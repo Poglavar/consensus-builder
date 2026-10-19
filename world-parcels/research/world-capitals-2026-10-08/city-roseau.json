@@ -1,0 +1,101 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:DM:roseau",
+  "name": "Roseau",
+  "country": "Dominica",
+  "countryCode": "DM",
+  "centerLatLon": [
+    15.3,
+    -61.4
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Roseau Dominica official cadastral parcel map lands survey GIS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://housing.gov.dm/en/lands-and-surveys-division",
+        "https://physicalplanning.gov.dm/land-use-and-development/16-land-use-and-development/68-roseau",
+        "https://gis.dominica.gov.dm"
+      ]
+    },
+    {
+      "query": "Roseau Dominica Lands Surveys GIS map cadastral parcels official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://housing.gov.dm/en/lands-and-surveys-division",
+        "https://physicalplanning.gov.dm/land-use-and-development/16-land-use-and-development/68-roseau",
+        "https://gis.dominica.gov.dm"
+      ]
+    },
+    {
+      "query": "Roseau Dominica GIS geoservices cadastral parcels map",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://housing.gov.dm/en/lands-and-surveys-division",
+        "https://physicalplanning.gov.dm/land-use-and-development/16-land-use-and-development/68-roseau",
+        "https://gis.dominica.gov.dm"
+      ]
+    },
+    {
+      "query": "site:gis.dominica.gov.dm parcels cadastral map service",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://housing.gov.dm/en/lands-and-surveys-division",
+        "https://physicalplanning.gov.dm/land-use-and-development/16-land-use-and-development/68-roseau",
+        "https://gis.dominica.gov.dm"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://housing.gov.dm/en/lands-and-surveys-division",
+      "observation": "Government Lands and Surveys Division is custodian of land survey maps; planning portal contains Roseau land-use maps. No city parcel geometry source inspected."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://housing.gov.dm/en/lands-and-surveys-division",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Lands and Surveys Division page opened; it is custodian of land survey maps and national mapping for Dominica."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The national Lands and Surveys Division is the survey-map custodian; the inspected evidence did not identify Roseau-specific cadastral coverage or a parcel service.",
+    "urls": [
+      "https://housing.gov.dm/en/lands-and-surveys-division"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The national Lands and Surveys Division is the survey-map custodian; the inspected evidence did not identify Roseau-specific cadastral coverage or a parcel service."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The national Lands and Surveys Division is the survey-map custodian; the inspected evidence did not identify Roseau-specific cadastral coverage or a parcel service.",
+  "registryEvidenceUrls": [
+    "https://housing.gov.dm/en/lands-and-surveys-division"
+  ],
+  "sourceIds": []
+}

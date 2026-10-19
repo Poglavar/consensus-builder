@@ -1,0 +1,31 @@
+{
+  "taskId": "city:8774",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-8774-jalingo.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/jalingo-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:46:31Z",
+  "reason": "TAGIS and the Taraba State directory establish the Jalingo-based cadastral custodian. The saved public API route resolves to login and the sign-in page exposes no anonymous parcel feature response; no safe native ID or polygon was obtained.",
+  "registryFound": true,
+  "identity": {
+    "rank": 2218,
+    "country": "Nigeria",
+    "point": [
+      8.91443574950481,
+      11.3643973620493
+    ],
+    "populationPersons": 262796
+  },
+  "bilingualSearches": [
+    "English",
+    "Hausa"
+  ],
+  "firstPartyUrlsChecked": [
+    "https://tagis.tarabastate.gov.ng/",
+    "https://www.tarabastate.gov.ng/contact"
+  ],
+  "admission": "held: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed details-panel verification not evidenced; no runtime/catalog/report change"
+}

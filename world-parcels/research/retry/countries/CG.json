@@ -1,0 +1,53 @@
+{
+ "kind": "country",
+ "key": "CG",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-CG,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.geoportail.cg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin)"
+  },
+  {
+   "url": "http://www.cadastre.cg",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "DNS does not resolve"
+  },
+  {
+   "url": "https://www.mmeh.cg",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin)"
+  },
+  {
+   "url": "https://www.gouvernement.cg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre%20Congo%20Brazzaville",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "government hosts reset or 502 through the proxy; cause unknown",
+ "notes": "No change; every candidate host failed, so absence is unconfirmed.",
+ "nextStep": "Retry from another network; look for donor-funded land information system."
+}

@@ -1,0 +1,71 @@
+{
+  "cityCode": 424,
+  "queueRank": 1741,
+  "name": "Plovdiv",
+  "country": "Bulgaria",
+  "countryCode": "BG",
+  "iso3": "BGR",
+  "point": [42.1407936933214, 24.757117492438],
+  "population2025": 329838,
+  "population2025k": 329.838,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Plovdiv cadastral map official parcel Bulgaria",
+        "result": "Official first-party results identified the Bulgarian Geodesy, Cartography and Cadastre Agency (AGKK) KAIS public cadastral map/search and its service documentation; the City of Plovdiv planning and cadastre directorate was also identified.",
+        "actualResultUrls": [
+          "https://kais.cadastre.bg/en",
+          "https://kais.cadastre.bg/en/Map/SearchForm?view=Search%2FCadastre%2F_FullSearch",
+          "https://www.plovdiv.bg/administration/directorates-and-departments/ustrplankadaster/",
+          "https://www.cadastre.bg/en/service/790-provision-copy-cadastral-map-excluding-ownership-data-digital-form-magnetic-medium"
+        ]
+      },
+      {
+        "language": "Bulgarian",
+        "query": "Пловдив кадастрална карта официален портал имоти",
+        "result": "Official Bulgarian-language results identified KAIS cadastral search, the City of Plovdiv Directorate of Spatial Planning and Cadastre, and an official city-hosted cadastral sketch documenting Plovdiv cadastral identifiers and BGS 2005.",
+        "actualResultUrls": [
+          "https://kais.cadastre.bg/bg/Map",
+          "https://www.plovdiv.bg/administration/directorates-and-departments/ustrplankadaster/",
+          "https://plovdiv.bg/obs/wp-content/uploads/2019/07/%D0%A0208-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE.pdf"
+        ]
+      }
+    ],
+    "officialViewer": "https://kais.cadastre.bg/en/Map",
+    "serviceDiscovery": "The live KAIS HTML configuration names the public AGKK ArcGIS service as https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer and exposes BGS 2005 (EPSG:7801), BGS 2005 UTM (EPSG:9391), and WGS84 UTM options.",
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://kais.cadastre.bg/en/Map",
+        "outcome": "HTTP 200; live JavaScript/configuration inspected; public viewer and service URL discovered."
+      },
+      {
+        "method": "GET",
+        "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer?f=pjson",
+        "outcome": "HTTP 403 Request Rejected by host WAF; no service metadata returned."
+      },
+      {
+        "method": "GET",
+        "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer?f=json",
+        "outcome": "HTTP 403 Request Rejected by host WAF; no service metadata returned."
+      },
+      {
+        "method": "GET",
+        "url": "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=false&resultRecordCount=1&f=json",
+        "outcome": "HTTP 403 Request Rejected by host WAF; no bounded anonymous record response returned."
+      }
+    ],
+    "scopeLimits": [
+      "No login, credentials, private token, CAPTCHA bypass, or unsafe owner/address/titleholder fields were used.",
+      "The exact WUP point was not shifted and was not used to infer citywide absence.",
+      "No parcel geometry was retained because the public ArcGIS endpoint rejected anonymous REST requests before schema/feature retrieval.",
+      "The official municipal page evidences a local cadastre/planning custodian; AGKK is the national cadastral authority and KAIS is the public viewer."
+    ]
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Official public service was discovered, but the anonymous ArcGIS REST metadata and query routes were WAF-rejected; no independent adapter qualification or geometry sample is claimed."
+}

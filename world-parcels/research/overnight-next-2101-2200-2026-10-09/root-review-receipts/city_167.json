@@ -1,0 +1,32 @@
+{
+  "taskId": "city:167",
+  "decision": "held",
+  "checkedAt": "2026-10-11T00:52:33.037740Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-167-sinuiju.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/sinuiju-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json"
+  ],
+  "city": "Sinuiju",
+  "reason": "No DPRK-local cadastral custodian or anonymous parcel response is evidenced; the Naenara PDF was inaccessible on direct checks and is development-zone context only. Registry custody remains null, without an absence inference.",
+  "identityValidated": {
+    "cityCode": 167,
+    "rank": 2181,
+    "country": "Dem. People's Republic of Korea",
+    "pointLatLon": [
+      40.10039684487,
+      124.397834585144
+    ],
+    "populationPersons": 267218
+  },
+  "bilingualSearchesRecorded": [
+    "English",
+    "native/local"
+  ],
+  "samplePolygonCount": 0,
+  "qualificationGates": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification; city remains unenabled.",
+  "firstPartyPagesChecked": [
+    "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"
+  ]
+}

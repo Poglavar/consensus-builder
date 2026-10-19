@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "GUA",
+ "regionName": "Guanajuato",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9 (cookie jar on; viewer-origin Referer where the viewer was fetched)",
+ "source": {
+  "sourceId": "mx-gua-san-miguel-de-allende-arcgis-webmap",
+  "name": "CARTOGRAFIA_SMA_2023 (predio-level cartography, San Miguel de Allende)",
+  "operator": "Municipio de San Miguel de Allende (ArcGIS Online owner SanMigueldeAllende)",
+  "scope": "municipal, San Miguel de Allende only",
+  "endpoint": "https://www.arcgis.com/sharing/rest/content/items/c9df54c373734fe1868579543a1528e8/data?f=json",
+  "method": "GET",
+  "responseFormat": "ArcGIS web map JSON with inline featureCollection layers (Esri JSON polygons)",
+  "crs": "EPSG:3857 (wkid 102100)",
+  "reuseStatus": "item licenseInfo empty; no terms text seen"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "mx-gua-san-miguel-de-allende-arcgis-webmap",
+  "requestUrl": "https://www.arcgis.com/sharing/rest/content/items/c9df54c373734fe1868579543a1528e8/data?f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": "extent ~[-100.78,20.90,-100.71,20.93] (San Miguel de Allende urban area), layer extents in EPSG:3857",
+  "parcelRecordCount": 65319,
+  "recordListPath": "operationalLayers[].featureCollection.layers[0].featureSet.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "NCTA",
+  "responseFile": "research/subnational/MX/GUA-parcel-response.json",
+  "pagination": "none; whole map (about 65319 predios in 22 layer chunks of 3000) is one static JSON, so not a bounded query; only 3 features saved"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide layer found; only the San Miguel de Allende municipal web map (2022-2024 editions) is public. Guanajuato's state finance site (finanzas.guanajuato.gob.mx) returned a redirect page only.",
+ "subregionsVerified": [
+  "San Miguel de Allende"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://finanzas.guanajuato.gob.mx/",
+   "observation": "200, JS redirect to /sf/; no parcel service found"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios%20Guanajuato&f=json",
+   "observation": "3 public web maps CARTOGRAFIA_SMA_2022/23/24 by owner SanMigueldeAllende; owner listing also shows SMA VALORES and ZONIFICACION web maps"
+  },
+  {
+   "url": "https://catastro.guanajuato.gob.mx/",
+   "observation": "guessed host, proxy CONNECT 502"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios%20Guanajuato&f=json&num=8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 web maps"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/content/items/c9df54c373734fe1868579543a1528e8/data?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon predios with NCTA ID; other attributes (street, colonia, numbers) not saved"
+  },
+  {
+   "url": "https://catastro.guanajuato.gob.mx/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502, temporarily unavailable/unresolved"
+  }
+ ],
+ "reuseStatus": "No licence text visible on the item; treat as unknown",
+ "remainingUncertainty": "Municipal data only (one of 46 municipalities). Statewide Guanajuato catastro/IPLANEG viewer not found. Reused from research/countries/MX.json and research/retry/countries/MX.json: RAN (phina/sig.ran.gob.mx) Akamai 403, INEGI has no parcel service; no national layer.",
+ "nextStep": "Check IPLANEG/SIT Guanajuato and León/Guanajuato capital municipal viewers; confirm terms of the SMA item."
+}

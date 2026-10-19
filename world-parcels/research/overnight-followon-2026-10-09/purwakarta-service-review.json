@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6010-purwakarta.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The national ATR/BPN is the official land registry authority; Purwakarta Regency’s official government reports local ATR/BPN land-office PTSL registration activity. BHUMI is an official interactive land-information map. However, the local SI-DIKA catalog exposed boundaries and irrigation data rather than parcel polygons, and the WUP-point layer/coverage remains unresolved.",
+  "registryAssessment": "The national ATR/BPN is the official land registry authority; Purwakarta Regency’s official government reports local ATR/BPN land-office PTSL registration activity. BHUMI is an official interactive land-information map. However, the local SI-DIKA catalog exposed boundaries and irrigation data rather than parcel polygons, and the WUP-point layer/coverage remains unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "BHUMI is the official ATR/BPN interactive land-information map integrated with the ministry’s ATLAS spatial data platform. The local Purwakarta government SI-DIKA map is first-party but the visible catalog is administrative boundaries and irrigation assets, not parcel polygons. Dynamic BHUMI content did not expose a Purwakarta-specific safe anonymous feature query or stable parcel ID/geometry in this review."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+      "observation": "BHUMI is the official ATR/BPN interactive land-information map integrated with the ministry’s ATLAS spatial data platform. The local Purwakarta government SI-DIKA map is first-party but the visible catalog is administrative boundaries and irrigation assets, not parcel polygons. Dynamic BHUMI content did not expose a Purwakarta-specific safe anonymous feature query or stable parcel ID/geometry in this review."
+    },
+    {
+      "url": "https://webgis.purwakartakab.go.id/",
+      "observation": "BHUMI is the official ATR/BPN interactive land-information map integrated with the ministry’s ATLAS spatial data platform. The local Purwakarta government SI-DIKA map is first-party but the visible catalog is administrative boundaries and irrigation assets, not parcel polygons. Dynamic BHUMI content did not expose a Purwakarta-specific safe anonymous feature query or stable parcel ID/geometry in this review."
+    },
+    {
+      "url": "https://www.purwakartakab.go.id/read/2400",
+      "observation": "The official Purwakarta Regency government reports the county ATR/BPN Land Office launching PTSL cadastral-registration activity. This is local registry context, not evidence of open parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Purwakarta Indonesia official land parcel cadastral map ATR BPN GIS peta bidang tanah",
+      "result": "BHUMI is the official ATR/BPN interactive land-information map integrated with the ministry’s ATLAS spatial data platform. The local Purwakarta government SI-DIKA map is first-party but the visible catalog is administrative boundaries and irrigation assets, not parcel polygons. Dynamic BHUMI content did not expose a Purwakarta-specific safe anonymous feature query or stable parcel ID/geometry in this review.",
+      "method": "Separate English-language web search followed by first-party page review.",
+      "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry."
+    },
+    {
+      "language": "Indonesian",
+      "query": "Peta bidang tanah Purwakarta ATR BPN BHUMI resmi Kantor Pertanahan Kabupaten Purwakarta",
+      "result": "The national ATR/BPN is the official land registry authority; Purwakarta Regency’s official government reports local ATR/BPN land-office PTSL registration activity. BHUMI is an official interactive land-information map. However, the local SI-DIKA catalog exposed boundaries and irrigation data rather than parcel polygons, and the WUP-point layer/coverage remains unresolved.",
+      "method": "Separate local-language web search followed by first-party page review.",
+      "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "The national ATR/BPN is the official land registry authority; Purwakarta Regency’s official government reports local ATR/BPN land-office PTSL registration activity. BHUMI is an official interactive land-information map. However, the local SI-DIKA catalog exposed boundaries and irrigation data rather than parcel polygons, and the WUP-point layer/coverage remains unresolved.",
+    "verifiedOpenScope": "No public anonymous WUP-point parcel response or citywide parcel coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "result": "BHUMI is the official ATR/BPN interactive land-information map integrated with the ministry’s ATLAS spatial data platform. The local Purwakarta government SI-DIKA map is first-party but the visible catalog is administrative boundaries and irrigation assets, not parcel polygons. Dynamic BHUMI content did not expose a Purwakarta-specific safe anonymous feature query or stable parcel ID/geometry in this review."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+      "result": "BHUMI is the official ATR/BPN interactive land-information map integrated with the ministry’s ATLAS spatial data platform. The local Purwakarta government SI-DIKA map is first-party but the visible catalog is administrative boundaries and irrigation assets, not parcel polygons. Dynamic BHUMI content did not expose a Purwakarta-specific safe anonymous feature query or stable parcel ID/geometry in this review."
+    },
+    {
+      "url": "https://webgis.purwakartakab.go.id/",
+      "result": "BHUMI is the official ATR/BPN interactive land-information map integrated with the ministry’s ATLAS spatial data platform. The local Purwakarta government SI-DIKA map is first-party but the visible catalog is administrative boundaries and irrigation assets, not parcel polygons. Dynamic BHUMI content did not expose a Purwakarta-specific safe anonymous feature query or stable parcel ID/geometry in this review."
+    },
+    {
+      "url": "https://www.purwakartakab.go.id/read/2400",
+      "result": "The official Purwakarta Regency government reports the county ATR/BPN Land Office launching PTSL cadastral-registration activity. This is local registry context, not evidence of open parcel geometry."
+    }
+  ],
+  "remainingUncertainty": "Availability and coverage of anonymous cadastral parcel geometry in Purwakarta on BHUMI remain unverified. The SI-DIKA service does not demonstrate it."
+}

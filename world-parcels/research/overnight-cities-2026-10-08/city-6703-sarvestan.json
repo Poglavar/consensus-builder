@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Sarvestan",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "No primary city-specific registry source could be verified for Sarvestan. A national cadastre portal candidate timed out; this does not establish its city coverage or indicate absence of a registry.",
+  "registryEvidenceUrls": [
+    "https://cadastre.ssaa.ir/",
+    "https://ssaa.ir/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6703,
+  "cityId": "wup2025:6703",
+  "centerLatLon": [
+    29.2717602833912,
+    53.2236275491027
+  ],
+  "rank": 491,
+  "queueRank": 491,
+  "population2025": 1039168,
+  "population2025k": 1039.168,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "English and Persian searches found no primary Sarvestan parcel map route. Candidate national cadastre hostname timed out; no private/login route used.",
+  "scopeLimits": "City-specific registry and parcel-map evidence remain unverified. No geometry, feature IDs, owner/address/tax data or property-specific fields were queried.",
+  "remainingUncertainty": "No complete georeferenced polygon or native feature ID was verified at the WUP point; public map viewers may provide display-only or identity-dependent workflows not tested.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sarvestan Fars Iran cadastral land registry map GIS municipal official",
+        "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+        "result": "Searches did not identify an official Sarvestan municipality/county cadastral map or a primary local property-register page. The national cadastral portal hostname cadastre.ssaa.ir could not be fetched within a 20-second timeout; no login, credentials, or retry bypass was used. Non-primary listings were not treated as evidence. No public parcel schema, anonymous geometry route, or local registry coverage was verified.",
+        "actualResultUrls": [
+          "https://cadastre.ssaa.ir/",
+          "https://ssaa.ir/"
+        ],
+        "executionMethod": "English-language web search plus direct anonymous inspection of official public routes."
+      },
+      {
+        "language": "Persian",
+        "query": "سامانه حدنگار کاداستر اراضی سازمان ثبت اسناد و املاک کشور نقشه سروستان فارس",
+        "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+        "result": "Searches did not identify an official Sarvestan municipality/county cadastral map or a primary local property-register page. The national cadastral portal hostname cadastre.ssaa.ir could not be fetched within a 20-second timeout; no login, credentials, or retry bypass was used. Non-primary listings were not treated as evidence. No public parcel schema, anonymous geometry route, or local registry coverage was verified.",
+        "actualResultUrls": [
+          "https://cadastre.ssaa.ir/",
+          "https://ssaa.ir/"
+        ],
+        "executionMethod": "Local-language search plus review of primary public official pages; no parcel-specific or private lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "ir-sarvestan-registry-map-review",
+    "name": "Sarvestan local registry/map source review",
+    "operator": "No city-specific primary registry publisher verified",
+    "url": "https://cadastre.ssaa.ir/",
+    "scope": "City-specific registry and parcel-map evidence remain unverified. No geometry, feature IDs, owner/address/tax data or property-specific fields were queried.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature ID obtained.",
+    "geometryStatus": "city_registry_source_not_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City-specific registry and parcel-map evidence remain unverified. No geometry, feature IDs, owner/address/tax data or property-specific fields were queried.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    29.2717602833912,
+    53.2236275491027
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "reason": "No full geometry-only parcel sample or runtime source contract was verified."
+  },
+  "rootReviewedAt": "2026-10-09T00:45:13.513608+00:00"
+}

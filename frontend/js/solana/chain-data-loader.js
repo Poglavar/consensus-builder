@@ -11,6 +11,13 @@
     const PARCEL_MINT_STATUS_CACHE_TTL_MS = 30 * 1000;
     const MAX_MULTIPLE_ACCOUNTS_BATCH = 100;
 
+    function proposalStatusFromCode(statusCode) {
+        const codec = globalScope.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
+    }
+
     function normalizeCluster(cluster) {
         const raw = typeof cluster === 'string' ? cluster.trim() : '';
         return raw || 'devnet';
@@ -65,9 +72,18 @@
         if (connectionCache.has(clusterKey)) {
             return connectionCache.get(clusterKey);
         }
-        const rpc = clusters[clusterKey] || clusters.devnet;
+        const routing = globalScope.SolanaRpcRouting;
+        const endpoints = routing
+            ? routing.resolveEndpoints(clusterKey)
+            : {
+                primary: globalScope.SOLANA_RPC_URLS?.[clusterKey] || clusters[clusterKey] || clusters.devnet,
+                programAccounts: globalScope.SOLANA_PROGRAM_ACCOUNTS_RPC_URLS?.[clusterKey] || null
+            };
         if (!globalScope.solanaWeb3) throw new Error('Solana web3.js not loaded');
-        const connection = new globalScope.solanaWeb3.Connection(rpc, 'confirmed');
+        const options = { commitment: 'confirmed' };
+        if (routing) options.fetch = routing.createFetch(endpoints.primary, endpoints.programAccounts);
+        if (endpoints.ws) options.wsEndpoint = endpoints.ws;
+        const connection = new globalScope.solanaWeb3.Connection(endpoints.primary, options);
         connectionCache.set(clusterKey, connection);
         return connection;
     }
@@ -161,16 +177,46 @@
             const acceptanceCount = offset + 8 <= body.length ? new DataView(body.buffer, body.byteOffset + offset, 8).getBigUint64(0, true) : 0n;
             offset += 8;
             const acceptedParcels = readVecString();
+            // lens: Vec<Pubkey>, bump: u8, then v2's verdict_may_execute: bool, then v3's
+            // site_hash: [u8; 32], open_ground: bool, open_ground_cleared: bool, layout_version: u8.
+            // The fixed-size account is zero-padded, so v1/v2-era accounts read false, no site (null)
+            // and layoutVersion 0 there; every v3 mint writes layoutVersion 3.
+            // A malformed lens vector is reported, not replaced.
+            let lens = [];
+            let lensError = null;
+            let verdictMayExecute = false;
+            let siteHash = null;
+            let openGround = false;
+            let openGroundCleared = false;
+            let layoutVersion = 0;
+            try {
+                const tail = globalScope.LensCore.decodeProposalLensTail(body, offset);
+                lens = tail.lens;
+                verdictMayExecute = tail.bump !== null && tail.offset < body.length && body[tail.offset] === 1;
+                const siteStart = tail.offset + 1;
+                if (tail.bump !== null && siteStart + 34 <= body.length) {
+                    const hashBytes = body.slice(siteStart, siteStart + 32);
+                    // The zero hash means "no site" (every v1/v2 proposal).
+                    siteHash = hashBytes.some(byte => byte !== 0)
+                        ? Array.from(hashBytes, byte => byte.toString(16).padStart(2, '0')).join('')
+                        : null;
+                    openGround = body[siteStart + 32] === 1;
+                    openGroundCleared = body[siteStart + 33] === 1;
+                    if (siteStart + 34 < body.length) layoutVersion = body[siteStart + 34];
+                }
+            } catch (error) {
+                lensError = error && error.message ? error.message : String(error);
+                console.warn(`[${new Date().toISOString()}] [SolanaChainDataLoader] proposal ${address}: lens not decodable: ${lensError}`);
+            }
 
-            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
             return {
                 proposalId: address,
                 proposalIdNum: proposalId.toString(),
-                parentParcelIds: parcelIds,
+                cadastreParcelIds: parcelIds,
                 isConditional,
                 imageURI,
                 acceptancePossible,
-                status: statusNames[status] || 'Unknown',
+                status: proposalStatusFromCode(status),
                 statusCode: status,
                 solBalance: solBalance.toString(),
                 ethBalance: solBalance.toString(), // compat alias — shared proposal schema uses ethBalance
@@ -179,7 +225,14 @@
                 expiryTimestamp: '0',
                 expiringPercentage: '0',
                 owner,
-                acceptedParcels: acceptedParcels || []
+                acceptedParcels: acceptedParcels || [],
+                lens,
+                lensError,
+                verdictMayExecute,
+                siteHash,
+                openGround,
+                openGroundCleared,
+                layoutVersion
             };
         } catch (_) {
             return null;
@@ -276,7 +329,7 @@
             if (account.data.length < 20) continue;
             const parsed = parseProposalAccount(account.data, pubkey.toString());
             if (parsed && parsed.owner === walletAddress) {
-                proposals.push({ ...parsed, lens: [] });
+                proposals.push(parsed);
             }
         }
         return proposals;
@@ -285,7 +338,7 @@
     async function getProposalsByParcelFromChain(cluster, proposalProgramId, parcelId) {
         const allProposals = await getAllProposals(cluster, proposalProgramId);
         return allProposals
-            .filter(p => (p.parentParcelIds || []).includes(parcelId))
+            .filter(p => (p.cadastreParcelIds || []).includes(parcelId))
             .map(p => p.proposalId);
     }
 

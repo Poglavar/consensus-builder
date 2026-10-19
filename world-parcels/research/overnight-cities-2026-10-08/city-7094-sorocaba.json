@@ -1,0 +1,108 @@
+{
+  "name": "Sorocaba",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 782,
+  "point": [
+    -23.4928629003271,
+    -47.4713792795384
+  ],
+  "population2025": 689775,
+  "population2025k": 689.775,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Sorocaba’s official planning-secretariat GIS page offers informational maps and downloadable geospatial ZIP files. Municipal planning/government sources describe geoprocessing and cartographic layers for lots and buildings used to update the municipal property cadastre. This establishes municipal cadastral-map custody, not a land-title registry or a verified public parcel-vector endpoint.",
+  "registryEvidenceUrls": [
+    "https://planejamento.sorocaba.sp.gov.br/mapas-camadas-simples-consulta/",
+    "https://agencia-local.sorocaba.sp.gov.br/iptu-complementar-foi-emitido-apos-estudo-utilizando-mapeamento/",
+    "https://noticias.sorocaba.sp.gov.br/wp-content/uploads/2024/06/noticias.sorocaba.sp.gov.br-relatorio-de-gestao.2022.1o.semestre_compressed.pdf",
+    "https://recad.sorocaba.sp.gov.br/dsf_sod_gtm/rcd/loginrcdman.do",
+    "https://iptu.sorocaba.sp.gov.br/dsf_iptu/pages/consultadebito.jsf"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No full parcel polygons were retained. Citywide/countrywide completeness, title and legal survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "local_registry_and_public_map_candidate_geometry_unverified",
+  "technicalBlocker": "The municipal GIS page confirms downloadable ZIP geospatial data, but the accessible page does not expose layer names or feature schemas. Tax/property-account services require identifying information and were not accessed.",
+  "remainingUncertainty": "Which GIS download includes parcel polygons at the WUP point, the native non-sensitive key, and whether its schema permits safe geometry-only access remain unresolved.",
+  "nextStep": "If continuing discovery, obtain an official schema-safe vector layer or field restriction, then issue only a bounded geometry request at this point.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sorocaba official municipal cadastral parcel map GIS geospatial layers lots download",
+        "scope": "Find first-party local registry/cadastral-map evidence and safe public parcel geometry schema.",
+        "result": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used.",
+        "actualResultUrls": [
+          "https://planejamento.sorocaba.sp.gov.br/mapas-camadas-simples-consulta/",
+          "https://agencia-local.sorocaba.sp.gov.br/iptu-complementar-foi-emitido-apos-estudo-utilizando-mapeamento/",
+          "https://noticias.sorocaba.sp.gov.br/wp-content/uploads/2024/06/noticias.sorocaba.sp.gov.br-relatorio-de-gestao.2022.1o.semestre_compressed.pdf",
+          "https://recad.sorocaba.sp.gov.br/dsf_sod_gtm/rcd/loginrcdman.do",
+          "https://iptu.sorocaba.sp.gov.br/dsf_iptu/pages/consultadebito.jsf"
+        ],
+        "executionMethod": "Separate English-language search and official source review; no personal or property-specific lookup."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Sorocaba mapa cadastral lotes cadastro imobiliário geoprocessamento camadas GIS prefeitura",
+        "scope": "Cross-check local-language official sources for the city registry, map and public feature schema.",
+        "result": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used.",
+        "actualResultUrls": [
+          "https://planejamento.sorocaba.sp.gov.br/mapas-camadas-simples-consulta/",
+          "https://agencia-local.sorocaba.sp.gov.br/iptu-complementar-foi-emitido-apos-estudo-utilizando-mapeamento/",
+          "https://noticias.sorocaba.sp.gov.br/wp-content/uploads/2024/06/noticias.sorocaba.sp.gov.br-relatorio-de-gestao.2022.1o.semestre_compressed.pdf",
+          "https://recad.sorocaba.sp.gov.br/dsf_sod_gtm/rcd/loginrcdman.do",
+          "https://iptu.sorocaba.sp.gov.br/dsf_iptu/pages/consultadebito.jsf"
+        ],
+        "executionMethod": "Separate local-language search and official source review."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "BR-SOROCABA-SEPLAN-CARTOGRAPHY",
+    "name": "Sorocaba municipal planning GIS and cartographic base",
+    "url": "https://planejamento.sorocaba.sp.gov.br/mapas-camadas-simples-consulta/",
+    "operator": "Prefeitura de Sorocaba, Secretaria de Planejamento e Desenvolvimento Urbano",
+    "serviceType": "Municipal public informational map and geospatial downloads; lot/cadastral layers are documented, but exact public dataset schema and safe parcel-feature endpoint not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 7094,
+  "cityId": "wup2025:7094",
+  "queueRank": 782,
+  "sourceIds": [],
+  "centerLatLon": [
+    -23.4928629003271,
+    -47.4713792795384
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Sorocaba’s official planning-secretariat GIS page offers informational maps and downloadable geospatial ZIP files. Municipal planning/government sources describe geoprocessing and cartographic layers for lots and buildings used to update the municipal property cadastre. This establishes municipal cadastral-map custody, not a land-title registry or a verified public parcel-vector endpoint.",
+    "verifiedOpenScope": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime contract or adapter behavior was tested."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://planejamento.sorocaba.sp.gov.br/mapas-camadas-simples-consulta/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Secretaria de Planejamento e Desenvolvimento Urbano - Prefeitura de Sorocaba"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

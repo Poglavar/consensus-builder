@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "city": "Johannesburg",
+  "cityId": "wup2025:3664",
+  "countryCode": "ZA",
+  "checkedAt": "2026-10-07",
+  "sourceCandidate": {
+    "sourceId": "za-joburg-registered-stands",
+    "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+    "layer": "Registered Stands (layer 6)",
+    "operator": "City of Johannesburg municipal GIS (ags.joburg.org.za)",
+    "geometryType": "Polygon",
+    "nativeIdCandidate": "SG_ID (26-character string)",
+    "otherFieldsForIdentityAudit": [
+      "PROPERTY_ID (integer; metadata says its index is non-unique)",
+      "STAND_NO",
+      "STATUS_DESC"
+    ],
+    "objectIdField": "OBJECTID (unique service row index)",
+    "metadataHttpStatus": 200,
+    "metricSridNote": "metricSrid 32735 is the downstream area/binding projection. The ArcGIS query requests outSR=4326, so the provider native spatial reference is independent and is not a blocker."
+  },
+  "initialSample": {
+    "httpStatus": 200,
+    "featureCount": 3,
+    "geometryType": "MultiPolygon",
+    "observed": "All three sample rows shared one SG_ID and PROPERTY_ID and were suspected to be joined/duplicate parts. Sample alone does not prove that their geometries are identical or complete.",
+    "sampleNativeIds": [
+      "T0IQ01830000000000000000RE"
+    ],
+    "sampleTransportObjectIds": [
+      612526,
+      612527,
+      612528
+    ],
+    "outFields": [
+      "OBJECTID",
+      "SG_ID",
+      "PROPERTY_ID",
+      "STAND_NO",
+      "STATUS_DESC",
+      "LAND_TYPE_NAME"
+    ],
+    "ownerField": "Metadata includes OWNER, but it was not requested or saved."
+  },
+  "boundedAcceptanceAttempt": {
+    "evidenceFile": "world-parcels/research/same-country-expansion-2026-10-07/johannesburg-small-page-acceptance.json",
+    "configuration": {
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true,
+      "partMatchFields": [
+        "PROPERTY_ID",
+        "STAND_NO",
+        "STATUS_DESC"
+      ],
+      "pageSize": 20
+    },
+    "outcome": "failed_first_cell_provider_timeout",
+    "completedViewportCells": 0,
+    "requestsBeforeFailure": 9,
+    "lastRequest": {
+      "operation": "geometry-by-OID",
+      "objectIdCount": 20,
+      "parameterChars": 335,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "body": "did not finish before the adapter 15-second timeout"
+    },
+    "instrumentedOneCell": {
+      "bboxLonLat": [
+        28.04,
+        -26.207500000000003,
+        28.0425,
+        -26.205000000000002
+      ],
+      "countRequest": {
+        "httpStatus": 200,
+        "bytes": 12,
+        "elapsedMs": 1259
+      },
+      "objectIdManifest": {
+        "httpStatus": 200,
+        "bytes": 543,
+        "elapsedMs": 419,
+        "objectIdCount": 20
+      },
+      "geometryRequest": {
+        "httpStatus": 200,
+        "headersArrived": true,
+        "bodyReadElapsedMs": 15004,
+        "result": "AbortSignal.timeout(15000) aborted body read"
+      }
+    },
+    "interpretation": "Count and manifest work. The geometry-by-OID page body is too slow/large at page size 20 for the existing 15-second runtime deadline. The acceptance gate did not establish paging completeness, exact native-ID reads, geometry equality, or binding.",
+    "deadlinePolicy": "The configured 15-second deadline was retained; no timeout increase or TLS/validation bypass used."
+  },
+  "status": "promising_official_candidate_acceptance_incomplete",
+  "nextStep": "For a later bounded pass, investigate whether smaller OID batches can complete within the existing 15-second runtime deadline before retrying full acceptance. Do not register as live until complete paging, exact-ID reads and part geometry integrity pass.",
+  "savedRawGeometry": false,
+  "registryChanged": false,
+  "previousResearchCityId": "queue:50"
+}

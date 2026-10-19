@@ -1,0 +1,419 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fourth detailed India/Africa batch following the ten-city proposal accepted by the user.",
+  "preparedAt": "2026-10-08T14:07:41.989003+00:00",
+  "status": "complete",
+  "baseQueue": "world-parcels/queue-india-africa.json",
+  "selectionMethod": "Five unresolved Indian and five unresolved African cities by saved largest-city rank, excluding configured app entries and previous detailed follow-ups. Preliminary regional screening is retained as prior evidence.",
+  "cityCount": 10,
+  "indiaCount": 5,
+  "africaCount": 5,
+  "cities": [
+    {
+      "cityId": "wup2025:8064",
+      "wupCityCode": 8064,
+      "name": "Jaipur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.9128723533915,
+        75.7865606043523
+      ],
+      "largestRank": 110,
+      "growthRank": null,
+      "population2025": 4071754,
+      "annualGrowthPct2015To2025": 1.078002,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8064"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/jaipur.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Jaipur",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 110,
+      "priority": 142,
+      "workstream": "india",
+      "baselineResearchFile": "research/india-africa-2026-10-08/india-city-8064.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-8064.json"
+    },
+    {
+      "cityId": "wup2025:10447",
+      "wupCityCode": 10447,
+      "name": "Varanasi",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        25.3130953149596,
+        83.0050363443188
+      ],
+      "largestRank": 119,
+      "growthRank": null,
+      "population2025": 3858863,
+      "annualGrowthPct2015To2025": 0.850739,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:10447"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/varanasi.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Varanasi",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 119,
+      "priority": 144,
+      "workstream": "india",
+      "baselineResearchFile": "research/india-africa-2026-10-08/india-city-10447.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-10447.json"
+    },
+    {
+      "cityId": "wup2025:8886",
+      "wupCityCode": 8886,
+      "name": "Indore",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.6991756014844,
+        75.8556700061169
+      ],
+      "largestRank": 136,
+      "growthRank": null,
+      "population2025": 3476423,
+      "annualGrowthPct2015To2025": 1.580286,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8886"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/indore.json",
+        "research/retry/cities/indore.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Indore",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 136,
+      "priority": 150,
+      "workstream": "india",
+      "baselineResearchFile": "research/india-africa-2026-10-08/india-city-8886.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-8886.json"
+    },
+    {
+      "cityId": "wup2025:9793",
+      "wupCityCode": 9793,
+      "name": "Nagpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        21.1403108339582,
+        79.0798475250127
+      ],
+      "largestRank": 147,
+      "growthRank": null,
+      "population2025": 3257841,
+      "annualGrowthPct2015To2025": 0.713869,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:9793"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/nagpur.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 147,
+      "priority": 152,
+      "workstream": "india",
+      "baselineResearchFile": "research/india-africa-2026-10-08/india-city-9793.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-9793.json"
+    },
+    {
+      "cityId": "wup2025:8120",
+      "wupCityCode": 8120,
+      "name": "Kalyan-Dombivli",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        19.2079660812588,
+        73.1699593951258
+      ],
+      "largestRank": 156,
+      "growthRank": null,
+      "population2025": 3163424,
+      "annualGrowthPct2015To2025": 1.098028,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8120"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kalyan-dombivli.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 156,
+      "priority": 156,
+      "workstream": "india",
+      "baselineResearchFile": "research/india-africa-2026-10-08/india-city-8120.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-8120.json"
+    },
+    {
+      "cityId": "wup2025:7330",
+      "wupCityCode": 7330,
+      "name": "Onitsha",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        6.17349813029485,
+        6.82053185724296
+      ],
+      "largestRank": 69,
+      "growthRank": null,
+      "population2025": 5627706,
+      "annualGrowthPct2015To2025": 3.070259,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:7330"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/onitsha.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Onitsha",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 69,
+      "priority": 129,
+      "workstream": "africa_west",
+      "baselineResearchFile": "research/india-africa-2026-10-08/africa-ws-city-7330.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-7330.json"
+    },
+    {
+      "cityId": "wup2025:2324",
+      "wupCityCode": 2324,
+      "name": "Yaoundé",
+      "country": "Cameroon",
+      "countryCode": "CM",
+      "region": "Africa",
+      "centerLatLon": [
+        3.84966629078637,
+        11.5177122171369
+      ],
+      "largestRank": 79,
+      "growthRank": null,
+      "population2025": 5106087,
+      "annualGrowthPct2015To2025": 3.884454,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2324"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/yaounde.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Yaound%C3%A9",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 79,
+      "priority": 131,
+      "workstream": "africa_west",
+      "baselineResearchFile": "research/india-africa-2026-10-08/africa-ws-city-2324.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-2324.json"
+    },
+    {
+      "cityId": "wup2025:1866",
+      "wupCityCode": 1866,
+      "name": "Kampala",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "region": "Africa",
+      "centerLatLon": [
+        0.321224889410938,
+        32.5794981900445
+      ],
+      "largestRank": 85,
+      "growthRank": null,
+      "population2025": 4880943,
+      "annualGrowthPct2015To2025": 3.384883,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:1866"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kampala.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Kampala",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 85,
+      "priority": 134,
+      "workstream": "africa_north_east",
+      "baselineResearchFile": "research/india-africa-2026-10-08/africa-ne-city-kampala.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-1866.json"
+    },
+    {
+      "cityId": "wup2025:8435",
+      "wupCityCode": 8435,
+      "name": "Kano",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        11.9851852836313,
+        8.50931812932348
+      ],
+      "largestRank": 89,
+      "growthRank": null,
+      "population2025": 4840280,
+      "annualGrowthPct2015To2025": 1.734421,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:8435"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "no_verified_open_endpoint_after_attempts"
+      ],
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/kano.json"
+      ],
+      "wikipediaUrl": null,
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 89,
+      "priority": 135,
+      "workstream": "africa_west",
+      "baselineResearchFile": "research/india-africa-2026-10-08/africa-ws-city-8435.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-8435.json"
+    },
+    {
+      "cityId": "wup2025:2076",
+      "wupCityCode": 2076,
+      "name": "Casablanca",
+      "country": "Morocco",
+      "countryCode": "MA",
+      "region": "Africa",
+      "centerLatLon": [
+        33.5818411354042,
+        -7.54260580529481
+      ],
+      "largestRank": 94,
+      "growthRank": null,
+      "population2025": 4457471,
+      "annualGrowthPct2015To2025": 0.960716,
+      "cohorts": [
+        "largest200"
+      ],
+      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:2076"
+      ],
+      "previouslyInvestigated": true,
+      "previousStatuses": [
+        "temporarily_unavailable"
+      ],
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "previousEvidenceFiles": [
+        "research/casablanca.json",
+        "research/retry/cities/casablanca.json"
+      ],
+      "wikipediaUrl": "https://en.wikipedia.org/wiki/Casablanca",
+      "workCategory": "retry_existing_city",
+      "bestCohortRank": 94,
+      "priority": 136,
+      "workstream": "africa_north_east",
+      "baselineResearchFile": "research/india-africa-2026-10-08/africa-ne-city-casablanca.json",
+      "outcomeFile": "research/india-africa-batch4-2026-10-08/city-2076.json"
+    }
+  ],
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "tlsPolicy": "Certificate validation is the default; source-specific exceptions are authorized when needed. An expired certificate alone is not a terminal blocker.",
+  "completedAt": "2026-10-08T14:34:27.980970+00:00",
+  "outcomeFile": "research/india-africa-batch4-2026-10-08/index.json"
+}

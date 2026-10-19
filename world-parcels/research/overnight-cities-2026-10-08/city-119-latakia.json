@@ -1,0 +1,121 @@
+{
+  "name": "Latakia",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "rank": 920,
+  "point": [
+    35.5295651336195,
+    35.7956719811809
+  ],
+  "population2025": 591300,
+  "population2025k": 591.3,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Latakia Governorate service directory lists Latakia City Council property/real-estate services, including cadastral-plan requests and registry extracts. These are application-based administrative services, not evidence of anonymous public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://latakia.gov.sy/services",
+    "https://sana.sy/locals/2407294/"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Anonymous public parcel geometry and exact WUP-point coverage were not verified.",
+  "scopeLimits": "Research covers the exact unchanged WUP locator and reviewed official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "SY-119-latakia-source-review",
+    "name": "Latakia Governorate service directory / City Council property services",
+    "url": "https://latakia.gov.sy/services",
+    "operator": "Syrian Arab Republic",
+    "serviceType": "Local registry/cadastral-plan administrative services; no anonymous geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response or native parcel ID schema verified."
+  },
+  "wupCityCode": 119,
+  "cityId": "wup2025:119",
+  "queueRank": 920,
+  "centerLatLon": [
+    35.5295651336195,
+    35.7956719811809
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "The official Latakia Governorate service directory lists Latakia City Council property/real-estate services, including cadastral-plan requests and registry extracts. These are application-based administrative services, not evidence of anonymous public parcel geometry.",
+    "verifiedOpenScope": "No anonymous public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Latakia Syria official cadastral map land registry municipal GIS parcel land registry services",
+        "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service.",
+        "result": "The official governorate service directory documents land/property-record and cadastral-plan services handled in Latakia, including owner/transaction documentation for some services. Search did not identify a public parcel-layer endpoint or safe anonymous geometry route; no personal or parcel-specific request was made.",
+        "actualResultUrls": [
+          "https://latakia.gov.sy/services",
+          "https://sana.sy/locals/2407294/"
+        ],
+        "executionMethod": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted."
+      },
+      {
+        "language": "Arabic",
+        "query": "اللاذقية مديرية المصالح العقارية السجل العقاري مخطط عقاري عقار",
+        "scope": "Find first-party local-language evidence for the same local registry/map question.",
+        "result": "The official governorate service directory documents land/property-record and cadastral-plan services handled in Latakia, including owner/transaction documentation for some services. Search did not identify a public parcel-layer endpoint or safe anonymous geometry route; no personal or parcel-specific request was made.",
+        "actualResultUrls": [
+          "https://latakia.gov.sy/services",
+          "https://sana.sy/locals/2407294/"
+        ],
+        "executionMethod": "Separate native-language search and official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://latakia.gov.sy/services",
+        "observation": "The official Latakia Governorate service directory lists Latakia City Council property/real-estate services, including cadastral-plan requests and registry extracts. These are application-based administrative services, not evidence of anonymous public parcel geometry."
+      },
+      {
+        "url": "https://sana.sy/locals/2407294/",
+        "observation": "The official Latakia Governorate service directory lists Latakia City Council property/real-estate services, including cadastral-plan requests and registry extracts. These are application-based administrative services, not evidence of anonymous public parcel geometry."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://latakia.gov.sy/services",
+        "method": "Official service-directory review",
+        "result": "Lists local property/registry and cadastral-plan services with application requirements; no public parcel geometry service exposed."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://latakia.gov.sy/services",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "الخدمات | محافظة اللاذقية"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

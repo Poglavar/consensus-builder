@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:32635"
+    }
+  },
+  "featureCount": 9,
+  "validNonemptyCount": 8,
+  "invalidFeatures": [
+    {
+      "id": "TR-TKGM-166827-101-1",
+      "reason": "Ring Self-intersection[671747.59105167 4445553.18266901]",
+      "empty": false
+    }
+  ],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 102.08630805224739,
+    "median": 1587.0432574574897,
+    "max": 10435175.649466494
+  },
+  "features": [
+    {
+      "id": "TR-TKGM-166822-5389-16",
+      "areaM2": 133.81129909062088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-166782-5495-20",
+      "areaM2": 1587.0432574574897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-124909-4161-17",
+      "areaM2": 1012.959060959809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-134235-1549-13",
+      "areaM2": 102.08630805224739,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-154570-962-26",
+      "areaM2": 31162.537160972006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-136528-1137-20",
+      "areaM2": 127.62830660413124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-166827-101-1",
+      "areaM2": 10435175.649466494,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-154713-3313-16",
+      "areaM2": 323906.60075971676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "TR-TKGM-133927-4053-18",
+      "areaM2": 1706.9314072963944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

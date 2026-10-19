@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Seattle",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 359,
+  "queueRank": 359,
+  "wupCityCode": 5386,
+  "cityId": "wup2025:5386",
+  "centerLatLon": [
+    47.680804084804,
+    -122.278326020363
+  ],
+  "point": [
+    47.680804084804,
+    -122.278326020363
+  ],
+  "population2025": 1403495,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "registryFound": true,
+  "registryBasis": "The SeattleData public parcel feature service is a City of Seattle-hosted layer sourced from King County assessor parcel polygons, spatially filtered to the City of Seattle Central Geographic Database extent. A bounded query at the ranked locator returned a polygon with only OBJECTID and PIN requested. This confirms a local parcel-map/record source for the point but does not establish citywide completeness or legal accuracy.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "106 valid, distinct City of Seattle-hosted King County parcel references verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all 106 fresh PIN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32610 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The publisher describes its CGDB spatial extent, which extends north and south of Seattle; the source is not restricted to current municipal limits. Citywide completeness, legal survey accuracy and permanent PIN uniqueness beyond this sample are unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Seattle official parcel GIS ArcGIS parcel boundaries city Seattle assessor feature service",
+        "scope": "Trace Seattle/King County public parcel viewer to an anonymous vector geometry endpoint.",
+        "result": "Official King County Parcel Viewer states it is sourced from the King County Assessor and supports parcel boundary selection. The Seattle-hosted ArcGIS item is owned by SeattleData and describes the layer as King County parcels clipped to the City of Seattle Central Geographic Database extent, updated weekly. A bounded point query at the ranked locator returned one Polygon with only OBJECTID and PIN requested.",
+        "method": "English-language web search and direct public ArcGIS metadata/point query."
+      },
+      {
+        "language": "English",
+        "query": "King County Parcel Viewer parcel boundaries Seattle public GIS polygon geometry API",
+        "scope": "Confirm official viewer attribution, layer schema and safe vector query.",
+        "result": "FeatureServer metadata reports Polygon geometry, WGS84 output support, OBJECTID transport ID and PIN native parcel identifier. At the WUP point the point-intersection query returned PIN 7974200250 / OBJECTID 11343910. No address/owner fields were requested.",
+        "method": "Separate focused English-language search; ArcGIS REST item and layer metadata reviewed."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gismaps.kingcounty.gov/parcelviewer2/",
+        "operator": "City of Seattle / King County GIS, as identified by the source",
+        "observation": "Official King County Parcel Viewer; search/identify parcel boundaries and labels source as King County Assessor; lot lines approximate and not for legal use."
+      },
+      {
+        "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0?f=pjson",
+        "operator": "City of Seattle / King County GIS, as identified by the source",
+        "observation": "Public feature metadata; Polygon layer, OBJECTID transport field, PIN native ID, supports query, output spatial reference 2926, SeattleData service item."
+      },
+      {
+        "url": "https://www.arcgis.com/sharing/rest/content/items/8cf592e88c664316a3aa7240d76b3cc3?f=json",
+        "operator": "City of Seattle ArcGIS Online; item owner SeattleData",
+        "observation": "ArcGIS item owner SeattleData in org City of Seattle ArcGIS Online (org ID ZOyb2t4B0UYuYNYH; URL key SeattleCityGIS). Item modified 2026-10-05 16:59:52 UTC. Service description says King County parcels clipped to City of Seattle Central Geographic Database extent, from KCGIS.CGDB_PARCEL_SV, updated weekly."
+      },
+      {
+        "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query",
+        "operator": "City of Seattle / King County GIS, as identified by the source",
+        "observation": "Anonymous point query returned one full polygon at the WUP coordinate with outFields=OBJECTID,PIN only; a 13-cell bounded qualification followed."
+      },
+      {
+        "url": "https://www.arcgis.com/sharing/rest/portals/ZOyb2t4B0UYuYNYH?f=json",
+        "operator": "City of Seattle ArcGIS Online",
+        "observation": "Public ArcGIS organization metadata identifies the org as City of Seattle ArcGIS Online and shows URL key SeattleCityGIS; this verifies Seattle city authority for the hosted item."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gismaps.kingcounty.gov/parcelviewer2/",
+        "method": "GET public official parcel viewer information",
+        "result": "Viewer attributes parcel boundaries to the King County Assessor; boundaries described as approximate."
+      },
+      {
+        "url": "https://www.arcgis.com/sharing/rest/content/items/8cf592e88c664316a3aa7240d76b3cc3?f=json",
+        "method": "GET public ArcGIS sharing item metadata",
+        "result": "Owner SeattleData; service description states King County source parcels clipped to Seattle CGDB spatial extent and weekly updates."
+      },
+      {
+        "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0?f=pjson",
+        "method": "GET public ArcGIS layer metadata",
+        "result": "HTTP 200; polygon schema, OBJECTID/PIN fields and query support verified."
+      },
+      {
+        "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query",
+        "method": "GET WGS84 point intersection at rank locator, outFields=OBJECTID,PIN,returnGeometry=true,outSR=4326,resultRecordCount=3",
+        "result": "HTTP 200; one Polygon with PIN 7974200250 and OBJECTID 11343910."
+      },
+      {
+        "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query",
+        "method": "Repository ArcGIS adapter bounded qualification in /tmp; 13 cells, 3-row pagination, exact IDs, absence, footprint and binding.",
+        "result": "20/20 tests passed, 106 distinct parcels, 141 requests; all full geometry and QA caches remain under /tmp."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "King County assessor tax parcels spatially filtered to the City of Seattle Central Geographic Database extent; publisher notes extension north/south of the city.",
+      "verifiedOpenScope": "One WGS84 point hit at the WUP locator and 106 distinct parcels from thirteen 0.001-degree nearby grid/pan cells. Full exact-ID, pagination, absence, footprint and source-binding checks passed; GEOS audit reported 106 valid/nonempty geometries, no exact duplicates and no overlaps above 0.01 m².",
+      "citywideVerified": false,
+      "countrywideVerified": false
+    },
+    "qualificationHistory": {
+      "boundedRun": {
+        "uniqueParcels": 106,
+        "requestCount": 141,
+        "tests": 20,
+        "allTestsPassed": true,
+        "forcedThreeRowPages": true,
+        "exactIdsFresh": 106,
+        "explicitAbsencePassed": true,
+        "footprintPassed": true,
+        "sourceBindingCoverage": "complete",
+        "metricCrs": "EPSG:32610"
+      },
+      "geometryAudit": {
+        "library": "Shapely 2.2.0 / GEOS",
+        "featureCount": 106,
+        "validNonemptyCount": 106,
+        "invalidCount": 0,
+        "exactDuplicatePairs": 0,
+        "overlapPairsAbove0_01m2": 0,
+        "sumPairwiseOverlapM2": 0,
+        "operationErrors": 0
+      },
+      "rootRuntimeDescriptorRun": {
+        "pageSize": 1000,
+        "forcedTestPageSize": 3,
+        "tests": 20,
+        "requestCount": 65,
+        "uniqueParcels": 106,
+        "allTestsPassed": true,
+        "metricCrs": "EPSG:32610"
+      }
+    },
+    "sampleRetention": {
+      "initialPointHit": "One polygon kept in temporary source audit storage; repository examples replaced with three canonical qualified adapter geometries.",
+      "fullRepositorySampleCount": 3
+    }
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "endpoint": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query",
+    "requestedFields": [
+      "OBJECTID",
+      "PIN"
+    ],
+    "fullPolygonReturned": true,
+    "repoGeometrySample": "seattle-adapter-sample.geojson (three safe full polygons)",
+    "pointHitNativeId": "7974200250",
+    "pointHitTransportId": 11343910,
+    "boundedUniqueFeatureCount": 106,
+    "repoRetainedFullPolygonCount": 1,
+    "uniqueFullPolygonCount": 106,
+    "retainedFullPolygonCount": 3
+  },
+  "source": {
+    "id": "us-wa-king-county-parcel-boundary",
+    "adapter": "arcgis (bounded qualification only; no runtime/catalog integration)",
+    "url": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0",
+    "idField": "PIN",
+    "objectIdField": "OBJECTID",
+    "geometryType": "Polygon",
+    "spatialReference": 2926,
+    "outFields": [
+      "OBJECTID",
+      "PIN"
+    ],
+    "scope": "106 valid, distinct City of Seattle-hosted King County parcel references verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all 106 fresh PIN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32610 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The publisher describes its CGDB spatial extent, which extends north and south of Seattle; the source is not restricted to current municipal limits. Citywide completeness, legal survey accuracy and permanent PIN uniqueness beyond this sample are unverified."
+  },
+  "technicalBlocker": null,
+  "remainingUncertainty": "Coverage and PIN uniqueness beyond the sampled cells, current legal title and survey accuracy.",
+  "nextStep": "Integrate reviewed provider and inspect normal parcel selection locally.",
+  "sourceIds": [
+    "us-wa-king-county-parcel-boundary"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "King County assessor tax parcels spatially filtered to the City of Seattle Central Geographic Database extent; publisher notes extension north/south of the city.",
+    "verifiedOpenScope": "106 valid, distinct City of Seattle-hosted King County parcel references verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all 106 fresh PIN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32610 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The publisher describes its CGDB spatial extent, which extends north and south of Seattle; the source is not restricted to current municipal limits. Citywide completeness, legal survey accuracy and permanent PIN uniqueness beyond this sample are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "adapterReady": true,
+  "registryEvidenceUrls": [
+    "https://gismaps.kingcounty.gov/parcelviewer2/",
+    "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0?f=pjson",
+    "https://www.arcgis.com/sharing/rest/content/items/8cf592e88c664316a3aa7240d76b3cc3?f=json",
+    "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0/query",
+    "https://www.arcgis.com/sharing/rest/portals/ZOyb2t4B0UYuYNYH?f=json"
+  ],
+  "appCityId": "seattle",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "106 valid, distinct City of Seattle-hosted King County parcel references verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all 106 fresh PIN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32610 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The publisher describes its CGDB spatial extent, which extends north and south of Seattle; the source is not restricted to current municipal limits. Citywide completeness, legal survey accuracy and permanent PIN uniqueness beyond this sample are unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/seattle-parcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/seattle-parcels-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/seattle-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-wa-king-county-parcel-boundary",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/seattle-parcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/seattle-parcels-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T23:00:14.246496+00:00"
+}

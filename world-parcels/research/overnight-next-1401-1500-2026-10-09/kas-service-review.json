@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1860-kas.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official National Information Center describes Sudan Spatial Portal as a national web map browser with OGC WMS/WFS services and links to geoportal.gov.sd. The Judiciary’s Aqari portal documents national land-registration services. The geoportal host timed out; no anonymous Kas parcel ID, geometry, schema, or CRS was obtained. This is unresolved access, not evidence of parcel absence.",
+  "registryAssessment": "National spatial and land-registration custodians are evidenced, but no Kas-local registry custodian or city-specific public parcel service was independently established; registryFound is therefore null.",
+  "officialPrimarySources": [
+    {"url": "https://nic.gov.sd/public/projectDetails/3", "observation": "Official NIC page describes Sudan Spatial Portal as an interactive national spatial map browser and states that it provides OGC WMS and WFS services; it links to https://www.geoportal.gov.sd."},
+    {"url": "https://aqari.nctr.sd/ar", "observation": "Official Judiciary Aqari page describes a national electronic service for registering and managing land and real-estate records, including search-certificate and subdivision procedures; no public parcel feature endpoint was exposed."},
+    {"url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9_%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "observation": "Official Judiciary land-registration administration page describes the General Registrar of Lands and registration procedures; it is national procedural context, not Kas-specific geometry evidence."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Kas Sudan official cadastral parcel map land registry GIS geoportal", "result": "NIC Sudan Spatial Portal, Judiciary Aqari, and General Registrar of Lands pages found; no Kas-specific anonymous parcel geometry route verified.", "resultUrls": ["https://nic.gov.sd/public/projectDetails/3", "https://aqari.nctr.sd/en", "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9_%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"], "method": "Separate English first-party discovery search followed by ordinary HTTPS source review.", "scope": "Identify city/local registry custody and safe anonymous parcel geometry."},
+    {"language": "Arabic", "query": "كاس السودان خريطة كادسترية قطع الأراضي السجل العقاري بوابة مكانية رسمية", "result": "Arabic first-party discovery confirmed the same national spatial and registration context; no Kas-specific public parcel feature response or local custodian page was found.", "resultUrls": ["https://nic.gov.sd/public/projectDetails/3", "https://aqari.nctr.sd/ar", "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9_%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"], "method": "Separate Arabic first-party discovery search followed by ordinary HTTPS source review.", "scope": "Cross-check local-language registry custody and safe anonymous parcel geometry."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No public parcel feature service was reached, so unchanged WUP point [12.5059709379069, 24.2881537768175] was not tested against a parcel layer. This is unresolved, not a zero-hit finding.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Sudan national spatial portal and national Judiciary land-registration services.", "verifiedOpenScope": "Institutional/service remit verified, but no public anonymous ordinary-land parcel geometry or Kas-specific cadastral layer verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "attempts": [
+    {"url": "https://nic.gov.sd/public/projectDetails/3", "method": "GET via ordinary HTTPS with TLS verification", "httpStatus": 200, "result": "Official page reviewed; WMS/WFS service description and geoportal.gov.sd link found. No direct service configuration or feature endpoint exposed in returned HTML."},
+    {"url": "https://aqari.nctr.sd/ar", "method": "GET via ordinary HTTPS with TLS verification", "httpStatus": 200, "result": "Official Aqari page reviewed; national land-registration services described. No anonymous parcel geometry endpoint or safe schema exposed."},
+    {"url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9_%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "method": "First-party source review", "httpStatus": 200, "result": "General Registrar of Lands procedure and national administrative remit reviewed; no public parcel API or Kas-local service found."},
+    {"url": "https://www.geoportal.gov.sd", "method": "GET via ordinary HTTPS with TLS verification", "httpStatus": null, "result": "DNS/connection timed out during bounded attempts; no viewer, JavaScript/configuration, schema, CRS, or geometry response captured. No TLS exception used."},
+    {"url": "https://geoportal.gov.sd", "method": "GET via ordinary HTTPS with TLS verification", "httpStatus": null, "result": "Bounded request did not produce a usable response; no viewer, schema, CRS, or geometry response captured."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "full native parcel geometry", "native geometry CRS", "source URL", "request status", "schema field names needed to identify safe ID/geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "remainingUncertainty": "The official geoportal may expose parcel layers after a current viewer route becomes reachable. Exact-point hit status, native parcel identity, CRS, geometry retrieval, request reliability, and citywide completeness remain unverified. No absence inference is made from timeout or missing HTML clues.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification",
+  "cityCode": 1860,
+  "queueRank": 1491,
+  "countryCode": "SD",
+  "wupPoint": [12.5059709379069, 24.2881537768175],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1
+}

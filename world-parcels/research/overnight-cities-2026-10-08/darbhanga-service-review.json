@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11153-darbhanga.json",
+  "purpose": "Read-only source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official Darbhanga District Administration land-records page links the Bihar Bhumi land-record service. Bihar Revenue and Land Records Directorate provides an official public BhuNaksha cadastral-map viewer with district/subdivision/circle/mauza/map-sheet selectors, and Government of India DILRMP publishes Darbhanga district cadastral-map status. These establish local district land-record/map services, but the city-centroid village and a full-vector endpoint are not verified. The anonymous official BhuNaksha viewer exposes raster WMS display and plot-identification workflows, not a verified full-vector polygon feed. No feature query or geometry sample was made because the client did not identify a vector route or safe response schema.",
+  "officialEvidence": [
+    {
+      "url": "https://darbhanga.nic.in/service/biharbhumi/",
+      "observation": "Official district land-records page links to Bihar Bhumi and is owned by the Darbhanga District Administration (last updated 2026-09-26)."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "httpStatus": 200,
+      "observation": "Anonymous official Bihar BhuNaksha shell displays selectors for district, subdivision, circle, mauza, survey type, map instance, and sheet. No feature geometry was requested."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.js",
+      "httpStatus": 200,
+      "observation": "Official viewer client renders map layers as WMS images and calls plot identification after a village/GIS selection. No full-vector polygon route was found in the client."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/",
+      "observation": "Official Bihar Directorate of Land Records and Survey lists Bhu-Naksha and Online Map among public services."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/215",
+      "observation": "Government of India DILRMP district report for Darbhanga publishes cadastral map, village, and parcel digitization status."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Public cadastral-map selector; current client uses WMS and plot selection. District has official map digitization status, but no city-point selector, full geometry schema, or anonymous vector service was verified."
+    },
+    "routes": [],
+    "notes": "The WUP point is not resolved to a specific Darbhanga mauza, and district map counts do not demonstrate complete city-center coverage."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "The anonymous official BhuNaksha viewer exposes raster WMS display and plot-identification workflows, not a verified full-vector polygon feed. No feature query or geometry sample was made because the client did not identify a vector route or safe response schema."
+  }
+}

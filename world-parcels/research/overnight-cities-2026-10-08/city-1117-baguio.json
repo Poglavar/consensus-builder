@@ -1,0 +1,126 @@
+{
+  "name": "Baguio",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "rank": 971,
+  "point": [
+    16.4223678734897,
+    120.59436215245
+  ],
+  "population2025": 565522,
+  "population2025k": 565.522,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "DENR-LMB’s official eFOI record documents successful provision of a Baguio City cadastral map; the City Assessor maintains real-property assessment within the city, but LMB is the direct cadastral-map custodian found.",
+  "registryEvidenceUrls": [
+    "https://www.foi.gov.ph/requests/cadastral-map-of-baguio-city/",
+    "https://www.foi.gov.ph/agencies/denrlmb/",
+    "https://main.baguio.gov.ph/"
+  ],
+  "resultCategory": "local_cadastral_map_request_available_no_anonymous_vector_service",
+  "remainingUncertainty": "Whether LMB or City Assessor exposes a newer parcel vector layer through a non-public GIS or data request; successful map copies may be images/PDF rather than vector features.",
+  "scopeLimits": "No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "PH-BAGUIO-DENRLMB-CADASTRAL-MAP",
+    "name": "Land Management Bureau cadastral map request for Baguio City",
+    "operator": "Department of Environment and Natural Resources, Land Management Bureau (DENR-LMB); City Assessor for local real-property assessment",
+    "url": "https://www.foi.gov.ph/requests/cadastral-map-of-baguio-city/",
+    "serviceType": "Official government cadastral-map custodian responds to FOI requests; a city cadastral-map request is publicly documented as successful. No anonymous public parcel-vector service was found.",
+    "geometryType": "Cadastral map document (download attachment, not verified as vector features).",
+    "outputCrs": null,
+    "nativeIdField": "Cadastral lot identifier likely present in map documents; native field schema not inspected."
+  },
+  "sourceIds": [],
+  "wupCityCode": 1117,
+  "cityId": "wup2025:1117",
+  "queueRank": 971,
+  "centerLatLon": [
+    16.4223678734897,
+    120.59436215245
+  ],
+  "technicalBlocker": "The LMB FOI portal documents successful map delivery via request. Baguio public map site inspected is a COVID-case map with no parcel layer; city eBPLS is a payment service, not GIS. No complete anonymous parcel geometry endpoint or polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "LMB has provided a Baguio City cadastral map through the official eFOI workflow. No citywide vector coverage or currentness is inferred from the request record.",
+    "verifiedOpenScope": "The documented access path is an official information request. Public Baguio maps inspected are thematic; no public cadastral feature service was found.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_full_polygon_sample",
+    "reason": "The LMB FOI portal documents successful map delivery via request. Baguio public map site inspected is a COVID-case map with no parcel layer; city eBPLS is a payment service, not GIS. No complete anonymous parcel geometry endpoint or polygon response was verified."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Filipino",
+        "query": "Baguio mapa kadastral lote hangganan LMB City Assessor GIS opisyal",
+        "scope": "Find city cadastral map custodian and local public parcel services.",
+        "result": "Official eFOI record from DENR-LMB documents successful delivery of a Baguio City cadastral map on request. Baguio public map search results point to thematic COVID map and city service/payment portals, not an open parcel layer.",
+        "method": "Separate Filipino-language search and official DENR-LMB/City Government source review.",
+        "actualResultUrls": [
+          "https://www.foi.gov.ph/requests/cadastral-map-of-baguio-city/",
+          "https://main.baguio.gov.ph/",
+          "https://map.baguio.gov.ph/"
+        ],
+        "executionMethod": "Separate Filipino-language search and official DENR-LMB/City Government source review."
+      },
+      {
+        "language": "English",
+        "query": "Baguio cadastral parcel map GIS lot boundary official city government LMB",
+        "scope": "Cross-check public vector viewer and native parcel schema availability.",
+        "result": "Official DENR-LMB FOI page records successful request fulfillment of the city cadastral map. No anonymous parcel GIS/vector feature service was identified; the public Baguio map page is thematic and the eBPLS service handles city payments.",
+        "method": "Separate English-language search and public first-party map/service review.",
+        "actualResultUrls": [
+          "https://www.foi.gov.ph/requests/cadastral-map-of-baguio-city/",
+          "https://map.baguio.gov.ph/",
+          "https://ebpls.baguio.gov.ph/"
+        ],
+        "executionMethod": "Separate English-language search and public first-party map/service review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.foi.gov.ph/requests/cadastral-map-of-baguio-city/",
+        "observation": "Official eFOI page lists DENR-LMB as custodian and records a successful response providing a city cadastral-map attachment. Access was request-based, not an anonymous public vector endpoint."
+      },
+      {
+        "url": "https://main.baguio.gov.ph/",
+        "observation": "Official City Government portal links Baguio Open Data and local services; no parcel-vector service was identified in the inspected portal listings."
+      },
+      {
+        "url": "https://map.baguio.gov.ph/",
+        "observation": "Official public map page is a thematic COVID-19 map with health/checkpoint layers, not parcel cadastre."
+      },
+      {
+        "url": "https://ebpls.baguio.gov.ph/",
+        "observation": "Official eBPLS handles business permits and real-property tax payments by billing identifiers; it is not a public parcel-map service."
+      }
+    ]
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.foi.gov.ph/requests/cadastral-map-of-baguio-city/",
+    "fetch": "error",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

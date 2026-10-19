@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-8151-gaithersburg.json",
+  "cityCode": 8151,
+  "queueRank": 2116,
+  "city": "Gaithersburg",
+  "country": "United States of America",
+  "countryCode": "US",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodian": "City of Gaithersburg GIS",
+  "service": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0",
+  "schema": {"nativeCrs": "EPSG:2893", "geometryType": "esriGeometryPolygon", "nativeIdentity": "fullacctno", "safeFieldAllowlist": ["fullacctno", "OBJECTID", "Shape"]},
+  "queryOutcomes": {"discovery": "official City GIS page and parcel viewer documentation found", "metadata": "successful anonymous f=pjson response", "boundedSample": "three polygon features returned", "exactWupPoint": "zero intersecting features; point miss only"},
+  "retainedSample": "gaithersburg-sample.geojson",
+  "scopeLimits": ["Only three polygons were retained.", "No full-city export was downloaded.", "No owner, address, contact, titleholder, tax/account, or personal attributes were retained.", "Runtime readiness remains held pending independent serial review."],
+  "uncertainty": ["The exact WUP point is not itself a parcel-hit test for citywide coverage.", "The service is municipal and public, but adapter admission was not attempted."],
+  "completionSummary": {"attempt": 1, "maxAttempts": 3, "filesWritten": ["city-8151-gaithersburg.json", "gaithersburg-service-review.json", "gaithersburg-sample.geojson"], "samplePolygonCount": 3}
+}

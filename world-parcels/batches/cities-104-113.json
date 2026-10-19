@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Luxor",
+  "country": "Egypt",
+  "iso2": "EG",
+  "cityCode": 7397,
+  "capital": false,
+  "lon": 32.5858136344761,
+  "lat": 25.6736044952306,
+  "pop2025k": 4188.023,
+  "rank": 104
+ },
+ {
+  "name": "Belo Horizonte",
+  "country": "Brazil",
+  "iso2": "BR",
+  "cityCode": 7802,
+  "capital": false,
+  "lon": -43.9916716948718,
+  "lat": -19.9006209955912,
+  "pop2025k": 4162.814,
+  "rank": 105
+ },
+ {
+  "name": "Wenzhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 12032,
+  "capital": false,
+  "lon": 120.630364464619,
+  "lat": 28.0153538416269,
+  "pop2025k": 4158.195,
+  "rank": 106
+ },
+ {
+  "name": "Sydney",
+  "country": "Australia",
+  "iso2": "AU",
+  "cityCode": 2139,
+  "capital": false,
+  "lon": 151.078965122611,
+  "lat": -33.8589905191914,
+  "pop2025k": 4150.917,
+  "rank": 107
+ },
+ {
+  "name": "Guadalajara",
+  "country": "Mexico",
+  "iso2": "MX",
+  "cityCode": 3099,
+  "capital": false,
+  "lon": -103.347430134243,
+  "lat": 20.6567869138028,
+  "pop2025k": 4135.44,
+  "rank": 108
+ },
+ {
+  "name": "Douala",
+  "country": "Cameroon",
+  "iso2": "CM",
+  "cityCode": 813,
+  "capital": false,
+  "lon": 9.73966468522168,
+  "lat": 4.05134876751942,
+  "pop2025k": 4104.516,
+  "rank": 109
+ },
+ {
+  "name": "Jaipur",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 8064,
+  "capital": false,
+  "lon": 75.7865606043523,
+  "lat": 26.9128723533915,
+  "pop2025k": 4071.754,
+  "rank": 110
+ },
+ {
+  "name": "Şan'ā' (Sana'a)",
+  "country": "Yemen",
+  "iso2": "YE",
+  "cityCode": 4328,
+  "capital": true,
+  "lon": 44.2045604621985,
+  "lat": 15.3581160204966,
+  "pop2025k": 4018.856,
+  "rank": 111
+ },
+ {
+  "name": "Taiyuan",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 8609,
+  "capital": false,
+  "lon": 112.547997757151,
+  "lat": 37.853105714027,
+  "pop2025k": 4005.816,
+  "rank": 112
+ },
+ {
+  "name": "Puning",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11820,
+  "capital": false,
+  "lon": 116.395195038873,
+  "lat": 23.2618285028224,
+  "pop2025k": 3989.322,
+  "rank": 113
+ }
+]

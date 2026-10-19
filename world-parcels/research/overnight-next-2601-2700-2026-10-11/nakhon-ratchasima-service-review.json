@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-3475-nakhon-ratchasima.json",
+  "cityCode": 3475,
+  "queueRank": 2688,
+  "name": "Nakhon Ratchasima",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "pointLatLon": [14.9718372259703, 102.089263308796],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://www.dol.go.th/landmap/home/","outcome":"Official Department of Lands cadastral-map center page. It advertises LandsMaps and related cadastral-map services; homepage HTML exposed the local site service path https://www.dol.go.th/landmap/services."},
+    {"method":"SEARCH","url":"https://www.dol.go.th/nakhonratchasima/home/","outcome":"Official Nakhon Ratchasima Provincial Land Office page. It identifies the local office, lists LandsMaps parcel search among public services, and gives the office address/phone. This is local custodian evidence, not a polygon API."},
+    {"method":"SEARCH","url":"https://landsmaps.dol.go.th/","outcome":"Official Department of Lands LandsMaps host identified by first-party pages and discovery. Anonymous HTTPS GET timed out after 30 seconds with TLS verification enabled; no login or bypass was attempted. This is not evidence of parcel absence."},
+    {"method":"GET","url":"https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer?f=pjson","outcome":"Official LDD ArcGIS REST service metadata returned HTTP 200. It exposes layer 0 land-parcel locations, layer 1 land-use polygons, and other soil layers. It is a general national land-information service, not evidence of a Nakhon Ratchasima local registry endpoint."},
+    {"method":"GET","url":"https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer/0?f=pjson","outcome":"Layer metadata returned HTTP 200. Layer 0 is a Feature Layer with esriGeometryPoint, native CRS EPSG:3857 / wkid 3857, display field PARCEL_ID, object ID field OBJECTID, and fields OBJECTID, PARCEL_ID, POS_X, POS_Y plus excluded user/audit fields. It is point-only, so it was not treated as a cadastral polygon source."},
+    {"method":"GET","url":"https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer/0/query","outcome":"Bounded anonymous exact WUP-point query using geometry point x=102.089263308796, y=14.9718372259703, spatialReference wkid 4326, intersects, outFields=OBJECTID,PARCEL_ID, returnGeometry=true, outSR=4326, resultRecordCount=3 returned HTTP 200 with an empty features array. No identity or geometry was inferred or retained. A zero exact-point hit is not evidence of citywide absence."}
+  ],
+  "schemaAndCrs": {
+    "serviceType": "ArcGIS REST FeatureServer",
+    "nationalServiceLayer": "LDD_PLM_WM layer 0, Thai label ชั้นข้อมูลตำแหน่งแปลงที่ดิน (land-parcel location)",
+    "geometryType": "esriGeometryPoint",
+    "nativeCrs": "EPSG:3857 / wkid 3857",
+    "queryCrs": "4326 requested for the WUP-coordinate query; response was HTTP 200 with zero features",
+    "nativeIdentityCandidates": ["PARCEL_ID", "OBJECTID"],
+    "sourceFieldMapping": {"safeIdentity":"PARCEL_ID preferred; OBJECTID is the service object-id fallback only if a returned feature establishes it", "geometry":"point location only in inspected layer; no full parcel polygon", "unsafeFieldsExcluded":["USERCREATE","DATECREATE","USERUPDATED","DATEUPDATED"]},
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point [14.9718372259703, 102.089263308796] in latitude/longitude order", "featureCount":0, "nativeIdentity":null, "geometryRetained":false, "outcome":"HTTP 200 with empty features array"}
+  },
+  "sourceFieldMapping": {"serviceLayer":"LDD_PLM_WM FeatureServer layer 0", "identityProvenance":"Service metadata exposes PARCEL_ID and OBJECTID, but the exact-point response returned no feature to establish a stable native identity", "compositeKeyProvenance":null},
+  "localCustodianAssessment":"The Nakhon Ratchasima Provincial Land Office is evidenced as the local registry/cadastre custodian through its official Department of Lands page and public LandsMaps link. The Department of Lands cadastral-map center and the LDD ArcGIS service are national sources; the latter is not evidence of a city-local endpoint.",
+  "safeFieldAllowlist":["stable native parcel identity if independently confirmed from an anonymous response","full parcel polygon only when bounded and anonymously returned","source service URL","native CRS and requested output CRS","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","property value","legal description","personal data","mailing data","user/audit fields"],
+  "sampleGeoJSON":null,
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local Nakhon Ratchasima registry custodian and national cadastral services are evidenced, but LandsMaps timed out anonymously and the reachable LDD layer is point-only with zero features at the exact WUP point. No bounded full parcel polygon and stable native identity were returned."},
+  "scopeLimits":["Exact WUP point [14.9718372259703, 102.089263308796] was preserved and not shifted.","Zero exact-point hit, map extent miss, timeout, connection failure, or unusable UI is not evidence of citywide absence.","No parcel polygon is retained.","No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification exception was used.","The provincial office page establishes custodian identity and links the public service, but does not establish current citywide polygon coverage or update cadence.","This research packet does not admit or integrate a runtime adapter."],
+  "uncertainty":"The local custodian and national cadastral service are evidenced. Current citywide polygon coverage, LandsMaps live query syntax, stable native identity at the WUP point, and geometry freshness remain unverified. Runtime readiness remains held for serial review."
+}

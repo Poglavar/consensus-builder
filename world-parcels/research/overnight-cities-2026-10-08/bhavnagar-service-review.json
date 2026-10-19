@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6440-bhavnagar.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-survey property records are confirmed through Gujarat’s official city-survey administration and state property-card service. The property-card workflow is keyed by city-survey/ward/property identifiers and CAPTCHA; no query was submitted and no anonymous parcel geometry was verified.",
+  "registryAssessment": "Bhavnagar’s official district portal has a Land Records service category. Gujarat Revenue Department’s official IORA service lists Property Cards. Gujarat Informatics Ltd. published a state Settlement Commissioner/Directorate of Land Records procurement document identifying Bhavnagar as one of five city-survey record centers. Together these establish a Bhavnagar city-survey/property-card registry workflow.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhavnagar.nic.in/service-category/land-records/",
+      "observation": "Bhavnagar’s official district portal has a Land Records service category. Gujarat Revenue Department’s official IORA service lists Property Cards. Gujarat Informatics Ltd. published a state Settlement Commissioner/Directorate of Land Records procurement document identifying Bhavnagar as one of five city-survey record centers. Together these establish a Bhavnagar city-survey/property-card registry workflow."
+    },
+    {
+      "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "observation": "The Government of Gujarat Revenue Department advertises view-property-card service. The Bhavnagar district government lists land records, and an official Gujarat Informatics/land-records procurement document names Bhavnagar among city-survey record centers. The state record lookup requires record-location selectors/identifiers and CAPTCHA, so it was not opened/submitted for a parcel. The municipal corporation property-tax portal is also property-account based and was not queried. No geometry-only schema or public parcel-feature service was found."
+    },
+    {
+      "url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/2020116154350219.pdf",
+      "observation": "The Government of Gujarat Revenue Department advertises view-property-card service. The Bhavnagar district government lists land records, and an official Gujarat Informatics/land-records procurement document names Bhavnagar among city-survey record centers. The state record lookup requires record-location selectors/identifiers and CAPTCHA, so it was not opened/submitted for a parcel. The municipal corporation property-tax portal is also property-account based and was not queried. No geometry-only schema or public parcel-feature service was found."
+    },
+    {
+      "url": "https://anyror.gujarat.gov.in/emilkat/GeneralReport_IDB.aspx",
+      "observation": "The Government of Gujarat Revenue Department advertises view-property-card service. The Bhavnagar district government lists land records, and an official Gujarat Informatics/land-records procurement document names Bhavnagar among city-survey record centers. The state record lookup requires record-location selectors/identifiers and CAPTCHA, so it was not opened/submitted for a parcel. The municipal corporation property-tax portal is also property-account based and was not queried. No geometry-only schema or public parcel-feature service was found."
+    },
+    {
+      "url": "https://bmcgujarat.com/",
+      "observation": "The Government of Gujarat Revenue Department advertises view-property-card service. The Bhavnagar district government lists land records, and an official Gujarat Informatics/land-records procurement document names Bhavnagar among city-survey record centers. The state record lookup requires record-location selectors/identifiers and CAPTCHA, so it was not opened/submitted for a parcel. The municipal corporation property-tax portal is also property-account based and was not queried. No geometry-only schema or public parcel-feature service was found."
+    },
+    {
+      "url": "https://services.bmcgujarat.com/WelcomePage.aspx",
+      "observation": "The Government of Gujarat Revenue Department advertises view-property-card service. The Bhavnagar district government lists land records, and an official Gujarat Informatics/land-records procurement document names Bhavnagar among city-survey record centers. The state record lookup requires record-location selectors/identifiers and CAPTCHA, so it was not opened/submitted for a parcel. The municipal corporation property-tax portal is also property-account based and was not queried. No geometry-only schema or public parcel-feature service was found."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bhavnagar Gujarat official city survey office property cards urban land records cadastral map",
+      "result": "City-survey property records are confirmed through Gujarat’s official city-survey administration and state property-card service. The property-card workflow is keyed by city-survey/ward/property identifiers and CAPTCHA; no query was submitted and no anonymous parcel geometry was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    },
+    {
+      "language": "Gujarati",
+      "query": "ભાવનગર શહેર સિટી સર્વે કચેરી પ્રોપર્ટી કાર્ડ જમીન રેકોર્ડ નકશો સરકારી",
+      "result": "City-survey property records are confirmed through Gujarat’s official city-survey administration and state property-card service. The property-card workflow is keyed by city-survey/ward/property identifiers and CAPTCHA; no query was submitted and no anonymous parcel geometry was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The Government of Gujarat Revenue Department advertises view-property-card service. The Bhavnagar district government lists land records, and an official Gujarat Informatics/land-records procurement document names Bhavnagar among city-survey record centers. The state record lookup requires record-location selectors/identifiers and CAPTCHA, so it was not opened/submitted for a parcel. The municipal corporation property-tax portal is also property-account based and was not queried. No geometry-only schema or public parcel-feature service was found."
+  },
+  "privacy": "No parcel/owner/address/tax-account lookup or login was made. No geometry or private attributes retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

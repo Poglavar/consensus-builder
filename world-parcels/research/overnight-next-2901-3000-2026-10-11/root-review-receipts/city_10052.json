@@ -1,0 +1,29 @@
+{
+  "taskId": "city:10052",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-10052-zouping.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/zouping-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:02:03Z",
+  "reason": "The paired evidence contains national portal context and secondary local directory results, without first-party local registry proof or an anonymous native-ID parcel polygon response. The reported HTTP 418 is an access limitation, not citywide absence. All admission gates remain unproved.",
+  "registryFound": null,
+  "identityVerifiedAgainstOriginalWup": true,
+  "bilingualExecutedSearchesRecorded": true,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://www.rerc.com.cn/",
+    "https://z.mnr.gov.cn/"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

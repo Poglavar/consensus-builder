@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1752",
+  "queueRank": 198,
+  "wupCityCode": 1752,
+  "name": "Cotonou",
+  "country": "Benin",
+  "countryCode": "BJ",
+  "centerLatLon": [
+    6.38646680667236,
+    2.3895186609943
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 198,
+  "growthRank": null,
+  "population2025": 2506489,
+  "annualGrowthPct2015To2025": 3.041336,
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_partial_coverage",
+  "priorEvidence": [
+    "research/cotonou.json"
+  ],
+  "priorStatuses": [
+    "verified_sample_partial_coverage"
+  ],
+  "sharedCountryAssessment": null,
+  "freshCityLocalSearch": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": true,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": "Cotonou",
+    "countrywideVerified": false
+  },
+  "blocker": null,
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+  "requests": [],
+  "resultCategory": "inherited_live_baseline",
+  "evidenceType": "inherited_live_baseline",
+  "targetEndpointProbePerformed": false
+}

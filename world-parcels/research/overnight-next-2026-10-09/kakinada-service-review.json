@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11081-kakinada.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "AP cadastral mapping programme covers Kakinada Urban Mandal, and an official AP BhuNaksha portal exists. No anonymous parcel vector schema or feature response was reached because the portal timed out.",
+  "registryAssessment": "City-bound or jurisdictionally local registry/land administration source identified, with the limited scope stated above; parcel geometry/runtime qualification remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "operator": "Andhra Pradesh BhuNaksha",
+      "observation": "Official AP cadastral map portal is indexed as BhuNaksha; standard direct HTTPS landing request timed out before HTTP response. No selector values submitted."
+    },
+    {
+      "url": "https://apsac.ap.gov.in/",
+      "operator": "Andhra Pradesh Space Applications Centre",
+      "observation": "Official portal lists cadastral maps and links AP Cadastral Maps."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/4951",
+      "operator": "Government of India DILRMP",
+      "observation": "Official district-level project record identifies Kakinada Urban Mandal and records map-digitization completion/verification; it documents local programme coverage, not downloadable parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kakinada Andhra Pradesh official cadastral map survey land records GIS",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://bhunaksha.ap.gov.in/",
+        "https://apsac.ap.gov.in/",
+        "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/4951"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "Telugu",
+      "query": "కాకినాడ భూ నక్ష ఆంధ్రప్రదేశ్ కడాస్ట్రల్ మ్యాప్",
+      "result": "Telugu search did not surface a localized official cadastral page; the English search found the official AP BhuNaksha portal and DILRMP Kakinada coverage record.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Public geometry route was blocked/token-gated/timeout or not advertised; no parcel-specific input was submitted.",
+    "requestEvidence": [
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 28; connection timed out after 20 seconds; no HTTP response"
+      },
+      {
+        "url": "https://apsac.ap.gov.in/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 147683,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "AP cadastral mapping programme covers Kakinada Urban Mandal, and an official AP BhuNaksha portal exists. No anonymous parcel vector schema or feature response was reached because the portal timed out.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "result": "No HTTP response: curl exit 28; connection timed out after 20 seconds; no HTTP response. "
+    },
+    {
+      "url": "https://apsac.ap.gov.in/",
+      "result": "HTTP 200 text/html; charset=UTF-8; 147683 response bytes. Direct official-source GET; response supports only the page/application description recorded in the source review."
+    }
+  ],
+  "remainingUncertainty": "AP cadastral mapping programme covers Kakinada Urban Mandal, and an official AP BhuNaksha portal exists. No anonymous parcel vector schema or feature response was reached because the portal timed out. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "runtimeAssessment": "not enabled; no full parcel geometry retained",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "AP cadastral mapping programme covers Kakinada Urban Mandal, and an official AP BhuNaksha portal exists. No anonymous parcel vector schema or feature response was reached because the portal timed out.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

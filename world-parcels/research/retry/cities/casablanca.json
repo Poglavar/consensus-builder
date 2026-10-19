@@ -1,0 +1,53 @@
+{
+ "kind": "city",
+ "key": "casablanca",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-MA,fr;q=0.9,ar;q=0.7; cookie jar (curl -b/-c) used",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 on this run (country retry got 200 with full headers; intermittent challenge)"
+  },
+  {
+   "url": "https://www.ancfcc.gov.ma/nos-métiers/cartographie/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "cartography product pages, no data endpoint or viewer service"
+  },
+  {
+   "url": "https://cadastre.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://www.urbanismecasablanca.ma/, https://www.agenceurbaine-casablanca.ma/, https://www.sig-casablanca.ma/, https://www.mhpv.gov.ma/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://www.casablancacity.ma/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "city site loads; no GIS/parcel link tested beyond landing"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "dedicated cadastre/urbanism hosts reset at CONNECT while main sites load; see research/retry/countries/MA.json",
+ "notes": "Consistent with the MA country retry: ANCFCC main site no longer a maintenance page (200 for cartography pages) but no public parcel viewer/service found. No new source.",
+ "nextStep": "Retry from Morocco-reachable network; look for ANCFCC consultation en ligne / Casablanca urban-agency SIG."
+}

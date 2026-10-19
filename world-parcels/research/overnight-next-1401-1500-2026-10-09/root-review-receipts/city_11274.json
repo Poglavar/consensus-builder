@@ -1,0 +1,21 @@
+{
+  "taskId": "city:11274",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-11274-tongling.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/tongling-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261009T174353-2305f753/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T17:49:40Z",
+  "reason": "Immutable WUP code 11274, rank 1482, China, point and 383739 persons match the checksum-verified 2025 UN archive and queue. Worker run logs confirm English and local-language searches. Local registration custody and a GIS platform are confirmed, but the cited notice lists map datasets without a parcel endpoint. Requests met a 403 or timeout. No safe native parcel ID or full polygon was returned. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details verification are not independently evidenced. Access failures do not establish citywide absence.",
+  "firstPartyPagesChecked": [
+    "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/gjzc/pc/content/content_1770298861338931202.html",
+    "https://zrzyhghj.tl.gov.cn/tlszrzyhghj/dtgl/pc/content/content_1687371447390756864.html"
+  ],
+  "registryFoundReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "admission": false
+}

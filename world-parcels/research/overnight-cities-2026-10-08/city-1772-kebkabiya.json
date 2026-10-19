@@ -1,0 +1,98 @@
+{
+  "name": "Kebkabiya",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "rank": 775,
+  "point": [
+    13.6511847807994,
+    24.0925917236549
+  ],
+  "population2025": 694415,
+  "population2025k": 694.415,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The Sudan Judiciary describes a statewide land-registration directorate with offices across states and separately lists Kebkabiya among North Darfur partial courts. The official sources do not identify a land-registry office in Kebkabiya or establish that the local court handles title registration; therefore city-level registry presence remains unresolved.",
+  "registryEvidenceUrls": [
+    "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+    "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No parcel geometry was retained. Citywide/countrywide completeness, title, survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "regional_registry_framework_local_office_unverified",
+  "technicalBlocker": "City-level land-registry branch not directly verified; no anonymous public parcel-vector schema or geometry was identified.",
+  "remainingUncertainty": "Whether Kebkabiya has a local land-registration office and whether any public geometry service covers the WUP point remain unknown.",
+  "nextStep": "If a primary official map service can be identified later, inspect its metadata and safe key fields before any bounded geometry-only request.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kebkabiya Sudan official land registry cadastral office land records North Darfur",
+        "scope": "Find first-party local registry evidence and a public parcel geometry schema; do not submit a parcel lookup.",
+        "result": "The official Judiciary site lists Kebkabiya as a North Darfur partial-court location and says the national land-registration system has offices across Sudanese states. No source located ties a land-registration office to Kebkabiya specifically. No public geometry endpoint or schema was found.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"
+        ],
+        "executionMethod": "Separate English-language search; official primary-source and public-service review only."
+      },
+      {
+        "language": "Arabic",
+        "query": "كبكابية السودان مكتب تسجيلات الأراضي المساحة السجل العقاري شمال دارفور رسمي",
+        "scope": "Find first-party local-language registry/cadastre sources and public geometry schema; no individual property lookup.",
+        "result": "The official Judiciary site lists Kebkabiya as a North Darfur partial-court location and says the national land-registration system has offices across Sudanese states. No source located ties a land-registration office to Kebkabiya specifically. No public geometry endpoint or schema was found.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A"
+        ],
+        "executionMethod": "Separate local-language search; official primary-source and public-service review only."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "SD-KEBKABIYA-REGISTRY-IDENTITY-UNRESOLVED",
+    "name": "Sudan Judiciary land-registration directorate and North Darfur judicial structure",
+    "url": "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+    "operator": "Sudan Judiciary",
+    "serviceType": "Official judicial/court and national land-registration descriptions; Kebkabiya registry branch not identified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 1772,
+  "cityId": "wup2025:1772",
+  "queueRank": 775,
+  "sourceIds": [],
+  "centerLatLon": [
+    13.6511847807994,
+    24.0925917236549
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official Judiciary site lists Kebkabiya as a North Darfur partial-court location and says the national land-registration system has offices across Sudanese states. No source located ties a land-registration office to Kebkabiya specifically. No public geometry endpoint or schema was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "rootRegistryDecisionNote": "Local registry presence is unestablished; generic institution pages and search failures do not establish absence.",
+  "rootPrimaryReadback": {
+    "url": "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+    "fetch": "error",
+    "reason": "HTTP Error 521: <none>"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

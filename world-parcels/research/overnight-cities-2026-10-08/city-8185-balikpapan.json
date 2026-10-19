@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Balikpapan",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official ATR/BPN Kota Balikpapan office portal identifies the city land office. The city’s official land and spatial-planning service describes cadastral-map products in an applicant workflow that requires supporting land-right documents; no anonymous parcel geometry route is documented. The municipal GeoNode is a general geospatial catalogue, but its public app shell did not expose a parcel dataset/schema in the inspected page view.",
+  "registryEvidenceUrls": [
+    "https://kot-balikpapan.atrbpn.go.id/",
+    "https://dppr.balikpapan.go.id/halaman/informasi-tata-ruang",
+    "https://balikpapan.go.id/profil/49",
+    "https://geonode.balikpapan.go.id/",
+    "https://geonode.balikpapan.go.id/developer/",
+    "https://epbb.balikpapan.go.id/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8185,
+  "cityId": "wup2025:8185",
+  "centerLatLon": [
+    -1.24482405294523,
+    116.860375533157
+  ],
+  "rank": 736,
+  "queueRank": 736,
+  "population2025": 728771,
+  "population2025k": 728.771,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The ministry-hosted city land-office portal resolves to a JavaScript-app shell. The municipal DPPR information-planning page describes an applicant service and lists a cadastral land-map product among documents when multiple land rights/certificates are involved. The official municipal GeoNode landing/catalogue presents a generic city geospatial portal; its page view exposed no parcel dataset description or attribute allowlist. GeoNode's developer information explains that vector layers may be available through WFS in general, but this does not establish a Balikpapan cadastral layer. A public WFS GetCapabilities request was attempted through the web reader, which could not parse its XML content; direct host resolution failed in the local network context, so there is no HTTP status or verified schema. The e-PBB map service is taxpayer/account-specific; no PBB query, login, form, or feature request was made.",
+  "scopeLimits": "No owner, address, taxpayer, title, parcel-key, account, or protected property-record lookup was performed. No geometry or attributes were retained.",
+  "remainingUncertainty": "The city land registry and municipal land-planning functions are confirmed. The city may host additional geospatial datasets, but no cadastre layer and geometry-only/public-ID schema were verified. The municipal map and land-use plans should not be treated as parcel geometry. Tax and applicant workflows are out of scope.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Balikpapan Indonesia official city land office cadastral parcel map geoportal",
+        "scope": "Verify city registry identity and assess whether an anonymous parcel geometry route exposes only safe geometry and stable IDs.",
+        "result": "Official ATR/BPN identifies the Balikpapan land office. The city DPPR describes an application-based cadastral-map product, and the city GeoNode is a general spatial catalogue. No safe anonymous parcel feature schema was verified.",
+        "actualResultUrls": [
+          "https://kot-balikpapan.atrbpn.go.id/",
+          "https://dppr.balikpapan.go.id/halaman/informasi-tata-ruang",
+          "https://balikpapan.go.id/profil/49",
+          "https://geonode.balikpapan.go.id/",
+          "https://geonode.balikpapan.go.id/developer/",
+          "https://epbb.balikpapan.go.id/"
+        ],
+        "executionMethod": "English-language web search followed by review of primary official pages and limited public-shell/metadata inspection; no feature query."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kantor Pertanahan Kota Balikpapan peta kadastral bidang tanah geoportal resmi",
+        "scope": "Verify city registry identity and assess whether an anonymous parcel geometry route exposes only safe geometry and stable IDs.",
+        "result": "Sumber resmi Balikpapan mengonfirmasi Kantor Pertanahan Kota Balikpapan dan layanan DPPR yang dapat menerbitkan peta kadastral sebagai produk permohonan; Geoportal kota bersifat umum dan tidak menampilkan skema bidang tanah pada halaman publik yang ditinjau.",
+        "actualResultUrls": [
+          "https://kot-balikpapan.atrbpn.go.id/",
+          "https://dppr.balikpapan.go.id/halaman/informasi-tata-ruang",
+          "https://balikpapan.go.id/profil/49",
+          "https://geonode.balikpapan.go.id/",
+          "https://geonode.balikpapan.go.id/developer/",
+          "https://epbb.balikpapan.go.id/"
+        ],
+        "executionMethod": "Native-language search followed by review of primary official pages; no property-record lookup, login, or feature query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kot-balikpapan.atrbpn.go.id/",
+        "observation": "Official ATR/BPN Kota Balikpapan land-office portal; accessible page view is a JavaScript-app shell."
+      },
+      {
+        "url": "https://dppr.balikpapan.go.id/halaman/informasi-tata-ruang",
+        "observation": "The city land and spatial-planning office describes its Informasi Tata Ruang applicant service and lists a cadastral land map in cases involving multiple land-right documents."
+      },
+      {
+        "url": "https://balikpapan.go.id/profil/49",
+        "observation": "The municipal government offers an administration map and aerial photo; it does not describe parcel polygons."
+      },
+      {
+        "url": "https://geonode.balikpapan.go.id/",
+        "observation": "Municipal GeoNode landing page describes a general thematic/spatial-data portal; no cadastral feature metadata was exposed in the page view."
+      },
+      {
+        "url": "https://geonode.balikpapan.go.id/developer/",
+        "observation": "GeoNode help describes generic WMS/WFS services, not a specific Balikpapan cadastral dataset or safe fields."
+      },
+      {
+        "url": "https://epbb.balikpapan.go.id/",
+        "observation": "Municipal property-tax GIS landing is described as a PBB map search. It is an account/tax route and was not queried."
+      }
+    ],
+    "metadataReviewFile": "balikpapan-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The city land registry and municipal land-planning functions are confirmed. The city may host additional geospatial datasets, but no cadastre layer and geometry-only/public-ID schema were verified. The municipal map and land-use plans should not be treated as parcel geometry. Tax and applicant workflows are out of scope."
+  },
+  "coverageAssessment": {
+    "status": "unknown",
+    "basis": "The city land registry and municipal land-planning functions are confirmed. The city may host additional geospatial datasets, but no cadastre layer and geometry-only/public-ID schema were verified. The municipal map and land-use plans should not be treated as parcel geometry. Tax and applicant workflows are out of scope.",
+    "wupPointParcelPresence": "not_established",
+    "citywideCompleteness": "not_asserted"
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The city land registry and municipal land-planning functions are confirmed. The city may host additional geospatial datasets, but no cadastre layer and geometry-only/public-ID schema were verified. The municipal map and land-use plans should not be treated as parcel geometry. Tax and applicant workflows are out of scope."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://kot-balikpapan.atrbpn.go.id/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": null
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    -1.24482405294523,
+    116.860375533157
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

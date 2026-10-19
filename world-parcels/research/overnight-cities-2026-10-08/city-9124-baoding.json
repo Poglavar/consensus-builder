@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Baoding",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Baoding municipal government identifies the city Natural Resources and Planning Bureau and real-estate registration center. The retrieved official result does not expose a public parcel geometry source, and the direct page open timed out; no exact WUP point coverage was verified.",
+  "registryEvidenceUrls": [
+    "https://www.baoding.gov.cn/zwgknr-1762-395207.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9124,
+  "cityId": "wup2025:9124",
+  "centerLatLon": [
+    38.872021123724,
+    115.482395801843
+  ],
+  "rank": 534,
+  "queueRank": 534,
+  "population2025": 970162,
+  "population2025k": 970.162,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous parcel map or vector service schema was located. Direct open of the official city-government page timed out; no geometry query was made.",
+  "scopeLimits": "Only municipal registry/department evidence is established. No public city parcel layer, exact WUP point geometry, or map extent was verified.",
+  "remainingUncertainty": "The exact parcel coverage at the WUP point and whether any public city geometry endpoint exists remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "保定市不动产登记中心 地籍图 查询 官方 保定市自然资源和规划局",
+        "scope": "Find city registration and cadastral/map sources.",
+        "result": "Official Baoding government search results identify the Municipal Natural Resources and Planning Bureau and city real-estate registration center; no public parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.baoding.gov.cn/zwgknr-1762-395207.html"
+        ],
+        "executionMethod": "Separate Chinese-language search; official government result reviewed (direct page open timed out)."
+      },
+      {
+        "language": "English",
+        "query": "Baoding cadastral map city land parcel registry official GIS natural resources bureau",
+        "scope": "Search for public city parcel GIS and registry evidence.",
+        "result": "No anonymous city parcel geometry or official map service was found; municipal registry and natural-resources roles were corroborated by the official government page result.",
+        "actualResultUrls": [
+          "https://www.baoding.gov.cn/zwgknr-1762-395207.html"
+        ],
+        "executionMethod": "Separate English-language search followed by official city-site review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.baoding.gov.cn/zwgknr-1762-395207.html",
+        "observation": "Official Baoding city government page identifies the Municipal Natural Resources and Planning Bureau and municipal real-estate registration center. Direct page open timed out during review; no GIS service is linked/verified."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "cn-baoding-municipal-real-estate-registration-center",
+    "name": "Baoding Municipal Real Estate Registration Center",
+    "operator": "Baoding Municipal Natural Resources and Planning Bureau",
+    "url": "https://www.baoding.gov.cn/zwgknr-1762-395207.html",
+    "serviceType": "Official municipal registry office evidence; public vector/map service not located",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The official city-government page identifies the municipal natural-resources bureau and real-estate registration center. It does not establish anonymous parcel geometry or exact WUP point coverage.",
+    "identityBasis": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City/authority-scope evidence is limited to the official source described below.",
+    "verifiedOpenScope": "Only municipal registry/department evidence is established. No public city parcel layer, exact WUP point geometry, or map extent was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "held_no_public_geometry: No anonymous parcel map or vector service schema was located. Direct open of the official city-government page timed out; no geometry query was made."
+  },
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_source_review_no_public_geometry",
+    "reason": "No anonymous parcel map or vector service schema was located. Direct open of the official city-government page timed out; no geometry query was made.",
+    "nativeIdsUsed": null,
+    "sampleFile": null
+  },
+  "point": [
+    38.872021123724,
+    115.482395801843
+  ],
+  "rootReviewedAt": "2026-10-09T01:23:12.168688+00:00"
+}

@@ -1,0 +1,104 @@
+{
+  "cityCode": 3607,
+  "queueRank": 2966,
+  "name": "Padua",
+  "country": "Italy",
+  "countryCode": "IT",
+  "point": [45.4107792873828, 11.8825856616001],
+  "population2025": 201341,
+  "population2025k": 201.341,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Padua Italy official cadastral parcel map Comune di Padova catasto GIS",
+        "result": "Found the official Comune di Padova map and planning/cadastral-services pages, plus the Agenzia delle Entrate national cadastral WFS catalog/service.",
+        "actualResultUrls": [
+          "https://www.comune.padova.it/mappa-online-della-citta",
+          "https://www.comune.padova.it/piano-di-assetto-del-territorio-pat",
+          "https://data.europa.eu/data/datasets/age-d_g224_padova?locale=it",
+          "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AS_0000_ITALIA"
+        ]
+      },
+      {
+        "language": "Italian",
+        "query": "Padova mappa catastale particelle Comune di Padova catasto GIS sito ufficiale",
+        "result": "Found Comune di Padova official map, Geoportale/PAT/PI material, and official cadastral-map evidence; the national Agenzia WFS exposes Padova cadastral parcels.",
+        "actualResultUrls": [
+          "https://www.comune.padova.it/mappa-online-della-citta",
+          "https://www.comune.padova.it/piano-degli-interventi-pi-geoportale-ed-elaborati-vigenti",
+          "https://www.comune.padova.it/materiale-cartografico",
+          "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "sourceReview": {
+    "localCustodian": {
+      "name": "Comune di Padova, Settore Urbanistica e Servizi Catastali",
+      "evidenceUrl": "https://www.comune.padova.it/piano-di-assetto-del-territorio-pat",
+      "scope": "Official municipal pages identify the responsible urbanistic/cadastral-services sector and public map/Geoportale access; the municipal map is a general city map, while planning Geoportale content is not itself a cadastral parcel API."
+    },
+    "nationalService": {
+      "name": "Agenzia delle Entrate - Cartografia catastale",
+      "endpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+      "dataset": "CP:CadastralParcel / Padua administrative unit G224",
+      "catalogUrl": "https://data.europa.eu/data/datasets/age-d_g224_padova?locale=it",
+      "scope": "Public national cadastral parcel geometry service; not a municipal custodian."
+    },
+    "attempts": [
+      {
+        "request": "GET Comune di Padova official city-map page",
+        "url": "https://www.comune.padova.it/mappa-online-della-citta",
+        "outcome": "HTTP content returned; public municipal map identified. Page describes filters for city services and toponymy, not a direct parcel feature endpoint."
+      },
+      {
+        "request": "GET Comune di Padova PAT page",
+        "url": "https://www.comune.padova.it/piano-di-assetto-del-territorio-pat",
+        "outcome": "HTTP content returned; official Geoportale/webgis and Settore Urbanistica e Servizi Catastali identified. Planning layers and requested shapefiles are described; no direct parcel API was exposed in page text."
+      },
+      {
+        "request": "GET Agenzia WFS GetCapabilities 2.0.0",
+        "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+        "outcome": "Success. CP:CadastralParcel (Particelle) identified; default CRS EPSG:6706; GML output formats; service describes national parcel coverage."
+      },
+      {
+        "request": "GET WFS bounded GetFeature GeoJSON variant",
+        "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?language=ita&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=CP%3ACadastralParcel&SRSNAME=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&BBOX=45.41070%2C11.88250%2C45.41086%2C11.88267&REQUEST=GetFeature&COUNT=3&OUTPUTFORMAT=application%2Fgeo%2Bjson",
+        "outcome": "HTTP response was a WFS ServiceException InvalidFormat because this endpoint advertises GML/HTML formats, not GeoJSON; not treated as absence."
+      },
+      {
+        "request": "GET WFS bounded GetFeature GML variant, Padua point vicinity",
+        "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?language=ita&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=CP%3ACadastralParcel&SRSNAME=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&BBOX=45.41070%2C11.88250%2C45.41086%2C11.88267&REQUEST=GetFeature&COUNT=3&OUTPUTFORMAT=text%2Fxml%3B%20subtype%3Dgml%2F3.2.1",
+        "outcome": "Success; returned three parcel polygons in GML, numberReturned=3, timestamp 2026-10-12T01:49:12Z."
+      }
+    ],
+    "boundedProbe": {
+      "bbox": [45.41070, 11.88250, 45.41086, 11.88267],
+      "bboxCrs": "EPSG:6706; service response uses latitude,longitude axis order",
+      "count": 3,
+      "exactPoint": [45.4107792873828, 11.8825856616001],
+      "exactPointInterpretation": "WUP point preserved unchanged; bounded vicinity probe is not a citywide coverage claim or an exact-point intersection claim.",
+      "returnedIds": [
+        "IT.AGE.PLA.G224_009000.10",
+        "IT.AGE.PLA.G224_009000.410",
+        "IT.AGE.PLA.G224_009000.9"
+      ],
+      "sampleFile": "city-3607-padua-sample.geojson"
+    },
+    "safeFieldAllowlist": ["stable native parcel identity (INSPIREID_LOCALID)", "geometry", "source CRS", "bounded response metadata"],
+    "excludedFields": ["LABEL", "INSPIREID_NAMESPACE", "NATIONALCADASTRALREFERENCE", "ADMINISTRATIVEUNIT", "owner/titleholder/address/contact/tax/account fields"],
+    "identityMapping": "Retained GeoJSON properties contain only id=INSPIREID_LOCALID. Source field mapping and provenance are documented here; no synthetic row number used."
+  },
+  "runtimeReadiness": "held",
+  "limitations": [
+    "The three-feature sample is a bounded probe, not citywide coverage or adapter admission.",
+    "The municipal pages establish local custodianship and public GIS/planning access, but no direct municipal parcel API was validated.",
+    "The WFS response is GML in EPSG:6706 latitude/longitude axis order; retained GeoJSON uses standard longitude/latitude coordinate order.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe cadastral/person fields were used.",
+    "The initial GeoJSON-format failure is a format limitation, not evidence of absence."
+  ]
+}

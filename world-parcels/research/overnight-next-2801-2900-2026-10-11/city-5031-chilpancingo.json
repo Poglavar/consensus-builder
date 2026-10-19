@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 5031,
+  "queueRank": 2813,
+  "name": "Chilpancingo",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [17.5534601213259, -99.5042907125328],
+  "population2025": 211326,
+  "population2025k": 211.326,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chilpancingo official cadastral parcel map cadastre GIS Guerrero Mexico site:gob.mx OR site:guerrero.gob.mx",
+        "result": "Found the official municipality portal, its municipal Catastro/Predial service entry, and the first-party SIMAC online-tramites portal. No indexed public parcel geometry service was found.",
+        "actualResultUrls": ["https://chilpancingo.gob.mx/portal/", "https://simac.chilpancingo.gob.mx/", "https://www.guerrero.gob.mx/dependencia/sector-central/secretaria-de-finanzas-y-administracion/"]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Chilpancingo catastro predial mapa parcelas SIG oficial Guerrero México",
+        "result": "Found the official municipal Dirección de Catastro e Impuesto Predial form and SIMAC predial/catastro service page. The municipal API's public OpenAPI document lists no cadastral parcel, map, or geometry endpoint.",
+        "actualResultUrls": ["https://chilpancingo.gob.mx/transparencia/wp-content/uploads/2021/11/FORMATO-DE-PLANO-DE-ALINEAMIENTO-CATASTRAL-1.pdf", "https://simac.chilpancingo.gob.mx/tramites?q=predial", "https://chpoapi.chilpancingo.gob.mx/api/", "https://chpoapi.chilpancingo.gob.mx/api-json"]
+      }
+    ],
+    "sources": ["https://chilpancingo.gob.mx/portal/", "https://simac.chilpancingo.gob.mx/", "https://simac.chilpancingo.gob.mx/tramites?q=predial", "https://chpoapi.chilpancingo.gob.mx/api-json", "https://chilpancingo.gob.mx/transparencia/wp-content/uploads/2021/11/FORMATO-DE-PLANO-DE-ALINEAMIENTO-CATASTRAL-1.pdf"]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Ayuntamiento de Chilpancingo portal identifies Catastro as a municipal service, SIMAC provides the municipality's predial/catastro online service entry, and the official municipal form is issued by Dirección de Catastro e Impuesto Predial. This evidences a local custodian, not a successful public parcel extraction.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {"claimedScope": "Municipal Catastro/Predial custodian and online service portal", "verifiedOpenScope": null, "countrywideVerified": false, "citywideVerified": false},
+  "requestsAndEndpointChecks": [
+    {"url": "https://chilpancingo.gob.mx/portal/", "method": "GET", "status": "HTTP 200", "summary": "Official municipality portal loaded and exposed a Catastro service link; no parcel API was identified in the inspected page."},
+    {"url": "https://simac.chilpancingo.gob.mx/tramites?q=predial", "method": "GET", "status": "HTTP 200", "summary": "Official online-tramites page loaded for predial; it presents procedures, not anonymous parcel polygons or a map service."},
+    {"url": "https://chpoapi.chilpancingo.gob.mx/api/", "method": "GET", "status": "HTTP 200", "summary": "Municipal API Swagger UI loaded."},
+    {"url": "https://chpoapi.chilpancingo.gob.mx/api-json", "method": "GET", "status": "HTTP 200", "summary": "OpenAPI schema inspected. Listed routes cover authentication, citizen accounts, catalogs, notices, routes, locations, and tracking; no cadastral, parcel, map, or geometry route was present."},
+    {"url": "https://chpoapi.chilpancingo.gob.mx/api/health", "method": "GET", "status": "HTTP 200", "summary": "Anonymous API health response returned status ok; this proves API reachability only, not parcel access."},
+    {"url": "https://chpoapi.chilpancingo.gob.mx/api/catalogos/estados", "method": "GET", "status": "HTTP 200", "summary": "Anonymous catalog JSON returned state names/keys; it is non-cadastral reference data and was not retained as parcel evidence."},
+    {"url": "https://chpoapi.chilpancingo.gob.mx/", "method": "GET", "status": "HTTP 404", "summary": "API root returned JSON Not Found; no alternative public root route inferred."},
+    {"url": "https://www.guerrero.gob.mx/catastro", "method": "GET", "status": "HTTP 403", "summary": "State Catastro URL was blocked by the server response; no bypass or TLS exception was attempted."}
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned", "geometry", "source CRS", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner/titleholder", "address/contact", "tax/account", "protected cadastral data"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "No live parcel schema, native parcel ID, CRS, or geometry response was obtained. The exact WUP point was preserved and not shifted; no zero-hit, map miss, timeout, login wall, or blocked state was treated as evidence of citywide absence.",
+  "nextStep": "If a public municipal cadastral viewer or API is later published, inspect its current JavaScript/configuration and request a bounded anonymous ID-plus-geometry response using only safe fields."
+}

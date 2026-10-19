@@ -1,0 +1,127 @@
+{
+  "name": "Jiujiang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 913,
+  "point": [
+    29.7089573621996,
+    115.989243360239
+  ],
+  "population2025": 597681,
+  "population2025k": 597.681,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET.",
+  "registryEvidenceUrls": [
+    "https://www.jiujiang.gov.cn/xxgk/xzwgk/jcgk/zfgb_1/2019n/jjsrmzfgb2019nd8q/dzbxz_165209/202511/P020251105780598083392.pdf",
+    "https://jje.jiujiang.gov.cn/zwgk_194/zfxxgkzd/202311/t20231127_6304163.html",
+    "http://106.225.177.5:2022/geoigs/index.html#/"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "No anonymous, field-safe parcel geometry response was verified; exact point and map coverage remain unresolved.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-11076-jiujiang-source-review",
+    "name": "Jiujiang Municipal Real Estate Registration Center / registry database documentation",
+    "url": "https://www.jiujiang.gov.cn/xxgk/xzwgk/jcgk/zfgb_1/2019n/jjsrmzfgb2019nd8q/dzbxz_165209/202511/P020251105780598083392.pdf",
+    "operator": "China",
+    "serviceType": "Municipal registry database evidence; no anonymous geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public feature response; parcel native identifier not verified."
+  },
+  "wupCityCode": 11076,
+  "cityId": "wup2025:11076",
+  "queueRank": 913,
+  "centerLatLon": [
+    29.7089573621996,
+    115.989243360239
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel geometry sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jiujiang China cadastral map system city registry public land parcel GIS 自然资源局 official",
+        "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint.",
+        "result": "Official municipal documentation identifies the local real-estate registry database and parcel/housing vector layers. The public viewer URL was found only through local secondary reporting; the direct host timed out before its landing page loaded. No public geometry or schema was verified.",
+        "actualResultUrls": [
+          "https://www.jiujiang.gov.cn/xxgk/xzwgk/jcgk/zfgb_1/2019n/jjsrmzfgb2019nd8q/dzbxz_165209/202511/P020251105780598083392.pdf",
+          "https://jje.jiujiang.gov.cn/zwgk_194/zfxxgkzd/202311/t20231127_6304163.html",
+          "http://106.225.177.5:2022/geoigs/index.html#/"
+        ],
+        "executionMethod": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested."
+      },
+      {
+        "language": "Chinese",
+        "query": "No public feature response; parcel native identifier not verified.",
+        "scope": "Find primary local-language evidence for the same registry/map question.",
+        "result": "Official municipal documentation identifies the local real-estate registry database and parcel/housing vector layers. The public viewer URL was found only through local secondary reporting; the direct host timed out before its landing page loaded. No public geometry or schema was verified.",
+        "actualResultUrls": [
+          "https://www.jiujiang.gov.cn/xxgk/xzwgk/jcgk/zfgb_1/2019n/jjsrmzfgb2019nd8q/dzbxz_165209/202511/P020251105780598083392.pdf",
+          "https://jje.jiujiang.gov.cn/zwgk_194/zfxxgkzd/202311/t20231127_6304163.html",
+          "http://106.225.177.5:2022/geoigs/index.html#/"
+        ],
+        "executionMethod": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.jiujiang.gov.cn/xxgk/xzwgk/jcgk/zfgb_1/2019n/jjsrmzfgb2019nd8q/dzbxz_165209/202511/P020251105780598083392.pdf",
+        "observation": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET."
+      },
+      {
+        "url": "https://jje.jiujiang.gov.cn/zwgk_194/zfxxgkzd/202311/t20231127_6304163.html",
+        "observation": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET."
+      },
+      {
+        "url": "http://106.225.177.5:2022/geoigs/index.html#/",
+        "observation": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "http://106.225.177.5:2022/geoigs/index.html#/",
+        "method": "Anonymous GET advertised cadastral map landing page, 20-second timeout",
+        "result": "Connection timed out with zero response bytes. No login, property search, or query was attempted."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel geometry sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.jiujiang.gov.cn/xxgk/xzwgk/jcgk/zfgb_1/2019n/jjsrmzfgb2019nd8q/dzbxz_165209/202511/P020251105780598083392.pdf",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

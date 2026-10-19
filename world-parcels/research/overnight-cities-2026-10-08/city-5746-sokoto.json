@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Sokoto",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Sokoto State Ministry of Lands & Survey lists SOGIS within the state land-administration portfolio, and the official Sokoto budget includes reproduction of Sokoto cadastral maps and mapping of Sokoto township. The state ministry’s SOGIS page and the linked SOGIS agency landing are informational; no public parcel-vector route or schema was found.",
+  "registryEvidenceUrls": [
+    "https://molhs.sk.gov.ng/sogis/",
+    "https://sogis.org.ng/",
+    "https://mbep.sk.gov.ng/wp-content/uploads/2025/07/2025_Sokoto_State_Q2-BIRCN_CR.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5746,
+  "cityId": "wup2025:5746",
+  "centerLatLon": [
+    13.0378571534437,
+    5.24957938316496
+  ],
+  "rank": 572,
+  "queueRank": 572,
+  "population2025": 903238,
+  "population2025k": 903.238,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The state agency and Sokoto-township cadastral mapping are documented, but the public SOGIS landing page exposes no safe anonymous parcel-vector service/schema. The application route was not opened. Runtime remains disabled.",
+  "scopeLimits": "Evidence supports a Sokoto-city mapping program and state land-agency presence. No actual public parcel polygons, safe feature identifier contract, data license, or coverage completeness were verified.",
+  "remainingUncertainty": "Evidence supports a Sokoto-city mapping program and state land-agency presence. No actual public parcel polygons, safe feature identifier contract, data license, or coverage completeness were verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sokoto official SOGIS Sokoto township cadastral maps land administration public GIS parcels",
+        "scope": "Find Sokoto-bound registry/cartography evidence and a safe public geometry route.",
+        "result": "Sokoto State’s Ministry of Lands & Survey links SOGIS, and an official Sokoto State budget line says the Surveyor General’s office is to reproduce Sokoto cadastral maps and map Sokoto township. The SOGIS landing page has informational navigation and an Apply link; no anonymous parcel geometry/schema was identified, and no application route was opened.",
+        "actualResultUrls": [
+          "https://molhs.sk.gov.ng/sogis/",
+          "https://sogis.org.ng/",
+          "https://mbep.sk.gov.ng/wp-content/uploads/2025/07/2025_Sokoto_State_Q2-BIRCN_CR.pdf"
+        ]
+      },
+      {
+        "language": "Hausa",
+        "query": "Sokoto jihar SOGIS taswirar kadaster na garin Sokoto ma’aikatar filaye",
+        "scope": "Nemo hujjar rajistar ƙasa da taswirar fili ta Sokoto, ba tare da binciken bayanan mutum ba.",
+        "result": "Shafin Ma’aikatar Filaye da Bincike ta Jihar Sokoto yana danganta SOGIS, kuma kasafin kuɗin gwamnati ya ambaci taswirar kadaster na garin Sokoto. An duba shafin bayanai kawai; ba a buɗe hanyar Apply ko aika fom ba, kuma ba a tabbatar da sabis ɗin geometry na fili na jama’a ba.",
+        "actualResultUrls": [
+          "https://molhs.sk.gov.ng/sogis/",
+          "https://sogis.org.ng/",
+          "https://mbep.sk.gov.ng/wp-content/uploads/2025/07/2025_Sokoto_State_Q2-BIRCN_CR.pdf"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://molhs.sk.gov.ng/sogis/",
+        "observation": "Official Sokoto State Ministry of Lands & Survey page labels SOGIS as a ministry component. Direct anonymous HTTPS GET returned 200; the static page uses generic WordPress/Elementor scripts and links to informational pages and an application route, with no public parcel service schema."
+      },
+      {
+        "url": "https://sogis.org.ng/",
+        "observation": "Agency landing page linked from the state ministry. Direct anonymous HTTPS GET returned 200 and identifies the Sokoto State Geographic Information System Agency. Public landing/navigation contains no parcel-vector schema; a menu link labelled Apply was not opened."
+      },
+      {
+        "url": "https://mbep.sk.gov.ng/wp-content/uploads/2025/07/2025_Sokoto_State_Q2-BIRCN_CR.pdf",
+        "observation": "Official state budget search result identifies a Surveyor General project to reproduce Sokoto cadastral maps and map Sokoto township; cited as city-bound mapping-program evidence, not a live parcel data source."
+      }
+    ],
+    "metadataReviewFile": "sokoto-service-review.json"
+  },
+  "source": {
+    "sourceId": "ng-sokoto-official-land-source",
+    "name": "Sokoto official land/cadastral source review",
+    "operator": "https://molhs.sk.gov.ng/sogis/",
+    "url": "https://molhs.sk.gov.ng/sogis/",
+    "scope": "Evidence supports a Sokoto-city mapping program and state land-agency presence. No actual public parcel polygons, safe feature identifier contract, data license, or coverage completeness were verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature identifier was requested or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Evidence supports a Sokoto-city mapping program and state land-agency presence. No actual public parcel polygons, safe feature identifier contract, data license, or coverage completeness were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    13.0378571534437,
+    5.24957938316496
+  ],
+  "rootReviewedAt": "2026-10-09T01:39:35.583478+00:00"
+}

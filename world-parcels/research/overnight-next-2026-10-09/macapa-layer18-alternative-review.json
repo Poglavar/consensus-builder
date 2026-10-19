@@ -1,0 +1,2399 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:27:20.503Z",
+  "purpose": "Bounded endpoint investigation of the official municipal SIT-configured alternative “Consulta Geo Lote Físico”, layer 18. Only physical lot identity and geometry; no integration or reader changes.",
+  "officialConfigEvidence": {
+    "url": "https://mapa.macapa.ap.gov.br/macapacliente/sit/Analise/ServicosMapa/ListarParametrosSistema",
+    "method": "POST",
+    "httpStatus": 200,
+    "bytes": 6125,
+    "sha256": "bb6f999127deb5e581b66c74bf9382b4fa6dc1ba8583bc7e374b0ea62e6cd031",
+    "entry": {
+      "name": "Consulta Geo Lote Físico",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18",
+      "keyField": "idlote"
+    }
+  },
+  "endpoint": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18",
+  "layerMetadata": {
+    "httpStatus": 200,
+    "name": "sit_macapa.vw.vw_lotes_sit",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": {
+      "wkid": 31982,
+      "latestWkid": 31982
+    },
+    "objectIdField": null,
+    "oidFields": [
+      "idlote"
+    ],
+    "globalIdField": null,
+    "uniqueIdInfo": null,
+    "maxRecordCount": 1000000,
+    "supportsDistinct": true,
+    "supportsPagination": true,
+    "idFieldPresent": true,
+    "safeObjectIdField": "idlote"
+  },
+  "cells": [
+    {
+      "cell": 0,
+      "bboxWgs84": [
+        -51.07,
+        0.042,
+        -51.069,
+        0.043
+      ],
+      "adapter": {
+        "complete": false,
+        "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "status": 502
+      },
+      "directNativeGeometry": {
+        "httpStatus": 200,
+        "featureCount": 43,
+        "uniqueIdCount": 26,
+        "duplicateIdGroups": [
+          {
+            "id": "605261",
+            "rowCount": 10,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+          },
+          {
+            "id": "605262",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+          },
+          {
+            "id": "605265",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+          }
+        ],
+        "nativeIds": [
+          "502134",
+          "502135",
+          "503042",
+          "503043",
+          "503044",
+          "503045",
+          "503046",
+          "503047",
+          "503048",
+          "503049",
+          "503050",
+          "503052",
+          "503058",
+          "503059",
+          "503087",
+          "503088",
+          "503089",
+          "503090",
+          "503091",
+          "503092",
+          "503093",
+          "526997",
+          "526998",
+          "605261",
+          "605262",
+          "605265"
+        ],
+        "geometryTypes": [
+          "Polygon"
+        ],
+        "exceededTransferLimit": null,
+        "completeAtCap": true
+      }
+    },
+    {
+      "cell": 1,
+      "bboxWgs84": [
+        -51.069,
+        0.042,
+        -51.068,
+        0.043
+      ],
+      "adapter": {
+        "complete": false,
+        "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "status": 502
+      },
+      "directNativeGeometry": {
+        "httpStatus": 200,
+        "featureCount": 33,
+        "uniqueIdCount": 25,
+        "duplicateIdGroups": [
+          {
+            "id": "605265",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+          },
+          {
+            "id": "605274",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+          }
+        ],
+        "nativeIds": [
+          "502134",
+          "502136",
+          "502137",
+          "502475",
+          "502476",
+          "502677",
+          "502678",
+          "502679",
+          "502723",
+          "502724",
+          "503050",
+          "503051",
+          "503052",
+          "503053",
+          "503054",
+          "503055",
+          "503057",
+          "503060",
+          "523735",
+          "526978",
+          "526999",
+          "605265",
+          "605267",
+          "605273",
+          "605274"
+        ],
+        "geometryTypes": [
+          "Polygon"
+        ],
+        "exceededTransferLimit": null,
+        "completeAtCap": true
+      }
+    },
+    {
+      "cell": 4,
+      "bboxWgs84": [
+        -51.069,
+        0.043,
+        -51.068,
+        0.044
+      ],
+      "adapter": {
+        "complete": false,
+        "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "status": 502
+      },
+      "directNativeGeometry": {
+        "httpStatus": 200,
+        "featureCount": 62,
+        "uniqueIdCount": 22,
+        "duplicateIdGroups": [
+          {
+            "id": "502725",
+            "rowCount": 6,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+          },
+          {
+            "id": "527010",
+            "rowCount": 6,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+          },
+          {
+            "id": "605268",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+          },
+          {
+            "id": "605269",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+          },
+          {
+            "id": "605270",
+            "rowCount": 10,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+          },
+          {
+            "id": "605271",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+          },
+          {
+            "id": "605272",
+            "rowCount": 10,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+          }
+        ],
+        "nativeIds": [
+          "502725",
+          "503050",
+          "503265",
+          "503266",
+          "527008",
+          "527009",
+          "527010",
+          "527011",
+          "527012",
+          "527013",
+          "527355",
+          "527538",
+          "527539",
+          "537518",
+          "605268",
+          "605269",
+          "605270",
+          "605271",
+          "605272",
+          "606579",
+          "606580",
+          "606581"
+        ],
+        "geometryTypes": [
+          "Polygon"
+        ],
+        "exceededTransferLimit": null,
+        "completeAtCap": true
+      }
+    },
+    {
+      "cell": 9,
+      "bboxWgs84": [
+        -51.069,
+        0.041,
+        -51.068,
+        0.042
+      ],
+      "adapter": {
+        "complete": false,
+        "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "status": 502
+      },
+      "directNativeGeometry": {
+        "httpStatus": 200,
+        "featureCount": 38,
+        "uniqueIdCount": 26,
+        "duplicateIdGroups": [
+          {
+            "id": "605264",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+          },
+          {
+            "id": "605265",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+          },
+          {
+            "id": "605274",
+            "rowCount": 5,
+            "distinctGeometryHashes": 1,
+            "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+          }
+        ],
+        "nativeIds": [
+          "502475",
+          "502476",
+          "502675",
+          "502678",
+          "502679",
+          "502721",
+          "502722",
+          "503056",
+          "503057",
+          "503085",
+          "503086",
+          "503099",
+          "503100",
+          "503101",
+          "503102",
+          "503103",
+          "503104",
+          "503105",
+          "503106",
+          "527361",
+          "537519",
+          "605264",
+          "605265",
+          "605274",
+          "605275",
+          "606560"
+        ],
+        "geometryTypes": [
+          "Polygon"
+        ],
+        "exceededTransferLimit": null,
+        "completeAtCap": true
+      }
+    }
+  ],
+  "exactIdTest": {
+    "nativeId": "502134",
+    "complete": true,
+    "returnedFeatureCount": 1,
+    "absentIds": [],
+    "geometryHashes": [
+      "b83643decf9b246a72b017cd769226c890cc4739dc5f612efd6bfd6ebaad7054"
+    ]
+  },
+  "requests": [
+    {
+      "stage": "",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18?f=pjson",
+      "status": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "bytes": 5956,
+      "sha256": "982419ca6e48d25d06e5f7774993c6a7d31fa119cde182ebd423a81ccefa0a89",
+      "error": null,
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-adapter-cell-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.07%2C0.042%2C-51.069%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "f72ead787aa237120c8b5149fa33647c46d3297f90daab36bcce8e91bc796571",
+      "error": null,
+      "count": 43,
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-adapter-cell-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.07%2C0.042%2C-51.069%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 345,
+      "sha256": "853b2ca9de7742a4431099d36387d06e1eadba52b70fbe685fe3f74b038f4f92",
+      "error": null,
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        526997,
+        503042,
+        502134,
+        503052,
+        502135,
+        526998,
+        503049,
+        503058,
+        503059,
+        503044,
+        503050,
+        503043,
+        503046,
+        503048,
+        503045,
+        503047,
+        503087,
+        503088,
+        503091,
+        503092,
+        503089,
+        503093,
+        503090,
+        605261,
+        605262,
+        605265,
+        605261,
+        605262,
+        605265,
+        605261,
+        605262,
+        605265,
+        605261,
+        605262,
+        605265,
+        605261,
+        605262,
+        605265,
+        605261,
+        605261,
+        605261,
+        605261,
+        605261
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-direct-cell-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.07%2C%22ymin%22%3A0.042%2C%22xmax%22%3A-51.069%2C%22ymax%22%3A0.043%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=100",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 22381,
+      "sha256": "9fe6abbde44e2d7c3382fbcae61f241dd81a5a979513114a4089e2ca0d0d7e93",
+      "error": null,
+      "featureCount": 43,
+      "returnedRows": [
+        {
+          "id": "502134",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "e4907c5af2ed4614ed935e7e631c9555ebd6893ee46af99f8da4a239fc8debcc"
+        },
+        {
+          "id": "502135",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "e1c7e6052a499996f562a01f046e896a010915ce443e6ca928a75765cd9c9151"
+        },
+        {
+          "id": "503042",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "8017c49ec28ef955ae568d674e41eff240a2fd8d5ed3d91407ae80527f15d638"
+        },
+        {
+          "id": "503043",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "c6afa61458f74e05fb48a14c00b6e1674e717298f4e4f0b402ca35e8860d95f1"
+        },
+        {
+          "id": "503044",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "59600130ef34c4a137e0753d2859f6ffc9126f009ad74272d4e39ed54711cb8d"
+        },
+        {
+          "id": "503045",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "022ce286027dfc8d34163378dbcc1fc166cd2a95ce9c66b8a65e58e22638e2e0"
+        },
+        {
+          "id": "503046",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "2dc726bf5b974b54cadd9ed1fe39854018a149ac6460d472eebfdeb7ee5ef052"
+        },
+        {
+          "id": "503047",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "debf6a715c52002359014e6a2495900af92e3eee0ffb842743807c7c22676f53"
+        },
+        {
+          "id": "503048",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "7990394e8dc254fa52011d918e7abc199fc7695a3e273b9783b7a62490059967"
+        },
+        {
+          "id": "503049",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "c11e57a373486d4dc7425ed8e09ae318677d063f13d8ce5922a2b7c87b269105"
+        },
+        {
+          "id": "503050",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "e76f16875470f4abc43724394eae9792964e9e819dbd8a44bb87f09837deaffe"
+        },
+        {
+          "id": "503052",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0f4cd31e96794216cbea958250addb081a92aa6c4a704ddeb798048107da3e3a"
+        },
+        {
+          "id": "503058",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "48472ba3497d69c280277d82aadefb5340227b1ca01537f6b8a465b23e123fd6"
+        },
+        {
+          "id": "503059",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "a1aeafab226851938ad7bc9cd13f05311d211b092827d573b2880421cf12f970"
+        },
+        {
+          "id": "503087",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "464b8af4da6a5af54db514f0c26bf914943b826e5317eb202398d24debcb235f"
+        },
+        {
+          "id": "503088",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "6368cdff50ff762e0d6262c214739085833b6cd80ac40ba281e340bdb10eac76"
+        },
+        {
+          "id": "503089",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4d6ee47f5c02c4236b36b67734a3baa55f6c1f7ebf3f6f7c66154d769ad20c86"
+        },
+        {
+          "id": "503090",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "a213243bb5dd26e4167edf67e2d33241a4b177da0ae35b3d150aba54e3301ea7"
+        },
+        {
+          "id": "503091",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "f16dbfb8c01a5a2da254adeac39904874d35291d90cdb2d1f84943c8bd6f20d9"
+        },
+        {
+          "id": "503092",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d489a917e72d42f10a37a755f672ad5edefda5a927c5187de3d18d39471cb964"
+        },
+        {
+          "id": "503093",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "22edf33d39b03916a56b360f538da84b89a74d92302fa9fee5643aa4cb2cc644"
+        },
+        {
+          "id": "526997",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d4aaf80358b1f2272ae821a672f287898ede08f1eb5eacd1fa02ccd5ff45b16a"
+        },
+        {
+          "id": "526998",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "9cb0b71875710ba14115cf748d1e34c7249e63c7f0ed50a1427d13bc700f312e"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605261",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "51cb7ad514f0747ae0f2e2c6309899435e6e44e3d1ca10f08cdfbeda7a694274"
+        },
+        {
+          "id": "605262",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+        },
+        {
+          "id": "605262",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+        },
+        {
+          "id": "605262",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+        },
+        {
+          "id": "605262",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+        },
+        {
+          "id": "605262",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "fa6a6df6ab4c74ebf8ddd7f661eef20082bba72326b7f867c1efafe3f03abe0f"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        }
+      ]
+    },
+    {
+      "stage": "layer18-adapter-cell-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.069%2C0.042%2C-51.068%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "52aa0abe7b47012a5285efab6e22093d351180321938c1cdd985859a4bda1c0d",
+      "error": null,
+      "count": 33,
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-adapter-cell-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.069%2C0.042%2C-51.068%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 275,
+      "sha256": "c5efbb719e8357f71508ca6841fe70b5d5065cc1545d2d5eb61966887256c9d7",
+      "error": null,
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        503054,
+        502137,
+        523735,
+        503051,
+        502677,
+        502724,
+        502723,
+        502134,
+        502136,
+        503052,
+        503053,
+        503050,
+        503055,
+        526999,
+        503060,
+        605265,
+        605274,
+        605265,
+        605274,
+        605265,
+        605274,
+        605265,
+        605274,
+        605265,
+        605274,
+        502476,
+        502678,
+        502679,
+        502475,
+        503057,
+        526978,
+        605267,
+        605273
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-direct-cell-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.042%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.043%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=100",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 17252,
+      "sha256": "4d46979da4eebc781ecb5111ada8bd8b6e245481ad6bbcd0ec1a05a9165e8405",
+      "error": null,
+      "featureCount": 33,
+      "returnedRows": [
+        {
+          "id": "502134",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "e4907c5af2ed4614ed935e7e631c9555ebd6893ee46af99f8da4a239fc8debcc"
+        },
+        {
+          "id": "502136",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "af7f34d494b3755d3156957fc6579f08c8bd95c905ffca8fd1a027ebfb19f3fe"
+        },
+        {
+          "id": "502137",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "85a82f41a6949541ba24c64b55bebf02867d4d036988542f857af7453e53e421"
+        },
+        {
+          "id": "502475",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "8008889e6e2ea91abdb53003b6e31670833059a857fd7ee4781928c7f994ec53"
+        },
+        {
+          "id": "502476",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "a40bffb846ade946561dc8f862383e3f6adbd3b297a144612b6a3dd6a03d3df8"
+        },
+        {
+          "id": "502677",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "3f87e08e3fb0fe70b0e0bbc79c00fa47131b6eea58a3a7e1aca41bed5f6f3e3b"
+        },
+        {
+          "id": "502678",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "54c4f410ad70479ba176194c4d79f80283676e6363c10c5dc64c369a11aaa49c"
+        },
+        {
+          "id": "502679",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "53422aae45d82f9dbf28ded26cc3af721db429451e23a3e1f77323a07bede31b"
+        },
+        {
+          "id": "502723",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "6d4fc583fd327c1d02fd1c7807513b579d36f0d578d00ef63fb2f92a173d4b48"
+        },
+        {
+          "id": "502724",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "676c4baabb2c711d2ac6ffd2e10c4906489101be15e8b71571d377d7a7ed20cd"
+        },
+        {
+          "id": "503050",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "e76f16875470f4abc43724394eae9792964e9e819dbd8a44bb87f09837deaffe"
+        },
+        {
+          "id": "503051",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "116a710d48e64b138e7d7fabc37b9e145c48a4514b6a2adf26886c763736e601"
+        },
+        {
+          "id": "503052",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0f4cd31e96794216cbea958250addb081a92aa6c4a704ddeb798048107da3e3a"
+        },
+        {
+          "id": "503053",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "37ef610d101191dd38cb80a1455fc46bede411a7c8965b23cca68d21ef52320f"
+        },
+        {
+          "id": "503054",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "ba6f6930bb474e7198ae6accd71944e25540777934d179788802c71fc4e7855f"
+        },
+        {
+          "id": "503055",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "55f1dc676da014e8c9349aad762fc5663818eb1db8e5ff92743d70e23f1e46f6"
+        },
+        {
+          "id": "503057",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "ea3b4d1ece87d71949abafb3b493f90bf4fe8c9523344c827f53febf28d6f415"
+        },
+        {
+          "id": "503060",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "17dbfef28ba84aa7e41b5b697d0c501be9d541374633c504d6bb5e3bf23dffa8"
+        },
+        {
+          "id": "523735",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "ff450a0e37873b19bfbb72f31ebebf9124f7e94e33e4687b6b2c6dc72d658a33"
+        },
+        {
+          "id": "526978",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "49a9d732e5241eb93b7c34620cc763e7cca97806e929e55152745a43285ae809"
+        },
+        {
+          "id": "526999",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "699ab3a6d0c892c1eb921a46f1ac55318a16a168bec8138fc95d427bc61484eb"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605267",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "37f9d01441f5d3013e5f33f8eb1ba0b413631d5b24798701aca859ce86cb4f54"
+        },
+        {
+          "id": "605273",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "e8d3faa05753706674914612de955eb3b5bb3953797126546aa300f5cf95d2fa"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        }
+      ]
+    },
+    {
+      "stage": "layer18-adapter-cell-4",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.069%2C0.043%2C-51.068%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "4d7fa0dcf0b577004dc5203fef7b4cb9af7132f677b6227575588819d5b01de6",
+      "error": null,
+      "count": 62,
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-adapter-cell-4",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.069%2C0.043%2C-51.068%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 478,
+      "sha256": "2083b00ac2ec9941abf1e3f51227523345dd1a93520ae5241bc953a7eab232b1",
+      "error": null,
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        503050,
+        527538,
+        606581,
+        503266,
+        527355,
+        527013,
+        527539,
+        527010,
+        537518,
+        527011,
+        527008,
+        527009,
+        503265,
+        527012,
+        502725,
+        502725,
+        527010,
+        502725,
+        527010,
+        502725,
+        527010,
+        502725,
+        527010,
+        502725,
+        527010,
+        605272,
+        605272,
+        605272,
+        605272,
+        605272,
+        605270,
+        605271,
+        605269,
+        605268,
+        605270,
+        605271,
+        605269,
+        605268,
+        605270,
+        605271,
+        605269,
+        605268,
+        605270,
+        605271,
+        605269,
+        605268,
+        605270,
+        605271,
+        605269,
+        605268,
+        605272,
+        605270,
+        605272,
+        605270,
+        605272,
+        605270,
+        605272,
+        605270,
+        605272,
+        605270,
+        606579,
+        606580
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-direct-cell-4",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.043%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.044%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=100",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 31494,
+      "sha256": "30c6ec4d0c4afd5c5ee2f8fc70df61891c2522ac4abd9f173352ca8295255099",
+      "error": null,
+      "featureCount": 62,
+      "returnedRows": [
+        {
+          "id": "502725",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+        },
+        {
+          "id": "502725",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+        },
+        {
+          "id": "502725",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+        },
+        {
+          "id": "502725",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+        },
+        {
+          "id": "502725",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+        },
+        {
+          "id": "502725",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "97d6f5d15b4c6a60cdbb88fa68a210e2f03290ee6e0c75b91d62425b56b2965f"
+        },
+        {
+          "id": "503050",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "e76f16875470f4abc43724394eae9792964e9e819dbd8a44bb87f09837deaffe"
+        },
+        {
+          "id": "503265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "3286814aa71f64ab235aedfe8641c590d85f76c9380c5286780ee7deaf9622c5"
+        },
+        {
+          "id": "503266",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "24d2004ca66d4a48bb1d6c2a7966b8a360df55124438e2b5ed3f913ae40755b7"
+        },
+        {
+          "id": "527008",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "fd77d5188af1b1593414bc177f961d7ba021078bbc55d086def543e82390e371"
+        },
+        {
+          "id": "527009",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7"
+        },
+        {
+          "id": "527010",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+        },
+        {
+          "id": "527010",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+        },
+        {
+          "id": "527010",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+        },
+        {
+          "id": "527010",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+        },
+        {
+          "id": "527010",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+        },
+        {
+          "id": "527010",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d7612a54004e2b7ff8dbffd89c166d8fb9a3737c77094f71c8094bbfa7708ad4"
+        },
+        {
+          "id": "527011",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "25925ea7353940de37a0fbb964992c32e074546a6d0803fa96e50cedd09e4452"
+        },
+        {
+          "id": "527012",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "60e159f70d58731aaa8febedca1692d6dd727b04d32fc64596ad95d8b9aa984c"
+        },
+        {
+          "id": "527013",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "dcfc4b813e1d91d28fb763209bd1e0adb8014ae531091c1577a69db367ba5a79"
+        },
+        {
+          "id": "527355",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "12a35195bf0ce5f22c30ebde772d8b9784f03e5f40db3d109195f5a48f2b86c8"
+        },
+        {
+          "id": "527538",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "f315854da4b3b3a881872e8dd7f37dcfbbf4fa93fb99502eb0296b09283afdf4"
+        },
+        {
+          "id": "527539",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "c2e2cc4ba64372c1b2bc0146749dc3f1211cfef77dd0aa709ea6421d2def70c5"
+        },
+        {
+          "id": "537518",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "a5fb4e94acbec9d810e1025cba587a7ec295f36512ca350cc9c14fef1e6f8b37"
+        },
+        {
+          "id": "605268",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+        },
+        {
+          "id": "605268",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+        },
+        {
+          "id": "605268",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+        },
+        {
+          "id": "605268",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+        },
+        {
+          "id": "605268",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "2d80d6f3f7a3dd29bcc493d8f37271cf8239cac5bf51e4d7ac04f825f08d0e78"
+        },
+        {
+          "id": "605269",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+        },
+        {
+          "id": "605269",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+        },
+        {
+          "id": "605269",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+        },
+        {
+          "id": "605269",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+        },
+        {
+          "id": "605269",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "413ad9d8d63f849bfd89ccf0c5ad9e8b69be352ed64d8f92ed52c8017899e1ba"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605270",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "552abce141434c7fbce91db27654b1da18485df3753d973bd12d260f6f7a7e89"
+        },
+        {
+          "id": "605271",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+        },
+        {
+          "id": "605271",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+        },
+        {
+          "id": "605271",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+        },
+        {
+          "id": "605271",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+        },
+        {
+          "id": "605271",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "00f9ecdaabafcfe66432b474e0e8b247be5e9e954fde75b4f71f6a65a89a5b02"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "605272",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "0afb72f471899ef30e35f24ba728215db033cee05c56d5e299f55c1c7f9b084a"
+        },
+        {
+          "id": "606579",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "a037470666ff5c22cbb18fcce7debad90c995c52d3002f82697e8942b0f073dc"
+        },
+        {
+          "id": "606580",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "54f995ab11955410f15001e1ebb39f01c8a82288eb9b956ca6dcb9a7ae48131f"
+        },
+        {
+          "id": "606581",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "df72d563da23720ccff0a123cc36d9560619f8e029cb6581275c775daf64ee7e"
+        }
+      ]
+    },
+    {
+      "stage": "layer18-adapter-cell-9",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.069%2C0.041%2C-51.068%2C0.042&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "sha256": "d64031d385f466fa27ac912bb11c2f71c5aecbf3a86e3e24a96d870528901f2c",
+      "error": null,
+      "count": 38,
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-adapter-cell-9",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&geometry=-51.069%2C0.041%2C-51.068%2C0.042&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 310,
+      "sha256": "8b97ddce958f5ecc7f2e4f6405bad83394bba6f58fc637061c5c7013915580ce",
+      "error": null,
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        503099,
+        502722,
+        606560,
+        503100,
+        537519,
+        503101,
+        502721,
+        503103,
+        503106,
+        503104,
+        503102,
+        503105,
+        605265,
+        605274,
+        605265,
+        605274,
+        605265,
+        605274,
+        605265,
+        605274,
+        605265,
+        605274,
+        503056,
+        605264,
+        605264,
+        605264,
+        605264,
+        605264,
+        503085,
+        527361,
+        502476,
+        502475,
+        502675,
+        502678,
+        502679,
+        503057,
+        605275,
+        503086
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-direct-cell-9",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?f=geojson&where=1%3D1&geometry=%7B%22xmin%22%3A-51.069%2C%22ymin%22%3A0.041%2C%22xmax%22%3A-51.068%2C%22ymax%22%3A0.042%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=idlote&returnGeometry=true&outSR=31982&resultRecordCount=100",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 21405,
+      "sha256": "d917cc8b6d1ed0d91d8e15adf86c9e41a0fbe7a0e28512431895256cd831e0b4",
+      "error": null,
+      "featureCount": 38,
+      "returnedRows": [
+        {
+          "id": "502475",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "8008889e6e2ea91abdb53003b6e31670833059a857fd7ee4781928c7f994ec53"
+        },
+        {
+          "id": "502476",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "a40bffb846ade946561dc8f862383e3f6adbd3b297a144612b6a3dd6a03d3df8"
+        },
+        {
+          "id": "502675",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "84605b61567c4b86f09502b1476837c30bf223725ac659b331153922adcae5f2"
+        },
+        {
+          "id": "502678",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "54c4f410ad70479ba176194c4d79f80283676e6363c10c5dc64c369a11aaa49c"
+        },
+        {
+          "id": "502679",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "53422aae45d82f9dbf28ded26cc3af721db429451e23a3e1f77323a07bede31b"
+        },
+        {
+          "id": "502721",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "9e7c4acc64b2c5eb0d98c6706b1105885db462cb1737e2882ef3520a7d2fc83d"
+        },
+        {
+          "id": "502722",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "869b3d6f7fbff52158c43880f7b7f0c9ab73ea3339845bab250e50a5a479fa84"
+        },
+        {
+          "id": "503056",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "72eb07de97c2b5f2b79948b54ad4db4b4690b6d6ae779fbb85cc45d5309bb134"
+        },
+        {
+          "id": "503057",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "ea3b4d1ece87d71949abafb3b493f90bf4fe8c9523344c827f53febf28d6f415"
+        },
+        {
+          "id": "503085",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "be7c0a6100e0ac53d73da2fa964092c0756e5150005f4d039d90e612106f947b"
+        },
+        {
+          "id": "503086",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "14954b6e3ce25c394c424423d3bec758da7ec559e69625fc51319f908b02cd73"
+        },
+        {
+          "id": "503099",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "6f0cfb4bd916d2df0116bbeea307bb199e5bb41345629f8caba9b778a64a7c3f"
+        },
+        {
+          "id": "503100",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "b4f3a98ee42380a9ea324ea37a05bb7c14db4947c15983144132d69a20c45268"
+        },
+        {
+          "id": "503101",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "77cb3ceee988a076feec149acedd4c9cc4cac2e98afbb4f9e5ded519cb9f2170"
+        },
+        {
+          "id": "503102",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "b944b4dddf645d8b5b69a702e0d3cbd435cd207fecf1591eaeee1a6826246399"
+        },
+        {
+          "id": "503103",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d838a7b59a9bf6310992fd75f5bf0621e5b36ad92a7a1b07d464cc2d2eac6b0c"
+        },
+        {
+          "id": "503104",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "139b9c5305ee77e76af1c0e5ebef3b4f2abef1629649126fff6c1f4d7bd8f661"
+        },
+        {
+          "id": "503105",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "3733f35769e985bf15d331f80c1206c12be5f1a454a0f83d8c937185c0a09988"
+        },
+        {
+          "id": "503106",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d70ee09714c3d3796b0ec92e3e60ca34a52be4de96bb4d8421ab4c2781047de8"
+        },
+        {
+          "id": "527361",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "180a1ea15a90c378d3a500dad981ec673208902152be699513e24a45e1f45e4e"
+        },
+        {
+          "id": "537519",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "ca6223a8bee5cd2256afcba187a991c0b3f9c6baee3b38bb9db92f5ab25a8cc0"
+        },
+        {
+          "id": "605264",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+        },
+        {
+          "id": "605264",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+        },
+        {
+          "id": "605264",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+        },
+        {
+          "id": "605264",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+        },
+        {
+          "id": "605264",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "9d1ce3a9fbae9f4452546c0a4a39c0e204845635d1fe7f7503b71db3129becab"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605265",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "4dc8d50b8f9f134f19253539ab269739df58f7a22047468106e7997a9b93c56a"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605274",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "5e5379972077242007b9ee9f4a9a458cee78454389d3bca8ee9bcac61251e985"
+        },
+        {
+          "id": "605275",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "d147c9834ee54065cec874f4a9eeee6459366166b1dcfd7ecf892452a086fc50"
+        },
+        {
+          "id": "606560",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "81ed129734ea107fe0cb2442ad9070be9edb67c1326dd969ad3b5c3b18f2a9a6"
+        }
+      ]
+    },
+    {
+      "stage": "layer18-exact-id-502134",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=idlote+IN+%28502134%29&f=json&returnCountOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "sha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "error": null,
+      "count": 1,
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-exact-id-502134",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=idlote+IN+%28502134%29&f=json&returnIdsOnly=true",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 51,
+      "sha256": "aa7c21c618619faddcce2d5a6fa1d0d827fc93aba5238b142d61f443bd0e8562",
+      "error": null,
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502134
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "layer18-exact-id-502134",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/18/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502134",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 805,
+      "sha256": "ec8253dfb33fd24b062c26f73a695f6bb506d57af43af0a05e9b44d246d50aab",
+      "error": null,
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "id": "502134",
+          "objectId": null,
+          "fields": [
+            "idlote"
+          ],
+          "geometryType": "Polygon",
+          "geometrySha256": "b83643decf9b246a72b017cd769226c890cc4739dc5f612efd6bfd6ebaad7054"
+        }
+      ]
+    }
+  ],
+  "limitations": {
+    "queryFields": [
+      "idlote"
+    ],
+    "ownerAddressTaxAccountApplicantFieldsRequestedOrRetained": false,
+    "fullGeometriesCachedOnlyInIgnoredTmp": true,
+    "durableFullPolygonsAdded": 0,
+    "readerOrAdapterCodeChanged": false,
+    "globalSourceConfigChanged": false,
+    "rootReviewStampAdded": false,
+    "citywideCompletenessClaimed": false
+  },
+  "layer27Comparison": [
+    {
+      "cell": 0,
+      "layer27Name": "sit_macapa.vw.vw_info_fisico",
+      "layer27Rows": 43,
+      "layer18Name": "sit_macapa.vw.vw_lotes_sit",
+      "layer18Rows": 43,
+      "sameNativeIdSet": true,
+      "samePerIdRowCounts": true,
+      "samePerIdFullGeometryHashMultisets": true,
+      "distinctNativeIdCount": 26
+    },
+    {
+      "cell": 1,
+      "layer27Name": "sit_macapa.vw.vw_info_fisico",
+      "layer27Rows": 33,
+      "layer18Name": "sit_macapa.vw.vw_lotes_sit",
+      "layer18Rows": 33,
+      "sameNativeIdSet": true,
+      "samePerIdRowCounts": true,
+      "samePerIdFullGeometryHashMultisets": true,
+      "distinctNativeIdCount": 25
+    },
+    {
+      "cell": 4,
+      "layer27Name": "sit_macapa.vw.vw_info_fisico",
+      "layer27Rows": 62,
+      "layer18Name": "sit_macapa.vw.vw_lotes_sit",
+      "layer18Rows": 62,
+      "sameNativeIdSet": true,
+      "samePerIdRowCounts": true,
+      "samePerIdFullGeometryHashMultisets": true,
+      "distinctNativeIdCount": 22
+    },
+    {
+      "cell": 9,
+      "layer27Name": "sit_macapa.vw.vw_info_fisico",
+      "layer27Rows": 38,
+      "layer18Name": "sit_macapa.vw.vw_lotes_sit",
+      "layer18Rows": 38,
+      "sameNativeIdSet": true,
+      "samePerIdRowCounts": true,
+      "samePerIdFullGeometryHashMultisets": true,
+      "distinctNativeIdCount": 26
+    }
+  ],
+  "configuredPhysicalLayerFinding": {
+    "alternativeName": "Consulta Geo Lote Físico",
+    "alternativeLayerId": 18,
+    "layer18IsIndependentUniqueParcelBase": false,
+    "reason": "Across all four held bounded cells, layer 18 returned the same idlote sets, row multiplicities, and full geometry-hash multisets as layer 27; it also reports idlote as its OID and its normal adapter run rejects the same duplicate manifests."
+  },
+  "requestSummary": {
+    "total": 16,
+    "statuses": {
+      "200": 16
+    },
+    "anyNonIdloteFieldsRequestedOrReturned": false
+  }
+}

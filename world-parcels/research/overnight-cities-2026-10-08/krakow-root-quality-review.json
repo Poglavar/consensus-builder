@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:19:25.360561+00:00",
+  "decision": "approved_by_root",
+  "scope": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "krakow-msip-root-acceptance.json",
+  "qualityFile": "krakow-msip-root-quality.json",
+  "nativeIdentityEvidenceFile": "krakow-root-native-identity-review.json"
+}

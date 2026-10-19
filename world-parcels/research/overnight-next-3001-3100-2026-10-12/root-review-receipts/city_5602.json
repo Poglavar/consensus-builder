@@ -1,0 +1,37 @@
+{
+  "taskId": "city:5602",
+  "decision": "held",
+  "checkedAt": "2026-10-12T01:52:36Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-5602-buta.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/buta-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "tmp/valhalla-parcel-research/5602/ministry.html",
+    "tmp/valhalla-parcel-research/5602/bic-parcels.headers",
+    "tmp/valhalla-parcel-research/5602/bic-parcels.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 5602,
+    "rank": 3052,
+    "country": "Democratic Republic of the Congo",
+    "point": [
+      2.80824270124581,
+      24.7416340693805
+    ],
+    "populationPersons": 196091
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": true,
+  "reason": "Buta has an official local cadastral circumscription, but no full parcel polygon or qualified anonymous ID-plus-geometry response. The saved empty BIC query reverses WUP latitude and longitude, so it is not a Buta bounded test. Public viewer options mention Bas-Uele/Buta; neither those options nor the landing-page coverage statement proves parcel availability. No adapter or headed Details verification exists."
+}

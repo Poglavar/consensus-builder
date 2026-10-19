@@ -1,0 +1,499 @@
+{
+  "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+  "bbox": [
+    113.996,
+    22.425,
+    113.997,
+    22.426
+  ],
+  "descriptorNote": "Temporary harness descriptor only; no source-catalog entry or runtime configuration was created. Native candidate LotCSUID is distinct from the existing hk-landsd-lot-index-api native lotid.",
+  "runs": [
+    {
+      "mode": "offset",
+      "cell": {
+        "complete": true,
+        "featureCount": 11,
+        "includesKnownConservativeCandidate": false,
+        "mismatchCandidateSourceIds": null,
+        "sourceParcelIds": [
+          "180002717    A,RP",
+          "180002718",
+          "180002719",
+          "180002720",
+          "180002734",
+          "180002735    A,RP",
+          "180002735    B,RP",
+          "180002736    RP",
+          "180002739",
+          "180002744    A,RP",
+          "180002744    B,RP"
+        ],
+        "pageRequests": [
+          {
+            "method": "GET",
+            "resultOffset": "0",
+            "resultRecordCount": "5",
+            "fields": "LotCSUID,OBJECTID",
+            "httpStatus": 200
+          },
+          {
+            "method": "GET",
+            "resultOffset": "5",
+            "resultRecordCount": "5",
+            "fields": "LotCSUID,OBJECTID",
+            "httpStatus": 200
+          },
+          {
+            "method": "GET",
+            "resultOffset": "10",
+            "resultRecordCount": "5",
+            "fields": "LotCSUID,OBJECTID",
+            "httpStatus": 200
+          },
+          {
+            "method": "GET",
+            "resultOffset": "0",
+            "resultRecordCount": "5",
+            "fields": "LotCSUID,OBJECTID",
+            "httpStatus": 200
+          },
+          {
+            "method": "GET",
+            "resultOffset": "5",
+            "resultRecordCount": "5",
+            "fields": "LotCSUID,OBJECTID",
+            "httpStatus": 200
+          }
+        ],
+        "sameCellUnchangedGeometryHash": null
+      },
+      "selectedNativeIds": {
+        "requested": 3,
+        "returned": 3,
+        "absentIds": [],
+        "checks": [
+          {
+            "OBJECTID": 219322,
+            "LotCSUID": "180002685",
+            "found": true,
+            "geometryHashMatches": true
+          },
+          {
+            "OBJECTID": 243059,
+            "LotCSUID": "180003872    B",
+            "found": true,
+            "geometryHashMatches": true
+          },
+          {
+            "OBJECTID": 166999,
+            "LotCSUID": "180002720",
+            "found": true,
+            "geometryHashMatches": true
+          }
+        ]
+      },
+      "validAbsent": {
+        "absentIds": [
+          "TMP-HK-CSDI-LOT-CSUID-ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+        ],
+        "count": 0
+      },
+      "fullPolygonGeometryQuery": {
+        "complete": true,
+        "featureCount": 5,
+        "selectedParcelBound": true,
+        "geometryHashMatches": true,
+        "sourceParcelIds": [
+          "180002684",
+          "180002685",
+          "180002686",
+          "180002687",
+          "180002702"
+        ]
+      }
+    },
+    {
+      "mode": "object-ids",
+      "cell": {
+        "complete": true,
+        "featureCount": 12,
+        "includesKnownConservativeCandidate": true,
+        "mismatchCandidateSourceIds": {
+          "OBJECTID": 161282,
+          "LotCSUID": "180002732    RP"
+        },
+        "sourceParcelIds": [
+          "180002717    A,RP",
+          "180002718",
+          "180002719",
+          "180002720",
+          "180002732    RP",
+          "180002734",
+          "180002735    A,RP",
+          "180002735    B,RP",
+          "180002736    RP",
+          "180002739",
+          "180002744    A,RP",
+          "180002744    B,RP"
+        ],
+        "pageRequests": [
+          {
+            "method": "GET",
+            "resultOffset": null,
+            "resultRecordCount": null,
+            "fields": "",
+            "httpStatus": 200
+          },
+          {
+            "method": "GET",
+            "resultOffset": null,
+            "resultRecordCount": null,
+            "fields": "",
+            "httpStatus": 200
+          },
+          {
+            "method": "GET",
+            "resultOffset": null,
+            "resultRecordCount": null,
+            "fields": "",
+            "httpStatus": 200
+          },
+          {
+            "method": "GET",
+            "resultOffset": null,
+            "resultRecordCount": null,
+            "fields": "",
+            "httpStatus": 200
+          }
+        ],
+        "sameCellUnchangedGeometryHash": true
+      },
+      "selectedNativeIds": {
+        "requested": 3,
+        "returned": 3,
+        "absentIds": [],
+        "checks": [
+          {
+            "OBJECTID": 219322,
+            "LotCSUID": "180002685",
+            "found": true,
+            "geometryHashMatches": true
+          },
+          {
+            "OBJECTID": 243059,
+            "LotCSUID": "180003872    B",
+            "found": true,
+            "geometryHashMatches": true
+          },
+          {
+            "OBJECTID": 166999,
+            "LotCSUID": "180002720",
+            "found": true,
+            "geometryHashMatches": true
+          }
+        ]
+      },
+      "validAbsent": {
+        "absentIds": [
+          "TMP-HK-CSDI-LOT-CSUID-ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+        ],
+        "count": 0
+      },
+      "fullPolygonGeometryQuery": {
+        "complete": true,
+        "featureCount": 5,
+        "selectedParcelBound": true,
+        "geometryHashMatches": true,
+        "sourceParcelIds": [
+          "180002684",
+          "180002685",
+          "180002686",
+          "180002687",
+          "180002702"
+        ]
+      }
+    }
+  ],
+  "traceSummary": {
+    "requestCount": 21,
+    "statusCounts": {
+      "200": 21
+    },
+    "onlyIdentityTransportFields": true,
+    "trace": [
+      {
+        "label": "bounds-offset",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": "0",
+        "resultRecordCount": "5",
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-offset",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": "5",
+        "resultRecordCount": "5",
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-offset",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": "10",
+        "resultRecordCount": "5",
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-offset",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": "0",
+        "resultRecordCount": "5",
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-offset",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": "0",
+        "resultRecordCount": "5",
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-offset",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": "0",
+        "resultRecordCount": "5",
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-offset",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": "5",
+        "resultRecordCount": "5",
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": "true",
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 5,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 5,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 2,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": "true",
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": "true",
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "",
+        "geometryType": "esriGeometryEnvelope",
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": "true",
+        "returnCountOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 5,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "label": "bounds-object-ids",
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID",
+        "geometryType": null,
+        "resultOffset": null,
+        "resultRecordCount": null,
+        "returnIdsOnly": null,
+        "returnCountOnly": null,
+        "objectIdBatchSize": 2,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    ]
+  }
+}

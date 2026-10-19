@@ -1,0 +1,13 @@
+{
+  "taskId": "city:756",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-756-siem-reap.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/siem-reap-service-review.json"
+  ],
+  "reviewNote": "2025 UN source and queue identity agree: rank 1621, Cambodia, point [13.3579072325135,103.862640114498], 352948 persons. English and Khmer searches are recorded. The first-party MLMUPC cadastral-service page links to gdcg; saved anonymous response headers for linked hosts show 403. Local parcel custody remains unresolved (registryFound null); no native-ID polygon response or adapter qualification exists. A 403 is not citywide absence.",
+  "checkedAt": "2026-10-10T11:17:27Z",
+  "runtimeAdmission": "held; independent live adapter qualification not evidenced"
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4828",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-4828-derby.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/derby-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:14:55Z",
+  "reason": "UN 2025 source and immutable rank-2146 queue match Derby, United Kingdom, point [52.911534635347, -1.47278567567583], 271170 persons. Two executed queries are recorded, but the query labeled local/native uses French rather than local English; bilingual/local-language evidence is therefore incomplete. HM Land Registry first-party guidance supports registryFound true and describes indicative registered-freehold INSPIRE polygons and unique INSPIRE IDs. The saved anonymous download response self-redirects, with no Derby GML, native-ID/full-polygon sample, or city geometry proof; this is not citywide absence. Fresh exact-ID reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are missing; runtime held.",
+  "sourceUrls": [
+    "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data"
+  ],
+  "observedFirstPartyResponse": "Saved anonymous GET headers: HTTP 302, Location /datasets/inspire/download (self-redirect); no GML payload."
+}

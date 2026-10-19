@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "sourceRoster": "ranked-top1000.json",
+  "selectionMethod": "WUP 2025 population descending; remove confirmed prior attempts and hold identity-review candidates for manual resolution.",
+  "cityCount": 0,
+  "cities": []
+}

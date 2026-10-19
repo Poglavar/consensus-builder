@@ -1,0 +1,104 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SK",
+ "country": "Slovakia",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "UGKK SR (Geodesy, Cartography and Cadastre Authority) - INSPIRE HVD cadastral parcels, registers C-KN and E-KN",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: <per country, e.g. el-GR,el;q=0.9,en;q=0.8>; cookie jar on; Referer = viewer/portal origin",
+ "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/https-data-gov-sk-set-data-gmd-1d9ceaef-b3c6-4441-... ('INSPIRE HVD - Cadastral parcels (CN register) - Slovakia'); WFS record https-data-gov-sk-set-data-gmd-699fee2f-e705-4bc4-...; via data.gov.sk",
+ "portalsFound": [
+  {
+   "url": "https://inspirews.skgeodesy.sk/geoserver/cp/ows?service=wfs&version=2.0.0&request=getcapabilities",
+   "observation": "INSPIRE CP WFS (register C) from the record; and .../geoserver/cp_uo/ows (register E, 'uo'). Connection reset from this network on every attempt"
+  },
+  {
+   "url": "https://inspirews.skgeodesy.sk/atom/f48baf46-4fdc-4f89-a57c-1f9f0faaa5d3_dlsFeed.atom",
+   "observation": "ATOM feed C register; unreachable from here"
+  },
+  {
+   "url": "https://opendata.skgeodesy.sk/static/INSPIRE/Cadastral_parcels/",
+   "observation": "open static ZIPs: SlovenskoC.zip (2.28 GB), NitrianskyC.zip (294 MB), NitrianskyE.zip, TrnavskyE.zip; one GML per cadastral territory; reachable and Range-capable"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://inspirews.skgeodesy.sk/geoserver/cp/ows?service=wfs&version=2.0.0&request=getcapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer (3+ tries, with Referer https://zbgis.skgeodesy.sk/)"
+  },
+  {
+   "url": "https://inspirews.skgeodesy.sk/ and /atom/...dlsFeed.atom",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset / CONNECT failure"
+  },
+  {
+   "url": "https://opendata.skgeodesy.sk/static/INSPIRE/Cadastral_parcels/NitrianskyC.zip",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/zip",
+   "assessment": "central directory read: 451 GML files, e.g. 800180.gml; 521 cp:CadastralParcel in that file"
+  },
+  {
+   "url": "https://opendata.skgeodesy.sk/static/INSPIRE/Cadastral_parcels/TrnavskyE.zip",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "application/zip",
+   "assessment": "347 GML files, e.g. 800406.gml; 307 parcels"
+  },
+  {
+   "url": "https://opendata.skgeodesy.sk/static/INSPIRE/Cadastral_parcels/SlovenskoC.zip",
+   "method": "GET",
+   "httpStatus": "200 (HEAD)",
+   "contentType": "application/zip",
+   "assessment": "Content-Length 2277470235, Range supported, not downloaded"
+  },
+  {
+   "url": "https://zbgis.skgeodesy.sk/, https://kataster.skgeodesy.sk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "sk-ugkk-inspire-cp-opendata",
+  "requestUrl": "https://opendata.skgeodesy.sk/static/INSPIRE/Cadastral_parcels/NitrianskyC.zip (HTTP Range, member 800180.gml) and https://opendata.skgeodesy.sk/static/INSPIRE/Cadastral_parcels/TrnavskyE.zip (member 800406.gml)",
+  "method": "GET (Range) + inflate",
+  "httpStatus": 206,
+  "contentType": "application/zip -> GML 3.2 (INSPIRE cp 4.0)",
+  "spatialTestAreaLonLat": "Nitra ~[17.961,48.364]-[17.984,48.392]; Trnava region ~[17.360,47.994]-[17.394,48.022]",
+  "parcelRecordCount": 6,
+  "recordListPath": "gml:featureMember/cp:CadastralParcel",
+  "geometryType": "gml:Surface PolygonPatch, EPSG:4258 (lat lon)",
+  "closedRings": true,
+  "idField": "gml:id (CP.<n> register C, EP.<n> register E)",
+  "responseFile": "europe/SK-parcel-response.json",
+  "pagination": "none (per-territory file download)",
+  "regionSampled": "Nitra region (C register); Trnava region (E register)"
+ },
+ "regionsSampled": [
+  "Nitra",
+  "Trnava"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE HVD parcels for all of Slovakia, two registers: C-KN (parcels of the cadastral map) and E-KN (register of original ownership parcels)",
+  "regionsVerified": [
+   "Nitra region (register C)",
+   "Trnava region (register E)"
+  ],
+  "nationwideVerified": true,
+  "note": "same publisher, same INSPIRE cp 4.0 GML schema; two distinct regions sampled, but from different registers (C and E). SlovenskoC.zip (2.28 GB) is the whole-country C set, not opened"
+ },
+ "accessModel": "open (bulk download); WFS not reachable",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "remainingUncertainty": "inspirews WFS/ATOM and zbgis/kataster viewer hosts still reset connections from this network, so no bbox query was tested. Licence not read. Parcels carry no owner data in the GML sampled.",
+ "nextStep": "Try the inspirews WFS (cp:CP.CadastralParcel, bbox 48.17531,17.02634,48.19138,17.05007 EPSG:4258 per the Bratislava record) from another network; otherwise use the ZIPs."
+}

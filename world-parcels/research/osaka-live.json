@@ -1,0 +1,322 @@
+{
+  "checkedAt": "2026-10-03T09:42:11.221Z",
+  "sourceId": "jp-moj-geospatial-2026",
+  "descriptor": {
+    "id": "jp-moj-geospatial-2026",
+    "adapter": "geojson-snapshot",
+    "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+    "idPrefix": "JP-MOJ-2026-",
+    "idFields": [
+      "市区町村C",
+      "地図名",
+      "ID"
+    ],
+    "outFields": [
+      "ID",
+      "市区町村C",
+      "大字コード",
+      "丁目コード",
+      "小字コード",
+      "予備コード",
+      "市区町村名",
+      "大字名",
+      "丁目名",
+      "地番",
+      "精度区分",
+      "座標値種別",
+      "地図名",
+      "座標系",
+      "測地系判別"
+    ],
+    "parcelNumberField": "地番",
+    "maxSnapshotBytes": 3145728,
+    "maxSnapshotFeatures": 3000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "expectedSnapshotFeatures": 2487,
+    "expectedEtag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+    "name": "Osaka Chuo ward MOJ public-coordinate map sheets — 2026",
+    "countryCode": "JP",
+    "cityIds": [
+      "osaka"
+    ],
+    "metricSrid": 32653,
+    "dataVersion": "2026",
+    "scope": "Partial Osaka Chuo ward coverage: 2,487 public-coordinate registry-map polygons in the 2026 converted release. Sheets without public coordinates are omitted; this is not citywide or Japan-wide coverage. A verified snapshot is refreshed into transient memory every five minutes, without parcel writes to disk or a database.",
+    "licenceNote": "Geospatial Information Center catalogue lists CC BY; underlying Ministry of Justice data and conversion-publisher conditions also apply. Publisher warns that public-coordinate sheets only are converted and some geometries may be misplaced. Conditions are informational.",
+    "licenceUrl": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/",
+    "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128",
+    "attribution": "Japan Ministry of Justice registry-map data; Geospatial Information Center / AIGID conversion, 2026. Osaka Chuo ward public-coordinate sheets only; adapted to WGS84.",
+    "evidenceFile": "research/osaka-live.json"
+  },
+  "defaultCenter": {
+    "lat": 34.677750586,
+    "lon": 135.532507321
+  },
+  "metricSrid": 32653,
+  "snapshot": {
+    "status": 200,
+    "etag": "\"ee9a4504aece339b35a3d4d9cea39aaf\"",
+    "bytes": "2051653",
+    "lastModified": "Fri, 07 Aug 2026 06:21:07 GMT"
+  },
+  "featureCount": 2487,
+  "uniqueNativeKeys": 2487,
+  "cells": [
+    {
+      "bbox": [
+        135.528757321,
+        34.674000586000005,
+        135.531257321,
+        34.676500586
+      ],
+      "pan": 0,
+      "featureCount": 391,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.531257321,
+        34.674000586000005,
+        135.533757321,
+        34.676500586
+      ],
+      "pan": 0,
+      "featureCount": 217,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.533757321,
+        34.674000586000005,
+        135.536257321,
+        34.676500586
+      ],
+      "pan": 0,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.528757321,
+        34.676500586,
+        135.531257321,
+        34.679000586
+      ],
+      "pan": 0,
+      "featureCount": 341,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.531257321,
+        34.676500586,
+        135.533757321,
+        34.679000586
+      ],
+      "pan": 0,
+      "featureCount": 304,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.533757321,
+        34.676500586,
+        135.536257321,
+        34.679000586
+      ],
+      "pan": 0,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.528757321,
+        34.679000586,
+        135.531257321,
+        34.681500586
+      ],
+      "pan": 0,
+      "featureCount": 146,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.531257321,
+        34.679000586,
+        135.533757321,
+        34.681500586
+      ],
+      "pan": 0,
+      "featureCount": 184,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.533757321,
+        34.679000586,
+        135.536257321,
+        34.681500586
+      ],
+      "pan": 0,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.532757321,
+        34.674000586000005,
+        135.535257321,
+        34.676500586
+      ],
+      "pan": 0.004,
+      "featureCount": 57,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.535257321,
+        34.674000586000005,
+        135.537757321,
+        34.676500586
+      ],
+      "pan": 0.004,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.537757321,
+        34.674000586000005,
+        135.54025732099998,
+        34.676500586
+      ],
+      "pan": 0.004,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.532757321,
+        34.676500586,
+        135.535257321,
+        34.679000586
+      ],
+      "pan": 0.004,
+      "featureCount": 11,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.535257321,
+        34.676500586,
+        135.537757321,
+        34.679000586
+      ],
+      "pan": 0.004,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.537757321,
+        34.676500586,
+        135.54025732099998,
+        34.679000586
+      ],
+      "pan": 0.004,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.532757321,
+        34.679000586,
+        135.535257321,
+        34.681500586
+      ],
+      "pan": 0.004,
+      "featureCount": 66,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.535257321,
+        34.679000586,
+        135.537757321,
+        34.681500586
+      ],
+      "pan": 0.004,
+      "featureCount": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        135.537757321,
+        34.679000586,
+        135.54025732099998,
+        34.681500586
+      ],
+      "pan": 0.004,
+      "featureCount": 0,
+      "complete": true
+    }
+  ],
+  "observedNativeKeys": 1475,
+  "exact": {
+    "batchSize": 80,
+    "batches": 32,
+    "resolved": 2487,
+    "absentVerified": true,
+    "geometryConflicts": 0
+  },
+  "footprint": {
+    "complete": true,
+    "featureCount": 244
+  },
+  "networkRequests": 1,
+  "scope": "2026 Ministry of Justice publication mirrored by G Spatial Information Center, public-coordinate map sheets for Osaka Chuo ward only; partial city coverage.",
+  "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128",
+  "technicalResult": "ready: bounded transient-memory snapshot adapter; pinned ETag and feature count; complete local bounds and exact-ID queries over verified snapshot.",
+  "schemaVersion": 1,
+  "city": "osaka",
+  "center": [
+    34.677750586,
+    135.532507321
+  ],
+  "description": "Metadata-only verification of bounded transient-memory snapshot reads and every native composite exact lookup.",
+  "sourceConditionsEvidence": "research/osaka.json",
+  "coverageAssessment": {
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "verifiedScope": "2026 Osaka Chuo ward public-coordinate sheets only; 2487 polygons."
+  },
+  "browserQA": {
+    "afterPan": 965,
+    "back": "ready",
+    "backCached": true,
+    "binding": {
+      "count": 3,
+      "coverage": "complete",
+      "status": 200
+    },
+    "city": "osaka",
+    "exact": {
+      "absent": 0,
+      "count": 1,
+      "status": 200
+    },
+    "initial": "ready",
+    "initialRetained": 965,
+    "pan": "ready",
+    "rendered": 965,
+    "source": "jp-moj-geospatial-2026",
+    "under": {
+      "complete": true,
+      "count": 36,
+      "status": 200
+    },
+    "checkedAt": "2026-10-03",
+    "globeOpenVerified": true
+  }
+}

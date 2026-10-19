@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a settlement population centroid, not a parcel identity or city boundary. Nashik-district map digitization and local city-survey offices do not prove the point is covered by the public viewer or that a full vector layer is downloadable. No personal property identifiers, owner, address, tax, or account fields were submitted or saved; no login or CAPTCHA was used.",
+  "wupCityCode": 8394,
+  "queueRank": 247,
+  "name": "Nashik",
+  "centerLatLon": [
+    19.985078634446,
+    73.7846192151294
+  ],
+  "population2025": 1996763,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Maharashtra’s official land-records department lists the Nashik District Superintendent of Land Records and two Nashik city-survey special deputy superintendents responsible for city/town survey matters. The district information page reports original cadastral maps digitized under DILRMP and the department links Mahabhunakasha maps with land records. These establish local survey/map records and a public map portal, not an anonymous full-polygon export at the WUP locator.",
+  "resultCategory": "official_city_survey_registry_and_cadastral_map_portal_geometry_unverified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Nashik Maharashtra official cadastral parcel map GIS property card city survey land records",
+        "scope": "Locate Nashik-specific cadastral records, city-survey offices, and an official public map endpoint.",
+        "result": "Official Maharashtra sources list Nashik city-survey offices and report digitization of original Nashik district cadastral maps. The official Mahabhunakasha portal provides maps with land records, but direct opening of the district viewer returned a redirect loop in this environment and no full polygon response was verified.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=11&source=DistrictContact",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=11",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ],
+        "executionMethod": "English-language web search; official Maharashtra land-record pages reviewed; public viewer URL tested through the web reader."
+      },
+      {
+        "language": "Marathi",
+        "query": "नाशिक शहर भूमी अभिलेख भू नकाशा GIS सिटी सर्वे क्रमांक अधिकृत",
+        "scope": "Check Marathi-language official evidence for Nashik city survey and parcel-map access.",
+        "result": "Official land-record pages identify the Nashik district land-records office and city/town survey officers, and the Maharashtra service portal links to Mahabhunakasha. Digitized cadastral-map records are reported for Nashik district; the public viewer did not provide a verifiable polygon response in this pass.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=11&source=DistrictContact",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=11",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ],
+        "executionMethod": "Separate Marathi-language web search and official department-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=11&source=DistrictContact",
+        "operator": "Maharashtra Department of Land Records",
+        "observation": "Official district contact page identifies the Nashik land-records office and three Special Deputy Superintendents (city/town survey and enquiry) for Nashik city survey numbers 1–3."
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=11",
+        "operator": "Maharashtra Department of Land Records",
+        "observation": "Official Nashik district information reports digitization of original cadastral maps and records two municipal survey officers; this is map-record availability evidence, not an open polygon feed."
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/",
+        "operator": "Maharashtra Department of Land Records",
+        "observation": "Official portal describes Mahabhunakasha as maps integrated with land records and explains that survey-number maps show boundaries, area, and adjacent survey groups."
+      },
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "operator": "Maharashtra land-records map service",
+        "observation": "Official Nashik BhuNaksha instance URL. A direct TLS-verified GET timed out before HTTP response in this environment; separately, the web reader reported a redirect-loop error. No origin status, viewer shell, or parcel response was available."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "method": "GET",
+        "networkResult": "ConnectTimeout before HTTP response (normal TLS verification; connection timeout 20 seconds)",
+        "observation": "Raw direct request did not resolve/connect and yielded no HTTP status, redirect chain, response content type, viewer shell, or geometry."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "No citywide polygon scope is claimed.",
+      "verifiedOpenScope": "Official local records/map service discovery only; no full parcel polygon verified.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "The official map viewer could not be inspected because its web-reader request looped redirects; indexed records describe official survey/map availability but no public full-vector endpoint was demonstrated.",
+    "remainingUncertainty": "Whether Mahabhunakasha exposes anonymous parcel vectors for the Nashik urban survey at the WUP locator; actual viewer coverage, parcel identity, map currency, and export behavior.",
+    "webReaderErrors": [
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "result": "Reader returned ‘400 Redirect loop detected’ as a reader error; this is not an observed origin HTTP status."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "cityId": "wup2025:8394",
+  "populationPlausibility2025": "High",
+  "technicalBlocker": "A raw, TLS-verified request to the official Mahabhunakasha Nashik instance timed out during DNS/connect before receiving an HTTP response. The page reader separately reported a redirect-loop error. No final viewer shell, client assets, or parcel service could be inspected.",
+  "remainingUncertainty": "Whether the Nashik city-survey viewer is publicly reachable from another network path and exposes full parcel polygons at the WUP locator; this pass could not establish an origin HTTP status or inspect any redirect response.",
+  "nextStep": "Retry the official viewer from a network where its host resolves, capture each redirect response without following unboundedly, then inspect its own viewer/client service and a tiny bounded parcel query if available.",
+  "rootReviewedAt": "2026-10-08T21:44:23.947164+00:00",
+  "sourceIds": [],
+  "point": [
+    19.985078634446,
+    73.7846192151294
+  ]
+}

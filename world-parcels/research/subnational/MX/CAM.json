@@ -1,0 +1,41 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "CAM",
+ "regionName": "Campeche",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none; Mexican cadastre is state/municipal and no state-wide open layer was found",
+ "subregionsVerified": [],
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/content/items/0b90b0118d624f8997c54067d0fe852c/data",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "'Predios Campeche' web map (owner sigsapmx2): Subscription is disabled, not accessible"
+  },
+  {
+   "url": "catastro.campeche.gob.mx, carmen.gob.mx, catastro.carmen.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "https://campeche.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "state portal, no parcel service seen"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "State catastro and Carmen hosts unreachable; the one Campeche predios web map is disabled. ArcGIS Hub hits were only INEGI-derived secciones and manzanas (blocks), not parcels.",
+ "nextStep": "Retry Campeche Instituto Catastral hosts from another network."
+}

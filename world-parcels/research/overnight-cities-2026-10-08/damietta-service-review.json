@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6774-damietta.json",
+  "purpose": "Document city-local registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The WUP point is a settlement centroid, not a parcel identity. ESA’s official Damietta cooperation material covers surveying and digitizing state-owned land records at governorate scope; a 2025 project also shows the local survey directorate produces official maps. Neither source proves anonymous, complete, private-parcel geometry at the WUP point. ESA digital maps are request-based; no geometry request was made. No owner/address or identity data retained.",
+  "registryAssessment": "The Egyptian Survey Authority (ESA) identifies its Damietta Survey Directorate and an ESA–Damietta Governorate cooperation protocol for surveying and digitizing the governorate’s state-land inventory. This establishes a local surveying/maps institution and a city/gubernatorial land-record project, but not a public parcel service for the WUP point, private-title registry access, or anonymous full geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+      "observation": "First-party Egyptian Survey Authority report names the Governor of Damietta and the Director of the Damietta Survey Directorate in a protocol for a comprehensive land inventory, precise surveying and digitization of state-owned lands in Damietta Governorate. The project is for state lands, not evidence of open private parcel coverage."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official ESA overview describes its surveying, map-production and property-record mapping mandate and map services; general national mandate alone does not establish parcel coverage at Damietta’s WUP point."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "observation": "Official ESA digital-map service description is a request-based map-product path; no anonymous vector geometry endpoint is described."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Damietta Egypt official cadastral parcel map ESA survey directorate property registry GIS",
+      "result": "Official ESA primary source confirms Damietta local survey work and a state-land digitization protocol, but no public parcel geometry schema or exact-point coverage surfaced.",
+      "urls": [
+        "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+      ],
+      "scope": "Find city-specific local registry/cadastre evidence and schema-reviewed anonymous vector access without querying property identities."
+    },
+    {
+      "language": "Arabic",
+      "query": "دمياط الهيئة المصرية العامة للمساحة مديرية المساحة خرائط مساحية سجل عيني قطع الأراضي رسمي",
+      "result": "مصدر الهيئة المصرية العامة للمساحة يذكر مديرية المساحة بدمياط وبروتوكولاً لحصر ورفع وميكنة أملاك الدولة بالمحافظة. لم يظهر عارض عام يتيح هندسة قطع الأراضي، ولم يُجرَ استعلام عن عقار أو مالك.",
+      "urls": [
+        "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+      ],
+      "scope": "Find city-specific local registry/cadastre evidence and schema-reviewed anonymous vector access without querying property identities."
+    }
+  ],
+  "serviceChecks": [],
+  "schemaFirstReview": {
+    "completed": false,
+    "reason": "No public parcel vector layer/schema was found for these two locations; no feature request was made. The Yichun portal is a login-oriented registration hall; ESA’s map workflow is request based."
+  },
+  "geometryEvidence": null,
+  "privacy": "No parcel-specific lookup or geometry request was made; no owner/address/identity attributes, credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11606-nantong.json",
+  "purpose": "Read-only source discovery and public map/service review for the exact ranked city record; no globals/runtime/catalog integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The ranked WUP point is a settlement centroid, not a parcel identity or official boundary. The public Tianditu Nantong release describes citywide imagery, roads/buildings and thematic resource layers, with service endpoints requiring registration/application; no cadastral parcel layer or anonymous parcel endpoint was exposed. No exact point coverage claim is made. No parcel geometry was retained.",
+  "registryAssessment": "Nantong Natural Resources and Planning Bureau materials identify the municipal real-estate registration service and the city’s official geoinformation service platform. These establish local registration/map services; the public Tianditu Nantong description covers imagery, roads, buildings and thematic natural-resource maps, but does not identify cadastral parcels.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nantong official cadastral parcel map GIS land registration property registry parcels public service platform",
+      "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+      "result": "Official Nantong sources describe a city geoinformation public-service platform and municipal real-estate registration functions. The map description names imagery, roads, building and resource themes, not parcel geometry; no anonymous parcel layer was identified.",
+      "actualResultUrls": [
+        "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html"
+      ],
+      "executionMethod": "Separate English web search and official municipal source review."
+    },
+    {
+      "language": "Chinese",
+      "query": "南通 市 自然资源规划局 不动产登记 地籍图 电子地图 地块 查询 官方",
+      "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+      "result": "Official Nantong materials describe 天地图·南通 and online real-estate registration appointments/inquiries. Public layers described are imagery, roads, high-rise/building and natural-resource themes; no anonymous parcel geometry route was found.",
+      "actualResultUrls": [
+        "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html"
+      ],
+      "executionMethod": "Separate Chinese web search and official-source review."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html",
+      "method": "Official page and source inspection",
+      "observation": "Nantong government announcement for 天地图·南通, describing the Natural Resources & Planning Bureau geoinformation public-service platform and its public map themes; no parcel layer is identified."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/nt/",
+      "method": "Official page and source inspection",
+      "observation": "Nantong Natural Resources and Planning Bureau portal; its 2024 report documents online real-estate registration inquiry/appointment pathways. These are registration services, not public parcel-map geometry."
+    },
+    {
+      "url": "https://www.nantong.gov.cn/ntsrmzf/sjbm_2024/content/33b5a7c4-3945-4791-98e3-3ae98a7e8acb.html",
+      "method": "Official department annual report",
+      "observation": "Official 2024 Natural Resources and Planning Bureau report says self-service real-estate registration inquiries and online appointments connect to NantongBaitong; this is a registration service, not public parcel geometry."
+    }
+  ],
+  "viewerAndServiceTrace": null,
+  "geometryDecision": "No publicly queryable city parcel geometry verified; no polygon retained."
+}

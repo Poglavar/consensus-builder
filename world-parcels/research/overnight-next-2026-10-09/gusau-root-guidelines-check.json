@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:44:50.518527+00:00",
+  "wupCityCode": 7148,
+  "url": "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf",
+  "httpStatus": 200,
+  "curlExit": 0,
+  "bytes": 396921,
+  "sha256": "13e9f1d04ef2eef5182b660479d1960b424ff3e958c2b80f1b551438a8838f16",
+  "executionContext": "require_escalated public network",
+  "pdfExtracted": true,
+  "institutionAndGeographyTermCounts": {
+    "ZAGIS": 8,
+    "Gusau": 7,
+    "survey": 1,
+    "registration": 9,
+    "ZAMFARA": 17
+  },
+  "scope": "Public government registration guideline; institutional/local custody context only. No form submission or property lookup, no contact fields retained, no parcel vectors verified."
+}

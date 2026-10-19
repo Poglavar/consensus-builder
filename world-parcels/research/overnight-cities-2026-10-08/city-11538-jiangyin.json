@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Jiangyin",
+  "country": "China",
+  "countryCode": "CN",
+  "registryFound": true,
+  "registryBasis": "Official Jiangyin government and Natural Resources Bureau identify the Jiangyin Real Estate Registration Center and local services. Public 掌上登/掌上查询 material describes registration/property-information workflows; no anonymous parcel map or safe geometry+ID schema verified.",
+  "registryEvidenceUrls": [
+    "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+    "https://www.jiangyin.gov.cn/doc/2025/08/05/1346255.shtml",
+    "https://www.jiangyin.gov.cn/uploadfiles/202502/14/2025021408411629144965.pdf",
+    "https://www.jiangyin.gov.cn/uploadfiles/202602/06/2026020615581481876386.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11538,
+  "cityId": "wup2025:11538",
+  "centerLatLon": [
+    31.9086280832761,
+    120.229678245069
+  ],
+  "point": [
+    31.9086280832761,
+    120.229678245069
+  ],
+  "rank": 846,
+  "queueRank": 846,
+  "population2025": 637502,
+  "population2025k": 637.502,
+  "populationPlausibility2025": "Moderate",
+  "notes": "5",
+  "coverageAssessment": {
+    "claimedScope": "Official Jiangyin government and Natural Resources Bureau identify the Jiangyin Real Estate Registration Center and local services. Public 掌上登/掌上查询 material describes registration/property-information workflows; no anonymous parcel map or safe geometry+ID schema verified.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with safe stable ID was verified; findings and limits are described in source and service review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "江阴市不动产登记中心 地籍图 公开地块地图 自然资源和规划局 官方",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "Official Jiangyin sources identify its Real Estate Registration Center and 掌上登. Public pages describe registration/query workflows, not anonymous parcel geometry; no account/property query.",
+        "actualResultUrls": [
+          "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+          "https://www.jiangyin.gov.cn/doc/2025/08/05/1346255.shtml",
+          "https://www.jiangyin.gov.cn/uploadfiles/202502/14/2025021408411629144965.pdf",
+          "https://www.jiangyin.gov.cn/uploadfiles/202602/06/2026020615581481876386.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      },
+      {
+        "language": "English",
+        "query": "Jiangyin China official real estate registration center cadastral parcel map public GIS",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "City bureau confirms local registration center/services. No parcel-vector dataset or safe geometry+ID schema found.",
+        "actualResultUrls": [
+          "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+          "https://www.jiangyin.gov.cn/doc/2025/08/05/1346255.shtml",
+          "https://www.jiangyin.gov.cn/uploadfiles/202502/14/2025021408411629144965.pdf",
+          "https://www.jiangyin.gov.cn/uploadfiles/202602/06/2026020615581481876386.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+        "observation": "Official Bureau fee catalog lists Jiangyin Real Estate Registration Center and services."
+      },
+      {
+        "url": "https://www.jiangyin.gov.cn/doc/2025/08/05/1346255.shtml",
+        "observation": "2025 government open-month report describes 掌上登/掌上查询 for registration/property info, not generic geometry; no app/account used."
+      },
+      {
+        "url": "https://www.jiangyin.gov.cn/uploadfiles/202502/14/2025021408411629144965.pdf",
+        "observation": "2025 center budget confirms local operations."
+      },
+      {
+        "url": "https://www.jiangyin.gov.cn/uploadfiles/202602/06/2026020615581481876386.pdf",
+        "observation": "2026 Bureau budget describes registration, cadastral survey and records management but no public parcel API."
+      }
+    ]
+  },
+  "source": {
+    "name": "Jiangyin Natural Resources and Planning Bureau and municipal Real Estate Registration Center public information.",
+    "urls": [
+      "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+      "https://www.jiangyin.gov.cn/doc/2025/08/05/1346255.shtml",
+      "https://www.jiangyin.gov.cn/uploadfiles/202502/14/2025021408411629144965.pdf",
+      "https://www.jiangyin.gov.cn/uploadfiles/202602/06/2026020615581481876386.pdf"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "Documented 掌上登/掌上查询 is a property-information workflow, not a generic anonymous geometry layer. No safe feature endpoint/schema; no login or property query.",
+  "scopeLimits": "Bounded public-source review. No owner, address, tax/account, applicant, identity or property-specific data queried or retained. No completeness or legal/survey accuracy claim.",
+  "remainingUncertainty": "Other portals may exist. Public parcel coverage, native ID and WUP-point geometry remain unverified.",
+  "resultCategory": "city_registry_confirmed_no_anonymous_parcel_geometry_verified",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "Documented 掌上登/掌上查询 is a property-information workflow, not a generic anonymous geometry layer. No safe feature endpoint/schema; no login or property query."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "江阴市自然资源和规划局综合性目录清单"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

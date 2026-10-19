@@ -1,0 +1,58 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ZA",
+ "checkedAt": "2026-09-29",
+ "country": "South Africa",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Chief Surveyor-General (Dept of Agriculture, Land Reform and Rural Development); the verified service is a third-party Esri South Africa (GISCOE) copy",
+ "portalsFound": [
+  {
+   "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+   "observation": "Open ArcGIS REST layer of erven/holdings/farm portions keyed by 21-character SG code; answered bbox queries in Johannesburg and Cape Town"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query?where=1=1&geometry=18.4230,-33.9260,18.4245,-33.9248&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,SG21KEY,PROPTYPE&returnGeometry=true&outSR=4326&resultRecordCount=2&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "2 polygon erven in Cape Town CBD"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "za-giscoe-erven",
+  "requestUrl": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query?where=1=1&geometry=18.4230,-33.9260,18.4245,-33.9248&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,SG21KEY,PROPTYPE&returnGeometry=true&outSR=4326&resultRecordCount=2&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   18.423,
+   -33.926,
+   18.4245,
+   -33.9248
+  ],
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "SG21KEY",
+  "responseFile": "ZA-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount/resultOffset",
+  "regionSampled": "Cape Town (Western Cape); Johannesburg (Gauteng) via ../johannesburg.json"
+ },
+ "subnationalServices": [
+  "City of Johannesburg, Cape Town and Durban GIS (see city evidence files)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "South Africa national cadastre (Surveyor-General data) hosted by Esri SA",
+  "regionsVerified": [
+   "Johannesburg",
+   "Cape Town"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Third-party (not the official CSG BGIS portal); currency, completeness and reuse terms unverified. Official CSG service (csg.dlrrd.gov.za / BGIS) not tested.",
+ "nextStep": "Compare with official CSG/BGIS service and obtain licence terms."
+}

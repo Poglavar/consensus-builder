@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "countryCode": "SA",
+  "cities": [
+    "Riyadh",
+    "Jeddah",
+    "Dammam",
+    "Khobar"
+  ],
+  "status": "held-authenticated-official-parcel-platform-and-municipal-network-timeouts",
+  "verifiedTechnicallyUsableCases": [],
+  "officialPlatform": {
+    "operator": "Ministry of Municipalities and Housing / Balady",
+    "catalogueUrl": "https://balady.gov.sa/ar/services/%D8%A7%D9%84%D8%AE%D8%B1%D8%A7%D8%A6%D8%B7-%D8%A7%D9%84%D8%AD%D8%B6%D8%B1%D9%8A%D8%A9",
+    "viewerUrl": "https://umaps.balady.gov.sa/",
+    "canonicalViewerUrl": "https://umaps.momah.gov.sa/",
+    "scopeClaim": "National urban map; official service description includes streets and land parcels; city-level cadastral layer and identity not anonymously readable.",
+    "bundleEvidence": {
+      "url": "https://umaps.momah.gov.sa/main-73KWGRT7.js",
+      "httpStatus": 200,
+      "origin": "laptop curl TLS verified",
+      "configuration": {
+        "authenticationType": "Custom",
+        "allowAnonymous": false,
+        "portalUrl": "https://umaps.momah.gov.sa/portal/",
+        "appApiUrl": "https://umaps.momah.gov.sa/api/App.Api/",
+        "app2ApiUrl": "https://umaps.momah.gov.sa/api/App2.Api/"
+      },
+      "assessment": "Configuration metadata only persisted; credentials and API keys omitted."
+    },
+    "serverUrl": "https://umaps.momah.gov.sa/server/rest/services",
+    "heldReason": "Service root anonymously lists official folders, but umaps,MOJ,Hosted folder reads return ArcGIS 499 Token Required under HTTP200. Portal item inaccessible (400). No parcel polygon layer/ID contract readable."
+  },
+  "municipalChecks": {
+    "Riyadh": "Official eservices.alriyadh.gov.sa MapViewer timed out through both web fetch and laptop verified TLS.",
+    "Jeddah": "www.jeddah.gov.sa and services.jeddah.gov.sa timed out on direct laptop TLS.",
+    "EasternGulf": "www.eamana.gov.sa timed out; guessed gis.eamana.gov.sa/maps.eamana.gov.sa fail DNS, separately classified as guesses, not provider absence."
+  },
+  "evidenceFiles": [
+    "saudi-jordan-searches.json",
+    "saudi-jordan-discovery.json",
+    "saudi-jordan-discovery-retry.json",
+    "saudi-jordan-umaps.json",
+    "saudi-jordan-umaps-services.json",
+    "saudi-jordan-umaps-folders.json"
+  ],
+  "additionalActualAttempts": [
+    {
+      "url": "https://umaps.balady.gov.sa/main-73KWGRT7.js",
+      "httpStatus": 302,
+      "origin": "laptop curl TLS verified",
+      "assessment": "Redirect discards path to canonical domain; followed response was SPA HTML; direct canonical script works."
+    },
+    {
+      "url": "https://umaps.momah.gov.sa/",
+      "httpStatus": 200,
+      "origin": "laptop curl TLS verified",
+      "assessment": "Official application HTML"
+    }
+  ],
+  "termsNote": "Informational only; not a licence rejection. Held reasons are technical authentication and network failures.",
+  "notAbsence": "This audit does not assert Saudi parcel data is absent; official platform expressly advertises parcel data."
+}

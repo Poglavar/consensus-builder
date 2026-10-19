@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11710-meizhou.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal bureau 2024 departmental accounts explicitly assign property registration, cadastral investigation/survey and registration information-system responsibilities. This primary municipal institutional document supports local custody; unrelated service guidance and individual notices do not establish an anonymous parcel-vector API.",
+  "registryAssessment": "The municipal bureau 2024 departmental accounts explicitly assign property registration, cadastral investigation/survey and registration information-system responsibilities. This primary municipal institutional document supports local custody; unrelated service guidance and individual notices do not establish an anonymous parcel-vector API.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.meizhou.gov.cn/attachment/0/226/226516/2834527.pdf",
+      "operator": "Meizhou Municipal Natural Resources Bureau / Meizhou Real Estate Registration Center",
+      "scope": "Official municipal bureau responsibilities cover unified property registration, cadastral investigation/survey and registry information systems. Public pages reviewed are service guidance/notices, not an anonymous parcel geometry API. Avoided notices containing holder identifiers."
+    },
+    {
+      "url": "https://www.meizhou.gov.cn/zwgk/zfjg/szrzyj/bdcdj/fwzn/content/post_2719711.html",
+      "operator": "Meizhou Municipal Natural Resources Bureau / Meizhou Real Estate Registration Center",
+      "scope": "Official municipal bureau responsibilities cover unified property registration, cadastral investigation/survey and registry information systems. Public pages reviewed are service guidance/notices, not an anonymous parcel geometry API. Avoided notices containing holder identifiers."
+    },
+    {
+      "url": "https://www.meizhou.gov.cn/zwgk/zfjg/szrzyj/bdcdj/smgg/content/post_2732715.html",
+      "operator": "Meizhou Municipal Natural Resources Bureau / Meizhou Real Estate Registration Center",
+      "scope": "Official municipal bureau responsibilities cover unified property registration, cadastral investigation/survey and registry information systems. Public pages reviewed are service guidance/notices, not an anonymous parcel geometry API. Avoided notices containing holder identifiers."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Meizhou official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://www.meizhou.gov.cn/attachment/0/226/226516/2834527.pdf",
+        "https://www.meizhou.gov.cn/zwgk/zfjg/szrzyj/bdcdj/fwzn/content/post_2719711.html",
+        "https://www.meizhou.gov.cn/zwgk/zfjg/szrzyj/bdcdj/smgg/content/post_2732715.html"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "梅州 不动产登记中心 地籍调查 地籍图 自然资源局",
+      "result": "Official Meizhou Natural Resources Bureau directs and manages unified natural-resource/property registration, cadastral investigation and survey, and an information system. Public pages and notices do not expose anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.meizhou.gov.cn/attachment/0/226/226516/2834527.pdf",
+        "https://www.meizhou.gov.cn/zwgk/zfjg/szrzyj/bdcdj/fwzn/content/post_2719711.html",
+        "https://www.meizhou.gov.cn/zwgk/zfjg/szrzyj/bdcdj/smgg/content/post_2732715.html"
+      ],
+      "method": "Separate Chinese (Simplified)-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The municipal bureau 2024 departmental accounts explicitly assign property registration, cadastral investigation/survey and registration information-system responsibilities. This primary municipal institutional document supports local custody; unrelated service guidance and individual notices do not establish an anonymous parcel-vector API.",
+    "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+  "nextStep": "Continue viewer configuration, public advertised service and API discovery; verify full native polygons and retrieval completeness before city admission.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:46:31.498552+00:00",
+    "decision": "Paired discovery, exact roster identity and actual primary institutional evidence reviewed. Public geometry remains unverified in this bounded pass.",
+    "custodyScope": "The municipal bureau 2024 departmental accounts explicitly assign property registration, cadastral investigation/survey and registration information-system responsibilities. This primary municipal institutional document supports local custody; unrelated service guidance and individual notices do not establish an anonymous parcel-vector API.",
+    "source": "https://www.meizhou.gov.cn/attachment/0/226/226516/2834527.pdf",
+    "rootNetworkEvidence": "root-primary-four-recheck.json",
+    "uiLoginOrTransportFailureNotAbsence": true,
+    "legalTitleTermsNotEligibilityGates": true,
+    "noCitywideAbsenceClaim": true,
+    "sourceCorrection": "Use the municipal duties PDF for local responsibility; a Meizhou-hosted cross-city assistance guide concerning other municipalities and individual registration notices are not geometry evidence."
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 11710,
+      "stage": "meizhou-duties",
+      "url": "https://www.meizhou.gov.cn/attachment/0/226/226516/2834527.pdf",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 499884,
+      "sha256": "6711326408c5ec3590d78dccc7fd1da911e59146ee267962b1bf18fd31fbe4b9",
+      "checkedAt": "2026-10-09T09:40:37.788035+00:00",
+      "executionContext": "require_escalated public network",
+      "pdfExtracted": true,
+      "pageCountFromFormFeed": 38,
+      "termCounts": {
+        "毕节": 0,
+        "不动产登记": 8,
+        "权籍调查": 1,
+        "梅州市自然资源局": 25,
+        "Gusau": 0
+      },
+      "institutionalContext": [
+        "然资源调查监测评价工作。 （三）负责自然资源统一确权登记工作。负责组织、指导各 类自然资源和不动产统一确权登记、权籍调查、不动产测绘、争 议调处、成果应用等工作。建立健全自然资源和不动产登记信息 管理系统。负责自然资源和不动产登记资料收集、整理、共享、 汇交管理等。指导监督各县（市、区）自然资源和不动产确权登 记工作。指导调处自然资源权属争议"
+      ]
+    }
+  ]
+}

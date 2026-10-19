@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-4397-isparta.json",
+  "cityCode": 4397,
+  "queueRank": 2372,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-11",
+  "localRegistryCustodian": {
+    "found": true,
+    "evidence": "The official TKGM service identifies Isparta (id 54), Merkez (id 486), and Pirimehmet (id 140151), and returns a parcel feature at the exact WUP point. Isparta Belediyesi separately documents its Kent Rehberi route.",
+    "urls": ["https://parselsorgu.tkgm.gov.tr/", "https://keos.isparta.bel.tr/keos/"]
+  },
+  "requestOutcomes": "All executed discovery and request outcomes, including the successful exact-point TKGM response and the municipal timeout, are recorded in city-4397-isparta.json under attemptsRecorded.",
+  "safeFieldAllowlist": ["native stable parcel identity or composite native identity", "full unchanged parcel polygon", "source administrative IDs", "source field names in metadata only", "CRS/coordinate-order evidence", "source URL", "retrieval date"],
+  "nativeFieldMapping": {
+    "id": "Retained GeoJSON canonical identity is the TKGM composite 54/486/140151/721/310.",
+    "metadataOnly": ["ilId", "ilceId", "mahalleId", "adaNo", "parselNo", "alan", "nitelik", "pafta", "ilAd", "ilceAd", "mahalleAd"]
+  },
+  "compositeKeyProvenance": "TKGM response fields ilId=54, ilceId=486, mahalleId=140151, adaNo=721, parselNo=310. No synthetic row number was used.",
+  "sampleGeojson": "isparta-parcel-sample.geojson",
+  "geometryAndSchema": {
+    "response": "GeoJSON Feature with one Polygon from the official public API.",
+    "coordinateOrder": "[longitude, latitude] in the retained geometry; the WUP point remains [latitude, longitude] in the city record.",
+    "crs": "No explicit CRS member in response; likely WGS 84 geographic coordinates based on service/viewer behavior, retained with uncertainty.",
+    "featureCountRetained": 1
+  },
+  "scopeLimits": [
+    "Exact-point success is not citywide coverage evidence.",
+    "Municipal viewer timeout is not citywide absence evidence.",
+    "No unsafe owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested.",
+    "No login, credential, private token, CAPTCHA/Cloudflare bypass, or global TLS exception was used.",
+    "The packet is not source integration/admission; runtime readiness remains held pending serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Independent serial reviewer qualification is required even though a bounded official parcel geometry response was obtained.",
+  "uncertainty": "The composite identity appears source-derived and usable for review, but the source did not expose an opaque parcel key or explicit CRS declaration in the bounded response. Citywide service extent and update cadence were not verified."
+}

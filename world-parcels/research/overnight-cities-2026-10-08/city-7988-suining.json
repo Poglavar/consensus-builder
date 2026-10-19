@@ -1,0 +1,132 @@
+{
+  "name": "Suining",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 882,
+  "point": [
+    30.511307967251,
+    105.580153252327
+  ],
+  "population2025": 613678,
+  "population2025k": 613.678,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified.",
+  "registryEvidenceUrls": [
+    "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+    "https://sns.sczwfw.gov.cn/",
+    "https://www.suining.gov.cn/"
+  ],
+  "resultCategory": "local_real_estate_registration_evidenced_no_public_geometry_verified",
+  "remainingUncertainty": "The 2018 service listing may be stale; current service availability, local GIS publication and whether the WUP locator lies within any public parcel layer remain unverified.",
+  "scopeLimits": "Research is limited to official sources and the exact unchanged WUP settlement locator. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-7988-suining-cadastre-review",
+    "name": "Suining Municipal Natural Resources/Land authority registration-record inquiry",
+    "url": "https://www.suining.gov.cn/",
+    "operator": "China",
+    "serviceType": "Official municipal/county real-estate registration record inquiry; no public parcel-vector endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 7988,
+  "cityId": "wup2025:7988",
+  "queueRank": 882,
+  "centerLatLon": [
+    30.511307967251,
+    105.580153252327
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research evidence only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified.",
+    "verifiedOpenScope": "No parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Suining China official cadastral parcel map natural resources land registry GIS",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "Official municipal service documentation identifies real-estate registration-record inquiry; the city homepage and likely city map routes timed out. No parcel geometry schema was verified.",
+        "actualResultUrls": [
+          "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+          "https://sns.sczwfw.gov.cn/",
+          "https://www.suining.gov.cn/"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      },
+      {
+        "language": "Chinese",
+        "query": "遂宁 不动产登记资料查询 地籍图 地块 GIS 官方",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "市级政府服务文件列出不动产登记资料查询服务；遂宁政府站点连接超时，未验证公开地籍图或矢量服务。",
+        "actualResultUrls": [
+          "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+          "https://sns.sczwfw.gov.cn/",
+          "https://www.suining.gov.cn/"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+        "observation": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified."
+      },
+      {
+        "url": "https://sns.sczwfw.gov.cn/",
+        "observation": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified."
+      },
+      {
+        "url": "https://www.suining.gov.cn/",
+        "observation": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.suining.gov.cn/",
+        "method": "GET official city homepage",
+        "observation": "Connection timed out; no page or map-service route could be inspected."
+      },
+      {
+        "url": "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+        "method": "GET official government service document",
+        "observation": "2018 government service document enumerates municipal/county real-estate registration-record inquiry. Document establishes a registry service, not an anonymous parcel map."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research evidence only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

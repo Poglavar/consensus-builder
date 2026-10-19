@@ -1,0 +1,2979 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "7159",
+  "cityName": "Tampa",
+  "sourceId": "us-fl-dor-statewide-cadastral",
+  "candidateSha256": "17915397e2f59a2f86658152fd14cebab02f18dab6bd702a77d2b586293b9b14",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 88,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 88,
+      "collectedUniqueCount": 88
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 276
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 7,
+      "distinctSingletonObjectIdQueries": 7,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "57307685c705b8edc88b34a4b0e338f900db323debb7688228d42d2952171dae",
+      "featureCount": 88,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32617",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "57307685c705b8edc88b34a4b0e338f900db323debb7688228d42d2952171dae",
+  "featureCount": 88,
+  "sampleIds": [
+    "US-FL-STATEWIDE-39~1828354EK000011000150A",
+    "US-FL-STATEWIDE-39~1828354EK000011000160A",
+    "US-FL-STATEWIDE-39~1828354EK000011000120A"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -82.472,
+        28.002,
+        -82.471,
+        28.003
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "US-FL-STATEWIDE-39~1828354EK000011000230A",
+        "US-FL-STATEWIDE-39~1828354EK000011000210A",
+        "US-FL-STATEWIDE-39~1828354EK000011000200A",
+        "US-FL-STATEWIDE-39~1828354EK000011000180A",
+        "US-FL-STATEWIDE-39~1828354EK000011000232A",
+        "US-FL-STATEWIDE-39~1828354EK000011000220A",
+        "US-FL-STATEWIDE-39~1828354EK000011000160A",
+        "US-FL-STATEWIDE-39~1828354EG000000000010A",
+        "US-FL-STATEWIDE-39~1828354EG000000000020A"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -82.471,
+        28.002,
+        -82.47,
+        28.003
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "US-FL-STATEWIDE-39~1828354EK000011000180A",
+        "US-FL-STATEWIDE-39~1828354EK000011000150A",
+        "US-FL-STATEWIDE-39~1828354EK000011000160A",
+        "US-FL-STATEWIDE-39~1828354EG000000000060A",
+        "US-FL-STATEWIDE-39~1828354EG000000000050A",
+        "US-FL-STATEWIDE-39~1828354EG000000000040A",
+        "US-FL-STATEWIDE-39~1828354EG000000000080A",
+        "US-FL-STATEWIDE-39~1828354EG000000000070A",
+        "US-FL-STATEWIDE-39~1828354EG000000000030A",
+        "US-FL-STATEWIDE-39~1828354EG000000000020A",
+        "US-FL-STATEWIDE-39~1828354EK000011000130A"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -82.47,
+        28.002,
+        -82.469,
+        28.003
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "US-FL-STATEWIDE-39~1828354EK000008000021A",
+        "US-FL-STATEWIDE-39~1828354EK000008000080A",
+        "US-FL-STATEWIDE-39~1828354EK000008000081A",
+        "US-FL-STATEWIDE-39~1828354EK000008000070A",
+        "US-FL-STATEWIDE-39~1828354EK000008000062A",
+        "US-FL-STATEWIDE-39~1828354EK000008000040A",
+        "US-FL-STATEWIDE-39~1828354EK000008000031A",
+        "US-FL-STATEWIDE-39~1828354EK000008000022A",
+        "US-FL-STATEWIDE-39~1828354EK000008000023A",
+        "US-FL-STATEWIDE-39~1828354EK000008000042A",
+        "US-FL-STATEWIDE-39~1828354EK000008000041A",
+        "US-FL-STATEWIDE-39~1828354EK000008000071A",
+        "US-FL-STATEWIDE-39~1828354EK000008000010A",
+        "US-FL-STATEWIDE-39~1828354EK000008000090A",
+        "US-FL-STATEWIDE-39~1828354EK000008000020A",
+        "US-FL-STATEWIDE-39~1828354EK000008000030A",
+        "US-FL-STATEWIDE-39~1828354EK000008000091A",
+        "US-FL-STATEWIDE-39~1828354EK000008000092A",
+        "US-FL-STATEWIDE-39~1828354EK000011000120A",
+        "US-FL-STATEWIDE-39~1828354EK000011000130A"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -82.472,
+        28.003,
+        -82.471,
+        28.004
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "US-FL-STATEWIDE-39~182924HRV000000000060A",
+        "US-FL-STATEWIDE-39~1828354EK000011000210A",
+        "US-FL-STATEWIDE-39~1828354EK000011000200A",
+        "US-FL-STATEWIDE-39~1828354EK000011000180A",
+        "US-FL-STATEWIDE-39~1828354EK000011000150A",
+        "US-FL-STATEWIDE-39~1828354EK000011000160A"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -82.471,
+        28.003,
+        -82.47,
+        28.004
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "US-FL-STATEWIDE-39~182924HRV000000000060A",
+        "US-FL-STATEWIDE-39~1828354EK000011000110A",
+        "US-FL-STATEWIDE-39~1828354EK000011000090A",
+        "US-FL-STATEWIDE-39~1828354EK000011000150A",
+        "US-FL-STATEWIDE-39~1828354EK000011000160A",
+        "US-FL-STATEWIDE-39~1828354EK000011000120A",
+        "US-FL-STATEWIDE-39~1828354EK000011000130A"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -82.47,
+        28.003,
+        -82.469,
+        28.004
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "US-FL-STATEWIDE-39~1828354EK000011000100A",
+        "US-FL-STATEWIDE-39~1828354EK000011000071A",
+        "US-FL-STATEWIDE-39~1828354EK000011000080A",
+        "US-FL-STATEWIDE-39~1828354EK000011000110A",
+        "US-FL-STATEWIDE-39~1828354EK000011000060A",
+        "US-FL-STATEWIDE-39~1828354EK000011000090A",
+        "US-FL-STATEWIDE-39~1828354EK000008000010A",
+        "US-FL-STATEWIDE-39~1828354EK000008000030A",
+        "US-FL-STATEWIDE-39~1828354EK000011000120A",
+        "US-FL-STATEWIDE-39~1828354EK000011000130A"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -82.472,
+        28.004,
+        -82.471,
+        28.005
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "US-FL-STATEWIDE-39~182924HRV000000000060A",
+        "US-FL-STATEWIDE-39~1828353GU000000001140A",
+        "US-FL-STATEWIDE-39~1828353GU000000001150A",
+        "US-FL-STATEWIDE-39~1828353GU000000001160A",
+        "US-FL-STATEWIDE-39~1828353GU000000001170A",
+        "US-FL-STATEWIDE-39~1828353GU000000001190A",
+        "US-FL-STATEWIDE-39~1828353GU000000001200A"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -82.471,
+        28.004,
+        -82.47,
+        28.005
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "US-FL-STATEWIDE-39~182924HRV000000000060A",
+        "US-FL-STATEWIDE-39~1828353GU000000001190A",
+        "US-FL-STATEWIDE-39~1828353GU000000001200A",
+        "US-FL-STATEWIDE-39~1828353GU000000001240A",
+        "US-FL-STATEWIDE-39~1828353GU000000001580A",
+        "US-FL-STATEWIDE-39~1828354EK000011000110A",
+        "US-FL-STATEWIDE-39~1828354EK000011000090A",
+        "US-FL-STATEWIDE-39~1828354EK000011000120A"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -82.47,
+        28.004,
+        -82.469,
+        28.005
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "US-FL-STATEWIDE-39~182924HRV000000000060A",
+        "US-FL-STATEWIDE-39~1828354EK000011000071A",
+        "US-FL-STATEWIDE-39~1828353GU000000001580A",
+        "US-FL-STATEWIDE-39~1828354EK000011000060A",
+        "US-FL-STATEWIDE-39~1828354EK000011000090A",
+        "US-FL-STATEWIDE-39~1828354EK000011000070A",
+        "US-FL-STATEWIDE-39~1828354EK000011000010A"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -82.471,
+        28.001,
+        -82.47,
+        28.002
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-FL-STATEWIDE-39~1828354EK000013000111A",
+        "US-FL-STATEWIDE-39~1828354EK000013000011A",
+        "US-FL-STATEWIDE-39~1828354EK000013000010A",
+        "US-FL-STATEWIDE-39~1828354EK000013000012A",
+        "US-FL-STATEWIDE-39~1828354EK000013000122A",
+        "US-FL-STATEWIDE-39~1828354EK000013000120A",
+        "US-FL-STATEWIDE-39~1828354EK000013000110A",
+        "US-FL-STATEWIDE-39~1828354EK000013000020A",
+        "US-FL-STATEWIDE-39~1828354EG000000000100A",
+        "US-FL-STATEWIDE-39~1828354EG000000000090A",
+        "US-FL-STATEWIDE-39~1828354EG000000000040A",
+        "US-FL-STATEWIDE-39~1828354EG000000000130A",
+        "US-FL-STATEWIDE-39~1828354EG000000000120A",
+        "US-FL-STATEWIDE-39~1828354EG000000000110A",
+        "US-FL-STATEWIDE-39~1828354EG000000000080A",
+        "US-FL-STATEWIDE-39~1828354EG000000000030A",
+        "US-FL-STATEWIDE-39~1828354EG000000000020A"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -82.471,
+        28.005,
+        -82.47,
+        28.006
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "US-FL-STATEWIDE-39~182924HRV000000000060A",
+        "US-FL-STATEWIDE-39~1828353GU000000001200A",
+        "US-FL-STATEWIDE-39~1828353GU000000001240A",
+        "US-FL-STATEWIDE-39~1828353GU000000001580A",
+        "US-FL-STATEWIDE-39~1828353GU000000001260A",
+        "US-FL-STATEWIDE-39~1828353GU000000001290A",
+        "US-FL-STATEWIDE-39~1828353GU000000000310A",
+        "US-FL-STATEWIDE-39~1828353GU000000000293A",
+        "US-FL-STATEWIDE-39~1828353GU000000000292A"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -82.473,
+        28.003,
+        -82.472,
+        28.004
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "US-FL-STATEWIDE-39~182924HRV000000000060A",
+        "US-FL-STATEWIDE-39~1828354EK000011000210A",
+        "US-FL-STATEWIDE-39~1828354EK000011000200A",
+        "US-FL-STATEWIDE-39~1828354EK000011000180A",
+        "US-FL-STATEWIDE-39~1828353GU000000001750A",
+        "US-FL-STATEWIDE-39~1828353GU000000001731A",
+        "US-FL-STATEWIDE-39~1828353GU000000001770A",
+        "US-FL-STATEWIDE-39~1828354EK000011000220A",
+        "US-FL-STATEWIDE-39~1828354EK000011000231A",
+        "US-FL-STATEWIDE-39~1828354EK000011000250A"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -82.469,
+        28.003,
+        -82.468,
+        28.004
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-FL-STATEWIDE-39~1828354EK000011000071A",
+        "US-FL-STATEWIDE-39~1828354EK000011000040A",
+        "US-FL-STATEWIDE-39~1828354EK000011000041A",
+        "US-FL-STATEWIDE-39~1828354EK000011000011A",
+        "US-FL-STATEWIDE-39~1828354EK000011000017A",
+        "US-FL-STATEWIDE-39~1828354EK000011000060A",
+        "US-FL-STATEWIDE-39~1828354EK000011000090A",
+        "US-FL-STATEWIDE-39~1828354EK000007000020A",
+        "US-FL-STATEWIDE-39~1828354EK000007000131A",
+        "US-FL-STATEWIDE-39~1828354EK000007000130A",
+        "US-FL-STATEWIDE-39~1828354EK000007000121A",
+        "US-FL-STATEWIDE-39~1828354EK000007000030A",
+        "US-FL-STATEWIDE-39~1828354EK000008000010A",
+        "US-FL-STATEWIDE-39~1828354EK000008000020A",
+        "US-FL-STATEWIDE-39~1828354EK000007000141A",
+        "US-FL-STATEWIDE-39~1828354EK000007000140A",
+        "US-FL-STATEWIDE-39~1828354EK000007000010A"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 196,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:38.506Z",
+      "queryHash": "ca2e049906ef258177c8889ea82864c4d9ccbe05e972cae50c512452fb627d9e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1202
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:39.719Z",
+      "queryHash": "ca2e049906ef258177c8889ea82864c4d9ccbe05e972cae50c512452fb627d9e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 447
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:40.222Z",
+      "queryHash": "70ac5413fca9df9840d1dbd439831349f3f84995807d49dc948b4cf15fa98946",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1386
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:41.613Z",
+      "queryHash": "ca2e049906ef258177c8889ea82864c4d9ccbe05e972cae50c512452fb627d9e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 898
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:42.580Z",
+      "queryHash": "ca2e049906ef258177c8889ea82864c4d9ccbe05e972cae50c512452fb627d9e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 226
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:42.852Z",
+      "queryHash": "70ac5413fca9df9840d1dbd439831349f3f84995807d49dc948b4cf15fa98946",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 111
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:42.967Z",
+      "queryHash": "5f9eeeac6c12a7b8676e482bd711afc99c184e292c5043c6aa04bdd54bfe745c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2615
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:45.715Z",
+      "queryHash": "5f9eeeac6c12a7b8676e482bd711afc99c184e292c5043c6aa04bdd54bfe745c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1209
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:47.150Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 3227
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:50.386Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 646
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:51.041Z",
+      "queryHash": "e2a9b41d95e8ded4e9cf4f038921ebad04920d66065c0e94751a6ab196299f43",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 2361
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:53.426Z",
+      "queryHash": "303dcabcf19ebe0c16384d2664d7dca40ab83c7b9b5252cdf6afe86d11808964",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 942
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:54.382Z",
+      "queryHash": "303dcabcf19ebe0c16384d2664d7dca40ab83c7b9b5252cdf6afe86d11808964",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 583
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:55.071Z",
+      "queryHash": "e2a9b41d95e8ded4e9cf4f038921ebad04920d66065c0e94751a6ab196299f43",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 350
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:55.495Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2353
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:57.851Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 780
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:58.643Z",
+      "queryHash": "ff5ae08fbf0d4702eb21a4728da59b56436505d3716fd82c5e375d69f186f65b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 335
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:02:58.980Z",
+      "queryHash": "ad24ced5f694dbd7bab535ed70792f56a65cd3287919960023ac7af31d68a331",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2167
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:01.292Z",
+      "queryHash": "ad24ced5f694dbd7bab535ed70792f56a65cd3287919960023ac7af31d68a331",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2630
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:03.926Z",
+      "queryHash": "ff5ae08fbf0d4702eb21a4728da59b56436505d3716fd82c5e375d69f186f65b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 311
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:04.244Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1355
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:05.600Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 560
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:06.162Z",
+      "queryHash": "54d64f048e80d4f2cda3a317900e53e397f60c04e002611b65f0bff1853620c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 2049
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:08.219Z",
+      "queryHash": "49fa78193cd265e743671a64bfe970e231c2d93625d6f14955a8c2e97d23ee40",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 442
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:08.667Z",
+      "queryHash": "49fa78193cd265e743671a64bfe970e231c2d93625d6f14955a8c2e97d23ee40",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 557
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:09.230Z",
+      "queryHash": "54d64f048e80d4f2cda3a317900e53e397f60c04e002611b65f0bff1853620c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 370
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:09.613Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1972
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:11.586Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 304
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:11.928Z",
+      "queryHash": "8a13e63e36048e37e96bf2f34d11c1b3773e50f0dacf330ed2a414c51cd1bed1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 320
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:12.677Z",
+      "queryHash": "f1fd0ae2968f3b3d9758453dce5ea55ec46ee7bc5e0956edd87e3967bfa6c862",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 4403
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:17.092Z",
+      "queryHash": "f1fd0ae2968f3b3d9758453dce5ea55ec46ee7bc5e0956edd87e3967bfa6c862",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 4280
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:21.391Z",
+      "queryHash": "414186e61a42df76dcfab948ca32680ae02ddc2aa5d1a6e69d4cb9c300fc5db2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 53,
+      "httpStatus": 200,
+      "elapsedMs": 517
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:24.470Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2173
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:26.651Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:27.008Z",
+      "queryHash": "3e4ba7c5d96a058829520c821faabafdf9231224a60d07eab7e90d70ec889ba5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 289
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:27.302Z",
+      "queryHash": "aa0774c271b68cb25f3d912e1d7f9029d1612151bc14def35627ecd9e027408d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 571
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:27.874Z",
+      "queryHash": "aa0774c271b68cb25f3d912e1d7f9029d1612151bc14def35627ecd9e027408d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 362
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:28.323Z",
+      "queryHash": "44936406bc2c84f6a9fce3185f63af6562daea5dde5150acf87d1bdc0d28245b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 54,
+      "httpStatus": 200,
+      "elapsedMs": 494
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:30.713Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2206
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:33.077Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 844
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:33.924Z",
+      "queryHash": "08d4a36214a07e5ba71c8af42b4b531baa35204dba36da176f51adf978c6b1b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 351
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:34.296Z",
+      "queryHash": "9b85c6dc49f5cc42438bd0804a42539fce033f2bfdad3123aa32974baa361ea5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 382
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:34.687Z",
+      "queryHash": "9b85c6dc49f5cc42438bd0804a42539fce033f2bfdad3123aa32974baa361ea5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 355
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:35.044Z",
+      "queryHash": "08d4a36214a07e5ba71c8af42b4b531baa35204dba36da176f51adf978c6b1b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 308
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:35.355Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 922
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:36.281Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 393
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:36.678Z",
+      "queryHash": "d9e161ce0cdaace6531c08b3005be7dab6acc2e29c54e11eb7896053604a66da",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 327
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:37.059Z",
+      "queryHash": "cfe47bf674d1215fe4f3ee1a7e2ae74af06b0839ccd207bf8ed93a41887b4f63",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 3398
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:40.458Z",
+      "queryHash": "cfe47bf674d1215fe4f3ee1a7e2ae74af06b0839ccd207bf8ed93a41887b4f63",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2598
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:43.058Z",
+      "queryHash": "c85c49059e4abcb4c560bc3e6c5f7e89908aede367a76116570a333022b7891c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 483
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:48.185Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2639
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:50.828Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 796
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:51.633Z",
+      "queryHash": "da8e754d1461d973712f67c8a46847defbcbd4e8beec4a726f0363a14f7b6a8d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 1160
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:52.798Z",
+      "queryHash": "cdaab1b8db6bf460571aa60ed565eaf35827aef68aea5a660a9ec60017c3a1a7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1020
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:53.877Z",
+      "queryHash": "cdaab1b8db6bf460571aa60ed565eaf35827aef68aea5a660a9ec60017c3a1a7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 351
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:54.251Z",
+      "queryHash": "2cd9e89fa6ffb3f8f0fdcb1a9a4f2eb9d00d2414f25b1394609c93bfb117d3d2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 59,
+      "httpStatus": 200,
+      "elapsedMs": 2256
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:03:59.620Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 683
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:00.309Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 396
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:00.719Z",
+      "queryHash": "b62b56372689e120716ee07ae766cc984d6e05847c98e18cc534560ed77d2e85",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 435
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:01.155Z",
+      "queryHash": "469c97c9c65c86587e52e47fc678d5b4247ed2f79a02d1075a0304bd4e7b6ecc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 978
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:02.138Z",
+      "queryHash": "469c97c9c65c86587e52e47fc678d5b4247ed2f79a02d1075a0304bd4e7b6ecc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 644
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:02.783Z",
+      "queryHash": "d2f3a9bc3781c899bf0a4d69c9d8ffc5d091a71d93de8a96c6cd45598d7477bc",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 55,
+      "httpStatus": 200,
+      "elapsedMs": 632
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:04.347Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1755
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:06.108Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 4596
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:10.713Z",
+      "queryHash": "7d3cf3ac309eda1e05cce9e373ffb25b4c197bcf7b0896fd223c8f60c5755f73",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 1749
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:12.467Z",
+      "queryHash": "7d7135f065e2378ccb691a9cffcc7efa9af0c606ca5f261a57ea41b3a9cef256",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1383
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:13.855Z",
+      "queryHash": "7d7135f065e2378ccb691a9cffcc7efa9af0c606ca5f261a57ea41b3a9cef256",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 405
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:14.262Z",
+      "queryHash": "7d3cf3ac309eda1e05cce9e373ffb25b4c197bcf7b0896fd223c8f60c5755f73",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 525
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:14.791Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2163
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:16.958Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 282
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:17.242Z",
+      "queryHash": "55ab2b63372dc903e75c546b6adfacf92cfb4f71cae73d14e060b21fcf00baa9",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 292
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:17.546Z",
+      "queryHash": "4046f192f27dcfe962dd33d1bdd5a95eb8d57b3c4d90dcd8ad1b316a65b2dd47",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 950
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:18.496Z",
+      "queryHash": "4046f192f27dcfe962dd33d1bdd5a95eb8d57b3c4d90dcd8ad1b316a65b2dd47",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 3277
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:21.778Z",
+      "queryHash": "84bc8bab80ee342b9be2c3104eda079b422752347f286eb2a842b540b9eb23dd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 488
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:22.802Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 781
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:23.584Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 287
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:23.871Z",
+      "queryHash": "3b4d7e8c6e36ee2eb15d535d6210b1db106912c99a27ff40294013e2482331e9",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 297
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:24.170Z",
+      "queryHash": "5853122ff6bc933e1e26f9719e1c2dc7cb98e7324f429c5182632f6ce68eff0d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1004
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:25.174Z",
+      "queryHash": "5853122ff6bc933e1e26f9719e1c2dc7cb98e7324f429c5182632f6ce68eff0d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 350
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:25.525Z",
+      "queryHash": "ddb5ea1bfd91601a2c18d59795c3011904642e71d34768b5da6677fd5beef284",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 449
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:26.327Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 4433
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:30.762Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 720
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:31.485Z",
+      "queryHash": "8c7073c1d3dc84bfc5d0ee94258efaeb9458089522e6965d71b4cac5fa2af337",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 381
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:31.870Z",
+      "queryHash": "399a7fa8bbb9a41dd1da59702a374122163869499fe3bbf2b7293324aab50d10",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2325
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:34.196Z",
+      "queryHash": "399a7fa8bbb9a41dd1da59702a374122163869499fe3bbf2b7293324aab50d10",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 530
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:34.729Z",
+      "queryHash": "8c7073c1d3dc84bfc5d0ee94258efaeb9458089522e6965d71b4cac5fa2af337",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 304
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:35.036Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 518
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:35.554Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2157
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:37.714Z",
+      "queryHash": "e2a9b41d95e8ded4e9cf4f038921ebad04920d66065c0e94751a6ab196299f43",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 444
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:38.160Z",
+      "queryHash": "303dcabcf19ebe0c16384d2664d7dca40ab83c7b9b5252cdf6afe86d11808964",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 430
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:38.591Z",
+      "queryHash": "303dcabcf19ebe0c16384d2664d7dca40ab83c7b9b5252cdf6afe86d11808964",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 296
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:38.887Z",
+      "queryHash": "e2a9b41d95e8ded4e9cf4f038921ebad04920d66065c0e94751a6ab196299f43",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 295
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:39.183Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2452
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:41.636Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 636
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:42.273Z",
+      "queryHash": "ff5ae08fbf0d4702eb21a4728da59b56436505d3716fd82c5e375d69f186f65b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 316
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:42.590Z",
+      "queryHash": "ad24ced5f694dbd7bab535ed70792f56a65cd3287919960023ac7af31d68a331",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 292
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:42.882Z",
+      "queryHash": "ad24ced5f694dbd7bab535ed70792f56a65cd3287919960023ac7af31d68a331",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 287
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:43.169Z",
+      "queryHash": "ff5ae08fbf0d4702eb21a4728da59b56436505d3716fd82c5e375d69f186f65b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 302
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:43.472Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1959
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:45.432Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1488
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:46.921Z",
+      "queryHash": "54d64f048e80d4f2cda3a317900e53e397f60c04e002611b65f0bff1853620c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 367
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:47.289Z",
+      "queryHash": "49fa78193cd265e743671a64bfe970e231c2d93625d6f14955a8c2e97d23ee40",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 536
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:47.825Z",
+      "queryHash": "49fa78193cd265e743671a64bfe970e231c2d93625d6f14955a8c2e97d23ee40",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 286
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:48.126Z",
+      "queryHash": "54d64f048e80d4f2cda3a317900e53e397f60c04e002611b65f0bff1853620c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 20,
+      "httpStatus": 200,
+      "elapsedMs": 315
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:48.444Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 663
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:49.108Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 834
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:49.942Z",
+      "queryHash": "8a13e63e36048e37e96bf2f34d11c1b3773e50f0dacf330ed2a414c51cd1bed1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 357
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:50.301Z",
+      "queryHash": "f1fd0ae2968f3b3d9758453dce5ea55ec46ee7bc5e0956edd87e3967bfa6c862",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 293
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:50.594Z",
+      "queryHash": "f1fd0ae2968f3b3d9758453dce5ea55ec46ee7bc5e0956edd87e3967bfa6c862",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 272
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:50.868Z",
+      "queryHash": "414186e61a42df76dcfab948ca32680ae02ddc2aa5d1a6e69d4cb9c300fc5db2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 53,
+      "httpStatus": 200,
+      "elapsedMs": 499
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:51.945Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 668
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:52.622Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1170
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:53.794Z",
+      "queryHash": "3e4ba7c5d96a058829520c821faabafdf9231224a60d07eab7e90d70ec889ba5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 343
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:54.139Z",
+      "queryHash": "aa0774c271b68cb25f3d912e1d7f9029d1612151bc14def35627ecd9e027408d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 319
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:54.472Z",
+      "queryHash": "aa0774c271b68cb25f3d912e1d7f9029d1612151bc14def35627ecd9e027408d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 442
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:54.915Z",
+      "queryHash": "44936406bc2c84f6a9fce3185f63af6562daea5dde5150acf87d1bdc0d28245b",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 54,
+      "httpStatus": 200,
+      "elapsedMs": 535
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:56.651Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 971
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:57.623Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 459
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:58.095Z",
+      "queryHash": "08d4a36214a07e5ba71c8af42b4b531baa35204dba36da176f51adf978c6b1b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 1363
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:59.459Z",
+      "queryHash": "9b85c6dc49f5cc42438bd0804a42539fce033f2bfdad3123aa32974baa361ea5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 348
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:04:59.809Z",
+      "queryHash": "9b85c6dc49f5cc42438bd0804a42539fce033f2bfdad3123aa32974baa361ea5",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 309
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:00.118Z",
+      "queryHash": "08d4a36214a07e5ba71c8af42b4b531baa35204dba36da176f51adf978c6b1b2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:00.458Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1586
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:02.045Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1640
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:03.687Z",
+      "queryHash": "d9e161ce0cdaace6531c08b3005be7dab6acc2e29c54e11eb7896053604a66da",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 314
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:04.005Z",
+      "queryHash": "cfe47bf674d1215fe4f3ee1a7e2ae74af06b0839ccd207bf8ed93a41887b4f63",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 312
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:04.317Z",
+      "queryHash": "cfe47bf674d1215fe4f3ee1a7e2ae74af06b0839ccd207bf8ed93a41887b4f63",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 292
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:04.609Z",
+      "queryHash": "c85c49059e4abcb4c560bc3e6c5f7e89908aede367a76116570a333022b7891c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 838
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:05.679Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1924
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:07.609Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1108
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:08.718Z",
+      "queryHash": "da8e754d1461d973712f67c8a46847defbcbd4e8beec4a726f0363a14f7b6a8d",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 319
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:09.041Z",
+      "queryHash": "cdaab1b8db6bf460571aa60ed565eaf35827aef68aea5a660a9ec60017c3a1a7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 404
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:09.446Z",
+      "queryHash": "cdaab1b8db6bf460571aa60ed565eaf35827aef68aea5a660a9ec60017c3a1a7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 321
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:09.767Z",
+      "queryHash": "2cd9e89fa6ffb3f8f0fdcb1a9a4f2eb9d00d2414f25b1394609c93bfb117d3d2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 59,
+      "httpStatus": 200,
+      "elapsedMs": 324
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:10.235Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1162
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:11.398Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 796
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:12.194Z",
+      "queryHash": "b62b56372689e120716ee07ae766cc984d6e05847c98e18cc534560ed77d2e85",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 330
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:12.525Z",
+      "queryHash": "469c97c9c65c86587e52e47fc678d5b4247ed2f79a02d1075a0304bd4e7b6ecc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 316
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:12.842Z",
+      "queryHash": "469c97c9c65c86587e52e47fc678d5b4247ed2f79a02d1075a0304bd4e7b6ecc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 296
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:13.141Z",
+      "queryHash": "d2f3a9bc3781c899bf0a4d69c9d8ffc5d091a71d93de8a96c6cd45598d7477bc",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 55,
+      "httpStatus": 200,
+      "elapsedMs": 352
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:13.727Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2095
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:15.823Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1280
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:17.104Z",
+      "queryHash": "7d3cf3ac309eda1e05cce9e373ffb25b4c197bcf7b0896fd223c8f60c5755f73",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 932
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:18.037Z",
+      "queryHash": "7d7135f065e2378ccb691a9cffcc7efa9af0c606ca5f261a57ea41b3a9cef256",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 896
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:18.934Z",
+      "queryHash": "7d7135f065e2378ccb691a9cffcc7efa9af0c606ca5f261a57ea41b3a9cef256",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 521
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:19.456Z",
+      "queryHash": "7d3cf3ac309eda1e05cce9e373ffb25b4c197bcf7b0896fd223c8f60c5755f73",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 638
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:20.096Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1739
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:21.836Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 785
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:22.622Z",
+      "queryHash": "55ab2b63372dc903e75c546b6adfacf92cfb4f71cae73d14e060b21fcf00baa9",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 953
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:23.577Z",
+      "queryHash": "4046f192f27dcfe962dd33d1bdd5a95eb8d57b3c4d90dcd8ad1b316a65b2dd47",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 695
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:24.273Z",
+      "queryHash": "4046f192f27dcfe962dd33d1bdd5a95eb8d57b3c4d90dcd8ad1b316a65b2dd47",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 912
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:25.186Z",
+      "queryHash": "84bc8bab80ee342b9be2c3104eda079b422752347f286eb2a842b540b9eb23dd",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 834
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:26.239Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2335
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:28.575Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 3629
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:32.205Z",
+      "queryHash": "3b4d7e8c6e36ee2eb15d535d6210b1db106912c99a27ff40294013e2482331e9",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 2649
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:34.858Z",
+      "queryHash": "5853122ff6bc933e1e26f9719e1c2dc7cb98e7324f429c5182632f6ce68eff0d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2763
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:37.622Z",
+      "queryHash": "5853122ff6bc933e1e26f9719e1c2dc7cb98e7324f429c5182632f6ce68eff0d",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1877
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:39.500Z",
+      "queryHash": "ddb5ea1bfd91601a2c18d59795c3011904642e71d34768b5da6677fd5beef284",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 60,
+      "httpStatus": 200,
+      "elapsedMs": 14589
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:54.266Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2582
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:56.848Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 820
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:57.670Z",
+      "queryHash": "8c7073c1d3dc84bfc5d0ee94258efaeb9458089522e6965d71b4cac5fa2af337",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 312
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:57.984Z",
+      "queryHash": "399a7fa8bbb9a41dd1da59702a374122163869499fe3bbf2b7293324aab50d10",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 301
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:58.285Z",
+      "queryHash": "399a7fa8bbb9a41dd1da59702a374122163869499fe3bbf2b7293324aab50d10",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 316
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:58.601Z",
+      "queryHash": "8c7073c1d3dc84bfc5d0ee94258efaeb9458089522e6965d71b4cac5fa2af337",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 17,
+      "httpStatus": 200,
+      "elapsedMs": 464
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:59.072Z",
+      "queryHash": "1e9050e26db8ee78fb394b740a7a48aef1beeb504853f136a0b7a9866b727b14",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 863
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:05:59.936Z",
+      "queryHash": "1e9050e26db8ee78fb394b740a7a48aef1beeb504853f136a0b7a9866b727b14",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1724
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:01.660Z",
+      "queryHash": "1b6c13390ca655932907b150daf6141878d9f4ed237413970681c3e9b1ecffd0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 657
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:02.320Z",
+      "queryHash": "391bc4cfcebb0ad640778fa636dbf89e680a0b198514c1ae38ddca44cbc63eac",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 433
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:02.754Z",
+      "queryHash": "391bc4cfcebb0ad640778fa636dbf89e680a0b198514c1ae38ddca44cbc63eac",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 5926
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:08.681Z",
+      "queryHash": "9e5a69fd297021065ec24f7e05aabe0dad042990eb79f61ad24eecf80a4c39d4",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 967
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:09.651Z",
+      "queryHash": "0dbe74ea5af5daf4ccd3c56a408a7a692c2a33e1742ec6bd6366ab420a16e74b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1053
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:10.706Z",
+      "queryHash": "0dbe74ea5af5daf4ccd3c56a408a7a692c2a33e1742ec6bd6366ab420a16e74b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1174
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:11.881Z",
+      "queryHash": "292e0ac5e280e5e2e846f4c46ac42e975a5703a745cb4f3bf9ac82860b6caeca",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1574
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:13.456Z",
+      "queryHash": "0feae78297efa34d7ca8456c7520dfb6c1c43b1f6a2528effa2b1bc341c9ce50",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1899
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:15.356Z",
+      "queryHash": "0feae78297efa34d7ca8456c7520dfb6c1c43b1f6a2528effa2b1bc341c9ce50",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1943
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:17.307Z",
+      "queryHash": "e6323c8afd9929b55adb3cb33fdde03f4fb0883c61621860638fa117da2d2219",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 2898
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:20.205Z",
+      "queryHash": "d81952a604ba1c1129787652dcc812ecd6fa7e499a433f0121beafa83698c9df",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 10493
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:30.701Z",
+      "queryHash": "d5313e5524038d1010be8f77b8bed735769772a28c029f778c32210c1e7486d7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 7531
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:38.233Z",
+      "queryHash": "d5313e5524038d1010be8f77b8bed735769772a28c029f778c32210c1e7486d7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 3975
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:42.220Z",
+      "queryHash": "882440401ddbe4828184c3cf5fc8f17ac2f98d1b7ec3fa3ed5c6e0820939dfc0",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1975
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:44.205Z",
+      "queryHash": "0560964aa66569975036eb13eeb198a5f2479c13103bf9b75c73324e9e8d8d7f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 413
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:44.621Z",
+      "queryHash": "ca2e049906ef258177c8889ea82864c4d9ccbe05e972cae50c512452fb627d9e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:45.007Z",
+      "queryHash": "ca2e049906ef258177c8889ea82864c4d9ccbe05e972cae50c512452fb627d9e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:45.388Z",
+      "queryHash": "70ac5413fca9df9840d1dbd439831349f3f84995807d49dc948b4cf15fa98946",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 366
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:45.757Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2069
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:47.827Z",
+      "queryHash": "003987cb6ec0d244650b525262cd5332892a5492616378e45337bb02bdee0a5c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 346
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:48.173Z",
+      "queryHash": "88b42688191dd3d8d94023ade5bbdfcd1d7783412619127d1b75c39bd901b150",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:48.535Z",
+      "queryHash": "2a4a9eab6f647dc98ab6fedefccec9f2254fb2cc505643a8ae14a2e2cb3089eb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 358
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:48.894Z",
+      "queryHash": "2a4a9eab6f647dc98ab6fedefccec9f2254fb2cc505643a8ae14a2e2cb3089eb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 565
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:06:49.459Z",
+      "queryHash": "c2f5308e1178596364d93a2ab543ebe9f0027c52ed3567c12dae097936af94b7",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 53,
+      "httpStatus": 200,
+      "elapsedMs": 724
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services9.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:06:50.533Z",
+      "queryHash": "284d43159ab9711086a59c516c755c35b5366ed980ab8954c416f6db447a4c78",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 4426
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services9.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:06:54.965Z",
+      "queryHash": "284d43159ab9711086a59c516c755c35b5366ed980ab8954c416f6db447a4c78",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 7091
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:07:02.058Z",
+      "queryHash": "dca4959e3bc9a70c946aa29963311629192867a0926c95a9cf154b5e765cbd32",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 92,
+      "httpStatus": 200,
+      "elapsedMs": 766
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:07:02.842Z",
+      "queryHash": "5ea601dd7826bbc8446aa5df6f83c111213bc2ac2f7919d05fb1c89cb38014cc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 733
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:07:03.575Z",
+      "queryHash": "5ea601dd7826bbc8446aa5df6f83c111213bc2ac2f7919d05fb1c89cb38014cc",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 457
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services9.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:07:04.032Z",
+      "queryHash": "179525e000f8a8e4de70b515857d17b544be810dc3ac628cf476e4f0c7e8a691",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 55,
+      "httpStatus": 200,
+      "elapsedMs": 1110
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "monrovia",
+  "cityId": "capital:LR:monrovia",
+  "name": "Monrovia",
+  "country": "Liberia",
+  "code": "LR",
+  "centerLatLon": [
+    6.3156,
+    -10.8074
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Liberia Land Authority administers national land registry and survey/mapping; Monrovia is within the relevant urban authority area.",
+  "registryFound": null,
+  "registryEvidenceUrls": [
+    "https://www.npa.gov.lr/tenders/comprehensive-land-resurvey-monrovia",
+    "https://lla.gov.lr/index.php/about-us/organizational-arrangements/land-administration-department"
+  ],
+  "registryBasis": "City-specific evidence documents a Port of Monrovia resurvey procurement whose scope includes cadastral/parcel mapping. That is a bounded port-site survey, not evidence of a city-wide Monrovia parcel register. The Liberia Land Authority’s national mandate is context only; city-wide registry coverage was not established.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_land_registry_no_public_geometry",
+  "findings": "An official 2026 procurement notice documents cadastral and parcel mapping in the Port of Monrovia, while the LLA states a national land-registry and cadastral mandate. The port survey is site-specific and does not establish a city-wide register. The LLA site was previously observed behind a bot-challenge interstitial in country-level evidence; no challenge was bypassed and that access barrier is not evidence of registry absence. No public Monrovia parcel polygon endpoint was verified.",
+  "englishQueries": [
+    "Monrovia Liberia land cadastre parcel map GIS cadastral parcels official"
+  ],
+  "localLanguageQueries": [],
+  "searches": [
+    {
+      "query": "Monrovia Liberia land cadastre parcel map GIS cadastral parcels official",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "No anonymous public parcel endpoint located; one official LLA page is protected by a bot challenge.",
+  "nextStep": "Ask Liberia Land Authority or LISGIS whether a public-use Monrovia parcel service or extract exists.",
+  "coverageAssessment": {
+    "claimedScope": "Port of Monrovia cadastral/parcel resurvey procurement; national LLA mandate is broader context.",
+    "verifiedOpenScope": "No open parcel geometry verified; port-site survey does not establish whole-city registry coverage.",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": null,
+  "localLanguageQueryNote": "No separate non-English local-language query was executed; English is the official administrative language used for the source search.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://www.npa.gov.lr/tenders/comprehensive-land-resurvey-monrovia",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Official NPA procurement notice content returned; HTTP status not exposed.",
+      "observed": "Closed 2026 Port of Monrovia resurvey procurement includes cadastral/topographic survey, boundary and parcel mapping, and GIS data integration. It is limited to the port/site and is not evidence of a city-wide register."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "LR",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Monrovia Liberia land cadastre parcel map GIS cadastral parcels official",
+      "language": "English",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

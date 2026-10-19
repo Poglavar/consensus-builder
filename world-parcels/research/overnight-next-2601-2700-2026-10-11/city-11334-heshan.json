@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 11334,
+  "wupCityCode": 11334,
+  "queueRank": 2690,
+  "rank": 2690,
+  "cityId": "wup2025:11334",
+  "name": "Heshan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [22.7705491848799, 112.953062433317],
+  "centerLatLon": [22.7705491848799, 112.953062433317],
+  "population2025": 219701,
+  "population2025k": 219.701,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Official Heshan government material identifies the Heshan Municipal Natural Resources Bureau (鹤山市自然资源局) as the local custodian for natural-resource and real-estate-rights registration, cadastral investigation, cadastral surveying, registration information management, and public access guidance. No anonymous public Heshan parcel feature service or downloadable citywide parcel layer was qualified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Heshan China official cadastral parcel map GIS land registry Natural Resources Bureau",
+        "result": "Discovery found the official Heshan Natural Resources Bureau organization/functions page, the official Heshan government information-disclosure portal, the Guangdong Tianditu public geographic-information platform, and an indexed Heshan official parcel-map notice. No public Heshan parcel viewer, anonymous parcel API, or downloadable citywide parcel layer was identified.",
+        "actualResultUrls": [
+          "https://www.heshan.gov.cn/jmhszrj/gkmlpt/content/3/3489/post_3489290.html",
+          "https://www.heshan.gov.cn/gzjg/sfbm/hsszrzyj/",
+          "https://guangdong.tianditu.gov.cn/",
+          "https://www.heshan.gov.cn/attachment/0/373/373308/3472729.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (中文)",
+        "query": "鹤山市 自然资源局 不动产登记 地籍图 宗地 GIS 官方",
+        "result": "官方检索确认鹤山市自然资源局负责自然资源和不动产统一确权登记、权籍调查、不动产测绘、登记信息平台与数据库建设、社会查询指导等工作；同时找到广东省地理信息公共服务平台。未发现可匿名访问的鹤山市宗地要素服务、地籍图接口或返回安全宗地标识与几何的公开请求。",
+        "actualResultUrls": [
+          "https://www.heshan.gov.cn/jmhszrj/gkmlpt/content/3/3489/post_3489290.html",
+          "https://www.heshan.gov.cn/jmhszrzyj/gkmlpt/guide",
+          "https://guangdong.tianditu.gov.cn/",
+          "https://www.heshan.gov.cn/attachment/0/365/365898/3278636.pdf"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.heshan.gov.cn/jmhszrj/gkmlpt/content/3/3489/post_3489290.html",
+      "operator": "鹤山市自然资源局 / Heshan Municipal Natural Resources Bureau",
+      "scope": "Heshan city",
+      "observation": "Official 2026 organization/functions page identifies cadastral surveying, geographic-information management, unified natural-resource and real-estate-rights registration, cadastral investigation, registration database/platform work, and guidance for public registration-information queries. This establishes local custodial responsibility, not an open parcel API."
+    },
+    {
+      "url": "https://www.heshan.gov.cn/attachment/0/365/365898/3278636.pdf",
+      "operator": "鹤山市不动产登记中心 / Heshan Real Estate Registration Center",
+      "scope": "Heshan city",
+      "observation": "Official Heshan government budget document identifies the local real-estate registration center and its duties for registration-material queries and cadastral/right-registration survey results. It does not expose a public parcel geometry endpoint."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/",
+      "operator": "Guangdong Provincial Geographic Information Public Service Platform / Guangdong Natural Resources technical center",
+      "scope": "Guangdong province; general public geographic-information services",
+      "observation": "Current public portal and map.js expose general vector/imagery/terrain WMTS map infrastructure and catalog links. The inspected public configuration did not expose a Heshan cadastral or parcel feature layer."
+    },
+    {
+      "url": "https://www.heshan.gov.cn/attachment/0/373/373308/3472729.pdf",
+      "operator": "Heshan municipal government publication",
+      "scope": "One published Heshan parcel-map notice, not citywide coverage",
+      "observation": "Search indexed a parcel-map publication with a native parcel number and coordinate table, but the direct URL returned HTTP 404 during this attempt; no geometry was retained or treated as a live parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.heshan.gov.cn/jmhszrj/gkmlpt/content/3/3489/post_3489290.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official local bureau page fetched. It confirms local cadastral/registration responsibilities; no parcel feature schema, CRS declaration, or anonymous geometry endpoint was present."
+    },
+    {
+      "url": "https://www.heshan.gov.cn/gzjg/sfbm/hsszrzyj/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Heshan Natural Resources Bureau portal fetched; public navigation exposed bureau information but no parcel API or safe ID-plus-geometry response."
+    },
+    {
+      "url": "https://www.heshan.gov.cn/attachment/0/365/365898/3278636.pdf",
+      "method": "GET",
+      "status": "not directly fetched; official search result indexed",
+      "summary": "Used as official local registration-center lead; no parcel attributes or geometry were requested or retained."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current provincial public map portal loaded anonymously. The page exposes general map services, catalog and developer links, not a Heshan parcel layer."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/statics/js/map.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current portal JavaScript inspected. It constructs general WMTS tile URLs for map layers; no parcel/cadastral feature endpoint or ID+geometry query was exposed."
+    },
+    {
+      "url": "https://www.heshan.gov.cn/attachment/0/373/373308/3472729.pdf",
+      "method": "GET",
+      "status": "HTTP 404",
+      "summary": "Indexed official parcel-map notice URL was unavailable from the current site. This is not evidence of citywide parcel absence, and no retry with unsafe or alternate access was attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Heshan local registration/cadastral custodian plus Guangdong public geographic-information platform context.",
+    "verifiedOpenScope": "Local official custodial responsibilities and general public map infrastructure only; no anonymous parcel feature response or citywide downloadable parcel data verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Heshan local Natural Resources Bureau and Real Estate Registration Center responsibilities are evidenced by official Heshan government publications; registryFound is true, but public parcel data access is not established."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No parcel geometry obtained.",
+    "crs": null,
+    "identityReadiness": "A native parcel-number format appeared in an indexed official notice, but no live feature response was obtained and its stability/service semantics were not independently qualified.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained. Owner, address, contact, titleholder, personal, tax, account, and document fields were not requested."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous public parcel ID-plus-geometry response or downloadable cadastral dataset was verified. Serial review must independently qualify any future Heshan source for coverage, stable identity, CRS/axis semantics, and safe fields before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [22.7705491848799,112.953062433317] was preserved in latitude/longitude order and was not shifted.",
+    "A zero exact-point hit, map extent miss, HTTP 404, timeout, login wall, or unusable viewer is not evidence of citywide parcel absence.",
+    "No GeoJSON sample was retained because no safe native parcel feature with verified full polygon geometry was obtained.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+    "Packet completion is research evidence only and is not source integration or admission."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity as properties.id; keep native field mapping and any composite-key provenance in city/service-review metadata."
+}

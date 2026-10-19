@@ -1,1181 +1,223 @@
-(function (global) {
+// Viewport helpers around the authoritative parcel architecture.
+//
+// Parcel geometry is owned by LiveParcelFabric; Leaflet layers are owned by ParcelPresenter.
+// This file intentionally contains no layer insertion/removal and no geometry cache.
+(function attachParcelStorageFacade(global) {
     'use strict';
 
-    const getCache = () => (global.ParcelsState && global.ParcelsState.getParcelCache)
-        ? global.ParcelsState.getParcelCache()
-        : global.parcelCache;
-
-    const getLayerIndex = () => (global.ParcelsState && global.ParcelsState.getParcelLayerIndex)
-        ? global.ParcelsState.getParcelLayerIndex()
-        : global.parcelLayerIndex;
-
-    function getFeatureParcelId(feature) {
-        if (!feature) return null;
-        const props = feature.properties || {};
-        const id = typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
-            : (props.parcelId ?? props.parcel_id ?? props.id);
-        return id !== undefined && id !== null ? id : null;
-    }
-
-    function getLayerParcelId(layer) {
-        if (!layer) return null;
-        if (layer.feature) return getFeatureParcelId(layer.feature);
-        return getFeatureParcelId(layer);
-    }
-
-    const bumpLayerIndexVersion = () => (global.ParcelsState && global.ParcelsState.bumpParcelLayerIndexVersion)
-        ? global.ParcelsState.bumpParcelLayerIndexVersion()
-        : (function () {
-            global.parcelLayerIndexVersion = (global.parcelLayerIndexVersion || 0) + 1;
-            return global.parcelLayerIndexVersion;
-        })();
-
-    function getParcelLayerIdMap() {
-        if (!global.parcelLayerById || !(global.parcelLayerById instanceof Map)) {
-            global.parcelLayerById = new Map();
-        }
-        return global.parcelLayerById;
-    }
-
-    function rebuildParcelLayerByIdFromParcelLayer(options) {
-        const opts = options && typeof options === 'object' ? options : {};
-        const includeIndexRebuild = opts.includeIndexRebuild !== false;
-
-        const parcelLayer = global.parcelLayer;
-        if (!parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
-            return { scanned: 0, mapped: 0, indexed: 0, mapSize: (global.parcelLayerById instanceof Map) ? global.parcelLayerById.size : 0 };
-        }
-
-        const map = getParcelLayerIdMap();
-        let scanned = 0;
-        let mapped = 0;
-        let indexed = 0;
-
-        parcelLayer.eachLayer(layer => {
-            scanned++;
-            const pid = getLayerParcelId(layer);
-            if (pid === undefined || pid === null) return;
-            const key = pid.toString();
-            if (!key) return;
-            const existing = map.get(key);
-            if (existing !== layer) {
-                map.set(key, layer);
-                mapped++;
-            }
-            if (includeIndexRebuild && typeof global.indexParcelLayer === 'function') {
-                try {
-                    global.indexParcelLayer(layer);
-                    indexed++;
-                } catch (_) { }
-            }
-        });
-
-        return { scanned, mapped, indexed, mapSize: map.size };
-    }
-
-    function setParcelLayerById(parcelId, layer) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId || !layer) return;
-        getParcelLayerIdMap().set(normalizedId, layer);
-    }
-
-    function deleteParcelLayerById(parcelId) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) return;
-        // Intentionally NO-OP to keep parcelLayerById intact.
-        // Visibility should be controlled via parcelLayer membership only.
+    function parcelGridSize() {
+        const configured = global.ParcelsState?.getParcelGridSize?.()
+            ?? global.CityConfigManager?.getParcelGridSize?.()
+            ?? global.PARCELS_GRID_SIZE;
+        return Number(configured);
     }
 
     function getGridKey(easting, northing) {
-        const cache = getCache();
-        if (!cache || !Number.isFinite(cache.gridSize) || cache.gridSize <= 0) {
-            return null;
-        }
-        const gridE = Math.floor(easting / cache.gridSize);
-        const gridN = Math.floor(northing / cache.gridSize);
-        return `${gridE},${gridN}`;
+        const size = parcelGridSize();
+        if (!(size > 0)) return null;
+        return `${Math.floor(Number(easting) / size)},${Math.floor(Number(northing) / size)}`;
     }
 
     function getRequiredGridCells(bounds, extraRadius = 0) {
-        const cache = getCache();
+        const size = parcelGridSize();
         const cells = new Set();
-        if (!bounds || typeof bounds.getSouthWest !== 'function' || !cache || !cache.gridSize) {
-            return cells;
-        }
-        // Skip parcel fetching when the viewport is entirely outside the dataset bounds.
-        // The projection is only valid within those bounds (e.g. HTRS96 for Croatia).
-        const datasetBounds = global.CURRENT_CITY_CONFIG?.projection?.datasetBounds;
-        if (datasetBounds) {
-            const sw = bounds.getSouthWest();
-            const ne = bounds.getNorthEast();
-            const [swE, swN] = global.wgs84ToHTRS96(sw.lat, sw.lng);
-            const [neE, neN] = global.wgs84ToHTRS96(ne.lat, ne.lng);
-            const minE = Math.min(swE, neE);
-            const maxE = Math.max(swE, neE);
-            const minN = Math.min(swN, neN);
-            const maxN = Math.max(swN, neN);
-            const noOverlap = maxE < datasetBounds.minX || minE > datasetBounds.maxX
-                || maxN < datasetBounds.minY || minN > datasetBounds.maxY;
-            if (noOverlap) {
-                return cells;
-            }
-        }
+        if (!bounds || typeof bounds.getSouthWest !== 'function' || typeof bounds.getNorthEast !== 'function'
+            || !Number.isFinite(size) || !(size > 0)
+            || typeof global.wgs84ToDataset !== 'function') return cells;
         const sw = bounds.getSouthWest();
         const ne = bounds.getNorthEast();
-        const center = bounds.getCenter && bounds.getCenter() || {
-            lat: (sw.lat + ne.lat) / 2,
-            lng: (sw.lng + ne.lng) / 2
+        if (sw?.lat === null || sw?.lat === undefined || ne?.lat === null || ne?.lat === undefined
+            || sw?.lng === null || sw?.lng === undefined || ne?.lng === null || ne?.lng === undefined) return cells;
+        const south = Number(sw?.lat);
+        const north = Number(ne?.lat);
+        const west = Number(sw?.lng);
+        const east = Number(ne?.lng);
+        if (![south, north, west, east].every(Number.isFinite) || south > north || west > east) return cells;
+
+        // Project the whole perimeter, not just SW and NE. Native projections can rotate or curve
+        // a geographic rectangle, so those two diagonal points alone need not define its extent.
+        // Sampling each edge also captures the curvature of common local projected CRSs while
+        // keeping the fetched cells limited to the viewport's rectangular dataset-space envelope.
+        const projected = [];
+        const edgeSamples = 16;
+        const project = (lat, lng) => {
+            const value = global.wgs84ToDataset(lat, lng);
+            if (!Array.isArray(value) || value.length < 2
+                || value[0] === null || value[0] === undefined
+                || value[1] === null || value[1] === undefined) return false;
+            const easting = Number(value[0]);
+            const northing = Number(value[1]);
+            if (!Number.isFinite(easting) || !Number.isFinite(northing)) return false;
+            projected.push([easting, northing]);
+            return true;
         };
-        const enforceRadius = Number.isFinite(extraRadius) ? Math.max(0, Math.floor(extraRadius)) : 0;
-        const [centerEasting, centerNorthing] = global.wgs84ToHTRS96(center.lat, center.lng);
-        const centerGridE = Math.floor(centerEasting / cache.gridSize);
-        const centerGridN = Math.floor(centerNorthing / cache.gridSize);
-        const [rawSwEasting, rawSwNorthing] = global.wgs84ToHTRS96(sw.lat, sw.lng);
-        const [rawNeEasting, rawNeNorthing] = global.wgs84ToHTRS96(ne.lat, ne.lng);
-        const minEasting = Math.min(rawSwEasting, rawNeEasting);
-        const maxEasting = Math.max(rawSwEasting, rawNeEasting);
-        const minNorthing = Math.min(rawSwNorthing, rawNeNorthing);
-        const maxNorthing = Math.max(rawNeNorthing, rawSwNorthing);
-        const epsilon = 1e-6;
-        const minGridE = Math.floor(minEasting / cache.gridSize);
-        const maxGridE = Math.max(minGridE, Math.floor((maxEasting - epsilon) / cache.gridSize));
-        const minGridN = Math.floor(minNorthing / cache.gridSize);
-        const maxGridN = Math.max(minGridN, Math.floor((maxNorthing - epsilon) / cache.gridSize));
-        let radiusEast = Math.max(0, centerGridE - minGridE, maxGridE - centerGridE);
-        let radiusNorth = Math.max(0, centerGridN - minGridN, maxGridN - centerGridN);
-        radiusEast = Math.max(radiusEast, enforceRadius);
-        radiusNorth = Math.max(radiusNorth, enforceRadius);
-        const radius = Math.max(radiusEast, radiusNorth);
-        for (let e = centerGridE - radius; e <= centerGridE + radius; e++) {
-            for (let n = centerGridN - radius; n <= centerGridN + radius; n++) {
-                cells.add(`${e},${n}`);
-            }
+        for (let i = 0; i <= edgeSamples; i += 1) {
+            const fraction = i / edgeSamples;
+            const lat = south + (north - south) * fraction;
+            const lng = west + (east - west) * fraction;
+            if (!project(south, lng) || !project(north, lng)
+                || !project(lat, west) || !project(lat, east)) return cells;
+        }
+        if (!projected.length) return cells;
+        const minE = Math.min(...projected.map(point => point[0]));
+        const maxE = Math.max(...projected.map(point => point[0]));
+        const minN = Math.min(...projected.map(point => point[1]));
+        const maxN = Math.max(...projected.map(point => point[1]));
+        if (![minE, maxE, minN, maxN].every(Number.isFinite)) return cells;
+
+        // CURRENT_CITY_CONFIG is map-core.js's top-level const, never on window: the check never ran.
+        // Only the Croatian cities declare datasetBounds (the country, in HTRS96/TM).
+        const currentConfig = global.CityConfigManager && typeof global.CityConfigManager.getCurrentCityConfig === 'function'
+            ? global.CityConfigManager.getCurrentCityConfig() : null;
+        const datasetBounds = currentConfig && currentConfig.projection && currentConfig.projection.datasetBounds;
+        if (datasetBounds && (maxE < datasetBounds.minX || minE > datasetBounds.maxX
+            || maxN < datasetBounds.minY || minN > datasetBounds.maxY)) return cells;
+
+        // Snap numerical noise at cell edges using a tolerance scaled to the grid and coordinate
+        // magnitude rather than assuming metres/degrees. Lower bounds are inclusive; upper bounds
+        // are exclusive at an exact grid line.
+        const boundaryEpsilon = value => Math.max(size * 1e-10, Number.EPSILON * Math.max(1, Math.abs(value)) * 8);
+        const inclusiveLowerCell = value => Math.floor((value + boundaryEpsilon(value)) / size);
+        const exclusiveUpperCell = value => {
+            return Math.floor((value - boundaryEpsilon(value)) / size);
+        };
+        const minGridE = inclusiveLowerCell(minE);
+        const minGridN = inclusiveLowerCell(minN);
+        const maxGridE = exclusiveUpperCell(maxE);
+        const maxGridN = exclusiveUpperCell(maxN);
+        const requestedRadius = Number.isFinite(Number(extraRadius)) ? Math.max(0, Math.floor(Number(extraRadius))) : 0;
+        const firstE = minGridE - requestedRadius;
+        const lastE = Math.max(minGridE, maxGridE) + requestedRadius;
+        const firstN = minGridN - requestedRadius;
+        const lastN = Math.max(minGridN, maxGridN) + requestedRadius;
+        for (let e = firstE; e <= lastE; e += 1) {
+            for (let n = firstN; n <= lastN; n += 1) cells.add(`${e},${n}`);
         }
         return cells;
     }
 
     function computeGridKeysForBounds(bounds) {
-        if (!bounds || typeof bounds.getSouthWest !== 'function') {
-            return [];
-        }
-        if (typeof getRequiredGridCells === 'function') {
-            const keys = Array.from(getRequiredGridCells(bounds, 0));
-            if (keys.length) return keys;
-        }
-        try {
-            if (typeof bounds.getCenter === 'function' && typeof global.wgs84ToHTRS96 === 'function') {
-                const center = bounds.getCenter();
-                const coords = global.wgs84ToHTRS96(center.lat, center.lng);
-                if (Array.isArray(coords) && coords.length >= 2) {
-                    return [getGridKey(coords[0], coords[1])];
-                }
-            }
-        } catch (_) { }
-        return [];
+        return Array.from(getRequiredGridCells(bounds, 0));
     }
 
-    function indexParcelLayer(layer) {
-        const index = getLayerIndex();
-        if (!layer || typeof layer.getBounds !== 'function' || !index) return;
-        unindexParcelLayer(layer);
-        let keys = [];
-        try {
-            const bounds = layer.getBounds();
-            if (bounds && bounds.isValid && bounds.isValid()) {
-                keys = computeGridKeysForBounds(bounds);
-            }
-        } catch (_) { }
-        if (!Array.isArray(keys) || !keys.length) return;
-        const uniqueKeys = Array.from(new Set(keys.filter(Boolean)));
-        if (!uniqueKeys.length) return;
-        layer.__parcelGridKeys = uniqueKeys;
-        uniqueKeys.forEach(key => {
-            let bucket = index.get(key);
-            if (!bucket) {
-                bucket = new Set();
-                index.set(key, bucket);
-            }
-            bucket.add(layer);
-        });
-        bumpLayerIndexVersion();
+    function presenter() {
+        return global.ParcelPresenter || null;
     }
 
-    function unindexParcelLayer(layer) {
-        const index = getLayerIndex();
-        if (!index || !layer || !Array.isArray(layer.__parcelGridKeys) || !layer.__parcelGridKeys.length) return;
-        const keys = layer.__parcelGridKeys.slice();
-        delete layer.__parcelGridKeys;
-        keys.forEach(key => {
-            if (!key) return;
-            const bucket = index.get(key);
-            if (!bucket) return;
-            bucket.delete(layer);
-            if (bucket.size === 0) {
-                index.delete(key);
-            }
-        });
-        bumpLayerIndexVersion();
+    function getPresentedParcelLayer(parcelId) {
+        const value = presenter();
+        return value && typeof value.getLayer === 'function' ? value.getLayer(parcelId) : null;
     }
 
-    /**
-     * Clean up any attached overlay layers (like road centerlines) before removing a parcel layer.
-     * This is necessary because the 'remove' event only fires when removing from the map directly,
-     * not when removing from a LayerGroup.
-     * @param {L.Layer} layer - The parcel layer being removed
-     */
-    function cleanupAttachedLayers(layer) {
-        if (!layer) return;
-        // Remove road centerline overlay if present
-        if (layer._roadCenterlineLayer) {
-            try {
-                if (global.map && global.map.hasLayer(layer._roadCenterlineLayer)) {
-                    global.map.removeLayer(layer._roadCenterlineLayer);
-                    console.log('[cleanupAttachedLayers] Removed road centerline layer');
-                }
-            } catch (e) {
-                console.warn('[cleanupAttachedLayers] Error removing road centerline:', e);
-            }
-            layer._roadCenterlineLayer = null;
-        }
-        // Remove track rails overlay if present
-        if (layer._trackRailsLayer) {
-            try {
-                if (global.map && global.map.hasLayer(layer._trackRailsLayer)) {
-                    global.map.removeLayer(layer._trackRailsLayer);
-                    console.log('[cleanupAttachedLayers] Removed track rails layer');
-                }
-            } catch (e) {
-                console.warn('[cleanupAttachedLayers] Error removing track rails:', e);
-            }
-            layer._trackRailsLayer = null;
-        }
+    function getPresentedParcelId(layer) {
+        const value = presenter();
+        return value && typeof value.getIdForLayer === 'function'
+            ? value.getIdForLayer(layer)
+            : null;
     }
 
-    function clearParcelLayerIndex() {
-        const index = getLayerIndex();
-        if (index) {
-            index.clear();
-        }
-        bumpLayerIndexVersion();
+    function getLiveParcelFeature(layerOrId) {
+        const id = typeof layerOrId === 'string' || typeof layerOrId === 'number'
+            ? String(layerOrId)
+            : getPresentedParcelId(layerOrId);
+        return id && global.LiveParcelFabric && typeof global.LiveParcelFabric.get === 'function'
+            ? global.LiveParcelFabric.get(id)
+            : null;
     }
 
-    /**
-     * Efficiently get parcel layers within viewport bounds using the grid index.
-     * This avoids iterating over all parcels when only viewport parcels are needed.
-     * @param {L.LatLngBounds} bounds - The viewport bounds
-     * @returns {Array<L.Layer>} Array of parcel layers within or intersecting the bounds
-     */
+    function resolveLiveParcelLayers(parcelIds, options = {}) {
+        const value = presenter();
+        return value && typeof value.resolveLiveLayers === 'function'
+            ? value.resolveLiveLayers(parcelIds, options)
+            : [];
+    }
+
     function getParcelLayersWithinBounds(bounds) {
-        if (!bounds || typeof bounds.getSouthWest !== 'function') {
-            return [];
-        }
-        const index = getLayerIndex();
-        if (!index || index.size === 0) {
-            // If index is empty, fallback to empty array (caller should handle this)
-            return [];
-        }
-        const gridKeys = computeGridKeysForBounds(bounds);
-        if (!Array.isArray(gridKeys) || gridKeys.length === 0) {
-            return [];
-        }
-        const layersSet = new Set();
-        const uniqueKeys = Array.from(new Set(gridKeys.filter(Boolean)));
-        for (const key of uniqueKeys) {
-            const bucket = index.get(key);
-            if (bucket && bucket.size > 0) {
-                bucket.forEach(layer => {
-                    if (layer && typeof layer.getBounds === 'function') {
-                        try {
-                            const layerBounds = layer.getBounds();
-                            if (layerBounds && layerBounds.isValid && layerBounds.isValid()) {
-                                // Only include layers that actually intersect the bounds
-                                if (bounds.intersects(layerBounds)) {
-                                    layersSet.add(layer);
-                                }
-                            }
-                        } catch (_) {
-                            // If bounds check fails, include the layer anyway (better safe than sorry)
-                            layersSet.add(layer);
-                        }
-                    } else {
-                        // If layer has no bounds method, include it (shouldn't happen but be safe)
-                        layersSet.add(layer);
-                    }
-                });
-            }
-        }
-        return Array.from(layersSet);
+        const value = presenter();
+        return value && typeof value.getLayersWithinBounds === 'function'
+            ? value.getLayersWithinBounds(bounds)
+            : [];
     }
 
-    function resolveParcelLayerById(parcelId) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) return null;
-
-        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
-        if (!mapById) return null;
-        const layer = mapById.get(normalizedId) || null;
-        return layer;
+    function getParcelsInBounds(bounds) {
+        const target = bounds || (global.map && typeof global.map.getBounds === 'function' ? global.map.getBounds() : null);
+        return getParcelLayersWithinBounds(target);
     }
 
-    /**
-     * Remove duplicate layers from parcelLayer.
-     * Keeps the first occurrence of each parcel ID and removes subsequent duplicates.
-     * This fixes data quality issues where the same parcel appears multiple times in source data.
-     */
-    function deduplicateParcelLayer() {
-        if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
-            return 0;
-        }
-
-        const currentVersion = (global.ParcelsState && global.ParcelsState.getParcelLayerIndexVersion)
-            ? global.ParcelsState.getParcelLayerIndexVersion()
-            : (global.parcelLayerIndexVersion || 0);
-        if (typeof deduplicateParcelLayer.lastVersion === 'number' && deduplicateParcelLayer.lastVersion === currentVersion) {
-            return 0;
-        }
-
-        const seenParcelIds = new Map(); // Map of parcelId -> preferred layer
-        const duplicatesToRemove = [];
-
-        // Helper: check if layer has attached overlays (like centerlines)
-        const hasAttachedOverlays = (layer) => {
-            return !!(layer && (layer._roadCenterlineLayer || layer._trackRailsLayer));
-        };
-
-        // First pass: identify duplicates
-        // Prefer to keep layers that have attached overlays (like centerlines)
-        global.parcelLayer.eachLayer(layer => {
-            const parcelId = getLayerParcelId(layer);
-            if (parcelId === undefined || parcelId === null) return;
-            const normalizedId = parcelId.toString();
-
-            if (seenParcelIds.has(normalizedId)) {
-                const existingLayer = seenParcelIds.get(normalizedId);
-                const existingHasOverlays = hasAttachedOverlays(existingLayer);
-                const currentHasOverlays = hasAttachedOverlays(layer);
-
-                if (currentHasOverlays && !existingHasOverlays) {
-                    // Current layer has overlays but existing doesn't - prefer current
-                    duplicatesToRemove.push(existingLayer);
-                    seenParcelIds.set(normalizedId, layer);
-                    console.log(`[deduplicateParcelLayer] Preferring layer with overlays for parcel ${normalizedId}`);
-                } else {
-                    // Keep existing, mark current as duplicate
-                    duplicatesToRemove.push(layer);
-                }
-            } else {
-                // First occurrence - keep it
-                seenParcelIds.set(normalizedId, layer);
-            }
-        });
-
-        // Second pass: remove duplicates
-        let removedCount = 0;
-        duplicatesToRemove.forEach(layer => {
-            const parcelId = getLayerParcelId(layer);
-            const normalizedId = parcelId ? parcelId.toString() : null;
-
-            if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) {
-                // Clean up attached overlay layers before removing
-                cleanupAttachedLayers(layer);
-                global.parcelLayer.removeLayer(layer);
-                // Unindex the duplicate layer
-                if (typeof global.unindexParcelLayer === 'function') {
-                    global.unindexParcelLayer(layer);
-                }
-                removedCount++;
-            }
-
-            // Ensure the id->layer map points to the kept (first seen) layer, not the removed duplicate
-            if (normalizedId && seenParcelIds.has(normalizedId)) {
-                const primaryLayer = seenParcelIds.get(normalizedId);
-                if (primaryLayer) {
-                    setParcelLayerById(normalizedId, primaryLayer);
-                }
-            }
-        });
-
-        // After removals, reassert id->layer mappings for all kept layers to guarantee consistency
-        seenParcelIds.forEach((layer, parcelId) => {
-            if (layer) {
-                setParcelLayerById(parcelId, layer);
-            }
-        });
-
-        if (removedCount > 0) {
-            console.warn(`[deduplicateParcelLayer] Removed ${removedCount} duplicate parcel layer(s) from parcelLayer`);
-        }
-
-        deduplicateParcelLayer.lastVersion = currentVersion;
-
-        return removedCount;
-    }
-
-    function removeParcelLayerById(parcelId, options = {}) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) {
-            console.warn(`[removeParcelLayerById] Invalid input: parcelId=${parcelId}`);
-            return;
-        }
-
-        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
-        const mappedLayer = mapById ? mapById.get(normalizedId) : null;
-        if (!mappedLayer) {
-            // Silently skip - parcel may not have been rendered to map layer (common during bulk unapply)
-            return;
-        }
-
-        unindexParcelLayer(mappedLayer);
-        if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
-            // Clean up attached overlay layers before removing
-            cleanupAttachedLayers(mappedLayer);
-            global.parcelLayer.removeLayer(mappedLayer);
-        }
-
-    }
-
-    /**
-     * Hide a parcel from the visible parcelLayer but keep it in parcelLayerById.
-     * Use this when hiding parent parcels that may still be needed as parents for descendant proposals.
-     * @param {string|number} parcelId
-     * @returns {boolean} true if the parcel was hidden, false if not found or already hidden
-     */
-    function hideParcelLayerById(parcelId) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) return false;
-
-        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
-        const mappedLayer = mapById ? mapById.get(normalizedId) : null;
-        if (!mappedLayer) return false;
-
-        if (global.parcelLayer && global.parcelLayer.hasLayer(mappedLayer)) {
-            // Keep parcelLayerIndex consistent with parcelLayer membership.
-            // parcelLayerById retains the reference even when hidden.
-            // Note: We intentionally do NOT clean up attached layers (like centerlines) when hiding
-            // because the layer is just being temporarily removed from the visible layer,
-            // not destroyed. The centerline should remain visible since it's attached to map directly.
-            unindexParcelLayer(mappedLayer);
-            global.parcelLayer.removeLayer(mappedLayer);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Show a parcel that is in parcelLayerById but hidden from parcelLayer.
-     * Use this when restoring parent parcels after unapplying a proposal.
-     * @param {string|number} parcelId
-     * @returns {boolean} true if the parcel was shown, false if not found or already visible
-     */
-    function showParcelLayerById(parcelId) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) return false;
-
-        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
-        const mappedLayer = mapById ? mapById.get(normalizedId) : null;
-        if (!mappedLayer) return false;
-
-        if (global.parcelLayer && !global.parcelLayer.hasLayer(mappedLayer)) {
-            global.parcelLayer.addLayer(mappedLayer);
-            // Keep parcelLayerIndex consistent with parcelLayer membership.
-            indexParcelLayer(mappedLayer);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Fast bulk removal using the id->layer map only; skips parcelLayer and map scans.
-     * @param {Iterable<string|number>} parcelIds
-     * @returns {number} number of layers removed
-     */
-    function fastRemoveParcelLayersByIds(parcelIds) {
-        const mapById = global.parcelLayerById instanceof Map ? global.parcelLayerById : null;
-        if (!mapById || !parcelIds) return 0;
-        let removed = 0;
-        for (const id of parcelIds) {
-            const normalizedId = id !== undefined && id !== null ? id.toString() : null;
-            if (!normalizedId) continue;
-            const layer = mapById.get(normalizedId);
-            if (!layer) continue;
-
-            // Remove from parcelLayer
-            if (global.parcelLayer && typeof global.parcelLayer.removeLayer === 'function') {
-                if (global.parcelLayer.hasLayer(layer)) {
-                    // Clean up attached overlay layers before removing
-                    cleanupAttachedLayers(layer);
-                    global.parcelLayer.removeLayer(layer);
-                }
-            }
-
-            // Unindex and delete mapping
-            if (typeof unindexParcelLayer === 'function') {
-                unindexParcelLayer(layer);
-            }
-            removed++;
-        }
-        return removed;
+    function eachVisibleParcel(callback, bounds) {
+        if (typeof callback !== 'function') return;
+        getParcelsInBounds(bounds).forEach(callback);
     }
 
     function ensureParcelLayerInitialized() {
-        if (!global.parcelLayer) {
-            global.parcelLayer = L.featureGroup();
-            // NOTE: Do NOT automatically add parcelLayer to map here.
-            // Adding parcels to the map should be controlled by zoom level checks.
-            // The parcel layer will be added to the map by:
-            // - addParcelLayerToMapIfAppropriate() - respects zoom level
-            // - zoomend/moveend handlers in map-core.js - respects zoom level
-            // - showAllParcels() in visibility.js - respects zoom level
-        }
-        // NOTE: Do NOT add parcelLayer to map if it's not already there.
-        // This function should only initialize the layer group, not control visibility.
-        // Visibility is managed by zoom-aware functions.
+        const value = presenter();
+        return value && typeof value.ensureGroup === 'function' ? value.ensureGroup() : null;
     }
 
-    /**
-     * Add parcel layer to map only if zoom is within the allowed range.
-     * This is the ONLY function that should be used to add parcelLayer to the map
-     * from general code paths (excluding explicit user actions like checkbox toggle).
-     * @returns {boolean} true if the layer was added, false otherwise
-     */
     function addParcelLayerToMapIfAppropriate() {
-        if (!global.parcelLayer || !global.map) {
-            return false;
-        }
-
-        // Check if zoom is within parcel display range
-        const isZoomWithinRange = (typeof global.isZoomWithinParcelRange === 'function')
-            ? global.isZoomWithinParcelRange()
-            : true; // Default to true if function not available (backwards compatibility)
-
-        if (!isZoomWithinRange) {
-            // Zoom is out of range - ensure parcel layer is NOT on map
-            if (global.map.hasLayer(global.parcelLayer)) {
-                try { global.map.removeLayer(global.parcelLayer); } catch (_) { }
-            }
-            return false;
-        }
-
-        // Zoom is appropriate - add parcel layer if not already there
-        if (!global.map.hasLayer(global.parcelLayer)) {
-            try {
-                global.parcelLayer.addTo(global.map);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
-        return true; // Already on map
+        const value = presenter();
+        return !!(value && typeof value.addGroupToMapIfAppropriate === 'function'
+            && value.addGroupToMapIfAppropriate());
     }
 
-    // Expose globally for legacy callers
+    function debugParcelCount(parcelId) {
+        const id = parcelId === undefined || parcelId === null ? '' : String(parcelId);
+        const layer = getPresentedParcelLayer(id);
+        const fabricFeature = global.LiveParcelFabric && global.LiveParcelFabric.get(id);
+        return {
+            parcelId: id,
+            inLiveFabric: !!fabricFeature,
+            inParcelLayer: layer ? 1 : 0,
+            total: layer ? 1 : 0,
+            duplicatePathsInDOM: 0,
+            presenterRevision: global.LiveParcelFabric ? global.LiveParcelFabric.snapshot().revision : null
+        };
+    }
+
+    function analyzeMultiPolygonParcels() {
+        const features = global.LiveParcelFabric ? global.LiveParcelFabric.list() : [];
+        const multi = features.filter(feature => feature && feature.geometry && feature.geometry.type === 'MultiPolygon');
+        return {
+            totalParcels: features.length,
+            polygonCount: features.length - multi.length,
+            multiPolygonCount: multi.length,
+            multiPolygonParcels: multi.map(feature => ({
+                parcelId: feature.properties && feature.properties.parcelId,
+                componentCount: feature.geometry.coordinates.length
+            })),
+            invalidGeometries: []
+        };
+    }
+
+    function getMultiPolygonDetails(parcelId) {
+        const feature = global.LiveParcelFabric && global.LiveParcelFabric.get(parcelId);
+        if (!feature || !feature.geometry || feature.geometry.type !== 'MultiPolygon') return null;
+        return { parcelId: String(parcelId), componentCount: feature.geometry.coordinates.length, feature };
+    }
+
+    function checkParcelVisibility(parcelId) {
+        const layer = getPresentedParcelLayer(parcelId);
+        const group = ensureParcelLayerInitialized();
+        return {
+            parcelId: String(parcelId),
+            exists: !!layer,
+            visible: !!(layer && group && typeof group.hasLayer === 'function' && group.hasLayer(layer))
+        };
+    }
+
     global.getGridKey = getGridKey;
     global.getRequiredGridCells = getRequiredGridCells;
     global.computeGridKeysForBounds = computeGridKeysForBounds;
-    global.indexParcelLayer = indexParcelLayer;
-    global.unindexParcelLayer = unindexParcelLayer;
-    global.clearParcelLayerIndex = clearParcelLayerIndex;
+    global.resolveLiveParcelLayers = resolveLiveParcelLayers;
+    global.getPresentedParcelId = getPresentedParcelId;
+    global.getLiveParcelFeature = getLiveParcelFeature;
     global.getParcelLayersWithinBounds = getParcelLayersWithinBounds;
-    global.resolveParcelLayerById = resolveParcelLayerById;
-    global.fastRemoveParcelLayersByIds = fastRemoveParcelLayersByIds;
-    global.cleanupAttachedLayers = cleanupAttachedLayers;
-    // Debug function to check for duplicate parcels
-    function debugParcelCount(parcelId) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) return { error: 'Invalid parcel ID' };
-
-        const inParcelLayer = [];
-        const onMapDirectly = [];
-        const domPaths = [];
-
-        if (global.parcelLayer && typeof global.parcelLayer.eachLayer === 'function') {
-            global.parcelLayer.eachLayer(layer => {
-                const candidate = getLayerParcelId(layer);
-                if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
-                    const pathElement = layer._path;
-                    const pathD = pathElement ? pathElement.getAttribute('d') : null;
-                    inParcelLayer.push({
-                        layer,
-                        inParcelLayer: true,
-                        onMap: global.map && global.map.hasLayer(layer),
-                        hasPath: !!pathElement,
-                        pathD: pathD ? pathD.substring(0, 50) + '...' : null
-                    });
-
-                    if (pathElement) {
-                        domPaths.push({
-                            element: pathElement,
-                            d: pathD,
-                            parent: pathElement.parentElement,
-                            style: window.getComputedStyle(pathElement).fill
-                        });
-                    }
-                }
-            });
-        }
-
-        if (typeof global.map !== 'undefined' && global.map && typeof global.map.eachLayer === 'function') {
-            global.map.eachLayer(layer => {
-                if (!layer.feature || !layer.feature.properties) return;
-                if (global.parcelLayer && global.parcelLayer.hasLayer(layer)) return; // Already counted
-
-                const candidate = getLayerParcelId(layer);
-                if (candidate !== undefined && candidate !== null && candidate.toString() === normalizedId) {
-                    const pathElement = layer._path;
-                    onMapDirectly.push({
-                        layer,
-                        inParcelLayer: false,
-                        onMap: true,
-                        hasPath: !!pathElement
-                    });
-                }
-            });
-        }
-
-        // Check for duplicate path elements in DOM with same 'd' attribute
-        const pathDElements = new Map();
-        domPaths.forEach(({ d, element }) => {
-            if (d) {
-                if (!pathDElements.has(d)) {
-                    pathDElements.set(d, []);
-                }
-                pathDElements.get(d).push(element);
-            }
-        });
-        const duplicatePaths = Array.from(pathDElements.entries()).filter(([d, elements]) => elements.length > 1);
-
-        return {
-            parcelId: normalizedId,
-            inParcelLayer: inParcelLayer.length,
-            onMapDirectly: onMapDirectly.length,
-            total: inParcelLayer.length + onMapDirectly.length,
-            duplicatePathsInDOM: duplicatePaths.length,
-            parcelLayerOnMap: global.map && global.map.hasLayer(global.parcelLayer),
-            details: {
-                inParcelLayer,
-                onMapDirectly,
-                duplicatePaths: duplicatePaths.map(([d, elements]) => ({
-                    pathD: d.substring(0, 50) + '...',
-                    count: elements.length,
-                    elements: elements.map(el => ({
-                        parent: el.parentElement?.tagName,
-                        style: window.getComputedStyle(el).fill
-                    }))
-                }))
-            }
-        };
-    }
-
-
-    /**
-     * Enable monkey-patch on parcelLayer.addLayer to trace ALL additions.
-     * Call from console: window.enableParcelLayerAddTrace()
-     */
-    function enableParcelLayerAddTrace() {
-        if (!global.parcelLayer) {
-            console.error('[enableParcelLayerAddTrace] parcelLayer not available yet');
-            return false;
-        }
-
-        if (global.parcelLayer._originalAddLayer) {
-            console.log('[enableParcelLayerAddTrace] Already enabled');
-            return true;
-        }
-
-        const original = global.parcelLayer.addLayer.bind(global.parcelLayer);
-        global.parcelLayer._originalAddLayer = original;
-        global.parcelLayer._addLayerCalls = [];
-
-        global.parcelLayer.addLayer = function (layer) {
-            const parcelId = getLayerParcelId(layer)?.toString();
-
-            const callInfo = {
-                parcelId,
-                layerId: layer._leaflet_id,
-                timestamp: new Date().toISOString(),
-                stack: new Error().stack.split('\n').slice(1, 8).join('\n')
-            };
-            global.parcelLayer._addLayerCalls.push(callInfo);
-
-            return original(layer);
-        };
-
-        console.log('[enableParcelLayerAddTrace] Enabled - addLayer calls will be logged');
-        return true;
-    }
-
-    /**
-     * Get all addLayer calls for a specific parcel.
-     * Call from console: window.getAddLayerCalls('123')
-     */
-    function getAddLayerCalls(parcelId) {
-        if (!global.parcelLayer || !global.parcelLayer._addLayerCalls) {
-            console.error('[getAddLayerCalls] Trace not enabled. Call window.enableParcelLayerAddTrace() first');
-            return null;
-        }
-
-        const calls = global.parcelLayer._addLayerCalls.filter(c => c.parcelId === parcelId);
-        console.log(`[getAddLayerCalls] Found ${calls.length} addLayer calls for parcel ${parcelId}:`, calls);
-        return calls;
-    }
-
-    /**
-    * Inspect ALL layers on the map to find where a parcel might be rendered.
-    * Call from console: window.findParcelEverywhere('123')
-     */
-    function findParcelEverywhere(parcelId) {
-        const normalizedId = parcelId?.toString();
-        if (!normalizedId) {
-            console.error('Please provide a parcel ID');
-            return null;
-        }
-
-        const results = {
-            parcelId: normalizedId,
-            inParcelLayer: [],
-            inOtherLayerGroups: [],
-            directlyOnMap: [],
-            allMapLayers: [],
-            svgPathsWithParcelId: []
-        };
-
-        // Check parcelLayer
-        if (global.parcelLayer && typeof global.parcelLayer.eachLayer === 'function') {
-            global.parcelLayer.eachLayer(layer => {
-                const id = getLayerParcelId(layer)?.toString();
-                if (id === normalizedId) {
-                    results.inParcelLayer.push({
-                        layerId: layer._leaflet_id,
-                        hasPath: !!layer._path,
-                        pathId: layer._path?.id,
-                        bounds: layer.getBounds ? layer.getBounds() : null
-                    });
-                }
-            });
-        }
-
-        // Check all layers directly on the map
-        if (global.map && typeof global.map.eachLayer === 'function') {
-            global.map.eachLayer(layer => {
-                const layerInfo = {
-                    layerId: layer._leaflet_id,
-                    type: layer.constructor?.name || 'unknown',
-                    isParcelLayer: layer === global.parcelLayer,
-                    hasLayers: typeof layer.getLayers === 'function'
-                };
-                results.allMapLayers.push(layerInfo);
-
-                // Check if it's a layer group containing our parcel
-                if (typeof layer.eachLayer === 'function' && layer !== global.parcelLayer) {
-                    layer.eachLayer(subLayer => {
-                        const id = getLayerParcelId(subLayer)?.toString();
-                        if (id === normalizedId) {
-                            results.inOtherLayerGroups.push({
-                                parentLayerId: layer._leaflet_id,
-                                parentType: layer.constructor?.name,
-                                layerId: subLayer._leaflet_id,
-                                hasPath: !!subLayer._path
-                            });
-                        }
-                    });
-                }
-
-                // Check if it's the parcel directly
-                const id = getLayerParcelId(layer)?.toString();
-                if (id === normalizedId && layer !== global.parcelLayer) {
-                    results.directlyOnMap.push({
-                        layerId: layer._leaflet_id,
-                        hasPath: !!layer._path,
-                        inParcelLayer: global.parcelLayer && global.parcelLayer.hasLayer(layer)
-                    });
-                }
-            });
-        }
-
-        // Check SVG paths in the DOM
-        const allPaths = document.querySelectorAll('svg path');
-        allPaths.forEach(path => {
-            // Check if this path belongs to a layer with our parcel ID
-            // We can check by looking at the data-parcel-id attribute if it exists
-            // or by matching the path's d attribute
-            const pathD = path.getAttribute('d');
-            if (pathD) {
-                // Check all layers to see if any match this path
-                if (global.parcelLayer) {
-                    global.parcelLayer.eachLayer(layer => {
-                        const id = getLayerParcelId(layer)?.toString();
-                        if (id === normalizedId && layer._path === path) {
-                            results.svgPathsWithParcelId.push({
-                                pathElement: path,
-                                pathD: pathD.substring(0, 50) + '...',
-                                layerId: layer._leaflet_id
-                            });
-                        }
-                    });
-                }
-            }
-        });
-
-        console.log(`🔍 [findParcelEverywhere] Results for parcel ${normalizedId}:`, results);
-        console.log(`   In parcelLayer: ${results.inParcelLayer.length}`);
-        console.log(`   In other layer groups: ${results.inOtherLayerGroups.length}`);
-        console.log(`   Directly on map: ${results.directlyOnMap.length}`);
-        console.log(`   Total layers on map: ${results.allMapLayers.length}`);
-
-        if (results.inOtherLayerGroups.length > 0) {
-            console.error(`🚨 FOUND PARCEL IN OTHER LAYER GROUPS:`, results.inOtherLayerGroups);
-        }
-        if (results.directlyOnMap.length > 0) {
-            console.error(`🚨 FOUND PARCEL DIRECTLY ON MAP:`, results.directlyOnMap);
-        }
-
-        return results;
-    }
-
-
-    /**
-     * Analyze MultiPolygon parcels to see how they're being handled.
-     * Call from console: window.analyzeMultiPolygonParcels()
-     */
-    function analyzeMultiPolygonParcels() {
-        if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
-            console.error('[analyzeMultiPolygonParcels] parcelLayer not available');
-            return null;
-        }
-
-        const results = {
-            totalParcels: 0,
-            polygonCount: 0,
-            multiPolygonCount: 0,
-            multiPolygonParcels: [],
-            invalidGeometries: [],
-            multiPolygonDetails: []
-        };
-
-        global.parcelLayer.eachLayer(layer => {
-            results.totalParcels++;
-            const feature = layer?.feature;
-            if (!feature || !feature.geometry) {
-                results.invalidGeometries.push({
-                    parcelId: getFeatureParcelId(feature),
-                    reason: 'No geometry'
-                });
-                return;
-            }
-
-            const geomType = feature.geometry.type;
-            const parcelId = getFeatureParcelId(feature)?.toString();
-
-            if (geomType === 'Polygon') {
-                results.polygonCount++;
-            } else if (geomType === 'MultiPolygon') {
-                results.multiPolygonCount++;
-                const coords = feature.geometry.coordinates;
-
-                const detail = {
-                    parcelId,
-                    polygonCount: Array.isArray(coords) ? coords.length : 0,
-                    coordinates: coords,
-                    layerId: layer._leaflet_id,
-                    hasPath: !!layer._path,
-                    pathD: layer._path ? layer._path.getAttribute('d')?.substring(0, 100) : null,
-                    bounds: layer.getBounds ? layer.getBounds() : null
-                };
-
-                // Validate MultiPolygon structure
-                if (!Array.isArray(coords) || coords.length === 0) {
-                    detail.valid = false;
-                    detail.error = 'Invalid MultiPolygon coordinates structure';
-                    results.invalidGeometries.push(detail);
-                } else {
-                    detail.valid = true;
-                    // Count rings in each polygon
-                    detail.ringsPerPolygon = coords.map((poly, idx) => {
-                        if (!Array.isArray(poly) || poly.length === 0) {
-                            return { polygonIndex: idx, ringCount: 0, valid: false };
-                        }
-                        return {
-                            polygonIndex: idx,
-                            ringCount: poly.length,
-                            exteriorRingLength: Array.isArray(poly[0]) ? poly[0].length : 0,
-                            valid: Array.isArray(poly[0]) && poly[0].length >= 3
-                        };
-                    });
-                }
-
-                results.multiPolygonParcels.push(parcelId);
-                results.multiPolygonDetails.push(detail);
-            } else {
-                results.invalidGeometries.push({
-                    parcelId,
-                    reason: `Unexpected geometry type: ${geomType}`
-                });
-            }
-        });
-
-        console.log('📊 [analyzeMultiPolygonParcels] Results:');
-        console.log(`   Total parcels: ${results.totalParcels}`);
-        console.log(`   Polygon: ${results.polygonCount}`);
-        console.log(`   MultiPolygon: ${results.multiPolygonCount}`);
-        console.log(`   Invalid geometries: ${results.invalidGeometries.length}`);
-
-        if (results.multiPolygonCount > 0) {
-            console.log('\n🔍 MultiPolygon parcels:', results.multiPolygonParcels.slice(0, 20));
-            console.log('\n📋 MultiPolygon details (first 5):');
-            results.multiPolygonDetails.slice(0, 5).forEach(detail => {
-                console.log(`   Parcel ${detail.parcelId}:`, {
-                    polygonCount: detail.polygonCount,
-                    ringsPerPolygon: detail.ringsPerPolygon,
-                    valid: detail.valid,
-                    hasPath: detail.hasPath
-                });
-            });
-        }
-
-        if (results.invalidGeometries.length > 0) {
-            console.error('\n❌ Invalid geometries:', results.invalidGeometries.slice(0, 10));
-        }
-
-        return results;
-    }
-
-    /**
-    * Get detailed info about a specific MultiPolygon parcel.
-    * Call from console: window.getMultiPolygonDetails('123')
-     */
-    function getMultiPolygonDetails(parcelId) {
-        const normalizedId = parcelId?.toString();
-        if (!normalizedId) {
-            console.error('Please provide a parcel ID');
-            return null;
-        }
-
-        if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
-            console.error('[getMultiPolygonDetails] parcelLayer not available');
-            return null;
-        }
-
-        let foundLayer = null;
-        global.parcelLayer.eachLayer(layer => {
-            const id = getLayerParcelId(layer)?.toString();
-            if (id === normalizedId) {
-                foundLayer = layer;
-            }
-        });
-
-        if (!foundLayer) {
-            console.error(`[getMultiPolygonDetails] Parcel ${normalizedId} not found in parcelLayer`);
-            return null;
-        }
-
-        const feature = foundLayer.feature;
-        const geometry = feature?.geometry;
-        const coords = geometry?.coordinates;
-
-        const details = {
-            parcelId: normalizedId,
-            geometryType: geometry?.type,
-            layerId: foundLayer._leaflet_id,
-            hasPath: !!foundLayer._path,
-            pathD: foundLayer._path ? foundLayer._path.getAttribute('d') : null,
-            bounds: foundLayer.getBounds ? foundLayer.getBounds() : null,
-            coordinates: coords,
-            polygonCount: Array.isArray(coords) ? coords.length : 0,
-            polygons: []
-        };
-
-        if (geometry?.type === 'MultiPolygon' && Array.isArray(coords)) {
-            coords.forEach((polygon, polyIdx) => {
-                const polyDetail = {
-                    polygonIndex: polyIdx,
-                    ringCount: Array.isArray(polygon) ? polygon.length : 0,
-                    rings: []
-                };
-
-                if (Array.isArray(polygon)) {
-                    polygon.forEach((ring, ringIdx) => {
-                        polyDetail.rings.push({
-                            ringIndex: ringIdx,
-                            coordinateCount: Array.isArray(ring) ? ring.length : 0,
-                            firstCoordinate: Array.isArray(ring) && ring.length > 0 ? ring[0] : null,
-                            lastCoordinate: Array.isArray(ring) && ring.length > 0 ? ring[ring.length - 1] : null,
-                            isClosed: Array.isArray(ring) && ring.length > 0 &&
-                                ring[0][0] === ring[ring.length - 1][0] &&
-                                ring[0][1] === ring[ring.length - 1][1]
-                        });
-                    });
-                }
-
-                details.polygons.push(polyDetail);
-            });
-        }
-
-        // Also check the actual coordinates to see if conversion failed
-        if (geometry?.type === 'MultiPolygon' && Array.isArray(coords)) {
-            const firstPolygon = coords[0];
-            const firstRing = Array.isArray(firstPolygon) ? firstPolygon[0] : null;
-            const firstCoord = Array.isArray(firstRing) && firstRing.length > 0 ? firstRing[0] : null;
-
-            details.coordinateAnalysis = {
-                firstCoordinate: firstCoord,
-                looksLikeWGS84: firstCoord && Math.abs(firstCoord[0]) <= 180 && Math.abs(firstCoord[1]) <= 90,
-                looksLikeHTRS96: firstCoord && (Math.abs(firstCoord[0]) > 1000 || Math.abs(firstCoord[1]) > 1000),
-                allZero: firstCoord && firstCoord[0] === 0 && firstCoord[1] === 0
-            };
-        }
-
-        console.log(`🔍 [getMultiPolygonDetails] Parcel ${normalizedId}:`, details);
-
-        if (details.pathD === 'M0 0' || details.pathD === 'M 0 0') {
-            console.error(`❌ [getMultiPolygonDetails] Parcel ${normalizedId} has invalid path (M0 0) - coordinate conversion likely failed!`);
-            console.error('   First coordinate:', details.coordinateAnalysis?.firstCoordinate);
-            console.error('   Looks like WGS84:', details.coordinateAnalysis?.looksLikeWGS84);
-            console.error('   Looks like HTRS96:', details.coordinateAnalysis?.looksLikeHTRS96);
-        }
-
-        return details;
-    }
-
-    /**
-     * Check if a parcel is visible on the map by searching for it.
-     * Can search by parcelId.
-     * Call from console: window.checkParcelVisibility('21606957') or window.checkParcelVisibility('1812', 'BROJ_CESTICE')
-     */
-    function checkParcelVisibility(searchValue, searchProperty = 'parcelId') {
-        if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
-            console.error('[checkParcelVisibility] parcelLayer not available');
-            return null;
-        }
-
-        let foundLayers = [];
-        global.parcelLayer.eachLayer(layer => {
-            const props = layer?.feature?.properties;
-            if (!props) return;
-
-            const value = (searchProperty === 'parcelId')
-                ? getFeatureParcelId(layer.feature)?.toString()
-                : props[searchProperty]?.toString();
-            if (value === searchValue?.toString()) {
-                const pathD = layer._path ? layer._path.getAttribute('d') : null;
-                const bounds = layer.getBounds ? layer.getBounds() : null;
-                const isVisible = global.map && global.map.hasLayer(layer);
-                const isInViewport = bounds && global.map ? global.map.getBounds().intersects(bounds) : false;
-
-                foundLayers.push({
-                    layer,
-                    layerId: layer._leaflet_id,
-                    parcelId: getFeatureParcelId(layer.feature),
-                    brojCestice: props.BROJ_CESTICE,
-                    hasPath: !!layer._path,
-                    pathD: pathD ? (pathD.length > 100 ? pathD.substring(0, 100) + '...' : pathD) : null,
-                    pathDLength: pathD ? pathD.length : 0,
-                    bounds: bounds,
-                    isVisible: isVisible,
-                    isInViewport: isInViewport,
-                    geometryType: layer.feature?.geometry?.type
-                });
-            }
-        });
-
-        if (foundLayers.length === 0) {
-            console.log(`❌ [checkParcelVisibility] No parcel found with ${searchProperty}="${searchValue}"`);
-            return null;
-        }
-
-        console.log(`✅ [checkParcelVisibility] Found ${foundLayers.length} parcel(s) with ${searchProperty}="${searchValue}":`, foundLayers);
-
-        // If found, try to zoom to it
-        if (foundLayers.length > 0 && global.map && foundLayers[0].bounds) {
-            try {
-                global.map.fitBounds(foundLayers[0].bounds, { padding: [50, 50] });
-                console.log(`📍 [checkParcelVisibility] Zoomed to parcel bounds`);
-            } catch (e) {
-                console.warn(`[checkParcelVisibility] Error zooming to parcel:`, e);
-            }
-        }
-
-        return foundLayers;
-    }
-
-    /**
-     * Get all parcel layers that are within or intersect the given bounds.
-     * This is more efficient than iterating all layers when you only need visible ones.
-     *
-     * @param {L.LatLngBounds} bounds - The bounds to filter by (defaults to current map bounds)
-     * @param {Object} options - Optional configuration
-     * @param {boolean} options.includeIntersecting - Include layers that intersect bounds (default: true)
-     * @returns {Array} Array of layers within/intersecting bounds
-     */
-    function getParcelsInBounds(bounds, options = {}) {
-        const opts = { includeIntersecting: true, ...options };
-
-        // Use provided bounds or fall back to current map bounds
-        const filterBounds = bounds || (global.map && typeof global.map.getBounds === 'function'
-            ? global.map.getBounds()
-            : null);
-
-        if (!filterBounds || !global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
-            return [];
-        }
-
-        const result = [];
-
-        global.parcelLayer.eachLayer(layer => {
-            if (!layer || typeof layer.getBounds !== 'function') return;
-
-            try {
-                const layerBounds = layer.getBounds();
-                if (!layerBounds || !layerBounds.isValid()) return;
-
-                const isInBounds = opts.includeIntersecting
-                    ? filterBounds.intersects(layerBounds)
-                    : filterBounds.contains(layerBounds);
-
-                if (isInBounds) {
-                    result.push(layer);
-                }
-            } catch (_) {
-                // Skip layers with invalid bounds
-            }
-        });
-
-        return result;
-    }
-
-    /**
-     * Iterate only over parcel layers within the current map bounds.
-     * More efficient than parcelLayer.eachLayer() when you only care about visible parcels.
-     *
-     * @param {Function} callback - Function to call for each visible layer
-     * @param {L.LatLngBounds} bounds - Optional bounds (defaults to current map bounds)
-     */
-    function eachVisibleParcel(callback, bounds) {
-        if (typeof callback !== 'function') return;
-
-        const visibleParcels = getParcelsInBounds(bounds);
-        for (let i = 0; i < visibleParcels.length; i++) {
-            callback(visibleParcels[i]);
-        }
-    }
-
-    global.removeParcelLayerById = removeParcelLayerById;
-    global.hideParcelLayerById = hideParcelLayerById;
-    global.showParcelLayerById = showParcelLayerById;
-    global.getParcelLayerIdMap = getParcelLayerIdMap;
-    global.setParcelLayerById = setParcelLayerById;
-    global.deleteParcelLayerById = deleteParcelLayerById;
-    global.rebuildParcelLayerByIdFromParcelLayer = rebuildParcelLayerByIdFromParcelLayer;
+    global.getParcelsInBounds = getParcelsInBounds;
+    global.eachVisibleParcel = eachVisibleParcel;
     global.ensureParcelLayerInitialized = ensureParcelLayerInitialized;
     global.addParcelLayerToMapIfAppropriate = addParcelLayerToMapIfAppropriate;
     global.debugParcelCount = debugParcelCount;
-    global.enableParcelLayerAddTrace = enableParcelLayerAddTrace;
-    global.getAddLayerCalls = getAddLayerCalls;
-    global.findParcelEverywhere = findParcelEverywhere;
     global.analyzeMultiPolygonParcels = analyzeMultiPolygonParcels;
     global.getMultiPolygonDetails = getMultiPolygonDetails;
     global.checkParcelVisibility = checkParcelVisibility;
-    global.getParcelsInBounds = getParcelsInBounds;
-    global.eachVisibleParcel = eachVisibleParcel;
 })(typeof window !== 'undefined' ? window : globalThis);
-

@@ -1,0 +1,45 @@
+{
+ "kind": "city",
+ "key": "indore",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-IN,en;q=0.9,hi;q=0.8 (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://mpbhulekh.gov.in/ ; https://landrecords.mp.gov.in/ ; https://geoportal.mp.gov.in/ ; https://mapit.gov.in/ ; https://www.mpsedc.mp.gov.in/ ; https://mpgis.mp.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer"
+  },
+  {
+   "url": "https://bhunaksha.mp.gov.in/ ; https://mpbhunaksha.mp.gov.in/ ; https://mapit.mp.gov.in/ ; https://sarthi.mp.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502"
+  },
+  {
+   "url": "https://bhunaksha.nic.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "NIC Bhu-Naksha page: tool for authorised State/UT officials (Login); no public API"
+  },
+  {
+   "url": "https://www.imcindore.mp.gov.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "municipal Next.js shell; no parcel GIS layer found"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "All *.mp.gov.in hosts reset or 502 while nic.in and imcindore respond; consistent with Indian-IP-only filtering, unproven.",
+ "nextStep": "Retry MP Bhulekh / MP Bhunaksha from an Indian network; inspect viewer calls and terms."
+}

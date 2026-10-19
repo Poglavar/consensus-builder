@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Sembawang",
+  "country": "Singapore",
+  "countryCode": "SG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Singapore Land Authority publishes a current nationwide cadastral land-parcel GeoJSON described as the entire cadastral map of Singapore. Its polygon at the Sembawang WUP point was verified by geometry-only point-in-polygon inspection. This establishes public geometry at the locator, not title or legal boundary status.",
+  "registryEvidenceUrls": [
+    "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+    "https://api-open.data.gov.sg/v2/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/metadata",
+    "https://www.sla.gov.sg/regulatory/property-boundaries/",
+    "https://www.onemap.gov.sg/docs/maps/landlot.html"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_snapshot_adapter_qualification",
+  "wupCityCode": 329,
+  "cityId": "wup2025:329",
+  "centerLatLon": [
+    1.43901745845202,
+    103.809783149109
+  ],
+  "rank": 593,
+  "queueRank": 593,
+  "population2025": 878551,
+  "population2025k": 878.551,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "One complete SLA polygon is verified at the Sembawang settlement locator, but a faithful executable contract for the 144,800,984-byte weekly national snapshot, its transient resource link and revision-scoped native object identity has not been qualified. Source notices are informational. No cropped geometry corpus or proxy ID is substituted for the full source.",
+  "scopeLimits": "SLA dataset metadata identifies a weekly updated nationwide GeoJSON snapshot (data from Nov 2025; last updated 2026-10-05) with polygon geometries. A temporary full download was used only to test the exact WUP point; its 144,800,984-byte source was deleted after retaining one point-containing polygon. Only snapshot-local OBJECTID_1 and geometry are retained; LOT_KEY and all other properties were discarded.",
+  "remainingUncertainty": "Citywide parcel coverage is not established. For the Florida row, retained geometry is from a countywide service and municipal-boundary coverage is unverified. For other rows, no broader completeness claim is made.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sembawang Singapore official cadastral land parcel map SLA geojson",
+        "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+        "result": "The Singapore Land Authority publishes a current nationwide cadastral land-parcel GeoJSON described as the entire cadastral map of Singapore. Its polygon at the Sembawang WUP point was verified by geometry-only point-in-polygon inspection. This establishes public geometry at the locator, not title or legal boundary status. Official data.gov.sg metadata was anonymously fetched (HTTP 200) and listed a 144,800,984-byte GEOJSON maintained by SLA. The public poll-download endpoint returned 201; the dataset was streamed temporarily, with only geometry tested against the WUP point. One containing Polygon (73 ring vertices) was retained with snapshot OBJECTID_1 80598974 only. Full source deleted. OneMap separately advertises a LandLot basemap and LandQuery; no ownership or lot-number lookup was used.",
+        "actualResultUrls": [
+          "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+          "https://api-open.data.gov.sg/v2/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/metadata",
+          "https://www.sla.gov.sg/regulatory/property-boundaries/",
+          "https://www.onemap.gov.sg/docs/maps/landlot.html"
+        ],
+        "executionMethod": "English/local-language query plus official-source/schema review; no owner, address, tax, or property lookup."
+      },
+      {
+        "language": "Malay",
+        "query": "Sembawang Singapura peta kadaster lot tanah rasmi SLA",
+        "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+        "result": "The Singapore Land Authority publishes a current nationwide cadastral land-parcel GeoJSON described as the entire cadastral map of Singapore. Its polygon at the Sembawang WUP point was verified by geometry-only point-in-polygon inspection. This establishes public geometry at the locator, not title or legal boundary status. Official data.gov.sg metadata was anonymously fetched (HTTP 200) and listed a 144,800,984-byte GEOJSON maintained by SLA. The public poll-download endpoint returned 201; the dataset was streamed temporarily, with only geometry tested against the WUP point. One containing Polygon (73 ring vertices) was retained with snapshot OBJECTID_1 80598974 only. Full source deleted. OneMap separately advertises a LandLot basemap and LandQuery; no ownership or lot-number lookup was used.",
+        "actualResultUrls": [
+          "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+          "https://api-open.data.gov.sg/v2/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/metadata",
+          "https://www.sla.gov.sg/regulatory/property-boundaries/",
+          "https://www.onemap.gov.sg/docs/maps/landlot.html"
+        ],
+        "executionMethod": "English/local-language query plus official-source/schema review; no owner, address, tax, or property lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "sg-data-gov-d_e7395d743076a2bcc487b0d12b9bf33b",
+    "name": "Sembawang registry and parcel geometry review",
+    "operator": "Singapore Land Authority",
+    "url": "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+    "scope": "SLA dataset metadata identifies a weekly updated nationwide GeoJSON snapshot (data from Nov 2025; last updated 2026-10-05) with polygon geometries. A temporary full download was used only to test the exact WUP point; its 144,800,984-byte source was deleted after retaining one point-containing polygon. Only snapshot-local OBJECTID_1 and geometry are retained; LOT_KEY and all other properties were discarded.",
+    "nativeIdField": "OBJECTID_1",
+    "attributesRequested": [],
+    "identityBasis": "Provider snapshot-local object ID only; all other attributes discarded.",
+    "geometryStatus": "verified_point_geometry_sample"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "SLA dataset metadata identifies a weekly updated nationwide GeoJSON snapshot (data from Nov 2025; last updated 2026-10-05) with polygon geometries. A temporary full download was used only to test the exact WUP point; its 144,800,984-byte source was deleted after retaining one point-containing polygon. Only snapshot-local OBJECTID_1 and geometry are retained; LOT_KEY and all other properties were discarded.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Low",
+  "sourceIds": [],
+  "point": [
+    1.43901745845202,
+    103.809783149109
+  ],
+  "sampleFile": "city-329-sembawang-sample.geojson",
+  "sampleFeatureCount": 1,
+  "sampleCrs": "OGC:CRS84 (GeoJSON lon,lat)",
+  "geometryEvidence": {
+    "sourceId": "sg-data-gov-d_e7395d743076a2bcc487b0d12b9bf33b",
+    "summary": "Public geometry-only point response contains the exact WUP locator; only provider snapshot object ID and polygon geometry retained.",
+    "sampleCount": 1,
+    "sampleCrs": "OGC:CRS84 (GeoJSON lon,lat)",
+    "attributesRetained": [
+      "sourceObjectId"
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "held_snapshot_adapter_qualification",
+    "reason": "One complete SLA polygon is verified at the Sembawang settlement locator, but a faithful executable contract for the 144,800,984-byte weekly national snapshot, its transient resource link and revision-scoped native object identity has not been qualified. Source notices are informational. No cropped geometry corpus or proxy ID is substituted for the full source.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/sembawang-service-review.json"
+  },
+  "rootReviewedAt": "2026-10-09T01:56:33.436610+00:00"
+}

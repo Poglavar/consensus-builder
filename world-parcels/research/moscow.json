@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:524901",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_sample_candidate_countrywide",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://nspd.gov.ru/", "observation": "Russian national spatial-data/cadastral map portal is a countrywide viewing candidate, but it did not respond to this client."},
+    {"url": "https://data.mos.ru/", "observation": "Moscow open-data portal has land datasets, but direct access timed out and no parcel polygon response was verified."},
+    {"url": "https://data.apicrafter.ru/tables/datamos/delimitedland", "observation": "Third-party mirror describes Moscow city-owned or unallocated land parcels with geometry, last updated 2021; it is not complete city cadastre and was not used as official endpoint verification."}
+  ],
+  "requests": [
+    {"url": "https://nspd.gov.ru/", "method": "GET", "httpStatus": null, "error": "Connection timed out after 20 seconds", "parcelRecordCount": null},
+    {"url": "https://data.mos.ru/", "method": "GET", "httpStatus": null, "error": "Connection timed out after 20 seconds", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "National cadastral viewer; separate limited Moscow municipal land dataset", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "Neither a Moscow parcel list nor an open nationwide vector service could be tested. A public map or partial city-owned land table is insufficient for nationwide green coverage.",
+  "nextStep": "Recheck official national map access and documented vector API from a reachable network; test Moscow and a second region."
+}

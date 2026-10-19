@@ -1,0 +1,84 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 1176,
+  "queueRank": 2847,
+  "name": "Lutsk",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso3": "UKR",
+  "locId": 804,
+  "point": [50.7507560557239, 25.3429472477178],
+  "population2025": 209014,
+  "population2025k": 209.014,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lutsk Ukraine official cadastral parcel map public API land cadastre",
+        "result": "First-party discovery identified the Lutsk City Council geoportal, its official geospatial-resources page, the city land-parcels dataset, and the National Geoportal API documentation. The city dataset is a local cadastral/map lead, but the observed public response did not expose parcel geometry.",
+        "actualResultUrls": [
+          "https://geo.lutskrada.gov.ua/geoinformacini-resursi-ta-servisi",
+          "https://geo.lutskrada.gov.ua/ua/dataset-page/12376028776684568",
+          "https://nsdi.gov.ua/docs/api/v2/geodata.html"
+        ]
+      },
+      {
+        "language": "Ukrainian (local/native-language discovery)",
+        "query": "Луцьк офіційна кадастрова карта земельний кадастр публічна карта",
+        "result": "First-party Ukrainian-language results identified the Lutsk City Council geoportal's Земельні ділянки dataset, the city's administrative service for State Land Cadastre extracts, and the National Geoportal parcel API documentation. These establish a local cadastral/map custodian and public service leads, not a retained parcel polygon.",
+        "actualResultUrls": [
+          "https://geo.lutskrada.gov.ua/ua/dataset-page/12376028776684568",
+          "https://cnap.lutskrada.gov.ua/functionality/22810/",
+          "https://nsdi.gov.ua/docs/api/v2/geodata.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Lutsk City Council's official geoportal identifies the city government as custodian and exposes the local cadastral dataset 'Земельні ділянки' (dataset id 12376028776684568), categorized as Земельний кадастр. The city service page also documents State Land Cadastre parcel extracts.",
+  "officialSources": [
+    {"url": "https://geo.lutskrada.gov.ua/ua/dataset-page/12376028776684568", "observation": "Official Lutsk City Council geoportal dataset page for Земельні ділянки; dataset id 12376028776684568; map configuration covers the Lutsk community and declares EPSG:4326 among supported SRIDs."},
+    {"url": "https://geo.lutskrada.gov.ua/access-page/12376028776684568?service_type=TMS", "observation": "Official dataset access page documents a public TMS raster route and states the layer is WGS 84 / Pseudo-Mercator; the recommended carto tile route was requested successfully at the exact WUP-point tile."},
+    {"url": "https://geo.lutskrada.gov.ua/geoinformacini-resursi-ta-servisi", "observation": "Official Lutsk City Council geospatial-resources page links the Public Cadastral Map, NSDI, and the city's geospatial portal."},
+    {"url": "https://cnap.lutskrada.gov.ua/functionality/22810/", "observation": "Official Lutsk administrative-service page documents online State Land Cadastre information/extract service for a land parcel."},
+    {"url": "https://nsdi.gov.ua/docs/api/v2/geodata.html", "observation": "Official National Geoportal documentation describes GET /geo/parcel by cadastral number or WGS84 coordinates, with public L0 access subject to restrictions and rate limiting."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Lutsk City Council geoportal / Земельні ділянки dataset (dataset id 12376028776684568); national parcel API lead at nsdi.gov.ua",
+  "sourceIds": ["12376028776684568"],
+  "sourceFieldMapping": {
+    "observedNativeFields": ["dataset id", "layer title", "map SRID configuration", "tile URL"],
+    "parcelIdentity": "No parcel feature identity was returned. The city dataset page exposes only the dataset identity in this attempt; no synthetic row id was created.",
+    "compositeKeyProvenance": null
+  },
+  "schemaAndCrs": {
+    "cityPortalMapConfig": ["EPSG:4326", "EPSG:3395", "EPSG:500002", "EPSG:600007"],
+    "publicRasterService": "WGS 84 / Pseudo-Mercator (TMS page statement)",
+    "parcelFeatureSchema": null
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://geo.lutskrada.gov.ua/ua/dataset-page/12376028776684568", "outcome": "200 HTML; official city dataset page loaded and exposed dataset id, title, map configuration, and access links."},
+    {"method": "GET", "url": "https://geo.lutskrada.gov.ua/access-page/12376028776684568?service_type=TMS", "outcome": "200 HTML; official TMS documentation exposed the public carto tile template."},
+    {"method": "GET", "url": "https://geo.lutskrada.gov.ua/map/rtile/carto_12376028776684568/ua/14/9345/5502.png", "outcome": "200 image/png, 54826 bytes. This is a raster map tile covering the exact WUP point; it contains no machine-readable parcel identity or polygon geometry."},
+    {"method": "GET", "url": "https://nsdi.gov.ua/api/geo/parcel?lat=50.7507560557239&lon=25.3429472477178", "outcome": "403 JSON Access restricted: request not allowed. No token was supplied and no authentication or bypass was attempted."},
+    {"method": "GET", "url": "https://nsdi.gov.ua/api/v2/geo/parcel?lat=50.7507560557239&lon=25.3429472477178", "outcome": "404 HTML; documented route is not mounted at this guessed versioned path."},
+    {"method": "GET", "url": "https://nsdi.gov.ua/geo/parcel?lat=50.7507560557239&lon=25.3429472477178", "outcome": "302 to the National Geoportal authorization page; no login was attempted."},
+    {"method": "GET", "url": "https://newmap.land.gov.ua/", "outcome": "DNS resolution failed for newmap.land.gov.ua in this environment; no alternate host or TLS exception was used."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "resultCategory": "city_registry_and_public_map_verified_but_no_safe_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Lutsk City Council geoportal cadastral dataset and linked public map services; National Geoportal parcel API lead.",
+    "verifiedOpenScope": "Local city dataset page and raster map route verified; exact-point raster coverage verified; no parcel feature response, native parcel ID, or polygon geometry verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The 200 raster tile proves service availability and map coverage only, not parcel-feature availability. The exact point is not treated as a citywide absence test. The national API was access-restricted, and the local portal's observed public route did not expose safe feature geometry. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only and is not source integration or admission."
+}

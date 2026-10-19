@@ -1,0 +1,234 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { REQUIRED_CHECKS } from '../lib/parcel-qualification-policy.mjs';
+import { addCanonicalFeature, assessForcedQueryEvidence, forcedEvidenceMode, assessHmlrBrowserCompletenessEvidence,
+    assessInitialQualification, canonicalSafeFeature, cellsForPoint, exactReadCost, footprintBbox, makeSafeFetch,
+    hasUsableGeographicPolygons, shouldShrinkCell, validateCandidate } from '../qualify-parcel-source.mjs';
+
+const geometry = { type:'Polygon', coordinates:[[[0,0],[1,0],[1,1],[0,1],[0,0]]] };
+const feature = (id, extra = {}) => ({ type:'Feature', id, properties:{ parcelId:id, sourceId:'public-test', sourceParcelId:id.slice(5), owner:'omit', ...extra }, geometry });
+
+test('initial parcel availability qualifies with missing alignment recorded as follow-up', () => {
+    const checks = Object.fromEntries(['classification','exactIds','stableGeometry','explicitAbsence','sampling','completeness','binding','metric','alignment']
+        .map(key => [key, { passed: ['classification','exactIds','stableGeometry'].includes(key) }]));
+    const result = assessInitialQualification(checks, [feature('SRC-123')]);
+    assert.deepEqual(REQUIRED_CHECKS, ['classification','exactIds','stableGeometry']);
+    assert.equal(result.passed, true);
+    assert.equal(result.policy, 'parcel-availability-v1');
+    assert.equal(result.status, 'follow-up-required');
+    assert.ok(result.followUp.some(item => item.check === 'alignment'));
+    assert.equal(checks.alignment.passed, false);
+});
+
+test('non-parcel classification, missing polygons, and broken exact IDs cannot qualify', () => {
+    const core = { classification:{ passed:true }, exactIds:{ passed:true }, stableGeometry:{ passed:true } };
+    assert.equal(assessInitialQualification({ ...core, classification:{ passed:false } }, [feature('SRC-123')]).passed, false);
+    assert.equal(assessInitialQualification(core, []).passed, false);
+    assert.equal(assessInitialQualification({ ...core, exactIds:{ passed:false } }, [feature('SRC-123')]).passed, false);
+    assert.equal(assessInitialQualification({ ...core, stableGeometry:{ passed:false } }, [feature('SRC-123')]).passed, false);
+    assert.equal(hasUsableGeographicPolygons([{ ...feature('SRC-123'), geometry:{ type:'Polygon', coordinates:[[[0,0],[999,0],[1,1],[0,0]]] } }]), false);
+});
+
+test('unrun and failed advisory checks remain false and never count as proof', () => {
+    const checks = { classification:{ passed:true }, exactIds:{ passed:true }, stableGeometry:{ passed:true },
+        explicitAbsence:{ passed:false, reason:'Deferred to second-pass review.' }, sampling:{ passed:false }, completeness:{ passed:false },
+        binding:{ passed:false }, metric:{ passed:false }, alignment:{ passed:false } };
+    const result = assessInitialQualification(checks, [feature('SRC-123')]);
+    assert.equal(result.passed, true);
+    assert.deepEqual(['explicitAbsence','sampling','completeness','binding','metric','alignment'].map(key => checks[key].passed),
+        [false,false,false,false,false,false]);
+    assert.ok(result.followUp.some(item => item.check === 'alignment'));
+});
+
+test('initial candidate validation allows no absent-ID codec while deep review requires a distinct prefixed ID', () => {
+    const candidate = { descriptor:{ id:'public-test', adapter:'arcgis', idPrefix:'SRC-' },
+        city:{ code:'test', name:'Test', point:[0,0] }, sampleIds:['SRC-123'], metricEpsg:32631 };
+    assert.doesNotThrow(() => validateCandidate(candidate));
+    assert.throws(() => validateCandidate(candidate, { deepReview:true }), /Deep review requires/);
+    assert.throws(() => validateCandidate({ ...candidate, absentId:'SRC-123' }), /distinct canonical/);
+    assert.throws(() => validateCandidate({ ...candidate, absentId:'OTHER-1' }), /distinct canonical/);
+    assert.doesNotThrow(() => validateCandidate({ ...candidate, absentId:'SRC-999' }, { deepReview:true }));
+});
+
+test('builds thirteen bounded WGS84 cells around explicit lon/lat', () => {
+    const cells = cellsForPoint([-1.2, 51.5], 0.001);
+    assert.equal(cells.length, 13);
+    assert.deepEqual(cells[4].bbox, [-1.2, 51.5, -1.199, 51.501]);
+});
+
+test('retains only canonical safe identity properties', () => {
+    const clean = canonicalSafeFeature(feature('SRC-123'), 'public-test');
+    assert.deepEqual(Object.keys(clean.properties).sort(), ['parcelId','sourceId','sourceParcelId']);
+    assert.equal(clean.geometry, geometry);
+});
+
+test('an outline-derived reference stands on its geometry hash; a bare missing source key still fails', () => {
+    const hash = 'a'.repeat(64);
+    const outline = { type:'Feature', id:'SRC-g1~1~2~' + hash, geometry, properties:{ parcelId:'SRC-g1~1~2~' + hash, sourceId:'public-test',
+        sourceParcelId:null, parcelIdentityKind:'geometry-sha256-v1', sourceGeometryHash:hash } };
+    assert.equal(canonicalSafeFeature(outline, 'public-test').properties.sourceParcelId, hash);
+    assert.throws(() => canonicalSafeFeature({ ...outline, properties:{ ...outline.properties, parcelIdentityKind:undefined } }, 'public-test'), /Malformed/);
+    assert.throws(() => canonicalSafeFeature({ ...outline, properties:{ ...outline.properties, sourceGeometryHash:'short' } }, 'public-test'), /Malformed/);
+});
+
+test('collapses repeat IDs with the same geometry and rejects changed geometry', () => {
+    const cache = new Map();
+    addCanonicalFeature(cache, feature('SRC-123'), 'public-test');
+    addCanonicalFeature(cache, feature('SRC-123'), 'public-test');
+    assert.equal(cache.size, 1);
+    assert.throws(() => addCanonicalFeature(cache, { ...feature('SRC-123'), geometry:{ type:'Polygon', coordinates:[[[0,0],[2,0],[2,2],[0,2],[0,0]]] } }, 'public-test'), /Conflicting geometry/);
+});
+
+test('preserves equal outlines under different canonical IDs for the independent metric pass', () => {
+    const cache = new Map();
+    addCanonicalFeature(cache, feature('SRC-123'), 'public-test');
+    addCanonicalFeature(cache, feature('SRC-456'), 'public-test');
+    assert.equal(cache.size, 2);
+    assert.equal(cache.get('SRC-123').geometry, cache.get('SRC-456').geometry);
+});
+
+test('accepts page-size-one offset-zero requests when native predicates differ', () => {
+    const evidence = assessForcedQueryEvidence({
+        requests:[{ queryHash:'native-query-a', pageLimit:1, offset:0, httpStatus:200 }, { queryHash:'native-query-b', pageLimit:1, offset:0, httpStatus:200 }],
+        expectedIds:['SRC-123','SRC-456'], returnedIds:['SRC-123','SRC-456'], complete:true
+    });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.distinctFeatureQueries, 2);
+    assert.equal(evidence.duplicatePageRequests, 0);
+});
+
+test('rejects a repeated page-size-one predicate at the same offset', () => {
+    const evidence = assessForcedQueryEvidence({
+        requests:[{ queryHash:'same-native-query', pageLimit:1, offset:0, httpStatus:200 }, { queryHash:'same-native-query', pageLimit:1, offset:0, httpStatus:200 }],
+        expectedIds:['SRC-123','SRC-456'], returnedIds:['SRC-123','SRC-456'], complete:true
+    });
+    assert.equal(evidence.passed, false);
+    assert.equal(evidence.duplicatePageRequests, 1);
+});
+
+test('a page the provider dropped and the adapter sent again is one read, not a repeated page', () => {
+    const page = { queryHash:'same-native-query', pageLimit:1, offset:0 };
+    const evidence = assessForcedQueryEvidence({
+        requests:[{ ...page, errorType:'TypeError', causeCode:'ECONNRESET' }, { ...page, httpStatus:502 }, { ...page, httpStatus:200 },
+            { queryHash:'native-query-b', pageLimit:1, offset:0, httpStatus:200 }],
+        expectedIds:['SRC-123','SRC-456'], returnedIds:['SRC-123','SRC-456'], complete:true
+    });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.featurePageRequests, 2);
+    assert.equal(evidence.duplicatePageRequests, 0);
+});
+
+test('accepts ArcGIS singleton object-ID requests only with a complete manifest and exact returned IDs', () => {
+    const requests = [
+        { queryHash:'object-id-a', idListParam:'objectIds', idListCount:1, httpStatus:200 },
+        { queryHash:'object-id-b', idListParam:'objectIds', idListCount:1, httpStatus:200 }
+    ];
+    const evidence = assessForcedQueryEvidence({ requests, expectedIds:['SRC-123','SRC-456'],
+        returnedIds:['SRC-123','SRC-456'], complete:true, mode:'object-ids' });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.distinctSingletonObjectIdQueries, 2);
+    assert.equal(assessForcedQueryEvidence({ requests, expectedIds:['SRC-123','SRC-456'],
+        returnedIds:['SRC-123','SRC-456'], complete:false, mode:'object-ids' }).passed, false);
+});
+
+test('accepts HMLR immutable snapshot completeness only when release, date, IDs, absence and repeated cells bind', () => {
+    const snapshotId = 'a'.repeat(64), sourceDate = '2026-10-04';
+    const sampleIds = ['GB-HMLR-BROWSER-v1-12', 'GB-HMLR-BROWSER-v1-34'];
+    const exact = Object.assign(new Map(sampleIds.map(id => [id, { id }])), { snapshotId, sourceDate });
+    const absent = { complete:true, features:[], absentIds:['GB-HMLR-BROWSER-v1-99'], snapshotId, sourceDate };
+    const cell = ids => ({ complete:true, ids, snapshotId, sourceDate });
+    const firstPass = [cell(sampleIds), cell([])];
+    const secondPass = [cell([...sampleIds].reverse()), cell([])];
+    const evidence = assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:exact, absenceResult:absent, firstPass, secondPass,
+        absentId:'GB-HMLR-BROWSER-v1-99' });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.snapshotBound, true);
+    assert.equal(evidence.sourceDateBound, true);
+    assert.equal(evidence.exactSampleIdsRepeated, true);
+    assert.equal(evidence.completeSampleQueries, true);
+
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:'b'.repeat(64), sampleIds,
+        firstExact:exact, secondExact:exact, absenceResult:absent, firstPass, secondPass,
+        absentId:'GB-HMLR-BROWSER-v1-99' }).passed, false);
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:Object.assign(new Map(exact), { snapshotId, sourceDate:'2026-10-05' }),
+        absenceResult:absent, firstPass, secondPass, absentId:'GB-HMLR-BROWSER-v1-99' }).sourceDateBound, false);
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:new Map([[sampleIds[0], exact.get(sampleIds[0])]]), absenceResult:absent,
+        firstPass, secondPass, absentId:'GB-HMLR-BROWSER-v1-99' }).exactSampleIdsRepeated, false);
+    assert.equal(assessHmlrBrowserCompletenessEvidence({ expectedSnapshotId:snapshotId, sampleIds,
+        firstExact:exact, secondExact:exact, absenceResult:absent, firstPass:[cell(sampleIds), { ...cell([]), complete:false }],
+        secondPass, absentId:'GB-HMLR-BROWSER-v1-99' }).completeSampleQueries, false);
+});
+
+test('single-equality exact reads are judged by their singleton objectIds geometry requests', () => {
+    const requests = [
+        { queryHash:'count-a' }, { queryHash:'ids-a' }, { queryHash:'oid-1', idListParam:'objectIds', idListCount:1 },
+        { queryHash:'count-b' }, { queryHash:'ids-b' }, { queryHash:'oid-2', idListParam:'objectIds', idListCount:1 }
+    ].map(request => ({ ...request, httpStatus:200 }));
+    const evidence = assessForcedQueryEvidence({ requests, expectedIds:['N-1','N-2'], returnedIds:['N-1','N-2'], complete:true, mode:'single-equality' });
+    assert.equal(evidence.passed, true);
+    assert.equal(evidence.kind, 'single-equality-manifest');
+    assert.equal(assessForcedQueryEvidence({ requests, expectedIds:['N-1','N-2'], returnedIds:['N-1','N-2'], complete:true }).passed, false);
+});
+
+test('a cursor-paged request is a distinct query identity', async () => {
+    const state = { requests: [] };
+    globalThis.__qualificationOriginalFetch = async () => new Response('{}');
+    const fetch = makeSafeFetch({ state, stage: 'forced-page-size-one' });
+    await fetch('https://api.example/collections/parcels/items?f=json&limit=1');
+    await fetch('https://api.example/collections/parcels/items?f=json&limit=1&cursor=abc');
+    await fetch('https://api.example/collections/parcels/items?f=json&limit=1&cursor=def');
+    delete globalThis.__qualificationOriginalFetch;
+    assert.equal(new Set(state.requests.map(request => request.queryHash)).size, 3);
+    const evidence = assessForcedQueryEvidence({ requests: state.requests, expectedIds:['A','B','C'], returnedIds:['A','B','C'], complete:true });
+    assert.equal(evidence.passed, true);
+});
+
+test('page-size-one reads of two different cells at one offset are distinct queries', async () => {
+    const state = { requests: [] };
+    globalThis.__qualificationOriginalFetch = async () => new Response('{}');
+    const fetch = makeSafeFetch({ state, stage: 'forced-page-size-one' });
+    const cell = box => `https://gis.example/arcgis/rest/services/x/MapServer/5/query?where=1%3D1&geometry=${box}&resultRecordCount=1&resultOffset=0`;
+    await fetch(cell('72.84,19.01,72.85,19.02'));
+    await fetch(cell('72.86,19.03,72.87,19.04'));
+    await fetch(cell('72.86,19.03,72.87,19.04'));
+    delete globalThis.__qualificationOriginalFetch;
+    const evidence = assessForcedQueryEvidence({ requests: state.requests.slice(0, 2), expectedIds:['A','B'], returnedIds:['A','B'], complete:true });
+    assert.equal(evidence.passed, true);
+    assert.equal(assessForcedQueryEvidence({ requests: state.requests, expectedIds:['A','B'], returnedIds:['A','B'], complete:true }).duplicatePageRequests, 1);
+});
+
+test('a network failure records the cause code Node\'s fetch hides behind "fetch failed"', async () => {
+    const state = { requests: [] };
+    globalThis.__qualificationOriginalFetch = async () => { throw new TypeError('fetch failed', { cause: Object.assign(new Error('getaddrinfo EAI_AGAIN'), { code: 'EAI_AGAIN' }) }); };
+    const fetch = makeSafeFetch({ state, stage: 'sampling' });
+    await assert.rejects(fetch('https://api.example/collections/parcels/items?limit=1'), /fetch failed/);
+    delete globalThis.__qualificationOriginalFetch;
+    assert.equal(state.requests.length, 1);
+    assert.equal(state.requests[0].errorType, 'TypeError');
+    assert.equal(state.requests[0].causeCode, 'EAI_AGAIN');
+});
+
+test('dense cities shrink the cell only for sources that read one parcel per request or worse', () => {
+    assert.equal(exactReadCost(3, 3), 1);
+    assert.equal(exactReadCost(9, 3), 3);
+    assert.equal(exactReadCost(1, 3), 0);
+    // The probe box spans the 13 cells' 5x5-cell footprint.
+    assert.deepEqual(footprintBbox([-1.2, 51.5], 0.001), [-1.202, 51.498, -1.197, 51.503]);
+    // Palma: ~400 parcels in the 0.001° footprint, one request each, would re-read ~230.
+    assert.equal(shouldShrinkCell({ footprintFeatures: 400, perIdCost: 1, step: 0.001 }), true);
+    assert.equal(shouldShrinkCell({ footprintFeatures: 100, perIdCost: 1, step: 0.0005 }), false);
+    // Wellington: a sparse centre cell, but ~150 parcels around it at three requests each.
+    assert.equal(shouldShrinkCell({ footprintFeatures: 150, perIdCost: 3, step: 0.001 }), true);
+    assert.equal(shouldShrinkCell({ footprintFeatures: 400, perIdCost: 0, step: 0.001 }), false);
+    assert.equal(shouldShrinkCell({ footprintFeatures: 900, perIdCost: 3, step: 0.00025 }), false);
+});
+
+test('an outline source paging by object-ID lists is judged by its singleton object-ID reads', () => {
+    assert.equal(forcedEvidenceMode({ identityKind:'geometry-sha256-v1', boundsQueryMode:'object-ids' }), 'object-ids');
+    assert.equal(forcedEvidenceMode({ identityKind:'geometry-sha256-v1' }), undefined);
+    assert.equal(forcedEvidenceMode({ idsQueryMode:'single-equality' }), 'single-equality');
+    assert.equal(forcedEvidenceMode({ boundsQueryMode:'object-ids' }), undefined);
+});

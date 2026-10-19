@@ -1,0 +1,126 @@
+{
+  "cityCode": 3969,
+  "queueRank": 2771,
+  "name": "Santa Cruz",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "locId": 608,
+  "point": [14.2649420218369, 121.397561527768],
+  "population2025": 213846,
+  "population2025k": 213.846,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santa Cruz Laguna Philippines official cadastral parcel map GIS cadastral registry DENR LRA municipal assessor",
+        "result": "First-party discovery found the official Municipality of Santa Cruz Laguna portal, the official LRA directory listing Registry of Deeds Sta. Cruz, Laguna, and an official LMB/FOI record for a Santa Cruz, Laguna planning-document request. No public parcel viewer or geometry API was identified.",
+        "actualResultUrls": [
+          "https://www.sbstacruz.com/",
+          "https://www.lra.gov.ph/images/Transparency_Page/XIII.ISO_QMS/condocrev2_1.pdf",
+          "https://www.foi.gov.ph/agencies/denrlmb/SUCCESSFUL/?page=3/"
+        ]
+      },
+      {
+        "language": "Filipino/Tagalog",
+        "query": "Santa Cruz Laguna opisyal mapa kadastral parsela GIS rehistro lupa",
+        "result": "Search did not reveal a first-party public cadastral parcel viewer/API. The official municipal portal was found and its current pages were inspected; it provides municipal information and documents but no safe parcel service route.",
+        "actualResultUrls": [
+          "https://www.sbstacruz.com/",
+          "https://www.sbstacruz.com/aboutUs",
+          "https://www.sbstacruz.com/citizenscharter"
+        ]
+      }
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "route": "https://www.sbstacruz.com/",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Current official municipal portal loaded. It exposes ordinances, resolutions, citizen charter, downloadable forms, and municipal information; no cadastral map or parcel API link was present in the page shell. Session cookies were not retained."
+    },
+    {
+      "route": "https://www.sbstacruz.com/build/assets/app-DIuewKhF.js",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript bundle inspected. No parcel, cadastral, GIS, assessor, property, or land-service endpoint was identified by route/string inspection."
+    },
+    {
+      "route": "https://www.sbstacruz.com/aboutUs",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Official municipal geographic profile confirms Santa Cruz Laguna context, 26 barangays, and approximate 3,860-hectare area; this is locality evidence, not parcel geometry."
+    },
+    {
+      "route": "https://www.sbstacruz.com/citizenscharter",
+      "method": "GET anonymous; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Official citizen-charter page loaded but its records were client-fetched and no parcel/cadastral service response was exposed in the bounded inspection. No form was submitted."
+    },
+    {
+      "route": "https://www.lra.gov.ph/images/Transparency_Page/XIII.ISO_QMS/condocrev2_1.pdf",
+      "method": "GET/read-only official PDF; TLS verified",
+      "httpStatus": 200,
+      "outcome": "LRA document lists RD-058, RD Sta. Cruz, Laguna. This evidences a local registry custodian/procedure, not an anonymous parcel geometry endpoint."
+    },
+    {
+      "route": "https://www.foi.gov.ph/agencies/denrlmb/SUCCESSFUL/?page=3/",
+      "method": "GET/read-only official FOI index; TLS verified",
+      "httpStatus": 200,
+      "outcome": "Official LMB index lists a successful July 27, 2026 request titled CLUP and CDP of Santa Cruz, Laguna. It does not publish a parcel feature service or safe parcel geometry in the indexed response."
+    },
+    {
+      "route": "https://santacruzlaguna.gov.ph/",
+      "method": "GET anonymous; TLS verified DNS/request attempt",
+      "httpStatus": null,
+      "outcome": "Host did not resolve. This failure was not treated as evidence of citywide absence."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native public parcel ID if independently verified",
+    "full parcel polygon geometry",
+    "source service URL",
+    "source CRS",
+    "geometry type",
+    "retrieval timestamp",
+    "administrative codes"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data",
+    "private credentials or tokens"
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not run against a verified parcel endpoint; exact point preserved and no absence inference made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal portal, official LRA local registry directory evidence, and official LMB/FOI index.",
+    "verifiedOpenScope": "Local registry custodian/procedure evidence only; no public parcel geometry service verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_serial_review",
+  "integrationDecision": "not_integrated",
+  "remainingUncertainty": "A DENR/LMB regional or local office may provide cadastral maps or survey records through a request workflow, and a future municipal portal release may expose GIS services. The current public pages and bounded JavaScript inspection do not establish service availability, schema, CRS, parcel identity, completeness, or citywide absence."
+}

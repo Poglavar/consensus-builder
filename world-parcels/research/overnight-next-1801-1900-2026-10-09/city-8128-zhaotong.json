@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 8128,
+  "queueRank": 1897,
+  "cityId": "queue:1897",
+  "name": "Zhaotong",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [27.3335909992706, 103.715357916614],
+  "centerLatLon": [27.3335909992706, 103.715357916614],
+  "population2025": 302089,
+  "population2025k": 302.089,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhaotong cadastral parcel map official natural resources China",
+        "result": "Search found the official National Geographic Information Resource Catalog, national cadastral-policy material, and an official Yunnan Natural Resources page for the Zhaotong Real Estate Registration Center. No Zhaotong anonymous parcel ID-plus-geometry service was exposed.",
+        "actualResultUrls": [
+          "https://www.webmap.cn/main.do?method=index1",
+          "https://app.www.gov.cn/govdata/gov/202310/12/508153/article.html",
+          "https://dnr.yn.gov.cn/html/2021/caizhengyujuesuan_0401/32076.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "昭通 不动产登记 地籍图 自然资源局 官方",
+        "result": "Official Yunnan Natural Resources material identifies the Zhaotong Real Estate Registration Center, its statutory registration/query duties, and plans for self-service query functions. Search did not reveal a current public cadastral viewer or anonymous parcel geometry API for Zhaotong.",
+        "actualResultUrls": [
+          "https://dnr.yn.gov.cn/html/2021/caizhengyujuesuan_0401/32076.html",
+          "https://www.webmap.cn/main.do?method=index1",
+          "https://www.tianditu.gov.cn/"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Simplified-Chinese web discovery followed by bounded TLS-verified GETs using a browser User-Agent; no credentials, login, CAPTCHA/Cloudflare bypass, or unsafe fields used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://dnr.yn.gov.cn/html/2021/caizhengyujuesuan_0401/32076.html",
+      "observation": "Official Yunnan Natural Resources page for 昭通市不动产登记中心. The page states that the center implements unified real-estate registration, conducts registration-information query supervision, coordinates county/district registration operations, and promotes self-service query at registration halls. Direct GET succeeded with HTTP 200. No viewer configuration or parcel geometry endpoint was present."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "observation": "Official national geographic-information resource catalog operated under the Ministry of Natural Resources and maintained by the National Geomatics Center. Direct GET succeeded with HTTP 200; inspected page exposed general catalog and Tianditu navigation, not a Zhaotong cadastral layer or anonymous geometry endpoint."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "Official national geographic-information public-service portal. Direct anonymous GET returned CloudWAF interception HTTP 418; no challenge defeat attempted."
+    },
+    {
+      "url": "https://www.zhaotong.gov.cn/",
+      "observation": "Candidate official municipal portal from discovery context; DNS resolution failed during bounded GET, so no content or service route was verified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dnr.yn.gov.cn/html/2021/caizhengyujuesuan_0401/32076.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official local/regional registry-custodian page retrieved. HTML inspection found no map viewer, schema, CRS, or parcel feature response."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=utf-8",
+      "assessment": "National catalog page retrieved. HTML inspection found general catalog/map-service routes but no Zhaotong parcel layer or bounded anonymous ID-plus-geometry query."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "CloudWAF interception; no bypass attempted and not evidence of cadastral absence."
+    },
+    {
+      "url": "https://www.zhaotong.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "DNS resolution failed; no certificate exception or alternate bypass used, and not evidence of cadastral absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Zhaotong prefecture-level city real-estate registration administration under the Zhaotong and Yunnan natural-resources authorities.",
+    "verifiedOpenScope": "Local registry custodian and query-procedure evidence only; no anonymous parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current public viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency, and citywide coverage remain unresolved. The official page establishes registry custody and query duties but not an open vector parcel service. WAF/DNS limitations and a general catalog result are access limitations, not evidence that Zhaotong lacks cadastral data.",
+  "nextStep": "A later attempt may inspect an officially exposed Yunnan/Zhaotong viewer from an allowed network and test only a bounded anonymous ID-plus-geometry query if the viewer reveals one; do not infer absence from these access failures."
+}

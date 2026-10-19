@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Bounded fallback research for Boston's current official fee parcel polygons. Stores source metadata, aggregate validity and at most three native IDs; no raw geometry or owner attributes are retained.",
+  "city": "Boston",
+  "stateCode": "MA",
+  "centerLatLon": [
+    42.3601,
+    -71.0589
+  ],
+  "status": "passed",
+  "source": {
+    "id": "us-ma-boston-current-parcels",
+    "name": "City of Boston GIS \u2014 current fee parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0",
+    "catalogueUrl": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0?f=pjson",
+    "operator": "City of Boston GIS / Assessing",
+    "countryCode": "US",
+    "stateCode": "MA",
+    "cityIds": [
+      "boston"
+    ],
+    "scope": "Current Boston FEE parcel polygons. The city endpoint's layer metadata identifies Boston's M035TaxPar source and distinguishes parcel, water, and rights-of-way polygons by POLY_TYPE.",
+    "idField": "LOC_ID",
+    "idType": "string",
+    "idPattern": "^[MF]_[0-9]+_[0-9]+$",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "US-MA-BOSTON-",
+    "outFields": [
+      "OBJECTID",
+      "LOC_ID",
+      "MAP_PAR_ID",
+      "POLY_TYPE"
+    ],
+    "parcelNumberField": "MAP_PAR_ID",
+    "attributeFilters": {
+      "POLY_TYPE": "FEE"
+    },
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32619,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "nativeGeometryMode": "parts",
+    "partsCoordinatePrecision": 9,
+    "references": [
+      {
+        "url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0?f=pjson",
+        "observation": "Official current City of Boston feature layer is CURRENT_PARCELS with Polygon geometry. It declares OBJECTID, LOC_ID (18-character string), MAP_PAR_ID, POLY_TYPE and TOWN_ID. The service description identifies the Boston M035TaxPar source and says parcels relate to assessment records via LOC_ID. Only the four listed non-owner fields are requested."
+      },
+      {
+        "url": "https://www.mass.gov/info-details/massgis-data-property-tax-parcels",
+        "observation": "MassGIS' current parcel page describes FEE/TAX and other POLY_TYPE values and its standardized parcel mapping."
+      },
+      {
+        "url": "https://www.mass.gov/info-details/info-for-assessors-about-parcel-data",
+        "observation": "MassGIS describes LOC_ID as a unique statewide locational identifier for standardized parcel mapping."
+      },
+      {
+        "url": "https://www.mass.gov/doc/standard-for-digital-parcels-and-related-data-sets-version-3/download",
+        "observation": "MassGIS standard documents LOC_ID as the parcel polygon identifier and discusses one parcel mapping feature linking to multiple assessor records."
+      }
+    ],
+    "caveats": [
+      "Uses the current city service, not Boston's historical Parcels09 layer.",
+      "FEE parcels only; TAX, water, rights-of-way, and other polygon types are excluded.",
+      "Complete same-LOC_ID source rows are resolved by OID manifest and combined in parts mode before the parcel is exposed. The source's relationship to assessor data does not require returning assessment or owner attributes."
+    ]
+  },
+  "attempts": [
+    {
+      "endpoint": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/MapServer/0/query",
+      "bbox": [
+        -71.0625,
+        42.3575,
+        -71.06,
+        42.36
+      ],
+      "where": "POLY_TYPE='FEE'",
+      "operation": "returnCountOnly",
+      "result": {
+        "httpStatus": 200,
+        "count": 33
+      },
+      "assessment": "The corresponding returnIdsOnly call returned 34 unique OIDs. Completeness check correctly rejected the MapServer endpoint; no count/manifest tolerance was added."
+    },
+    {
+      "endpoint": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/MapServer/0/query",
+      "bbox": [
+        -71.0625,
+        42.3575,
+        -71.06,
+        42.36
+      ],
+      "where": "POLY_TYPE='FEE'",
+      "operation": "returnIdsOnly",
+      "result": {
+        "httpStatus": 200,
+        "objectIdFieldName": "OBJECTID",
+        "count": 34,
+        "uniqueCount": 34,
+        "invalidCount": 0
+      }
+    },
+    {
+      "endpoint": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0/query",
+      "bbox": [
+        -71.0625,
+        42.3575,
+        -71.06,
+        42.36
+      ],
+      "where": "POLY_TYPE='FEE'",
+      "operation": "returnCountOnly and returnIdsOnly",
+      "result": {
+        "httpStatus": 200,
+        "count": 34,
+        "manifestCount": 34,
+        "uniqueManifestCount": 34
+      },
+      "assessment": "The current FeatureServer equivalent resolves the count/manifest discrepancy observed on MapServer."
+    },
+    {
+      "endpoint": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0/query",
+      "bbox": [
+        -71.0625,
+        42.3575,
+        -71.06,
+        42.36
+      ],
+      "where": "POLY_TYPE='FEE'",
+      "operation": "feature sample",
+      "result": {
+        "count": 4,
+        "geometryType": "Polygon",
+        "allFourGeometryValid": true,
+        "requestedFields": [
+          "OBJECTID",
+          "LOC_ID",
+          "MAP_PAR_ID",
+          "POLY_TYPE"
+        ]
+      }
+    },
+    {
+      "endpoint": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0/query",
+      "operation": "full adapter gate",
+      "result": "Passed all 18 viewport cells, provider count/manifest equality, forced small-page enumeration, exact native-ID resolution, geometry footprint read, and complete binding."
+    }
+  ],
+  "verification": {
+    "viewportCells": 18,
+    "uniqueNativeIDs": 864,
+    "exactResolvedNativeIDs": 864,
+    "nativeIDs": [
+      "F_775089_2955798",
+      "F_774884_2956255",
+      "F_774940_2956339"
+    ],
+    "geometryValidity": "All queried Polygon features passed adapter validation; grouped source-part unions and repeated-cell geometry consistency passed.",
+    "paging": {
+      "providerCount": 7,
+      "forcedPageSize": 3,
+      "returned": 7,
+      "complete": true
+    },
+    "footprintParcelCount": 3,
+    "bindingCoverage": "complete",
+    "requests": 182,
+    "gateOutput": "research/us-capitals-batch-two-boston-current-featureserver-live-2026-10-06.json"
+  },
+  "limitations": "The MapServer count discrepancy was isolated to that endpoint: count 33 versus 34 unique manifest IDs for the same request. The current FeatureServer counterpart returned matching count and manifest and passed the full gate. The precise internal reason for the MapServer count behavior is unknown; integration uses the verified FeatureServer endpoint."
+}

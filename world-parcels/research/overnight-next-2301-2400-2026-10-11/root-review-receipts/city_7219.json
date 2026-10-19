@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7219",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-7219-chakwal.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/chakwal-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:51:03Z",
+  "reason": "Immutable UN WUP 2025 identity matches code 7219, rank 2337, Pakistan, point [32.9330443745596,72.8516333554078], and 249801 persons. English and Urdu query text, outcomes and URLs are recorded in the paired packet. Official PLRA/PULSE and Chakwal revenue context support continued custody investigation, but the GIS host timed out or failed normal TLS verification; no anonymous native-ID full-polygon response, schema or CRS was obtained. Zero samples; an unavailable viewer does not establish citywide absence.",
+  "sampleCheck": "No polygon retained; safe-attribute and three-polygon caps satisfied.",
+  "admissionCheck": "No independent live adapter proof of fresh native-ID reads, forced paging, 13 bounded cells, metric full-polygon overlap and operation checks, proposal source binding, and headed Details-panel verification. Runtime, catalog and generated report state remain unchanged."
+}

@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32649",
+  "featureCount": 28,
+  "validNonemptyCount": 28,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 563.1624007171702,
+    "median": 1479.4777910958032,
+    "max": 6301.676683902373
+  },
+  "features": [
+    {
+      "id": "MO-DSCC-CAD-87",
+      "areaM2": 1121.9312139957929,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-88",
+      "areaM2": 1470.2122377849719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-150",
+      "areaM2": 4402.360473135104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-387",
+      "areaM2": 813.2180481849679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-389",
+      "areaM2": 1866.3320308897921,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-396",
+      "areaM2": 1645.7187903524396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-84",
+      "areaM2": 563.1624007171702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-85",
+      "areaM2": 826.6872836645855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-86",
+      "areaM2": 1121.9410330735418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-361",
+      "areaM2": 2533.95438549909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-375",
+      "areaM2": 1263.1586685998097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-388",
+      "areaM2": 1261.0752149228806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-460",
+      "areaM2": 2811.0357751733436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-461",
+      "areaM2": 3779.6391441538244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-462",
+      "areaM2": 2794.687827544395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-273",
+      "areaM2": 6301.676683902373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-376",
+      "areaM2": 1811.8555437260552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-377",
+      "areaM2": 1488.7433444066348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-378",
+      "areaM2": 2058.5448319667867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-379",
+      "areaM2": 2384.4143694663494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-380",
+      "areaM2": 1767.0230147669936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-381",
+      "areaM2": 1065.6080857217498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-71",
+      "areaM2": 1251.9249450309708,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-73",
+      "areaM2": 1457.99776071729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-91",
+      "areaM2": 1191.7105473392603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-151",
+      "areaM2": 1295.752746675408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-339",
+      "areaM2": 3144.3696559022433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MO-DSCC-CAD-414",
+      "areaM2": 1129.3214537670906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

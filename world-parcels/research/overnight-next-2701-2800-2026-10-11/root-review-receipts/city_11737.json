@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11737",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-11737-bardhaman.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/bardhaman-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T19:30:45.677Z",
+  "reviewFindings": {
+    "identity": "Bardhaman, IN, rank 2761, point [23.2391331506577,87.8624172398472], 214413 persons: packet matches immutable roster and pending queue.",
+    "custody": "Official Purba Bardhaman district land-office directory supports local land-record custody; registryFound true is supported as custody only.",
+    "geometry": "Banglarbhumi anonymous request timed out; no Bardhaman parcel endpoint, native ID, CRS or full polygon response was obtained. This is unresolved, not absence.",
+    "admission": "Held: no live parcel adapter qualification, forced paging, 13 bounded cells, metric geometry/overlap and operation suite, source binding, or headed Details verification."
+  }
+}

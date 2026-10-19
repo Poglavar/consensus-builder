@@ -1,0 +1,53 @@
+{
+ "kind": "country",
+ "key": "TN",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: fr-TN,fr;q=0.9,ar;q=0.8,en;q=0.7; cookie jar (curl -c/-b) kept per country",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.cnct.nat.tn/, https://www.opf.nat.tn/, https://www.ocld.nat.tn/, https://otc.nat.tn/, https://www.data.gov.tn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502), no response from host"
+  },
+  {
+   "url": "https://www.otc.nat.tn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "OTC (Office de la Topographie et du Cadastre) site is reachable; menus include Connexion/Creer un compte, my-carts, prices, e-services"
+  },
+  {
+   "url": "https://www.otc.nat.tn/geoportail",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Describes a 'Geoportail cadastral de la Tunisie' project (Web-SIG cadastral information system); realisations 'en cours'; no map/service URL in page"
+  },
+  {
+   "url": "https://www.otc.nat.tn/e-services , /cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "same shell page; e-services need an account"
+  },
+  {
+   "url": "https://www.otc.nat.tn/tlis, /products",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "project/product pages, no public parcel API"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "OTC main site reachable; other Tunisian hosts fail at proxy CONNECT (502), reason unknown",
+ "notes": "New: OTC site is reachable; it lists a cadastral geoportal project still under construction and an account/cart e-services model, with no public parcel service found. Classification is low confidence: account/cart evidence only, I did not confirm that parcel geometries are sold.",
+ "nextStep": "Register-free browse of OTC e-services from a real browser; look for the geoportail viewer URL once launched; check OPF (Conservation Fonciere) separately."
+}

@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1127,
+  "population2025k": 493.753,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "High",
+  "verifiedParcelResponse": null,
+  "source": {
+    "name": "Aswan Governorate GIS Geoportal",
+    "url": "https://gis.aswan.gov.eg/",
+    "operator": "Aswan Governorate GIS Geoportal",
+    "serviceType": "official service/map evidence; vector access not verified",
+    "layer": "not verified",
+    "geometryType": "not verified",
+    "nativeIdField": null
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:7520",
+  "wupCityCode": 7520,
+  "name": "Aswan",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    24.0772404484552,
+    32.9008693936913
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_registry_route_geometry_unverified",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "أسوان خريطة مساحية سجل عقاري محافظة أسوان الشهر العقاري GIS رسمي",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://gis.aswan.gov.eg/",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf"
+      ],
+      "summary": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Aswan Egypt official cadastral land registry parcel map local survey authority GIS",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://gis.aswan.gov.eg/",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf"
+      ],
+      "summary": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://gis.aswan.gov.eg/",
+      "operator": "Aswan Governorate GIS Geoportal",
+      "observation": "Official geoportal describes Geographic Information Administration and Utility Network Center and Urban Planning; reviewed description does not identify land parcels."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Egyptian Survey Authority",
+      "observation": "Official national mapping agency states mission includes ownership/cadastral maps/registers; not evidence of an anonymous parcel service."
+    },
+    {
+      "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+      "operator": "Egypt Ministry of Finance",
+      "observation": "Official finance document lists Aswan real-estate registration office address; office location evidence only."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.aswan.gov.eg/",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://gis.aswan.gov.eg/",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 5067,
+      "sha256OfReadBytes": "e895b17b185cb95bac3e4b34d76298be37c906247b6ff6f8cda6b254bf2becb4",
+      "title": "البوابة الجغرافية",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://gis.aswan.gov.eg/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official geoportal describes Geographic Information Administration and Utility Network Center and Urban Planning; reviewed description does not identify land parcels."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official national mapping agency states mission includes ownership/cadastral maps/registers; not evidence of an anonymous parcel service."
+    },
+    {
+      "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official finance document lists Aswan real-estate registration office address; office location evidence only."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "Public Aswan geoportal reviewed as utility/planning, not cadastral layer. No full parcel geometry endpoint found.",
+  "remainingUncertainty": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+  "nextStep": "Public Aswan geoportal reviewed as utility/planning, not cadastral layer. No full parcel geometry endpoint found.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 493753,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+  "registryEvidenceUrls": [
+    "https://gis.aswan.gov.eg/",
+    "https://www.esa.gov.eg/main.aspx",
+    "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf"
+  ],
+  "technicalBlocker": "Public Aswan geoportal reviewed as utility/planning, not cadastral layer. No full parcel geometry endpoint found.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Public Aswan geoportal reviewed as utility/planning, not cadastral layer. No full parcel geometry endpoint found."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

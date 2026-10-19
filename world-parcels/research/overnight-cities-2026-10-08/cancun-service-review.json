@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Cancún",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 845,
+  "wupCityCode": 7106,
+  "point": [
+    21.165484558762,
+    -86.8621985906125
+  ],
+  "registryFound": true,
+  "registryBasis": "Benito Juárez’s official Catastro Directorate says it maintains the municipal Registro Catastral. Public pages describe consultation/services, not an anonymous parcel endpoint; the municipal value-zone plan maps zones, not parcels.",
+  "registryEvidenceUrls": [
+    "https://catastro.cancun.gob.mx/dcm/home/inicio",
+    "https://catastro.cancun.gob.mx/dcm/home/conocenos",
+    "https://cancun.gob.mx/uploads/19/129/Tabla%20Version%20Final%20Catastro.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Dirección de Catastro Municipal, Ayuntamiento de Benito Juárez, Quintana Roo.",
+      "operator": "Official government agency identified in sources",
+      "homeUrl": "https://catastro.cancun.gob.mx/dcm/home/inicio",
+      "observation": "Official Benito Juárez Catastro home identifies the authority maintaining the municipal register."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://catastro.cancun.gob.mx/dcm/home/inicio",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 13321,
+      "observation": "Public Catastro page; no vector route."
+    },
+    {
+      "url": "https://catastro.cancun.gob.mx/dcm/home/conocenos",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official Conócenos page lists consultation/regularization; interactive office-location map is forthcoming."
+    },
+    {
+      "url": "https://cancun.gob.mx/uploads/19/129/Tabla%20Version%20Final%20Catastro.pdf",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Municipal value-zone plan is not parcel geometry. Home GET HTTP 200 (13,321 bytes), no scripts/vector route; no form submitted."
+    }
+  ],
+  "limitations": "Official public Catastro pages describe registry/consultation but no parcel viewer or safe schema. Published map is value-zone mapping; no tax/address/property request.",
+  "scopeLimits": "No protected, personal or property-specific data queried or retained. No anonymous full geometry/safe-ID schema verified; no completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_safe_geometry_schema",
+    "reason": "Official public Catastro pages describe registry/consultation but no parcel viewer or safe schema. Published map is value-zone mapping; no tax/address/property request."
+  }
+}

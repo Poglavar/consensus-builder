@@ -1,0 +1,37 @@
+{
+  "taskId": "city:1588",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-1588-rivne.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/rivne-service-review.json",
+    "tmp/valhalla-parcel-research/rivne-geo.html",
+    "tmp/valhalla-parcel-research/rivne-register.html"
+  ],
+  "checkedAt": "2026-10-11T17:04:51Z",
+  "identity": {
+    "cityCode": 1588,
+    "queueRank": 2651,
+    "country": "Ukraine",
+    "point": [
+      50.623720299177,
+      26.2477323548083
+    ],
+    "populationPersons": 222927
+  },
+  "reviewReason": "Rivne municipal GIS and land-parcel register are evidenced by the saved first-party HTML; the named register route says it is being populated. No parcel ID-plus-polygon source response or adapter qualification is evidenced.",
+  "firstPartyUrlsChecked": [
+    "https://geo.rv.ua/map/main",
+    "https://geo.rv.ua/register/3262621605964022967"
+  ],
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging and complete manifests",
+    "13 aligned bounded cells",
+    "independent source-wide metric geometry checks",
+    "full-parcel proposal source binding",
+    "headed Details-panel verification"
+  ],
+  "runtimeAdmission": false
+}

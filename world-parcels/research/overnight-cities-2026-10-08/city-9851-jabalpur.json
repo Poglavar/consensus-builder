@@ -1,0 +1,131 @@
+{
+  "name": "Jabalpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 313,
+  "point": [
+    23.1736754381024,
+    79.934862441499
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "जबलपुर भूअभिलेख भू नक्शा मध्य प्रदेश आधिकारिक जबलपुर राजस्व",
+        "result": "The official Jabalpur district land-record page identifies the local Bhulekh office and links the MP portal. The MP government service catalog documents land records and map-copy services, including current cadastral maps. The WebGIS2 map app is officially referenced for land parcel maps, but its host timed out from the local shell; this is not evidence the service is down. No vector response or WUP-point lookup was verified.",
+        "urls": [
+          "https://jabalpur.nic.in/service/आवास-प्रामाण-पत्र/",
+          "https://services.mp.gov.in/eservice/eServices?srvs=19",
+          "https://webgis2.mpbhulekh.gov.in/"
+        ],
+        "method": "Official district/state pages and bounded anonymous GET to WebGIS2."
+      },
+      {
+        "language": "English",
+        "query": "Jabalpur official cadastral parcel map land records MP Bhulekh WebGIS 2.0",
+        "result": "Government district/state sources confirm Jabalpur land records and cadastral map-copy services. The official pages do not describe a public vector API; no full feature response was inspected. Direct viewer timeout is inconclusive.",
+        "urls": [
+          "https://jabalpur.nic.in/service/आवास-प्रामाण-पत्र/",
+          "https://services.mp.gov.in/eservice/eServices?srvs=19",
+          "https://webgis2.mpbhulekh.gov.in/"
+        ],
+        "method": "Official pages plus bounded anonymous direct GET; no credentials or personal fields."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Jabalpur District land records office",
+        "operator": "District Administration, Government of Madhya Pradesh",
+        "url": "https://jabalpur.nic.in/service/आवास-प्रामाण-पत्र/",
+        "observation": "Official district page identifies its local land-records office and links the MP Bhulekh portal."
+      },
+      {
+        "name": "MP Bhulekh / WebGIS2",
+        "operator": "Commissioner Land Records, Department of Revenue, Government of Madhya Pradesh; MPSeDC",
+        "url": "https://webgis2.mpbhulekh.gov.in/",
+        "observation": "Official state sources describe land-record/map services and digitized parcel maps; the live public viewer API and exact response were not inspected."
+      },
+      {
+        "name": "MP citizen service catalog, land records/maps",
+        "operator": "Government of Madhya Pradesh",
+        "url": "https://services.mp.gov.in/eservice/eServices?srvs=19",
+        "observation": "Official catalog documents public land-record search and cadastral map-copy services, including current map copies on request."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://jabalpur.nic.in/service/आवास-प्रामाण-पत्र/",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official district page identifies the Jabalpur land-record office and links MP Bhulekh."
+      },
+      {
+        "url": "https://services.mp.gov.in/eservice/eServices?srvs=19",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official catalog lists land map and certified-copy services."
+      },
+      {
+        "url": "https://webgis2.mpbhulekh.gov.in/",
+        "method": "GET direct shell",
+        "status": null,
+        "type": null,
+        "observation": "Anonymous request timed out locally; not treated as provider outage."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No full parcel polygon was fetched or independently verified."
+  },
+  "source": {
+    "id": "mpbhulekh-jabalpur-land-map",
+    "name": "MP Bhulekh / WebGIS2 land-record map service",
+    "operator": "Commissioner Land Records, Department of Revenue, Government of Madhya Pradesh",
+    "url": "https://webgis2.mpbhulekh.gov.in/",
+    "format": "Cadastral map view/copy documented; vector format not verified",
+    "access": "Public land-record/map services documented; exact viewer API uninspected",
+    "nativeIdField": "District/tehsil/village and parcel identifiers; WUP-point identity unresolved",
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jabalpur District Administration identifies its local land-record office and links MP Bhulekh; the MP government service catalog documents cadastral land maps and copies.",
+    "verifiedOpenScope": "No vector API is documented in the service catalog; direct request to WebGIS2 timed out locally and is inconclusive.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Jabalpur District Administration identifies its local land-record office and links MP Bhulekh; the MP government service catalog documents cadastral land maps and copies.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_land_registry_confirmed_public_geometry_unverified",
+  "technicalBlocker": "No vector API is documented in the service catalog; direct request to WebGIS2 timed out locally and is inconclusive.",
+  "remainingUncertainty": "Whether WebGIS2 exposes full polygons or rendered maps/copies and whether WUP point resolves to an official village/parcel.",
+  "nextStep": "Inspect the current public WebGIS2 map through a working route; establish exact village/parcel and full polygon response before claiming geometry.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9851,
+  "cityId": "wup2025:9851",
+  "queueRank": 313,
+  "population2025": 1582131,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    23.1736754381024,
+    79.934862441499
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:19:03.228348+00:00"
+}

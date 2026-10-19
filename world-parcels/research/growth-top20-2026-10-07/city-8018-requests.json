@@ -1,0 +1,40 @@
+{
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+    "Accept": "application/json,text/plain,*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.nconemap.gov/"
+  },
+  "requests": [
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27&geometry=-78.6426325645578%2C35.8599596134079%2C-78.6406325645578%2C35.8619596134079&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&orderByFields=objectid+ASC&f=json",
+      "method": "GET",
+      "operation": "bounded New Hope WUP-centre parcel sample",
+      "checkedAt": "2026-10-07T16:58:43.512579+00:00",
+      "httpStatus": null,
+      "error": "The read operation timed out"
+    },
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27&geometry=2105787.402%2C768077.507%2C2106587.402%2C768877.507&geometryType=esriGeometryEnvelope&inSR=2264&spatialRel=esriSpatialRelIntersects&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "operation": "native EPSG:2264 bbox retry at New Hope WUP centre, 244m square",
+      "checkedAt": "2026-10-07T17:05:08.016793+00:00",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "featureCount": 3,
+      "exceededTransferLimit": true,
+      "error": null
+    },
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=stcntyfips%3D%2737183%27+AND+parno%3D%271706686856%27&outFields=parno%2Cobjectid%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "operation": "exact county-scoped native parcel ID read",
+      "checkedAt": "2026-10-07T17:05:08.686974+00:00",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "featureCount": 1,
+      "exceededTransferLimit": false,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GE",
+ "country": "Georgia",
+ "checkedAt": "2026-09-30",
+ "status": "national_cadastre_viewer_only",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_cadastre_viewer_only",
+ "cadastreAuthority": "National Agency of Public Registry (NAPR)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language per country; cookie jar; Referer = viewer origin where applicable",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://maps.gov.ge/map/portal/",
+   "observation": "official NAPR viewer (OpenLayers 6.9, v1.9.91) loads with browser headers"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://maps.gov.ge/map/portal/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer shell loads"
+  },
+  {
+   "url": "https://maps.gov.ge/map/portal/js/main.f0683d617e2f4941ba0a.app.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "JS read: parcel layer LR_PARCELS (CADCODE); client calls relative endpoints lr/bo/mg/getinfo2?LON=&LAT=&C=&FRAME_NAME=... (returns shape_wkt) and lr/bo/mg/getinfo?...fmt=json&res=shp"
+  },
+  {
+   "url": "https://maps.gov.ge/lr/bo/mg/getinfo2?LON=44.7930&LAT=41.7151&C=1&FRAME_NAME=BY_COORDS_AND_COMPASS.GETINFO.MAPGOV",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "WAF 'Access Denied' page"
+  },
+  {
+   "url": "https://maps.gov.ge/map/portal/lr/bo/mg/getinfo2?LON=44.7930&LAT=41.7151&C=1&FRAME_NAME=BY_COORDS_AND_COMPASS.GETINFO.MAPGOV",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "backend reached but empty body (0 bytes); response sets an empty apitoken cookie, i.e. the API expects an API token/session"
+  },
+  {
+   "url": "https://maps.gov.ge/map/lr/bo/mg/getinfo2?...same",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": null,
+   "assessment": "empty body, same behaviour"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "regionsSampled": [],
+ "coverageAssessment": {
+  "claimedScope": "Country-wide NAPR cadastral map (viewer)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "viewer-only",
+ "remainingUncertainty": "The parcel query API is behind an apitoken. I stopped at that point: the automated permission check blocked further inspection of the viewer code for how the token is issued, and I did not pursue it. Whether an anonymous token is issued to the viewer is therefore unknown.",
+ "nextStep": "A person could check in a browser whether the viewer obtains a public anonymous token for lr/bo/mg/getinfo2 and, if so, whether NAPR terms permit reuse.",
+ "geoBlockSuspected": false,
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true
+}

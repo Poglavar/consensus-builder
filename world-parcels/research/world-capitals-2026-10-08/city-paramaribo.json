@@ -1,0 +1,225 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:SR:paramaribo",
+  "name": "Paramaribo",
+  "country": "Suriname",
+  "countryCode": "SR",
+  "centerLatLon": [
+    5.833333333333333,
+    -55.166667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Paramaribo Suriname official cadastral parcel map GIS land registry",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://miglis.sr/diensten/",
+        "https://www.arcgis.com/sharing/rest/content/items/03fcf6e8dc7548c8954a0c918c137214/data?f=json",
+        "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+      ]
+    },
+    {
+      "query": "Suriname perceelkaart GIS Paramaribo MI-GLIS percelen online officieel",
+      "language": "Dutch",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://miglis.sr/diensten/",
+        "https://www.arcgis.com/sharing/rest/content/items/03fcf6e8dc7548c8954a0c918c137214/data?f=json",
+        "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+      ]
+    },
+    {
+      "query": "site:miglis.sr \"Percelen Online\" kaart viewer map",
+      "language": "English/Dutch",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://miglis.sr/diensten/",
+        "https://www.arcgis.com/sharing/rest/content/items/03fcf6e8dc7548c8954a0c918c137214/data?f=json",
+        "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+      ]
+    },
+    {
+      "query": "\"MI-GLIS Percelen Online\" geometry ArcGIS layer",
+      "language": "English/Dutch",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://miglis.sr/diensten/",
+        "https://www.arcgis.com/sharing/rest/content/items/03fcf6e8dc7548c8954a0c918c137214/data?f=json",
+        "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://miglis.sr/diensten/",
+      "observation": "MI-GLIS official services page advertises an online parcel viewer searchable by address, place or parcel ID."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/03fcf6e8dc7548c8954a0c918c137214/data?f=json",
+      "observation": "Public MI-GLIS ArcGIS web app configuration links to its web map."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/785f3b5c13344f549dbb642ba687b937/data?f=json",
+      "observation": "Public web map identifies the Paramaribo polygon FeatureServer layer (Percelen_Online/6)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/03fcf6e8dc7548c8954a0c918c137214/data?f=json",
+      "method": "GET",
+      "params": {
+        "f": "json"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Public MI-GLIS app configuration retrieved; points to web map item 785f3b5c13344f549dbb642ba687b937."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/785f3b5c13344f549dbb642ba687b937/data?f=json",
+      "method": "GET",
+      "params": {
+        "f": "json"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Web map reveals public Paramaribo polygon layer Percelen_Online/6."
+    },
+    {
+      "url": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6?f=pjson",
+      "method": "GET",
+      "params": {
+        "f": "pjson"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Layer geometry type Polygon; object ID field FID. Schema has potentially personal/street attributes, which were not requested in sample query."
+    },
+    {
+      "url": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6/query",
+      "method": "GET",
+      "params": {
+        "where": "1=1",
+        "geometry": "-55.168,5.832,-55.166,5.834",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "FID",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 3
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:00Z",
+      "outcome": "Returned three Polygon features intersecting a tight bbox around roster city center; only FID and geometry requested."
+    },
+    {
+      "url": "https://miglis.sr/diensten/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official MI-GLIS services page opened; it advertises Percelen Online, searchable by address, place or parcel ID."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "MI-GLIS advertises a public parcel viewer searchable by place and its public web map exposes the Paramaribo polygon layer; a bounded central sample returned three polygons.",
+    "urls": [
+      "https://miglis.sr/diensten/",
+      "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+    ]
+  },
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "source": {
+    "name": "MI-GLIS Percelen Online - Paramaribo",
+    "operator": "Management Instituut voor Grondregistratie en Land Informatie Systeem (MI-GLIS)",
+    "scope": "Paramaribo district parcel polygons; sample is central only and does not establish complete city coverage.",
+    "endpoint": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6",
+    "protocol": "ArcGIS FeatureServer query",
+    "featureType": "Percelen_Online/6",
+    "geometryField": "Shape",
+    "sourceIdField": "FID",
+    "requestProperties": [
+      "FID",
+      "geometry"
+    ],
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:4326",
+    "fieldMetadata": {
+      "nonpersonalCandidateFields": [
+        "FID",
+        "PerceelID",
+        "PerceelNR",
+        "PerceelOpp",
+        "EenheidOpp",
+        "Ressort",
+        "Distrikt",
+        "Shape_STAr",
+        "Shape_STLe",
+        "Shape__Area",
+        "Shape__Length"
+      ],
+      "excludedPotentiallySensitiveFields": [
+        "Straat1",
+        "Straat2",
+        "Landmeter",
+        "Stregnr",
+        "PerceelOms",
+        "Perc_kaart",
+        "UitgPercee",
+        "StatusPerc"
+      ]
+    },
+    "coverageNotes": "MI-GLIS viewer describes the displayed information as limited and disclaims completeness/accuracy; central sample does not prove complete district coverage."
+  },
+  "verifiedParcelResponse": {
+    "requestUrl": "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6/query",
+    "method": "GET",
+    "httpStatus": 200,
+    "checkedAt": "2026-10-08T18:00Z",
+    "spatialTestAreaLonLat": [
+      -55.168,
+      5.832,
+      -55.166,
+      5.834
+    ],
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "idField": "FID",
+    "responseFile": "paramaribo-safe-sample.json"
+  },
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "MI-GLIS advertises a public parcel viewer searchable by place and its public web map exposes the Paramaribo polygon layer; a bounded central sample returned three polygons.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_quality_review",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "MI-GLIS advertises a public parcel viewer searchable by place and its public web map exposes the Paramaribo polygon layer; a bounded central sample returned three polygons.",
+  "registryEvidenceUrls": [
+    "https://miglis.sr/diensten/",
+    "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+  ],
+  "sourceIds": [
+    "sr-miglis-paramaribo-fs"
+  ],
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Material parcel overlaps remain: 212 intersecting pairs, including near/full containment. Stable FID lookup passes; missing or repeated legal parcel numbers are not the hold reason.",
+    "evidenceFile": "research/world-capitals-2026-10-08/paramaribo-adapter-qualification.json"
+  },
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/paramaribo-safe-sample.json"
+}

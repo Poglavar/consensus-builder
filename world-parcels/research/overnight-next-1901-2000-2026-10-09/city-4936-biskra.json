@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 4936,
+  "queueRank": 1912,
+  "name": "Biskra",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "point": [34.8481213034189, 5.7313776666827],
+  "population2025": 300313,
+  "population2025k": 300.313,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Biskra Algeria official cadastral parcel map cadastre geoportal",
+        "result": "Found the official National Cadastre agency Biskra wilaya directorate page with local office contact details. No separate public Biskra parcel-map/API result was found.",
+        "actualResultUrls": ["https://a.dgdn.dz/biskra.html", "https://www.anfu.dz/", "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"]
+      },
+      {
+        "language": "French (local/official language)",
+        "query": "Biskra carte cadastrale officielle parcelles Algérie cadastre",
+        "result": "Found the official Direction du Cadastre de Biskra page and Algerian cadastral procedure material. The search did not expose an anonymous parcel geometry service or Biskra-specific public viewer endpoint.",
+        "actualResultUrls": ["https://a.dgdn.dz/biskra.html", "https://www.joradp.dz/FTP/JO-francais/1976/F1976030.pdf", "https://a.dgdn.dz/DOCUMENTS/Decret_n_76_63_du_25_mars_1976.pdf"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://a.dgdn.dz/biskra.html",
+      "operator": "Agence Nationale du Cadastre / Direction du Cadastre de la wilaya de Biskra",
+      "evidence": "First-party Biskra directorate page identifies the local cadastral office, address in Biskra, telephone/fax, and official dcw-biskra@an-cadastre.dz contact. This is direct local-custodian evidence, not merely national agency prose."
+    },
+    {
+      "url": "https://www.joradp.dz/FTP/JO-francais/1976/F1976030.pdf",
+      "operator": "Journal officiel de la République algérienne",
+      "evidence": "Official cadastral procedure text describes commune cadastral plans, sections, parcel registers, and parcel subdivision; it does not provide an anonymous Biskra feature service."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "operator": "Agence Spatiale Algérienne / ASGA geospatial portal",
+      "evidence": "Official public cartographic viewer was discoverable, but its documented 1:200,000 layers are general cartography (wilaya/communes/etc.), not a parcel layer."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://a.dgdn.dz/biskra.html",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official Biskra directorate HTML was retrieved by the research web index; page content exposed local office contact details and the agency navigation."
+    },
+    {
+      "url": "https://a.dgdn.dz/%3C?php+echo++%24adresse+%3B+%3F%3E%2FWathikaCad.php=",
+      "method": "GET",
+      "status": "timeout/unusable",
+      "summary": "The public-access e-service link on the official page rendered a malformed PHP-derived URL and timed out. No login, credentials, CAPTCHA bypass, or private token was used."
+    },
+    {
+      "url": "https://a.dgdn.dz/Document_cad.html",
+      "method": "GET",
+      "status": "timeout/unusable",
+      "summary": "Official cadastral-document guide link timed out in the public fetcher; no parcel schema or geometry was returned."
+    },
+    {
+      "url": "https://a.dgdn.dz/doc_tarif.html",
+      "method": "GET",
+      "status": "timeout/unusable",
+      "summary": "Official cadastral-document tariff link timed out in the public fetcher; no parcel schema or geometry was returned."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official ASGA map viewer was reachable and exposed general 1:200,000 cartographic layers; no parcel feature layer or public parcel API was identified."
+    },
+    {
+      "url": "https://a.dgdn.dz/biskra.html",
+      "method": "GET via curl with verified TLS",
+      "status": "timeout",
+      "summary": "A direct bounded request from the workspace timed out after 20 seconds; this was recorded as a transport limitation and not interpreted as source absence."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no safe anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or native ID was exposed by the attempted public routes."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official local directorate is the cadastral custodian for Biskra wilaya; official procedure material establishes commune parcel plans and registers.",
+    "verifiedOpenScope": "Local custodian and general cadastral-document/procedure evidence only; Biskra city parcel geometry and feature coverage were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable point or parcel response was obtained. This is an endpoint/availability limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_cadastre_custodian_geometry_unverified",
+  "remainingUncertainty": "The official Biskra directorate is evidenced, but its public e-service route was malformed or timed out and no current anonymous map/API schema, CRS, native parcel identity, or geometry response was available. No parcel polygons were retained.",
+  "nextStep": "Serial reviewer should independently inspect the current official cadastral e-service, confirm whether an anonymous parcel map/API exists, identify the native parcel ID and CRS, and verify Biskra coverage before any adapter admission."
+}

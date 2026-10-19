@@ -1,0 +1,15 @@
+{
+  "taskId": "city:5493",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:47:54Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-5493-cuautla.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/cuautla-service-review.json",
+    "tmp/valhalla-parcel-research/5493/cuautla.html",
+    "tmp/valhalla-parcel-research/5493/isryc.html"
+  ],
+  "review": "WUP code 5493, rank 2725, Mexico, point [18.8303019116445,-98.9436945278123], and 216531 persons match the immutable roster and queue. The packet records executed English and Spanish searches with URLs and outcomes. First-party municipal and state custody/procedure are evidenced, so registryFound true is supported. No native parcel ID plus polygon response, adapter, paging, 13-cell coverage, metric full-scale checks, source binding, or headed Details proof exists. This is unresolved public geometry, not citywide absence; hold without admission."
+}

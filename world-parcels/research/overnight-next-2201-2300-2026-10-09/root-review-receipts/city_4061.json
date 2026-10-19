@@ -1,0 +1,18 @@
+{
+  "taskId": "city:4061",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-4061-bah-a-blanca.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/bah-a-blanca-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_4061-municipal-catastro.html",
+    "tmp/valhalla-parcel-research/4061/cartoarba.html"
+  ],
+  "checkedAt": "2026-10-11T02:51:58.475Z",
+  "reason": "Roster and queue identity match code 4061, rank 2269, Argentina, point [-38.7199011544995,-62.2653007739001], and 257379 persons. English and Spanish searches are recorded. Original municipal Catastro page supports local cadastral custody; original Carto ARBA viewer cache exposes search routes but no safe native parcel ID plus full polygon response. Incomplete GET 405 is a protocol result, not absence. Adapter qualification and all admission gates remain unverified.",
+  "sourceCacheCopies": {
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_4061-municipal-catastro.html": "2c5d09e26c51a22280bb57721fbe316f5d0f8cac5859bc814e25ba43720e3c58"
+  },
+  "admission": "held; no runtime/catalog/report change"
+}

@@ -1,0 +1,31 @@
+{
+  "taskId": "city:8519",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-8519-makurdi.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/makurdi-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "checkedAt": "2026-10-09T15:37:00.286016Z",
+  "reason": "First-party BENGIS guidance names its Makurdi service centre and Cadastral Unit, but the public portal is a sign-in screen. The failed direct transport and login wall establish no citywide absence. No anonymous native-ID polygon response or qualified adapter exists; registryFound remains unresolved.",
+  "firstPartyPagesChecked": [
+    "https://bengis.benuestate.gov.ng/application-guidelines/",
+    "https://bengis.benuestate.gov.ng/portal"
+  ],
+  "identityCheck": {
+    "cityCode": 8519,
+    "queueRank": 1382,
+    "country": "Nigeria",
+    "point": [
+      7.71679050070715,
+      8.53831284036563
+    ],
+    "populationPersons": 408753,
+    "matches2025WupRow": true
+  },
+  "searchCheck": "Two separately recorded English and local-language queries with actual result URLs in packet and paired review; Makurdi local-language search used Hausa and did not establish a Tiv/Idoma source.",
+  "polygonCheck": "Zero full polygons retained; no safe source-native parcel ID plus complete polygon response.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are not independently evidenced."
+}

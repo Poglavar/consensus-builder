@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:106",
+  "queueRank": 106,
+  "name": "Wenzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    28.0153538416269,
+    120.630364464619
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://data.wenzhou.gov.cn/",
+      "observation": "Wenzhou public data-open platform (Hanweb) with dataset and API-service channels; no cadastral parcel dataset seen."
+    },
+    {
+      "url": "https://zrzyj.wenzhou.gov.cn/",
+      "observation": "Natural Resources bureau site; did not respond."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.wenzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "portal homepage"
+    },
+    {
+      "url": "https://data.wenzhou.gov.cn/jdop_front/channal/data_public1.do",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "dataset channel page; no parcel/cadastre (宗地/地籍/不动产) text found"
+    },
+    {
+      "url": "https://data.wenzhou.gov.cn/jdop_front/channal/api_service.do",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "API service channel page; no parcel service found"
+    },
+    {
+      "url": "https://data.wenzhou.gov.cn/jdop_front/channal/data_public1.do?keyword=%E5%AE%97%E5%9C%B0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "server-rendered page identical in size to the unfiltered one; search not evaluated"
+    },
+    {
+      "url": "https://zrzyj.wenzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://map.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "CloudWAF block page"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Wenzhou municipality (unverified)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Chinese cadastral data is generally held by natural-resources/real-estate registries and not openly published as polygons; the portal search was not executable and Tianditu blocks this client.",
+  "nextStep": "Search the portal's dataset catalogue interactively for 宗地/不动产 layers and test any documented API."
+}

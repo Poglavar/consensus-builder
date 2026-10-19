@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10200",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10200-liaoyuan.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/liaoyuan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T13:57:17Z",
+  "reason": "Held: official local bureau and provincial basemap configuration were checked, but no anonymous parcel ID plus full polygon response was established. The two 404 API probes are route misses, not citywide absence. No fresh adapter, paging, 13-cell, GEOS, binding, or headed Details qualification."
+}

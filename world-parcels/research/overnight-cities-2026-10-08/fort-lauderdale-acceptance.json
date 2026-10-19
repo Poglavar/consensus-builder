@@ -1,0 +1,2958 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T23:12:53.883Z",
+  "city": "fort-lauderdale-ground-final",
+  "descriptor": {
+    "id": "us-fl-fort-lauderdale-taxparcels-ground",
+    "name": "Fort Lauderdale TaxParcel qualification descriptor",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0",
+    "idField": "OBJECTID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "US-FL-FORT-LAUDERDALE-ROW-",
+    "parcelNumberField": "PARCELID",
+    "outFields": [
+      "OBJECTID",
+      "PARCELID",
+      "RECORDTYPE"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 20000,
+    "maxBboxKm2": 1,
+    "countryCode": "US",
+    "metricSrid": 32617,
+    "cityIds": [
+      "fort-lauderdale-review"
+    ],
+    "operator": "City of Fort Lauderdale GIS",
+    "catalogueUrl": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer",
+    "attribution": "City of Fort Lauderdale GIS TaxParcel service; tax parcel polygons only, not legal title.",
+    "attributeFilters": {
+      "RECORDTYPE": "Parcel"
+    },
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -80.202,
+        26.212,
+        -80.201,
+        26.213
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -80.201,
+        26.212,
+        -80.2,
+        26.213
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -80.2,
+        26.212,
+        -80.199,
+        26.213
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -80.202,
+        26.213,
+        -80.201,
+        26.214
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -80.201,
+        26.213,
+        -80.2,
+        26.214
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -80.2,
+        26.213,
+        -80.199,
+        26.214
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -80.202,
+        26.214,
+        -80.201,
+        26.215
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -80.201,
+        26.214,
+        -80.2,
+        26.215
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -80.2,
+        26.214,
+        -80.199,
+        26.215
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -80.201,
+        26.211,
+        -80.2,
+        26.212
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -80.201,
+        26.215,
+        -80.2,
+        26.216
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -80.203,
+        26.213,
+        -80.202,
+        26.214
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -80.199,
+        26.213,
+        -80.198,
+        26.214
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1164,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        -80.202,
+        26.212,
+        -80.201,
+        26.213
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-92851",
+          "geometrySha256": "4b18964eacdd7f1a890b7622d51dd5b9b6a4077bb191a380539e11be4a9755ee"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-178045",
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 683,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        -80.201,
+        26.212,
+        -80.2,
+        26.213
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 741,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        -80.2,
+        26.212,
+        -80.199,
+        26.213
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-2016",
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 673,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        -80.202,
+        26.213,
+        -80.201,
+        26.214
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-178045",
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 688,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        -80.201,
+        26.213,
+        -80.2,
+        26.214
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 669,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        -80.2,
+        26.213,
+        -80.199,
+        26.214
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-2016",
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 677,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        -80.202,
+        26.214,
+        -80.201,
+        26.215
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-43159",
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-178045",
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 981,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -80.201,
+        26.214,
+        -80.2,
+        26.215
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-43159",
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 676,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        -80.2,
+        26.214,
+        -80.199,
+        26.215
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-2016",
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-43159",
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 743,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        -80.201,
+        26.211,
+        -80.2,
+        26.212
+      ],
+      "complete": true,
+      "count": 26,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-5943",
+          "geometrySha256": "0141fbf2e02b1e6fc01f8c298d810b58731bd2d89f6d159ea5d8652d68450938"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-14090",
+          "geometrySha256": "be3a6cf4a2ac0b11a435ac31b2e0690e29ed093d1311b0acdb46c8d3cc3e8a3a"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-21183",
+          "geometrySha256": "7e6481557fa1b850da2a3202400a858d975ea7707308b073e48b06a90d9b0b58"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-38019",
+          "geometrySha256": "4d123a9cb4c9d9db57d00f7950fbd52d5bc82a7fdce1b02d7911d5b598c74158"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-42912",
+          "geometrySha256": "c779352c0e70ea380d7d3e33940a590ee1d26c3535d3d4ec8023577c8a0d960c"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-48008",
+          "geometrySha256": "baaa868defea8567894758316863e6148084a66283cfce73b6411fc6e4674e4a"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-49329",
+          "geometrySha256": "7f409c70aa10aa57b2f166dda52e1086417fec841aaa31a8217dd26774bf82da"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-55954",
+          "geometrySha256": "e54ccc2ad59b9228a085674f8244c0a25d8b189f0a8134b227d5072052fbfac2"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-80002",
+          "geometrySha256": "1ccd4f111bb7848bb59e146a1657ee7751a7c371a2f8bff7a107f08e11d7cce6"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-86200",
+          "geometrySha256": "3729f70cce8f8e90418969e850cf22f4dafd63c1b589c09ceb3f18a39df259f7"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-87053",
+          "geometrySha256": "68d889982c2497a24f853b2304973cf8c7849a73f9c470b9b997abe0b55be6ba"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-91086",
+          "geometrySha256": "e4ce8859ad9c283f32e0c8429ad8f0c3e40ed0795579f1f3f4ba9286a532791d"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-95920",
+          "geometrySha256": "441807959bd67a957c0c59762a4c454f4972d4e6d280dc37010b1d76c16d519c"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-103765",
+          "geometrySha256": "4ab5abc696e3eb320d8c71c576429525b25637a59a9b9b0a287f4ab5975060eb"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-115572",
+          "geometrySha256": "84e02b3db5975f2c55361c9ddb2ace20b724d84fb5eb740ada52bbdc0566e827"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-118433",
+          "geometrySha256": "c7946c7c9368da6f3e42476ffab09357dfd46cd6c461f97e6f380ca5eb5dad34"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-143285",
+          "geometrySha256": "c7f6b879ca0e2fe6e88ccb6e4a6687b72291afa6a821d981b93d961df8b161f6"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-154057",
+          "geometrySha256": "bc3ec74f1b4d337c36f868588f3d6692f8251c3d5391cd462306a254ce1e7823"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-154298",
+          "geometrySha256": "4ca81527418d7ae96b0a338c601e11288a5c81b6613a500ba677cb64ed3a4f74"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-165791",
+          "geometrySha256": "fc76444e4ab28bbb7d33cdada4e4629c7ba147523f550d1cc7b9482f2b72bdf8"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-171605",
+          "geometrySha256": "467887f01d4b6794b0776b88cb8c43ecf68766226ca8a3d7977c2095d2790aa8"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-183059",
+          "geometrySha256": "956cdbdc29d25614c4665c1eaa8cfa207d70e571d5759ec74b7c8d0d8b2fd553"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-184921",
+          "geometrySha256": "b1920564595da005b8ddf03121d15b151ae36b292dc2fbcb44b1ad374454f11d"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-185421",
+          "geometrySha256": "af3a709fbef9dd3b33a271b8a63f3a3082ba92df5d7f3b7e572061acdbc32d08"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-188345",
+          "geometrySha256": "6a3f637780e1c4c49f08a8b9e9a7e406283229d45f580d11bf374bf145497c21"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-192420",
+          "geometrySha256": "87ddfcf4f8fb59cf34b802622b2b63f0d3e4e2ba686ccb4cf2768e814a57012f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 1060,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        -80.201,
+        26.215,
+        -80.2,
+        26.216
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-10899",
+          "geometrySha256": "67dc60c0166ee3969eb0b1480d3dd214b22c696b08ee23fa1dba16ae1e3d2e01"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-11225",
+          "geometrySha256": "9de155e3d103c42fa8009b9adb0de1ad127ef639999012acd8cce6be603cd4cc"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-40767",
+          "geometrySha256": "f5b05ec40cbcdbd0be002eeb6afd365a1a5320e791535ff552e67118de17ac04"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-43159",
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-44392",
+          "geometrySha256": "09a9a3edebcc1d47a634c1ce67d53fe002974cc0b180ce52963173f2ef3de52c"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-84596",
+          "geometrySha256": "9b6bd5eee123012ffea6fcfbef93bbaee0abcca9016fb32127acc4299d5a79c8"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-113756",
+          "geometrySha256": "aa63132cb819983ffe26f7a8439c1a426366d71917abc0a7b556cc11c1b284cf"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-122101",
+          "geometrySha256": "cd5d3c0cf65dc039af0ecbd0549f28d833bfb9a1e07d4c24f52b20aac0dd3ec0"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-123483",
+          "geometrySha256": "800a5c0359fd4e7735e295d8f77830b08acb6d9b6397d8477c5b7f82b3d029b1"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-124142",
+          "geometrySha256": "7b0948c84fbeed50cc794c1d91eb0f016ba0610035b18a3ffba7f6fcf6496d1c"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-141008",
+          "geometrySha256": "42bf3c9d153283099dd8201d1c869fa816721aad003dd1240ea576e81f7bd8bd"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-146691",
+          "geometrySha256": "b1fcf5e874b601a6ada4f31d6370942bfb9396be37221c8d53d357047dafff70"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-167607",
+          "geometrySha256": "b15cd600f9edaf6300a1f5de5bd422897ee25cbb46bbdabbfa78592819c1a338"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-171711",
+          "geometrySha256": "69153dddb3cc2d8607c42019374fae9baf3f959dc75f8ec6f557cb63b34a2942"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 705,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        -80.203,
+        26.213,
+        -80.202,
+        26.214
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-107781",
+          "geometrySha256": "a68a9d548f7f503a4e292b60425acd52a8cd281cc20d3b4951f59ae1bdadbce7"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-143830",
+          "geometrySha256": "d389b4c82fd5291f6dfd8b818ad907f922ba528b4cf59346a9eca73b6296cfca"
+        },
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-178045",
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 722,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        -80.199,
+        26.213,
+        -80.198,
+        26.214
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-FL-FORT-LAUDERDALE-ROW-2016",
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 2590,
+      "requestIndexes": [
+        39,
+        49
+      ],
+      "count": 26,
+      "geometryPages": 9,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 1282,
+      "requestIndexes": [
+        50,
+        52
+      ],
+      "count": 40,
+      "ids": [
+        "US-FL-FORT-LAUDERDALE-ROW-103765",
+        "US-FL-FORT-LAUDERDALE-ROW-107781",
+        "US-FL-FORT-LAUDERDALE-ROW-10899",
+        "US-FL-FORT-LAUDERDALE-ROW-11225",
+        "US-FL-FORT-LAUDERDALE-ROW-113756",
+        "US-FL-FORT-LAUDERDALE-ROW-115572",
+        "US-FL-FORT-LAUDERDALE-ROW-118433",
+        "US-FL-FORT-LAUDERDALE-ROW-122101",
+        "US-FL-FORT-LAUDERDALE-ROW-123483",
+        "US-FL-FORT-LAUDERDALE-ROW-124142",
+        "US-FL-FORT-LAUDERDALE-ROW-14090",
+        "US-FL-FORT-LAUDERDALE-ROW-141008",
+        "US-FL-FORT-LAUDERDALE-ROW-143285",
+        "US-FL-FORT-LAUDERDALE-ROW-143830",
+        "US-FL-FORT-LAUDERDALE-ROW-146691",
+        "US-FL-FORT-LAUDERDALE-ROW-154057",
+        "US-FL-FORT-LAUDERDALE-ROW-154298",
+        "US-FL-FORT-LAUDERDALE-ROW-165791",
+        "US-FL-FORT-LAUDERDALE-ROW-167607",
+        "US-FL-FORT-LAUDERDALE-ROW-171605",
+        "US-FL-FORT-LAUDERDALE-ROW-171711",
+        "US-FL-FORT-LAUDERDALE-ROW-178045",
+        "US-FL-FORT-LAUDERDALE-ROW-183059",
+        "US-FL-FORT-LAUDERDALE-ROW-184921",
+        "US-FL-FORT-LAUDERDALE-ROW-185421",
+        "US-FL-FORT-LAUDERDALE-ROW-188345",
+        "US-FL-FORT-LAUDERDALE-ROW-192420",
+        "US-FL-FORT-LAUDERDALE-ROW-2016",
+        "US-FL-FORT-LAUDERDALE-ROW-21183",
+        "US-FL-FORT-LAUDERDALE-ROW-38019",
+        "US-FL-FORT-LAUDERDALE-ROW-40767",
+        "US-FL-FORT-LAUDERDALE-ROW-42912",
+        "US-FL-FORT-LAUDERDALE-ROW-43159",
+        "US-FL-FORT-LAUDERDALE-ROW-44392",
+        "US-FL-FORT-LAUDERDALE-ROW-48008",
+        "US-FL-FORT-LAUDERDALE-ROW-49329",
+        "US-FL-FORT-LAUDERDALE-ROW-55954",
+        "US-FL-FORT-LAUDERDALE-ROW-5943",
+        "US-FL-FORT-LAUDERDALE-ROW-80002",
+        "US-FL-FORT-LAUDERDALE-ROW-84596"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 678,
+      "requestIndexes": [
+        53,
+        55
+      ],
+      "count": 6,
+      "ids": [
+        "US-FL-FORT-LAUDERDALE-ROW-86200",
+        "US-FL-FORT-LAUDERDALE-ROW-87053",
+        "US-FL-FORT-LAUDERDALE-ROW-91086",
+        "US-FL-FORT-LAUDERDALE-ROW-92851",
+        "US-FL-FORT-LAUDERDALE-ROW-95920",
+        "US-FL-FORT-LAUDERDALE-ROW-97983"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 497,
+      "requestIndexes": [
+        56,
+        57
+      ],
+      "absentIds": [
+        "US-FL-FORT-LAUDERDALE-ROW-2147483647"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 738,
+      "requestIndexes": [
+        58,
+        60
+      ],
+      "selectedParcelId": "US-FL-FORT-LAUDERDALE-ROW-146691",
+      "count": 5,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 808,
+      "requestIndexes": [
+        61,
+        63
+      ],
+      "selectedParcelId": "US-FL-FORT-LAUDERDALE-ROW-146691",
+      "coverage": "complete",
+      "siteM2": 699.61,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.202%2C26.212%2C-80.201%2C26.213&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:53.885Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.202%2C26.212%2C-80.201%2C26.213&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:54.577Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 65,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        92851,
+        97983,
+        178045
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=92851%2C97983%2C178045",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:54.818Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 8996,
+      "features": [
+        {
+          "transportId": 92851,
+          "properties": {
+            "OBJECTID": 92851,
+            "PARCELID": "9207010024",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4b18964eacdd7f1a890b7622d51dd5b9b6a4077bb191a380539e11be4a9755ee"
+        },
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        },
+        {
+          "transportId": 178045,
+          "properties": {
+            "OBJECTID": 178045,
+            "PARCELID": "9206160020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.212%2C-80.2%2C26.213&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:55.049Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.212%2C-80.2%2C26.213&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:55.285Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        97983
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=97983",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:55.504Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 440,
+      "features": [
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.2%2C26.212%2C-80.199%2C26.213&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:55.732Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.2%2C26.212%2C-80.199%2C26.213&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:56.007Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 57,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        2016,
+        97983
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=2016%2C97983",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:56.237Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1573,
+      "features": [
+        {
+          "transportId": 2016,
+          "properties": {
+            "OBJECTID": 2016,
+            "PARCELID": "9207120020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        },
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.202%2C26.213%2C-80.201%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:56.473Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.202%2C26.213%2C-80.201%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:56.692Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 59,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        97983,
+        178045
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=97983%2C178045",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:56.923Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 8637,
+      "features": [
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        },
+        {
+          "transportId": 178045,
+          "properties": {
+            "OBJECTID": 178045,
+            "PARCELID": "9206160020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.213%2C-80.2%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:57.147Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.213%2C-80.2%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:57.381Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        97983
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=97983",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:57.612Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 440,
+      "features": [
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.2%2C26.213%2C-80.199%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:57.835Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.2%2C26.213%2C-80.199%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.052Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 57,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        2016,
+        97983
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=2016%2C97983",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.282Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1573,
+      "features": [
+        {
+          "transportId": 2016,
+          "properties": {
+            "OBJECTID": 2016,
+            "PARCELID": "9207120020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        },
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.202%2C26.214%2C-80.201%2C26.215&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.505Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.202%2C26.214%2C-80.201%2C26.215&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.720Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 65,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        43159,
+        97983,
+        178045
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=43159%2C97983%2C178045",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.939Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 22098,
+      "features": [
+        {
+          "transportId": 43159,
+          "properties": {
+            "OBJECTID": 43159,
+            "PARCELID": "9206000000",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        },
+        {
+          "transportId": 178045,
+          "properties": {
+            "OBJECTID": 178045,
+            "PARCELID": "9206160020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.214%2C-80.2%2C26.215&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:59.182Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.214%2C-80.2%2C26.215&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:59.701Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 58,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        43159,
+        97983
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=43159%2C97983",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:59.934Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 13901,
+      "features": [
+        {
+          "transportId": 43159,
+          "properties": {
+            "OBJECTID": 43159,
+            "PARCELID": "9206000000",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.2%2C26.214%2C-80.199%2C26.215&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:00.165Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.2%2C26.214%2C-80.199%2C26.215&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:00.394Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 63,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        2016,
+        43159,
+        97983
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=2016%2C43159%2C97983",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:00.612Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15034,
+      "features": [
+        {
+          "transportId": 2016,
+          "properties": {
+            "OBJECTID": 2016,
+            "PARCELID": "9207120020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        },
+        {
+          "transportId": 43159,
+          "properties": {
+            "OBJECTID": 43159,
+            "PARCELID": "9206000000",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.211%2C-80.2%2C26.212&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:00.842Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 26
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.211%2C-80.2%2C26.212&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:01.073Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 214,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        5943,
+        14090,
+        21183,
+        38019,
+        42912,
+        48008,
+        49329,
+        55954,
+        80002,
+        86200,
+        87053,
+        91086,
+        95920,
+        103765,
+        115572,
+        118433,
+        143285,
+        154057,
+        154298,
+        165791,
+        171605,
+        183059,
+        184921,
+        185421,
+        188345,
+        192420
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=5943%2C14090%2C21183%2C38019%2C42912%2C48008%2C49329%2C55954%2C80002%2C86200%2C87053%2C91086%2C95920%2C103765%2C115572%2C118433%2C143285%2C154057%2C154298%2C165791%2C171605%2C183059%2C184921%2C185421%2C188345%2C192420",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:01.319Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 18751,
+      "features": [
+        {
+          "transportId": 5943,
+          "properties": {
+            "OBJECTID": 5943,
+            "PARCELID": "9206310290",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0141fbf2e02b1e6fc01f8c298d810b58731bd2d89f6d159ea5d8652d68450938"
+        },
+        {
+          "transportId": 14090,
+          "properties": {
+            "OBJECTID": 14090,
+            "PARCELID": "9207120010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "be3a6cf4a2ac0b11a435ac31b2e0690e29ed093d1311b0acdb46c8d3cc3e8a3a"
+        },
+        {
+          "transportId": 21183,
+          "properties": {
+            "OBJECTID": 21183,
+            "PARCELID": "9206210190",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7e6481557fa1b850da2a3202400a858d975ea7707308b073e48b06a90d9b0b58"
+        },
+        {
+          "transportId": 38019,
+          "properties": {
+            "OBJECTID": 38019,
+            "PARCELID": "9206310270",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4d123a9cb4c9d9db57d00f7950fbd52d5bc82a7fdce1b02d7911d5b598c74158"
+        },
+        {
+          "transportId": 42912,
+          "properties": {
+            "OBJECTID": 42912,
+            "PARCELID": "9206260070",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c779352c0e70ea380d7d3e33940a590ee1d26c3535d3d4ec8023577c8a0d960c"
+        },
+        {
+          "transportId": 48008,
+          "properties": {
+            "OBJECTID": 48008,
+            "PARCELID": "9206210220",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "baaa868defea8567894758316863e6148084a66283cfce73b6411fc6e4674e4a"
+        },
+        {
+          "transportId": 49329,
+          "properties": {
+            "OBJECTID": 49329,
+            "PARCELID": "9206210250",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7f409c70aa10aa57b2f166dda52e1086417fec841aaa31a8217dd26774bf82da"
+        },
+        {
+          "transportId": 55954,
+          "properties": {
+            "OBJECTID": 55954,
+            "PARCELID": "9206310260",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "e54ccc2ad59b9228a085674f8244c0a25d8b189f0a8134b227d5072052fbfac2"
+        },
+        {
+          "transportId": 80002,
+          "properties": {
+            "OBJECTID": 80002,
+            "PARCELID": "9206210230",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "1ccd4f111bb7848bb59e146a1657ee7751a7c371a2f8bff7a107f08e11d7cce6"
+        },
+        {
+          "transportId": 86200,
+          "properties": {
+            "OBJECTID": 86200,
+            "PARCELID": "9206210290",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "3729f70cce8f8e90418969e850cf22f4dafd63c1b589c09ceb3f18a39df259f7"
+        },
+        {
+          "transportId": 87053,
+          "properties": {
+            "OBJECTID": 87053,
+            "PARCELID": "9206210170",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "68d889982c2497a24f853b2304973cf8c7849a73f9c470b9b997abe0b55be6ba"
+        },
+        {
+          "transportId": 91086,
+          "properties": {
+            "OBJECTID": 91086,
+            "PARCELID": "9206210120",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "e4ce8859ad9c283f32e0c8429ad8f0c3e40ed0795579f1f3f4ba9286a532791d"
+        },
+        {
+          "transportId": 95920,
+          "properties": {
+            "OBJECTID": 95920,
+            "PARCELID": "9206210140",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "441807959bd67a957c0c59762a4c454f4972d4e6d280dc37010b1d76c16d519c"
+        },
+        {
+          "transportId": 103765,
+          "properties": {
+            "OBJECTID": 103765,
+            "PARCELID": "9206310280",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4ab5abc696e3eb320d8c71c576429525b25637a59a9b9b0a287f4ab5975060eb"
+        },
+        {
+          "transportId": 115572,
+          "properties": {
+            "OBJECTID": 115572,
+            "PARCELID": "9206260060",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "84e02b3db5975f2c55361c9ddb2ace20b724d84fb5eb740ada52bbdc0566e827"
+        },
+        {
+          "transportId": 118433,
+          "properties": {
+            "OBJECTID": 118433,
+            "PARCELID": "9206210260",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c7946c7c9368da6f3e42476ffab09357dfd46cd6c461f97e6f380ca5eb5dad34"
+        },
+        {
+          "transportId": 143285,
+          "properties": {
+            "OBJECTID": 143285,
+            "PARCELID": "9206210150",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c7f6b879ca0e2fe6e88ccb6e4a6687b72291afa6a821d981b93d961df8b161f6"
+        },
+        {
+          "transportId": 154057,
+          "properties": {
+            "OBJECTID": 154057,
+            "PARCELID": "9206210180",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "bc3ec74f1b4d337c36f868588f3d6692f8251c3d5391cd462306a254ce1e7823"
+        },
+        {
+          "transportId": 154298,
+          "properties": {
+            "OBJECTID": 154298,
+            "PARCELID": "9206210270",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4ca81527418d7ae96b0a338c601e11288a5c81b6613a500ba677cb64ed3a4f74"
+        },
+        {
+          "transportId": 165791,
+          "properties": {
+            "OBJECTID": 165791,
+            "PARCELID": "9206210130",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "fc76444e4ab28bbb7d33cdada4e4629c7ba147523f550d1cc7b9482f2b72bdf8"
+        },
+        {
+          "transportId": 171605,
+          "properties": {
+            "OBJECTID": 171605,
+            "PARCELID": "9206310470",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "467887f01d4b6794b0776b88cb8c43ecf68766226ca8a3d7977c2095d2790aa8"
+        },
+        {
+          "transportId": 183059,
+          "properties": {
+            "OBJECTID": 183059,
+            "PARCELID": "9206310250",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "956cdbdc29d25614c4665c1eaa8cfa207d70e571d5759ec74b7c8d0d8b2fd553"
+        },
+        {
+          "transportId": 184921,
+          "properties": {
+            "OBJECTID": 184921,
+            "PARCELID": "9206210240",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b1920564595da005b8ddf03121d15b151ae36b292dc2fbcb44b1ad374454f11d"
+        },
+        {
+          "transportId": 185421,
+          "properties": {
+            "OBJECTID": 185421,
+            "PARCELID": "9206310240",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "af3a709fbef9dd3b33a271b8a63f3a3082ba92df5d7f3b7e572061acdbc32d08"
+        },
+        {
+          "transportId": 188345,
+          "properties": {
+            "OBJECTID": 188345,
+            "PARCELID": "9206210280",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "6a3f637780e1c4c49f08a8b9e9a7e406283229d45f580d11bf374bf145497c21"
+        },
+        {
+          "transportId": 192420,
+          "properties": {
+            "OBJECTID": 192420,
+            "PARCELID": "9206210160",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "87ddfcf4f8fb59cf34b802622b2b63f0d3e4e2ba686ccb4cf2768e814a57012f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.215%2C-80.2%2C26.216&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:01.585Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 14
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.215%2C-80.2%2C26.216&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:01.815Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 138,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        10899,
+        11225,
+        40767,
+        43159,
+        44392,
+        84596,
+        113756,
+        122101,
+        123483,
+        124142,
+        141008,
+        146691,
+        167607,
+        171711
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=10899%2C11225%2C40767%2C43159%2C44392%2C84596%2C113756%2C122101%2C123483%2C124142%2C141008%2C146691%2C167607%2C171711",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:02.043Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 231294,
+      "features": [
+        {
+          "transportId": 10899,
+          "properties": {
+            "OBJECTID": 10899,
+            "PARCELID": "9206200010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "67dc60c0166ee3969eb0b1480d3dd214b22c696b08ee23fa1dba16ae1e3d2e01"
+        },
+        {
+          "transportId": 11225,
+          "properties": {
+            "OBJECTID": 11225,
+            "PARCELID": "9206200820",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9de155e3d103c42fa8009b9adb0de1ad127ef639999012acd8cce6be603cd4cc"
+        },
+        {
+          "transportId": 40767,
+          "properties": {
+            "OBJECTID": 40767,
+            "PARCELID": "9206200330",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "f5b05ec40cbcdbd0be002eeb6afd365a1a5320e791535ff552e67118de17ac04"
+        },
+        {
+          "transportId": 43159,
+          "properties": {
+            "OBJECTID": 43159,
+            "PARCELID": "9206000000",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "transportId": 44392,
+          "properties": {
+            "OBJECTID": 44392,
+            "PARCELID": "9206130940",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "09a9a3edebcc1d47a634c1ce67d53fe002974cc0b180ce52963173f2ef3de52c"
+        },
+        {
+          "transportId": 84596,
+          "properties": {
+            "OBJECTID": 84596,
+            "PARCELID": "9206180921",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9b6bd5eee123012ffea6fcfbef93bbaee0abcca9016fb32127acc4299d5a79c8"
+        },
+        {
+          "transportId": 113756,
+          "properties": {
+            "OBJECTID": 113756,
+            "PARCELID": "9206200840",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "aa63132cb819983ffe26f7a8439c1a426366d71917abc0a7b556cc11c1b284cf"
+        },
+        {
+          "transportId": 122101,
+          "properties": {
+            "OBJECTID": 122101,
+            "PARCELID": "9206200860",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "cd5d3c0cf65dc039af0ecbd0549f28d833bfb9a1e07d4c24f52b20aac0dd3ec0"
+        },
+        {
+          "transportId": 123483,
+          "properties": {
+            "OBJECTID": 123483,
+            "PARCELID": "9206200340",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "800a5c0359fd4e7735e295d8f77830b08acb6d9b6397d8477c5b7f82b3d029b1"
+        },
+        {
+          "transportId": 124142,
+          "properties": {
+            "OBJECTID": 124142,
+            "PARCELID": "9206200870",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7b0948c84fbeed50cc794c1d91eb0f016ba0610035b18a3ffba7f6fcf6496d1c"
+        },
+        {
+          "transportId": 141008,
+          "properties": {
+            "OBJECTID": 141008,
+            "PARCELID": "9206200880",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "42bf3c9d153283099dd8201d1c869fa816721aad003dd1240ea576e81f7bd8bd"
+        },
+        {
+          "transportId": 146691,
+          "properties": {
+            "OBJECTID": 146691,
+            "PARCELID": "9206200020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b1fcf5e874b601a6ada4f31d6370942bfb9396be37221c8d53d357047dafff70"
+        },
+        {
+          "transportId": 167607,
+          "properties": {
+            "OBJECTID": 167607,
+            "PARCELID": "9206200830",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b15cd600f9edaf6300a1f5de5bd422897ee25cbb46bbdabbfa78592819c1a338"
+        },
+        {
+          "transportId": 171711,
+          "properties": {
+            "OBJECTID": 171711,
+            "PARCELID": "9206200850",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "69153dddb3cc2d8607c42019374fae9baf3f959dc75f8ec6f557cb63b34a2942"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.203%2C26.213%2C-80.202%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:02.648Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.203%2C26.213%2C-80.202%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:02.876Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 67,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        107781,
+        143830,
+        178045
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=107781%2C143830%2C178045",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:03.114Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 9250,
+      "features": [
+        {
+          "transportId": 107781,
+          "properties": {
+            "OBJECTID": 107781,
+            "PARCELID": "9206160010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a68a9d548f7f503a4e292b60425acd52a8cd281cc20d3b4951f59ae1bdadbce7"
+        },
+        {
+          "transportId": 143830,
+          "properties": {
+            "OBJECTID": 143830,
+            "PARCELID": "9206160021",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "d389b4c82fd5291f6dfd8b818ad907f922ba528b4cf59346a9eca73b6296cfca"
+        },
+        {
+          "transportId": 178045,
+          "properties": {
+            "OBJECTID": 178045,
+            "PARCELID": "9206160020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.199%2C26.213%2C-80.198%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:03.357Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.199%2C26.213%2C-80.198%2C26.214&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:03.612Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 51,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        2016
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=2016",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:03.852Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1174,
+      "features": [
+        {
+          "transportId": 2016,
+          "properties": {
+            "OBJECTID": 2016,
+            "PARCELID": "9207120020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.211%2C-80.2%2C26.212&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:04.081Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 26
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.201%2C26.211%2C-80.2%2C26.212&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:04.305Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 214,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        5943,
+        14090,
+        21183,
+        38019,
+        42912,
+        48008,
+        49329,
+        55954,
+        80002,
+        86200,
+        87053,
+        91086,
+        95920,
+        103765,
+        115572,
+        118433,
+        143285,
+        154057,
+        154298,
+        165791,
+        171605,
+        183059,
+        184921,
+        185421,
+        188345,
+        192420
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=5943%2C14090%2C21183",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:04.536Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1935,
+      "features": [
+        {
+          "transportId": 5943,
+          "properties": {
+            "OBJECTID": 5943,
+            "PARCELID": "9206310290",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0141fbf2e02b1e6fc01f8c298d810b58731bd2d89f6d159ea5d8652d68450938"
+        },
+        {
+          "transportId": 14090,
+          "properties": {
+            "OBJECTID": 14090,
+            "PARCELID": "9207120010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "be3a6cf4a2ac0b11a435ac31b2e0690e29ed093d1311b0acdb46c8d3cc3e8a3a"
+        },
+        {
+          "transportId": 21183,
+          "properties": {
+            "OBJECTID": 21183,
+            "PARCELID": "9206210190",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7e6481557fa1b850da2a3202400a858d975ea7707308b073e48b06a90d9b0b58"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=38019%2C42912%2C48008",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:04.758Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1519,
+      "features": [
+        {
+          "transportId": 38019,
+          "properties": {
+            "OBJECTID": 38019,
+            "PARCELID": "9206310270",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4d123a9cb4c9d9db57d00f7950fbd52d5bc82a7fdce1b02d7911d5b598c74158"
+        },
+        {
+          "transportId": 42912,
+          "properties": {
+            "OBJECTID": 42912,
+            "PARCELID": "9206260070",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c779352c0e70ea380d7d3e33940a590ee1d26c3535d3d4ec8023577c8a0d960c"
+        },
+        {
+          "transportId": 48008,
+          "properties": {
+            "OBJECTID": 48008,
+            "PARCELID": "9206210220",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "baaa868defea8567894758316863e6148084a66283cfce73b6411fc6e4674e4a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=49329%2C55954%2C80002",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:04.992Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1239,
+      "features": [
+        {
+          "transportId": 49329,
+          "properties": {
+            "OBJECTID": 49329,
+            "PARCELID": "9206210250",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7f409c70aa10aa57b2f166dda52e1086417fec841aaa31a8217dd26774bf82da"
+        },
+        {
+          "transportId": 55954,
+          "properties": {
+            "OBJECTID": 55954,
+            "PARCELID": "9206310260",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "e54ccc2ad59b9228a085674f8244c0a25d8b189f0a8134b227d5072052fbfac2"
+        },
+        {
+          "transportId": 80002,
+          "properties": {
+            "OBJECTID": 80002,
+            "PARCELID": "9206210230",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "1ccd4f111bb7848bb59e146a1657ee7751a7c371a2f8bff7a107f08e11d7cce6"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=86200%2C87053%2C91086",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.237Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4223,
+      "features": [
+        {
+          "transportId": 86200,
+          "properties": {
+            "OBJECTID": 86200,
+            "PARCELID": "9206210290",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "3729f70cce8f8e90418969e850cf22f4dafd63c1b589c09ceb3f18a39df259f7"
+        },
+        {
+          "transportId": 87053,
+          "properties": {
+            "OBJECTID": 87053,
+            "PARCELID": "9206210170",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "68d889982c2497a24f853b2304973cf8c7849a73f9c470b9b997abe0b55be6ba"
+        },
+        {
+          "transportId": 91086,
+          "properties": {
+            "OBJECTID": 91086,
+            "PARCELID": "9206210120",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "e4ce8859ad9c283f32e0c8429ad8f0c3e40ed0795579f1f3f4ba9286a532791d"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=95920%2C103765%2C115572",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.499Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2104,
+      "features": [
+        {
+          "transportId": 95920,
+          "properties": {
+            "OBJECTID": 95920,
+            "PARCELID": "9206210140",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "441807959bd67a957c0c59762a4c454f4972d4e6d280dc37010b1d76c16d519c"
+        },
+        {
+          "transportId": 103765,
+          "properties": {
+            "OBJECTID": 103765,
+            "PARCELID": "9206310280",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4ab5abc696e3eb320d8c71c576429525b25637a59a9b9b0a287f4ab5975060eb"
+        },
+        {
+          "transportId": 115572,
+          "properties": {
+            "OBJECTID": 115572,
+            "PARCELID": "9206260060",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "84e02b3db5975f2c55361c9ddb2ace20b724d84fb5eb740ada52bbdc0566e827"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=118433%2C143285%2C154057",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.720Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1210,
+      "features": [
+        {
+          "transportId": 118433,
+          "properties": {
+            "OBJECTID": 118433,
+            "PARCELID": "9206210260",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c7946c7c9368da6f3e42476ffab09357dfd46cd6c461f97e6f380ca5eb5dad34"
+        },
+        {
+          "transportId": 143285,
+          "properties": {
+            "OBJECTID": 143285,
+            "PARCELID": "9206210150",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c7f6b879ca0e2fe6e88ccb6e4a6687b72291afa6a821d981b93d961df8b161f6"
+        },
+        {
+          "transportId": 154057,
+          "properties": {
+            "OBJECTID": 154057,
+            "PARCELID": "9206210180",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "bc3ec74f1b4d337c36f868588f3d6692f8251c3d5391cd462306a254ce1e7823"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=154298%2C165791%2C171605",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.966Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4715,
+      "features": [
+        {
+          "transportId": 154298,
+          "properties": {
+            "OBJECTID": 154298,
+            "PARCELID": "9206210270",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4ca81527418d7ae96b0a338c601e11288a5c81b6613a500ba677cb64ed3a4f74"
+        },
+        {
+          "transportId": 165791,
+          "properties": {
+            "OBJECTID": 165791,
+            "PARCELID": "9206210130",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "fc76444e4ab28bbb7d33cdada4e4629c7ba147523f550d1cc7b9482f2b72bdf8"
+        },
+        {
+          "transportId": 171605,
+          "properties": {
+            "OBJECTID": 171605,
+            "PARCELID": "9206310470",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "467887f01d4b6794b0776b88cb8c43ecf68766226ca8a3d7977c2095d2790aa8"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=183059%2C184921%2C185421",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:06.197Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1369,
+      "features": [
+        {
+          "transportId": 183059,
+          "properties": {
+            "OBJECTID": 183059,
+            "PARCELID": "9206310250",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "956cdbdc29d25614c4665c1eaa8cfa207d70e571d5759ec74b7c8d0d8b2fd553"
+        },
+        {
+          "transportId": 184921,
+          "properties": {
+            "OBJECTID": 184921,
+            "PARCELID": "9206210240",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b1920564595da005b8ddf03121d15b151ae36b292dc2fbcb44b1ad374454f11d"
+        },
+        {
+          "transportId": 185421,
+          "properties": {
+            "OBJECTID": 185421,
+            "PARCELID": "9206310240",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "af3a709fbef9dd3b33a271b8a63f3a3082ba92df5d7f3b7e572061acdbc32d08"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=188345%2C192420",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:06.432Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 765,
+      "features": [
+        {
+          "transportId": 188345,
+          "properties": {
+            "OBJECTID": 188345,
+            "PARCELID": "9206210280",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "6a3f637780e1c4c49f08a8b9e9a7e406283229d45f580d11bf374bf145497c21"
+        },
+        {
+          "transportId": 192420,
+          "properties": {
+            "OBJECTID": 192420,
+            "PARCELID": "9206210160",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "87ddfcf4f8fb59cf34b802622b2b63f0d3e4e2ba686ccb4cf2768e814a57012f"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=%28RECORDTYPE+%3D+%27Parcel%27%29+AND+%28OBJECTID+IN+%28103765%2C107781%2C10899%2C11225%2C113756%2C115572%2C118433%2C122101%2C123483%2C124142%2C14090%2C141008%2C143285%2C143830%2C146691%2C154057%2C154298%2C165791%2C167607%2C171605%2C171711%2C178045%2C183059%2C184921%2C185421%2C188345%2C192420%2C2016%2C21183%2C38019%2C40767%2C42912%2C43159%2C44392%2C48008%2C49329%2C55954%2C5943%2C80002%2C84596%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:06.674Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=%28RECORDTYPE+%3D+%27Parcel%27%29+AND+%28OBJECTID+IN+%28103765%2C107781%2C10899%2C11225%2C113756%2C115572%2C118433%2C122101%2C123483%2C124142%2C14090%2C141008%2C143285%2C143830%2C146691%2C154057%2C154298%2C165791%2C167607%2C171605%2C171711%2C178045%2C183059%2C184921%2C185421%2C188345%2C192420%2C2016%2C21183%2C38019%2C40767%2C42912%2C43159%2C44392%2C48008%2C49329%2C55954%2C5943%2C80002%2C84596%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:06.896Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 308,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        2016,
+        5943,
+        10899,
+        11225,
+        14090,
+        21183,
+        38019,
+        40767,
+        42912,
+        43159,
+        44392,
+        48008,
+        49329,
+        55954,
+        80002,
+        84596,
+        103765,
+        107781,
+        113756,
+        115572,
+        118433,
+        122101,
+        123483,
+        124142,
+        141008,
+        143285,
+        143830,
+        146691,
+        154057,
+        154298,
+        165791,
+        167607,
+        171605,
+        171711,
+        178045,
+        183059,
+        184921,
+        185421,
+        188345,
+        192420
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=2016%2C5943%2C10899%2C11225%2C14090%2C21183%2C38019%2C40767%2C42912%2C43159%2C44392%2C48008%2C49329%2C55954%2C80002%2C84596%2C103765%2C107781%2C113756%2C115572%2C118433%2C122101%2C123483%2C124142%2C141008%2C143285%2C143830%2C146691%2C154057%2C154298%2C165791%2C167607%2C171605%2C171711%2C178045%2C183059%2C184921%2C185421%2C188345%2C192420",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:07.500Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 255803,
+      "features": [
+        {
+          "transportId": 2016,
+          "properties": {
+            "OBJECTID": 2016,
+            "PARCELID": "9207120020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "38c19be284c88c41513821d27e4a2952f7282bfd6072b5e4c09ce5dad468169d"
+        },
+        {
+          "transportId": 5943,
+          "properties": {
+            "OBJECTID": 5943,
+            "PARCELID": "9206310290",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0141fbf2e02b1e6fc01f8c298d810b58731bd2d89f6d159ea5d8652d68450938"
+        },
+        {
+          "transportId": 10899,
+          "properties": {
+            "OBJECTID": 10899,
+            "PARCELID": "9206200010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "67dc60c0166ee3969eb0b1480d3dd214b22c696b08ee23fa1dba16ae1e3d2e01"
+        },
+        {
+          "transportId": 11225,
+          "properties": {
+            "OBJECTID": 11225,
+            "PARCELID": "9206200820",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9de155e3d103c42fa8009b9adb0de1ad127ef639999012acd8cce6be603cd4cc"
+        },
+        {
+          "transportId": 14090,
+          "properties": {
+            "OBJECTID": 14090,
+            "PARCELID": "9207120010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "be3a6cf4a2ac0b11a435ac31b2e0690e29ed093d1311b0acdb46c8d3cc3e8a3a"
+        },
+        {
+          "transportId": 21183,
+          "properties": {
+            "OBJECTID": 21183,
+            "PARCELID": "9206210190",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7e6481557fa1b850da2a3202400a858d975ea7707308b073e48b06a90d9b0b58"
+        },
+        {
+          "transportId": 38019,
+          "properties": {
+            "OBJECTID": 38019,
+            "PARCELID": "9206310270",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4d123a9cb4c9d9db57d00f7950fbd52d5bc82a7fdce1b02d7911d5b598c74158"
+        },
+        {
+          "transportId": 40767,
+          "properties": {
+            "OBJECTID": 40767,
+            "PARCELID": "9206200330",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "f5b05ec40cbcdbd0be002eeb6afd365a1a5320e791535ff552e67118de17ac04"
+        },
+        {
+          "transportId": 42912,
+          "properties": {
+            "OBJECTID": 42912,
+            "PARCELID": "9206260070",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c779352c0e70ea380d7d3e33940a590ee1d26c3535d3d4ec8023577c8a0d960c"
+        },
+        {
+          "transportId": 43159,
+          "properties": {
+            "OBJECTID": 43159,
+            "PARCELID": "9206000000",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "transportId": 44392,
+          "properties": {
+            "OBJECTID": 44392,
+            "PARCELID": "9206130940",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "09a9a3edebcc1d47a634c1ce67d53fe002974cc0b180ce52963173f2ef3de52c"
+        },
+        {
+          "transportId": 48008,
+          "properties": {
+            "OBJECTID": 48008,
+            "PARCELID": "9206210220",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "baaa868defea8567894758316863e6148084a66283cfce73b6411fc6e4674e4a"
+        },
+        {
+          "transportId": 49329,
+          "properties": {
+            "OBJECTID": 49329,
+            "PARCELID": "9206210250",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7f409c70aa10aa57b2f166dda52e1086417fec841aaa31a8217dd26774bf82da"
+        },
+        {
+          "transportId": 55954,
+          "properties": {
+            "OBJECTID": 55954,
+            "PARCELID": "9206310260",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "e54ccc2ad59b9228a085674f8244c0a25d8b189f0a8134b227d5072052fbfac2"
+        },
+        {
+          "transportId": 80002,
+          "properties": {
+            "OBJECTID": 80002,
+            "PARCELID": "9206210230",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "1ccd4f111bb7848bb59e146a1657ee7751a7c371a2f8bff7a107f08e11d7cce6"
+        },
+        {
+          "transportId": 84596,
+          "properties": {
+            "OBJECTID": 84596,
+            "PARCELID": "9206180921",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9b6bd5eee123012ffea6fcfbef93bbaee0abcca9016fb32127acc4299d5a79c8"
+        },
+        {
+          "transportId": 103765,
+          "properties": {
+            "OBJECTID": 103765,
+            "PARCELID": "9206310280",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4ab5abc696e3eb320d8c71c576429525b25637a59a9b9b0a287f4ab5975060eb"
+        },
+        {
+          "transportId": 107781,
+          "properties": {
+            "OBJECTID": 107781,
+            "PARCELID": "9206160010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a68a9d548f7f503a4e292b60425acd52a8cd281cc20d3b4951f59ae1bdadbce7"
+        },
+        {
+          "transportId": 113756,
+          "properties": {
+            "OBJECTID": 113756,
+            "PARCELID": "9206200840",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "aa63132cb819983ffe26f7a8439c1a426366d71917abc0a7b556cc11c1b284cf"
+        },
+        {
+          "transportId": 115572,
+          "properties": {
+            "OBJECTID": 115572,
+            "PARCELID": "9206260060",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "84e02b3db5975f2c55361c9ddb2ace20b724d84fb5eb740ada52bbdc0566e827"
+        },
+        {
+          "transportId": 118433,
+          "properties": {
+            "OBJECTID": 118433,
+            "PARCELID": "9206210260",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c7946c7c9368da6f3e42476ffab09357dfd46cd6c461f97e6f380ca5eb5dad34"
+        },
+        {
+          "transportId": 122101,
+          "properties": {
+            "OBJECTID": 122101,
+            "PARCELID": "9206200860",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "cd5d3c0cf65dc039af0ecbd0549f28d833bfb9a1e07d4c24f52b20aac0dd3ec0"
+        },
+        {
+          "transportId": 123483,
+          "properties": {
+            "OBJECTID": 123483,
+            "PARCELID": "9206200340",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "800a5c0359fd4e7735e295d8f77830b08acb6d9b6397d8477c5b7f82b3d029b1"
+        },
+        {
+          "transportId": 124142,
+          "properties": {
+            "OBJECTID": 124142,
+            "PARCELID": "9206200870",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "7b0948c84fbeed50cc794c1d91eb0f016ba0610035b18a3ffba7f6fcf6496d1c"
+        },
+        {
+          "transportId": 141008,
+          "properties": {
+            "OBJECTID": 141008,
+            "PARCELID": "9206200880",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "42bf3c9d153283099dd8201d1c869fa816721aad003dd1240ea576e81f7bd8bd"
+        },
+        {
+          "transportId": 143285,
+          "properties": {
+            "OBJECTID": 143285,
+            "PARCELID": "9206210150",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "c7f6b879ca0e2fe6e88ccb6e4a6687b72291afa6a821d981b93d961df8b161f6"
+        },
+        {
+          "transportId": 143830,
+          "properties": {
+            "OBJECTID": 143830,
+            "PARCELID": "9206160021",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "d389b4c82fd5291f6dfd8b818ad907f922ba528b4cf59346a9eca73b6296cfca"
+        },
+        {
+          "transportId": 146691,
+          "properties": {
+            "OBJECTID": 146691,
+            "PARCELID": "9206200020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b1fcf5e874b601a6ada4f31d6370942bfb9396be37221c8d53d357047dafff70"
+        },
+        {
+          "transportId": 154057,
+          "properties": {
+            "OBJECTID": 154057,
+            "PARCELID": "9206210180",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "bc3ec74f1b4d337c36f868588f3d6692f8251c3d5391cd462306a254ce1e7823"
+        },
+        {
+          "transportId": 154298,
+          "properties": {
+            "OBJECTID": 154298,
+            "PARCELID": "9206210270",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4ca81527418d7ae96b0a338c601e11288a5c81b6613a500ba677cb64ed3a4f74"
+        },
+        {
+          "transportId": 165791,
+          "properties": {
+            "OBJECTID": 165791,
+            "PARCELID": "9206210130",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "fc76444e4ab28bbb7d33cdada4e4629c7ba147523f550d1cc7b9482f2b72bdf8"
+        },
+        {
+          "transportId": 167607,
+          "properties": {
+            "OBJECTID": 167607,
+            "PARCELID": "9206200830",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b15cd600f9edaf6300a1f5de5bd422897ee25cbb46bbdabbfa78592819c1a338"
+        },
+        {
+          "transportId": 171605,
+          "properties": {
+            "OBJECTID": 171605,
+            "PARCELID": "9206310470",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "467887f01d4b6794b0776b88cb8c43ecf68766226ca8a3d7977c2095d2790aa8"
+        },
+        {
+          "transportId": 171711,
+          "properties": {
+            "OBJECTID": 171711,
+            "PARCELID": "9206200850",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "69153dddb3cc2d8607c42019374fae9baf3f959dc75f8ec6f557cb63b34a2942"
+        },
+        {
+          "transportId": 178045,
+          "properties": {
+            "OBJECTID": 178045,
+            "PARCELID": "9206160020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "0487ed0d964c54c2ddb77d297ee98f7033997c4ae1a30d52f32a0c097c72a7e2"
+        },
+        {
+          "transportId": 183059,
+          "properties": {
+            "OBJECTID": 183059,
+            "PARCELID": "9206310250",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "956cdbdc29d25614c4665c1eaa8cfa207d70e571d5759ec74b7c8d0d8b2fd553"
+        },
+        {
+          "transportId": 184921,
+          "properties": {
+            "OBJECTID": 184921,
+            "PARCELID": "9206210240",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b1920564595da005b8ddf03121d15b151ae36b292dc2fbcb44b1ad374454f11d"
+        },
+        {
+          "transportId": 185421,
+          "properties": {
+            "OBJECTID": 185421,
+            "PARCELID": "9206310240",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "af3a709fbef9dd3b33a271b8a63f3a3082ba92df5d7f3b7e572061acdbc32d08"
+        },
+        {
+          "transportId": 188345,
+          "properties": {
+            "OBJECTID": 188345,
+            "PARCELID": "9206210280",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "6a3f637780e1c4c49f08a8b9e9a7e406283229d45f580d11bf374bf145497c21"
+        },
+        {
+          "transportId": 192420,
+          "properties": {
+            "OBJECTID": 192420,
+            "PARCELID": "9206210160",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "87ddfcf4f8fb59cf34b802622b2b63f0d3e4e2ba686ccb4cf2768e814a57012f"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=%28RECORDTYPE+%3D+%27Parcel%27%29+AND+%28OBJECTID+IN+%2886200%2C87053%2C91086%2C92851%2C95920%2C97983%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:07.958Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=%28RECORDTYPE+%3D+%27Parcel%27%29+AND+%28OBJECTID+IN+%2886200%2C87053%2C91086%2C92851%2C95920%2C97983%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.177Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 82,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        86200,
+        87053,
+        91086,
+        92851,
+        95920,
+        97983
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=86200%2C87053%2C91086%2C92851%2C95920%2C97983",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.399Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5342,
+      "features": [
+        {
+          "transportId": 86200,
+          "properties": {
+            "OBJECTID": 86200,
+            "PARCELID": "9206210290",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "3729f70cce8f8e90418969e850cf22f4dafd63c1b589c09ceb3f18a39df259f7"
+        },
+        {
+          "transportId": 87053,
+          "properties": {
+            "OBJECTID": 87053,
+            "PARCELID": "9206210170",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "68d889982c2497a24f853b2304973cf8c7849a73f9c470b9b997abe0b55be6ba"
+        },
+        {
+          "transportId": 91086,
+          "properties": {
+            "OBJECTID": 91086,
+            "PARCELID": "9206210120",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "e4ce8859ad9c283f32e0c8429ad8f0c3e40ed0795579f1f3f4ba9286a532791d"
+        },
+        {
+          "transportId": 92851,
+          "properties": {
+            "OBJECTID": 92851,
+            "PARCELID": "9207010024",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "4b18964eacdd7f1a890b7622d51dd5b9b6a4077bb191a380539e11be4a9755ee"
+        },
+        {
+          "transportId": 95920,
+          "properties": {
+            "OBJECTID": 95920,
+            "PARCELID": "9206210140",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "441807959bd67a957c0c59762a4c454f4972d4e6d280dc37010b1d76c16d519c"
+        },
+        {
+          "transportId": 97983,
+          "properties": {
+            "OBJECTID": 97983,
+            "PARCELID": "9206160030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9d1f7db944ab0e863db7b80a987181d179dc289895e25729569b1257e8b7d299"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=%28RECORDTYPE+%3D+%27Parcel%27%29+AND+%28OBJECTID+IN+%282147483647%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.642Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=%28RECORDTYPE+%3D+%27Parcel%27%29+AND+%28OBJECTID+IN+%282147483647%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.860Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.20122942664389%2C26.215089702177334%2C-80.20099918968766%2C26.21536581585405&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:09.147Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.20122942664389%2C26.215089702177334%2C-80.20099918968766%2C26.21536581585405&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:09.377Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 77,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        10899,
+        11400,
+        43159,
+        84596,
+        146691
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=10899%2C11400%2C43159%2C84596%2C146691",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:09.605Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 197227,
+      "features": [
+        {
+          "transportId": 10899,
+          "properties": {
+            "OBJECTID": 10899,
+            "PARCELID": "9206200010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "67dc60c0166ee3969eb0b1480d3dd214b22c696b08ee23fa1dba16ae1e3d2e01"
+        },
+        {
+          "transportId": 11400,
+          "properties": {
+            "OBJECTID": 11400,
+            "PARCELID": "9206200030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "1ade24f1f08196793d9c071194119b697ae543f6390e27277cd00499024c1c3f"
+        },
+        {
+          "transportId": 43159,
+          "properties": {
+            "OBJECTID": 43159,
+            "PARCELID": "9206000000",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "transportId": 84596,
+          "properties": {
+            "OBJECTID": 84596,
+            "PARCELID": "9206180921",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9b6bd5eee123012ffea6fcfbef93bbaee0abcca9016fb32127acc4299d5a79c8"
+        },
+        {
+          "transportId": 146691,
+          "properties": {
+            "OBJECTID": 146691,
+            "PARCELID": "9206200020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b1fcf5e874b601a6ada4f31d6370942bfb9396be37221c8d53d357047dafff70"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.20122942664389%2C26.215089702177334%2C-80.20099918968766%2C26.21536581585405&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:09.886Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&geometry=-80.20122942664389%2C26.215089702177334%2C-80.20099918968766%2C26.21536581585405&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:10.121Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 77,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        10899,
+        11400,
+        43159,
+        84596,
+        146691
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0/query?where=RECORDTYPE+%3D+%27Parcel%27&outFields=OBJECTID%2CPARCELID%2CRECORDTYPE&returnGeometry=true&outSR=4326&f=geojson&objectIds=10899%2C11400%2C43159%2C84596%2C146691",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:10.376Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 197227,
+      "features": [
+        {
+          "transportId": 10899,
+          "properties": {
+            "OBJECTID": 10899,
+            "PARCELID": "9206200010",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "67dc60c0166ee3969eb0b1480d3dd214b22c696b08ee23fa1dba16ae1e3d2e01"
+        },
+        {
+          "transportId": 11400,
+          "properties": {
+            "OBJECTID": 11400,
+            "PARCELID": "9206200030",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "1ade24f1f08196793d9c071194119b697ae543f6390e27277cd00499024c1c3f"
+        },
+        {
+          "transportId": 43159,
+          "properties": {
+            "OBJECTID": 43159,
+            "PARCELID": "9206000000",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "a6bdaffca7a2aa62e9c83cc131d9a8197573cb9a4ffa8ac8802f5e3ae01ac066"
+        },
+        {
+          "transportId": 84596,
+          "properties": {
+            "OBJECTID": 84596,
+            "PARCELID": "9206180921",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "9b6bd5eee123012ffea6fcfbef93bbaee0abcca9016fb32127acc4299d5a79c8"
+        },
+        {
+          "transportId": 146691,
+          "properties": {
+            "OBJECTID": 146691,
+            "PARCELID": "9206200020",
+            "RECORDTYPE": "Parcel"
+          },
+          "geometrySha256": "b1fcf5e874b601a6ada4f31d6370942bfb9396be37221c8d53d357047dafff70"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/fort-lauderdale-quality.json",
+  "uniqueParcels": 46,
+  "requestCount": 64,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T23:13:10.726Z",
+  "qualityStatus": "passed_independent_metric_topology",
+  "qualityDecision": "approved_by_root"
+}

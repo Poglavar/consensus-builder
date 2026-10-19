@@ -1,0 +1,113 @@
+{
+ "kind": "country",
+ "key": "SV",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: es-SV,es;q=0.9,en;q=0.8 (cookie jar kept via curl -b/-c)",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "sv-arcgis-online-mapabase",
+  "requestUrl": "https://services8.arcgis.com/AamuaBHBnpGFgvGV/arcgis/rest/services/Mapabase/FeatureServer/1/query?where=1=1&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "San Salvador centro (AMSS), first 3 records; layer extent about 6x4 km",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "CLAVECAT",
+  "responseFile": "research/retry/countries/SV-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount, maxRecordCount 2000",
+  "regionSampled": "San Salvador metropolitan area only"
+ },
+ "source": {
+  "sourceId": "sv-arcgis-online-mapabase",
+  "name": "Mapabase (CNR cadastral layer for AMSS)",
+  "operator": "third-party ArcGIS Online org rbarriere_aplan; data credited to CNR via MITUR, compiled by Asociacion Temporal Suma Cotrans City Plan",
+  "scope": "AMSS partial coverage only",
+  "endpoint": "https://services8.arcgis.com/AamuaBHBnpGFgvGV/arcgis/rest/services/Mapabase/FeatureServer/1",
+  "method": "ArcGIS REST query",
+  "responseFormat": "geojson/json",
+  "crs": "EPSG:32617 native, outSR=4326 supported",
+  "reuseStatus": "unknown, not read; unofficial copy"
+ },
+ "requests": [
+  {
+   "url": "https://www.cnr.gob.sv/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "previously 403; with full Chrome headers now 200 (130 KB WordPress site)"
+  },
+  {
+   "url": "https://www.cnr.gob.sv/catastro/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": null,
+   "assessment": "no such page"
+  },
+  {
+   "url": "https://www.cnr.gob.sv/geoportal/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 (688 B)"
+  },
+  {
+   "url": "https://www.cnr.gob.sv/mapa-del-sitio/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "sitemap: news item on 'El Salvador Maps' (GIS platform: LiDAR, orthophotos) and Clave Catastral consult"
+  },
+  {
+   "url": "https://www.e.cnr.gob.sv/ClaveCatastral/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "IGCN Clave Catastral public viewer (ArcGIS JS 4.24). js/funcionclvcat_des.js names MapServers on aggeoserver.cnr.gob.sv: SV/WMS_CAT_NAC, PRB/wms_prb_clv, PRB/WMS_LIMITES_CLVCAT; attributes SR_CLAVE_CATASTRAL, VSR_AREA, VSR_PERIM etc.; viewer embeds an ArcGIS geocode API key (redacted <PUBLIC_TOKEN>, Esri-issued)"
+  },
+  {
+   "url": "https://aggeoserver.cnr.gob.sv/server/rest/services/{SV/WMS_CAT_NAC,PRB/wms_prb_clv,PRB/WMS_LIMITES_CLVCAT}/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "egress proxy denied CONNECT (organization policy) x4; official parcel service could not be queried"
+  },
+  {
+   "url": "https://sigcnr.cnr.gob.sv/, https://geoportal.cnr.gob.sv/, https://ide.cnr.gob.sv/, https://www.ign.gob.sv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://geoportal.snet.gob.sv/",
+   "method": "GET",
+   "httpStatus": 522,
+   "contentType": "text/plain",
+   "assessment": "origin timeout (522)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=El Salvador catastro parcelas type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "third-party item 'Mapabase' (owner rbarriere_aplan): CNR cadastral layer compiled for the AMSS by a consultancy from MITUR data"
+  },
+  {
+   "url": "https://services8.arcgis.com/AamuaBHBnpGFgvGV/arcgis/rest/services/Mapabase/FeatureServer/1/query?where=1=1&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 Polygon features (closed rings, 8-11 vertices); fields CLAVECAT, PAR_DIRECC, Tipo=Predio"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "CNR www 403 was header-dependent. aggeoserver denial is egress-proxy policy here, not evidence of a Salvadoran geoblock.",
+ "notes": "New: headers fixed the 403; viewer inspection found the real official service host (aggeoserver.cnr.gob.sv MapServers), unreachable from this network. Verified parcel sample only from a THIRD-PARTY ArcGIS Online copy (San Salvador metro area, extent about 6x4 km, UTM 17N): unofficial, not nationwide, reuse terms not read, possibly stale. Official popup exposes owner (Siryc) fields; none requested or saved.",
+ "nextStep": "Query the official aggeoserver MapServer with a small bbox from a network that can reach it; confirm CNR data licence."
+}

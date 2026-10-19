@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9847,
+  "cityId": "wup2025:9847",
+  "name": "Kollam",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    9.29818038422683,
+    76.4275496736682
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 157,
+  "stateOrUT": "Kerala",
+  "administrativeIdentity": {
+    "district": "Alappuzha",
+    "tehsilOrTaluk": "Karthikappally",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "temporarily_unavailable"
+    ],
+    "previousEvidenceFiles": [
+      "research/kollam.json",
+      "research/retry/cities/kollam.json"
+    ],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/kollam.json",
+        "checkedAt": "2026-09-29",
+        "status": "temporarily_unavailable",
+        "scope": "Kerala Revenue/ReSurvey (ILRMS, eReKha) portals",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://erekha.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "TLS self-signed certificate chain; not retried insecurely"
+          },
+          {
+            "method": "GET",
+            "url": "https://webgis.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "proxy 502 host unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "proxy 502 host unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://ilrms.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "proxy 502 host unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://kollam.nic.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset"
+          },
+          {
+            "method": "GET",
+            "url": "https://kerala.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=utf-8",
+            "assessment": "state portal home page only"
+          }
+        ],
+        "conclusion": "Kerala's land-record and web-GIS hosts were unreachable or failed TLS, so absence of a public parcel API is not established. Kerala resurvey portals are likely record/viewer oriented.",
+        "nextStep": "Retry ILRMS/eReKha/Bhunaksha Kerala from another network; inspect for a documented map service and test a bounded Kollam query."
+      },
+      {
+        "path": "research/retry/cities/kollam.json",
+        "checkedAt": "2026-09-30",
+        "status": "temporarily_unavailable",
+        "scope": null,
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://erekha.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://ilrms.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://webgis.kerala.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://dilrmp.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://svamitva.nic.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhuvan.nrsc.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=utf-8",
+            "assessment": "ISRO Bhuvan front page reachable; not a parcel service, none identified"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search?q=Kerala+cadastral+OR+survey+type%3AFeature+Service",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "only census/admin/LSG boundary layers; no parcels"
+          }
+        ],
+        "conclusion": "No IN country retry file exists. Kerala land-record hosts still 502/reset; no new source.",
+        "nextStep": "Retry Kerala land-record/Bhunaksha hosts from an India-region network."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Malayalam",
+        "query": "കേരളം കൊല്ലം റവന്യൂ വില്ലേജ് സർവേ ഭൂപടം eRekha Ente Bhoomi",
+        "scope": "WUP 9847 Kollam cohort label retained. This actual query led to shared Government of Kerala Ente Bhoomi portal; locality and revenue-village identity checked via official selector, not inferred from label.",
+        "result": "Search surfaced the official Ente Bhoomi viewer as the state entry point; no city-specific parcel geometry result was returned by search.",
+        "checkedAt": "2026-10-08",
+        "script": "Malayalam",
+        "actualResultUrls": [
+          "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+          "https://entebhoomi.kerala.gov.in/web/home",
+          "https://entebhoomi.kerala.gov.in/web/ilms/map",
+          "https://www.survey.entebhoomi.kerala.gov.in/",
+          "https://survey.entebhoomi.kerala.gov.in/portal/",
+          "https://training-survey.entebhoomi.kerala.gov.in/portal/",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/dashboard",
+          "https://entebhoomi.kerala.gov.in/assets/pdf/land_tax_payment_guideline.pdf",
+          "https://spb.kerala.gov.in/sites/default/files/2026-01/ER%202025%20Volume1%20Mal%20final1.pdf",
+          "https://dslr.kerala.gov.in/%E0%B4%87-%E0%B4%B0%E0%B5%87%E0%B4%96-%E0%B4%AA%E0%B4%A6%E0%B5%8D%E0%B4%A7%E0%B4%A4%E0%B4%BF/",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/village/survey/started/list",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/menu/digitalrecords",
+          "https://dslr.kerala.gov.in/en/erekha/",
+          "https://entebhoomi.kerala.gov.in/assets/pdf/location_sketch_guideline.pdf",
+          "https://spb.kerala.gov.in/sites/default/files/2026-01/ER%202025%20Volume2%20Mal%20final.pdf",
+          "https://prd.kerala.gov.in/sites/default/files/inline-files/Janapatham_April_2025_WEB%20%281%29_compressed.pdf",
+          "https://document.kerala.gov.in/documents/cabinetdecisions/cabinet2101202615%3A36%3A53.pdf",
+          "https://www.reddit.com/r/Kerala/comments/1arzxjl",
+          "https://www.reddit.com/r/Kerala/comments/1r49zd9/288_%E0%B4%B5%E0%B4%B3%E0%B4%B5%E0%B4%95%E0%B5%BE_%E0%B4%A8%E0%B4%B5%E0%B5%BC%E0%B4%A4%E0%B4%A4_%E0%B4%B2%E0%B4%95%E0%B4%B7%E0%B4%AF_%E0%B4%AE%E0%B4%A3%E0%B4%95%E0%B4%95%E0%B4%B1%E0%B5%BD_160_%E0%B4%95%E0%B4%AE_%E0%B4%B8%E0%B4%B8%E0%B4%A5%E0%B4%A8%E0%B4%A4%E0%B4%A4_7_%E0%B4%B1%E0%B4%AF%E0%B5%BD/",
+          "https://www.reddit.com/r/Kochi/comments/1dmg52u",
+          "https://www.reddit.com/r/Kerala/comments/1jnxbvx",
+          "https://www.reddit.com/r/Kerala/comments/1149qkv",
+          "https://www.reddit.com/r/Kerala/comments/t5h5q2",
+          "https://www.reddit.com/r/Kerala/comments/1jwo92a",
+          "https://www.reddit.com/r/NewKeralaRevolution/comments/1rccbox/%E0%B4%85%E0%B5%BE%E0%B4%9F%E0%B4%B0%E0%B4%B5%E0%B4%AF%E0%B4%B2%E0%B4%B1%E0%B4%B1_%E0%B4%B0%E0%B4%B6%E0%B4%AE%E0%B4%95%E0%B4%B3_%E0%B4%B8%E0%B4%95%E0%B4%B7%E0%B4%95%E0%B4%95%E0%B4%A3_%E0%B4%B8%E0%B4%B8%E0%B4%A5%E0%B4%A8%E0%B4%A4%E0%B4%A4_8_%E0%B4%87%E0%B4%9F%E0%B4%A4%E0%B4%A4_%E0%B4%AF%E0%B4%B2%E0%B4%B2_%E0%B4%85%E0%B4%B2%E0%B5%BC%E0%B4%9F%E0%B4%9F/",
+          "https://www.reddit.com/r/u_Maralika09/comments/15h1vtx",
+          "https://www.reddit.com/r/Kerala/comments/yb8ayl",
+          "https://www.reddit.com/r/Kerala/comments/1q4a6oj/%E0%B4%95_2026_%E0%B4%87%E0%B4%A8%E0%B4%A8%E0%B4%AE%E0%B4%A4%E0%B4%B2_%E0%B4%85%E0%B4%AA%E0%B4%95%E0%B4%B7_%E0%B4%B8%E0%B4%B5%E0%B4%95%E0%B4%B0%E0%B4%95%E0%B4%95/",
+          "https://www.reddit.com/r/Kerala/comments/rnb8g3"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Ente Bhoomi ILMS public map",
+        "operator": "Government of Kerala, Survey and Land Records Department / NIC Kerala portal attribution",
+        "homeUrl": "https://entebhoomi.kerala.gov.in/web/home",
+        "mapUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "observation": "Official district/taluk/village selectors checked. In Karthikappally all-village list returned 18 entries; published-village list returned 3. The WUP point reverse lead is Harippad/Karthikappally/Alappuzha, unlike the cohort label Kollam. The official all-village Karthikappally selector contains Harippad; its published subset excludes it. Candidate name presence is not point-in-polygon proof.",
+        "selectorCalls": [
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+            "status": 200,
+            "contentType": "text/html",
+            "assessment": "Official viewer and Malayalam district selector."
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid",
+            "queryParameter": "districtId from selected Malayalam district",
+            "status": 200,
+            "contentType": "application/json"
+          },
+          {
+            "method": "GET",
+            "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+            "queryParameters": {
+              "talukId": "selected from official taluk selector",
+              "loadAllVillage": "true",
+              "loadPublishedVillage": "false|true"
+            },
+            "status": 200,
+            "contentType": "application/json",
+            "assessment": "Observed all-village and published-village lists; exact opaque GID omitted from this record."
+          }
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=9.29818038422683&lon=76.4275496736682&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "हरिप्पाड, Karthikappally, Alappuzha, Kerala, 690514, India",
+        "osmType": "way",
+        "osmId": 632716419,
+        "address": {
+          "town": "हरिप्पाड",
+          "county": "Karthikappally",
+          "state_district": "Alappuzha",
+          "state": "Kerala",
+          "ISO3166-2-lvl4": "IN-KL",
+          "postcode": "690514",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official selector/viewer shell; district names available in Malayalam."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official all-village selector result; Karthikappally taluk contained 18 villages.",
+        "queryParameters": {
+          "talukId": "selected from live official district/taluk selector (exact opaque GID not retained in this research record)",
+          "loadAllVillage": "true",
+          "loadPublishedVillage": "false"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official published-village selector result; Karthikappally taluk contained 3 villages; target named candidate not included.",
+        "queryParameters": {
+          "talukId": "selected from live official district/taluk selector (exact opaque GID not retained in this research record)",
+          "loadAllVillage": "true",
+          "loadPublishedVillage": "true"
+        }
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Selected candidate Harippad using district/taluk/village GIDs; page config location_code 040405."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/040405",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "responseBytes": 28794,
+        "assessment": "POST form layer_code=LAND_PARCEL, crs=32643, x/y=656792.56, 1028134.08; returned generic 28,794-byte HTML viewer shell, not JSON/GeoJSON or parcel geometry."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Public Ente Bhoomi viewer/selector loaded successfully; endpoint-only evidence."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "District selector was used to retrieve taluk list; exact districtId GID was not preserved, so this request record is non-reproducible."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/village/gid",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "All-village and published-village lists were queried; opaque talukId GID was not preserved, so this request record is non-reproducible."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "A candidate village was selected; opaque GIDs were not preserved, so this exact request cannot be replayed."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/040405",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "responseBytes": 28794,
+        "assessment": "Successful identify-endpoint request returned the generic HTML viewer shell only, not parcel feature geometry; request is endpoint-only/non-reproducible because selector GIDs were not preserved."
+      }
+    ],
+    "viewerRequestRecordQuality": "endpoint_only_non_reproducible",
+    "viewerRequestReproducibilityNote": "The public Ente Bhoomi viewer and selector were successfully queried and returned HTTP 200. The three opaque district/taluk/village GIDs used in selector calls were not preserved in this record, so those exact requests cannot be replayed from the saved URL data. Only the endpoint paths and method/filter semantics remain; this is not a reproducible exact request log. No parcel geometry was returned."
+  },
+  "status": "partial_coverage",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP point against an official revenue-village boundary; obtain a published parcel map or supported spatial identify response with a stable parcel ID and usable polygon. Current selector results and HTML-shell identifies are insufficient."
+}

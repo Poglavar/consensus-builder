@@ -1,0 +1,46 @@
+{
+  "cityCode": 10717,
+  "queueRank": 2530,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [13.1240523617681, 79.9158697925941],
+  "population2025": 232380,
+  "population2025k": 232.38,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tiruvallur Tamil Nadu official cadastral parcel map land records portal",
+        "result": "Found the official Tiruvallur District Survey and Land Records page, official district land e-Services page, Tamil Nadu e-Services destination, and TNGIS. The district page states that rural records and Tiruvallur urban records are online and that FMB sketches are digitized; no public parcel vector endpoint was exposed by discovery.",
+        "actualResultUrls": [
+          "https://tiruvallur.nic.in/departments/survey-and-land-records/",
+          "https://tiruvallur.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://eservices.tn.gov.in/eservicesnew/index.html",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "திருவள்ளூர் நில அளவை வரைபடம் அதிகாரப்பூர்வ இணையதளம்",
+        "result": "Found the official Tamil Tiruvallur district site and the official Tamil Nadu land-record/TNGIS service references. The result supports local Survey and Land Records custody and public Patta/FMB/Chitta/TSLR procedures, but did not expose a safe anonymous parcel feature response.",
+        "actualResultUrls": [
+          "https://tiruvallur.nic.in/ta/",
+          "https://tiruvallur.nic.in/departments/survey-and-land-records/",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Tiruvallur District Administration identifies its Survey and Land Records department as implementing computerized rural and urban land records and digitized FMB sketches; its land e-Services page directs users to the Government of Tamil Nadu e-Services portal for Patta/FMB/Chitta/TSLR, A-Register, Patta verification, and Poramboke verification.",
+  "serviceReview": "tiruvallur-service-review.json",
+  "geometry": null,
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "uncertainty": "No safe native parcel identity, parcel polygon, service schema, or CRS response was obtained. The state e-Services host timed out on an anonymous TLS-verified GET, and the TNGIS page exposed a login/CAPTCHA shell. These failures do not establish citywide absence or lack of cadastral coverage."
+}

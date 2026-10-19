@@ -1,0 +1,78 @@
+{
+ "kind": "country",
+ "key": "BZ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-BZ,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "bz-belize-city-parcels-agol",
+  "requestUrl": "https://services.arcgis.com/LxfKOYkTamDQYlsa/arcgis/rest/services/BelizeBank_BzeCity_Parcels/FeatureServer/0/query?where=1=1&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "Belize City, approx -88.20,17.499 (first records, no bbox)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID (block-registration section-parcel no.)",
+  "responseFile": "research/retry/countries/BZ-parcel-response.json (2 features kept)",
+  "pagination": "resultRecordCount/resultOffset; maxRecordCount 2000; exceededTransferLimit true",
+  "regionSampled": "Belize City"
+ },
+ "source": {
+  "sourceId": "bz-belize-city-parcels-agol",
+  "name": "Belize City Parcels (ArcGIS Online item 81c5880e12e648698af94029d804f8fa)",
+  "operator": "ArcGIS Online org LxfKOYkTamDQYlsa; layer name says BelizeBank - a third party, not the Lands Dept",
+  "scope": "Belize City only",
+  "endpoint": "https://services.arcgis.com/LxfKOYkTamDQYlsa/arcgis/rest/services/BelizeBank_BzeCity_Parcels/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "Esri JSON / GeoJSON",
+  "crs": "EPSG:4326 requested (native unknown)",
+  "reuseStatus": "unknown; licence and provenance not read; not verified as official"
+ },
+ "requests": [
+  {
+   "url": "https://www.lands.gov.bz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin)"
+  },
+  {
+   "url": "https://naturalresources.gov.bz/index.php/surveys-and-mappings-section/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS certificate verification failed (not bypassed)"
+  },
+  {
+   "url": "https://landfolio.gov.bz/ ; https://lands.gov.bz/ ; https://landregistry.gov.bz/ ; https://www.landsandsurveys.gov.bz/ ; https://www.nrmgis.gov.bz ; https://belize.geoportal.io ; https://www.belizenationalgis.com/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin) for each guessed host"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Belize%20parcels&f=json&num=10",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "found BZ_Parcels item; other hits are flood/sugar cane parcels, not cadastre"
+  },
+  {
+   "url": "(BZ_Parcels FeatureServer/0/query, 3 records)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels with block/registration-section IDs (Belize City)"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "All Belize government hosts return proxy CONNECT 502 or a TLS chain failure, while ArcGIS Online works from the same network; suggests egress block or a Belize-side outage/geo-filter, unproven",
+ "notes": "New: an open Belize City parcel layer with Land Registry style IDs (block/registration section/parcel), but published by a bank-named org, not the government; city scope only. Official Lands & Surveys / Landfolio still unreachable, so national status not settled.",
+ "nextStep": "Retry official hosts from another network; check whether the AGOL layer traces to the Land Registry and read its licence."
+}

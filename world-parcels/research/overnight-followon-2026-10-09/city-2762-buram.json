@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2762",
+  "wupCityCode": 2762,
+  "name": "Buram",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "rank": 1030,
+  "queueRank": 1030,
+  "point": [
+    10.8551825222035,
+    25.1591685098531
+  ],
+  "centerLatLon": [
+    10.8551825222035,
+    25.1591685098531
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 537169,
+  "population2025k": 537.169,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The Sudan Judiciary’s official Arabic land-registration page describes a national land-registration administration and offices in states, while the National Information Centre describes national WMS/WFS mapping services. Neither source ties a specific land-records office or parcel layer to Buram, so local custody remains unknown.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "national_registry_candidate_city_scope_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The Sudan Judiciary’s official Arabic land-registration page describes a national land-registration administration and offices in states, while the National Information Centre describes national WMS/WFS mapping services. Neither source ties a specific land-records office or parcel layer to Buram, so local custody remains unknown.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Buram South Darfur Sudan land registry cadastral map local office",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "Search found national Sudan land-registration and mapping services, but no first-party evidence of a Buram-specific registry office or parcel feature service.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://nic.gov.sd/public/projectDetails/3"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Arabic",
+        "query": "بورام دارفور تسجيل الأراضي محلية برام خريطة السجل العقاري",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "بحث عربي عن برام وسجل الأراضي لم يثبت مكتب تسجيل محلياً أو طبقة قطع أراضٍ خاصة بمدينة برام؛ المصادر الحكومية التي ظهرت تصف خدمات وسجلات وطنية فقط.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://nic.gov.sd/public/projectDetails/3"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [],
+    "portals": [],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "The exact Buram administrative custody, local land-records office, WUP-point parcel coverage and any anonymous complete-polygon service remain unverified.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The Sudan Judiciary’s official Arabic land-registration page describes a national land-registration administration and offices in states, while the National Information Centre describes national WMS/WFS mapping services. Neither source ties a specific land-records office or parcel layer to Buram, so local custody remains unknown."
+}

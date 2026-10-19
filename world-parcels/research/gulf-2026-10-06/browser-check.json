@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-10-06",
+  "surface": "Dedicated headed Chrome, local frontend5638/backend4638; reduced motion",
+  "checks": [
+    {
+      "city": "doha",
+      "initialBounds": 9,
+      "initialFeatureCount": 84,
+      "parcelSelection": "Visible native parcel opened proposal/details/history/site menu",
+      "pan": "After1500px horizontalpan, retainedparcels142 and bounds11; furthercells streamed",
+      "sourceWarning": false,
+      "pageErrors": 0
+    },
+    {
+      "city": "dubai",
+      "initialBounds": 9,
+      "featureCount": 45,
+      "renderedLayers": 45,
+      "visual": "Parcel outlines visible against Dubai Media City/Marina base map; official publisher/scope notice",
+      "sourceWarning": false,
+      "pageErrors": 0
+    },
+    {
+      "city": "amman",
+      "initialBounds": 9,
+      "featureCount": 569,
+      "renderedLayers": 577,
+      "visual": "Identified parcel outlines visible; partial scope stated in attribution",
+      "parcelSelection": "Visible native parcel opened proposal/details/history/site menu",
+      "sourceWarning": false,
+      "pageErrors": 0
+    }
+  ],
+  "validation": {
+    "headlessTestFiles": 18,
+    "headlessTestsPassed": 290,
+    "parcelDatabaseImports": 0
+  }
+}

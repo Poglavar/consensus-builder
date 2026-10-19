@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 3599,
+  "queueRank": 2802,
+  "name": "Santander",
+  "country": "Spain",
+  "countryCode": "ES",
+  "iso3": "ESP",
+  "point": [43.4528941081206, -3.82448712390228],
+  "population2025": 211730,
+  "population2025k": 211.73,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Santander Spain official cadastral parcel map GIS Catastro parcelas",
+        "result": "Found the first-party national Directorate-General for Cadastre portal and its WMS/INSPIRE documentation; found a Santander municipal GIS lead through the official city portal/catalog. No indexed city-specific public parcel API was established.",
+        "actualResultUrls": [
+          "https://www1.sedecatastro.gob.es/OVCInicio.aspx",
+          "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+          "https://www.catastro.hacienda.gob.es/webinspire/",
+          "https://sede.ayto-santander.es/web/fichaAsunto.do?asas_ide_asu=536&empezarPorPagina=1&idioma=1&op=24&opcion=0",
+          "https://datos.gob.es/es/catalogo/l01390759-mapa-base"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Santander España sede electrónica catastro mapa parcelas GIS oficial",
+        "result": "Found the same first-party national Cadastre access, free cartographic WMS and INSPIRE parcel service documentation, plus the official Ayuntamiento de Santander entry naming a municipal GIS viewer. Direct endpoint probing did not yield a usable parcel response.",
+        "actualResultUrls": [
+          "https://www.sedecatastro.gob.es/",
+          "https://www.catastro.hacienda.gob.es/es-es/acceso_infocat.html",
+          "https://www.catastro.hacienda.gob.es/ayuda/ayuda_coordinadas.htm",
+          "https://sede.ayto-santander.es/web/fichaAsunto.do?asas_ide_asu=536&empezarPorPagina=1&idioma=1&op=24&opcion=0",
+          "https://datos.santander.es/catalogo/mapa-base"
+        ]
+      }
+    ],
+    "sources": [
+      "https://www.catastro.hacienda.gob.es/es-ES/wms.html",
+      "https://www.catastro.hacienda.gob.es/webinspire/",
+      "https://www.catastro.hacienda.gob.es/es-es/acceso_infocat.html",
+      "https://sede.ayto-santander.es/web/fichaAsunto.do?asas_ide_asu=536&empezarPorPagina=1&idioma=1&op=24&opcion=0",
+      "https://datos.gob.es/es/catalogo/l01390759-mapa-base"
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Spanish Directorate-General for Cadastre documents nationwide free cadastral cartography WMS and INSPIRE parcel services. The official Ayuntamiento de Santander portal separately names a municipal GIS viewer. This evidences relevant custodians/services, not a successful city parcel extraction.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Spain-wide cadastral cartography/INSPIRE services, with a Santander municipal GIS lead.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "status": "HTTP 400",
+      "summary": "Public endpoint returned an HTML Catastro error page; no capabilities/schema response was obtained. TLS verification remained enabled."
+    },
+    {
+      "url": "http://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?service=wms&request=GetCapabilities&version=1.1.1",
+      "method": "GET",
+      "status": "HTTP 400",
+      "summary": "HTTP retry of the documented INSPIRE endpoint also returned the same HTML error page; no parcel data was accepted as evidence."
+    },
+    {
+      "url": "http://ovc.catastro.meh.es/Cartografia/INSPIRE/spadgcwms.aspx?service=wms&request=getfeatureinfo&srs=epsg:25830&width=50&height=50&format=image/png&query_layers=CP.CADASTRALPARCEL&bbox=433291.967,4811439.021,433293.967,4811441.021&i=25&j=25",
+      "method": "GET",
+      "status": "HTTP 400",
+      "summary": "Bounded anonymous GetFeatureInfo request around the exact WUP point after EPSG:25830 transformation returned HTML error content, not an ID/geometry response."
+    },
+    {
+      "url": "https://sede.ayto-santander.es/web/fichaAsunto.do?asas_ide_asu=536&empezarPorPagina=1&idioma=1&op=24&opcion=0",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Santander municipal portal page loaded and names 'Visor Gis Municipal'; the route did not expose a directly usable anonymous parcel API in the inspected HTML."
+    },
+    {
+      "url": "https://datos.santander.es/catalogo/mapa-base",
+      "method": "GET",
+      "status": "HTTP 200 via official catalog discovery",
+      "summary": "Official city open-data catalog lead for a base-map dataset; metadata describes georeferenced base imagery, not cadastral parcel polygons."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned", "geometry", "source CRS", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner/titleholder", "address/contact", "tax/account", "protected cadastral data"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "remainingUncertainty": "The exact point was not shifted and no zero-hit inference was made. Because the public endpoint returned HTTP 400 and the municipal GIS route was not API-resolved, citywide parcel coverage, current schema, CRS at the live route, and any Santander parcel native IDs remain unverified.",
+  "nextStep": "Retry the documented public Catastro INSPIRE/WMS route when it returns a valid capabilities response, then request a small Santander bbox using only parcel ID and geometry. Separately inspect the municipal GIS viewer bootstrap if its public route becomes available."
+}

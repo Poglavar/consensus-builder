@@ -1,0 +1,74 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "ID",
+ "regionName": "Idaho",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-id-public-parcels",
+  "name": "Public Idaho Parcels (Parcels Public, layer 7)",
+  "operator": "State of Idaho / Idaho Geospatial Office (The Idaho Map open data hub)",
+  "scope": "Voluntary county submissions; only 13 county FIPS present in a group-by query",
+  "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service. Another IDWR layer (gis.idwr.idaho.gov Reference/Parcels) states it \"cannot be shared outside IDWR\" and was NOT used."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-id-public-parcels",
+  "requestUrl": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-116.2030%2C43.6145%2C-116.2015%2C43.6155&outFields=PARCEL_ID%2CFIPS",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -116.203,
+   43.6145,
+   -116.2015,
+   43.6155
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID",
+  "responseFile": "ID-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": false,
+ "regionWideBasis": "Item is \"standardized statewide parcel layer\" per hub blurb, but a FIPS group-by returned 13 counties (Ada 16001 largest with 217,038 records; also 16007,16015,16025,16047,16053,16063,16067,16069,16071,16081,16085,16087) plus 220 null; test boxes at Idaho Falls, Coeur d'Alene, Pocatello and Twin Falls returned 0.",
+ "subregionsVerified": [
+  "Ada County (Boise)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://the-idaho-map-open-data-idaho.hub.arcgis.com/datasets/parcels-public/explore",
+   "observation": "Hub page for Parcels Public"
+  },
+  {
+   "url": "https://gis.idwr.idaho.gov/hosting/rest/services/Reference/Parcels/FeatureServer",
+   "observation": "IDWR compilation; description says not to be shared outside IDWR; not used"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-116.2030%2C43.6145%2C-116.2015%2C43.6155&outFields=PARCEL_ID%2CFIPS",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 parcel polygons with PARCEL_ID"
+  },
+  {
+   "url": ".../Public_Idaho_Parcels_/FeatureServer/7/query (bboxes Idaho Falls, Coeur d'Alene, Pocatello, Twin Falls)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features each"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service. Another IDWR layer (gis.idwr.idaho.gov Reference/Parcels) states it \"cannot be shared outside IDWR\" and was NOT used.",
+ "remainingUncertainty": "Statewide claim not supported: 4 of 4 other-county boxes empty. Layer carries owner and mailing fields (not requested).",
+ "nextStep": "Check which counties are shared to the hub; sample another covered county."
+}

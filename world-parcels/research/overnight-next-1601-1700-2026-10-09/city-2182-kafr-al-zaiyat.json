@@ -1,0 +1,40 @@
+{
+  "cityCode": 2182,
+  "queueRank": 1615,
+  "name": "Kafr Al-Zaiyat",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [30.8159685817581, 30.8047565224488],
+  "population2025": 354037,
+  "population2025k": 354.037,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kafr El Zayat Egypt cadastral parcel map official GIS",
+        "result": "Found the first-party Egyptian Survey Authority (ESA) website and its digital-maps service. The service describes requesting a specified map location, scale, layers, format, and projection, but does not expose a public parcel viewer or parcel API in the fetched page.",
+        "actualResultUrls": ["https://www.esa.gov.eg/", "https://www.esa.gov.eg/sellingmaproomdigital.aspx"]
+      },
+      {
+        "language": "Arabic",
+        "query": "كفر الزيات السجل العيني خريطة عقارية مساحية موقع حكومي",
+        "result": "Found ESA first-party map/service pages and an Egyptian government service-search result for requesting a land-survey statement. The accessible ESA pages provide service/procedure prose only; no anonymous Kafr Al-Zaiyat parcel layer, schema, CRS, or safe geometry response was available.",
+        "actualResultUrls": ["https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "parcelSource": null,
+  "runtimeReadiness": "held",
+  "evidenceSummary": "No safe parcel source was admitted. ESA is the evidenced national survey/cadastral custodian, but the public site exposes map-purchase/service workflows rather than an anonymous parcel feature service. A zero exact-point or map-extent result was not used as evidence of citywide absence.",
+  "sampleGeoJSON": null,
+  "notes": [
+    "The WUP point is preserved exactly in latitude/longitude order and was not shifted.",
+    "No parcel polygon or source-specific attribute set was retained.",
+    "This packet records research completion only; it is not source integration or admission."
+  ]
+}

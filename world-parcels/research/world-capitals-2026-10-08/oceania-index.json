@@ -1,0 +1,178 @@
+{
+  "purpose": "Completed regional slice of the remaining world-capital research batch.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "complete",
+  "group": "oceania",
+  "cityCount": 15,
+  "cities": [
+    {
+      "cityId": "capital:CK:avarua",
+      "name": "Avarua",
+      "countryCode": "CK",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-avarua.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:FM:palikir",
+      "name": "Palikir",
+      "countryCode": "FM",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-palikir.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:FJ:suva",
+      "name": "Suva",
+      "countryCode": "FJ",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-suva.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:KI:south-tarawa",
+      "name": "South Tarawa",
+      "countryCode": "KI",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-south-tarawa.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:MH:majuro",
+      "name": "Majuro",
+      "countryCode": "MH",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-majuro.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:NR:yaren",
+      "name": "Yaren",
+      "countryCode": "NR",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-yaren.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:NZ:wellington",
+      "name": "Wellington",
+      "countryCode": "NZ",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-wellington.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "nz-linz-primary-parcels-arcgis"
+      ],
+      "appCityId": "wellington"
+    },
+    {
+      "cityId": "capital:NU:alofi",
+      "name": "Alofi",
+      "countryCode": "NU",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-alofi.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:PW:ngerulmud",
+      "name": "Ngerulmud",
+      "countryCode": "PW",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-ngerulmud.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:PG:port-moresby",
+      "name": "Port Moresby",
+      "countryCode": "PG",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-port-moresby.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:WS:apia",
+      "name": "Apia",
+      "countryCode": "WS",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-apia.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:SB:honiara",
+      "name": "Honiara",
+      "countryCode": "SB",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-honiara.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:TO:nukualofa",
+      "name": "Nuku'alofa",
+      "countryCode": "TO",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-nukualofa.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:TV:funafuti",
+      "name": "Funafuti",
+      "countryCode": "TV",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-funafuti.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:VU:port-vila",
+      "name": "Port Vila",
+      "countryCode": "VU",
+      "group": "oceania",
+      "researchFile": "research/world-capitals-2026-10-08/city-port-vila.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6095-hatay.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "TKGM describes the free public parcel-query map; users can locate parcels by administrative parcel identifiers or map location. The official Hatay Metropolitan Municipality announced its Kent Rehberi parcel-search tool in May 2026. A single bounded anonymous API request at the exact WUP point (36.2147772245554, 36.157969070235) to the public MEGSIS coordinate endpoint returned HTTP 403 with the official viewer Referer/Origin; no parcel geometry or identifiers were received. No retry using credentials or alternate proxy was made.",
+  "registryAssessment": "TKGM is the national cadastral authority providing the official public parcel-query service, and Hatay Metropolitan Municipality confirms local parcel search in its city guide.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "TKGM describes the free public parcel-query map; users can locate parcels by administrative parcel identifiers or map location. The official Hatay Metropolitan Municipality announced its Kent Rehberi parcel-search tool in May 2026. A single bounded anonymous API request at the exact WUP point (36.2147772245554, 36.157969070235) to the public MEGSIS coordinate endpoint returned HTTP 403 with the official viewer Referer/Origin; no parcel geometry or identifiers were received. No retry using credentials or alternate proxy was made."
+    },
+    {
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "observation": "TKGM describes the free public parcel-query map; users can locate parcels by administrative parcel identifiers or map location. The official Hatay Metropolitan Municipality announced its Kent Rehberi parcel-search tool in May 2026. A single bounded anonymous API request at the exact WUP point (36.2147772245554, 36.157969070235) to the public MEGSIS coordinate endpoint returned HTTP 403 with the official viewer Referer/Origin; no parcel geometry or identifiers were received. No retry using credentials or alternate proxy was made."
+    },
+    {
+      "url": "https://www.hatay.bel.tr/haberler/hbb-kent-rehberi-ile-sorular-cevap-buluyor",
+      "observation": "TKGM describes the free public parcel-query map; users can locate parcels by administrative parcel identifiers or map location. The official Hatay Metropolitan Municipality announced its Kent Rehberi parcel-search tool in May 2026. A single bounded anonymous API request at the exact WUP point (36.2147772245554, 36.157969070235) to the public MEGSIS coordinate endpoint returned HTTP 403 with the official viewer Referer/Origin; no parcel geometry or identifiers were received. No retry using credentials or alternate proxy was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Turkish",
+      "query": "Hatay parsel sorgu kadastro haritası TKGM Hatay Büyükşehir Kent Rehberi",
+      "result": "TKGM describes the free public parcel-query map; users can locate parcels by administrative parcel identifiers or map location. The official Hatay Metropolitan Municipality announced its Kent Rehberi parcel-search tool in May 2026. A single bounded anonymous API request at the exact WUP point (36.2147772245554, 36.157969070235) to the public MEGSIS coordinate endpoint returned HTTP 403 with the official viewer Referer/Origin; no parcel geometry or identifiers were received. No retry using credentials or alternate proxy was made.",
+      "method": "Separate native/local-language web search and first-party source review.",
+      "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "English",
+      "query": "Hatay Turkey official public cadastral parcel map TKGM parcel query full polygon API",
+      "result": "TKGM describes the free public parcel-query map; users can locate parcels by administrative parcel identifiers or map location. The official Hatay Metropolitan Municipality announced its Kent Rehberi parcel-search tool in May 2026. A single bounded anonymous API request at the exact WUP point (36.2147772245554, 36.157969070235) to the public MEGSIS coordinate endpoint returned HTTP 403 with the official viewer Referer/Origin; no parcel geometry or identifiers were received. No retry using credentials or alternate proxy was made.",
+      "method": "Separate English-language web search and first-party source review.",
+      "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe WUP-point sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "TKGM is the national cadastral authority providing the official public parcel-query service, and Hatay Metropolitan Municipality confirms local parcel search in its city guide.",
+    "verifiedOpenScope": "Official national public parcel search and local Hatay city-guide parcel search are evidenced. The WUP-point geometry response and citywide feature coverage are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/36.2147772245554/36.157969070235/",
+      "httpStatus": 403,
+      "result": "One bounded exact-WUP coordinate request with Referer and Origin set to the official public TKGM viewer returned HTTP 403; no geometry was returned. No authenticated token or proxy was used."
+    }
+  ],
+  "remainingUncertainty": "Official national public parcel search and local Hatay city-guide parcel search are evidenced. The WUP-point geometry response and citywide feature coverage are unverified."
+}

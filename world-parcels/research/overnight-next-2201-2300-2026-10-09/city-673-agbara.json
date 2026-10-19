@@ -1,0 +1,40 @@
+{
+  "cityCode": 673,
+  "queueRank": 2233,
+  "name": "Agbara",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [6.50433430173984, 3.03723454634413],
+  "population2025": 261298,
+  "population2025k": 261.298,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nigeria official cadastral parcel map Agbara Ogun State land registry GIS",
+        "result": "First-party discovery identified Ogun State OLARMS, the Bureau of Land and Survey route, Ogun SDI, and OLARMS-GIS. Official descriptions evidence Ogun land administration, digital land records, cadastral maps, and layered land-parcel mapping, but no safe anonymous parcel ID-plus-geometry response was exposed for Agbara.",
+        "actualResultUrls": [
+          "https://olarms.ogunstate.gov.ng/",
+          "https://gis.ogunstate.gov.ng/about/",
+          "https://gis.ogunstate.gov.ng/catalogue/",
+          "https://geosensepro.tinovo.ng/welcome/index"
+        ]
+      },
+      {
+        "language": "Yoruba",
+        "query": "Agbara Ogun ilẹ mapa kadasta iforukọsilẹ ilẹ osise GIS",
+        "result": "The Yoruba-local discovery route did not expose a separate first-party public parcel viewer or geometry service. Search context remained consistent with the official Ogun State land/GIS custodians; no parcel geometry or citywide-absence claim is made.",
+        "actualResultUrls": [
+          "https://ogunstate.gov.ng/",
+          "https://olarms.ogunstate.gov.ng/",
+          "https://gis.ogunstate.gov.ng/catalogue/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Ogun State OLARMS/Bureau of Land and Survey and Ogun SDI/OLARMS-GIS are first-party state custodial routes evidenced by official pages. This packet records source discovery only; no safe anonymous parcel schema, CRS, native identity, or geometry was available. This is not source integration, runtime admission, or evidence of citywide parcel absence.",
+  "runtimeReadiness": "held"
+}

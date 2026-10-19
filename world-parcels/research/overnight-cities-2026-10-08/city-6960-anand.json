@@ -1,0 +1,146 @@
+{
+  "name": "Anand",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 816,
+  "point": [
+    22.550992470579,
+    72.9436598114924
+  ],
+  "population2025": 664789,
+  "population2025k": 664.789,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Anand District Administration maintains an official Land Records service and names a dedicated Mamlatdar (Anand City) office. Gujarat’s Revenue Department publishes city-survey/property-card services; a government Gujarat Informatics record also identifies a City Survey Superintendent, Anand. These support local urban land-record administration but do not verify a public vector geometry service or exact parcel coverage.",
+  "registryEvidenceUrls": [
+    "https://anand.nic.in/service/land-records/",
+    "https://anand.nic.in/taluka-mamlatdar/",
+    "https://anand.nic.in/organisation-chart/",
+    "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+    "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+    "https://anyror.gujarat.gov.in/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No full polygon sample is retained. Citywide/countrywide completeness, title identity, legal survey accuracy, exact WUP point coverage and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "No public feature schema or bounded parcel geometry endpoint was verified. Online land-record/property-card workflows are keyed to selected records and may expose property attributes; no survey-number, owner-name, or property-card query was submitted.",
+  "remainingUncertainty": "The city survey/property-card service is official, but anonymous vector geometry availability and exact WUP point-to-city-survey coverage remain unverified.",
+  "nextStep": "No runtime qualification was attempted. If further review is needed, use only a bounded source-native geometry query with an allowlisted non-sensitive identifier and geometry.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anand Gujarat official city cadastral map land records survey property parcel GIS Anand municipality",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official Anand District land-records page links Gujarat AnyRoR and describes computerized record-of-rights services; official district directory lists the city Mamlatdar. State Revenue Department provides city-survey/property-card services. No anonymous safe polygon layer was identified.",
+        "actualResultUrls": [
+          "https://anand.nic.in/service/land-records/",
+          "https://anand.nic.in/taluka-mamlatdar/",
+          "https://anand.nic.in/organisation-chart/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+          "https://anyror.gujarat.gov.in/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      },
+      {
+        "language": "Gujarati",
+        "query": "આણંદ શહેર મહેસૂલ જમીન રેકોર્ડ સર્વે નકશો નગરપાલિકા અધિકૃત",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Anand district/state-government sources identify Anand City revenue office and urban property-card/city-survey services. No public geometry-only feature endpoint or safe schema was found.",
+        "actualResultUrls": [
+          "https://anand.nic.in/service/land-records/",
+          "https://anand.nic.in/taluka-mamlatdar/",
+          "https://anand.nic.in/organisation-chart/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+          "https://anyror.gujarat.gov.in/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      },
+      {
+        "language": "English",
+        "query": "Anand official city survey property card land records Gujarat",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official district and state revenue pages establish urban land records and city survey property-card workflows; no bounded public parcel-vector endpoint was found.",
+        "actualResultUrls": [
+          "https://anand.nic.in/service/land-records/",
+          "https://anand.nic.in/taluka-mamlatdar/",
+          "https://anand.nic.in/organisation-chart/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+          "https://anyror.gujarat.gov.in/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      },
+      {
+        "language": "Gujarati",
+        "query": "આણંદ શહેર સીટી સર્વે નકશો પ્રોપર્ટી કાર્ડ જમીન દફતર સત્તાવાર",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official sources link Anand City land administration with Gujarat’s city-survey/property-card services. No schema-safe anonymous geometry query was made.",
+        "actualResultUrls": [
+          "https://anand.nic.in/service/land-records/",
+          "https://anand.nic.in/taluka-mamlatdar/",
+          "https://anand.nic.in/organisation-chart/",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+          "https://anyror.gujarat.gov.in/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "IN-ANAND-CITY-LAND-RECORDS",
+    "name": "Anand City land records and city-survey/property-card service pathway",
+    "url": "https://anand.nic.in/service/land-records/",
+    "operator": "District Administration Anand / Revenue Department, Government of Gujarat",
+    "serviceType": "Public land-record service information and city revenue-office directory; property-card output is record-oriented, not a verified parcel-vector endpoint.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 6960,
+  "cityId": "wup2025:6960",
+  "queueRank": 816,
+  "sourceIds": [],
+  "centerLatLon": [
+    22.550992470579,
+    72.9436598114924
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The Anand District Administration maintains an official Land Records service and names a dedicated Mamlatdar (Anand City) office. Gujarat’s Revenue Department publishes city-survey/property-card services; a government Gujarat Informatics record also identifies a City Survey Superintendent, Anand. These support local urban land-record administration but do not verify a public vector geometry service or exact parcel coverage.",
+    "verifiedOpenScope": "Anand District’s official Land Records service and the listed Mamlatdar (Anand City) establish local land-record administration. Gujarat’s Revenue Department offers city-survey and property-card services, but no anonymous vector geometry schema was identified. No property-specific lookup was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; no runtime contract or adapter qualification was tested."
+  },
+  "verifiedParcelResponse": null,
+  "rootPrimaryReadback": {
+    "url": "https://anand.nic.in/service/land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Land Records | District Anand, Government of Gujarat | India    "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

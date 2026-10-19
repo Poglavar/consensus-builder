@@ -1,0 +1,128 @@
+{
+  "cityCode": 10616,
+  "queueRank": 1434,
+  "name": "Xinxing",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [45.8102573065306, 130.878029237799],
+  "population2025": 395115,
+  "population2025k": 395.115,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinxing District Qitaihe Heilongjiang China official cadastral parcel map GIS natural resources bureau",
+        "result": "The point matches Xinxing District (新兴区), Qitaihe, Heilongjiang. Search found the official Heilongjiang Tianditu public geospatial portal and the Xinxing government identity, but no first-party public parcel feature service or anonymous parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map",
+          "https://www.hljxinxing.gov.cn/",
+          "https://www.jixi.gov.cn/jixi/c100330/202607/c06_368810.shtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "新兴区 七台河 地籍图 不动产登记 自然资源局 官方",
+        "result": "Search results identify Xinxing District in Heilongjiang and the province's official Tianditu portal. Results did not expose an Xinxing/Qitaihe anonymous cadastral layer, schema, CRS, or safe parcel geometry API.",
+        "actualResultUrls": [
+          "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map",
+          "https://www.hljxinxing.gov.cn/",
+          "https://www.wikidata.org/wiki/Q1197393"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Heilongjiang Tianditu public geospatial service portal",
+        "operator": "黑龙江省地理信息公共服务平台",
+        "homeUrl": "https://heilongjiang.tianditu.gov.cn/",
+        "observation": "Official provincial portal. Current public configuration exposes imagery, vector basemap, administrative-boundary and parking-map services; no cadastral/parcel layer was exposed. The resource-center route loads a public JavaScript application."
+      },
+      {
+        "name": "Xinxing District government website",
+        "operator": "新兴区人民政府",
+        "homeUrl": "https://www.hljxinxing.gov.cn/",
+        "observation": "Official local government domain identified in search/Wikidata; direct HTTPS request returned an empty reply, so no registry page or map configuration could be inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T16:47:00Z",
+        "url": "https://www.hljxinxing.gov.cn/",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "result": "Connection returned an empty reply; no TLS bypass, login, or retry with verification disabled."
+      },
+      {
+        "checkedAt": "2026-10-09T16:45:00Z",
+        "url": "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "result": "Fetched current public HTML. It loads config.js and app.b8eb68a8.js."
+      },
+      {
+        "checkedAt": "2026-10-09T16:46:00Z",
+        "url": "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/config.js",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "result": "Inspected current configuration. It lists basemap/imagery/administrative-boundary and parking-map endpoints; no parcel/cadastral endpoint, layer name, native ID field, or parcel CRS was present."
+      },
+      {
+        "checkedAt": "2026-10-09T16:47:00Z",
+        "url": "https://heilongjiang.tianditu.gov.cn/ljj4",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "result": "Returned a 用户登录 login page. No login or credential use attempted; this is not an anonymous parcel response."
+      },
+      {
+        "checkedAt": "2026-10-09T16:47:00Z",
+        "url": "https://heilongjiang.tianditu.gov.cn/tdtserver/api/hlj",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "result": "Returned JSON code 50000 Not Found; no parcel schema or geometry."
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidenceUrls": ["https://www.hljxinxing.gov.cn/", "https://heilongjiang.tianditu.gov.cn/"],
+  "registryBasis": "No local registry/cadastre/map/procedure page was successfully inspected. The local government domain was identified but returned an empty reply, while the provincial public geospatial portal did not expose a cadastral layer.",
+  "source": {
+    "sourceId": "CN-10616-XINXING-HEILONGJIANG-TIANDITU-REVIEW",
+    "name": "Heilongjiang Tianditu public portal review",
+    "url": "https://heilongjiang.tianditu.gov.cn/iportal/web-ui/resource-center/map",
+    "operator": "黑龙江省地理信息公共服务平台",
+    "serviceType": "Official provincial geospatial portal reviewed; no safe anonymous parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The provincial portal is a public geospatial platform and its configuration includes Heilongjiang-wide basemap and administrative-boundary services.",
+    "verifiedOpenScope": "No anonymous public parcel layer, feature-service schema, CRS, native parcel identity, or bounded parcel geometry response was verified. Exact-point and citywide parcel coverage remain unknown.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_portal_geometry_unverified",
+  "technicalBlocker": "The local government site returned an empty reply. The provincial portal's current public config exposes non-cadastral services only, and its /ljj4 route is a login page; no anonymous parcel endpoint was found.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "A separate local or authenticated cadastral viewer may exist; no exact-point query was performed because no public parcel endpoint was identified. A zero-hit inference is not made.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect a documented first-party anonymous parcel service if one becomes publicly discoverable, confirming schema, CRS, native identity, and safe fields first.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [45.8102573065306, 130.878029237799],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7556-barnaul.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Barnaul’s official land committee is the local custodian; the municipality points users to administrative land-service applications. No first-party anonymous geometry feature endpoint or point response was established.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://barnaul-zem.ru/",
+      "observation": "Official city Committee for Land Resources and Land Management; city-admin-linked home page and contacts. It establishes local land administration responsibility, not a public vector layer."
+    },
+    {
+      "url": "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+      "observation": "Official Barnaul city information says municipal land services, including land-plot plan approval, are accessed through Gosuslugi; this is an application workflow rather than anonymous parcel geometry."
+    },
+    {
+      "url": "https://lkkadastr.ru/altajskij-kraj/",
+      "observation": "Search result for Roskadastr services in Altai Krai; not treated as a public parcel data service or geometry evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Barnaul official cadastral parcel map Rosreestr GIS Altai Krai",
+      "resultUrls": [
+        "https://barnaul-zem.ru/",
+        "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+        "https://lkkadastr.ru/altajskij-kraj/"
+      ],
+      "result": "The English search mostly surfaced third-party cadastral service offers; no official public geometry endpoint was identified.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Russian",
+      "query": "Барнаул официальный сайт кадастровая карта земельные участки Росреестр Алтайский край",
+      "resultUrls": [
+        "https://barnaul-zem.ru/",
+        "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+        "https://lkkadastr.ru/altajskij-kraj/"
+      ],
+      "result": "The Russian search found the official Barnaul Committee for Land Resources and Land Management and the city’s land-service application route; these are administrative workflows, not parcel geometry.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Barnaul’s official land committee is the local custodian; the municipality points users to administrative land-service applications. No first-party anonymous geometry feature endpoint or point response was established.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://barnaul-zem.ru/",
+      "result": "Official city Committee for Land Resources and Land Management; city-admin-linked home page and contacts. It establishes local land administration responsibility, not a public vector layer."
+    },
+    {
+      "url": "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+      "result": "Official Barnaul city information says municipal land services, including land-plot plan approval, are accessed through Gosuslugi; this is an application workflow rather than anonymous parcel geometry."
+    },
+    {
+      "url": "https://lkkadastr.ru/altajskij-kraj/",
+      "result": "Search result for Roskadastr services in Altai Krai; not treated as a public parcel data service or geometry evidence."
+    }
+  ],
+  "remainingUncertainty": "A public cadastral viewer may exist at the federal level, but no documented safe-ID geometry schema or anonymous point response was verified in this city-specific pass.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 7556,
+      "url": "https://barnaul-zem.ru/",
+      "checkedAt": "2026-10-09T07:10:39.364351+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://barnaul-zem.ru/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 15861,
+      "sha256": "2b8ff2d1eb027b1c910dc28e8c3303f90ef5a084cecb421556280daa9c00b7a1",
+      "complete": true
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Barnaul’s official land committee is the local custodian; the municipality points users to administrative land-service applications. No first-party anonymous geometry feature endpoint or point response was established.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

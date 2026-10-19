@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GT",
+ "country": "Guatemala",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Registro de Información Catastral (RIC) of Guatemala; municipal cadastre for Guatemala City via Municipalidad de Guatemala",
+ "portalsFound": [
+  {
+   "url": "https://www.ric.gob.gt/",
+   "observation": "RIC host unreachable"
+  },
+  {
+   "url": "https://services7.arcgis.com/BBr2ruK5unTgrH8y/arcgis/rest/services/Ciudad_de_guatemala/FeatureServer",
+   "observation": "Open ArcGIS Online layer is a hazard-zone polygon layer (fields Id, Descrip), not parcels; not a cadastre"
+  },
+  {
+   "url": "https://www.igm.gob.gt/",
+   "observation": "IGM (Instituto Geografico Nacional) site loads; no parcel service located"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.ric.gob.gt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://ric.gob.gt/ric-en-linea",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://geoportal.ric.gob.gt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://services7.arcgis.com/BBr2ruK5unTgrH8y/arcgis/rest/services/Ciudad_de_guatemala/FeatureServer/0/query?where=1=1&resultRecordCount=2",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygons are hazard zones, not parcels"
+  },
+  {
+   "url": "https://www.igm.gob.gt/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "no cadastre service"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "RIC national cadastre is partial (declared municipalities only)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "RIC hosts unreachable from here; nothing tested. See research/guatemala-city.json.",
+ "nextStep": "Retry ric.gob.gt later; look for RIC geoportal/WMS and municipal (Muniguate) ArcGIS."
+}

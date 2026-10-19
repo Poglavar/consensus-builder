@@ -1,0 +1,2337 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32631",
+  "featureCount": 331,
+  "validNonemptyCount": 331,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 1.924933439650798,
+    "median": 165.13697214461976,
+    "max": 27852.508590116733
+  },
+  "features": [
+    {
+      "id": "FR-PCI-132048180B0007",
+      "areaM2": 237.35989369387192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0008",
+      "areaM2": 289.12613437886137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0009",
+      "areaM2": 315.98251555200994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0010",
+      "areaM2": 345.00342684619994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0011",
+      "areaM2": 123.32634743566547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0015",
+      "areaM2": 3676.4838063231264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0070",
+      "areaM2": 347.3475089151499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0077",
+      "areaM2": 664.4599813451912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0078",
+      "areaM2": 334.9661958577008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0079",
+      "areaM2": 485.2859397055902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0080",
+      "areaM2": 260.50216468034324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0081",
+      "areaM2": 243.39374485634846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0082",
+      "areaM2": 288.4374215037699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0083",
+      "areaM2": 292.9979519150208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0084",
+      "areaM2": 295.915725401145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0085",
+      "areaM2": 281.3914903223069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0086",
+      "areaM2": 286.61000914376166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0087",
+      "areaM2": 273.4510693055846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0088",
+      "areaM2": 855.2219533512463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0089",
+      "areaM2": 361.75405601428724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0090",
+      "areaM2": 372.188434914511,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0091",
+      "areaM2": 354.0606626944833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0100",
+      "areaM2": 124.86620956100221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0111",
+      "areaM2": 136.30612833621868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0112",
+      "areaM2": 125.07301293530021,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0113",
+      "areaM2": 135.05185452489206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0114",
+      "areaM2": 143.37519073417474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0115",
+      "areaM2": 142.41477609489928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0116",
+      "areaM2": 145.07218567483628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0190",
+      "areaM2": 370.26409837412973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0191",
+      "areaM2": 398.17908746141364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0192",
+      "areaM2": 498.26737972458824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0021",
+      "areaM2": 210.79818064906084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0144",
+      "areaM2": 1262.9857282872756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0170",
+      "areaM2": 240.84415757291563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0171",
+      "areaM2": 245.03079992732935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0256",
+      "areaM2": 861.8976791986555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0318",
+      "areaM2": 9012.210466078033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0117",
+      "areaM2": 141.88911545505576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0118",
+      "areaM2": 118.06189362758622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0119",
+      "areaM2": 118.75951897802591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0143",
+      "areaM2": 175.55612700264817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0146",
+      "areaM2": 188.3808039803267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0147",
+      "areaM2": 206.0785426118163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0149",
+      "areaM2": 10.804378510313072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0150",
+      "areaM2": 214.4709121080808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0151",
+      "areaM2": 234.57646199954974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0154",
+      "areaM2": 247.92796463588812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0155",
+      "areaM2": 259.4142768908051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0158",
+      "areaM2": 452.688612003576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0159",
+      "areaM2": 118.14996967935348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0160",
+      "areaM2": 365.6341073668548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0164",
+      "areaM2": 730.4364276164764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0167",
+      "areaM2": 226.58764596528863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0187",
+      "areaM2": 537.7439544116169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0188",
+      "areaM2": 245.6157794905007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0204",
+      "areaM2": 512.8745580389049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0057",
+      "areaM2": 146.43867124210826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0059",
+      "areaM2": 132.01544031380033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0060",
+      "areaM2": 149.85596164879493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0061",
+      "areaM2": 89.36458367789976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0062",
+      "areaM2": 85.19148687643045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0063",
+      "areaM2": 113.84681223755805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0064",
+      "areaM2": 111.29067544591666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0065",
+      "areaM2": 206.0794357989002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0066",
+      "areaM2": 179.6361345369297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0067",
+      "areaM2": 59.40457849891581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0069",
+      "areaM2": 58.02614917188589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0070",
+      "areaM2": 81.51952648157874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0071",
+      "areaM2": 78.82514030597177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0072",
+      "areaM2": 79.4308188305907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0078",
+      "areaM2": 5356.922764318096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0154",
+      "areaM2": 356.4066435003356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0157",
+      "areaM2": 140.03853574332115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0158",
+      "areaM2": 125.70544181484046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0159",
+      "areaM2": 434.4067449118679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0160",
+      "areaM2": 121.03829986751225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0161",
+      "areaM2": 123.0825319888381,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0162",
+      "areaM2": 105.40731514752562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0163",
+      "areaM2": 67.05693752246425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0164",
+      "areaM2": 78.67155721520115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0165",
+      "areaM2": 90.940764614593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0166",
+      "areaM2": 77.64601861923177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0167",
+      "areaM2": 134.6686359929393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0168",
+      "areaM2": 120.8117719905671,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0169",
+      "areaM2": 117.11777135880553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0172",
+      "areaM2": 152.664432040085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0173",
+      "areaM2": 165.169602719808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0174",
+      "areaM2": 79.50581386300748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0175",
+      "areaM2": 91.20330386053305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0176",
+      "areaM2": 83.832317972629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0177",
+      "areaM2": 109.47783817069109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0178",
+      "areaM2": 133.0701959542341,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0179",
+      "areaM2": 145.33883443175543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0180",
+      "areaM2": 143.56928190710923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0181",
+      "areaM2": 170.81624173439553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0182",
+      "areaM2": 129.2634711911147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0183",
+      "areaM2": 119.73734175621468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0184",
+      "areaM2": 60.215925521701266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0187",
+      "areaM2": 145.7930595315546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0200",
+      "areaM2": 149.50376583933783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0201",
+      "areaM2": 142.27597122113764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0219",
+      "areaM2": 59.318380413234685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0220",
+      "areaM2": 60.92148978991968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0244",
+      "areaM2": 2988.690707300212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0038",
+      "areaM2": 188.03442967953123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0039",
+      "areaM2": 188.39841195666014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0040",
+      "areaM2": 637.195479152271,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0041",
+      "areaM2": 440.27567912274435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0043",
+      "areaM2": 180.76894368698456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0044",
+      "areaM2": 214.07474340444733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0045",
+      "areaM2": 217.70549457277124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0046",
+      "areaM2": 156.36221544689667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0047",
+      "areaM2": 170.25768565618841,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0048",
+      "areaM2": 256.0945141964866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0049",
+      "areaM2": 140.96820194876113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0050",
+      "areaM2": 388.0798669364556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0051",
+      "areaM2": 593.8236577292898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0052",
+      "areaM2": 176.5959175823139,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0053",
+      "areaM2": 149.2324994285369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0056",
+      "areaM2": 2403.7323390338106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0062",
+      "areaM2": 185.46403075385246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0063",
+      "areaM2": 106.99772493614024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0066",
+      "areaM2": 79.23368552417787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0067",
+      "areaM2": 71.61183471428527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0068",
+      "areaM2": 172.42621047576066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0071",
+      "areaM2": 363.03001328046184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0072",
+      "areaM2": 523.3939107574715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0073",
+      "areaM2": 349.10338344966897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0074",
+      "areaM2": 340.5301366799272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0075",
+      "areaM2": 340.38502425463577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0076",
+      "areaM2": 131.30176780270475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0193",
+      "areaM2": 37.818616184090416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0194",
+      "areaM2": 31.983624561015073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0196",
+      "areaM2": 101.17287459006468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0197",
+      "areaM2": 159.672386951075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0255",
+      "areaM2": 774.1594354447585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0060",
+      "areaM2": 93.09794646837412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0064",
+      "areaM2": 118.84805620141528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0065",
+      "areaM2": 69.71133975478676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0069",
+      "areaM2": 188.96807758793673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0121",
+      "areaM2": 382.56799072447143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0122",
+      "areaM2": 333.4555142491066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0123",
+      "areaM2": 93.12134866893405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0124",
+      "areaM2": 98.98855982306105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0125",
+      "areaM2": 100.74541634744725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0126",
+      "areaM2": 133.2620686378105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0127",
+      "areaM2": 135.9944819480308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0128",
+      "areaM2": 138.33402087339732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0129",
+      "areaM2": 155.32385316407021,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0131",
+      "areaM2": 163.21961045160384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0132",
+      "areaM2": 72.46878618017816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0134",
+      "areaM2": 107.11265167052676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0135",
+      "areaM2": 118.66172090958472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0138",
+      "areaM2": 117.80492402271442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0139",
+      "areaM2": 132.9130531038373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0142",
+      "areaM2": 143.5459985779441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0186",
+      "areaM2": 98.4366075929069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0189",
+      "areaM2": 12.845465411266847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0205",
+      "areaM2": 86.91460269964107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0186",
+      "areaM2": 391.2877542676891,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0190",
+      "areaM2": 138.76507700313152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0191",
+      "areaM2": 140.58753302392478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0250",
+      "areaM2": 147.35101693131742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048150N0251",
+      "areaM2": 140.712006454951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0312",
+      "areaM2": 104.6322989619209,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0184",
+      "areaM2": 636.4691855393323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0187",
+      "areaM2": 410.73291579955117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0188",
+      "areaM2": 158.94525412472586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0189",
+      "areaM2": 161.92353728028266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0190",
+      "areaM2": 322.6806364770424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0191",
+      "areaM2": 156.11539336188628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0226",
+      "areaM2": 1127.996282622785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0227",
+      "areaM2": 257.7149487760109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0228",
+      "areaM2": 119.96199969561108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0241",
+      "areaM2": 262.5323109668097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0246",
+      "areaM2": 8753.423553643426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0033",
+      "areaM2": 97.62943435881122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0034",
+      "areaM2": 170.2401119313278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0035",
+      "areaM2": 351.63927060594904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0036",
+      "areaM2": 288.01445249402786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0037",
+      "areaM2": 283.5475945948653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0054",
+      "areaM2": 105.45464199640148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0055",
+      "areaM2": 122.99782067555105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0057",
+      "areaM2": 152.4390065215408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0061",
+      "areaM2": 127.84350543871125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0184",
+      "areaM2": 112.33865260344211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0185",
+      "areaM2": 115.04010807908612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0001",
+      "areaM2": 76.09163691600799,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0002",
+      "areaM2": 328.1102211480459,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0017",
+      "areaM2": 138.2145242353876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0018",
+      "areaM2": 136.64770908134338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0019",
+      "areaM2": 165.40848901919026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0020",
+      "areaM2": 244.19608948996918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0021",
+      "areaM2": 241.58545136665876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0330",
+      "areaM2": 179.57020849356422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0349",
+      "areaM2": 1507.583383016555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0130",
+      "areaM2": 1344.5018863486537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0131",
+      "areaM2": 159.98100062462095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0132",
+      "areaM2": 142.33689439840833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0133",
+      "areaM2": 135.98574950194967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0134",
+      "areaM2": 144.23784743294632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0135",
+      "areaM2": 411.21623885936157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0136",
+      "areaM2": 536.5317347707784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0137",
+      "areaM2": 380.1378506958153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0138",
+      "areaM2": 344.90082032729015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0058",
+      "areaM2": 122.84749185599111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0059",
+      "areaM2": 112.33333008800797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0007",
+      "areaM2": 377.73097937746354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0008",
+      "areaM2": 105.23559132948907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0009",
+      "areaM2": 165.13697214461976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0010",
+      "areaM2": 162.49697313001107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0011",
+      "areaM2": 164.9317095554145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0012",
+      "areaM2": 165.79332940867695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0013",
+      "areaM2": 181.13396217640388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0014",
+      "areaM2": 75.61040196356174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0015",
+      "areaM2": 289.3700283330801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0016",
+      "areaM2": 131.04509524020366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0022",
+      "areaM2": 299.06845540146236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0099",
+      "areaM2": 159.96357423825384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0100",
+      "areaM2": 138.7714151454937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0101",
+      "areaM2": 206.85783149781216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0107",
+      "areaM2": 229.98967064899583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0108",
+      "areaM2": 158.2104519874804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0109",
+      "areaM2": 173.23941616603238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0110",
+      "areaM2": 138.35579152793588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0111",
+      "areaM2": 264.41036832090424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0112",
+      "areaM2": 140.4227866135386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0113",
+      "areaM2": 145.8262964668037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0114",
+      "areaM2": 131.2580643185703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0109",
+      "areaM2": 169.6762088629788,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0168",
+      "areaM2": 409.6646201013845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0169",
+      "areaM2": 328.4988929077066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0171",
+      "areaM2": 1.924933439650798,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0172",
+      "areaM2": 3.1816152804134785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0173",
+      "areaM2": 241.86424052661232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0176",
+      "areaM2": 111.23719008568612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0177",
+      "areaM2": 106.88116817257311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0178",
+      "areaM2": 107.49714102056414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0179",
+      "areaM2": 106.70249736887506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0180",
+      "areaM2": 106.0555864326429,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0181",
+      "areaM2": 103.07058061616456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0182",
+      "areaM2": 98.48896937971918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0183",
+      "areaM2": 100.7247708551177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0099",
+      "areaM2": 1580.3197787585113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0101",
+      "areaM2": 102.996976094407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0102",
+      "areaM2": 122.15828209616622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0103",
+      "areaM2": 179.46472035260143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0104",
+      "areaM2": 87.82956289203257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0105",
+      "areaM2": 85.68813527835876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0106",
+      "areaM2": 126.47752473298273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0107",
+      "areaM2": 172.67481748090051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0108",
+      "areaM2": 161.42437205142724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0109",
+      "areaM2": 155.97513519715335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0110",
+      "areaM2": 165.22859547878517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0111",
+      "areaM2": 214.40534926023972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0113",
+      "areaM2": 423.68577358121956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0170",
+      "areaM2": 136.3810189825067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0183",
+      "areaM2": 183.70500202805533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180C0190",
+      "areaM2": 73.13786889630005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0056",
+      "areaM2": 124.58819264519543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0060",
+      "areaM2": 102.69515447934441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0061",
+      "areaM2": 121.06587777789198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0062",
+      "areaM2": 255.2987096984263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0063",
+      "areaM2": 318.97258596122185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0064",
+      "areaM2": 215.27307081814655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0107",
+      "areaM2": 554.7541069619906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0111",
+      "areaM2": 368.3510029784047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0112",
+      "areaM2": 167.71627095640355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0113",
+      "areaM2": 185.89540322490618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0114",
+      "areaM2": 205.67450512920632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0115",
+      "areaM2": 225.6821975265573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0116",
+      "areaM2": 239.96578655351277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0117",
+      "areaM2": 196.4325185739579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0118",
+      "areaM2": 182.61593229896246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0119",
+      "areaM2": 212.16272981449885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0120",
+      "areaM2": 228.09259039967634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0121",
+      "areaM2": 222.8503480731154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0122",
+      "areaM2": 166.89643576228863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0123",
+      "areaM2": 206.85133289969576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0124",
+      "areaM2": 200.83366130158788,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0125",
+      "areaM2": 230.05070571934056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0126",
+      "areaM2": 228.61102693959964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0127",
+      "areaM2": 167.59380419138338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0128",
+      "areaM2": 170.87339244162095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0129",
+      "areaM2": 654.053835779253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0139",
+      "areaM2": 216.95184370300942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0144",
+      "areaM2": 553.3479143559928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0147",
+      "areaM2": 211.4999745674265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0148",
+      "areaM2": 224.505632335872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0149",
+      "areaM2": 235.4532263858959,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0150",
+      "areaM2": 197.6837298626117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0200",
+      "areaM2": 118.58026234686965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160E0201",
+      "areaM2": 98.22630992053428,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180A0033",
+      "areaM2": 27852.508590116733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0013",
+      "areaM2": 309.03232747310955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0014",
+      "areaM2": 234.3214837217613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0016",
+      "areaM2": 102.69431120165692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0017",
+      "areaM2": 102.90274735367487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0018",
+      "areaM2": 35.87412776077388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0019",
+      "areaM2": 168.39735935560395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0020",
+      "areaM2": 131.07558569159335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0021",
+      "areaM2": 173.81703502880328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0022",
+      "areaM2": 220.62812926930778,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0023",
+      "areaM2": 227.62574536636438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0024",
+      "areaM2": 229.59002202906757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0042",
+      "areaM2": 129.58790885200486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048180B0195",
+      "areaM2": 156.50576253318255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0115",
+      "areaM2": 160.15123800276686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0116",
+      "areaM2": 102.65544328870048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0117",
+      "areaM2": 184.49543296416988,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0118",
+      "areaM2": 172.90532974258315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0119",
+      "areaM2": 182.92070839918782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0120",
+      "areaM2": 112.91552920360083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0121",
+      "areaM2": 140.44968602885558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0122",
+      "areaM2": 98.85411054576264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0123",
+      "areaM2": 79.10462416245763,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0124",
+      "areaM2": 129.81696224846596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0125",
+      "areaM2": 13.398810175702263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0126",
+      "areaM2": 65.46314518275918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0127",
+      "areaM2": 77.00755840344898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0128",
+      "areaM2": 150.01419567849723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0129",
+      "areaM2": 85.75089088157328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0130",
+      "areaM2": 215.82182306900668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0131",
+      "areaM2": 215.80804070563545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0132",
+      "areaM2": 124.02533478086215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0133",
+      "areaM2": 128.35325697713319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0134",
+      "areaM2": 315.3423712916825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0310",
+      "areaM2": 3240.1472083273106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0324",
+      "areaM2": 407.63815211591196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "FR-PCI-132048160D0362",
+      "areaM2": 1094.526128151003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "taskId": "city:3686",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-3686-bangkinang.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/bangkinang-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "tmp/valhalla-parcel-research/3686/atlas.html",
+    "tmp/valhalla-parcel-research/3686/bhumi.html"
+  ],
+  "checkedAt": "2026-10-12T06:39:17.806043Z",
+  "reason": "Bangkinang: English and Indonesian queries are recorded. Saved official ATR/BPN portal HTML offers no verified safe native parcel ID plus full polygon response; no source binding or independent adapter and headed Details qualification exists. Registry custody remains unresolved (null); portal inspection is not citywide absence.",
+  "admissionGates": {
+    "nativeIdAndFullPolygon": false,
+    "freshExactIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAction": "none"
+}

@@ -1,0 +1,42 @@
+/* The basemap credit stays legible on the map (its licence asks for it); the city's data and
+   software credits live under Settings → Information.
+   No box: the text sits straight on the map with a halo, in the row right above the dock, the row
+   the scale bar shares from the other corner (css/map.css). Its links are cb-link--quiet
+   cb-link--external (js/ui/map-credits.js), so they take this colour. */
+.map-credits-control {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 4px 8px;
+    max-width: calc(100vw - 20px);
+    padding: 3px 6px;
+    margin: 0;
+    background: transparent;
+    color: var(--cb-text);
+    text-shadow: var(--cb-text-halo);
+    font: var(--cb-text-sm)/var(--cb-leading) var(--cb-font-sans);
+}
+
+/* The 2D basemap is covered in model/photo view; Google's visible tiles credit themselves. */
+body.three-mode-active .map-credits-control { display: none; }
+
+#map-credits-title { scroll-margin-top: 12px; }
+
+.map-credits-details {
+    margin: 0;
+    font: var(--cb-text-base)/1.5 var(--cb-font-sans);
+    overflow-wrap: anywhere;
+}
+
+.map-credits-details dt {
+    margin-top: var(--cb-space-3);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.map-credits-details dd { margin: var(--cb-space-1) 0 0; }
+
+.map-credits-software {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+}

@@ -1,0 +1,147 @@
+{
+  "cityCode": 2797,
+  "queueRank": 1716,
+  "city": "Neiva",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "point": [2.93469535393622, -75.2770578121095],
+  "population2025": 333744,
+  "population2025k": 333.744,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Neiva Colombia official cadastral parcel map catastro IGAC geoportal",
+        "result": "First-party discovery identified the Alcaldía de Neiva cadastral pages, the municipal Geoportal/Servicios Catastrales links, and IGAC Colombia en Mapas and ArcGIS REST cadastral services. The municipality is documented as a cadastral manager; a safe anonymous parcel geometry response for the WUP point was not verified.",
+        "actualResultUrls": [
+          "https://www.alcaldianeiva.gov.co/Paginas/Index.aspx",
+          "https://alcaldianeiva.gov.co/NuestraAlcaldia/Dependencias/Paginas/Direccion-de-Gestion-Catastral.aspx",
+          "https://sigi.igac.gov.co/colombia-mapas/como-hacer-una-consulta-catastral/index.html",
+          "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Neiva Colombia mapa catastral predios oficial catastro geoportal IGAC Alcaldía",
+        "result": "La búsqueda de primera parte encontró la Dirección de Gestión Catastral de la Alcaldía de Neiva, su página de Catastro Multipropósito y el servicio REST público de IGAC. La respuesta de consulta de predios por el punto WUP no quedó verificada de forma anónima; no se interpretó el tiempo de espera como ausencia catastral.",
+        "actualResultUrls": [
+          "https://alcaldianeiva.gov.co/Paginas/CatastroMultiproposito.aspx",
+          "https://alcaldianeiva.gov.co/Gestion/Normatividad/DECRETO%200477%20DEL%2016-07-2021.pdf",
+          "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales",
+          "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Alcaldía Municipal de Neiva, Dirección de Gestión Catastral, documented as a municipal gestor catastral; IGAC is the national cadastral authority and publishes the public reference service.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://alcaldianeiva.gov.co/NuestraAlcaldia/Dependencias/Paginas/Direccion-de-Gestion-Catastral.aspx",
+    "municipalCadastreUrl": "https://alcaldianeiva.gov.co/Paginas/CatastroMultiproposito.aspx",
+    "nationalServiceUrl": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer",
+    "evidence": "The municipal page lists duties to form, update, conserve and maintain cadastral information for Neiva; the 2021 municipal decree states IGAC habilitated Neiva as gestor catastral. IGAC REST metadata describes the national cadastral service and its parcel layers."
+  },
+  "sourceReview": {
+    "service": "IGAC Dato Fundamental Catastro ArcGIS MapServer, with Alcaldía de Neiva municipal cadastral custodian",
+    "baseUrls": [
+      "https://alcaldianeiva.gov.co/",
+      "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer"
+    ],
+    "officialAssetsInspected": [
+      "Alcaldía de Neiva /Paginas/Index.aspx",
+      "Dirección de Gestión Catastral",
+      "Catastro Multipropósito",
+      "IGAC Dato_Fundamental_Catastro MapServer metadata",
+      "IGAC Dato_Fundamental_Catastro MapServer/layers metadata",
+      "IGAC layer 4 U_TERRENO query endpoint"
+    ],
+    "nativeFieldMapping": "Parcel layer U_TERRENO exposes FID (ArcGIS OID) and CODIGO (30-character native cadastral code), alongside non-retained source fields. R_TERRENO exposes the same identity pattern for rural terrain.",
+    "compositeKeyProvenance": "No composite key was used. CODIGO was observed in the official layer schema as the candidate native parcel identity; no parcel feature was retained.",
+    "crs": "Service metadata declares EPSG:9377 (MAGNA-SIRGAS / Colombia Bogotá zone family); the service advertises output transformation and GeoJSON, but no geometry response was retained to independently validate coordinates.",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier (CODIGO, only if feature-level stability is independently confirmed)",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and coverage metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.alcaldianeiva.gov.co/Paginas/Index.aspx",
+      "outcome": "200; official municipal landing page readable; public links include cadastral services and Geoportal references; no login used"
+    },
+    {
+      "method": "GET",
+      "url": "https://alcaldianeiva.gov.co/NuestraAlcaldia/Dependencias/Paginas/Direccion-de-Gestion-Catastral.aspx",
+      "outcome": "200; official municipal cadastral directorate page readable; duties and Neiva custodianship documented"
+    },
+    {
+      "method": "GET",
+      "url": "https://alcaldianeiva.gov.co/Paginas/CatastroMultiproposito.aspx",
+      "outcome": "200; official municipal multipurpose-cadastre information page readable; no public parcel feature payload exposed in page HTML"
+    },
+    {
+      "method": "GET",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer?f=pjson",
+      "outcome": "200; official IGAC service metadata readable; layers include polygon R_TERRENO and U_TERRENO and service CRS 9377"
+    },
+    {
+      "method": "GET",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/layers?f=pjson",
+      "outcome": "200; official layer schemas readable; U_TERRENO layer exposes FID and CODIGO plus other source attributes"
+    },
+    {
+      "method": "GET",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query?f=pjson&where=1%3D0&outFields=FID%2CCODIGO&returnGeometry=false",
+      "outcome": "200; endpoint returned a response, but its behavior returned features despite the nominal false predicate; treated as schema/endpoint reachability only, not as Neiva evidence"
+    },
+    {
+      "method": "GET",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query",
+      "outcome": "Timed out after 30 seconds for the exact WUP point spatial query; no response or geometry was received"
+    },
+    {
+      "method": "GET",
+      "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query?where=CODIGO%20LIKE%20%2741001%25%27",
+      "outcome": "Blocked by upstream unauthorized-request/WAF response; no parcel data received and no retry with credentials or bypass was attempted"
+    },
+    {
+      "method": "GET",
+      "url": "https://sigi.igac.gov.co/colombia-mapas/",
+      "outcome": "Timed out after 30 seconds while fetching the viewer shell; no login, CAPTCHA or TLS exception used"
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": "CODIGO (schema candidate only)",
+    "exactWupPointTest": "Attempted against U_TERRENO with exact WUP point [2.93469535393622,-75.2770578121095]; request timed out, so no hit/miss inference was made",
+    "requestEvidence": ["30-second timeout; zero features cannot be concluded"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Neiva cadastral custodian plus IGAC national cadastral reference service",
+    "verifiedOpenScope": "Official custodian evidence, public service metadata, layer schema and endpoint reachability; no Neiva parcel geometry response",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [2.93469535393622, -75.2770578121095] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A timeout, WAF block, map extent miss, login wall or unusable viewer is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained because no Neiva parcel geometry and stable feature identity were verified.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public IGAC layer schema and municipal custodianship are evidenced, but anonymous Neiva feature selection, city coverage, stable feature-level identity, and a usable parcel geometry response remain unresolved.",
+  "retainedSample": null
+}

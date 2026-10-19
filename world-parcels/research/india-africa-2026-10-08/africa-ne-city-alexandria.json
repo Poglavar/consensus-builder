@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:275",
+  "queueRank": 48,
+  "wupCityCode": 275,
+  "name": "Alexandria",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    31.1933695758061,
+    29.9517660943627
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 48,
+  "growthRank": null,
+  "population2025": 7266957,
+  "annualGrowthPct2015To2025": 2.018881,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/alexandria.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-EG.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic",
+    "exactQuery": "الإسكندرية مصر قطع الأراضي المسح العقاري كادستر خريطة",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+      "https://www.esa.gov.eg/services.aspx",
+      "https://ida.gov.eg/ar/investmap",
+      "https://geogiza.com/ar/locations/alexandria/cadastral-land-subdivision",
+      "https://www.esa.gov.eg/main.aspx",
+      "https://www.esa.gov.eg/main2.aspx",
+      "https://www.esa.gov.eg/paper_maps_search.aspx",
+      "https://www.alexandria.gov.eg/Government/districts/garb/Map.aspx"
+    ],
+    "summary": "Official ESA map products and NUCA land-offering viewer found; NUCA data are offered lots in separate new cities, not target-city cadastral coverage. No parcel geometry verified.",
+    "additionalOfficialLead": "NUCA normal viewer navigation lists 27 planned new cities. New Cairo and Borg El Arab New are distinct land-offering cities; Cairo/Alexandria city target is not covered by those pages.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esa.gov.eg/services.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ida.gov.eg/ar/investmap",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://geogiza.com/ar/locations/alexandria/cadastral-land-subdivision",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esa.gov.eg/main2.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esa.gov.eg/paper_maps_search.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.alexandria.gov.eg/Government/districts/garb/Map.aspx",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Alexandria\" Egypt (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Alexandria%22+Egypt+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The public city-specific search found no verified parcel polygons for Alexandria; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check ESA or the Alexandria local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Alexandria%22+Egypt+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "landOfferingLead": {
+    "portal": "https://lands.nuca.gov.eg/ar/ViewZone.aspx?ID=4797",
+    "zoneIdDiscoveredVia": "Cities.aspx/GetSiteCities -> ViewCity.aspx?ID=1 -> ViewProject.aspx?ID=2284",
+    "zoneRequestStatus": 200,
+    "rasterTileSource": "../Images/DataImages/Aug26/NCairo/NCairo/GeneratedImages/dzc_output.xml",
+    "assessment": "Public New Cairo offered plots with availability/price table; not general cadastral geometry and not target Cairo city scope."
+  },
+  "followupServiceAuditRefs": []
+}

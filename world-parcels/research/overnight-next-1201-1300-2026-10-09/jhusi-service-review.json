@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10187-jhusi.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official Prayagraj/Jhusi cadastral-service discovery and bounded anonymous API behavior.",
+  "assessment": "The official Prayagraj district Hindi service links to UP Bhulekh, and the current Uttar Pradesh BhuNaksha JavaScript/configuration was followed to public hierarchy and plot routes. Jhusi Kohna was identified in the official revenue hierarchy. Safe plot metadata worked anonymously for three bounded plot-number lookups; full polygon retrieval was held because the geometry endpoint required an Authorization header. No polygon is retained.",
+  "registryAssessment": "registryFound=true is supported by the official Prayagraj district service page and official UP BhuNaksha/Bhulekh services. This is evidence of revenue/cadastral service custody only, not ownership, title, or citywide parcel availability.",
+  "scopeLimits": {"maxFullPolygonsRetainedInRepository": 3, "fullPolygonsRetained": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "coverageAssessment": {"claimedScope": "Official Prayagraj district service and UP BhuNaksha; bounded Jhusi Kohna village test.", "verifiedOpenScope": "Hierarchy and safe plot metadata only; no anonymous full parcel polygon.", "geometryVerified": false, "citywideVerified": false, "countrywideVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/", "operator": "District Administration Prayagraj, Government of Uttar Pradesh", "observation": "Official Hindi district service page links to UP Bhulekh."},
+    {"url": "https://upbhunaksha.gov.in/home/", "operator": "Board of Revenue, Government of Uttar Pradesh / NIC", "observation": "Official BhuNaksha viewer loaded and its live configuration exposed the current API routes."},
+    {"url": "https://upbhulekh.gov.in/", "operator": "Government of Uttar Pradesh / NIC", "observation": "Official UP land-record service."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Jhusi Prayagraj Uttar Pradesh official cadastral map parcel BhuNaksha Bhulekh", "actualResultUrls": ["https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/", "https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/"], "outcome": "Official district, BhuNaksha, and Board of Revenue routes identified."},
+    {"language": "Hindi", "query": "झूंसी प्रयागराज आधिकारिक भू नक्शा खसरा नक्शा", "actualResultUrls": ["https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/", "https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/"], "outcome": "Hindi official district page and the same public cadastral service identified."}
+  ],
+  "attempts": [
+    "Fetched the official BhuNaksha viewer and inspected current JavaScript/configuration; no login, credentials, CAPTCHA bypass, or TLS exception used.",
+    "Queried the official hierarchy; Prayagraj district=175, Phulpur tehsil=00889, Jhusi Kohna village=161736.",
+    "Queried the map extent route for 17500889161736; upstream createGisCode dependency returned 403 through a 500 response, so no CRS/extent was retained.",
+    "Queried getPlotAtXY with the exact WUP point [25.4250788331479,81.9580751860907] in latitude/longitude order; response was {} for the bounded village context and was not interpreted as absence.",
+    "Queried plot numbers 1, 2, and 10; responses contained safe native ids, kide values, and projected bounding boxes, but no full geometry.",
+    "Queried the current plot geometry route with the safe id from plot 1; endpoint returned HTTP 401 Missing or invalid Authorization header. No token was sought or used."
+  ],
+  "safeFieldAllowlist": ["stable native parcel id if independently qualified", "plot/kide identifier", "geometry", "CRS", "map extent", "source endpoint", "public schema metadata"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Tested only against the bounded Jhusi Kohna village context; empty response is not evidence of citywide absence."},
+  "uncertainty": ["The current public geometry route may require a viewer session or authorization bootstrap.", "The tested revenue village is not proven to contain the urban WUP point.", "Citywide and countrywide parcel coverage remain unknown."],
+  "runtimeReadiness": "held",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

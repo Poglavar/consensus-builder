@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4929",
+  "cityCode": 4929,
+  "wupCityCode": 4929,
+  "name": "Celaya",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso2": "MX",
+  "iso3": "MEX",
+  "rank": 1534,
+  "queueRank": 1534,
+  "point": [20.5311443592114, -100.819935271633],
+  "centerLatLon": [20.5311443592114, -100.819935271633],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 372139,
+  "population2025k": 372.139,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Municipio de Celaya site identifies its Dirección de Impuestos Inmobiliarios y Catastro and provides city catastro contact details. This establishes local registry/cadastre custody, not public parcel geometry availability.",
+  "registryEvidenceUrls": [
+    "https://www.celaya.gob.mx/dependencia/impuestos-inmobiliarios-catastro/",
+    "https://predial.celaya.gob.mx/home/",
+    "https://www.celaya.gob.mx/wp-content/uploads/2022/05/fo-sm-cel-ii-02.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current public municipal GIS was inspected and serves a CRS84 GeoJSON urban-block layer (`marco_geoestadistico/manzanas.json`), not a cadastral parcel layer. The official Predial portal loaded, but its public home page exposed no safe anonymous parcel geometry or stable parcel identity route. No login, credential, private token, CAPTCHA bypass, or unsafe owner/address/tax query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Dirección de Impuestos Inmobiliarios y Catastro is the city-specific cadastral custodian; the municipal GIS is a public planning/map viewer and Predial is a public municipal tax portal.",
+    "verifiedOpenScope": "7,098 public urban-block features were returned by the municipal GIS in CRS84, with an extent containing the exact WUP point; no parcel feature schema or parcel geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Celaya official cadastral parcel map viewer land registry Guanajuato Mexico",
+        "scope": "Identify city-specific registry custody and a safe public parcel geometry route.",
+        "result": "Search located the official Municipio de Celaya catastro office, official Predial portal, and municipal GIS. The official pages establish local custody; inspected public GIS data is urban-block/planning data and no anonymous parcel ID-plus-polygon response was verified.",
+        "actualResultUrls": [
+          "https://www.celaya.gob.mx/dependencia/impuestos-inmobiliarios-catastro/",
+          "https://predial.celaya.gob.mx/home/",
+          "https://www.imipecelaya.org/cartografia-celaya/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "sitio oficial catastro predial mapa catastral parcelas Celaya Guanajuato",
+        "scope": "Independent local-language search for the local registry custodian and public cadastral geometry.",
+        "result": "Search located the official Dirección de Impuestos Inmobiliarios y Catastro page and official Predial portal. The municipal GIS page was inspected; its published layer is urban blocks (`manzanas`), not cadastral parcels. No safe anonymous parcel response was verified.",
+        "actualResultUrls": [
+          "https://www.celaya.gob.mx/dependencia/impuestos-inmobiliarios-catastro/",
+          "https://predial.celaya.gob.mx/home/",
+          "https://www.imipecelaya.org/cartografia-celaya/"
+        ],
+        "executionMethod": "Separate Spanish-language web search and first-party/local source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. The urban-block extent containing it is not evidence of a parcel hit, parcel coverage, or citywide absence. Native cadastral layer names, field schema, CRS for any parcel service, and stable safe parcel identity remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a real anonymous municipal or state cadastral adapter; do not enable runtime from this packet alone."
+}

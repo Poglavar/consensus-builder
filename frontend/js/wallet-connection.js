@@ -19,13 +19,6 @@
         lastConnector: `${STORAGE_NAMESPACE}:lastConnector`
     };
 
-    const DEFAULT_RPC_MAP = Object.freeze({
-        '31337': 'http://127.0.0.1:8545',
-        '11155111': 'https://rpc.sepolia.org',
-        '84532': 'https://sepolia.base.org',
-        '8453': 'https://mainnet.base.org'
-    });
-
     const state = {
         status: 'idle',
         accounts: [],
@@ -331,6 +324,10 @@
     }
 
     function finalizeConnection(entry, accounts, chainId, options = {}) {
+        // Wallet vendors load on demand; a live connection means chain readers
+        // (balance display, contracts, sync) are about to need ethers. Fire and
+        // forget — racing consumers await ensureWalletVendors() themselves.
+        if (typeof globalScope.ensureWalletVendors === 'function') globalScope.ensureWalletVendors();
         detachProviderListeners();
 
         const normalizedAccounts = normalizeAccounts(accounts);
@@ -421,7 +418,11 @@
         }
     }
 
-    function ensureConnectorModal() {
+    // The connector dialog: the shared dialog (CbDialog, js/ui/dialogs.js) on the upper rung, so it
+    // opens above the agent dialog or a create dialog that asked for a wallet. One cb-option row per
+    // detected wallet. wallet-modal, wallet-modal-overlay, wallet-modal-close and the data-wallet-*
+    // attributes are hooks for scripts and the e2e specs; they paint nothing.
+    function openConnectorDialog() {
         if (connectorModal) {
             return connectorModal;
         }
@@ -433,24 +434,28 @@
         };
         const getConnectedMessage = () => translate('wallet.modal.connected', 'Wallet connected');
 
-        const overlay = document.createElement('div');
-        overlay.className = 'wallet-modal-overlay';
-        overlay.setAttribute('tabindex', '-1');
-        overlay.innerHTML = `
-            <div class="wallet-modal" role="dialog" aria-modal="true">
-                <div class="wallet-modal-header">
-                    <h2 data-i18n-key="wallet.modal.title">${modalStrings.title}</h2>
-                    <button type="button" class="wallet-modal-close close-circle-btn close-circle-btn--lg" aria-label="${modalStrings.closeAria}" data-i18n-key="wallet.modal.closeAria" data-i18n-attr="aria-label" data-wallet-modal-close>&times;</button>
-                </div>
-                <div class="wallet-modal-body">
-                    <div class="wallet-modal-description" data-i18n-key="wallet.modal.description">${modalStrings.description}</div>
-                    <div class="wallet-options" data-wallet-options></div>
-                    <div class="wallet-modal-error" data-wallet-modal-error></div>
-                </div>
-            </div>
+        const content = document.createElement('div');
+        content.innerHTML = `
+            <p class="wallet-modal-description" data-i18n-key="wallet.modal.description">${modalStrings.description}</p>
+            <div class="wallet-options" data-wallet-options></div>
+            <div class="wallet-modal-error" data-wallet-modal-error role="status" aria-live="polite"></div>
         `;
+        const dialog = globalScope.CbDialog.open({
+            title: modalStrings.title,
+            size: 'sm',
+            top: true,
+            className: 'wallet-modal',
+            overlayClassName: 'wallet-modal-overlay',
+            closeLabel: modalStrings.closeAria,
+            body: Array.from(content.childNodes),
+            // The ×, a backdrop press and Escape close the dialog itself; this lets go of the rest.
+            onClose: () => destroyConnectorModal()
+        });
+        const closeButton = dialog.header.querySelector('.close-circle-btn');
+        closeButton.classList.add('wallet-modal-close');
+        closeButton.setAttribute('data-wallet-modal-close', '');
 
-        applyTranslationsTo(overlay);
+        applyTranslationsTo(dialog.body);
 
         const detachProvidersListener = walletManager.on('providersChanged', () => {
             renderConnectorOptions();
@@ -488,25 +493,7 @@
             maybeCloseOnConnected();
         }, 500);
 
-        const handleKeydown = (event) => {
-            if (event.key === 'Escape') {
-                walletManager.closeConnectorModal();
-            }
-        };
-
-        overlay.addEventListener('click', event => {
-            if (event.target === overlay) {
-                walletManager.closeConnectorModal();
-            }
-        });
-
-        overlay.querySelector('[data-wallet-modal-close]').addEventListener('click', () => {
-            walletManager.closeConnectorModal();
-        });
-
-        overlay.addEventListener('keydown', handleKeydown);
-
-        overlay.addEventListener('click', event => {
+        dialog.body.addEventListener('click', event => {
             const button = event.target.closest('[data-wallet-connector]');
             if (!button) {
                 return;
@@ -517,12 +504,11 @@
         });
 
         connectorModal = {
-            overlay,
+            dialog,
             detachProvidersListener,
             detachConnectListener,
             detachSolanaConnect,
-            detachStateListener,
-            handleKeydown
+            detachStateListener
         };
 
         return connectorModal;
@@ -530,9 +516,9 @@
 
     function renderConnectorOptions() {
         if (!connectorModal) return;
-        const { overlay } = connectorModal;
-        const list = overlay.querySelector('[data-wallet-options]');
-        const errorNode = overlay.querySelector('[data-wallet-modal-error]');
+        const { body } = connectorModal.dialog;
+        const list = body.querySelector('[data-wallet-options]');
+        const errorNode = body.querySelector('[data-wallet-modal-error]');
         if (errorNode) {
             errorNode.textContent = '';
         }
@@ -571,8 +557,12 @@
             return;
         }
 
+        // A wallet is a cb-option row (its icon, name and where it was found); a wallet that speaks
+        // both chains is one row with an Ethereum / Solana pair of small buttons.
         const connectorsHtml = connectors.map(connector => {
-            const iconHtml = connector.icon ? `<img src="${connector.icon}" alt="${connector.name}" class="wallet-option-icon">` : '<div class="wallet-option-placeholder" aria-hidden="true"></div>';
+            const iconHtml = connector.icon
+                ? `<img src="${connector.icon}" alt="" class="wallet-option-icon">`
+                : '<i class="cb-option__icon fa-solid fa-wallet" aria-hidden="true"></i>';
             const originKey = connector.type === 'solana' ? null : (connector.origin ? null : (connector.type === 'eip6963' ? 'wallet.modal.provider.eip6963' : 'wallet.modal.provider.injected'));
             const originLabel = connector.type === 'solana' ? 'Solana' : (connector.origin ? connector.origin : translate(originKey, connector.type === 'eip6963' ? 'EIP-6963 Provider' : 'Injected Provider'));
             const originAttrs = originKey ? ` data-i18n-key="${originKey}"` : '';
@@ -581,26 +571,26 @@
                 // Dual-chain wallet: show two chain buttons side by side
                 const solanaId = connector.solanaConnectorId;
                 return `
-                <div class="wallet-option wallet-option--dual" data-wallet-dual="${connector.id}">
+                <div class="wallet-option-dual" data-wallet-dual="${connector.id}">
                     ${iconHtml}
-                    <div class="wallet-option-meta">
-                        <div class="wallet-option-name">${connector.name}</div>
-                        <div class="wallet-option-chains">
-                            <button type="button" class="wallet-chain-btn" data-wallet-connector="${connector.id}" title="Connect as EVM (Ethereum)">Ethereum</button>
-                            <button type="button" class="wallet-chain-btn wallet-chain-btn--solana" data-wallet-connector="${solanaId}" title="Connect as Solana">Solana</button>
-                        </div>
-                    </div>
+                    <span class="cb-option__text">
+                        <span class="cb-option__title">${connector.name}</span>
+                    </span>
+                    <span class="cb-actions">
+                        <button type="button" class="btn btn-sm" data-wallet-connector="${connector.id}" title="Connect as EVM (Ethereum)">Ethereum</button>
+                        <button type="button" class="btn btn-sm" data-wallet-connector="${solanaId}" title="Connect as Solana">Solana</button>
+                    </span>
                 </div>
                 `;
             }
 
             return `
-                <button type="button" class="wallet-option" data-wallet-connector="${connector.id}">
+                <button type="button" class="cb-option" data-wallet-connector="${connector.id}">
                     ${iconHtml}
-                    <div class="wallet-option-meta">
-                        <div class="wallet-option-name">${connector.name}</div>
-                        <div class="wallet-option-origin"${originAttrs}>${originLabel}</div>
-                    </div>
+                    <span class="cb-option__text">
+                        <span class="cb-option__title">${connector.name}</span>
+                        <span class="cb-option__desc"${originAttrs}>${originLabel}</span>
+                    </span>
                 </button>
             `;
         }).join('');
@@ -609,16 +599,16 @@
         applyTranslationsTo(list);
     }
 
+    // The status line under the list (connecting…, connected, or the error) and the rows' enabled state.
     function setModalState({ message, isError, disableAll }) {
         if (!connectorModal) return;
-        const { overlay } = connectorModal;
-        const errorNode = overlay.querySelector('[data-wallet-modal-error]');
+        const { body } = connectorModal.dialog;
+        const errorNode = body.querySelector('[data-wallet-modal-error]');
         if (errorNode) {
             errorNode.textContent = message || '';
-            errorNode.classList.toggle('visible', Boolean(message));
             errorNode.classList.toggle('error', Boolean(isError));
         }
-        const buttons = overlay.querySelectorAll('[data-wallet-connector]');
+        const buttons = body.querySelectorAll('[data-wallet-connector]');
         buttons.forEach(button => {
             button.disabled = Boolean(disableAll);
         });
@@ -656,9 +646,13 @@
         }
     }
 
+    // Lets go of the listeners and the poll, then closes the dialog. Runs once: from
+    // closeConnectorModal(), or as the dialog's onClose when it closed itself (×, backdrop, Escape),
+    // in which case its close() is a no-op.
     function destroyConnectorModal() {
         if (!connectorModal) return;
-        const { overlay, detachProvidersListener, detachConnectListener, detachSolanaConnect, detachStateListener, handleKeydown } = connectorModal;
+        const { dialog, detachProvidersListener, detachConnectListener, detachSolanaConnect, detachStateListener } = connectorModal;
+        connectorModal = null;
         if (detachProvidersListener) {
             detachProvidersListener();
         }
@@ -675,13 +669,7 @@
             clearInterval(connectorModalCheckTimer);
             connectorModalCheckTimer = null;
         }
-        if (overlay) {
-            overlay.removeEventListener('keydown', handleKeydown);
-            if (overlay.parentElement) {
-                overlay.parentElement.removeChild(overlay);
-            }
-        }
-        connectorModal = null;
+        dialog.close();
     }
 
     const walletManager = {
@@ -734,14 +722,6 @@
                 }
                 const chainId = chainIdFromSession || await readChainId(entry.provider);
                 finalizeConnection(entry, normalized, chainId, { isAutoConnect: false });
-
-                // Close WC modals if open
-                try {
-                    if (walletConnectModalInstance && typeof walletConnectModalInstance.closeModal === 'function') {
-                        walletConnectModalInstance.closeModal();
-                    }
-                    closeFallbackQrModal();
-                } catch (_) { }
 
                 return cloneState();
             } catch (err) {
@@ -849,9 +829,6 @@
             eventHub.removeEventListener(event, handler);
         },
         openConnectorModal() {
-            const modal = ensureConnectorModal();
-            if (!modal) return;
-
             // Re-run provider detection when the user explicitly opens the modal to catch late-injected wallets
             try {
                 detectLegacyProviders();
@@ -863,13 +840,15 @@
             const isAlreadyConnected = (currentState && currentState.status === 'connected' && Array.isArray(currentState.accounts) && currentState.accounts.length > 0)
                 || (solanaState && solanaState.status === 'connected' && Array.isArray(solanaState.accounts) && solanaState.accounts.length > 0);
             if (isAlreadyConnected) {
-                setModalState({ message: translate('wallet.modal.connected', 'Wallet connected'), isError: false, disableAll: false });
-                setTimeout(() => walletManager.closeConnectorModal(), 150);
+                // Nothing to choose: a dialog that is already open says so and closes; none is opened.
+                if (connectorModal) {
+                    setModalState({ message: translate('wallet.modal.connected', 'Wallet connected'), isError: false, disableAll: false });
+                    setTimeout(() => walletManager.closeConnectorModal(), 150);
+                }
                 return;
             }
+            openConnectorDialog();
             renderConnectorOptions();
-            document.body.appendChild(modal.overlay);
-            modal.overlay.focus({ preventScroll: true });
         },
         closeConnectorModal() {
             destroyConnectorModal();

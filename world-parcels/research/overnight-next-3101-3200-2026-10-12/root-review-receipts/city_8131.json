@@ -1,0 +1,45 @@
+{
+  "taskId": "city:8131",
+  "decision": "held",
+  "checkedAt": "2026-10-12T04:08:07Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-8131-rio-das-ostras.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/rio-das-ostras-service-review.json"
+  ],
+  "queueIdentity": {
+    "rank": 3146,
+    "cityCode": 8131,
+    "name": "Rio das Ostras",
+    "country": "Brazil",
+    "pointLatLon": [
+      -22.5418000804139,
+      -41.9681985207403
+    ],
+    "population2025Persons": 190778
+  },
+  "executedSearchLanguages": [
+    "English",
+    "Portuguese (local)"
+  ],
+  "retainedFullPolygonCount": 0,
+  "registryFound": true,
+  "firstPartyChecks": [
+    "https://www.riodasostras.rj.gov.br/fazenda-gecim/",
+    "https://www.riodasostras.rj.gov.br/mapas-municipais/",
+    "https://spe.riodasostras.rj.gov.br/iptu/cartaoinscricao.aspx"
+  ],
+  "reason": "Municipal GECIM custody is evidenced. The public maps page embeds OSM, while the tax form requires an inscription and CAPTCHA; no anonymous parcel feature response, native ID, or full polygon was evidenced.",
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "admission": "not_admitted",
+  "absenceClaim": null
+}

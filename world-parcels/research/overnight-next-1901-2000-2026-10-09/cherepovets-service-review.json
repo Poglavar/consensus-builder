@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-1773-cherepovets.json",
+  "cityCode": 1773,
+  "queueRank": 1994,
+  "city": "Cherepovets",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "outcome": "held_no_verified_geometry",
+  "registryFound": true,
+  "custodian": "Intermunicipal Department for Cherepovets and Cherepovetsky District of the Vologda Oblast Rosreestr Directorate, evidenced by a Cherepovets local directory; NSPD is the first-party public map destination.",
+  "scope": "Local cadastral custody is evidenced, but no safe Cherepovets parcel feature response was verified.",
+  "queries": [
+    {"language": "English", "query": "Cherepovets Russian Federation official cadastral parcel map public cadastral viewer Rosreestr NSDI", "outcome": "NSPD public map and local Rosreestr custodian listing found; official map timed out and returned no geometry.", "urls": ["https://nspd.gov.ru/map?thematic=PKK", "https://gid.cherinfo.ru/registrazionnie-organi", "https://rosreestr.gov.ru/"]},
+    {"language": "Russian (local/official language)", "query": "Череповец официальный публичная кадастровая карта Росреестр кадастровые участки НСПД", "outcome": "Найдены НСПД и местный отдел Росреестра; запрос карты завершился тайм-аутом, геометрия не получена.", "urls": ["https://nspd.gov.ru/map?thematic=PKK", "https://gid.cherinfo.ru/registrazionnie-organi", "https://rosreestr.gov.ru/"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://nspd.gov.ru/map?thematic=PKK", "method": "GET", "outcome": "Timeout after 20 seconds with normal TLS; no API/config/schema/geometry obtained."},
+    {"url": "https://rosreestr.gov.ru/", "method": "GET via public web discovery", "outcome": "First-party agency URL identified, but direct web fetch timed out."},
+    {"url": "https://gid.cherinfo.ru/registrazionnie-organi", "method": "GET via public web discovery", "outcome": "200/indexed local directory; local Rosreestr and cadastral-chamber offices identified, no parcel API."}
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source CRS", "source layer/service identifier"],
+  "excludedFields": ["owner", "titleholder", "address", "contact", "personal", "tax", "account", "legal description", "rights/title details", "private credentials/tokens"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "uncertainty": "No exact-point or bounded extent response completed. The timeout is not evidence of citywide absence. Native parcel identity, CRS, geometry, and citywide coverage remain unverified.",
+  "reviewDisposition": "Keep packet complete as a research record; hold runtime integration pending serial qualification of a real public Cherepovets parcel adapter and safe native identity/geometry mapping."
+}

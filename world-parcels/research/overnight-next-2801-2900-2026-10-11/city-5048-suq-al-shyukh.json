@@ -1,0 +1,97 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 5048,
+  "queueRank": 2894,
+  "name": "Suq al Shyukh",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "iso3": "IRQ",
+  "locId": 368,
+  "capital": false,
+  "point": [30.8933368355498, 46.4610322687862],
+  "population2025": 206015,
+  "population2025k": 206.015,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Suq al Shuyukh Iraq cadastral parcel map official land registry GIS",
+        "result": "First-party discovery identified the Iraq Ministry of Justice Real Estate Registration Directorate contact page, which lists a dedicated Suq al Shuyukh directorate, and the official Ur Portal deed/property-map service. No public parcel API or downloadable geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://moj.gov.iq/contact_us.php",
+          "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+          "https://moj.gov.iq/view.8629/"
+        ]
+      },
+      {
+        "language": "Arabic (local)",
+        "query": "سوق الشيوخ العراق خريطة عقارية السجل العقاري رسمي",
+        "result": "Arabic first-party discovery confirmed وزارة العدل / دائرة التسجيل العقاري and the specifically listed مديرية تسجيل عقاري سوق الشيوخ. The official Ur Portal service describes requesting a deed and property map, with owner identity/document checks; it does not expose anonymous parcel geometry.",
+        "actualResultUrls": [
+          "https://moj.gov.iq/contact_us.php",
+          "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+          "https://eservice.ur.gov.iq/customer/applyService/10360"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Iraq Ministry of Justice, General Directorate of Real Estate Registration; dedicated Suq al Shuyukh Real Estate Registration Directorate",
+    "locality": "Suq al Shuyukh, Dhi Qar Governorate",
+    "evidenceUrls": ["https://moj.gov.iq/contact_us.php"],
+    "scopeNote": "The Ministry of Justice first-party contact directory explicitly lists مديرية تسجيل عقاري سوق الشيوخ and its official mailbox. This establishes a local registry custodian, not open citywide parcel geometry access."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Iraq Ministry of Justice Real Estate Registration / Ur Portal property-deed and property-map service",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "note": "No anonymous parcel ID+geometry response was observed. No exact-point lookup or map-extent test was used as an absence test."
+  },
+  "officialSources": [
+    {"url": "https://moj.gov.iq/contact_us.php", "observation": "Official Ministry of Justice contact directory lists the dedicated Suq al Shuyukh Real Estate Registration Directorate and mailbox souqal_shouekh_iqari@moj.gov.iq."},
+    {"url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat", "observation": "Official Ur Portal describes the deed and property-map request service, requiring owner or authorized representative documents and stating electronic availability at that time only in Baghdad."},
+    {"url": "https://eservice.ur.gov.iq/customer/applyService/10360", "observation": "Official service application route loads a citizen JavaScript application and requires Ur Portal login; no public parcel response was exposed."},
+    {"url": "https://moj.gov.iq/view.8629/", "observation": "Official Ministry of Justice announcement describes electronic property deed/map and related real-estate services being rolled out incrementally through Ur Portal."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Iraq Ministry of Justice Real Estate Registration / Ur Portal",
+    "viewerUrl": "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+    "serviceBase": null,
+    "administrativeSelection": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "geometryType": null
+  },
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://moj.gov.iq/contact_us.php", "outcome": "200; official contact directory retrieved and inspected; Suq al Shuyukh local real-estate-registration directorate observed."},
+    {"method": "GET", "url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat", "outcome": "418 from bounded curl request; first-party service page was independently identified in official search evidence. No parcel API response obtained."},
+    {"method": "GET", "url": "https://eservice.ur.gov.iq/customer/applyService/10360", "outcome": "200; official application shell retrieved. The page requires Ur Portal login for the deed/property-map request; no anonymous parcel ID, schema, CRS, or geometry response was obtained."},
+    {"method": "GET", "url": "https://eservice.ur.gov.iq/js/customer.af324c84.js", "outcome": "200; current customer JavaScript inspected. It references the Ur customer request application but did not expose a public anonymous parcel geometry route."},
+    {"method": "GET", "url": "https://ur.gov.iq/index/map/", "outcome": "418 from bounded curl request; no map payload or cadastral service metadata obtained."}
+  ],
+  "resultCategory": "city_registry_verified_no_public_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official Ministry of Justice real-estate-registration services and the dedicated Suq al Shuyukh directorate.",
+    "verifiedOpenScope": "Local registry custodian verified. No anonymously downloadable or queryable parcel geometry was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "integration": "not_admitted",
+  "remainingUncertainty": "The official service is owner-authenticated and its published rollout is not evidence of a public citywide parcel layer. Current internal service routes, any authenticated map response, native identity fields, CRS, and coverage for Suq al Shuyukh remain unverified. No owner, address, contact, titleholder, personal, tax, account, certificate, or title fields were requested or retained."
+}

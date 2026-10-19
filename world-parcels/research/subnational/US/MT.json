@@ -1,0 +1,91 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MT",
+ "regionName": "Montana",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-mt-dnrc-cadastral-mirror",
+  "name": "Montana Cadastral (Parcels), DNRC mirror",
+  "operator": "Montana State Library Cadastral Framework, served by MT DNRC",
+  "scope": "statewide parcels, \"most of Montana\"",
+  "endpoint": "https://gis.dnrc.mt.gov/arcgis/rest/services/DNRALL/Cadastral/MapServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "native SR from service; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-mt-dnrc-cadastral-mirror",
+  "requestUrl": "https://gis.dnrc.mt.gov/arcgis/rest/services/DNRALL/Cadastral/MapServer/0/query?geometry=<bbox ~150m>&outFields=PARCELID,COUNTYCD&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-112.0399,46.5883,-112.0383,46.5899]",
+   "[-108.5015,45.7825,-108.4999,45.7841]"
+  ],
+  "parcelRecordCount": 4,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCELID (with COUNTYCD)",
+  "responseFile": "research/subnational/US/MT-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Helena area (county code 5)",
+   "Billings area (county code 3)"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Description: \"The Montana Cadastral Framework shows the taxable parcels and tax-exempt parcels for most of Montana\"; DNRC service says data acquired from Montana State Library and updated about monthly. Official MSL host gisservicemt.gov returned only an HTML \"Blank Page\" to all REST paths from this network, so the DNRC mirror was used.",
+ "subregionsVerified": [
+  "COUNTYCD 5 (Helena area)",
+  "COUNTYCD 3 (Billings area)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://svc.mt.gov/msl/cadastral/",
+   "observation": "Montana Cadastral viewer"
+  },
+  {
+   "url": "https://gisservicemt.gov/arcgis/rest/services/MSDI_Framework/Parcels/MapServer",
+   "observation": "returned HTML blank page, not JSON, from this network (could be a block or JS shell)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.dnrc.mt.gov/arcgis/rest/services/DNRALL/Cadastral/MapServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://gis.dnrc.mt.gov/arcgis/rest/services/DNRALL/Cadastral/MapServer/0/query?geometry=<bbox ~150m near Helena area (county code 5)>&outFields=PARCELID,COUNTYCD...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://gis.dnrc.mt.gov/arcgis/rest/services/DNRALL/Cadastral/MapServer/0/query?geometry=<bbox ~150m near Billings area (county code 3)>&outFields=PARCELID,COUNTYCD...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://gisservicemt.gov/arcgis/rest/services/MSDI_Framework/Parcels/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "HTML blank page, no REST JSON; not verification"
+  }
+ ],
+ "reuseStatus": "Layer carries owner names and addresses; not requested or saved. Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+ "remainingUncertainty": "\"Most of Montana\", not every county; ORION data maintained by MT Dept of Revenue plus five counties. Canonical MSL host not reachable as JSON here.",
+ "nextStep": "Retest gisservicemt.gov from another network; read MSL data use terms."
+}

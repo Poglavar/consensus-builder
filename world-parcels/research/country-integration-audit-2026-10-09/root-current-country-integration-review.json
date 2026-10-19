@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:35:08.403982+00:00",
+  "publishedCheckpoint": {
+    "commit": "9772729bf9744af1c0b7856d20fb691665c00663",
+    "buildId": "deploy-422",
+    "configuredCities": 187,
+    "providers": 159,
+    "providerCountBasis": "Initial parcel release checkpoint; public configured city count remains unchanged.",
+    "verifiedAt": "2026-10-09T09:35:08.403829+00:00",
+    "releaseUrl": "https://urbangametheory.xyz/release.json",
+    "coverageUrl": "https://urbangametheory.xyz/data/world-coverage.json",
+    "reportUrl": "https://urbangametheory.xyz/data/parcel-coverage-report.json",
+    "namedCountryCoverage": [
+      {
+        "cc": "EE",
+        "name": "Estonia",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "FI",
+        "name": "Finland",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "IE",
+        "name": "Ireland",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "IS",
+        "name": "Iceland",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "LT",
+        "name": "Lithuania",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "LV",
+        "name": "Latvia",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "NO",
+        "name": "Norway",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "PT",
+        "name": "Portugal",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "RO",
+        "name": "Romania",
+        "coverage": "unknown",
+        "tier": "unknown",
+        "note": "ANCPI documents a parcel vector service, but the Geoportal hostname does not resolve from either network checked. ANCPI reports a staged restart. Access remains inconclusive; this is not a no-data finding.",
+        "enabledCityCount": 0
+      },
+      {
+        "cc": "SE",
+        "name": "Sweden",
+        "coverage": "partial",
+        "tier": "source",
+        "note": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+        "enabledCityCount": 0
+      }
+    ]
+  },
+  "localCheckpoint": {
+    "configuredCities": 193,
+    "providers": 165,
+    "newUndeployedCities": [
+      "orlando",
+      "dublin",
+      "riga",
+      "tallinn",
+      "vilnius",
+      "jundiai"
+    ]
+  },
+  "colorMeaning": {
+    "yellow": "partial public parcel evidence; country fill does not imply city runtime integration or nationwide completeness",
+    "romania": "unknown gray in verified published coverage"
+  },
+  "memoryPreferenceSaved": "MEMORY.md: continue beyond human-facing UI through viewer config/network/first-party endpoints; UI login or fetch failure is not geometry absence.",
+  "requalificationCounting": "Existing country-source and city findings revisited; excluded from fresh population-cohort investigation counts.",
+  "findings": [
+    {
+      "countryCode": "IE",
+      "country": "Ireland",
+      "currentStatus": "fresh_full_runtime_qualified",
+      "assessment": "Dublin enabled locally; 113 native parcels; freehold-only, citywide completeness unverified.",
+      "evidenceFile": "dublin-root-acceptance.json"
+    },
+    {
+      "countryCode": "FI",
+      "country": "Finland",
+      "currentStatus": "fresh_public_polygons_spatial_semantics_review",
+      "assessment": "Reviewed reader and live known/synthetic-ID/paging checks passed. Thirty-six-feature forced paging matched normal paging. A known-contained1m site returned zero while full parcel-footprint binding succeeded; spatial query semantics are being diagnosed before admission.",
+      "evidenceFile": "Finland-runtime-qualification.json"
+    },
+    {
+      "countryCode": "NO",
+      "country": "Norway",
+      "currentStatus": "fresh_public_polygons_exact_id_limitation",
+      "assessment": "Public spatial retrieval and14 exact native-ID hashes passed. One large native ID loads spatially but fails ResourceID retrieval HTTP500; correct nested equality GET/POST did not produce usable counts. Source remains disabled; no geometry absence asserted.",
+      "evidenceFile": "Norway-runtime-protocol-followthrough.json"
+    },
+    {
+      "countryCode": "IS",
+      "country": "Iceland",
+      "currentStatus": "fresh_public_polygons_bbox_protocol_verified",
+      "assessment": "Escalated anonymous Reykjavík bbox API HTTP200; repeated four-feature body/hash stable over58seconds. Viewer uses LANDEIGN_NR+SKIKI_AUDK fallback part identity. Exact-ID and paging parameters ignored; no independent absence/count-completeness protocol yet.",
+      "evidenceFile": "Iceland-protocol-followthrough.json"
+    },
+    {
+      "countryCode": "SE",
+      "country": "Sweden",
+      "currentStatus": "historical_positive_current_inconclusive",
+      "assessment": "Viewer geometry previously verified; current direct retries timed out. No claim of unavailable parcel data.",
+      "evidenceFile": "named-country-recheck-current.json"
+    },
+    {
+      "countryCode": "PT",
+      "country": "Portugal",
+      "currentStatus": "fresh_public_polygons_partial_geography",
+      "assessment": "Mafra parcels and exact item retrieval verified via DGT OGC API; not Lisbon municipality, not countrywide proof.",
+      "evidenceFile": "named-country-recheck-current.json"
+    },
+    {
+      "countryCode": "EE",
+      "country": "Estonia",
+      "currentStatus": "fresh_full_runtime_qualified",
+      "assessment": "Tallinn enabled locally; 60 bounded full native parcels; complete protocol, independent clean metric topology, full binding and headed pointer-selected native Details passed. Citywide completeness unverified.",
+      "evidenceFile": "tallinn-root-acceptance.json",
+      "headedBrowserCheck": "tallinn-headed-browser-check.json"
+    },
+    {
+      "countryCode": "LV",
+      "country": "Latvia",
+      "currentStatus": "fresh_full_runtime_qualified",
+      "assessment": "Riga enabled locally; 113 bounded full native parcels; complete protocol, independent clean metric topology, full binding and headed pointer-selected native Details passed. Citywide completeness unverified.",
+      "evidenceFile": "riga-root-acceptance.json",
+      "headedBrowserCheck": "riga-headed-browser-check.json"
+    },
+    {
+      "countryCode": "LT",
+      "country": "Lithuania",
+      "currentStatus": "fresh_full_runtime_qualified",
+      "assessment": "Vilnius enabled locally; 7 bounded full native parcels; complete protocol, independent clean metric topology, full binding and headed pointer-selected native Details passed. Citywide completeness unverified.",
+      "evidenceFile": "vilnius-root-acceptance.json",
+      "headedBrowserCheck": "vilnius-headed-browser-check.json"
+    },
+    {
+      "countryCode": "RO",
+      "country": "Romania",
+      "currentStatus": "current_access_inconclusive",
+      "assessment": "Official geoportal migration documented; current endpoint retries timed out. Unknown, no no-data claim.",
+      "evidenceFile": "named-country-recheck-current.json"
+    }
+  ],
+  "populationCohorts": {
+    "completeFreshInvestigations": 886,
+    "rootReviewedIntegrated": 872,
+    "rootReviewedPublicGeometryFindings": 102,
+    "nextCohortComplete": 95,
+    "nextCohortReviewed": 81,
+    "nextCohortAwaitingReviewOrFollowthrough": 14,
+    "rank1201To1300ResearchComplete": 4
+  },
+  "validation": {
+    "dublinHeadlessAffectedTests": 224,
+    "generatedReportFollowupTests": 45,
+    "generatedReportWarnings": [],
+    "headedParcelSelection": [
+      "dublin-headed-browser-check.json",
+      "riga-headed-browser-check.json",
+      "tallinn-headed-browser-check.json",
+      "vilnius-headed-browser-check.json"
+    ],
+    "geometryChangedOrRepaired": false,
+    "latestAffectedHeadlessTests": 236,
+    "latestAffectedHeadlessFiles": 12,
+    "additionalConcurrentWorkTestFailure": {
+      "file": "backend/test/i18n-locale-coverage.test.js",
+      "failure": "Dynamic-key allowlist missing panel.proposal.market.state. and panel.proposal.market.next. in concurrent market details-panel changes. Parcel affected checks passed separately.",
+      "observedFailedTests": 1,
+      "earlierCombinedRunPassedTests": 184
+    },
+    "additionalHeadedParcelSelection": "../overnight-next-2026-10-09/jundiai-headed-browser-check.json",
+    "finlandIndependentProbe": {
+      "file": "finland-root-independent-probe.json",
+      "requests": 52,
+      "freshWupIds": 2,
+      "forcedPagingStressParcels": 36,
+      "fullParcelBinding": "complete",
+      "qualifiedForRuntime": false,
+      "pending": "Known-contained small interior-site spatial semantics"
+    },
+    "finlandIndependentMetricAudit": {
+      "file": "finland-root-quality.json",
+      "features": 38,
+      "invalid": 0,
+      "duplicateGeometry": 0,
+      "overlapPairsAbove0_01m2": 0,
+      "operationErrors": 0,
+      "geometryChangedOrRepaired": false
+    },
+    "additionalPublicGeometryFinding": {
+      "city": "Macapa",
+      "evidenceFile": "../overnight-next-2026-10-09/macapa-root-public-geometry-review.json",
+      "runtimeEnabled": false,
+      "reason": "Duplicate native idlote join-row manifests prevent current adapter completeness; full native geometry is publicly available."
+    }
+  },
+  "initialParcelReleaseCheckpoint": {
+    "commit": "ad47b45a5b1e82b853f5630ede1b6397c1dc5e1c",
+    "buildId": "deploy-420",
+    "configuredCities": 187,
+    "providers": 159
+  }
+}

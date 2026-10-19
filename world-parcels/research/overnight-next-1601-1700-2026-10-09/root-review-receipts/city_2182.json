@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2182",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-2182-kafr-al-zaiyat.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/kafr-al-zaiyat-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/2182/esa-digital.html"
+  ],
+  "checkedAt": "2026-10-10T11:07:19Z",
+  "reason": "ESA first-party digital-map page confirms a request and purchase workflow. No Kafr Al-Zaiyat parcel feature response, safe native ID, or full polygon is evidenced. Registry custody remains unresolved, and all live adapter gates, source binding, and headed Details verification are missing.",
+  "firstPartyUrlsChecked": [
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  ],
+  "verifiedFullPolygonCount": 0,
+  "runtimeAdmitted": false
+}

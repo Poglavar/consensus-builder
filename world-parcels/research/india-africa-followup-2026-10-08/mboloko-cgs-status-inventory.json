@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-10-07T23:03:38.871Z",
+  "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?f=json&where=1%3D1&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22row_count%22%7D%5D&groupByFieldsForStatistics=LSTATUS%2CWSTATUS%2CPRCL_TYPE&returnGeometry=false",
+  "httpStatus": 200,
+  "payload": {
+    "displayFieldName": "",
+    "fieldAliases": {
+      "LSTATUS": "LSTATUS",
+      "WSTATUS": "WSTATUS",
+      "PRCL_TYPE": "PRCL_TYPE",
+      "row_count": "row_count"
+    },
+    "fields": [
+      {
+        "name": "LSTATUS",
+        "type": "esriFieldTypeString",
+        "alias": "LSTATUS",
+        "length": 1
+      },
+      {
+        "name": "WSTATUS",
+        "type": "esriFieldTypeString",
+        "alias": "WSTATUS",
+        "length": 1
+      },
+      {
+        "name": "PRCL_TYPE",
+        "type": "esriFieldTypeString",
+        "alias": "PRCL_TYPE",
+        "length": 10
+      },
+      {
+        "name": "row_count",
+        "type": "esriFieldTypeInteger",
+        "alias": "row_count"
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "LSTATUS": "R",
+          "WSTATUS": "C",
+          "PRCL_TYPE": "E",
+          "row_count": 14177
+        }
+      },
+      {
+        "attributes": {
+          "LSTATUS": "S",
+          "WSTATUS": " ",
+          "PRCL_TYPE": "E",
+          "row_count": 132446
+        }
+      },
+      {
+        "attributes": {
+          "LSTATUS": "S",
+          "WSTATUS": "C",
+          "PRCL_TYPE": "E",
+          "row_count": 307791
+        }
+      }
+    ]
+  },
+  "elapsedMs": 1356
+}

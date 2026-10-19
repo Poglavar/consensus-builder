@@ -1,0 +1,139 @@
+{
+  "name": "Ghazipur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1171,
+  "point": [
+    25.5865210971484,
+    83.5734521945564
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ghazipur official cadastral parcel map GIS Uttar Pradesh Bhu Naksha Ghazipur district",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+          "https://upbhunaksha.gov.in/home/"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Hindi",
+        "query": "गाजीपुर भू नक्शा आधिकारिक पार्सल नक्शा उत्तर प्रदेश भूलेख",
+        "result": "Official district BhuNaksha selectors found; point-matched city selector returned a zero extent.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+          "https://upbhunaksha.gov.in/home/"
+        ],
+        "method": "Separate Hindi-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+        "operator": "Uttar Pradesh Bhulekh",
+        "scope": "Official district map-digitization dashboard identifies Ghazipur district."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "operator": "Uttar Pradesh BhuNaksha",
+        "scope": "Official public cadastral map and geography selectors; city point did not yield a usable extent or polygon."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=2 codes=195",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 1122,
+        "assessment": "Returned seven tehsils."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=3 codes=195,00989",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 96765,
+        "assessment": "Returned 582 villages and the city selector 219756."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST gisLevels=195,00989,219756",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 231,
+        "assessment": "Returned zero bounds/no CRS; no XY identify sent."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1171 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+    "operator": "Uttar Pradesh Bhulekh",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ghazipur district land-map sources link to official Uttar Pradesh Bhulekh/BhuNaksha; the exact WUP city point produced no usable public parcel extent.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official point-matched Ghazipur city village selector returned an empty extent (zero bounds); no parcel identify request was sent.",
+  "remainingUncertainty": "Ghazipur district land-map sources link to official Uttar Pradesh Bhulekh/BhuNaksha; the exact WUP city point produced no usable public parcel extent. Exact-point public parcel geometry, legal/title scope, coverage completeness, and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10619,
+  "cityId": "wup2025:10619",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.5865210971484,
+    83.5734521945564
+  ],
+  "population2025k": 473.824,
+  "populationUnit": "persons",
+  "queueRank": 1171,
+  "population2025": 473824,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Ghazipur district land-map sources link to official Uttar Pradesh Bhulekh/BhuNaksha; the exact WUP city point produced no usable public parcel extent.",
+  "registryEvidenceUrls": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=195",
+    "https://upbhunaksha.gov.in/home/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon response at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

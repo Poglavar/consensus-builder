@@ -1,0 +1,14 @@
+{
+  "taskId": "city:7643",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-7643-pare.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pare-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:03:35.971361Z",
+  "reason": "English and Indonesian executed searches are recorded. Kediri Regency geospatial portal and ATR/BPN catalog establish map/data institutions, but inspected catalogs yielded no Pare cadastral feature with safe native ID and full polygon. Kota Kediri evidence does not establish Pare coverage. Pare parcel-record custody remains unresolved despite worker registryFound=true; do not promote that value to runtime/catalog coverage. Catalog omission is not citywide absence; no runtime qualification is evidenced.",
+  "registryCustodyAccepted": null,
+  "admission": "held; no runtime/catalog/report change"
+}

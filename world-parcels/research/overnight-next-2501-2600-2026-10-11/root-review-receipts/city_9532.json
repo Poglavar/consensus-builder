@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9532",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-9532-xingyang.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/xingyang-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T13:32:40.696842Z",
+  "reason": "Held: exact WUP identity and English/Chinese searches are present. The first-party Xingyang bureau page confirms a local registration custodian, but the paired attempt obtained no successful anonymous parcel response, safe native ID, CRS, or polygon. Viewer login, blocked route, and timeout do not show citywide absence. No adapter qualification or headed Details verification is evidenced.",
+  "sourceCheck": {
+    "url": "https://public.xingyang.gov.cn/D1604Y/8575493.jhtml",
+    "httpStatus": 200,
+    "bureauNameObserved": "荥阳市自然资源和规划局",
+    "parcelFeatureRead": "not evidenced"
+  }
+}

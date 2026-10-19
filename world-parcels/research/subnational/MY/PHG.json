@@ -1,0 +1,32 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "PHG",
+ "regionName": "Pahang",
+ "checkedAt": "2026-09-30",
+ "status": "credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geoportal.pahang.gov.my/SUKPahang/",
+   "observation": "PahangGIS (SUK Pahang) portal: page shows a login form and registration; thematic menus only, no open service endpoint in source"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoportal.pahang.gov.my/SUKPahang/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "HTML with login/registration forms; no ArcGIS/WMS/WFS URLs in source"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "Public tabs might exist behind the menu; only the front page was inspected. Login not attempted.",
+ "nextStep": "Register or inspect logged-out map pages for a lot layer."
+}

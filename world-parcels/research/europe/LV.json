@@ -1,0 +1,119 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LV",
+ "country": "Latvia",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "State Land Service (VZD), Kadastra informacijas sistema; geoportal geolatvija.lv",
+ "inspireRecordUrl": "https://data.gov.lv/dati/lv/dataset/kadastrlie-zemes-gabali-inspire (points to https://grafws.kadastrs.lv/atom/cp/atom.xml; that host is unreachable from this network)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: lv-LV,lv;q=0.9,en;q=0.5; Referer: https://geolatvija.lv/; cookie jar",
+ "portalsFound": [
+  {
+   "url": "https://geolatvija.lv/",
+   "observation": "React viewer; /runtime-config.js gives geoserverUrl=https://geolatvija.lv/geoserver; main.js layer 'parcel' (also 'building','parcel_part') in workspace 'vraa' (WMS at /geoserver/vraa/wms; WFS search uses typename parcel, outputFormat application/json). No token or captcha needed for WFS."
+  },
+  {
+   "url": "https://data.gov.lv/dati/lv/dataset/kadastrlie-zemes-gabali-inspire",
+   "observation": "INSPIRE CP dataset record; resources: grafws.kadastrs.lv ATOM and two geo-dpps.viss.gov.lv package links"
+  },
+  {
+   "url": "https://data.gov.lv/dati/lv/dataset/kadastra-informacijas-sistemas-atverti-telpiskie-dati",
+   "observation": "per-municipality open shapefile zips (earlier pass)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://grafws.kadastrs.lv/atom/cp/atom.xml",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset (unchanged with headers/Referer)"
+  },
+  {
+   "url": "https://ogc.kadastrs.lv/cp?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://geolatvija.lv/runtime-config.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "geoserverUrl, tapisWMTSUrl, dapUrl"
+  },
+  {
+   "url": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "WFS 2.0.0 capabilities"
+  },
+  {
+   "url": "https://geolatvija.lv/geoserver/vraa/wfs GetFeature parcel, Riga bbox 56.9490,24.1050,56.9500,24.1065",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 MultiPolygon parcels (18 in bbox), EPSG:3059 coordinates"
+  },
+  {
+   "url": "https://geolatvija.lv/geoserver/vraa/wfs GetFeature parcel, Daugavpils bbox 55.8735,26.5340,55.8745,26.5355",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 MultiPolygon parcels (20 in bbox)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+  "requestUrl": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=parcel&count=3&outputFormat=application/json&bbox=56.9490,24.1050,56.9500,24.1065,urn:ogc:def:crs:EPSG::4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "56.9490,24.1050,56.9500,24.1065",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "code (cadastral designation; feature id parcel.<n>)",
+  "responseFile": "LV-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Riga (Latvia, Riga city)"
+ },
+ "additionalVerifiedRegion": {
+  "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+  "requestUrl": "https://geolatvija.lv/geoserver/vraa/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=parcel&count=3&outputFormat=application/json&bbox=55.8735,26.5340,55.8745,26.5355,urn:ogc:def:crs:EPSG::4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "55.8735,26.5340,55.8745,26.5355",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "code (cadastral designation; feature id parcel.<n>)",
+  "responseFile": "LV-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Daugavpils (Latgale)"
+ },
+ "regionsSampled": [
+  "Riga",
+  "Daugavpils"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "National VZD cadastral parcels shown in the national geoportal viewer",
+  "regionsVerified": [
+   "Riga",
+   "Daugavpils"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "remainingUncertainty": "Source is the viewer's own GeoServer (vraa workspace), not the INSPIRE ATOM/WFS which remains unreachable from here. The feature attributes include owner/address fields (stripped from the saved reply). Licence not read (data.gov.lv lists CC0 for the dataset).",
+ "nextStep": "Use geolatvija.lv/geoserver/vraa WFS parcel layer; confirm terms of use for the viewer service versus CC0 open data."
+}

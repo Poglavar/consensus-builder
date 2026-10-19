@@ -1,0 +1,145 @@
+{
+  "name": "Hanover",
+  "country": "Germany",
+  "countryCode": "DE",
+  "rank": 887,
+  "point": [
+    52.3779984016013,
+    9.75410976708694
+  ],
+  "population2025": 611288,
+  "population2025k": 611.288,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway.",
+  "registryEvidenceUrls": [
+    "https://www.hannover.de/Service/Presse-Medien/Landeshauptstadt-Hannover/Stadtkarte-1-1000-SKH1000",
+    "https://numis.niedersachsen.de/trefferanzeige?docuuid=d5b05158-fd60-4749-9913-4d4afa85986b",
+    "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+    "https://www.hannover.de/Leben-in-der-Region-Hannover/Verwaltungen-Kommunen/Die-Verwaltung-der-Landeshauptstadt-Hannover/Dezernate-und-Fachbereiche-der-LHH/Stadtentwicklung-und-Bauen/Fachbereich-Planen-und-Stadtentwicklung/Geoinformation/Open-GeoData/Digitale-Stadtkarten/Stadtkarte-1-1000-SKH1000"
+  ],
+  "resultCategory": "official_cadastre_wfs_schema_found_query_rejected",
+  "remainingUncertainty": "Whether the official WFS gateway will accept a supported bounded request format and return geometry at the exact WUP point remains unresolved; no query was broadened.",
+  "scopeLimits": "Research is limited to official sources and the exact unchanged WUP settlement locator. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "DE-4316-hanover-cadastre-review",
+    "name": "Lower Saxony LGLN ALKIS INSPIRE WFS / City of Hanover official map",
+    "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+    "operator": "Germany",
+    "serviceType": "Official no-auth INSPIRE WFS 2.0.0 `cp:CadastralParcel`; gateway rejects bounded GetFeature queries.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": "nationalCadastralReference / inspireId",
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 4316,
+  "cityId": "wup2025:4316",
+  "queueRank": 887,
+  "centerLatLon": [
+    52.3779984016013,
+    9.75410976708694
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research evidence only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway.",
+    "verifiedOpenScope": "No parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hanover Germany official ALKIS cadastral parcel WFS open data",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "Official City of Hanover map documents ALKIS parcel boundaries; Lower Saxony catalog identifies no-auth WFS coverage and parcel schema.",
+        "actualResultUrls": [
+          "https://www.hannover.de/Service/Presse-Medien/Landeshauptstadt-Hannover/Stadtkarte-1-1000-SKH1000",
+          "https://numis.niedersachsen.de/trefferanzeige?docuuid=d5b05158-fd60-4749-9913-4d4afa85986b",
+          "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      },
+      {
+        "language": "German",
+        "query": "Hannover ALKIS Flurstücke INSPIRE WFS LGLN Kataster öffentlich",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "Die Stadt Hannover nennt ALKIS-Flurstücksgrenzen in der Stadtkarte; der LGLN-Katalog weist einen öffentlichen WFS mit Hannover-Abdeckung aus. Begrenzte GetFeature-Abfragen wurden vom Gateway abgewiesen.",
+        "actualResultUrls": [
+          "https://www.hannover.de/Service/Presse-Medien/Landeshauptstadt-Hannover/Stadtkarte-1-1000-SKH1000",
+          "https://numis.niedersachsen.de/trefferanzeige?docuuid=d5b05158-fd60-4749-9913-4d4afa85986b",
+          "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.hannover.de/Service/Presse-Medien/Landeshauptstadt-Hannover/Stadtkarte-1-1000-SKH1000",
+        "observation": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway."
+      },
+      {
+        "url": "https://numis.niedersachsen.de/trefferanzeige?docuuid=d5b05158-fd60-4749-9913-4d4afa85986b",
+        "observation": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway."
+      },
+      {
+        "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+        "observation": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+        "method": "GET WFS 2.0 GetCapabilities",
+        "observation": "HTTP 200; official capabilities list `cp:CadastralParcel`, supported CRS including EPSG:4326."
+      },
+      {
+        "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?SERVICE=WFS&VERSION=2.0.0&REQUEST=DescribeFeatureType&TYPENAMES=cp%3ACadastralParcel",
+        "method": "GET WFS DescribeFeatureType",
+        "observation": "HTTP 200; schema includes `geometry`, `nationalCadastralReference`, `inspireId`, and other non-owner fields."
+      },
+      {
+        "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=cp%3ACadastralParcel&BBOX=9.7540%2C52.3779%2C9.7542%2C52.3781%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A%3ACRS84",
+        "method": "GET bounded WFS BBOX query",
+        "observation": "HTTP 400 generic “Zurückgewiesene Anfrage”; no feature data returned. Separate exact-point Intersects GET and bounded XML POST also returned HTTP 400. No broader query attempted."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+      "apiBase": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp",
+      "observedClientRoutes": [],
+      "notes": "Official capabilities and schema were available; bounded feature queries were rejected. No credentials used."
+    }
+  },
+  "rootPrimarySupplement": "Fresh indexed primary City of Hanover page explicitly describes state ALKIS parcel boundaries in the city map and municipal geographical scope. The failed old primary URL and rejected WFS feature request are retained separately.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research evidence only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.hannover.de/Service/Presse-Medien/Landeshauptstadt-Hannover/Stadtkarte-1-1000-SKH1000",
+    "fetch": "error",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

@@ -1,0 +1,89 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "country": "Malaysia",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Jabatan Ukur dan Pemetaan Malaysia (JUPEM) - eKadaster / MyGeoportal; land registries are state-level (Pejabat Tanah dan Galian)",
+ "portalsFound": [
+  {
+   "url": "https://ekadaster.jupem.gov.my/",
+   "observation": "302 redirect to /Account/Login: JUPEM eKadaster requires an account"
+  },
+  {
+   "url": "https://www.mygeoportal.gov.my/",
+   "observation": "national geoportal HTML loads (HTTP 200); no parcel service identified"
+  },
+  {
+   "url": "https://www.jupem.gov.my/",
+   "observation": "connection failure from this client"
+  },
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer",
+   "observation": "Selangor JPS open ArcGIS lot layers (see research/kuala-lumpur.json)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ekadaster.jupem.gov.my/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect to login"
+  },
+  {
+   "url": "https://ekadaster.jupem.gov.my/Account/Login",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "login wall"
+  },
+  {
+   "url": "https://www.mygeoportal.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal page"
+  },
+  {
+   "url": "https://www.jupem.gov.my/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failure"
+  },
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folders incl. Lot; services list"
+  },
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7/query?where=1%3D1&geometry=101.62%2C3.09%2C101.65%2C3.11&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&resultRecordCount=3&outFields=No_Lot,Nama_Daerah&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 lot polygons (Petaling, Selangor); verified sub-national"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "JUPEM national digital cadastre (eKadaster) behind login",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "subnationalServices": [
+  {
+   "region": "Selangor",
+   "operator": "JPS Selangor (drainage agency)",
+   "endpoint": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7",
+   "verified": true,
+   "sampleFile": "MY-selangor-parcel-response.json",
+   "note": "3 closed polygons for Petaling district; non-authoritative agency layer; Federal Territory KL not covered"
+  }
+ ],
+ "remainingUncertainty": "No national open parcel endpoint found; eKadaster may include public paid/registered services not tested. Other states not probed. Licence of the Selangor layer unknown.",
+ "nextStep": "Probe other state GIS (Johor, Penang, Perak), check eKadaster public service terms and fees."
+}

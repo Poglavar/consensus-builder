@@ -1,0 +1,67 @@
+{
+  "cityCode": 9420,
+  "queueRank": 2361,
+  "name": "Guxian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [34.6744685125421, 112.845040886148],
+  "population2025": 247503,
+  "population2025k": 247.503,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Guxian China cadastral parcel map official GIS 固县 地籍图 官方",
+        "result": "Search identified the official Henan Tianditu public geographic-information platform, the Luoyang natural-resources portal, and general Chinese registration references, but no Guxian-specific public parcel-vector service.",
+        "actualResultUrls": ["https://henan.tianditu.gov.cn/", "https://www.ly.gov.cn/zdlyxxgk/ggjg/bhbbszn/szrzyhghj/", "https://www.webmap.cn/main.do?method=index1"]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "固县镇 泌阳县/桐柏县 不动产登记 地籍图 官方",
+        "result": "Search established that 固县镇 is an official town of Tongbai County, Nanyang, and found official government/service pages plus the official Henan Tianditu platform; no anonymous parcel geometry or cadastral feature endpoint was exposed.",
+        "actualResultUrls": ["https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=411330000000", "https://www.tongbai.gov.cn/", "https://henan.tianditu.gov.cn/"]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Tongbai County / Guxian Town government service context; the official Henan government service result identifies 固县镇 and its jurisdiction. A dedicated local cadastral viewer was not identified.",
+    "regionalPublicMap": "Henan Tianditu (https://henan.tianditu.gov.cn/), operated by the Henan surveying/geographic-information authorities as the public provincial map platform.",
+    "registryEvidence": "Official Henan government-service material provides real-estate-registration procedure context, and the official Tongbai/Guxian government result identifies the local administrative custodian. This does not prove open parcel-vector access or citywide parcel coverage.",
+    "registryEvidenceUrls": ["https://henan.tianditu.gov.cn/", "https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=411330000000", "https://www.tongbai.gov.cn/"]
+  },
+  "requestOutcomes": "TLS-verified anonymous GET retrieved the official Henan Tianditu landing page (HTTP 200), current map application (HTTP 200), its map JavaScript and online-map chunks, and the official Henan government-service guide (HTTP 200). The Tongbai government homepage returned HTTP 403 anonymously. Current map JavaScript was inspected: public map/online-map functions and anonymous service routes were present, but no cadastral/parcel layer, parcel schema, or safe ID+geometry endpoint was identified. No geometry query was made because no parcel route was evidenced. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    {"route": "Official Henan Tianditu landing page", "url": "https://henan.tianditu.gov.cn/", "outcome": "HTTP 200; official provincial public geographic-information platform retrieved."},
+    {"route": "Official Henan Tianditu current map application", "url": "https://henan.tianditu.gov.cn/map/", "outcome": "HTTP 200; current HTML and JavaScript configuration/chunks inspected."},
+    {"route": "Henan Tianditu map JavaScript", "url": "https://henan.tianditu.gov.cn/assets/js/map.c976f3c8.js", "outcome": "HTTP 200; route table showed public online, thematic, 3D and other modules; no parcel/cadastral route identified."},
+    {"route": "Henan Tianditu online-map chunk", "url": "https://henan.tianditu.gov.cn/assets/js/chunk-4858a3fa.a90fe60b.js", "outcome": "HTTP 200; inspected map behavior and service calls. Only general anonymous services and sharing/folder routes were evident; no parcel feature response."},
+    {"route": "Official Henan government-service guide for local jurisdiction", "url": "https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=411330000000", "outcome": "HTTP 200; official service/procedure context and Guxian Town jurisdiction evidence; no public parcel geometry."},
+    {"route": "Official Tongbai County government portal", "url": "https://www.tongbai.gov.cn/", "outcome": "Anonymous GET returned HTTP 403; this is not evidence of absence."},
+    {"route": "National geographic-information resource catalog", "url": "https://www.webmap.cn/main.do?method=index1", "outcome": "Discovery result identifies national public geographic-information resources, but no Guxian parcel-vector response was found."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [34.6744685125421, 112.845040886148] was preserved and not shifted; no exact-point hit/miss inference was made.",
+    "Search results indicate the named Guxian is 固县镇 in Tongbai County, Nanyang, while the supplied WUP point is elsewhere; this identity/geocoding inconsistency is recorded, not corrected.",
+    "Provincial public map access and local government procedure evidence do not prove citywide open cadastral coverage.",
+    "No safe stable native parcel identity, full polygon geometry, parcel schema, or parcel CRS was retrieved; no GeoJSON sample is retained.",
+    "Packet completion records research status only; it does not qualify or admit a runtime adapter. Independent serial review remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "No parcel CRS response.",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference.", "requestEvidence": ["Official Henan Tianditu current map JavaScript/chunks inspected; no parcel layer or safe parcel endpoint identified."]},
+  "coverageAssessment": {"claimedScope": "Guxian Town/Tongbai local government context plus Henan provincial public map services.", "verifiedOpenScope": "Official provincial map and local service context reachable/identified; no anonymous Guxian parcel-vector coverage verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The supplied WUP identity and point conflict with the discovered official 固县镇 location. A separate Guxian identity or a dedicated local cadastral service may exist, but current URL, access boundary, native ID semantics, parcel CRS, geometry endpoint, and coverage were not established through anonymous safe requests."
+}

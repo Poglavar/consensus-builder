@@ -1,0 +1,136 @@
+// Verifies source-scoped certificate trust, request failures and bounded JSON streaming.
+import { EventEmitter } from 'node:events';
+import { readFileSync } from 'node:fs';
+import { Readable } from 'node:stream';
+import { rootCertificates } from 'node:tls';
+import { describe, expect, it, vi } from 'vitest';
+import { createHttpsJsonFetch } from '../parcels/https-json-fetch.js';
+
+const extraCa = readFileSync(new URL('../parcels/certificates/geotrust-ev-rsa-ca-g2.pem', import.meta.url), 'utf8');
+
+function readableResponse(chunks, statusCode = 200) {
+    const response = Readable.from(chunks.map(chunk => Buffer.from(chunk)));
+    response.statusCode = statusCode;
+    return response;
+}
+
+function respondingGet(response, onCall = () => {}) {
+    return vi.fn((url, options, callback) => {
+        onCall(url, options);
+        const request = new EventEmitter();
+        queueMicrotask(() => callback(response));
+        return request;
+    });
+}
+
+describe('createHttpsJsonFetch', () => {
+    it('adds the source certificate to normal roots, forwards request options, and parses streamed JSON', async () => {
+        const response = readableResponse(['{"type":"Feature', 'Collection","features":[]}']);
+        let requestOptions;
+        let requestUrl;
+        const getImpl = respondingGet(response, (url, options) => {
+            requestUrl = url;
+            requestOptions = options;
+        });
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl });
+        const controller = new AbortController();
+
+        const result = await fetchJson('https://sig.car.gov.co/arcgis/query?f=geojson', {
+            headers: { Accept: 'application/geo+json' }, signal: controller.signal
+        });
+
+        expect(requestUrl).toBe('https://sig.car.gov.co/arcgis/query?f=geojson');
+        expect(requestOptions.headers).toEqual({ Accept: 'application/geo+json' });
+        expect(requestOptions.signal).toBe(controller.signal);
+        expect(requestOptions.agent.options).toMatchObject({ rejectUnauthorized: true, keepAlive: true, maxSockets: 6 });
+        expect(requestOptions.agent.options.ca).toEqual([...rootCertificates, extraCa]);
+        expect(result).toMatchObject({ ok: true, status: 200 });
+        await expect(result.json()).resolves.toEqual({ type: 'FeatureCollection', features: [] });
+        requestOptions.agent.destroy();
+    });
+
+    it('propagates request errors', async () => {
+        const failure = new Error('socket failed');
+        let request;
+        const getImpl = vi.fn(() => {
+            request = new EventEmitter();
+            queueMicrotask(() => request.emit('error', failure));
+            return request;
+        });
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl });
+
+        await expect(fetchJson('https://sig.car.gov.co/arcgis/query')).rejects.toBe(failure);
+        getImpl.mock.calls[0][1].agent.destroy();
+    });
+
+    it('sends long ArcGIS queries as POST bodies and exposes provider retry headers', async () => {
+        const response = readableResponse(['{"features":[]}']);
+        response.headers = { 'retry-after': '60' };
+        let request;
+        const requestImpl = respondingGet(response);
+        requestImpl.mockImplementation((url, options, callback) => {
+            request = new EventEmitter();
+            request.end = vi.fn(() => queueMicrotask(() => callback(response)));
+            return request;
+        });
+        const getImpl = vi.fn();
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl, requestImpl });
+        const body = 'where=' + 'x'.repeat(2000);
+        const result = await fetchJson('https://gis.cmpdd.org/arcgis/query', {
+            method: 'POST', body, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+        expect(getImpl).not.toHaveBeenCalled();
+        expect(requestImpl.mock.calls[0][1]).toMatchObject({ method: 'POST' });
+        expect(request.end).toHaveBeenCalledWith(body);
+        expect(result.headers.get('retry-after')).toBe('60');
+        await expect(result.json()).resolves.toEqual({ features: [] });
+        requestImpl.mock.calls[0][1].agent.destroy();
+    });
+
+    it('rejects a streamed response that exceeds the byte limit', async () => {
+        const response = readableResponse(['123', '456']);
+        const fetchJson = createHttpsJsonFetch(extraCa, {
+            getImpl: respondingGet(response), maxBytes: 5
+        });
+        const result = await fetchJson('https://sig.car.gov.co/arcgis/query');
+
+        await expect(result.json()).rejects.toThrow('Parcel provider response exceeds the byte limit.');
+    });
+
+    it('drains non-success responses and reports their status', async () => {
+        const response = readableResponse(['error body'], 503);
+        const resume = vi.spyOn(response, 'resume');
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl: respondingGet(response) });
+
+        const result = await fetchJson('https://sig.car.gov.co/arcgis/query');
+
+        expect(result).toMatchObject({ ok: false, status: 503 });
+        expect(resume).toHaveBeenCalledOnce();
+    });
+
+    it('exposes the same bounded bytes through a standard response body', async () => {
+        const response = readableResponse(['{"features":', '[]}']);
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl: respondingGet(response) });
+        const result = await fetchJson('https://map.gov4c.kz/geoserver/wfs');
+        const reader = result.body.getReader();
+        const chunks = [];
+        for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(Buffer.from(value));
+        }
+        expect(Buffer.concat(chunks).toString('utf8')).toBe('{"features":[]}');
+        expect(result.bodyUsed).toBe(true);
+    });
+
+    it('enforces the shared byte limit when an adapter consumes the body directly', async () => {
+        const response = readableResponse(['123', '456']);
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl: respondingGet(response), maxBytes: 5 });
+        const result = await fetchJson('https://map.gov4c.kz/geoserver/wfs');
+        const reader = result.body.getReader();
+        await expect((async () => {
+            while (!(await reader.read()).done) { /* Drain until the transport rejects. */ }
+        })()).rejects.toThrow('Parcel provider response exceeds the byte limit.');
+        expect(response.destroyed).toBe(true);
+    });
+});

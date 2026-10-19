@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "TH",
+  "name": "Thailand",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/TH.json"
+ },
+ {
+  "kind": "country",
+  "key": "TJ",
+  "name": "Tajikistan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/TJ.json"
+ },
+ {
+  "kind": "country",
+  "key": "TL",
+  "name": "Timor-Leste",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/TL.json"
+ },
+ {
+  "kind": "country",
+  "key": "TM",
+  "name": "Turkmenistan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/TM.json"
+ },
+ {
+  "kind": "country",
+  "key": "TN",
+  "name": "Tunisia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/TN.json"
+ },
+ {
+  "kind": "country",
+  "key": "TT",
+  "name": "Trinidad and Tobago",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/TT.json"
+ },
+ {
+  "kind": "country",
+  "key": "TW",
+  "name": "China, Taiwan Province of China",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/TW.json"
+ },
+ {
+  "kind": "country",
+  "key": "TZ",
+  "name": "United Republic of Tanzania",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/TZ.json"
+ }
+]

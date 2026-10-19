@@ -33,6 +33,13 @@
         'function ownerOf(uint256 tokenId) public view returns (address)'
     ];
 
+    function proposalStatusFromCode(statusCode) {
+        const codec = globalScope.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
+    }
+
     /**
      * Check if an RPC URL is localhost
      */
@@ -134,10 +141,13 @@
             }
         }
 
-        // Simple fallback map
+        // The configured provider (EVM_RPC_URLS from rpc-config.js), else the public defaults
+        // parcels/blockchain.js also falls back to.
+        const configured = globalScope.EVM_RPC_URLS && globalScope.EVM_RPC_URLS[normalized];
+        if (typeof configured === 'string' && configured.trim()) return configured.trim();
         const rpcMap = {
             '31337': 'http://localhost:8545',
-            '11155111': 'https://rpc.sepolia.org',
+            '11155111': 'https://ethereum-sepolia-rpc.publicnode.com',
             '84532': 'https://sepolia.base.org',
             '8453': 'https://mainnet.base.org'
         };
@@ -325,7 +335,6 @@
                 return [];
             }
 
-            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
             let proposals;
 
             try {
@@ -361,11 +370,11 @@
                     } catch (_) { /* ignore */ }
                     return {
                         proposalId: tokenId.toString(),
-                        parentParcelIds: parcelIdsArray[index],
+                        cadastreParcelIds: parcelIdsArray[index],
                         isConditional: isConditionalArray[index],
                         imageURI: imageURIArray[index],
                         acceptancePossible: acceptancePossibleArray[index],
-                        status: statusNames[Number(statusArray[index])] || 'Unknown',
+                        status: proposalStatusFromCode(statusArray[index]),
                         statusCode: Number(statusArray[index]),
                         ethBalance: ethBalanceArray[index].toString(),
                         tokenBalance: tokenBalanceArray[index].toString(),
@@ -410,11 +419,11 @@
 
                             return {
                                 proposalId: tokenId.toString(),
-                                parentParcelIds: parcelIds,
+                                cadastreParcelIds: parcelIds,
                                 isConditional,
                                 imageURI,
                                 acceptancePossible,
-                                status: statusNames[Number(status)] || 'Unknown',
+                                status: proposalStatusFromCode(status),
                                 statusCode: Number(status),
                                 ethBalance: ethBalance.toString(),
                                 tokenBalance: tokenBalance.toString(),
@@ -488,7 +497,6 @@
         const normalizedAddress = getAddress(proposalContractAddress);
         const contract = new Contract(normalizedAddress, PROPOSAL_NFT_ABI, provider);
 
-        const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
         const results = [];
         const BATCH_SIZE = 40;
 
@@ -522,11 +530,11 @@
             slice.forEach((pid, index) => {
                 results.push({
                     proposalId: pid.toString(),
-                    parentParcelIds: parcelIdsArray[index],
+                    cadastreParcelIds: parcelIdsArray[index],
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],
-                    status: statusNames[Number(statusArray[index])] || 'Unknown',
+                    status: proposalStatusFromCode(statusArray[index]),
                     statusCode: Number(statusArray[index]),
                     ethBalance: ethBalanceArray[index].toString(),
                     tokenBalance: tokenBalanceArray[index].toString(),
@@ -574,7 +582,7 @@
         const acceptanceByProposal = {};
 
         for (const proposal of proposals) {
-            const intersection = (proposal.parentParcelIds || []).filter(pid => ownedSet.has(pid));
+            const intersection = (proposal.cadastreParcelIds || []).filter(pid => ownedSet.has(pid));
             if (!intersection.length) continue;
 
             // For any of the user's parcels, check acceptance on-chain
@@ -592,7 +600,7 @@
             const hasAccepted = acceptanceChecks.some(Boolean);
             const acceptedParcels = intersection.filter((_, idx) => acceptanceChecks[idx]);
             acceptanceByProposal[proposal.proposalId] = {
-                parentParcelIds: proposal.parentParcelIds || [],
+                cadastreParcelIds: proposal.cadastreParcelIds || [],
                 acceptedParcels
             };
 
@@ -740,7 +748,6 @@
                 expiringPercentageArray
             ] = result;
 
-            const statusNames = ['Active', 'Executed', 'Cancelled', 'Expired'];
             const lensArrays = await Promise.all(proposalIds.map(async (proposalId) => {
                 try {
                     const lensResult = await contract.getLens(proposalId);
@@ -759,11 +766,11 @@
 
                 return {
                     proposalId: proposalId,
-                    parentParcelIds: parcelIdsArray[index],
+                    cadastreParcelIds: parcelIdsArray[index],
                     isConditional: isConditionalArray[index],
                     imageURI: imageURIArray[index],
                     acceptancePossible: acceptancePossibleArray[index],
-                    status: statusNames[Number(statusArray[index])] || 'Unknown',
+                    status: proposalStatusFromCode(statusArray[index]),
                     statusCode: Number(statusArray[index]),
                     ethBalance: ethBalanceArray[index].toString(),
                     tokenBalance: tokenBalanceArray[index].toString(),
@@ -798,4 +805,3 @@
         getProviderForChain
     };
 })();
-

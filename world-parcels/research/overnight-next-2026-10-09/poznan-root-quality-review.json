@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:19:42.539920+00:00",
+  "status": "approved_bounded_full_geometry",
+  "acceptanceFile": "poznan-root-acceptance.json",
+  "independentQualityFile": "poznan-root-quality.json",
+  "sourceId": "poznan-gml-wfs",
+  "safeFields": [
+    "ID_DZIALKI",
+    "MSGEOMETRY"
+  ],
+  "qualifiedUniqueParcels": 51,
+  "scope": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness.",
+  "geometryChangedOrRepaired": false
+}

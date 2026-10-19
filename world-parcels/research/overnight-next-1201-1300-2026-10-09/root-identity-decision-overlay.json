@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-1201-1300",
+  "recordedAt": "2026-10-09T09:27:20.543207+00:00",
+  "parentOverlay": "../overnight-next-2026-10-09/root-identity-decision-overlay.json",
+  "decisions": [
+    {
+      "wupCityCode": 6442,
+      "rank": 1158,
+      "countryCode": "CN",
+      "name": "Yulin",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        38.228670767027,
+        109.753608850168
+      ],
+      "priorCityCode": 10684,
+      "priorCityName": "Yulin",
+      "priorPointLatLon": [
+        22.6306726253459,
+        110.150072930059
+      ],
+      "distanceKm": 1734.83,
+      "reason": "Different Chinese settlements despite the shared English romanization: the existing WUP10684 packet concerns 玉林 in Guangxi; the candidate locator is 榆林 in Shaanxi. The 1,734.83 km separation and official Yulin government source support retaining WUP6442 as pending.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-cities-2026-10-08/city-10684-yulin.json",
+          "observation": "Prior packet identifies Yulin/玉林, Guangxi, WUP10684, at 22.6306726253459,110.150072930059."
+        },
+        {
+          "url": "https://www.yl.gov.cn/zwgk/fdzdgknr/sthj_17285/jsxmhjyxpj/202410/P020241024373609277070.pdf",
+          "observation": "Official Yulin municipal government PDF corroborates the candidate city as 榆林/Shaanxi; exact 2025 WUP point is retained unchanged. Direct PDF fetch timed out during this session, so this is recorded as parent-supplied first-party evidence, not a successful fetch."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 26,
+      "rank": 1159,
+      "countryCode": "TT",
+      "name": "Port of Spain",
+      "decision": "confirmed_attempt",
+      "effectiveAttemptState": "attempted",
+      "candidatePointLatLon": [
+        10.6579002575209,
+        -61.441428041308
+      ],
+      "distanceKm": 8.27,
+      "reason": "The existing first-party-review packet explicitly contains parcel polygons in Port of Spain neighborhoods Woodbrook and St. James. The WUP settlement centroid is shifted by 8.27 km but remains the same city; prior attempt should be skipped.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/countries/TT.json",
+          "observation": "Prior country packet documents three closed-ring polygons in the Port of Spain area, specifically Woodbrook and St. James; response was not retained because it included surveyor-name personal data."
+        },
+        {
+          "path": "world-parcels/research/retry/countries/TT.json",
+          "observation": "Public parcel layer query returned three polygons within a small bounded Port of Spain envelope, with safe request metadata retained and no owner values retained in this packet. Distance to WUP settlement centroid is 8.27 km."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 7328,
+      "rank": 1212,
+      "countryCode": "US",
+      "name": "Atlanta",
+      "decision": "confirmed_attempt",
+      "effectiveAttemptState": "attempted",
+      "candidatePointLatLon": [
+        33.790562284868,
+        -84.3637780537448
+      ],
+      "priorCityId": "us-capital:GA",
+      "priorPointLatLon": [
+        33.749,
+        -84.388
+      ],
+      "distanceKm": 5.14,
+      "reason": "The earlier municipal Atlanta and Fulton County parcel investigation explicitly concerns the same city; a 5.14km population-weighted centroid difference does not make it a new city attempt. Both positive and unsuccessful prior investigations are excluded.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/us-capitals-2026-10-06/ga.json",
+          "observation": "Prior city-specific Atlanta investigation returned public native ParcelID polygons and an exact native-ID readback on2026-10-06."
+        },
+        {
+          "path": "frontend/js/city-config.js",
+          "observation": "Existing Atlanta runtime entry uses the qualified city parcel source; configuration alone was not used as attempt evidence."
+        }
+      ]
+    }
+  ],
+  "scope": "Earlier decisions preserved and one newly reviewed Atlanta crosswalk added. Tallinn exact WUP91 and Kolwezi exactWUP5724 are independently classified prior attempts by current evidence. Queue membership alone is not an attempt."
+}

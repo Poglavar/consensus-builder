@@ -1,0 +1,166 @@
+{
+  "cityCode": 11444,
+  "queueRank": 2829,
+  "name": "Getian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [23.2918719393548, 113.818813467201],
+  "population2025": 210323,
+  "population2025k": 210.323,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Getian China official cadastral parcel map GIS natural resources 23.2918719393548 113.818813467201",
+        "result": "Discovery located the official Guangzhou Municipal Planning and Natural Resources Bureau portal, its cadastral-map enquiry, and the official Tian地图·广州 public map viewer/API lead. No English-language result independently established a parcel polygon at the WUP point.",
+        "actualResultUrls": [
+          "https://ghzyj.gz.gov.cn/ywpd/index.html",
+          "https://ghzyj.gz.gov.cn/newyhyshj/ggcx/sjal/content/post_9022462.html",
+          "https://guangdong.tianditu.gov.cn/guangzhou/"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "葛田 广州 不动产登记 地籍图 自然资源 官方 地图 23.2918719393548 113.818813467201",
+        "result": "中文 discovery identified Guangzhou's official cadastral-map enquiry and public Tian地图·广州 viewer. Official guidance says cadastral maps can be queried by spatial position, but online registration-record access is identity/condition controlled; the anonymous public REST map returned no parcel polygon at the exact point.",
+        "actualResultUrls": [
+          "https://ghzyj.gz.gov.cn/newyhyshj/bszd/bdcdj/bdcdc/index.html",
+          "https://bdcda.gzlpc.gov.cn/wxpro_ts/djcx/",
+          "https://guangdong.tianditu.gov.cn/guangzhou/smartgzsky/Map/Djcx"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Guangzhou Municipal Planning and Natural Resources Bureau is the official municipal cadastral/real-estate-registration authority evidenced by the portal and cadastral enquiry pages. The point-layer attributes identify QXDM 440118 (Zengcheng), but a separate district custodian was not established from the public viewer.",
+    "publicMap": "Tian地图·广州 / Guangzhou Smart Spatial Information Cloud Platform, with a public cadastral enquiry viewer and anonymous ArcGIS REST MapService endpoints.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": []
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://ghzyj.gz.gov.cn/ywpd/index.html",
+      "httpStatus": 200,
+      "outcome": "Official Guangzhou planning and natural-resources portal loaded and linked to cadastral enquiry, map services, and Tian地图."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://ghzyj.gz.gov.cn/newyhyshj/ggcx/sjal/content/post_9022462.html",
+      "httpStatus": 200,
+      "outcome": "Official Guangzhou guidance states that cadastral maps are publicly queryable by spatial position and describes the categories of cadastral/parcel information; it does not publish parcel geometry or a downloadable safe field schema."
+    },
+    {
+      "method": "GET",
+      "url": "https://ghzyj.gz.gov.cn/newyhyshj/bszd/bdcdj/bdcdc/index.html",
+      "httpStatus": 200,
+      "outcome": "Official viewer landing page loaded and disclosed the current Tian地图·广州 cadastral viewer URL."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/smartgzsky/Map/Djcx",
+      "httpStatus": 200,
+      "outcome": "Current viewer HTML loaded. Its JavaScript configuration exposed public ArcGIS REST services for cadastral districts/subdistricts and land-rights layers, with map spatial reference WKID 4490 and a proxy path."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/DJZQ_4490/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Layer metadata loaded anonymously. DJZQ_cgcs2000 is a polygon layer; source and service metadata identify WKID 4490, fields FID/YSDM/DJZQDM/DJZQMC/BSM, and no parcel-level identity field."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E9%9B%86%E4%BD%93%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/identify",
+      "httpStatus": 200,
+      "outcome": "Anonymous Identify at exact WUP point with geometryType=esriGeometryPoint, sr=4490, mapExtent=112.88,23.03,114.10,24.05, tolerance=1 returned four nearby point records. Safe native IDs included ZDDM values 440118001005JB60423, 440118001005JB60813, 440118001005JB60427, and 440118001005JB60819; returned geometries were points, not parcel polygons."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/DJZQ_4490/1e85e146b0728d2fb3a5312c75089400/identify",
+      "httpStatus": 200,
+      "outcome": "Exact-point Identify returned one cadastral subdistrict polygon, DJZQDM 440118001006 / 兴发社区, in WKID 4490. This is administrative cadastral partition geometry, not a parcel polygon, so it is not retained as a parcel sample."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E5%9B%BD%E6%9C%89%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/identify",
+      "httpStatus": 200,
+      "outcome": "Exact-point Identify returned an empty results array for the public-layer land-rights point service. No parcel polygon or safe ID-plus-polygon response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/QSLY_4490/1e85e146b0728d2fb3a5312c75089400/identify",
+      "httpStatus": 200,
+      "outcome": "Exact-point Identify returned an empty results array for the other-rights-source public layer. No parcel polygon was obtained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Current viewer JavaScript disclosed ArcGIS REST MapService endpoints and uses WKID 4490 (CGCS2000 geographic coordinates); one layer metadata also reports a source extent in projected WKID 4547, but no parcel polygon was returned to validate a retained sample CRS.",
+    "geometryCrs": "EPSG:4490 / CGCS2000 geographic for returned cadastral subdistrict and point geometries",
+    "nativeIdentity": "ZDDM is the source's parcel/宗地 code field in the land-rights layer configuration; OBJECTID and BDCID are also source fields. No polygon feature was obtained, so no native parcel identity is retained.",
+    "sourceFieldMapping": {
+      "ZDDM": "宗地代码 / stable parcel identity candidate",
+      "OBJECTID": "ArcGIS object identifier",
+      "BDCID": "source registration record identifier",
+      "DJZQDM": "cadastral subdistrict code, not parcel identity"
+    },
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [23.2918719393548, 113.818813467201] was preserved in latitude/longitude order; no coordinate shift was used.",
+      "featureCount": 4,
+      "result": "Four nearby collective-construction-land point records were returned, plus one cadastral-subdistrict polygon; no parcel polygon response was available for retention."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Exact-point public Identify was executed. It returned nearby point records and a cadastral-subdistrict polygon, not a parcel polygon; no parcel-hit or citywide-absence inference was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Guangzhou municipal cadastral enquiry and Tian地图·广州 public ArcGIS services; the returned records indicate Zengcheng district code 440118.",
+    "verifiedOpenScope": "Anonymous public service and layer metadata were verified, but parcel polygon coverage and citywide parcel identity semantics were not.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point parcel hit, empty layer response, map extent limitation, or point-only response was not treated as citywide cadastral absence.",
+    "The returned DJZQ polygon is a cadastral subdistrict, not a parcel, and is not retained as a parcel sample.",
+    "No parcel polygon with a qualified native identity was obtained; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "An official Guangzhou cadastral enquiry and anonymous Tian地图·广州 ArcGIS services are evidenced. The exact point produced nearby public point records and a cadastral-subdistrict polygon, but no safe parcel polygon response. The viewer may expose additional parcel data only through workflows not anonymously accessible or not represented by the public point layers. Runtime readiness remains held."
+}

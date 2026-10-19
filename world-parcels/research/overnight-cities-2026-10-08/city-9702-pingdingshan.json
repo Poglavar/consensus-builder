@@ -1,0 +1,105 @@
+{
+  "name": "Pingdingshan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 682,
+  "point": [
+    33.7401758366548,
+    113.310270476191
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "平顶山市 不动产登记中心 地籍图 天地图 平顶山 自然资源和规划局",
+        "scope": "Confirm city-local registration office and find an anonymous public cadastral vector map.",
+        "result": "The Pingdingshan Natural Resources and Planning Bureau maintains a current real-property registration service section. Its 2026 guide identifies the municipal Real Estate Registration Center, requires applicant documentation for registration, and routes online service through a service portal. The bureau also links Tianditu Pingdingshan, while its basic-survey plan describes public geospatial map services and 1:1000 base mapping, not parcel polygons. No anonymous parcel-vector endpoint was identified.",
+        "actualResultUrls": [
+          "https://zrzyghj.pds.gov.cn/channels/12020.html",
+          "https://zrzyghj.pds.gov.cn/contents/12020/12283.html",
+          "https://zrzyghj.pds.gov.cn/contents/26282/451063.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Pingdingshan China official land registry cadastral map parcel GIS",
+        "scope": "Cross-check English-language evidence and distinguish general map services from parcel records.",
+        "result": "No separate English-language public parcel geometry service was found. The city bureau’s own materials identify a municipal registry and general public map service.",
+        "actualResultUrls": [
+          "https://zrzyghj.pds.gov.cn/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Pingdingshan Natural Resources and Planning Bureau registration service",
+        "operator": "Pingdingshan Natural Resources and Planning Bureau / Pingdingshan Real Estate Registration Center",
+        "homeUrl": "https://zrzyghj.pds.gov.cn/channels/12020.html",
+        "observation": "Official city service pages confirm real-estate registration. The separate Tianditu link is general public mapping; no anonymous parcel polygon API or downloadable city parcel layer verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://zrzyghj.pds.gov.cn/channels/12020.html",
+        "method": "GET official city registration section",
+        "result": "Registration notices and 2026 procedures present; no public polygon service."
+      },
+      {
+        "url": "https://zrzyghj.pds.gov.cn/contents/26282/451063.html",
+        "method": "GET official basic-survey plan",
+        "result": "Describes Tianditu Pingdingshan and city topographic products; parcel-vector access not documented."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "cn-pingdingshan-official-land-records",
+    "name": "Pingdingshan Natural Resources and Planning Bureau registration service",
+    "url": "https://zrzyghj.pds.gov.cn/channels/12020.html",
+    "operator": "Pingdingshan Natural Resources and Planning Bureau / Pingdingshan Real Estate Registration Center",
+    "serviceType": "Official registry/map services reviewed; no safe anonymous full-polygon feature response verified.",
+    "geometryType": null,
+    "nativeIdField": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "A city-local real-property registry is confirmed, but reviewed public map evidence is general mapping and does not expose a verified anonymous parcel-geometry schema.",
+    "verifiedOpenScope": "Official local registration or parcel-map administration is documented, but anonymous full city parcel geometry has not been verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "The local registry is an application/service workflow. Public Tianditu and basic-survey materials describe map/topographic products but do not establish anonymous full-parcel geometry access. No geometry was queried or retained.",
+  "remainingUncertainty": "Whether an unlinked or authenticated local cadastral GIS exposes parcel polygons; whether such data cover the WUP point.",
+  "nextStep": "Ask the city bureau whether a public city parcel-vector service exists and document its anonymous query/schema before runtime consideration.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9702,
+  "cityId": "wup2025:9702",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    33.7401758366548,
+    113.310270476191
+  ],
+  "queueRank": 682,
+  "population2025": 779154,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The local registry is an application/service workflow. Public Tianditu and basic-survey materials describe map/topographic products but do not establish anonymous full-parcel geometry access. No geometry was queried or retained.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/pingdingshan-service-review.json"
+  },
+  "registryBasis": "A city-local real-property registry is confirmed, but reviewed public map evidence is general mapping and does not expose a verified anonymous parcel-geometry schema.",
+  "registryEvidenceUrls": [
+    "https://zrzyghj.pds.gov.cn/contents/12020/12283.html"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

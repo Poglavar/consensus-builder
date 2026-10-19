@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "ne-maradi-official-parcel-research",
+  "purpose": "Service review for WUP2025 rank 813 Maradi (city code 2168); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "City and Regional authorities of Maradi; Niger Directorate General of Taxes (regional office structure)",
+  "sourceUrl": null,
+  "registryFound": null,
+  "registryBasis": "Niger’s official Interior Ministry decentralisation handbook lists the Ville de Maradi as a distinct city-level local authority. An official ANP report describes a Maradi City land-affairs committee with participation from cadastral services and city/resident representation. National DGI materials list Maradi regional tax offices and cadastral functions, but none of these sources identifies an exact city-level title registry or public parcel-map service. Under the local-evidence threshold, registry existence is left unresolved (null).",
+  "officialSources": [
+    {
+      "url": "https://interieur.gouv.ne/wp-content/uploads/2022/10/brochure_information_decentralisation.pdf",
+      "observation": "Official Interior Ministry decentralisation handbook lists Ville de Maradi and city administrative structure; it contains no parcel-map service details."
+    },
+    {
+      "url": "https://anp.ne/maradi-installation-du-comite-didentification-et-de-recensement-des-menages-dans-les-zones-inondables-de-la-vallee-du-goulbi/",
+      "observation": "Official ANP report records a city committee for land/flood displacement work in Maradi involving cadastral services and communal/regional actors; it does not describe public registry records or map access."
+    },
+    {
+      "url": "https://www.impots.gouv.ne/media/telech/ARRETE%20N528%20MF%20DGI%20du%2006%2012%202021.pdf",
+      "observation": "National DGI regulation identifies a Maradi regional property-tax office and lists cadastral/foncier functions at the national institutional level; it is regional/national evidence, not city parcel coverage."
+    },
+    {
+      "url": "https://www.impots.gouv.ne/media/telech/Organigramme_DG_%20version%20MAJ_Mai_%202020.pdf",
+      "observation": "National DGI organization chart lists regional DRI Maradi and national cadastral/land-finance services; no local geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Maradi Niger official city cadastral registry parcel map",
+      "scope": "Find official local registry and anonymous parcel geometry route.",
+      "result": "Official sources confirm city-level land administration work involving cadastral personnel and separately show Maradi regional tax/cadastre administration. They do not establish the operational remit of a city-specific land-title registry, nor an anonymous parcel-map service. No property/household records were queried.",
+      "urls": [
+        "https://interieur.gouv.ne/wp-content/uploads/2022/10/brochure_information_decentralisation.pdf",
+        "https://anp.ne/maradi-installation-du-comite-didentification-et-de-recensement-des-menages-dans-les-zones-inondables-de-la-vallee-du-goulbi/",
+        "https://www.impots.gouv.ne/media/telech/ARRETE%20N528%20MF%20DGI%20du%2006%2012%202021.pdf"
+      ]
+    },
+    {
+      "language": "French",
+      "query": "Maradi Niger cadastre mairie ville service du cadastre parcelles plan cadastral",
+      "scope": "Find first-party local registry and map service details.",
+      "result": "Official sources confirm city-level land administration work involving cadastral personnel and separately show Maradi regional tax/cadastre administration. They do not establish the operational remit of a city-specific land-title registry, nor an anonymous parcel-map service. No property/household records were queried.",
+      "urls": [
+        "https://interieur.gouv.ne/wp-content/uploads/2022/10/brochure_information_decentralisation.pdf",
+        "https://anp.ne/maradi-installation-du-comite-didentification-et-de-recensement-des-menages-dans-les-zones-inondables-de-la-vallee-du-goulbi/",
+        "https://www.impots.gouv.ne/media/telech/ARRETE%20N528%20MF%20DGI%20du%2006%2012%202021.pdf"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_city_specific_registry_evidence_geometry_unverified",
+    "reason": "No city-specific public registry/map portal or geometry schema was identified. Region-level tax/cadastre administration and a city land-affairs committee do not establish anonymous urban parcel feature coverage."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://interieur.gouv.ne/wp-content/uploads/2022/10/brochure_information_decentralisation.pdf",
+      "method": "GET official public page/document inspection",
+      "result": "Official Interior Ministry decentralisation handbook lists Ville de Maradi and city administrative structure; it contains no parcel-map service details."
+    },
+    {
+      "url": "https://anp.ne/maradi-installation-du-comite-didentification-et-de-recensement-des-menages-dans-les-zones-inondables-de-la-vallee-du-goulbi/",
+      "method": "GET official public page/document inspection",
+      "result": "Official ANP report records a city committee for land/flood displacement work in Maradi involving cadastral services and communal/regional actors; it does not describe public registry records or map access."
+    },
+    {
+      "url": "https://www.impots.gouv.ne/media/telech/ARRETE%20N528%20MF%20DGI%20du%2006%2012%202021.pdf",
+      "method": "GET official public page/document inspection",
+      "result": "National DGI regulation identifies a Maradi regional property-tax office and lists cadastral/foncier functions at the national institutional level; it is regional/national evidence, not city parcel coverage."
+    },
+    {
+      "url": "https://www.impots.gouv.ne/media/telech/Organigramme_DG_%20version%20MAJ_Mai_%202020.pdf",
+      "method": "GET official public page/document inspection",
+      "result": "National DGI organization chart lists regional DRI Maradi and national cadastral/land-finance services; no local geometry endpoint."
+    }
+  ],
+  "technicalBlocker": "No city-specific public registry/map portal or geometry schema was identified. Region-level tax/cadastre administration and a city land-affairs committee do not establish anonymous urban parcel feature coverage.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether Maradi city maintains a dedicated city-bound property register and whether any public parcel polygons are available; local primary evidence remains insufficient."
+}

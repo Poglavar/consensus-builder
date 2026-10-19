@@ -1,0 +1,26 @@
+{
+  "taskId": "city:4521",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-4521-mollar-char.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/mollar-char-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_4521-first-party-cache-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:00:20.737189+00:00",
+  "reason": "Queue identity and English/Bengali searches checked. First-party DLRS caches show a Gaibandha survey, then an empty thana response. Institutional registry discovery is supported, but Mollar Char geometry and native parcel identity are unresolved.",
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-9894-jinchengjiang.json",
+  "cityCode": 9894,
+  "queueRank": 2653,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "requests": [
+    {"route": "http://www.jcj.gov.cn/", "method": "GET", "outcome": "HTTP 200 official district portal; no parcel endpoint in fetched homepage."},
+    {"route": "http://www.jcj.gov.cn/syzwdt/", "method": "GET", "outcome": "HTTP 200 official government-map page; local Natural Resources Bureau office listed, but map code exposes office points only, not parcels."},
+    {"route": "http://hcjcj.zwfw.gxzf.gov.cn/gxzwfw/itemNew/bsfw_index.do?type=1&webId=111", "method": "GET", "outcome": "HTTP 200 service catalog; Natural Resources Bureau named, but no anonymous parcel ID-plus-geometry response."},
+    {"route": "https://zwfw.gxzf.gov.cn/eportal/ui?regionCode=3107111&pageId=3cd3d403fb4443d5becb61375b2b093a", "method": "GET", "outcome": "HTTP 200 Guangxi portal; login-oriented navigation, no parcel response; no login attempted."},
+    {"route": "https://www.webmap.cn/main.do?method=index1", "method": "GET", "outcome": "HTTP 418 CloudWAF; no bypass attempted."},
+    {"route": "https://www.jcj.gov.cn/", "method": "GET", "outcome": "TLS certificate expired; no certificate exception used."},
+    {"route": "https://rerc.com.cn/", "method": "GET", "outcome": "DNS resolution failed from research environment; no private alternate access attempted."}
+  ],
+  "schemaCrs": {"status": "not qualified", "reason": "No parcel feature response was obtained, so native field schema, CRS, pagination, stable native identity and geometry encoding could not be verified."},
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS only when explicitly returned"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "coverageAssessment": {"localCustodian": "Jinchengjiang District Natural Resources Bureau is evidenced by the official district government-map page; Hechi Natural Resources Bureau is evidenced by official Guangxi reporting.", "openParcelCoverage": "unverified", "citywideVerified": false, "countrywideVerified": false},
+  "scopeLimits": [
+    "Exact WUP point [24.6965389868011,108.062645597383] preserved in latitude/longitude order and not shifted.",
+    "No exact-point parcel hit, map extent result, or citywide absence claim is made.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "No retained GeoJSON sample was created because no safe native parcel ID plus full polygon was obtained.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "Jinchengjiang may have cadastral data in internal or restricted real-estate-registration systems, or in a public map route not discoverable from the checked official pages. The expired HTTPS certificate, WAF response, DNS failure and login-oriented service portal are route limitations, not evidence that Jinchengjiang lacks cadastral coverage."
+}

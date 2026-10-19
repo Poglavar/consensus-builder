@@ -14,19 +14,14 @@ function formatGameText(template, params = {}) {
 function translateGameText(key, fallback, params = {}) {
     const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
     if (api && typeof api.t === 'function') {
-        return api.t(key, params);
+        { const translated = api.t(key, params); if (translated !== key) return translated; }
     }
     return formatGameText(fallback, params);
 }
 
 function showGameAlert(key, fallback, params = {}) {
     const message = translateGameText(`alerts.messages.${key}`, fallback, params);
-    const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-        ? window.showStyledAlert
-        : window.alert;
-    if (typeof alertFn === 'function') {
-        alertFn(message);
-    }
+    window.CbDialog.alert(message);
     return message;
 }
 
@@ -66,7 +61,8 @@ const gameState = {
             this.isRunning = false; // Never auto-start the game loop
             this.currentDateTime = new Date(parsed.currentDateTime || '2024-01-01T00:00:00Z');
             this.currentTurn = parsed.currentTurn || 0;
-            this.gameLog = parsed.gameLog || [];
+            // Saved games from before the activity envelope held plain strings; they cannot be attributed.
+            this.gameLog = (parsed.gameLog || []).filter(entry => entry?.actor && entry?.action);
             this.turnIntervalSeconds = parsed.turnIntervalSeconds || 30;
         }
         // Update UI after loading
@@ -79,15 +75,17 @@ const gameState = {
         }
     },
 
-    // Add entry to game log
-    addLogEntry(message, isUserAction = false, options = {}) {
+    // Add a structured activity; actor/action/source let the unified explorer filter simulation,
+    // live, human, algorithmic and LLM activity through one envelope.
+    addActivityEvent(activity, options = {}) {
         const skipPersist = options && options.skipPersist === true;
         const skipUiUpdate = options && options.skipUiUpdate === true;
-        const timestamp = this.currentDateTime.toISOString().slice(0, 19).replace('T', ' ');
-        const logEntry = `[Turn ${this.currentTurn}] [${timestamp}] ${message}`;
         const logEntryObj = {
-            text: logEntry,
-            isUserAction: isUserAction
+            ...(activity || {}),
+            source: activity?.source || 'simulation',
+            occurredAt: activity?.occurredAt || this.currentDateTime.toISOString(),
+            recordedAt: activity?.recordedAt || new Date().toISOString(),
+            turn: activity?.turn ?? this.currentTurn
         };
         this.gameLog.push(logEntryObj);
 
@@ -102,7 +100,25 @@ const gameState = {
         if (!skipUiUpdate) {
             this.updateGameUI();
         }
+        if (!skipUiUpdate) {
+            updateGameLogDialogIfOpen();
+            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('activity:updated'));
+        }
         // console.log('Game Log:', logEntry);
+    },
+
+    // Backwards-compatible entrypoint for the older human/system call sites.
+    addLogEntry(message, isUserAction = false, options = {}) {
+        const currentUser = isUserAction && typeof getCurrentUserAgent === 'function' ? getCurrentUserAgent() : null;
+        this.addActivityEvent({
+            id: `local:${Date.now()}:${this.gameLog.length + 1}`,
+            source: 'simulation',
+            actor: currentUser
+                ? { id: currentUser.id, name: currentUser.name, kind: 'human', controller: 'human', avatarIndex: currentUser.avatarIndex }
+                : { id: 'system', name: 'System', kind: 'system', controller: 'system' },
+            action: options.action || { type: 'log' },
+            messageHtml: message
+        }, options);
     },
 
     // Clear all game data
@@ -179,11 +195,11 @@ const gameState = {
 function initializeGame() {
     if (gameState.isInitialized) {
         console.log('Game already initialized');
-        updateStatus('Game already initialized');
+        updateStatus(translateGameText('status.messages.game_already_initialized', 'Game already initialized'));
         return;
     }
 
-    updateStatus('Initializing game state...');
+    updateStatus(translateGameText('status.messages.initializing_game_state', 'Initializing game state...'));
     gameState.addLogEntry('Initializing game...');
 
     // Get existing user agent or create 10 AI agents
@@ -193,7 +209,7 @@ function initializeGame() {
     const userAgent = getCurrentUserAgent();
     if (userAgent) {
         agents.push(userAgent);
-        gameState.addLogEntry(`User agent joined: <a href="#" data-agent-id="${userAgent.id}" class="agent-link agent-link-clickable">${userAgent.name}</a>`);
+        gameState.addLogEntry(`User agent joined: <button type="button" data-agent-id="${userAgent.id}" class="cb-link agent-link-clickable">${userAgent.name}</button>`);
     }
 
     // Create AI agents to total 10 agents (including user if present)
@@ -202,20 +218,19 @@ function initializeGame() {
         const agent = createAgent();
         agentStorage.addAgent(agent);
         agents.push(agent);
-        gameState.addLogEntry(`Created agent: <a href="#" data-agent-id="${agent.id}" class="agent-link agent-link-clickable">${agent.name}</a>`);
+        gameState.addLogEntry(`Created agent: <button type="button" data-agent-id="${agent.id}" class="cb-link agent-link-clickable">${agent.name}</button>`);
     }
 
     // Assign each parcel a random owner
     let assignedParcels = 0;
-    if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-        parcelLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties && layer.feature.properties.parcelId) {
-                const parcelId = layer.feature.properties.parcelId.toString();
-                const randomAgent = agents[Math.floor(Math.random() * agents.length)];
-
-                PersistentStorage.setItem(`parcel_${parcelId}_owner`, randomAgent.id);
-                assignedParcels++;
-            }
+    const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
+    if (fabric && typeof fabric.list === 'function' && typeof fabric.featureId === 'function') {
+        fabric.list().forEach(feature => {
+            const parcelId = fabric.featureId(feature);
+            if (!parcelId) return;
+            const randomAgent = agents[Math.floor(Math.random() * agents.length)];
+            PersistentStorage.setItem(`parcel_${parcelId}_owner`, randomAgent.id);
+            assignedParcels++;
         });
     }
 
@@ -230,7 +245,7 @@ function initializeGame() {
     gameState.updateGameUI();
     updateAgentsButton();
 
-    updateStatus(`Game initialized: ${agents.length} agents created, ${assignedParcels} parcels assigned`);
+    updateStatus(translateGameText('status.messages.game_initialized_summary', 'Game initialized: {{agents}} agents created, {{parcels}} parcels assigned', { agents: agents.length, parcels: assignedParcels }));
     console.log(`Game initialized: ${agents.length} agents created, ${assignedParcels} parcels assigned`);
 }
 
@@ -254,6 +269,14 @@ function startGameLoop() {
     if (gameState.isRunning) {
         console.log('Game loop already running');
         return;
+    }
+    // A running game is game mode. Play works with the simulation settings folded away, and a game
+    // left running with "Enable game mode" off had its own interval and New game controls greyed.
+    // Ticking the box the way a click does also runs its change handlers (section gating, title).
+    const gameCheckbox = document.getElementById('gameCheckbox');
+    if (gameCheckbox && !gameCheckbox.checked) {
+        gameCheckbox.checked = true;
+        gameCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
     }
     gameState.isRunning = true;
     gameState.turnStartTime = Date.now();
@@ -364,9 +387,7 @@ async function executeGameTurn() {
             : null;
         const activeProposals = (currentCityId && typeof isInCity === 'function')
             ? allActiveProposals.filter(p => {
-                const ids = Array.isArray(p.parentParcelIds) && p.parentParcelIds.length
-                    ? p.parentParcelIds
-                    : (Array.isArray(p.childParcelIds) ? p.childParcelIds : []);
+                const ids = Array.isArray(p.cadastreParcelIds) ? p.cadastreParcelIds : [];
                 if (!ids.length) return true;
                 return ids.some(id => isInCity(id, currentCityId));
             })
@@ -395,7 +416,23 @@ async function executeGameTurn() {
             proposalStorage.beginBatch();
         }
 
-        // Have each AI-controlled agent decide and act
+        // Reconcile support against lifecycle before agents act. Donations return to their donors
+        // when a proposal is Cancelled/Expired; soft pledges are voided without touching balances.
+        if (window.AgentSupportSimulation) {
+            for (const proposal of allActiveProposals) {
+                const status = typeof getLifecycleStatus === 'function' ? getLifecycleStatus(proposal) : proposal.lifecycleStatus;
+                if (status !== 'Cancelled' && status !== 'Expired') continue;
+                const outcome = window.AgentSupportSimulation.refund(proposal, id => agentStorage.getAgent(id));
+                if (!outcome.refunded && !outcome.voided) continue;
+                if (typeof proposalStorage._indexProposal === 'function') proposalStorage._indexProposal(proposal);
+                proposalStorage.save();
+                for (const participant of agents) agentStorage.updateAgent(participant.id, { ethBalance: participant.ethBalance });
+            }
+        }
+
+        const actionEngine = getUnifiedAgentActionEngine();
+        // Have each AI-controlled agent decide and act through the same action contract. A local
+        // agent can switch controller from "algorithm" to "llm" without changing execution or UI.
         for (let index = 0; index < agents.length; index++) {
             const agent = agents[index];
             // Skip agents that are not AI controlled
@@ -403,14 +440,28 @@ async function executeGameTurn() {
                 continue;
             }
 
-            const action = agentDecideAction(agent, {
+            const turnContext = {
                 activeProposals,
                 ownedParcelsByAgent,
                 turnParcelPool,
-                neighborMap
-            });
-            const result = executeAgentAction(agent, action);
-            gameState.addLogEntry(result, false, { skipPersist: true, skipUiUpdate: true });
+                neighborMap,
+                source: 'simulation',
+                turn: gameState.currentTurn,
+                occurredAt: gameState.currentDateTime.toISOString(),
+                skipPersist: true,
+                skipUiUpdate: true
+            };
+            try {
+                await actionEngine.run(agent, turnContext);
+            } catch (error) {
+                gameState.addActivityEvent({
+                    id: `simulation:${agent.id}:error:${Date.now()}`,
+                    source: 'simulation',
+                    actor: window.AgentActionEngine.normalizeActor(agent),
+                    action: { type: 'error' }, ok: false,
+                    message: `${agent.name} could not act: ${error.message}`
+                }, { skipPersist: true, skipUiUpdate: true });
+            }
 
             // Update agent's last action timestamp
             agentStorage.updateAgent(agent.id, { lastActionAt: new Date().toISOString() });
@@ -450,6 +501,9 @@ async function executeGameTurn() {
         if (typeof proposalStorage !== 'undefined' && typeof proposalStorage.endBatch === 'function') {
             proposalStorage.endBatch();
         }
+        // Agents create proposals every turn; the Proposals button's count (and the list button it
+        // mirrors) otherwise stayed at its old value until a reload.
+        if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
 
         gameState.isTurnExecuting = false;
 
@@ -460,34 +514,68 @@ async function executeGameTurn() {
     }
 }
 
-/**
- * Update the agents button with count
- */
+let unifiedAgentActionEngine = null;
+
+function getUnifiedAgentActionEngine() {
+    if (unifiedAgentActionEngine) return unifiedAgentActionEngine;
+    if (!window.AgentActionEngine) throw new Error('AgentActionEngine is unavailable');
+    unifiedAgentActionEngine = window.AgentActionEngine.createEngine({
+        decisionProviders: {
+            algorithm: (agent, context) => agentDecideAction(agent, context),
+            human: (_actor, context) => context.action,
+            llm: async (agent, context) => {
+                if (typeof window.agentLlmDecisionProvider !== 'function') {
+                    throw new Error('No LLM decision provider is configured');
+                }
+                return window.agentLlmDecisionProvider(agent, context);
+            }
+        },
+        actionHandlers: {
+            '*': (agent, action, context) => Object.prototype.hasOwnProperty.call(context, 'outcome')
+                ? context.outcome
+                : executeAgentAction(agent, action)
+        },
+        onActivity: (activity, context) => gameState.addActivityEvent(activity, {
+            skipPersist: context.skipPersist === true,
+            skipUiUpdate: context.skipUiUpdate === true
+        })
+    });
+    return unifiedAgentActionEngine;
+}
+
+// UI and wallet flows use this adapter after their deterministic side effect has completed. Human,
+// algorithmic and LLM controllers therefore enter the same action engine and emit the same event
+// shape; the browser never needs a second "human activity" implementation.
+async function dispatchAgentAction(actor, action, context = {}) {
+    const result = await getUnifiedAgentActionEngine().run(actor, {
+        ...context,
+        action,
+        source: context.source || 'live',
+        occurredAt: context.occurredAt || new Date().toISOString()
+    });
+    updateGameLogDialogIfOpen();
+    return result;
+}
+
+/** This is a global actor explorer, not a simulation-agent count. The button is the Activity sheet's. */
 function updateAgentsButton() {
-    const agentsBtn = document.getElementById('show-agents-btn');
-    if (!agentsBtn || typeof agentStorage === 'undefined') return;
-
-    const agents = agentStorage.getAllAgents();
-    const hasAgents = agents.length > 0;
-    const key = hasAgents ? 'sidebar.game.showAgentsCount' : 'sidebar.game.showAgents';
+    const agentsBtn = document.getElementById('activity-agents-button');
+    if (!agentsBtn) return;
+    const key = 'sidebar.game.showAgents';
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
-
-    agentsBtn.setAttribute('data-i18n-key', key);
-    if (hasAgents) {
-        agentsBtn.setAttribute('data-i18n-params', JSON.stringify({ count: agents.length }));
-    } else {
-        agentsBtn.removeAttribute('data-i18n-params');
-    }
-
+    // The label span, beside the button's icon (the button itself only on older markup).
+    const label = agentsBtn.querySelector('[data-i18n-key]') || agentsBtn;
+    label.setAttribute('data-i18n-key', key);
+    label.removeAttribute('data-i18n-params');
     if (i18nApi && typeof i18nApi.t === 'function') {
-        agentsBtn.textContent = i18nApi.t(key, { count: agents.length });
+        label.textContent = i18nApi.t(key);
     } else {
-        agentsBtn.textContent = hasAgents ? `Show Agents (${agents.length})` : 'Show Agents';
+        label.textContent = 'Actors';
     }
 }
 
 /**
- * Update the Game section title based on current state
+ * Update the Simulation section title (in the Activity sheet) based on current state
  */
 function updateGameSectionTitle() {
     const gameCheckbox = document.getElementById('gameCheckbox');
@@ -496,16 +584,16 @@ function updateGameSectionTitle() {
 
     const i18nApi = (typeof window !== 'undefined') ? window.i18n : null;
     const key = (gameCheckbox && !gameCheckbox.checked && !gameState.isRunning)
-        ? 'sidebar.game.titlePaused'
-        : 'sidebar.game.title';
+        ? 'mapShell.simulation.titlePaused'
+        : 'mapShell.simulation.title';
 
     gameLabel.setAttribute('data-i18n-key', key);
     if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
         i18nApi.applyTranslations(gameLabel);
-    } else if (key === 'sidebar.game.titlePaused') {
-        gameLabel.textContent = 'Game (paused)';
+    } else if (key === 'mapShell.simulation.titlePaused') {
+        gameLabel.textContent = 'Simulation (paused)';
     } else {
-        gameLabel.textContent = 'Game';
+        gameLabel.textContent = 'Simulation';
     }
 }
 
@@ -518,8 +606,8 @@ gameState.updateGameUI = function () {
     // Update game datetime display
     const gameTimeElement = document.getElementById('game-datetime');
     if (gameTimeElement) {
-        const dateStr = this.currentDateTime.toISOString().slice(0, 10);
-        gameTimeElement.textContent = dateStr;
+        // The game calendar is kept in UTC; show that day in the UI language.
+        gameTimeElement.textContent = CbFormat.formatDate(this.currentDateTime, { timeZone: 'UTC' });
     }
 
     // Update turns played display
@@ -556,33 +644,35 @@ gameState.updateGameUI = function () {
             }
         }
 
-        if (this.isRunning) {
-            playPauseBtn.classList.remove('btn-success');
-            playPauseBtn.classList.add('btn-warning');
-        } else {
-            playPauseBtn.classList.remove('btn-warning');
-            playPauseBtn.classList.add('btn-success');
-        }
+        // Running is the pressed state of the btn toggle (css/primitives.css).
+        playPauseBtn.setAttribute('aria-pressed', this.isRunning ? 'true' : 'false');
     }
 
-    // Update game log button with count
-    const gameLogBtn = document.getElementById('show-game-log-btn');
+    // The running dot on the Activity button (js/ui/simulation-indicator.js).
+    if (typeof window !== 'undefined' && window.SimulationIndicator) {
+        window.SimulationIndicator.sync(document, this);
+    }
+
+    // The Activity sheet's explorer button carries the count of this browser's activity entries.
+    const gameLogBtn = document.getElementById('activity-explorer-button');
     if (gameLogBtn) {
+        // The label span, beside the button's icon (the button itself only on older markup).
+        const gameLogLabel = gameLogBtn.querySelector('[data-i18n-key]') || gameLogBtn;
         const hasLogs = this.gameLog.length > 0;
-        const logKey = hasLogs ? 'sidebar.game.showGameLogCount' : 'sidebar.game.showGameLog';
-        gameLogBtn.setAttribute('data-i18n-key', logKey);
+        const logKey = hasLogs ? 'mapShell.activityExplorerCount' : 'mapShell.commands.activityExplorer';
+        gameLogLabel.setAttribute('data-i18n-key', logKey);
         if (hasLogs) {
-            gameLogBtn.setAttribute('data-i18n-params', JSON.stringify({ count: this.gameLog.length }));
+            gameLogLabel.setAttribute('data-i18n-params', JSON.stringify({ count: this.gameLog.length }));
         } else {
-            gameLogBtn.removeAttribute('data-i18n-params');
+            gameLogLabel.removeAttribute('data-i18n-params');
         }
 
         if (i18nApi && typeof i18nApi.t === 'function') {
-            gameLogBtn.textContent = i18nApi.t(logKey, { count: this.gameLog.length });
+            gameLogLabel.textContent = i18nApi.t(logKey, { count: this.gameLog.length });
         } else {
-            gameLogBtn.textContent = hasLogs
-                ? `Show Game Log (${this.gameLog.length})`
-                : 'Show Game Log';
+            gameLogLabel.textContent = hasLogs
+                ? `Open activity explorer (${this.gameLog.length})`
+                : 'Open activity explorer';
         }
     }
 
@@ -601,240 +691,343 @@ function toggleGamePlayPause() {
     }
 }
 
-/**
- * Show the game log dialog
- */
-function showGameLogDialog() {
-    // Create modal dialog
-    const modal = document.createElement('div');
-    modal.className = 'game-log-modal';
-    modal.innerHTML = `
-        <div class="game-log-modal-content">
-            <div class="game-log-modal-header">
-                <h2 data-i18n-key="gameDialogs.log.title">${translateGameText('gameDialogs.log.title', 'Game Log')}</h2>
-                <button type="button" class="game-log-modal-close close-circle-btn close-circle-btn--lg"
-                    data-i18n-key="gameDialogs.log.closeAria" data-i18n-attr="aria-label"
-                    aria-label="${translateGameText('gameDialogs.log.closeAria', 'Close game log')}"
-                    onclick="closeGameLogDialog()">&times;</button>
-            </div>
-            <div class="game-log-modal-body">
-                <div id="game-log-content" class="game-log-content">
-                    ${gameState.gameLog.length === 0 ?
-            `<p class="no-logs" data-i18n-key="gameDialogs.log.empty">${translateGameText('gameDialogs.log.empty', 'No game events yet. Start the game to see agent activities.')}</p>` :
-            gameState.gameLog.map(entry => {
-                // Handle both old string format and new object format
-                const entryText = typeof entry === 'string' ? entry : entry.text;
-                const isUserAction = typeof entry === 'object' && entry.isUserAction;
-                const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
-                return `<div class="${cssClass}">${entryText}</div>`;
-            }).join('')
+// Unified activity explorer: one dialog, one filter vocabulary (AgentActionEngine) and one row
+// renderer (ActorExplorer) for simulation, live and combined activity. Sources are adapters, so
+// switching from game data to live data never changes the interface or the action vocabulary.
+let liveAgentActivity = null; // unscoped feed; null = not fetched yet; Refresh clears it
+// What the open explorer shows: its filter, its view (events | actors) and the sources that failed.
+// It was referenced but never declared, so every way into the explorer threw a ReferenceError.
+const activityExplorerState = { filter: null, view: 'events', failures: [] };
+// Backend origin for the live activity feed and run details (same base every other API call uses).
+// The mounted Actors view (ActorExplorer.mount); null until first shown and after the dialog closes.
+let actorExplorerController = null;
+function activityApiBase() {
+    return String(window.getBackendBase()).replace(/\/+$/, '');
+}
+const scopedLiveActivity = new Map(); // server-filtered feeds keyed by query string
+const liveActivityRequests = new Map(); // one in-flight fetch per query, shared by concurrent renders
+
+// A scoped explorer asks the API to filter (it scans a wider window than the 250-event feed),
+// so an old proposal's activity is not lost behind newer events.
+function liveActivityQuery(filter = {}) {
+    const params = new URLSearchParams({ limit: '250' });
+    if (filter.actorId) params.set('actor', filter.actorId);
+    if (filter.proposalId) params.set('proposal', filter.proposalId);
+    if (filter.runId) params.set('run', filter.runId);
+    return params.toString();
+}
+
+async function fetchLiveAgentActivity(filter = {}) {
+    const query = liveActivityQuery(filter);
+    const unscoped = query === 'limit=250';
+    const cached = unscoped ? liveAgentActivity : scopedLiveActivity.get(query);
+    if (cached) return cached;
+    if (!liveActivityRequests.has(query)) {
+        liveActivityRequests.set(query, (async () => {
+            const response = await fetch(`${activityApiBase()}/agent/activity?${query}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const payload = await response.json();
+            const events = Array.isArray(payload.events) ? payload.events : [];
+            if (unscoped) liveAgentActivity = events;
+            else scopedLiveActivity.set(query, events);
+            return events;
+        })().finally(() => liveActivityRequests.delete(query)));
+    }
+    return liveActivityRequests.get(query);
+}
+
+const activitySource = window.AgentActionEngine.createActivitySource({
+    simulation: () => gameState.gameLog,
+    live: fetchLiveAgentActivity
+});
+
+// The inline feed shares the explorer's adapters and row bindings. Its refresh action clears the
+// same live cache, while opening the sheet can reuse already-fetched activity without polling.
+window.CbActivityFeedAdapter = {
+    async load({ refresh = false } = {}) {
+        if (refresh) {
+            liveAgentActivity = null;
+            scopedLiveActivity.clear();
         }
+        return activitySource.load('combined', { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER });
+    },
+    bindRowActions() { setupGameLogClickListeners(); }
+};
+
+/** Everything known right now, without fetching; the per-agent log reads this synchronously. */
+function allActivityEvents() {
+    return window.AgentActionEngine.mergeActivities(gameState.gameLog, liveAgentActivity || []);
+}
+
+function allKnownProposals() {
+    try {
+        return typeof proposalStorage !== 'undefined' && typeof proposalStorage.getAllProposals === 'function'
+            ? proposalStorage.getAllProposals()
+            : [];
+    } catch (error) {
+        console.warn(`[${new Date().toISOString()}] [activity] could not enumerate proposals for parcel-set filter`, error);
+        return [];
+    }
+}
+
+/** The effective filter: a parcel-set scope expands to the proposals currently known on that land. */
+function effectiveActivityFilter() {
+    const filter = activityExplorerState.filter || { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER };
+    if (!filter.parcelSet) return filter;
+    return { ...filter, proposalIds: window.ParcelSetRelations.proposalIdsForParcelSet(allKnownProposals(), filter.parcelSet) };
+}
+
+function activityScopeLabel(filter) {
+    if (filter.actorId) return translateGameText('gameDialogs.log.scopeActor', 'Actor: {{id}}', { id: filter.actorId });
+    if (filter.proposalId) return translateGameText('gameDialogs.log.scopeProposal', 'Proposal: {{id}}', { id: filter.proposalId });
+    if (filter.parcelSet) return translateGameText('gameDialogs.log.scopeParcelSet', 'Land: {{id}}', { id: filter.parcelSet.length > 13 ? `${filter.parcelSet.slice(0, 13)}…` : filter.parcelSet });
+    if (filter.runId) return translateGameText('gameDialogs.log.scopeRun', 'Run: {{id}}', { id: filter.runId });
+    return '';
+}
+
+let activityRenderToken = 0;
+
+/** The scope chip above the list: what the explorer is narrowed to, hidden when it is not. */
+function showActivityScope(modal, filter) {
+    const scope = modal?.querySelector('[data-activity-scope-chip]');
+    if (!scope) return;
+    const scopeLabel = activityScopeLabel(filter);
+    scope.hidden = !scopeLabel;
+    scope.querySelector('span').textContent = scopeLabel;
+}
+
+async function renderActivityExplorer() {
+    if (!document.querySelector('.game-log-modal')) return;
+    const token = ++activityRenderToken;
+    const filter = effectiveActivityFilter();
+    // A scoped feed is fetched from the server and can take seconds: show the new scope and a
+    // loading line at once, so a drill-down click never looks like it did nothing.
+    const pending = document.querySelector('.game-log-modal');
+    showActivityScope(pending, filter);
+    const pendingStatus = pending.querySelector('[data-activity-live-status]');
+    const pendingContent = document.getElementById('game-log-content');
+    // A cached feed resolves in a microtask, before the next paint, so this never flickers.
+    if (pendingStatus) pendingStatus.textContent = translateGameText('world.activity.loading', 'Loading activity…');
+    pendingContent?.setAttribute('aria-busy', 'true');
+    const { events, failures } = await activitySource.load(filter.source, filter);
+    // A newer render (typing, filter change, new turn) superseded this one while it awaited.
+    const modal = document.querySelector('.game-log-modal');
+    if (token !== activityRenderToken || !modal) return;
+    document.getElementById('game-log-content')?.removeAttribute('aria-busy');
+    activityExplorerState.failures = failures;
+    const visible = events.filter(event => window.AgentActionEngine.matchesActivity(event, filter));
+
+    const status = modal.querySelector('[data-activity-live-status]');
+    if (status) {
+        status.textContent = failures.length
+            ? translateGameText('gameDialogs.log.sourceFailed', 'Could not load: {{sources}}', { sources: failures.map(failure => `${failure.source} (${failure.error})`).join(', ') })
+            : translateGameText('gameDialogs.log.count', '{{count}} events', { count: visible.length });
+    }
+    showActivityScope(modal, filter);
+    modal.querySelectorAll('[data-activity-filter-field]').forEach(field => {
+        const expected = filter[field.dataset.activityFilterField] ?? '';
+        if (field.value !== expected) field.value = expected;
+    });
+    modal.querySelectorAll('[data-activity-view]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.activityView === activityExplorerState.view));
+    });
+
+    const content = document.getElementById('game-log-content');
+    const actors = modal.querySelector('[data-activity-actors]');
+    content.hidden = activityExplorerState.view !== 'events';
+    actors.hidden = activityExplorerState.view !== 'actors';
+    if (activityExplorerState.view === 'actors') {
+        if (!actorExplorerController) {
+            actorExplorerController = window.ActorExplorer.mount(actors, {
+                events: visible,
+                showFilters: false,
+                openProposal: showProposalFromLog,
+                loadRun: async runId => {
+                    const response = await fetch(`${activityApiBase()}/agent/runs/${encodeURIComponent(runId)}`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return (await response.json()).run;
+                }
+            });
+        } else {
+            actorExplorerController.setEvents(visible);
+        }
+    } else {
+        const newestFirst = [...visible].reverse();
+        content.innerHTML = newestFirst.length
+            ? newestFirst.map(event => window.ActorExplorer.activityRowHtml(event, { translate: translateGameText })).join('')
+            : `<p class="no-logs">${escapeHtml(translateGameText('gameDialogs.log.noMatch', 'No matching activity yet.'))}</p>`;
+        content.setAttribute('data-rendered-count', String(newestFirst.length));
+        setupGameLogClickListeners();
+    }
+}
+
+function setActivityFilter(field, value) {
+    const base = activityExplorerState.filter || { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER };
+    activityExplorerState.filter = field === 'reset'
+        ? { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER }
+        : { ...base, [field]: value };
+    renderActivityExplorer();
+}
+
+function clearActivityScope() {
+    activityExplorerState.filter = { ...activityExplorerState.filter, actorId: null, proposalId: null, runId: null, parcelSet: null, proposalIds: null };
+    renderActivityExplorer();
+}
+
+function setActivityView(view) {
+    activityExplorerState.view = view === 'actors' ? 'actors' : 'events';
+    renderActivityExplorer();
+}
+
+function refreshLiveActivity() {
+    liveAgentActivity = null;
+    scopedLiveActivity.clear();
+    renderActivityExplorer();
+}
+
+// The open explorer: the shared dialog (js/ui/dialogs.js) whose card carries the game-log-modal
+// identity class that renderActivityExplorer and the tests address it by.
+let gameLogDialog = null;
+
+/**
+ * Open the one activity explorer, optionally scoped (actor/proposal/run/parcel set) and on a view.
+ * Every entry point — the Activity sheet's buttons, row drill-downs, proposal Details, ?activity= links — lands here.
+ */
+function showGameLogDialog(options = {}) {
+    const scope = options.filter || {};
+    activityExplorerState.filter = { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER, ...scope };
+    activityExplorerState.view = options.view === 'actors' ? 'actors' : 'events';
+    if (gameLogDialog) {
+        renderActivityExplorer();
+        return;
+    }
+    const t = (key, fallback) => escapeHtml(translateGameText(`gameDialogs.log.${key}`, fallback));
+    // One option per type in the shared action vocabulary, so every live and simulated action is filterable.
+    const actionOptionsHtml = window.ActorExplorer.actionOptions(translateGameText)
+        .map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`).join('');
+    const body = `
+                <div class="activity-live-status" data-activity-live-status aria-live="polite"></div>
+                <div class="cb-segmented activity-views" role="group" aria-label="${t('viewsAria', 'Activity view')}">
+                    <button type="button" class="cb-segmented__option" data-activity-view="events" aria-pressed="true" onclick="setActivityView('events')">${t('viewEvents', 'Events')}</button>
+                    <button type="button" class="cb-segmented__option" data-activity-view="actors" aria-pressed="false" onclick="setActivityView('actors')">${t('viewActors', 'Actors')}</button>
                 </div>
-            </div>
-        </div>
-    `;
+                <nav class="activity-filters" aria-label="${t('filtersAria', 'Filter activity')}">
+                    <input type="search" data-activity-filter-field="query" aria-label="${t('searchAria', 'Search activity')}" placeholder="${t('searchPlaceholder', 'Actor, proposal or transaction')}" oninput="setActivityFilter('query', this.value)">
+                    <select data-activity-filter-field="source" aria-label="${t('sourceAria', 'Activity source')}" onchange="setActivityFilter('source', this.value)">
+                        <option value="combined">${t('sourceAll', 'All sources')}</option><option value="live">${t('sourceLive', 'Live')}</option><option value="simulation">${t('sourceSimulation', 'Simulation')}</option>
+                    </select>
+                    <select data-activity-filter-field="kind" aria-label="${t('kindAria', 'Actor type')}" onchange="setActivityFilter('kind', this.value)">
+                        <option value="all">${t('kindAll', 'Everyone')}</option><option value="human">${t('kindHuman', 'People')}</option><option value="agent">${t('kindAgent', 'Agents')}</option><option value="system">${t('kindSystem', 'System')}</option>
+                    </select>
+                    <select data-activity-filter-field="controller" aria-label="${t('controllerAria', 'Controller')}" onchange="setActivityFilter('controller', this.value)">
+                        <option value="all">${t('controllerAll', 'Any controller')}</option><option value="human">${t('controllerHuman', 'Human')}</option><option value="algorithm">${t('controllerAlgorithm', 'Algorithm')}</option><option value="llm">${t('controllerLlm', 'LLM')}</option>
+                    </select>
+                    <select data-activity-filter-field="action" aria-label="${t('actionAria', 'Activity action')}" onchange="setActivityFilter('action', this.value)">
+                        <option value="all">${t('actionAll', 'All actions')}</option>${actionOptionsHtml}
+                    </select>
+                    <select data-activity-filter-field="status" aria-label="${t('statusAria', 'Activity result')}" onchange="setActivityFilter('status', this.value)">
+                        <option value="all">${t('statusAll', 'Any result')}</option><option value="success">${t('statusSuccess', 'Succeeded')}</option><option value="failed">${t('statusFailed', 'Failed')}</option>
+                    </select>
+                    <button type="button" class="btn btn-sm" onclick="setActivityFilter('reset')">${t('clearFilters', 'Clear')}</button>
+                    <button type="button" class="btn btn-sm activity-refresh" onclick="refreshLiveActivity()">${t('refresh', 'Refresh')}</button>
+                </nav>
+                <div class="cb-badge cb-badge--primary activity-scope-chip" data-activity-scope-chip hidden>
+                    <span></span><button type="button" class="btn btn-quiet btn-sm btn-icon" onclick="clearActivityScope()" aria-label="${t('clearScope', 'Clear scope')}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                </div>
+                <div id="game-log-content" class="game-log-content"></div>
+                <div class="activity-actors" data-activity-actors hidden></div>`;
 
-    document.body.appendChild(modal);
-    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
-        try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
-    }
-
-    // Auto-scroll to bottom
-    const logContent = document.getElementById('game-log-content');
-    if (logContent) {
-        logContent.scrollTop = logContent.scrollHeight;
-        logContent.setAttribute('data-rendered-count', String(gameState.gameLog.length));
-    }
-
-    // Set up event listeners for clickable links
-    setupGameLogClickListeners();
+    const dialogApi = window.CbDialog.open({
+        title: translateGameText('gameDialogs.log.title', 'Activity'),
+        size: 'lg',
+        className: 'game-log-modal',
+        bodyClassName: 'game-log-modal-body',
+        closeLabel: translateGameText('gameDialogs.log.closeAria', 'Close activity'),
+        body,
+        onClose: () => {
+            if (gameLogDialog === dialogApi) gameLogDialog = null;
+            onGameLogDialogClosed();
+        }
+    });
+    if (!dialogApi) return;
+    gameLogDialog = dialogApi;
+    const closeButton = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+    if (closeButton) closeButton.classList.add('game-log-modal-close');
+    renderActivityExplorer();
 }
 
 /**
  * Close the game log dialog
  */
 function closeGameLogDialog() {
-    const modal = document.querySelector('.game-log-modal');
-    if (modal) {
-        document.body.removeChild(modal);
+    if (gameLogDialog) gameLogDialog.close();   // its onClose finishes the job
+    else onGameLogDialogClosed();
+}
+
+function onGameLogDialogClosed() {
+    actorExplorerController = null;
+    // A ?activity= deep link has been followed once; left in the URL, every reload reopened the
+    // explorer the user had just closed.
+    const url = new URL(window.location.href);
+    if (url.searchParams.has('activity')) {
+        url.searchParams.delete('activity');
+        window.history.replaceState(window.history.state, '', url.toString());
     }
 }
 
-/**
- * Show agents statistics dialog
- */
-async function showAgentsStatistics() {
-    const agents = agentStorage.getAllAgents();
-
-    if (agents.length === 0) {
-        showGameAlert('no_agents_exist_yet_start_the_game_to_create_agents', 'No agents exist yet. Start the game to create agents.');
-        return;
+// Row drill-downs (data-activity-scope) work wherever a shared row is rendered — the explorer
+// itself or an agent dialog's log — and always land in the one explorer, scoped.
+function activityScopeFromButton(button) {
+    const field = button.dataset.activityScope;
+    const value = button.dataset.activityValue;
+    if (field !== 'parcelSetOf') return { [field]: value };
+    const proposal = allKnownProposals().find(item => window.ParcelSetRelations.proposalKey(item) === value);
+    const setHash = proposal?.parcelSet?.setHash;
+    // Without a canonical set the land scope would silently mean "this proposal"; say so instead.
+    if (!setHash) {
+        showGameAlert('activity_no_parcel_set', 'This proposal has no canonical parcel set loaded.');
+        return null;
     }
-
-    // Calculate statistics for each agent
-    const agentStats = await Promise.all(agents.map(async agent => {
-        const ownedParcels = getAgentOwnedParcels(agent.id);
-        let portfolioValue = 0;
-        if (typeof calculatePortfolioValue === 'function') {
-            try {
-                portfolioValue = await calculatePortfolioValue(ownedParcels);
-            } catch (error) {
-                console.warn('Failed to calculate portfolio value for agent', agent.id, error);
-            }
-        }
-
-        // Count executed proposals authored by this agent
-        let proposalsAppliedCount = 0;
-        if (typeof proposalStorage !== 'undefined') {
-            const allProposals = proposalStorage.getAllProposals();
-            proposalsAppliedCount = allProposals.filter(proposal => {
-                if (proposal.author !== agent.name) return false;
-                if (typeof isProposalApplied === 'function') {
-                    return isProposalApplied(proposal);
-                }
-                return (proposal.status || '').toLowerCase() === 'applied';
-            }).length;
-        }
-
-        return {
-            ...agent,
-            currentParcels: ownedParcels,
-            portfolioValue: portfolioValue,
-            totalWealth: agent.ethBalance + portfolioValue,
-            proposalsAppliedCount
-        };
-    }));
-
-    // Sort by total wealth descending
-    agentStats.sort((a, b) => b.totalWealth - a.totalWealth);
-
-    // Create modal dialog
-    const modal = document.createElement('div');
-    modal.className = 'agents-stats-modal';
-    modal.innerHTML = `
-        <div class="agents-stats-modal-content">
-            <div class="agents-stats-modal-header">
-                <h2 data-i18n-key="gameDialogs.agents.title">${translateGameText('gameDialogs.agents.title', 'Agent Statistics')}</h2>
-                <button type="button" class="agents-stats-modal-close close-circle-btn close-circle-btn--lg"
-                    data-i18n-key="gameDialogs.agents.closeAria" data-i18n-attr="aria-label"
-                    aria-label="${translateGameText('gameDialogs.agents.closeAria', 'Close agent statistics')}"
-                    onclick="closeAgentsStatistics()">&times;</button>
-            </div>
-            <div class="agents-stats-modal-body">
-                <div class="agents-stats-table-container">
-                    <table class="agents-stats-table">
-                        <thead>
-                            <tr>
-                                <th data-i18n-key="gameDialogs.agents.avatar">${translateGameText('gameDialogs.agents.avatar', 'Avatar')}</th>
-                                <th data-i18n-key="gameDialogs.agents.name">${translateGameText('gameDialogs.agents.name', 'Name')}</th>
-                                <th data-i18n-key="gameDialogs.agents.ethBalance">${translateGameText('gameDialogs.agents.ethBalance', (typeof getChainCurrencySymbol === 'function' ? getChainCurrencySymbol() : 'ETH') + ' Balance')}</th>
-                                <th data-i18n-key="gameDialogs.agents.parcelsOwned">${translateGameText('gameDialogs.agents.parcelsOwned', 'Parcels Owned')}</th>
-                                <th data-i18n-key="gameDialogs.agents.proposalsCreated">${translateGameText('gameDialogs.agents.proposalsCreated', 'Proposals Created')}</th>
-                                <th data-i18n-key="gameDialogs.agents.proposalsAccepted">${translateGameText('gameDialogs.agents.proposalsAccepted', 'Proposals Accepted')}</th>
-                                <th data-i18n-key="gameDialogs.agents.proposalsApplied">${translateGameText('gameDialogs.agents.proposalsApplied', 'Proposals Applied')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${agentStats.map(agent => {
-        const isUserAgent = agent.userControlled === true;
-        const rowClass = isUserAgent ? 'user-agent-row' : '';
-        const ethBalanceDisplay = isUserAgent ? '-' : `${agent.ethBalance.toFixed(2)} ${typeof getChainCurrencySymbol === 'function' ? getChainCurrencySymbol() : 'ETH'}`;
-        return `
-                                <tr class="${rowClass}">
-                                    <td>
-                                        <img src="${getAvatarImagePath(agent.avatarIndex)}" class="agent-avatar" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" onclick="showAgentDialog('${agent.id}')">
-                                    </td>
-                                    <td>
-                                        <a href="#" onclick="showAgentDialog('${agent.id}'); return false;" class="agent-link">
-                                            ${agent.name}
-                                        </a>
-                                        ${isUserAgent ? `<div class="user-agent-indicator" data-i18n-key="gameDialogs.agents.you">${translateGameText('gameDialogs.agents.you', '(You)')}</div>` : ''}
-                                    </td>
-                                    <td ${isUserAgent ? 'data-user-eth-balance-table' : ''}>${ethBalanceDisplay}</td>
-                                    <td>${agent.currentParcels.length}</td>
-                                    <td>${agent.proposalsCreated ? agent.proposalsCreated.length : 0}</td>
-                                    <td>${agent.proposalsAccepted ? agent.proposalsAccepted.length : 0}</td>
-                                    <td>${agent.proposalsAppliedCount || 0}</td>
-                                </tr>
-                                `;
-    }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
-        try { window.i18n.applyTranslations(modal); } catch (_) { /* ignore */ }
-    }
-    if (typeof window.refreshUserEthBalanceDisplay === 'function') {
-        window.refreshUserEthBalanceDisplay();
-    }
+    return { parcelSet: setHash };
 }
+
+document.addEventListener('click', event => {
+    const button = event.target.closest?.('[data-activity-scope]');
+    if (!button) return;
+    event.preventDefault();
+    const scope = activityScopeFromButton(button);
+    if (!scope) return;
+    if (button.closest('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
+    showGameLogDialog({ filter: scope });
+});
+
+// `?activity=proposal:<id>` (or actor:/run:/parcelSet:) opens the explorer scoped, so the Demo
+// Center, Details and shared links can deep-link straight into the same explorer.
+// It waits for the page and its translations: the dialog renders translated strings inline, and
+// before i18n registers its tables every lookup would return the raw key.
+function openActivityFromUrl() {
+    const scope = window.AgentActionEngine.parseActivityLink(new URLSearchParams(window.location.search).get('activity'));
+    if (!scope) return;
+    const open = () => showGameLogDialog({ filter: scope });
+    const probe = 'gameDialogs.log.viewEvents';
+    if (typeof window.i18n?.t === 'function' && window.i18n.t(probe) !== probe) open();
+    else window.addEventListener('i18n:translationsLoaded', open, { once: true });
+}
+if (document.readyState === 'complete') openActivityFromUrl();
+else window.addEventListener('load', openActivityFromUrl, { once: true });
 
 /**
  * Update the Game Log dialog content if it's currently open
  */
 function updateGameLogDialogIfOpen() {
-    const gameLogModal = document.querySelector('.game-log-modal');
-    if (!gameLogModal) {
+    const logContentElement = document.getElementById('game-log-content');
+    if (!logContentElement) {
         // Game Log dialog is not open
         return;
     }
 
-    const logContentElement = document.getElementById('game-log-content');
-    if (!logContentElement) {
-        // Game Log content element not found
-        return;
-    }
-
-    // Store current scroll position to determine if user was at bottom
-    const wasAtBottom = logContentElement.scrollTop >= (logContentElement.scrollHeight - logContentElement.clientHeight - 10);
-
-    const renderedCountRaw = logContentElement.getAttribute('data-rendered-count');
-    const renderedCount = Number.isFinite(Number(renderedCountRaw)) ? Number(renderedCountRaw) : 0;
-
-    const renderEntriesToHtml = (entries) => entries.map(entry => {
-        const entryText = typeof entry === 'string' ? entry : entry.text;
-        const isUserAction = typeof entry === 'object' && entry.isUserAction;
-        const cssClass = isUserAction ? 'log-entry user-action' : 'log-entry';
-        return `<div class="${cssClass}">${entryText}</div>`;
-    }).join('');
-
-    if (gameState.gameLog.length === 0) {
-        logContentElement.innerHTML = '<p class="no-logs">No game events yet. Start the game to see agent activities.</p>';
-        logContentElement.setAttribute('data-rendered-count', '0');
-    } else if (renderedCount > 0 && renderedCount <= gameState.gameLog.length) {
-        const newEntries = gameState.gameLog.slice(renderedCount);
-        if (newEntries.length > 0) {
-            logContentElement.insertAdjacentHTML('beforeend', renderEntriesToHtml(newEntries));
-            logContentElement.setAttribute('data-rendered-count', String(gameState.gameLog.length));
-        }
-    } else {
-        logContentElement.innerHTML = renderEntriesToHtml(gameState.gameLog);
-        logContentElement.setAttribute('data-rendered-count', String(gameState.gameLog.length));
-    }
-
-    // Re-setup click listeners for new content
-    setupGameLogClickListeners();
-
-    // If user was at bottom before update, keep them at bottom
-    // Otherwise, maintain their current scroll position
-    if (wasAtBottom) {
-        logContentElement.scrollTop = logContentElement.scrollHeight;
-    }
-}
-
-/**
- * Close agents statistics dialog
- */
-function closeAgentsStatistics() {
-    const modal = document.querySelector('.agents-stats-modal');
-    if (modal) {
-        document.body.removeChild(modal);
-    }
+    const scrollTop = logContentElement.scrollTop;
+    renderActivityExplorer().then(() => { logContentElement.scrollTop = scrollTop; });
 }
 
 /**
@@ -854,17 +1047,11 @@ function setupGameLogClickListeners() {
                 return;
             }
 
-            const sidebar = document.getElementById('sidebar');
-            const sidebarWasCollapsed = sidebar ? sidebar.classList.contains('collapsed') : false;
-
             const inProposalModal = this.closest('.proposal-info-modal');
             if (inProposalModal && typeof closeProposalInfoDialog === 'function') {
                 closeProposalInfoDialog();
                 // Allow the proposal dialog to close before opening the agent dialog
                 setTimeout(() => {
-                    if (sidebarWasCollapsed && sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-                        toggleSidebar();
-                    }
                     showAgentDialog(agentId);
                 }, 50);
                 return;
@@ -874,15 +1061,13 @@ function setupGameLogClickListeners() {
             if (proposalDetailsPanel && proposalDetailsPanel.contains(this) && typeof hideProposalDetailsPanel === 'function') {
                 hideProposalDetailsPanel();
                 setTimeout(() => {
-                    if (sidebarWasCollapsed && sidebar && !sidebar.classList.contains('collapsed') && typeof toggleSidebar === 'function') {
-                        toggleSidebar();
-                    }
                     showAgentDialog(agentId);
                 }, 50);
                 return;
             }
 
-            showAgentDialog(agentId);
+            // Over the explorer (a modal above the docked panels) the dialog must be raised too.
+            showAgentDialog(agentId, { elevated: !!this.closest('.game-log-modal') });
         });
     });
 
@@ -946,7 +1131,7 @@ function showProposalFromLog(proposalId) {
     }
 
     if (!proposal) {
-        showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
+        openServerProposalFromLog(lookup);
         return;
     }
 
@@ -958,9 +1143,9 @@ function showProposalFromLog(proposalId) {
         closeAgentDialog();
     }
 
-    const focusParcelId = Array.isArray(proposal.parentParcelIds) && proposal.parentParcelIds.length > 0
-        ? proposal.parentParcelIds[0]
-        : (Array.isArray(proposal.childParcelIds) && proposal.childParcelIds.length > 0 ? proposal.childParcelIds[0] : null);
+    const focusParcelId = Array.isArray(proposal.cadastreParcelIds) && proposal.cadastreParcelIds.length > 0
+        ? proposal.cadastreParcelIds[0]
+        : null;
     const proposalKey = proposal
         ? (proposal.proposalId !== undefined && proposal.proposalId !== null
             ? proposal.proposalId
@@ -974,6 +1159,28 @@ function showProposalFromLog(proposalId) {
     } else {
         showGameAlert('unable_to_open_proposal_details', 'Unable to open proposal details.');
     }
+}
+
+// Live activity names proposals that live on the server (agent runs, other people's uploads); they are
+// not in this browser until downloaded, so "Open proposal" on them always said "not found". Download
+// after the same confirm the search box asks, then open; one the server lacks too is reported.
+async function openServerProposalFromLog(lookup) {
+    if (!(await showProposalDownloadConfirm())) return;
+    let proposal;
+    try {
+        proposal = await importServerProposal(lookup);
+    } catch (error) {
+        if (error?.code === 'proposal-in-other-city') {
+            await openProposalInItsCity(lookup, error.cityId);
+            return;
+        }
+        console.warn(`[${new Date().toISOString()}] [activity] could not download proposal ${lookup}`, error);
+        showGameAlert('proposal_with_id_not_found', 'Proposal with ID {{id}} not found.', { id: lookup });
+        return;
+    }
+    closeGameLogDialog();
+    if (document.querySelector('.agent-dialog-modal') && typeof closeAgentDialog === 'function') closeAgentDialog();
+    openProposalFromList(getProposalKey(proposal) || lookup, { proposal, closeSheets: true });
 }
 
 /**
@@ -1004,16 +1211,9 @@ function showParcelFromLog(parcelId) {
     // Close Game Log dialog if open to allow better visibility of the parcel
     closeGameLogDialog();
 
-    // On mobile, also collapse sidebar if open
-    const isMobile = window.innerWidth <= 768;
-    if (isMobile) {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar && !sidebar.classList.contains('collapsed')) {
-            if (typeof toggleSidebar === 'function') {
-                toggleSidebar();
-            }
-        }
-    }
+    // Fold away an open sheet so the parcel is in view
+    if (window.MapShell) window.MapShell.closeSheets();
+    const isMobile = window.innerWidth < 768;
 
     // Use the existing parcel selection functionality with mobile-aware behavior
     if (typeof selectParcel === 'function') {
@@ -1125,10 +1325,13 @@ window.executeGameTurn = executeGameTurn;
 window.toggleGamePlayPause = toggleGamePlayPause;
 window.resetGameState = resetGameState;
 window.showGameLogDialog = showGameLogDialog;
+window.dispatchAgentAction = dispatchAgentAction;
 window.closeGameLogDialog = closeGameLogDialog;
 window.updateGameLogDialogIfOpen = updateGameLogDialogIfOpen;
-window.showAgentsStatistics = showAgentsStatistics;
-window.closeAgentsStatistics = closeAgentsStatistics;
+window.setActivityFilter = setActivityFilter;
+window.setActivityView = setActivityView;
+window.clearActivityScope = clearActivityScope;
+window.refreshLiveActivity = refreshLiveActivity;
 window.setupGameLogClickListeners = setupGameLogClickListeners;
 window.showProposalFromLog = showProposalFromLog;
 window.showProposalInfoDialog = showProposalInfoDialog;
@@ -1144,12 +1347,13 @@ window.updateGameSectionTitle = updateGameSectionTitle;
  * Reset the entire game state. If autoReinit is true the game will be initialised again automatically.
  * @param {boolean} autoReinit - Whether to run initializeGame() right after the reset completes.
  */
-function resetGameState(autoReinit = false) {
-    const message = autoReinit ?
-        'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.' :
-        'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.';
+async function resetGameState(autoReinit = false) {
+    const message = autoReinit
+        ? translateGameText('gameDialogs.newGameConfirm', 'Are you sure you want to start a NEW game? This will delete all agents, game progress, and parcel ownership data.')
+        : translateGameText('gameDialogs.resetConfirm', 'Are you sure you want to reset the game state? This will delete all agents, game progress, and parcel ownership data.');
 
-    const confirmed = confirm(message);
+    // The app's own dialog (js/ui/dialogs.js), never the browser's.
+    const confirmed = await window.CbDialog.confirm(message);
     if (!confirmed) return;
 
     // Preserve the current user-controlled agent (if any) so the player keeps their identity.
@@ -1185,6 +1389,7 @@ function resetGameState(autoReinit = false) {
             proposalsExecuted: [],
             createdAt: new Date().toISOString(),
             lastActionAt: null,
+            controller: 'human',
             aiControlled: false,
             userControlled: true
         };
@@ -1219,4 +1424,4 @@ function resetGameState(autoReinit = false) {
             'Game state has been reset. All agents and progress deleted.';
         updateStatus(statusMessage);
     }
-} 
+}

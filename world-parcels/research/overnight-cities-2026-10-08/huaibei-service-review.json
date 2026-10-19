@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10468-huaibei.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The city bureau documents a cadastral map platform with parcel and building-related functions. The public landing page returned HTTP 200; static JavaScript names parcel and cadastral list/data routes, while associated detail calls use a client-credential/access-token flow. No data API was called because the public-safe field contract could not be established without that flow; no geometry response verified.",
+  "registryAssessment": "The official Huaibei Natural Resources and Planning Bureau describes the city cadastral platform as displaying cadastral zones and parcel information. Its static public map shell loads, but data routes in the frontend are linked to backend service calls requiring a client/access-token flow; no token or parcel endpoint was used.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+      "observation": "The official Huaibei Natural Resources and Planning Bureau describes the city cadastral platform as displaying cadastral zones and parcel information. Its static public map shell loads, but data routes in the frontend are linked to backend service calls requiring a client/access-token flow; no token or parcel endpoint was used."
+    },
+    {
+      "url": "http://60.172.200.224:9293/hbdj/",
+      "observation": "The official Huaibei Natural Resources and Planning Bureau describes the city cadastral platform as displaying cadastral zones and parcel information. Its static public map shell loads, but data routes in the frontend are linked to backend service calls requiring a client/access-token flow; no token or parcel endpoint was used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Huaibei China official land registry cadastral parcel map GIS natural resources",
+      "result": "The city bureau documents a cadastral map platform with parcel and building-related functions. The public landing page returned HTTP 200; static JavaScript names parcel and cadastral list/data routes, while associated detail calls use a client-credential/access-token flow. No data API was called because the public-safe field contract could not be established without that flow; no geometry response verified.",
+      "method": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested.",
+      "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint."
+    },
+    {
+      "language": "Chinese",
+      "query": "No feature response returned; native identifier not verified.",
+      "result": "The city bureau documents a cadastral map platform with parcel and building-related functions. The public landing page returned HTTP 200; static JavaScript names parcel and cadastral list/data routes, while associated detail calls use a client-credential/access-token flow. No data API was called because the public-safe field contract could not be established without that flow; no geometry response verified.",
+      "method": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified.",
+      "scope": "Find primary local-language evidence for the same registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement point and reviewed official sources only.",
+    "limits": "No complete citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "http://60.172.200.224:9293/hbdj/",
+      "method": "Anonymous GET landing page and static JavaScript/config inspection",
+      "result": "HTTP 200 HTML shell (8,504 bytes); static config names cadastral/parcel/building list and parcel detail routes. Related ETL detail calls assemble client identifiers/secrets/access tokens. Did not invoke protected/detail endpoints or use any credential/token; no parcel result."
+    }
+  ],
+  "remainingUncertainty": "No anonymous safe-feature response was verified; registry coverage at the exact WUP point remains unresolved."
+}

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7850",
+  "wupCityCode": 7850,
+  "name": "Shahkot",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 1061,
+  "queueRank": 1061,
+  "point": [
+    31.5226806257689,
+    73.3594242254074
+  ],
+  "centerLatLon": [
+    31.5226806257689,
+    73.3594242254074
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 520664,
+  "population2025k": 520.664,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "PLRA first-party procurement document identifies an Arazi Record Center at Tehsil Shah Kot, TMA Office, Nankana Sahib District, Punjab, Pakistan. PLRA states ARCs provide land-record services. This resolves the city-local custody question, but does not establish a public parcel-geometry route.",
+  "registryEvidenceUrls": [
+    "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf",
+    "https://www.punjab-zameen.gov.pk/",
+    "https://nankana.punjab.gov.pk/Assistant_Commissioner_Shahkot"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Pakistan PLRA local record custody is confirmed; no anonymous parcel-vector service or complete safe identity-plus-geometry response was verified.",
+  "scopeLimits": "The official cadastral map viewer was inspected as a UI/source lead, but no anonymous full-polygon vector endpoint was traced or queried; no polygon sample retained.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "PLRA first-party procurement document identifies an Arazi Record Center at Tehsil Shah Kot, TMA Office, Nankana Sahib District, Punjab, Pakistan. PLRA states ARCs provide land-record services. This resolves the city-local custody question, but does not establish a public parcel-geometry route.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Pakistan PLRA local record custody is confirmed; no anonymous parcel-vector service or complete safe identity-plus-geometry response was verified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shahkot Nankana Sahib Punjab Pakistan land records service center PLRA Board of Revenue official",
+        "result": "Found first-party PLRA site and official procurement PDF. The PDF explicitly lists the Shah Kot tehsil Arazi Record Center at TMA Office, Nankana Sahib District. Indian Punjab results were rejected as wrong jurisdiction.",
+        "method": "Separate English-language web search, followed by reading the first-party PLRA page and PDF."
+      },
+      {
+        "language": "Urdu",
+        "query": "شاہ کوٹ ننکانہ صاحب اراضی ریکارڈ سنٹر پنجاب لینڈ ریکارڈ اتھارٹی",
+        "result": "Search surfaced a non-government Urdu republication of ARC addresses; it was not treated as primary evidence. Cross-checked the Shah Kot entry against the first-party Punjab PLRA procurement PDF, which confirms the same Nankana Sahib location. Excluded Indian Punjab land-record portals and all India DILRMP results.",
+        "method": "Separate Urdu-language web search, then first-party PLRA source verification."
+      }
+    ],
+    "officialSources": [
+      {
+        "title": "Punjab Land Records Cadastral Map",
+        "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+        "observation": "Punjab Government cadastral map UI provides district/tehsil/village selection; no full vector response/schema was verified."
+      },
+      {
+        "title": "Punjab Land Records service",
+        "url": "https://jamabandi.punjab.gov.pk/FardRequestCR.aspx",
+        "observation": "Official Department of Revenue land-record portal offers region, district, tehsil, village and record searches; personal/record-detail screens were not queried."
+      },
+      {
+        "title": "Punjab Land Records Authority",
+        "url": "https://www.punjab-zameen.gov.pk/",
+        "observation": "Official PLRA service centers and digital land-record context."
+      },
+      {
+        "title": "DILRMP Shahkot report",
+        "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/village-level/209",
+        "observation": "Government DILRMP report identifies Tehsil Shahkot in Punjab land-record digitization reporting."
+      }
+    ],
+    "viewerAndServiceTrace": "The official cadastral map viewer was inspected as a UI/source lead, but no anonymous full-polygon vector endpoint was traced or queried; no polygon sample retained.",
+    "attemptedGeometry": "No safe full polygon query returned in this investigation.",
+    "sensitiveFieldsRequested": false,
+    "credentialsUsed": false
+  },
+  "remainingUncertainty": "The WUP point has not been resolved to an exact cadastral village or map sheet. The public viewer advertises locality selectors but polygon geometry access and point containment remain unverified.",
+  "nextStep": "Resolve the exact administrative/cadastral locality and qualify a bounded source-native parcel query only if a safe public geometry service is available.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sampleFile": null,
+  "custodyFollowthroughFile": "research/overnight-followon-2026-10-09/shahkot-root-custody-followthrough.json",
+  "priorIncorrectCustodyBasis": {
+    "excluded": true,
+    "reason": "The earlier DILRMP/Indian Punjab references were the wrong jurisdiction for Pakistan Shahkot; superseded by first-party PLRA Shah Kot ARC evidence."
+  },
+  "source": {
+    "name": "PLRA Arazi Record Center Tehsil Shah Kot",
+    "operator": "Punjab Land Records Authority, Pakistan",
+    "url": "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf",
+    "sampleCount": 0,
+    "directGeometryQueryVerified": false
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

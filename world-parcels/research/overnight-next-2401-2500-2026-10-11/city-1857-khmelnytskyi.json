@@ -1,0 +1,41 @@
+{
+  "cityCode": 1857,
+  "queueRank": 2422,
+  "name": "Khmelnytskyi",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "point": [49.420271522017, 26.9903339006871],
+  "population2025": 242022,
+  "population2025k": 242.022,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khmelnytskyi Ukraine official cadastral parcel map public GIS API city council",
+        "result": "First-party results identified the Official Geoportal of Khmelnytskyi City Council, its public cadastral map, and a published non-agricultural land-parcel dataset with a public JSON API. The city council's open-data page also links the geoportal.",
+        "actualResultUrls": [
+          "https://gis.khm.gov.ua/",
+          "https://gis.khm.gov.ua/map/zem_cad",
+          "https://gis.khm.gov.ua/register_of_datasets_card/3651143827500041938",
+          "https://www.khm.gov.ua/prozora-hromada/vidkryti-dani"
+        ]
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Хмельницький офіційна кадастрова карта земельний кадастр карта ділянок",
+        "result": "Офіційні результати підтвердили міський геопортал Хмельницької міської ради, публічну кадастрову карту та набір земельних ділянок несільськогосподарського призначення з API; окремо підтверджено державну кадастрову службу як національний, не міський, custodian.",
+        "actualResultUrls": [
+          "https://gis.khm.gov.ua/map/zem_cad",
+          "https://gis.khm.gov.ua/zemelni-kadastr",
+          "https://www.khm.gov.ua/uk/node/38618",
+          "https://khmelnytska.land.gov.ua/kadastr-i-reyestraciya/nacionalna-kadastrova-sistema/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "researchNote": "A first-party Khmelnytskyi City Council geoportal and municipal land-cadastre dataset/API were evidenced. The bounded API response was tabular only; no safe parcel ID-plus-geometry response was obtained. This packet is not source integration or runtime admission."
+}

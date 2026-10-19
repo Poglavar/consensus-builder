@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3592",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3592-tacna.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/tacna-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:24:57Z",
+  "reason": "Tacna municipal cadastral custody and SUNARP viewer are evidenced; the inspected IDEP polygon layer contains map-sheet fields, and SUNARP requires identity/CAPTCHA. No public native parcel ID or full parcel response was verified. Fresh adapter reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent."
+}

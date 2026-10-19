@@ -1,0 +1,148 @@
+{
+  "name": "Leipzig",
+  "country": "Germany",
+  "countryCode": "DE",
+  "rank": 1017,
+  "point": [
+    51.3403873460544,
+    12.3749392867142
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Leipzig Germany official cadastral parcel map ALKIS GeoSN public WFS",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "Official ALKIS service publishes parcel geometry/native IDs without owner data. Exact 1 m EPSG:25833 WUP-point envelope returned one full polygon HTTP 200; fresh exact-ID query returned same parcel and geometry hash; polygon covers point. One safe sample retained.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "German",
+        "query": "Leipzig Flurstück ALKIS GeoSN Liegenschaftskataster WFS Geodaten Sachsen",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "Official ALKIS service publishes parcel geometry/native IDs without owner data. Exact 1 m EPSG:25833 WUP-point envelope returned one full polygon HTTP 200; fresh exact-ID query returned same parcel and geometry hash; polygon covers point. One safe sample retained.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "GeoSN Saxony ALKIS simplified WFS",
+        "operator": "Saxon State Office for Geoinformation and Land Management (GeoSN)",
+        "homeUrl": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+        "observation": "Official ALKIS service publishes parcel geometry/native IDs without owner data. Exact 1 m EPSG:25833 WUP-point envelope returned one full polygon HTTP 200; fresh exact-ID query returned same parcel and geometry hash; polygon covers point. One safe sample retained."
+      }
+    ],
+    "requests": [
+      {
+        "method": "WFS GetFeature",
+        "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+        "query": "ave:Flurstueck safe fields ave:flstkennz and ave:geometrie; 1m x 1m EPSG:25833 envelope centered on exact WUP point; count=3.",
+        "response": {
+          "numberReturned": 1,
+          "nativeId": "140415___04403____04",
+          "geometryType": "Polygon",
+          "geometryHash": "5ddabc97c3ac8c8b0d3aafba8c6f86743591057dad2e24d264f342a428e00903",
+          "pointCovered": true,
+          "sample": "city-5391-leipzig-samples.geojson"
+        }
+      },
+      {
+        "method": "WFS GetFeature",
+        "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+        "query": "Exact equality filter on ave:flstkennz, count=2.",
+        "response": {
+          "numberReturned": 1,
+          "nativeIds": [
+            "140415___04403____04"
+          ],
+          "geometryHashes": [
+            "5ddabc97c3ac8c8b0d3aafba8c6f86743591057dad2e24d264f342a428e00903"
+          ],
+          "sameGeometry": true
+        }
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "DE-5391-LOCAL-CADASTRE-REVIEW",
+    "name": "GeoSN Saxony ALKIS simplified WFS",
+    "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+    "operator": "Saxon State Office for Geoinformation and Land Management (GeoSN)",
+    "serviceType": "Official public parcel WFS returned full geometry at WUP point.",
+    "layer": "ave:Flurstueck",
+    "geometryType": "Polygon",
+    "outputCrs": "GeoJSON EPSG:4326; source WFS EPSG:25833",
+    "nativeIdField": "ave:flstkennz",
+    "nativeIdEvidence": "Exact native-ID readback returned identical geometry.",
+    "scope": "180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness."
+  },
+  "coverageAssessment": {
+    "claimedScope": "WFS exact 1m point query returned one full Polygon HTTP 200; exact ave:flstkennz requery returned same ID/hash; safe fields only.",
+    "verifiedOpenScope": "180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Qualified bounded source-reference geometry only; whole-city completeness, legal title, survey accuracy, currentness and future revision identity continuity remain unverified.",
+  "nextStep": "Review runtime/profile qualification separately before any adapter enablement.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5391,
+  "cityId": "wup2025:5391",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    51.3403873460544,
+    12.3749392867142
+  ],
+  "population2025k": 542.313,
+  "populationUnit": "persons",
+  "queueRank": 1017,
+  "population2025": 542313,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "dresden-saxony-gml-wfs"
+  ],
+  "registryBasis": "GeoSN public ALKIS WFS returned source-native Leipzig parcels, including the unchanged WUP locator. 180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness.",
+  "registryEvidenceUrls": [
+    "https://geodienste.sachsen.de/alkis-wfs-4968.html",
+    "https://www.landesvermessung.sachsen.de/liegenschaftskataster-4980.html",
+    "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness.",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/leipzig-saxony-gml-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/leipzig-saxony-gml-root-quality.json",
+    "qualityReviewFile": "research/overnight-followon-2026-10-09/leipzig-root-quality-review.json"
+  },
+  "sampleFile": "city-5391-leipzig-samples.geojson",
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. GeoSN public ALKIS WFS returned source-native Leipzig parcels, including the unchanged WUP locator. 180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness.",
+  "appCityId": "leipzig",
+  "scopeLimits": "180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness.",
+  "runtimeQualification": {
+    "sourceId": "dresden-saxony-gml-wfs",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/leipzig-saxony-gml-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/leipzig-saxony-gml-root-quality.json"
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  }
+}

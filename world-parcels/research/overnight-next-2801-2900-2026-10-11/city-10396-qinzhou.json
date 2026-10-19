@@ -1,0 +1,144 @@
+{
+  "cityCode": 10396,
+  "queueRank": 2830,
+  "name": "Qinzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [21.9581462914771, 108.627671762759],
+  "population2025": 210017,
+  "population2025k": 210.017,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qinzhou China official cadastral parcel map land registry GIS service",
+        "result": "Official Guangxi Natural Resources reporting was found for a Guangxi real-estate-registration map inquiry service and an official Guangxi report on Qinzhou's land-space information platform. The public sources describe service/governance context but expose no anonymous Qinzhou parcel-vector endpoint or safe parcel schema.",
+        "actualResultUrls": [
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17610037.shtml"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "钦州市 不动产登记 地籍图 自然资源局 官方 地图 服务",
+        "result": "中文 discovery confirmed the Guangxi online 不动产登记 ‘以图询房’ service, which uses Tianditu Guangxi and requires user authentication. An official Qinzhou report confirms the city's land-space basic-information platform and one-map supervision system. No anonymous Qinzhou parcel geometry, native parcel ID, or public cadastral API was found.",
+        "actualResultUrls": [
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17610037.shtml",
+          "https://bdc.dnr.gxzf.gov.cn/index"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Qinzhou Natural Resources authority is identified in official Qinzhou/Guangxi government reporting as responsible for the city's land-space information and natural-resources management systems; a separately exposed local cadastral viewer/API was not evidenced.",
+    "regionalPublicMap": "Guangxi real-estate-registration map inquiry service (bdc.dnr.gxzf.gov.cn) using Tianditu Guangxi; the official notice states that authentication is required.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": [
+      "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+      "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17610037.shtml"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Guangxi Natural Resources article says the Guangxi real-estate-registration ‘map inquiry’ service provides visualized registered-property and cadastral-map information through Tianditu Guangxi, while requiring user authentication. It does not publish an anonymous parcel-vector route, schema, CRS, or safe parcel identity query."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17610037.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Guangxi Natural Resources article reports acceptance of Qinzhou's land-space basic-information platform and one-map supervision system. It establishes a municipal management platform but exposes no public anonymous cadastral geometry or parcel identity endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://bdc.dnr.gxzf.gov.cn/index",
+      "httpStatus": null,
+      "outcome": "Anonymous HTTPS GET timed out after 20 seconds from the research environment. No content, viewer configuration, API route, geometry, or absence inference was made; no credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://dnr.gxzf.gov.cn/",
+      "httpStatus": null,
+      "outcome": "Anonymous HTTPS GET timed out after 20 seconds. The official search result pages above were available to discovery, but no additional service endpoint was recovered."
+    },
+    {
+      "method": "GET",
+      "url": "http://www.qinzhou.gov.cn/",
+      "httpStatus": null,
+      "outcome": "Attempted official Qinzhou government homepage request did not produce a response before the request window ended; no cadastral endpoint or geometry was inferred."
+    },
+    {
+      "method": "GET",
+      "url": "https://zrzyghj.qinzhou.gov.cn/",
+      "httpStatus": null,
+      "outcome": "Attempted likely Qinzhou natural-resources host request did not produce a response before the request window ended; no cadastral endpoint or geometry was inferred."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [21.9581462914771, 108.627671762759] was preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No public anonymous Qinzhou parcel-vector route or safe ID-plus-geometry response was identified."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Qinzhou municipal natural-resources/land-space information platform and Guangxi provincial real-estate-registration map inquiry service.",
+    "verifiedOpenScope": "Official local/provincial service context was evidenced; no anonymous Qinzhou parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, local service CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Official Guangxi sources establish a provincial map-based real-estate/cadastral inquiry service and a Qinzhou land-space information platform, but anonymous access timed out and the public material does not expose a safe parcel-vector route, schema, CRS, native identity, or citywide open coverage. Runtime readiness remains held."
+}

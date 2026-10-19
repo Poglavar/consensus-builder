@@ -1,0 +1,1344 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded actual-adapter qualification of the official Seychelles current parcel layer. Complete viewport manifests, exact rereads with matching geometry, forced paging, explicit absence, footprint and source binding.",
+  "checkedAt": "2026-10-08T15:41:32.498Z",
+  "descriptor": {
+    "id": "sc-mlh-current-parcels-arcgis",
+    "adapter": "arcgis",
+    "idPrefix": "SC-MLH-",
+    "endpoint": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0",
+    "idField": "id",
+    "idType": "string",
+    "objectIdField": "objectid",
+    "outFields": [
+      "objectid",
+      "id",
+      "validfrom",
+      "validtill"
+    ],
+    "parcelNumberField": "id",
+    "attributeDateEquals": {
+      "validtill": "9999-12-31T23:59:59.000Z"
+    },
+    "boundsSrid": 32740,
+    "boundsProjection": "+proj=utm +zone=40 +south +datum=WGS84 +units=m +no_defs",
+    "pageSize": 200,
+    "idBatchSize": 40,
+    "maxFeatures": 6000,
+    "maxBboxKm2": 4,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": {
+    "centerLonLat": [
+      55.4513,
+      -4.6191
+    ],
+    "step": 0.0015,
+    "alignedCells": 9,
+    "panCells": 4
+  },
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 3130,
+      "bbox": [
+        55.449,
+        -4.6215,
+        55.4505,
+        -4.62
+      ],
+      "count": 56,
+      "complete": true
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1487,
+      "bbox": [
+        55.4505,
+        -4.6215,
+        55.452,
+        -4.62
+      ],
+      "count": 34,
+      "complete": true
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 10201,
+      "bbox": [
+        55.452,
+        -4.6215,
+        55.4535,
+        -4.62
+      ],
+      "count": 31,
+      "complete": true
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 6355,
+      "bbox": [
+        55.449,
+        -4.62,
+        55.4505,
+        -4.6185
+      ],
+      "count": 64,
+      "complete": true
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1087,
+      "bbox": [
+        55.4505,
+        -4.62,
+        55.452,
+        -4.6185
+      ],
+      "count": 15,
+      "complete": true
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 5537,
+      "bbox": [
+        55.452,
+        -4.62,
+        55.4535,
+        -4.6185
+      ],
+      "count": 21,
+      "complete": true
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 10684,
+      "bbox": [
+        55.449,
+        -4.6185,
+        55.4505,
+        -4.617
+      ],
+      "count": 73,
+      "complete": true
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 2182,
+      "bbox": [
+        55.4505,
+        -4.6185,
+        55.452,
+        -4.617
+      ],
+      "count": 48,
+      "complete": true
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 14614,
+      "bbox": [
+        55.452,
+        -4.6185,
+        55.4535,
+        -4.617
+      ],
+      "count": 65,
+      "complete": true
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 2699,
+      "bbox": [
+        55.4505,
+        -4.623,
+        55.452,
+        -4.6215
+      ],
+      "count": 37,
+      "complete": true
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 3652,
+      "bbox": [
+        55.4505,
+        -4.617,
+        55.452,
+        -4.6155
+      ],
+      "count": 70,
+      "complete": true
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 3421,
+      "bbox": [
+        55.4475,
+        -4.62,
+        55.449,
+        -4.6185
+      ],
+      "count": 68,
+      "complete": true
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 14474,
+      "bbox": [
+        55.4535,
+        -4.62,
+        55.455,
+        -4.6185
+      ],
+      "count": 18,
+      "complete": true
+    },
+    {
+      "name": "fresh-exact-0",
+      "passed": true,
+      "elapsedMs": 6375,
+      "count": 80,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "fresh-exact-80",
+      "passed": true,
+      "elapsedMs": 6729,
+      "count": 80,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "fresh-exact-160",
+      "passed": true,
+      "elapsedMs": 5508,
+      "count": 80,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "fresh-exact-240",
+      "passed": true,
+      "elapsedMs": 5714,
+      "count": 80,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "fresh-exact-320",
+      "passed": true,
+      "elapsedMs": 5288,
+      "count": 80,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "fresh-exact-400",
+      "passed": true,
+      "elapsedMs": 5097,
+      "count": 80,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "fresh-exact-480",
+      "passed": true,
+      "elapsedMs": 1702,
+      "count": 16,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "forced-page-size-3",
+      "passed": true,
+      "elapsedMs": 8319,
+      "bbox": [
+        55.449,
+        -4.6185,
+        55.4505,
+        -4.617
+      ],
+      "count": 73,
+      "geometryPages": 25
+    },
+    {
+      "name": "explicit-absent",
+      "passed": true,
+      "elapsedMs": 489,
+      "absentId": "SC-MLH-__absent_research_20261008__",
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1025,
+      "count": 10,
+      "sampledParcelId": "SC-MLH-V5940",
+      "geometrySha256": "48aa87977ce8d051e857464c16172c46b9cf9306e14e8745f7b2d84650dfb418"
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 986,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "sampledParcelId": "SC-MLH-V5940"
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T15:41:32.502Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327948.6825510113%2C9488986.615730196%2C328115.4782675206%2C9489152.844798153&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1996
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:34.499Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327948.6825510113%2C9488986.615730196%2C328115.4782675206%2C9489152.844798153&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 821
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:35.352Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192359%2C28191517%2C28191612%2C28194229%2C28194236%2C28194371%2C28197134%2C28199470%2C28199511%2C28200661%2C28204898%2C28206745%2C28207862%2C28208456%2C28210296%2C28210300%2C28210453%2C28210807%2C28211588%2C28212408%2C28212439%2C28213828%2C28214347%2C28214722%2C28214901%2C28238297%2C28218294%2C28218987%2C28222220%2C28222382%2C28222962%2C28224240%2C28224640%2C28225017%2C28227400%2C28230179%2C28230225%2C28230837%2C28233273%2C28233326%2C28233507%2C28233580%2C28235037%2C28236262%2C28236265%2C28236268%2C28237317%2C28239237%2C28239433%2C28240690%2C28242555%2C28243527%2C28243766%2C28244750%2C28244925%2C28245371",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 282
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:35.632Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328115.1168129903%2C9488986.978656417%2C328281.9120620453%2C9489153.20725612&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 616
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:36.249Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328115.1168129903%2C9488986.978656417%2C328281.9120620453%2C9489153.20725612&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 572
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:36.833Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192957%2C28193975%2C28194624%2C28196982%2C28198704%2C28199017%2C28200351%2C28201007%2C28201249%2C28201969%2C28202045%2C28204933%2C28208667%2C28210585%2C28213828%2C28215465%2C28218907%2C28220257%2C28220571%2C28221391%2C28221409%2C28222134%2C28222329%2C28223685%2C28225429%2C28230357%2C28230965%2C28231871%2C28234058%2C28236247%2C28240963%2C28242647%2C28243506%2C28244925",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 276
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:37.120Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328281.55095785036%2C9488987.341231046%2C328448.3457395653%2C9489153.569362609&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 9296
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:46.418Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328281.55095785036%2C9488987.341231046%2C328448.3457395653%2C9489153.569362609&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 616
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:47.036Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191595%2C28193930%2C28196982%2C28198801%2C28200351%2C28200799%2C28202045%2C28202734%2C28207043%2C28210613%2C28211106%2C28212610%2C28212735%2C28213382%2C28213963%2C28220039%2C28221391%2C28221634%2C28222329%2C28224115%2C28225286%2C28225829%2C28226512%2C28229217%2C28229564%2C28230214%2C28231429%2C28233756%2C28238485%2C28241277%2C28243506",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 267
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:47.323Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327948.3208633539%2C9489152.48198871%2C328115.1168129903%2C9489318.710933402&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 4124
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:51.456Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327948.3208633539%2C9489152.48198871%2C328115.1168129903%2C9489318.710933402&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 894
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:52.351Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192392%2C28190940%2C28191517%2C28194236%2C28194252%2C28195176%2C28196354%2C28196926%2C28197187%2C28197658%2C28198903%2C28199533%2C28199875%2C28200650%2C28200680%2C28200853%2C28200957%2C28201257%2C28202432%2C28202439%2C28202620%2C28203612%2C28204084%2C28206575%2C28207480%2C28207675%2C28210300%2C28211840%2C28212049%2C28214123%2C28218172%2C28218294%2C28218594%2C28218976%2C28219682%2C28220148%2C28221555%2C28222382%2C28222701%2C28224419%2C28225167%2C28226240%2C28229499%2C28229781%2C28230837%2C28231102%2C28231457%2C28231870%2C28233273%2C28233507%2C28233580%2C28234768%2C28235939%2C28238919%2C28239184%2C28240243%2C28241264%2C28241599%2C28242529%2C28242555%2C28242680%2C28243506%2C28245054%2C28245371",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 273
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:53.679Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328114.7554755559%2C9489152.844798153%2C328281.55095785036%2C9489319.073274706&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 408
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:54.090Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328114.7554755559%2C9489152.844798153%2C328281.55095785036%2C9489319.073274706&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 414
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:54.505Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192492%2C28193860%2C28202620%2C28206575%2C28212049%2C28216462%2C28224419%2C28230357%2C28234811%2C28235357%2C28236515%2C28237799%2C28239184%2C28240963%2C28243506",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 257
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:54.768Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328281.189970638%2C9489153.20725612%2C328447.98498570453%2C9489319.435264643&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 4805
+    },
+    {
+      "checkedAt": "2026-10-08T15:41:59.576Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328281.189970638%2C9489153.20725612%2C328447.98498570453%2C9489319.435264643&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 446
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:00.044Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191922%2C28193900%2C28194254%2C28199497%2C28199979%2C28205305%2C28207448%2C28212231%2C28213963%2C28214984%2C28216462%2C28218677%2C28220039%2C28224588%2C28225829%2C28228525%2C28228922%2C28230214%2C28233287%2C28243286%2C28243506",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 259
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:00.307Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327947.95929290634%2C9489318.348240735%2C328114.7554755559%2C9489484.577062165&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 9418
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:09.728Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327947.95929290634%2C9489318.348240735%2C328114.7554755559%2C9489484.577062165&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 962
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:10.694Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192392%2C28190960%2C28190995%2C28191480%2C28191521%2C28191578%2C28191653%2C28195053%2C28195131%2C28195737%2C28195970%2C28196026%2C28196741%2C28197413%2C28198071%2C28198937%2C28199050%2C28199093%2C28200147%2C28200522%2C28200642%2C28200700%2C28200795%2C28200801%2C28201257%2C28201639%2C28202620%2C28203612%2C28203708%2C28204200%2C28204425%2C28204653%2C28205024%2C28205494%2C28205610%2C28207265%2C28207335%2C28207480%2C28207575%2C28207675%2C28208165%2C28209056%2C28209188%2C28210402%2C28210637%2C28211487%2C28211993%2C28212409%2C28213070%2C28213290%2C28214123%2C28214140%2C28214513%2C28214666%2C28214699%2C28216055%2C28216204%2C28216441%2C28218252%2C28220220%2C28220573%2C28221977%2C28222390%2C28227656%2C28227870%2C28229283%2C28229499%2C28231870%2C28234278%2C28237693%2C28238852%2C28239370%2C28243279",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 273
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:10.993Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328114.394255218%2C9489318.710933402%2C328281.189970638%2C9489484.939286804&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1110
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:12.105Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328114.394255218%2C9489318.710933402%2C328281.189970638%2C9489484.939286804&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 777
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:12.890Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192492%2C28191600%2C28192641%2C28193860%2C28194293%2C28195053%2C28196026%2C28196412%2C28196455%2C28197199%2C28197413%2C28201215%2C28202620%2C28204371%2C28206351%2C28207335%2C28208281%2C28209188%2C28209199%2C28214380%2C28215102%2C28215433%2C28216462%2C28217932%2C28222795%2C28223197%2C28223801%2C28224140%2C28224323%2C28225929%2C28229340%2C28238393%2C28230219%2C28230821%2C28234559%2C28235357%2C28235730%2C28236515%2C28236785%2C28237693%2C28237799%2C28238519%2C28240551%2C28240559%2C28241882%2C28243000%2C28244994%2C28246021",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 280
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:13.177Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328280.8291004085%2C9489319.073274706%2C328447.62434871285%2C9489485.30116019&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 12259
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:25.442Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328280.8291004085%2C9489319.073274706%2C328447.62434871285%2C9489485.30116019&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 928
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:26.372Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191900%2C28192641%2C28193900%2C28194254%2C28194994%2C28195171%2C28197061%2C28199067%2C28199375%2C28199497%2C28199979%2C28200047%2C28200379%2C28200380%2C28200581%2C28200729%2C28200748%2C28201012%2C28203877%2C28204371%2C28204680%2C28205331%2C28207701%2C28208281%2C28209938%2C28210254%2C28210299%2C28210474%2C28210489%2C28212752%2C28213638%2C28214950%2C28214984%2C28215243%2C28216462%2C28216946%2C28217048%2C28217932%2C28218677%2C28219134%2C28220160%2C28222213%2C28222867%2C28223197%2C28223901%2C28223948%2C28224242%2C28224323%2C28225313%2C28225929%2C28228525%2C28228603%2C28228922%2C28229675%2C28238393%2C28233214%2C28233687%2C28234955%2C28235987%2C28236379%2C28236905%2C28237941%2C28238519%2C28241222%2C28244994",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 1415
+    },
+    {
+      "checkedAt": "2026-10-08T15:42:27.794Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328115.4782675206%2C9488821.112508189%2C328282.2732832226%2C9488987.341231046&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "error": "The operation was aborted due to timeout",
+      "elapsedMs": 15006
+    },
+    {
+      "checkedAt": "2026-10-08T15:44:48.005Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328115.4782675206%2C9488821.112508189%2C328282.2732832226%2C9488987.341231046&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1721
+    },
+    {
+      "checkedAt": "2026-10-08T15:44:49.740Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328115.4782675206%2C9488821.112508189%2C328282.2732832226%2C9488987.341231046&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 671
+    },
+    {
+      "checkedAt": "2026-10-08T15:44:50.425Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192097%2C28192670%2C28194164%2C28195014%2C28196340%2C28196982%2C28198704%2C28199175%2C28199454%2C28199610%2C28200338%2C28200353%2C28200731%2C28201249%2C28201889%2C28202208%2C28207684%2C28207756%2C28208667%2C28210359%2C28210585%2C28216049%2C28217211%2C28221467%2C28222134%2C28224233%2C28224335%2C28230209%2C28227464%2C28230791%2C28232552%2C28233778%2C28236438%2C28241199%2C28242647%2C28243454%2C28244925",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 256
+    },
+    {
+      "checkedAt": "2026-10-08T15:44:50.708Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328114.0331519766%2C9489484.577062165%2C328280.8291004085%2C9489650.805292416&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "error": "The operation was aborted due to timeout",
+      "elapsedMs": 15050
+    },
+    {
+      "checkedAt": "2026-10-08T15:45:52.427Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328114.0331519766%2C9489484.577062165%2C328280.8291004085%2C9489650.805292416&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2240
+    },
+    {
+      "checkedAt": "2026-10-08T15:45:54.678Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328114.0331519766%2C9489484.577062165%2C328280.8291004085%2C9489650.805292416&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1037
+    },
+    {
+      "checkedAt": "2026-10-08T15:45:55.722Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191198%2C28191372%2C28192641%2C28192777%2C28193246%2C28193444%2C28194293%2C28195920%2C28196311%2C28196945%2C28197152%2C28197169%2C28197413%2C28200581%2C28200857%2C28200931%2C28201215%2C28201892%2C28201927%2C28202044%2C28202912%2C28203815%2C28204215%2C28204228%2C28204239%2C28205311%2C28206244%2C28206351%2C28206385%2C28207172%2C28209199%2C28209565%2C28209592%2C28210199%2C28210363%2C28210474%2C28211175%2C28212543%2C28212786%2C28213059%2C28213202%2C28214127%2C28214689%2C28214773%2C28215628%2C28215817%2C28217171%2C28217818%2C28218621%2C28220551%2C28220937%2C28222793%2C28222799%2C28229215%2C28229359%2C28238393%2C28229804%2C28229881%2C28230199%2C28230821%2C28230899%2C28230985%2C28234486%2C28235714%2C28239235%2C28240551%2C28240682%2C28243388%2C28244127%2C28245804",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 292
+    },
+    {
+      "checkedAt": "2026-10-08T15:45:56.079Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327781.88613391697%2C9489152.118827783%2C327948.6825510113%2C9489318.348240735&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "error": "The operation was aborted due to timeout",
+      "elapsedMs": 15032
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:14.671Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327781.88613391697%2C9489152.118827783%2C327948.6825510113%2C9489318.348240735&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2112
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:16.791Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327781.88613391697%2C9489152.118827783%2C327948.6825510113%2C9489318.348240735&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 990
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:17.785Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192456%2C28193292%2C28193470%2C28193485%2C28194678%2C28194909%2C28194930%2C28195047%2C28195051%2C28195870%2C28197470%2C28198223%2C28198754%2C28198767%2C28199121%2C28199183%2C28199254%2C28200323%2C28200734%2C28201014%2C28201378%2C28201906%2C28202392%2C28203788%2C28204084%2C28204197%2C28204724%2C28204731%2C28204735%2C28207681%2C28208481%2C28208649%2C28210295%2C28212245%2C28213954%2C28214777%2C28214793%2C28216239%2C28216585%2C28217063%2C28217378%2C28217691%2C28217882%2C28218172%2C28218305%2C28219315%2C28219517%2C28220912%2C28221764%2C28222077%2C28222382%2C28223689%2C28225300%2C28226271%2C28226564%2C28228627%2C28229499%2C28229781%2C28230193%2C28230279%2C28231373%2C28232236%2C28234607%2C28236784%2C28237129%2C28240582%2C28243399%2C28243403",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 300
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:18.094Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328447.62434871285%2C9489153.569362609%2C328614.4188966656%2C9489319.79690322&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 13782
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:31.880Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=328447.62434871285%2C9489153.569362609%2C328614.4188966656%2C9489319.79690322&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 448
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:32.332Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28199222%2C28199497%2C28203419%2C28203902%2C28204680%2C28204909%2C28207448%2C28212324%2C28213963%2C28214989%2C28219033%2C28219650%2C28224588%2C28225927%2C28231604%2C28232031%2C28240917%2C28243533",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 232
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:32.572Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V5940%27%2C%27V5711%27%2C%27V529%27%2C%27V5388%27%2C%27V5397%27%2C%27V5391%27%2C%27V5502%27%2C%27V10456%27%2C%27V10088%27%2C%27V5548%27%2C%27V5715%27%2C%27V22007%27%2C%27V5257%27%2C%27V5387%27%2C%27V1750%27%2C%27V3530%27%2C%27V5503%27%2C%27V5557%27%2C%27V5384%27%2C%27V10843%27%2C%27V5518%27%2C%27V4726%27%2C%27V1752%27%2C%27V423%27%2C%27V1751%27%2C%27V424%27%2C%27V10403%27%2C%27V2063%27%2C%27V22006%27%2C%27V10858%27%2C%27V5851%27%2C%27V5398%27%2C%27V10404%27%2C%27V5258%27%2C%27V5392%27%2C%27V10859%27%2C%27V3529%27%2C%27V4998%27%2C%27V5385%27%2C%27V5394%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2473
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:35.048Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V5940%27%2C%27V5711%27%2C%27V529%27%2C%27V5388%27%2C%27V5397%27%2C%27V5391%27%2C%27V5502%27%2C%27V10456%27%2C%27V10088%27%2C%27V5548%27%2C%27V5715%27%2C%27V22007%27%2C%27V5257%27%2C%27V5387%27%2C%27V1750%27%2C%27V3530%27%2C%27V5503%27%2C%27V5557%27%2C%27V5384%27%2C%27V10843%27%2C%27V5518%27%2C%27V4726%27%2C%27V1752%27%2C%27V423%27%2C%27V1751%27%2C%27V424%27%2C%27V10403%27%2C%27V2063%27%2C%27V22006%27%2C%27V10858%27%2C%27V5851%27%2C%27V5398%27%2C%27V10404%27%2C%27V5258%27%2C%27V5392%27%2C%27V10859%27%2C%27V3529%27%2C%27V4998%27%2C%27V5385%27%2C%27V5394%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 323
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:35.393Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192359%2C28191517%2C28191612%2C28194229%2C28194236%2C28194371%2C28197134%2C28199470%2C28199511%2C28200661%2C28204898%2C28206745%2C28207862%2C28208456%2C28210296%2C28210300%2C28210453%2C28210807%2C28211588%2C28212408%2C28212439%2C28213828%2C28214347%2C28214722%2C28214901%2C28218294%2C28218987%2C28222220%2C28222382%2C28222962%2C28224240%2C28224640%2C28225017%2C28227400%2C28230179%2C28230225%2C28230837%2C28233273%2C28233326%2C28233507",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 242
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:35.642Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V4886%27%2C%27V10457%27%2C%27V4352%27%2C%27V4571%27%2C%27V5500%27%2C%27V10712%27%2C%27V5007%27%2C%27V5361%27%2C%27V4570%27%2C%27V2062%27%2C%27V5499%27%2C%27V10860%27%2C%27V396%27%2C%27V5515%27%2C%27V5504%27%2C%27V5395%27%2C%27V5365%27%2C%27V17446%27%2C%27V5501%27%2C%27V5496%27%2C%27V10684%27%2C%27V5374%27%2C%27V5495%27%2C%27V3915%27%2C%27V7910%27%2C%27V17447%27%2C%27V5371%27%2C%27V7913%27%2C%27V10685%27%2C%27V3703%27%2C%27V7911%27%2C%27V5530%27%2C%27V5579%27%2C%27V7928%27%2C%27V3556%27%2C%27V3555%27%2C%27V5529%27%2C%27V6083%27%2C%27V5364%27%2C%27V5578%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2744
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:38.393Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V4886%27%2C%27V10457%27%2C%27V4352%27%2C%27V4571%27%2C%27V5500%27%2C%27V10712%27%2C%27V5007%27%2C%27V5361%27%2C%27V4570%27%2C%27V2062%27%2C%27V5499%27%2C%27V10860%27%2C%27V396%27%2C%27V5515%27%2C%27V5504%27%2C%27V5395%27%2C%27V5365%27%2C%27V17446%27%2C%27V5501%27%2C%27V5496%27%2C%27V10684%27%2C%27V5374%27%2C%27V5495%27%2C%27V3915%27%2C%27V7910%27%2C%27V17447%27%2C%27V5371%27%2C%27V7913%27%2C%27V10685%27%2C%27V3703%27%2C%27V7911%27%2C%27V5530%27%2C%27V5579%27%2C%27V7928%27%2C%27V3556%27%2C%27V3555%27%2C%27V5529%27%2C%27V6083%27%2C%27V5364%27%2C%27V5578%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 287
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:38.685Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192957%2C28193975%2C28194624%2C28196982%2C28198704%2C28199017%2C28200351%2C28201007%2C28201249%2C28201969%2C28202045%2C28204933%2C28208667%2C28210585%2C28215465%2C28238297%2C28218907%2C28220257%2C28220571%2C28221391%2C28221409%2C28222134%2C28222329%2C28223685%2C28225429%2C28233580%2C28235037%2C28236262%2C28236265%2C28236268%2C28237317%2C28239237%2C28239433%2C28240690%2C28242555%2C28243527%2C28243766%2C28244750%2C28244925%2C28245371",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 252
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:38.951Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V11204%27%2C%27V5366%27%2C%27V625%27%2C%27V5553%27%2C%27V5363%27%2C%27V7932%27%2C%27V7912%27%2C%27V21028%27%2C%27V1300%27%2C%27V777%27%2C%27V10243%27%2C%27V1939%27%2C%27V12796%27%2C%27V19145%27%2C%27V5924%27%2C%27V5498%27%2C%27V1963%27%2C%27V405%27%2C%27V5497%27%2C%27V9006%27%2C%27V8873%27%2C%27V5177%27%2C%27V1962%27%2C%27V560%27%2C%27V1885%27%2C%27V1961%27%2C%27V12809%27%2C%27V5178%27%2C%27V12795%27%2C%27V406%27%2C%27V12793%27%2C%27V5926%27%2C%27V626%27%2C%27V18442%27%2C%27V17811%27%2C%27V8044%27%2C%27V5505%27%2C%27V2247%27%2C%27V1865%27%2C%27V6153%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2774
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:41.728Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V11204%27%2C%27V5366%27%2C%27V625%27%2C%27V5553%27%2C%27V5363%27%2C%27V7932%27%2C%27V7912%27%2C%27V21028%27%2C%27V1300%27%2C%27V777%27%2C%27V10243%27%2C%27V1939%27%2C%27V12796%27%2C%27V19145%27%2C%27V5924%27%2C%27V5498%27%2C%27V1963%27%2C%27V405%27%2C%27V5497%27%2C%27V9006%27%2C%27V8873%27%2C%27V5177%27%2C%27V1962%27%2C%27V560%27%2C%27V1885%27%2C%27V1961%27%2C%27V12809%27%2C%27V5178%27%2C%27V12795%27%2C%27V406%27%2C%27V12793%27%2C%27V5926%27%2C%27V626%27%2C%27V18442%27%2C%27V17811%27%2C%27V8044%27%2C%27V5505%27%2C%27V2247%27%2C%27V1865%27%2C%27V6153%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 287
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:42.018Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192392%2C28190940%2C28191595%2C28193930%2C28194252%2C28195176%2C28196354%2C28196926%2C28197187%2C28198801%2C28200799%2C28202734%2C28207043%2C28210613%2C28211106%2C28212610%2C28212735%2C28213382%2C28213963%2C28220039%2C28221634%2C28224115%2C28225286%2C28225829%2C28226512%2C28229217%2C28229564%2C28230214%2C28230357%2C28230965%2C28231429%2C28231871%2C28233756%2C28234058%2C28236247%2C28238485%2C28240963%2C28241277%2C28242647%2C28243506",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 240
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:42.265Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V2663%27%2C%27V5599%27%2C%27V6152%27%2C%27V621%27%2C%27V8166%27%2C%27V4725%27%2C%27V21071%27%2C%27V8165%27%2C%27V740%27%2C%27V18441%27%2C%27V3343%27%2C%27V17646%27%2C%27V20163%27%2C%27V21077%27%2C%27V439%27%2C%27V4807%27%2C%27V5522%27%2C%27V4808%27%2C%27V21027%27%2C%27V20058%27%2C%27V21078%27%2C%27V4573%27%2C%27V211%27%2C%27V136%27%2C%27V4724%27%2C%27V1538%27%2C%27V2248%27%2C%27V2330%27%2C%27V881%27%2C%27V4693%27%2C%27V22897%27%2C%27V22008%27%2C%27V21070%27%2C%27V4954%27%2C%27V741%27%2C%27V6013%27%2C%27V2163%27%2C%27V1755%27%2C%27V8167%27%2C%27V4873%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2871
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:45.140Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V2663%27%2C%27V5599%27%2C%27V6152%27%2C%27V621%27%2C%27V8166%27%2C%27V4725%27%2C%27V21071%27%2C%27V8165%27%2C%27V740%27%2C%27V18441%27%2C%27V3343%27%2C%27V17646%27%2C%27V20163%27%2C%27V21077%27%2C%27V439%27%2C%27V4807%27%2C%27V5522%27%2C%27V4808%27%2C%27V21027%27%2C%27V20058%27%2C%27V21078%27%2C%27V4573%27%2C%27V211%27%2C%27V136%27%2C%27V4724%27%2C%27V1538%27%2C%27V2248%27%2C%27V2330%27%2C%27V881%27%2C%27V4693%27%2C%27V22897%27%2C%27V22008%27%2C%27V21070%27%2C%27V4954%27%2C%27V741%27%2C%27V6013%27%2C%27V2163%27%2C%27V1755%27%2C%27V8167%27%2C%27V4873%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 289
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:45.432Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28197658%2C28198903%2C28199533%2C28199875%2C28200650%2C28200680%2C28200853%2C28200957%2C28201257%2C28202432%2C28202439%2C28202620%2C28203612%2C28204084%2C28206575%2C28207480%2C28207675%2C28211840%2C28212049%2C28214123%2C28218172%2C28218594%2C28218976%2C28219682%2C28220148%2C28221555%2C28222701%2C28224419%2C28225167%2C28226240%2C28229499%2C28229781%2C28231102%2C28231457%2C28231870%2C28234768%2C28235939%2C28238919%2C28239184%2C28240243",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 245
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:45.682Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V8045%27%2C%27V5701%27%2C%27V2506%27%2C%27V5551%27%2C%27V3344%27%2C%27V6589%27%2C%27V6151%27%2C%27V5546%27%2C%27V5170%27%2C%27V6927%27%2C%27V12546%27%2C%27V12485%27%2C%27V5585%27%2C%27V5645%27%2C%27V18251%27%2C%27V6731%27%2C%27V5643%27%2C%27V1887%27%2C%27V6084%27%2C%27V5640%27%2C%27V5644%27%2C%27V5904%27%2C%27V8552%27%2C%27V6361%27%2C%27V18252%27%2C%27V6618%27%2C%27V6617%27%2C%27V5521%27%2C%27V937%27%2C%27V1353%27%2C%27V783%27%2C%27V12307%27%2C%27V6315%27%2C%27V6926%27%2C%27V2001%27%2C%27V21024%27%2C%27V513%27%2C%27V18901%27%2C%27V12065%27%2C%27V1888%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2612
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:48.299Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V8045%27%2C%27V5701%27%2C%27V2506%27%2C%27V5551%27%2C%27V3344%27%2C%27V6589%27%2C%27V6151%27%2C%27V5546%27%2C%27V5170%27%2C%27V6927%27%2C%27V12546%27%2C%27V12485%27%2C%27V5585%27%2C%27V5645%27%2C%27V18251%27%2C%27V6731%27%2C%27V5643%27%2C%27V1887%27%2C%27V6084%27%2C%27V5640%27%2C%27V5644%27%2C%27V5904%27%2C%27V8552%27%2C%27V6361%27%2C%27V18252%27%2C%27V6618%27%2C%27V6617%27%2C%27V5521%27%2C%27V937%27%2C%27V1353%27%2C%27V783%27%2C%27V12307%27%2C%27V6315%27%2C%27V6926%27%2C%27V2001%27%2C%27V21024%27%2C%27V513%27%2C%27V18901%27%2C%27V12065%27%2C%27V1888%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 286
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:48.592Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192492%2C28190960%2C28190995%2C28191480%2C28191521%2C28191578%2C28191653%2C28191922%2C28193860%2C28193900%2C28194254%2C28195053%2C28195131%2C28195737%2C28195970%2C28196026%2C28196741%2C28197413%2C28199497%2C28199979%2C28205305%2C28207448%2C28212231%2C28214984%2C28216462%2C28218677%2C28224588%2C28228525%2C28228922%2C28233287%2C28234811%2C28235357%2C28236515%2C28237799%2C28241264%2C28241599%2C28242529%2C28242680%2C28243286%2C28245054",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 247
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:48.843Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V2117%27%2C%27V20162%27%2C%27V3%2FB%27%2C%27V11365%27%2C%27V1407%27%2C%27V11366%27%2C%27V782%27%2C%27V1184%27%2C%27V6523%27%2C%27V5519%27%2C%27V4815%27%2C%27V21714%27%2C%27V5523%27%2C%27V6446%27%2C%27V3325%27%2C%27V5552%27%2C%27V2118%27%2C%27V2002%27%2C%27V5795%27%2C%27V1890%27%2C%27V18362%27%2C%27V1354%27%2C%27V1408%27%2C%27V18902%27%2C%27V5524%27%2C%27V12064%27%2C%27V3326%27%2C%27V3327%27%2C%27V3%2FC%27%2C%27V12306%27%2C%27V1534%27%2C%27V3%2FE%27%2C%27V21617%27%2C%27V2297%27%2C%27V5556%27%2C%27V5726%27%2C%27V1215%27%2C%27V3186%27%2C%27V6524%27%2C%27V18106%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1811
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:50.664Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V2117%27%2C%27V20162%27%2C%27V3%2FB%27%2C%27V11365%27%2C%27V1407%27%2C%27V11366%27%2C%27V782%27%2C%27V1184%27%2C%27V6523%27%2C%27V5519%27%2C%27V4815%27%2C%27V21714%27%2C%27V5523%27%2C%27V6446%27%2C%27V3325%27%2C%27V5552%27%2C%27V2118%27%2C%27V2002%27%2C%27V5795%27%2C%27V1890%27%2C%27V18362%27%2C%27V1354%27%2C%27V1408%27%2C%27V18902%27%2C%27V5524%27%2C%27V12064%27%2C%27V3326%27%2C%27V3327%27%2C%27V3%2FC%27%2C%27V12306%27%2C%27V1534%27%2C%27V3%2FE%27%2C%27V21617%27%2C%27V2297%27%2C%27V5556%27%2C%27V5726%27%2C%27V1215%27%2C%27V3186%27%2C%27V6524%27%2C%27V18106%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 281
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:50.949Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28198071%2C28198937%2C28199050%2C28199093%2C28200147%2C28200522%2C28200642%2C28200700%2C28200795%2C28200801%2C28201639%2C28203708%2C28204200%2C28204425%2C28204653%2C28205024%2C28205494%2C28205610%2C28207265%2C28207335%2C28207575%2C28208165%2C28209056%2C28209188%2C28210402%2C28210637%2C28211487%2C28211993%2C28212409%2C28213070%2C28213290%2C28214140%2C28214513%2C28214666%2C28214699%2C28216055%2C28216204%2C28216441%2C28218252%2C28220220",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 237
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:51.193Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V5615%27%2C%27V18363%27%2C%27V12308%27%2C%27V3%2FD%27%2C%27V3425%27%2C%27V3%2FA%27%2C%27V21616%27%2C%27V18107%27%2C%27V21713%27%2C%27V18364%27%2C%27V10813%27%2C%27V3945%27%2C%27V20239%27%2C%27V3462%27%2C%27V3463%27%2C%27V3464%27%2C%27V10220%27%2C%27V3944%27%2C%27V18759%27%2C%27V9372%27%2C%27V17554%27%2C%27V3492%27%2C%27V17920%27%2C%27V17921%27%2C%27V8667%27%2C%27V20238%27%2C%27V3697%27%2C%27V19852%27%2C%27V21733%27%2C%27V6752%27%2C%27V18757%27%2C%27V20883%27%2C%27V12484%27%2C%27V8671%27%2C%27V21504%27%2C%27V6438%27%2C%27V3696%27%2C%27V16967%27%2C%27V21619%27%2C%27V20237%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2385
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:53.581Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V5615%27%2C%27V18363%27%2C%27V12308%27%2C%27V3%2FD%27%2C%27V3425%27%2C%27V3%2FA%27%2C%27V21616%27%2C%27V18107%27%2C%27V21713%27%2C%27V18364%27%2C%27V10813%27%2C%27V3945%27%2C%27V20239%27%2C%27V3462%27%2C%27V3463%27%2C%27V3464%27%2C%27V10220%27%2C%27V3944%27%2C%27V18759%27%2C%27V9372%27%2C%27V17554%27%2C%27V3492%27%2C%27V17920%27%2C%27V17921%27%2C%27V8667%27%2C%27V20238%27%2C%27V3697%27%2C%27V19852%27%2C%27V21733%27%2C%27V6752%27%2C%27V18757%27%2C%27V20883%27%2C%27V12484%27%2C%27V8671%27%2C%27V21504%27%2C%27V6438%27%2C%27V3696%27%2C%27V16967%27%2C%27V21619%27%2C%27V20237%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 282
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:53.867Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191600%2C28192641%2C28194293%2C28196412%2C28196455%2C28197199%2C28201215%2C28204371%2C28206351%2C28208281%2C28209199%2C28214380%2C28215102%2C28215433%2C28217932%2C28220573%2C28221977%2C28222390%2C28222795%2C28223197%2C28223801%2C28224140%2C28224323%2C28225929%2C28227656%2C28227870%2C28229283%2C28229340%2C28238393%2C28230219%2C28230821%2C28234278%2C28234559%2C28235730%2C28236785%2C28237693%2C28238519%2C28238852%2C28239370%2C28243279",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 232
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:54.104Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V21503%27%2C%27V19853%27%2C%27V21734%27%2C%27V5797%27%2C%27V10411%27%2C%27V3702%27%2C%27V947%27%2C%27V21241%27%2C%27V4497%27%2C%27V2309%27%2C%27V20885%27%2C%27V6841%27%2C%27V5636%27%2C%27V2589%27%2C%27V6046%27%2C%27V7679%27%2C%27V5660%27%2C%27V6972%27%2C%27V10431%27%2C%27V860%27%2C%27V6732%27%2C%27V6979%27%2C%27V5055%27%2C%27V6971%27%2C%27V3852%27%2C%27V5642%27%2C%27V4929%27%2C%27V5639%27%2C%27V20884%27%2C%27V5681%27%2C%27V16800%27%2C%27V19157%27%2C%27V2590%27%2C%27V9424%27%2C%27V9423%27%2C%27V5428%27%2C%27V5807%27%2C%27V19156%27%2C%27V4498%27%2C%27V883%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2269
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:56.376Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V21503%27%2C%27V19853%27%2C%27V21734%27%2C%27V5797%27%2C%27V10411%27%2C%27V3702%27%2C%27V947%27%2C%27V21241%27%2C%27V4497%27%2C%27V2309%27%2C%27V20885%27%2C%27V6841%27%2C%27V5636%27%2C%27V2589%27%2C%27V6046%27%2C%27V7679%27%2C%27V5660%27%2C%27V6972%27%2C%27V10431%27%2C%27V860%27%2C%27V6732%27%2C%27V6979%27%2C%27V5055%27%2C%27V6971%27%2C%27V3852%27%2C%27V5642%27%2C%27V4929%27%2C%27V5639%27%2C%27V20884%27%2C%27V5681%27%2C%27V16800%27%2C%27V19157%27%2C%27V2590%27%2C%27V9424%27%2C%27V9423%27%2C%27V5428%27%2C%27V5807%27%2C%27V19156%27%2C%27V4498%27%2C%27V883%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 278
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:56.657Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191900%2C28194994%2C28195171%2C28197061%2C28199067%2C28199375%2C28200047%2C28200379%2C28200380%2C28200581%2C28200729%2C28200748%2C28201012%2C28203877%2C28204680%2C28205331%2C28207701%2C28209938%2C28210254%2C28210299%2C28210474%2C28210489%2C28212752%2C28213638%2C28214950%2C28215243%2C28216946%2C28217048%2C28219134%2C28220160%2C28222213%2C28222867%2C28223901%2C28223948%2C28240551%2C28240559%2C28241882%2C28243000%2C28244994%2C28246021",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 246
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:56.910Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V948%27%2C%27V5429%27%2C%27V21618%27%2C%27V6840%27%2C%27V20882%27%2C%27V18758%27%2C%27V5663%27%2C%27V19475%27%2C%27V9425%27%2C%27V1294%27%2C%27V5651%27%2C%27V776%27%2C%27V5372%27%2C%27V5623%27%2C%27V5345%27%2C%27V4676%27%2C%27V482%27%2C%27V622%27%2C%27V5344%27%2C%27V5346%27%2C%27V5794%27%2C%27V6992%27%2C%27V5718%27%2C%27V5312%27%2C%27V5514%27%2C%27V10246%27%2C%27V4895%27%2C%27V1082%27%2C%27V3657%27%2C%27V5767%27%2C%27V5494%27%2C%27V5367%27%2C%27V5347%27%2C%27V5408%27%2C%27V5348%27%2C%27V17918%27%2C%27V5370%27%2C%27V5369%27%2C%27V40%27%2C%27V5319%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2333
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:59.246Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V948%27%2C%27V5429%27%2C%27V21618%27%2C%27V6840%27%2C%27V20882%27%2C%27V18758%27%2C%27V5663%27%2C%27V19475%27%2C%27V9425%27%2C%27V1294%27%2C%27V5651%27%2C%27V776%27%2C%27V5372%27%2C%27V5623%27%2C%27V5345%27%2C%27V4676%27%2C%27V482%27%2C%27V622%27%2C%27V5344%27%2C%27V5346%27%2C%27V5794%27%2C%27V6992%27%2C%27V5718%27%2C%27V5312%27%2C%27V5514%27%2C%27V10246%27%2C%27V4895%27%2C%27V1082%27%2C%27V3657%27%2C%27V5767%27%2C%27V5494%27%2C%27V5367%27%2C%27V5347%27%2C%27V5408%27%2C%27V5348%27%2C%27V17918%27%2C%27V5370%27%2C%27V5369%27%2C%27V40%27%2C%27V5319%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 289
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:59.538Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192097%2C28192670%2C28194164%2C28195014%2C28196340%2C28199175%2C28199454%2C28199610%2C28200338%2C28200353%2C28200731%2C28201889%2C28202208%2C28207684%2C28207756%2C28210359%2C28216049%2C28217211%2C28221467%2C28224233%2C28224242%2C28224335%2C28225313%2C28230209%2C28227464%2C28228603%2C28229675%2C28230791%2C28232552%2C28233214%2C28233687%2C28233778%2C28234955%2C28235987%2C28236379%2C28236438%2C28236905%2C28237941%2C28241199%2C28241222",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 247
+    },
+    {
+      "checkedAt": "2026-10-08T15:47:59.789Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V5368%27%2C%27V2903%27%2C%27V3108%27%2C%27V19013%27%2C%27V1655%27%2C%27V19012%27%2C%27V1652%27%2C%27V4900%27%2C%27V3077%27%2C%27V7677%27%2C%27V1669%27%2C%27V2904%27%2C%27V1670%27%2C%27V21205%27%2C%27V5790%27%2C%27V8187%27%2C%27V21146%27%2C%27V18570%27%2C%27V20972%27%2C%27V7181%27%2C%27V17506%27%2C%27V5054%27%2C%27V18538%27%2C%27V3076%27%2C%27V1078%27%2C%27V2569%27%2C%27V21204%27%2C%27V11597%27%2C%27V17809%27%2C%27V1667%27%2C%27V1671%27%2C%27V2158%27%2C%27V761%27%2C%27V6029%27%2C%27V18569%27%2C%27V12766%27%2C%27V4301%27%2C%27V2570%27%2C%27V1656%27%2C%27V11598%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1873
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:01.665Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V5368%27%2C%27V2903%27%2C%27V3108%27%2C%27V19013%27%2C%27V1655%27%2C%27V19012%27%2C%27V1652%27%2C%27V4900%27%2C%27V3077%27%2C%27V7677%27%2C%27V1669%27%2C%27V2904%27%2C%27V1670%27%2C%27V21205%27%2C%27V5790%27%2C%27V8187%27%2C%27V21146%27%2C%27V18570%27%2C%27V20972%27%2C%27V7181%27%2C%27V17506%27%2C%27V5054%27%2C%27V18538%27%2C%27V3076%27%2C%27V1078%27%2C%27V2569%27%2C%27V21204%27%2C%27V11597%27%2C%27V17809%27%2C%27V1667%27%2C%27V1671%27%2C%27V2158%27%2C%27V761%27%2C%27V6029%27%2C%27V18569%27%2C%27V12766%27%2C%27V4301%27%2C%27V2570%27%2C%27V1656%27%2C%27V11598%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 285
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:01.953Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191198%2C28191372%2C28192777%2C28193246%2C28193444%2C28195920%2C28196311%2C28196945%2C28197152%2C28197169%2C28200857%2C28200931%2C28201892%2C28201927%2C28202044%2C28202912%2C28203815%2C28204215%2C28204228%2C28204239%2C28205311%2C28206244%2C28206385%2C28207172%2C28209565%2C28209592%2C28210199%2C28210363%2C28211175%2C28212543%2C28212786%2C28213059%2C28213202%2C28214127%2C28214689%2C28214773%2C28215628%2C28215817%2C28217171%2C28243454",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 240
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:02.201Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V18571%27%2C%27V1657%27%2C%27V7182%27%2C%27V717%27%2C%27V17810%27%2C%27V3074%27%2C%27V4977%27%2C%27V718%27%2C%27V3107%27%2C%27V4860%27%2C%27V4754%27%2C%27V6694%27%2C%27V7180%27%2C%27V1654%27%2C%27V760%27%2C%27V3075%27%2C%27V1658%27%2C%27V7183%27%2C%27V18539%27%2C%27V762%27%2C%27V16285%27%2C%27V2028%27%2C%27V2548%27%2C%27V2064%27%2C%27V1398%27%2C%27V14%27%2C%27V7247%27%2C%27V2059%27%2C%27V792%27%2C%27V2061%27%2C%27V1395%27%2C%27V1891%27%2C%27V16286%27%2C%27V362%27%2C%27V1438%27%2C%27V364%27%2C%27V4584%27%2C%27V6141%27%2C%27V2056%27%2C%27V22005%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1976
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:04.180Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V18571%27%2C%27V1657%27%2C%27V7182%27%2C%27V717%27%2C%27V17810%27%2C%27V3074%27%2C%27V4977%27%2C%27V718%27%2C%27V3107%27%2C%27V4860%27%2C%27V4754%27%2C%27V6694%27%2C%27V7180%27%2C%27V1654%27%2C%27V760%27%2C%27V3075%27%2C%27V1658%27%2C%27V7183%27%2C%27V18539%27%2C%27V762%27%2C%27V16285%27%2C%27V2028%27%2C%27V2548%27%2C%27V2064%27%2C%27V1398%27%2C%27V14%27%2C%27V7247%27%2C%27V2059%27%2C%27V792%27%2C%27V2061%27%2C%27V1395%27%2C%27V1891%27%2C%27V16286%27%2C%27V362%27%2C%27V1438%27%2C%27V364%27%2C%27V4584%27%2C%27V6141%27%2C%27V2056%27%2C%27V22005%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 292
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:04.477Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192456%2C28193292%2C28193470%2C28193485%2C28194678%2C28194909%2C28194930%2C28195047%2C28195051%2C28195870%2C28197470%2C28198223%2C28198754%2C28198767%2C28199121%2C28199183%2C28199254%2C28200323%2C28200734%2C28201014%2C28217818%2C28218621%2C28220551%2C28220937%2C28222793%2C28222799%2C28229215%2C28229359%2C28229804%2C28229881%2C28230199%2C28230899%2C28230985%2C28234486%2C28235714%2C28239235%2C28240682%2C28243388%2C28244127%2C28245804",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 241
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:04.722Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V4718%27%2C%27V2348%27%2C%27V17280%27%2C%27V2111%27%2C%27V20932%27%2C%27V2390%27%2C%27V19607%27%2C%27V8056%27%2C%27V3827%27%2C%27V4157%27%2C%27V8058%27%2C%27V5396%27%2C%27V1396%27%2C%27V2652%27%2C%27V4589%27%2C%27V4590%27%2C%27V21076%27%2C%27V1397%27%2C%27V1743%27%2C%27V8574%27%2C%27V2057%27%2C%27V2060%27%2C%27V10511%27%2C%27V5597%27%2C%27V1400%27%2C%27V1677%27%2C%27V2058%27%2C%27V3826%27%2C%27V22896%27%2C%27V5405%27%2C%27V2314%27%2C%27V1745%27%2C%27V8057%27%2C%27V7248%27%2C%27V1744%27%2C%27V10512%27%2C%27V6140%27%2C%27V5596%27%2C%27V6366%27%2C%27V5441%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 2017
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:06.747Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V4718%27%2C%27V2348%27%2C%27V17280%27%2C%27V2111%27%2C%27V20932%27%2C%27V2390%27%2C%27V19607%27%2C%27V8056%27%2C%27V3827%27%2C%27V4157%27%2C%27V8058%27%2C%27V5396%27%2C%27V1396%27%2C%27V2652%27%2C%27V4589%27%2C%27V4590%27%2C%27V21076%27%2C%27V1397%27%2C%27V1743%27%2C%27V8574%27%2C%27V2057%27%2C%27V2060%27%2C%27V10511%27%2C%27V5597%27%2C%27V1400%27%2C%27V1677%27%2C%27V2058%27%2C%27V3826%27%2C%27V22896%27%2C%27V5405%27%2C%27V2314%27%2C%27V1745%27%2C%27V8057%27%2C%27V7248%27%2C%27V1744%27%2C%27V10512%27%2C%27V6140%27%2C%27V5596%27%2C%27V6366%27%2C%27V5441%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 294
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:07.048Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28201378%2C28201906%2C28202392%2C28203788%2C28204197%2C28204724%2C28204731%2C28204735%2C28207681%2C28208481%2C28208649%2C28210295%2C28212245%2C28213954%2C28214777%2C28214793%2C28216239%2C28216585%2C28217063%2C28217378%2C28217691%2C28217882%2C28218305%2C28219315%2C28219517%2C28220912%2C28221764%2C28222077%2C28223689%2C28225300%2C28226271%2C28226564%2C28228627%2C28230193%2C28230279%2C28231373%2C28232236%2C28234607%2C28236784%2C28237129",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 246
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:07.300Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V21622%27%2C%27V21623%27%2C%27V19606%27%2C%27V8092%27%2C%27V8091%27%2C%27V5664%27%2C%27V8553%27%2C%27V5633%27%2C%27V8787%27%2C%27V9007%27%2C%27V9100%27%2C%27V1074%27%2C%27V23309%27%2C%27V826%27%2C%27V8788%27%2C%27V23310%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1177
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:08.479Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27V21622%27%2C%27V21623%27%2C%27V19606%27%2C%27V8092%27%2C%27V8091%27%2C%27V5664%27%2C%27V8553%27%2C%27V5633%27%2C%27V8787%27%2C%27V9007%27%2C%27V9100%27%2C%27V1074%27%2C%27V23309%27%2C%27V826%27%2C%27V8788%27%2C%27V23310%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 276
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:08.759Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28199222%2C28203419%2C28203902%2C28204909%2C28212324%2C28214989%2C28219033%2C28219650%2C28225927%2C28231604%2C28232031%2C28240582%2C28240917%2C28243399%2C28243403%2C28243533",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 240
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:09.005Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327947.95929290634%2C9489318.348240735%2C328114.7554755559%2C9489484.577062165&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1228
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:10.235Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327947.95929290634%2C9489318.348240735%2C328114.7554755559%2C9489484.577062165&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 973
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:11.212Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192392%2C28190960%2C28190995",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 256
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:11.471Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191480%2C28191521%2C28191578",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 272
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:11.747Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191653%2C28195053%2C28195131",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 238
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:11.988Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28195737%2C28195970%2C28196026",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 238
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:12.230Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28196741%2C28197413%2C28198071",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 233
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:12.466Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28198937%2C28199050%2C28199093",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 233
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:12.705Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28200147%2C28200522%2C28200642",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 241
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:12.953Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28200700%2C28200795%2C28200801",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 235
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:13.191Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28201257%2C28201639%2C28202620",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 243
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:13.439Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28203612%2C28203708%2C28204200",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 238
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:13.680Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28204425%2C28204653%2C28205024",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 235
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:13.919Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28205494%2C28205610%2C28207265",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 236
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:14.164Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28207335%2C28207480%2C28207575",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 232
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:14.399Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28207675%2C28208165%2C28209056",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 237
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:14.640Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28209188%2C28210402%2C28210637",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 235
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:14.879Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28211487%2C28211993%2C28212409",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 234
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:15.117Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28213070%2C28213290%2C28214123",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 235
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:15.355Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28214140%2C28214513%2C28214666",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 253
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:15.610Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28214699%2C28216055%2C28216204",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 237
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:15.850Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28216441%2C28218252%2C28220220",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 237
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:16.089Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28220573%2C28221977%2C28222390",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 239
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:16.330Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28227656%2C28227870%2C28229283",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 246
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:16.579Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28229499%2C28231870%2C28234278",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 252
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:16.838Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28237693%2C28238852%2C28239370",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 239
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:17.082Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28243279",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 235
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:17.329Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27__absent_research_20261008__%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 249
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:17.580Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=%28validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27%29+AND+%28id+IN+%28%27__absent_research_20261008__%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 234
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:17.821Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327971.21338123677%2C9489130.39718156%2C328000.6089175623%2C9489152.78848658&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 420
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:18.244Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327971.21338123677%2C9489130.39718156%2C328000.6089175623%2C9489152.78848658&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 357
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:18.603Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191517%2C28191612%2C28200661%2C28206745%2C28212408%2C28222382%2C28224640%2C28233273%2C28233580%2C28237317",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 238
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:18.849Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327971.21338123677%2C9489130.39718156%2C328000.6089175623%2C9489152.78848658&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 343
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:19.196Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=327971.21338123677%2C9489130.39718156%2C328000.6089175623%2C9489152.78848658&geometryType=esriGeometryEnvelope&inSR=32740&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 372
+    },
+    {
+      "checkedAt": "2026-10-08T15:48:19.571Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28191517%2C28191612%2C28200661%2C28206745%2C28212408%2C28222382%2C28224640%2C28233273%2C28233580%2C28237317",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 237
+    }
+  ],
+  "privacy": "Only published parcel identifiers, lifecycle timestamps and geometry are requested. No names or contacts.",
+  "result": "passed",
+  "completedAt": "2026-10-08T15:48:19.837Z",
+  "uniqueParcelIds": 496
+}

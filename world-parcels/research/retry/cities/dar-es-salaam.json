@@ -1,0 +1,46 @@
+{
+ "kind": "city",
+ "key": "dar-es-salaam",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: sw-TZ,sw;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://ilmis.lands.go.tz/ ; https://ilmis.lands.go.tz/en/ilmis-project ; https://maps.lands.go.tz/ ; https://portal.lands.go.tz/ ; https://opendata.go.tz/ ; https://www.ardhi.go.tz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+  },
+  {
+   "url": "https://www.lands.go.tz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Ministry site loads; links only to registration and surveys-and-mapping service pages, no viewer/service URL"
+  },
+  {
+   "url": "https://www.tanzania.go.tz/ ; https://www.nbs.go.tz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable, not parcel services"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Tanzania cadastral parcels type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only unrelated third-party layers (Land_Ownership is Esri world cities; Dar damage assessment)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "only ILMIS/ardhi hosts fail while other .go.tz sites answer; possible host-specific block, unproven",
+ "notes": "Unchanged: ILMIS host unreachable; nothing new found. No public polygon service confirmed.",
+ "nextStep": "Retry ILMIS later; find its public viewer network calls."
+}

@@ -1,0 +1,62 @@
+{
+  "cityCode": 10159,
+  "queueRank": 2667,
+  "country": "India",
+  "countryCode": "IN",
+  "point": [18.7507894670564, 79.4853929976803],
+  "population2025": 221352,
+  "population2025k": 221.352,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ramagundam Telangana official cadastral parcel map land records GIS",
+        "result": "Found the official Ramagundam Municipal Corporation portal, Telangana Bhu Bharati land-records portal, and TGRAC ArcGIS REST services. The public parcel-capable layers inspected do not cover the Ramagundam latitude or returned no exact-point feature.",
+        "actualResultUrls": [
+          "https://ramagundamcorporation.telangana.gov.in/055/home-page",
+          "https://bhulandrecords.in/",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "రామగుండం తెలంగాణ అధికారిక భూ రికార్డులు మ్యాప్ సర్వే నంబర్",
+        "result": "Found the official Telangana Bhu Bharati portal with Telugu option and a Telugu listing for Telangana LandGrid. LandGrid states its displayed survey-map data comes from the public NRSC Bhuvan portal; it is not treated as a first-party cadastral registry. No Ramagundam parcel endpoint was evidenced.",
+        "actualResultUrls": [
+          "https://bhulandrecords.in/",
+          "https://play.google.com/store/apps/details?hl=te&id=app.landgrid.ts",
+          "https://bhuvan-app1.nrsc.gov.in/bhuvan2d2.0/"
+        ]
+      }
+    ],
+    "researchedAt": "2026-10-11",
+    "sourceScope": "Anonymous public GET/POST only; no login, token, CAPTCHA bypass, owner, address, contact, titleholder, tax/account, or other unsafe fields requested."
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Ramagundam Municipal Corporation / Government of Telangana",
+    "urls": [
+      "https://ramagundamcorporation.telangana.gov.in/055/home-page",
+      "https://bhulandrecords.in/"
+    ],
+    "qualification": "The local official portal evidences municipal property and mutation procedures and links to state services. This is registry/custodian evidence, not evidence that a public parcel-geometry adapter is available for Ramagundam."
+  },
+  "parcelSource": {
+    "provider": "Telangana State Remote Sensing Applications Centre (TGRAC), Government of Telangana",
+    "serviceUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem/MapServer",
+    "alternateServiceUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/DLSFolder/Digital_Land_Survey/MapServer",
+    "coverage": "No qualified Ramagundam parcel geometry found. LIS service is EPSG:4326 and lists parcel layers, but its parcel layer extents stop south of Ramagundam (layer 13: 16.0241–16.0739 N; layer 14: 15.9426–17.5302 N). DLS parcel/database extents also stop at 17.9092 N. Hydra cadastral layer uses a projected Lambert CRS and has an extent unrelated to the Ramagundam point.",
+    "safeFieldAllowlist": ["OBJECTID", "globalid", "unique_bsn", "parcel_no", "Parcel_num", "Base_Syno", "DMV_Code", "V_Name", "M_Name", "D_Name", "geometry"],
+    "nativeFieldMapping": "TGRAC LIS layer 13 exposes OBJECTID, unique_bsn, parcel_no and globalid among many fields; DLS layer 4 exposes OBJECTID and base-survey identifiers; Hydra layer 0 exposes OBJECTID/geodb_oid/Parcel_num. Unsafe ownership fields were not requested or retained. No feature qualified for retention."
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "No real Ramagundam parcel adapter or bounded parcel sample was independently qualified; research packet only, not source integration/admission.",
+  "samples": [],
+  "uncertainty": [
+    "The exact WUP point is a city reference point, not a guarantee of parcel coverage.",
+    "Zero exact-point responses and layer extent misses do not establish citywide cadastral absence.",
+    "The Bhu Bharati portal is official and provides land-record procedures, but the public UI/API route was not used for unsafe or owner-linked detail and no anonymous geometry response was evidenced."
+  ]
+}

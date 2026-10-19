@@ -1,0 +1,39 @@
+{
+ "kind": "country",
+ "key": "CF",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-CF,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gouv.cf/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "government site reachable; no cadastre portal seen"
+  },
+  {
+   "url": "https://minfin.cf/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel failed, response 502 from agent proxy (no HTTP response from origin)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Centrafrique%20parcelles%20Bangui",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "gouv.cf reachable; minfin.cf 502 only",
+ "notes": "No change. Only two hosts reached; no evidence of an online cadastre.",
+ "nextStep": "Check donor land projects (World Bank, UN-Habitat)."
+}

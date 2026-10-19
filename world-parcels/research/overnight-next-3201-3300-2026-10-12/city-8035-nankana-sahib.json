@@ -1,0 +1,92 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 8035,
+  "queueRank": 3202,
+  "name": "Nankana Sahib",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "capital": false,
+  "point": [31.448742754287, 73.7056035789592],
+  "population2025": 188474,
+  "population2025k": 188.474,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nankana Sahib Pakistan official cadastral land records map parcel Punjab Land Records Authority",
+        "result": "First-party discovery identified the Punjab Land Records Authority (PLRA), its land-record service network, the Nankana Sahib Arazi Record Centre, and official Punjab/local-government map references. The public PLRA homepage was reachable, but no anonymous parcel vector endpoint was exposed by discovery.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf",
+          "https://lahoredivision.punjab.gov.pk/maps",
+          "https://lgcd.punjab.gov.pk/system/files/Nankana_0.pdf"
+        ]
+      },
+      {
+        "language": "Urdu (local)",
+        "query": "نانکانہ صاحب پاکستان سرکاری اراضی ریکارڈ نقشہ کادستر پارسل",
+        "result": "First-party Urdu/English search results identified PLRA land-record services and the Nankana Sahib Arazi Record Centre. The official Registry of Deeds portal presented a login and CAPTCHA wall; no credentials, CAPTCHA bypass, or private token was used.",
+        "actualResultUrls": [
+          "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2FSearch%2F",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://nankana.punjab.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Punjab Land Records Authority (PLRA); Arazi Record Center Tehsil Nankana Sahib; Nankana Sahib district administration",
+    "scopeNote": "The official PLRA source names the Nankana Sahib Arazi Record Center and Punjab land-record services. Official local-government material documents Nankana Sahib cadastral/revenue survey-number and map context. This evidences a local registry/service custodian, not open citywide parcel geometry access.",
+    "evidenceUrls": [
+      "https://www.punjab-zameen.gov.pk/",
+      "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf",
+      "https://lgcd.punjab.gov.pk/system/files/Nankana_0.pdf",
+      "https://lahoredivision.punjab.gov.pk/maps"
+    ]
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "PLRA / Registry of Deeds public portal; Nankana Sahib Arazi Record Center",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "No anonymous safe parcel ID-plus-geometry response was returned. The exact WUP point was preserved and was not shifted or used as an absence test. No source-specific attribute set is retained."
+  },
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://www.punjab-zameen.gov.pk/", "outcome": "HTTP 200 from direct request; current PLRA landing page reachable. No parcel endpoint or public vector schema exposed in the retrieved page."},
+    {"method": "GET", "url": "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2FSearch%2F", "outcome": "Direct request timed out in this environment; web discovery showed the official Registry of Deeds portal presents login and CAPTCHA. No login or bypass attempted."},
+    {"method": "GET", "url": "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf", "outcome": "Official PLRA procurement document found by first-party search; it identifies the Arazi Record Center Tehsil Nankana Sahib near Officer Colony Mosque, District Nankana Sahib. Procedural/local-custodian evidence only; no parcel geometry response."},
+    {"method": "GET", "url": "https://lgcd.punjab.gov.pk/system/files/Nankana_0.pdf", "outcome": "Official Punjab LGCD document found by first-party search; it lists Municipal Committee Nankana Sahib revenue-estate/khasra survey-number context. Map/survey context only; no downloadable parcel feature service."},
+    {"method": "GET", "url": "https://lahoredivision.punjab.gov.pk/maps", "outcome": "Official Lahore Division map page found by first-party search; it lists Nankana Sahib, Sangla Hill, and Shahkot map areas. Administrative map lead only; no parcel schema or geometry response."},
+    {"method": "GET", "url": "https://nankana.punjab.gov.pk/", "outcome": "Official Nankana Sahib district portal identified by first-party discovery; direct request timed out from this environment. No absence inference."}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "scopeLimits": [
+    "Exact WUP point [31.448742754287, 73.7056035789592] was preserved in latitude/longitude order and not shifted.",
+    "No exact-point hit or miss, timeout, login/CAPTCHA wall, or unavailable UI was treated as evidence of citywide absence.",
+    "A local registry custodian and official map/survey references are evidenced, but no anonymous parcel ID, schema, CRS, or full polygon was verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The current PLRA public application may expose parcel records through an administrative workflow, but an anonymous geometry route was not established safely.",
+    "The official local map and survey documents do not establish citywide vector parcel coverage or update cadence.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "Local registry/service evidence exists, but no safe anonymous parcel ID-plus-geometry response was qualified."},
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

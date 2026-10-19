@@ -1,0 +1,147 @@
+{
+  "name": "Yangjiang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1114,
+  "point": [
+    21.8512712662802,
+    111.967547953756
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yangjiang official land parcel map natural resources bureau cadastre public map",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search did not surface a city-specific official public parcel feature layer.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+          "https://www.yangjiang.gov.cn/yjzrzy/gkmlpt/guide",
+          "https://guangdong.tianditu.gov.cn/ggdt/#/public/standar-map/index"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "阳江市 自然资源局 地籍 地图 不动产登记 公开 官方",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Chinese search surfaced the Yangjiang Natural Resources Bureau standard-map notice, its information-disclosure guide and the linked Guangdong Tianditu standard map. These are not verified cadastral geometry services.",
+        "executionMethod": "Separate Chinese-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+          "https://www.yangjiang.gov.cn/yjzrzy/gkmlpt/guide",
+          "https://guangdong.tianditu.gov.cn/ggdt/#/public/standar-map/index"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+        "operator": "China",
+        "homeUrl": "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+        "observation": "Official Yangjiang Natural Resources Bureau standard-map notice links the provincial Tianditu public standard-map service; standard cartography is not a parcel layer."
+      },
+      {
+        "name": "https://www.yangjiang.gov.cn/yjzrzy/gkmlpt/guide",
+        "operator": "China",
+        "homeUrl": "https://www.yangjiang.gov.cn/yjzrzy/gkmlpt/guide",
+        "observation": "Official Yangjiang Natural Resources Bureau information disclosure guide covers public notices, including real-estate registration notices, with proactive publication and request-based disclosure. It does not document parcel-vector access."
+      },
+      {
+        "name": "https://guangdong.tianditu.gov.cn/ggdt/#/public/standar-map/index",
+        "operator": "China",
+        "homeUrl": "https://guangdong.tianditu.gov.cn/ggdt/#/public/standar-map/index",
+        "observation": "Provincial public standard map viewer referenced by the city bureau; no cadastral layer or query schema verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+    "url": "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The city Natural Resources Bureau links a public provincial standard-map service and publishes natural-resource/real-estate registration notices. No public parcel geometry endpoint or sample feature response was established.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "Whether the provincial Tianditu viewer has a separate city cadastral layer is unverified; the WUP point was not queried.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11208,
+  "cityId": "wup2025:11208",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    21.8512712662802,
+    111.967547953756
+  ],
+  "population2025k": 496.608,
+  "populationUnit": "persons",
+  "queueRank": 1114,
+  "population2025": 496608,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The city Natural Resources Bureau links a public provincial standard-map service and publishes natural-resource/real-estate registration notices. No public parcel geometry endpoint or sample feature response was established.",
+  "registryEvidenceUrls": [
+    "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+    "https://www.yangjiang.gov.cn/yjzrzy/gkmlpt/guide",
+    "https://guangdong.tianditu.gov.cn/ggdt/#/public/standar-map/index"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 11208,
+      "url": "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+      "checkedAt": "2026-10-09T07:10:40.099372+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://www.yangjiang.gov.cn/zfxxgkml/yjszrzyj/qt/gggs/content/post_904225.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 13352,
+      "sha256": "222f1c501ddef9fb7e1bbd83101f29b58cb298fe4176c8fb65475457648baf72",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The city Natural Resources Bureau links a public provincial standard-map service and publishes natural-resource/real-estate registration notices. No public parcel geometry endpoint or sample feature response was established.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

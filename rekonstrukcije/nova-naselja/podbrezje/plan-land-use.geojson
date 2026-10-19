@@ -1,0 +1,1827 @@
+{
+  "type": "FeatureCollection",
+  "name": "UPU Podbrežje – službena planirana namjena površina",
+  "source": {
+    "planName": "UPU Podbrežje",
+    "planYears": "UPU 2007.; izmjene 2011.",
+    "implementationStatus": "četiri stambena bloka izvedena; A11 u gradnji; ostatak plana fazno neizveden",
+    "sources": [
+      "https://zagreb.hr/izmjene-i-dopune-urbanistickog-plana-ure%C4%91enja-podb/89126",
+      "https://www.log-urbis.hr/development-podbrezje",
+      "https://www.zgh.hr/podbrezje/najcesca-pitanja-faq/4506",
+      "https://zagreb.hr/gradonacelnik-tomasevic-obisao-radove-na-zgradi-za/217781",
+      "https://data.zagreb.hr/dataset/geoportal-urbanisticki-planovi-uredenja"
+    ],
+    "coordinateSystem": "lokalni izvori u HTRS96/TM (EPSG:3765), izvoz za aplikaciju u WGS84",
+    "dataset": "Grad Zagreb, Geoportal – planirana namjena površina",
+    "capturedAt": "2026-08-14"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 201,
+        "namjena": "Javna i društvena namjena-kultura",
+        "skupnaNamjena": "Javna i društvena namjena",
+        "analitika": "Javna i društvena",
+        "oznaka": "D7",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 2343,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5013.684965637142
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.974591092,
+                45.766187662
+              ],
+              [
+                15.973774283,
+                45.766175822
+              ],
+              [
+                15.973753272,
+                45.766885569
+              ],
+              [
+                15.974570094,
+                45.76689741
+              ],
+              [
+                15.974591092,
+                45.766187662
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 228,
+        "namjena": "Javna i društvena namjena-predškolska",
+        "skupnaNamjena": "Javna i društvena namjena",
+        "analitika": "Javna i društvena",
+        "oznaka": "D4",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1661,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 4664.632954553519
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.975738325,
+                45.765396346
+              ],
+              [
+                15.975746624,
+                45.765115667
+              ],
+              [
+                15.974909139,
+                45.765086068
+              ],
+              [
+                15.974889841,
+                45.765738423
+              ],
+              [
+                15.975727852,
+                45.765750563
+              ],
+              [
+                15.975738325,
+                45.765396346
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 229,
+        "namjena": "Javna i društvena namjena-predškolska",
+        "skupnaNamjena": "Javna i društvena namjena",
+        "analitika": "Javna i društvena",
+        "oznaka": "D4",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 2342,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5013.68496555714
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.971943369,
+                45.76614926
+              ],
+              [
+                15.971126561,
+                45.766137401
+              ],
+              [
+                15.971105517,
+                45.766847147
+              ],
+              [
+                15.971922337,
+                45.766859007
+              ],
+              [
+                15.971943369,
+                45.76614926
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 254,
+        "namjena": "Javna i društvena namjena-školska",
+        "skupnaNamjena": "Javna i društvena namjena",
+        "analitika": "Javna i društvena",
+        "oznaka": "D5",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1650,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 16799.19990057099
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.97011523,
+                45.764259647
+              ],
+              [
+                15.96810771,
+                45.765702945
+              ],
+              [
+                15.970409375,
+                45.765736409
+              ],
+              [
+                15.970453031,
+                45.764264555
+              ],
+              [
+                15.97011523,
+                45.764259647
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 538,
+        "namjena": "Javni park",
+        "skupnaNamjena": "Javne zelene površine",
+        "analitika": "Javne zelene površine",
+        "oznaka": "Z1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 2341,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 37263.63708586819
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.967750197,
+                45.76679837
+              ],
+              [
+                15.967771283,
+                45.766088624
+              ],
+              [
+                15.968478841,
+                45.766098918
+              ],
+              [
+                15.969295649,
+                45.766110796
+              ],
+              [
+                15.969303766,
+                45.765837332
+              ],
+              [
+                15.970008107,
+                45.765847571
+              ],
+              [
+                15.969978936,
+                45.766830781
+              ],
+              [
+                15.970397949,
+                45.766836869
+              ],
+              [
+                15.970419002,
+                45.766127123
+              ],
+              [
+                15.971126561,
+                45.766137401
+              ],
+              [
+                15.971943369,
+                45.76614926
+              ],
+              [
+                15.971951473,
+                45.765875796
+              ],
+              [
+                15.972655815,
+                45.765886018
+              ],
+              [
+                15.972626691,
+                45.766869229
+              ],
+              [
+                15.973045705,
+                45.766875308
+              ],
+              [
+                15.973066724,
+                45.76616556
+              ],
+              [
+                15.973774283,
+                45.766175822
+              ],
+              [
+                15.974591092,
+                45.766187662
+              ],
+              [
+                15.974599183,
+                45.765914199
+              ],
+              [
+                15.975303526,
+                45.765924404
+              ],
+              [
+                15.975274448,
+                45.766907615
+              ],
+              [
+                15.975693463,
+                45.766913684
+              ],
+              [
+                15.975727852,
+                45.765750563
+              ],
+              [
+                15.974889841,
+                45.765738423
+              ],
+              [
+                15.974185501,
+                45.765728215
+              ],
+              [
+                15.974205241,
+                45.765061184
+              ],
+              [
+                15.973829074,
+                45.765047886
+              ],
+              [
+                15.973814882,
+                45.765047368
+              ],
+              [
+                15.973800691,
+                45.765046818
+              ],
+              [
+                15.973786503,
+                45.765046237
+              ],
+              [
+                15.973760078,
+                45.765938932
+              ],
+              [
+                15.973052522,
+                45.76592867
+              ],
+              [
+                15.973058942,
+                45.765711878
+              ],
+              [
+                15.97224214,
+                45.765700027
+              ],
+              [
+                15.9715378,
+                45.765689803
+              ],
+              [
+                15.971572354,
+                45.764524038
+              ],
+              [
+                15.971430793,
+                45.764454882
+              ],
+              [
+                15.97129316,
+                45.764381945
+              ],
+              [
+                15.971159662,
+                45.764305336
+              ],
+              [
+                15.971112368,
+                45.76590051
+              ],
+              [
+                15.970404812,
+                45.765890232
+              ],
+              [
+                15.970409375,
+                45.765736409
+              ],
+              [
+                15.96810771,
+                45.765702945
+              ],
+              [
+                15.967575214,
+                45.766085762
+              ],
+              [
+                15.967695356,
+                45.766087518
+              ],
+              [
+                15.967664915,
+                45.767112108
+              ],
+              [
+                15.967740843,
+                45.767113214
+              ],
+              [
+                15.967750197,
+                45.76679837
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 697,
+        "namjena": "Mješovita namjena-pretežno poslovna",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M2",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1657,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5802.4360305721675
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.967575214,
+                45.766085762
+              ],
+              [
+                15.967171475,
+                45.76637601
+              ],
+              [
+                15.966953221,
+                45.76653291
+              ],
+              [
+                15.966829873,
+                45.766621584
+              ],
+              [
+                15.966829619,
+                45.766630115
+              ],
+              [
+                15.966815658,
+                45.767099746
+              ],
+              [
+                15.967664915,
+                45.767112108
+              ],
+              [
+                15.967695356,
+                45.766087518
+              ],
+              [
+                15.967575214,
+                45.766085762
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1020,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1651,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 12327.106525212712
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.971159662,
+                45.764305336
+              ],
+              [
+                15.971165738,
+                45.764100375
+              ],
+              [
+                15.971018283,
+                45.764007771
+              ],
+              [
+                15.97087634,
+                45.763911042
+              ],
+              [
+                15.970816915,
+                45.763867109
+              ],
+              [
+                15.970763038,
+                45.763827276
+              ],
+              [
+                15.970740141,
+                45.763810349
+              ],
+              [
+                15.970714274,
+                45.763828946
+              ],
+              [
+                15.970600113,
+                45.763911027
+              ],
+              [
+                15.97011523,
+                45.764259647
+              ],
+              [
+                15.970453031,
+                45.764264555
+              ],
+              [
+                15.970409375,
+                45.765736409
+              ],
+              [
+                15.970404812,
+                45.765890232
+              ],
+              [
+                15.971112368,
+                45.76590051
+              ],
+              [
+                15.971159662,
+                45.764305336
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1021,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1652,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 8947.563066155564
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.976420169,
+                45.765406219
+              ],
+              [
+                15.976417003,
+                45.765406173
+              ],
+              [
+                15.975738325,
+                45.765396346
+              ],
+              [
+                15.975727852,
+                45.765750563
+              ],
+              [
+                15.975693463,
+                45.766913684
+              ],
+              [
+                15.976375325,
+                45.766923557
+              ],
+              [
+                15.976420107,
+                45.765408301
+              ],
+              [
+                15.976420169,
+                45.765406219
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1022,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1653,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 6268.824334590509
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.972269073,
+                45.764790979
+              ],
+              [
+                15.97202941,
+                45.764711717
+              ],
+              [
+                15.971796897,
+                45.764622632
+              ],
+              [
+                15.971572354,
+                45.764524038
+              ],
+              [
+                15.9715378,
+                45.765689803
+              ],
+              [
+                15.97224214,
+                45.765700027
+              ],
+              [
+                15.972269073,
+                45.764790979
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1023,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1654,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5989.1518554912345
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.969295649,
+                45.766110796
+              ],
+              [
+                15.969274582,
+                45.766820543
+              ],
+              [
+                15.969978936,
+                45.766830781
+              ],
+              [
+                15.970008107,
+                45.765847571
+              ],
+              [
+                15.969303766,
+                45.765837332
+              ],
+              [
+                15.969295649,
+                45.766110796
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1024,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1655,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5989.139611286856
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.974591092,
+                45.766187662
+              ],
+              [
+                15.974570094,
+                45.76689741
+              ],
+              [
+                15.975274448,
+                45.766907615
+              ],
+              [
+                15.975303526,
+                45.765924404
+              ],
+              [
+                15.974599183,
+                45.765914199
+              ],
+              [
+                15.974591092,
+                45.766187662
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1025,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1656,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5989.1451889416
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.971943369,
+                45.76614926
+              ],
+              [
+                15.971922337,
+                45.766859007
+              ],
+              [
+                15.972626691,
+                45.766869229
+              ],
+              [
+                15.972655815,
+                45.765886018
+              ],
+              [
+                15.971951473,
+                45.765875796
+              ],
+              [
+                15.971943369,
+                45.76614926
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1026,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1659,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5607.742719431779
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.973786503,
+                45.765046237
+              ],
+              [
+                15.973549583,
+                45.765031826
+              ],
+              [
+                15.973314099,
+                45.765008598
+              ],
+              [
+                15.973080715,
+                45.764976619
+              ],
+              [
+                15.973058942,
+                45.765711878
+              ],
+              [
+                15.973052522,
+                45.76592867
+              ],
+              [
+                15.973760078,
+                45.765938932
+              ],
+              [
+                15.973786503,
+                45.765046237
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1027,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1662,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 4343.094048289086
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.971126561,
+                45.766137401
+              ],
+              [
+                15.970419002,
+                45.766127123
+              ],
+              [
+                15.970397949,
+                45.766836869
+              ],
+              [
+                15.971105517,
+                45.766847147
+              ],
+              [
+                15.971126561,
+                45.766137401
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1028,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1663,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 4343.086159363372
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.973774283,
+                45.766175822
+              ],
+              [
+                15.973066724,
+                45.76616556
+              ],
+              [
+                15.973045705,
+                45.766875308
+              ],
+              [
+                15.973753272,
+                45.766885569
+              ],
+              [
+                15.973774283,
+                45.766175822
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1029,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1664,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 4343.099552541503
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.968478841,
+                45.766098918
+              ],
+              [
+                15.967771283,
+                45.766088624
+              ],
+              [
+                15.967750197,
+                45.76679837
+              ],
+              [
+                15.968457764,
+                45.766808665
+              ],
+              [
+                15.968478841,
+                45.766098918
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1030,
+        "namjena": "Mješovita namjena-pretežno stambena",
+        "skupnaNamjena": "Stambena i mješovita namjena",
+        "analitika": "Stambena i mješovita",
+        "oznaka": "M1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1665,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 4018.4566095995283
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.974909139,
+                45.765086068
+              ],
+              [
+                15.974205241,
+                45.765061184
+              ],
+              [
+                15.974185501,
+                45.765728215
+              ],
+              [
+                15.974889841,
+                45.765738423
+              ],
+              [
+                15.974909139,
+                45.765086068
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1517,
+        "namjena": "Površine infrastrukturnih sustava",
+        "skupnaNamjena": "Prometne površine",
+        "analitika": "Promet",
+        "oznaka": "IS",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1649,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 35940.75738734128
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.976689437,
+                45.764996679
+              ],
+              [
+                15.976689456,
+                45.764996041
+              ],
+              [
+                15.974216705,
+                45.764923783
+              ],
+              [
+                15.974062907,
+                45.764919287
+              ],
+              [
+                15.973611081,
+                45.764886452
+              ],
+              [
+                15.973165603,
+                45.76482425
+              ],
+              [
+                15.972730365,
+                45.764733224
+              ],
+              [
+                15.972309163,
+                45.764614166
+              ],
+              [
+                15.971905675,
+                45.764468119
+              ],
+              [
+                15.971523422,
+                45.764296355
+              ],
+              [
+                15.971165738,
+                45.764100375
+              ],
+              [
+                15.971159662,
+                45.764305336
+              ],
+              [
+                15.97129316,
+                45.764381945
+              ],
+              [
+                15.971430793,
+                45.764454882
+              ],
+              [
+                15.971572354,
+                45.764524038
+              ],
+              [
+                15.971796897,
+                45.764622632
+              ],
+              [
+                15.97202941,
+                45.764711717
+              ],
+              [
+                15.972269073,
+                45.764790979
+              ],
+              [
+                15.972533783,
+                45.764864926
+              ],
+              [
+                15.972804698,
+                45.76492689
+              ],
+              [
+                15.973080715,
+                45.764976619
+              ],
+              [
+                15.973314099,
+                45.765008598
+              ],
+              [
+                15.973549583,
+                45.765031826
+              ],
+              [
+                15.973786503,
+                45.765046237
+              ],
+              [
+                15.973800691,
+                45.765046818
+              ],
+              [
+                15.973814882,
+                45.765047368
+              ],
+              [
+                15.973829074,
+                45.765047886
+              ],
+              [
+                15.974205241,
+                45.765061184
+              ],
+              [
+                15.974909139,
+                45.765086068
+              ],
+              [
+                15.975746624,
+                45.765115667
+              ],
+              [
+                15.975758418,
+                45.765116084
+              ],
+              [
+                15.976428044,
+                45.765139746
+              ],
+              [
+                15.976420169,
+                45.765406219
+              ],
+              [
+                15.976420107,
+                45.765408301
+              ],
+              [
+                15.976375325,
+                45.766923557
+              ],
+              [
+                15.975693463,
+                45.766913684
+              ],
+              [
+                15.975274448,
+                45.766907615
+              ],
+              [
+                15.974570094,
+                45.76689741
+              ],
+              [
+                15.973753272,
+                45.766885569
+              ],
+              [
+                15.973045705,
+                45.766875308
+              ],
+              [
+                15.972626691,
+                45.766869229
+              ],
+              [
+                15.971922337,
+                45.766859007
+              ],
+              [
+                15.971105517,
+                45.766847147
+              ],
+              [
+                15.970397949,
+                45.766836869
+              ],
+              [
+                15.969978936,
+                45.766830781
+              ],
+              [
+                15.969274582,
+                45.766820543
+              ],
+              [
+                15.968457764,
+                45.766808665
+              ],
+              [
+                15.967750197,
+                45.76679837
+              ],
+              [
+                15.967740843,
+                45.767113214
+              ],
+              [
+                15.976621774,
+                45.767242103
+              ],
+              [
+                15.976623085,
+                45.767242121
+              ],
+              [
+                15.976634691,
+                45.76684937
+              ],
+              [
+                15.976689437,
+                45.764996679
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1518,
+        "namjena": "Površine infrastrukturnih sustava",
+        "skupnaNamjena": "Prometne površine",
+        "analitika": "Promet",
+        "oznaka": "IS",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1666,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 1959.3614721338674
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.966416011,
+                45.767108737
+              ],
+              [
+                15.966673538,
+                45.767097699
+              ],
+              [
+                15.966673925,
+                45.767097683
+              ],
+              [
+                15.966815658,
+                45.767099746
+              ],
+              [
+                15.966829619,
+                45.766630115
+              ],
+              [
+                15.966829873,
+                45.766621584
+              ],
+              [
+                15.966953221,
+                45.76653291
+              ],
+              [
+                15.966681023,
+                45.766486702
+              ],
+              [
+                15.966645202,
+                45.766512685
+              ],
+              [
+                15.966611306,
+                45.766539905
+              ],
+              [
+                15.966579421,
+                45.766568291
+              ],
+              [
+                15.966541621,
+                45.766607017
+              ],
+              [
+                15.966508792,
+                45.766647904
+              ],
+              [
+                15.966481185,
+                45.76669064
+              ],
+              [
+                15.966459012,
+                45.766734899
+              ],
+              [
+                15.966442441,
+                45.766780342
+              ],
+              [
+                15.966436625,
+                45.766803372
+              ],
+              [
+                15.966432777,
+                45.766818611
+              ],
+              [
+                15.96642655,
+                45.766857227
+              ],
+              [
+                15.966423782,
+                45.766896041
+              ],
+              [
+                15.966423105,
+                45.766921648
+              ],
+              [
+                15.966422646,
+                45.766938962
+              ],
+              [
+                15.96642124,
+                45.766955014
+              ],
+              [
+                15.966420475,
+                45.766958636
+              ],
+              [
+                15.96641788,
+                45.766970923
+              ],
+              [
+                15.966412594,
+                45.766986572
+              ],
+              [
+                15.966405418,
+                45.76700185
+              ],
+              [
+                15.966396406,
+                45.767016643
+              ],
+              [
+                15.966385624,
+                45.767030844
+              ],
+              [
+                15.966373148,
+                45.767044348
+              ],
+              [
+                15.966359072,
+                45.767057059
+              ],
+              [
+                15.966343498,
+                45.767068883
+              ],
+              [
+                15.966326539,
+                45.767079734
+              ],
+              [
+                15.966308319,
+                45.767089532
+              ],
+              [
+                15.966288972,
+                45.767098207
+              ],
+              [
+                15.966268635,
+                45.767105694
+              ],
+              [
+                15.966247462,
+                45.76711194
+              ],
+              [
+                15.966225603,
+                45.767116899
+              ],
+              [
+                15.966416011,
+                45.767108737
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1723,
+        "namjena": "Sportsko rekreacijska namjena-sport  s gradnjom",
+        "skupnaNamjena": "Sport i rekreacija",
+        "analitika": "Sport i rekreacija",
+        "oznaka": "R1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1658,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5745.013266319678
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.973080715,
+                45.764976619
+              ],
+              [
+                15.972804698,
+                45.76492689
+              ],
+              [
+                15.972533783,
+                45.764864926
+              ],
+              [
+                15.972269073,
+                45.764790979
+              ],
+              [
+                15.97224214,
+                45.765700027
+              ],
+              [
+                15.973058942,
+                45.765711878
+              ],
+              [
+                15.973080715,
+                45.764976619
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 1724,
+        "namjena": "Sportsko rekreacijska namjena-sport  s gradnjom",
+        "skupnaNamjena": "Sport i rekreacija",
+        "analitika": "Sport i rekreacija",
+        "oznaka": "R1",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1660,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 5013.6953088569335
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.969295649,
+                45.766110796
+              ],
+              [
+                15.968478841,
+                45.766098918
+              ],
+              [
+                15.968457764,
+                45.766808665
+              ],
+              [
+                15.969274582,
+                45.766820543
+              ],
+              [
+                15.969295649,
+                45.766110796
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 2024,
+        "namjena": "Zaštitne zelene površine",
+        "skupnaNamjena": "Zaštitne zelene površine",
+        "analitika": "Poljoprivreda, zaštitno zelenilo, neuređeno, ostalo",
+        "oznaka": "Z",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1667,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 1613.242393021253
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.975746624,
+                45.765115667
+              ],
+              [
+                15.975738325,
+                45.765396346
+              ],
+              [
+                15.976417003,
+                45.765406173
+              ],
+              [
+                15.976420169,
+                45.765406219
+              ],
+              [
+                15.976428044,
+                45.765139746
+              ],
+              [
+                15.975758418,
+                45.765116084
+              ],
+              [
+                15.975746624,
+                45.765115667
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "objectid": 2025,
+        "namjena": "Zaštitne zelene površine",
+        "skupnaNamjena": "Zaštitne zelene površine",
+        "analitika": "Poljoprivreda, zaštitno zelenilo, neuređeno, ostalo",
+        "oznaka": "Z",
+        "kartografskiPrikaz": "Korištenje i namjena prostora",
+        "izradivacPlana": "Log - urbis d.o.o., Zagreb",
+        "izvornoMjerilo": null,
+        "godinaZadnjeIzmjene": 2011,
+        "planId": 1668,
+        "razinaPlana": "Detaljniji planovi",
+        "areaM2": 1287.3484954442526
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.966681023,
+                45.766486702
+              ],
+              [
+                15.966662929,
+                45.76648363
+              ],
+              [
+                15.965800551,
+                45.767103569
+              ],
+              [
+                15.965808076,
+                45.767103808
+              ],
+              [
+                15.965942231,
+                45.767108083
+              ],
+              [
+                15.966083914,
+                45.767112527
+              ],
+              [
+                15.966225603,
+                45.767116899
+              ],
+              [
+                15.966247462,
+                45.76711194
+              ],
+              [
+                15.966268635,
+                45.767105694
+              ],
+              [
+                15.966288972,
+                45.767098207
+              ],
+              [
+                15.966308319,
+                45.767089532
+              ],
+              [
+                15.966326539,
+                45.767079734
+              ],
+              [
+                15.966343498,
+                45.767068883
+              ],
+              [
+                15.966359072,
+                45.767057059
+              ],
+              [
+                15.966373148,
+                45.767044348
+              ],
+              [
+                15.966385624,
+                45.767030844
+              ],
+              [
+                15.966396406,
+                45.767016643
+              ],
+              [
+                15.966405418,
+                45.76700185
+              ],
+              [
+                15.966412594,
+                45.766986572
+              ],
+              [
+                15.96641788,
+                45.766970923
+              ],
+              [
+                15.966420475,
+                45.766958636
+              ],
+              [
+                15.96642124,
+                45.766955014
+              ],
+              [
+                15.966422646,
+                45.766938962
+              ],
+              [
+                15.966423105,
+                45.766921648
+              ],
+              [
+                15.966423782,
+                45.766896041
+              ],
+              [
+                15.96642655,
+                45.766857227
+              ],
+              [
+                15.966432777,
+                45.766818611
+              ],
+              [
+                15.966436625,
+                45.766803372
+              ],
+              [
+                15.966442441,
+                45.766780342
+              ],
+              [
+                15.966459012,
+                45.766734899
+              ],
+              [
+                15.966481185,
+                45.76669064
+              ],
+              [
+                15.966508792,
+                45.766647904
+              ],
+              [
+                15.966541621,
+                45.766607017
+              ],
+              [
+                15.966579421,
+                45.766568291
+              ],
+              [
+                15.966611306,
+                45.766539905
+              ],
+              [
+                15.966645202,
+                45.766512685
+              ],
+              [
+                15.966681023,
+                45.766486702
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

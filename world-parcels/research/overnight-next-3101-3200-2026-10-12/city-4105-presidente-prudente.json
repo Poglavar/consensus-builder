@@ -1,0 +1,100 @@
+{
+  "cityCode": 4105,
+  "queueRank": 3145,
+  "name": "Presidente Prudente",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-22.1190404286471, -51.3998392710065],
+  "population2025": 190780,
+  "population2025k": 190.78,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Presidente Prudente Brazil cadastral parcel map official municipality GIS cadastro imobiliario",
+        "result": "First-party discovery found the municipality's official map and geographic-information page, its cadastral-value lookup procedure, and the municipal Planning/Cadastro Técnico department page. No anonymous parcel-feature service or geometry response was established.",
+        "actualResultUrls": [
+          "https://presidenteprudente.sp.gov.br/site/central-de-mapas.xhtml",
+          "https://www.presidenteprudente.sp.gov.br/servico/dbv/index.xhtml",
+          "https://www2.presidenteprudente.sp.gov.br/site/unidade/13/departamentos"
+        ]
+      },
+      {
+        "language": "Portuguese (local/native)",
+        "query": "Presidente Prudente cadastro imobiliário mapa parcelas prefeitura geoprocessamento site oficial",
+        "result": "A pesquisa located the official Central de Mapas, the Cadastro Técnico department description, and the municipal Demonstrativo básico de valores de cadastro imobiliário. The map page lists PDFs/DWGs and approved subdivision plans, not a public parcel API; the DBV form requires a cadastral reference or number and does not expose geometry in the anonymous HTML.",
+        "actualResultUrls": [
+          "https://presidenteprudente.sp.gov.br/site/central-de-mapas.xhtml",
+          "https://www2.presidenteprudente.sp.gov.br/site/unidade/13/departamentos",
+          "https://www.presidenteprudente.sp.gov.br/servico/dbv/index.xhtml",
+          "https://www.presidenteprudente.sp.gov.br/site/unidade/13/publicacoes"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Municipality of Presidente Prudente, Secretaria de Planejamento, Desenvolvimento Urbano e Habitação, Departamento de Cadastro Técnico; the official department page describes maintenance of the Cadastro Imobiliário database and the municipal geoprocessing system. This is local custodian evidence, not evidence of an exposed parcel geometry service.",
+  "publicMapLead": "https://presidenteprudente.sp.gov.br/site/central-de-mapas.xhtml",
+  "serviceReview": "The official Central de Mapas page was fetched over TLS and its current HTML inspected. It exposes municipal map PDFs, DWG files, and approved subdivision-plan documents. No JavaScript map viewer, WMS/WFS, ArcGIS REST endpoint, parcel layer, schema, or CRS was exposed. The official DBV route https://www.presidenteprudente.sp.gov.br/servico/dbv/index.xhtml was fetched over TLS; its JSF form offers lookup by Referência cadastral or Número do cadastro and requires user-supplied cadastral identifiers. No lookup was submitted because no identifier was available and the route is a fiscal/cadastral-value procedure, not a safe anonymous geometry endpoint. No login, credential, CAPTCHA/Cloudflare bypass, private token, unsafe-field request, or TLS exception was used.",
+  "requests": [
+    {
+      "route": "Official municipal Central de Mapas page",
+      "url": "https://presidenteprudente.sp.gov.br/site/central-de-mapas.xhtml",
+      "outcome": "Anonymous GET succeeded. Current HTML listed map PDFs/DWGs and subdivision approval plans; no public parcel API or map-service configuration was found."
+    },
+    {
+      "route": "Official municipal Cadastro Técnico department page",
+      "url": "https://www2.presidenteprudente.sp.gov.br/site/unidade/13/departamentos",
+      "outcome": "Anonymous GET succeeded. Page identifies the Department of Cadastro Técnico and describes the municipal Cadastro Imobiliário database and geoprocessing responsibilities."
+    },
+    {
+      "route": "Official municipal cadastral-value lookup",
+      "url": "https://www.presidenteprudente.sp.gov.br/servico/dbv/index.xhtml",
+      "outcome": "Anonymous GET succeeded. JSF form exposes only cadastral-reference/number inputs and a submit action; no safe parcel geometry, native ID schema, CRS, or anonymous bounded parcel response was obtained."
+    },
+    {
+      "route": "Official Planning department publications",
+      "url": "https://www.presidenteprudente.sp.gov.br/site/unidade/13/publicacoes",
+      "outcome": "Anonymous GET succeeded. Municipal department publication listing confirmed the local planning/cadastral context; no parcel-feature service was exposed."
+    },
+    {
+      "route": "Exact WUP-point parcel intersection",
+      "outcome": "Not attempted against a parcel layer because no public parcel geometry service or downloadable cadastral parcel dataset was identified. The exact point [-22.1190404286471, -51.3998392710065] was preserved and not shifted."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identity only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "No GeoJSON sample is retained because no full parcel polygon with a source-proven stable native identity was observed.",
+    "No exact-point hit, map extent miss, unavailable API, or unusable UI was treated as evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Only the local municipal custodian and public procedures are evidenced; no citywide public parcel geometry integration route was qualified.",
+    "Packet completion is research evidence only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The municipality may maintain internal or restricted cadastral geometry not exposed by the public pages inspected.",
+    "The downloadable subdivision plans are project/approval documents and are not a verified complete cadastral parcel layer.",
+    "Current native parcel identity, geometry schema, CRS, API availability, and citywide coverage remain unknown.",
+    "Independent serial review is required before any runtime adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "evidenceCache": "tmp/valhalla-parcel-research/4105/"
+}

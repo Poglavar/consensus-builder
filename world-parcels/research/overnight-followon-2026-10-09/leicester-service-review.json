@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5469-leicester.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "HM Land Registry’s current 2026-09-06 INSPIRE listing names Leicester City Council and its free GML partition. A fresh anonymous download using the site’s ordinary cookie flow returned HTTP 200 (14,594,724 bytes). The archive contains 110,414 complete GML features, updated 2026-10-04, with EPSG:27700 geometry and an INSPIREID field; the dataset documents indicative extents for registered freehold property only. A local, geometry-only scan of a 1 km square centered on the unchanged WUP point found 1,662 complete polygons, including one feature that covers the exact point. Three full nearby polygons are retained with INSPIREID and geometry only; no owner/address fields were read or stored. All 1,662 scanned geometries were valid with unique IDs, and the three retained rings are closed; no repair or clipping was applied.",
+  "registryAssessment": "HM Land Registry’s current local-authority partition listing explicitly includes Leicester City Council and the GML contains registered freehold index polygons; these are indicative extents, not complete legal boundaries.",
+  "officialPrimarySources": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
+      "observation": "HM Land Registry’s current 2026-09-06 INSPIRE listing names Leicester City Council and its free GML partition. A fresh anonymous download using the site’s ordinary cookie flow returned HTTP 200 (14,594,724 bytes). The archive contains 110,414 complete GML features, updated 2026-10-04, with EPSG:27700 geometry and an INSPIREID field; the dataset documents indicative extents for registered freehold property only. A local, geometry-only scan of a 1 km square centered on the unchanged WUP point found 1,662 complete polygons, including one feature that covers the exact point. Three full nearby polygons are retained with INSPIREID and geometry only; no owner/address fields were read or stored. All 1,662 scanned geometries were valid with unique IDs, and the three retained rings are closed; no repair or clipping was applied."
+    },
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "observation": "HM Land Registry’s current 2026-09-06 INSPIRE listing names Leicester City Council and its free GML partition. A fresh anonymous download using the site’s ordinary cookie flow returned HTTP 200 (14,594,724 bytes). The archive contains 110,414 complete GML features, updated 2026-10-04, with EPSG:27700 geometry and an INSPIREID field; the dataset documents indicative extents for registered freehold property only. A local, geometry-only scan of a 1 km square centered on the unchanged WUP point found 1,662 complete polygons, including one feature that covers the exact point. Three full nearby polygons are retained with INSPIREID and geometry only; no owner/address fields were read or stored. All 1,662 scanned geometries were valid with unique IDs, and the three retained rings are closed; no repair or clipping was applied."
+    },
+    {
+      "url": "https://data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "observation": "HM Land Registry’s current 2026-09-06 INSPIRE listing names Leicester City Council and its free GML partition. A fresh anonymous download using the site’s ordinary cookie flow returned HTTP 200 (14,594,724 bytes). The archive contains 110,414 complete GML features, updated 2026-10-04, with EPSG:27700 geometry and an INSPIREID field; the dataset documents indicative extents for registered freehold property only. A local, geometry-only scan of a 1 km square centered on the unchanged WUP point found 1,662 complete polygons, including one feature that covers the exact point. Three full nearby polygons are retained with INSPIREID and geometry only; no owner/address fields were read or stored. All 1,662 scanned geometries were valid with unique IDs, and the three retained rings are closed; no repair or clipping was applied."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Leicester UK official HM Land Registry INSPIRE index polygons title parcels download Leicester City Council",
+      "result": "HM Land Registry’s current 2026-09-06 INSPIRE listing names Leicester City Council and its free GML partition. A fresh anonymous download using the site’s ordinary cookie flow returned HTTP 200 (14,594,724 bytes). The archive contains 110,414 complete GML features, updated 2026-10-04, with EPSG:27700 geometry and an INSPIREID field; the dataset documents indicative extents for registered freehold property only. A local, geometry-only scan of a 1 km square centered on the unchanged WUP point found 1,662 complete polygons, including one feature that covers the exact point. Three full nearby polygons are retained with INSPIREID and geometry only; no owner/address fields were read or stored. All 1,662 scanned geometries were valid with unique IDs, and the three retained rings are closed; no repair or clipping was applied.",
+      "method": "Separate native/local-language web search and first-party source review.",
+      "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "English",
+      "query": "Leicester City Council registered freehold parcel polygons HM Land Registry official download",
+      "result": "HM Land Registry’s current 2026-09-06 INSPIRE listing names Leicester City Council and its free GML partition. A fresh anonymous download using the site’s ordinary cookie flow returned HTTP 200 (14,594,724 bytes). The archive contains 110,414 complete GML features, updated 2026-10-04, with EPSG:27700 geometry and an INSPIREID field; the dataset documents indicative extents for registered freehold property only. A local, geometry-only scan of a 1 km square centered on the unchanged WUP point found 1,662 complete polygons, including one feature that covers the exact point. Three full nearby polygons are retained with INSPIREID and geometry only; no owner/address fields were read or stored. All 1,662 scanned geometries were valid with unique IDs, and the three retained rings are closed; no repair or clipping was applied.",
+      "method": "Separate English-language web search and first-party source review.",
+      "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "city-5469-leicester-samples.geojson",
+    "nativeId": "42889273",
+    "nativeIdField": "INSPIREID",
+    "nativeGeometryCrs": "EPSG:27700",
+    "exactWupPointTest": "A full INSPIRE geometry with ID 42889273 covers the unchanged WUP point. The geometry is unmodified; three full polygons are retained as nearby samples.",
+    "requestEvidence": [
+      {
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
+        "method": "GET with standard cookie jar; no account or API key",
+        "httpStatus": 200,
+        "contentType": "application/force-download",
+        "responseBytes": 14594724,
+        "archiveSha256": "d8b1815580fc35955485190036befd9a9a37e8e1167373fa461f37538ba59247",
+        "result": "The site-issued anonymous cookie flow returned the public Leicester archive."
+      },
+      {
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
+        "method": "Local streaming GML parse; spatial filter only after reading source features",
+        "httpStatus": 200,
+        "gmlTimestamp": "2026-10-04T02:22:09.596Z",
+        "sourceRows": 110414,
+        "schemaFieldNames": [
+          "GEOMETRY",
+          "INSPIREID",
+          "LABEL",
+          "NATIONALCADASTRALREFERENCE",
+          "VALIDFROM",
+          "BEGINLIFESPANVERSION"
+        ],
+        "retainedFields": [
+          "INSPIREID",
+          "GEOMETRY"
+        ],
+        "nativeCrs": "EPSG:27700",
+        "boundedSearchBoxMeters": [
+          458767.36184217216,
+          303542.92059304944,
+          459767.36184217216,
+          304542.92059304944
+        ],
+        "boundedFullGeometryCount": 1662,
+        "exactWupPointIds": [
+          "42889273"
+        ],
+        "retainedFullPolygonCount": 3,
+        "sampleFile": "city-5469-leicester-samples.geojson",
+        "result": "One full source polygon covers the unchanged WUP point (INSPIREID 42889273). Three nearest full polygons are retained; all 1,662 local candidates had unique IDs and valid rings, and retained geometries were not clipped or repaired."
+      }
+    ],
+    "localQuality": {
+      "boundedFullGeometryCount": 1662,
+      "uniqueIds": 1662,
+      "duplicateIds": 0,
+      "validGeometries": 1662,
+      "invalidGeometries": 0,
+      "exactWupPointMatches": 1,
+      "retainedRingsClosed": true
+    }
+  },
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry INSPIRE Index Polygons partition for Leicester City Council: indicative extents of registered freehold property, not all tenures or legal boundary survey geometry.",
+    "verifiedOpenScope": "The 2026-10-04 GML archive contained 110,414 features. A 1 km square centered on the unchanged WUP point yielded 1,662 full intersecting geometries; one full polygon contains the point. Three nearby full polygons are retained as bounded samples.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
+      "method": "GET (initial no-cookie redirect chain)",
+      "httpStatus": null,
+      "result": "Initial attempt without a session cookie followed a repeating redirect/cookie loop (curl max-redirs 50, exit 47); no archive received."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
+      "method": "GET with standard cookie jar; no account or API key",
+      "httpStatus": 200,
+      "contentType": "application/force-download",
+      "responseBytes": 14594724,
+      "archiveSha256": "d8b1815580fc35955485190036befd9a9a37e8e1167373fa461f37538ba59247",
+      "result": "The site-issued anonymous cookie flow returned the public Leicester archive."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
+      "method": "Local streaming GML parse; spatial filter only after reading source features",
+      "httpStatus": 200,
+      "gmlTimestamp": "2026-10-04T02:22:09.596Z",
+      "sourceRows": 110414,
+      "schemaFieldNames": [
+        "GEOMETRY",
+        "INSPIREID",
+        "LABEL",
+        "NATIONALCADASTRALREFERENCE",
+        "VALIDFROM",
+        "BEGINLIFESPANVERSION"
+      ],
+      "retainedFields": [
+        "INSPIREID",
+        "GEOMETRY"
+      ],
+      "nativeCrs": "EPSG:27700",
+      "boundedSearchBoxMeters": [
+        458767.36184217216,
+        303542.92059304944,
+        459767.36184217216,
+        304542.92059304944
+      ],
+      "boundedFullGeometryCount": 1662,
+      "exactWupPointIds": [
+        "42889273"
+      ],
+      "retainedFullPolygonCount": 3,
+      "sampleFile": "city-5469-leicester-samples.geojson",
+      "result": "One full source polygon covers the unchanged WUP point (INSPIREID 42889273). Three nearest full polygons are retained; all 1,662 local candidates had unique IDs and valid rings, and retained geometries were not clipped or repaired."
+    }
+  ],
+  "remainingUncertainty": "HMLR INSPIRE index polygons cover registered freehold properties and indicate general extents; they do not prove all local parcels, leaseholds, unregistered land, or legally exact boundaries. Only a 1 km WUP-centered area was spatially audited."
+}

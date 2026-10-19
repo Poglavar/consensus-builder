@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "GH",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "Accra Metro public property-identification app",
+    "operator": "Accra Metro app (page title ACCRA METRO, labels AMA) hosted by Berry ICT; app ownership/authority not independently established",
+    "scope": "App claims Accra Metro scope; actual first-record sample area only; no citywide completeness established",
+    "endpoint": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+    "geometry": "Three first complete records are MultiPolygons, with application fields `parcelid` and `parcelcode` (generic `id` is a row ID). Stable/native identifier semantics remain unverified.",
+    "access": "Public HTML/JS fetched with en-GH headers and AMA Referer. POST request with Range bytes=0-32767 plus 32 KiB hard cap returned HTTP 200; Range ignored and transfer aborted at 32768 bytes. Three complete records were sanitized to parcelid, parcelcode, and geometry; generic id field excluded as row ID. Full response not saved.",
+    "assessment": "Partial sample geometry lead from the Accra Metro app. Three complete polygons are within a compact ~350 m aggregate bbox, but the request had no spatial filter and lies about 8 km south of WUP center; it does not establish center-area coverage, completeness, or adapter readiness."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "English (Ghana); French (Cameroon)",
+      "exactQueries": [
+        "\"Accra\" cadastral parcels GIS Land Commission Ghana geoserver",
+        "\"Kumasi\" cadastral parcel GIS Ghana Lands Commission",
+        "\"Yaoundé\" \"parcelles cadastrales\" SIG cadastre Cameroon",
+        "\"Douala\" \"parcelles cadastrales\" SIG cadastre Cameroun"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Page and JS inspected; app JavaScript identified general_php_scripts/load_data.php as the parcel-table endpoint. A later capped-prefix POST was made; see the following request record for its HTTP 200 response and the fact that Range was ignored."
+    },
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Request body tbl=parcel&flds=*&where=1=1; Range bytes=0-32767 was ignored; 32 KiB client cap aborted transfer. Three complete prefix features saved with only id+geometry. No spatial filter was applied."
+    }
+  ],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

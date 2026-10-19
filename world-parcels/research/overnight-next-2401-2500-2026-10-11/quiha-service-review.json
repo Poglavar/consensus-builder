@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-6867-quiha.json",
+  "cityCode": 6867,
+  "queueRank": 2407,
+  "name": "Quiha",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "pointLatLon": [13.4774131318195, 39.5427550561283],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method":"SEARCH","url":"https://eland.addiscadaster.gov.et/","httpStatus":200,"outcome":"Official Addis Ababa Land Holding Registration and Information Agency e-Land landing page loaded; it describes digital cadastral services and identifies Addis Ababa as the agency location, not Quiha/Tigray."},
+    {"method":"GET","url":"https://eland.addiscadaster.gov.et/maps","httpStatus":200,"outcome":"Official map route returned the same public application shell. Current HTML referenced runtime.8ea72521f0889291.js, polyfills.201022c8eb248e0.js, scripts.16103ff1dfc515e6.js, and main.d3525dff4b9098d6.js. No public Quiha/Tigray parcel endpoint or bounded parcel response was exposed in the inspected shell/configuration."},
+    {"method":"GET","url":"https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js","httpStatus":200,"outcome":"The current JavaScript bundle was fetched (3,225,191 bytes received before the client timeout while the response continued toward 3,258,372 bytes). Inspection found generic application/API client code but no safely usable Quiha/Tigray parcel route or anonymous parcel geometry response. No credentials or private tokens were used."},
+    {"method":"SEARCH","url":"https://data.moa.gov.et/dataset/ethiopian-administrative-boundary2","httpStatus":200,"outcome":"Search result identifies an official Ethiopian administrative-boundary dataset. It is boundary evidence only, not a cadastral parcel source; no parcel geometry was requested or retained."},
+    {"method":"GET","url":"https://data.moa.gov.et/dataset/ethiopian-administrative-boundary2","httpStatus":0,"outcome":"Direct curl was blocked by certificate validation (unable to get local issuer certificate); TLS was not bypassed."},
+    {"method":"GET","url":"https://www.ethionsdi.gov.et/","httpStatus":0,"outcome":"Direct curl was blocked by certificate validation (self-signed certificate); TLS was not bypassed."},
+    {"method":"GET","url":"https://www.tigray.gov.et/","httpStatus":0,"outcome":"DNS resolution failed in the research environment; no login or bypass was attempted."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://eland.addiscadaster.gov.et/maps and referenced main.d3525dff4b9098d6.js",
+    "apiBase": null,
+    "geometryCrs": "No parcel geometry response was returned and no CRS was established for Quiha.",
+    "nativeIdentity": "No public Quiha/Tigray parcel identity field or value was returned; no synthetic identity was created.",
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"Public official e-Land map shell and current JavaScript inspection; no parcel query was available for Quiha/Tigray","featureCount":0,"nativeIdentity":null}
+  },
+  "localCustodianAssessment": "No local Quiha or Tigray land-registry/cadastre/map/procedure custodian was first-party evidenced. The Addis Ababa Land Holding Registration and Information Agency is a national search result only in this context and explicitly city-specific; it is not treated as Quiha's local custodian. The Ministry of Agriculture administrative-boundary dataset is general boundary infrastructure, not local parcel registry evidence.",
+  "safeFieldAllowlist": ["stable native parcel identity", "polygon geometry if publicly returned", "latitude/longitude or source CRS", "source service URL", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "mortgage", "dispute", "payment", "audit"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"No local registry or public parcel identity/geometry was evidenced. Runtime adapter qualification remains a separate serial review."},
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel hit or map extent test was treated as citywide absence; no parcel extent was available from an official Quiha/Tigray viewer.",
+    "The Addis Ababa e-Land service is outside Quiha and does not establish coverage for Tigray.",
+    "The administrative-boundary dataset is not parcel evidence.",
+    "No GeoJSON sample is retained because no safe full parcel polygon and native parcel identity were returned.",
+    "No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+    "Larger unchanged HTML/JavaScript and request evidence is under ignored tmp/valhalla-parcel-research/6867/.",
+    "TLS certificate failures were recorded without disabling verification or using a certificate exception."
+  ],
+  "uncertainty": "Attempt 1 is complete for the queue packet, but public cadastral coverage, local custodianship, API availability, schema/CRS, update cadence, licensing, and runtime adapter behavior remain unresolved. Registry status is null rather than false."
+}

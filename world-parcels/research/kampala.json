@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:85",
+  "queueRank": 85,
+  "name": "Kampala",
+  "country": "Uganda",
+  "countryCode": "UG",
+  "centerLatLon": [
+    0.321224889410938,
+    32.5794981900445
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.kcca.go.ug/gis",
+      "observation": "KCCA GIS page says the GIS includes cadastre information from the Ministry of Lands, but exposes a search form and web app, not a data download."
+    },
+    {
+      "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+      "observation": "KCCA GIS web app; page references an anonymous GeoServer and internal REST endpoints."
+    },
+    {
+      "url": "https://mlhud.go.ug/ugnlis/",
+      "observation": "Ministry of Lands UgNLIS (Uganda National Land Information System) information page."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/",
+      "observation": "UgNLIS Angular app shell; no open parcel API observed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://camcamv.kcca.go.ug/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "Anonymous GeoServer WFS lists KCCA:Common-* layers (divisions, parishes, villages, generic data tables) plus demo layers; no layer named as parcels/plots"
+    },
+    {
+      "url": "https://camcamv.kcca.go.ug/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&maxFeatures=3&typeName=KCCA:Common-Data-MultiPolygon&bbox=32.575,0.318,32.585,0.326,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "empty FeatureCollection (0 features); same for Common-Data-GID-MultiPolygon and Data-GID",
+      "parcelRecordCount": 0
+    },
+    {
+      "url": "https://camcamv.kcca.go.ug/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&outputFormat=application/json&maxFeatures=2&typeName=KCCA:Layers-Common-Data",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "generic layer table; sampled rows are HVLine utility lines with geometry stored as UTM coordinates in an attribute; no parcel rows found in the first 3000 rows or via ILIKE filters for parcel/plot/cadastr/survey/lot/boundar/land"
+    },
+    {
+      "url": "https://gis.kcca.go.ug/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "no ArcGIS REST at this path"
+    },
+    {
+      "url": "https://kccagis.kcca.go.ug/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT rejected (502); host unreachable from this environment"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "KCCA says cadastre from MoLHUD is included in its GIS",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "KCCA's GeoServer may hold cadastre in tables behind its own web app (viewparams or authenticated REST) that could not be identified; the sampled anonymous layers hold utilities and admin areas. Not a permanent negative.",
+  "nextStep": "Inspect the KCCA web app's network calls for the cadastre layer, ask KCCA/MoLHUD for a data service, and test a bounded polygon query."
+}

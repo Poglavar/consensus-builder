@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7082-bukavu.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The DRC Ministry of Land Affairs’ administrative list places two cadastral land districts, Bukavu I and Bukavu II, under South Kivu. The South Kivu provincial government identifies its land-affairs ministry as responsible for provincial cadastre and land titles. This is city-named local-registry evidence; no public cadastral map or geometry endpoint was found. No public Bukavu parcel viewer, map download, or vector service was identified. Registry directories establish city-named cadastral units but do not expose geometry or their operational coverage boundary.",
+  "officialEvidence": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "httpStatus": 200,
+      "observation": "The DRC Ministry of Land Affairs lists Bukavu I and Bukavu II within South Kivu among its updated administrative/cadastral land districts."
+    },
+    {
+      "url": "https://sudkivu.gouv.cd/ministere-infrastructures.html",
+      "httpStatus": 200,
+      "observation": "South Kivu provincial government states that its Ministry of Infrastructure, Urbanism and Land Affairs manages provincial cadastre and land titles. The listed ministry seat is Uvira, so current Bukavu operations are not established by this source."
+    },
+    {
+      "url": "https://sudkivu.gouv.cd/territoire-bukavu.html",
+      "observation": "Provincial government identifies Bukavu as a city in South Kivu and lists its five communes; this binds the Bukavu-named land districts to the target city context."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/5177",
+      "httpStatus": 200,
+      "observation": "The DRC public-service catalogue describes commune-level parcel numbering based on a property title/occupation document and parcel plan/sketch. This is a generic national service description, not proof of a currently available Bukavu endpoint."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": null,
+    "notes": "Whether the Bukavu I/II cadastral units currently operate locally, their precise city coverage, and whether any anonymous map/vector service exists. The provincial ministry page places its seat in Uvira; no assumption about Bukavu service status is made."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No public Bukavu parcel viewer, map download, or vector service was identified. Registry directories establish city-named cadastral units but do not expose geometry or their operational coverage boundary."
+  }
+}

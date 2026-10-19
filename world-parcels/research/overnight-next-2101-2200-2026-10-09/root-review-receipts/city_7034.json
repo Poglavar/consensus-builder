@@ -1,0 +1,52 @@
+{
+  "taskId": "city:7034",
+  "decision": "held",
+  "checkedAt": "2026-10-11T01:20:20Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-identity-2061-7034-first-party-evidence.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-7034-jining.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/jining-service-review.json",
+    "world-parcels/research/overnight-cities-2026-10-08/city-10092-jining.json"
+  ],
+  "identity": {
+    "cityCode": 7034,
+    "rank": 2200,
+    "country": "China",
+    "countryCode": "CN",
+    "pointLatLon": [41.0251329176748, 113.116647318686],
+    "population2025Persons": 265293,
+    "source": "Original WUP 2025 archive row, checked against the immutable roster and pending queue. The prior Jining code 10092 is the distinct Shandong settlement."
+  },
+  "researchCheck": {
+    "bilingualSearchesRecorded": ["English", "Chinese (Simplified)"],
+    "registryFound": true,
+    "registryBasis": "The first-party Ulanqab institutional notice identifies its real-estate registration center, municipal registration remit, citywide guidance role and Jining District address. This is institutional custody evidence, not a public geometry or current viewer claim.",
+    "freshFirstPartyResponses": [
+      {
+        "url": "https://wlcb.nmgbb.gov.cn/wlcbs/newsite/zxdt/tzgg_6078/201812/t20181207_160064.html",
+        "httpStatus": 200,
+        "responseSha256": "7ed394de412dceb9542b9403902f70e06e15bc621cb4930a42ca95b2871da0ff",
+        "observation": "Institutional notice text names 乌兰察布市不动产登记中心 and locates it in 集宁区."
+      },
+      {
+        "url": "https://www.wulanchabu.gov.cn/",
+        "httpStatus": 200,
+        "responseSha256": "61b817ce20c06ba21d7d9fc7eab4c0b8d7777e58898fba150a3749618d4e1174",
+        "observation": "Official municipal homepage returned; no parcel feature response was obtained from this page."
+      },
+      {
+        "url": "https://zwfw.nmg.gov.cn/OrgItem_index?regionCode=150900000000&orgCode=11152600MB1924408D",
+        "httpStatus": 403,
+        "responseSha256": "9a679e5a0fe2feaa6595b15b0e1bde4caee85902213599eb929d7cbd5831e55a",
+        "observation": "Public portal route denied access; this does not establish citywide parcel absence."
+      }
+    ],
+    "retainedFullPolygonCount": 0,
+    "safeNativeParcelIdAndGeometryResponse": false
+  },
+  "reason": "No anonymous full-polygon/native-ID response or retained sample exists. Fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are all unevidenced. Hold runtime admission and coverage claims; the 403 route is an access limitation, not evidence that Jining has no parcels."
+}

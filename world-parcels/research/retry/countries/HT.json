@@ -1,0 +1,67 @@
+{
+ "kind": "country",
+ "key": "HT",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-HT,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://cnigs.ht/site/haitidata",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "CNIGS HaitiData page"
+  },
+  {
+   "url": "https://cnigs.ht/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "CNIGS homepage"
+  },
+  {
+   "url": "https://haitidata.org/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "React SPA; main JS inspected: only links to CNIGS, SIE-Haiti, Recovery Observatory, Protection Civile MangoMap; no GeoNode/API endpoint or cadastre layer"
+  },
+  {
+   "url": "https://haitidata.org/api/layers/?title__icontains=cadastre&limit=5",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "no GeoNode API here"
+  },
+  {
+   "url": "https://data.humdata.org/api/3/action/package_search?q=haiti+cadastre&rows=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "HDX: 0 results"
+  },
+  {
+   "url": "https://data.humdata.org/api/3/action/package_search?q=haiti+parcel&rows=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "HDX: 0 results"
+  },
+  {
+   "url": "https://onacah.gouv.ht",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "CNIGS, HaitiData and HDX are reachable; no block evident.",
+ "notes": "Re-checked with browser headers and JS inspection of HaitiData; no cadastre or parcel service found. Unchanged. ONACA site unreachable.",
+ "nextStep": "Low priority; check ONACA/DGI if reachable, or ArcGIS Online orgs for Haiti cadastre pilots."
+}

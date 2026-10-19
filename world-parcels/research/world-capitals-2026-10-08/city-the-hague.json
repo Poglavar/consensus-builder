@@ -1,0 +1,99 @@
+{
+  "cityId": "capital:NL:the-hague",
+  "name": "The Hague",
+  "country": "Netherlands",
+  "countryCode": "NL",
+  "centerLatLon": [
+    52.0705,
+    4.3007
+  ],
+  "capitalRole": "executive seat of government",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "The Hague Netherlands cadastral parcels public map PDOK",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Den Haag kadastrale percelen PDOK OGC API",
+      "language": "Dutch",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+      "observation": "Official cadastral map OGC API; same enabled provider as Amsterdam and Rotterdam."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:09:48.455Z",
+      "method": "GET",
+      "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?bbox=4.309,52.078,4.312,52.081&limit=3&f=json&status_historie_code=G",
+      "httpStatus": 200,
+      "finalUrl": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?bbox=4.309,52.078,4.312,52.081&limit=3&f=json&status_historie_code=G",
+      "contentType": "application/geo+json",
+      "bytes": 9091
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Current cadastral polygons returned with 14-digit identifiers and cadastral municipality ’s-Gravenhage.",
+  "registryEvidenceUrls": [
+    "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+  ],
+  "sourceCandidate": {
+    "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+    "publisher": "Kadaster / PDOK",
+    "safeSampleFile": "the-hague-adapter-sample.geojson"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Valid G records only; central The Hague sample, existing national service.",
+    "verifiedOpenScope": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Indicative cadastral map boundaries are not legally binding survey coordinates.",
+  "runtimeReadiness": "enabled",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "MultiPolygon"
+    ],
+    "responseFile": "research/world-capitals-2026-10-08/the-hague-adapter-sample.geojson",
+    "runtimeSampleParcelCount": 139,
+    "initialSampleMetadataFile": "research/world-capitals-2026-10-08/the-hague-safe-sample.json"
+  },
+  "acceptanceFile": "research/world-capitals-2026-10-08/the-hague-acceptance.json",
+  "geometryQualityFile": "research/world-capitals-2026-10-08/the-hague-quality.json",
+  "runtimeQualified": true,
+  "appCityId": "thehague",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee.",
+    "evidenceFile": "research/world-capitals-2026-10-08/the-hague-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/the-hague-quality.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/the-hague-adapter-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      52.08,
+      4.311
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.001
+  }
+}

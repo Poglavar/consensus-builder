@@ -1,5 +1,19 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Page, Route } from '@playwright/test';
 import { selectors } from './selectors';
+
+/** Mock Solana account reads regardless of the developer's configured RPC provider. */
+export async function routeSolanaReads(page: Page, respond: (route: Route) => Promise<unknown>): Promise<void> {
+  const methods = new Set(['getAccountInfo', 'getMultipleAccounts', 'getProgramAccounts', 'getBalance',
+    'getTokenAccountBalance', 'getSignaturesForAddress', 'getLatestBlockhash']);
+  await page.route('**/*', async route => {
+    if (route.request().method() !== 'POST') return route.fallback();
+    let body: any;
+    try { body = route.request().postDataJSON(); } catch (_) { return route.fallback(); }
+    const requests = Array.isArray(body) ? body : [body];
+    if (!requests.length || !requests.every(item => item?.jsonrpc === '2.0' && methods.has(item.method))) return route.fallback();
+    await respond(route);
+  });
+}
 
 type MockEvmWalletOptions = {
   account?: string;
@@ -46,6 +60,23 @@ type MockEvmLoaderOptions = {
   proposalContractAddress?: string;
 };
 
+/** Wait for the app's versioned local scripts and on-demand wallet vendors to finish loading. */
+export async function waitForBlockchainRuntime(page: Page, globals: string[] = []): Promise<void> {
+  await page.evaluate(async () => {
+    const ensureWalletVendors = (window as typeof window & {
+      ensureWalletVendors?: () => Promise<boolean>;
+    }).ensureWalletVendors;
+    if (ensureWalletVendors) await ensureWalletVendors();
+  });
+
+  if (globals.length) {
+    await page.waitForFunction((requiredGlobals) => {
+      const runtime = window as typeof window & Record<string, unknown>;
+      return requiredGlobals.every((name) => runtime[name] !== undefined && runtime[name] !== null);
+    }, globals);
+  }
+}
+
 export async function injectMockEvmWallet(page: Page, options: MockEvmWalletOptions = {}): Promise<void> {
   await page.addInitScript((initOptions: MockEvmWalletOptions) => {
     const account = initOptions.account || '0x1234567890abcdef1234567890abcdef12345678';
@@ -86,6 +117,12 @@ export async function injectMockEvmWallet(page: Page, options: MockEvmWalletOpti
         if (method === 'net_version') {
           return String(parseInt(chainIdHex, 16));
         }
+        // Connected profiles read these quantities through the real ethers provider. RPC
+        // quantities are hex strings; null makes ethers throw before the UI can finish loading.
+        if (['eth_getBalance', 'eth_getTransactionCount'].includes(method)) return '0x0';
+        if (['eth_blockNumber', 'eth_gasPrice', 'eth_maxPriorityFeePerGas'].includes(method)) return '0x1';
+        if (method === 'eth_estimateGas') return '0x5208';
+        if (method === 'eth_getCode' || method === 'eth_call') return '0x';
         if (method === 'wallet_switchEthereumChain') {
           const requested = params && params[0] && params[0].chainId ? String(params[0].chainId) : chainIdHex;
           chainIdHex = normalizeHex(requested);
@@ -188,9 +225,19 @@ export async function connectWalletByConnectorId(page: Page, connectorId: string
   await openWalletModal(page);
   await page.locator(`${selectors.walletConnectorButton}[data-wallet-connector="${connectorId}"]`).click();
   await expect(page.locator(selectors.walletModalOverlay)).toHaveCount(0);
+  await walletVendorsLoaded(page);
+}
+
+// ethers and solanaWeb3 load on demand (index.html ensureWalletVendors); a wallet connect only starts
+// the load, so the connect helper and any stub that patches window.ethers wait for it rather than race it.
+async function walletVendorsLoaded(page: Page): Promise<void> {
+  await page.waitForFunction(() => typeof (window as any).ensureWalletVendors === 'function');
+  const loaded = await page.evaluate(() => (window as any).ensureWalletVendors());
+  if (!loaded) throw new Error('the wallet vendors (ethers) failed to load');
 }
 
 export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmProposalMintOptions = {}): Promise<void> {
+  await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmProposalMintOptions) => {
     const globalWindow = window as typeof window & {
       ethers?: {
@@ -240,6 +287,7 @@ export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmPro
       address: string;
       mintAndFund: ((...args: unknown[]) => Promise<{ hash: string; wait: () => Promise<{ hash: string; logs: Array<{ address: string; topics: string[] }>; blockNumber: number }> }>) & {
         staticCall: (...args: unknown[]) => Promise<boolean>;
+        estimateGas: (...args: unknown[]) => Promise<bigint>;
       };
 
       constructor(address: string) {
@@ -260,6 +308,7 @@ export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmPro
           wait,
         });
         mintAndFund.staticCall = async () => true;
+        mintAndFund.estimateGas = async () => 21000n;
         this.mintAndFund = mintAndFund;
       }
     }
@@ -283,6 +332,7 @@ export async function stubEvmProposalMintSuccess(page: Page, options: MockEvmPro
 }
 
 export async function stubEvmAcceptWithdrawSuccess(page: Page, options: MockEvmTxOptions = {}): Promise<void> {
+  await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmTxOptions) => {
     const globalWindow = window as typeof window & {
       ethers?: {
@@ -422,7 +472,7 @@ export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBri
     globalWindow.SolanaChainDataLoader.parseProposalAccount = () => ({
       acceptancePossible: true,
       status: 'Active',
-      parentParcelIds: ['HR-335754-1234'],
+      cadastreParcelIds: ['HR-335754-1234'],
       acceptedParcels: [],
     });
     globalWindow.SolanaChainDataLoader.getParcelMintStatus = async () => ({
@@ -434,6 +484,7 @@ export async function stubSolanaBridgeSuccess(page: Page, options: MockSolanaBri
 }
 
 export async function stubEvmChainDataReads(page: Page, options: MockEvmLoaderOptions = {}): Promise<void> {
+  await walletVendorsLoaded(page);
   await page.evaluate((stubOptions: MockEvmLoaderOptions) => {
     const globalWindow = window as typeof window & {
       ethers?: {

@@ -1,0 +1,117 @@
+{
+  "name": "Dhule",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 838,
+  "point": [
+    20.9011136973646,
+    74.7693968387587
+  ],
+  "population2025": 643777,
+  "population2025k": 643.777,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point.",
+  "registryEvidenceUrls": [
+    "https://dhule.gov.in/en/service/land-records/",
+    "https://dhule.gov.in/e0-a4-9c-e0-a4-bf-e0-a4-b2-e0-a4-b9-e0-a4-be-e0-a4-85-e0-a4-a7-e0-a5-80-e0-a4-95-e0-a5-8d-e0-a4-ad-e0-a5-82-e0-a4-ae-e0-a4-bf-e0-a4-85-e0-a4-ad-e0-a4-bf-e0-a4-b2/",
+    "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. At most two full polygons retained for Toulouse; no geometry retained for the other cities. Citywide/countrywide completeness, legal title, survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_land_records_office_public_map_endpoint_schema_unverified",
+  "technicalBlocker": "The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+  "remainingUncertainty": "Whether the district-linked map viewer exposes a public vector geometry endpoint with safe native IDs for the Dhule urban locality and whether the unchanged WUP point lies inside a mapped parcel remain unknown.",
+  "nextStep": "If a primary public parcel layer is identified or the existing Toulouse provider is considered for extension, complete parent-owned source qualification independently; no runtime/config change made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dhule official cadastral map land records Maharashtra BhuNaksha city parcel map",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+        "actualResultUrls": [
+          "https://dhule.gov.in/en/service/land-records/",
+          "https://dhule.gov.in/e0-a4-9c-e0-a4-bf-e0-a4-b2-e0-a4-b9-e0-a4-be-e0-a4-85-e0-a4-a7-e0-a5-80-e0-a4-95-e0-a5-8d-e0-a4-ad-e0-a5-82-e0-a4-ae-e0-a4-bf-e0-a4-85-e0-a4-ad-e0-a4-bf-e0-a4-b2/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      },
+      {
+        "language": "Marathi",
+        "query": "धुळे शहर अधिकृत भू नक्शा जमीन अभिलेख ई नकाशा महाराष्ट्र भूमी अभिलेख",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+        "actualResultUrls": [
+          "https://dhule.gov.in/en/service/land-records/",
+          "https://dhule.gov.in/e0-a4-9c-e0-a4-bf-e0-a4-b2-e0-a4-b9-e0-a4-be-e0-a4-85-e0-a4-a7-e0-a5-80-e0-a4-95-e0-a5-8d-e0-a4-ad-e0-a5-82-e0-a4-ae-e0-a4-bf-e0-a4-85-e0-a4-ad-e0-a4-bf-e0-a4-b2/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      },
+      {
+        "language": "Marathi",
+        "query": "site:dhule.gov.in भूमी अभिलेख धुळे जिल्हा अधीक्षक भूमि अभिलेख धुळे भू नकाशा शहर सर्वे",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+        "actualResultUrls": [
+          "https://dhule.gov.in/en/service/land-records/",
+          "https://dhule.gov.in/e0-a4-9c-e0-a4-bf-e0-a4-b2-e0-a4-b9-e0-a4-be-e0-a4-85-e0-a4-a7-e0-a5-80-e0-a4-95-e0-a5-8d-e0-a4-ad-e0-a5-82-e0-a4-ae-e0-a4-bf-e0-a4-85-e0-a4-ad-e0-a4-bf-e0-a4-b2/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "IN-DHULE-LAND-RECORDS",
+    "name": "Official Dhule district Land Records page links to MahaBhumi and lists",
+    "url": "https://dhule.gov.in/en/service/land-records/",
+    "operator": "District Superintendent of Land Records, Dhule / Maharashtra Department of Land Records",
+    "serviceType": "Official local land-record / property-registration service; no public parcel feature layer and safe field schema verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 8736,
+  "cityId": "wup2025:8736",
+  "queueRank": 838,
+  "sourceIds": [],
+  "centerLatLon": [
+    20.9011136973646,
+    74.7693968387587
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Parent owns protocol qualification and runtime decisions; this discovery pass made no adapter or runtime changes."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://dhule.gov.in/en/service/land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Land Records | District Dhule , Government of Maharashtra | India    "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4994-jakdo-dong.json",
+  "purpose": "Document first-party registry/map discovery, bounded public-source review, request outcomes, and safety limits.",
+  "assessment": "No local DPRK cadastral registry or public parcel-map/API route was evidenced. Search results established locality context only; no safe anonymous parcel ID plus complete polygon was obtained.",
+  "registryAssessment": "registryFound remains null. Neither the DPRK-related publication reviewed nor the locality/population pages is a local registry or cadastral-map custodian. South Korean services found by Korean-language search were rejected as wrong-country sources.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kkfonline.com/2023/03/24/important-weapon-test-and-firing-drill-for-strategic-purpose-conducted-in-dprk/",
+      "observation": "DPRK-related English publication identifies Jakdo-dong as a locality in Hungnam District, Hamhung City, South Hamgyong Province; it is a news/publication page, not a cadastral registry or parcel map."
+    }
+  ],
+  "discoveryOnlySources": [
+    {
+      "url": "https://mapcarta.com/16104508",
+      "observation": "Non-first-party locality page identifies Chakto-dong/작도동 and alternate names; no parcel layer or cadastral custody is evidenced."
+    },
+    {
+      "url": "https://censuswall.com/city/jakdo-dong-north-korea",
+      "observation": "Population/context page reproduces WUP-derived city information; it is not a cadastral source."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": null,
+    "observedTechnology": "No DPRK cadastral viewer or public map application was located.",
+    "observedControls": [],
+    "schemaAndCrs": "Not available; no successful first-party service response.",
+    "nativeFieldNames": null
+  },
+  "attempts": [
+    {
+      "route": "English first-party discovery",
+      "method": "Web search",
+      "result": "Located a DPRK-related publication and non-first-party place/population references; no cadastral registry or parcel viewer found.",
+      "credentialsUsed": false,
+      "unsafeFieldsRequested": false
+    },
+    {
+      "route": "Korean-language first-party discovery",
+      "method": "Web search",
+      "result": "Returned South Korean cadastral portals and a non-first-party locality page; wrong-country portals were not used for DPRK evidence.",
+      "credentialsUsed": false,
+      "unsafeFieldsRequested": false
+    },
+    {
+      "route": "First-party viewer/API follow-through",
+      "method": "Not executed",
+      "result": "No official DPRK viewer/API URL was identified from discovery, so no speculative endpoint or point query was submitted.",
+      "credentialsUsed": false,
+      "unsafeFieldsRequested": false
+    }
+  ],
+  "requests": [],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No parcel geometry retained. This is not a citywide absence claim; exact-point coverage and any non-public registry behavior remain unknown."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "complete parcel geometry", "source CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "coverageAssessment": {
+    "claimedScope": "No local registry or public cadastral service was verified.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "uncertainty": "The exact WUP point [39.8425452003986, 127.609763727222] was preserved. No point-hit, search miss, unavailable UI, or absent public API was treated as evidence of citywide parcel absence. Native IDs, field mapping, CRS, geometry coverage, and registry custody remain unknown.",
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "adapterQualification": "held_pending_independent_serial_review"
+}

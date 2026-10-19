@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-6979-ciudad-del-carmen.json",
+  "cityCode": 6979,
+  "queueRank": 2755,
+  "name": "Ciudad del Carmen",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "point": [18.6488208984808, -91.8060260344894],
+  "population2025": 214640,
+  "population2025k": 214.64,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "runtimeReadiness": "held",
+  "reviewOutcome": "Local cadastral custodian and official state cadastral infrastructure are evidenced; no public parcel ID+geometry service was qualified.",
+  "queryAndRequestOutcomes": "Separate English and Spanish first-party discovery queries were executed and recorded in the city record. INFOCAM, IDE Campeche, the Carmen municipal regulation, the official Campeche predial portal, and the legacy Carmen cadastral route were inspected. The IDE requires authentication, the legacy route returned HTTP 503, and no bounded anonymous ID+geometry response or public schema/CRS was obtained.",
+  "localRegistryEvidence": "The official Carmen municipal regulation search result identifies the Dirección de Catastro and its cadastral-register/cartography responsibilities. INFOCAM is the state cadastral custodian, and the official IDE entry advertises OGC services but currently exposes a login wall. The predial portal is account-based and not evidenced as parcel geometry.",
+  "attemptsRecordedInCityRecord": true,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": 0,
+  "scopeLimits": [
+    "No GeoJSON sample retained because no safe native parcel ID plus unchanged native geometry was obtained.",
+    "No credentials, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder/contact fields, tax/account lookup, or private token was used.",
+    "The exact WUP point was preserved; no exact-point or map-extent absence conclusion was drawn.",
+    "Packet completion does not mean source integration or admission."
+  ],
+  "uncertainty": "The IDE may expose parcel services only after authorized access, while the legacy Carmen endpoint was unavailable. This attempt cannot establish citywide parcel coverage or absence.",
+  "runtimeAdmission": "held pending independent serial qualification of a real adapter and public safe ID+geometry service."
+}

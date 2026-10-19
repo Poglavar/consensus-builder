@@ -1,0 +1,38 @@
+{
+  "cityCode": 9601,
+  "queueRank": 2150,
+  "name": "Hassan",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [13.0062489641327, 76.103165062204],
+  "population2025": 270626,
+  "population2025k": 270.626,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hassan Karnataka official cadastral parcel map land records Bhoomi Hassan",
+        "result": "First-party discovery located the Hassan District Government of Karnataka land-records page. It identifies Bhoomi as Karnataka's land-records management system, directs users to the official RTC service, and identifies the Hassan Taluk Office. No parcel feature schema or downloadable geometry was exposed by the indexed page.",
+        "actualResultUrls": [
+          "https://hassan.nic.in/en/service/land-records/",
+          "https://landrecords.karnataka.gov.in/service2/RTC.aspx"
+        ]
+      },
+      {
+        "language": "Kannada",
+        "query": "ಹಾಸನ ಕರ್ನಾಟಕ ಅಧಿಕೃತ ಭೂಮಿ ಜಮೀನು ನಕ್ಷೆ ಪೋರ್ಟಲ್",
+        "result": "The Kannada-language discovery query returned official Karnataka land-record references and the Hassan district land-records pathway, but no first-party Kannada page with a public parcel API or safe ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://hassan.nic.in/en/service/land-records/",
+          "https://landrecords.karnataka.gov.in/"
+        ]
+      }
+    ]
+  },
+  "researchNotes": "The local Hassan District Government page is evidence of the local registry/service pathway; the underlying Bhoomi service is state-operated. Direct anonymous bounded follow-up did not qualify parcel geometry. No exact-point hit or citywide absence is claimed.",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

@@ -1,0 +1,291 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "6413",
+  "cityName": "Arlington",
+  "sourceId": "arlington-tax-parcels",
+  "candidateSha256": "cdaa19aaf0f456142d9315030b32d079ddf1ca3573c955f4b276f48734779045",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 141,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 141,
+      "collectedUniqueCount": 141
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 362,
+      "sampleCentroidCell": {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          -97.066,
+          32.723,
+          -97.065,
+          32.724
+        ],
+        "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "complete": true,
+        "featureCount": 19
+      }
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "forcedComplete": true,
+      "pagingRequests": 10,
+      "observedPageLimits": [
+        1
+      ],
+      "singleIdRequests": 0,
+      "usesOffsetPaging": true,
+      "distinctOffsets": 2,
+      "pagedEvidence": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "ed72aecc3aca11181548bf29cfd7b2448fb6eb9bc5c3bf20e0e0e1867198e504",
+      "featureCount": 141,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32614",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "ed72aecc3aca11181548bf29cfd7b2448fb6eb9bc5c3bf20e0e0e1867198e504",
+  "featureCount": 141,
+  "sampleIds": [
+    "US-TX-ARLINGTON-4201521",
+    "US-TX-ARLINGTON-4201522",
+    "US-TX-ARLINGTON-4201523"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 45,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -97.074,
+        32.716,
+        -97.073,
+        32.717
+      ],
+      "complete": true,
+      "featureCount": 20
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -97.073,
+        32.716,
+        -97.072,
+        32.717
+      ],
+      "complete": true,
+      "featureCount": 20
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -97.072,
+        32.716,
+        -97.071,
+        32.717
+      ],
+      "complete": true,
+      "featureCount": 12
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -97.074,
+        32.717,
+        -97.073,
+        32.718
+      ],
+      "complete": true,
+      "featureCount": 15
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -97.073,
+        32.717,
+        -97.072,
+        32.718
+      ],
+      "complete": true,
+      "featureCount": 15
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -97.072,
+        32.717,
+        -97.071,
+        32.718
+      ],
+      "complete": true,
+      "featureCount": 9
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -97.074,
+        32.718,
+        -97.073,
+        32.719
+      ],
+      "complete": true,
+      "featureCount": 15
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -97.073,
+        32.718,
+        -97.072,
+        32.719
+      ],
+      "complete": true,
+      "featureCount": 15
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -97.072,
+        32.718,
+        -97.071,
+        32.719
+      ],
+      "complete": true,
+      "featureCount": 5
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -97.073,
+        32.715,
+        -97.072,
+        32.716
+      ],
+      "complete": true,
+      "featureCount": 11
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -97.073,
+        32.719,
+        -97.072,
+        32.72
+      ],
+      "complete": true,
+      "featureCount": 15
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -97.075,
+        32.717,
+        -97.074,
+        32.718
+      ],
+      "complete": true,
+      "featureCount": 21
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -97.071,
+        32.717,
+        -97.07,
+        32.718
+      ],
+      "complete": true,
+      "featureCount": 8
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -97.066,
+        32.723,
+        -97.065,
+        32.724
+      ],
+      "complete": true,
+      "featureCount": 19
+    }
+  ]
+}

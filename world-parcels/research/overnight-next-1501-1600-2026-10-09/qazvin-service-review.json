@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-4367-qazvin.json",
+  "purpose": "Document first-party local registry context and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Qazvin local registration/cadastre custody context was evidenced through the Qazvin notary association's public institutional links and cadastral notices. Direct anonymous HTTPS access to SSAA, My SSAA, SHAMIM, and the Qazvin municipal domain timed out. The accessible local site did not expose a parcel map, WMS/WFS, ArcGIS service, schema, CRS, or geometry-only endpoint. No parcel geometry was retained.",
+  "registryAssessment": "Local registry context is evidenced, but this packet does not establish public parcel-vector access. The Qazvin notary association is a local professional institution linking the provincial Organization for Registration of Deeds and Properties; the national SSAA organization is the referenced cadastral authority. This is custody evidence, not source integration or adapter qualification.",
+  "officialPrimarySources": [
+    {
+      "url": "https://qazvinnotary.ir/",
+      "observation": "Accessible Qazvin notary association homepage links the Organization for Registration of Deeds and Properties and publishes local registration/cadastral notices; no public parcel feature endpoint was exposed."
+    },
+    {
+      "url": "https://ssaa.ir/",
+      "observation": "Official national registration/cadastre domain was attempted anonymously over HTTPS; request timed out from this environment. No credentials or alternate insecure transport was used."
+    },
+    {
+      "url": "https://shamim.ssaa.ir/",
+      "observation": "Official SHAMIM cadastral positioning service was attempted anonymously over HTTPS; request timed out. No login was attempted."
+    }
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Qazvin official cadastral parcel map GIS land registry Iran",
+      "outcome": "Institutional/custody context found; no safe anonymous parcel geometry endpoint verified.",
+      "actualResultUrls": ["https://qazvinnotary.ir/", "https://ssaa.ir/", "https://shamim.ssaa.ir"]
+    },
+    {
+      "language": "Persian (Farsi)",
+      "query": "قزوین نقشه کاداستر قطعات ملکی سامانه رسمی سازمان ثبت اسناد املاک",
+      "outcome": "Local registration/cadastre references found; no safe anonymous parcel geometry endpoint verified.",
+      "actualResultUrls": ["https://qazvinnotary.ir/", "https://ssaa.ir/", "https://shamim.ssaa.ir"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://qazvinnotary.ir/",
+      "method": "GET",
+      "result": "HTTP 200; local association page reviewed. Institutional links and notices were visible, but no map/API/service configuration or parcel geometry was exposed.",
+      "safeFields": "Only institutional page/link context retained."
+    },
+    {
+      "url": "https://ssaa.ir/",
+      "method": "GET",
+      "result": "TLS-verified anonymous request timed out after 20 seconds; no response body or schema.",
+      "safeFields": "No data returned."
+    },
+    {
+      "url": "https://my.ssaa.ir/portal",
+      "method": "GET",
+      "result": "TLS-verified anonymous request timed out after 8 seconds; no login was attempted.",
+      "safeFields": "No data returned."
+    },
+    {
+      "url": "https://shamim.ssaa.ir/",
+      "method": "GET",
+      "result": "TLS-verified anonymous request timed out after 8 seconds; no login was attempted.",
+      "safeFields": "No data returned."
+    },
+    {
+      "url": "https://qazvin.ir/",
+      "method": "GET",
+      "result": "TLS-verified anonymous request timed out after 8 seconds; no municipal map/API response.",
+      "safeFields": "No data returned."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "crs": null,
+    "exactWupPointTest": "Not performed against a verified parcel endpoint because no public parcel service or schema was available. This is not evidence of citywide parcel absence.",
+    "requestEvidence": []
+  },
+  "safeFieldAllowlist": ["stable native parcel identity only if verified", "geometry", "declared CRS", "service/schema metadata"],
+  "sourceSpecificFields": "No source-specific parcel attributes were requested or retained. Any future native field mapping or composite-key provenance belongs in this review metadata, not GeoJSON properties.",
+  "coverageAssessment": {
+    "claimedScope": "Qazvin local registration/cadastre context plus official Iranian national cadastral service entry points.",
+    "verifiedOpenScope": "Institutional context only; no anonymous parcel geometry, schema, CRS, or native identity verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "geometryDecisionSummary": "No GeoJSON sample written. No qualifying safe native ID plus unchanged full parcel polygon was available.",
+  "runtimeAssessment": "held; research packet completion is not source integration or adapter admission.",
+  "remainingUncertainty": "Timeouts may reflect network or service availability and do not establish absence. A serial reviewer may revisit the official portals and inspect current JavaScript/configuration if reachable, without login or unsafe fields."
+}

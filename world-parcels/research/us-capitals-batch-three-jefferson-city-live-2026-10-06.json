@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "jefferson_city",
+      "stateCode": "MO",
+      "sourceId": "us-mo-jefferson_city-parcels",
+      "endpoint": "https://services6.arcgis.com/rXa0aMElf2BPjgBA/arcgis/rest/services/JCBaseMap/FeatureServer/15",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1775,
+            38.572500000000005,
+            -92.175,
+            38.575
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.175,
+            38.572500000000005,
+            -92.1725,
+            38.575
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1725,
+            38.572500000000005,
+            -92.17,
+            38.575
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1775,
+            38.575,
+            -92.175,
+            38.5775
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.175,
+            38.575,
+            -92.1725,
+            38.5775
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1725,
+            38.575,
+            -92.17,
+            38.5775
+          ],
+          "count": 84,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1775,
+            38.5775,
+            -92.175,
+            38.580000000000005
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.175,
+            38.5775,
+            -92.1725,
+            38.580000000000005
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1725,
+            38.5775,
+            -92.17,
+            38.580000000000005
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.17,
+            38.572500000000005,
+            -92.1675,
+            38.575
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1675,
+            38.572500000000005,
+            -92.16499999999999,
+            38.575
+          ],
+          "count": 60,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.16499999999999,
+            38.572500000000005,
+            -92.1625,
+            38.575
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.17,
+            38.575,
+            -92.1675,
+            38.5775
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1675,
+            38.575,
+            -92.16499999999999,
+            38.5775
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.16499999999999,
+            38.575,
+            -92.1625,
+            38.5775
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.17,
+            38.5775,
+            -92.1675,
+            38.580000000000005
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1675,
+            38.5775,
+            -92.16499999999999,
+            38.580000000000005
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.16499999999999,
+            38.5775,
+            -92.1625,
+            38.580000000000005
+          ],
+          "count": 1,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -92.1725,
+          38.5775,
+          -92.17,
+          38.580000000000005
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 377,
+      "exactResolved": 377,
+      "nativeIds": [
+        "1103070004016001",
+        "1103070004030007",
+        "1103070004028001"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mo-jefferson_city-parcels",
+        "parcels": 1,
+        "siteM2": 973.83
+      },
+      "requests": 28,
+      "proposedDescriptor": {
+        "id": "us-mo-jefferson_city-parcels",
+        "name": "Cole County GIS / Jefferson City (JCMO_ADMIN) — Jefferson City",
+        "adapter": "arcgis",
+        "endpoint": "https://services6.arcgis.com/rXa0aMElf2BPjgBA/arcgis/rest/services/JCBaseMap/FeatureServer/15",
+        "idField": "PID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": "^[0-9]{1,19}$",
+        "idPrefix": "US-MO-JEFFERSON_CITY-",
+        "outFields": [
+          "OBJECTID",
+          "PID"
+        ],
+        "parcelNumberField": "PID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 32615,
+        "countryCode": "US",
+        "stateCode": "MO",
+        "cityIds": [
+          "jefferson_city"
+        ],
+        "operator": "Cole County GIS / Jefferson City (JCMO_ADMIN)",
+        "scope": "Public capital-region cadastral polygons around Jefferson City.",
+        "catalogueUrl": "https://www.colecounty.org/424/GISMapping",
+        "licenceNote": "Source conditions informational; users choose source and intended use."
+      }
+    }
+  ]
+}

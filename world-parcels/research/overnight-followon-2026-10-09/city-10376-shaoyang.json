@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10376",
+  "wupCityCode": 10376,
+  "name": "Shaoyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1027,
+  "queueRank": 1027,
+  "point": [
+    27.2374333456455,
+    111.468671594059
+  ],
+  "centerLatLon": [
+    27.2374333456455,
+    111.468671594059
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 538432,
+  "population2025k": 538.432,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Hunan provincial government registration-query guide expressly names Shaoyang City’s real-estate registration center. The Shaoyang2022 municipal valuation report identifies local cadastral survey datasets, cadastral parcel maps and registration records. Official indexed evidence establishes local custody; a direct normal-TLS read failed with BAD_ECPOINT, and no anonymous full-polygon endpoint is verified.",
+  "registryEvidenceUrls": [
+    "https://www.hunan.gov.cn/topic/yjsycb/bszn/dspdbyjs/202104/t20210407_16441575.html",
+    "https://www.shaoyang.gov.cn/attachment/upload/file/20240708/1720407207906043369.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist.",
+  "scopeLimits": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The Hunan provincial government registration-query guide expressly names Shaoyang City’s real-estate registration center. The Shaoyang2022 municipal valuation report identifies local cadastral survey datasets, cadastral parcel maps and registration records. Official indexed evidence establishes local custody; a direct normal-TLS read failed with BAD_ECPOINT, and no anonymous full-polygon endpoint is verified.",
+    "verifiedOpenScope": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shaoyang official cadastral parcel real estate registration center",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "The Hunan provincial government registration-query guide expressly names Shaoyang City’s real-estate registration center. The Shaoyang2022 municipal valuation report identifies local cadastral survey datasets, cadastral parcel maps and registration records. Official indexed evidence establishes local custody; a direct normal-TLS read failed with BAD_ECPOINT, and no anonymous full-polygon endpoint is verified.",
+        "actualResultUrls": [
+          "https://www.hunan.gov.cn/topic/yjsycb/bszn/dspdbyjs/202104/t20210407_16441575.html",
+          "https://www.shaoyang.gov.cn/attachment/upload/file/20240708/1720407207906043369.pdf"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Chinese",
+        "query": "邵阳市 不动产登记中心 地籍图 官方",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "The Hunan provincial government registration-query guide expressly names Shaoyang City’s real-estate registration center. The Shaoyang2022 municipal valuation report identifies local cadastral survey datasets, cadastral parcel maps and registration records. Official indexed evidence establishes local custody; a direct normal-TLS read failed with BAD_ECPOINT, and no anonymous full-polygon endpoint is verified.",
+        "actualResultUrls": [
+          "https://www.hunan.gov.cn/topic/yjsycb/bszn/dspdbyjs/202104/t20210407_16441575.html",
+          "https://www.shaoyang.gov.cn/attachment/upload/file/20240708/1720407207906043369.pdf"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:18.820005+00:00",
+        "url": "https://www.hunan.gov.cn/topic/yjsycb/bszn/dspdbyjs/202104/t20210407_16441575.html",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error [SSL: BAD_ECPOINT] bad ecpoint (_ssl.c:1082)>"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://www.hunan.gov.cn/topic/yjsycb/bszn/dspdbyjs/202104/t20210407_16441575.html",
+        "observation": "The Hunan provincial government registration-query guide expressly names Shaoyang City’s real-estate registration center. The Shaoyang2022 municipal valuation report identifies local cadastral survey datasets, cadastral parcel maps and registration records. Official indexed evidence establishes local custody; a direct normal-TLS read failed with BAD_ECPOINT, and no anonymous full-polygon endpoint is verified."
+      },
+      {
+        "homeUrl": "https://www.shaoyang.gov.cn/attachment/upload/file/20240708/1720407207906043369.pdf",
+        "observation": "The Hunan provincial government registration-query guide expressly names Shaoyang City’s real-estate registration center. The Shaoyang2022 municipal valuation report identifies local cadastral survey datasets, cadastral parcel maps and registration records. Official indexed evidence establishes local custody; a direct normal-TLS read failed with BAD_ECPOINT, and no anonymous full-polygon endpoint is verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "The Hunan provincial government registration-query guide expressly names Shaoyang City’s real-estate registration center. The Shaoyang2022 municipal valuation report identifies local cadastral survey datasets, cadastral parcel maps and registration records. Official indexed evidence establishes local custody; a direct normal-TLS read failed with BAD_ECPOINT, and no anonymous full-polygon endpoint is verified. No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00"
+}

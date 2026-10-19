@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:60",
+  "wupCityCode": 60,
+  "cityCode": 60,
+  "queueRank": 1277,
+  "rank": 1277,
+  "name": "Geneva",
+  "country": "Switzerland",
+  "countryCode": "CH",
+  "iso3": "CHE",
+  "point": [46.2017520971079, 6.13622539632436],
+  "centerLatLon": [46.2017520971079, 6.13622539632436],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 436587,
+  "population2025k": 436.587,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_cantonal_cadastral_service_and_public_coordinate_parcel_geometry_verified",
+  "registryFound": true,
+  "registryBasis": "The official Canton of Geneva SITG cadastral viewer and ArcGIS parcel layer returned safe cadastral identity fields and polygon geometry in bounded anonymous queries around the unchanged WUP point. This evidences public local cadastral coverage, not citywide completeness.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "Public parcel geometry is verified, but runtime remains held pending independent serial adapter qualification.",
+  "source": {
+    "operator": "République et canton de Genève - Département du territoire / SITG",
+    "custodianScope": "Official cantonal cadastral and official-survey map service for Geneva; the SITG catalog identifies the parcel data as official mensuration/cadastre data.",
+    "viewerUrl": "https://map.sitg.ge.ch/app/",
+    "viewerConfigUrl": "https://map.sitg.ge.ch/app/js/dataConfig.json",
+    "serviceUrl": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer",
+    "parcelLayerUrl": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4",
+    "queryUrl": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4/query",
+    "crs": "Native layer EPSG:2056 (Swiss LV95); query output requested as EPSG:4326 GeoJSON with coordinate order [longitude, latitude]."
+  },
+  "sampleFile": "geneva-parcel-samples.geojson",
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "Official SITG viewer/configuration discovery, parcel layer schema inspection, one exact transformed-point identity query, and one bounded anonymous envelope query around the immutable WUP point.",
+    "verifiedOpenScope": "The exact transformed WUP point returned EGRID CH576384326540 / parcel 78. The bounded envelope returned three full parcel polygons with stable-looking EGRID identities; only EGRID is retained in sample properties.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "technicalBlocker": "Native parcel layer fields are OBJECTID, EGRID, NO_PARCELLE, IDEDDP, PLAN_RF, SURFACE, LIEN_WWW and EXTRAIT_RDPPF_PDF. EGRID is retained as the canonical native identity; NO_PARCELLE and IDEDDP remain source metadata only.",
+  "remainingUncertainty": "The bounded query does not establish citywide completeness, parcel freshness, or universal service behavior. No owner, address, contact, titleholder, tax/account, personal, or registry-extract fields were requested or retained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Geneva Switzerland official cadastral map parcel viewer GIS parcelles cadastre Genève official",
+        "result": "First-party discovery located the official SITG interactive map, official cadastral/mensuration catalog, and SITG ArcGIS parcel layer.",
+        "actualResultUrls": [
+          "https://sitg.ge.ch/cartes/cadastre",
+          "https://sitg.ge.ch/applications/interface-cartographique",
+          "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Genève carte cadastrale officielle parcelles géoportail SITG",
+        "result": "La recherche officielle en français a trouvé le catalogue SITG de la mensuration officielle, la carte interactive et le service cantonal des parcelles cadastrales.",
+        "actualResultUrls": [
+          "https://sitg.ge.ch/cartes/cadastre",
+          "https://sitg.ge.ch/applications/cadastre-mensuration-officielle",
+          "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://map.sitg.ge.ch/app/",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Current official SITG viewer HTML identified versioned JavaScript/configuration assets."
+      },
+      {
+        "url": "https://map.sitg.ge.ch/app/js/config.js?v=20260825T114450",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Viewer configuration exposed official portal groups and EPSG:2056 map extent; no credentials or private tokens were used."
+      },
+      {
+        "url": "https://map.sitg.ge.ch/app/js/dataConfig.json",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Current viewer data configuration identified the CADASTRE/Mensuration-Cadastre resource."
+      },
+      {
+        "url": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official parcel layer metadata identified Polygon geometry, native EPSG:2056, GeoJSON support, safe fields, and the Geneva canton extent."
+      },
+      {
+        "url": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4/query",
+        "method": "GET; anonymous; TLS verification enabled; exact WUP point transformed only for native CRS; outFields=EGRID,NO_PARCELLE,IDEDDP; returnGeometry=false",
+        "httpStatus": 200,
+        "assessment": "Exact transformed WUP point returned EGRID CH576384326540, NO_PARCELLE 78, IDEDDP 24:78. This is a positive local hit, not a completeness test."
+      },
+      {
+        "url": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4/query",
+        "method": "GET; anonymous; TLS verification enabled; 1000m LV95 envelope around transformed WUP point; safe outFields; outSR=4326; f=geojson; resultRecordCount=3",
+        "httpStatus": 200,
+        "assessment": "Returned three full Polygon features with EGRID identities CH428339656353, CH216334658388, and CH356765836385; response indicated exceededTransferLimit because the bounded request intersected more than three features."
+      }
+    ],
+    "inspectedConfiguration": {
+      "viewer": "https://map.sitg.ge.ch/app/",
+      "service": "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer",
+      "parcelLayer": 4,
+      "responseSchemaObserved": "ArcGIS FeatureCollection/GeoJSON with Polygon geometry and safe cadastral attributes",
+      "nativeCrsObserved": "EPSG:2056",
+      "outputCrsObserved": "EPSG:4326",
+      "nativeIdentityMapping": "EGRID; federal cadastral identifier exposed by the native parcel layer. NO_PARCELLE and IDEDDP are source-specific supporting fields and are not retained in sample properties."
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://sitg.ge.ch/cartes/cadastre",
+    "https://sitg.ge.ch/applications/interface-cartographique",
+    "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer",
+    "https://thematic.sitg.ge.ch/arcgis/rest/services/CADASTRE_RDPPF/MapServer/4"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Source geometry is verified at a bounded location, but adapter qualification is reserved for the serial reviewer."
+  },
+  "sampleRetention": {
+    "retainedFeatureProperties": ["id"],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false
+  }
+}

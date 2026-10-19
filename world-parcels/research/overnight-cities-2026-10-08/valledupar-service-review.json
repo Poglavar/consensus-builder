@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4824-valledupar.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official operator says it serves Valledupar’s municipal cadastre, publishes complete parcel cartography for six urban sectors and 25 rural corregimientos, and offers a citizen parcel query. Linked public geoportal exposes cadastral/property detail panels that can include NPN, address and land-area attributes; no geometry-only safe-field route was verified, so no feature query was sent. Cadastral certification products require identity/title documentation. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tuterritorio.gov.co/",
+      "observation": "Official operator says it serves Valledupar’s municipal cadastre, publishes complete parcel cartography for six urban sectors and 25 rural corregimientos, and offers a citizen parcel query. Linked public geoportal exposes cadastral/property detail panels that can include NPN, address and land-area attributes; no geometry-only safe-field route was verified, so no feature query was sent. Cadastral certification products require identity/title documentation."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Valledupar official cadastral parcel map multipurpose cadastre public GIS municipal portal"
+    },
+    {
+      "language": "Spanish",
+      "query": "Valledupar catastro multipropósito visor predios consulta tu predio geoservicio oficial"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

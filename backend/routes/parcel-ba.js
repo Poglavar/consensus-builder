@@ -1,6 +1,10 @@
-import { normalizePossessionSheets, buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
+import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
+import { buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
 
 const MAX_LIMIT = 5000;
+// Pages come from one grid cell (bbox capped at MAX_CELL_BBOX_KM2), so a deep offset is never the
+// app paging — it is a caller walking the table. Reject it rather than scan-and-discard.
+export const MAX_OFFSET = 50000;
 
 const SRID_WGS84 = 4326;
 
@@ -114,6 +118,17 @@ function parseLimit(rawValue) {
     return Math.min(parsed, MAX_LIMIT);
 }
 
+// Returns 0 for absent, a non-negative integer, or NaN for invalid input (caller answers 400).
+function parseOffset(rawValue) {
+    if (rawValue === undefined || rawValue === null || rawValue === '') {
+        return 0;
+    }
+    if (typeof rawValue !== 'string' || !/^\d+$/.test(rawValue.trim())) {
+        return Number.NaN;
+    }
+    return Number.parseInt(rawValue.trim(), 10);
+}
+
 function parseBbox(rawValue) {
     if (!rawValue || typeof rawValue !== 'string') {
         return null;
@@ -184,21 +199,6 @@ function buildFeature(row, ownershipSummary = null) {
     };
 }
 
-async function fetchOwnershipForSmp(pool, smp) {
-    const sql = `
-        SELECT information_basic, information_technical, property_horizontal, doors, date_added, date_updated
-        FROM parcel_ba
-        WHERE smp = $1
-        LIMIT 1
-    `;
-    const { rows } = await pool.query(sql, [smp]);
-    if (!rows.length) {
-        return null;
-    }
-    const row = rows[0];
-    return buildOwnershipPayloadFromRow(row, smp);
-}
-
 async function fetchOwnershipSummariesForSmps(pool, smps) {
     const summaryMap = new Map();
     const uniqueSmps = Array.from(new Set((smps || [])
@@ -249,6 +249,13 @@ export function setupParcelBaRoute(app, pool) {
         const block = typeof req.query.block === 'string' ? req.query.block.trim() : '';
         const parcel = typeof req.query.parcel === 'string' ? req.query.parcel.trim() : '';
         const limit = parseLimit(req.query.limit);
+        const offset = parseOffset(req.query.offset);
+        if (!Number.isFinite(offset)) {
+            return res.status(400).json({ error: 'Invalid offset. Expected a non-negative integer.' });
+        }
+        if (offset > MAX_OFFSET) {
+            return res.status(400).json({ error: `offset too large (max ${MAX_OFFSET}).` });
+        }
         const bboxRaw = typeof req.query.bbox === 'string' ? req.query.bbox.trim() : '';
         const bbox = parseBbox(bboxRaw);
 
@@ -256,6 +263,10 @@ export function setupParcelBaRoute(app, pool) {
             return res.status(400).json({
                 error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
             });
+        }
+        // Callers ask per 500 m grid cell; a bbox the size of a city (or the world) is not the app.
+        if (bbox && wgs84BboxAreaKm2(bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat) > MAX_CELL_BBOX_KM2) {
+            return res.status(400).json({ error: `bbox too large (max ${MAX_CELL_BBOX_KM2} km²).` });
         }
 
         const hasSmp = Boolean(smp);
@@ -381,17 +392,32 @@ export function setupParcelBaRoute(app, pool) {
             sql += ` WHERE ${whereClauses.join(' AND ')}`;
         }
 
+        // smp is the primary key: the tiebreaker makes the order total, so offset pages never
+        // overlap or skip rows (block+parcel alone repeats across sections in a bbox query).
         if (queryType !== 'parcel') {
-            sql += ' ORDER BY block, parcel';
+            sql += ' ORDER BY block, parcel, smp';
         }
 
-        if (limit && queryType !== 'parcel') {
-            params.push(limit);
+        // Always bounded: without ?limit this used to return every matching row (a world bbox or
+        // a bare filter returned the whole table, raw features included). One extra row tells us
+        // whether the answer was cut short.
+        // Key lookups (queryType 'parcel') name their rows and stay unlimited.
+        const effectiveLimit = queryType === 'parcel' ? Infinity : (limit || MAX_LIMIT);
+        if (queryType !== 'parcel') {
+            params.push(effectiveLimit + 1);
             sql += ` LIMIT $${params.length}`;
+            // The frontend pages a cell with offset=startIndex while `returned === count`; ignoring
+            // offset handed it page 0 forever whenever a cell held exactly `count` rows.
+            if (offset > 0) {
+                params.push(offset);
+                sql += ` OFFSET $${params.length}`;
+            }
         }
 
         try {
-            const { rows } = await pool.query(sql, params);
+            const { rows: fetched } = await pool.query(sql, params);
+            const truncated = fetched.length > effectiveLimit;
+            const rows = truncated ? fetched.slice(0, effectiveLimit) : fetched;
             if (!rows.length) {
                 return res.status(404).json({ error: 'No parcels found for the provided filters.' });
             }
@@ -423,8 +449,10 @@ export function setupParcelBaRoute(app, pool) {
                     block: block || undefined,
                     parcel: parcel || undefined,
                     bbox: hasBbox ? `${bbox.minLon},${bbox.minLat},${bbox.maxLon},${bbox.maxLat}` : undefined,
-                    limit: limit || undefined
+                    limit: limit || undefined,
+                    offset: offset || undefined
                 },
+                truncated,
                 features
             });
         } catch (error) {
@@ -432,31 +460,4 @@ export function setupParcelBaRoute(app, pool) {
             res.status(500).json({ error: 'Failed to fetch Buenos Aires parcels.' });
         }
     });
-
-    app.get('/parcel-ba/:smp/ownership', async (req, res) => {
-        let smp = (req.params.smp || '').trim();
-        // Strip AR- prefix if present (handle both AR-002-062-000 and 002-062-000 formats)
-        if (smp) {
-            smp = smp.replace(/^(AR-)+/i, '');
-        }
-        if (!smp) {
-            return res.status(400).json({ error: 'SMP identifier is required.' });
-        }
-        if (!SMP_REGEX.test(smp)) {
-            return res.status(400).json({
-                error: 'Invalid SMP format. Expected e.g. 001-005-027A or 001-025A-002.'
-            });
-        }
-        try {
-            const ownership = await fetchOwnershipForSmp(pool, smp);
-            if (!ownership) {
-                return res.status(404).json({ error: 'Ownership data not found for the requested SMP.' });
-            }
-            res.json(ownership);
-        } catch (error) {
-            console.error(`Error in /parcel-ba/${smp}/ownership:`, error);
-            res.status(500).json({ error: 'Failed to fetch Buenos Aires ownership data.' });
-        }
-    });
 }
-

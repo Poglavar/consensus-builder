@@ -1,0 +1,32 @@
+[
+  {
+    "state": "FL",
+    "endpoint": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0",
+    "error": {
+      "message": "Unexpected token '<', \"<HTML><HEA\"... is not valid JSON"
+    },
+    "finalStatus": "endpoint_inaccessible_not_data_absent"
+  },
+  {
+    "state": "KS",
+    "endpoint": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0",
+    "error": {
+      "message": "fetch failed",
+      "cause": "self-signed certificate; if the root CA is installed locally, try running Node.js with --use-system-ca"
+    },
+    "finalStatus": "endpoint_inaccessible_not_data_absent"
+  },
+  {
+    "state": "KY",
+    "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+    "httpStatus": 200,
+    "count": 3,
+    "nativeIds": [
+      "061-42-11-026.00",
+      "061-42-11-027.00",
+      "061-42-07-002.00"
+    ],
+    "assessment": "Bounded accessibility retry only; prior duplicate provenance ambiguity remains unresolved.",
+    "finalStatus": "accessible_identity_unresolved"
+  }
+]

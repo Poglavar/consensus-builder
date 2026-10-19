@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4499",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-4499-wakefield.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/wakefield-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/wakefield/localplan.html",
+    "tmp/valhalla-parcel-research/runs/20261010T172405-9018f500/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T17:29:23Z",
+  "reason": "HM Land Registry officially lists Wakefield for INSPIRE Index Polygons, supporting registry custody, but the download redirected in a loop and the API required a key. The cached Council page is a planning map. No actual Wakefield GML, safe native-ID polygon sample, or independent adapter, paging, 13-cell, metric geometry, source-binding, and headed Details qualification exists. Access failure is not absence.",
+  "registryFound": true,
+  "firstPartySourceUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+}

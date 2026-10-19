@@ -1,0 +1,84 @@
+{
+  "name": "Goma",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "rank": 654,
+  "point": [
+    -1.64389233869783,
+    29.2142416271701
+  ],
+  "population2025": 809601,
+  "populationUnit": "persons",
+  "population2025k": 809.601,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The DRC Ministry of Land Affairs service catalogue describes cadastral and land-register consultation through the local Conservateur des Titres Immobiliers or head of the Cadastre Division. A North-Kivu government report documents separate Goma and Karisimbi-Nyiragongo land-registration districts and local cadastral offices. This confirms local authority, not public anonymous GIS.",
+  "registryEvidenceUrls": [
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://provincenordkivu.cd/la-ville-de-goma-compte-desormais-scindee-en-deux-circonscriptions-foncieres/",
+    "https://affairesfoncieres.gouv.cd/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Goma cadastre carte parcellaire registre foncier division du cadastre officiel",
+        "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+        "result": "Official DRC service catalogue describes formal access to cadastral/land registers through the registrar or head of the Cadastre Division. North-Kivu government records local Goma registration districts; no anonymous vector layer was found.",
+        "actualResultUrls": [
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://provincenordkivu.cd/la-ville-de-goma-compte-desormais-scindee-en-deux-circonscriptions-foncieres/"
+        ],
+        "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+      },
+      {
+        "language": "English",
+        "query": "Goma DRC official land registry cadastre parcel map GIS public vector",
+        "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+        "result": "English-language results did not identify a city parcel service. Official national and provincial sources confirm local cadastral/registry offices and a formal paid register-search procedure, not anonymous parcel geometry.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/",
+          "https://servicepublic.gouv.cd/service/4671"
+        ],
+        "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+      }
+    ]
+  },
+  "scopeLimits": "The public service catalogue lists a formal request and fee and describes owner/legal-status records. It does not expose anonymous parcel geometry. No identity documents, credentials, owner details or personal property queries were submitted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "CD-GOMA-LAND-AFFAIRS-CADASTRE",
+    "name": "Goma land-registration and cadastral offices / DRC Ministry of Land Affairs consultation service",
+    "url": "https://servicepublic.gouv.cd/service/4671",
+    "operator": "DRC Ministry of Land Affairs; Goma and Karisimbi-Nyiragongo land-registration districts",
+    "serviceType": "Formal paid registry consultation via local land registrar or cadastre division; no open GIS service identified",
+    "layer": "Cadastral and land-register records; no public feature layer/schema identified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "formal parcel/reference number required for registry request; no public geometry key identified"
+  },
+  "wupCityCode": 7292,
+  "cityId": "wup2025:7292",
+  "queueRank": 654,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The public service catalogue lists a formal request and fee and describes owner/legal-status records. It does not expose anonymous parcel geometry. No identity documents, credentials, owner details or personal property queries were submitted.",
+  "remainingUncertainty": "Anonymous locator coverage, geometry service behavior and bounded parcel responses are unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    -1.64389233869783,
+    29.2142416271701
+  ],
+  "rootReviewedAt": "2026-10-09T02:23:14.725507+00:00"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-507-salta.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Salta DGI and provincial sources document a free public cadastral map. The official urban-parcel polygon layer returned one full polygon at the unchanged WUP point. Only OBJECTID and geometry were retained. Citywide completeness, legal title and currentness are not assessed.",
+  "registryAssessment": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained.",
+  "officialPrimarySources": [
+    {
+      "url": "https://inmuebles.gov.ar/",
+      "observation": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained."
+    },
+    {
+      "url": "https://www.salta.gob.ar/prensa/noticias/la-provincia-cuenta-con-un-mapa-catastral-digitalizado-80566",
+      "observation": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained."
+    },
+    {
+      "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer",
+      "observation": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Salta Argentina official cadastral map parcel polygon GIS DGI",
+      "result": "Official DGI portal describes the free public map viewer; official provincial GIS publishes the cadastral MapServer with urban parcel polygons.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    },
+    {
+      "language": "Spanish",
+      "query": "Salta mapa catastral parcelas urbanas DGI oficial servicio GIS",
+      "result": "El portal oficial de DGI describe un visor catastral público y gratuito; el servicio GIS oficial publica una capa poligonal de parcelas urbanas.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": true,
+    "decision": "One bounded feature was returned and its safe ID+geometry sample is retained."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact WUP settlement point and reviewed official sources only.",
+    "limits": "A one-feature point query proves only that the WUP locator intersects a returned urban parcel; it does not establish municipal completeness, legal title, survey accuracy or long-term identifier continuity."
+  },
+  "attempts": [
+    {
+      "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer/2/query?geometry=-65.4167676647554%2C-24.7999287325476&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+      "method": "GET bounded official ArcGIS point-intersection query",
+      "result": "HTTP 200; one Polygon returned, native OBJECTID 918703. Requested only OBJECTID and geometry; no owner/address fields requested."
+    }
+  ],
+  "remainingUncertainty": "A one-feature point query proves only that the WUP locator intersects a returned urban parcel; it does not establish municipal completeness, legal title, survey accuracy or long-term identifier continuity."
+}

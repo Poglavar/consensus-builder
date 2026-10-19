@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 137,
+  "city": "Jinan",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/jinan.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "济南 不动产 地籍图 宗地 GIS 开放数据"
+  },
+  "results": [
+    {
+      "title": "Jinan cadastral-map online query service notice",
+      "url": "https://nrp.jinan.gov.cn/col80660/art/2024/art_80660_4938881.html",
+      "kind": "official-cadastral-viewer",
+      "note": "Official free public parcel and building cadastral map query platform."
+    },
+    {
+      "title": "Jinan public smart geospatial platform",
+      "url": "https://nrp.jinan.gov.cn/nav/",
+      "kind": "official-OGC-platform",
+      "note": "Advertises OGC WMS/WFS services, but search result does not establish that cadastral parcels are among the public layers."
+    }
+  ],
+  "assessment": "Jinan has an official free public parcel-map lookup and a public OGC geospatial platform supporting WFS. The specific parcel layer, anonymous bulk access and exact-ID operations were not verified; strong follow-up candidate.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

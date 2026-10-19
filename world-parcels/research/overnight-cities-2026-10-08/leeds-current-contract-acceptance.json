@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-09T00:34:41.723Z",
+  "purpose": "Bounded real existing official GML snapshot adapter trial against Leeds authority archive; notices and freehold-only scope are informational, not a use gate.",
+  "descriptor": {
+    "id": "gb-leeds-hmlr-inspire-index-temp",
+    "adapter": "gml-snapshot",
+    "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leeds_City_Council.zip",
+    "idField": "INSPIREID",
+    "idPattern": "^[0-9]+$",
+    "idPrefix": "GB-HMLR-LEEDS-",
+    "outFields": [
+      "INSPIREID"
+    ],
+    "parcelNumberField": "INSPIREID",
+    "maxSnapshotBytes": 25165824,
+    "maxDecompressedBytes": 167772160,
+    "maxSnapshotFeatures": 150000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1
+  },
+  "bbox": [
+    -1.64283048308533,
+    53.80088765836,
+    -1.64263048308533,
+    53.801087658360004
+  ],
+  "result": {
+    "passed": false,
+    "status": 502,
+    "error": "Parcel archive exceeds byte limit."
+  }
+}

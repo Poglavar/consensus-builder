@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6924-faqous.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence.",
+  "registryAssessment": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9/",
+      "operator": "Egyptian Survey Authority / Egyptian GOPP",
+      "scope": "National mapping authority describes historic property-map and land-record functions and offers paper/digital maps; Sharkia GOPP provides urban-planning maps. No public parcel boundary geometry for the exact WUP point was found."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Egyptian Survey Authority / Egyptian GOPP",
+      "scope": "National mapping authority describes historic property-map and land-record functions and offers paper/digital maps; Sharkia GOPP provides urban-planning maps. No public parcel boundary geometry for the exact WUP point was found."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "operator": "Egyptian Survey Authority / Egyptian GOPP",
+      "scope": "National mapping authority describes historic property-map and land-record functions and offers paper/digital maps; Sharkia GOPP provides urban-planning maps. No public parcel boundary geometry for the exact WUP point was found."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Government source with the jurisdictional scope stated in observation",
+      "observation": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Faqous official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9/",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/services.aspx"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Arabic",
+      "query": "فاقوس خريطة مساحية سجل عقاري خرائط الأراضي",
+      "result": "Official Sharkia GOPP urban-boundary/planning map page covers Faqous district; Egyptian Survey Authority confirms national map and property-record responsibilities, but no anonymous city parcel service was verified.",
+      "actualResultUrls": [
+        "https://gopp.gov.eg/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%B9%D9%85%D8%B1%D8%A7%D9%86%D9%8A%D8%A9-%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B4%D8%B1%D9%82%D9%8A%D8%A9/",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/services.aspx"
+      ],
+      "method": "Separate Arabic-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "Egyptian Survey Authority national mapping and historical property-record functions plus Sharkia urban-planning context do not establish Faqous-specific cadastral custody. The previous positive local-registry classification was broader than its evidence.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 6924,
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "checkedAt": "2026-10-09T08:59:12.580151+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://www.esa.gov.eg/main.aspx",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 38210,
+      "sha256": "dea091ad925f4653718d96bb0514c0ae2c3dafd8b9a39bb52b174ccf3b87b19f",
+      "complete": true,
+      "termPresence": {
+        "不动产": false,
+        "地籍": false,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": false,
+        "登记": false,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ]
+}

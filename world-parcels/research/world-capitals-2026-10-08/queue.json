@@ -1,0 +1,1717 @@
+{
+  "purpose": "Remaining world-capital research queue; completion depends on city research artifacts.",
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-08T17:59:26.566371+00:00",
+  "scope": "193 UN member states and the two UN observer states, separate established or transitional government seats, and clearly labelled associated/disputed/de facto supplementary seats. Overseas dependencies and ordinary subnational capitals excluded.",
+  "scopeNotes": [
+    "Prior checked includes actual city-specific unsuccessful requests; finding a national agency alone does not count.",
+    "The existing African-capital roster is carried forward, including its associated seats and separately labelled supplement.",
+    "Supplementary city inclusion is geographic research scope and does not express a political-recognition position."
+  ],
+  "scopeSources": [
+    {
+      "url": "https://www.un.org/en/about-us/",
+      "purpose": "193 UN member states"
+    },
+    {
+      "url": "https://www.un.org/en/about-us/non-member-states",
+      "purpose": "Holy See and State of Palestine observer states"
+    },
+    {
+      "url": "https://european-union.europa.eu/principles-countries-history/eu-countries/netherlands_en",
+      "purpose": "Amsterdam capital; The Hague seat of government and parliament"
+    },
+    {
+      "url": "https://www.pmo.gov.my/en/perdana-putra/",
+      "purpose": "Putrajaya administrative capital"
+    },
+    {
+      "url": "https://www.wipo.int/wipolex/en/legislation/details/6920",
+      "purpose": "Montenegro constitution: Podgorica capital and Cetinje Old Royal Capital"
+    },
+    {
+      "url": "https://www.ikn.go.id/en/otorita-ikn-dan-bumd-jakarta-teken-mou-perkuat-kolaborasi-menuju-pengelolaan-kota-masa-depan",
+      "purpose": "Nusantara planned political-capital transition; existing Jakarta role retained"
+    },
+    {
+      "url": "https://www.kotte.mc.gov.lk/index.php?Itemid=175&id=25&lang=en&option=com_content&view=article",
+      "purpose": "Sri Jayawardenepura Kotte administrative capital; prior combined Colombo/Kotte investigation"
+    },
+    {
+      "path": "world-parcels/registry.json",
+      "purpose": "existing city IDs, city researchFile and capital tracker"
+    },
+    {
+      "path": "world-parcels/research/africa-capitals-2026-10-08/roster.json",
+      "purpose": "African national capitals and associated seats with prior/current evidence"
+    },
+    {
+      "path": "world-parcels/research/central-asia-capitals-2026-10-08/index.json",
+      "purpose": "five Central Asian national capitals and outcomes"
+    },
+    {
+      "path": "backend/parcels/source-catalog.json",
+      "purpose": "executable city providers and evidence files"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/katerinaSo/countries_cities_data/main/country-capitals.csv",
+      "purpose": "reference capital labels, WGS84 points, country codes and regions; tentative for multi-seat or transition cases"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/List_of_national_capitals",
+      "purpose": "cross-check for multiple seats; not used to determine recognition"
+    }
+  ],
+  "cityCount": 69,
+  "previouslyCheckedCount": 156,
+  "newBatchCount": 69,
+  "status": "complete",
+  "cities": [
+    {
+      "name": "Manama",
+      "country": "Bahrain",
+      "countryCode": "BH",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "manama",
+      "centerLatLon": [
+        26.233333333333334,
+        50.566667
+      ],
+      "cityId": "capital:BH:manama",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-manama.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Thimphu",
+      "country": "Bhutan",
+      "countryCode": "BT",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "thimphu",
+      "centerLatLon": [
+        27.466666666666665,
+        89.633333
+      ],
+      "cityId": "capital:BT:thimphu",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-thimphu.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Bandar Seri Begawan",
+      "country": "Brunei Darussalam",
+      "countryCode": "BN",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "bandar-seri-begawan",
+      "centerLatLon": [
+        4.883333333333333,
+        114.933333
+      ],
+      "cityId": "capital:BN:bandar-seri-begawan",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-bandar-seri-begawan.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Phnom Penh",
+      "country": "Cambodia",
+      "countryCode": "KH",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "phnom-penh",
+      "centerLatLon": [
+        11.55,
+        104.916667
+      ],
+      "cityId": "capital:KH:phnom-penh",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-phnom-penh.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "North Nicosia",
+      "country": "Cyprus",
+      "countryCode": "CY",
+      "region": "Asia",
+      "capitalRole": "de facto seat of Northern Cyprus; supplemental disputed-status seat",
+      "aliases": [],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "north-nicosia",
+      "centerLatLon": [
+        35.1856,
+        33.3823
+      ],
+      "cityId": "capital:CY:north-nicosia",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-north-nicosia.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "Nusantara",
+      "country": "Indonesia",
+      "countryCode": "ID",
+      "region": "Asia",
+      "capitalRole": "planned/transitional national-capital seat; current legal and operational status requires verification",
+      "aliases": [
+        "IKN",
+        "Nusantara"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "nusantara",
+      "centerLatLon": [
+        -0.975,
+        116.707
+      ],
+      "cityId": "capital:ID:nusantara",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-nusantara.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Jerusalem",
+      "country": "Israel",
+      "countryCode": "IL",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "jerusalem",
+      "centerLatLon": [
+        31.766666666666666,
+        35.233333
+      ],
+      "cityId": "capital:IL:jerusalem",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-jerusalem.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Vientiane",
+      "country": "Laos",
+      "countryCode": "LA",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "vientiane",
+      "centerLatLon": [
+        17.966666666666665,
+        102.6
+      ],
+      "cityId": "capital:LA:vientiane",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-vientiane.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Beirut",
+      "country": "Lebanon",
+      "countryCode": "LB",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "beirut",
+      "centerLatLon": [
+        33.86666666666667,
+        35.5
+      ],
+      "cityId": "capital:LB:beirut",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-beirut.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Putrajaya",
+      "country": "Malaysia",
+      "countryCode": "MY",
+      "region": "Asia",
+      "capitalRole": "administrative seat",
+      "aliases": [],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "putrajaya",
+      "centerLatLon": [
+        2.9264,
+        101.6964
+      ],
+      "cityId": "capital:MY:putrajaya",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-putrajaya.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Male",
+      "country": "Maldives",
+      "countryCode": "MV",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "male",
+      "centerLatLon": [
+        4.166666666666667,
+        73.5
+      ],
+      "cityId": "capital:MV:male",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-male.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "Naypyidaw",
+      "country": "Myanmar",
+      "countryCode": "MM",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [
+        "Nay Pyi Taw",
+        "Naypyidaw"
+      ],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "naypyidaw",
+      "centerLatLon": [
+        19.7633,
+        96.0785
+      ],
+      "cityId": "capital:MM:naypyidaw",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-naypyidaw.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Sejong",
+      "country": "South Korea",
+      "countryCode": "KR",
+      "region": "Asia",
+      "capitalRole": "administrative government seat",
+      "aliases": [
+        "Sejong"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "sejong",
+      "centerLatLon": [
+        36.4801,
+        127.289
+      ],
+      "cityId": "capital:KR:sejong",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-sejong.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "East Jerusalem",
+      "country": "State of Palestine",
+      "countryCode": "PS",
+      "region": "Asia",
+      "capitalRole": "claimed capital",
+      "aliases": [
+        "Jerusalem"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "east-jerusalem",
+      "centerLatLon": [
+        31.7833,
+        35.2333
+      ],
+      "cityId": "capital:PS:east-jerusalem",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-east-jerusalem.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Ramallah",
+      "country": "State of Palestine",
+      "countryCode": "PS",
+      "region": "Asia",
+      "capitalRole": "Palestinian Authority administrative seat",
+      "aliases": [],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "ramallah",
+      "centerLatLon": [
+        31.9038,
+        35.2034
+      ],
+      "cityId": "capital:PS:ramallah",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-ramallah.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "Dili",
+      "country": "Timor-Leste",
+      "countryCode": "TL",
+      "region": "Asia",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "dili",
+      "centerLatLon": [
+        -8.583333333333334,
+        125.6
+      ],
+      "cityId": "capital:TL:dili",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-dili.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Aden",
+      "country": "Yemen",
+      "countryCode": "YE",
+      "region": "Asia",
+      "capitalRole": "temporary seat of internationally recognized government; current status requires verification",
+      "aliases": [
+        "Aden"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "aden",
+      "centerLatLon": [
+        12.7855,
+        45.0187
+      ],
+      "cityId": "capital:YE:aden",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-aden.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Andorra la Vella",
+      "country": "Andorra",
+      "countryCode": "AD",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "andorra-la-vella",
+      "centerLatLon": [
+        42.5,
+        1.516667
+      ],
+      "cityId": "capital:AD:andorra-la-vella",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-andorra-la-vella.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "Vienna",
+      "country": "Austria",
+      "countryCode": "AT",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "vienna",
+      "centerLatLon": [
+        48.2,
+        16.366667
+      ],
+      "cityId": "capital:AT:vienna",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-vienna.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Baku",
+      "country": "Azerbaijan",
+      "countryCode": "AZ",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "baku",
+      "centerLatLon": [
+        40.38333333333333,
+        49.866667
+      ],
+      "cityId": "capital:AZ:baku",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-baku.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Skopje",
+      "country": "North Macedonia",
+      "countryCode": "MK",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "skopje",
+      "centerLatLon": [
+        42,
+        21.433333
+      ],
+      "cityId": "capital:MK:skopje",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-skopje.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "Chisinau",
+      "country": "Moldova",
+      "countryCode": "MD",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [
+        "Tiraspol"
+      ],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "chisinau",
+      "centerLatLon": [
+        47,
+        28.85
+      ],
+      "cityId": "capital:MD:chisinau",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-chisinau.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "Tiraspol",
+      "country": "Moldova",
+      "countryCode": "MD",
+      "region": "Europe",
+      "capitalRole": "de facto seat of Transnistria; supplemental disputed-status seat",
+      "aliases": [
+        "Tiraspol"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "tiraspol",
+      "centerLatLon": [
+        46.8403,
+        29.6433
+      ],
+      "cityId": "capital:MD:tiraspol",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-tiraspol.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Cetinje",
+      "country": "Montenegro",
+      "countryCode": "ME",
+      "region": "Europe",
+      "capitalRole": "constitutional Old Royal Capital",
+      "aliases": [
+        "Cetinje"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "cetinje",
+      "centerLatLon": [
+        42.3931,
+        18.9116
+      ],
+      "cityId": "capital:ME:cetinje",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-cetinje.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Podgorica",
+      "country": "Montenegro",
+      "countryCode": "ME",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [
+        "Cetinje"
+      ],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "podgorica",
+      "centerLatLon": [
+        42.43333333333333,
+        19.266667
+      ],
+      "cityId": "capital:ME:podgorica",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-podgorica.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "The Hague",
+      "country": "Netherlands",
+      "countryCode": "NL",
+      "region": "Europe",
+      "capitalRole": "executive seat of government",
+      "aliases": [
+        "Den Haag",
+        "The Hague"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "the-hague",
+      "centerLatLon": [
+        52.0705,
+        4.3007
+      ],
+      "cityId": "capital:NL:the-hague",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-the-hague.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Lisbon",
+      "country": "Portugal",
+      "countryCode": "PT",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "lisbon",
+      "centerLatLon": [
+        38.71666666666667,
+        -9.133333
+      ],
+      "cityId": "capital:PT:lisbon",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-lisbon.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Bucharest",
+      "country": "Romania",
+      "countryCode": "RO",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "bucharest",
+      "centerLatLon": [
+        44.43333333333333,
+        26.1
+      ],
+      "cityId": "capital:RO:bucharest",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-bucharest.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "San Marino",
+      "country": "San Marino",
+      "countryCode": "SM",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "san-marino",
+      "centerLatLon": [
+        43.93333333333333,
+        12.416667
+      ],
+      "cityId": "capital:SM:san-marino",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-san-marino.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Bratislava",
+      "country": "Slovakia",
+      "countryCode": "SK",
+      "region": "Europe",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "bratislava",
+      "centerLatLon": [
+        48.15,
+        17.116667
+      ],
+      "cityId": "capital:SK:bratislava",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-bratislava.json",
+      "researchGroup": "europe",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    },
+    {
+      "name": "Sukhumi",
+      "country": "Georgia",
+      "countryCode": "GE",
+      "region": "Europe/Asia (Caucasus)",
+      "capitalRole": "de facto seat of Abkhazia; supplemental disputed-status seat",
+      "aliases": [
+        "Sukhumi",
+        "Tskhinvali"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "sukhumi",
+      "centerLatLon": [
+        43.0015,
+        41.0234
+      ],
+      "cityId": "capital:GE:sukhumi",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-sukhumi.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Tskhinvali",
+      "country": "Georgia",
+      "countryCode": "GE",
+      "region": "Europe/Asia (Caucasus)",
+      "capitalRole": "de facto seat of South Ossetia; supplemental disputed-status seat",
+      "aliases": [
+        "Sukhumi",
+        "Tskhinvali"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "tskhinvali",
+      "centerLatLon": [
+        42.2257,
+        43.9709
+      ],
+      "cityId": "capital:GE:tskhinvali",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-tskhinvali.json",
+      "researchGroup": "asia",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Saint John's",
+      "country": "Antigua and Barbuda",
+      "countryCode": "AG",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "saint-johns",
+      "centerLatLon": [
+        17.116666666666667,
+        -61.85
+      ],
+      "cityId": "capital:AG:saint-johns",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-saint-johns.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Nassau",
+      "country": "Bahamas",
+      "countryCode": "BS",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "nassau",
+      "centerLatLon": [
+        25.083333333333332,
+        -77.35
+      ],
+      "cityId": "capital:BS:nassau",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-nassau.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Bridgetown",
+      "country": "Barbados",
+      "countryCode": "BB",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "bridgetown",
+      "centerLatLon": [
+        13.1,
+        -59.616667
+      ],
+      "cityId": "capital:BB:bridgetown",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-bridgetown.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Belmopan",
+      "country": "Belize",
+      "countryCode": "BZ",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "belmopan",
+      "centerLatLon": [
+        17.25,
+        -88.766667
+      ],
+      "cityId": "capital:BZ:belmopan",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-belmopan.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Ottawa",
+      "country": "Canada",
+      "countryCode": "CA",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "ottawa",
+      "centerLatLon": [
+        45.416666666666664,
+        -75.7
+      ],
+      "cityId": "capital:CA:ottawa",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-ottawa.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "San Jose",
+      "country": "Costa Rica",
+      "countryCode": "CR",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "san-jose",
+      "centerLatLon": [
+        9.933333333333334,
+        -84.083333
+      ],
+      "cityId": "capital:CR:san-jose",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-san-jose.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Havana",
+      "country": "Cuba",
+      "countryCode": "CU",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "havana",
+      "centerLatLon": [
+        23.116666666666667,
+        -82.35
+      ],
+      "cityId": "capital:CU:havana",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-havana.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Roseau",
+      "country": "Dominica",
+      "countryCode": "DM",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "roseau",
+      "centerLatLon": [
+        15.3,
+        -61.4
+      ],
+      "cityId": "capital:DM:roseau",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-roseau.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Saint George's",
+      "country": "Grenada",
+      "countryCode": "GD",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "saint-georges",
+      "centerLatLon": [
+        12.05,
+        -61.75
+      ],
+      "cityId": "capital:GD:saint-georges",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-saint-georges.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Port-au-Prince",
+      "country": "Haiti",
+      "countryCode": "HT",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "port-au-prince",
+      "centerLatLon": [
+        18.533333333333335,
+        -72.333333
+      ],
+      "cityId": "capital:HT:port-au-prince",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-port-au-prince.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Tegucigalpa",
+      "country": "Honduras",
+      "countryCode": "HN",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "tegucigalpa",
+      "centerLatLon": [
+        14.1,
+        -87.216667
+      ],
+      "cityId": "capital:HN:tegucigalpa",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-tegucigalpa.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Managua",
+      "country": "Nicaragua",
+      "countryCode": "NI",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "managua",
+      "centerLatLon": [
+        12.133333333333333,
+        -86.25
+      ],
+      "cityId": "capital:NI:managua",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-managua.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Panama City",
+      "country": "Panama",
+      "countryCode": "PA",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "registryMatches": [],
+      "sourceCatalogMatches": [],
+      "capitalRosterMatch": null,
+      "manualCityEvidence": [
+        {
+          "id": "PA-city-query",
+          "path": "research/developed/PA.json",
+          "note": "Explicit Panama City mention; national-sample scope only is stated, human review required"
+        }
+      ],
+      "evidenceFiles": [
+        "research/developed/PA.json"
+      ],
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "auditNote": "Research/developed/PA.json mentions Panama City, but the sampled query is at province level/San Miguelito and is not verified as a city-region query; retain as unchecked.",
+      "slug": "panama-city",
+      "centerLatLon": [
+        8.966666666666667,
+        -79.533333
+      ],
+      "cityId": "capital:PA:panama-city",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-panama-city.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Basseterre",
+      "country": "Saint Kitts and Nevis",
+      "countryCode": "KN",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "basseterre",
+      "centerLatLon": [
+        17.3,
+        -62.716667
+      ],
+      "cityId": "capital:KN:basseterre",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-basseterre.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Castries",
+      "country": "Saint Lucia",
+      "countryCode": "LC",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "castries",
+      "centerLatLon": [
+        14,
+        -61
+      ],
+      "cityId": "capital:LC:castries",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-castries.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Kingstown",
+      "country": "Saint Vincent and the Grenadines",
+      "countryCode": "VC",
+      "region": "North America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "kingstown",
+      "centerLatLon": [
+        13.133333333333333,
+        -61.216667
+      ],
+      "cityId": "capital:VC:kingstown",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-kingstown.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Avarua",
+      "country": "Cook Islands",
+      "countryCode": "CK",
+      "region": "Oceania",
+      "capitalRole": "supplemental self-governing associated state",
+      "aliases": [],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "avarua",
+      "centerLatLon": [
+        -21.207,
+        -159.775
+      ],
+      "cityId": "capital:CK:avarua",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-avarua.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Palikir",
+      "country": "Federated States of Micronesia",
+      "countryCode": "FM",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "palikir",
+      "centerLatLon": [
+        6.916666666666667,
+        158.15
+      ],
+      "cityId": "capital:FM:palikir",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-palikir.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Suva",
+      "country": "Fiji",
+      "countryCode": "FJ",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "suva",
+      "centerLatLon": [
+        -18.133333333333333,
+        178.416667
+      ],
+      "cityId": "capital:FJ:suva",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-suva.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "South Tarawa",
+      "country": "Kiribati",
+      "countryCode": "KI",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [
+        "Tarawa",
+        "Bairiki",
+        "Betio"
+      ],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "south-tarawa",
+      "centerLatLon": [
+        -0.8833333333333333,
+        169.533333
+      ],
+      "cityId": "capital:KI:south-tarawa",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-south-tarawa.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Majuro",
+      "country": "Marshall Islands",
+      "countryCode": "MH",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "majuro",
+      "centerLatLon": [
+        7.1,
+        171.383333
+      ],
+      "cityId": "capital:MH:majuro",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-majuro.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Yaren",
+      "country": "Nauru",
+      "countryCode": "NR",
+      "region": "Oceania",
+      "capitalRole": "de facto government seat; Nauru has no formally designated capital",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "yaren",
+      "centerLatLon": [
+        -0.5477,
+        166.920867
+      ],
+      "cityId": "capital:NR:yaren",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-yaren.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Wellington",
+      "country": "New Zealand",
+      "countryCode": "NZ",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "wellington",
+      "centerLatLon": [
+        -41.3,
+        174.783333
+      ],
+      "cityId": "capital:NZ:wellington",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-wellington.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled"
+    },
+    {
+      "name": "Alofi",
+      "country": "Niue",
+      "countryCode": "NU",
+      "region": "Oceania",
+      "capitalRole": "supplemental self-governing associated state",
+      "aliases": [],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "alofi",
+      "centerLatLon": [
+        -19.0554,
+        -169.9179
+      ],
+      "cityId": "capital:NU:alofi",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-alofi.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Ngerulmud",
+      "country": "Palau",
+      "countryCode": "PW",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [
+        "Melekeok",
+        "Ngerulmud"
+      ],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "ngerulmud",
+      "centerLatLon": [
+        7.5006,
+        134.6242
+      ],
+      "cityId": "capital:PW:ngerulmud",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-ngerulmud.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Port Moresby",
+      "country": "Papua New Guinea",
+      "countryCode": "PG",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "port-moresby",
+      "centerLatLon": [
+        -9.45,
+        147.183333
+      ],
+      "cityId": "capital:PG:port-moresby",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-port-moresby.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Apia",
+      "country": "Samoa",
+      "countryCode": "WS",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "apia",
+      "centerLatLon": [
+        -13.816666666666666,
+        -171.766667
+      ],
+      "cityId": "capital:WS:apia",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-apia.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Honiara",
+      "country": "Solomon Islands",
+      "countryCode": "SB",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "honiara",
+      "centerLatLon": [
+        -9.433333333333334,
+        159.95
+      ],
+      "cityId": "capital:SB:honiara",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-honiara.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Nuku'alofa",
+      "country": "Tonga",
+      "countryCode": "TO",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "nukualofa",
+      "centerLatLon": [
+        -21.133333333333333,
+        -175.2
+      ],
+      "cityId": "capital:TO:nukualofa",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-nukualofa.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Funafuti",
+      "country": "Tuvalu",
+      "countryCode": "TV",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "funafuti",
+      "centerLatLon": [
+        -8.516666666666667,
+        179.216667
+      ],
+      "cityId": "capital:TV:funafuti",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-funafuti.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Port-Vila",
+      "country": "Vanuatu",
+      "countryCode": "VU",
+      "region": "Oceania",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "port-vila",
+      "centerLatLon": [
+        -17.733333333333334,
+        168.316667
+      ],
+      "cityId": "capital:VU:port-vila",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-port-vila.json",
+      "researchGroup": "oceania",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "La Paz",
+      "country": "Bolivia",
+      "countryCode": "BO",
+      "region": "South America",
+      "capitalRole": "primary",
+      "aliases": [
+        "Sucre"
+      ],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "la-paz",
+      "centerLatLon": [
+        -16.5,
+        -68.15
+      ],
+      "cityId": "capital:BO:la-paz",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-la-paz.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_access_review"
+    },
+    {
+      "name": "Sucre",
+      "country": "Bolivia",
+      "countryCode": "BO",
+      "region": "South America",
+      "capitalRole": "constitutional capital",
+      "aliases": [
+        "La Plata",
+        "Sucre"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "sucre",
+      "centerLatLon": [
+        -19.0196,
+        -65.2619
+      ],
+      "cityId": "capital:BO:sucre",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-sucre.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Valparaiso",
+      "country": "Chile",
+      "countryCode": "CL",
+      "region": "South America",
+      "capitalRole": "legislative seat",
+      "aliases": [
+        "Valparaiso"
+      ],
+      "seatType": "supplemental_functioning_or_claimed_seat",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "valparaiso",
+      "centerLatLon": [
+        -33.0472,
+        -71.6127
+      ],
+      "cityId": "capital:CL:valparaiso",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-valparaiso.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Georgetown",
+      "country": "Guyana",
+      "countryCode": "GY",
+      "region": "South America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "georgetown",
+      "centerLatLon": [
+        6.8,
+        -58.15
+      ],
+      "cityId": "capital:GY:georgetown",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-georgetown.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Asuncion",
+      "country": "Paraguay",
+      "countryCode": "PY",
+      "region": "South America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "asuncion",
+      "centerLatLon": [
+        -25.266666666666666,
+        -57.666667
+      ],
+      "cityId": "capital:PY:asuncion",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-asuncion.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+    },
+    {
+      "name": "Paramaribo",
+      "country": "Suriname",
+      "countryCode": "SR",
+      "region": "South America",
+      "capitalRole": "primary",
+      "aliases": [],
+      "reference": "country-capitals.csv",
+      "evidenceStatus": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+      "slug": "paramaribo",
+      "centerLatLon": [
+        5.833333333333333,
+        -55.166667
+      ],
+      "cityId": "capital:SR:paramaribo",
+      "researchStatus": "complete",
+      "pointBasis": "Initial chosen capital research locator; actual sample and app opening anchors are recorded separately in the city research artifact. Not an official boundary or WUP centroid.",
+      "researchFile": "research/world-capitals-2026-10-08/city-paramaribo.json",
+      "researchGroup": "americas",
+      "checkedAt": "2026-10-08",
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review"
+    }
+  ],
+  "completedAt": "2026-10-08T19:16:41.807708+00:00",
+  "remainingCount": 0
+}

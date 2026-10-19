@@ -1,0 +1,21 @@
+{
+  "taskId": "city:4664",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-4664-arak.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/arak-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:57:24Z",
+  "identity": "Packet city code, rank, country, exact point and population persons match both frozen roster and pending queue.",
+  "searchReview": "English and local-language executed query records are present in both packet and paired review; independent search recheck found corresponding leads, without a qualifying parcel response.",
+  "retainedFullPolygons": 0,
+  "reviewerCustodyDecision": null,
+  "admission": "held: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding and headed Details verification are absent.",
+  "reason": "Iranian/Arak custody unresolved: municipal and national hosts yielded no usable first-party response. No anonymous native-ID polygon, source binding, or qualification evidence. TLS failure and timeout do not establish absence.",
+  "firstPartyUrlsChecked": [
+    "https://ayan.arak.ir/",
+    "https://my.ssaa.ir/"
+  ]
+}

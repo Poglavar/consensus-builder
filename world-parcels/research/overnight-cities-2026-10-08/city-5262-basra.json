@@ -1,0 +1,140 @@
+{
+  "name": "Basra",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 241,
+  "point": [
+    30.5177062063329,
+    47.7986500003805
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "بصرة خريطة عقارية دائرة التسجيل العقاري GIS العراق",
+        "scope": "Find an official Basra land-registry map with anonymous full parcel geometry.",
+        "result": "The official Iraq MOJ published a Basra Directorate of Real Estate Registration notice describing local staff training on its system for lodging and checking property reservations/obstacles, confirming a city-specific registry process. Basra Municipality’s Building Permit Division public page requires ownership deed Form 25 and a current boundary-fixing map (valid three months) for new applications; status lookup asks for an application form number. The governorate’s archived interactive map shell has no embedded cadastral feature service. No anonymous parcel polygon was obtained.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/view.8135/",
+          "https://lbm.basrabaladya.gov.iq/",
+          "https://basra.gov.iq/archives/int/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A%D8%A9",
+          "https://baladyatbasrah.gov.iq/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D9%85%D9%88%D8%A7%D8%B7%D9%86%D9%8A%D9%8A%D8%A9/"
+        ],
+        "executionMethod": "Arabic search and read-only inspection of Ministry of Justice, governorate map archive, and municipality service sources."
+      },
+      {
+        "language": "English",
+        "query": "Basra Iraq official cadastral map parcels land registry GIS public map",
+        "scope": "Cross-check official land-map e-services and public city map availability.",
+        "result": "The same primary city-specific MOJ record confirms the Basra real-estate registration directorate. The municipality’s permit form is specific to Basra, requires an ownership deed and boundary map, and provides login by application number for case follow-up. The MOJ electronic title/map request article is a separate Baghdad-only rollout and is not treated as a Basra public service. No anonymous parcel feature endpoint is exposed.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/view.8135/",
+          "https://lbm.basrabaladya.gov.iq/",
+          "https://basra.gov.iq/archives/int/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A%D8%A9",
+          "https://www.moj.gov.iq/view.9289/"
+        ],
+        "executionMethod": "English search with direct inspection of official Iraq MOJ and Basra municipality/governorate pages."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Iraq Ministry of Justice property-map e-service",
+        "operator": "Ministry of Justice, Government of Iraq",
+        "homeUrl": "https://www.moj.gov.iq/view.9289/",
+        "observation": "National MOJ article documents property-map/deed e-services, but its published rollout is selected Baghdad directorates only. This is not counted as Basra public geometry; Basra-local registry evidence is supplied separately."
+      },
+      {
+        "name": "Basra Governorate interactive map archive",
+        "operator": "Basra Governorate, Government of Iraq",
+        "homeUrl": "https://basra.gov.iq/archives/int/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A%D8%A9",
+        "observation": "Archive page shell is reachable but no embedded public parcel map or feature-service URL is present."
+      },
+      {
+        "name": "Basra Municipality land and permit services",
+        "operator": "Basra Municipality",
+        "homeUrl": "https://baladyatbasrah.gov.iq/",
+        "observation": "The official Basra Building Permit Division new-application page requires a property ownership deed (Form 25), boundary-fixing map current within three months, and approved building plans; the login form follows an application number for status checks. This is a city-specific parcel-document procedure, not an anonymous cadastral data portal."
+      },
+      {
+        "name": "Basra Directorate of Real Estate Registration (MOJ)",
+        "operator": "Ministry of Justice, Government of Iraq",
+        "homeUrl": "https://www.moj.gov.iq/view.8135/",
+        "observation": "Official MOJ article dated 14 May 2024 identifies the Basra Directorate and its internal procedure for recording/consulting property reservations and encumbrances; this confirms city-specific property-registration records, not an open public map."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://basra.gov.iq/archives/int/%D8%A7%D9%84%D8%AE%D8%B1%D9%8A%D8%B7%D8%A9-%D8%A7%D9%84%D8%AA%D9%81%D8%A7%D8%B9%D9%84%D9%8A%D8%A9",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Archive shell returned HTTP 200; inspection found no iframe or parcel feature endpoint in the page."
+      },
+      {
+        "url": "https://lbm.basrabaladya.gov.iq/",
+        "method": "GET",
+        "observation": "Official building-permit portal is identified by municipal service sources; its parcel/map workflow uses login and application/transaction context, not an anonymous public feature query."
+      },
+      {
+        "url": "https://www.moj.gov.iq/view.8135/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "observation": "Official MOJ article titled “Basra Real Estate Registration Directorate organizes a workshop on reservations/obstacles management” identifies the local directorate and its property-record workflow."
+      },
+      {
+        "url": "https://lbm.basrabaladya.gov.iq/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "observation": "Official Basra Municipality Building Permit Division page shows new registration and application-number login; its new application requires title deed Form 25 and a boundary-fixing map whose validity is limited to three months. No parcel map/vector data is returned."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IQ-BASRA-MOJ-REGISTRY-MUNICIPAL-PARCEL-DOCS",
+    "name": "Basra Real Estate Registration Directorate and municipal boundary-map procedure",
+    "url": "https://www.moj.gov.iq/view.8135/",
+    "operator": "Ministry of Justice, Government of Iraq; Basra Municipality Building Permit Division",
+    "serviceType": "City-specific registry workflows and permit requirements include title deed and boundary map; no anonymous map feature API verified.",
+    "layer": null,
+    "geometryType": "Boundary-map documents are required for permit intake; no public full polygon service was observed.",
+    "outputCrs": null,
+    "nativeIdField": "MOJ title/registry references; municipality application number",
+    "nativeIdEvidence": "MOJ article identifies local property-record reservation/encumbrance workflow; municipal page requires title deed Form 25 and a current boundary-fixing map."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Basra land-registration and municipal permit workflows are evidenced locally by MOJ and the Basra Municipality Building Permit Division.",
+    "verifiedOpenScope": "City-specific registry and parcel-document procedures are confirmed, but neither source exposes a public anonymous parcel layer. No full geometry at the WUP point was obtained.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_public",
+  "technicalBlocker": "Basra public sources document title/registry processing and municipality-required boundary maps, but no anonymous full-polygon viewer or vector feature endpoint was found. Municipality status lookup is application-number based.",
+  "remainingUncertainty": "Whether the Basra registration directorate has a public map viewer or a data-request pathway for full parcel geometry, and whether WUP-center parcel coverage exists.",
+  "nextStep": "Ask the Basra Directorate of Real Estate Registration or municipality for a public parcel map/feature service and test a bounded full-geometry response; do not infer geometry from the required boundary-map documents.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5262,
+  "cityId": "wup2025:5262",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.5177062063329,
+    47.7986500003805
+  ],
+  "population2025k": 2033.553,
+  "queueRank": 241,
+  "population2025": 2033553,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "City-specific primary evidence: Iraq MOJ article documents the Basra Real Estate Registration Directorate and its local registry procedure for recording reservations/obstacles in property records; Basra Municipality’s Building Permit Division requires an ownership deed (Form 25) and a current boundary-fixing map. These prove city land-registration/parcel-record workflows, but not an anonymous public parcel layer.",
+  "rootReviewedAt": "2026-10-08T21:25:23.474999+00:00"
+}

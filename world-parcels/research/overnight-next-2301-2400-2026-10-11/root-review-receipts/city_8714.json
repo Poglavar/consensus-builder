@@ -1,0 +1,17 @@
+{
+  "taskId": "city:8714",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-8714-azare.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/azare-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:08:25Z",
+  "reason": "Bauchi first-party Azare land-record search is record evidence only; no safe full parcel polygon or native geometry service was verified, and adapter/admission gates remain unverified.",
+  "identityCheck": "WUP 2025 source SHA-256, cohort roster, pending queue, packet and paired review agree on city code, rank, country, point and population persons.",
+  "searchCheck": "English and native/local-language executed searches and result URLs recorded in paired packet; reviewed with service attempts.",
+  "sampleCheck": "No full parcel polygons retained; safe native ID plus full polygon unverified.",
+  "admissionCheck": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not independently evidenced."
+}

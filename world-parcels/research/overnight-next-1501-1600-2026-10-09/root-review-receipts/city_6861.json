@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6861",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-6861-piracicaba.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/piracicaba-service-review.json",
+    "tmp/valhalla-parcel-research/6861/ServerURLs.js",
+    "tmp/valhalla-parcel-research/6861/map.html",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T10:33:36.895914Z",
+  "reason": "WUP 2025 city code 6861, rank 1590, Brazil, exact point and 357844 persons match the original source and queue. Packet records separate English and Portuguese searches. Cached municipal viewer config names Lotes and WMS, but anonymous layer calls yielded no safe native ID plus polygon and WMS capability timed out. No independent live adapter qualification, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details-panel verification; timeout does not prove absence.",
+  "sourceAdmission": "not_admitted"
+}

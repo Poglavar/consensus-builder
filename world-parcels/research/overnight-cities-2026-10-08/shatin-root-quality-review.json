@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:36:55.414196+00:00",
+  "decision": "approved_by_root",
+  "scope": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "sha-tin-csdi-root-acceptance.json",
+  "qualityFile": "sha-tin-csdi-root-quality.json",
+  "nativeIdentityEvidenceFile": "shatin-root-native-identity-review.json",
+  "initialSparsePaginationEvidenceFile": "sha-tin-root-first-acceptance.json"
+}

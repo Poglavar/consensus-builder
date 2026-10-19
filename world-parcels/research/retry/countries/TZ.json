@@ -1,0 +1,53 @@
+{
+ "kind": "country",
+ "key": "TZ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: sw-TZ,sw;q=0.9,en;q=0.8; cookie jar (curl -c/-b) kept per country",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://ilmis.lands.go.tz/, https://eardhi.lands.go.tz/, https://maps.lands.go.tz/, https://gis.lands.go.tz/, ramani.ardhi.go.tz, ilmis.ardhi.go.tz, geoportal.go.tz",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed / proxy CONNECT tunnel failed (502), no response from host"
+  },
+  {
+   "url": "https://ardhi.go.tz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS verification failure (self-signed certificate in chain); NOT bypassed"
+  },
+  {
+   "url": "https://www.lands.go.tz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Ministry site; homepage links to https://eardhi.lands.go.tz (e-Ardhi digital land system) which is unreachable from here"
+  },
+  {
+   "url": "https://www.lands.go.tz/services/surveys-and-mapping-2",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "service description page; no map/service URL"
+  },
+  {
+   "url": "https://www.nbs.go.tz/, https://ocgs.go.tz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "reachable; not cadastre services"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "eardhi/ilmis hosts fail at connection level while lands.go.tz and other .go.tz sites load; may be down or block foreign/cloud egress",
+ "notes": "New: identified https://eardhi.lands.go.tz as the current e-Ardhi platform (linked from the ministry homepage), but it is unreachable so the viewer could not be inspected. ardhi.go.tz has a broken certificate chain, not bypassed.",
+ "nextStep": "Retry eardhi.lands.go.tz from another network; inspect its JS for the map service and layer names."
+}

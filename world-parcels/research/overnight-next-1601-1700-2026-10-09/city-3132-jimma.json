@@ -1,0 +1,113 @@
+{
+  "cityCode": 3132,
+  "queueRank": 1698,
+  "name": "Jimma",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "locId": 231,
+  "point": [7.67102741639804, 36.8415364191598],
+  "population2025": 336448,
+  "population2025k": 336.448,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jimma Ethiopia official cadastral map parcel land registry cadastre site:gov.et",
+        "result": "First-party discovery found the official Jimma City Administration site and the Ethiopian Ministry of Urban and Infrastructure Land and Cadastre CEO page. The results describe city administration and national land/cadastre responsibilities, but no public Jimma-bounded parcel map, anonymous parcel API, schema, CRS, or safe parcel identity endpoint.",
+        "actualResultUrls": [
+          "https://jimma.gov.et/en/city/details/1",
+          "https://mui.gov.et/land-and-cadastre-ceo/",
+          "https://jimma.gov.et/sites/default/files/resource/proclamation-no-721-2011-urban-land-lease-proclamation%20land.pdf"
+        ]
+      },
+      {
+        "language": "Amharic",
+        "query": "ጅማ ኢትዮጵያ ካዳስተር የመሬት ምዝገባ ካርታ",
+        "result": "የመጀመሪያ ወገን ፍለጋ የጅማ ከተማ አስተዳደር ገጽን እና የኢትዮጵያ የከተማ እና መሠረተ ልማት ሚኒስቴር የመሬትና ካዳስተር ኃላፊ ገጽን አገኘ። ለጅማ የሚያገለግል ይፋዊ የፓርሴል ካርታ፣ የማይጠይቅ የፓርሴል API፣ ስኪማ፣ CRS ወይም የተረጋጋ የፓርሴል መለያ አልተገኘም።",
+        "actualResultUrls": [
+          "https://jimma.gov.et/am/office/jimma-town-municipality--1",
+          "https://mui.gov.et/land-and-cadastre-ceo/",
+          "https://eland.addiscadaster.gov.et/maps"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://jimma.gov.et/en/city/details/1",
+      "observation": "Official Jimma City Administration page. It confirms the city administration and lists general municipal offices, but does not expose a cadastral office, parcel layer, map service, or parcel API."
+    },
+    {
+      "url": "https://jimma.gov.et/am/office/jimma-town-municipality--1",
+      "observation": "Official Amharic Jimma Town Municipality page. It confirms the municipal site in the native-language route, but contains no public cadastral data or parcel service."
+    },
+    {
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "observation": "Official national ministry page describing the Urban Land Development and Management Bureau's land census, registration, and information responsibilities across cities. This is general national agency evidence, not a Jimma parcel service."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "observation": "Official e-Land map route discovered in native-language results. The indexed description identifies Addis Ababa's Land Holding Registration and Information Agency; no Jimma coverage or public safe parcel response was exposed."
+    },
+    {
+      "url": "https://jimma.gov.et/sites/default/files/resource/proclamation-no-721-2011-urban-land-lease-proclamation%20land.pdf",
+      "observation": "Official Jimma-hosted copy of Ethiopia's urban land lease proclamation. It provides legal context only and no Jimma parcel geometry or safe identity data."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://jimma.gov.et/en/city/details/1",
+      "method": "GET; anonymous; TLS verification enabled",
+      "outcome": "Web discovery fetched the official page successfully. It exposed municipal information and links, but no cadastral viewer, service configuration, geometry endpoint, schema, or CRS."
+    },
+    {
+      "url": "https://jimma.gov.et/am/office/jimma-town-municipality--1",
+      "method": "GET; anonymous; TLS verification enabled",
+      "outcome": "Web discovery fetched the native-language municipal page successfully. It exposed no parcel service or safe parcel fields."
+    },
+    {
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "outcome": "Web discovery fetched the official ministry page successfully. The page described institutional responsibilities, including land census, registration, and information systems, but provided no Jimma-specific public geometry endpoint."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "outcome": "Official e-Land landing route was discoverable, but the viewer was not text-exposed by the research interface; no Jimma-specific coverage, public schema, CRS, or safe parcel response was obtained."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "method": "GET; anonymous; TLS verification enabled",
+      "outcome": "Official map route was opened for viewer/configuration inspection. It was Addis Ababa-focused in the indexed first-party description and did not yield a usable Jimma parcel request or bounded anonymous ID+geometry response."
+    },
+    {
+      "url": "https://jimma.gov.et/en/city/details/1 (local shell curl retry)",
+      "method": "GET; anonymous; TLS verification enabled",
+      "outcome": "Local request attempt failed before HTTP because the execution environment could not resolve jimma.gov.et (DNS error). This was recorded as an environment request failure, not evidence of source absence."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No local Jimma registry, cadastre office procedure, or Jimma parcel map/API was actually evidenced. The municipal site and national ministry page are custodial/context evidence only, so registryFound remains null.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Jimma City Administration / Oromia urban land administration route; national policy context from Ethiopia Ministry of Urban and Infrastructure",
+    "viewerUrls": [],
+    "crs": null
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_city_and_national_cadastre_context_no_public_parcel_endpoint",
+  "coverageAssessment": {
+    "claimedScope": "Official municipal and national urban land/cadastre administration context for Jimma, Oromia, Ethiopia.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "Jimma or Oromia may operate restricted, formal-request, unpublished, or non-indexed cadastral systems. The e-Land route found is Addis-focused in the available evidence. No exact-point, extent, timeout, login wall, or unusable-viewer result was treated as evidence of citywide absence; the WUP point was not shifted. No unsafe owner, address, titleholder, tax, account, or contact fields were requested."
+}

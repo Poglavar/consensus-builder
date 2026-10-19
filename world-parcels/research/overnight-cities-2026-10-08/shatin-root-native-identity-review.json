@@ -1,0 +1,13 @@
+{
+  "featureCount": 1,
+  "features": [
+    {
+      "id": "HK-CSDI-LOT-1910159279",
+      "exactGeometryMatch": true,
+      "hausdorffDistanceM": 0.0,
+      "symmetricDifferenceM2": 0.0
+    }
+  ],
+  "sourceCoordinatesModified": false,
+  "fullGeometryRetainedInReview": false
+}

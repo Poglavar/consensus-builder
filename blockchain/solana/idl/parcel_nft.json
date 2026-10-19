@@ -10,7 +10,7 @@
     {
       "name": "mint_parcel",
       "docs": [
-        "Mint a single parcel"
+        "Create the anchor for one parcel. Anyone may pay for it; nobody owns it."
       ],
       "discriminator": [
         158,
@@ -47,7 +47,10 @@
           }
         },
         {
-          "name": "owner",
+          "name": "payer",
+          "docs": [
+            "Pays rent only; same account position as v1's `owner`, so raw-built instructions still work."
+          ],
           "writable": true,
           "signer": true
         },
@@ -61,41 +64,6 @@
           "name": "parcel_id",
           "type": "string"
         },
-        {
-          "name": "metadata_uri",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "set_parcel_metadata_uri",
-      "docs": [
-        "Update parcel metadata URI (owner only)"
-      ],
-      "discriminator": [
-        196,
-        216,
-        88,
-        218,
-        240,
-        132,
-        103,
-        78
-      ],
-      "accounts": [
-        {
-          "name": "parcel",
-          "writable": true
-        },
-        {
-          "name": "owner",
-          "signer": true,
-          "relations": [
-            "parcel"
-          ]
-        }
-      ],
-      "args": [
         {
           "name": "metadata_uri",
           "type": "string"

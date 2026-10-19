@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3021",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-3021-zahrat-laban.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/zahrat-laban-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:48:00Z",
+  "reason": "Verified WUP 2025 source archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, immutable roster and queue agree on code 3021, rank 2266, Saudi Arabia, point [24.6320476798316,46.5545842581718], and 257467 persons. The packet records executed English and Arabic searches. First-party Riyadh Municipality and Real Estate General Authority pages describe plot-map capability, but no local native-ID parcel feature response was obtained; registryFound stays null. The paired review records map-viewer timeouts and no safe polygon sample. These limits do not establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are unevidenced. No runtime admission or coverage change.",
+  "registryFound": null,
+  "firstPartyPortalUrls": [
+    "https://alriyadh.gov.sa/en/gis-portal",
+    "https://rega.gov.sa/rega-services/platforms/geospatial-real-estate-portal/"
+  ]
+}

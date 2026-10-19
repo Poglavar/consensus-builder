@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 5397,
+  "queueRank": 1920,
+  "name": "Saransk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [54.1904328842577, 45.1781328327448],
+  "population2025": 299262,
+  "population2025k": 299.262,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saransk cadastral map official parcel Rosreestr Saransk public cadastral map",
+        "result": "Found official Mordovia government material identifying the current NSPD public cadastral map and official Saransk municipal cadastral-office evidence. No anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.e-mordovia.ru/for-smi/all-news/v-edinyy-gosudarstvennyy-reестр-nedvizhimosti-vneseny-svedeniya-o-bolee-chem-44-tysyachakh-obektakh-/",
+          "https://xn--80aa4alnee.xn--p1ai/mun-order/Kadastr.php",
+          "https://nspd.gov.ru/map"
+        ]
+      },
+      {
+        "language": "Russian (native/local)",
+        "query": "официальная публичная кадастровая карта Саранск Росреестр Мордовия кадастровые участки",
+        "result": "Found the official Mordovia government announcement naming nspd.gov.ru as the public cadastral map and describing cadastral work covering Saransk, plus official municipal Saransk cadastral-office evidence. The NSPD viewer and API were unavailable to this workspace by timeout.",
+        "actualResultUrls": [
+          "https://www.e-mordovia.ru/for-smi/all-news/v-edinyy-gosudarstvennyy-reестр-nedvizhimosti-vneseny-svedeniya-o-bolee-chem-44-tysyachakh-obektakh-/",
+          "https://xn--80aa4alnee.xn--p1ai/mun-order/Kadastr.php",
+          "https://nspd.gov.ru/map"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://nspd.gov.ru/map",
+      "operator": "Rosreestr / National Spatial Data System (NSPD)",
+      "evidence": "Current public cadastral-map viewer identified by official Mordovia government material; the viewer is the current official route for public cadastral-map information. Direct access from this workspace timed out."
+    },
+    {
+      "url": "https://www.e-mordovia.ru/for-smi/all-news/v-edinyy-gosudarstvennyy-reестр-nedvizhimosti-vneseny-svedeniya-o-bolee-chem-44-tysyachakh-obektakh-/",
+      "operator": "Government of the Republic of Mordovia / Rosreestr regional administration",
+      "evidence": "Official regional government notice says cadastral work covered cadastral quarters in the Saransk urban district and directs users to nspd.gov.ru for the public cadastral map."
+    },
+    {
+      "url": "https://xn--80aa4alnee.xn--p1ai/mun-order/Kadastr.php",
+      "operator": "Official Saransk city portal, municipal enterprise Gorodskogo okruga Saransk Kadastr",
+      "evidence": "Official city portal identifies the municipal Saransk cadastral enterprise and its local office. This is local custodian evidence, not proof of an open parcel feature service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://nspd.gov.ru/map",
+      "method": "GET",
+      "status": "timeout",
+      "headers": "Browser-like User-Agent, Accept, Accept-Language ru-RU, cookie jar",
+      "summary": "Direct official viewer request timed out at approximately 30 seconds; no HTML/configuration or parcel data was returned."
+    },
+    {
+      "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=13%3A23%3A0901190%3A27&thematicSearchId=2",
+      "method": "GET",
+      "status": "timeout",
+      "headers": "Browser-like User-Agent, Accept application/json, Accept-Language ru-RU, Origin and Referer nspd.gov.ru",
+      "summary": "Bounded official search request using a Saransk cadastral number cited in an official Mordovia document timed out at 12 seconds; no ID or geometry response was returned."
+    },
+    {
+      "url": "https://nspd.gov.ru/api/aeggis/v4/36048/wms",
+      "method": "not executed",
+      "status": "candidate only",
+      "summary": "A public WMS layer route was discovered in secondary technical documentation, but no request was made because the official viewer/API host was already unreachable and the layer schema could not be confirmed from first-party configuration."
+    },
+    {
+      "url": "https://www.e-mordovia.ru/for-smi/all-news/v-edinyy-gosudarstvennyy-reестр-nedvizhimosti-vneseny-svedeniya-o-bolee-chem-44-tysyachakh-obektakh-/",
+      "method": "GET via web search/index",
+      "status": 200,
+      "summary": "Official regional government page was found and its text was inspected for current Saransk cadastral coverage and the NSPD viewer URL."
+    },
+    {
+      "url": "https://xn--80aa4alnee.xn--p1ai/mun-order/Kadastr.php",
+      "method": "GET via web search/index",
+      "status": 200,
+      "summary": "Official Saransk city portal page was found and inspected for local cadastral-custodian evidence."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no bounded anonymous parcel feature response returned.",
+      "native identity": "Not available: schema could not be retrieved from the timed-out viewer/API."
+    },
+    "crs": "Not confirmed.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official NSPD public cadastral map is a federal public map, and official Mordovia material specifically reports cadastral-quarter work in the Saransk urban district.",
+    "verifiedOpenScope": "Official local and federal viewer/procedure evidence only; no city parcel geometry or native-ID response was verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No point query result was obtained because the official viewer/API timed out. This is an access limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_current_viewer_and_local_custodian_geometry_unverified",
+  "remainingUncertainty": "The official NSPD viewer and its public API are the strongest current route, but the workspace could not retrieve viewer configuration, CRS, schema, native parcel identity, or geometry. Saransk-specific open coverage therefore remains unverified.",
+  "nextStep": "Serial reviewer should retry the official NSPD viewer/API from an eligible network, inspect first-party JavaScript/configuration, and issue a tiny ID-plus-geometry request before considering adapter qualification."
+}

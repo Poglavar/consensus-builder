@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11823",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-11823-contai.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/contai-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T07:16:06Z",
+  "findings": {
+    "identity": "Original WUP 2025 archive SHA-256 matched handoff; source row, ranked roster, queue and packet agree: rank 3259, Contai, India, exact point [21.7750795010373, 87.7483708520383], 184806 persons.",
+    "searches": "Packet records executed English and Bengali queries, outcomes and first-party URLs.",
+    "custody": "Government of India land-resources directory lists West Bengal BanglarBhumi as the state RoR portal. The state land-record and geoportal routes timed out in the packet; this supports institutional custody, not a Contai parcel response.",
+    "geometry": "No original first-party parcel feature/cache artifact, native parcel ID, full polygon, or safe sample exists. West Bengal viewer schema and CRS were not retrieved.",
+    "admission": "Independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap and operation checks, source binding, and headed Details-panel verification are unevidenced. Remain held; no runtime, catalog, registry or report admission."
+  }
+}

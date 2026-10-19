@@ -1,0 +1,96 @@
+// Machine-ready bundle sold by the x402 oracle endpoint. The paid response does not invent a new
+// fact: it packages one already-source-hashed land event with the exact resolution recipe an agent
+// can independently inspect and use.
+
+import {
+    buildProposalLifecycleRecipe,
+    EVENT_TYPE,
+    PROPOSAL_PROGRAM_ID,
+    recipeForProposalAccount,
+    sha256,
+    STATUS_CANCELLED,
+    STATUS_EXECUTED,
+    STATUS_EXPIRED
+} from './proposal-lifecycle.js';
+import { evaluateResolutionRecipe } from './recipe-evaluator.js';
+
+const OUTCOME_STATUS = Object.freeze({
+    executed: STATUS_EXECUTED,
+    cancelled: STATUS_CANCELLED,
+    expired: STATUS_EXPIRED
+});
+
+function validIsoDate(value) {
+    if (value instanceof Date) return Number.isFinite(value.getTime());
+    return typeof value === 'string' && Number.isFinite(Date.parse(value));
+}
+
+export function buildVerifiedProposalFact({ event, proposalAccount, marketAccount = null } = {}) {
+    if (!event || typeof event !== 'object') throw new Error('event is required');
+    if (event.eventType !== EVENT_TYPE) throw new Error(`eventType must be ${EVENT_TYPE}`);
+    if (event.subject?.type !== 'proposal' || event.subject?.id !== proposalAccount) {
+        throw new Error('event subject does not match the requested proposal');
+    }
+    const expectedStatus = OUTCOME_STATUS[event.outcome];
+    if (!expectedStatus) throw new Error('event outcome is not a supported terminal state');
+    if (event.evidence?.proposalStatusByte !== expectedStatus) {
+        throw new Error('event outcome does not match its proposal status evidence');
+    }
+    if (event.attester?.kind !== 'solana_program' || event.attester?.address !== PROPOSAL_PROGRAM_ID) {
+        throw new Error('event was not attested by the trusted ProposalNFT program');
+    }
+    if (!/^sha256:[a-f0-9]{64}$/.test(event.source?.hash || '')) {
+        throw new Error('event has no canonical source hash');
+    }
+    if (!event.source?.transaction || !validIsoDate(event.observedAt)) {
+        throw new Error('event has no source transaction or source timestamp');
+    }
+
+    // proposal-lifecycle-v2 when the event carries the proposal account bytes and they hold a lens:
+    // the lens is read from the very bytes the event hashed, so it cannot be swapped without
+    // breaking the source hash. Events without the bytes keep the precommitted v1 recipe.
+    const encoded = event.evidence?.accountDataBase64;
+    let recipe;
+    let lensFromHashedAccount = false;
+    if (encoded) {
+        const accountData = Buffer.from(String(encoded), 'base64');
+        if (`sha256:${sha256(accountData)}` !== event.source.hash) {
+            throw new Error('event proposal account bytes do not match its source hash');
+        }
+        recipe = recipeForProposalAccount({ proposalAccount, marketAccount, accountData });
+        lensFromHashedAccount = recipe.version === 2;
+    } else {
+        recipe = buildProposalLifecycleRecipe({ proposalAccount, marketAccount });
+    }
+    const lens = evaluateResolutionRecipe({
+        recipe,
+        evidence: [event],
+        now: event.recordedAt || event.observedAt,
+        subjectMatches: candidate => candidate.subject?.type === 'proposal'
+            && candidate.subject?.id === proposalAccount
+    });
+    if (lens.status !== 'resolved' || lens.outcome !== event.outcome) {
+        throw new Error(`event does not satisfy its resolution recipe: ${lens.reason}`);
+    }
+    return {
+        fact: event,
+        recipe,
+        verification: {
+            status: 'verified',
+            method: 'source-hashed Solana program account plus terminal transaction',
+            eventId: event.id,
+            recipeId: recipe.id,
+            recipeHash: recipe.hash,
+            lens,
+            checks: {
+                subjectMatches: true,
+                terminalStatusMatches: true,
+                trustedAttesterMatches: true,
+                sourceHashPresent: true,
+                lensFromHashedAccount,
+                sourceTransactionPresent: true,
+                sourceTimestampPresent: true
+            }
+        }
+    };
+}

@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "workstream": "africa_east",
+  "verifiedParcelResponse": {
+    "provider": "Nairobi Maps (commercial, non-government provider; not an official registry)",
+    "endpoint": "https://nairobimaps.com/api/get_parcels.php",
+    "method": "GET anonymous host request; no Authorization header or session cookie used",
+    "requestParams": {
+      "bbox": "36.844,-1.267,36.847,-1.264",
+      "zoom": 16
+    },
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "responseBytes": 76241,
+    "featureCount": 342,
+    "limit": 7000,
+    "truncated": false,
+    "geometryTypes": {
+      "MultiPolygon": 342
+    },
+    "propertiesNonemptyCount": 0,
+    "featureIdsPresentCount": 0,
+    "assessment": "Fresh no-cookie GET requests show anonymous polygon geometry works at zoom 16, 18 and 19. A one-point identify returns one MultiPolygon but no properties or feature ID. The public app code gates parcel details/popups (including LR number, area and block) to Gold/Platinum/Admin and shows a locked-details message to Public/guest users. No key or paid account was used.",
+    "higherZoomViewportChecks": [
+      {
+        "bbox": "36.845,-1.2665,36.846,-1.2655",
+        "widthDegrees": 0.001,
+        "heightDegrees": 0.001,
+        "zoom": 18,
+        "httpStatus": 200,
+        "responseBytes": 17254,
+        "featureCount": 74,
+        "geometryTypes": {
+          "MultiPolygon": 74
+        },
+        "propertiesNonemptyCount": 0,
+        "featureIdsPresentCount": 0,
+        "truncated": false
+      },
+      {
+        "bbox": "36.845,-1.2665,36.846,-1.2655",
+        "widthDegrees": 0.001,
+        "heightDegrees": 0.001,
+        "zoom": 19,
+        "httpStatus": 200,
+        "responseBytes": 17254,
+        "featureCount": 74,
+        "geometryTypes": {
+          "MultiPolygon": 74
+        },
+        "propertiesNonemptyCount": 0,
+        "featureIdsPresentCount": 0,
+        "truncated": false
+      }
+    ],
+    "pointIdentifyCheck": {
+      "endpoint": "https://nairobimaps.com/find_parcel_at.php",
+      "method": "GET anonymous host request without account/session",
+      "queryParams": {
+        "lat": "-1.2659211",
+        "lng": "36.8451619"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "responseBytes": 315,
+      "featureCount": 1,
+      "geometryType": "MultiPolygon",
+      "propertyKeyCount": 0,
+      "safeParcelOrPlanReferenceKeysPresent": [],
+      "featureIdPresent": false,
+      "assessment": "The public point identify returns the polygon geometry only; no LR/parcel/survey-plan reference or feature ID."
+    }
+  },
+  "registryFound": null,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "cityId": "wup2025:2033",
+  "wupCityCode": 2033,
+  "name": "Nairobi",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "centerLatLon": [
+    -1.26592113731299,
+    36.845161927435
+  ],
+  "status": "verified_anonymous_parcel_outline_geometry_no_public_id",
+  "priorEvidence": [
+    "research/india-africa-2026-10-08/africa-ne-city-nairobi.json",
+    "research/india-africa-2026-10-08/africa-ne-country-KE.json"
+  ],
+  "newFindings": [
+    {
+      "source": "Nairobi City County, Built Environment and Urban Planning Sector",
+      "url": "https://nairobi.go.ke/built-environment-and-urban-planning-sector",
+      "evidence": "County Lands Subsector responsibilities include surveying, GIS/mapping, valuation, land administration/property management and registration. No public county parcel feature endpoint was linked or identified in this pass."
+    },
+    {
+      "source": "Nairobi County LIMS",
+      "url": "https://ardhi.nairobiservices.go.ke/",
+      "evidence": "Service front end for land services; public page did not expose a reusable anonymous parcel feature API."
+    },
+    {
+      "source": "NAIROBIPLAN",
+      "url": "https://edev.nairobiservices.go.ke/",
+      "evidence": "Physical-planning services require account registration; not an anonymous parcel-data feed."
+    },
+    {
+      "source": "Nairobi Maps public parcel viewer (commercial, non-government)",
+      "url": "https://nairobimaps.com/",
+      "evidence": "Fresh anonymous request to the viewer’s viewport endpoint returned 342 MultiPolygon parcel outlines for a small zoom-16 bbox around the WUP point. The API returned empty properties and no feature IDs, so the anonymous route does not expose a stable parcel key. The provider says parcels are compiled from survey records; this has not been independently confirmed as government-source geometry."
+    },
+    {
+      "source": "Nairobi Maps public GIS data page",
+      "url": "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+      "evidence": "Provider documents parcel cadastre data and field/coverage notes. WFS is a separate route requiring an organisation API key; the anonymous viewport API does not require that key."
+    },
+    {
+      "source": "Ministry of Lands gazetted-parcels notice",
+      "url": "https://lands.go.ke/all-gazetted-parcels-9th-may-2024",
+      "evidence": "Official notice concerns parcel-number conversion and describes map access through Ministry/survey offices and Ministry site; no anonymous feature service identified."
+    }
+  ],
+  "discoveryChecks": [
+    {
+      "target": "Anonymous outlines at WUP centre",
+      "method": "GET viewer viewport endpoint, bbox 0.003° x 0.003°, zoom 16",
+      "httpStatus": 200,
+      "featureCount": 342,
+      "geometryType": "MultiPolygon",
+      "propertiesNonemptyCount": 0,
+      "featureIdsPresentCount": 0
+    },
+    {
+      "target": "Anonymous outlines at higher zoom",
+      "method": "GET viewport endpoint, bbox 0.001° x 0.001°, zoom 18 and 19",
+      "httpStatus": 200,
+      "result": "Each request returned 74 MultiPolygon features; all had empty properties and no top-level IDs."
+    },
+    {
+      "target": "Anonymous per-point identify",
+      "method": "GET find_parcel_at.php at the WUP point, no account/session",
+      "httpStatus": 200,
+      "result": "One MultiPolygon, zero property keys, no feature ID or parcel/plan reference."
+    },
+    {
+      "target": "Viewer click entitlement",
+      "method": "Static public app.js inspection",
+      "result": "Anonymous/public/guest users are in the basic tier; parcel-attribute popups are Gold/Platinum/Admin only. The public click branch displays a locked-details message; it does not expose LR number, area or block."
+    },
+    {
+      "target": "WFS alternative",
+      "method": "Public documentation review only; no API key used",
+      "result": "WFS requires an organisation API key and is separate from anonymous viewport geometry."
+    }
+  ],
+  "sourceQuality": "Nairobi Maps is a commercial provider, not an official registry, but its public page and live anonymous API both confirm actual parcel-outline geometry delivery. The API key requirement applies to separate WFS access; it does not technically block the anonymous viewport response. Native parcel identity and attribute availability remain absent from the anonymous response.",
+  "blocker": "Anonymous polygon geometry is available at zooms 16–19, but the public viewport and point-identify responses contain no native ID or attributes. The viewer’s app gates parcel/plan details to Gold/Platinum/Admin; no paid or organisation key route was used.",
+  "remainingUncertainty": "Provider says outlines are compiled from survey records, but their source lineage/authority was not independently verified. Anonymous geometry cannot be joined reliably to a registry without a stable ID.",
+  "nextStep": "Use the published anonymous endpoint only for geometry-only display with provider provenance. For parcel/plan joins, wait for a government-published service or another public endpoint that returns stable IDs without paid/authenticated access.",
+  "requests": [
+    {
+      "endpoint": "https://nairobimaps.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "Public map page explains parcel outlines are visible without sign-up at zoom 16+; outlines are free to view, while details and WFS access are separate."
+    },
+    {
+      "endpoint": "https://nairobimaps.com/app.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "assessment": "Public app script uses viewport GET `api/get_parcels.php?bbox=…&zoom=…` with same-origin credentials; direct anonymous no-cookie GET independently returned 342 outline polygons."
+    },
+    {
+      "endpoint": "https://nairobimaps.com/api/get_parcels.php",
+      "method": "GET",
+      "requestParams": {
+        "bbox": "36.844,-1.267,36.847,-1.264",
+        "zoom": 16
+      },
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "responseBytes": 76241,
+      "featureCount": 342,
+      "geometryTypes": {
+        "MultiPolygon": 342
+      },
+      "propertiesNonemptyCount": 0,
+      "topLevelFeatureIdsPresent": false,
+      "assessment": "Anonymous geometry works technically; this response does not supply native IDs or attributes."
+    },
+    {
+      "endpoint": "https://nairobimaps.com/wfs.php",
+      "method": "documented WFS 2.0/1.1, not queried",
+      "assessment": "Provider states WFS returns GML/GeoJSON and requires an organisation API key. This restriction applies to WFS access, not the anonymous visual/viewport outline endpoint."
+    },
+    {
+      "endpoint": "https://nairobimaps.com/api/get_parcels.php",
+      "method": "GET",
+      "queryParams": {
+        "bbox": "36.845,-1.2665,36.846,-1.2655",
+        "zoom": 18
+      },
+      "httpStatus": 200,
+      "responseBytes": 17254,
+      "featureCount": 74,
+      "propertiesNonemptyCount": 0,
+      "featureIdsPresentCount": 0,
+      "assessment": "One 0.001° viewport at higher zoom; anonymous outlines only."
+    },
+    {
+      "endpoint": "https://nairobimaps.com/api/get_parcels.php",
+      "method": "GET",
+      "queryParams": {
+        "bbox": "36.845,-1.2665,36.846,-1.2655",
+        "zoom": 19
+      },
+      "httpStatus": 200,
+      "responseBytes": 17254,
+      "featureCount": 74,
+      "propertiesNonemptyCount": 0,
+      "featureIdsPresentCount": 0,
+      "assessment": "Same small viewport at zoom 19; no native ID or attributes were added."
+    },
+    {
+      "endpoint": "https://nairobimaps.com/find_parcel_at.php",
+      "method": "GET",
+      "queryParams": {
+        "lat": "-1.2659211",
+        "lng": "36.8451619"
+      },
+      "httpStatus": 200,
+      "responseBytes": 315,
+      "featureCount": 1,
+      "geometryType": "MultiPolygon",
+      "propertyKeyCount": 0,
+      "featureIdPresent": false,
+      "assessment": "One anonymous per-point identify returned geometry but no native parcel or plan reference."
+    }
+  ],
+  "geometryOnlyVerified": true,
+  "nativeParcelIdentityVerified": false,
+  "reportClassification": "Public commercial parcel outlines observed; registry identity and government source lineage remain unverified. No app entry is enabled."
+}

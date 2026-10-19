@@ -1,0 +1,23 @@
+{
+  "taskId": "city:1026",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-1026-lab.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/lab-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T21:32:47Z",
+  "reason": "English and French queries and result URLs recorded. Packet identifies a Labé cadastral custodian and official Guinea map lead. Fresh anonymous request to the application-layer metadata returned HTTP 200 with ArcGIS error 499 Token Required; no parcel schema, native ID, or polygon response was available. Token wall does not establish absence.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "UA",
+ "country": "Ukraine",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "cadastreAuthority": "State Geocadastre; Public Cadastral Map (map.land.gov.ua)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language per country; cookie jar; Referer = viewer origin where applicable",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://map.land.gov.ua/",
+   "observation": "TCP/TLS reset by peer before any HTTP response, even with full browser headers"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://map.land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset (curl 35)"
+  },
+  {
+   "url": "https://map.land.gov.ua/kadastrova-karta",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset (curl 35)"
+  },
+  {
+   "url": "https://cadmap.land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502 (host not reachable via egress proxy)"
+  },
+  {
+   "url": "https://kadastr.live/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "regionsSampled": [],
+ "coverageAssessment": {
+  "claimedScope": "Nationwide Public Cadastral Map (viewer, per authority)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Viewer JS could not be read; geo-block suspected (reset at TLS, while land.gov.ua answers) but not proven. Not an INSPIRE country, so no INSPIRE CP service is mandated.",
+ "nextStep": "Retry from a Ukrainian/EU network; inspect map.land.gov.ua viewer JS for the WMS/WFS host.",
+ "geoBlockSuspected": true,
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false
+}

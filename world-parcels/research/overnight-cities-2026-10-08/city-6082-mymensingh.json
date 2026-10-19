@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Mymensingh",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official DLRS Mymensingh Zonal Settlement Office serves Mymensingh district; official land-record/survey services include mouza maps and cadastral/plot map searches. A public map-search client can load full per-sheet GeoJSON/vector tiles by administrative map selectors. For this city, public selectors returned Mymensingh district and one RS survey but zero thana/upazila units; no Mymensingh Sadar sheet or exact WUP polygon could be queried.",
+  "registryEvidenceUrls": [
+    "https://zso.mymensingh.gov.bd/pages/officers",
+    "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+    "https://settlement.gov.bd/Map/MapSearch",
+    "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+    "https://map.land.gov.bd/",
+    "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+    "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6082,
+  "cityId": "wup2025:6082",
+  "centerLatLon": [
+    24.7509673318953,
+    90.4043009902257
+  ],
+  "point": [
+    24.7509673318953,
+    90.4043009902257
+  ],
+  "rank": 802,
+  "queueRank": 802,
+  "population2025": 677433,
+  "population2025k": 677.433,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No full parcel polygon at the exact WUP point was received. MapSearch route makes per-sheet full GeoJSON available after selecting a map unit; this district’s public survey selector returned no upazila choices. No tile was treated as a full geometry sample.",
+  "scopeLimits": "Bounded public-source and anonymous service review only. No owner, address, applicant, account, taxpayer, identity or property-specific query inputs were submitted. No geometry sample is retained.",
+  "remainingUncertainty": "Whether a current cadastral sheet covers the urban WUP locator is unknown; the listed public RS survey had no upazila map units. The national land-zoning site is a distinct project and its geometry/registry semantics were not established.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Bengali",
+        "query": "ময়মনসিংহ সদর ভূমি রেকর্ড জরিপ মৌজা ম্যাপ দাগ প্লট মানচিত্র সরকারি",
+        "scope": "Verify city-local registry/cadastre activity and inspect anonymous public parcel-map geometry without owner/address/account/property-specific inputs.",
+        "result": "সরকারি ভূমি রেকর্ড ও জরিপ অধিদপ্তরের ময়মনসিংহ জোনাল অফিস ময়মনসিংহ জেলা পরিচালনা করে। DLRS MapSearch-এ বিভাগ/জেলা/জরিপ/উপজেলা/মৌজা/শিট নির্বাচন আছে এবং per-sheet GeoJSON/vector tile route ব্যবহৃত হয়; ময়মনসিংহ জেলার RS জরিপে উপজেলা তালিকা শূন্য, তাই শহরের WUP পয়েন্টে কোনো sheet/parcel geometry পাওয়া যায়নি।",
+        "actualResultUrls": [
+          "https://zso.mymensingh.gov.bd/pages/officers",
+          "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+          "https://map.land.gov.bd/",
+          "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+          "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source inspection and route/schema checks. No personal or property-specific inputs were submitted."
+      },
+      {
+        "language": "English",
+        "query": "Mymensingh Bangladesh official cadastral parcel map land records survey office public GIS",
+        "scope": "Cross-check local institution identity and determine whether full public parcel geometry can be verified at the WUP point.",
+        "result": "Official DLRS sources establish a Mymensingh Zonal Settlement Office and a public map-search workflow with district/survey/upazila/mouza/sheet selectors. Its public selector returned zero upazila map units for Mymensingh district’s listed RS survey, so no exact-point feature was available. The separate Smart Land Map site is a mouza/plot land-zoning project, not verified parcel registry geometry.",
+        "actualResultUrls": [
+          "https://zso.mymensingh.gov.bd/pages/officers",
+          "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+          "https://map.land.gov.bd/",
+          "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+          "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map"
+        ],
+        "executionMethod": "Separate English-language web search followed by official source/service inspection; no personal or property-specific inputs were submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zso.mymensingh.gov.bd/pages/officers",
+        "observation": "Official DLRS Mymensingh office page lists the Mymensingh Zonal Settlement Officer under the Department of Land Records and Surveys."
+      },
+      {
+        "url": "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+        "observation": "Official DLRS directory assigns Mymensingh district to the Mymensingh Zonal Settlement Office and lists survey/mouza map services."
+      },
+      {
+        "url": "https://settlement.gov.bd/Map/MapSearch",
+        "observation": "Official DLRS map-search page exposes administrative selectors for survey, district, upazila, mouza, sheet and dag; HTML shell returned HTTP 200."
+      },
+      {
+        "url": "https://map.land.gov.bd/",
+        "observation": "Official Smart Bhumi Naksha page explains a mouza/plot land-use zoning program; it is not itself proof of cadastral parcel-vector coverage."
+      },
+      {
+        "url": "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+        "observation": "Official Mymensingh district map page offers district map material, not parcel vectors."
+      },
+      {
+        "url": "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map",
+        "observation": "Official Mymensingh Sadar government service-process page includes land-record correction and khatiyan copy services; it supports local land-record activity, not anonymous parcel-vector geometry."
+      }
+    ]
+  },
+  "source": {
+    "name": "Bangladesh DLRS Mymensingh public settlement map-search portal",
+    "urls": [
+      "https://zso.mymensingh.gov.bd/pages/officers",
+      "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+      "https://settlement.gov.bd/Map/MapSearch",
+      "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+      "https://map.land.gov.bd/",
+      "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+      "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official DLRS Mymensingh Zonal Settlement Office serves Mymensingh district; official land-record/survey services include mouza maps and cadastral/plot map searches. A public map-search client can load full per-sheet GeoJSON/vector tiles by administrative map selectors. For this city, public selectors returned Mymensingh district and one RS survey but zero thana/upazila units; no Mymensingh Sadar sheet or exact WUP polygon could be queried.",
+    "verifiedOpenScope": "Official public map-selector endpoints returned district/survey metadata but zero upazila map units for Mymensingh district’s RS survey; no parcel geometry at the locator.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_exact_point_full_polygon",
+    "reason": "No full parcel polygon at the exact WUP point was received. MapSearch route makes per-sheet full GeoJSON available after selecting a map unit; this district’s public survey selector returned no upazila choices. No tile was treated as a full geometry sample.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/mymensingh-service-review.json"
+  },
+  "resultCategory": "local_survey_map_portal_candidate_exact_city_geometry_unverified",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "serviceCandidateNote": "Official public map/query candidate exists, but no full polygon response at the WUP point was verified.",
+  "geometryRouteCandidate": {
+    "serviceUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "clientScript": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+    "declaredFullGeometryRoute": "/Khatian/GetSheetJsonBySurvey",
+    "declaredTileRoute": "/tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf",
+    "status": "public map client documents per-sheet full GeoJSON after administrative selection; no Mymensingh Sadar map unit was returned by current public selectors, so no feature schema/sample was received"
+  },
+  "rootPrimarySupplement": "Primary indexed DLRS office directory and subdistrict-office list explicitly name Mymensingh and its Sadar settlement office. Source content dates 2021/2022 are separate from current research; direct TLS failure is preserved without bypass.",
+  "rootPrimaryReadback": {
+    "url": "https://zso.mymensingh.gov.bd/pages/officers",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

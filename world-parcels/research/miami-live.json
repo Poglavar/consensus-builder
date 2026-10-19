@@ -1,0 +1,291 @@
+{
+  "checkedAt": "2026-10-02",
+  "officialOpenDataItem": {
+    "title": "Parcel",
+    "itemId": "347bce97227c4b54b04a3e626b558950",
+    "hubDatasetId": "347bce97227c4b54b04a3e626b558950_0",
+    "hubItemUrl": "https://gis-mdc.opendata.arcgis.com/datasets/MDC::parcel/about",
+    "sharingRestItemUrl": "https://www.arcgis.com/sharing/rest/content/items/347bce97227c4b54b04a3e626b558950?f=json",
+    "sharingRestDataUrl": "https://www.arcgis.com/sharing/rest/content/items/347bce97227c4b54b04a3e626b558950/data?f=json",
+    "owner": "MDPublisher",
+    "access": "public",
+    "contentStatus": "public_authoritative",
+    "categories": [
+      "Source Department/Property Appraiser",
+      "Production Content",
+      "GIS Groups/Geospatial Infrastructure Support"
+    ],
+    "description": "A polygon feature class of the property ownership boundaries as defined by legal description and deeds; used for maintaining property boundaries throughout Miami-Dade County.",
+    "updateCadence": "Weekly-Sat (as stated in item description)",
+    "accessInformation": "Miami-Dade County GIS Technical Support Group",
+    "licenseInfoAssessment": "Item licenseInfo contains an as-is/accuracy and reliance disclaimer only. It names no Creative Commons or other reuse license, no redistribution terms, and no required attribution wording. No separate parcel-specific reuse license URL was exposed in the item metadata. Do not label CC BY/open license from this evidence alone.",
+    "itemModifiedEpochMs": 1790578261000,
+    "featureServiceUrl": "https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/Parcelpoly_gdb/FeatureServer",
+    "hubDatasetApiUrl": "https://gis-mdc.opendata.arcgis.com/api/v3/datasets/347bce97227c4b54b04a3e626b558950_0",
+    "hubApiObserved": {
+      "access": "public",
+      "downloadable": true,
+      "contentStatus": "public_authoritative",
+      "fieldNameIncludes": [
+        "OBJECTID",
+        "FOLIO",
+        "PARCEL"
+      ]
+    }
+  },
+  "otherOfficialReuseSources": [
+    {
+      "title": "Miami-Dade GIS Data Service / request GIS data",
+      "url": "https://www.miamidade.gov/global/service.page?Mduid_service=ser1468850841882434",
+      "statement": "Most publicly available production GIS data can be downloaded for free from the Miami-Dade County Open Data Hub.",
+      "assessment": "Confirms free access for public production data, but does not state a data reuse or attribution license."
+    },
+    {
+      "title": "Miami-Dade County website disclaimer and user agreement",
+      "url": "https://www.miamidade.gov/global/disclaimer/disclaimer.page",
+      "assessment": "General county website use terms; not a parcel-specific data reuse license."
+    },
+    {
+      "title": "Miami-Dade GIS/Esri Data Terms of Use addendum in GIS procurement item 231654",
+      "url": "https://www.miamidade.gov/govaction/legistarfiles/Matters/Y2023/231654.pdf",
+      "assessment": "Esri software-contract addendum contains restrictions on use of licensed data with Esri software. Its scope appears contract/software-specific; it is not evidence that those terms govern the public Open Data Hub parcel item."
+    }
+  ],
+  "testedEndpoints": [
+    {
+      "url": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+      "role": "Original live parcel layer candidate",
+      "metadataHttpStatus": 200,
+      "metadataContentType": "application/json; charset=UTF-8",
+      "layerName": "MDC.Parcel_poly",
+      "geometryType": "esriGeometryPolygon",
+      "idField": "FOLIO",
+      "idFieldType": "esriFieldTypeString",
+      "idFieldLength": 13,
+      "objectIdField": "OBJECTID",
+      "nativeSpatialReference": {
+        "wkid": 102658,
+        "latestWkid": 2236
+      },
+      "maxRecordCount": 1000,
+      "supportsPagination": true,
+      "boundedSample": {
+        "bboxWgs84": [
+          -80.283,
+          25.8595,
+          -80.281,
+          25.861
+        ],
+        "httpStatus": 200,
+        "queryParameters": {
+          "outFields": "OBJECTID,FOLIO,PARCEL",
+          "outSR": 4326,
+          "returnGeometry": true,
+          "resultRecordCount": 1000
+        },
+        "featureCount": 38,
+        "nullFolioCount": 0,
+        "blankFolioCount": 0,
+        "nonStringFolioCount": 0,
+        "duplicateFolioValuesInSample": 0,
+        "folioLengths": [
+          13
+        ],
+        "geometryTypes": {
+          "Polygon": 38
+        },
+        "exactQuotedFolioQuery": {
+          "where": "FOLIO = '0431060380340'",
+          "httpStatus": 200,
+          "resultCount": 1,
+          "returnedFolio": "0431060380340"
+        },
+        "paginationEvidence": {
+          "priorBoundedRequestRecordCount": 5,
+          "responseExceededTransferLimit": true
+        }
+      }
+    },
+    {
+      "url": "https://services.arcgis.com/8Pc9XBTAsYuxx9Ny/arcgis/rest/services/Parcelpoly_gdb/FeatureServer/0",
+      "role": "Feature layer referenced by official Open Data Hub item",
+      "serviceItemIdMatchesHubItem": true,
+      "maxRecordCount": 2000,
+      "boundedSample": {
+        "bboxWgs84": [
+          -80.283,
+          25.8595,
+          -80.281,
+          25.861
+        ],
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "queryParameters": {
+          "outFields": "OBJECTID,FOLIO,PARCEL",
+          "outSR": 4326,
+          "returnGeometry": true,
+          "resultRecordCount": 1000
+        },
+        "featureCount": 38,
+        "nullFolioCount": 0,
+        "blankFolioCount": 0,
+        "nonStringFolioCount": 0,
+        "duplicateFolioValuesInSample": 0,
+        "geometryTypes": {
+          "Polygon": 38
+        },
+        "exactQuotedFolioQuery": {
+          "where": "FOLIO = '0431060380340'",
+          "httpStatus": 200,
+          "resultCount": 1,
+          "returnedFolio": "0431060380340"
+        }
+      }
+    }
+  ],
+  "identityAndCoverageLimits": [
+    "FOLIO is explicitly a native 13-character string and must retain leading zeroes; quoted equality worked on both endpoints.",
+    "The 38-feature small bbox sample has no null/blank/non-string or repeated FOLIO values, but this does not establish global non-nullness or uniqueness.",
+    "OBJECTID is the unique indexed object identifier in the original layer metadata; FOLIO did not have a uniqueness constraint/index in the inspected layer metadata. Do not claim global FOLIO uniqueness without a full or aggregate duplicate audit.",
+    "The sample contains Polygon geometries only; it does not rule out MultiPolygon results elsewhere or demonstrate multipart FOLIO semantics.",
+    "Dataset extent and description support Miami-Dade County scope, not the full Miami metropolitan region across neighboring counties."
+  ],
+  "description": "Bounded source, native identity, paging and published data-term checks for Miami-Dade parcels.",
+  "cityId": "miami",
+  "sourceId": "us-fl-miamidade-pa-parcels",
+  "selection": "Use the County public service for the prototype, link its published disclaimer, and do not claim a named open-data licence.",
+  "rowIdentityFollowup": {
+    "checkedAt": "2026-10-02",
+    "testedEndpoint": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+    "boundedDowntownSample": {
+      "bboxWgs84": [
+        -80.195,
+        25.774,
+        -80.192,
+        25.776
+      ],
+      "httpStatus": 200,
+      "featureCount": 68,
+      "exceededTransferLimit": false,
+      "fieldsRequested": [
+        "OBJECTID",
+        "FOLIO",
+        "GLOBALID",
+        "PARCEL"
+      ],
+      "folioNullCount": 0,
+      "folioBlankCount": 0,
+      "globalIdNullCount": 0,
+      "globalIdBlankCount": 0,
+      "globalIdRuntimeType": "string",
+      "globalIdStringLength": 38,
+      "globalIdBracedUppercaseCount": 68,
+      "duplicateFolioGroups": [
+        {
+          "folio": "0101120201070",
+          "rows": [
+            {
+              "objectId": 72054,
+              "globalId": "{C9D13CB3-3718-4F70-B8BB-CA6F9FE127F4}",
+              "parcel": "1070",
+              "geometryType": "Polygon",
+              "bboxWgs84": [
+                -80.1941269,
+                25.773397,
+                -80.1936876,
+                25.7740398
+              ]
+            },
+            {
+              "objectId": 311113,
+              "globalId": "{EC07093A-2B9D-45E0-A76F-FDC6044C367F}",
+              "parcel": "1070",
+              "geometryType": "Polygon",
+              "bboxWgs84": [
+                -80.1935126,
+                25.7734134,
+                -80.1927205,
+                25.7740571
+              ]
+            }
+          ],
+          "interpretation": "Two distinct Polygon features share one FOLIO and are spatially distinct, confirming FOLIO cannot serve as a row identity."
+        }
+      ],
+      "globalIdRepeatedValuesInSample": 0
+    },
+    "globalIdentityChecks": {
+      "metadataField": {
+        "name": "GLOBALID",
+        "type": "esriFieldTypeGlobalID",
+        "length": 38
+      },
+      "metadataIndex": {
+        "name": "UUID_32565",
+        "fields": "GLOBALID",
+        "isUnique": false
+      },
+      "exactQuotedEqualityQuery": {
+        "where": "GLOBALID = '{8EF3C94D-1433-4EB4-A9BF-BD3042838B08}'",
+        "httpStatus": 200,
+        "matches": 1,
+        "returnedSameBracedUppercaseValue": true
+      },
+      "quotedInQuery": {
+        "where": "GLOBALID IN ('{8EF3C94D-1433-4EB4-A9BF-BD3042838B08}','{7622011D-0528-4C78-BF05-7445F9F0F12A}')",
+        "httpStatus": 200,
+        "matches": 2,
+        "returnedBothExactIds": true
+      },
+      "wholeLayerRowCount": 596304,
+      "wholeLayerCountGlobalIdNonNull": 596304,
+      "wholeLayerGlobalIdNullCount": 0,
+      "wholeLayerDuplicateGlobalIdAggregate": {
+        "method": "group by GLOBALID; count OBJECTID; HAVING COUNT(OBJECTID) > 1",
+        "httpStatus": 200,
+        "duplicateGroupsReturned": 0
+      },
+      "distinctCountStatisticAttempt": {
+        "result": "unsupported/error despite advertised supportsCountDistinct=true",
+        "error": "HTTP 200 ArcGIS JSON error 400: Invalid or missing input parameters."
+      },
+      "distinctIdentityConclusion": "The full-layer duplicate-group aggregate returned no duplicate GLOBALIDs and all 596304 rows have non-null GLOBALID; this supports one-to-one identity in the current layer response, but is not a DB uniqueness constraint (metadata index isUnique=false)."
+    },
+    "wholeLayerFolioChecks": {
+      "rowCount": 596304,
+      "folioNonNullCount": 596304,
+      "folioNullCount": 0,
+      "emptyStringFolioCount": 5124,
+      "duplicateGroupExample": "0101120201070 (2 rows in the bounded sample)",
+      "note": "FOLIO is a 13-character string field but is neither non-null at semantic level (empty strings occur) nor row-unique."
+    },
+    "adapterIdentityRecommendation": "For the fixed original MapServer source, identify each returned parcel feature by braced uppercase GLOBALID (native esriFieldTypeGlobalID, a 38-character textual value). Preserve FOLIO as an attribute only. Configure a string id pattern matching braces and UUID hex/hyphen form; SQL-quote GLOBALID values. Do not switch endpoint silently; evidence here is for the original MD_PA_PropertySearch MapServer layer."
+  },
+  "canonicalIdentity": "US-FL-MIAMI-DADE- followed by the exact brace-wrapped GLOBALID. FOLIO is display-only and can be repeated or blank.",
+  "adapterVerification": {
+    "bbox": [
+      -80.195,
+      25.774,
+      -80.192,
+      25.776
+    ],
+    "parcelCount": 68,
+    "complete": true,
+    "idLookupCount": 3,
+    "absentIds": [],
+    "responseFile": "miami-live-response.json"
+  },
+  "endpoint": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+  "browserVerification": {
+    "initialLoaded": 258,
+    "afterPanRetained": 322,
+    "returnCached": true,
+    "uncachedFootprintHttpStatus": 200,
+    "uncachedFootprintComplete": true,
+    "bindingHttpStatus": 200,
+    "bindingCoverage": "complete",
+    "boundParcelId": "US-FL-MIAMI-DADE-{FABC86F2-4A2A-4328-95CF-BA6B219E8B22}",
+    "globePopup": "Live city with source streaming description and Open city action",
+    "globeHandoff": "Open city navigates to its configured source at zoom 19 and streams parcels"
+  }
+}

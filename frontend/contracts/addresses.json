@@ -5,22 +5,26 @@
     "ProposalNFT": "0x8A791620dd6260079BF849Dc5567aDC3F2FdC318"
   },
   "84532": {
-    "CityMemeToken": "0x24AA6831a7b782Fd3F3643652b706CDC3AEda3Bc",
+    "CityMemeToken": "0x3F7FF9fC46F32b462f4Cc2d02D07Ac3b6c0c2AeE",
     "ParcelNFT": "0x20e0A2897c642565905c0B45BBfaf7D8F96D1639",
-    "ProposalNFT": "0x9699AcBc70a32E5a7Ff30566dD496e080a4FAE2F"
+    "ProposalNFT": "0xFf162bC8De48AA39582c9389D60a7487b6330342"
   },
   "11155111": {
     "CityMemeToken": "0xa65E0Eb5E1A0C238A531CB6Fb6325eECa70Ff6A9",
     "ParcelNFT": "0x4862683688e94E36c024fCEC13E9209f1C7D8673",
-    "ProposalNFT": "0x6c8316eB31f2384aDCEBd3eeb499376587c9c7Fc"
+    "ProposalNFT": "0xFFeD620F8A28d94FfaAeE7BC4D66DA6131A90fE1"
   },
   "solana": {
     "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
-    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
+    "ProposalMarket": "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB",
+    "ProposalPledge": "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
   },
   "solana-devnet": {
     "ParcelNFT": "4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1",
-    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg"
+    "ProposalNFT": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
+    "ProposalMarket": "GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB",
+    "ProposalPledge": "1jESRS3mJiPUJTtmQ5ncyBhGNmGeXTpUqPyJcTYrp6g"
   },
   "solana-mainnet-beta": {}
 }

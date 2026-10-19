@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T22:06:14.562Z",
+  "cityId": "wup2025:3336",
+  "descriptor": {
+    "id": "gh-ama-public-property-app",
+    "name": "Accra Metro app property footprints",
+    "adapter": "geojson-snapshot",
+    "endpoint": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+    "requestForm": {
+      "tbl": "parcel",
+      "flds": "parcelid,parcelcode"
+    },
+    "idFields": [
+      "parcelid"
+    ],
+    "idPrefix": "GH-AMA-",
+    "outFields": [
+      "parcelid",
+      "parcelcode"
+    ],
+    "parcelNumberField": "parcelcode",
+    "nativeGeometryMode": "parts",
+    "disjointParts": true,
+    "partMatchFields": [
+      "parcelcode"
+    ],
+    "maxSnapshotBytes": 8388608,
+    "maxSnapshotFeatures": 20000,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 10,
+    "metricSrid": 32630,
+    "countryCode": "GH",
+    "cityIds": [
+      "accra"
+    ],
+    "maxConcurrentQueries": 6
+  },
+  "purpose": "Partial publisher app-PID footprints, not claimed as official statutory cadastre. All source rows load before spatial selection. No imported parcels.",
+  "tests": [
+    {
+      "name": "viewport",
+      "elapsedMs": 4027,
+      "bbox": [
+        -0.22,
+        5.5475,
+        -0.2175,
+        5.55
+      ],
+      "complete": true,
+      "count": 8
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 4,
+      "bbox": [
+        -0.2175,
+        5.5475,
+        -0.215,
+        5.55
+      ],
+      "complete": true,
+      "count": 38
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 2,
+      "bbox": [
+        -0.215,
+        5.5475,
+        -0.2125,
+        5.55
+      ],
+      "complete": true,
+      "count": 76
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 1,
+      "bbox": [
+        -0.22,
+        5.55,
+        -0.2175,
+        5.5525
+      ],
+      "complete": true,
+      "count": 11
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 0,
+      "bbox": [
+        -0.2175,
+        5.55,
+        -0.215,
+        5.5525
+      ],
+      "complete": true,
+      "count": 8
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 0,
+      "bbox": [
+        -0.215,
+        5.55,
+        -0.2125,
+        5.5525
+      ],
+      "complete": true,
+      "count": 7
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 0,
+      "bbox": [
+        -0.22,
+        5.5525,
+        -0.2175,
+        5.555
+      ],
+      "complete": true,
+      "count": 12
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 0,
+      "bbox": [
+        -0.2175,
+        5.5525,
+        -0.215,
+        5.555
+      ],
+      "complete": true,
+      "count": 5
+    },
+    {
+      "name": "viewport",
+      "elapsedMs": 1,
+      "bbox": [
+        -0.215,
+        5.5525,
+        -0.2125,
+        5.555
+      ],
+      "complete": true,
+      "count": 2
+    },
+    {
+      "name": "fresh-exact-0",
+      "elapsedMs": 1099,
+      "count": 80,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "fresh-exact-80",
+      "elapsedMs": 1,
+      "count": 44,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "all-four-duplicate-pid-groups",
+      "elapsedMs": 0,
+      "ids": [
+        "GH-AMA-AMAAW67819",
+        "GH-AMA-AMAKB25637",
+        "GH-AMA-AMAPO35919A",
+        "GH-AMA-AMAUT34220"
+      ],
+      "componentCounts": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "geometryHashes": [
+        "50d36fabdc7cfe4dba0dad277eb763e472ec196fab182a887dc1c7f20e363654",
+        "7bf3c04ce7654152758f031d5dae382f2bfd96bc8b1f8649476ef9fc8d47d9f1",
+        "b6e1ff47ca43cbf951e2f166609ea4ed99ef04db805f2ffdfce6ce51edbc382f",
+        "34b04e98b6fa435b11c9a3887a13ac4eab68f74129041f7749abc7eac41d1717"
+      ]
+    },
+    {
+      "name": "absent",
+      "elapsedMs": 1,
+      "absentId": "GH-AMA-NONEXISTENTPID0000"
+    },
+    {
+      "name": "footprint",
+      "elapsedMs": 0,
+      "parcelId": "GH-AMA-AMAPO34833",
+      "count": 4
+    },
+    {
+      "name": "binding",
+      "elapsedMs": 37,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "parcelId": "GH-AMA-AMAPO34833"
+    }
+  ],
+  "requests": [
+    {
+      "label": "initial",
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "POST",
+      "body": "tbl=parcel&flds=parcelid%2Cparcelcode",
+      "httpStatus": 200,
+      "bytes": 3580950,
+      "elapsedMs": 3814,
+      "rows": 12586,
+      "uniquePid": 12582
+    },
+    {
+      "label": "fresh-exact",
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "POST",
+      "body": "tbl=parcel&flds=parcelid%2Cparcelcode",
+      "httpStatus": 200,
+      "bytes": 3580950,
+      "elapsedMs": 1001,
+      "rows": 12586,
+      "uniquePid": 12582
+    }
+  ],
+  "result": "passed",
+  "uniqueTargetParcels": 124,
+  "appCenterLatLon": [
+    5.5508,
+    -0.2162
+  ],
+  "scope": "Partial Accra Metro publisher app dataset; source extent [-0.25521,5.52345,-0.2015,5.59943], WUP center outside by approximately 470m. Publisher app PID groups may comprise separate pieces; legal cadastral identity and official authority unconfirmed."
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:527",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-527-tlemcen.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/tlemcen-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:02:36Z",
+  "registryFound": null,
+  "reason": "Official national cartography and cadastre-related links do not establish Tlemcen local registry custody. English and French/Arabic queries have result URLs, but official viewer requests timed out and no parcel layer, native ID, or polygon response was obtained. Preserve custody as null; no live adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

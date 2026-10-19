@@ -1,0 +1,26 @@
+{
+  "cityRecord": "city-11584-yantian-district.json",
+  "cityCode": 11584,
+  "queueRank": 2545,
+  "name": "Yantian District",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [22.5757089564737, 114.249725274837],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html", "httpStatus": "curl error 52 / empty reply", "outcome": "Official cadastral viewer did not return HTML within the bounded anonymous request; no JavaScript/configuration or feature response was obtained."},
+    {"method": "GET", "url": "https://pnr.sz.gov.cn/d-rer/ycwx/wx/index/index.html", "httpStatus": "web-search result available", "outcome": "Official Shenzhen Real Estate Registration Center landing page identifies 地籍图查询 (cadastral-map query) as a public information service; no direct parcel response was obtained."},
+    {"method": "GET", "url": "https://www.szgeoinfo.com.cn/", "httpStatus": "web-search result available", "outcome": "Official Shenzhen geospatial portal identifies the Shenzhen cadastral-map query system; no parcel feature response was obtained."},
+    {"method": "GET", "url": "https://www.sz.gov.cn/en_szgov/services/DistrictServices/yantian/", "httpStatus": "web-search result available", "outcome": "Official Shenzhen Government Yantian District page confirms the district context; it is not a cadastral parcel endpoint."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": "CGCS2000 stated by official viewer page, not observed in a response", "nativeFieldMapping": null, "compositeKeyProvenance": null, "rawAttributesRetained": false, "inspection": "No safe anonymous parcel feature response was obtained. The official page documents parcel number/code outputs but not the exact machine field names."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official municipal cadastral source and Shenzhen-wide stated scope are evidenced, but no current anonymous parcel feature response, native identity, schema, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of absence.", "No citywide geometry extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The official Shenzhen source is local and explicitly covers the district, but the live viewer's empty reply prevented bounded anonymous inspection. Endpoint details and parcel geometry remain unresolved."
+}

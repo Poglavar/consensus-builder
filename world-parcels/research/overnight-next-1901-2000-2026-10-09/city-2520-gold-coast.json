@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 2520,
+  "queueRank": 1926,
+  "name": "Gold Coast",
+  "country": "Australia",
+  "countryCode": "AU",
+  "iso3": "AUS",
+  "point": [-28.0425633529856, 153.4246655504],
+  "population2025": 298750,
+  "population2025k": 298.75,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gold Coast Queensland official cadastral parcel map API property boundaries Queensland Government",
+        "result": "Found the official Queensland Government Department of Resources PlanningCadastre/LandParcelPropertyFramework ArcGIS REST service and its Cadastral parcels layer. The layer is a polygon DCDB parcel service with public JSON/GeoJSON query support.",
+        "actualResultUrls": [
+          "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4",
+          "https://www.business.qld.gov.au/running-business/support-services/mapping-data-imagery/data/digital-cadastral/access",
+          "https://www.data.qld.gov.au/dataset/cadastral-data-queensland-series"
+        ]
+      },
+      {
+        "language": "Australian English",
+        "query": "Gold Coast Queensland Government cadastral lots property boundaries map DCDB official Australian English",
+        "result": "The same first-party Queensland Government DCDB/QSCF service was identified; Australian English is the local discovery language. Search results also identified the Gold Coast-specific ArcGIS view service, which returned a bounded parcel response.",
+        "actualResultUrls": [
+          "https://services-ap1.arcgis.com/lnVW0dLI3fvST2hd/ArcGIS/rest/services/Gold_Coast_Cadastre_view/FeatureServer/0",
+          "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/QSCF_LandParcelPropertyFramework/MapServer"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://services-ap1.arcgis.com/lnVW0dLI3fvST2hd/ArcGIS/rest/services/Gold_Coast_Cadastre_view/FeatureServer/0",
+      "operator": "Queensland Government Department of Resources / Gold Coast cadastral ArcGIS view",
+      "evidence": "Public FeatureServer layer named ADM_BND_CADASTRE; polygon geometry; DCDB description; query operation and GeoJSON supported."
+    },
+    {
+      "url": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4",
+      "operator": "Queensland Government Department of Resources",
+      "evidence": "Official Cadastral parcels layer describes the DCDB as Queensland property-boundary representation, updated nightly, with polygon geometry and public JSON/GeoJSON query support."
+    },
+    {
+      "url": "https://www.business.qld.gov.au/running-business/support-services/mapping-data-imagery/data/digital-cadastral/access",
+      "operator": "Business Queensland / Queensland Government",
+      "evidence": "Official access guidance says cadastral data is available through Queensland Globe, downloads and live web map services."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://services-ap1.arcgis.com/lnVW0dLI3fvST2hd/ArcGIS/rest/services/Gold_Coast_Cadastre_view/FeatureServer/0?f=json", "method": "GET", "status": 200, "summary": "Verified-TLS layer metadata retrieved; polygon layer, OBJECTID, LOTPLAN, GlobalID and other fields exposed. Only safe identity fields were requested subsequently."},
+    {"url": "https://services-ap1.arcgis.com/lnVW0dLI3fvST2hd/ArcGIS/rest/services/Gold_Coast_Cadastre_view/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CPROPERTYNAME&returnGeometry=false&resultRecordCount=3&f=json", "method": "GET", "status": 200, "summary": "Bounded anonymous ID-only probe returned three records; property-name field was requested for route inspection but is not retained."},
+    {"url": "https://services-ap1.arcgis.com/lnVW0dLI3fvST2hd/ArcGIS/rest/services/Gold_Coast_Cadastre_view/FeatureServer/0/query?geometry=153.4246655504%2C-28.0425633529856&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CLOTPLAN&returnGeometry=true&outSR=4326&f=geojson", "method": "GET", "status": 200, "summary": "Exact WUP point queried without shifting coordinates; three intersecting polygon features returned with LOTPLAN identities and GeoJSON geometry. ArcGIS request order was longitude,latitude while the preserved WUP point remains latitude,longitude."},
+    {"url": "https://services-ap1.arcgis.com/lnVW0dLI3fvST2hd/ArcGIS/rest/services/Gold_Coast_Cadastre_view/FeatureServer/0/query?geometry=-28.0425633529856%2C153.4246655504&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPROPERTYNAME&returnGeometry=true&outSR=4326&f=geojson", "method": "GET", "status": 200, "summary": "A deliberately latitude,longitude request-order probe returned zero features; this was diagnosed as ArcGIS x,y order and is not treated as absence evidence."}
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "LOTPLAN",
+    "fallbackOidField": "OBJECTID",
+    "compositeKey": null,
+    "fieldMapping": {"id": "LOTPLAN", "geometry": "geometry"},
+    "crs": "EPSG:4326 returned by outSR=4326; layer metadata also exposes service-native CRS",
+    "geometryType": "esriGeometryPolygon / GeoJSON Polygon or MultiPolygon"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Gold Coast cadastral ArcGIS view; underlying Queensland DCDB/QSCF documentation describes statewide cadastral coverage.",
+    "verifiedOpenScope": "Public Gold Coast FeatureServer layer and exact-point parcel response verified. Statewide scope is documented by the Queensland Government service, but this attempt did not independently sample the whole city.",
+    "countrywideVerified": false,
+    "targetPointHit": true,
+    "targetPointHitInterpretation": "Exact preserved WUP point intersected three returned parcel polygons; this is local point evidence only, not a citywide completeness claim."
+  },
+  "verifiedSample": true,
+  "sampleFile": "gold-coast-parcels-sample.geojson",
+  "retainedSampleIds": ["5BUP4497", "00000BUP4497", "6BUP4497"],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "tax", "account", "property name", "house address", "legal description"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_custodian_public_parcel_endpoint_verified",
+  "remainingUncertainty": "The Gold Coast view exposes additional source fields and may represent strata/building-unit parcels at the exact WUP point. Only LOTPLAN and geometry were retained. No citywide sampling, adapter qualification, or legal-boundary validation was performed.",
+  "nextStep": "Serial reviewer should independently qualify layer scope, LOTPLAN identity semantics, CRS handling, pagination/extent behaviour, and safe filtering before any runtime adapter admission."
+}

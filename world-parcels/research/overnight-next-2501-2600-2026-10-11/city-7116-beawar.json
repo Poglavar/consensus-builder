@@ -1,0 +1,90 @@
+{
+  "cityCode": 7116,
+  "queueRank": 2521,
+  "name": "Beawar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.100820590642, 74.3188098496136],
+  "population2025": 232862,
+  "population2025k": 232.862,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Beawar Rajasthan official cadastral parcel map land records Bhu Naksha Ajmer district",
+        "result": "First-party discovery identified the Government of Rajasthan Bhu-Naksha viewer, the Government of India DILRMP Beawar cadastral-status page, Rajasthan land-revenue/cadastral-map pages, and the Rajdharaa Urban GIS portal. The Bhu-Naksha host timed out during bounded anonymous retrieval; no parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/821",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "ब्यावर राजस्थान आधिकारिक भू नक्शा भूमि अभिलेख अजमेर",
+        "result": "प्रथम-पक्ष खोज में राजस्थान सरकार का भू-नक्शा दर्शक, भारत सरकार का ब्यावर DILRMP कैडस्ट्रल-स्थिति पृष्ठ, राजस्थान राजस्व विभाग के कैडस्ट्रल-मैप पृष्ठ और राजधारा अर्बन GIS पोर्टल मिले। सीमित अनामिक अनुरोध में भू-नक्शा होस्ट टाइमआउट हुआ; कोई पार्सल फीचर प्रतिक्रिया नहीं मिली।",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/821",
+          "https://apnakhata.rajasthan.gov.in/Owner_wise/DistrictMap.aspx",
+          "https://www.edharti.rajasthan.gov.in/LRCLogin.aspx"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Government of Rajasthan revenue/settlement authorities and the Beawar district administration context evidenced by the official DILRMP Beawar page; no Beawar municipal parcel endpoint was qualified.",
+    "stateParcelService": "Rajasthan Government Bhu-Naksha viewer at https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html.",
+    "nationalStatusService": "Government of India Department of Land Resources DILRMP Beawar cadastral-map/ULPIN status page at https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/821.",
+    "registryBasis": "Official Rajasthan and DILRMP pages evidence a real cadastral/land-record service and Beawar district coverage context. This supports registryFound=true for source discovery only, not adapter qualification or citywide geometry coverage.",
+    "registryFoundReason": "First-party state cadastral viewer and first-party DILRMP page explicitly identify Rajasthan/Beawar cadastral mapping context; anonymous parcel inspection remained unavailable."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+    "responseType": null,
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "inspectionNote": "The official Bhu-Naksha viewer timed out before HTML/JavaScript or service configuration could be retrieved. Rajdharaa's current Config.js exposes a JDA-specific ArcGIS Settlement_JDA Khasra layer, not Beawar-specific coverage; its layer endpoint also timed out. No safe anonymous ID-plus-geometry response was obtained."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a qualified Beawar parcel endpoint; the exact WUP point was preserved and not shifted.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan Government cadastral viewer and DILRMP Beawar district cadastral-status evidence.",
+    "verifiedOpenScope": "Official service identity and district/status evidence only; no parcel geometry, map extent, or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [26.100820590642, 74.3188098496136] was preserved in latitude/longitude order and was not shifted.",
+    "A timeout, TLS certificate failure, HTTP method mismatch, or unavailable map UI is not evidence of a zero parcel hit or citywide absence.",
+    "No native parcel identity, field schema, CRS, or geometry was obtained; no sample GeoJSON is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "Rajasthan's first-party cadastral source and Beawar status context are evidenced, but the current Bhu-Naksha deployment could not be reached for bounded anonymous inspection. Beawar-specific parcel access, native identity fields, schema, CRS, and citywide coverage remain unverified."
+}

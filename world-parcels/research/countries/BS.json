@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BS",
+ "country": "Bahamas",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Department of Lands and Surveys / Bahamas National GIS (BNGIS) Centre",
+ "portalsFound": [
+  {
+   "url": "https://www.bahamas.gov.bs/bahamas-national-geographic-information-systems",
+   "observation": "BNGIS GIS page (Bahamas Land Data); no parcel download identified."
+  },
+  {
+   "url": "https://gbpa.com/city-services/gis-department/",
+   "observation": "Freeport (Grand Bahama Port Authority) public parcel viewer; local scope only, not tested."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.bahamas.gov.bs/bahamas-national-geographic-information-systems",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "informational page only",
+   "contentType": "text/html"
+  },
+  {
+   "url": "https://www.mapsbahamas.com/",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "landing page, no parcel data evidence",
+   "contentType": "text/html"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "No national online cadastre identified; Freeport local viewer",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Shallow probe; the BNGIS SDI library could hold parcel layers.",
+ "nextStep": "Inspect BNGIS SDI library and GBPA viewer for ArcGIS endpoints."
+}

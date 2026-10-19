@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11002",
+  "wupCityCode": 11002,
+  "name": "Chenzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1079,
+  "queueRank": 1079,
+  "point": [
+    25.8033810476258,
+    113.028943352226
+  ],
+  "centerLatLon": [
+    25.8033810476258,
+    113.028943352226
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 514905,
+  "population2025k": 514.905,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Hunan Government Service Network listings for Chenzhou identify the Chenzhou Natural Resources and Planning Bureau and Chenzhou Real Estate Registration Center as the responsible city-level authority for real-estate registrations. The entry requires cadastral-survey materials, parcel maps, and parcel-boundary coordinates as application documents; it does not expose public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+    "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/zjfwInfoDetail.jsp?areaCode=&id=87haueVtQCeaE7R1V9Q82Q",
+    "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent.",
+  "scopeLimits": "No full parcel polygon or personal property attributes retained. The exact UN WUP2025 weighted settlement point is a search locator only; it is not a parcel-coverage claim. No complete native parcel polygon was verified; `publicParcelGeometryFound:false` records an unverified result, not proof that no public geometry exists.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Hunan Government Service Network listings for Chenzhou identify the Chenzhou Natural Resources and Planning Bureau and Chenzhou Real Estate Registration Center as the responsible city-level authority for real-estate registrations. The entry requires cadastral-survey materials, parcel maps, and parcel-boundary coordinates as application documents; it does not expose public parcel geometry.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chenzhou Hunan official land parcel cadastral map property registration public GIS",
+        "scope": "Fresh city-specific registry-custody and anonymous parcel-geometry discovery.",
+        "result": "City-specific registration responsibility is confirmed, but no public anonymous full-polygon parcel layer was established. No feature query was made because inspected official registration pages provide service and application requirements rather than a public geometry API.",
+        "actualResultUrls": [
+          "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+          "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/zjfwInfoDetail.jsp?areaCode=&id=87haueVtQCeaE7R1V9Q82Q",
+          "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html"
+        ],
+        "executionMethod": "Separately executed web search; first-party sources inspected."
+      },
+      {
+        "language": "Chinese",
+        "query": "郴州 不动产登记 地籍图 公开查询 郴州市自然资源和规划局",
+        "scope": "Independent local-language search for local custody and anonymous full-parcel geometry.",
+        "result": "City-specific registration responsibility is confirmed, but no public anonymous full-polygon parcel layer was established. No feature query was made because inspected official registration pages provide service and application requirements rather than a public geometry API.",
+        "actualResultUrls": [
+          "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+          "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/zjfwInfoDetail.jsp?areaCode=&id=87haueVtQCeaE7R1V9Q82Q",
+          "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html"
+        ],
+        "executionMethod": "Separately executed native/local-language web search; first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=utf-8",
+        "bytesRead": 42985,
+        "assessment": "Official Hunan responsibility directory identifies city registration authority; no anonymous geometry endpoint."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+        "observation": "Official Hunan government responsibility directory names Chenzhou Natural Resources and Planning Bureau and Chenzhou Real Estate Registration Center for registration matters."
+      },
+      {
+        "homeUrl": "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/zjfwInfoDetail.jsp?areaCode=&id=87haueVtQCeaE7R1V9Q82Q",
+        "observation": "Official Hunan government service entry for Chenzhou registration-related approval; supporting application materials include cadastral survey form, parcel map, and boundary coordinates."
+      },
+      {
+        "homeUrl": "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html",
+        "observation": "Official Hunan government Chenzhou bureau profile."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Whether Chenzhou publishes anonymous full parcel geometry, and whether any viewer has a public feature API, remain unverified.",
+  "nextStep": "Use the city registration center or an official Chenzhou map catalog to identify a documented public vector feature endpoint.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

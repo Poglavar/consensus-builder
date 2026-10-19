@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T04:00:45.405944+00:00",
+  "decision": "approved_by_root",
+  "scope": "110 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 110 fresh exact native identities, explicit absence, footprint and source binding passed in 41 requests. Independent metric EPSG:32630 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. Native parcel33063000IX0001 covers the original exact WUP point and matches fresh complete geometry exactly. This is bounded settlement-local evidence, not proof of municipal cadastral completeness. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+  "acceptanceFile": "bordeaux-ign-root-acceptance.json",
+  "qualityFile": "bordeaux-ign-root-quality.json",
+  "originalSampleReviewFile": "bordeaux-root-original-sample-review.json",
+  "sourceCoordinatesModified": false
+}

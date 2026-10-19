@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Doha",
+      "sourceId": "qa-cgis-approved-cadastre",
+      "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            51.5275,
+            25.2825,
+            51.53,
+            25.285
+          ],
+          "count": 5,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 5,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "manifest",
+        "parameterLength": 161,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=UTF-8"
+      }
+    }
+  ]
+}

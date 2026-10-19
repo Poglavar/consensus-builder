@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9965-kurnool.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "State cadastral map and record services are available; public viewer is organized by administrative unit and plot/survey number. No account, property, survey or owner data was entered.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "operator": "Andhra Pradesh Survey, Settlements and Land Records Department",
+      "scope": "State cadastral map and record services are available; public viewer is organized by administrative unit and plot/survey number. No account, property, survey or owner data was entered."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/State-RoR-Web",
+      "operator": "Andhra Pradesh Survey, Settlements and Land Records Department",
+      "scope": "State cadastral map and record services are available; public viewer is organized by administrative unit and plot/survey number. No account, property, survey or owner data was entered."
+    },
+    {
+      "url": "https://meebhoomi.ap.gov.in/",
+      "operator": "Andhra Pradesh Survey, Settlements and Land Records Department",
+      "scope": "State cadastral map and record services are available; public viewer is organized by administrative unit and plot/survey number. No account, property, survey or owner data was entered."
+    },
+    {
+      "url": "https://www.nic.gov.in/project/bhunaksha/",
+      "operator": "Andhra Pradesh Survey, Settlements and Land Records Department",
+      "scope": "State cadastral map and record services are available; public viewer is organized by administrative unit and plot/survey number. No account, property, survey or owner data was entered."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kurnool official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://bhunaksha.ap.gov.in/",
+        "https://www.dilrmp.gov.in/dilrmpold/State-RoR-Web",
+        "https://meebhoomi.ap.gov.in/",
+        "https://www.nic.gov.in/project/bhunaksha/"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Telugu",
+      "query": "కర్నూలు భూ నక్ష మ్యాప్ భూమి రికార్డులు cadastral survey map",
+      "result": "Official Andhra Pradesh Bhunaksha says it provides geo-referenced cadastral maps integrated with records; DILRMP lists Bhunaksha AP and Mee Bhoomi. Exact village/map-sheet was not determined.",
+      "actualResultUrls": [
+        "https://bhunaksha.ap.gov.in/",
+        "https://www.dilrmp.gov.in/dilrmpold/State-RoR-Web",
+        "https://meebhoomi.ap.gov.in/",
+        "https://www.nic.gov.in/project/bhunaksha/"
+      ],
+      "method": "Separate Telugu-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "State cadastral map and record services are available; public viewer is organized by administrative unit and plot/survey number. No account, property, survey or owner data was entered.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "State cadastral map and record services are available; public viewer is organized by administrative unit and plot/survey number. No account, property, survey or owner data was entered. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

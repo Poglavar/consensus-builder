@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-1897-tarlac-city.json",
+  "cityCode": 1897,
+  "queueRank": 3010,
+  "city": "Tarlac City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and local-language discovery evidenced the Tarlac City Assessor, DENR-LMB, and the Philippine Geoportal parcel-data lead. The Geoportal catalog was retrieved, but bounded anonymous WMS/WFS capabilities and schema requests timed out; no parcel geometry was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries and bounded endpoint attempts, including statuses, configuration findings, and TLS/403 outcomes, are recorded in city-1897-tarlac-city.json.",
+  "custodians": ["Tarlac City Assessor's Office / City Government of Tarlac", "Land Management Bureau (DENR-LMB)", "Philippine Geoportal / NAMRIA"],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point was preserved and not moved.", "No exact-point hit or miss was inferred from timeout, TLS alert, or HTTP 403.", "No citywide public vector coverage or safe native identity was qualified.", "No unsafe fields were requested or retained.", "Independent serial review is required before any adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "A local custodian and national parcel-data service lead are evidenced, but no anonymous parcel ID-plus-geometry response, schema, CRS, or citywide open coverage was qualified."},
+  "uncertainty": "The City Assessor and DENR-LMB establish cadastral/tax-map custodianship, and Geoportal catalogs denr_parcel_data, but the current public machine-readable service and native identity semantics remain unresolved.",
+  "registryFound": true,
+  "admissionDecision": "held"
+}

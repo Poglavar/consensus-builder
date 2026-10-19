@@ -1,0 +1,2576 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32724",
+  "featureCount": 365,
+  "validNonemptyCount": 365,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 16.12062947853289,
+    "median": 153.904339592613,
+    "max": 23254.614445872867
+  },
+  "features": [
+    {
+      "id": "BR-ARACAJU-18010740632",
+      "areaM2": 23254.614445872867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750356",
+      "areaM2": 492.82512243802194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750365",
+      "areaM2": 268.41673506327874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750394",
+      "areaM2": 1242.78079713676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750400",
+      "areaM2": 337.1883709009569,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750424",
+      "areaM2": 1420.0670176768508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760041",
+      "areaM2": 1357.082865980045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760329",
+      "areaM2": 1812.4962995219746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750168",
+      "areaM2": 1733.381472219767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750174",
+      "areaM2": 191.6791696055837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750247",
+      "areaM2": 2068.0958028787504,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750279",
+      "areaM2": 865.2756064886279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750280",
+      "areaM2": 226.3960737459977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750300",
+      "areaM2": 199.95005956447235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760077",
+      "areaM2": 791.3419329253209,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760084",
+      "areaM2": 262.4068403865041,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760090",
+      "areaM2": 176.2704634514017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760123",
+      "areaM2": 245.80841489198917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760130",
+      "areaM2": 193.67896205330712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760136",
+      "areaM2": 148.1181461532457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760142",
+      "areaM2": 142.48063177930698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760210",
+      "areaM2": 1342.461727185629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770368",
+      "areaM2": 5023.638932771746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780014",
+      "areaM2": 180.84799038623825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780323",
+      "areaM2": 251.70256315701818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770052",
+      "areaM2": 151.4574724283917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770070",
+      "areaM2": 451.4046564997378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770076",
+      "areaM2": 152.4661433361445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770126",
+      "areaM2": 204.7983073426059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770131",
+      "areaM2": 148.80514136125598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770136",
+      "areaM2": 145.69180664866155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770141",
+      "areaM2": 135.1816602987071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770146",
+      "areaM2": 163.69638334952032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770153",
+      "areaM2": 151.29218096900794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770157",
+      "areaM2": 129.3703739258658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770163",
+      "areaM2": 183.9314333505338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770169",
+      "areaM2": 185.62836147001886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770175",
+      "areaM2": 196.88759640400326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770181",
+      "areaM2": 186.52487874372372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770186",
+      "areaM2": 152.47807717962775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770191",
+      "areaM2": 148.95195227660622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770196",
+      "areaM2": 156.4380306374976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770202",
+      "areaM2": 156.53695191418416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770233",
+      "areaM2": 148.0460293451193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770238",
+      "areaM2": 62.84922256473689,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770388",
+      "areaM2": 517.3758262484264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780019",
+      "areaM2": 147.8343233417496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780031",
+      "areaM2": 192.7038987204419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780036",
+      "areaM2": 158.80678284282536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780043",
+      "areaM2": 216.4364747443117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780049",
+      "areaM2": 175.59624572956903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780054",
+      "areaM2": 152.00502605102932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780061",
+      "areaM2": 210.1698384887294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780068",
+      "areaM2": 136.98119624854104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780100",
+      "areaM2": 120.82220080607202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780105",
+      "areaM2": 108.87746213139812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780110",
+      "areaM2": 137.5938271284292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780115",
+      "areaM2": 129.84343405603138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780130",
+      "areaM2": 339.7069954763425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780224",
+      "areaM2": 153.0431602857126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790343",
+      "areaM2": 199.19857605924003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790365",
+      "areaM2": 684.0975550943781,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010800343",
+      "areaM2": 79.79508186831245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010800349",
+      "areaM2": 68.87417828410614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710162",
+      "areaM2": 118.32838910432099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710193",
+      "areaM2": 131.91004966873868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710197",
+      "areaM2": 42.96498181196348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710203",
+      "areaM2": 133.4006809304419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710215",
+      "areaM2": 245.87288452295246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710221",
+      "areaM2": 111.29901915893554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710227",
+      "areaM2": 105.83528109421388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710233",
+      "areaM2": 107.68038422010032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710240",
+      "areaM2": 128.9143070110228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710244",
+      "areaM2": 78.92245808116748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710255",
+      "areaM2": 173.731406203647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710259",
+      "areaM2": 116.27073007238101,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720030",
+      "areaM2": 93.2956437589783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720036",
+      "areaM2": 121.09386645254013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720041",
+      "areaM2": 111.72981699783153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720048",
+      "areaM2": 126.70741990945415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720058",
+      "areaM2": 203.27248155004233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720064",
+      "areaM2": 111.66696826295296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720069",
+      "areaM2": 95.98405473957351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720074",
+      "areaM2": 102.9095733416112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720081",
+      "areaM2": 142.43949842814519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720120",
+      "areaM2": 277.18546626993833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720131",
+      "areaM2": 313.1004248784931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720137",
+      "areaM2": 146.3456546774328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720143",
+      "areaM2": 150.60620507788587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720151",
+      "areaM2": 187.27696383138937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720182",
+      "areaM2": 158.6232821616163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720191",
+      "areaM2": 219.40693273370817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720203",
+      "areaM2": 325.09873867726566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720213",
+      "areaM2": 251.35738466239087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720220",
+      "areaM2": 146.0975425221719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720225",
+      "areaM2": 126.79719112451743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720232",
+      "areaM2": 189.40299255183214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720240",
+      "areaM2": 206.47370582738455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720247",
+      "areaM2": 170.39327549588117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720255",
+      "areaM2": 64.79514029085452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720281",
+      "areaM2": 142.91425795098468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720287",
+      "areaM2": 204.07067309262854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720295",
+      "areaM2": 212.81423368322675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720299",
+      "areaM2": 97.4938738741649,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720305",
+      "areaM2": 150.84329143847492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720310",
+      "areaM2": 122.24824646352343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010720316",
+      "areaM2": 152.102540481811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750014",
+      "areaM2": 330.61960551437267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750024",
+      "areaM2": 211.43036857931583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750034",
+      "areaM2": 211.06667349934295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750044",
+      "areaM2": 213.07520882449975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750054",
+      "areaM2": 206.45981879956162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750064",
+      "areaM2": 199.6269335481143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750074",
+      "areaM2": 203.1502651027758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750083",
+      "areaM2": 197.3335948613249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750093",
+      "areaM2": 195.86378632731646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750103",
+      "areaM2": 194.43756787896365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010750142",
+      "areaM2": 272.6604732291317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690145",
+      "areaM2": 259.20214962994936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690177",
+      "areaM2": 168.2358889153691,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690183",
+      "areaM2": 153.904339592613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690189",
+      "areaM2": 150.75641896761454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690195",
+      "areaM2": 156.78628085684002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690201",
+      "areaM2": 156.9307815457257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690207",
+      "areaM2": 149.6277887813081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690212",
+      "areaM2": 123.55497921887283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690217",
+      "areaM2": 113.02772262771198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690231",
+      "areaM2": 312.36786288668424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690263",
+      "areaM2": 168.7210611869948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690269",
+      "areaM2": 151.0791474508032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700019",
+      "areaM2": 47.16811621753418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700025",
+      "areaM2": 72.92796427682487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700031",
+      "areaM2": 153.20613766332238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700043",
+      "areaM2": 302.10832285152554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700049",
+      "areaM2": 148.1202635256898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700054",
+      "areaM2": 110.69687900859422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700061",
+      "areaM2": 173.4711653184671,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700066",
+      "areaM2": 128.51316285571554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700072",
+      "areaM2": 146.12231782842585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700078",
+      "areaM2": 144.61347554122378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700112",
+      "areaM2": 272.26066444520296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700117",
+      "areaM2": 133.26448885732793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700123",
+      "areaM2": 137.43949975752273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700135",
+      "areaM2": 265.6187130291004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700141",
+      "areaM2": 148.51501156769422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700170",
+      "areaM2": 180.22406411299573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700180",
+      "areaM2": 265.64153205453937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700186",
+      "areaM2": 150.48396866799231,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700192",
+      "areaM2": 162.06438665919046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700198",
+      "areaM2": 156.4896552319511,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700207",
+      "areaM2": 221.90037982933254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700213",
+      "areaM2": 156.05525833359863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700218",
+      "areaM2": 126.12340838266347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700228",
+      "areaM2": 247.37805906002592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700234",
+      "areaM2": 155.5552567124124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700240",
+      "areaM2": 150.77162736238935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700272",
+      "areaM2": 198.8968568515105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700286",
+      "areaM2": 341.511612316547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700293",
+      "areaM2": 110.10700352907725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010700299",
+      "areaM2": 71.82288922709962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770012",
+      "areaM2": 306.3802212246426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770019",
+      "areaM2": 176.14396320615668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770026",
+      "areaM2": 188.06017939402548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770034",
+      "areaM2": 204.55941060735822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770040",
+      "areaM2": 133.63114604464468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770046",
+      "areaM2": 152.8962583832396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770107",
+      "areaM2": 137.01490475243338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770112",
+      "areaM2": 120.53004602896225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010770118",
+      "areaM2": 137.63098573574274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610045",
+      "areaM2": 1315.8063085334738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610172",
+      "areaM2": 200.72573473950283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610181",
+      "areaM2": 339.69930661400485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610188",
+      "areaM2": 216.70793047581157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610195",
+      "areaM2": 199.30164887903402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610200",
+      "areaM2": 142.66442456195725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610205",
+      "areaM2": 119.04718871818545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610210",
+      "areaM2": 133.47399712495255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610215",
+      "areaM2": 141.20771299645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610246",
+      "areaM2": 120.17078678256995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610251",
+      "areaM2": 123.42757008486035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610258",
+      "areaM2": 222.4556916932942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610263",
+      "areaM2": 245.20471121671835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610268",
+      "areaM2": 241.7954617656247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610275",
+      "areaM2": 298.50735588919025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610280",
+      "areaM2": 228.06689870810516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610285",
+      "areaM2": 266.17102354980796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610290",
+      "areaM2": 241.0855886726289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610295",
+      "areaM2": 160.56507093701006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610303",
+      "areaM2": 246.4615604787462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610309",
+      "areaM2": 219.57694390648965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610343",
+      "areaM2": 213.27701190778004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610347",
+      "areaM2": 104.71711551251671,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610353",
+      "areaM2": 127.27678962072278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610359",
+      "areaM2": 135.2159766151807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610364",
+      "areaM2": 124.10147789041406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610370",
+      "areaM2": 151.46270796938177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010610375",
+      "areaM2": 156.19381868982222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710005",
+      "areaM2": 164.12975804499033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710010",
+      "areaM2": 128.56873598060113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710015",
+      "areaM2": 137.58039700705055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710020",
+      "areaM2": 116.38448569551419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710025",
+      "areaM2": 127.8851870178356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710030",
+      "areaM2": 130.33226558519115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710035",
+      "areaM2": 129.44952079392579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710040",
+      "areaM2": 127.82805595814656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710045",
+      "areaM2": 129.40995513086648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710050",
+      "areaM2": 129.09786927956648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710055",
+      "areaM2": 126.0309681159406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710060",
+      "areaM2": 126.13521910178338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710065",
+      "areaM2": 131.04712945936697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710068",
+      "areaM2": 138.9465943774537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710073",
+      "areaM2": 119.42580111791605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710078",
+      "areaM2": 133.73297634253083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710083",
+      "areaM2": 120.71664795853752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710088",
+      "areaM2": 129.83939496567928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710093",
+      "areaM2": 117.83326948369546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710098",
+      "areaM2": 126.31483112533839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710126",
+      "areaM2": 271.9274221200051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710140",
+      "areaM2": 265.7458141972604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710145",
+      "areaM2": 182.7707271538522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710157",
+      "areaM2": 244.78661074346746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710264",
+      "areaM2": 63.6221367162577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710267",
+      "areaM2": 16.12062947853289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710293",
+      "areaM2": 120.60924361944679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710299",
+      "areaM2": 132.61236850665733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710305",
+      "areaM2": 161.79377509059228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710316",
+      "areaM2": 1048.6558615518395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010710322",
+      "areaM2": 192.0103515720567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010620441",
+      "areaM2": 11932.849456626813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690008",
+      "areaM2": 197.54371639952436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690016",
+      "areaM2": 193.1284685973795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690022",
+      "areaM2": 150.68703875913926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690029",
+      "areaM2": 182.36620624502976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690036",
+      "areaM2": 171.95511236975736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690043",
+      "areaM2": 181.6190370650073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690051",
+      "areaM2": 205.62916734310966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690057",
+      "areaM2": 147.81826407267127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690063",
+      "areaM2": 149.34009259559105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690074",
+      "areaM2": 266.2665491123424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690080",
+      "areaM2": 135.88697922527086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690110",
+      "areaM2": 168.4081767507274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690116",
+      "areaM2": 139.60768936795435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690122",
+      "areaM2": 145.63182486518068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690128",
+      "areaM2": 155.60595417254868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690134",
+      "areaM2": 151.86350388960847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690275",
+      "areaM2": 146.9685631972966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010690281",
+      "areaM2": 182.66371610057658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760220",
+      "areaM2": 198.48041672813946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760230",
+      "areaM2": 167.54313090726163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760240",
+      "areaM2": 191.72598617494265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010760250",
+      "areaM2": 173.89552283859703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780254",
+      "areaM2": 187.69346052688442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780286",
+      "areaM2": 150.5001124814385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010780293",
+      "areaM2": 220.0669298471392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020020083",
+      "areaM2": 983.5380946456842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020020178",
+      "areaM2": 886.3301580602614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020030014",
+      "areaM2": 351.3215464289936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020030019",
+      "areaM2": 57.19333240778203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020030209",
+      "areaM2": 126.5789157480281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020030214",
+      "areaM2": 88.80116239352449,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020030218",
+      "areaM2": 56.60679170467808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020060011",
+      "areaM2": 229.7010696542695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020060017",
+      "areaM2": 178.04959408632251,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020060026",
+      "areaM2": 292.7056147910363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020060067",
+      "areaM2": 333.1392750459414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070053",
+      "areaM2": 328.0971010446654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070063",
+      "areaM2": 315.8938622665968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070069",
+      "areaM2": 174.27481205741367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070074",
+      "areaM2": 166.32727293482097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070084",
+      "areaM2": 1906.853688470089,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070089",
+      "areaM2": 101.33952128858394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070094",
+      "areaM2": 58.135066914310485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070099",
+      "areaM2": 62.99327306460828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070119",
+      "areaM2": 76.4420379878917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070126",
+      "areaM2": 109.66828307060821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18020070131",
+      "areaM2": 144.7936427261705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190477",
+      "areaM2": 697.2208988104778,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190483",
+      "areaM2": 131.28133578529352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190489",
+      "areaM2": 149.25989887303072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190495",
+      "areaM2": 130.63257861146224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190523",
+      "areaM2": 164.21586307566653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190551",
+      "areaM2": 808.5102959381725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190569",
+      "areaM2": 814.231291066572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010190579",
+      "areaM2": 662.310656020386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200004",
+      "areaM2": 110.2536731439629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200009",
+      "areaM2": 153.5514475731571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200015",
+      "areaM2": 150.69955543962635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200021",
+      "areaM2": 155.5019503694879,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200058",
+      "areaM2": 271.08127812561344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200063",
+      "areaM2": 123.62610734197216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200078",
+      "areaM2": 392.5894927956563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200090",
+      "areaM2": 300.5197013483389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200096",
+      "areaM2": 148.7470155770315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200102",
+      "areaM2": 147.59326293593458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200107",
+      "areaM2": 152.96018855684565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200114",
+      "areaM2": 153.12827355342895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200120",
+      "areaM2": 146.6356894567586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200128",
+      "areaM2": 191.03418252794904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200231",
+      "areaM2": 99.73192549361562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200236",
+      "areaM2": 110.82822620516181,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200241",
+      "areaM2": 120.28541375747282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200246",
+      "areaM2": 110.4861416373283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200252",
+      "areaM2": 138.6443687977892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200258",
+      "areaM2": 141.9187972926366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200264",
+      "areaM2": 137.89577680310873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200270",
+      "areaM2": 132.42503040290632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200276",
+      "areaM2": 134.80581895561852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010200282",
+      "areaM2": 142.18137537169648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010210073",
+      "areaM2": 173.35765633661168,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010210078",
+      "areaM2": 134.55003510484912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010210084",
+      "areaM2": 132.63623199085188,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-17010210090",
+      "areaM2": 142.08921722398765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010730067",
+      "areaM2": 112.32371003790448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010730310",
+      "areaM2": 152.21349408754864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010730315",
+      "areaM2": 146.45055772729387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010730326",
+      "areaM2": 277.9741250493042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010730332",
+      "areaM2": 134.83826003817782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010730363",
+      "areaM2": 152.6499097740578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010730368",
+      "areaM2": 115.14249730592512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010660268",
+      "areaM2": 155.95826244999992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680025",
+      "areaM2": 409.9864565607633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680047",
+      "areaM2": 1801.2176363403935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680077",
+      "areaM2": 2514.0169606907007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680091",
+      "areaM2": 1232.0108465600483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680197",
+      "areaM2": 94.76959367305366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680209",
+      "areaM2": 317.5016298463958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680215",
+      "areaM2": 117.00771065202795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680240",
+      "areaM2": 136.1547323355389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680245",
+      "areaM2": 56.70433145973303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680250",
+      "areaM2": 128.9280034444067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680257",
+      "areaM2": 180.51324261683195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680262",
+      "areaM2": 126.60797957525877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680274",
+      "areaM2": 157.68473665087302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680279",
+      "areaM2": 125.47280757899568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680284",
+      "areaM2": 128.92494152835476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680290",
+      "areaM2": 161.40842457960358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680296",
+      "areaM2": 161.4828109336614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680301",
+      "areaM2": 142.2056880450337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680306",
+      "areaM2": 126.21136199426438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680337",
+      "areaM2": 145.31857116911598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680342",
+      "areaM2": 126.94973441840872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680348",
+      "areaM2": 156.154398510313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680353",
+      "areaM2": 118.37205341944333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680359",
+      "areaM2": 148.00801379200232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680364",
+      "areaM2": 128.7173427292971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680370",
+      "areaM2": 144.1080993336964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680377",
+      "areaM2": 159.17996790631872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680384",
+      "areaM2": 134.23607422046757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680389",
+      "areaM2": 126.50004932383109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680395",
+      "areaM2": 130.98162328762893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680400",
+      "areaM2": 184.7889114893991,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680407",
+      "areaM2": 182.45761862042886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010680415",
+      "areaM2": 190.83711344217653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790016",
+      "areaM2": 330.71805284433486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790027",
+      "areaM2": 250.94529283287207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790038",
+      "areaM2": 300.22273395447775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790050",
+      "areaM2": 333.74974001502085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790056",
+      "areaM2": 205.49940163638152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790061",
+      "areaM2": 186.78828303078666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790072",
+      "areaM2": 416.11041837107655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790078",
+      "areaM2": 239.46769269618534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790085",
+      "areaM2": 282.41748513300587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790091",
+      "areaM2": 238.68044626037528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790116",
+      "areaM2": 101.16804350170169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-ARACAJU-18010790121",
+      "areaM2": 99.48775566424919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ],
+  "scopeLimit": "365 successful viewport features only; three failed cells and one failed fresh-ID batch contain conflicting native fiscal-lot IDs. The clean subset is not evidence that the failed cells are valid."
+}

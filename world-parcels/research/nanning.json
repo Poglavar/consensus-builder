@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:143",
+  "queueRank": 143,
+  "name": "Nanning",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    22.8254179691826,
+    108.312052358985
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://data.nanning.gov.cn/",
+      "observation": "Nanning open-data portal (presumed municipal data portal); not reachable from this environment, so no observation of its catalogue."
+    },
+    {
+      "url": "https://zrzyj.nanning.gov.cn/",
+      "observation": "Municipal natural resources bureau (guessed hostname); unreachable."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu base-map platform: HTTP 418 from a WAF page; basemap service, not a cadastral parcel list."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.nanning.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502; unreachable"
+    },
+    {
+      "url": "https://zrzyj.nanning.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "unreachable (no HTTP status)"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "WAF block page, no data"
+    },
+    {
+      "url": "https://www.mnr.gov.cn/ and https://data.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "none established; in China real-estate cadastral maps are generally served to registered/qualified users, as seen for Beijing and other Chinese cities",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Chinese government hosts were unreachable from this environment; this is not proof of absence. Portal hostnames for the natural-resources bureau were guessed, not confirmed.",
+  "nextStep": "Retry from a network that can reach the municipal portals; search the city open-data catalogue for a licensed parcel polygon dataset and test a bounded query."
+}

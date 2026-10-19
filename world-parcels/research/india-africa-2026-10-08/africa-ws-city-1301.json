@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1301",
+  "queueRank": 191,
+  "wupCityCode": 1301,
+  "name": "Moatize",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "centerLatLon": [
+    -16.1159198655094,
+    33.7260305389037
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 191,
+  "population2025": 154135,
+  "annualGrowthPct2015To2025": 4.817859,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ws-provider-MZ.json",
+  "freshCityLocalSearch": {
+    "languageScript": "Portuguese (Latin script)",
+    "exactQueries": [
+      "\"Moatize\" \"cadastro predial\" parcelas SIG Moçambique"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [],
+    "summary": "Executed city-targeted native/official-language search as part of shared query batch; query results are source leads, not parcel verification."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "Only Matola/Maputo cadastral visualization service identified; its published extent does not cover Tete or Moatize.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+  "requests": [],
+  "resultCategory": "country_service_outside_target",
+  "evidenceType": "new_or_retry_city_specific_discovery",
+  "targetEndpointProbePerformed": false
+}

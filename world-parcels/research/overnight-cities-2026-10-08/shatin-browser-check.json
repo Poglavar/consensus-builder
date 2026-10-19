@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:55:29.609430+00:00",
+  "browser": "Dedicated headed Chrome through agent-browser; manual inspection, no browser test suite.",
+  "url": "http://localhost:5638/?city=shatin&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "loadedCanonicalNativeIdentities": 4,
+  "renderedPolygonParts": 5,
+  "visiblePolygonParts": 1,
+  "pointerSelectedParcelId": "HK-CSDI-LOT-1910159279",
+  "detailsHeadingMatchedNativeIdentity": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "multipartReview": "Two rendered shapes with LotID1800240769 are components of one source MultiPolygon with identical OBJECTID160649 and LotCSUID732000348. A fresh exact native identity query returns one complete canonical parcel, without absent identities.",
+  "browserCloseConfirmedAt": "2026-10-09T04:12:31.591161+00:00",
+  "browserCloseEvidence": "Named validation session closed; subsequent session list returned No active sessions."
+}

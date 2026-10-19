@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Al Ahsa",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "rank": 738,
+  "point": [
+    25.3827109762729,
+    49.5978211795765
+  ],
+  "population2025": 725760,
+  "population2025k": 725.76,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "wupCityCode": 3414,
+  "cityId": "wup2025:3414",
+  "queueRank": 738,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The National Platform service listing identifies Al-Ahsa Municipality as the provider of a GIS service for the public to inquire about plot data and draw/print maps. Official municipality branch listing confirms the local municipality. This establishes city-specific plot-record service, but no anonymous feature schema or geometry response was verified.",
+  "registryEvidenceUrls": [
+    "https://my.gov.sa/en/services/272590",
+    "https://momah.gov.sa/ar/branches/alahsa-municipality",
+    "https://www.spa.gov.sa/N2294375",
+    "https://dga.gov.sa/sites/default/files/2024-04/%D8%AF%D9%84%D9%8A%D9%84%20%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%AC%D9%87%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9_0.pdf"
+  ],
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "adapterReady": false,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "الأحساء أمانة الأحساء نظام المعلومات الجغرافية استعلام قطعة أرض خريطة مخطط رسمي",
+        "scope": "Verify the local municipality plot-record/GIS service and whether a safe anonymous polygon endpoint is published.",
+        "result": "أظهرت نتائج المصادر الحكومية خدمة نظم معلومات جغرافية تابعة لأمانة الأحساء تتيح للجمهور الاستعلام عن بيانات قطع الأراضي ورسم الخرائط وطباعتها. لم يتوفر مخطط حقول أو نقطة خدمة هندسية عامة يمكن التحقق منها.",
+        "actualResultUrls": [
+          "https://my.gov.sa/en/services/272590",
+          "https://momah.gov.sa/ar/branches/alahsa-municipality",
+          "https://www.spa.gov.sa/N2294375",
+          "https://dga.gov.sa/sites/default/files/2024-04/%D8%AF%D9%84%D9%8A%D9%84%20%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%AC%D9%87%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9_0.pdf"
+        ],
+        "executionMethod": "Separate language-specific discovery and official-source review; no plot identifier, personal lookup, or feature request submitted."
+      },
+      {
+        "language": "English",
+        "query": "Al Ahsa official municipality GIS land plot map cadastral parcel inquiry",
+        "scope": "Verify the local municipality plot-record/GIS service and whether a safe anonymous polygon endpoint is published.",
+        "result": "Official service-directory evidence identifies an Al-Ahsa Municipality GIS service for public land-plot information and map printing. The service page itself returned 403 to the web reader, and no feature endpoint/schema could be inspected; geometry remains unverified.",
+        "actualResultUrls": [
+          "https://my.gov.sa/en/services/272590",
+          "https://momah.gov.sa/ar/branches/alahsa-municipality",
+          "https://www.spa.gov.sa/N2294375",
+          "https://dga.gov.sa/sites/default/files/2024-04/%D8%AF%D9%84%D9%8A%D9%84%20%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%AC%D9%87%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9_0.pdf"
+        ],
+        "executionMethod": "Separate language-specific discovery and official-source review; no plot identifier, personal lookup, or feature request submitted."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The WUP point identifies the ranked Al Ahsa entry. Local registry/cadastral administration is documented, but no parcel geometry was verified at the point.",
+    "verifiedOpenScope": "No safe anonymous full polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "sa-alahsa-municipality-gis-plots",
+    "name": "Al-Ahsa Municipality GIS plot inquiry",
+    "url": "https://my.gov.sa/en/services/272590",
+    "operator": "Al-Ahsa Municipality / Ministry of Municipalities and Housing",
+    "serviceType": "City-specific municipal GIS service advertised for public inquiry into land-plot data, map drawing and printing; feature endpoint/schema not verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The city-specific GIS plot inquiry is publicly advertised, but the service endpoint and safe geometry schema were not available for inspection; no parcel feature response was verified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/al-ahsa-service-review.json"
+  },
+  "technicalBlocker": "The city-specific GIS plot inquiry is publicly advertised, but the service endpoint and safe geometry schema were not available for inspection; no parcel feature response was verified.",
+  "remainingUncertainty": "Whether a public map has a documented anonymous vector service, safe non-sensitive field allowlist, and coverage at the exact WUP point remains unverified.",
+  "scopeLimits": "No full parcel polygons, owner names, addresses, applicant, taxpayer, title, assessment, or sale data were requested or retained. No citywide completeness claim.",
+  "rootPrimaryReadback": {
+    "url": "https://my.gov.sa/en/services/272590",
+    "fetch": "error",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "centerLatLon": [
+    25.3827109762729,
+    49.5978211795765
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

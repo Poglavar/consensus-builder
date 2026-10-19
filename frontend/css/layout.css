@@ -10,39 +10,30 @@ body {
     padding-bottom: var(--app-safe-area-bottom);
 }
 
-.road-analysis-modal {
+/* The road width analysis results (#osm-road-segment-list-popup): a right-dock panel (its width
+   from .right-dock-panel, its chrome from .info-panel and .panel-header) under the top-right
+   floating buttons (user bubble, Layers, Settings), which it used to cover. A flex column: the
+   header stays, the body scrolls. A fixed height: the histogram and the list arrive after it opens
+   and it no longer grows with them. Two classes, so the right-dock rung outranks .info-panel's. */
+.info-panel.road-analysis-modal {
     position: fixed;
-    top: 30px;
-    right: 30px;
-    z-index: 1200;
-    min-width: 360px;
-    max-width: 420px;
-    max-height: 70vh;
-    display: flex;
+    top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    right: var(--right-dock-gap);
+    z-index: var(--cb-z-panel);
+    box-sizing: border-box;
+    height: 70vh;
     flex-direction: column;
-    padding: 18px 20px 22px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.24);
-    border-radius: 10px;
-}
-
-.road-analysis-modal__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-}
-
-.road-analysis-modal__header h3 {
-    font-size: 18px;
-    margin: 0;
-}
-
-.road-analysis-modal__body {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    margin-top: 12px;
+    padding: 0;
     overflow: hidden;
+    background: var(--cb-surface);
+}
+
+.road-analysis-modal .road-analysis-modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-5);
+    padding: var(--cb-space-3) var(--cb-space-4) var(--cb-space-4);
+    overflow-y: auto;
 }
 
 .road-histogram-section,
@@ -55,20 +46,20 @@ body {
 .road-histogram-header h4,
 .road-segment-list-header h4 {
     margin: 0;
-    font-size: 16px;
+    font-size: var(--cb-text-lg);
 }
 
 .road-histogram-subtitle,
 .road-segment-subtitle {
     margin: 0;
-    font-size: 13px;
-    color: #5f6368;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .road-analysis-empty {
     margin: 0;
-    font-size: 13px;
-    color: #5f6368;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
 .road-histogram {
@@ -85,28 +76,28 @@ body {
     grid-template-columns: 120px 1fr 60px;
     align-items: center;
     gap: 12px;
-    font-size: 13px;
+    font-size: var(--cb-text-md);
 }
 
 .road-histogram-label {
-    color: #3c4043;
+    color: var(--cb-text);
 }
 
 .road-histogram-bar {
-    background: #e8eaed;
-    border-radius: 999px;
+    background: var(--cb-surface-3);
+    border-radius: var(--cb-radius-pill);
     overflow: hidden;
     height: 12px;
 }
 
 .road-histogram-bar-fill {
-    background: linear-gradient(90deg, #1a73e8 0%, #4586e6 100%);
+    background: var(--cb-primary);
     height: 100%;
 }
 
 .road-histogram-value {
     text-align: right;
-    color: #202124;
+    color: var(--cb-text-strong);
 }
 
 .road-segment-list {
@@ -118,28 +109,16 @@ body {
     padding-right: 6px;
 }
 .parcel-proposal-actions {
-    margin-bottom: 12px;
-    padding: 0 8px 8px;
+    margin-bottom: 4px;
+    padding: 0 8px 4px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-}
-
-.parcel-road-actions {
-    display: flex;
-    width: 100%;
     gap: 6px;
 }
 
-.parcel-road-actions .btn {
-    flex: 1 1 0;
-    min-width: 0;
-    width: auto;
-}
-
 /* -------------------- Mobile layout tweaks -------------------- */
-@media (max-width: 768px) {
-    /* Stack layout vertically so map fills screen and sidebar overlays */
+@media (max-width: 767.98px) {
+    /* Stack layout vertically so the map fills the screen */
     body {
         flex-direction: column;
     }
@@ -154,5 +133,68 @@ body {
     .parcel-road-actions .btn {
         width: auto;
         flex: 1 1 0;
+    }
+}
+
+/* No text selection or tap highlight on buttons and list rows */
+.btn, .close-button, .cb-tab,
+.block-item, .parcel-item, .proposal-item {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Larger tap targets for mobile */
+@media (max-width: 767.98px) {
+    /* List items easier to tap */
+    .parcel-item, .proposal-item, .block-item {
+        min-height: 48px;
+        padding: 12px 15px;
+    }
+
+    /* Form inputs larger */
+    .form-group input, .form-group select {
+        min-height: 44px;
+        padding: 12px 16px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Checkbox/radio larger touch areas */
+    .checkbox-group label {
+        min-height: 44px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Slider controls more touch-friendly */
+    #turn-interval-slider {
+        height: 8px;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    #turn-interval-slider::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+
+    /* Leaflet control buttons larger for touch */
+    .leaflet-control-zoom a {
+        width: 44px !important;
+        height: 44px !important;
+        line-height: 44px !important;
+        font-size: 20px !important;
+    }
+
+    /* Attribution more compact */
+    .leaflet-control-attribution {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
     }
 }

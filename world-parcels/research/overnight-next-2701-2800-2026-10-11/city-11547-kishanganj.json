@@ -1,0 +1,31 @@
+{
+  "cityCode": 11547,
+  "queueRank": 2763,
+  "name": "Kishanganj",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [26.1017166605851, 87.9478702107069],
+  "population2025": 214352,
+  "population2025k": 214.352,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {"language": "English", "query": "Kishanganj Bihar cadastral map land records official parcel map", "result": "Found the official Kishanganj district land-records page, official Bihar Bhu-Naksha cadastral viewer, BiharBhumi, and Government of India DILRMP status page. First-party service ownership was established, but search itself returned no parcel geometry.", "actualResultUrls": ["https://kishanganj.nic.in/service/revenue-department/", "https://bhunaksha.bihar.gov.in/10/index.jsp", "https://biharbhumi.bihar.gov.in/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/210"]},
+      {"language": "Hindi", "query": "किशनगंज बिहार भू नक्शा आधिकारिक", "result": "Found the Hindi Kishanganj district revenue/land-records page and official Bihar Bhu-Naksha. The search confirmed the same first-party custodians and returned no safe parcel geometry.", "actualResultUrls": ["https://kishanganj.nic.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5/", "https://bhunaksha.bihar.gov.in/10/index.jsp"]}
+    ],
+    "researchedAt": "2026-10-11",
+    "scope": "Bounded anonymous first-party discovery; no login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or shifted point used."
+  },
+  "registryFound": true,
+  "sourceSummary": {
+    "candidateService": "Bhu-Naksha Bihar",
+    "custodian": "Directorate of Land Records & Survey, Government of Bihar / National Informatics Centre",
+    "serviceUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "localEvidence": "The official Kishanganj district land-records page directs users to Bihar land records. The Bhu-Naksha selector returned district Kishanganj (08), subdivision Kishanganj (01), and circle Kishanganj (01). This is local registry evidence, not a qualified city adapter.",
+    "citySpecificQualification": "Selector coverage was evidenced, but no city point-to-parcel response or full parcel geometry was obtained anonymously."
+  },
+  "runtimeReadiness": "held",
+  "notes": "No parcel sample retained: the bounded extent request returned HTTP 204 with an empty body. A zero exact-point hit, extent miss, or unusable response is not evidence of citywide absence. Serial review is required before admission."
+}

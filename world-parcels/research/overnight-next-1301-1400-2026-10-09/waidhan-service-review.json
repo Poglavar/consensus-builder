@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10513-waidhan.json",
+  "purpose": "Document separate English/Hindi discovery, local revenue/cadastral custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Indian and Madhya Pradesh sources establish that Singrauli is covered by digitized/georeferenced cadastral-map reporting and that MP Bhulekh is the state-authorized textual and map land-record portal. The local Waidhan revenue-office reference supports local administrative custody. The public portal timed out before viewer/API inspection; no parcel geometry was verified.",
+  "registryAssessment": "Local/jurisdictional revenue and cadastral custody is evidenced at the Singrauli/Waidhan administrative scope, but no current anonymous parcel-vector service or local registry API was verified. registryFound=true in the city packet refers to evidenced official land-record/map custody, not geometry availability.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sidhi.nic.in/en/service/land-records/",
+      "operator": "District Administration Sidhi, Government of Madhya Pradesh",
+      "scope": "States that mpbhulekh.gov.in is the authorized Madhya Pradesh portal for textual and map land records, including certified maps."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/437",
+      "operator": "Government of India, Department of Land Resources, DILRMP",
+      "scope": "Singrauli district tehsil-level cadastral-map digitization/georeferencing status; aggregate coverage evidence, not parcel geometry."
+    },
+    {
+      "url": "https://singrauli.nic.in/en/service/revenue-case-management-system-rcms/",
+      "operator": "District Singrauli, Government of Madhya Pradesh",
+      "scope": "Official page lists revenue-office locations including Tehsil campus Waidhan."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Waidhan Madhya Pradesh official cadastral parcel map GIS Bhu Naksha Singrauli",
+      "result": "Official MP Bhulekh, DILRMP Singrauli status and Singrauli district revenue sources identified; no anonymous parcel geometry returned.",
+      "actualResultUrls": [
+        "https://mpbhulekh.gov.in/mpbhulekh.do",
+        "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/437",
+        "https://singrauli.nic.in/en/service/revenue-case-management-system-rcms/"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "वैढ़न सिंगरौली भू नक्शा आधिकारिक खसरा नक्शा मध्य प्रदेश",
+      "result": "Hindi discovery corroborated the official MP map/land-record route and Singrauli government source; no source-native parcel feature was exposed.",
+      "actualResultUrls": [
+        "https://mpbhulekh.gov.in/mpbhulekh.do",
+        "https://singrauli.nic.in/",
+        "https://services.india.gov.in/service/detail/check-dissemination-of-naksha-parcel-map-of-madhya-pradesh-online-1"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No exact-point or nearby source-native full polygon was returned. The portal timeout and map-extent non-observation are transport/access limitations and do not establish citywide absence.",
+    "requestEvidence": [
+      {
+        "url": "https://mpbhulekh.gov.in/mpbhulekh.do",
+        "method": "Anonymous TLS GET",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "curl exit 28 after 25 seconds; no response body, viewer configuration or API schema obtained."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official sources establish state land-record/map custody and aggregate Singrauli cadastral-map digitization status, with Waidhan named as a revenue-office location.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in this bounded investigation. No citywide absence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "English and Hindi first-party discovery completed; official source URLs and outcomes recorded above.",
+    "MP Bhulekh anonymous GET timed out after 25 seconds; viewer/API route and schema could not be inspected.",
+    "DILRMP Singrauli status was available as a search-index result with aggregate map coverage, but direct fetch was a cache miss and no feature request was attempted without the viewer contract.",
+    "India.gov MP parcel-map service was found in official search results, but direct fetch timed out and no geometry response was obtained."
+  ],
+  "remainingUncertainty": "The current public MP Bhulekh/Bhu-Naksha viewer may expose parcel maps after selecting district, tehsil and village, but its current route, request schema, CRS and native identity field remain unverified. Aggregate digitization statistics do not prove a Waidhan parcel response.",
+  "nextStep": "Reattempt official viewer discovery and inspect only safe ID/geometry responses when reachable; retain no owner, address, title, tax, account or personal fields.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1301-1400",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReview": null
+}

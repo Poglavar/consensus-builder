@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-3756-heidelberg.json",
+  "schemaVersion": "1.0",
+  "cityCode": 3756,
+  "queueRank": 3294,
+  "city": "Heidelberg",
+  "country": "Germany",
+  "countryCode": "DE",
+  "pointLatLon": [49.3910185824291, 8.6720920591206],
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Heidelberg evidence establishes the Vermessungsamt/Liegenschaftskataster custodian and a current public queryable rendered Liegenschaftskarte WMS layer. Anonymous feature-info requests returned no parcel object with safe native identity and full geometry, so no GeoJSON sample is retained and runtime remains held.",
+  "searchQueries": [
+    {"language": "English", "query": "Heidelberg Germany official cadastral parcel map GIS Flurstücke Liegenschaftskataster", "outcome": "First-party city/state sources and the city Geoportal were located; no anonymous parcel ID-plus-geometry response was obtained.", "resultUrls": ["https://www.heidelberg.de/hd%2CLde/HD/Rathaus/Vermessungsamt.html", "https://wirtschaftsfoerderung.heidelberg.de/7071_12757_5617863_5838450_5992979.html", "https://www.lgl-bw.de/Produkte/Liegenschaftskataster/index.html", "https://geoweb.heidelberg.de/geoportal/"]},
+    {"language": "German (local/native)", "query": "Heidelberg amtliche Liegenschaftskarte Flurstücke Geoportal offiziell", "outcome": "Offizielle Ergebnisse bestätigen Vermessungsamt, Liegenschaftskataster and Geoportal; the bounded anonymous parcel response remained empty.", "resultUrls": ["https://www.heidelberg.de/hd/-/Lebenslagen/oertliche-lage-und-beschaffenheit-vermessung/leb5000532", "https://www.heidelberg.de/-/Behoerdenwegweiser/vermessungsamt-stadt-heidelberg/oe6011136", "https://www.heidelberg.de/-/Verfahrensbeschreibung/liegenschaftskataster---auszug-beantragen/vbid6007933", "https://geoweb.heidelberg.de/geoportal/"]}
+  ],
+  "attempts": [
+    {"method": "GET", "url": "https://geoweb.heidelberg.de/geoportal/", "httpStatus": 200, "outcome": "Current public viewer HTML and JavaScript configuration loaded."},
+    {"method": "GET", "url": "https://geoweb.heidelberg.de/geoportal/GCGisService?request=GetCapabilities", "httpStatus": 200, "outcome": "Live WMS capabilities exposed queryable Liegenschaftskarte and CRS EPSG:25832, 4326, 31467 and 3857."},
+    {"method": "GET", "url": "https://geoweb.heidelberg.de/geoportal/GCGisService?request=GetMap&LAYERS=Liegenschaftskarte&SRS=EPSG:25832&BBOX=476154,5470926,476254,5471026&WIDTH=256&HEIGHT=256&FORMAT=image/png", "httpStatus": 200, "outcome": "Bounded rendered map returned as PNG; no identity or full vector geometry."},
+    {"method": "GET", "url": "https://geoweb.heidelberg.de/geoportal/GCGisService?request=GetFeatureInfo&LAYERS=Liegenschaftskarte&QUERY_LAYERS=Liegenschaftskarte&SRS=EPSG:25832&BBOX=476154,5470926,476254,5471026&WIDTH=256&HEIGHT=256&INFO_FORMAT=application/vnd.ogc.gml&FEATURE_COUNT=3&X=128&Y=128", "httpStatus": 200, "outcome": "Empty OSIRIS object response with gml:null unavailable; no hit/miss inference."},
+    {"method": "GET", "url": "https://geoweb.heidelberg.de/mapproxy/service?SERVICE=WMS&REQUEST=GetCapabilities", "httpStatus": 503, "outcome": "Official configured map-proxy route returned maintenance HTML; no bypass attempted."},
+    {"method": "GET", "url": "https://geoweb.heidelberg.de/OsirisGeoserver?SERVICE=WMS&REQUEST=GetCapabilities", "httpStatus": 404, "outcome": "Configured legacy GeoServer path absent at public host."},
+    {"method": "GET", "url": "https://geoweb.heidelberg.de/geoportal/GCGisService?request=GetFeatureInfo&LAYERS=Flurstuecke&QUERY_LAYERS=Flurstuecke&SRS=EPSG:25832&BBOX=468000,5465000,469000,5466000&WIDTH=256&HEIGHT=256&INFO_FORMAT=application/vnd.ogc.gml&FEATURE_COUNT=3&X=128&Y=128", "httpStatus": 200, "outcome": "LayerNotDefined for guessed Flurstuecke name; not used to negate the verified Liegenschaftskarte layer."}
+  ],
+  "schemaAndCrs": {"viewerConfig": "OSIRIS WMS 1.3.0 / Smallworld public capabilities", "parcelApi": "GCGisService GetFeatureInfo", "geometryCrs": ["EPSG:25832", "EPSG:4326", "EPSG:31467", "EPSG:3857"], "nativeIdentity": null, "sourceFieldMapping": null, "compositeKeyProvenance": null, "boundedAnonymousResponse": {"featureCount": 0, "result": "No parcel object returned; zero is not an absence finding."}},
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source service/layer URL", "source CRS and coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "localCustodianAssessment": "registryFound=true is supported by official Heidelberg pages naming the Vermessungsamt and its Liegenschaftskataster responsibility. The public Geoportal also exposes a rendered/queryable Liegenschaftskarte layer. This does not establish an open parcel-vector download or runtime adapter.",
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Bounded request made around the exact WUP point after request-only EPSG:25832 transformation; empty response, no hit/miss or absence inference."},
+  "coverageAssessment": {"claimedScope": "Heidelberg local cadastral map and Baden-Württemberg Liegenschaftskataster", "verifiedOpenScope": "Public rendered WMS layer metadata and bounded image response only; anonymous identity, full geometry, coverage and update cadence unverified", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No safe anonymous parcel identity plus full polygon geometry was verified; independent serial review is required before adapter/runtime consideration."},
+  "scopeLimits": ["Exact WUP point [49.3910185824291, 8.6720920591206] preserved in latitude/longitude order; no coordinate shift.", "No exact-point hit or miss was obtained and none is used as a citywide absence claim.", "Maintenance, 404, empty response, and guessed-layer failure are access/discovery limitations, not evidence of cadastral absence.", "No raw source-specific attribute set or unsafe personal/property-rights data was retained.", "No GeoJSON sample is retained because no safe full parcel polygon and native identity were obtained.", "This packet records research completion only and is not source integration or registry admission."],
+  "uncertainty": "Local custody and current public map-layer evidence are strong, but the anonymous service did not return a parcel object. Native identity, safe schema, full geometry delivery, licensing, update cadence and citywide completeness remain unresolved."
+}

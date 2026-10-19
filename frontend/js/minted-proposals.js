@@ -5,7 +5,7 @@
     }
 
     const state = {
-        overlay: null,
+        dialog: null,
         listNode: null,
         statusNode: null,
         refreshNode: null,
@@ -125,7 +125,7 @@
         const button = document.getElementById('mintedProposalsButton');
         if (!button) return;
         const connected = isWalletConnected(getWalletState());
-        button.style.display = connected ? '' : 'none';
+        button.hidden = !connected;
     };
 
     const attachWalletObservers = () => {
@@ -219,10 +219,11 @@
 
         if (!normalized.length) return null;
 
-        const button = document.createElement('button');
-        button.type = 'button';
+        const button = document.createElement('span');
+        button.setAttribute('role', 'img');
         button.className = 'minted-proposal-lens-btn';
         button.title = t('modal.mintedProposals.lensLabel', 'Lens: {{count}}', { count: normalized.length });
+        button.setAttribute('aria-label', button.title);
 
         if (typeof globalScope.getLensPatternDataUrl === 'function') {
             try {
@@ -255,19 +256,45 @@
             .filter(Boolean);
     };
 
+    const cadastreIdsForMintedEntry = (entry) => {
+        const metadataProps = entry?.metadata?.properties || {};
+        const own = (value, key) => value && typeof value === 'object'
+            && Object.prototype.hasOwnProperty.call(value, key);
+        if (own(entry, 'parentParcelIds') || own(metadataProps, 'parcelIds')) {
+            throw new Error('Minted proposal uses a retired parcel declaration.');
+        }
+        const source = entry?.cadastreParcelIds
+            || metadataProps.cadastreParcelIds
+            || [];
+        const ids = Array.from(new Set(normalizeIdList(source)));
+        const isDerived = globalScope.ProposalAuthoredRecord?.isDerivedParcelId;
+        if (typeof isDerived !== 'function') {
+            throw new Error('Authored proposal boundary is unavailable.');
+        }
+        const invalid = ids.find(id => isDerived(id));
+        if (invalid) throw new Error(`Minted proposal names generated parcel ${invalid}.`);
+        return ids;
+    };
+
     const openMintedProposalDetails = (entry) => {
         if (!entry || entry.proposalId === undefined || entry.proposalId === null) return;
 
         closeMintedProposalsModal();
 
-        const parentParcelIds = normalizeIdList(entry.parentParcelIds);
+        let cadastreParcelIds;
+        try {
+            cadastreParcelIds = cadastreIdsForMintedEntry(entry);
+        } catch (error) {
+            console.warn('Cannot open non-canonical minted proposal', entry, error);
+            return;
+        }
 
         let imported = null;
         try {
             if (globalScope.proposalStorage && typeof globalScope.proposalStorage.importOnChainProposal === 'function') {
                 imported = globalScope.proposalStorage.importOnChainProposal({
                     proposalId: entry.proposalId,
-                    parentParcelIds,
+                    cadastreParcelIds,
                     isConditional: entry.isConditional,
                     imageURI: entry.imageURI || entry.imageUrl || (entry.metadata && (entry.metadata.image || entry.metadata.image_url || entry.metadata.imageURI)) || '',
                     acceptancePossible: entry.acceptancePossible,
@@ -294,7 +321,7 @@
             console.warn('Failed to import minted proposal into storage', entry, err);
         }
 
-        const fallbackParcelId = parentParcelIds.length ? parentParcelIds[0] : null;
+        const fallbackParcelId = cadastreParcelIds.length ? cadastreParcelIds[0] : null;
         const targetProposalId = imported?.proposalId || imported?.chainProposalId || entry.proposalId;
         let opened = false;
 
@@ -307,7 +334,7 @@
                     closeProposalList: true,
                     closeParcelInfo: true,
                     closeAgentDialog: true,
-                    collapseSidebar: true
+                    closeSheets: true
                 }));
             } catch (err) {
                 console.warn('openProposalFromList failed for minted proposal', err);
@@ -333,118 +360,59 @@
     };
 
     const closeMintedProposalsModal = () => {
-        if (state.overlay && state.overlay.parentNode) {
-            state.overlay.parentNode.removeChild(state.overlay);
-        }
+        if (state.dialog) state.dialog.close();
     };
 
+    // The list is the shared dialog (js/ui/dialogs.js) with Refresh in its footer. The classes
+    // minted-proposals-overlay / -refresh / -close stay as hooks for scripts and tests.
     const ensureModal = () => {
-        if (state.overlay) return state.overlay;
-
-        const overlay = document.createElement('div');
-        overlay.className = 'minted-proposals-overlay';
-
-        const modal = document.createElement('div');
-        modal.className = 'minted-proposals-modal';
-        modal.setAttribute('role', 'dialog');
-        modal.setAttribute('aria-modal', 'true');
-
-        const header = document.createElement('div');
-        header.className = 'minted-proposals-header';
-
-        const title = document.createElement('div');
-        title.className = 'minted-proposals-title';
-        title.setAttribute('data-i18n-key', 'modal.mintedProposals.title');
-        title.textContent = t('modal.mintedProposals.title', 'Minted Proposals');
-
-        const actions = document.createElement('div');
-        actions.className = 'minted-proposals-actions';
-
-        const refreshBtn = document.createElement('button');
-        refreshBtn.type = 'button';
-        refreshBtn.className = 'btn btn-secondary minted-proposals-refresh';
-        refreshBtn.setAttribute('data-i18n-key', 'modal.mintedProposals.refresh');
-        refreshBtn.textContent = t('modal.mintedProposals.refresh', 'Refresh');
-        refreshBtn.addEventListener('click', () => {
-            openMintedProposalsModal();
-        });
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn close-circle-btn--lg minted-proposals-close';
-        closeBtn.setAttribute('aria-label', 'Close');
-        closeBtn.innerHTML = '&times;';
-        closeBtn.addEventListener('click', closeMintedProposalsModal);
-
-        actions.appendChild(refreshBtn);
-        actions.appendChild(closeBtn);
-        header.appendChild(title);
-        header.appendChild(actions);
-
-        const body = document.createElement('div');
-        body.className = 'minted-proposals-body';
+        if (state.dialog) return state.dialog;
 
         const status = document.createElement('div');
         status.className = 'minted-proposals-status';
-        status.textContent = '';
+        status.setAttribute('role', 'status');
 
         const list = document.createElement('div');
         list.className = 'minted-proposals-list';
 
-        body.appendChild(status);
-        body.appendChild(list);
-        modal.appendChild(header);
-        modal.appendChild(body);
-        overlay.appendChild(modal);
-
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                closeMintedProposalsModal();
+        const dialogApi = globalScope.CbDialog.open({
+            title: t('modal.mintedProposals.title', 'Minted proposals'),
+            size: 'lg',
+            className: 'minted-proposals-modal',
+            overlayClassName: 'minted-proposals-overlay',
+            bodyClassName: 'minted-proposals-body',
+            body: [status, list],
+            actions: [{
+                id: 'refresh',
+                label: t('modal.mintedProposals.refresh', 'Refresh'),
+                role: 'secondary',
+                className: 'minted-proposals-refresh',
+                keepOpen: true,
+                onClick: () => { openMintedProposalsModal(); }
+            }],
+            onClose: () => {
+                if (state.dialog !== dialogApi) return;
+                state.dialog = null;
+                state.listNode = null;
+                state.statusNode = null;
+                state.refreshNode = null;
+                state.bodyNode = null;
             }
         });
+        const closeBtn = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+        if (closeBtn) closeBtn.classList.add('minted-proposals-close');
 
-        state.overlay = overlay;
+        state.dialog = dialogApi;
         state.listNode = list;
         state.statusNode = status;
-        state.refreshNode = refreshBtn;
-        state.bodyNode = body;
-
-        try {
-            if (globalScope.i18n && typeof globalScope.i18n.applyTranslations === 'function') {
-                globalScope.i18n.applyTranslations(overlay);
-            }
-        } catch (_) { /* ignore */ }
-
-        return overlay;
+        state.refreshNode = dialogApi.getActionButton('refresh');
+        state.bodyNode = dialogApi.body;
+        return dialogApi;
     };
 
+    // Opened from the list, so on the dialog-over-dialog rung. The header and footer keep the
+    // minted-metadata-header / -footer hooks the tests address them by.
     const showMetadataDialog = (entry) => {
-        const overlay = document.createElement('div');
-        overlay.className = 'minted-metadata-overlay';
-
-        const modal = document.createElement('div');
-        modal.className = 'minted-metadata-modal';
-        modal.setAttribute('role', 'dialog');
-        modal.setAttribute('aria-modal', 'true');
-
-        const header = document.createElement('div');
-        header.className = 'minted-metadata-header';
-
-        const title = document.createElement('h3');
-        title.textContent = t('modal.mintedProposals.metadataTitle', 'Proposal metadata');
-
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn close-circle-btn--lg';
-        closeBtn.innerHTML = '&times;';
-        closeBtn.addEventListener('click', () => overlay.remove());
-
-        header.appendChild(title);
-        header.appendChild(closeBtn);
-
-        const body = document.createElement('div');
-        body.className = 'minted-metadata-body';
-
         const source = document.createElement('div');
         source.className = 'minted-metadata-source';
         if (entry.metadataUrl) {
@@ -452,7 +420,8 @@
             const link = document.createElement('a');
             link.href = resolvedSource;
             link.target = '_blank';
-            link.rel = 'noreferrer noopener';
+            link.rel = 'noopener noreferrer';
+            link.className = 'cb-link cb-link--external';
             link.textContent = resolvedSource;
             source.appendChild(link);
         }
@@ -468,36 +437,18 @@
             pre.textContent = t('modal.mintedProposals.metadataUnavailable', 'Metadata is not available for this proposal.');
         }
 
-        const footer = document.createElement('div');
-        footer.className = 'minted-metadata-footer';
-        const okBtn = document.createElement('button');
-        okBtn.type = 'button';
-        okBtn.className = 'btn btn-action';
-        okBtn.textContent = t('modal.mintedProposals.ok', 'OK');
-        okBtn.addEventListener('click', () => overlay.remove());
-        footer.appendChild(okBtn);
-
-        body.appendChild(source);
-        body.appendChild(pre);
-        body.appendChild(footer);
-
-        modal.appendChild(header);
-        modal.appendChild(body);
-        overlay.appendChild(modal);
-
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) {
-                overlay.remove();
-            }
+        const dialogApi = globalScope.CbDialog.open({
+            title: t('modal.mintedProposals.metadataTitle', 'Proposal metadata'),
+            size: 'lg',
+            top: true,
+            className: 'minted-metadata-modal',
+            overlayClassName: 'minted-metadata-overlay',
+            bodyClassName: 'minted-metadata-body',
+            footerClassName: 'minted-metadata-footer',
+            body: [source, pre],
+            actions: [{ id: 'ok', label: t('modal.mintedProposals.ok', 'OK'), role: 'primary' }]
         });
-
-        try {
-            if (globalScope.i18n && typeof globalScope.i18n.applyTranslations === 'function') {
-                globalScope.i18n.applyTranslations(overlay);
-            }
-        } catch (_) { /* ignore */ }
-
-        document.body.appendChild(overlay);
+        if (dialogApi && dialogApi.header) dialogApi.header.classList.add('minted-metadata-header');
     };
 
     const renderList = (entries, chainId, contractAddress) => {
@@ -519,8 +470,8 @@
                 return Number.isFinite(t) ? t : null;
             };
 
-            const aTime = parseTime(a.createdAt || a.metadata?.createdAt || a.metadata?.properties?.createdAt);
-            const bTime = parseTime(b.createdAt || b.metadata?.createdAt || b.metadata?.properties?.createdAt);
+            const aTime = parseTime(a.metadata?.properties?.proposal?.createdAt || a.createdAt || a.metadata?.createdAt || a.metadata?.properties?.createdAt);
+            const bTime = parseTime(b.metadata?.properties?.proposal?.createdAt || b.createdAt || b.metadata?.createdAt || b.metadata?.properties?.createdAt);
 
             if (aTime !== null && bTime !== null && aTime !== bTime) {
                 return bTime - aTime;
@@ -574,7 +525,8 @@
             meta.className = 'minted-proposal-meta';
 
             const parcelsLabel = document.createElement('span');
-            const parcelCount = Array.isArray(entry.parentParcelIds) ? entry.parentParcelIds.length : 0;
+            let parcelCount = 0;
+            try { parcelCount = cadastreIdsForMintedEntry(entry).length; } catch (_) { }
             parcelsLabel.textContent = t('modal.mintedProposals.parcelsLabel', 'Parcels: {{count}}', { count: parcelCount });
 
             const lensCount = Array.isArray(entry.lens) ? entry.lens.length : 0;
@@ -588,14 +540,15 @@
                 : null;
 
             const createdLabel = document.createElement('span');
-            const createdRaw = (entry.metadata && entry.metadata.properties && entry.metadata.properties.createdAt)
+            const createdRaw = entry.metadata?.properties?.proposal?.createdAt
+                || (entry.metadata && entry.metadata.properties && entry.metadata.properties.createdAt)
                 || (entry.metadata && entry.metadata.createdAt)
                 || entry.createdAt;
             if (createdRaw) {
                 const createdDate = new Date(createdRaw);
                 if (!isNaN(createdDate.getTime())) {
                     createdLabel.textContent = t('modal.mintedProposals.createdLabel', 'Created: {{date}}', {
-                        date: createdDate.toLocaleString()
+                        date: CbFormat.formatDateTime(createdDate)
                     });
                 }
             }
@@ -603,7 +556,8 @@
             meta.appendChild(parcelsLabel);
             if (createdLabel.textContent) meta.appendChild(createdLabel);
 
-            const authorRaw = (entry.metadata && entry.metadata.properties && entry.metadata.properties.author)
+            const authorRaw = entry.metadata?.properties?.proposal?.author
+                || (entry.metadata && entry.metadata.properties && entry.metadata.properties.author)
                 || (entry.metadata && entry.metadata.author)
                 || entry.author
                 || entry.owner;
@@ -639,16 +593,17 @@
                 actions.appendChild(lensButton);
             }
 
+            // One row of small actions per card; no card claims the dialog's one primary.
             const detailsBtn = document.createElement('button');
             detailsBtn.type = 'button';
-            detailsBtn.className = 'btn btn-action minted-proposal-details-btn';
+            detailsBtn.className = 'btn btn-sm minted-proposal-details-btn';
             detailsBtn.textContent = t('modal.mintedProposals.detailsButton', 'Details');
             detailsBtn.addEventListener('click', () => openMintedProposalDetails(entry));
             actions.appendChild(detailsBtn);
 
             const metadataBtn = document.createElement('button');
             metadataBtn.type = 'button';
-            metadataBtn.className = 'btn btn-outline minted-proposal-metadata-btn';
+            metadataBtn.className = 'btn btn-sm minted-proposal-metadata-btn';
             metadataBtn.textContent = t('modal.mintedProposals.metadataButton', 'Metadata');
             metadataBtn.addEventListener('click', () => showMetadataDialog(entry));
 
@@ -658,16 +613,21 @@
             if (explorerUrl) {
                 const explorerLink = document.createElement('a');
                 explorerLink.href = explorerUrl;
-                explorerLink.className = 'btn btn-secondary';
+                explorerLink.className = 'btn btn-sm';
                 explorerLink.target = '_blank';
-                explorerLink.rel = 'noreferrer noopener';
+                explorerLink.rel = 'noopener noreferrer';
                 explorerLink.textContent = t('modal.mintedProposals.explorer', 'View on Explorer');
                 actions.appendChild(explorerLink);
             }
 
             main.appendChild(titleRow);
             main.appendChild(meta);
-            const proposalEns = (typeof proposalEnsName === 'function') ? proposalEnsName(entry.proposalId) : '';
+            const chainKey = typeof buildChainProposalId === 'function'
+                ? buildChainProposalId(entry.chainId, entry.contractAddress, entry.proposalId) : null;
+            const localRecord = chainKey ? globalScope.proposalStorage?.getProposal?.(chainKey) : null;
+            const ensRecord = entry.metadata?.properties?.proposalProtocol
+                ? (localRecord || entry) : entry.proposalId;
+            const proposalEns = (typeof proposalEnsName === 'function') ? proposalEnsName(ensRecord) : '';
             if (proposalEns && typeof ensNameLineHtml === 'function') {
                 const ensWrap = document.createElement('div');
                 ensWrap.innerHTML = ensNameLineHtml(proposalEns);
@@ -752,7 +712,8 @@
                 || t('modal.mintedProposals.proposalIdLabel', 'Proposal #{{id}}', { id: item.proposalId });
             const description = metadata && metadata.description ? metadata.description : '';
 
-            const createdAt = (metadata && (metadata.createdAt || metadata.date || metadata.properties?.createdAt))
+            const createdAt = metadata?.properties?.proposal?.createdAt
+                || (metadata && (metadata.createdAt || metadata.date || metadata.properties?.createdAt))
                 || item.createdAt
                 || null;
 
@@ -800,11 +761,9 @@
     };
 
     const openMintedProposalsModal = async () => {
+        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
         const run = async () => {
-            const overlay = ensureModal();
-            if (!overlay.parentNode) {
-                document.body.appendChild(overlay);
-            }
+            ensureModal();
             if (state.listNode) {
                 state.listNode.innerHTML = '';
             }
@@ -854,10 +813,18 @@
         return run();
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    const initializeButtonVisibility = () => {
         refreshButtonVisibility();
         attachWalletObservers();
-    });
+    };
+
+    // This file is loaded dynamically by writeVersionedLocalScripts. If the first load happens
+    // after DOMContentLoaded, registering only that event leaves the minted button hidden forever.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeButtonVisibility, { once: true });
+    } else {
+        initializeButtonVisibility();
+    }
 
     globalScope.openMintedProposalsModal = openMintedProposalsModal;
     globalScope.refreshMintedProposalsButtonVisibility = refreshButtonVisibility;

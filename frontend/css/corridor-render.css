@@ -1,0 +1,70 @@
+/* Surface symbols and planted-tree markers shared by drawn and applied corridor cross-sections. */
+
+.corridor-decoration {
+    background: transparent;
+    border: 0;
+    pointer-events: none;
+}
+
+.corridor-decoration-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 16px;
+    line-height: 1;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.corridor-decoration--pedestrian .corridor-decoration-inner {
+    font-size: 13px;
+}
+
+.corridor-pedestrian-pair {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 1px;
+}
+
+.corridor-pedestrian-pair .fa-child {
+    font-size: 0.72em;
+}
+
+.corridor-decoration--tree .corridor-decoration-inner {
+    color: #245c2a;
+    font-size: 17px;
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+/* Selected road segment: the amber dashes crawl so the scoped segment is unmistakable.
+   Colors/weights come from the Leaflet path options; CSS only animates the dash offset. */
+.corridor-segment-selected {
+    animation: corridor-segment-ants 1.1s linear infinite;
+}
+
+@keyframes corridor-segment-ants {
+    to { stroke-dashoffset: -20; }
+}
+
+/* A paved footway. The stone pattern is only legible when zoomed right in — the fill COLOUR
+   (corridorStripSurface) is what separates it from asphalt at map zooms, and this is the texture on
+   top of that. Defined once in index.html so every Leaflet SVG can reference the same pattern. */
+.corridor-strip--paved {
+    fill: url(#corridor-paving-pattern);
+    fill-opacity: 0.95;
+}
+
+/* Ballast under a track, for the same reason: a mix of stone greys rather than one flat fill, so
+   the black rails and sleepers have something to read against. The pattern replaces the lane's
+   surface colour entirely, so it must be opaque enough to separate the corridor from the parcel
+   shading beneath it. */
+.corridor-strip--rail {
+    fill: url(#corridor-ballast-pattern);
+    fill-opacity: 1;
+}
+
+/* Rail and sleeper COLOUR deliberately stays in JS, per call site: the drawing preview paints them
+   orange on purpose, and a stroke rule here would silently repaint it. */

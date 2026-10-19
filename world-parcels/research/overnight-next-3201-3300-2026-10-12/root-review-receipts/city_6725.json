@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6725",
+  "decision": "held",
+  "checkedAt": "2026-10-12T05:22:20Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6725-bethany.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/bethany-service-review.json"
+  ],
+  "reason": "WUP code 6725, rank 3201, country, point, and 188536 persons match the immutable roster. English and Spanish control searches are recorded; Spanish is not identified as a local language. Oklahoma County Assessor custody is supported, but its GIS route returned 403 and no safe native-ID full polygon was obtained. Fresh exact-ID reads, forced paging, thirteen bounded cells, metric geometry checks, source binding, and headed Details verification are not evidenced. The access block is not a citywide absence finding."
+}

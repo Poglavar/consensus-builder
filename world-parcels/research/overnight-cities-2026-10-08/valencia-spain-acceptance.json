@@ -1,0 +1,4124 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T23:18:34.268Z",
+  "city": "valencia-spain-root",
+  "descriptor": {
+    "idType": "string",
+    "maxFeatures": 5000,
+    "maxBboxKm2": 1,
+    "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+    "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+    "id": "es-dgc-inspire-cp-wfs",
+    "name": "Dirección General del Catastro — Madrid and Barcelona",
+    "adapter": "catastro-wfs",
+    "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+    "idField": "nationalCadastralReference",
+    "idPattern": "^[A-Z0-9]{14}$",
+    "idPrefix": "ES-DGC-",
+    "outFields": [
+      "nationalCadastralReference"
+    ],
+    "parcelNumberField": "nationalCadastralReference",
+    "cityIds": [
+      "madrid",
+      "barcelona"
+    ],
+    "countryCode": "ES",
+    "metricSrid": 25830,
+    "metricSridByCity": {
+      "madrid": 25830,
+      "barcelona": 25831
+    },
+    "maxResponseBytes": 8388608,
+    "bbox": [
+      -10,
+      35,
+      5,
+      44
+    ],
+    "catalogueUrl": "https://www.catastro.hacienda.gob.es/webinspire/",
+    "attribution": "Dirección General del Catastro, INSPIRE Cadastral Parcels. Adapted to WGS84.",
+    "scope": "Bounded samples in Madrid and Barcelona; national or municipality-wide completeness is not claimed.",
+    "caveats": [
+      "Official WFS does not implement offset paging. Requests omit count/startIndex and require actual members to equal numberMatched.",
+      "A truncated, malformed or exception response is unavailable, never an empty success."
+    ]
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -0.394,
+        39.469,
+        -0.393,
+        39.47
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -0.393,
+        39.469,
+        -0.392,
+        39.47
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -0.392,
+        39.469,
+        -0.391,
+        39.47
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -0.394,
+        39.47,
+        -0.393,
+        39.471
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -0.393,
+        39.47,
+        -0.392,
+        39.471
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -0.392,
+        39.47,
+        -0.391,
+        39.471
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -0.394,
+        39.471,
+        -0.393,
+        39.472
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -0.393,
+        39.471,
+        -0.392,
+        39.472
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -0.392,
+        39.471,
+        -0.391,
+        39.472
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -0.393,
+        39.468,
+        -0.392,
+        39.469
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -0.393,
+        39.472,
+        -0.392,
+        39.473
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -0.395,
+        39.47,
+        -0.394,
+        39.471
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -0.391,
+        39.47,
+        -0.39,
+        39.471
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1714,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        -0.394,
+        39.469,
+        -0.393,
+        39.47
+      ],
+      "complete": true,
+      "count": 38,
+      "ids": [
+        {
+          "id": "ES-DGC-4323004YJ2742C",
+          "geometrySha256": "8ce9d2d7df8703161cdfb2efe57e1773e56cd3b29ad38e00e06b5cd67e5dcc18"
+        },
+        {
+          "id": "ES-DGC-4323005YJ2742C",
+          "geometrySha256": "a2cc63f0d238b43267d2c7a0152589f4114d732cfbcf21212f2f030364c36d38"
+        },
+        {
+          "id": "ES-DGC-4323006YJ2742C",
+          "geometrySha256": "c1aec05ef895de03c66542fa5a28be2fd1a0273ec059ebab10ee9a38f54e9577"
+        },
+        {
+          "id": "ES-DGC-4323008YJ2742C",
+          "geometrySha256": "5508bf11d3b8f180f6a7ce25463dc616c0ba516eee4289d755702b1fe86d8c7e"
+        },
+        {
+          "id": "ES-DGC-4323009YJ2742C",
+          "geometrySha256": "0d3c4219b27bcb094006f0034198c027983bfb1f52598146830d8eab42f79b62"
+        },
+        {
+          "id": "ES-DGC-4323010YJ2742C",
+          "geometrySha256": "363bc6f80c7c4c37bb98955b80a24895c5166ec2d0cf1bacf3dc52ca3822f801"
+        },
+        {
+          "id": "ES-DGC-4323011YJ2742C",
+          "geometrySha256": "2c6fa575d7bf2809ea628b2d83197c2a2f8ed6f2edc07ffa569ef62d1c46d1e3"
+        },
+        {
+          "id": "ES-DGC-4323012YJ2742C",
+          "geometrySha256": "fda424a009f9a1bc88467f99b18453ed82a95160b6fe9f02ea73b3f282da12a4"
+        },
+        {
+          "id": "ES-DGC-4323013YJ2742C",
+          "geometrySha256": "e46f7541bbccdbe2d1fbe600b85d906b526f11016c61f6366fc4bf0edef9ad70"
+        },
+        {
+          "id": "ES-DGC-4323014YJ2742C",
+          "geometrySha256": "51f44a01686b55920a368d41dfd59f1b05a73a58b91d4d58973ad36668b8f076"
+        },
+        {
+          "id": "ES-DGC-4323015YJ2742C",
+          "geometrySha256": "883985db8806b7b6866138f4d5f833555b489a57ff092c68c0e33c9cb471f0ed"
+        },
+        {
+          "id": "ES-DGC-4323016YJ2742C",
+          "geometrySha256": "fb19bcea9a60ed9d811cefb60e548403bab23c35ec50bbd6260a5df56a025be2"
+        },
+        {
+          "id": "ES-DGC-4323018YJ2742C",
+          "geometrySha256": "362151be94eb486fd4317a69f38a1095af33bc644efdd4151c4c92f735add525"
+        },
+        {
+          "id": "ES-DGC-4323019YJ2742C",
+          "geometrySha256": "56f531260126a1a19da7fdbdd3bcf3762f6c9c606f6e3534d85a40b2b8ae5be5"
+        },
+        {
+          "id": "ES-DGC-4323802YJ2742C",
+          "geometrySha256": "b5bb2e301ab7b703af639ae8ad430c9b5157430ecee93c27b9a6d84c8bee3f91"
+        },
+        {
+          "id": "ES-DGC-4323803YJ2742C",
+          "geometrySha256": "402aa0c2d37f815d5e36e606be7029b0a4e29408bd14793434ccba86d79b6b40"
+        },
+        {
+          "id": "ES-DGC-4323804YJ2742C",
+          "geometrySha256": "abe6655186dafa57797a5193c28d11daabfb4ac74e8131f783b1d033002411a7"
+        },
+        {
+          "id": "ES-DGC-4323805YJ2742C",
+          "geometrySha256": "366b07ab330bce184ed274620a2a97f616f32abdf9d5a7a3909fb89a463d7053"
+        },
+        {
+          "id": "ES-DGC-4323806YJ2742C",
+          "geometrySha256": "08beaedc20f5eb0df40cf3ddc181058f4102740cb9ee586a53f5aab8791958f6"
+        },
+        {
+          "id": "ES-DGC-4323807YJ2742C",
+          "geometrySha256": "a6913b5631821d505faa85e1ef70582ade066ad825f31ddeb6c0b0cf842fd228"
+        },
+        {
+          "id": "ES-DGC-4323808YJ2742C",
+          "geometrySha256": "a4dfd4c2f9de804f2c75a101156545d164a478941ac58a403ac58e89aabc0ded"
+        },
+        {
+          "id": "ES-DGC-4323809YJ2742C",
+          "geometrySha256": "c4547e882ea8cd7ab535bbc4b237047535769ba5830ae56c7342f8baeeaa2d94"
+        },
+        {
+          "id": "ES-DGC-4323810YJ2742C",
+          "geometrySha256": "75e82811a660d3599b192c7447d78c1a7755eb4cd8e0d8bb4ccd5c3526109520"
+        },
+        {
+          "id": "ES-DGC-4323811YJ2742C",
+          "geometrySha256": "50bc448c527b380b5f795b942dacc37062af0e4b0fdcb2468996950b59bd9ade"
+        },
+        {
+          "id": "ES-DGC-4323812YJ2742C",
+          "geometrySha256": "0c03df797dc9bbde6fc16ec3140f3c5b6a1406c76ab6cf94c8f0e87ecfc4c3d9"
+        },
+        {
+          "id": "ES-DGC-4323813YJ2742C",
+          "geometrySha256": "2fdee605ada02aa98918d8456a091f59e33bb38deaa89a6adc04fdeeb5c53ae2"
+        },
+        {
+          "id": "ES-DGC-4323814YJ2742C",
+          "geometrySha256": "2c056e65dd05b9d0af790ec5be5daa8fe0d1450cc7109dfd4f16fb05789b17c5"
+        },
+        {
+          "id": "ES-DGC-4323815YJ2742C",
+          "geometrySha256": "3549e4e5df2b35c4dbbf456442a84d3501d639f37464646d5256095b22cd280f"
+        },
+        {
+          "id": "ES-DGC-4323816YJ2742C",
+          "geometrySha256": "d3923dbd66d7a40b57bdf4fcb8fb080e8d6ffeb463940b07d630826bf9cc8539"
+        },
+        {
+          "id": "ES-DGC-4323817YJ2742C",
+          "geometrySha256": "03ec8898b59594701579549ff029011055ad6d06fdcaf80c8c22d4cf4fcbe6bd"
+        },
+        {
+          "id": "ES-DGC-4323818YJ2742C",
+          "geometrySha256": "c1c364c4397e104bd2361d1ecb17ef63c9052744cc350e0e7b7b2fa0618ce13a"
+        },
+        {
+          "id": "ES-DGC-4323819YJ2742C",
+          "geometrySha256": "3190f02353ebca7a8e0726226a2232b0ec56d7269091f6bce743359108734a49"
+        },
+        {
+          "id": "ES-DGC-4323820YJ2742C",
+          "geometrySha256": "1783a1480c90b86741f59163b122bd5f0ce3fe2634091189e9cfe5931857db59"
+        },
+        {
+          "id": "ES-DGC-4323821YJ2742C",
+          "geometrySha256": "d599db8abc00e388004168f510807121155fa12dc23b6b724838b5631586bc37"
+        },
+        {
+          "id": "ES-DGC-4324007YJ2742C",
+          "geometrySha256": "30d205e617833ea1cd1b3294c315cd46537c0ec0e06e794eeb53e663d0636f07"
+        },
+        {
+          "id": "ES-DGC-4324008YJ2742C",
+          "geometrySha256": "d2011dc63845083cc2e05cccc420ef84445f9cafa73c9a296722eee25389f437"
+        },
+        {
+          "id": "ES-DGC-4324009YJ2742C",
+          "geometrySha256": "e0a62ad3f8bf3cb5d3cbfaee0f4ab52a020e6b497d19bd62ce8a807a9d5397ec"
+        },
+        {
+          "id": "ES-DGC-4324010YJ2742C",
+          "geometrySha256": "ec2f6a703bcf23aedf76b9d9c08fe40f69a31e2379d6cc3ee4dbf33c827470d5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 802,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        -0.393,
+        39.469,
+        -0.392,
+        39.47
+      ],
+      "complete": true,
+      "count": 20,
+      "ids": [
+        {
+          "id": "ES-DGC-4323012YJ2742C",
+          "geometrySha256": "fda424a009f9a1bc88467f99b18453ed82a95160b6fe9f02ea73b3f282da12a4"
+        },
+        {
+          "id": "ES-DGC-4323808YJ2742C",
+          "geometrySha256": "a4dfd4c2f9de804f2c75a101156545d164a478941ac58a403ac58e89aabc0ded"
+        },
+        {
+          "id": "ES-DGC-4323809YJ2742C",
+          "geometrySha256": "c4547e882ea8cd7ab535bbc4b237047535769ba5830ae56c7342f8baeeaa2d94"
+        },
+        {
+          "id": "ES-DGC-4323810YJ2742C",
+          "geometrySha256": "75e82811a660d3599b192c7447d78c1a7755eb4cd8e0d8bb4ccd5c3526109520"
+        },
+        {
+          "id": "ES-DGC-4323811YJ2742C",
+          "geometrySha256": "50bc448c527b380b5f795b942dacc37062af0e4b0fdcb2468996950b59bd9ade"
+        },
+        {
+          "id": "ES-DGC-4323812YJ2742C",
+          "geometrySha256": "0c03df797dc9bbde6fc16ec3140f3c5b6a1406c76ab6cf94c8f0e87ecfc4c3d9"
+        },
+        {
+          "id": "ES-DGC-4323813YJ2742C",
+          "geometrySha256": "2fdee605ada02aa98918d8456a091f59e33bb38deaa89a6adc04fdeeb5c53ae2"
+        },
+        {
+          "id": "ES-DGC-4324006YJ2742C",
+          "geometrySha256": "34e07349d028311dd1f4367ac6850300e3219289ab0d9fbff7940f393e9a644f"
+        },
+        {
+          "id": "ES-DGC-4324007YJ2742C",
+          "geometrySha256": "30d205e617833ea1cd1b3294c315cd46537c0ec0e06e794eeb53e663d0636f07"
+        },
+        {
+          "id": "ES-DGC-4423001YJ2742C",
+          "geometrySha256": "50b1550c1a280a8f71655836a7e0dc40cd6acb36b1f39ae479b0743c84d46e9c"
+        },
+        {
+          "id": "ES-DGC-4423002YJ2742C",
+          "geometrySha256": "dcfb0f9e90c2a5ff920a06bf003daabfb9d6173c07196a3009e0bb9adfbe047b"
+        },
+        {
+          "id": "ES-DGC-4423003YJ2742C",
+          "geometrySha256": "2aa99a3513891777b14d013333fce31ba2971f1b1e6d22006c6cd669427779f7"
+        },
+        {
+          "id": "ES-DGC-4423004YJ2742C",
+          "geometrySha256": "d5bc5388bfa5e2e8dd76f1006f8193b92bfd342075aa473483d97fdbe3dead1a"
+        },
+        {
+          "id": "ES-DGC-4423005YJ2742C",
+          "geometrySha256": "753cd3b159f1f37b98966554f553acefd578a0d77b3fbf43fe1373dc97efff2e"
+        },
+        {
+          "id": "ES-DGC-4423006YJ2742C",
+          "geometrySha256": "ad30dcce3103879af03853a9ba63fe861ee4d368fe3686a63e43e705ca7abaac"
+        },
+        {
+          "id": "ES-DGC-4423007YJ2742C",
+          "geometrySha256": "f547eef08d452988e7da33517fbc87b6faf75d4ccd555152a31eb853f581ebad"
+        },
+        {
+          "id": "ES-DGC-4423008YJ2742C",
+          "geometrySha256": "bf1b367a878d20a9f16977d34329890f0f2b2a2c437749350eacc61c5e9e16dc"
+        },
+        {
+          "id": "ES-DGC-4423009YJ2742C",
+          "geometrySha256": "274861637cfc40c95cd8e9ec0fc2984ff2185b445a8e357db17312052060ffd8"
+        },
+        {
+          "id": "ES-DGC-4423010YJ2742C",
+          "geometrySha256": "c3a511b0b1b971cf390b63761f1033eb4b6123b547207b9675992fbb59ec0cd3"
+        },
+        {
+          "id": "ES-DGC-4423012YJ2742C",
+          "geometrySha256": "43ac11e541eae35c0f2a1318f96329e6f9ba6217655477aecaab47ab83e8bc58"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 843,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        -0.392,
+        39.469,
+        -0.391,
+        39.47
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "ES-DGC-4423003YJ2742C",
+          "geometrySha256": "2aa99a3513891777b14d013333fce31ba2971f1b1e6d22006c6cd669427779f7"
+        },
+        {
+          "id": "ES-DGC-4423004YJ2742C",
+          "geometrySha256": "d5bc5388bfa5e2e8dd76f1006f8193b92bfd342075aa473483d97fdbe3dead1a"
+        },
+        {
+          "id": "ES-DGC-4522410YJ2742D",
+          "geometrySha256": "269c5a1bfd8b4198c69a49b77fdbe72b84293cce0e29ac7b9ff6be688c979d80"
+        },
+        {
+          "id": "ES-DGC-4522411YJ2742D",
+          "geometrySha256": "80c9df616f8dcc81c5a79ebe62df97432484b2bdac1eeee4e4bdf205c9701c8a"
+        },
+        {
+          "id": "ES-DGC-4522412YJ2742D",
+          "geometrySha256": "3e955fa4c17d18ec837f8225a893b0d8129623c0b3be44dd9883558100decc3d"
+        },
+        {
+          "id": "ES-DGC-4523902YJ2742D",
+          "geometrySha256": "3e1f881b278acc0799cf9414804ccc15799d8d219e6a94e890bb681049e18ed2"
+        },
+        {
+          "id": "ES-DGC-4523907YJ2742D",
+          "geometrySha256": "be4bbb0185c896ae3ebc254745561d2ec85080aeebaf62ee861cbe3558387330"
+        },
+        {
+          "id": "ES-DGC-4523908YJ2742D",
+          "geometrySha256": "b09999a39f1af13ad97e186d88450129040c7ed59e6151d4d67f72a932693456"
+        },
+        {
+          "id": "ES-DGC-4523909YJ2742D",
+          "geometrySha256": "96b58b45b01505d02320dd3b64ba81e3062e13404180f860e03b0bbca30fd30c"
+        },
+        {
+          "id": "ES-DGC-4523910YJ2742D",
+          "geometrySha256": "bf1ea86e2f747f0aad14b80a9efb4c7070ba80a0f6bc13d73e3909608ad882f0"
+        },
+        {
+          "id": "ES-DGC-4523911YJ2742D",
+          "geometrySha256": "ad7d38b7180c6f98a18944d89c1351c73d2062434fe86b03e75d37923cd226d2"
+        },
+        {
+          "id": "ES-DGC-4523912YJ2742C",
+          "geometrySha256": "a4b2781eb99111413af4979e79936f94fc55cee8fb8cf7b0fac447cdea54e4f7"
+        },
+        {
+          "id": "ES-DGC-4523913YJ2742C",
+          "geometrySha256": "2e1381e683dbe1e9c504554b0cbcceab30e3edd164482130731866b295ad55ec"
+        },
+        {
+          "id": "ES-DGC-4523914YJ2742C",
+          "geometrySha256": "8118a626b7bd3987140b75089f442b3d7411eb63285203060067877b4b0c25f3"
+        },
+        {
+          "id": "ES-DGC-4523915YJ2742D",
+          "geometrySha256": "6ac7db811a8f1e05e897a89591d6726ffba59f62dde09a7e051e1374600449b4"
+        },
+        {
+          "id": "ES-DGC-4523916YJ2742D",
+          "geometrySha256": "08d44d6c675a2b46ce88e24c3c126b318dc58261c52d237f0076c49830e52013"
+        },
+        {
+          "id": "ES-DGC-4523917YJ2742D",
+          "geometrySha256": "6b8f3f44a0ed14b789e768d3c9d9cd656fcffd26fd9b2af54433db51ef58df9c"
+        },
+        {
+          "id": "ES-DGC-4523918YJ2742D",
+          "geometrySha256": "234cd748767cbb67e228ce4a3c53b28ce85f0f212dfe9ba68be267ebca632947"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 914,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        -0.394,
+        39.47,
+        -0.393,
+        39.471
+      ],
+      "complete": true,
+      "count": 21,
+      "ids": [
+        {
+          "id": "ES-DGC-4324001YJ2742C",
+          "geometrySha256": "62eb1dd7a366ad0bbe822508911d532cfd303e09736351d51bfc7a6d2635d3a1"
+        },
+        {
+          "id": "ES-DGC-4324002YJ2742C",
+          "geometrySha256": "76963ef073d3090712ea20be654d82349fa992599051c8f9d06b3a69e6ccca5f"
+        },
+        {
+          "id": "ES-DGC-4324003YJ2742C",
+          "geometrySha256": "6cb0a732336b79e629ca58efcb05003553b89d327da1d42c1d47cae07f8ed1f1"
+        },
+        {
+          "id": "ES-DGC-4324004YJ2742C",
+          "geometrySha256": "d1b416d53f6484fba8b7d644a3beb6e4537596c0283b57165c7dba73a8440e2e"
+        },
+        {
+          "id": "ES-DGC-4324005YJ2742C",
+          "geometrySha256": "003f948b6fb7b1210f009f2c348469da74b9a0c4c149dce42450138bbfd2dab6"
+        },
+        {
+          "id": "ES-DGC-4324007YJ2742C",
+          "geometrySha256": "30d205e617833ea1cd1b3294c315cd46537c0ec0e06e794eeb53e663d0636f07"
+        },
+        {
+          "id": "ES-DGC-4324008YJ2742C",
+          "geometrySha256": "d2011dc63845083cc2e05cccc420ef84445f9cafa73c9a296722eee25389f437"
+        },
+        {
+          "id": "ES-DGC-4324009YJ2742C",
+          "geometrySha256": "e0a62ad3f8bf3cb5d3cbfaee0f4ab52a020e6b497d19bd62ce8a807a9d5397ec"
+        },
+        {
+          "id": "ES-DGC-4324010YJ2742C",
+          "geometrySha256": "ec2f6a703bcf23aedf76b9d9c08fe40f69a31e2379d6cc3ee4dbf33c827470d5"
+        },
+        {
+          "id": "ES-DGC-4324011YJ2742C",
+          "geometrySha256": "d323e52ae41ffea14045bfea25d3ff68fd151547039b4dc0d328f4d04b8548cf"
+        },
+        {
+          "id": "ES-DGC-4324012YJ2742C",
+          "geometrySha256": "c862d2e27bf46bc9c5921dd7e54bc46af3ba1ec256f298c28230172776978946"
+        },
+        {
+          "id": "ES-DGC-4324013YJ2742C",
+          "geometrySha256": "ba1cfb4de9609f22ab16ef068e6950d8e7be55559cc2794d4a1c3b8408b26617"
+        },
+        {
+          "id": "ES-DGC-4324014YJ2742C",
+          "geometrySha256": "f16bc7ea3721a6f803b3c17b71a725c2335b1a7f81ec2a7964b2e8bfb1608a6b"
+        },
+        {
+          "id": "ES-DGC-4324015YJ2742C",
+          "geometrySha256": "ad42c1b5cec9f9ad8c908533f91b23596202fef8dd0f9a53e1d575d6b2d1ba3d"
+        },
+        {
+          "id": "ES-DGC-4324016YJ2742C",
+          "geometrySha256": "f959f7101b095bbc8de97083d47697d3de834445f1fd7934b93cb3f363115760"
+        },
+        {
+          "id": "ES-DGC-4324017YJ2742C",
+          "geometrySha256": "d0d2e63c1af127494aa9e39237a2cd43322e4a95c53c51ef9e4b4f559d570d23"
+        },
+        {
+          "id": "ES-DGC-4324018YJ2742C",
+          "geometrySha256": "55d5b34179d8241540eb799f5edaa58c074725894acd833f59cca1662c906a8e"
+        },
+        {
+          "id": "ES-DGC-4324019YJ2742C",
+          "geometrySha256": "569b61ca82f3ded765b499044988a27c16b1bd3f36b546447ea7674045ff5c52"
+        },
+        {
+          "id": "ES-DGC-4324020YJ2742C",
+          "geometrySha256": "623f8dd5bb91a0a925db6ee60926ed8615fb9ee2da9649e36597268658d6dd4e"
+        },
+        {
+          "id": "ES-DGC-4325002YJ2742E",
+          "geometrySha256": "0b152614dc9d3857ccd63c10dda2d4b97b77ea9bf519404bce03573a211e30bc"
+        },
+        {
+          "id": "ES-DGC-4325008YJ2742E",
+          "geometrySha256": "178aac1a989895478a49342370e684a12cd923ebf7df88296adf7de4620ddfc9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 719,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        -0.393,
+        39.47,
+        -0.392,
+        39.471
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "ES-DGC-4324001YJ2742C",
+          "geometrySha256": "62eb1dd7a366ad0bbe822508911d532cfd303e09736351d51bfc7a6d2635d3a1"
+        },
+        {
+          "id": "ES-DGC-4324002YJ2742C",
+          "geometrySha256": "76963ef073d3090712ea20be654d82349fa992599051c8f9d06b3a69e6ccca5f"
+        },
+        {
+          "id": "ES-DGC-4324003YJ2742C",
+          "geometrySha256": "6cb0a732336b79e629ca58efcb05003553b89d327da1d42c1d47cae07f8ed1f1"
+        },
+        {
+          "id": "ES-DGC-4324004YJ2742C",
+          "geometrySha256": "d1b416d53f6484fba8b7d644a3beb6e4537596c0283b57165c7dba73a8440e2e"
+        },
+        {
+          "id": "ES-DGC-4324005YJ2742C",
+          "geometrySha256": "003f948b6fb7b1210f009f2c348469da74b9a0c4c149dce42450138bbfd2dab6"
+        },
+        {
+          "id": "ES-DGC-4324006YJ2742C",
+          "geometrySha256": "34e07349d028311dd1f4367ac6850300e3219289ab0d9fbff7940f393e9a644f"
+        },
+        {
+          "id": "ES-DGC-4324007YJ2742C",
+          "geometrySha256": "30d205e617833ea1cd1b3294c315cd46537c0ec0e06e794eeb53e663d0636f07"
+        },
+        {
+          "id": "ES-DGC-4324008YJ2742C",
+          "geometrySha256": "d2011dc63845083cc2e05cccc420ef84445f9cafa73c9a296722eee25389f437"
+        },
+        {
+          "id": "ES-DGC-4425614YJ2742C",
+          "geometrySha256": "c6f9732b4140295487f404f92364cfae565ecefbb4e45e017457f7d3f273f7eb"
+        },
+        {
+          "id": "ES-DGC-4425615YJ2742C",
+          "geometrySha256": "fb7ed0032aeecc16ebf511c38dd2988f33ab08e4f27f71294ca7d406627a421a"
+        },
+        {
+          "id": "ES-DGC-4425616YJ2742C",
+          "geometrySha256": "f7a14b5e3c4d60ac139c87a16798fd7885efff16cd8fbca44bf3792312d0246d"
+        },
+        {
+          "id": "ES-DGC-4425617YJ2742C",
+          "geometrySha256": "3e0dcc2521b92fda329e6d4296a9d7f05522b91539cbc57fc3b40c8302d04b16"
+        },
+        {
+          "id": "ES-DGC-4425618YJ2742C",
+          "geometrySha256": "3a0579cc31a00e70b1c7a136421721671bc9ce2f06966e6576f82bb47664aa20"
+        },
+        {
+          "id": "ES-DGC-4425619YJ2742E",
+          "geometrySha256": "80d14b81e5da1ff999cc94691c72e3821410b39181ebe46adef95de768b3a6d1"
+        },
+        {
+          "id": "ES-DGC-4425620YJ2742E",
+          "geometrySha256": "e0e8b008f43bd0db3a4806762a0227c918245d0fc13a4fa503985c089cbf53f4"
+        },
+        {
+          "id": "ES-DGC-4425621YJ2742C",
+          "geometrySha256": "ed10397f35078fe1159e657cc5960e274adf8ec0b8fb2f0388f1fdceb53bcb73"
+        },
+        {
+          "id": "ES-DGC-4425622YJ2742C",
+          "geometrySha256": "69dae42091aa7f9131af4868d82d8de1a91fbb60d7a857529fdf39c92189872b"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 938,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        -0.392,
+        39.47,
+        -0.391,
+        39.471
+      ],
+      "complete": true,
+      "count": 23,
+      "ids": [
+        {
+          "id": "ES-DGC-4425605YJ2742E",
+          "geometrySha256": "c7762031c6d005f9a35c16d0e9b8b4e02d87d0a01c81423461b3036f0808fd0f"
+        },
+        {
+          "id": "ES-DGC-4425606YJ2742E",
+          "geometrySha256": "72eed71a875c5b27a1a4d13bb48969077952c854a5013e1e2cf6013a782c3533"
+        },
+        {
+          "id": "ES-DGC-4425607YJ2742C",
+          "geometrySha256": "35e817b6f0ede342c517ff82eca9ecf524b52ee27f997a3f150490f70a90b1c0"
+        },
+        {
+          "id": "ES-DGC-4425608YJ2742D",
+          "geometrySha256": "1ac84e137274188457ece9dcf8f91c828c775f4c80ed3ac1d95be91bb68ad0e6"
+        },
+        {
+          "id": "ES-DGC-4425609YJ2742D",
+          "geometrySha256": "de5b003bf66f92049c9b67d32be368449290974502bd2fa44103c2557dbcdc6a"
+        },
+        {
+          "id": "ES-DGC-4425610YJ2742D",
+          "geometrySha256": "5b4ff626709044118a3ce629bf7dacb0fbe960074e02a3dc654a584470cc9337"
+        },
+        {
+          "id": "ES-DGC-4425611YJ2742D",
+          "geometrySha256": "e75055d6cff37c9dd0b12e2afbfbcdfe75a1f1e33625a352b7699130b0ddf186"
+        },
+        {
+          "id": "ES-DGC-4425612YJ2742C",
+          "geometrySha256": "96d1923538f2fb722f25fee4918a648714c59eeb13384346f8da221ad102b497"
+        },
+        {
+          "id": "ES-DGC-4425613YJ2742C",
+          "geometrySha256": "d8572217f33c9ccbd008e1c284c83ced4179c785fe79082fbdd6def1198fead1"
+        },
+        {
+          "id": "ES-DGC-4425614YJ2742C",
+          "geometrySha256": "c6f9732b4140295487f404f92364cfae565ecefbb4e45e017457f7d3f273f7eb"
+        },
+        {
+          "id": "ES-DGC-4425615YJ2742C",
+          "geometrySha256": "fb7ed0032aeecc16ebf511c38dd2988f33ab08e4f27f71294ca7d406627a421a"
+        },
+        {
+          "id": "ES-DGC-4425621YJ2742C",
+          "geometrySha256": "ed10397f35078fe1159e657cc5960e274adf8ec0b8fb2f0388f1fdceb53bcb73"
+        },
+        {
+          "id": "ES-DGC-4425622YJ2742C",
+          "geometrySha256": "69dae42091aa7f9131af4868d82d8de1a91fbb60d7a857529fdf39c92189872b"
+        },
+        {
+          "id": "ES-DGC-4523901YJ2742D",
+          "geometrySha256": "acfcdc237c58e5e38dc996bebe576e8d983edf466ef7f2b2d7a6c58a6223d887"
+        },
+        {
+          "id": "ES-DGC-4523902YJ2742D",
+          "geometrySha256": "3e1f881b278acc0799cf9414804ccc15799d8d219e6a94e890bb681049e18ed2"
+        },
+        {
+          "id": "ES-DGC-4523907YJ2742D",
+          "geometrySha256": "be4bbb0185c896ae3ebc254745561d2ec85080aeebaf62ee861cbe3558387330"
+        },
+        {
+          "id": "ES-DGC-4523914YJ2742C",
+          "geometrySha256": "8118a626b7bd3987140b75089f442b3d7411eb63285203060067877b4b0c25f3"
+        },
+        {
+          "id": "ES-DGC-4523915YJ2742D",
+          "geometrySha256": "6ac7db811a8f1e05e897a89591d6726ffba59f62dde09a7e051e1374600449b4"
+        },
+        {
+          "id": "ES-DGC-4523916YJ2742D",
+          "geometrySha256": "08d44d6c675a2b46ce88e24c3c126b318dc58261c52d237f0076c49830e52013"
+        },
+        {
+          "id": "ES-DGC-4523917YJ2742D",
+          "geometrySha256": "6b8f3f44a0ed14b789e768d3c9d9cd656fcffd26fd9b2af54433db51ef58df9c"
+        },
+        {
+          "id": "ES-DGC-4525418YJ2742D",
+          "geometrySha256": "f0468a5ed6cef89b8813b22c5566795aa9416edb104743b29c44657a890c5c08"
+        },
+        {
+          "id": "ES-DGC-4525419YJ2742D",
+          "geometrySha256": "42d4f23221ce448d9170f55a2824379dfbdf34cca08bf85d3de3fc0ffb314b16"
+        },
+        {
+          "id": "ES-DGC-4525420YJ2742F",
+          "geometrySha256": "1934849f2a7250697009a64de8a5c5c8e39d7938f2d2c381776609fa03af0945"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 314,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        -0.394,
+        39.471,
+        -0.393,
+        39.472
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "ES-DGC-4226501YJ2742E",
+          "geometrySha256": "6fbffaf896828f7ece57f86aea833c2314ef7c4a074ab7566675bf4c920eceba"
+        },
+        {
+          "id": "ES-DGC-4226502YJ2742E",
+          "geometrySha256": "e508f8bf01ede4a109b4b46e5be6ea25249ce3581ee796ce4c50544fddb9a7fd"
+        },
+        {
+          "id": "ES-DGC-4325002YJ2742E",
+          "geometrySha256": "0b152614dc9d3857ccd63c10dda2d4b97b77ea9bf519404bce03573a211e30bc"
+        },
+        {
+          "id": "ES-DGC-4325008YJ2742E",
+          "geometrySha256": "178aac1a989895478a49342370e684a12cd923ebf7df88296adf7de4620ddfc9"
+        },
+        {
+          "id": "ES-DGC-4425104YJ2742E",
+          "geometrySha256": "3b29afa6f123fa88f25ff466b6c24c352d9d8ea4347aba1e0a487d327969dcd0"
+        },
+        {
+          "id": "ES-DGC-4426807YJ2742E",
+          "geometrySha256": "3d765b3ade82f1f5a3d8bb1de6e9ce148707629b90e8121411a261a3084079a1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 461,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        -0.393,
+        39.471,
+        -0.392,
+        39.472
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "ES-DGC-4425101YJ2742E",
+          "geometrySha256": "a68274c0509267dc00adecb5c36a9131918834b35a7a03aeeab6576f4d917d82"
+        },
+        {
+          "id": "ES-DGC-4425102YJ2742E",
+          "geometrySha256": "85d6a506cbf648ea8a99ed1910f34eeb12f6028511a7cde753452590a6d82cee"
+        },
+        {
+          "id": "ES-DGC-4425103YJ2742E",
+          "geometrySha256": "b16a4f8d59e1b7a393aba5ab7dcac52bb6609935ed5fa63b19c82d31ad7007ce"
+        },
+        {
+          "id": "ES-DGC-4425104YJ2742E",
+          "geometrySha256": "3b29afa6f123fa88f25ff466b6c24c352d9d8ea4347aba1e0a487d327969dcd0"
+        },
+        {
+          "id": "ES-DGC-4425601YJ2742E",
+          "geometrySha256": "eae5760cef21594d517ad7b4e15b755ac568498c7292fd1462f8b6c226380c9f"
+        },
+        {
+          "id": "ES-DGC-4425619YJ2742E",
+          "geometrySha256": "80d14b81e5da1ff999cc94691c72e3821410b39181ebe46adef95de768b3a6d1"
+        },
+        {
+          "id": "ES-DGC-4425620YJ2742E",
+          "geometrySha256": "e0e8b008f43bd0db3a4806762a0227c918245d0fc13a4fa503985c089cbf53f4"
+        },
+        {
+          "id": "ES-DGC-4425622YJ2742C",
+          "geometrySha256": "69dae42091aa7f9131af4868d82d8de1a91fbb60d7a857529fdf39c92189872b"
+        },
+        {
+          "id": "ES-DGC-4426807YJ2742E",
+          "geometrySha256": "3d765b3ade82f1f5a3d8bb1de6e9ce148707629b90e8121411a261a3084079a1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 880,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        -0.392,
+        39.471,
+        -0.391,
+        39.472
+      ],
+      "complete": true,
+      "count": 20,
+      "ids": [
+        {
+          "id": "ES-DGC-4425101YJ2742E",
+          "geometrySha256": "a68274c0509267dc00adecb5c36a9131918834b35a7a03aeeab6576f4d917d82"
+        },
+        {
+          "id": "ES-DGC-4425601YJ2742E",
+          "geometrySha256": "eae5760cef21594d517ad7b4e15b755ac568498c7292fd1462f8b6c226380c9f"
+        },
+        {
+          "id": "ES-DGC-4425602YJ2742E",
+          "geometrySha256": "900cfc56c92174b5fc29f4d4d5f2c309ada132eb54dd812e73746edbd50931c2"
+        },
+        {
+          "id": "ES-DGC-4425603YJ2742E",
+          "geometrySha256": "5189b2e46298191f99a6193fe0bc97879211e623ba0ad9e3a4a9832c5db07f30"
+        },
+        {
+          "id": "ES-DGC-4425604YJ2742E",
+          "geometrySha256": "39f7936c9f49d4e20215cf3c697e787d92e1a1e68ebe22c2cbce2de3bf670ed8"
+        },
+        {
+          "id": "ES-DGC-4425605YJ2742E",
+          "geometrySha256": "c7762031c6d005f9a35c16d0e9b8b4e02d87d0a01c81423461b3036f0808fd0f"
+        },
+        {
+          "id": "ES-DGC-4425606YJ2742E",
+          "geometrySha256": "72eed71a875c5b27a1a4d13bb48969077952c854a5013e1e2cf6013a782c3533"
+        },
+        {
+          "id": "ES-DGC-4425607YJ2742C",
+          "geometrySha256": "35e817b6f0ede342c517ff82eca9ecf524b52ee27f997a3f150490f70a90b1c0"
+        },
+        {
+          "id": "ES-DGC-4425622YJ2742C",
+          "geometrySha256": "69dae42091aa7f9131af4868d82d8de1a91fbb60d7a857529fdf39c92189872b"
+        },
+        {
+          "id": "ES-DGC-4525420YJ2742F",
+          "geometrySha256": "1934849f2a7250697009a64de8a5c5c8e39d7938f2d2c381776609fa03af0945"
+        },
+        {
+          "id": "ES-DGC-4525421YJ2742F",
+          "geometrySha256": "0cb048a6c46b66c2978b591dcf6df4c63f285d0731da26a6bfac23a49eddd121"
+        },
+        {
+          "id": "ES-DGC-4525422YJ2742F",
+          "geometrySha256": "872e05954cc72feccf4804fad072fdb05692f935bf0f1aa3439f2a9e804ad6d6"
+        },
+        {
+          "id": "ES-DGC-4525423YJ2742F",
+          "geometrySha256": "14aebd7427b8daf95f81dd12fea2a7d700eb65b9628d0e618c5947515ff9cdf4"
+        },
+        {
+          "id": "ES-DGC-4525424YJ2742F",
+          "geometrySha256": "a184fdad1ebf43b8dfcb432439f11a12c028668eb0eef796bb07b5c1b56eec5b"
+        },
+        {
+          "id": "ES-DGC-4525425YJ2742F",
+          "geometrySha256": "dbdba64e5fadb2f751323552b4bd16518ab5b0048684a6f29e3899e0b6e6a9f6"
+        },
+        {
+          "id": "ES-DGC-4525426YJ2742F",
+          "geometrySha256": "17efb024da80f7163fff9cb0a8aa62f96e43465933ec972303fdf8fb0bb59a41"
+        },
+        {
+          "id": "ES-DGC-4525427YJ2742F",
+          "geometrySha256": "5bc109255ad41e843f8c36e12fff1fba1e527389deacd7cabb0ebc1b52b0c896"
+        },
+        {
+          "id": "ES-DGC-4525428YJ2742F",
+          "geometrySha256": "6a8b1e8b42045c45a15691f8f54d3a7a902ffc93dc461f0600076730f9941154"
+        },
+        {
+          "id": "ES-DGC-4525701YJ2742F",
+          "geometrySha256": "8236a82d309a939db3679672fa13730d98c4f191c66d7f0d28538c2108a7f281"
+        },
+        {
+          "id": "ES-DGC-4525702YJ2742E",
+          "geometrySha256": "4eac1a1f0b987d71adeb9b60fd383ed92b2d9640d7be3c0cd82eeb678f7255fa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 1024,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        -0.393,
+        39.468,
+        -0.392,
+        39.469
+      ],
+      "complete": true,
+      "count": 27,
+      "ids": [
+        {
+          "id": "ES-DGC-4322001YJ2742A",
+          "geometrySha256": "ab6b609d57d6ba5f556d3ea4eb7a5a54acdb88336c26f5ce3b120255831fb973"
+        },
+        {
+          "id": "ES-DGC-4322002YJ2742A",
+          "geometrySha256": "be1fa9433f09a00b8098b6307cef3ebe8f88855f3c77130480b5625f1e45b2cb"
+        },
+        {
+          "id": "ES-DGC-4322003YJ2742A",
+          "geometrySha256": "c870036355dba576f95796604ce4304197d36e5a83697b8ab4e5487ad11d7c5a"
+        },
+        {
+          "id": "ES-DGC-4322004YJ2742A",
+          "geometrySha256": "833506400647b74155db52eba3cee56fb368603251a66bc3929b6bc15bd57706"
+        },
+        {
+          "id": "ES-DGC-4323012YJ2742C",
+          "geometrySha256": "fda424a009f9a1bc88467f99b18453ed82a95160b6fe9f02ea73b3f282da12a4"
+        },
+        {
+          "id": "ES-DGC-4422002YJ2742A",
+          "geometrySha256": "fd54ddaffdd6e467be296cff63b2cb94569eeb7a8d9016bf802add44b3a40c5a"
+        },
+        {
+          "id": "ES-DGC-4422003YJ2742A",
+          "geometrySha256": "69898591c5a593c1ebfcc29380414dccdfe23b0124fc284ce3c48a17a997d398"
+        },
+        {
+          "id": "ES-DGC-4422004YJ2742A",
+          "geometrySha256": "24245cf1950f59a3508d029a86e70a564e86439495dd39c98f6c5df7a33fa0f5"
+        },
+        {
+          "id": "ES-DGC-4422005YJ2742A",
+          "geometrySha256": "c03daba941beb1244e6fd7bae5f2048104d6e697e6eed1259b9164af7ab3eb47"
+        },
+        {
+          "id": "ES-DGC-4422006YJ2742A",
+          "geometrySha256": "eebc7c095d1b613922672d30c937a0cc20f5b7e12cc99b892e018066eb500331"
+        },
+        {
+          "id": "ES-DGC-4422007YJ2742A",
+          "geometrySha256": "8e5a13e3911244aa7d96cfa838497e3549c44e99d8ebaf0c91c41f74517846d4"
+        },
+        {
+          "id": "ES-DGC-4422008YJ2742A",
+          "geometrySha256": "dd9ad3c5ff2575ed8828a2051809f5551cb0f0c75bbd83a56ebb8164e00e2abb"
+        },
+        {
+          "id": "ES-DGC-4422009YJ2742A",
+          "geometrySha256": "6e2635186ee543a0ea90fec3c87d8357fce460b02ca04b44399409cb73c565f2"
+        },
+        {
+          "id": "ES-DGC-4422010YJ2742C",
+          "geometrySha256": "ee9a7a36798e39e8e5b6523b4689dbd0ecd9dea39d752343bde779504a95def7"
+        },
+        {
+          "id": "ES-DGC-4422011YJ2742A",
+          "geometrySha256": "0a1506ee4057319402c2661dd10df45f4c6b223e952e6af0ea8d416f31ef0784"
+        },
+        {
+          "id": "ES-DGC-4422012YJ2742A",
+          "geometrySha256": "a03262ae845a7876fea13c90404d0ee4f428e786c70574808ee939a4ceff2027"
+        },
+        {
+          "id": "ES-DGC-4422013YJ2742A",
+          "geometrySha256": "f199e9289e282786a561ad79eb7f71d73eeb92004a39302f67f492e5bda4633c"
+        },
+        {
+          "id": "ES-DGC-4422014YJ2742A",
+          "geometrySha256": "0398b75551a9f443c9c958e526ac95827e68e2f29268c1a19a81d894d0d1c1fe"
+        },
+        {
+          "id": "ES-DGC-4422015YJ2742A",
+          "geometrySha256": "844fdc51a17f221e7f2a558cd17b1b4a87099b339d854382dbe5399f6d80a64f"
+        },
+        {
+          "id": "ES-DGC-4422016YJ2742A",
+          "geometrySha256": "eeedc07b58b83061e69b68048e8c43caf54495750f2233cc946bb870814b1971"
+        },
+        {
+          "id": "ES-DGC-4423005YJ2742C",
+          "geometrySha256": "753cd3b159f1f37b98966554f553acefd578a0d77b3fbf43fe1373dc97efff2e"
+        },
+        {
+          "id": "ES-DGC-4423006YJ2742C",
+          "geometrySha256": "ad30dcce3103879af03853a9ba63fe861ee4d368fe3686a63e43e705ca7abaac"
+        },
+        {
+          "id": "ES-DGC-4423007YJ2742C",
+          "geometrySha256": "f547eef08d452988e7da33517fbc87b6faf75d4ccd555152a31eb853f581ebad"
+        },
+        {
+          "id": "ES-DGC-4423008YJ2742C",
+          "geometrySha256": "bf1b367a878d20a9f16977d34329890f0f2b2a2c437749350eacc61c5e9e16dc"
+        },
+        {
+          "id": "ES-DGC-4423009YJ2742C",
+          "geometrySha256": "274861637cfc40c95cd8e9ec0fc2984ff2185b445a8e357db17312052060ffd8"
+        },
+        {
+          "id": "ES-DGC-4522016YJ2742A",
+          "geometrySha256": "257a0b494571587ed34e5ee3fe691e8669982b3a6bd13f6ab3ba3de3e9bdc023"
+        },
+        {
+          "id": "ES-DGC-4522017YJ2742A",
+          "geometrySha256": "b38776813c12739073b66995cddba4379b15ae89f7a07d19a9943d426c1c3819"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 286,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        -0.393,
+        39.472,
+        -0.392,
+        39.473
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "ES-DGC-4426806YJ2742E",
+          "geometrySha256": "cb7e72815ae256221fb4731c14a87f2efee8defa64ae8b696b09eea59af9f31b"
+        },
+        {
+          "id": "ES-DGC-4426807YJ2742E",
+          "geometrySha256": "3d765b3ade82f1f5a3d8bb1de6e9ce148707629b90e8121411a261a3084079a1"
+        },
+        {
+          "id": "ES-DGC-4426815YJ2742E",
+          "geometrySha256": "a03c14a4a3fc888cc04e834d656490578f42d7d10c4e6288a217ca3716f50f85"
+        },
+        {
+          "id": "ES-DGC-4426816YJ2742E",
+          "geometrySha256": "d8347e62abec35e8a3ca765cd3ada66e5a74caf24a44764c41c8a41d80fcd62d"
+        },
+        {
+          "id": "ES-DGC-4427801YJ2742G",
+          "geometrySha256": "a9df555156bceda32a84a4cbee4fdfa5ad3fbbe528816c6f839265ee05e60d9f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 526,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        -0.395,
+        39.47,
+        -0.394,
+        39.471
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "ES-DGC-4124004YJ2742C",
+          "geometrySha256": "ae006958e66e4fbaeb1cfb2b466a256f06376a5c2a1240655a7b1176edfcfd71"
+        },
+        {
+          "id": "ES-DGC-4124811YJ2742C",
+          "geometrySha256": "b1d538f026108c1a50f080732476e57d12aabba089792040a6278b72e194dd59"
+        },
+        {
+          "id": "ES-DGC-4124812YJ2742C",
+          "geometrySha256": "dd7bb4a73cd4f936086ac448359050e85e78f967baad1ec5fb2b7608dc3b8351"
+        },
+        {
+          "id": "ES-DGC-4225004YJ2742C",
+          "geometrySha256": "a911077ab1728592f46463bc6ade0a16bfe07a8a2f69d6445be03bd5221fddc4"
+        },
+        {
+          "id": "ES-DGC-4225005YJ2742C",
+          "geometrySha256": "46b5176f2ce527c15fc9d4152e0b2e143802773ad546b6c503b2c7ff02dd40f2"
+        },
+        {
+          "id": "ES-DGC-4225006YJ2742C",
+          "geometrySha256": "01d9cc3393ddd6f0f66d79f024f320a1f2e3336c1b39dcc36091793778f8975a"
+        },
+        {
+          "id": "ES-DGC-4323801YJ2742C",
+          "geometrySha256": "97be7cec62a371ec989c39d524662d959d29e3f0b9330dd35889bea044185bf6"
+        },
+        {
+          "id": "ES-DGC-4323802YJ2742C",
+          "geometrySha256": "b5bb2e301ab7b703af639ae8ad430c9b5157430ecee93c27b9a6d84c8bee3f91"
+        },
+        {
+          "id": "ES-DGC-4324015YJ2742C",
+          "geometrySha256": "ad42c1b5cec9f9ad8c908533f91b23596202fef8dd0f9a53e1d575d6b2d1ba3d"
+        },
+        {
+          "id": "ES-DGC-4324016YJ2742C",
+          "geometrySha256": "f959f7101b095bbc8de97083d47697d3de834445f1fd7934b93cb3f363115760"
+        },
+        {
+          "id": "ES-DGC-4324017YJ2742C",
+          "geometrySha256": "d0d2e63c1af127494aa9e39237a2cd43322e4a95c53c51ef9e4b4f559d570d23"
+        },
+        {
+          "id": "ES-DGC-4325008YJ2742E",
+          "geometrySha256": "178aac1a989895478a49342370e684a12cd923ebf7df88296adf7de4620ddfc9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 1225,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        -0.391,
+        39.47,
+        -0.39,
+        39.471
+      ],
+      "complete": true,
+      "count": 29,
+      "ids": [
+        {
+          "id": "ES-DGC-4523901YJ2742D",
+          "geometrySha256": "acfcdc237c58e5e38dc996bebe576e8d983edf466ef7f2b2d7a6c58a6223d887"
+        },
+        {
+          "id": "ES-DGC-4523902YJ2742D",
+          "geometrySha256": "3e1f881b278acc0799cf9414804ccc15799d8d219e6a94e890bb681049e18ed2"
+        },
+        {
+          "id": "ES-DGC-4523907YJ2742D",
+          "geometrySha256": "be4bbb0185c896ae3ebc254745561d2ec85080aeebaf62ee861cbe3558387330"
+        },
+        {
+          "id": "ES-DGC-4523917YJ2742D",
+          "geometrySha256": "6b8f3f44a0ed14b789e768d3c9d9cd656fcffd26fd9b2af54433db51ef58df9c"
+        },
+        {
+          "id": "ES-DGC-4525411YJ2742F",
+          "geometrySha256": "6b5148cff5bb213244833a225396248e48ac484cd770435384e1655d4bf7d732"
+        },
+        {
+          "id": "ES-DGC-4525412YJ2742F",
+          "geometrySha256": "c776259333c191e9c0ca3cf0b4444998d29e442946adac6b2070d8f042e92664"
+        },
+        {
+          "id": "ES-DGC-4525413YJ2742F",
+          "geometrySha256": "500afbf192f5ed427158592d2350b0720c88555faef88d89b006c2e3005bb998"
+        },
+        {
+          "id": "ES-DGC-4525414YJ2742D",
+          "geometrySha256": "73d01072eea52f0e8db67f3d833a04c8c1cc43ea2667225f25f952d5ab393aef"
+        },
+        {
+          "id": "ES-DGC-4525415YJ2742D",
+          "geometrySha256": "b08005ec611c5ba03b87c38fcfd05335f353f83e905751e442b07363c60cd158"
+        },
+        {
+          "id": "ES-DGC-4525416YJ2742D",
+          "geometrySha256": "99eb9cec8f4566c7b5894c43b95dab6700f892ef92bb5984a342fb05c1f46902"
+        },
+        {
+          "id": "ES-DGC-4525417YJ2742D",
+          "geometrySha256": "677d59ab7f589630024d50e83510e357d8c45b7b2f0a08127d0bd8b65ecf011d"
+        },
+        {
+          "id": "ES-DGC-4525418YJ2742D",
+          "geometrySha256": "f0468a5ed6cef89b8813b22c5566795aa9416edb104743b29c44657a890c5c08"
+        },
+        {
+          "id": "ES-DGC-4525419YJ2742D",
+          "geometrySha256": "42d4f23221ce448d9170f55a2824379dfbdf34cca08bf85d3de3fc0ffb314b16"
+        },
+        {
+          "id": "ES-DGC-4525420YJ2742F",
+          "geometrySha256": "1934849f2a7250697009a64de8a5c5c8e39d7938f2d2c381776609fa03af0945"
+        },
+        {
+          "id": "ES-DGC-4525433YJ2742F",
+          "geometrySha256": "9d5a353af33b6f4e3dc529d9fa1b73b3a41d1b37f0098e7c07e369cee51c2c39"
+        },
+        {
+          "id": "ES-DGC-4525434YJ2742F",
+          "geometrySha256": "fbbf5fdc8a723d247ad976004d1c47349122bd9850e5760ca1ab8091317cf539"
+        },
+        {
+          "id": "ES-DGC-4624701YJ2742D",
+          "geometrySha256": "11e298f920b3057b76ab9a160bc202367f30fe2c64598056aac9bbb546a081f1"
+        },
+        {
+          "id": "ES-DGC-4624702YJ2742D",
+          "geometrySha256": "5c5f4af596982357e869061e47039ffa2cead5315a9eaf66352817da0be02668"
+        },
+        {
+          "id": "ES-DGC-4624703YJ2742D",
+          "geometrySha256": "0feecbb902c5042815e3ac0fafb5e4d027ac72a9b5ed9242e3213b1aac09c42b"
+        },
+        {
+          "id": "ES-DGC-4624704YJ2742D",
+          "geometrySha256": "aee224ce00c93715f448e5b95a0de6d01e92d667532de245bc1db9757e9bbe81"
+        },
+        {
+          "id": "ES-DGC-4624705YJ2742D",
+          "geometrySha256": "10acdf731cf977849be79e913cbc4aa028db952a71d291412eabb4a1503e045a"
+        },
+        {
+          "id": "ES-DGC-4624706YJ2742D",
+          "geometrySha256": "3fd11c1f5076780ba1425f679d016567499a07d15b430481f16d2b8ae4850389"
+        },
+        {
+          "id": "ES-DGC-4624707YJ2742D",
+          "geometrySha256": "54bcaaea92d6a8060bcdddb033fca9b0d688c6606b62c2122e7d19bb01a1fd09"
+        },
+        {
+          "id": "ES-DGC-4624715YJ2742D",
+          "geometrySha256": "c9b9525d703b408fad2bd782b5d96e941253a36f0af7bcdc253b67fd0585cf8d"
+        },
+        {
+          "id": "ES-DGC-4624716YJ2742D",
+          "geometrySha256": "b59b7123bef287bcb9a6c536fa5a8cd9232bf1327ee2cf9a2e9c3d3f3ca42899"
+        },
+        {
+          "id": "ES-DGC-4624717YJ2742D",
+          "geometrySha256": "1f5f42707f931be32ccadf52d9f6f2ed5ba24648f4160246424841abd2013ba0"
+        },
+        {
+          "id": "ES-DGC-4624718YJ2742D",
+          "geometrySha256": "40ccdd4eeacee643eec0bf8694816926abdecebb1e771a9aea6fab79d50dfd9c"
+        },
+        {
+          "id": "ES-DGC-4624916YJ2742D",
+          "geometrySha256": "e3565afc7cca96110f6b81007efbdc990a0d136fa97660a5d64e17cb2fb0268f"
+        },
+        {
+          "id": "ES-DGC-4624917YJ2742D",
+          "geometrySha256": "221ca7f0ecb8490139d5a68b25edb4053f767c1a344f3961bb7bc93378f052db"
+        }
+      ]
+    },
+    {
+      "name": "member-count-completeness",
+      "passed": true,
+      "elapsedMs": 0,
+      "requestIndexes": [
+        13,
+        12
+      ],
+      "cells": 13,
+      "actualMembersMatchNumberMatched": true,
+      "actualMembersMatchNumberReturned": true
+    },
+    {
+      "name": "maxFeatures-truncation-rejected",
+      "passed": true,
+      "elapsedMs": 1433,
+      "requestIndexes": [
+        13,
+        13
+      ],
+      "boundedCell": "viewport-0",
+      "actualFeatureCount": 38,
+      "maxFeatures": 3,
+      "rejected": true,
+      "error": "Parcel GML exceeds feature limit."
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 5599,
+      "requestIndexes": [
+        14,
+        53
+      ],
+      "count": 40,
+      "ids": [
+        "ES-DGC-4124004YJ2742C",
+        "ES-DGC-4124811YJ2742C",
+        "ES-DGC-4124812YJ2742C",
+        "ES-DGC-4225004YJ2742C",
+        "ES-DGC-4225005YJ2742C",
+        "ES-DGC-4225006YJ2742C",
+        "ES-DGC-4226501YJ2742E",
+        "ES-DGC-4226502YJ2742E",
+        "ES-DGC-4322001YJ2742A",
+        "ES-DGC-4322002YJ2742A",
+        "ES-DGC-4322003YJ2742A",
+        "ES-DGC-4322004YJ2742A",
+        "ES-DGC-4323004YJ2742C",
+        "ES-DGC-4323005YJ2742C",
+        "ES-DGC-4323006YJ2742C",
+        "ES-DGC-4323008YJ2742C",
+        "ES-DGC-4323009YJ2742C",
+        "ES-DGC-4323010YJ2742C",
+        "ES-DGC-4323011YJ2742C",
+        "ES-DGC-4323012YJ2742C",
+        "ES-DGC-4323013YJ2742C",
+        "ES-DGC-4323014YJ2742C",
+        "ES-DGC-4323015YJ2742C",
+        "ES-DGC-4323016YJ2742C",
+        "ES-DGC-4323018YJ2742C",
+        "ES-DGC-4323019YJ2742C",
+        "ES-DGC-4323801YJ2742C",
+        "ES-DGC-4323802YJ2742C",
+        "ES-DGC-4323803YJ2742C",
+        "ES-DGC-4323804YJ2742C",
+        "ES-DGC-4323805YJ2742C",
+        "ES-DGC-4323806YJ2742C",
+        "ES-DGC-4323807YJ2742C",
+        "ES-DGC-4323808YJ2742C",
+        "ES-DGC-4323809YJ2742C",
+        "ES-DGC-4323810YJ2742C",
+        "ES-DGC-4323811YJ2742C",
+        "ES-DGC-4323812YJ2742C",
+        "ES-DGC-4323813YJ2742C",
+        "ES-DGC-4323814YJ2742C"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 5184,
+      "requestIndexes": [
+        54,
+        93
+      ],
+      "count": 40,
+      "ids": [
+        "ES-DGC-4323815YJ2742C",
+        "ES-DGC-4323816YJ2742C",
+        "ES-DGC-4323817YJ2742C",
+        "ES-DGC-4323818YJ2742C",
+        "ES-DGC-4323819YJ2742C",
+        "ES-DGC-4323820YJ2742C",
+        "ES-DGC-4323821YJ2742C",
+        "ES-DGC-4324001YJ2742C",
+        "ES-DGC-4324002YJ2742C",
+        "ES-DGC-4324003YJ2742C",
+        "ES-DGC-4324004YJ2742C",
+        "ES-DGC-4324005YJ2742C",
+        "ES-DGC-4324006YJ2742C",
+        "ES-DGC-4324007YJ2742C",
+        "ES-DGC-4324008YJ2742C",
+        "ES-DGC-4324009YJ2742C",
+        "ES-DGC-4324010YJ2742C",
+        "ES-DGC-4324011YJ2742C",
+        "ES-DGC-4324012YJ2742C",
+        "ES-DGC-4324013YJ2742C",
+        "ES-DGC-4324014YJ2742C",
+        "ES-DGC-4324015YJ2742C",
+        "ES-DGC-4324016YJ2742C",
+        "ES-DGC-4324017YJ2742C",
+        "ES-DGC-4324018YJ2742C",
+        "ES-DGC-4324019YJ2742C",
+        "ES-DGC-4324020YJ2742C",
+        "ES-DGC-4325002YJ2742E",
+        "ES-DGC-4325008YJ2742E",
+        "ES-DGC-4422002YJ2742A",
+        "ES-DGC-4422003YJ2742A",
+        "ES-DGC-4422004YJ2742A",
+        "ES-DGC-4422005YJ2742A",
+        "ES-DGC-4422006YJ2742A",
+        "ES-DGC-4422007YJ2742A",
+        "ES-DGC-4422008YJ2742A",
+        "ES-DGC-4422009YJ2742A",
+        "ES-DGC-4422010YJ2742C",
+        "ES-DGC-4422011YJ2742A",
+        "ES-DGC-4422012YJ2742A"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 5266,
+      "requestIndexes": [
+        94,
+        133
+      ],
+      "count": 40,
+      "ids": [
+        "ES-DGC-4422013YJ2742A",
+        "ES-DGC-4422014YJ2742A",
+        "ES-DGC-4422015YJ2742A",
+        "ES-DGC-4422016YJ2742A",
+        "ES-DGC-4423001YJ2742C",
+        "ES-DGC-4423002YJ2742C",
+        "ES-DGC-4423003YJ2742C",
+        "ES-DGC-4423004YJ2742C",
+        "ES-DGC-4423005YJ2742C",
+        "ES-DGC-4423006YJ2742C",
+        "ES-DGC-4423007YJ2742C",
+        "ES-DGC-4423008YJ2742C",
+        "ES-DGC-4423009YJ2742C",
+        "ES-DGC-4423010YJ2742C",
+        "ES-DGC-4423012YJ2742C",
+        "ES-DGC-4425101YJ2742E",
+        "ES-DGC-4425102YJ2742E",
+        "ES-DGC-4425103YJ2742E",
+        "ES-DGC-4425104YJ2742E",
+        "ES-DGC-4425601YJ2742E",
+        "ES-DGC-4425602YJ2742E",
+        "ES-DGC-4425603YJ2742E",
+        "ES-DGC-4425604YJ2742E",
+        "ES-DGC-4425605YJ2742E",
+        "ES-DGC-4425606YJ2742E",
+        "ES-DGC-4425607YJ2742C",
+        "ES-DGC-4425608YJ2742D",
+        "ES-DGC-4425609YJ2742D",
+        "ES-DGC-4425610YJ2742D",
+        "ES-DGC-4425611YJ2742D",
+        "ES-DGC-4425612YJ2742C",
+        "ES-DGC-4425613YJ2742C",
+        "ES-DGC-4425614YJ2742C",
+        "ES-DGC-4425615YJ2742C",
+        "ES-DGC-4425616YJ2742C",
+        "ES-DGC-4425617YJ2742C",
+        "ES-DGC-4425618YJ2742C",
+        "ES-DGC-4425619YJ2742E",
+        "ES-DGC-4425620YJ2742E",
+        "ES-DGC-4425621YJ2742C"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-120",
+      "passed": true,
+      "elapsedMs": 5193,
+      "requestIndexes": [
+        134,
+        173
+      ],
+      "count": 40,
+      "ids": [
+        "ES-DGC-4425622YJ2742C",
+        "ES-DGC-4426806YJ2742E",
+        "ES-DGC-4426807YJ2742E",
+        "ES-DGC-4426815YJ2742E",
+        "ES-DGC-4426816YJ2742E",
+        "ES-DGC-4427801YJ2742G",
+        "ES-DGC-4522016YJ2742A",
+        "ES-DGC-4522017YJ2742A",
+        "ES-DGC-4522410YJ2742D",
+        "ES-DGC-4522411YJ2742D",
+        "ES-DGC-4522412YJ2742D",
+        "ES-DGC-4523901YJ2742D",
+        "ES-DGC-4523902YJ2742D",
+        "ES-DGC-4523907YJ2742D",
+        "ES-DGC-4523908YJ2742D",
+        "ES-DGC-4523909YJ2742D",
+        "ES-DGC-4523910YJ2742D",
+        "ES-DGC-4523911YJ2742D",
+        "ES-DGC-4523912YJ2742C",
+        "ES-DGC-4523913YJ2742C",
+        "ES-DGC-4523914YJ2742C",
+        "ES-DGC-4523915YJ2742D",
+        "ES-DGC-4523916YJ2742D",
+        "ES-DGC-4523917YJ2742D",
+        "ES-DGC-4523918YJ2742D",
+        "ES-DGC-4525411YJ2742F",
+        "ES-DGC-4525412YJ2742F",
+        "ES-DGC-4525413YJ2742F",
+        "ES-DGC-4525414YJ2742D",
+        "ES-DGC-4525415YJ2742D",
+        "ES-DGC-4525416YJ2742D",
+        "ES-DGC-4525417YJ2742D",
+        "ES-DGC-4525418YJ2742D",
+        "ES-DGC-4525419YJ2742D",
+        "ES-DGC-4525420YJ2742F",
+        "ES-DGC-4525421YJ2742F",
+        "ES-DGC-4525422YJ2742F",
+        "ES-DGC-4525423YJ2742F",
+        "ES-DGC-4525424YJ2742F",
+        "ES-DGC-4525425YJ2742F"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-160",
+      "passed": true,
+      "elapsedMs": 2701,
+      "requestIndexes": [
+        174,
+        193
+      ],
+      "count": 20,
+      "ids": [
+        "ES-DGC-4525426YJ2742F",
+        "ES-DGC-4525427YJ2742F",
+        "ES-DGC-4525428YJ2742F",
+        "ES-DGC-4525433YJ2742F",
+        "ES-DGC-4525434YJ2742F",
+        "ES-DGC-4525701YJ2742F",
+        "ES-DGC-4525702YJ2742E",
+        "ES-DGC-4624701YJ2742D",
+        "ES-DGC-4624702YJ2742D",
+        "ES-DGC-4624703YJ2742D",
+        "ES-DGC-4624704YJ2742D",
+        "ES-DGC-4624705YJ2742D",
+        "ES-DGC-4624706YJ2742D",
+        "ES-DGC-4624707YJ2742D",
+        "ES-DGC-4624715YJ2742D",
+        "ES-DGC-4624716YJ2742D",
+        "ES-DGC-4624717YJ2742D",
+        "ES-DGC-4624718YJ2742D",
+        "ES-DGC-4624916YJ2742D",
+        "ES-DGC-4624917YJ2742D"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence-invalid-shape",
+      "passed": true,
+      "elapsedMs": 131,
+      "requestIndexes": [
+        194,
+        194
+      ],
+      "classification": "explicit exact-reference OWS missing-parcel message or complete empty collection",
+      "absentIds": [
+        "ES-DGC-ZZZZZZZZZZZZZZ"
+      ],
+      "complete": true
+    },
+    {
+      "name": "explicit-absence-native-shape",
+      "passed": true,
+      "elapsedMs": 440,
+      "requestIndexes": [
+        195,
+        195
+      ],
+      "classification": "explicit exact-reference OWS missing-parcel message or complete empty collection",
+      "absentIds": [
+        "ES-DGC-9999999YJ2742C"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 420,
+      "requestIndexes": [
+        196,
+        196
+      ],
+      "selectedParcelId": "ES-DGC-4624715YJ2742D",
+      "count": 7,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 460,
+      "requestIndexes": [
+        197,
+        197
+      ],
+      "selectedParcelId": "ES-DGC-4624715YJ2742D",
+      "coverage": "complete",
+      "siteM2": 356.68,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724172.5939675343%2C4372066.029629355%2C724261.8399719123%2C4372179.521571989",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:34.271Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 83129,
+      "gmlNumberMatched": 38,
+      "gmlNumberReturned": 38,
+      "gmlFeatureCount": 38
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724258.6271817355%2C4372068.5192586975%2C724347.8744339037%2C4372182.0121752545",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:35.988Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 45481,
+      "gmlNumberMatched": 20,
+      "gmlNumberReturned": 20,
+      "gmlFeatureCount": 20
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724344.6604091467%2C4372071.009844914%2C724433.9089091128%2C4372184.503735403",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:36.791Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 42659,
+      "gmlNumberMatched": 18,
+      "gmlNumberReturned": 18,
+      "gmlFeatureCount": 18
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724169.3823434261%2C4372177.031925605%2C724258.6271817355%2C4372290.523900472",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:37.635Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 46086,
+      "gmlNumberMatched": 21,
+      "gmlNumberReturned": 21,
+      "gmlFeatureCount": 21
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724255.4143230235%2C4372179.521571989%2C724344.6604091467%2C4372293.014520783",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:38.552Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 39323,
+      "gmlNumberMatched": 17,
+      "gmlNumberReturned": 17,
+      "gmlFeatureCount": 17
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724341.4463158285%2C4372182.0121752545%2C724430.6936497733%2C4372295.506097984",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:39.272Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 54027,
+      "gmlNumberMatched": 23,
+      "gmlNumberReturned": 23,
+      "gmlFeatureCount": 23
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724166.1706508102%2C4372288.034237048%2C724255.4143230235%2C4372401.526244145",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:40.211Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 13747,
+      "gmlNumberMatched": 6,
+      "gmlNumberReturned": 6,
+      "gmlFeatureCount": 6
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724252.2013957776%2C4372290.523900472%2C724341.4463158285%2C4372404.0168814985",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:40.532Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 21733,
+      "gmlNumberMatched": 9,
+      "gmlNumberReturned": 9,
+      "gmlFeatureCount": 9
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724338.23215395%2C4372293.014520783%2C724427.4783218462%2C4372406.508475747",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:40.994Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 46623,
+      "gmlNumberMatched": 20,
+      "gmlNumberReturned": 20,
+      "gmlFeatureCount": 20
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724261.8399719123%2C4371957.516960597%2C724351.0883900984%2C4372071.009844914",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:41.876Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 58755,
+      "gmlNumberMatched": 27,
+      "gmlNumberReturned": 27,
+      "gmlFeatureCount": 27
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724248.9883999985%2C4372401.526244145%2C724338.23215395%2C4372515.019257399",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:42.902Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 12275,
+      "gmlNumberMatched": 5,
+      "gmlNumberReturned": 5,
+      "gmlFeatureCount": 5
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724083.3503770314%2C4372174.543236098%2C724172.5939675343%2C4372288.034237048",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:43.190Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 26865,
+      "gmlNumberMatched": 12,
+      "gmlNumberReturned": 12,
+      "gmlFeatureCount": 12
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724427.4783218462%2C4372184.503735403%2C724516.7269036201%2C4372297.9986320725",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:43.718Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 66395,
+      "gmlNumberMatched": 29,
+      "gmlNumberReturned": 29,
+      "gmlFeatureCount": 29
+    },
+    {
+      "test": "maxFeatures-truncation-rejected",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724172.5939675343%2C4372066.029629355%2C724261.8399719123%2C4372179.521571989",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:44.947Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 83129,
+      "gmlNumberMatched": 38,
+      "gmlNumberReturned": 38,
+      "gmlFeatureCount": 38
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4124004YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:46.383Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2961,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4124811YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:46.848Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3169,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4124812YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:46.975Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2858,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4225004YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:47.133Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2943,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4225005YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:47.260Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2898,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4225006YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:47.387Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2877,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4226501YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:47.512Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2815,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4226502YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:47.639Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2692,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4322001YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:47.787Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3021,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4322002YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:47.913Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2797,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4322003YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.044Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2836,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4322004YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.172Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2875,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323004YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.298Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3233,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323005YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.427Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2985,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323006YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.562Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3340,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323008YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.691Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2980,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323009YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.819Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2817,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323010YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:48.945Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2856,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323011YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.073Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2858,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323012YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.202Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2941,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323013YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.334Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2921,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323014YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.461Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2880,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323015YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.591Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2897,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323016YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.716Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2933,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323018YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.841Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2986,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323019YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:49.968Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3069,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323801YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:50.098Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2860,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323802YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:50.234Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3146,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323803YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:50.380Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2953,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323804YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:50.515Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2941,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323805YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:50.649Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2858,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323806YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:50.783Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2879,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323807YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:50.914Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2880,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323808YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.040Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2853,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323809YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.168Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3020,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323810YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.303Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3324,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323811YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.446Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2874,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323812YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.580Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2889,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323813YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.705Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2876,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323814YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.833Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2937,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323815YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:51.984Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2922,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323816YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:52.108Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2984,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323817YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:52.233Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2917,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323818YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:52.360Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2940,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323819YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:52.488Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2900,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323820YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:52.613Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2808,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4323821YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:52.741Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2787,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324001YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:52.882Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3088,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324002YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.011Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3025,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324003YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.144Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2963,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324004YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.277Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3183,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324005YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.404Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3086,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324006YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.534Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3125,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324007YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.661Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2894,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324008YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.792Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2936,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324009YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:53.926Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2958,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324010YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.063Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3000,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324011YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.190Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2814,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324012YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.318Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2751,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324013YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.444Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2753,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324014YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.582Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2776,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324015YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.711Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2898,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324016YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.847Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2940,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324017YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:54.977Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2856,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324018YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:55.108Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2818,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324019YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:55.240Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2881,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4324020YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:55.367Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3172,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4325002YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:55.495Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2900,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4325008YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:55.620Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3092,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422002YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:55.747Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2875,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422003YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:55.878Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2836,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422004YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.001Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2775,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422005YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.129Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2897,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422006YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.255Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2939,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422007YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.382Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3128,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422008YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.510Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2983,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422009YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.638Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2978,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422010YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.783Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2855,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422011YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:56.908Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2856,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422012YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.038Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2857,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422013YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.173Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3048,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422014YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.314Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3025,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422015YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.453Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2960,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4422016YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.582Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2983,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423001YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.711Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2922,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423002YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.854Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3022,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423003YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:57.981Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3021,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423004YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:58.109Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3563,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423005YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:58.242Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2957,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423006YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:58.369Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2958,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423007YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:58.495Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3151,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423008YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:58.625Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2816,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423009YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:58.756Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2936,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423010YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:58.884Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3145,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4423012YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.014Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3107,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425101YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.140Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3004,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425102YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.269Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3231,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425103YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.397Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3208,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425104YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.526Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3022,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425601YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.666Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3023,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425602YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.803Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2796,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425603YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:18:59.933Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2839,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425604YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.083Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2966,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425605YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.210Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3104,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425606YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.336Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3058,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425607YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.468Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3291,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425608YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.602Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3090,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425609YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.729Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3089,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425610YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.859Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2858,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425611YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:00.989Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3129,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425612YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:01.116Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3169,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425613YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:01.248Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3085,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425614YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:01.380Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3317,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425615YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:01.506Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3046,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425616YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:01.640Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2879,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425617YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:01.768Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2897,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425618YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:01.896Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3062,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425619YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.025Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3165,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425620YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.179Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3123,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425621YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.308Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3006,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4425622YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.441Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3086,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4426806YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.567Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3298,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4426807YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.695Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3151,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4426815YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.821Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2900,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4426816YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:02.953Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2980,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4427801YJ2742G&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.088Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3086,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4522016YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.215Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2960,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4522017YJ2742A&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.344Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2920,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4522410YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.475Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2939,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4522411YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.602Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2961,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4522412YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.737Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3739,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523901YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.862Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3003,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523902YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:03.993Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2979,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523907YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:04.120Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3609,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523908YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:04.246Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3063,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523909YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:04.373Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3087,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523910YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:04.498Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2942,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523911YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:04.628Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2958,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523912YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:04.757Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3046,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523913YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:04.883Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2980,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523914YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.009Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3192,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523915YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.139Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3062,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523916YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.270Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2980,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523917YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.404Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3005,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4523918YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.536Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2876,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525411YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.665Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3506,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525412YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.806Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3110,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525413YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:05.952Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3249,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525414YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.081Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3129,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525415YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.211Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2985,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525416YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.346Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2900,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525417YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.473Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2961,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525418YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.599Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3087,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525419YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.731Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2984,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525420YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.861Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3066,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525421YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:06.986Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3126,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525422YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:07.115Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3110,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525423YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:07.242Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3026,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525424YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:07.367Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3149,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525425YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:07.502Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3270,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525426YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:07.636Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3334,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525427YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:07.765Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3171,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525428YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:07.897Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3065,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525433YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.028Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2774,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525434YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.178Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2882,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525701YJ2742F&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.304Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3090,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4525702YJ2742E&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.430Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2962,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624701YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.556Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3192,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624702YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.693Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2960,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624703YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.825Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2980,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624704YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:08.986Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3041,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624705YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:09.119Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2915,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624706YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:09.262Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2860,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624707YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:09.392Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2900,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624715YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:09.521Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3063,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624716YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:09.681Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2960,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624717YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:09.807Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3064,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624718YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:09.943Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3228,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624916YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:10.076Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 2858,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "fresh-ids-160",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=4624917YJ2742D&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:10.204Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 3123,
+      "gmlNumberMatched": 1,
+      "gmlNumberReturned": 1,
+      "gmlFeatureCount": 1
+    },
+    {
+      "test": "explicit-absence-invalid-shape",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=ZZZZZZZZZZZZZZ&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:10.341Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 333,
+      "gmlNumberMatched": null,
+      "gmlNumberReturned": null,
+      "gmlFeatureCount": 0
+    },
+    {
+      "test": "explicit-absence-native-shape",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=9999999YJ2742C&SRSNAME=EPSG%3A%3A25830",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:10.477Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 333,
+      "gmlNumberMatched": null,
+      "gmlNumberReturned": null,
+      "gmlFeatureCount": 0
+    },
+    {
+      "test": "footprint",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724476.1287787331%2C4372172.776371381%2C724499.5626979637%2C4372207.575333954",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:10.921Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 15988,
+      "gmlNumberMatched": 7,
+      "gmlNumberReturned": 7,
+      "gmlFeatureCount": 7
+    },
+    {
+      "test": "source-binding",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25830&bbox=724476.1287787331%2C4372172.776371381%2C724499.5626979637%2C4372207.575333954",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:19:11.345Z",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8",
+      "bytes": 15988,
+      "gmlNumberMatched": 7,
+      "gmlNumberReturned": 7,
+      "gmlFeatureCount": 7
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/valencia-spain-quality.json",
+  "uniqueParcels": 180,
+  "requestCount": 198,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T23:19:11.812Z",
+  "qualityStatus": "passed_independent_metric_topology",
+  "qualityDecision": "approved_by_root",
+  "providerAbsenceSemantics": "HTTP200 OWS1.1 OperationProcessingFailed is empty only for a structurally complete single Exception/ExceptionText document whose exact Spanish missing-parcel message echoes the requested REFCAT and huso 25830. Viewport/general/malformed/mismatched exceptions remain unavailable; absence is not cached."
+}

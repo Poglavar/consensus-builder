@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-10304-lengshuijiang.json",
+  "cityCode": 10304,
+  "queueRank": 2702,
+  "city": "Lengshuijiang",
+  "country": "China",
+  "countryCode": "CN",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_no_verified_open_parcel_source",
+  "registryFound": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "queryAndRequestOutcome": "English and Chinese discovery were performed separately. Official Hunan geospatial and registration leads were recorded. Direct GET of the Hunan geospatial landing page timed out after 20 seconds; no TLS exception was used. Official announcement and service pages were inspected via search/open. No public JavaScript/configuration or anonymous geometry response for Lengshuijiang was found.",
+  "routesAttempted": [
+    {"url": "https://hunan.tianditu.gov.cn/", "method": "GET", "outcome": "timeout; no response body"},
+    {"url": "https://www.hunan.gov.cn/topic/hnsz/szmtbd/202606/t20260628_34014601.html", "method": "GET/search-open", "outcome": "official provincial platform announcement; no parcel API"},
+    {"url": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/kak8KubfQnOxbHbCRz0sWw/index.html", "method": "GET/search-open", "outcome": "official identity/certificate registration workflow; not safe for anonymous geometry research"},
+    {"url": "https://www.rerc.com.cn/", "method": "GET/search-open", "outcome": "national registry-center information; no local open endpoint"}
+  ],
+  "schemaCrsAndResponse": {
+    "service": null,
+    "nativeFields": null,
+    "crs": null,
+    "boundedResponse": null,
+    "geometryRetained": false,
+    "reason": "No service endpoint or parcel response was established."
+  },
+  "scopeLimits": [
+    "Provincial platform existence does not prove Lengshuijiang parcel-layer coverage.",
+    "Exact WUP point was not shifted and no zero-hit inference was made.",
+    "Search-index absence and timeout do not prove citywide cadastral absence.",
+    "General national/provincial registry prose is not treated as evidence of a local Lengshuijiang custodian."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "uncertainty": "A local public viewer may exist behind an unindexed route or become reachable later. No authentication, credentials, CAPTCHA/Cloudflare defeat, private token, or unsafe record lookup was used.",
+  "admissionDecision": "hold; no source integration or runtime admission",
+  "sampleGeoJSON": null
+}

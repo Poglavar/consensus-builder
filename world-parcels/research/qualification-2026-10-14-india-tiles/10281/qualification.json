@@ -1,0 +1,634 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "10281",
+  "cityName": "Gyanpur",
+  "sourceId": "in-up-ncog-tiles",
+  "candidateSha256": "9a823f9863e84a0b49147d1afc5730160e7aebc33e8c2d7de0eddf7c7674844d",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 118,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 118,
+      "collectedUniqueCount": 118
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 378
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "pagingRequired": false,
+      "reason": "Fixed tile snapshot: every tile is read whole and each row cut at a tile edge is followed into the neighbouring tile until it closes; pagination is not part of the protocol."
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "c314acfbbf88f00e6226e184c2de9fdfdb4545aa2ccab2337ecb94536cf699d5",
+      "featureCount": 118,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32644",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "c314acfbbf88f00e6226e184c2de9fdfdb4545aa2ccab2337ecb94536cf699d5",
+  "featureCount": 118,
+  "sampleIds": [
+    "IN-UP-NCOG-g1~824320400~253040855~8c3051763e264967fdc96370eb74662397daef00488bec8106cc33b8e12f01d4",
+    "IN-UP-NCOG-g1~824334133~253056277~bae97b6be296216cde76c71f913fc7145d09c74a6f65500375efa1293d3aa187",
+    "IN-UP-NCOG-g1~824347919~253061321~c0a7f007da40a1004e6425d9403ee485fa021c319399bba7fedbe84809c0472d"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        82.432,
+        25.304,
+        82.433,
+        25.305
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-UP-NCOG-g1~824309993~253041292~ec99375ed65d3fe2e4fbceb4fcc743c9ee2dbc2eb670fc8274663d3378c345df",
+        "IN-UP-NCOG-g1~824317181~253038624~e343316c02872b70c990a27e6c388739fd09dd5f6bc645438b1ce856d8838af0",
+        "IN-UP-NCOG-g1~824318308~253041583~334f50c852f6a27d27c23a3cc262dd885ca01f23d1e56230da27ca8b32112491",
+        "IN-UP-NCOG-g1~824320400~253040855~8c3051763e264967fdc96370eb74662397daef00488bec8106cc33b8e12f01d4",
+        "IN-UP-NCOG-g1~824320883~253048324~b6a48ab95b0d8f57a27b64f72c7fd1b9c9e0015aa9fd997f6f1d5b1dddf04580",
+        "IN-UP-NCOG-g1~824322170~253051719~a2bc25791aff3b397ca024e8d580abed2554c6eb4b0415bdea4d528c59f781ce",
+        "IN-UP-NCOG-g1~824328983~253050797~bf7d4785840296c8a04c920b15164852530d0cdc103d220c4a0523a26d35d874",
+        "IN-UP-NCOG-g1~824329090~253037606~6f963e1c87a7faafbe70ee891ff45e9370d22be59ed0f6ee16ee3836d0675126",
+        "IN-UP-NCOG-g1~824329466~253040710~3af54980cdf94b5f400c3698d51ad6a4ad181c0cd346bb4db5ff3372b17ec050",
+        "IN-UP-NCOG-g1~824329787~253043329~5e30ad066163cdaa6b1724e1d20048cd86fcb87dade8cc05eaa698de3ad330ee"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        82.433,
+        25.304,
+        82.434,
+        25.305
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "IN-UP-NCOG-g1~824320400~253040855~8c3051763e264967fdc96370eb74662397daef00488bec8106cc33b8e12f01d4",
+        "IN-UP-NCOG-g1~824328929~253053076~97bdbe2af1fb4415c67a9d52fa076a558aa4c33310b1b6a952510fbb794715c3",
+        "IN-UP-NCOG-g1~824328983~253050797~bf7d4785840296c8a04c920b15164852530d0cdc103d220c4a0523a26d35d874",
+        "IN-UP-NCOG-g1~824329090~253037606~6f963e1c87a7faafbe70ee891ff45e9370d22be59ed0f6ee16ee3836d0675126",
+        "IN-UP-NCOG-g1~824329466~253040710~3af54980cdf94b5f400c3698d51ad6a4ad181c0cd346bb4db5ff3372b17ec050",
+        "IN-UP-NCOG-g1~824329787~253043329~5e30ad066163cdaa6b1724e1d20048cd86fcb87dade8cc05eaa698de3ad330ee",
+        "IN-UP-NCOG-g1~824330270~253049197~436c240667f3f8eac0707840dc30bdfb70353276a1156690f01a09ffdc28bc1c",
+        "IN-UP-NCOG-g1~824330485~253049245~c52ea2715577e07f336d963f0982464d2576000711683b34cd012eb9f7fc70c7",
+        "IN-UP-NCOG-g1~824330646~253040419~72c0b2b7976e8cfa03da85ea28c6e2129fc8c533a75a9bb46f3ebc21eee81a69",
+        "IN-UP-NCOG-g1~824331772~253048857~2f7eb48d0542cd1fd5eeb5e71adca729b04f08efddec5a76ec262f8822afcac4",
+        "IN-UP-NCOG-g1~824333650~253039837~03ce6dbd6728625206689cb51e74160ad7cdb9a7e8914aecf9dd558b3380364e",
+        "IN-UP-NCOG-g1~824336171~253045559~8dcfd601543092a312ed67ce2ad671dbd726e12289a9dee9bb367baf7b5f16f1",
+        "IN-UP-NCOG-g1~824336171~253050361~b546b9b0f33af1d71280c5d3abfcbbcbc092b83dfce89081e07b7d488287576f",
+        "IN-UP-NCOG-g1~824336439~253046190~15720f6929004de3b4c6565af25edaf6a016823e4acc0bfbcf348488ab79197a",
+        "IN-UP-NCOG-g1~824336708~253046820~2e0d7c2f1f83f0b0a9b212eac723dadca13535e2fd84c807c6a38a95caef6b7c",
+        "IN-UP-NCOG-g1~824337351~253048130~07fe774e7bae00a84009cb785f40d5240e5812858ef55eedca3cb500f0aaeebe",
+        "IN-UP-NCOG-g1~824337512~253044929~01b9f78a5e280a3109b8136c1fab800d1b31b23722a47ea1877ad80406c2eab1",
+        "IN-UP-NCOG-g1~824337673~253038236~ded21e44d523a8789c9301be5ac5691f11ad63b7352c49ac48af17e3ef88e16a"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        82.434,
+        25.304,
+        82.435,
+        25.305
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "IN-UP-NCOG-g1~824333650~253039837~03ce6dbd6728625206689cb51e74160ad7cdb9a7e8914aecf9dd558b3380364e",
+        "IN-UP-NCOG-g1~824336171~253050361~b546b9b0f33af1d71280c5d3abfcbbcbc092b83dfce89081e07b7d488287576f",
+        "IN-UP-NCOG-g1~824336439~253046190~15720f6929004de3b4c6565af25edaf6a016823e4acc0bfbcf348488ab79197a",
+        "IN-UP-NCOG-g1~824336708~253046820~2e0d7c2f1f83f0b0a9b212eac723dadca13535e2fd84c807c6a38a95caef6b7c",
+        "IN-UP-NCOG-g1~824337351~253048130~07fe774e7bae00a84009cb785f40d5240e5812858ef55eedca3cb500f0aaeebe",
+        "IN-UP-NCOG-g1~824337512~253044929~01b9f78a5e280a3109b8136c1fab800d1b31b23722a47ea1877ad80406c2eab1",
+        "IN-UP-NCOG-g1~824337673~253038236~ded21e44d523a8789c9301be5ac5691f11ad63b7352c49ac48af17e3ef88e16a",
+        "IN-UP-NCOG-g1~824340677~253048906~b2e876bbd4f4825cecd078556dad7a3889c62724b5db7ff842200f9fd9811efd",
+        "IN-UP-NCOG-g1~824340999~253045414~4f70c1f512218892642f6e9fc9d8e9a8d42d88be123672be4f512a7cb2925230",
+        "IN-UP-NCOG-g1~824341911~253046335~541dc58557f1b72658b34d918a17cc2a8186e8bd0eb59a2e7e4bab8f3619bed7",
+        "IN-UP-NCOG-g1~824342072~253047693~162055a73e5e1aadde096fab760a4a3c5dc764d59db557a0079c40f523418f0b",
+        "IN-UP-NCOG-g1~824343628~253046723~b0cbed5c4ed59dc772bd9cb1d9be1dc755f8583504b7be1bd55d553a5d03d9a2",
+        "IN-UP-NCOG-g1~824345398~253048033~2e856d66fb0dc8dd76c9b52ebd621ad5ca93352e1b36ef4d99499f562cc28b31",
+        "IN-UP-NCOG-g1~824346471~253039740~b0c4f05e36ac7846f68a82d3ce89875a002348ace6902283e19b3d067f3730a3",
+        "IN-UP-NCOG-g1~824347115~253048178~53a713b56c515e12200b95dbc34fa02dc5967fa0d9dca2153f3cf692233e6270",
+        "IN-UP-NCOG-g1~824347544~253045753~77e59d1ce1b2bebc25dfe26792eec0aee65483093a133c75753042e5883e011d",
+        "IN-UP-NCOG-g1~824349046~253047645~701a348d4571851f5062841f6d7306c94a719220ab7135001639447aa94eb00e",
+        "IN-UP-NCOG-g1~824349207~253048081~df1c367cd854051dace9e2399f93d3857a1322e436ad7026377f15a652203fba"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        82.432,
+        25.305,
+        82.433,
+        25.306
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "IN-UP-NCOG-g1~824298406~253067819~24aed49e62f62ce7e9eec6d954ad043ee069f512736bf9702ebe02b2c0a3dabb",
+        "IN-UP-NCOG-g1~824309993~253041292~ec99375ed65d3fe2e4fbceb4fcc743c9ee2dbc2eb670fc8274663d3378c345df",
+        "IN-UP-NCOG-g1~824318630~253054434~6e2da8abcfa5702fc4896323fec9cd46fe4eca64893e23faa7acbbf9c6332611",
+        "IN-UP-NCOG-g1~824318844~253075336~d01d06555a4e494343a8c46b0556cb040ee07ee810d3c3da8542871e8619ca53",
+        "IN-UP-NCOG-g1~824320561~253056229~d75b74afec1c89ab719da46183a073e5ba1840a56a313971b0a131367ab11c69",
+        "IN-UP-NCOG-g1~824320668~253072620~78cd0015eb9cc1b2197b639b5a08f127aa82eafaab9733e7a6570801eb09eed6",
+        "IN-UP-NCOG-g1~824320883~253048324~b6a48ab95b0d8f57a27b64f72c7fd1b9c9e0015aa9fd997f6f1d5b1dddf04580",
+        "IN-UP-NCOG-g1~824322170~253051719~a2bc25791aff3b397ca024e8d580abed2554c6eb4b0415bdea4d528c59f781ce",
+        "IN-UP-NCOG-g1~824322814~253061078~c3b87e46eef7c6883855a17f5f54105793e1c4ac0e6b65c7c2eaf5e4352caf07",
+        "IN-UP-NCOG-g1~824324745~253057781~54de90c2ecdbb81cd7ea048f5a5a155b0bee9c3acc7603fbd33cd7bd2f0a8ecf",
+        "IN-UP-NCOG-g1~824325120~253057490~038775e40e59abf9c7f1b6d4daab7c8acbd96337d7d6818ef48b776a9c3fef57",
+        "IN-UP-NCOG-g1~824325818~253056956~dda35fc4f26f1e50f2001e73c2374f52030898e888135b8cb4c24aa366a1ddd7",
+        "IN-UP-NCOG-g1~824326086~253055598~82dcd6dd37d70fbe407c86edc545ab9b5f5f24da206c1a8042726bc0828f4925",
+        "IN-UP-NCOG-g1~824326193~253056665~d804fff5e0cc1ecc1f66f1d87ba3a724bba3c95591036c44b90759f805e3c358",
+        "IN-UP-NCOG-g1~824326462~253058217~cef982776eac5e5b27b0e14a5988ddd7a8c2d4ef5b29ea04e45d9100194c0333",
+        "IN-UP-NCOG-g1~824326837~253056180~d45508ae719f07f356194ad59c2b998348576b0097442066033f69f81e34e477",
+        "IN-UP-NCOG-g1~824327052~253058314~9ce3691e420152840554f70592d0f1a83c873ee46a50c212a3aee6c07f26ba7e",
+        "IN-UP-NCOG-g1~824327159~253058363~b59ec0494c405c404a13cd64b1b790a09b019de63096ac1d3250270ffbb0e28b",
+        "IN-UP-NCOG-g1~824327213~253057975~d7ec3cfc854e155b7f97f483b4dc89db04ae6fc4831cede3bb076e51c4f0f9dc",
+        "IN-UP-NCOG-g1~824327534~253058460~da9843687500fd2ef648c7b19a75ece73dbdf5de0c34f5b4f7e1a96e412c44d0",
+        "IN-UP-NCOG-g1~824328929~253053076~97bdbe2af1fb4415c67a9d52fa076a558aa4c33310b1b6a952510fbb794715c3",
+        "IN-UP-NCOG-g1~824328983~253050797~bf7d4785840296c8a04c920b15164852530d0cdc103d220c4a0523a26d35d874"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        82.433,
+        25.305,
+        82.434,
+        25.306
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "IN-UP-NCOG-g1~824327052~253058314~9ce3691e420152840554f70592d0f1a83c873ee46a50c212a3aee6c07f26ba7e",
+        "IN-UP-NCOG-g1~824327213~253057975~d7ec3cfc854e155b7f97f483b4dc89db04ae6fc4831cede3bb076e51c4f0f9dc",
+        "IN-UP-NCOG-g1~824327534~253058460~da9843687500fd2ef648c7b19a75ece73dbdf5de0c34f5b4f7e1a96e412c44d0",
+        "IN-UP-NCOG-g1~824328929~253053076~97bdbe2af1fb4415c67a9d52fa076a558aa4c33310b1b6a952510fbb794715c3",
+        "IN-UP-NCOG-g1~824328983~253050797~bf7d4785840296c8a04c920b15164852530d0cdc103d220c4a0523a26d35d874",
+        "IN-UP-NCOG-g1~824330270~253049197~436c240667f3f8eac0707840dc30bdfb70353276a1156690f01a09ffdc28bc1c",
+        "IN-UP-NCOG-g1~824330753~253053125~8101d19ea5495b7fe9ec041226b1f80822674d4656aaeb26621af1a7d50aab1e",
+        "IN-UP-NCOG-g1~824330914~253054580~c1b060c58e36a25648fdc074550f8c4bd3566602a32ec7f595a8765d8537f010",
+        "IN-UP-NCOG-g1~824331772~253048857~2f7eb48d0542cd1fd5eeb5e71adca729b04f08efddec5a76ec262f8822afcac4",
+        "IN-UP-NCOG-g1~824332362~253052107~9360b02b79b9ac1cae840a7c32d1c001a6007442212e145388f69546bee8be55",
+        "IN-UP-NCOG-g1~824332577~253051913~728c1de391c76a3e568fa16dbe1feb20f801f2e794025294a94a477399fd7b47",
+        "IN-UP-NCOG-g1~824334133~253056277~bae97b6be296216cde76c71f913fc7145d09c74a6f65500375efa1293d3aa187",
+        "IN-UP-NCOG-g1~824336171~253050361~b546b9b0f33af1d71280c5d3abfcbbcbc092b83dfce89081e07b7d488287576f",
+        "IN-UP-NCOG-g1~824336976~253055210~f2d13daeaba77144e16cc7ad114b462f3ff72b24b08819b0917eb5ddb202bcba",
+        "IN-UP-NCOG-g1~824337512~253055938~7de86b8d53a544e6f372b6108bba49068791a0aaa4760507c4649c1a58b11a79"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        82.434,
+        25.305,
+        82.435,
+        25.306
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "IN-UP-NCOG-g1~824334133~253056277~bae97b6be296216cde76c71f913fc7145d09c74a6f65500375efa1293d3aa187",
+        "IN-UP-NCOG-g1~824336171~253050361~b546b9b0f33af1d71280c5d3abfcbbcbc092b83dfce89081e07b7d488287576f",
+        "IN-UP-NCOG-g1~824337512~253055938~7de86b8d53a544e6f372b6108bba49068791a0aaa4760507c4649c1a58b11a79",
+        "IN-UP-NCOG-g1~824340677~253048906~b2e876bbd4f4825cecd078556dad7a3889c62724b5db7ff842200f9fd9811efd",
+        "IN-UP-NCOG-g1~824341536~253051767~807062c66af34ff835df9d58a1d7a1d08581112337bc3abc69ad23aadaf5b1a2",
+        "IN-UP-NCOG-g1~824343789~253057490~416fd8dd8c963feb1e3630be605d3913616d42f8ff50c94fe4b59fbc4bb5f082",
+        "IN-UP-NCOG-g1~824345398~253048033~2e856d66fb0dc8dd76c9b52ebd621ad5ca93352e1b36ef4d99499f562cc28b31",
+        "IN-UP-NCOG-g1~824346256~253058702~5fab3567285b5f186aa94cfe095c4b27695405f4ca89c56ab16e41566cc3cc44",
+        "IN-UP-NCOG-g1~824346793~253060011~d4d012f726f315a9907f1dcf78194e013bf385cb15af9eb04c230ba5d7acd4aa",
+        "IN-UP-NCOG-g1~824349046~253047645~701a348d4571851f5062841f6d7306c94a719220ab7135001639447aa94eb00e",
+        "IN-UP-NCOG-g1~824349368~253055938~3295415c3c2f8e4ba0f14e7f3b20d487cc7596dabfd4919bf02e5dde2d0c3318",
+        "IN-UP-NCOG-g1~824349582~253053270~c889bc630f8b3017f5dd8d24f44064132e2e48485f624767bf082a995c835bb9"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        82.432,
+        25.306,
+        82.433,
+        25.307
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-UP-NCOG-g1~824298406~253067819~24aed49e62f62ce7e9eec6d954ad043ee069f512736bf9702ebe02b2c0a3dabb",
+        "IN-UP-NCOG-g1~824318844~253075336~d01d06555a4e494343a8c46b0556cb040ee07ee810d3c3da8542871e8619ca53",
+        "IN-UP-NCOG-g1~824319595~253070147~31595ee8f8df76ff856e77cc4c2640126b12c599bc2f7d4e3e6b95cb0d7f8d17",
+        "IN-UP-NCOG-g1~824320400~253068159~e349be0cdd2d0ff611bf19801e264aef883ad0cac03886c79d076b8907ecbe77",
+        "IN-UP-NCOG-g1~824320668~253072620~78cd0015eb9cc1b2197b639b5a08f127aa82eafaab9733e7a6570801eb09eed6",
+        "IN-UP-NCOG-g1~824322814~253061078~c3b87e46eef7c6883855a17f5f54105793e1c4ac0e6b65c7c2eaf5e4352caf07",
+        "IN-UP-NCOG-g1~824327159~253058363~b59ec0494c405c404a13cd64b1b790a09b019de63096ac1d3250270ffbb0e28b",
+        "IN-UP-NCOG-g1~824327534~253058460~da9843687500fd2ef648c7b19a75ece73dbdf5de0c34f5b4f7e1a96e412c44d0",
+        "IN-UP-NCOG-g1~824329251~253064085~3a130c795797259bb45f07dff7b3bfd3c59c519df072350546eebe3ac3acd4df",
+        "IN-UP-NCOG-g1~824329734~253065637~70c9389bdab58ef816a1003fa35ca604814bc754038e2483b3a8c64d1fa2bf91"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        82.433,
+        25.306,
+        82.434,
+        25.307
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "IN-UP-NCOG-g1~824320668~253072620~78cd0015eb9cc1b2197b639b5a08f127aa82eafaab9733e7a6570801eb09eed6",
+        "IN-UP-NCOG-g1~824327159~253058363~b59ec0494c405c404a13cd64b1b790a09b019de63096ac1d3250270ffbb0e28b",
+        "IN-UP-NCOG-g1~824327534~253058460~da9843687500fd2ef648c7b19a75ece73dbdf5de0c34f5b4f7e1a96e412c44d0",
+        "IN-UP-NCOG-g1~824329251~253064085~3a130c795797259bb45f07dff7b3bfd3c59c519df072350546eebe3ac3acd4df",
+        "IN-UP-NCOG-g1~824329734~253065637~70c9389bdab58ef816a1003fa35ca604814bc754038e2483b3a8c64d1fa2bf91",
+        "IN-UP-NCOG-g1~824330378~253067625~90fa2b9da843b9d440f713244b10f3634617a5a6f67637afb99cb4825f5385af",
+        "IN-UP-NCOG-g1~824330646~253069905~7a3a185b466585f11511c11e7bd39b2b15a82a1bc389fee44888a90e57211eb0",
+        "IN-UP-NCOG-g1~824331021~253069759~7824e33b19b57792b267842a26061ec09db9e6bbc3e251e39c6f4fa7e642875a",
+        "IN-UP-NCOG-g1~824331129~253070196~f0c680e2556596979f4631302b95b51b56e5a724a01d7ac03796062ba196f0cd",
+        "IN-UP-NCOG-g1~824332470~253064813~01fdb0413b444ae70686204838281bd30450488152b060f6f2ed54dd53ee2153",
+        "IN-UP-NCOG-g1~824334079~253069323~a0df18cfc3abf2e13c277d79af390cf81407df9f69d68e6704bfcb3100eb5007",
+        "IN-UP-NCOG-g1~824334133~253056277~bae97b6be296216cde76c71f913fc7145d09c74a6f65500375efa1293d3aa187",
+        "IN-UP-NCOG-g1~824337995~253068207~92ad884fcdf000f08ed6da5f8ff96f66bd217af9e5345084e40dade151330ff8"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        82.434,
+        25.306,
+        82.435,
+        25.307
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "IN-UP-NCOG-g1~824331021~253069759~7824e33b19b57792b267842a26061ec09db9e6bbc3e251e39c6f4fa7e642875a",
+        "IN-UP-NCOG-g1~824334133~253056277~bae97b6be296216cde76c71f913fc7145d09c74a6f65500375efa1293d3aa187",
+        "IN-UP-NCOG-g1~824337995~253068207~92ad884fcdf000f08ed6da5f8ff96f66bd217af9e5345084e40dade151330ff8",
+        "IN-UP-NCOG-g1~824337995~253073057~c8fd8ed6bba5ec390887dd0c3fd6aaa23459f579fe7a5e8c960ca3af1f1bb869",
+        "IN-UP-NCOG-g1~824346256~253058702~5fab3567285b5f186aa94cfe095c4b27695405f4ca89c56ab16e41566cc3cc44",
+        "IN-UP-NCOG-g1~824346793~253060011~d4d012f726f315a9907f1dcf78194e013bf385cb15af9eb04c230ba5d7acd4aa",
+        "IN-UP-NCOG-g1~824347919~253061321~c0a7f007da40a1004e6425d9403ee485fa021c319399bba7fedbe84809c0472d"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        82.433,
+        25.303,
+        82.434,
+        25.304
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "IN-UP-NCOG-g1~824320400~253040855~8c3051763e264967fdc96370eb74662397daef00488bec8106cc33b8e12f01d4",
+        "IN-UP-NCOG-g1~824328929~253036539~f2d76379406cec1a73cc19864ece2a33dd493e8c3ec731e42e1bf09e5482b987",
+        "IN-UP-NCOG-g1~824329090~253027955~bf02f60eb19015c66c0b4ec8e06b659dd35f6a3ad5b4cb00ef450906b5ae0540",
+        "IN-UP-NCOG-g1~824329090~253037606~6f963e1c87a7faafbe70ee891ff45e9370d22be59ed0f6ee16ee3836d0675126",
+        "IN-UP-NCOG-g1~824329466~253040710~3af54980cdf94b5f400c3698d51ad6a4ad181c0cd346bb4db5ff3372b17ec050",
+        "IN-UP-NCOG-g1~824330592~253028925~07c4696595f4b5643c9c2570b0c8d9ddbedc89dfcdc3bea624d99c9b1c570a7a",
+        "IN-UP-NCOG-g1~824330646~253040419~72c0b2b7976e8cfa03da85ea28c6e2129fc8c533a75a9bb46f3ebc21eee81a69",
+        "IN-UP-NCOG-g1~824330914~253032902~e739a3ab121654bab09e6c642a0e953ebcc82e80ce919e0cf549d54c6af1c8d3",
+        "IN-UP-NCOG-g1~824333650~253039837~03ce6dbd6728625206689cb51e74160ad7cdb9a7e8914aecf9dd558b3380364e",
+        "IN-UP-NCOG-g1~824334401~253029070~a2c064da18d76ac181aa10abd7696a1ea92f824e345c279785ddcacaaa9ecd1a",
+        "IN-UP-NCOG-g1~824336118~253031107~e071752df6258df99d11773a05d301f7b038fbf54a0b72019801d3c04bfa591d",
+        "IN-UP-NCOG-g1~824336386~253027761~0dbbb716d9ab2c91b3b34d4abc21092accfdaa23f5cf7121e541ebb9e842eb91",
+        "IN-UP-NCOG-g1~824337459~253034502~4d17fc99ad631f4849f590299329724adab3223fc2d0b2b92b51e89029e1a988",
+        "IN-UP-NCOG-g1~824337673~253038236~ded21e44d523a8789c9301be5ac5691f11ad63b7352c49ac48af17e3ef88e16a"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        82.433,
+        25.307,
+        82.434,
+        25.308
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "IN-UP-NCOG-g1~824320668~253072620~78cd0015eb9cc1b2197b639b5a08f127aa82eafaab9733e7a6570801eb09eed6",
+        "IN-UP-NCOG-g1~824322492~253079458~64d24bdb1999e852d75e540c952bb0ce4b0adebc52552ec521b8b16d7c1db6dc",
+        "IN-UP-NCOG-g1~824324316~253071699~d95dbed5ec9353c573f6057df8e88b7cac91bdf4806ec5e01f3837fca43465dc",
+        "IN-UP-NCOG-g1~824329251~253077373~47d0080b9380c306dbe76c30ec828a7c578df0f4b80238863ff505ad8a145c70",
+        "IN-UP-NCOG-g1~824330646~253069905~7a3a185b466585f11511c11e7bd39b2b15a82a1bc389fee44888a90e57211eb0",
+        "IN-UP-NCOG-g1~824330968~253076888~3917b3035b1ddd3f206bac100f92b7fee9bc95035101a33eed6e9feaaa72d65e",
+        "IN-UP-NCOG-g1~824331021~253069759~7824e33b19b57792b267842a26061ec09db9e6bbc3e251e39c6f4fa7e642875a",
+        "IN-UP-NCOG-g1~824331129~253070196~f0c680e2556596979f4631302b95b51b56e5a724a01d7ac03796062ba196f0cd",
+        "IN-UP-NCOG-g1~824332899~253075773~2c36fe25298bdd0fbbb28d6496ba25b7176981d040f166f48c97a087b48e0b18",
+        "IN-UP-NCOG-g1~824334079~253069323~a0df18cfc3abf2e13c277d79af390cf81407df9f69d68e6704bfcb3100eb5007",
+        "IN-UP-NCOG-g1~824335957~253074754~42948f4af866b8c0084ebfcfc65e36f68589c591928b8171feb08492f167d002",
+        "IN-UP-NCOG-g1~824337995~253068207~92ad884fcdf000f08ed6da5f8ff96f66bd217af9e5345084e40dade151330ff8",
+        "IN-UP-NCOG-g1~824337995~253073057~c8fd8ed6bba5ec390887dd0c3fd6aaa23459f579fe7a5e8c960ca3af1f1bb869"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        82.431,
+        25.305,
+        82.432,
+        25.306
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-UP-NCOG-g1~824298406~253067819~24aed49e62f62ce7e9eec6d954ad043ee069f512736bf9702ebe02b2c0a3dabb",
+        "IN-UP-NCOG-g1~824305058~253043038~d39f929f34b066229b6dfcc917c2c318bb85b7c415adbbb2f78b9b75a52c7cc9",
+        "IN-UP-NCOG-g1~824308330~253050846~b8ed6c06b7aef72fa96664efab6530aadc67e0c7f2b1314e5cecf7383fcaa828",
+        "IN-UP-NCOG-g1~824309993~253041292~ec99375ed65d3fe2e4fbceb4fcc743c9ee2dbc2eb670fc8274663d3378c345df",
+        "IN-UP-NCOG-g1~824318630~253054434~6e2da8abcfa5702fc4896323fec9cd46fe4eca64893e23faa7acbbf9c6332611"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        82.435,
+        25.305,
+        82.436,
+        25.306
+      ],
+      "complete": true,
+      "featureCount": 32,
+      "ids": [
+        "IN-UP-NCOG-g1~824343789~253057490~416fd8dd8c963feb1e3630be605d3913616d42f8ff50c94fe4b59fbc4bb5f082",
+        "IN-UP-NCOG-g1~824345398~253048033~2e856d66fb0dc8dd76c9b52ebd621ad5ca93352e1b36ef4d99499f562cc28b31",
+        "IN-UP-NCOG-g1~824346256~253058702~5fab3567285b5f186aa94cfe095c4b27695405f4ca89c56ab16e41566cc3cc44",
+        "IN-UP-NCOG-g1~824347919~253061321~c0a7f007da40a1004e6425d9403ee485fa021c319399bba7fedbe84809c0472d",
+        "IN-UP-NCOG-g1~824349046~253047645~701a348d4571851f5062841f6d7306c94a719220ab7135001639447aa94eb00e",
+        "IN-UP-NCOG-g1~824349368~253055938~3295415c3c2f8e4ba0f14e7f3b20d487cc7596dabfd4919bf02e5dde2d0c3318",
+        "IN-UP-NCOG-g1~824349582~253053270~c889bc630f8b3017f5dd8d24f44064132e2e48485f624767bf082a995c835bb9",
+        "IN-UP-NCOG-g1~824350011~253051622~92b485c138629194d4972073f16fef611184100feeed084d5549ca745a0dc5e1",
+        "IN-UP-NCOG-g1~824350548~253052834~5031c41c224143b16465808c2befe590cde289aae4a786612051b29cd924937c",
+        "IN-UP-NCOG-g1~824350709~253048033~a2196d28efc92089a34332c03065ed6c480cd2574d87ccd88bd1eeeb1533a53a",
+        "IN-UP-NCOG-g1~824351084~253051040~21e2f233cf6846748ad5e190026731a7977402fcbda45498a97e69eba256bd7e",
+        "IN-UP-NCOG-g1~824352157~253050846~4d6b85e2ef15c55ed88871adb80730e253c005df44bd893274ae01f1175a2803",
+        "IN-UP-NCOG-g1~824352211~253055501~efa33481953f615e2906372621e319568dbdca35892c01f60c8b1b6b1b01aeed",
+        "IN-UP-NCOG-g1~824352586~253052155~1b6fd1e08d0ccf7cdc423bfe56e53022ad0e7dbcb4562653553e648fe85232b4",
+        "IN-UP-NCOG-g1~824353176~253053464~230cdd732cf8428e24616223a62c3c06fabc9fde025fa29a3e9a1c837d995e71",
+        "IN-UP-NCOG-g1~824353552~253054386~59da38d5f2dfe83e3367896940c139992b3389e8da966c61ece0b7924d30e056",
+        "IN-UP-NCOG-g1~824354142~253048663~2a88f23441d0dee91cefc5643518a6f224eb577a571a81fdc0b3ce894c2cf1d9",
+        "IN-UP-NCOG-g1~824354357~253050215~58521863f193f1fe829048cf8993248a5c8cf25f2b00188e706ab6d0b81b5986",
+        "IN-UP-NCOG-g1~824354625~253050943~2cdb03aed84bf6e5187b78789745ff42e549352ec915bb9e3fa6124d05931d24",
+        "IN-UP-NCOG-g1~824354678~253054871~3874a616f0a53d414c3d13a2e179127268b6e5ea3e210e854426eecbd07097e8",
+        "IN-UP-NCOG-g1~824355966~253056229~99827bc8a7925b05ed454eba07703b11b57e20b644c5c931050ec022c876a140",
+        "IN-UP-NCOG-g1~824356341~253056908~f7f2630f834e7d59d6bd803b1a130b70a7d5532b3377f98dd5fea1d6848ced78",
+        "IN-UP-NCOG-g1~824356663~253057684~a6b245c030d7f8027493893dd112c12eb35757d9d5124292fe26929b536fb0a2",
+        "IN-UP-NCOG-g1~824356931~253058363~9c0c6835906e144ba829662ef490dbc3a92293bef94c9cfd3da96e9d49494247",
+        "IN-UP-NCOG-g1~824357575~253055550~6f91c48941c1a30cc0c9b6a49f9548483917e38991602005383a2307dd7df87a",
+        "IN-UP-NCOG-g1~824357951~253055404~4bdfd7e915d0c9d1dc08b986a14109f1f814a14cb674014958e246561eac28c2",
+        "IN-UP-NCOG-g1~824358058~253057878~8b3e9a176afaf90c384eb8536cb7d51228eefe5d2d02428ca7da12c3d0ea41de",
+        "IN-UP-NCOG-g1~824358594~253052155~9a126facf5191bd52567fb4c0c3bfa30c2aa8a6636377a4fa43315a1f5fd6040",
+        "IN-UP-NCOG-g1~824359185~253058023~aec2bb203f75b5b00fdbff78b76cbb807ebe75e71ba094c641fb7ddbe681048b",
+        "IN-UP-NCOG-g1~824359667~253054628~d2dae3c6c926fec7c6a921928ec2343561c5d242444ed258b613e1b4bb6d3212",
+        "IN-UP-NCOG-g1~824359828~253059769~51f770f582bbc876b726bad51a7c6f7a3c6f2e177e79b008028077b11b50aabe",
+        "IN-UP-NCOG-g1~824359989~253054483~07fcce773fa40b023989d03c82d37332fb72816e1e8a4212cbe735a21a0745f8"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 16,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:53.413Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 274
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:53.417Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1227
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:54.911Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 841
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:54.911Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1934
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:57.134Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 828
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:57.134Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1913
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:59.387Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 777
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:33:59.387Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1864
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:03.562Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 159
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:03.562Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1235
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:05.537Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 352
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:05.537Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1466
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:07.241Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 861
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:07.242Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 1961
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:10.895Z",
+      "queryHash": "d7fdcb7af24882bae8b8d52c2048cba5887549ceddd91c19e653161630f9fd44",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 308
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "indianopenmaps.com",
+      "method": "GET",
+      "startedAt": "2026-10-14T08:34:12.073Z",
+      "queryHash": "0f32723b5ca4e2638441452a61f357dd18bc2ed81f78cc3719249fc37dccd786",
+      "safeParamNames": [],
+      "httpStatus": 200,
+      "elapsedMs": 122
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

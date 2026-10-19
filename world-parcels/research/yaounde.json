@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:79",
+  "queueRank": 79,
+  "name": "Yaoundé",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "centerLatLon": [
+    3.84966629078637,
+    11.5177122171369
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.mindcaf.gov.cm/",
+      "observation": "Ministry of Domains, Cadastre and Land Affairs (MINDCAF) site (reachable HTML, 200); describes services and titles but no open parcel data/API links found in the page."
+    },
+    {
+      "url": "https://www.investiraucameroun.com/economie/2607-13042-le-cameroun-a-engage-la-digitalisation-de-130-000-titres-fonciers-et-480-000-parcelles-des-domaines-national-et-public",
+      "observation": "Press report: digitisation of 130,000 land titles and 480,000 parcels in pilot cities Douala, Yaoundé, Garoua, Maroua under PAMOCCA; no public access described."
+    },
+    {
+      "url": "https://geocameroun.cm",
+      "observation": "GeoCameroun portal (aggregates OSM, government, Copernicus data); host unreachable from the research proxy."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mindcaf.gov.cm/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "HTML site, no parcel data"
+    },
+    {
+      "url": "https://geocameroun.cm",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://cadastre.cm/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://data.gouv.cm/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "MINDCAF cadastre digitisation pilot in four cities incl. Yaoundé",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Digital cadastral plans for Yaoundé reportedly exist but no anonymous public service was found; some hosts (GeoCameroun) were unreachable so may still hold a layer.",
+  "nextStep": "Retry GeoCameroun; ask MINDCAF/ Yaoundé council (CUY) for a digital cadastre download or web service."
+}

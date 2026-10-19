@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5573",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-5573-reading.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/reading-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:20:56Z",
+  "reason": "Reading queue code 5573, rank 2112, United Kingdom, exact WUP point and 274632 persons match. Two searches are recorded, but the purported local-language query mixes French cadastral terms into English; independent bilingual search evidence is incomplete. First-party HM Land Registry guidance supports national custody and a public indicative registered-freehold INSPIRE dataset, not complete city coverage. No Reading GML, parcel geometry/native ID response, or sample polygon was obtained; a fresh anonymous download request returned HTTP 403. This route outcome is not citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, and headed Details verification are absent; no runtime admission.",
+  "firstPartyPagesChecked": [
+    "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+    "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+  ]
+}

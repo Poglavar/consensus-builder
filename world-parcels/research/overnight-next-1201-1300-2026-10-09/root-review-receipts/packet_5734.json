@@ -1,0 +1,21 @@
+{
+  "taskId": "packet:5734",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-5734-elenga.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/elenga-service-review.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-review-receipts/city_5734.json",
+    "tmp/valhalla-parcel-research/elenga/dists.json",
+    "tmp/valhalla-parcel-research/elenga/thanas-3093.json",
+    "tmp/valhalla-parcel-research/elenga/main.js"
+  ],
+  "checkedAt": "2026-10-09T11:53:51Z",
+  "reason": "Official local land-record custody is recorded; the cached first-party viewer response returns three Dhaka-division districts and empty tested thana arrays, while viewer code only documents potential gid/WKT fields. There is no Elenga plot response; this is not absence.",
+  "identityCheck": "Exact code, rank, country, point, and population persons match the SHA-256 verified immutable WUP roster, pending queue, and integration ledger.",
+  "researchCheck": "Paired packet and service review record separate English and local-language searches. Zero full sample polygons and no safe native parcel ID response are retained.",
+  "admissionCheck": "Fresh native-ID reads, forced paging, thirteen bounded cells, independent metric GEOS checks, source binding, and headed Details-panel verification are missing. Runtime/catalog/report state remains unchanged."
+}

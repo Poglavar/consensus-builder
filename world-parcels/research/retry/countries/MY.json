@@ -1,0 +1,82 @@
+{
+ "kind": "country",
+ "key": "MY",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "my-selangor-jps-lot-petaling",
+  "requestUrl": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   101.62,
+   3.09,
+   101.65,
+   3.11
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID",
+  "responseFile": "research/retry/countries/MY-selangor-petaling-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Petaling district, Selangor (subnational only)"
+ },
+ "source": {
+  "sourceId": "my-selangor-jps-lot-petaling",
+  "name": "JPS Selangor Lot_Kadaster_MIL1 layer 7 LOT_DAERAH_PETALING",
+  "operator": "Jabatan Pengairan dan Saliran Negeri Selangor",
+  "scope": "Petaling district, Selangor",
+  "endpoint": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7",
+  "method": "ArcGIS REST query",
+  "responseFormat": "esri JSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "unknown; not read"
+ },
+ "requests": [
+  {
+   "url": "https://ekadaster.jupem.gov.my/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect to /Account/Login; login wall, not bypassed"
+  },
+  {
+   "url": "https://ekadaster.jupem.gov.my/eKadaster",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "same login redirect"
+  },
+  {
+   "url": "https://www.mygeoportal.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "national geoportal page; no parcel service URL found"
+  },
+  {
+   "url": "https://www.jupem.gov.my/ , mysdi.gov.my, penang, johor, perak, sarawak hosts",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failures"
+  },
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7/query?where=1=1&geometry=101.62,3.09,101.65,3.11&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&resultRecordCount=3&outFields=*&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon lots (layer JPSSELGIS_LOT.SDE.LOT_DAERAH_PETALING), re-verified; applicant/developer name fields redacted in saved reply"
+  }
+ ],
+ "geoBlockSuspected": "false",
+ "notes": "Status unchanged: national eKadaster still requires an account. Re-verified the Selangor JPS (Drainage and Irrigation) Petaling lot layer with browser headers (subnational, Petaling district only, licence unknown, layer appears to be a JPS-maintained lot layer, not the JUPEM national cadastre). Other state hosts unreachable.",
+ "nextStep": "Ask JUPEM about eKadaster public/paid access terms; probe other Selangor districts and other states' geoportals from a different network."
+}

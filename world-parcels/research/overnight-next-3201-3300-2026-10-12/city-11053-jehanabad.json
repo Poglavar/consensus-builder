@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 11053,
+  "queueRank": 3226,
+  "name": "Jehanabad",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [25.2134987136412, 84.9888184309687],
+  "population2025": 187144,
+  "population2025k": 187.144,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jehanabad Bihar official cadastral parcel map land records GIS Bhunaksha",
+        "result": "First-party discovery identified the Government of Bihar BhuNaksha cadastral viewer, BiharBhumi revenue portal, the Directorate of Land Records & Survey service page, and the official Jehanabad district map/revenue pages. The live BhuNaksha viewer exposes district, sub-division, circle and mauza selectors and anonymous REST endpoints.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://jehanabad.nic.in/en/map-of-district/"
+        ]
+      },
+      {
+        "language": "Hindi (native/local-language discovery)",
+        "query": "जहानाबाद बिहार सरकारी भू नक्शा खतौनी भूमि अभिलेख",
+        "result": "Hindi first-party discovery identified the official Jehanabad district Revenue and Land Reforms page, which links BiharBhumi, and the BiharBhumi portal's Hindi land-record/map services. The official BhuNaksha selector returned the Hindi Jehanabad mauza label जहानाबाद for the selected administrative path.",
+        "actualResultUrls": [
+          "https://jehanabad.nic.in/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%94%E0%A4%B0-%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B8%E0%A5%81%E0%A4%A7%E0%A4%BE%E0%A4%B0/",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Directorate of Land Records & Survey / Revenue and Land Reforms Department, Government of Bihar; Jehanabad district administration",
+    "scope": "The official Jehanabad district revenue page identifies the state land-record service, and the Government of Bihar BhuNaksha viewer exposes Jehanabad district and locality selectors. This evidences a local/state cadastral map custodian, not open citywide parcel completeness.",
+    "evidenceUrls": [
+      "https://jehanabad.nic.in/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%94%E0%A4%B0-%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B8%E0%A5%81%E0%A4%A7%E0%A4%BE%E0%A4%B0/",
+      "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "https://dlrs.bihar.gov.in/services.html"
+    ]
+  },
+  "officialSources": [
+    {"url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "publisher": "Directorate of Land Records & Survey, Government of Bihar", "observation": "Live Bihar cadastral mapping viewer; describes digitized cadastral maps and provides map access."},
+    {"url": "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default", "publisher": "Revenue and Land Reforms Department, Government of Bihar", "observation": "Official land-record gateway listing Jamabandi and Bhu-Manचित्र services."},
+    {"url": "https://jehanabad.nic.in/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%94%E0%A4%B0-%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B8%E0%A5%81%E0%A4%A7%E0%A4%BE%E0%A4%B0/", "publisher": "Jehanabad District Administration", "observation": "Official Hindi Revenue and Land Reforms page linking the Bihar land-record portal."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "httpStatus": 200, "outcome": "TLS-verified live viewer HTML retrieved; state 10 and current REST entry route observed."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "payload": {"state": "10"}, "httpStatus": 200, "outcome": "Returned 7 location/data levels."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "payload": {"state": "10", "level": 0, "codes": "", "hasmap": true}, "httpStatus": 200, "outcome": "Returned Bihar district list including 33 JEHANABAD."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "payload": {"state": "10", "level": 1, "codes": "33,", "hasmap": true}, "httpStatus": 200, "outcome": "Returned Jehanabad sub-division code 01 (Jehanabad)."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "payload": {"state": "10", "level": 2, "codes": "33,01,", "hasmap": true}, "httpStatus": 200, "outcome": "Returned Jehanabad circle code 01 (Jehanabad)."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "payload": {"state": "10", "level": 3, "codes": "33,01,01,", "hasmap": true}, "httpStatus": 200, "outcome": "Returned mauza code 0063 with English label Jehanabad and Hindi label जहानाबाद; returned survey type Special Survey, map instances First Map and Boundary Verified Map."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp", "httpStatus": 200, "outcome": "Current viewer HTML and linked index.js/config.js retrieved; JavaScript identifies getVVVVExtentGeoref, getPlotAtXY, WMS, and plot-info routes. No credentials or login used."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "payload": {"state": "10", "gisLevels": "33,01,01,0063,SS,00,00,", "srs": "0"}, "httpStatus": 204, "outcome": "No map extent response for the selected special-survey map instance; no parcel geometry or ID retained."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/rest/WMS?service=WMS&request=GetCapabilities", "httpStatus": 200, "outcome": "Returned the site's generic error page rather than WMS capabilities; no CRS or vector schema inferred."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/10/village_selector.jsp", "httpStatus": 200, "outcome": "Direct unauthenticated fetch returned generic error page outside the viewer's expected AJAX flow; not treated as parcel absence."}
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Government of Bihar BhuNaksha",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {"canonicalId": "Not observed in a parcel response", "safeGeometry": "Viewer JavaScript references plot geometry through map/WMS and getPlotAtXY, but no parcel response was returned"},
+    "compositeKeyProvenance": "Administrative selector codes 33/01/01/0063 and survey/map-instance codes SS/00/00 were observed as routing values only; no parcel identity was returned and no synthetic identity was assigned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bihar state BhuNaksha service with Jehanabad district and locality selectors.",
+    "verifiedOpenScope": "Jehanabad district/circle/mauza selection metadata was returned, but the selected map extent endpoint returned HTTP 204 and no parcel geometry was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "exactPointParcelSample": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "uncertainty": [
+    "No parcel ID-plus-geometry response was returned in this attempt.",
+    "The HTTP 204 map-extent result may reflect unavailable or unpopulated selected map data; it is not evidence of citywide parcel absence.",
+    "BhuNaksha map/WMS behavior may require a different current map-instance route or interactive sequence; no login, CAPTCHA, credentials, or private fields were attempted.",
+    "Exact WUP point was preserved and not shifted or used as an absence test.",
+    "No citywide coverage or adapter qualification was performed."
+  ],
+  "doNotInfer": ["A zero exact-point hit, map extent miss, HTTP 204, or unusable direct AJAX route is not evidence of citywide absence.", "Administrative selector metadata is not a parcel sample.", "Packet completion is not source integration or admission."],
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

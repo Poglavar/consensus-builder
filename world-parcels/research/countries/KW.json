@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "KW",
+ "country": "Kuwait",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Public Authority for Housing Welfare (PAI) and PACI (Public Authority for Civil Information); Kuwait Municipality survey",
+ "portalsFound": [
+  {
+   "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1",
+   "observation": "PAI ArcGIS parcel layer (per research/kuwait-city.json); sits behind Incapsula bot protection."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1/query?where=1%3D1&geometry=47.9994,29.2828,48.0004,29.2838&geometryType=esriGeometryEnvelope&inSR=4326&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Incapsula block page even with browser User-Agent"
+  },
+  {
+   "url": "https://gis.pai.gov.kw/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Incapsula block"
+  },
+  {
+   "url": "https://kuwaitportal.paci.gov.kw/arcgisportal/rest/services/?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.paci.gov.kw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.pai.gov.kw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "PAI parcel layer appears country-wide (Kuwait is a city-state-sized country) but unverified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Bot protection blocks automated access; not proven absent or restricted. Reuses research/kuwait-city.json.",
+ "nextStep": "Try from a network/browser session passing the Incapsula challenge."
+}

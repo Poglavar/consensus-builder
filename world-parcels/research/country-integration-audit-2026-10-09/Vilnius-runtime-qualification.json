@@ -1,0 +1,275 @@
+{
+  "schemaVersion": "1.0",
+  "status": "stopped_existing_adapter_descriptor_unsupported",
+  "checkedAt": "2026-10-09T08:26:19.744Z",
+  "city": "Vilnius",
+  "country": "Lithuania",
+  "wupCityCode": 699,
+  "identity": {
+    "priorAttemptSameWupIdentity": true,
+    "freshAttemptCountAdded": 0,
+    "reason": "Repeat qualification of previously attempted WUP City_Code 699; this report does not add a new city attempt."
+  },
+  "wup": {
+    "cityCode": 699,
+    "city": "Vilnius",
+    "country": "Lithuania",
+    "year": 2025,
+    "pointLatLon": [
+      54.695435447302,
+      25.2704077979851
+    ],
+    "source": "UN DESA WUP 2025 Revision, WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "sourceUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "archiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "pointBasis": "Official bulk WUP 2025 City_Code 699, Year=2025 PWCent latitude/longitude; retained unchanged as the center."
+  },
+  "scope": {
+    "purpose": "Check whether the existing WFS adapter can qualify the documented Lithuania INSPIRE source without code changes.",
+    "noGlobalReaderCatalogRegistryFrontendOrRootStampChanges": true,
+    "durableGeometryCopiesAdded": 0,
+    "fullGeometryCache": null,
+    "sourceTermsOrCurrentnessWereNotUsedAsEligibilityGates": true
+  },
+  "source": {
+    "id": "lt-inspire-cp-wfs",
+    "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+    "featureType": "cp:CP.CadastralParcel",
+    "adapter": "createWfsParcelSource",
+    "version": "2.0.0",
+    "nativeCrs": "EPSG:4258",
+    "nativeCrsAuthorityAxisOrder": [
+      "latitude",
+      "longitude"
+    ],
+    "previouslyObservedGeoJsonCoordinates": [
+      "longitude",
+      "latitude"
+    ],
+    "idField": "nationalcadastralreference",
+    "idType": "integer",
+    "geometryField": "geometry",
+    "outFields": [
+      "nationalcadastralreference"
+    ],
+    "requestProperties": true,
+  "intendedSrsName": "CRS:84 (would request GeoJSON output in longitude/latitude order; not issued)",
+    "intendedResponseSrid": null,
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "minRequestIntervalMs": 150,
+    "capabilitiesHttpStatus": 200,
+    "schemaHttpStatus": 200,
+    "sourceFeatureType": "cp:CP.CadastralParcel"
+  },
+  "adapterProbe": {
+    "factory": "createWfsParcelSource",
+    "constructed": false,
+    "fetchCallsDuringProbe": 0,
+    "networkRequestsMade": 0,
+    "error": "Invalid WFS parcel source descriptor.",
+    "actualFeatureType": "cp:CP.CadastralParcel",
+    "adapterFeatureTypeValidationPattern": "^[A-Za-z0-9_.]+:[A-Za-z0-9_]+$",
+    "rejection": "The namespace/local-name pattern permits a period before the colon but not inside the local name. `CP.CadastralParcel` contains a period, so the unchanged factory throws `Invalid WFS parcel source descriptor.` before any fetch.",
+    "unsupportedDescriptorConfirmed": true,
+    "readerChanged": false
+  },
+  "plannedQualification": {
+    "cellSizeDegrees": 0.001,
+    "alignmentOrigin": [
+      0,
+      0
+    ],
+    "cellCount": 13,
+    "cells": [
+      {
+        "offset": [
+          0,
+          0
+        ],
+        "bounds": [
+          25.27,
+          54.695,
+          25.271,
+          54.696
+        ]
+      },
+      {
+        "offset": [
+          -1,
+          -1
+        ],
+        "bounds": [
+          25.269,
+          54.694,
+          25.27,
+          54.695
+        ]
+      },
+      {
+        "offset": [
+          0,
+          -1
+        ],
+        "bounds": [
+          25.27,
+          54.694,
+          25.271,
+          54.695
+        ]
+      },
+      {
+        "offset": [
+          1,
+          -1
+        ],
+        "bounds": [
+          25.271,
+          54.694,
+          25.272,
+          54.695
+        ]
+      },
+      {
+        "offset": [
+          -1,
+          0
+        ],
+        "bounds": [
+          25.269,
+          54.695,
+          25.27,
+          54.696
+        ]
+      },
+      {
+        "offset": [
+          1,
+          0
+        ],
+        "bounds": [
+          25.271,
+          54.695,
+          25.272,
+          54.696
+        ]
+      },
+      {
+        "offset": [
+          -1,
+          1
+        ],
+        "bounds": [
+          25.269,
+          54.696,
+          25.27,
+          54.697
+        ]
+      },
+      {
+        "offset": [
+          0,
+          1
+        ],
+        "bounds": [
+          25.27,
+          54.696,
+          25.271,
+          54.697
+        ]
+      },
+      {
+        "offset": [
+          1,
+          1
+        ],
+        "bounds": [
+          25.271,
+          54.696,
+          25.272,
+          54.697
+        ]
+      },
+      {
+        "offset": [
+          0,
+          -2
+        ],
+        "bounds": [
+          25.27,
+          54.693,
+          25.271,
+          54.694
+        ]
+      },
+      {
+        "offset": [
+          0,
+          2
+        ],
+        "bounds": [
+          25.27,
+          54.697,
+          25.271,
+          54.698
+        ]
+      },
+      {
+        "offset": [
+          -2,
+          0
+        ],
+        "bounds": [
+          25.268,
+          54.695,
+          25.269,
+          54.696
+        ]
+      },
+      {
+        "offset": [
+          2,
+          0
+        ],
+        "bounds": [
+          25.272,
+          54.695,
+          25.273,
+          54.696
+        ]
+      }
+    ],
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "countBeforeAfter": "not executed; adapter rejected the descriptor before any request",
+    "forcedPageSize1SmallCell": "not executed",
+    "maxConcurrentRequestsObserved": 0,
+    "freshNativeIdReads": "not executed",
+    "explicitNativeAbsence": "not executed",
+    "wupPointContainment": "not assessed",
+    "fullFootprintBinding": "not executed",
+    "nativeEPSG4258GeometryComparison": "not executed"
+  },
+  "sourceEvidence": {
+    "priorBalticRecheckStatus": "passed",
+    "priorAnonymousCapabilitiesHttpStatus": 200,
+    "priorSchemaHttpStatus": 200,
+    "priorFeatureType": "cp:CP.CadastralParcel",
+    "nativeIdType": "xsd:long",
+    "priorBboxMatchedCount": "27",
+    "priorBboxStableMatchedCount": true,
+    "existingNativeIdExactReadsPassed": true,
+    "existingExplicitAbsencePassed": true
+  },
+  "outcome": {
+    "runtimeQualification": "not_completed_due_to_existing_adapter_descriptor_contract",
+    "sourceAvailabilityVerdict": "not_retested",
+    "noInferenceFromThisFailure": "This is a local adapter descriptor validation limit, not evidence that the public WFS source or its geometry is invalid.",
+    "nextDecision": "Root review may select a narrowly scoped, legitimate adapter capability for the punctuated feature type; no speculative reader patch was made."
+  },
+  "provenance": {
+    "existingAudit": "world-parcels/research/country-integration-audit-2026-10-09/baltic-source-recheck.json",
+    "officialBulkArchive": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "bulkArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "name": "Denizli",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "rank": 977,
+  "point": [
+    37.7769297462601,
+    29.0816895081799
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Denizli Turkey official cadastral parcel map municipal GIS TKGM land registry",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "The official city guide describes address/parcel search and drawing the selected parcel polygon with area. The public ArcGIS MapServer traced for the guide contains roads, buildings, neighborhoods and administrative/place layers, not cadastral parcels. The city guide’s parcel tool likely uses another backend, but its schema/anonymous geometry request was not verified. TKGM lists a Denizli Cadastre Directorate and an official public parcel-query service; its UI is identifier-oriented and no query was submitted.",
+        "actualResultUrls": [
+          "https://kentrehberi.denizli.bel.tr/tanitim.html"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Turkish",
+        "query": "Denizli parsel sorgu kadastro haritası tapu kadastro müdürlüğü kent rehberi resmi",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "The official city guide describes address/parcel search and drawing the selected parcel polygon with area. The public ArcGIS MapServer traced for the guide contains roads, buildings, neighborhoods and administrative/place layers, not cadastral parcels. The city guide’s parcel tool likely uses another backend, but its schema/anonymous geometry request was not verified. TKGM lists a Denizli Cadastre Directorate and an official public parcel-query service; its UI is identifier-oriented and no query was submitted.",
+        "actualResultUrls": [
+          "https://kentrehberi.denizli.bel.tr/tanitim.html"
+        ],
+        "executionMethod": "Separate Turkish-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Denizli Metropolitan Municipality Kent Rehberi and TKGM Denizli Cadastre Directorate",
+        "operator": "Denizli Metropolitan Municipality; Turkish General Directorate of Land Registry and Cadastre (TKGM)",
+        "homeUrl": "https://kentrehberi.denizli.bel.tr/tanitim.html",
+        "observation": "The official city guide describes address/parcel search and drawing the selected parcel polygon with area. The public ArcGIS MapServer traced for the guide contains roads, buildings, neighborhoods and administrative/place layers, not cadastral parcels. The city guide’s parcel tool likely uses another backend, but its schema/anonymous geometry request was not verified. TKGM lists a Denizli Cadastre Directorate and an official public parcel-query service; its UI is identifier-oriented and no query was submitted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "TR-3663-LOCAL-CADASTRE-REVIEW",
+    "name": "Denizli Metropolitan Municipality Kent Rehberi and TKGM Denizli Cadastre Directorate",
+    "url": "https://kentrehberi.denizli.bel.tr/tanitim.html",
+    "operator": "Denizli Metropolitan Municipality; Turkish General Directorate of Land Registry and Cadastre (TKGM)",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local cadastre administration and a city parcel-map function are evidenced; however, this research did not recover the parcel-service schema or a safe full geometry response.",
+    "verifiedOpenScope": "The official city guide describes address/parcel search and drawing the selected parcel polygon with area. The public ArcGIS MapServer traced for the guide contains roads, buildings, neighborhoods and administrative/place layers, not cadastral parcels. The city guide’s parcel tool likely uses another backend, but its schema/anonymous geometry request was not verified. TKGM lists a Denizli Cadastre Directorate and an official public parcel-query service; its UI is identifier-oriented and no query was submitted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Only a city general MapServer was inspectable and it has no parcel layer. The distinct parcel-search backend was not traced to a field-allowlisted geometry endpoint.",
+  "remainingUncertainty": "Exact WUP parcel hit, service coverage, and export support remain unverified.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3663,
+  "cityId": "wup2025:3663",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    37.7769297462601,
+    29.0816895081799
+  ],
+  "population2025k": 561.327,
+  "populationUnit": "persons",
+  "queueRank": 977,
+  "population2025": 561327,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official city guide describes address/parcel search and drawing the selected parcel polygon with area. The public ArcGIS MapServer traced for the guide contains roads, buildings, neighborhoods and administrative/place layers, not cadastral parcels. The city guide’s parcel tool likely uses another backend, but its schema/anonymous geometry request was not verified. TKGM lists a Denizli Cadastre Directorate and an official public parcel-query service; its UI is identifier-oriented and no query was submitted.",
+  "registryEvidenceUrls": [
+    "https://kentrehberi.denizli.bel.tr/tanitim.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Only a city general MapServer was inspectable and it has no parcel layer. The distinct parcel-search backend was not traced to a field-allowlisted geometry endpoint."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://kentrehberi.denizli.bel.tr/tanitim.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "Sistemi Keşfedin | Denizli Kent Rehberi"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

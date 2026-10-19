@@ -1,0 +1,115 @@
+{
+  "name": "Bhubaneshwar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 450,
+  "point": [
+    20.28854020032,
+    85.8289544924443
+  ],
+  "population2025": 1146434,
+  "population2025k": 1146.434,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Local BMC property records and BDA planning sources are confirmed. The official BhuNaksha map viewer’s current map-backed district options did not include Khordha, and no city parcel polygon was fetched.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Bhubaneswar Municipal Corporation documents city property-tax records and a GIS-based survey; BDA publishes land-use planning products. This is city-local property/planning administration, not proof of a publicly queryable cadastral parcel layer.",
+  "resultCategory": "city_property_and_planning_records_confirmed_open_cadastral_geometry_unverified",
+  "technicalBlocker": "BhuNaksha exposes a statewide hierarchy but currently returned only three map-backed districts, none Khordha. Its plot-info handler may mix plot metadata, so it was not called.",
+  "remainingUncertainty": "Whether an alternate public map service provides parcel geometry for the Bhubaneswar/Khordha locator remains unknown.",
+  "nextStep": "Revisit through an official Khordha-enabled BhuNaksha viewer or BDA/BMC GIS layer; require schema and server-side geometry/ID allowlist before data retrieval.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bhubaneswar official cadastral parcel map GIS land records Bhubaneswar Development Authority",
+        "result": "The official BhuNaksha application is a village-level plot-map viewer. Its anonymous current selector returns map-backed district entries Puri, Nayagarh, and Rayagada; Khordha (Bhubaneswar) was absent. BDA’s official public pages link land-use maps and a draft CDP map, not parcel vectors.",
+        "method": "Separate English search, official BDA/BMC pages, and public BhuNaksha selector/schema review."
+      },
+      {
+        "language": "Odia",
+        "query": "ଭୁବନେଶ୍ୱର ଜମି ନକ୍ସା ଭୂଖଣ୍ଡ ମାନଚିତ୍ର ଜିଆଇଏସ ସରକାରୀ",
+        "result": "Official BMC materials document city property-tax records and GIS-based survey; the public BhuNaksha map selector did not expose Khordha in its current map-backed options. No property record or owner lookup was performed.",
+        "method": "Separate Odia-language search and official Odisha/BMC map-source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://app2bhunakshaodisha.nic.in/bhunaksha/",
+        "observation": "Official Odisha BhuNaksha plot-map UI with District, Tehsil, RI, Village and Sheet selectors; public selector request currently returned only three district choices, none Khordha."
+      },
+      {
+        "url": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+        "observation": "Official Odisha Bhulekh Map View page links to the official BhuNaksha service and exposes village-map/plot-map entry points."
+      },
+      {
+        "url": "https://www.bmc.gov.in/property-tax-assessment",
+        "observation": "Bhubaneswar Municipal Corporation says property-tax records are being computerised and GIS maps are used for its city survey; this is local property-tax administration, not public parcel polygons."
+      },
+      {
+        "url": "https://www.bda.gov.in/information/894",
+        "observation": "Bhubaneswar Development Authority offers a land-use map for 205 villages and a clearly labeled draft GIS-based CDP plan; neither was treated as a cadastral vector layer."
+      },
+      {
+        "url": "https://odisha4kgeo.in/index.php/mapview/bluisplus",
+        "observation": "ORSAC describes statewide georeferenced cadastral-level land-use maps; the portal is a state asset/planning system, not verified public parcel vectors for this city point."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Official BhuNaksha shell and public JavaScript were inspected. The viewer uses raster WMS for village/plot display and a plot-info handler whose response can include descriptive records; that endpoint was deliberately not called. Anonymous Levels/ListsAfterLevel for state 21 returned only districts Puri (11), Nayagarh (22), Rayagada (27) as current map-backed options; Khordha was absent. No parcel geometry was queried.",
+      "geometryAttempted": false,
+      "geometryStatus": "not queried; active map-backed selector did not expose Khordha/Bhubaneswar, and viewer’s plot-info route may return record values",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "not queried; active map-backed selector did not expose Khordha/Bhubaneswar, and viewer’s plot-info route may return record values",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "source": {
+    "name": "BMC property records and BDA planning maps; Odisha BhuNaksha discovery",
+    "operator": "Bhubaneswar Municipal Corporation / Bhubaneswar Development Authority / Government of Odisha",
+    "url": "https://www.bmc.gov.in/property-tax-assessment",
+    "scope": "City property/planning records confirmed; current Bhunaksha map-backed selector lacks Khordha and no public parcel vectors verified.",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false
+  },
+  "sourceIds": [],
+  "queueRank": 450,
+  "wupCityCode": 11573,
+  "cityId": "wup2025:11573",
+  "centerLatLon": [
+    20.28854020032,
+    85.8289544924443
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "registryEvidenceUrls": [
+    "https://app2bhunakshaodisha.nic.in/bhunaksha/",
+    "https://bhulekh.ori.nic.in/frmmapview.aspx",
+    "https://www.bmc.gov.in/property-tax-assessment",
+    "https://www.bda.gov.in/information/894",
+    "https://odisha4kgeo.in/index.php/mapview/bluisplus"
+  ],
+  "rootReviewedAt": "2026-10-09T00:13:07.775882+00:00"
+}

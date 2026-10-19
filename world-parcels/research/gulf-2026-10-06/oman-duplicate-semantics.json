@@ -1,0 +1,18 @@
+[
+  {
+    "nativeId": "1-05-011-01-739",
+    "rows": 31,
+    "differentPlotNumberCount": 31,
+    "distinctExactGeometryCount": 31,
+    "maxGeometryCenterSeparationM": 209.1,
+    "exceededTransferLimit": null
+  },
+  {
+    "nativeId": "01-01-016-01-1031",
+    "rows": 29,
+    "differentPlotNumberCount": 29,
+    "distinctExactGeometryCount": 26,
+    "maxGeometryCenterSeparationM": 181.8,
+    "exceededTransferLimit": null
+  }
+]

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Bi'r Rubak",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "rank": 754,
+  "point": [
+    12.8711676964977,
+    44.9836917599667
+  ],
+  "population2025": 712438,
+  "population2025k": 712.438,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "wupCityCode": 5454,
+  "cityId": "wup2025:5454",
+  "queueRank": 754,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "The WUP place name and point have not been reconciled against a city-specific primary administrative source; registry and parcel coverage remain unestablished.",
+  "registryEvidenceUrls": [],
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "adapterReady": false,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "بئر رباك عدن البريقة السجل العقاري مكتب الأراضي والمساحة خرائط الأراضي رسمي",
+        "scope": "Reconcile WUP locality identity with the supplied point before attaching a local registry or parcel source.",
+        "result": "تسجل بيانات WUP الاسم والإحداثيات المقدمة، لكن مصدرًا جغرافيًا ثانويًا يضع قرية بئر رباك على مسافة تقارب 8 كم جنوب غرب النقطة. لا يكفي هذا التطابق الاسمي لربط سجل عقاري أو خدمة كادسترية بالنقطة، ولم يُجرَ أي استعلام عن قطعة أرض.",
+        "actualResultUrls": [
+          "https://population.un.org/wup/downloads?tab=Cities",
+          "https://galsup.gov.ye/",
+          "https://agoye.gov.ye/page.php?id=374",
+          "https://www.humanitarianatlas.org/yemen/atlasmaps/r-ye2404-al-burayqah-district-aden-governorate-reference-map-1-november-2019-en-ar-a1-ocha.pdf",
+          "https://mapcarta.com/12499212"
+        ],
+        "executionMethod": "Separate English and Arabic discovery; compared WUP-supplied identity/point with geographic search results and reviewed official Yemen land-authority and registry-law pages. No parcel query."
+      },
+      {
+        "language": "English",
+        "query": "Bi’r Rubak Yemen official cadastral land registry parcel map Aden Al Buraiqeh",
+        "scope": "Reconcile WUP locality identity with the supplied point before attaching a local registry or parcel source.",
+        "result": "The WUP row supplies this name and point, but a locality gazetteer result for Bi’r Rubak is about 8 km southwest of the supplied population-weighted point. The local-name match is insufficient to bind a registry or cadastral service to the target; no parcel source was queried.",
+        "actualResultUrls": [
+          "https://population.un.org/wup/downloads?tab=Cities",
+          "https://galsup.gov.ye/",
+          "https://agoye.gov.ye/page.php?id=374",
+          "https://www.humanitarianatlas.org/yemen/atlasmaps/r-ye2404-al-burayqah-district-aden-governorate-reference-map-1-november-2019-en-ar-a1-ocha.pdf",
+          "https://mapcarta.com/12499212"
+        ],
+        "executionMethod": "Separate English and Arabic discovery; compared WUP-supplied identity/point with geographic search results and reviewed official Yemen land-authority and registry-law pages. No parcel query."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The supplied UN WUP record is Bi'r Rubak (city code 5454); no parcel polygon was verified at the population-weighted point.",
+    "verifiedOpenScope": "No safe anonymous full polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": null,
+    "name": "Unresolved WUP locality identity",
+    "url": null,
+    "operator": null,
+    "serviceType": "No city/locality-specific registry source attached while the WUP point/name identity remains unresolved.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_wup_identity_unresolved",
+  "runtimeAssessment": {
+    "status": "not_ready_wup_identity_unresolved",
+    "reason": "The WUP name and point are not reconciled: the identified Bi’r Rubak hamlet location is approximately 8 km from the supplied point. No local registry is attached until the target identity is resolved.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/bir-rubak-service-review.json"
+  },
+  "technicalBlocker": "The WUP name and point are not reconciled: the identified Bi’r Rubak hamlet location is approximately 8 km from the supplied point. No local registry is attached until the target identity is resolved.",
+  "remainingUncertainty": "The WUP place name and point have not been reconciled against a city-specific primary administrative source; registry and parcel coverage remain unestablished.",
+  "scopeLimits": "No full parcel polygons, owner names, addresses, applicant, taxpayer, title, assessment, or sale data were requested or retained. No citywide completeness claim.",
+  "rootPrimaryReadback": {
+    "url": null,
+    "fetch": "no_primary_candidate"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "centerLatLon": [
+    12.8711676964977,
+    44.9836917599667
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

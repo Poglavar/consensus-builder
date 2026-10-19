@@ -1,0 +1,81 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "JE",
+ "country": "Jersey",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "partial_or_unofficial_sample",
+ "status": "subnational_only",
+ "cadastreAuthority": "Government of Jersey (Infrastructure, Housing & Environment) mapping; property title is held by the Judicial Greffe (public registry, not mapped online as far as found)",
+ "inspireRecordUrl": null,
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GB,en;q=0.9; Referer: https://govje.maps.arcgis.com/; cookie jar",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "portalsFound": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=owner:maps.gov.je",
+   "observation": "Government of Jersey ArcGIS Online org: 168 public items reviewed by title/type. Found: 'Public land and property' (government estate sites, polygon), 'Field number lookup' (POINT layer of UPRN/Field_No, no polygons), 'Jersey Feature Polygons' (JsyData/Polygons MapServer, topographic features: roads, buildings, gardens, with areas in vergees/perches, no ownership), 'Vingtaine Polygons', Island Plan layers"
+  },
+  {
+   "url": "https://mapserver.digimap.gg/arcgis/rest/services/StatesOfJersey/JerseyPlanning/MapServer/1",
+   "observation": "Layer named 'Landparcels' in the Digimap-hosted Jersey Island Plan service, but attributes are FEATURE/THEME topographic classes (Pavement, Garden, Major Building), same as Jersey Feature Polygons: not ownership parcels"
+  },
+  {
+   "url": "https://opendata.gov.je/",
+   "observation": "CKAN: zero parcel datasets"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/content/items/a178029765e94b9a8e38a92367c9ac0d/data?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Field number lookup web map: layers = Jersey Feature Polygons + Field Numbers (points)"
+  },
+  {
+   "url": "utility.arcgis.com/.../JsyData/Polygons/MapServer/0/query (Jersey Feature Polygons)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygons but topographic (FEATURE, THEME, USRN, M2, Vergees); not title parcels"
+  },
+  {
+   "url": "https://services-eu1.arcgis.com/mUgkK1QjC37PAGmP/arcgis/rest/services/PropertySites_Join_Jun26_view/FeatureServer/0/query?f=json&where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon government-owned sites (public estate only)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "je-govje-public-property-sites",
+  "requestUrl": "https://services-eu1.arcgis.com/mUgkK1QjC37PAGmP/arcgis/rest/services/PropertySites_Join_Jun26_view/FeatureServer/0/query?f=json&where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "none (first 3 records island-wide)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID_1",
+  "responseFile": "JE-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "St Brelade, St Helier"
+ },
+ "regionsSampled": [
+  "St Brelade",
+  "St Helier"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Government-owned/leased public estate sites only",
+  "regionsVerified": [
+   "public estate sites only (not the general parcel fabric)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open for the public-estate layer; no general parcel/title polygon service found",
+ "remainingUncertainty": "No island-wide title/ownership parcel polygons found. The topographic 'Jersey Feature Polygons' could approximate plots but are not legal parcels (gardens/buildings/roads). Licence not read. mapping.gov.je, maps.gov.je, digimap.gov.je unreachable/403 from here.",
+ "nextStep": "Ask Government of Jersey (Digimap / Land Registry) whether a plot-boundary layer is published; check the Planning online viewer's layer list for 'property boundary'."
+}

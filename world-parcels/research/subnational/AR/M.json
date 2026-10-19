@@ -1,0 +1,85 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "M",
+ "regionName": "Mendoza",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": {
+  "sourceId": "ar-mza-ciudad-catastro-publico",
+  "name": "Catastro_publico / Parcelario catastral (layer 1)",
+  "operator": "Municipalidad de la Ciudad de Mendoza (Geoportal Ciudadano)",
+  "scope": "Ciudad de Mendoza municipality only (layer minScale 7000, extent ~ city)",
+  "endpoint": "https://webgis.ciudaddemendoza.gob.ar/server/rest/services/Catastro_p%C3%BAblico/FeatureServer/1",
+  "method": "ArcGIS FeatureServer query, f=json, no key",
+  "responseFormat": "Esri JSON",
+  "crs": "native WGS84 TM (wkt); outSR=4326 honoured",
+  "reuseStatus": "Search result states CC-BY-4.0 on the city open data portal datos.ciudaddemendoza.gob.ar; not re-read this pass"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ar-mza-ciudad-catastro-publico",
+  "requestUrl": "https://webgis.ciudaddemendoza.gob.ar/server/rest/services/Catastro_p%C3%BAblico/FeatureServer/1/query?where=1%3D1&geometry=-68.8460,-32.8900,-68.8445,-32.8890&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,par_nomenclatura,par_pad_mun_bd&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -68.846,
+   -32.89,
+   -68.8445,
+   -32.889
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "par_nomenclatura (NC) / objectid",
+  "responseFile": "research/subnational/AR/M-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Layer is published by the city of Mendoza; no province-wide parcel layer found.",
+ "subregionsVerified": [
+  "Ciudad de Mendoza"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://idemza.mendoza.gov.ar/",
+   "observation": "SIGIDE ExtJS viewer, 200; not inspected for parcel layer"
+  },
+  {
+   "url": "https://ide.mendoza.gov.ar/server/rest/services",
+   "observation": "Provincial ArcGIS Enterprise; folders Hosted/test/Utilities; no provincial parcel service listed, only Hosted/Parcelas_con_Indicadores_Urbanos_Lavalle"
+  },
+  {
+   "url": "https://ide.mendoza.gov.ar/server/rest/services/Hosted/Parcelas_con_Indicadores_Urbanos_Lavalle/FeatureServer/0",
+   "observation": "Lavalle department urban-indicator parcels (fid, nc, padron); 3 polygons returned with ID+geometry; a second partial source, not saved"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://webgis.ciudaddemendoza.gob.ar/server/rest/services/Catastro_p%C3%BAblico/FeatureServer/1?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer metadata; fields include street/number (not requested)"
+  },
+  {
+   "url": "see verifiedParcelResponse.requestUrl",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons, Referer = city webappviewer origin"
+  },
+  {
+   "url": "https://ide.mendoza.gov.ar/server/rest/services/Hosted/Parcelas_con_Indicadores_Urbanos_Lavalle/FeatureServer/0/query?where=1%3D1&outFields=fid,nc,padron&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons near -68.66,-32.79 (Lavalle)"
+  }
+ ],
+ "reuseStatus": "CC-BY-4.0 per search snippet for the city dataset; unverified",
+ "remainingUncertainty": "No provincial (ATM/Catastro) parcel service found; coverage is the city of Mendoza (plus Lavalle department layer). Only ID and geometry fields requested; no owner names, addresses or tokens saved.",
+ "nextStep": "Inspect idemza.mendoza.gov.ar viewer config and ATM/Catastro Mendoza for a provincial parcel layer; test Godoy Cruz, Guaymallen, Las Heras municipal services."
+}

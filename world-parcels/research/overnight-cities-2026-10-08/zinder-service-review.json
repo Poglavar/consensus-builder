@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2940-zinder.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A local Zinder-region property registry office and its title/transfer/mortgage/boundary workflow are confirmed. No public parcel map or geometry endpoint was verified.",
+  "registryAssessment": "Niger’s Directorate General of Taxes announced the opening of a Conservation Foncière et des Hypothèques office in Zinder. The notice assigns it the Zinder region, including Diffa, and charges it with issuing rural and urban land titles, recording ownership transfers and mortgages, and expertise for boundary marking/delimitation. This directly covers property in Zinder; it does not establish a public digital parcel map.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+      "observation": "Niger’s Directorate General of Taxes announced the opening of a Conservation Foncière et des Hypothèques office in Zinder. The notice assigns it the Zinder region, including Diffa, and charges it with issuing rural and urban land titles, recording ownership transfers and mortgages, and expertise for boundary marking/delimitation. This directly covers property in Zinder; it does not establish a public digital parcel map."
+    },
+    {
+      "url": "https://www.impots.gouv.ne/media/telech/CGI%202013%20MAJ%20LF%20%202022.pdf",
+      "observation": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made."
+    },
+    {
+      "url": "https://www.gouv.ne/",
+      "observation": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zinder Niger official land registry cadastral office land titles map",
+      "result": "A local Zinder-region property registry office and its title/transfer/mortgage/boundary workflow are confirmed. No public parcel map or geometry endpoint was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    },
+    {
+      "language": "French",
+      "query": "Zinder Niger bureau conservation foncière cadastre titres fonciers mairie registre officiel",
+      "result": "A local Zinder-region property registry office and its title/transfer/mortgage/boundary workflow are confirmed. No public parcel map or geometry endpoint was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made."
+  },
+  "privacy": "No parcel/owner/address/tax-account lookup or login was made. No geometry or private attributes retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

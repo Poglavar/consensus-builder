@@ -1,0 +1,127 @@
+import { test, expect } from '../helpers/fixtures';
+import { openCity, PARCEL_ID } from '../helpers/runtime';
+
+test.describe('Search and command palette @features', () => {
+  test('address results use the geocoder and move the map to the selected place', async ({ mockApi: page }) => {
+    const queries: string[] = [];
+    await page.route('https://photon.komoot.io/api/**', route => {
+      queries.push(new URL(route.request().url()).searchParams.get('q') || '');
+      return route.fulfill({ json: { features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: [15.975, 45.81] }, properties: { name: 'Test library', city: 'Zagreb', country: 'Croatia', osm_key: 'amenity', osm_value: 'library' } }] } });
+    });
+    await openCity(page);
+    const search = page.getByRole('combobox', { name: 'Search the map' });
+    // Folded to the city chip and magnifier until used; the magnifier unfolds it.
+    await expect(search).toBeHidden();
+    await page.locator('.map-search__icon-button').click();
+    await search.fill('Test library');
+    await page.locator('.map-search__results [role="option"]').filter({ hasText: 'Test library' }).first().click();
+    await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lat - 45.81))).toBeLessThan(0.0001);
+    await expect.poll(() => page.evaluate(() => Math.abs((window as any).map.getCenter().lng - 15.975))).toBeLessThan(0.0001);
+    expect(queries).toContain('Test library');
+    // Running a result closes the list and folds the box again (hidden, so out of the role tree).
+    const input = page.locator('#map-search-input');
+    await expect(input).toHaveAttribute('aria-expanded', 'false');
+    await expect(input).toBeHidden();
+  });
+
+  test('parcel search locates the actual cadastral geometry', async ({ mockApi: page }) => {
+    await openCity(page);
+    const search = page.getByRole('combobox', { name: 'Search the map' });
+    await page.locator('.map-search__icon-button').click();
+    await search.fill(PARCEL_ID);
+    await page.locator('.map-search__results [role="option"]').filter({ hasText: PARCEL_ID }).first().click();
+    await expect.poll(() => page.evaluate(() => (window as any).selectedParcelId)).toBe(PARCEL_ID);
+    await expect(page.locator('#parcel-info-panel')).toBeVisible();
+    await expect(page.locator('#info-content')).toContainText('1234');
+  });
+
+  test('keyboard palette filters and executes toggles, reveals inputs, reports unavailable actions, and closes', async ({ mockApi: page }) => {
+    await openCity(page);
+    const palette = page.locator('.command-palette-backdrop');
+    const input = page.locator('.command-palette__input');
+    await page.keyboard.press('Meta+k');
+    await expect(palette).toBeVisible();
+    await input.fill('Show parcels');
+    await page.keyboard.press('Enter');
+    await expect(palette).toBeHidden();
+    await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer))).toBe(false);
+    await page.keyboard.press('Meta+k');
+    await input.fill('Show parcels');
+    await page.keyboard.press('Enter');
+    await expect.poll(() => page.evaluate(() => (window as any).map.hasLayer((window as any).parcelLayer))).toBe(true);
+    await page.keyboard.press('Meta+k');
+    await input.fill('Base map');
+    await page.keyboard.press('Enter');
+    // The base-map select lives in the Layers sheet since fbe3758d.
+    await expect(page.locator('#layers-sheet')).toBeVisible();
+    await expect(page.locator('#tile-source-select')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await page.locator('#settings-button').focus();
+    await page.keyboard.press('Meta+k');
+    await input.fill('Propose here');
+    await expect(page.locator('.command-palette__item').filter({ hasText: 'Propose here' })).toHaveAttribute('aria-disabled', 'true');
+    await input.fill('zzzz nonexistent action');
+    await expect(page.locator('.command-palette__empty')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(palette).toBeHidden();
+  });
+
+  test('introduction, version information and diagnostic log open, copy and close through their controls', async ({ mockApi: page }) => {
+    await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+    await openCity(page);
+    await page.locator('#settings-button').click();
+    await expect(page.locator('#version-badge')).not.toBeEmpty();
+    await page.keyboard.press('Meta+k');
+    // Labelled "How it works" since a21963ab (the introduction tour).
+    await page.locator('.command-palette__input').fill('How it works');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#site-intro-modal')).toBeVisible();
+    // The introduction is a tour since a21963ab: its last step's button is the "Explore the map" CTA.
+    await page.keyboard.press('End');
+    const cta = page.locator('#site-intro-modal [data-site-intro-next]');
+    await expect(cta).toHaveText('Explore the map');
+    await cta.click();
+    await expect(page.locator('#site-intro-modal')).toBeHidden();
+    await page.keyboard.press('Meta+k');
+    await page.locator('.command-palette__input').fill('Open the status log');
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#status-log-modal')).toBeVisible();
+    await expect(page.locator('#status-log-modal-list')).not.toBeEmpty();
+    await page.locator('#status-log-modal-copy').click();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('Loaded 5 cadastral parcels.');
+    await page.locator('#status-log-modal-close').click();
+    await expect(page.locator('#status-log-modal')).toBeHidden();
+  });
+
+  test('the introduction Previous, Next, and page dots navigate the visible feature slides', async ({ mockApi: page }) => {
+    await openCity(page);
+    await page.locator('#settings-button').click();
+    await page.locator('#settings-sheet [data-site-intro-open]').click();
+    const intro = page.locator('#site-intro-modal');
+    await expect(intro).toBeVisible();
+    await expect(intro.locator('[data-site-intro-progress]')).toHaveText('1 / 5');
+    await expect(intro.locator('[data-site-intro-back]')).toBeDisabled();
+
+    await intro.locator('[data-site-intro-next]').click();
+    await expect(intro.locator('[data-site-intro-progress]')).toHaveText('2 / 5');
+    await expect(intro.locator('[data-site-intro-slide="propose"]')).toBeVisible();
+    await intro.locator('[data-site-intro-back]').click();
+    await expect(intro.locator('[data-site-intro-progress]')).toHaveText('1 / 5');
+
+    const slides = ['explore', 'propose', 'consent', 'activity', 'sources'];
+    for (const [index, slide] of slides.entries()) {
+      const dot = intro.locator(`[data-site-intro-page="${index}"]`);
+      await dot.click();
+      await expect(intro.locator('[data-site-intro-progress]')).toHaveText(`${index + 1} / ${slides.length}`);
+      await expect(intro.locator(`[data-site-intro-slide="${slide}"]`)).toBeVisible();
+      await expect(dot).toHaveAttribute('aria-current', 'step');
+    }
+    await intro.getByRole('button', { name: 'Close introduction', exact: true }).click();
+    await expect(intro).toBeHidden();
+    if (!(await page.locator('#settings-sheet').isVisible())) await page.locator('#settings-button').click();
+    await page.locator('#settings-sheet [data-site-intro-open]').click();
+    await expect(intro).toBeVisible();
+    await intro.locator('.site-intro-skip').click();
+    await expect(intro).toBeHidden();
+  });
+});

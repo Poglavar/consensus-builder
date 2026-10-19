@@ -1,0 +1,157 @@
+{
+  "cityCode": 11209,
+  "queueRank": 1999,
+  "name": "Nawada",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [24.8896035518647, 85.5407309971938],
+  "population2025": 290657,
+  "population2025k": 290.657,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nawada Bihar official cadastral map Bhu Naksha land records GIS parcel",
+        "result": "First-party discovery identified the official Nawada district Revenue page, Bihar Bhu-Naksha, Bihar land-record reporting, and the DILRMP map-digitization record. The current Bihar Bhu-Naksha viewer exposed anonymous hierarchy and map routes; the selected urban mauza route returned a null extent, so no parcel geometry was retrieved.",
+        "actualResultUrls": [
+          "https://nawada.nic.in/departments/revenue/",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://www.bhulagan.bihar.gov.in/reports/CircleWiseReport.aspx",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1532"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "नवादा बिहार आधिकारिक भू नक्शा भू अभिलेख खसरा नक्शा",
+        "result": "आधिकारिक हिंदी परिणामों में नवादा जिला प्रशासन का भू-राजस्व पृष्ठ और बिहार भू-नक्शा/भूमि अभिलेख सेवाएं मिलीं। भू-नक्शा में नवादा जिला, नवादा अनुमंडल, नवादा अंचल और ‘Nawada urf Gonawa’ मौजा का सार्वजनिक पदानुक्रम मिला, लेकिन शहरी मार्ग का extent null रहा और कोई सुरक्षित पार्सल ज्यामिति नहीं मिली।",
+        "actualResultUrls": [
+          "https://nawada.nic.in/hi/service/%E0%A4%AD%E0%A5%82-%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5/",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Current official Bihar Bhu-Naksha public viewer. Its JavaScript configuration exposed anonymous REST hierarchy, map extent, WMS, and scalar-data routes. No login, credential, private token, CAPTCHA or unsafe lookup was used."
+    },
+    {
+      "url": "https://nawada.nic.in/departments/revenue/",
+      "observation": "Official Nawada district Revenue page identifying Bihar Revenue and Land Reforms services and the local Collectorate revenue office."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/CircleWiseReport.aspx",
+      "observation": "Official Bihar land-revenue report listing Nawada circles, including Nawada Sadar; coverage/reporting evidence only, not a parcel geometry response."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1532",
+      "observation": "Official DILRMP map-digitization record for Bihar/Nawada discovered in first-party search; direct curl verification failed TLS certificate validation in this environment and was not retried with disabled verification."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nawada.nic.in/departments/revenue/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official district Revenue page loaded and linked Bihar land-record services."
+    },
+    {
+      "url": "https://nawada.nic.in/hi/service/%E0%A4%AD%E0%A5%82-%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Official Hindi district Revenue page loaded and confirmed the local Nawada revenue-office context."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Current Bihar Bhu-Naksha viewer shell loaded; public JavaScript/configuration was inspected."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST; state=10; anonymous",
+      "httpStatus": 200,
+      "outcome": "Returned hierarchy count 7."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST; state=10; level=1; codes=36,; hasmap=true; anonymous",
+      "httpStatus": 200,
+      "outcome": "Returned Nawada district code 36, Nawada subdivision code 02, and Nawada circle code 09 among public hierarchy rows."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST; state=10; level=1; codes=36,02,09,; hasmap=true; anonymous",
+      "httpStatus": 200,
+      "outcome": "Returned public mauza rows including Nawada urf Gonawa code 0753, with Revisional Survey and Cadastral Survey options."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST; state=10; gisLevels=36,02,09,0753,RS,07,00,; srs=0; anonymous",
+      "httpStatus": 200,
+      "outcome": "Returned gisCode RS36020907533670700 and attribution naming Nawada district/subdivision/circle/mauza, but xmin/ymin/xmax/ymax were all null. This is an unavailable/null extent response for the selected route, not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Layers/getLayers",
+      "method": "POST; state=10; layerType=TABLE_THEMES; giscode=3602090753RS0700; anonymous",
+      "httpStatus": 200,
+      "outcome": "Returned an empty JSON array; no public theme-layer schema or parcel feature response was exposed."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1532",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "TLS validation failure",
+      "outcome": "Certificate chain was not trusted by the local curl environment. No certificate exception or insecure retry was used."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/index.jsp",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "National NIC Bhu-Naksha information page loaded; it describes Bhu-Naksha as an authorized-official parcel-map management tool, not a Nawada-specific open parcel feed."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Bihar Bhu-Naksha service exposes Nawada's public cadastral hierarchy and the official Nawada district Revenue page identifies the local Revenue and Land Reforms custodian. This establishes a local/state cadastral map procedure, but not an open citywide geometry feed.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "bihar-bhunaksha-public-viewer",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Bihar Bhu-Naksha cadastral map hierarchy and official Nawada district revenue services.",
+    "verifiedOpenScope": "Nawada district/subdivision/circle/mauza hierarchy was confirmed; the selected urban mauza returned null map extent and no parcel schema, identity, CRS, or geometry was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "exactPointChecked": false,
+    "note": "The exact WUP point [24.8896035518647, 85.5407309971938] was preserved in latitude/longitude order and was not shifted. No exact-point presence/absence inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax, account, registration or mutation details",
+    "personal information",
+    "credentials and private tokens"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The first-party Bihar viewer and Nawada hierarchy are evidenced, but the urban mauza map route returned null extent and no stable native parcel identity, CRS, or polygon was returned. Dashboard/report pages indicate administrative/map-digitization context only. The null extent, exact-point non-check, and TLS validation failure are not evidence of citywide absence. This packet is not source integration/admission."
+}

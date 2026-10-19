@@ -1,0 +1,153 @@
+{
+  "cityId": "belgrade",
+  "countryCode": "RS",
+  "assessedAt": "2026-10-03",
+  "status": "temporarily-unavailable-no-verified-feature-endpoint",
+  "canonicalIdPrefixUnderReview": "SR-cadmun-parcel",
+  "scope": "Search for an official, anonymous, bounded-read cadastral parcel polygon source that can return parcel identifiers and geometry for Belgrade. No owner, rights-holder, address, or other private attributes were requested or retained.",
+  "authority": {
+    "name": "Republic Geodetic Authority (RGZ)",
+    "officialGeoSrbijaPage": "https://www.rgz.gov.rs/geo-srbija",
+    "officialeCadastrePage": "https://www.rgz.gov.rs/e-katastar",
+    "officialDigitalServicesPage": "https://www.rgz.gov.rs/digital-services",
+    "finding": "RGZ describes GeoSrbija as a national platform combining geospatial data, with public map insight into parcel/property information. This confirms the existence of an official public viewing service, not a publicly callable polygon-query contract. The eCadastre page distinguishes public access from a registered service whose use requires an RGZ contract; its result data may include rights-holder name and address and are outside this boundary-only assessment."
+  },
+  "catalogSearch": {
+    "nationalOpenDataPortal": "https://data.gov.rs/sr/organizations/republichki-geodetski-zavod/",
+    "result": "The current RGZ organization listing shows five datasets (including address-register and other datasets) but no downloadable parcel-boundary layer. This is scoped to the public listing, not proof no cadastral service or restricted dataset exists.",
+    "searchTerms": [
+      "katastar",
+      "katastarska parcela",
+      "katastarske parcele",
+      "katastarska opština",
+      "cadastral parcel",
+      "GeoSrbija",
+      "RGZ WMS WFS"
+    ],
+    "openDataPortalNote": "Official government announcements identify opendata.geosrbija.rs as an RGZ open-data portal. The confirmed examples found through official listings are the public Address Register and other non-parcel datasets; no anonymous Belgrade parcel geometry endpoint was confirmed."
+  },
+  "officialPublicViewers": [
+    {
+      "url": "https://a3.geosrbija.rs/",
+      "purpose": "GeoSrbija cadastral map viewer",
+      "currentNetworkResult": "Parent's repeated probes from laptop and valhalla time out / reset; this worker's official-page fetch also did not yield an accessible viewer response.",
+      "assessment": "Official viewing availability is independently described by RGZ, but its query service/API contract could not be inspected."
+    },
+    {
+      "url": "https://katastar.rgz.gov.rs/eKatastarPublic/PublicAccess.aspx",
+      "purpose": "eKatastar public access",
+      "currentNetworkResult": "Parent's repeated probes time out / reset.",
+      "assessment": "This is a public interactive lookup, not evidence of an anonymous spatial polygon feature endpoint. The registered eCadastre service requires registration and an RGZ data-use contract; no access controls were bypassed."
+    },
+    {
+      "url": "https://portal.rgz.gov.rs/rgz-portal/map",
+      "purpose": "RGZ digital portal map referenced by RGZ materials and recent Serbian project documents",
+      "currentNetworkResult": "HTTP fetch timed out in this worker; no JS, layer catalogue, or endpoint contract was obtained.",
+      "assessment": "Potential official viewer candidate; no executable descriptor is justified without inspecting its anonymous layer/query behavior and getting a bounded response."
+    },
+    {
+      "url": "https://opendata.geosrbija.rs/",
+      "purpose": "RGZ geospatial open-data portal",
+      "currentNetworkResult": "HTTP fetch timed out in this worker; official historical announcements and official Open Data Portal records identify it as a publication location.",
+      "assessment": "No parcel polygon resource was confirmed. Some older material indicates portal registration for downloads; no sign-in, token, or restriction workaround was attempted."
+    }
+  ],
+  "nearbyGovernmentArcGISCandidate": {
+    "endpoint": "https://kro.mre.gov.rs/arcgis/rest/services/MiningWaste/kro235/MapServer/5",
+    "name": "PARCELE",
+    "publisherContext": "Ministry of Mining and Energy, MiningWaste/kro235 map service",
+    "officialServiceMetadata": "https://kro.mre.gov.rs/arcgis/rest/services/MiningWaste/kro235/MapServer",
+    "geometryType": "esriGeometryPolygon",
+    "identifierFields": [
+      "kat_opstin",
+      "parcela_br"
+    ],
+    "metadataExtent": {
+      "xmin": 2128618.0025545806,
+      "ymin": 5342505.052020217,
+      "xmax": 2486325.2769791624,
+      "ymax": 5555993.906047997,
+      "spatialReference": "EPSG:3857"
+    },
+    "assessment": "The REST metadata is reachable and reports a polygon layer with cadastral-looking attributes, but it is a child layer of a MiningWaste service, not an RGZ cadastral publication. Its sublayer extent ends south of central Belgrade (the Belgrade center is north of the reported maximum Y), so it cannot establish a city-wide Belgrade parcel source. Treat it as a topic-specific layer candidate, not a cadastral endpoint. No features were requested."
+  },
+  "boundaryVsCadmun": "Public records about cadastral municipalities/spatial units are not parcel boundaries. Serbia's Statistical Office describes cadastral municipalities as units in the public Register of Spatial Units, sourced from RGZ; this does not establish the imported SR-cadmun-parcel identifier prefix or prove an anonymous parcel polygon API.",
+  "officialEvidence": [
+    {
+      "title": "RGZ - GeoSrbija",
+      "url": "https://www.rgz.gov.rs/geo-srbija",
+      "relevance": "RGZ describes GeoSrbija as the national geospatial platform and says citizens can view parcel/property information."
+    },
+    {
+      "title": "RGZ - e-Cadastre",
+      "url": "https://www.rgz.gov.rs/e-katastar",
+      "relevance": "Distinguishes public search from registered access; registered users need an RGZ agreement. Public property information may include holder name and address, so this audit did not request those attributes."
+    },
+    {
+      "title": "RGZ - GeoSrbija digital platform announcement",
+      "url": "https://www.rgz.gov.rs/vesti/2567/vest/nova-digitalna-platforma-za-nacionalnu-infrastrukturu-geoprostornih-podataka",
+      "date": "2017-10-02",
+      "relevance": "Official announcement identifies GeoSrbija as the national platform for finding, connecting, and displaying geospatial data."
+    },
+    {
+      "title": "RGZ - Address Register",
+      "url": "https://www.rgz.gov.rs/adresni-registar",
+      "relevance": "Official RGZ page says address-register data are public and available through GeoSrbija/open-data resources. This is address data, not parcel polygons."
+    },
+    {
+      "title": "Register of spatial units and GIS",
+      "url": "https://www.stat.gov.rs/en-us/oblasti/registar-prostornih-jedinica-i-gis/",
+      "relevance": "Official Statistics Office describes cadastral municipalities among its public spatial units and states the data are obtained from RGZ; municipality polygons are not parcel polygons."
+    },
+    {
+      "title": "RGZ - Javni pristup (Public Access)",
+      "url": "https://www.rgz.gov.rs/javni-pristup",
+      "relevance": "Public eCadastre allows parcel-number/cadastral-municipality and address lookup, with limited basic property/right-holder information; this is an interactive lookup, not a confirmed feature service."
+    }
+  ],
+  "termsAndPrivacy": "Terms are recorded as source context, not an integration gate. Do not use registered/contract-only services or expose owner/right-holder data. No captcha, login, personal-information workflow, or access-control mechanism was bypassed.",
+  "decision": "Do not enable or propose an executable source descriptor yet. Official cadastral map/data existence is established, but a technically verified anonymous bounded polygon endpoint and its exact native-ID mapping remain unestablished. Because multiple geoportal hosts have repeated connection failures, this result is temporary technical unavailability, not evidence that cadastral maps or underlying source data do not exist.",
+  "nextEvidenceNeeded": [
+    "A successful anonymous small-BBOX response from the current RGZ/GeoSrbija viewer's parcel layer or an official RGZ cadastral feature service.",
+    "Layer metadata and field definition that confirm parcel polygons and canonical cadastral parcel IDs, not cadastral-municipality identifiers.",
+    "Exact reads for returned native IDs with no missing IDs, duplicate-key conflicts, or geometry conflicts."
+  ],
+  "networkAttempts": [
+    {
+      "url": "http://a3.geosrbija.rs/",
+      "errorType": "URLError",
+      "httpStatus": null,
+      "error": "[Errno 8] nodename nor servname provided, or not known"
+    },
+    {
+      "url": "https://a3.geosrbija.rs/",
+      "errorType": "URLError",
+      "httpStatus": null,
+      "error": "timed out"
+    },
+    {
+      "url": "https://geosrbija.rs/",
+      "errorType": "URLError",
+      "httpStatus": null,
+      "error": "timed out"
+    },
+    {
+      "url": "https://katastar.rgz.gov.rs/eKatastarPublic/PublicAccess.aspx",
+      "errorType": "URLError",
+      "httpStatus": null,
+      "error": "timed out"
+    },
+    {
+      "url": "https://gis.beograd.gov.rs/",
+      "errorType": "URLError",
+      "httpStatus": null,
+      "error": "[Errno 8] nodename nor servname provided, or not known"
+    },
+    {
+      "url": "https://kro.mre.gov.rs/arcgis/rest/services/IMIS/BASEMAP/MapServer?f=pjson",
+      "httpStatus": 200,
+      "bytes": 8490
+    }
+  ],
+  "additionalNetwork": "The dev server also timed out on a3.geosrbija.rs, geosrbija.rs and eKatastarPublic in read-only 12-second probes."
+}

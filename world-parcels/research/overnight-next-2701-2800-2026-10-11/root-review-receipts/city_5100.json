@@ -1,0 +1,40 @@
+{
+  "taskId": "city:5100",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:14:22Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-5100-sant-boi-de-llobregat.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/sant-boi-de-llobregat-service-review.json"
+  ],
+  "identityCheck": {
+    "queueRank": 2792,
+    "cityCode": 5100,
+    "name": "Sant Boi de Llobregat",
+    "country": "Spain",
+    "point": [
+      41.3263706512004,
+      2.02126711517289
+    ],
+    "populationPersons": 212510,
+    "matchesImmutableQueueAndRoster": true
+  },
+  "bilingualSearchesRecorded": true,
+  "retainedFullPolygons": 0,
+  "safeNativeIdAndGeometryResponseVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official municipal parcel catalog and indexed ArcGIS layer metadata identify a parcel service and PARCELA identity field. Direct anonymous layer request timed out in root review, so no original ID-plus-geometry response, full polygon, or adapter qualification is evidenced. Timeout and provider-probe 403 do not establish absence.",
+  "firstPartySourcesReviewed": [
+    "https://datos.gob.es/ca/catalogo/l01082009-datos-de-parcela",
+    "https://cartoweb.santboi.cat/server/rest/services/OD/Finques_cadastrals/MapServer/0"
+  ],
+  "integrationDisposition": "held; no runtime, catalog, registry, or generated coverage/report admission edit"
+}

@@ -1,0 +1,116 @@
+{
+  "name": "Surakarta",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 326,
+  "point": [
+    -7.56064825639002,
+    110.786012929093
+  ],
+  "population2025": 1538599,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Surakarta's official BAPENDA SMARTGIS documents a local PBB-P2 geographic map of tax objects and an interactive 'Peta Bidang' with object lookup. This verifies a city property-tax parcel map, not a legal land-title cadastre; the page's visible fields include taxpayer name and address, so no feature query was performed.",
+  "resultCategory": "city_property_tax_parcel_viewer_sensitive_lookup_no_geometry_verified",
+  "technicalBlocker": "The official map UI exposes taxpayer-name/address fields and tax-object detail. Ordinary anonymous HTTPS GETs also timed out before HTTP response, so the viewer HTML and JavaScript routes could not be fetched directly; no safe geometry-only service contract could be verified.",
+  "remainingUncertainty": "Whether the SMARTGIS viewer offers a public geometry-only endpoint distinct from its tax-object search, whether the tax-object polygons follow cadastral boundaries, and whether its map coverage is complete. Static HTML/JS could not be obtained because direct HTTPS transport timed out.",
+  "nextStep": "If a documented geometry-only map service can be found in the viewer's static JavaScript or official metadata, test a small anonymous spatial query with identity and owner/address fields excluded; otherwise keep this as a city tax-map lead only.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Surakarta Indonesia official cadastral parcel map GIS property tax parcel map BPN",
+        "result": "Found the official city BAPENDA SMARTGIS portal describing a public PBB-P2 geographic-object map. Its map UI exposes fields for tax object number (NOP), taxpayer name and address; the source does not claim land-title registry coverage or expose a geometry-only service in its page description.",
+        "urls": [
+          "https://pajak.surakarta.go.id/smartgis/",
+          "https://pajak.surakarta.go.id/smartgis/peta",
+          "https://kot-surakarta.atrbpn.go.id/"
+        ],
+        "method": "Separate English web search and official city/BPN public-page review."
+      },
+      {
+        "language": "Indonesian",
+        "query": "site:surakarta.go.id peta persil tanah bidang tanah GIS Surakarta pertanahan",
+        "result": "Portal resmi BAPENDA Kota Surakarta menyebut SMARTGIS sebagai peta geografis objek PBB-P2 dan menyediakan fitur lihat/gambar/pecah/gabung bidang objek pajak. Tampilan peta memuat pencarian NOP, Nama WP, alamat dan panel data objek pajak; karena itu tidak dilakukan permintaan fitur atau pencarian data pribadi. Portal tidak menyatakan bahwa poligon pajak adalah batas kadaster atau layanan sertifikat tanah.",
+        "urls": [
+          "https://pajak.surakarta.go.id/smartgis/",
+          "https://pajak.surakarta.go.id/smartgis/peta",
+          "https://kot-surakarta.atrbpn.go.id/"
+        ],
+        "method": "Separate Indonesian-language web search and official city/BPN public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://pajak.surakarta.go.id/smartgis/",
+        "method": "GET via web reader",
+        "observation": "HTTP 200 official BAPENDA Kota Surakarta page describes SMARTGIS as a public geographic PBB-P2 object map; its controls include viewing/drawing/splitting/merging tax-object polygons. Dashboard reports mapped objects but makes no legal-cadastre or complete-city coverage claim.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://pajak.surakarta.go.id/smartgis/peta",
+        "method": "GET via web reader",
+        "observation": "HTTP 200 visible map UI includes an administrative-layer panel, 'Peta Bidang', base-map controls and tax-object detail/search fields NOP, Nama WP, Alamat. No search was submitted and no property record or geometry was requested. Direct browser navigation from this environment timed out, so JS network routes could not be inspected.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://kot-surakarta.atrbpn.go.id/",
+        "method": "GET via web reader",
+        "observation": "Official local Land Office website is a JavaScript application; page text did not expose a public parcel-map endpoint.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      }
+    ],
+    "portals": [
+      {
+        "name": "SMARTGIS PBB-P2 & Peta Titik Reklame",
+        "operator": "Badan Pendapatan Daerah Kota Surakarta",
+        "url": "https://pajak.surakarta.go.id/smartgis/",
+        "observation": "Official city tax-geospatial portal with a PBB-P2 tax-object map. The viewer UI exposes taxpayer-related fields, so no query was made. It is not established as a legal title cadastre."
+      },
+      {
+        "name": "Kantor Pertanahan Kota Surakarta",
+        "operator": "ATR/BPN Land Office",
+        "url": "https://kot-surakarta.atrbpn.go.id/",
+        "observation": "Official local land office page; its JS shell does not expose an anonymous parcel vector endpoint in the reviewed text."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed the official SMARTGIS map landing page and rendered UI using the web reader. Ordinary anonymous GETs to the map page timed out before HTTP response (request metadata and absent raw-script paths are recorded in the service review). The visible UI exposes tax-object details and taxpayer name/address fields, so no search or geometry request was made.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "outcome": "No geometry request was made because the official map presents taxpayer name/address fields and no geometry-only service contract was verified."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 7158,
+  "cityId": "wup2025:7158",
+  "queueRank": 326,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    -7.56064825639002,
+    110.786012929093
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:34:01.071695+00:00"
+}

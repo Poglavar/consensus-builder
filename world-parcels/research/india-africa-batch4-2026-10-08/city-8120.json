@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 8120,
+  "cityId": "wup2025:8120",
+  "name": "Kalyan-Dombivli",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    19.2079660812588,
+    73.1699593951258
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 156,
+  "stateOrUT": "Maharashtra",
+  "administrativeIdentity": {
+    "district": "Thane",
+    "tehsilOrTaluk": "Ulhasnagar Subdistrict",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-08",
+    "batch4Summary": "Property layer schema contains owner/address/mobile fields. No such fields were requested or retained. Parent has already completed secondary retry; wait for parent diagnostic integration.",
+    "queries": [
+      "कल्याण डोंबिवली city survey property map GIS parcel KDMC"
+    ],
+    "sources": [
+      "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer",
+      "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_GIS_ENT/FeatureServer/13"
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "KDMC public ArcGIS metadata documents city-survey boundary polygons and property features. Exact WUP point may fall in Ulhasnagar; no target KDMC parcel geometry verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_city_survey_service_provider_failure",
+  "registryFound": true,
+  "verifiedSample": false,
+  "technicalBlocker": "The KDMC public ArcGIS layer endpoint returns an HTTP 200 HTML Web Adaptor error saying no server machines are accessible, reproduced on a second network. The WUP locator may fall in Ulhasnagar, so eventual KDMC geometry also needs explicit coverage qualification.",
+  "remainingUncertainty": "No usable parcel polygon was retrieved. The saved WUP point is a research locator; correctly scoped nearby urban coverage could qualify separately if geometry becomes available.",
+  "nextStep": "Retry the exact city-survey/property services after provider recovery; request geometry and nonpersonal identifiers, validate municipal coverage, and label any accepted partial Kalyan-Dombivli coverage explicitly.",
+  "priorEvidence": [
+    {
+      "file": "world-parcels/research/india-africa-2026-10-08/india-city-8120.json",
+      "summary": "Earlier city assessment retained in referenced file; not duplicated in this batch record."
+    },
+    "research/india-africa-2026-10-08/india-city-8120.json"
+  ],
+  "registryBasis": "KDMC official ArcGIS service metadata exposes city-survey boundary layer (survey_no, ward_id, village_name); a municipal parcel registry layer is documented, but WUP center may lie outside KDMC in Ulhasnagar.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "कल्याण डोंबिवली city survey property map GIS parcel KDMC",
+      "date": "2026-10-08",
+      "executionMethod": "web search; official portal inspection as listed in requestsAndEndpointChecks",
+      "resultUrls": [
+        "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer",
+        "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_GIS_ENT/FeatureServer/13"
+      ],
+      "summary": "Batch-4 search and follow-up only; prior search history is in priorEvidence."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Property layer schema contains owner/address/mobile fields. No such fields were requested or retained. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    },
+    {
+      "url": "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_GIS_ENT/FeatureServer/13",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Property layer schema contains owner/address/mobile fields. No such fields were requested or retained. Parent has already completed secondary retry; wait for parent diagnostic integration."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer",
+      "method": "GET (ArcGIS REST metadata via web index)",
+      "status": "service metadata found",
+      "summary": "Layer 15 City Survey Boundary, polygon EPSG:32643; fields include survey_no, ward_id, village_name."
+    },
+    {
+      "url": "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_GIS_ENT/FeatureServer/13/query",
+      "method": "GET",
+      "payload": {
+        "where": "1=1",
+        "returnCountOnly": "true",
+        "f": "json"
+      },
+      "status": "HTTP 200 HTML Web Adaptor error: Could not access any server machines",
+      "summary": "No feature count or geometry; same error on point query. Avoid PII fields."
+    }
+  ],
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_BASEMAP_24_04_2025/MapServer",
+    "https://maps.kdmc.gov.in/agserver/rest/services/KDMC_GIS_ENT/FeatureServer/13"
+  ],
+  "blocker": "The KDMC public ArcGIS layer endpoint returns an HTTP 200 HTML Web Adaptor error saying no server machines are accessible, reproduced on a second network. The WUP locator may fall in Ulhasnagar, so eventual KDMC geometry also needs explicit coverage qualification.",
+  "supplementalEvidenceFiles": [
+    "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+  ]
+}

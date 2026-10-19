@@ -1,0 +1,78 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "country": "Mexico",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Decentralised: state and municipal catastros; Registro Agrario Nacional (RAN, ejidos) and INEGI at federal level; SEDATU catastro programme",
+ "portalsFound": [
+  {
+   "url": "https://www.inegi.org.mx/temas/catastro/",
+   "observation": "INEGI catastro theme page loads (HTTP 200); page is about conversion tools/property distribution, no parcel service"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios%20catastro%20mexico",
+   "observation": "ArcGIS Online search: 1 hit, a 1:1000 cartography flight service (owner sigsapmx2), not a parcel layer"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://phina.ran.gob.mx/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Akamai Access Denied"
+  },
+  {
+   "url": "https://sig.ran.gob.mx/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Access Denied"
+  },
+  {
+   "url": "https://www.gob.mx/sedatu/acciones-y-programas/sistema-de-informacion-catastral",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "JS challenge page only"
+  },
+  {
+   "url": "https://www.inegi.org.mx/temas/catastro/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "theme page"
+  },
+  {
+   "url": "https://gaia.inegi.org.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirect to mdm6 viewer"
+  },
+  {
+   "url": "https://datos.cdmx.gob.mx/api/3/action/package_search?q=lotes+catastro&rows=5",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios%20catastro%20mexico&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no parcel layer"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established from this client",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Mexico has no single national parcel cadastre in the state-level sense; parcels are held by 32 state/municipal catastros. Federal RAN hosts returned 403 and CDMX host was unreachable, so no verification either way. City evidence (guadalajara, monterrey) was also negative-but-weak; mexico-city is a candidate only.",
+ "nextStep": "Try CDMX SIG/Catastro, Jalisco IITEJ, Nuevo Leon state services, and RAN PHINA via browser."
+}

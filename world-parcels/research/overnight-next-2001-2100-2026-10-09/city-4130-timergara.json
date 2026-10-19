@@ -1,0 +1,114 @@
+{
+  "cityCode": 4130,
+  "queueRank": 2025,
+  "name": "Timergara",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [34.8309632986105, 71.8328903300032],
+  "population2025": 287866,
+  "population2025k": 287.866,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Timergara Pakistan official cadastral parcel map land records GIS Lower Dir",
+        "result": "First-party Government of Khyber Pakhtunkhwa settlement-of-land-records pages identified the Dir/Kalam GIS-based land-settlement project, its Timergara sub-office, project maps and GIS progress pages. No public anonymous parcel feature/API with stable ID plus geometry was found.",
+        "actualResultUrls": [
+          "https://slrdirkalam.com/",
+          "https://slrdirkalam.com/googlemap.php",
+          "https://slrdirkalam.com/gis_progress.php",
+          "https://slrdirkalam.com/mouza_list.php?id=1",
+          "https://sdlr.kp.gov.pk/"
+        ]
+      },
+      {
+        "language": "Urdu/local",
+        "query": "ٹیمارگرہ دیر لوئر اراضی ریکارڈ کادستر نقشہ سرکاری",
+        "result": "Official/local-language discovery surfaced the same Khyber Pakhtunkhwa land-settlement programme and Urdu notices on the official project site; the public material describes settlement, measurement and digitization work but does not expose an anonymous parcel geometry endpoint or safe native parcel identity response.",
+        "actualResultUrls": [
+          "https://slrdirkalam.com/",
+          "https://slrdirkalam.com/news.php?id=20",
+          "https://slrdirkalam.com/news.php?id=21"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Revenue and Estate Department, Government of Khyber Pakhtunkhwa project site identifies Settlement of Land Records in Dir Lower/Dir Upper/Kalam as the land-record settlement and GIS custodian, lists a Dir Lower Sub Office for Tehsil Timergara, and publishes Timergara project/GIS material. This evidences a local/tehsil land-record custodian, not an open parcel-geometry API.",
+  "registryEvidenceUrls": [
+    "https://slrdirkalam.com/",
+    "https://slrdirkalam.com/mouza_list.php?id=1",
+    "https://slrdirkalam.com/googlemap.php",
+    "https://slrdirkalam.com/gis_progress.php",
+    "https://sdlr.kp.gov.pk/"
+  ],
+  "requests": [
+    {
+      "url": "https://slrdirkalam.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official project home fetched successfully over verified TLS. It describes GIS-based settlement and links to project maps, GIS progress, mouza lists and the Timergara sub-office; no parcel API/configuration was exposed."
+    },
+    {
+      "url": "https://slrdirkalam.com/googlemap.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official project maps page fetched successfully. The page exposes static JPG project maps (including Lower Dir) through lightbox links, not machine-readable parcel features; no CRS, schema or stable parcel ID response was available."
+    },
+    {
+      "url": "https://slrdirkalam.com/gis_progress.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official GIS dashboard fetched successfully. It exposes static progress charts and images including Timergara2025.jpg and project-area/takbast images; no anonymous ID-plus-geometry service or viewer JavaScript/API configuration was present."
+    },
+    {
+      "url": "https://slrdirkalam.com/mouza_list.php?id=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Dir Lower mouza list fetched successfully. It includes Timergara entries and settlement-area references, but only tabular/static public information; no parcel polygon or safe native parcel identity response was available."
+    },
+    {
+      "url": "https://sdlr.kp.gov.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Khyber Pakhtunkhwa SDLR landing route was reachable in first-party discovery, but its returned page had no inspectable public parcel schema or bounded geometry response."
+    },
+    {
+      "url": "https://cfc.kp.gov.pk/Home/PhoneDirectory?s=uqo9gqEr5NICnLZK0EfxpA%3D%3D",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official KP citizen portal phone directory fetched successfully and lists AC Office, Timergara under Dir Lower. It is custodian/contact evidence only and provides no parcel geometry service."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Government of Khyber Pakhtunkhwa Dir/Kalam settlement project, its Dir Lower/Timergara sub-office and official project/GIS pages, plus the KP citizen-service directory.",
+    "verifiedOpenScope": "Local land-record settlement custodian, Timergara sub-office, mouza/project references and static GIS/map publication only; no anonymous parcel feature response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The project’s underlying settlement database, any public map/API endpoint, schema, CRS, safe native identity field and citywide parcel coverage remain unknown. Static map images were not converted into parcel geometries. No login, private token, CAPTCHA bypass or protected owner/property query was attempted."
+}

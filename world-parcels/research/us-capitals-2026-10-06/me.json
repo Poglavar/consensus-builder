@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "ME",
+  "state": "Maine",
+  "capital": "Augusta",
+  "centerLatLon": [
+    44.3106,
+    -69.7795
+  ],
+  "query": {
+    "language": "English",
+    "text": "Maine GeoLibrary Augusta Maine parcels ArcGIS GIS organized towns parcel layer"
+  },
+  "references": [
+    "https://www.maine.gov/geolib/",
+    "https://gis.maine.gov/mapservices/rest/services/dep/MaineDEP_Parcels_NDW_NWI_NHD/MapServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.maine.gov/mapservices/rest/services/dep/MaineDEP_Parcels_NDW_NWI_NHD/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live layer metadata reports polygon geometry and native identifier fields."
+    },
+    {
+      "url": "https://gis.maine.gov/mapservices/rest/services/dep/MaineDEP_Parcels_NDW_NWI_NHD/MapServer/0/query?where=TOWN%3D%27AUGUSTA%27&geometry=-69.7805%2C44.3095%2C-69.7785%2C44.3115&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=GEOCODE%2CTOWN&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Initial geographic query returned empty; native CRS retry below returned features."
+    },
+    {
+      "url": "https://gis.maine.gov/mapservices/rest/services/dep/MaineDEP_Parcels_NDW_NWI_NHD/MapServer/0/query?where=TOWN%3D%27Augusta%27&geometry=437750%2C4906545%2C437912%2C4906766&geometryType=esriGeometryEnvelope&inSR=26919&spatialRel=esriSpatialRelIntersects&outFields=MAP_BK_LOT&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Capital bbox sample, maximum 3 features, native parcel key and geometry only."
+    },
+    {
+      "url": "https://gis.maine.gov/mapservices/rest/services/dep/MaineDEP_Parcels_NDW_NWI_NHD/MapServer/0/query?where=TOWN%3D%27Augusta%27%20AND%20MAP_BK_LOT%3D%2700033%2000118%2000000%27&outFields=MAP_BK_LOT&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "One exact native parcel-key round trip; town namespace filter applied."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.maine.gov/mapservices/rest/services/dep/MaineDEP_Parcels_NDW_NWI_NHD/MapServer/0",
+    "adapter": "arcgis",
+    "name": "Maine_Parcels_NDW_NWI_NHD",
+    "operator": "Maine GeoLibrary and municipality parcel data contributors",
+    "idField": "MAP_BK_LOT",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "space-delimited map book lot text with leading zeroes preserved; unique only within TOWN",
+    "outFields": "MAP_BK_LOT",
+    "parcelNumberField": "MAP_BK_LOT",
+    "metricSrid": 26919,
+    "attributeFilters": {
+      "TOWN": "Augusta"
+    }
+  },
+  "verification": {
+    "bbox": [
+      437750,
+      4906545,
+      437912,
+      4906766
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "00033 00118 00000",
+      "00033 00055 00000",
+      "00033 00077 00000"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

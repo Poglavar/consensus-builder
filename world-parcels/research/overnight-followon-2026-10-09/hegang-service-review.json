@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9978-hegang.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Hegang Municipal Natural Resources Bureau’s official responsibilities include unified property-rights registration, cadastral surveying and geospatial services. No anonymous parcel-vector endpoint, safe ID-plus-geometry schema, or point-specific polygon response was verified.",
+  "registryAssessment": "First-party sources establish a local registry/cadastre custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hegang.gov.cn/hegang/jgjj/202604/ea4ea95ed51046f0a09365379eed624c.shtml",
+      "observation": "Municipal government describes unified natural-resource/property-rights registration, cadastral survey and geospatial-service responsibilities."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hegang China official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+      "result": "The Hegang Municipal Natural Resources Bureau’s official responsibilities include unified property-rights registration, cadastral surveying and geospatial services. No anonymous parcel-vector endpoint, safe ID-plus-geometry schema, or point-specific polygon response was verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+      "actualResultUrls": [
+        "https://www.hegang.gov.cn/hegang/jgjj/202604/ea4ea95ed51046f0a09365379eed624c.shtml"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "鹤岗市 自然资源局 不动产登记 地籍调查 地籍图 官方",
+      "result": "The Hegang Municipal Natural Resources Bureau’s official responsibilities include unified property-rights registration, cadastral surveying and geospatial services. No anonymous parcel-vector endpoint, safe ID-plus-geometry schema, or point-specific polygon response was verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+      "actualResultUrls": [
+        "https://www.hegang.gov.cn/hegang/jgjj/202604/ea4ea95ed51046f0a09365379eed624c.shtml"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Hegang Municipal Natural Resources Bureau’s official responsibilities include unified property-rights registration, cadastral surveying and geospatial services. No anonymous parcel-vector endpoint, safe ID-plus-geometry schema, or point-specific polygon response was verified.",
+    "verifiedOpenScope": "The Hegang Municipal Natural Resources Bureau’s official responsibilities include unified property-rights registration, cadastral surveying and geospatial services. No anonymous parcel-vector endpoint, safe ID-plus-geometry schema, or point-specific polygon response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.hegang.gov.cn/hegang/jgjj/202604/ea4ea95ed51046f0a09365379eed624c.shtml",
+      "result": "Municipal government describes unified natural-resource/property-rights registration, cadastral survey and geospatial-service responsibilities."
+    }
+  ],
+  "remainingUncertainty": "A public cadastral feature service and geometry coverage at the WUP point remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry"
+}

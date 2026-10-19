@@ -1,0 +1,15 @@
+{
+  "stateCode": "RI",
+  "city": "providence",
+  "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0/query",
+  "status": 200,
+  "nativeId": "025-0196-0000",
+  "sourceRows": 1,
+  "geometryBbox": [
+    -71.4176158938671,
+    41.8214002588578,
+    -71.4166244290838,
+    41.8222353308046
+  ],
+  "assessment": "Aggregate bounds only, raw geometry not retained."
+}

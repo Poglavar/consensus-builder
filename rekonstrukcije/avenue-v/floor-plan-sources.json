@@ -1,0 +1,1220 @@
+{
+  "schema": "consensus-builder.reviewed-raster-source.v1",
+  "building": {
+    "id": "avenue-v",
+    "name": "Avenue V",
+    "developerUrl": "https://vid-park.com/en/project-en/",
+    "agencyProjectUrl": "https://eurovilla.hr/projekt/zagreb-strojarska-vukovarska-avenue-v-ekskuzivan-projekt/651/",
+    "reportedTotalUnits": 74,
+    "landmarkId": "avenue-v",
+    "overtureId": "d6734dbe-2ba5-4b8e-8bd3-d76e7fbfdd7b",
+    "parcelId": 21397015,
+    "anchor": [
+      15.9882429,
+      45.8012088
+    ]
+  },
+  "units": [
+    {
+      "id": "A-5-2",
+      "file": "A52.jpg",
+      "url": "https://s3.eu-central-1.amazonaws.com/blueprints.eurovilla-cdn.com/842475/A52.jpg",
+      "sha256": "02a46ba0bcaff49587a0e48c1b2dbec5a302b6e4462f3606d9cc1f936db95d1b",
+      "listingUrl": "https://eurovilla.hr/nekretnina/zagreb-strojarska-vukovarska-avenue-v-ekskluzivan-projekt-trosoban-stan-80-58-m2/842475/",
+      "floor": 5,
+      "areaM2": 80.58,
+      "physicalNetAreaM2": 83.93,
+      "reviewWidthPx": 1600,
+      "scaleBarPx": [
+        148,
+        400
+      ],
+      "scaleBarMeters": 5,
+      "outlinePx": [
+        [
+          165,
+          338
+        ],
+        [
+          667,
+          338
+        ],
+        [
+          667,
+          842
+        ],
+        [
+          165,
+          842
+        ]
+      ],
+      "elevationM": 18.4,
+      "elevationBasis": "documented",
+      "rooms": [
+        {
+          "id": "01",
+          "name": "Hodnik",
+          "areaM2": 9.41
+        },
+        {
+          "id": "02",
+          "name": "Kupaonica",
+          "areaM2": 4.49
+        },
+        {
+          "id": "03",
+          "name": "WC",
+          "areaM2": 2.03
+        },
+        {
+          "id": "04",
+          "name": "Spavaća soba",
+          "areaM2": 10.82
+        },
+        {
+          "id": "05",
+          "name": "Spavaća soba 2",
+          "areaM2": 9.34
+        },
+        {
+          "id": "06",
+          "name": "Dnevni boravak i kuhinja",
+          "areaM2": 34.47
+        },
+        {
+          "id": "07",
+          "name": "Loggia",
+          "areaM2": 13.37
+        }
+      ],
+      "openingsPx": [
+        {
+          "kind": "door",
+          "a": [
+            575,
+            345
+          ],
+          "b": [
+            628,
+            345
+          ],
+          "hinge": [
+            628,
+            345
+          ],
+          "openTip": [
+            628,
+            399
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            410,
+            445
+          ],
+          "b": [
+            447,
+            445
+          ],
+          "hinge": [
+            447,
+            445
+          ],
+          "openTip": [
+            447,
+            407
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            570,
+            399
+          ],
+          "b": [
+            570,
+            439
+          ],
+          "hinge": [
+            570,
+            439
+          ],
+          "openTip": [
+            530,
+            439
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            411,
+            506
+          ],
+          "b": [
+            453,
+            506
+          ],
+          "hinge": [
+            411,
+            506
+          ],
+          "openTip": [
+            411,
+            550
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            511,
+            506
+          ],
+          "b": [
+            555,
+            506
+          ],
+          "hinge": [
+            511,
+            506
+          ],
+          "openTip": [
+            511,
+            550
+          ]
+        },
+        {
+          "kind": "window",
+          "a": [
+            173,
+            484
+          ],
+          "b": [
+            173,
+            536
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            412,
+            706
+          ],
+          "b": [
+            461,
+            706
+          ]
+        },
+        {
+          "kind": "window",
+          "a": [
+            509,
+            706
+          ],
+          "b": [
+            608,
+            706
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            370,
+            718
+          ],
+          "b": [
+            370,
+            818
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            185,
+            833
+          ],
+          "b": [
+            362,
+            833
+          ]
+        }
+      ],
+      "excludeWallRectsPx": [
+        [
+          658,
+          715,
+          670,
+          843
+        ],
+        [
+          183,
+          825,
+          365,
+          843
+        ]
+      ],
+      "railingsPx": [
+        [
+          [
+            378,
+            839
+          ],
+          [
+            657,
+            839
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "A-6-2",
+      "file": "A62.jpg",
+      "url": "https://s3.eu-central-1.amazonaws.com/blueprints.eurovilla-cdn.com/383380/A62.jpg",
+      "sha256": "83882f2483df1c403faf82dbd0fac23e4f8860e66d833e6c32164d9ef34c947a",
+      "listingUrl": "https://eurovilla.hr/nekretnina/zagreb-strojarska-vukovarska-avenue-v-ekskluzivan-projekt-trosoban-stan-nkp-78-12-m2/383380/",
+      "floor": 6,
+      "areaM2": 78.12,
+      "physicalNetAreaM2": 84.06,
+      "reviewWidthPx": 1600,
+      "scaleBarPx": [
+        148,
+        400
+      ],
+      "scaleBarMeters": 5,
+      "outlinePx": [
+        [
+          165,
+          338
+        ],
+        [
+          667,
+          338
+        ],
+        [
+          667,
+          842
+        ],
+        [
+          165,
+          842
+        ]
+      ],
+      "elevationM": 21.7,
+      "elevationBasis": "documented",
+      "rooms": [
+        {
+          "id": "01",
+          "name": "Hodnik",
+          "areaM2": 9.41
+        },
+        {
+          "id": "02",
+          "name": "WC",
+          "areaM2": 2.03
+        },
+        {
+          "id": "03",
+          "name": "Kupaonica",
+          "areaM2": 4.49
+        },
+        {
+          "id": "04",
+          "name": "Spavaća soba",
+          "areaM2": 10.82
+        },
+        {
+          "id": "05",
+          "name": "Spavaća soba 2",
+          "areaM2": 9.34
+        },
+        {
+          "id": "06",
+          "name": "Dnevni boravak i kuhinja",
+          "areaM2": 24.21
+        },
+        {
+          "id": "07",
+          "name": "Loggia",
+          "areaM2": 23.76
+        }
+      ],
+      "openingsPx": [
+        {
+          "kind": "door",
+          "a": [
+            575,
+            345
+          ],
+          "b": [
+            628,
+            345
+          ],
+          "hinge": [
+            628,
+            345
+          ],
+          "openTip": [
+            628,
+            399
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            410,
+            445
+          ],
+          "b": [
+            447,
+            445
+          ],
+          "hinge": [
+            447,
+            445
+          ],
+          "openTip": [
+            447,
+            407
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            570,
+            399
+          ],
+          "b": [
+            570,
+            439
+          ],
+          "hinge": [
+            570,
+            439
+          ],
+          "openTip": [
+            530,
+            439
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            411,
+            506
+          ],
+          "b": [
+            453,
+            506
+          ],
+          "hinge": [
+            411,
+            506
+          ],
+          "openTip": [
+            411,
+            550
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            511,
+            506
+          ],
+          "b": [
+            555,
+            506
+          ],
+          "hinge": [
+            511,
+            506
+          ],
+          "openTip": [
+            511,
+            550
+          ]
+        },
+        {
+          "kind": "window",
+          "a": [
+            173,
+            484
+          ],
+          "b": [
+            173,
+            536
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            412,
+            706
+          ],
+          "b": [
+            461,
+            706
+          ]
+        },
+        {
+          "kind": "window",
+          "a": [
+            509,
+            706
+          ],
+          "b": [
+            608,
+            706
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            185,
+            706
+          ],
+          "b": [
+            361,
+            706
+          ]
+        }
+      ],
+      "excludeWallRectsPx": [
+        [
+          658,
+          715,
+          670,
+          843
+        ]
+      ],
+      "railingsPx": [
+        [
+          [
+            171,
+            839
+          ],
+          [
+            656,
+            839
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "B-5-2",
+      "file": "154595_Screenshot20241016at23.22.45.jpg",
+      "url": "https://s3.eu-central-1.amazonaws.com/blueprints.eurovilla-cdn.com/154595/Screenshot20241016at23.22.45.jpg",
+      "sha256": "88e6eb14eb934c573742074437a21fca00d13a4a6c3927ffff1463b061489f82",
+      "listingUrl": "https://eurovilla.hr/nekretnina/zagreb-strojarska-vukovarska-avenue-v-ekskluzivan-projekt-trosoban-stan-95-83-m2/154595/",
+      "floor": 5,
+      "areaM2": 95.83,
+      "physicalNetAreaM2": 110.55,
+      "reviewWidthPx": 1864,
+      "scaleBarPx": [
+        149,
+        375
+      ],
+      "scaleBarMeters": 5,
+      "outlinePx": [
+        [
+          363,
+          314
+        ],
+        [
+          547,
+          314
+        ],
+        [
+          547,
+          636
+        ],
+        [
+          718,
+          636
+        ],
+        [
+          718,
+          735
+        ],
+        [
+          550,
+          735
+        ],
+        [
+          550,
+          1177
+        ],
+        [
+          211,
+          996
+        ],
+        [
+          211,
+          383
+        ]
+      ],
+      "elevationM": 18.4,
+      "elevationBasis": "estimated",
+      "rooms": [
+        {
+          "id": "01",
+          "name": "Hodnik",
+          "areaM2": 8.94
+        },
+        {
+          "id": "02",
+          "name": "Kupaonica",
+          "areaM2": 4.35
+        },
+        {
+          "id": "03",
+          "name": "WC",
+          "areaM2": 1.89
+        },
+        {
+          "id": "04",
+          "name": "Hodnik",
+          "areaM2": 2.09
+        },
+        {
+          "id": "05",
+          "name": "Spavaća soba 2",
+          "areaM2": 11.48
+        },
+        {
+          "id": "06",
+          "name": "Spavaća soba",
+          "areaM2": 14.59
+        },
+        {
+          "id": "07",
+          "name": "Dnevni boravak i kuhinja",
+          "areaM2": 36.63
+        },
+        {
+          "id": "08",
+          "name": "Loggia",
+          "areaM2": 10.83
+        },
+        {
+          "id": "09",
+          "name": "Loggia",
+          "areaM2": 14.42
+        },
+        {
+          "id": "10",
+          "name": "Žardinjera",
+          "areaM2": 5.33
+        }
+      ],
+      "openingsPx": [
+        {
+          "kind": "door",
+          "a": [
+            711,
+            652
+          ],
+          "b": [
+            711,
+            697
+          ],
+          "hinge": [
+            711,
+            652
+          ],
+          "openTip": [
+            660,
+            652
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            475,
+            644
+          ],
+          "b": [
+            505,
+            644
+          ],
+          "hinge": [
+            505,
+            644
+          ],
+          "openTip": [
+            505,
+            613
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            427,
+            752
+          ],
+          "b": [
+            427,
+            787
+          ],
+          "hinge": [
+            427,
+            787
+          ],
+          "openTip": [
+            462,
+            787
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            368,
+            741
+          ],
+          "b": [
+            368,
+            778
+          ],
+          "hinge": [
+            368,
+            741
+          ],
+          "openTip": [
+            331,
+            741
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            376,
+            789
+          ],
+          "b": [
+            416,
+            789
+          ],
+          "hinge": [
+            376,
+            789
+          ],
+          "openTip": [
+            376,
+            829
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            236,
+            939
+          ],
+          "b": [
+            360,
+            939
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            402,
+            939
+          ],
+          "b": [
+            496,
+            939
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            228,
+            550
+          ],
+          "b": [
+            365,
+            478
+          ]
+        },
+        {
+          "kind": "window",
+          "a": [
+            399,
+            322
+          ],
+          "b": [
+            489,
+            322
+          ]
+        }
+      ],
+      "railingsPx": [
+        [
+          [
+            212,
+            385
+          ],
+          [
+            360,
+            314
+          ]
+        ],
+        [
+          [
+            214,
+            440
+          ],
+          [
+            214,
+            549
+          ]
+        ],
+        [
+          [
+            213,
+            994
+          ],
+          [
+            534,
+            1172
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "B-7-3",
+      "file": "377092_TlocrtB73.jpg",
+      "url": "https://s3.eu-central-1.amazonaws.com/blueprints.eurovilla-cdn.com/377092/TlocrtB73.jpg",
+      "sha256": "5bd98f9f06d83dec847c9fb06c41d8137c31c42ca37a4823daea830f07690751",
+      "listingUrl": "https://eurovilla.hr/nekretnina/zagreb-strojarska-vukovarska-avenue-v-ekskluzivan-projekt-trosoban-stan-80-74-m2/377092/",
+      "floor": 7,
+      "areaM2": 80.74,
+      "physicalNetAreaM2": 84.15,
+      "reviewWidthPx": 1863,
+      "scaleBarPx": [
+        136,
+        438
+      ],
+      "scaleBarMeters": 5,
+      "outlinePx": [
+        [
+          200,
+          442
+        ],
+        [
+          795,
+          442
+        ],
+        [
+          795,
+          1048
+        ],
+        [
+          200,
+          1048
+        ]
+      ],
+      "elevationM": 25.0,
+      "elevationBasis": "estimated",
+      "rooms": [
+        {
+          "id": "01",
+          "name": "Hodnik",
+          "areaM2": 8.54
+        },
+        {
+          "id": "02",
+          "name": "Kupaonica",
+          "areaM2": 4.16
+        },
+        {
+          "id": "03",
+          "name": "Spavaća soba",
+          "areaM2": 11.89
+        },
+        {
+          "id": "04",
+          "name": "WC",
+          "areaM2": 2.21
+        },
+        {
+          "id": "05",
+          "name": "Spavaća soba 2",
+          "areaM2": 9.34
+        },
+        {
+          "id": "06",
+          "name": "Dnevni boravak i kuhinja",
+          "areaM2": 34.38
+        },
+        {
+          "id": "07",
+          "name": "Loggia",
+          "areaM2": 13.63
+        }
+      ],
+      "openingsPx": [
+        {
+          "kind": "door",
+          "a": [
+            591,
+            450
+          ],
+          "b": [
+            656,
+            450
+          ],
+          "hinge": [
+            656,
+            450
+          ],
+          "openTip": [
+            656,
+            519
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            466,
+            573
+          ],
+          "b": [
+            514,
+            573
+          ],
+          "hinge": [
+            514,
+            573
+          ],
+          "openTip": [
+            514,
+            526
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            665,
+            503
+          ],
+          "b": [
+            665,
+            549
+          ],
+          "hinge": [
+            665,
+            503
+          ],
+          "openTip": [
+            711,
+            503
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            487,
+            645
+          ],
+          "b": [
+            536,
+            645
+          ],
+          "hinge": [
+            487,
+            645
+          ],
+          "openTip": [
+            487,
+            697
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            605,
+            646
+          ],
+          "b": [
+            659,
+            646
+          ],
+          "hinge": [
+            605,
+            646
+          ],
+          "openTip": [
+            605,
+            699
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            488,
+            883
+          ],
+          "b": [
+            546,
+            883
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            440,
+            900
+          ],
+          "b": [
+            440,
+            1022
+          ]
+        },
+        {
+          "kind": "window",
+          "a": [
+            636,
+            884
+          ],
+          "b": [
+            755,
+            884
+          ]
+        }
+      ],
+      "excludeWallRectsPx": [
+        [
+          782,
+          897,
+          796,
+          1049
+        ]
+      ],
+      "railingsPx": [
+        [
+          [
+            453,
+            1045
+          ],
+          [
+            783,
+            1045
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "B-5-6",
+      "file": "375208_B56.jpg",
+      "url": "https://s3.eu-central-1.amazonaws.com/blueprints.eurovilla-cdn.com/375208/B56.jpg",
+      "sha256": "ce25a66eff889f169635b7018545651d092fdaad2c62e3f12e547ae37f51ef0a",
+      "listingUrl": "https://eurovilla.hr/sl/lastnina/zagreb-strojarska-vukovarska-avenue-v-ekskluzivni-projekt-dvosobno-stanovanje-70-91-m2/375208/",
+      "floor": null,
+      "areaM2": 70.91,
+      "physicalNetAreaM2": 76.52,
+      "reviewWidthPx": 1888,
+      "scaleBarPx": [
+        174,
+        472
+      ],
+      "scaleBarMeters": 5,
+      "outlinePx": [
+        [
+          120,
+          391
+        ],
+        [
+          875,
+          391
+        ],
+        [
+          875,
+          986
+        ],
+        [
+          439,
+          989
+        ],
+        [
+          439,
+          628
+        ],
+        [
+          320,
+          628
+        ],
+        [
+          320,
+          565
+        ],
+        [
+          120,
+          565
+        ]
+      ],
+      "elevationM": null,
+      "elevationBasis": null,
+      "rooms": [
+        {
+          "id": "01",
+          "name": "Hodnik",
+          "areaM2": 2.6
+        },
+        {
+          "id": "02",
+          "name": "Kupaonica",
+          "areaM2": 4.04
+        },
+        {
+          "id": "03",
+          "name": "Spavaća soba",
+          "areaM2": 13.3
+        },
+        {
+          "id": "04",
+          "name": "Dnevni boravak i kuhinja",
+          "areaM2": 34.11
+        },
+        {
+          "id": "05",
+          "name": "Loggia",
+          "areaM2": 22.47
+        }
+      ],
+      "sourceFloorConflict": {
+        "heading": "B-5-6 / PETI",
+        "drawing": "B-3-6 / +11.80",
+        "resolution": "Unresolved; no building-floor publication."
+      },
+      "excludeWallRectsPx": [
+        [
+          120,
+          390,
+          620,
+          400
+        ],
+        [
+          120,
+          398,
+          130,
+          541
+        ]
+      ],
+      "railingsPx": [
+        [
+          [
+            127,
+            394
+          ],
+          [
+            620,
+            394
+          ]
+        ],
+        [
+          [
+            125,
+            397
+          ],
+          [
+            125,
+            539
+          ]
+        ]
+      ],
+      "openingsPx": [
+        {
+          "kind": "door",
+          "a": [
+            564,
+            978
+          ],
+          "b": [
+            629,
+            978
+          ],
+          "hinge": [
+            564,
+            978
+          ],
+          "openTip": [
+            564,
+            913
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            562,
+            882
+          ],
+          "b": [
+            562,
+            928
+          ],
+          "hinge": [
+            562,
+            882
+          ],
+          "openTip": [
+            516,
+            882
+          ]
+        },
+        {
+          "kind": "door",
+          "a": [
+            574,
+            849
+          ],
+          "b": [
+            627,
+            849
+          ],
+          "hinge": [
+            627,
+            849
+          ],
+          "openTip": [
+            627,
+            796
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            636,
+            416
+          ],
+          "b": [
+            636,
+            540
+          ]
+        },
+        {
+          "kind": "glazedDoor",
+          "a": [
+            492,
+            554
+          ],
+          "b": [
+            608,
+            554
+          ]
+        },
+        {
+          "kind": "window",
+          "a": [
+            645,
+            402
+          ],
+          "b": [
+            855,
+            402
+          ]
+        }
+      ]
+    }
+  ]
+}

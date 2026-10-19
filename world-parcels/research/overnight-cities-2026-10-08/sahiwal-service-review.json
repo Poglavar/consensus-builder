@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7951-sahiwal.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Punjab PULSE materials identify Sahiwal’s cadastral-map category and first-party PLRA/PULSE procurement material lists an Arazi Record Center for Tehsil Sahiwal, District Sahiwal. The distinct Sahiwal (Sargodha) office was excluded. The public map may be a geometry candidate, but no anonymous full-polygon response, safe native key/schema, CRS, or exact WUP-point coverage was verified. No login, feature query, or full polygon was retained.",
+  "registryAssessment": "The WUP point is in Sahiwal city, Punjab, Pakistan. The official PLRA/PULSE document gives an ARC for Tehsil Sahiwal, District Sahiwal; the official PULSE map lists Sahiwal in its Cadastral Maps category. A separate Sahiwal Tehsil exists in Sargodha District, and its ARC listing is not treated as the target. PULSE map evidence supports a public-layer candidate, but not verified safe anonymous parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official PULSE public GIS page lists Sahiwal among its divisions/districts and a Cadastral Maps category; the map page also marks complete parcel details as login-gated. No anonymous geometry endpoint or schema was queried."
+    },
+    {
+      "url": "https://pulse.gop.pk/pulse-loginpanel0901/uploads/400384072865907472130156258_1779444426_22-05-2026.pdf",
+      "observation": "Official PLRA/PULSE May 2026 procurement document lists “Arazi Record Center Tehsil Sahiwal” at Zilla Council Office, Zilla Council Secretariat, District Sahiwal; it is distinct from the separate Sahiwal (SGD) entry in Sargodha."
+    },
+    {
+      "url": "https://pulse.gop.pk/",
+      "observation": "Official Punjab Urban Land Systems Enhancement project describes parcel-map/land-record objectives and includes Sahiwal mapping work in current project materials; project pages are not proof of feature-level open access."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority describes Arazi Record Centres and digital land-record services provincewide; used as authority context, not as the sole city-local evidence."
+    },
+    {
+      "url": "https://sargodha.punjab.gov.pk/revenue-office",
+      "observation": "Official Sargodha district page labels its own separate “Arazi Record Center (Tehsil Sahiwal)” as being in District Sargodha; explicitly excluded to avoid homonym confusion."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Urdu",
+      "query": "ساہیوال شہر پنجاب اراضی ریکارڈ مرکز کڈسٹرل نقشہ PULSE ضلع ساہیوال",
+      "result": "Official PULSE materials identify Sahiwal as a division/district and list a public Cadastral Maps category. A first-party 2026 PLRA/PULSE document identifies the Arazi Record Center, Tehsil Sahiwal, District Sahiwal. The Sargodha district site separately lists a different Tehsil Sahiwal (Sargodha), which is not the target city. No public geometry schema or WUP-point response was verified.",
+      "urls": [
+        "https://lis.pulse.gop.pk/",
+        "https://pulse.gop.pk/pulse-loginpanel0901/uploads/400384072865907472130156258_1779444426_22-05-2026.pdf",
+        "https://sargodha.punjab.gov.pk/revenue-office"
+      ],
+      "scope": "Identify the Sahiwal District city’s official registry/map services and distinguish it from Sahiwal Tehsil in Sargodha; do not submit parcel, owner, or address lookups."
+    },
+    {
+      "language": "English",
+      "query": "Sahiwal Pakistan official cadastral map PLRA Arazi Record Centre Tehsil Sahiwal District Sahiwal",
+      "result": "The official Punjab PULSE viewer exposes Sahiwal as a division/district and a Cadastral Maps category; a PLRA/PULSE official procurement document names the ARC for Tehsil Sahiwal, District Sahiwal. Sahiwal in Sargodha is a separate tehsil and its ARC is not used as evidence for this city. No safe anonymous full-polygon schema or locator query was verified.",
+      "urls": [
+        "https://lis.pulse.gop.pk/",
+        "https://pulse.gop.pk/pulse-loginpanel0901/uploads/400384072865907472130156258_1779444426_22-05-2026.pdf",
+        "https://www.punjab-zameen.gov.pk/",
+        "https://sargodha.punjab.gov.pk/revenue-office"
+      ],
+      "scope": "Cross-check city-specific land-record administration and public GIS access; exclude the Sargodha Sahiwal homonym."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET official source page or public map shell; no property/plot lookup, login, or geometry feature query",
+      "result": "Official PULSE public GIS page lists Sahiwal among its divisions/districts and a Cadastral Maps category; the map page also marks complete parcel details as login-gated. No anonymous geometry endpoint or schema was queried."
+    },
+    {
+      "url": "https://pulse.gop.pk/pulse-loginpanel0901/uploads/400384072865907472130156258_1779444426_22-05-2026.pdf",
+      "method": "GET official source page or public map shell; no property/plot lookup, login, or geometry feature query",
+      "result": "Official PLRA/PULSE May 2026 procurement document lists “Arazi Record Center Tehsil Sahiwal” at Zilla Council Office, Zilla Council Secretariat, District Sahiwal; it is distinct from the separate Sahiwal (SGD) entry in Sargodha."
+    },
+    {
+      "url": "https://pulse.gop.pk/",
+      "method": "GET official source page or public map shell; no property/plot lookup, login, or geometry feature query",
+      "result": "Official Punjab Urban Land Systems Enhancement project describes parcel-map/land-record objectives and includes Sahiwal mapping work in current project materials; project pages are not proof of feature-level open access."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "method": "GET official source page or public map shell; no property/plot lookup, login, or geometry feature query",
+      "result": "Official Punjab Land Records Authority describes Arazi Record Centres and digital land-record services provincewide; used as authority context, not as the sole city-local evidence."
+    },
+    {
+      "url": "https://sargodha.punjab.gov.pk/revenue-office",
+      "method": "GET official source page or public map shell; no property/plot lookup, login, or geometry feature query",
+      "result": "Official Sargodha district page labels its own separate “Arazi Record Center (Tehsil Sahiwal)” as being in District Sargodha; explicitly excluded to avoid homonym confusion."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, applicant, taxpayer, assessment, sale, or identity fields were requested or retained; no full polygon was retained.",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The official public map page did not provide a verified layer endpoint, safe native parcel-key schema, CRS, or anonymous full-polygon response at the WUP locator. Login was not attempted and no parcel-specific query was submitted."
+  },
+  "geometryDisposition": "No full geometry sample: PULSE provides a public cadastral-map candidate, but anonymous full-polygon response, native parcel key, CRS, and WUP-point coverage remain unverified."
+}

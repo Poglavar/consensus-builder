@@ -1,0 +1,1003 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS topology audit of bounded adapter-returned provider rows projected into a local metric CRS; no geometry repair. Counts describe the tested viewport only.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32636",
+  "featureCount": 123,
+  "validNonemptyCount": 123,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryGroups": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "positiveAreaOverlapPairCountAbove0_01M2": 0,
+  "areaM2": {
+    "min": 16.13667587017672,
+    "median": 453.5962323252994,
+    "max": 4408.054362196877
+  },
+  "features": [
+    {
+      "id": "IL-JERUSALEM-ROW-714145",
+      "areaM2": 2117.659760243814,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715071",
+      "areaM2": 437.73381314820136,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715315",
+      "areaM2": 353.74625867823755,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715320",
+      "areaM2": 352.1660624483697,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715321",
+      "areaM2": 363.7517958541783,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715322",
+      "areaM2": 1076.785397495255,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715323",
+      "areaM2": 499.53480060172495,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715324",
+      "areaM2": 384.02651314342813,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715325",
+      "areaM2": 378.2211309335292,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715326",
+      "areaM2": 16.13667587017672,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715327",
+      "areaM2": 1660.9472361539044,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715328",
+      "areaM2": 680.9462084369783,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715329",
+      "areaM2": 41.06372128249853,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715330",
+      "areaM2": 223.84495841128415,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715331",
+      "areaM2": 1259.79277153069,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715335",
+      "areaM2": 270.4541780526331,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715336",
+      "areaM2": 489.88574480552745,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715337",
+      "areaM2": 427.52243885287805,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786743",
+      "areaM2": 762.1834100405408,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786744",
+      "areaM2": 516.1060952716043,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786745",
+      "areaM2": 1488.8506983230811,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786749",
+      "areaM2": 525.8589882518629,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786750",
+      "areaM2": 775.6347001810747,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082692",
+      "areaM2": 773.07797383496,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082693",
+      "areaM2": 902.1298692197439,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082698",
+      "areaM2": 508.5070518985176,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082699",
+      "areaM2": 1931.9364578698194,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082700",
+      "areaM2": 1139.5734559588095,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-713897",
+      "areaM2": 277.8814202576675,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-713898",
+      "areaM2": 299.2471847263178,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-713899",
+      "areaM2": 458.6059525649,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-713900",
+      "areaM2": 229.31452091450302,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-713901",
+      "areaM2": 954.3762087306822,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-713902",
+      "areaM2": 207.77263591907217,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-713903",
+      "areaM2": 171.90804375236624,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714012",
+      "areaM2": 186.74533804630082,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714013",
+      "areaM2": 598.9964625919084,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714015",
+      "areaM2": 675.7819091944981,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714016",
+      "areaM2": 528.2147864941018,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714017",
+      "areaM2": 498.79399211169886,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714018",
+      "areaM2": 491.7472558463991,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714020",
+      "areaM2": 479.67495408826045,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714021",
+      "areaM2": 86.28745951315217,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714146",
+      "areaM2": 1198.59214734617,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714147",
+      "areaM2": 476.8704224429098,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715332",
+      "areaM2": 17.125639890108342,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715333",
+      "areaM2": 604.6269043398753,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082695",
+      "areaM2": 206.02336888678298,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082697",
+      "areaM2": 460.9820957275515,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091863",
+      "areaM2": 529.7658132373424,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091864",
+      "areaM2": 453.5962323252994,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091866",
+      "areaM2": 713.500324549319,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091867",
+      "areaM2": 390.2674318303576,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354916",
+      "areaM2": 4018.17452555506,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354924",
+      "areaM2": 930.2543576466603,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354925",
+      "areaM2": 991.3776775043298,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354926",
+      "areaM2": 637.4508431485318,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354927",
+      "areaM2": 1835.8512906810017,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354928",
+      "areaM2": 1671.2650017249562,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-355162",
+      "areaM2": 828.4014348599676,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-355163",
+      "areaM2": 869.0818995672623,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531735",
+      "areaM2": 1055.7813208326124,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531736",
+      "areaM2": 1066.3279160425218,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531737",
+      "areaM2": 1526.9556035432684,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714019",
+      "areaM2": 517.0902876108293,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786746",
+      "areaM2": 1629.7603307426177,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786748",
+      "areaM2": 801.6611676155719,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786751",
+      "areaM2": 319.3589828817659,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082694",
+      "areaM2": 763.3278231807705,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1082696",
+      "areaM2": 794.0650860018997,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091565",
+      "areaM2": 96.86137190942272,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091566",
+      "areaM2": 427.07611170666655,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091567",
+      "areaM2": 85.48602597828844,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091568",
+      "areaM2": 47.17565409117307,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091841",
+      "areaM2": 32.4253529594407,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091842",
+      "areaM2": 173.4228310374803,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091843",
+      "areaM2": 57.343195598041184,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091844",
+      "areaM2": 53.222138034424205,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091845",
+      "areaM2": 1241.797695278843,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091846",
+      "areaM2": 81.35953113285298,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091847",
+      "areaM2": 100.97466569938565,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091848",
+      "areaM2": 16.914633682360797,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091849",
+      "areaM2": 26.276229520459864,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091850",
+      "areaM2": 87.62712429584258,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091851",
+      "areaM2": 57.32794888271858,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091852",
+      "areaM2": 126.55756193065594,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091853",
+      "areaM2": 408.4668515453713,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091854",
+      "areaM2": 104.95905986616833,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091855",
+      "areaM2": 40.954722738874665,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091856",
+      "areaM2": 40.959714861267805,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091857",
+      "areaM2": 136.14636955665912,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091858",
+      "areaM2": 262.1907507008583,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091859",
+      "areaM2": 61.954360927560856,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091860",
+      "areaM2": 98.30383051806773,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091861",
+      "areaM2": 90.3203992892853,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091862",
+      "areaM2": 88.6981922895355,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091865",
+      "areaM2": 60.35640934639442,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091868",
+      "areaM2": 350.0181425983087,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1091869",
+      "areaM2": 295.864762153122,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354913",
+      "areaM2": 1402.2669865164523,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354915",
+      "areaM2": 277.59151470408045,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354917",
+      "areaM2": 1082.2593907874045,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354923",
+      "areaM2": 4408.054362196877,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531485",
+      "areaM2": 1789.896987565804,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531731",
+      "areaM2": 516.9818680644192,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531732",
+      "areaM2": 178.72889513257041,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531733",
+      "areaM2": 275.54257697496143,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-531734",
+      "areaM2": 1623.891541568992,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1085584",
+      "areaM2": 2778.3099126094808,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-714014",
+      "areaM2": 267.6655323644211,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715334",
+      "areaM2": 338.42743163364105,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1085762",
+      "areaM2": 1050.2777663296667,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-1085764",
+      "areaM2": 2211.223498467724,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715314",
+      "areaM2": 2255.3296841970364,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715575",
+      "areaM2": 135.0128844119303,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-715576",
+      "areaM2": 280.0468164104492,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-786747",
+      "areaM2": 292.8545177479723,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354914",
+      "areaM2": 399.23349607033776,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354918",
+      "areaM2": 1294.8719038061108,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354919",
+      "areaM2": 280.98140179489,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354920",
+      "areaM2": 360.8380561884751,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354921",
+      "areaM2": 528.4849779185533,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-JERUSALEM-ROW-354922",
+      "areaM2": 2475.3044451863443,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    }
+  ]
+}

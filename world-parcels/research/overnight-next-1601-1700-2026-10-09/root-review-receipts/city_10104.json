@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10104",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-10104-dongying.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/dongying-service-review.json",
+    "tmp/valhalla-parcel-research/dongying/official.html",
+    "tmp/valhalla-parcel-research/dongying/official.headers"
+  ],
+  "checkedAt": "2026-10-10T12:17:39Z",
+  "reason": "The packet matches the immutable WUP rank 1666 Dongying identity and records English and Chinese searches. Original official bureau HTML and headers confirm a reachable local custodian and a linked map application, but no parcel feature response was retained; the linked map timed out in the bounded attempt. No full polygon with safe native ID or independent adapter qualification exists. Timeout is not citywide absence.",
+  "runtimeAdmission": false
+}

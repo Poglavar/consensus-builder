@@ -1,0 +1,69 @@
+{
+  "descriptor": {
+    "id": "be-vlaanderen-grb-adp",
+    "name": "Flanders Digitaal Vlaanderen GRB administrative parcels",
+    "adapter": "ogc-api",
+    "endpoint": "https://geo.api.vlaanderen.be/GRB/ogc/features/v1/collections/ADP/items",
+    "idField": "OIDN",
+    "idType": "integer",
+    "pagination": "startIndex",
+    "idPrefix": "BE-GRB-ADP-",
+    "outFields": [
+      "OIDN"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "BE",
+    "metricSrid": 32631,
+    "scope": "Flanders GRB administrative cadastral-map objects; permanent OIDN identity, UIDN version metadata and CAPAKEY cadastral association. Graphic depiction corrected to terrain, not a legal survey boundary. Only bounded Antwerp globe entry is enabled; Brussels and Wallonia need separate sources.",
+    "evidenceFile": "research/antwerp-live.json",
+    "attribution": "Bron: Grootschalig Referentie Bestand Vlaanderen, Digitaal Vlaanderen. Adapted to WGS84.",
+    "licenceUrl": "https://www.vlaanderen.be/digitaal-vlaanderen/onze-diensten-en-platformen/open-data/voorwaarden-voor-het-hergebruik-van-overheidsinformatie/modellicentie-gratis-hergebruik",
+    "catalogueUrl": "https://www.vlaanderen.be/datavindplaats/catalogus/ogc-api-features-grb",
+    "cityIds": [
+      "antwerp",
+      "804"
+    ],
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "BE",
+        "admin1": [
+          "BE-VAN",
+          "BE-VBR",
+          "BE-VLI",
+          "BE-VOV",
+          "BE-VWV"
+        ],
+        "basis": "Flanders region GRB administrative cadastral parcels (five Flemish provinces).",
+        "evidence": [
+          "research/countries/BE.json",
+          "research/antwerp-live.json"
+        ]
+      }
+    }
+  },
+  "city": {
+    "code": "804",
+    "name": "Aalst",
+    "point": [
+      4.03960887199254,
+      50.9435433390796
+    ]
+  },
+  "sampleIds": [
+    "BE-GRB-ADP-5609105",
+    "BE-GRB-ADP-5121177",
+    "BE-GRB-ADP-4744632"
+  ],
+  "absentId": "BE-GRB-ADP-999999999",
+  "metricEpsg": "EPSG:32631",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Flanders Digitaal Vlaanderen GRB administrative parcels",
+      "Current official Flemish OGC API source and complete bounded Antwerp verification."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

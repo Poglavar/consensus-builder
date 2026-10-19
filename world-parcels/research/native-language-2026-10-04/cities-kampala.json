@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 85,
+  "city": "Kampala",
+  "countryCode": "UG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kampala.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Kampala cadastral parcel shapefile GIS open data Uganda land registry property boundaries"
+  },
+  "results": [
+    {
+      "title": "Kampala Capital City Authority GIS",
+      "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+      "kind": "official-city-GIS",
+      "note": "Search index describes spatial/integrated-data searches and property fields; anonymous parcel feature export and stable IDs not established."
+    }
+  ],
+  "assessment": "Official KCCA GIS viewer appears to include property information and spatial queries. Public feature service access and complete cadastral parcel geometry remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,103 @@
+{
+  "cityCode": 6143,
+  "queueRank": 2388,
+  "name": "Subang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [-6.55905101972898, 107.768382219158],
+  "population2025": 244383,
+  "population2025k": 244.383,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Subang Indonesia official cadastral parcel map GIS land registry",
+        "result": "First-party discovery found the official Subang government site, Sitaru Subang planning map, and ATR/BPN BHUMI/ATLAS geospatial portals. The local map exposes planning/transport layers, not a bounded anonymous cadastral parcel feature response.",
+        "actualResultUrls": ["https://sitaru.wst.co.id/peta", "https://atlas.atrbpn.go.id/", "https://subang.go.id/public/"]
+      },
+      {
+        "language": "Indonesian (local/native)",
+        "query": "Subang Indonesia peta bidang tanah kadaster GIS resmi",
+        "result": "Penelusuran sumber resmi menemukan Sitaru Subang dan portal data spasial ATR/BPN. Sitaru menyediakan peta pola ruang dan transportasi; tidak ditemukan respons anonim berisi identitas bidang tanah dan geometri poligon yang aman dalam pemeriksaan terbatas.",
+        "actualResultUrls": ["https://sitaru.wst.co.id/peta", "https://atlas.atrbpn.go.id/", "https://simpatig.big.go.id/peta"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Indonesian discovery plus bounded inspection of the official local viewer and ATR/BPN catalog/API routes",
+  "sourceReview": "Sitaru Subang is an official local/regional planning map and procedure portal. Its current JavaScript/configuration references public GeoJSON endpoints for pola ruang and roads. Those responses contain planning/transport features and no qualified cadastral parcel identity. ATR/BPN BHUMI/ATLAS is the national land-spatial portal; the current public catalog route returned a 404 HTML page for the inspected API path, and no parcel feature response was obtained.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://sitaru.wst.co.id/peta",
+      "httpStatus": 200,
+      "outcome": "Official Sitaru Subang map page loaded. It identifies the local map custodian/service context and displays pola ruang and transportasi layers; its disclaimer directs public-information clarification to PUPR Kabupaten Subang. No cadastral parcel layer was identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://sitaru.wst.co.id/assets/map/layer/polaruang.php",
+      "httpStatus": 200,
+      "outcome": "Public GeoJSON FeatureCollection returned (4,474,910 bytes) for spatial-planning polygons. It is not a cadastral parcel response; no geometry retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://sitaru.wst.co.id/assets/map/layer/tr_jalankab.php",
+      "httpStatus": 200,
+      "outcome": "Public GeoJSON FeatureCollection returned (8,477,931 bytes) for district roads. It is not a cadastral parcel response; no geometry retained."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://atlas.atrbpn.go.id/",
+      "httpStatus": 200,
+      "outcome": "Official ATR/BPN BHUMI/ATLAS portal loaded. Page text describes land-spatial datasets and parcel-related map themes, but no anonymous Subang parcel feature response was exposed in the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://atlas.atrbpn.go.id/api/v2/resources?format=json&page_size=1000",
+      "httpStatus": 404,
+      "outcome": "Current public API path from the viewer bundle returned a 404 HTML page; no credentials, login, CAPTCHA, or TLS bypass was attempted. This unavailable route was not treated as citywide absence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://simpatig.big.go.id/peta",
+      "httpStatus": 200,
+      "outcome": "Official BIG dashboard lists Peta Bidang Tanah as a national thematic-data category and identifies ATR/BPN cadastral directorate stewardship, but it did not expose a bounded Subang parcel feature response in this inspection."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Sitaru inline JavaScript exposes Leaflet and public GeoJSON layer endpoints; ATR/BPN ATLAS exposes Next.js catalog JavaScript and an API route that returned 404.",
+    "geometryCrs": "Sitaru responses are GeoJSON with longitude/latitude coordinate ordering; no cadastral layer CRS was observed. The planning/road layers were not retained.",
+    "nativeIdentity": "Not observed for a cadastral parcel; no parcel feature response obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [-6.55905101972898, 107.768382219158] was preserved for qualification; no coordinate shift or exact-point parcel query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "Local public planning/road GeoJSON was reachable, but no cadastral parcel route or safe parcel ID-plus-geometry response was identified. No exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "A local official planning map and national cadastral-data custodian are evidenced, but no public anonymous cadastral parcel geometry, schema/CRS, or source-proven native parcel identity was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [-6.55905101972898, 107.768382219158] was preserved and not shifted.",
+    "No zero exact-point hit, map extent, timeout, 404, or unusable route was treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide cadastral coverage, update cadence, parcel CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Subang's official local planning-map custodian and ATR/BPN national cadastral-data stewardship are evidenced. Current anonymous cadastral parcel access, schema/CRS, stable identity semantics, and citywide coverage remain unverified. Runtime/admission remains held."
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Kayseri",
+  "country": "Turkey",
+  "countryCode": "TR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Kayseri Metropolitan Municipality publishes its city guide and cadastral GIS activity page, while TKGM provides the national parcel-query service. The municipal cadastral app is described as login-accessible; an anonymous one-point request through the reviewed TKGM adapter was blocked upstream (HTTP 403). These sources establish registry/map infrastructure, not usable Kayseri vector coverage.",
+  "registryEvidenceUrls": [
+    "https://csb.kayseri.bel.tr/CbsFaaliyetleri",
+    "https://cbs.kayseri.bel.tr/Kayseri-Kent-Rehberi",
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "https://parselsorguv2.tkgm.gov.tr/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5654,
+  "cityId": "wup2025:5654",
+  "centerLatLon": [
+    38.7434355668725,
+    35.523695545876
+  ],
+  "rank": 585,
+  "queueRank": 585,
+  "population2025": 882238,
+  "population2025k": 882.238,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The public TKGM provider blocked the single anonymous WUP-point request with HTTP 403; the municipal cadastral application is login-gated. No full polygon sample is verified.",
+  "scopeLimits": "Official city cadastral map and national TKGM parcel viewer are identified. The city page indicates the municipal cadastral app requires login; no login attempted. A single public TKGM point-identification request at the WUP center returned upstream HTTP 403. No polygon retained and no area query performed.",
+  "remainingUncertainty": "No complete georeferenced parcel polygon with a verified safe native ID was obtained for this city. Public maps or registry workflows may provide visual layers or identity-dependent services that were not queried.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kayseri Turkey official cadastral map GIS land registry parcel public map",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "Kayseri Metropolitan Municipality publishes its city guide and cadastral GIS activity page, while TKGM provides the national parcel-query service. The municipal cadastral app is described as login-accessible; an anonymous one-point request through the reviewed TKGM adapter was blocked upstream (HTTP 403). These sources establish registry/map infrastructure, not usable Kayseri vector coverage. The official city page describes a cadastral map app accessed through user login, which was not opened. The national TKGM public page documents coordinate/parcel display and excludes owner/name or Turkish-ID lookup. One anonymous point request via the repository safe-ID/geometry adapter received HTTP 403; no retry or bypass was attempted.",
+        "actualResultUrls": [
+          "https://csb.kayseri.bel.tr/CbsFaaliyetleri",
+          "https://cbs.kayseri.bel.tr/Kayseri-Kent-Rehberi",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      },
+      {
+        "language": "Turkish",
+        "query": "Kayseri resmi kadastro haritası parsel sorgulama belediye kent rehberi",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "Kayseri Metropolitan Municipality publishes its city guide and cadastral GIS activity page, while TKGM provides the national parcel-query service. The municipal cadastral app is described as login-accessible; an anonymous one-point request through the reviewed TKGM adapter was blocked upstream (HTTP 403). These sources establish registry/map infrastructure, not usable Kayseri vector coverage. The official city page describes a cadastral map app accessed through user login, which was not opened. The national TKGM public page documents coordinate/parcel display and excludes owner/name or Turkish-ID lookup. One anonymous point request via the repository safe-ID/geometry adapter received HTTP 403; no retry or bypass was attempted.",
+        "actualResultUrls": [
+          "https://csb.kayseri.bel.tr/CbsFaaliyetleri",
+          "https://cbs.kayseri.bel.tr/Kayseri-Kent-Rehberi",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorguv2.tkgm.gov.tr/"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "tr-kayseri-registry-map-review",
+    "name": "Kayseri local registry/map source review",
+    "operator": "Kayseri Metropolitan Municipality; General Directorate of Land Registry and Cadastre (TKGM)",
+    "url": "https://csb.kayseri.bel.tr/CbsFaaliyetleri",
+    "scope": "Official city cadastral map and national TKGM parcel viewer are identified. The city page indicates the municipal cadastral app requires login; no login attempted. A single public TKGM point-identification request at the WUP center returned upstream HTTP 403. No polygon retained and no area query performed.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature ID obtained.",
+    "geometryStatus": "upstream_http_403_no_geometry"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official city cadastral map and national TKGM parcel viewer are identified. The city page indicates the municipal cadastral app requires login; no login attempted. A single public TKGM point-identification request at the WUP center returned upstream HTTP 403. No polygon retained and no area query performed.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    38.7434355668725,
+    35.523695545876
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "reason": "No full geometry-only parcel sample and native safe ID were verified."
+  },
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00"
+}

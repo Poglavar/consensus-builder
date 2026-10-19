@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "San Luis Potosí",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Ayuntamiento de San Luis Potosí identifies a municipal Dirección de Catastro and publishes San Luis Virtual, an official municipal cartography portal for technical data from city departments. The municipal program document describes unifying and updating cadastral cartography. This supports a local cadastral function and public map, but no geometry schema or parcel feature was retrieved.",
+  "registryEvidenceUrls": [
+    "https://sitio.sanluis.gob.mx/SanLuisVirtual/",
+    "https://sitio.sanluis.gob.mx/SanLuisVirtual/AcercaDe",
+    "https://sitio.sanluis.gob.mx/pagAyuntamientoCMS/storage/Medios/2026/03/GACETA%20272%20DGGTC%202026.pdf",
+    "https://sitio.sanluis.gob.mx/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5218,
+  "cityId": "wup2025:5218",
+  "centerLatLon": [
+    22.1533233429272,
+    -100.959583790101
+  ],
+  "rank": 517,
+  "queueRank": 517,
+  "population2025": 992648,
+  "population2025k": 992.648,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official municipal map link is known, but `https://geo.sanluis.gob.mx/maps/view` failed DNS resolution in a bounded direct request (no HTTP status). No alternate vector/schema response was verified. The cadastral transaction/login routes were not accessed.",
+  "scopeLimits": "San Luis Virtual is an official city cartography portal; city planning material confirms municipal cadastral responsibilities. This establishes local registry/cartography basis, not a public parcel polygon route or full city coverage.",
+  "remainingUncertainty": "The public map-view host could not be reached through standard DNS resolution at inspection time. A safe anonymous parcel geometry contract remains unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "San Luis Potosí official municipal cadastral map parcel GIS San Luis Virtual",
+        "scope": "Find city-specific registry/cartography basis and safe anonymous geometry routes.",
+        "result": "Official city pages advertise San Luis Virtual as municipal cartography and a municipal program document assigns cadastral cartography and base-map updating to the Catastro directorate. The map view host did not resolve in the bounded direct request, so geometry/schema remains unverified. No login or property service was used.",
+        "actualResultUrls": [
+          "https://sitio.sanluis.gob.mx/SanLuisVirtual/",
+          "https://sitio.sanluis.gob.mx/SanLuisVirtual/AcercaDe",
+          "https://sitio.sanluis.gob.mx/pagAyuntamientoCMS/storage/Medios/2026/03/GACETA%20272%20DGGTC%202026.pdf",
+          "https://sitio.sanluis.gob.mx/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Catastro municipal San Luis Potosí cartografía catastral mapa predial oficial",
+        "scope": "Find local-language city-specific registry/cartography basis and safe anonymous geometry routes.",
+        "result": "El Ayuntamiento de San Luis Potosí publica San Luis Virtual como herramienta municipal de cartografía y documentos municipales asignan a Catastro la cartografía catastral y la actualización de la base cartográfica municipal. El acceso directo a la vista del mapa no resolvió DNS en la prueba acotada; no se obtuvo geometría ni esquema.",
+        "actualResultUrls": [
+          "https://sitio.sanluis.gob.mx/SanLuisVirtual/",
+          "https://sitio.sanluis.gob.mx/SanLuisVirtual/AcercaDe",
+          "https://sitio.sanluis.gob.mx/pagAyuntamientoCMS/storage/Medios/2026/03/GACETA%20272%20DGGTC%202026.pdf",
+          "https://sitio.sanluis.gob.mx/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sitio.sanluis.gob.mx/SanLuisVirtual/",
+        "observation": "The Ayuntamiento de San Luis Potosí identifies a municipal Dirección de Catastro and publishes San Luis Virtual, an official municipal cartography portal for technical data from city departments. The municipal program document describes unifying and updating cadastral cartography. This supports a local cadastral function and public map, but no geometry schema or parcel feature was retrieved."
+      },
+      {
+        "url": "https://sitio.sanluis.gob.mx/SanLuisVirtual/AcercaDe",
+        "observation": "The Ayuntamiento de San Luis Potosí identifies a municipal Dirección de Catastro and publishes San Luis Virtual, an official municipal cartography portal for technical data from city departments. The municipal program document describes unifying and updating cadastral cartography. This supports a local cadastral function and public map, but no geometry schema or parcel feature was retrieved."
+      },
+      {
+        "url": "https://sitio.sanluis.gob.mx/pagAyuntamientoCMS/storage/Medios/2026/03/GACETA%20272%20DGGTC%202026.pdf",
+        "observation": "The Ayuntamiento de San Luis Potosí identifies a municipal Dirección de Catastro and publishes San Luis Virtual, an official municipal cartography portal for technical data from city departments. The municipal program document describes unifying and updating cadastral cartography. This supports a local cadastral function and public map, but no geometry schema or parcel feature was retrieved."
+      },
+      {
+        "url": "https://sitio.sanluis.gob.mx/",
+        "observation": "The Ayuntamiento de San Luis Potosí identifies a municipal Dirección de Catastro and publishes San Luis Virtual, an official municipal cartography portal for technical data from city departments. The municipal program document describes unifying and updating cadastral cartography. This supports a local cadastral function and public map, but no geometry schema or parcel feature was retrieved."
+      }
+    ],
+    "metadataReviewFile": "san-luis-potosi-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-5218-san-luis-potosi-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "mx-san-luis-potosi-municipal-registry",
+    "name": "San Luis Potosí local registry/cartography route review",
+    "operator": "Ayuntamiento de San Luis Potosí / Dirección de Catastro",
+    "url": "https://sitio.sanluis.gob.mx/SanLuisVirtual/",
+    "scope": "San Luis Virtual is an official city cartography portal; city planning material confirms municipal cadastral responsibilities. This establishes local registry/cartography basis, not a public parcel polygon route or full city coverage.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_geometry"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "San Luis Virtual is an official city cartography portal; city planning material confirms municipal cadastral responsibilities. This establishes local registry/cartography basis, not a public parcel polygon route or full city coverage.",
+    "notEstablished": [
+      "legal ownership or boundary",
+      "complete citywide parcel coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-09T01:14:01.434685+00:00",
+  "sourceIds": [],
+  "point": [
+    22.1533233429272,
+    -100.959583790101
+  ]
+}

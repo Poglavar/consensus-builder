@@ -1,0 +1,14 @@
+{
+  "taskId": "city:531",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-531-ghent.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ghent-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ghent-parcels-sample.geojson",
+    "tmp/valhalla-parcel-research/ghent/adpf-query.xml"
+  ],
+  "checkedAt": "2026-10-11T14:31:56.143590Z",
+  "reason": "WUP rank 2549, Belgium, unchanged point and 230642 persons match the immutable roster and queue. English and Dutch searches are recorded. The cached first-party Adpf WFS response reports three features; all three retained full polygon rings and sole id values match its CAPAKEY/posList values exactly. The separate exact-point ArcGIS zero is not citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent."
+}

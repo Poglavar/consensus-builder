@@ -1,0 +1,147 @@
+{
+  "name": "Loudi",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 935,
+  "point": [
+    27.7441854967241,
+    111.98401973935
+  ],
+  "population2025": 585521,
+  "population2025k": 585.521,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Hunan Natural Resources Department publishes city-specific items about Loudi real-estate registration and a map-based 3D visual-search system. The system supports property/location lookup and returns land/right-related information, so it is registry evidence rather than a safe anonymous parcel-vector service. Exact WUP locator coverage and public geometry access remain unverified.",
+  "registryEvidenceUrls": [
+    "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202504/t20250414_33640405.html",
+    "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202410/t20241023_33483464.html",
+    "https://zwfw-new.hunan.gov.cn/onething/service/index.jsp?areacode=431301000000&main=1&type=xndtfr"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Whether additional safe anonymous parcel-geometry services or broader source coverage exist; no citywide coverage is claimed.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-10430-loudi-source-review",
+    "name": "Loudi official cadastral/land registry source",
+    "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202504/t20250414_33640405.html",
+    "operator": "China",
+    "serviceType": "Official registry/map service evidence; no anonymous parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No safe feature query performed; native parcel key not verified.",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "Official Hunan Natural Resources sources document Loudi real-estate registration and a 3D visual search that uses a property/unit or location and returns land-right information. No safe anonymous geometry layer/schema was verified; no property search was submitted."
+  },
+  "wupCityCode": 10430,
+  "cityId": "wup2025:10430",
+  "queueRank": 935,
+  "centerLatLon": [
+    27.7441854967241,
+    111.98401973935
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Reviewed official descriptions of the registry and visual-search workflow. It requires a property/unit or location and presents land/right information; no identifier or person-specific lookup was performed, and no anonymous feature service/schema was located.",
+  "coverageAssessment": {
+    "claimedScope": "Hunan Natural Resources Department publishes city-specific items about Loudi real-estate registration and a map-based 3D visual-search system. The system supports property/location lookup and returns land/right-related information, so it is registry evidence rather than a safe anonymous parcel-vector service. Exact WUP locator coverage and public geometry access remain unverified.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Loudi city official cadastral map land registry parcel database natural resources bureau",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Official Hunan Natural Resources sources document Loudi real-estate registration and a 3D visual search that uses a property/unit or location and returns land-right information. No safe anonymous geometry layer/schema was verified; no property search was submitted.",
+        "actualResultUrls": [
+          "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202504/t20250414_33640405.html",
+          "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202410/t20241023_33483464.html",
+          "https://zwfw-new.hunan.gov.cn/onething/service/index.jsp?areacode=431301000000&main=1&type=xndtfr"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      },
+      {
+        "language": "Chinese",
+        "query": "娄底市 不动产登记中心 3D一图查询 房产地籍 娄底自然资源局",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Official Hunan Natural Resources sources document Loudi real-estate registration and a 3D visual search that uses a property/unit or location and returns land-right information. No safe anonymous geometry layer/schema was verified; no property search was submitted.",
+        "actualResultUrls": [
+          "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202504/t20250414_33640405.html",
+          "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202410/t20241023_33483464.html",
+          "https://zwfw-new.hunan.gov.cn/onething/service/index.jsp?areacode=431301000000&main=1&type=xndtfr"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202504/t20250414_33640405.html",
+        "observation": "Hunan Natural Resources report describes Loudi’s map-based 3D visual search and property information workflow; it is locator-based and returns registry details."
+      },
+      {
+        "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202410/t20241023_33483464.html",
+        "observation": "Official provincial report documents real-estate registration activity in Loudi."
+      },
+      {
+        "url": "https://zwfw-new.hunan.gov.cn/onething/service/index.jsp?areacode=431301000000&main=1&type=xndtfr",
+        "observation": "Official Hunan government service portal lists Loudi-area natural-resources registration services."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202504/t20250414_33640405.html",
+        "method": "Official public source or service review",
+        "result": "Reviewed official descriptions of the registry and visual-search workflow. It requires a property/unit or location and presents land/right information; no identifier or person-specific lookup was performed, and no anonymous feature service/schema was located."
+      },
+      {
+        "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202410/t20241023_33483464.html",
+        "method": "Official public source or service review",
+        "result": "Reviewed official descriptions of the registry and visual-search workflow. It requires a property/unit or location and presents land/right information; no identifier or person-specific lookup was performed, and no anonymous feature service/schema was located."
+      },
+      {
+        "url": "https://zwfw-new.hunan.gov.cn/onething/service/index.jsp?areacode=431301000000&main=1&type=xndtfr",
+        "method": "Official public source or service review",
+        "result": "Reviewed official descriptions of the registry and visual-search workflow. It requires a property/unit or location and presents land/right information; no identifier or person-specific lookup was performed, and no anonymous feature service/schema was located."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Reviewed official descriptions of the registry and visual-search workflow. It requires a property/unit or location and presents land/right information; no identifier or person-specific lookup was performed, and no anonymous feature service/schema was located."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202504/t20250414_33640405.html",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: BAD_ECPOINT] bad ecpoint (_ssl.c:1082)>"
+  },
+  "rootPrimarySupplement": {
+    "url": "https://zrzyt.hunan.gov.cn/zrzyt/xxgk/gzdt/sxxx/202410/t20241023_33483464.html",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: BAD_ECPOINT] bad ecpoint (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

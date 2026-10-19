@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-11868-jinshan.json",
+  "schemaVersion": "1.0",
+  "cityCode": 11868,
+  "queueRank": 1872,
+  "city": "Jinshan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Shanghai evidence establishes a Jinshan district-level immovable-property map query service and local planning/natural-resources custodian, but no anonymous parcel ID-plus-geometry response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified-Chinese discovery queries, outcomes, and actual URLs are recorded in city-11868-jinshan.json.",
+  "requestOutcomes": "The official listed online query route failed TLS negotiation under default verification and was not retried with verification disabled. The official Shanghai Tianditu homepage returned HTTP 200, but no parcel layer or safe geometry response was exposed.",
+  "attemptedRoutes": [
+    "Shanghai government one-stop service entry for Jinshan 不动产查询（以图查房）",
+    "Official Shanghai Planning and Natural Resources Jinshan section",
+    "Official Shanghai Tianditu public geographic-information platform",
+    "Listed online query route at biz.ghzyj.sh.gov.cn"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [30.7323947902576, 121.332047117118] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Jinshan district boundary or complete citywide coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema, or CRS was retrieved or retained.",
+    "Local registry custody and a map-based registration procedure are not proof of an open vector parcel API.",
+    "A zero exact-point hit, map extent miss, timeout, TLS failure, login wall, or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jinshan District, Shanghai Municipality, China; local planning/natural-resources and immovable-property registration services.",
+    "verifiedOpenScope": "Local registry/service custody and public map-service evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API configuration, access controls, layer schema, CRS, stable native parcel identity, update currency, legal status, and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

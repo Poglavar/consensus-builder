@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1570-abeokuta.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The state land registry/admin office is physically in Abeokuta and the official portal lists Abeokuta schemes. The official OLARMS-GIS landing page advertises parcel polygons and cadastral maps, but entry is through a sign-in/start flow and no public terms or anonymous schema are supplied. A separate property-ID map advertises parcel click-through to PID/address; it was not used. No anonymous geometry-only endpoint was verified.",
+  "registryAssessment": "Ogun State’s official OLARMS portal describes state land registration/search and property-registration services, lists government land schemes in Abeokuta, and places the Bureau of Lands and Survey GIS office at Oke-Mosan, Abeokuta. This is city-located institutional evidence, not a claim of citywide parcel coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://olarms.ogunstate.gov.ng/",
+      "observation": "Official Ogun State OLARMS page describes land allocation, property registration, title and land-search services; lists Abeokuta land schemes and the Bureau of Lands and Survey GIS office address in Abeokuta. Transaction applications require registration/payment."
+    },
+    {
+      "url": "https://geosensepro.tinovo.ng/welcome/index",
+      "observation": "OLARMS-GIS landing page advertises Ogun State parcel, zoning and cadastral map layers and links to a sign-in/start route; no public map schema or terms for anonymous retrieval were exposed."
+    },
+    {
+      "url": "https://ogprs.ogunstate.gov.ng/",
+      "observation": "Official Ogun State Property Registry search page advertises tapping building polygons to display a Property ID and sharing the ID/address. No position or parcel was searched or selected."
+    },
+    {
+      "url": "https://ogunstate.gov.ng/ministry_department_agencies",
+      "observation": "Official Ogun State portal describes its Physical Planning and Urban Development Ministry and statewide remit; no parcel feature service provided."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Abeokuta Ogun State official land registry cadastral GIS parcel map",
+      "result": "Found Ogun State OLARMS and OLARMS-GIS, with state land registration and parcel mapping; public map access is not documented as anonymous or geometry-only, and the registry office is located in Abeokuta.",
+      "method": "Separate English-language search and official Ogun State/OLARMS portal review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    },
+    {
+      "language": "Yoruba",
+      "query": "site:ogunstate.gov.ng Abeokuta ìforúkọsílẹ̀ ilẹ OLARMS Bureau Lands Survey",
+      "result": "No additional Yoruba-language official cadastral/map result surfaced; the primary English OLARMS pages remain the verified source.",
+      "method": "Separate Yoruba-language official-domain search.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full-polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Ogun State’s official OLARMS portal describes state land registration/search and property-registration services, lists government land schemes in Abeokuta, and places the Bureau of Lands and Survey GIS office at Oke-Mosan, Abeokuta. This is city-located institutional evidence, not a claim of citywide parcel coverage.",
+    "verifiedOpenScope": "No geometry-only service or point-level response verified; candidate map/query flows either expose parcel identifiers/property attributes or require application/account steps.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether OLARMS-GIS has a public geometry-only endpoint separate from its sign-in/start workflow and property-identification map."
+}

@@ -1,0 +1,167 @@
+{
+  "asOf": "2026-10-03",
+  "city": "Curitiba",
+  "candidateId": "br-curitiba-ippuc-lote-cadastral",
+  "status": "technically_queryable_but_blocked_for_integration_pending_reuse_terms_and_paging",
+  "source": {
+    "publisher": "IPPUC / Prefeitura Municipal de Curitiba",
+    "service": "GeoCuritiba/Publico_GeoCuritiba_MapaCadastral (MapServer), layer 15 Lote Cadastral",
+    "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+    "serviceMetadata": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15?f=pjson",
+    "itemInfo": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/info/iteminfo?f=json",
+    "nativeCrs": "EPSG:31982 (SIRGAS 2000 UTM 22S)",
+    "queryCapabilities": {
+      "anonymousQuery": true,
+      "supportedFormats": [
+        "JSON",
+        "geoJSON",
+        "PBF"
+      ],
+      "maxRecordCount": 2000,
+      "supportsPagination": true,
+      "supportsCountDistinct": true,
+      "copyrightText": "",
+      "itemInfoLicenseInfo": "",
+      "editingInfo": null
+    },
+    "officialScope": "City's official service page describes the public cadastral map as showing basic information for legal lots, official streets/squares and approved subdivision plans in Curitiba's 75 neighborhoods. This is a municipal technical cadastral base, not a national registry or proof of surveyed title boundaries.",
+    "nativeIdentity": {
+      "field": "gtm_ind_fiscal",
+      "alias": "Indicação Fiscal",
+      "type": "string",
+      "maxLength": 10,
+      "displayField": true,
+      "citySearchUsesField": true,
+      "semanticAssessment": "Best native parcel key. The citywide current service aggregate showed every nonnull value unique, though its database index is not marked unique. Preserve as text (including any leading zero).",
+      "indexIsUnique": false,
+      "citywideRows": 308920,
+      "citywideNulls": 308,
+      "citywideDistinctNonNull": 308612
+    },
+    "otherIdFields": {
+      "objectid": "Esri OID; use only as provider row/paging identity, not semantic parcel ID.",
+      "gtm_cod_lote": "Integer lot code; nonunique index; 1,916 null rows citywide and unsuitable alone as a global key.",
+      "gtm_cod_quadra": "Quadra/block code; intentionally repeats across lots."
+    }
+  },
+  "reuse": {
+    "finding": "No source-specific open reuse license was found. The MapServer itemInfo has empty licenseInfo/accessInformation; layer copyrightText is empty. IPPUC's official geodownload page labels its information merely informative and disclaims damages, but gives no geometry-reuse grant. Curitiba's general open-data rules allow free use of datasets published on that portal, but the cadastral MapServer layer is not listed there (exact searches for its lot/planta/Indicação Fiscal terms yielded no catalog entry). Do not infer that the portal's general rule applies to this standalone service.",
+    "links": [
+      "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/info/iteminfo?f=json",
+      "https://www.ippuc.org.br/geodownloads/geo.htm",
+      "https://dadosabertos.curitiba.pr.gov.br/informacoes/regrasutilizacao/5"
+    ],
+    "integrationGate": "Written permission or an explicit license applying to this exact MapServer layer is needed before persistence/reuse."
+  },
+  "boundedChecks": {
+    "bboxWgs84": [
+      -49.274,
+      -25.43,
+      -49.2725,
+      -25.4288
+    ],
+    "bboxSizeApprox": "~130 m by ~130 m",
+    "count": 40,
+    "returnedRows": 40,
+    "fieldsRequested": [
+      "objectid",
+      "gtm_ind_fiscal",
+      "gtm_cod_lote",
+      "gtm_cod_quadra",
+      "gtm_mtr_area_terreno",
+      "flag_int_geom",
+      "flag_int_atrib"
+    ],
+    "sensitiveAddressOrOwnerFieldsRequested": false,
+    "keyStats": {
+      "gtm_ind_fiscal": {
+        "nonnull": 40,
+        "distinctNonNull": 40,
+        "duplicateCount": 0,
+        "nullCount": 0
+      },
+      "gtm_cod_lote": {
+        "nonnull": 40,
+        "distinctNonNull": 40,
+        "duplicateCount": 0,
+        "nullCount": 0
+      },
+      "gtm_cod_quadra": {
+        "nonnull": 40,
+        "distinctNonNull": 8,
+        "nullCount": 0
+      }
+    },
+    "metadataSemantics": "gtm_mtr_area_terreno is the matricula-recorded terrain area; it is not the measured polygon area. Geometry field is esriGeometryPolygon; outSR=4326 is honored. No separate current-as-of/edit timestamp is exposed in layer metadata."
+  },
+  "adapterTests": {
+    "exactNativeLookup": {
+      "adapter": "existing arcgis adapter",
+      "requestedId": "BR-CURITIBA-11150008",
+      "where": "gtm_ind_fiscal IN ('11150008')",
+      "resultCount": 1,
+      "absentIds": [],
+      "geometryType": "Polygon",
+      "canonicalResponse": "curitiba-live-response.json"
+    },
+    "forcedPagingLargeBox": {
+      "bbox": [
+        -49.274,
+        -25.43,
+        -49.2725,
+        -25.4288
+      ],
+      "pageSize": 2,
+      "failure": "Adapter failed closed on repeated object ID: resultOffset 26 returned one feature (objectid 3436), then resultOffset 27 returned objectids 3436 and 3437.",
+      "pageSize20Retry": "Also failed: offset 20 returned 19 features ending in 3454; next offset 39 repeated 3454 together with 3455.",
+      "implication": "Despite supportsPagination=true, repeated/short offset pages make completeness unsafe when a bounded query needs multiple pages; adapter's duplicate-object guard correctly refused a complete result."
+    },
+    "forcedPagingSmallBox": {
+      "bbox": [
+        -49.27395,
+        -25.4292,
+        -49.27295,
+        -25.42865
+      ],
+      "count": 11,
+      "pageSize": 5,
+      "pages": [
+        {
+          "offset": 0,
+          "count": 5,
+          "objectids": [
+            1667,
+            1668,
+            1669,
+            1670,
+            1671
+          ]
+        },
+        {
+          "offset": 5,
+          "count": 5,
+          "objectids": [
+            1672,
+            1673,
+            1823,
+            1824,
+            3440
+          ]
+        },
+        {
+          "offset": 10,
+          "count": 1,
+          "objectids": [
+            3441
+          ]
+        }
+      ],
+      "result": "completed with 11 distinct fiscal IDs"
+    }
+  },
+  "recommendation": "Keep disabled until reuse rights are resolved and complete paging is demonstrated. Preserve fiscal strings, detect repeated provider row IDs, and never treat failed reads as absent ground.",
+  "description": "Current source identity, exact lookup and repeated-page failures; runtime remains disabled.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "br-curitiba-ippuc-lote-cadastral",
+  "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15"
+}

@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "regionCode": "NE",
+ "regionName": "NE",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; Accept-Language: de-CH,de;q=0.9; Referer https://geodienste.ch/; cookie jar used",
+ "status": "credentialed_or_paid",
+ "source": {
+  "sourceId": "ch-geodienste-av0",
+  "name": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
+  "operator": "Cantons and Confederation via geodienste.ch",
+  "scope": "canton NE as one filter of a multi-canton national aggregate",
+  "endpoint": "https://geodienste.ch/db/av_0/deu",
+  "method": "GET",
+  "responseFormat": "WFS 2.0 GML 3.2 (text/xml)",
+  "crs": "EPSG:2056",
+  "reuseStatus": "keine Angabe (per services.json); canton terms https://sitn.ne.ch/geoshop2_media/documents/contrat_sitn.pdf"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "Not open. Vector AV requires an existing paid usage contract (SITN contract, cantonal tariff); WMS open with registration; cantonal_coverage false (partial coverage).",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "NE av entry: publication_data=Freigabe erforderlich, cantonal_coverage=False, contract_required_data=True, opendata_terms_data=keine Angabe, terms_of_use_data=https://sitn.ne.ch/geoshop2_media/documents/contrat_sitn.pdf"
+  },
+  {
+   "url": "https://geodienste.ch/services/av",
+   "observation": "geodienste.ch AV topic page (terms https://geodienste.ch/terms-of-use)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2562000,1205000,2562150,1205150,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "0 RESF features"
+  }
+ ],
+ "gatedCondition": "Vector AV requires an existing paid usage contract (SITN contract, cantonal tariff); WMS open with registration; cantonal_coverage false (partial coverage).",
+ "gatedBehaviour": "Bounded GetFeature at Neuchatel returned HTTP 200 with numberReturned=0 (release filter FILTER_ALLOWED_CANTONS excludes NE); not bypassed.",
+ "reuseStatus": "Vector AV requires an existing paid usage contract (SITN contract, cantonal tariff); WMS open with registration; cantonal_coverage false (partial coverage).",
+ "remainingUncertainty": "A 0-feature result is the documented release gate; not retried with credentials. No login attempted. Cantonal WMS is free but is not a parcel record list.",
+ "nextStep": "Obtain contract/release from canton (sitn@ne.ch) if parcel data for NE is needed."
+}

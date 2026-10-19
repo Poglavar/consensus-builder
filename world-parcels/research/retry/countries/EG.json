@@ -1,0 +1,81 @@
+{
+ "kind": "country",
+ "key": "EG",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: ar-EG,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.esa.gov.eg/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable with browser headers; no viewer link; only a Google Maps key on static map pages (key not saved)"
+  },
+  {
+   "url": "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "static page loading Google Maps JS; no parcel service"
+  },
+  {
+   "url": "https://www.esa.gov.eg/egypt_maps.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "static maps page; no parcel service"
+  },
+  {
+   "url": "https://www.esa.gov.eg/boundaryUpdates.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "static page; no parcel service"
+  },
+  {
+   "url": "https://geoportal.egypt.gov.eg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT failed / no response (000) again"
+  },
+  {
+   "url": "https://data.gov.eg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response (000)"
+  },
+  {
+   "url": "https://egypt.opendataforafrica.org/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 bot page"
+  },
+  {
+   "url": "https://www.mwri.gov.eg",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "water ministry site; not parcels"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Egypt%20parcels%20cadastre%20owner:esa&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "ESA site reachable; two hosts failed at connection level only (possible geo/network filtering, unproven)",
+ "notes": "ESA HTML/JS inspected: no WFS/FeatureServer/token references beyond a Google Maps API key on static pages. Geoportal host still unreachable.",
+ "nextStep": "Try Egypt geoportal from another network; ESA e-services are likely licensed/in-person."
+}

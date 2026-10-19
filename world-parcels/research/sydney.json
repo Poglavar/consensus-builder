@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:107",
+  "queueRank": 107,
+  "name": "Sydney",
+  "country": "Australia",
+  "countryCode": "AU",
+  "centerLatLon": [
+    -33.8589905191914,
+    151.078965122611
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "au-nsw-six-cadastre-lot",
+    "requestUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query?where=1%3D1&geometry=151.0790,-33.8590,151.0800,-33.8580&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "text/plain;charset=utf-8",
+    "spatialTestAreaLonLat": [
+      151.079,
+      -33.859,
+      151.08,
+      -33.858
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "cadid (lotidstring e.g. 9//DP11050)",
+    "responseFile": "sydney-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true"
+  },
+  "source": {
+    "sourceId": "au-nsw-six-cadastre-lot",
+    "name": "NSW Cadastre (Lot layer), Spatial Services / SIX Maps",
+    "operator": "NSW Spatial Services (Department of Customer Service)",
+    "scope": "New South Wales state lots (plan/section/lot extents)",
+    "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+    "method": "ArcGIS REST MapServer query",
+    "responseFormat": "ArcGIS JSON (f=json), also geoJSON per server capabilities not tested",
+    "crs": "native EPSG:3857 (102100); outSR=4326 honoured",
+    "reuseStatus": "not reviewed; NSW Spatial Services terms not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer",
+      "observation": "Public dynamic map service of plan, section and lot extents; layer 9 'Lot' is a queryable polygon layer (service description says designed primarily for display)."
+    },
+    {
+      "url": "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_and_Property_Theme/FeatureServer/8",
+      "observation": "Spatial Services feature service for the same theme; requires a token (HTTP 499), so not open."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Land_Parcel_and_Property_Theme/FeatureServer/8/query?...",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "body was error 499 Token Required; not verification"
+    },
+    {
+      "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "assessment": "service description only"
+    },
+    {
+      "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query?...outFields=lotnumber,plannumber,planlabel,cadid...",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "assessment": "body was error 400 (field names are lower-case and outFields list failed); retried with outFields=*"
+    },
+    {
+      "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query?where=1%3D1&geometry=151.0790,-33.8590,151.0800,-33.8580&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "assessment": "3 closed-ring lot polygons at the Sydney city-centre point from the queue (first is Lot 9 DP11050)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "New South Wales statewide lot cadastre; the Sydney urban area lies within NSW",
+    "verifiedOpenScope": "three lots in one ~100 m bbox at lon 151.079, lat -33.859",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Only one small bbox tested. Completeness across Greater Sydney, service stability for runtime use (display-oriented dynamic service, MapServer 10.51), and reuse terms are unreviewed. Other Australian states use different services.",
+  "nextStep": "Test bboxes in central Sydney and outer western suburbs; review NSW Spatial Services licence; implement bounded ArcGIS query adapter."
+}

@@ -1,0 +1,35 @@
+/* The how-to guide shell (css/howto.css) scrolls its reading column on its own; the public landing
+   page uses normal document flow, with the page navigation's links sticky in their column on a
+   wide screen. */
+html.urban-planning-page {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+body.urban-planning-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+}
+
+body.urban-planning-page .main-content {
+    overflow: visible;
+}
+
+body.urban-planning-page .intro-with-visual > img {
+    height: auto;
+    aspect-ratio: 2 / 1;
+}
+
+@media (min-width: 768px) {
+    body.urban-planning-page .sidebar {
+        overflow: visible;
+    }
+
+    body.urban-planning-page .sidebar-links {
+        position: sticky;
+        top: 20px;
+    }
+}

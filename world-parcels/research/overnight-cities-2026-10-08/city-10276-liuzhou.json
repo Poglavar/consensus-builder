@@ -1,0 +1,93 @@
+{
+  "name": "Liuzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 362,
+  "point": [
+    24.3158156846034,
+    109.392314560825
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "柳州市 不动产登记 地籍图 查询 GIS 公开地图 柳州市自然资源和规划局",
+        "scope": "Find the local registration institution and an anonymous parcel-vector service.",
+        "result": "The 2025 Liuzhou Natural Resources and Planning Bureau budget identifies the city Real Estate Registration Center and cadastral-rights review work. A local city housing/transaction site provides contract-query functions, including captcha fields, but no anonymous full parcel geometry viewer was found. The bureau also published a large-scale land-spatial planning information platform; available evidence describes agency systems, not public parcel downloads.",
+        "actualResultUrls": [
+          "https://lz.dnr.gxzf.gov.cn/zwgk/zfxxgk/fdzdgknr_1/cwxx/czysjsgjf/P020250214328837150828.pdf",
+          "https://www.lzfcjys.com/wspsp/web/mains/query_center.jsp",
+          "https://www.supermap.com/zh-cn/a/case/110_4152.html"
+        ],
+        "executionMethod": "Separate Chinese-language search and municipal bureau/transaction-site inspection; no personal record query and no captcha or login used."
+      },
+      {
+        "language": "English",
+        "query": "Liuzhou China official real estate registry cadastral parcel GIS public map",
+        "scope": "Cross-check the city registry and open geometry availability.",
+        "result": "Official city bureau budget material identifies the local registration center and cadastral review activities. No English-language public parcel-vector service was found in the reviewed official city sources.",
+        "actualResultUrls": [
+          "https://lz.dnr.gxzf.gov.cn/zwgk/zfxxgk/fdzdgknr_1/cwxx/czysjsgjf/P020250214328837150828.pdf",
+          "https://www.lzfcjys.com/wspsp/web/mains/query_center.jsp"
+        ],
+        "executionMethod": "Separate English-language search followed by first-party city bureau and service-site review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Liuzhou Natural Resources and Planning Bureau 2025 department budget",
+        "operator": "Liuzhou Natural Resources and Planning Bureau / Liuzhou Real Estate Registration Center",
+        "homeUrl": "https://lz.dnr.gxzf.gov.cn/zwgk/zfxxgk/fdzdgknr_1/cwxx/czysjsgjf/P020250214328837150828.pdf",
+        "observation": "Identifies the municipal registration center, cadastral rights review, information and system maintenance duties; not a public parcel vector source."
+      },
+      {
+        "name": "Liuzhou Property Transaction Management Network, query center",
+        "operator": "Liuzhou Housing Transaction Exchange",
+        "homeUrl": "https://www.lzfcjys.com/wspsp/web/mains/query_center.jsp",
+        "observation": "Lists transaction/contract query and record-printing functions, with captcha fields. It is not an anonymous cadastral geometry service."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": false,
+    "fullGeometrySampleCount": 0,
+    "bounded": true,
+    "pointLocated": false,
+    "note": "No complete public parcel polygon sample was verified."
+  },
+  "source": {
+    "operator": "Liuzhou Natural Resources and Planning Bureau / Liuzhou Real Estate Registration Center",
+    "endpoint": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false
+  },
+  "coverageAssessment": "No public full-polygon coverage verified for the WUP point.",
+  "registryFound": true,
+  "registryBasis": "First-party city bureau budget confirms the local Real Estate Registration Center and cadastral review/database duties.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_registry_activity_no_public_parcel_geometry_found",
+  "technicalBlocker": "No anonymous public parcel vector endpoint was found; registry/transaction records are distinct from an open cadastral geometry layer.",
+  "remainingUncertainty": "The planning platform reference describes internal agency GIS capability, not public access.",
+  "sourceIds": [],
+  "nextStep": "Ask the city bureau whether any non-personal public parcel dataset is available.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10276,
+  "cityId": "wup2025:10276",
+  "queueRank": 362,
+  "population2025": 1400880,
+  "population2025k": 1400.88,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    24.3158156846034,
+    109.392314560825
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:02:54.805434+00:00"
+}

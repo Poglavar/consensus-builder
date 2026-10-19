@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8950-yuncheng.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Local registration and cadastral database evidence; no safe anonymous polygon response verified. No public parcel feature service, layer schema or geometry-only query was identified. Official sources document registration and cadastral-data infrastructure but do not provide anonymous full-parcel geometry.",
+  "registryAssessment": "Yuncheng municipal government describes its municipal government-service real-estate registration window; a current procurement by the municipal planning/natural-resources bureau explicitly upgrades the city/county registration and cadastral database. This establishes local registration custody, not a public map endpoint or exact point parcel.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.yuncheng.gov.cn/doc/2023/06/01/347389.shtml",
+      "observation": "Yuncheng municipal-government report describes the city government-service real-estate registration window and its registration workflow."
+    },
+    {
+      "url": "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202609/t20260927_27404665.htm",
+      "observation": "Current procurement notice originating with Yuncheng Planning and Natural Resources Bureau concerns city/county integrated real-estate registration and cadastral databases; it does not expose parcel features."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yuncheng China official real estate registration center land cadastre municipal natural resources bureau",
+      "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+      "result": "No public parcel feature service, layer schema or geometry-only query was identified. Official sources document registration and cadastral-data infrastructure but do not provide anonymous full-parcel geometry. Official registry evidence: Yuncheng municipal government describes its municipal government-service real-estate registration window; a current procurement by the municipal planning/natural-resources bureau explicitly upgrades the city/county registration and cadastral database. This establishes local registration custody, not a public map endpoint or exact point parcel.",
+      "actualResultUrls": [
+        "https://www.yuncheng.gov.cn/doc/2023/06/01/347389.shtml",
+        "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202609/t20260927_27404665.htm"
+      ],
+      "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+    },
+    {
+      "language": "Chinese",
+      "query": "运城市 不动产登记 地籍图查询 运城自然资源局 官方",
+      "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+      "result": "No public parcel feature service, layer schema or geometry-only query was identified. Official sources document registration and cadastral-data infrastructure but do not provide anonymous full-parcel geometry. Official registry evidence: Yuncheng municipal government describes its municipal government-service real-estate registration window; a current procurement by the municipal planning/natural-resources bureau explicitly upgrades the city/county registration and cadastral database. This establishes local registration custody, not a public map endpoint or exact point parcel.",
+      "actualResultUrls": [
+        "https://www.yuncheng.gov.cn/doc/2023/06/01/347389.shtml",
+        "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202609/t20260927_27404665.htm"
+      ],
+      "executionMethod": "Separate Chinese-language web search, followed by review of first-party source pages; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No full anonymous parcel feature response was obtained. No geometry sample is retained; exact point geometry remains unverified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official local sources and the exact unchanged WUP locator only; no citywide parcel completeness is claimed.",
+    "limits": "No parcel feature endpoint or exact point-to-parcel coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.yuncheng.gov.cn/doc/2023/06/01/347389.shtml",
+      "method": "Official public source/service review",
+      "result": "Yuncheng municipal-government report describes the city government-service real-estate registration window and its registration workflow."
+    },
+    {
+      "url": "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202609/t20260927_27404665.htm",
+      "method": "Official public source/service review",
+      "result": "Current procurement notice originating with Yuncheng Planning and Natural Resources Bureau concerns city/county integrated real-estate registration and cadastral databases; it does not expose parcel features."
+    }
+  ],
+  "remainingUncertainty": "No parcel feature endpoint or exact point-to-parcel coverage was verified."
+}

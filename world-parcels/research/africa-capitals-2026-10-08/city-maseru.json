@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "cityId": "capital:LS:maseru",
+  "name": "Maseru",
+  "country": "Lesotho",
+  "countryCode": "LS",
+  "centerLatLon": [
+    -29.3158,
+    27.486
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/LS.json"
+  ],
+  "registryFound": true,
+  "officialRegistryOrPortalFound": true,
+  "publicEndpointVerified": false,
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "resultCategory": "official_registry_or_service_no_geometry",
+  "source": null,
+  "verifiedParcelResponse": null,
+  "englishQueries": [
+    {
+      "languageScript": "English",
+      "exactQuery": "Maseru Lesotho cadastre parcels land registry GIS cadastral map official LAA",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://laa.org.ls/",
+        "https://portal.laa.landfolio.com/Portal/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60",
+        "https://lesotholii.org/akn/ls/act/2010/9/eng%402010-06-15"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "English (official language)",
+      "exactQuery": "Maseru Lesotho cadastral map parcels land registry GIS LAA",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://laa.org.ls/",
+        "https://portal.laa.landfolio.com/Portal/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60",
+        "https://lesotholii.org/akn/ls/act/2010/9/eng%402010-06-15"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://laa.org.ls/",
+      "observation": "Official Lesotho Land Administration Authority provides cadastral-survey and land-administration services."
+    },
+    {
+      "url": "https://portal.laa.landfolio.com/Portal/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60",
+      "observation": "Official public LAA landing page distinguishes personal account access for plots/deeds from paid map/survey products; no anonymous feature service was exposed."
+    },
+    {
+      "url": "https://lesotholii.org/akn/ls/act/2010/9/eng%402010-06-15",
+      "observation": "Land Administration Authority Act gives LAA land-registration and surveying/mapping functions; information is available upon request."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://laa.org.ls/",
+      "method": "web.run open official Land Administration Authority homepage",
+      "httpStatus": "not exposed; page retrieved",
+      "assessment": "Official LAA homepage links the Land Administration Online System and cadastral survey services."
+    },
+    {
+      "url": "https://portal.laa.landfolio.com/Portal/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60",
+      "method": "web.run click publicly linked LAA online system landing page",
+      "httpStatus": "not exposed; page retrieved",
+      "assessment": "Public landing page says registered accounts expose leases, plots, bonds and deeds; map/survey products are sold through ecommerce. No anonymous parcel feature layer exposed on landing page; no sign-in, purchase or account operation attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City-level coverage not established.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+  "remainingUncertainty": "Current data coverage, freshness, legal completeness and anonymous geometry access remain unverified.",
+  "nextStep": "If source access terms and public services change, recheck the official portal for an anonymous bounded geometry service; otherwise retain as a documented non-geometry research result.",
+  "status": "complete",
+  "purpose": "City-specific research into parcel geometry and presence of a city-level registry or cadastre. Registry evidence is assessed separately from publicly retrievable geometry.",
+  "registryEvidenceUrls": [
+    "https://laa.org.ls/",
+    "https://portal.laa.landfolio.com/Portal/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60"
+  ],
+  "registryBasis": "Official Land Administration Authority administers national land registration and cadastral surveying, and its public portal offers registered plot accounts and paid survey/map products; no anonymous geometry is verified.",
+  "portalInspectionComplete": true,
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Maseru Lesotho cadastre parcels land registry GIS cadastral map official LAA",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Maseru Lesotho cadastral map parcels land registry GIS LAA",
+      "language": "English (official language)",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-8117-vit-ria-da-conquista.json",
+  "cityCode": 8117,
+  "queueRank": 2172,
+  "service": "Municipal Geo360 pg_tileserv cadastro.lote",
+  "serviceUrl": "https://tiles-vitoriadaconquista.geo360.com.br/",
+  "reviewStatus": "held_pending_independent_serial_qualification",
+  "registryFound": true,
+  "nativeIdentity": "id",
+  "nativeFieldDescription": "The live layer metadata describes id as the unique identifier of the table.",
+  "geometry": {"type": "Polygon", "crs": "EPSG:4326", "delivery": "Mapbox vector tile PBF"},
+  "safeFieldAllowlist": ["id", "full parcel polygon geometry", "CRS/service metadata"],
+  "sourceFieldMapping": {"id": "cadastro.lote.id", "geometry": "cadastro.lote native geometry"},
+  "compositeKeyProvenance": null,
+  "attemptedRoutes": [
+    {"url": "https://tiles-vitoriadaconquista.geo360.com.br/", "method": "GET", "result": "200; pg_tileserv homepage and layer links retrieved."},
+    {"url": "https://tiles-vitoriadaconquista.geo360.com.br/index.json", "method": "GET", "result": "200; public layer index retrieved."},
+    {"url": "https://tiles-vitoriadaconquista.geo360.com.br/cadastro.lote.json", "method": "GET", "result": "200; schema, Polygon geometry, EPSG:4326 metadata, native id, bounds, and tile URL retrieved."},
+    {"url": "https://tiles-vitoriadaconquista.geo360.com.br/cadastro.lote/17/50663/71007.pbf", "method": "GET", "result": "200; bounded tile returned 253 features; exact immutable WUP point hit count 0."}
+  ],
+  "coverageAndUncertainty": {
+    "layerBounds": [-40.984474182128906, -15.041089057922363, -40.6158447265625, -14.702041625976562],
+    "boundedTile": "z17/x50663/y71007",
+    "citywideCompleteness": "unverified",
+    "exactPointMissMeaning": "No inference of citywide absence; a point miss can reflect location, tile publication, or geometry/coverage limits.",
+    "tileGeometryQualification": "The inspected PBF is tile-local and may be clipped/simplified; no sample was retained."
+  },
+  "unsafeFieldsNotRetained": ["owner/person links", "address/contact", "titleholder", "tax/account details", "raw source attribute sets"],
+  "runtimeReadiness": "held",
+  "runtimeReason": "Research verifies a plausible public source and safe native identity, but runtime admission requires independent serial qualification of adapter behavior and coverage semantics.",
+  "notSourceIntegration": true,
+  "completionSummary": "complete_research_packet; public_municipal_parcel_service_verified; no_retained_sample; runtime_held"
+}

@@ -1,0 +1,286 @@
+// Turns a proposal into a stored thumbnail PNG: works out which geometry the picture should frame,
+// pulls the parent/neighbour parcel outlines for context, renders the tile-stitched image and writes
+// it to the shared image store, returning the URL to put in proposal.screenshot_url.
+//
+// The geometry resolution mirrors reconstructProposalScreenshotDataUrl, the browser-side function
+// this replaces (deleted from frontend/js/proposals/dialog-upload.js in the same change), so a
+// server-rendered thumbnail frames a proposal the way the client-side one did.
+import * as turf from '@turf/turf';
+import { renderProposalThumbnailSet } from './tile-stitch.js';
+import { fetchParcelPolygonsByIds } from './parcel-geometry.js';
+import { saveImageBuffer } from '../utils/image-store.js';
+
+// Mirrors PROPOSAL_GOAL_ICON_MAP in frontend/js/proposals/data.js — the badge drawn top-left.
+const PROPOSAL_GOAL_ICON_MAP = {
+    'as-is': '🟰',
+    'square': '⛲️',
+    'park': '🌳',
+    'lake': '🐟',
+    'station': '🚉',
+    'single': '🏠',
+    'buildings': '🏠',
+    'road-track': '🛣️🛤️',
+    'road/track': '🛣️🛤️',
+    'urban-rule': '📜📐',
+    'urban rule': '📜📐',
+    'decide-later': '🪡',
+    'decide later': '🪡',
+    'reparcellization': '✂️',
+    'ownership-transfer': '🔄',
+    'ownership-transfer-to-me': '🔄',
+    'ownership-transfer-from-me': '🔄'
+};
+
+// Goals with no meaningful map geometry — a thumbnail would just be a placeholder.
+const PROPOSAL_SCREENSHOT_SKIP_GOALS = new Set([
+    'urban-rule',
+    'ownership-transfer',
+    'ownership-transfer-to-me',
+    'ownership-transfer-from-me'
+]);
+
+const THUMBNAIL_PADDING = 0.12;
+const THUMBNAIL_ZOOM = 19;
+
+// Port of normalizeGoalKey (frontend/js/proposals/core.js).
+export function normalizeGoalKey(goal) {
+    const raw = (goal || '').toString().trim().toLowerCase();
+    if (!raw) return '';
+    if (raw.startsWith('building')) return 'single';
+    if (raw === 'road track') return 'road-track';
+    if (raw === 'ownership transfer to me' || raw === 'ownership-transfer-to-me') return 'ownership-transfer-to-me';
+    if (raw === 'ownership transfer from me' || raw === 'ownership-transfer-from-me') return 'ownership-transfer-from-me';
+    if (raw === 'ownership transfer' || raw === 'ownership-transfer') return 'ownership-transfer';
+    return raw;
+}
+
+export function resolveProposalGoalKey(proposal) {
+    return normalizeGoalKey(proposal?.goal || proposal?.proposalType || proposal?.type || '');
+}
+
+export function shouldSkipProposalThumbnail(proposal) {
+    if (!proposal) return true;
+    return PROPOSAL_SCREENSHOT_SKIP_GOALS.has(resolveProposalGoalKey(proposal));
+}
+
+function goalBadge(goalKey) {
+    const icon = PROPOSAL_GOAL_ICON_MAP[normalizeGoalKey(goalKey)];
+    return icon ? { text: icon } : null;
+}
+
+/**
+ * A proposal is a road proposal if it says so OR if it simply has a roadProposal on it.
+ *
+ * The goal key alone is not enough: older proposals store type `road`/`Track` with no `goal` at all,
+ * and the browser's version of this only ever matched the exact key 'road-track'. That is why 33 road
+ * proposals whose corridor could be drawn from their stored centerline had no thumbnail — the code
+ * that would have drawn them was behind a check they could never pass.
+ */
+function isRoadProposal(proposal) {
+    const goalKey = resolveProposalGoalKey(proposal);
+    if (goalKey === 'road-track' || goalKey === 'road' || goalKey === 'track') return true;
+    return !!proposal.roadProposal;
+}
+
+function fromGeometry(geom) {
+    if (!geom || !geom.coordinates) return null;
+    if (geom.type === 'Polygon') return { polygon: geom.coordinates, polygonOrder: 'lnglat' };
+    if (geom.type === 'MultiPolygon') return { polygon: geom.coordinates[0], polygonOrder: 'lnglat' };
+    return null;
+}
+
+/**
+ * Pull the coordinate ring the thumbnail should highlight out of whatever the proposal stored.
+ * Port of the browser's resolveProposalPolygonForScreenshot, which this replaces.
+ * @returns {{ polygon: Array|null, polygonOrder?: string, fitToPolygonOnly?: boolean }}
+ */
+export function resolveProposalPolygon(proposal) {
+    if (!proposal) return { polygon: null };
+
+    if (isRoadProposal(proposal)) {
+        const resolved = fromGeometry(proposal.roadProposal?.definition?.polygon);
+        if (resolved) return { ...resolved, fitToPolygonOnly: true };
+    }
+
+    if (proposal.buildingGeometry) {
+        const resolved = fromGeometry(proposal.buildingGeometry);
+        if (resolved) return resolved;
+    }
+
+    if (proposal.structureProposal && proposal.structureProposal.geometry) {
+        const resolved = fromGeometry(proposal.structureProposal.geometry);
+        if (resolved) return resolved;
+    }
+
+    // Reparcellization: union the slice geometries so the thumbnail frames the whole carve-up.
+    if (proposal.reparcellization && Array.isArray(proposal.reparcellization.polygons) && proposal.reparcellization.polygons.length) {
+        const slices = proposal.reparcellization.polygons
+            .map(s => s && s.geometry)
+            .filter(g => g && g.coordinates && (g.type === 'Polygon' || g.type === 'MultiPolygon'));
+        if (slices.length === 1) {
+            const resolved = fromGeometry(slices[0]);
+            if (resolved) return resolved;
+        } else if (slices.length > 1) {
+            const merged = unionGeometries(slices);
+            const resolved = merged ? fromGeometry(merged) : null;
+            if (resolved) return resolved;
+            const first = fromGeometry(slices[0]);
+            if (first) return first;
+        }
+    }
+
+    if (proposal.geometry && (proposal.geometry.type === 'Polygon' || proposal.geometry.type === 'MultiPolygon')) {
+        const resolved = fromGeometry(proposal.geometry);
+        if (resolved) return resolved;
+    }
+
+    // A plan's buildings (geometry.buildings, one feature each): every footprint is drawn, before the
+    // site, so two plans on one site do not share a picture of the site alone (the two Candlestick
+    // Point plans rendered byte-identical thumbnails, 2026-10-12).
+    if (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length) {
+        const parts = [];
+        for (const f of proposal.geometry.buildings) {
+            const g = f && f.geometry;
+            if (!g || !Array.isArray(g.coordinates)) continue;
+            if (g.type === 'Polygon') parts.push(g.coordinates);
+            else if (g.type === 'MultiPolygon') parts.push(...g.coordinates);
+        }
+        if (parts.length) return { polygon: parts.length === 1 ? parts[0] : parts, polygonOrder: 'lnglat' };
+    }
+
+    // The proposal's site (PARCEL-OPTIONAL.md): its ground, a MultiPolygon, and on open ground (an
+    // explore city, unsurveyed land) the only geometry a record may have. Every part is framed.
+    const site = proposal.site;
+    if (site && Array.isArray(site.coordinates) && site.coordinates.length) {
+        if (site.type === 'Polygon') return { polygon: site.coordinates, polygonOrder: 'lnglat' };
+        if (site.type === 'MultiPolygon') {
+            return { polygon: site.coordinates.length === 1 ? site.coordinates[0] : site.coordinates, polygonOrder: 'lnglat' };
+        }
+    }
+
+    return { polygon: null };
+}
+
+function unionGeometries(geometries) {
+    try {
+        let merged = null;
+        for (const geom of geometries) {
+            const feature = { type: 'Feature', properties: {}, geometry: geom };
+            merged = merged ? (turf.union(merged, feature) || merged) : feature;
+        }
+        return merged ? merged.geometry : null;
+    } catch (err) {
+        console.warn('[thumbnail] turf.union failed:', err.message);
+        return null;
+    }
+}
+
+function ringsToPolygonGeometries(rings) {
+    return rings.map(coords => ({ type: 'Polygon', coordinates: coords }));
+}
+
+export function getProposalCadastreParcelIds(proposal) {
+    const ids = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
+    return ids.map(id => (id === null || id === undefined ? null : String(id))).filter(Boolean);
+}
+
+/**
+ * Assemble everything the renderer needs for one proposal: the highlighted polygon, the cadastral
+ * parcel outlines (which expand the frame for building proposals) and the goal badge.
+ * @returns {Promise<Object|null>} renderer options, or null when the proposal has no usable geometry
+ */
+export async function buildThumbnailRenderOptions(pool, proposal, city) {
+    if (!proposal || shouldSkipProposalThumbnail(proposal)) return null;
+
+    const cadastreParcelIds = getProposalCadastreParcelIds(proposal);
+    const cadastrePolygons = cadastreParcelIds.length
+        ? await fetchParcelPolygonsByIds(pool, city, cadastreParcelIds)
+        : [];
+
+    let { polygon, polygonOrder, fitToPolygonOnly } = resolveProposalPolygon(proposal);
+
+    // Parcel-only proposals (merge / decide-later) have no geometry of their own: the picture is the
+    // union of the cadastral parcels.
+    if (!polygon && cadastrePolygons.length) {
+        if (cadastrePolygons.length === 1) {
+            polygon = cadastrePolygons[0];
+            polygonOrder = 'lnglat';
+        } else {
+            const merged = unionGeometries(ringsToPolygonGeometries(cadastrePolygons));
+            const resolved = merged ? fromGeometry(merged) : null;
+            polygon = resolved ? resolved.polygon : cadastrePolygons[0];
+            polygonOrder = 'lnglat';
+        }
+    }
+
+    if (!polygon) return null;
+
+    // Building proposals frame the cadastral parcel too (the building sits inside it, and the dashed
+    // outline is what shows that); for other goals those parcels either already ARE the polygon
+    // (merge) or are irrelevant to the picture (a road corridor cuts across many of them).
+    const isBuildingProposal = !!(proposal.buildingGeometry || proposal.buildingProposal);
+    const parcelPolygons = isBuildingProposal ? cadastrePolygons : [];
+
+    // Older road proposals have no goal key at all, so fall back to the road badge for them.
+    const badge = goalBadge(resolveProposalGoalKey(proposal))
+        || (isRoadProposal(proposal) ? goalBadge('road-track') : null);
+
+    return {
+        polygon,
+        parcelPolygons,
+        padding: THUMBNAIL_PADDING,
+        zoom: THUMBNAIL_ZOOM,
+        badge,
+        polygonOrder: polygonOrder || 'auto',
+        parcelPolygonOrder: 'lnglat',
+        fitToPolygonOnly: !!fitToPolygonOnly
+    };
+}
+
+/**
+ * Render and store a proposal thumbnail.
+ * @param {Object} pool - pg pool (may be null: the thumbnail then renders without parcel context)
+ * @param {Object} proposal - the proposal JSON (proposal_data)
+ * @param {Object} options
+ * @param {string} options.city - normalized city id
+ * @param {string|number} options.proposalId - used for the file name
+ * @param {string} options.baseUrl - absolute origin the stored file will be served from
+ * @param {boolean} [options.dryRun=false] - render but store nothing; `url` comes back null
+ * @returns {Promise<{ url: string|null, beforeUrl: string|null, pairUrl: string|null, buffer: Buffer,
+ *                     beforeBuffer: Buffer, pairBuffer: Buffer, frame: Object, tiles: Object }|null>}
+ *          null when the proposal has no geometry worth rendering; throws when rendering fails
+ */
+export async function generateAndStoreProposalThumbnail(pool, proposal, { city, proposalId, baseUrl, dryRun = false }) {
+    const renderOptions = await buildThumbnailRenderOptions(pool, proposal, city);
+    if (!renderOptions) return null;
+
+    // One tile fetch, three pictures: the thumbnail, the same ground without the proposal, and the
+    // two side by side (dividers.md, M3).
+    const set = await renderProposalThumbnailSet(renderOptions);
+    const { frame, tiles } = set;
+    const buffer = set.after.buffer;
+    const beforeBuffer = set.before.buffer;
+    const pairBuffer = set.pair.buffer;
+
+    // A thumbnail whose tiles all failed is a grey rectangle — worse than no thumbnail, because it
+    // would be indistinguishable from a real one and never regenerated.
+    if (tiles.total > 0 && tiles.loaded === 0) {
+        throw new Error(`All ${tiles.total} basemap tiles failed to load`);
+    }
+
+    if (dryRun) {
+        return { url: null, beforeUrl: null, pairUrl: null, fileName: null, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length };
+    }
+
+    const stamp = Date.now();
+    const origin = String(baseUrl).replace(/\/$/, '');
+    const { fileName, imagePath } = saveImageBuffer(buffer, `proposal-thumb-${proposalId}-${stamp}`);
+    const before = saveImageBuffer(beforeBuffer, `proposal-before-${proposalId}-${stamp}`);
+    const pair = saveImageBuffer(pairBuffer, `proposal-pair-${proposalId}-${stamp}`);
+    return {
+        url: `${origin}${imagePath}`, beforeUrl: `${origin}${before.imagePath}`, pairUrl: `${origin}${pair.imagePath}`,
+        fileName, imagePath, buffer, beforeBuffer, pairBuffer, frame, tiles, bytes: buffer.length
+    };
+}
+
+export { PROPOSAL_SCREENSHOT_SKIP_GOALS, PROPOSAL_GOAL_ICON_MAP };

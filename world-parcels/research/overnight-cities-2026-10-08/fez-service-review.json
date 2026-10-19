@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "ma-ancfcc-fez-cadastre",
+  "purpose": "Service review for WUP2025 rank 373 Fez (city code 4424); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+  "sourceUrl": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+  "registryFound": true,
+  "registryBasis": "Morocco’s ANCFCC lists separate Fès Medina and Fès Zouagha My Yacoub land-conservation and cadastre offices, confirming local cadastral coverage in Fez. Its cadastral-plan ordering service requires personal/organization details, a land-title number, CAPTCHA and SMS verification; it is not an anonymous public feature service.",
+  "officialSources": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "observation": "Official ANCFCC directory lists Fès Medina and Fès Zouagha My Yacoub conservation/cadastre offices with Fez locations."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/cadastre/",
+      "observation": "ANCFCC states that it establishes and maintains the national cadastre and cadastral plans, and makes cadastral data available in digital or analog form."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "observation": "Official cadastral-plan order form requests personal/organization information, title number, CAPTCHA and SMS verification. No form was submitted."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr",
+      "observation": "Arabic ANCFCC product page describes cadastral plans and map sheets as land-survey products."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Fez Morocco official cadastre parcel map land registry ANCFCC public GIS",
+      "scope": "Find city-local cadastral offices and any anonymous full parcel map or geometry service.",
+      "result": "ANCFCC official materials identify Fez cadastral offices and a public online service to request a cadastral plan. The plan-order workflow is title-specific and requires identity information, a title number, CAPTCHA and SMS verification; no anonymous full geometry service was identified.",
+      "actualResultUrls": [
+        "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+        "https://www.ancfcc.gov.ma/cadastre/",
+        "https://www.ancfcc.gov.ma/Plancadastralpage"
+      ],
+      "executionMethod": "English-language web search followed by direct inspection of official ANCFCC pages."
+    },
+    {
+      "language": "Arabic",
+      "query": "فاس المغرب الخريطة العقارية المسح العقاري المحافظة العقارية ANCFCC خرائط رسمية",
+      "scope": "البحث عن مكاتب التحفيظ والمسح العقاري بفاس وخدمة خرائط عامة مجهولة الهوية ذات هندسة كاملة للقطع.",
+      "result": "تؤكد صفحات الوكالة الرسمية خدمات المسح العقاري والخرائط، وتظهر المكاتب المحلية في فاس. خدمة طلب التصميم العقاري تتطلب بيانات شخصية ورقم الرسم العقاري ورمز تحقق ورسالة نصية؛ لم يتم إثبات خدمة مجهولة تعرض مضلعات كاملة.",
+      "actualResultUrls": [
+        "https://www.ancfcc.gov.ma/ar",
+        "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+        "https://www.ancfcc.gov.ma/Plancadastralpage"
+      ],
+      "executionMethod": "بحث باللغة العربية ومراجعة مباشرة لصفحات ANCFCC الرسمية بالفرنسية والعربية."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "The official plan service is per-title and requires identity and title fields plus CAPTCHA and SMS confirmation. Those gated fields were not entered; no anonymous full parcel geometry route was identified.",
+    "publicPlanFormDirectStatus": 403,
+    "publicCartographyPageDirectStatus": 403,
+    "formSubmitted": false,
+    "captchaAttempted": false,
+    "smsVerificationAttempted": false,
+    "professionalWorkspaceAccessed": false
+  },
+  "requestEvidence": [
+    {
+      "method": "web search",
+      "observation": "Searches were conducted separately in English and the city/country primary language. Search results and official source pages are recorded above; search-result presence is not treated as a parcel response."
+    },
+    {
+      "method": "official-page inspection",
+      "observation": "Inspected the listed official HTML/content sources only. No undocumented endpoint or feature response was observed, so no HTTP status, feature count, CRS or native feature ID is asserted."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "method": "GET",
+      "status": 403,
+      "contentType": "text/html",
+      "bytes": 49381,
+      "observation": "Anonymous direct response denied; no form submission was attempted."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Cartographie/",
+      "method": "GET",
+      "status": 403,
+      "contentType": "text/html",
+      "bytes": 49381,
+      "observation": "Separate official cartography URL returned 403; no public viewer or map schema was observed."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr",
+      "method": "GET",
+      "status": 403,
+      "contentType": "text/html",
+      "bytes": 49381,
+      "observation": "Official product-page URL returned 403 to direct anonymous client; indexed official description concerns cadastral plans and map sheets."
+    }
+  ],
+  "technicalBlocker": "The public ANCFCC site describes cadastral products and separately lists Fès local cadastre offices, but direct anonymous requests to the cadastral-plan form and the official cartography products page returned HTTP 403. The indexed form requires personal/organization details, a title number, CAPTCHA and SMS verification. No anonymous full parcel geometry route was found and no form was submitted.",
+  "sampleDisposition": "No anonymous public map geometry route was verified; gated per-title form was not submitted. Zero polygons retained.",
+  "remainingUncertainty": "A professional cadastral/cartography portal exists, but its availability and data access conditions were not tested. Fez cadastral coverage completeness and any public geometry interface remain unverified."
+}

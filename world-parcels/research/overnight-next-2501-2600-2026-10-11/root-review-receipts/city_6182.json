@@ -1,0 +1,53 @@
+{
+  "taskId": "city:6182",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-6182-tehuac-n.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/tehuac-n-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T13:41:22.667622Z",
+  "reason": "Municipal Catastro custody is verified, but there is no native-ID parcel geometry response or adapter qualification.",
+  "identityCheck": {
+    "wupCityCode": 6182,
+    "rank": 2510,
+    "country": "Mexico",
+    "countryCode": "MX",
+    "pointLatLon": [
+      18.4628380638669,
+      -97.397458739666
+    ],
+    "population2025Persons": 233951,
+    "bulkSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "searchCheck": {
+    "recordedLanguages": [
+      "English",
+      "Spanish"
+    ],
+    "pairedQueriesAndResultUrlsPresent": true
+  },
+  "registryFound": true,
+  "firstPartyChecks": [
+    {
+      "url": "https://remtys.tehuacan.gob.mx/all_cat.php?id=7",
+      "observation": "Official municipal Catastro page describes identification, delimitation, registration, cartography and unique cadastral keys."
+    }
+  ],
+  "geometryCheck": {
+    "retainedFullPolygons": 0,
+    "safeNativeIdResponse": false,
+    "citywideAbsenceInferred": false
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "runtimeAdmitted": false
+  }
+}

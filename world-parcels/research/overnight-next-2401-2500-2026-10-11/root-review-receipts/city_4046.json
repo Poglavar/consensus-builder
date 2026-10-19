@@ -1,0 +1,18 @@
+{
+  "taskId": "city:4046",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-4046-veraval.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/veraval-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:19:24Z",
+  "registryFound": true,
+  "reason": "Original UN WUP 2025 CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 confirms code 4046, rank 2454, India, point [20.9112470797304,70.3750770969452], and Pop 238.718 thousand = 238718 persons. English and Gujarati search queries and outcomes were inspected and independently repeated. The official Gujarat office listing names Gir Somnath land-records offices at Veraval and the e-Milkat form shows city-survey search categories, supporting custody but not public geometry. The worker's timed-out official portals are not citywide absence. A third-party GujMap page was excluded from first-party evidence. No safe native-ID polygon response or retained polygon exists. Fresh ID reads, paging, 13 bounded cells, metric GEOS checks, source binding, and headed details-panel verification have no independent qualification evidence. Runtime admission remains held.",
+  "firstPartySourcesChecked": [
+    "https://e-milkat.gujarat.gov.in/GeneralReport.aspx",
+    "https://gil.gujarat.gov.in/tendercms/TenderDocs/2017418182241922.pdf"
+  ],
+  "retainedFullPolygonCount": 0
+}

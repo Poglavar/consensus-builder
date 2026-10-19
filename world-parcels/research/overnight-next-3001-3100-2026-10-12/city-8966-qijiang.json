@@ -1,0 +1,55 @@
+{
+  "cityCode": 8966,
+  "queueRank": 3054,
+  "name": "Qijiang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [29.0360965441736, 106.650943429132],
+  "population2025": 196069,
+  "population2025k": 196.069,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qijiang China official cadastral parcel map GIS land registry Chongqing Qijiang",
+        "result": "Search surfaced the official Chongqing Planning and Natural Resources Bureau real-estate registration portal and public-service notices describing cadastral-map access; no public parcel feature service was surfaced.",
+        "actualResultUrls": [
+          "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/index.html",
+          "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037880.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "綦江 地籍图 地块 GIS 不动产登记 官方",
+        "result": "Official results identify the Qijiang district planning and natural-resources bureau, district registration service window, and YuKuaiBan online channel; no anonymous parcel geometry/API response was found.",
+        "actualResultUrls": [
+          "https://www.cqqj.gov.cn/zwxx/gggs/202403/P020231220582156526207.pdf",
+          "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Qijiang district government service catalog names the district planning and natural-resources bureau as the implementing authority for construction-land, homestead, collective-land, and other real-estate registrations, with a local real-estate registration service counter. The Chongqing bureau states cadastral maps may be requested through the registration hall or YuKuaiBan.",
+  "registryEvidenceUrls": [
+    "https://www.cqqj.gov.cn/zwxx/gggs/202403/P020231220582156526207.pdf",
+    "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "sourceCandidate": null,
+  "runtimeReadiness": "held_no_verified_anonymous_public_geometry",
+  "resultCategory": "city_registry_procedure_evidenced_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Qijiang district registration procedures and Chongqing-wide online cadastral-map query guidance.",
+    "verifiedOpenScope": "Local custodial/procedural evidence only; no open citywide parcel layer or bounded safe ID+geometry response was verified.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The official online route may require an interactive service flow, authorization, or property-specific query. No login, credentials, private token, unsafe owner/address fields, or CAPTCHA bypass was attempted. A zero geometry result was not obtained, so absence is not inferred.",
+  "attempt": 1,
+  "cohort": "overnight-next-3001-3100-2026-10-12",
+  "pointBasis": "Exact WUP queue point; not shifted to force a parcel hit."
+}

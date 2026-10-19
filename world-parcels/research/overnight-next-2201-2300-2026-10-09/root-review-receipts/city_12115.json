@@ -1,0 +1,14 @@
+{
+  "taskId": "city:12115",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-12115-yuhuan.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/yuhuan-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_12115-yuhuan-home.html"
+  ],
+  "checkedAt": "2026-10-11T02:57:44Z",
+  "reason": "Immutable queue identity matches Yuhuan, China, rank 2272, point [28.1147158074451,121.248734273497], 257224 persons. Paired evidence records English and Chinese searches and official local custodial references, but no parcel schema, native ID, CRS, or full polygon sample. The saved first-party city portal response is HTTP 403. No independent city adapter qualification exists; denial and timeout cannot establish citywide absence.",
+  "admission": "held; no runtime, catalog, registry or generated report change"
+}

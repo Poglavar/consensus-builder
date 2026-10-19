@@ -1,0 +1,43 @@
+{
+  "cityCode": 2848,
+  "queueRank": 1943,
+  "city": "Chon Buri",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "iso3": "THA",
+  "point": [13.3535501806016, 100.982057260807],
+  "population2025": 297276,
+  "population2025k": 297.276,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chon Buri Thailand official cadastral parcel map viewer land department GIS",
+        "result": "Found the official Department of Lands public LandsMaps viewer, the official Department of Lands cadastral map centre, and the official Chon Buri Provincial Land Office page. The public viewer is intended to search land-parcel shapes, but its live host timed out during direct retrieval and no anonymous feature response was obtained.",
+        "actualResultUrls": [
+          "https://landsmaps.dol.go.th/",
+          "https://www.dol.go.th/landmap/home/",
+          "https://www.dol.go.th/chonburi/home/"
+        ]
+      },
+      {
+        "language": "Thai",
+        "query": "ชลบุรี แผนที่ кадастр ที่ดิน กรมที่ดิน ระบบแผนที่แปลงที่ดิน",
+        "result": "Found the official Thai Department of Lands LandsMaps service and the official Chon Buri Provincial Land Office page. The Department of Lands manual states that the service accepts province, district, and title-deed inputs and displays the parcel shape; it does not expose a bounded anonymous citywide geometry download.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/chonburi/home/",
+          "https://www.dol.go.th/media/813280899755020288/2026/01/hrgY73ZEAKC6Jv25WXb9uneo.pdf",
+          "https://landsmaps.dol.go.th/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Chon Buri Provincial Land Office page links directly to the Department of Lands LandsMaps parcel-search service, and the Department of Lands manual describes the public parcel-shape lookup workflow. This is first-party local-office and national map-service evidence, not evidence of an open citywide parcel API.",
+  "serviceReview": "chon-buri-service-review.json",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

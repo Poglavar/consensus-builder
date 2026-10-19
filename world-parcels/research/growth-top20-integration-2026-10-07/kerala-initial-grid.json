@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cityId": "venjaramoodu",
+  "researchCityId": "wup2025:10023",
+  "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+  "checkedAt": "2026-10-07T18:54:45.059Z",
+  "runtimeDescriptor": {
+    "gridSize": 0.001,
+    "maxBboxKm2": 1,
+    "maxFeatures": 1000
+  },
+  "tests": [
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.912,
+        8.652000000000001,
+        76.91300000000001,
+        8.653
+      ],
+      "complete": true,
+      "count": 11
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-07T18:54:45.062Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:54:46.371Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid?districtId=dfd75e07-cae4-45e8-875b-6292909b8089",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:54:47.150Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=56d4cd54-4ad1-469a-bdbf-202951b95c39&loadAllVillage=true&loadPublishedVillage=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:54:47.907Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+      "method": "POST",
+      "body": "districtGid=dfd75e07-cae4-45e8-875b-6292909b8089&talukGid=56d4cd54-4ad1-469a-bdbf-202951b95c39&villageGid=ce6185fb-b497-4803-a49d-4a0a8925aef8",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:54:48.666Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710389.5157665453,956906.8559191675,710500.1472496686,957018.023284243\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:54:50.962Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710279.44016698,956906.3032690382,710390.0712973803,957017.4702825064\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": null
+    }
+  ],
+  "privacy": "Protocol metadata, counts, parcel IDs and geometry hashes only; no owner fields, geometry, cookies, CSRF or temporary map keys retained.",
+  "result": "failed",
+  "failure": {
+    "message": "Kerala map export returned no parcel data.",
+    "code": "parcel-source-unavailable",
+    "status": 502
+  }
+}

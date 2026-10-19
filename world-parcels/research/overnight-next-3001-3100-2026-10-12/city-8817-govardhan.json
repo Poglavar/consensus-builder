@@ -1,0 +1,124 @@
+{
+  "cityCode": 8817,
+  "queueRank": 3087,
+  "name": "Govardhan",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [27.4957826951429, 77.4637808483488],
+  "population2025": 194777,
+  "population2025k": 194.777,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Govardhan Uttar Pradesh official land records cadastral map GIS parcel viewer",
+        "result": "First-party discovery identified the Government of Uttar Pradesh Revenue Council land-records portal, the live UP Bhunaksha cadastral map viewer, the UP cadastral-map digitization dashboard, and the official Mathura district tehsil page. The Mathura district page lists GOVERDHAN as a tehsil; the live viewer exposes the Mathura/Govardhan administrative path. No parcel geometry was available for the town village tested.",
+        "actualResultUrls": [
+          "https://mathura.nic.in/tehsil/",
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/unavailable_maps?distCode=145&tehsilCode=01048",
+          "https://bor.up.nic.in/",
+          "https://upbhulekh.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi (local/native)",
+        "query": "गोवर्धन उत्तर प्रदेश आधिकारिक भूलेख नक्शा खसरा खतौनी",
+        "result": "Hindi first-party discovery reached the same Uttar Pradesh Revenue Council land-records and cadastral-map services. The official dashboard lists Mathura/Govardhan villages whose cadastral maps are unavailable, including गोबर्धन गोरबा अ.टाउन (village code 124236).",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/unavailable_maps?distCode=145&tehsilCode=01048"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Government of Uttar Pradesh Revenue Council / UP Bhulekh and Bhunaksha services, with Mathura District Administration and Goverdhan Tehsil as the local administrative custodian",
+    "scope": "Local tehsil and district land-record/cadastral-map service route. The official Mathura district page lists GOVERDHAN as a tehsil, and the UP Bhunaksha viewer identifies the Mathura district, Govardhan tehsil, and village-level cadastral map status.",
+    "evidenceUrls": [
+      "https://mathura.nic.in/tehsil/",
+      "https://upbhunaksha.gov.in/",
+      "https://upbhulekh.gov.in/GeoDashboard/unavailable_maps?distCode=145&tehsilCode=01048"
+    ],
+    "scopeNote": "This evidences a local registry/cadastral service and custodian, not open citywide parcel geometry access. General national land-record prose was not treated as local evidence."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Uttar Pradesh Government BhuNaksha / Bhulekh",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": {
+      "viewer": "https://upbhunaksha.gov.in/",
+      "serviceBase": "https://upbhunaksha.gov.in/bhunakshaserver",
+      "administrativeCodes": {
+        "district": "145",
+        "tehsil": "01048",
+        "village": "124236",
+        "gisCode": "14501048124236",
+        "villageLabel": "गोबर्धन गोरबा अ.टाउन"
+      },
+      "mapInfo": {
+        "request": "POST /MapInfo/getVVVVExtentGeoref with gisLevels=145,01048,124236",
+        "response": "{\"xmin\":0.0,\"ymin\":0.0,\"xmax\":0.0,\"ymax\":0.0,\"attribution\":\"जिला : 145 मथुरा, तहसील : 01048 गोवर्धन, गाँव : 124236 गोबर्धन गोरबा अ.टाउन\",\"gisCode\":\"14501048124236\"}"
+      },
+      "safePlotLookups": [
+        "POST /MapInfo/getPlotByPlotNo with giscode=14501048124236 and plotno=1 returned {}",
+        "POST /MapInfo/getPlotInfo with gisCode=14501048124236 and plotNo=1 returned the public message that no plot information is available",
+        "POST /MapInfo/getPlotAtXY with giscode=14501048124236, x=0, y=0, plotno empty returned {}"
+      ]
+    },
+    "fieldMapping": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://upbhunaksha.gov.in/",
+        "outcome": "200 HTML; current Angular configuration inspected. It disclosed service base https://upbhunaksha.gov.in/bhunakshaserver, levelvalue, map extent, and safe plot lookup routes."
+      },
+      {
+        "method": "POST",
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "outcome": "200 for level 1 with empty codes, level 2 with 145, and level 3 with 145,01048; confirmed Mathura=145, Govardhan=01048, and town village 124236 with hasData=false. A level 4 request was rejected upstream with 403."
+      },
+      {
+        "method": "POST",
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "outcome": "200 bounded response with zero extent and gisCode 14501048124236. Zero extent is recorded as unavailable map data, not citywide absence."
+      },
+      {
+        "method": "POST",
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo",
+        "outcome": "200 empty JSON for safe test plot number 1; no geometry or native identity."
+      },
+      {
+        "method": "POST",
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotInfo",
+        "outcome": "200 public no-plot-information message for safe test plot number 1; no unsafe fields requested."
+      },
+      {
+        "method": "POST",
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+        "outcome": "200 empty JSON for bounded zero-coordinate probe; this was not used as an absence test and the WUP point was not shifted."
+      }
+    ],
+    "note": "No parcel ID, geometry, schema, CRS, or bounded feature response was obtained. The exact WUP point was preserved in latitude/longitude order and was not shifted."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The official cadastral viewer explicitly reports zero map extent and the dashboard lists the tested town village as an unavailable map; this does not establish citywide parcel absence.",
+    "The official viewer exposes public lookup routes, but no anonymous parcel feature response was available for village code 124236 during this attempt.",
+    "The current public service did not provide a parcel schema, source CRS, stable parcel identity, or geometry for safe retention.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

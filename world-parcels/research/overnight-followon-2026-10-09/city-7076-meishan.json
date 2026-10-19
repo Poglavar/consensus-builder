@@ -1,0 +1,107 @@
+{
+  "name": "Meishan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1006,
+  "point": [
+    30.0472205698083,
+    103.835406839822
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Meishan Sichuan China official cadastral parcel map real estate registration GIS site:sc.gov.cn",
+        "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry.",
+        "result": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage.",
+        "executionMethod": "Separate English-language web search followed by first-party page review."
+      },
+      {
+        "language": "Chinese",
+        "query": "眉山市不动产登记 地籍图 地块地图 官方 自然资源局",
+        "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality.",
+        "result": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage.",
+        "executionMethod": "Separate local-language web search followed by first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Meishan municipal land-resources department / real-estate registration center",
+        "operator": "Meishan Municipal Real Estate Registration Center (identified in 2017 municipal government report)",
+        "homeUrl": "https://www.ms.gov.cn/info/5440/1041264.htm",
+        "observation": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:42:07.564197+00:00",
+        "url": "https://www.ms.gov.cn/info/5440/1041264.htm",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error timed out>"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-7076-LOCAL-CADASTRE-REVIEW",
+    "name": "Meishan municipal Real Estate Registration Center institutional evidence",
+    "url": "https://www.ms.gov.cn/info/5440/1041264.htm",
+    "operator": "Meishan Municipal Real Estate Registration Center (identified in 2017 municipal government report)",
+    "serviceType": "Official local registry/map service reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Meishan’s municipal government identifies a city Real Estate Registration Center in a 2017 government work report. This establishes historical local registry context only; the report is not current evidence of active service or public geometry.",
+    "verifiedOpenScope": "Separate English and Chinese searches for Meishan-specific cadastral maps/real-estate registration did not return a verified local first-party registry or parcel map source usable for this locality. A Sichuan provincial portal was reviewed only as a discovery entry point; no Meishan parcel service, schema, or coverage evidence was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The primary municipal report names local registry custody, but no safe native-ID-and-full-polygon response or executable public geometry endpoint was verified. Report date and current service operation remain informational uncertainties.",
+  "remainingUncertainty": "Current status of the registration centre, its service boundary, exact WUP settlement identity, and any public parcel geometry remain unresolved.",
+  "nextStep": "If the official source later exposes a documented public feature service, inspect metadata first and make only a bounded query retaining safe native IDs plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7076,
+  "cityId": "wup2025:7076",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.0472205698083,
+    103.835406839822
+  ],
+  "population2025k": 546.811,
+  "populationUnit": "persons",
+  "queueRank": 1006,
+  "population2025": 546811,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Meishan’s municipal government identifies a city Real Estate Registration Center in a 2017 government work report. This establishes historical local registry context only; the report is not current evidence of active service or public geometry.",
+  "registryEvidenceUrls": [
+    "https://www.ms.gov.cn/info/5440/1041264.htm"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The primary municipal report names local registry custody, but no safe native-ID-and-full-polygon response or executable public geometry endpoint was verified. Report date and current service operation remain informational uncertainties."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. Meishan’s municipal government identifies a city Real Estate Registration Center in a 2017 government work report. This establishes historical local registry context only; the report is not current evidence of active service or public geometry."
+}

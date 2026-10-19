@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-srinagar-jk-land-records-and-planning-map-review",
+  "purpose": "Service review for WUP2025 rank 458 Srinagar (city code 1967); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Jammu and Kashmir Revenue Department; Srinagar Development Authority; District Srinagar Administration",
+  "sourceUrl": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+  "registryFound": true,
+  "registryBasis": "Jammu and Kashmir Revenue Department exposes a public land-records application shell, and DILRMP publishes Srinagar district cadastral-map digitization/geo-reference status. The Srinagar Development Authority publishes a 2035 land-use map, not parcel geometry. Publicly indexed ArcGIS MapServer parcel layers were metadata-inspected: their parcel-layer extents are in the Jammu area and miss the WUP Srinagar point; their schemas include owner/contact and property/address fields. No feature query was sent.",
+  "officialSources": [
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/10",
+      "observation": "Government of India DILRMP provides tehsil-level map-digitization status for District Srinagar."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "observation": "Jammu and Kashmir Revenue Department public land-record app shell; the initial page is not a parcel map and static client lists authentication endpoints."
+    },
+    {
+      "url": "https://kucms6.uok.edu.in/Main/Default.aspx",
+      "observation": "Srinagar Development Authority identifies itself as a Government of J&K body and links to Master Plan 2035, Land Use Map and Online Building Permission."
+    },
+    {
+      "url": "https://kucms6.uok.edu.in/Main/ViewPage.aspx?Page=10",
+      "observation": "SDA land-use map page links a static 2035 land-use PDF, not a parcel feature dataset."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Srinagar Jammu Kashmir official cadastral parcel map land records public GIS",
+      "scope": "Find Srinagar-local land records and an anonymous full-polygon route.",
+      "result": "Official DILRMP publishes district-level cadastral-map digitization status and SDA publishes a static land-use plan. The public JK Revenue shell includes sign-in/authentication workflow; the found parcel services’ layer extent does not cover the WUP point. No features queried.",
+      "urls": [
+        "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/10",
+        "https://d14fnjoywemmi.cloudfront.net/jklr/",
+        "https://kucms6.uok.edu.in/Main/ViewPage.aspx?Page=10"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "श्रीनगर जम्मू कश्मीर भूमि रिकॉर्ड कैडस्ट्रल नक्शा भू नक्शा सरकारी",
+      "scope": "श्रीनगर के आधिकारिक भूमि अभिलेख और सार्वजनिक पूर्ण-पॉलीगॉन मार्ग खोजें।",
+      "result": "Search surfaced the Jammu and Kashmir Revenue Department application and the Srinagar Development Authority land-use map. It did not establish a public parcel-geometry route; the Revenue client exposes authentication workflow.",
+      "urls": [
+        "https://d14fnjoywemmi.cloudfront.net/jklr/",
+        "https://kucms6.uok.edu.in/Main/Default.aspx",
+        "https://srinagar.nic.in/map-of-district/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxAccountOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "The public JK Revenue page loads a secure land-records application shell; its static client contains authentication/OTP/captcha routes and no anonymous vector schema was established. The Srinagar Development Authority map is a static land-use plan. ArcGIS parcel-layer metadata on the indexed Jammu/Srinagar services shows that the feature layer extents do not cover the WUP target point; the broader layer schema also includes owner/contact and address identifiers, so no feature request was issued."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 1446,
+      "observation": "Public JK Revenue app shell."
+    },
+    {
+      "url": "https://d14fnjoywemmi.cloudfront.net/jklr/assets/index-CKGBOSSj.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytesInspected": 2000000,
+      "observation": "Static client includes sign-in, captcha, OTP and refresh-token routes plus an analytics route that maps revenue-record identifiers; no feature geometry schema was exposed in the inspected route strings. No route was called."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/10",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "Government of India DILRMP page is specific to District Srinagar and lists tehsil-level cadastral map digitization and geo-reference status."
+    },
+    {
+      "url": "https://kucms6.uok.edu.in/Main/ViewPage.aspx?Page=10",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "Official SDA Land Use Map page links a static 2035 planning PDF; no feature API is advertised on the page."
+    },
+    {
+      "url": "https://gis.autodcr.com/server/rest/services/SriNagar_Jammu_Final/MapServer/4?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "observation": "Metadata only: Parcel_Updated polygon layer advertises Query. Layer extent (EPSG:32643) is x 475739.2–493801.2, y 3611392.8–3630194.6, while WUP point transforms to (484266.7, 3777971.1); the target lies outside. Schema contains owner/contact/address/property fields; no feature query was made."
+    },
+    {
+      "url": "https://gis.autodcr.com/server/rest/services/Existing_Jammu_SriNagar_Updated/MapServer/4?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "observation": "Metadata only: Parcel_Updated polygon layer extent is x 476033.0–493516.4, y 3612171.6–3629749.1 (EPSG:32643), again south of the WUP point. Field definitions include owner/contact/property/address fields; no feature query was made."
+    },
+    {
+      "url": "https://gis.autodcr.com/server/rest/services/Srinagar_LandUse_Jammu_Katra_MasterPlan/MapServer/4?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "observation": "Metadata only: Parcel polygon layer extent is x 476033.0–493516.4, y 3612171.6–3629749.1 (EPSG:32643), outside Srinagar WUP point; schema includes owner/contact, identity and address fields. No feature query was made."
+    },
+    {
+      "url": "https://srinagar.nic.in/map-of-district/",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "District administrative map page; it does not advertise parcel geometry."
+    }
+  ],
+  "technicalBlocker": "The public JK Revenue page loads a secure land-records application shell; its static client contains authentication/OTP/captcha routes and no anonymous vector schema was established. The Srinagar Development Authority map is a static land-use plan. ArcGIS parcel-layer metadata on the indexed Jammu/Srinagar services shows that the feature layer extents do not cover the WUP target point; the broader layer schema also includes owner/contact and address identifiers, so no feature request was issued.",
+  "sampleDisposition": "No parcel polygons or feature attributes retained.",
+  "remainingUncertainty": "Srinagar district map-digitization status and a city 2035 planning map are documented. The accessed district map is administrative; the 2035 PDF is a land-use plan. The discovered parcel-feature layers are outside the target point extent and expose personal fields in metadata, so they were not queried. No citywide parcel completeness is inferred."
+}

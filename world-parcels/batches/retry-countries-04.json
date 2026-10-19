@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "CR",
+  "name": "Costa Rica",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/CR.json"
+ },
+ {
+  "kind": "country",
+  "key": "CU",
+  "name": "Cuba",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/CU.json"
+ },
+ {
+  "kind": "country",
+  "key": "CV",
+  "name": "Cabo Verde",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/CV.json"
+ },
+ {
+  "kind": "country",
+  "key": "CW",
+  "name": "Curaçao",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/CW.json"
+ },
+ {
+  "kind": "country",
+  "key": "CY",
+  "name": "Cyprus",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/CY.json"
+ },
+ {
+  "kind": "country",
+  "key": "DJ",
+  "name": "Djibouti",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/DJ.json"
+ },
+ {
+  "kind": "country",
+  "key": "DZ",
+  "name": "Algeria",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/DZ.json"
+ },
+ {
+  "kind": "country",
+  "key": "EC",
+  "name": "Ecuador",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/EC.json"
+ }
+]

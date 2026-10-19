@@ -1,0 +1,15 @@
+{
+  "taskId": "city:3144",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3144-barmer.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/barmer-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:50:47Z",
+  "reviewNotes": "WUP source archive, queue and packet agree on code 3144, rank 1887, India, exact point and 304268 persons. English and Hindi executed searches are recorded. Rajasthan official portal and cadastral custody are supported by first-party pages, but no anonymous Barmer native-ID polygon response or bounded geometry was obtained; the Bhu-Naksha timeout/502 does not establish absence.",
+  "admissionGate": "No independent fresh native-ID read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding or headed Details-panel verification. No runtime or catalog admission."
+}

@@ -1,0 +1,22 @@
+{
+  "taskId": "city:6047",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6047-bu-n-ma-thu-t.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/bu-n-ma-thu-t-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/runs/20261010T155512-bbc29550/stdout.jsonl",
+    "tmp/valhalla-parcel-research/6047/ioc.html",
+    "tmp/valhalla-parcel-research/6047/wards.json",
+    "tmp/valhalla-parcel-research/6047/bddc.json",
+    "tmp/valhalla-parcel-research/6047/geojson.headers",
+    "tmp/valhalla-parcel-research/6047/phuong_bmt_merged.geojson"
+  ],
+  "checkedAt": "2026-10-10T16:00:36Z",
+  "reviewNotes": "First-party ward list binds Id 3 to Phường Buôn Ma Thuột and the 2024 parcel-sheet note; source basename resolves to phuong_bmt_merged. Original 153,979,617-byte CRS84 GeoJSON has 82,935 Polygon features and one point-covering feature labeled 8(51). But OBJECTID has only 34,474 distinct values: 14,873 IDs are reused across 63,334 rows. OBJECTID 3216 occurs on seven geometrically different polygons. Thus the packet canonical ID is not unique and OBJECTID:3216 is not a safe parcel key. English and Vietnamese searches are visible in the worker search action. No retained durable sample polygon.",
+  "admissionGate": "Held: no independently qualified live adapter with fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification. No registry, catalog, city config, or generated coverage/report admission update."
+}

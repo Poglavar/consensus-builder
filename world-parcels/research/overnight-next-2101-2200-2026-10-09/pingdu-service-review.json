@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-10610-pingdu.json",
+  "cityCode": 10610,
+  "wupCityCode": 10610,
+  "queueRank": 2102,
+  "rank": 2102,
+  "name": "Pingdu",
+  "cityName": "Pingdu",
+  "country": "China",
+  "iso2": "CN",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.777142001992, 119.95105682208],
+  "population2025": 276004,
+  "population2025k": 276.004,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeEligible": false,
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "discoveryMethod": "first-party English and Simplified Chinese web discovery plus bounded HTTPS inspection",
+  "queryOutcomes": "English and Chinese searches found official Qingdao/Pingdu evidence for the Pingdu Natural Resources Bureau, cadastral-boundary survey, land registration and land-use procedures. They did not reveal a public parcel viewer/API or downloadable city parcel geometry.",
+  "attempts": [
+    {"method": "web search", "language": "English", "query": "Pingdu China official cadastral parcel map GIS land registry Pingdu Shandong", "outcome": "Official Qingdao pages found; no parcel geometry endpoint."},
+    {"method": "web search", "language": "Chinese (Simplified)", "query": "平度市 不动产登记 地籍图 宗地 GIS 官方", "outcome": "Official government service and land-notice documents found; no anonymous map/API geometry."},
+    {"method": "GET/HEAD", "url": "https://www.pingdu.gov.cn/", "outcome": "TLS self-signed certificate; normal verification failed; no exception used."},
+    {"method": "GET/HEAD", "url": "https://pingdu.gov.cn/", "outcome": "TLS self-signed certificate; normal verification failed; no exception used."}
+  ],
+  "sourceAssessment": {
+    "localCustodian": "Pingdu Natural Resources Bureau, evidenced in Qingdao/Pingdu government materials.",
+    "publicService": "No public cadastral feature service or anonymous parcel geometry response verified.",
+    "nativeFieldsObserved": "No parcel API schema was retrieved. Public documents mention parcel/land identifiers in notices, but those are not treated as geometry-service schema.",
+    "safeFieldAllowlist": ["stable native parcel identifier only", "geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account"]
+  },
+  "scopeLimits": [
+    "Exact WUP point is a locator only; zero geometry response would not establish citywide absence.",
+    "No city boundary or municipal coverage polygon was obtained.",
+    "No parcel polygons are retained; no GeoJSON sample is written.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "sampleFile": null,
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "Official local custodian evidence exists, but current public viewer/API access, CRS, field schema, parcel coverage, and anonymous geometry availability are unresolved."
+}

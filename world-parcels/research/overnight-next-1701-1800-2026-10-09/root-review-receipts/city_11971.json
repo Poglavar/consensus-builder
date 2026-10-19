@@ -1,0 +1,20 @@
+{
+  "taskId": "city:11971",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11971-tezpur.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/tezpur-service-review.json",
+    "tmp/valhalla-parcel-research/11971/districts.json",
+    "tmp/valhalla-parcel-research/11971/circles-11.json",
+    "tmp/valhalla-parcel-research/11971/villages-110101.json",
+    "tmp/valhalla-parcel-research/11971/capabilities.xml",
+    "tmp/valhalla-parcel-research/11971/click-110101030410006.json",
+    "tmp/valhalla-parcel-research/11971/feature-info.json"
+  ],
+  "checkedAt": "2026-10-10T14:22:11Z",
+  "reason": "Official Assam hierarchy and WMS extent are visible; original click-info response is a backend error and GetFeatureInfo is 400. No stable native parcel ID or full polygon, so fresh ID reads, paging, 13 cells, metric GEOS, source binding and headed Details are unverified."
+}

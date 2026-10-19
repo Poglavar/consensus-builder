@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1871",
+  "queueRank": 26,
+  "wupCityCode": 1871,
+  "name": "Naivasha",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "centerLatLon": [
+    -0.717235941739218,
+    36.4424810814619
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 26,
+  "population2025": 185944,
+  "annualGrowthPct2015To2025": 8.121625,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-KE.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Swahili and English",
+    "exactQuery": "Naivasha Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.ramani.co.ke/pages/ramani-online",
+      "https://ramani.co.ke/pages/ramani-online",
+      "https://www.ramani.co.ke/pages/ramani-land-services",
+      "https://www.lands.go.ke/land-registries",
+      "https://www.ramani.co.ke/pages/gis-mapping",
+      "https://www.ramani.co.ke/solutions",
+      "https://www.lands.go.ke/sites/default/files/2025-04/SDLPP%20Kiswahili%20Service%20Charter.pdf",
+      "https://www.ramani.co.ke/pages/products"
+    ],
+    "summary": "Swahili searches surfaced official national registries/Ardhisasa and county services; spatial polygon API not found.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.ramani.co.ke/pages/ramani-online",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ramani.co.ke/pages/ramani-online",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ramani.co.ke/pages/ramani-land-services",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.lands.go.ke/land-registries",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ramani.co.ke/pages/gis-mapping",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ramani.co.ke/solutions",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.lands.go.ke/sites/default/files/2025-04/SDLPP%20Kiswahili%20Service%20Charter.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ramani.co.ke/pages/products",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Naivasha\" Kenya (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Naivasha%22+Kenya+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Naivasha parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Naivasha land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Naivasha%22+Kenya+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

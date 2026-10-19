@@ -1,0 +1,139 @@
+1
+00:00:00,000 --> 00:00:01,454
+Jane is a planet surfer.
+
+2
+00:00:01,637 --> 00:00:03,660
+She loves exploring our blue marble.
+
+3
+00:00:03,901 --> 00:00:07,294
+Opinionated, well informed, and always monitoring the situation.
+
+4
+00:00:07,697 --> 00:00:09,674
+We call her a Superpredictor.
+
+5
+00:00:10,124 --> 00:00:15,131
+On a typical day, Jane opens Urban Game Theory and scrolls the latest proposals.
+
+6
+00:00:15,314 --> 00:00:17,836
+A new apartment block in Zagreb catches her eye.
+
+7
+00:00:17,961 --> 00:00:19,008
+She clicks.
+
+8
+00:00:19,458 --> 00:00:21,678
+The three-dimensional view brings it to life.
+
+9
+00:00:21,861 --> 00:00:24,732
+New homes, on these parcels, in this neighbourhood.
+
+10
+00:00:24,973 --> 00:00:26,078
+It looks good.
+
+11
+00:00:26,319 --> 00:00:29,178
+But Jane knows something the picture cannot tell her.
+
+12
+00:00:29,628 --> 00:00:34,518
+In this example, the party promising to block the project is leading the next election.
+
+13
+00:00:35,131 --> 00:00:37,398
+Jane thinks execution is unlikely.
+
+14
+00:00:37,581 --> 00:00:39,395
+That suggests a NO bet.
+
+15
+00:00:39,845 --> 00:00:42,576
+First, she checks who will resolve the outcome.
+
+16
+00:00:42,655 --> 00:00:44,271
+Does she trust that lens?
+
+17
+00:00:44,512 --> 00:00:45,954
+Then the details:
+
+18
+00:00:46,265 --> 00:00:51,597
+money committed, pledges, donations, and parcel-owner acceptances.
+
+19
+00:00:52,001 --> 00:00:54,163
+Every signal can change her view.
+
+20
+00:00:54,613 --> 00:00:56,113
+Her conclusion holds.
+
+21
+00:00:56,517 --> 00:01:00,107
+Jane selects NO, chooses her stake, and confirms.
+
+22
+00:01:00,348 --> 00:01:02,615
+The stake stays locked until resolution.
+
+23
+00:01:03,112 --> 00:01:09,302
+Cancellation or recorded expiry pays NO; execution pays YES.
+
+24
+00:01:09,752 --> 00:01:12,390
+Then she spots another proposal nearby:
+
+25
+00:01:12,701 --> 00:01:15,293
+buy two parcels and make a public park.
+
+26
+00:01:15,789 --> 00:01:17,115
+Jane wants that to happen.
+
+27
+00:01:17,426 --> 00:01:20,447
+She donates fifty dollars in devnet USDC.
+
+28
+00:01:20,897 --> 00:01:23,140
+The donation sits in escrow.
+
+29
+00:01:23,265 --> 00:01:25,555
+This plan needs all parcel owners to accept.
+
+30
+00:01:25,680 --> 00:01:31,778
+If it has not executed after a year, and expiry is recorded on-chain, Jane can claim her donation back.
+
+31
+00:01:32,228 --> 00:01:34,274
+A forecast on one project.
+
+32
+00:01:34,399 --> 00:01:35,667
+Support for another.
+
+33
+00:01:35,978 --> 00:01:38,605
+Jane returns to happily surfing the planet.
+
+34
+00:01:38,846 --> 00:01:40,207
+Urban Game Theory.
+
+35
+00:01:40,518 --> 00:01:45,338
+Explore your world, predict what changes, and help shape what comes next.

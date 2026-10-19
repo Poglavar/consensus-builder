@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BG",
+  "country": "Bulgaria",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "Agency for Geodesy, Cartography and Cadastre (AGKK) - KAIS cadastre; INSPIRE service inspire.cadastre.bg",
+  "portalsFound": [
+    {
+      "url": "https://inspire.cadastre.bg/arcgis/rest/services",
+      "observation": "INSPIRE ArcGIS server: Cadastral_Parcel, Building, Administrative_Unit, Geo_Names MapServers"
+    },
+    {
+      "url": "https://kais.cadastre.bg/bg/Map",
+      "observation": "KAIS public cadastral map viewer"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://inspire.cadastre.bg/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "service list"
+    },
+    {
+      "url": "https://inspire.cadastre.bg/arcgis/rest/services/Cadastral_Parcel/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "layer 0 CP.CadastralParcel polygon, minScale 20000"
+    },
+    {
+      "url": "https://inspire.cadastre.bg/arcgis/rest/services/Cadastral_Parcel/MapServer/0/query?where=1%3D1&geometry=23.32,42.69,23.322,42.692&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 polygon parcels, Sofia"
+    },
+    {
+      "url": "same layer bbox 24.745,42.135,24.747,42.137 (Plovdiv)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 parcels, refs 56784.*"
+    },
+    {
+      "url": "same layer bbox 27.91,43.21,27.912,43.212 (Varna)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "3 parcels, refs 10135.*"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "bg-agkk-inspire-cadastral-parcel",
+    "requestUrl": "https://inspire.cadastre.bg/arcgis/rest/services/Cadastral_Parcel/MapServer/0/query?where=1%3D1&geometry=23.32,42.69,23.322,42.692&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      23.32,
+      42.69,
+      23.322,
+      42.692
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "nationalcadastralref",
+    "responseFile": null,
+    "pagination": "resultOffset/resultRecordCount (exceededTransferLimit)",
+    "regionSampled": "Sofia, Plovdiv, Varna"
+  },
+  "coverageAssessment": {
+    "claimedScope": "National INSPIRE cadastral parcels",
+    "regionsVerified": [
+      "Sofia",
+      "Plovdiv",
+      "Varna"
+    ],
+    "nationwideVerified": true
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Layer visible only at scale <=1:20000 (bbox queries fine); attributes are geometry plus references, not owner data. Licence not read.",
+  "nextStep": "Read licence terms; test pagination limits."
+}

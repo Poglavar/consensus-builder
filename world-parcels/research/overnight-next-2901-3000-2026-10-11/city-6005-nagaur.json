@@ -1,0 +1,83 @@
+{
+  "cityCode": 6005,
+  "queueRank": 2905,
+  "name": "Nagaur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [27.1993937927472, 73.7354959348155],
+  "population2025": 205380,
+  "population2025k": 205.38,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nagaur Rajasthan official cadastral map parcel GIS Bhunaksha",
+        "result": "Official Rajasthan results identified the state BhuNaksha viewer, Rajdharaa Urban GIS Portal with Khasra search, the Rajasthan Apna Khata land-records portal, and the Nagaur district government portal. The BhuNaksha viewer was then requested directly but timed out before its JavaScript/configuration or public map service could be inspected.",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://apnakhata.rajasthan.gov.in/",
+          "https://nagaur.rajasthan.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi (local)",
+        "query": "नागौर राजस्थान भू नक्शा खसरा आधिकारिक",
+        "result": "Official Hindi-language results identified Rajasthan Apna Khata, its भू नक्शा link, Rajdharaa Khasra Search, and the Rajasthan BhuNaksha viewer. The sources establish public land-record/map workflows but did not yield a bounded anonymous parcel geometry response for Nagaur.",
+        "actualResultUrls": [
+          "https://apnakhata.rajasthan.gov.in/",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://nagaur.rajasthan.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Government of Rajasthan Revenue Board / Apna Khata, Settlement Department and Rajdharaa state GIS; Nagaur district government portal",
+    "scope": "Rajasthan public land-record and cadastral/khasra map workflows, including district/city selection; no Nagaur parcel response was obtained",
+    "evidenceUrls": [
+      "https://apnakhata.rajasthan.gov.in/",
+      "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+      "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "https://nagaur.rajasthan.gov.in/"
+    ]
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Rajasthan BhuNaksha / Rajdharaa Urban GIS / Apna Khata",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "nativeIdentity": null,
+      "safeGeometry": null,
+      "documentedSafeFields": ["parcel/khasra identity if exposed", "parcel geometry if exposed", "source CRS"]
+    },
+    "note": "No source-specific attribute set or geometry was retained. The exact WUP point was preserved and was not shifted or used as a citywide absence test. Direct request to https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html timed out after 20 seconds; requests to official Apna Khata and Rajdharaa hosts also timed out or redirected to an error handler from this environment. Public page inspection via search/open showed Rajdharaa Khasra Search fields for district, tehsil, village and khasra number, and Apna Khata links to भू नक्शा, but no parcel response was executed."
+  },
+  "requestAttempts": [
+    {"route": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html", "method": "GET", "outcome": "timeout; no login or bypass attempted"},
+    {"route": "https://apnakhata.rajasthan.gov.in/", "method": "GET/HEAD", "outcome": "timeout from execution environment; official page independently inspected through indexed/open content"},
+    {"route": "https://rajdharaa.rajasthan.gov.in/citizenudh/", "method": "GET/HEAD", "outcome": "redirected to ~/HandleError.aspx / timeout; public page content exposed Khasra Search but no API response"},
+    {"route": "https://nagaur.rajasthan.gov.in/", "method": "GET", "outcome": "official portal discovered; page content unavailable to fetch"}
+  ],
+  "safeFieldAllowlist": ["canonical native parcel identifier if exposed", "geometry", "source CRS", "public service metadata", "retrieval date"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The official BhuNaksha viewer's current JavaScript/configuration and public service endpoint could not be inspected because the host timed out.",
+    "Rajdharaa and Apna Khata evidence establishes official workflows and custodians, not citywide parcel coverage or an anonymous geometry API.",
+    "No exact-point hit or miss was used as evidence of citywide presence or absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ]
+}

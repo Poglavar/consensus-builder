@@ -1,0 +1,21 @@
+{
+  "taskId": "city:11121",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11121-simri.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/simri-service-review.json",
+    "tmp/valhalla-parcel-research/simri/extent.json",
+    "tmp/valhalla-parcel-research/simri/center-plot.json",
+    "tmp/valhalla-parcel-research/simri/center-scalar.json"
+  ],
+  "checkedAt": "2026-10-10T11:44:22Z",
+  "reason": "Official Bihar BhuNaksha hierarchy and RS sheet route are evidenced. Cached sheet extent and center plot lookup show a safe plot ID and extent but no full polygon; the immutable WUP point is outside that selected sheet, which is not citywide absence.",
+  "admissionGates": "No full polygon or production adapter. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced.",
+  "sourceCacheSha256": {
+    "tmp/valhalla-parcel-research/simri/extent.json": "e0a7dd17b9d70508d7d02be8b7d2b2bc4e4bfe45a27355d1084afa15399a0d92",
+    "tmp/valhalla-parcel-research/simri/center-plot.json": "f76bc775b28dc8a37d4738eb3a4e0af1853146cb0a826496c5d41da007e997d1",
+    "tmp/valhalla-parcel-research/simri/center-scalar.json": "71b020496a6437a1f3dcff0497a3513d51a840af398467bce316e8dff4d9a813"
+  }
+}

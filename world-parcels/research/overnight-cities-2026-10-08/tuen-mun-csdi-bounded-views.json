@@ -1,0 +1,283 @@
+{
+  "checkedAt": "2026-10-09",
+  "mode": "object-ids",
+  "pageSize": 5,
+  "viewCount": 17,
+  "expectedViewCount": 17,
+  "complete": true,
+  "allMatch": true,
+  "perView": [
+    {
+      "id": "grid-r-2-c+0",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.996,
+        22.424,
+        113.997,
+        22.425
+      ],
+      "directIdCount": 3,
+      "adapterCount": 3,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r-1-c-1",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.995,
+        22.425,
+        113.996,
+        22.426
+      ],
+      "directIdCount": 10,
+      "adapterCount": 10,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r-1-c+0",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.996,
+        22.425,
+        113.997,
+        22.426
+      ],
+      "directIdCount": 12,
+      "adapterCount": 12,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r-1-c+1",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.997,
+        22.425,
+        113.998,
+        22.426
+      ],
+      "directIdCount": 4,
+      "adapterCount": 4,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+0-c-2",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.994,
+        22.426,
+        113.995,
+        22.427
+      ],
+      "directIdCount": 10,
+      "adapterCount": 10,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+0-c-1",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.995,
+        22.426,
+        113.996,
+        22.427
+      ],
+      "directIdCount": 7,
+      "adapterCount": 7,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+0-c+0",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.996,
+        22.426,
+        113.997,
+        22.427
+      ],
+      "directIdCount": 14,
+      "adapterCount": 14,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+0-c+1",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.997,
+        22.426,
+        113.998,
+        22.427
+      ],
+      "directIdCount": 5,
+      "adapterCount": 5,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+0-c+2",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.998,
+        22.426,
+        113.999,
+        22.427
+      ],
+      "directIdCount": 7,
+      "adapterCount": 7,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+1-c-1",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.995,
+        22.427,
+        113.996,
+        22.428
+      ],
+      "directIdCount": 22,
+      "adapterCount": 22,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+1-c+0",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.996,
+        22.427,
+        113.997,
+        22.428
+      ],
+      "directIdCount": 19,
+      "adapterCount": 19,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+1-c+1",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.997,
+        22.427,
+        113.998,
+        22.428
+      ],
+      "directIdCount": 4,
+      "adapterCount": 4,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "grid-r+2-c+0",
+      "kind": "initial_desktop_5x5",
+      "bbox": [
+        113.996,
+        22.428,
+        113.997,
+        22.429
+      ],
+      "directIdCount": 8,
+      "adapterCount": 8,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "pan_east",
+      "kind": "pan_002_centered_0015",
+      "bbox": [
+        113.99686684238199,
+        22.425635578075198,
+        113.998866842382,
+        22.4276355780752
+      ],
+      "directIdCount": 18,
+      "adapterCount": 18,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "pan_west",
+      "kind": "pan_002_centered_0015",
+      "bbox": [
+        113.993866842382,
+        22.425635578075198,
+        113.99586684238201,
+        22.4276355780752
+      ],
+      "directIdCount": 33,
+      "adapterCount": 33,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "pan_north",
+      "kind": "pan_002_centered_0015",
+      "bbox": [
+        113.995366842382,
+        22.427135578075198,
+        113.99736684238201,
+        22.4291355780752
+      ],
+      "directIdCount": 37,
+      "adapterCount": 37,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    },
+    {
+      "id": "pan_south",
+      "kind": "pan_002_centered_0015",
+      "bbox": [
+        113.995366842382,
+        22.424135578075198,
+        113.99736684238201,
+        22.4261355780752
+      ],
+      "directIdCount": 19,
+      "adapterCount": 19,
+      "complete": true,
+      "adapterIdsMatchDirectManifest": true,
+      "missingObjectIds": [],
+      "extraObjectIds": []
+    }
+  ]
+}

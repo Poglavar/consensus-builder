@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "description": "Two-city continuation using one existing pinned 2026 Japan provider; partial ward coverage only.",
+  "addedCities": [
+    {
+      "cityId": "tokyo",
+      "sourceId": "jp-moj-geospatial-2026",
+      "evidenceFile": "research/tokyo-2026-live.json"
+    },
+    {
+      "cityId": "nagoya",
+      "sourceId": "jp-moj-geospatial-2026",
+      "evidenceFile": "research/nagoya-2026-live.json"
+    }
+  ],
+  "preservedCity": "osaka",
+  "preservedNamespace": "JP-MOJ-2026-",
+  "combinedEvidenceFile": "research/japan-2026-live.json",
+  "failedAttemptEvidenceFile": "research/nagoya-2026-source-attempts.json",
+  "acceptance": {
+    "completeViewportCells": 54,
+    "allNativeIdRoundTrips": 3007,
+    "geometryConflicts": 0,
+    "selectedSourceFailureAbortsRead": true,
+    "countrywideVerified": false
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "taskId": "city:8134",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-8134-dahod.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/dahod-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T11:35:25Z",
+  "reason": "Dahod district land-record page confirms cadastral survey and e-Dhara custody; AnyRoR timed out, and no native parcel ID or full polygon response is evidenced.",
+  "firstPartyChecks": [
+    {
+      "url": "https://dahod.nic.in/service/land-records/",
+      "httpStatus": 200,
+      "finding": "Cadastral survey, taluka e-Dhara process and AnyRoR link confirmed in fresh HTTP 200 HTML."
+    }
+  ],
+  "qualification": "No fresh native-ID feature read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification; runtime admission remains unqualified.",
+  "polygonSampleCount": 0,
+  "custody": "true: first-party institutional evidence; public geometry and citywide coverage unresolved, not absent",
+  "identity": "2025 code, rank, country, point, and persons checked against cohort queue and original WUP archive; English and local-language query records checked."
+}

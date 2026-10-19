@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3089-mandalay.json",
+  "purpose": "Read-only city parcel-source discovery; no runtime, global, catalog, or registry integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official Mandalay city map app is a road and address locator. No official city cadastral register, parcel layer, or anonymous vector endpoint was verified.",
+  "registryAssessment": "Mandalay City Development Committee's official portal entry describes land-management responsibilities, but the public map is specified as an address/location lookup. This is insufficient to confirm a city parcel register or public cadastral access.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mandalay Myanmar official land registry cadastral map GIS municipal land records parcel map",
+      "result": "Found the official Mandalay city map description, which lists roads, addresses, postal codes, wards and townships; no parcel features or cadastral map service.",
+      "urls": [
+        "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map"
+      ],
+      "method": "Separate English search and public official-source review."
+    },
+    {
+      "language": "Burmese",
+      "query": "မန္တလေးမြို့တော် စည်ပင်သာယာရေးကော်မတီ မြေစာရင်းမြေပုံ မြို့ပြအိမ်ခြံမြေ GIS",
+      "result": "တရားဝင်မြန်မာနိုင်ငံပေါ်တယ်တွင် MCDC မြို့ပြမြေပုံအက်ပ်သည် လမ်း/လိပ်စာ/ရပ်ကွက်/မြို့နယ်ရှာဖွေမှုအတွက်ဟု ဖော်ပြထားသည်။ မြေကွက်အလွှာ သို့မဟုတ် အများသုံး GIS ဝန်ဆောင်မှု မတွေ့ပါ။",
+      "urls": [
+        "https://www.myanmar.gov.mm/my/mandalay-city-development-council",
+        "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map"
+      ],
+      "method": "Separate Burmese-language search and official government portal review."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map",
+      "method": "GET via web reader",
+      "observation": "HTTP 200 official government page says the app was developed by MCDC, notes its land-management role, and defines map functions as address/location lookup. No parcel map is described.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://www.myanmar.gov.mm/my/mandalay-city-development-council",
+      "method": "GET via web search result",
+      "observation": "Official Burmese MCDC portal page found by search; direct open timed out, so no additional claim is based on that page.",
+      "httpStatus": null,
+      "contentType": "unknown"
+    }
+  ],
+  "portals": [
+    {
+      "name": "Mandalay City / Mandalay Map",
+      "operator": "Mandalay City Development Committee",
+      "url": "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map",
+      "observation": "Official city map app, described as road/address/ward lookup; no cadastral layer exposed in the documentation."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "attempted": true,
+    "summary": "Reviewed the official MCDC map-app entry and searched official Burmese-language materials. The available app description supplies no web viewer or public parcel API URL; no endpoint or geometry query was identified.",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "credentialsOrTokenValuesRetained": false
+  },
+  "geometryAttempt": {
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "outcome": "No city parcel vector endpoint was verified, so no geometry was requested."
+  },
+  "remainingUncertainty": "Whether MCDC or another city institution has an unpublished parcel registry or a separate cadastral map system.",
+  "nextStep": "Locate city-specific public land-register documentation or an anonymous parcel service from MCDC; if only the mobile address map is available, retain the no-geometry result."
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6189-kahramanmaras.json",
+  "purpose": "Document first-party local cadastral/registry evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official TKGM parcel inquiry is public and supports geographic parcel display; local metropolitan viewer documents planning/buildings rather than parcel vectors. Native query schema/full polygon feature access and WUP-point sample were not verified. Direct city site request returned 403 from shell; official web content loads and describes the application, so this is an access limitation, not source absence.",
+  "registryAssessment": "TKGM official provincial organization directory explicitly lists Kahramanmaraş Kadastro Müdürlüğü, and the official parcel-inquiry service identifies TKGM as its operator. The Kahramanmaraş Metropolitan Municipality separately documents its City Information System.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+      "observation": "Official TKGM directory lists Kahramanmaraş Kadastro Müdürlüğü under the Gaziantep regional directorate."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/gaziantep-bm/bagli-mudurlukler/kahramanmaras-kadastro-mudurlugu",
+      "observation": "First-party TKGM page for the local Kahramanmaraş Cadastre Directorate."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "TKGM describes its public parcel inquiry service and administrative parcel search."
+    },
+    {
+      "url": "https://kahramanmaras.bel.tr/node/760",
+      "observation": "Municipal e-services page says the 3D City Guide provides building models, district/municipality boundaries, master plans and route data; it does not document cadastral parcel geometry."
+    },
+    {
+      "url": "https://kahramanmaras.bel.tr/kent-bilgi-sistemi",
+      "observation": "Municipal City Information System describes an integrated digital city model and Kent Rehberi/planning modules."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Turkish",
+      "query": "Kahramanmaraş parsel sorgu kadastro müdürlüğü kent bilgi sistemi imar harita",
+      "result": "TKGM lists the Kahramanmaraş Cadastre Directorate and offers official public Parsel Sorgu. The municipal 3D city guide advertises building models, administrative boundaries, master plans and transit, without parcel geometry claims.",
+      "method": "Separate Turkish-language search and first-party TKGM/municipal source review.",
+      "scope": "Find local cadastral custodian and official city parcel-map options."
+    },
+    {
+      "language": "English",
+      "query": "Kahramanmaraş cadastral parcel map official GIS land registry public parcel viewer",
+      "result": "Official TKGM parcel inquiry is the public parcel application. No city-specific anonymous full-vector response was established; municipal City Information System is broader city modeling/planning.",
+      "method": "Separate English-language search and official service descriptions; no parcel owner or property-ID query.",
+      "scope": "Cross-check public parcel-viewer and full-geometry availability."
+    }
+  ],
+  "geometryDecision": "No complete full polygon with a safely validated native parcel identifier was retained. The public viewer advertises/displays parcel geometry, but an exact WUP-point sample was not verified.",
+  "coverageAssessment": {
+    "claimedScope": "TKGM parcel inquiry is Turkey-wide; the locally listed Kahramanmaraş Cadastre Directorate is the named custodian. No local-city completeness is independently measured.",
+    "verifiedOpenScope": "Official service supports parcel search/display by administrative location and parcel number; city 3D guide shows buildings, boundaries, zoning and routes. No complete parcel polygon response was returned or retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://kahramanmaras.bel.tr/kent-bilgi-sistemi",
+      "method": "GET via read-only shell",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "observation": "Direct shell request received 403. Official web inspection/search content still exposes the City Information System description; 403 is an access limitation and not evidence that the service is absent."
+    }
+  ],
+  "remainingUncertainty": "Whether TKGM permits anonymous full-polygon download/API responses for this location; whether municipal GIS exposes a separate cadastral parcel feature layer."
+}

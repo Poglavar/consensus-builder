@@ -1,0 +1,41 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LA",
+ "country": "Lao People's Democratic Republic",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Department of Land (Ministry of Natural Resources and Environment); Land Management and Registration",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.dolm.gov.la/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://lmd.gov.la/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.nlma.gov.la/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No host reachable; no public parcel service seen. Not evidence of absence.",
+ "nextStep": "Search for the Lao Land Information System / LMDC portal and test from another network."
+}

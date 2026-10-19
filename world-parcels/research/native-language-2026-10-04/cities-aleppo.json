@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 168,
+  "city": "Aleppo",
+  "countryCode": "SY",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/aleppo.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "حلب مديرية المصالح العقارية خريطة قطع الأراضي GIS بيانات جغرافية"
+  },
+  "results": [
+    {
+      "title": "Aleppo Real Estate Registry directorate (secondary directory)",
+      "url": "https://sy-on.com/entity/real-estate-registry-aleppo",
+      "kind": "secondary"
+    },
+    {
+      "title": "Aleppo real-estate directorate service changes",
+      "url": "https://sana.sy/governorates/aleppo/2256077/",
+      "kind": "official-news"
+    }
+  ],
+  "assessment": "The Arabic search found references to Aleppo's real-estate registry and cadastral directorate, but no public GIS download/service or query endpoint. Treat as administrative lead only.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

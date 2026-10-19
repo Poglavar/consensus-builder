@@ -1,0 +1,1840 @@
+{
+  "schemaVersion": "1.0",
+  "city": "Orlando",
+  "wupCityCode": 7432,
+  "rank": 1165,
+  "pointLatLon": [
+    28.5718526010057,
+    -81.3224429681126
+  ],
+  "source": {
+    "sourceId": "US-ORANGE-COUNTY-OCPA-PARCELS",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+    "operator": "Orange County Property Appraiser",
+    "scope": "county assessment parcels; not legal title",
+    "layerCrs": "EPSG:2236 (WKID 102658/latest 2236)",
+    "responseCrs": "EPSG:4326",
+    "nativeParcelIdField": "PARCEL",
+    "objectIdField": "OBJECTID",
+    "requestedAttributes": [
+      "OBJECTID",
+      "PARCEL"
+    ],
+    "anonymous": true
+  },
+  "profile": {
+    "gridStepDegrees": 0.001,
+    "offsets": [
+      [
+        -1,
+        -1
+      ],
+      [
+        0,
+        -1
+      ],
+      [
+        1,
+        -1
+      ],
+      [
+        -1,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        -1,
+        1
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        -2
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        -2,
+        0
+      ],
+      [
+        2,
+        0
+      ]
+    ],
+    "cells": [
+      {
+        "index": 0,
+        "dx": -1,
+        "dy": -1,
+        "bbox": [
+          -81.324,
+          28.57,
+          -81.323,
+          28.571
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 1,
+        "dx": 0,
+        "dy": -1,
+        "bbox": [
+          -81.323,
+          28.57,
+          -81.322,
+          28.571
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 2,
+        "dx": 1,
+        "dy": -1,
+        "bbox": [
+          -81.322,
+          28.57,
+          -81.321,
+          28.571
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 3,
+        "dx": -1,
+        "dy": 0,
+        "bbox": [
+          -81.324,
+          28.571,
+          -81.323,
+          28.572
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          -81.323,
+          28.571,
+          -81.322,
+          28.572
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 5,
+        "dx": 1,
+        "dy": 0,
+        "bbox": [
+          -81.322,
+          28.571,
+          -81.321,
+          28.572
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 6,
+        "dx": -1,
+        "dy": 1,
+        "bbox": [
+          -81.324,
+          28.572,
+          -81.323,
+          28.573
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 7,
+        "dx": 0,
+        "dy": 1,
+        "bbox": [
+          -81.323,
+          28.572,
+          -81.322,
+          28.573
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 8,
+        "dx": 1,
+        "dy": 1,
+        "bbox": [
+          -81.322,
+          28.572,
+          -81.321,
+          28.573
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 9,
+        "dx": 0,
+        "dy": -2,
+        "bbox": [
+          -81.323,
+          28.569,
+          -81.322,
+          28.57
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 10,
+        "dx": 0,
+        "dy": 2,
+        "bbox": [
+          -81.323,
+          28.573,
+          -81.322,
+          28.574
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 11,
+        "dx": -2,
+        "dy": 0,
+        "bbox": [
+          -81.325,
+          28.571,
+          -81.324,
+          28.572
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      },
+      {
+        "index": 12,
+        "dx": 2,
+        "dy": 0,
+        "bbox": [
+          -81.321,
+          28.571,
+          -81.32,
+          28.572
+        ],
+        "complete": true,
+        "featureCount": 1,
+        "uniqueObjectIds": 1,
+        "parcelIds": [
+          "302216051000349"
+        ],
+        "objectIds": [
+          167862
+        ]
+      }
+    ],
+    "boundsSrid": 2236,
+    "metricSrid": 26917,
+    "pageSize": 25,
+    "forcedPageSize": 1
+  },
+  "requests": [
+    {
+      "stage": "grid",
+      "ordinal": 1,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:03.042Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 2,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:03.891Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 3,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:04.105Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 4,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:04.315Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 5,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:04.535Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 6,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:04.747Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 7,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:04.982Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 8,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:05.195Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 9,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:05.412Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 10,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:05.625Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 11,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:05.839Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 12,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:06.054Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 13,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:06.265Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 14,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:06.478Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 15,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:06.696Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 16,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:06.909Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 17,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:07.122Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 18,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:07.346Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 19,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:07.554Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 20,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:07.771Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 21,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:07.984Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 22,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:08.196Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 23,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:08.408Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 24,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:08.621Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 25,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:08.835Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 26,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:09.048Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 27,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:09.264Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 28,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:09.474Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 29,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:09.682Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 30,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:09.896Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 31,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:10.109Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 32,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:10.320Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 33,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:10.533Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 34,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:10.754Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 35,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:10.971Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 36,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:11.184Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 37,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:11.401Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "grid",
+      "ordinal": 38,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:11.705Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "grid",
+      "ordinal": 39,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:11.918Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "native-id-and-absence",
+      "ordinal": 40,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:12.130Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "native-id-and-absence",
+      "ordinal": 41,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:12.334Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "native-id-and-absence",
+      "ordinal": 42,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:12.539Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "fresh-all-native-ids",
+      "ordinal": 43,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:12.754Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "fresh-all-native-ids",
+      "ordinal": 44,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:12.955Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "fresh-all-native-ids",
+      "ordinal": 45,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:13.159Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "forced-page-size-one",
+      "ordinal": 46,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:13.371Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "forced-page-size-one",
+      "ordinal": 47,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:13.573Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 66
+    },
+    {
+      "stage": "forced-page-size-one",
+      "ordinal": 48,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:13.781Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "grid",
+      "ordinal": 49,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:13.998Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 33
+    },
+    {
+      "stage": "grid",
+      "ordinal": 50,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:14.246Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 386
+    },
+    {
+      "stage": "grid",
+      "ordinal": 51,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:14.663Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 763646
+    },
+    {
+      "stage": "grid",
+      "ordinal": 52,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:16.195Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 388607
+    },
+    {
+      "stage": "grid",
+      "ordinal": 53,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:17.598Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 172004
+    },
+    {
+      "stage": "grid",
+      "ordinal": 54,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:18.391Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 529747
+    },
+    {
+      "stage": "grid",
+      "ordinal": 55,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:20.199Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 532380
+    },
+    {
+      "stage": "grid",
+      "ordinal": 56,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 14,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:22.025Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 120690
+    },
+    {
+      "stage": "grid",
+      "ordinal": 57,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:22.579Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 33
+    },
+    {
+      "stage": "grid",
+      "ordinal": 58,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": "2236",
+      "timestamp": "2026-10-09T07:31:22.833Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 386
+    },
+    {
+      "stage": "grid",
+      "ordinal": 59,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:23.411Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 763646
+    },
+    {
+      "stage": "grid",
+      "ordinal": 60,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:25.334Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 388607
+    },
+    {
+      "stage": "grid",
+      "ordinal": 61,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:26.188Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 172004
+    },
+    {
+      "stage": "grid",
+      "ordinal": 62,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:26.634Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 529747
+    },
+    {
+      "stage": "grid",
+      "ordinal": 63,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 25,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:27.510Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 532380
+    },
+    {
+      "stage": "grid",
+      "ordinal": 64,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 14,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:28.229Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 120690
+    },
+    {
+      "stage": "fresh-final-all-native-ids",
+      "ordinal": 65,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:28.827Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "fresh-final-all-native-ids",
+      "ordinal": 66,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:29.042Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 90
+    },
+    {
+      "stage": "fresh-final-all-native-ids",
+      "ordinal": 67,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 6,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:29.258Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 166413
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 68,
+      "method": "GET",
+      "mode": "count",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:29.563Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 31
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 69,
+      "method": "GET",
+      "mode": "object_id_manifest",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": null,
+      "outFields": null,
+      "hasGeometry": false,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:29.770Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "contentLength": 90
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 70,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:29.978Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 126611
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 71,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:30.278Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8166
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 72,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:30.496Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 8167
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 73,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:30.713Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 17800
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 74,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:30.937Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 3770
+    },
+    {
+      "stage": "forced-final-page-size-one",
+      "ordinal": 75,
+      "method": "GET",
+      "mode": "object_id_page",
+      "resultOffset": 0,
+      "resultRecordCount": 0,
+      "objectIdCount": 1,
+      "outFields": "OBJECTID,PARCEL",
+      "hasGeometry": true,
+      "boundsWkid": null,
+      "timestamp": "2026-10-09T07:31:31.152Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "contentLength": 2104
+    }
+  ],
+  "tests": [
+    {
+      "name": "grid-cell-0",
+      "passed": true,
+      "bbox": [
+        -81.324,
+        28.57,
+        -81.323,
+        28.571
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-1",
+      "passed": true,
+      "bbox": [
+        -81.323,
+        28.57,
+        -81.322,
+        28.571
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-2",
+      "passed": true,
+      "bbox": [
+        -81.322,
+        28.57,
+        -81.321,
+        28.571
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-3",
+      "passed": true,
+      "bbox": [
+        -81.324,
+        28.571,
+        -81.323,
+        28.572
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-4",
+      "passed": true,
+      "bbox": [
+        -81.323,
+        28.571,
+        -81.322,
+        28.572
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-5",
+      "passed": true,
+      "bbox": [
+        -81.322,
+        28.571,
+        -81.321,
+        28.572
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-6",
+      "passed": true,
+      "bbox": [
+        -81.324,
+        28.572,
+        -81.323,
+        28.573
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-7",
+      "passed": true,
+      "bbox": [
+        -81.323,
+        28.572,
+        -81.322,
+        28.573
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-8",
+      "passed": true,
+      "bbox": [
+        -81.322,
+        28.572,
+        -81.321,
+        28.573
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-9",
+      "passed": true,
+      "bbox": [
+        -81.323,
+        28.569,
+        -81.322,
+        28.57
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-10",
+      "passed": true,
+      "bbox": [
+        -81.323,
+        28.573,
+        -81.322,
+        28.574
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-11",
+      "passed": true,
+      "bbox": [
+        -81.325,
+        28.571,
+        -81.324,
+        28.572
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-12",
+      "passed": true,
+      "bbox": [
+        -81.321,
+        28.571,
+        -81.32,
+        28.572
+      ],
+      "featureCount": 1,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "selected-native-key-and-explicit-absence",
+      "passed": true,
+      "nativeParcelId": "302216051000349",
+      "objectId": 167862,
+      "absentIds": [
+        "US-ORANGE-COUNTY-PARCEL-QUALIFICATION-ABSENT-20261009"
+      ],
+      "geometryHash": "6c33cab26a62decfc9b4b43b135b3d396b9acf8499c3fb2f998de4c715c08f0a"
+    },
+    {
+      "name": "fresh-independent-reads-all-collected-native-ids",
+      "passed": true,
+      "requestedNativeIdCount": 1,
+      "returnedNativeIdCount": 1,
+      "absentCount": 0,
+      "independentRead": true
+    },
+    {
+      "name": "forced-small-object-id-pages",
+      "passed": true,
+      "pageSize": 1,
+      "featurePageCalls": 1,
+      "returnedCount": 1,
+      "nativeParcelId": "302216051000349"
+    },
+    {
+      "name": "wup-footprint-and-proposal-binding",
+      "passed": true,
+      "wupPointContained": true,
+      "footprintQueryFeatureCount": 6,
+      "bindingCoverage": "complete",
+      "boundParcelCount": 1,
+      "siteM2": 850999.4,
+      "parcelId": "US-ORANGE-COUNTY-PARCEL-302216051000349"
+    },
+    {
+      "name": "fresh-independent-reads-every-final-collected-id",
+      "passed": true,
+      "requestedNativeIdCount": 6,
+      "returnedNativeIdCount": 6,
+      "absentCount": 0,
+      "independentRead": true
+    },
+    {
+      "name": "forced-small-object-id-pages-for-collected-set",
+      "passed": true,
+      "pageSize": 1,
+      "requestedCount": 6,
+      "returnedCount": 6,
+      "featurePageCalls": 6,
+      "allIdsMatch": true
+    }
+  ],
+  "quality": {
+    "status": "pending"
+  },
+  "purpose": "Bounded runtime qualification through the repository ArcGIS adapter. Only public PARCEL/OBJECTID identifiers and polygon geometry are requested or retained.",
+  "uniqueObjectIdCount": 6,
+  "uniqueNativeParcelIdCount": 6,
+  "featureCount": 6,
+  "requestCount": 75,
+  "requestsByStage": {
+    "grid": 55,
+    "native-id-and-absence": 3,
+    "fresh-all-native-ids": 3,
+    "forced-page-size-one": 3,
+    "fresh-final-all-native-ids": 3,
+    "forced-final-page-size-one": 8
+  },
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T07:31:31.382Z",
+  "tempArtifacts": {
+    "fullGeometryWgs84": "tmp/overnight-cities-2026-10-09/orlando-full-safe-geometry.geojson",
+    "fullGeometryMetric": "tmp/overnight-cities-2026-10-09/orlando-full-safe-geometry-epsg26917.geojson",
+    "featureCount": 6,
+    "metricCrs": "EPSG:26917"
+  },
+  "candidateSourceId": "orlando-ocpa-arcgis",
+  "candidateAliasNote": "The qualification harness sourceId is retained as historical evidence; the durable candidate descriptor uses orlando-ocpa-arcgis. Public native parcel identities are unchanged.",
+  "testedAdapterDescriptor": {
+    "adapter": "arcgis",
+    "id": "US-ORANGE-COUNTY-OCPA-PARCELS",
+    "name": "Orlando OCPA bounded parcel qualification",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+    "idField": "PARCEL",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+    "outFields": [
+      "OBJECTID",
+      "PARCEL"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 25,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 25,
+    "boundsSrid": 2236,
+    "boundsProjection": "+proj=tmerc +lat_0=24.3333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+    "responseCrs": "EPSG:4326",
+    "metricSrid": 26917,
+    "countryCode": "US",
+    "cityIds": [
+      "orlando"
+    ],
+    "note": "Descriptor fields follow the successfully exercised backend adapter; root review is required before any catalog or runtime admission."
+  },
+  "requestManifestSafety": {
+    "requestCount": 75,
+    "allHttp200": true,
+    "featureRequestsUseOnly": [
+      "OBJECTID",
+      "PARCEL"
+    ],
+    "rawQueryParameterValuesRetained": false,
+    "ownerAddressTaxOrAssessmentAttributesRequestedOrStored": false,
+    "manifestContainsOnlyRequestModeCountsStatusContentMetadataAndSafeOutFields": true
+  },
+  "researchArtifact": "Persisted for root review; pending root acceptance."
+}

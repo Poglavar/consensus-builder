@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RW",
+  "country": "Rwanda",
+  "checkedAt": "2026-09-29",
+  "status": "subnational_only",
+  "cadastreAuthority": "National Land Authority (NLA, formerly RNRA/RLMUA) - Land Administration Information System (LAIS); UPI-based parcels",
+  "portalsFound": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Rwanda%20parcels&f=json&num=5",
+      "observation": "ArcGIS Online lists LAIS-derived parcel Feature Services: Bugesera_Parcels (public, org account 'nla'), Kigali_Building_Use__Parcels_Zoning (World Bank SPARC pilot), and Parcels_private_1ha_ALIS2 / PublicLandParcels (token required or unverified)"
+    },
+    {
+      "url": "https://www.lands.rw/",
+      "observation": "HTTP 307 redirect only"
+    },
+    {
+      "url": "https://landportal.rw/",
+      "observation": "CONNECT tunnel failed 502"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Rwanda%20parcels&f=json&num=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "catalog search; lists candidate services"
+    },
+    {
+      "url": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Bugesera_Parcels/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "polygon layer, fields upi/village/province/district/sector/cell/size"
+    },
+    {
+      "url": "https://services3.arcgis.com/ahwGFCNNx4JuPpVP/arcgis/rest/services/Parcels_private_1ha_ALIS2/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "error 499 Token Required"
+    },
+    {
+      "url": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Bugesera_Parcels/FeatureServer/0/query?where=1%3D1&outFields=upi,district,size&resultRecordCount=2&f=geojson&outSR=4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "2 Polygon parcels in Bugesera District (owner-free fields only)"
+    },
+    {
+      "url": "https://www.lands.rw/",
+      "method": "GET",
+      "httpStatus": 307,
+      "contentType": "text/html",
+      "assessment": "redirect only"
+    },
+    {
+      "url": "https://landportal.rw/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "rw-nla-bugesera-parcels-arcgis",
+    "requestUrl": "https://services7.arcgis.com/htgaiKX6RV2DDGgK/arcgis/rest/services/Bugesera_Parcels/FeatureServer/0/query?where=1%3D1&outFields=upi,district,size&resultRecordCount=2&f=geojson&outSR=4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      30.097,
+      -2.086,
+      30.098,
+      -2.084
+    ],
+    "parcelRecordCount": 2,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "upi",
+    "responseFile": "research/countries/RW-parcel-response.json",
+    "pagination": "resultOffset/resultRecordCount",
+    "regionSampled": "Bugesera District (Eastern Province); layer extent covers only that district"
+  },
+  "coverageAssessment": {
+    "claimedScope": "National LAIS parcel register (UPI); only a Bugesera District extract found open on ArcGIS Online",
+    "regionsVerified": [
+      "Bugesera District"
+    ],
+    "nationwideVerified": false
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Open sample is a single-district extract in an organisation ArcGIS Online account, not a verified national endpoint; other LAIS-derived services require tokens. Licence not read. Official LAIS/NLA portals unreached.",
+  "nextStep": "Look for other district extracts under the same 'nla' org or NLA's official LAIS/Kigali GIS services; verify a second district."
+}

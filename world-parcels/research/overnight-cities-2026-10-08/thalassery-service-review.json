@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-thalassery-registry-map-review",
+  "purpose": "City-specific registry/map source review and bounded safe route inspection for the WUP ranked settlement point.",
+  "primaryPublisher": "Kerala Department of Survey and Land Records; Kerala Land Records Modernization Mission",
+  "sourceUrl": "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+  "registryFound": true,
+  "registryBasis": "Official Ente Bhoomi data lists a survey camp office in Thalassery Taluk, and the state Survey & Land Records directory lists Kannur district offices. Kerala BhuNaksha is the state cadastral-map portal, but no safe anonymous vector endpoint or exact point parcel coverage was verified.",
+  "officialSources": [
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+      "observation": "Official Ente Bhoomi page lists a digital survey camp office in Thalassery Taluk, Kannur district."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "observation": "Official Kerala Survey and Land Records directory lists Kannur district survey, re-survey and digitization offices."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "observation": "Official Kerala BhuNaksha portal search listing identifies Revenue, Survey and Registration Department and exposes block/survey/subdivision and plot-info UI; direct HTTPS certificate validation failed and was not bypassed."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+      "observation": "Official citizen land-information form requires survey/subdivision numbers and captcha; no parcel details were submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Thalassery Kerala official cadastral parcel map land survey GIS public map",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "The official Ente Bhoomi camp-office listing identifies Thalassery Taluk and a digital survey camp office in Thalassery; the Kerala Survey and Land Records directory lists Kannur district survey offices. The state BhuNaksha portal advertises cadastral map selectors and plot information, but direct HTTPS failed certificate validation (expired certificate); no bypass was attempted. Ente Bhoomi’s public search page requires survey/subdivision fields and captcha, and no parcel lookup was submitted. No safe anonymous full-polygon schema/endpoint was verified.",
+      "actualResultUrls": [
+        "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+        "https://dslr.kerala.gov.in/en/sub-offices-2/",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+      ],
+      "executionMethod": "English-language web search plus direct anonymous inspection of official public routes."
+    },
+    {
+      "language": "Malayalam",
+      "query": "തലശ്ശേരി ഭൂ നികുതി ഭൂപടം കഡസ്ട്രൽ മാപ്പ് ഔദ്യോഗിക GIS കേരളം",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "The official Ente Bhoomi camp-office listing identifies Thalassery Taluk and a digital survey camp office in Thalassery; the Kerala Survey and Land Records directory lists Kannur district survey offices. The state BhuNaksha portal advertises cadastral map selectors and plot information, but direct HTTPS failed certificate validation (expired certificate); no bypass was attempted. Ente Bhoomi’s public search page requires survey/subdivision fields and captcha, and no parcel lookup was submitted. No safe anonymous full-polygon schema/endpoint was verified.",
+      "actualResultUrls": [
+        "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+        "https://dslr.kerala.gov.in/en/sub-offices-2/",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+      ],
+      "executionMethod": "Local-language search plus review of primary public official pages; no parcel-specific or private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "inspected_no_geometry_only_vector_response",
+    "reason": "Anonymous Ente Bhoomi page and office directory inspected. BhuNaksha route certificate validation failed; no bypass. Ente Bhoomi form contains survey/subdivision and captcha inputs, so it was not submitted. No vector feature schema was found.",
+    "nativeIdsUsed": "none",
+    "sampleFile": null
+  },
+  "requestEvidence": [
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 497840,
+      "observation": "Official survey-camp listing fetched anonymously; Thalassery Taluk record confirmed."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 69939,
+      "observation": "Official Kannur district survey-office directory fetched anonymously."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 40584,
+      "observation": "Static survey form inspected; no survey number, subdivision, captcha, or search submitted."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "method": "GET",
+      "status": null,
+      "error": "TLS certificate expired; validation error; no bypass attempted",
+      "observation": "No static client scripts or geometry schema retrieved."
+    }
+  ],
+  "technicalBlocker": "Anonymous Ente Bhoomi page and office directory inspected. BhuNaksha route certificate validation failed; no bypass. Ente Bhoomi form contains survey/subdivision and captcha inputs, so it was not submitted. No vector feature schema was found.",
+  "sampleDisposition": "No full parcel polygons retained; no geometry-only feature response verified.",
+  "remainingUncertainty": "No complete georeferenced polygon or native feature ID was verified at the WUP point; public map viewers may provide display-only or identity-dependent workflows not tested.",
+  "viewerClientInspection": {
+    "candidateMapFound": true,
+    "clientInspection": "Anonymous Ente Bhoomi page and office directory inspected. BhuNaksha route certificate validation failed; no bypass. Ente Bhoomi form contains survey/subdivision and captcha inputs, so it was not submitted. No vector feature schema was found."
+  }
+}

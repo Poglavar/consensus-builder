@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:113",
+  "queueRank": 113,
+  "name": "Puning",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    23.2618285028224,
+    116.395195038873
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.jieyang.gov.cn/",
+      "observation": "Jieyang prefecture government portal (Puning is a county-level city under Jieyang); did not respond."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.jieyang.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://map.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "CloudWAF block page"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "CloudWAF block page"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Puning / Jieyang (unverified)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Very little probed; prefecture site unreachable. Guangdong provincial platforms (see Guangzhou, Shenzhen research) were not tested for Jieyang.",
+  "nextStep": "Check Guangdong provincial open-data and Jieyang natural resources bureau; retest from another network."
+}

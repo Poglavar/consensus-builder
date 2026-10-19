@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1554",
+  "wupCityCode": 1554,
+  "name": "Concepción",
+  "country": "Chile",
+  "countryCode": "CL",
+  "rank": 1075,
+  "queueRank": 1075,
+  "point": [
+    -36.7854983970449,
+    -73.0751133510248
+  ],
+  "centerLatLon": [
+    -36.7854983970449,
+    -73.0751133510248
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 516741,
+  "population2025k": 516.741,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1069-1076",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Concepción Municipality’s official Dirección de Obras Municipales maintains the comuna’s urbanization/building cadastre and its SIG DOM allows property-background lookup using a supplied address or assessment-roll number. The municipality’s information concerns its planning/building function and is not evidence of legal title registration. An independent SII-derived user-hosted ArcGIS layer was queried at the exact WUP point using only OBJECTID and geometry and returned zero features; the SII interoperation service itself is limited to specifically authorized municipal staff, so it was not accessed.",
+  "registryEvidenceUrls": [
+    "https://concepcion.cl/direccion-de-obras/",
+    "https://concepcion.cl/preguntas-frecuentes-dom/",
+    "https://www.concepcion.cl/info_geografica.html",
+    "https://www.sii.cl/sitios_de_interes/interoperabilidad_cartografia_municipalidades.pdf",
+    "https://services6.arcgis.com/vBbMl3xYkjxTE5tR/ArcGIS/rest/services/Parcelas_Estimadas_desde_Mapa_Catastral_SII/FeatureServer/0"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist.",
+  "scopeLimits": "Local registry/cadastre custody and safe public geometry are assessed separately. No complete parcel geometry at the exact WUP point was retained; no citywide or countrywide coverage is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "remainingUncertainty": "Exact WUP point coverage and source completeness remain unverified; no citywide or countrywide completeness claim is made.",
+  "nextStep": "Root review can retain this city-specific custody evidence and pursue a source-native public feature route only if one is identified.",
+  "coverageAssessment": {
+    "claimedScope": "Concepción Municipality’s official Dirección de Obras Municipales maintains the comuna’s urbanization/building cadastre and its SIG DOM allows property-background lookup using a supplied address or assessment-roll number. The municipality’s information concerns its planning/building function and is not evidence of legal title registration. An independent SII-derived user-hosted ArcGIS layer was queried at the exact WUP point using only OBJECTID and geometry and returned zero features; the SII interoperation service itself is limited to specifically authorized municipal staff, so it was not accessed.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Concepción Chile official cadastral parcel map SII municipal GIS",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "The municipal DOM confirms a local urban-development/building cadastre and a SIG DOM property lookup, while the SII states that its detailed mapping interoperation service is for authorized municipal staff. A separate public derivative layer returned zero features at the exact point.",
+        "actualResultUrls": [
+          "https://concepcion.cl/direccion-de-obras/",
+          "https://concepcion.cl/preguntas-frecuentes-dom/",
+          "https://www.concepcion.cl/info_geografica.html",
+          "https://www.sii.cl/sitios_de_interes/interoperabilidad_cartografia_municipalidades.pdf",
+          "https://services6.arcgis.com/vBbMl3xYkjxTE5tR/ArcGIS/rest/services/Parcelas_Estimadas_desde_Mapa_Catastral_SII/FeatureServer/0"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      },
+      {
+        "language": "Spanish",
+        "query": "Concepción Chile mapa catastral parcelas SII catastro municipal sitio oficial",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "La Municipalidad de Concepción informa que la DOM mantiene catastros de obras y que su SIG DOM permite consultar antecedentes prediales mediante dirección o rol; no se consultaron identificadores de predio ni atributos privados. La capa pública derivada que se revisó no contiene polígonos en el punto WUP exacto.",
+        "actualResultUrls": [
+          "https://concepcion.cl/direccion-de-obras/",
+          "https://concepcion.cl/preguntas-frecuentes-dom/",
+          "https://www.concepcion.cl/info_geografica.html",
+          "https://www.sii.cl/sitios_de_interes/interoperabilidad_cartografia_municipalidades.pdf",
+          "https://services6.arcgis.com/vBbMl3xYkjxTE5tR/ArcGIS/rest/services/Parcelas_Estimadas_desde_Mapa_Catastral_SII/FeatureServer/0"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      }
+    ]
+  },
+  "source": null,
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "cityCode": 10925,
+  "queueRank": 2343,
+  "name": "Bhimavaram",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [16.5429339362058, 81.5268143253089],
+  "population2025": 249410,
+  "population2025k": 249.41,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhimavaram Andhra Pradesh official cadastral parcel map GIS survey land records",
+        "result": "First-party discovery found the Government of Andhra Pradesh Bhunaksha portal, the official Bhimavaram municipal portal, Andhra Pradesh NIC land-record/resurvey documentation, and ISRO NRSC Bhuvan's Andhra Pradesh state viewer. Bhuvan's current JavaScript/configuration and WMS capabilities expose a public Andhra Pradesh cadastral layer; no safe anonymous parcel ID-plus-full-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://bhimavaram.cdma.ap.gov.in/",
+          "https://ap.nic.in/en/publication/presentation-of-state-centre/",
+          "https://bhuvan-app1.nrsc.gov.in/state/AP",
+          "https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/wms/"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "భీమవరం ఆంధ్రప్రదేశ్ అధికారిక భూ పటం కాడస్ట్రల్ పార్సెల్ మ్యాప్ భూ రికార్డులు",
+        "result": "Telugu-language first-party discovery located the Government of Andhra Pradesh Bhuseva/Bhudhaar land-services portal and the Bhimavaram municipal government portal. The available official evidence confirms land-record and cadastral-map services but did not yield a safe anonymous native parcel identity plus complete polygon for Bhimavaram.",
+        "actualResultUrls": [
+          "https://bhudhaar.ap.gov.in/",
+          "https://bhimavaram.cdma.ap.gov.in/",
+          "https://bhunaksha.ap.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A first-party public cadastral registry/map service is evidenced: Government of Andhra Pradesh Bhunaksha is the state Survey, Settlements and Land Records portal, and ISRO NRSC Bhuvan's state viewer exposes the queryable cadastral:AndhraPradesh__Cad_sisdp_p2 layer. The current Bhuvan WMS capabilities response identifies EPSG:4326 for the layer. A direct WMS GetMap request against a bounded Bhimavaram-area extent returned PNG raster imagery; GetFeatureInfo at the exact WUP point returned zero features. No parcel vector endpoint, safe native parcel identity, or full parcel polygon was retrieved. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-2308-nz-r-kor.json",
+  "cityCode": 2308,
+  "queueRank": 2133,
+  "city": "Nzérékoré",
+  "country": "Guinea",
+  "countryCode": "GN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "First-party discovery verified Guinea's title-registration procedure and national cadastral-coverage context, but no public general-land parcel service for Nzérékoré. The accessible ArcGIS service is a mining-cadastre country layer; the application layer requires a token.",
+  "queryOutcomes": "English and French discovery queries are recorded verbatim in city-2308-nz-r-kor.json, with actual result URLs.",
+  "requestOutcomes": "Official procedure, DGPEIP coverage page, municipal map HTML/current JavaScript, mining-cadastre REST metadata, one bounded country-layer query, and token-protected application metadata were requested. No credentials, private tokens, unsafe fields, CAPTCHA bypass, or TLS-verification bypass was used.",
+  "scopeLimits": [
+    "National procedure and agency prose do not prove a local public parcel registry.",
+    "The municipal territorial map contains administrative points, not parcel polygons.",
+    "The mining-cadastre country layer is out of scope for ordinary cadastral parcels.",
+    "No exact WUP-point parcel test was possible; unavailable or out-of-scope services are not treated as citywide absence.",
+    "No raw source-specific attributes or parcel polygons were retained."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe, verified native land-parcel geometry response was available."},
+  "uncertainty": "Parcel-level stable identity, schema, CRS, anonymous access, local coverage, and citywide completeness remain unverified.",
+  "qualificationDecision": "hold",
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

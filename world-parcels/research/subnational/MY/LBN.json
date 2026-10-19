@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "LBN",
+ "regionName": "Labuan",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.pl.gov.my/",
+   "observation": "Perbadanan Labuan site loads; only links to mygeoportal.gov.my and land/development pages, no parcel service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.pl.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "no GIS endpoint in HTML"
+  },
+  {
+   "url": "https://www.mygeoportal.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "national geoportal HTML, no parcel service (earlier evidence)"
+  },
+  {
+   "url": "arcgis.pl.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "gis.pl.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "gis.labuan.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "Labuan land administration is federal (Labuan Land Office); no viewer found; guessed GIS hosts unreachable.",
+ "nextStep": "Look for a Labuan Land Office / Perbadanan Labuan GIS viewer."
+}

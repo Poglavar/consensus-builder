@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11779,
+  "cityId": "wup2025:11779",
+  "name": "Parhati",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    23.2588217842522,
+    88.1507406243375
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 80,
+  "stateOrUT": "West Bengal",
+  "administrativeIdentity": {
+    "district": "Purba Bardhaman",
+    "tehsilOrTaluk": "Memari - II",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Bengali",
+        "query": "পরহাটি পশ্চিমবঙ্গ মৌজা মানচিত্র খতিয়ান দাগ Banglarbhumi",
+        "scope": "WUP 11779 Parhati cohort label; search explored corresponding city/locality names and West Bengal cadastral terms.",
+        "result": "The actual native-script search did not return an official city-specific parcel sample. Shared official state/civic portals found in the same query batch are recorded separately below.",
+        "checkedAt": "2026-10-08",
+        "script": "Bengali",
+        "actualResultUrls": [
+          "https://www.banglabhumi.in/banglarbhumi-mouza-map-download-and-print/",
+          "https://banglarbhumi.com.in/",
+          "https://banglarbhumigov.com/land-parcel-map-viewer",
+          "https://banglarbhumigov.com/",
+          "https://www.youtube.com/watch?v=_xVIHlDm4W0",
+          "https://media.banglabhumi.in/banglarbhumi-gov-in-land-records/",
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+          "https://www.wblandsrecords.space/",
+          "https://sarthac.gov.in/view-case-file?id=1111&year=2016",
+          "https://baanglarbhumi.com/",
+          "https://www.wblandsrecords.space/tools/kyp/",
+          "https://banglabhumi.in/banglarbhumi-gov-in-land-record-khatian-plot-information/",
+          "https://www.sudawb.org/uploads/digitaldoc/NULM/SUDA_23_2014%28PT-A%29/SHELTER%20FOR%20URBAN%20HOMELESS/CP_03.pdf",
+          "https://www.wblandsrecords.space/mouza-map/",
+          "https://baanglarbhumi.com/mouza-map/",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/1714453748.pdf",
+          "https://www.youtube.com/watch?v=ht5bRwv22o4",
+          "https://www.reddit.com/r/westbengal/comments/1uxqqwf/banglarbhumi/",
+          "https://www.reddit.com/r/u_sudip_007/comments/kpks7k",
+          "https://www.reddit.com/r/u_ScoreAdept9052/comments/ywn3up",
+          "https://arxiv.org/abs/2011.07499",
+          "https://www.reddit.com/r/bengalilanguage/comments/1w23xyr/can_anyone_help_me_readdecipher_this_old_bengali/",
+          "https://arxiv.org/abs/1712.01434",
+          "https://www.reddit.com/r/kolkata/comments/1f74b8f/the_entire_map_of_up_and_karnataka_is_coloured/",
+          "https://www.reddit.com/r/bangladesh/comments/1duj19t",
+          "https://www.reddit.com/r/BanglaPokkho/comments/1f71sqd",
+          "https://arxiv.org/abs/2005.02155",
+          "https://arxiv.org/abs/1501.05497",
+          "https://www.reddit.com/r/u_ScoreAdept9052/comments/ywm249",
+          "https://www.reddit.com/r/Kolkatacity/comments/1sp3l52/west_bangladesh/",
+          "https://www.reddit.com/r/RealTimeBangladesh/comments/1ov0pet",
+          "https://www.reddit.com/r/kolkata/comments/1qhmbx8/%E0%A6%86%E0%A6%AA%E0%A6%A8%E0%A6%A6%E0%A6%B0_%E0%A6%AE%E0%A6%A4%E0%A6%AE%E0%A6%A4_%E0%A6%9C%E0%A6%A8%E0%A6%A4_%E0%A6%AA%E0%A6%B0%E0%A6%B2_%E0%A6%AD%E0%A6%B2_%E0%A6%B9%E0%A7%9F/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Banglarbhumi / West Bengal L&LR portal",
+        "operator": "Government of West Bengal, Land & Land Reforms and Refugee Relief & Rehabilitation Department",
+        "homeUrl": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+        "observation": "This is a shared state entry point surfaced for West Bengal searches; city-specific mouza availability was not confirmed by the search result."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=23.2588217842522&lon=88.1507406243375&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Memari - II, Purba Bardhaman, West Bengal, 713430, India",
+        "osmType": "way",
+        "osmId": 1042918054,
+        "address": {
+          "county": "Memari - II",
+          "state_district": "Purba Bardhaman",
+          "state": "West Bengal",
+          "ISO3166-2-lvl4": "IN-WB",
+          "postcode": "713430",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+        "httpStatus": 400,
+        "contentType": "",
+        "assessment": "Direct official portal open timed out in web fetch; prior search output surfaced the official URL with an Invalid Operation/HTTP Header Method Change page. This is a host/protocol access result, not evidence about parcel coverage."
+      },
+      {
+        "method": "GET",
+        "url": "https://wburbanservices.org/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Government of West Bengal Department of Urban Development & Municipal Affairs home rendered district list and Know Your Property service link; shared urban service, not city-specific parcel geometry."
+      },
+      {
+        "method": "GET",
+        "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official procedure describes OTP-based registration and selection of district, block, mouza then search by khatian or plot; no public geometry sample established."
+      }
+    ]
+  },
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry."
+}

@@ -1,0 +1,2727 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T23:42:23.976Z",
+  "city": "juarez-predios",
+  "descriptor": {
+    "id": "mx-juarez-predios",
+    "adapter": "arcgis",
+    "endpoint": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3",
+    "idPrefix": "MX-JUA-PREDIO-",
+    "idField": "clavetxt",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "parcelNumberField": "clavetxt",
+    "outFields": [
+      "OBJECTID",
+      "clavetxt"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 1,
+    "boundsSrid": 32613,
+    "boundsProjection": "+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -106.4223,
+        31.6629,
+        -106.422,
+        31.6632
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -106.422,
+        31.6629,
+        -106.4217,
+        31.6632
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -106.4217,
+        31.6629,
+        -106.4214,
+        31.6632
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -106.4223,
+        31.6632,
+        -106.422,
+        31.6635
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -106.422,
+        31.6632,
+        -106.4217,
+        31.6635
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -106.4217,
+        31.6632,
+        -106.4214,
+        31.6635
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -106.4223,
+        31.6635,
+        -106.422,
+        31.6638
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -106.422,
+        31.6635,
+        -106.4217,
+        31.6638
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -106.4217,
+        31.6635,
+        -106.4214,
+        31.6638
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -106.422,
+        31.6626,
+        -106.4217,
+        31.6629
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -106.422,
+        31.6638,
+        -106.4217,
+        31.6641
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -106.4226,
+        31.6632,
+        -106.4223,
+        31.6635
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -106.4214,
+        31.6632,
+        -106.4211,
+        31.6635
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 4060,
+      "requestIndexes": [
+        0,
+        3
+      ],
+      "bbox": [
+        -106.4223,
+        31.6629,
+        -106.422,
+        31.6632
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-019",
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-022",
+          "geometrySha256": "0ea17e452b26b92b4f51a99b37ddbb111f6db9d2aa753a487862b77317ee5823"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-023",
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-026",
+          "geometrySha256": "d75f3cf0e0191905d5b76f1e7a71c98cc6f26691ad7f864f00668ba112fc218e"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-021",
+          "geometrySha256": "4d7537984268792313a4a1c68620ca6298b626ae15b7c5cf0ad172bbaf520875"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 2171,
+      "requestIndexes": [
+        4,
+        7
+      ],
+      "bbox": [
+        -106.422,
+        31.6629,
+        -106.4217,
+        31.6632
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-008",
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-019",
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-006",
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-025",
+          "geometrySha256": "0370ef235f3e0411f38261417d3eef52ba972326658120383fda731550cc0499"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-024",
+          "geometrySha256": "9177e3489434a9470e5baca190ffb1cf170e8385d5452b37c2b0b186de1dc45d"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-023",
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 815,
+      "requestIndexes": [
+        8,
+        10
+      ],
+      "bbox": [
+        -106.4217,
+        31.6629,
+        -106.4214,
+        31.6632
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-008",
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-006",
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 993,
+      "requestIndexes": [
+        11,
+        14
+      ],
+      "bbox": [
+        -106.4223,
+        31.6632,
+        -106.422,
+        31.6635
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-010",
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-011",
+          "geometrySha256": "4ca7434345b2ae06f72521fe3c9a3c83b1c64bd8605244f3c4b51e3994550caa"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-023",
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-026",
+          "geometrySha256": "d75f3cf0e0191905d5b76f1e7a71c98cc6f26691ad7f864f00668ba112fc218e"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-021",
+          "geometrySha256": "4d7537984268792313a4a1c68620ca6298b626ae15b7c5cf0ad172bbaf520875"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1372,
+      "requestIndexes": [
+        15,
+        19
+      ],
+      "bbox": [
+        -106.422,
+        31.6632,
+        -106.4217,
+        31.6635
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-008",
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-009",
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-010",
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-006",
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-025",
+          "geometrySha256": "0370ef235f3e0411f38261417d3eef52ba972326658120383fda731550cc0499"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-024",
+          "geometrySha256": "9177e3489434a9470e5baca190ffb1cf170e8385d5452b37c2b0b186de1dc45d"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-023",
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1025,
+      "requestIndexes": [
+        20,
+        23
+      ],
+      "bbox": [
+        -106.4217,
+        31.6632,
+        -106.4214,
+        31.6635
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-008",
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-009",
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-006",
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-006",
+          "geometrySha256": "0835137fc572659aa1932f8aeeecaf2b3b512750ffe3c9981e2612d1ad698c72"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-007",
+          "geometrySha256": "dac40c36310016cc61e9573e14529a38c800289d3bcdfac5611c57bf9f24508c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 1484,
+      "requestIndexes": [
+        24,
+        27
+      ],
+      "bbox": [
+        -106.4223,
+        31.6635,
+        -106.422,
+        31.6638
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-010",
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-011",
+          "geometrySha256": "4ca7434345b2ae06f72521fe3c9a3c83b1c64bd8605244f3c4b51e3994550caa"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-012",
+          "geometrySha256": "4a7f7f4e94310c80ef6b58ab6b1be878156f25c687e35173c107ad57e5ff2239"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-013",
+          "geometrySha256": "8747e8a3159e539091e636fdc2736ba615988fd07e59e44c96ce65d40c7bc07a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1191,
+      "requestIndexes": [
+        28,
+        32
+      ],
+      "bbox": [
+        -106.422,
+        31.6635,
+        -106.4217,
+        31.6638
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-008",
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-009",
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-010",
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-004",
+          "geometrySha256": "c0228f88f7d9e5bf17d10e78f8326bfd5a6fb87dbf7fb2c48ae8077d843d95a6"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-005",
+          "geometrySha256": "41c676ca9a77731677a4e3eca78960a5bfb554aafa3edb5ba22739046f70709e"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-012",
+          "geometrySha256": "4a7f7f4e94310c80ef6b58ab6b1be878156f25c687e35173c107ad57e5ff2239"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-013",
+          "geometrySha256": "8747e8a3159e539091e636fdc2736ba615988fd07e59e44c96ce65d40c7bc07a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 982,
+      "requestIndexes": [
+        33,
+        36
+      ],
+      "bbox": [
+        -106.4217,
+        31.6635,
+        -106.4214,
+        31.6638
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-008",
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-009",
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-004",
+          "geometrySha256": "c0228f88f7d9e5bf17d10e78f8326bfd5a6fb87dbf7fb2c48ae8077d843d95a6"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-006",
+          "geometrySha256": "0835137fc572659aa1932f8aeeecaf2b3b512750ffe3c9981e2612d1ad698c72"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-007",
+          "geometrySha256": "dac40c36310016cc61e9573e14529a38c800289d3bcdfac5611c57bf9f24508c"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-005",
+          "geometrySha256": "41c676ca9a77731677a4e3eca78960a5bfb554aafa3edb5ba22739046f70709e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 1249,
+      "requestIndexes": [
+        37,
+        41
+      ],
+      "bbox": [
+        -106.422,
+        31.6626,
+        -106.4217,
+        31.6629
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-008",
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-004",
+          "geometrySha256": "c4112168f779aced4f239010aede21edb794a1124efda01a90b50e2dd129e5c1"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-017",
+          "geometrySha256": "e09ad32d17cc04725cd00639df35e7d029355dd008bcdb2f7f84148c60c69554"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-015",
+          "geometrySha256": "52a4ff64beb83a3bb0a54e3850998a2b0ebb9df942e2b5738358cda09e6341db"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-016",
+          "geometrySha256": "3aa5bca56accc540bb270049d38d25a8be538bb64446915685e518cd7cc50da1"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-020",
+          "geometrySha256": "c39de86971528be860a6080c83159f8be3593b40c112b617dfad3a63f2ee65e9"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-001",
+          "geometrySha256": "b9f01f69ed5148836e4090fdcbd2aa8eb42c907f2a68b430ad68253c12c42b0f"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-019",
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 986,
+      "requestIndexes": [
+        42,
+        45
+      ],
+      "bbox": [
+        -106.422,
+        31.6638,
+        -106.4217,
+        31.6641
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-004",
+          "geometrySha256": "c0228f88f7d9e5bf17d10e78f8326bfd5a6fb87dbf7fb2c48ae8077d843d95a6"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-013",
+          "geometrySha256": "8747e8a3159e539091e636fdc2736ba615988fd07e59e44c96ce65d40c7bc07a"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-003",
+          "geometrySha256": "ac03b215fe2e046fb75d9ec710573996f8e0ccfcbf33984d6772431d43b12089"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-002",
+          "geometrySha256": "87381c6ba4813741de9034c734a0199ad91d096552de7fb06aed472e6718c294"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 990,
+      "requestIndexes": [
+        46,
+        49
+      ],
+      "bbox": [
+        -106.4226,
+        31.6632,
+        -106.4223,
+        31.6635
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-080-012",
+          "geometrySha256": "045ac3f12364cea6204c9dfd027a02786b53e41aeb6bf27e9bc743a58824143b"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-080-006",
+          "geometrySha256": "f7ff293f26ce897e7c86634690444142bbd6d8a84d9d88c19d74aad0096ff958"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-074-008",
+          "geometrySha256": "d303e40724588ff38f28e304c147a3db26dff748994454adf18d999de263b779"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-074-009",
+          "geometrySha256": "e60237cf8f221c849c58c26eab4aff5826ddc5dee1e706ee150870c465c72c2b"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 993,
+      "requestIndexes": [
+        50,
+        53
+      ],
+      "bbox": [
+        -106.4214,
+        31.6632,
+        -106.4211,
+        31.6635
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MX-JUA-PREDIO-1-184-028-006",
+          "geometrySha256": "44883384a1aa85e7eeea672f312af7938fbdb3d1f55a9439c9f7c9941f697681"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-081-006",
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-019-015",
+          "geometrySha256": "89d89fd19a7e1bc2d4931104a21c1842406ab16e9b817087e7a6d50cad514eb4"
+        },
+        {
+          "id": "MX-JUA-PREDIO-1-184-075-006",
+          "geometrySha256": "0835137fc572659aa1932f8aeeecaf2b3b512750ffe3c9981e2612d1ad698c72"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1172,
+      "requestIndexes": [
+        54,
+        58
+      ],
+      "count": 8,
+      "geometryPages": 3,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 3909,
+      "requestIndexes": [
+        59,
+        71
+      ],
+      "count": 33,
+      "ids": [
+        "MX-JUA-PREDIO-1-184-019-015",
+        "MX-JUA-PREDIO-1-184-028-006",
+        "MX-JUA-PREDIO-1-184-074-008",
+        "MX-JUA-PREDIO-1-184-074-009",
+        "MX-JUA-PREDIO-1-184-075-002",
+        "MX-JUA-PREDIO-1-184-075-003",
+        "MX-JUA-PREDIO-1-184-075-004",
+        "MX-JUA-PREDIO-1-184-075-005",
+        "MX-JUA-PREDIO-1-184-075-006",
+        "MX-JUA-PREDIO-1-184-075-007",
+        "MX-JUA-PREDIO-1-184-075-008",
+        "MX-JUA-PREDIO-1-184-075-009",
+        "MX-JUA-PREDIO-1-184-075-010",
+        "MX-JUA-PREDIO-1-184-075-011",
+        "MX-JUA-PREDIO-1-184-075-012",
+        "MX-JUA-PREDIO-1-184-075-013",
+        "MX-JUA-PREDIO-1-184-080-006",
+        "MX-JUA-PREDIO-1-184-080-012",
+        "MX-JUA-PREDIO-1-184-081-001",
+        "MX-JUA-PREDIO-1-184-081-004",
+        "MX-JUA-PREDIO-1-184-081-006",
+        "MX-JUA-PREDIO-1-184-081-008",
+        "MX-JUA-PREDIO-1-184-081-015",
+        "MX-JUA-PREDIO-1-184-081-016",
+        "MX-JUA-PREDIO-1-184-081-017",
+        "MX-JUA-PREDIO-1-184-081-019",
+        "MX-JUA-PREDIO-1-184-081-020",
+        "MX-JUA-PREDIO-1-184-081-021",
+        "MX-JUA-PREDIO-1-184-081-022",
+        "MX-JUA-PREDIO-1-184-081-023",
+        "MX-JUA-PREDIO-1-184-081-024",
+        "MX-JUA-PREDIO-1-184-081-025",
+        "MX-JUA-PREDIO-1-184-081-026"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 637,
+      "requestIndexes": [
+        72,
+        73
+      ],
+      "absentIds": [
+        "MX-JUA-PREDIO-NOT-A-REAL-JUAREZ-PREDIO-999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 959,
+      "requestIndexes": [
+        74,
+        77
+      ],
+      "selectedParcelId": "MX-JUA-PREDIO-1-184-081-016",
+      "count": 4,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 938,
+      "requestIndexes": [
+        78,
+        81
+      ],
+      "selectedParcelId": "MX-JUA-PREDIO-1-184-081-016",
+      "coverage": "complete",
+      "siteM2": 400.27,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365160.70583890355%2C3503949.9487292366%2C365189.58292776614%2C3503983.575012521&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:23.978Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365160.70583890355%2C3503949.9487292366%2C365189.58292776614%2C3503983.575012521&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:26.095Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        19235,
+        19447,
+        19885,
+        19900,
+        19912
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19235%2C19447%2C19885",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:27.499Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1306,
+      "features": [
+        {
+          "transportId": 19235,
+          "properties": {
+            "OBJECTID": 19235,
+            "clavetxt": "1-184-081-019"
+          },
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        },
+        {
+          "transportId": 19447,
+          "properties": {
+            "OBJECTID": 19447,
+            "clavetxt": "1-184-081-022"
+          },
+          "geometrySha256": "0ea17e452b26b92b4f51a99b37ddbb111f6db9d2aa753a487862b77317ee5823"
+        },
+        {
+          "transportId": 19885,
+          "properties": {
+            "OBJECTID": 19885,
+            "clavetxt": "1-184-081-023"
+          },
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19900%2C19912",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:27.773Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 805,
+      "features": [
+        {
+          "transportId": 19900,
+          "properties": {
+            "OBJECTID": 19900,
+            "clavetxt": "1-184-081-026"
+          },
+          "geometrySha256": "d75f3cf0e0191905d5b76f1e7a71c98cc6f26691ad7f864f00668ba112fc218e"
+        },
+        {
+          "transportId": 19912,
+          "properties": {
+            "OBJECTID": 19912,
+            "clavetxt": "1-184-081-021"
+          },
+          "geometrySha256": "4d7537984268792313a4a1c68620ca6298b626ae15b7c5cf0ad172bbaf520875"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365189.1495890953%2C3503949.5781323807%2C365218.02658480103%2C3503983.2043354623&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:28.037Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365189.1495890953%2C3503949.5781323807%2C365218.02658480103%2C3503983.2043354623&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:29.425Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 80,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        996,
+        19235,
+        19855,
+        19862,
+        19877,
+        19885
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=996%2C19235%2C19855",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:29.675Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1302,
+      "features": [
+        {
+          "transportId": 996,
+          "properties": {
+            "OBJECTID": 996,
+            "clavetxt": "1-184-081-008"
+          },
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "transportId": 19235,
+          "properties": {
+            "OBJECTID": 19235,
+            "clavetxt": "1-184-081-019"
+          },
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        },
+        {
+          "transportId": 19855,
+          "properties": {
+            "OBJECTID": 19855,
+            "clavetxt": "1-184-081-006"
+          },
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19862%2C19877%2C19885",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:29.943Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1104,
+      "features": [
+        {
+          "transportId": 19862,
+          "properties": {
+            "OBJECTID": 19862,
+            "clavetxt": "1-184-081-025"
+          },
+          "geometrySha256": "0370ef235f3e0411f38261417d3eef52ba972326658120383fda731550cc0499"
+        },
+        {
+          "transportId": 19877,
+          "properties": {
+            "OBJECTID": 19877,
+            "clavetxt": "1-184-081-024"
+          },
+          "geometrySha256": "9177e3489434a9470e5baca190ffb1cf170e8385d5452b37c2b0b186de1dc45d"
+        },
+        {
+          "transportId": 19885,
+          "properties": {
+            "OBJECTID": 19885,
+            "clavetxt": "1-184-081-023"
+          },
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365217.59333761525%2C3503949.2076137713%2C365246.4702401632%2C3503982.833736652&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:30.208Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365217.59333761525%2C3503949.2076137713%2C365246.4702401632%2C3503982.833736652&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:30.472Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 56,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        996,
+        19855
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=996%2C19855",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:30.755Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 839,
+      "features": [
+        {
+          "transportId": 996,
+          "properties": {
+            "OBJECTID": 996,
+            "clavetxt": "1-184-081-008"
+          },
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "transportId": 19855,
+          "properties": {
+            "OBJECTID": 19855,
+            "clavetxt": "1-184-081-006"
+          },
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365161.1392690595%2C3503983.2043354623%2C365190.0162701352%2C3504016.830622171&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:31.024Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365161.1392690595%2C3503983.2043354623%2C365190.0162701352%2C3504016.830622171&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:31.267Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18702,
+        18716,
+        19885,
+        19900,
+        19912
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18702%2C18716%2C19885",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:31.508Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1104,
+      "features": [
+        {
+          "transportId": 18702,
+          "properties": {
+            "OBJECTID": 18702,
+            "clavetxt": "1-184-075-010"
+          },
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        },
+        {
+          "transportId": 18716,
+          "properties": {
+            "OBJECTID": 18716,
+            "clavetxt": "1-184-075-011"
+          },
+          "geometrySha256": "4ca7434345b2ae06f72521fe3c9a3c83b1c64bd8605244f3c4b51e3994550caa"
+        },
+        {
+          "transportId": 19885,
+          "properties": {
+            "OBJECTID": 19885,
+            "clavetxt": "1-184-081-023"
+          },
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19900%2C19912",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:31.778Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 805,
+      "features": [
+        {
+          "transportId": 19900,
+          "properties": {
+            "OBJECTID": 19900,
+            "clavetxt": "1-184-081-026"
+          },
+          "geometrySha256": "d75f3cf0e0191905d5b76f1e7a71c98cc6f26691ad7f864f00668ba112fc218e"
+        },
+        {
+          "transportId": 19912,
+          "properties": {
+            "OBJECTID": 19912,
+            "clavetxt": "1-184-081-021"
+          },
+          "geometrySha256": "4d7537984268792313a4a1c68620ca6298b626ae15b7c5cf0ad172bbaf520875"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365189.58292776614%2C3503982.833736652%2C365218.45983568416%2C3504016.4599431576&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:32.017Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365189.58292776614%2C3503982.833736652%2C365218.45983568416%2C3504016.4599431576&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:32.360Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 88,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18658,
+        18683,
+        18702,
+        19855,
+        19862,
+        19877,
+        19885
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18658%2C18683%2C18702",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:32.604Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1185,
+      "features": [
+        {
+          "transportId": 18658,
+          "properties": {
+            "OBJECTID": 18658,
+            "clavetxt": "1-184-075-008"
+          },
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "transportId": 18683,
+          "properties": {
+            "OBJECTID": 18683,
+            "clavetxt": "1-184-075-009"
+          },
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "transportId": 18702,
+          "properties": {
+            "OBJECTID": 18702,
+            "clavetxt": "1-184-075-010"
+          },
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19855%2C19862%2C19877",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:32.871Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1063,
+      "features": [
+        {
+          "transportId": 19855,
+          "properties": {
+            "OBJECTID": 19855,
+            "clavetxt": "1-184-081-006"
+          },
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        },
+        {
+          "transportId": 19862,
+          "properties": {
+            "OBJECTID": 19862,
+            "clavetxt": "1-184-081-025"
+          },
+          "geometrySha256": "0370ef235f3e0411f38261417d3eef52ba972326658120383fda731550cc0499"
+        },
+        {
+          "transportId": 19877,
+          "properties": {
+            "OBJECTID": 19877,
+            "clavetxt": "1-184-081-024"
+          },
+          "geometrySha256": "9177e3489434a9470e5baca190ffb1cf170e8385d5452b37c2b0b186de1dc45d"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19885",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:33.133Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 423,
+      "features": [
+        {
+          "transportId": 19885,
+          "properties": {
+            "OBJECTID": 19885,
+            "clavetxt": "1-184-081-023"
+          },
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365218.02658480103%2C3503982.4632160882%2C365246.9033995606%2C3504016.0893423925&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:33.390Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365218.02658480103%2C3503982.4632160882%2C365246.9033995606%2C3504016.0893423925&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:33.633Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18658,
+        18683,
+        19855,
+        20891,
+        20904
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18658%2C18683%2C19855",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:33.880Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1186,
+      "features": [
+        {
+          "transportId": 18658,
+          "properties": {
+            "OBJECTID": 18658,
+            "clavetxt": "1-184-075-008"
+          },
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "transportId": 18683,
+          "properties": {
+            "OBJECTID": 18683,
+            "clavetxt": "1-184-075-009"
+          },
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "transportId": 19855,
+          "properties": {
+            "OBJECTID": 19855,
+            "clavetxt": "1-184-081-006"
+          },
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=20891%2C20904",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:34.152Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 846,
+      "features": [
+        {
+          "transportId": 20891,
+          "properties": {
+            "OBJECTID": 20891,
+            "clavetxt": "1-184-075-006"
+          },
+          "geometrySha256": "0835137fc572659aa1932f8aeeecaf2b3b512750ffe3c9981e2612d1ad698c72"
+        },
+        {
+          "transportId": 20904,
+          "properties": {
+            "OBJECTID": 20904,
+            "clavetxt": "1-184-075-007"
+          },
+          "geometrySha256": "dac40c36310016cc61e9573e14529a38c800289d3bcdfac5611c57bf9f24508c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365161.5727029145%2C3504016.4599431576%2C365190.44961620227%2C3504050.0862332894&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:34.416Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365161.5727029145%2C3504016.4599431576%2C365190.44961620227%2C3504050.0862332894&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:34.689Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18702,
+        18716,
+        21423,
+        21662
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18702%2C18716%2C21423",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:34.932Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1308,
+      "features": [
+        {
+          "transportId": 18702,
+          "properties": {
+            "OBJECTID": 18702,
+            "clavetxt": "1-184-075-010"
+          },
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        },
+        {
+          "transportId": 18716,
+          "properties": {
+            "OBJECTID": 18716,
+            "clavetxt": "1-184-075-011"
+          },
+          "geometrySha256": "4ca7434345b2ae06f72521fe3c9a3c83b1c64bd8605244f3c4b51e3994550caa"
+        },
+        {
+          "transportId": 21423,
+          "properties": {
+            "OBJECTID": 21423,
+            "clavetxt": "1-184-075-012"
+          },
+          "geometrySha256": "4a7f7f4e94310c80ef6b58ab6b1be878156f25c687e35173c107ad57e5ff2239"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=21662",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:35.207Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 709,
+      "features": [
+        {
+          "transportId": 21662,
+          "properties": {
+            "OBJECTID": 21662,
+            "clavetxt": "1-184-075-013"
+          },
+          "geometrySha256": "8747e8a3159e539091e636fdc2736ba615988fd07e59e44c96ce65d40c7bc07a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365190.0162701352%2C3504016.0893423925%2C365218.8930902647%2C3504049.715552321&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:35.901Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365190.0162701352%2C3504016.0893423925%2C365218.8930902647%2C3504049.715552321&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:36.141Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 88,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18658,
+        18683,
+        18702,
+        18741,
+        21357,
+        21423,
+        21662
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18658%2C18683%2C18702",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:36.376Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1185,
+      "features": [
+        {
+          "transportId": 18658,
+          "properties": {
+            "OBJECTID": 18658,
+            "clavetxt": "1-184-075-008"
+          },
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "transportId": 18683,
+          "properties": {
+            "OBJECTID": 18683,
+            "clavetxt": "1-184-075-009"
+          },
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "transportId": 18702,
+          "properties": {
+            "OBJECTID": 18702,
+            "clavetxt": "1-184-075-010"
+          },
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18741%2C21357%2C21423",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:36.599Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1635,
+      "features": [
+        {
+          "transportId": 18741,
+          "properties": {
+            "OBJECTID": 18741,
+            "clavetxt": "1-184-075-004"
+          },
+          "geometrySha256": "c0228f88f7d9e5bf17d10e78f8326bfd5a6fb87dbf7fb2c48ae8077d843d95a6"
+        },
+        {
+          "transportId": 21357,
+          "properties": {
+            "OBJECTID": 21357,
+            "clavetxt": "1-184-075-005"
+          },
+          "geometrySha256": "41c676ca9a77731677a4e3eca78960a5bfb554aafa3edb5ba22739046f70709e"
+        },
+        {
+          "transportId": 21423,
+          "properties": {
+            "OBJECTID": 21423,
+            "clavetxt": "1-184-075-012"
+          },
+          "geometrySha256": "4a7f7f4e94310c80ef6b58ab6b1be878156f25c687e35173c107ad57e5ff2239"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=21662",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:36.857Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 709,
+      "features": [
+        {
+          "transportId": 21662,
+          "properties": {
+            "OBJECTID": 21662,
+            "clavetxt": "1-184-075-013"
+          },
+          "geometrySha256": "8747e8a3159e539091e636fdc2736ba615988fd07e59e44c96ce65d40c7bc07a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365218.45983568416%2C3504015.718819875%2C365247.3365626546%2C3504049.344949601&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:37.093Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365218.45983568416%2C3504015.718819875%2C365247.3365626546%2C3504049.344949601&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:37.330Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 82,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18658,
+        18683,
+        18741,
+        20891,
+        20904,
+        21357
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18658%2C18683%2C18741",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:37.564Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1226,
+      "features": [
+        {
+          "transportId": 18658,
+          "properties": {
+            "OBJECTID": 18658,
+            "clavetxt": "1-184-075-008"
+          },
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "transportId": 18683,
+          "properties": {
+            "OBJECTID": 18683,
+            "clavetxt": "1-184-075-009"
+          },
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "transportId": 18741,
+          "properties": {
+            "OBJECTID": 18741,
+            "clavetxt": "1-184-075-004"
+          },
+          "geometrySha256": "c0228f88f7d9e5bf17d10e78f8326bfd5a6fb87dbf7fb2c48ae8077d843d95a6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=20891%2C20904%2C21357",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:37.820Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1473,
+      "features": [
+        {
+          "transportId": 20891,
+          "properties": {
+            "OBJECTID": 20891,
+            "clavetxt": "1-184-075-006"
+          },
+          "geometrySha256": "0835137fc572659aa1932f8aeeecaf2b3b512750ffe3c9981e2612d1ad698c72"
+        },
+        {
+          "transportId": 20904,
+          "properties": {
+            "OBJECTID": 20904,
+            "clavetxt": "1-184-075-007"
+          },
+          "geometrySha256": "dac40c36310016cc61e9573e14529a38c800289d3bcdfac5611c57bf9f24508c"
+        },
+        {
+          "transportId": 21357,
+          "properties": {
+            "OBJECTID": 21357,
+            "clavetxt": "1-184-075-005"
+          },
+          "geometrySha256": "41c676ca9a77731677a4e3eca78960a5bfb554aafa3edb5ba22739046f70709e"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365188.7162541227%2C3503916.3225295777%2C365217.59333761525%2C3503949.9487292366&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:38.076Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365188.7162541227%2C3503916.3225295777%2C365217.59333761525%2C3503949.9487292366&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:38.309Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 92,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        996,
+        10851,
+        10861,
+        10872,
+        18171,
+        18193,
+        18579,
+        19235
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=996%2C10851%2C10861",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:38.547Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1177,
+      "features": [
+        {
+          "transportId": 996,
+          "properties": {
+            "OBJECTID": 996,
+            "clavetxt": "1-184-081-008"
+          },
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "transportId": 10851,
+          "properties": {
+            "OBJECTID": 10851,
+            "clavetxt": "1-184-081-004"
+          },
+          "geometrySha256": "c4112168f779aced4f239010aede21edb794a1124efda01a90b50e2dd129e5c1"
+        },
+        {
+          "transportId": 10861,
+          "properties": {
+            "OBJECTID": 10861,
+            "clavetxt": "1-184-081-017"
+          },
+          "geometrySha256": "e09ad32d17cc04725cd00639df35e7d029355dd008bcdb2f7f84148c60c69554"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=10872%2C18171%2C18193",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:38.803Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1105,
+      "features": [
+        {
+          "transportId": 10872,
+          "properties": {
+            "OBJECTID": 10872,
+            "clavetxt": "1-184-081-015"
+          },
+          "geometrySha256": "52a4ff64beb83a3bb0a54e3850998a2b0ebb9df942e2b5738358cda09e6341db"
+        },
+        {
+          "transportId": 18171,
+          "properties": {
+            "OBJECTID": 18171,
+            "clavetxt": "1-184-081-016"
+          },
+          "geometrySha256": "3aa5bca56accc540bb270049d38d25a8be538bb64446915685e518cd7cc50da1"
+        },
+        {
+          "transportId": 18193,
+          "properties": {
+            "OBJECTID": 18193,
+            "clavetxt": "1-184-081-020"
+          },
+          "geometrySha256": "c39de86971528be860a6080c83159f8be3593b40c112b617dfad3a63f2ee65e9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18579%2C19235",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:39.067Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 968,
+      "features": [
+        {
+          "transportId": 18579,
+          "properties": {
+            "OBJECTID": 18579,
+            "clavetxt": "1-184-081-001"
+          },
+          "geometrySha256": "b9f01f69ed5148836e4090fdcbd2aa8eb42c907f2a68b430ad68253c12c42b0f"
+        },
+        {
+          "transportId": 19235,
+          "properties": {
+            "OBJECTID": 19235,
+            "clavetxt": "1-184-081-019"
+          },
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365190.44961620227%2C3504049.344949601%2C365219.32634854264%2C3504082.9711629543&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:39.326Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365190.44961620227%2C3504049.344949601%2C365219.32634854264%2C3504082.9711629543&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:39.566Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18741,
+        21662,
+        22020,
+        22034
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18741%2C21662%2C22020",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:39.802Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1635,
+      "features": [
+        {
+          "transportId": 18741,
+          "properties": {
+            "OBJECTID": 18741,
+            "clavetxt": "1-184-075-004"
+          },
+          "geometrySha256": "c0228f88f7d9e5bf17d10e78f8326bfd5a6fb87dbf7fb2c48ae8077d843d95a6"
+        },
+        {
+          "transportId": 21662,
+          "properties": {
+            "OBJECTID": 21662,
+            "clavetxt": "1-184-075-013"
+          },
+          "geometrySha256": "8747e8a3159e539091e636fdc2736ba615988fd07e59e44c96ce65d40c7bc07a"
+        },
+        {
+          "transportId": 22020,
+          "properties": {
+            "OBJECTID": 22020,
+            "clavetxt": "1-184-075-003"
+          },
+          "geometrySha256": "ac03b215fe2e046fb75d9ec710573996f8e0ccfcbf33984d6772431d43b12089"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=22034",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:40.060Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 423,
+      "features": [
+        {
+          "transportId": 22034,
+          "properties": {
+            "OBJECTID": 22034,
+            "clavetxt": "1-184-075-002"
+          },
+          "geometrySha256": "87381c6ba4813741de9034c734a0199ad91d096552de7fb06aed472e6718c294"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365132.6956086808%2C3503983.575012521%2C365161.5727029145%2C3504017.2013794337&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:40.312Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365132.6956086808%2C3503983.575012521%2C365161.5727029145%2C3504017.2013794337&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:40.548Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        20387,
+        20403,
+        21207,
+        21222
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=20387%2C20403%2C21207",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:40.782Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1224,
+      "features": [
+        {
+          "transportId": 20387,
+          "properties": {
+            "OBJECTID": 20387,
+            "clavetxt": "1-184-080-012"
+          },
+          "geometrySha256": "045ac3f12364cea6204c9dfd027a02786b53e41aeb6bf27e9bc743a58824143b"
+        },
+        {
+          "transportId": 20403,
+          "properties": {
+            "OBJECTID": 20403,
+            "clavetxt": "1-184-080-006"
+          },
+          "geometrySha256": "f7ff293f26ce897e7c86634690444142bbd6d8a84d9d88c19d74aad0096ff958"
+        },
+        {
+          "transportId": 21207,
+          "properties": {
+            "OBJECTID": 21207,
+            "clavetxt": "1-184-074-008"
+          },
+          "geometrySha256": "d303e40724588ff38f28e304c147a3db26dff748994454adf18d999de263b779"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=21222",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:41.036Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 381,
+      "features": [
+        {
+          "transportId": 21222,
+          "properties": {
+            "OBJECTID": 21222,
+            "clavetxt": "1-184-074-009"
+          },
+          "geometrySha256": "e60237cf8f221c849c58c26eab4aff5826ddc5dee1e706ee150870c465c72c2b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365246.4702401632%2C3503982.092773773%2C365275.34696176846%2C3504015.718819875&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:41.303Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365246.4702401632%2C3503982.092773773%2C365275.34696176846%2C3504015.718819875&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:41.542Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        19803,
+        19855,
+        19973,
+        20891
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19803%2C19855%2C19973",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:41.790Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1103,
+      "features": [
+        {
+          "transportId": 19803,
+          "properties": {
+            "OBJECTID": 19803,
+            "clavetxt": "1-184-028-006"
+          },
+          "geometrySha256": "44883384a1aa85e7eeea672f312af7938fbdb3d1f55a9439c9f7c9941f697681"
+        },
+        {
+          "transportId": 19855,
+          "properties": {
+            "OBJECTID": 19855,
+            "clavetxt": "1-184-081-006"
+          },
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        },
+        {
+          "transportId": 19973,
+          "properties": {
+            "OBJECTID": 19973,
+            "clavetxt": "1-184-019-015"
+          },
+          "geometrySha256": "89d89fd19a7e1bc2d4931104a21c1842406ab16e9b817087e7a6d50cad514eb4"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=20891",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:42.048Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 505,
+      "features": [
+        {
+          "transportId": 20891,
+          "properties": {
+            "OBJECTID": 20891,
+            "clavetxt": "1-184-075-006"
+          },
+          "geometrySha256": "0835137fc572659aa1932f8aeeecaf2b3b512750ffe3c9981e2612d1ad698c72"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365188.7162541227%2C3503916.3225295777%2C365217.59333761525%2C3503949.9487292366&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:42.297Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365188.7162541227%2C3503916.3225295777%2C365217.59333761525%2C3503949.9487292366&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:42.530Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 92,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        996,
+        10851,
+        10861,
+        10872,
+        18171,
+        18193,
+        18579,
+        19235
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=996%2C10851%2C10861",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:42.787Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1177,
+      "features": [
+        {
+          "transportId": 996,
+          "properties": {
+            "OBJECTID": 996,
+            "clavetxt": "1-184-081-008"
+          },
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "transportId": 10851,
+          "properties": {
+            "OBJECTID": 10851,
+            "clavetxt": "1-184-081-004"
+          },
+          "geometrySha256": "c4112168f779aced4f239010aede21edb794a1124efda01a90b50e2dd129e5c1"
+        },
+        {
+          "transportId": 10861,
+          "properties": {
+            "OBJECTID": 10861,
+            "clavetxt": "1-184-081-017"
+          },
+          "geometrySha256": "e09ad32d17cc04725cd00639df35e7d029355dd008bcdb2f7f84148c60c69554"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=10872%2C18171%2C18193",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:43.012Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1105,
+      "features": [
+        {
+          "transportId": 10872,
+          "properties": {
+            "OBJECTID": 10872,
+            "clavetxt": "1-184-081-015"
+          },
+          "geometrySha256": "52a4ff64beb83a3bb0a54e3850998a2b0ebb9df942e2b5738358cda09e6341db"
+        },
+        {
+          "transportId": 18171,
+          "properties": {
+            "OBJECTID": 18171,
+            "clavetxt": "1-184-081-016"
+          },
+          "geometrySha256": "3aa5bca56accc540bb270049d38d25a8be538bb64446915685e518cd7cc50da1"
+        },
+        {
+          "transportId": 18193,
+          "properties": {
+            "OBJECTID": 18193,
+            "clavetxt": "1-184-081-020"
+          },
+          "geometrySha256": "c39de86971528be860a6080c83159f8be3593b40c112b617dfad3a63f2ee65e9"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18579%2C19235",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:43.242Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 968,
+      "features": [
+        {
+          "transportId": 18579,
+          "properties": {
+            "OBJECTID": 18579,
+            "clavetxt": "1-184-081-001"
+          },
+          "geometrySha256": "b9f01f69ed5148836e4090fdcbd2aa8eb42c907f2a68b430ad68253c12c42b0f"
+        },
+        {
+          "transportId": 19235,
+          "properties": {
+            "OBJECTID": 19235,
+            "clavetxt": "1-184-081-019"
+          },
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=clavetxt+IN+%28%271-184-019-015%27%2C%271-184-028-006%27%2C%271-184-074-008%27%2C%271-184-074-009%27%2C%271-184-075-002%27%2C%271-184-075-003%27%2C%271-184-075-004%27%2C%271-184-075-005%27%2C%271-184-075-006%27%2C%271-184-075-007%27%2C%271-184-075-008%27%2C%271-184-075-009%27%2C%271-184-075-010%27%2C%271-184-075-011%27%2C%271-184-075-012%27%2C%271-184-075-013%27%2C%271-184-080-006%27%2C%271-184-080-012%27%2C%271-184-081-001%27%2C%271-184-081-004%27%2C%271-184-081-006%27%2C%271-184-081-008%27%2C%271-184-081-015%27%2C%271-184-081-016%27%2C%271-184-081-017%27%2C%271-184-081-019%27%2C%271-184-081-020%27%2C%271-184-081-021%27%2C%271-184-081-022%27%2C%271-184-081-023%27%2C%271-184-081-024%27%2C%271-184-081-025%27%2C%271-184-081-026%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:43.469Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 33
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=clavetxt+IN+%28%271-184-019-015%27%2C%271-184-028-006%27%2C%271-184-074-008%27%2C%271-184-074-009%27%2C%271-184-075-002%27%2C%271-184-075-003%27%2C%271-184-075-004%27%2C%271-184-075-005%27%2C%271-184-075-006%27%2C%271-184-075-007%27%2C%271-184-075-008%27%2C%271-184-075-009%27%2C%271-184-075-010%27%2C%271-184-075-011%27%2C%271-184-075-012%27%2C%271-184-075-013%27%2C%271-184-080-006%27%2C%271-184-080-012%27%2C%271-184-081-001%27%2C%271-184-081-004%27%2C%271-184-081-006%27%2C%271-184-081-008%27%2C%271-184-081-015%27%2C%271-184-081-016%27%2C%271-184-081-017%27%2C%271-184-081-019%27%2C%271-184-081-020%27%2C%271-184-081-021%27%2C%271-184-081-022%27%2C%271-184-081-023%27%2C%271-184-081-024%27%2C%271-184-081-025%27%2C%271-184-081-026%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:44.029Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 242,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        10861,
+        19862,
+        20387,
+        21357,
+        18579,
+        19447,
+        19900,
+        22020,
+        20904,
+        18702,
+        10872,
+        19877,
+        20403,
+        996,
+        21423,
+        18658,
+        10851,
+        19855,
+        19973,
+        21222,
+        18193,
+        18741,
+        19803,
+        19912,
+        22034,
+        21207,
+        18171,
+        18716,
+        19235,
+        19885,
+        20891,
+        21662,
+        18683
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=10861%2C19862%2C20387",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:44.539Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1181,
+      "features": [
+        {
+          "transportId": 10861,
+          "properties": {
+            "OBJECTID": 10861,
+            "clavetxt": "1-184-081-017"
+          },
+          "geometrySha256": "e09ad32d17cc04725cd00639df35e7d029355dd008bcdb2f7f84148c60c69554"
+        },
+        {
+          "transportId": 19862,
+          "properties": {
+            "OBJECTID": 19862,
+            "clavetxt": "1-184-081-025"
+          },
+          "geometrySha256": "0370ef235f3e0411f38261417d3eef52ba972326658120383fda731550cc0499"
+        },
+        {
+          "transportId": 20387,
+          "properties": {
+            "OBJECTID": 20387,
+            "clavetxt": "1-184-080-012"
+          },
+          "geometrySha256": "045ac3f12364cea6204c9dfd027a02786b53e41aeb6bf27e9bc743a58824143b"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=21357%2C18579%2C19447",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:44.801Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1552,
+      "features": [
+        {
+          "transportId": 18579,
+          "properties": {
+            "OBJECTID": 18579,
+            "clavetxt": "1-184-081-001"
+          },
+          "geometrySha256": "b9f01f69ed5148836e4090fdcbd2aa8eb42c907f2a68b430ad68253c12c42b0f"
+        },
+        {
+          "transportId": 19447,
+          "properties": {
+            "OBJECTID": 19447,
+            "clavetxt": "1-184-081-022"
+          },
+          "geometrySha256": "0ea17e452b26b92b4f51a99b37ddbb111f6db9d2aa753a487862b77317ee5823"
+        },
+        {
+          "transportId": 21357,
+          "properties": {
+            "OBJECTID": 21357,
+            "clavetxt": "1-184-075-005"
+          },
+          "geometrySha256": "41c676ca9a77731677a4e3eca78960a5bfb554aafa3edb5ba22739046f70709e"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19900%2C22020%2C20904",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:45.057Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1309,
+      "features": [
+        {
+          "transportId": 19900,
+          "properties": {
+            "OBJECTID": 19900,
+            "clavetxt": "1-184-081-026"
+          },
+          "geometrySha256": "d75f3cf0e0191905d5b76f1e7a71c98cc6f26691ad7f864f00668ba112fc218e"
+        },
+        {
+          "transportId": 20904,
+          "properties": {
+            "OBJECTID": 20904,
+            "clavetxt": "1-184-075-007"
+          },
+          "geometrySha256": "dac40c36310016cc61e9573e14529a38c800289d3bcdfac5611c57bf9f24508c"
+        },
+        {
+          "transportId": 22020,
+          "properties": {
+            "OBJECTID": 22020,
+            "clavetxt": "1-184-075-003"
+          },
+          "geometrySha256": "ac03b215fe2e046fb75d9ec710573996f8e0ccfcbf33984d6772431d43b12089"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18702%2C10872%2C19877",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:45.312Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1060,
+      "features": [
+        {
+          "transportId": 10872,
+          "properties": {
+            "OBJECTID": 10872,
+            "clavetxt": "1-184-081-015"
+          },
+          "geometrySha256": "52a4ff64beb83a3bb0a54e3850998a2b0ebb9df942e2b5738358cda09e6341db"
+        },
+        {
+          "transportId": 18702,
+          "properties": {
+            "OBJECTID": 18702,
+            "clavetxt": "1-184-075-010"
+          },
+          "geometrySha256": "e1c030e6d62295e29a4824da47fc00d465ba524cdf770f8f2a119ec91861676a"
+        },
+        {
+          "transportId": 19877,
+          "properties": {
+            "OBJECTID": 19877,
+            "clavetxt": "1-184-081-024"
+          },
+          "geometrySha256": "9177e3489434a9470e5baca190ffb1cf170e8385d5452b37c2b0b186de1dc45d"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=20403%2C996%2C21423",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:45.568Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1466,
+      "features": [
+        {
+          "transportId": 996,
+          "properties": {
+            "OBJECTID": 996,
+            "clavetxt": "1-184-081-008"
+          },
+          "geometrySha256": "7086968a9d8929f42e0729434f35096b422c06b56ad3fdc428187361cb67e5a2"
+        },
+        {
+          "transportId": 20403,
+          "properties": {
+            "OBJECTID": 20403,
+            "clavetxt": "1-184-080-006"
+          },
+          "geometrySha256": "f7ff293f26ce897e7c86634690444142bbd6d8a84d9d88c19d74aad0096ff958"
+        },
+        {
+          "transportId": 21423,
+          "properties": {
+            "OBJECTID": 21423,
+            "clavetxt": "1-184-075-012"
+          },
+          "geometrySha256": "4a7f7f4e94310c80ef6b58ab6b1be878156f25c687e35173c107ad57e5ff2239"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18658%2C10851%2C19855",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:45.823Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1105,
+      "features": [
+        {
+          "transportId": 10851,
+          "properties": {
+            "OBJECTID": 10851,
+            "clavetxt": "1-184-081-004"
+          },
+          "geometrySha256": "c4112168f779aced4f239010aede21edb794a1124efda01a90b50e2dd129e5c1"
+        },
+        {
+          "transportId": 18658,
+          "properties": {
+            "OBJECTID": 18658,
+            "clavetxt": "1-184-075-008"
+          },
+          "geometrySha256": "de1992f046b3221dbd64be13e4a3b9474b47fe8ba737210957e72dce72ffbb05"
+        },
+        {
+          "transportId": 19855,
+          "properties": {
+            "OBJECTID": 19855,
+            "clavetxt": "1-184-081-006"
+          },
+          "geometrySha256": "0f2f027cd2da37171ea716e4bf2876c1bfa50581ce338534725a6033ac19bba7"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=19973%2C21222%2C18193",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:46.084Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1147,
+      "features": [
+        {
+          "transportId": 18193,
+          "properties": {
+            "OBJECTID": 18193,
+            "clavetxt": "1-184-081-020"
+          },
+          "geometrySha256": "c39de86971528be860a6080c83159f8be3593b40c112b617dfad3a63f2ee65e9"
+        },
+        {
+          "transportId": 19973,
+          "properties": {
+            "OBJECTID": 19973,
+            "clavetxt": "1-184-019-015"
+          },
+          "geometrySha256": "89d89fd19a7e1bc2d4931104a21c1842406ab16e9b817087e7a6d50cad514eb4"
+        },
+        {
+          "transportId": 21222,
+          "properties": {
+            "OBJECTID": 21222,
+            "clavetxt": "1-184-074-009"
+          },
+          "geometrySha256": "e60237cf8f221c849c58c26eab4aff5826ddc5dee1e706ee150870c465c72c2b"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18741%2C19803%2C19912",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:46.340Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1142,
+      "features": [
+        {
+          "transportId": 18741,
+          "properties": {
+            "OBJECTID": 18741,
+            "clavetxt": "1-184-075-004"
+          },
+          "geometrySha256": "c0228f88f7d9e5bf17d10e78f8326bfd5a6fb87dbf7fb2c48ae8077d843d95a6"
+        },
+        {
+          "transportId": 19803,
+          "properties": {
+            "OBJECTID": 19803,
+            "clavetxt": "1-184-028-006"
+          },
+          "geometrySha256": "44883384a1aa85e7eeea672f312af7938fbdb3d1f55a9439c9f7c9941f697681"
+        },
+        {
+          "transportId": 19912,
+          "properties": {
+            "OBJECTID": 19912,
+            "clavetxt": "1-184-081-021"
+          },
+          "geometrySha256": "4d7537984268792313a4a1c68620ca6298b626ae15b7c5cf0ad172bbaf520875"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=22034%2C21207%2C18171",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:46.595Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1105,
+      "features": [
+        {
+          "transportId": 18171,
+          "properties": {
+            "OBJECTID": 18171,
+            "clavetxt": "1-184-081-016"
+          },
+          "geometrySha256": "3aa5bca56accc540bb270049d38d25a8be538bb64446915685e518cd7cc50da1"
+        },
+        {
+          "transportId": 21207,
+          "properties": {
+            "OBJECTID": 21207,
+            "clavetxt": "1-184-074-008"
+          },
+          "geometrySha256": "d303e40724588ff38f28e304c147a3db26dff748994454adf18d999de263b779"
+        },
+        {
+          "transportId": 22034,
+          "properties": {
+            "OBJECTID": 22034,
+            "clavetxt": "1-184-075-002"
+          },
+          "geometrySha256": "87381c6ba4813741de9034c734a0199ad91d096552de7fb06aed472e6718c294"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18716%2C19235%2C19885",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:46.855Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1227,
+      "features": [
+        {
+          "transportId": 18716,
+          "properties": {
+            "OBJECTID": 18716,
+            "clavetxt": "1-184-075-011"
+          },
+          "geometrySha256": "4ca7434345b2ae06f72521fe3c9a3c83b1c64bd8605244f3c4b51e3994550caa"
+        },
+        {
+          "transportId": 19235,
+          "properties": {
+            "OBJECTID": 19235,
+            "clavetxt": "1-184-081-019"
+          },
+          "geometrySha256": "17b66dbb5ba3a473d4e8467e97e54154c874297616d3a0e3a6aeeca12915ccc6"
+        },
+        {
+          "transportId": 19885,
+          "properties": {
+            "OBJECTID": 19885,
+            "clavetxt": "1-184-081-023"
+          },
+          "geometrySha256": "f76f53ac9702fa3f0074ccd26fbdf9f1fb28070552c33f682376e0f957afd9a9"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=20891%2C21662%2C18683",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:47.117Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1595,
+      "features": [
+        {
+          "transportId": 18683,
+          "properties": {
+            "OBJECTID": 18683,
+            "clavetxt": "1-184-075-009"
+          },
+          "geometrySha256": "79f6b1d1e47ceffbccbc053642d1d494082182887a78ce129bd1243b45241762"
+        },
+        {
+          "transportId": 20891,
+          "properties": {
+            "OBJECTID": 20891,
+            "clavetxt": "1-184-075-006"
+          },
+          "geometrySha256": "0835137fc572659aa1932f8aeeecaf2b3b512750ffe3c9981e2612d1ad698c72"
+        },
+        {
+          "transportId": 21662,
+          "properties": {
+            "OBJECTID": 21662,
+            "clavetxt": "1-184-075-013"
+          },
+          "geometrySha256": "8747e8a3159e539091e636fdc2736ba615988fd07e59e44c96ce65d40c7bc07a"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=clavetxt+IN+%28%27NOT-A-REAL-JUAREZ-PREDIO-999999%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:47.378Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=clavetxt+IN+%28%27NOT-A-REAL-JUAREZ-PREDIO-999999%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:47.699Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365186.5347521699%2C3503901.737040843%2C365201.5687546899%2C3503933.4144973895&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:48.017Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "footprint",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365186.5347521699%2C3503901.737040843%2C365201.5687546899%2C3503933.4144973895&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:48.257Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        10872,
+        18171,
+        18193,
+        18579
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=10872%2C18171%2C18193",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:48.492Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1105,
+      "features": [
+        {
+          "transportId": 10872,
+          "properties": {
+            "OBJECTID": 10872,
+            "clavetxt": "1-184-081-015"
+          },
+          "geometrySha256": "52a4ff64beb83a3bb0a54e3850998a2b0ebb9df942e2b5738358cda09e6341db"
+        },
+        {
+          "transportId": 18171,
+          "properties": {
+            "OBJECTID": 18171,
+            "clavetxt": "1-184-081-016"
+          },
+          "geometrySha256": "3aa5bca56accc540bb270049d38d25a8be538bb64446915685e518cd7cc50da1"
+        },
+        {
+          "transportId": 18193,
+          "properties": {
+            "OBJECTID": 18193,
+            "clavetxt": "1-184-081-020"
+          },
+          "geometrySha256": "c39de86971528be860a6080c83159f8be3593b40c112b617dfad3a63f2ee65e9"
+        }
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18579",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:48.722Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 505,
+      "features": [
+        {
+          "transportId": 18579,
+          "properties": {
+            "OBJECTID": 18579,
+            "clavetxt": "1-184-081-001"
+          },
+          "geometrySha256": "b9f01f69ed5148836e4090fdcbd2aa8eb42c907f2a68b430ad68253c12c42b0f"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365186.5347521699%2C3503901.737040843%2C365201.5687546899%2C3503933.4144973895&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:48.978Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "source-binding",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=365186.5347521699%2C3503901.737040843%2C365201.5687546899%2C3503933.4144973895&geometryType=esriGeometryEnvelope&inSR=32613&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:49.213Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        10872,
+        18171,
+        18193,
+        18579
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=10872%2C18171%2C18193",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:49.455Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1105,
+      "features": [
+        {
+          "transportId": 10872,
+          "properties": {
+            "OBJECTID": 10872,
+            "clavetxt": "1-184-081-015"
+          },
+          "geometrySha256": "52a4ff64beb83a3bb0a54e3850998a2b0ebb9df942e2b5738358cda09e6341db"
+        },
+        {
+          "transportId": 18171,
+          "properties": {
+            "OBJECTID": 18171,
+            "clavetxt": "1-184-081-016"
+          },
+          "geometrySha256": "3aa5bca56accc540bb270049d38d25a8be538bb64446915685e518cd7cc50da1"
+        },
+        {
+          "transportId": 18193,
+          "properties": {
+            "OBJECTID": 18193,
+            "clavetxt": "1-184-081-020"
+          },
+          "geometrySha256": "c39de86971528be860a6080c83159f8be3593b40c112b617dfad3a63f2ee65e9"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson&objectIds=18579",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:42:49.680Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 505,
+      "features": [
+        {
+          "transportId": 18579,
+          "properties": {
+            "OBJECTID": 18579,
+            "clavetxt": "1-184-081-001"
+          },
+          "geometrySha256": "b9f01f69ed5148836e4090fdcbd2aa8eb42c907f2a68b430ad68253c12c42b0f"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/juarez-predios-quality.json",
+  "uniqueParcels": 33,
+  "requestCount": 82,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T23:42:49.917Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

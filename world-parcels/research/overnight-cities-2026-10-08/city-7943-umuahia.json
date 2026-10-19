@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Umuahia",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage.",
+  "registryEvidenceUrls": [
+    "https://abiastate.gov.ng/wp-content/uploads/2024/11/Abia-State-Process-of-CoFOs_032623.pdf",
+    "https://services.abiastate.gov.ng/services/property",
+    "https://landsandhousing.abiastate.gov.ng/services/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7943,
+  "cityId": "wup2025:7943",
+  "centerLatLon": [
+    5.50188268456577,
+    7.49135433094146
+  ],
+  "rank": 622,
+  "queueRank": 622,
+  "population2025": 843245,
+  "population2025k": 843.245,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The verified Umuahia land-office workflows are document/application based and require ownership or survey-plan materials. No anonymous full-polygon service/schema was verified; no application or property query was submitted.",
+  "scopeLimits": "First-party source discovery only. No owner, address, tax, personal-identity, credential, account, or property-identifier lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Whether an anonymous city-scoped full-polygon service exists and whether the WUP point corresponds to the named local record unit remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Umuahia Abia State official land registry survey cadastral parcel map GIS",
+        "scope": "Find official local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "result": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage.",
+        "actualResultUrls": [
+          "https://abiastate.gov.ng/wp-content/uploads/2024/11/Abia-State-Process-of-CoFOs_032623.pdf",
+          "https://services.abiastate.gov.ng/services/property",
+          "https://landsandhousing.abiastate.gov.ng/services/"
+        ]
+      },
+      {
+        "language": "Igbo",
+        "query": "Umuahia ndekọ ala Abia State Ministry of Lands Survey cadastral official",
+        "scope": "Find native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+        "result": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage.",
+        "actualResultUrls": [
+          "https://abiastate.gov.ng/wp-content/uploads/2024/11/Abia-State-Process-of-CoFOs_032623.pdf",
+          "https://services.abiastate.gov.ng/services/property",
+          "https://landsandhousing.abiastate.gov.ng/services/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://abiastate.gov.ng/wp-content/uploads/2024/11/Abia-State-Process-of-CoFOs_032623.pdf",
+        "observation": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage."
+      },
+      {
+        "url": "https://services.abiastate.gov.ng/services/property",
+        "observation": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage."
+      },
+      {
+        "url": "https://landsandhousing.abiastate.gov.ng/services/",
+        "observation": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage."
+      }
+    ],
+    "metadataReviewFile": "umuahia-service-review.json"
+  },
+  "source": {
+    "sourceId": "ng-umuahia-registry-review",
+    "name": "Umuahia local registry/cadastre route review",
+    "operator": "Abia State Ministry of Lands, Survey & Urban Planning / Zonal Land Office, Umuahia",
+    "url": "https://abiastate.gov.ng/wp-content/uploads/2024/11/Abia-State-Process-of-CoFOs_032623.pdf",
+    "scope": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "An Abia State Ministry process document locates a Zonal Land Office in Umuahia and states it processes Certificates of Occupancy, title confirmation through the Deeds Registry/ABIAGIS, survey charting and inspection. The state property portal documents land-title/registration workflows requiring applicant identity and supporting property documents. This confirms a local Umuahia office and record service, not open parcel geometry or citywide coverage.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "point": [
+    5.50188268456577,
+    7.49135433094146
+  ],
+  "rootReviewedAt": "2026-10-09T02:08:28.000160+00:00"
+}

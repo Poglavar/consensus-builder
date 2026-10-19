@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 38,
+  "city": "Tehran",
+  "countryCode": "IR",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/tehran.json",
+  "query": {
+    "language": "Persian",
+    "script": "Perso-Arabic",
+    "text": "تهران نقشه کاداستر املاک سازمان ثبت اسناد داده مکانی سایت دولتی"
+  },
+  "results": [
+    {
+      "title": "Iran National Cartographic Center",
+      "url": "https://www.ncc.gov.ir/",
+      "kind": "official-national-mapping-agency",
+      "note": "Search did not return a current Tehran cadastral parcel service; this agency reference is only a possible authoritative map-data lead."
+    }
+  ],
+  "assessment": "Native-script search did not surface a verifiable public Tehran cadastral vector endpoint. No-source conclusion is not drawn.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:5264",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Persian",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "تهران نقشه کاداستر املاک سازمان ثبت اسناد داده مکانی سایت دولتی",
+    "englishQuery": "Tehran cadastral land map, land registration organization, and government spatial data",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:61",
+  "queueRank": 61,
+  "name": "Chaozhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    23.652988715908,
+    116.320090416427
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://guangdong.tianditu.gov.cn/",
+      "observation": "Guangdong provincial Tianditu platform loads (200). Its Guangzhou service path exposes only point layers for land-right records (see guangzhou.json); a /chaozhou/ path returned 404."
+    },
+    {
+      "url": "https://www.chaozhou.gov.cn/",
+      "observation": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://guangdong.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "provincial map platform landing page"
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/chaozhou/",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "no Chaozhou service path"
+    },
+    {
+      "url": "https://www.gdcz.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.chaozhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "none established",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Municipal hosts were unreachable and only the provincial landing page was checked; a Chaozhou real-estate-registration map may exist but no polygon query was found or tested.",
+  "nextStep": "Find Chaozhou's natural-resources bureau map service (Guangdong 粤省事/不动产 query) and test a bounded polygon response."
+}

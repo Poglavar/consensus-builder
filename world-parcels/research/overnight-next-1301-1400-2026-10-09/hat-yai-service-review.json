@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3528-hat-yai.json",
+  "cohort": "overnight-next-1301-1400",
+  "purpose": "Review official Thai cadastral/public-land map channels for safe anonymous geometry and stable parcel identity for Hat Yai.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Department of Lands LandsPublic viewer and its current JavaScript were retrieved anonymously. The viewer's point route returned an official no-data response at the exact WUP point. Its declared GeoServer WFS capabilities exposed administrative boundaries and a public-land layer, not cadastral parcel features; the bounded public-land query returned zero features. No parcel geometry or native parcel identity was retained.",
+  "registryAssessment": "The official Songkhla Provincial Land Office identifies the local Department of Lands custodian, and the official Ministry/Department notice assigns Hat Yai district to the Songkhla Provincial Land Office Hat Yai Branch for deed issuance, surveying, registration, and related real-property matters. This is local registry/custodian evidence, not proof of an open cadastral vector API.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hat Yai Thailand official cadastral parcel map GIS land records Department of Lands",
+      "result": "Official Department of Lands viewer and Songkhla land-office sources found; no safe anonymous cadastral polygon/native parcel ID verified.",
+      "actualResultUrls": ["https://portal.dol.go.th/landspublic/", "https://www.dol.go.th/songkhla/", "https://www.dol.go.th/songkhla/contact/"]
+    },
+    {
+      "language": "Thai",
+      "query": "หาดใหญ่ แผนที่โฉนดที่ดิน ระบบสารสนเทศภูมิศาสตร์ กรมที่ดิน",
+      "result": "พบแหล่งทางการของกรมที่ดินและสำนักงานที่ดินจังหวัดสงขลา แต่ไม่พบรูปหลายเหลี่ยมแปลงที่ดินแบบไม่ระบุตัวตนที่ปลอดภัยสำหรับเก็บไว้.",
+      "actualResultUrls": ["https://portal.dol.go.th/landspublic/", "https://www.dol.go.th/songkhla/home/", "https://www.dol.go.th/songkhla/parcel/"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://portal.dol.go.th/landspublic/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Retrieved current viewer HTML anonymously."
+    },
+    {
+      "url": "https://portal.dol.go.th/landspublic/js/app.js?v=1.6",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Retrieved current JavaScript and documented point-query, WMS, WFS, and public-land layer routes."
+    },
+    {
+      "url": "https://portal.dol.go.th/api/nsldata/search-by-point?lat=7.00808972990678&lng=100.473261275137",
+      "method": "GET",
+      "httpStatus": 404,
+      "result": "With viewer referer/origin and anonymous session, returned {success:false,message:\"No data found at this location\"}. This is a public-land/NSL route, not proof of cadastral parcel absence."
+    },
+    {
+      "url": "https://portal.dol.go.th/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Capabilities returned EPSG:4326 layers province, amphoe, tambol, DOL_Bound, and DOLNSL only; no cadastral parcel feature type was listed."
+    },
+    {
+      "url": "https://portal.dol.go.th/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=LPCPUBLIC:DOLNSL&outputFormat=application/json&srsName=EPSG:4326&bbox=100.4725,7.0075,100.4740,7.0087,EPSG:4326&count=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Returned an empty GeoJSON FeatureCollection with totalFeatures 0 and numberReturned 0."
+    },
+    {
+      "url": "https://portal.dol.go.th/geoserver/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "WMS capabilities confirmed the same administrative/public-land layer scope; no parcel layer was exposed."
+    },
+    {
+      "url": "https://www.dol.go.th/songkhla/contact/",
+      "method": "GET via official discovery",
+      "httpStatus": 200,
+      "result": "Confirmed official Songkhla Provincial Land Office custodian page."
+    },
+    {
+      "url": "https://www.dol.go.th/media/716929789247754240/migration/2025/10/uzcU4HVeNxt86n3ykWoKd09s.PDF",
+      "method": "GET via official discovery",
+      "httpStatus": 200,
+      "result": "Official notice confirms Hat Yai Branch responsibility for Hat Yai district land-office operations."
+    }
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "The exact WUP point was sent unchanged to the viewer-declared public-land point route; it returned 404 no data. No cadastral parcel query route was exposed.",
+    "requestEvidence": [
+      {"url": "https://portal.dol.go.th/api/nsldata/search-by-point?lat=7.00808972990678&lng=100.473261275137", "method": "GET", "httpStatus": 404, "result": "No data found at this location"},
+      {"url": "https://portal.dol.go.th/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=LPCPUBLIC:DOLNSL&outputFormat=application/json&srsName=EPSG:4326&bbox=100.4725,7.0075,100.4740,7.0087,EPSG:4326&count=3", "method": "GET", "httpStatus": 200, "result": "Empty FeatureCollection"}
+    ]
+  },
+  "sourceFieldMapping": {
+    "viewerRoute": "nsldata/search-by-point",
+    "publicLayer": "LPCPUBLIC:DOLNSL",
+    "declaredCrs": "EPSG:4326",
+    "interpretation": "These are public-land/administrative service fields, not a cadastral parcel identity schema; no source field set was retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Department of Lands viewer/configuration and GeoServer capabilities, exact point, bounded public-land query, and local Songkhla/Hat Yai custodian pages.",
+    "verifiedOpenScope": "Viewer and public service routes are verified, but open cadastral parcel-vector access, stable parcel identity, exact-point parcel containment, and citywide coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "administrative hierarchy codes and names", "HTTP status and response size"],
+  "runtimeReadiness": "held",
+  "nextStep": "Serial reviewer may re-check the official viewer and any newly declared public cadastral route. Qualify runtime only after independently verifying safe native ID plus geometry and adapter behavior.",
+  "remainingUncertainty": "The public viewer may provide parcel search through an interactive workflow not exposed by this packet's anonymous route inspection. The no-data point response and absent WFS parcel layer are not evidence of citywide cadastral absence.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

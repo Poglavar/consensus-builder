@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:16:47.191176+00:00",
+  "cityId": "dublin",
+  "sourceId": "ie-tailte-hvd-freehold",
+  "url": "http://localhost:5640/?city=dublin&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1",
+  "browser": "dedicated headed Chrome via agent-browser europe-dublin-ui",
+  "initialCenterLatLon": [
+    53.33024347233096,
+    -6.2733274698257455
+  ],
+  "expectedWupCenterLatLon": [
+    53.330243126706,
+    -6.27332800239088
+  ],
+  "initialLoadedParcelCount": 224,
+  "selectedNativeParcelId": "IE-SP-4828269",
+  "actualPointerClick": {
+    "x": 512,
+    "y": 334,
+    "downUp": true
+  },
+  "detailsHeadingVerified": true,
+  "uncaughtErrors": [],
+  "screenshot": "ignored tmp/overnight-cities-2026-10-09/dublin-parcel-details.png",
+  "screenshotVisuallyInspected": true,
+  "basemapVerification": "Tiles initially stalled; later screenshot shows partially loaded OSM basemap with gray gaps. Local curl tile response had x-blocked Access denied header. Full basemap availability is not verified.",
+  "browserClosed": true,
+  "status": "parcel_render_and_selection_verified_basemap_partial"
+}

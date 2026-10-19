@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:47:51Z",
+  "purpose": "Bounded protocol follow-through for the public HMS Landeignaskra viewer proxy, based on the named-country recheck and existing safe samples.",
+  "priorEvidence": {
+    "file": "named-country-recheck-current.json",
+    "priorCheckedAt": "2026-10-09T08:10:56Z",
+    "sampleFile": "named-country-recheck-IS-samples.json",
+    "durableSampleCount": 3,
+    "priorBboxCount": 4,
+    "nativeCrs": "EPSG:3057"
+  },
+  "sandboxFailureHistory": {
+    "executionContext": "restricted sandbox network; not an escalated public network request",
+    "attemptedAt": "2026-10-09T08:44:39Z",
+    "result": "curl exit 6; HTTP 000; local resolver reported Could not resolve host: landeignaskra.hms.is",
+    "interpretation": "This was a sandbox DNS failure and does not establish endpoint unavailability."
+  },
+  "escalatedLiveChecks": {
+    "executionContext": "authorized require_escalated public read-only network",
+    "concurrency": 1,
+    "authentication": "none",
+    "cookies": "none",
+    "viewerScript": {
+      "url": "https://landeignaskra.hms.is/_next/static/chunks/3796-bcc04733f651d800.js",
+      "httpStatus": 200,
+      "bytes": 82657,
+      "lastModified": "2026-10-08T15:32:51Z",
+      "etag": "W/\"142e1-1a11c2554b8\"",
+      "cacheControl": "public, max-age=31536000, immutable",
+      "observedGeometryLoader": "OpenLayers extent is joined with commas and fetched at /api/geo/wfs/landeign?bbox=<extent>; the response is decoded by GeoJSON readFeatures. The loader declares id=landeign and strategy=bbox. This loader supplies no ID predicate, count, startIndex, page or limit parameter."
+    },
+    "boundedBboxRequests": [
+      {
+        "bbox": "357000,406400,357300,406700",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bytes": 9373,
+        "responseSha256": "8250d86b19e4e17b78dc35a9a733844ec1b2e8d16a2b82244a0a5e75b88cdbf5",
+        "totalFeatures": 4,
+        "returned": 4,
+        "crs": "urn:ogc:def:crs:EPSG::3057",
+        "ids": ["221261", "106748", "106641", "106745"],
+        "canonicalGeometrySha256ById": {
+          "221261": "70a73b5a55770f935fc253cc9ea76a2dcfb6af68cb9ca4c9664cf2f59313d6d5",
+          "106748": "d42501840a5f014ec737d22882751d088d1788a18203f8a8b736a60d126cbb39",
+          "106641": "1129c6f744e2e598b45704366936d60085090b9eeb7bfa7bbf3173aa8e54d6c3",
+          "106745": "6fbcd819c4d9931996b447ad210844a9a3b45f02e606976354bdeed6d97ae86c"
+        },
+        "returnedProperties": ["LANDEIGN_NR", "SKIKI_AUDK"],
+        "geometryTypes": ["Polygon", "Polygon", "Polygon", "Polygon"]
+      },
+      {
+        "bbox": "357000,406400,357300,406700",
+        "purpose": "Sequential same-query stability check",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bytes": 9373,
+        "responseSha256": "8250d86b19e4e17b78dc35a9a733844ec1b2e8d16a2b82244a0a5e75b88cdbf5",
+        "totalFeatures": 4,
+        "returned": 4,
+        "crs": "urn:ogc:def:crs:EPSG::3057"
+      }
+    ],
+    "freshness": {
+      "repeatIntervalSeconds": 58,
+      "bboxResponseDateHeaders": ["2026-10-09T08:45:53Z", "2026-10-09T08:46:51Z"],
+      "bboxResponseLastModified": null,
+      "bboxResponseEtag": null,
+      "bboxResponseCacheControl": null,
+      "interpretation": "The same four-feature body/hash recurred 58 seconds later. The response exposes no modification or cache validator, so this supports only short-interval count/body stability, not dataset publication freshness."
+    },
+    "identity": {
+      "nativeIdentifierField": "LANDEIGN_NR",
+      "nativeIdentifierTypeObserved": "integer JSON value; normalized to string in the durable safe sample",
+      "viewerFeatureIdentityLogic": "The current viewer's setId uses ae:<AE_SKIKI_NR> when present; otherwise ln:<LANDEIGN_NR>:<SKIKI_AUDK>. GeoServer Feature.id is a separate MV_LANDEIGNASKRA_TINY.fid value. Therefore LANDEIGN_NR names the land unit but is not sufficient as the viewer's polygon-part identity when SKIKI_AUDK distinguishes pieces.",
+      "knownSampleGeometryRecheck": {
+        "method": "The same bounded anonymous bbox response was compared in memory by LANDEIGN_NR to each already-retained full geometry.",
+        "ids": ["221261", "106748", "106641"],
+        "allThreeCanonicalGeometryHashesMatch": true,
+        "additionalReturnedId": "106745",
+        "geometryPersisted": false
+      },
+      "knownIdQueryAttempt": {
+        "requestParameter": "LANDEIGN_NR=221261, together with the same bbox",
+        "httpStatus": 200,
+        "totalFeatures": 4,
+        "responseSha256": "8250d86b19e4e17b78dc35a9a733844ec1b2e8d16a2b82244a0a5e75b88cdbf5",
+        "interpretation": "The parameter did not narrow the bbox response; it is not a verified exact-ID lookup."
+      },
+      "nativeShapedAbsenceQueryAttempt": {
+        "requestParameter": "LANDEIGN_NR=999999999, together with the same bbox",
+        "httpStatus": 200,
+        "totalFeatures": 4,
+        "responseSha256": "8250d86b19e4e17b78dc35a9a733844ec1b2e8d16a2b82244a0a5e75b88cdbf5",
+        "interpretation": "The parameter did not narrow or empty the bbox response. This is not an absence result."
+      }
+    },
+    "pagingProbe": {
+      "parameters": "count=1&startIndex=1, together with the same bbox",
+      "httpStatus": 200,
+      "totalFeatures": 4,
+      "returned": 4,
+      "responseSha256": "8250d86b19e4e17b78dc35a9a733844ec1b2e8d16a2b82244a0a5e75b88cdbf5",
+      "interpretation": "Standard count/startIndex parameters had no effect. The viewer and observed route expose bbox retrieval only; server cap and pagination remain unsupported/unverified."
+    },
+    "axisAndOutput": {
+      "bboxParameterOrder": "minX,minY,maxX,maxY in OpenLayers extent order",
+      "bboxCrs": "EPSG:3057",
+      "response": "GeoJSON-like FeatureCollection with explicit legacy crs.name=urn:ogc:def:crs:EPSG::3057",
+      "coordinateOrderObserved": "[x,y] in native projected easting/northing ranges; no WGS84 reprojection was applied in this proxy response."
+    }
+  },
+  "qualification": {
+    "anonymousGeometryAndBboxRead": "verified for this bounded Reykjavik window",
+    "knownNativeIdGeometry": "known sample geometries reappeared within the same bbox; exact-ID lookup is not verified",
+    "explicitAbsentId": "not verified; the only tested native-ID parameter was ignored",
+    "pagingAndServerCap": "not verified; count/startIndex were ignored in the bounded probe",
+    "datasetFreshness": "not verified; count and body were stable across two reads 58 seconds apart, with no bbox modification validator",
+    "widerCoverageOrRuntimeAdmission": "not established by this protocol check"
+  },
+  "scope": {
+    "durablePolygonsAdded": 0,
+    "totalDurableIcelandPolygons": 3,
+    "rawResponseRetained": false,
+    "catalogRegistryOrRuntimeChanges": false
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-583-haifa.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Haifa publishes planning-lot GIS, but no city legal cadastral registry custody or safe parcel layer was established; the national Survey of Israel cadastre remains outside city-level custody.",
+  "registryAssessment": "No city-level legal cadastral custodian was established; cited official map evidence is planning or another limited subject.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.haifa.muni.il/development-and-construction/urban-planning/",
+      "operator": "Haifa Municipality",
+      "observation": "Official city planning department describes GIS and block/parcel lookup tools. The inspected service layer is “planning parcels” (חלקות תב״ע), a planning designation layer, not a legal cadastral parcel register."
+    },
+    {
+      "url": "https://gisserver.haifa.muni.il/arcgiswebadaptor/rest/services/PublicSite/Haifa_Eng_Public/MapServer/7",
+      "operator": "Haifa Municipal GIS",
+      "observation": "Search-indexed layer is planning lots; direct metadata GET timed out. It is not used as legal parcel geometry evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Haifa Israel official GIS cadastral parcels map land registry",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://www.haifa.muni.il/development-and-construction/urban-planning/",
+        "https://gisserver.haifa.muni.il/arcgiswebadaptor/rest/services/PublicSite/Haifa_Eng_Public/MapServer/7"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "Hebrew",
+      "query": "חיפה מפה קדסטרית חלקות מקרקעין מינהל התכנון עיריית חיפה",
+      "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://www.haifa.muni.il/development-and-construction/urban-planning/",
+        "https://gisserver.haifa.muni.il/arcgiswebadaptor/rest/services/PublicSite/Haifa_Eng_Public/MapServer/7"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact WUP point; publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://www.haifa.muni.il/development-and-construction/urban-planning/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 482,
+        "contentType": "text/html",
+        "bytesRead": 302,
+        "assessment": "HTTP 482 access-edge response"
+      },
+      {
+        "url": "https://gisserver.haifa.muni.il/arcgiswebadaptor/rest/services/PublicSite/Haifa_Eng_Public/MapServer/7",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 28; connection timed out after 20 seconds; no HTTP response"
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Haifa publishes planning-lot GIS, but no city legal cadastral registry custody or safe parcel layer was established; the national Survey of Israel cadastre remains outside city-level custody.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.haifa.muni.il/development-and-construction/urban-planning/",
+      "result": "HTTP 482 text/html; 302 response bytes. HTTP 482 access-edge response"
+    },
+    {
+      "url": "https://gisserver.haifa.muni.il/arcgiswebadaptor/rest/services/PublicSite/Haifa_Eng_Public/MapServer/7",
+      "result": "No HTTP response: curl exit 28; connection timed out after 20 seconds; no HTTP response. "
+    }
+  ],
+  "remainingUncertainty": "Haifa publishes planning-lot GIS, but no city legal cadastral registry custody or safe parcel layer was established; the national Survey of Israel cadastre remains outside city-level custody. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "runtimeAssessment": "not enabled; no full parcel geometry retained",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Haifa publishes planning-lot GIS, but no city legal cadastral registry custody or safe parcel layer was established; the national Survey of Israel cadastre remains outside city-level custody.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

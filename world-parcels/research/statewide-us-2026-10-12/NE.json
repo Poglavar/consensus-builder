@@ -1,0 +1,55 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NE",
+ "checkedAt": "2026-10-12",
+ "status": "held",
+ "category": "held",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "6965",
+   "name": "Omaha",
+   "lat": 41.2670137658623,
+   "lon": -95.9912619235591,
+   "pop2025k": 248.059,
+   "rank": 2357
+  },
+  {
+   "cityCode": "6890",
+   "name": "Lincoln",
+   "lat": 40.7977582347399,
+   "lon": -96.6585931737017,
+   "pop2025k": 178.522,
+   "rank": 3391
+  },
+  {
+   "cityCode": "6950",
+   "name": "Chalco",
+   "lat": 41.1931996103983,
+   "lon": -96.1594559210902,
+   "pop2025k": 51.948,
+   "rank": 11830
+  }
+ ],
+ "endpoint": "https://gis.ne.gov/Enterprise/rest/services/StatewideParcelsExternal/FeatureServer/0",
+ "reason": "TCP connection to port 443 timed out from this network on every attempt (no HTTP response), including the alternate host giscat.ne.gov; probably network-level filtering. Unverified; no descriptor staged.",
+ "attempts": [
+  {
+   "ts": "2026-10-12T10:49:01Z",
+   "tool": "node fetch",
+   "result": "UND_ERR_CONNECT_TIMEOUT (10 s)"
+  },
+  {
+   "ts": "2026-10-12T11:02:26Z",
+   "tool": "curl",
+   "result": "connect timeout after 25 s"
+  },
+  {
+   "ts": "2026-10-12T11:03:28Z",
+   "tool": "curl",
+   "url": "https://giscat.ne.gov/agency/rest/services/TaxParcelsDED/MapServer/0?f=json",
+   "result": "connect timeout after 20 s"
+  }
+ ],
+ "priorNotes": "Prior evidence (research/subnational/US/NE.json) reached the layer through a proxy and recorded State_PID, Parcel_ID and County_ID; uniqueness and adapter behaviour remain unverified."
+}

@@ -1,0 +1,65 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:PG:port-moresby",
+  "name": "Port Moresby",
+  "country": "Papua New Guinea",
+  "countryCode": "PG",
+  "centerLatLon": [
+    -9.45,
+    147.183333
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/PG.json",
+    "research/retry/countries/PG.json (DLPP/portal searched, no open capital geometry)."
+  ],
+  "priorEvidenceAssessment": "research/countries/PG.json; research/retry/countries/PG.json (DLPP/portal searched, no open capital geometry).",
+  "executedQueries": [
+    {
+      "query": "Port Moresby Papua New Guinea cadastral parcels GIS land registry portal",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Papua New Guinea cadastral map plot data Port Moresby GIS Tok Pisin graun map",
+      "language": "Tok Pisin-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://dlpp.gov.pg/",
+      "observation": "Official DLPP site lists land registry/mapping functions; eLands portal was opened and returned a 403 authorization page, not parcel geometry. Historic map-book catalog entry is copyrighted and not used as sample."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dlpp.gov.pg/elands",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "outcome": "Official eLands portal inspection showed an access-denied 403 page; web tool does not expose a transport status."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-port-moresby.json"
+}

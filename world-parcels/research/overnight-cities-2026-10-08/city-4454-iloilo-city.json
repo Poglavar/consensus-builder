@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Iloilo City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "rank": 750,
+  "point": [
+    10.7198565023086,
+    122.537418330341
+  ],
+  "population2025": 717038,
+  "population2025k": 717.038,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "wupCityCode": 4454,
+  "cityId": "wup2025:4454",
+  "queueRank": 750,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Iloilo City Government lists a local City Assessor’s Office. The city’s Comprehensive Development Plan assigns it citywide real-property assessment and maintenance of tax maps. These are city-specific assessment/map records, not evidence of a public downloadable cadastral feature layer.",
+  "registryEvidenceUrls": [
+    "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+    "https://iloilocity.gov.ph/main/wp-content/uploads/2023/05/CDP2023-2028_4-13_Final-Document.pdf",
+    "https://iloilocity.gov.ph/organizational-structure/"
+  ],
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "adapterReady": false,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hiligaynon / Filipino",
+        "query": "Iloilo City opisyal City Assessor tax map cadastral mapa sang duta",
+        "scope": "Confirm the city assessor and mapped property-record scope; find a public safe parcel geometry service if one exists.",
+        "result": "Nakit-an sa opisyal nga listahan sang gobyerno sang Iloilo City ang City Assessor’s Office. Ang city plan naghatag sa opisina sang responsibilidad sa real-property assessment kag pagmentinar sang tax maps sa bilog nga siyudad; wala makita nga anonymous vector endpoint ukon safe schema.",
+        "actualResultUrls": [
+          "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+          "https://iloilocity.gov.ph/main/wp-content/uploads/2023/05/CDP2023-2028_4-13_Final-Document.pdf",
+          "https://iloilocity.gov.ph/organizational-structure/"
+        ],
+        "executionMethod": "Separate English and Hiligaynon/Filipino discovery followed by official city directory and plan review. No parcel or taxpayer lookup."
+      },
+      {
+        "language": "English",
+        "query": "Iloilo City official city assessor cadastral tax maps property assessment",
+        "scope": "Confirm the city assessor and mapped property-record scope; find a public safe parcel geometry service if one exists.",
+        "result": "The official city directory identifies the City Assessor’s Office, and the official city plan assigns it real-property assessment and citywide tax-map maintenance. No anonymous parcel vector endpoint or safe schema was identified.",
+        "actualResultUrls": [
+          "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+          "https://iloilocity.gov.ph/main/wp-content/uploads/2023/05/CDP2023-2028_4-13_Final-Document.pdf",
+          "https://iloilocity.gov.ph/organizational-structure/"
+        ],
+        "executionMethod": "Separate English and Hiligaynon/Filipino discovery followed by official city directory and plan review. No parcel or taxpayer lookup."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The supplied UN WUP record is Iloilo City (city code 4454); no parcel polygon was verified at the population-weighted point.",
+    "verifiedOpenScope": "No safe anonymous full polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "ph-iloilo-city-assessor-tax-maps",
+    "name": "Iloilo City Assessor’s Office",
+    "url": "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+    "operator": "Iloilo City Government",
+    "serviceType": "City property assessment and tax-map administration; no public vector layer/schema identified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The city’s assessor and citywide tax-map maintenance are confirmed, but no anonymous vector endpoint or safe feature schema was found.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/iloilo-city-service-review.json"
+  },
+  "technicalBlocker": "The city’s assessor and citywide tax-map maintenance are confirmed, but no anonymous vector endpoint or safe feature schema was found.",
+  "remainingUncertainty": "Whether a public map provides a documented anonymous vector service, safe non-sensitive field allowlist, and coverage at the exact WUP point remains unverified.",
+  "scopeLimits": "No full parcel polygons, owner names, addresses, applicant, taxpayer, title, assessment, or sale data were requested or retained. No citywide completeness claim.",
+  "rootPrimaryReadback": {
+    "url": "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "DEPARTMENTS | Iloilo City Government"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "centerLatLon": [
+    10.7198565023086,
+    122.537418330341
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

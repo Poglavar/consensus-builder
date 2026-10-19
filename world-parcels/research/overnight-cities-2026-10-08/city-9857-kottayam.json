@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Kottayam",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Kerala Survey & Land Records office directory explicitly locates the Deputy Director and District Survey Superintendent at Civil Station Kottayam and the resurvey/mapping offices at Kodimala Junction in Kottayam. These are city-bound survey/land-record institutions; they do not prove accessible vector geometry or citywide completeness.",
+  "registryEvidenceUrls": [
+    "https://dslr.kerala.gov.in/en/sub-offices-2/",
+    "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+    "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9857,
+  "cityId": "wup2025:9857",
+  "centerLatLon": [
+    9.5214900128887,
+    76.5456787561359
+  ],
+  "rank": 490,
+  "queueRank": 490,
+  "population2025": 1043314,
+  "population2025k": 1043.314,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The public BhuNaksha interface search result exposes administrative and plot selectors, but direct route inspection was blocked by expired TLS validation. Ente Bhoomi HTML exposes a citizen search form; its parcel-specific fields were not submitted. No vector feature schema was found.",
+  "scopeLimits": "Local Kottayam survey/mapping institutions and state cadastral-map portal are verified. No full georeferenced polygon, feature identifier, or point-level parcel coverage was verified; citizen form requires survey/subdivision identifiers and captcha.",
+  "remainingUncertainty": "No complete georeferenced polygon or native feature ID was verified at the WUP point; public map viewers may provide display-only or identity-dependent workflows not tested.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kottayam Kerala official cadastral parcel map GIS land survey resurvey public map",
+        "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+        "result": "The official Kerala survey-office directory lists the Deputy Director, Assistant Director (Re-Survey), Assistant Director (Mapping), District Survey Superintendent, and District Digitization Centre in Kottayam. The state BhuNaksha portal advertises parcel/map selectors and Plot Info, but its direct HTTPS request failed certificate validation (expired certificate); no bypass was attempted. The public Ente Bhoomi survey search page asks for a survey number, subdivision number, and captcha; no parcel fields were submitted. No safe anonymous full-polygon schema/endpoint was verified.",
+        "actualResultUrls": [
+          "https://dslr.kerala.gov.in/en/sub-offices-2/",
+          "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+          "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+        ],
+        "executionMethod": "English-language web search plus direct anonymous inspection of official public routes."
+      },
+      {
+        "language": "Malayalam",
+        "query": "കോട്ടയം ഭൂ നികുതി ഭൂപടം കഡസ്ട്രൽ മാപ്പ് ഔദ്യോഗിക GIS Kerala",
+        "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+        "result": "The official Kerala survey-office directory lists the Deputy Director, Assistant Director (Re-Survey), Assistant Director (Mapping), District Survey Superintendent, and District Digitization Centre in Kottayam. The state BhuNaksha portal advertises parcel/map selectors and Plot Info, but its direct HTTPS request failed certificate validation (expired certificate); no bypass was attempted. The public Ente Bhoomi survey search page asks for a survey number, subdivision number, and captcha; no parcel fields were submitted. No safe anonymous full-polygon schema/endpoint was verified.",
+        "actualResultUrls": [
+          "https://dslr.kerala.gov.in/en/sub-offices-2/",
+          "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+          "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+        ],
+        "executionMethod": "Local-language search plus review of primary public official pages; no parcel-specific or private lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "in-kottayam-registry-map-review",
+    "name": "Kottayam local registry/map source review",
+    "operator": "Kerala Department of Survey and Land Records; Kerala Land Records Modernization Mission",
+    "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+    "scope": "Local Kottayam survey/mapping institutions and state cadastral-map portal are verified. No full georeferenced polygon, feature identifier, or point-level parcel coverage was verified; citizen form requires survey/subdivision identifiers and captcha.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature ID obtained.",
+    "geometryStatus": "no_anonymous_geometry_response_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local Kottayam survey/mapping institutions and state cadastral-map portal are verified. No full georeferenced polygon, feature identifier, or point-level parcel coverage was verified; citizen form requires survey/subdivision identifiers and captcha.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    9.5214900128887,
+    76.5456787561359
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "reason": "No full geometry-only parcel sample or runtime source contract was verified."
+  },
+  "rootSupplementalResearch": {
+    "checkedAt": "2026-10-09",
+    "method": "Read official directory and camp-office primary pages independently.",
+    "observation": "The official Kerala Survey & Land Records office directory explicitly locates the Deputy Director and District Survey Superintendent at Civil Station Kottayam and the resurvey/mapping offices at Kodimala Junction in Kottayam. These are city-bound survey/land-record institutions; they do not prove accessible vector geometry or citywide completeness."
+  },
+  "rootReviewedAt": "2026-10-09T00:45:13.513608+00:00"
+}

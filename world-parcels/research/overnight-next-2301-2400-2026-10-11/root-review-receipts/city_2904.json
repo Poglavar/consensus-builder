@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2904",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-2904-ust-kamenogorsk.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ust-kamenogorsk-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:38:31Z",
+  "reason": "Official East Kazakhstan sources support land-map custody, but the regional viewer showed technical works and the national viewer timed out; no parcel feature, native ID, or full polygon was obtained.",
+  "identityCheck": "Original UN WUP 2025 row, ranked roster, pending queue, and city packet agree on city code, rank, country, point, and population in persons; the paired review agrees on code, rank, country, and point.",
+  "searchCheck": "City packet and paired review record executed English and native-language queries with result URLs and bounded first-party route outcomes.",
+  "sampleCheck": "No full parcel polygons or unsafe source attributes retained; three-polygon cap satisfied.",
+  "admissionCheck": "No independently evidenced fresh native-ID reads, forced paging, thirteen bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime and source admission remain held."
+}

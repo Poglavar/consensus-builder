@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10065-faizabad.json",
+  "purpose": "Read-only source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official Ayodhya district land-records page (the current district containing former Faizabad) links the Uttar Pradesh land-record portal. The Government of India DILRMP and UP Bhulekh district report identify Faizabad tehsil within Ayodhya and report cadastral-map digitization/georeferencing for local revenue villages. This is district/tehsil-level evidence; it does not confirm the WUP point’s specific urban village or public vector access. The official map app presents a login/captcha gate. Public district/tehsil dashboard establishes local map digitization but not the queue point’s specific village nor a public vector feature contract. No credentials or protected endpoints were attempted.",
+  "officialEvidence": [
+    {
+      "url": "https://ayodhya.nic.in/service/land-records/",
+      "observation": "First-party district administration land-records page directs users to Uttar Pradesh land records; Ayodhya is the current district containing Faizabad tehsil."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=177",
+      "observation": "Official Uttar Pradesh public dashboard report for Ayodhya district lists Faizabad tehsil and village-level revenue-map coverage/georeferencing counts. It does not establish the WUP point’s village or citywide vector availability."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/177",
+      "observation": "Government of India DILRMP district/tehsil map-digitization report for Ayodhya (district code 177) includes Faizabad tehsil and local cadastral map status."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/login/",
+      "observation": "Official BhuNaksha page exposes a login form (user, password, captcha); no credentials, login, token, or protected query was used."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/",
+      "observation": "NIC BhuNaksha documentation describes the software as intended for authorized officials; used to bound access expectations."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://upbhunaksha.gov.in/login/",
+      "observation": "Official UP cadastral viewer entry presents an account/captcha gate. Public Ayodhya district progress is visible on UP Bhulekh; no anonymous full-geometry route or safe response schema was verified."
+    },
+    "routes": [],
+    "notes": "The WUP population centroid may fall in Faizabad urban revenue village, but point-to-village assignment was not resolved. Dashboard map counts are not evidence of complete city coverage or vector access."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "The official map app presents a login/captcha gate. Public district/tehsil dashboard establishes local map digitization but not the queue point’s specific village nor a public vector feature contract. No credentials or protected endpoints were attempted."
+  }
+}

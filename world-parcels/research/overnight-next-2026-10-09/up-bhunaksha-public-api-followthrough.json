@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "purpose": "Follow the first three India city packets through the official Uttar Pradesh BhuNaksha public API and establish its native geometry readback path without retaining unverified geometry.",
+  "scopeLimits": {
+    "cities": ["Etawah", "Sitapur", "Raebareli"],
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "citywideCompletenessAsserted": false,
+    "rasterTreatedAsParcelGeometry": false
+  },
+  "publicApplication": {
+    "url": "https://upbhunaksha.gov.in/home/",
+    "homeHttpStatus": 200,
+    "apiRoot": "https://upbhunaksha.gov.in/bhunakshaserver",
+    "bundle": {
+      "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "bytes": 2972677,
+      "sha256": "071268458e19e27270071323d228d059e521d3fc4d87968a0247d148bcb15780"
+    },
+    "frontendProtocol": [
+      {
+        "method": "POST",
+        "path": "/masterdata/levelvalue",
+        "requestFields": ["level", "codes"],
+        "purpose": "District-to-tehsil and tehsil-to-village public selectors"
+      },
+      {
+        "method": "POST",
+        "path": "/MapInfo/getVVVVExtentGeoref",
+        "requestFields": ["gisLevels"],
+        "responseExtentFields": ["xmin", "ymin", "xmax", "ymax", "crs", "gisCode"]
+      },
+      {
+        "method": "POST",
+        "path": "/MapInfo/getPlotAtXY",
+        "requestFields": ["giscode", "x", "y", "plotno"],
+        "purpose": "Map identify; frontend reads returned parcel id and kide"
+      },
+      {
+        "method": "POST",
+        "path": "/v1/khasramap/plot",
+        "requestFields": ["bhucode", "id"],
+        "body": {},
+        "purpose": "Frontend source-native polygon readback; frontend reads wkbGeometry and kide"
+      }
+    ],
+    "protocolLimits": "The native polygon endpoint and field bindings are verified from the served first-party application bundle. No live /v1/khasramap/plot readback was possible without a verified parcel id; authenticated editing/import routes were not used."
+  },
+  "cities": [
+    {
+      "name": "Etawah",
+      "wupCode": "9279",
+      "wupPointLonLat": [79.0233814920568, 26.7828387119844],
+      "districtCode": "161",
+      "tehsilCode": "00838",
+      "selectorEvidence": {
+        "villageSelectorCount": 234,
+        "cityNamedCandidates": 4,
+        "citySelectorCodesChecked": ["219897", "219898"],
+        "citySelectorResult": "both return zero extents",
+        "nonzeroNearbySelectorsChecked": ["147582", "147621"],
+        "nearbySelectorCrs": "EPSG:32644",
+        "wupPointEpsg32644": [303490.8, 2963910.8],
+        "pointWithinCheckedNearbyExtents": false,
+        "provenance": "Existing first-party request evidence in city-9279-etawah.json and etawah-service-review.json."
+      },
+      "nativePolygon": {
+        "verifiedAtExactWupPoint": false,
+        "sampleCount": 0,
+        "assessment": "The checked city selectors have no map extent and the WUP point is outside the two checked nonzero nearby extents; no source-native polygon or parcel id was verified."
+      }
+    },
+    {
+      "name": "Sitapur",
+      "wupCode": "9595",
+      "wupPointLonLat": [80.6900013205048, 27.5635472049459],
+      "wupPointEpsg32644": [469398.139, 3048894.096],
+      "districtCode": "154",
+      "tehsilCode": "00804",
+      "selectorEvidence": {
+        "tehsilName": "सीतापुर",
+        "villageSelectorCount": 398,
+        "cityNamedVillageSelectors": [
+          {"code": "137657", "name": "सीतापुर", "hasData": false},
+          {"code": "218314", "name": "सीतापुर अनपा", "hasData": false}
+        ],
+        "citySelectorExtentReadback": {
+          "code": "137657",
+          "httpStatus": 200,
+          "extent": [0, 0, 0, 0],
+          "gisCode": "15400804137657"
+        },
+        "exactWupPointIdentify": {
+          "selectorCode": "154,00804,137657",
+          "httpStatus": 200,
+          "returnedObjectKeys": [],
+          "parcelIdReturned": false,
+          "kideReturned": false,
+          "wkbReturned": false
+        }
+      },
+      "nativePolygon": {
+        "verifiedAtExactWupPoint": false,
+        "sampleCount": 0,
+        "assessment": "Both city-named selectors are flagged as having no map data; the checked selector has a zero extent and exact-point identify returned an empty object. No source-native polygon or parcel id was verified."
+      }
+    },
+    {
+      "name": "Raebareli",
+      "wupCode": "9883",
+      "wupPointLonLat": [81.243838038826, 26.2276825649448],
+      "wupPointEpsg32644": [524355.555, 2900921.545],
+      "districtCode": "158",
+      "tehsilCode": "00825",
+      "selectorEvidence": {
+        "tehsilName": "रायबरेली",
+        "villageSelectorCount": 358,
+        "cityNamedVillageCandidateFound": false,
+        "exactWupPointIdentifyAtTehsilDepth": {
+          "selectorCode": "158,00825",
+          "httpStatus": 200,
+          "returnedObjectKeys": [],
+          "parcelIdReturned": false,
+          "kideReturned": false,
+          "wkbReturned": false
+        },
+        "provenance": "Village list and tehsil-level identify evidence in city-9883-raebareli.json and raebareli-service-review.json; fresh anonymous identify on 2026-10-09."
+      },
+      "nativePolygon": {
+        "verifiedAtExactWupPoint": false,
+        "sampleCount": 0,
+        "assessment": "The tehsil has 358 village selectors but none matched the city name. Tehsil-depth identify returned an empty object; no village selector or source-native polygon was verified at the exact point."
+      }
+    }
+  ],
+  "overallAssessment": "The official public application exposes a native polygon readback route, but none of these three point checks yielded a verified parcel id that could be safely read back as a full polygon. These results mean unverified within the checked selector/point scope, not confirmed parcel absence or citywide incompleteness."
+}

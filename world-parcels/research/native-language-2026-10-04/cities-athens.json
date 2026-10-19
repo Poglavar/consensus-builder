@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 160,
+  "city": "Athína (Athens)",
+  "countryCode": "GR",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/athens.json",
+  "query": {
+    "language": "Greek",
+    "script": "Greek",
+    "text": "Αθήνα κτηματολογικά γεωτεμάχια δεδομένα GIS ανοικτά WFS πολεοδομία"
+  },
+  "results": [
+    {
+      "title": "Athens municipal geospatial application",
+      "url": "https://domisi.cityofathens.gr/",
+      "kind": "official-city-geoportal",
+      "note": "Municipal spatial application describes geospatial information and a CC-BY-style data reuse license; cadastral parcel layer not identified."
+    },
+    {
+      "title": "Attica Region geospatial infrastructure",
+      "url": "https://gis.attica.gov.gr/el/ygp",
+      "kind": "official-regional-geoportal",
+      "note": "Open data/download and WFS services cover regional public works; no parcel dataset identified."
+    }
+  ],
+  "assessment": "Greek-language search found official geospatial portals and some open WFS services, but no cadastral parcel layer or stable exact-ID source for Athens.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

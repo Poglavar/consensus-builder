@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:6811",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6811-barishal.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/barishal-service-review.json",
+    "tmp/valhalla-parcel-research/6811/map.html",
+    "tmp/valhalla-parcel-research/6811/main.js",
+    "tmp/valhalla-parcel-research/6811/capabilities-https.xml",
+    "tmp/valhalla-parcel-research/6811/capabilities.xml"
+  ],
+  "checkedAt": "2026-10-09T11:57:37Z",
+  "reason": "Held. Queue code 6811, rank 1215, Bangladesh, point and 457323 persons match the packet; English and Bengali searches are recorded. Original Ministry of Land viewer cache names Barishal Sadar and its JavaScript exposes plot routes; original GIS capabilities bodies both say 503 Service Unavailable. This supports the existing public map/custody context, not an anonymous native-ID full polygon. Exact-point presence, paging, thirteen cells, metric GEOS checks, source binding and headed Details verification remain missing. The outage is not citywide absence."
+}

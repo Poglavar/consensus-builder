@@ -1,0 +1,59 @@
+{
+  "cityRecord": "city-2540-tiaret.json",
+  "cityCode": 2540,
+  "queueRank": 2313,
+  "city": "Tiaret",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "scope": "Tiaret, Algeria; exact WUP point [35.3628940105099, 1.32459405544269] is preserved in the city packet in latitude/longitude order. No coordinate shift was used.",
+  "discovery": {
+    "english": "Official DGDN legal/institutional material, the ASAL ArcGIS portal, and the ASGA InfoGéolAlgérie viewer were checked; no public Tiaret parcel layer or anonymous parcel API was evidenced.",
+    "native": "Arabic discovery identified the Tiaret land-survey/land-conservation office and national cadastral responsibilities, but no public parcel viewer/API or parcel response.",
+    "actualUrls": [
+      "https://a.dgdn.dz/DOCUMENTS/loi_91-11.pdf",
+      "https://geoportail.asal.dz/portal/sharing/rest/portals/info",
+      "https://geoportail.asal.dz/portal/sharing/rest/search?f=json&num=100&q=owner%3A*%20AND%20%28cadastre%20OR%20cadastral%20OR%20%D9%85%D8%B3%D8%AD%29",
+      "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "https://mapcarta.com/N4663404298",
+      "https://www.joradp.dz/FTP/JO-arabe/2023/A2023009.pdf"
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://geoportail.asal.dz/portal/sharing/rest/portals/info?f=json",
+      "method": "GET",
+      "outcome": "Succeeded anonymously; returned portal and token-service metadata. No token was requested."
+    },
+    {
+      "url": "https://geoportail.asal.dz/portal/sharing/rest/search?f=json&num=100&q=owner%3A*%20AND%20%28cadastre%20OR%20cadastral%20OR%20%D9%85%D8%B3%D8%AD%29",
+      "method": "GET",
+      "parameters": "public ArcGIS content search for cadastre/cadastral/مسح",
+      "outcome": "Succeeded anonymously; returned total=0 and no public matching items. No parcel schema or geometry returned."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "GET",
+      "outcome": "Timed out after 20 seconds. No parcel request or exact-point query was completed."
+    }
+  ],
+  "schemaCrs": {
+    "inspectedService": "ASAL portal metadata/search; ASGA WebADF viewer landing route",
+    "responseCrs": null,
+    "parcelSchema": null
+  },
+  "safeFieldAllowlist": ["geometry", "stable native parcel identifier if later exposed"],
+  "excludedFields": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "unsafe source-specific attributes"],
+  "retainedSamples": [],
+  "scopeLimits": [
+    "General DGDN or government GIS prose is not a local Tiaret registry response.",
+    "The ASAL zero-result search is bounded to that public portal query and cannot establish citywide cadastral absence.",
+    "The ASGA timeout and lack of exact-point hit are not evidence of parcel absence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No source integration, runtime admission, or parcel coverage claim is made."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "A current Tiaret cadastral service may exist behind a restricted/request workflow or an unindexed government map service; no safe anonymous route was evidenced during this bounded attempt."
+}

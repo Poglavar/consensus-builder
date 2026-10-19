@@ -1,0 +1,110 @@
+{
+  "cityCode": 9906,
+  "queueRank": 2946,
+  "name": "Changqing",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.5469342033281, 116.748404914705],
+  "population2025": 202186,
+  "population2025k": 202.186,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Changqing Jinan China official cadastral parcel map land registration natural resources GIS service",
+        "result": "First-party discovery found the official Jinan Natural Resources and Planning Bureau public time-space platform, the official Jinan real-estate-registration online hall, and an official Jinan government service entry identifying the Changqing District Natural Resources Bureau as the implementing body for real-estate registration. The official platform documentation describes public cadastral-map visualization and a documented public platform URL, but no current anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://nrp.jinan.gov.cn/nav/",
+          "https://nrp.jinan.gov.cn/oshs/pages/oshs/guide/index.jsf",
+          "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370113000000&innerCode=1dfc965f-f813-4a72-8e80-9872709e92bc&taskType=QR",
+          "https://nrp.jinan.gov.cn/cms_files/jcms1/web136/site/attach/0/c146c483fbc6479093c8b889921068c6.pdf?fileName=c146c483fbc6479093c8b889921068c6.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "长清 济南 官方 不动产登记 地籍图 查询 自然资源和规划局 地图 服务",
+        "result": "First-party Chinese-language results identified 济南市长清区自然资源局 as the implementation agency for registration, the 长清区不动产登记服务大厅, and official instructions stating that Jinan cadastral-map queries can use the natural-resources portal / 天地图 / the registration hall. The official visualization-platform instructions expose no safe parcel schema or anonymous geometry in the bounded inspection.",
+        "actualResultUrls": [
+          "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370113000000&innerCode=1dfc965f-f813-4a72-8e80-9872709e92bc&taskType=QR",
+          "https://nrp.jinan.gov.cn/oshs/pages/oshs/window/serviceCommitment/bdcDT.jsf?mbean=pointMBean&subType=2-9-1&type=2",
+          "https://www.jinan.gov.cn/attach/0/4b4f6a8b880144ed9b1c38ec3ec95e9f.pdf",
+          "http://60.208.121.161:8083/bdcApiNew/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Jinan Changqing District Natural Resources Bureau / Changqing District real-estate registration service",
+    "basis": "Official government service entry names 济南市长清区自然资源局 as implementing body and gives the Changqing registration service hall; official Jinan instructions describe cadastral-map query service covering 长清区. This establishes local registry custody, not parcel coverage or runtime admission.",
+    "urls": [
+      "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370113000000&innerCode=1dfc965f-f813-4a72-8e80-9872709e92bc&taskType=QR",
+      "https://www.jinan.gov.cn/attach/0/4b4f6a8b880144ed9b1c38ec3ec95e9f.pdf"
+    ]
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://nrp.jinan.gov.cn/nav/",
+      "httpStatus": 403,
+      "outcome": "Official public map landing page was identified, but direct retrieval returned a WAF 403. No bypass, login, CAPTCHA/Cloudflare defeat, or credentials were attempted. This is an access limitation, not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "http://60.208.121.161:8083/bdcApiNew/index.html",
+      "httpStatus": null,
+      "outcome": "Official platform instructions document this public visualization URL. Bounded direct request timed out after 20 seconds; no JavaScript/configuration, API route, schema, CRS, native identity, or geometry response was obtained. No absence inference was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://nrp.jinan.gov.cn/cms_files/jcms1/web136/site/attach/0/c146c483fbc6479093c8b889921068c6.pdf?fileName=c146c483fbc6479093c8b889921068c6.pdf",
+      "httpStatus": 200,
+      "outcome": "Official three-page platform instructions were readable. They describe map click and query by cadastral unit / certificate / location and document the public platform URL, but provide no parcel feature schema or safe anonymous geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://zwfw.jinan.gov.cn/jpaas-jiq-web-jnywtb/front/transition/ywTransToDetail?areaCode=370113000000&innerCode=1dfc965f-f813-4a72-8e80-9872709e92bc&taskType=QR",
+      "httpStatus": 200,
+      "outcome": "Official service page identifies 济南市长清区自然资源局 as implementing body and gives the Changqing registration service location. No parcel geometry or unsafe ownership fields were requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://nrp.jinan.gov.cn/oshs/pages/oshs/window/serviceCommitment/bdcDT.jsf?mbean=pointMBean&subType=2-9-1&type=2",
+      "httpStatus": 200,
+      "outcome": "Official registration-hall page lists the Changqing District real-estate registration service hall. No public parcel feature endpoint was exposed in bounded inspection."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Not obtained; documented public viewer timed out and the official portal was WAF-blocked.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed.",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [36.5469342033281, 116.748404914705] preserved in latitude/longitude order; no coordinate shift or parcel-hit inference.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No usable public feature-query response was obtained."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "qualification": {
+    "serialReviewerRequired": true,
+    "reason": "Local registry custody is evidenced, but no anonymous source-native parcel geometry, schema, CRS, or stable native identity was qualified. Packet completion is not source integration or admission."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved and not shifted.",
+    "A zero response was not obtained; timeout and WAF block are service-access limitations, not evidence of citywide cadastral absence.",
+    "No citywide coverage, update cadence, viewer configuration, service CRS, or stable parcel-identity semantics were verified.",
+    "No parcel polygon is retained because no unchanged safe polygon with a qualified native identity was obtained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "Changqing local registry custody is first-party evidenced. The current public viewer/API remains unqualified because its documented IP timed out and the official portal was WAF-blocked; runtime remains held pending independent serial review."
+}

@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-5673-farnham.json",
+  "cityCode": 5673,
+  "queueRank": 2942,
+  "name": "Farnham",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and local-language-equivalent English discovery checks identified HM Land Registry INSPIRE index polygons and the licensed National Polygon Service, then followed the official HMLR INSPIRE WMS capabilities. The CP.CadastralParcel layer and CRS were inspected; a bounded raster map request succeeded, WFS was disabled, and GetFeatureInfo was not queryable. Surrey's official public map catalog had no parcel layer. No vector sample was retained.",
+  "attemptedRoutes": [
+    {"url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data", "method": "GET", "outcome": "official HMLR INSPIRE dataset page retrieved"},
+    {"url": "https://use-land-property-data.service.gov.uk/datasets/nps", "method": "GET", "outcome": "official HMLR licensed National Polygon Service information retrieved; no login used"},
+    {"url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities&version=1.3.0", "method": "GET", "outcome": "HTTP 200; CP.CadastralParcel WMS layer and CRS metadata observed"},
+    {"url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&request=GetCapabilities&version=2.0.0", "method": "GET", "outcome": "HTTP 200 exception; WFS explicitly disabled"},
+    {"url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=inspire%3ACP.CadastralParcel&STYLES=&CRS=CRS%3A84&BBOX=-0.7570%2C51.2769%2C-0.7542%2C51.2790&WIDTH=512&HEIGHT=512&FORMAT=image%2Fpng&TRANSPARENT=true", "method": "GET", "outcome": "HTTP 200 bounded raster map around exact WUP point; no vector or attributes retained"},
+    {"url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=inspire%3ACP.CadastralParcel&QUERY_LAYERS=inspire%3ACP.CadastralParcel&STYLES=&CRS=CRS%3A84&BBOX=-0.7570%2C51.2769%2C-0.7542%2C51.2790&WIDTH=512&HEIGHT=512&INFO_FORMAT=text%2Fplain&I=256&J=256", "method": "GET", "outcome": "HTTP 200 exception; LayerNotQueryable and no feature identity"},
+    {"url": "https://sccmaps.surreycc.gov.uk/webmaps/rest/services/Surrey_Interactive_Map?f=pjson", "method": "GET", "outcome": "HTTP 200 official Surrey service catalog; no cadastral parcel service listed"},
+    {"url": "https://www.gov.uk/get-information-about-property-and-land/search-the-index-map", "method": "GET", "outcome": "official HMLR index-map procedure retrieved; not an anonymous parcel-vector service"}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [51.2779073993314, -0.755591034770066] was preserved and not shifted; the unavailable GetFeatureInfo result is not evidence of citywide absence.",
+    "HMLR INSPIRE is an indicative freehold subset; the full national polygon service is licensed/chargeable. Coverage and completeness for Farnham were not established.",
+    "The successful bounded WMS response was raster only. No safe native identity and unchanged vector geometry were available, so no GeoJSON was created.",
+    "Surrey public map services and Farnham planning-map material do not establish a local cadastral registry or parcel API."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": null,
+    "alsoObserved": [],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "No vector feature response was obtained; no identity was synthesized."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "HM Land Registry's national first-party INSPIRE source is evidenced for England and Wales, but the public route exposed only a non-queryable WMS parcel layer in this attempt. The open layer is not the complete licensed title index, Surrey has no parcel layer in the inspected public catalog, and no source is admitted. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+}

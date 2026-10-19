@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 88,
+  "city": "Islamabad",
+  "countryCode": "PK",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/islamabad.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Perso-Arabic",
+    "text": "اسلام آباد اراضی سروے نقشہ کڈسٹرل سی ڈی اے زمین ریکارڈ سرکاری"
+  },
+  "results": [
+    {
+      "title": "Capital Development Authority",
+      "url": "https://www.cda.gov.pk/",
+      "kind": "official-city-administration",
+      "note": "Search did not reveal a public parcel feature endpoint; historical notice maps do not establish a reusable citywide cadastral service."
+    }
+  ],
+  "assessment": "Native-script search found no verifiable official Islamabad parcel-vector service. Existing temporary-unavailable label remains unchanged.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:7017",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Urdu",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "اسلام آباد اراضی سروے نقشہ کڈسٹرل سی ڈی اے زمین ریکارڈ سرکاری",
+    "englishQuery": "Islamabad cadastral map, land survey and CDA land records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

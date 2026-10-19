@@ -1,0 +1,97 @@
+{
+ "kind": "country",
+ "key": "MG",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: fr-MG,fr;q=0.9,mg;q=0.6,en;q=0.4",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": {
+  "sourceId": "mg-oat-mapserver",
+  "name": "Observatoire du Foncier / OAT map viewer (WMS via MapServer 7.6.2)",
+  "operator": "Observatoire du territoire (observatoire-territoire.mg)",
+  "scope": "viewer layers plof_avaradrano, plof_atsimondrano, plof_laniera (local land offices) and urban plans; not verified as parcel polygons",
+  "endpoint": "https://observatoire-territoire.mg/cgi-bin/mapserv (requires server-side MAP=<path>)",
+  "method": "WMS GET via OpenLayers",
+  "responseFormat": "image (WMS); WFS not confirmed",
+  "crs": "unknown",
+  "reuseStatus": "unknown"
+ },
+ "requests": [
+  {
+   "url": "https://www.matsf.gov.mg/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site reachable; no cadastre/portal link (links to Observatoire du territoire, Rizplus, digital.gov.mg)"
+  },
+  {
+   "url": "https://www.foncier.gov.mg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.mataf.gov.mg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.gov.mg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://guichetfoncier.mg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.observatoire-foncier.mg/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/carte/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular map app; main JS config _urlMapServ=https://observatoire-territoire.mg/cgi-bin/mapserv; layers include plof_* and lim_commune"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?SERVICE=WMS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "MapServer message page: needs a MAP parameter"
+  },
+  {
+   "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?MAP=E:/mapserv_data/oatmap/oat/wms_home.map&SERVICE=WFS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "MapServer message page; map path from old viewer config not valid on this host"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Madagascar%20cadastre%20parcelles&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: ministry site and an official-partner map viewer are reachable. Viewer shows PLOF (guichet foncier zone) and urban-plan layers for some districts only, rendered as WMS images; no parcel polygon reply obtained and the server-side map file name was not guessed. An open directory listing on that server exposed configuration folders; nothing there was read. Status is a tentative subnational classification, not a verified parcel source.",
+ "nextStep": "Find the valid MAP file / WFS for the plof_* layers (e.g. via the viewer's network calls in a real browser), then run a bounded GetFeature."
+}

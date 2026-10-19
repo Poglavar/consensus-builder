@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 47,
+  "city": "Tianjin",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/tianjin.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "天津 地籍宗地 不动产 GIS 数据开放 地块矢量 查询"
+  },
+  "results": [
+    {
+      "title": "Tianjin TianDiTu public geographic services",
+      "url": "https://tianjin.tianditu.gov.cn/",
+      "kind": "official-geoportal",
+      "note": "Offers public map/service APIs and catalog; no parcel data identified."
+    },
+    {
+      "title": "Tianjin unified open-data platform",
+      "url": "https://open.data.tj.gov.cn/",
+      "kind": "official-open-data",
+      "note": "Broad catalog; no cadastral parcel vector identified by search."
+    }
+  ],
+  "assessment": "Official Tianjin mapping and open-data portals were found, but neither the search results nor surfaced catalog entries verified public cadastral parcel geometries or stable IDs.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

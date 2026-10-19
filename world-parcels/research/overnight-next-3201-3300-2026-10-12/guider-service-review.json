@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-3060-guider.json",
+  "cityCode": 3060,
+  "queueRank": 3214,
+  "city": "Guider",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "registryCustodian": "MINDCAF is evidenced as Cameroon’s national cadastral and land-tenure authority; no Guider-local registry/map/procedure was independently evidenced.",
+  "publicMapLead": "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+  "queryOutcomes": "Separate English and French first-party discovery queries were executed; exact queries, outcomes, and URLs are in city-3060-guider.json.",
+  "requestOutcomes": "MINDCAF mission and FAQ pages returned HTTP 200; the MINHDU viewer direct GET timed out after 12 seconds; Cameroon Geoportal landing page returned HTTP 200. No live anonymous bounded parcel ID-plus-geometry response was obtained. No login, credentials, bypass, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [9.93071455037161, 13.9431679403781] was preserved and not moved.",
+    "Timeout or unavailable viewer is not evidence of citywide absence.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "Independent serial review is required before adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "National custodial mandate and public viewer lead were evidenced, but no Guider-specific live anonymous parcel ID-plus-geometry response or citywide open coverage was qualified."
+  },
+  "uncertainty": "The public viewer may be temporarily unavailable or may require further client-side inspection; unresolved access and coverage are not proof that Guider lacks cadastral parcels.",
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

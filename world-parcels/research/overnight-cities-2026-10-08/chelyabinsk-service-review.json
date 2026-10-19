@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7269-chelyabinsk.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Rosreestr regional-office material confirms cadastral accounting and real-estate registration functions for the Chelyabinsk region, and directs users to NSPD’s Public Cadastral Map. Public map features are parcel/property objects identified by cadastral number and other object details; no object search or map selection was made. No safe geometry-only schema/allowlist was verified.",
+  "registryAssessment": "The Chelyabinsk city-administration FAQ directs residents to Rosreestr’s regional office located in Chelyabinsk for registration matters. Rosreestr’s regional channel describes oblast-wide registration and cadastral-accounting duties. These are separate facts: local city access is confirmed, while registry jurisdiction is regional; neither establishes point coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "observation": "Official Rosreestr website identified by the Chelyabinsk regional office as its portal; no property search was opened."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "Official National Spatial Data Platform now hosts the Public Cadastral Map. The map was not queried because no server-side geometry-only output schema was established."
+    },
+    {
+      "url": "https://t.me/s/rosreestr_74/1748",
+      "observation": "Official Rosreestr Chelyabinsk regional-office channel describes the oblast service scope for cadastral accounting, rights registration, and EGRN information; this is regional, not city-only evidence."
+    },
+    {
+      "url": "https://polovinsp.ru/about/info/messages/37997/",
+      "observation": "Regional public notice relays the official Rosreestr statement that the Public Cadastral Map moved to NSPD. Used only as service-location context, not city-registry evidence."
+    },
+    {
+      "url": "https://q.priemnaya.cheladmin.ru/cheladmin-faq/category/zemlepolzovanie-i-gorodskoe-imushchestvo?page=12",
+      "observation": "Official Chelyabinsk city-administration FAQ directs residents to the Rosreestr regional office for registration questions and lists its Chelyabinsk city address. This is city-local service access; the office’s jurisdiction remains the Chelyabinsk Oblast, not an exclusively municipal registry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Chelyabinsk official cadastral map GIS land registry parcel public Rosreestr",
+      "result": "Found official Rosreestr Chelyabinsk regional-office information and the federal NSPD Public Cadastral Map reference. The regional claim is recorded as oblast-wide, not city-exclusive; no parcel was selected or searched.",
+      "method": "Separate English-language search followed by official Rosreestr/NSPD references review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or safe public geometry service."
+    },
+    {
+      "language": "Russian",
+      "query": "Челябинск официальный кадастровая карта земельные участки Росреестр НСПД",
+      "result": "Official Rosreestr regional-office material describes regional cadastral/registration services and points users to NSPD’s public map. Search/selection can expose cadastral object details; no object query or feature request was made.",
+      "method": "Separate Russian-language search; official Rosreestr regional-office material reviewed, no property query.",
+      "scope": "Locate current official city-bound registry, cadastral map, or safe public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public geometry-only point-level response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official Rosreestr Chelyabinsk regional office and cadastral-service administration are located in Chelyabinsk city, with jurisdiction over the oblast. The federal public cadastral map is now part of NSPD, but no city-exclusive registry or geometry coverage was verified. This city-located regional office establishes local registry presence, not municipal parcel coverage.",
+    "verifiedOpenScope": "The discoverable lookup routes require an object/location key, expose property attributes, or use account/application workflows; no geometry-only response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether NSPD exposes an anonymous geometry-only service endpoint independent of cadastral identifiers and object-detail attributes."
+}

@@ -1,0 +1,19 @@
+{
+  "taskId": "city:2864",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-2864-oakville.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/oakville-service-review.json",
+    "tmp/valhalla-parcel-research/oakville/assess-parcels-root.json",
+    "tmp/valhalla-parcel-research/oakville/assess-parcels-0.json",
+    "tmp/valhalla-parcel-research/oakville/point-query.geojson"
+  ],
+  "checkedAt": "2026-10-12T04:24:03Z",
+  "finding": "Oakville, rank 3159: original UN WUP 2025 row, ranked roster, pending queue and packet agree on code 2864, Canada, point [43.4483939847174,-79.7169186140335], and 190294 persons. English and French searches are recorded. Original first-party Town of Oakville ArcGIS metadata identifies municipal Assess_Parcels polygon layer in EPSG:26917, with OBJECTID OID and maxRecordCount 2000; the bounded point-query cache contains one full Polygon with only OBJECTID 2591645. This grounds municipal GIS custody and public geometry discovery, not legal title or citywide coverage. No fresh exact-ID read, forced paging, 13 bounded cells, independent metric GEOS validity/overlap checks, source binding, or headed Details-panel verification is evidenced. Held; no runtime admission.",
+  "samplePolygonCount": 1,
+  "runtimeAdmitted": false
+}

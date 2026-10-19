@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Rangpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "rank": 842,
+  "wupCityCode": 2716,
+  "point": [
+    25.7478972294139,
+    89.2481940533704
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Rangpur Metropolitan Revenue Circle Land Office lists land-record/map services and a Sadar sub-registry office. DLRS MapSearch exposes draft mouza parcel-view routes, but no geometry-only field allowlist is verified.",
+  "registryEvidenceUrls": [
+    "https://aclrmrc.rangpur.gov.bd/",
+    "https://settlement.gov.bd/",
+    "https://settlement.gov.bd/map/mapsearch"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Bangladesh DLRS public settlement survey MapSearch and Rangpur Metropolitan Revenue Circle Land Office.",
+      "operator": "Official government agency identified in sources",
+      "homeUrl": "https://aclrmrc.rangpur.gov.bd/",
+      "observation": "Official Rangpur Metropolitan Revenue Circle Land Office lists Land Records & Map and a Sadar sub-registry office."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://aclrmrc.rangpur.gov.bd/",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 98629,
+      "observation": "Local land-office page; no parcel input."
+    },
+    {
+      "url": "https://settlement.gov.bd/map/mapsearch",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 67055,
+      "observation": "Public map shell has selectors and owner panel; none used."
+    },
+    {
+      "url": "https://settlement.gov.bd/js/MapSearch.js",
+      "method": "static JS GET",
+      "httpStatus": 200,
+      "contentType": "text/javascript",
+      "bytes": 139619,
+      "observation": "Static route discovery only; no geometry route called."
+    },
+    {
+      "url": "https://settlement.gov.bd/",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official DLRS portal describes draft survey records/maps and warns khatians may change during survey."
+    },
+    {
+      "url": "https://settlement.gov.bd/Home/MapSearch",
+      "method": "official site navigation link open",
+      "httpStatus": 404,
+      "contentType": null,
+      "observation": "The title-cased linked route returned HTTP 404. The lower-case public route /map/mapsearch returned HTTP 200 and was inspected instead; this is a broken route distinction, not a map-service outage."
+    }
+  ],
+  "limitations": "Public client exposes GeoJSON/vector-tile routes but no safe geometry+ID allowlist; separate parcel-to-khatian route presents owner fields. No data route called.",
+  "scopeLimits": "No protected, personal or property-specific data queried or retained. No anonymous full geometry/safe-ID schema verified; no completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_safe_geometry_schema",
+    "reason": "Public client exposes GeoJSON/vector-tile routes but no safe geometry+ID allowlist; separate parcel-to-khatian route presents owner fields. No data route called."
+  }
+}

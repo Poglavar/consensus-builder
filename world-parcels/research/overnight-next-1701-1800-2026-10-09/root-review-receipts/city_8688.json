@@ -1,0 +1,33 @@
+{
+  "taskId": "city:8688",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-8688-greater-noida.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/greater-noida-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T14:09:41.101003Z",
+  "registryFound": true,
+  "reviewReason": "GNIDA OneMap returned 200, but its configured ArcGIS metadata returned error 499 Token Required. No anonymous native-ID parcel polygon response or adapter qualification exists.",
+  "identityCheck": {
+    "queueRank": 1743,
+    "cityCode": 8688,
+    "country": "India",
+    "point": [
+      28.4897037590169,
+      77.5288313520276
+    ],
+    "population2025Persons": 329385,
+    "matchesImmutableQueue": true
+  },
+  "bilingualQueriesRecorded": true,
+  "retainedFullPolygonCount": 0,
+  "admission": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

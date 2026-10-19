@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-1684-tver.json",
+  "purpose": "Document first-party registry/map discovery, current viewer evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Tver municipal sources evidence local cadastral-work administration and point to federal Rosreestr/Roskadastr for cadastral-map/EGRN functions. No anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "The Tver city Department of Property and Land Resources and municipal cadastral-work pages are local administrative/procedural evidence. The MFC page documents EGRN and cadastral-plan services. These do not establish a separate city parcel API; federal Rosreestr/Roskadastr remains the registry/map custodian route.",
+  "officialPrimarySources": [
+    {"url": "https://www.tver.ru/administration/structure/departament-upravleniya-imushchestvom-i-zemelnymi-resursami/", "observation": "Official Tver city page identifies the Department of Property and Land Resources."},
+    {"url": "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/karta-plany-territoriy-2025/", "observation": "Official Tver city page publishes 2025 territorial cadastral-plan materials, demonstrating municipal cadastral-work activity."},
+    {"url": "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/kompl.php", "observation": "Official Tver city page describes 2025 federally supported comprehensive cadastral work and names the Tver Rosreestr administration and regional Roskadastr branch."},
+    {"url": "https://mfc-tver.ru/services/detail.php?ELEMENT_ID=54322", "observation": "Tver regional MFC service page documents EGRN information and cadastral-plan territory services."},
+    {"url": "https://pkk.rosreestr.ru/", "observation": "Official Rosreestr public cadastral map route identified, but not retrieved anonymously."},
+    {"url": "https://nspd.gov.ru/", "observation": "Current national spatial-data platform route identified as a likely public-map channel, but its viewer configuration was not retrieved."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://nspd.gov.ru/",
+    "observedTechnology": "No current viewer JavaScript or configuration was retrieved in this environment.",
+    "observedControls": [],
+    "schemaAndCrs": "Not verified from a successful service response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://nspd.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Connection timed out after 5 seconds; no HTML, JavaScript configuration, API route, layer response, or geometry retrieved."},
+    {"url": "https://pkk.rosreestr.ru/", "method": "GET", "normalTlsVerification": true, "result": "Connection timed out after 5 seconds; no public-map response or API configuration retrieved."},
+    {"url": "https://rosreestr.gov.ru/", "method": "GET", "normalTlsVerification": true, "result": "Connection timed out after 5 seconds; no service configuration retrieved."},
+    {"url": "https://www.tver.ru/administration/munitsipalnoe-imushchestvo/karta-plany-territoriy-2025/", "method": "GET", "normalTlsVerification": true, "result": "First-party source was identified through search, but direct curl connection failed in this environment; page content was reviewed from the search result."},
+    {"url": "https://mfc-tver.ru/services/detail.php?ELEMENT_ID=54322", "method": "GET", "normalTlsVerification": true, "result": "HTTP 403 Forbidden; no service schema or parcel geometry retrieved. No login or bypass attempted."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel feature query was submitted because the current public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Tver municipal cadastral-work administration plus federal Rosreestr/Roskadastr public-map and EGRN channels.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact viewer configuration, layer schema, CRS, native parcel identity, anonymous query shape, and coverage remain unverified. Timeout, HTTP 403, or unusable UI is not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

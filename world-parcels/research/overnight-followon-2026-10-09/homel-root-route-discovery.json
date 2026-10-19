@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "city": "Homel",
+  "country": "Belarus",
+  "wupCityCode": 1681,
+  "rank": 1048,
+  "pointLatLon": [
+    52.4376021631448,
+    30.9782260496108
+  ],
+  "population2025Persons": 529882,
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Gomel Homel Belarus cadastral agency land parcel GIS regional agency Homel cadastral map",
+      "executionMethod": "Separate English-language web search followed by primary local agency and NCA service review.",
+      "result": "The Gomel agency's official site identifies the agency, registration services and its Gomel city/branch service scope. The NCA public map publishes a parcel WFS layer. A viewer-compatible bounded 2 m query returned one nearby parcel with object_id 6722720, but point-in-ring placed it outside the unchanged WUP point; a subsequent exact INTERSECTS query returned zero features. No parcel is claimed at the point.",
+      "actualResultUrls": [
+        "https://gagrzk.by/",
+        "https://gagrzk.by/struktura/filialy-i-byuro/",
+        "https://gagrzk.by/uslugi/registratsiya/",
+        "https://map.nca.by/",
+        "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&maxFeatures=3&outputFormat=application%2Fjson&propertyName=object_id%2Cgeom&cql_filter=DWITHIN%28geom%2CPoint%2830.9782260496108%2052.4376021631448%29%2C2%2Cmeters%29",
+        "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&maxFeatures=3&outputFormat=application%2Fjson&propertyName=object_id%2Cgeom&cql_filter=INTERSECTS%28geom%2CPoint%2830.9782260496108%2052.4376021631448%29%29"
+      ]
+    },
+    {
+      "language": "Russian",
+      "query": "Гомельское агентство по государственной регистрации земельному кадастру карта участков официальный",
+      "executionMethod": "Separate Russian-language web search followed by primary local agency and NCA service review.",
+      "result": "Официальный сайт РУП «Гомельское агентство по государственной регистрации и земельному кадастру» подтверждает местного регистратора и землеустроительные функции; страница структуры указывает обслуживание города Гомеля и отдельную зону Гомельского филиала. В открытой карте Национального кадастрового агентства найден WFS-слой земельных участков. Ограниченный запрос в радиусе 2 м вернул соседний полигон object_id 6722720, но точка WUP находится вне его; точный запрос INTERSECTS вернул ноль объектов. Наличие участка в точке не утверждается.",
+      "actualResultUrls": [
+        "https://gagrzk.by/",
+        "https://gagrzk.by/struktura/filialy-i-byuro/",
+        "https://gagrzk.by/uslugi/registratsiya/",
+        "https://map.nca.by/",
+        "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&maxFeatures=3&outputFormat=application%2Fjson&propertyName=object_id%2Cgeom&cql_filter=DWITHIN%28geom%2CPoint%2830.9782260496108%2052.4376021631448%29%2C2%2Cmeters%29",
+        "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&maxFeatures=3&outputFormat=application%2Fjson&propertyName=object_id%2Cgeom&cql_filter=INTERSECTS%28geom%2CPoint%2830.9782260496108%2052.4376021631448%29%29"
+      ]
+    }
+  ],
+  "localRegistryCustody": {
+    "agency": "РУП «Гомельское агентство по государственной регистрации и земельному кадастру»",
+    "officialHomepage": "https://gagrzk.by/",
+    "officialTerritoryPage": "https://gagrzk.by/struktura/filialy-i-byuro/",
+    "officialServicePage": "https://gagrzk.by/uslugi/registratsiya/",
+    "evidence": "The agency's official homepage and service pages identify the organization and state-registration/land-management functions. The official branch page says the Gomel Agency serves Gomel city except Novobelitsky District; the Gomel branch covers Gomel District and Novobelitsky District. Exact administrative sub-area placement of the WUP point was not independently overlaid.",
+    "registryCustodyVerified": true
+  },
+  "parcelService": {
+    "operator": "National Cadastral Agency public map (Belarus)",
+    "viewer": "https://map.nca.by/",
+    "wfsEndpoint": "https://map.nca.by/geoserver/pcm/ows",
+    "featureType": "pcm:294b19b9-3259-44e5-b8e8-5314b0adf928",
+    "featureTitle": "Земельные участки (land parcels)",
+    "capabilitiesUrl": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "describeFeatureTypeUrl": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928",
+    "capabilitiesEvidence": "Existing anonymous GetCapabilities response names the parcel polygon layer and DefaultCRS urn:ogc:def:crs:EPSG::4326. WGS84BoundingBox is expressed as longitude, latitude, consistent with response GeoJSON coordinates.",
+    "schemaEvidence": "DescribeFeatureType declares object_id as a non-null long and geom as a geometry property; it also contains address/cad_num/purpose/organization/status attributes. Geometry query explicitly selected only object_id and geom.",
+    "currentMetadataProbe": {
+      "headers": "Ordinary Origin: https://map.nca.by and Referer: https://map.nca.by/, matching official viewer route; no cookies or credentials.",
+      "capabilitiesHttpStatus": 200,
+      "describeFeatureTypeHttpStatus": 200,
+      "confirmedDefaultCRS": "urn:ogc:def:crs:EPSG::4326",
+      "tempFiles": [
+        "/private/tmp/overnight-cities-2026-10-09/homel-root-cap-same-origin.xml",
+        "/private/tmp/overnight-cities-2026-10-09/homel-root-schema-same-origin.xml"
+      ]
+    }
+  },
+  "attempts": [
+    {
+      "operation": "WFS 2.0.0 GetCapabilities",
+      "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "httpStatus": 200,
+      "result": "Layer metadata names Земельные участки and DefaultCRS urn:ogc:def:crs:EPSG::4326."
+    },
+    {
+      "operation": "DescribeFeatureType",
+      "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928",
+      "httpStatus": 200,
+      "result": "Schema confirms safe object_id and geom fields; other sensitive/property fields were not requested."
+    },
+    {
+      "operation": "Fresh same-origin capabilities/schema probe (standard public viewer Origin/Referer headers; no cookies)",
+      "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "httpStatus": 200,
+      "result": "Current metadata confirms the parcel layer and DefaultCRS EPSG:4326; DescribeFeatureType also returned HTTP 200 and confirms object_id and geom."
+    },
+    {
+      "operation": "Official-viewer-style DWITHIN query, 2 m radius",
+      "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&maxFeatures=3&outputFormat=application%2Fjson&propertyName=object_id%2Cgeom&cql_filter=DWITHIN%28geom%2CPoint%2830.9782260496108%2052.4376021631448%29%2C2%2Cmeters%29",
+      "httpStatus": 200,
+      "result": "One full polygon returned, object_id 6722720, only object_id and geom requested. Ring has 18 coordinate tuples including closure. It is a nearby feature; point-in-ring check returned false, so the polygon was not retained as a WUP-point sample."
+    },
+    {
+      "operation": "Exact point INTERSECTS query",
+      "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&maxFeatures=3&outputFormat=application%2Fjson&propertyName=object_id%2Cgeom&cql_filter=INTERSECTS%28geom%2CPoint%2830.9782260496108%2052.4376021631448%29%29",
+      "httpStatus": 200,
+      "result": "Empty FeatureCollection (numberReturned 0) at the unchanged WUP coordinate. This is a service query result only and is not interpreted as proof that no legal parcel exists at the locator."
+    },
+    {
+      "operation": "Bare metadata GET without viewer Origin/Referer",
+      "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "httpStatus": 403,
+      "result": "A bare request was denied; this was not retried with cookies or other access-control workarounds. The official viewer-compatible same-origin metadata request succeeded."
+    }
+  ],
+  "geometryDecision": "One complete nearby Polygon is retained as official-source geometry evidence with only the safe native object_id and geometry. It was returned by the official 2 m DWITHIN query but does not contain the exact WUP locator; the exact INTERSECTS result remains empty.",
+  "geometryVerified": true,
+  "nearbyCandidateCount": 1,
+  "nearbyCandidateNativeId": 6722720,
+  "exactPointIntersectionCount": 0,
+  "retainedFullPolygonCount": 1,
+  "wupPointContained": false,
+  "remainingUncertainty": "The exact WUP point did not intersect a returned feature in this layer. The reason (mapping gap, locator on a non-parcel area, or other source coverage behavior) is unknown; the exact local agency sub-area division was also not checked against an official boundary overlay.",
+  "tempEvidence": {
+    "nearbyResponse": "/private/tmp/overnight-cities-2026-10-09/homel-root-wfs-feature-response.json",
+    "capabilities": "/private/tmp/nca-wfs-caps.xml",
+    "schema": "/private/tmp/nca-parcel-schema.xml"
+  },
+  "retainedGeometrySampleFile": "city-1681-homel-root-samples.geojson",
+  "publicGeometryResponseVerified": true
+}

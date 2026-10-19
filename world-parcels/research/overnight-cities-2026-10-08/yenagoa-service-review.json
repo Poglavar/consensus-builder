@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6892-yenagoa.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The agency advertises GIS data/map access but no dataset catalog/schema or anonymous full-polygon endpoint was exposed. Its property-search service is fee-based; no property search was submitted.",
+  "registryAssessment": "Bayelsa Ministry of Lands and Survey and BGIS are explicitly located in Yenagoa; official pages describe local land registry, cadastral survey, digital records and geospatial functions.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mols.bayelsastate.gov.ng/departments/",
+      "observation": "Official Bayelsa Ministry departments page says Lands manages land registry records, Surveys conducts cadastral surveys and BGIS manages digital land records/geospatial data; ministry address is in Yenagoa."
+    },
+    {
+      "url": "https://bgis.bayelsastate.gov.ng/about-us/",
+      "observation": "Official BGIS about page places the agency in Yenagoa and describes land-administration/geospatial mandate."
+    },
+    {
+      "url": "https://bgis.bayelsastate.gov.ng/services/",
+      "observation": "Official service directory lists GIS Data & Maps Access (online download/physical media) and a property-record verification service with a stated fee; no public feature schema is exposed."
+    },
+    {
+      "url": "https://bgis.bayelsastate.gov.ng/",
+      "observation": "Public BGIS home page offers property-address contact/search form and describes a secured centralized records database; no form was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yenagoa official Bayelsa cadastral map parcel GIS BGIS land registry",
+      "result": "Official state Ministry and BGIS describe cadastral surveys, land registry, digital land records and GIS/map access; the public site describes property search as paid and does not expose a safe vector schema.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Ijaw/Pidgin English",
+      "query": "Yenagoa Bayelsa land survey cadastral map BGIS",
+      "result": "No separate Ijaw-language official anonymous map service surfaced; first-party state English pages provide the relevant registry information.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://bgis.bayelsastate.gov.ng/",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Reviewed public agency pages and service directory only; did not submit property/address form or paid record search and retained no credentials/token."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

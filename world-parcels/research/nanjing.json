@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:57",
+  "queueRank": 57,
+  "name": "Nanjing",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    32.0355096011129,
+    118.777731053634
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyj.nanjing.gov.cn/",
+      "observation": "Nanjing natural resources and planning bureau; no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/",
+      "observation": "Jiangsu Tianditu provincial platform; no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    },
+    {
+      "url": "https://data.jiangsu.gov.cn/",
+      "observation": "Jiangsu open-data portal; no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.nanjing.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://zrzyj.nanjing.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://data.jiangsu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "none established",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All official hosts were unreachable through the proxy, so nothing was learned about a public parcel query. Comparable Chinese city viewers (Guangzhou, Shenzhen) expose no open polygon endpoint.",
+  "nextStep": "Retry later; look for a Nanjing real-estate registration (不动产登记) map service and check for a bounded polygon query."
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 174,
+  "city": "Hyderabad, Pakistan",
+  "countryCode": "PK",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/hyderabad-pakistan.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Perso-Arabic",
+    "text": "حیدرآباد سندھ زمین ریکارڈ نقشہ بورڈ آف ریونیو سندھ زمین سرکاری"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Urdu",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "حیدرآباد سندھ زمین ریکارڈ نقشہ بورڈ آف ریونیو سندھ زمین سرکاری",
+    "englishQuery": "Hyderabad, Sindh land records and maps from the Board of Revenue Sindh",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Sindh Zameen Platform",
+      "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+      "kind": "official-provincial-land-records-portal",
+      "note": "Board of Revenue Sindh portal identifies cadastral survey maps and public revenue services; search did not establish Hyderabad district layer behavior or geometry download/API."
+    },
+    {
+      "title": "Sindh Zameen notifications",
+      "url": "https://sindhzameen.gos.pk/pdf/other_notifications.pdf",
+      "kind": "official-provincial-document",
+      "note": "Document references Hyderabad Board of Revenue records administration, not an open spatial service."
+    }
+  ],
+  "assessment": "Sindh maintains a public revenue portal with cadastral-map services, but Hyderabad-specific map access and machine-readable data remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:5822",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

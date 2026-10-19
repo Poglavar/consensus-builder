@@ -1,9 +1,10 @@
-import { buildOwnershipSummary, pickOwnershipFields } from './parcels.js';
-import { fetchNycOwners, isPlaceholderOwner, isCondoBillingLot } from './nyc-condo-owners.js';
 import { fetchPluto } from '../zoning/pluto.js';
 import { computeEnvelope } from '../zoning/envelope.js';
 import { SITE_REVIEWS } from '../zoning/reviews.js';
 import { getPilotEvidence } from '../zoning/pilot.js';
+import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
+import { buildOwnershipSummary } from './parcels.js';
+import { isPlaceholderOwner, isCondoBillingLot } from './nyc-condo-owners.js';
 
 const MAX_LIMIT = 5000;
 const SRID_WGS84 = 4326;
@@ -192,7 +193,7 @@ function buildFeature(row) {
         properties.ownershipType = summary.ownershipType;
         // A condo billing lot's only recorded "owner" is the condominium association,
         // not the individual unit owners. Omit the owner list here so the parcel panel
-        // resolves the real unit owners on demand via /parcel-nyc/:id/ownership instead
+        // resolves the real unit owners on demand via /parcel-ownership/parcel-nyc/:id instead
         // of trusting this single-entity stub from the bulk load. ownershipType is kept
         // so map colouring still works without a per-parcel lookup.
         if (!isCondoBillingLot(parcelValue)) {
@@ -222,6 +223,10 @@ export function setupParcelNycRoute(app, pool) {
             return res.status(400).json({
                 error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
             });
+        }
+        // Callers ask per 500 m grid cell; a bbox the size of a city (or the world) is not the app.
+        if (bbox && wgs84BboxAreaKm2(bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat) > MAX_CELL_BBOX_KM2) {
+            return res.status(400).json({ error: `bbox too large (max ${MAX_CELL_BBOX_KM2} km²).` });
         }
 
         if (parcelIdParam && !isValidParcelValue(parcelValue)) {
@@ -281,8 +286,13 @@ export function setupParcelNycRoute(app, pool) {
             sql += ` ORDER BY (SELECT MIN(u2.swis_sbl_id) FROM ${UNIT_TABLE} u2 WHERE u2.geom_id = g.geom_id)`;
         }
 
-        if (limit && queryType !== 'parcel') {
-            params.push(limit);
+        // Always bounded: without ?limit this used to return every matching row (a world bbox or
+        // a bare filter returned the whole table, raw features included). One extra row tells us
+        // whether the answer was cut short.
+        // Key lookups (queryType 'parcel') name their rows and stay unlimited.
+        const effectiveLimit = queryType === 'parcel' ? Infinity : (limit || MAX_LIMIT);
+        if (queryType !== 'parcel') {
+            params.push(effectiveLimit + 1);
             sql += ` LIMIT $${params.length}`;
         }
 
@@ -292,7 +302,9 @@ export function setupParcelNycRoute(app, pool) {
         }
 
         try {
-            const { rows } = await pool.query(sql, params);
+            const { rows: fetched } = await pool.query(sql, params);
+            const truncated = fetched.length > effectiveLimit;
+            const rows = truncated ? fetched.slice(0, effectiveLimit) : fetched;
             const features = rows.map(buildFeature);
             res.json({
                 type: 'FeatureCollection',
@@ -304,72 +316,12 @@ export function setupParcelNycRoute(app, pool) {
                     limit: limit || undefined,
                     offset: offset || undefined
                 },
+                truncated,
                 features
             });
         } catch (error) {
             console.error('Error in /parcel-nyc:', error);
             res.status(500).json({ error: 'Failed to fetch New York parcels.' });
-        }
-    });
-
-    app.get('/parcel-nyc/:parcelId/ownership', async (req, res) => {
-        const parcelId = normalizeParcelValue((req.params.parcelId || '').trim());
-        if (!parcelId) {
-            return res.status(400).json({ error: 'parcelId is required.' });
-        }
-
-        if (!isValidParcelValue(parcelId)) {
-            return res.status(400).json({
-                error: 'Invalid parcelId format. Expected US-NY-<parcel_id> or <parcel_id>.'
-            });
-        }
-
-        const sql = `
-            SELECT
-                u.swis_sbl_id,
-                MIN(u.sbl) AS sbl,
-                array_remove(array_agg(DISTINCT u.primary_owner), NULL) AS primary_owner
-            FROM ${UNIT_TABLE} u
-            WHERE u.swis_sbl_id = $1 OR u.swis_print_key_id = $1
-            GROUP BY u.swis_sbl_id
-            LIMIT 1
-        `;
-
-        try {
-            const { rows } = await pool.query(sql, [parcelId]);
-            if (!rows.length) {
-                return res.status(404).json({ error: 'Ownership data not found for the requested parcelId.' });
-            }
-
-            const row = rows[0];
-            // Drop the "UNAVAILABLE OWNER" placeholder the NY State source carries for
-            // condos/commercial lots. Resolve real owners on demand from NYC DOF when
-            // either nothing usable is left, or this is a condo billing lot (whose
-            // recorded "owner" is just the condominium association, not the individual
-            // unit owners we want to list).
-            let owners = aggregateOwners(row.primary_owner, null)
-                .filter(name => !isPlaceholderOwner(name));
-            if (row.sbl && (!owners.length || isCondoBillingLot(row.sbl))) {
-                try {
-                    const resolved = await fetchNycOwners(row.sbl);
-                    if (resolved.owners.length) {
-                        owners = resolved.owners;
-                    }
-                } catch (lookupError) {
-                    console.error(`NYC DOF owner lookup failed for ${row.sbl}:`, lookupError.message);
-                }
-            }
-            const { payload, summary } = buildOwnershipSummaryFromOwners(row.swis_sbl_id, owners);
-            const normalized = pickOwnershipFields(payload, buildParcelId(row.swis_sbl_id));
-            if (summary) {
-                normalized.ownershipList = summary.ownershipList;
-                normalized.ownershipType = summary.ownershipType;
-            }
-
-            res.json(normalized);
-        } catch (error) {
-            console.error(`Error in /parcel-nyc/${parcelId}/ownership:`, error);
-            res.status(500).json({ error: 'Failed to fetch New York ownership data.' });
         }
     });
 

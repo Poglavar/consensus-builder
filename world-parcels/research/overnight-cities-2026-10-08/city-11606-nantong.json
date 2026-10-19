@@ -1,0 +1,90 @@
+{
+  "name": "Nantong",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 291,
+  "point": [
+    32.0169783106968,
+    120.886335013645
+  ],
+  "population2025": 1684417,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP point is a settlement centroid, not a parcel identity or official boundary. The public Tianditu Nantong release describes citywide imagery, roads/buildings and thematic resource layers, with service endpoints requiring registration/application; no cadastral parcel layer or anonymous parcel endpoint was exposed. No exact point coverage claim is made. No parcel geometry was retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The 2024 Nantong Natural Resources and Planning Bureau report documents municipal real-estate registration self-service inquiries and online appointments, and the city government describes the official geoinformation service platform. These establish local registration/map services; the public Tianditu Nantong description covers imagery, roads, buildings and thematic natural-resource maps, but does not identify cadastral parcels.",
+  "resultCategory": "city_registry_and_geoinformation_platform_no_public_parcel_geometry_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Nantong official cadastral parcel map GIS land registration property registry parcels public service platform",
+        "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+        "result": "Official Nantong sources describe a city geoinformation public-service platform and municipal real-estate registration functions. The map description names imagery, roads, building and resource themes, not parcel geometry; no anonymous parcel layer was identified.",
+        "actualResultUrls": [
+          "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html"
+        ],
+        "executionMethod": "Separate English web search and official municipal source review."
+      },
+      {
+        "language": "Chinese",
+        "query": "南通 市 自然资源规划局 不动产登记 地籍图 电子地图 地块 查询 官方",
+        "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+        "result": "Official Nantong materials describe 天地图·南通 and online real-estate registration appointments/inquiries. Public layers described are imagery, roads, high-rise/building and natural-resource themes; no anonymous parcel geometry route was found.",
+        "actualResultUrls": [
+          "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html"
+        ],
+        "executionMethod": "Separate Chinese web search and official-source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.nantong.gov.cn/ntsrmzf/ntxw/content/a96ace6c-05b3-4971-bbc5-c98c1ce22739.html",
+        "method": "Official page and source inspection",
+        "observation": "Nantong government announcement for 天地图·南通, describing the Natural Resources & Planning Bureau geoinformation public-service platform and its public map themes; no parcel layer is identified."
+      },
+      {
+        "url": "https://zrzy.jiangsu.gov.cn/nt/",
+        "method": "Official page and source inspection",
+        "observation": "Nantong Natural Resources and Planning Bureau portal; its 2024 report documents online real-estate registration inquiry/appointment pathways. These are registration services, not public parcel-map geometry."
+      },
+      {
+        "url": "https://www.nantong.gov.cn/ntsrmzf/sjbm_2024/content/33b5a7c4-3945-4791-98e3-3ae98a7e8acb.html",
+        "method": "Official department report",
+        "observation": "Official 2024 Natural Resources and Planning Bureau report says self-service real-estate registration inquiries and online appointments connect to NantongBaitong; this is a registration service, not public parcel geometry."
+      }
+    ],
+    "viewerAndServiceTrace": null
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-JS-NANTONG-TIANDITU-REGISTRY-REVIEW",
+    "name": "Nantong city geoinformation and registration services",
+    "url": "https://www.nantong.gov.cn/ntsrmzf/sjbm_2024/content/33b5a7c4-3945-4791-98e3-3ae98a7e8acb.html",
+    "operator": "Nantong Natural Resources and Planning Bureau / municipal real-estate registration service",
+    "serviceType": "Official city-specific registry/cadastral office or map-service evidence; no anonymous parcel-geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "wupCityCode": 11606,
+  "cityId": "wup2025:11606",
+  "queueRank": 291,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    32.0169783106968,
+    120.886335013645
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:09:53.255025+00:00"
+}

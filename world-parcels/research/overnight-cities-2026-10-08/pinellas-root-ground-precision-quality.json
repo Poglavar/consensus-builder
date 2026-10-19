@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32617",
+  "featureCount": 38,
+  "validNonemptyCount": 38,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016697684004803",
+        "US-FL-PINELLAS-183016822730010010"
+      ],
+      "overlapM2": 0.25962711674855465,
+      "fractionOfSmaller": 1.9839388262551153e-05
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016697684004808",
+        "US-FL-PINELLAS-183016822730010010"
+      ],
+      "overlapM2": 0.010534417720165777,
+      "fractionOfSmaller": 1.354539055121346e-06
+    }
+  ],
+  "sumPairwiseOverlapM2": 0.27016153446872043,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 180.34885580223656,
+    "median": 3999.998597044309,
+    "max": 58360.200529079804
+  },
+  "features": [
+    {
+      "id": "US-FL-PINELLAS-183016215820010010",
+      "areaM2": 43143.6120390307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004703",
+      "areaM2": 1520.22309610111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016215820020030",
+      "areaM2": 4427.828297662811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016303380000131",
+      "areaM2": 14981.113195458165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016215820020010",
+      "areaM2": 3627.702474667559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003307",
+      "areaM2": 341.50740236455124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003306",
+      "areaM2": 4517.490026120151,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003310",
+      "areaM2": 960.2928221365282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003303",
+      "areaM2": 6274.774875810742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003314",
+      "areaM2": 180.34885580223656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003302",
+      "areaM2": 3560.3994030317253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003308",
+      "areaM2": 4912.376986522086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004801",
+      "areaM2": 4372.294719421059,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003305",
+      "areaM2": 2768.755928529861,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003304",
+      "areaM2": 3271.1035069660848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003301",
+      "areaM2": 1482.9441193488758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000080",
+      "areaM2": 7688.800793864305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000090",
+      "areaM2": 23209.791881085595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000060",
+      "areaM2": 6164.028972978721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016557510000010",
+      "areaM2": 6825.756453196488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000020",
+      "areaM2": 5019.889218874347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000001",
+      "areaM2": 11767.468737128062,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000051",
+      "areaM2": 5004.126810062823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004803",
+      "areaM2": 13086.447692473817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004701",
+      "areaM2": 2170.11357192334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004802",
+      "areaM2": 4523.944017792408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004808",
+      "areaM2": 7777.123649802814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016822730010010",
+      "areaM2": 58360.200529079804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000011",
+      "areaM2": 2298.7354083996856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000010",
+      "areaM2": 1760.314004766902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000100",
+      "areaM2": 2511.261668490091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000040",
+      "areaM2": 1059.0318785863176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000060",
+      "areaM2": 1602.8086874154076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000070",
+      "areaM2": 1721.7942062519228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016017730001190",
+      "areaM2": 10262.852837462226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000050",
+      "areaM2": 1062.610133489907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016017730000050",
+      "areaM2": 1890.502532048649,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000080",
+      "areaM2": 989.9174879184354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

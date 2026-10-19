@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-11714-haifeng.json",
+  "cityCode": 11714,
+  "queueRank": 1617,
+  "city": "Haifeng",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "summary": "Official local custody was verified, but no anonymous public parcel ID-plus-geometry service was exposed. No parcel sample is retained.",
+  "queryOutcomes": "English and Chinese first-party discovery queries are recorded in the city record with actual result URLs. Both found official Shanwei/Haifeng registration and cadastral-survey evidence, not a public geometry API.",
+  "requestOutcomes": "Four bounded anonymous HTTPS GET requests returned HTTP 200. They returned official procedure, custody, or information-request pages; none returned viewer JavaScript/configuration, parcel schema/CRS, or safe parcel ID-plus-geometry data.",
+  "routesAttempted": [
+    "Official Shanwei Natural Resources Bureau Haifeng registration report",
+    "Official Shanwei registration-property reform index",
+    "Official Guangdong Haifeng information-request portal",
+    "Official Guangdong government service guide"
+  ],
+  "localRegistryCustodian": "Haifeng County Natural Resources Bureau / Haifeng County property-registration center, evidenced by official Shanwei Natural Resources Bureau reports.",
+  "publicMapOrApi": null,
+  "schemaCrs": "unverified",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner/titleholder",
+    "address/contact",
+    "tax/account/registration details",
+    "credentials/private tokens"
+  ],
+  "sampleGeojson": null,
+  "scopeLimits": "A point miss, absent public viewer/API, inaccessible hidden system, or lack of a public sample is not evidence of citywide cadastral absence. No exact-point parcel query was treated as a coverage test.",
+  "uncertainty": "A public Haifeng parcel viewer or service may exist behind an interactive or authenticated workflow; its endpoint, access rules, schema, CRS, native identity, and geographic coverage were not established.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "registryFound": true,
+  "verifiedSample": false,
+  "completion": "complete_research_no_verified_geometry"
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3574",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-3574-termez.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/termez-service-review.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-11T10:43:42Z",
+  "identityCheck": "Matched the SHA-256 verified original WUP 2025 compressed CSV, ranked roster, pending queue, and packet for city code, rank, country, point, and population persons.",
+  "searchCheck": "Packet and paired review record executed English and local-language searches with result URLs; first-party custody evidence supports registryFound=true.",
+  "sampleCheck": "Zero full parcel polygons and zero qualified native parcel identifiers retained; three-polygon limit met.",
+  "admissionCheck": "No independently qualified fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification.",
+  "reason": "Official cadastral custody and a Termiz office are supported, but the public viewer timed out and the ArcGIS item JSON contains application error 403. No parcel ID, polygon, CRS, or schema was retrieved.",
+  "absenceDecision": "unresolved; no citywide absence inferred from timeout, access denial, empty administrative lookup, or unavailable viewer"
+}

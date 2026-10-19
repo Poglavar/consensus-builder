@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [],
+  "name": "Liaoyang",
+  "country": "China",
+  "countryCode": "CN",
+  "registryFound": true,
+  "registryBasis": "A current Liaoning Provincial Government release attributed to the Liaoyang Government describes a 2026 local real-estate-registration process jointly issued by the Liaoyang Natural Resources and Housing Construction bureaus. This is city-specific registry activity. No anonymous cadastral map or full-polygon service was identified.",
+  "registryEvidenceUrls": [
+    "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+    "https://www.ln.gov.cn/web/zwgkx/zfxxgk1/zc/gz/BAB483B6C4744841816D3C3CB40676F2/index.shtml",
+    "https://www.lyszfgjj.com/bmyjs/index.jhtml",
+    "https://www.liaoyang.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10232,
+  "cityId": "wup2025:10232",
+  "centerLatLon": [
+    41.2479581940543,
+    123.183358997054
+  ],
+  "point": [
+    41.2479581940543,
+    123.183358997054
+  ],
+  "rank": 852,
+  "queueRank": 852,
+  "population2025": 635212,
+  "population2025k": 635.212,
+  "populationPlausibility2025": "High",
+  "scopeLimits": "No full polygon retained. City-specific registry or map evidence is informational and does not establish citywide completeness.",
+  "remainingUncertainty": "City registration activity is current, but no public full-polygon route, native cadastral key schema, or WUP-point geometry response was verified. Direct local city hostname resolution did not complete in this environment, which is not evidence of provider downtime.",
+  "nextStep": "If pursued, find an official Liaoyang city cadastral map/parcel service with a safe geometry schema; avoid property-registration records and private lookup flows.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "辽阳市自然资源局 地籍图 不动产登记 官方",
+        "result": "Official Liaoning Government source attributes current 2026 local real-estate registration process to Liaoyang Government; no public parcel vector map was identified.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+          "https://www.ln.gov.cn/web/zwgkx/zfxxgk1/zc/gz/BAB483B6C4744841816D3C3CB40676F2/index.shtml",
+          "https://www.lyszfgjj.com/bmyjs/index.jhtml",
+          "https://www.liaoyang.gov.cn/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "辽阳市推行预售商品房预告登记 2026 自然资源局",
+        "result": "Official provincial release documents current city registration work; it is a transaction/registration workflow, not a public geometry layer.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+          "https://www.ln.gov.cn/web/zwgkx/zfxxgk1/zc/gz/BAB483B6C4744841816D3C3CB40676F2/index.shtml",
+          "https://www.lyszfgjj.com/bmyjs/index.jhtml",
+          "https://www.liaoyang.gov.cn/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "English",
+        "query": "Liaoyang cadastral map land registration official city",
+        "result": "Official city registration activity is confirmed; no anonymous full-polygon service was found.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+          "https://www.ln.gov.cn/web/zwgkx/zfxxgk1/zc/gz/BAB483B6C4744841816D3C3CB40676F2/index.shtml",
+          "https://www.lyszfgjj.com/bmyjs/index.jhtml",
+          "https://www.liaoyang.gov.cn/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+        "observation": "Official Liaoning Provincial Government release (information source: Liaoyang Government) documents the city’s August 2026 “no-application” advance-registration service issued by local natural-resources and housing authorities."
+      },
+      {
+        "url": "https://www.ln.gov.cn/web/zwgkx/zfxxgk1/zc/gz/BAB483B6C4744841816D3C3CB40676F2/index.shtml",
+        "observation": "Official Liaoning provincial registration rules describe local registration authority roles; contextual, not evidence of a geometry service."
+      },
+      {
+        "url": "https://www.lyszfgjj.com/bmyjs/index.jhtml",
+        "observation": "Official municipal housing-fund portal budget list references the Liaoyang Real Estate Registration Center; older local activity evidence."
+      },
+      {
+        "url": "https://www.liaoyang.gov.cn/",
+        "observation": "Official city portal hostname attempted; local DNS resolution failed before HTTP response, so no provider-status claim is made."
+      }
+    ]
+  },
+  "source": {
+    "name": "Liaoyang real-estate registration service evidence",
+    "urls": [
+      "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+      "https://www.ln.gov.cn/web/zwgkx/zfxxgk1/zc/gz/BAB483B6C4744841816D3C3CB40676F2/index.shtml",
+      "https://www.lyszfgjj.com/bmyjs/index.jhtml",
+      "https://www.liaoyang.gov.cn/"
+    ],
+    "operator": "Liaoyang municipal government and natural-resources bureaus",
+    "url": "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+    "serviceType": "Official land-registration service or public map candidate; vector geometry unverified",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official local registry/map workflow reviewed; no full geometry response verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "A current Liaoning Provincial Government release attributed to the Liaoyang Government describes a 2026 local real-estate-registration process jointly issued by the Liaoyang Natural Resources and Housing Construction bureaus. This is city-specific registry activity. No anonymous cadastral map or full-polygon service was identified.",
+    "verifiedOpenScope": "No public full-polygon coverage verified at the exact WUP locator. This record documents source evidence/candidate status only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No public full-polygon/native-key response was verified at the unchanged WUP locator; the official registry or map lead remains unqualified for runtime."
+  },
+  "resultCategory": "official_city_registry_activity_no_public_geometry",
+  "geometryEvidence": "No full parcel polygon was retained. Official city registry activity is confirmed, but no public full-polygon layer/native cadastral key or city-point result was found.",
+  "adapterReady": false,
+  "rootPrimaryReadback": {
+    "url": "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2026080510504412373/index.shtml",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "辽阳市推行预售商品房预告登记“免申即办” "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

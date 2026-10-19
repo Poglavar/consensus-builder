@@ -1,0 +1,30 @@
+{
+  "cityCode": 255,
+  "queueRank": 2223,
+  "name": "Novi Sad",
+  "country": "Serbia",
+  "countryCode": "RS",
+  "point": [45.2553804142272, 19.8244509114482],
+  "population2025": 262324,
+  "population2025k": 262.324,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Novi Sad official cadastral parcel map Serbia cadastral geoportal API",
+        "result": "Official RGZ results identify GeoSrbija as the national platform for parcel and real-estate spatial data, eKatastar public access, and the Novi Sad cadastral office pages. The official GeoSrbija/REST route was not anonymously reachable during this attempt.",
+        "actualResultUrls": ["https://www.rgz.gov.rs/geo-srbija", "https://www.rgz.gov.rs/e-katastar", "https://geosrbija.rs/usluge/rest-api/", "https://preview.rgz.gov.rs/public-access"]
+      },
+      {
+        "language": "Serbian",
+        "query": "Novi Sad katastarski plan parcela zvanični geoportal RGZ",
+        "result": "Official Serbian-language RGZ results identify GeoSrbija, public parcel lookup, the digital cadastral plan REST service, and the local Novi Sad 1 cadastral office. No safe anonymous parcel geometry response was obtained.",
+        "actualResultUrls": ["https://www.rgz.gov.rs/гео-србија", "https://www.rgz.gov.rs/katastri-u-srbiji", "https://preview.rgz.gov.rs/вести/служба-за-катастар-непокретности-нови-сад-1-"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "RGZ/GeoSrbija and a Novi Sad local cadastral office are evidenced. Viewer/API access was held by login/redirect/timeout conditions, so no parcel sample is retained. This packet is not source integration or runtime admission."
+}

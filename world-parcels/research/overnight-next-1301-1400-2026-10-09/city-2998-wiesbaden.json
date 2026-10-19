@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "cityId": "wup2025:2998",
+  "cityCode": 2998,
+  "wupCityCode": 2998,
+  "queueRank": 1309,
+  "rank": 1309,
+  "name": "Wiesbaden",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso2": "DE",
+  "iso3": "DEU",
+  "point": [50.0324160875229, 8.24497585586087],
+  "centerLatLon": [50.0324160875229, 8.24497585586087],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 427270,
+  "population2025k": 427.27,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["wiesbaden"],
+  "status": "complete",
+  "resultCategory": "official_state_alkis_wfs_verified_with_bounded_geometry_samples",
+  "registryFound": true,
+  "registryBasis": "The official Wiesbaden Geoportal identifies the municipal Tiefbau- und Vermessungsamt as its geoinformation custodian. Hessen's official ALKIS WFS, operated by the Hessian State Office for Land Management and Geoinformation, returned Wiesbaden parcel features.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "A bounded WFS request verified safe parcel geometry and native IDs, but it did not establish citywide completeness or independently qualify a production adapter.",
+  "source": {
+    "sourceId": "hessen-alkis-vereinfacht-wfs",
+    "name": "WFS HE ALKIS Vereinfacht",
+    "url": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities",
+    "operator": "Hessisches Landesamt für Bodenmanagement und Geoinformation (HLBG/HVBG)",
+    "serviceType": "Public WFS 2.0 ALKIS simplified download service",
+    "layer": "ave:Flurstueck",
+    "geometryType": "MultiSurface/Polygon",
+    "nativeIdField": "oid (also exposed as gml:identifier and idflurst)",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "nativeCrs": "EPSG:25832",
+    "geometryStatus": "verified",
+    "sampleCount": 2,
+    "sampleFile": "wiesbaden-parcel-samples.geojson",
+    "fieldMapping": {"oid": "canonical safe native identity", "geometrie": "full parcel geometry", "gml:posList": "source coordinates transformed from EPSG:25832 to WGS84 for GeoJSON"},
+    "compositeKeyProvenance": "Not used for retained identity; source also exposes flstkennz as a composite cadastral designation, but samples use oid only."
+  },
+  "sampleFile": "wiesbaden-parcel-samples.geojson",
+  "verifiedSample": true,
+  "verifiedParcelResponse": {"requestReturned": 3, "retained": 2, "responseFormat": "GML 3.2.1", "responseTimestamp": "2026-10-09T16:07:20.569+02:00"},
+  "coverageAssessment": {
+    "claimedScope": "Hessen ALKIS simplified WFS; returned features include Wiesbaden municipality attributes.",
+    "verifiedOpenScope": "Anonymous public GetCapabilities and bounded GetFeature response for ave:Flurstueck; two full safe-identity parcel polygons retained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {"language": "English", "query": "Wiesbaden official cadastral map parcel GIS Liegenschaftskataster Flurstücke", "result": "Found the official Wiesbaden Geoportal and the official Geoportal Hessen ALKIS parcel service documentation.", "actualResultUrls": ["https://www.wiesbaden.de/leben-wohnen/mobilitaet/stadtplan/", "https://geoportal.wiesbaden.de/", "https://www.geoportal.hessen.de/spatial-objects/710/collections/"]},
+      {"language": "German", "query": "Wiesbaden offizielles Geoportal Flurstücke ALKIS Liegenschaftskataster", "result": "Found Wiesbaden's official Geoportal, municipal geoinformation custodian, Hessen parcel-search documentation, and the official ALKIS WFS metadata.", "actualResultUrls": ["https://www.wiesbaden.de/vv/produkte/66/geoportal", "https://www.geoportal.hessen.de/article/Flurstueckssuche/", "https://www.geoportal.hessen.de/spatial-objects/637"]}
+    ],
+    "portals": [
+      {"url": "https://geoportal.wiesbaden.de/", "operator": "Landeshauptstadt Wiesbaden, Tiefbau- und Vermessungsamt", "scope": "Official municipal Geoportal; public city maps and thematic geodata."},
+      {"url": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs", "operator": "Hessisches Landesamt für Bodenmanagement und Geoinformation", "scope": "Official state ALKIS simplified WFS including Flurstücke."}
+    ],
+    "requests": [
+      {"url": "https://geoportal.wiesbaden.de/kartenwerk/application/stadtplan", "method": "GET; anonymous", "httpStatus": null, "contentType": null, "assessment": "Timed out after 20 seconds in the shell request; indexed official page identifies the viewer and visible layers. Timeout is not evidence of absence."},
+      {"url": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities", "method": "GET; anonymous", "httpStatus": 200, "contentType": "text/xml", "assessment": "Returned WFS capabilities, service title, ALKIS scope, and feature type ave:Flurstueck."},
+      {"url": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ave:Flurstueck&COUNT=3&OUTPUTFORMAT=application/gml+xml; version=3.2&SRSNAME=EPSG:25832&BBOX=445826.291,5542407.947,446026.291,5542607.947,EPSG:25832", "method": "GET; anonymous bounded request", "httpStatus": 200, "contentType": "application/gml+xml; version=3.2.1", "assessment": "Returned 3 parcel features with safe native oid identifiers and EPSG:25832 geometries. Response envelope/features were not treated as proof of citywide completeness."}
+    ],
+    "schemaCrs": {"nativeCrs": "EPSG:25832", "geometryResponseSchema": "WFS 2.0 GML 3.2.1, ave:Flurstueck", "viewerLayers": ["ave:Flurstueck"]}
+  },
+  "safeFieldAllowlist": ["oid", "gml:identifier", "geometry", "CRS", "HTTP status/content type", "public service metadata"],
+  "remainingUncertainty": "The Wiesbaden municipal viewer timed out from this shell path; the state WFS response was bounded and returned only three features, so citywide parcel coverage, update currency, exact point containment, and adapter suitability remain for serial review. No owner, address, contact, titleholder, tax, or personal fields were retained.",
+  "registryEvidenceUrls": ["https://www.wiesbaden.de/vv/produkte/66/geoportal", "https://geoportal.wiesbaden.de/", "https://www.geoportal.hessen.de/spatial-objects/710/collections/", "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": ["hessen-alkis-vereinfacht-wfs"],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently qualify the live WFS, coverage semantics, coordinate handling, and native identity before any runtime admission; keep held meanwhile.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:230",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-230-m-nchengladbach.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/m-nchengladbach-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/m-nchengladbach-parcels-sample.geojson",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_230-first-party-exact-point-response.json"
+  ],
+  "checkedAt": "2026-10-11T15:38:04Z",
+  "reason": "One exact-point ALKIS_ID parcel polygon is preserved and valid, but fresh adapter ID reads, forced paging, 13 bounded cells, independent full-polygon overlap and operation checks, source binding, and headed Details verification are not evidenced.",
+  "runtimeAdmission": false
+}

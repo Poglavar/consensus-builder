@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:111",
+  "queueRank": 111,
+  "name": "Şan'ā' (Sana'a)",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "centerLatLon": [
+    15.3581160204966,
+    44.2045604621985
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.yemen-nic.info/",
+      "observation": "Yemen National Information Center site; did not respond."
+    },
+    {
+      "url": "https://www.lrcyemen.org/",
+      "observation": "Land registry related site; did not respond."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=sanaa%20parcels",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "no cadastral parcels; only story maps, web maps, and unrelated US county parcel layers"
+    },
+    {
+      "url": "https://www.yemen-nic.info/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://www.lrcyemen.org/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Yemen; no online cadastre found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Conflict-affected context, split administrations, and unreachable official sites; a cadastral authority (Land Survey and Registration Authority) exists but no online parcel service was found or reachable.",
+  "nextStep": "Look for humanitarian (UN-Habitat, HLP) parcel datasets on HDX and retest official sites later."
+}

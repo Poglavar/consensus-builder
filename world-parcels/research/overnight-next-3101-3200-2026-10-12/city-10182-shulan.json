@@ -1,0 +1,94 @@
+{
+  "purpose": "resumable WUP cadastral-source research packet",
+  "schemaVersion": 1,
+  "kind": "city-parcel-research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10182,
+  "queueRank": 3174,
+  "name": "Shulan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [44.4131968645505, 126.946736675919],
+  "population2025": 189563,
+  "population2025k": 189.563,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shulan China cadastral parcels GIS property registry official map service",
+        "result": "Search did not identify a Shulan-specific public cadastral viewer or anonymous parcel geometry API. Results were general Chinese cadastral/registration guidance, national context, or unrelated city services.",
+        "actualResultUrls": ["https://rerc.com.cn/", "https://www.shulan.gov.cn/", "https://beijing.tianditu.gov.cn/"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "舒兰市 不动产 登记 地籍图 地图 服务 官方",
+        "result": "Search did not expose a public Shulan parcel viewer/API. The official Shulan government site was found and its information-disclosure catalog was inspected; the catalog provides local registration documents, not parcel geometry.",
+        "actualResultUrls": ["https://www.shulan.gov.cn/", "http://xxgk.shulan.gov.cn/gzbm/cyqhbj/xxgkml/", "https://rerc.com.cn/"]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "舒兰市自然资源局 不动产登记中心 官方网站",
+        "result": "The official Shulan government homepage links to the Shulan Natural Resources Bureau information-disclosure area. Its catalog contains a 不动产登记信息 category, and the public catalog endpoint returned Shulan Real Estate Registration Center document metadata; no map/API geometry was exposed.",
+        "actualResultUrls": ["https://www.shulan.gov.cn/", "http://xxgk.shulan.gov.cn/gzbm/cyqhbj/xxgkml/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Shulan government homepage links to 舒兰市自然资源局 (Shulan Municipal Natural Resources Bureau). The bureau's official information-disclosure catalog exposes a 不动产登记信息 category; its public JSONP list response returned records whose publisher is 舒兰市不动产登记中心 (Shulan Real Estate Registration Center). This evidences a local registry custodian, but not public parcel geometry access.",
+  "officialSources": [
+    {
+      "url": "http://www.shulan.gov.cn/",
+      "role": "official Shulan municipal government homepage",
+      "access": "HTTP GET returned 200; homepage HTML inspected; it links to the Shulan Natural Resources Bureau disclosure area and the Jilin government service portal. HTTPS was separately attempted with normal TLS verification and failed with a TLS internal-alert error."
+    },
+    {
+      "url": "http://xxgk.shulan.gov.cn/gzbm/cyqhbj/xxgkml/",
+      "role": "official Shulan Natural Resources Bureau information-disclosure catalog",
+      "access": "HTTP GET returned 200; HTML and current JavaScript/configuration inspected. Catalog category 19669 is labeled 不动产登记信息."
+    },
+    {
+      "url": "http://122.137.242.23:8081/govsearch/jsonp/gkml/zf_subcat_list.jsp?channelId=36176",
+      "role": "public catalog subcategory service used by the official page",
+      "access": "HTTP GET returned 200 JSONP; response listed category 19669 among active categories."
+    },
+    {
+      "url": "http://122.137.242.23:8081/govsearch/jsonp/gkml/zf_list.jsp?page=1&lb=1&channelId=36176&subcat=19669",
+      "role": "public catalog list service used by the official page",
+      "access": "HTTP GET returned 200 JSONP with 99 document records; response contained document metadata only, including titles and publishers, and no parcel IDs, geometry, CRS, or viewer endpoint."
+    },
+    {
+      "url": "https://zrzy.jl.gov.cn/",
+      "role": "Jilin provincial natural-resources context source",
+      "access": "TLS-verified HTTPS GET returned 200; no Shulan parcel service route was identified from this bounded request."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "role": "official national Real Estate Registration Center context/directory",
+      "access": "Search result and public page were used for national context only; no Shulan geometry service was identified."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"route": "http://www.shulan.gov.cn/", "method": "GET", "outcome": "HTTP 200; official homepage inspected for first-party map, cadastral, and registry routes."},
+    {"route": "https://www.shulan.gov.cn/", "method": "GET", "outcome": "TLS-verified request failed with OpenSSL TLS internal alert; no retry with a certificate exception was authorized or used."},
+    {"route": "http://xxgk.shulan.gov.cn/gzbm/cyqhbj/xxgkml/", "method": "GET", "outcome": "HTTP 200; current page JavaScript/configuration inspected. Local bureau catalog and category 19669 identified."},
+    {"route": "http://122.137.242.23:8081/govsearch/jsonp/gkml/zf_subcat_list.jsp?channelId=36176", "method": "GET", "outcome": "HTTP 200 JSONP; active category IDs returned, including 19669 不动产登记信息."},
+    {"route": "http://122.137.242.23:8081/govsearch/jsonp/gkml/zf_list.jsp?page=1&lb=1&channelId=36176&subcat=19669", "method": "GET", "outcome": "HTTP 200 JSONP; 99 registration-document metadata records returned. No safe parcel ID, polygon, CRS, or map/API route present."},
+    {"route": "https://zrzy.jl.gov.cn/", "method": "GET", "outcome": "TLS-verified HTTP 200; provincial context page inspected without finding a Shulan parcel endpoint."},
+    {"route": "https://www.tianditu.gov.cn/", "method": "GET", "outcome": "HTTP 418 anti-automation response; no bypass attempted and no geometry inferred."},
+    {"route": "https://www.shulan.gov.cn/ and https://xxgk.shulan.gov.cn/", "method": "GET", "outcome": "An initial broad probe was run with curl -k while checking host reachability; its result was not used as evidence, and subsequent conclusions rely on the HTTP 200 official pages and TLS-verified provincial request recorded above."}
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_registry_custodian_verified_no_public_parcel_api",
+  "coverageAssessment": "No exact-point parcel query was attempted because no public Shulan parcel endpoint was identified. The exact WUP point was preserved and not shifted. This is not evidence of citywide absence.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The current Shulan registry viewer, if any, its JavaScript/configuration, service routes, native parcel identity field, field schema, CRS, anonymous query semantics, and citywide coverage remain unknown. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only, not source integration or admission."
+}

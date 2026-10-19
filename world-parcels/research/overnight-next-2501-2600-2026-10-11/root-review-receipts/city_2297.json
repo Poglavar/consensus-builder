@@ -1,0 +1,13 @@
+{
+  "taskId": "city:2297",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-2297-cob-n.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/cob-n-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_2297-first-party-cache-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:55:34.996147Z",
+  "reason": "Queue identity and English/Spanish searches match; original RIC cache verifies three bounded polygon features with distinct native ccc IDs. This is a local discovery, not citywide coverage or adapter qualification. Fresh exact-ID reads, forced paging, 13 bounded cells, full metric GEOS checks, source binding, and headed Details-panel verification are missing."
+}

@@ -1,0 +1,127 @@
+{
+  "name": "Mysuru",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 379,
+  "point": [
+    12.316010598965,
+    76.636412308794
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Kannada",
+        "query": "ಮೈಸೂರು ನಗರ ಭೂಮಾಪನ ಸರ್ವೆ ನಕ್ಷೆ ನಗರ ಭೂದಾಖಲೆ CTS ನಕ್ಷೆ ಅಧಿಕೃತ ಮೈಸೂರು ಮಹಾನಗರ ಪಾಲಿಕೆ",
+        "scope": "Find city-specific municipal or town-survey parcel data and a safe anonymous full-vector route.",
+        "result": "Mysuru City Corporation’s official application-procedure page lists “CTS extract & Map” among documents used for local property/trade processes and includes property-register extracts and land sketches in building applications. Its home page advertises a property-details and tax service. The accessible property form asks for assessment/property details and includes owner/mobile fields; no property records were submitted. The public pages do not link an anonymous parcel map or vector feature endpoint.",
+        "actualResultUrls": [
+          "https://www.mysurucitycorporation.co.in/WebSiteMysuru/ApplicationProcedures.aspx",
+          "https://www.mysurucitycorporation.co.in/WebSiteMysuru/home.aspx",
+          "https://www.mysurucitycorporation.co.in/WebSiteMysuru/PropertySearch1.aspx"
+        ],
+        "executionMethod": "Kannada-language search and static page/form-schema inspection of first-party MCC pages; did not submit property or owner data."
+      },
+      {
+        "language": "English",
+        "query": "Mysuru official municipal cadastral parcel map CTS extract map city survey public GIS",
+        "scope": "Cross-check city property-map workflow and whether it serves complete parcel vectors anonymously.",
+        "result": "The official district portal links Mysuru City Corporation. MCC provides a local property-details/tax page and its procedures document CTS extracts/maps. Searches also found ward maps and planning/base maps, but these are not cadastral parcel polygons. No anonymous parcel-vector endpoint or schema was advertised.",
+        "actualResultUrls": [
+          "https://mysore.nic.in/en/public-utility/mysuru-city-corporation/",
+          "https://www.mysurucitycorporation.co.in/WebSiteMysuru/ApplicationProcedures.aspx",
+          "https://www.mysurucitycorporation.co.in/WebSiteMysuru/PropertySearch1.aspx"
+        ],
+        "executionMethod": "Separate English-language search plus direct anonymous GETs of MCC property procedures and property-search page; no form submission or property record retrieval."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Mysuru City Corporation property procedures",
+        "operator": "Mysuru City Corporation",
+        "homeUrl": "https://www.mysurucitycorporation.co.in/WebSiteMysuru/ApplicationProcedures.aspx",
+        "observation": "Official local document checklist refers to CTS extract and map; the site does not publish the map as an anonymous full-vector service."
+      },
+      {
+        "name": "Mysuru City Corporation property details and tax service",
+        "operator": "Mysuru City Corporation",
+        "homeUrl": "https://www.mysurucitycorporation.co.in/WebSiteMysuru/PropertySearch1.aspx",
+        "observation": "Public HTML form is for property/tax lookup and includes assessment and owner/mobile inputs; schema inspected only, no values submitted or records retrieved."
+      },
+      {
+        "name": "Mysuru District official MCC directory",
+        "operator": "District Administration, Government of Karnataka",
+        "homeUrl": "https://mysore.nic.in/en/public-utility/mysuru-city-corporation/",
+        "observation": "District government directory links the City Corporation website."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.mysurucitycorporation.co.in/WebSiteMysuru/ApplicationProcedures.aspx",
+        "method": "GET direct shell",
+        "status": 200,
+        "type": "text/html; charset=utf-8",
+        "observation": "Official MCC application procedure; includes CTS extract and map in document checklists."
+      },
+      {
+        "url": "https://www.mysurucitycorporation.co.in/WebSiteMysuru/PropertySearch1.aspx",
+        "method": "GET public form schema only",
+        "status": 200,
+        "type": "text/html; charset=utf-8",
+        "observation": "Public property-tax form HTML inspected; no submission or record retrieval. Fields include assessment identifiers and owner/mobile inputs; not a parcel vector viewer."
+      },
+      {
+        "url": "https://mysore.nic.in/en/public-utility/mysuru-city-corporation/",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "District government directory identifies and links the City Corporation."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 0,
+    "bounded": false,
+    "pointLocated": false,
+    "note": "No anonymous full-vector parcel query produced geometry; see recorded official public routes and their request outcomes."
+  },
+  "source": {
+    "operator": "Mysuru City Corporation / municipal property records and town-survey documents",
+    "endpoint": "https://www.mysurucitycorporation.co.in/WebSiteMysuru/ApplicationProcedures.aspx",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "serviceType": "Municipal property-tax/register service and CTS map document workflow",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false
+  },
+  "coverageAssessment": "The local property and CTS-map record workflows are confirmed. The WUP point has not been resolved to a cadastral unit and no anonymous parcel geometry was advertised or returned.",
+  "registryFound": true,
+  "registryBasis": "Mysuru City Corporation’s official property procedures explicitly require CTS extracts/maps in local property processes and reference municipal property-register extracts; district administration links to the MCC. This confirms local property/city-survey records, not an open vector service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_property_and_cts_records_confirmed_no_anonymous_parcel_vector_endpoint",
+  "technicalBlocker": "The public MCC pages expose property/tax form workflows and CTS map document requirements, not a map service or vector layer. The property form includes assessment and owner/mobile inputs and was not submitted.",
+  "remainingUncertainty": "It is unknown whether a separate MCC/City Survey endpoint publishes parcel vectors; no such route was linked from the inspected official pages. Local CTS map access may require an application/document workflow.",
+  "nextStep": "Revisit if MCC or Karnataka survey sources publish a documented open urban parcel-vector endpoint. Keep property/owner lookup workflows out of scope.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9769,
+  "cityId": "wup2025:9769",
+  "queueRank": 379,
+  "population2025": 1342126,
+  "population2025k": 1342.126,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    12.316010598965,
+    76.636412308794
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00"
+}

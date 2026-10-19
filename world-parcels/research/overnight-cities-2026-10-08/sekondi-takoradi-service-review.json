@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "gh-sekondi-takoradi-lands-commission-and-stma-review",
+  "purpose": "Service review for WUP2025 rank 457 Sekondi-Takoradi (city code 1260); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Sekondi-Takoradi Metropolitan Assembly and Ghana Lands Commission",
+  "sourceUrl": "https://stma.gov.gh/departments/physical-planning.php",
+  "registryFound": true,
+  "registryBasis": "STMA’s official Physical Planning Department prepares spatial and land-use plans and processes development permits. Ghana Lands Commission Survey and Mapping Division holds survey records for parcels; its client-service charter routes Western Region searches through submission of a site plan at a regional CSAU/registry, while the public ELIS is a login page. The inspected city plan products are planning maps, not public parcel geometry. No anonymous full-polygon source was verified.",
+  "officialSources": [
+    {
+      "url": "https://stma.gov.gh/departments/physical-planning.php",
+      "observation": "Official city department page describes spatial/land-use planning, monitoring development and facilitating permits; it does not advertise an open parcel feature service."
+    },
+    {
+      "url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+      "observation": "National statutory mapping division states it preserves records and operations relating to surveys of land parcels; this is institutional evidence, not an anonymous parcel feed."
+    },
+    {
+      "url": "https://lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf",
+      "observation": "For other regions, the official charter describes a site-plan submission workflow at a regional office for searches; no owner, address, or parcel lookup was made."
+    },
+    {
+      "url": "https://elis.lc.gov.gh/",
+      "observation": "Public ELIS landing page returned HTTP 200 and prompts for official email/password. No login was attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sekondi-Takoradi Ghana official public cadastral map land registry GIS parcel service",
+      "scope": "Find city-local cadastral services and anonymous full-polygon routes.",
+      "result": "Official STMA pages establish urban physical planning and public spatial-plan downloads. Lands Commission sources establish survey-record custody and a site-plan-based regional search workflow; no anonymous parcel geometry route was verified.",
+      "urls": [
+        "https://stma.gov.gh/departments/physical-planning.php",
+        "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+        "https://lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf"
+      ]
+    },
+    {
+      "language": "Twi",
+      "query": "Sekondi-Takoradi asase nhoma, asase mmara, asase mfonini GIS land parcel map",
+      "scope": "Hwehwɛ kuropɔn no asase nhoma ne anonymous parcel geometry route.",
+      "result": "Search did not surface an official Twi cadastral map or geometry route. The traceable official sources found were the English-language STMA spatial-planning pages and Lands Commission service documentation.",
+      "urls": [
+        "https://stma.gov.gh/departments/physical-planning.php",
+        "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxAccountOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "No anonymous city parcel-feature endpoint or geometry-only schema was found in the inspected official route set. The official ELIS page requires valid credentials, and the Lands Commission charter routes Western Region searches through a site-plan submission to a regional office. No login, form, payment, or parcel search was attempted."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://stma.gov.gh/departments/physical-planning.php",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytesObservedAtLeast": 30000,
+      "observation": "Anonymous public STMA Physical Planning page; it describes land-use/spatial planning and development-permit functions, with no public parcel feature layer advertised."
+    },
+    {
+      "url": "https://www.stma.gov.gh/Documents.php",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "Official publications listing provides spatial-plan PDFs, including Sekondi, Takoradi, and Essikado-Ketan plans; these are planning documents, not parcel records."
+    },
+    {
+      "url": "https://elis.lc.gov.gh/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 6850,
+      "observation": "Public Lands Commission ELIS landing page is a login form requesting official email and password; no credentials were entered."
+    },
+    {
+      "url": "https://lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf",
+      "method": "GET",
+      "status": "indexed_public_document",
+      "observation": "Lands Commission client charter routes official searches for regions outside Greater Accra through site-plan submission at a regional CSAU or registry; no search submitted."
+    }
+  ],
+  "technicalBlocker": "No anonymous city parcel-feature endpoint or geometry-only schema was found in the inspected official route set. The official ELIS page requires valid credentials, and the Lands Commission charter routes Western Region searches through a site-plan submission to a regional office. No login, form, payment, or parcel search was attempted.",
+  "sampleDisposition": "No parcel polygons or feature attributes retained.",
+  "remainingUncertainty": "City-specific planning authority and Lands Commission record custody are established. Publicly available STMA spatial plans are city-level land-use/structure plans; they do not establish parcel geometry or complete cadastral coverage. No parcel feature data or search report was requested."
+}

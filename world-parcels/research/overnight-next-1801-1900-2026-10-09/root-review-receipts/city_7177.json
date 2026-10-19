@@ -1,0 +1,18 @@
+{
+  "taskId": "city:7177",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7177-dessie.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/dessie-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/dessie/eland-maps.html",
+    "tmp/valhalla-parcel-research/dessie/main.d3525dff4b9098d6.js",
+    "tmp/valhalla-parcel-research/dessie/api-config-headers.txt",
+    "tmp/valhalla-parcel-research/runs/20261010T172405-60a51648/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T17:29:23Z",
+  "reason": "The official e-Land map cache is HTML and JavaScript; configuration retrieval timed out and no Dessie-specific anonymous parcel ID plus polygon was evidenced. The directory lead does not establish local registry custody. Native reads, paging, 13 cells, metric geometry, source binding, and headed Details qualification are absent; registry custody remains unresolved, not false.",
+  "registryFound": null
+}

@@ -1,0 +1,62 @@
+{
+  "cityCode": 7626,
+  "queueRank": 1708,
+  "city": "Bonny",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [4.4230284330027, 7.17160048091615],
+  "population2025": 335542,
+  "population2025k": 335.542,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bonny Nigeria official cadastral parcel map land registry GIS Rivers State",
+        "result": "First-party discovery identified the current SGRIV Land Management Platform presented as the Office of the Surveyor General, Rivers State, plus the Rivers State Ministry of Physical Planning and Urban Development portal. The official Rivers State government site and the federal Office of the Surveyor-General site also document state/national surveying functions, but no public Bonny parcel layer was identified.",
+        "actualResultUrls": ["https://www.sgriv.com/", "https://urban.riversstateapps.ng/", "https://riversstate.gov.ng/", "https://osgof.gov.ng/cadastral-legal-surveys/"]
+      },
+      {
+        "language": "Ibani (Bonny local language; Nigerian Pidgin search variant)",
+        "query": "Bonny land map registry Rivers State; Bonny cadastral parcel map",
+        "result": "No distinct local-language or Bonny-specific first-party parcel viewer was found. Results converged on the same Rivers State land-management/procedure portals; no geometry or safe parcel identifier was exposed anonymously.",
+        "actualResultUrls": ["https://www.sgriv.com/", "https://urban.riversstateapps.ng/", "https://riversstate.gov.ng/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Office of the Surveyor General, Rivers State, as identified by the first-party SGRIV Land Management Platform; Rivers State Ministry of Physical Planning and Urban Development is a related planning/procedure custodian.",
+  "registryEvidence": {
+    "viewerUrl": "https://www.sgriv.com/",
+    "viewerText": "SGRIV Land Management Platform; Office of the Surveyor General, Rivers State; process your C of O faster and apply directly to the office through the official portal.",
+    "procedureUrl": "https://urban.riversstateapps.ng/",
+    "procedureOutcome": "Public portal describes survey plans and land/physical-planning services, but application actions lead to login; no parcel map was exposed."
+  },
+  "sourceReview": {
+    "service": "SGRIV Land Management Platform / Rivers State land-management procedure portals",
+    "baseUrl": "https://www.sgriv.com/",
+    "officialAssetsInspected": ["/", "https://urban.riversstateapps.ng/", "https://osgof.gov.ng/cadastral-legal-surveys/"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel geometry response",
+    "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service and layer metadata"]
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.sgriv.com/", "outcome": "200; current public landing page readable; identifies Office of the Surveyor General, Rivers State and a C of O application workflow; no parcel map or parcel API in page/configuration."},
+    {"method": "GET", "url": "https://urban.riversstateapps.ng/", "outcome": "200; public Rivers State Ministry of Physical Planning and Urban Development portal readable; survey-plan services documented; application routes require login; no parcel geometry."},
+    {"method": "GET", "url": "https://riversstate.gov.ng/", "outcome": "403 from automated request; search result still identified it as the official Rivers State Government portal. No inference about parcel coverage."},
+    {"method": "GET", "url": "https://rivgis.gov.ng/", "outcome": "DNS resolution failed; historical RIVGIS lead not treated as a current usable service and no retry or TLS bypass used."},
+    {"method": "GET", "url": "https://osgof.gov.ng/cadastral-legal-surveys/", "outcome": "200; federal cadastral/legal-survey mandate and national cadastral GIS function documented, but this is general national agency prose, not a Bonny local parcel service."},
+    {"method": "GET", "url": "https://www.sgriv.com/_next/static/chunks/app/page-f0f5c57fe34fc0b3.js", "outcome": "200; current landing-page JavaScript inspected; only public contact-support route surfaced, with no parcel/map endpoint."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against parcel geometry; no hit/miss inference", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Rivers State land-management and planning procedures; SGRIV presents a state land administration workflow", "verifiedOpenScope": "Public procedure and agency identity only; anonymous parcel vector response not verified", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": ["Exact WUP point [4.4230284330027, 7.17160048091615] was preserved and not shifted.", "A zero exact-point hit, map extent miss, timeout, login wall, DNS failure or unusable UI is not evidence of citywide cadastral absence.", "No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained.", "No raw source-specific attribute set or GeoJSON sample was retained.", "Packet completion records executed attempts only; it is not source integration/admission. Serial reviewer qualification remains required."],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public Rivers State land-management custodian is evidenced, but Bonny-specific parcel layer availability, anonymous access, native parcel identity, schema, CRS, geometry endpoint and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

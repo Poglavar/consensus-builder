@@ -1,0 +1,23 @@
+{
+  "taskId": "city:356",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-356-antofagasta.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/antofagasta-service-review.json",
+    "tmp/valhalla-parcel-research/antofagasta/predios/PREDIOS/PREDIOSANTOFAGASTA.shp",
+    "tmp/valhalla-parcel-research/antofagasta/predios/PREDIOS/PREDIOSANTOFAGASTA.dbf",
+    "tmp/valhalla-parcel-research/antofagasta/predios/PREDIOS/PREDIOSANTOFAGASTA.prj",
+    "tmp/valhalla-parcel-research/antofagasta/fiscal-layer.json",
+    "tmp/valhalla-parcel-research/antofagasta/fiscal-point.geojson"
+  ],
+  "checkedAt": "2026-10-09T17:34:25.906142+00:00",
+  "reviewFindings": {
+    "identity": "Immutable queue, ranked roster, and original WUP 2025 CSV agree on Antofagasta, Chile, rank 1474, point [-23.6235572731874,-70.3904203851601], 385812 persons.",
+    "searches": "Paired packet and review record show executed English and Spanish searches.",
+    "sourceEvidence": "Original MINVU Predios shapefile was opened with ogrinfo: 123771 polygons, EPSG:32719, and only COMUNA/CUT_COM/CUT_REG/CUT_PROV DBF fields; no stable native parcel ID is exposed. Original ArcGIS metadata identifies the distinct Propiedad_Fiscal layer; its exact-point cache has one OBJECTID-only fiscal polygon, not general parcel coverage. No durable parcel sample was retained.",
+    "holdReason": "The public polygon source lacks a safe stable native parcel identity, and no independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details check exists. A fiscal point hit does not qualify a general parcel source."
+  }
+}

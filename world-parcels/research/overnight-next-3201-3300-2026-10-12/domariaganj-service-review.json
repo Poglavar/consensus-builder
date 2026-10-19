@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-10167-domariaganj.json",
+  "cityCode": 10167,
+  "queueRank": 3217,
+  "attempt": 1,
+  "reviewedAt": "2026-10-12",
+  "service": "Government of Uttar Pradesh BhuNaksha / Bhulekh",
+  "requestSummary": "Browser-like GET/POST requests to the public viewer succeeded for the viewer, administrative selector, and map-extent route. Siddharthnagar code 184, Domariaganj tehsil code 00936, and village code 221349 were returned. The village record had hasData=false and the map extent response was all zero.",
+  "queryOutcomes": "English and Hindi discovery queries both found first-party UP portals and district revenue evidence; exact query text and URLs are recorded in the city JSON.",
+  "schemaAndCrs": {"observedViewerFields": ["gisCode", "plotno", "id", "kide", "wkbGeometry"], "crs": null, "geometryType": null, "note": "No parcel response was returned, so parcel schema and CRS could not be verified."},
+  "safeFieldAllowlist": ["stable native parcel identity if returned", "full parcel geometry if returned", "geometry CRS", "administrative source codes needed to identify the selected map"],
+  "scopeLimits": ["State portal prose and selector coverage do not prove citywide parcel completeness.", "The selected village map was unavailable; this is not a citywide absence result.", "No polygon sample was retained because no polygon was returned."],
+  "uncertainty": ["No stable native parcel identity was observed.", "No bounded ID+geometry response was available after following the public viewer routes.", "The exact WUP point was preserved and not shifted; no point-hit inference was made.", "Runtime readiness remains held pending independent serial adapter qualification."],
+  "admission": "not_admitted",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "attemptedRoutes": ["viewer HTML", "viewer JavaScript/configuration", "district selector", "tehsil selector", "village selector", "village map extent"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained."
+}

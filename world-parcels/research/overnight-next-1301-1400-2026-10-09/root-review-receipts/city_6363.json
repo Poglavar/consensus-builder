@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6363",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-6363-north-richland-hills.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/north-richland-hills-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/north-richland-hills-parcel-samples.geojson"
+  ],
+  "checkedAt": "2026-10-09T15:57:00.074685+00:00",
+  "reason": "Queue identity and rank match the WUP 2025 source. English and Spanish-language search terms were recorded, though the second query is labeled English. A live first-party query returned native ParcelId P00005 with the exact retained polygon and safe attributes. Fresh adapter ID reads, forced paging, thirteen bounded cells, metric GEOS checks, source binding and headed Details verification are not evidenced."
+}

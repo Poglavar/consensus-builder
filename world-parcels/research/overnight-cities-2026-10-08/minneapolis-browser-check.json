@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T00:43:56.434786+00:00",
+  "city": "minneapolis",
+  "url": "http://127.0.0.1:5638/?city=minneapolis&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "verificationMethod": "Dedicated headed agent-browser; normal rendered parcel-layer click event, menu, Details panel and page error log. Not a browser test suite.",
+  "loadedFeatureCount": 8,
+  "visibleFeatureCount": 1,
+  "selectedParcelId": "us-mn-hennepin:2502924130005",
+  "detailsIdMatchesSelection": true,
+  "normalMenuOpened": true,
+  "pageErrors": 0,
+  "menuAreaM2": null,
+  "browserClosed": true,
+  "startupCorrection": "Initial gateway startup failed because temporary research descriptor depended on harness-only EPSG:26915 registration; replaced with exact self-contained native GRS80 UTM definition and repeated40 expanded live tests before reloading."
+}

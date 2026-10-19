@@ -1,0 +1,59 @@
+{
+ "kind": "country",
+ "key": "KM",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-KM,fr;q=0.9,ar;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://cadastre.gov.km/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.gouvernement.km/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.presidence.km/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://geoportail.km/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.comores-infos.net/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "news site, not relevant"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Comores parcelles OR cadastre OR Comoros parcel&f=json&num=8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no relevant layers"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "No new evidence: guessed government hosts are unreachable from this network (not proof of absence), no ArcGIS Online cadastre items.",
+ "nextStep": "Search World Bank/AFD land-registry projects for a Comoros geoportal; low priority."
+}

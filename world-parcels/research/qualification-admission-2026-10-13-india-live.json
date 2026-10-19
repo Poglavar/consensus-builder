@@ -1,0 +1,1292 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-13",
+  "cityCount": 12,
+  "scope": "12 technically qualified city/source bindings admitted to the app. Qualification is bounded: it does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "refused": [
+    {
+      "code": "173",
+      "name": "Dunedin",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "244",
+      "name": "Maribor",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "486",
+      "name": "Wellington",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "996",
+      "name": "Kulim",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "1146",
+      "name": "A Coruña",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "1755",
+      "name": "Liège",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "2260",
+      "name": "Chirundu",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "2413",
+      "name": "Nazareth",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "2947",
+      "name": "Cherkasy",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "5275",
+      "name": "Tacoma",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "5572",
+      "name": "Pelotas",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "5875",
+      "name": "Spokane",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "6014",
+      "name": "Sudoeste e Octogonal",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "6557",
+      "name": "Cockrell Hill",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "6573",
+      "name": "Flower Mound",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "6815",
+      "name": "Metairie",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "7927",
+      "name": "Charlotte",
+      "reason": "no evidence in the given state dirs"
+    },
+    {
+      "code": "8012",
+      "name": "Ribeira",
+      "reason": "no evidence in the given state dirs"
+    }
+  ],
+  "cities": [
+    {
+      "cityCode": "6392",
+      "appCityId": "sirsa",
+      "cityName": "Sirsa",
+      "qualificationCityName": "Sirsa",
+      "cityId": "wup2025:6392",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-sirsa",
+      "appCenterLatLon": [
+        29.536704378771,
+        75.035515266935
+      ],
+      "wupPointLatLon": [
+        29.536704378771,
+        75.035515266935
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "9824ba05abf911918d703b571aa520075c8ef6c2752cf843bf5db8f2cb79d053",
+        "evidenceOriginalSha256": "9824ba05abf911918d703b571aa520075c8ef6c2752cf843bf5db8f2cb79d053",
+        "evidenceExportSha256": "9824ba05abf911918d703b571aa520075c8ef6c2752cf843bf5db8f2cb79d053"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "5216146b1f5aace843341d11b89e7cac961b6f9b7343567c90baeb3ec2963a4a",
+        "evidenceExportSha256": "58101ffbd3b9e830d7a60fc36232a3d189eae347207f8abc1554f33a3d47cbcf",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 54,
+        "sampleIds": [
+          "IN-HR-HSAC-SIRSA-17//102//02518//120//12",
+          "IN-HR-HSAC-SIRSA-17//102//02518//120//24",
+          "IN-HR-HSAC-SIRSA-17//102//02518//135//9"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "620d4b5890049b98dba2eccab9ceae15afb5341716bbf296de3b1ee307c6ec2a",
+        "evidenceExportSha256": "c6d4d5d2bad8ed5dd1cc0e8186bcd84d12c3692a7d2418fe0bed5fd1471ccddd",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "cf227b6988aaf5e5361742c6274611f3a44792c56fd35b7ea2520030c8801c98",
+        "featureCount": 54,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/6392/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/6392/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/6392/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/6392/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "c6d4d5d2bad8ed5dd1cc0e8186bcd84d12c3692a7d2418fe0bed5fd1471ccddd",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "cf227b6988aaf5e5361742c6274611f3a44792c56fd35b7ea2520030c8801c98",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 54,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/17",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-SIRSA-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "7285",
+      "appCityId": "hisar",
+      "cityName": "Hisar",
+      "qualificationCityName": "Hisar",
+      "cityId": "wup2025:7285",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-hisar",
+      "appCenterLatLon": [
+        29.150778973288602,
+        75.75211620569911
+      ],
+      "wupPointLatLon": [
+        29.150778973288602,
+        75.75211620569911
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "d6ca927b756079d61ea8b5d45f3ab3311755e7b90c068eb6acc4f3fc2a28b7c2",
+        "evidenceOriginalSha256": "d6ca927b756079d61ea8b5d45f3ab3311755e7b90c068eb6acc4f3fc2a28b7c2",
+        "evidenceExportSha256": "d6ca927b756079d61ea8b5d45f3ab3311755e7b90c068eb6acc4f3fc2a28b7c2"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "96ad522eb3edd015f569682bb626712f862374efbce25c26b832efddb478ac1a",
+        "evidenceExportSha256": "5fc91964cf11dde63494fa6d6a7d43f490ef15fba57e42ebf52fd13ff32d40ee",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 62,
+        "sampleIds": [
+          "IN-HR-HSAC-HISAR-06//035//02175//172//14",
+          "IN-HR-HSAC-HISAR-06//035//02175//172//7",
+          "IN-HR-HSAC-HISAR-06//035//02175//173//9"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "2e57542e73ae7eb999e0f1b0dcdaa0c1fe159e89026d8dee7bccce723056e6e3",
+        "evidenceExportSha256": "438e9f4f387245d97ccfcbe9ecc70755da3a1d654904512882b88b1709f58b3e",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "ba67d8ce3b5ede7c9f83dc4ffe37660bbe5c43a359db992c04ee005fe1503002",
+        "featureCount": 62,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/7285/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/7285/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/7285/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/7285/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "438e9f4f387245d97ccfcbe9ecc70755da3a1d654904512882b88b1709f58b3e",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "ba67d8ce3b5ede7c9f83dc4ffe37660bbe5c43a359db992c04ee005fe1503002",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 62,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/6",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-HISAR-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "7670",
+      "appCityId": "kaithal",
+      "cityName": "Kaithal",
+      "qualificationCityName": "Kaithal",
+      "cityId": "wup2025:7670",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-kaithal",
+      "appCenterLatLon": [
+        29.7995897199337,
+        76.4055225188099
+      ],
+      "wupPointLatLon": [
+        29.7995897199337,
+        76.4055225188099
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "b862233c8e42947938ab4b76c92bc18e1736d9d9d9f7b2f4dca41cd537a792c5",
+        "evidenceOriginalSha256": "b862233c8e42947938ab4b76c92bc18e1736d9d9d9f7b2f4dca41cd537a792c5",
+        "evidenceExportSha256": "b862233c8e42947938ab4b76c92bc18e1736d9d9d9f7b2f4dca41cd537a792c5"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "82e7f57f359f52ccce0dad13194b4b8ce74f3102d37651e5406e787d7158385f",
+        "evidenceExportSha256": "72e61015733d9e7623da911fcabb4d661a2ecbf53486619f3d53fbf776dd46ec",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 56,
+        "sampleIds": [
+          "IN-HR-HSAC-KAITHAL-09//053//00407//0//601",
+          "IN-HR-HSAC-KAITHAL-09//053//06452//0//261",
+          "IN-HR-HSAC-KAITHAL-09//053//06452//0//309"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "b89a96b0257bf9455b14898debf72f881009c97d4bd60e0eba622d5ab69b4263",
+        "evidenceExportSha256": "3a0e397b5599a1c2b995a390395a6a654e3409edbd64fcb28ffd9ea6778e7f70",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "bfbdc26a12b5d1fcf849c80d1cc0db9be4237541e895899d938ab5d4706547bf",
+        "featureCount": 56,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/7670/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/7670/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/7670/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/7670/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "3a0e397b5599a1c2b995a390395a6a654e3409edbd64fcb28ffd9ea6778e7f70",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "bfbdc26a12b5d1fcf849c80d1cc0db9be4237541e895899d938ab5d4706547bf",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 56,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/9",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-KAITHAL-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "7788",
+      "appCityId": "ambala",
+      "cityName": "Ambala",
+      "qualificationCityName": "Ambala",
+      "cityId": "wup2025:7788",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-ambala",
+      "appCenterLatLon": [
+        30.380225522836298,
+        76.8141196644984
+      ],
+      "wupPointLatLon": [
+        30.380225522836298,
+        76.8141196644984
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "6ad1b950dbea050b7400a125fba84dc2347a737476d98a56eae3e5f4f82c1644",
+        "evidenceOriginalSha256": "6ad1b950dbea050b7400a125fba84dc2347a737476d98a56eae3e5f4f82c1644",
+        "evidenceExportSha256": "6ad1b950dbea050b7400a125fba84dc2347a737476d98a56eae3e5f4f82c1644"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "23be019aaa3223c4ace4fb2503075b50d828c86afdbffb905f7765ea9a9e15e5",
+        "evidenceExportSha256": "073c2f6b33ab689e40c7e00c4f28efb971583797911ccd5b728579f3d7c45edb",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 122,
+        "sampleIds": [
+          "IN-HR-HSAC-AMBALA-01//006//02868//0//26",
+          "IN-HR-HSAC-AMBALA-01//006//02868//15//22/2",
+          "IN-HR-HSAC-AMBALA-01//006//02868//20//9/1"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "b3a611fcb191adf60f6bb4810eeb6715c9dff5c1a857ebe8c561f3dbc4df91c7",
+        "evidenceExportSha256": "3b5f580e85fd547853e3ad819fd91b5d61d7aa4bf00278f0267aa4d96de5cd84",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "d288a7c685b1bb13082f385631ec08176eecc5492ae162f9121a242a6bf2cdcb",
+        "featureCount": 122,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/7788/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/7788/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/7788/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/7788/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "3b5f580e85fd547853e3ad819fd91b5d61d7aa4bf00278f0267aa4d96de5cd84",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "d288a7c685b1bb13082f385631ec08176eecc5492ae162f9121a242a6bf2cdcb",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 122,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/1",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-AMBALA-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "7797",
+      "appCityId": "jind",
+      "cityName": "Jind",
+      "qualificationCityName": "Jind",
+      "cityId": "wup2025:7797",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-jind",
+      "appCenterLatLon": [
+        29.3176729893746,
+        76.3185369205235
+      ],
+      "wupPointLatLon": [
+        29.3176729893746,
+        76.3185369205235
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "8716dc2abfcb564ed2d1871e509988c5151e18a1416db3ca5df7a14a1f308ccb",
+        "evidenceOriginalSha256": "8716dc2abfcb564ed2d1871e509988c5151e18a1416db3ca5df7a14a1f308ccb",
+        "evidenceExportSha256": "8716dc2abfcb564ed2d1871e509988c5151e18a1416db3ca5df7a14a1f308ccb"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "7d6e64b924715f9fb454949557ba4144ffa1397aead0584c9d4171a07ebd534a",
+        "evidenceExportSha256": "0e02a2d14761d649cf7e5e5a0395c743b659df3ed8cded7a946d68264a7d4615",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 56,
+        "sampleIds": [
+          "IN-HR-HSAC-JIND-08//046//01772//160//20",
+          "IN-HR-HSAC-JIND-08//046//01772//174//3",
+          "IN-HR-HSAC-JIND-08//046//01772//175//10"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "c27a034bf56e06c9389c9797fed3438d4572724bfadeadf07d8502c9fe44b879",
+        "evidenceExportSha256": "2caccfd7b191072a07a6778bc5043974dfba8022367795baf305c26889472199",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "ee362e6db0c1bb6f581fa68af610053b0545b43f05f6913c30ce53d69a7d7fe7",
+        "featureCount": 56,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/7797/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/7797/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/7797/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/7797/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "2caccfd7b191072a07a6778bc5043974dfba8022367795baf305c26889472199",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "ee362e6db0c1bb6f581fa68af610053b0545b43f05f6913c30ce53d69a7d7fe7",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 56,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/8",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-JIND-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "7878",
+      "appCityId": "bhiwani",
+      "cityName": "Bhiwani",
+      "qualificationCityName": "Bhiwani",
+      "cityId": "wup2025:7878",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-bhiwani",
+      "appCenterLatLon": [
+        28.7971298761814,
+        76.1384878765419
+      ],
+      "wupPointLatLon": [
+        28.7971298761814,
+        76.1384878765419
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "c4c9d9b743449601d106e623eede852e639b9ad7c904ed6ab040314e3a639818",
+        "evidenceOriginalSha256": "c4c9d9b743449601d106e623eede852e639b9ad7c904ed6ab040314e3a639818",
+        "evidenceExportSha256": "c4c9d9b743449601d106e623eede852e639b9ad7c904ed6ab040314e3a639818"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "b9caf53af314920ea0ec691ebbe32192354fe044d222b0982371afe86668ac3d",
+        "evidenceExportSha256": "ca9b8894a8897a43f118556e1d474f947998ec4d1c443648175b3acf5afc2d58",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 51,
+        "sampleIds": [
+          "IN-HR-HSAC-BHIWANI-02//007//01949//0//1",
+          "IN-HR-HSAC-BHIWANI-02//007//01949//0//20",
+          "IN-HR-HSAC-BHIWANI-02//007//01949//0//9"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "587c8df18d33ccc0f5d27e78bd703845c7f32784011c121f729a41e7006d74e3",
+        "evidenceExportSha256": "51d2a0287423777d06a06da98360736b179e0fd8073a9b6447abb20c089207e0",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "fef81fc044f3f04d5bed73c8d7e1d7b4c54145fea3227804441978d0f42bbe18",
+        "featureCount": 51,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/7878/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/7878/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/7878/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/7878/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "51d2a0287423777d06a06da98360736b179e0fd8073a9b6447abb20c089207e0",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "fef81fc044f3f04d5bed73c8d7e1d7b4c54145fea3227804441978d0f42bbe18",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 51,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/2",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-BHIWANI-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "7952",
+      "appCityId": "kurukshetra",
+      "cityName": "Kurukshetra",
+      "qualificationCityName": "Kurukshetra",
+      "cityId": "wup2025:7952",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-kurukshetra",
+      "appCenterLatLon": [
+        29.9674026272771,
+        76.8569110935626
+      ],
+      "wupPointLatLon": [
+        29.9674026272771,
+        76.8569110935626
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "d8dc7c8c5853e1f47cce4b504c4a683a9ce99ff6f9c611358c78b2faf9a675db",
+        "evidenceOriginalSha256": "d8dc7c8c5853e1f47cce4b504c4a683a9ce99ff6f9c611358c78b2faf9a675db",
+        "evidenceExportSha256": "d8dc7c8c5853e1f47cce4b504c4a683a9ce99ff6f9c611358c78b2faf9a675db"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "b28b6116ed16b3f409d93e4dca358f4153d1ab5c1de4b8a043a991ae8e998b91",
+        "evidenceExportSha256": "223ec9eee8e3a10167720d997c83737168f748fd04b49ea90c43d773ef173a0f",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 53,
+        "sampleIds": [
+          "IN-HR-HSAC-KURUKSHETRA-11//071//00046//117//23",
+          "IN-HR-HSAC-KURUKSHETRA-11//071//00046//123//15",
+          "IN-HR-HSAC-KURUKSHETRA-11//071//00046//123//8"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "8d4f56f59724ac00b29efa226fe7794eb1d4b29cbe218b64f28d107959f14991",
+        "evidenceExportSha256": "7b42651f4a373fa397dfc568158cfbb7a71f1d2bf56d01f0ddfa049930e88ba3",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "6ffca01acb9152e7a3a4d0e2142bb5e7389b4248ba067d67830b3c52325e413d",
+        "featureCount": 53,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/7952/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/7952/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/7952/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/7952/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "7b42651f4a373fa397dfc568158cfbb7a71f1d2bf56d01f0ddfa049930e88ba3",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "6ffca01acb9152e7a3a4d0e2142bb5e7389b4248ba067d67830b3c52325e413d",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 53,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/11",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-KURUKSHETRA-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "8085",
+      "appCityId": "rohtak",
+      "cityName": "Rohtak",
+      "qualificationCityName": "Rohtak",
+      "cityId": "wup2025:8085",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-rohtak",
+      "appCenterLatLon": [
+        28.8730362473323,
+        76.5954147246247
+      ],
+      "wupPointLatLon": [
+        28.8730362473323,
+        76.5954147246247
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "6793e2af56d11f98ba451d7d50e693a4db390f6f2de979c04cc3b2e64e5c7549",
+        "evidenceOriginalSha256": "6793e2af56d11f98ba451d7d50e693a4db390f6f2de979c04cc3b2e64e5c7549",
+        "evidenceExportSha256": "6793e2af56d11f98ba451d7d50e693a4db390f6f2de979c04cc3b2e64e5c7549"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "09166ddfbe6be450975dc69fda123847487cfc591046a0575926eb3f60103565",
+        "evidenceExportSha256": "ef86e81ce0c50e3e6c0fa2a084877688461c2a050e204aad8eceff6afd9d7000",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 69,
+        "sampleIds": [
+          "IN-HR-HSAC-ROHTAK-16//093//00971//0//109",
+          "IN-HR-HSAC-ROHTAK-16//093//00971//24//3",
+          "IN-HR-HSAC-ROHTAK-16//093//00971//25//21"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "3e33801c29e93a79d9450cffd2b3d78816973969f4343d89957130c5093241e3",
+        "evidenceExportSha256": "ef9eb668a8afb388b3e51de4bf204fa921aed52e962aedaa5a2b3f9fc288ecac",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "9c2f4ad8753a0e17d099a255c790af923f5cffa6fa347a550ac2f7899fae1b61",
+        "featureCount": 69,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/8085/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/8085/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/8085/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/8085/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "ef9eb668a8afb388b3e51de4bf204fa921aed52e962aedaa5a2b3f9fc288ecac",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "9c2f4ad8753a0e17d099a255c790af923f5cffa6fa347a550ac2f7899fae1b61",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 69,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/16",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-ROHTAK-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "8162",
+      "appCityId": "panipat",
+      "cityName": "Panipat",
+      "qualificationCityName": "Panipat",
+      "cityId": "wup2025:8162",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-panipat",
+      "appCenterLatLon": [
+        29.400963638737302,
+        76.98281629834831
+      ],
+      "wupPointLatLon": [
+        29.400963638737302,
+        76.98281629834831
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "a19ce97efd5a28f9055e828ff0b76dba7704f70b96ad05ff5b06a1736184af43",
+        "evidenceOriginalSha256": "a19ce97efd5a28f9055e828ff0b76dba7704f70b96ad05ff5b06a1736184af43",
+        "evidenceExportSha256": "a19ce97efd5a28f9055e828ff0b76dba7704f70b96ad05ff5b06a1736184af43"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "7533cc4e12c96255f0bf8672ace58947dffe8ca5ea85a8be0d2fe6c3d34afcf8",
+        "evidenceExportSha256": "03a2213820dee40da550851abcd01ef512bc617b1345b7bf79a3fa37fa855a91",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 95,
+        "sampleIds": [
+          "IN-HR-HSAC-PANIPAT-14//084//00701//0//123/1",
+          "IN-HR-HSAC-PANIPAT-14//084//00701//89//18",
+          "IN-HR-HSAC-PANIPAT-14//084//00701//94//10"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "9421ac78411daa63f3415cab44f52adcd2329cda12a907f107ca8af63a0dbd8b",
+        "evidenceExportSha256": "6f0f851c69259837bc2697e656726a4b0daaf056b32b682005927eca2e15a8aa",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "d8dd2601c23dc598326d10d3e7020563e29836e93e87a5da58d81de7f5e6a1fc",
+        "featureCount": 95,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/8162/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/8162/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/8162/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/8162/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "6f0f851c69259837bc2697e656726a4b0daaf056b32b682005927eca2e15a8aa",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "d8dd2601c23dc598326d10d3e7020563e29836e93e87a5da58d81de7f5e6a1fc",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 95,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/14",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-PANIPAT-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "8337",
+      "appCityId": "sonipat",
+      "cityName": "Sonipat",
+      "qualificationCityName": "Sonipat",
+      "cityId": "wup2025:8337",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-sonipat",
+      "appCenterLatLon": [
+        28.9827143736227,
+        77.03440734666691
+      ],
+      "wupPointLatLon": [
+        28.9827143736227,
+        77.03440734666691
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "c22cba143d0119d49e870b61e347f441179c9a80c14a131b2713c1cdbb48a69f",
+        "evidenceOriginalSha256": "c22cba143d0119d49e870b61e347f441179c9a80c14a131b2713c1cdbb48a69f",
+        "evidenceExportSha256": "c22cba143d0119d49e870b61e347f441179c9a80c14a131b2713c1cdbb48a69f"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "01b949ddfdb5b93ee8e9b3f85132f4a144acd0007852f3c2e931e2a7396b13ed",
+        "evidenceExportSha256": "8892424a118817ca1b4572aaa121aa0589f1b9ab4fe0306533c9e0f6ff182555",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 64,
+        "sampleIds": [
+          "IN-HR-HSAC-SONIPAT-18//106//03533//0//15",
+          "IN-HR-HSAC-SONIPAT-18//106//03533//8//17",
+          "IN-HR-HSAC-SONIPAT-18//106//03533//9//20"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "22cbdb659d9a08603d37acc1493a036fe9ec09bb1bbd9730e29f344638bf2d18",
+        "evidenceExportSha256": "cfb4d15a119c0060e6d57ed4a83477976483228595b33dbe09e04728d168f157",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "2a9866ea1e47925731914b94d0e4bebd882e7525855b4aff68eff8b825eadcd1",
+        "featureCount": 64,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/8337/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/8337/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/8337/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/8337/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "cfb4d15a119c0060e6d57ed4a83477976483228595b33dbe09e04728d168f157",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "2a9866ea1e47925731914b94d0e4bebd882e7525855b4aff68eff8b825eadcd1",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 64,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/18",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-SONIPAT-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "8691",
+      "appCityId": "palwal",
+      "cityName": "Palwal",
+      "qualificationCityName": "Palwal",
+      "cityId": "wup2025:8691",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-hr-hsac-palwal",
+      "appCenterLatLon": [
+        28.141468469378,
+        77.3328111663979
+      ],
+      "wupPointLatLon": [
+        28.141468469378,
+        77.3328111663979
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "1bafa3d222bad8c2023ad361814b3bc4cad14a92b7cd274c6c7ce65520197cff",
+        "evidenceOriginalSha256": "1bafa3d222bad8c2023ad361814b3bc4cad14a92b7cd274c6c7ce65520197cff",
+        "evidenceExportSha256": "1bafa3d222bad8c2023ad361814b3bc4cad14a92b7cd274c6c7ce65520197cff"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "c7fd7973046f019be623c76c813c467982a5c15c9785ce59e2335b820fd012d5",
+        "evidenceExportSha256": "c76bfc011d7434de41d54797d931cb1d128f05d84398d011bf68a3241bd25b89",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 53,
+        "sampleIds": [
+          "IN-HR-HSAC-PALWAL-21//017//01449//163//12",
+          "IN-HR-HSAC-PALWAL-21//017//01449//163//22",
+          "IN-HR-HSAC-PALWAL-21//017//01449//163//9"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "a7e8dd6c0931832663894aa940bccbd2326446f84caf3f29e548485df2ef07fe",
+        "evidenceExportSha256": "ac6e74b60ab0d5ade02a716bc0320011df8250f79dcaa031babc519b17a56451",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32643",
+        "inputSha256": "c54ac88d47188757771bb6d651d139c0e919cd968a5016703ca80eaa3312cb2e",
+        "featureCount": 53,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/8691/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/8691/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/8691/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/8691/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "ac6e74b60ab0d5ade02a716bc0320011df8250f79dcaa031babc519b17a56451",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "c54ac88d47188757771bb6d651d139c0e919cd968a5016703ca80eaa3312cb2e",
+        "metricCrs": "EPSG:32643",
+        "featureCount": 53,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://hsacggm.in/map/rest/services/EODB/EODB_v1/MapServer/21",
+        "idField": "uq",
+        "idFields": null,
+        "idPrefix": "IN-HR-HSAC-PALWAL-",
+        "metricSrid": 32643,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    },
+    {
+      "cityCode": "10969",
+      "appCityId": "chirand",
+      "cityName": "Chirand",
+      "qualificationCityName": "Chirand",
+      "cityId": "wup2025:10969",
+      "countryCode": "IN",
+      "country": "India",
+      "sourceId": "in-br-matribhoomi-chapra",
+      "appCenterLatLon": [
+        25.7481087475537,
+        84.8804993475657
+      ],
+      "wupPointLatLon": [
+        25.7481087475537,
+        84.8804993475657
+      ],
+      "candidate": {
+        "qualificationRecordedSha256": "24de97ce1211d229566087487ace7cb6bd5a3676f75da5a99f584fdfe3e3146e",
+        "evidenceOriginalSha256": "24de97ce1211d229566087487ace7cb6bd5a3676f75da5a99f584fdfe3e3146e",
+        "evidenceExportSha256": "24de97ce1211d229566087487ace7cb6bd5a3676f75da5a99f584fdfe3e3146e"
+      },
+      "qualification": {
+        "status": "technical-qualified",
+        "evidenceOriginalSha256": "5ff19a152c1d572f1d9c1490d2a09a4a7bf1250741b6603c278c43b4f9317a02",
+        "evidenceExportSha256": "fb466450c9f1fe3803d4c85837f1bbc13ee09048b6075d3dc9f73be9c1e8ab21",
+        "gates": {
+          "classification": true,
+          "exactIds": true,
+          "stableGeometry": true,
+          "explicitAbsence": true,
+          "sampling": true,
+          "completeness": true,
+          "binding": true,
+          "metric": true
+        },
+        "featureCount": 30,
+        "sampleIds": [
+          "IN-BR-MB-CHAPRA-RS1701004852701~893~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~913~%20",
+          "IN-BR-MB-CHAPRA-RS1701004852701~928~%20"
+        ],
+        "cellSizeDegrees": 0.001,
+        "limitations": [
+          "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+        ]
+      },
+      "metric": {
+        "evidenceOriginalSha256": "b47249de68f9a9c279aa3990e9abbfb3b77cd03390ff6387f34c6ed3dfbf8a08",
+        "evidenceExportSha256": "d95116936cd76ebfb87165e33f57b794dde451578a75ff556ffae37e8110d255",
+        "sourceCrs": "EPSG:4326",
+        "metricCrs": "EPSG:32645",
+        "inputSha256": "34e00b2ed10868e123090d0de5d5c5645b226494a62987852305c1c9b604b10d",
+        "featureCount": 30,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "evidenceFiles": {
+        "candidate": "world-parcels/research/qualification-2026-10-13-india-live/10969/candidate.json",
+        "qualification": "world-parcels/research/qualification-2026-10-13-india-live/10969/qualification.json",
+        "metric": "world-parcels/research/qualification-2026-10-13-india-live/10969/metric-report.json",
+        "independentMetricAudit": "world-parcels/research/qualification-2026-10-13-india-live/10969/independent-metric-audit.json"
+      },
+      "independentMetricAudit": {
+        "sha256": "d95116936cd76ebfb87165e33f57b794dde451578a75ff556ffae37e8110d255",
+        "method": "Independent GEOS recomputation by the qualification runner from the unchanged full-safe cache.",
+        "inputSha256": "34e00b2ed10868e123090d0de5d5c5645b226494a62987852305c1c9b604b10d",
+        "metricCrs": "EPSG:32645",
+        "featureCount": 30,
+        "geometryChangedOrRepaired": false,
+        "geometryPass": true,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapPairCount": 0,
+        "operationErrorCount": 0
+      },
+      "sourceProfile": {
+        "adapter": "arcgis",
+        "endpoint": "https://mapservice.gov.in/mapserviceserv176/rest/services/Matribhoomi/Matribhoomi/MapServer/72",
+        "idField": null,
+        "idFields": [
+          "BHUCODE",
+          "KID",
+          "KPARTH"
+        ],
+        "idPrefix": "IN-BR-MB-CHAPRA-",
+        "metricSrid": 32645,
+        "evidence": []
+      },
+      "verifiedAt": "2026-10-13",
+      "primaryReview": {
+        "status": "admitted",
+        "method": "Qualification evidence re-verified offline: eight gates, metric and independent metric audit, production descriptor identity and query contract."
+      }
+    }
+  ]
+}

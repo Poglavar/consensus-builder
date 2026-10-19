@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 101,
+  "city": "Al Kuwayt (Kuwait City)",
+  "countryCode": "KW",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/al-kuwayt-kuwait-city.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "الكويت الجهاز المركزي للمعلومات الجغرافية الأراضي قطع الأراضي GIS بيانات مفتوحة"
+  },
+  "results": [
+    {
+      "title": "Kuwait GeoHub GIS maps",
+      "url": "https://kuwait-geohub.org/geohub/gis-maps",
+      "kind": "official-portal-claimed"
+    },
+    {
+      "title": "Kuwait Ministry of Finance GIS",
+      "url": "https://www.mof.gov.kw/GIS/GIS.aspx",
+      "kind": "official",
+      "note": "Describes State property-management GIS; not evidence of a complete cadastral lot feed."
+    }
+  ],
+  "assessment": "The search found a Kuwait open geospatial hub and the Ministry of Finance's enterprise GIS, but the latter is scoped to state-owned real estate and public-property operations. No citywide private cadastral parcel vector endpoint was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,52 @@
+{
+  "cityRecord": "city-8046-parma.json",
+  "cityCode": 8046,
+  "queueRank": 1780,
+  "city": "Parma",
+  "country": "United States of America",
+  "countryCode": "US",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "Cuyahoga County's official MyPlace viewer and GIS REST catalog establish a local parcel-data custodian serving Parma, with indexed evidence of native PARCELPIN identities and parcel services. Direct anonymous viewer/REST requests timed out or were inaccessible from this environment, so no parcel geometry sample is retained.",
+  "queryOutcomes": "Separate English and native/local-language (English, the US local language) discovery queries, exact text, outcomes and first-party URLs are recorded in city-8046-parma.json.",
+  "requestOutcomes": "Attempted the official MyPlace viewer, consolidated parcel map metadata, a bounded Parma envelope query requesting only PARCELPIN plus geometry, and the parcel-fabric FeatureServer catalog. The viewer and direct REST host timed out; indexed first-party metadata supplied service/schema/CRS evidence. No successful geometry response is claimed.",
+  "scopeLimits": [
+    "Exact WUP point and population fields were preserved; no coordinate was shifted.",
+    "No exact-point hit or miss inference was made.",
+    "A timeout, inaccessible viewer, unavailable bounded endpoint or missing geometry response is not evidence of citywide cadastral absence.",
+    "County parcel service/catalog evidence establishes local custody but does not establish citywide live geometry completeness or update currency.",
+    "No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier (PARCELPIN)", "full parcel polygon geometry", "geometry CRS", "source layer/service metadata"],
+  "nativeFieldMapping": {"PARCELPIN": "county parcel-pin identity; indexed metadata only, no values retained", "geometry": "parcel polygon geometry if returned"},
+  "compositeKeyProvenance": null,
+  "crs": "Indexed metadata reports EPSG:3857 for Point Parcels and EPSG:3734/State Plane Ohio North feet for Parcel Fabric Taxparcels; live parcel polygon CRS unverified.",
+  "geometryQuality": "not applicable; no parcel geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": "PARCELPIN",
+    "exactWupPointTest": "Attempted only as part of a bounded envelope route; no response, so no hit/miss inference.",
+    "requestEvidence": ["MyPlace viewer GET timed out", "MyPlace REST metadata direct GET timed out", "bounded Parma REST query requesting PARCELPIN and geometry was inaccessible/timeout", "parcel-fabric FeatureServer metadata indexed by first-party search; direct GET timed out"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Cuyahoga County MyPlace and GIS parcel services for Parma.",
+    "verifiedOpenScope": "Local official service catalog and indexed schema metadata only; live anonymous parcel geometry not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Live endpoint availability, parcel polygon layer selection, final schema/field values, response CRS for polygons, geometry completeness and update currency remain unresolved due to timeout/inaccessible county GIS host.",
+  "retainedSample": null,
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

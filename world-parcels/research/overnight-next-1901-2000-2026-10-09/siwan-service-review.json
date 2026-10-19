@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10787-siwan.json",
+  "purpose": "Document first-party Siwan cadastral discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A first-party local/district cadastral custodian and public Bihar BhuNaksha viewer are evidenced. The live public viewer hierarchy and CRS/extent metadata were inspected, but no safe anonymous parcel identity plus full polygon response was verified.",
+  "registryAssessment": "Local cadastral service evidenced: District Siwan Revenue Section links to Bihar land records, and the Bihar government BhuNaksha viewer exposes Siwan district map hierarchy. This is source evidence only, not runtime integration or source admission.",
+  "safeFieldAllowlist": ["safe public native parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://siwan.nic.in/service/land-records/", "observation": "Official Siwan district page identifies Revenue Section land records and links to lrc.bih.nic.in."},
+    {"url": "https://siwan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/", "observation": "Official Hindi Siwan district page gives the same revenue land-records route."},
+    {"url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "observation": "Official Bihar cadastral viewer. Current HTML identifies BhuNaksha Bihar as NIC cadastral mapping software and exposes the public map entry point."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218", "observation": "Official DILRMP Siwan district page reports cadastral-map digitization/status metadata; it does not provide parcel geometry in the response used here."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Siwan Bihar official cadastral map land records parcel map government", "result": "Found official Siwan land-records page, official Bihar BhuNaksha, and official DILRMP Siwan coverage page.", "resultUrls": ["https://siwan.nic.in/service/land-records/", "https://bhunaksha.bihar.gov.in/10/index.jsp", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218"]},
+    {"language": "Hindi", "query": "सीवान बिहार आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख", "result": "Found official Hindi Siwan land-records page and Bihar government Bhu-Naksha references.", "resultUrls": ["https://siwan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/", "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister", "https://bhunaksha.bihar.gov.in/10/index.jsp"]}
+  ],
+  "viewerRouteEvidence": {
+    "viewer": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "stateCode": "10",
+    "hierarchy": {"district": "16 SIWAN", "subdivision": "01 सिवान सदर", "circle": "05 Siwan", "village": "0397 सिवान (शहरी)(231)", "surveyType": "RS", "mapInstance": "07 RS Map", "sheet": "01"},
+    "extentEndpoint": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+    "extentResponse": {"epsg": "EPSG:32645", "gisCode": "RS16010503972310701"},
+    "publicRoutesInspected": ["/rest/Levels/count", "/rest/Levels/ListsAfterLevel", "/rest/MapInfo/getVVVVExtentGeoref", "/rest/MapInfo/getPlotAtXY", "/10/ScalarDatahandler", "/WMS"]
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [26.2218095676118, 84.3593324414747] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {"url": "https://bhunaksha.bihar.gov.in/10/index.jsp", "method": "GET", "httpStatus": 200, "result": "Official viewer page fetched; current JS/configuration then followed."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "method": "POST", "httpStatus": 200, "result": "Resolved public hierarchy to Siwan district, Siwan Sadar, Siwan circle, and urban Siwan village/map sheet."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "method": "POST", "httpStatus": 200, "result": "Returned extent metadata with EPSG:32645 and gisCode RS16010503972310701; this was not parcel geometry."},
+    {"url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "method": "POST", "httpStatus": 200, "result": "Bounded test coordinate returned an empty response; treated only as an unsuccessful point lookup, not evidence of absence."},
+    {"url": "https://bhunaksha.bihar.gov.in/10/ScalarDatahandler", "method": "POST", "httpStatus": "error page", "result": "Tested plot-number requests returned the service error page; no parcel ID or geometry retained."},
+    {"url": "https://bhunaksha.bihar.gov.in/WMS", "method": "GET", "httpStatus": 200, "result": "WMS request returned raster PNG map output, not a safe vector parcel response; no feature properties or polygon retained."}
+  ],
+  "coverageAssessment": {"claimedScope": "Siwan district official land-records custodian and one public urban BhuNaksha map hierarchy path.", "verifiedOpenScope": "Hierarchy, CRS, and map extent metadata only; parcel geometry unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A different map sheet, interactive coordinate, or undocumented public route may return parcel geometry. Exact-point hit status, native identity field, and citywide completeness are unknown."
+}

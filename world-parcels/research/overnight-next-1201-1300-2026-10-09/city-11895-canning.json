@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:11895",
+  "wupCityCode": 11895,
+  "queueRank": 1242,
+  "rank": 1242,
+  "name": "Canning",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [22.3459469110544, 88.7375117722278],
+  "centerLatLon": [22.3459469110544, 88.7375117722278],
+  "pointBasis": "Immutable WUP 2025 queue coordinate, preserved in latitude/longitude order without adjustment.",
+  "population2025": 447522,
+  "population2025k": 447.522,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "status": "complete",
+  "resultCategory": "official_local_registry_found_no_anonymous_vector_response",
+  "registryFound": true,
+  "registryBasis": "The official West Bengal Directorate of Land Records and Surveys/Sarthac result identifies the Canning mouza, Canning block and plot-information workflow; the official Urban Development & Municipal Affairs procedure also documents the state land-record path by district, block, mouza, khatian and plot.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "No safe anonymous parcel geometry, native identifier schema, CRS, or current Banglarbhumi JavaScript/API configuration was obtained. Banglarbhumi and Sarthac home routes timed out; the State GIS page was not inspected because TLS verification failed. These access outcomes do not establish citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Banglarbhumi / Directorate of Land Records and Surveys, Government of West Bengal",
+    "url": "https://banglarbhumi.gov.in/",
+    "operator": "Government of West Bengal, Land and Land Reforms and Refugee Relief and Rehabilitation Department; local cadastral custodian evidenced by Directorate of Land Records and Surveys Canning mouza result",
+    "serviceType": "Official West Bengal land-record, plot-information and mouza-map service",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_reached",
+    "operatorNote": "Only public service and plot-workflow evidence was retained. No owner, address, titleholder, tax, account, contact, or other unsafe fields were requested or retained.",
+    "outputCrs": null,
+    "nativeIdEvidence": "Official Sarthac search result displayed Plot No. 373/638 for Canning mouza, but no polygon response was obtained and this value is not retained as a parcel sample.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Official West Bengal cadastral service entry points and bounded anonymous requests for Canning; no citywide completeness claim.",
+    "verifiedOpenScope": "Official local/state registry custody and plot-information workflow only; no live anonymous parcel geometry.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Canning West Bengal official cadastral map parcel GIS land records",
+        "result": "Found official West Bengal Directorate of Land Records and Surveys/Sarthac plot-information evidence for Canning mouza and the official State GIS portal. No anonymous vector parcel endpoint was verified.",
+        "actualResultUrls": [
+          "https://sarthac.gov.in/download-case-file?id=16407&page=view-case-file&year=2016",
+          "https://stategisportal.nic.in/stategisportal/home/map/19",
+          "https://banglarbhumi.gov.in/",
+          "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "script": "Bengali",
+        "query": "ক্যানিং পশ্চিমবঙ্গ সরকারি মৌজা মানচিত্র দাগ খতিয়ান GIS",
+        "result": "Search surfaced the official West Bengal land-record/cadastral service route and State GIS portal; the result itself did not provide a safe public parcel geometry response.",
+        "actualResultUrls": [
+          "https://sarthac.gov.in/download-case-file?id=16407&page=view-case-file&year=2016",
+          "https://banglarbhumi.gov.in/",
+          "https://stategisportal.nic.in/stategisportal/home/map/19"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://banglarbhumi.gov.in/",
+        "operator": "Government of West Bengal, Land and Land Reforms and Refugee Relief and Rehabilitation Department",
+        "scope": "Official state land-record and plot/mouza-map service; live anonymous route timed out in this pass."
+      },
+      {
+        "url": "https://sarthac.gov.in/download-case-file?id=16407&page=view-case-file&year=2016",
+        "operator": "Directorate of Land Records and Surveys, Government of West Bengal",
+        "scope": "Official Canning mouza khatian/plot-information result visible in search retrieval; no safe polygon response."
+      },
+      {
+        "url": "https://stategisportal.nic.in/stategisportal/home/map/19",
+        "operator": "State GIS Portal / BharatMaps",
+        "scope": "Official West Bengal administrative GIS viewer; cadastral parcel layer was not verified."
+      }
+    ],
+    "requests": [
+      {"url": "https://sarthac.gov.in/download-case-file?id=16407&page=view-case-file&year=2016", "method": "GET; official search retrieval", "httpStatus": 200, "contentType": "text/html", "assessment": "Search result exposed official Canning mouza plot-information page and a plot-map link, but no full safe native geometry was captured."},
+      {"url": "https://banglarbhumi.gov.in/", "method": "GET; anonymous public portal", "httpStatus": null, "contentType": null, "assessment": "Timed out before HTML/JavaScript/configuration; no availability conclusion."},
+      {"url": "https://banglarbhumi.gov.in/BanglarBhumi/", "method": "GET; anonymous public route", "httpStatus": null, "contentType": null, "assessment": "Timed out before service response; no availability conclusion."},
+      {"url": "https://stategisportal.nic.in/stategisportal/home/map/19", "method": "GET; anonymous public viewer", "httpStatus": null, "contentType": null, "assessment": "TLS certificate chain verification failed in curl; no certificate exception was used and no content was inspected."},
+      {"url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3", "method": "GET; official search retrieval", "httpStatus": 200, "contentType": "text/html", "assessment": "Official procedure confirms district/block/mouza and khatian/plot workflow; it is not a parcel geometry response."}
+    ],
+    "schemaCrs": {"nativeCrs": null, "geometryResponseSchema": "Not verified; no anonymous parcel response", "viewerLayers": []}
+  },
+  "remainingUncertainty": "Whether Banglarbhumi exposes a current public vector or map-download endpoint, its native CRS and stable safe parcel identifier, and the extent of Canning urban/rural coverage remain unknown. No exact-point hit or miss was used as an absence claim.",
+  "registryEvidenceUrls": ["https://sarthac.gov.in/download-case-file?id=16407&page=view-case-file&year=2016", "https://banglarbhumi.gov.in/", "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer should independently retry Banglarbhumi and inspect its current public viewer/API configuration; qualify runtime only after a real safe native parcel geometry response is independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

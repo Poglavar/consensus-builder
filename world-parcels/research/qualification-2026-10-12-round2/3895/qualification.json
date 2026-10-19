@@ -1,0 +1,2257 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3895",
+  "cityName": "Hanau",
+  "sourceId": "hessen-alkis-vereinfacht-wfs",
+  "candidateSha256": "452eb8daf6e549585a6909495f166b86db751bb6e893621e0cbe83b527255814",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 85,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 85,
+      "collectedUniqueCount": 85
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 296
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "1cc499725c863b10e07d222849c5d813bc4f02e8442499f2e07a485e9ca25363",
+      "featureCount": 85,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32632",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "1cc499725c863b10e07d222849c5d813bc4f02e8442499f2e07a485e9ca25363",
+  "featureCount": 85,
+  "sampleIds": [
+    "DE-HE-DEHE05970000hhvUFL",
+    "DE-HE-DEHE05970000hhwpFL",
+    "DE-HE-DEHE05970001q1P4FL"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        8.921,
+        50.118,
+        8.922,
+        50.119
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "DE-HE-DEHE05970000WoO7FL",
+        "DE-HE-DEHE05970000hhvWFL",
+        "DE-HE-DEHE05970000hhxBFL",
+        "DE-HE-DEHE05970000hhxDFL",
+        "DE-HE-DEHE05970000hhxwFL",
+        "DE-HE-DEHE05970000hhvUFL"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        8.922,
+        50.118,
+        8.923,
+        50.119
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "DE-HE-DEHE05970000WoO7FL",
+        "DE-HE-DEHE05970000hhvWFL",
+        "DE-HE-DEHE05970000hhxwFL",
+        "DE-HE-DEHE05970000hhvNFL",
+        "DE-HE-DEHE05970000hhvUFL",
+        "DE-HE-DEHE05970000hhwhFL",
+        "DE-HE-DEHE05970000hhwpFL",
+        "DE-HE-DEHE05970001gFlgFL",
+        "DE-HE-DEHE05970001H2e5FL"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        8.923,
+        50.118,
+        8.924,
+        50.119
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "DE-HE-DEHE05970000hhvNFL",
+        "DE-HE-DEHE05970000hhvUFL",
+        "DE-HE-DEHE05970000hhwhFL",
+        "DE-HE-DEHE05970000hhwiFL",
+        "DE-HE-DEHE05970000hhwmFL",
+        "DE-HE-DEHE05970000hhwoFL",
+        "DE-HE-DEHE05970000hhwpFL",
+        "DE-HE-DEHE05970001H2e5FL"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        8.921,
+        50.119,
+        8.922,
+        50.12
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "DE-HE-DEHE05970000WoNCFL",
+        "DE-HE-DEHE05970000WoNEFL",
+        "DE-HE-DEHE05970000WoNOFL",
+        "DE-HE-DEHE05970000WoNPFL",
+        "DE-HE-DEHE05970000WoNWFL",
+        "DE-HE-DEHE05970000WoO7FL",
+        "DE-HE-DEHE05970000hhvCFL",
+        "DE-HE-DEHE05970000hhvWFL",
+        "DE-HE-DEHE05970000hhxwFL",
+        "DE-HE-DEHE05970000WoNNFL",
+        "DE-HE-DEHE05970000WoO8FL",
+        "DE-HE-DEHE05970000WoO9FL",
+        "DE-HE-DEHE05970000hhvUFL",
+        "DE-HE-DEHE05970001q1P4FL",
+        "DE-HE-DEHE05970001H2e5FL"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        8.922,
+        50.119,
+        8.923,
+        50.12
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "DE-HE-DEHE05970000hhvNFL",
+        "DE-HE-DEHE05970000hhvUFL",
+        "DE-HE-DEHE05970000hhwpFL",
+        "DE-HE-DEHE05970001DqWUFL",
+        "DE-HE-DEHE05970001gFlgFL",
+        "DE-HE-DEHE05970001q1P2FL",
+        "DE-HE-DEHE05970001q1P3FL",
+        "DE-HE-DEHE05970001q1P4FL",
+        "DE-HE-DEHE05970001H2e5FL"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        8.923,
+        50.119,
+        8.924,
+        50.12
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "DE-HE-DEHE05970000hgesFL",
+        "DE-HE-DEHE05970000hhvNFL",
+        "DE-HE-DEHE05970001DqWSFL",
+        "DE-HE-DEHE05970001DqWTFL",
+        "DE-HE-DEHE05970001DqWUFL",
+        "DE-HE-DEHE05970001gFlgFL",
+        "DE-HE-DEHE05970001q1P4FL"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        8.921,
+        50.12,
+        8.922,
+        50.121
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "DE-HE-DEHE05970000WoNEFL",
+        "DE-HE-DEHE05970000hhvCFL",
+        "DE-HE-DEHE05970000hhvAFL",
+        "DE-HE-DEHE05970000hhvBFL",
+        "DE-HE-DEHE05970000hhvDFL",
+        "DE-HE-DEHE05970000hhvwFL",
+        "DE-HE-DEHE05970000hhvzFL",
+        "DE-HE-DEHE05970001q1P4FL",
+        "DE-HE-DEHE05970001H2e5FL"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        8.922,
+        50.12,
+        8.923,
+        50.121
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "DE-HE-DEHE05970000hg5HFL",
+        "DE-HE-DEHE05970000hhvCFL",
+        "DE-HE-DEHE05970000hgbUFL",
+        "DE-HE-DEHE05970000hhvBFL",
+        "DE-HE-DEHE05970000hhvDFL",
+        "DE-HE-DEHE05970000hhvEFL",
+        "DE-HE-DEHE05970001q1P2FL",
+        "DE-HE-DEHE05970001q1P3FL",
+        "DE-HE-DEHE05970001q1P4FL"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        8.923,
+        50.12,
+        8.924,
+        50.121
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "DE-HE-DEHE05970000hg5HFL",
+        "DE-HE-DEHE05970000hgbEFL",
+        "DE-HE-DEHE05970000hgbFFL",
+        "DE-HE-DEHE05970000hgbGFL",
+        "DE-HE-DEHE05970000hgbHFL",
+        "DE-HE-DEHE05970000hgbNFL",
+        "DE-HE-DEHE05970000hgbOFL",
+        "DE-HE-DEHE05970000hgbSFL",
+        "DE-HE-DEHE05970000hgbTFL",
+        "DE-HE-DEHE05970000hgbUFL",
+        "DE-HE-DEHE05970000hgc0FL",
+        "DE-HE-DEHE05970000hgcAFL",
+        "DE-HE-DEHE05970000hgcBFL",
+        "DE-HE-DEHE05970000hgceFL",
+        "DE-HE-DEHE05970000hgczFL",
+        "DE-HE-DEHE05970000hgdPFL",
+        "DE-HE-DEHE05970000hgesFL",
+        "DE-HE-DEHE05970000hhvDFL",
+        "DE-HE-DEHE059700017ZUCFL",
+        "DE-HE-DEHE05970001DqWSFL",
+        "DE-HE-DEHE05970001DqWTFL",
+        "DE-HE-DEHE05970001q1P2FL",
+        "DE-HE-DEHE05970001q1P3FL",
+        "DE-HE-DEHE05970001q1P4FL"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        8.922,
+        50.117,
+        8.923,
+        50.118
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "DE-HE-DEHE05970000WoO7FL",
+        "DE-HE-DEHE05970000hhvWFL",
+        "DE-HE-DEHE05970000hhxEFL",
+        "DE-HE-DEHE05970000hhxwFL",
+        "DE-HE-DEHE05970000hhvUFL",
+        "DE-HE-DEHE05970000hhxGFL",
+        "DE-HE-DEHE05970000hhxMFL",
+        "DE-HE-DEHE05970000hhxOFL",
+        "DE-HE-DEHE05970000hhxvFL"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        8.922,
+        50.121,
+        8.923,
+        50.122
+      ],
+      "complete": true,
+      "featureCount": 23,
+      "ids": [
+        "DE-HE-DEHE05970000hg5HFL",
+        "DE-HE-DEHE05970000hgbDFL",
+        "DE-HE-DEHE05970000hgbAFL",
+        "DE-HE-DEHE05970000hgbIFL",
+        "DE-HE-DEHE05970000hgbJFL",
+        "DE-HE-DEHE05970000hgbKFL",
+        "DE-HE-DEHE05970000hgbLFL",
+        "DE-HE-DEHE05970000hgbMFL",
+        "DE-HE-DEHE05970000hgbPFL",
+        "DE-HE-DEHE05970000hgbQFL",
+        "DE-HE-DEHE05970000hgbRFL",
+        "DE-HE-DEHE05970000hgbUFL",
+        "DE-HE-DEHE05970000hgbyFL",
+        "DE-HE-DEHE05970000hgbzFL",
+        "DE-HE-DEHE05970000hgcCFL",
+        "DE-HE-DEHE05970000hgcDFL",
+        "DE-HE-DEHE05970000hgcEFL",
+        "DE-HE-DEHE05970000hgcFFL",
+        "DE-HE-DEHE05970000hgcGFL",
+        "DE-HE-DEHE05970000hhvBFL",
+        "DE-HE-DEHE05970000hhvwFL",
+        "DE-HE-DEHE05970001B5H4FL",
+        "DE-HE-DEHE05970001B5H7FL"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        8.92,
+        50.119,
+        8.921,
+        50.12
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "DE-HE-DEHE05970000WoNCFL",
+        "DE-HE-DEHE05970000WoNEFL",
+        "DE-HE-DEHE05970000WoNOFL",
+        "DE-HE-DEHE05970000WoNPFL",
+        "DE-HE-DEHE05970000WoNWFL",
+        "DE-HE-DEHE05970000WoO7FL",
+        "DE-HE-DEHE05970000hhvWFL",
+        "DE-HE-DEHE05970000hhw9FL",
+        "DE-HE-DEHE05970000hhwtFL",
+        "DE-HE-DEHE05970000hhwyFL",
+        "DE-HE-DEHE05970000hhxBFL",
+        "DE-HE-DEHE05970000hhxwFL"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        8.924,
+        50.119,
+        8.925,
+        50.12
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "DE-HE-DEHE05970000hgdRFL",
+        "DE-HE-DEHE05970000hgesFL",
+        "DE-HE-DEHE05970000hhvHFL",
+        "DE-HE-DEHE05970000hhvNFL",
+        "DE-HE-DEHE05970000hhvOFL",
+        "DE-HE-DEHE059700017ZUEFL",
+        "DE-HE-DEHE05970001DqWSFL",
+        "DE-HE-DEHE05970001gFlgFL"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 140,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:18.210Z",
+      "queryHash": "58e64b28bd82376d90d845d1a539a9cff850ff4f42b796dc0d5a5c350e9f66ef",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 466
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:18.692Z",
+      "queryHash": "cbea78972d1ea4ef15f99f623b929d9f958cbd8955477feb8c0ac041646781b3",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 3,
+      "httpStatus": 200,
+      "elapsedMs": 253
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:18.956Z",
+      "queryHash": "58e64b28bd82376d90d845d1a539a9cff850ff4f42b796dc0d5a5c350e9f66ef",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 201
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:19.159Z",
+      "queryHash": "58e64b28bd82376d90d845d1a539a9cff850ff4f42b796dc0d5a5c350e9f66ef",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 199
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:19.359Z",
+      "queryHash": "cbea78972d1ea4ef15f99f623b929d9f958cbd8955477feb8c0ac041646781b3",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 3,
+      "httpStatus": 200,
+      "elapsedMs": 246
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:19.609Z",
+      "queryHash": "58e64b28bd82376d90d845d1a539a9cff850ff4f42b796dc0d5a5c350e9f66ef",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 195
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:19.807Z",
+      "queryHash": "ec028cf590985684edd133ea11ffedb5ceaefa4e325e683b487bbfb3d7a1025f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 241
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:20.050Z",
+      "queryHash": "ec028cf590985684edd133ea11ffedb5ceaefa4e325e683b487bbfb3d7a1025f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:20.269Z",
+      "queryHash": "6e7c04aaaed00795a9403c31a00c1fd692fd890ac2e8a5830fc9db773b96ca72",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:20.489Z",
+      "queryHash": "69912d56ed3df45790fe9a99320f45215e924beedf0e4319669c7bcfdcf1d15f",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 6,
+      "httpStatus": 200,
+      "elapsedMs": 253
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:20.754Z",
+      "queryHash": "6e7c04aaaed00795a9403c31a00c1fd692fd890ac2e8a5830fc9db773b96ca72",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 237
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:20.997Z",
+      "queryHash": "281a4ca250f31db44a75d8305672415d097d782376d428d70bdb70e46c733a1f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 220
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:21.218Z",
+      "queryHash": "9a6302c1fa8566b49618cf5acc43899a3019d8cade3408b75f1d998213a81ac3",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 275
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:21.502Z",
+      "queryHash": "281a4ca250f31db44a75d8305672415d097d782376d428d70bdb70e46c733a1f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 227
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:21.736Z",
+      "queryHash": "87f535d30597f90657735467cc118fc1d2e4ce616fbad91f8757617eeabe902f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 202
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:21.940Z",
+      "queryHash": "b458879ef57b063c0e1c29d4ef4b26be5d159864bff9a12a29eda612f800eeb7",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 268
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:22.232Z",
+      "queryHash": "87f535d30597f90657735467cc118fc1d2e4ce616fbad91f8757617eeabe902f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 232
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:22.474Z",
+      "queryHash": "5265a215e7bec93a20fa8360d2cb3dbd25641ba15e9327ab277f1bcfd607cfb1",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 221
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:22.696Z",
+      "queryHash": "af816422761642571a0696ab33abfc8f3a5ff04cf21db56f60a4a3bc99325ea2",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 15,
+      "httpStatus": 200,
+      "elapsedMs": 274
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:22.987Z",
+      "queryHash": "5265a215e7bec93a20fa8360d2cb3dbd25641ba15e9327ab277f1bcfd607cfb1",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 241
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:23.233Z",
+      "queryHash": "752d70cd5b80ddccdbe28ea5542551458276d6ef905f608b60f3abbee238409a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:23.457Z",
+      "queryHash": "ef79581f96c0ab6e9a3dbbf2ca66dcd66e14f0f8fa7fd52685e24d381ec44a55",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 259
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:23.721Z",
+      "queryHash": "752d70cd5b80ddccdbe28ea5542551458276d6ef905f608b60f3abbee238409a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 225
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:23.949Z",
+      "queryHash": "33f5e7e6df5b638835f59334f4b542fbc4d46182c076fff2193e5b4d6149976d",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 225
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:24.175Z",
+      "queryHash": "2c5f8bf2838560f1db8b89215b1895bbc7dee5ec020e3ac1cfc769356fb37033",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 7,
+      "httpStatus": 200,
+      "elapsedMs": 266
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:24.446Z",
+      "queryHash": "33f5e7e6df5b638835f59334f4b542fbc4d46182c076fff2193e5b4d6149976d",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 248
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:24.695Z",
+      "queryHash": "36f0cb27cedb890bdd9414b2a7fa9e6016f7f3ca373fd483bcedbeaf84789fdc",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:24.916Z",
+      "queryHash": "ea6e898f139947431266c009634a57c660cb927991a096bf57d48aa0de1b862a",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:25.183Z",
+      "queryHash": "36f0cb27cedb890bdd9414b2a7fa9e6016f7f3ca373fd483bcedbeaf84789fdc",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:25.445Z",
+      "queryHash": "ca091efc73d562de0d7dd4ab3f40dc69351cda57d9af048840b670823e2f0ec3",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 234
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:25.680Z",
+      "queryHash": "cf2c06485758eee6bc6338d67fac6dd870776ecfb56c717cecc2caddb73c3204",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 255
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:25.950Z",
+      "queryHash": "ca091efc73d562de0d7dd4ab3f40dc69351cda57d9af048840b670823e2f0ec3",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 230
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:26.213Z",
+      "queryHash": "f24586e6608d04b002c801b6206723460413cfdf2f6e309455bb330d4ff3d6ab",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 230
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:26.447Z",
+      "queryHash": "40a9c1d92f77409d89515eaa3672c3fb162582c312c029c4f666ae9091b4328b",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 24,
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:26.728Z",
+      "queryHash": "f24586e6608d04b002c801b6206723460413cfdf2f6e309455bb330d4ff3d6ab",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 235
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:26.965Z",
+      "queryHash": "72e231255e2eed01497847dec3ddd0e218a2bb1a36252f4899e92bc611056cf6",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 254
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:27.221Z",
+      "queryHash": "1c873b214d3cab350578f3d809a569eaa5ca6483d163c7425d1c2246f19bb622",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 271
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:27.502Z",
+      "queryHash": "72e231255e2eed01497847dec3ddd0e218a2bb1a36252f4899e92bc611056cf6",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 209
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:27.713Z",
+      "queryHash": "73d48659dcec8fdcbae20fea918397e481425ac5ee2f9d811855192da6707806",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:27.926Z",
+      "queryHash": "f52bc862ea34f72d1da81e8e68da219210614f87077ae4fecb22a84f24a0c47b",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 23,
+      "httpStatus": 200,
+      "elapsedMs": 266
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:28.200Z",
+      "queryHash": "73d48659dcec8fdcbae20fea918397e481425ac5ee2f9d811855192da6707806",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 233
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:28.435Z",
+      "queryHash": "228627675315a645c8f72d26482c37503dbd7e4392cf5fd04bdc01140d4e8a09",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 209
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:28.644Z",
+      "queryHash": "d5e40f3036991501beceb128af4ed32cb575f475bb2426a4dc3c16fdb1ecf70d",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 12,
+      "httpStatus": 200,
+      "elapsedMs": 248
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:28.903Z",
+      "queryHash": "228627675315a645c8f72d26482c37503dbd7e4392cf5fd04bdc01140d4e8a09",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 247
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:29.152Z",
+      "queryHash": "cb8bc2f3408840e2376670a7479e8f742332d78272d2470d92086caee065c0f4",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:29.404Z",
+      "queryHash": "7158fd8e9c519f78530b13c9e8b4e8c845cdb4896cdda9904c4898925938e79f",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 255
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:29.673Z",
+      "queryHash": "cb8bc2f3408840e2376670a7479e8f742332d78272d2470d92086caee065c0f4",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 227
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:29.940Z",
+      "queryHash": "6e7c04aaaed00795a9403c31a00c1fd692fd890ac2e8a5830fc9db773b96ca72",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 237
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:30.182Z",
+      "queryHash": "69912d56ed3df45790fe9a99320f45215e924beedf0e4319669c7bcfdcf1d15f",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 6,
+      "httpStatus": 200,
+      "elapsedMs": 265
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:30.459Z",
+      "queryHash": "6e7c04aaaed00795a9403c31a00c1fd692fd890ac2e8a5830fc9db773b96ca72",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 611
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:31.073Z",
+      "queryHash": "281a4ca250f31db44a75d8305672415d097d782376d428d70bdb70e46c733a1f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 586
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:31.660Z",
+      "queryHash": "9a6302c1fa8566b49618cf5acc43899a3019d8cade3408b75f1d998213a81ac3",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 291
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:31.960Z",
+      "queryHash": "281a4ca250f31db44a75d8305672415d097d782376d428d70bdb70e46c733a1f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1304
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:33.282Z",
+      "queryHash": "87f535d30597f90657735467cc118fc1d2e4ce616fbad91f8757617eeabe902f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 312
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:33.599Z",
+      "queryHash": "b458879ef57b063c0e1c29d4ef4b26be5d159864bff9a12a29eda612f800eeb7",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 377
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:33.982Z",
+      "queryHash": "87f535d30597f90657735467cc118fc1d2e4ce616fbad91f8757617eeabe902f",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 262
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:34.246Z",
+      "queryHash": "5265a215e7bec93a20fa8360d2cb3dbd25641ba15e9327ab277f1bcfd607cfb1",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:34.583Z",
+      "queryHash": "af816422761642571a0696ab33abfc8f3a5ff04cf21db56f60a4a3bc99325ea2",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 15,
+      "httpStatus": 200,
+      "elapsedMs": 357
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:34.948Z",
+      "queryHash": "5265a215e7bec93a20fa8360d2cb3dbd25641ba15e9327ab277f1bcfd607cfb1",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 265
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:35.218Z",
+      "queryHash": "752d70cd5b80ddccdbe28ea5542551458276d6ef905f608b60f3abbee238409a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 295
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:35.515Z",
+      "queryHash": "ef79581f96c0ab6e9a3dbbf2ca66dcd66e14f0f8fa7fd52685e24d381ec44a55",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 304
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:35.827Z",
+      "queryHash": "752d70cd5b80ddccdbe28ea5542551458276d6ef905f608b60f3abbee238409a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 274
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:36.103Z",
+      "queryHash": "33f5e7e6df5b638835f59334f4b542fbc4d46182c076fff2193e5b4d6149976d",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 242
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:36.346Z",
+      "queryHash": "2c5f8bf2838560f1db8b89215b1895bbc7dee5ec020e3ac1cfc769356fb37033",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 7,
+      "httpStatus": 200,
+      "elapsedMs": 265
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:36.617Z",
+      "queryHash": "33f5e7e6df5b638835f59334f4b542fbc4d46182c076fff2193e5b4d6149976d",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 226
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:36.846Z",
+      "queryHash": "36f0cb27cedb890bdd9414b2a7fa9e6016f7f3ca373fd483bcedbeaf84789fdc",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:37.068Z",
+      "queryHash": "ea6e898f139947431266c009634a57c660cb927991a096bf57d48aa0de1b862a",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 259
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:37.333Z",
+      "queryHash": "36f0cb27cedb890bdd9414b2a7fa9e6016f7f3ca373fd483bcedbeaf84789fdc",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 230
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:37.565Z",
+      "queryHash": "ca091efc73d562de0d7dd4ab3f40dc69351cda57d9af048840b670823e2f0ec3",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 278
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:37.844Z",
+      "queryHash": "cf2c06485758eee6bc6338d67fac6dd870776ecfb56c717cecc2caddb73c3204",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 352
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:38.201Z",
+      "queryHash": "ca091efc73d562de0d7dd4ab3f40dc69351cda57d9af048840b670823e2f0ec3",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 233
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:38.436Z",
+      "queryHash": "f24586e6608d04b002c801b6206723460413cfdf2f6e309455bb330d4ff3d6ab",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 226
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:38.663Z",
+      "queryHash": "40a9c1d92f77409d89515eaa3672c3fb162582c312c029c4f666ae9091b4328b",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 24,
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:38.937Z",
+      "queryHash": "f24586e6608d04b002c801b6206723460413cfdf2f6e309455bb330d4ff3d6ab",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 242
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:39.182Z",
+      "queryHash": "72e231255e2eed01497847dec3ddd0e218a2bb1a36252f4899e92bc611056cf6",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 226
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:39.409Z",
+      "queryHash": "1c873b214d3cab350578f3d809a569eaa5ca6483d163c7425d1c2246f19bb622",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 9,
+      "httpStatus": 200,
+      "elapsedMs": 286
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:39.705Z",
+      "queryHash": "72e231255e2eed01497847dec3ddd0e218a2bb1a36252f4899e92bc611056cf6",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:39.931Z",
+      "queryHash": "73d48659dcec8fdcbae20fea918397e481425ac5ee2f9d811855192da6707806",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 248
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:40.180Z",
+      "queryHash": "f52bc862ea34f72d1da81e8e68da219210614f87077ae4fecb22a84f24a0c47b",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 23,
+      "httpStatus": 200,
+      "elapsedMs": 262
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:40.450Z",
+      "queryHash": "73d48659dcec8fdcbae20fea918397e481425ac5ee2f9d811855192da6707806",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 245
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:40.699Z",
+      "queryHash": "228627675315a645c8f72d26482c37503dbd7e4392cf5fd04bdc01140d4e8a09",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 220
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:40.920Z",
+      "queryHash": "d5e40f3036991501beceb128af4ed32cb575f475bb2426a4dc3c16fdb1ecf70d",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 12,
+      "httpStatus": 200,
+      "elapsedMs": 316
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:41.244Z",
+      "queryHash": "228627675315a645c8f72d26482c37503dbd7e4392cf5fd04bdc01140d4e8a09",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 242
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:41.489Z",
+      "queryHash": "cb8bc2f3408840e2376670a7479e8f742332d78272d2470d92086caee065c0f4",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 260
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:41.749Z",
+      "queryHash": "7158fd8e9c519f78530b13c9e8b4e8c845cdb4896cdda9904c4898925938e79f",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 250
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:42.003Z",
+      "queryHash": "cb8bc2f3408840e2376670a7479e8f742332d78272d2470d92086caee065c0f4",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 229
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:42.239Z",
+      "queryHash": "9c2441a6b8f6b6259fca9aab456c28481122a4a7011ec4a321b5b72abc49bd1a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 250
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:42.498Z",
+      "queryHash": "97875a0e32aca172eb9a5e1b9f3e5476c67fc8b0e117249f207a7d8a8e1ab75d",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 287
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:42.786Z",
+      "queryHash": "9c2441a6b8f6b6259fca9aab456c28481122a4a7011ec4a321b5b72abc49bd1a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 228
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:43.015Z",
+      "queryHash": "25cb93da85343db2152d2e4f9a8c32b218ca44b98977b2f331bcae8cd9eb3322",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:43.269Z",
+      "queryHash": "e9bd5e0ffd479d0facdc6cccdfec4e58aa65291604c19e8ac112f8e14b17cfea",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 248
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:43.521Z",
+      "queryHash": "25cb93da85343db2152d2e4f9a8c32b218ca44b98977b2f331bcae8cd9eb3322",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 218
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:43.740Z",
+      "queryHash": "d227a903e54610481d8f76cadb57f209285561696cb4f0c731bb60c421d56181",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 242
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:43.983Z",
+      "queryHash": "2081c4c86833706284a9cfa8402a1a5a800a0f865799bb290d4b7cb2e8574ea5",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 250
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:44.234Z",
+      "queryHash": "d227a903e54610481d8f76cadb57f209285561696cb4f0c731bb60c421d56181",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 229
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:44.466Z",
+      "queryHash": "a8e41223efe0b0fd140d62cf0f71e13554ac05dbbb6f1e17a1cb578b24222133",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 256
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:44.723Z",
+      "queryHash": "e9d9294092849471c83ae6c28cb9fd5f0584b11b0e1b7d098a3a38b0b33819f2",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 264
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:44.990Z",
+      "queryHash": "a8e41223efe0b0fd140d62cf0f71e13554ac05dbbb6f1e17a1cb578b24222133",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 242
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:45.233Z",
+      "queryHash": "0a01034e91f726185aed9384dd2d9f507121e1b84e4d7f9965ab3cdbfe841b7d",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:45.423Z",
+      "queryHash": "bf4f43db3c31344bdbd05b45d6eaefd8f58953ac295e8557cfabc27ea6b8479a",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "httpStatus": 200,
+      "elapsedMs": 239
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:45.664Z",
+      "queryHash": "0a01034e91f726185aed9384dd2d9f507121e1b84e4d7f9965ab3cdbfe841b7d",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 210
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:45.879Z",
+      "queryHash": "58e64b28bd82376d90d845d1a539a9cff850ff4f42b796dc0d5a5c350e9f66ef",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 409
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:46.307Z",
+      "queryHash": "cbea78972d1ea4ef15f99f623b929d9f958cbd8955477feb8c0ac041646781b3",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 3,
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:46.571Z",
+      "queryHash": "58e64b28bd82376d90d845d1a539a9cff850ff4f42b796dc0d5a5c350e9f66ef",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 203
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:46.788Z",
+      "queryHash": "5e1d9f8f7a82c2b679380fd6115f0850ff6e2c24c75f66f7399f6dcc49ae7bb8",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:47.001Z",
+      "queryHash": "7a5d44e7917abc197219723e4ff812911c31127f1ab83681967b3479229d7ca6",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 22,
+      "httpStatus": 200,
+      "elapsedMs": 264
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:47.275Z",
+      "queryHash": "5e1d9f8f7a82c2b679380fd6115f0850ff6e2c24c75f66f7399f6dcc49ae7bb8",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 246
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:47.597Z",
+      "queryHash": "56ac60169883fdb9966d84ca84d4c6b4aa871bd815adf6d8dec0ac23465c1252",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 236
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:47.833Z",
+      "queryHash": "038d519cf2cde2cdba3691afb235ffe6279187823882afdb9ace18f86d6979df",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 268
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:48.106Z",
+      "queryHash": "56ac60169883fdb9966d84ca84d4c6b4aa871bd815adf6d8dec0ac23465c1252",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:48.316Z",
+      "queryHash": "af03b57820d3c26a1ae3612c1dc276e15c3c4a957a3fc74c78505f28fee22619",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:48.534Z",
+      "queryHash": "7470f1d98dc1887514478fb7c0851ae1ae0b6007c90b973cdad32f05b3c611c8",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 285
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:48.823Z",
+      "queryHash": "af03b57820d3c26a1ae3612c1dc276e15c3c4a957a3fc74c78505f28fee22619",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 210
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:49.034Z",
+      "queryHash": "734d6fc2a2f19cc574fb2df52c44837cbfa6d051dbecc8fbf4af293b20391e8e",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 254
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:49.293Z",
+      "queryHash": "69c34a6cf5e4fff840aaafac245b742607c3460fec0bc27013a46c1cbb2a8f1c",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 242
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:49.540Z",
+      "queryHash": "734d6fc2a2f19cc574fb2df52c44837cbfa6d051dbecc8fbf4af293b20391e8e",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 262
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:49.803Z",
+      "queryHash": "106bd705a6ddcd45871399c12126917893736bbf191869fe927130832567c53b",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 207
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:50.011Z",
+      "queryHash": "c593f3df3048479dd6c120386d527948f45b568a747df187936e93dba9f9102a",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 262
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:50.278Z",
+      "queryHash": "106bd705a6ddcd45871399c12126917893736bbf191869fe927130832567c53b",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 219
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:50.498Z",
+      "queryHash": "236664f606ae860b2eda3b07e59ed9348ec5a0b9b4f90c25c6ea764f871399d8",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 227
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:50.732Z",
+      "queryHash": "e3c2f27970c72d817d8a6afe2798d501f254e045a132078ab96fd896b2cbaefc",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:51.023Z",
+      "queryHash": "236664f606ae860b2eda3b07e59ed9348ec5a0b9b4f90c25c6ea764f871399d8",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 250
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:51.274Z",
+      "queryHash": "5e5bb162255f31a6827795679724b5f25c1335b2b0b8761cd0c8c944ec7466e7",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 250
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:51.525Z",
+      "queryHash": "2868949080aba34e2df18ae12bfb0897e543405d94ce4db88c4fc7e874087364",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 381
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:51.914Z",
+      "queryHash": "5e5bb162255f31a6827795679724b5f25c1335b2b0b8761cd0c8c944ec7466e7",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 224
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:52.139Z",
+      "queryHash": "2c2bd03897a15fc456158ab0eb061928b8b536e268dcac1b1c4295e8e99011e4",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 222
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:52.367Z",
+      "queryHash": "34315a3a0998101c691000764c9703b0a95d497f55ba05a32a4f9abc9633dcff",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:52.634Z",
+      "queryHash": "2c2bd03897a15fc456158ab0eb061928b8b536e268dcac1b1c4295e8e99011e4",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 220
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:52.857Z",
+      "queryHash": "60ae47a4aa478d49d9a731cd26e675beab23a9b1e0c3e6fbf3509395cbbb17d3",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 236
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:53.094Z",
+      "queryHash": "d467b12e5e5db98e01aebb855804a7b5eda0150399ef77065605444748f8188e",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 257
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:53.356Z",
+      "queryHash": "60ae47a4aa478d49d9a731cd26e675beab23a9b1e0c3e6fbf3509395cbbb17d3",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 238
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:53.595Z",
+      "queryHash": "34fdb35a50d20de01708ed9b537f2a2aad0b30de00c72f0cd503fd6b5bacbb94",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 279
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:53.876Z",
+      "queryHash": "3354af54818805f8d2ef26ca9ec7bc9ee8c8edb3223b2b332c70b1b12499022c",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 252
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:54.131Z",
+      "queryHash": "34fdb35a50d20de01708ed9b537f2a2aad0b30de00c72f0cd503fd6b5bacbb94",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 208
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:54.340Z",
+      "queryHash": "2994c8ce78a9ebca5a9a9fcbaa4e93dd5059966a56d3fcb81b31e3a2891c0f4b",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 258
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:54.600Z",
+      "queryHash": "1cfed86f2f9bd88a93b16e5d9625971a46de5a0d2d6da6b0930e651080475e2e",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 8,
+      "httpStatus": 200,
+      "elapsedMs": 244
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:54.849Z",
+      "queryHash": "2994c8ce78a9ebca5a9a9fcbaa4e93dd5059966a56d3fcb81b31e3a2891c0f4b",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 239
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:55.090Z",
+      "queryHash": "e463254f81613de6d81319f46c0a705461a9e9f7df69cddfce93cc8141e610d6",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 212
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:55.303Z",
+      "queryHash": "92b7ac44032fedc410e86d5e6f2926928ce852191416337b2692f1462720692d",
+      "safeParamNames": [
+        "count",
+        "filter"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 5,
+      "httpStatus": 200,
+      "elapsedMs": 247
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "www.gds.hessen.de",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:11:55.552Z",
+      "queryHash": "e463254f81613de6d81319f46c0a705461a9e9f7df69cddfce93cc8141e610d6",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 213
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

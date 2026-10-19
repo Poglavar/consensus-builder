@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6763-yazd.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "An official city notice describes a map-based land-use service, but the located route is planning information and no local registry/cadastre custodian or public parcel schema was verified.",
+  "registryAssessment": "No city-level legal cadastral custodian was established; cited official map evidence is planning or another limited subject.",
+  "officialPrimarySources": [
+    {
+      "url": "https://t.me/s/yazdshahr/15252",
+      "operator": "Yazd Municipality public channel",
+      "observation": "City notice says the ESUP citizen-service website can identify land use by placing a property location on the map; this is land-use planning, not proof of a registry or parcel feature service."
+    },
+    {
+      "url": "https://esup.yazd.ir/",
+      "operator": "Yazd ESUP citizen-service site",
+      "observation": "Anonymous GET timed out before HTTP response; no property marker/location was selected or entered."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yazd Iran official cadastral GIS map property registration parcels",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://t.me/s/yazdshahr/15252",
+        "https://esup.yazd.ir/",
+        "https://gisyazd.blogfa.com/"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "Persian",
+      "query": "یزد کاداستر نقشه املاک اداره ثبت اسناد و املاک یزد شهرداری",
+      "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://t.me/s/yazdshahr/15252",
+        "https://esup.yazd.ir/",
+        "https://gisyazd.blogfa.com/"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact WUP point; publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://esup.yazd.ir/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 28; connection timed out after 20 seconds; no HTTP response"
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "An official city notice describes a map-based land-use service, but the located route is planning information and no local registry/cadastre custodian or public parcel schema was verified.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://esup.yazd.ir/",
+      "result": "No HTTP response: curl exit 28; connection timed out after 20 seconds; no HTTP response. "
+    }
+  ],
+  "remainingUncertainty": "An official city notice describes a map-based land-use service, but the located route is planning information and no local registry/cadastre custodian or public parcel schema was verified. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "runtimeAssessment": "not enabled; no full parcel geometry retained",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "An official city notice describes a map-based land-use service, but the located route is planning information and no local registry/cadastre custodian or public parcel schema was verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

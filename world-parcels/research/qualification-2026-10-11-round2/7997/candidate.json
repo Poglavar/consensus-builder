@@ -1,0 +1,69 @@
+{
+  "descriptor": {
+    "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+    "adapter": "arcgis",
+    "name": "NC OneMap Parcels (polys)",
+    "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
+    "scope": "Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; configured for Raleigh and the WUP New Hope urban-centre point.",
+    "idField": "parno",
+    "objectIdField": "objectid",
+    "idType": "string",
+    "outFields": [
+      "parno",
+      "objectid",
+      "stcntyfips"
+    ],
+    "id": "us-nc-wake-raleigh-parcels",
+    "stateCode": "NC",
+    "cityIds": [
+      "raleigh",
+      "new_hope",
+      "7997"
+    ],
+    "idPrefix": "US-NC-WAKE-",
+    "metricSrid": 32617,
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "caveats": [
+      "Bounded viewport acceptance at Raleigh and New Hope does not establish full municipal or statewide coverage.",
+      "New Hope denotes the WUP urban-centre point in Wake County, not a separate municipal boundary."
+    ],
+    "attributeFilters": {
+      "stcntyfips": "37183"
+    },
+    "countryCode": "US",
+    "catalogueUrl": "https://www.nconemap.gov/pages/parcels",
+    "maxConcurrentQueries": 2,
+    "evidenceFile": "research/us-capitals-batch-four-live-2026-10-06.json",
+    "attribution": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors. Adapted to WGS84.",
+    "licenceNote": "Source conditions are informational; users choose their source and intended use.",
+    "idBatchSize": 5
+  },
+  "city": {
+    "code": "7997",
+    "name": "Cary",
+    "point": [
+      -78.7870570250863,
+      35.784901551333
+    ]
+  },
+  "sampleIds": [
+    "US-NC-WAKE-0764302687",
+    "US-NC-WAKE-0764300584",
+    "US-NC-WAKE-0764301553"
+  ],
+  "absentId": "US-NC-WAKE-9999999999",
+  "metricEpsg": "EPSG:32617",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "NC OneMap Parcels (polys)",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; NC OneMap Parcels (polys); Wake County only, fixed stcntyfips 37183 in the NC OneMap compilation; configured for Raleigh and the WUP New Hope urban-centre point.; Fourth configured US capital batch: strict bounded viewport, paging/manifests, exact-native geometry and authoritative binding acceptance; no parcel geometry import or research payloads."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "2d0a4ee03557faba3aecbc0d5798a960a33d1be3bf176854fa0e4eefcf57d4a9",
+  "qualificationRecordedSha256": "fd7461111521a965e002b3ef0e70f5af34905d909fb3974d1e53696d8424b536",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/7997/attempt-01/candidate.json"
+}

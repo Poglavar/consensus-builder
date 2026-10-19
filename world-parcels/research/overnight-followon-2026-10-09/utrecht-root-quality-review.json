@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-09T06:05:23.845931+00:00",
+  "decision": "approved_by_root",
+  "geometryChangedOrRepaired": false,
+  "basis": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
+  "acceptanceFile": "research/overnight-followon-2026-10-09/utrecht-root-acceptance.json",
+  "qualityFile": "research/overnight-followon-2026-10-09/utrecht-root-quality.json",
+  "wideReviewFile": "research/overnight-followon-2026-10-09/utrecht-root-wide-review.json",
+  "wideQualityFile": "research/overnight-followon-2026-10-09/utrecht-root-wide-quality.json"
+}

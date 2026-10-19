@@ -1,0 +1,119 @@
+{
+  "name": "Faizabad",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 546,
+  "point": [
+    26.7745701688927,
+    82.1553715464935
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Faizabad Ayodhya Uttar Pradesh official cadastral parcel map land records tehsil",
+        "result": "Official Ayodhya district records direct users to UP Bhulekh. The UP Bhulekh district report lists Faizabad tehsil and village-level cadastral maps/georeferencing; the BhuNaksha viewer presents a user/password/captcha gate, so no login or feature call was attempted.",
+        "urls": [
+          "https://ayodhya.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=177",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/177",
+          "https://upbhunaksha.gov.in/login/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "अयोध्या फैजाबाद तहसील खतौनी भू नक्शा आधिकारिक भूलेख",
+        "result": "आधिकारिक अयोध्या जिला भूमि-अभिलेख पृष्ठ उत्तर प्रदेश भूलेख पोर्टल से जोड़ता है। सरकारी डैशबोर्ड में फैजाबाद तहसील और गांवों के नक्शों के डिजिटलीकरण/जियोरेफरेंसिंग की स्थिति है; भू-नक्शा लॉगिन पृष्ठ पर उपयोगकर्ता, पासवर्ड और कैप्चा मांगा जाता है, इसलिए लॉगिन या संरक्षित अनुरोध नहीं किया गया।",
+        "urls": [
+          "https://ayodhya.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=177",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/177",
+          "https://upbhunaksha.gov.in/login/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://ayodhya.nic.in/service/land-records/",
+        "observation": "First-party district administration land-records page directs users to Uttar Pradesh land records; Ayodhya is the current district containing Faizabad tehsil."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=177",
+        "observation": "Official Uttar Pradesh public dashboard report for Ayodhya district lists Faizabad tehsil and village-level revenue-map coverage/georeferencing counts. It does not establish the WUP point’s village or citywide vector availability."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/177",
+        "observation": "Government of India DILRMP district/tehsil map-digitization report for Ayodhya (district code 177) includes Faizabad tehsil and local cadastral map status."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/login/",
+        "observation": "Official BhuNaksha page exposes a login form (user, password, captcha); no credentials, login, token, or protected query was used."
+      },
+      {
+        "url": "https://bhunaksha.nic.in/bhunaksha/",
+        "observation": "NIC BhuNaksha documentation describes the software as intended for authorized officials; used to bound access expectations."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No full parcel geometry was retrieved or independently validated."
+  },
+  "source": {
+    "id": "city-IN-10065-overnight-research",
+    "name": "Faizabad city-local parcel source review",
+    "operator": null,
+    "url": "https://upbhunaksha.gov.in/login/",
+    "format": "No verified full-vector geometry source",
+    "access": "Public source discovery only; no login or credentials used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Ayodhya district land-records page (the current district containing former Faizabad) links the Uttar Pradesh land-record portal. The Government of India DILRMP and UP Bhulekh district report identify Faizabad tehsil within Ayodhya and report cadastral-map digitization/georeferencing for local revenue villages. This is district/tehsil-level evidence; it does not confirm the WUP point’s specific urban village or public vector access.",
+    "verifiedOpenScope": "The official map app presents a login/captcha gate. Public district/tehsil dashboard establishes local map digitization but not the queue point’s specific village nor a public vector feature contract. No credentials or protected endpoints were attempted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The official Ayodhya district land-records page (the current district containing former Faizabad) links the Uttar Pradesh land-record portal. The Government of India DILRMP and UP Bhulekh district report identify Faizabad tehsil within Ayodhya and report cadastral-map digitization/georeferencing for local revenue villages. This is district/tehsil-level evidence; it does not confirm the WUP point’s specific urban village or public vector access.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_revenue_map_coverage_point_unresolved_vector_unavailable",
+  "technicalBlocker": "The official map app presents a login/captcha gate. Public district/tehsil dashboard establishes local map digitization but not the queue point’s specific village nor a public vector feature contract. No credentials or protected endpoints were attempted.",
+  "remainingUncertainty": "The WUP population centroid may fall in Faizabad urban revenue village, but point-to-village assignment was not resolved. Dashboard map counts are not evidence of complete city coverage or vector access.",
+  "nextStep": "Resolve the WUP point to an official Faizabad urban village using a public selector, and only proceed with geometry if a public schema-safe vector route exists.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10065,
+  "cityId": "wup2025:10065",
+  "queueRank": 546,
+  "population2025": 952074,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    26.7745701688927,
+    82.1553715464935
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, credentials, login sessions, or tokens were retained.",
+  "registryEvidenceUrls": [
+    "https://ayodhya.nic.in/service/land-records/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=177",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/177",
+    "https://upbhunaksha.gov.in/login/",
+    "https://ayodhya.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/"
+  ],
+  "rootReviewedAt": "2026-10-09T01:23:12.168688+00:00"
+}

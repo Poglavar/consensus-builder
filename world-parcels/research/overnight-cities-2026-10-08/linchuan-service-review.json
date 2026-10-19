@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11398-linchuan.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Fuzhou Natural Resources Bureau lists the Fuzhou Real Estate Registration Center and explicitly includes Linchuan District in its registration and cadastral-support remit. No public geometry-only schema was found.",
+  "registryAssessment": "The Fuzhou municipal Natural Resources Bureau explicitly assigns the Fuzhou Real Estate Registration Center responsibility for property registration in the city proper, Linchuan District, and two development zones, and for cadastral-survey support and registration-record management in those jurisdictions. This is direct city-bound registry evidence for Linchuan. Its portal lists online-query and registration services, but no safe anonymous parcel geometry endpoint/schema was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.jxfz.gov.cn/art/2026/5/7/art_75_4379128.html",
+      "observation": "Official Fuzhou Municipal Government / Natural Resources Bureau functions page (2026-05-07) says the municipal Real Estate Registration Center handles real-property registration and cadastral/record work for city proper, Linchuan District, and named development zones."
+    },
+    {
+      "url": "https://bdcdj.fuzhou.gov.cn/",
+      "observation": "Official Fuzhou Real Estate Registration and Trading Center portal lists service guides, online-query services and registration announcements; it does not expose a public geometry schema on the landing page."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Linchuan District Fuzhou official real estate registration center land registry China cadastral map",
+      "result": "Official Fuzhou Natural Resources Bureau lists the Fuzhou Real Estate Registration Center and explicitly includes Linchuan District in its registration and cadastral-support remit. No public geometry-only schema was found.",
+      "method": "English-language search followed by primary-source review."
+    },
+    {
+      "language": "Chinese",
+      "query": "临川区 不动产登记 抚州市自然资源局 登记中心 地籍 官方",
+      "result": "抚州市自然资源局明确，市不动产登记中心承办市本级、临川区等地的不动产登记，并负责地籍调查、登记档案和测绘成果技术支持。官方门户未公开安全的宗地几何字段白名单或匿名几何接口。",
+      "method": "Local-language search followed by primary-source review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The official Fuzhou registry portal exposes办事服务 (service guides), 网上查询 (online queries), and registration announcements. The official bureau’s organization/function page states that its city registration center handles property registration, records, cadastral investigations and related work for city proper and Linchuan District. The portal pages reviewed describe registry workflows but provide no anonymous geometry-only feature schema, safe ID allowlist, or CRS. No query, personal/property lookup, or geometry request was made."
+  },
+  "privacy": "No owner/address/tax/account/property-record query, login, or private attribute extraction was performed. No geometry retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The municipal registry’s official remit expressly includes Linchuan, while the entity is organized at Fuzhou city level and also covers development zones. No safe parcel-geometry source or dataset coverage was verified; no citywide or WUP-point parcel-presence claim is made."
+  }
+}

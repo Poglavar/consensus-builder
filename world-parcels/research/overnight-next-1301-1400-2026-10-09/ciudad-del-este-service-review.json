@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1024-ciudad-del-este.json",
+  "cityCode": 1024,
+  "purpose": "Document first-party discovery, current public cadastral viewer/service review, bounded anonymous access, safe-field handling, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official SNC public viewer currently configures a GeoServer WFS parcel layer. Anonymous capabilities and schema requests succeeded, and a bounded request returned three full parcel geometries with only canonical native ids retained. No credentials, login, CAPTCHA bypass, private token, owner, address, titleholder, contact, or unsafe cadastral fields were used.",
+  "registryAssessment": "registryFound=true is supported by the official SNC public cadastral viewer/WFS and the official municipality directory's Ciudad del Este cooperation record. This does not establish complete or current citywide parcel coverage.",
+  "safeFieldAllowlist": ["id", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Ciudad del Este Paraguay official cadastral map parcel GIS cadastre municipal","outcome":"Official SNC municipality directory, public viewer, and public WFS were found.","actualResultUrls":["https://www.catastro.gov.py/municipios","https://www.catastro.gov.py/visor/","https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities"]},
+    {"language":"Spanish (local/native)","query":"Paraguay catastro mapa parcelario Ciudad del Este sitio oficial","outcome":"Official SNC municipality directory, Ciudad del Este cooperation document, viewer, and WFS were found.","actualResultUrls":["https://www.catastro.gov.py/municipios","https://www.catastro.gov.py/public/b22ef1_Ciudad%20del%20Este.pdf","https://www.catastro.gov.py/visor/","https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities"]}
+  ],
+  "attempts": [
+    {"url":"https://www.catastro.gov.py/visor/","method":"GET","httpStatus":200,"result":"Current viewer HTML loaded; JavaScript/configuration identified /geoserver/ows, workspace snc, layer parcelas_activas, and EPSG:32721."},
+    {"url":"https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities","method":"GET","httpStatus":200,"result":"WFS capabilities loaded; official layers include snc:parcelas_activas."},
+    {"url":"https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typename=snc:parcelas_activas","method":"GET","httpStatus":200,"result":"Schema loaded; native id and geometry plus additional cadastral fields observed. Only id and geometry were requested subsequently."},
+    {"url":"https://www.catastro.gov.py/api/v1/public/departamentos","method":"GET","httpStatus":500,"result":"Public viewer API route attempted anonymously; server returned an internal error and no data was retained."},
+    {"url":"https://www.catastro.gov.py/api/v1/public/distritos","method":"GET","httpStatus":500,"result":"Public viewer API route attempted anonymously; server returned an internal error and no data was retained."},
+    {"url":"https://www.catastro.gov.py/geoserver/ows","method":"GET","parameters":"service=WFS; version=1.1.0; request=GetFeature; typename=snc:parcelas_activas; outputFormat=application/json; srsname=EPSG:4326; bbox=-54.650,-25.518,-54.646,-25.515,EPSG:4326; maxFeatures=3; propertyName=id,shape","httpStatus":200,"result":"Bounded anonymous response returned three full MultiPolygon features in EPSG:4326 GeoJSON; retained after reducing properties to canonical id values."},
+    {"url":"https://www.catastro.gov.py/geoserver/ows","method":"GET","parameters":"service=WFS; version=1.1.0; request=GetFeature; typename=snc:parcelas_activas; outputFormat=application/json; srsname=EPSG:4326; bbox=-54.66,-25.53,-54.63,-25.50,EPSG:4326; maxFeatures=3; propertyName=id,shape","httpStatus":200,"result":"Broader bounded anonymous envelope also returned three features; not used as a completeness claim."},
+    {"url":"https://www.catastro.gov.py/municipios","method":"GET","httpStatus":200,"result":"Official directory lists Ciudad del Este cooperation agreement."}
+  ],
+  "geometryEvidence": {"sampleFile":"ciudad-del-este-parcel-samples.geojson","sampleCount":3,"nativeIdentityField":"id","requestedFields":["id","geometry"],"retainedProperties":["id"]},
+  "geometryDecision": {"verified":true,"sourceId":"https://www.catastro.gov.py/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typename=snc:parcelas_activas","nativeIdField":"id","sampleCount":3,"sampleFile":"ciudad-del-este-parcel-samples.geojson","exactWupPointTest":"No exact-point hit was used or inferred; the supplied coordinate was preserved and not shifted."},
+  "remainingUncertainty": "The attempt did not independently validate complete current citywide coverage, parcel currency, or exact-point containment. The WFS schema exposes sensitive cadastral fields, but they were not requested or retained. Viewer API department/district routes returned HTTP 500.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

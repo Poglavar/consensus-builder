@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5536-jodhpur.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Opened the official Urban GIS public page and inspected the visible interface text: district/city authority selectors, Khasra search (district/tehsil/village/khasra), and Khasra/Plot/Urban Jurisdiction layers. The public page’s disclaimer says cadastral boundaries are for viewing only. Ordinary public HTTPS fetch of the portal timed out, so its JavaScript/service endpoint and exact Jodhpur extent could not be traced; no parcel geometry query was made. Whether the specific WUP locator is covered by a Jodhpur urban Khasra layer or the state revenue BhuNaksha; whether either portal offers anonymous machine-readable vector geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/",
+      "observation": "Official Rajasthan BhuNaksha map-with-land-records viewer."
+    },
+    {
+      "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+      "observation": "Official Rajasthan georeferenced map viewer information and plot details."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "observation": "Official Urban GIS Portal; includes Khasra search and Khasra/urban-jurisdiction/plot map layers; disclaimer identifies Settlement Department boundary data and respective urban agency source."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/PDF/User_Manual_Urban_GIS_Portal.pdf",
+      "observation": "Official portal manual describes the urban GIS search and map layers."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/",
+      "observation": "Official Rajasthan Rajdharaa portal."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "method": "official web viewer read; ordinary HTTPS shell GET timed out",
+      "result": "Viewer text exposes district/city authority selectors, Khasra search, Khasra/Plot/Urban Jurisdiction layers, and non-legal-use disclaimer. Service JavaScript and endpoint could not be fetched; no parcel query made."
+    }
+  ]
+}

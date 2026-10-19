@@ -8,6 +8,7 @@
     let modalElement = null;
     let openButton = null;
     let closeButton = null;
+    let headerCloseButton = null;
     let refreshButton = null;
     let legendElement = null;
     let summaryElement = null;
@@ -17,6 +18,9 @@
     let coverageLayerGroup = null;
 
     let listenersAttached = false;
+    let primaryMapChangeTimer = null;
+    // A zoom fires zoomend and moveend, and a pan can end several times in a row: redraw once after both.
+    const PRIMARY_MAP_CHANGE_DEBOUNCE_MS = 150;
 
     const CELL_STYLE = {
         color: '#d97706',
@@ -41,10 +45,12 @@
         attribution: '© OpenStreetMap contributors'
     };
 
+    // #parcel-coverage-modal is the shared dialog's overlay (index.html); it is shown through [hidden].
     function cacheElements() {
         modalElement = document.getElementById('parcel-coverage-modal') || null;
         openButton = document.getElementById('showParcelCoverageButton') || null;
         closeButton = document.getElementById('parcel-coverage-close-btn') || null;
+        headerCloseButton = modalElement ? modalElement.querySelector('[data-parcel-coverage-close]') : null;
         refreshButton = document.getElementById('parcel-coverage-refresh-btn') || null;
         legendElement = document.getElementById('parcel-coverage-legend') || null;
         summaryElement = document.getElementById('parcel-coverage-summary') || null;
@@ -90,7 +96,7 @@
     }
 
     function isModalOpen() {
-        return !!modalElement && modalElement.style.display && modalElement.style.display !== 'none';
+        return !!modalElement && !modalElement.hidden;
     }
 
     function formatArea(areaSqm) {
@@ -115,10 +121,12 @@
             return null;
         }
         const [gridEasting, gridNorthing] = parts;
-        if (!Number.isFinite(gridEasting) || !Number.isFinite(gridNorthing) || typeof parcelCache === 'undefined') {
+        if (!Number.isFinite(gridEasting) || !Number.isFinite(gridNorthing)) {
             return null;
         }
-        const cellSize = parcelCache && parcelCache.gridSize ? parcelCache.gridSize : 500;
+        const cellSize = Number(window.ParcelsState?.getParcelGridSize?.()
+            ?? window.CityConfigManager?.getParcelGridSize?.()
+            ?? 500);
         const swEasting = gridEasting * cellSize;
         const swNorthing = gridNorthing * cellSize;
         const neEasting = (gridEasting + 1) * cellSize;
@@ -133,17 +141,19 @@
     }
 
     function htrsToLatLng(easting, northing) {
-        if (typeof window.htrs96ToWGS84 !== 'function') {
+        // Grid cells are keyed in the dataset CRS (gridSize is in dataset units), not metric metres.
+        const convert = window.datasetToWgs84;
+        if (typeof convert !== 'function') {
             return null;
         }
         try {
-            const [lat, lon] = window.htrs96ToWGS84(easting, northing);
+            const [lat, lon] = convert(easting, northing);
             if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
                 return null;
             }
             return L.latLng(lat, lon);
         } catch (error) {
-            console.warn('Failed to convert HTRS96/TM to WGS84 for coverage visualisation', error);
+            console.warn('Failed to convert dataset coordinates to WGS84 for coverage visualisation', error);
             return null;
         }
     }
@@ -158,17 +168,20 @@
             cellAreaSqm: 0
         };
 
-        if (typeof parcelCache === 'undefined' || !parcelCache || !parcelCache.grid) {
+        const repository = window.CadastralParcelRepository;
+        if (!repository || typeof repository.snapshot !== 'function') {
             return result;
         }
-        const gridSize = parcelCache.gridSize || 500;
+        const gridSize = Number(window.ParcelsState?.getParcelGridSize?.()
+            ?? window.CityConfigManager?.getParcelGridSize?.()
+            ?? 500);
         result.cellAreaSqm = gridSize * gridSize;
 
         const mainMapBounds = (typeof map !== 'undefined' && map && typeof map.getBounds === 'function') ? map.getBounds() : null;
 
         let aggregateBounds = null;
 
-        for (const key of parcelCache.grid.keys()) {
+        for (const key of repository.snapshot().boundsKeys || []) {
             const bounds = gridKeyToBounds(key);
             if (!bounds) {
                 continue;
@@ -192,6 +205,20 @@
 
         if (aggregateBounds && aggregateBounds.isValid()) {
             result.coverageBounds = aggregateBounds;
+        }
+
+        // The grid size is in dataset units: metres for a metric CRS (3765), where its square is the
+        // cell's area, but degrees for EPSG:4326 grids, where squaring it reported "0.000025 m²". Those
+        // cells are measured on the ground, from a cell's own corners in a frame at the cell.
+        const datasetCrs = window.CityConfigManager?.getProjectionConfig?.()?.datasetCrs;
+        const firstCell = result.cellBounds[0];
+        if (datasetCrs === 'EPSG:4326' && firstCell && window.__metricFrame) {
+            const sw = firstCell.getSouthWest();
+            const ne = firstCell.getNorthEast();
+            const frame = window.__metricFrame.frameFor([[sw.lng, sw.lat], [ne.lng, ne.lat]]);
+            const [x0, y0] = frame.toMetric([sw.lng, sw.lat]);
+            const [x1, y1] = frame.toMetric([ne.lng, ne.lat]);
+            result.cellAreaSqm = Math.abs((x1 - x0) * (y1 - y0));
         }
 
         if (mainMapBounds && typeof window.getRequiredGridCells === 'function') {
@@ -338,6 +365,10 @@
             map.off('moveend', handlePrimaryMapChange);
             map.off('zoomend', handlePrimaryMapChange);
         }
+        if (primaryMapChangeTimer) {
+            clearTimeout(primaryMapChangeTimer);
+            primaryMapChangeTimer = null;
+        }
         window.removeEventListener('parcelCoverageUpdated', handleCoverageEvent);
     }
 
@@ -345,7 +376,11 @@
         if (!isModalOpen()) {
             return;
         }
-        refreshVisualization({ fitToContent: false });
+        if (primaryMapChangeTimer) clearTimeout(primaryMapChangeTimer);
+        primaryMapChangeTimer = setTimeout(() => {
+            primaryMapChangeTimer = null;
+            refreshVisualization({ fitToContent: false });
+        }, PRIMARY_MAP_CHANGE_DEBOUNCE_MS);
     }
 
     function handleCoverageEvent() {
@@ -359,7 +394,9 @@
         if (!modalElement) {
             return;
         }
-        modalElement.style.display = 'flex';
+        modalElement.hidden = false;
+        modalElement.__unregisterEscape?.();
+        modalElement.__unregisterEscape = window.ModalEscape?.register(modalElement, closeModal);
         attachGlobalListeners();
         ensureMap();
         if (coverageMap) {
@@ -372,15 +409,10 @@
         if (!modalElement) {
             return;
         }
-        modalElement.style.display = 'none';
+        modalElement.hidden = true;
+        modalElement.__unregisterEscape?.();
+        modalElement.__unregisterEscape = null;
         detachGlobalListeners();
-    }
-
-    function handleDocumentKeydown(event) {
-        if (event.key === 'Escape' && isModalOpen()) {
-            event.stopPropagation();
-            closeModal();
-        }
     }
 
     function handleOverlayClick(event) {
@@ -409,6 +441,10 @@
             });
         }
 
+        if (headerCloseButton) {
+            headerCloseButton.addEventListener('click', closeModal);
+        }
+
         if (refreshButton) {
             refreshButton.addEventListener('click', function () {
                 refreshVisualization({ fitToContent: true });
@@ -416,7 +452,6 @@
         }
 
         modalElement.addEventListener('click', handleOverlayClick);
-        window.addEventListener('keydown', handleDocumentKeydown);
 
         // Keep modal in sync if coverage updates while it's closed, so that summary is fresh when opened
         window.addEventListener('parcelCoverageUpdated', function () {

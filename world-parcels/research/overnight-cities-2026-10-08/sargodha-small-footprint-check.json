@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-09T00:22:30.083Z",
+  "purpose": "Retry footprint and source-binding checks using the smallest already-verified safe sample polygon; token-free evidence only.",
+  "selectedId": "PK-PULSE-SARGODHA-8559826",
+  "selectedGeometrySha256": "3f08a0f728b7c8e978a5fb8f92a6e2318195f70ac25000f9d2a73048a001462c",
+  "selectedAreaM2": 2028.617756881755,
+  "tests": [
+    {
+      "name": "footprint",
+      "passed": false,
+      "error": "HTTP 502",
+      "code": 502
+    },
+    {
+      "name": "source-binding",
+      "passed": false,
+      "error": "HTTP 502",
+      "code": 502
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090879.635600001%2C3773382.2065000013%2C8090963.9629999995%2C3773459.000699996&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "count": 8
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090879.635600001%2C3773382.2065000013%2C8090963.9629999995%2C3773459.000699996&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "objectIds": [
+        8559601,
+        8559681,
+        8559821,
+        8559826,
+        8559828,
+        8559833,
+        8560005
+      ]
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090879.635600001%2C3773382.2065000013%2C8090963.9629999995%2C3773459.000699996&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "count": 8
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090879.635600001%2C3773382.2065000013%2C8090963.9629999995%2C3773459.000699996&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "objectIds": [
+        8559601,
+        8559681,
+        8559821,
+        8559826,
+        8559828,
+        8559833,
+        8560005
+      ]
+    }
+  ]
+}

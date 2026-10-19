@@ -1,0 +1,86 @@
+/* The "no parcel register could be loaded" screen (js/parcels/ground-fallback.js): the shared
+   dialog (css/primitives.css) with `ground-fallback-dialog` as its identity class, on the
+   ordinary dialog rung. The rules here lay out its inside. */
+
+/* Recovery follows the introduction (which sits on the rung above). Reopening the intro also
+   hides recovery without trapping its keys. */
+body.site-intro-open .ground-fallback-overlay {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* The one sentence that says what actually happened. Its colour says whether retrying is sane. */
+.ground-fallback-status {
+    margin: 0 0 16px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+    background: var(--cb-surface-2);
+    color: var(--cb-text);
+    border-left: 4px solid var(--cb-text-faint);
+}
+
+.ground-fallback-status--temporary { background: var(--cb-warning-soft); border-left-color: var(--cb-warning); }
+.ground-fallback-status--no-register { background: var(--cb-primary-soft); border-left-color: var(--cb-primary); }
+.ground-fallback-status--refused,
+.ground-fallback-status--broken { background: var(--cb-danger-soft); border-left-color: var(--cb-danger); }
+
+/* The choices are cb-option rows (css/primitives.css); the list only spaces them. */
+.ground-fallback-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.ground-fallback-options .cb-option {
+    margin: 0;
+}
+
+.ground-fallback-foot,
+.ground-fallback-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.ground-fallback-actions .btn,
+.ground-fallback-foot .btn {
+    width: auto;
+}
+
+.ground-fallback-section h4 {
+    margin: 4px 0 8px;
+    font-size: 16px;
+    color: var(--cb-text-strong);
+}
+
+.ground-fallback-help {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--cb-text);
+}
+
+/* A base form control (css/primitives.css); only its width is set here. */
+.ground-fallback-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ground-fallback-result {
+    min-height: 1.2em;
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--cb-text);
+}
+
+.ground-fallback-result.is-ok { color: var(--cb-success); }
+.ground-fallback-result.is-error { color: var(--cb-danger); }
+
+@media (max-width: 767.98px) {
+    .ground-fallback-actions,
+    .ground-fallback-foot { flex-wrap: wrap; }
+}

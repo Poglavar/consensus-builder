@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:49",
+  "queueRank": 49,
+  "name": "Nagoya",
+  "country": "Japan",
+  "countryCode": "JP",
+  "centerLatLon": [
+    35.1653670097016,
+    136.926722955036
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "jp-moj-esri-touki-2023",
+    "requestUrl": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5/query?where=CityCode%3D%2723106%27&outFields=OBJECTID%2CBoundaryId%2CLotNumber%2CCityCode%2CCityName&resultRecordCount=3&returnGeometry=true&outSR=4326&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      136.89897,
+      35.17518,
+      136.90044,
+      35.17591
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "BoundaryId (plus LotNumber, CityCode)",
+    "responseFile": "nagoya-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true"
+  },
+  "source": {
+    "sourceId": "jp-moj-esri-touki-2023",
+    "name": "Ministry of Justice registry-office map data (touki) as hosted by Esri Japan (layer merge_tokyo_aichi_fukuoka)",
+    "operator": "MOJ data converted and hosted by Esri Japan",
+    "scope": "Tokyo, Aichi and Fukuoka prefecture registry maps; same layer used for Tokyo",
+    "endpoint": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5",
+    "method": "GET ArcGIS query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326 (outSR)",
+    "reuseStatus": "MOJ says underlying data usable subject to its terms (https://www.moj.go.jp/MINJI/minji05_00494.html); hosted derivative's own terms not reviewed"
+  },
+  "portalsFound": [
+    {
+      "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer",
+      "observation": "Hosted layer of MOJ registry-office maps; layer 5 contains Tokyo, Aichi, Fukuoka."
+    },
+    {
+      "url": "https://www.moj.go.jp/MINJI/minji05_00494.html",
+      "observation": "Ministry of Justice registry map open-data page (as recorded in tokyo.json)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "service description; only layer 5 exists"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "registry-map data for registered areas of Aichi prefecture in this hosted layer",
+    "verifiedOpenScope": "three adjacent lots in Naka ward, Nagoya (CityCode 23106), ~2 km from the UN city point",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Sample is Naka ward only; other wards (CityCode 23101-23120) and completeness were not tested. Registry maps do not cover every area (e.g. areas without survey-based maps). Hosted derivative terms need review; nationwide MOJ data has other regions in separate layers/files.",
+  "nextStep": "Test other Nagoya wards; check current MOJ (G-Spatial) release and choose stable ID composite (CityCode+BoundaryId)."
+}

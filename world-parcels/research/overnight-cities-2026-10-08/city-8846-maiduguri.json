@@ -1,0 +1,87 @@
+{
+  "name": "Maiduguri",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 420,
+  "point": [
+    11.829373464143,
+    13.165156772323
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Maiduguri official cadastral map land registry Borno Geographic Information Service parcels map",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted.",
+        "actualResultUrls": [
+          "https://bogis.bornostate.gov.ng/",
+          "https://bogis.bornostate.gov.ng/properties",
+          "https://bogis.bornostate.gov.ng/land-registeration-guide",
+          "https://bogis.bornostate.gov.ng/application-forms",
+          "https://app.bogis.bornostate.gov.ng/"
+        ],
+        "executionMethod": "Separate English web search followed by direct review of official local pages and anonymous public map/service entry points."
+      },
+      {
+        "language": "Hausa",
+        "query": "taswirar fili Maiduguri BOGIS hukumar kula da filaye Borno",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted.",
+        "actualResultUrls": [
+          "https://bogis.bornostate.gov.ng/",
+          "https://bogis.bornostate.gov.ng/properties",
+          "https://bogis.bornostate.gov.ng/land-registeration-guide",
+          "https://bogis.bornostate.gov.ng/application-forms",
+          "https://app.bogis.bornostate.gov.ng/"
+        ],
+        "executionMethod": "Separate native-language web search followed by direct review of official local pages and anonymous public map/service entry points."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NG-8846-PUBLIC-CADASTRE",
+    "name": "Borno Geographic Information Service (BOGIS) land registration and survey services",
+    "url": "https://bogis.bornostate.gov.ng/",
+    "operator": "Borno State Geographic Information Service (BOGIS), Borno State Government",
+    "serviceType": "Official city-local land-record or registration services; no anonymous public parcel-vector endpoint/schema verified",
+    "layer": "No anonymous parcel feature layer verified",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "No public safe parcel identifier returned",
+    "nativeIdEvidence": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted.",
+    "verifiedOpenScope": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "BOGIS confirms land title registration/search functions and lists its contact office on Biu Road in Maiduguri; this establishes a city-located registry office, not the extent or public vector coverage of its records.",
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The BOGIS site lists land registration, survey-request, and title-search processes but no anonymous map/vector schema. The linked application portal rendered only a dynamic shell in the page reader; no application was submitted.",
+  "remainingUncertainty": "Whether BOGIS publishes an anonymous city map or geometry API behind the dynamic portal is unresolved; this review verified the Maiduguri office and service, not map coverage or completeness.",
+  "nextStep": "Recheck if the official local provider exposes an anonymous safe-ID parcel-vector layer or point-to-feature schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8846,
+  "cityId": "wup2025:8846",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    11.829373464143,
+    13.165156772323
+  ],
+  "population2025k": 1225.505,
+  "populationUnit": "persons",
+  "queueRank": 420,
+  "population2025": 1225505,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

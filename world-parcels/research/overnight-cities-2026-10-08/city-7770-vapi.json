@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Vapi",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "A Gujarat Informatics/land-record digitization document names the City Survey Superintendent Vapi office. Gujarat Revenue Department materials document urban property-card and city-survey services; Vapi Municipal Corporation publishes local property-tax services. This establishes city-specific registry service presence.",
+  "registryEvidenceUrls": [
+    "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+    "https://revenuedepartment.gujarat.gov.in/iora-service",
+    "https://vapicity.in/",
+    "https://revenuedepartment.gujarat.gov.in/branch/h-branch"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7770,
+  "cityId": "wup2025:7770",
+  "centerLatLon": [
+    20.4053164591648,
+    72.9215741933623
+  ],
+  "point": [
+    20.4053164591648,
+    72.9215741933623
+  ],
+  "rank": 789,
+  "queueRank": 789,
+  "population2025": 682459,
+  "population2025k": 682.459,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The municipal site provides a property-tax entry point and state services handle property-card records; no anonymous map/feature service with a safe geometry-and-ID-only schema was verified. No property identifiers or account fields were submitted.",
+  "scopeLimits": "The official evidence confirms the Vapi city-survey office and municipal property service; it does not establish a public parcel geometry endpoint or citywide sample coverage.",
+  "remainingUncertainty": "No public feature schema or downloadable full parcel geometry source was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Vapi Gujarat official city survey land records property card parcel map",
+        "scope": "Identify city-specific registry evidence and safe public parcel geometry routes.",
+        "result": "A Gujarat Informatics/land-record digitization document names the City Survey Superintendent Vapi office. Gujarat Revenue Department materials document urban property-card and city-survey services; Vapi Municipal Corporation publishes local property-tax services. This establishes city-specific registry service presence. The municipal site provides a property-tax entry point and state services handle property-card records; no anonymous map/feature service with a safe geometry-and-ID-only schema was verified. No property identifiers or account fields were submitted.",
+        "actualResultUrls": [
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://vapicity.in/",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch"
+        ],
+        "executionMethod": "Official-source-focused search and public HTML/document review; no property-specific inputs submitted."
+      },
+      {
+        "language": "Gujarati",
+        "query": "વાપી સિટી સર્વે સુપ્રિન્ટેન્ડન્ટ કચેરી જમીન રેકોર્ડ નકશો સત્તાવાર",
+        "scope": "Identify primary local-language evidence for registry/cadastre and anonymous map services.",
+        "result": "A Gujarat Informatics/land-record digitization document names the City Survey Superintendent Vapi office. Gujarat Revenue Department materials document urban property-card and city-survey services; Vapi Municipal Corporation publishes local property-tax services. This establishes city-specific registry service presence. The municipal site provides a property-tax entry point and state services handle property-card records; no anonymous map/feature service with a safe geometry-and-ID-only schema was verified. No property identifiers or account fields were submitted.",
+        "actualResultUrls": [
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+          "https://revenuedepartment.gujarat.gov.in/iora-service",
+          "https://vapicity.in/",
+          "https://revenuedepartment.gujarat.gov.in/branch/h-branch"
+        ],
+        "executionMethod": "Separate local-language official-source-focused search; no property-specific inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+        "observation": "A Gujarat Informatics/land-record digitization document names the City Survey Superintendent Vapi office. Gujarat Revenue Department materials document urban property-card and city-survey services; Vapi Municipal Corporation publishes local property-tax services. This establishes city-specific registry service presence. The municipal site provides a property-tax entry point and state services handle property-card records; no anonymous map/feature service with a safe geometry-and-ID-only schema was verified. No property identifiers or account fields were submitted."
+      },
+      {
+        "url": "https://revenuedepartment.gujarat.gov.in/iora-service",
+        "observation": "A Gujarat Informatics/land-record digitization document names the City Survey Superintendent Vapi office. Gujarat Revenue Department materials document urban property-card and city-survey services; Vapi Municipal Corporation publishes local property-tax services. This establishes city-specific registry service presence. The municipal site provides a property-tax entry point and state services handle property-card records; no anonymous map/feature service with a safe geometry-and-ID-only schema was verified. No property identifiers or account fields were submitted."
+      },
+      {
+        "url": "https://vapicity.in/",
+        "observation": "A Gujarat Informatics/land-record digitization document names the City Survey Superintendent Vapi office. Gujarat Revenue Department materials document urban property-card and city-survey services; Vapi Municipal Corporation publishes local property-tax services. This establishes city-specific registry service presence. The municipal site provides a property-tax entry point and state services handle property-card records; no anonymous map/feature service with a safe geometry-and-ID-only schema was verified. No property identifiers or account fields were submitted."
+      },
+      {
+        "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+        "observation": "A Gujarat Informatics/land-record digitization document names the City Survey Superintendent Vapi office. Gujarat Revenue Department materials document urban property-card and city-survey services; Vapi Municipal Corporation publishes local property-tax services. This establishes city-specific registry service presence. The municipal site provides a property-tax entry point and state services handle property-card records; no anonymous map/feature service with a safe geometry-and-ID-only schema was verified. No property identifiers or account fields were submitted."
+      }
+    ]
+  },
+  "source": {
+    "type": "manual_primary_source_review",
+    "checkedAt": "2026-10-09",
+    "urls": [
+      "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+      "https://revenuedepartment.gujarat.gov.in/iora-service",
+      "https://vapicity.in/",
+      "https://revenuedepartment.gujarat.gov.in/branch/h-branch"
+    ]
+  },
+  "coverageAssessment": {
+    "status": "unknown",
+    "scope": "No safe parcel feature route or complete polygon sample verified.",
+    "notes": "The official evidence confirms the Vapi city-survey office and municipal property service; it does not establish a public parcel geometry endpoint or citywide sample coverage."
+  },
+  "priorEvidenceFiles": [],
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00",
+  "resultCategory": "registry_found_geometry_unverified",
+  "runtimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No public feature schema or downloadable full parcel geometry source was verified."
+  },
+  "rootPrimarySupplement": "Primary government property-card digitization tender is dated April 2013 and lists the Vapi City Survey Superintendent office. It is historical institutional evidence; no fresh office launch or current public vector service is asserted.",
+  "rootPrimaryReadback": {
+    "url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/201341113248867.pdf",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "sourceIds": []
+}

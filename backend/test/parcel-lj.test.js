@@ -140,7 +140,7 @@ describe('GET /parcel-lj', () => {
         expect(res.body.query.type).toBe('all');
         expect(res.body.query.ko_id).toBe('1');
         expect(res.body.query.limit).toBe(2);
-        expect(pool.getCalls()[0].params).toEqual(['1', 2]);
+        expect(pool.getCalls()[0].params).toEqual(['1', 3]);
     });
 
     it('supports ko_id and st_parcele parcel lookups', async () => {
@@ -251,107 +251,5 @@ describe('GET /parcel-lj', () => {
 
         expect(res.status).toBe(200);
         expect(res.body.features[0].properties).not.toHaveProperty('ownershipList');
-    });
-});
-
-describe('GET /parcel-lj/:parcelId/ownership', () => {
-    it('rejects invalid parcel ids', async () => {
-        const res = await request(app).get('/parcel-lj/bad%20id/ownership');
-
-        expect(res.status).toBe(400);
-        expect(res.body).toEqual({
-            error: 'Invalid parcelId format. Expected SI-<eid_parcela> or <eid_parcela>.'
-        });
-    });
-
-    it('returns 404 when ljubljana ownership is missing', async () => {
-        pool.setResult({ rows: [], rowCount: 0 });
-
-        const res = await request(app).get('/parcel-lj/SI-123/ownership');
-
-        expect(res.status).toBe(404);
-        expect(res.body).toEqual({ error: 'Ownership data not found for the requested parcelId.' });
-    });
-
-    it('returns 500 when ljubljana ownership lookup fails', async () => {
-        pool.query = async () => {
-            throw new Error('lj ownership failed');
-        };
-
-        const res = await request(app).get('/parcel-lj/SI-123/ownership');
-
-        expect(res.status).toBe(500);
-        expect(res.body).toEqual({ error: 'Failed to fetch Ljubljana ownership data.' });
-    });
-
-    it('returns ownership data for a valid parcel id', async () => {
-        pool.setResult({
-            rows: [{
-                eid_parcela: '123',
-                ko_id: 1,
-                naziv: 'KO Center',
-                st_parcele: '15',
-                povrsina: 80,
-                oseba_id: '42',
-                share_num: 1,
-                share_den: 1,
-                meta: { ime: 'Janez Novak' }
-            }],
-            rowCount: 1
-        });
-
-        const res = await request(app).get('/parcel-lj/SI-123/ownership');
-        expect(res.status).toBe(200);
-        expect(res.body.parcelId).toBe('SI-123');
-        expect(res.body.ownershipList).toHaveLength(1);
-    });
-
-    it('accepts ownership lookups without the SI prefix and falls back to naziv labels', async () => {
-        pool.setResult({
-            rows: [{
-                eid_parcela: '123',
-                ko_id: 1,
-                naziv: 'KO Center',
-                st_parcele: '15',
-                povrsina: 80,
-                oseba_id: '42',
-                share_num: 1,
-                share_den: 4,
-                meta: { naziv: 'Mestna Obcina Ljubljana' }
-            }],
-            rowCount: 1
-        });
-
-        const res = await request(app).get('/parcel-lj/123/ownership');
-
-        expect(res.status).toBe(200);
-        expect(res.body.parcelId).toBe('SI-123');
-        expect(res.body.possessionSheets[0].possessors[0]).toEqual({
-            name: 'Mestna Obcina Ljubljana',
-            ownership: '1/4',
-            address: ''
-        });
-    });
-
-    it('returns an unknown-owner placeholder when no ownership rows are present', async () => {
-        pool.setResult({
-            rows: [{
-                eid_parcela: '123',
-                ko_id: 1,
-                naziv: 'KO Center',
-                st_parcele: '15',
-                povrsina: 80,
-                oseba_id: null,
-                share_num: null,
-                share_den: null,
-                meta: null
-            }],
-            rowCount: 1
-        });
-
-        const res = await request(app).get('/parcel-lj/SI-123/ownership');
-
-        expect(res.status).toBe(200);
-        expect(res.body.possessionSheets[0].possessors[0].name).toBe('Unknown owner');
     });
 });

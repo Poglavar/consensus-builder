@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-09",
+  "rootDecision": "approved_for_bounded_runtime",
+  "scope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
+  "acceptanceFile": "tuen-mun-csdi-root-acceptance.json",
+  "qualityFile": "tuen-mun-csdi-root-quality.json",
+  "nativeIdField": "LotCSUID",
+  "nativeIdWhitespacePreserved": true,
+  "sourceRevisionContinuityVerified": false,
+  "existingHongKongLotIndexProviderChanged": false,
+  "browserCheckFile": "tuenmun-browser-check.json"
+}

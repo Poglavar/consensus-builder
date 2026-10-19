@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10021-tiruppur.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Tiruppur has an official land-records service and urban TSLR/FMB extract workflow. The published entry route is record-keyed (town/block/ward/survey/subdivision); it exposes no anonymous coordinate-to-parcel lookup or vector geometry schema. No record-specific identifier was submitted, so no private record was requested and no polygon was retained.",
+  "registryAssessment": "District-specific Survey & Land Records office and official land record routes confirmed. Public parcel-vector coverage at the WUP point is unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://tiruppur.nic.in/service/e-services-anytime-anywhere-land/",
+      "observation": "Tiruppur District Administration lists official land e-services (Patta/FMB/Chitta/TSLR, A-register, patta and poramboke verification) and identifies its Assistant Director, Survey & Land Records."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+      "observation": "National Government Services Portal describes the Tamil Nadu land-record service input hierarchy: district plus urban/rural, then town/block/ward/survey/subdivision for urban records."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+      "observation": "Official Tamil Nadu e-Services entry point linked from the Tiruppur District Administration page; its service page did not resolve through the anonymous page reader during this review."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tiruppur official cadastral map land records Tamil Nadu e-services taluk survey map urban parcel",
+      "result": "Tiruppur has an official land-records service and urban TSLR/FMB extract workflow. The published entry route is record-keyed (town/block/ward/survey/subdivision); it exposes no anonymous coordinate-to-parcel lookup or vector geometry schema. No record-specific identifier was submitted, so no private record was requested and no polygon was retained.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    },
+    {
+      "language": "Tamil",
+      "query": "திருப்பூர் அதிகாரப்பூர்வ நில வரைபடம் பட்டா FMB நகர் நில அளவை மின்னணு சேவை",
+      "result": "Tiruppur has an official land-records service and urban TSLR/FMB extract workflow. The published entry route is record-keyed (town/block/ward/survey/subdivision); it exposes no anonymous coordinate-to-parcel lookup or vector geometry schema. No record-specific identifier was submitted, so no private record was requested and no polygon was retained.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://tiruppur.nic.in/service/e-services-anytime-anywhere-land/",
+      "method": "GET official district service page",
+      "httpStatus": 200,
+      "observation": "Page lists Patta & FMB / Chitta / TSLR Extract, A-Register, Patta verification and Poramboke verification; names Survey & Land Records office in Tiruppur."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+      "method": "GET official linked entry route",
+      "httpStatus": null,
+      "observation": "District page links the official service. The anonymous page reader returned an internal fetch error, and no survey-number submission or personal-record lookup was attempted."
+    }
+  ],
+  "geometryEvidence": null
+}

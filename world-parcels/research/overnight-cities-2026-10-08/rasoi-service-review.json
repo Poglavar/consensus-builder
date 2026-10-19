@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8430-rasoi.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Identity unresolved. The official Sonipat district village list places Rasoi among villages in Rai block, and India’s official 2011 Census dataset classifies Rasoi(42) as a village (census location code 06 076 00380 059883 0000). The queue point and name are consistent with that village, but those sources do not reconcile the queued WUP cityCode and 703,790-person city population with the small village identity. Thus no city-code-bound registry finding is asserted. The Sonipat district website says Haryana registration/mutation/Jamabandi records can be viewed by owner name, khewat, or khasra; those are property/person lookup keys, so no record search was made. Its public page and census source confirm a village named Rasoi in Sonipat/Rai, not the queued city identity. The queue’s population/city classification conflict remains unresolved, and no village geometry schema was verified.",
+  "registryAssessment": "Identity unresolved. The official Sonipat district village list places Rasoi among villages in Rai block, and India’s official 2011 Census dataset classifies Rasoi(42) as a village (census location code 06 076 00380 059883 0000). The queue point and name are consistent with that village, but those sources do not reconcile the queued WUP cityCode and 703,790-person city population with the small village identity. Thus no city-code-bound registry finding is asserted.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sonipat.gov.in/village-list/",
+      "observation": "Official Sonipat district village list places Rasoi at item 324 under Rai block."
+    },
+    {
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/6267",
+      "observation": "Census of India official Sonipat 2011 PCA catalog identifies Rasoi(42) as a village with location code 06 076 00380 059883 0000."
+    },
+    {
+      "url": "https://sonipat.gov.in/service/online-jamabandhis/",
+      "observation": "Official district guidance says online Haryana land-record services include registration, mutation and Jamabandi, searchable with owner name, khewat or khasra number; no query was submitted."
+    },
+    {
+      "url": "https://jamabandi.nic.in/",
+      "observation": "Official Haryana Jamabandi portal linked by Sonipat district; only linked, not queried."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Rasoi Haryana Sonipat land registry village official English",
+      "result": "Official Sonipat district and Census sources show Rasoi as a village in Rai block. The queue’s city-scale population is inconsistent with the village evidence; identity remains unresolved.",
+      "method": "Separate official-source-focused search; no person/property lookup."
+    },
+    {
+      "language": "Hindi",
+      "query": "रसोई गांव सोनीपत राय भूमि रिकॉर्ड जमाबंदी आधिकारिक",
+      "result": "The district’s official village list places Rasoi in Rai block; Sonipat’s online Jamabandi page describes record lookup by owner/khewat/khasra, which was not used. The queued city-code identity remains unreconciled.",
+      "method": "Separate official-source-focused search; no person/property lookup."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://sonipat.gov.in/village-list/",
+      "check": "public informational HTML / documentation review",
+      "result": "Official Sonipat district village list places Rasoi at item 324 under Rai block."
+    },
+    {
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/6267",
+      "check": "public informational HTML / documentation review",
+      "result": "Census of India official Sonipat 2011 PCA catalog identifies Rasoi(42) as a village with location code 06 076 00380 059883 0000."
+    },
+    {
+      "url": "https://sonipat.gov.in/service/online-jamabandhis/",
+      "check": "public informational HTML / documentation review",
+      "result": "Official district guidance says online Haryana land-record services include registration, mutation and Jamabandi, searchable with owner name, khewat or khasra number; no query was submitted."
+    },
+    {
+      "url": "https://jamabandi.nic.in/",
+      "check": "public informational HTML / documentation review",
+      "result": "Official Haryana Jamabandi portal linked by Sonipat district; only linked, not queried."
+    }
+  ],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "identity_unresolved",
+    "reason": "The Sonipat district website says Haryana registration/mutation/Jamabandi records can be viewed by owner name, khewat, or khasra; those are property/person lookup keys, so no record search was made. Its public page and census source confirm a village named Rasoi in Sonipat/Rai, not the queued city identity. The queue’s population/city classification conflict remains unresolved, and no village geometry schema was verified."
+  },
+  "privacy": "No parcel, owner, address, tax-account, title or personal lookup was made. No geometry or private attributes were retained.",
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-stable-ID response schema was established."
+  }
+}

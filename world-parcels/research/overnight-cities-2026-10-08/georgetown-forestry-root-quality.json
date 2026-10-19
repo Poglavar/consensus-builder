@@ -1,0 +1,1021 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32647",
+  "featureCount": 143,
+  "validNonemptyCount": 143,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 134.75913106522793,
+    "median": 283.4280077313282,
+    "max": 173602.63093461163
+  },
+  "features": [
+    {
+      "id": "MY-PENANG-07040100010613",
+      "areaM2": 173602.63093461163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010533",
+      "areaM2": 1613.9644740803865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010534",
+      "areaM2": 1017.7353552920201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010535",
+      "areaM2": 950.2932548540309,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010594",
+      "areaM2": 374.84859376785977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010537",
+      "areaM2": 908.3631326950479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010538",
+      "areaM2": 1071.6843215878812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010539",
+      "areaM2": 364.26487912006206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010540",
+      "areaM2": 364.2319052821685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010541",
+      "areaM2": 364.2079731737424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010542",
+      "areaM2": 364.2144776147945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010536",
+      "areaM2": 949.3200630787129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010595",
+      "areaM2": 340.4228480374079,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010589",
+      "areaM2": 290.823950119189,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010590",
+      "areaM2": 290.79621957123226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010591",
+      "areaM2": 290.77967714308903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010593",
+      "areaM2": 290.7686918986643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010543",
+      "areaM2": 364.18330872630855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010592",
+      "areaM2": 290.8288431934106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100034",
+      "areaM2": 58991.24184341522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009625",
+      "areaM2": 14034.814430665454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009629",
+      "areaM2": 7968.378215128774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010053",
+      "areaM2": 1428.829711007904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010578",
+      "areaM2": 334.6387105127316,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010579",
+      "areaM2": 623.6677174173171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010580",
+      "areaM2": 455.4803885547848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010582",
+      "areaM2": 327.84474836421987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010583",
+      "areaM2": 327.7770973459617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010584",
+      "areaM2": 371.0547199295374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010586",
+      "areaM2": 290.86181725257836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010587",
+      "areaM2": 290.780525973875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010532",
+      "areaM2": 1766.1369820931063,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010581",
+      "areaM2": 327.8315088973202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010585",
+      "areaM2": 369.9227316635075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010573",
+      "areaM2": 288.18800660972965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010575",
+      "areaM2": 281.43824438848156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010598",
+      "areaM2": 277.1691545300376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010599",
+      "areaM2": 277.1670635570122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010600",
+      "areaM2": 282.43639561456087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010601",
+      "areaM2": 282.4364366307124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010603",
+      "areaM2": 277.1820513005559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010576",
+      "areaM2": 281.442253163396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010577",
+      "areaM2": 281.44707935216195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010604",
+      "areaM2": 277.1641101747669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010605",
+      "areaM2": 277.1524861876133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010607",
+      "areaM2": 348.66314515238923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010608",
+      "areaM2": 283.43803927629386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010609",
+      "areaM2": 283.4257791221956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010567",
+      "areaM2": 347.5423079828645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010568",
+      "areaM2": 291.69240674531636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010569",
+      "areaM2": 281.45525217815145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010571",
+      "areaM2": 281.4307712206029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010572",
+      "areaM2": 304.08572245134394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010597",
+      "areaM2": 277.14960447634115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010588",
+      "areaM2": 290.78007036244264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010570",
+      "areaM2": 281.43577306185364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010596",
+      "areaM2": 277.1516955096822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010602",
+      "areaM2": 277.15044220422806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010606",
+      "areaM2": 340.41136635946316,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010610",
+      "areaM2": 283.4280077313282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010611",
+      "areaM2": 913.9965943640372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010612",
+      "areaM2": 1761.690175313377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010574",
+      "areaM2": 281.43161860062435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010006418",
+      "areaM2": 2691.074348466222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010006420",
+      "areaM2": 222.6258029497615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010006423",
+      "areaM2": 1557.1549039538816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010003368",
+      "areaM2": 1027.8793359605925,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009585",
+      "areaM2": 140.47066781075463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009588",
+      "areaM2": 143.0795358380807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010052",
+      "areaM2": 1680.247580921333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009628",
+      "areaM2": 253.04877509518812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009623",
+      "areaM2": 815.1326729217715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009586",
+      "areaM2": 143.08616732647604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009587",
+      "areaM2": 143.10490153222554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009589",
+      "areaM2": 208.0932766581749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009590",
+      "areaM2": 208.1144553475757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009626",
+      "areaM2": 436.3628423137526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009627",
+      "areaM2": 283.19621408897217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009513",
+      "areaM2": 163.46104067418648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009551",
+      "areaM2": 192.42880823925327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009552",
+      "areaM2": 143.03733556353282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009554",
+      "areaM2": 143.03755205726435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009555",
+      "areaM2": 143.04650123638646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009557",
+      "areaM2": 143.03656741472236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009558",
+      "areaM2": 143.03759254901072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009518",
+      "areaM2": 143.03733952364303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009519",
+      "areaM2": 143.0576876782297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009520",
+      "areaM2": 143.03865676517432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009521",
+      "areaM2": 143.0365512753941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009523",
+      "areaM2": 143.0373901745713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009524",
+      "areaM2": 143.0587533528221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009526",
+      "areaM2": 261.48173391563563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009514",
+      "areaM2": 163.44576469872675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009591",
+      "areaM2": 143.07977183143691,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009594",
+      "areaM2": 143.09927870879437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009600",
+      "areaM2": 143.08097295539056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009603",
+      "areaM2": 143.0839249463633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009605",
+      "areaM2": 140.48539305440258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009517",
+      "areaM2": 192.4278272505079,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009522",
+      "areaM2": 143.0373800103448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009525",
+      "areaM2": 143.03760676535313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009553",
+      "areaM2": 143.03754188411193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009556",
+      "areaM2": 143.04862700894864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009559",
+      "areaM2": 143.03760268073503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009595",
+      "areaM2": 143.07961597803583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009596",
+      "areaM2": 143.07982253524747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009597",
+      "areaM2": 140.481449988447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009598",
+      "areaM2": 140.48312424818414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009599",
+      "areaM2": 143.078847091199,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009601",
+      "areaM2": 143.10002412173105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009602",
+      "areaM2": 143.0843836326273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009604",
+      "areaM2": 143.0787013395087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009592",
+      "areaM2": 143.08345451307713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009593",
+      "areaM2": 143.08538383151767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009560",
+      "areaM2": 143.03640151136943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009561",
+      "areaM2": 144.87196711718767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009515",
+      "areaM2": 163.44977260432722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009516",
+      "areaM2": 187.90767785279942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010364",
+      "areaM2": 351.3626617163743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0704010009462",
+      "areaM2": 1019.7226000527148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100020168",
+      "areaM2": 134.75913106522793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010549",
+      "areaM2": 364.1441252521906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010550",
+      "areaM2": 364.146527588048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010544",
+      "areaM2": 364.1959470571655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010545",
+      "areaM2": 364.17664912633114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010546",
+      "areaM2": 364.1738020155003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010548",
+      "areaM2": 364.16524931893446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010552",
+      "areaM2": 364.09970304926156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010553",
+      "areaM2": 364.104613704111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010554",
+      "areaM2": 364.06166924816387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010555",
+      "areaM2": 364.0608725708379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010556",
+      "areaM2": 364.0381666311471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010557",
+      "areaM2": 364.0386643460689,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010558",
+      "areaM2": 436.82758996275226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010561",
+      "areaM2": 278.18436072583563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010562",
+      "areaM2": 278.1845803948692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010564",
+      "areaM2": 419.9949278272246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010565",
+      "areaM2": 533.3196370998819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010566",
+      "areaM2": 786.8775216037782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010551",
+      "areaM2": 364.0986636586885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010563",
+      "areaM2": 278.17334445951826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100010547",
+      "areaM2": 364.1566494630608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07040100020244",
+      "areaM2": 11816.416941256854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

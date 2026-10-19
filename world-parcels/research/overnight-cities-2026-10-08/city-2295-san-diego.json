@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "San Diego",
+  "country": "United States of America",
+  "countryCode": "US",
+  "wupCityCode": 2295,
+  "cityId": "wup2025:2295",
+  "centerLatLon": [
+    32.728932496022,
+    -117.086972512462
+  ],
+  "rank": 260,
+  "population2025": 1915114,
+  "registryFound": true,
+  "registryBasis": "SanGIS is the City of San Diego and County of San Diego joint-powers GIS publisher. Its unstacked parcel reference polygon data is publicly served by the county DPW map service; thirteen local query cells returned complete parcel geometries.",
+  "registryEvidenceUrls": [
+    "https://www.sangis.org/",
+    "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "technicalBlocker": null,
+  "scopeLimits": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN.",
+  "remainingUncertainty": "Provider deadlines occurred intermittently; whole-city completeness, legal boundary accuracy and APN correspondence are unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "San Diego County official parcel GIS polygon FeatureServer SanGIS",
+        "result": "Official city/county SanGIS publisher and county-hosted SanGIS unstacked reference polygon layer found."
+      },
+      {
+        "language": "English",
+        "query": "SanGIS Parcels tax assessor polygon ArcGIS REST official",
+        "result": "Official county DPW/LEAMS_Reference/MapServer/16 public polygon layer inspected and bounded queries verified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.sangis.org/",
+        "observation": "Primary city/county joint-powers GIS publisher."
+      },
+      {
+        "url": "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16",
+        "observation": "Official layer declares polygon geometry, pagination, GeoJSON output and native PARCELID. Description documents unstacked reference geometry and a programmatically chosen APN that may vary; owner/contact fields not requested."
+      }
+    ],
+    "metadataReviewFile": "san-diego-sangis-service-review.json"
+  },
+  "source": {
+    "id": "us-ca-sangis-parcels-reference",
+    "sourceId": "us-ca-sangis-parcels-reference",
+    "name": "SanGIS unstacked parcel reference polygons",
+    "operator": "SanGIS (City and County of San Diego joint-powers GIS agency); public county DPW service",
+    "url": "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16",
+    "scope": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN.",
+    "nativeIdField": "PARCELID",
+    "transportObjectIdField": "OBJECTID",
+    "attributesRequested": [
+      "OBJECTID",
+      "PARCELID",
+      "SUB_TYPE"
+    ],
+    "identityBasis": "Public native PARCELID source-scoped identity, independent of the layer’s representative APN."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [
+    "san-diego-sangis-initial-acceptance.json",
+    "san-diego-sangis-acceptance.json"
+  ],
+  "serviceReliability": "Intermittent 15-second provider deadlines occurred on three full-run cell attempts; targeted retry succeeded. Runtime can still expose provider failures.",
+  "status": "complete",
+  "appCityId": "sandiego",
+  "sourceIds": [
+    "us-ca-sangis-parcels-reference"
+  ],
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/san-diego-sangis-union-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/san-diego-sangis-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-ca-sangis-parcels-reference",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/san-diego-sangis-union-quality.json"
+  },
+  "queueRank": 260,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "rootReviewedAt": "2026-10-08T21:46:22.040221+00:00",
+  "point": [
+    32.728932496022,
+    -117.086972512462
+  ]
+}

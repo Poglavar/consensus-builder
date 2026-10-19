@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "city": "Dublin",
+  "cityId": "wup2025:377",
+  "countryCode": "IE",
+  "checkedAt": "2026-10-09T08:12:06.378767+00:00",
+  "rootReviewedAt": "2026-10-09T08:12:06.378767+00:00",
+  "sourceId": "ie-tailte-hvd-freehold",
+  "descriptor": {
+    "id": "ie-tailte-hvd-freehold",
+    "adapter": "arcgis",
+    "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+    "idField": "SP_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "IE-SP-",
+    "outFields": [
+      "OBJECTID",
+      "SP_ID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "maxConcurrentQueries": 1,
+    "countryCode": "IE",
+    "cityIds": [
+      "dublin"
+    ],
+    "metricSrid": 2157,
+    "name": "Dublin Tailte Éireann freehold cadastral parcels",
+    "operator": "Tailte Éireann",
+    "scope": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency.",
+    "responseCrs": "EPSG:4326",
+    "parcelNumberField": "SP_ID",
+    "evidenceFile": "research/country-integration-audit-2026-10-09/dublin-root-acceptance.json",
+    "catalogueUrl": "https://data.gov.ie/dataset/high-value-dataset-cadastral-parcels-freehold1",
+    "attribution": "© Tailte Éireann · freehold title boundaries only · adapted",
+    "licenceNote": "Published national High Value Dataset. Source terms, title certainty and currentness are informational; only public OBJECTID/SP_ID and geometry requested."
+  },
+  "qualityStatus": "approved_bounded_full_geometry",
+  "scope": "Public Tailte Éireann freehold title parcel boundaries only; leasehold and unregistered land are outside this layer. Thirteen aligned cells around the unchanged Dublin WUP locator returned 113 unique full polygons with stable count/OID manifests, forced one-feature paging and 113 matching fresh native SP_ID reads. Root independently confirmed native lookup, explicit absence, center-cell completeness, full-parcel footprint binding and zero invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors in EPSG:2157. The WUP point is outside freehold polygons; the nearest verified parcel is 31.027 m away. Bounded evidence does not establish citywide completeness, survey precision, exclusive legal ownership or currency.",
+  "qualificationFile": "dublin-runtime-qualification.json",
+  "independentProbeFile": "dublin-root-independent-probe.json",
+  "independentQualityFile": "dublin-root-quality.json",
+  "sourceModelReview": {
+    "decision": "accepted_freehold_only_source",
+    "reason": "Official publication describes boundaries of individual freehold titles. The bounded actual geometry has no overlaps; omitted leasehold/unregistered areas remain unavailable. General title and legal boundary caveats are not runtime eligibility gates.",
+    "publisherDescriptionUrl": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+    "exclusivityCitywideVerified": false
+  },
+  "geometryChangedOrRepaired": false,
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "registryFound": true,
+  "runtimeReadiness": "enabled",
+  "pointLatLon": [
+    53.330243126706,
+    -6.27332800239088
+  ],
+  "wupCityCode": 377,
+  "population2025": 1142650,
+  "rootReview": {
+    "decision": "Approved bounded runtime admission; retain partial/freehold-only scope and unchanged city point."
+  }
+}

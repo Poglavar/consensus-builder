@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "eg-faiyum-real-estate-registration-and-survey",
+  "purpose": "Service review for WUP2025 rank 620 Faiyum (city code 3668); city-bound registry evidence and safe anonymous parcel-geometry route.",
+  "primaryPublisher": "Egyptian Ministry of Justice Real Estate Publicity and Notarization Authority; Egyptian Survey Authority",
+  "sourceUrl": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+  "registryFound": true,
+  "registryBasis": "An official Egyptian Ministry of Finance directory search result lists the Faiyum Real Estate Publicity office and the Faiyum registration mission in Faiyum city. This establishes a local registration institution. The separate Egyptian Survey Authority page about a GIS unit in Faiyum concerns state-property inventory at governorate scope and is not treated as evidence of public city parcel coverage. No anonymous cadastral vector source was verified.",
+  "officialSources": [
+    {
+      "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+      "observation": "Official Egyptian Ministry of Finance directory search result lists the Faiyum Real Estate Publicity office and Faiyum registration mission under the Faiyum locality. The PDF itself was not downloaded or parsed during this route review."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official Egyptian Survey Authority site describes national mapping and property-record responsibilities; used for institutional context only, not proof of city-specific public geometry."
+    },
+    {
+      "url": "https://www.esa.gov.eg/images.aspx?FileID=112",
+      "observation": "Official ESA page describes a GIS unit for the governorate-level state-property inventory; this province/governorate scope is not counted as city cadastral coverage."
+    },
+    {
+      "url": "https://www.fayoum.gov.eg/",
+      "observation": "Official Faiyum Governorate portal; direct anonymous HTTPS GET timed out before an HTTP response."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Faiyum Egypt official real estate registry cadastral parcel map GIS city",
+      "scope": "Find Faiyum-city registry evidence and any safe public parcel geometry route.",
+      "result": "An official Ministry of Finance directory lists the Faiyum real-estate publicity office and registration mission in the city. The Egyptian Survey Authority describes national survey and mapping functions, but no anonymous Faiyum-city parcel-vector schema was found. Direct governorate-site access timed out locally; no HTTP status was received.",
+      "actualResultUrls": [
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.fayoum.gov.eg/"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    },
+    {
+      "language": "Arabic",
+      "query": "الفيوم مكتب الشهر العقاري الفيوم مأمورية شهر الفيوم خريطة كادستر GIS رسمية",
+      "scope": "تأكيد مكتب التسجيل المحلي بالفيوم والبحث عن خدمة عامة آمنة للهندسة فقط دون بيانات عقارية.",
+      "result": "تُظهر نتيجة دليل حكومي تابع لوزارة المالية مكتب الشهر العقاري ومأمورية الشهر بمدينة الفيوم. لم يُعثر على طبقة قطع عقارية عامة أو واجهة هندسية فقط. بوابة المحافظة الرسمية انتهت بمهلة اتصال محلية، وهذا لا يثبت حالة HTTP أو تعطل الجهة. ولم يُستخدم جرد أملاك الدولة على مستوى المحافظة لإثبات تغطية المدينة.",
+      "actualResultUrls": [
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.fayoum.gov.eg/"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "paymentSubmitted": false,
+    "routeInspectionStatus": "reviewed_no_safe_public_geometry_route_verified",
+    "reason": "The city has a listed registration office, but no public anonymous parcel-vector endpoint or geometry-only schema was identified. Governorate-wide state-property GIS evidence was excluded from city coverage.",
+    "candidateLayer": null,
+    "candidateSchema": null,
+    "targetGeometryRequest": null
+  },
+  "requestEvidence": [
+    {
+      "method": "public page/search and bounded static metadata review",
+      "observation": "No parcel identifier, property address, owner, tax account or identity query was sent. No feature geometry or attribute response was requested or retained."
+    }
+  ],
+  "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-3668-faiyum-route-inspection.json"
+}

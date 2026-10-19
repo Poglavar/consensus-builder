@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "2b10b7cad699f6eef598636e90974fb2ea818c0ac24c503916c4c4991a2293c2",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32613",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 15,
+  "validFeatureCount": 15,
+  "perFeature": [
+    {
+      "id": "Boulder~146329300065",
+      "geometrySha256": "f8ee1d3198e36bae11401809af77053b7a58820f70aedb6d89a6f0ca4abc18f3",
+      "boundsMetric": {
+        "minX": 477849.9508570246,
+        "minY": 4429426.150184309,
+        "maxX": 477891.5630721994,
+        "maxY": 4429462.720696292,
+        "widthM": 41.612215174827725,
+        "heightM": 36.570511982776225,
+        "aspectRatio": 1.1378625269021667
+      },
+      "areaM2": 1501.6050343007691,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146329300088",
+      "geometrySha256": "9b3daa773035b683713dfc02a9fa2ec08f4ec241872f234bceff42e7114fabe6",
+      "boundsMetric": {
+        "minX": 477850.08648355136,
+        "minY": 4429426.6736465525,
+        "maxX": 477934.4889149661,
+        "maxY": 4429482.2894898625,
+        "widthM": 84.40243141475366,
+        "heightM": 55.615843310020864,
+        "aspectRatio": 1.517596900298121
+      },
+      "areaM2": 2999.607908035014,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146329306003",
+      "geometrySha256": "b422e45cfcecda5edba1dd1ad1b7c826cae6c1c38963152639bec24a01fd4aed",
+      "boundsMetric": {
+        "minX": 477746.71205774014,
+        "minY": 4429553.8034527255,
+        "maxX": 477850.21562740946,
+        "maxY": 4429708.259811412,
+        "widthM": 103.50356966932304,
+        "heightM": 154.45635868608952,
+        "aspectRatio": 1.4922804998856782
+      },
+      "areaM2": 13540.278461549302,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146329314001",
+      "geometrySha256": "0cb4850be837afb96d228a151482f579ac64bdb632375a72ba636b720cb9400f",
+      "boundsMetric": {
+        "minX": 477682.41460517695,
+        "minY": 4429626.3172400575,
+        "maxX": 477765.5221134863,
+        "maxY": 4429708.181009009,
+        "widthM": 83.10750830936013,
+        "heightM": 81.86376895103604,
+        "aspectRatio": 1.015192793762867
+      },
+      "areaM2": 6673.708058301401,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146329314002",
+      "geometrySha256": "767df897e8bd403361c7f62b732e3234f4fbd6d73a15780509f2213cf6cba06a",
+      "boundsMetric": {
+        "minX": 477559.69983131206,
+        "minY": 4429425.928965832,
+        "maxX": 477850.21562740946,
+        "maxY": 4429708.278646819,
+        "widthM": 290.5157960974029,
+        "heightM": 282.34968098718673,
+        "aspectRatio": 1.0289219916298995
+      },
+      "areaM2": 59884.09584017685,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146330849002",
+      "geometrySha256": "8a26444e440d609fc6547ab457df0217b5ce55e7ea487bae63a37e098c5878d2",
+      "boundsMetric": {
+        "minX": 477480.60999111994,
+        "minY": 4429422.697070644,
+        "maxX": 477537.883085978,
+        "maxY": 4429459.331812724,
+        "widthM": 57.273094858042896,
+        "heightM": 36.63474207930267,
+        "aspectRatio": 1.5633546630153612
+      },
+      "areaM2": 1445.2478559572066,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146330849005",
+      "geometrySha256": "c93c5dc8a3d67bdfbc00a93e2e238684485e8ec1bce3071afe972d3260d7483a",
+      "boundsMetric": {
+        "minX": 477510.3256993372,
+        "minY": 4429422.746604004,
+        "maxX": 477537.87642814463,
+        "maxY": 4429446.227913537,
+        "widthM": 27.550728807458654,
+        "heightM": 23.4813095331192,
+        "aspectRatio": 1.1733046135523124
+      },
+      "areaM2": 632.1669853709099,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146330849006",
+      "geometrySha256": "a5b0ee272a89e398f95db27b7f2f174c1a0630d06280574ac53e3ffa3c8bd566",
+      "boundsMetric": {
+        "minX": 477423.24382222584,
+        "minY": 4429422.600284993,
+        "maxX": 477480.74395172705,
+        "maxY": 4429495.21656961,
+        "widthM": 57.50012950121891,
+        "heightM": 72.61628461722285,
+        "aspectRatio": 1.2628890621139124
+      },
+      "areaM2": 4161.900093553389,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146331100001",
+      "geometrySha256": "75a25d0dd74a8456e61bb580d4b3fd07fc86d65b2efc13557c5905e2f1a9c015",
+      "boundsMetric": {
+        "minX": 477494.0113066359,
+        "minY": 4429360.750074122,
+        "maxX": 477536.62061247916,
+        "maxY": 4429403.450803187,
+        "widthM": 42.60930584324524,
+        "heightM": 42.70072906464338,
+        "aspectRatio": 1.0021456163058484
+      },
+      "areaM2": 1105.7193110856651,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146331100003",
+      "geometrySha256": "a32408cbb5bd77a8df6ac891285eab10adfc3c57d5e6204b1eb0379dc6ff64ec",
+      "boundsMetric": {
+        "minX": 477447.2951154282,
+        "minY": 4429360.855743191,
+        "maxX": 477515.4710286352,
+        "maxY": 4429403.453784233,
+        "widthM": 68.17591320700012,
+        "heightM": 42.598041041754186,
+        "aspectRatio": 1.6004471459186294
+      },
+      "areaM2": 2630.4872494199208,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146331100065",
+      "geometrySha256": "08bd330f48b0413d6cab8778cb512580f794ea420a819acbcf66485498695353",
+      "boundsMetric": {
+        "minX": 476391.7873308407,
+        "minY": 4427846.166723854,
+        "maxX": 477547.79784335056,
+        "maxY": 4429403.460735728,
+        "widthM": 1156.010512509849,
+        "heightM": 1557.2940118741244,
+        "aspectRatio": 1.347127898078571
+      },
+      "areaM2": 929788.9865491478,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146332200048",
+      "geometrySha256": "b988c312807a3092063d76e0ed4f7f30405274df901cd6ebc04b9d9e3b390fcf",
+      "boundsMetric": {
+        "minX": 477655.29908742476,
+        "minY": 4429341.02825065,
+        "maxX": 477730.8257364401,
+        "maxY": 4429390.285852633,
+        "widthM": 75.52664901531534,
+        "heightM": 49.257601983845234,
+        "aspectRatio": 1.533299348191685
+      },
+      "areaM2": 3684.6063108690573,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146332200049",
+      "geometrySha256": "c4d85f8bcde1b2d6b42cda48406e23ce52c034ff6002a13f7b58139d932d6825",
+      "boundsMetric": {
+        "minX": 477547.74901080364,
+        "minY": 4429054.33195228,
+        "maxX": 477625.8691153069,
+        "maxY": 4429238.704028639,
+        "widthM": 78.12010450323578,
+        "heightM": 184.37207635864615,
+        "aspectRatio": 2.360110467479077
+      },
+      "areaM2": 13399.823299040854,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146332200100",
+      "geometrySha256": "d68bb830247c6086f4c87d04388482d0182104f98d354c44ec3a5789ce1c280c",
+      "boundsMetric": {
+        "minX": 477556.9439125674,
+        "minY": 4429237.2223129645,
+        "maxX": 477898.6110893876,
+        "maxY": 4429405.087858486,
+        "widthM": 341.66717682022136,
+        "heightM": 167.86554552149028,
+        "aspectRatio": 2.0353621450953487
+      },
+      "areaM2": 52982.59188051959,
+      "invalidReasons": []
+    },
+    {
+      "id": "Boulder~146332237001",
+      "geometrySha256": "1c103723b5426f1123b9215cf26166f308e36340bbd1a7720f81be17e663f364",
+      "boundsMetric": {
+        "minX": 477547.7437809221,
+        "minY": 4429011.700439523,
+        "maxX": 477898.0637953401,
+        "maxY": 4429238.500938149,
+        "widthM": 350.3200144179864,
+        "heightM": 226.8004986261949,
+        "aspectRatio": 1.5446174789737666
+      },
+      "areaM2": 63812.34271340245,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0,
+  "maxOverlapFractionOfSmaller": 0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 4,
+  "subthresholdPositiveIntersectionTotalM2": 0.005759115727739084,
+  "subthresholdPositiveIntersections": [
+    {
+      "ids": [
+        "Boulder~146331100003",
+        "Boulder~146331100065"
+      ],
+      "featureIndexes": [
+        9,
+        10
+      ],
+      "areaM2": 0.002313303401996402
+    },
+    {
+      "ids": [
+        "Boulder~146332200048",
+        "Boulder~146332200100"
+      ],
+      "featureIndexes": [
+        11,
+        13
+      ],
+      "areaM2": 0.0020935079687021815
+    },
+    {
+      "ids": [
+        "Boulder~146332200049",
+        "Boulder~146332237001"
+      ],
+      "featureIndexes": [
+        12,
+        14
+      ],
+      "areaM2": 0.001295193655578595
+    },
+    {
+      "ids": [
+        "Boulder~146331100001",
+        "Boulder~146331100065"
+      ],
+      "featureIndexes": [
+        8,
+        10
+      ],
+      "areaM2": 0.000057110701461905624
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

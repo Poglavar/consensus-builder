@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-10-09",
+  "sourceId": "pl-katowice-egib-dzialki",
+  "requestFields": [
+    "OBJECTID",
+    "IDENT_DZ"
+  ],
+  "publicOwnerFreeOnly": true,
+  "rootDecision": "held_native_coordinate_contract",
+  "reason": "Official REST GeoJSON and Esri JSON claim EPSG:4326 while returning coordinate values in native EPSG:2177 (for example x=6573053.29,y=5565132.756). Root reproduced this with two bounded Esri JSON queries: the ranked viewport is empty and the central sample returns two native-coordinate polygons under a false 4326 spatialReference, with exceededTransferLimit=true. The current runtime correctly rejects these unsupported coordinates. A truthful native CRS transport and complete enumeration/exact-ID contract remain unqualified; centroid containment is not the hold reason.",
+  "requestEvidence": [
+    {
+      "endpoint": "https://emapa.katowice.eu/arcgis/rest/services/Katowice_konfig/MapServer/0/query",
+      "params": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "18.9252,50.2884,18.9262,50.2894",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "outSR": "4326",
+        "outFields": "OBJECTID,IDENT_DZ",
+        "resultRecordCount": "3",
+        "returnGeometry": "true"
+      },
+      "httpStatus": 200,
+      "responseSpatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "returned": 0,
+      "exceededTransferLimit": false
+    },
+    {
+      "endpoint": "https://emapa.katowice.eu/arcgis/rest/services/Katowice_konfig/MapServer/0/query",
+      "params": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "6572339.5,5564074.5,6573339.5,5565074.5",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "2177",
+        "outSR": "4326",
+        "outFields": "OBJECTID,IDENT_DZ",
+        "resultRecordCount": "3",
+        "returnGeometry": "true"
+      },
+      "httpStatus": 200,
+      "responseSpatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "returned": 2,
+      "exceededTransferLimit": true
+    }
+  ],
+  "coordinateExample": [
+    6573053.29,
+    5565132.756
+  ],
+  "geometryRetained": "Two previously sanitized full samples only; raw root responses temporary."
+}

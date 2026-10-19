@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "name": "Silvassa",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Dadra and Nagar Haveli land-record portal identifies a Silvassa Mamlatdar Office contact and the UT revenue service links to the DNH Land Records / Bhu-Naksha service. The official DNH survey portal advertises certified maps, rural and urban boundary demarcation, and related cadastral services. This establishes a local land-record custodian and public service route, but not an anonymously queryable parcel-feature dataset.",
+  "registryEvidenceUrls": [
+    "https://dnh.nlrmp.in/avanika/ContactUs.aspx",
+    "https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/",
+    "https://dnh.nlrmp.in/psurveylive/Logininit.aspx",
+    "https://ddd.gov.in/notice/silvassa-municipal-council-silvassa-11/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "wupCityCode": 7886,
+  "cityId": "wup2025:7886",
+  "rank": 1563,
+  "queueRank": 1563,
+  "centerLatLon": [20.2574198438208, 73.01482517438],
+  "point": [20.2574198438208, 73.01482517438],
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 366589,
+  "population2025k": 366.589,
+  "populationPlausibility2025": "High",
+  "technicalBlocker": "The official DNH survey/map entrypoint https://dnh.nlrmp.in/psurveylive/Logininit.aspx returned HTTP 500 on an anonymous GET during this review. Search-indexed service text confirms cadastral-map and boundary services, but no public feature-service URL, safe native ID field, CRS, or geometry-only response was exposed. No login, CAPTCHA bypass, owner/address lookup, survey-number lookup, or private fields were used.",
+  "scopeLimits": "Local custodian evidence is specific to Silvassa through the Mamlatdar Office contact and UT land-record service. The DNH portal's advertised service scope includes certified maps, demarcation, and cadastral-map publication, but public availability, citywide completeness, currentness, and anonymous machine-readable geometry were not verified. The municipal GIS property-survey tender is property-survey procurement evidence, not a parcel dataset.",
+  "remainingUncertainty": "A public map/API route may exist behind the DNH portal or may require an interactive citizen workflow. Its current anonymous contract, schema, CRS, parcel identity, and Silvassa coverage remain unverified. Exact-point non-response is not treated as absence.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Silvassa Dadra Nagar Haveli official cadastral parcel map GIS land records survey city",
+        "result": "Official results identified the DNH land-record/survey portal, a Silvassa Mamlatdar Office contact page, the UT revenue-service page, a DILRMP status page, and a Silvassa Municipal Council GIS property-survey notice. The official survey portal advertised certified-map and boundary-demarcation services, but no anonymous parcel geometry endpoint or safe schema was verified.",
+        "actualResultUrls": [
+          "https://dnh.nlrmp.in/psurveylive/Logininit.aspx",
+          "https://dnh.nlrmp.in/avanika/ContactUs.aspx",
+          "https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/",
+          "https://ddd.gov.in/notice/silvassa-municipal-council-silvassa-11/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/496"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "सिलवासा दादरा नगर हवेली आधिकारिक भू-अभिलेख नक्शा जमीन सर्वेक्षण",
+        "result": "The Hindi UT revenue page links भूमि नक्षा डी एन एच and भूमि अभिलेख दादरा और नगर हवेली. The linked DNH service is the same official land-record/survey route; its public service description was visible in search results, but its anonymous map entrypoint returned HTTP 500 and exposed no safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/",
+          "https://dnh.nlrmp.in/psurveylive/Logininit.aspx",
+          "https://dnh.nlrmp.in/avanika/ContactUs.aspx"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://dnh.nlrmp.in/avanika/ContactUs.aspx",
+        "observation": "Official DNH land-record portal contact page names Mamlatdar Office, Silvassa, Dadra and Nagar Haveli, with a public office telephone number. This is local custodian evidence, not parcel geometry evidence."
+      },
+      {
+        "url": "https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4ाजस्व सेवा/",
+        "observation": "Official UT revenue page links DNH Bhu-Naksha and DNH land records. The linked portal is the relevant first-party map/service route."
+      },
+      {
+        "url": "https://dnh.nlrmp.in/psurveylive/Logininit.aspx",
+        "observation": "Official DNH survey portal search result advertises certified maps, rural/urban boundary demarcation, and land subdivision/amalgamation services. Anonymous direct GET returned HTTP 500; no schema or geometry was obtained."
+      },
+      {
+        "url": "https://ddd.gov.in/notice/silvassa-municipal-council-silvassa-11/",
+        "observation": "Official UT notice records a Silvassa Municipal Council GIS-based property survey procurement. It does not publish a parcel layer or establish legal cadastral coverage."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/496",
+        "observation": "Official national DILRMP status result reports digitization/geo-reference statistics for the UT/tehsil context, but it is aggregate program status, not an anonymous Silvassa parcel service."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://dnh.nlrmp.in/psurveylive/Logininit.aspx",
+        "method": "GET",
+        "access": "anonymous, normal TLS verification",
+        "outcome": "HTTP 500 Internal Server Error; no usable HTML application shell, JavaScript configuration, service endpoint, CRS, schema, or geometry response verified."
+      },
+      {
+        "url": "https://dnh.nlrmp.in/avanika/ContactUs.aspx",
+        "method": "GET",
+        "access": "anonymous, normal TLS verification",
+        "outcome": "HTTP 200 HTML; confirmed Mamlatdar Office, Silvassa contact. No parcel lookup or geometry requested."
+      },
+      {
+        "url": "https://ddd.gov.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE/",
+        "method": "GET",
+        "access": "anonymous, normal TLS verification",
+        "outcome": "HTTP 200 HTML; official Hindi revenue page linked DNH Bhu-Naksha and land-record services."
+      }
+    ],
+    "metadataReviewFile": "silvassa-service-review.json",
+    "scratchEvidenceDir": "tmp/valhalla-parcel-research/7886/"
+  },
+  "source": {
+    "sourceId": "in-silvassa-dnh-land-records-service-review",
+    "name": "Dadra and Nagar Haveli official land-record and survey services",
+    "operator": "UT Administration of Dadra and Nagar Haveli and Daman and Diu / DNH land-records and survey offices",
+    "url": "https://dnh.nlrmp.in/psurveylive/Logininit.aspx",
+    "serviceType": "Official local land-record/cadastral service route; no anonymously verified parcel geometry endpoint",
+    "nativeIdField": null,
+    "nativeIdFields": [],
+    "attributesRequested": [],
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "identityBasis": "No parcel feature identity was requested or retained.",
+    "geometryStatus": "no_public_geometry_verified",
+    "scope": "Silvassa Mamlatdar Office and UT DNH land-record/survey service evidence; public machine-readable parcel geometry and schema unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official DNH land-record/survey services serve the local Silvassa land administration context and advertise cadastral-map/boundary services.",
+    "verifiedOpenScope": "Local custodian and service route verified; no public parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_no_verified_public_geometry",
+    "reason": "No safe anonymous parcel geometry/schema response was obtained; runtime admission remains held for serial review."
+  },
+  "sampleFile": null,
+  "priorEvidenceFiles": [],
+  "rootReviewedAt": "2026-10-10T09:50:00Z"
+}

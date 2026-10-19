@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1854",
+  "wupCityCode": 1854,
+  "name": "Kinshasa",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "centerLatLon": [
+    -4.38339103982329,
+    15.3261049737162
+  ],
+  "checkedAt": "2026-10-08",
+  "resultCategory": "no_verified_public_parcel_endpoint",
+  "registryFound": null,
+  "verifiedSample": false,
+  "priorEvidence": [
+    {
+      "path": "research/kinshasa.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    },
+    {
+      "path": "research/india-africa-2026-10-08/africa-ws-city-1854.json",
+      "status": "no_new_verified_target_sample"
+    }
+  ],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "French",
+      "exactQuery": "site:affairesfoncieres.gouv.cd \"Kinshasa\" \"plan cadastral\" \"parcelles\"",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.affairesfoncieres.gouv.cd/"
+      ],
+      "summary": "Official Ministry material describes cadastre digitisation and Kinshasa services; no public parcel feature endpoint surfaced."
+    },
+    {
+      "languageScript": "French",
+      "exactQuery": "site:cadastre.gouv.cd Kinshasa cadastre parcellaire plan parcelle",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://cadastre.gouv.cd/"
+      ],
+      "summary": "No published service or public map endpoint returned. Direct TLS request to the host failed DNS resolution during this pass, so availability is unresolved."
+    },
+    {
+      "languageScript": "French",
+      "exactQuery": "site:anat.gouv.cd \"Kinshasa\" géoportail données cadastrales parcelles",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.anat.gouv.cd/services"
+      ],
+      "summary": "Official ANAT page advertises a Geoportail interface, but public site bundle inspection exposes a placeholder link rather than a service URL."
+    },
+    {
+      "languageScript": "French",
+      "exactQuery": "\"plan cadastral\" Kinshasa cadastre numérique Gombe parcelles GeoServer",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://issr-journals.org/xplore/ijias/0037/004/IJIAS-22-234-09.pdf"
+      ],
+      "summary": "Found a research paper describing a GIS for cadastral records around Batetela/Gombe; its GeoServer deployment is localhost in a research/lab description, not a public feature service."
+    },
+    {
+      "languageScript": "French",
+      "exactQuery": "site:*.gouv.cd Kinshasa \"parcelle\" \"plan cadastral\" Geoportail",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.anat.gouv.cd/services",
+        "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+      ],
+      "summary": "Official ANAT and Ministry administrative routes found, but no public parcel download or spatial query endpoint."
+    },
+    {
+      "languageScript": "French",
+      "exactQuery": "Kinshasa \"WFS\" parcelle cadastrale Gombe",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://issr-journals.org/xplore/ijias/0037/004/IJIAS-22-234-09.pdf"
+      ],
+      "summary": "The only surfaced GeoServer reference is localhost within a paper about a localized research deployment; no externally reachable service URL was documented."
+    },
+    {
+      "languageScript": "French",
+      "exactQuery": "Gombe Kinshasa système d’information géographique cadastre GeoServer parcelles web SIG Batetela",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://issr-journals.org/xplore/ijias/0037/004/IJIAS-22-234-09.pdf"
+      ],
+      "summary": "Research describes a neighborhood GIS, not an official public source. No parcel endpoint for the WUP point was available to query."
+    },
+    {
+      "languageScript": "French",
+      "exactQuery": "\"parcelles cadastrales\" Kinshasa données SIG téléchargement GeoJSON",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.anat.gouv.cd/services",
+        "https://www.affairesfoncieres.gouv.cd/"
+      ],
+      "summary": "No official downloadable parcel dataset or bounded endpoint surfaced."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.anat.gouv.cd/services",
+      "operator": "Agence Nationale d’Aménagement du Territoire (ANAT)",
+      "observation": "HTTP 200 public HTML page advertises a Geoportail interface. Inspection of the referenced public Next.js bundle found the portal link has action_href=\"#\" and no service URL. This is a placeholder, not a usable feature endpoint."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "operator": "Ministère des Affaires Foncières",
+      "observation": "HTTP 200 public Ministry site. Its “Projet pilote de numérisation du cadastre” link resolves to http://localhost:3000/ressources/documents/projet-pilote-de-numerisation-du-cadastre, which is not a public hosted document or map API."
+    },
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "operator": "Ministère des Affaires Foncières",
+      "observation": "HTTP 200 administrative directory lists Kinshasa land/cadastre circonscriptions, including Gombe, but contains no parcel map or downloadable geometry."
+    },
+    {
+      "url": "https://cadastre.gouv.cd/",
+      "operator": "Official cadastre host surfaced in prior evidence/search",
+      "observation": "Fresh verified-TLS request failed DNS resolution on 2026-10-08; this is an unresolved connectivity result, not proof that no portal exists."
+    },
+    {
+      "url": "https://issr-journals.org/xplore/ijias/0037/004/IJIAS-22-234-09.pdf",
+      "operator": "Academic research (not an official data publisher)",
+      "observation": "2022 paper p. 764 describes a localized Batetela/Gombe cadastre GIS whose GeoServer path is http://localhost:8080/geoserver/web. This is not a hosted anonymous dataset and is not suitable for target parcel querying."
+    }
+  ],
+  "targetQuery": {
+    "attempted": false,
+    "reason": "No documented, externally reachable, anonymous parcel feature endpoint was found; the apparent official Geoportail link is a placeholder and the research GeoServer is localhost. No guessed query, authentication route or unrelated administrative layer was probed.",
+    "verifiedParcelGeometryCount": 0,
+    "verifiedNativeIdCount": 0
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "The cadastre.gouv.cd host could not be resolved from this environment; government and e-Foncier systems may hold cadastral records behind an unavailable or access-controlled service. The existence of local records or the Gombe pilot does not establish anonymous public access at the WUP coordinate.",
+  "nextStep": "If the official cadastre portal becomes reachable or the Geoportail link is published, inspect its documented public service and run one bounded target query for the WUP coordinate before reconsidering the source."
+}

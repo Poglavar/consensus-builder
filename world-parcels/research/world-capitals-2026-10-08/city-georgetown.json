@@ -1,0 +1,79 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:GY:georgetown",
+  "name": "Georgetown",
+  "country": "Guyana",
+  "countryCode": "GY",
+  "centerLatLon": [
+    6.8,
+    -58.15
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Georgetown Guyana cadastral parcel map GIS official Guyana Lands Surveys Commission",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://glsc.gov.gy/survey/",
+        "https://landregistry.gov.gy/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://glsc.gov.gy/survey/",
+      "observation": "Lands and Surveys Commission provides mapping/survey services; land title searches appear in-person/fee-based. No public city geometry service identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://glsc.gov.gy/survey/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Lands and Surveys Commission survey page opened; it lists mapping/survey services."
+    },
+    {
+      "url": "https://landregistry.gov.gy/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Land Registry page opened; title searches are fee-based/in-person, and no public geometry service was found."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The national Lands and Surveys Commission provides mapping and survey services and the national Land Registry offers title searches; no Georgetown-specific parcel coverage or public geometry service was established.",
+    "urls": [
+      "https://glsc.gov.gy/survey/",
+      "https://landregistry.gov.gy/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The national Lands and Surveys Commission provides mapping and survey services and the national Land Registry offers title searches; no Georgetown-specific parcel coverage or public geometry service was established."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The national Lands and Surveys Commission provides mapping and survey services and the national Land Registry offers title searches; no Georgetown-specific parcel coverage or public geometry service was established.",
+  "registryEvidenceUrls": [
+    "https://glsc.gov.gy/survey/",
+    "https://landregistry.gov.gy/"
+  ],
+  "sourceIds": []
+}

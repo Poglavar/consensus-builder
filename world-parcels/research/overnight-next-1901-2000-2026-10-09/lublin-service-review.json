@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-4280-lublin.json",
+  "cityCode": 4280,
+  "queueRank": 1914,
+  "city": "Lublin",
+  "country": "Poland",
+  "countryCode": "PL",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "City of Lublin Geoportal/SIPL, with GUGiK ULDK national aggregation",
+  "serviceUrl": "https://geoportal.lublin.eu/link/?mapa=1",
+  "scope": "Municipal EGiB cadastral parcel map, plus a bounded anonymous ULDK point lookup.",
+  "schemaAndCrs": "Municipal capabilities advertise ms:dzialki and EPSG:2179, EPSG:2180, EPSG:4326, EPSG:3857. Municipal DescribeFeatureType/GetFeature failed. ULDK returned a POLYGON WKT in EPSG:4326.",
+  "nativeIdentity": "ULDK id/teryt 066301_1.0029.AR_3.12/10; no synthetic row number used.",
+  "fieldMapping": {
+    "id": "ULDK native parcel identity (also teryt)",
+    "geometry": "ULDK geom_wkt",
+    "sourceAttributes": "parcel, region, commune, datasource observed in response but not retained as GeoJSON properties"
+  },
+  "requestOutcome": "English and Polish first-party discovery succeeded. Municipal capabilities were retrieved, but schema and feature requests failed due to layer/database errors. National aggregate WFS returned zero features for the bounded extent. Exact-point ULDK lookup succeeded with one native ID and full polygon geometry.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained; the unchanged safe ID-plus-geometry response remains in ignored tmp/valhalla-parcel-research/lublin/uldk-point.txt.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and ownership/rights fields were not requested or retained.",
+  "officialCustodyEvidence": "The official City of Lublin Geoportal lists the municipal EGiB Dzialki layer, and its WFS capabilities identify a municipal service operator. GUGiK ULDK independently returned a parcel sourced from powiat Lublin (wfs).",
+  "limits": [
+    "One exact WUP point hit does not prove complete citywide coverage.",
+    "The municipal service backend was unavailable for schema/feature retrieval during this attempt.",
+    "The aggregate WFS empty response is not evidence of citywide absence.",
+    "No login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm the current municipal feature endpoint, field schema, native identity stability, and broader coverage before admission."
+}

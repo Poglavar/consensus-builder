@@ -1,0 +1,1203 @@
+{
+  "name": "Zagrebačka avenija–Rudeš – postojeće stanje prije projekta",
+  "type": "FeatureCollection",
+  "context": {
+    "schema": "consensus-builder.reconstruction-context.v1",
+    "article": "https://baustela.hr/nekretnine/vijesti/76275/nove-zgrade-na-zagrebackoj-zili-kucavici-jos-jedno-pionirovo-naselje-ovog-puta-na-zapadu-grada/vijest",
+    "capturedAt": "2026-08-13T00:00:00.000Z",
+    "gup2016Comment": "https://www.zagreb.hr/userdocsimages/arhiva/prostorni_planovi/GUP%20ZAGREBA_KP%20lipanj%202016/izvjesca_preth_jr_pjr/ponovna%20javna%20rasprava/03_IZID%20GUP%20GZ_PJR2016_gospodarstvenici%20tablica.pdf",
+    "plannedGeometryStatus": "unresolved; obtain amended location/building-permit attachments"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.920402004,
+                45.80406355
+              ],
+              [
+                15.920372301,
+                45.804049632
+              ],
+              [
+                15.920248039,
+                45.803973599
+              ],
+              [
+                15.92025142,
+                45.803970107
+              ],
+              [
+                15.920261562,
+                45.803959721
+              ],
+              [
+                15.920312664,
+                45.803907522
+              ],
+              [
+                15.92023674,
+                45.803859807
+              ],
+              [
+                15.920459775,
+                45.803665953
+              ],
+              [
+                15.920953919,
+                45.803232237
+              ],
+              [
+                15.921141649,
+                45.803068075
+              ],
+              [
+                15.921271353,
+                45.802953918
+              ],
+              [
+                15.921351825,
+                45.802984829
+              ],
+              [
+                15.921431426,
+                45.803012946
+              ],
+              [
+                15.921695791,
+                45.803126039
+              ],
+              [
+                15.921749865,
+                45.803196766
+              ],
+              [
+                15.921804975,
+                45.80326678
+              ],
+              [
+                15.9218464,
+                45.803316568
+              ],
+              [
+                15.921898141,
+                45.803376576
+              ],
+              [
+                15.921956926,
+                45.80343959
+              ],
+              [
+                15.922006844,
+                45.803489241
+              ],
+              [
+                15.922050933,
+                45.803530315
+              ],
+              [
+                15.922114414,
+                45.803587143
+              ],
+              [
+                15.922180094,
+                45.803642813
+              ],
+              [
+                15.922223731,
+                45.803677855
+              ],
+              [
+                15.92224032,
+                45.803690986
+              ],
+              [
+                15.922295723,
+                45.803732747
+              ],
+              [
+                15.922459191,
+                45.803849647
+              ],
+              [
+                15.922434645,
+                45.803871928
+              ],
+              [
+                15.922157631,
+                45.80412319
+              ],
+              [
+                15.921525538,
+                45.804696852
+              ],
+              [
+                15.92127698,
+                45.804609662
+              ],
+              [
+                15.921256053,
+                45.804580583
+              ],
+              [
+                15.921173069,
+                45.804543451
+              ],
+              [
+                15.920964976,
+                45.804412556
+              ],
+              [
+                15.920816427,
+                45.804321193
+              ],
+              [
+                15.920791572,
+                45.804298842
+              ],
+              [
+                15.920740295,
+                45.804256202
+              ],
+              [
+                15.920716037,
+                45.804238173
+              ],
+              [
+                15.92066875,
+                45.80420788
+              ],
+              [
+                15.920620159,
+                45.8041792
+              ],
+              [
+                15.920598174,
+                45.804165322
+              ],
+              [
+                15.920572595,
+                45.804150705
+              ],
+              [
+                15.920533593,
+                45.804127833
+              ],
+              [
+                15.920451929,
+                45.804087648
+              ],
+              [
+                15.920402004,
+                45.80406355
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "id": "HR-335614-799/1",
+        "areaM2": 17980.60960002188,
+        "source": "DGU katastar, aktualna čestica",
+        "cestica_id": 21362030,
+        "broj_cestice": "799/1",
+        "context:role": "site",
+        "maticni_broj_ko": 335614
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921393138,
+                45.804511813
+              ],
+              [
+                15.921551434,
+                45.804606373
+              ],
+              [
+                15.921471641,
+                45.804671115
+              ],
+              [
+                15.921313601,
+                45.804576735
+              ],
+              [
+                15.921393138,
+                45.804511813
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5979670,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 153.59990000102658,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2568"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921613324,
+                45.804319651
+              ],
+              [
+                15.921770703,
+                45.804415736
+              ],
+              [
+                15.921689753,
+                45.804480472
+              ],
+              [
+                15.921532375,
+                45.804384387
+              ],
+              [
+                15.921613324,
+                45.804319651
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5979677,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 155.20600000170617,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2575"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.9209807,
+                45.804335343
+              ],
+              [
+                15.921033644,
+                45.804291611
+              ],
+              [
+                15.921075839,
+                45.804316749
+              ],
+              [
+                15.921092059,
+                45.804303425
+              ],
+              [
+                15.92115919,
+                45.804343266
+              ],
+              [
+                15.921298812,
+                45.804228259
+              ],
+              [
+                15.921395351,
+                45.804285615
+              ],
+              [
+                15.921162775,
+                45.804481583
+              ],
+              [
+                15.920973553,
+                45.80436707
+              ],
+              [
+                15.92096927,
+                45.804370647
+              ],
+              [
+                15.920939226,
+                45.804352409
+              ],
+              [
+                15.920969192,
+                45.804328536
+              ],
+              [
+                15.9209807,
+                45.804335343
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5979678,
+        "dguBuildingType": "KUĆA",
+        "footprintAreaM2": 406.50929999158507,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2576"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921843155,
+                45.804140225
+              ],
+              [
+                15.921999116,
+                45.804236573
+              ],
+              [
+                15.921919081,
+                45.804299964
+              ],
+              [
+                15.921763249,
+                45.804203617
+              ],
+              [
+                15.921843155,
+                45.804140225
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5979710,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 151.93484999931695,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "3198"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921412625,
+                45.803710643
+              ],
+              [
+                15.921448418,
+                45.80368311
+              ],
+              [
+                15.921170225,
+                45.803513709
+              ],
+              [
+                15.921209657,
+                45.803482686
+              ],
+              [
+                15.921223534,
+                45.803471959
+              ],
+              [
+                15.921231447,
+                45.80346561
+              ],
+              [
+                15.921264133,
+                45.803439952
+              ],
+              [
+                15.921858158,
+                45.803809176
+              ],
+              [
+                15.921928082,
+                45.80385263
+              ],
+              [
+                15.921983728,
+                45.803808732
+              ],
+              [
+                15.922024251,
+                45.803833861
+              ],
+              [
+                15.921968861,
+                45.803877851
+              ],
+              [
+                15.921975124,
+                45.803881842
+              ],
+              [
+                15.921872126,
+                45.803963742
+              ],
+              [
+                15.921824003,
+                45.80400174
+              ],
+              [
+                15.921784309,
+                45.804033302
+              ],
+              [
+                15.921703389,
+                45.803983313
+              ],
+              [
+                15.921800806,
+                45.803906064
+              ],
+              [
+                15.921528166,
+                45.803734442
+              ],
+              [
+                15.921493151,
+                45.803761349
+              ],
+              [
+                15.921412625,
+                45.803710643
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5979719,
+        "dguBuildingType": "KUĆA",
+        "footprintAreaM2": 962.5041000191112,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "3207"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921959505,
+                45.804048585
+              ],
+              [
+                15.922114948,
+                45.8041452
+              ],
+              [
+                15.922033361,
+                45.804209392
+              ],
+              [
+                15.921878047,
+                45.804112778
+              ],
+              [
+                15.921959505,
+                45.804048585
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5980242,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 154.20815000148113,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "1955"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.922275271,
+                45.803757298
+              ],
+              [
+                15.922430961,
+                45.803854903
+              ],
+              [
+                15.922348862,
+                45.803919004
+              ],
+              [
+                15.922193043,
+                45.803821398
+              ],
+              [
+                15.922275271,
+                45.803757298
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5980360,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 155.53105000640448,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "3857"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921726945,
+                45.804230787
+              ],
+              [
+                15.921884194,
+                45.804326871
+              ],
+              [
+                15.921803634,
+                45.804391339
+              ],
+              [
+                15.921646384,
+                45.804295254
+              ],
+              [
+                15.921726945,
+                45.804230787
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5980984,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 154.44689999813798,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "3891"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921500682,
+                45.80441347
+              ],
+              [
+                15.921650067,
+                45.804511224
+              ],
+              [
+                15.921572626,
+                45.804572468
+              ],
+              [
+                15.921421282,
+                45.804477583
+              ],
+              [
+                15.921500682,
+                45.80441347
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5981096,
+        "dguBuildingType": "KUĆA U IZGRADNJI",
+        "footprintAreaM2": 146.67054999797074,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "5180"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.92206253,
+                45.803951568
+              ],
+              [
+                15.922218369,
+                45.804047195
+              ],
+              [
+                15.92213833,
+                45.804111036
+              ],
+              [
+                15.921982491,
+                45.804015409
+              ],
+              [
+                15.92206253,
+                45.803951568
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5981506,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 152.06840000734047,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2049"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921033301,
+                45.803865196
+              ],
+              [
+                15.920997633,
+                45.80384342
+              ],
+              [
+                15.921105582,
+                45.803755517
+              ],
+              [
+                15.921548809,
+                45.804027071
+              ],
+              [
+                15.921438183,
+                45.804112621
+              ],
+              [
+                15.921400853,
+                45.804089757
+              ],
+              [
+                15.921389219,
+                45.80408268
+              ],
+              [
+                15.921046853,
+                45.803873453
+              ],
+              [
+                15.921033301,
+                45.803865196
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5981507,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 586.2297000034721,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2050"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921150476,
+                45.803718763
+              ],
+              [
+                15.921593814,
+                45.803992117
+              ],
+              [
+                15.921548809,
+                45.804027071
+              ],
+              [
+                15.921105582,
+                45.803755517
+              ],
+              [
+                15.921150476,
+                45.803718763
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5981509,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 243.10069999387554,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2052"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.922176695,
+                45.803859646
+              ],
+              [
+                15.922332264,
+                45.803956531
+              ],
+              [
+                15.922250809,
+                45.804020455
+              ],
+              [
+                15.92209524,
+                45.80392357
+              ],
+              [
+                15.922176695,
+                45.803859646
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5981510,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 154.08590000010122,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2053"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921872126,
+                45.803963742
+              ],
+              [
+                15.921887596,
+                45.803973178
+              ],
+              [
+                15.921839471,
+                45.804011266
+              ],
+              [
+                15.921824003,
+                45.80400174
+              ],
+              [
+                15.921872126,
+                45.803963742
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5981514,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 9.025499998535263,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2057"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921203971,
+                45.803298739
+              ],
+              [
+                15.921129505,
+                45.803358648
+              ],
+              [
+                15.92108092,
+                45.803329428
+              ],
+              [
+                15.921079492,
+                45.803330681
+              ],
+              [
+                15.921072716,
+                45.803326597
+              ],
+              [
+                15.921148997,
+                45.803265348
+              ],
+              [
+                15.921203971,
+                45.803298739
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5982756,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 50.17225000342447,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "2125"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.920929253,
+                45.803663474
+              ],
+              [
+                15.921011744,
+                45.803598927
+              ],
+              [
+                15.921065046,
+                45.803632309
+              ],
+              [
+                15.920982426,
+                45.803696856
+              ],
+              [
+                15.920929253,
+                45.803663474
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5985839,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 53.494500001734814,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "1048"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.92184448,
+                45.803452428
+              ],
+              [
+                15.922103359,
+                45.803611112
+              ],
+              [
+                15.922021504,
+                45.803676473
+              ],
+              [
+                15.921762496,
+                45.803517788
+              ],
+              [
+                15.92184448,
+                45.803452428
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5985840,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 258.51339999967746,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "1049"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.920779783,
+                45.803574266
+              ],
+              [
+                15.921079492,
+                45.803330681
+              ],
+              [
+                15.92108092,
+                45.803329428
+              ],
+              [
+                15.921129505,
+                45.803358648
+              ],
+              [
+                15.921201871,
+                45.803402205
+              ],
+              [
+                15.920900733,
+                45.803647043
+              ],
+              [
+                15.920779783,
+                45.803574266
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5985842,
+        "dguBuildingType": "GOSPODARSKA ZGRADA",
+        "footprintAreaM2": 445.04760000045064,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "1051"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921400853,
+                45.804089757
+              ],
+              [
+                15.921390216,
+                45.804098162
+              ],
+              [
+                15.921378581,
+                45.804091174
+              ],
+              [
+                15.921389219,
+                45.80408268
+              ],
+              [
+                15.921400853,
+                45.804089757
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5988695,
+        "dguBuildingType": "STEPENIŠTE ",
+        "footprintAreaM2": 1.4954500006128917,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "10609"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921046853,
+                45.803873453
+              ],
+              [
+                15.921036215,
+                45.803881947
+              ],
+              [
+                15.921022664,
+                45.80387369
+              ],
+              [
+                15.921033301,
+                45.803865196
+              ],
+              [
+                15.921046853,
+                45.803873453
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5988700,
+        "dguBuildingType": "STEPENIŠTE ",
+        "footprintAreaM2": 1.7532000003237742,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "10614"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.921218154,
+                45.803457265
+              ],
+              [
+                15.921231447,
+                45.80346561
+              ],
+              [
+                15.921223534,
+                45.803471959
+              ],
+              [
+                15.921209983,
+                45.803463612
+              ],
+              [
+                15.921218154,
+                45.803457265
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "source": "DGU katastar, aktualna zgrada",
+        "context:role": "existing-building",
+        "dguBuildingId": 5988721,
+        "dguBuildingType": "STEPENIŠTE ",
+        "footprintAreaM2": 1.3159000004795613,
+        "plannedGeometry": false,
+        "dguBuildingNumber": "10635"
+      }
+    }
+  ]
+}

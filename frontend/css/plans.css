@@ -1,0 +1,224 @@
+/* ========== Named plans ==========
+   The plan line on proposal rows and the Plans lists (js/proposals/plans.js), the parcel panel's
+   Proposals | Plans switch, and the plan view: a plan's proposals hatched on the map with the docked
+   plan panel (js/proposals/plan-view.js). Colours come from the theme tokens (css/tokens.css). */
+
+/* ---- Plan line on a proposal row ---- */
+.proposal-plan-line {
+    margin-top: var(--cb-space-1);
+    font-size: var(--cb-text-sm);
+}
+
+.proposal-plan-line .cb-link i {
+    margin-right: 2px;
+}
+
+.proposal-plan-options[hidden] {
+    display: none;
+}
+
+.proposal-plan-options {
+    margin: var(--cb-space-1) 0 0;
+    padding-left: var(--cb-space-3);
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* ---- Proposals | Plans inside a parcel's Proposals tab ---- */
+.parcel-proposals-switch {
+    margin-bottom: var(--cb-space-2);
+}
+
+/* #proposals-content is a flex column (css/panels.css), which would outrank the hidden attribute. */
+#proposals-tab > [hidden] {
+    display: none;
+}
+
+.plan-item .proposal-item-title i {
+    color: var(--cb-plan);
+}
+
+.plan-item .proposal-item-details.plan-item-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    color: var(--cb-text-muted);
+}
+
+.plan-list-empty {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+/* ---- The plan on the map: hatched through the pattern plan-view.js puts in its renderer ---- */
+.plan-preview-pane {
+    z-index: var(--cb-z-map-pane-plan-view);
+}
+
+.plan-preview-member {
+    stroke: var(--cb-plan);
+    stroke-width: 2px;
+    stroke-dasharray: 6 4;
+    fill: url(#plan-preview-hatch);
+    fill-opacity: 1;
+    cursor: pointer;
+}
+
+.plan-preview-member.is-applied {
+    stroke: var(--cb-success);
+    stroke-dasharray: none;
+}
+
+.plan-preview-member.is-hovered {
+    stroke-width: 4px;
+}
+
+.plan-preview-hatch-line {
+    stroke: var(--cb-plan);
+    stroke-width: 2px;
+    stroke-opacity: 0.55;
+}
+
+/* ---- The plan panel: in the right dock under the top-right buttons, as tall as the dock runs; on
+   phones the shared bottom-sheet rule (css/utilities.css) places it. ---- */
+#plan-view-panel {
+    position: absolute;
+    top: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    right: var(--right-dock-gap);
+    bottom: var(--right-dock-bottom);
+    padding: 0;
+    overflow: hidden;
+    z-index: var(--cb-z-panel);
+}
+
+#plan-view-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+#plan-view-panel .panel-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+#plan-view-panel .panel-header h3 {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--cb-text-xl);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.plan-view-panel .panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    min-height: 0;
+    padding: var(--cb-space-3) var(--cb-space-4);
+    overflow-y: auto;
+}
+
+.plan-view-hint,
+.plan-view-meta,
+.plan-view-status {
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.plan-view-description {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.plan-view-note {
+    margin: 0;
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-sm);
+}
+
+.plan-view-note--warning { background: var(--cb-warning-soft); color: var(--cb-warning-soft-ink); }
+.plan-view-note--danger { background: var(--cb-danger-soft); color: var(--cb-danger-soft-ink); }
+.plan-view-note--info { background: var(--cb-info-soft); color: var(--cb-info-soft-ink); }
+
+.plan-view-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+.plan-view-totals {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 2px var(--cb-space-3);
+    margin: 0;
+    font-size: var(--cb-text-sm);
+}
+
+.plan-view-totals > div {
+    display: contents;
+}
+
+.plan-view-totals dt {
+    color: var(--cb-text-muted);
+}
+
+.plan-view-totals dd {
+    margin: 0;
+    min-width: 0;
+}
+
+.plan-view-heading {
+    margin: var(--cb-space-2) 0 0;
+    font-size: var(--cb-text-base);
+}
+
+.plan-view-members {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* The row is a quiet button (css/primitives.css); this only lays it out as a list row. */
+.plan-view-member {
+    justify-content: flex-start;
+    width: 100%;
+    padding: var(--cb-space-1) var(--cb-space-2);
+    text-align: left;
+}
+
+.plan-view-member__index {
+    flex: 0 0 auto;
+    min-width: 1.5em;
+    color: var(--cb-text-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.plan-view-member__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.plan-view-member__title {
+    overflow-wrap: anywhere;
+}
+
+.plan-view-member__type {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}

@@ -1,0 +1,136 @@
+{
+  "cityCode": 8999,
+  "queueRank": 1696,
+  "name": "Thakurdwara",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [29.2048542395257, 78.9302902436794],
+  "population2025": 336772,
+  "population2025k": 336.772,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thakurdwara Uttar Pradesh official cadastral map land records GIS parcel map",
+        "result": "First-party results identified the Board of Revenue Uttar Pradesh land-record portal, the official UP Bhu-Naksha viewer, and the UP cadastral-map digitization dashboard. The current Bhu-Naksha JavaScript viewer was followed to its public service and returned administrative level codes, a village map extent, CRS metadata, and bounded safe plot ID/bounding-box responses.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report",
+          "https://bor.up.nic.in/?search_key=HOMECENTER"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "ठाकुरद्वारा उत्तर प्रदेश आधिकारिक भू नक्शा खसरा नक्शा",
+        "result": "First-party Hindi results identified Rajस्व परिषद Uttar Pradesh land-record and Bhu-Naksha services. The official viewer returned Moradabad (135), Thakurdwara tehsil (00717), and same-named revenue village (220917) records; no anonymous full polygon response was obtained.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://revenue.up.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Official Uttar Pradesh Bhu-Naksha public viewer. Its current JavaScript configuration exposed the public service base https://upbhunaksha.gov.in/bhunakshaserver and level-value, extent, plot lookup, and plot-by-ID routes."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "Official Board of Revenue Uttar Pradesh land-record portal describing online land records and linked Bhu-Naksha services."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report",
+      "observation": "Official Uttar Pradesh cadastral-map digitization dashboard; it reports linked/geo-referenced Bhu-Naksha coverage at state and district reporting levels, not a citywide parcel inventory."
+    },
+    {
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "observation": "Official Revenue Council page listing Khasra, Khatauni, Bhu-Naksha/Shajra, village-map, and gata-boundary services."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer shell loaded. Current main JavaScript was inspected for the public API base, endpoint paths, level sequence, and CRS support."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "httpStatus": 200,
+      "outcome": "Anonymous level discovery returned district 135=मुरादाबाद, tehsil 00717=ठाकुरद्वारा, and village 220917=ठाकुरद्वारा. A preliminary wrong state-code request returned an empty list; this was treated only as route probing, not as absence evidence."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref?gisLevels=135,00717,220917",
+      "method": "POST",
+      "httpStatus": 200,
+      "outcome": "Returned gisCode 13500717220917, extent xmin=290917.0139367361, ymin=3230351.2349705785, xmax=292057.10039685504, ymax=3231706.902661109, attribution naming Moradabad/Thakurdwara/Thakurdwara, and CRS EPSG:32644."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY?giscode=13500717220917&x=290975&y=3231230&plotno=",
+      "method": "POST",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous lookup returned safe plot identity kide=47 and native opaque id fe7uq8tJS_-m_oqw0Cf6Lg with a UTM bounding box. This probe was deliberately away from the WUP point and is not retained as a parcel polygon."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo?giscode=13500717220917&plotno=1",
+      "method": "POST",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous lookup returned safe plot identity kide=1 and native opaque id aiNDmvS5TyupDnHL6PkS2g with a UTM bounding box. No owner, address, contact, title, tax, or other unsafe field was requested."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?bhucode=13500717220917&id=aiNDmvS5TyupDnHL6PkS2g",
+      "method": "POST",
+      "httpStatus": 401,
+      "outcome": "Public plot-by-ID route responded Missing or invalid Authorization header. No token, login, credential, CAPTCHA, Cloudflare bypass, or unsafe alternative was attempted."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official dashboard loaded; used as coverage/procedure evidence only."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Uttar Pradesh Board of Revenue land-record/Bhu-Naksha service and its public Moradabad-Thakurdwara village map establish a state/local revenue cadastral custodian and an actual public map procedure. They do not establish citywide parcel coverage for the WUP city point.",
+  "nativeFieldMapping": {
+    "id": "opaque native Bhu-Naksha plot id returned by public lookup; stable identity not independently qualified",
+    "kide": "native plot/gata number returned by public lookup",
+    "minx/miny/maxx/maxy": "native EPSG:32644 bounding-box fields from anonymous lookup; not a full parcel geometry"
+  },
+  "compositeKeyProvenance": "Administrative path 135/00717/220917 was used to form public gisCode 13500717220917; it is service navigation provenance, not a synthetic parcel identity.",
+  "crs": "EPSG:32644 (UTM zone 44N, WGS84) reported by official extent response; no full parcel geometry was retrieved.",
+  "geometryQuality": "not evaluated; only bounding boxes were returned anonymously",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "uttar-pradesh-bhunaksha-upbhunaksha",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh Board of Revenue Bhu-Naksha land-record map service for the selected revenue village.",
+    "cityCoverage": "The selected same-named revenue village map extent is documented, but it is not shown to cover the full Thakurdwara WUP city. The exact WUP point transforms to approximately UTM 44N [298786.08,3232455.82], outside the returned extent; this map-extent miss is not treated as citywide absence.",
+    "exactPointChecked": true,
+    "note": "The exact WUP point [29.2048542395257, 78.9302902436794] was preserved in latitude/longitude order and was not shifted. Its derived UTM coordinate was used only to compare with the official returned extent."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "native plot/gata number only when needed for public parcel identity"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public viewer and administrative path are real and reproducible, but anonymous full geometry is blocked by the plot-by-ID Authorization requirement. The WUP point is outside the selected village-map extent, and citywide service coverage, parcel-layer completeness, native identity stability, update currency, and legal boundary status remain unresolved. No raw source-specific attribute set or synthetic row identity was retained. This packet is not source integration/admission."
+}

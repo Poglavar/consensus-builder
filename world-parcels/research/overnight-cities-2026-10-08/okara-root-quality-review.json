@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:45:50.431533+00:00",
+  "decision": "approved_by_root",
+  "scope": "15 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 15 fresh source-ID reads, explicit absence, footprint and source binding passed in 58 requests. Independent metric EPSG:32643 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Public source-native OBJECTID is the cadastral-reference geometry identity, not a legal Khasra/Mouza key. Returned legal key fields are zero and are not promoted to legal identifiers. The real runtime adapter uses the documented anonymous public-viewer reader bootstrap; reader tokens stay in memory, simultaneous reads share one bootstrap, and renewal occurs within thirty seconds because publisher expiry omits a timezone. All request evidence omits token values. Six headless reader tests verify renewal, coalescing, endpoint confinement, unchanged geometry, blocked responses and safe errors. Native source CRS is EPSG:3857 (ArcGIS WKID102100). The original exact-point sample is topologically identical to fresh complete geometry: ring coordinate order differs, while projected symmetric difference and Hausdorff distance are both zero. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "okara-public-runtime-root-acceptance.json",
+  "qualityFile": "okara-public-runtime-root-quality.json",
+  "nativeIdentityEvidenceFile": "okara-root-native-identity-review.json",
+  "originalDecoratorEvidenceFile": "okara-root-arcgis-decorator-acceptance.json"
+}

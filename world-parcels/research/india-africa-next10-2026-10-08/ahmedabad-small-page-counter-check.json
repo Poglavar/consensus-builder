@@ -1,0 +1,276 @@
+{
+  "purpose": "Fresh diagnostic of all seventeen small pages from one 50-feature viewport after failed forced pagination. Full pages report totalFeatures=50; the final partial page at offset48 reports totalFeatures=2.",
+  "requests": [
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:03.039899+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.307,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Jamalpur 1 108",
+        "Jamalpur 1 11",
+        "Jamalpur 1 12"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=3&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:02.965373+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.233,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 1/1",
+        "Kankaria_Varid 2 1/2",
+        "Kankaria_Varid 2 11"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=6&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:03.914892+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.949,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 12",
+        "Kankaria_Varid 2 13",
+        "Kankaria_Varid 2 14/1"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=9&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:03.933303+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.893,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 14/2",
+        "Kankaria_Varid 2 14/A",
+        "Kankaria_Varid 2 15"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=12&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:04.824300+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.909,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 17",
+        "Kankaria_Varid 2 18",
+        "Kankaria_Varid 2 19"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=15&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:05.088514+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.155,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 2",
+        "Kankaria_Varid 2 20",
+        "Kankaria_Varid 2 21"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=18&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:05.792104+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.967,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 22",
+        "Kankaria_Varid 2 23",
+        "Kankaria_Varid 2 24"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=21&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:06.043374+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.954,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 25",
+        "Kankaria_Varid 2 26",
+        "Kankaria_Varid 2 27"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=24&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:06.707954+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.915,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 28",
+        "Kankaria_Varid 2 29",
+        "Kankaria_Varid 2 3"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=27&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:06.894478+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.851,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 30",
+        "Kankaria_Varid 2 31",
+        "Kankaria_Varid 2 32"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=30&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:07.645267+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.937,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 33",
+        "Kankaria_Varid 2 34",
+        "Kankaria_Varid 2 35"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=33&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:07.810375+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 0.915,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 36",
+        "Kankaria_Varid 2 37",
+        "Kankaria_Varid 2 38"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=36&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:08.748886+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.103,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 4",
+        "Kankaria_Varid 2 41+42+43",
+        "Kankaria_Varid 2 47/1"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=39&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:08.962721+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.152,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 47/2",
+        "Kankaria_Varid 2 48",
+        "Kankaria_Varid 2 49"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=42&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:09.809025+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.06,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 5",
+        "Kankaria_Varid 2 50",
+        "Kankaria_Varid 2 51"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=45&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:10.098544+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.135,
+      "error": "",
+      "totalFeatures": 50,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 3,
+      "nativeIds": [
+        "Kankaria_Varid 2 52",
+        "Kankaria_Varid 2 54",
+        "Kankaria_Varid 2 6+8"
+      ]
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=48&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "checkedAt": "2026-10-08T05:13:10.937850+00:00",
+      "httpStatus": "200",
+      "elapsedSeconds": 1.128,
+      "error": "",
+      "totalFeatures": 2,
+      "numberMatched": null,
+      "numberReturned": null,
+      "count": 2,
+      "nativeIds": [
+        "Kankaria_Varid 2 7",
+        "Kankaria_Varid 2 9+10"
+      ]
+    }
+  ]
+}

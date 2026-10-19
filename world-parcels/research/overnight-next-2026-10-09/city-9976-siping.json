@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1125,
+  "population2025k": 493.984,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "High",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:9976",
+  "wupCityCode": 9976,
+  "name": "Siping",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    43.1569561169615,
+    124.392176255859
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "no_local_custody_evidence",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Chinese (Simplified)",
+      "exactQuery": "四平市 不动产登记 地籍图 不动产登记中心 自然资源局 官方 地图",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [],
+      "summary": "Search results did not establish Siping-specific cadastral custody or a local official public parcel map."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Siping City China official cadastral map parcel real estate registration public GIS",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [],
+      "summary": "Search results did not establish Siping-specific cadastral custody or a local official public parcel map."
+    },
+    {
+      "exactQuery": "四平市 自然资源 不动产登记 中心 官方",
+      "languageScript": "Chinese",
+      "date": "2026-10-09",
+      "executionMethod": "Root web search followed by primary-page open",
+      "resultUrls": [
+        "https://www.jl.gov.cn/szfzt/gzlfz/gzdt/202510/t20251022_3506094.html"
+      ],
+      "summary": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.jl.gov.cn/szfzt/gzlfz/gzdt/202510/t20251022_3506094.html",
+      "operator": "Jilin Provincial Government",
+      "observation": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint."
+    }
+  ],
+  "requestsAndEndpointChecks": [],
+  "coverageAssessment": {
+    "claimedScope": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "No usable exact-city first-party source or public geometry service verified.",
+  "remainingUncertainty": "No anonymous full parcel polygon or citywide coverage verified; local custodial responsibility has the scope recorded in registryBasis.",
+  "nextStep": "No usable exact-city first-party source or public geometry service verified.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "registryBasis": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint.",
+  "registryEvidenceUrls": [
+    "https://www.jl.gov.cn/szfzt/gzlfz/gzdt/202510/t20251022_3506094.html"
+  ],
+  "population2025": 493984,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "technicalBlocker": "No usable exact-city first-party source or public geometry service verified.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No usable exact-city first-party source or public geometry service verified."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

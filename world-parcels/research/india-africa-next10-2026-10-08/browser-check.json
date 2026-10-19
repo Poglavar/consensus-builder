@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Manual headed Chrome inspection of the local Ahmedabad entry; no browser test suite.",
+  "checkedAt": "2026-10-08T05:25:09.641379+00:00",
+  "cityId": "wup2025:6408",
+  "appCityId": "ahmedabad",
+  "sourceId": "in-gj-tpvd-final-plots",
+  "result": "passed",
+  "localUrl": "http://localhost:5638/?city=ahmedabad&backend=http%3A%2F%2Flocalhost%3A4640&reduceMotion=1",
+  "initialView": {
+    "boundsCount": 9,
+    "centerLatLon": [
+      23.020038952422126,
+      72.59974837303163
+    ],
+    "city": "ahmedabad",
+    "fallbackVisible": false,
+    "featureCount": 132,
+    "loading": false,
+    "viewport": [
+      1200,
+      818
+    ],
+    "zoom": 18
+  },
+  "selection": {
+    "alerts": [],
+    "boundsCount": 9,
+    "city": "ahmedabad",
+    "fallbackVisible": false,
+    "featureCount": 132,
+    "panelText": null,
+    "selectedId": "IN-GJ-TPVD-Sarangpur 18 10",
+    "sourceId": "in-gj-tpvd-final-plots",
+    "sourceProperties": {
+      "authority": "AMC",
+      "city": "Ahmedabad",
+      "district": "Ahmedabad",
+      "fp_no": "10",
+      "search": "Sarangpur 18 10",
+      "status": "Final",
+      "tps_id": 100,
+      "tps_name": "Sarangpur_18",
+      "tps_no": "18",
+      "village": "Sarangpur"
+    }
+  },
+  "pan": {
+    "action": "350 pixels east with reduced motion",
+    "alerts": [],
+    "boundsCount": 12,
+    "centerLatLon": [
+      23.020038952422126,
+      72.60162591934206
+    ],
+    "city": "ahmedabad",
+    "fallbackVisible": false,
+    "featureCount": 221,
+    "loading": false,
+    "zoom": 18
+  },
+  "countsMeaning": "featureCount is retained repository geometry across complete cells, not the number currently visible on screen. The native-ID audit covers132 initial identities; the pan increased retained geometry to221.",
+  "requests": [
+    {
+      "bbox": "72.59,23.015,72.595,23.02",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.59,23.02,72.595,23.025000000000002",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.59,23.025000000000002,72.595,23.03",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.595,23.015,72.60000000000001,23.02",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.595,23.02,72.60000000000001,23.025000000000002",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.595,23.025000000000002,72.60000000000001,23.03",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.60000000000001,23.015,72.605,23.02",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.60000000000001,23.02,72.605,23.025000000000002",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.60000000000001,23.025000000000002,72.605,23.03",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.605,23.015,72.61,23.02",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.605,23.02,72.61,23.025000000000002",
+      "httpStatus": 200,
+      "method": "GET"
+    },
+    {
+      "bbox": "72.605,23.025000000000002,72.61,23.03",
+      "httpStatus": 200,
+      "method": "GET"
+    }
+  ],
+  "uncaughtPageErrors": [],
+  "visualInspection": {
+    "selectedPlotOutline": true,
+    "alignmentPlausible": true,
+    "sourceAttributionVisible": true,
+    "sourceReferenceAndPlotNumberCorrect": true,
+    "newPanCellsRendered": true,
+    "screenshotsViewed": true
+  },
+  "browserSession": "india-africa-next10-ui",
+  "sessionCleanup": "Dedicated browser closed after map and report verification; final session list empty.",
+  "reportView": {
+    "cohort": "india-africa",
+    "configuredRows": 14,
+    "countLabel": "171 of 461 rows",
+    "renderedRows": 171,
+    "selectedRows": [
+      {
+        "links": [
+          {
+            "href": "https://tpvd.openprp.in/geoserver/ows",
+            "text": "Yes"
+          },
+          {
+            "href": "https://www.openstreetmap.org/?mlat=23.02084&mlon=72.59717#map=12/23.02084/72.59717",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=23.02084%2C72.59717",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Ahmedabad",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Ahmedabad\nConfigured in the app\n\t7,632,408\t1.1%\tIndia\tYes\t2026-10-08\tYes\nParcel sample verified\n\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=-18.86511&mlon=47.53777#map=12/-18.86511/47.53777",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=-18.86511%2C47.53777",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Antananarivo",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Antananarivo\t3,916,219\t3.9%\tMadagascar\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=12.97194&mlon=77.59369#map=12/12.97194/77.59369",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=12.97194%2C77.59369",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Bengaluru",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Bengaluru\t13,187,098\t2.0%\tIndia\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=13.08784&mlon=80.27847#map=12/13.08784/80.27847",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=13.08784%2C80.27847",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Chennai",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Chennai\t11,153,205\t1.0%\tIndia\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=14.74390&mlon=-17.38936#map=12/14.74390/-17.38936",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=14.74390%2C-17.38936",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Dakar",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Dakar\t3,852,475\t1.8%\tSenegal\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=-6.83353&mlon=39.22414#map=12/-6.83353/39.22414",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=-6.83353%2C39.22414",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Dar_es_Salaam",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Dar es Salaam\t7,795,114\t4.0%\tUnited Republic of Tanzania\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+            "text": "Yes"
+          },
+          {
+            "href": "https://www.openstreetmap.org/?mlat=17.43003&mlon=78.65423#map=12/17.43003/78.65423",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=17.43003%2C78.65423",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Ghatkesar",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Ghatkesar\t167,897\t6.0%\tIndia\tYes\t2026-10-08\tYes\nParcel sample verified\n\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=17.41389&mlon=78.47569#map=12/17.41389/78.47569",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=17.41389%2C78.47569",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Hyderabad",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Hyderabad\t9,190,795\t1.0%\tIndia\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=6.45407&mlon=3.39467#map=12/6.45407/3.39467",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=6.45407%2C3.39467",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Lagos",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Lagos\t12,791,699\t1.4%\tNigeria\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      },
+      {
+        "links": [
+          {
+            "href": "https://www.openstreetmap.org/?mlat=-1.26592&mlon=36.84516#map=12/-1.26592/36.84516",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://www.google.com/maps/search/?api=1&query=-1.26592%2C36.84516",
+            "text": "Map ↗"
+          },
+          {
+            "href": "https://en.wikipedia.org/wiki/Nairobi",
+            "text": "Article ↗"
+          }
+        ],
+        "text": "Nairobi\t6,134,334\t2.7%\tKenya\tYes\t2026-10-08\tUnknown\tNot recorded\tMap ↗\tMap ↗\tArticle ↗"
+      }
+    ],
+    "uncaughtPageErrors": [],
+    "screenshotVisuallyInspected": true
+  }
+}

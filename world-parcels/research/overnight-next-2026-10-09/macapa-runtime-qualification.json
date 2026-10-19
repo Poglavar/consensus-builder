@@ -1,0 +1,4972 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:14:43.754Z",
+  "city": {
+    "name": "Macapá",
+    "cityId": "wup2025:2928",
+    "countryCode": "BR",
+    "rank": 1176,
+    "population2025k": 471.922,
+    "centerLatLon": [
+      0.0431561083287672,
+      -51.0688251135422
+    ]
+  },
+  "purpose": "Actual live qualification through the existing ArcGIS parcel adapter, using only idlote and full polygon geometry. No source/catalog/registry integration or root review stamp.",
+  "candidateProfile": {
+    "sourceId": "macapa-egl-sit-physical-lot-layer-27",
+    "endpoint": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27",
+    "layer": "MapServer/27",
+    "idField": "idlote",
+    "objectIdField": "idlote",
+    "nativeCrs": "EPSG:31982",
+    "outFields": [
+      "idlote"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "normalPageSize": 100,
+    "gridStepDegrees": 0.001,
+    "gridCellCount": 13,
+    "responseCrs": "EPSG:4326 (adapter default)",
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25
+  },
+  "grid": [
+    {
+      "cell": 0,
+      "bboxWgs84": [
+        -51.07,
+        0.042,
+        -51.069,
+        0.043
+      ],
+      "complete": false,
+      "featureCount": null,
+      "returnedNativeIds": [],
+      "requestCount": 2,
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "status": 502
+    },
+    {
+      "cell": 1,
+      "bboxWgs84": [
+        -51.069,
+        0.042,
+        -51.068,
+        0.043
+      ],
+      "complete": false,
+      "featureCount": null,
+      "returnedNativeIds": [],
+      "requestCount": 2,
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "status": 502
+    },
+    {
+      "cell": 2,
+      "bboxWgs84": [
+        -51.068,
+        0.042,
+        -51.067,
+        0.043
+      ],
+      "complete": true,
+      "featureCount": 26,
+      "returnedNativeIds": [
+        "502138",
+        "502681",
+        "503062",
+        "503072",
+        "503074",
+        "504071",
+        "537495",
+        "537499",
+        "537500",
+        "572372",
+        "572375",
+        "504072",
+        "503073",
+        "503064",
+        "502680",
+        "503061",
+        "503082",
+        "572366",
+        "576811",
+        "503063",
+        "502683",
+        "537496",
+        "576810",
+        "503084",
+        "503083",
+        "502682"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502138",
+          "geometrySha256": "734ee0473378e561ffaafffa037e06da09f2e4ff56f8ab80177596f05b0fe9a4"
+        },
+        {
+          "nativeId": "502681",
+          "geometrySha256": "bdf73c1e6be9396196aabfec3098341cd9db02bd018765422cf945950ca08fad"
+        },
+        {
+          "nativeId": "503062",
+          "geometrySha256": "06d945cd65204a586c0afa420285ffc18cab575350366a3bd773abec461cb0ab"
+        },
+        {
+          "nativeId": "503072",
+          "geometrySha256": "157e05b48289c5764df6ada69104fa26f91176781b772e979cecc846245c16d3"
+        },
+        {
+          "nativeId": "503074",
+          "geometrySha256": "83cac853d7f13998f2877d405c1a9aad233d45b361a3560f918d4d67698a67a9"
+        },
+        {
+          "nativeId": "504071",
+          "geometrySha256": "20c609fe33146fd8ec6c74d4bc07cf28ce337acb23d24471dc6aec5e8f95f017"
+        },
+        {
+          "nativeId": "537495",
+          "geometrySha256": "835077b9db9603425e12d884280b9577cc913f704ef5469082c110ffefa0163a"
+        },
+        {
+          "nativeId": "537499",
+          "geometrySha256": "b0890b3271daa2fbe129b036a0aeb53983ee601754e03c0bd34e512ed73d3430"
+        },
+        {
+          "nativeId": "537500",
+          "geometrySha256": "64e0e8505d40977861e7b429e01369d9e9dd7d08578747f2b3943b65665246e9"
+        },
+        {
+          "nativeId": "572372",
+          "geometrySha256": "435db3e2efb11b1b85b53bd6944a7c8100e1e030a3b40a147042ffa4a9c0b0bb"
+        },
+        {
+          "nativeId": "572375",
+          "geometrySha256": "cac8079aae470bdca59733c9f01d5db06b2d86499fbc21e60ba0670d817cf603"
+        },
+        {
+          "nativeId": "504072",
+          "geometrySha256": "b87f36e27e03fd1b55f13ede967089bceb42fc79e679bded440396a5e26c23f7"
+        },
+        {
+          "nativeId": "503073",
+          "geometrySha256": "82433e74623b2a2f875d54cbcd5da11e367a84d10fc84bda6bbcd545f1ee5732"
+        },
+        {
+          "nativeId": "503064",
+          "geometrySha256": "c7185b927a609c186b2e1e070b681ac6064c2044676676afd35c184bc7b37e2e"
+        },
+        {
+          "nativeId": "502680",
+          "geometrySha256": "6755ec0cb4f2a7c4e364b582a510d2d89c66a4755b4a5681854abe292c29e67a"
+        },
+        {
+          "nativeId": "503061",
+          "geometrySha256": "a9ae0655de1862ef992f97ce6e2173f0e3b59274531fbe55a216205309afcfea"
+        },
+        {
+          "nativeId": "503082",
+          "geometrySha256": "4da59b3d9d06db7356e9ae21f01983256235cd376359c22bf0638c3ae4d443c6"
+        },
+        {
+          "nativeId": "572366",
+          "geometrySha256": "76aa9f519f84677f1f2bc60235f8373ae2808897e432fa80f6026e11cc6579ed"
+        },
+        {
+          "nativeId": "576811",
+          "geometrySha256": "77cb4d586daee4ba0ab70f99267ada43657f616b7761542069829e416e2e3266"
+        },
+        {
+          "nativeId": "503063",
+          "geometrySha256": "73a8eba187c8038c82d1395ce69605d798cb80f3aa4727bc18dfa36b5da4ad23"
+        },
+        {
+          "nativeId": "502683",
+          "geometrySha256": "fe9528a80ea708554e2c1d7277012ceaddee6213320ac0b7f18531e5166c5db2"
+        },
+        {
+          "nativeId": "537496",
+          "geometrySha256": "84db2a97aab1f58babc94a5306e213f4ebdbd3651b06e30ca47fa28689198301"
+        },
+        {
+          "nativeId": "576810",
+          "geometrySha256": "53e6d9f09ca4cbdc0387b9d559fdf500e260750f134130922017b9372bb9e228"
+        },
+        {
+          "nativeId": "503084",
+          "geometrySha256": "1d096723553df3fa9251d4e63e9b2d279c8ddce9e786f9e5ffa5c3a382298328"
+        },
+        {
+          "nativeId": "503083",
+          "geometrySha256": "0fdc2a0070df3efcd1aa1dfc0dfb77a1908c50c0580e282269008d00618fc59a"
+        },
+        {
+          "nativeId": "502682",
+          "geometrySha256": "fec204bfd9c419788967b1efac7c48024a7d4c431c3356505d592ab94d71beaf"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 26
+    },
+    {
+      "cell": 3,
+      "bboxWgs84": [
+        -51.07,
+        0.043,
+        -51.069,
+        0.044
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "returnedNativeIds": [
+        "502145",
+        "503048",
+        "503050",
+        "503059",
+        "503144",
+        "503175",
+        "503176",
+        "527009",
+        "527011",
+        "527012",
+        "527354",
+        "527007",
+        "503043",
+        "503058",
+        "503044",
+        "502144",
+        "502143",
+        "503049"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502145",
+          "geometrySha256": "7c10cad78986e8a16c595ee0c198c941da89d519d8d97e32b4e051a8447a3004"
+        },
+        {
+          "nativeId": "503048",
+          "geometrySha256": "6403d300b3b5fcb3370ca31996b5b93a4d7d384b31b14a2e53332416277bac9e"
+        },
+        {
+          "nativeId": "503050",
+          "geometrySha256": "7f1ac097ec9efe626584c656bb54917f4241459caf9e62e45eeda09054346c74"
+        },
+        {
+          "nativeId": "503059",
+          "geometrySha256": "8743a994bf04d2d3c8e8244736d328099cb524debd80418de1c1906aaa711c13"
+        },
+        {
+          "nativeId": "503144",
+          "geometrySha256": "d6fc91d1c10c9675de90cd59dbfb0fc9fb1dbd682c4b8f3e8df91dea32161a15"
+        },
+        {
+          "nativeId": "503175",
+          "geometrySha256": "15bbcee561521943d6185ee42f2d844e1b14ca063a74d2a688fe71bc32d9b60c"
+        },
+        {
+          "nativeId": "503176",
+          "geometrySha256": "e87b539344ddb37507beebeafca020162cd7e2a719552ba584c0e75183edbd61"
+        },
+        {
+          "nativeId": "527009",
+          "geometrySha256": "b835d4f70ecdb4b5ff54ea5f35f02b61a54eaf7f171a6a20bd8df84df3a05670"
+        },
+        {
+          "nativeId": "527011",
+          "geometrySha256": "0f3e08970fa41ce084cb9e304354f4b2dbddd2291ef85d732764d3544ce07dce"
+        },
+        {
+          "nativeId": "527012",
+          "geometrySha256": "5488a59ed0e8240573f902d03704fbea952fea0111a60cbd8e7f88e6c1256a7d"
+        },
+        {
+          "nativeId": "527354",
+          "geometrySha256": "55e566ebaa18e260b18993cb3bc8d02c2954391086009b080101ed1075927fa1"
+        },
+        {
+          "nativeId": "527007",
+          "geometrySha256": "ff685f4776c300be79dd57ac78c62e1fc259a67598ab5266ff86201e5e52d9a7"
+        },
+        {
+          "nativeId": "503043",
+          "geometrySha256": "8437d58661deee0fb0682ec52f8b3e02196914b60c30ffe112afbee4dd4cbcf4"
+        },
+        {
+          "nativeId": "503058",
+          "geometrySha256": "94c13f0307f6bfd94f298d3f12aecf9b6ad70287039dfd7052e4fc49ee661c96"
+        },
+        {
+          "nativeId": "503044",
+          "geometrySha256": "a295038d9d22860d588c7ce6901cc06651fabcb5237c035229bbf3fb3ac22aa6"
+        },
+        {
+          "nativeId": "502144",
+          "geometrySha256": "7180125bb363cf2c9e33929f02f165d00ba464ce6310561f72538736a9def72c"
+        },
+        {
+          "nativeId": "502143",
+          "geometrySha256": "dd5c543e0862b4d9f28d4152c5fbeb3dfc295f0c0953ba80dc8a43d1bcd77981"
+        },
+        {
+          "nativeId": "503049",
+          "geometrySha256": "980a5b7e3e636bcb09cd705c8988e283092381a26f5a10dbb4039136d8f53091"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 18
+    },
+    {
+      "cell": 4,
+      "bboxWgs84": [
+        -51.069,
+        0.043,
+        -51.068,
+        0.044
+      ],
+      "complete": false,
+      "featureCount": null,
+      "returnedNativeIds": [],
+      "requestCount": 2,
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "status": 502
+    },
+    {
+      "cell": 5,
+      "bboxWgs84": [
+        -51.068,
+        0.043,
+        -51.067,
+        0.044
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "returnedNativeIds": [
+        "502141",
+        "502688",
+        "502692",
+        "502693",
+        "503267",
+        "503268",
+        "503271",
+        "503272",
+        "503280",
+        "503282",
+        "527017",
+        "527021",
+        "527365",
+        "527538",
+        "503270",
+        "502139",
+        "606581",
+        "606580",
+        "503279",
+        "503276",
+        "606579"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502141",
+          "geometrySha256": "61b3a15718ddf4d29f1a9a439e4bc566ff0f6f8dd17a3d7cf3b449f46f5132ec"
+        },
+        {
+          "nativeId": "502688",
+          "geometrySha256": "cdafa7ad9932691d75dffdedd98020ee6c688e145f3e05b0af7f8f007e27eb7a"
+        },
+        {
+          "nativeId": "502692",
+          "geometrySha256": "054bd2c0e45cfdc6d201f39ed35914282e4d77fd0fc5a9bb14b7e6a50005597b"
+        },
+        {
+          "nativeId": "502693",
+          "geometrySha256": "dfadbc73b388dda61cc12b5cc5effdc91b26eda0fc25cc56ccae0955efe39d99"
+        },
+        {
+          "nativeId": "503267",
+          "geometrySha256": "86e37b26a1faaf4dad41cd111beab87a1b750039ecd74bc6cbe6d3b2bac9e1ce"
+        },
+        {
+          "nativeId": "503268",
+          "geometrySha256": "b553d40c8f2e84145b9c10d9267d50a4404db456a093f5ba773f82694360a2fb"
+        },
+        {
+          "nativeId": "503271",
+          "geometrySha256": "898ede5ac5868b1e6ca9484786ac86ff2ce3d978b69c76273876c175562b774e"
+        },
+        {
+          "nativeId": "503272",
+          "geometrySha256": "f0e57b63163abf14abe40a1db2ea55d64caf31b8c04f00e7d9f6e55ea610868f"
+        },
+        {
+          "nativeId": "503280",
+          "geometrySha256": "eb788ca2e6cd64af9be2560a978dd8a2ed29e12bbbb81ec992db29e7215ed86c"
+        },
+        {
+          "nativeId": "503282",
+          "geometrySha256": "e59314aa82663665ba2ba4956ea1ca893621141bf4ce08489b6bec778224051d"
+        },
+        {
+          "nativeId": "527017",
+          "geometrySha256": "b8cf1fa85655d64961f6aa7ccaceb58e3b3b9fbec4dcafd35d749b89c48a5602"
+        },
+        {
+          "nativeId": "527021",
+          "geometrySha256": "b2bbb0188c7a59fe7d8b845cd5bc812a8a15330204ab5ad19eb91cb165503779"
+        },
+        {
+          "nativeId": "527365",
+          "geometrySha256": "53bea1f71f99812d5d89166565fa5d0ea5325d80e20e86ab907c64ee1ed07ac7"
+        },
+        {
+          "nativeId": "527538",
+          "geometrySha256": "e9fc32965e238082b54c97fd90ce9d146e4f5f9aeded526e2d548870886d8100"
+        },
+        {
+          "nativeId": "503270",
+          "geometrySha256": "f567e62456a734b8c590ae72f7ff8145475608a79b49a10d0ef76aaf7b4ee0ec"
+        },
+        {
+          "nativeId": "502139",
+          "geometrySha256": "95b54796e79d49bbd8f903f10dcf0c371bcd603f597e94a7b3497211c1c585d1"
+        },
+        {
+          "nativeId": "606581",
+          "geometrySha256": "8201fb04a82c2867f7ef3d6fcb9391c43319f62e326c854dcc0dd4dcea64dfa7"
+        },
+        {
+          "nativeId": "606580",
+          "geometrySha256": "c6edbb4579960164097e97a013d7e65621db330e3d58124d83b027703ee59cd7"
+        },
+        {
+          "nativeId": "503279",
+          "geometrySha256": "579a68f96211258dda02ae3292fc61c275a286caa0a27bfea7a36b588d82c4e7"
+        },
+        {
+          "nativeId": "503276",
+          "geometrySha256": "5e2db75c66a4d28b76e0a1b9846d21a1850f292f762ec04ce7f78c70fd78186c"
+        },
+        {
+          "nativeId": "606579",
+          "geometrySha256": "e6dac33d154334a4f3ff6a39f0bd8f21d58383ad9ff040aa972b614c335db6fe"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 21
+    },
+    {
+      "cell": 6,
+      "bboxWgs84": [
+        -51.07,
+        0.044,
+        -51.069,
+        0.045
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "returnedNativeIds": [
+        "502129",
+        "502130",
+        "502132",
+        "502142",
+        "502676",
+        "503122",
+        "503123",
+        "503125",
+        "503126",
+        "527344",
+        "527353",
+        "527524",
+        "527525",
+        "503141",
+        "503128",
+        "529699",
+        "503124",
+        "503127",
+        "539719"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502129",
+          "geometrySha256": "9e502c3b7dd123a7113a1ad54bba379ca9add23dbb345729c2018e4bcaa54928"
+        },
+        {
+          "nativeId": "502130",
+          "geometrySha256": "6042be1c06d049e1cce97487909991939761833084a84cffd77ce9ad8d0dc636"
+        },
+        {
+          "nativeId": "502132",
+          "geometrySha256": "259eac308a936db1d283581c837ff720f8a9b7f18f818f48e467cd3aa1aa9522"
+        },
+        {
+          "nativeId": "502142",
+          "geometrySha256": "b5b152bf0b8ed57cdea83003fa3e446c039ae2066fc2d735ebdd0261931606ec"
+        },
+        {
+          "nativeId": "502676",
+          "geometrySha256": "472326e50fe495f7f6fa9d739aeee23fb4c56cbb0a3617fdfc3971aa5ec13a6d"
+        },
+        {
+          "nativeId": "503122",
+          "geometrySha256": "2406b021c7068db1ede23dff4ba955b9ffd3066cb99edda4eedae5befddfcbb3"
+        },
+        {
+          "nativeId": "503123",
+          "geometrySha256": "dd342d23f9d57ae9716572d39e17d19d4ca050974e9239cf6507affb2bc9f1cc"
+        },
+        {
+          "nativeId": "503125",
+          "geometrySha256": "969abfdf56b3ddf9978cba3abb97afba1617d18baa57a69f190a51934bc247a1"
+        },
+        {
+          "nativeId": "503126",
+          "geometrySha256": "36a80b347cff807f06679d8d932d17f2b01d3d3b8738de9cd0663004c23b4248"
+        },
+        {
+          "nativeId": "527344",
+          "geometrySha256": "50f8fd39d0ab7f205c77e7d67d57a78dcd5814c5cad070cc231ea33d4be92d4d"
+        },
+        {
+          "nativeId": "527353",
+          "geometrySha256": "227c126ad29e343e1f15ce54816122aadec5bf003fd47898d6237eb612ba0195"
+        },
+        {
+          "nativeId": "527524",
+          "geometrySha256": "9ab4aac849e56a5b9349a81412ae2bf8d6aa151e68870f0563e429a846cb3182"
+        },
+        {
+          "nativeId": "527525",
+          "geometrySha256": "a40ba590c86ab2bb731da742db73be8ad2979feaa4a34c3a0d50d26e678d3172"
+        },
+        {
+          "nativeId": "503141",
+          "geometrySha256": "ef82d6d3475666ee312abf5ad97c6f57a15881eefc517ac6dad25cb937c3c115"
+        },
+        {
+          "nativeId": "503128",
+          "geometrySha256": "f88ae6bfd92c3d4853b0c9f85f3e7a0140a288b70247a642720c049446a8bc89"
+        },
+        {
+          "nativeId": "529699",
+          "geometrySha256": "41be9d9924f7828ba8ddc0b535012e55e778816f8acdd35a39a31b49a9fc3ff2"
+        },
+        {
+          "nativeId": "503124",
+          "geometrySha256": "4448f42aae7e2652874e4d3bb8be4b1c7712b494670e799ab0983cbe39dabff4"
+        },
+        {
+          "nativeId": "503127",
+          "geometrySha256": "c74dc9a0737d877189376ad362fd32de155cf29c22333abd656ba8bd8e28c5df"
+        },
+        {
+          "nativeId": "539719",
+          "geometrySha256": "a591efffd83adbd0179ce8906b4f0533e0fa95101e8a728f5a21db53ac899570"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 19
+    },
+    {
+      "cell": 7,
+      "bboxWgs84": [
+        -51.069,
+        0.044,
+        -51.068,
+        0.045
+      ],
+      "complete": true,
+      "featureCount": 25,
+      "returnedNativeIds": [
+        "502128",
+        "502132",
+        "502133",
+        "503129",
+        "503131",
+        "503132",
+        "503134",
+        "503135",
+        "503136",
+        "503138",
+        "503142",
+        "527005",
+        "527344",
+        "502127",
+        "503141",
+        "527345",
+        "503139",
+        "503133",
+        "503140",
+        "503137",
+        "527006",
+        "503130",
+        "539635",
+        "503143",
+        "539719"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502128",
+          "geometrySha256": "e3878338da893acd661e1019e6dccdb90457435f0cc9566bc256d554da713315"
+        },
+        {
+          "nativeId": "502132",
+          "geometrySha256": "259eac308a936db1d283581c837ff720f8a9b7f18f818f48e467cd3aa1aa9522"
+        },
+        {
+          "nativeId": "502133",
+          "geometrySha256": "8afeeedf014ad859d075cb3823fde1ce415afbf2aab15d0289d08e91e50d6c06"
+        },
+        {
+          "nativeId": "503129",
+          "geometrySha256": "1dac0a7f0bfa45589dc751532e719bb1c53daf1bd0027d7be8ce4c960c8d22e1"
+        },
+        {
+          "nativeId": "503131",
+          "geometrySha256": "d21f7d2f5a546aa4929ef2724d6fc97059f8b0f0f095d3beb715d75fe05d8387"
+        },
+        {
+          "nativeId": "503132",
+          "geometrySha256": "b448c7e96c738e07b8f420ad9a3ee317dbb7aaba36e3156efc1c82f98ed8bd6c"
+        },
+        {
+          "nativeId": "503134",
+          "geometrySha256": "86876a55a0efb5fe6975d0d8515115d641e49529f9e8c5ee4c9de4efd64deebc"
+        },
+        {
+          "nativeId": "503135",
+          "geometrySha256": "ac10d2109b0a70a0166f95a5e011584813c0b00b583fdc31b76172c2433dbe8a"
+        },
+        {
+          "nativeId": "503136",
+          "geometrySha256": "3566c0164096085c081b9ea2ab615f5c1221537f120b6b2a4544e63a1e57569f"
+        },
+        {
+          "nativeId": "503138",
+          "geometrySha256": "3748c0c911b0422e4f3865bf86ed1d9840fe97a8314c58f5e18d2d7f41659ca5"
+        },
+        {
+          "nativeId": "503142",
+          "geometrySha256": "5c3929fa3d77034c54ed3fc82c8797aba47a086cbf0f203c3d796cb975dc94c1"
+        },
+        {
+          "nativeId": "527005",
+          "geometrySha256": "59fbb5d6ea3f40b119fd4a4c840293ffeff573de6e9a8b7f5d4c01c83e4234ce"
+        },
+        {
+          "nativeId": "527344",
+          "geometrySha256": "50f8fd39d0ab7f205c77e7d67d57a78dcd5814c5cad070cc231ea33d4be92d4d"
+        },
+        {
+          "nativeId": "502127",
+          "geometrySha256": "eb155bf62f65c9d4b43b2553573d288c0550704eb0549e3f05b25e1a645a090f"
+        },
+        {
+          "nativeId": "503141",
+          "geometrySha256": "ef82d6d3475666ee312abf5ad97c6f57a15881eefc517ac6dad25cb937c3c115"
+        },
+        {
+          "nativeId": "527345",
+          "geometrySha256": "b4a6b56398ace0b82b83c384969fc28ee26fb9a4d6ac931758c1fcc42952ab94"
+        },
+        {
+          "nativeId": "503139",
+          "geometrySha256": "0816a6c0ed80f219f7f6631f9a82b4f0ffe8ebdb272a36cd8516b2c1c5dc1ed8"
+        },
+        {
+          "nativeId": "503133",
+          "geometrySha256": "adf7fe1efc3b04690313ba48030e42c37814c61fffbd70d542cd369218f03ff3"
+        },
+        {
+          "nativeId": "503140",
+          "geometrySha256": "9b1d4e4b6e8d3f04a7263f7bae24d4bfccf8200539a0e45973c3ba0b0e8d5ca5"
+        },
+        {
+          "nativeId": "503137",
+          "geometrySha256": "c06ad52acb55dee94ae32663fd37633a74ee1aefef34f45c5f375d60cfa0a58e"
+        },
+        {
+          "nativeId": "527006",
+          "geometrySha256": "73409fd4f1a874f45fc3362de24cd49f75f88ee92cc0651bf688a6267fc4e488"
+        },
+        {
+          "nativeId": "503130",
+          "geometrySha256": "ee5c6175f6a02e18b5cb60d4ccc4242c1aca8864dc9304d4efc3499055c2a92e"
+        },
+        {
+          "nativeId": "539635",
+          "geometrySha256": "92612a8370c9bc77123d00fdd63716e25139c579654b1b8d4d01ebd781f077a2"
+        },
+        {
+          "nativeId": "503143",
+          "geometrySha256": "8e124982a859a7f1582c25b8f5a0a61855f774b6fb2517732adc9610428572b8"
+        },
+        {
+          "nativeId": "539719",
+          "geometrySha256": "a591efffd83adbd0179ce8906b4f0533e0fa95101e8a728f5a21db53ac899570"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 25
+    },
+    {
+      "cell": 8,
+      "bboxWgs84": [
+        -51.068,
+        0.044,
+        -51.067,
+        0.045
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "returnedNativeIds": [
+        "502141",
+        "503131",
+        "503132",
+        "503134",
+        "503135",
+        "503282",
+        "527016",
+        "527017",
+        "527021",
+        "527022",
+        "539636",
+        "503285",
+        "604838",
+        "527023",
+        "604912",
+        "539635",
+        "604813",
+        "604815",
+        "604913"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502141",
+          "geometrySha256": "61b3a15718ddf4d29f1a9a439e4bc566ff0f6f8dd17a3d7cf3b449f46f5132ec"
+        },
+        {
+          "nativeId": "503131",
+          "geometrySha256": "d21f7d2f5a546aa4929ef2724d6fc97059f8b0f0f095d3beb715d75fe05d8387"
+        },
+        {
+          "nativeId": "503132",
+          "geometrySha256": "b448c7e96c738e07b8f420ad9a3ee317dbb7aaba36e3156efc1c82f98ed8bd6c"
+        },
+        {
+          "nativeId": "503134",
+          "geometrySha256": "86876a55a0efb5fe6975d0d8515115d641e49529f9e8c5ee4c9de4efd64deebc"
+        },
+        {
+          "nativeId": "503135",
+          "geometrySha256": "ac10d2109b0a70a0166f95a5e011584813c0b00b583fdc31b76172c2433dbe8a"
+        },
+        {
+          "nativeId": "503282",
+          "geometrySha256": "e59314aa82663665ba2ba4956ea1ca893621141bf4ce08489b6bec778224051d"
+        },
+        {
+          "nativeId": "527016",
+          "geometrySha256": "e319a71dd0c7fb65f258cc2aeeaaa22fdf96b2860026a8f69a50d738a8189a11"
+        },
+        {
+          "nativeId": "527017",
+          "geometrySha256": "b8cf1fa85655d64961f6aa7ccaceb58e3b3b9fbec4dcafd35d749b89c48a5602"
+        },
+        {
+          "nativeId": "527021",
+          "geometrySha256": "b2bbb0188c7a59fe7d8b845cd5bc812a8a15330204ab5ad19eb91cb165503779"
+        },
+        {
+          "nativeId": "527022",
+          "geometrySha256": "77a979bbe6360e11c27ff299d3fccde8e4465c23f8b211151cc962e558a3e3f5"
+        },
+        {
+          "nativeId": "539636",
+          "geometrySha256": "586763105abe997284e8aa27a27c7aedf3c88879fe88942c97b047965a47765c"
+        },
+        {
+          "nativeId": "503285",
+          "geometrySha256": "a9c27b1848be002bceb677b6cfd9138edb4ac17292c21be71e2b7e7e1755fca2"
+        },
+        {
+          "nativeId": "604838",
+          "geometrySha256": "9cc014fd927258b58963d334a6f8ca0c32ec883c45090f4d1356d7199567f783"
+        },
+        {
+          "nativeId": "527023",
+          "geometrySha256": "8bf601af3ba895ea938cf9ecd7cebe7692ded6aae40a398865a3dc80a37d52cc"
+        },
+        {
+          "nativeId": "604912",
+          "geometrySha256": "a1f173de35786d811d9d6143237dc6f505cd5df3cb334889f7f951e64efa4870"
+        },
+        {
+          "nativeId": "539635",
+          "geometrySha256": "92612a8370c9bc77123d00fdd63716e25139c579654b1b8d4d01ebd781f077a2"
+        },
+        {
+          "nativeId": "604813",
+          "geometrySha256": "114f3a36748c74e525f6b3ec3094b90d50c6395e113da987f74f2f92271072e4"
+        },
+        {
+          "nativeId": "604815",
+          "geometrySha256": "c263a55ad85f0d545164509a80401bc3e296675b20dbdce1d72ff243070812c9"
+        },
+        {
+          "nativeId": "604913",
+          "geometrySha256": "690f776bad702d8adc1f55442c34e103989a823ff5b9a810fecc222bb968bf70"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 19
+    },
+    {
+      "cell": 9,
+      "bboxWgs84": [
+        -51.069,
+        0.041,
+        -51.068,
+        0.042
+      ],
+      "complete": false,
+      "featureCount": null,
+      "returnedNativeIds": [],
+      "requestCount": 2,
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "status": 502
+    },
+    {
+      "cell": 10,
+      "bboxWgs84": [
+        -51.069,
+        0.045,
+        -51.068,
+        0.046
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "returnedNativeIds": [
+        "523353",
+        "539635",
+        "523352",
+        "523354",
+        "539719"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "523353",
+          "geometrySha256": "691de6ef99c8ae16fbf7891ed5fd07ffccdc79015c0eea5250da4015a93778da"
+        },
+        {
+          "nativeId": "539635",
+          "geometrySha256": "92612a8370c9bc77123d00fdd63716e25139c579654b1b8d4d01ebd781f077a2"
+        },
+        {
+          "nativeId": "523352",
+          "geometrySha256": "10a77e4e5333e3dc7b70100f8b93a45916988f2a0d6e5407f8172b28c6f80b2d"
+        },
+        {
+          "nativeId": "523354",
+          "geometrySha256": "71f7d5779f50dc8b5ddbbef967067931f43ecabc7a11476ee314b31815e23748"
+        },
+        {
+          "nativeId": "539719",
+          "geometrySha256": "a591efffd83adbd0179ce8906b4f0533e0fa95101e8a728f5a21db53ac899570"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 5
+    },
+    {
+      "cell": 11,
+      "bboxWgs84": [
+        -51.071,
+        0.043,
+        -51.07,
+        0.044
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "returnedNativeIds": [
+        "502929",
+        "521640",
+        "522362",
+        "522363",
+        "522368",
+        "522369",
+        "522448",
+        "526169",
+        "538750",
+        "538751",
+        "539290",
+        "539292",
+        "539293",
+        "522194"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502929",
+          "geometrySha256": "34c3b4f0916604a217e530a243979c2e0c869e1a1f9a6ca635a438104e81d39c"
+        },
+        {
+          "nativeId": "521640",
+          "geometrySha256": "a9c772cc5afdf482b59a73d2d0b10ee9ae5fe53ad90a43ffc55f7cdee73cbcde"
+        },
+        {
+          "nativeId": "522362",
+          "geometrySha256": "e0aff2eded5bbfc0628f47d4e8b901bb6ca70b5e5c47893b19cfdb8f760794e1"
+        },
+        {
+          "nativeId": "522363",
+          "geometrySha256": "cbcb49f0937c0a0a7bac27dda0a49cff848780c68e4f9f71eb4844a0f932e23e"
+        },
+        {
+          "nativeId": "522368",
+          "geometrySha256": "dcea4d894ced684d7e51d28754d077541406841969fab05d4b35480933f8ac3c"
+        },
+        {
+          "nativeId": "522369",
+          "geometrySha256": "3675457038c058986f5e76cf40cdf15b195b837b0c54f5cc6c6c5994665d52c2"
+        },
+        {
+          "nativeId": "522448",
+          "geometrySha256": "5659c6a96eeb6129fe9d8abc58a3a5116de602cf243c70822462c8e435d8d09a"
+        },
+        {
+          "nativeId": "526169",
+          "geometrySha256": "dd3204ec7d11c53e60bc7f3358c47dc2c621e87955e920cd93e7b927502b5f2c"
+        },
+        {
+          "nativeId": "538750",
+          "geometrySha256": "f4d336e05c03ec97e60e443a53afe20465cd14b9a0afe95650765b70f84fb835"
+        },
+        {
+          "nativeId": "538751",
+          "geometrySha256": "e3aaeddccfc5609c237a5be8fc719d9073b7b712669db9912bf5ca559360454e"
+        },
+        {
+          "nativeId": "539290",
+          "geometrySha256": "26f73bb05f37afdaf88cb869b9adef5fc18d2d94fd1817cb0c9668a92e0917f4"
+        },
+        {
+          "nativeId": "539292",
+          "geometrySha256": "4016c2fff7d16fad30ddd6363ae7ba5424fdbcc15db5b99ad030a955845fd558"
+        },
+        {
+          "nativeId": "539293",
+          "geometrySha256": "512f17cb4998259645acc64e5f3792971b81f34159087ecfcd1787d4cd3879bb"
+        },
+        {
+          "nativeId": "522194",
+          "geometrySha256": "2dd44c960c7d8151c7c66d0a3e08fb4b849fe2b7e6e6fa574ef7deb9dbc61872"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 14
+    },
+    {
+      "cell": 12,
+      "bboxWgs84": [
+        -51.067,
+        0.043,
+        -51.066,
+        0.044
+      ],
+      "complete": true,
+      "featureCount": 33,
+      "returnedNativeIds": [
+        "502140",
+        "502687",
+        "502688",
+        "502880",
+        "502881",
+        "502932",
+        "502933",
+        "503269",
+        "503272",
+        "503277",
+        "503278",
+        "503283",
+        "503286",
+        "503287",
+        "527020",
+        "527021",
+        "527363",
+        "502146",
+        "527014",
+        "503274",
+        "503281",
+        "527015",
+        "537515",
+        "503273",
+        "527364",
+        "503275",
+        "502931",
+        "502691",
+        "502690",
+        "503284",
+        "527356",
+        "502689",
+        "503276"
+      ],
+      "geometryHashes": [
+        {
+          "nativeId": "502140",
+          "geometrySha256": "f0a5ef5d173f40cea106074e9e70f89bd9dfdd664db519874f87212b3519eac0"
+        },
+        {
+          "nativeId": "502687",
+          "geometrySha256": "5ffdc14ff3fc7b420eaf6da3a8409807bbf2a416070a8905904b52dfe2584ab5"
+        },
+        {
+          "nativeId": "502688",
+          "geometrySha256": "cdafa7ad9932691d75dffdedd98020ee6c688e145f3e05b0af7f8f007e27eb7a"
+        },
+        {
+          "nativeId": "502880",
+          "geometrySha256": "38b961fdba8e73c851a0fc07e54db6d4506054d28855485f1889c545aeebf7b2"
+        },
+        {
+          "nativeId": "502881",
+          "geometrySha256": "8caee85e5874146ead5556afe84ec802e79e29b015d5d4ec290b88402d5cd485"
+        },
+        {
+          "nativeId": "502932",
+          "geometrySha256": "6cd8782cbe5efb160f75b7c30627fb80088faf78178708315f9163845a5dcdbf"
+        },
+        {
+          "nativeId": "502933",
+          "geometrySha256": "ac0f4709c531bb7ee2d53e353246143f0558a8ad771e5002f91d9c8a2f8bac4a"
+        },
+        {
+          "nativeId": "503269",
+          "geometrySha256": "9ba437a3983ab9a8f4f51ee9c5e4ff6802fd0a5609abe0781cd9a1f8605bff88"
+        },
+        {
+          "nativeId": "503272",
+          "geometrySha256": "f0e57b63163abf14abe40a1db2ea55d64caf31b8c04f00e7d9f6e55ea610868f"
+        },
+        {
+          "nativeId": "503277",
+          "geometrySha256": "b8045746145f7193422036eab5b6fb9c482bed4bbdb8e23b450e37bfabb6fe85"
+        },
+        {
+          "nativeId": "503278",
+          "geometrySha256": "9fe8d3a5bc0bbe6b8680a6c55f5c836696a7eb9b566739bb800512aaba32daef"
+        },
+        {
+          "nativeId": "503283",
+          "geometrySha256": "ede669c80c77103ffbf262629d0bdafb8fa7fbbcb21aff6da7e32fca8e4ad4bf"
+        },
+        {
+          "nativeId": "503286",
+          "geometrySha256": "e7c5e65b65484f08b3c1babdcf7cfd1a672bf6ed39abf320f4dda70e7f04dd56"
+        },
+        {
+          "nativeId": "503287",
+          "geometrySha256": "5b8b6fe1f112d9fb473571e24d294d2cbffe9271e946f231f240c44568a261f8"
+        },
+        {
+          "nativeId": "527020",
+          "geometrySha256": "8f6b66c5926ca62268b106137df48aca9b0133a552168d6e41b5644494692884"
+        },
+        {
+          "nativeId": "527021",
+          "geometrySha256": "b2bbb0188c7a59fe7d8b845cd5bc812a8a15330204ab5ad19eb91cb165503779"
+        },
+        {
+          "nativeId": "527363",
+          "geometrySha256": "9ec35ce2b26b9e2a4c70bb632b484cfe824807d031b15c96d45466e42abb1977"
+        },
+        {
+          "nativeId": "502146",
+          "geometrySha256": "14b8944bd5b9c7d8ecc7bf53248302ebf075fbd58af7a7df0ae0acbf0ae9d0d8"
+        },
+        {
+          "nativeId": "527014",
+          "geometrySha256": "3b849c0b000b5a9a79174bdf26079c71ff4b04852f055327cdd8fda9ef5561c9"
+        },
+        {
+          "nativeId": "503274",
+          "geometrySha256": "97f7ce7de29e06c8e498c4885042c70d63c0f7b28d5761ddc7fb2ec0985573ac"
+        },
+        {
+          "nativeId": "503281",
+          "geometrySha256": "f53cdc56fc3242c21f337bb529fa12ccc897ccba992d5086a15b9fab3d8d4761"
+        },
+        {
+          "nativeId": "527015",
+          "geometrySha256": "20d1d780287f34263fd9f59d470a221a5593bd9e89d7b2af739962988ef1c0d1"
+        },
+        {
+          "nativeId": "537515",
+          "geometrySha256": "522ff43f263bb1372bc32b4f0729ddd53c589cf989c8adaddf8a5bf22a00a1d5"
+        },
+        {
+          "nativeId": "503273",
+          "geometrySha256": "b9d26f46c22cffbadad41fbc147d3e3f6d11aa4b6b37c605ab92d8abbb79255b"
+        },
+        {
+          "nativeId": "527364",
+          "geometrySha256": "5ba6c6154b8620ee21b2b9d2d977c74d3821d13fdbf5f325797e82a4e7d0bf6e"
+        },
+        {
+          "nativeId": "503275",
+          "geometrySha256": "970a1218d87e43f119de09e008a6a6796e863e9ed0ac9babfd8101966b237454"
+        },
+        {
+          "nativeId": "502931",
+          "geometrySha256": "ba3d52686c31ffb86cedc1a5ac2df53e91ce9df77ce8862482d18bd0548349fa"
+        },
+        {
+          "nativeId": "502691",
+          "geometrySha256": "c2c073b71e0b3a3771e2321a885055a447b6d77347435161e7878d4c4423f5b6"
+        },
+        {
+          "nativeId": "502690",
+          "geometrySha256": "88de99d115b1f1bd94abb59ec86302bc8b3ee147f866a01e47b04db361ffa938"
+        },
+        {
+          "nativeId": "503284",
+          "geometrySha256": "c1f5ff31ddc983c6f4726f806c2ea472e97428c2e51cbf3f6ce762abac848975"
+        },
+        {
+          "nativeId": "527356",
+          "geometrySha256": "c87af14d7862f7789871d3327d5727b3e272648e1d3bb9c341bf3765ae5bcb15"
+        },
+        {
+          "nativeId": "502689",
+          "geometrySha256": "d4342554e825ce9e7f2362ba3f8dfe290412e38f518e86bd588342123f1f180b"
+        },
+        {
+          "nativeId": "503276",
+          "geometrySha256": "5e2db75c66a4d28b76e0a1b9846d21a1850f292f762ec04ce7f78c70fd78186c"
+        }
+      ],
+      "requestCount": 3,
+      "sourceRows": 33
+    }
+  ],
+  "tests": [
+    {
+      "name": "thirteen-aligned-bounded-cells-complete",
+      "passed": false,
+      "completeCells": 9,
+      "cellCount": 13,
+      "perCellCounts": [
+        null,
+        null,
+        26,
+        18,
+        null,
+        21,
+        19,
+        25,
+        19,
+        null,
+        5,
+        14,
+        33
+      ]
+    },
+    {
+      "name": "cross-cell-geometry-hash-stability",
+      "passed": false,
+      "distinctNativeIds": 161,
+      "duplicateGeometryGroups": []
+    },
+    {
+      "name": "all-distinct-native-ids-fresh-read-with-matching-full-hashes",
+      "passed": true,
+      "requestedDistinctNativeIds": 161,
+      "independentReads": 161,
+      "batches": [
+        {
+          "start": 0,
+          "requested": 80,
+          "returned": 80,
+          "complete": true,
+          "absentIds": [],
+          "mismatches": [],
+          "hashesMatch": true
+        },
+        {
+          "start": 80,
+          "requested": 80,
+          "returned": 80,
+          "complete": true,
+          "absentIds": [],
+          "mismatches": [],
+          "hashesMatch": true
+        },
+        {
+          "start": 160,
+          "requested": 1,
+          "returned": 1,
+          "complete": true,
+          "absentIds": [],
+          "mismatches": [],
+          "hashesMatch": true
+        }
+      ]
+    },
+    {
+      "name": "explicit-synthetic-absence",
+      "passed": true,
+      "nativeId": "2147483647",
+      "complete": true,
+      "returnedFeatureCount": 0,
+      "absentIds": [
+        "2147483647"
+      ]
+    },
+    {
+      "name": "forced-object-id-page-size-1",
+      "passed": true,
+      "pageSize": 1,
+      "chosenNativeIds": [
+        "502127",
+        "502128",
+        "502129",
+        "502130",
+        "502132",
+        "502133",
+        "502138",
+        "502139"
+      ],
+      "complete": true,
+      "returnedFeatureCount": 8,
+      "expectedPageCount": 8,
+      "actualGeometryPageRequestCount": 8,
+      "absentIds": [],
+      "mismatches": [],
+      "idsAndFullGeometryHashesMatch": true
+    },
+    {
+      "name": "nearby-complete-parcel-footprint-query",
+      "passed": true,
+      "complete": true,
+      "featureCount": 3,
+      "intersectingNativeIds": [
+        "527008",
+        "527009",
+        "527011"
+      ],
+      "targetPresent": true,
+      "targetFullGeometryHashMatches": true,
+      "error": null,
+      "targetNativeId": "527009",
+      "targetGeometrySha256": "b835d4f70ecdb4b5ff54ea5f35f02b61a54eaf7f171a6a20bd8df84df3a05670"
+    },
+    {
+      "name": "complete-nearby-parcel-proposal-binding",
+      "passed": true,
+      "coverage": "complete",
+      "siteM2": 384.3,
+      "parcelCount": 1,
+      "parcelIds": [
+        "BR-MACAPA-SIT-LOT-527009"
+      ],
+      "targetParcelId": "BR-MACAPA-SIT-LOT-527009",
+      "targetOverlapM2": 384.298,
+      "touchedCount": 0,
+      "unsurveyedM2": 0,
+      "toleranceM": 0,
+      "complete": true
+    },
+    {
+      "name": "bounded-topology-metadata",
+      "passed": true,
+      "validRingClosureAndThreeUniqueVertices": true,
+      "selfIntersectionFree": true,
+      "duplicateGeometryGroupCount": 0,
+      "positiveAreaOverlapCount": 0,
+      "topologyOperationErrorCount": 0
+    },
+    {
+      "name": "only-safe-id-attribute-returned",
+      "passed": true,
+      "total": 64,
+      "httpStatuses": {
+        "200": 64
+      },
+      "anyUnexpectedFeatureFields": false,
+      "fieldsRequestedAndExpected": [
+        "idlote"
+      ],
+      "stages": [
+        "current-layer-metadata",
+        "normal-grid-cell-0",
+        "normal-grid-cell-1",
+        "normal-grid-cell-2",
+        "normal-grid-cell-3",
+        "normal-grid-cell-4",
+        "normal-grid-cell-5",
+        "normal-grid-cell-6",
+        "normal-grid-cell-7",
+        "normal-grid-cell-8",
+        "normal-grid-cell-9",
+        "normal-grid-cell-10",
+        "normal-grid-cell-11",
+        "normal-grid-cell-12",
+        "fresh-exact-native-ids-0",
+        "fresh-exact-native-ids-80",
+        "fresh-exact-native-ids-160",
+        "explicit-synthetic-absence",
+        "forced-object-id-page-size-1",
+        "nearby-target-exact-id-full-footprint",
+        "nearby-target-proposal-binding",
+        "nearby-target-native-epsg31982-read"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "stage": "current-layer-metadata",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27?f=pjson",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "bytes": 2924,
+      "bodySha256": "151e0c3835dc618168c24f89d87609170076d97ff85957a378cb51048e080d68",
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.07%2C0.042%2C-51.069%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "f72ead787aa237120c8b5149fa33647c46d3297f90daab36bcce8e91bc796571",
+      "count": 43,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.07%2C0.042%2C-51.069%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 345,
+      "bodySha256": "24654e505fea947f9b9c2254c9bb8523a76779a85810c77926baf51da5715690",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502135,
+        503042,
+        503046,
+        503047,
+        503048,
+        503050,
+        503052,
+        503059,
+        503087,
+        503088,
+        503089,
+        503090,
+        503092,
+        503093,
+        526998,
+        503091,
+        526997,
+        503043,
+        502134,
+        503045,
+        503058,
+        503044,
+        605262,
+        605262,
+        605262,
+        605262,
+        605262,
+        605261,
+        605261,
+        605261,
+        605261,
+        605261,
+        605261,
+        605261,
+        605261,
+        605261,
+        605261,
+        605265,
+        605265,
+        605265,
+        605265,
+        605265,
+        503049
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.042%2C-51.068%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "52aa0abe7b47012a5285efab6e22093d351180321938c1cdd985859a4bda1c0d",
+      "count": 33,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.042%2C-51.068%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 275,
+      "bodySha256": "fb66657ae2c0070f201fb4f094ad1f67c045673e3e2c3f0df2f361b33d6a6f72",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502136,
+        502137,
+        502475,
+        502476,
+        502677,
+        502678,
+        502679,
+        502723,
+        502724,
+        503050,
+        503051,
+        503052,
+        503053,
+        503054,
+        503057,
+        526978,
+        526999,
+        605273,
+        502134,
+        605267,
+        523735,
+        605274,
+        605274,
+        605274,
+        605274,
+        605274,
+        503055,
+        503060,
+        605265,
+        605265,
+        605265,
+        605265,
+        605265
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-2",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.068%2C0.042%2C-51.067%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "3cf92e3a7cbce67954d43f0c8bbb4fb00b27074dada63d419a01d4aae8e6db81",
+      "count": 26,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-2",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.068%2C0.042%2C-51.067%2C0.043&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 226,
+      "bodySha256": "a21dd1724888a2852a1750ac7b86500adef3dd7deadc25788711e2b9bd384739",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502138,
+        502681,
+        503062,
+        503072,
+        503074,
+        504071,
+        537495,
+        537499,
+        537500,
+        572372,
+        572375,
+        504072,
+        503073,
+        503064,
+        502680,
+        503061,
+        503082,
+        572366,
+        576811,
+        503063,
+        502683,
+        537496,
+        576810,
+        503084,
+        503083,
+        502682
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-2",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502138%2C502681%2C503062%2C503072%2C503074%2C504071%2C537495%2C537499%2C537500%2C572372%2C572375%2C504072%2C503073%2C503064%2C502680%2C503061%2C503082%2C572366%2C576811%2C503063%2C502683%2C537496%2C576810%2C503084%2C503083%2C502682",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 16949,
+      "bodySha256": "0fd44b669bbd460618e0a60802b290ab0df00113b7e9a0cc24ca802cdf75f8f6",
+      "featureCount": 26,
+      "returnedRows": [
+        {
+          "objectId": 502138,
+          "nativeId": 502138,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502681,
+          "nativeId": 502681,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503062,
+          "nativeId": 503062,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503072,
+          "nativeId": 503072,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503074,
+          "nativeId": 503074,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 504071,
+          "nativeId": 504071,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537495,
+          "nativeId": 537495,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537499,
+          "nativeId": 537499,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537500,
+          "nativeId": 537500,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 572372,
+          "nativeId": 572372,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 572375,
+          "nativeId": 572375,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 504072,
+          "nativeId": 504072,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503073,
+          "nativeId": 503073,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503064,
+          "nativeId": 503064,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502680,
+          "nativeId": 502680,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503061,
+          "nativeId": 503061,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503082,
+          "nativeId": 503082,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 572366,
+          "nativeId": 572366,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 576811,
+          "nativeId": 576811,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503063,
+          "nativeId": 503063,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502683,
+          "nativeId": 502683,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537496,
+          "nativeId": 537496,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 576810,
+          "nativeId": 576810,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503084,
+          "nativeId": 503084,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503083,
+          "nativeId": 503083,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502682,
+          "nativeId": 502682,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-3",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.07%2C0.043%2C-51.069%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "19f8817224a7a07445208b8738e329b10f123cce8737a134a2c1048911fa83cc",
+      "count": 18,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-3",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.07%2C0.043%2C-51.069%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 170,
+      "bodySha256": "9dc9e5f5ad2c00e696136a393bbb55763da910da47ff798e5719d2d7cee8c1e1",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502145,
+        503048,
+        503050,
+        503059,
+        503144,
+        503175,
+        503176,
+        527009,
+        527011,
+        527012,
+        527354,
+        527007,
+        503043,
+        503058,
+        503044,
+        502144,
+        502143,
+        503049
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-3",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502145%2C503048%2C503050%2C503059%2C503144%2C503175%2C503176%2C527009%2C527011%2C527012%2C527354%2C527007%2C503043%2C503058%2C503044%2C502144%2C502143%2C503049",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 13197,
+      "bodySha256": "9977e24daf45ac403d459188f52118f497927d784ebfa51ee65dd41bb3db1771",
+      "featureCount": 18,
+      "returnedRows": [
+        {
+          "objectId": 502145,
+          "nativeId": 502145,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503048,
+          "nativeId": 503048,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503050,
+          "nativeId": 503050,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503059,
+          "nativeId": 503059,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503144,
+          "nativeId": 503144,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503175,
+          "nativeId": 503175,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503176,
+          "nativeId": 503176,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527009,
+          "nativeId": 527009,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527011,
+          "nativeId": 527011,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527012,
+          "nativeId": 527012,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527354,
+          "nativeId": 527354,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527007,
+          "nativeId": 527007,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503043,
+          "nativeId": 503043,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503058,
+          "nativeId": 503058,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503044,
+          "nativeId": 503044,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502144,
+          "nativeId": 502144,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502143,
+          "nativeId": 502143,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503049,
+          "nativeId": 503049,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-4",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.043%2C-51.068%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "4d7fa0dcf0b577004dc5203fef7b4cb9af7132f677b6227575588819d5b01de6",
+      "count": 62,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-4",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.043%2C-51.068%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 478,
+      "bodySha256": "af3b31d942ede28cff496ce0c76ec1bb12c1115c22162104054cd40ecb04a793",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502725,
+        502725,
+        502725,
+        502725,
+        502725,
+        502725,
+        503050,
+        527008,
+        527009,
+        527010,
+        527010,
+        527010,
+        527010,
+        527010,
+        527010,
+        527011,
+        527012,
+        527355,
+        527538,
+        527539,
+        537518,
+        527013,
+        605269,
+        605269,
+        605269,
+        605269,
+        605269,
+        605270,
+        605270,
+        605270,
+        605270,
+        605270,
+        605270,
+        605270,
+        605270,
+        605270,
+        605270,
+        503265,
+        605271,
+        605271,
+        605271,
+        605271,
+        605271,
+        605268,
+        605268,
+        605268,
+        605268,
+        605268,
+        606581,
+        503266,
+        606580,
+        605272,
+        605272,
+        605272,
+        605272,
+        605272,
+        605272,
+        605272,
+        605272,
+        605272,
+        605272,
+        606579
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-5",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.068%2C0.043%2C-51.067%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "84f619c76731e5454a16ea7190c363b4ef0a7a81e7d0b6c2058611b81d4cf3b3",
+      "count": 21,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-5",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.068%2C0.043%2C-51.067%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 191,
+      "bodySha256": "f034cf19febcc1935f8895b52804338192dd71c1acec2826f6a9026e1a3375ea",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502141,
+        502688,
+        502692,
+        502693,
+        503267,
+        503268,
+        503271,
+        503272,
+        503280,
+        503282,
+        527017,
+        527021,
+        527365,
+        527538,
+        503270,
+        502139,
+        606581,
+        606580,
+        503279,
+        503276,
+        606579
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-5",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502141%2C502688%2C502692%2C502693%2C503267%2C503268%2C503271%2C503272%2C503280%2C503282%2C527017%2C527021%2C527365%2C527538%2C503270%2C502139%2C606581%2C606580%2C503279%2C503276%2C606579",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 14983,
+      "bodySha256": "bfafad02102eadcc80fc63851c1ce0de7c945ea8be4cf271e446b3be66a553a0",
+      "featureCount": 21,
+      "returnedRows": [
+        {
+          "objectId": 502141,
+          "nativeId": 502141,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502688,
+          "nativeId": 502688,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502692,
+          "nativeId": 502692,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502693,
+          "nativeId": 502693,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503267,
+          "nativeId": 503267,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503268,
+          "nativeId": 503268,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503271,
+          "nativeId": 503271,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503272,
+          "nativeId": 503272,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503280,
+          "nativeId": 503280,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503282,
+          "nativeId": 503282,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527017,
+          "nativeId": 527017,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527021,
+          "nativeId": 527021,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527365,
+          "nativeId": 527365,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527538,
+          "nativeId": 527538,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503270,
+          "nativeId": 503270,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502139,
+          "nativeId": 502139,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 606581,
+          "nativeId": 606581,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 606580,
+          "nativeId": 606580,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503279,
+          "nativeId": 503279,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503276,
+          "nativeId": 503276,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 606579,
+          "nativeId": 606579,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-6",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.07%2C0.044%2C-51.069%2C0.045&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "be90a0f9606c3c25a422bc22dc637c2b99af3e4d3b9d9179c5aee6aa78658585",
+      "count": 19,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-6",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.07%2C0.044%2C-51.069%2C0.045&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 177,
+      "bodySha256": "01b0c8200dc6dd53e88980f69e7783a59747e564514b79945f35bf90e83c46da",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502129,
+        502130,
+        502132,
+        502142,
+        502676,
+        503122,
+        503123,
+        503125,
+        503126,
+        527344,
+        527353,
+        527524,
+        527525,
+        503141,
+        503128,
+        529699,
+        503124,
+        503127,
+        539719
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-6",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502129%2C502130%2C502132%2C502142%2C502676%2C503122%2C503123%2C503125%2C503126%2C527344%2C527353%2C527524%2C527525%2C503141%2C503128%2C529699%2C503124%2C503127%2C539719",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12889,
+      "bodySha256": "c2f66815c8f666e442490bd9b62433fd0dae6459fcb132e8d332d62c33ea0982",
+      "featureCount": 19,
+      "returnedRows": [
+        {
+          "objectId": 502129,
+          "nativeId": 502129,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502130,
+          "nativeId": 502130,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502132,
+          "nativeId": 502132,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502142,
+          "nativeId": 502142,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502676,
+          "nativeId": 502676,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503122,
+          "nativeId": 503122,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503123,
+          "nativeId": 503123,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503125,
+          "nativeId": 503125,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503126,
+          "nativeId": 503126,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527344,
+          "nativeId": 527344,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527353,
+          "nativeId": 527353,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527524,
+          "nativeId": 527524,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527525,
+          "nativeId": 527525,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503141,
+          "nativeId": 503141,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503128,
+          "nativeId": 503128,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 529699,
+          "nativeId": 529699,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503124,
+          "nativeId": 503124,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503127,
+          "nativeId": 503127,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539719,
+          "nativeId": 539719,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-7",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.044%2C-51.068%2C0.045&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "d79e56c6f5cdd06304e4d430c72c4929de1c1231cdc6a25d9ef3d87280df906a",
+      "count": 25,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-7",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.044%2C-51.068%2C0.045&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 219,
+      "bodySha256": "c492ebc1d8a71bda8b795b6d37840b4d15c31e4e58016378dc4ce42afecb7f67",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502128,
+        502132,
+        502133,
+        503129,
+        503131,
+        503132,
+        503134,
+        503135,
+        503136,
+        503138,
+        503142,
+        527005,
+        527344,
+        502127,
+        503141,
+        527345,
+        503139,
+        503133,
+        503140,
+        503137,
+        527006,
+        503130,
+        539635,
+        503143,
+        539719
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-7",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502128%2C502132%2C502133%2C503129%2C503131%2C503132%2C503134%2C503135%2C503136%2C503138%2C503142%2C527005%2C527344%2C502127%2C503141%2C527345%2C503139%2C503133%2C503140%2C503137%2C527006%2C503130%2C539635%2C503143%2C539719",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 21130,
+      "bodySha256": "d83787ebc7802eeff56130bc51d192bc0e2102b299132ec3967b726657ef3347",
+      "featureCount": 25,
+      "returnedRows": [
+        {
+          "objectId": 502128,
+          "nativeId": 502128,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502132,
+          "nativeId": 502132,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502133,
+          "nativeId": 502133,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503129,
+          "nativeId": 503129,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503131,
+          "nativeId": 503131,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503132,
+          "nativeId": 503132,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503134,
+          "nativeId": 503134,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503135,
+          "nativeId": 503135,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503136,
+          "nativeId": 503136,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503138,
+          "nativeId": 503138,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503142,
+          "nativeId": 503142,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527005,
+          "nativeId": 527005,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527344,
+          "nativeId": 527344,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502127,
+          "nativeId": 502127,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503141,
+          "nativeId": 503141,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527345,
+          "nativeId": 527345,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503139,
+          "nativeId": 503139,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503133,
+          "nativeId": 503133,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503140,
+          "nativeId": 503140,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503137,
+          "nativeId": 503137,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527006,
+          "nativeId": 527006,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503130,
+          "nativeId": 503130,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539635,
+          "nativeId": 539635,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503143,
+          "nativeId": 503143,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539719,
+          "nativeId": 539719,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-8",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.068%2C0.044%2C-51.067%2C0.045&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "be90a0f9606c3c25a422bc22dc637c2b99af3e4d3b9d9179c5aee6aa78658585",
+      "count": 19,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-8",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.068%2C0.044%2C-51.067%2C0.045&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 177,
+      "bodySha256": "e77a087394f28e2beb814553b71e5cdf7f2f0f6884d497f9d73e3483d2369e4f",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502141,
+        503131,
+        503132,
+        503134,
+        503135,
+        503282,
+        527016,
+        527017,
+        527021,
+        527022,
+        539636,
+        503285,
+        604838,
+        527023,
+        604912,
+        539635,
+        604813,
+        604815,
+        604913
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-8",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502141%2C503131%2C503132%2C503134%2C503135%2C503282%2C527016%2C527017%2C527021%2C527022%2C539636%2C503285%2C604838%2C527023%2C604912%2C539635%2C604813%2C604815%2C604913",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 23917,
+      "bodySha256": "425c62065fbfc506593c8bde706838217fba0370880bff376ace7275488eb35c",
+      "featureCount": 19,
+      "returnedRows": [
+        {
+          "objectId": 502141,
+          "nativeId": 502141,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503131,
+          "nativeId": 503131,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503132,
+          "nativeId": 503132,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503134,
+          "nativeId": 503134,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503135,
+          "nativeId": 503135,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503282,
+          "nativeId": 503282,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527016,
+          "nativeId": 527016,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527017,
+          "nativeId": 527017,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527021,
+          "nativeId": 527021,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527022,
+          "nativeId": 527022,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539636,
+          "nativeId": 539636,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503285,
+          "nativeId": 503285,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604838,
+          "nativeId": 604838,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527023,
+          "nativeId": 527023,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604912,
+          "nativeId": 604912,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539635,
+          "nativeId": 539635,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604813,
+          "nativeId": 604813,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604815,
+          "nativeId": 604815,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604913,
+          "nativeId": 604913,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-9",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.041%2C-51.068%2C0.042&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "d64031d385f466fa27ac912bb11c2f71c5aecbf3a86e3e24a96d870528901f2c",
+      "count": 38,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-9",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.041%2C-51.068%2C0.042&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 310,
+      "bodySha256": "b0cfdf8d6e6ae9867db557c851f8d253c707f81d8c035712362fcf81a8a36896",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502475,
+        502476,
+        502678,
+        502679,
+        502721,
+        503057,
+        503085,
+        503099,
+        503101,
+        503103,
+        503104,
+        527361,
+        606560,
+        503100,
+        503056,
+        503086,
+        605264,
+        605264,
+        605264,
+        605264,
+        605264,
+        605275,
+        502675,
+        503106,
+        605274,
+        605274,
+        605274,
+        605274,
+        605274,
+        503105,
+        537519,
+        502722,
+        605265,
+        605265,
+        605265,
+        605265,
+        605265,
+        503102
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-10",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.045%2C-51.068%2C0.046&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "bodySha256": "a7b59f14220279bf034e35863bb5c8f0e489b130e214b6eead2d04fe26f2ea8b",
+      "count": 5,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-10",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.069%2C0.045%2C-51.068%2C0.046&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 79,
+      "bodySha256": "3eb9d6e3bd9d9f5a6b71d289c99a80bbf68303914a8d0f66bc7beff8da4b14f8",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        523353,
+        539635,
+        523352,
+        523354,
+        539719
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-10",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=523353%2C539635%2C523352%2C523354%2C539719",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7288,
+      "bodySha256": "222b0dd23d50f25138cc6cb003c6e3d61b5f77055abde98fa9f334590656b435",
+      "featureCount": 5,
+      "returnedRows": [
+        {
+          "objectId": 523353,
+          "nativeId": 523353,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539635,
+          "nativeId": 539635,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 523352,
+          "nativeId": 523352,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 523354,
+          "nativeId": 523354,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539719,
+          "nativeId": 539719,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-11",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.071%2C0.043%2C-51.07%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "d086d346fbb21cce7fd033131dbc339e86fd2416ddc29c726c6708825c13f382",
+      "count": 14,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-11",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.071%2C0.043%2C-51.07%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 142,
+      "bodySha256": "f3879908b3650fa8653b85a1883eed24fd625dd03c5303728ed54d61795c4fa6",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502929,
+        521640,
+        522362,
+        522363,
+        522368,
+        522369,
+        522448,
+        526169,
+        538750,
+        538751,
+        539290,
+        539292,
+        539293,
+        522194
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-11",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502929%2C521640%2C522362%2C522363%2C522368%2C522369%2C522448%2C526169%2C538750%2C538751%2C539290%2C539292%2C539293%2C522194",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 8812,
+      "bodySha256": "ad78f870085b650190e26fe68dfaa471d58363b781883f83cc825aee947f253c",
+      "featureCount": 14,
+      "returnedRows": [
+        {
+          "objectId": 502929,
+          "nativeId": 502929,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 521640,
+          "nativeId": 521640,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522362,
+          "nativeId": 522362,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522363,
+          "nativeId": 522363,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522368,
+          "nativeId": 522368,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522369,
+          "nativeId": 522369,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522448,
+          "nativeId": 522448,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 526169,
+          "nativeId": 526169,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 538750,
+          "nativeId": 538750,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 538751,
+          "nativeId": 538751,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539290,
+          "nativeId": 539290,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539292,
+          "nativeId": 539292,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539293,
+          "nativeId": 539293,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522194,
+          "nativeId": 522194,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "normal-grid-cell-12",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.067%2C0.043%2C-51.066%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "52aa0abe7b47012a5285efab6e22093d351180321938c1cdd985859a4bda1c0d",
+      "count": 33,
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-12",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.067%2C0.043%2C-51.066%2C0.044&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 275,
+      "bodySha256": "9d496ef72d2f0f4c21a5fc1f5733103b08c4c4bb7eb4e787aa062e05294a1385",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502140,
+        502687,
+        502688,
+        502880,
+        502881,
+        502932,
+        502933,
+        503269,
+        503272,
+        503277,
+        503278,
+        503283,
+        503286,
+        503287,
+        527020,
+        527021,
+        527363,
+        502146,
+        527014,
+        503274,
+        503281,
+        527015,
+        537515,
+        503273,
+        527364,
+        503275,
+        502931,
+        502691,
+        502690,
+        503284,
+        527356,
+        502689,
+        503276
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "normal-grid-cell-12",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502140%2C502687%2C502688%2C502880%2C502881%2C502932%2C502933%2C503269%2C503272%2C503277%2C503278%2C503283%2C503286%2C503287%2C527020%2C527021%2C527363%2C502146%2C527014%2C503274%2C503281%2C527015%2C537515%2C503273%2C527364%2C503275%2C502931%2C502691%2C502690%2C503284%2C527356%2C502689%2C503276",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 20918,
+      "bodySha256": "9fbf8eaf2c9162b4c2edf71c319bb54420fc17cfcc4510b01aac0151f1dbdddc",
+      "featureCount": 33,
+      "returnedRows": [
+        {
+          "objectId": 502140,
+          "nativeId": 502140,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502687,
+          "nativeId": 502687,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502688,
+          "nativeId": 502688,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502880,
+          "nativeId": 502880,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502881,
+          "nativeId": 502881,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502932,
+          "nativeId": 502932,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502933,
+          "nativeId": 502933,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503269,
+          "nativeId": 503269,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503272,
+          "nativeId": 503272,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503277,
+          "nativeId": 503277,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503278,
+          "nativeId": 503278,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503283,
+          "nativeId": 503283,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503286,
+          "nativeId": 503286,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503287,
+          "nativeId": 503287,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527020,
+          "nativeId": 527020,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527021,
+          "nativeId": 527021,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527363,
+          "nativeId": 527363,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502146,
+          "nativeId": 502146,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527014,
+          "nativeId": 527014,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503274,
+          "nativeId": 503274,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503281,
+          "nativeId": 503281,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527015,
+          "nativeId": 527015,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537515,
+          "nativeId": 537515,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503273,
+          "nativeId": 503273,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527364,
+          "nativeId": 527364,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503275,
+          "nativeId": 503275,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502931,
+          "nativeId": 502931,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502691,
+          "nativeId": 502691,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502690,
+          "nativeId": 502690,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503284,
+          "nativeId": 503284,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527356,
+          "nativeId": 527356,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502689,
+          "nativeId": 502689,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503276,
+          "nativeId": 503276,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "fresh-exact-native-ids-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28502127%2C502128%2C502129%2C502130%2C502132%2C502133%2C502138%2C502139%2C502140%2C502141%2C502142%2C502143%2C502144%2C502145%2C502146%2C502676%2C502680%2C502681%2C502682%2C502683%2C502687%2C502688%2C502689%2C502690%2C502691%2C502692%2C502693%2C502880%2C502881%2C502929%2C502931%2C502932%2C502933%2C503043%2C503044%2C503048%2C503049%2C503050%2C503058%2C503059%2C503061%2C503062%2C503063%2C503064%2C503072%2C503073%2C503074%2C503082%2C503083%2C503084%2C503122%2C503123%2C503124%2C503125%2C503126%2C503127%2C503128%2C503129%2C503130%2C503131%2C503132%2C503133%2C503134%2C503135%2C503136%2C503137%2C503138%2C503139%2C503140%2C503141%2C503142%2C503143%2C503144%2C503175%2C503176%2C503267%2C503268%2C503269%2C503270%2C503271%29&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "5bd49ef37ce510afa1eeeb39be066abe7002d02ef8f6186efb38ab47741b28c2",
+      "count": 80,
+      "returnedRows": []
+    },
+    {
+      "stage": "fresh-exact-native-ids-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28502127%2C502128%2C502129%2C502130%2C502132%2C502133%2C502138%2C502139%2C502140%2C502141%2C502142%2C502143%2C502144%2C502145%2C502146%2C502676%2C502680%2C502681%2C502682%2C502683%2C502687%2C502688%2C502689%2C502690%2C502691%2C502692%2C502693%2C502880%2C502881%2C502929%2C502931%2C502932%2C502933%2C503043%2C503044%2C503048%2C503049%2C503050%2C503058%2C503059%2C503061%2C503062%2C503063%2C503064%2C503072%2C503073%2C503074%2C503082%2C503083%2C503084%2C503122%2C503123%2C503124%2C503125%2C503126%2C503127%2C503128%2C503129%2C503130%2C503131%2C503132%2C503133%2C503134%2C503135%2C503136%2C503137%2C503138%2C503139%2C503140%2C503141%2C503142%2C503143%2C503144%2C503175%2C503176%2C503267%2C503268%2C503269%2C503270%2C503271%29&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 604,
+      "bodySha256": "dce33db2650a0a4c638564fbbe3adb1f57674148503c0e577018ed7422502d35",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502128,
+        502129,
+        502130,
+        502132,
+        502133,
+        502138,
+        502140,
+        502141,
+        502142,
+        502145,
+        502676,
+        502681,
+        502687,
+        502688,
+        502692,
+        502693,
+        502880,
+        502881,
+        502929,
+        502932,
+        502933,
+        503048,
+        503050,
+        503059,
+        503062,
+        503072,
+        503074,
+        503122,
+        503123,
+        503125,
+        503126,
+        503129,
+        503131,
+        503132,
+        503134,
+        503135,
+        503136,
+        503138,
+        503142,
+        503144,
+        503175,
+        503176,
+        503267,
+        503268,
+        503269,
+        503271,
+        502146,
+        502127,
+        503141,
+        503073,
+        503064,
+        503270,
+        503139,
+        503133,
+        503043,
+        503140,
+        502680,
+        503137,
+        503061,
+        502931,
+        503128,
+        502139,
+        503130,
+        503058,
+        503082,
+        503044,
+        502691,
+        503063,
+        503143,
+        502683,
+        502690,
+        502144,
+        502689,
+        503124,
+        503084,
+        502143,
+        503049,
+        503083,
+        503127,
+        502682
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "fresh-exact-native-ids-0",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502128%2C502129%2C502130%2C502132%2C502133%2C502138%2C502140%2C502141%2C502142%2C502145%2C502676%2C502681%2C502687%2C502688%2C502692%2C502693%2C502880%2C502881%2C502929%2C502932%2C502933%2C503048%2C503050%2C503059%2C503062%2C503072%2C503074%2C503122%2C503123%2C503125%2C503126%2C503129%2C503131%2C503132%2C503134%2C503135%2C503136%2C503138%2C503142%2C503144%2C503175%2C503176%2C503267%2C503268%2C503269%2C503271%2C502146%2C502127%2C503141%2C503073%2C503064%2C503270%2C503139%2C503133%2C503043%2C503140%2C502680%2C503137%2C503061%2C502931%2C503128%2C502139%2C503130%2C503058%2C503082%2C503044%2C502691%2C503063%2C503143%2C502683%2C502690%2C502144%2C502689%2C503124%2C503084%2C502143%2C503049%2C503083%2C503127%2C502682",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 49903,
+      "bodySha256": "3e5659501e14a5f7b923479cb785eedffce65f46865697d2482df7dff0685543",
+      "featureCount": 80,
+      "returnedRows": [
+        {
+          "objectId": 502128,
+          "nativeId": 502128,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502129,
+          "nativeId": 502129,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502130,
+          "nativeId": 502130,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502132,
+          "nativeId": 502132,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502133,
+          "nativeId": 502133,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502138,
+          "nativeId": 502138,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502140,
+          "nativeId": 502140,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502141,
+          "nativeId": 502141,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502142,
+          "nativeId": 502142,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502145,
+          "nativeId": 502145,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502676,
+          "nativeId": 502676,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502681,
+          "nativeId": 502681,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502687,
+          "nativeId": 502687,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502688,
+          "nativeId": 502688,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502692,
+          "nativeId": 502692,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502693,
+          "nativeId": 502693,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502880,
+          "nativeId": 502880,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502881,
+          "nativeId": 502881,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502929,
+          "nativeId": 502929,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502932,
+          "nativeId": 502932,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502933,
+          "nativeId": 502933,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503048,
+          "nativeId": 503048,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503050,
+          "nativeId": 503050,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503059,
+          "nativeId": 503059,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503062,
+          "nativeId": 503062,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503072,
+          "nativeId": 503072,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503074,
+          "nativeId": 503074,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503122,
+          "nativeId": 503122,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503123,
+          "nativeId": 503123,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503125,
+          "nativeId": 503125,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503126,
+          "nativeId": 503126,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503129,
+          "nativeId": 503129,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503131,
+          "nativeId": 503131,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503132,
+          "nativeId": 503132,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503134,
+          "nativeId": 503134,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503135,
+          "nativeId": 503135,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503136,
+          "nativeId": 503136,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503138,
+          "nativeId": 503138,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503142,
+          "nativeId": 503142,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503144,
+          "nativeId": 503144,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503175,
+          "nativeId": 503175,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503176,
+          "nativeId": 503176,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503267,
+          "nativeId": 503267,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503268,
+          "nativeId": 503268,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503269,
+          "nativeId": 503269,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503271,
+          "nativeId": 503271,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502146,
+          "nativeId": 502146,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502127,
+          "nativeId": 502127,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503141,
+          "nativeId": 503141,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503073,
+          "nativeId": 503073,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503064,
+          "nativeId": 503064,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503270,
+          "nativeId": 503270,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503139,
+          "nativeId": 503139,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503133,
+          "nativeId": 503133,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503043,
+          "nativeId": 503043,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503140,
+          "nativeId": 503140,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502680,
+          "nativeId": 502680,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503137,
+          "nativeId": 503137,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503061,
+          "nativeId": 503061,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502931,
+          "nativeId": 502931,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503128,
+          "nativeId": 503128,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502139,
+          "nativeId": 502139,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503130,
+          "nativeId": 503130,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503058,
+          "nativeId": 503058,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503082,
+          "nativeId": 503082,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503044,
+          "nativeId": 503044,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502691,
+          "nativeId": 502691,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503063,
+          "nativeId": 503063,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503143,
+          "nativeId": 503143,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502683,
+          "nativeId": 502683,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502690,
+          "nativeId": 502690,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502144,
+          "nativeId": 502144,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502689,
+          "nativeId": 502689,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503124,
+          "nativeId": 503124,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503084,
+          "nativeId": 503084,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502143,
+          "nativeId": 502143,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503049,
+          "nativeId": 503049,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503083,
+          "nativeId": 503083,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503127,
+          "nativeId": 503127,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 502682,
+          "nativeId": 502682,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "fresh-exact-native-ids-80",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28503272%2C503273%2C503274%2C503275%2C503276%2C503277%2C503278%2C503279%2C503280%2C503281%2C503282%2C503283%2C503284%2C503285%2C503286%2C503287%2C504071%2C504072%2C521640%2C522194%2C522362%2C522363%2C522368%2C522369%2C522448%2C523352%2C523353%2C523354%2C526169%2C527005%2C527006%2C527007%2C527009%2C527011%2C527012%2C527014%2C527015%2C527016%2C527017%2C527020%2C527021%2C527022%2C527023%2C527344%2C527345%2C527353%2C527354%2C527356%2C527363%2C527364%2C527365%2C527524%2C527525%2C527538%2C529699%2C537495%2C537496%2C537499%2C537500%2C537515%2C538750%2C538751%2C539290%2C539292%2C539293%2C539635%2C539636%2C539719%2C572366%2C572372%2C572375%2C576810%2C576811%2C604813%2C604815%2C604838%2C604912%2C604913%2C606579%2C606580%29&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "bodySha256": "5bd49ef37ce510afa1eeeb39be066abe7002d02ef8f6186efb38ab47741b28c2",
+      "count": 80,
+      "returnedRows": []
+    },
+    {
+      "stage": "fresh-exact-native-ids-80",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28503272%2C503273%2C503274%2C503275%2C503276%2C503277%2C503278%2C503279%2C503280%2C503281%2C503282%2C503283%2C503284%2C503285%2C503286%2C503287%2C504071%2C504072%2C521640%2C522194%2C522362%2C522363%2C522368%2C522369%2C522448%2C523352%2C523353%2C523354%2C526169%2C527005%2C527006%2C527007%2C527009%2C527011%2C527012%2C527014%2C527015%2C527016%2C527017%2C527020%2C527021%2C527022%2C527023%2C527344%2C527345%2C527353%2C527354%2C527356%2C527363%2C527364%2C527365%2C527524%2C527525%2C527538%2C529699%2C537495%2C537496%2C537499%2C537500%2C537515%2C538750%2C538751%2C539290%2C539292%2C539293%2C539635%2C539636%2C539719%2C572366%2C572372%2C572375%2C576810%2C576811%2C604813%2C604815%2C604838%2C604912%2C604913%2C606579%2C606580%29&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 604,
+      "bodySha256": "ce77823ed3f738245c52cec045914e68a856809e99b60850ca9067d4290a2e0f",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        503272,
+        503277,
+        503278,
+        503280,
+        503282,
+        503283,
+        503286,
+        503287,
+        504071,
+        521640,
+        522362,
+        522363,
+        522368,
+        522369,
+        522448,
+        526169,
+        527005,
+        527009,
+        527011,
+        527012,
+        527016,
+        527017,
+        527020,
+        527021,
+        527022,
+        527344,
+        527353,
+        527354,
+        527363,
+        527365,
+        527524,
+        527525,
+        527538,
+        537495,
+        537499,
+        537500,
+        538750,
+        538751,
+        539290,
+        539292,
+        539636,
+        572372,
+        572375,
+        523353,
+        504072,
+        503285,
+        527014,
+        503274,
+        503281,
+        527015,
+        537515,
+        527345,
+        503273,
+        527364,
+        604838,
+        527007,
+        527023,
+        604912,
+        527006,
+        503275,
+        539635,
+        572366,
+        576811,
+        539293,
+        604813,
+        503284,
+        523352,
+        606580,
+        527356,
+        537496,
+        503279,
+        529699,
+        503276,
+        523354,
+        576810,
+        522194,
+        604815,
+        606579,
+        604913,
+        539719
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "fresh-exact-native-ids-80",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=503272%2C503277%2C503278%2C503280%2C503282%2C503283%2C503286%2C503287%2C504071%2C521640%2C522362%2C522363%2C522368%2C522369%2C522448%2C526169%2C527005%2C527009%2C527011%2C527012%2C527016%2C527017%2C527020%2C527021%2C527022%2C527344%2C527353%2C527354%2C527363%2C527365%2C527524%2C527525%2C527538%2C537495%2C537499%2C537500%2C538750%2C538751%2C539290%2C539292%2C539636%2C572372%2C572375%2C523353%2C504072%2C503285%2C527014%2C503274%2C503281%2C527015%2C537515%2C527345%2C503273%2C527364%2C604838%2C527007%2C527023%2C604912%2C527006%2C503275%2C539635%2C572366%2C576811%2C539293%2C604813%2C503284%2C523352%2C606580%2C527356%2C537496%2C503279%2C529699%2C503276%2C523354%2C576810%2C522194%2C604815%2C606579%2C604913%2C539719",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 66087,
+      "bodySha256": "288665899a93ec7ba74bbbdd121b27c5ce3934ad8e3cf8e6183e12ea68c2d6cc",
+      "featureCount": 80,
+      "returnedRows": [
+        {
+          "objectId": 503272,
+          "nativeId": 503272,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503277,
+          "nativeId": 503277,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503278,
+          "nativeId": 503278,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503280,
+          "nativeId": 503280,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503282,
+          "nativeId": 503282,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503283,
+          "nativeId": 503283,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503286,
+          "nativeId": 503286,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503287,
+          "nativeId": 503287,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 504071,
+          "nativeId": 504071,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 521640,
+          "nativeId": 521640,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522362,
+          "nativeId": 522362,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522363,
+          "nativeId": 522363,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522368,
+          "nativeId": 522368,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522369,
+          "nativeId": 522369,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522448,
+          "nativeId": 522448,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 526169,
+          "nativeId": 526169,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527005,
+          "nativeId": 527005,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527009,
+          "nativeId": 527009,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527011,
+          "nativeId": 527011,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527012,
+          "nativeId": 527012,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527016,
+          "nativeId": 527016,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527017,
+          "nativeId": 527017,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527020,
+          "nativeId": 527020,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527021,
+          "nativeId": 527021,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527022,
+          "nativeId": 527022,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527344,
+          "nativeId": 527344,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527353,
+          "nativeId": 527353,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527354,
+          "nativeId": 527354,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527363,
+          "nativeId": 527363,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527365,
+          "nativeId": 527365,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527524,
+          "nativeId": 527524,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527525,
+          "nativeId": 527525,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527538,
+          "nativeId": 527538,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537495,
+          "nativeId": 537495,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537499,
+          "nativeId": 537499,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537500,
+          "nativeId": 537500,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 538750,
+          "nativeId": 538750,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 538751,
+          "nativeId": 538751,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539290,
+          "nativeId": 539290,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539292,
+          "nativeId": 539292,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539636,
+          "nativeId": 539636,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 572372,
+          "nativeId": 572372,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 572375,
+          "nativeId": 572375,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 523353,
+          "nativeId": 523353,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 504072,
+          "nativeId": 504072,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503285,
+          "nativeId": 503285,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527014,
+          "nativeId": 527014,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503274,
+          "nativeId": 503274,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503281,
+          "nativeId": 503281,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527015,
+          "nativeId": 527015,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537515,
+          "nativeId": 537515,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527345,
+          "nativeId": 527345,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503273,
+          "nativeId": 503273,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527364,
+          "nativeId": 527364,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604838,
+          "nativeId": 604838,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527007,
+          "nativeId": 527007,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527023,
+          "nativeId": 527023,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604912,
+          "nativeId": 604912,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527006,
+          "nativeId": 527006,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503275,
+          "nativeId": 503275,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539635,
+          "nativeId": 539635,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 572366,
+          "nativeId": 572366,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 576811,
+          "nativeId": 576811,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539293,
+          "nativeId": 539293,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604813,
+          "nativeId": 604813,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503284,
+          "nativeId": 503284,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 523352,
+          "nativeId": 523352,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 606580,
+          "nativeId": 606580,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527356,
+          "nativeId": 527356,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 537496,
+          "nativeId": 537496,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503279,
+          "nativeId": 503279,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 529699,
+          "nativeId": 529699,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 503276,
+          "nativeId": 503276,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 523354,
+          "nativeId": 523354,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 576810,
+          "nativeId": 576810,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 522194,
+          "nativeId": 522194,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604815,
+          "nativeId": 604815,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 606579,
+          "nativeId": 606579,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 604913,
+          "nativeId": 604913,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 539719,
+          "nativeId": 539719,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "fresh-exact-native-ids-160",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28606581%29&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "bodySha256": "6aea6dfe6561984cdc5c54ead84d47d2cf29e48253ae282aef237404adad4661",
+      "count": 1,
+      "returnedRows": []
+    },
+    {
+      "stage": "fresh-exact-native-ids-160",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28606581%29&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 51,
+      "bodySha256": "1d8e998c0aef6cf75e85e95d30b13da0129ae165cb53c34aee472fba8f38cc8c",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        606581
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "fresh-exact-native-ids-160",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=606581",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 591,
+      "bodySha256": "73e4e1dbb52c5a7b87081d186978d5dbb16757187ec6739cf62290b9cf191845",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 606581,
+          "nativeId": 606581,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "explicit-synthetic-absence",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%282147483647%29&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "bodySha256": "618de7d9f46f3f697d827a1b6d84974760d5deda62e4e592adaa3c646602a94c",
+      "count": 0,
+      "returnedRows": []
+    },
+    {
+      "stage": "explicit-synthetic-absence",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%282147483647%29&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 47,
+      "bodySha256": "0b0c8c747bfe0ca48bc6851572d4fe1a9de559f67475d8ee38c75c65d7f1c359",
+      "objectIdFieldName": "idlote",
+      "objectIds": null,
+      "returnedRows": []
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28502127%2C502128%2C502129%2C502130%2C502132%2C502133%2C502138%2C502139%29&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "bodySha256": "286ef99473842386e093b70e2cb43524734dcd35c826f5b736d6444f65ad4686",
+      "count": 8,
+      "returnedRows": []
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=idlote+IN+%28502127%2C502128%2C502129%2C502130%2C502132%2C502133%2C502138%2C502139%29&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 100,
+      "bodySha256": "2f7cfdae9854d2aa87797e6b6401c225fde66496e53727ac1d5c37e05c33ebf6",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        502128,
+        502129,
+        502130,
+        502132,
+        502133,
+        502138,
+        502127,
+        502139
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502128",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 937,
+      "bodySha256": "d71a2a52f48de0f9c54fd5f4e6ed0fbdc08574ed69cfbf74ea8ff2c9bc55b507",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502128,
+          "nativeId": 502128,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502129",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 635,
+      "bodySha256": "798ca82df7da5633ac5579a6683975e05a4aa05ff3327c8480196ff90e10a4ff",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502129,
+          "nativeId": 502129,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502130",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 462,
+      "bodySha256": "d7c8e863b4a86c51a8cc7a53b31cf5bdf53631de9a2a8006b9e6035187f5fbbf",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502130,
+          "nativeId": 502130,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502132",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 766,
+      "bodySha256": "428bd3cefd244efd2243a0cfc28fcdf19b1d61f1e356966b44cb14440a8ab5e1",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502132,
+          "nativeId": 502132,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502133",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 722,
+      "bodySha256": "07f13d65248944c972643a899a17d87bb04e197eecd488ea82559f5b55d893f2",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502133,
+          "nativeId": 502133,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502138",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 807,
+      "bodySha256": "110ca48ad183cf9596f16767a03fc9c4dbf5e47030eb5e4f829d4c79b8627a04",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502138,
+          "nativeId": 502138,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502127",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 762,
+      "bodySha256": "68b78e678d69c9caeca8150745eeafd967177d5d5765428f1d53168d9a41adbb",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502127,
+          "nativeId": 502127,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "forced-object-id-page-size-1",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=502139",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 888,
+      "bodySha256": "be95cc500caaac53f32d48ba2c6c6be250440067c257b6f1a20dfd4531163c66",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 502139,
+          "nativeId": 502139,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "nearby-target-exact-id-full-footprint",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.06909002789137%2C0.043213993626269036%2C-51.068931613363034%2C0.04345288856873994&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "bodySha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "count": 3,
+      "returnedRows": []
+    },
+    {
+      "stage": "nearby-target-exact-id-full-footprint",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.06909002789137%2C0.043213993626269036%2C-51.068931613363034%2C0.04345288856873994&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 65,
+      "bodySha256": "c6c8b277cccfbf36cf3a63328a6f57801fbb5b2b06374d842722fcbf60ee7cab",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        527008,
+        527009,
+        527011
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "nearby-target-exact-id-full-footprint",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=527008%2C527009%2C527011",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3808,
+      "bodySha256": "696bf21e13ff7869ee7935b4e9949f6a7850ef5b4c92e46bb88b89bf8b9e23a2",
+      "featureCount": 3,
+      "returnedRows": [
+        {
+          "objectId": 527008,
+          "nativeId": 527008,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527009,
+          "nativeId": 527009,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527011,
+          "nativeId": 527011,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "nearby-target-proposal-binding",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.06909002789137%2C0.043213993626269036%2C-51.068931613363034%2C0.04345288856873994&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "bodySha256": "0c07187ea6d064441225b3cba26a7b1e8bc702fcf332b457dae8e26892ba68a6",
+      "count": 3,
+      "returnedRows": []
+    },
+    {
+      "stage": "nearby-target-proposal-binding",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&geometry=-51.06909002789137%2C0.043213993626269036%2C-51.068931613363034%2C0.04345288856873994&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 65,
+      "bodySha256": "c6c8b277cccfbf36cf3a63328a6f57801fbb5b2b06374d842722fcbf60ee7cab",
+      "objectIdFieldName": "idlote",
+      "objectIds": [
+        527008,
+        527009,
+        527011
+      ],
+      "returnedRows": []
+    },
+    {
+      "stage": "nearby-target-proposal-binding",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?where=1%3D1&outFields=idlote&returnGeometry=true&outSR=4326&f=geojson&objectIds=527008%2C527009%2C527011",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3808,
+      "bodySha256": "696bf21e13ff7869ee7935b4e9949f6a7850ef5b4c92e46bb88b89bf8b9e23a2",
+      "featureCount": 3,
+      "returnedRows": [
+        {
+          "objectId": 527008,
+          "nativeId": 527008,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527009,
+          "nativeId": 527009,
+          "extraReturnedFieldNames": []
+        },
+        {
+          "objectId": 527011,
+          "nativeId": 527011,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    },
+    {
+      "stage": "nearby-target-native-epsg31982-read",
+      "method": "GET",
+      "url": "https://hml.egl.eng.br/arcgis/rest/services/2_Ferramentas/2_Consulta_Geo/MapServer/27/query?f=geojson&where=idlote+%3D+527009&outFields=idlote&returnGeometry=true&outSR=31982",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 578,
+      "bodySha256": "c5b62b6b6c75e12e9427c020b8c63d37ba1eabaea81d533f3a6d8a1a0896da5a",
+      "featureCount": 1,
+      "returnedRows": [
+        {
+          "objectId": 527009,
+          "nativeId": 527009,
+          "extraReturnedFieldNames": []
+        }
+      ]
+    }
+  ],
+  "limitations": {
+    "citywideCompletenessProven": false,
+    "titleOrOwnershipProven": false,
+    "surveyAccuracyProven": false,
+    "productionHostStabilityProven": false,
+    "ownerAddressTaxOrApplicantFieldsRequestedOrRetained": false,
+    "durableFullPolygonCountBefore": 3,
+    "durableFullPolygonCountAdded": 0,
+    "furtherFullGeometryCachedOnlyInIgnoredTmp": true,
+    "nativeProjectionDefinition": "+proj=utm +zone=22 +south +ellps=GRS80 +units=m +no_defs (EPSG:31982)"
+  },
+  "layerMetadata": {
+    "httpStatus": 200,
+    "contentType": "text/plain;charset=UTF-8",
+    "name": "sit_macapa.vw.vw_info_fisico",
+    "geometryType": "esriGeometryPolygon",
+    "objectIdField": null,
+    "oidFields": [
+      "idlote"
+    ],
+    "layerSpatialReference": {
+      "wkid": 31982,
+      "latestWkid": 31982
+    },
+    "maxRecordCount": 1000000,
+    "capabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsHavingClause": true,
+      "supportsCountDistinct": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsPagination": true,
+      "supportsTrueCurve": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true
+    },
+    "expectedIdFieldPresent": true,
+    "polygonLayer": true,
+    "fieldSchema": [
+      {
+        "name": "idlote",
+        "type": "esriFieldTypeOID",
+        "alias": "idlote"
+      },
+      {
+        "name": "lote_area",
+        "type": "esriFieldTypeDouble",
+        "alias": "lote_area"
+      },
+      {
+        "name": "lote_testadalote",
+        "type": "esriFieldTypeDouble",
+        "alias": "lote_testadalote"
+      },
+      {
+        "name": "qtd_edificacoes",
+        "type": "esriFieldTypeDouble",
+        "alias": "qtd_edificacoes"
+      },
+      {
+        "name": "caminhofoto",
+        "type": "esriFieldTypeString",
+        "alias": "caminhofoto"
+      },
+      {
+        "name": "shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "shape"
+      }
+    ],
+    "globalIdField": null,
+    "uniqueIdInfo": null,
+    "alternativeNativeRowIdentityExposed": false
+  },
+  "gridSummary": {
+    "cellCount": 13,
+    "completeCells": 9,
+    "featureHitsAcrossCells": 180,
+    "distinctNativeIds": 161,
+    "perCellCounts": [
+      null,
+      null,
+      26,
+      18,
+      null,
+      21,
+      19,
+      25,
+      19,
+      null,
+      5,
+      14,
+      33
+    ],
+    "nativeIdsByCell": [
+      [],
+      [],
+      [
+        "502138",
+        "502681",
+        "503062",
+        "503072",
+        "503074",
+        "504071",
+        "537495",
+        "537499",
+        "537500",
+        "572372",
+        "572375",
+        "504072",
+        "503073",
+        "503064",
+        "502680",
+        "503061",
+        "503082",
+        "572366",
+        "576811",
+        "503063",
+        "502683",
+        "537496",
+        "576810",
+        "503084",
+        "503083",
+        "502682"
+      ],
+      [
+        "502145",
+        "503048",
+        "503050",
+        "503059",
+        "503144",
+        "503175",
+        "503176",
+        "527009",
+        "527011",
+        "527012",
+        "527354",
+        "527007",
+        "503043",
+        "503058",
+        "503044",
+        "502144",
+        "502143",
+        "503049"
+      ],
+      [],
+      [
+        "502141",
+        "502688",
+        "502692",
+        "502693",
+        "503267",
+        "503268",
+        "503271",
+        "503272",
+        "503280",
+        "503282",
+        "527017",
+        "527021",
+        "527365",
+        "527538",
+        "503270",
+        "502139",
+        "606581",
+        "606580",
+        "503279",
+        "503276",
+        "606579"
+      ],
+      [
+        "502129",
+        "502130",
+        "502132",
+        "502142",
+        "502676",
+        "503122",
+        "503123",
+        "503125",
+        "503126",
+        "527344",
+        "527353",
+        "527524",
+        "527525",
+        "503141",
+        "503128",
+        "529699",
+        "503124",
+        "503127",
+        "539719"
+      ],
+      [
+        "502128",
+        "502132",
+        "502133",
+        "503129",
+        "503131",
+        "503132",
+        "503134",
+        "503135",
+        "503136",
+        "503138",
+        "503142",
+        "527005",
+        "527344",
+        "502127",
+        "503141",
+        "527345",
+        "503139",
+        "503133",
+        "503140",
+        "503137",
+        "527006",
+        "503130",
+        "539635",
+        "503143",
+        "539719"
+      ],
+      [
+        "502141",
+        "503131",
+        "503132",
+        "503134",
+        "503135",
+        "503282",
+        "527016",
+        "527017",
+        "527021",
+        "527022",
+        "539636",
+        "503285",
+        "604838",
+        "527023",
+        "604912",
+        "539635",
+        "604813",
+        "604815",
+        "604913"
+      ],
+      [],
+      [
+        "523353",
+        "539635",
+        "523352",
+        "523354",
+        "539719"
+      ],
+      [
+        "502929",
+        "521640",
+        "522362",
+        "522363",
+        "522368",
+        "522369",
+        "522448",
+        "526169",
+        "538750",
+        "538751",
+        "539290",
+        "539292",
+        "539293",
+        "522194"
+      ],
+      [
+        "502140",
+        "502687",
+        "502688",
+        "502880",
+        "502881",
+        "502932",
+        "502933",
+        "503269",
+        "503272",
+        "503277",
+        "503278",
+        "503283",
+        "503286",
+        "503287",
+        "527020",
+        "527021",
+        "527363",
+        "502146",
+        "527014",
+        "503274",
+        "503281",
+        "527015",
+        "537515",
+        "503273",
+        "527364",
+        "503275",
+        "502931",
+        "502691",
+        "502690",
+        "503284",
+        "527356",
+        "502689",
+        "503276"
+      ]
+    ],
+    "unchangedWupPointContainingIds": [],
+    "pointMissIsEligibilityGate": false,
+    "duplicateGeometryGroups": [],
+    "crossCellHashConsistent": false
+  },
+  "freshIdQualification": {
+    "requestedDistinctNativeIds": 161,
+    "independentReads": 161,
+    "batchCount": 3,
+    "batches": [
+      {
+        "start": 0,
+        "requested": 80,
+        "returned": 80,
+        "complete": true,
+        "absentIds": [],
+        "mismatches": [],
+        "hashesMatch": true
+      },
+      {
+        "start": 80,
+        "requested": 80,
+        "returned": 80,
+        "complete": true,
+        "absentIds": [],
+        "mismatches": [],
+        "hashesMatch": true
+      },
+      {
+        "start": 160,
+        "requested": 1,
+        "returned": 1,
+        "complete": true,
+        "absentIds": [],
+        "mismatches": [],
+        "hashesMatch": true
+      }
+    ],
+    "allComplete": true,
+    "allFullGeometryHashesMatch": true
+  },
+  "syntheticAbsence": {
+    "nativeId": "2147483647",
+    "complete": true,
+    "returnedFeatureCount": 0,
+    "absentIds": [
+      "2147483647"
+    ]
+  },
+  "forcedPaging": {
+    "pageSize": 1,
+    "chosenNativeIds": [
+      "502127",
+      "502128",
+      "502129",
+      "502130",
+      "502132",
+      "502133",
+      "502138",
+      "502139"
+    ],
+    "complete": true,
+    "returnedFeatureCount": 8,
+    "expectedPageCount": 8,
+    "actualGeometryPageRequestCount": 8,
+    "absentIds": [],
+    "mismatches": [],
+    "idsAndFullGeometryHashesMatch": true
+  },
+  "nearbyTarget": {
+    "nativeId": "527009",
+    "canonicalParcelId": "BR-MACAPA-SIT-LOT-527009",
+    "distanceToWupPointKm": 0.01616014408595121,
+    "geometrySha256": "b835d4f70ecdb4b5ff54ea5f35f02b61a54eaf7f171a6a20bd8df84df3a05670",
+    "geometrySummary": {
+      "geometryType": "Polygon",
+      "ringCount": 1,
+      "vertexCount": 10,
+      "closedRings": true,
+      "coordinateDecimalPlaces": {
+        "min": 13,
+        "max": 18
+      }
+    },
+    "footprintQuery": {
+      "complete": true,
+      "featureCount": 3,
+      "intersectingNativeIds": [
+        "527008",
+        "527009",
+        "527011"
+      ],
+      "targetPresent": true,
+      "targetFullGeometryHashMatches": true,
+      "error": null
+    }
+  },
+  "nearbyBinding": {
+    "coverage": "complete",
+    "siteM2": 384.3,
+    "parcelCount": 1,
+    "parcelIds": [
+      "BR-MACAPA-SIT-LOT-527009"
+    ],
+    "targetParcelId": "BR-MACAPA-SIT-LOT-527009",
+    "targetOverlapM2": 384.298,
+    "touchedCount": 0,
+    "unsurveyedM2": 0,
+    "toleranceM": 0,
+    "complete": true
+  },
+  "nativeOutputPrecision": {
+    "httpStatus": 200,
+    "contentType": "application/geo+json;charset=UTF-8",
+    "sourceCrs": "EPSG:31982",
+    "nativeGeometrySha256": "313642145f9b4946c3325c02a1b9b424aa234bc30728b53e1fffb3be625234e7",
+    "nativeGeometry": {
+      "geometryType": "Polygon",
+      "ringCount": 1,
+      "vertexCount": 10,
+      "closedRings": true,
+      "coordinateDecimalPlaces": {
+        "min": 4,
+        "max": 11
+      }
+    },
+    "adapterWgs84Geometry": {
+      "geometryType": "Polygon",
+      "ringCount": 1,
+      "vertexCount": 10,
+      "closedRings": true,
+      "coordinateDecimalPlaces": {
+        "min": 13,
+        "max": 18
+      }
+    },
+    "roundTripVertexResidual": {
+      "nativeVertexCount": 10,
+      "outputVertexCount": 10,
+      "vertexCountsMatch": true,
+      "maxNearestNativeVertexResidualM": 1.5832613237179557e-07,
+      "meanNearestNativeVertexResidualM": 1.58139143168545e-07
+    },
+    "proj4Definition": "+proj=utm +zone=22 +south +ellps=GRS80 +units=m +no_defs",
+    "outputCRS": "EPSG:4326 (normal adapter profile)",
+    "projectedNativeVertexComparison": {
+      "nativeVertices": 10,
+      "adapterOutputVertices": 10,
+      "nearestResidualToNativeSourceVerticesM": 1.5832613237179557e-07
+    }
+  },
+  "topology": {
+    "featureCount": 161,
+    "duplicateGeometryGroups": [],
+    "selfIntersectionKinks": [],
+    "openOrDegenerateRings": [],
+    "pairwiseIntersects": 259,
+    "positiveAreaOverlaps": [],
+    "operationErrors": [],
+    "auditLibrary": "@turf/turf (WGS84 geodesic area; no separate GEOS certification)"
+  },
+  "topologySummary": {
+    "validRingClosureAndThreeUniqueVertices": true,
+    "selfIntersectionFree": true,
+    "duplicateGeometryGroupCount": 0,
+    "positiveAreaOverlapCount": 0,
+    "topologyOperationErrorCount": 0
+  },
+  "fullGeometryCache": {
+    "path": "tmp/overnight-cities-2026-10-09/macapa-arcgis-runtime-cache.geojson",
+    "featureCount": 161,
+    "sha256": "bea41bd1d8d322d3ce7f89fcd1590393862ad505ef49c025ac844fb05b1e07ac"
+  },
+  "requestSummary": {
+    "total": 64,
+    "httpStatuses": {
+      "200": 64
+    },
+    "anyUnexpectedFeatureFields": false,
+    "fieldsRequestedAndExpected": [
+      "idlote"
+    ],
+    "stages": [
+      "current-layer-metadata",
+      "normal-grid-cell-0",
+      "normal-grid-cell-1",
+      "normal-grid-cell-2",
+      "normal-grid-cell-3",
+      "normal-grid-cell-4",
+      "normal-grid-cell-5",
+      "normal-grid-cell-6",
+      "normal-grid-cell-7",
+      "normal-grid-cell-8",
+      "normal-grid-cell-9",
+      "normal-grid-cell-10",
+      "normal-grid-cell-11",
+      "normal-grid-cell-12",
+      "fresh-exact-native-ids-0",
+      "fresh-exact-native-ids-80",
+      "fresh-exact-native-ids-160",
+      "explicit-synthetic-absence",
+      "forced-object-id-page-size-1",
+      "nearby-target-exact-id-full-footprint",
+      "nearby-target-proposal-binding",
+      "nearby-target-native-epsg31982-read"
+    ]
+  },
+  "testSummary": {
+    "total": 9,
+    "passed": 7,
+    "failed": 2,
+    "allPassed": false
+  },
+  "duplicateIdManifestAssessment": {
+    "reviewFile": "macapa-duplicate-id-manifest-review.json",
+    "normalAdapterHeldCells": [
+      0,
+      1,
+      4,
+      9
+    ],
+    "fullGeometryRowsChecked": 176,
+    "duplicateGroupsChecked": 15,
+    "allRepeatedIdRowsHaveIdenticalFullPolygons": true,
+    "uniqueNativeRowIdentityBeyondIdlote": false,
+    "offsetModeStillRejectsDuplicateObjectIds": true,
+    "adapterCodeChanged": false,
+    "durableFullGeometryCountAdded": 0,
+    "allFourRawCountManifestAndGeometryRowCountsAgree": true,
+    "rawDuplicateRowCounts": {
+      "0": {
+        "count": 43,
+        "manifestRows": 43,
+        "fullPolygonRows": 43,
+        "duplicateRows": 17,
+        "allRepeatedIdRowsHaveIdenticalFullPolygons": true
+      },
+      "1": {
+        "count": 33,
+        "manifestRows": 33,
+        "fullPolygonRows": 33,
+        "duplicateRows": 8,
+        "allRepeatedIdRowsHaveIdenticalFullPolygons": true
+      },
+      "4": {
+        "count": 62,
+        "manifestRows": 62,
+        "fullPolygonRows": 62,
+        "duplicateRows": 40,
+        "allRepeatedIdRowsHaveIdenticalFullPolygons": true
+      },
+      "9": {
+        "count": 38,
+        "manifestRows": 38,
+        "fullPolygonRows": 38,
+        "duplicateRows": 12,
+        "allRepeatedIdRowsHaveIdenticalFullPolygons": true
+      }
+    },
+    "rowsCollapsedOrAcceptedByAdapter": false
+  },
+  "adapterOffsetModeProbe": {
+    "metadataFile": "macapa-duplicate-id-manifest-review.json",
+    "requestStatus": 200,
+    "returnedFeatureCount": 43,
+    "complete": false,
+    "error": "Parcel provider pagination repeated or omitted an object ID.",
+    "safeFields": [
+      "idlote"
+    ]
+  }
+}

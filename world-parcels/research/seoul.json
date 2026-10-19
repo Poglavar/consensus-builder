@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1835848",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_sample_candidate_countrywide",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://www.data.go.kr/data/15045882/fileData.do", "observation": "Korean Ministry of Land lists a free, unrestricted nationwide continuous cadastral polygon dataset, distributed as province/city SHP files in EPSG:5186. It reports 38,352,207 rows. Its own description says it is a reference map rather than legally authoritative survey data."},
+    {"url": "https://www.data.go.kr/data/15123899/openapi.do", "observation": "Ministry also catalogs a nationwide WMS/WFS continuous cadastral service; use requires an API application/key."},
+    {"url": "https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23", "observation": "Official download destination did not return a parcel sample from this client."}
+  ],
+  "requests": [
+    {"url": "https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23", "method": "GET", "httpStatus": null, "error": "Connection died before HTTP response after repeated retries", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "Republic of Korea, nationwide; separate provincial/city SHP files", "verifiedOpenScope": "none; catalog metadata only", "countrywideVerified": false},
+  "remainingUncertainty": "This is a strong countrywide source candidate, but no HTTP 200 nonempty Seoul parcel sample or second-region sample was obtained. Direct browser loading and API key requirements remain open.",
+  "nextStep": "Retrieve a small Seoul SHP extract or authorized WFS result, then verify another distant province and the same schema before marking KR countrywide green."
+}

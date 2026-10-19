@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:100",
+  "queueRank": 100,
+  "name": "Jeddah",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "centerLatLon": [
+    21.5293312912755,
+    39.2089998542255
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://my.gov.sa/en/content/gis",
+      "observation": "National GIS platform (GASGI National Geospatial Platform): registration-based access to national layers; page returned 403 (Cloudflare) from this client."
+    },
+    {
+      "url": "https://www.arcgis.com/home/search.html?t=content&q=tags%3A%22Jeddah%22",
+      "observation": "Only third-party Jeddah layers found, none an official parcel layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://my.gov.sa/en/content/gis",
+      "method": "GET",
+      "httpStatus": "403",
+      "contentType": "text/html",
+      "assessment": "Cloudflare block page"
+    },
+    {
+      "url": "https://nationalgeoplatform.gov.sa/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    },
+    {
+      "url": "https://maps.balady.gov.sa/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    },
+    {
+      "url": "https://gis.jeddah.gov.sa/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    },
+    {
+      "url": "https://open.data.gov.sa/data/api/datasets?version=-1&dataset=&query=parcels",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Saudi national platform is registration-gated; municipal/Balady GIS unreachable",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Saudi government hosts were blocked or unreachable from this client, so no candidate could be tested; the gap may be network-side.",
+  "nextStep": "Retry from a Saudi-reachable network; check Balady/MoMRAH and Jeddah Municipality GIS, and the National Geospatial Platform terms."
+}

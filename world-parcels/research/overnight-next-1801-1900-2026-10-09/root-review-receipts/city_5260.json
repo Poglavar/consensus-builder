@@ -1,0 +1,15 @@
+{
+  "taskId": "city:5260",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-5260-al-qadarif.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/al-qadarif-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T15:49:51Z",
+  "reviewNotes": "WUP 2025 source archive, ranked roster, queue and packet agree on Al-Qadarif code 5260, rank 1808, Sudan, exact point and 317258 persons. English and Arabic searches are recorded. First-party Sudan Judiciary land-registration guidance and an Al-Qadarif parcel case support registry custody; the NIC describes a spatial portal with WMS/WFS but does not identify an accessible Al-Qadarif parcel layer. No safe native-ID polygon response or retained polygon exists. Portal timeout and login workflow do not establish absence.",
+  "admissionGate": "Held: no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification. Registry, catalog, city configuration and generated reports were not changed."
+}

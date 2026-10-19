@@ -1,0 +1,103 @@
+{
+  "cityCode": 1972,
+  "queueRank": 2462,
+  "name": "Monywa",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "iso2": "MM",
+  "iso3": "MMR",
+  "point": [22.1148978187163, 95.1466501424968],
+  "population2025": 237751,
+  "population2025k": 237.751,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Monywa Myanmar official cadastral parcel map land registry GIS service Survey Department",
+        "result": "Official results identified Myanmar's Survey Department mapping functions, the Settlement and Land Records Department (SLRD) as the national land-record custodian, and official One Map Myanmar Geoportal development. No public anonymous Monywa parcel viewer or safe parcel-ID-plus-polygon endpoint was verified.",
+        "actualResultUrls": [
+          "https://surveydepartment.gov.mm/mapping",
+          "https://slrd.gov.mm/en",
+          "https://surveydepartment.gov.mm/news/936"
+        ]
+      },
+      {
+        "language": "Burmese (Myanmar local/native)",
+        "query": "မုံရွာမြို့ မြေစာရင်း မြေပုံ ကadastral parcel official",
+        "result": "Official Burmese-language results identified the Survey Department, SLRD-related land-record terminology, an official Monywa census GIS activity report, and One Map Myanmar Geoportal development. The results did not expose a public anonymous Monywa cadastral parcel identity and polygon service.",
+        "actualResultUrls": [
+          "https://www.moi.gov.mm/iprd/news/171575",
+          "https://surveydepartment.gov.mm/news/936",
+          "https://surveydepartment.gov.mm/mapping"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Attempt 1 completed. National custodial and mapping evidence was found, but no Monywa-local public registry/map service or anonymous safe parcel geometry response was evidenced. This packet is not source integration or runtime admission.",
+  "requestOutcomes": [
+    {
+      "route": "Official Survey Department homepage",
+      "url": "https://surveydepartment.gov.mm/",
+      "method": "GET",
+      "outcome": "Direct curl request timed out after 20 seconds in this environment; official search results were available and were used only as discovery evidence. No retry with disabled TLS or bypass was attempted."
+    },
+    {
+      "route": "Official Survey Department mapping page",
+      "url": "https://surveydepartment.gov.mm/mapping",
+      "method": "Public web search discovery",
+      "outcome": "Official page describes topographic/map production and Lambert/UTM mapping, not an anonymous cadastral parcel feature service. No parcel ID, schema, CRS response, or geometry was obtained."
+    },
+    {
+      "route": "Official Settlement and Land Records Department homepage",
+      "url": "https://slrd.gov.mm/en",
+      "method": "GET",
+      "outcome": "HTTP 403 Cloudflare challenge. Login, CAPTCHA solving, challenge defeat, and browser automation to bypass the wall were not attempted. No parcel response was obtained."
+    },
+    {
+      "route": "Official One Map Myanmar Geoportal candidate host",
+      "url": "https://onemapmyanmar.gov.mm/",
+      "method": "GET",
+      "outcome": "DNS resolution failed in this environment. This hostname was a bounded candidate based on the official One Map Myanmar Geoportal references; no alternate host was guessed and no evidence of citywide absence is inferred."
+    },
+    {
+      "route": "Official Monywa information report",
+      "url": "https://www.moi.gov.mm/iprd/news/171575",
+      "method": "Public web search discovery",
+      "outcome": "Official report confirms a Monywa census unit using GIS technology for population and housing enumeration. It is not cadastral custody or a parcel feature service; no parcel geometry was requested or retained."
+    },
+    {
+      "route": "Official Survey Department One Map Myanmar report",
+      "url": "https://surveydepartment.gov.mm/news/936",
+      "method": "Public web search discovery",
+      "outcome": "Official report describes One Map Myanmar Geoportal development and testing, but exposes no public service URL, schema, CRS, parcel identity, or anonymous geometry response."
+    }
+  ],
+  "runtimeReadiness": "held",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe anonymous native parcel ID plus complete polygon response was verified."
+  },
+  "scopeLimits": [
+    "The exact WUP point [22.1148978187163, 95.1466501424968] is preserved in latitude/longitude order; no coordinate was shifted.",
+    "Survey Department and SLRD evidence establishes national mapping/land-record custodial context only; no Monywa-local registry or public parcel service was evidenced.",
+    "The timeout, Cloudflare challenge, DNS failure, and absence of an exposed anonymous endpoint are not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or synthetic identity was retained.",
+    "Packet completion is not source integration/admission; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "source layer metadata",
+    "CRS"
+  ],
+  "qualificationDecision": "hold",
+  "uncertainty": "A restricted, browser-only, authenticated, unpublished, or currently unavailable Myanmar parcel service may exist. Stable parcel identity, schema, CRS, anonymous geometry access, and Monywa coverage remain unresolved."
+}

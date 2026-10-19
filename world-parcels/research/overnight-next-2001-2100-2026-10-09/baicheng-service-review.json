@@ -1,0 +1,84 @@
+{
+  "cityRecord": "city-9016-baicheng.json",
+  "cityCode": 9016,
+  "queueRank": 2001,
+  "city": "Baicheng",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official Jilin Natural Resources sources were found for the Baicheng Real Estate Registration Center and the provincial unified registration platform. No public anonymous parcel viewer/API was established.",
+    "native": "中文官方检索确认白城市不动产登记中心及吉林省不动产统一登记平台试点信息；没有确认可匿名返回宗地稳定ID和几何的公开接口。"
+  },
+  "custodian": {
+    "name": "白城市不动产登记中心 / 吉林省不动产登记管理中心",
+    "role": "Local registration custodian and provincial platform operator described by official sources",
+    "evidenceUrls": [
+      "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201809/t20180926_5196515.html",
+      "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/202109/t20210908_8211618.html"
+    ]
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Jilin official Baicheng registration-center notice",
+      "url": "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/201809/t20180926_5196515.html",
+      "result": "HTTP 200; local custodian and registration-service evidence only; no geometry/API"
+    },
+    {
+      "route": "Jilin official unified-registration platform notice",
+      "url": "https://zrzy.jl.gov.cn/jlsbdcdj/gzdt/bdcsngzdt/202109/t20210908_8211618.html",
+      "result": "HTTP 200; Baicheng pilot/platform evidence only; no anonymous parcel endpoint"
+    },
+    {
+      "route": "Jilin official registration query rules",
+      "url": "https://zrzy.jl.gov.cn/jlsbdcdj/flfg_1231/t20181109_5443791.html",
+      "result": "HTTP 200; lawful query and identity/interest boundary documented; no anonymous geometry"
+    },
+    {
+      "route": "Baidu site-restricted native-language search",
+      "url": "https://www.baidu.com/s?wd=site%3Abaicheng.gov.cn+%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0+%E5%9C%B0%E5%9B%BE",
+      "result": "Redirected to visual CAPTCHA; not bypassed and not treated as absence evidence"
+    },
+    {
+      "route": "National Tianditu map portal",
+      "url": "https://www.tianditu.gov.cn/",
+      "result": "HTTP 418 to anonymous GET; no viewer configuration, schema, or geometry; treated as access failure"
+    }
+  ],
+  "fieldPolicy": {
+    "allowlist": [
+      "safe stable native parcel identity if publicly returned",
+      "parcel polygon geometry",
+      "source field names and mapping in metadata only",
+      "CRS/format and request metadata"
+    ],
+    "notRequested": [
+      "owner/right-holder",
+      "address/contact",
+      "titleholder/certificate",
+      "tax/account/identity/application data"
+    ]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [45.6121514877514, 122.8397131348] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point hit or map-extent miss was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens, and protected owner/property queries were not attempted.",
+    "National/general-agency prose was not promoted to a Baicheng geometry source.",
+    "Registry existence is locally evidenced, but source integration/admission remains unqualified."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Public endpoint, schema, CRS, safe native identity field, and citywide coverage remain unknown."
+  }
+}

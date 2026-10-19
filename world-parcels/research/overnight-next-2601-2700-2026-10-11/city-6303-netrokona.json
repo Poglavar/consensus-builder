@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 6303,
+  "wupCityCode": 6303,
+  "cityId": "wup2025:6303",
+  "name": "Netrokona",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso2": "BD",
+  "iso3": "BGD",
+  "queueRank": 2621,
+  "rank": 2621,
+  "point": [24.8791599755252, 90.7265243738965],
+  "centerLatLon": [24.8791599755252, 90.7265243738965],
+  "population2025": 225001,
+  "population2025k": 225.001,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Netrokona Bangladesh official land records cadastral map parcel GIS",
+        "result": "Located official Bangladesh Department of Land Records and Surveys map/settlement services, the official Bangladesh land portal, an official Netrokona district map page, and the official Netrokona District Registrar portal. No indexed public Netrokona parcel API or geometry extract was found.",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://settlement.gov.bd/",
+          "https://www.land.gov.bd/nagorik-subidha?lang=bn",
+          "https://netrokona.gov.bd/pages/static-pages/6970a1d0a31054345f161bc7",
+          "https://dr.netrokona.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali (বাংলা)",
+        "query": "নেত্রকোনা জেলা ভূমি রেকর্ড খতিয়ান মৌজা ম্যাপ সরকারি",
+        "result": "Located the official DLRS online survey/map service, official Integrated Online Map Purchase System, official land portal citizen-service page, and official Netrokona district/registrar pages. The discovered services describe or provide map/procedure access but did not expose a bounded anonymous Netrokona parcel feature response.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map",
+          "https://www.land.gov.bd/nagorik-subidha?lang=bn",
+          "https://netrokona.gov.bd/pages/static-pages/6970a1d0a31054345f161bc7",
+          "https://dr.netrokona.gov.bd/"
+        ]
+      }
+    ]
+  },
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "held",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh national DLRS/land portal map and survey services, with official Netrokona administrative and registrar pages; Netrokona parcel coverage was not verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_registry_and_map_procedure_no_verified_open_geometry",
+  "registryBasis": "The official Netrokona District Registrar portal evidences a local land-registration custodian/procedure context. The official national DLRS and Ministry of Land portals document cadastral/mouza-map and khatian services. This is registry/procedure evidence only, not an admitted open parcel source.",
+  "registryEvidenceUrls": [
+    "https://dr.netrokona.gov.bd/",
+    "https://settlement.gov.bd/",
+    "https://map.land.gov.bd/",
+    "https://www.land.gov.bd/nagorik-subidha?lang=bn"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "cityCode": 6535,
+  "queueRank": 1984,
+  "name": "Hazro",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [33.8990724288631, 72.4855222650377],
+  "population2025": 293506,
+  "population2025k": 293.506,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hazro Pakistan official cadastral map parcel land record Attock Punjab",
+        "result": "First-party discovery found the Punjab PULSE/PLRA land-system portal, official ArcGIS cadastral-map service references, an Attock district land-use page listing MC Hazro maps, and an official district administration page describing land-record and registration duties. The public parcel service route was then inspected but required a token.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://pmu-lgcdd.gop.pk/attock/",
+          "https://attock.punjab.gov.pk/administration",
+          "https://www.pulse.gop.pk/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "حضرو پاکستان سرکاری اراضی ریکارڈ نقشہ کیڈسٹرل پنجاب",
+        "result": "Urdu-language discovery returned official Punjab land-record and Punjab government material, including PLRA/PULSE services and Hazro-specific official mapping references. No anonymous safe parcel-ID plus polygon response was exposed.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://pmu-lgcdd.gop.pk/Land_Use_Plan/Attock/LUC/MC_Hazro_LUC.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Punjab sources identify the Punjab Land Records Authority/PULSE land-record system and expose an Attock/Hazro cadastral-map scope. Official Attock district administration material describes maintenance and updating of periodical land records and registration records; official PMU-LGCDD material publishes an MC Hazro land-use map. This establishes relevant provincial/local administrative custody and mapped scope, not an open parcel geometry API.",
+  "officialSources": [
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official PULSE map viewer states that it provides parcel maps linked to Punjab land records; its public interface says complete parcel details require login and includes a cadastral-map route."},
+    {"url": "https://pmu-lgcdd.gop.pk/attock/", "observation": "Official Attock district planning page lists MC Hazro land-use classification and urban-block maps."},
+    {"url": "https://pmu-lgcdd.gop.pk/Land_Use_Plan/Attock/LUC/MC_Hazro_LUC.pdf", "observation": "Official MC Hazro land-use classification map; planning/map evidence only, not a parcel-boundary dataset."},
+    {"url": "https://attock.punjab.gov.pk/administration", "observation": "Official Attock district page describes maintenance and updating of periodical revenue/land records and registration-related records."},
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Official Punjab Land Records Authority portal for land-record services and service-center access."}
+  ],
+  "requests": [
+    {"url": "https://lis.pulse.gop.pk/", "method": "GET", "outcome": "HTTP 200; official viewer HTML retrieved and inspected. It references the public ArcGIS host and the Punjab cadastral map service; viewer text states complete parcel details require login."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=pjson", "method": "GET", "outcome": "HTTP 200; ArcGIS REST root exposed service folders including GPC, Punjab and VendorMaps."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson", "method": "GET", "outcome": "HTTP response contained ArcGIS error 499 Token Required; no service schema, CRS, layer fields or geometry was obtained."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson", "method": "GET", "outcome": "HTTP response contained ArcGIS error 499 Token Required; no parcel response was retained."},
+    {"url": "https://pmu-lgcdd.gop.pk/Land_Use_Plan/Attock/LUC/MC_Hazro_LUC.pdf", "method": "GET via first-party search/open", "outcome": "Official Hazro planning map available; it is not a parcel feature service and was not converted to parcel geometry."}
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Punjab land-record/cadastral mapping with Attock and Hazro administrative/map references.",
+    "verifiedOpenScope": "Official viewer and service catalogue identified; parcel layer access is token-gated, so open parcel geometry scope was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No coordinate shift or exact-point hit/miss inference was used. No parcel geometry or native parcel identity was retained. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained. Packet completion is not source integration/admission; serial reviewer qualification remains required."
+}

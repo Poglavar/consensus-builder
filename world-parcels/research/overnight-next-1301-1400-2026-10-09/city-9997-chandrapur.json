@@ -1,0 +1,93 @@
+{
+  "cityCode": 9997,
+  "queueRank": 1347,
+  "name": "Chandrapur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [19.9651134278361, 79.3002216660293],
+  "population2025": 416903,
+  "population2025k": 416.903,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "Chandrapur District Administration publishes an E-Mahabhumi land-records route that links to Maharashtra's official Bhumi Abhilekh portal with districtId=37. The district's Marathi land branch documents survey-number maps, village maps and land-records offices, including the Deputy Superintendent of Land Records, and identifies the Collector/Sub-Divisional Officer/Tahsildar workflow. This evidences a local/state cadastral service custodian, but not an open parcel-vector integration.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chandrapur Maharashtra official cadastral parcel map land records Bhu Naksha survey map site:mahabhumi.gov.in OR site:chanda.nic.in OR site:maharashtra.gov.in",
+        "result": "Found the official Chandrapur district E-Mahabhumi page, Maharashtra Bhumi Abhilekh services, the public Bhu-Naksha viewer, and the Maharashtra NAKSHA page scoped to districtId=37. The public viewer was discoverable but anonymous retrieval timed out; no safe parcel ID plus geometry response was obtained.",
+        "actualResultUrls": [
+          "https://chanda.nic.in/en/service/e-mahabhumi/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://bhumiabhilekh.maharashtra.gov.in/Home/SchemeAndProjectDetail?districtId=37"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "चंद्रपूर महाराष्ट्र अधिकृत जमीन नकाशा भू नकाशा सातबारा सर्वेक्षण नकाशा",
+        "result": "First-party Marathi discovery found Chandrapur's land-branch page and Maharashtra Bhumi Abhilekh pages describing survey-number maps, village maps, property maps and the Bhu-Naksha service. It identifies local land-record offices and processes but exposes no anonymous parcel geometry response.",
+        "actualResultUrls": [
+          "https://chanda.nic.in/e0-a4-9c-e0-a4-a4-e0-a4-ae-e0-a4-80-e0-a4-a8-e0-a4-b6-e0-a4-be-e0-a4-96-e0-a4-be/",
+          "https://bhumiabhilekh.maharashtra.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Home/SchemeAndProjectDetail?districtId=37"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://chanda.nic.in/en/service/e-mahabhumi/",
+      "role": "Chandrapur District Administration official E-Mahabhumi route",
+      "observation": "Links the district-scoped Maharashtra Bhumi Abhilekh portal with districtId=37; page identifies the Collector's office as content owner and was readable."
+    },
+    {
+      "url": "https://chanda.nic.in/e0-a4-9c-e0-a4-ae-e0-a4-80-e0-a4-a8-e0-a4-b6-e0-a4-be-e0-a4-96-e0-a4-be/",
+      "role": "Chandrapur District Administration Marathi land branch",
+      "observation": "Documents survey-number site maps, village maps, land-record documentation and the land-record office workflow; it names the Deputy Superintendent of Land Records and other local authorities."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "role": "Maharashtra Bhumi Abhilekh official service catalogue",
+      "observation": "Lists Bhu-Naksha, e-map/village-map and city-survey-map services, plus land-record and property-card services."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "role": "Maharashtra official Bhu-Naksha public viewer",
+      "observation": "Search discovery exposed a public plot-number viewer shell, but direct anonymous retrieval timed out before its current JavaScript/configuration or schema/CRS could be inspected."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Home/SchemeAndProjectDetail?districtId=37",
+      "role": "Maharashtra official NAKSHA page scoped to Chandrapur district",
+      "observation": "Describes the NAKSHA urban GIS/cadastral modernization programme and GIS-based property maps; this is programme provenance, not proof of an open parcel API or citywide vector coverage."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and not shifted; viewer timeout and unavailable public response do not establish citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Chandrapur district administration, Maharashtra Bhumi Abhilekh services, public Bhu-Naksha viewer, and district-scoped NAKSHA programme references.",
+    "verifiedOpenScope": "Local/state registry provenance was established, but anonymous parcel-vector access, current viewer configuration, schema, CRS, native identity, exact-point containment and citywide coverage were not verified.",
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "safe parcel identifier only if publicly exposed and non-personal",
+    "geometry",
+    "CRS or coordinate-system metadata",
+    "non-personal layer/schema metadata",
+    "administrative hierarchy codes and names"
+  ],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

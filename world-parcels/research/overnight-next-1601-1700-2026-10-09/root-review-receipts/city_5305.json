@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5305",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-5305-an-polis.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/an-polis-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:58:49Z",
+  "reviewNote": "The WUP identity and English/Portuguese searches were checked. First-party municipal mapoteca and cadastral-sheet pages support local custody, but the Geomais public page exposes no verified anonymous parcel ID/geometry response. No sample or adapter qualification exists; timeout and login are access limitations, not absence.",
+  "runtimeAdmission": "held; independent live adapter qualification gates not evidenced"
+}

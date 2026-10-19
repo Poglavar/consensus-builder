@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PA",
+ "country": "Panama",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "ANATI (Autoridad Nacional de Administracion de Tierras) - national cadastre; Registro Publico for titles",
+ "portalsFound": [
+  {
+   "url": "https://www.anati.gob.pa/",
+   "observation": "ANATI site reachable; cadastre map/consultation not located"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.anati.gob.pa/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "institutional site; no parcel endpoint identified"
+  },
+  {
+   "url": "https://geoportal.anati.gob.pa/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  },
+  {
+   "url": "https://mapas.anati.gob.pa/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "ANATI claims national cadastre; access not verified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Guessed geoportal hosts unreachable; the actual ANATI viewer URL was not found.",
+ "nextStep": "Find ANATI cadastre viewer URL and probe for ArcGIS/WFS."
+}

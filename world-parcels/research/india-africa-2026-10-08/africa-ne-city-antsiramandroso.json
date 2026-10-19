@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2198",
+  "queueRank": 20,
+  "wupCityCode": 2198,
+  "name": "Antsiramandroso",
+  "country": "Madagascar",
+  "countryCode": "MG",
+  "centerLatLon": [
+    -18.0327220798438,
+    49.3376073680055
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 20,
+  "population2025": 312434,
+  "annualGrowthPct2015To2025": 8.528493,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/growth-top20-2026-10-07/city-2198.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-MG.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Malagasy and French",
+    "exactQuery": "Antsiramandroso Madagasikara sarintany fananan-tany parcellaire PLOF",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.scribd.com/document/588334289/Torolalana-Fananan-tany",
+      "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf",
+      "https://cnlegis.gov.mg/uploads/L2022-013-VM.pdf",
+      "https://indriconnect.info/public/images/documents/pdf_1729006995.pdf",
+      "https://bianco-mg.org/wp-content/uploads/2020/06/Torolalana_Fananan-tany.pdf",
+      "https://www.studocu.com/row/document/universite-dantananarivo/universite-d-antananarivo/torolalana-fananan-tany-inona-no-tokony-ho-fantatra-bianco-2018/137959781",
+      "https://torolalana.gov.mg/mg/services/transformer-cadastre-en-titre/",
+      "https://www.govserv.org/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany"
+    ],
+    "summary": "Malagasy/French search surfaced official OITF/SILOAT and local PLOF; Antananarivo polygons remain semantically/ID unconfirmed and partial.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.scribd.com/document/588334289/Torolalana-Fananan-tany",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://cnlegis.gov.mg/uploads/L2022-013-VM.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://indriconnect.info/public/images/documents/pdf_1729006995.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://bianco-mg.org/wp-content/uploads/2020/06/Torolalana_Fananan-tany.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.studocu.com/row/document/universite-dantananarivo/universite-d-antananarivo/torolalana-fananan-tany-inona-no-tokony-ho-fantatra-bianco-2018/137959781",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://torolalana.gov.mg/mg/services/transformer-cadastre-en-titre/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.govserv.org/MG/Antananarivo/107799771613628/Minisiteran%E2%80%99ny-Fanajariana-ny-Tany-sy-ny-Raharahan-tany",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Antsiramandroso\" Madagascar (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Antsiramandroso%22+Madagascar+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No verified parcel layer for Antsiramandroso was established. Antananarivo’s prior PLOF WFS candidate remains semantically unconfirmed and partial; it cannot establish parcel coverage for this city.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "For Antsiramandroso, verify the relevant PLOF layer’s meaning, attributes, ID stability and city coverage; do not transfer Antananarivo’s partial lead to this city.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Antsiramandroso%22+Madagascar+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

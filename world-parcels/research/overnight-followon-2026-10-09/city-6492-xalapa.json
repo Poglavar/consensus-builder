@@ -1,0 +1,112 @@
+{
+  "name": "Xalapa",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 1018,
+  "point": [
+    19.544077332072,
+    -96.9156263974971
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xalapa Veracruz official cadastral parcel map registry public GIS",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "Veracruz state says Dirección General de Catastro y Valuación opened service offices in central Xalapa for cadastral procedures. No public parcel map/full-vector service exposed. Separate predial portal says Xalapa payments temporarily unavailable; no payment or property account queried.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "Spanish",
+        "query": "Xalapa catastro municipal mapa catastral parcelas Veracruz oficina catastral trámite oficial",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "Veracruz state says Dirección General de Catastro y Valuación opened service offices in central Xalapa for cadastral procedures. No public parcel map/full-vector service exposed. Separate predial portal says Xalapa payments temporarily unavailable; no payment or property account queried.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Veracruz Dirección General de Catastro y Valuación",
+        "operator": "Government of Veracruz, Secretaría de Gobierno",
+        "homeUrl": "https://www.veracruz.gob.mx/2025/03/26/catastro-y-valuacion-estrena-oficinas-para-brindar-mejor-atencion/",
+        "observation": "Veracruz state says Dirección General de Catastro y Valuación opened service offices in central Xalapa for cadastral procedures. No public parcel map/full-vector service exposed. Separate predial portal says Xalapa payments temporarily unavailable; no payment or property account queried."
+      }
+    ],
+    "requests": [
+      {
+        "observation": "Reviewed state notice placing cadastral office in central Xalapa and predial portal status. No parcel lookup or payment submitted."
+      },
+      {
+        "checkedAt": "2026-10-09T05:42:09.155277+00:00",
+        "url": "https://www.veracruz.gob.mx/2025/03/26/catastro-y-valuacion-estrena-oficinas-para-brindar-mejor-atencion/",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MX-6492-LOCAL-CADASTRE-REVIEW",
+    "name": "Veracruz Dirección General de Catastro y Valuación",
+    "url": "https://www.veracruz.gob.mx/2025/03/26/catastro-y-valuacion-estrena-oficinas-para-brindar-mejor-atencion/",
+    "operator": "Government of Veracruz, Secretaría de Gobierno",
+    "serviceType": "Official local registry/cadastre reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Reviewed state notice placing cadastral office in central Xalapa and predial portal status. No parcel lookup or payment submitted.",
+    "verifiedOpenScope": "Veracruz state says Dirección General de Catastro y Valuación opened service offices in central Xalapa for cadastral procedures. No public parcel map/full-vector service exposed. Separate predial portal says Xalapa payments temporarily unavailable; no payment or property account queried.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-polygon response exposed; no owner/address lookup made.",
+  "remainingUncertainty": "Parcel presence at WUP point and any public feature endpoint remain unverified.",
+  "nextStep": "If official source later exposes a documented feature service, inspect schema and make a bounded full-geometry query.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6492,
+  "cityId": "wup2025:6492",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    19.544077332072,
+    -96.9156263974971
+  ],
+  "population2025k": 542.213,
+  "populationUnit": "persons",
+  "queueRank": 1018,
+  "population2025": 542213,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Veracruz government notice of2025-03-26 explicitly places the Dirección General de Catastro y Valuación service office in central Xalapa and describes local cadastral procedures. The predial-payment portal is a separate workflow; no safe anonymous full native parcel polygon response was verified.",
+  "registryEvidenceUrls": [
+    "https://www.veracruz.gob.mx/2025/03/26/catastro-y-valuacion-estrena-oficinas-para-brindar-mejor-atencion/",
+    "https://www.ovh.gob.mx/predial/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-polygon response exposed; no owner/address lookup made."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootPreviousRegistryBasis": "Reviewed state notice placing cadastral office in central Xalapa and predial portal status. No parcel lookup or payment submitted.",
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The Veracruz government notice of2025-03-26 explicitly places the Dirección General de Catastro y Valuación service office in central Xalapa and describes local cadastral procedures. The predial-payment portal is a separate workflow; no safe anonymous full native parcel polygon response was verified."
+}

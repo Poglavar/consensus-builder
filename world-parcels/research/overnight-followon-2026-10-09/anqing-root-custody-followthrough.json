@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11168-anqing.json",
+  "city": "Anqing",
+  "wupCityCode": 11168,
+  "country": "China",
+  "countryCode": "CN",
+  "purpose": "Identify an official Anqing city-level real-estate registration institution and resolve the prior unresolved local-custody assessment.",
+  "assessment": "Confirmed city-level custody evidence. Anqing Municipal Org Work Committee’s government-hosted portal publishes an article authored by the Anqing Municipal Natural Resources and Planning Bureau. It explicitly names “安庆市自然资源和规划局不动产登记中心” (Anqing Municipal Natural Resources and Planning Bureau Real Estate Registration Center) and describes that center carrying out a local land-registration case with the Yixiu District People’s Court. A second city procurement-platform result independently names 安庆市不动产登记中心 as the buyer for digitizing its registration archives. City-local registry custody is therefore supported; neither source provides parcel-vector geometry.",
+  "registryCustody": "confirmed_city_real_estate_registration_center",
+  "registryFound": true,
+  "registryBasis": "The city-hosted municipal-organ-affairs page, authored by the Anqing Municipal Natural Resources and Planning Bureau, directly names its real-estate registration center and describes it performing land-registration work. The local public procurement announcement also names the Anqing Real Estate Registration Center as buyer for its registration-archive digitization project.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.aqjgdj.gov.cn/News/show/27553.html",
+      "observation": "Anqing Municipal Org Work Committee portal; article credits Anqing Municipal Natural Resources and Planning Bureau. It names the Anqing bureau’s Real Estate Registration Center and describes a 2025 local registration action coordinated with Yixiu District People’s Court."
+    },
+    {
+      "url": "https://www.aqjgdj.gov.cn/News/show/25358.html",
+      "observation": "Anqing Municipal Org Work Committee portal; article authored by the city Natural Resources and Planning Bureau describes its municipal “Man Yi Deng” registration service, city registration hall, and citywide registration work."
+    },
+    {
+      "url": "https://www.aqsygjy.com/jyxx/002003/002003004/20260626/623e0d07-c38a-4b39-bf8c-582386d88fb1.html",
+      "observation": "Anqing Sunshine Procurement Exchange page for a city real-estate registration archive digitization contract; it names 安庆市不动产登记中心 as the purchasing entity. Used as corroboration, alongside the city-authored bureau page."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Anqing Municipal Real Estate Registration Center official natural resources planning bureau Anqing China",
+      "result": "Search results led to Anqing-authored municipal-organ portal material describing its real-estate registration center and a local registration case; this establishes the city-level entity and operation. No public geometry route was found.",
+      "method": "Separate English-language web search and review of first-party municipal material."
+    },
+    {
+      "language": "Chinese",
+      "query": "安庆市不动产登记中心 官方地址 安庆市自然资源和规划局不动产登记中心",
+      "result": "Found Anqing Municipal Org Work Committee portal content authored by the city Natural Resources and Planning Bureau naming the bureau’s Real Estate Registration Center and describing a city registration hall. The local procurement listing separately names the Anqing Real Estate Registration Center as buyer for its archive-digitization project. No parcel-specific lookup was attempted.",
+      "method": "Separate Chinese-language web search and review of municipal bureau and city procurement pages."
+    }
+  ],
+  "geometryAssessment": "No public parcel geometry endpoint was identified in this custody followthrough. No property, owner, address, tax or account data were queried or retained.",
+  "recommendedCityRecordUpdate": "Set registryFound=true and replace the unresolved basis with the city-local bureau registration-center evidence above. This file is a followthrough record only; the existing city/service packet was not edited.",
+  "scopeLimits": {
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "geometryQueried": false,
+    "citywideGeometryCompletenessAsserted": false
+  }
+}

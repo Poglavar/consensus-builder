@@ -1,0 +1,396 @@
+{
+ "displayFieldName": "planlabel",
+ "fieldAliases": {
+  "objectid": "OBJECTID",
+  "cadid": "cadid",
+  "createdate": "createdate",
+  "modifieddate": "modifieddate",
+  "controllingauthorityoid": "controllingauthorityoid",
+  "planoid": "planoid",
+  "plannumber": "plannumber",
+  "planlabel": "planlabel",
+  "itstitlestatus": "ITSTitleStatus",
+  "itslotid": "itslotid",
+  "stratumlevel": "StratumLevel",
+  "hasstratum": "HasStratum",
+  "classsubtype": "ClassSubtype",
+  "lotnumber": "lotnumber",
+  "sectionnumber": "sectionnumber",
+  "planlotarea": "planlotarea",
+  "planlotareaunits": "planlotareaunits",
+  "startdate": "startdate",
+  "enddate": "enddate",
+  "lastupdate": "lastupdate",
+  "msoid": "msoid",
+  "centroidid": "centroidid",
+  "shapeuuid": "shapeuuid",
+  "changetype": "changetype",
+  "lotidstring": "lotidstring",
+  "processstate": "processstate",
+  "urbanity": "urbanity",
+  "shape_Length": "shape_Length",
+  "shape_Area": "shape_Area"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "objectid",
+   "type": "esriFieldTypeOID",
+   "alias": "OBJECTID"
+  },
+  {
+   "name": "cadid",
+   "type": "esriFieldTypeInteger",
+   "alias": "cadid"
+  },
+  {
+   "name": "createdate",
+   "type": "esriFieldTypeDate",
+   "alias": "createdate",
+   "length": 8
+  },
+  {
+   "name": "modifieddate",
+   "type": "esriFieldTypeDate",
+   "alias": "modifieddate",
+   "length": 8
+  },
+  {
+   "name": "controllingauthorityoid",
+   "type": "esriFieldTypeInteger",
+   "alias": "controllingauthorityoid"
+  },
+  {
+   "name": "planoid",
+   "type": "esriFieldTypeInteger",
+   "alias": "planoid"
+  },
+  {
+   "name": "plannumber",
+   "type": "esriFieldTypeInteger",
+   "alias": "plannumber"
+  },
+  {
+   "name": "planlabel",
+   "type": "esriFieldTypeString",
+   "alias": "planlabel",
+   "length": 15
+  },
+  {
+   "name": "itstitlestatus",
+   "type": "esriFieldTypeSmallInteger",
+   "alias": "ITSTitleStatus"
+  },
+  {
+   "name": "itslotid",
+   "type": "esriFieldTypeInteger",
+   "alias": "itslotid"
+  },
+  {
+   "name": "stratumlevel",
+   "type": "esriFieldTypeSmallInteger",
+   "alias": "StratumLevel"
+  },
+  {
+   "name": "hasstratum",
+   "type": "esriFieldTypeSmallInteger",
+   "alias": "HasStratum"
+  },
+  {
+   "name": "classsubtype",
+   "type": "esriFieldTypeInteger",
+   "alias": "ClassSubtype"
+  },
+  {
+   "name": "lotnumber",
+   "type": "esriFieldTypeString",
+   "alias": "lotnumber",
+   "length": 6
+  },
+  {
+   "name": "sectionnumber",
+   "type": "esriFieldTypeString",
+   "alias": "sectionnumber",
+   "length": 3
+  },
+  {
+   "name": "planlotarea",
+   "type": "esriFieldTypeDouble",
+   "alias": "planlotarea"
+  },
+  {
+   "name": "planlotareaunits",
+   "type": "esriFieldTypeString",
+   "alias": "planlotareaunits",
+   "length": 6
+  },
+  {
+   "name": "startdate",
+   "type": "esriFieldTypeDate",
+   "alias": "startdate",
+   "length": 8
+  },
+  {
+   "name": "enddate",
+   "type": "esriFieldTypeDate",
+   "alias": "enddate",
+   "length": 8
+  },
+  {
+   "name": "lastupdate",
+   "type": "esriFieldTypeDate",
+   "alias": "lastupdate",
+   "length": 8
+  },
+  {
+   "name": "msoid",
+   "type": "esriFieldTypeInteger",
+   "alias": "msoid"
+  },
+  {
+   "name": "centroidid",
+   "type": "esriFieldTypeInteger",
+   "alias": "centroidid"
+  },
+  {
+   "name": "shapeuuid",
+   "type": "esriFieldTypeString",
+   "alias": "shapeuuid",
+   "length": 38
+  },
+  {
+   "name": "changetype",
+   "type": "esriFieldTypeString",
+   "alias": "changetype",
+   "length": 2
+  },
+  {
+   "name": "lotidstring",
+   "type": "esriFieldTypeString",
+   "alias": "lotidstring",
+   "length": 50
+  },
+  {
+   "name": "processstate",
+   "type": "esriFieldTypeString",
+   "alias": "processstate",
+   "length": 5
+  },
+  {
+   "name": "urbanity",
+   "type": "esriFieldTypeString",
+   "alias": "urbanity",
+   "length": 2
+  },
+  {
+   "name": "shape_Length",
+   "type": "esriFieldTypeDouble",
+   "alias": "shape_Length"
+  },
+  {
+   "name": "shape_Area",
+   "type": "esriFieldTypeDouble",
+   "alias": "shape_Area"
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "objectid": 3537226,
+    "cadid": 100098447,
+    "createdate": 750297600000,
+    "modifieddate": 1569343553000,
+    "controllingauthorityoid": 2,
+    "planoid": 363932,
+    "plannumber": 11050,
+    "planlabel": "DP11050",
+    "itstitlestatus": 1,
+    "itslotid": 681086,
+    "stratumlevel": 0,
+    "hasstratum": 1,
+    "classsubtype": 1,
+    "lotnumber": "9",
+    "sectionnumber": null,
+    "planlotarea": null,
+    "planlotareaunits": null,
+    "startdate": 1569343772000,
+    "enddate": 32503680000000,
+    "lastupdate": 1569343965102,
+    "msoid": 2801425,
+    "centroidid": null,
+    "shapeuuid": "b6e8fffb-01cc-3f67-af4d-9d821e2275c6",
+    "changetype": "M",
+    "lotidstring": "9//DP11050",
+    "processstate": null,
+    "urbanity": "U",
+    "shape_Length": 128.0069287464699,
+    "shape_Area": 749.126382863357
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       151.07932243628468,
+       -33.85810489694422
+      ],
+      [
+       151.0792036992162,
+       -33.858164131376626
+      ],
+      [
+       151.0789810158404,
+       -33.85785243587119
+      ],
+      [
+       151.07908534842335,
+       -33.857800372902894
+      ],
+      [
+       151.07909974392575,
+       -33.85779319283029
+      ],
+      [
+       151.07932243628468,
+       -33.85810489694422
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 3537227,
+    "cadid": 100098448,
+    "createdate": 750297600000,
+    "modifieddate": 1569343553000,
+    "controllingauthorityoid": 2,
+    "planoid": 363932,
+    "plannumber": 11050,
+    "planlabel": "DP11050",
+    "itstitlestatus": 1,
+    "itslotid": 681085,
+    "stratumlevel": 0,
+    "hasstratum": 1,
+    "classsubtype": 1,
+    "lotnumber": "8",
+    "sectionnumber": null,
+    "planlotarea": null,
+    "planlotareaunits": null,
+    "startdate": 1569343772000,
+    "enddate": 32503680000000,
+    "lastupdate": 1569343965226,
+    "msoid": 2828048,
+    "centroidid": null,
+    "shapeuuid": "c1eb1484-abbb-3bc8-83d9-2c9383c09131",
+    "changetype": "M",
+    "lotidstring": "8//DP11050",
+    "processstate": null,
+    "urbanity": "U",
+    "shape_Length": 128.01301375638823,
+    "shape_Area": 749.1846796401094
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       151.07944118233627,
+       -33.85804566340318
+      ],
+      [
+       151.07932243628468,
+       -33.85810489694422
+      ],
+      [
+       151.07909974392575,
+       -33.85779319283029
+      ],
+      [
+       151.07921847201104,
+       -33.85773394042351
+      ],
+      [
+       151.0792654887101,
+       -33.85779975467072
+      ],
+      [
+       151.07944118233627,
+       -33.85804566340318
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "objectid": 3537228,
+    "cadid": 100098449,
+    "createdate": 750297600000,
+    "modifieddate": 1569343553000,
+    "controllingauthorityoid": 2,
+    "planoid": 363932,
+    "plannumber": 11050,
+    "planlabel": "DP11050",
+    "itstitlestatus": 1,
+    "itslotid": 681084,
+    "stratumlevel": 0,
+    "hasstratum": 1,
+    "classsubtype": 1,
+    "lotnumber": "7",
+    "sectionnumber": null,
+    "planlotarea": null,
+    "planlotareaunits": null,
+    "startdate": 1569343772000,
+    "enddate": 32503680000000,
+    "lastupdate": 1569343965638,
+    "msoid": 2855420,
+    "centroidid": null,
+    "shapeuuid": "cef0501b-c6ba-339c-a153-d6ac7c3dc27d",
+    "changetype": "M",
+    "lotidstring": "7//DP11050",
+    "processstate": null,
+    "urbanity": "U",
+    "shape_Length": 128.01742552142886,
+    "shape_Area": 749.2074792871758
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       151.07955991940474,
+       -33.857986428888566
+      ],
+      [
+       151.07944118233627,
+       -33.85804566340318
+      ],
+      [
+       151.0792654887101,
+       -33.85779975467072
+      ],
+      [
+       151.07921847201104,
+       -33.85773394042351
+      ],
+      [
+       151.0793371911132,
+       -33.857674688908084
+      ],
+      [
+       151.0794270192729,
+       -33.8578004176618
+      ],
+      [
+       151.07955991940474,
+       -33.857986428888566
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "exceededTransferLimit": true
+}

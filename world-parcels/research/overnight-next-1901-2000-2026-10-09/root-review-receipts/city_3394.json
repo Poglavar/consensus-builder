@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3394",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-3394-karlsruhe.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/karlsruhe-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T18:52:59.644196Z",
+  "reason": "Municipal parcel map and custodianship confirmed; no anonymous native-ID polygon response or independent adapter qualification.",
+  "admissionGates": "No independent proof of fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS geometry and overlap checks, source binding, and headed Details verification."
+}

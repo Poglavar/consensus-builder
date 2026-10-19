@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8490-alwar.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Rajasthan Urban GIS exposes Khasra/plot and village-boundary layers with district/tehsil/village/plot selectors and says the information is for viewing, not legal use. Rajasthan BhuNaksha is also a public cadastral viewer. Alwar GIS DLC pages show registration-office coverage but require login. No field-limited anonymous geometry query was verified, and no identifier-based record lookup was performed. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "observation": "Rajasthan Urban GIS exposes Khasra/plot and village-boundary layers with district/tehsil/village/plot selectors and says the information is for viewing, not legal use. Rajasthan BhuNaksha is also a public cadastral viewer. Alwar GIS DLC pages show registration-office coverage but require login. No field-limited anonymous geometry query was verified, and no identifier-based record lookup was performed."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Alwar Rajasthan official cadastral parcel map BhuNaksha Urban GIS land registry"
+    },
+    {
+      "language": "Hindi",
+      "query": "अलवर भू नक्शा खसरा जमाबंदी राजस्थान शहरी GIS आधिकारिक"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

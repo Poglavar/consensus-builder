@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10070-shangqiu.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Shangqiu Real Estate Registration and Transaction Center publishes city-local land-registration, cadastral-map, and parcel-map query pages. The cadastral-map page links to a separate public map viewer; parcel-map query uses a real-property unit/address plus applicant, purpose, and captcha. The map viewer shell did not return an HTTP response in this environment, and no full polygon schema or response was verified.",
+  "registryAssessment": "The Shangqiu Real Estate Registration and Transaction Center publishes city-local land-registration, cadastral-map, and parcel-map query pages. The cadastral-map page links to a separate public map viewer; parcel-map query uses a real-property unit/address plus applicant, purpose, and captcha. The map viewer shell did not return an HTTP response in this environment, and no full polygon schema or response was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sqsbdc.cn/Query_zdt.aspx",
+      "observation": "Official Shangqiu Real Estate Registration and Transaction Center parcel-map query page; fields require property unit/address, applicant, purpose and captcha. No property-specific query was submitted."
+    },
+    {
+      "url": "https://sqsbdc.cn/Query_djt.aspx",
+      "observation": "Official center cadastral-map page offers cadastral district/subdistrict type and a purpose field; the query link leads to a separate viewer at http://222.138.172.5:8222/."
+    },
+    {
+      "url": "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+      "observation": "Official city center organization page lists the local registry institution and service center."
+    },
+    {
+      "url": "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+      "observation": "Official city center page describes its real-estate registration/transaction surveying service center."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "商丘市不动产登记交易中心 地籍图查询 宗地图 宗地登记 官方",
+      "result": "商丘市不动产登记交易中心提供土地登记、地籍图、宗地图等查询入口。宗地图表单要求不动产单元号/房屋坐落、申请人、查询用途及验证码；地籍图页需选择地籍区类别并链接到地图应用。未提交任何地块/申请人信息，地图服务未返回可核验的几何响应。",
+      "urls": [
+        "https://sqsbdc.cn/",
+        "https://sqsbdc.cn/Query_zdt.aspx",
+        "https://sqsbdc.cn/Query_djt.aspx",
+        "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+        "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+        "http://222.138.172.5:8222/"
+      ],
+      "scope": "Verify city-local registry/cadastre activity and safe public full geometry routes."
+    },
+    {
+      "language": "English",
+      "query": "Shangqiu China official real estate registration cadastral map parcel map public GIS land registry",
+      "result": "Official city registration-center pages identify land-registration, cadastral-map, and parcel-map query services. The parcel-map form requests a property unit/address, applicant, purpose, and captcha. The cadastral map page links to a separate map host, but no full polygon/schema was verified.",
+      "urls": [
+        "https://sqsbdc.cn/",
+        "https://sqsbdc.cn/Query_zdt.aspx",
+        "https://sqsbdc.cn/Query_djt.aspx",
+        "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+        "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+        "http://222.138.172.5:8222/"
+      ],
+      "scope": "Cross-check source identity, public access conditions, and exact locator coverage."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://sqsbdc.cn/Query_zdt.aspx",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 HTML. Official parcel-map query fields: real-property unit number/house location, applicant, purpose, captcha. No field submitted."
+    },
+    {
+      "url": "https://sqsbdc.cn/Query_djt.aspx",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 HTML. Official cadastral-map page asks cadastral-zone category/code and purpose; “query” link points to http://222.138.172.5:8222/. Page gives no geometry schema."
+    },
+    {
+      "url": "http://222.138.172.5:8222/",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "Shell GET timed out before HTTP status in this environment. No response body/schema or feature geometry obtained; do not infer provider outage."
+    },
+    {
+      "url": "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "Official center organizational/service page identifies the Shangqiu Real Estate Registration and Transaction Center."
+    },
+    {
+      "url": "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "Official center page identifies a public-service institution for registration/transaction surveying services."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, applicant, account, taxpayer, or identity data was queried or retained. No credentials, tokens, or full geometry were retained.",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_exact_point_full_polygon",
+    "reason": "The linked map viewer and per-record parcel-map query did not yield a public safe full-polygon schema or exact-WUP response. No identity, captcha or property query was attempted."
+  },
+  "geometryDisposition": "No full geometry sample: city-specific official source pages and linked map/service routes were inspected, but no safe public full-polygon feature response and schema at the exact WUP locator were verified."
+}

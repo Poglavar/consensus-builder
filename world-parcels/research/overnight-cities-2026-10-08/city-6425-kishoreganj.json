@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Kishoreganj",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Kishoreganj Sadar Upazila Land Office identifies the local land administration. The official DLRS site assigns Kishoreganj to its Mymensingh settlement zone, and DLRS Map Search exposes district, survey, upazila, mouza, and sheet selectors. Its public selector returned Kishoreganj district, but no survey options for that district.",
+  "registryEvidenceUrls": [
+    "https://acl.kishoreganjsadar.kishoreganj.gov.bd/",
+    "https://dlrs.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+    "https://settlement.gov.bd/map/mapsearch"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6425,
+  "cityId": "wup2025:6425",
+  "centerLatLon": [
+    24.4075970112163,
+    90.7697996060054
+  ],
+  "rank": 387,
+  "queueRank": 387,
+  "population2025": 1324096,
+  "population2025k": 1324.096,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The public DLRS map UI has an advertised GeoJSON sheet route and parcel vector-tile route after a survey/mouza selection. The district selector resolved Kishoreganj (`010400000`), but the corresponding public survey selector returned HTTP 200 with an empty list. No sheet or parcel tile can therefore be selected for Kishoreganj through this route without inventing codes. The owner/khatian detail endpoint was not called.",
+  "scopeLimits": "Inspected the public DLRS map-search HTML and client script, queried only division/district/survey administrative selectors, and verified the Kishoreganj Sadar local land office. Did not request a plot/dag, khatian, owner, land area, legal identifier, or map feature record. The map’s separate Khatian-data endpoint is excluded.",
+  "remainingUncertainty": "Whether the district survey selector is temporarily empty, whether a current BDS or other survey map is served through a different official route, and whether any selected mouza sheet covers the WUP center or the broader Kishoreganj Sadar urban area.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Bangla",
+        "query": "কিশোরগঞ্জ সদর ভূমি অফিস DLRS মৌজা নকশা মানচিত্র অনলাইন",
+        "result": "Found the official Kishoreganj Sadar land office and the DLRS public survey-map portal. The selector requires survey/mouza/sheet selection; the district survey list is empty."
+      },
+      {
+        "language": "English",
+        "query": "Kishoreganj Bangladesh official cadastral map DLRS public parcel map",
+        "result": "Found official DLRS map search and local Sadar land office; no safe parcel geometry was available because the district survey selector is empty."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://acl.kishoreganjsadar.kishoreganj.gov.bd/",
+        "observation": "HTTP 200, 101,544 bytes; official Kishoreganj Sadar Upazila Land Office portal."
+      },
+      {
+        "url": "https://dlrs.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+        "observation": "Official DLRS zone information lists Kishoreganj under the Mymensingh Zonal Settlement Office. Search/open content was accessible; direct HTTPS verification to this host failed certificate validation and no HTTP status is claimed."
+      },
+      {
+        "url": "https://settlement.gov.bd/map/mapsearch",
+        "observation": "HTTP 200, 67,055 bytes. Official DLRS land survey map search provides district/survey/upazila/mouza/sheet selectors and a public map interface."
+      },
+      {
+        "url": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+        "observation": "HTTP 200, 139,619 bytes. Static client advertises `/Khatian/GetSheetJsonBySurvey` GeoJSON and `/tiles/parcels/{survey}/{mouza}/{z}/{x}/{y}.pbf` after administrative selection; also contains a separate khatian-details route, which was not called."
+      }
+    ],
+    "metadataReviewFile": "kishoreganj-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-6425-kishoreganj-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "bd-dlrs-kishoreganj-public-mapsearch",
+    "name": "Bangladesh DLRS public map search and Kishoreganj Sadar land office",
+    "operator": "Department of Land Records and Surveys (DLRS), Ministry of Land; Kishoreganj Sadar Upazila Land Office",
+    "url": "https://settlement.gov.bd/map/mapsearch",
+    "scope": "The public DLRS map UI has an advertised GeoJSON sheet route and parcel vector-tile route after a survey/mouza selection. The district selector resolved Kishoreganj (`010400000`), but the corresponding public survey selector returned HTTP 200 with an empty list. No sheet or parcel tile can therefore be selected for Kishoreganj through this route without inventing codes. The owner/khatian detail endpoint was not called.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature was requested or returned; no native parcel identifier was examined.",
+    "geometryStatus": "no_qualifying_anonymous_geometry_route"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local registry/land-office presence and public map routes were inspected. No anonymous parcel polygon geometry was verified for the target city; this is an access result, not a claim that the registry lacks parcel records.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "point": [
+    24.4075970112163,
+    90.7697996060054
+  ],
+  "rootReviewedAt": "2026-10-08T23:27:05.916367+00:00",
+  "sourceIds": []
+}

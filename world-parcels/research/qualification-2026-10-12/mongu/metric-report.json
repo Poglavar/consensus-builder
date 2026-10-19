@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "57ae1477a0c251baa621f118ef972e5ae6a57d551436a70d5a8e570382f9e29e",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32734",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 2,
+  "validFeatureCount": 2,
+  "perFeature": [
+    {
+      "id": "241873",
+      "geometrySha256": "889fac633acadc707003ac9e16e7b4b859e402272ec34f9d06d7dd86c6684ecf",
+      "boundsMetric": {
+        "minX": 730827.7925290003,
+        "minY": 8310572.8777398905,
+        "maxX": 731140.4219219675,
+        "maxY": 8310944.68665954,
+        "widthM": 312.62939296721015,
+        "heightM": 371.8089196495712,
+        "aspectRatio": 1.1892961059121143
+      },
+      "areaM2": 54534.30364389685,
+      "invalidReasons": []
+    },
+    {
+      "id": "260925",
+      "geometrySha256": "cda0929ff762704cf8c90da4678870cb88cc35f70e6cc51ec379cf92487b8372",
+      "boundsMetric": {
+        "minX": 730368.4667943928,
+        "minY": 8309986.714538805,
+        "maxX": 731365.51382,
+        "maxY": 8310537.286522314,
+        "widthM": 997.0470256072003,
+        "heightM": 550.5719835087657,
+        "aspectRatio": 1.8109294614903453
+      },
+      "areaM2": 286209.0983384687,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0.0,
+  "maxOverlapFractionOfSmaller": 0.0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 0,
+  "subthresholdPositiveIntersectionTotalM2": 0,
+  "subthresholdPositiveIntersections": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

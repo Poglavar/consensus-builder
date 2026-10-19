@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IS",
+ "country": "Iceland",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "HMS (Húsnæðis- og mannvirkjastofnun) runs the Property Registry (Fasteignaskrá) and Land Registry (Landeignaskrá); Landmælingar Íslands (LMI/National Land Survey) hosts the national geodata portal",
+ "portalsFound": [
+  {
+   "url": "https://gis.lmi.is/geoserver/ows",
+   "observation": "LMI open GeoServer WFS with ~350 layers (INSPIRE AU/HY/GN, IS_50V, Hagstofan, etc.); no cadastral parcel / land-unit layer listed"
+  },
+  {
+   "url": "https://geo.lmi.is/",
+   "observation": "GeoNetwork catalogue loads"
+  },
+  {
+   "url": "https://www.landupplysingar.is/",
+   "observation": "Landupplysingar portal loads (200)"
+  },
+  {
+   "url": "https://opingogn.is/",
+   "observation": "Open data portal redirects (301)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.lmi.is/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "no parcel layers among feature type names"
+  },
+  {
+   "url": "https://www.hms.is/fasteignaskra",
+   "method": "GET",
+   "httpStatus": 429,
+   "contentType": "text/html",
+   "assessment": "rate-limited/blocked"
+  },
+  {
+   "url": "https://kort.hms.is/ and gis.hms.is ArcGIS rest guesses",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "unreachable (502 tunnel / no response)"
+  },
+  {
+   "url": "https://fasteignaskra.is/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS certificate name mismatch; not accessed insecurely"
+  },
+  {
+   "url": "https://map.is/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer landing"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National land registry (HMS) with map viewer; not confirmed",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "The HMS-hosted services (which most likely hold parcel polygons) returned 429/502 and were not tested; LMI WFS contains no parcels. Not proof of absence.",
+ "nextStep": "Retry hms.is (429) later or with alternate host; look for HMS WFS/ArcGIS \"landeignir\" layer and opingogn.is dataset."
+}

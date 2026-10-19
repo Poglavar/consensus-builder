@@ -1,0 +1,145 @@
+{
+  "name": "Chifeng",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 909,
+  "point": [
+    42.2707379779461,
+    118.935983949044
+  ],
+  "population2025": 599299,
+  "population2025k": 599.299,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.chifeng.gov.cn/",
+    "https://zrzyj.chifeng.gov.cn/zzllms/zzGzdt/index_74.html",
+    "https://zrzyj.chifeng.gov.cn/zwgk/czxx/",
+    "https://chifeng.gov.cn/zwgk/"
+  ],
+  "resultCategory": "municipal_real_estate_registry_evidenced_no_public_geometry_verified",
+  "scopeLimits": "Research uses official public sources and preserves the exact unchanged WUP locator. No owner, address, account, tax, personal-property, credential or token data requested or retained. No citywide completeness asserted.",
+  "remainingUncertainty": "Whether any public/authenticated parcel GIS exists and whether its coverage includes the exact settlement locator remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Chifeng Inner Mongolia official cadastral parcel map GIS land registry",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry.",
+        "result": "English search did not identify a public parcel GIS. Official municipal Chinese sources confirm an active real-estate registration center and cadastral land-rights work.",
+        "actualResultUrls": [
+          "https://zrzyj.chifeng.gov.cn/",
+          "https://zrzyj.chifeng.gov.cn/zzllms/zzGzdt/index_74.html",
+          "https://zrzyj.chifeng.gov.cn/zwgk/czxx/",
+          "https://chifeng.gov.cn/zwgk/"
+        ],
+        "executionMethod": "English-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      },
+      {
+        "language": "Chinese",
+        "query": "赤峰 地籍图 宗地 不动产登记 GIS 自然资源局 官方",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry in a local language.",
+        "result": "赤峰市自然资源局资料说明全市开展不动产确权登记和房地一体宗地登记，并设市不动产登记中心；未发现公开地块矢量服务。",
+        "actualResultUrls": [
+          "https://zrzyj.chifeng.gov.cn/",
+          "https://zrzyj.chifeng.gov.cn/zzllms/zzGzdt/index_74.html",
+          "https://zrzyj.chifeng.gov.cn/zwgk/czxx/",
+          "https://chifeng.gov.cn/zwgk/"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyj.chifeng.gov.cn/",
+        "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+      },
+      {
+        "url": "https://zrzyj.chifeng.gov.cn/zzllms/zzGzdt/index_74.html",
+        "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+      },
+      {
+        "url": "https://zrzyj.chifeng.gov.cn/zwgk/czxx/",
+        "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+      },
+      {
+        "url": "https://chifeng.gov.cn/zwgk/",
+        "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://zrzyj.chifeng.gov.cn/",
+        "method": "GET official Chifeng Natural Resources Bureau homepage",
+        "result": "Identifies the bureau and land/registration notices; no public cadastral viewer link found."
+      },
+      {
+        "url": "https://zrzyj.chifeng.gov.cn/zzllms/zzGzdt/index_74.html",
+        "method": "GET official Chifeng bureau activity page",
+        "result": "Reports city-wide land-rights registration and parcel survey/registration actions; no public parcel geometry service."
+      },
+      {
+        "url": "https://zrzyj.chifeng.gov.cn/zwgk/czxx/",
+        "method": "GET official bureau public-disclosure page",
+        "result": "Lists Chifeng Real Estate Registration Center as a municipal bureau unit; no feature endpoint exposed."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-9064-chifeng-cadastre-review",
+    "name": "Chifeng Municipal Natural Resources Bureau / Chifeng Real Estate Registration Center",
+    "url": "https://chifeng.gov.cn/zwgk/",
+    "operator": "China",
+    "serviceType": "Municipal land and property registration, cadastral rights administration and registration services; no public geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native feature identity and geometry at the WUP point were not verified."
+  },
+  "wupCityCode": 9064,
+  "cityId": "wup2025:9064",
+  "queueRank": 909,
+  "centerLatLon": [
+    42.2707379779461,
+    118.935983949044
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research packet only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located.",
+    "verifiedOpenScope": "No parcel geometry verified at the exact WUP settlement point.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research packet only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://zrzyj.chifeng.gov.cn/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "赤峰市自然资源局"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-8600-bandikui.json",
+  "cityCode": 8600,
+  "queueRank": 3220,
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Hindi discovery identified official Rajasthan BhuNaksha, Apna Khata, Rajdharaa Urban GIS, and Bandikui-specific urban-government planning/municipal documents. Direct TLS-default requests to both BhuNaksha routes timed out after 25 seconds; indexed first-party pages exposed public map/search descriptions but no anonymous parcel ID-plus-geometry response. All executed routes and limits are recorded in the city record.",
+  "attemptedRoutes": [
+    {"route": "https://bhunaksha.rajasthan.gov.in/", "outcome": "TLS-default GET timed out after 25 seconds; no body or viewer configuration."},
+    {"route": "https://bhunaksha.rajasthan.gov.in/georef_gmaps.html", "outcome": "TLS-default GET timed out after 25 seconds; no parcel request attempted."},
+    {"route": "https://apnakhata.rajasthan.gov.in/", "outcome": "Official page identified; land-record/BhuNaksha links observed; no parcel feature response."},
+    {"route": "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "outcome": "Official Urban GIS page identified; district/tehsil/village/khasra controls and Settlement Department disclaimer observed; no parcel response."},
+    {"route": "https://www.lsg.urban.rajasthan.gov.in/content/dam/raj/udh/organizations/ctp/pdf/Bandikui%20Maps.pdf", "outcome": "Official Bandikui Land Use Plan 2031; planning/municipal-limit visual evidence only."},
+    {"route": "https://lsg.urban.rajasthan.gov.in/content/dam/raj/udh/udh%20department/pdf/Notifications/Dausa%20Bandikui%20Notification.pdf", "outcome": "Official Bandikui municipal-area notification; administrative evidence only."},
+    {"route": "https://lsg.urban.rajasthan.gov.in/content/dam/raj/udh/lsgs/lsg-jaipur/Order/order2019/sep/WardParisiman/bandikui.pdf", "outcome": "Official Bandikui ward-boundary document; administrative evidence only."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [27.0502803263627, 76.5736780879062] was preserved in latitude/longitude order.",
+    "No coordinate shift, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "Planning, ward, and municipal-limit documents are not parcel geometry and were not retained as samples.",
+    "No raw source-specific attribute set or administrative geometry was retained as a parcel sample.",
+    "No registry/catalog/runtime configuration or other city's files were changed."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No anonymous public parcel vector with a qualified native identity, geometry, schema, and CRS was obtained; independent serial review remains required."},
+  "uncertainty": "Rajasthan or Bandikui local authorities may maintain operational cadastral data not exposed by these public routes during this attempt. Official planning and municipal documents prove local map/administrative evidence, not an open parcel API or citywide machine-readable coverage.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with current Rajasthan BhuNaksha/Rajdharaa viewer configuration and independent adapter qualification.",
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

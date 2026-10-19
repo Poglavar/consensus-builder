@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "WI",
+ "regionName": "Wisconsin",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-wi-parcels",
+  "name": "Wisconsin State Cartographer's Office / Wisconsin Land Information Program (WLIP, Dept of Administration) Statewide Parcel Map Database V12; layer V1200_WisconsinParcels_2026",
+  "operator": "Wisconsin State Cartographer's Office / Wisconsin Land Information Program (WLIP, Dept of Administration) Statewide Parcel Map Database V12; layer V1200_WisconsinParcels_2026",
+  "scope": "statewide layer",
+  "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST query (f=geojson)",
+  "crs": "EPSG:3857 (requested outSR 4326)",
+  "reuseStatus": "Item states data free for public consumption as of 2026-06-30; full terms not read. Layer carries owner/address fields (not requested)."
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: application/json; Accept-Language: en-US,en;q=0.9; cookie jar (curl -b/-c); outbound via agent proxy, TLS verified",
+ "verifiedParcelResponse": {
+  "sourceId": "us-wi-parcels",
+  "requestUrl": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json / geo+json",
+  "spatialTestAreaLonLat": "bbox ~0.0024 deg (about 200 m) around each sample point, inSR=4326",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "PARCELID",
+  "responseFile": "research/subnational/US/WI-parcel-response.json",
+  "pagination": "resultRecordCount=3; server maxRecordCount 100000 or 2000/1000",
+  "regionSampled": "Dane County, Milwaukee County"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer description: 'final deliverable for the Version 12 Statewide Parcel Map Database Project', comprehensive collection of parcel geometries aggregated from county-level data. Item text: 'This data free for public consumption as of 06/30/2026'.",
+ "subregionsVerified": [
+  "Dane County",
+  "Milwaukee County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+   "observation": "anonymous ArcGIS REST layer; found via ArcGIS Online sharing search / known state service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=PARCELID,CONAME&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 polygon(s), Dane County"
+  },
+  {
+   "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=PARCELID,CONAME&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 polygon(s), Milwaukee County"
+  }
+ ],
+ "reuseStatus": "Item states data free for public consumption as of 2026-06-30; full terms not read. Layer carries owner/address fields (not requested).",
+ "remainingUncertainty": "Hub/item owner is a DOA staff account; the first guessed path Wisconsin_Statewide_Parcels returned Invalid URL.",
+ "nextStep": "Read the WLIP statewide parcel page for terms and county completeness."
+}

@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "cityId": "venjaramoodu",
+  "researchCityId": "wup2025:10023",
+  "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+  "checkedAt": "2026-10-07T18:57:50.373Z",
+  "runtimeDescriptor": {
+    "gridSize": 0.00025,
+    "maxBboxKm2": 1,
+    "maxFeatures": 1000
+  },
+  "tests": [
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.91225,
+        8.652750000000001,
+        76.9125,
+        8.653
+      ],
+      "complete": true,
+      "count": 1
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.912,
+        8.652750000000001,
+        76.91225,
+        8.653
+      ],
+      "complete": true,
+      "count": 1
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.9125,
+        8.652750000000001,
+        76.91275,
+        8.653
+      ],
+      "complete": true,
+      "count": 4
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.91225,
+        8.652500000000002,
+        76.9125,
+        8.652750000000001
+      ],
+      "complete": true,
+      "count": 1
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.91225,
+        8.653,
+        76.9125,
+        8.653250000000002
+      ],
+      "complete": true,
+      "count": 1
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.912,
+        8.652500000000002,
+        76.91225,
+        8.652750000000001
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.9125,
+        8.652500000000002,
+        76.91275,
+        8.652750000000001
+      ],
+      "complete": true,
+      "count": 2
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.912,
+        8.653,
+        76.91225,
+        8.653250000000002
+      ],
+      "complete": true,
+      "count": 1
+    },
+    {
+      "operation": "queryBounds",
+      "bbox": [
+        76.9125,
+        8.653,
+        76.91275,
+        8.653250000000002
+      ],
+      "complete": true,
+      "count": 2
+    },
+    {
+      "operation": "queryIds",
+      "complete": true,
+      "count": 4,
+      "allGeometriesMatch": true,
+      "freshAdapter": true
+    },
+    {
+      "operation": "exactAbsence",
+      "complete": true,
+      "confirmed": true
+    },
+    {
+      "operation": "binding",
+      "coverage": "complete",
+      "parcelCount": 1,
+      "siteM2": 3520.2,
+      "sampledParcelId": "IN-KL-ENTEBHOOMI-010309-ce0688a8-8689-41b8-8d14-1edd191a86ee",
+      "geometrySha256": "adcd27368dc9cc30c3172e1a364ed90b63b990f434296bf5264e7c5eaf98b429"
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-07T18:57:50.380Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:51.432Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid?districtId=dfd75e07-cae4-45e8-875b-6292909b8089",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:52.174Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=56d4cd54-4ad1-469a-bdbf-202951b95c39&loadAllVillage=true&loadPublishedVillage=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:52.936Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+      "method": "POST",
+      "body": "districtGid=dfd75e07-cae4-45e8-875b-6292909b8089&talukGid=56d4cd54-4ad1-469a-bdbf-202951b95c39&villageGid=ce6185fb-b497-4803-a49d-4a0a8925aef8",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:53.709Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710417.0346760664,956989.9549105967,710444.6925145115,957017.7467471649\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:54.715Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710389.5157665453,956989.8166911915,710417.1735829441,957017.6085057833\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:55.743Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710444.5535894403,956990.093148106,710472.2114499338,957017.8850066515\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:56.088Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710417.1735829441,956962.3013157301,710444.8314355977,956990.093148106\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:56.433Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710416.8957652041,957017.6085057833,710444.5535894403,957045.4003465442\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:56.771Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710389.6546552298,956962.1631001966,710417.3124858375,956989.9549105967\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:57.115Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710444.6925145115,956962.4395493672,710472.350389213,956990.2314037198\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:57.457Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710389.3768738771,957017.4702825064,710417.0346760664,957045.26210129\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:57.807Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710444.4146603842,957017.7467471649,710472.0725066693,957045.5386099033\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:58.142Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:59.207Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid?districtId=dfd75e07-cae4-45e8-875b-6292909b8089",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:57:59.985Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=56d4cd54-4ad1-469a-bdbf-202951b95c39&loadAllVillage=true&loadPublishedVillage=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:58:00.730Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+      "method": "POST",
+      "body": "districtGid=dfd75e07-cae4-45e8-875b-6292909b8089&talukGid=56d4cd54-4ad1-469a-bdbf-202951b95c39&villageGid=ce6185fb-b497-4803-a49d-4a0a8925aef8",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    {
+      "checkedAt": "2026-10-07T18:58:01.470Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"attributes\":{\"parcel_gid\":\"ce0688a8-8689-41b8-8d14-1edd191a86ee\"},\"fit_to_this\":\"false\",\"type\":\"json\"}",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:58:02.993Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"attributes\":{\"parcel_gid\":\"7bdfd8e4-a4e0-4819-b868-d7610e00e04c\"},\"fit_to_this\":\"false\",\"type\":\"json\"}",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:58:04.569Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"attributes\":{\"parcel_gid\":\"ecc51a3a-5358-45e6-9a1b-5c1f75940091\"},\"fit_to_this\":\"false\",\"type\":\"json\"}",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:58:06.088Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"attributes\":{\"parcel_gid\":\"899cd7ef-6f82-4cdc-9512-a672aa34593a\"},\"fit_to_this\":\"false\",\"type\":\"json\"}",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:58:07.663Z",
+      "url": "https://entebhoomi.kerala.gov.in/web/proxy/mapinfo/feature_info/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"attributes\":{\"parcel_gid\":\"00000000-0000-0000-0000-000000000000\"},\"fit_to_this\":\"false\",\"type\":\"json\"}",
+      "httpStatus": 200,
+      "contentType": "application/json"
+    },
+    {
+      "checkedAt": "2026-10-07T18:58:09.159Z",
+      "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "method": "POST",
+      "body": "{\"map_type\":\"GENERIC_MAP\",\"layer_code\":\"LAND_PARCEL\",\"srs\":\"EPSG:32643\",\"bbox\":\"710412.6207145551,956961.6538801122,710485.8686448637,957050.1516670074\",\"limit\":1000}",
+      "httpStatus": 200,
+      "contentType": "application/geo+json"
+    }
+  ],
+  "privacy": "Protocol metadata, counts, parcel IDs and geometry hashes only; no owner fields, geometry, cookies, CSRF or temporary map keys retained.",
+  "exactIdsVerified": 4,
+  "result": "passed",
+  "uniqueParcels": 4
+}

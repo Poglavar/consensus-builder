@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9776-liaocheng.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresh searches found municipal registration-service evidence but no city cadastral viewer, anonymous feature endpoint or schema. No personal registration lookup was attempted.",
+  "registryAssessment": "A current report attributed to the Liaocheng Natural Resources and Planning Bureau describes the city registration center and municipal service hall; a Liaocheng government notice separately confirms local real-estate registration services. Local custody is established, but first-party public GIS was not located.",
+  "officialPrimarySources": [
+    {
+      "title": "Liaocheng Natural Resources and Planning Bureau registration center report (agency-attributed)",
+      "url": "https://news.10jqka.com.cn/20260831/c679454355.shtml",
+      "observation": "Report attributed to the Liaocheng Natural Resources and Planning Bureau describes the city real-estate registration center and its municipal service hall; not a parcel-data endpoint."
+    },
+    {
+      "title": "Liaocheng municipal government policy notice",
+      "url": "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf",
+      "observation": "Municipal notice addresses online one-stop real-estate registration/tax service, but does not document public parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Liaocheng China official cadastral parcel map land registry GIS natural resources bureau",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://news.10jqka.com.cn/20260831/c679454355.shtml",
+        "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "聊城市 不动产登记中心 地籍图 查询 官方 自然资源和规划局",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://news.10jqka.com.cn/20260831/c679454355.shtml",
+        "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "Fresh searches found municipal registration-service evidence but no city cadastral viewer, anonymous feature endpoint or schema. No personal registration lookup was attempted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "A current report attributed to the Liaocheng Natural Resources and Planning Bureau describes the city registration center and municipal service hall; a Liaocheng government notice separately confirms local real-estate registration services. Local custody is established, but first-party public GIS was not located.",
+    "verifiedOpenScope": "Fresh searches found municipal registration-service evidence but no city cadastral viewer, anonymous feature endpoint or schema. No personal registration lookup was attempted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "official source/UI and public service inspection",
+      "result": "Fresh searches found municipal registration-service evidence but no city cadastral viewer, anonymous feature endpoint or schema. No personal registration lookup was attempted.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "No public parcel geometry endpoint was located; queried point-to-parcel coverage is unknown."
+}

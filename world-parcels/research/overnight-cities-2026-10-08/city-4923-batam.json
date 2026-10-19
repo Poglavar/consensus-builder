@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN WUP 2025 population-weighted settlement point is a locator, not an official municipal boundary, parcel identity, or coverage guarantee. No owner, address, tax, or account data was retained; no credential, login, CAPTCHA, or private token was used.",
+  "wupCityCode": 4923,
+  "queueRank": 338,
+  "name": "Batam City",
+  "centerLatLon": [
+    1.11077415068436,
+    104.005422401643
+  ],
+  "population2025": 1500354,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "BP Batam operates Satu Peta Batam and its Pertanahan data category. An indexed official ArcGIS service and the national dataset catalog identify a Batam land polygon dataset; live layer schema requests timed out, so safe native identifiers and geometry retrieval remain unverified.",
+  "resultCategory": "city_land_geoportal_ownership_layer_sensitive_fields_unverified_no_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Batam City Indonesia official peta persil bidang tanah GIS kadaster tanah Batam kota",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "Identified BP Batam Satu Peta Geoportal and indexed local land-ownership map service; no safe live schema was verified.",
+        "actualResultUrls": [
+          "https://geoportal.bpbatam.go.id/",
+          "https://geoportal.bpbatam.go.id/profile/",
+          "https://web-gis.bpbatam.go.id/arcgis/rest/services/Pertanahan/KEPEMILIKANTANAH_AR_5K/MapServer",
+          "https://tanahair.indonesia.go.id/sdi/id/dataset/peta-pertanahan-berupa-kepemilikan-tanah-skala-1-5-000-di-wilayah-kota-batam"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Batam resmi peta bidang tanah Geoportal BP Batam layer pertanahan parsel Kota Batam tanah bidang",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "Official BP Batam Geoportal lists Pertanahan and its indexed MapServer layer is a 1:5,000 ownership dataset for Kota Batam. No feature query was issued because the layer is ownership data and safe fields could not be confirmed.",
+        "actualResultUrls": [
+          "https://geoportal.bpbatam.go.id/",
+          "https://geoportal.bpbatam.go.id/profile/",
+          "https://web-gis.bpbatam.go.id/arcgis/rest/services/Pertanahan/KEPEMILIKANTANAH_AR_5K/MapServer",
+          "https://tanahair.indonesia.go.id/sdi/id/dataset/peta-pertanahan-berupa-kepemilikan-tanah-skala-1-5-000-di-wilayah-kota-batam"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://geoportal.bpbatam.go.id/",
+        "operator": "Badan Pengusahaan Batam (BP Batam)",
+        "observation": "Official Satu Peta Batam portal, including Pertanahan thematic data."
+      },
+      {
+        "url": "https://geoportal.bpbatam.go.id/profile/",
+        "operator": "BP Batam",
+        "observation": "Portal profile says BP Batam geospatial datasets are published through its Geoportal under Indonesia’s One Map framework."
+      },
+      {
+        "url": "https://web-gis.bpbatam.go.id/arcgis/rest/services/Pertanahan/KEPEMILIKANTANAH_AR_5K/MapServer",
+        "operator": "BP Batam GIS",
+        "observation": "Indexed official ArcGIS MapServer titled KEPEMILIKANTANAH_AR_5K; child layer gis.lahan.KEPEMILIKANTANAH_AR_5K; EPSG:32648; max 1000; query formats include JSON/GeoJSON. Live layer schema GET timed out; no safe feature contract could be established."
+      },
+      {
+        "url": "https://tanahair.indonesia.go.id/sdi/id/dataset/peta-pertanahan-berupa-kepemilikan-tanah-skala-1-5-000-di-wilayah-kota-batam",
+        "operator": "Indonesia Satu Data Geospatial portal; walidata BP Batam",
+        "observation": "Dataset title explicitly describes Batam land ownership at 1:5,000; metadata indicates polygon footprint. Direct portal GET returned HTTP 403."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geoportal.bpbatam.go.id/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official portal HTML loaded; 27 linked static script bundles were fetched and inspected; no ArcGIS/feature-service/ownership route string was found in the client bundle text."
+      },
+      {
+        "url": "https://web-gis.bpbatam.go.id/arcgis/rest/services/Pertanahan/KEPEMILIKANTANAH_AR_5K/MapServer/0?f=pjson",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Connection timed out before layer schema was returned; no fields or feature data were retrieved."
+      },
+      {
+        "url": "https://tanahair.indonesia.go.id/sdi/id/dataset/peta-pertanahan-berupa-kepemilikan-tanah-skala-1-5-000-di-wilayah-kota-batam",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "observation": "Dataset metadata landing page blocked the direct request; web-indexed metadata was used only to establish layer title/coverage."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "No complete municipal coverage is claimed.",
+      "verifiedOpenScope": "No anonymous city parcel polygons verified. City-local registry or mapping evidence is described above.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "Direct anonymous layer-schema GET timed out before a response, public Geoportal static JavaScript review did not expose a usable geometry-only route, and the national CKAN metadata request returned HTTP 403. Native identity, geometry type and safe output fields could not be verified through an accessible live layer schema; no feature query was made.",
+    "remainingUncertainty": "Whether the live ArcGIS layer offers a geometry-only response with non-sensitive identifiers and what fields it contains; whether the mapped area covers the WUP point or all urban parcels."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "cityId": "wup2025:4923",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "technicalBlocker": "Direct anonymous layer-schema GET timed out before a response, public Geoportal static JavaScript review did not expose a usable geometry-only route, and the national CKAN metadata request returned HTTP 403. Native identity, geometry type and safe output fields could not be verified through an accessible live layer schema; no feature query was made.",
+  "remainingUncertainty": "Whether the live ArcGIS layer offers a geometry-only response with non-sensitive identifiers and what fields it contains; whether the mapped area covers the WUP point or all urban parcels.",
+  "nextStep": "Retain as research only unless a safe, anonymous, city-local polygon endpoint can be inspected and verified.",
+  "rootReviewedAt": "2026-10-08T22:44:29.461431+00:00",
+  "point": [
+    1.11077415068436,
+    104.005422401643
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5807,
+  "cityId": "wup2025:5807",
+  "name": "Toyohashi",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "centerLatLon": [34.7670614726782, 137.389808743258],
+  "queueRank": 1263,
+  "population2025": 441665,
+  "population2025k": 441.665,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Toyohashi official cadastral parcel map GIS land parcel map city Japan",
+        "result": "Found Toyohashi City's official Chizumiru Toyohashi public GIS page; the published themes are administrative, disaster, facilities, planning, culture and similar information, with no advertised parcel geometry layer. Found the Ministry of Justice/G-Space Toyohashi registry-map dataset catalog and its converted GeoJSON resource.",
+        "actualResultUrls": [
+          "https://www.city.toyohashi.lg.jp/16943.htm",
+          "https://www.geospatial.jp/ckan/dataset/aigid-moj-23201",
+          "https://www.moj.go.jp/MINJI/minji05_00494.html"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "豊橋市 地籍図 公図 地番図 GIS 公式",
+        "result": "Found Toyohashi City's official cadastral-map application/procedure: cadastral maps (地籍図・公図) can be requested by anyone at the municipal fixed-assets tax office, but the page does not provide an anonymous geometry API or downloadable parcel layer. The official public GIS page is Chizumiru Toyohashi.",
+        "actualResultUrls": [
+          "https://www.city.toyohashi.lg.jp/4311.htm",
+          "https://www.city.toyohashi.lg.jp/16943.htm",
+          "https://www.city.toyohashi.lg.jp/secure/6121/R7.2etsurantisekizunayose.pdf"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialCityService": "Toyohashi City Chizumiru Toyohashi public GIS; current published page documents map viewing/search/printing and lists non-cadastral public-information themes.",
+    "localRegistryProcedure": "Toyohashi City fixed-assets tax office accepts applications for cadastral maps (地籍図・公図); the page states anyone may apply for cadastral-map copies, with fee and counter procedure.",
+    "openGeometrySource": "G-Space catalog dataset 愛知県-豊橋市, converted from Ministry of Justice 登記所備付地図 data; 2026 GeoJSON resource was fetched anonymously and inspected.",
+    "nativeIdentity": "ID",
+    "sourceFields": ["ID", "市区町村C", "大字コード", "丁目コード", "小字コード", "地番", "地図名", "座標系", "測地系判別"],
+    "fieldMapping": {"ID": "stable source feature identity retained in sample properties as id"},
+    "compositeKeyProvenance": "The source also exposes Japanese municipality/area/lot fields; no composite key was used because the source ID was present. The sample retains only ID-derived id.",
+    "crs": "CRS84 (GeoJSON; coordinates longitude, latitude)",
+    "sampleFile": null,
+    "sampleScope": "A 0.002-degree bbox around the WUP point yielded nearby source polygons in ignored scratch evidence; none intersects the exact WUP point. No retained sample is included because the bounded result was not needed for packet qualification."
+  },
+  "verifiedSample": false,
+  "targetGeometryEvidence": "nearby_source_geometry_in_ignored_scratch_exact_point_not_hit",
+  "coverageAssessment": {
+    "claimedScope": "Toyohashi municipality for the Ministry of Justice registry-map extract where public-coordinate features are available; coverage completeness and cadastral map status vary by source feature.",
+    "verifiedOpenScope": "Toyohashi municipal dataset extent in the G-Space catalog; bounded sample only, not full coverage validation.",
+    "countrywideVerified": false
+  },
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.city.toyohashi.lg.jp/16943.htm", "method": "GET/web open", "status": "HTTP page found", "summary": "Official Chizumiru Toyohashi public GIS description; no parcel endpoint exposed in published page."},
+    {"url": "https://www.city.toyohashi.lg.jp/4311.htm", "method": "GET/web open", "status": "HTTP page found", "summary": "Official cadastral-map application procedure; public counter procedure, not an anonymous geometry service."},
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-23201", "method": "GET", "status": "HTTP 200 JSON", "summary": "Catalog metadata returned Toyohashi 2022-2026 GeoJSON resources."},
+    {"url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23201/23201_%E8%B1%8A%E6%A9%8B%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson", "method": "GET", "status": "HTTP 200", "summary": "23 MB GeoJSON fetched; CRS84, 28,068 features, native ID field present; bounded geometry query produced 3 nearby polygons and no exact-point intersection."}
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "A real source and nearby polygons were verified, but the official city viewer has no documented anonymous parcel API in the inspected page, the exact WUP point was not intersected by the bounded query, and the retained sample is not sufficient for independent adapter qualification.",
+  "remainingUncertainty": "Exact parcel coverage at the WUP coordinate, completeness of public-coordinate registry-map coverage, and whether the city GIS exposes an undocumented parcel theme remain unverified.",
+  "nextStep": "If qualification is required, inspect Chizumiru's live JavaScript/configuration in a browser session and compare its themes with the G-Space Ministry-derived geometry; use geometry and safe IDs only.",
+  "identityPolicy": "Do not treat Japanese lot/address fields as safe runtime attributes; retain only the stable native source ID with geometry in the sample."
+}

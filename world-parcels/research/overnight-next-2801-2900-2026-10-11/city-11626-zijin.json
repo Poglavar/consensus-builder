@@ -1,0 +1,79 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 11626,
+  "queueRank": 2863,
+  "name": "Zijin",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [23.6343764709408, 115.176363827102],
+  "population2025": 208091,
+  "population2025k": 208.091,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zijin County China official cadastral map land registration parcel map 紫金县 不动产登记 地图 官方",
+        "result": "First-party discovery found the official Zijin County Natural Resources Bureau and county government real-estate-registration portal. The portal links to the Heyuan online registration service; no public citywide parcel download was found.",
+        "actualResultUrls": ["https://www.zijin.gov.cn/hyzjzrzyj/gkmlpt/content/0/703/post_703673.html", "https://www.zijin.gov.cn/ztzl/bdcdjzx/index.html", "https://bdc.heyuan.gov.cn/HYApplyOnline/home.html"]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "紫金县 不动产登记 地图 宗地图 官方",
+        "result": "中国語の第一方検索で紫金县自然资源局、不动产登记专题、河源网上办事大厅が確認できた。公開案内は登録・照会手続を示すが、匿名の市域パーセル地物/APIは確認できなかった。",
+        "actualResultUrls": ["https://www.zijin.gov.cn/hyzjzrzyj/gkmlpt/mguide", "https://www.zijin.gov.cn/ztzl/bdcdjzx/yshj/content/post_684598.html", "https://bdc.heyuan.gov.cn/HYApplyOnline/templates/CXgather/WSCXListType.html"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "The official Zijin County Natural Resources Bureau describes responsibility for unified natural-resource/real-estate registration, cadastral surveying and maintenance of the county registration information platform. The official county registration portal links to Heyuan's online service, whose anonymous organization API returned a Zijin County Real Estate Registration Center entry.",
+    "localCustodianScope": "Zijin County, Heyuan, Guangdong; the live service record names 紫金县不动产登记中心 and 紫金县自然资源局 with administrative code 441621.",
+    "urls": ["https://www.zijin.gov.cn/hyzjzrzyj/gkmlpt/content/0/703/post_703673.html", "https://www.zijin.gov.cn/ztzl/bdcdjzx/index.html", "https://bdc.heyuan.gov.cn/HYApplyOnline/actionapi/YHGL/QuerySysJgInfoList"]
+  },
+  "officialSources": [
+    {"url": "https://www.zijin.gov.cn/hyzjzrzyj/gkmlpt/content/0/703/post_703673.html", "observation": "Official county Natural Resources Bureau profile states it handles unified registration, cadastral survey, real-estate registration information platform operation and surveying/geographic-information management."},
+    {"url": "https://www.zijin.gov.cn/hyzjzrzyj/gkmlpt/mguide", "observation": "Official information guide identifies the county Natural Resources Bureau as the information custodian and says real-estate registration records are subject to special access rules."},
+    {"url": "https://www.zijin.gov.cn/ztzl/bdcdjzx/index.html", "observation": "Official county portal has a dedicated 不动产登记 section and links to the Heyuan online service."},
+    {"url": "https://bdc.heyuan.gov.cn/HYApplyOnline/home.html", "observation": "Current Heyuan online registration service was retrieved; its current configuration and JavaScript expose public organization selection and a query menu including 宗地/房屋附图."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Heyuan online real-estate registration service / Zijin County Natural Resources Bureau",
+    "viewerUrl": "https://bdc.heyuan.gov.cn/HYApplyOnline/home.html",
+    "serviceBase": "https://bdc.heyuan.gov.cn/",
+    "administrativeSelection": {"countyCode": "441621", "county": "Zijin", "custodian": "Zijin County Real Estate Registration Center", "agency": "Zijin County Natural Resources Bureau"},
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "geometryType": null
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "requestOutcomes": [
+    {"method": "GET", "url": "http://www.zijin.gov.cn/ztzl/bdcdjzx/index.html", "outcome": "HTTP page retrieved after the HTTPS endpoint failed certificate hostname verification; page links to the Heyuan online service. HTTPS was not bypassed."},
+    {"method": "GET", "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/home.html", "outcome": "200; current online registration landing page retrieved."},
+    {"method": "GET", "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/config.xml", "outcome": "200; current configuration inspected; service base is https://bdc.heyuan.gov.cn/ and the configuration labels 宗地/房屋附图 and registration query modules."},
+    {"method": "GET", "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/static/js/commonJs.js", "outcome": "200; current JavaScript inspected; organization selection routes to the query pages and uses the public action API."},
+    {"method": "POST", "url": "https://bdc.heyuan.gov.cn/actionapi/YHGL/QuerySysJgInfoList", "outcome": "200; anonymous organization list returned the Zijin County organization code 441621, agency 紫金县自然资源局, and 紫金县不动产登记中心. No parcel fields were requested."},
+    {"method": "GET", "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/templates/CXgather/WSCXListType.html", "outcome": "200; current query menu inspected; the 宗地/房屋附图 route was identified."},
+    {"method": "GET", "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/templates/CXgather/ZDORFWFTSearch.html?infoC=441621", "outcome": "200; current query page inspected. It requires a certificate/record-number query and its JavaScript calls ZDTFHT/GetFHTInfoForYH or ZDTFHT/GetFHTInfoForQLR. No fabricated identifier or personal/owner query was submitted."},
+    {"method": "POST", "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/actionapi/YHGL/QuerySysJgInfoList", "outcome": "404; path copied from page-relative context was wrong; corrected root endpoint above succeeded."},
+    {"method": "GET", "url": "https://www.zijin.gov.cn/ztzl/bdcdjzx/index.html", "outcome": "HTTPS request failed certificate hostname verification; no TLS exception was used."}
+  ],
+  "resultCategory": "local_registry_service_verified_no_public_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Zijin County registration authority and the Heyuan online registration service.",
+    "verifiedOpenScope": "The local custodian and public procedural/query service were verified. No anonymous parcel ID-plus-geometry response was verified, and no citywide or municipal parcel completeness was established.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "remainingUncertainty": "The live service's parcel/attachment query requires a certificate or registration number and may expose map/attachment output only after a qualifying record query. CRS, native parcel identity fields, geometry schema, coverage, update cadence, and exact relationship to the WUP point remain unverified. The exact WUP point was preserved and not shifted. No owner, address, contact, titleholder, personal, tax/account, certificate, title, or unsafe fields were requested or retained. This packet is research evidence only and is not source integration or admission."
+}

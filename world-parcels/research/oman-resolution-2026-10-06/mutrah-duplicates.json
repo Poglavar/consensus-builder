@@ -1,0 +1,120 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+  "attempts": [
+    {
+      "label": "duplicate-native-keys",
+      "parameters": {
+        "where": "PLOTUID IS NOT NULL",
+        "groupByFieldsForStatistics": "PLOTUID",
+        "havingClause": "COUNT(OBJECTID)>1",
+        "returnGeometry": "false",
+        "orderByFields": "rows_n DESC",
+        "outStatistics": "[{\"statisticType\":\"count\",\"onStatisticField\":\"OBJECTID\",\"outStatisticFieldName\":\"rows_n\"}]"
+      },
+      "httpStatus": 200,
+      "records": 209,
+      "groupCount": 209,
+      "extraRows": 264,
+      "samples": [
+        {
+          "PLOTUID": 158628,
+          "ROWS_N": 10
+        },
+        {
+          "PLOTUID": 154536,
+          "ROWS_N": 6
+        },
+        {
+          "PLOTUID": 158667,
+          "ROWS_N": 5
+        }
+      ],
+      "ms": 1175
+    },
+    {
+      "label": "conflict-cell",
+      "parameters": {
+        "geometry": "6518034.484673152,2704134.1816146723,6518312.783400133,2704437.872239675",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "3857",
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "PLOTUID,PLOTNO,NEWPLOTNO,DIRECTORATECD,AREACD,BLOCKNO,NEWPHASECD,CREATEDDATE,MODIFYDATE,SOURCECD,KROOKINO",
+        "outSR": "4326",
+        "returnGeometry": "true",
+        "resultRecordCount": "2000"
+      },
+      "httpStatus": 200,
+      "records": 33,
+      "conflicts": [
+        {
+          "nativeId": 154383,
+          "records": 2,
+          "geometries": 2,
+          "attributes": [
+            {
+              "PLOTUID": 154383,
+              "PLOTNO": "322",
+              "NEWPLOTNO": "147",
+              "DIRECTORATECD": 1,
+              "AREACD": 5,
+              "BLOCKNO": 142,
+              "NEWPHASECD": 17,
+              "CREATEDDATE": null,
+              "MODIFYDATE": 1516106818000,
+              "SOURCECD": 3,
+              "KROOKINO": " "
+            },
+            {
+              "PLOTUID": 154383,
+              "PLOTNO": "322",
+              "NEWPLOTNO": "148",
+              "DIRECTORATECD": 1,
+              "AREACD": 5,
+              "BLOCKNO": 142,
+              "NEWPHASECD": 17,
+              "CREATEDDATE": null,
+              "MODIFYDATE": 1516106818000,
+              "SOURCECD": 3,
+              "KROOKINO": " "
+            }
+          ]
+        },
+        {
+          "nativeId": 153136,
+          "records": 2,
+          "geometries": 2,
+          "attributes": [
+            {
+              "PLOTUID": 153136,
+              "PLOTNO": "332",
+              "NEWPLOTNO": "143",
+              "DIRECTORATECD": 1,
+              "AREACD": 5,
+              "BLOCKNO": 142,
+              "NEWPHASECD": 17,
+              "CREATEDDATE": null,
+              "MODIFYDATE": 1516106818000,
+              "SOURCECD": 3,
+              "KROOKINO": " "
+            },
+            {
+              "PLOTUID": 153136,
+              "PLOTNO": "332",
+              "NEWPLOTNO": "143",
+              "DIRECTORATECD": 1,
+              "AREACD": 5,
+              "BLOCKNO": 142,
+              "NEWPHASECD": 17,
+              "CREATEDDATE": null,
+              "MODIFYDATE": 1516106818000,
+              "SOURCECD": 3,
+              "KROOKINO": " "
+            }
+          ]
+        }
+      ],
+      "ms": 477
+    }
+  ]
+}

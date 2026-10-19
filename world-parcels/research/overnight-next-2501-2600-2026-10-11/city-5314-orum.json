@@ -1,0 +1,90 @@
+{
+  "cityCode": 5314,
+  "queueRank": 2502,
+  "name": "Çorum",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "point": [40.5488952673038, 34.9569974868323],
+  "population2025": 234339,
+  "population2025k": 234.339,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Corum Turkey official cadastral parcel map land registry GIS",
+        "result": "First-party discovery found the official TKGM Parsel Sorgu service and the Çorum Municipality Kent Bilgi Sistemi parcel-map lead. The live TKGM client configuration exposed an anonymous coordinate parcel API; the exact WUP point returned a Çorum parcel polygon.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://kbs2.corum.bel.tr/",
+          "https://harita.corum.bel.tr/"
+        ]
+      },
+      {
+        "language": "Turkish",
+        "query": "Çorum Türkiye resmi kadastro parsel haritası tapu kadastro GIS",
+        "result": "Resmi keşif, TKGM Parsel Sorgu servisini ve Çorum Belediyesi Kent Bilgi Sistemi parsel haritası duyurusunu buldu. TKGM istemci yapılandırması anonim koordinat parsel API'sini gösterdi; tam WUP noktası Çorum'da bir parsel poligonu döndürdü.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://kbs2.corum.bel.tr/",
+          "https://cbs.corum.bel.tr/imarbs.aspx"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Çorum Belediyesi Kent Bilgi Sistemi / municipal GIS lead; its official page advertises parcel information, while live harita.corum.bel.tr access timed out during this attempt.",
+    "nationalCadastreService": "Tapu ve Kadastro Genel Müdürlüğü (TKGM) Parsel Sorgu / MEGSİS public service.",
+    "registryBasis": "Local municipal parcel-map publication is evidenced by the official Çorum Municipality KBS page; the verified parcel response came from the official TKGM public cadastral service.",
+    "registryFoundReason": "A local municipal cadastral/map service is actually evidenced, so registryFound is true; this does not imply that the municipal viewer's backend was independently qualified."
+  },
+  "schemaAndCrs": {
+    "serviceUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api",
+    "endpoint": "/parsel/{lat}/{lon}",
+    "responseType": "GeoJSON Feature",
+    "geometryType": "Polygon",
+    "geometryCrs": "Not declared in response; coordinates observed in GeoJSON [longitude, latitude] order and retained without reprojection.",
+    "nativeIdentity": "Composite source identity mahalleId=124404, adaNo=426, parselNo=28; no standalone parselId was returned.",
+    "sourceFieldMapping": {
+      "mahalleId": "native neighborhood identifier",
+      "adaNo": "native block/ada number",
+      "parselNo": "native parcel number"
+    },
+    "compositeKeyProvenance": "The identity is composed from the exact TKGM feature properties returned for the coordinate query; it is not an internal row number."
+  },
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "TKGM:mahalleId=124404|adaNo=426|parselNo=28",
+    "sampleCount": 1,
+    "sampleFile": "orum-parcel-sample.geojson",
+    "exactWupPointTest": "Exact coordinate query returned a polygon whose returned feature properties identify Çorum / Merkez / Yeniyol / ada 426 / parsel 28.",
+    "nativeIdField": "composite: mahalleId + adaNo + parselNo",
+    "safeFieldsRetained": ["canonical composite native identity", "full polygon geometry"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "TKGM national public cadastral parcel query plus Çorum Municipality KBS local parcel-map publication.",
+    "verifiedOpenScope": "One exact-point TKGM parcel feature in Çorum Merkez/Yeniyol; no citywide extent was tested.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": "orum-parcel-sample.geojson",
+  "scopeLimits": [
+    "Exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "One exact-point hit does not establish citywide coverage; no citywide absence or completeness claim is made.",
+    "No raw source-specific attribute set is retained in the sample; source fields and mapping are recorded only in metadata.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used."
+  ],
+  "uncertainty": "The exact-point parcel feature is verified, but the local municipal viewer timed out and the TKGM response did not declare a CRS or standalone parcel ID. Independent serial review must qualify any adapter; runtime remains held."
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1175-benghazi.json",
+  "purpose": "Read-only local registry and parcel-service discovery; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Official Libyan News Agency reports the Benghazi branch of the Real Estate Registration Authority reopening in 2013 and identifies its branch head in a 2025 authority training report; these support a local registry branch but do not independently verify present service capacity. No public parcel geometry service or safe feature schema was found.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Benghazi Libya official land registry cadastre office cadastral map GIS",
+      "result": "Official Libyan News Agency reported the reopening of a Benghazi branch of the Real Estate Registration Authority in 2013. The authority’s official site identifies the national real-estate registry. No current city-specific anonymous parcel map or feature schema was located.",
+      "method": "Separate language-specific search and official source/service review; no property-specific lookup."
+    },
+    {
+      "language": "Arabic",
+      "query": "site:lana.gov.ly بنغازي إعادة افتتاح فرع مصلحة التسجيل العقاري بنغازي",
+      "result": "Libyan News Agency archive search returned its 2013 report that the Benghazi branch of the Real Estate Registration Authority reopened, and a 2025 report naming the Benghazi branch head at an authority training event. These confirm a city branch in public official reporting, but do not independently verify its current service capacity. No city-local public parcel map or anonymous geometry schema was found.",
+      "method": "Separate language-specific search and official source/service review; no property-specific lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://lana.gov.ly/post.php?id=15747&lang=ar",
+      "observation": "Historical official news report of the Benghazi registry branch reopening in 2013."
+    },
+    {
+      "url": "https://lana.gov.ly/post.php?id=326238&lang=ar",
+      "observation": "2025 official news report names the Benghazi branch head at an authority training event."
+    },
+    {
+      "url": "https://reril.ly/en/%D8%B1%D8%A6%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9/",
+      "observation": "Official Real Estate Registration Authority site identifies the national registry office."
+    }
+  ],
+  "attempts": [
+    {
+      "source": "https://lana.gov.ly/post.php?id=15747&lang=ar",
+      "outcome": "Official branch evidence reviewed; no parcel query.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://lana.gov.ly/post.php?id=326238&lang=ar",
+      "outcome": "Official branch evidence reviewed; no parcel query.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://reril.ly/en/%D8%B1%D8%A6%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9/",
+      "outcome": "Official national authority page reviewed; no parcel query.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "geometryDecision": "No geometry retained; no public parcel feature response with a verified safe native identifier and complete geometry was obtained.",
+  "remainingUncertainty": "Current service capacity of the Benghazi branch and availability of public parcel geometry remain unverified.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime adapter or contract test was performed."
+  },
+  "technicalBlocker": "No city-local public parcel viewer, anonymous geometry endpoint, or schema-safe map service was found. Official reporting supports a local branch but does not verify current service capacity.",
+  "registryEvidenceUrls": null
+}

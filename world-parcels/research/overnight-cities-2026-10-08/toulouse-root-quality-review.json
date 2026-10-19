@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T04:00:45.405944+00:00",
+  "decision": "approved_by_root",
+  "scope": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+  "acceptanceFile": "toulouse-ign-root-acceptance.json",
+  "qualityFile": "toulouse-ign-root-quality.json",
+  "originalSampleReviewFile": "toulouse-root-original-sample-review.json",
+  "sourceCoordinatesModified": false
+}

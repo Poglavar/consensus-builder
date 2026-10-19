@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2945",
+  "decision": "held",
+  "reason": "Abéché code 2945, rank 1254, Chad, immutable point [13.825454472527,20.8296055719745] and 443793 persons match the roster and queue. English and French executed searches are recorded. Original ANATS response and application cache support an agency/service-center site but contain no safe parcel ID or polygon response; the e-Tchad fetch failed DNS. Parcel registry custody remains unresolved (registryFound=null), and neither the DNS failure nor the lack of a point query proves citywide absence. No independent adapter qualification or runtime admission.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2945-ab-ch.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ab-ch-service-review.json",
+    "tmp/valhalla-parcel-research/2945/anats.html",
+    "tmp/valhalla-parcel-research/2945/anats.js",
+    "tmp/valhalla-parcel-research/2945/anats.headers",
+    "tmp/valhalla-parcel-research/2945/etchad.headers"
+  ],
+  "checkedAt": "2026-10-09T12:18:10.832162Z"
+}

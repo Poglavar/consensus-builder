@@ -21,7 +21,7 @@
     function translateParcelText(key, fallback, params = {}) {
         const api = (typeof global !== 'undefined' && global.i18n) ? global.i18n : null;
         if (api && typeof api.t === 'function') {
-            return api.t(key, params);
+            { const translated = api.t(key, params); if (translated !== key) return translated; }
         }
         return formatParcelText(fallback, params);
     }
@@ -42,6 +42,16 @@
         fillColor: '#2b2b2b',
         fillOpacity: 0.7,
         color: '#2b2b2b',
+        weight: 1,
+        dashArray: null
+    };
+    const corridorParcelStyle = {
+        // The cross-section renderer supplies the visible asphalt, paths and verges. This underlying
+        // structural parcel only needs a quiet footprint for edges the lane geometry does not cover.
+        fillColor: '#94a3b8',
+        fillOpacity: 0.12,
+        color: '#64748b',
+        opacity: 0.55,
         weight: 1,
         dashArray: null
     };
@@ -81,8 +91,10 @@
         opacity: normalStyle.opacity !== undefined ? normalStyle.opacity : 1,
         dashArray: normalStyle.dashArray || '',
         fillColor: normalStyle.fillColor,
-        // Keep fills visible for applied spatial proposals (e.g., building overlays) instead of clearing to transparent
-        fillOpacity: 0.2
+        // Border-only, like every other parcel. The old 0.2 red fill "pink-shaded" the WHOLE
+        // parcel whenever any applied park/square/building touched a corner of it — the
+        // proposal's own visuals already show where it sits, so the parcel fill was only noise.
+        fillOpacity: 0
     };
 
     let parcelsWithAppliedSpatialProposals = new Set();
@@ -97,24 +109,29 @@
     }
 
     function getParcelBaseStyle(parcelId, optionsOrLayer = {}, maybeOptions = {}) {
-        // Handle case where second arg is a layer (for compatibility with getParcelStyle signature)
         let options = optionsOrLayer;
         let layer = null;
-        if (optionsOrLayer && typeof optionsOrLayer === 'object' && optionsOrLayer.feature) {
+        if (global.ParcelPresenter?.getIdForLayer?.(optionsOrLayer)) {
             layer = optionsOrLayer;
+            options = maybeOptions || {};
+        } else if (optionsOrLayer === null || optionsOrLayer === undefined) {
             options = maybeOptions || {};
         }
         const { isRoad: isRoadOverride, isTrack: isTrackOverride } = options || {};
         const idStr = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
+        // Style decisions only read properties, so use the fabric's non-cloning read: a full
+        // restyle touches every presented layer and `get` would deep-clone each polygon.
+        const fabric = global.LiveParcelFabric;
+        const readFabric = fabric ? (fabric.peek || fabric.get) : null;
+        const feature = options?.feature?.type === 'Feature'
+            ? options.feature
+            : (idStr && readFabric ? readFabric.call(fabric, idStr) || null : null);
+        const properties = feature?.properties || {};
 
         // Check track first - tracks have isCorridor=true and isTrack=true but isRoad=false
         let trackFlag = typeof isTrackOverride === 'boolean' ? isTrackOverride : false;
-        if (!trackFlag && layer) {
-            if (layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
-                trackFlag = true;
-            } else if (layer._trackStyle) {
-                trackFlag = true;
-            }
+        if (!trackFlag) {
+            trackFlag = properties.isTrack === true || Boolean(layer?._trackStyle);
         }
         if (trackFlag) {
             if (layer && layer._trackStyle) {
@@ -123,10 +140,18 @@
             return { ...trackStyle };
         }
 
-        // Check for road (tracks have isRoad=false, so no conflict)
+        const corridorRoadFlag = properties.isCorridor === true && properties.isRoad === true;
+        if (corridorRoadFlag) {
+            return { ...corridorParcelStyle };
+        }
+
+        // Check for road (tracks have isRoad=false, so no conflict). Both sources count: the
+        // feature's own isRoad flag (child slices carry it before addRoadParcel registers them)
+        // and the persisted road-parcel set (legacy/curated parcels carry no flag at all).
+        const propsRoadFlag = properties.isRoad === true || properties.isRoad === 'true';
         const roadFlag = typeof isRoadOverride === 'boolean'
             ? isRoadOverride
-            : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
+            : (propsRoadFlag || (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false));
         if (roadFlag) {
             return { ...roadStyle };
         }
@@ -142,6 +167,51 @@
     }
 
     /**
+     * The ownership-highlight style a parcel should wear, or null when none applies. Roads,
+     * tracks, ad parcels and parcels under an applied proposal keep their own style; only
+     * plain parcels of a selected ownership type are highlighted. Both the single-parcel style
+     * (getParcelStyle) and the bulk restyle (refreshParcelStylesForAppliedProposals) ask this,
+     * so the two cannot disagree about precedence.
+     * @param {string} idStr - The parcel ID
+     * @param {Object} layer - Optional layer object to check ownership type from
+     * @param {Object} options - Optional style options (isRoad override, feature)
+     * @returns {Object|null}
+     */
+    function ownershipHighlightStyle(idStr, layer = null, options = {}) {
+        const ownershipHighlight = global.ParcelsOwnershipHighlight;
+        if (!ownershipHighlight || typeof ownershipHighlight.getSelectedOwnershipTypes !== 'function') return null;
+        const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
+        if (selectedTypes.size === 0) return null;
+
+        const properties = global.LiveParcelFabric?.get?.(idStr)?.properties || options?.feature?.properties || {};
+
+        // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
+        const { isRoad: isRoadOverride } = options || {};
+        const propsRoadFlag = properties.isRoad === true || properties.isRoad === 'true';
+        const roadFlag = typeof isRoadOverride === 'boolean'
+            ? isRoadOverride
+            : (propsRoadFlag || (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false));
+        const isAdParcel = Boolean(global.showAdParcels && adParcelIdSet.has(idStr));
+
+        // Check if this is a track parcel (via layer or by searching parcelLayer)
+        const isTrackParcelFlag = properties.isTrack === true || Boolean(layer && layer._trackStyle);
+
+        if (roadFlag || isAdParcel || isTrackParcelFlag || parcelHasAppliedSpatialProposal(idStr)) {
+            return null;
+        }
+
+        // Ask the module, not the feature: a re-ingested parcel arrives without the
+        // property, and its type lives in the id-keyed cache until something re-stamps it.
+        const ownershipType = (typeof ownershipHighlight.typeFor === 'function')
+            ? ownershipHighlight.typeFor(layer)
+            : properties.ownershipType;
+        if (!ownershipType || !selectedTypes.has(ownershipType)) return null;
+        return typeof ownershipHighlight.styleFor === 'function'
+            ? ownershipHighlight.styleFor(ownershipType) || null
+            : null;
+    }
+
+    /**
      * Get the appropriate style for a parcel, considering ownership highlighting
      * @param {string|number} parcelId - The parcel ID
      * @param {Object} layer - Optional layer object to check ownership type from
@@ -154,56 +224,8 @@
             return { ...normalStyle };
         }
 
-        // Get base style first - pass layer so track detection works
-        const baseStyle = getParcelBaseStyle(parcelId, layer, options);
-
-        // Roads, tracks, and ad parcels use their specific styles, don't apply ownership highlighting
-        const { isRoad: isRoadOverride } = options || {};
-        const roadFlag = typeof isRoadOverride === 'boolean'
-            ? isRoadOverride
-            : (idStr ? (typeof global.isRoad === 'function' ? global.isRoad(idStr) : false) : false);
-        const isAdParcel = Boolean(global.showAdParcels && idStr && adParcelIdSet.has(idStr));
-
-        // Check if this is a track parcel (via layer or by searching parcelLayer)
-        let isTrackParcelFlag = false;
-        if (layer && layer.feature && layer.feature.properties && layer.feature.properties.isTrack === true) {
-            isTrackParcelFlag = true;
-        } else if (layer && layer._trackStyle) {
-            isTrackParcelFlag = true;
-        }
-
-        if (roadFlag || isAdParcel || isTrackParcelFlag || (idStr && parcelHasAppliedSpatialProposal(idStr))) {
-            return baseStyle;
-        }
-
-        // Check for ownership type highlighting for non-road, non-ad parcels
-        const ownershipHighlight = global.ParcelsOwnershipHighlight;
-        if (ownershipHighlight && typeof ownershipHighlight.getSelectedOwnershipTypes === 'function') {
-            const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
-            if (selectedTypes.size > 0) {
-                // Try to get ownership type from layer if provided, otherwise from feature properties
-                let ownershipType = null;
-                if (layer && layer.feature && layer.feature.properties) {
-                    ownershipType = layer.feature.properties.ownershipType;
-                }
-
-                if (ownershipType && selectedTypes.has(ownershipType)) {
-                    const highlightColors = {
-                        'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
-                        'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
-                        'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
-                        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
-                    };
-                    const highlightStyle = highlightColors[ownershipType];
-                    if (highlightStyle) {
-                        return { ...highlightStyle };
-                    }
-                }
-            }
-        }
-
         // Fall back to base style if no ownership highlighting applies
-        return baseStyle;
+        return ownershipHighlightStyle(idStr, layer, options) || getParcelBaseStyle(parcelId, layer, options);
     }
 
     function recomputeParcelsWithAppliedSpatialProposals() {
@@ -213,15 +235,13 @@
                 const proposals = global.proposalStorage.getAllProposals();
                 proposals.forEach(proposal => {
                     if (!proposal) return;
-                    const status = (proposal.status || '').toLowerCase();
                     const parcelIds = [];
                     const buildingProposal = proposal.buildingProposal || null;
                     if (buildingProposal) {
-                        const buildingStatus = (buildingProposal.status || status).toLowerCase();
-                        if (buildingStatus === 'applied' || buildingStatus === 'executed') {
-                            const ids = Array.isArray(buildingProposal.parentParcelIds) && buildingProposal.parentParcelIds.length > 0
-                                ? buildingProposal.parentParcelIds
-                                : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
+                        if (isApplied(proposal, buildingProposal)) {
+                            const ids = Array.isArray(proposal.cadastreParcelIds)
+                                ? proposal.cadastreParcelIds
+                                : [];
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }
                     } else {
@@ -230,19 +250,18 @@
                             : (proposal.goal || '').toLowerCase();
                         const isBuildingGoal = ['buildings', 'building(s)', 'single-building', 'parcelBased'].includes(goalKey);
                         if ((isBuildingGoal || (proposal.geometry && Array.isArray(proposal.geometry.buildings) && proposal.geometry.buildings.length))
-                            && (status === 'applied' || status === 'executed')) {
-                            if (Array.isArray(proposal.parentParcelIds)) parcelIds.push(...proposal.parentParcelIds);
+                            && isApplied(proposal)) {
+                            if (Array.isArray(proposal.cadastreParcelIds)) parcelIds.push(...proposal.cadastreParcelIds);
                         }
                     }
 
                     const structureProposal = proposal.structureProposal || null;
                     if (structureProposal) {
                         const kind = (structureProposal.kind || '').toLowerCase();
-                        const structureStatus = (structureProposal.status || status).toLowerCase();
-                        if ((kind === 'park' || kind === 'square') && (structureStatus === 'applied' || structureStatus === 'executed')) {
-                            const ids = Array.isArray(structureProposal.parentParcelIds) && structureProposal.parentParcelIds.length > 0
-                                ? structureProposal.parentParcelIds
-                                : (Array.isArray(proposal.parentParcelIds) ? proposal.parentParcelIds : []);
+                        if ((kind === 'park' || kind === 'square') && isApplied(proposal, structureProposal)) {
+                            const ids = Array.isArray(proposal.cadastreParcelIds)
+                                ? proposal.cadastreParcelIds
+                                : [];
                             if (Array.isArray(ids)) parcelIds.push(...ids);
                         }
                     }
@@ -259,9 +278,15 @@
         return result;
     }
 
-    function refreshParcelStylesForAppliedProposals() {
-        recomputeParcelsWithAppliedSpatialProposals();
-        if (!global.parcelLayer) return;
+    // With no options every presented layer is restyled (a mode change: ownership highlight,
+    // block selection). After one proposal changes, pass `parcelIds` — the live pieces under
+    // that proposal — and only those, the parcels whose applied-proposal membership changed and
+    // the selection are touched. Profiled on a 7,000-layer Šibenik view, the full pass was 30%
+    // of every single apply or unapply.
+    function refreshParcelStylesForAppliedProposals(options = {}) {
+        const membershipBefore = parcelsWithAppliedSpatialProposals;
+        const membershipAfter = recomputeParcelsWithAppliedSpatialProposals();
+        if (!global.LiveParcelFabric || !global.ParcelPresenter) return;
 
         const mapBounds = (global.map && typeof global.map.getBounds === 'function') ? global.map.getBounds() : null;
 
@@ -282,23 +307,25 @@
         if (ownershipTypesActive && typeof global.getParcelsInBounds === 'function' && mapBounds) {
             // Get only visible parcels for the expensive ownership highlighting
             parcelsToProcess = global.getParcelsInBounds(mapBounds);
-            visibleParcelIds = new Set(parcelsToProcess.map(layer => {
-                const pid = layer?.feature?.properties?.parcelId;
-                return pid !== undefined && pid !== null ? pid.toString() : null;
-            }).filter(Boolean));
+            visibleParcelIds = new Set(parcelsToProcess
+                .map(layer => global.ParcelPresenter?.getIdForLayer?.(layer))
+                .filter(Boolean).map(String));
         }
 
         // Process layers - use optimized path when available
         const processLayer = (layer) => {
-            const parcelId = layer?.feature?.properties?.parcelId;
+            const parcelId = global.ParcelPresenter?.getIdForLayer?.(layer);
             if (parcelId === undefined || parcelId === null) return;
             const idStr = parcelId.toString();
+            const fabric = global.LiveParcelFabric;
+            const feature = fabric ? (fabric.peek ? fabric.peek(idStr) : fabric.get(idStr)) : null;
+            if (!feature) return;
 
             // For ownership highlighting, skip parcels not in view (if we have that info)
             const isInVisibleSet = visibleParcelIds ? visibleParcelIds.has(idStr) : true;
 
             if (selectedId && idStr === selectedId) {
-                const isTrackSelected = (layer?.feature?.properties?.isTrack === true) || Boolean(layer?._trackStyle);
+                const isTrackSelected = feature.properties?.isTrack === true || Boolean(layer?._trackStyle);
                 if (isTrackSelected) {
                     const trackStyle = getParcelBaseStyle(idStr, layer, { isTrack: true });
                     layer.setStyle({ ...trackStyle, weight: 4 });
@@ -323,7 +350,7 @@
             const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
                 ? global.selectedBlockName
                 : (typeof global !== 'undefined' ? global.selectedBlockName : null);
-            const layerBlockName = layer?.feature?.properties?.block;
+            const layerBlockName = global.parcelBlockNameForId?.(idStr) || null;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
                 return;
@@ -337,20 +364,12 @@
                     return;
                 }
 
-                const selectedTypes = ownershipHighlight.getSelectedOwnershipTypes();
-                const ownershipType = layer?.feature?.properties?.ownershipType;
-                if (ownershipType && selectedTypes.has(ownershipType)) {
-                    const highlightColors = {
-                        'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
-                        'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
-                        'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
-                        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
-                    };
-                    const highlightStyle = highlightColors[ownershipType];
-                    if (highlightStyle) {
-                        layer.setStyle(highlightStyle);
-                        return;
-                    }
+                // The same precedence as getParcelStyle: an ad parcel, road, track or applied
+                // proposal keeps its own style under an ownership highlight.
+                const highlightStyle = ownershipHighlightStyle(idStr, layer);
+                if (highlightStyle) {
+                    layer.setStyle(highlightStyle);
+                    return;
                 }
             }
 
@@ -363,8 +382,20 @@
             layer.setStyle(getParcelBaseStyle(idStr, layer));
         };
 
-        // Process all layers (we still need to touch all for proper state management)
-        global.parcelLayer.eachLayer(processLayer);
+        // Process all layers (we still need to touch all for proper state management). Ids come
+        // from the snapshot: `list()` deep-clones every polygon in the fabric, and profiled on a
+        // 7,000-parcel Šibenik view that one call was 70% of a corridor apply.
+        let fabricIds;
+        if (options && options.parcelIds) {
+            const targeted = new Set(Array.from(options.parcelIds, id => String(id)));
+            membershipBefore.forEach(id => { if (!membershipAfter.has(id)) targeted.add(id); });
+            membershipAfter.forEach(id => { if (!membershipBefore.has(id)) targeted.add(id); });
+            if (selectedId) targeted.add(selectedId);
+            fabricIds = Array.from(targeted);
+        } else {
+            fabricIds = global.LiveParcelFabric?.snapshot?.().parcelIds || [];
+        }
+        global.ParcelPresenter?.getLayers?.(fabricIds).forEach(processLayer);
 
         if (hasMultiSelection && typeof global.multiParcelSelection?.reapplyMultiParcelHighlights === 'function') {
             global.multiParcelSelection.reapplyMultiParcelHighlights();
@@ -375,11 +406,11 @@
         }
 
         if (selectedId) {
-            const selectedLayer = global.parcelLayer.getLayers().find(layer =>
-                layer.feature && layer.feature.properties && layer.feature.properties.parcelId.toString() === selectedId
-            );
+            const selectedLayer = global.LiveParcelFabric?.get?.(selectedId)
+                ? global.ParcelPresenter?.getLayer?.(selectedId)
+                : null;
             if (selectedLayer) {
-                const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
+                const isTrackSelected = global.LiveParcelFabric?.get?.(selectedId)?.properties?.isTrack === true || Boolean(selectedLayer?._trackStyle);
                 if (isTrackSelected) {
                     const trackStyle = getParcelBaseStyle(selectedId, selectedLayer, { isTrack: true });
                     selectedLayer.setStyle({ ...trackStyle, weight: 4 });
@@ -396,6 +427,7 @@
     global.translateParcelText = translateParcelText;
     global.showParcelAlert = showParcelAlert;
     global.roadStyle = roadStyle;
+    global.corridorParcelStyle = corridorParcelStyle;
     global.trackStyle = trackStyle;
     global.normalStyle = normalStyle;
     global.adParcelStyle = adParcelStyle;
@@ -409,4 +441,3 @@
     global.refreshParcelStylesForAppliedProposals = refreshParcelStylesForAppliedProposals;
     global.parcelsWithAppliedSpatialProposals = parcelsWithAppliedSpatialProposals;
 })(typeof window !== 'undefined' ? window : globalThis);
-

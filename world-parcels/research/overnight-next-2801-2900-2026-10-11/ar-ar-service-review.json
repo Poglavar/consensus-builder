@@ -1,0 +1,88 @@
+{
+  "cityRecord": "city-855-ar-ar.json",
+  "cityCode": 855,
+  "queueRank": 2859,
+  "city": "Ar'ar",
+  "country": "Saudi Arabia",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Northern Borders Municipality / Arar Municipality, Ministry of Municipalities and Housing",
+    "localEvidence": "The municipality's official Arabic service page is titled land-plot inquiry, and its Arar city page publishes local planning atlases.",
+    "urls": [
+      "https://arar-mu.momah.gov.sa/ar/node/3630",
+      "https://arar-mu.momah.gov.sa/ar/node/4777",
+      "https://momah.gov.sa/ar/branches/northern-borders-municipality"
+    ]
+  },
+  "routesAttempted": [
+    {
+      "route": "Official English discovery",
+      "request": "Web search for Saudi Arabia official cadastral parcel map Arar Northern Borders municipality GIS",
+      "outcome": "First-party results found the Ministry Urban Maps page, Northern Borders Municipality branch page, and official UMAPS viewer."
+    },
+    {
+      "route": "Official Arabic discovery",
+      "request": "Web search for أرضي عرعر خريطة قطع الأراضي السجل العقاري أمانة منطقة الحدود الشمالية",
+      "outcome": "First-party results found Arar's land-plot inquiry page and Arar planning atlas page, plus the Arabic Urban Maps page."
+    },
+    {
+      "route": "Northern Borders Municipality branch",
+      "request": "GET https://momah.gov.sa/ar/branches/northern-borders-municipality",
+      "outcome": "Reachable; identifies the Northern Borders Municipality and its Arar address/contact. No parcel schema or geometry response exposed."
+    },
+    {
+      "route": "Arar land-plot inquiry service",
+      "request": "GET https://arar-mu.momah.gov.sa/ar/node/3630",
+      "outcome": "Reachable; official service description says users can inquire about a land plot and obtain details from government/service entities. The linked workflow did not expose an anonymous parcel API in rendered content."
+    },
+    {
+      "route": "Arar city planning atlas",
+      "request": "GET https://arar-mu.momah.gov.sa/ar/node/4777",
+      "outcome": "Reachable; lists Arar local planning atlases, including land-use, local-plan, density, and infrastructure maps. These are planning documents, not a public parcel feature service."
+    },
+    {
+      "route": "UMAPS current viewer",
+      "request": "GET https://umaps.momah.gov.sa/",
+      "outcome": "Reachable; current JavaScript/configuration inspected. The application configuration reported allowAnonymous=false and the rendered UI presented a login wall."
+    },
+    {
+      "route": "UMAPS configuration API",
+      "request": "POST https://umaps.momah.gov.sa/api/Config.Api/api/Config/GetConfigs with shared/ArcGISServicesConfig.json, viewer-2d/MapIdentifyConfig.json, viewer-2d/MapSearchConfig.json, and shared/LayerFieldsConfig.json",
+      "outcome": "HTTP 200; returned official service configuration. Parcel identify service is https://umaps.momah.gov.sa/server/rest/services/umaps/Layers/MapServer, with parcels mapped to layer 1; search API is https://umaps.momah.gov.sa/api/Search.Api/api/Search/Search. Configuration also exposed official administrative lookup URLs."
+    },
+    {
+      "route": "UMAPS ArcGIS parcel service metadata",
+      "request": "GET https://umaps.momah.gov.sa/server/rest/services/umaps/Layers/MapServer?f=pjson and /1?f=pjson",
+      "outcome": "HTTP 499 Token Required for both service root and parcel layer metadata. No schema, CRS, ID field, extent, or geometry response obtained."
+    },
+    {
+      "route": "UMAPS administrative service metadata",
+      "request": "GET https://umaps.momah.gov.sa/server/rest/services/umaps/AdministrativeLayers/MapServer/17?f=pjson and SearchLayers/MapServer/2?f=pjson",
+      "outcome": "HTTP 499 Token Required. No anonymous city or plan feature response obtained."
+    },
+    {
+      "route": "UMAPS search API",
+      "request": "POST https://umaps.momah.gov.sa/api/Search.Api/api/Search/Search with empty JSON body",
+      "outcome": "HTTP 401 Unauthorized. No search or parcel response obtained."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "canonical native parcel ID only, if obtained",
+    "polygon or multipolygon geometry only, if obtained",
+    "source URL, service URL, schema field names, CRS, query extent, and response metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "No parcel polygons or source IDs were obtained, so no GeoJSON sample was written.",
+    "The WUP point [30.9797356858465, 41.0313344245833] was preserved and not shifted; no exact-point hit/miss inference was made.",
+    "A municipal land-inquiry page and planning atlas evidence a local custodian, but do not establish open citywide cadastral geometry coverage.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No source integration or runtime adapter admission was performed."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "The local municipal map/procedure custodian is evidenced, and the current official UMAPS configuration identifies the parcel service route, but token-gated/unauthorized anonymous requests prevented schema inspection and bounded parcel geometry retrieval."
+}

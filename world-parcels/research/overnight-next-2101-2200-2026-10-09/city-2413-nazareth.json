@@ -1,0 +1,105 @@
+{
+  "cityCode": 2413,
+  "queueRank": 2195,
+  "name": "Nazareth",
+  "country": "Israel",
+  "countryCode": "IL",
+  "iso3": "ISR",
+  "point": [32.7074004606184, 35.2985466322546],
+  "population2025": 265611,
+  "population2025k": 265.611,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Israel official cadastral parcel map GIS Nazareth parcel API gov.il",
+        "result": "Found the official GovMap public map, Survey of Israel materials describing cadastral block/parcel data and APIs, and the public Survey of Israel parcel FeatureServer. A bounded anonymous response was obtained from the national parcel layer.",
+        "actualResultUrls": [
+          "https://govmap.gov.il/map.html?lang=en",
+          "https://www.gov.il/he/departments/survey_of_israel/govil-landing-page?id=maps%2Fmaps&maps_l=1",
+          "https://services8.arcgis.com/JcXY3lLZni6BK4El/ArcGIS/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer"
+        ]
+      },
+      {
+        "language": "Hebrew",
+        "query": "ישראל מפה קדסטרית חלקות נצרת GIS API gov.il",
+        "result": "Found official Hebrew Survey of Israel/GovMap documentation identifying the government map portal, Topocad cadastral platform, and the parcel layer. The parcel service metadata identifies Israeli New Grid (ITM), EPSG:2039, parcel fields, and national scope.",
+        "actualResultUrls": [
+          "https://www.gov.il/BlobFolder/generalpage/booklet_on_2023_activities/he/An%20overview%20booklet%20on%202023%20activities.pdf",
+          "https://www.gov.il/BlobFolder/generalpage/other-links/he/dg-desk_wms_services.pdf",
+          "https://services8.arcgis.com/JcXY3lLZni6BK4El/ArcGIS/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "خريطة قطع الأراضي الناصرة مسح الأراضي إسرائيل موقع رسمي",
+        "result": "No additional first-party Arabic cadastral API was identified; the same official Survey of Israel/GovMap parcel service was the usable public source.",
+        "actualResultUrls": [
+          "https://govmap.gov.il/map.html?lang=en"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "No Nazareth-specific local registry custodian or municipal cadastral office was separately evidenced. The verified source is a national Survey of Israel parcel dataset, not a city registry.",
+  "sourceCandidate": {
+    "name": "Survey of Israel parcel layer via ArcGIS FeatureServer",
+    "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/ArcGIS/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0",
+    "publisher": "Survey of Israel / מרכז למיפוי ישראל",
+    "scope": "Israel-wide cadastral parcel polygon layer",
+    "crs": "EPSG:2039 (Israeli New Grid / ITM); sample response reprojected to EPSG:4326",
+    "nativeIdentity": "GushHelka composite block/parcel identity, e.g. 16574/23; OBJECTID and PARCEL_ID also exist but are not retained as the canonical sample identity"
+  },
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sampleFile": "nazareth-parcel-sample.geojson",
+  "sampleFeatureCount": 3,
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/ArcGIS/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0",
+      "outcome": "HTTP 200. Layer metadata returned polygon geometry, fields, native CRS EPSG:2039, full extent, and service capabilities."
+    },
+    {
+      "method": "GET",
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/ArcGIS/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0/query?f=pjson&where=LOCALITY_N%20%3D%20%27%D7%A0%D7%A6%D7%A8%D7%AA%27&returnIdsOnly=true&resultRecordCount=3",
+      "outcome": "HTTP 200. Returned OBJECTIDs 11580, 11581, 11582 with exceededTransferLimit=true; this confirms bounded Nazareth-labelled records but is not a complete city extract."
+    },
+    {
+      "method": "GET",
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/ArcGIS/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0/query",
+      "outcome": "A point-intersects query at the immutable WUP point returned an invalid outFields error, and a retry with outFields=* timed out after 25 seconds. This route failure was not treated as citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/ArcGIS/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0/query?f=geojson&objectIds=11580%2C11581%2C11582&outFields=*&returnGeometry=true&outSR=4326",
+      "outcome": "HTTP 200. Returned three full polygon geometries and native attributes in temporary evidence; retained sample was reduced to one canonical id property per feature."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsExcluded": ["owner", "titleholder", "address", "contact", "personal", "tax", "account", "encumbrance", "deed", "mutation_details"],
+  "coverageAssessment": {
+    "claimedScope": "Israel-wide parcel layer published through the Survey of Israel ArcGIS service.",
+    "verifiedOpenScope": "The service metadata and three Nazareth-labelled parcel responses were verified; complete city coverage was not established.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "Research verifies a public source and bounded geometry, but does not authorize adapter admission; a serial reviewer must independently qualify request construction, coverage, rate limits, and identity semantics."
+  },
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit.",
+  "resultCategory": "national_cadastre_public_geometry_verified_city_label_bounded",
+  "completionSummary": {
+    "packetComplete": true,
+    "geometryVerified": true,
+    "runtimeHeld": true,
+    "sampleFile": "nazareth-parcel-sample.geojson"
+  }
+}

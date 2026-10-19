@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7241",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-7241-al-manshah.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/al-manshah-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:22:47.058162Z",
+  "reason": "WUP 2025 archive, ranked roster and queue agree on code 7241, rank 1542, Egypt, point [26.4435318582286, 31.7709117627], and 370283 persons. Packet records separate English and Arabic searches. ESA first-party pages support national survey/map custody and a mediated digital-map purchase procedure; Al-Manshah local parcel service is unverified. No safe anonymous native-ID plus complete-polygon response or sample was retained. Fresh exact ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details-panel verification are absent; unavailable service access is not citywide absence.",
+  "independentlyCheckedFirstPartyUrls": [
+    "https://www.esa.gov.eg/services.aspx",
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  ],
+  "sourceAdmission": "not_admitted"
+}

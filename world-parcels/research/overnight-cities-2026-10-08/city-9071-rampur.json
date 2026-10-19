@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Rampur",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Uttar Pradesh Board of Revenue publishes the Bhulekh land-record portal and the official state BhuNaksha viewer. The Rampur district dashboard records tehsil-level map digitization/georeferencing. This is statewide cadastral service evidence tied to Rampur district; the WUP point’s specific revenue village and parcel availability were not resolved.",
+  "registryEvidenceUrls": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=136",
+    "https://upbhulekh.gov.in/",
+    "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9071,
+  "cityId": "wup2025:9071",
+  "centerLatLon": [
+    28.7972293040482,
+    79.0272497886754
+  ],
+  "rank": 991,
+  "queueRank": 991,
+  "population2025": 553229,
+  "population2025k": 553.229,
+  "populationPlausibility": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "UP Bhulekh / Board of Revenue provides state land records; district dashboard distCode=136 reports Rampur tehsil map digitization/georeferencing. The public BhuNaksha viewer is an official state map application, but this review did not resolve the WUP point to a particular village or full parcel polygon.",
+  "scopeLimits": "The Uttar Pradesh Board of Revenue publishes the Bhulekh land-record portal and the official state BhuNaksha viewer. The Rampur district dashboard records tehsil-level map digitization/georeferencing. This is statewide cadastral service evidence tied to Rampur district; the WUP point’s specific revenue village and parcel availability were not resolved.",
+  "remainingUncertainty": "The exact parcel coverage of the WUP settlement centroid and the complete public geometry coverage in the locality remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Rampur India official cadastre cadastral parcel map GIS land registry",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "UP Bhulekh / Board of Revenue provides state land records; district dashboard distCode=136 reports Rampur tehsil map digitization/georeferencing. The public BhuNaksha viewer is an official state map application, but this review did not resolve the WUP point to a particular village or full parcel polygon.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=136",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+        ],
+        "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      },
+      {
+        "language": "Hindi",
+        "query": "रामपुर भू नक्शा भूलेख नक्शा cadastral map official",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "UP Bhulekh / Board of Revenue provides state land records; district dashboard distCode=136 reports Rampur tehsil map digitization/georeferencing. The public BhuNaksha viewer is an official state map application, but this review did not resolve the WUP point to a particular village or full parcel polygon.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=136",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+        ],
+        "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=136",
+        "observation": "UP Bhulekh / Board of Revenue provides state land records; district dashboard distCode=136 reports Rampur tehsil map digitization/georeferencing. The public BhuNaksha viewer is an official state map application, but this review did not resolve the WUP point to a particular village or full parcel polygon."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/",
+        "observation": "UP Bhulekh / Board of Revenue provides state land records; district dashboard distCode=136 reports Rampur tehsil map digitization/georeferencing. The public BhuNaksha viewer is an official state map application, but this review did not resolve the WUP point to a particular village or full parcel polygon."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+        "observation": "UP Bhulekh / Board of Revenue provides state land records; district dashboard distCode=136 reports Rampur tehsil map digitization/georeferencing. The public BhuNaksha viewer is an official state map application, but this review did not resolve the WUP point to a particular village or full parcel polygon."
+      }
+    ],
+    "metadataReviewFile": "rampur-service-review.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "Official cadastral/property-record service identified; anonymous full geometry not verified in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The Uttar Pradesh Board of Revenue publishes the Bhulekh land-record portal and the official state BhuNaksha viewer. The Rampur district dashboard records tehsil-level map digitization/georeferencing. This is statewide cadastral service evidence tied to Rampur district; the WUP point’s specific revenue village and parcel availability were not resolved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Uttar Pradesh Board of Revenue publishes the Bhulekh land-record portal and the official state BhuNaksha viewer. The Rampur district dashboard records tehsil-level map digitization/georeferencing. This is statewide cadastral service evidence tied to Rampur district; the WUP point’s specific revenue village and parcel availability were not resolved.",
+    "verifiedOpenScope": "No full parcel geometry retained; no citywide coverage is inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "UP Bhulekh / Board of Revenue provides state land records; district dashboard distCode=136 reports Rampur tehsil map digitization/georeferencing. The public BhuNaksha viewer is an official state map application, but this review did not resolve the WUP point to a particular village or full parcel polygon."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=136",
+    "fetch": 200,
+    "contentType": "text/html;charset=UTF-8",
+    "title": "Digitization of Cadastral Maps and Geo Referencing | Public Report"
+  },
+  "rootReviewNote": "Root reviewed the exact primary institutional evidence and specific local jurisdiction, preserving source dates, application/access limits and failed readbacks. Registry presence and public full parcel geometry are separate findings. No public full geometry was verified in this city discovery record.",
+  "rootReviewedAt": "2026-10-09T05:10:15.053712+00:00",
+  "populationPlausibility2025": "Moderate",
+  "point": [
+    28.7972293040482,
+    79.0272497886754
+  ],
+  "sourceIds": []
+}

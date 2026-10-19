@@ -1,0 +1,390 @@
+{
+  "checkedAt": "2026-10-03",
+  "description": "Metadata-only complete viewport and exact-key source verification.",
+  "city": "sydney",
+  "center": [
+    -33.8585,
+    151.0795
+  ],
+  "descriptor": {
+    "id": "au-nsw-six-cadastre-lot",
+    "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+    "idField": "cadid",
+    "objectIdField": "objectid",
+    "idPrefix": "AU-NSW-",
+    "idType": "integer",
+    "outFields": [
+      "objectid",
+      "cadid",
+      "shapeuuid",
+      "lotidstring",
+      "enddate",
+      "processstate",
+      "changetype"
+    ],
+    "pageSize": 25,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32756,
+    "parcelNumberField": "lotidstring",
+    "adapter": "arcgis",
+    "name": "NSW Spatial Services cadastral lots",
+    "countryCode": "AU",
+    "cityIds": [
+      "sydney"
+    ],
+    "scope": "New South Wales cadastral lots; a bounded western Sydney metropolitan entry is enabled around the verified sample. This does not establish complete Sydney coverage or legal title.",
+    "evidenceFile": "research/sydney-live.json",
+    "licenceUrl": "https://www.spatial.nsw.gov.au/products_and_services/web_services/terms_and_conditions",
+    "catalogueUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+    "licenceNote": "NSW Spatial Services publishes attribution conditions and restrictions on automated retrieval; users are responsible for checking the publisher conditions for their intended use.",
+    "attribution": "NSW Spatial Services / Department of Customer Service, cadastral lots; adapted to WGS84. See publisher conditions."
+  },
+  "cells": [
+    {
+      "bbox": [
+        151.07500000000002,
+        -33.8625,
+        151.07750000000001,
+        -33.86
+      ],
+      "complete": true,
+      "count": 28
+    },
+    {
+      "bbox": [
+        151.07500000000002,
+        -33.86,
+        151.07750000000001,
+        -33.8575
+      ],
+      "complete": true,
+      "count": 14
+    },
+    {
+      "bbox": [
+        151.07500000000002,
+        -33.8575,
+        151.07750000000001,
+        -33.855000000000004
+      ],
+      "complete": true,
+      "count": 4
+    },
+    {
+      "bbox": [
+        151.07750000000001,
+        -33.8625,
+        151.08,
+        -33.86
+      ],
+      "complete": true,
+      "count": 64
+    },
+    {
+      "bbox": [
+        151.07750000000001,
+        -33.86,
+        151.08,
+        -33.8575
+      ],
+      "complete": true,
+      "count": 81
+    },
+    {
+      "bbox": [
+        151.07750000000001,
+        -33.8575,
+        151.08,
+        -33.855000000000004
+      ],
+      "complete": true,
+      "count": 11
+    },
+    {
+      "bbox": [
+        151.08,
+        -33.8625,
+        151.0825,
+        -33.86
+      ],
+      "complete": true,
+      "count": 60
+    },
+    {
+      "bbox": [
+        151.08,
+        -33.86,
+        151.0825,
+        -33.8575
+      ],
+      "complete": true,
+      "count": 68
+    },
+    {
+      "bbox": [
+        151.08,
+        -33.8575,
+        151.0825,
+        -33.855000000000004
+      ],
+      "complete": true,
+      "count": 13
+    },
+    {
+      "bbox": [
+        151.08,
+        -33.8575,
+        151.0825,
+        -33.855000000000004
+      ],
+      "complete": true,
+      "count": 13
+    },
+    {
+      "bbox": [
+        151.08,
+        -33.855000000000004,
+        151.0825,
+        -33.8525
+      ],
+      "complete": true,
+      "count": 5
+    },
+    {
+      "bbox": [
+        151.08,
+        -33.8525,
+        151.0825,
+        -33.85
+      ],
+      "complete": true,
+      "count": 2
+    },
+    {
+      "bbox": [
+        151.0825,
+        -33.8575,
+        151.085,
+        -33.855000000000004
+      ],
+      "complete": true,
+      "count": 63
+    },
+    {
+      "bbox": [
+        151.0825,
+        -33.855000000000004,
+        151.085,
+        -33.8525
+      ],
+      "complete": true,
+      "count": 81
+    },
+    {
+      "bbox": [
+        151.0825,
+        -33.8525,
+        151.085,
+        -33.85
+      ],
+      "complete": true,
+      "count": 51
+    },
+    {
+      "bbox": [
+        151.085,
+        -33.8575,
+        151.0875,
+        -33.855000000000004
+      ],
+      "complete": true,
+      "count": 61
+    },
+    {
+      "bbox": [
+        151.085,
+        -33.855000000000004,
+        151.0875,
+        -33.8525
+      ],
+      "complete": true,
+      "count": 51
+    },
+    {
+      "bbox": [
+        151.085,
+        -33.8525,
+        151.0875,
+        -33.85
+      ],
+      "complete": true,
+      "count": 47
+    }
+  ],
+  "retainedCount": 541,
+  "acrossCellConflicts": 0,
+  "exact": [
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 61,
+      "count": 61,
+      "absent": 0,
+      "conflicts": 0
+    }
+  ],
+  "nativeIdentity": {
+    "field": "cadid",
+    "meaning": "Source cadastral identifier, separate from system-maintained objectid and displayed lotidstring.",
+    "sampleDistinctNativeIds": 541,
+    "allExactReadsComplete": true,
+    "conflictingGeometry": 0,
+    "indexUniqueness": "Service index is not declared unique; bounded and exact-key queries found no conflicting geometry."
+  },
+  "sourceNotice": {
+    "termsAreInformational": true,
+    "ownerFieldsRequested": false,
+    "readMode": "Public source boundaries read on demand; no parcel database import."
+  },
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "mode": "manual headed browser",
+    "initialFeatures": 253,
+    "retainedAfterPan": 541,
+    "backCached": true,
+    "backRequestCount": 0,
+    "renderedAfterFootprint": 567,
+    "under": {
+      "status": 200,
+      "complete": true,
+      "features": 4
+    },
+    "binding": {
+      "status": 200,
+      "coverage": "complete",
+      "parcels": 1
+    },
+    "globeOpenVerified": true
+  },
+  "productionPageVerification": {
+    "pageSize": 500,
+    "completeCells": 18,
+    "retainedCount": 541,
+    "acrossCellConflicts": 0,
+    "exact": [
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 61,
+        "count": 61,
+        "absent": 0,
+        "conflicts": 0
+      }
+    ],
+    "requestSummary": {
+      "count": 25,
+      "operations": {
+        "bounds": 18,
+        "exact-id-or-page": 7
+      },
+      "httpStatuses": {
+        "200": 25
+      },
+      "detail": "Individual request URLs are omitted to avoid persisting queried native parcel lists."
+    }
+  },
+  "requestSummary": {
+    "count": 67,
+    "operations": {
+      "bounds": 40,
+      "exact-id-or-page": 27
+    },
+    "httpStatuses": {
+      "200": 67
+    },
+    "detail": "Individual request URLs are omitted to avoid persisting queried native parcel lists."
+  }
+}

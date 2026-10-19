@@ -1,0 +1,44 @@
+{
+  "taskId": "city:2771",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-2771-samarra.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/samarra-service-review.json",
+    "tmp/valhalla-parcel-research/2771/moj.html",
+    "tmp/valhalla-parcel-research/2771/moj.headers",
+    "tmp/valhalla-parcel-research/2771/ur.html",
+    "tmp/valhalla-parcel-research/2771/igp.html"
+  ],
+  "checkedAt": "2026-10-11T23:53:56Z",
+  "city": "Samarra",
+  "identityCheck": {
+    "queueRank": 2968,
+    "country": "Iraq",
+    "pointLatLon": [
+      34.191795106743,
+      43.8725632131166
+    ],
+    "populationPersons": 201149,
+    "queueRosterArchivePacketMatch": true
+  },
+  "searchLanguages": [
+    "English",
+    "Arabic (native/local)"
+  ],
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "safeNativeParcelIdAndFullPolygonVerified": false,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "First-party Iraqi Ministry of Justice Samarra registration-directorate notice supports local registry custody. The saved Ur response is a JavaScript shell, not a parcel response. No safe anonymous native-ID polygon or adapter qualification is evidenced.",
+  "absenceInference": false
+}

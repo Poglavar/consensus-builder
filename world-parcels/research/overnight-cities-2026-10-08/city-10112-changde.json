@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Changde",
+  "country": "China",
+  "countryCode": "CN",
+  "registryFound": true,
+  "registryBasis": "Changde Natural Resources and Planning Bureau and the Changde Real Estate Registration Center publish city-specific registration service notices. The documented online information-query route requires account registration and real-name verification; it is not an anonymous cadastral geometry API.",
+  "registryEvidenceUrls": [
+    "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+    "https://zrzyhghj.changde.gov.cn/slzq/ztzl1__xwzx/ztzl/fzjs/content_1091558",
+    "https://zrzyhghj.changde.gov.cn/xwzx/tzgg/content_78210747"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10112,
+  "cityId": "wup2025:10112",
+  "centerLatLon": [
+    29.0401422607343,
+    111.692519729142
+  ],
+  "point": [
+    29.0401422607343,
+    111.692519729142
+  ],
+  "rank": 833,
+  "queueRank": 833,
+  "population2025": 651562,
+  "population2025k": 651.562,
+  "populationPlausibility2025": "High",
+  "notes": "5",
+  "coverageAssessment": {
+    "claimedScope": "Changde Natural Resources and Planning Bureau and the Changde Real Estate Registration Center publish city-specific registration service notices. The documented online information-query route requires account registration and real-name verification; it is not an anonymous cadastral geometry API.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with a safe stable identifier was verified; the documented routes are map-level only, application-based or identity-gated as described above.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "常德市 不动产登记中心 地籍图 地图 查询 实名认证 官方",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "Official Changde government and Natural Resources and Planning Bureau pages confirm a city Real Estate Registration Center and online registration-information services. The described query workflow requires account registration and real-name verification; no anonymous parcel feature schema was found and no account or property query was attempted.",
+        "actualResultUrls": [
+          "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+          "https://zrzyhghj.changde.gov.cn/slzq/ztzl1__xwzx/ztzl/fzjs/content_1091558",
+          "https://zrzyhghj.changde.gov.cn/xwzx/tzgg/content_78210747"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      },
+      {
+        "language": "English",
+        "query": "Changde China official cadastral parcel map GIS natural resources registration center",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "Official city sources establish local real-property registration services. Reviewed online registry information lookup is identity-gated; no public geometry-only parcel service or safe stable-ID schema was verified.",
+        "actualResultUrls": [
+          "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+          "https://zrzyhghj.changde.gov.cn/slzq/ztzl1__xwzx/ztzl/fzjs/content_1091558",
+          "https://zrzyhghj.changde.gov.cn/xwzx/tzgg/content_78210747"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+        "observation": "Changde municipal government article (2026-07-21) says its Real Estate Registration Center’s online real-property-information service is accessed through its official WeChat account after account registration and real-name verification; no query was submitted."
+      },
+      {
+        "url": "https://zrzyhghj.changde.gov.cn/slzq/ztzl1__xwzx/ztzl/fzjs/content_1091558",
+        "observation": "Changde Natural Resources and Planning Bureau registration-center notice (2024-10-14) documents local online registration channels and identifies the municipal service hall."
+      },
+      {
+        "url": "https://zrzyhghj.changde.gov.cn/xwzx/tzgg/content_78210747",
+        "observation": "Bureau’s 2026 notice describes city registry system integration into Hunan’s provincial platform, confirming active local registration infrastructure; it does not document anonymous parcel geometries."
+      }
+    ]
+  },
+  "source": {
+    "name": "Changde Real Estate Registration Center online information services; official documentation describes a verified-account workflow, not anonymous public geometry.",
+    "urls": [
+      "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+      "https://zrzyhghj.changde.gov.cn/slzq/ztzl1__xwzx/ztzl/fzjs/content_1091558",
+      "https://zrzyhghj.changde.gov.cn/xwzx/tzgg/content_78210747"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "The described information-query route requires registration and real-name verification. No anonymous public parcel geometry endpoint, safe geometry+ID allowlist, or exact WUP-point hit was verified.",
+  "scopeLimits": "Bounded review of public first-party sources. No owner, address, tax/account, applicant, identity, or property-specific data was queried or retained. No citywide completeness or legal/survey accuracy is asserted.",
+  "remainingUncertainty": "A public planning map may expose spatial layers, but no cadastral parcel feature route or exact-point coverage was documented in reviewed official material. Citywide completeness is not established.",
+  "resultCategory": "local_registry_confirmed_identity_gated_query_no_public_geometry",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The described information-query route requires registration and real-name verification. No anonymous public parcel geometry endpoint, safe geometry+ID allowlist, or exact WUP-point hit was verified."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "市民可线上查询不动产登记信息_部门动态_常德资讯_常德市人民政府门户网站"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

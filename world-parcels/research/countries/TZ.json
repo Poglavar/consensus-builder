@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "TZ",
+ "country": "United Republic of Tanzania",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Lands, Housing and Human Settlements Development; ILMIS (Integrated Land Management Information System)",
+ "portalsFound": [
+  {
+   "url": "https://www.lands.go.tz/",
+   "observation": "Ministry site reachable (HTML); no open parcel service found."
+  },
+  {
+   "url": "https://ilmis.lands.go.tz/en/ilmis-project",
+   "observation": "ILMIS project page from earlier Dar es Salaam probe; host unreachable now."
+  },
+  {
+   "url": "https://ardhi.go.tz/",
+   "observation": "Unreachable in this run (TLS problem earlier; verification not disabled)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ilmis.lands.go.tz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.lands.go.tz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "HTML only"
+  },
+  {
+   "url": "https://ardhi.go.tz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://ramani.ardhi.go.tz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "ILMIS vectorised cadastre in pilot areas (Dar es Salaam); national roll-out unclear",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Government hosts unreachable; anonymous parcel access unconfirmed.",
+ "nextStep": "Retry ILMIS/ardhi hosts; look for a public viewer or feature service."
+}

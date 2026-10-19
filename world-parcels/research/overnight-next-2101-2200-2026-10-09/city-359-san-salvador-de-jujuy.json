@@ -1,0 +1,96 @@
+{
+  "cityCode": 359,
+  "queueRank": 2113,
+  "name": "San Salvador de Jujuy",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "iso3": "ARG",
+  "point": [-24.2030777447245, -65.2888555186182],
+  "population2025": 274625,
+  "population2025k": 274.625,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "San Salvador de Jujuy Argentina official cadastral map parcel viewer catastro municipal",
+        "result": "First-party results identified the Municipalidad de San Salvador de Jujuy, the provincial Dirección Provincial de Inmuebles, the official IDEJUY geographic viewer, and the public Catastro Parcelario map/WFS published by the provincial agency.",
+        "actualResultUrls": [
+          "https://inmuebles.jujuy.gob.ar/",
+          "https://geo.idejuy.jujuy.gob.ar/catalogue/#/map/39",
+          "https://www.sansalvadordejujuy.gob.ar/"
+        ]
+      },
+      {
+        "language": "Spanish (Argentina)",
+        "query": "San Salvador de Jujuy Argentina catastro visor parcelas oficial municipio",
+        "result": "First-party results identified the provincial Departamento Catastro / Dirección Provincial de Inmuebles, its official Visor Geográfico link labelled Catastro Parcelario, and the municipal MuniMap announcement. The live parcel source is provincial rather than a separate municipal parcel service.",
+        "actualResultUrls": [
+          "https://inmuebles.jujuy.gob.ar/departamento-catastro/",
+          "https://geo.idejuy.jujuy.gob.ar/catalogue/#/map/39",
+          "https://www.sansalvadordejujuy.gob.ar/fue-presentado-el-sistema-digital-georreferenciado-munimap/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The Dirección Provincial de Inmuebles / Departamento Catastro is an evidenced provincial cadastral custodian located in San Salvador de Jujuy. Its official site links the IDEJUY Visor Geográfico as Catastro Parcelario, and the published map metadata attributes the parcel register to Dirección Provincial de Inmuebles - Ministerio de Hacienda y Finanzas.",
+  "officialSources": [
+    {
+      "url": "https://inmuebles.jujuy.gob.ar/departamento-catastro/",
+      "publisher": "Dirección Provincial de Inmuebles, Gobierno de Jujuy",
+      "observation": "Official Departamento Catastro page identifies cadastral responsibilities and provides the provincial agency context." 
+    },
+    {
+      "url": "https://geo.idejuy.jujuy.gob.ar/catalogue/#/map/39",
+      "publisher": "IDEJUY / Dirección Provincial de Inmuebles",
+      "observation": "Official viewer map 39 is titled Catastro Parcelario and describes a register of cadastral parcels of Jujuy Province." 
+    },
+    {
+      "url": "https://geo.idejuy.jujuy.gob.ar/api/maps/39",
+      "publisher": "IDEJUY GeoNode API",
+      "observation": "Current map configuration exposes the DPI WMS endpoint and the official parcel map attribution." 
+    },
+    {
+      "url": "https://dpinmuebles.ddns.net/dpicatastro.php?service=WFS&version=2.0.0&request=GetCapabilities",
+      "publisher": "Dirección Provincial de Inmuebles public WFS",
+      "observation": "Capabilities expose the WFS service, parcel layers including salvador:parcelas_A-1-12, EPSG:4326 support, and a Jujuy/San Salvador extent." 
+    }
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "parcelGeometryVerified": true,
+  "sourceCandidate": "https://dpinmuebles.ddns.net/dpicatastro.php",
+  "serviceMetadata": {
+    "serviceType": "OGC WFS 2.0.0",
+    "layerName": "salvador:parcelas_A-1-12",
+    "layerScope": "Urban parcel layer covering a bounded portion of San Salvador de Jujuy; capabilities list multiple salvador parcel layers and separate interior/subrural layers.",
+    "geometryType": "gml:MultiSurfacePropertyType; returned GeoJSON geometry type MultiPolygon",
+    "crs": "EPSG:4326; requested output srsName=EPSG:4326",
+    "supportedOutput": "application/json",
+    "nativeFieldsObserved": ["the_geom", "OBJECTID", "AREA", "PERIMETER", "DEPARTA", "CIRCUNS", "SECCION", "MANZANA", "PARCELA", "SUBPARCELA", "NOMENCLA", "COD", "N_POSTAL", "CALLE", "TIPOI", "ESPECIFICO", "OBSERVA", "PADRON"],
+    "safeIdentityCandidate": "WFS feature id, e.g. parcelas_A-1-12.1512; OBJECTID is also exposed by the schema but was not used as the retained identity because the response feature id is the service-native stable identity observed with each geometry.",
+    "fieldMapping": {"WFS feature id": "properties.id", "the_geom": "Feature.geometry"},
+    "compositeKeyProvenance": "The layer name is part of the native WFS feature identity namespace. Cadastral component fields such as CIRCUNS, SECCION, MANZANA, PARCELA, SUBPARCELA, NOMENCLA, and PADRON were observed in schema metadata but were not requested or retained. No synthetic row number was used."
+  },
+  "sampleGeoJSON": "san-salvador-de-jujuy-sample.geojson",
+  "retainedPolygonSampleFile": "san-salvador-de-jujuy-sample.geojson",
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "A real public WFS adapter candidate and three bounded native geometries are evidenced, but research completion is not source integration, adapter admission, or independent serial runtime qualification."
+  },
+  "pointBasis": "Immutable WUP queue point retained exactly in latitude/longitude order; no coordinate adjustment was made.",
+  "scopeLimits": [
+    "The provincial service is evidenced as a cadastral source, but citywide completeness and the equivalence of all listed parcel layers to the city boundary were not independently established.",
+    "The bounded query returned 60 intersecting features in one layer; only three were retained as the allowed sample maximum.",
+    "The public metadata warns that IDEJUY cartography is orientative and not approving plan information; authoritative approvals require the agency's plans section.",
+    "No owner, address, contact, titleholder, personal, tax, account, valuation, assessment, or legal/title fields were requested or retained.",
+    "The WUP point was used only as the immutable query anchor; no exact-point hit or miss was used to infer citywide presence or absence."
+  ]
+}

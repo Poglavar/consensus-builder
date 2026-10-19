@@ -1,0 +1,96 @@
+{
+  "cityRecord": "city-10686-huanggang.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10686,
+  "queueRank": 3234,
+  "city": "Huanggang",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [30.468249779875, 114.88203261645],
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "First-party evidence establishes Huanggang local real-estate registration custody and a public-facing cadastral-map visualization service, but no safe anonymous parcel ID plus full polygon response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Huanggang China official cadastral map parcel GIS land registry",
+      "outcome": "Official Hubei Natural Resources reporting identified the Huanggang Real Estate Registration Center and online cadastral-map visualization; no public parcel-vector endpoint was found.",
+      "resultUrls": ["https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202508/t20250827_5756703.shtml"]
+    },
+    {
+      "language": "Chinese (local/native)",
+      "query": "黄冈 不动产登记 地籍图 宗地 查询 官方",
+      "outcome": "Official Hubei reporting states that 鄂汇办 supports Huanggang cadastral-map visualization queries and that Huanggang Tong provides city/county registration services; no safe anonymous parcel geometry was found.",
+      "resultUrls": ["https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202508/t20250827_5756703.shtml", "https://gtj.hg.gov.cn/"]
+    }
+  ],
+  "attempts": [
+    {
+      "method": "GET",
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202508/t20250827_5756703.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Hubei Natural Resources page retrieved. It identifies the Huanggang Real Estate Registration Center, Huanggang Tong city/county services, and cadastral-map visualization through 鄂汇办. This is local custodian/service evidence, not a parcel geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://gtj.hg.gov.cn/",
+      "httpStatus": null,
+      "outcome": "TLS-verified anonymous GET timed out after 12 seconds. No retry with certificate bypass, login, credentials, CAPTCHA, or private token was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://zwfw.hubei.gov.cn/",
+      "httpStatus": null,
+      "outcome": "TLS-verified anonymous GET timed out after 12 seconds. No public parcel endpoint or current JavaScript/configuration could be inspected from this route."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.hubei.gov.cn/",
+      "httpStatus": 412,
+      "outcome": "Anonymous request returned HTTP 412; no parcel service content was used as evidence."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "parcelApi": null,
+    "geometryCrs": "Unverified; no parcel geometry response obtained.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source service URL", "source CRS and coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "localCustodianAssessment": "registryFound=true is supported by first-party evidence of the Huanggang Real Estate Registration Center and Huanggang city/county registration service. The described cadastral-map visualization is a user service, but its current anonymous parcel-vector route was not reached.",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not run against a verified parcel endpoint; the exact WUP point remains unchanged and no absence inference is made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Huanggang city/county real-estate registration services and cadastral-map visualization.",
+    "verifiedOpenScope": "Local custodian and service capability described by official reporting; anonymous parcel geometry, schema, CRS, coverage, and update cadence remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No safe anonymous parcel geometry and native identity were verified; independent serial review is required before any adapter/runtime consideration."
+  },
+  "scopeLimits": [
+    "Exact WUP point [30.468249779875, 114.88203261645] was preserved in latitude/longitude order; no coordinate shift was made.",
+    "No exact-point parcel hit or miss was obtained and none is used as a citywide absence claim.",
+    "HTTP timeout/412 outcomes are access and discovery limitations, not evidence of citywide cadastral absence.",
+    "No raw source-specific attribute set or unsafe personal/property-rights data was retained.",
+    "No GeoJSON sample is retained because no safe full parcel polygon and native identity were obtained.",
+    "This packet records research completion only and is not source integration or registry admission."
+  ],
+  "uncertainty": "A public visualization service is evidenced in official reporting, but current viewer configuration, parcel API route, safe field schema, CRS, anonymous reachability, coverage, licensing, and update cadence remain unresolved."
+}

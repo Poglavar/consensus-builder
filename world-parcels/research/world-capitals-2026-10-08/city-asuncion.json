@@ -1,0 +1,209 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:PY:asuncion",
+  "name": "Asuncion",
+  "country": "Paraguay",
+  "countryCode": "PY",
+  "centerLatLon": [
+    -25.266666666666666,
+    -57.666667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Asuncion Paraguay municipal catastro parcel GIS map official Municipalidad de Asuncion",
+      "language": "English/Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/31",
+        "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion/attachment/mapa_catastral_vigente"
+      ]
+    },
+    {
+      "query": "Asunción Paraguay municipalidad catastro parcelas mapa predial oficial GIS servicio de mapas",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion",
+        "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+        "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/31",
+      "observation": "Official municipality layer metadata identifies the Lotes layer."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion/attachment/mapa_catastral_vigente",
+      "observation": "Municipal page hosts its current cadastral map."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer",
+      "observation": "Official municipal ArcGIS map service metadata credits the Municipalidad de Asunción GIS/catastro service."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+      "observation": "Official layer Datos Catastrales is esriGeometryPolygon in EPSG:32721; because the schema exposes other cadastral/account fields, any sample must select only objectid_1 and geometry."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion",
+      "observation": "Municipal download page publishes a Mapa Catastral link."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/31",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:53Z",
+      "outcome": "Official municipal ArcGIS layer metadata identifies Lotes; metadata lists no usable geometry type."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/31/query",
+      "method": "GET",
+      "params": {
+        "where": "1=1",
+        "geometry": "-57.636,-25.301,-57.634,-25.299",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "objectid_1",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 3
+      },
+      "httpStatus": 400,
+      "checkedAt": "2026-10-08T17:53Z",
+      "outcome": "Server replied that geojson output format is unsupported."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/31/query",
+      "method": "GET",
+      "params": {
+        "where": "1=1",
+        "geometry": "-57.636,-25.301,-57.634,-25.299",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "objectid_1",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "json",
+        "resultRecordCount": 3
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:53Z",
+      "outcome": "Bounded query returned three attributes/IDs but no geometry despite returnGeometry=true."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/31/query",
+      "method": "GET",
+      "params": {
+        "objectIds": "22962",
+        "outFields": "objectid_1",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "pjson"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:53Z",
+      "outcome": "Single object query returned attributes only; no geometry."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official municipal metadata opened; layer 32 is Datos Catastrales with polygon geometry and EPSG:32721."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official municipal page opened and lists Mapa Catastral download."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32/query",
+      "method": "GET",
+      "params": {
+        "geometry": "-57.636,-25.301,-57.634,-25.299",
+        "inSR": 4326,
+        "outFields": "objectid_1",
+        "returnGeometry": true,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": 400,
+      "checkedAt": "2026-10-08",
+      "outcome": "Bounded query with f=geojson returned HTTP 400: server said output format unsupported."
+    },
+    {
+      "url": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32/query",
+      "method": "GET",
+      "params": {
+        "geometry": "-57.636,-25.301,-57.634,-25.299",
+        "inSR": 4326,
+        "outFields": "objectid_1",
+        "returnGeometry": true,
+        "resultRecordCount": 3,
+        "f": "json"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "outcome": "Retry in supported ArcGIS JSON returned HTTP 200 with application error 500: Unable to perform query; no features/geometry obtained."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Official municipal services expose a Datos Catastrales polygon layer and a downloadable city cadastral map. Bounded public queries did not return geometry.",
+    "urls": [
+      "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+      "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Municipalidad de Asunción municipal cadastral polygon layer",
+    "operator": "Municipalidad de Asunción",
+    "scope": "Layer 32 Datos Catastrales; polygon metadata verified, but bounded feature geometry not yet retrieved.",
+    "endpoint": "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+    "protocol": "ArcGIS MapServer",
+    "featureType": "MapServer layer 32",
+    "geometryField": "shape",
+    "sourceIdField": "objectid_1",
+    "requestProperties": [
+      "objectid_1",
+      "shape"
+    ],
+    "responseFormat": "ArcGIS JSON",
+    "crs": "EPSG:4326"
+  },
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "Official municipal services expose a Datos Catastrales polygon layer and a downloadable city cadastral map. Bounded public queries did not return geometry."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "Official municipal services expose a Datos Catastrales polygon layer and a downloadable city cadastral map. Bounded public queries did not return geometry.",
+  "registryEvidenceUrls": [
+    "https://www.asuncion.gov.py/arcgis/rest/services/Mapa_Web/Mapa_General/MapServer/32",
+    "https://www.asuncion.gov.py/mapa-descargable-de-la-ciudad-de-asuncion"
+  ],
+  "sourceIds": []
+}

@@ -1,0 +1,123 @@
+{
+  "cityCode": 10597,
+  "queueRank": 2134,
+  "name": "Dalla",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [24.4580167199722, 83.0074737035664],
+  "population2025": 272778,
+  "population2025k": 272.778,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dalla Uttar Pradesh official cadastral parcel map land records GIS",
+        "result": "First-party discovery identified the official Uttar Pradesh BhuLekh portal, the Government of India Department of Land Resources land-record directory, and the National Government Services Portal description of online Uttar Pradesh land records. The sources establish land-record/map procedures and official custodianship, but no anonymous Dalla parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/",
+          "https://dolr.gov.in/en/citizen-centric-services/",
+          "https://services.india.gov.in/service/detail/check-online-land-records-madhya-pradesh"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "डल्ला उत्तर प्रदेश भू नक्शा भूलेख सरकारी",
+        "result": "Hindi-language discovery identified the official Uttar Pradesh BhuLekh portal and its public land-record/map description. The result establishes an official state procedure, not a retrievable anonymous parcel identity or geometry for Dalla.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/",
+          "https://dolr.gov.in/en/citizen-centric-services/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "Official Uttar Pradesh Revenue Council BhuLekh portal loaded anonymously. The page describes statewide land records and links plot/gata-related land-record services. The current JavaScript identifies public API bases https://upbhulekh.gov.in/PublicBhuApi/api and https://upbhulekh.gov.in/PublicBhuApi/bhunaksha. No login, credentials, captcha bypass, or unsafe land fields were used."
+    },
+    {
+      "url": "https://dolr.gov.in/en/citizen-centric-services/",
+      "observation": "Official Department of Land Resources page lists state/UT land-record services and explains Records of Rights, cadastral maps, spatial data, and ULPIN as separate concepts. It is national directory/procedure context, not Dalla-specific parcel coverage."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/check-online-land-records-madhya-pradesh",
+      "observation": "Search discovery returned the government-services catalogue entry describing district/subdivision/tehsil/village land-record selection. The result is a government catalogue lead and was not used as evidence that Dalla has a parcel response."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "An official Uttar Pradesh statewide land-record portal was evidenced, but a Dalla-local registry/map custodian, administrative path, or city-specific parcel layer was not independently verified in this bounded attempt; registryFound therefore remains null.",
+  "sourceCandidate": "in-uttar-pradesh-bhulekh-dalla",
+  "service": "Uttar Pradesh BhuLekh / BhuNaksha public land-record services",
+  "serviceUrl": "https://upbhulekh.gov.in/",
+  "requests": [
+    {
+      "url": "https://webgis2.mpbhulekh.gov.in/",
+      "method": "GET",
+      "outcome": "Anonymous request timed out after 20 seconds. No response body, schema, CRS, or parcel geometry retained. This Madhya Pradesh portal was not treated as applicable city evidence."
+    },
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "method": "GET",
+      "outcome": "Anonymous request timed out after 20 seconds. No response body, schema, CRS, or parcel geometry retained. This Madhya Pradesh portal was not treated as applicable city evidence."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Portal loaded. Current HTML and main JavaScript were inspected; the JavaScript exposed the public API base and a separate BhuNaksha base. No authenticated route or unsafe field was requested."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/main.28b4c6cc26e3c370.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current application JavaScript downloaded and inspected for API/configuration strings. It exposed https://upbhulekh.gov.in/PublicBhuApi/api and https://upbhulekh.gov.in/PublicBhuApi/bhunaksha. No credentials or private token was extracted or used."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/PublicBhuApi/api/districts_list",
+      "method": "GET",
+      "httpStatus": 500,
+      "outcome": "Returned JSON error {\"error\":\"Unexpected error\",\"details\":\"No static resource api/districts_list.\"}. This guessed route was not treated as the portal's actual request contract."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/PublicBhuApi/api/tehsils_list",
+      "method": "GET",
+      "httpStatus": 500,
+      "outcome": "Returned JSON error {\"error\":\"Unexpected error\",\"details\":\"No static resource api/tehsils_list.\"}. This guessed route was not treated as the portal's actual request contract."
+    }
+  ],
+  "query": {
+    "pointLatLon": [24.4580167199722, 83.0074737035664],
+    "exactPointChecked": false,
+    "result": {
+      "featureCount": 0,
+      "nativeIds": [],
+      "reason": "No public parcel API/layer response was reached; no exact-point absence inference is made."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if publicly exposed", "full parcel polygon geometry if publicly exposed", "geometry CRS/service metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh official BhuLekh statewide land-record/map service and national land-record directory context.",
+    "cityCoverage": "Not verified; no Dalla-specific public parcel layer or bounded parcel response was obtained.",
+    "exactPointChecked": false
+  },
+  "scopeLimits": [
+    "Exact WUP point [24.4580167199722, 83.0074737035664] was preserved and not shifted to force a hit.",
+    "A timeout, guessed-route error, or unusable API path is not evidence of citywide absence.",
+    "No owner, address, contact, titleholder, tax, account, khasra/gata detail, or other unsafe fields were requested, logged, or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity and full geometry response was verified.",
+    "Packet completion is not source integration or runtime admission."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official Uttar Pradesh portal and public API configuration were evidenced, but the actual anonymous request contract, Dalla administrative selection, schema/CRS, citywide completeness, and parcel identity semantics remain unverified."
+}

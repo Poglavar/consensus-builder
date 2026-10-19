@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-shantou-chenghai-registration",
+  "wupCityCode": 11902,
+  "rank": 596,
+  "purpose": "City-specific registry/map source review and safe route inspection for ranked WUP settlement point.",
+  "primaryPublisher": "Shantou Municipal Natural Resources Bureau; Chenghai District Real Estate Registration and Transaction Center",
+  "sourceUrl": "https://www.shantou.gov.cn/stszrzyj/zljs/yhyshj/bszn/content/post_2342822.html",
+  "registryFound": true,
+  "registryBasis": "The official Shantou Municipal Natural Resources Bureau service guide explicitly lists the Chenghai District Real Estate Registration and Transaction Center and its Chenghai service locations. This verifies a city/district-specific registry institution, not a public parcel-vector endpoint.",
+  "officialSources": [
+    {
+      "url": "https://www.shantou.gov.cn/stszrzyj/zljs/yhyshj/bszn/content/post_2342822.html",
+      "observation": "Official Shantou Natural Resources Bureau guide identifies Chenghai District Real Estate Registration and Transaction Center and its local service points."
+    },
+    {
+      "url": "https://www.shantou.gov.cn/stszrzyj/",
+      "observation": "Official Shantou Municipal Natural Resources Bureau portal; no city-facing public cadastral vector service found."
+    },
+    {
+      "url": "https://www.shantou.gov.cn/cnst/ztzl/sthqbmzczt/chqrmzfmhwz/index.html",
+      "observation": "Official Shantou portal provides a Chenghai District Government portal section; it is administrative context, not cadastral geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Chenghai Shantou China official real estate registration cadastral map GIS parcel",
+      "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+      "result": "The official Shantou Municipal Natural Resources Bureau service guide explicitly lists the Chenghai District Real Estate Registration and Transaction Center and its Chenghai service locations. This verifies a city/district-specific registry institution, not a public parcel-vector endpoint. Reviewed the official Chinese service guide and district/city map-service discovery. The guide is a counter-service directory; no parcel or registration lookup. No anonymous geometry schema or public vector service was identified. No authentication or owner/address workflow entered."
+    },
+    {
+      "language": "Chinese",
+      "query": "澄海区 不动产登记交易中心 地籍图 GIS 官方 汕头市自然资源局",
+      "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+      "result": "The official Shantou Municipal Natural Resources Bureau service guide explicitly lists the Chenghai District Real Estate Registration and Transaction Center and its Chenghai service locations. This verifies a city/district-specific registry institution, not a public parcel-vector endpoint. Reviewed the official Chinese service guide and district/city map-service discovery. The guide is a counter-service directory; no parcel or registration lookup. No anonymous geometry schema or public vector service was identified. No authentication or owner/address workflow entered."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://www.shantou.gov.cn/stszrzyj/zljs/yhyshj/bszn/content/post_2342822.html",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 39034,
+      "observation": "Read public registration-service guide; no form or lookup."
+    }
+  ],
+  "routeInspectionSummary": "Reviewed the official Chinese service guide and district/city map-service discovery. The guide is a counter-service directory; no parcel or registration lookup. No anonymous geometry schema or public vector service was identified. No authentication or owner/address workflow entered.",
+  "geometrySampleCount": 0,
+  "geometryRetained": false,
+  "nativeIdField": null,
+  "attributesRequested": [],
+  "attributesRetained": [],
+  "runtimeEnabled": false,
+  "rootQualificationStatus": "pending_root_review",
+  "registryEvidenceUrls": []
+}

@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_geometry_and_point_contract_review",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not a municipal boundary or official parcel identity. A single point hit or an unsuccessful point-centered geometry request cannot establish citywide coverage. No personal owner, address, tax, account, or applicant data was requested or retained; no authentication, CAPTCHA, credentials, or token was used.",
+  "wupCityCode": 5107,
+  "queueRank": 542,
+  "name": "Konya",
+  "centerLatLon": [
+    37.864475900001,
+    32.4868496516476
+  ],
+  "population2025": 959484,
+  "population2025k": 959.484,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official TKGM Konya regional directory lists Konya Kadastro Müdürlüğü and central Meram Tapu Müdürlüğü. TKGM documents a public parcel/coordinate viewer and states that owner name or Turkish ID cannot be used for public queries. An anonymous exact WUP-point request returned a valid closed Polygon identified administratively as Konya / Meram / Öğretmenevleri; only geometry and a synthetic ID from public parcel keys were retained.",
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/konya-bm/bagli-mudurlukler",
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+  ],
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "technicalBlocker": "Two bounded production-adapter checks obtained seven distinct public parcel IDs and re-read their full geometries, but nearby point requests repeatedly failed without an HTTP response and a valid-format absence response remained unverified. Independent GEOS audits reproduce invalid geometry in TR-TKGM-128083-812-81 in both source WGS84 and metric coordinates. Konya remains held without repairing or excluding that parcel. Point/exact lookup is a supported source mode; its lack of area enumeration is a scope limit, not the reason for this hold.",
+  "remainingUncertainty": "Area coverage, update vintage, reuse terms for automated access, and polygon integrity outside the one sampled point. No citywide or arbitrary-area enumeration is verified.",
+  "nextStep": "Review the original invalid source parcel and reliable public point/exact absence responses before enabling Konya.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Konya Türkiye official parcel cadastral map public TKGM Konya Cadastre Directorate",
+        "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+        "result": "Official TKGM pages identify the Konya cadastral office and public point/coordinate lookup; the geometry endpoint returned one Polygon at the WUP point.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/konya-bm/bagli-mudurlukler",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+        ],
+        "executionMethod": "Web search followed by primary-page or public metadata inspection."
+      },
+      {
+        "language": "Turkish",
+        "query": "Konya resmi parsel sorgu kadastro harita Konya Kadastro Müdürlüğü tapu",
+        "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+        "result": "Official TKGM local directory and public viewer documentation support city-local registry basis. Exact-point geometry returned one closed Polygon; no owner/name/ID query was made.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/konya-bm/bagli-mudurlukler",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+        ],
+        "executionMethod": "Web search followed by primary-page or public metadata inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tkgm.gov.tr/konya-bm/bagli-mudurlukler",
+        "method": "official-source inspection",
+        "observation": "Official TKGM Konya Regional Directorate directory lists Konya Cadastre Directorate and central Meram Tapu Directorate."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "method": "GET",
+        "observation": "Official TKGM page describes public parcel, area and coordinate lookup and states owner name/T.C. identity cannot be used as query keys.",
+        "status": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4868496516476",
+        "method": "GET",
+        "observation": "Exact anonymous point request using only the ranked WUP coordinate returned a GeoJSON Feature with one Polygon and safe parcel identifiers; source locality was Konya / Meram / Öğretmenevleri. No other response attributes retained.",
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "bytes": 707
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4868496516476",
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "bytes": 707,
+        "observation": "Anonymous exact WUP-point request returned Feature/Polygon. Response keys were inspected; owner, account or address fields were not present. Only geometry and a synthetic source ID built from public locality/block/parcel keys were retained."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "The official TKGM Konya regional directory lists Konya Kadastro Müdürlüğü and central Meram Tapu Müdürlüğü. TKGM documents a public parcel/coordinate viewer and states that owner name or Turkish ID cannot be used for public queries. An anonymous exact WUP-point request returned a valid closed Polygon identified administratively as Konya / Meram / Öğretmenevleri; only geometry and a synthetic ID from public parcel keys were retained.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": true
+    }
+  },
+  "cityId": "wup2025:5107",
+  "point": [
+    37.864475900001,
+    32.4868496516476
+  ],
+  "sourceIds": [
+    "tr-tkgm-parselsorgu-api"
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "tr-tkgm-parselsorgu-api",
+    "requestUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4868496516476",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      32.486848651647605,
+      37.864474900001,
+      32.4868506516476,
+      37.864476900000994
+    ],
+    "parcelRecordCount": 1,
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "synthetic TR-TKGM-<mahalleId>-<adaNo>-<parselNo>; other response properties discarded",
+    "responseFile": "konya-point-sample.geojson",
+    "pagination": "none; existing TKGM adapter/API supports point lookup only, not bbox/area enumeration"
+  },
+  "registryEvidence": {
+    "registryFound": true,
+    "registryBasis": "The official TKGM Konya regional directory lists Konya Kadastro Müdürlüğü and central Meram Tapu Müdürlüğü. TKGM documents a public parcel/coordinate viewer and states that owner name or Turkish ID cannot be used for public queries. An anonymous exact WUP-point request returned a valid closed Polygon identified administratively as Konya / Meram / Öğretmenevleri; only geometry and a synthetic ID from public parcel keys were retained.",
+    "officialSourceUrls": [
+      "https://www.tkgm.gov.tr/konya-bm/bagli-mudurlukler",
+      "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+    ]
+  },
+  "source": {
+    "sourceId": "tr-tkgm-parselsorgu-api",
+    "name": "TKGM public Konya parcel point lookup",
+    "operator": "General Directorate of Land Registry and Cadastre (TKGM)",
+    "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+    "responseFormat": "Full WGS84 Polygon via clicked point or native cadastral identity",
+    "nativeIdFields": [
+      "mahalleId",
+      "adaNo",
+      "parselNo"
+    ],
+    "scope": "Two bounded production-adapter checks obtained seven distinct public parcel IDs and re-read their full geometries, but nearby point requests repeatedly failed without an HTTP response and a valid-format absence response remained unverified. Independent GEOS audits reproduce invalid geometry in TR-TKGM-128083-812-81 in both source WGS84 and metric coordinates. Konya remains held without repairing or excluding that parcel. Point/exact lookup is a supported source mode; its lack of area enumeration is a scope limit, not the reason for this hold."
+  },
+  "runtimeAssessment": {
+    "status": "held_geometry_and_point_contract_review",
+    "reason": "Two bounded production-adapter checks obtained seven distinct public parcel IDs and re-read their full geometries, but nearby point requests repeatedly failed without an HTTP response and a valid-format absence response remained unverified. Independent GEOS audits reproduce invalid geometry in TR-TKGM-128083-812-81 in both source WGS84 and metric coordinates. Konya remains held without repairing or excluding that parcel. Point/exact lookup is a supported source mode; its lack of area enumeration is a scope limit, not the reason for this hold.",
+    "initialAcceptanceFile": "research/overnight-cities-2026-10-08/konya-root-point-acceptance.json",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/konya-root-point-followthrough-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/konya-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T01:29:32.105621+00:00"
+}

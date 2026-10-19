@@ -9,8 +9,11 @@
         return;
     }
 
-    const DEFAULT_TITLE = 'Consensus Builder';
-    const DEFAULT_DESCRIPTION = 'Help communities reach consensus on future land development.';
+    // The product is Consensus Builder (docs/design-language.md); Urban Game Theory is the organisation.
+    // Resetting restores the page's own <title> instead of overwriting it with a hardcoded one.
+    const SITE_NAME = 'Consensus Builder';
+    const DEFAULT_TITLE = document.title || SITE_NAME;
+    const DEFAULT_DESCRIPTION = 'A market for real-world land change: humans and agents propose, fund and forecast changes to real parcels, while public records resolve what actually happened.';
     const DEFAULT_IMAGE = '/images/consensus-builder-logo-2.png';
 
     /**
@@ -79,6 +82,12 @@
             return `${aggregator}/v1/blobs/${blobId}`;
         }
 
+        // Files the API stores are served by the BACKEND, whose origin differs from the page's on
+        // prod (api.urbangametheory.xyz vs urbangametheory.xyz) and on a dev machine (4582 vs 5582).
+        if (/^\/(?:uploads|images)\//.test(imageUrl) && typeof globalScope.resolveBackendAssetUrl === 'function') {
+            return globalScope.resolveBackendAssetUrl(imageUrl);
+        }
+
         // Relative URL - make absolute
         const baseUrl = getFrontendBaseUrl();
         const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
@@ -135,7 +144,7 @@
         }
 
         // Update page title
-        document.title = `${title} - ${DEFAULT_TITLE}`;
+        document.title = `${title} · ${SITE_NAME}`;
 
         // Open Graph tags
         getOrCreateMetaTag('og:title', title);
@@ -143,7 +152,7 @@
         getOrCreateMetaTag('og:image', imageUrl);
         getOrCreateMetaTag('og:url', currentUrl);
         getOrCreateMetaTag('og:type', 'website');
-        getOrCreateMetaTag('og:site_name', DEFAULT_TITLE);
+        getOrCreateMetaTag('og:site_name', SITE_NAME);
 
         // Twitter Card tags
         getOrCreateMetaTag('twitter:card', 'summary_large_image');
@@ -170,7 +179,7 @@
         getOrCreateMetaTag('og:image', imageUrl);
         getOrCreateMetaTag('og:url', currentUrl);
         getOrCreateMetaTag('og:type', 'website');
-        getOrCreateMetaTag('og:site_name', DEFAULT_TITLE);
+        getOrCreateMetaTag('og:site_name', SITE_NAME);
 
         getOrCreateMetaTag('twitter:card', 'summary_large_image');
         getOrCreateMetaTag('twitter:title', DEFAULT_TITLE);
@@ -198,4 +207,3 @@
     globalScope.updateProposalOGMetadata = updateProposalOGMetadata;
     globalScope.resetOGMetadata = resetOGMetadata;
 })();
-

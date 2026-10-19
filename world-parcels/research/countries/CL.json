@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CL",
+ "country": "Chile",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_viewer_only",
+ "cadastreAuthority": "Servicio de Impuestos Internos (SII) - Catastro de Bienes Raíces / Mapas SII; MINVU and IDE Chile as secondary",
+ "portalsFound": [
+  {
+   "url": "https://www4.sii.cl/mapasui/internet/",
+   "observation": "Mapas SII viewer loads (HTTP 200, AngularJS app); fiscal parcel (predio) map; earlier evidence says WMS images only, no vector download."
+  },
+  {
+   "url": "https://geoide.minvu.cl/server/rest/services/Catastros?f=json",
+   "observation": "MINVU ArcGIS Server lists catastros (social housing, parks); no predios layer."
+  },
+  {
+   "url": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0",
+   "observation": "OCUC (Universidad Católica) republication of MINVU predios for Santiago metro; open ArcGIS but non-official, doubtful attributes, licence unclear."
+  },
+  {
+   "url": "https://www.ide.cl/",
+   "observation": "IDE Chile portal loads; no parcel WFS found."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www4.sii.cl/mapasui/internet/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer HTML only"
+  },
+  {
+   "url": "https://geoide.minvu.cl/server/rest/services/Catastros?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service list, no predios"
+  },
+  {
+   "url": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0/query (Puerto Montt bbox, resultRecordCount=3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "empty: layer covers Santiago metro only"
+  },
+  {
+   "url": "https://www.ide.cl/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "SII fiscal cadastre national; only a Santiago metro derivative served as open polygons (see research/santiago.json)",
+  "regionsVerified": [
+   "Santiago metropolitan area (unofficial republication, partial)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "viewer-only",
+ "remainingUncertainty": "No official SII vector service verified; the open Santiago layer is a third-party republication.",
+ "nextStep": "Look for SII WMS/WFS endpoints behind Mapas SII; check IDE Chile catalogue for MINVU/SII predios."
+}

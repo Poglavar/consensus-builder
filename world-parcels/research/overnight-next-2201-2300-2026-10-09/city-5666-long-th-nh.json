@@ -1,0 +1,41 @@
+{
+  "cityCode": 5666,
+  "queueRank": 2244,
+  "name": "Long Thành",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "point": [10.7575478007597, 106.937935472823],
+  "population2025": 260047,
+  "population2025k": 260.047,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Long Thanh Vietnam official cadastral map parcel viewer Đồng Nai land registration map API",
+        "result": "Official discovery identified the Đồng Nai provincial portal, the Long Thành local government portal, and the Đồng Nai land-data thematic-map portal. Official pages evidence cadastral-map and land-registration work, but no safe anonymous parcel ID-plus-geometry response or public parcel API was exposed.",
+        "actualResultUrls": [
+          "https://dongnai.gov.vn/",
+          "https://longthanh.dongnai.gov.vn/",
+          "https://ungdung.stnmt.dongnai.gov.vn/dulieumo/BanDoChuyenDe?categoryId=33",
+          "https://dongnai.gov.vn/vi/news/tai-nguyen-moi-truong/quyet-dinh-ve-viec-giao-cho-trung-tam-phat-trien-quy-dat-huyen-long-thanh-quan-ly-khu-dat-thuoc-thua-dat-so-119-va-442-to-ban-do-dia-chinh-so-29-thi-tran-long-thanh-huyen-long-thanh-tinh-dong-nai-47527.html"
+        ]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "bản đồ địa chính thửa đất chính thức Long Thành Đồng Nai Văn phòng đăng ký đất đai bản đồ trực tuyến",
+        "result": "Vietnamese-language official discovery found the Long Thành government portal and Đồng Nai government notices naming the Văn phòng Đăng ký đất đai tỉnh Đồng Nai - Chi nhánh Long Thành and describing cadastral-map sheets and parcels. The public routes did not expose a safe anonymous parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://longthanh.dongnai.gov.vn/pages/newsdetail.aspx?CatId=112&NewsId=2858",
+          "https://longthanh.dongnai.gov.vn/vi/news/thong-bao/thong-bao-thu-hoi-dat-thong-bao-kiem-dem-thuc-dia-ve-dat-dai-nha-cua-va-tai-san-khac-gan-lien-voi-dat-thu-hoi-cua-du-an-du-an-mo-rong-doan-cao-toc-thanh-pho-ho-chi-minh-long-thanh-doan-qua-xa-long-thanh-tinh-dong-nai-266.html?download=1&id=0",
+          "https://dongnai.gov.vn/vi/news/tai-nguyen-moi-truong/quyet-dinh-ve-viec-giao-cho-trung-tam-phat-trien-quy-dat-huyen-long-thanh-quan-ly-khu-dat-thuoc-thua-dat-so-119-va-442-to-ban-do-dia-chinh-so-29-thi-tran-long-thanh-huyen-long-thanh-tinh-dong-nai-47527.html",
+          "https://ungdung.stnmt.dongnai.gov.vn/dulieumo/BanDoChuyenDe?categoryId=33"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Official local and provincial custodians are evidenced, but no public anonymous parcel service was qualified and no parcel sample is retained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

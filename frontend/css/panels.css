@@ -2,17 +2,127 @@
 
 /* Shared style for all info panels */
 .info-panel {
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* A little of the map shows through every panel (user rule 2026-10-17). */
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: var(--cb-text);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-sm);
     padding: 15px;
     display: none;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: var(--cb-z-map-chrome);
 }
 
 .info-panel.visible {
     display: block;
+}
+
+/* ========== Right dock ==========
+   THE single source of truth for every panel that docks to the right edge of the map: the parcel
+   info panel (and the proposal buttons inside it), the proposal details panel, the road/track info
+   panel, and the road-impact dialog. They used to carry four different widths (300 / 400 / fit-content
+   400-560 / 480), so the right-hand column read as a ragged stack. Give a panel `.right-dock-panel`
+   and it inherits the width — never re-declare a width on the panel itself.
+
+   On phones the same class becomes a bottom sheet. It opens tall enough to make the parcel build
+   palette useful, stays above the Game bar, and can be resized from its handle. */
+:root {
+    --right-dock-width: 400px;
+    --right-dock-gap: 10px;
+    /* Where the dock's panels end. On a map wide enough for the bottom pills to sit clear of the
+       column (pills recentre in the map left of it, css/map-shell.css) the panels run down to the
+       screen's bottom-right corner; on a narrower one they stop above the pills. */
+    --right-dock-bottom: var(--map-shell-bottom-clearance);
+}
+
+@media (min-width: 900px) {
+    :root {
+        --right-dock-bottom: var(--right-dock-gap);
+    }
+}
+
+.right-dock-panel {
+    width: var(--right-dock-width);
+    max-width: calc(100vw - 2 * var(--right-dock-gap));
+    box-sizing: border-box;
+}
+
+/* The sheet's drag handle (js/mobile-dock-sheet.js) is a phone control; on desktop the dock has a
+   fixed height and the bare button showed as a blank strip above the panel. */
+.mobile-dock-sheet-handle {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    /* Width comes from the insets (see the .info-panel bottom-sheet rule in utilities.css): the
+       sheet runs from the mode-button strip on the left to the right edge. */
+    :root {
+        --right-dock-width: auto;
+        --right-dock-gap: 0px;
+    }
+
+    .info-panel.right-dock-panel:not(#proposal-details-panel):not(.is-minimized) {
+        /* The default leaves the search/mode controls visible on a short phone while giving the
+           build palette enough vertical room to use without immediately scrolling. JS can replace
+           the height with a clamped pixel value while the handle is dragged. */
+        --mobile-dock-sheet-height: 66dvh;
+        height: min(var(--mobile-dock-sheet-height), calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
+    }
+
+    /* The desktop parcel panel has an ID-level 50vh declaration. Keep the shared sheet height
+       authoritative after the phone breakpoint switches it into the common dock. */
+    #parcel-info-panel.right-dock-panel:not(.is-minimized) {
+        height: min(var(--mobile-dock-sheet-height), calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
+    }
+
+    .mobile-dock-sheet-handle {
+        display: block;
+        flex: 0 0 24px;
+        width: 100%;
+        margin: 0;
+        padding: 7px 0 5px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        cursor: ns-resize;
+        touch-action: none;
+    }
+
+    .mobile-dock-sheet-handle::after {
+        display: block;
+        width: 36px;
+        height: 4px;
+        margin: 0 auto;
+        border-radius: 999px;
+        background: var(--cb-text-faint);
+        content: '';
+    }
+
+    .mobile-dock-sheet-handle:focus-visible {
+        outline: 2px solid var(--cb-focus);
+        outline-offset: -3px;
+    }
+
+    .info-panel.right-dock-panel.is-minimized .mobile-dock-sheet-handle {
+        display: none;
+    }
+}
+
+/* An editing mode owns the map (see map-edit-lock.js). The panels that select things on it stand
+   down for the duration — a left-over card behind the editor invited clicks that either did
+   nothing or, worse, changed the selection out from under the open editor. The editor's own panel
+   and the map controls stay live. */
+body.map-edit-locked #proposal-details-panel,
+body.map-edit-locked #parcel-info-panel,
+body.map-edit-locked #road-info-panel,
+body.map-edit-locked #drill-stack-panel {
+    pointer-events: none;
+    opacity: 0.45;
+    filter: saturate(0.6);
 }
 
 .close-button {
@@ -23,6 +133,8 @@
 
 #parcel-info-panel .panel-header h3 {
     display: inline-flex;
+    flex: 1 1 0;
+    min-width: 0;
     align-items: center;
     gap: 8px;
     margin: 0;
@@ -31,33 +143,47 @@
 
 #parcel-info-panel .parcel-title-id {
     display: inline-flex;
+    min-width: 0;
     align-items: center;
     gap: 4px;
     font-size: 11px;
-    color: #666;
+    color: var(--cb-text-muted);
+    padding: 3px 6px;
+    border-radius: 5px;
+    cursor: copy;
+    transition: background-color 120ms ease, color 120ms ease;
 }
 
 #parcel-info-panel .parcel-title-id-value {
     font-family: monospace;
 }
 
-/* 
-Parcel info panel should be in the bottom right corner of the map, 
-with a width of 300px, and a height of half of the map height minus 5px.
+#parcel-info-panel .parcel-title-id:hover {
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+}
+
+#parcel-info-panel .parcel-title-id:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: 2px;
+}
+
+/*
+Parcel info panel sits in the bottom right corner of the map, half the map height. Its width comes
+from .right-dock-panel — do not re-declare one here.
 */
 #parcel-info-panel {
     position: absolute;
-    bottom: 10px;
+    bottom: var(--right-dock-bottom);
     right: 10px;
-    width: 300px;
     height: 50vh;
     max-height: 50vh;
     box-sizing: border-box;
     display: none;
     overflow: hidden;
     padding: 0; /* Override .info-panel padding since we use .panel-header and .panel-body */
-    z-index: 1500; /* Lowest z-index for modals - always behind other modals */
-    border-radius: 12px;
+    z-index: var(--cb-z-panel); /* the right dock's rung: over the map chrome, under sheets and dialogs */
+    border-radius: var(--cb-radius-lg);
 }
 
 #parcel-info-panel.visible {
@@ -65,43 +191,226 @@ with a width of 300px, and a height of half of the map height minus 5px.
     flex-direction: column;
 }
 
-/* 
-Road info panel should be in the bottom right corner of the map, 
-with a width of 400px, and a height of half of the map height minus 5px.
+/* Credits occupy the lower left. Right-hand panels end just above the navigation row. */
+
+/* Collapsed to ONE line: the header, which reads "Parcel <number>". The panel is the SECONDARY
+   surface when a proposal selection opened its own parcel underneath the proposal card.
+   `display: none` is set here rather than left to the [hidden] attribute, because .parcel-tabs
+   and .panel-body both declare a display of their own and would win over the UA rule. */
+#parcel-info-panel.is-minimized {
+    height: auto;
+    max-height: none;
+}
+
+#parcel-info-panel.is-minimized .parcel-tabs,
+#parcel-info-panel.is-minimized .panel-body {
+    display: none;
+}
+
+#parcel-info-panel .panel-header #parcel-info-minimize {
+    margin-left: 0;
+}
+
+#parcel-info-panel .panel-header #parcel-info-minimize + .close-button {
+    margin-left: 0;
+}
+
+#parcel-info-panel .panel-header > button {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+}
+
+/*
+Road info panel sits in the bottom right corner of the map. Its width comes from .right-dock-panel,
+shared with every other right-hand panel. It used to size to its own content because pinning a width
+clipped the right-hand values in Croatian/Spanish (labels run ~30-40px longer than English) — that is
+handled properly now by .road-metrics-grid, where the label wraps and the value never shrinks, so a
+fixed width costs a taller row rather than a cut-off number. Its height FITS ITS CONTENT (2026-10-16:
+a fixed 34rem left a blank third under the metrics): anchored to the bottom, a value that wraps its
+label raises the top edge by one line, and the dock's column caps it; what goes past it scrolls. On
+a phone it is the bottom sheet, up to half the screen (the phone block at the end of this file).
 */
 #road-info-panel {
     position: absolute;
-    bottom: 10px;
+    bottom: var(--right-dock-bottom);
     right: 10px;
-    width: 400px;
-    max-height: 400px;
-    overflow-y: auto;
+    height: auto;
+    max-height: calc(100% - var(--map-shell-top-clearance) - var(--right-dock-bottom));
+    /* A column: header, tools, the metrics (which scroll) and the Undo · Finish · Cancel row,
+       which therefore never scrolls out of reach. */
+    overflow: hidden;
     display: none;
     border-radius: 12px;
     box-sizing: border-box;
-    padding: 15px 10px;
+    padding: 12px 10px;
 }
 
 #road-info-panel.visible {
-    display: block;
+    display: flex;
+    flex-direction: column;
+}
+
+#road-info-panel > * {
+    flex-shrink: 0;
+}
+
+#road-info-panel > .road-metrics-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* Undo · Finish · Cancel: the panel's last row, three equal buttons under a rule. */
+#road-info-panel .road-panel-controls {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--cb-line);
+}
+
+#road-info-panel .road-panel-controls[hidden] {
+    display: none;
+}
+
+#road-drawing-controls > .cb-actions {
+    display: flex;
+    gap: 8px;
+}
+
+#road-drawing-controls > .cb-actions > .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
 }
 
 #road-info-panel h3 {
     margin: 0 0 10px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
-    font-size: 16px;
-    color: #333;
+    border-bottom: 1px solid var(--cb-line);
+    font-size: var(--cb-text-lg);
+    color: var(--cb-text);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-right: 30px;
 }
 
+/* Header row: title + the Cross-section button (opens the width/lane editor while drawing) + the
+   minimise/close circles. All three are IN the flex row, so the row sizes around them — no right
+   padding guessing at how much space the circles happen to occupy. */
+#road-info-panel .road-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px 0;
+    padding: 0 0 8px 0;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+#road-info-panel .road-panel-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* .close-button is absolute by default (panels.css:18) — inside this flex row it must not be. */
+#road-info-panel .road-panel-actions .close-button,
+#road-info-panel .road-panel-actions .road-panel-minimize {
+    position: static;
+    top: auto;
+    right: auto;
+}
+
+#road-info-panel .road-panel-header h3 {
+    margin: 0;
+    padding: 0;
+    border-bottom: none;
+}
+
+/* The tools row under the header (Cross-section · width, Import…): two equal buttons sharing one
+   row, the way the metric boxes pair up below them. */
+#road-info-panel .road-panel-tools {
+    margin: 0 0 10px 0;
+    /* Equal heights: a label that wraps to two lines must not leave its neighbour shorter. */
+    align-items: stretch;
+}
+
+#road-info-panel .road-panel-tools .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    /* Icon, label and width wrap as whole words onto a second centred line when the column is
+       too narrow for "Edit cross-section · 7.5 m" on one. */
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    font-size: var(--cb-text-sm);
+}
+
+/* Build palette (js/parcels/ui/proposal-actions.js): everything creatable on the selected
+   parcel(s). The §15a taxonomy as groups, each a cb-kicker over the shared choice tiles
+   (cb-tiles > cb-tile, css/primitives.css): Land readjustment first on its own (the formation
+   primitive), then Urban rules (Block / Row houses / Detached — rules-based), Structures (Freeform,
+   Park, Square, Lake — they take their parcel), Transport and Ownership. Only the spacing lives
+   here; the tiles take their look from primitives.css. */
+.parcel-build-palette {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+    padding-top: var(--cb-space-2);
+}
+
+.parcel-build-palette .cb-kicker {
+    margin-bottom: var(--cb-space-1);
+}
+
+/* Acceptance mini-bar inside a proposal list row: grey track, green proportional fill,
+   the exact count centred over it. */
+.proposal-item-acceptbar {
+    position: relative;
+    flex: 1;
+    min-width: 42px;
+    max-width: 90px;
+    height: 12px;
+    margin-left: auto;
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-surface-3);
+    overflow: hidden;
+}
+
+.proposal-item-acceptbar-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--cb-success);
+    border-radius: var(--cb-radius-pill);
+}
+
+.proposal-item-acceptbar-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--cb-text);
+    text-shadow: var(--cb-text-halo);
+    pointer-events: none;
+}
+
 #road-info-panel .metric-label {
     font-weight: 500;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-bottom: 2px;
+}
+
+/* In the metric boxes the label sits beside its value; the 2px under it made a wrapped label's
+   box 2px taller than the fixed two-line height (css/utilities.css .road-metrics-grid). */
+#road-info-panel .road-metrics-grid .metric-group > .metric-label {
+    margin-bottom: 0;
 }
 
 #road-info-panel .metric-label.has-tooltip {
@@ -119,32 +428,43 @@ with a width of 400px, and a height of half of the map height minus 5px.
 }
 
 .acquiring-difficulty-help-icon {
-    color: #999;
+    color: var(--cb-text-faint);
     cursor: pointer;
     font-size: 14px;
     transition: color 0.2s ease;
 }
 
 .acquiring-difficulty-help-icon:hover {
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 #road-info-panel .metric-value {
-    color: #333;
+    color: var(--cb-text);
 }
 
-#road-info-panel .close-button {
-    position: absolute;
-    top: 8px;
-    right: 8px;
+/* Minimized: a slim strip — header (title + Cross-section + the circles) and the Undo/Finish
+   controls stay, metrics and ownership stats hide, so the map is visible while drawing on small
+   screens. The circles ride along inside the header, so they need no exemption of their own. */
+#road-info-panel.is-minimized {
+    height: auto;
 }
 
-/* Ensure undo/finish buttons split the row evenly on small screens */
-#road-drawing-controls > div > .btn {
-    flex: 1 1 0;
-    margin: 0;
-    min-width: 0; /* allow shrinking in tight containers */
+#road-info-panel.is-minimized > :not(.road-panel-header):not(#road-drawing-controls) {
+    display: none;
 }
+
+#road-info-panel.is-minimized .road-panel-header {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#road-info-panel.is-minimized .road-panel-controls {
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: none;
+}
+
 
 /* Parcel info panel now uses .panel-header structure */
 
@@ -156,80 +476,112 @@ with a width of 400px, and a height of half of the map height minus 5px.
     gap: 8px;
 }
 
-/* Add borders to metric groups in the two-row layout for better visual balance */
-#parcel-info-panel #info-content > div[style*="display: flex"] .metric-group {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 8px;
+/* The Info tab's facts, two to a row, each in a light box. */
+#parcel-info-panel .parcel-metric-row {
+    display: flex;
+    gap: var(--cb-space-2);
+}
+
+#parcel-info-panel .parcel-metric-row .metric-group {
+    flex: 1 1 0;
+    min-width: 0;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    padding: var(--cb-space-2);
     box-sizing: border-box;
+}
+
+/* Desktop: the panel's text is chrome-sized (--cb-text-base), not the page's 16px, and the fact
+   boxes pad one step less (user 2026-10-16: the parcel panel read a size larger than the proposal
+   card above it). Phones keep the inherited touch size. */
+@media (min-width: 768px) {
+    #parcel-info-panel .panel-body {
+        font-size: var(--cb-text-base);
+    }
+
+    #parcel-info-panel .parcel-metric-row .metric-group {
+        padding: 6px var(--cb-space-2);
+    }
+
+    #parcel-info-panel .parcel-tabs .cb-tab {
+        font-size: var(--cb-text-md);
+    }
+
+    /* The road panel's metric boxes at the same chrome size (their two-line height is in em). */
+    #road-info-panel .road-metrics-grid {
+        font-size: var(--cb-text-base);
+    }
 }
 
 #parcel-info-panel .metric-label {
     font-weight: 500;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-bottom: 0;
 }
 
 #parcel-info-panel .metric-value {
-    color: #333;
+    color: var(--cb-text);
     margin-left: 0;
 }
 
-#parcel-info-panel .metric-value .btn {
-    margin: 0;
-    padding: 0 8px;
-    height: 22px;
-    line-height: 22px;
-    font-size: 12px;
-    box-sizing: border-box;
-}
-
-/* Reduce padding when metric-group contains a button */
-#parcel-info-panel .metric-group:has(.btn) {
-    padding: 4px 8px;
-}
-
-/* Parcel Info Panel Tabs */
-.parcel-tabs,
-.block-tabs {
-    display: flex;
-    border-bottom: 1px solid #ccc;
-    margin: 0;
-    background: transparent;
+/* The parcel and block panels' tabs: the shared cb-tabs strip (css/primitives.css), inset like the
+   header above it. Four tabs share the parcel strip (Info · Propose · Proposals · Tools); the
+   text tabs split the room and Tools, an icon, takes only its own width. When the labels do not
+   fit, the strip scrolls sideways. The Proposals tab carries its count as a cb-badge. */
+#parcel-info-panel .parcel-tabs,
+#block-info-panel .block-tabs {
     flex-shrink: 0;
-    padding: 10px 10px 0 10px;
-    gap: 4px;
+    padding: 0 var(--cb-space-2);
 }
 
-.parcel-tab-btn,
-.block-tab-btn {
-    flex: 1;
-    padding: 8px 6px;
-    background: #f0f0f0;
-    border: 1px solid #ccc;
+#parcel-info-panel .parcel-tab-btn--icon {
+    flex: 0 0 auto;
+}
+
+.parcel-tab-count,
+.block-tab-count {
+    margin-left: var(--cb-space-1);
+}
+
+/* The Info tab's collapsed History section (js/proposals/parcel-history-card.js renderSection). */
+#parcel-history-section:not(:empty) {
+    margin-top: 12px;
+}
+
+.parcel-history-section summary .fa-clock-rotate-left {
+    color: var(--cb-text-muted);
+}
+
+/* The Proposals tab with nothing in it yet, and the list for a set of parcels (a multi-selection,
+   a site: js/parcels/parcel-set-proposals.js). */
+.parcel-proposals-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 4px 0;
+    color: var(--cb-text-muted);
+}
+
+.parcel-proposals-empty[hidden] {
+    display: none;
+}
+
+.parcel-proposals-empty p,
+.parcel-set-proposals-empty,
+.parcel-set-proposals-summary {
+    margin: 0 0 8px;
+    color: var(--cb-text-muted);
+    font-size: 13px;
+}
+
+.parcel-set-proposal {
     cursor: pointer;
-    font-size: 14px;
-    color: #666;
-    margin-bottom: -1px;
-    border-radius: 4px 4px 0 0;
-    transition: background-color 0.2s ease;
 }
 
-.parcel-tab-btn:hover,
-.block-tab-btn:hover {
-    background-color: #e0e0e0;
-    color: #333;
-}
-
-.parcel-tab-btn.active,
-.block-tab-btn.active {
-    color: #007bff;
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
-    font-weight: bold;
-    z-index: 1;
-}
-
+/* Tab panels, shown with the hidden attribute: the parcel panel's by switchParcelTab
+   (js/parcels/proposals.js), the site panel's by js/site-drawing.js, the block panel's by
+   switchBlockTab (js/parcel-blocks.js). */
 .parcel-tab-content,
 .block-tab-content {
     display: none;
@@ -239,8 +591,8 @@ with a width of 400px, and a height of half of the map height minus 5px.
     min-height: 0;
 }
 
-.parcel-tab-content.active,
-.block-tab-content.active {
+.parcel-tab-content:not([hidden]),
+.block-tab-content:not([hidden]) {
     display: flex;
 }
 
@@ -310,7 +662,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 .parcel-layer.road {
     fill: rgba(128, 128, 128, 0.2);
-    stroke: #666;
+    stroke: var(--cb-text-muted);
 }
 
 .parcel-layer:hover {
@@ -394,32 +746,20 @@ with a width of 400px, and a height of half of the map height minus 5px.
     stroke-width: 1;
 }
 
-.coordinates {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 1000;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 12px;
-    pointer-events: none;
-}
-
-/* Block info panel */
+/* Block info panel: a fixed height, so switching its tabs (Info / Proposals / Tools) swaps what
+   it shows without the panel growing or shrinking; the body scrolls. */
 #block-info-panel {
     position: absolute;
-    top: 10px;
+    top: var(--map-shell-top-clearance);
     right: 10px;
     width: 320px;
     max-width: calc(100vw - 20px);
-    max-height: calc(60vh);
+    height: min(60vh, calc(100% - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance)));
     display: none;
     padding: 0;
     overflow: hidden;
     box-sizing: border-box;
-    border-radius: 12px;
+    border-radius: var(--cb-radius-lg);
 }
 
 #block-info-panel.visible {
@@ -442,12 +782,12 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 #block-info-panel .metric-label {
     font-weight: 500;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-bottom: 2px;
 }
 
 #block-info-panel .metric-value {
-    color: #333;
+    color: var(--cb-text);
     margin-left: 8px;
 }
 
@@ -468,14 +808,14 @@ with a width of 400px, and a height of half of the map height minus 5px.
 #block-info-panel .block-parcels-list {
     flex: 1;
     overflow-y: auto;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--cb-line);
     padding-top: 10px;
     margin-top: 0;
 }
 
 #block-info-panel .block-parcels-heading {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
     margin-bottom: 8px;
 }
 
@@ -489,25 +829,30 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 #block-info-panel .block-proposals-actions {
     padding: 8px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--cb-line);
     margin-bottom: 4px;
     box-sizing: border-box;
 }
 
-#block-info-panel .block-proposals-actions .btn-proposal {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    box-sizing: border-box;
-}
-
 #block-info-panel .block-proposals-empty {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 14px;
     text-align: center;
     padding: 20px 10px;
+}
+
+/* A block proposal's row: the title keeps the first line; its map action, lifecycle badge and
+   delete wrap under it, to the right, in the narrow panel. */
+#block-info-panel .proposal-list-header {
+    flex-wrap: wrap;
+}
+
+#block-info-panel .proposal-list-header .proposal-list-title {
+    flex: 1 1 200px;
+}
+
+#block-info-panel .proposal-actions {
+    margin-left: auto;
 }
 
 #block-info-panel .block-tools-content {
@@ -516,28 +861,20 @@ with a width of 400px, and a height of half of the map height minus 5px.
     gap: 12px;
 }
 
-#block-info-panel .block-tools-content .parcel-info-buttons {
-    margin-top: 0;
-}
-
 #block-info-panel .tools-hint {
-    font-size: 13px;
-    color: #666;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
-#block-info-panel .block-tools-buttons .parcel-info-btn {
-    margin-left: 0;
-    flex: 1;
-}
-
-#block-info-panel .block-tools-buttons .button-row {
-    justify-content: space-between;
+/* The block's tools share the row (Zoom to block · Show vertices). */
+#block-info-panel .block-tools-buttons > .btn {
+    flex: 1 1 0;
 }
 
 .parcel-item, .proposal-item {
     padding: 8px 12px;
     margin-bottom: 5px;
-    background: #f8f9fa;
+    background: var(--cb-surface-2);
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s;
@@ -549,39 +886,37 @@ with a width of 400px, and a height of half of the map height minus 5px.
 }
 
 .parcel-item:hover, .proposal-item:hover {
-    background: #e9ecef;
-    border-left-color: #007bff;
+    background: var(--cb-surface-3);
+    border-left-color: var(--cb-primary);
     transform: translateX(2px);
 }
 
 .parcel-item.has-proposals {
-    border-left-color: #ffc107;
-    background: #fff8e1;
+    border-left-color: var(--cb-warning);
+    background: var(--cb-warning-soft);
 }
 
 .parcel-item.has-proposals:hover {
-    background: #fff3c4;
-    border-left-color: #ff9800;
+    background: var(--cb-surface-3);
 }
 
 .parcel-proposal-count {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 0.9em;
     font-weight: 500;
 }
 
 .parcel-item.high-proposals {
-    border-left-color: #dc3545;
-    background: #ffebee;
+    border-left-color: var(--cb-danger);
+    background: var(--cb-danger-soft);
 }
 
 .parcel-item.high-proposals:hover {
-    background: #ffcdd2;
-    border-left-color: #c62828;
+    background: var(--cb-surface-3);
 }
 
 .parcel-item.high-proposals .parcel-proposal-count {
-    color: #d32f2f;
+    color: var(--cb-danger);
     font-weight: 600;
 }
 
@@ -609,12 +944,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
     stroke-width: 2;
 }
 
-/* Measurement tool styles */
-#measureButton.active {
-    background-color: #dc3545;
-    border-color: #dc3545;
-}
-
+/* Measurement tool styles (the Measure button itself is a btn toggle: aria-pressed) */
 .measurement-line {
     stroke: #ff3300;
     stroke-width: 2;
@@ -636,41 +966,33 @@ with a width of 400px, and a height of half of the map height minus 5px.
     font-size: 12px;
     font-weight: bold;
     white-space: nowrap;
-    color: #333;
+    color: var(--cb-text);
 }
 
-/* Parcel Info Panel Button Rows */
+/* The Tools tab (index.html): the NFT status line, then rows of two equal btn buttons
+   (.button-row is claim.js's hook for hiding rows while several parcels are selected). */
 .parcel-info-buttons {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--cb-space-2);
     margin-bottom: 10px;
 }
-.button-row {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-.button-row-1, .button-row-2 {
-    justify-content: flex-start;
-}
-.button-row-5 {
-    justify-content: flex-start;
+
+.parcel-info-buttons .cb-actions > .btn {
+    flex: 1 1 0;
 }
 
 .claim-status-indicator {
-    font-size: 12px;
-    color: #64748b;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
     line-height: 1.4;
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
     padding: 6px 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f8f9fa;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    background-color: var(--cb-surface-2);
     text-align: center;
     width: 100%;
-    flex: 1 1 100%;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -678,80 +1000,35 @@ with a width of 400px, and a height of half of the map height minus 5px.
     min-height: 28px;
 }
 
-.button-row-claim {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-}
-
 .claim-status-indicator.is-neutral {
-    color: #64748b;
+    color: var(--cb-text-muted);
 }
 
 .claim-status-indicator.is-loading {
-    color: #2563eb;
+    color: var(--cb-primary);
 }
 
 .claim-status-indicator.is-minted {
-    color: #047857;
+    color: var(--cb-success-soft-ink);
     font-weight: 600;
 }
 
 .claim-status-indicator.is-not-minted {
-    color: #b45309;
+    color: var(--cb-warning);
     font-weight: 600;
 }
 
 .claim-status-indicator.is-not-minted:hover {
-    color: #92400e;
-    background-color: rgba(180, 83, 9, 0.1);
-    border-radius: 4px;
+    color: var(--cb-warning-soft-ink);
+    background-color: var(--cb-warning-soft);
 }
 
 .claim-status-indicator.is-error {
-    color: #dc2626;
+    color: var(--cb-danger);
 }
 
 .claim-status-indicator.is-error:hover {
-    color: #b91c1c;
-    background-color: rgba(220, 38, 38, 0.1);
-    border-radius: 4px;
-}
-
-/* Make the buttons smaller and more compact in the parcel info panel */
-#parcel-info-panel .parcel-info-btn,
-#parcel-info-panel .visualize-button,
-#parcel-info-panel .neighbors-button,
-#parcel-info-panel .vertices-button,
-#parcel-info-panel .analyze-button,
-#parcel-info-panel .measure-road-button,
-#parcel-info-panel .split-button {
-    padding: 6px 8px;
-    font-size: 12px;
-    width: calc(50% - 4px);
-    flex: 0 0 calc(50% - 4px);
-    text-align: center;
-    box-sizing: border-box;
-    margin-left: 0; /* Override the margin from base class for panel buttons */
-}
-
-#parcel-info-panel .claim-button {
-    width: calc(50% - 4px);
-    flex: 0 0 calc(50% - 4px);
-    padding: 6px 8px;
-    font-size: 12px;
-    box-shadow: none !important;
-}
-
-#parcel-info-panel .claim-button:hover {
-    box-shadow: none !important;
-}
-
-#parcel-info-panel .claim-button:active {
-    box-shadow: none !important;
-}
-
-#parcel-info-panel .button-row button:last-child {
-    margin-right: 0;
+    background-color: var(--cb-danger-soft);
 }
 
 .crosshairs-cursor,
@@ -784,7 +1061,7 @@ with a width of 400px, and a height of half of the map height minus 5px.
 /* Removed hover animation for parcel owner */
 
 .owner-name {
-    color: #007bff;
+    color: var(--cb-primary);
     font-weight: 500;
 }
 
@@ -810,89 +1087,77 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 .parcel-owner-header-label {
     font-weight: 500;
-    color: #333;
+    color: var(--cb-text);
     font-size: inherit;
     margin: 0;
 }
 
+/* The owner kind beside "Owner" (js/parcels/ui/parcel-panel.js, ownership-ui.js): a soft tag per
+   kind, from the theme's soft tones. */
 .parcel-ownership-type-label {
     display: inline-block;
     padding: 2px 8px;
     margin-left: 8px;
-    font-size: 11px;
+    font-size: var(--cb-text-xs);
     font-weight: 500;
-    color: #333;
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
+    color: var(--cb-text);
+    background-color: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
     vertical-align: middle;
     cursor: default;
 }
 
 .parcel-ownership-type-label.ownership-type-government {
-    background-color: #e3f2fd;
-    border-color: #90caf9;
-    color: #1565c0;
+    background-color: var(--cb-info-soft);
+    border-color: var(--cb-info);
+    color: var(--cb-info-soft-ink);
 }
 
 .parcel-ownership-type-label.ownership-type-institution {
-    background-color: #f3e5f5;
-    border-color: #ce93d8;
-    color: #7b1fa2;
+    background-color: var(--cb-primary-soft);
+    border-color: var(--cb-primary);
+    color: var(--cb-primary-soft-ink);
 }
 
 .parcel-ownership-type-label.ownership-type-company {
-    background-color: #fff3e0;
-    border-color: #ffb74d;
-    color: #e65100;
+    background-color: var(--cb-warning-soft);
+    border-color: var(--cb-warning);
+    color: var(--cb-warning-soft-ink);
 }
 
 .parcel-ownership-type-label.ownership-type-mixed {
-    background-color: #f1f8e9;
-    border-color: #aed581;
-    color: #558b2f;
+    background-color: var(--cb-surface-2);
+    border-color: var(--cb-line-strong);
+    color: var(--cb-text);
 }
 
 .parcel-ownership-type-label.ownership-type-individual {
-    background-color: #e8f5e9;
-    border-color: #81c784;
-    color: #2e7d32;
+    background-color: var(--cb-success-soft);
+    border-color: var(--cb-success);
+    color: var(--cb-success-soft-ink);
 }
 
 .parcel-owner-header-share {
     text-align: right;
 }
 
+/* "For sale" beside the owner heading, and the ad's actions it unfolds (Marketplace, Parcel
+   builder): btn btn-sm buttons in a soft box. */
 .parcel-owner-header .parcel-ad-link-btn {
-    box-sizing: border-box;
-    height: 26px;
-    min-height: 26px;
-    max-height: 26px;
-    padding: 2px 8px;
-    font-size: 11px;
-    line-height: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-left: 8px;
-    vertical-align: middle;
+    margin-left: var(--cb-space-2);
 }
 
 .parcel-ad-dialog {
     display: none;
     margin: 4px 0 8px 0;
     padding: 6px 8px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    gap: 8px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    gap: var(--cb-space-2);
     flex-wrap: wrap;
     justify-content: center;
-}
-.parcel-ad-dialog .parcel-builder-icon,
-.parcel-ad-dialog .fa-shopping-cart {
-    margin-right: 6px;
 }
 
 .parcel-owner-section .parcel-owners-container {
@@ -917,7 +1182,29 @@ with a width of 400px, and a height of half of the map height minus 5px.
     max-width: 100%;
     box-sizing: border-box;
     padding: 6px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--cb-line);
+}
+
+/* An owner's name and share on one line (js/parcels/ui/parcel-panel.js); "loading" and "not part of
+   a block" read muted. */
+.parcel-owner-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+}
+
+.parcel-owner-share,
+.owner-loading {
+    color: var(--cb-text-muted);
+}
+
+.parcel-owner-share {
+    font-size: 0.9em;
+}
+
+.parcel-block-none {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
 }
 
 .parcel-owners-container .owner-row:last-child {
@@ -944,37 +1231,38 @@ with a width of 400px, and a height of half of the map height minus 5px.
     justify-content: center;
 }
 
-/* Parcel Info Panel Layout */
-.parcel-info-header {
-    position: sticky;
-    top: 0;
-    background: white;
-    z-index: 1;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 10px;
+/* "Select multiple parcels" group: title with the two selection modes side by side —
+   the Manually checkbox and the Detect block action (block floodfill from the selected parcel). */
+#parcel-info-panel #info-tab .multi-select-group {
+    gap: 4px;
 }
 
-.parcel-info-body {
-    flex: 1;
-    overflow-y: auto;
-    padding-top: 10px;
+#parcel-info-panel #info-tab .multi-select-title {
+    font-weight: 600;
+    font-size: 13px;
 }
 
-.button-row-3 {
-    justify-content: flex-start;
+#parcel-info-panel #info-tab .multi-select-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.button-row-3 .parcel-info-btn {
-    width: calc(50% - 4px) !important;
-    flex: 0 0 calc(50% - 4px);
+/* Touch: the Manually checkbox gets a finger-sized row like the Detect block button beside it. */
+@media (pointer: coarse) {
+    #parcel-info-panel #info-tab .multi-select-options label {
+        min-height: 34px;
+    }
 }
 
 /* Proposal list in parcel info panel */
 .parcel-proposals-list {
     height: 100%;
     overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
     padding: 4px;
 }
 
@@ -982,15 +1270,15 @@ with a width of 400px, and a height of half of the map height minus 5px.
     cursor: pointer;
     padding: 8px;
     margin: 4px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #f8f9fa;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface-2);
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .parcel-proposals-list .proposal-item:hover {
-    background: #e9ecef;
-    border-color: #007bff;
+    background: var(--cb-surface-3);
+    border-color: var(--cb-primary);
 }
 
 .parcel-proposals-list .proposal-item-row {
@@ -1012,64 +1300,30 @@ with a width of 400px, and a height of half of the map height minus 5px.
 .parcel-proposals-list .proposal-item-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: var(--cb-space-2);
     margin-bottom: 4px;
 }
 
 .parcel-proposals-list .proposal-item-title {
-    color: #007bff;
+    min-width: 0;
+    color: var(--cb-primary);
     font-weight: bold;
-    font-size: 14px;
+    font-size: var(--cb-text-base);
+    overflow-wrap: anywhere;
 }
 
-.parcel-proposals-list .proposal-item-status {
-    font-size: 12px;
-    font-weight: bold;
-}
-
+/* The row's lifecycle and consent-channel badges (cb-badge, the ladder of the proposals list). */
 .parcel-proposals-list .proposal-item-badges {
-     display: flex;
-     gap: 6px;
-     align-items: center;
-}
-.parcel-proposals-list .proposal-item-status,
-.parcel-proposals-list .proposal-item-map-badge {
-     font-size: 11px;
-     font-weight: 600;
-     text-transform: uppercase;
-     letter-spacing: 0.5px;
-     padding: 2px 6px;
-     border-radius: 999px;
-}
-.parcel-proposals-list .proposal-item-status.active {
-     background-color: #e3f2fd;
-     color: #1976d2;
-     border: 1px solid #bbdefb;
-}
-.parcel-proposals-list .proposal-item-status.inactive {
-     background-color: #fff3e0;
-     color: #f57c00;
-     border: 1px solid #ffe0b2;
-}
-.parcel-proposals-list .proposal-item-status.executed {
-     background-color: #e8f5e8;
-     color: #2e7d32;
-     border: 1px solid #c8e6c9;
-}
-.parcel-proposals-list .proposal-item-status.rejected {
-     background-color: #fdecea;
-     color: #d93025;
-     border: 1px solid #f8c9c3;
-}
-.parcel-proposals-list .proposal-item-map-badge.applied {
-     background-color: #e8f5e9;
-     color: #2e7d32;
-     border: 1px solid #c8e6c9;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--cb-space-1);
 }
 
 .parcel-proposals-list .proposal-item-details {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-bottom: 2px;
     display: flex;
     align-items: center;
@@ -1089,39 +1343,49 @@ with a width of 400px, and a height of half of the map height minus 5px.
     flex: 1;
 }
 
-.parcel-proposals-list .proposal-item-actions {
-    margin-top: 8px;
-    text-align: right;
-}
-
 /* Proposal details panel now uses .panel-header and .panel-body structure */
 
-/* Responsive width for info panels */
-#proposal-details-panel,
-#parcel-info-panel,
+/* Responsive width for the info panels that are NOT part of the right dock. The dock's panels
+   (#parcel-info-panel, #proposal-details-panel, #road-info-panel) are
+   deliberately absent: this rule has ID specificity, so listing one here silently overrides
+   .right-dock-panel and the shared --right-dock-width stops meaning anything. */
 #block-info-panel,
 #area-monitor-detail-panel,
-#parcel-info-panel,
-#road-info-panel,
 #road-analysis-panel {
     width: min(90vw, 400px);
 }
 
+/* The watched-area panel (js/area-monitor/ui.js): docked bottom right on the panels' rung; its
+   controls are the shared btn / close-circle-btn / cb-link (css/primitives.css). A fixed height
+   with a scrolling body: sized to its content it was cut off at the cap (the subscribe form out of
+   reach) and grew when the subscribe answer came in. Folded, it is its header. */
 #area-monitor-detail-panel {
     position: absolute;
     bottom: 10px;
     right: 10px;
-    max-height: 50vh;
+    height: 50vh;
     overflow: hidden;
     padding: 0;
-    z-index: 1510;
+    z-index: var(--cb-z-panel);
     box-sizing: border-box;
-    border-radius: 12px;
+    border-radius: var(--cb-radius-lg);
+}
+
+#area-monitor-detail-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+#area-monitor-detail-panel.is-minimized {
+    height: auto;
+}
+
+#map-container:has(#parcel-info-panel.visible) #area-monitor-detail-panel:not(.is-minimized) {
+    height: calc(50vh - 30px);
 }
 
 #map-container:has(#parcel-info-panel.visible) #area-monitor-detail-panel {
     bottom: calc(50vh + 20px);
-    max-height: calc(50vh - 30px);
 }
 
 #area-monitor-detail-panel .panel-header {
@@ -1145,11 +1409,10 @@ with a width of 400px, and a height of half of the map height minus 5px.
     overflow-wrap: anywhere;
 }
 
-#area-monitor-detail-panel .area-monitor-detail-toggle {
-    font-weight: 700;
-}
-
 #area-monitor-detail-panel .panel-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
     padding: 12px;
 }
 
@@ -1165,82 +1428,53 @@ with a width of 400px, and a height of half of the map height minus 5px.
 #area-monitor-detail-panel .area-monitor-detail-summary {
     margin-bottom: 12px;
     padding: 14px;
-    background: rgba(245, 247, 250, 0.88);
-    border: 1px solid rgba(212, 215, 221, 0.72);
-    border-radius: 10px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
 }
 
 #area-monitor-detail-panel .area-monitor-detail-summary__percent {
     font-size: 28px;
-    font-weight: 700;
-    color: #2e7d32;
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-success-soft-ink);
     line-height: 1;
 }
 
 #area-monitor-detail-panel .area-monitor-detail-summary__meta {
     margin-top: 6px;
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 #area-monitor-detail-panel .area-monitor-detail-summary__bar {
     margin-top: 10px;
     height: 6px;
-    background: #e0e0e0;
-    border-radius: 999px;
+    background: var(--cb-surface-3);
+    border-radius: var(--cb-radius-pill);
     overflow: hidden;
 }
 
 #area-monitor-detail-panel .area-monitor-detail-summary__fill {
     height: 100%;
-    background: #4caf50;
-    border-radius: 999px;
+    background: var(--cb-success);
+    border-radius: var(--cb-radius-pill);
     transition: width 0.3s ease;
 }
 
 #area-monitor-detail-panel .area-monitor-detail-summary__area {
     margin-top: 10px;
     font-size: 12px;
-    color: #555;
+    color: var(--cb-text-muted);
 }
 
-#area-monitor-detail-panel .area-monitor-detail-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 12px;
-    font-size: 12px;
-}
-
-#area-monitor-detail-panel .area-monitor-detail-links a {
-    color: #1565c0;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-#area-monitor-detail-panel .area-monitor-detail-links a:hover {
-    text-decoration: underline;
-}
-
-#area-monitor-detail-panel .area-monitor-detail-links__sep {
-    color: #9aa0a6;
-}
-
+/* The links are a cb-link-row and the actions a stacked cb-actions row; only the spacing is here. */
+#area-monitor-detail-panel .area-monitor-detail-links,
 #area-monitor-detail-panel .area-monitor-detail-actions {
     margin-bottom: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-#area-monitor-detail-panel .area-monitor-detail-button {
-    width: 100%;
-    margin: 0;
 }
 
 #area-monitor-detail-panel .area-monitor-detail-subscribe {
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--cb-line);
     padding-top: 12px;
 }
 
@@ -1248,66 +1482,19 @@ with a width of 400px, and a height of half of the map height minus 5px.
     margin-bottom: 8px;
     font-size: 13px;
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
+/* A disabled base input (css/primitives.css); only its width is set here. */
 #area-monitor-detail-panel .area-monitor-detail-subscribe__input {
     width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 13px;
     box-sizing: border-box;
-    background: rgba(245, 245, 245, 0.9);
-    color: #999;
 }
 
 #area-monitor-detail-panel .area-monitor-detail-subscribe__hint {
     margin-top: 4px;
     font-size: 11px;
-    color: #999;
-}
-
-/* Road info panel should always be 400px (not responsive) */
-#road-info-panel {
-    width: 400px !important;
-    max-width: 400px !important;
-    box-sizing: border-box;
-}
-
-#proposal-details-panel .panel-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0px 0px;
-    min-height: 40px;
-    border-radius: 12px 12px 0 0;
-    border-bottom: 1px solid black;
-}
-
-#proposal-details-panel .panel-header__actions {
-    margin-left: auto;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-#proposal-details-panel .panel-header__actions .close-button {
-    margin-left: 0;
-}
-
-#proposal-details-panel .panel-header h3 {
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    flex: 1 1 auto;
-    min-width: 0;
-    margin-right: 0;
-    overflow-wrap: anywhere;
-}
-
-#proposal-details-panel .proposal-details-toggle {
-    font-weight: 700;
+    color: var(--cb-text-faint);
 }
 
 #proposal-details-panel .share-proposal-action {
@@ -1318,9 +1505,9 @@ with a width of 400px, and a height of half of the map height minus 5px.
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 20px;
-    border-bottom: 1px solid #eee;
-    background: rgba(248, 249, 250, 0.8);
+    padding: 6px 14px;
+    border-bottom: 1px solid var(--cb-line);
+    background: var(--cb-surface-2);
     border-radius: 8px 8px 0 0;
     flex-shrink: 0; /* prevent header from shrinking */
     height: fit-content;
@@ -1334,18 +1521,20 @@ with a width of 400px, and a height of half of the map height minus 5px.
 
 .panel-header h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--cb-text-lg);
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 #parcel-info-panel .panel-header {
     border-radius: 12px 12px 0 0;
+    gap: 8px;
+    padding: 8px 12px;
 }
 
 #parcel-info-panel .panel-header h3 {
-    width: fit-content;
-    max-width: 100%;
+    width: 0;
+    max-width: none;
 }
 
 .panel-body {
@@ -1364,37 +1553,24 @@ with a width of 400px, and a height of half of the map height minus 5px.
     min-width: 0;
 }
 
-/* Proposal details panel footer */
-#proposal-details-panel .panel-footer {
-    flex-shrink: 0;
-    padding: 12px 10px 0 10px;
-    border-top: 1px solid #eee;
-    background: rgba(248, 249, 250, 0.8);
-    border-radius: 0 0 12px 12px;
-    box-sizing: border-box;
-    border-top: 1px solid black;
+/* Compact proposal card: hide the body, but keep its map and authoring actions showing.
+   The header rounds only its top corners since the footer sits directly beneath it. */
+#proposal-details-panel.is-minimized .panel-header {
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
 }
 
-#proposal-details-panel .panel-footer:empty {
+#proposal-details-panel.is-minimized .panel-body {
     display: none;
 }
 
-#proposal-details-panel .panel-footer .proposal-actions-group {
-    margin: 0;
-}
-
-#proposal-details-panel.is-minimized .panel-header {
-    border-bottom: none;
+/* When collapsed with no actions in the footer, the header is the whole card, so round it fully. */
+#proposal-details-panel.is-minimized:not(:has(.panel-footer:not(:empty))) .panel-header {
     border-radius: 12px;
 }
 
-#proposal-details-panel.is-minimized .panel-body,
-#proposal-details-panel.is-minimized .panel-footer {
-    display: none;
-}
-
 /* Mobile panel padding adjustments */
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .panel-header {
         padding: 0 15px; /* No vertical padding on mobile */
     }
@@ -1408,41 +1584,78 @@ with a width of 400px, and a height of half of the map height minus 5px.
         padding-bottom: 0;
     }
     
-    /* Parcel and block tabs also need consistent padding */
-    .parcel-tabs,
-    .block-tabs {
-        padding: 5px 10px 0 10px; /* Reduced top padding for mobile */
-        margin: 0;
-        background: transparent;
-        flex-shrink: 0;
-    }
-    
-    .parcel-tab-btn,
-    .block-tab-btn {
-        padding: 6px 4px; /* Reduced padding for mobile */
-    }
-    
-    /* Parcel info panel takes up 1/3 of screen on mobile */
-    #parcel-info-panel {
-        height: 33vh;
-        max-height: 33vh;
-    }
-
-    #area-monitor-detail-panel {
-        max-height: 33vh;
+    #area-monitor-detail-panel:not(.is-minimized) {
+        height: 50vh;
     }
 
     #map-container:has(#parcel-info-panel.visible) #area-monitor-detail-panel {
-        bottom: calc(33vh + 12px) !important;
-        max-height: 33vh;
+        bottom: calc(min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px) + 12px) !important;
+    }
+
+    /* Over the parcel sheet it takes the room left under the top row, never more than half. */
+    #map-container:has(#parcel-info-panel.visible) #area-monitor-detail-panel:not(.is-minimized) {
+        height: min(50vh, calc(100dvh - var(--map-shell-top-clearance) - 20px - min(var(--mobile-dock-sheet-height, 66dvh), 100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px)));
     }
     
-    /* Road info panel fits screen width on mobile */
-    #road-info-panel {
-        width: calc(100vw - 20px) !important;
-        max-width: calc(100vw - 20px) !important;
-        left: 10px !important;
-        right: 10px !important;
+    /* The road panel is the phone's bottom block while a road is drawn: full width, on the
+       screen's bottom edge (the navigation bar stands down while drawing, css/map-shell.css), as
+       tall as its content and never more than half the screen, its own Undo / Finish / Cancel row
+       last. It collapses to its header and that row from the minimise circle, so it has no drag
+       handle. The mode strip hangs from the top-left on phones (css/map.css), so nothing on the
+       left needs clearing. */
+    #map-container #road-info-panel {
+        bottom: 0;
+        width: auto;
+        max-width: none;
+        height: auto;
+        max-height: 50dvh;
+        border-radius: 12px 12px 0 0;
+    }
+
+    #road-info-panel .mobile-dock-sheet-handle {
+        display: none;
+    }
+
+    /* A shorter header with smaller margins, so the half-screen sheet shows more metrics. */
+    #map-container #road-info-panel {
+        padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
+    }
+
+    #road-info-panel .road-panel-controls {
+        margin-top: 8px;
+        padding-top: 8px;
+    }
+
+    #road-info-panel .road-panel-header {
+        gap: 6px;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+    }
+
+    #road-info-panel .road-panel-header h3 {
+        font-size: 15px;
+    }
+
+    #road-info-panel .road-panel-actions .close-circle-btn--lg {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        min-height: 34px;
+        font-size: 17px;
+    }
+
+    #road-info-panel .road-panel-tools {
+        margin-bottom: 6px;
+    }
+
+    #road-info-panel .road-metrics-grid {
+        gap: 6px;
+        margin-top: 0;
+    }
+
+    #block-info-panel {
+        height: min(66dvh, calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - 8px);
     }
     
     /* Parcel proposals list uses full width on mobile */
@@ -1471,4 +1684,31 @@ with a width of 400px, and a height of half of the map height minus 5px.
 .info-panel.visible {
     display: flex;
     flex-direction: column;
+}
+
+/* The producer pill ("Parcel source": the proposal this parcel descends from) and the dossier's
+   consent channel (rethink-proposals.md §10) are cb-badges now (js/parcels/ui/parcel-panel.js);
+   acceptance, the one that needs the owner's signature, takes the loud tone. */
+
+/* What a formation takes from this parcel (shown only on acceptance entries). */
+.proposal-item-takes {
+    color: var(--cb-danger);
+    font-size: 12px;
+}
+
+/* The remainder report: what the parcel cedes to the listed formations and what is
+   left. Fragmentation (more than one piece) is the fact an owner most needs to see. */
+.parcel-dossier-remainder {
+    margin: 4px 0 8px;
+    padding: 6px 8px;
+    border-left: 3px solid var(--cb-line-strong);
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    border-radius: 0 var(--cb-radius-sm) var(--cb-radius-sm) 0;
+}
+.parcel-dossier-remainder.fragmented {
+    border-left-color: var(--cb-warning);
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
 }

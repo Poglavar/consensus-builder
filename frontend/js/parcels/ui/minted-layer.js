@@ -13,10 +13,6 @@
         totalMinted: null
     };
 
-    const getCache = () => (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function')
-        ? global.ParcelsState.getParcelCache()
-        : global.parcelCache;
-
     function normalizeParcelId(parcelId) {
         if (parcelId === undefined || parcelId === null) return null;
         const str = parcelId.toString().trim();
@@ -54,20 +50,15 @@
         return state.layer;
     }
 
-    function getCachedFeature(parcelId) {
-        const cache = getCache();
-        if (cache && cache.byId instanceof Map) {
-            const feature = cache.byId.get(parcelId);
-            if (feature) return feature;
-        }
-        return null;
+    function getParcelFeature(parcelId) {
+        const id = String(parcelId || '');
+        return global.LiveParcelFabric?.get?.(id)
+            || global.CadastralParcelRepository?.get?.(id)
+            || null;
     }
 
     function resolveParcelLayer(parcelId) {
-        if (typeof global.resolveParcelLayerById === 'function') {
-            return global.resolveParcelLayerById(parcelId);
-        }
-        return null;
+        return global.ParcelPresenter?.getLayer?.(parcelId) || null;
     }
 
     function computeLatLng(feature, layer) {
@@ -128,7 +119,7 @@
         state.mintedIds.add(normalizedId);
 
         const layer = options.layer || resolveParcelLayer(normalizedId);
-        const featureHint = options.feature || (layer && layer.feature) || getCachedFeature(normalizedId);
+        const featureHint = options.feature || getParcelFeature(normalizedId);
         const latLng = computeLatLng(featureHint, layer);
 
         if (!latLng) {
@@ -213,6 +204,8 @@
             console.log('Fetch already in progress, skipping');
             return;
         }
+        // Chain reads need the on-demand wallet vendors (index.html).
+        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
 
         state.fetchInProgress = true;
 
@@ -282,8 +275,10 @@
         } catch (error) {
             console.error('Error fetching minted parcels:', error);
             const errorMessage = error?.message || String(error);
-            if (global.showToast && typeof global.showToast === 'function') {
-                global.showToast(`Failed to load minted parcels: ${errorMessage}`, 'error');
+            const key = 'ephemeral.messages.minted_parcels_failed';
+            const translated = typeof global.i18n?.t === 'function' ? global.i18n.t(key, { error: errorMessage }) : null;
+            if (typeof global.showEphemeralMessage === 'function') {
+                global.showEphemeralMessage(translated && translated !== key ? translated : `Minted parcels could not be loaded: ${errorMessage}`, 6000, 'error');
             }
         } finally {
             state.fetchInProgress = false;

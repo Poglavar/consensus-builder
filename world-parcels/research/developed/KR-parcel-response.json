@@ -1,0 +1,16 @@
+{
+ "note": "No parcel reply obtained: api.vworld.kr / www.vworld.kr / openapi.nsdi.go.kr drop connections from this network (HTTP 000). Catalogue evidence only.",
+ "catalogue": {
+  "url": "https://www.data.go.kr/data/15045882/fileData.do",
+  "httpStatus": 200,
+  "title": "국토교통부_일별연속지적도형정보_20240709",
+  "provider": "국토교통부 (National Spatial Data Center)",
+  "format": "SHP, by province (시도), EPSG:5186",
+  "rows": 38352207,
+  "spatialScope": "all Korea",
+  "cost": "무료 (free)",
+  "licenceScope": "이용허락범위 제한 없음",
+  "download": "https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23",
+  "updated": "2025-09-08"
+ }
+}

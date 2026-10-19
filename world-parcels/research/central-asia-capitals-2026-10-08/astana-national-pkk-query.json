@@ -1,0 +1,275 @@
+{
+  "date": "2026-10-08",
+  "viewerUrl": "https://map.gov4c.kz/egkn/",
+  "restUrl": "https://map.gov4c.kz/egkn/rest",
+  "wfsUrl": "https://map.gov4c.kz/geoserver/wfs",
+  "noCookiesOrCredentials": true,
+  "headers": [
+    "User-Agent: Mozilla/5.0",
+    "Accept: application/json",
+    "Referer: https://map.gov4c.kz/egkn/"
+  ],
+  "districtList": {
+    "url": "https://map.gov4c.kz/egkn/rest/map/districts?lang=ru",
+    "httpStatus": 200,
+    "assessment": "Returned region 21 г. Астана and six district records with id/name/srs; selected point belongs to returned Есиль district candidate id=254 after the WFS district-view query."
+  },
+  "districtsOnline": {
+    "url": "https://map.gov4c.kz/egkn/rest/map/districts/online?lang=ru&service=false",
+    "httpStatus": 200,
+    "assessment": "Returned no child district objects under region 21; the ordinary district selector endpoint above provided the six official public IDs."
+  },
+  "districtRecords": [
+    {
+      "id": 252,
+      "regionCode": "21",
+      "code": "318",
+      "rn_code": "107193",
+      "kato": "711110000",
+      "nameRu": "Алматы (21-318)",
+      "nameKz": "Алматы (21-318)",
+      "nameEn": "Алматы (21-318)",
+      "srs": 32642,
+      "ate_code": "107193"
+    },
+    {
+      "id": 253,
+      "regionCode": "21",
+      "code": "319",
+      "rn_code": "107989",
+      "kato": "711310000",
+      "nameRu": "Сарыарка (21-319)",
+      "nameKz": "Сарыарқа (21-319)",
+      "nameEn": "Сарыарка (21-319)",
+      "srs": 32642,
+      "ate_code": "107989"
+    },
+    {
+      "id": 254,
+      "regionCode": "21",
+      "code": "320",
+      "rn_code": "108584",
+      "kato": "711210000",
+      "nameRu": "Есиль (21-320)",
+      "nameKz": "Есіл (21-320)",
+      "nameEn": "Есиль (21-320)",
+      "srs": 32642,
+      "ate_code": "108584"
+    },
+    {
+      "id": 264,
+      "regionCode": "21",
+      "code": "324",
+      "rn_code": "251449",
+      "kato": "711410000",
+      "nameRu": "Байконыр (21-324)",
+      "nameKz": "Байқоңыр (21-324)",
+      "nameEn": "Байконыр (21-324)",
+      "srs": 32642,
+      "ate_code": "251449"
+    },
+    {
+      "id": 271,
+      "regionCode": "21",
+      "code": "335",
+      "rn_code": "252205",
+      "kato": "711510000",
+      "nameRu": "Нұра (21-335)",
+      "nameKz": "Нұра (21-335)",
+      "nameEn": "Нұра (21-335)",
+      "srs": 32642,
+      "ate_code": "252205"
+    },
+    {
+      "id": 431,
+      "regionCode": "21",
+      "code": "342",
+      "rn_code": "252235",
+      "kato": "711610000",
+      "nameRu": "Сарайшық (21-342)",
+      "nameKz": "Сарайшық (21-342)",
+      "nameEn": "Сарайшық (21-342)",
+      "srs": 32642,
+      "ate_code": "252235"
+    }
+  ],
+  "districtBboxQueries": {
+    "bbox": "669959.009,5666790.225,670159.009,5666990.225,EPSG:32642",
+    "maxFeatureCount": 3,
+    "queries": [
+      {
+        "districtId": 252,
+        "districtName": "Алматы (21-318)",
+        "srs": 32642,
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:252",
+        "httpStatus": 200,
+        "totalFeaturesReported": 0,
+        "featuresReturned": 0
+      },
+      {
+        "districtId": 253,
+        "districtName": "Сарыарка (21-319)",
+        "srs": 32642,
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:253",
+        "httpStatus": 200,
+        "totalFeaturesReported": 0,
+        "featuresReturned": 0
+      },
+      {
+        "districtId": 254,
+        "districtName": "Есиль (21-320)",
+        "srs": 32642,
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:254",
+        "httpStatus": 200,
+        "totalFeaturesReported": 19,
+        "featuresReturned": 3
+      },
+      {
+        "districtId": 264,
+        "districtName": "Байконыр (21-324)",
+        "srs": 32642,
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:264",
+        "httpStatus": 200,
+        "totalFeaturesReported": 0,
+        "featuresReturned": 0
+      },
+      {
+        "districtId": 271,
+        "districtName": "Нұра (21-335)",
+        "srs": 32642,
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:271",
+        "httpStatus": 200,
+        "totalFeaturesReported": 0,
+        "featuresReturned": 0
+      },
+      {
+        "districtId": 431,
+        "districtName": "Сарайшық (21-342)",
+        "srs": 32642,
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:431",
+        "httpStatus": 200,
+        "totalFeaturesReported": 0,
+        "featuresReturned": 0
+      }
+    ],
+    "assessment": "Only district id 254 returned candidates (server reported totalFeatures=19 but this request capped sample to 3); other five returned 0."
+  },
+  "targetPointTransform": {
+    "inputWgs84LonLat": [
+      71.4304,
+      51.1282
+    ],
+    "cs2csCommand": "cs2cs -f %.9f EPSG:4326 EPSG:32642; input ordered latitude,longitude to honor source axis order",
+    "outputUtmEastingNorthing": [
+      670059.008796046,
+      5666890.225130632
+    ]
+  },
+  "targetCenterQuery": {
+    "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&bbox=670049.009,5666880.225,670069.009,5666900.225,EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "totalFeaturesReported": 1,
+    "featuresReturned": 1,
+    "sourceFieldsRequested": [
+      "gid",
+      "kad_nomer",
+      "geom"
+    ],
+    "sourceFieldsOmitted": [
+      "address_ru",
+      "address_kz",
+      "owner/personal fields"
+    ],
+    "sampleCode": "21320072529",
+    "gid": 5884914,
+    "featureIdBehavior": "GeoServer feature.id changed on repeat, while gid and kad_nomer were unchanged; use kad_nomer (or geometry hash), not GeoServer feature.id.",
+    "geometryType": "MultiPolygon",
+    "sourceCrs": "EPSG:32642",
+    "closedRings": true,
+    "geosValid": true,
+    "geosValidityReason": "Valid Geometry",
+    "planarAreaSquareMetres": 1955.539888316002,
+    "containsChosenTargetPoint": true,
+    "geometryHash": "sha256:16dc5f1d351a453f13da42e68fc1dcbfe0910104b25dbd340428faca80b72a49",
+    "wgs84EvidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-center.geojson",
+    "sourceCrsEvidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-center-source-utm.geojson"
+  },
+  "exactIdLookup": {
+    "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&filter=%3Cfes:Filter+xmlns:fes%3D%22http:%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes:PropertyIsEqualTo%3E%3Cfes:ValueReference%3Ekad_nomer%3C%2Ffes:ValueReference%3E%3Cfes:Literal%3E21320072529%3C%2Ffes:Literal%3E%3C%2Ffes:PropertyIsEqualTo%3E%3C%2Ffes:Filter%3E",
+    "httpStatus": 200,
+    "totalFeaturesReported": 1,
+    "featureCount": 1,
+    "match": "kad_nomer=21320072529; gid=5884914"
+  },
+  "schemaRequest": {
+    "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=egkn%3Au_view",
+    "httpStatus": 200,
+    "assessment": "u_view fields include gid, district_id, kad_nomer, rka, address_ru, address_kz and others; only gid,kad_nomer,geom requested. Addresses/owners not queried."
+  },
+  "supersededRuViewProbes": {
+    "layer": "egkn:ru_view",
+    "assessment": "Five HTTP200/zero-feature bbox variants lacked viewer district_id and used a non-selected layer. Treat as inconclusive and do not use as a no-coverage signal. Correct public map snapping layer is egkn:u_view with district_id viewparam."
+  },
+  "neighborhoodGrid": {
+    "requestManifest": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3-requests.json",
+    "geometryFile": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3.geojson",
+    "featureCount": 154,
+    "totalRows": 190,
+    "pageRequests": 74,
+    "allHttp200": true,
+    "allNineTerminalEmpty": true,
+    "valid": 154,
+    "invalid": 0,
+    "positiveAreaOverlapPairs": 5,
+    "featuresContainingCenter": [
+      "21320072529"
+    ]
+  },
+  "exactIdLookupRepeat": {
+    "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&filter=%3Cfes:Filter+xmlns:fes%3D%22http://www.opengis.net/fes/2.0%22%3E%3Cfes:PropertyIsEqualTo%3E%3Cfes:ValueReference%3Ekad_nomer%3C/fes:ValueReference%3E%3Cfes:Literal%3E21320072529%3C/fes:Literal%3E%3C/fes:PropertyIsEqualTo%3E%3C/fes:Filter%3E",
+    "noBbox": true,
+    "httpStatus": 200,
+    "repeatCount": 2,
+    "eachFeatureCount": 1,
+    "stableFields": {
+      "gid": 5884914,
+      "kad_nomer": "21320072529"
+    },
+    "geometryIdenticalAcrossResponses": true,
+    "responseBytesDiffer": true,
+    "sha256ResponseBytes": [
+      "5a0ed1c973559fcbc99409424683fac434ac9564357a25a1426ddeaa60f43db8",
+      "f13462244df17a4d19d69595b620216a4a37e43c7f6322f2e3f78b80330ca5ee"
+    ],
+    "explanation": "GeoServer-generated Feature.id changes on each response; gid, kad_nomer and geometry are stable. Do not persist generated Feature.id."
+  },
+  "crsProbesWithCorrectViewparams": [
+    {
+      "srsname": "CRS:84",
+      "bbox": "71.4303,51.1281,71.4305,51.1283,CRS:84",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "assessment": "No feature in WGS84 output/BBOX variant with district_id:254."
+    },
+    {
+      "srsname": "EPSG:4326",
+      "bbox": "51.1281,71.4303,51.1283,71.4305,EPSG:4326",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "assessment": "No feature in axis-order WFS 2.0 variant with district_id:254."
+    },
+    {
+      "srsname": "EPSG:4326",
+      "bbox": "71.4303,51.1281,71.4305,51.1283,EPSG:4326",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "assessment": "No feature in lon/lat EPSG:4326 variant with district_id:254."
+    }
+  ],
+  "sortingCheck": {
+    "sortBy": "gid",
+    "httpStatus": 200,
+    "assessment": "Accepted and observed strictly increasing numeric gid order within all nine cells; `sortBy=gid+A` returned HTTP400 OWS `Illegal property name: gid+A`. Repeated center-cell startIndex=0 returned identical gid/kad_nomer rows."
+  }
+}

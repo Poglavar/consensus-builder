@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11542-heyuan.json",
+  "purpose": "Document first-party Heyuan registry context and bounded anonymous parcel-service access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Heyuan material and the current first-party portal evidence the local Natural Resources Bureau / Real Estate Registration Center custody. The portal exposes an organization directory anonymously, but its land-parcel/house attachment-map query is in the authenticated query workflow. No safe anonymous parcel-vector response was verified.",
+  "registryAssessment": "Local registry/procedure evidenced through official Heyuan sources; this is institutional custody evidence, not admission of a public parcel source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "nativeFieldMapping": {
+    "organizationDirectoryResponse": ["JGMC", "JGMS", "YWDWMC", "JGDM", "ID"],
+    "note": "These are organization-directory fields observed while identifying the custodian, not parcel fields and not retained as parcel data. No parcel native identity field was observed."
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://bdc.heyuan.gov.cn/",
+      "observation": "Official Heyuan real-estate-registration portal; anonymous landing page redirects to the current home page."
+    },
+    {
+      "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/home_new.html",
+      "observation": "Current portal HTML labels the query area and routes parcel/house attachment-map access through the logged-in workflow; no public parcel vector service URL is exposed in the inspected page."
+    },
+    {
+      "url": "https://www.heyuan.gov.cn/bmjy/hysbdcdjzx/gggs/content/post_615315.html",
+      "observation": "Official Heyuan government instructions state that online self-service registration-information queries use the local registration center portal and require personal login/identity steps."
+    },
+    {
+      "url": "https://www.heyuan.gov.cn/hyszrzyj/gkmlpt/content/0/529/post_529352.html",
+      "observation": "Official Heyuan Natural Resources Bureau instructions describe the registration-information service as a personal/right-holder query; it was not accessed because it is identity-gated and record-specific."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Heyuan China official cadastral parcel map land registry public map API",
+      "result": "Official Heyuan registration portal and government instructions found; no verified anonymous parcel geometry route.",
+      "resultUrls": ["https://bdc.heyuan.gov.cn/", "https://www.heyuan.gov.cn/bmjy/hysbdcdjzx/gggs/content/post_615315.html", "https://www.heyuan.gov.cn/bmjy/hyszrzyj/zrzy/content/post_420698.html"]
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "河源市 不动产登记 地籍图 宗地图 官方 地图 查询",
+      "result": "Official Chinese-language sources found; local custody and an identity-gated attached-map/query workflow were evidenced, but no anonymous cadastral geometry route was verified.",
+      "resultUrls": ["https://bdc.heyuan.gov.cn/HYApplyOnline/home_new.html", "https://www.heyuan.gov.cn/hyszrzyj/gkmlpt/content/0/529/post_529352.html", "https://www.heyuan.gov.cn/bmjy/hysbdcdjzx/mindex.html"]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [23.707934644016, 114.682376540749] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://bdc.heyuan.gov.cn/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Redirected to /HYApplyOnline/home_new.html."
+    },
+    {
+      "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/config.xml",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Current portal configuration inspected. It identifies the local portal and labels the attached-map query, but exposes no parcel geometry service or parcel schema."
+    },
+    {
+      "url": "https://bdc.heyuan.gov.cn/actionapi/YHGL/QuerySysJgInfoList",
+      "method": "POST; anonymous; TLS verification enabled; JSON body {\"JGID\":\"1\"}",
+      "httpStatus": 200,
+      "result": "Safe organization-directory response identified 河源市自然资源局 / 河源市不动产登记中心. This response contains custodian metadata only, not parcel geometry or parcel IDs."
+    },
+    {
+      "url": "https://bdc.heyuan.gov.cn/HYApplyOnline/templates/CXgather/WSCXListType.html",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "result": "Query menu HTML inspected. The land-parcel/house attachment-map option is present, but the page invokes login-state checks and provides no anonymous parcel payload."
+    },
+    {
+      "url": "https://www.heyuan.gov.cn/bmjy/hysbdcdjzx/gggs/content/post_615315.html",
+      "method": "GET via first-party indexed result",
+      "httpStatus": "web result available",
+      "result": "Official instructions reviewed; personal registration-information query requires login/identity steps and was not attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Heyuan portal and government instructions, current portal HTML/configuration, and bounded anonymous organization-directory/query-menu requests.",
+    "verifiedOpenScope": "Local registry/procedure custody only; parcel geometry access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separately published municipal or provincial cadastral/map service may exist, but it was not identified from the current first-party portal. No exact-point query or citywide parcel completeness conclusion was made."
+}

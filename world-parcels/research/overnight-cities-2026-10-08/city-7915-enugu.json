@@ -1,0 +1,133 @@
+{
+  "name": "Enugu",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 464,
+  "point": [
+    6.45160887208736,
+    7.50672659792272
+  ],
+  "population2025": 1115303,
+  "population2025k": 1115.303,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Enugu State’s ENGIS and the Office of the Surveyor General describe state land-record and parcel-mapping services, including registered survey plans, but the reviewed map viewer’s Launch Map Viewer link redirected to an account login. The page states that accounts are needed for land services and that historical survey lookup requires a ₦10,000 payment. No login, payment or property search was submitted. No anonymous parcel feature/ID or exact point-to-digitized-coverage result was verified at the Enugu WUP locator.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official ENGIS describes state parcel mapping and land-registry services and places its agency headquarters in Independence Layout, Enugu city. The official Surveyor General office describes cadastral maps, deposited survey records and boundary documentation and places its office in GRA, Enugu. This directly establishes local city registry/mapping activity; it does not establish digital parcel coverage at the WUP point.",
+  "resultCategory": "local_state_land_registry_found_no_anonymous_geometry_verified",
+  "technicalBlocker": "The available map feature link redirected to an account login; no anonymous vector query endpoint was exposed by the public page reviewed.",
+  "remainingUncertainty": "Actual ENGIS digitized-LGA coverage at the WUP point, viewer service endpoints and public geometry access remain unverified. ENGIS says it has progressively digitized LGAs; statewide platform language is not proof every locality is mapped.",
+  "nextStep": "Root review the state registry finding; if city-specific geometry is needed, request an official public map endpoint or non-sensitive coverage statement from ENGIS without using account-gated land searches.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Enugu Nigeria official cadastral map land registry parcel GIS Enugu State Geographic Information System",
+        "result": "Found the official ENGIS description of parcel mapping and its account-based registry services; no anonymous vector endpoint found.",
+        "method": "Separate English-language discovery search and official first-party page review."
+      },
+      {
+        "language": "Igbo",
+        "query": "maapụ ala Enugu ENGIS Office of Surveyor General",
+        "result": "No additional Igbo-language official parcel-map service surfaced; the official English ENGIS pages remained the primary source.",
+        "method": "Separate Igbo-language discovery search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://enugustate.gov.ng/2026/05/21/enugu-housing-corporation-launches-digital-land-transactions/",
+        "observation": "Enugu State Government states the ENGIS law provides legal backing for digital land administration and reports launch of digital land transactions."
+      },
+      {
+        "url": "https://engis.enugustate.gov.ng/",
+        "observation": "State platform describes ENGIS as land administration with parcel mapping, verification, records, survey services and LGA digitization updates; services require a registered account."
+      },
+      {
+        "url": "https://survey.engis.en.gov.ng/maps/",
+        "observation": "Office of the Surveyor General page describes property mapping and boundaries from registered survey plans; visible Launch Map Viewer navigation redirects to a login page. It says prior survey lookup requires a ₦10,000 payment."
+      },
+      {
+        "url": "https://surveyorgeneral.enugustate.gov.ng/",
+        "observation": "Official Office of the Surveyor General portal describes the new digital survey management system."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed ENGIS Maps page and followed its Launch Map Viewer link. The public target redirected to the Office of the Surveyor General login; no anonymous public map service, schema or safe feature payload was exposed. Did not log in, use credentials, pay, or submit a property/survey query.",
+      "geometryStatus": "No anonymous parcel geometry response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "No anonymous feature query endpoint exposed; map viewer link redirects to account login",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    },
+    "rootSupplement": [
+      {
+        "url": "https://engis.enugustate.gov.ng/contact",
+        "observation": "Official agency headquarters explicitly in Enugu city."
+      },
+      {
+        "url": "https://surveyorgeneral.enugustate.gov.ng/about-us",
+        "observation": "Maintains cadastral maps and documents surveyed boundaries; contact page locates office in Enugu."
+      }
+    ]
+  },
+  "sourceIds": [],
+  "queueRank": 464,
+  "wupCityCode": 7915,
+  "cityId": "wup2025:7915",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    6.45160887208736,
+    7.50672659792272
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "ng-engis-enugu-state-land-platform",
+    "name": "Enugu State Geographic Information System (ENGIS)",
+    "operator": "Enugu State Government / Office of the Surveyor General",
+    "url": "https://engis.enugustate.gov.ng/",
+    "serviceType": "State land-administration platform with parcel mapping and survey/registry services; public viewer path redirects to account login.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Statewide platform description; actual digitized coverage at the exact Enugu settlement point is not verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "State land-administration and parcel-mapping platform; exact city/point digital coverage unverified.",
+    "verifiedOpenScope": "No anonymous parcel feature returned or public vector endpoint exposed.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://enugustate.gov.ng/2026/05/21/enugu-housing-corporation-launches-digital-land-transactions/",
+    "https://engis.enugustate.gov.ng/",
+    "https://survey.engis.en.gov.ng/maps/",
+    "https://surveyorgeneral.enugustate.gov.ng/",
+    "https://engis.enugustate.gov.ng/contact",
+    "https://surveyorgeneral.enugustate.gov.ng/about-us",
+    "https://surveyorgeneral.enugustate.gov.ng/contact"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No anonymous parcel geometry/ID query or exact WUP-point coverage was verified; viewer path redirects to login."
+  },
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00"
+}

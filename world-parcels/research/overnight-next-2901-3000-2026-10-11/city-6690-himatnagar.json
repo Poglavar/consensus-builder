@@ -1,0 +1,86 @@
+{
+  "cityCode": 6690,
+  "queueRank": 2988,
+  "name": "Himatnagar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [23.5982431443311, 72.9659549977241],
+  "population2025": 200338,
+  "population2025k": 200.338,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Himatnagar Gujarat official cadastral parcel map land records GIS site:gujarat.gov.in OR site:gujarat.gov.in",
+        "result": "First-party discovery identified Gujarat Revenue/land-record references and the official AnyRoR portal, but no public Himatnagar parcel geometry viewer or parcel API. The official district land-record page states that Gujarat land records are online and points to AnyRoR.",
+        "actualResultUrls": ["https://dangs.nic.in/service/land-records/", "https://anyror.gujarat.gov.in/", "https://revenuedepartment.gujarat.gov.in/", "https://revenuedepartment.gujarat.gov.in/downloads/tender_guj_state_resurvey_prj_2013-14_new.pdf"]
+      },
+      {
+        "language": "native/local",
+        "query": "હિંમતનગર જમીન રેકોર્ડ નકશો સત્તાવાર ગુજરાત સરકાર",
+        "result": "Gujarati-language first-party discovery identified Gujarat district land-record guidance: RoR is available through AnyRoR and e-Dhara centres at the relevant Mamlatdar office. No public Himatnagar parcel geometry/API endpoint was returned.",
+        "actualResultUrls": ["https://jamnagar.nic.in/gu/service/%E0%AA%9C%E0%AA%AE%E0%AB%80%E0%AA%A8-%E0%AA%B0%E0%AB%87%E0%AA%95%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%A1/", "https://anyror.gujarat.gov.in/", "https://revenuedepartment.gujarat.gov.in/iora-service"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "attemptedRoutes": [
+    {
+      "route": "Gujarat Revenue Department official service discovery",
+      "url": "https://revenuedepartment.gujarat.gov.in/",
+      "outcome": "Official state custodian evidenced; its online-service navigation includes rural Record of Rights and property-card services. No Himatnagar parcel geometry endpoint was exposed by the inspected pages."
+    },
+    {
+      "route": "Official district land-record guidance",
+      "url": "https://jamnagar.nic.in/gu/service/%E0%AA%9C%E0%AA%AE%E0%AB%80%E0%AA%A8-%E0%AA%B0%E0%AB%87%E0%AA%95%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%A1/",
+      "outcome": "Government district page states that RoR copies are available at village e-Gram and Mamlatdar-office e-Dhara centres and links AnyRoR; this is general Gujarat procedure evidence, not a Himatnagar parcel response."
+    },
+    {
+      "route": "Official AnyRoR public host direct GET",
+      "url": "https://anyror.gujarat.gov.in/",
+      "outcome": "TLS-verified ordinary GET attempted with a 20-second timeout; request timed out without a response. No login, CAPTCHA bypass, credentials, private token, or TLS exception used."
+    },
+    {
+      "route": "Official Gujarat resurvey specification",
+      "url": "https://revenuedepartment.gujarat.gov.in/downloads/tender_guj_state_resurvey_prj_2013-14_new.pdf",
+      "outcome": "Official specification documents Gujarat village maps, land parcel maps, coordinates, and VF-7 records, with survey/land-record responsibilities under the state system. It is not a live Himatnagar parcel service and no geometry was extracted."
+    }
+  ],
+  "requestOutcomes": "No bounded anonymous parcel ID-plus-geometry response was available. The official AnyRoR host timed out on direct GET, and the inspected first-party pages exposed service/procedure information rather than a public GIS/API schema. No owner, address, titleholder, contact, personal, tax, account, or unsafe fields were requested or retained.",
+  "scopeLimits": [
+    "Exact WUP point [23.5982431443311, 72.9659549977241] was preserved in latitude/longitude order; no coordinate shift or exact-point hit/miss inference was made.",
+    "A timeout and lack of an exposed public geometry endpoint are not evidence of citywide cadastral absence.",
+    "A Gujarat Revenue Department/e-Dhara land-record custodian and public service procedure were evidenced, so registryFound is true; a Himatnagar-specific open parcel geometry service was not verified.",
+    "No stable native parcel identity, source schema, CRS response, or full parcel polygon was obtained; no GeoJSON sample is retained.",
+    "Packet completion is not source integration/admission; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate-reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No official parcel endpoint responded; no hit/miss test was performed.",
+    "requestEvidence": ["https://anyror.gujarat.gov.in/ timed out after 20 seconds on 2026-10-12"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public first-party discovery for Himatnagar/Sabarkantha and Gujarat land-record, cadastral-map, and parcel-service sources.",
+    "verifiedOpenScope": "Gujarat Revenue/e-Dhara land-record procedure verified; Himatnagar parcel geometry service not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The live AnyRoR route, Himatnagar-specific map/API availability, native parcel identity semantics, schema, CRS, geometry delivery, and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, land rights, or completeness."
+}

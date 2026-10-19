@@ -1,0 +1,87 @@
+{
+  "cityCode": 7759,
+  "queueRank": 1327,
+  "name": "Jijiga",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "point": [9.3557236983248, 42.7953343409497],
+  "population2025": 422225,
+  "population2025k": 422.225,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Official Somali Regional State land-administration custody and an Ethiopian national e-Land service were evidenced, but no Jijiga-specific anonymous parcel geometry with a safe native identity was verified. The official Jijiga city portal is under maintenance. This is not evidence of citywide absence.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jijiga Ethiopia official cadastral map parcel registry GIS",
+        "result": "Found the official Jigjiga City Administration portal, the Somali Regional State Environmental Protection and Rural Land Administration Bureau, Ethiopia's e-Land registration/maps portals, and Ethio-NSDI. Search results did not expose a Jijiga-specific public parcel API or downloadable safe parcel geometry.",
+        "actualResultUrls": [
+          "https://www.jigjiga.gov.et/contact-us/",
+          "https://srseprlab.gov.et/contact-us/",
+          "https://eland.addiscadaster.gov.et/registration",
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://www.ethionsdi.gov.et/"
+        ]
+      },
+      {
+        "language": "Amharic",
+        "query": "ጅጅጋ ካዳስተር የመሬት ምዝገባ ካርታ ይፋዊ",
+        "result": "Search returned official Ethiopian cadastral/land-registration legal material and general federal land-registration references, but no Jijiga-specific public parcel viewer response or safe parcel geometry. A second Amharic query for Jijiga/Somali land registration likewise did not identify an anonymous parcel service.",
+        "actualResultUrls": [
+          "https://www.metaappz.com/pdf/ethiopian_laws/federal/2025/pr_1381_2025.pdf",
+          "https://www.ddacouncil.gov.et/public/uploads/proclamations/file-60.pdf",
+          "https://eland.addiscadaster.gov.et/registration",
+          "https://eland.addiscadaster.gov.et/maps"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.jigjiga.gov.et/contact-us/",
+      "role": "Jigjiga City Administration official portal",
+      "observation": "The official city portal identifies Jigjiga as headquarters in the Somali Region but reports that the website is under maintenance and shows an interactive-map placeholder; no cadastral layer, schema, or parcel geometry was exposed."
+    },
+    {
+      "url": "https://srseprlab.gov.et/contact-us/",
+      "role": "Somali Regional State Environmental Protection and Rural Land Administration Bureau",
+      "observation": "The official regional bureau states a mandate covering rural land administration and transparent land registration and lists its Jigjiga address/contact, but the page exposes no public parcel viewer or geometry API."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "role": "Ethiopian Land Holding Registration and Information Agency e-Land map portal",
+      "observation": "The official national e-Land map portal was found in first-party search and opened through the research browser, but it returned no inspectable text/schema or anonymous parcel feature response."
+    },
+    {
+      "url": "https://www.ethionsdi.gov.et/",
+      "role": "Ethiopia National Spatial Data Infrastructure geoportal",
+      "observation": "The official NSDI geoportal was found as a geospatial publication service; the open request timed out before a public parcel layer, configuration, schema, or geometry response could be verified."
+    },
+    {
+      "url": "https://www.ffic.gov.et/Portals/0/1381-2017.pdf",
+      "role": "Official Ethiopian cadastral legal evidence",
+      "observation": "The indexed official gazette text describes cadastral maps containing parcels and unique parcel identification codes. It is legal/administrative context, not evidence of an anonymous Jijiga vector service."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel identity and full parcel polygon were obtained. The exact WUP point was preserved and not shifted; no exact-point hit or map extent miss was treated as citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jigjiga City Administration, Somali Regional State land-administration custodian, Ethiopia e-Land, and Ethio-NSDI discovery routes.",
+    "verifiedOpenScope": "Official custodian and national portal presence were verified, but Jijiga-specific anonymous parcel response, native ID field, CRS response, exact parcel containment, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

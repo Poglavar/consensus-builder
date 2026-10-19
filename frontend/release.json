@@ -1,0 +1,8 @@
+{
+    "version": 1,
+    "component": "urbangametheory-frontend",
+    "commit": "__RELEASE_COMMIT__",
+    "buildId": "__BUILD_ID__",
+    "buildNumber": "__BUILD_NUMBER__",
+    "generatedAt": "__BUILD_GENERATED_AT__"
+}

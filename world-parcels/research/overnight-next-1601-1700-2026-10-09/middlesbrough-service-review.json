@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-5250-middlesbrough.json",
+  "cityCode": 5250,
+  "queueRank": 1637,
+  "name": "Middlesbrough",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "Middlesbrough Council's official page evidences a local land-charges registry/procedure and council GIS mapping-data request route. HM Land Registry is the national England-and-Wales land-registration custodian and its first-party INSPIRE service lists a Middlesbrough Borough Council GML partition. No public local parcel API was evidenced.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official Middlesbrough Council and HM Land Registry sources found.",
+    "localLanguageDiscovery": "Completed as a separate English wording because English is the United Kingdom local/native research language.",
+    "exactPoint": [54.560753928282, -1.26260886474088],
+    "bboxLonLat": null,
+    "exactPointReturned": null,
+    "boundedReturned": null,
+    "ids": [],
+    "geometry": null,
+    "mapExtentOrPointMiss": false,
+    "pointMissInterpretation": "No exact-point or map query was completed; no absence inference is made."
+  },
+  "requestOutcomes": "Middlesbrough Council page returned HTTP 200 and documented local land-charges/GIS request procedures. HM Land Registry INSPIRE documentation was available from first-party indexed content. Direct anonymous download-page retrieval encountered a 302 self-redirect/Cloudflare challenge and did not yield GML or geometry. No login, CAPTCHA bypass, credentials, private tokens, unsafe fields, or certificate exception was used.",
+  "safeFieldAllowlist": ["Land Registry-INSPIRE ID", "geometry"],
+  "nativeFieldMapping": {"id": "Land Registry-INSPIRE ID", "geometry": "INSPIRE polygon geometry"},
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "The HM Land Registry source is national England-and-Wales registered-freehold index data, not a Middlesbrough-only cadastral custodian; the local-authority partition was listed but not downloaded.",
+    "Middlesbrough Council's local land-charges/GIS procedure does not by itself establish a public anonymous parcel geometry API.",
+    "The direct download route was blocked by a redirect/Cloudflare challenge; CRS, schema, geometry, and native IDs were not independently observed in a response.",
+    "No sample GeoJSON is retained because no unchanged safe parcel polygon was obtained.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about parcel absence, citywide completeness, ownership, address, title, tax records, legal survey accuracy, currentness beyond the source's stated monthly publication, or adapter readiness.",
+  "runtimeReadiness": "held_serial_review"
+}

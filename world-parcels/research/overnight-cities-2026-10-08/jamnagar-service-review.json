@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": null,
+  "purpose": "Service review for WUP2025 rank 795 Jamnagar (city code 2647); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "India",
+  "sourceUrl": "https://jamnagar.nic.in/service/land-records/",
+  "registryFound": true,
+  "registryBasis": "Official Government of Gujarat materials identify two Jamnagar City Survey Offices (Jamnagar-1 and Jamnagar-2) and the district’s land-records service. Jamnagar Municipal Corporation publishes a city map/GIS page, but its FAQ describes utility layers rather than parcel polygons and its property assessment services are account-oriented. The local city-survey registry is verified; no safe anonymous geometry route is.",
+  "officialSources": [
+    {
+      "url": "https://jamnagar.nic.in/service/land-records/",
+      "observation": "Official district portal describes land records, cadastral survey basis and online record-of-rights/mutation services in Jamnagar district."
+    },
+    {
+      "url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf",
+      "observation": "Government of Gujarat Informatics procurement document lists Jamnagar-1 and Jamnagar-2 City Survey Offices."
+    },
+    {
+      "url": "https://mcjamnagar.com/faq.aspx",
+      "observation": "Official JMC FAQ references city-survey documents for municipal planning processes and a city map; no downloadable parcel feature schema is documented."
+    },
+    {
+      "url": "https://www.mcjamnagar.com/faqguj.aspx",
+      "observation": "Official Gujarati FAQ describes map tools and public utility layers; it does not describe full parcel geometry. Tax services request assessment identifiers and were not queried."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jamnagar Gujarat official city survey office cadastral map property card GIS",
+      "result": "Official Jamnagar district and Gujarat Revenue sources establish land-record/property-card services. A Gujarat government scanning tender names Jamnagar-1 and Jamnagar-2 City Survey Offices. JMC publishes a city map and GIS application; its FAQ describes public-utility layers, while property-tax assessment is account-oriented. No parcel geometry schema was verified.",
+      "urls": [
+        "https://jamnagar.nic.in/service/land-records/",
+        "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf",
+        "https://mcjamnagar.com/",
+        "https://mcjamnagar.com/faq.aspx"
+      ]
+    },
+    {
+      "language": "Gujarati",
+      "query": "જામનગર શહેર સર્વે કચેરી જમીન રેકોર્ડ મિલકત કાર્ડ GIS નકશો",
+      "result": "જામનગર જિલ્લા સત્તાવાર land-records પાનું રેકોર્ડ ઓફ રાઈટ્સ સેવા દર્શાવે છે; ગુજરાત સરકારના દસ્તાવેજમાં Jamnagar-1 અને Jamnagar-2 City Survey Offices સૂચિબદ્ધ છે. JMC FAQ શહેરના નકશા માટેના નકશા સાધનો અને જાહેર utility layers સમજાવે છે; મિલકત કર શોધ વ્યક્તિગત assessment સંદર્ભિત છે. કોઈ parcel geometry/schema query કરવામાં આવી નથી.",
+      "urls": [
+        "https://jamnagar.nic.in/service/land-records/",
+        "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf",
+        "https://www.mcjamnagar.com/faqguj.aspx"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_safe_public_geometry_contract_verified",
+    "reason": "No public anonymous parcel feature layer with a verified safe geometry-and-ID schema was found. JMC’s public map description covers civic utility layers, and assessment lookup would involve account-specific information; neither was queried for parcel data."
+  },
+  "requestEvidence": [],
+  "technicalBlocker": "No public anonymous parcel feature layer with a verified safe geometry-and-ID schema was found. JMC’s public map description covers civic utility layers, and assessment lookup would involve account-specific information; neither was queried for parcel data.",
+  "sampleDisposition": "No parcel polygons or parcel feature attributes retained.",
+  "remainingUncertainty": "Local city-survey registry evidence is clear, but the exact parcel layer/API, schema, point coverage and citywide completeness remain unverified."
+}

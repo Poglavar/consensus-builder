@@ -1,0 +1,15 @@
+{
+  "cityRecord": "city-1732-apartad.json",
+  "cityCode": 1732,
+  "queueRank": 2786,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": "Gobernación de Antioquia / Gerencia de Catastro is evidenced as cadastral manager for Apartadó, and its public M045 service is explicitly an Apartadó parcel cartography service.",
+  "officialSources": ["https://geoags1.catastroantioquia-mas.com/arcgis/rest/services/Regiones_M/M045/MapServer/info/iteminfo", "https://geoags1.catastroantioquia-mas.com/arcgis/rest/services/Regiones_M/M045/MapServer/9", "https://www.antioquia.gov.co/atencion-a-la-ciudadania/preguntas-frecuentes", "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales"],
+  "queryAndRequestOutcome": "English and Spanish discovery, first-party service metadata, safe schema inspection, exact-point local-service query, exact-point IGAC query, and timed-out bounded attempts are recorded in the city record. The local service returned one polygon at the exact WUP point; IGAC's separate U_TERRENO exact-point count was zero.",
+  "nativeSchema": {"geometry": "esriGeometryPolygon; EPSG:9377 source, sample output EPSG:4326", "nativeIdentityCandidates": ["TERRENO_CODIGO", "LOCAL_ID", "GLOBALID", "OBJECTID"], "identityQualification": "TERRENO_CODIGO is a stable source cadastral code and is the only retained GeoJSON property as id.", "sourceFieldsInspected": ["OBJECTID", "AVALUO_TERRENO", "AVALUO_COMERCIAL_TERRENO", "TERRENO_CODIGO", "DIMENSION", "ETIQUETA", "RELACION_SUPERFICIE", "ESPACIO_DE_NOMBRES", "LOCAL_ID", "CREATED_USER", "CREATED_DATE", "LAST_EDITED_USER", "LAST_EDITED_DATE", "GLOBALID", "SHAPE", "SHAPE.AREA", "SHAPE.LEN"], "safeAllowlist": ["native parcel identity", "geometry", "geometry CRS", "source layer", "bounded query metadata"], "compositeKeyProvenance": null},
+  "scopeLimits": ["Bounded anonymous requests only; no citywide completeness claim.", "The exact WUP point was preserved and not shifted.", "One polygon retained with exactly one canonical native identity property; no raw source attributes retained.", "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS verification disablement was used.", "Packet completion is not source integration/admission."],
+  "retainedSample": "apartad-safe-sample.geojson",
+  "runtimeReadiness": "held",
+  "uncertainty": "The local public parcel source is well evidenced and produced a bounded exact-point polygon, but urban/rural citywide completeness and adapter readiness require serial review. IGAC national-service timeout/miss behavior remains a separate service limitation."
+}

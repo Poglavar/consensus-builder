@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Hsinchu",
+  "country": "China, Taiwan Province of China",
+  "countryCode": "TW",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Hsinchu City’s Land Office and municipal land administration department are official local agencies. The city’s official residential-information map page describes cadastral location and parcel-identification functions, supporting city-specific cadastral service presence.",
+  "registryEvidenceUrls": [
+    "https://www.landhc.gov.tw/",
+    "https://land.hccg.gov.tw/",
+    "https://land.hccg.gov.tw/news/?id=461&mode=data&parent_id=10004&type_id=10653",
+    "https://eghouse.hccg.gov.tw/webgis/index.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 12123,
+  "cityId": "wup2025:12123",
+  "centerLatLon": [
+    24.815790546669,
+    120.994438775396
+  ],
+  "rank": 773,
+  "queueRank": 773,
+  "population2025": 695677,
+  "population2025k": 695.677,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official map exposes parcel/address search and identify functions and describes ownership-related information layers. The page/static material reviewed did not establish a server-side geometry-and-ID-only response allowlist. No coordinate click, parcel lookup, or feature request was made.",
+  "scopeLimits": "The public map is verified as a map service, but no safe parcel feature response or representative polygon was verified.",
+  "remainingUncertainty": "The full map service schema and fields remain unknown; the public interface can expose property-related information beyond geometry and parcel ID.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Hsinchu City official land office parcel cadastral map public GIS",
+        "scope": "Identify city-specific registry evidence and safe public geometry routes.",
+        "result": "Hsinchu City’s Land Office and municipal land administration department are official local agencies. The city’s official residential-information map page describes cadastral location and parcel-identification functions, supporting city-specific cadastral service presence. The official map exposes parcel/address search and identify functions and describes ownership-related information layers. The page/static material reviewed did not establish a server-side geometry-and-ID-only response allowlist. No coordinate click, parcel lookup, or feature request was made.",
+        "actualResultUrls": [
+          "https://www.landhc.gov.tw/",
+          "https://land.hccg.gov.tw/",
+          "https://land.hccg.gov.tw/news/?id=461&mode=data&parent_id=10004&type_id=10653",
+          "https://eghouse.hccg.gov.tw/webgis/index.html"
+        ],
+        "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+      },
+      {
+        "language": "Traditional Chinese",
+        "query": "新竹市 地政事務所 地籍圖 地號 地籍圖資 官方",
+        "scope": "Identify local-language primary evidence for city registry and public parcel-map services.",
+        "result": "Hsinchu City’s Land Office and municipal land administration department are official local agencies. The city’s official residential-information map page describes cadastral location and parcel-identification functions, supporting city-specific cadastral service presence. The official map exposes parcel/address search and identify functions and describes ownership-related information layers. The page/static material reviewed did not establish a server-side geometry-and-ID-only response allowlist. No coordinate click, parcel lookup, or feature request was made.",
+        "actualResultUrls": [
+          "https://www.landhc.gov.tw/",
+          "https://land.hccg.gov.tw/",
+          "https://land.hccg.gov.tw/news/?id=461&mode=data&parent_id=10004&type_id=10653",
+          "https://eghouse.hccg.gov.tw/webgis/index.html"
+        ],
+        "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.landhc.gov.tw/",
+        "observation": "Hsinchu City’s Land Office and municipal land administration department are official local agencies. The city’s official residential-information map page describes cadastral location and parcel-identification functions, supporting city-specific cadastral service presence. The official map exposes parcel/address search and identify functions and describes ownership-related information layers. The page/static material reviewed did not establish a server-side geometry-and-ID-only response allowlist. No coordinate click, parcel lookup, or feature request was made."
+      },
+      {
+        "url": "https://land.hccg.gov.tw/",
+        "observation": "Hsinchu City’s Land Office and municipal land administration department are official local agencies. The city’s official residential-information map page describes cadastral location and parcel-identification functions, supporting city-specific cadastral service presence. The official map exposes parcel/address search and identify functions and describes ownership-related information layers. The page/static material reviewed did not establish a server-side geometry-and-ID-only response allowlist. No coordinate click, parcel lookup, or feature request was made."
+      },
+      {
+        "url": "https://land.hccg.gov.tw/news/?id=461&mode=data&parent_id=10004&type_id=10653",
+        "observation": "Hsinchu City’s Land Office and municipal land administration department are official local agencies. The city’s official residential-information map page describes cadastral location and parcel-identification functions, supporting city-specific cadastral service presence. The official map exposes parcel/address search and identify functions and describes ownership-related information layers. The page/static material reviewed did not establish a server-side geometry-and-ID-only response allowlist. No coordinate click, parcel lookup, or feature request was made."
+      },
+      {
+        "url": "https://eghouse.hccg.gov.tw/webgis/index.html",
+        "observation": "Hsinchu City’s Land Office and municipal land administration department are official local agencies. The city’s official residential-information map page describes cadastral location and parcel-identification functions, supporting city-specific cadastral service presence. The official map exposes parcel/address search and identify functions and describes ownership-related information layers. The page/static material reviewed did not establish a server-side geometry-and-ID-only response allowlist. No coordinate click, parcel lookup, or feature request was made."
+      }
+    ]
+  },
+  "source": {
+    "type": "manual_primary_source_review",
+    "checkedAt": "2026-10-09",
+    "urls": [
+      "https://www.landhc.gov.tw/",
+      "https://land.hccg.gov.tw/",
+      "https://land.hccg.gov.tw/news/?id=461&mode=data&parent_id=10004&type_id=10653",
+      "https://eghouse.hccg.gov.tw/webgis/index.html"
+    ]
+  },
+  "coverageAssessment": {
+    "status": "unknown",
+    "scope": "No safe parcel feature route or complete polygon sample verified.",
+    "notes": "The public map is verified as a map service, but no safe parcel feature response or representative polygon was verified."
+  },
+  "priorEvidenceFiles": [],
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00",
+  "resultCategory": "registry_found_geometry_unverified",
+  "runtimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The full map service schema and fields remain unknown; the public interface can expose property-related information beyond geometry and parcel ID."
+  },
+  "point": [
+    24.815790546669,
+    120.994438775396
+  ],
+  "rootPrimarySupplement": "Fresh primary indexed city land-office and municipal land-administration pages confirm registration and cadastral services; direct TLS verification failure is preserved, not bypassed.",
+  "rootPrimaryReadback": {
+    "url": "https://www.landhc.gov.tw/",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Missing Subject Key Identifier (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "sourceIds": []
+}

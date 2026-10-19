@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:49:45.370462+00:00",
+  "decision": "held_source_geometry",
+  "reason": "All live reader protocol checks passed for 219 indicative registered-freehold polygons, but independent GEOS found two ring self-intersections and twenty-two overlap pairs above 0.01 m². Fresh original EPSG:27700 coordinates reproduce both invalid rings and the three largest overlap pairs (9.060795, 4.078653 and 3.377109 m²). Source geometry remains unchanged; no repair or selective exclusion clears these source defects. Indicative index semantics and legal-title caveats are separate from this geometry-quality hold.",
+  "acceptanceFile": "nottingham-hmlr-root-acceptance.json",
+  "qualityFile": "nottingham-hmlr-root-quality.json",
+  "nativeDefectReviewFile": "nottingham-root-native-defect-review.json",
+  "sourceCoordinatesModified": false
+}

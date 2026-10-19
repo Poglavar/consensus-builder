@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:94",
+  "queueRank": 94,
+  "name": "Casablanca",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "centerLatLon": [
+    33.5818411354042,
+    -7.54260580529481
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ProduitsCartographie/",
+      "observation": "ANCFCC (national land registry, cadastre and cartography agency) lists cartographic products; site currently serves a maintenance page."
+    },
+    {
+      "url": "https://data.gov.ma/data/fr/dataset?q=cadastre",
+      "observation": "National open-data portal; CKAN package_search for 'parcelle' returned 0 datasets."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.ancfcc.gov.ma/",
+      "method": "GET",
+      "httpStatus": "403",
+      "contentType": "text/html",
+      "assessment": "Title 'ANCFCC : Portail en Maintenance !' - maintenance page, no data"
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/arcgis/rest/services",
+      "method": "GET",
+      "httpStatus": "403",
+      "contentType": "text/html",
+      "assessment": "same maintenance page"
+    },
+    {
+      "url": "https://data.gov.ma/data/api/3/action/package_search?q=parcelle&rows=5",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "success but count 0"
+    },
+    {
+      "url": "https://cadastre.ancfcc.gov.ma/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502 (host not reachable via proxy)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "ANCFCC national cadastre (online services are request-based)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "ANCFCC portal was in maintenance during the probe; a public parcel endpoint may exist but could not be tested. Not a permanent negative.",
+  "nextStep": "Retry ANCFCC when out of maintenance and look for a public WMS/WFS or plan-cadastral service; test a bounded Casablanca sample."
+}

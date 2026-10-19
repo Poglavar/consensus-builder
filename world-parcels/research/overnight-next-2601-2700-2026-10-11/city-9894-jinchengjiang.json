@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 9894,
+  "wupCityCode": 9894,
+  "queueRank": 2653,
+  "cityId": "wup2025:9894",
+  "name": "Jinchengjiang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [24.6965389868011, 108.062645597383],
+  "centerLatLon": [24.6965389868011, 108.062645597383],
+  "population2025": 222713,
+  "population2025k": 222.713,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Jinchengjiang District government portal and Guangxi/Hechi natural-resources materials evidence the local and higher-level custodians of real-estate registration and geospatial work, but no public anonymous parcel feature service was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jinchengjiang China official cadastral map parcel GIS Natural Resources Bureau",
+        "result": "Search found no Jinchengjiang-specific anonymous cadastral parcel API or downloadable parcel dataset. It did identify official Guangxi natural-resources reporting about Hechi real-estate registration work in Jinchengjiang and the national real-estate registration center portal.",
+        "actualResultUrls": [
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17758177.shtml",
+          "https://rerc.com.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "河池市 金城江区 自然资源局 不动产登记 地籍图 公共服务 地图",
+        "result": "发现官方金城江区政府门户及其政务地图页面；页面列出河池市金城江区自然资源局、地址和电话。发现广西政务服务入口，但未发现可匿名返回宗地稳定ID与完整几何的接口；相关不动产登记查询通常进入政务服务/登录流程。",
+        "actualResultUrls": [
+          "http://www.jcj.gov.cn/",
+          "http://www.jcj.gov.cn/syzwdt/",
+          "http://hcjcj.zwfw.gxzf.gov.cn/gxzwfw/itemNew/bsfw_index.do?type=1&webId=111",
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17758177.shtml"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "http://www.jcj.gov.cn/",
+      "operator": "Jinchengjiang District People's Government",
+      "scope": "Jinchengjiang District",
+      "observation": "Official district portal; navigation exposes government information, public services and a government-map page. No parcel geometry endpoint was present in the fetched homepage."
+    },
+    {
+      "url": "http://www.jcj.gov.cn/syzwdt/",
+      "operator": "Jinchengjiang District People's Government public government map",
+      "scope": "Jinchengjiang District",
+      "observation": "Current page lists 河池市金城江区自然资源局 (Jinchengjiang District Natural Resources Bureau) at 南新西路128号 with consultation phone 0778-2283677. The page is a points-of-interest map and contains no cadastral parcel layer or parcel API."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17758177.shtml",
+      "operator": "Guangxi Department of Natural Resources / Hechi Natural Resources Bureau",
+      "scope": "Hechi, including Jinchengjiang District",
+      "observation": "Official Guangxi report describes Hechi Natural Resources Bureau conducting real-estate registration problem resolution in Jinchengjiang; it is custodian evidence, not a parcel data service."
+    },
+    {
+      "url": "http://hcjcj.zwfw.gxzf.gov.cn/gxzwfw/itemNew/bsfw_index.do?type=1&webId=111",
+      "operator": "Guangxi government service portal / Jinchengjiang district service site",
+      "scope": "Jinchengjiang District government services",
+      "observation": "Reachable service catalog names the district Natural Resources Bureau. The inspected page does not expose a public parcel feature response; no login or credential flow was attempted."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "http://www.jcj.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official district homepage fetched. No cadastral parcel service or geometry was present in the response."
+    },
+    {
+      "url": "https://www.jcj.gov.cn/",
+      "method": "GET",
+      "status": "TLS certificate validation failed: certificate expired",
+      "summary": "HTTPS route was not used further; no certificate exception was used. The HTTP official route was available."
+    },
+    {
+      "url": "http://www.jcj.gov.cn/syzwdt/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current government-map HTML and JavaScript inspected. It uses TianDiTu map display for office points and lists the local Natural Resources Bureau; no parcel layer, schema, CRS, or parcel geometry response was exposed."
+    },
+    {
+      "url": "http://hcjcj.zwfw.gxzf.gov.cn/gxzwfw/itemNew/bsfw_index.do?type=1&webId=111",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "District government-service catalog fetched and inspected; Natural Resources Bureau entry present, but no anonymous parcel ID-plus-geometry endpoint was exposed."
+    },
+    {
+      "url": "https://zwfw.gxzf.gov.cn/eportal/ui?regionCode=3107111&pageId=3cd3d403fb4443d5becb61375b2b093a",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Guangxi e-government portal fetched; page contains login-oriented service navigation and no parcel feature response. No login, credential, private token, CAPTCHA or challenge bypass was attempted."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "method": "GET",
+      "status": "HTTP 418 CloudWAF response",
+      "summary": "National geographic-resource catalog route was not usable anonymously; no challenge bypass was attempted and no parcel request was made."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "GET",
+      "status": "DNS resolution failed in the research environment",
+      "summary": "National real-estate registration center lead could not be fetched directly; search evidence was retained only as a relevant national lead, not as a parcel source."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Jinchengjiang district local custodian and Guangxi/Hechi real-estate registration and public-service discovery.",
+    "verifiedOpenScope": "Official district portal, local government-map office listing, and service-catalog navigation only; no parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Local natural-resources and real-estate-registration custodian is evidenced, but public registry parcel-data access is not evidenced."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No parcel geometry obtained.",
+    "crs": null,
+    "identityReadiness": "No native parcel identity observed.",
+    "safeFieldAllowlist": ["stable native ID if later exposed", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested or retained; no owner, address, titleholder, contact, tax, account, or other unsafe fields were accessed."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous public parcel ID-plus-geometry response or downloadable cadastral dataset was verified. Serial review must independently qualify any later public source, including stable native identity, CRS/axis handling, coverage and legal/source semantics.",
+  "scopeLimits": [
+    "Exact WUP point [24.6965389868011,108.062645597383] preserved in latitude/longitude order; it was not shifted and no exact-point hit or miss was treated as citywide evidence.",
+    "No sample GeoJSON retained because no safe native parcel ID plus full polygon was obtained.",
+    "A map extent miss, TLS failure, WAF response, timeout, login-oriented portal, or absent service listing is not evidence of citywide cadastral absence.",
+    "No login, credentials, private token use, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+    "Packet completion is research evidence only and is not source integration or admission."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If a future source is qualified, retain exactly one stable native parcel identity as properties.id and keep source field mapping in metadata.",
+  "nextStep": "Serial reviewer should independently inspect any authenticated-free official Jinchengjiang, Hechi or Guangxi parcel service that becomes available, verify native IDs, CRS/axis handling and coverage, and keep runtime held until qualification."
+}

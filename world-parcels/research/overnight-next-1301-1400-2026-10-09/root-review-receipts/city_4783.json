@@ -1,0 +1,12 @@
+{
+  "taskId": "city:4783",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-4783-hamhung.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/hamhung-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T15:16:08Z",
+  "reason": "No Hamhung local custodian evidenced; South Korean source scope does not establish DPRK coverage; no source-native parcel polygon/ID or admission qualification."
+}

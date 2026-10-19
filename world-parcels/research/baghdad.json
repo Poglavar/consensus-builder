@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:63",
+  "queueRank": 63,
+  "name": "Baghdad",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "centerLatLon": [
+    33.3371222481876,
+    44.3886352455028
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.baghdad.gov.iq/",
+      "observation": "Amanat Baghdad site returned a JavaScript reload/challenge shell; no GIS or parcel service exposed."
+    },
+    {
+      "url": "https://www.dgcs.gov.iq/",
+      "observation": "Survey directorate host; no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.baghdad.gov.iq/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "challenge/landing shell only"
+    },
+    {
+      "url": "https://www.dgcs.gov.iq/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.dgcs.gov.iq",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=parcels Baghdad type:Feature Service&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "none found; literature says Iraqi cadastral maps are mainly paper sheets on a local Clarke 1880 datum",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official hosts were partly unreachable; no evidence of an online parcel service was found by search.",
+  "nextStep": "Look for Real Estate Registration Department (Ministry of Justice) e-services and any Amanat Baghdad GIS portal."
+}

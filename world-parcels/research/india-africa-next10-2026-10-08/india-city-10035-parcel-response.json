@@ -1,0 +1,184 @@
+{
+  "source": "Telangana Remote Sensing Applications Centre (TGRAC), public Bhunaksha_query MapServer, Full Cadastral layer 0",
+  "serviceMetadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer?f=json",
+  "layerMetadataUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0?f=json",
+  "queryUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0/query?geometry=78.6542279686069%2C17.4300271469809&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Parcel_num%2CV_Name%2CM_Name%2CD_Name%2CDMV_Code%2CNew_District%2CNew_Mandal%2CNew_Villagename%2CRemarks&returnGeometry=true&outSR=4326&f=json",
+  "httpStatus": 200,
+  "contentType": null,
+  "geometryType": "esriGeometryPolygon",
+  "spatialReference": {
+    "wkid": 4326,
+    "latestWkid": 4326
+  },
+  "displayFieldName": "V_Name",
+  "fields": [
+    {
+      "name": "Parcel_num",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "V_Name",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "M_Name",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "D_Name",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "DMV_Code",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "New_District",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "New_Mandal",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "New_Villagename",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "Remarks",
+      "type": "esriFieldTypeString"
+    }
+  ],
+  "featureCount": 1,
+  "features": [
+    {
+      "attributes": {
+        "Parcel_num": "92",
+        "V_Name": "Annojiguda",
+        "M_Name": "Ghatkesar",
+        "D_Name": "Rangareddy",
+        "DMV_Code": "1512012",
+        "New_District": "Medchal_Malkajgiri",
+        "New_Mandal": "Ghatkesar",
+        "New_Villagename": "Annojiguda",
+        "Remarks": " "
+      },
+      "geometry": {
+        "rings": [
+          [
+            [
+              78.65464396800013,
+              17.43093816400011
+            ],
+            [
+              78.6544793270001,
+              17.43034040600003
+            ],
+            [
+              78.65443795500005,
+              17.43016417500013
+            ],
+            [
+              78.65440060200007,
+              17.43006228100001
+            ],
+            [
+              78.65439124300008,
+              17.42991985000003
+            ],
+            [
+              78.65436471900017,
+              17.42951325100006
+            ],
+            [
+              78.6542436470001,
+              17.42946614100009
+            ],
+            [
+              78.6535094670001,
+              17.42966861000008
+            ],
+            [
+              78.65275513800015,
+              17.43015058300006
+            ],
+            [
+              78.65269648100019,
+              17.43021602300013
+            ],
+            [
+              78.65277912300007,
+              17.43031508100017
+            ],
+            [
+              78.65307304000015,
+              17.43057113700002
+            ],
+            [
+              78.65324256500008,
+              17.43085986800003
+            ],
+            [
+              78.6531657430001,
+              17.43094132100009
+            ],
+            [
+              78.6530784420001,
+              17.43102888200014
+            ],
+            [
+              78.65315557900016,
+              17.43118827500013
+            ],
+            [
+              78.65319853400007,
+              17.43127885000007
+            ],
+            [
+              78.65331211000006,
+              17.43121643600006
+            ],
+            [
+              78.65353814700018,
+              17.43112168500011
+            ],
+            [
+              78.65384472700015,
+              17.43079974300014
+            ],
+            [
+              78.65405725700015,
+              17.43081295900015
+            ],
+            [
+              78.65425228100014,
+              17.43099389000008
+            ],
+            [
+              78.65448434400002,
+              17.43122998000013
+            ],
+            [
+              78.6545646150002,
+              17.43131515300013
+            ],
+            [
+              78.6546355000001,
+              17.43134777000006
+            ],
+            [
+              78.65466102900018,
+              17.431247113
+            ],
+            [
+              78.65464396800013,
+              17.43093816400011
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "observation": "HTTP 200 at exact WUP point 17.4300271469809,78.6542279686069. One parcel polygon intersects; bbox contains the point. Survey identity is the publisher attribute pair DMV_Code + Parcel_num (1512012/92) with matching village name. OID was omitted and is not used as parcel identity. This verifies one sample only, not village/city completeness.",
+  "responseFormat": "JSON body requested with f=json; HTTP Content-Type header was not present in observed response."
+}

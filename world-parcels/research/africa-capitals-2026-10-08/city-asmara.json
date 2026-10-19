@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:ER:asmara",
+  "queueRank": null,
+  "name": "Asmara",
+  "country": "Eritrea",
+  "countryCode": "ER",
+  "centerLatLon": [
+    15.3229,
+    38.9251
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Asmara Eritrea cadastral parcels land registry survey map",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Tigrinya",
+        "query": "ኣስመራ መሬት ካዳስተር ምዝገባ ቦታ",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+        "observation": "Professional cadastral paper reports an immovable-property registration study in Asmara in 2022; city-specific registry work is evidenced, but paper is not a public source."
+      },
+      {
+        "url": "https://fig.net/resources/proceedings/fig_proceedings/fig2023/papers/ts09g/TS09G_weldegiorgis_11953.pdf",
+        "observation": "Third-party ArcGIS item is a 1997 Asmara tile package (raster map), not cadastral polygons. UNESCO’s public map describes the inscribed heritage property, not parcels."
+      },
+      {
+        "url": "https://tiles.arcgis.com/tiles/6A16OGWeO5n9jAWS/arcgis/rest/services/ERI_Asmara_1997/MapServer",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      },
+      {
+        "url": "https://www.arcgis.com/home/item.html?id=7ddcaa7bf99c486eabdf988820a79c5c",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "Third-party ArcGIS item is a 1997 Asmara tile package (raster map), not cadastral polygons. UNESCO’s public map describes the inscribed heritage property, not parcels.",
+    "nextStep": "Find a city-specific active registry or cadastral-coverage source before changing registryFound from null.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "A technical paper documents a property-registration study in Asmara in 2022; it does not establish a live city registry or public parcel service today.",
+  "registryEvidenceUrls": [
+    "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+    "https://fig.net/resources/proceedings/fig_proceedings/fig2023/papers/ts09g/TS09G_weldegiorgis_11953.pdf",
+    "https://tiles.arcgis.com/tiles/6A16OGWeO5n9jAWS/arcgis/rest/services/ERI_Asmara_1997/MapServer",
+    "https://www.arcgis.com/home/item.html?id=7ddcaa7bf99c486eabdf988820a79c5c"
+  ],
+  "resultCategory": "city_registration_study_only_live_registry_unestablished",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/ER.json",
+    "world-parcels/research/retry/countries/ER.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Asmara Eritrea cadastral parcels land registry survey map",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "Tigrinya",
+      "query": "ኣስመራ መሬት ካዳስተር ምዝገባ ቦታ",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

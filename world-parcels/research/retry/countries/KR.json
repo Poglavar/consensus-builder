@@ -1,0 +1,87 @@
+{
+ "kind": "country",
+ "key": "KR",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.vworld.kr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection died after 5 retries"
+  },
+  {
+   "url": "https://map.vworld.kr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection died after 5 retries"
+  },
+  {
+   "url": "https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&geomFilter=BOX(126.978,37.565,126.979,37.566)&size=3&format=json&key=<API_KEY>",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection died (placeholder key; no key was available)"
+  },
+  {
+   "url": "https://api.vworld.kr/req/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection died"
+  },
+  {
+   "url": "https://openapi.nsdi.go.kr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.nsdi.go.kr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.data.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "now reachable; portal only, no keyless cadastral API"
+  },
+  {
+   "url": "https://www.eum.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "196-byte stub"
+  },
+  {
+   "url": "https://kras.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "60-byte redirect stub"
+  },
+  {
+   "url": "https://www.ngii.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "77-byte redirect stub"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "VWorld hosts (the LP_PA_CBND_BUBUN continuous cadastral service) still drop connections from this network, while some other .go.kr hosts respond, so a host-specific or region block is suspected. VWorld requires a registered free API key, which was not available and was not guessed.",
+ "nextStep": "Retry from a Korea-reachable network with a registered VWorld key (accessModel registration)."
+}

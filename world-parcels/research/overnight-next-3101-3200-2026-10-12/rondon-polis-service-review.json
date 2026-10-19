@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-2382-rondon-polis.json",
+  "cityCode": 2382,
+  "queueRank": 3197,
+  "city": "Rondonópolis",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "packetStatus": "complete",
+  "registryFound": true,
+  "custodianFinding": "The Municipality of Rondonópolis, through its official SIGGEO / Secretaria Municipal de Fazenda references, is the local cadastral/map custodian evidenced here. IBGE map material was treated only as general national agency reference, not as the local parcel custodian.",
+  "discovery": {
+    "officialPage": "https://www.rondonopolis.mt.gov.br/projetos/rondonopolis-mais-inteligente/siggeo/",
+    "publicViewer": "https://experience.arcgis.com/experience/d1d0101777b14e92930fee1d2765464a",
+    "experienceItemId": "d1d0101777b14e92930fee1d2765464a",
+    "webMapItemId": "95689b3e8fc54bca99e835b083bb2e21"
+  },
+  "layerReview": {
+    "title": "LOTES",
+    "url": "https://services.arcgis.com/n4lF54Alm3639FBe/arcgis/rest/services/Base_Cartográfica_Rondonópolis/FeatureServer/16",
+    "geometry": "esriGeometryPolygon",
+    "crs": "WKID 102100 / EPSG:3857; response requested as EPSG:4326 GeoJSON",
+    "nativeIdentity": "id is the preferred native parcel identity; FID is the ArcGIS service object ID",
+    "fieldAllowlist": ["id", "FID", "geometry"],
+    "fieldMapping": {"id": "canonical native identity", "FID": "service object identifier", "geometry": "parcel polygon"},
+    "compositeKey": null,
+    "unsafeDataHandling": "Owner, address, contact, titleholder, tax/account, cadastral registration and other personal or unsafe attributes were not requested or retained. The layer schema was inspected only to identify safe fields and geometry."
+  },
+  "queryOutcomes": [
+    "Exact immutable WUP point query returned one polygon with FID 144582; this is a local hit only and is not a citywide coverage claim.",
+    "A bounded approximately 0.02-degree envelope around the point returned three polygon geometries with safe IDs in ignored scratch evidence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No parcel polygon was retained in the cohort directory; full raw responses remain only under ignored tmp/valhalla-parcel-research/ for auditability."
+  ],
+  "scopeLimits": [
+    "The bounded queries do not establish complete municipal coverage, freshness, update cadence, legal title status, or parcel validity.",
+    "The WUP point is preserved exactly in latitude/longitude order and was not shifted to force a hit.",
+    "The public service's extensive schema includes unsafe fields; only the allowlisted identity and geometry are eligible for any future adapter work."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The native `id` field is documented by schema and public map configuration but its lifecycle/stability should be independently validated before adapter admission.",
+    "No serial reviewer qualification was performed; packet completion does not mean source integration/admission."
+  ],
+  "executedAt": "2026-10-12",
+  "completionSummary": {"cityCode": 2382, "attempt": 1, "officialLocalRegistry": true, "anonymousParcelQuery": true, "retainedSamples": 0, "runtimeReadiness": "held"}
+}

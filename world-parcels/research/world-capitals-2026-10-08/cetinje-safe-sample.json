@@ -1,0 +1,88 @@
+{
+  "purpose": "Bounded public cadastral geometry sample, nonpersonal fields only.",
+  "checkedAt": "2026-10-08T18:05:18.450Z",
+  "request": {
+    "url": "https://wis.gov.me/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=uzv%3Aparcele_v&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=18.92%2C42.389%2C18.925%2C42.393%2CEPSG%3A4326&count=3&propertyName=geom%2Cid%2Cko%2Cbr_parcele%2Cnaziv_ko%2Cnaziv_po",
+    "method": "GET",
+    "params": {
+      "service": "WFS",
+      "version": "2.0.0",
+      "request": "GetFeature",
+      "typeNames": "uzv:parcele_v",
+      "outputFormat": "application/json",
+      "srsName": "EPSG:4326",
+      "bbox": "18.92,42.389,18.925,42.393,EPSG:4326",
+      "count": "3",
+      "propertyName": "geom,id,ko,br_parcele,naziv_ko,naziv_po"
+    }
+  },
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "parcele_v.fid--3bc10029_1a11c47a596_-7a7d",
+        "geometry": {
+          "geometryType": "MultiPolygon",
+          "geometrySha256": "922c54ec573be0f2a14c7822a0732313dd2065c12c6102e4d46633bf1036a27c",
+          "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "id": 1449310,
+          "ko": 6,
+          "naziv_ko": "CETINJE I",
+          "naziv_po": "Cetinje",
+          "br_parcele": "4705/1"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "parcele_v.fid--3bc10029_1a11c47a596_-7a7c",
+        "geometry": {
+          "geometryType": "MultiPolygon",
+          "geometrySha256": "b5ba7d37626f93be24c1962604fe64516c62902b359d78ffbf9cddad7dd4056a",
+          "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "id": 1450185,
+          "ko": 6,
+          "naziv_ko": "CETINJE I",
+          "naziv_po": "Cetinje",
+          "br_parcele": "3535"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "parcele_v.fid--3bc10029_1a11c47a596_-7a7b",
+        "geometry": {
+          "geometryType": "MultiPolygon",
+          "geometrySha256": "d4b2c4a1c9145b29c1452e48521a75d1f9471abb28b655bf58ffff5c5e0dfe90",
+          "geometryRetention": "Historical surplus geometry omitted from repository; request metadata and audit metrics retained. Current three-feature sample remains in this research folder."
+        },
+        "geometry_name": "geom",
+        "properties": {
+          "id": 1444585,
+          "ko": 6,
+          "naziv_ko": "CETINJE I",
+          "naziv_po": "Cetinje",
+          "br_parcele": "3536/1"
+        }
+      }
+    ],
+    "totalFeatures": 452,
+    "numberMatched": 452,
+    "numberReturned": 3,
+    "timeStamp": "2026-10-08T18:05:18.631Z",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:EPSG::4326"
+      }
+    }
+  },
+  "retentionNote": "Surplus historical geometry replaced by type/hash summaries; this document is request/audit evidence, not a GeoJSON data feed."
+}

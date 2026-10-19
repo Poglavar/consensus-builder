@@ -1,0 +1,73 @@
+{
+  "wupCityCode": 10013,
+  "city": "Thiruvananthapuram",
+  "source": "official Ente Bhoomi public viewer click-info response",
+  "village": "Kudappanakunnu",
+  "villageMalayalam": "കുടപ്പനക്കുന്നൂ",
+  "locationCode": "010111",
+  "crs": "EPSG:32643",
+  "endpoint": "/web/proxy/click_info/multiple/010111",
+  "request": {
+    "method": "POST",
+    "contentType": "multipart/form-data",
+    "fields": {
+      "layer_code": "LAND_PARCEL",
+      "crs": "32643",
+      "x": "715303.1991",
+      "y": "944452.0231"
+    }
+  },
+  "featureCountReturned": 1,
+  "nativeParcelFields": {
+    "parcel_gid": "95fe702e-ee57-4e07-9407-4e688f0caa7f",
+    "survey_no": "123",
+    "block_no": "51"
+  },
+  "geometry": {
+    "encoding": "WKT",
+    "type": "MULTIPOLYGON Z",
+    "value": "MULTIPOLYGON Z (((715316.2546269 944437.2141753 0,715323.7594733 944447.7110029 0,715315.8846211 944450.793076 0,715302.7561301 944455.7395903 0,715302.3255426 944455.3981592 0,715301.6164043 944454.934154 0,715300.3814598 944454.2400267 0,715299.3803655 944453.8866427 0,715295.1273174 944453.13106 0,715293.837053 944452.7015417 0,715292.8980209 944452.1979527 0,715292.1305008 944451.5969704 0,715291.7406617 944451.1153257 0,715291.1105843 944449.7459922 0,715306.0324008 944442.3966012 0,715316.2546269 944437.2141753 0)))",
+    "sha256": "dc432840904a7560728c2c6c177cd5c596143204733b9affd9c50acea8633543",
+    "chars": 527
+  },
+  "responseNotes": "Only safe parcel identifiers and geom were persisted; non-whitelisted response attributes filtered in memory.",
+  "validation": {
+    "transform": {
+      "from": "EPSG:32643",
+      "to": "EPSG:4326",
+      "library": "backend package proj4 2.22.0"
+    },
+    "wgs84Bbox": [
+      76.95594485,
+      8.53904846,
+      76.95624126,
+      8.53921655
+    ],
+    "polygonCount": 1,
+    "ringCount": 1,
+    "vertexCount": 15,
+    "allRingsClosed": true,
+    "allCoordinatesFinite3d": true,
+    "allRingsPositiveArea": true,
+    "selfIntersectionCount": 0,
+    "validClosedPolygon": true,
+    "wupTargetCenterLatLon": [
+      8.50983231508796,
+      76.9676364538033
+    ],
+    "wupPointInsideParcel": false,
+    "distanceToParcelBoundaryMeters": 3469.63,
+    "distanceMethod": "Euclidean distance in EPSG:32643 between the viewer click coordinate and the projected WUP target point",
+    "viewerClickCoordinateSourceCrs": "EPSG:32643",
+    "viewerClickCoordinate": [
+      715303.1991,
+      944452.0231
+    ],
+    "viewerClickCoordinateWgs84LonLat": [
+      76.95605474,
+      8.53918293
+    ],
+    "viewerClickCoordinateInsideSampleParcel": true,
+    "distanceFromWupTargetToClickCoordinateMeters": 3488.22
+  }
+}

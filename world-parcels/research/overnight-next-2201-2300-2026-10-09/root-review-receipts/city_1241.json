@@ -1,0 +1,22 @@
+{
+  "taskId": "city:1241",
+  "decision": "held",
+  "checkedAt": "2026-10-11T02:33:20Z",
+  "admission": "held; no runtime/catalog/report change",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-1241-cajamarca.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/cajamarca-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_1241-bounded-three-source-polygons.geojson",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_1241-layer-6-metadata.json",
+    "tmp/valhalla-parcel-research/city-1241/layer-6.json",
+    "tmp/valhalla-parcel-research/city-1241/exact-point-envelope.json",
+    "tmp/valhalla-parcel-research/city-1241/exact-point-geometry-3.geojson"
+  ],
+  "registryFound": true,
+  "publicGeometryFound": true,
+  "sourceUrl": "https://geo.serfor.gob.pe/geoservicios/rest/services/Visor/OCAPAS_MIDAGRI/MapServer/6",
+  "originalSourceSha256": "b69858e7bff78632b1a6c2c4f0ee959169d10f05df014186962880c08973e33c",
+  "reason": "Immutable WUP roster and queue agree on code 1241, rank 2255, Peru, unchanged point and 258440 persons. English and Spanish executed searches are recorded in the paired packet. First-party SERFOR layer metadata names Predios Rurales - Cajamarca, EPSG:4326, and exposes UNICAT and OBJECTID. Original bounded GeoJSON contains three valid full polygons with only those safe fields and IDs 79790, 39108 and 78901; none intersects the exact point. The response flags exceededTransferLimit=true, so it is not a complete manifest. The packet ID 78948 appears in a separate attributes-only envelope response and does not describe this three-polygon GeoJSON. Regional rural scope does not establish complete urban coverage. Fresh exact-ID reads, stable manifest, forced paging, 13 aligned cells, metric GEOS checks, source binding, and headed Details verification remain unevidenced."
+}

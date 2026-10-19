@@ -1,0 +1,81 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "V",
+ "regionName": "Tierra del Fuego",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": "ar-tdf-aref-dgc-wfs",
+  "name": "DGC-Parcelario_URBANO / DGC-Parcelario_RURAL",
+  "operator": "Agencia de Recaudacion Fueguina (AREF), Direccion Provincial de Catastro",
+  "scope": "Tierra del Fuego province cadastre (urban 48117 features, rural 1243 by resultType=hits)",
+  "endpoint": "http://catastro.aref.gob.ar/arcgis/services/publica/TDF_DGC_wfs/MapServer/WFSServer",
+  "method": "WFS 1.1.0 GetFeature (ArcGIS Server), GML",
+  "responseFormat": "GML 3.1.1",
+  "crs": "EPSG:4326 (lat,lon axis order)",
+  "reuseStatus": "Terms not read; linked from AREF SIG page with shapefile download"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ar-tdf-aref-dgc-wfs",
+  "requestUrl": "http://catastro.aref.gob.ar/arcgis/services/publica/TDF_DGC_wfs/MapServer/WFSServer?service=WFS&version=1.1.0&request=GetFeature&typeName=publica_TDF_DGC_wfs:DGC-Parcelario_URBANO&maxFeatures=3&srsName=EPSG:4326&propertyName=OBJECTID_1,SEC,MZO,PAR,Shape&bbox=-54.81,-68.31,-54.80,-68.30,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml",
+  "spatialTestAreaLonLat": [
+   -68.31,
+   -54.81,
+   -68.3,
+   -54.8
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "gml:featureMember",
+  "geometryType": "MultiSurface/Polygon",
+  "closedRings": true,
+  "idField": "OBJECTID_1 (+ SEC/MZO/PAR)",
+  "responseFile": "research/subnational/AR/V-parcel-response.json",
+  "pagination": "maxFeatures; resultType=hits for counts",
+  "regionSampled": "Ushuaia; Rio Grande (bbox -67.72,-53.79,-67.70,-53.78) also returned 3 parcels"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Provincial cadastre (AREF Direccion Provincial de Catastro) publishes province-level WFS with urban and rural parcel layers; viewers for Ushuaia, Tolhuin, Rio Grande",
+ "subregionsVerified": [
+  "Ushuaia",
+  "Rio Grande"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.aref.gob.ar/sistema-de-informacion-geografica/",
+   "observation": "lists WMS/WFS/KML and shapefile downloads"
+  },
+  {
+   "url": "http://catastro.aref.gob.ar/arcgis/services/publica/TDF_DGC_wfs/MapServer/WFSServer",
+   "observation": "WFS GetCapabilities 200: DGC-Parcelario_URBANO, DGC-Parcelario_RURAL, DGC-MACIZOS, DGC-SECCIONES, DGC-CALLES, DGC-RUTAS"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://catastro.aref.gob.ar/arcgis/services/publica/TDF_DGC_wfs/MapServer/WFSServer?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "layer list"
+  },
+  {
+   "url": "(Ushuaia GetFeature above)",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "3 closed polygons, verified"
+  },
+  {
+   "url": "(Rio Grande GetFeature)",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "3 features"
+  }
+ ],
+ "foundViaViewerInspection": false,
+ "reuseStatus": "Terms not read",
+ "remainingUncertainty": "Tolhuin and rural layer bbox not sampled; WFS 1.1.0 EPSG:4326 needs lat,lon bbox order.",
+ "nextStep": "Sample DGC-Parcelario_RURAL and Tolhuin; read AREF terms."
+}

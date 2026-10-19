@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Oklahoma City",
+      "stateCode": "OK",
+      "sourceId": "us-ok-oklahoma_city-parcels",
+      "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.465,
+            -97.5175,
+            35.4675
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.465,
+            -97.515,
+            35.4675
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.465,
+            -97.5125,
+            35.4675
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.4675,
+            -97.5175,
+            35.47
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.4675,
+            -97.515,
+            35.47
+          ],
+          "count": 96,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.4675,
+            -97.5125,
+            35.47
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.47,
+            -97.5175,
+            35.472500000000004
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.47,
+            -97.515,
+            35.472500000000004
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.47,
+            -97.5125,
+            35.472500000000004
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.465,
+            -97.51,
+            35.4675
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.465,
+            -97.5075,
+            35.4675
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.465,
+            -97.505,
+            35.4675
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.4675,
+            -97.51,
+            35.47
+          ],
+          "count": 101,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.4675,
+            -97.5075,
+            35.47
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.4675,
+            -97.505,
+            35.47
+          ],
+          "count": 82,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.47,
+            -97.51,
+            35.472500000000004
+          ],
+          "count": 146,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.47,
+            -97.5075,
+            35.472500000000004
+          ],
+          "count": 75,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.47,
+            -97.505,
+            35.472500000000004
+          ],
+          "count": 81,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -97.515,
+          35.465,
+          -97.5125,
+          35.4675
+        ],
+        "forcedPageSize": 3,
+        "count": 7,
+        "returned": 6,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 610,
+      "exactResolved": 610,
+      "nativeIds": [
+        "R010017936",
+        "R010018008",
+        "R010014360"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ok-oklahoma_city-parcels",
+        "parcels": 1,
+        "siteM2": 6984.43
+      },
+      "requests": 173
+    }
+  ]
+}

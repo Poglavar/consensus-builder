@@ -1,0 +1,52 @@
+{
+  "cityCode": 9488,
+  "queueRank": 3276,
+  "name": "Huixian",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.4618493636296, 113.794871256029],
+  "population2025": 184045,
+  "population2025k": 184.045,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huixian China official cadastral map parcel GIS land registration",
+        "result": "Search found official-government evidence identifying the Huixian Real Estate Registration and Trading Center (辉县市不动产登记和交易中心) through the Xinxiang/Henan government procurement portal, and a Ministry of Natural Resources registration-center portal. No anonymous safe parcel-vector endpoint was exposed.",
+        "actualResultUrls": [
+          "https://zfcg.henan.gov.cn/xinxiang/content?bz=1&channelCode=H680202&infoId=1995932",
+          "https://www.rerc.com.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "辉县市 不动产登记 地籍图 宗地 查询 官方",
+        "result": "官方检索结果确认辉县市不动产登记和交易中心为地方登记机构，并找到辉县市房地产政策中关于不动产登记和交易中心、自然资源和规划局的职责引用；未找到可匿名取得安全宗地编号和完整面状几何的公开接口。",
+        "actualResultUrls": [
+          "https://zfcg.henan.gov.cn/xinxiang/content?bz=1&channelCode=H680202&infoId=1995932",
+          "https://www.fangchan.com/news/6/2023-08-14/7096675242093121659.html",
+          "https://www.rerc.com.cn/"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "localCustodian": "辉县市不动产登记和交易中心 (Huixian Real Estate Registration and Trading Center), with local natural-resources/real-estate registration responsibility evidenced in official-government procurement and policy material.",
+    "publicServiceEvidence": "The national Ministry of Natural Resources Real Estate Registration Center portal advertises local registration-site links and information services, but no Huixian parcel viewer/API route was verified from the anonymous checks.",
+    "anonymousParcelGeometry": false,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sampleGeoJSON": null
+  },
+  "runtimeReadiness": "held",
+  "notes": [
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.",
+    "No coordinate was shifted and no exact-point hit or miss was tested against an unverified endpoint.",
+    "Packet completion records research only; it is not source integration or adapter admission."
+  ]
+}

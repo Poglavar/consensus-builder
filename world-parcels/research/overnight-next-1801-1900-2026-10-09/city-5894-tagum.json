@@ -1,0 +1,71 @@
+{
+  "cityCode": 5894,
+  "queueRank": 1890,
+  "name": "Tagum",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "point": [7.44847936247078, 125.807809128074],
+  "population2025": 303614,
+  "population2025k": 303.614,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Philippines official cadastral parcel map GIS Tagum City cadastral map DENR LMB",
+        "result": "Found the official Geoportal Philippines viewer and its current layer registry. The registry exposes an LMB agency layer titled Parcel data with layer name denr_parcel_data. Found the official Tagum City Assessor directory and Land Management Bureau records mentioning Tagum tax mapping and Tagum approved subdivision-plan requests. No anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://geoportal.gov.ph/",
+          "https://tagumcity.gov.ph/?page_id=633",
+          "https://www.foi.gov.ph/agencies/denrlmb/?page=47&status=status_success",
+          "https://www.foi.gov.ph/agencies/denrlmb/"
+        ]
+      },
+      {
+        "language": "Filipino/Cebuano (local)",
+        "query": "Tagum City mapa cadastral lote DENR opisyal; Tagum City mapa ng mga lote cadastral opisyal",
+        "result": "Search results independently surfaced the official Tagum City website, its City Assessor directory, the official Geoportal Philippines viewer, and DENR/LMB cadastral references. No local-language public parcel API or downloadable Tagum parcel geometry was identified.",
+        "actualResultUrls": [
+          "https://tagumcity.gov.ph/?page_id=633",
+          "https://geoportal.gov.ph/",
+          "https://www.foi.gov.ph/agencies/denrlmb/?page=47&status=status_success",
+          "https://ncr.denr.gov.ph/wp-content/uploads/2024/07/DAO-2007-29-Revised-Regulations-on-Land-Surveys.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Philippine Land Management Bureau (LMB/DENR) via Geoportal Philippines, with City of Tagum Assessor as local tax-mapping custodian",
+    "viewerUrl": "https://geoportal.gov.ph/",
+    "serviceType": "Public Geoportal WMS viewer; current registry exposes LMB Parcel data layer, but anonymous feature service access was not verified",
+    "parcelLayerConfirmed": true,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+    "crs": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "scopeNote": "LMB/DENR is the national cadastral custodian evidenced by the Geoportal layer and official land-survey regulation. The official City of Tagum directory identifies the City Assessor's Office, and LMB FOI results identify Tagum tax-mapping and approved-plan records. These establish custodianship/procedure, not open citywide parcel delivery."
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No anonymous parcel ID-plus-geometry response was obtained; no GeoJSON sample retained. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/5894/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Philippine national LMB/DENR parcel-data layer and Tagum City tax-mapping/cadastral records.",
+    "verifiedOpenScope": "Geoportal HTML/JavaScript and layer-registry JSON were retrieved; the LMB Parcel data layer was identified, but public service schema, CRS, stable IDs, geometry and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Research evidence only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order with no coordinate shift. No owner, address, titleholder, contact, title, tax/account, personal or other unsafe fields were requested or retained."
+}

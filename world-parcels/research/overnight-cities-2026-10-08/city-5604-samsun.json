@@ -1,0 +1,128 @@
+{
+  "name": "Samsun",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "rank": 918,
+  "point": [
+    41.2942278241548,
+    36.3162698732391
+  ],
+  "population2025": 594089,
+  "population2025k": 594.089,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "TKGM official pages identify the Samsun Cadastre Directorate and Samsun land-registry offices. The national Parsel Sorgu service is official, but the exact-point API request returned HTTP 403; this transport/access response is not evidence of parcel absence.",
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "https://www.tkgm.gov.tr/samsun-bm/bagli-mudurlukler/samsun-kadastro-mudurlugu",
+    "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "No anonymous, field-safe parcel geometry response was verified; exact point and map coverage remain unresolved.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "TR-5604-samsun-source-review",
+    "name": "TKGM Parsel Sorgu and Samsun Cadastre Directorate",
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "operator": "Türkiye",
+    "serviceType": "Official national public parcel-query service; exact-point access blocked by HTTP 403.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": "EPSG:4326 (adapter expects WGS84 point; no feature response returned)",
+    "nativeIdField": null,
+    "nativeIdEvidence": "Adapter contract uses mahalleId, adaNo, parselNo; values not returned because HTTP 403."
+  },
+  "wupCityCode": 5604,
+  "cityId": "wup2025:5604",
+  "queueRank": 918,
+  "centerLatLon": [
+    41.2942278241548,
+    36.3162698732391
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel geometry sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "TKGM official pages identify the Samsun Cadastre Directorate and Samsun land-registry offices. The national Parsel Sorgu service is official, but the exact-point API request returned HTTP 403; this transport/access response is not evidence of parcel absence.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Samsun official land registry cadastre parcel map land records TKGM",
+        "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint.",
+        "result": "Official TKGM pages document the public parcel-query service and Samsun Cadastre Directorate. The adapter endpoint was called anonymously once at the unchanged WUP point and returned HTTP 403. No retry/bypass, authentication, or personal-attribute query was attempted; no geometry outcome is known.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.tkgm.gov.tr/samsun-bm/bagli-mudurlukler/samsun-kadastro-mudurlugu",
+          "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati"
+        ],
+        "executionMethod": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested."
+      },
+      {
+        "language": "Turkish",
+        "query": "Adapter contract uses mahalleId, adaNo, parselNo; values not returned because HTTP 403.",
+        "scope": "Find primary local-language evidence for the same registry/map question.",
+        "result": "Official TKGM pages document the public parcel-query service and Samsun Cadastre Directorate. The adapter endpoint was called anonymously once at the unchanged WUP point and returned HTTP 403. No retry/bypass, authentication, or personal-attribute query was attempted; no geometry outcome is known.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.tkgm.gov.tr/samsun-bm/bagli-mudurlukler/samsun-kadastro-mudurlugu",
+          "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati"
+        ],
+        "executionMethod": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "TKGM official pages identify the Samsun Cadastre Directorate and Samsun land-registry offices. The national Parsel Sorgu service is official, but the exact-point API request returned HTTP 403; this transport/access response is not evidence of parcel absence."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/samsun-bm/bagli-mudurlukler/samsun-kadastro-mudurlugu",
+        "observation": "TKGM official pages identify the Samsun Cadastre Directorate and Samsun land-registry offices. The national Parsel Sorgu service is official, but the exact-point API request returned HTTP 403; this transport/access response is not evidence of parcel absence."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+        "observation": "TKGM official pages identify the Samsun Cadastre Directorate and Samsun land-registry offices. The national Parsel Sorgu service is official, but the exact-point API request returned HTTP 403; this transport/access response is not evidence of parcel absence."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/36.3162698732391/41.2942278241548",
+        "method": "Anonymous GET exact unchanged WUP latitude/longitude via inspected TKGM point adapter",
+        "result": "HTTP 403 Forbidden. No response feature retained; access failure is not treated as no parcel."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel geometry sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

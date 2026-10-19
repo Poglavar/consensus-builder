@@ -1,0 +1,625 @@
+/* Layout for tx-explorer.html — the standalone devnet transaction explorer — under the shared page
+   header (css/page-chrome.css). It does not load the map app's css/base.css, which pins html/body to
+   the viewport with overflow:hidden, so this long ops page scrolls normally. Colours are the product
+   tokens and the controls are the primitives (css/primitives.css: btn, cb-segmented for the program
+   and action filters, cb-badge for statuses and tags, cb-link for the explorer links). */
+
+* {
+    box-sizing: border-box;
+}
+
+.tx-body {
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+/* One 16px gutter on every width, the same as the page header's. */
+.tx-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* ---------- header ---------- */
+
+.tx-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.tx-header-titles {
+    min-width: 0;
+}
+
+.tx-sub {
+    margin: 2px 0 0;
+    color: var(--cb-text-muted);
+    font-size: 0.85rem;
+    max-width: 60ch;
+}
+
+.tx-fetched {
+    margin: 6px 0 0;
+    color: var(--cb-text-muted);
+    font-size: 0.8rem;
+    min-height: 1.2em;
+}
+
+.tx-header-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.tx-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: var(--cb-text-muted);
+}
+
+.tx-control-check {
+    white-space: nowrap;
+}
+
+.tx-control-grow {
+    flex: 1 1 260px;
+    min-width: 0;
+}
+
+.tx-control select,
+.tx-control input[type="search"] {
+    font: inherit;
+    padding: 7px 9px;
+    color: var(--cb-text);
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: 6px;
+    min-width: 0;
+    width: 100%;
+}
+
+.tx-control select {
+    width: auto;
+}
+
+/* ---------- banner / empty ---------- */
+
+.tx-banner {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    color: var(--cb-danger-soft-ink);
+    background: var(--cb-danger-soft);
+    border: 1px solid color-mix(in srgb, var(--cb-danger) 30%, transparent);
+    border-radius: 8px;
+    font-size: 0.86rem;
+    overflow-wrap: anywhere;
+}
+
+.tx-banner[hidden] {
+    display: none;
+}
+
+.tx-empty {
+    margin: 16px 0;
+    padding: 24px 12px;
+    text-align: center;
+    color: var(--cb-text-muted);
+    background: var(--cb-surface);
+    border: 1px dashed var(--cb-line-strong);
+    border-radius: 10px;
+}
+
+.tx-empty[hidden] {
+    display: none;
+}
+
+.tx-count {
+    margin: 0 0 8px;
+    color: var(--cb-text-muted);
+    font-size: 0.8rem;
+    min-height: 1.1em;
+}
+
+.tx-muted {
+    color: var(--cb-text-muted);
+    font-size: 0.82rem;
+    margin: 0;
+}
+
+.tx-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---------- legend ---------- */
+
+.tx-section-title {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+}
+
+.tx-legend,
+.tx-filters {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
+    border-radius: 10px;
+}
+
+.tx-legend-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+}
+
+.tx-legend-group {
+    min-width: 0;
+    flex: 1 1 260px;
+}
+
+.tx-legend-kind {
+    margin: 0 0 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--cb-text-muted);
+}
+
+.tx-legend-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tx-legend-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+}
+
+.tx-legend-label {
+    font-weight: 600;
+}
+
+/* ---------- filters ---------- */
+
+.tx-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tx-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.tx-chip-legend {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--cb-text-muted);
+    flex: 0 0 72px;
+}
+
+.tx-chips {
+    flex: 1 1 0;
+    min-width: 0;
+    gap: 6px;
+}
+
+/* ---------- table ---------- */
+
+.tx-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.84rem;
+}
+
+.tx-table[hidden] {
+    display: none;
+}
+
+.tx-table thead th {
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--cb-text-muted);
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--cb-line);
+    white-space: nowrap;
+}
+
+.tx-row {
+    cursor: pointer;
+    border-top: 1px solid var(--cb-line);
+}
+
+.tx-row:hover {
+    background: var(--cb-surface-2);
+}
+
+.tx-row:focus-visible {
+    outline: 2px solid var(--cb-primary-hover);
+    outline-offset: -2px;
+}
+
+.tx-row.is-expanded {
+    background: var(--cb-primary-soft);
+}
+
+.tx-row.is-failed .tx-summary {
+    color: var(--cb-danger-soft-ink);
+}
+
+.tx-cell {
+    padding: 8px 10px;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.tx-cell-time,
+.tx-cell-fee,
+.tx-cell-status {
+    white-space: nowrap;
+}
+
+.tx-time,
+.tx-fee {
+    font-variant-numeric: tabular-nums;
+}
+
+.tx-cell-summary {
+    min-width: 22ch;
+}
+
+.tx-summary {
+    display: block;
+}
+
+.tx-slot,
+.tx-row-error {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--cb-text-muted);
+}
+
+.tx-row-error {
+    color: var(--cb-danger-soft-ink);
+}
+
+.tx-amount {
+    margin-bottom: 4px;
+}
+
+.tx-amount-text {
+    display: block;
+}
+
+.tx-amount-owner {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--cb-text-muted);
+}
+
+.tx-address {
+    font-family: var(--cb-font-mono);
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+}
+
+/* Program and action tags in a row: badges that wrap; action names are code. */
+.tx-cell-tags .cb-badge {
+    margin: 0 4px 4px 0;
+}
+
+.tx-tag-action {
+    font-family: var(--cb-font-mono);
+}
+
+.tx-link {
+    font-size: 0.74rem;
+    white-space: nowrap;
+}
+
+.tx-cell-sig .tx-link {
+    margin-left: 6px;
+}
+
+.tx-copy {
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+/* Copy feedback without a JS timer: the class is removed on animationend. */
+@media (prefers-reduced-motion: no-preference) {
+    .tx-copy.is-copied {
+        animation: tx-copied 900ms ease-out;
+    }
+}
+
+@keyframes tx-copied {
+    0%,
+    70% {
+        color: var(--cb-primary-ink);
+        background: var(--cb-primary);
+        border-color: var(--cb-primary);
+    }
+}
+
+/* ---------- details panel ---------- */
+
+.tx-details-row {
+    border-top: 1px solid var(--cb-line);
+    background: var(--cb-bg);
+}
+
+.tx-details-cell {
+    padding: 10px 12px 14px;
+}
+
+.tx-details-title {
+    margin: 0 0 8px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--cb-text-muted);
+}
+
+.tx-ix-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tx-ix {
+    padding: 8px 10px;
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line);
+    border-radius: 8px;
+}
+
+.tx-ix-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.tx-ix-index {
+    font-family: var(--cb-font-mono);
+    font-size: 0.76rem;
+    color: var(--cb-text-muted);
+}
+
+.tx-ix-program {
+    font-weight: 600;
+}
+
+.tx-ix-name {
+    font-family: var(--cb-font-mono);
+    font-size: 0.74rem;
+    color: var(--cb-text-muted);
+}
+
+.tx-ix-sub {
+    margin: 8px 0 4px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--cb-text-muted);
+}
+
+.tx-args {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+}
+
+.tx-arg {
+    font-size: 0.78rem;
+}
+
+.tx-arg-key {
+    color: var(--cb-text-muted);
+    margin-right: 4px;
+}
+
+.tx-arg-value {
+    font-family: var(--cb-font-mono);
+}
+
+.tx-accounts {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+}
+
+.tx-accounts th {
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--cb-text-muted);
+    font-weight: 600;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.tx-accounts td {
+    padding: 4px 6px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--cb-line);
+    overflow-wrap: anywhere;
+}
+
+.tx-account-role {
+    color: var(--cb-text-muted);
+}
+
+.tx-account-links a {
+    margin-right: 6px;
+}
+
+/* ---------- mobile: the table becomes stacked cards (CSS only) ---------- */
+
+@media (max-width: 767.98px) {
+
+    .tx-header-controls {
+        width: 100%;
+    }
+
+    .tx-table,
+    .tx-table thead,
+    .tx-table tbody,
+    .tx-table tr,
+    .tx-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .tx-table {
+        border: 0;
+        background: transparent;
+        overflow: visible;
+    }
+
+    .tx-table thead {
+        display: none;
+    }
+
+    .tx-row {
+        margin-bottom: 10px;
+        padding: 8px 10px;
+        background: var(--cb-surface);
+        border: 1px solid var(--cb-line);
+        border-radius: 10px;
+    }
+
+    .tx-cell {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        padding: 3px 0;
+        white-space: normal;
+    }
+
+    /* The column header moves into the cell, from the data-label the row model writes. */
+    .tx-cell::before {
+        content: attr(data-label);
+        flex: 0 0 82px;
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--cb-text-muted);
+        padding-top: 2px;
+    }
+
+    .tx-cell-summary {
+        min-width: 0;
+        font-size: 0.9rem;
+    }
+
+    .tx-cell>* {
+        min-width: 0;
+    }
+
+    .tx-details-row {
+        margin-bottom: 10px;
+        border-radius: 10px;
+    }
+
+    .tx-details-cell {
+        padding: 8px;
+    }
+
+    .tx-accounts,
+    .tx-accounts tbody,
+    .tx-accounts tr,
+    .tx-accounts td {
+        display: block;
+        width: 100%;
+    }
+
+    .tx-accounts thead {
+        display: none;
+    }
+
+    .tx-account {
+        margin-bottom: 6px;
+        padding: 6px;
+        border: 1px solid var(--cb-line);
+        border-radius: 6px;
+    }
+
+    .tx-accounts td {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        padding: 2px 0;
+        border-bottom: 0;
+    }
+
+    .tx-accounts td::before {
+        content: attr(data-label);
+        flex: 0 0 66px;
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--cb-text-muted);
+    }
+
+    .tx-chip-legend {
+        flex-basis: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+
+    .tx-header-controls {
+        gap: 6px;
+    }
+
+    .tx-cell::before {
+        flex-basis: 100%;
+    }
+
+    .tx-accounts td::before {
+        flex-basis: 100%;
+    }
+}

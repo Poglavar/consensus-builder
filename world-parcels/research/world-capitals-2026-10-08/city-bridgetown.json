@@ -1,0 +1,97 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:BB:bridgetown",
+  "name": "Bridgetown",
+  "country": "Barbados",
+  "countryCode": "BB",
+  "centerLatLon": [
+    13.1,
+    -59.616667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Bridgetown Barbados official cadastral parcel map GIS land registry",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://landsandsurveys.gov.bb/",
+        "https://mtw.gov.bb/departments-services/design-services/land-surveying-section/"
+      ]
+    },
+    {
+      "query": "Bridgetown Barbados official cadastral parcel map GIS government",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://landsandsurveys.gov.bb/",
+        "https://mtw.gov.bb/departments-services/design-services/land-surveying-section/"
+      ]
+    },
+    {
+      "query": "Bridgetown Barbados official cadastral parcel map GIS parcels online Lands Surveys map services",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://landsandsurveys.gov.bb/",
+        "https://mtw.gov.bb/departments-services/design-services/land-surveying-section/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://landsandsurveys.gov.bb/",
+      "observation": "Official national Lands and Surveys Department is the government mapping agency; digital vector layers are available for purchase. Its FAQ says maps are not freely available. This is not a verified Bridgetown parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://landsandsurveys.gov.bb/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Lands and Surveys Department page opened; it is the national government mapping agency and offers digital vector layers."
+    },
+    {
+      "url": "https://landsandsurveys.gov.bb/pages/LandRegistration.html",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official land registration page opened; it describes land registration, cadastral mapping and parcel plans, but no public Bridgetown geometry endpoint."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The national mapping agency offers vector layers for purchase, but no Bridgetown-specific parcel dataset or service was verified.",
+    "urls": [
+      "https://landsandsurveys.gov.bb/",
+      "https://landsandsurveys.gov.bb/pages/LandRegistration.html"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The national mapping agency offers vector layers for purchase, but no Bridgetown-specific parcel dataset or service was verified."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The national mapping agency offers vector layers for purchase, but no Bridgetown-specific parcel dataset or service was verified.",
+  "registryEvidenceUrls": [
+    "https://landsandsurveys.gov.bb/",
+    "https://landsandsurveys.gov.bb/pages/LandRegistration.html"
+  ],
+  "sourceIds": []
+}

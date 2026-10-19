@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Sukkur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Board of Revenue, Government of Sindh operates the Sindh Zameen land-record portal and Sukkur service-center/digitization functions. Its official Sukkur dashboard documents a Board of Revenue digital scanning unit and indexed registration documents; the active-center page lists Sukkur among district centers. Portal FAQs state that record search is owner-name keyed and deliberately limited for privacy, and ruled cards contain ownership/transaction details. These sources confirm local land-record and registration services, not anonymous full parcel geometry or citywide coverage.",
+  "registryEvidenceUrls": [
+    "https://sindhzameen.gos.pk/",
+    "https://sindhzameen.gos.pk/FAQs.aspx",
+    "https://sindhzameen.gos.pk/Centers.aspx",
+    "https://sindhzameen.gos.pk/asrkhi/sukkur_dashboard.aspx",
+    "https://sindhzameen.gos.pk/demo_Registries/RuledCard.aspx",
+    "https://map.sindhzameen.gos.pk/",
+    "https://bor.sindh.gov.pk/geodatabase"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5207,
+  "cityId": "wup2025:5207",
+  "centerLatLon": [
+    27.7068269984077,
+    68.8544326763957
+  ],
+  "rank": 650,
+  "queueRank": 650,
+  "population2025": 812885,
+  "population2025k": 812.885,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained.",
+  "scopeLimits": "Bounded source discovery only. Official evidence confirms local registry/land-record services only where stated in registryBasis; it does not establish complete citywide cadastral coverage or parcel geometry at the WUP point. No owner, address, tax, personal-identity, credential, account, or property-identifier lookup was submitted or retained. No parcel geometry or feature attributes were retained.",
+  "remainingUncertainty": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sukkur Pakistan official land registry city survey cadastral map parcel geometry Board of Revenue",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "Found the Board of Revenue Sindh’s Sukkur district service-center listing and a Sukkur digital scanning unit dashboard for registration-document indexing. Public ruled cards are ownership/transaction records and require district/town/ward/survey number selection; FAQs describe name-based searches and limited output for owner privacy. The anonymous Deh Maps host was not reachable in the review, and no safe full-polygon schema was verified.",
+        "actualResultUrls": [
+          "https://sindhzameen.gos.pk/",
+          "https://sindhzameen.gos.pk/FAQs.aspx",
+          "https://sindhzameen.gos.pk/Centers.aspx",
+          "https://sindhzameen.gos.pk/asrkhi/sukkur_dashboard.aspx",
+          "https://sindhzameen.gos.pk/demo_Registries/RuledCard.aspx",
+          "https://map.sindhzameen.gos.pk/",
+          "https://bor.sindh.gov.pk/geodatabase"
+        ]
+      },
+      {
+        "language": "Sindhi/Urdu",
+        "query": "سکر زمين رڪارڊ نقشو رجسٽري بورڊ آف روينيو سنڌ سروي پبلڪ سکر",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "بورڊ آف روينيو سنڌ جو سنڌ زمين پورٽل سکر لاءِ سروس سينٽر ۽ ڊجيٽل اسڪيننگ يونٽ جي موجودگي ڏيکاري ٿو. رولڊ ڪارڊ ۾ ملڪيت ۽ ٽرانزيڪشن جي معلومات آهي ۽ چونڊون ضلعو، تعلقو، وارڊ ۽ سروي نمبر وٺن ٿيون؛ مالڪ جي سڃاڻپ واري ڳولا يا ملڪيت جو رڪارڊ استعمال نه ڪيو ويو. عوامي ديھه-نقشن جو ميزبان جائزي دوران نه کليو؛ محفوظ مڪمل پارسل هندسه نه ملي.",
+        "actualResultUrls": [
+          "https://sindhzameen.gos.pk/",
+          "https://sindhzameen.gos.pk/FAQs.aspx",
+          "https://sindhzameen.gos.pk/Centers.aspx",
+          "https://sindhzameen.gos.pk/asrkhi/sukkur_dashboard.aspx",
+          "https://sindhzameen.gos.pk/demo_Registries/RuledCard.aspx",
+          "https://map.sindhzameen.gos.pk/",
+          "https://bor.sindh.gov.pk/geodatabase"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sindhzameen.gos.pk/",
+        "observation": "Sindh Zameen is the official Board of Revenue Government of Sindh portal for land records, registries, Deh maps, property registers and ruled cards; it contains owner-name and CNIC search controls. No query was submitted."
+      },
+      {
+        "url": "https://sindhzameen.gos.pk/FAQs.aspx",
+        "observation": "Official portal FAQ says record search is available to persons whose names are entered in the record, provides only limited information for privacy, and notes Village Form II urban property registers plus rural agricultural forms. It does not promise city parcel vectors."
+      },
+      {
+        "url": "https://sindhzameen.gos.pk/Centers.aspx",
+        "observation": "Official active-centers page lists a Sukkur district service center."
+      },
+      {
+        "url": "https://sindhzameen.gos.pk/asrkhi/sukkur_dashboard.aspx",
+        "observation": "Official Board of Revenue Sukkur dashboard describes a local digital scanning unit, 11 sub-registrar offices across three districts, and registration documents indexed (aggregate administrative metrics). This confirms local registration activity, not open geometry."
+      },
+      {
+        "url": "https://sindhzameen.gos.pk/demo_Registries/RuledCard.aspx",
+        "observation": "The official Ruled Card service describes surveyed property cards with ownership and subsequent transaction details for 20 Sindh cities; the interface asks District, Taluka/Town, Ward/Quarter and Survey number. It was not used because it exposes property-level records, not safe geometry-only data."
+      },
+      {
+        "url": "https://map.sindhzameen.gos.pk/",
+        "observation": "The official Deh Map host returned 502 on the public route during review; the Sindh BOR geodatabase page did not expose an anonymous feature service schema. No query or sample was made."
+      }
+    ],
+    "metadataReviewFile": "sukkur-service-review.json"
+  },
+  "source": {
+    "sourceId": "pk-sukkur-registry-review",
+    "name": "Sukkur local registry/cadastre route review",
+    "operator": "Sukkur local land/registry authority (as qualified in registryBasis)",
+    "url": "https://sindhzameen.gos.pk/",
+    "scope": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "point": [
+    27.7068269984077,
+    68.8544326763957
+  ],
+  "rootReviewedAt": "2026-10-09T02:15:55.042537+00:00"
+}

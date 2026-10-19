@@ -1,0 +1,101 @@
+{
+  "cityCode": 284,
+  "queueRank": 1799,
+  "city": "Deir el-Balah",
+  "country": "State of Palestine",
+  "countryCode": "PS",
+  "iso3": "PSE",
+  "locId": 275,
+  "point": [31.4324866010456, 34.3738573546702],
+  "population2025": 319915,
+  "population2025k": 319.915,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Deir el-Balah State of Palestine official cadastral parcel map cadastre GIS land registry Gaza",
+        "result": "First-party discovery located the Palestinian Land Authority's Gaza land-registration pages, a public Gaza parcel-location service, its linked public ArcGIS viewer, and a 2022 Gaza Web Map containing polygon parcel layers. The viewer metadata identifies the Gaza land-authority GIS department and a public map extent covering Deir el-Balah.",
+        "actualResultUrls": [
+          "https://pla.gov.ps/",
+          "https://pla.gov.ps/ar/%D8%A7%D9%84%D8%A3%D8%AF%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-290.html",
+          "https://pla.gov.ps/ar/1664",
+          "https://www.arcgis.com/apps/View/index.html?appid=3dd310f44e094975b24c188c02247c71",
+          "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3?f=pjson"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "دير البلح فلسطين خريطة عقارية كادستر أراضي سجل الأراضي نظام معلومات جغرافي",
+        "result": "البحث العربي في المصادر الرسمية لسلطة الأراضي الفلسطينية أظهر الإدارة العامة لتسجيل الأراضي، منظومة عقارية جغرافية، خدمة التحقق من موقع القسائم، وإعلان مشروع التسوية الشاملة الذي يذكر دير البلح ضمن بلديات المحافظة الوسطى. بيانات عارض ArcGIS العام تضمنت طبقات قسائم مضلعة لمنطقة غزة وتحققاً مكانياً محدوداً حول النقطة المحفوظة.",
+        "actualResultUrls": [
+          "https://pla.gov.ps/ar/%D8%A7%D9%84%D8%A3%D8%AF%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84-%D8%A7%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-290.html",
+          "https://www.pla.pna.ps/ar/Article/194/%D8%A7%D9%84%D9%85%D9%86%D8%B8%D9%88%D9%85%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9",
+          "https://pla.gov.ps/ar/service/blocksellcheck/%D8%A7%D9%84%D8%AA%D8%AD%D9%82%D9%82-%D9%85%D9%86-%D9%85%D9%88%D9%82%D8%B9-%D8%A7%D9%84%D9%82%D8%B3%D8%A7%D8%A6%D9%85",
+          "https://pla.gov.ps/ar/1664",
+          "https://www.arcgis.com/apps/View/index.html?appid=3dd310f44e094975b24c188c02247c71"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Palestinian Land Authority (سلطة الأراضي الفلسطينية), Gaza land-registration and surveying/GIS departments.",
+  "registryEvidence": {
+    "officialAuthorityUrl": "https://pla.gov.ps/",
+    "landRegistrationUrl": "https://pla.gov.ps/ar/%D8%A7%D9%84%D8%A3%D8%AF%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%85%D8%A9-%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84-%D8%A7%D9%D9%84%D8%A3%D8%B1%D8%A7%D8%B6%D9%8A-290.html",
+    "localCoverageUrl": "https://pla.gov.ps/ar/1664",
+    "publicMapUrl": "https://www.arcgis.com/apps/View/index.html?appid=3dd310f44e094975b24c188c02247c71",
+    "evidence": "The official Land Authority identifies land-registration functions and states that the 2022 comprehensive settlement phase included Deir el-Balah among the central Gaza municipalities. Its public citizen-services page links to a public ArcGIS location viewer. The viewer's public app configuration names the Palestinian Land Authority - Gaza and its geospatial information systems department; the public Web Map extent covers the preserved point and contains polygon layers with Deir el-Balah-area features."
+  },
+  "sourceReview": {
+    "service": "Palestinian Land Authority Gaza public ArcGIS viewer and Web Map, item 3e936aa1e26d436ba5883b033aa038e3, public app 3dd310f44e094975b24c188c02247c71.",
+    "webMapItemUrl": "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3?f=pjson",
+    "webMapDataUrl": "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json",
+    "appDataUrl": "https://www.arcgis.com/sharing/rest/content/items/3dd310f44e094975b24c188c02247c71/data?f=json",
+    "layer": "TYPE3GAZA8 embedded feature collection layer; polygon geometry; Web Mercator EPSG:3857 / WKID 102100.",
+    "nativeFieldMapping": "The layer exposes FID (OID), OBJECTID (source object identifier), Arabic parcel/block fields رقم_ا, رقم__1, القسي, area field المسا, classification/type fields, and Shape_Leng/Shape_Area. Only OBJECTID was selected as the canonical native identity for the bounded evidence; no source attribute set was retained.",
+    "compositeKeyProvenance": "The source visibly includes Arabic block/parcel components رقم_ا, رقم__1 and a combined display value القسي. No composite identity was constructed; canonical identity is the source OBJECTID.",
+    "crs": "EPSG:3857 / WKID 102100, latest WKID 3857.",
+    "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata"],
+    "dataVintage": "The public app configuration says the displayed data was last updated May 2022; the Web Map item was modified 2022-06-14. Current completeness is not established."
+  },
+  "requestOutcomes": [
+    {"method":"GET","url":"https://pla.gov.ps/ar/1664","outcome":"200/readable official Arabic page; explicitly names Deir el-Balah among municipalities in phase two of Gaza comprehensive land-rights settlement and identifies the Land Authority land-registration process."},
+    {"method":"GET","url":"https://pla.gov.ps/ar/service/blocksellcheck/%D8%A7%D9%84%D8%AA%D8%AD%D9%82%D9%82-%D9%85%D9%86-%D9%85%D9%88%D9%82%D8%B9-%D8%A7%D9%84%D9%82%D8%B3%D8%A7%D8%A6%D9%85","outcome":"200/readable official service page; public parcel-location service form was exposed, but no owner, address, contact, titleholder, tax, account, or personal fields were requested."},
+    {"method":"GET","url":"https://www.arcgis.com/sharing/rest/content/items/3dd310f44e094975b24c188c02247c71/data?f=json","outcome":"200/readable public app configuration; followed the official viewer configuration to Web Map item 3e936aa1e26d436ba5883b033aa038e3; no login or token used."},
+    {"method":"GET","url":"https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3?f=pjson","outcome":"200/readable public Web Map metadata; extent [34.1977,31.3384] to [34.6025,31.5177] covers the preserved WUP point; item is public, Arabic, and tagged Gaza."},
+    {"method":"GET","url":"https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json","outcome":"200/readable public Web Map data; embedded TYPE3GAZA8 polygon feature collection was inspected in ignored scratch evidence. A bounded projected-point envelope check found two candidate polygons near the exact WUP point, with source OBJECTIDs 18824 and 18960. No unsafe source attributes were retained."},
+    {"method":"BOUNDED_POINT_CHECK","url":"https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json","outcome":"Exact preserved point [31.4324866010456,34.3738573546702] was converted only for local comparison to EPSG:3857; two source polygon bounding boxes intersected the point envelope in TYPE3GAZA8. This is bounded evidence from a static embedded public Web Map, not a live feature-service query or citywide completeness proof."}
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "3e936aa1e26d436ba5883b033aa038e3/TYPE3GAZA8",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": "OBJECTID 18824 and 18960 observed in bounded response; no retained GeoJSON sample",
+    "nativeIdField": "OBJECTID",
+    "exactWupPointTest": "The preserved WUP point was used unchanged in latitude/longitude order. Two candidate polygon envelopes were found near the exact point; no coordinate shift was made.",
+    "requestEvidence": ["public Web Map metadata", "public Web Map embedded polygon collection", "bounded point-envelope comparison"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public Gaza parcel-location viewer maintained by the Palestinian Land Authority, with multiple Gaza polygon layers.",
+    "verifiedOpenScope": "Public viewer configuration, Web Map extent and schema, and bounded TYPE3GAZA8 polygon evidence near Deir el-Balah.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "scopeLimits": [
+    "The Web Map is a static public snapshot whose displayed data date is May 2022; current service health, updates, and completeness are unresolved.",
+    "The bounded comparison is not a live ArcGIS FeatureServer response and does not prove that all Deir el-Balah parcels are represented.",
+    "No owner, address, titleholder, contact, tax/account, registration-detail, personal, or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set was retained. No GeoJSON sample was retained because the evidence was an embedded Web Map snapshot and the requested packet does not require a sample.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_static_public_webmap_needs_independent_live_adapter_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A first-party Palestinian land registry/cadastre custodian, Gaza public parcel viewer, public polygon schema, EPSG:3857 CRS, and two bounded candidate geometries near the preserved point are evidenced. Live endpoint semantics, identity stability beyond the observed OBJECTID field, current coverage, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

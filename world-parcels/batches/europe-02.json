@@ -1,0 +1,58 @@
+[
+ {
+  "iso2": "BE",
+  "name": "Belgium",
+  "previousStatus": "subnational_only",
+  "previousEvidence": [
+   "research/countries/BE.json"
+  ],
+  "hints": "Federal FPS Finance 'CadGIS' has an open cadastral-parcel WFS/ArcGIS (eservices.minfin.fgov.be, INSPIRE CP). Flanders GRB ADP verified already; Wallonia WalOnMap and Brussels UrbIS also publish parcels. Aim: federal service in two regions."
+ },
+ {
+  "iso2": "CH",
+  "name": "Switzerland",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/CH.json"
+  ],
+  "hints": "geodienste.ch aggregates cantonal Amtliche Vermessung (Liegenschaften) as WFS; availability is per canton (some open, some registration). map.geo.admin.ch identify verified ZH/BE/GE. Aim: list which cantons are open and verify two via geodienste.ch."
+ },
+ {
+  "iso2": "LI",
+  "name": "Liechtenstein",
+  "previousStatus": "not_probed",
+  "previousEvidence": [],
+  "hints": "Liechtenstein Amtliche Vermessung via geodaten.llv.li (WMS/WFS) or geodienste.ch."
+ },
+ {
+  "iso2": "AD",
+  "name": "Andorra",
+  "previousStatus": "not_probed",
+  "previousEvidence": [],
+  "hints": "Andorra: SIGMA / cartografia.ad geoportal, cadastre WMS/WFS."
+ },
+ {
+  "iso2": "MC",
+  "name": "Monaco",
+  "previousStatus": "national_cadastre_viewer_only",
+  "previousEvidence": [
+   "research/countries/MC.json",
+   "research/retry/countries/MC.json"
+  ],
+  "hints": "Monaco: URBA_Parcellaire_Public needs a token; check whether the plan-parcellaire viewer config or carto.gouv.mc exposes a public token; otherwise record as gated."
+ },
+ {
+  "iso2": "SM",
+  "name": "San Marino",
+  "previousStatus": "not_probed",
+  "previousEvidence": [],
+  "hints": "San Marino: Ufficio Tecnico del Catasto; likely no open service; record honestly."
+ },
+ {
+  "iso2": "VA",
+  "name": "Vatican City",
+  "previousStatus": "not_probed",
+  "previousEvidence": [],
+  "hints": "Vatican City: record whether any cadastral publication exists (likely none)."
+ }
+]

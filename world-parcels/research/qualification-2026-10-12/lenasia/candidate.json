@@ -1,0 +1,57 @@
+{
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "PRCL_KEY",
+      "OBJECTID"
+    ],
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "cityIds": [
+      "3855"
+    ],
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "scope": "Bounded Lenasia technical review of the national Chief Surveyor-General Erven reference layer hosted by DFFE. Whole native polygons and PRCL_KEY identity are preserved. Wider city coverage, legal title, survey accuracy and currentness are unverified.",
+    "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+    "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified."
+  },
+  "city": {
+    "code": "3855",
+    "name": "Lenasia",
+    "point": [
+      27.876034282466,
+      -26.3478558274038
+    ]
+  },
+  "sampleIds": [
+    "ZA-CSG-DFFE-ERVEN-GJHBT0IQ071600006209000000",
+    "ZA-CSG-DFFE-ERVEN-GJHBT0IQ071600003920000000"
+  ],
+  "absentId": "ZA-CSG-DFFE-ERVEN-GJHBT0IQ071600009999000000",
+  "metricEpsg": "EPSG:32735",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "First-party DFFE service metadata identifies the source as \"National Cadastral Layer. Custodian - Chief Surveyor General\"; layer 2 publishes Erven polygon boundaries with native PRCL_KEY and OBJECTID. See evidence/official-source-inspection.json and https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson.",
+      "The frozen city packet and service review record complete bounded envelope queries around the unchanged Lenasia locator, returning the two native PRCL_KEY samples. The national first-party layer extent includes that location; sample-file SHA-256 matches the frozen queue. This establishes local sampled scope, not citywide completeness. See evidence/input-provenance.json."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

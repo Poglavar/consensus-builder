@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "HK",
+ "country": "China, Hong Kong SAR",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Lands Department (iC1000 Digital Land Boundary Map), via CSDI",
+ "portalsFound": [
+  {
+   "url": "https://p1hosting.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+   "observation": "Lot Index API doc: bbox in EPSG:2326, max 750x600 m, GML, attribution required."
+  },
+  {
+   "url": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-development-hkms-digital-c1k",
+   "observation": "Bulk download FGDB/DWG/GML."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=837000,819400,837240,819600,EPSG:2326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "GML",
+   "assessment": "lot polygons GML (from hong-kong.json)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "hk-landsd-lot-index-api",
+  "requestUrl": "https://mapapi.geodata.gov.hk/gs/api/v1.0.0/iC1000/lot?bbox=837000,819400,837240,819600,EPSG:2326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml; subtype=gml/3.1.1",
+  "spatialTestAreaLonLat": "bbox 837000,819400,837240,819600 in EPSG:2326 (HK1980 Grid), approx 114.181-114.184 E, 22.315-22.317 N near Tamar/Admiralty",
+  "parcelRecordCount": 2,
+  "recordListPath": "wfs:FeatureCollection/gml:featureMember",
+  "geometryType": "gml:Polygon",
+  "closedRings": true,
+  "idField": "landsd:lotid (cislotdisplayname e.g. KIL 11119 S.C)",
+  "responseFile": "hong-kong-parcel-response.json",
+  "pagination": "none; bbox limited to 750 m x 600 m; the documented example bbox (Kowloon) returned 33 lots",
+  "regionSampled": "Hong Kong SAR (Central); territory-wide by design, one area sampled"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Hong Kong SAR-wide lot boundaries (approximate)",
+  "regionsVerified": [
+   "Hong Kong SAR (one sampled area)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Reused city evidence; only one area sampled. Boundaries approximate, attribution and rate limits apply, full terms unread.",
+ "nextStep": "Sample a New Territories bbox to confirm territory-wide schema."
+}

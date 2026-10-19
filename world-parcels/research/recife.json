@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:124",
+  "queueRank": 124,
+  "name": "Recife",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "centerLatLon": [
+    -8.04622135042311,
+    -34.9207751899257
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "br-recife-prefeitura-lotes",
+    "requestUrl": "https://dados.recife.pe.gov.br/dataset/1702c764-ec7a-4ef0-9861-8acd0e40c819/resource/c41ee0d0-bb33-4380-8809-2e9082d79ab0/download/lotes.geojson",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/octet-stream (GeoJSON body; 302 redirect to signed storage URL)",
+    "spatialTestAreaLonLat": [
+      -34.92088,
+      -8.04633,
+      -34.9207,
+      -8.04614
+    ],
+    "parcelRecordCount": 114079,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "DSQFL (district+sector+block+face+lot); OBJECTID",
+    "responseFile": "recife-parcel-response.json",
+    "pagination": "none; static city-wide file (~137 MB, no bbox query). Saved response is 3 features nearest city centre extracted from the full file."
+  },
+  "source": {
+    "sourceId": "br-recife-prefeitura-lotes",
+    "name": "Lotes (Area urbana dataset), Portal de Dados Abertos da Cidade do Recife",
+    "operator": "Prefeitura do Recife (data via EMPREL CKAN)",
+    "scope": "Municipality of Recife, ~114k lot polygons",
+    "endpoint": "https://dados.recife.pe.gov.br/dataset/1702c764-ec7a-4ef0-9861-8acd0e40c819/resource/c41ee0d0-bb33-4380-8809-2e9082d79ab0/download/lotes.geojson",
+    "method": "GET static GeoJSON download (CKAN)",
+    "responseFormat": "GeoJSON MultiPolygon",
+    "crs": "CRS84 (lon/lat)",
+    "reuseStatus": "CKAN package license_id odc-odbl (Open Database License); attribution/share-alike terms not reviewed in detail"
+  },
+  "portalsFound": [
+    {
+      "url": "https://dados.recife.pe.gov.br/dataset/area-urbana",
+      "observation": "CKAN dataset 'Area urbana' with lotes, quadras, face de quadra, bairros GeoJSON, plus data dictionary for lots."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dados.recife.pe.gov.br/api/3/action/package_search?q=lotes",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "catalogue search; located area-urbana package"
+    },
+    {
+      "url": "https://dados.recife.pe.gov.br/dataset/1702c764-ec7a-4ef0-9861-8acd0e40c819/resource/c41ee0d0-bb33-4380-8809-2e9082d79ab0/download/lotes.geojson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/octet-stream",
+      "parcelRecordCount": 114079,
+      "assessment": "whole-city static file (Range header ignored, full 137 MB downloaded once); real lot MultiPolygons with closed rings; verified"
+    },
+    {
+      "url": "https://geoservicos.recife.pe.gov.br/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 502,
+      "assessment": "proxy tunnel failed; unreachable, not proof of absence"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipality of Recife",
+    "verifiedOpenScope": "114,079 lot features in the file; sample of 3 near city centre",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Not a bounded server-side query: a client must fetch or pre-tile a ~137 MB file. Data vintage (TLOTESULAT 2023 in sample). Metro area beyond Recife municipality (Olinda, Jaboatao) not covered. ODbL obligations not reviewed.",
+  "nextStep": "Pre-tile/cache the GeoJSON server-side; look for an ArcGIS/WFS endpoint that allows bbox queries."
+}

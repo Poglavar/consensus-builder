@@ -69,30 +69,16 @@ async function ensureParcelsAvailable(parcelIds, options = {}) {
     const unique = Array.from(new Set(parcelIds.map(normalizeParcelIdForValuation).filter(Boolean)));
     if (!unique.length) return;
 
-    const forceRefresh = options.forceRefresh === true;
     try {
-        if (typeof fetchParcelsByIds === 'function') {
-            await fetchParcelsByIds(unique, { forceRefresh });
-        } else if (typeof fetchParcelsForIds === 'function') {
-            await fetchParcelsForIds(unique, { forceRefresh });
-        } else if (typeof fetchSingleParcelById === 'function') {
-            await Promise.allSettled(unique.map(id => fetchSingleParcelById(id, { forceRefresh })));
-        } else if (typeof fetchParcelData === 'function') {
-            await fetchParcelData();
+        const ground = (typeof CadastralParcelRepository !== 'undefined' && CadastralParcelRepository)
+            ? CadastralParcelRepository
+            : ((typeof window !== 'undefined') ? window.CadastralParcelRepository : null);
+        if (!ground || typeof ground.ensureIds !== 'function') {
+            throw new Error('Cadastral ground service is unavailable.');
         }
+        await ground.ensureIds(unique);
     } catch (error) {
-        console.warn('ensureParcelsAvailable: fetch failed', error);
-    }
-
-    // Wait for layers to be ready before attempting to read areas
-    if (typeof waitForParcelLayersReady === 'function') {
-        try {
-            await waitForParcelLayersReady(unique, {
-                timeoutMs: options.fetchTimeoutMs || 8000
-            });
-        } catch (error) {
-            console.warn('ensureParcelsAvailable: waitForParcelLayersReady failed', error);
-        }
+        console.warn('ensureParcelsAvailable: cadastral ground load failed', error);
     }
 }
 
@@ -182,22 +168,9 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
             }
         });
 
-        // If still missing after bulk fetch, try individual fetches as a last resort
+        // The ground service owns retries, negative caching, and transport choice. Asking a second
+        // low-level fetcher here used to download the same parcel again after the bulk answer.
         let stillMissing = missing.filter(id => getParcelAreaFromCache(id) <= 0);
-        if (stillMissing.length && typeof fetchSingleParcelById === 'function') {
-            await Promise.allSettled(stillMissing.map(id => fetchSingleParcelById(id, { forceRefresh: true })));
-            if (typeof waitForParcelLayersReady === 'function') {
-                try {
-                    await waitForParcelLayersReady(stillMissing, { timeoutMs: options.fetchTimeoutMs || 8000, cityId });
-                } catch (_) { }
-            }
-            stillMissing.forEach(id => {
-                const area = getParcelAreaFromCache(id);
-                if (area > 0) {
-                    totalArea += area;
-                }
-            });
-        }
 
         // Final fallback: fetch area from NFT metadata on-chain
         stillMissing = normalizedIds.filter(id => getParcelAreaFromCache(id) <= 0);
@@ -241,15 +214,25 @@ async function calculatePortfolioValue(parcelIds, options = {}) {
  * Calculate proposal execution payout per parcel
  * @param {number} totalBudget - Total proposal budget in ETH
  * @param {number} numberOfParcels - Number of parcels in the proposal
- * @returns {number} - Payout per parcel in ETH
+ * @returns {number|null} - Payout per parcel in ETH; null when the proposal binds no parcel (open
+ *   ground: there is no owner to pay, which is not the same as paying each owner 0) or the budget
+ *   is not a number.
  */
 function calculatePayoutPerParcel(totalBudget, numberOfParcels) {
-    if (numberOfParcels === 0) return 0;
+    if (!(typeof numberOfParcels === 'number' && Number.isInteger(numberOfParcels) && numberOfParcels > 0)) return null;
+    if (!(typeof totalBudget === 'number' && Number.isFinite(totalBudget))) return null;
     return totalBudget / numberOfParcels;
 }
 
 // Make functions available globally
-window.estimateParcelMarketValue = estimateParcelMarketValue;
-window.getLastTransactedPrice = getLastTransactedPrice;
-window.calculatePortfolioValue = calculatePortfolioValue;
-window.calculatePayoutPerParcel = calculatePayoutPerParcel; 
+if (typeof window !== 'undefined') {
+    window.estimateParcelMarketValue = estimateParcelMarketValue;
+    window.getLastTransactedPrice = getLastTransactedPrice;
+    window.calculatePortfolioValue = calculatePortfolioValue;
+    window.calculatePayoutPerParcel = calculatePayoutPerParcel;
+}
+
+// Node tests load this classic script with require (the browser ignores this branch).
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { calculatePayoutPerParcel, areaToEth };
+}

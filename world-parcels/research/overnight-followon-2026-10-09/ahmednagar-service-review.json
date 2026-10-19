@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8893-ahmednagar.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Ahilyanagar district service page routes residents to Mahabhumi and identifies the District Collector Office, Ahilyanagar as the local service location. Maharashtra’s official Mahabhumi portal lists Mahabhunakasha (maps with land records). This establishes local land-record service but does not verify vector geometry or exact WUP-point coverage. The official viewer shell normal HTTPS request timed out, so no viewer JS/schema or geometry was obtained.",
+  "registryAssessment": "The official Ahilyanagar district service page routes residents to Mahabhumi and identifies the District Collector Office, Ahilyanagar as the local service location. Maharashtra’s official Mahabhumi portal lists Mahabhunakasha (maps with land records). This establishes local land-record service but does not verify vector geometry or exact WUP-point coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ahmednagar.nic.in/service/%E0%A4%AE%E0%A4%B9%E0%A4%BE%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%E0%A4%82%E0%A4%B8%E0%A4%BE%E0%A4%A0%E0%A5%80/",
+      "observation": "Official district service page links Mahabhumi and names the District Collector Office, Ahilyanagar."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "observation": "The official Maharashtra portal lists Mahabhunakasha (maps with land records)."
+    },
+    {
+      "url": "https://bhunakasha.mahabhumi.gov.in/",
+      "observation": "Official Bhunakasha entry point; no point-specific service metadata or safe full-polygon response was verified."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Official viewer shell failed to load through one ordinary anonymous HTTPS request (connect timeout); no viewer schema or geometry response captured."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ahmednagar Maharashtra India official land records cadastral parcel map Mahabhulekh GIS",
+      "result": "The official Ahilyanagar district service page routes residents to Mahabhumi and identifies the District Collector Office, Ahilyanagar as the local service location. Maharashtra’s official Mahabhumi portal lists Mahabhunakasha (maps with land records). This establishes local land-record service but does not verify vector geometry or exact WUP-point coverage. The official viewer shell normal HTTPS request timed out, so no viewer JS/schema or geometry was obtained.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://ahmednagar.nic.in/service/%E0%A4%AE%E0%A4%B9%E0%A4%BE%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%E0%A4%82%E0%A4%B8%E0%A4%BE%E0%A4%A0%E0%A5%80/",
+        "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "अहमदनगर महाभू नक्शा सातबारा भूमि अभिलेख अधिकृत नकाशा",
+      "result": "The official Ahilyanagar district service page routes residents to Mahabhumi and identifies the District Collector Office, Ahilyanagar as the local service location. Maharashtra’s official Mahabhumi portal lists Mahabhunakasha (maps with land records). This establishes local land-record service but does not verify vector geometry or exact WUP-point coverage. The official viewer shell normal HTTPS request timed out, so no viewer JS/schema or geometry was obtained.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+      "actualResultUrls": [
+        "https://ahmednagar.nic.in/service/%E0%A4%AE%E0%A4%B9%E0%A4%BE%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%E0%A4%82%E0%A4%B8%E0%A4%BE%E0%A4%A0%E0%A5%80/",
+        "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no anonymous safe-ID geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official state land-record portal provides cadastral-map/record services, but the reviewed evidence does not establish an Ahmednagar city-specific registry scope at the WUP point. This remains unresolved.",
+    "verifiedOpenScope": "Maharashtra’s official Mahabhumi portal links land-record and cadastral-map services. The available workflows require selection of local administrative units and plot identifiers; the reviewed materials did not establish the exact city-side jurisdiction of the WUP point or an anonymous feature schema returning only a safe identifier and polygon. Written record services include identity/captcha gates and were not used. A local city cadastral registry source was not independently established.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "result": "Reviewed official entry point and linked record/map workflows; no property-specific lookup submitted."
+    },
+    {
+      "url": "https://bhunakasha.mahabhumi.gov.in/",
+      "result": "Viewer route identified, but no city-specific anonymous geometry schema or exact map selection was verified."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "result": "One ordinary anonymous HTTPS GET timed out while connecting. No retries, login, or property query."
+    }
+  ],
+  "remainingUncertainty": "Exact WUP point-to-survey-unit mapping and public vector geometry remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification."
+}

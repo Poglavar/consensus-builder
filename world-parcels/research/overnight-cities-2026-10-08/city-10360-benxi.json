@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Benxi",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Benxi Natural Resources Bureau maintains a city-local real-property registration section and service guides and identifies the Benxi Real Estate Registration Center as an active local service office. Current city-government materials document registration intake and service handling, but no public anonymous parcel-vector service, safe geometry schema, or exact WUP-point coverage was verified.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.benxi.gov.cn/zwfw/fwzn/bdcdj",
+    "https://zrzyj.benxi.gov.cn/gzdt/content_667955",
+    "https://zrzyj.benxi.gov.cn/jgzn/jgsz",
+    "https://zwfw.benxi.gov.cn/epoint-web-zwdt/",
+    "https://zrzyj.benxi.gov.cn/gzdt/content_608584"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10360,
+  "cityId": "wup2025:10360",
+  "centerLatLon": [
+    41.2899722335507,
+    123.761245160742
+  ],
+  "rank": 730,
+  "queueRank": 730,
+  "population2025": 734933,
+  "population2025k": 734.933,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous parcel-geometry service, safe native-key schema, or geometry response at the unchanged WUP settlement locator was verified. The reviewed registration portal is an application workflow.",
+  "scopeLimits": "City-local registration is confirmed by first-party municipal sources. The available service guides and online portal describe rights-registration application workflows; they do not establish public anonymous parcel polygons or a safe feature schema. No geometry or property-specific lookup was requested, and no full polygon was retained. No owner/address or identity data queried.",
+  "priorEvidenceFiles": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "本溪市自然资源局 不动产登记中心 地籍图 地籍 服务指南 本溪",
+        "scope": "Verify the city-local registry service and look for public anonymous parcel geometry without property-specific queries.",
+        "result": "The city bureau publishes an “不动产登记” service-guide section; current official bureau material identifies the Benxi Real Estate Registration Center and city service-center intake. No anonymous parcel-vector endpoint or geometry schema was found.",
+        "actualResultUrls": [
+          "https://zrzyj.benxi.gov.cn/zwfw/fwzn/bdcdj",
+          "https://zrzyj.benxi.gov.cn/gzdt/content_667955",
+          "https://zwfw.benxi.gov.cn/epoint-web-zwdt/"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal, owner, address, or property-specific query inputs submitted."
+      },
+      {
+        "language": "English",
+        "query": "Benxi China official real estate registration center cadastral parcel map GIS land registry",
+        "scope": "Cross-check city-specific registry/map evidence and distinguish service workflow from public parcel-vector access.",
+        "result": "Official city bureau and municipal-government materials confirm a local registration center and online service portal. No city parcel feature schema or anonymous full-polygon route surfaced.",
+        "actualResultUrls": [
+          "https://zrzyj.benxi.gov.cn/zwfw/fwzn/bdcdj",
+          "https://zwfw.benxi.gov.cn/epoint-web-zwdt/",
+          "https://benxi.gov.cn/"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal, owner, address, or property-specific query inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyj.benxi.gov.cn/zwfw/fwzn/bdcdj",
+        "observation": "Official Benxi Natural Resources Bureau “不动产登记” service-guide section lists local registration procedures and is hosted by the municipal bureau; it documents an application workflow, not a geometry service."
+      },
+      {
+        "url": "https://zrzyj.benxi.gov.cn/gzdt/content_667955",
+        "observation": "Official 2026 bureau report states the city Natural Resources Affairs Service Center’s Real Estate Registration Center handles registration intake at the municipal service center; it establishes current local service activity but exposes no parcel geometry."
+      },
+      {
+        "url": "https://zrzyj.benxi.gov.cn/jgzn/jgsz",
+        "observation": "Official city-bureau organization page describes responsibilities including unified natural-resource and real-property registration and management of the real-property information platform."
+      },
+      {
+        "url": "https://zwfw.benxi.gov.cn/epoint-web-zwdt/",
+        "observation": "Official Benxi integrated government service portal lists “互联网+不动产登记” (Internet + real-estate registration); it is an online application/service workflow, not a public parcel map."
+      }
+    ]
+  },
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "The official Benxi Natural Resources Bureau maintains a city-local real-property registration section and service guides and identifies the Benxi Real Estate Registration Center as an active local service office. Current city-government materials document registration intake and service handling, but no public anonymous parcel-vector service, safe geometry schema, or exact WUP-point coverage was verified.",
+    "verifiedOpenScope": "Official city-local registry/cadastre service is documented; anonymous full-polygon geometry and its schema have not been verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "No anonymous parcel-geometry service, safe native-key schema, or geometry response at the unchanged WUP settlement locator was verified. The reviewed registration portal is an application workflow.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/benxi-service-review.json"
+  },
+  "publicParcelGeometryCandidateFound": false,
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "rootPrimaryReadback": {
+    "url": "https://zrzyj.benxi.gov.cn/zwfw/fwzn/bdcdj",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "不动产登记_服务指南_政务服务_本溪市自然资源局"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    41.2899722335507,
+    123.761245160742
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

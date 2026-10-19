@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:132",
+  "queueRank": 132,
+  "name": "Berlin",
+  "country": "Germany",
+  "countryCode": "DE",
+  "centerLatLon": [
+    52.5018146389819,
+    13.3999531382876
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "de-be-alkis-flurstuecke-wfs",
+    "requestUrl": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke?service=WFS&version=2.0.0&request=GetFeature&typeNames=alkis_flurstuecke:flurstuecke&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=13.3995,52.5015,13.4005,52.5022,EPSG:4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json (GeoServer WFS GeoJSON; header not seen, fetched via WebFetch tool)",
+    "spatialTestAreaLonLat": [
+      13.3995,
+      52.5015,
+      13.4005,
+      52.5022
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "uuid / fsko (Flurstueckskennzeichen)",
+    "responseFile": "berlin-parcel-response.json",
+    "pagination": "WFS 2.0 count/startIndex; totalFeatures 403526 for Berlin; 10 matched in the test bbox"
+  },
+  "source": {
+    "sourceId": "de-be-alkis-flurstuecke-wfs",
+    "name": "ALKIS Berlin Flurstuecke WFS (Geoportal Berlin / FIS-Broker)",
+    "operator": "Land Berlin, Senatsverwaltung / Geoportal Berlin (ALKIS)",
+    "scope": "Land Berlin, ~403,526 Flurstuecke",
+    "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+    "method": "GET OGC WFS 2.0 GetFeature (GeoJSON)",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:25833 native; EPSG:4326 via srsName",
+    "reuseStatus": "Open data on Berlin portal; licence text not read here"
+  },
+  "portalsFound": [
+    {
+      "url": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+      "observation": "Berlin GDI WFS with alkis_flurstuecke:flurstuecke feature type."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "curl TLS verification failed (self-signed certificate in chain); not bypassed"
+    },
+    {
+      "url": "https://daten.berlin.de/api/3/action/package_search?q=flurstücke",
+      "method": "GET",
+      "httpStatus": 403,
+      "assessment": "policy/blocked response"
+    },
+    {
+      "url": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke?...count=1&outputFormat=application/json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 1,
+      "assessment": "via WebFetch: real Marzahn parcel, totalFeatures 403526"
+    },
+    {
+      "url": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke?service=WFS&version=2.0.0&request=GetFeature&typeNames=alkis_flurstuecke:flurstuecke&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=13.3995,52.5015,13.4005,52.5022,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "parcelRecordCount": 3,
+      "assessment": "via WebFetch: 3 Kreuzberg Flurstuecke with closed rings; 10 in bbox"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Land Berlin",
+    "verifiedOpenScope": "three Flurstuecke in Kreuzberg in a bounded sample",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Verification came through the WebFetch tool because direct curl fails TLS chain validation for gdi.berlin.de; a runtime client must trust the chain or the fix must be confirmed. Licence not read. Germany-wide coverage is not established (Laender run separate ALKIS services).",
+  "nextStep": "Confirm the TLS chain issue and licence (likely dl-de/zero or by, unread); implement paginated WFS requests."
+}

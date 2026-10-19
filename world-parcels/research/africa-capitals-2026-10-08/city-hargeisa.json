@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:SO:hargeisa",
+  "queueRank": null,
+  "name": "Hargeisa",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "centerLatLon": [
+    9.5624,
+    44.0775
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hargeisa Somaliland parcel cadastre land registry online map GIS",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Somali",
+        "query": "diiwaangelinta dhulka Hargeysa cadastre khariidad dhul GIS",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://hargeisamunicipality.com/services/online-land-registration/",
+        "observation": "Official Hargeisa Municipality land-registration service says all land in the districts should be registered locally; applications require sign-in, technical review and payment."
+      },
+      {
+        "url": "https://www.dhhengineering.org/app/login",
+        "observation": "Third-party project report says 2023–24 GIS cadastre and property-registration work was delivered in Hargeisa; this is a project claim, not an open service. Historic UN-Habitat reports describe older building/property GIS and cadastral records, but not currently open parcel geometry."
+      },
+      {
+        "url": "https://eastadvisory.org/projects/municipal-property-registration",
+        "observation": "Municipal land-registry system is login-only; not accessed past public login."
+      },
+      {
+        "url": "https://spatial.faoswalim.org/",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      },
+      {
+        "url": "https://unhabitat.org/sites/default/files/download-manager-files/53%20UN-Habitat%20Model%20Projects.pdf",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "Municipal land-registry system is login-only; not accessed past public login.",
+    "nextStep": "Revisit the official map/service after a public, non-personal feature endpoint is identified; validate city coverage and geometry before calling this a sample.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official municipality describes local land registration for its districts and online parcel registration workflow.",
+  "registryEvidenceUrls": [
+    "https://hargeisamunicipality.com/services/online-land-registration/",
+    "https://www.dhhengineering.org/app/login",
+    "https://eastadvisory.org/projects/municipal-property-registration",
+    "https://spatial.faoswalim.org/",
+    "https://unhabitat.org/sites/default/files/download-manager-files/53%20UN-Habitat%20Model%20Projects.pdf"
+  ],
+  "resultCategory": "municipal_land_registration_login_based_no_public_geometry",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/SO.json",
+    "world-parcels/research/retry/countries/SO.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "supplement: Somaliland de facto capital",
+  "scopeTier": "supplementary_disputed_or_de_facto",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Hargeisa Somaliland parcel cadastre land registry online map GIS",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "Somali",
+      "query": "diiwaangelinta dhulka Hargeysa cadastre khariidad dhul GIS",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

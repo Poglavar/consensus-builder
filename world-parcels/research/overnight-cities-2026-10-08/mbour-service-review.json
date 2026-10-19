@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-205-mbour.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified.",
+  "registryAssessment": "The Senegal DGID is the national authority for cadastre and land domain records and offers certified cadastral plan extracts; the reviewed service information indicates request-based certified documents rather than an anonymous parcel geometry API. Local Mbour coverage/office assignment was not proven by the available primary map evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.dgid.sn/",
+      "observation": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified."
+    },
+    {
+      "url": "https://www.dgid.sn/particuliers",
+      "observation": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "M'bour Senegal official cadastre cadastral parcel map GIS land registry",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified.",
+      "actualResultUrls": [
+        "https://www.dgid.sn/",
+        "https://www.dgid.sn/particuliers"
+      ],
+      "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    },
+    {
+      "language": "French",
+      "query": "M'bour cadastre parcelles carte cadastrale DGID Sénégal officiel service fiscal Mbour",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified.",
+      "actualResultUrls": [
+        "https://www.dgid.sn/",
+        "https://www.dgid.sn/particuliers"
+      ],
+      "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry retained; no qualifying full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Senegal DGID is the national authority for cadastre and land domain records and offers certified cadastral plan extracts; the reviewed service information indicates request-based certified documents rather than an anonymous parcel geometry API. Local Mbour coverage/office assignment was not proven by the available primary map evidence.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Public anonymous parcel geometry, exact WUP-point coverage, and citywide coverage remain unverified."
+}

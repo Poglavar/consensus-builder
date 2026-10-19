@@ -1,0 +1,29 @@
+{
+  "taskId": "city:10486",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-10486-lieshan.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/lieshan-service-review.json",
+    "tmp/valhalla-parcel-research/lieshan/huaibei-article.html",
+    "tmp/valhalla-parcel-research/lieshan/req-1.body",
+    "tmp/valhalla-parcel-research/lieshan/req-2.body",
+    "tmp/valhalla-parcel-research/lieshan/req-3.body",
+    "tmp/valhalla-parcel-research/lieshan/req-4.body",
+    "tmp/valhalla-parcel-research/lieshan/req-5.body"
+  ],
+  "checkedAt": "2026-10-10T14:50:34Z",
+  "findings": {
+    "identity": "WUP code 10486, rank 1773, China/CN, exact point and 323702 persons match immutable queue and roster.",
+    "searches": "English and Chinese query texts, outcome narratives and actual URLs recorded in city packet.",
+    "custody": "registryFound true supported by saved first-party Huaibei cadastral-map announcement naming municipal bureau and public viewer.",
+    "geometry": "No sample polygon or native parcel ID; five saved anonymous responses report code 10002 and permission denied. No citywide absence inference.",
+    "admission": "No fresh native-ID read, paging, 13 bounded cells, metric GEOS checks, source binding or headed Details verification."
+  },
+  "sourceUrls": [
+    "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html"
+  ],
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false
+}

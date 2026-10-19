@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11194",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11194-funing.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/funing-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T21:58:53Z",
+  "identityCheck": "Immutable WUP ranked roster, pending queue, and city packet agree on city code, rank, name, country, exact settlement point, and population in persons.",
+  "researchCheck": "Paired packet and review record English and native-language searches with query text and result URLs. No sample GeoJSON or verified full parcel polygon is retained; polygon count is zero (within the three-polygon cap), and no safe native ID has been established.",
+  "custodyDecision": "First-party Funing government page names the county Natural Resources and Planning Bureau and its survey/mapping and rights-registration section. The original cached Jiangsu portal configuration names 阜宁县 code 320923 and a login-mediated ticket route; the cached direct response is HTTP 400 for a missing ticket. RegistryFound remains null because no city parcel record was verified.",
+  "reason": "A login-mediated ticket route is not a parcel response. No safe native-ID polygon or independent live adapter proof; login friction cannot establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed details-panel verification are not independently evidenced. Runtime/catalog/report admission remains withheld."
+}

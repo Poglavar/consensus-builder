@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "TJ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: tg-TJ,tg;q=0.9,ru;q=0.8,en;q=0.7; cookie jar (curl -c/-b) kept per country",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.kadastr.tj/ and https://kadastr.tj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502), no response from host"
+  },
+  {
+   "url": "https://www.gki.tj/, gki.tj, landcom.tj, www.landcom.tj, geoportal.tj, www.geoportal.tj, cadastre.tj, data.gov.tj, tajstat.tj",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502), no response from host (candidate national agency/geoportal/open-data hosts)"
+  },
+  {
+   "url": "https://www.president.tj/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable but irrelevant SPA shell; shows .tj hosts are not all blocked"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Tajikistan parcel&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "every cadastre/land-agency .tj host fails at the proxy CONNECT (502) while another .tj site (president.tj) loads; consistent with the hosts being down or blocking non-Tajik/cloud egress",
+ "notes": "No change: still no response from any Tajik land-agency host with browser headers, and no ArcGIS Online parcel content. No viewer could be inspected.",
+ "nextStep": "Retry from another network/region; find the State Committee on Land Management and Geodesy site via a search engine."
+}

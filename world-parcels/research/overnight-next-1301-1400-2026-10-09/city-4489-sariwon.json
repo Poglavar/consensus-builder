@@ -1,0 +1,69 @@
+{
+  "cityCode": 4489,
+  "queueRank": 1398,
+  "name": "Sariwon",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "point": [38.5104736623283, 125.755403558968],
+  "population2025": 404672,
+  "population2025k": 404.672,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "No local Sariwon registry, cadastral viewer, or public parcel-vector service was evidenced. Official DPRK web material found during discovery was general or for other locations and did not establish a Sariwon parcel source; registryFound therefore remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sariwon North Korea official cadastral map parcel land registry GIS",
+        "result": "No official Sariwon cadastral map, local land-registry viewer, parcel API, or downloadable parcel dataset was found. Search results included a general Sariwon reference and an official DPRK site for a different city's economic-zone layout, neither of which provides Sariwon parcel geometry.",
+        "actualResultUrls": [
+          "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+          "https://www.koreanarchitecture.gov.kp/",
+          "https://en.wikipedia.org/wiki/Sariwon"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "사리원시 지적도 토지정보 공식 지도 지적측량",
+        "result": "No Sariwon-specific official cadastral map, parcel service, or public safe ID-plus-geometry response was found. Results were predominantly South Korean cadastral/GIS services or general DPRK legal/institutional material, not a Sariwon source.",
+        "actualResultUrls": [
+          "https://www.kgeop.go.kr/",
+          "https://kcsc.co.kr/kor/sub01_02_01_01.do",
+          "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.naenara.com.kp/",
+      "role": "DPRK official Naenara web domain discovered during first-party search",
+      "observation": "The search result available was an official publication for the Sinuiju International Economic Zone, not Sariwon cadastral data. Direct request to the selected domain route failed local TLS certificate validation; no certificate exception was authorized and no service configuration was inferred."
+    },
+    {
+      "url": "https://www.koreanarchitecture.gov.kp/",
+      "role": "DPRK official architecture/cultural site discovered during first-party search",
+      "observation": "The reachable site describes the Central Zoo and general map-guide content; no Sariwon parcel layer, cadastral schema, or public parcel endpoint was exposed. Direct curl also failed local TLS certificate validation."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel identity plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and was not shifted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Publicly discoverable Sariwon/DPRK cadastral and map sources reviewed in English and Korean.",
+    "verifiedOpenScope": "Official-domain presence and general map material were reviewed, but Sariwon parcel-vector access, schema, CRS, native identity, exact-point containment, and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

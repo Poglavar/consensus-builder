@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AM",
+ "country": "Armenia",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Cadastre Committee of the Republic of Armenia (e-cadastre.am); state mapping platform maparmenia.am",
+ "portalsFound": [
+  {
+   "url": "https://www.e-cadastre.am/en/map",
+   "observation": "Redirects to /en/customer/login/map/1: the map viewer sits behind customer login."
+  },
+  {
+   "url": "https://maparmenia.am/",
+   "observation": "State mapping platform reportedly showing cadastral blocks/parcels; unreachable from proxy."
+  },
+  {
+   "url": "https://dram.am/en/cadastre",
+   "observation": "Third-party viewer that streams parcels from maparmenia.am; Cloudflare 403."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.e-cadastre.am/en/map",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "redirected to login page (no anonymous parcel data)",
+   "contentType": "text/html"
+  },
+  {
+   "url": "https://maparmenia.am/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National cadastre map, login required at e-cadastre.am; maparmenia.am claimed public viewer",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "maparmenia.am could not be reached, so an anonymous WMS/ArcGIS endpoint behind its viewer is untested.",
+ "nextStep": "Retry maparmenia.am, inspect viewer network calls for parcel layer."
+}

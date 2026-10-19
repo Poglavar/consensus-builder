@@ -55,7 +55,7 @@ describe('POST /ipfs/upload', () => {
     it('rejects missing metadata objects', async () => {
         const res = await request(app)
             .post('/ipfs/upload')
-            .send({ imageData: 'data:image/png;base64,aGVsbG8=' });
+            .send({ imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA' });
 
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ error: 'metadata object is required.' });
@@ -65,7 +65,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: []
             });
 
@@ -77,7 +77,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Proposal NFT' },
                 injected: true
             });
@@ -105,7 +105,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Proposal NFT' }
             });
 
@@ -125,7 +125,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Proposal NFT' }
             });
 
@@ -144,7 +144,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Proposal NFT' }
             });
 
@@ -170,7 +170,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Proposal NFT' }
             });
 
@@ -195,7 +195,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: { name: 'Proposal NFT' }
             });
 
@@ -221,7 +221,7 @@ describe('POST /ipfs/upload', () => {
             .post('/ipfs/upload')
             .send({
                 fileName: 'proposal.png',
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: {
                     name: 'Proposal NFT'
                 }
@@ -252,7 +252,7 @@ describe('POST /ipfs/upload', () => {
         const res = await request(app)
             .post('/ipfs/upload')
             .send({
-                imageData: 'data:image/png;base64,aGVsbG8=',
+                imageData: 'data:image/png;base64,iVBORw0KGgoAAAAAAAAAAAAAAAAAAAAA',
                 metadata: {
                     name: 'Proposal NFT',
                     external_url: 'https://example.com/proposals/1'

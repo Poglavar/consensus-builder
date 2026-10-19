@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T02:41:49.525472+00:00",
+  "decision": "approved_by_root",
+  "scope": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m\u00b2 or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified.",
+  "acceptanceFile": "bonn-nrw-root-acceptance.json",
+  "qualityFile": "bonn-nrw-root-quality.json",
+  "sourceCoordinatesModified": false
+}

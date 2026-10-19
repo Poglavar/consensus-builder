@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11495",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11495-purnia.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/purnia-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:33:53Z",
+  "reason": "The official Bihar BhuNaksha landing page and cached selector response establish Purnia cadastral-map custody. A bounded extent returned no content; cached REST error pages are not parcel responses. No native-ID polygon or adapter qualification exists.",
+  "identityCheck": "Exact code, rank, country, point and population persons match the immutable hashed WUP queue; English and native/local searches are recorded in both paired files.",
+  "polygonCheck": "Zero full polygons retained in paired files; no safe native parcel ID or city-specific full polygon verified.",
+  "qualificationGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding and headed Details-panel check are not independently evidenced.",
+  "firstParty": "Bihar BhuNaksha landing page HTTP 200; cached selector list contains PURNIA 09, Sadar Purnia 02 and Purnia East 06; bounded extent body empty; WMS route returned error HTML."
+}

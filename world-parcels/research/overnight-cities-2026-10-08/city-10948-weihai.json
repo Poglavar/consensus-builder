@@ -1,0 +1,135 @@
+{
+  "name": "Weihai",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 925,
+  "point": [
+    37.5117779131162,
+    122.085580399879
+  ],
+  "population2025": 589850,
+  "population2025k": 589.85,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Weihai Natural Resources and Planning Bureau documents city cadastral-map public-query paths and states that urban cadastral parcel layers are available through the Shandong public geospatial platform; the Weihai Real Estate Registration Center supports cadastral map/property-map services. No safe anonymous feature schema or geometry endpoint was verified.",
+  "registryEvidenceUrls": [
+    "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+    "https://bnrp.weihai.gov.cn/",
+    "https://www.weihai.gov.cn/art/2016/9/27/art_59749_3322.html",
+    "http://www.sdmap.gov.cn/index.html"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Anonymous public parcel geometry and exact WUP-point coverage were not verified.",
+  "scopeLimits": "Research covers the exact unchanged WUP locator and reviewed official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-10948-weihai-source-review",
+    "name": "Weihai Natural Resources and Planning Bureau cadastral-map inquiry / Shandong public geospatial platform",
+    "url": "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+    "operator": "China",
+    "serviceType": "Official cadastral map lookup and city real-estate registration service; parcel geometry endpoint not inspected/verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; map’s native parcel key not verified."
+  },
+  "wupCityCode": 10948,
+  "cityId": "wup2025:10948",
+  "queueRank": 925,
+  "centerLatLon": [
+    37.5117779131162,
+    122.085580399879
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "Weihai Natural Resources and Planning Bureau documents city cadastral-map public-query paths and states that urban cadastral parcel layers are available through the Shandong public geospatial platform; the Weihai Real Estate Registration Center supports cadastral map/property-map services. No safe anonymous feature schema or geometry endpoint was verified.",
+    "verifiedOpenScope": "No anonymous public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Weihai official cadastral parcel map land registration service Natural Resources Planning Bureau",
+        "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service.",
+        "result": "The city bureau describes public cadastral-map lookup via Shandong’s public geospatial platform (urban cadastral district/subdistrict/construction-land parcel layer) and registration-service routes. Some other workflows return property/house maps after address, certificate or unit-number searches; no such identifiers were used. No anonymous geometry endpoint or response verified.",
+        "actualResultUrls": [
+          "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+          "https://bnrp.weihai.gov.cn/",
+          "https://www.weihai.gov.cn/art/2016/9/27/art_59749_3322.html",
+          "http://www.sdmap.gov.cn/index.html"
+        ],
+        "executionMethod": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted."
+      },
+      {
+        "language": "Chinese",
+        "query": "威海 不动产登记 地籍图 宗地 官方 自然资源局",
+        "scope": "Find first-party local-language evidence for the same local registry/map question.",
+        "result": "The city bureau describes public cadastral-map lookup via Shandong’s public geospatial platform (urban cadastral district/subdistrict/construction-land parcel layer) and registration-service routes. Some other workflows return property/house maps after address, certificate or unit-number searches; no such identifiers were used. No anonymous geometry endpoint or response verified.",
+        "actualResultUrls": [
+          "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+          "https://bnrp.weihai.gov.cn/",
+          "https://www.weihai.gov.cn/art/2016/9/27/art_59749_3322.html",
+          "http://www.sdmap.gov.cn/index.html"
+        ],
+        "executionMethod": "Separate native-language search and official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+        "observation": "Weihai Natural Resources and Planning Bureau documents city cadastral-map public-query paths and states that urban cadastral parcel layers are available through the Shandong public geospatial platform; the Weihai Real Estate Registration Center supports cadastral map/property-map services. No safe anonymous feature schema or geometry endpoint was verified."
+      },
+      {
+        "url": "https://bnrp.weihai.gov.cn/",
+        "observation": "Weihai Natural Resources and Planning Bureau documents city cadastral-map public-query paths and states that urban cadastral parcel layers are available through the Shandong public geospatial platform; the Weihai Real Estate Registration Center supports cadastral map/property-map services. No safe anonymous feature schema or geometry endpoint was verified."
+      },
+      {
+        "url": "https://www.weihai.gov.cn/art/2016/9/27/art_59749_3322.html",
+        "observation": "Weihai Natural Resources and Planning Bureau documents city cadastral-map public-query paths and states that urban cadastral parcel layers are available through the Shandong public geospatial platform; the Weihai Real Estate Registration Center supports cadastral map/property-map services. No safe anonymous feature schema or geometry endpoint was verified."
+      },
+      {
+        "url": "http://www.sdmap.gov.cn/index.html",
+        "observation": "Weihai Natural Resources and Planning Bureau documents city cadastral-map public-query paths and states that urban cadastral parcel layers are available through the Shandong public geospatial platform; the Weihai Real Estate Registration Center supports cadastral map/property-map services. No safe anonymous feature schema or geometry endpoint was verified."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+        "method": "Official service instructions review",
+        "result": "Describes cadastral map query via public platform and “public cadastral map query” workflow. It also offers property-unit/address/certificate-based house/parcel plans; no personal/property identifiers were submitted."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "威海市自然资源和规划局 一网通办操作说明 不出门即可查询地籍图的几种方法"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

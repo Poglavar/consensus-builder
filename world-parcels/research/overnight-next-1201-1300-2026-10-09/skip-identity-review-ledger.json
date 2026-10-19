@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 1212,
+      "cityCode": 7328,
+      "name": "Atlanta",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 458.225,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "reviewed-attempt-crosswalk",
+          "source": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json",
+          "evidenceFile": "world-parcels/research/us-capitals-2026-10-06/ga.json",
+          "distanceKm": 5.14,
+          "reason": "The earlier municipal Atlanta and Fulton County parcel investigation explicitly concerns the same city; a 5.14km population-weighted centroid difference does not make it a new city attempt. Both positive and unsuccessful prior investigations are excluded.",
+          "identityConfidence": "confirmed"
+        }
+      ],
+      "resolvedPriorMatches": [
+        {
+          "kind": "same-country-name-coordinate-candidate",
+          "evidenceFile": "research/us-capitals-2026-10-06/ga.json",
+          "cityId": "us-capital:GA",
+          "cityName": "Atlanta",
+          "parcelStatus": "verified_sample_capital_scope",
+          "checked": null,
+          "distanceKm": 5.14,
+          "identityConfidence": "probable-review-required",
+          "source": "registry"
+        },
+        {
+          "kind": "runtime-city-config-with-parcel-source",
+          "source": "frontend/js/city-config.js",
+          "cityId": "atlanta",
+          "label": "Atlanta, United States",
+          "identityConfidence": "review-required"
+        }
+      ],
+      "identityDecision": {
+        "wupCityCode": 7328,
+        "rank": 1212,
+        "countryCode": "US",
+        "name": "Atlanta",
+        "decision": "confirmed_attempt",
+        "effectiveAttemptState": "attempted",
+        "candidatePointLatLon": [
+          33.790562284868,
+          -84.3637780537448
+        ],
+        "priorCityId": "us-capital:GA",
+        "priorPointLatLon": [
+          33.749,
+          -84.388
+        ],
+        "distanceKm": 5.14,
+        "reason": "The earlier municipal Atlanta and Fulton County parcel investigation explicitly concerns the same city; a 5.14km population-weighted centroid difference does not make it a new city attempt. Both positive and unsuccessful prior investigations are excluded.",
+        "evidence": [
+          {
+            "path": "world-parcels/research/us-capitals-2026-10-06/ga.json",
+            "observation": "Prior city-specific Atlanta investigation returned public native ParcelID polygons and an exact native-ID readback on2026-10-06."
+          },
+          {
+            "path": "frontend/js/city-config.js",
+            "observation": "Existing Atlanta runtime entry uses the qualified city parcel source; configuration alone was not used as attempt evidence."
+          }
+        ],
+        "source": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json",
+        "evidenceFile": "world-parcels/research/us-capitals-2026-10-06/ga.json"
+      }
+    },
+    {
+      "rank": 1244,
+      "cityCode": 5724,
+      "name": "Kolwezi",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "pop2025k": 446.709,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-5724.json",
+          "cityId": "wup2025:5724",
+          "cityName": "Kolwezi",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-5724.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1269,
+      "cityCode": 91,
+      "name": "Tallinn",
+      "country": "Estonia",
+      "iso2": "EE",
+      "pop2025k": 439.526,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+          "cityId": "wup2025:91",
+          "cityName": "Tallinn",
+          "parcelStatus": "verified_sample_partial_coverage",
+          "checked": true,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/country-integration-audit-2026-10-09/Tallinn-runtime-qualification.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": [],
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "pending_unintegrated",
+  "integrationState": "not_integrated",
+  "proposalStatus": "awaiting_root_queue_confirmation",
+  "sourceRoster": "ranked-population.json",
+  "sourceRosterSha256": "3bfad4448253fa7dc9d049e4849601b990ba45bd19611da6de139b7730ad0dbd",
+  "sourceHashes": "source-hashes.json",
+  "sourceHashesSha256": "279510906900722f437d333344d755ca2ada7fde044600af126fd4fe8d97e310",
+  "identityDecisionOverlay": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json",
+  "identityDecisionOverlaySha256": "94bb446008d720eb0639a62f09fac74646cc36a2977389606672bea535df8af7",
+  "method": "Classified with the shared WUP queue protocol against the current registry and paired city evidence; current identity overlay considered by WUP code/country. Unresolved same-country aliases are held. Queue membership alone never marks an attempt.",
+  "resolvedIdentityDecisions": [
+    {
+      "rank": 1212,
+      "cityCode": 7328,
+      "name": "Atlanta",
+      "decision": "confirmed_attempt",
+      "source": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json"
+    }
+  ],
+  "cohortCounts": {
+    "ranked": 100,
+    "confirmedPriorAttemptSkips": 3,
+    "identityReviewHolds": 0,
+    "eligiblePending": 97
+  },
+  "reviewSummary": []
+}

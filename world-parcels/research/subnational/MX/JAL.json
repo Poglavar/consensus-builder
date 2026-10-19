@@ -1,0 +1,74 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "JAL",
+ "regionName": "Jalisco",
+ "checkedAt": "2026-09-30",
+ "status": "viewer_only",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9 (cookie jar on; viewer-origin Referer where the viewer was fetched)",
+ "source": {
+  "sourceId": "mx-jal-ecarto-808",
+  "name": "eCarto 'WEB CARTOGRAFIA' public map 808 (Cartografia Estatal predio layer)",
+  "operator": "Direccion de Catastro del Estado de Jalisco (platform CartoData eCarto)",
+  "scope": "state of Jalisco cadastral cartography, rendered as raster tiles",
+  "endpoint": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808",
+  "method": "GET",
+  "responseFormat": "PNG tiles + UTFGrid JSON (interaction grid exposes only the 'cuenta' ID)",
+  "crs": "web mercator tiles",
+  "reuseStatus": "not stated"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": true,
+ "regionWideBasis": "Viewer labels the layer 'Cartografia Estatal' and 'Jalisco - IIEGJ'; publisher makes no download claim. No vector geometry service exposed.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastro.jalisco.gob.mx/",
+   "observation": "200 landing page; eCarto viewer iframe map 808 is anonymous; /ecarto atlas login page; Google Drive folders of valores"
+  },
+  {
+   "url": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808/getmapviz",
+   "observation": "200 JSON config: tile layers (predio layer id fzh9qhyk-...), UTFGrid, GeoSearch and Oblix (oblique imagery) endpoints; contains a public Mapbox basemap token (not saved)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "public embed map"
+  },
+  {
+   "url": "https://catastro.jalisco.gob.mx/ecarto/catastro/map/808/getmapviz",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer config, tile-only"
+  },
+  {
+   "url": "https://ec1.jalisco.gob.mx/tiles/fzh9qhyk-<layer>:grid/18/55816/115693.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "UTFGrid with 2 parcel keys (IDs only, no polygon geometry)"
+  },
+  {
+   "url": "https://ec1.jalisco.gob.mx/tiles/fzh9qhyk-<layer>/18/55816/115693.png",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "image/png",
+   "assessment": "raster PNG tile"
+  },
+  {
+   "url": "https://iitej.jalisco.gob.mx/, https://mapas.jalisco.gob.mx/, https://datos.jalisco.gob.mx/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable / 502"
+  }
+ ],
+ "reuseStatus": "not assessed",
+ "remainingUncertainty": "No WFS/FeatureServer or GeoJSON parcel query found; raster+UTFGrid is not a vector polygon record list, so not verified. Guadalajara/Zapopan municipal viewers not reachable. Reused from research/countries/MX.json and research/retry/countries/MX.json: RAN (phina/sig.ran.gob.mx) Akamai 403, INEGI has no parcel service; no national layer.",
+ "nextStep": "Look for IIEG (iieg.gob.mx) datasets or municipal GDL/Zapopan GIS with vector output; eCarto GeoResources endpoint needs the map session."
+}

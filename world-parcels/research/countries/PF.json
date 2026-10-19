@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "PF",
+  "country": "French Polynesia",
+  "checkedAt": "2026-09-29",
+  "status": "no_online_cadastre_found",
+  "cadastreAuthority": "Service du Foncier / Direction des Affaires Foncieres (Polynesian territorial authority; not DGFiP PCI)",
+  "portalsFound": [
+    {
+      "url": "https://apicarto.ign.fr/api/doc/cadastre",
+      "observation": "French national API Carto; no PCI parcels for Papeete"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=Point(-149.5585,-17.5334)&_limit=2",
+      "method": "valid but empty FeatureCollection (Papeete, French Polynesia); no PCI cadastre there",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "application/json; charset=utf-8"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Only the French national API was tried; a territorial GIS (e.g. Tahiti SIG/Foncier portals) was not located. Absence not proven.",
+  "nextStep": "Search Polynesian government geoportal (e.g. tefenua / SIG) for a cadastre service."
+}

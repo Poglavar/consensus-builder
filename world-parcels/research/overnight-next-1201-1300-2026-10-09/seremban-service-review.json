@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2134-seremban.json",
+  "purpose": "Document first-party Seremban registry context and bounded anonymous cadastral geometry access review.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official Seremban land-office procedures and JUPEM state survey context were found. A Negeri Sembilan government ArcGIS Lot Kadaster layer returned three safe polygon features anonymously, with native UPI identities. Runtime readiness remains held pending serial review.",
+  "registryAssessment": "Local registry/procedure custody is evidenced by the official Pejabat Daerah dan Tanah Seremban pages; JUPEM is the survey/mapping source named by the cadastral layer. This is institutional/source evidence, not admission of an adapter or owner/title access.",
+  "safeFieldAllowlist": ["safe public parcel/source ID", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://seremban.ns.gov.my/", "observation": "Official Pejabat Daerah & Tanah Seremban portal lists land-tax, submission-status, forms, and land-title guidance services."},
+    {"url": "https://seremban.ns.gov.my/help/soalan-faq/", "observation": "Official FAQ states land-ownership status is checked at the Registration Unit and cadastral plans can be purchased at JUPEM Negeri Sembilan or the Seremban land office technical counter."},
+    {"url": "https://www.jupem.gov.my/ebiz/info-korp", "observation": "Official JUPEM material describes cadastral surveying and electronic web mapping, and identifies the Negeri Sembilan office in Seremban."},
+    {"url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/NEGERI_SEMBILAN/MapServer/52", "observation": "Government ArcGIS Feature Layer Lot Kadaster: polygon geometry, EPSG:102062, copyright/source JUPEM 2020, native fields FID/MUKIM/PA/LOT/UPI/KELUASAN, GeoJSON supported."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Seremban Malaysia official cadastral parcel map land registry GIS JUPEM Negeri Sembilan", "result": "First-party local land-office, JUPEM, and public ArcGIS cadastral sources found; geometry verified with a bounded query.", "resultUrls": ["https://seremban.ns.gov.my/", "https://www.jupem.gov.my/ebiz/info-korp", "https://geoformatik.forestry.gov.my/arcgis/rest/services/NEGERI_SEMBILAN/MapServer/52"]},
+    {"language": "Malay (Bahasa Melayu)", "query": "Seremban peta kadaster lot tanah rasmi Negeri Sembilan JUPEM Pejabat Tanah Seremban", "result": "Official Malay-language land-office procedure evidence and the Negeri Sembilan Lot Kadaster REST layer found; three safe polygons returned.", "resultUrls": ["https://seremban.ns.gov.my/help/soalan-faq/", "https://geoformatik.forestry.gov.my/arcgis/rest/services/NEGERI_SEMBILAN/MapServer"]}
+  ],
+  "geometryDecision": {"verified": true, "sourceId": "geoformatik.forestry.gov.my:NEGERI_SEMBILAN:MapServer:52", "sampleCount": 3, "sampleFile": "seremban-parcel-samples.geojson", "exactWupPointTest": "Not used to shift coordinates or infer absence; the WUP point remains [2.70605282873579,101.958045373885].", "nativeIdField": "UPI", "sourceFieldMapping": {"FID": "service object identifier; not retained", "MUKIM": "native mukim code; not retained", "PA": "native parcel-area/reference field; not retained", "LOT": "native lot number; not retained", "UPI": "native stable parcel identity; retained as properties.id", "KELUASAN": "native area value; not retained"}, "requestEvidence": [
+    {"url": "http://geoformatik.forestry.gov.my/arcgis/rest/services/NEGERI_SEMBILAN/MapServer/52?f=pjson", "method": "GET anonymous", "status": 200, "result": "Layer schema and EPSG:102062 polygon metadata returned."},
+    {"url": "http://geoformatik.forestry.gov.my/arcgis/rest/services/NEGERI_SEMBILAN/MapServer/52/query?where=1%3D1&outFields=FID%2CMUKIM%2CPA%2CLOT%2CUPI%2CKELUASAN&returnGeometry=false&f=pjson", "method": "GET anonymous", "status": 200, "result": "Unbounded schema/attribute response returned; used only to establish native fields and safe identities, not retained raw."},
+    {"url": "http://geoformatik.forestry.gov.my/arcgis/rest/services/NEGERI_SEMBILAN/MapServer/52/query?where=FID%20IN%20(0%2C1%2C2)&outFields=FID%2CMUKIM%2CPA%2CLOT%2CUPI%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson", "method": "GET anonymous", "status": 200, "result": "Three polygon features returned in GeoJSON after server reprojection to EPSG:4326; reduced sample retained with UPI-only properties."},
+    {"url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/NEGERI_SEMBILAN/MapServer/52", "method": "GET with default TLS verification", "status": "certificate verification failure locally", "result": "No verification bypass used; HTTP endpoint was used for the same public service and recorded above."}
+  ]},
+  "coverageAssessment": {"claimedScope": "Official local land-office pages, JUPEM material, current ArcGIS layer metadata, and bounded anonymous requests.", "verifiedOpenScope": "A public Negeri Sembilan cadastral polygon layer and three-feature sample are verified; citywide completeness and current freshness are not established.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "remainingUncertainty": "The sample is not spatially centered on the immutable WUP point and is not evidence of citywide completeness; serial review should test representative Seremban extents and adapter-safe request limits.",
+  "runtimeDecision": "held_pending_serial_review",
+  "integrationDecision": "not_integrated"
+}

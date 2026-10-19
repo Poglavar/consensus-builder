@@ -1,0 +1,50 @@
+{
+  "descriptor": {
+    "adapter": "arcgis",
+    "boundsQueryMode": "object-ids",
+    "catalogueUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+    "countryCode": "ZM",
+    "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "id": "zm-nsdi-zilmis-lots",
+    "idField": "SDE.Lots.OBJECTID",
+    "idPrefix": "ZM-NSDI-LOT-",
+    "idType": "integer",
+    "idsQueryMode": "object-ids",
+    "maxBboxKm2": 1,
+    "maxFeatures": 3000,
+    "metricSrid": 32735,
+    "name": "Zambia NSDI ZILMIS lot polygons",
+    "objectIdField": "SDE.Lots.OBJECTID",
+    "outFields": [
+      "SDE.Lots.OBJECTID"
+    ],
+    "pageSize": 1000,
+    "scope": "Zambia national cadastral-reference lot polygons from ZILMIS. Frozen Luanshya source OID 298159 was verified by a bounded city probe near the unchanged WUP locator. This attempt tests thirteen 0.001-degree cells, complete object-ID manifests, exact IDs, absence and source binding; citywide completeness, legal title, accuracy, currentness and GIS key continuity remain unverified.",
+    "boundsSrid": 32735,
+    "boundsProjection": "+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs",
+    "cityIds": [
+      "2025"
+    ]
+  },
+  "city": {
+    "code": "2025",
+    "name": "Luanshya",
+    "point": [
+      28.4228139265333,
+      -13.1437301508279
+    ]
+  },
+  "sampleIds": [
+    "ZM-NSDI-LOT-298159"
+  ],
+  "absentId": "ZM-NSDI-LOT-999999999",
+  "metricEpsg": "EPSG:32735",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "First-party https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/info/iteminfo?f=pjson states: Zambia national cadaster data and customary lots. Service documentInfo Comments: Lots from ZILMIS. Layer 0 is esriGeometryPolygon with native SDE.Lots.OBJECTID (OID). Safe metadata retained in evidence/official-source.json.",
+      "Geographic scope: the frozen Luanshya city packet and service review record a count/ID-manifest city probe in native EPSG:32735 at envelope 654189.6567238078,8546506.32094019,654244.1735051812,8546561.936211137 and independent exact source OID 298159 reads. Its unchanged full sample input has SHA256 685db166b00dd49f9da2b4dde52c166964055fab893816cd400975a3917688a6. Fresh bounded city sampling is required; national extent alone is insufficient for city completeness."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

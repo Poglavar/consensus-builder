@@ -1,0 +1,141 @@
+{
+  "name": "Campinas",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 299,
+  "point": [
+    -22.8908640288735,
+    -47.1273638348083
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese",
+        "query": "Campinas SIG municipal camada Lotes DIDC metadados geoespaciais shapefile cadastro territorial",
+        "scope": "Find first-party Campinas cadastral map/layer and public vector download or API.",
+        "result": "The official Campinas Spatial Metadata service describes a free, no-login public catalog for municipal GIS database layers and says several layers are downloadable as shapefiles. A 2023 municipal Diário Oficial report explicitly identifies the Municipal GIS “Lotes do DIDC” layer. The current metadata site and Zoneamento Online are publicly described, but no actual parcel file/full polygon was retrieved in this environment.",
+        "actualResultUrls": [
+          "https://portal-adm.campinas.sp.gov.br/servico/consultar-metadados-espaciais",
+          "https://campinas.sp.gov.br/sites/metadadosgeoespaciais",
+          "https://portal-api.campinas.sp.gov.br/sites/default/files/publicacoes-dom/dom/532254927007492705322524.pdf"
+        ],
+        "executionMethod": "Official Campinas service page and Diário Oficial sources; web page inspection and bounded direct requests to the listed public apps."
+      },
+      {
+        "language": "English",
+        "query": "Campinas municipal GIS cadastral parcel lot layer DIDC public shapefile",
+        "scope": "Confirm parcel-level service semantics and whether vector geometry is accessible anonymously.",
+        "result": "The official city describes its free Zoneamento Online service as allowing a user to click a property on the map and inspect information. A separate official service describes the no-login geospatial metadata catalog and shapefile downloads. Direct shell requests to the metadata and zoning hosts timed out after 12 seconds; these environment-side timeouts are not evidence that the city services are down. No public endpoint or geometry contract could therefore be qualified.",
+        "actualResultUrls": [
+          "https://portal-adm.campinas.sp.gov.br/servico/consultar-zoneamento",
+          "https://portal-adm.campinas.sp.gov.br/servico/consultar-metadados-espaciais",
+          "https://zoneamento.campinas.sp.gov.br/"
+        ],
+        "executionMethod": "Official city service page review and bounded read-only direct GET attempts."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Campinas Spatial Metadata catalog",
+        "operator": "Secretaria Municipal de Planejamento e Desenvolvimento Urbano, Prefeitura de Campinas",
+        "homeUrl": "https://campinas.sp.gov.br/sites/metadadosgeoespaciais",
+        "observation": "Official city service page says this public, no-login catalog describes layers in municipal GIS databases and that several layers can be downloaded as shapefiles; availability is gradual."
+      },
+      {
+        "name": "Campinas Zoneamento Online",
+        "operator": "Secretaria Municipal de Planejamento e Desenvolvimento Urbano, Prefeitura de Campinas",
+        "homeUrl": "https://zoneamento.campinas.sp.gov.br/",
+        "observation": "Official city service page describes a free public map where users can click an imóvel and inspect information. It is a zoning/property-identification map, not proof of downloadable full parcel vectors."
+      },
+      {
+        "name": "Municipal GIS Lotes do DIDC layer (documented)",
+        "operator": "Departamento de Informação, Documentação e Cadastro (DIDC), Prefeitura de Campinas",
+        "homeUrl": "https://portal-api.campinas.sp.gov.br/sites/default/files/publicacoes-dom/dom/532254927007492705322524.pdf",
+        "observation": "Official 2023 Diário Oficial document names a Municipal GIS layer “Lotes do DIDC” and uses it to identify a cartographic code. The document does not expose the layer endpoint or prove public geometry access."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://portal-adm.campinas.sp.gov.br/servico/consultar-metadados-espaciais",
+        "method": "GET (web inspection)",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official service page confirms public free no-login municipal metadata catalog and gradual shapefile downloads."
+      },
+      {
+        "url": "https://portal-adm.campinas.sp.gov.br/servico/consultar-zoneamento",
+        "method": "GET (web inspection)",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city service page confirms free public property-click zoneamento map."
+      },
+      {
+        "url": "https://campinas.sp.gov.br/sites/metadadosgeoespaciais",
+        "method": "GET (direct shell)",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Local shell request timed out after 12 seconds; the same route opens to a generic city portal template in web inspection. No layer listing parsed."
+      },
+      {
+        "url": "https://zoneamento.campinas.sp.gov.br/",
+        "method": "GET (direct shell)",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Local shell request timed out after 12 seconds; official app route documented as public. No API or geometry fetched."
+      }
+    ],
+    "executionMethod": "Portuguese and English search; official municipal service pages, Diário Oficial, rendered page inspection and bounded direct GET requests."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "Municipal GIS parcel layer is explicitly referenced in official city records, and public metadata/zoneamento services are documented, but no actual full parcel geometry or response API was retrieved."
+  },
+  "source": {
+    "id": "campinas-didc-lotes-municipal-gis",
+    "name": "Lotes do DIDC (Municipal GIS layer)",
+    "operator": "Departamento de Informação, Documentação e Cadastro, Prefeitura Municipal de Campinas",
+    "url": "https://portal-adm.campinas.sp.gov.br/servico/consultar-metadados-espaciais",
+    "format": "Shapefile download is supported for some municipal catalog layers; exact Lotes layer format/access not verified",
+    "access": "Official city metadata catalog is free and no-login per service page; actual layer availability remains unknown",
+    "nativeIdField": "Código Cartográfico (referenced in official city GIS documentation)",
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal GIS database includes an officially referenced DIDC lot layer; the city says several GIS catalog layers are downloadable as shapefiles.",
+    "verifiedOpenScope": "City-local parcel/lot layer existence and public catalog service are confirmed; actual Lotes layer exposure, downloadable full vectors, WUP-point geometry and citywide extent are not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Campinas municipal documentation names a Municipal GIS “Lotes do DIDC” layer, while city service pages document a public property-click map and a free no-login metadata catalog. This supports a local cadastral/lot registry, but not a verified open geometry endpoint.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "municipal_parcel_layer_documented_geometry_access_unverified",
+  "technicalBlocker": "Direct requests to the public metadata and zoneamento application hosts timed out from the local shell, so the DIDC lot layer listing/endpoint and full polygon response contract could not be inspected.",
+  "remainingUncertainty": "Whether the Lotes do DIDC layer is downloadable in the current metadata catalog, whether its record includes full parcel geometry, and whether the WUP center is covered by that layer.",
+  "sourceIds": [],
+  "nextStep": "Reach the live metadata catalog through a working public route and inspect the Lotes/DIDC layer metadata/download URL; if available, fetch at most three full polygons near the WUP point and validate IDs, CRS, extent and geometry.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7121,
+  "cityId": "wup2025:7121",
+  "queueRank": 299,
+  "population2025": 1631432,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    -22.8908640288735,
+    -47.1273638348083
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:11:57.022500+00:00"
+}

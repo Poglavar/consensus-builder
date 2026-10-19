@@ -1,0 +1,143 @@
+{
+  "name": "El Mahalla El Kubra",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 442,
+  "point": [
+    30.9661388231901,
+    31.17836527997
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "مدينة المحلة الكبرى خريطة مساحية GIS قطع الأراضي السجل العيني الهيئة المصرية العامة للمساحة الغربية",
+        "scope": "البحث عن خدمة عامة رسمية للقطع المساحية والمتجهات الكاملة داخل المدينة، وعن جهة التسجيل والمساحة المحلية.",
+        "result": "تؤكد الهيئة المصرية العامة للمساحة اختصاصها بخرائط ودفاتر الملكية للعقارات المبنية داخل المدن. كتالوجها الرسمي يوفر خرائط رقمية بصيغة GIS عند الطلب والشراء؛ لم يتم العثور على خدمة هندسية مفتوحة أو استجابة متجهية عامة لقطع المحلة.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/ImagesList.aspx"
+        ],
+        "executionMethod": "بحث رسمي عربي وقراءة خدمات وكتالوجات الهيئة المصرية العامة للمساحة ومصادر محافظة الغربية."
+      },
+      {
+        "language": "English",
+        "query": "El Mahalla El Kubra Egypt official cadastral parcels public GIS map Survey Authority Gharbia",
+        "scope": "Cross-check for a city-bound official public parcel feature service or complete parcel polygons.",
+        "result": "The Egyptian Survey Authority’s official Gharbia topographic-map index includes 1:5,000 city map sheets and its current digital-map service offers GIS formats by written request/quote. No anonymous parcel-feature endpoint or complete polygon response was found.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/ImagesList.aspx"
+        ],
+        "executionMethod": "Official source search and read-only service/catalog review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Egyptian Survey Authority digital-map room",
+        "operator": "Egyptian Survey Authority (ESA), Ministry of Water Resources and Irrigation",
+        "homeUrl": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "observation": "Official service says digital maps may be supplied in AutoCAD or GIS formats after a customer requests a specific location, scale and layers, receives a quote, and pays. No map was requested or purchased; this is not an anonymous service/API."
+      },
+      {
+        "name": "ESA Gharbia topographic-map index",
+        "operator": "Egyptian Survey Authority",
+        "homeUrl": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "observation": "Official Gharbia index identifies city maps at 1:5,000 scale and Gharbia localities; these are map products and do not establish a public full-parcel vector API."
+      },
+      {
+        "name": "Egyptian Survey Authority",
+        "operator": "Egyptian Survey Authority",
+        "homeUrl": "https://www.esa.gov.eg/main.aspx",
+        "observation": "ESA states its historic land-mapping remit included property maps/books for built-up properties in cities and local registry records."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.esa.gov.eg/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Official ESA public portal."
+      },
+      {
+        "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Official digital-map purchasing page describes request/quote workflow and GIS delivery formats."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Official Gharbia map index; no full parcel vector retrieved."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "EG-GH-ESA-MAHALLA-MAP-ROOM",
+    "name": "Egyptian Survey Authority Gharbia cadastral/topographic map services",
+    "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+    "operator": "Egyptian Survey Authority (ESA), Gharbia Survey Directorate",
+    "serviceType": "Official map production and digital-map request/quote service; not an open parcel geometry service.",
+    "layer": "No open parcel layer verified; Gharbia city-map products are indexed, digital GIS formats are supplied by request.",
+    "geometryType": "none retrieved",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel feature response obtained; official public pages do not disclose a parcel schema/native parcel identifier."
+  },
+  "coverageAssessment": {
+    "claimedScope": "ESA has city property-map/book remit and Gharbia map products; official records and local survey maps refer to El Mahalla El Kubra.",
+    "verifiedOpenScope": "No public full parcel polygons or anonymous vector query endpoint verified. City map sheet/catalog presence does not imply an open parcel API.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "The official digital GIS-map path is a request/quote/purchase process; public map and city index pages did not expose a complete parcel-feature service.",
+  "remainingUncertainty": "The full availability, scale, parcel content and present completeness of ESA map products for the WUP cell would require a formal quote and dataset inspection; no purchase or request was made.",
+  "nextStep": "Use only if a public full-geometry endpoint or an authorized dataset delivery is later approved; do not use owner/property lookups.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:57:31Z",
+  "wupCityCode": 3993,
+  "cityId": "wup2025:3993",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.9661388231901,
+    31.17836527997
+  ],
+  "queueRank": 442,
+  "population2025": 1156501,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-09T00:01:28.209446+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No anonymous full parcel geometry was verified for this city."
+  },
+  "registryBasis": "ESA’s official remit describes property maps/books for built properties within Egyptian cities; its official Gharbia index identifies 1:5,000 city map products, and government notices document survey maps for El Mahalla. GIS datasets are offered through a request/quote workflow rather than anonymously.",
+  "registryEvidenceUrls": [
+    "https://www.esa.gov.eg/main.aspx",
+    "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+    "https://www.esa.gov.eg/ImagesList.aspx"
+  ],
+  "appCityId": null,
+  "scopeLimits": [
+    "Historical map scale/date is recorded as product metadata, not treated as a reason to reject the source.",
+    "No purchase, owner-name, address, tax, or property-specific query was made."
+  ],
+  "runtimeQualification": null
+}

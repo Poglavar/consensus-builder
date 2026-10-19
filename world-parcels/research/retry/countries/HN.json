@@ -1,0 +1,109 @@
+{
+ "kind": "country",
+ "key": "HN",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-HN,es;q=0.9",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.sinit.hn",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "loads; links to geoservicios, visor-del-sinit, geonode.sinit.hn and thematic geoportals"
+  },
+  {
+   "url": "https://sinit.hn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "previous 406 now 200 with browser headers (headers changed this result); WordPress portal page"
+  },
+  {
+   "url": "https://sinit.hn/geoservicios/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "inspected: only service reference is geonode.sinit.hn/geoserver/geonode/wms"
+  },
+  {
+   "url": "https://sinit.hn/visor-del-sinit/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "inspected: links to geonode WMS; no parcel layer identified"
+  },
+  {
+   "url": "https://geonode.sinit.hn/geoserver/geonode/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TCP tunnel OK then 'Connection reset by peer' during TLS"
+  },
+  {
+   "url": "https://geonode.sinit.hn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://geoportal.sinap.hn/geoportal/main",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.ip.gob.hn/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Cloudflare 'Attention Required' challenge even with browser headers; not bypassed"
+  },
+  {
+   "url": "https://www.ip.gob.hn/catastro",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "same Cloudflare challenge"
+  },
+  {
+   "url": "https://ip.gob.hn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://catastro.gob.hn",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://catastro.ip.gob.hn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://sure.ip.gob.hn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "IP site is behind a Cloudflare challenge and SINIT's GeoNode/GeoServer host resets connections from this network; a network/region restriction is plausible.",
+ "notes": "sinit.hn 406 -> 200 with browser headers, and page inspection revealed geonode.sinit.hn GeoServer WMS as the real service host, but it is unreachable so no parcel query was possible.",
+ "nextStep": "Retry from another network; query geonode.sinit.hn WFS for catastro/predios layers; IP catastro portal needs a browser session."
+}

@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Maputo",
+  "country": "Mozambique",
+  "iso2": "MZ",
+  "cityCode": 116,
+  "capital": true,
+  "lon": 32.5554921959491,
+  "lat": -25.890514039018,
+  "pop2025k": 3166.328,
+  "rank": 154
+ },
+ {
+  "name": "San Francisco",
+  "country": "United States of America",
+  "iso2": "US",
+  "cityCode": 1233,
+  "capital": false,
+  "lon": -122.625238949058,
+  "lat": 37.7908132131578,
+  "pop2025k": 3163.486,
+  "rank": 155
+ },
+ {
+  "name": "Kalyan-Dombivli",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 8120,
+  "capital": false,
+  "lon": 73.1699593951258,
+  "lat": 19.2079660812588,
+  "pop2025k": 3163.424,
+  "rank": 156
+ },
+ {
+  "name": "Guayaquil",
+  "country": "Ecuador",
+  "iso2": "EC",
+  "cityCode": 772,
+  "capital": false,
+  "lon": -79.9099340154392,
+  "lat": -2.16603065668041,
+  "pop2025k": 3157.825,
+  "rank": 157
+ },
+ {
+  "name": "Salvador",
+  "country": "Brazil",
+  "iso2": "BR",
+  "cityCode": 8374,
+  "capital": false,
+  "lon": -38.4513681656682,
+  "lat": -12.9366878889254,
+  "pop2025k": 3135.157,
+  "rank": 158
+ },
+ {
+  "name": "Gujranwala",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "cityCode": 8042,
+  "capital": false,
+  "lon": 74.1830024916886,
+  "lat": 32.159839336667,
+  "pop2025k": 3121.271,
+  "rank": 159
+ },
+ {
+  "name": "Athína (Athens)",
+  "country": "Greece",
+  "iso2": "GR",
+  "cityCode": 833,
+  "capital": true,
+  "lon": 23.7294821422573,
+  "lat": 37.9900827844442,
+  "pop2025k": 3101.979,
+  "rank": 160
+ },
+ {
+  "name": "Ningbo",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11956,
+  "capital": false,
+  "lon": 121.56263122907,
+  "lat": 29.9132916963759,
+  "pop2025k": 3094.833,
+  "rank": 161
+ },
+ {
+  "name": "Kollam",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 9847,
+  "capital": false,
+  "lon": 76.4275496736682,
+  "lat": 9.29818038422683,
+  "pop2025k": 3074.562,
+  "rank": 162
+ },
+ {
+  "name": "Cebu City",
+  "country": "Philippines",
+  "iso2": "PH",
+  "cityCode": 5062,
+  "capital": false,
+  "lon": 123.902842289759,
+  "lat": 10.3088316940635,
+  "pop2025k": 3044.564,
+  "rank": 163
+ }
+]

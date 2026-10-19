@@ -1,0 +1,54 @@
+{
+  "cityRecord": "city-11628-yangkou.json",
+  "cityCode": 11628,
+  "queueRank": 2041,
+  "city": "Yangkou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T21:05:00Z",
+  "discovery": {
+    "english": "Official results identify Suichang County's Natural Resources and Planning Bureau and Zhejiang public geospatial services; no anonymous parcel viewer/API was established.",
+    "native": "中文官方结果确认遂昌县自然资源和规划局及浙江省地理信息公共服务平台相关职责与服务；未确认可匿名返回阳口宗地稳定ID和几何的公开接口。"
+  },
+  "custodian": {
+    "name": "遂昌县自然资源和规划局",
+    "role": "Local natural-resources, cadastral-survey and real-estate-registration custodian evidenced by official Suichang/Zhejiang material",
+    "evidenceUrls": [
+      "https://www.suichang.gov.cn/art/2025/5/22/art_1229428360_5521958.html",
+      "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3640/site/attach/0/a6518d04ce124458a8ef43b8bb85862b.pdf"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "Official Suichang county portal", "url": "https://www.suichang.gov.cn/", "result": "HTTP 403 anonymous denial; no viewer/API inspected."},
+    {"route": "Official Suichang natural-resources publication", "url": "https://www.suichang.gov.cn/art/2025/5/22/art_1229428360_5521958.html", "result": "HTTP 403 anonymous denial; first-party search result identified the local bureau, but no geometry response."},
+    {"route": "Official Zhejiang public geospatial platform", "url": "https://ditu.zjzwfw.gov.cn/platform-main/index.html", "result": "HTTP 200; fetched HTML exposed no parcel/cadastral service endpoint, schema, CRS or ID-plus-geometry response."},
+    {"route": "National Tianditu map portal", "url": "https://www.tianditu.gov.cn/", "result": "HTTP 418 anonymous access failure; no parcel data. Treated as access limitation, not absence evidence."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data"]
+  },
+  "sourceFieldMapping": null,
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [28.4315593325592, 118.171217328587] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point hit, map-extent miss, timeout, login wall or unusable UI was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens and protected owner/property queries were not attempted.",
+    "General Zhejiang and national map services were not promoted to a Yangkou geometry source without a city-scoped safe response.",
+    "Registry existence is locally evidenced, but source integration/admission remains unqualified."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Public endpoint, schema, CRS, safe native identity field and citywide coverage remain unknown."
+  }
+}

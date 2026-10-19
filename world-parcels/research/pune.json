@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:55",
+  "queueRank": 55,
+  "name": "Pune",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    18.5350448991254,
+    73.8602640542245
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "observation": "Official Maharashtra Bhu-Naksha cadastral viewer (village survey-number maps, incl. Pune district) per search results; no HTTP response through the agent proxy (connection reset or tunnel failure) here. Not documented as an open feature endpoint."
+    },
+    {
+      "url": "https://gis.pmc.gov.in/",
+      "observation": "Pune Municipal Corporation GIS portal named in search results; no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    },
+    {
+      "url": "https://pmrda.gov.in/",
+      "observation": "PMRDA site responds 301; no parcel service found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://bhunaksha.maharashtra.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://mahabhulekh.maharashtra.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://gis.pmc.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://pmc.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://onlinegis.pmc.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://opendata.pune.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://mapservices.pune.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://pmrda.gov.in/",
+      "method": "GET",
+      "httpStatus": 301,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "redirect only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bhu-Naksha claims village cadastral maps for most Maharashtra districts; unverified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Indian government hosts were unreachable through this proxy, so absence of an open endpoint is not established. Bhu-Naksha is a viewer; no bounded polygon query was reached.",
+  "nextStep": "Retry from another network path; inspect Bhu-Naksha's network calls for a documented WMS/WFS; check PMC/PMRDA GIS for a public feature service."
+}

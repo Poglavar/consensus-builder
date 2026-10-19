@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 10150,
+  "queueRank": 2392,
+  "name": "Qufu",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "aliases": ["qufu"],
+  "centerLatLon": [35.5893629962811, 116.979584942579],
+  "population2025": 244096,
+  "population2025k": 244.096,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qufu Shandong official cadastral parcel map public land registration map GIS API",
+        "result": "Search identified the official Shandong geographic information public-service platform and its public map/API documentation. It exposes general basemap, WMS/WMTS, gazetteer and feature-map services, but no Qufu parcel layer or safe anonymous parcel feature endpoint was identified.",
+        "actualResultUrls": ["https://www.sdmap.gov.cn/mapAPI.html", "https://www.sdmap.gov.cn/map.html", "https://lbs.sdmap.gov.cn/"]
+      },
+      {
+        "language": "native/local (Chinese)",
+        "query": "曲阜市 不动产登记 地籍图 宗地图 官方",
+        "result": "Official Jining/Qufu government material identifies the Qufu Natural Resources and Planning Bureau as the local real-estate registration custodian, including registration, cadastral-map/material inquiry and cadastral-survey responsibilities. No public anonymous parcel geometry response was found.",
+        "actualResultUrls": ["https://www.jining.gov.cn/jcms/jcms_files/jcms1/web86/site/module/download/downfile.jsp?classid=0&filename=3f06abceecdb4cf186ebc9cd142d69fc.pdf&showname=%E6%9B%B2%E9%98%9C%E5%B8%82%E4%BA%BA%E6%B0%91%E6%94%BF%E5%BA%9C%E5%8A%9E%E5%85%AC%E5%AE%A4%E5%85%AC%E5%B8%83%E8%BF%9B%E9%A9%BB%E4%B8%BA%E6%B0%91%E6%9C%8D%E5%8A%A1%E4%B8%AD%E5%BF%83%E6%94%BF%E5%8A%A1%E4%BA%8B%E9%A1%B9%E7%9A%84%E9%80%9A%E7%9F%A5.pdf", "https://www.jining.gov.cn/jact/front/main.do?sysid=24"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.jining.gov.cn/jcms/jcms_files/jcms1/web86/site/module/download/downfile.jsp?classid=0&filename=3f06abceecdb4cf186ebc9cd142d69fc.pdf&showname=%E6%9B%B2%E9%98%9C%E5%B8%82%E4%BA%BA%E6%B0%91%E6%94%BF%E5%BA%9C%E5%8A%9E%E5%85%AC%E5%AE%A4%E5%85%AC%E5%B8%83%E8%BF%9B%E9%A9%BB%E4%B8%BA%E6%B0%91%E6%9C%8D%E5%8A%A1%E4%BA%8B%E9%A1%B9%E7%9A%84%E9%80%9A%E7%9F%A5.pdf",
+      "operator": "Jining Municipal Government / Qufu Municipal Government service directory",
+      "observation": "The official directory assigns Qufu Natural Resources and Planning Bureau real-estate registration, cadastral-map/material inquiry, cadastral survey and related public services. This is local custodian evidence, not proof of open vector access."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/mapAPI.html",
+      "operator": "Shandong Department of Natural Resources / Shandong Institute of Land Surveying and Mapping",
+      "observation": "Official platform documentation describes general provincial basemap, WMS/WMTS, gazetteer, feature-map and route services; no Qufu cadastral parcel layer was exposed in the bounded inspection."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.sdmap.gov.cn/map.html", "method": "GET", "status": "HTTP 200", "summary": "TLS-verified official viewer HTML retrieved. Current JavaScript/configuration references service.sdmap.gov.cn:8081 and public map APIs; no parcel layer was visible in the bounded static inspection."},
+    {"url": "https://www.sdmap.gov.cn/Config_url.v002.js", "method": "GET", "status": "HTTP 200", "summary": "TLS-verified current viewer configuration retrieved and retained in ignored scratch cache; configuration is obfuscated and points to the official service host."},
+    {"url": "https://service.sdmap.gov.cn:8081", "method": "GET", "status": "HTTP 401 with JSON route-not-found response", "summary": "Anonymous service-host probe returned no parcel schema or geometry; no credentials or private token used."},
+    {"url": "https://www.sdmap.gov.cn/api/layer/noLogin/getInfo", "method": "GET", "status": "HTTP 404", "summary": "Viewer-derived noLogin route was probed without parameters; no layer metadata or geometry response."},
+    {"url": "https://www.sdmap.gov.cn/api/tablet/noLogin/getTbListPage", "method": "GET", "status": "HTTP 404", "summary": "Viewer-derived noLogin route was probed without parameters; no public table/layer response."},
+    {"url": "https://www.jining.gov.cn/jcms/jcms_files/jcms1/web86/site/module/download/downfile.jsp?classid=0&filename=3f06abceecdb4cf186ebc9cd142d69fc.pdf&showname=%E6%9B%B2%E9%98%9C%E5%B8%82%E4%BA%BA%E6%B0%91%E6%94%BF%E5%BA%9C%E5%8A%9E%E5%85%AC%E5%AE%A4%E5%85%AC%E5%B8%83%E8%BF%9B%E9%A9%BB%E4%B8%BA%E6%B0%91%E6%9C%8D%E5%8A%A1%E4%BA%8B%E9%A1%B9%E7%9A%84%E9%80%9A%E7%9F%A5.pdf", "method": "GET via official search result", "status": "official PDF identified; no unsafe lookup", "summary": "The official service-directory evidence was inspected through search extraction; it establishes Qufu local registry responsibility but not open parcel geometry."}
+  ],
+  "coverageAssessment": {"claimedScope": "Qufu local real-estate/cadastral custodian and Shandong public geographic-information platform.", "verifiedOpenScope": "Official custodian and general map-service documentation only; no live anonymous parcel feature response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response obtained",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public geometry response; no exact-point hit/miss inference.", "requestEvidence": ["Official viewer and current JavaScript/configuration inspected.", "Anonymous service/API probes returned 401/404 without parcel schema or geometry."]},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current cadastral visualization endpoint, authentication boundary, native parcel identity field, geometry CRS and citywide completeness remain unresolved. No owner, address, contact, titleholder, tax/account or personal fields were requested or retained. Packet completion records research status only and does not qualify or admit a runtime adapter."
+}

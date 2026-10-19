@@ -1,0 +1,77 @@
+{
+  "cityRecord": "city-4935-okitipupa.json",
+  "cityCode": 4935,
+  "queueRank": 2713,
+  "city": "Okitipupa",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "attempt": 1,
+  "reviewStatus": "complete_research_packet",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localRegistryOrCadastre": "Ondo State Ministry of Lands and Housing is evidenced by first-party state publications; the same material names the Okitipupa Area Lands Office at GRA Oke Oyinbo, Okitipupa.",
+    "generalAgencyOnly": "The Federal Ministry/other national search results were not used as evidence of a local Okitipupa parcel service.",
+    "coverageCaveat": "The official material describes title registration and digitization, not an openly queryable citywide parcel layer."
+  },
+  "attemptedRoutes": [
+    {
+      "route": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+      "method": "GET / PDF text inspection",
+      "outcome": "HTTP 200. First-party procedure names the Ministry of Lands and Housing and Okitipupa Area Lands Office, and mentions land-title digitization/e-archiving. No map/API endpoint or parcel schema was provided.",
+      "safeFields": ["custodian", "office location", "public procedure", "digitization statement"]
+    },
+    {
+      "route": "https://ondostate.gov.ng/wp-content/uploads/2022/11/List-and-Address-of-all-Area-offices.pdf",
+      "method": "GET / PDF text inspection",
+      "outcome": "HTTP 200. Official area-office list includes Okitipupa at Oke Oyinbo GRA. No parcel geometry or public feature service was provided."
+    },
+    {
+      "route": "https://www.odsglandministry.org/",
+      "method": "GET / HTML and linked JavaScript/configuration inspection",
+      "outcome": "HTTP 200 public LandsApp shell. It exposes applications, tracking, payments, documents, and public guidance; no parcel map or anonymous feature endpoint was exposed. Account creation/login was not attempted.",
+      "safeFields": ["public service metadata", "route metadata"]
+    },
+    {
+      "route": "https://www.odsglandministry.org/LandServices/Services",
+      "method": "GET / HTML inspection",
+      "outcome": "HTTP 200 public service catalogue. It lists land/survey and verification services, including survey-pillar and registration services, but no anonymous parcel geometry endpoint or CRS/schema."
+    },
+    {
+      "route": "https://ondolandportal.org/ and https://ondolandportal.org/map/",
+      "method": "GET / current HTML inspection",
+      "outcome": "HTTP 200 for the landing page; it advertises a Property Map and public search in page markup. The linked /map/ route returned a 404 page rather than a usable map/viewer. This site was not treated as authoritative parcel evidence beyond documenting the advertised route."
+    },
+    {
+      "route": "https://ondolandportal.org/api/v1/public/search/?q=Okitipupa",
+      "method": "GET with safe locality query",
+      "outcome": "HTTP 404 HTML. No parcel response, schema, CRS, or native identity returned. Equivalent safe queries for 566 and Okitipupa parcel also returned HTTP 404."
+    },
+    {
+      "route": "https://ondominlands.org",
+      "method": "GET",
+      "outcome": "Request failed/returned no usable HTTP response within the bounded request; no TLS exception or retry with disabled verification was used."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity only if first-party schema proves it",
+    "parcel polygon geometry",
+    "source service URL",
+    "source field names and mapping in metadata only",
+    "CRS/schema metadata",
+    "public coverage/status metadata"
+  ],
+  "excludedFields": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "payment", "private token"],
+  "geometryRetention": {
+    "retained": false,
+    "reason": "No bounded first-party anonymous parcel feature response was available; zero polygons retained.",
+    "maximumAllowed": 3
+  },
+  "uncertainty": [
+    "Ondo State land records and digitization work may contain parcel data that is not publicly exposed through the inspected routes.",
+    "The public registry/map site advertised map/search functionality, but its current map and API routes returned 404 and therefore cannot support a parcel claim.",
+    "No exact-point hit or map extent miss was obtained; no citywide absence conclusion is made.",
+    "The WUP point [6.49814824791005, 4.77776024390833] was preserved exactly in longitude/latitude input record order as requested; no coordinate shift was used."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "integrationNote": "This packet documents research evidence only and is not source integration or adapter admission."
+}

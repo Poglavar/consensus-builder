@@ -1,0 +1,80 @@
+{
+  "sourceId": "sg-sla-cadastral-land-parcel",
+  "technicalStatus": "held_no_public_vector_bbox_endpoint_found",
+  "officialDataset": {
+    "datasetId": "d_e7395d743076a2bcc487b0d12b9bf33b",
+    "url": "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+    "agency": "Singapore Land Authority",
+    "scope": "National surveyed land-lot polygons; GeoJSON snapshot",
+    "format": "GeoJSON",
+    "pageListedSize": "138.1 MB",
+    "fieldsInclude": [
+      "LOT_KEY",
+      "OBJECTID_1"
+    ],
+    "license": "Official dataset page states free personal/commercial use under the Open Data Licence; informational, not a gate."
+  },
+  "boundedPublicProbes": [
+    {
+      "endpoint": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+      "operation": "GET poll-download (no file URL followed)",
+      "httpStatus": 201,
+      "apiCode": 0,
+      "downloadUrlReturned": true,
+      "result": "The API provides a download URL, not a bbox parcel response. The large snapshot was not downloaded."
+    },
+    {
+      "endpoint": "https://data.gov.sg/api/action/datastore_search?resource_id=d_e7395d743076a2bcc487b0d12b9bf33b&limit=1",
+      "operation": "GET datastore_search",
+      "httpStatus": 200,
+      "result": "Empty response envelope: no result rows or field schema returned for this GeoJSON dataset. The documented API is row search/pagination and exposes no spatial bbox parameter."
+    },
+    {
+      "endpoint": "https://www.onemap.gov.sg/maps/service?SERVICE=WMS&REQUEST=GetCapabilities",
+      "operation": "GET WMS GetCapabilities",
+      "httpStatus": 200,
+      "layers": [
+        "Default",
+        "Original",
+        "Grey",
+        "GreyLite",
+        "Night",
+        "LandLot"
+      ],
+      "landLotQueryableAdvertised": false,
+      "getFeatureInfoFormats": [
+        "text/plain",
+        "text/html",
+        "text/xml"
+      ],
+      "result": "LandLot is documented as a map/tile/WMS layer; capabilities do not advertise the layer as queryable."
+    },
+    {
+      "endpoint": "https://www.onemap.gov.sg/maps/service",
+      "operation": "One-pixel GetFeatureInfo on LandLot using advertised text/plain format",
+      "httpStatus": 500,
+      "result": "No feature-info attributes or parcel geometry returned. A single pixel cannot provide a complete bbox parcel query in any case."
+    }
+  ],
+  "documentedAlternatives": {
+    "dataGovDownload": "Official API supports downloadable file subsets by row/column filters, but no spatial filter is documented for this GeoJSON. It is not a bbox adapter. Exact LOT_KEY filtering through the download API was not tested.",
+    "slaDigitisedCadastre": "Official SLA page offers cadastral datasets through enterprise licensing in DGN, DXF, DMP, or SHP; no public small-subregion feature endpoint was documented.",
+    "oneMapLandLot": "Official OneMap docs list LandLot as XYZ tiles, TileJSON, Mapbox style, and WMS map service; none supplies polygon feature batches with LOT_KEY exact lookup."
+  },
+  "technicalBlockers": [
+    "The public data.gov.sg dataset is a large snapshot download rather than a published spatial-query service.",
+    "No official small-area vector export or bbox-plus-exact-LOT_KEY endpoint was found in the documented SLA/OneMap services."
+  ],
+  "termsAreInformational": true,
+  "officialSources": [
+    "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+    "https://guide.data.gov.sg/developer-guide/dataset-apis/download-dataset",
+    "https://guide.data.gov.sg/developer-guide/dataset-apis/search-and-filter-within-dataset",
+    "https://www.onemap.gov.sg/docs/maps/landlot.html",
+    "https://www.onemap.gov.sg/apidocs/",
+    "https://www.sla.gov.sg/geospatial/digitised-land-information/"
+  ],
+  "description": "Current Singapore source assessment from official data.gov.sg and OneMap public API probes; metadata only, no parcel coordinates, geometries, or raw parcel identifiers.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false
+}

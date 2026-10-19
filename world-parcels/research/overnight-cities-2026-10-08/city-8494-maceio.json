@@ -1,0 +1,115 @@
+{
+  "name": "Maceió",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 499,
+  "point": [
+    -9.60820528324829,
+    -35.7442621414074
+  ],
+  "population2025": 1023645,
+  "population2025k": 1023.645,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The public map is interactive but the inspected backing API requires parcel inscription or sector/quadra and does not expose a documented safe field allowlist. No broad query was made and no geometry was retained. City registry/map existence does not establish public anonymous polygon access at the WUP point.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The city’s public service says users can search urban municipal tax registration from a map, and IPLAM describes the municipal technical cadastre. IPLAM states editable cadastral cartography (including Shapefile/DWG) is restricted to institutional partner agencies.",
+  "resultCategory": "municipal_registry_found_public_map_geometry_not_verified",
+  "technicalBlocker": "Inspected the official interactive viewer and its publicly linked loader/search scripts. The integration endpoint accepts parcel inscription or sector/quadra and its response includes address-related fields without a documented field-selection parameter. No property key, address or broad geometry request was submitted.",
+  "remainingUncertainty": "Whether the map service can support safe anonymous geometry queries at this exact point remains unknown. The citywide Quadras layer was not queried because that would be an unbounded extraction.",
+  "nextStep": "Root review; seek a documented public feature service with a safe attribute allowlist or city-issued coverage response.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Portuguese",
+        "query": "Maceió cadastro imobiliário mapa de lotes prefeitura geoportal",
+        "result": "Found the official map-based urban tax-inscription lookup and Maceió Geo viewer.",
+        "method": "Separate Portuguese-language discovery search."
+      },
+      {
+        "language": "Portuguese",
+        "query": "site:maceio.al.gov.br cadastro técnico municipal geoprocessamento mapa lotes imóvel",
+        "result": "Found IPLAM service information on the municipal technical cadastre and limited access to editable cadastral cartography.",
+        "method": "Separate targeted Portuguese-language search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.online.maceio.al.gov.br/6/ver_servico/21/unidade/buscar%2Binscri%C3%A7ao%2Bimobiliaria/",
+        "observation": "City service documentation advertises map-based urban registration lookup; IPLAM maintains the technical cadastre. Official disclosure rules restrict editable cadastral map files to institutional partner agencies."
+      },
+      {
+        "url": "https://www.iplam.maceio.al.gov.br/servicos/servicos",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      },
+      {
+        "url": "https://semecmaceio.com/maceio-geo/home/23/",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Inspected the official interactive viewer and its publicly linked loader/search scripts. The integration endpoint accepts parcel inscription or sector/quadra and its response includes address-related fields without a documented field-selection parameter. No property key, address or broad geometry request was submitted.",
+      "geometryStatus": "No safe anonymous polygon feature response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "No public safe geometry request completed",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 499,
+  "wupCityCode": 8494,
+  "cityId": "wup2025:8494",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    -9.60820528324829,
+    -35.7442621414074
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "id": "br-maceio-cadastro-tecnico-municipal",
+    "name": "Cadastro Técnico Municipal / Maceió Geo",
+    "operator": "Prefeitura de Maceió / IPLAM and SEMEC",
+    "url": "https://www.online.maceio.al.gov.br/6/ver_servico/21/unidade/buscar%2Binscri%C3%A7ao%2Bimobiliaria/",
+    "serviceType": "Public interactive map-based urban tax-inscription lookup; editable cartography disclosure limited to institutional partner agencies; safe anonymous feature query not verified.",
+    "geomType": null,
+    "crs": null,
+    "idFields": [],
+    "verified": false,
+    "scope": "Municipal registry and map service established; parcel geometry route at exact WUP point not verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The city’s public service says users can search urban municipal tax registration from a map, and IPLAM describes the municipal technical cadastre. IPLAM states editable cadastral cartography (including Shapefile/DWG) is restricted to institutional partner agencies.",
+    "verifiedOpenScope": "No public anonymous parcel geometry verified at the exact point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://www.online.maceio.al.gov.br/6/ver_servico/21/unidade/buscar%2Binscri%C3%A7ao%2Bimobiliaria/",
+    "https://www.iplam.maceio.al.gov.br/servicos/servicos",
+    "https://semecmaceio.com/maceio-geo/home/23/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No safe anonymous geometry and exact point coverage verified."
+  },
+  "rootReviewedAt": "2026-10-09T01:02:36.862973+00:00"
+}

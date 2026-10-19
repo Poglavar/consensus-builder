@@ -1,0 +1,138 @@
+{
+  "name": "Ajmer",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 858,
+  "point": [
+    26.4543232283408,
+    74.6369815679092
+  ],
+  "population2025": 631176,
+  "population2025k": 631.176,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Rajasthan’s official Citizen UDH Urban GIS portal exposes Khasra, Plot and urban-jurisdiction map layers and states that Khasra/village boundaries come from the Settlement Department. The official state annual report says citizens can view Khasra boundaries and RoR information for urban properties. The application shell does not establish a full-vector response schema or whether the WUP point is covered by a parcel layer.",
+  "registryEvidenceUrls": [
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+    "https://doitc.rajasthan.gov.in/Files/DOITCWEB/WriteReadData/AnnualProgressReportsPublicationOrders/202601281821140892871AnnualProgressReport202526.pdf",
+    "https://bhunaksha.rajasthan.gov.in/",
+    "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7350,
+  "cityId": "wup2025:7350",
+  "centerLatLon": [
+    26.4543232283408,
+    74.6369815679092
+  ],
+  "queueRank": 858,
+  "scopeLimits": "Bounded official-source and public-service review. No citywide completeness is claimed. No owner, address, account, tax, personal-property or credential fields are retained.",
+  "resultCategory": "official_state_urban_gis_cadastral_view_geometry_unverified",
+  "technicalBlocker": "Viewer/service schema could not be inspected; local shell request timed out, which does not establish provider failure. No exact-point lookup or full polygon response was obtained.",
+  "remainingUncertainty": "Whether Citizen UDH returns full parcel polygons and whether data at Ajmer WUP point are city cadastral parcels rather than generalized Khasra/plot display remain unresolved.",
+  "nextStep": "Parent review may decide whether additional viewer/source investigation is useful; no geometry/runtime claim is made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "अजमेर शहरी GIS खसरा नक्शा भू नक्शा भू अभिलेख आधिकारिक राजस्थान",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official Rajasthan Citizen UDH offers Khasra/plot layers and a state report describes viewing Khasra boundaries and RoR for urban properties. Full geometry schema and exact-point coverage were not verified.",
+        "actualResultUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://doitc.rajasthan.gov.in/Files/DOITCWEB/WriteReadData/AnnualProgressReportsPublicationOrders/202601281821140892871AnnualProgressReport202526.pdf",
+          "https://bhunaksha.rajasthan.gov.in/",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      },
+      {
+        "language": "English",
+        "query": "Ajmer Rajasthan official urban GIS Khasra cadastral maps land records",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Rajasthan government materials identify Citizen UDH map layers for Khasra and urban plots; no anonymous full-polygon response schema was verified.",
+        "actualResultUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://doitc.rajasthan.gov.in/Files/DOITCWEB/WriteReadData/AnnualProgressReportsPublicationOrders/202601281821140892871AnnualProgressReport202526.pdf",
+          "https://bhunaksha.rajasthan.gov.in/",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Ajmer official registry/cadastral review",
+        "operator": "India",
+        "homeUrl": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+        "observation": "Rajasthan’s official Citizen UDH Urban GIS portal exposes Khasra, Plot and urban-jurisdiction map layers and states that Khasra/village boundaries come from the Settlement Department. The official state annual report says citizens can view Khasra boundaries and RoR information for urban properties. The application shell does not establish a full-vector response schema or whether the WUP point is covered by a parcel layer."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+        "method": "GET official Rajasthan Citizen UDH shell",
+        "observation": "Official page exposes District and City/ULB selectors, coordinate-based map positioning, Khasra search, Khasra/Plot layers and states source khasra/village boundaries are Settlement Department data. No feature schema/full-vector response was inspected; direct local shell fetch timed out, which is inconclusive about provider availability."
+      },
+      {
+        "url": "https://doitc.rajasthan.gov.in/Files/DOITCWEB/WriteReadData/AnnualProgressReportsPublicationOrders/202601281821140892871AnnualProgressReport202526.pdf",
+        "method": "GET official Rajasthan DoIT&C annual report",
+        "observation": "Describes Citizen UDH views for Khasra boundaries, ward, forest, RoR and police boundaries for urban properties; it describes a map-view workflow rather than vector API."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/119",
+        "method": "GET Government of India DILRMP Ajmer status page",
+        "observation": "Identifies Ajmer district and reports cadastral-map digitization/georeferencing status by tehsil; does not provide parcel geometries."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-7350-ajmer-cadastre-review",
+    "name": "Ajmer official cadastral/registry source review",
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+    "operator": "India",
+    "serviceType": "Official state urban GIS view for Khasra and plot-related information; no full vector endpoint verified.",
+    "layer": "Citizen UDH layers labeled Khasra/Plot; not a confirmed full-geometry feature service.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No safe native parcel ID was confirmed in a full feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan’s official Citizen UDH Urban GIS portal exposes Khasra, Plot and urban-jurisdiction map layers and states that Khasra/village boundaries come from the Settlement Department. The official state annual report says citizens can view Khasra boundaries and RoR information for urban properties. The application shell does not establish a full-vector response schema or whether the WUP point is covered by a parcel layer.",
+    "verifiedOpenScope": "Official local registration/map evidence is documented, but no full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No verified public full-polygon response was obtained.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootPrimaryReadback": {
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00",
+  "sourceIds": []
+}

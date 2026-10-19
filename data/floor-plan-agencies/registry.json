@@ -1,0 +1,4741 @@
+{
+  "source": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici",
+  "retrievedAt": "2026-10-07",
+  "total_registry_rows": 1632,
+  "page_count": 17,
+  "city_settlement_source": [
+    "https://data.zagreb.hr/hr/dataset/naselja-adresna-prostorna-jedinice-za-podrucje-grada-zagreba",
+    "https://data.zagreb.hr/api/3/action/package_show?id=66a5f6b5-79f8-45ee-b961-783bc344592b",
+    "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+  ],
+  "city_settlement_count": 68,
+  "city_record_count": 470,
+  "records": [
+    {
+      "registry_id": "154252",
+      "registration_number": "179/2024",
+      "mb": "05481732",
+      "oib": "25075330864",
+      "legal_name": "LUVA Real Estate d.o.o.",
+      "registered_address": "Stube Ivana Kozarca 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154481",
+      "registration_number": "118/2025",
+      "mb": "06005381",
+      "oib": "74756654057",
+      "legal_name": "108 REAL ESTATE ADVISORY ADRIA d.o.o.",
+      "registered_address": "Savska cesta 32, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3112",
+      "registration_number": "38/2020",
+      "mb": "08129563",
+      "oib": "22861782287",
+      "legal_name": "1KROZ1 NEKRETNINE d.o.o.",
+      "registered_address": "Nova cesta 50, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "137053",
+      "registration_number": "25/2018",
+      "mb": "04569989",
+      "oib": "38968052580",
+      "legal_name": "2.ADVICE d.o.o.",
+      "registered_address": "Heinzelova 33, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "123088",
+      "registration_number": "49/2017",
+      "mb": "4608461",
+      "oib": "23869841386",
+      "legal_name": "2FC j.d.o.o.",
+      "registered_address": "Fijanova 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "127056",
+      "registration_number": "78/2017",
+      "mb": "04733363",
+      "oib": "34827712958",
+      "legal_name": "2MAER- ZAGREB NEKRETNINE d.o.o. za poslovanje nekretninama",
+      "registered_address": "Ulica Augusta Cesarca 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "138086",
+      "registration_number": "100/2018",
+      "mb": "04220722",
+      "oib": "57813607002",
+      "legal_name": "2MT D.O.O.",
+      "registered_address": "Dragutina Domjanića  48 a, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "41051",
+      "registration_number": "70/2010",
+      "mb": "91345227",
+      "oib": "56737207819",
+      "legal_name": "4 M, OBRT ZA POSLOVNO POSREDNIŠTVO I DIZAJN, VL. MEJRIMA MAXHUNI, ZAGREB",
+      "registered_address": "Rudeška cesta 177, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "106053",
+      "registration_number": "134/2014",
+      "mb": "97561835",
+      "oib": "68727671643",
+      "legal_name": "4 REAL, obrt za poslovanje nekretninama i usluge",
+      "registered_address": "Ulica Vladimira Nazora  20 A, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155473",
+      "registration_number": "248/2026",
+      "mb": null,
+      "oib": "42025237981",
+      "legal_name": "a.v.e nekretnine,  obrt za usluge, vl. Eva Lisjak, Zagreb, Haulikova ulica 3",
+      "registered_address": "HAULIKOVA ULICA 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3586",
+      "registration_number": "175/2022",
+      "mb": "",
+      "oib": "49698519345",
+      "legal_name": "ABITATI nekretnine, Obrt za usluge, Vl. Nena Balja",
+      "registered_address": "Hećimovićeva ulica  5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3481",
+      "registration_number": "70/2022",
+      "mb": "81410944",
+      "oib": "10026895148",
+      "legal_name": "ABOVE CAPITAL J.D.O.O.",
+      "registered_address": "ZELENJAK 82, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154997",
+      "registration_number": "62/2026",
+      "mb": "04836375",
+      "oib": "85701927966",
+      "legal_name": "AD HOC NEKRETNINE d.o.o.",
+      "registered_address": "Osječka ulica 45//a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154134",
+      "registration_number": "61/2024",
+      "mb": "05588731",
+      "oib": "85160210120",
+      "legal_name": "AD-ADAPT USLUGE d.o.o.",
+      "registered_address": "Košnička ulica 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3660",
+      "registration_number": "17/2023",
+      "mb": "01642014",
+      "oib": "56558260460",
+      "legal_name": "ADE STUDIO D.O.O.",
+      "registered_address": "Žarka Dolinara 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154744",
+      "registration_number": "241/2025",
+      "mb": "05451825",
+      "oib": "04801647872",
+      "legal_name": "ADRIA LA MAR NEKRETNINE d.o.o.",
+      "registered_address": "Ulica Nikole Tesle 14//1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154115",
+      "registration_number": "42/2024",
+      "mb": "05865662",
+      "oib": "65684224216",
+      "legal_name": "Adria Legacy d.o.o.",
+      "registered_address": "Ulica Hrvatskog proljeća 32, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3719",
+      "registration_number": "76/2023",
+      "mb": "04427840",
+      "oib": "62120303888",
+      "legal_name": "ADRIA PROPERTIES d.o.o.",
+      "registered_address": "Ćire Truhelke 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155122",
+      "registration_number": "107/2026",
+      "mb": "05121060",
+      "oib": "12370569837",
+      "legal_name": "ADRIATIC WEALTH d.o.o.",
+      "registered_address": "Vrbik 20, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "137089",
+      "registration_number": "61/2018",
+      "mb": "01269755",
+      "oib": "75774395192",
+      "legal_name": "AEROLIT d.o.o.",
+      "registered_address": "Grobnička 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3552",
+      "registration_number": "141/2022",
+      "mb": "05635390",
+      "oib": "06678494675",
+      "legal_name": "AGATHIAS D.O.O.",
+      "registered_address": "Zavrtnica 17, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "141060",
+      "registration_number": "157/2018",
+      "mb": "97915947",
+      "oib": "18772718219",
+      "legal_name": "AGENCIJA SUNNY, obrt za poslovanje nekretninama, vl. Renata Kardun, Zagreb",
+      "registered_address": "Gračanski Mihaljevac 7d, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154304",
+      "registration_number": "13/2025",
+      "mb": null,
+      "oib": "49866524438",
+      "legal_name": "Agenta, obrt za posredovanje i poslovno savjetovanje, vl. Josip Kukić, Zagreb, Jurišićeva ulica 19 /1",
+      "registered_address": "Jurišićeva ulica 19/1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "117058",
+      "registration_number": "72/2016",
+      "mb": "04540174",
+      "oib": "42457435199",
+      "legal_name": "AGENTIKA ONE d.o.o.",
+      "registered_address": "Stupnička 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "10060",
+      "registration_number": "46/2009",
+      "mb": "00681865",
+      "oib": "74467712614",
+      "legal_name": "AGGEMO d.o.o.",
+      "registered_address": "Ilica 253, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3205",
+      "registration_number": "131/2020",
+      "mb": "98206940",
+      "oib": "85154540209",
+      "legal_name": "AGN, obrt za usluge",
+      "registered_address": "Dubrava 248, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "41057",
+      "registration_number": "76/2010",
+      "mb": "02613689",
+      "oib": "78144615053",
+      "legal_name": "AGO NEKRETNINE d.o.o.",
+      "registered_address": "Zagrebačka avenija 104, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3364",
+      "registration_number": "150/2021",
+      "mb": "08084115",
+      "oib": "61042673670",
+      "legal_name": "AgroLogic d.o.o.",
+      "registered_address": "Hebrangova 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3792",
+      "registration_number": "149/2023",
+      "mb": "05465184",
+      "oib": "81627436690",
+      "legal_name": "AI Power d.o.o. za računalno programiranje i usluge",
+      "registered_address": "Ulica Roberta Frangeša - Mihanovića  9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3617",
+      "registration_number": "206/2022",
+      "mb": "98489143",
+      "oib": "28654757418",
+      "legal_name": "AKRO, OBRT ZA POSREDOVANJE, VL. Ana Rosenberg Kalajdžić",
+      "registered_address": "Koranska ulica 1b, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "103052",
+      "registration_number": "85/2014",
+      "mb": "97476595",
+      "oib": "55240437886",
+      "legal_name": "AKTUAL NEKRETNINE, obrt za usluge",
+      "registered_address": "Bujavički put 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "98058",
+      "registration_number": "21/2014",
+      "mb": "2885271",
+      "oib": "77048352370",
+      "legal_name": "ALKAR NEKRETNINE d.o.o. za promet nekretnina",
+      "registered_address": "Radnička cesta 80, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3637",
+      "registration_number": "226/2022",
+      "mb": "05677661",
+      "oib": "32423503301",
+      "legal_name": "ALL SERVICE D.O.O.",
+      "registered_address": "Ozaljska ulica 110, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154737",
+      "registration_number": "234/2025",
+      "mb": "06077943",
+      "oib": "50626840654",
+      "legal_name": "ALLORA NEKRETNINE j.d.o.o.",
+      "registered_address": "Ivane Brlić Mažuranić 36, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3421",
+      "registration_number": "10/2022",
+      "mb": "98356771",
+      "oib": "18241937698",
+      "legal_name": "ALPHA, obrt za posredovanje u prometu  nekreninama, vl. Andrea Dalić",
+      "registered_address": "Prevoj 69, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155129",
+      "registration_number": "112/2026",
+      "mb": "05391466",
+      "oib": "96862710964",
+      "legal_name": "AM AUDERE d.o.o.",
+      "registered_address": "Kačićeva ulica 12, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154297",
+      "registration_number": "6/2025",
+      "mb": null,
+      "oib": "11175380169",
+      "legal_name": "AMG, OBRT ZA USLUGE, VL. NIKOLINA GREGORIĆ, ZAGREB, ULICA POPA DUKLJANINA 3",
+      "registered_address": "Kostanjevec 23, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155010",
+      "registration_number": "65/2026",
+      "mb": "05141770",
+      "oib": "01385489529",
+      "legal_name": "AMIH GRADNJA d.o.o.",
+      "registered_address": "Ulica Roberta Tupeka 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "66054",
+      "registration_number": "21/2012",
+      "mb": "08076859",
+      "oib": "52547324996",
+      "legal_name": "ANA ZAGREB NEKRETNINE d.o.o.",
+      "registered_address": "Ul. Račkoga 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "121059",
+      "registration_number": "109/2016",
+      "mb": "02755556",
+      "oib": "09618765380",
+      "legal_name": "ANGELUS NEKRETNINE d.o.o.",
+      "registered_address": "Vlaška  72, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3387",
+      "registration_number": "173/2021",
+      "mb": "81300972",
+      "oib": "27952790253",
+      "legal_name": "ANIKON D.O.O.",
+      "registered_address": "IX.BUKOVAČKI OGRANAK 10, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155144",
+      "registration_number": "119/2026",
+      "mb": "05859379",
+      "oib": "35129766569",
+      "legal_name": "Anino Project d.o.o.",
+      "registered_address": "Vinogradska cesta 27, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154617",
+      "registration_number": "164/2025",
+      "mb": null,
+      "oib": "33173266163",
+      "legal_name": "ANTARION, obrt za poslovno savjetovanje i usluge, vl. Ivan-Krešimir Tomić, Zagreb, Koprivnička ulica 2",
+      "registered_address": "Koprivnička ulica 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154664",
+      "registration_number": "201/2025",
+      "mb": "05981751",
+      "oib": "38415951367",
+      "legal_name": "Antwerp j.d.o.o.",
+      "registered_address": "Vijenac 5/B, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3246",
+      "registration_number": "32/2021",
+      "mb": "08106536",
+      "oib": "41275180055",
+      "legal_name": "APS CROATIA D.O.O.",
+      "registered_address": "Hektorovićeva 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "16069",
+      "registration_number": "303/2009",
+      "mb": "90824288",
+      "oib": "06262208445",
+      "legal_name": "AR agencija za promet nekretninama",
+      "registered_address": "Turinina 2, 10010 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155460",
+      "registration_number": "235/2026",
+      "mb": "06301916",
+      "oib": "12753418421",
+      "legal_name": "ARCTIC Real Estate d.o.o.",
+      "registered_address": "Tkalčićeva ulica 27, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3680",
+      "registration_number": "37/2023",
+      "mb": "04537734",
+      "oib": "05071679479",
+      "legal_name": "ARENA NEKRETNINE d.o.o. za usluge",
+      "registered_address": "Karlovačka cesta 95/1, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "127055",
+      "registration_number": "77/2017",
+      "mb": "97774901",
+      "oib": "53839471996",
+      "legal_name": "ARGO NEKRETNINE, OBRT ZA USLUGE, VL. ANDRIJA TURČIN, ZAGREB",
+      "registered_address": "Milana Begovića 18, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3269",
+      "registration_number": "55/2021",
+      "mb": "04714024",
+      "oib": "87800093506",
+      "legal_name": "ARHITEKTURA DOXAT D.O.O.",
+      "registered_address": "Ljudevita Posavskog 27b, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154431",
+      "registration_number": "98/2025",
+      "mb": null,
+      "oib": "38234598121",
+      "legal_name": "ARNIE, OBRT ZA POSLOVNO SAVJETOVANJE, VL. IVAN JELKIĆ, ZAGREB, ULICA MARICE BARIĆ 11",
+      "registered_address": "Ulica Marice Barić 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "9096",
+      "registration_number": "32/2009",
+      "mb": "03601935",
+      "oib": "19833575345",
+      "legal_name": "ARTING d.o.o.",
+      "registered_address": "Celestina Medovića 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3767",
+      "registration_number": "124/2023",
+      "mb": "05707978",
+      "oib": "69231897047",
+      "legal_name": "Astera Pro Vobis d.o.o.",
+      "registered_address": "Trnjanska cesta 114, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "9082",
+      "registration_number": "18/2009",
+      "mb": "01725262",
+      "oib": "09405604248",
+      "legal_name": "ATEGO d.o.o.",
+      "registered_address": "Trogirska 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155470",
+      "registration_number": "245/2026",
+      "mb": "06309232",
+      "oib": "89318908366",
+      "legal_name": "AURUM ESTATE d.o.o.",
+      "registered_address": "Kovinska ulica 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "115050",
+      "registration_number": "6/2016",
+      "mb": "04467256",
+      "oib": "02817085173",
+      "legal_name": "AVENUE NEKRETNINE d.o.o.",
+      "registered_address": "Ulica Ivana Cankara 13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154166",
+      "registration_number": "93/2024",
+      "mb": "05870046",
+      "oib": "19891482616",
+      "legal_name": "Avison Young d.o.o.",
+      "registered_address": "Savska cesta 28, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155333",
+      "registration_number": "218/2026",
+      "mb": null,
+      "oib": "53312729966",
+      "legal_name": "AWIN Real Estate, obrt za usluge, vl. Nataša Ivezić Hudaverdi, Zagreb, Vidikovac 37",
+      "registered_address": "Vidikovac 37, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "116059",
+      "registration_number": "56/2016",
+      "mb": "04521676",
+      "oib": "81555892277",
+      "legal_name": "AZORI PLUS d.o.o.",
+      "registered_address": "Trg Antuna Mihanovića 2, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3565",
+      "registration_number": "154/2022",
+      "mb": "05501628",
+      "oib": "32235033898",
+      "legal_name": "B2 Impact d.o.o.",
+      "registered_address": "Radnička cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154804",
+      "registration_number": "261/2025",
+      "mb": "06132847",
+      "oib": "83471028545",
+      "legal_name": "B4 ENERGO SPACE d.o.o.",
+      "registered_address": "Šljivik 25/A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "72066",
+      "registration_number": "97/2012",
+      "mb": "02858797",
+      "oib": "67605152360",
+      "legal_name": "BAILO SAVJETOVANJE d.o.o.",
+      "registered_address": "Radnička 47, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "12091",
+      "registration_number": "125/2009",
+      "mb": "00822167",
+      "oib": "79023430439",
+      "legal_name": "BASICS d.o.o.",
+      "registered_address": "Kraljice Jelene 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "5050",
+      "registration_number": "5/2008",
+      "mb": "02134993",
+      "oib": "25875979925",
+      "legal_name": "BASILICA NEKRETNINE d.o.o.",
+      "registered_address": "Mladena Fiolića 59, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "16093",
+      "registration_number": "327/2009",
+      "mb": "91744440",
+      "oib": "68318856329",
+      "legal_name": "BEAUTY CENTAR KOZLINGER",
+      "registered_address": "Bužanova 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154723",
+      "registration_number": "230/2025",
+      "mb": "06026028",
+      "oib": "17745941628",
+      "legal_name": "Belfort usluge j.d.o.o.",
+      "registered_address": "Ožujska ulica 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "138056",
+      "registration_number": "70/2018",
+      "mb": "04830679",
+      "oib": "78052592272",
+      "legal_name": "BESTHOME NEKRETNINE D.O.O.",
+      "registered_address": "Vlaška ulica 68, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154228",
+      "registration_number": "155/2024",
+      "mb": null,
+      "oib": "77720210759",
+      "legal_name": "Blok 3P, obrt za usluge, proizvodnju i trgovinu, vl. Maja Karamarković, Zagreb, Palmotićeva ulica 3",
+      "registered_address": "Palmotićeva ulica 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "22076",
+      "registration_number": "610/2009",
+      "mb": "08045371",
+      "oib": "98789818163",
+      "legal_name": "BONUS NEKRETNINE d.o.o.",
+      "registered_address": "Maksimirska 36, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "13081",
+      "registration_number": "165/2009",
+      "mb": "01446380",
+      "oib": "90382399399",
+      "legal_name": "BORIVA NEKRETNINE d.o.o.",
+      "registered_address": "Ljudevita Gaja 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "103061",
+      "registration_number": "94/2014",
+      "mb": "04209664",
+      "oib": "32905029890",
+      "legal_name": "Boutique za nekretnine d.o.o.",
+      "registered_address": "Ulica Frana Kršinića 13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "130064",
+      "registration_number": "134/2017",
+      "mb": "97797006",
+      "oib": "42930676417",
+      "legal_name": "BRAZDE, obrt za promet nekretninama",
+      "registered_address": "Kamenarka 12, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3352",
+      "registration_number": "138/2021",
+      "mb": "98023748",
+      "oib": "43665450203",
+      "legal_name": "BRICK NEKRETNINE, obrt za usluge agencije za poslovanje nekretninama i druge usluge, vl. Frano Domitrović",
+      "registered_address": "Petrova ulica 15 B, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154212",
+      "registration_number": "139/2024",
+      "mb": "05998590",
+      "oib": "55063305746",
+      "legal_name": "BRIX j.d.o.o.",
+      "registered_address": "Savska cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3535",
+      "registration_number": "124/2022",
+      "mb": "04346173",
+      "oib": "91069910003",
+      "legal_name": "BUSINESS PROPERTIES d.o.o. za usluge",
+      "registered_address": "Miramarska cesta 24, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154205",
+      "registration_number": "132/2024",
+      "mb": "05677246",
+      "oib": "17682979076",
+      "legal_name": "BUY IN ZAGREB d.o.o.",
+      "registered_address": "Kulmerska ulica 23/A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3607",
+      "registration_number": "196/2022",
+      "mb": "98452797",
+      "oib": "71036676442",
+      "legal_name": "CASA CLARUS, OBRT za poslovanje nekretninama, vl. Klara Kregar",
+      "registered_address": "Dolski put 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154350",
+      "registration_number": "59/2025",
+      "mb": "06013791",
+      "oib": "42760945531",
+      "legal_name": "CASA real estates d.o.o.",
+      "registered_address": "Ulica grada Vukovara 62/B, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155061",
+      "registration_number": "76/2026",
+      "mb": null,
+      "oib": "64155706010",
+      "legal_name": "CASA+, OBRT ZA USLUGE, VL. NINO MARETIĆ, ZAGREB, ULICA ALEKSANDRA IGNACIJA MIKULIĆA 22",
+      "registered_address": "Ulica Aleksandra Ignacija Mikulića 22, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3292",
+      "registration_number": "78/2021",
+      "mb": "05375487",
+      "oib": "63569905534",
+      "legal_name": "CBRE D.O.O.-podružnica Zagreb",
+      "registered_address": "Slavonska avenija 1c, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144087",
+      "registration_number": "55/2019",
+      "mb": "04993420",
+      "oib": "25640941693",
+      "legal_name": "CBS INTERNATIONAL d.o.o.",
+      "registered_address": "Radnička cesta 80, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "109057",
+      "registration_number": "47/2015",
+      "mb": "02284910",
+      "oib": "95199223369",
+      "legal_name": "CC REAL d.o.o.",
+      "registered_address": "Jankomir 33, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "109096",
+      "registration_number": "86/2015",
+      "mb": "02351714",
+      "oib": "93462267870",
+      "legal_name": "CENTAR AKCIJA d.o.o.",
+      "registered_address": "Sudiščak 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "73052",
+      "registration_number": "101/2012",
+      "mb": "02883171",
+      "oib": "96900007960",
+      "legal_name": "CENTAR POSLOVNIH USLUGA d.o.o.",
+      "registered_address": "XIII VRBIK  1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "122063",
+      "registration_number": "132/2016",
+      "mb": "04542193",
+      "oib": "39441831007",
+      "legal_name": "CERIĆ NEKRETNINE d.o.o.",
+      "registered_address": "Velika cesta 78, 10020 ODRA, HRVATSKA",
+      "settlement": "Odra",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3391",
+      "registration_number": "177/2021",
+      "mb": "05498236",
+      "oib": "54350822749",
+      "legal_name": "COLLIERS CM d.o.o.",
+      "registered_address": "Petrinjska ulica 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3390",
+      "registration_number": "176/2021",
+      "mb": "05498244",
+      "oib": "37969176456",
+      "legal_name": "COLLIERS OCCUPIER SERVICES D.O.O.",
+      "registered_address": "Petrinjska ulica 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3336",
+      "registration_number": "122/2021",
+      "mb": "98276557",
+      "oib": "92853052871",
+      "legal_name": "COLOSSEUM NEKRETNINE, obrt",
+      "registered_address": "Kamenarka 28C, 10010 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "109086",
+      "registration_number": "76/2015",
+      "mb": "4125886",
+      "oib": "78970790764",
+      "legal_name": "CONFIANCE d.o.o. za trgovinu i usluge",
+      "registered_address": "Selska 23, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "110053",
+      "registration_number": "93/2015",
+      "mb": "04268075",
+      "oib": "90001576077",
+      "legal_name": "CORNERSTONE REALTY d.o.o.",
+      "registered_address": "Martićeva 45, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154846",
+      "registration_number": "273/2025",
+      "mb": null,
+      "oib": "20325880669",
+      "legal_name": "CREATE, obrt za posredovanje i savjetovanje, vl. Marko Duilo, Zagreb, Petrinjska ulica 26A",
+      "registered_address": "PETRINJSKA ULICA 26A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3794",
+      "registration_number": "151/2023",
+      "mb": "05818494",
+      "oib": "30706472166",
+      "legal_name": "Crest nekretnine d.o.o. za usluge",
+      "registered_address": "Naserov trg 2, ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "84061",
+      "registration_number": "47/2013",
+      "mb": "91572509",
+      "oib": "96006129965",
+      "legal_name": "CRO - INVEST, AGENCIJA ZA PROMET I UPRAVLJANJE NEKRETNINAMA , VL. MARICA GJURANEC - KUŠEC, ZAGREB",
+      "registered_address": "Svetoivanska 18, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3512",
+      "registration_number": "101/2022",
+      "mb": "05582415",
+      "oib": "13876261689",
+      "legal_name": "CUBILEONE D.O.O.",
+      "registered_address": "Novomarofska 19, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "59051",
+      "registration_number": "106/2011",
+      "mb": "92397158",
+      "oib": "34765966702",
+      "legal_name": "CVJETNA GALERIJA I NEKRETNINE \"SREĆA\"",
+      "registered_address": "Malešnica  12, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155159",
+      "registration_number": "124/2026",
+      "mb": "04811402",
+      "oib": "82211343326",
+      "legal_name": "ČVRSTA RUKA d.o.o.",
+      "registered_address": "Ulica Izidora Poljaka 9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154311",
+      "registration_number": "20/2025",
+      "mb": null,
+      "oib": "27670287231",
+      "legal_name": "D HOME, obrt za usluge i poslovno savjetovanje, vl. Dragana Džajić, Zagreb, Ulica Ede Murtića 2E",
+      "registered_address": "ULICA EDE MURTIĆA 2E, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155238",
+      "registration_number": "173/2026",
+      "mb": "04795229",
+      "oib": "51565271890",
+      "legal_name": "DA Consulting d.o.o.",
+      "registered_address": "Rebrovac 30, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "121068",
+      "registration_number": "118/2016",
+      "mb": "02360012",
+      "oib": "84787302959",
+      "legal_name": "DALMACIJA PRODUKT d.o.o.",
+      "registered_address": "ll Poljanice 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154098",
+      "registration_number": "25/2024",
+      "mb": null,
+      "oib": "79046815285",
+      "legal_name": "DAR/MAR nekretnine, obrt za poslovanje nekretninama i druge usluge, vl. Dario Marlais, Zagreb, Podbrežje III. 15",
+      "registered_address": "Podbrežje III. 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3548",
+      "registration_number": "137/2022",
+      "mb": "05528763",
+      "oib": "92742486222",
+      "legal_name": "DB AssetNet d.o.o.",
+      "registered_address": "Šestinski Kraljevec 25a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154663",
+      "registration_number": "200/2025",
+      "mb": null,
+      "oib": "34922798135",
+      "legal_name": "De facto, obrt za konzalting, vl. Antonio Štedul, Zagreb, Ulica Vjekoslava Klaića 44",
+      "registered_address": "Ulica Vjekoslava Klaića 44, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3790",
+      "registration_number": "147/2023",
+      "mb": "05813727",
+      "oib": "64341497823",
+      "legal_name": "Dekada nekretnine d.o.o. za usluge",
+      "registered_address": "Bani 110, 10010 BUZIN, HRVATSKA",
+      "settlement": "Buzin",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154845",
+      "registration_number": "272/2025",
+      "mb": "06095003",
+      "oib": "53710863572",
+      "legal_name": "DELTA FORUM d.o.o.",
+      "registered_address": "Bijenički ogranak III. 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3179",
+      "registration_number": "105/2020",
+      "mb": "97728462",
+      "oib": "70417311955",
+      "legal_name": "DELUX CONSULTING, OBRT ZA USLUGE",
+      "registered_address": "Gjure Eisenhutha 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3645",
+      "registration_number": "2/2023",
+      "mb": "05528992",
+      "oib": "10484043414",
+      "legal_name": "DESIGN CONCEPT PERIĆ D.O.O.",
+      "registered_address": "Ferde Livadića 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154938",
+      "registration_number": "33/2026",
+      "mb": null,
+      "oib": "26061348449",
+      "legal_name": "DILS Nekretnine, obrt za poslovanje nekretninama, vl. Ivan Merdžan, Zagreb, Oreškovićeva ulica 1",
+      "registered_address": "OREŠKOVIĆEVA ULICA 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155192",
+      "registration_number": "147/2026",
+      "mb": "05432723",
+      "oib": "51142920043",
+      "legal_name": "Direkt nekretnine d.o.o.",
+      "registered_address": "Savski gaj I. 17, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155225",
+      "registration_number": "160/2026",
+      "mb": "02041596",
+      "oib": "84110156019",
+      "legal_name": "DISSIMILIS d.o.o. za savjetovanje i usluge",
+      "registered_address": "Ulica Nikole Škrlca 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3453",
+      "registration_number": "42/2022",
+      "mb": "81284995",
+      "oib": "40964037064",
+      "legal_name": "DIVERSO DOMUS D.O.O.",
+      "registered_address": "Gredice 153, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "21069",
+      "registration_number": "553/2009",
+      "mb": "00472344",
+      "oib": "55448851248",
+      "legal_name": "DOH d.o.o.",
+      "registered_address": "Gajnički vidikovac 29A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155234",
+      "registration_number": "169/2026",
+      "mb": null,
+      "oib": "49472182170",
+      "legal_name": "DOM COMMERCE, Obrt za posl. nekretninama, vl. Marijo Cukar",
+      "registered_address": "Ulica fra Grge Martića 67, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "12089",
+      "registration_number": "123/2009",
+      "mb": "22187550",
+      "oib": "74143208745",
+      "legal_name": "DOM EKSPERT d.o.o.",
+      "registered_address": "Varaždinska cesta 111, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "110060",
+      "registration_number": "100/2015",
+      "mb": "01528653",
+      "oib": "65319726370",
+      "legal_name": "DOMUS AGRAM d.o.o.",
+      "registered_address": "Ivana Kukuljevića 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3143",
+      "registration_number": "69/2020",
+      "mb": "80574255",
+      "oib": "95477203184",
+      "legal_name": "DOMUS NOBILIS d.o.o",
+      "registered_address": "Ulica kneza Borne  24/3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155029",
+      "registration_number": "74/2026",
+      "mb": "02764482",
+      "oib": "43795612910",
+      "legal_name": "DOMUS OPERA d.o.o.",
+      "registered_address": "Nova cesta 152, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "138078",
+      "registration_number": "92/2018",
+      "mb": "04900804",
+      "oib": "89599022410",
+      "legal_name": "DOORBELL d.o.o.",
+      "registered_address": "Ulica Frana Vrbanića 17, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "122060",
+      "registration_number": "129/2016",
+      "mb": "97718564",
+      "oib": "31869300743",
+      "legal_name": "DOORS, obrt za usluge, vl.Mirjana Orešković",
+      "registered_address": "Lašćinski Borovec 25, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "33058",
+      "registration_number": "796/2009",
+      "mb": "01968114",
+      "oib": "48446666190",
+      "legal_name": "DORIANA SAVJETOVANJE d.o.o.",
+      "registered_address": "Ulica grada Vukovara 271, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154187",
+      "registration_number": "114/2024",
+      "mb": null,
+      "oib": "47809695877",
+      "legal_name": "Dr. House, obrt za posredovanje u prometu nekretnina, vl. Ljubo Jukić, Zagreb, Ulica Božidara Magovca 151",
+      "registered_address": "Ulica Božidara Magovca 151, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155465",
+      "registration_number": "240/2026",
+      "mb": "04676025",
+      "oib": "31813124796",
+      "legal_name": "DVORANA EVENT d.o.o.",
+      "registered_address": "Karlovačka cesta 12, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154596",
+      "registration_number": "151/2025",
+      "mb": null,
+      "oib": "05660901402",
+      "legal_name": "EDENVILLE, obrt za usluge u posredovanju prometa nekretnina, vl. Matija Kutnjak, Zagreb, Palmotićeva ulica 5",
+      "registered_address": "Ulica Milislava Demerca  1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3476",
+      "registration_number": "65/2022",
+      "mb": "98378864",
+      "oib": "98396824829",
+      "legal_name": "EFRON NEKRETNINE, OBRT vl.Tajana Tikulin",
+      "registered_address": "Ulica Antuna Kuzmanića 16, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154169",
+      "registration_number": "96/2024",
+      "mb": "05396271",
+      "oib": "43055029141",
+      "legal_name": "Eight Rings d.o.o.",
+      "registered_address": "Ulica Drage Gervaisa 42, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154430",
+      "registration_number": "97/2025",
+      "mb": "06036074",
+      "oib": "87554694226",
+      "legal_name": "ELIAN NEKRETNINE d.o.o.",
+      "registered_address": "Donje Svetice 79/C, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3223",
+      "registration_number": "9/2021",
+      "mb": "05212588",
+      "oib": "52718628712",
+      "legal_name": "EMPRESA PROJEKT D.O.O.",
+      "registered_address": "Prkanj 48, 10250 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "12054",
+      "registration_number": "88/2009",
+      "mb": "00616419",
+      "oib": "30145392738",
+      "legal_name": "EM-VE d.o.o.",
+      "registered_address": "Kranjčevićeva 63, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3378",
+      "registration_number": "164/2021",
+      "mb": "05388988",
+      "oib": "71649067848",
+      "legal_name": "EOL NEKRETNINE D.O.O.",
+      "registered_address": "Vinogradi 39, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3339",
+      "registration_number": "125/2021",
+      "mb": "02358212",
+      "oib": "76674680107",
+      "legal_name": "EOS MATRIX D.O.O.",
+      "registered_address": "HORVATOVA 82, 10010 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3701",
+      "registration_number": "58/2023",
+      "mb": "98408437",
+      "oib": "67910589199",
+      "legal_name": "Esperanza, obrt za posredovanje u prometu nekretninama, vl. Marija Vujević",
+      "registered_address": "Dobriše Cesarića 6, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3164",
+      "registration_number": "90/2020",
+      "mb": "01404806",
+      "oib": "60755406153",
+      "legal_name": "ESTERA ULAGANJA D.O.O.",
+      "registered_address": "Nemčićeva 10, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3349",
+      "registration_number": "135/2021",
+      "mb": "08138948",
+      "oib": "65418590404",
+      "legal_name": "EUROHOME NEKRETNINE D.O.O.",
+      "registered_address": "Vlaška ulica 64, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "15097",
+      "registration_number": "281/2009",
+      "mb": "91180341",
+      "oib": "79093943587",
+      "legal_name": "EURO-INTERIJERI agencija za nekretnine i posredovanje",
+      "registered_address": "A.Topića Mimare 3A, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154245",
+      "registration_number": "172/2024",
+      "mb": "05678013",
+      "oib": "86527772880",
+      "legal_name": "EUROSTYLE CONSULTING d.o.o.",
+      "registered_address": "Maksimirska cesta 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "12069",
+      "registration_number": "103/2009",
+      "mb": "01706357",
+      "oib": "77148321177",
+      "legal_name": "EUROVILLA d.o.o.",
+      "registered_address": "Berislavićeva 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3151",
+      "registration_number": "77/2020",
+      "mb": "98156969",
+      "oib": "96377140940",
+      "legal_name": "EVEREST obrt za promet nekretninama i ostale usluge vl. Ivona Ivković",
+      "registered_address": "Pantovčak 246, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "143059",
+      "registration_number": "10/2019",
+      "mb": "97924466",
+      "oib": "41843766194",
+      "legal_name": "EVORA (obrt)",
+      "registered_address": "Koturaška cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3564",
+      "registration_number": "153/2022",
+      "mb": "05484570",
+      "oib": "72328887867",
+      "legal_name": "EXIT Nekretnine j.d.o.o. za poslovanje nekretninama",
+      "registered_address": "Treščak 34, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155130",
+      "registration_number": "113/2026",
+      "mb": "05711118",
+      "oib": "58595087260",
+      "legal_name": "EXOLUTIM d.o.o.",
+      "registered_address": "Ulica Isidora Kršnjavoga 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3235",
+      "registration_number": "21/2021",
+      "mb": "02289652",
+      "oib": "53855410149",
+      "legal_name": "EXPERIENTIA D.O.O.",
+      "registered_address": "NIKE GRŠKOVIĆA 60, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154855",
+      "registration_number": "282/2025",
+      "mb": "05528577",
+      "oib": "06451178432",
+      "legal_name": "Expo nekretnine d.o.o.",
+      "registered_address": "Ulica Jakova Gotovca 8, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154109",
+      "registration_number": "36/2024",
+      "mb": "04730780",
+      "oib": "78154937011",
+      "legal_name": "EXY REAL ESTATE d.o.o.",
+      "registered_address": "Vjekoslava Heinzela 47 b, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3641",
+      "registration_number": "230/2022",
+      "mb": "98398202",
+      "oib": "33483244698",
+      "legal_name": "FAN NEKRETNINE, obrt za posredovanje nekretninama i ostale usluge, vl. Filip Devčić",
+      "registered_address": "Velikopoljska 9i, 10020 VELIKO POLJE, HRVATSKA",
+      "settlement": "Veliko Polje",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "151064",
+      "registration_number": "170/2019",
+      "mb": "98067745",
+      "oib": "43604493312",
+      "legal_name": "FC NEKRETNINE, OBRT ZA POSLOVANJE NEKRETNINAMA, VL. FILIP CEROVEČKI",
+      "registered_address": "Ulica grada Vukovara 20, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144052",
+      "registration_number": "20/2019",
+      "mb": "04916786",
+      "oib": "02258922151",
+      "legal_name": "FIDELIS MANAGEMENT GROUP d.o.o.",
+      "registered_address": "Britanski trg 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "141061",
+      "registration_number": "158/2018",
+      "mb": "97922633",
+      "oib": "86392278187",
+      "legal_name": "FIDES, Obrt za poslovne usluge",
+      "registered_address": "Talajićeva 2, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "92053",
+      "registration_number": "103/2013",
+      "mb": "04034821",
+      "oib": "36916132577",
+      "legal_name": "Fides-nekretnine d.o.o.",
+      "registered_address": "Ferde Livadića  1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3759",
+      "registration_number": "116/2023",
+      "mb": "04977220",
+      "oib": "05484390596",
+      "legal_name": "FINO VOĆE I POVRĆE j.d.o.o.",
+      "registered_address": "VLAŠKA 94, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "123069",
+      "registration_number": "30/2017",
+      "mb": "04205812",
+      "oib": "34170561607",
+      "legal_name": "FIVE STARS CONCIERGE j.d.o.o.",
+      "registered_address": "Baruna Trenka 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "123096",
+      "registration_number": "57/2017",
+      "mb": "04671899",
+      "oib": "36867422138",
+      "legal_name": "FOR FIVE j.d.o.o.",
+      "registered_address": "Sjeničarska 23, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154958",
+      "registration_number": "43/2026",
+      "mb": "02659875",
+      "oib": "22613810691",
+      "legal_name": "FORB nekretnine d.o.o.",
+      "registered_address": "Remete 62/A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "123087",
+      "registration_number": "48/2017",
+      "mb": "04672321",
+      "oib": "23712979568",
+      "legal_name": "FORRENT d.o.o.",
+      "registered_address": "Nova cesta 154, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154675",
+      "registration_number": "212/2025",
+      "mb": "06145329",
+      "oib": "20881173002",
+      "legal_name": "Fortress Advisory d.o.o.",
+      "registered_address": "Trg Marka Marulića 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3435",
+      "registration_number": "24/2022",
+      "mb": "80433585",
+      "oib": "88364963140",
+      "legal_name": "FRANK ADRIATIC D.O.O.",
+      "registered_address": "ZVONIGRADSKA 25, 10110 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3161",
+      "registration_number": "87/2020",
+      "mb": "05290236",
+      "oib": "16886454126",
+      "legal_name": "FRANKLIN NEKRETNINE DOO",
+      "registered_address": "TRAKOŠĆANSKA 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154535",
+      "registration_number": "132/2025",
+      "mb": "05779995",
+      "oib": "99615659103",
+      "legal_name": "Fulir Nekretnine j.d.o.o.",
+      "registered_address": "Brezovička cesta 27/V, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154915",
+      "registration_number": "30/2026",
+      "mb": null,
+      "oib": "65343097333",
+      "legal_name": "FULL HOUSE, obrt za ostale zabavne i rekreacijske djelatnosti, vl. Demian Topler, Zagreb, Ante Mike Tripala 6",
+      "registered_address": "Ulica Ante Mike Tripala 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "20078",
+      "registration_number": "512/2009",
+      "mb": "2200015",
+      "oib": "58777640005",
+      "legal_name": "FUNDITUS d.o.o.",
+      "registered_address": "Augusta Cesarca 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154779",
+      "registration_number": "256/2025",
+      "mb": "06151850",
+      "oib": "77664021775",
+      "legal_name": "Futura Premium Estate d.o.o.",
+      "registered_address": "Gornji Bukovac 107, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "15059",
+      "registration_number": "243/2009",
+      "mb": "01357107",
+      "oib": "47405294242",
+      "legal_name": "GAZDAR d.o.o.",
+      "registered_address": "Mlinovi 154E, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154533",
+      "registration_number": "130/2025",
+      "mb": "01284371",
+      "oib": "04953120282",
+      "legal_name": "GEMINI-ZAGREB d.o.o.",
+      "registered_address": "Boškovićeva ulica 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "21095",
+      "registration_number": "579/2009",
+      "mb": "01813447",
+      "oib": "56055678342",
+      "legal_name": "GEO GRUPA d.o.o.",
+      "registered_address": "Savska  144a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3156",
+      "registration_number": "82/2020",
+      "mb": "05182646",
+      "oib": "43727993761",
+      "legal_name": "GEOSURVEY d.o.o. za usluge i savjetovanje",
+      "registered_address": "Mosorska 37, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "81055",
+      "registration_number": "17/2013",
+      "mb": "03457966",
+      "oib": "80724491536",
+      "legal_name": "GET Nekretnine d.o.o.",
+      "registered_address": "Ljudevita Posavskog 5, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3230",
+      "registration_number": "16/2021",
+      "mb": "05330602",
+      "oib": "30113119227",
+      "legal_name": "GETO HOME D.O.O.",
+      "registered_address": "Ribnjak 16, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155191",
+      "registration_number": "146/2026",
+      "mb": "05369754",
+      "oib": "16968892603",
+      "legal_name": "GLOBAL BUSINESS SOLUTIONS j.d.o.o.",
+      "registered_address": "Vukomerec 38, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154662",
+      "registration_number": "199/2025",
+      "mb": "04981057",
+      "oib": "41400240314",
+      "legal_name": "Global Estate d.o.o.",
+      "registered_address": "Ulica Roberta Frangeša - Mihanovića 9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "103063",
+      "registration_number": "96/2014",
+      "mb": "04246608",
+      "oib": "90764884610",
+      "legal_name": "GLOBAL PROPERTY d.o.o. za poslovanje nekretninama i turistička agencija",
+      "registered_address": "VII Retkovec 59, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "26065",
+      "registration_number": "722/2009",
+      "mb": "03466655",
+      "oib": "94162733473",
+      "legal_name": "GLUŠAC d.o.o.",
+      "registered_address": "Školska   4, 10292 KUPINEČKI KRALJEVEC, HRVATSKA",
+      "settlement": "Kupinečki Kraljevec",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155241",
+      "registration_number": "176/2026",
+      "mb": "98913719",
+      "oib": "46996378258",
+      "legal_name": "GOLDEN FRONTIERS, obrt za poslovanje nekretninama, prijevoz i druge usluge, vl. Valentino Muža, Zagreb, Marjanovićev prilaz 3",
+      "registered_address": "Marjanovićev prilaz 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3444",
+      "registration_number": "33/2022",
+      "mb": "98360434",
+      "oib": "93330644780",
+      "legal_name": "GOLDEN NEKRETNINE, OBRT ZA USLUGE POSREDOVANJA U PROMETU NEKRETNINAMA",
+      "registered_address": "Martićeva 67, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "48051",
+      "registration_number": "174/2010",
+      "mb": "0507776",
+      "oib": "09797890783",
+      "legal_name": "GOLDPROJEKT d.o.o.",
+      "registered_address": "Branimirova 39, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154160",
+      "registration_number": "87/2024",
+      "mb": "05958024",
+      "oib": "71276682900",
+      "legal_name": "GRADAC NEKRETNINE d.o.o.",
+      "registered_address": "Ulica Jurja Denzlera 51, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154908",
+      "registration_number": "24/2026",
+      "mb": null,
+      "oib": "08232891958",
+      "legal_name": "GRUNT Real Estate, obrt za poslovanje nekretninama, vl. Iskra Kulenović, Zagreb, Ulica braće Cvijića 32",
+      "registered_address": "ULICA BRAĆE CVIJIĆA 32, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155252",
+      "registration_number": "187/2026",
+      "mb": "05522862",
+      "oib": "57695260411",
+      "legal_name": "GUNDULIĆEVA NEKRETNINE d.o.o.",
+      "registered_address": "Hruševečka ulica 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3302",
+      "registration_number": "88/2021",
+      "mb": "98176994",
+      "oib": "87796845526",
+      "legal_name": "HERITY, obrt za posredovanje u prometu nekretnina i usluge, vl. Antonela Filipović",
+      "registered_address": "Savska cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154074",
+      "registration_number": "1/2024",
+      "mb": "03886166",
+      "oib": "47141140631",
+      "legal_name": "HERMES CONSULTING d.o.o.",
+      "registered_address": "Nehruov trg 42, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154953",
+      "registration_number": "38/2026",
+      "mb": "05988012",
+      "oib": "11387134576",
+      "legal_name": "Hermes nekretnine d.o.o.",
+      "registered_address": "Prilaz Slave Raškaj 10, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3234",
+      "registration_number": "20/2021",
+      "mb": "98225685",
+      "oib": "49105164446",
+      "legal_name": "HERMES, obrt za poslovanje nekretninama",
+      "registered_address": "Cvjetno naselje IV. 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "116053",
+      "registration_number": "50/2016",
+      "mb": "01783122",
+      "oib": "66631337112",
+      "legal_name": "HESA GROUP d.o.o.",
+      "registered_address": "Ilica 92/l, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "25060",
+      "registration_number": "687/2009",
+      "mb": "02365618",
+      "oib": "73575113581",
+      "legal_name": "HILLBERG d.o.o.",
+      "registered_address": "Vranićeva ulica 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154151",
+      "registration_number": "78/2024",
+      "mb": "05864631",
+      "oib": "29617807870",
+      "legal_name": "Hills group nekretnine d.o.o.",
+      "registered_address": "Lička ulica 35, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "146057",
+      "registration_number": "90/2019",
+      "mb": "04881648",
+      "oib": "18240955205",
+      "legal_name": "HIMERA NEKRETNINE d.o.o.",
+      "registered_address": "Dubrava 212, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154621",
+      "registration_number": "168/2025",
+      "mb": "05890578",
+      "oib": "11114695506",
+      "legal_name": "HIT THE SPIRIT d.o.o.",
+      "registered_address": "Cebini 29, 10010 BUZIN, HRVATSKA",
+      "settlement": "Buzin",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3705",
+      "registration_number": "62/2023",
+      "mb": "98364090",
+      "oib": "97695511016",
+      "legal_name": "HM NEKRETNINE, obrt za posredovanje u prometu nekretnina, vl. Marko Hanzić",
+      "registered_address": "Jaruščica 1b, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "112054",
+      "registration_number": "113/2015",
+      "mb": "04430620",
+      "oib": "48954500679",
+      "legal_name": "HOJSKI NEKRETNINE d.o.o.",
+      "registered_address": "Majdakova 45, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "115064",
+      "registration_number": "20/2016",
+      "mb": "04471199",
+      "oib": "17951018406",
+      "legal_name": "HOME 2004 d.o.o.",
+      "registered_address": "Ulica Dragutina Golika 36, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154342",
+      "registration_number": "51/2025",
+      "mb": "05951143",
+      "oib": "52141079297",
+      "legal_name": "Home finder d.o.o.",
+      "registered_address": "Samoborska cesta 251, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "118061",
+      "registration_number": "85/2016",
+      "mb": "04556011",
+      "oib": "34888725441",
+      "legal_name": "HOME4LIFE d.o.o.",
+      "registered_address": "Ilica 500A, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154118",
+      "registration_number": "45/2024",
+      "mb": "98387413",
+      "oib": "00265997005",
+      "legal_name": "HOMES & LANDS, obrt za posredovanje u prometu nekretnina, vl. Ilija Tatarović, Zagreb, Ulica Dominika Andrijaševića 15",
+      "registered_address": "Ulica Dominika Andrijaševića 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3661",
+      "registration_number": "18/2023",
+      "mb": "05689210",
+      "oib": "06226972606",
+      "legal_name": "HOUSING INTERNATIONAL D.O.O.",
+      "registered_address": "Srijemska ulica 9b, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "15072",
+      "registration_number": "256/2009",
+      "mb": "01972260",
+      "oib": "08198142572",
+      "legal_name": "HPB-nekretnine d.o.o.",
+      "registered_address": "Jurišićeva ulica 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "122079",
+      "registration_number": "7/2017",
+      "mb": "4630742",
+      "oib": "91836098569",
+      "legal_name": "IDEAL NEKRETNINE d.o.o.",
+      "registered_address": "Valpovačka  9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3561",
+      "registration_number": "150/2022",
+      "mb": "05583489",
+      "oib": "44295415391",
+      "legal_name": "ILLUMINE NEKRETNINE D.O.O.",
+      "registered_address": "Ilica 480, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "127078",
+      "registration_number": "100/2017",
+      "mb": "04273885",
+      "oib": "58066804416",
+      "legal_name": "IMMO KUNST COMPANY d.o.o.",
+      "registered_address": "Gajeva 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3600",
+      "registration_number": "189/2022",
+      "mb": "05029791",
+      "oib": "89211240773",
+      "legal_name": "IMMOBILE - USUS FRUCTUS d.o.o.",
+      "registered_address": "Alberta Fortisa 25, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "110056",
+      "registration_number": "96/2015",
+      "mb": "04425677",
+      "oib": "04598869291",
+      "legal_name": "IMMOWELT j.d.o.o.",
+      "registered_address": "Vlaška 133, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "140080",
+      "registration_number": "146/2018",
+      "mb": "04815629",
+      "oib": "74860673682",
+      "legal_name": "IMPERIUM IMMOBILIARE d.o.o.",
+      "registered_address": "Ilica 87, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "27051",
+      "registration_number": "726/2009",
+      "mb": "02455331",
+      "oib": "36256673548",
+      "legal_name": "IMPERO TERRA d.o.o.",
+      "registered_address": "Mlinovi 141, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "122062",
+      "registration_number": "131/2016",
+      "mb": "04621557",
+      "oib": "23300936453",
+      "legal_name": "IN-BETWEEN d.o.o.",
+      "registered_address": "Iblerov trg 9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "107058",
+      "registration_number": "18/2015",
+      "mb": "04002334",
+      "oib": "91162007647",
+      "legal_name": "INTERKLASIK j.d.o.o. za usluge",
+      "registered_address": "Nečujamska 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154540",
+      "registration_number": "137/2025",
+      "mb": null,
+      "oib": "67285769554",
+      "legal_name": "IRENA, obrt za usluge, VL. IRENA JAMBRIŠAK CURIŠ, ZAGREB",
+      "registered_address": "Ulica Ivane Brlić Mažuranić 58, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154128",
+      "registration_number": "55/2024",
+      "mb": null,
+      "oib": "39227214356",
+      "legal_name": "ISSA, obrt za posredovanje u prometu nekretnina, vl. Veno Smolčić, Zagreb, Palmotićeva ulica 55",
+      "registered_address": "Palmotićeva ulica 55, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144069",
+      "registration_number": "37/2019",
+      "mb": "97963224",
+      "oib": "33464115785",
+      "legal_name": "IVAN NEKRETNINE (obrt)",
+      "registered_address": "Črnomerec 31a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3582",
+      "registration_number": "171/2022",
+      "mb": "05612870",
+      "oib": "41944575433",
+      "legal_name": "JELIČIĆ NEKRETNINE J.D.O.O. za poslovanje nekretninama",
+      "registered_address": "Trg Ivana Kukuljevića 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154339",
+      "registration_number": "48/2025",
+      "mb": null,
+      "oib": "49714806829",
+      "legal_name": "JOSIP GLUHAK, obrt za usluge, vl. Josip Gluhak, Zagreb, Vrapčanska ulica 40",
+      "registered_address": "VRAPČANSKA ULICA 40, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154069",
+      "registration_number": "159/2023",
+      "mb": "05834384",
+      "oib": "46405971671",
+      "legal_name": "Just ForYou d.o.o.",
+      "registered_address": "Vijenac Frane Gotovca 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155249",
+      "registration_number": "184/2026",
+      "mb": "06078354",
+      "oib": "91820005135",
+      "legal_name": "KALEX nekretnine d.o.o.",
+      "registered_address": "Ulica Franje Pokornoga 14, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155247",
+      "registration_number": "182/2026",
+      "mb": "05397383",
+      "oib": "95009936882",
+      "legal_name": "Kalis dimension d.o.o.",
+      "registered_address": "Ulica Dobriše Cesarića 23, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154149",
+      "registration_number": "76/2024",
+      "mb": "05871166",
+      "oib": "35902528296",
+      "legal_name": "KALS Real Estate d.o.o.",
+      "registered_address": "Sesvetska ulica 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "15098",
+      "registration_number": "282/2009",
+      "mb": "36561010",
+      "oib": "03509891796",
+      "legal_name": "KASTEL-ZAGREB d.o.o.",
+      "registered_address": "Gundulićeva 56, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3365",
+      "registration_number": "151/2021",
+      "mb": "98305581",
+      "oib": "87051788716",
+      "legal_name": "KAVALIR, obrt za usluge, poslovno savjetovanje i proizvodnju",
+      "registered_address": "PRERADOVIĆEVA 37, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154173",
+      "registration_number": "100/2024",
+      "mb": "05942845",
+      "oib": "42047577941",
+      "legal_name": "KAZA consulting d.o.o.",
+      "registered_address": "Ilica 246/A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154666",
+      "registration_number": "203/2025",
+      "mb": "05835755",
+      "oib": "24280261534",
+      "legal_name": "KLAN B projekt d.o.o.",
+      "registered_address": "Remete 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "122078",
+      "registration_number": "6/2017",
+      "mb": "02483319",
+      "oib": "88360747479",
+      "legal_name": "KM CONSULTING d.o.o.",
+      "registered_address": "Garićgradska 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154782",
+      "registration_number": "257/2025",
+      "mb": "04499280",
+      "oib": "70343446936",
+      "legal_name": "KONTURA SP j.d.o.o.",
+      "registered_address": "Jadranska avenija 6//22, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154280",
+      "registration_number": "207/2024",
+      "mb": null,
+      "oib": "48993808005",
+      "legal_name": "Konzul nekretnine, obrt za poslovanje nekretninama i druge usluge, vl. Jakša Stecca, Zagreb, Ulica Janka Grahora 9 A",
+      "registered_address": "Ulica Janka Grahora 9 A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155180",
+      "registration_number": "135/2026",
+      "mb": "06272754",
+      "oib": "40371329245",
+      "legal_name": "Kora nekretnine d.o.o.",
+      "registered_address": "Mikulići 49, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3384",
+      "registration_number": "170/2021",
+      "mb": "98342100",
+      "oib": "90299283505",
+      "legal_name": "KORAK NEKRETNINE, OBRT ZA POSLOVANJE NEKRETNINAMA",
+      "registered_address": "ul.grada vukovara 16, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "51062",
+      "registration_number": "14/2011",
+      "mb": "02717387",
+      "oib": "08809016901",
+      "legal_name": "KRISTAL NEKRETNINE d.o.o.",
+      "registered_address": "ZAGREBAČKA CESTA 217, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154313",
+      "registration_number": "22/2025",
+      "mb": null,
+      "oib": "53180627587",
+      "legal_name": "KRIŠTO4, obrt za poslovanje nekretninama, vl. Mislav Krišto, Zagreb, Ulica Augusta Harambašića 54",
+      "registered_address": "Ulica Augusta Harambašića 54, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "130055",
+      "registration_number": "125/2017",
+      "mb": "04763602 ",
+      "oib": "95238709925",
+      "legal_name": "KSB POSLOVANJE d.o.o.",
+      "registered_address": "Trnjanska cesta 105, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155075",
+      "registration_number": "90/2026",
+      "mb": "06237045",
+      "oib": "46635688490",
+      "legal_name": "Kuburić & Martinac Property d.o.o.",
+      "registered_address": "Ulica Milana Amruša 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "137076",
+      "registration_number": "48/2018",
+      "mb": "97853500",
+      "oib": "79125700498",
+      "legal_name": "KULA, OBRT ZA POSREDOVANJE U PROMETU NEKRETNINAMA, VL. SANJA REINIĆ",
+      "registered_address": "Rapska ulica 37 B, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "107060",
+      "registration_number": "20/2015",
+      "mb": "04328728",
+      "oib": "78432247615",
+      "legal_name": "KVADAR nekretnine j.d.o.o.",
+      "registered_address": "Radnička cesta 80, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "129051",
+      "registration_number": "112/2017",
+      "mb": "04754140",
+      "oib": "60144577884",
+      "legal_name": "KVADRAT DOMA j.d.o.o.",
+      "registered_address": "Ulica Grada Vukovara 238, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154214",
+      "registration_number": "141/2024",
+      "mb": null,
+      "oib": "37657073448",
+      "legal_name": "KVADRAT SNA, obrt za proizvodnju i usluge, vl. Maja Demšar Branković, Zagreb, Ulica Božidara Magovca 48",
+      "registered_address": "Ulica Božidara Magovca 48, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3178",
+      "registration_number": "104/2020",
+      "mb": "05148286",
+      "oib": "12203294486",
+      "legal_name": "KVADRATI UPRAVLJANJE D.O.O.",
+      "registered_address": "HEINZELOVA ULICA 33, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155244",
+      "registration_number": "179/2026",
+      "mb": "06028462",
+      "oib": "21876229202",
+      "legal_name": "La clé nekretnine d.o.o.",
+      "registered_address": "Dubrava 24, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154424",
+      "registration_number": "91/2025",
+      "mb": "02793717",
+      "oib": "12529080613",
+      "legal_name": "LAD 1 studio d.o.o.",
+      "registered_address": "Trnjanska cesta 69, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "103062",
+      "registration_number": "95/2014",
+      "mb": "04194675",
+      "oib": "87214938207",
+      "legal_name": "LAMIA NEKRETNINE d.o.o.",
+      "registered_address": "Varšavska 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154346",
+      "registration_number": "55/2025",
+      "mb": "06018807",
+      "oib": "06861727186",
+      "legal_name": "Landmark nekretnine d.o.o.",
+      "registered_address": "Savska cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "93060",
+      "registration_number": "114/2013",
+      "mb": "04111257",
+      "oib": "78449055522",
+      "legal_name": "Largo d.o.o.",
+      "registered_address": "Svetog Roka 18, 10010 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "147050",
+      "registration_number": "120/2019",
+      "mb": "081257203",
+      "oib": "63443543458",
+      "legal_name": "LARUE NEKRETNINE d.o.o.",
+      "registered_address": "Prisavlje 10, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "129054",
+      "registration_number": "115/2017",
+      "mb": "4770285",
+      "oib": "14327186016",
+      "legal_name": "LEGE ARTIS NEKRETNINE d.o.o.",
+      "registered_address": "Kopernikova 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3731",
+      "registration_number": "88/2023",
+      "mb": "05228271",
+      "oib": "64201462815",
+      "legal_name": "LENETI BLUE J.D.O.O.",
+      "registered_address": "Remete 74, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "151056",
+      "registration_number": "162/2019",
+      "mb": "05165865",
+      "oib": "24655908113",
+      "legal_name": "LEONA NEKRETNINE d.o.o.",
+      "registered_address": "Medvedski breg 17, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "138077",
+      "registration_number": "91/2018",
+      "mb": "04918223",
+      "oib": "94372507494",
+      "legal_name": "Libra R.E.S. d.o.o.",
+      "registered_address": "Hruševečka ulica 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "151057",
+      "registration_number": "163/2019",
+      "mb": "05159741",
+      "oib": "68687961235",
+      "legal_name": "LIFE HOUSE j.d.o.o.",
+      "registered_address": "Vrapčanska 2b, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154847",
+      "registration_number": "274/2025",
+      "mb": "05058228",
+      "oib": "20834886651",
+      "legal_name": "LINEA NEKRETNINE d.o.o.",
+      "registered_address": "Petrinjska ulica 51, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154889",
+      "registration_number": "14/2026",
+      "mb": "06208916",
+      "oib": "16763231722",
+      "legal_name": "Lirio Lucas d.o.o.",
+      "registered_address": "Ulica Crvenog križa 16, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154609",
+      "registration_number": "156/2025",
+      "mb": null,
+      "oib": "35701846970",
+      "legal_name": "List-IN, obrt za rješenja za nekretninska ulaganja i usluge, vl. Ivana Drk Došen, Zagreb, Ulica sv. Mateja 112",
+      "registered_address": "Ulica sv. Mateja 112, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "153060",
+      "registration_number": "194/2019",
+      "mb": "98080792",
+      "oib": "29504439998",
+      "legal_name": "LIVE IN obrt za posredovanje u prometu nekretnina",
+      "registered_address": "Kušlanova 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3621",
+      "registration_number": "210/2022",
+      "mb": "98495119",
+      "oib": "17926979498",
+      "legal_name": "LMO NEKRETNINE, obrt za posredovanje u prometu nekretnina, vl. Lidija Milinović Oroz",
+      "registered_address": "Gornje Prekrižje  21, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154287",
+      "registration_number": "214/2024",
+      "mb": null,
+      "oib": "69234925756",
+      "legal_name": "LNpartner, obrt za usluge, vl. Marija Krišto Justament, Sesvete, Andrije Maurovića 7",
+      "registered_address": "ANDRIJE MAUROVIĆA 7, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154612",
+      "registration_number": "159/2025",
+      "mb": "06098142",
+      "oib": "73530645533",
+      "legal_name": "LOCAL LAND EXPERTS d.o.o.",
+      "registered_address": "Martićeva ulica 67, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144094",
+      "registration_number": "62/2019",
+      "mb": "97931934",
+      "oib": "97942719464",
+      "legal_name": "LONG, OBRT ZA USLUGE, VL. PETAR BRAJKOVIĆ",
+      "registered_address": "Samoborska cesta 134, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "127067",
+      "registration_number": "89/2017",
+      "mb": "02079054",
+      "oib": "82282175061",
+      "legal_name": "LORETA USLUGE d.o.o.",
+      "registered_address": "Rooseveltov trg 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154243",
+      "registration_number": "170/2024",
+      "mb": "01661663",
+      "oib": "43089513110",
+      "legal_name": "LUMIERE NEKRETNINE d.o.o.",
+      "registered_address": "Kaptolska ulica 46, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3432",
+      "registration_number": "21/2022",
+      "mb": "81407560",
+      "oib": "94024887084",
+      "legal_name": "LURIMAX D.O.O.",
+      "registered_address": "Borje 2, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "16094",
+      "registration_number": "328/2009",
+      "mb": "02005042",
+      "oib": "24006098574",
+      "legal_name": "LUX-GRAD d.o.o.",
+      "registered_address": "Antuna Bauera 24, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "14083",
+      "registration_number": "217/2009",
+      "mb": "08067964",
+      "oib": "57601756355",
+      "legal_name": "LUXOR NEKRETNINE d.o.o.",
+      "registered_address": "Žumberačka 17a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154323",
+      "registration_number": "32/2025",
+      "mb": "06020828",
+      "oib": "72419121854",
+      "legal_name": "M Holding d.o.o.",
+      "registered_address": "Samoborska cesta 348, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154101",
+      "registration_number": "28/2024",
+      "mb": "05864135",
+      "oib": "20994814260",
+      "legal_name": "Maklen nekretnine d.o.o.",
+      "registered_address": "Radnička cesta 59/A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "112052",
+      "registration_number": "111/2015",
+      "mb": "04432819",
+      "oib": "55744801973",
+      "legal_name": "MANO NEKRETNINE d.o.o. za usluge",
+      "registered_address": "Zadarska 80, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "15064",
+      "registration_number": "248/2009",
+      "mb": "02209691",
+      "oib": "24838633812",
+      "legal_name": "MARDOS NEKRETNINE d.o.o.",
+      "registered_address": "Martina Pušteka 10, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "115057",
+      "registration_number": "13/2016",
+      "mb": "04469810",
+      "oib": "88254062560",
+      "legal_name": "MARILUSA NEKRETNINE j.d.o.o.",
+      "registered_address": "Isce 86, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "17098",
+      "registration_number": "382/2009",
+      "mb": "3534782",
+      "oib": "15774754353",
+      "legal_name": "MARKETING ALFA I OMEGA d.o.o.",
+      "registered_address": "Bukovačka 161, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "4051",
+      "registration_number": "2/2008",
+      "mb": "00917192",
+      "oib": "65669601147",
+      "legal_name": "MARLIMAT d.o.o.",
+      "registered_address": "Kneza Branimira 47, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3618",
+      "registration_number": "207/2022",
+      "mb": "05666341",
+      "oib": "23570640727",
+      "legal_name": "MARTI`S NEKRETNINE d.o.o.",
+      "registered_address": "Nikole Tesle 14/1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3752",
+      "registration_number": "109/2023",
+      "mb": "05738482",
+      "oib": "75312822597",
+      "legal_name": "Matrix Nekretnine d.o.o.",
+      "registered_address": "Radnička cesta 50, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3796",
+      "registration_number": "153/2023",
+      "mb": "05823552",
+      "oib": "52738161010",
+      "legal_name": "MEDIAR NEKRETNINE d.o.o.",
+      "registered_address": "Podbrežje XII. 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "138068",
+      "registration_number": "82/2018",
+      "mb": "97877883",
+      "oib": "02166937731",
+      "legal_name": "MEDIAR NEKRETNINE, obrt",
+      "registered_address": "Podbrežje XII 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "39051",
+      "registration_number": "54/2010",
+      "mb": "0540633",
+      "oib": "71120280721",
+      "legal_name": "MERLIN PRIX d.o.o.",
+      "registered_address": "Žutnička 14, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154103",
+      "registration_number": "30/2024",
+      "mb": "05871867",
+      "oib": "47926577116",
+      "legal_name": "MET d.o.o.",
+      "registered_address": "Savska cesta 32, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "16064",
+      "registration_number": "298/2009",
+      "mb": "1508644",
+      "oib": "40295081531",
+      "legal_name": "METROPOLA d.o.o. za trgovinu i usluge",
+      "registered_address": "Preradovićeva 20, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "19062",
+      "registration_number": "446/2009",
+      "mb": "91909287",
+      "oib": "23490552340",
+      "legal_name": "METROPOLIS agencija za promet nekretninama",
+      "registered_address": "Gračec 15A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154853",
+      "registration_number": "280/2025",
+      "mb": "98899104",
+      "oib": "88120945900",
+      "legal_name": "Millenium Consulting, obrt za savjetovanje i ostale usluge, vl. Domagoj Mišković, Zagreb, Ulica Zinke Kunc 9",
+      "registered_address": "Ulica Zinke Kunc 9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "110051",
+      "registration_number": "91/2015",
+      "mb": "02613883",
+      "oib": "83823147624",
+      "legal_name": "MILUNA USLUGE d.o.o.",
+      "registered_address": "Kornatska 1A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155091",
+      "registration_number": "96/2026",
+      "mb": "06238246",
+      "oib": "97663016200",
+      "legal_name": "Minela nekretnine d.o.o.",
+      "registered_address": "Utinjska ulica 14//5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "70050",
+      "registration_number": "66/2012",
+      "mb": "01779958",
+      "oib": "35459304959",
+      "legal_name": "MISIMI d.o.o. za trgovinu i usluge",
+      "registered_address": "Zagrebačka  175, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "82050",
+      "registration_number": "20/2013",
+      "mb": "02979713",
+      "oib": "00153102915",
+      "legal_name": "MOJ DOM NEKRETNINE d.o.o.",
+      "registered_address": "SREBRENJAK 19, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155372",
+      "registration_number": "221/2026",
+      "mb": "06308074",
+      "oib": "21316778787",
+      "legal_name": "Moj Plan Nekretnine d.o.o.",
+      "registered_address": "Ulica Roberta Frangeša - Mihanovića 9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "130063",
+      "registration_number": "133/2017",
+      "mb": "02383519",
+      "oib": "26755375300",
+      "legal_name": "MOMA SAVJETOVANJE d.o.o.",
+      "registered_address": "Ulica dr. Franje Račkog 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155263",
+      "registration_number": "198/2026",
+      "mb": null,
+      "oib": "62983430388",
+      "legal_name": "MORENA, obrt za posredovanje u prometu nekretninama i usluge, vl. Stevan Savić, Zagreb, Ulica Ivana Matetića Ronjgova 12",
+      "registered_address": "Ulica Ivana Matetića Ronjgova 12, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3268",
+      "registration_number": "54/2021",
+      "mb": "05394554",
+      "oib": "49575391621",
+      "legal_name": "MUST HAVE PROPERTIES D.O.O.",
+      "registered_address": "PALMOTIĆEVA ULICA 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144082",
+      "registration_number": "50/2019",
+      "mb": "01677756",
+      "oib": "38904991600",
+      "legal_name": "N3 CAPITAL PARTNERS d.o.o.",
+      "registered_address": "Ulica kneza Branimira 71a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155185",
+      "registration_number": "140/2026",
+      "mb": "02317753",
+      "oib": "92820356281",
+      "legal_name": "NANETTE NEKRETNINE d.o.o.",
+      "registered_address": "Maksimirska cesta 48, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155415",
+      "registration_number": "230/2026",
+      "mb": "02230755",
+      "oib": "89235525533",
+      "legal_name": "NEHR GRADNJA d.o.o.",
+      "registered_address": "Rijeznica 13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "81056",
+      "registration_number": "18/2013",
+      "mb": "97392090",
+      "oib": "93997287724",
+      "legal_name": "NEKRETNINE AGRAM, OBRT ZA POSLOVANJE NEKRETNINAMA",
+      "registered_address": "Zvečaj 40, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3140",
+      "registration_number": "66/2020",
+      "mb": "98099710",
+      "oib": "69910495930",
+      "legal_name": "NEKRETNINE DOLINAR, obrt za posredovanje u prometu nekretnina vl.Mario Dolinar",
+      "registered_address": "Perjavica 32, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3344",
+      "registration_number": "130/2021",
+      "mb": "98311654",
+      "oib": "56449396713",
+      "legal_name": "NEKRETNINE GREEN, OBRT",
+      "registered_address": "Hribarov prilaz 1, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "123054",
+      "registration_number": "15/2017",
+      "mb": "4621182",
+      "oib": "28649678855",
+      "legal_name": "NEKRETNINE IMPERIAL j.d.o.o.",
+      "registered_address": "Draganići 8a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "137064",
+      "registration_number": "36/2018",
+      "mb": "97845892",
+      "oib": "40066087203",
+      "legal_name": "NEKRETNINE NAŠ DOM, VL. JASMINKA CVITANOVIĆ",
+      "registered_address": "Ulica Hrvatskog proljeća 32/II, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "137083",
+      "registration_number": "55/2018",
+      "mb": "04249321",
+      "oib": "87157825646",
+      "legal_name": "NEKTUS INTERIJERI d.o.o.",
+      "registered_address": "Ulica Vojina Bakića, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "146054",
+      "registration_number": "87/2019",
+      "mb": "80812064",
+      "oib": "53047404709",
+      "legal_name": "NOBILIS EXPO d.o.o.",
+      "registered_address": "Deanovečka 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155015",
+      "registration_number": "70/2026",
+      "mb": "06078346",
+      "oib": "39936269826",
+      "legal_name": "NOBILIS HOUSE d.o.o.",
+      "registered_address": "Ulica Milana Makanca 13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155018",
+      "registration_number": "72/2026",
+      "mb": null,
+      "oib": "32385618097",
+      "legal_name": "NOBU,Obrt za posredovanje u prometu nekretnina i ostale usluge,vl.Siniša Nagradić, Zagreb, Ulica Ante Topić Mimare 3A.",
+      "registered_address": "ULICA ANTE TOPIĆ MIMARE 3A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154139",
+      "registration_number": "66/2024",
+      "mb": null,
+      "oib": "67689930557",
+      "legal_name": "NOVA, nekretnine obrt za usluge, vl. Irena Blažević, Zagreb, Ulica Gustava Krkleca 38 A",
+      "registered_address": "ULICA GUSTAVA KRKLECA 38 A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3788",
+      "registration_number": "145/2023",
+      "mb": "98651714",
+      "oib": "48482275328",
+      "legal_name": "NOVADOM, obrt za poslovanje nekretninama, vl. Ana Pavlović",
+      "registered_address": "Radnički dol  13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3438",
+      "registration_number": "27/2022",
+      "mb": "57371694",
+      "oib": "97390317203",
+      "legal_name": "NOVUS MANAGEMENT D.O.O.",
+      "registered_address": "Maksimirska 8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3279",
+      "registration_number": "65/2021",
+      "mb": "98254596",
+      "oib": "87352262880",
+      "legal_name": "OCELOT NEKRETNINE, obrt za posredovanje u prometu nekretnina i ostale usluge, vl. Zoran Stojković",
+      "registered_address": "Mlinovi 50, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "7051",
+      "registration_number": "23/2008",
+      "mb": "02445042",
+      "oib": "95124490958",
+      "legal_name": "OFFERO NEKRETNINE d.o.o.",
+      "registered_address": "VII Retkovec 121A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "124051",
+      "registration_number": "62/2017",
+      "mb": "04695780",
+      "oib": "01073135926",
+      "legal_name": "OFIS ZA NEKRETNINE I ARHITEKTURU d.o.o.",
+      "registered_address": "Gaje Alage 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155140",
+      "registration_number": "115/2026",
+      "mb": "01633422",
+      "oib": "24654058563",
+      "legal_name": "OLYMPIA d.o.o.",
+      "registered_address": "Polanjščak 31, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3554",
+      "registration_number": "143/2022",
+      "mb": "98452886",
+      "oib": "41727525749",
+      "legal_name": "OM NEKRETNINE, obrt za posredovanje u prometu nekretnina, vl. Jaroslav Kocurek, Zagreb,  Štefanovečka cesta 73",
+      "registered_address": "Štefanovečka cesta  73, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154914",
+      "registration_number": "29/2026",
+      "mb": "06179541",
+      "oib": "01750706312",
+      "legal_name": "Open Door d.o.o.",
+      "registered_address": "Savska cesta 135, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "14074",
+      "registration_number": "208/2009",
+      "mb": "01758730",
+      "oib": "24059421894",
+      "legal_name": "OPERETA d.o.o.",
+      "registered_address": "B.Magovca 63, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "92052",
+      "registration_number": "102/2013",
+      "mb": "02099926",
+      "oib": "70610046640",
+      "legal_name": "OPTIMA-BENZ d.o.o.",
+      "registered_address": "Jurkovićeva 19, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3106",
+      "registration_number": "32/2020",
+      "mb": "08067882",
+      "oib": "86302399816",
+      "legal_name": "ORANGE COUNTY d.o.o.",
+      "registered_address": "Srebrnjak 13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "130060",
+      "registration_number": "130/2017",
+      "mb": "97795810",
+      "oib": "19879695276",
+      "legal_name": "OSKAR NEKRETNINE, obrt za posredovanje nekretninama",
+      "registered_address": "Radnički dol 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "26055",
+      "registration_number": "712/2009",
+      "mb": "01510878",
+      "oib": "70074543875",
+      "legal_name": "OTP NEKRETNINE d.o.o.",
+      "registered_address": "Divka Budaka 1d, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "24086",
+      "registration_number": "663/2009",
+      "mb": "80255575",
+      "oib": "75150259676",
+      "legal_name": "OZANA d.o.o.",
+      "registered_address": "Dvorničićeva 33, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3441",
+      "registration_number": "30/2022",
+      "mb": "98353594",
+      "oib": "65375341985",
+      "legal_name": "P&P PROPERTIES, obrt vl.Tihana Ščrbić",
+      "registered_address": "Orhideja 53, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "136053",
+      "registration_number": "15/2018",
+      "mb": "04816919",
+      "oib": "08922724714",
+      "legal_name": "P.S.N. ZAGREB MAX NEKRETNINE d.o.o. za usluge",
+      "registered_address": "Anina ulica 57, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3563",
+      "registration_number": "152/2022",
+      "mb": "00749249",
+      "oib": "53433052884",
+      "legal_name": "PALMA-RENT D.O.O.",
+      "registered_address": "Palmotićeva 76, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3455",
+      "registration_number": "44/2022",
+      "mb": "081411038",
+      "oib": "10698892764",
+      "legal_name": "PAPIRUS NEKRETNINE I USLUGE D.O.O.",
+      "registered_address": "Horvaćanska cesta 142, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155158",
+      "registration_number": "123/2026",
+      "mb": "04423089",
+      "oib": "57125360334",
+      "legal_name": "PAPRIKA j.d.o.o.",
+      "registered_address": "Ulica baruna Trenka 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "137082",
+      "registration_number": "54/2018",
+      "mb": "04902432",
+      "oib": "31307028699",
+      "legal_name": "PARADIGMA NEKRETNINE d.o.o.",
+      "registered_address": "Ulica Predraga Heruca 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3449",
+      "registration_number": "38/2022",
+      "mb": "81405130",
+      "oib": "93896130315",
+      "legal_name": "PARK NEKRETNINE D.O.O.",
+      "registered_address": "Gornji bukovac 96, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3614",
+      "registration_number": "203/2022",
+      "mb": "05649340",
+      "oib": "34423349777",
+      "legal_name": "PARTHENON NEKRETNINE d.o.o.",
+      "registered_address": "Dobriše Cesarića 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3638",
+      "registration_number": "227/2022",
+      "mb": "05620899",
+      "oib": "33135922107",
+      "legal_name": "PASS CARD D.O.O.",
+      "registered_address": "Radnička cesta 80, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3740",
+      "registration_number": "97/2023",
+      "mb": "98034910",
+      "oib": "65401411591",
+      "legal_name": "PAVLOVIĆ NEKRETNIE, OBRT za posredovanje u prometu nekretninama i usluge, vl.Ivana Pavlović",
+      "registered_address": "Ilica 71, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "153080",
+      "registration_number": "1/2020",
+      "mb": "01406795",
+      "oib": "28495895537",
+      "legal_name": "PBZ CARD d.o.o.",
+      "registered_address": "Radnička cesta 44, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3470",
+      "registration_number": "59/2022",
+      "mb": "81365274",
+      "oib": "43136911357",
+      "legal_name": "PELITO SAVJETOVANJE D.O.O.",
+      "registered_address": "Dankovečka ulica 5, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "51056",
+      "registration_number": "8/2011",
+      "mb": "01901591",
+      "oib": "10064698373",
+      "legal_name": "PER TU d.o.o. za trgovinu i usluge",
+      "registered_address": "Mikulići 142 D, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "105059",
+      "registration_number": "123/2014",
+      "mb": "08091265",
+      "oib": "98801883970",
+      "legal_name": "PERFECT NEKRETNINE d.o.o.",
+      "registered_address": "Horvaćanska cesta  166, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "98054",
+      "registration_number": "17/2014",
+      "mb": "04163419",
+      "oib": "11265180999",
+      "legal_name": "PERIS d.o.o. za savjetovanje i usluge",
+      "registered_address": "Ulica Nike Grškovića 14, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "132053",
+      "registration_number": "147/2017",
+      "mb": "04788206",
+      "oib": "60057745898",
+      "legal_name": "PERMOVEO d.o.o.",
+      "registered_address": "Gradišćanska 30, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3251",
+      "registration_number": "37/2021",
+      "mb": "98039873",
+      "oib": "44019924937",
+      "legal_name": "PERVAN, obrt za usluge",
+      "registered_address": "Jurišićeva 19/1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3687",
+      "registration_number": "44/2023",
+      "mb": "98492250",
+      "oib": "70435083641",
+      "legal_name": "Petris nekretnine, obrt za poslovanje nekretninama i druge usluge, vl. Tomislav Petrović",
+      "registered_address": "Žažinska 13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "21058",
+      "registration_number": "542/2009",
+      "mb": "02222370",
+      "oib": "40950346709",
+      "legal_name": "PETRUS-PATRICE d.o.o.",
+      "registered_address": "1. Luka 4, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3555",
+      "registration_number": "144/2022",
+      "mb": "05508231",
+      "oib": "14828330753",
+      "legal_name": "PEX CONSIGLIERE CENTAR D.O.O.",
+      "registered_address": "Trg Eugena Kvaternika 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154281",
+      "registration_number": "208/2024",
+      "mb": "05253349",
+      "oib": "88816690525",
+      "legal_name": "Plavi kvadrat d.o.o.",
+      "registered_address": "Gundulićeva ulica 37//1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "138066",
+      "registration_number": "80/2018",
+      "mb": "4917642",
+      "oib": "20987805948",
+      "legal_name": "POINT NEKRETNINE d.o.o.",
+      "registered_address": "Radnička cesta 27, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154159",
+      "registration_number": "86/2024",
+      "mb": "05942888",
+      "oib": "65824280812",
+      "legal_name": "Poma realty d.o.o.",
+      "registered_address": "Vrbik XII. 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155374",
+      "registration_number": "222/2026",
+      "mb": "02936267",
+      "oib": "33540031543",
+      "legal_name": "Poslovna inicijativa d.o.o.",
+      "registered_address": "Gorjanovićeva ulica 13, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "25078",
+      "registration_number": "705/2009",
+      "mb": "2529203",
+      "oib": "80065889383",
+      "legal_name": "POSLOVNI KVADRATI d.o.o.",
+      "registered_address": "Jurišićeva 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3238",
+      "registration_number": "24/2021",
+      "mb": "05374090",
+      "oib": "83227207291",
+      "legal_name": "PREMIUM HOME GROUP D.O.O.",
+      "registered_address": "LUKŠIĆ  10 A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "138099",
+      "registration_number": "113/2018",
+      "mb": "04003349",
+      "oib": "87621734159",
+      "legal_name": "PRESTIGE NEKRETNINE d.o.o.",
+      "registered_address": "Ulica Andrije Žaje 49, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "55068",
+      "registration_number": "71/2011",
+      "mb": "02360039",
+      "oib": "58990432592",
+      "legal_name": "PRO PRIMO PROJEKT d.o.o.",
+      "registered_address": "Srednjak 19c, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "146074",
+      "registration_number": "107/2019",
+      "mb": "02938111",
+      "oib": "00569221870",
+      "legal_name": "PRO SAVJETOVANJE d.o.o.",
+      "registered_address": "Ulica Ivana Zahara  5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3720",
+      "registration_number": "77/2023",
+      "mb": "01284045",
+      "oib": "12931733734",
+      "legal_name": "PRO VILA D.O.O.",
+      "registered_address": "Nova cesta 188, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154327",
+      "registration_number": "36/2025",
+      "mb": "06050026",
+      "oib": "50132983584",
+      "legal_name": "ProAccount d.o.o.",
+      "registered_address": "Aleja Antuna Augustinčića 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3509",
+      "registration_number": "98/2022",
+      "mb": "08143110",
+      "oib": "61801422320",
+      "legal_name": "PROAgentura d.o.o.",
+      "registered_address": "Bukovačka cesta 324, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154068",
+      "registration_number": "158/2023",
+      "mb": "05809398",
+      "oib": "00868386013",
+      "legal_name": "ProCapex d.o.o.",
+      "registered_address": "Ulica Ljudevita Posavskog 34/A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3603",
+      "registration_number": "192/2022",
+      "mb": "00146510",
+      "oib": "10618735843",
+      "legal_name": "PROJEKT 92 d.o.o.",
+      "registered_address": "Ljudevita Posavskog 37, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155469",
+      "registration_number": "244/2026",
+      "mb": "05204038",
+      "oib": "96328637617",
+      "legal_name": "PROJEKT CIGLENICA j.d.o.o.",
+      "registered_address": "I. Petruševec III. odvojak 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155390",
+      "registration_number": "225/2026",
+      "mb": "97516481",
+      "oib": "99676813446",
+      "legal_name": "PRO-NUMERUS, OBRT ZA USLUGE, VL. ANDREJ VUČKOVIĆ, ZAGREB, ZENIČKA 26",
+      "registered_address": "ZENIČKA 26, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "15089",
+      "registration_number": "273/2009",
+      "mb": "01982028",
+      "oib": "51306183895",
+      "legal_name": "PROPERTAS d.o.o. za usluge",
+      "registered_address": "Radnička cesta 80, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3644",
+      "registration_number": "1/2023",
+      "mb": "05624029",
+      "oib": "61536045134",
+      "legal_name": "PROPERTY & MORE D.O.O.",
+      "registered_address": "Ilica 36, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154978",
+      "registration_number": "53/2026",
+      "mb": "05729980",
+      "oib": "18180491953",
+      "legal_name": "PROPERTY STORE d.o.o.",
+      "registered_address": "Ulica Božidara Adžije 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154464",
+      "registration_number": "111/2025",
+      "mb": null,
+      "oib": "57504295889",
+      "legal_name": "PROSTOR & CO, OBRT ZA POSLOVANJE NEKRETNINAMA I DRUGE USLUGE, VL. MARINA JOVIŠIĆ, ZAGREB, JARUN 68",
+      "registered_address": "JARUN 68, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3746",
+      "registration_number": "103/2023",
+      "mb": "97986780",
+      "oib": "81289844053",
+      "legal_name": "PROVIDENCA, obrt za istraživanje tržišta, poslovanje nekretninama i ostale usluge, vl. Luca Ilinović, Zagreb",
+      "registered_address": "Ulica Margarete Froman  3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154137",
+      "registration_number": "64/2024",
+      "mb": "05738083",
+      "oib": "11708695203",
+      "legal_name": "Prudent Consulting d.o.o.",
+      "registered_address": "Gundulićeva ulica 18, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "117050",
+      "registration_number": "64/2016",
+      "mb": "4058968",
+      "oib": "41805913095",
+      "legal_name": "PRVI SAVJET d.o.o.",
+      "registered_address": "Požarkovečka 12, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "119100",
+      "registration_number": "87/2016",
+      "mb": "81036417",
+      "oib": "13469752090",
+      "legal_name": "PUBLIC REAL ESTATE d.o.o.",
+      "registered_address": "Ilica 151, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "52056",
+      "registration_number": "21/2011",
+      "mb": "02165210",
+      "oib": "29626334707",
+      "legal_name": "PUNGO d.o.o.",
+      "registered_address": "Ljudevita Gaja 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144054",
+      "registration_number": "22/2019",
+      "mb": "08107614",
+      "oib": "34745680350",
+      "legal_name": "QBAT STUDIO d.o.o.",
+      "registered_address": "Ravenečki vinogradi 4, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3739",
+      "registration_number": "96/2023",
+      "mb": "05732018",
+      "oib": "05822009867",
+      "legal_name": "QUCHA NEKRETNINE D.O.O.",
+      "registered_address": "Mlinovi 154 b, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154218",
+      "registration_number": "145/2024",
+      "mb": "98861352",
+      "oib": "98645745393",
+      "legal_name": "RAKITIĆ, obrt za usluge, vl. Irena Rakitić, Zagreb, Maksimirsko naselje II. 19",
+      "registered_address": "Maksimirsko naselje II. 19, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "122080",
+      "registration_number": "8/2017",
+      "mb": "4639103",
+      "oib": "32199643181",
+      "legal_name": "RAPIDOM NEKRETNINE d.o.o.",
+      "registered_address": "Koprivnička ulica 48, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "122069",
+      "registration_number": "138/2016",
+      "mb": "81055438",
+      "oib": "57912993855",
+      "legal_name": "REA NEKRETNINE j.d.o.o.",
+      "registered_address": "Ulica Matka Laginje 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155062",
+      "registration_number": "77/2026",
+      "mb": "06238726",
+      "oib": "05538103147",
+      "legal_name": "REAG Business Consultancy d.o.o.",
+      "registered_address": "Park Kate Šoljić 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "145052",
+      "registration_number": "70/2019",
+      "mb": "05036062",
+      "oib": "84283039325",
+      "legal_name": "REAL ESTATE CROATIA d.o.o.",
+      "registered_address": "Đurđevačka ulica 30, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "14078",
+      "registration_number": "212/2009",
+      "mb": "2372584",
+      "oib": "66307839797",
+      "legal_name": "REALIS CENTAR NEKRETNINA d.o.o.",
+      "registered_address": "Vlaška 62, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154132",
+      "registration_number": "59/2024",
+      "mb": "05801451",
+      "oib": "90244247995",
+      "legal_name": "RED NEKRETNINE d.o.o.",
+      "registered_address": "Ulica Baltazara Bogišića 1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3735",
+      "registration_number": "92/2023",
+      "mb": "05602874",
+      "oib": "81223221931",
+      "legal_name": "Regent d.o.o.",
+      "registered_address": "Slavonska avenija 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "16086",
+      "registration_number": "320/2009",
+      "mb": "0549592",
+      "oib": "45880807495",
+      "legal_name": "REGULA PRIMA d.o.o.",
+      "registered_address": "Palmotićeva 56, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3726",
+      "registration_number": "83/2023",
+      "mb": "98540602",
+      "oib": "05799302761",
+      "legal_name": "REINA R.E., OBRT ZA USLUGE, VL. NATALIA REINOVA",
+      "registered_address": "Nikole Škrlca 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3510",
+      "registration_number": "99/2022",
+      "mb": "97670219",
+      "oib": "67920455473",
+      "legal_name": "RELANTIS, obrt za usluge i trgovinu, vl. Jozefina Apalović",
+      "registered_address": "Ul.Dane Duića 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "104050",
+      "registration_number": "108/2014",
+      "mb": "02289636",
+      "oib": "41624735227",
+      "legal_name": "RENOVA NEKRETNINE d.o.o. za promet nekretninama i usluge",
+      "registered_address": "Savska cesta 32, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "142054",
+      "registration_number": "176/2018",
+      "mb": "97762601",
+      "oib": "93879229388",
+      "legal_name": "RENTAL & HOST, obrt za poslovanje nekretninama i usluge, vl. Dragan Kusić",
+      "registered_address": "Trpanjska ulica 30, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3751",
+      "registration_number": "108/2023",
+      "mb": "98243705",
+      "oib": "38804036890",
+      "legal_name": "RESIDENT NEKRETNINE, obrt za posredovanje u prometu nekretninama, vl. Ivan Subota",
+      "registered_address": "Drage Gervaisa  8, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144085",
+      "registration_number": "53/2019",
+      "mb": "06038024",
+      "oib": "60966478654",
+      "legal_name": "REZIDENCIJA d.o.o.",
+      "registered_address": "Folnegovićeva 1c, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3736",
+      "registration_number": "93/2023",
+      "mb": "05707889",
+      "oib": "49079315133",
+      "legal_name": "Rina Nekretnine d.o.o.",
+      "registered_address": "Lanište 1i, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3774",
+      "registration_number": "131/2023",
+      "mb": "05748313",
+      "oib": "81911359179",
+      "legal_name": "RIVA NEKRETNINE D.O.O.",
+      "registered_address": "Maksimirska cesta 48, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "13074",
+      "registration_number": "158/2009",
+      "mb": "1876414",
+      "oib": "95474472266",
+      "legal_name": "RIVALITAS d.o.o.",
+      "registered_address": "Grahorova 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3556",
+      "registration_number": "145/2022",
+      "mb": "05449855",
+      "oib": "83280759774",
+      "legal_name": "ROEL REAL ESTATE D.O.O.",
+      "registered_address": "Frana Bošnjakovića 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154237",
+      "registration_number": "164/2024",
+      "mb": "05996392",
+      "oib": "76606137683",
+      "legal_name": "Rondo nekretnine d.o.o.",
+      "registered_address": "Hruševečka ulica 9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3236",
+      "registration_number": "22/2021",
+      "mb": "04845340",
+      "oib": "05485475194",
+      "legal_name": "ROSATO CONCEPT D.O.O.",
+      "registered_address": "Nova Ves 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155309",
+      "registration_number": "214/2026",
+      "mb": "01164554",
+      "oib": "31184249323",
+      "legal_name": "ROSA-TRIM d.o.o.",
+      "registered_address": "Prominska ulica 48, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "110052",
+      "registration_number": "92/2015",
+      "mb": "04433041",
+      "oib": "60771037537",
+      "legal_name": "ROST SAVJETOVANJE d.o.o.",
+      "registered_address": "Trnjanska cesta 59A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155096",
+      "registration_number": "101/2026",
+      "mb": "06255400",
+      "oib": "68628315207",
+      "legal_name": "SAL LIVING NEKRETNINE d.o.o.",
+      "registered_address": "Šestinska cesta 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3275",
+      "registration_number": "61/2021",
+      "mb": "05401739",
+      "oib": "64378807691",
+      "legal_name": "SAN POSREDOVANJE D.O.O.",
+      "registered_address": "Radmanovačka ulica 1, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155235",
+      "registration_number": "170/2026",
+      "mb": "06064116",
+      "oib": "23131845843",
+      "legal_name": "SARAS REAL ESTATE d.o.o.",
+      "registered_address": "Trnjanska cesta 67, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154111",
+      "registration_number": "38/2024",
+      "mb": null,
+      "oib": "59675711736",
+      "legal_name": "Schmidt Real Estate, obrt za posredovanje u prometu nekretnina, vl. Nina Schmidt, Zagreb, Savska cesta 41 (Poslovni toranj Zagrepčanka, 13. kat)",
+      "registered_address": "Savska cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155269",
+      "registration_number": "204/2026",
+      "mb": null,
+      "oib": "03813783958",
+      "legal_name": "SCOR'S ESTATE, obrt za usluge, vl. Ljiljana Škorić",
+      "registered_address": "DOLOVSKA ULICA 36, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "113052",
+      "registration_number": "118/2015",
+      "mb": "4458508",
+      "oib": "76915079150",
+      "legal_name": "SELECT HOME j.d.o.o.",
+      "registered_address": "Dardska 3, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154436",
+      "registration_number": "103/2025",
+      "mb": "05562465",
+      "oib": "22876904207",
+      "legal_name": "SELECTED REAL ESTATE j.d.o.o.",
+      "registered_address": "Ulica grada Vukovara 232/C, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "9065",
+      "registration_number": "1/2009",
+      "mb": "2151600",
+      "oib": "40554273019",
+      "legal_name": "SESVETE NEKRETNINE d.o.o.",
+      "registered_address": "Zagrebačka 4B, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154122",
+      "registration_number": "49/2024",
+      "mb": "98191373",
+      "oib": "67304766807",
+      "legal_name": "SIGNUM CONSULTING, OBRT ZA USLUGE, VL. HRVOJE OMAZIĆ, ZAGREB, MATIJEVKA 5",
+      "registered_address": "Matijevka 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "88054",
+      "registration_number": "85/2013",
+      "mb": "4057350",
+      "oib": "48058624464",
+      "legal_name": "SIGNUM d.o.o.",
+      "registered_address": "Brune Bušića 42, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "140067",
+      "registration_number": "133/2018",
+      "mb": "97910449",
+      "oib": "48896576792",
+      "legal_name": "SIGNUM obrt za poslovanje nekretninama i druge usluge",
+      "registered_address": "Palinovečka 19j, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154692",
+      "registration_number": "219/2025",
+      "mb": "05651867",
+      "oib": "19533390581",
+      "legal_name": "SINGER NEKRETNINE j.d.o.o.",
+      "registered_address": "Kostanjek 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155100",
+      "registration_number": "104/2026",
+      "mb": null,
+      "oib": "60727665986",
+      "legal_name": "SKELAC, obrt za posredovanje u prometu nekretnina, vl. Krešimir Skelac, Zagreb, Ciglenečka ulica 24",
+      "registered_address": "Ciglenečka ulica 24, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "140063",
+      "registration_number": "129/2018",
+      "mb": "04964209",
+      "oib": "18735927966",
+      "legal_name": "SKY NEKRETNINE d.o.o.",
+      "registered_address": "Vukovarska 237, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154610",
+      "registration_number": "157/2025",
+      "mb": "06043755",
+      "oib": "37630925706",
+      "legal_name": "SM IMPORTA d.o.o.",
+      "registered_address": "Ulica bagremova 10, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3250",
+      "registration_number": "36/2021",
+      "mb": "05374553",
+      "oib": "93105773459",
+      "legal_name": "SMARTKEY D.O.O.",
+      "registered_address": "SUNJSKA 9, 10020 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "21070",
+      "registration_number": "554/2009",
+      "mb": "92742416",
+      "oib": "89939452157",
+      "legal_name": "SOLLERS agencija za nekretnine",
+      "registered_address": "Pakoštanska 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154776",
+      "registration_number": "253/2025",
+      "mb": null,
+      "oib": "73768029179",
+      "legal_name": "SolosRE, obrt za poslovanje nekretnina, vl. Vladimir Stojaković, Zagreb, Jagodnjak 18",
+      "registered_address": "JAGODNJAK 18, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3678",
+      "registration_number": "35/2023",
+      "mb": "98520008",
+      "oib": "46860057883",
+      "legal_name": "SOLUM, obrt  za poslovanje nekretninama, vl. Iris Janković",
+      "registered_address": "Ivana Kralja 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3424",
+      "registration_number": "13/2022",
+      "mb": "04025911",
+      "oib": "09920035234",
+      "legal_name": "SOMNIUM GRUPA D.O.O.",
+      "registered_address": "Mije Goričkog 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154100",
+      "registration_number": "27/2024",
+      "mb": "05840287",
+      "oib": "96039678146",
+      "legal_name": "Sotto in su d.o.o.",
+      "registered_address": "Ulica kralja Zvonimira 33, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155196",
+      "registration_number": "151/2026",
+      "mb": "05688043",
+      "oib": "77598874578",
+      "legal_name": "South Real Estate d.o.o.",
+      "registered_address": "Srebrnjak 58, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "153066",
+      "registration_number": "200/2019",
+      "mb": "05179971",
+      "oib": "81055108555",
+      "legal_name": "SPECTO NEKRETNINE d.o.o.",
+      "registered_address": "Jurja Žerjavića 10, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "22070",
+      "registration_number": "604/2009",
+      "mb": "01750585",
+      "oib": "15095389147",
+      "legal_name": "SPILLER FARMER d.o.o.",
+      "registered_address": "Frane Petrića 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3169",
+      "registration_number": "95/2020",
+      "mb": "92340547",
+      "oib": "88105418740",
+      "legal_name": "SPINAX, obrt za usluge i posredovanje u prometu nekretnina",
+      "registered_address": "GRAČANSKA CESTA 189/1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154316",
+      "registration_number": "25/2025",
+      "mb": "02153815",
+      "oib": "77639720266",
+      "legal_name": "SPIRITUS MOVENS d.o.o.",
+      "registered_address": "Ulica Janka Rakuše 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "151071",
+      "registration_number": "177/2019",
+      "mb": "98068334",
+      "oib": "40977032048",
+      "legal_name": "SQM, obrt za usluge, vl. Domagoj Udiljak, Zagreb, Savska cesta 32",
+      "registered_address": "Savska cesta 32, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154743",
+      "registration_number": "240/2025",
+      "mb": "06180116",
+      "oib": "84591878140",
+      "legal_name": "St. Joseph d.o.o.",
+      "registered_address": "Radnička cesta 50, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "123098",
+      "registration_number": "59/2017",
+      "mb": "97746495",
+      "oib": "24159052568",
+      "legal_name": "STANOLOVKE, obrt za nekretnine i usluge",
+      "registered_address": "Braće Cvijića 30, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "123086",
+      "registration_number": "47/2017",
+      "mb": "97739987",
+      "oib": "68995612407",
+      "legal_name": "STANOLOVKE, obrt za nekretnine i usluge",
+      "registered_address": "Lašćinska cesta 21 A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154750",
+      "registration_number": "243/2025",
+      "mb": null,
+      "oib": "79183071044",
+      "legal_name": "STANSY, obrt za usluge, vl. Boris Stanić, Zagreb, Vrhovec 239",
+      "registered_address": "VRHOVEC 239, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154070",
+      "registration_number": "160/2023",
+      "mb": "04931297",
+      "oib": "74188347130",
+      "legal_name": "Star Gaze d.o.o.",
+      "registered_address": "Gračanska cesta 102, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "143052",
+      "registration_number": "3/2019",
+      "mb": "04622146",
+      "oib": "92048588805",
+      "legal_name": "STARLING d.o.o.",
+      "registered_address": "Prilaz Gjure Deželića  75/1, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "42084",
+      "registration_number": "119/2010",
+      "mb": "1821911",
+      "oib": "67770440472",
+      "legal_name": "STATOR d.o.o.",
+      "registered_address": "Frana Petrića 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "125053",
+      "registration_number": "67/2017",
+      "mb": "04703600",
+      "oib": "78314416545",
+      "legal_name": "STAV - nekretnine d.o.o.",
+      "registered_address": "Savska 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155260",
+      "registration_number": "195/2026",
+      "mb": null,
+      "oib": "08605842915",
+      "legal_name": "STAVORA, obrt za usluge, vl. Leon Lužija Andrijašević, Zagreb, Ilica 174, lokal br. 2",
+      "registered_address": "Ilica 174, lokal br.2 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "10086",
+      "registration_number": "72/2009",
+      "mb": "3734021",
+      "oib": "83478145379",
+      "legal_name": "STING d.o.o.",
+      "registered_address": "Horvatova ulica 25, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "109070",
+      "registration_number": "60/2015",
+      "mb": "02932270",
+      "oib": "50713263261",
+      "legal_name": "STRADUN ASSET MANAGEMENT d.o.o.",
+      "registered_address": "Savska cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154771",
+      "registration_number": "248/2025",
+      "mb": null,
+      "oib": "23735364817",
+      "legal_name": "Structura, obrt za usluge posredovanja nekretninama i druge usluge, vl. Iva Budimir, Zagreb, Vrisnička ulica 16",
+      "registered_address": "VRISNIČKA ULICA 16, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3129",
+      "registration_number": "55/2020",
+      "mb": "98040502",
+      "oib": "49172959505",
+      "legal_name": "STUDIO OKO, obrt za usluge, vl. Mia Vučić",
+      "registered_address": "Pantovčak 22, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "24084",
+      "registration_number": "661/2009",
+      "mb": "0842389",
+      "oib": "61086424116",
+      "legal_name": "SUNNY DAY d.o.o.",
+      "registered_address": "Ozaljska 110, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "109088",
+      "registration_number": "78/2015",
+      "mb": "4380843",
+      "oib": "32227315722",
+      "legal_name": "Svijet kvadrata d.o.o. za posredovanje u prometu nekretnina",
+      "registered_address": "2. Gajnički Vidikovac  14/3, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154993",
+      "registration_number": "58/2026",
+      "mb": "04473574",
+      "oib": "11463067338",
+      "legal_name": "ŠARENE DELICIJE j.d.o.o.",
+      "registered_address": "Kustošijanska ulica 285, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "33071",
+      "registration_number": "6/2010",
+      "mb": "02443813",
+      "oib": "24450125292",
+      "legal_name": "TALARIA d.o.o.",
+      "registered_address": "Pantovčak 9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154315",
+      "registration_number": "24/2025",
+      "mb": "01980467",
+      "oib": "15949952874",
+      "legal_name": "TAMIN NEKRETNINE d.o.o.",
+      "registered_address": "VI. Bukovački ogranak 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3474",
+      "registration_number": "63/2022",
+      "mb": "98372009",
+      "oib": "39296476627",
+      "legal_name": "TARGET, nekretnine obrt za usluge vl.Roman Bilandžija",
+      "registered_address": "Ostrovička ulica 2, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3539",
+      "registration_number": "128/2022",
+      "mb": "81416371",
+      "oib": "10669931626",
+      "legal_name": "TECTUM NEKRETNINE J.D.O.O.",
+      "registered_address": "Kajfešov brijeg  12, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154991",
+      "registration_number": "56/2026",
+      "mb": "03688429",
+      "oib": "12124386804",
+      "legal_name": "TEICO d.o.o.",
+      "registered_address": "Ulica Andrije Hebranga 26, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3541",
+      "registration_number": "130/2022",
+      "mb": "81438247",
+      "oib": "39025917294",
+      "legal_name": "TELENERG-NEKRETNINE D.O.O.",
+      "registered_address": "TRG J.JURJA STROSSMAYERA 6, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155080",
+      "registration_number": "94/2026",
+      "mb": null,
+      "oib": "26630338442",
+      "legal_name": "TERI Reale Estate, obrt za promet nekretninama, vl. Ivan Teri, Zagreb, Ulica Kozarčeve Tene 26",
+      "registered_address": "Ulica Kozarčeve Tene 26, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "16065",
+      "registration_number": "299/2009",
+      "mb": "1663429",
+      "oib": "70604601699",
+      "legal_name": "TERRA-X d.o.o.",
+      "registered_address": "Livanjska 18 A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "19066",
+      "registration_number": "450/2009",
+      "mb": "17753160",
+      "oib": "15379717048",
+      "legal_name": "TIHOMAR NEKRETNINE d.o.o.",
+      "registered_address": "Aleja Blaža Jurišića 81, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "153084",
+      "registration_number": "5/2020",
+      "mb": "04272897",
+      "oib": "84918060842",
+      "legal_name": "TIMAX CENTAR d.o.o.",
+      "registered_address": "Savski gaj ll 5, 10250 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "109090",
+      "registration_number": "80/2015",
+      "mb": "04365992",
+      "oib": "97903939075",
+      "legal_name": "TITANIA CONSULTING d.o.o.",
+      "registered_address": "Radnička cesta 80, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154246",
+      "registration_number": "173/2024",
+      "mb": null,
+      "oib": "42367528575",
+      "legal_name": "To je to, obrt za usluge, vl. Irena Kustura Rosandić, Zagreb, Kvintička ulica 63",
+      "registered_address": "KVINTIČKA ULICA 63, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154096",
+      "registration_number": "23/2024",
+      "mb": null,
+      "oib": "90000216076",
+      "legal_name": "Tomasso nekretnine, obrt za usluge, vl. Tomislav Kolačević, Zagreb, Vrhovec 113",
+      "registered_address": "Vrhovec 113, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "109093",
+      "registration_number": "83/2015",
+      "mb": "04422317",
+      "oib": "17301143775",
+      "legal_name": "TOTAL SOLUTION d.o.o. za savjetovanje i usluge",
+      "registered_address": "I. Vidovčica odvojak 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154278",
+      "registration_number": "205/2024",
+      "mb": "04438400",
+      "oib": "53345428109",
+      "legal_name": "TS-Valković d.o.o.",
+      "registered_address": "Zelengaj 65, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "12070",
+      "registration_number": "104/2009",
+      "mb": "00220361",
+      "oib": "40996068254",
+      "legal_name": "T-TOMISLAV d.o.o.",
+      "registered_address": "Šubićeva 26, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154181",
+      "registration_number": "108/2024",
+      "mb": "98854666",
+      "oib": "67398103923",
+      "legal_name": "Tudor nekretnine, obrt za poslovanje nekretninama, vl. Gordi Buratović, Zagreb, Tratinska ulica 34",
+      "registered_address": "Tratinska ulica 34, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "85061",
+      "registration_number": "60/2013",
+      "mb": "80684035",
+      "oib": "19109159026",
+      "legal_name": "UNITAS NEKRETNINE d.o.o.",
+      "registered_address": "Hondlova 2/9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3174",
+      "registration_number": "100/2020",
+      "mb": "98180860",
+      "oib": "26668334264",
+      "legal_name": "UNITED NEKRETNINE, OBRT ZA POSLOVANJE NEKRETNINAMA, VL.Vedran Anđelić",
+      "registered_address": "Zapoljska ulica 18, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154102",
+      "registration_number": "29/2024",
+      "mb": "04309936",
+      "oib": "10814368599",
+      "legal_name": "UNIVERSAL DISTRIBUCIJA d.o.o.",
+      "registered_address": "Ulica Silvija Strahimira Kranjčevića 10, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "19060",
+      "registration_number": "444/2009",
+      "mb": "03836304",
+      "oib": "59663871537",
+      "legal_name": "UNOS d.o.o.",
+      "registered_address": "Medulićeva 2a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "73050",
+      "registration_number": "99/2012",
+      "mb": "02897059",
+      "oib": "40567630423",
+      "legal_name": "UREDSKI CENTAR VERIS d.o.o.",
+      "registered_address": "Ulica Augusta Harambašića  60, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3698",
+      "registration_number": "55/2023",
+      "mb": "97751529",
+      "oib": "95181374374",
+      "legal_name": "V i A NEKRETNINE, obrt za usluge, vl. Jadranko Bailo, Zagreb",
+      "registered_address": "Utinjska 3G/2, 10020 ZAGREB",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3345",
+      "registration_number": "131/2021",
+      "mb": "81386551",
+      "oib": "87803772580",
+      "legal_name": "VALIDUS NEKRETNINE D.O.O.",
+      "registered_address": "UL.DOBRIŠE CESARIĆA 71, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155265",
+      "registration_number": "200/2026",
+      "mb": null,
+      "oib": "32516256349",
+      "legal_name": "Valor Concept, obrt za usluge, vl. Natalija Manzoni, Zagreb, Dugi dol 35",
+      "registered_address": "Dugi dol 35, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "143053",
+      "registration_number": "4/2019",
+      "mb": "97937479",
+      "oib": "00803772802",
+      "legal_name": "VARRO, OBRT ZA POSREDOVANJE U PROMETU NEKRETNINAMA, VL. ŽANETA AVDIČEVIĆ",
+      "registered_address": "Kecerini gornji 12, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "102070",
+      "registration_number": "74/2014",
+      "mb": "97507407",
+      "oib": "55632808760",
+      "legal_name": "VEDUTA NEKRETNINE REAL ESTATE, obrt za poslovne usluge i poslovanje nekretninama",
+      "registered_address": "Braće Domany 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3717",
+      "registration_number": "74/2023",
+      "mb": "05704448",
+      "oib": "89704104223",
+      "legal_name": "VENDE IMPERO NEKRETNINE d.o.o.",
+      "registered_address": "Argentinska 3, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3139",
+      "registration_number": "65/2020",
+      "mb": "05137845",
+      "oib": "27540322976",
+      "legal_name": "VENERA NEKRETNINE d.o.o.",
+      "registered_address": "Horvaćanska cesta  43, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3428",
+      "registration_number": "17/2022",
+      "mb": "98349651",
+      "oib": "18527664263",
+      "legal_name": "VERUM NEKRETNINE, OBRT",
+      "registered_address": "Garićgradska ulica 10, 10000 ZAGREB",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "142066",
+      "registration_number": "185/2018",
+      "mb": "05005043",
+      "oib": "35986432454",
+      "legal_name": "VERUS VILLAM d.o.o.",
+      "registered_address": "Antunovac 15, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "144086",
+      "registration_number": "54/2019",
+      "mb": "02696711",
+      "oib": "33502979734",
+      "legal_name": "VESNA CENTAR d.o.o.",
+      "registered_address": "Trakonšćanska 4, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154844",
+      "registration_number": "271/2025",
+      "mb": "06187447",
+      "oib": "73616288038",
+      "legal_name": "VESPER NEKRETNINE d.o.o.",
+      "registered_address": "Ulica Antuna Nemčića 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154056",
+      "registration_number": "17/2020",
+      "mb": "4621166",
+      "oib": "14439926349",
+      "legal_name": "VESTRA FORTUNA d.o.o.",
+      "registered_address": "Međimurska ulica 19, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154326",
+      "registration_number": "35/2025",
+      "mb": "06057322",
+      "oib": "59199989927",
+      "legal_name": "VIANA NEKRETNINE d.o.o.",
+      "registered_address": "ulica Roberta Frangeša- Mihanovića  9, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154962",
+      "registration_number": "47/2026",
+      "mb": "05750059",
+      "oib": "45552112424",
+      "legal_name": "VIGA ŠARIĆ NEKRETNINE d.o.o.",
+      "registered_address": "Ulica palma 21, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154998",
+      "registration_number": "63/2026",
+      "mb": null,
+      "oib": "83460774746",
+      "legal_name": "VillaLux, obrt za posredovanje u prometu nekretnina i usluge, vl. Mato Mišić, Sesvete Ulica Jurja Habdelića 4",
+      "registered_address": "ULICA JURJA HABDELIĆA 4, 10360 SESVETE, HRVATSKA",
+      "settlement": "Sesvete",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3458",
+      "registration_number": "47/2022",
+      "mb": "81419005",
+      "oib": "72729699265",
+      "legal_name": "VILMAR NEKRETNINE D.O.O. za usluge",
+      "registered_address": "Ivana Antunovića 5, 10090 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154951",
+      "registration_number": "36/2026",
+      "mb": "06066372",
+      "oib": "51081921787",
+      "legal_name": "Vinko Consulting d.o.o.",
+      "registered_address": "Gračec 15/A, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "56055",
+      "registration_number": "84/2011",
+      "mb": "02756447",
+      "oib": "56675361605",
+      "legal_name": "VIS-DOM d.o.o.",
+      "registered_address": "Augusta Šenoe 11, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "42066",
+      "registration_number": "101/2010",
+      "mb": "02337622",
+      "oib": "82887410900",
+      "legal_name": "VISOKA KLASA d.o.o.",
+      "registered_address": "Hrvoja Macanovića 45, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154940",
+      "registration_number": "34/2026",
+      "mb": "",
+      "oib": "87728664343",
+      "legal_name": "Vita Real Estate, obrt za promet nekretninama, vl. Valerija Topkin",
+      "registered_address": "Ulica Kozarčeve Tene 26, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3572",
+      "registration_number": "161/2022",
+      "mb": "04692659",
+      "oib": "11102146023",
+      "legal_name": "VK PROJEKTI D.O.O.",
+      "registered_address": "Poljanički prilaz 8, 10040 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "3482",
+      "registration_number": "71/2022",
+      "mb": "08065050",
+      "oib": "69006667271",
+      "legal_name": "VLATKA NEKRETNINE-CLARUS D.O.O.",
+      "registered_address": "Ulica kneza Branimira 29, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154677",
+      "registration_number": "214/2025",
+      "mb": "06129145",
+      "oib": "20503903499",
+      "legal_name": "Voluta nekretnine d.o.o.",
+      "registered_address": "Stara Peščenica I. 60, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "148053",
+      "registration_number": "131/2019",
+      "mb": "05093104",
+      "oib": "09013307465",
+      "legal_name": "VUKŠIĆ NEKRETNINE d.o.o.",
+      "registered_address": "Savska cesta 41, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154179",
+      "registration_number": "106/2024",
+      "mb": "98823485",
+      "oib": "63698598774",
+      "legal_name": "W NEKRETNINE, obrt za poslovanje nekretninama, usluge i prijevoz, vl.. Vedran Vidmar",
+      "registered_address": "Nova cesta 121, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "155272",
+      "registration_number": "205/2026",
+      "mb": "04087208",
+      "oib": "68201319893",
+      "legal_name": "WIN Project d.o.o.",
+      "registered_address": "Hercegovačka ulica 63, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "72053",
+      "registration_number": "84/2012",
+      "mb": "02095076",
+      "oib": "66661663177",
+      "legal_name": "ZADRUGA TEHNOINTERIJERI-zagrebački poslovno proizvodni centar",
+      "registered_address": "Dane Duića 5, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "79050",
+      "registration_number": "136/2012",
+      "mb": "92846335",
+      "oib": "41854572939",
+      "legal_name": "Zagreb Habitatio, obrt za poslovno savjetovanje i poslovanje nekretninama, vl. Martina Podravec",
+      "registered_address": "Remete 148, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "24066",
+      "registration_number": "643/2009",
+      "mb": "03709124",
+      "oib": "15364543303",
+      "legal_name": "ZAGREB NEKRETNINE d.o.o. za poslovanje nekretninama",
+      "registered_address": "Samoborska cesta  145, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "12095",
+      "registration_number": "129/2009",
+      "mb": "03656179",
+      "oib": "57317741523",
+      "legal_name": "ZAGREB WEST d.o.o.",
+      "registered_address": "Podvršje 7, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "154152",
+      "registration_number": "79/2024",
+      "mb": "04988973",
+      "oib": "97194608725",
+      "legal_name": "ZIHER PARTNER d.o.o.",
+      "registered_address": "Ulica Ivana Kukuljevića 36, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    },
+    {
+      "registry_id": "149051",
+      "registration_number": "152/2019",
+      "mb": "04691717",
+      "oib": "18430235425",
+      "legal_name": "ZRIN LINE d.o.o.",
+      "registered_address": "Gajnički vidikovac l 30a, 10000 ZAGREB, HRVATSKA",
+      "settlement": "Zagreb",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici"
+    }
+  ],
+  "scope": "City of Zagreb registered seat, not whole Zagreb County",
+  "scope_complete": true,
+  "scope_review": [
+    {
+      "registry_id": "154690",
+      "registration_number": "217/2025",
+      "mb": null,
+      "oib": "36462026388",
+      "legal_name": "GG NEKRETNINE, obrt za posredovanje u poslovanju nekretninama, vl. Goran Gledić, Strmec, Ulica jasena 18",
+      "registered_address": "Ulica jasena 18, 10340 STRMEC, HRVATSKA",
+      "settlement": "Strmec",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici",
+      "reason": "Ambiguous settlement name with postcode outside confirmed City Strmec delivery areas"
+    },
+    {
+      "registry_id": "3203",
+      "registration_number": "129/2020",
+      "mb": "04759532",
+      "oib": "52903029900",
+      "legal_name": "MR HALL J.D.O.O.",
+      "registered_address": "MATIJE GUPCA 2, 10434 STRMEC, HRVATSKA",
+      "settlement": "Strmec",
+      "source_endpoint": "https://digitalnakomora.hr/HGKPosredniciAPI/api/posrednici",
+      "reason": "Ambiguous settlement name with postcode outside confirmed City Strmec delivery areas"
+    }
+  ]
+}

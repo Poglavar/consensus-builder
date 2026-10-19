@@ -1,0 +1,51 @@
+[
+ {
+  "iso2": "JP",
+  "name": "Japan",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/JP.json"
+  ],
+  "hints": "Ministry of Justice publishes registry maps (登記所備付地図) nationwide via the Geospatial Information Center (geospatial.jp CKAN; per-municipality GeoJSON/XML packages, CC BY) and G空間情報センター; also MLIT's 国土数値情報 and the 'MOJ地図XML' API. We sampled only Osaka Chuo (aigid-moj-27128). Aim: two distant prefectures from the same publisher (e.g. Sapporo and Fukuoka packages), or any queryable service. Read the CKAN licence field."
+ },
+ {
+  "iso2": "KR",
+  "name": "Republic of Korea",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/KR.json",
+   "research/retry/countries/KR.json"
+  ],
+  "hints": "National continuous cadastral map (연속지적도) is open on data.go.kr (file data 15045882) and served by VWorld (api.vworld.kr) which needs a free API key; also the NSDI open API (openapi.nsdi.go.kr) and the LX 'K-Geo' platform. Try: data.go.kr file-data download of one region's SHP by HTTP Range (check licence: usually 공공누리 type 1), and whether any VWorld WMS/WFS endpoint answers without a key. Hosts previously dropped connections; retry with Referer https://map.vworld.kr/."
+ },
+ {
+  "iso2": "SG",
+  "name": "Singapore",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/SG.json"
+  ],
+  "hints": "SLA 'Cadastral Land Parcel' is open on data.gov.sg (verified by range-read only). Check OneMap (onemap.gov.sg) APIs and the data.gov.sg v2 API (api-open.data.gov.sg / api-production.data.gov.sg datasets/<id>/poll-download) for a queryable or paginated form; also check whether the dataset is on an ArcGIS/GeoServer endpoint via the SLA 'GeoSpace' portal. Read the Singapore Open Data Licence."
+ },
+ {
+  "iso2": "RO",
+  "name": "Romania",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/RO.json",
+   "research/retry/countries/RO.json",
+   "research/europe/RO.json"
+  ],
+  "hints": "ANCPI INSPIRE: ATOM http://geoportal.ancpi.ro/inspiredownload/rest/directories/arcgisforinspire/CP/CP_Download_MapServer/Main_ATOM_CP.xml and CP_View WMS; eTerra (eterra.ancpi.ro) was in phased restart on 2026-08-20. Retry all, plus geoportal.ancpi.ro/portal REST and the INSPIRE record on data.europa.eu. Two regions: Bucharest and Cluj."
+ },
+ {
+  "iso2": "HU",
+  "name": "Hungary",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/HU.json",
+   "research/europe/HU.json"
+  ],
+  "hints": "Lechner INSPIRE WFS only had a Mesterszállás sample. Look for the national cadastral map service behind foldhivatal.hu / 'e-ingatlan' / 'Takarnet' / map.foldhivatal.hu (mapserver), the Lechner 'Országos Térinformatikai Alapadatbázis' and the INSPIRE geoportal records at inspire.gov.hu / inspire.lechnerkozpont.hu (GeoNetwork). Inspect the public 'Térképi keresés' viewer JS. Two regions: Budapest and Debrecen."
+ }
+]

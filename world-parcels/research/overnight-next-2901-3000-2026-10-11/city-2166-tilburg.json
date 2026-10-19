@@ -1,0 +1,84 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2166,
+  "queueRank": 2939,
+  "name": "Tilburg",
+  "country": "Netherlands",
+  "countryCode": "NL",
+  "iso3": "NLD",
+  "locId": 528,
+  "capital": false,
+  "point": [51.5641928767689, 5.05885424279539],
+  "population2025": 202735,
+  "population2025k": 202.735,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tilburg official cadastral map parcel viewer Netherlands Kadaster PDOK",
+        "result": "First-party Kadaster and PDOK results identify the national BRK Kadastrale Kaart as the official public cadastral-map route, available through viewer, web services and OGC API. The official service is national rather than Tilburg-owned.",
+        "actualResultUrls": [
+          "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+          "https://www.pdok.nl/ogc-webservices/-/article/kadastrale-kaart",
+          "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=html"
+        ]
+      },
+      {
+        "language": "Dutch (local)",
+        "query": "Tilburg officiële kadastrale kaart perceel viewer Kadaster PDOK",
+        "result": "Officiële Nederlandstalige Kadaster/PDOK-pagina's documenteren de Kadastrale Kaart van de BRK, met percelen en perceelnummers, en verwijzen naar PDOK-viewer, webservices en OGC API.",
+        "actualResultUrls": [
+          "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+          "https://app.pdok.nl/kadaster/brk-kadastrale-kaart/download-viewer/",
+          "https://www.pdok.nl/-/de-kadastrale-kaart-nu-ook-via-pdok-beschikbaar-in-ogc-api"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Kadaster / Basisregistratie Kadaster (BRK), published through the Dutch national PDOK platform",
+    "locality": "Tilburg, Noord-Brabant, Netherlands",
+    "evidenceUrls": [
+      "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+      "https://www.pdok.nl/ogc-webservices/-/article/kadastrale-kaart"
+    ],
+    "scopeNote": "Tilburg is evidenced by returned native cadastral properties (kadastrale_gemeente_waarde=Tilburg); the public geometry service is national PDOK/Kadaster, not a Tilburg municipal endpoint."
+  },
+  "parcelDiscovery": {
+    "geometryFound": true,
+    "sampleFiles": ["tilburg-parcels-sample.geojson"],
+    "source": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+    "nativeIdField": "identificatie_namespace + identificatie_lokaal_id",
+    "nativeIdentityObserved": "NL.IMKAD.KadastraalObject:9680232370000; NL.IMKAD.KadastraalObject:9680317270000; NL.IMKAD.KadastraalObject:9680317370000",
+    "crs": "OGC CRS84 response (longitude/latitude); storage CRS EPSG:28992 also documented by collection metadata",
+    "boundedResponse": {"requestBbox": [5.0585, 51.5638, 5.0592, 51.5646], "requestCrs": "OGC CRS84", "count": 3, "nativeCollection": "perceel"},
+    "note": "The bounded response intersects the exact WUP point vicinity and returned three valid Tilburg parcels. Retained feature properties contain only a canonical composite native identity."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart", "outcome": "First-party page retrieved; describes BRK cadastral map and links to PDOK viewer, web services and OGC API."},
+    {"method": "GET", "url": "https://www.pdok.nl/ogc-webservices/-/article/kadastrale-kaart", "outcome": "First-party PDOK page retrieved; documents current v5 WFS/WMS endpoints and national cadastral-map scope."},
+    {"method": "GET", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=json", "outcome": "HTTP 200 JSON; official OGC API landing document exposed collection links, license, CRS-related links and national cadastral-map description."},
+    {"method": "GET", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=json", "outcome": "HTTP 200 JSON; collection exposed native collection perceel, CRS84/EPSG:28992/EPSG:3857/EPSG:4258, national extent, and storage CRS EPSG:28992."},
+    {"method": "GET", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/schema?f=json", "outcome": "HTTP 200 JSON; schema exposed safe/native fields including identificatie_namespace, identificatie_lokaal_id, kadastrale_gemeente_waarde, status_historie_code and geometry. Unsafe owner/address/title fields were not requested."},
+    {"method": "GET", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&limit=3&bbox=5.0585,51.5638,5.0592,51.5646", "outcome": "HTTP 200 GeoJSON; numberReturned=3 with complete MultiPolygon geometries, valid Tilburg municipality values, status_historie_code=G, and native namespace/local IDs. Raw response is retained only in ignored tmp evidence; sanitized three-feature sample is retained in cohort."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source collection/service metadata"],
+  "nativeFieldMapping": {"canonicalIdentity": "identificatie_namespace + ':' + identificatie_lokaal_id", "nativeFields": ["identificatie_namespace", "identificatie_lokaal_id"], "localityCheck": "kadastrale_gemeente_waarde", "validityCheck": "status_historie_code"},
+  "compositeKeyProvenance": "The retained id combines the returned namespace NL.IMKAD.KadastraalObject with the returned identificatie_lokaal_id; it is not a synthetic row number. Source-specific fields remain metadata-only.",
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The source is a national Kadaster/PDOK service rather than a Tilburg-owned registry endpoint.",
+    "The sample is bounded and is not evidence of complete Tilburg coverage or legal survey accuracy; Kadaster states the cadastral map is indicative and no exact measurements should be derived.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet records research evidence only and is not source integration or runtime admission."
+  ]
+}

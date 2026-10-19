@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6037-al-zaqaziq.json",
+  "purpose": "Document first-party local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The public Makani landing route was reviewed and presents only an email/password login for the Sharkia Spatial Changes Unit. No login, credential testing, hidden API call or authentication bypass was attempted. The official GOPP urban-map page describes administrative/settlement-level layers (governorate, center, local unit, village, hamlet) and provides no property-parcel geometry endpoint. ESA’s state-property map inventory lists Sharkia participation but concerns government assets, not a public private-cadastre viewer. No public parcel feature service was found. Whether the governorate spatial-change database includes cadastral parcels, whether it covers this point, and whether an authorized public parcel layer exists outside the login-gated portal.",
+  "officialPrimarySources": [
+    {
+      "url": "https://makani.sharkia.gov.eg/login",
+      "observation": "Official Sharkia Governorate Spatial Changes Unit application; public page shows login only, with no anonymous map/query."
+    },
+    {
+      "url": "https://gopp.gov.eg/الخريطة-العمرانية-لمحافظة-الشرقية/",
+      "observation": "Official General Organization for Physical Planning Sharkia urban-map page describing settlement boundaries and a governorate-to-village/hamlet hierarchy; not a cadastral parcel viewer."
+    },
+    {
+      "url": "https://www.esa.gov.eg/amlak.aspx",
+      "observation": "Official Egyptian Survey Authority state-property mapping project page lists Sharkia among governorates participating in mapping/state-owned-land inventory; this is not evidence of publicly queryable private parcel data."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official Egyptian Survey Authority describes its historic production of urban/rural property maps and property books; national scope only."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://makani.sharkia.gov.eg/login",
+      "method": "GET public login page",
+      "result": "Official governorate application presented email/password fields; no map or unauthenticated geometry route."
+    },
+    {
+      "url": "https://gopp.gov.eg/الخريطة-العمرانية-لمحافظة-الشرقية/",
+      "method": "GET official urban-map description",
+      "result": "Settlement hierarchy and urban maps described; no parcel-vector service."
+    },
+    {
+      "url": "https://www.esa.gov.eg/amlak.aspx",
+      "method": "GET official Survey Authority program page",
+      "result": "State-property mapping program lists Sharkia; government-asset scope only, not private parcel polygons."
+    }
+  ]
+}

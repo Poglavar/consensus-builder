@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Evidence for the Serbia/Croatia globe corrections and bounded checks of Romania, North Macedonia and Sarajevo. Coverage and current service reachability are recorded separately.",
+  "checkedAt": "2026-10-08",
+  "countries": [
+    {
+      "countryCode": "HR",
+      "coverage": "full",
+      "scope": "Croatian national digital cadastral plan",
+      "sourceIds": [
+        "hr-dgu-oss-dkp-cestice"
+      ],
+      "officialScope": {
+        "url": "https://catalog.uredjenazemlja.hr/katalogpodataka/atom-usluga-preuzimanja-dkp-a",
+        "finding": "The official DGU catalogue gives the Republic of Croatia as the geographic extent, identifies cadastral parcels among the downloadable layers, and states there are no public-access or use conditions. The origin is the joint land-registry and cadastre system; updates are weekly.",
+        "geographicExclusionsFound": []
+      },
+      "openDataListing": "https://dgu.gov.hr/otvoreni-podaci/6596",
+      "currentProbe": {
+        "url": "https://oss.uredjenazemlja.hr/oss/public/atom/atom_feed.xml",
+        "httpStatus": 200,
+        "contentType": "application/atom+xml;charset=UTF-8",
+        "bytes": 2104138,
+        "title": "Digital cadastre plan",
+        "cadastralMunicipalityDownloadEntries": 3498,
+        "assessment": "Public national download index is reachable without credentials. The count is catalogue entries, not a claim that every individual parcel was rechecked."
+      },
+      "geometryEvidence": "research/db-city-dgu-live-2026-10-03.json",
+      "decision": "Full coverage: combine the explicit official national scope and public download catalogue with the already verified DKP parcel geometry source. The prior yellow color omitted the official scope evidence."
+    },
+    {
+      "countryCode": "RS",
+      "coverage": "partial",
+      "scope": "Verified historical Belgrade parcel import; national completeness is not established",
+      "sourceIds": [
+        "rs-rgz-dkp-imported-belgrade"
+      ],
+      "provenance": {
+        "repository": "cadastre-data",
+        "files": [
+          "cities/beograd/fetch-parcels-wfs.js",
+          "cities/beograd/bg-fetch-all.js",
+          "cities/beograd/parcels.geojson",
+          "db/parcel_bg.sql"
+        ],
+        "upstream": "https://ogc-tmp.geosrbija.rs/regdkp/ows",
+        "publicProxy": "https://portal.rgz.gov.rs/rga-portal-api/gis/wms/proxy",
+        "featureType": "dkp:dkp_parcels_weekly_only_utm",
+        "protocol": "WFS 1.1.0 GetFeature, application/json, EPSG:32634",
+        "authentication": "The importer sends an Accept header only; no account credentials, bearer token or cookie.",
+        "destination": "public.parcel_bg",
+        "assessment": "The source URL and field mapping are present in the importer that writes the app's existing Belgrade parcel table. This is source evidence, beyond merely having a configured city."
+      },
+      "archivedResponse": {
+        "fileModifiedAt": "2025-12-10T18:50:19.282412+00:00",
+        "dateCaveat": "Filesystem modification date of the existing import artifact, not a new upstream fetch date.",
+        "sha256": "5da71e769dad887ce4fa5749ce3734a93503c79d61e70591bed616e8681347a1",
+        "bytes": 1640055,
+        "featureCount": 233,
+        "numberMatched": 233,
+        "geometryTypes": [
+          "Polygon",
+          "MultiPolygon"
+        ],
+        "crs": "EPSG:32634",
+        "nativeIdentifiers": [
+          "source_parcel_id",
+          "cadmun_code",
+          "parcel_num"
+        ],
+        "sanitizedSampleFile": "research/belgrade-import-sample-2026-10-08.json",
+        "responseTimestamp": "2025-12-10T18:50:17.394Z"
+      },
+      "currentProbe": {
+        "endpoint": "https://portal.rgz.gov.rs/rga-portal-api/gis/wms/proxy",
+        "upstream": "https://ogc-tmp.geosrbija.rs/regdkp/ows",
+        "operation": "Anonymous WFS GetFeature for the known parcel layer, 50 m bbox in EPSG:32634, maxFeatures=3",
+        "bbox": [
+          454850,
+          4962850,
+          454900,
+          4962900
+        ],
+        "httpStatus": null,
+        "result": "Connection timed out after 20 seconds on the approved direct network path. No new upstream sample was obtained."
+      },
+      "decision": "Some open parcel data has been confirmed through the recorded anonymous import, so Serbia is yellow. Today's service timeout does not erase that evidence or establish nationwide coverage.",
+      "databaseCheck": {
+        "checkedAt": "2026-10-08",
+        "environment": "production",
+        "database": "geodata",
+        "table": "public.parcel_bg",
+        "rowsWithGeometry": 668352,
+        "operation": "Read-only geometry count; no owner fields queried."
+      }
+    },
+    {
+      "countryCode": "RO",
+      "coverage": "unknown",
+      "scope": "Romanian ANCPI parcel service; a small Bucharest query was attempted",
+      "officialEvidence": [
+        {
+          "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "finding": "Indexed official metadata identifies a Cadastral Parcel polygon layer, supports JSON/GeoJSON and query operations, and advertises a 1000-record limit. This is a documented vector API, not just a raster viewer; no live geometry response was obtained."
+        },
+        {
+          "url": "https://data.europa.eu/api/hub/search/datasets/-b4c66413-3e17-4e33-a4dd-10f49950eb88-",
+          "httpStatus": 200,
+          "finding": "The official catalogue identifies RO.ANCPI/CP.ETERRA.WFS and an INSPIRE cadastral-parcels download service, updated 2026-06-16. Its download distribution points to the ANCPI Geoportal host."
+        },
+        {
+          "url": "https://www.ancpi.ro/",
+          "finding": "The official notice dated 20 August 2026 says e-Terra was restored while other services, including Geoportal, would restart in stages. No replacement Geoportal hostname was found in the bounded current-site check."
+        }
+      ],
+      "currentProbes": {
+        "host": "geoportal.ancpi.ro",
+        "operations": [
+          "Three-feature parcel query with geometry and selected native identifiers",
+          "Official catalogue ATOM distribution",
+          "INSPIRE WFS capabilities"
+        ],
+        "httpStatus": null,
+        "result": "All failed DNS resolution on the approved direct network path. The separate EU metadata host remained reachable.",
+        "secondNetworkResult": "The bounded parcel query also failed DNS resolution from the production host; no HTTP response."
+      },
+      "verifiedParcelResponse": null,
+      "decision": "Inconclusive access check, not evidence of no parcel data. Keep grey until a geometry response or verifiable downloaded artifact is available."
+    },
+    {
+      "countryCode": "MK",
+      "coverage": "unknown",
+      "scope": "North Macedonia AREC cadastral and NSDI portals",
+      "officialEvidence": {
+        "url": "https://www.katastar.gov.mk/wp-content/uploads/en/documents/Strategic_plan/Strateski%20plan%202023-2025_EN.pdf",
+        "finding": "Search-indexed official plan text lists cadastral parcels among NSDI collections and describes published view/download services. The document could not be downloaded in this check, so it does not independently verify a current parcel-specific vector endpoint or nationwide completeness."
+      },
+      "currentProbes": [
+        {
+          "url": "https://www.katastar.gov.mk/",
+          "httpStatus": null,
+          "result": "Transport failure; no HTTP response"
+        },
+        {
+          "url": "https://geoportal.katastar.gov.mk/",
+          "httpStatus": null,
+          "result": "No DNS answer; no HTTP response"
+        },
+        {
+          "url": "https://ossp.katastar.gov.mk/OSSP/",
+          "httpStatus": null,
+          "result": "Transport failure; no HTTP response"
+        },
+        {
+          "url": "https://nipp2.katastar.gov.mk:5003/geonipp/",
+          "httpStatus": null,
+          "result": "No HTTP response"
+        },
+        {
+          "url": "https://nipp2.katastar.gov.mk:5001/nipp2/en",
+          "httpStatus": null,
+          "result": "No HTTP response"
+        },
+        {
+          "url": "https://data.gov.mk/",
+          "httpStatus": 200,
+          "result": "General open-data portal reachable; no parcel geometry verified"
+        }
+      ],
+      "networkContext": "Requests were retried outside the restricted filesystem/network sandbox. The main cadastre and OSSP hostnames resolved; HTTP transport still failed.",
+      "verifiedParcelResponse": null,
+      "decision": "Inconclusive. Keep grey; do not turn network failures into a no-data finding.",
+      "secondNetworkCheck": {
+        "environment": "production",
+        "results": [
+          {
+            "url": "https://geoportal.katastar.gov.mk/",
+            "result": "DNS resolution failed; no HTTP response."
+          },
+          {
+            "url": "https://ossp.katastar.gov.mk/OSSP/",
+            "result": "Timed out after 12 seconds; no HTTP response."
+          }
+        ]
+      }
+    },
+    {
+      "countryCode": "BA",
+      "city": "Sarajevo",
+      "coverage": "unknown",
+      "scope": "Sarajevo / Federation of Bosnia and Herzegovina only, not the entire country",
+      "officialEvidence": [
+        {
+          "url": "https://katastar.ba/servisi",
+          "finding": "FGU advertises vector cadastral WFS services and lists Sarajevo municipalities including Centar, Novi Grad, Novo Sarajevo and Stari Grad."
+        },
+        {
+          "url": "https://zpr.ks.gov.ba/webcity",
+          "finding": "Sarajevo Canton's WebCity page lists digital cadastral data and separate public and registered viewers. It does not expose a parcel-layer query contract on that page."
+        }
+      ],
+      "currentProbes": [
+        {
+          "url": "https://servisi.katastar.ba/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+          "httpStatus": 401,
+          "authenticationChallenge": "Basic realm=GeoServer Realm",
+          "result": "Anonymous capabilities access rejected; no features returned."
+        },
+        {
+          "url": "https://www.katastar.ba/geoportal/preglednik/",
+          "redirect": "https://www.katastar.ba/onemoguceno.php",
+          "result": "Viewer asks for sign-in or registration."
+        },
+        {
+          "url": "https://gispp.zavodzpr-sa.ba/public/",
+          "httpStatus": null,
+          "result": "Connection timed out after 25 seconds on the approved direct network path."
+        }
+      ],
+      "verifiedParcelResponse": null,
+      "decision": "No anonymous parcel sample verified and no retained import found in the checked databases or repositories. FGU service access is restricted and the separate public canton viewer is unreachable from two networks. Keep the check inconclusive rather than claiming no parcel source exists.",
+      "secondNetworkCheck": {
+        "environment": "production",
+        "results": [
+          {
+            "url": "https://gispp.zavodzpr-sa.ba/public/",
+            "result": "Timed out after 12 seconds; no HTTP response."
+          },
+          {
+            "url": "https://servisi.katastar.ba/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+            "httpStatus": 403,
+            "result": "Anonymous capabilities request rejected; no features returned."
+          }
+        ]
+      },
+      "databaseCheck": {
+        "checkedAt": "2026-10-08",
+        "database": "geodata",
+        "mode": "Read-only metadata and bounded geometry checks; no personal fields queried.",
+        "sarajevoBoundingBox4326": [
+          18.25,
+          43.75,
+          18.55,
+          44
+        ],
+        "environments": [
+          {
+            "name": "laptop",
+            "namedSarajevoOrBosniaParcelTables": [],
+            "tablesWithNoGeometryInSarajevoBox": [
+              "parcel",
+              "parcel_ba",
+              "parcel_bg",
+              "parcel_cl",
+              "parcel_co_geom",
+              "parcel_lj",
+              "parcel_nyc",
+              "parcel_nyc_geom"
+            ]
+          },
+          {
+            "name": "development",
+            "namedSarajevoOrBosniaParcelTables": [],
+            "tablesWithNoGeometryInSarajevoBox": [
+              "parcel",
+              "parcel_ba",
+              "parcel_bg",
+              "parcel_cl",
+              "parcel_co_geom",
+              "parcel_lj",
+              "parcel_nyc_geom"
+            ]
+          },
+          {
+            "name": "production",
+            "namedSarajevoOrBosniaParcelTables": [],
+            "tablesWithNoGeometryInSarajevoBox": [
+              "parcel",
+              "parcel_bg",
+              "parcel_ba"
+            ]
+          }
+        ],
+        "ambiguousNameResolved": {
+          "table": "public.parcel_ba",
+          "actualCity": "Buenos Aires",
+          "evidence": "Stored geometry around longitude -58.38 and latitude -34.61; schema and importer history also identify Buenos Aires."
+        },
+        "retainedHistory": {
+          "repositories": [
+            "cadastre-data",
+            "consensus-builder"
+          ],
+          "result": "Bounded all-ref searches found only a Bosnia country-source reference page, no tracked Sarajevo parcel importer or parcel artifact."
+        },
+        "limits": "This does not prove that no Sarajevo import ever existed in an external backup, removed untracked file or other dataset."
+      }
+    }
+  ]
+}

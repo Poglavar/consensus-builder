@@ -1,0 +1,164 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GB",
+ "country": "United Kingdom",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "No single UK cadastre. England & Wales: HM Land Registry (INSPIRE index polygons). Scotland: Registers of Scotland (Land Register cadastral map; INSPIRE CP). Northern Ireland: Land & Property Services / OSNI.",
+ "inspireRecordUrl": "https://data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a (ros-cadastral-parcels-dataset; resource https://ros-inspire.themapcloud.com/)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GB,en;q=0.9; Referer: https://ros-inspire.themapcloud.com/ (Scotland) / https://use-land-property-data.service.gov.uk/datasets/inspire/download (England); cookie jar",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "portalsFound": [
+  {
+   "url": "https://ros-inspire.themapcloud.com/",
+   "observation": "RoS INSPIRE Download Service page (OGL3 terms checkbox; zip files via /maps/download/ros-cp.cadastralparcel/<file>) and INSPIRE WMS view service /maps/wms with layer CP.CadastralParcel. No WFS (GetCapabilities on /maps/wfs returns the HTML app). Listed as the resource of the data.gov.uk INSPIRE record."
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+   "observation": "HMLR per-authority INSPIRE index polygon zips, anonymous with session cookie; page states OGL conditions"
+  },
+  {
+   "url": "https://inspire.landregistry.gov.uk/inspire/ows",
+   "observation": "WFS disabled (unchanged)"
+  },
+  {
+   "url": "https://www.opendatani.gov.uk/ and https://osni-spatialni.opendata.arcgis.com/",
+   "observation": "NI open data hub reachable but no parcel layer offered; opendatani search API path 404"
+  },
+  {
+   "url": "https://utility.arcgis.com/usrsvcs/servers/<id>/rest/services/DynamicBasemaps/OSNIFusion_Dynamic/MapServer/17",
+   "observation": "OSNI Fusion 'LP_LAND_PARCEL' items listed as public in ArcGIS Online (owner SpatialNIAdmin) but the service answers 403 GWM_0003 (no permission); it is also a basemap layer, not a title register"
+  },
+  {
+   "url": "https://mapping.spatialni.gov.uk/arcgis/rest/services",
+   "observation": "proxy CONNECT 502"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.gov.uk/api/action/package_search?q=cadastral+parcels+scotland",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "finds ros-cadastral-parcels-dataset"
+  },
+  {
+   "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "INSPIRE view service, layer CP.CadastralParcel"
+  },
+  {
+   "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=55.9528,-3.1888,55.9538,-3.1878&width=101&height=101&i=50&j=50&info_format=application/json&feature_count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Edinburgh: 1 MultiPolygon title parcel (SCT0004051212)"
+  },
+  {
+   "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=57.4773,-4.2252,57.4783,-4.2242&width=101&height=101&i=50&j=50&info_format=application/json&feature_count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Inverness: 1 MultiPolygon title parcel"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/force-download",
+   "assessment": "893 KB zip, 3903 polygons in GML (EPSG:27700)"
+  },
+  {
+   "url": "utility.arcgis.com OSNIFusion_Dynamic MapServer/17 and /15 (?f=json, /query)",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "GWM_0003 no permission / 'Item does not exist or is inaccessible'"
+  },
+  {
+   "url": "https://data.spatialhub.scot/api/3/action/package_search?q=registers+of+scotland",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 datasets"
+  },
+  {
+   "url": "https://ros-inspire.scotland.gov.uk/ ; https://inspire.registers.gov.uk/ ; https://api.spatialhub.scot/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "guessed hosts unreachable"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "gb-ros-inspire-cp-wms-gfi",
+  "requestUrl": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=55.9528,-3.1888,55.9538,-3.1878&width=101&height=101&i=50&j=50&info_format=application/json&feature_count=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "bbox lat/lon (EPSG:4326 axis order) 55.9528,-3.1888,55.9538,-3.1878",
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "inspireid / nationalcadastralreference",
+  "responseFile": "GB-parcel-response.json",
+  "pagination": "none (point query; one parcel per pixel)",
+  "regionSampled": "Scotland: Edinburgh"
+ },
+ "additionalVerifiedRegions": [
+  {
+   "sourceId": "gb-ros-inspire-cp-wms-gfi",
+   "requestUrl": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=57.4773,-4.2252,57.4783,-4.2242&width=101&height=101&i=50&j=50&info_format=application/json&feature_count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "spatialTestAreaLonLat": "bbox lat/lon (EPSG:4326 axis order) 57.4773,-4.2252,57.4783,-4.2242",
+   "parcelRecordCount": 1,
+   "recordListPath": "features",
+   "geometryType": "MultiPolygon",
+   "closedRings": true,
+   "idField": "inspireid / nationalcadastralreference",
+   "responseFile": "GB-parcel-response.json",
+   "pagination": "none (point query; one parcel per pixel)",
+   "regionSampled": "Scotland: Inverness"
+  },
+  {
+   "sourceId": "gb-hmlr-inspire-index-polygons",
+   "requestUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/City_of_London_Corporation.zip",
+   "method": "GET (cookie jar, anonymous session)",
+   "httpStatus": 200,
+   "contentType": "application/force-download (zip: Land_Registry_Cadastral_Parcels.gml + licence pdf)",
+   "spatialTestAreaLonLat": "City of London local authority (EPSG:27700 x~533700 y~181190)",
+   "parcelRecordCount": 3903,
+   "recordListPath": "wfs:FeatureCollection/wfs:member/LR:PREDEFINED",
+   "geometryType": "Polygon",
+   "closedRings": true,
+   "idField": "INSPIREID",
+   "responseFile": "GB-parcel-response.json (first 3 of 3903)",
+   "pagination": "none; one zip per local authority",
+   "regionSampled": "England: City of London Corporation"
+  }
+ ],
+ "regionsSampled": [
+  "Scotland: Edinburgh",
+  "Scotland: Inverness",
+  "England: City of London (plus Isles of Scilly in retry/countries/GB.json)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Scotland: RoS INSPIRE Cadastral Parcels (registered titles); England and Wales: HMLR INSPIRE index polygons (freehold/leasehold titles). Northern Ireland: not verified.",
+  "regionsVerified": [
+   "Scotland (RoS, Edinburgh + Inverness)",
+   "England (HMLR, City of London + Isles of Scilly)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open (OGL v3 stated on both download pages; not a full cadastre, title/index polygons)",
+ "remainingUncertainty": "Two distinct sources/schemas, so this is a UK-level pass via two different national-mapping bodies (Scotland and England); explicitly NOT a single-schema nationwide verification, hence nationwideVerified=false. Northern Ireland has no verified open parcel service (OSNI Fusion land parcel 403). Wales not sampled (HMLR covers it). Scottish reply is by WMS GetFeatureInfo (point query), full Scottish download zips exist but were not fetched. Licence PDFs not read.",
+ "nextStep": "NI: find LPS/Spatial NI open parcel dataset or confirm it is licensed only; Scotland: fetch one RoS zip via /maps/download/ros-cp.cadastralparcel/<file> once the file list endpoint is identified."
+}

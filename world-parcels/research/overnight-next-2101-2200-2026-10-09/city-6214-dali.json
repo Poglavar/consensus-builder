@@ -1,0 +1,59 @@
+{
+  "cityCode": 6214,
+  "queueRank": 2163,
+  "name": "Dali",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [25.599739515649, 100.228179504096],
+  "population2025": 269213,
+  "population2025k": 269.213,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dali China cadastral parcel map official natural resources public map service GIS land registry",
+        "result": "An official Dali Prefecture Natural Resources and Planning Bureau page was found. It assigns the bureau responsibility for unified natural-resource and real-estate registration, cadastral investigation, cadastral surveying, registration-information platform management, and geospatial-result management. No Dali-specific anonymous parcel geometry API was found in the bounded search.",
+        "actualResultUrls": [
+          "https://www.dali.gov.cn/dlzrmzf/xxgkml/c105893/pc/content/1970057744017887232/content_1970057744017887232.html",
+          "https://www.yndali.gov.cn/dlsrmzf/c106722/pc/list.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "大理市 不动产登记 地图 查询 官方 自然资源 GIS",
+        "result": "The official Dali City government real-estate-registration section is live and its article metadata identifies the Dali City Natural Resources Bureau and Dali City Real Estate Registration Center as publishers. Official reporting also references a land-space-planning one-map supervision system, but no public cadastral parcel layer, service endpoint, schema, CRS response, or safe native parcel identifier was exposed.",
+        "actualResultUrls": [
+          "https://www.yndali.gov.cn/dlsrmzf/c106722/pc/list.html",
+          "https://www.yndali.gov.cn/dlsrmzf/c106732/pc/content/1983769810566221824/content_1983769810566221824.html",
+          "https://www.yndali.gov.cn/dlsrmzf/c106753/2018963559495536640/4PAIN2EJ.pdf"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialCustodian": "Dali Prefecture Natural Resources and Planning Bureau, with Dali City Natural Resources Bureau and Dali City Real Estate Registration Center evidenced by official government pages and registration-section metadata.",
+    "officialOpenServiceLead": "Dali City government real-estate-registration section and the prefecture natural-resources one-map/planning references; no public parcel feature service was verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "registryBasis": "Official first-party government material directly evidences the local natural-resources and real-estate-registration custodians and their cadastral/registration responsibilities. This is registry evidence, not evidence of an open anonymous parcel geometry endpoint."
+  },
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "runtimeReadiness": "held",
+  "sourceIds": [],
+  "crs": null,
+  "coverageAssessment": {
+    "claimedScope": "Dali City cadastral and real-estate-registration custody is evidenced by official local and prefecture government sources; public machine-readable parcel coverage is unverified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_evidenced_no_verified_open_geometry",
+  "blocker": "The official Dali pages loaded anonymously, but the bounded requests exposed only government content/article metadata and no current public parcel map/API route, layer schema, CRS, safe native parcel ID, or geometry response.",
+  "remainingUncertainty": "The exact WUP point is a research locator only. No exact-point hit or miss was used as evidence of citywide parcel absence; urban coverage, service authentication behavior, and native identifier fields remain unverified.",
+  "nextStep": "Retry from any officially documented Dali cadastral or real-estate-registration viewer when a public route is identified; inspect its current JavaScript/configuration and query only a small Dali-area extent for geometry plus a safe native parcel identifier before adapter qualification."
+}

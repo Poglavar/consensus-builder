@@ -1,0 +1,136 @@
+{
+  "name": "Swabi",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 1036,
+  "point": [
+    34.0809713699059,
+    72.46343932149
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Swabi Pakistan official cadastral parcel map land records GIS Board of Revenue Khyber Pakhtunkhwa",
+        "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+        "result": "Official Khyber Pakhtunkhwa Revenue & Estate Department sources identify land-record computerization and Service Delivery Centers, and the KPLR appointment portal lists Swabi and Razar centers. The eFard/CLRMIS entry workflow searches using registered name, father’s name and CNIC after biometric verification; no identity-based lookup was attempted. No anonymous parcel-vector layer, safe geometry schema or point-to-polygon response was found. The WUP point’s relation to a specific revenue circle/mauza is unverified.",
+        "executionMethod": "Separate English-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://revenue.kp.gov.pk/sdcs/",
+          "https://kplr.gkp.pk/",
+          "https://efard.kplr.gkp.pk/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "صوابی خیبرپختونخوا اراضی ریکارڈ بورڈ آف ریونیو سروسز لینڈ ریکارڈ نقشہ سرکاری",
+        "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+        "result": "Official Khyber Pakhtunkhwa Revenue & Estate Department sources identify land-record computerization and Service Delivery Centers, and the KPLR appointment portal lists Swabi and Razar centers. The eFard/CLRMIS entry workflow searches using registered name, father’s name and CNIC after biometric verification; no identity-based lookup was attempted. No anonymous parcel-vector layer, safe geometry schema or point-to-polygon response was found. The WUP point’s relation to a specific revenue circle/mauza is unverified.",
+        "executionMethod": "Separate local-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://revenue.kp.gov.pk/sdcs/",
+          "https://kplr.gkp.pk/",
+          "https://efard.kplr.gkp.pk/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "operator": "Pakistan",
+        "homeUrl": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "observation": "Revenue Department describes phase-II land-record computerization including Swabi."
+      },
+      {
+        "name": "https://revenue.kp.gov.pk/sdcs/",
+        "operator": "Pakistan",
+        "homeUrl": "https://revenue.kp.gov.pk/sdcs/",
+        "observation": "Official department describes SDCs as the public land-record service channel."
+      },
+      {
+        "name": "https://kplr.gkp.pk/",
+        "operator": "Pakistan",
+        "homeUrl": "https://kplr.gkp.pk/",
+        "observation": "Government KPLR portal lists Swabi and Razar SDC locations and appointment contacts."
+      },
+      {
+        "name": "https://efard.kplr.gkp.pk/",
+        "operator": "Pakistan",
+        "homeUrl": "https://efard.kplr.gkp.pk/",
+        "observation": "CLRMIS asks for registered name, father’s name and CNIC and requires biometric verification for record search."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "PK-6337-LOCAL-CADASTRE",
+    "name": "Swabi official local land registry/map review",
+    "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "operator": null,
+    "serviceType": "Official local cadastral/registry service reviewed; no anonymous safe full-parcel geometry response verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official KP Revenue & Estate Department lists Swabi among computerized land-record districts, while the official KPLR portal lists Swabi and Razar SDCs. This confirms local record-service coverage but not public geometry at the WUP point.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The official KP Revenue & Estate Department lists Swabi among computerized land-record districts, while the official KPLR portal lists Swabi and Razar SDCs. This confirms local record-service coverage but not public geometry at the WUP point.",
+  "verifiedSample": false,
+  "resultCategory": "no_verified_public_geometry",
+  "technicalBlocker": "No anonymous map/feature endpoint with a safe identifier-plus-geometry response was found; the online record lookup is identity-gated.",
+  "remainingUncertainty": "The exact revenue circle, mauza and parcel coverage at the WUP locator are unknown.",
+  "nextStep": "Recheck only if an official anonymous map-backed parcel feature service is published and the WUP point can be tied to its jurisdiction.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6337,
+  "cityId": "wup2025:6337",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    34.0809713699059,
+    72.46343932149
+  ],
+  "population2025k": 535.083,
+  "populationUnit": "persons",
+  "queueRank": 1036,
+  "population2025": 535083,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryEvidenceUrls": [
+    "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "https://revenue.kp.gov.pk/sdcs/",
+    "https://kplr.gkp.pk/",
+    "https://efard.kplr.gkp.pk/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous map/feature endpoint with a safe identifier-plus-geometry response was found; the online record lookup is identity-gated."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

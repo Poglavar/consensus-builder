@@ -1,0 +1,24 @@
+{
+  "taskId": "city:5232",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-5232-ambo.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ambo-service-review.json",
+    "tmp/valhalla-parcel-research/ambo/oromialand.html",
+    "tmp/valhalla-parcel-research/ambo/api.config.json",
+    "tmp/valhalla-parcel-research/ambo/ambo-wfs2.json"
+  ],
+  "checkedAt": "2026-10-12T06:59:03Z",
+  "findings": {
+    "identity": "WUP 2025 City_Code 5232, rank 3251, Ambo, Ethiopia, point [8.9795326715657,37.8637662328407], 185733 persons; original archive hash matches cohort provenance.",
+    "searches": "Packet records English and Amharic queries, outcomes, and first-party URLs; separate search execution logs were not retained.",
+    "custody": "Cached Oromia Land Bureau page identifies regional land registry/GIS services, supporting registryFound true at regional level. Addis e-Land cached configuration has cityCode AA-ADS in dev and prod, not Ambo.",
+    "geometry": "Cached Ambo-area WFS response has zero features from the Addis-configured service. No Ambo polygon or native parcel ID was retained; this zero is not citywide absence.",
+    "admission": "Held: no Ambo-bound parcel source or sample, and independent adapter, paging, 13-cell, metric, binding and headed Details-panel gates are unevidenced."
+  }
+}

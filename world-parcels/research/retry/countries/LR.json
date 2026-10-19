@@ -1,0 +1,59 @@
+{
+ "kind": "country",
+ "key": "LR",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-LR,en;q=0.9",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.lla.gov.lr/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "now returns full LLA site (previously JS challenge); only map-like link is a LLA-CLIMT ArcGIS Hub dashboards page"
+  },
+  {
+   "url": "https://lla-climt-cadasta.hub.arcgis.com/pages/dashboards",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "Hub site config returns status 403 (private); no parcel service exposed"
+  },
+  {
+   "url": "https://lla-climt-cadasta.hub.arcgis.com/api/v3/datasets?q=parcel",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "global search results (e.g. Mariposa County CA), none Liberian; discarded"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=orgid:8tX9OH8doNBidChm (parcel OR land OR cadastre)",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "Cadasta org: no Liberia parcel feature service; only Liberia Land Authority Act PDF"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Liberia cadastre parcel",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "only mineral/development exploration licence polygons (LiberiaForests), not cadastral parcels"
+  },
+  {
+   "url": "https://landportal.gov.lr/, https://gis.lla.gov.lr/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "unreachable"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Browser headers unblocked the LLA site. No public online parcel viewer/service found; the negative rests on the LLA site and ArcGIS Online searches only, so treat as provisional.",
+ "nextStep": "Ask LLA for the land registry/LIS portal; re-check the CLIMT hub with a login-free browser."
+}

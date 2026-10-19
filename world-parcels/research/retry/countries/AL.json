@@ -1,0 +1,110 @@
+{
+ "kind": "country",
+ "key": "AL",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 (application/json,*/*;q=0.8 for JSON/API calls); Accept-Language: sq-AL,sq;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "al-asig-zrpp-wms-albscad",
+  "requestUrl": "https://geoportal.asig.gov.al/service/zrpp/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=zrpp:p_kadas_albscad_072026&query_layers=zrpp:p_kadas_albscad_072026&styles=&srs=EPSG:4326&bbox=19.8150,41.3250,19.8250,41.3320&width=800&height=560&x=300&y=120&buffer=25&info_format=application/json&feature_count=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   19.815,
+   41.325,
+   19.825,
+   41.332
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "properties.inspireid (e.g. ASHK_PK__376540); cadastral number in numrin_pas",
+  "responseFile": "research/retry/countries/AL-parcel-response.json",
+  "pagination": "feature_count=3",
+  "regionSampled": "Tirana area (approx 41.33N 19.82E)"
+ },
+ "source": {
+  "sourceId": "al-asig-zrpp-wms-albscad",
+  "name": "ALBSCAD cadastral parcels, layers zrpp:p_kadas_albscad_072026 (and zrpp:parcela_kadastrale_qkd_042025)",
+  "operator": "ASIG geoportal (data from State Cadastre Agency / ASHK)",
+  "scope": "WMS layer bbox spans Albania (approx 19.24-21.09E, 39.64-42.66N); only Tirana area sampled",
+  "endpoint": "https://geoportal.asig.gov.al/service/zrpp/wms",
+  "method": "WMS GetFeatureInfo (GeoServer, application/json returns geometry); WFS on this workspace is disabled ('Service WFS is disabled')",
+  "responseFormat": "GeoJSON MultiPolygon via GetFeatureInfo",
+  "crs": "EPSG:4326 (native EPSG:6870)",
+  "reuseStatus": "not read; licence terms unknown"
+ },
+ "requests": [
+  {
+   "url": "https://geoportal.asig.gov.al/service/akp/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "IP blacklist page (WAF) on most attempts"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/zrpp/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "success on ~1 in 5 attempts; lists nd_kadas_albscad_072026, p_kadas_albscad_072026, parcela_kadastrale_qkd_042025, ndertesa_qkd_042025, zona_kadastrale_qkd_042025"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/zrpp/wfs?...GetFeature typeNames=zrpp:p_kadas_albscad_072026",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "OWS exception: Service WFS is disabled"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/akzm/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "Service WFS is disabled"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/akzm/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "success once; environmental layers only, no parcels"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/akp/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "success once; only land-value layers"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/zrpp/wms?...GetMap layers=zrpp:p_kadas_albscad_072026 bbox=19.815,41.325,19.825,41.332",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "image/png",
+   "assessment": "139 KB image with parcel outlines and numbers (checked visually)"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/zrpp/wms?...GetFeatureInfo point x=190,y=205",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 parcel polygon, numrin_pas 6/238"
+  },
+  {
+   "url": "https://geoportal.asig.gov.al/service/zrpp/wms?...GetFeatureInfo x=300,y=120,buffer=25,feature_count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcel polygons: verified"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Previously only capabilities/WAF pages. The ASIG WAF answers 'IP ... blacklist' (Albanian text) or resets the connection on most requests from this proxy IP and lets roughly 1 in 4 through, so retries were needed; that suggests IP-reputation filtering rather than a country block, not proven. Headers did not change the outcome. The earlier akp workspace was the wrong one: parcels are in workspace zrpp, WMS only. Attributes include parcel number, INSPIRE id, cadastral zone; no owner names in the reply. Only one region sampled, so nationwideVerified stays false; scope is claimed national (layer extent) but not verified.",
+ "nextStep": "Sample a second distinct region (e.g. Shkoder or Vlore) through the same layer to establish nationwide; check ASIG terms for reuse; note WMS-only access (no WFS)."
+}

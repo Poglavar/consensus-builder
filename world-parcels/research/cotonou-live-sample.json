@@ -1,0 +1,36 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "efb_parcel.fid-167c2ba9_1a0fe5cd619_4139",
+      "geometry": null,
+      "properties": {
+        "nup": "100187776"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "efb_parcel.fid-167c2ba9_1a0fe5cd619_413a",
+      "geometry": null,
+      "properties": {
+        "nup": "100188271"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "efb_parcel.fid-167c2ba9_1a0fe5cd619_413b",
+      "geometry": null,
+      "properties": {
+        "nup": "100188297"
+      }
+    }
+  ],
+  "totalFeatures": 1390,
+  "numberMatched": 1390,
+  "numberReturned": 3,
+  "timeStamp": "2026-10-02T21:48:41.458Z",
+  "crs": null,
+  "description": "Current bounded provider sample; transfer-limited or property-only, not a complete canonical parcel response.",
+  "checkedAt": "2026-10-03"
+}

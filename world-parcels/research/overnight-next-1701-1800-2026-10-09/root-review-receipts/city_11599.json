@@ -1,0 +1,19 @@
+{
+  "taskId": "city:11599",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11599-puri.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/puri-service-review.json",
+    "tmp/valhalla-parcel-research/11599/levels-count.txt",
+    "tmp/valhalla-parcel-research/11599/levels2.json",
+    "tmp/valhalla-parcel-research/11599/levels3-ri3.json",
+    "tmp/valhalla-parcel-research/11599/levels4.json",
+    "tmp/valhalla-parcel-research/11599/index.js"
+  ],
+  "checkedAt": "2026-10-10T14:22:11Z",
+  "reason": "Official Odisha administrative responses and viewer routes were inspected, including a bounded empty RI response; no safe native parcel ID plus full polygon or CRS response exists. Adapter paging, 13 cells, metric GEOS, binding and headed Details are unverified."
+}

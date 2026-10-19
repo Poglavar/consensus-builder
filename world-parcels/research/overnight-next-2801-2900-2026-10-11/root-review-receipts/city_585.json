@@ -1,0 +1,28 @@
+{
+  "taskId": "city:585",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-585-xai-xai.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/xai-xai-service-review.json",
+    "tmp/valhalla-parcel-research/585/portal-search.json",
+    "tmp/valhalla-parcel-research/585/layer-13.json",
+    "tmp/valhalla-parcel-research/585/layer-14.json",
+    "tmp/valhalla-parcel-research/585/query-13.json",
+    "tmp/valhalla-parcel-research/585/query-14.json"
+  ],
+  "checkedAt": "2026-10-11T21:32:47Z",
+  "reason": "English and Portuguese queries and result URLs recorded. Original MOZGIS portal cache identifies hosted and municipal map services; inspected hosted layers are base and administrative data. Original bounded layer 13/14 responses contain three and two administrative objectid values, respectively, with no geometry. Municipal GIS publication does not by itself qualify parcel-registry custody or parcel coverage.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

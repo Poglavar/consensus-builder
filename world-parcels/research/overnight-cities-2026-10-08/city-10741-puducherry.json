@@ -1,0 +1,92 @@
+{
+  "name": "Puducherry",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 513,
+  "point": [
+    11.9338400070201,
+    79.8028893696543
+  ],
+  "population2025": 998290,
+  "population2025k": 998.29,
+  "populationUnit": "persons",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Official Puducherry sources document the Nilamagal land-record query and FMB/village-map services. The Nilamagal form requires region, taluk, revenue village and Patta or re-survey number. No survey identifier or point-to-village match was established, so no parcel-specific query or geometry request was made.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Puducherry Directorate of Survey, Settlement and Land Records issues settlement extracts, FMB copies and village maps, and runs Nilamagal land-record services across the Union Territory. These are official local survey and record services; they do not provide anonymous polygon coverage for this WUP locator. The official contact directory explicitly locates the Survey and Land Records Director’s office in New Saram, Puducherry, providing city-local institutional evidence.",
+  "resultCategory": "official_union_territory_survey_and_land_records_identifier_based_no_public_geometry_verified",
+  "technicalBlocker": "The official record service requires a survey/Patta identifier and village context; no safe anonymous polygon feature endpoint was identified.",
+  "remainingUncertainty": "Exact revenue village and survey number for the WUP point; whether FMB/village-map copies can be accessed in a schema-safe digital geometry format.",
+  "nextStep": "Resolve the WUP point to a revenue village and survey number using an official map index, then assess whether the public output is a full polygon source or only a document copy.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Tamil",
+        "query": "புதுச்சேரி நில அளவை நிலப்பதிவு FMB புல வரைபடம் அதிகாரப்பூர்வ",
+        "scope": "Find official Puducherry land-record, FMB and cadastral-map services.",
+        "result": "Official Puducherry Revenue and district sources identify the Survey, Settlement and Land Records Directorate, Nilamagal and FMB/village-map services. The online record form needs a land/survey identifier and administrative selection; no polygon feature service was found.",
+        "urls": [
+          "https://revenue.py.gov.in/dos.html",
+          "https://revenue.py.gov.in/land_records_modernization.html",
+          "https://puducherry-dt.gov.in/ta/service/%E0%AE%A8%E0%AE%BF%E0%AE%B2-%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%B5%E0%AF%87%E0%AE%9F%E0%AF%81%E0%AE%95%E0%AE%B3%E0%AF%8D/"
+        ],
+        "method": "Separate Tamil-language discovery search and official Revenue/Survey Directorate review."
+      },
+      {
+        "language": "English",
+        "query": "Puducherry official cadastral map land records settlement survey department urban parcels",
+        "scope": "Cross-check official survey-record services and public geometry access.",
+        "result": "The Directorate issues FMB and village-map copies and Nilamagal provides record lookup by region, taluk, village and Patta or R.S. number. No anonymous vector parcel service or exact-point survey number was established.",
+        "urls": [
+          "https://revenue.py.gov.in/dos.html",
+          "https://revenue.py.gov.in/land_records_modernization.html",
+          "https://nilamagal.py.gov.in/public"
+        ],
+        "method": "Separate English-language search and first-party survey/land-record service review."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-PUDUCHERRY-LOCAL-REGISTRY-RESEARCH",
+    "name": "Puducherry official local land-record/cadastral service evidence",
+    "url": "https://revenue.py.gov.in/dos.html",
+    "operator": "Government of Puducherry Directorate of Survey, Settlement and Land Records",
+    "serviceType": "Official local registry/map service pathway identified; public parcel feature geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; a parcel-level native identifier and feature schema remain unverified."
+  },
+  "wupCityCode": 10741,
+  "cityId": "wup2025:10741",
+  "queueRank": 513,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    11.9338400070201,
+    79.8028893696543
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-09T01:10:35.212195+00:00",
+  "registryEvidenceUrls": [
+    "https://revenue.py.gov.in/dos.html",
+    "https://revenue.py.gov.in/land_records_modernization.html",
+    "https://puducherry-dt.gov.in/ta/service/%E0%AE%A8%E0%AE%BF%E0%AE%B2-%E0%AE%AA%E0%AE%A4%E0%AE%BF%E0%AE%B5%E0%AF%87%E0%AE%9F%E0%AF%81%E0%AE%95%E0%AE%B3%E0%AF%8D/",
+    "https://nilamagal.py.gov.in/public",
+    "https://revenue.py.gov.in/contact_us.html"
+  ],
+  "rootSupplementalResearch": {
+    "url": "https://revenue.py.gov.in/contact_us.html",
+    "observation": "Official directory identifies the Survey and Land Records office in the city of Puducherry. No personal contact names or values retained."
+  }
+}

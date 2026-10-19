@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "scope": "Final read-only consistency QA of the follow-up JSON evidence, current registry, executable provider catalog, app configuration, coverage report, browser-check artifact and headless validation artifact.",
+  "result": "pass",
+  "evidenceDirectory": "world-parcels/research/india-africa-followup-2026-10-08/",
+  "jsonValidation": {
+    "filesChecked": 71,
+    "parseFailures": 0
+  },
+  "repositoryEvidenceReferences": {
+    "referencesChecked": 188,
+    "missingReferences": 0,
+    "absolutePathReferences": 0,
+    "note": "Repository-relative evidence references resolve from the repository root or world-parcels/ as applicable."
+  },
+  "secretAndPersonalMetadataReview": {
+    "credentialOrEmailPatternMatches": 0,
+    "absoluteHomePathMatches": 0,
+    "personalContactAccountValueFields": 0,
+    "patternsChecked": [
+      "credential assignments for auth keys, CSRF, access/refresh tokens, API keys, session IDs and passwords",
+      "cookie/Set-Cookie header values",
+      "Bearer tokens and JWT-shaped strings",
+      "email addresses and personal contact/account values"
+    ],
+    "result": "No persisted credential, cookie/CSRF value, or personal contact/account value was found in the checked JSON evidence."
+  },
+  "currentIntegrationConsistency": {
+    "executableProviderCount": 97,
+    "configuredAppCityCount": 110,
+    "appConfigurationNote": "The city-config file has 111 keyed entries including the non-city explore mode; the 110 city entries match the coverage-report count.",
+    "newlyEnabledEntries": [
+      {
+        "appCityId": "mboloko",
+        "primarySourceId": "za-cgs-northwest-erven",
+        "catalogCityIds": ["mboloko"],
+        "appSourceIdLinks": 1
+      },
+      {
+        "appCityId": "kochi",
+        "sourceId": "in-kl-entebhoomi-070211",
+        "catalogCityIds": ["kochi"],
+        "appSourceIdLinks": 1
+      },
+      {
+        "appCityId": "iravipuram",
+        "sourceId": "in-kl-entebhoomi-020301",
+        "catalogCityIds": ["iravipuram"],
+        "appSourceIdLinks": 1
+      }
+    ],
+    "mbolokoReportSourceOrder": [
+      "za-cgs-northwest-erven",
+      "za-giscoe-erven"
+    ],
+    "heldResearchOnly": [
+      {
+        "cityId": "wup2025:9587",
+        "name": "Kozhikode",
+        "researchStatus": "held_runtime_availability",
+        "appConfigured": false,
+        "holdReason": "Two consecutive expanded 25-cell browser loads failed upstream and retained incomplete cells."
+      },
+      {
+        "cityId": "wup2025:10013",
+        "name": "Thiruvananthapuram",
+        "researchStatus": "held_runtime_availability",
+        "appConfigured": false,
+        "holdReason": "Repeated expanded browser checks retained incomplete cells."
+      }
+    ],
+    "wup9847Kollam": {
+      "sourceIds": [],
+      "appCityIds": [],
+      "population2025": 3074562
+    },
+    "distinctIravipuram": {
+      "cityId": "village:IN-KL-020301",
+      "sourceIds": ["in-kl-entebhoomi-020301"],
+      "appCityIds": ["iravipuram"],
+      "population2025": null
+    }
+  },
+  "browserAndReportAcceptance": {
+    "artifact": "browser-check.json",
+    "status": "passed_three_enabled_entries_two_candidates_held",
+    "reportConfiguredRows": 13,
+    "reportFocusRows": 171,
+    "reportTotalRows": 461,
+    "separateIravipuramRowCount": 1,
+    "runtimeProviderCount": 97,
+    "namedBrowserSessionClosed": true,
+    "finalActiveSessionCount": 0,
+    "ownedBrowserProcessesRemaining": 0
+  },
+  "headlessValidation": {
+    "artifact": "headless-validation.json",
+    "result": "passed",
+    "testFilesPassed": 18,
+    "testsPassed": 252,
+    "failed": 0
+  },
+  "rowCounts": {
+    "indiaAfricaFocusQueueRows": 171,
+    "coverageReportCityRows": 461,
+    "coverageReportMetadataCityCount": 461
+  },
+  "limitations": [
+    "This was a static evidence and configuration check; no network or browser actions were taken.",
+    "Kozhikode and Thiruvananthapuram remain research-only due to their repeated expanded-browser availability holds."
+  ]
+}

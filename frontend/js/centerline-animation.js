@@ -18,70 +18,58 @@ let animCenterlineSegmentsLayer = null;
 let animFinalCenterlineLayer = null;
 
 // Add function to show animation modal for current parcel
-function showAnimationModalForCurrentParcel() {
+async function showAnimationModalForCurrentParcel() {
     if (currentParcelCoordinates) {
+        // findMainAxis lives in road-analysis.js, which loads on first use (optional-tools-loader.js).
+        await window.ensureOptionalTool('roadAnalysis');
         showAnimationModal(currentParcelCoordinates);
     }
 }
 
+// The open visualization: the shared dialog (js/ui/dialogs.js) holding its own Leaflet map. The
+// overlay keeps the animation-modal id and the close button animation-close as hooks.
+let animationDialog = null;
+
+function animationText(key, fallback) {
+    try {
+        const value = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+        if (value && value !== key) return value;
+    } catch (_) { /* untranslated */ }
+    return fallback;
+}
+
 // Show the animation modal
 function showAnimationModal(coordinates) {
-    // Create modal elements properly instead of using innerHTML
-    if (!document.getElementById('animation-modal')) {
-        const modalDiv = document.createElement('div');
-        modalDiv.id = 'animation-modal';
-        modalDiv.style.position = 'fixed';
-        modalDiv.style.top = '0';
-        modalDiv.style.left = '0';
-        modalDiv.style.width = '100%';
-        modalDiv.style.height = '100%';
-        modalDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        modalDiv.style.zIndex = '1000';
-        modalDiv.style.display = 'flex';
-        modalDiv.style.alignItems = 'center';
-        modalDiv.style.justifyContent = 'center';
+    if (!animationDialog) {
+        const dialogApi = window.CbDialog.open({
+            title: animationText('modal.centerlineAnimation.title', 'Centerline algorithm visualization'),
+            size: 'xl',
+            className: 'animation-modal',
+            bodyClassName: 'animation-body',
+            body: `
+                <div id="animation-map"></div>
+                <div id="animation-controls">
+                    <div id="animation-step" role="status">Step 1: Loading parcel geometry</div>
+                    <div id="animation-buttons" class="cb-actions">
+                        <button type="button" class="btn" id="btn-prev" disabled>Previous</button>
+                        <button type="button" class="btn" id="btn-next">Next</button>
+                        <button type="button" class="btn btn-primary" id="btn-play">Play</button>
+                    </div>
+                </div>`,
+            onClose: () => {
+                if (animationDialog === dialogApi) animationDialog = null;
+                teardownAnimation();
+            }
+        });
+        if (!dialogApi) return;
+        animationDialog = dialogApi;
+        dialogApi.overlay.id = 'animation-modal';
+        const closeButton = dialogApi.header && dialogApi.header.querySelector('.close-circle-btn');
+        if (closeButton) closeButton.id = 'animation-close';
 
-        const container = document.createElement('div');
-        container.id = 'animation-container';
-        container.style.backgroundColor = 'white';
-        container.style.padding = '20px';
-        container.style.borderRadius = '8px';
-        container.style.maxWidth = '80%';
-        container.style.maxHeight = '80%';
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-
-        container.innerHTML = `
-            <div id="animation-header">
-                <h2>Centerline Algorithm Visualization</h2>
-                <button id="animation-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="Close animation modal">×</button>
-            </div>
-            <div id="animation-map"></div>
-            <div id="animation-controls" style="display: flex; flex-direction: column; align-items: center; padding: 15px;">
-                <div id="animation-step" style="text-align: center; margin-bottom: 15px; min-height: 20px;">Step 1: Loading parcel geometry</div>
-                <div id="animation-buttons" style="display: flex; gap: 10px;">
-                    <button class="animation-button" id="btn-prev" disabled>Previous</button>
-                    <button class="animation-button" id="btn-next">Next</button>
-                    <button class="animation-button" id="btn-play">Play</button>
-                </div>
-            </div>
-        `;
-
-        modalDiv.appendChild(container);
-        document.body.appendChild(modalDiv);
-
-        // Add event listeners
-        document.getElementById('animation-close').addEventListener('click', closeAnimationModal);
         document.getElementById('btn-prev').addEventListener('click', prevAnimationStep);
         document.getElementById('btn-next').addEventListener('click', nextAnimationStep);
         document.getElementById('btn-play').addEventListener('click', togglePlayAnimation);
-
-        // Close modal when clicking outside the container
-        modalDiv.addEventListener('click', (e) => {
-            if (e.target === modalDiv) {
-                closeAnimationModal();
-            }
-        });
     }
 
     // Reset animation state
@@ -113,8 +101,14 @@ function showAnimationModal(coordinates) {
     renderAnimationStep(0);
 }
 
-// Close the animation modal
+// Close the animation modal (the dialog's onClose tears the animation down).
 function closeAnimationModal() {
+    if (animationDialog) animationDialog.close();
+    else teardownAnimation();
+}
+
+// Stop the animation and remove its map; runs however the dialog was closed.
+function teardownAnimation() {
     // Stop any ongoing animation
     stopPlayAnimation();
 
@@ -123,26 +117,6 @@ function closeAnimationModal() {
         clearAnimationLayers();
         animationMap.remove();
         animationMap = null;
-    }
-
-    // Remove the modal from DOM
-    const modal = document.getElementById('animation-modal');
-    if (modal) {
-        // Remove all event listeners
-        const closeBtn = document.getElementById('animation-close');
-        const prevBtn = document.getElementById('btn-prev');
-        const nextBtn = document.getElementById('btn-next');
-        const playBtn = document.getElementById('btn-play');
-
-        if (closeBtn) closeBtn.removeEventListener('click', closeAnimationModal);
-        if (prevBtn) prevBtn.removeEventListener('click', prevAnimationStep);
-        if (nextBtn) nextBtn.removeEventListener('click', nextAnimationStep);
-        if (playBtn) playBtn.removeEventListener('click', togglePlayAnimation);
-
-        modal.removeEventListener('click', closeAnimationModal);
-
-        // Remove the modal
-        modal.remove();
     }
 
     // Force a reflow of the main map
@@ -208,10 +182,9 @@ function setupAnimationSteps(coordinates) {
         return;
     }
 
-    // Convert to HTRS96/TM for calculations
-    const htrsPolygonCoords = polygonCoords.map(coord => {
-        return wgs84ToHTRS96(coord[1], coord[0]);
-    });
+    // Metres for the calculations: a frame on this parcel itself (projections.md §2)
+    const frame = window.__metricFrame.frameFor(polygonCoords);
+    const htrsPolygonCoords = polygonCoords.map(coord => frame.latLngToMetric(coord[1], coord[0]));
 
     // Calculate the centroid
     let centroidX = 0, centroidY = 0;
@@ -295,7 +268,7 @@ function setupAnimationSteps(coordinates) {
             const samplePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: samplePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -353,7 +326,7 @@ function setupAnimationSteps(coordinates) {
             ];
 
             const wgs84AxisLine = axisLine.map(p => {
-                const [lat, lon] = htrs96ToWGS84(p[0], p[1]);
+                const [lat, lon] = frame.metricToLatLng(p[0], p[1]);
                 return [lon, lat];
             });
 
@@ -380,7 +353,7 @@ function setupAnimationSteps(coordinates) {
             const longSidePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: longSidePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -401,7 +374,7 @@ function setupAnimationSteps(coordinates) {
             const shortSidePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: shortSidePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -513,8 +486,8 @@ function setupAnimationSteps(coordinates) {
 
                 // Save the search line for visualization
                 const wgs84SearchLine = [
-                    htrs96ToWGS84(startPoint[0], startPoint[1]),
-                    htrs96ToWGS84(searchEndPoint[0], searchEndPoint[1])
+                    frame.metricToLatLng(startPoint[0], startPoint[1]),
+                    frame.metricToLatLng(searchEndPoint[0], searchEndPoint[1])
                 ].map(p => [p[1], p[0]]); // Convert to [lon, lat]
 
                 searchLines.push(wgs84SearchLine);
@@ -533,8 +506,8 @@ function setupAnimationSteps(coordinates) {
 
                     // Create width line
                     const wgs84Line = [
-                        htrs96ToWGS84(point[0], point[1]),
-                        htrs96ToWGS84(opposite[0], opposite[1])
+                        frame.metricToLatLng(point[0], point[1]),
+                        frame.metricToLatLng(opposite[0], opposite[1])
                     ].map(p => [p[1], p[0]]); // Convert to [lon, lat]
 
                     widthLines.push(wgs84Line);
@@ -560,7 +533,7 @@ function setupAnimationSteps(coordinates) {
             const oppositePointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: oppositePoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -609,7 +582,7 @@ function setupAnimationSteps(coordinates) {
             const midpointsGeoJSON = {
                 type: 'FeatureCollection',
                 features: midpoints.map(point => {
-                    const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                    const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                     return {
                         type: 'Feature',
                         properties: {},
@@ -665,7 +638,7 @@ function setupAnimationSteps(coordinates) {
 
             // Convert to WGS84
             const centerlineWGS84 = sortedCenterline.map(point => {
-                const [lat, lon] = htrs96ToWGS84(point[0], point[1]);
+                const [lat, lon] = frame.metricToLatLng(point[0], point[1]);
                 return [lon, lat];
             });
 
@@ -764,7 +737,9 @@ function startPlayAnimation() {
 function stopPlayAnimation() {
     if (animationPlaying) {
         animationPlaying = false;
-        document.getElementById('btn-play').textContent = 'Play';
+        // Gone already when the dialog was closed mid-play (teardownAnimation runs after removal).
+        const playButton = document.getElementById('btn-play');
+        if (playButton) playButton.textContent = 'Play';
 
         if (animationTimer) {
             clearTimeout(animationTimer);

@@ -5,6 +5,8 @@
 //                                  otherwise full raw_data for given city(ies) and optional date range
 //                                  ?cities=Zagreb,Ljubljana&from=2025-01-01&to=2026-12-31&metric=salary_net
 
+import { queryString } from '../utils/helpers.js';
+
 const exchangeRateCache = new Map();
 const FX_LOOKBACK_DAYS = 7;
 const FX_FETCH_TIMEOUT_MS = 5000;
@@ -447,7 +449,7 @@ export function setupCityStatsRoute(app, pool) {
 
     // List snapshots (city + date), optionally filtered by city
     app.get('/city-stats/snapshots', async (req, res) => {
-        const cityRaw = (req.query.city || '').trim();
+        const cityRaw = queryString(req.query, 'city');
         const params = [];
         let sql = `SELECT city, updated_at FROM numbeo_city`;
         if (cityRaw) {
@@ -468,10 +470,10 @@ export function setupCityStatsRoute(app, pool) {
     // When ?metric=salary_net is provided, returns a lean metric-scoped payload.
     // ?cities=Zagreb,Ljubljana&from=2025-01-01&to=2026-12-31&metric=salary_net
     app.get('/city-stats/data', async (req, res) => {
-        const citiesRaw = (req.query.cities || '').trim();
-        const fromRaw = (req.query.from || '').trim();
-        const toRaw = (req.query.to || '').trim();
-        const metricKey = (req.query.metric || '').trim();
+        const citiesRaw = queryString(req.query, 'cities');
+        const fromRaw = queryString(req.query, 'from');
+        const toRaw = queryString(req.query, 'to');
+        const metricKey = queryString(req.query, 'metric');
         const metric = metricKey ? CITY_METRICS_BY_KEY.get(metricKey) || null : null;
 
         if (metricKey && !metric) {

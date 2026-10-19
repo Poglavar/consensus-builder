@@ -1,0 +1,108 @@
+{
+  "cityCode": 5461,
+  "queueRank": 3004,
+  "name": "Metro",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "capital": false,
+  "point": [-5.1149642064481, 105.316057554457],
+  "population2025": 199160,
+  "population2025k": 199.16,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Metro Lampung Indonesia official cadastral parcel map GIS land records BHUMI ATR/BPN",
+        "result": "First-party discovery identified BHUMI ATR/BPN, the official national interactive land map, and the official Kantor Pertanahan Kota Metro service page. BHUMI's current public configuration identifies a Bidang Tanah layer and its safe display fields, but no anonymous parcel feature response was retained.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://kot-metro.atrbpn.go.id/testimoni/layanan-delivery-service-pesan-antar-kantor-pertanahan-kota-metro",
+          "https://mpp.metrokota.go.id/tenant/kantor-pertanahan-kota-metro"
+        ]
+      },
+      {
+        "language": "Indonesian (local/national language)",
+        "query": "peta bidang tanah Kota Metro Lampung resmi ATR BPN BHUMI Kantor Pertanahan Kota Metro",
+        "result": "Hasil resmi menemukan BHUMI ATR/BPN sebagai peta interaktif pertanahan, Kantor Pertanahan Kota Metro as the local service custodian, and Tanah Harapan as the municipal thematic WebGIS. The municipal public map configuration exposed thematic layers but no cadastral parcel layer. No anonymous parcel geometry or native parcel identity was obtained.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://kot-metro.atrbpn.go.id/",
+          "https://tanahharapan.metrokota.go.id/",
+          "https://tanahharapan.metrokota.go.id/peta"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Kantor Pertanahan Kota Metro, Kementerian Agraria dan Tata Ruang/Badan Pertanahan Nasional (ATR/BPN)",
+    "scope": "Local city land-office custodian for land registration, land rights, measurement, and land information services; BHUMI ATR/BPN is the official national public map presenting the local layer when available.",
+    "evidenceUrls": [
+      "https://kot-metro.atrbpn.go.id/",
+      "https://mpp.metrokota.go.id/tenant/kantor-pertanahan-kota-metro",
+      "https://bhumi.atrbpn.go.id/peta"
+    ],
+    "scopeNote": "This evidences a local registry/service custodian and an official public map route, not successful anonymous citywide parcel geometry access."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "BHUMI ATR/BPN Bidang Tanah layer; municipal Tanah Harapan thematic WebGIS checked as a local alternative",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "officialLayer": "umum:Persil",
+      "vendor": "Geoserver",
+      "configuredRoute": "/bhumigs/umum",
+      "safeDisplayFields": ["penggunaan", "tipehak", "luas", "nib", "akurasibidang"],
+      "retainedFields": [],
+      "note": "The configuration names NIB as a display field, but no parcel feature response or stable native identity was obtained, so no ID was promoted or retained."
+    },
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter%5Bdefault%5D%5B_eq%5D=true&filter%5Bstatus%5D%5B_eq%5D=published&fields=*,fields.*",
+        "outcome": "success; current public configuration returned the published Bidang Tanah layer, vendor Geoserver, map_service_url /bhumigs/umum, layer umum:Persil, and safe display field names"
+      },
+      {
+        "method": "GET",
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities",
+        "outcome": "HTTP 200 application HTML for the BHUMI 404 page, not a WFS capabilities document; no schema or CRS obtained"
+      },
+      {
+        "method": "GET",
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities",
+        "outcome": "HTTP 200 application HTML for the BHUMI 404 page, not a WMS capabilities document; no geometry or feature response obtained"
+      },
+      {
+        "method": "GET",
+        "url": "https://tanahharapan.metrokota.go.id/peta",
+        "outcome": "success; current public JavaScript/configuration exposed thematic WMS proxy layers and map feature-info wiring, but no parcel/cadastral layer was present in the inspected public layer list"
+      },
+      {
+        "method": "GET",
+        "url": "https://bhumi.atrbpn.go.id/peta",
+        "outcome": "success; official viewer JavaScript/configuration inspected to identify the public layer catalog and request paths; parcel feature retrieval path is login/token-gated in the current client for Geoserver layers, so no login or credentials were used"
+      }
+    ],
+    "note": "The exact WUP point was preserved in latitude/longitude order and was not shifted or used as an absence test. No point query was treated as citywide coverage evidence."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The official BHUMI layer catalog proves a national Bidang Tanah layer configuration and safe display-field names, but the anonymous public route did not yield a usable schema or feature response from this host.",
+    "The current client contains a token-gated Geoserver parcel retrieval path; no login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe field request was attempted.",
+    "Municipal Tanah Harapan is useful local thematic context but was not evidenced as a cadastral registry or parcel source.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

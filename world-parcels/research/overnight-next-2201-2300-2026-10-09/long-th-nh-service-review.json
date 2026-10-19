@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-5666-long-th-nh.json",
+  "cityCode": 5666,
+  "queueRank": 2244,
+  "name": "Long Thành",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "pointLatLon": [10.7575478007597, 106.937935472823],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method":"GET","url":"https://ungdung.stnmt.dongnai.gov.vn/dulieumo/BanDoChuyenDe?categoryId=33","httpStatus":200,"outcome":"Official Đồng Nai land-data thematic-map page loaded. The HTML exposed a keyword search form and a static thematic-map image reference, but no parcel service, parcel layer, schema, or anonymous ID-plus-geometry response."},
+    {"method":"GET","url":"https://longthanh.dongnai.gov.vn/","httpStatus":"200 via web discovery","outcome":"Official Long Thành local-government portal loaded. It identifies the local government custodian and publishes land-recovery and administrative notices, but no public parcel API was exposed on the landing page."},
+    {"method":"GET","url":"https://longthanh.dongnai.gov.vn/pages/newsdetail.aspx?CatId=112&NewsId=2858","httpStatus":"official page found via discovery; fetch not used for parcel extraction","outcome":"Official local notice identifies Văn phòng Đăng ký đất đai tỉnh Đồng Nai - Chi nhánh Long Thành as performing cadastral-map measurement procedures. Custodian/procedure evidence only."},
+    {"method":"GET","url":"https://dongnai.gov.vn/vi/news/tai-nguyen-moi-truong/quyet-dinh-ve-viec-giao-cho-trung-tam-phat-trien-quy-dat-huyen-long-thanh-quan-ly-khu-dat-thuoc-thua-dat-so-119-va-442-to-ban-do-dia-chinh-so-29-thi-tran-long-thanh-huyen-long-thanh-tinh-dong-nai-47527.html","httpStatus":"200 via web discovery","outcome":"Official provincial notice names Long Thành cadastral map sheet 29 and parcels 119 and 442 in a land-management decision. It does not provide safe parcel geometry or a reusable public API."},
+    {"method":"SEARCH","url":"https://www.google.com/search?q=site%3Adongnai.gov.vn+Long+Th%C3%A0nh+b%E1%BA%A3n+%C4%91%E1%BB%93+%C4%91%E1%BB%8Ba+ch%C3%ADnh","httpStatus":"search discovery","outcome":"No official public anonymous parcel viewer/API surfaced in the bounded search results. General government notices and procedure pages were retained as evidence only."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "The official Đồng Nai thematic-map page was inspected from its current HTML; no parcel viewer configuration or parcel API endpoint was exposed.",
+    "geometryCrs": "Not observed for a Long Thành parcel response.",
+    "nativeIdentity": "Not observed; no parcel response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {"requestScope":"No parcel query completed","featureCount":0,"nativeIdentity":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official local cadastral custodian/procedure evidence exists, but no safe anonymous Long Thành parcel ID-plus-geometry response was obtained."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and not shifted.",
+    "No exact-point query was completed; zero hits are not inferred as citywide absence.",
+    "The official thematic-map page is a catalog/search surface rather than an exposed parcel API in this attempt.",
+    "General provincial agency material and official notices are distinguished from local custodian evidence; the local branch is evidenced as a procedure custodian, not as a public parcel service.",
+    "No GeoJSON sample is retained because no safe native parcel identity and unchanged geometry were obtained.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained."
+  ],
+  "uncertainty": "Long Thành cadastral-map custody and parcel-sheet references are official and clear, but anonymous endpoint reachability, coverage, schema, CRS, stable identity, and update cadence remain unverified. Runtime/admission remains held."
+}

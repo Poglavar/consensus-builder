@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><WMS_Capabilities xmlns:inspire_vs="http://inspire.ec.europa.eu/schemas/inspire_vs/1.0" xmlns:inspire_common="http://inspire.ec.europa.eu/schemas/common/1.0" version="1.3.0" updateSequence="202" xmlns="http://www.opengis.net/wms" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wms https://inspire.landregistry.gov.uk/inspire/schemas/wms/1.3.0/capabilities_1_3_0.xsd http://inspire.ec.europa.eu/schemas/inspire_vs/1.0 https://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd">
+  <Service>
+    <Name>WMS</Name>
+    <Title>GeoServer Web Map Service</Title>
+    <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+    <KeywordList>
+      <Keyword>WFS</Keyword>
+      <Keyword>WMS</Keyword>
+      <Keyword>GEOSERVER</Keyword>
+    </KeywordList>
+    <OnlineResource xlink:type="simple" xlink:href="http://geoserver.org"/>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson/>
+        <ContactOrganization>HMLR INSPIRE</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition/>
+      <ContactAddress>
+        <AddressType/>
+        <Address/>
+        <City/>
+        <StateOrProvince/>
+        <PostCode/>
+        <Country/>
+      </ContactAddress>
+      <ContactVoiceTelephone/>
+      <ContactFacsimileTelephone/>
+      <ContactElectronicMailAddress/>
+    </ContactInformation>
+    <Fees>NONE</Fees>
+    <AccessConstraints>NONE</AccessConstraints>
+  </Service>
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>text/xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&amp;"/>
+            </Get>
+            <Post>
+              <OnlineResource xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&amp;"/>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/png</Format>
+        <Format>application/atom+xml</Format>
+        <Format>application/json;type=utfgrid</Format>
+        <Format>application/pdf</Format>
+        <Format>application/rss+xml</Format>
+        <Format>application/vnd.google-earth.kml+xml</Format>
+        <Format>application/vnd.google-earth.kml+xml;mode=networklink</Format>
+        <Format>application/vnd.google-earth.kmz</Format>
+        <Format>image/geotiff</Format>
+        <Format>image/geotiff8</Format>
+        <Format>image/gif</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>image/svg+xml</Format>
+        <Format>image/tiff</Format>
+        <Format>image/tiff8</Format>
+        <Format>image/vnd.jpeg-png</Format>
+        <Format>image/vnd.jpeg-png8</Format>
+        <Format>text/html; subtype=openlayers</Format>
+        <Format>text/html; subtype=openlayers2</Format>
+        <Format>text/html; subtype=openlayers3</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+      <GetFeatureInfo>
+        <Format>text/plain</Format>
+        <Format>application/vnd.ogc.gml</Format>
+        <Format>text/xml</Format>
+        <Format>application/vnd.ogc.gml/3.1.1</Format>
+        <Format>text/xml; subtype=gml/3.1.1</Format>
+        <Format>text/html</Format>
+        <Format>application/json</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&amp;"/>
+            </Get>
+          </HTTP>
+        </DCPType>
+      </GetFeatureInfo>
+    </Request>
+    <Exception>
+      <Format>XML</Format>
+      <Format>INIMAGE</Format>
+      <Format>BLANK</Format>
+      <Format>JSON</Format>
+    </Exception>
+    <inspire_vs:ExtendedCapabilities>
+      <inspire_common:MetadataUrl>
+        <inspire_common:URL>www.landregistry.gov.uk/inspire/ViewServiceMetaData.xml</inspire_common:URL>
+        <inspire_common:MediaType>application/vnd.iso.19139+xml</inspire_common:MediaType>
+      </inspire_common:MetadataUrl>
+      <inspire_common:SupportedLanguages>
+        <inspire_common:DefaultLanguage>
+          <inspire_common:Language>eng</inspire_common:Language>
+        </inspire_common:DefaultLanguage>
+      </inspire_common:SupportedLanguages>
+      <inspire_common:ResponseLanguage>
+        <inspire_common:Language>eng</inspire_common:Language>
+      </inspire_common:ResponseLanguage>
+    </inspire_vs:ExtendedCapabilities>
+    <Layer>
+      <Title>GeoServer Web Map Service</Title>
+      <Abstract>A compliant implementation of WMS plus most of the SLD extension (dynamic styling). Can also generate PDF, SVG, KML, GeoRSS</Abstract>
+      <!--Limited list of EPSG projections:-->
+      <CRS>EPSG:27700</CRS>
+      <CRS>EPSG:3035</CRS>
+      <CRS>EPSG:900913</CRS>
+      <CRS>CRS:84</CRS>
+      <EX_GeographicBoundingBox>
+        <westBoundLongitude>-8.36240875278169</westBoundLongitude>
+        <eastBoundLongitude>2.077715474620025</eastBoundLongitude>
+        <southBoundLatitude>49.76680727257757</southBoundLatitude>
+        <northBoundLatitude>55.81382919378528</northBoundLatitude>
+      </EX_GeographicBoundingBox>
+      <BoundingBox CRS="CRS:84" minx="-8.36240875278169" miny="49.76680727257757" maxx="2.077715474620025" maxy="55.81382919378528"/>
+      <Layer queryable="0" opaque="0">
+        <Name>inspire:AM.AreaManagement</Name>
+        <Title>AM.AreaManagement</Title>
+        <Abstract/>
+        <KeywordList>
+          <Keyword>features</Keyword>
+          <Keyword>AM.AreaManagement</Keyword>
+        </KeywordList>
+        <CRS>EPSG:27700</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-8.36240875278169</westBoundLongitude>
+          <eastBoundLongitude>2.077715474620025</eastBoundLongitude>
+          <southBoundLatitude>49.76680727257869</southBoundLatitude>
+          <northBoundLatitude>55.81382919378528</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-8.36240875278169" miny="49.76680727257869" maxx="2.077715474620025" maxy="55.81382919378528"/>
+        <BoundingBox CRS="EPSG:27700" minx="0.0" miny="0.0" maxx="656000.0" maxy="658000.0"/>
+        <Style>
+          <Name>inspire:inspire_areamanagement</Name>
+          <Title>inspire:inspire_areamanagement</Title>
+          <LegendURL width="22" height="60">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&amp;version=1.3.0&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=inspire%3AAM.AreaManagement"/>
+          </LegendURL>
+        </Style>
+        <MinScaleDenominator>1.0</MinScaleDenominator>
+        <MaxScaleDenominator>20000.0</MaxScaleDenominator>
+      </Layer>
+      <Layer queryable="0" opaque="0">
+        <Name>inspire:CP.CadastralParcel</Name>
+        <Title>CP.CadastralParcel</Title>
+        <Abstract>Use of this data is subject to terms and conditions located at www.bit.ly/wmseul,&#13;
+© Crown copyright and database rights 2018 Ordnance Survey 100026316</Abstract>
+        <KeywordList>
+          <Keyword>PD_LR_INDEX_POLY</Keyword>
+          <Keyword>features</Keyword>
+        </KeywordList>
+        <CRS>EPSG:27700</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-8.36240875278169</westBoundLongitude>
+          <eastBoundLongitude>2.0777154746200246</eastBoundLongitude>
+          <southBoundLatitude>49.76680727257757</southBoundLatitude>
+          <northBoundLatitude>55.81382919378528</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-8.36240875278169" miny="49.76680727257757" maxx="2.0777154746200246" maxy="55.81382919378528"/>
+        <BoundingBox CRS="EPSG:27700" minx="0.0" miny="0.0" maxx="656000.0" maxy="658000.0"/>
+        <Style>
+          <Name>inspire_common:DEFAULT</Name>
+          <Title>inspire_common:DEFAULT</Title>
+          <LegendURL width="22" height="20">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&amp;version=1.3.0&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=inspire%3ACP.CadastralParcel"/>
+          </LegendURL>
+        </Style>
+        <MinScaleDenominator>1.0</MinScaleDenominator>
+        <MaxScaleDenominator>20000.0</MaxScaleDenominator>
+      </Layer>
+      <Layer queryable="0" opaque="0">
+        <Name>inspire:LU.LandUse</Name>
+        <Title>LU.LandUse</Title>
+        <Abstract/>
+        <KeywordList>
+          <Keyword>features</Keyword>
+          <Keyword>LU.LandUse</Keyword>
+        </KeywordList>
+        <CRS>EPSG:27700</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-8.36240875278169</westBoundLongitude>
+          <eastBoundLongitude>2.077715474620025</eastBoundLongitude>
+          <southBoundLatitude>49.76680727257869</southBoundLatitude>
+          <northBoundLatitude>55.81382919378528</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-8.36240875278169" miny="49.76680727257869" maxx="2.077715474620025" maxy="55.81382919378528"/>
+        <BoundingBox CRS="EPSG:27700" minx="0.0" miny="0.0" maxx="656000.0" maxy="658000.0"/>
+        <Style>
+          <Name>inspire:inspire_landuse</Name>
+          <Title>inspire:inspire_landuse</Title>
+          <LegendURL width="185" height="120">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&amp;version=1.3.0&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=inspire%3ALU.LandUse"/>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer queryable="0" opaque="0">
+        <Name>inspire:PS.ProtectedSite</Name>
+        <Title>PS.ProtectedSite</Title>
+        <Abstract/>
+        <KeywordList>
+          <Keyword>PS.ProtectedSite</Keyword>
+          <Keyword>features</Keyword>
+        </KeywordList>
+        <CRS>EPSG:27700</CRS>
+        <CRS>CRS:84</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-8.36240875278169</westBoundLongitude>
+          <eastBoundLongitude>2.077715474620025</eastBoundLongitude>
+          <southBoundLatitude>49.76680727257869</southBoundLatitude>
+          <northBoundLatitude>55.81382919378528</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="CRS:84" minx="-8.36240875278169" miny="49.76680727257869" maxx="2.077715474620025" maxy="55.81382919378528"/>
+        <BoundingBox CRS="EPSG:27700" minx="0.0" miny="0.0" maxx="656000.0" maxy="658000.0"/>
+        <Style>
+          <Name>inspire:inspire_protectedsite</Name>
+          <Title>inspire:inspire_protectedsite</Title>
+          <LegendURL width="22" height="60">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href="https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&amp;version=1.3.0&amp;request=GetLegendGraphic&amp;format=image%2Fpng&amp;width=20&amp;height=20&amp;layer=inspire%3APS.ProtectedSite"/>
+          </LegendURL>
+        </Style>
+        <MinScaleDenominator>1.0</MinScaleDenominator>
+        <MaxScaleDenominator>20000.0</MaxScaleDenominator>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMS_Capabilities>

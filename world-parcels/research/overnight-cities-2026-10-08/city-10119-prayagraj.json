@@ -1,0 +1,121 @@
+{
+  "name": "Prayagraj",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 210,
+  "point": [
+    25.4434058472023,
+    81.8332352295393
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "प्रयागराज भू नक्शा उत्तर प्रदेश आधिकारिक parcel map",
+        "scope": "Search for the official UP cadastral viewer and Prayagraj-specific map coverage.",
+        "result": "Direct HTTP 200/POST inspection of official UP Bhunaksha selectors confirms district 175 Prayagraj, eight tehsils including Allahabad Sadar code 00890, and 175 village options under that tehsil. No exact village at the WUP coordinate or parcel polygon has yet been resolved. The initial viewer page defaults to Agra and was not treated as Prayagraj evidence.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/home/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=175",
+          "https://prayagraj.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80/"
+        ],
+        "executionMethod": "Web search plus read-only GET/POST inspection of official UP Bhunaksha and Bhulekh selector endpoints."
+      },
+      {
+        "language": "English",
+        "query": "Prayagraj cadastral parcel map official Uttar Pradesh Bhulekh Bhu Naksha Allahabad",
+        "scope": "Check English-language official sources and locate district/revenue-map data.",
+        "result": "Official district links point to UP Bhulekh. The UP dashboard identifies Prayagraj district code 175 and tehsils; it reports 3,178 revenue-village records and 2,602 mapsheets, with 10 map sheets remaining to georeference. These are district progress counts, not evidence of the WUP point parcel.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=175",
+          "https://prayagraj.nic.in/service/land-records-record-of-right-ror/"
+        ],
+        "executionMethod": "Web search; English query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Uttar Pradesh BhuNaksha",
+        "operator": "Government of Uttar Pradesh / Board of Revenue; viewer page credits NIC UP State Unit",
+        "homeUrl": "https://upbhunaksha.gov.in/home/",
+        "observation": "Official viewer is live. Its default is Agra, but selector POST confirms Prayagraj district code 175, eight tehsils, and 175 village choices under Allahabad Sadar code 00890. Exact WUP-point village and parcel remain unresolved; no default-Agra geometry is used."
+      },
+      {
+        "name": "Prayagraj cadastral maps and georeferencing dashboard",
+        "operator": "Government of Uttar Pradesh, Bhulekh / Board of Revenue",
+        "homeUrl": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=175",
+        "observation": "City-district-specific dashboard includes Prayagraj and its tehsils and tracks revenue villages, scanned/verified mapsheets and georeferencing. It does not return parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "HTTP 200 viewer shell; default selector is Agra and is not used as target-city evidence."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "HTTP 200 selector response: 75 districts at level 1; district code 175 yields eight tehsils, including Allahabad Sadar 00890; that tehsil yields 175 village choices. Exact village for WUP coordinate is unresolved."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 500,
+        "contentType": "application/json",
+        "observation": "HTTP 500 when requested with district 175 and tehsil 00890 but no village GIS code; this is an extent request, not a parcel lookup. Viewer bundle shows getPlotAtXY requires selected GIS code and projected map coordinates."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=175",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "HTTP 200 Prayagraj-specific district/tehsil digitization report; administrative progress totals, no parcel geometry."
+      },
+      {
+        "url": "https://prayagraj.nic.in/service/land-records-record-of-right-ror/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "HTTP 200 district land-record page links to official UP Bhulekh service."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh BhuNaksha revenue-village cadastral map; Prayagraj district selector and village hierarchy verified.",
+    "verifiedOpenScope": "Official selector confirms Prayagraj district/tehsil/village options; the exact WUP-point village and any full parcel polygon are not verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The viewer map request requires a selected village GIS code and projected map coordinates. A district/tehsil-only request was rejected; the WUP coordinate has not been resolved to a village.",
+  "remainingUncertainty": "Exact revenue village at the WUP point; whether the selected village has georeferenced parcel geometry available through the public viewer.",
+  "nextStep": "Resolve the village at the WUP point, then use the viewer’s selected GIS code and map-coordinate flow to retrieve the full parcel geometry.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10119,
+  "cityId": "wup2025:10119",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.4434058472023,
+    81.8332352295393
+  ],
+  "queueRank": 210,
+  "population2025": 2347869,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [],
+  "registryBasis": "The official UP BhuNaksha selector names Prayagraj district and Allahabad Sadar tehsil and exposes village choices; no parcel geometry was selected."
+}

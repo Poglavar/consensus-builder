@@ -1,0 +1,121 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "conakry",
+  "cityId": "capital:GN:conakry",
+  "name": "Conakry",
+  "country": "Guinea",
+  "code": "GN",
+  "centerLatLon": [
+    9.5092,
+    -13.7122
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Conakry is the special administrative zone with multiple communes; national land and cadastre functions sit with the Ministry of Urbanism, Housing and Territorial Planning / Direction Nationale des Domaines et du Cadastre.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://faolex.fao.org/docs/pdf/gui16265.pdf",
+    "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+    "https://habitat.gov.gn/presentation/"
+  ],
+  "registryBasis": "City-scoped legal evidence includes Guinea’s official urban-land framework referring to the Zone Spéciale de Conakry and cadastral/title documents, plus the public title-registration procedure requiring application to the mayor of the relevant commune and the national Conservation Foncière. This confirms a legal registration mechanism for the Conakry communes, not a current complete or digitized parcel register.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "registry_modernization_no_public_geometry",
+  "findings": "The city-specific legal framework references the Zone Spéciale de Conakry and cadastral/title documentation; the current public service describes title registration via the mayor of the relevant commune and the national conservation authority. The 2026 national modernization statements are future-work evidence, not proof of completed city coverage. Search-result snippets identified ministry and national land-platform pages, but no parcel API/page was directly fetched and no anonymous parcel polygons were verified.",
+  "englishQueries": [
+    "Conakry Guinea public cadastral parcel map GIS land registry official cadastre"
+  ],
+  "localLanguageQueries": [
+    "Conakry cadastre parcellaire géospatial parcelle Guinée SIG foncier officiel",
+    "Guinée Direction Nationale du Cadastre foncier Conakry officiel Ministère Urbanisme habitat",
+    "Conakry parcelle cadastre titre foncier ville Conakry cadastre urbain officiel Guinée"
+  ],
+  "searches": [
+    {
+      "query": "Conakry Guinea public cadastral parcel map GIS land registry official cadastre",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Conakry cadastre parcellaire géospatial parcelle Guinée SIG foncier officiel",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Guinée Direction Nationale du Cadastre foncier Conakry officiel Ministère Urbanisme habitat",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Conakry parcelle cadastre titre foncier ville Conakry cadastre urbain officiel Guinée",
+      "language": "French",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "No anonymous property-parcel endpoint found; SIGMOF/cadastre site reachability has been intermittent and the accessible Landfolio service is for mining rights.",
+  "nextStep": "Ask the Ministry's Direction Nationale des Domaines et du Cadastre whether Conakry's parcel GIS has a public export or feature service.",
+  "coverageAssessment": {
+    "claimedScope": "Legal title/cadastre processes are applicable through the relevant Conakry commune; national digitization agenda is separate.",
+    "verifiedOpenScope": "Legal/administrative mechanism identified; no public city parcel-vector service or point query verified.",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "French",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://faolex.fao.org/docs/pdf/gui16265.pdf",
+      "method": "web.run open PDF and find for Zone Spéciale de Conakry/cadastre",
+      "httpStatus": null,
+      "toolOutcome": "Official 1995 order page content returned; HTTP status not exposed.",
+      "observed": "Order defines cadastral parcel plan/coding elements for the Special Zone of Conakry and lists Kaloum, Dixinn, Ratoma, Matam, and Matoto; this is historic legal evidence, not proof of current digital coverage."
+    },
+    {
+      "url": "https://service-public.gov.gn/ova_sev/certificat-dimmatriculation-de-titre-foncier/",
+      "method": "web.run open and find",
+      "httpStatus": null,
+      "toolOutcome": "Current public-service page content returned; HTTP status not exposed.",
+      "observed": "Title-registration process requires application to the mayor of the relevant commune and the Director General of Conservation Foncière; applies to a parcel but is not an open geometry service."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "GN",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Conakry Guinea public cadastral parcel map GIS land registry official cadastre",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Conakry cadastre parcellaire géospatial parcelle Guinée SIG foncier officiel",
+      "language": "French",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Guinée Direction Nationale du Cadastre foncier Conakry officiel Ministère Urbanisme habitat",
+      "language": "French",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Conakry parcelle cadastre titre foncier ville Conakry cadastre urbain officiel Guinée",
+      "language": "French",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

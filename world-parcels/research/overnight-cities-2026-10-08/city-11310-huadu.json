@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Huadu",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Huadu branch of the Guangzhou Planning and Natural Resources Bureau publishes city-specific real-estate registration service information, and Huadu’s public disclosure catalog lists registration and cadastral-information procedures. This establishes a city-specific registration institution, not an anonymous parcel-vector service.",
+  "registryEvidenceUrls": [
+    "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyjhdqfj/content/post_10462942.html",
+    "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyj/content/mpost_8671953.html",
+    "https://guangdong.tianditu.gov.cn/guangzhou/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11310,
+  "cityId": "wup2025:11310",
+  "centerLatLon": [
+    23.390876400422,
+    113.213993550702
+  ],
+  "rank": 587,
+  "queueRank": 587,
+  "population2025": 882089,
+  "population2025k": 882.089,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous geometry-only feature endpoint or native safe-ID schema was identified on the public Huadu or Guangzhou map pages; no geometry retained.",
+  "scopeLimits": "Huadu government primary pages verify the district natural-resources branch and real-estate registration work, but not an open geometry service. Tianditu Guangzhou provides general map and developer resources; its cadastral enquiry link is a query workflow and was not used. No parcel form or property identifier was submitted.",
+  "remainingUncertainty": "No complete georeferenced parcel polygon with a verified safe native ID was obtained for this city. Public maps or registry workflows may provide visual layers or identity-dependent services that were not queried.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Huadu Guangzhou official real estate registration cadastral map public GIS parcel",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "The Huadu branch of the Guangzhou Planning and Natural Resources Bureau publishes city-specific real-estate registration service information, and Huadu’s public disclosure catalog lists registration and cadastral-information procedures. This establishes a city-specific registration institution, not an anonymous parcel-vector service. Official Huadu disclosure pages document registration services and cadastral information procedures. The Guangzhou Tianditu page links cadastral enquiry and map APIs; its public page warns that API/service calls require developer authorization. No cadastral enquiry, developer sign-in, or parcel-specific request was made. No anonymous feature schema found.",
+        "actualResultUrls": [
+          "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyjhdqfj/content/post_10462942.html",
+          "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyj/content/mpost_8671953.html",
+          "https://guangdong.tianditu.gov.cn/guangzhou/"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "花都区 不动产登记 地籍图 公开 地图 服务 广州市 规划和自然资源局",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "The Huadu branch of the Guangzhou Planning and Natural Resources Bureau publishes city-specific real-estate registration service information, and Huadu’s public disclosure catalog lists registration and cadastral-information procedures. This establishes a city-specific registration institution, not an anonymous parcel-vector service. Official Huadu disclosure pages document registration services and cadastral information procedures. The Guangzhou Tianditu page links cadastral enquiry and map APIs; its public page warns that API/service calls require developer authorization. No cadastral enquiry, developer sign-in, or parcel-specific request was made. No anonymous feature schema found.",
+        "actualResultUrls": [
+          "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyjhdqfj/content/post_10462942.html",
+          "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyj/content/mpost_8671953.html",
+          "https://guangdong.tianditu.gov.cn/guangzhou/"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "cn-huadu-registry-map-review",
+    "name": "Huadu local registry/map source review",
+    "operator": "Guangzhou Municipal Planning and Natural Resources Bureau, Huadu Branch",
+    "url": "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyjhdqfj/content/post_10462942.html",
+    "scope": "Huadu government primary pages verify the district natural-resources branch and real-estate registration work, but not an open geometry service. Tianditu Guangzhou provides general map and developer resources; its cadastral enquiry link is a query workflow and was not used. No parcel form or property identifier was submitted.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature ID obtained.",
+    "geometryStatus": "no_anonymous_geometry_schema_found"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Huadu government primary pages verify the district natural-resources branch and real-estate registration work, but not an open geometry service. Tianditu Guangzhou provides general map and developer resources; its cadastral enquiry link is a query workflow and was not used. No parcel form or property identifier was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    23.390876400422,
+    113.213993550702
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "reason": "No full geometry-only parcel sample and native safe ID were verified."
+  },
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00"
+}

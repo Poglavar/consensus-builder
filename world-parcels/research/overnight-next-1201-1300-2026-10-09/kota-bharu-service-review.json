@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2212-kota-bharu.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Kota Bharu's local land-registry custodian and bounded anonymous public-source/API checks without treating a geographically mismatched cadastral service, timeout, or access denial as citywide parcel absence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official PTJKB and PTG Kelantan sources evidence a local Kota Bharu land-office and state land custodian, with public land-administration entry points. The only public cadastral GIS metadata inspected describes Penang/Seberang Perai in a Cassini CRS; it is not accepted as Kota Bharu coverage. Its exact-WUP-point request timed out. No anonymous Kota Bharu parcel geometry or safe parcel identifier was verified.",
+  "registryAssessment": "Local registry/land-administration custody evidenced by the official Pejabat Tanah dan Jajahan Kota Bharu and Pejabat Pengarah Tanah dan Galian Negeri Kelantan portals. This does not evidence an open registry database, title result, or public Kota Bharu parcel geometry API.",
+  "coverageAssessment": {
+    "claimedScope": "Official PTJKB, PTG Kelantan, JUPEM public information, Kelantan land-revenue portal, and one public ArcGIS cadastral service.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://ptjkb.kelantan.gov.my/index.php?lang=ms",
+      "operator": "Pejabat Tanah dan Jajahan Kota Bharu",
+      "observation": "Official local land-office page identifies Kota Bharu office and links eKadaster, land-status/tax, TeraTanah.KB, and GeoForm services; no anonymous parcel geometry endpoint was observed."
+    },
+    {
+      "url": "https://ptg.kelantan.gov.my/index.php/ms/",
+      "operator": "Pejabat Pengarah Tanah dan Galian Negeri Kelantan",
+      "observation": "Official state land-office portal identifies the Kelantan land custodian in Kota Bharu and provides administrative content."
+    },
+    {
+      "url": "https://www.jupem.gov.my/ebiz/info-korp",
+      "operator": "Jabatan Ukur dan Pemetaan Malaysia (JUPEM)",
+      "observation": "Official JUPEM information describes cadastral survey/mapping responsibilities and electronic web-map provision; it does not itself provide a verified anonymous Kota Bharu parcel response in this attempt."
+    },
+    {
+      "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/MapServer",
+      "operator": "MBSP public ArcGIS host; service copyright identifies JUPEM",
+      "observation": "Public cadastral lot service metadata and schema were reachable, but its CRS/extent explicitly identify Pulau Pinang/Seberang Perai, so it is excluded from Kota Bharu geometry evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kota Bharu Malaysia official cadastral map land registry GIS parcel map government; Kota Bharu Malaysia cadastral map land registry parcel GIS JUPEM PTG Kelantan official",
+      "method": "English-language discovery followed by first-party PTJKB, PTG Kelantan, JUPEM, and public GIS metadata review.",
+      "actualResultUrls": [
+        "https://ptjkb.kelantan.gov.my/",
+        "https://ptg.kelantan.gov.my/index.php/ms/",
+        "https://www.jupem.gov.my/ebiz/info-korp",
+        "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/MapServer"
+      ],
+      "scope": "Find official local land-registry/cadastral custody and safe anonymous parcel geometry; retain no owner, address, titleholder, contact, tax, or account fields."
+    },
+    {
+      "language": "native/local",
+      "query": "Kota Bharu peta kadaster lot tanah JUPEM PTG Kelantan rasmi; Kota Bharu Malaysia peta kadaster rasmi daftar tanah GIS lot tanah",
+      "method": "Separate Malay-language discovery followed by first-party PTJKB, PTG Kelantan, and Kelantan land-revenue review.",
+      "actualResultUrls": [
+        "https://ptjkb.kelantan.gov.my/index.php?lang=ms",
+        "https://ptg.kelantan.gov.my/index.php/ms/",
+        "https://hasiltanah.kelantan.gov.my/",
+        "https://hasiltanah.kelantan.gov.my/uploads/manual_pengguna/manual_v1"
+      ],
+      "scope": "Cari hanya sumber rasmi pendaftaran/urusan tanah dan geometri kadaster tanpa menyimpan data pemilik, alamat, hubungan, cukai atau akaun."
+    }
+  ],
+  "attempts": [
+    "Official PTJKB Malay page reviewed; it identifies the local office and public land services, but no parcel API was exposed.",
+    "Official PTG Kelantan portal fetched anonymously; it identifies the state land custodian in Kota Bharu and provides administrative content, not verified parcel geometry.",
+    "Official Kelantan land-revenue portal fetched anonymously; treated as a procedure/service entry point only, with no owner/title/account lookup attempted.",
+    "Official JUPEM corporate information reviewed; it describes cadastral/web-map responsibilities but did not yield an anonymous Kota Bharu geometry response in this attempt.",
+    "Public ArcGIS cadastral MapServer metadata fetched anonymously; it exposes Lot Sementara, Lot Kadaster 2018, and Lot Kadaster 2009 polygon layers, but the stated CRS and extent are Pulau Pinang/Seberang Perai.",
+    "Public ArcGIS layer schema fetched anonymously; only safe fields were inspected: OBJECTID, LOT, MUKIM, DAERAH, ADUN, PARLIMEN, DAERAH_ID, MUKIM_ID, SEKSYEN_ID, and UPI. No geometry or attributes were retained.",
+    "Exact immutable WUP point [6.11825961704686,102.262854032837] was submitted unchanged to the mismatched service; the request timed out after 20 seconds. This is not a citywide absence result.",
+    "Direct PTJKB homepage command-line request returned HTTP 403; no bypass was attempted. JUPEM cadastral route returned a TLS certificate verification failure; no certificate exception was used.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe owner/address/titleholder field, or personal/tax/account lookup was used."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Attempted unchanged against the public ArcGIS layer, but the request timed out and the service metadata is geographically limited to Pulau Pinang/Seberang Perai. Not evidence of Kota Bharu parcel absence.",
+    "requestEvidence": [
+      {
+        "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/MapServer?f=pjson",
+        "method": "GET; anonymous metadata only",
+        "httpStatus": 200,
+        "contentType": "text/plain; charset=UTF-8",
+        "responseBytes": 8584,
+        "assessment": "Polygon cadastral layers and Penang/Seberang Perai Cassini CRS verified; not Kota Bharu coverage."
+      },
+      {
+        "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/MapServer/3?f=pjson",
+        "method": "GET; anonymous layer metadata only",
+        "httpStatus": 200,
+        "contentType": "text/plain; charset=UTF-8",
+        "responseBytes": 9791,
+        "assessment": "Safe schema verified for Lot Kadaster 2018; no parcel response retained."
+      },
+      {
+        "url": "https://spgis.mbsp.gov.my/geoportal/rest/services/Kadaster/KADASTER/MapServer/3/query?geometry=102.262854032837,6.11825961704686&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,LOT,MUKIM,DAERAH,DAERAH_ID,MUKIM_ID,SEKSYEN_ID,upi&returnGeometry=true&outSR=4326&f=pjson",
+        "method": "GET; anonymous exact-point query; geometry requested only from a safe allowlist",
+        "httpStatus": null,
+        "contentType": null,
+        "responseBytes": null,
+        "assessment": "Timed out after 20 seconds; no response data retained and no absence inference made."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["OBJECTID", "LOT", "MUKIM", "DAERAH", "ADUN", "PARLIMEN", "DAERAH_ID", "MUKIM_ID", "SEKSYEN_ID", "UPI", "geometryType", "spatialReference"],
+  "nextStep": "Hold for serial review. Only a separately verified anonymous Kota Bharu/Kelantan cadastral service with safe ID and geometry should advance runtime qualification.",
+  "remainingUncertainty": "A separate PTJKB/PTG Kelantan/JUPEM public viewer or API may exist outside the reviewed routes; its anonymous accessibility, geographic scope, and safe geometry schema are unknown.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

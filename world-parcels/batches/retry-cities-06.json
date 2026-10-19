@@ -1,0 +1,98 @@
+[
+ {
+  "kind": "city",
+  "key": "kunming",
+  "rank": 151,
+  "name": "Kunming",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 25.04187,
+  "lon": 102.7211,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/kunming.json"
+ },
+ {
+  "kind": "city",
+  "key": "maputo",
+  "rank": 154,
+  "name": "Maputo",
+  "country": "Mozambique",
+  "iso2": "MZ",
+  "lat": -25.89051,
+  "lon": 32.55549,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/maputo.json"
+ },
+ {
+  "kind": "city",
+  "key": "ningbo",
+  "rank": 161,
+  "name": "Ningbo",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 29.91329,
+  "lon": 121.56263,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/ningbo.json"
+ },
+ {
+  "kind": "city",
+  "key": "kollam",
+  "rank": 162,
+  "name": "Kollam",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 9.29818,
+  "lon": 76.42755,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/kollam.json"
+ },
+ {
+  "kind": "city",
+  "key": "thiruvananthapuram",
+  "rank": 166,
+  "name": "Thiruvananthapuram",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 8.50983,
+  "lon": 76.96764,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/thiruvananthapuram.json"
+ },
+ {
+  "kind": "city",
+  "key": "asansol",
+  "rank": 167,
+  "name": "Asansol",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 23.69795,
+  "lon": 86.91141,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/asansol.json"
+ },
+ {
+  "kind": "city",
+  "key": "pyongyang",
+  "rank": 172,
+  "name": "P'yŏngyang (Pyongyang)",
+  "country": "Dem. People's Republic of Korea",
+  "iso2": "KP",
+  "lat": 39.02607,
+  "lon": 125.74382,
+  "previousStatus": "no_verified_sample_candidate_countrywide",
+  "evidenceFile": "research/pyongyang.json"
+ },
+ {
+  "kind": "city",
+  "key": "tamluk",
+  "rank": 173,
+  "name": "Tamluk",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 22.38579,
+  "lon": 87.87234,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/tamluk.json"
+ }
+]

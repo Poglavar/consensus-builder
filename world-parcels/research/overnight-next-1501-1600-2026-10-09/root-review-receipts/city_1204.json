@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1204",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-1204-borama.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/borama-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/borama/localgov.html",
+    "tmp/valhalla-parcel-research/runs/20261010T100248-9079bbf0/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T10:07:16Z",
+  "reason": "Queue code, rank, Somalia identity, exact point, and 363753-person population match. The worker trace records English and Somali searches. Indexed first-party Borama Local Government registration procedure supports local custody, while the saved homepage is a Cloudflare challenge. No native parcel ID or full polygon was received or retained. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are unevidenced. Challenge and login access do not establish citywide absence.",
+  "sourceAdmission": "not_admitted"
+}

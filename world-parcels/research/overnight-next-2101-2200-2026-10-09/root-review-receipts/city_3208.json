@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3208",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-3208-hyesan.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/hyesan-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-review-receipts/source-evidence/city_3208-root-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:19:07Z",
+  "reason": "Hyesan custody unresolved. English and Korean searches are recorded and were independently rerun. Naenara direct TLS verification failed; no first-party parcel response, safe native ID, or full polygon exists. This access failure is not citywide absence. No adapter qualification, source binding, or headed Details verification; held.",
+  "registryFound": null,
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

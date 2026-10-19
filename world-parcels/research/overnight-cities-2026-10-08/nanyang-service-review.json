@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-nanyang-official-local-registry-review",
+  "purpose": "Service review for WUP2025 rank 678 Nanyang (city code 9682); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Official Nanyang Real Estate Registration Service Center portal establishes a city-local registration institution and public service remit.",
+  "sourceUrl": "https://fcglzx.nanyang.gov.cn/",
+  "registryFound": true,
+  "registryBasis": "The Nanyang Real Estate Registration Service Center and the Nanyang Natural Resources and Planning Bureau publish city-local real-estate registration services. The official guidance limits record queries to rights holders or interested parties and requires a stated reason and identity documents; no anonymous parcel geometry service was verified.",
+  "officialSources": [
+    {
+      "url": "https://fcglzx.nanyang.gov.cn/",
+      "observation": "Official Nanyang Real Estate Registration Service Center portal establishes a city-local registration institution and public service remit."
+    },
+    {
+      "url": "https://nygtzy.nanyang.gov.cn/ztzl/bdcdj/",
+      "observation": "Official Nanyang Natural Resources and Planning Bureau real-estate registration section."
+    },
+    {
+      "url": "https://fcglzx.nanyang.gov.cn/2024/05-31/410740.html",
+      "observation": "Official service guidance states access conditions for registration-record queries; no record query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nanyang Henan official real estate registration center cadastral parcel map public GIS",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "Official city registration-center and natural-resources pages confirm local registry services. The reviewed sources describe rights-holder/interested-party query limits; no safe anonymous parcel geometry route was found.",
+      "actualResultUrls": [
+        "https://fcglzx.nanyang.gov.cn/",
+        "https://nygtzy.nanyang.gov.cn/ztzl/bdcdj/",
+        "https://fcglzx.nanyang.gov.cn/2024/05-31/410740.html"
+      ],
+      "executionMethod": "Official-source search and public-page review."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "南阳市 不动产登记中心 地籍图 查询 地图 官方 南阳市自然资源和规划局",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "南阳市不动产登记服务中心及市自然资源和规划局公开登记服务信息。登记资料查询限权利人或利害关系人并要求理由及身份证明；未验证匿名宗地几何服务。",
+      "actualResultUrls": [
+        "https://fcglzx.nanyang.gov.cn/",
+        "https://nygtzy.nanyang.gov.cn/ztzl/bdcdj/",
+        "https://fcglzx.nanyang.gov.cn/2024/05-31/410740.html"
+      ],
+      "executionMethod": "Official-source search and public-page review."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "Reviewed official city registration pages did not expose an anonymous full-parcel geometry endpoint. The documented record-query path is restricted to rights holders/interested parties and identity documentation.",
+    "publicHtmlFetched": false,
+    "publicHtmlRoutesInspected": [],
+    "advertisedMapLinkFound": false
+  },
+  "requestEvidence": [
+    {
+      "method": "official-source review",
+      "observation": "Official evidence and access limits are summarized above. No property-specific query or non-public service was used; no HTTP status or geometry/schema is asserted."
+    },
+    {
+      "method": "web open",
+      "observation": "Official city registration-center and natural-resources pages were surfaced in search, but page fetches returned 403 in the web retrieval tool. The search results and official URLs are recorded; no direct GET status is asserted."
+    }
+  ],
+  "technicalBlocker": "Reviewed official city registration pages did not expose an anonymous full-parcel geometry endpoint. The documented record-query path is restricted to rights holders/interested parties and identity documentation.",
+  "sampleDisposition": "No safe anonymous full polygon route verified; zero polygons retained.",
+  "remainingUncertainty": "A separate public planning map may exist, but no city-specific anonymous parcel feature schema or geometry route was verified."
+}

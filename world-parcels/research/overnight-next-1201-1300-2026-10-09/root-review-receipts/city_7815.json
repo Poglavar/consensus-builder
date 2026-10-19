@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7815",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7815-bhilwara.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/bhilwara-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:11:13Z",
+  "identityReview": "Code 7815, rank 1288, India/IN, point [25.3436339514634,74.6310689921485], and 434406 persons match the immutable queue.",
+  "searchReview": "The paired files record separate English and Hindi queries with result URLs. Rajasthan's first-party RajKaj office report identifies Revenue Tehsil, Bhilwara and Inspector Land Record roles, supporting local custody but not parcel geometry or citywide coverage.",
+  "firstPartyEvidenceUrl": "https://rajkaj.rajasthan.gov.in/reports/PAR-Report-of-offices-by-appointing-dept-and-office.php?AppointDeptId=3000307&OfficeId=3024007",
+  "sampleReview": "No full polygons or unsafe identity attributes are retained; the Bhu-Naksha request timed out, which establishes no absence.",
+  "admissionReview": "No safe native-ID polygon response, fresh adapter read, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel proof. No admission or shared runtime/catalog/report edit."
+}

@@ -1,0 +1,51 @@
+{
+  "cityRecord": "city-11776-fengshun.json",
+  "cityCode": 11776,
+  "queueRank": 2671,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "route": "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/index.html",
+      "method": "GET/search open",
+      "outcome": "Official Fengshun County government Natural Resources Bureau page was found in first-party search. It documents the local custodian and responsibilities for unified registration, cadastral/right-enquiry work, real-estate surveying, and geospatial information, but no parcel viewer or parcel feature API was exposed in the inspected result."
+    },
+    {
+      "route": "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/gtzhl/content/mpost_2738896.html",
+      "method": "GET/search open",
+      "outcome": "Official 2025 Fengshun real-estate registration announcement was found. It references a parcel map attachment and registration procedure, but returns no safe machine-readable native parcel ID plus full polygon. The announcement is registry evidence, not a public parcel integration endpoint."
+    },
+    {
+      "route": "https://www.fengshun.gov.cn/attachment/0/197/197474/2684552.pdf",
+      "method": "GET/search open",
+      "outcome": "Official Fengshun registration-announcement attachment was found in search and contains tabular registration information. No geometry API response was obtained, and no unsafe owner/title/address fields were requested or retained."
+    },
+    {
+      "route": "https://www.fengshun.gov.cn/zfjg/gzbm/zrzyj/index.html",
+      "method": "direct GET via curl",
+      "outcome": "Request timed out during DNS/connection resolution after 20 seconds in the research environment. No retry with credentials, private access, or TLS bypass was attempted. This route failure is not evidence of citywide absence."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not qualified",
+    "reason": "No public parcel feature response was obtained; native field schema, CRS, pagination, stable native identity, and geometry encoding could not be verified."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel polygon geometry",
+    "source CRS only when explicitly returned"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "The exact WUP point [23.7609384160715, 116.170235707535] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel hit, map-extent result, or citywide absence claim is made.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, personal, or other unsafe fields were requested or retained.",
+    "A local registry custodian is evidenced by the official county government bureau page, but no public parcel integration endpoint is qualified.",
+    "No retained GeoJSON sample was created because no safe native parcel ID plus full polygon was obtained.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "Fengshun may have cadastral data in internal or restricted real-estate-registration systems, or in a public map route not discoverable from the checked official pages. The direct request timeout and absence of a discovered feature endpoint are route limitations, not evidence that Fengshun lacks cadastral coverage."
+}

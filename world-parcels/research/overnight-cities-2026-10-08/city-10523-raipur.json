@@ -1,0 +1,116 @@
+{
+  "name": "Raipur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 345,
+  "point": [
+    21.2557647248943,
+    81.6327981928147
+  ],
+  "population2025": 1478688,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local registration/land-record evidence was found, but no anonymous public parcel polygon was verified for this locator. No full geometry or owner/address data is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Raipur district links the Chhattisgarh BhuNaksha land-record service; official municipal sources document city property-tax/GIS-based tax administration and municipal map services. This confirms local property/land-record administration, not public point-specific parcel coverage.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "No anonymous geometry-only endpoint was verified. The selected village extent returned without a declared CRS, preventing a reliable comparison with the WUP point. Plot-info and property-tax paths may expose sensitive owner/property details and were not queried.",
+  "remainingUncertainty": "Whether this locator lies in revenue village Raipura or another adjacent mapped area; whether any anonymous vector polygon service exists for the exact point.",
+  "nextStep": "Resolve the exact revenue-village/cadastral area using a CRS-declared public map, then query only an anonymous geometry-only endpoint with safe IDs if available.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Raipur Chhattisgarh official cadastral parcel map Bhunaksha land records GIS municipal city",
+        "result": "Official Raipur district links the state BhuNaksha service; official municipal GIS pages list municipal and ward boundaries. State viewer exposes village-map rendering and interactive plot-info paths but no safe geometry-only vector endpoint. The municipal property-tax interface asks for owner/property identifiers and was not queried.",
+        "method": "Separate English-language search and static viewer/source review."
+      },
+      {
+        "language": "Hindi",
+        "query": "रायपुर छत्तीसगढ़ आधिकारिक भू नक्शा खसरा भू-अभिलेख नगर निगम cadastral map",
+        "result": "रायपुर जिला आधिकारिक भू-नक्शा सेवा को जोड़ता है और नगर निगम मानचित्र में सीमा/वार्ड परतें हैं। राज्य दर्शक में गाँव/प्लॉट मानचित्र उपलब्ध हैं, पर सार्वजनिक पूर्ण-बहुभुज सेवा सत्यापित नहीं हुई। संपत्ति-कर खोज में मालिक/संपत्ति पहचान की जानकारी माँगी जाती है, इसलिए उसका उपयोग नहीं किया गया।",
+        "method": "Separate Hindi-language search and official district/municipal/state viewer review."
+      },
+      {
+        "language": "Hindi",
+        "query": "रायपुर भू नक्शा आधिकारिक रायपुरा रायपुर तहसील भूलेख छत्तीसगढ़",
+        "result": "सार्वजनिक चयनकर्ताओं में रायपुर तहसील, रायपुर-1-रायपुरा राजस्व मंडल और रायपुरा ग्राम मिला। प्राप्त ग्राम-सीमा अनुरोध में CRS स्पष्ट नहीं था, इसलिए WUP बिंदु से तुलना नहीं की गई।",
+        "method": "Separate Hindi-language focused search and anonymous selector/extent calls."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://raipur.gov.in/service/भू-नक्शा/",
+        "observation": "Official Raipur district BhuNaksha service page; identifies Collectorate (Land Records), Raipur and links the state viewer."
+      },
+      {
+        "url": "https://revenue.cg.nic.in/bhunaksha/",
+        "observation": "Official Chhattisgarh revenue department BhuNaksha viewer."
+      },
+      {
+        "url": "https://www.nagarnigamraipur.nic.in/en/municipal-boundaries",
+        "observation": "Official Raipur Municipal Corporation map page lists municipal boundaries."
+      },
+      {
+        "url": "https://www.nagarnigamraipur.nic.in/",
+        "observation": "Official municipal corporation portal; map index lists municipal/ward GIS data and property tax services."
+      },
+      {
+        "url": "https://nagarnigamraipur.nic.in/sites/default/files/rmctender-rfprevenue.pdf",
+        "observation": "Official municipal GIS-based tax and fee collection procurement document; property administration context, not public parcel geometry."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The official CG BhuNaksha client/config and JavaScript were reviewed. Selectors returned district 44 Raipur, tehsil 07 Raipur, RI 03 रायपुर-1-रायपुरा, and revenue village 221 रायपुरा (hasData=true). getVVVVExtentGeoref returned bounds x=916697..919933, y=1022840..1026261 with request srs=0 and no declared CRS; it cannot be compared safely with the WUP locator. Viewer getPlotAtXY returns interactive plot info and its OP=4 handler can return plot data without a safe field allowlist, so neither was queried. WMS layers render maps and do not provide full vector parcel geometry. Municipal map service reviewed exposes boundaries/wards; property-tax searches require property/owner identifiers and were not used.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no safe anonymous full-vector geometry query",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://raipur.gov.in/service/भू-नक्शा/",
+    "https://revenue.cg.nic.in/bhunaksha/",
+    "https://www.nagarnigamraipur.nic.in/en/municipal-boundaries",
+    "https://www.nagarnigamraipur.nic.in/",
+    "https://nagarnigamraipur.nic.in/sites/default/files/rmctender-rfprevenue.pdf"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Raipur district links the Chhattisgarh BhuNaksha land-record service; official municipal sources document city property-tax/GIS-based tax administration and municipal map services. This confirms local property/land-record administration, not public point-specific parcel coverage.",
+    "verifiedOpenScope": "No anonymous geometry-only endpoint was verified. The selected village extent returned without a declared CRS, preventing a reliable comparison with the WUP point. Plot-info and property-tax paths may expose sensitive owner/property details and were not queried.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Raipur local registry/map evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://raipur.gov.in/service/भू-नक्शा/",
+    "scope": "Official Raipur district links the Chhattisgarh BhuNaksha land-record service; official municipal sources document city property-tax/GIS-based tax administration and municipal map services. This confirms local property/land-record administration, not public point-specific parcel coverage."
+  },
+  "wupCityCode": 10523,
+  "cityId": "wup2025:10523",
+  "queueRank": 345,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    21.2557647248943,
+    81.6327981928147
+  ],
+  "rootReviewedAt": "2026-10-08T22:44:29.461431+00:00"
+}

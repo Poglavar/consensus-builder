@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-6066-qu-ng-ng-i.json",
+  "schemaVersion": "1.0",
+  "cityCode": 6066,
+  "queueRank": 1792,
+  "city": "Quảng Ngãi",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Quảng Ngãi sources evidence local land-information and cadastral/database custody and an advertised city planning GIS with parcel lookup by map sheet and parcel number. The viewer host was unreachable from this environment and no anonymous safe ID-plus-geometry response was verified. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Vietnamese discovery queries, exact text and actual result URLs are recorded in city-6066-qu-ng-ng-i.json.",
+  "requestOutcomes": "Official source pages/search results were inspected. Direct GET to the advertised city GIS host failed DNS resolution; first-party web fetch returned 502. No JavaScript/configuration, service endpoint, schema, CRS or parcel feature response was obtained.",
+  "attemptedRoutes": [
+    {"route": "official provincial land-information portal", "url": "https://quangngai.gov.vn/thong-tin-dat-dai", "outcome": "Official land-information sections found; no open parcel feature route exposed"},
+    {"route": "official city planning GIS viewer", "url": "https://quyhoach.thanhpho.quangngai.gov.vn/", "outcome": "Advertised parcel lookup found in discovery; direct request DNS failure and web fetch 502; viewer/API unverified"},
+    {"route": "official provincial cadastral/database progress report", "url": "https://quangngai.gov.vn/tin-tuc/hoat-dong-lanh-dao-tinh/day-nhanh-cong-tac-do-dac-lap-ban-do-dia-chinh-lap-ho-so-dia-chinh-tai-40-xa-phia-tay.html", "outcome": "Cadastral surveying, registration records and database construction evidenced; no downloadable public parcel layer"},
+    {"route": "public Quảng Ngãi planning-app listing", "url": "https://play.google.com/store/apps/details?hl=vi&id=com.viettel.gis.qni", "outcome": "Parcel-plan lookup capability described; no public API or safe feature response"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [15.1182549299497, 108.803234138844] was preserved; no exact-point hit/miss inference was made.",
+    "Local cadastral/land-information custody is evidenced, but no open parcel map/API with citywide coverage was established.",
+    "No parcel geometry, stable native parcel identity, source schema or parcel CRS was retrieved or retained.",
+    "The advertised planning viewer and app listing are not treated as proof of an accessible parcel feature service.",
+    "No owner, address, contact, titleholder, personal, tax/account or other unsafe fields were requested or retained.",
+    "Timeout, DNS failure, HTTP 502, login wall or unusable UI would not prove citywide absence; this packet makes no such inference.",
+    "Packet completion does not qualify or admit a runtime adapter; serial review remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public parcel geometry query reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Quảng Ngãi local/provincial land-information and cadastral custody plus advertised city planning GIS", "verifiedOpenScope": "Custody/progress evidence and advertised viewer only", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current viewer availability, access controls, API route, layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, legal title or completeness.",
+  "retainedSample": null
+}

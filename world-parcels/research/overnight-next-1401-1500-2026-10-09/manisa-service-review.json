@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1496-manisa.json",
+  "purpose": "Document first-party TKGM discovery and bounded anonymous parcel-geometry access for Manisa.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "TKGM's public Parsel Sorgu/MEGSİS service is a verified cadastral source for Manisa at the exact WUP point. One safe-ID polygon was retained; the result is a bounded sample and does not establish citywide coverage or production integration.",
+  "registryAssessment": "Local parcel record verified through the national TKGM cadastral service: Manisa / Yunusemre / Yenimahalle / ada 1380 / parsel 1.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "Official TKGM page describes Parsel Sorgu as its public parcel-location and basic cadastral-information service."
+    },
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "observation": "Current official viewer loaded as a public page presenting Parsel Sorgu v2; no login was attempted."
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.6210645399539/27.3994264175019/",
+      "observation": "Anonymous HTTPS GET with the public viewer Origin/Referer headers returned HTTP 200 JSON Feature geometry and safe parcel attributes."
+    },
+    {
+      "url": "https://tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+      "observation": "Official TKGM MEGSİS description identifies centralized cadastral map, coordinate, and parcel-geometry data and public WMS/WFS-style sharing."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Manisa Turkey official cadastral parcel map TKGM Parsel Sorgu MEGSIS",
+      "result": "Found the official TKGM Parsel Sorgu/MEGSİS service and current v2 viewer; the exact-point API route returned one Manisa parcel feature.",
+      "actualResultUrls": ["https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama", "https://parselsorguv2.tkgm.gov.tr/", "https://tkgm.gov.tr/projeler/tamamlanan-projeler/megsis"]
+    },
+    {
+      "language": "Turkish",
+      "query": "Manisa Türkiye resmi kadastro parsel sorgu haritası TKGM MEGSİS",
+      "result": "Resmî TKGM hizmeti ve Manisa exact-point parcel response doğrulandı; sonuç Yenimahalle, Yunusemre, ada 1380, parsel 1 olarak döndü.",
+      "actualResultUrls": ["https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama", "https://parselsorguv2.tkgm.gov.tr/", "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.6210645399539/27.3994264175019/"]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "method": "GET",
+      "result": "Web search exposed the current official viewer; direct tool fetch returned 502, while the viewer's API route was independently identified and tested."
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.6210645399539/27.3994264175019/",
+      "method": "GET",
+      "requestHeaders": ["Accept: application/json", "Referer: https://parselsorgu.tkgm.gov.tr/", "Origin: https://parselsorgu.tkgm.gov.tr"],
+      "httpStatus": 200,
+      "result": "Returned JSON Feature with Polygon geometry and safe cadastral attributes: ilceAd Yunusemre, ilAd Manisa, mahalleAd Yenimahalle, ilceId 6166, mahalleId 149943, adaNo 1380, parselNo 1."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "sourceFieldsObserved": ["ilId", "ilceId", "mahalleId", "adaNo", "parselNo", "ilAd", "ilceAd", "mahalleAd", "alan", "nitelik", "pafta", "geometry"],
+    "retainedIdentity": "TR-67-6166-149943-1380-1",
+    "retainedIdentityProvenance": "Composite native cadastral identity from ilId=67, ilceId=6166, mahalleId=149943, adaNo=1380, parselNo=1; not an internal row number."
+  },
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "TKGM-MEGSIS-coordinate-query",
+    "sampleCount": 1,
+    "sampleFile": "manisa-parcel-sample.geojson",
+    "nativeId": "TR-67-6166-149943-1380-1",
+    "nativeIdField": "composite ilId/ilceId/mahalleId/adaNo/parselNo",
+    "exactWupPointTest": "Returned one polygon containing the requested point area; no coordinate shift was used.",
+    "requestEvidence": [{"httpStatus": 200, "contentType": "application/json", "responseBytes": 577, "tlsVerification": "default"}]
+  },
+  "coverageAssessment": {
+    "claimedScope": "TKGM Parsel Sorgu/MEGSİS provides public parcel query and centralized cadastral geometry for Turkey.",
+    "verifiedOpenScope": "One anonymous exact-coordinate parcel feature in Manisa was verified; schema fields and returned polygon were observed.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "remainingUncertainty": "The endpoint response does not itself document a formal CRS object; WGS84 longitude/latitude is recorded from the coordinate-query contract and observed GeoJSON order. One exact-point sample cannot prove citywide completeness, update cadence, or production reliability.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "CHH",
+ "regionName": "Chihuahua",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none; Mexican cadastre is state/municipal and no state-wide open layer was found",
+ "subregionsVerified": [],
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "catastro.chihuahua.gob.mx, sicatastro.chihuahua.gob.mx, mapas.imip.org.mx, sitio.chihuahuacapital.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / no connection"
+  },
+  {
+   "url": "https://chihuahua.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "state portal only"
+  },
+  {
+   "url": "https://www.imip.org.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Ciudad Juarez IMIP portal, not inspected for services"
+  },
+  {
+   "url": "https://catastro.juarez.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "not Ciudad Juarez, Chihuahua: JS points to Oaxaca de Juarez resources; its ArcGIS layers return 499 Token Required"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "State catastro and Chihuahua city hosts unreachable; ArcGIS Online/Hub searches found only basemap web maps, no parcel layers. Ciudad Juarez (IMIP) not tested for a service.",
+ "nextStep": "Inspect IMIP Ciudad Juarez viewer JS; retry Chihuahua state catastro."
+}

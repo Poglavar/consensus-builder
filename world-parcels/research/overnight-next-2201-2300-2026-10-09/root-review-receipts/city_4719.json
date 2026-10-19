@@ -1,0 +1,13 @@
+{
+  "taskId": "city:4719",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-4719-nador.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/nador-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T03:12:57.281810Z",
+  "reason": "Agency-indexed first-party ANCFCC directory lists Nador conservation and cadastre offices, supporting institutional custody; direct official GET now returns 403, so no viewer or parcel response was verified. No native ID, unchanged polygon, or independent adapter qualification exists. City remains held; the access wall is not citywide absence.",
+  "admission": "held; no runtime/catalog/report change"
+}

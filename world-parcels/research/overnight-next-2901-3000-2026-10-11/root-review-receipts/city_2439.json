@@ -1,0 +1,30 @@
+{
+  "taskId": "city:2439",
+  "decision": "held",
+  "checkedAt": "2026-10-11T22:37:52.869460Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-2439-b-c-giang.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/b-c-giang-service-review.json"
+  ],
+  "reason": "The provincial land-information GIS viewer grounds a local service/custody candidate, but direct viewer requests timed out and no anonymous native-ID polygon response, schema, CRS or bound source was obtained. Timeout is not parcel absence.",
+  "identitySourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "checks": {
+    "immutableQueueIdentity": "matched original WUP 2025 archive and ranked roster",
+    "englishAndLocalQueries": "present in packet with result URLs",
+    "durableFullPolygons": 0,
+    "nativeIdRead": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced",
+    "runtimeAdmission": false
+  },
+  "sourceUrlsReviewed": [
+    "https://gis.bacgiang.gov.vn/datdaiv3.aspx?orgcode=bacgiangcsdl"
+  ],
+  "effectiveRegistryFoundForQueuedCity": true
+}

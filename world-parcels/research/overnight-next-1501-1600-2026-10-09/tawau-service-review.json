@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3480-tawau.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Sabah Lands and Surveys sources evidence local cadastral custody and Tawau survey-office administration. JTUWMA Pro is described as registered/internal access to detailed cadastral information; no anonymous safe parcel-ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "The Sabah Lands and Surveys Department is the relevant state cadastral custodian and its official administration page lists Pejabat Juruukur Daerah Tawau. Official Sabah gazette material also records Tawau survey lot and plan references. These establish registry custody, not open citywide geometry.",
+  "officialPrimarySources": [
+    {"url": "https://www.jtu.sabah.gov.my/", "observation": "Official Sabah Lands and Surveys Department portal; advertises E-Commerce for land-survey products and JTUWMA Pro for cadastral-related information."},
+    {"url": "https://www.jtu.sabah.gov.my/homepage3/index.cfm?action=jtu2&lang=bm&section=administration", "observation": "Official Malay administration page lists Pejabat Juruukur Daerah Tawau under the department's survey and mapping administration."},
+    {"url": "https://eservice.hq.jtu.my/SLP/", "observation": "Official JTU e-Service page says JTUWMA Pro shares cadastral information according to security access levels and requires registered users; E-Commerce is the public purchase channel for land and survey products."},
+    {"url": "https://www.sabah.gov.my/gazette/docs/003137.pdf", "observation": "Official Sabah Gazette records a Tawau survey lot and plan number for a government land reserve; this is registry evidence, not a public parcel geometry feed."},
+    {"url": "https://explorer.digitalsabah.gov.my/map", "observation": "Official Sabah GeoExplorer public map was reachable and contains general geospatial/facility functionality; its retrieved JavaScript exposed facility/polling routes, not a cadastral parcel layer."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://www.jtu.sabah.gov.my/",
+    "observedTechnology": "JTU portal service catalog; JTUWMA Pro is a registered-user web-map application. Sabah GeoExplorer is a separate Cesium/Laravel public map.",
+    "observedControls": ["JTU E-Commerce", "JTUWMA Pro", "Quit Rent Enquiry", "Land Acquisition Enquiry", "Land Development", "Info PT"],
+    "schemaAndCrs": "Not verified from a successful parcel-service response.",
+    "nativeFieldNames": "Not retained; no successful parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.jtu.sabah.gov.my/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct curl request was reset before a response body was retrieved; web search cache confirmed the official service catalog."},
+    {"url": "https://portal.jtu.my/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct request timed out; no viewer HTML, JavaScript configuration, API route, or layer response was retrieved."},
+    {"url": "https://eservice.hq.jtu.my/SLP/", "method": "GET", "normalTlsVerification": true, "result": "Official login/service landing page identified through first-party search; no login was attempted and no private or token-bearing route was accessed."},
+    {"url": "https://pro.jtuwma.net/", "method": "GET", "normalTlsVerification": true, "result": "Bounded direct request did not yield a usable anonymous cadastral response; no login, credential, CAPTCHA, or challenge bypass was attempted."},
+    {"url": "https://explorer.digitalsabah.gov.my/map", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 public GeoExplorer HTML retrieved. Its current JavaScript exposed generic /api/facility/{id}/data and /api/load/poll routes; no cadastral parcel layer or parcel schema was advertised or queried."},
+    {"url": "https://services3.arcgis.com/JIcLMRci6mdcGKgX/ArcGIS/rest/services/Administrative_Boundaries/FeatureServer/0?f=pjson", "method": "GET", "normalTlsVerification": true, "result": "Public ArcGIS administrative-boundary metadata was found through first-party-linked discovery; it is district-boundary polyline data, not parcel geometry, so no feature query or sample was retained."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No WUP-point parcel query was submitted because no anonymous parcel layer and safe request shape were verified."},
+  "coverageAssessment": {"claimedScope": "Sabah Lands and Surveys Department custody, Tawau district survey-office administration, and official JTU cadastral/survey service channels.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Exact JTUWMA viewer configuration, layer schema, CRS, native parcel identity, anonymous query shape, and Tawau coverage remain unverified. Registered-user access, timeout, reset, or a general non-parcel map is not evidence of no cadastral records.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

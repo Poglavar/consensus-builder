@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<!-- Buildings: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: kako-koristiti-zgrade.html. -->
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Buildings · Consensus Builder
+  </title>
+  <meta content="Use freeform for an exact footprint. Use a block, row or detached-house rule to describe what can or must be built on the selected land." name="description"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+  <link rel="canonical" href="https://urbangametheory.xyz/how-to-use-buildings.html" />
+  <link rel="alternate" hreflang="en" href="https://urbangametheory.xyz/how-to-use-buildings.html" />
+  <link rel="alternate" hreflang="hr" href="https://urbangametheory.xyz/kako-koristiti-zgrade.html" />
+  <link rel="alternate" hreflang="x-default" href="https://urbangametheory.xyz/how-to-use-buildings.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Consensus Builder" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="Buildings · Consensus Builder" />
+  <meta property="og:description" content="Use freeform for an exact footprint. Use a block, row or detached-house rule to describe what can or must be built on the selected land." />
+  <meta property="og:url" content="https://urbangametheory.xyz/how-to-use-buildings.html" />
+  <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@UrbanGameTheory" />
+  <meta name="twitter:title" content="Buildings · Consensus Builder" />
+  <meta name="twitter:description" content="Use freeform for an exact footprint. Use a block, row or detached-house rule to describe what can or must be built on the selected land." />
+  <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta name="twitter:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Buildings","description":"Use freeform for an exact footprint. Use a block, row or detached-house rule to describe what can or must be built on the selected land.","inLanguage":"en","url":"https://urbangametheory.xyz/how-to-use-buildings.html","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","isPartOf":{"@type":"WebSite","name":"Consensus Builder","url":"https://urbangametheory.xyz/"},"publisher":{"@type":"Organization","name":"Urban Game Theory","url":"https://urbangametheory.xyz/"}}</script>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Buildings
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=en">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Back to the map
+   </a>
+   <nav aria-label="Language" class="cb-page-header__lang cb-segmented">
+    <a class="cb-segmented__option" href="kako-koristiti-zgrade.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a aria-current="page" class="cb-segmented__option" href="how-to-use-buildings.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Guide navigation" class="sidebar">
+   <div class="sidebar-links">
+    <a class="btn btn-quiet" href="how-to-use.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     How to use
+    </a>
+    <a aria-current="page" class="btn btn-quiet" href="how-to-use-buildings.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Buildings
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-park-square.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parks, squares and lakes
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-reparcellization.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Land readjustment
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-road.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Roads and tracks
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-views.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Views and comparisons
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     On this page
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#freeform">
+      Freeform building
+     </a>
+     <a class="btn btn-quiet" href="#rules">
+      Rule limits
+     </a>
+     <a class="btn btn-quiet" href="#block">
+      Block
+     </a>
+     <a class="btn btn-quiet" href="#row">
+      Row houses
+     </a>
+     <a class="btn btn-quiet" href="#detached">
+      Detached houses
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro">
+     <span class="eyebrow">
+      Learn by doing
+     </span>
+     <h2>
+      Draw a building, or define a rule
+     </h2>
+     <p>
+      Use freeform for an exact footprint. Use a block, row or detached-house rule to describe what can or must be built on the selected land.
+     </p>
+    </div>
+    <section class="guide-section" id="freeform">
+     <h2>
+      Design a house by hand
+     </h2>
+     <figure class="howto-video" id="watch-house">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Watch the workflow
+       </span>
+       <span class="video-duration">
+        0:34
+       </span>
+      </div>
+      <video aria-describedby="caption-house" aria-label="Design a house" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-01-house-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-01-house-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-01-house-review.mp4">
+        Open the video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-house">
+       <strong>
+        Design a house.
+       </strong>
+       Reshape the footprint, set its height and choose the surroundings.
+       <a class="cb-link" href="videos/howto/consensus-builder-01-house-review.mp4">
+        Open the video
+       </a>
+      </figcaption>
+     </figure>
+     <ol class="steps">
+      <li class="step">
+       <h3>
+        Start a freeform building
+       </h3>
+       <p>
+        Select the parcel or site and choose
+        <span class="ui-label">
+         Freeform
+        </span>
+        . The
+        <span class="ui-label">
+         Freeform building
+        </span>
+        window shows a map, a live 3D preview and the building list. Use the add, rename and delete controls to work with several buildings.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Shape the footprint on the map
+       </h3>
+       <p>
+        Drag the building to move it. Drag a vertex to reshape it; click an edge to add a vertex. Select a vertex and use the trash control or
+        <span class="ui-label">
+         Delete / Backspace
+        </span>
+        to remove it. Rotate the footprint in 5° steps. Keep the footprint within the site.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Set height and surroundings
+       </h3>
+       <p>
+        Adjust
+        <span class="ui-label">
+         Height
+        </span>
+        and check the 3D preview.
+        <span class="ui-label">
+         Surroundings
+        </span>
+        offers
+        <span class="ui-label">
+         Leave as they are
+        </span>
+        ,
+        <span class="ui-label">
+         Paved
+        </span>
+        or
+        <span class="ui-label">
+         Green
+        </span>
+        for the ground around all buildings in this proposal. Existing buildings on the selected parcels are cleared by this design either way.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Read the geometry statistics
+       </h3>
+       <p>
+        The card reports parcel area, building footprint, site coverage (kig), above-ground gross floor area (GBP) and kin. These are calculated from the drawn geometry and height, with a 3 m storey assumption. Finish with Done and inspect the proposal on the map.
+       </p>
+      </li>
+     </ol>
+    </section>
+    <section class="guide-section" id="rules">
+     <h2>
+      What the rule compels
+     </h2>
+     <p>
+      <span class="ui-label">
+       What the rule compels
+      </span>
+      separates a building requirement from a building limit. The controls are shared by Block, Row houses and Detached houses.
+     </p>
+     <div class="table-scroll">
+      <table class="tool-table">
+       <thead>
+        <tr>
+         <th scope="col">
+          Rule
+         </th>
+         <th scope="col">
+          Meaning
+         </th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td>
+          At most this
+         </td>
+         <td>
+          Sets a ceiling. Owners do not have to build the full envelope.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Between a minimum and this
+         </td>
+         <td>
+          Requires a minimum and permits development up to the ceiling.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Exactly this
+         </td>
+         <td>
+          Requires the full specified envelope.
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+     <p>
+      Minimum plot size excludes smaller plots; they are shown hatched and need to be merged before building under that rule. A preview is an example of what could be built, so check the permitted and guaranteed figures as well as the shapes.
+     </p>
+    </section>
+    <section class="guide-section" id="block">
+     <h2>
+      Block and existing buildings
+     </h2>
+     <p>
+      <span class="ui-label">
+       Block
+      </span>
+      opens
+      <span class="ui-label">
+       Urban rule
+      </span>
+      . Set the setback, wing depth (
+      <span class="ui-label">
+       Building width
+      </span>
+      ), height, chamfer and outline simplification. Reduce the depth if the courtyard disappears. Where gap and wing controls are enabled, drag their handles along the perimeter.
+     </p>
+     <p>
+      Use
+      <span class="ui-label">
+       Edit shape manually
+      </span>
+      to drag outline vertices, add points on edges or delete a selected point.
+      <span class="ui-label">
+       Back to sliders
+      </span>
+      discards the manual outline after confirmation.
+      <span class="ui-label">
+       Upload GeoJSON
+      </span>
+      imports a polygon. A range rule also exposes minimum height and the required building depth from the street.
+     </p>
+     <p>
+      <span class="ui-label">
+       Based on existing buildings
+      </span>
+      uses the existing footprints instead of drawing a new block. Choose a proposed height in floors or additional floors and set floor height. This mode needs building data for the selected land.
+     </p>
+    </section>
+    <section class="guide-section" id="row">
+     <h2>
+      Row houses
+     </h2>
+     <figure class="howto-video" id="watch-row">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Watch the workflow
+       </span>
+       <span class="video-duration">
+        0:32
+       </span>
+      </div>
+      <video aria-describedby="caption-row" aria-label="Design row houses" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-08-row-houses-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-08-row-houses-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-08-row-houses-review.mp4">
+        Open the video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-row">
+       <strong>
+        Design row houses.
+       </strong>
+       Adjust the row, reshape its footprint and check it in context.
+       <a class="cb-link" href="videos/howto/consensus-builder-08-row-houses-review.mp4">
+        Open the video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Select at least two contiguous parcels and choose Row houses. Length, width, height and chamfer define the initial row. Drag the footprint to move it, drag vertices to reshape it, click an edge to add a vertex, or delete a selected vertex. Use the 5° rotation controls or import GeoJSON.
+     </p>
+     <p>
+      The footprint must fit the selected land. Set the height rule and minimum plot size, then inspect the generated houses in the preview. Differently sized parcels can produce a warning; review the result before finishing.
+     </p>
+    </section>
+    <section class="guide-section" id="detached">
+     <h2>
+      Detached houses and parcel rules
+     </h2>
+     <figure class="howto-video" id="watch-parcel-rules">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Watch the workflow
+       </span>
+       <span class="video-duration">
+        0:39
+       </span>
+      </div>
+      <video aria-describedby="caption-parcel-rules" aria-label="Set parcel building rules" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-09-parcel-rules-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-09-parcel-rules-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-09-parcel-rules-review.mp4">
+        Open the video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-parcel-rules">
+       <strong>
+        Set parcel building rules.
+       </strong>
+       Choose what the rule compels and distinguish the envelope from an example.
+       <a class="cb-link" href="videos/howto/consensus-builder-09-parcel-rules-review.mp4">
+        Open the video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      The Detached houses tool applies a rule separately to each selected parcel. Set maximum floors, minimum distance from borders and minimum plot size. A range rule adds minimum floors and minimum ground-floor area; an exact rule uses the full permitted envelope.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      <span class="ui-label">
+       Regenerate
+      </span>
+      creates another example with different floor counts, footprint sizes and positions. It does not change the permitted footprint or volume. Check hatched plots: they may be too small, have no room after setbacks, or be unable to meet the minimum.
+     </div>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="how-to-use.html">
+      All instructions
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=en">
+      Try it on the map
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Roadmap
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
+</html>

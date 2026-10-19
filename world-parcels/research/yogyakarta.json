@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:179",
+  "queueRank": 179,
+  "name": "Yogyakarta",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "centerLatLon": [
+    -7.77431905735274,
+    110.434774240325
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "id-big-satupeta-hak-milik-diy",
+    "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13/query?where=1%3D1&geometry=110.36830%2C-7.81680%2C110.37070%2C-7.81440&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Ckecamatan%2Ckelurahan%2Ctipehak%2Cnib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      110.3683,
+      -7.8168,
+      110.3707,
+      -7.8144
+    ],
+    "parcelRecordCount": 2,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "nib (Nomor Identifikasi Bidang; pair with kelurahan, uniqueness not checked)",
+    "responseFile": "yogyakarta-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; maxRecordCount=1000; returned 2 features in the test box"
+  },
+  "source": {
+    "sourceId": "id-big-satupeta-hak-milik-diy",
+    "name": "Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) Skala 1:5000, Daerah Istimewa Yogyakarta sublayer (Satu Peta Perizinan dan Pertanahan)",
+    "operator": "Badan Informasi Geospasial (BIG) Satu Peta portal; land data attributed to Kementerian ATR/BPN",
+    "scope": "Land parcels with land-right type for Daerah Istimewa Yogyakarta province; same MapServer has sublayers for 15 provinces",
+    "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326",
+    "reuseStatus": "Not established; layer has no copyright text and no licence was read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+      "observation": "BIG Satu Peta public MapServer; layers 11-25 are per-province land-ownership polygons (DI Yogyakarta = layer 13, Jawa Barat = 21, Jawa Tengah = 25, Jawa Timur = 12)."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "observation": "ATR/BPN BHUMI map (HTTP 200 HTML); per existing Jakarta research parcel retrieval there is token-gated, so not used."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13/query (returnCountOnly, envelope 110.4048,-7.8043,110.4648,-7.7443; also a 300 m envelope at the queue centre)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "both returned 0 features at the queue centre (east of the city); layer is patchy there"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13 (returnCountOnly, 0.02 deg boxes around 110.3695,-7.7956)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "counts of 109 to 2261 polygons in central/southern boxes, 0 in northern and eastern ones"
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/13/query?where=1%3D1&geometry=110.36830%2C-7.81680%2C110.37070%2C-7.81440&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Ckecamatan%2Ckelurahan%2Ctipehak%2Cnib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "2 closed-ring polygons (Kraton, Panembahan); large payload (about 180 KB for 2 features) because rings are dense"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "DI Yogyakarta province land parcels (sublayer of a national multi-province service)",
+    "verifiedOpenScope": "2 polygons in a ~250 m box in Kraton district, Yogyakarta city; 0 features at the UN queue centre point",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Coverage is patchy (empty in some 2 km boxes); tipehak was 'Kosong' in the sample so it may include unregistered/unclassified parcels; completeness, currency and licence unknown. Not a national cadastre.",
+  "nextStep": "Check parcel counts per kelurahan against known totals, read Satu Peta terms, and test paging with resultOffset."
+}

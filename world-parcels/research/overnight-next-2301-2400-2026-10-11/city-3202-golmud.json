@@ -1,0 +1,116 @@
+{
+  "cityCode": 3202,
+  "queueRank": 2315,
+  "name": "Golmud",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [36.4215988404582, 94.8613745479289],
+  "population2025": 251353,
+  "population2025k": 251.353,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Golmud China official cadastral parcel map land resources GIS",
+        "result": "First-party search found the Golmud municipal government Natural Resources Bureau page and official public-land notices, but no public parcel viewer or anonymous parcel feature API.",
+        "actualResultUrls": [
+          "https://www.geermu.gov.cn/details?id=112702",
+          "https://www.qhdzzbfw.gov.cn/geem/jyxx/001005/001005001/20260723/61f79dac-8e50-4cce-83ef-f3dd4c387176.html"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "格尔木市 官方 不动产登记 地图 地籍 查询",
+        "result": "Official Golmud results identify the local Natural Resources Bureau and real-estate registration service center. A municipal notice documents QR-linked access to cadastral/map attachments, but no anonymous map/API route or parcel geometry was exposed.",
+        "actualResultUrls": [
+          "https://www.geermu.gov.cn/details?id=112702",
+          "https://www.geermu.gov.cn/details?id=ff8080819b104378019b9740e430064f",
+          "https://www.geermu.gov.cn/details?id=ff8080819d6c38cf019e3a405ca609c8"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Chinese discovery plus bounded official-site and public-map configuration inspection",
+  "sourceReview": "Golmud municipal government identifies the local Natural Resources Bureau as the custodian for natural-resources and real-estate registration information, with a local real-estate registration service-center window. An official notice states that QR codes on certificates can expose cadastral/map attachments. The official Qinghai Tianditu portal was identified as a public standard-map service, but its anonymous homepage request timed out during bounded inspection and no cadastral feature route, schema/CRS, safe parcel identity, or polygon response was obtained.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.geermu.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Golmud municipal government homepage was found. It provides government and public-service navigation; no public cadastral viewer link was identified in the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geermu.gov.cn/details?id=112702",
+      "httpStatus": 200,
+      "outcome": "Official Natural Resources Bureau institutional page loaded. It identifies responsibility for unified natural-resources and real-estate registration, information-platform management, and a local registration service-center contact. No viewer JavaScript, map configuration, feature API, schema, or geometry was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geermu.gov.cn/details?id=ff8080819b104378019b9740e430064f",
+      "httpStatus": 200,
+      "outcome": "Official municipal news states that from January 2026 Golmud uses QR-linked real-estate certificates and that scanning can query core cadastral/map attachment information. This is local registry/procedure evidence, not anonymous parcel geometry evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.geermu.gov.cn/details?id=ff8080819d6c38cf019e3a405ca609c8",
+      "httpStatus": 200,
+      "outcome": "Official first-registration notice demonstrates active local land-and-building registration records and a local registration-window address. Owner and other unsafe fields were not requested or retained. No public parcel API was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://qinghai.tianditu.gov.cn/",
+      "httpStatus": null,
+      "outcome": "Official Qinghai geographic-information public-service portal was identified by official Golmud correspondence and search. Anonymous HTTPS request timed out after 20 seconds; no login, CAPTCHA bypass, TLS exception, or retry beyond the bounded request was attempted. A timeout is not evidence of cadastral absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://xinjiang.tianditu.gov.cn/index.html",
+      "httpStatus": 200,
+      "outcome": "A first-party provincial Tianditu portal was inspected only to understand the current public viewer/configuration pattern. Its configuration exposed standard basemap WMTS and generic map/service-management routes, not Golmud parcel data; it is outside Golmud/Qinghai and was not treated as a source."
+    },
+    {
+      "method": "GET",
+      "url": "https://xinjiang.tianditu.gov.cn/static/config.js",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript configuration was readable for the non-Golmud comparison portal. It exposed basemap/service-management configuration but no Golmud cadastral endpoint. No parcel request was issued against it."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No Golmud/Qinghai cadastral viewer configuration or feature-service route was exposed in the bounded official inspection.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel feature response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [36.4215988404582, 94.8613745479289] was preserved for qualification.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public parcel feature-query route was exposed and the Qinghai public portal timed out; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local registry and natural-resources custodian evidence is real, but no public anonymous parcel geometry service, schema/CRS, or safe native ID-plus-polygon sample was qualified."
+  },
+  "scopeLimits": [
+    "The exact WUP point [36.4215988404582, 94.8613745479289] was preserved and not shifted.",
+    "No exact-point hit or miss, map extent miss, timeout, or unusable UI was used as evidence of citywide cadastral absence.",
+    "Official registry and QR-certificate statements do not establish anonymous public feature access.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, service CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained."
+  ],
+  "uncertainty": "Golmud local registry and natural-resources custodianship are evidenced by official municipal sources. Current public map/API availability, parcel geometry coverage, schema, CRS, stable native identity semantics, and anonymous access remain unverified. Runtime/admission remains held."
+}

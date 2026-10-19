@@ -1,0 +1,80 @@
+{
+ "kind": "country",
+ "key": "BH",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 (application/json,*/*;q=0.8 for JSON/API calls); Accept-Language: ar-BH,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "paid 1:1000 map purchase e-service"
+  },
+  {
+   "url": "https://www.slrb.gov.bh/en/cadastralsurveys",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "survey services list; no open viewer"
+  },
+  {
+   "url": "https://www.slrb.gov.bh/en/products-and-services",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "same"
+  },
+  {
+   "url": "https://www.data.gov.bh/api/explore/v2.1/catalog/datasets?where=search(parcel) or search(cadastr)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "4 datasets, none is a parcel layer (postal parcels, subdivision regulations)"
+  },
+  {
+   "url": "https://www.nspp.gov.bh/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.gis.gov.bh/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://geoportal.bh/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://gis.slrb.gov.bh/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://www.iga.gov.bh/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "eGov authority; no parcel service"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "SLRB site reachable with browser headers; only fee-based cadastral map purchase and per-deed location. Open data portal has no parcel layer. Unchanged.",
+ "nextStep": "Locate the national geoportal host (NSPP/Bahrain Geoportal) from another network."
+}

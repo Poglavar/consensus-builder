@@ -1,0 +1,31 @@
+{
+  "taskId": "city:4963",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4963-eugene.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/eugene-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T01:28:29Z",
+  "city": "Eugene",
+  "reason": "Immutable WUP/queue identity matches rank 3037, US, point and 197063 persons. English and US local English searches record actual first-party results. Cached ArcGIS layer 4 metadata identifies polygon Taxlots, native WKID 2914 and maptaxlot; cached exact-point GeoJSON has one full MultiPolygon with only OBJECTID and maptaxlot 1703294000301. The cached Property Explorer page is 403 Forbidden, contradicting the packet's HTTP 200 claim; viewer access is unresolved. Positive bounded discovery is held pending independent runtime qualification.",
+  "sourceArtifactSha256": {
+    "tmp/valhalla-parcel-research/eugene/taxlots-metadata.json": "cf732adb4b41ccc981279394df20797c0fbe48687caabc4453f8012eae601fe7",
+    "tmp/valhalla-parcel-research/eugene/exact-point.geojson": "a1648f8ff80c566b45d9fa49b3b2b918e9a8957c286fe513668a563871e89d30",
+    "tmp/valhalla-parcel-research/eugene/propertymap.html": "dc377105c134d5359b8e12a5525205dd19258707c0e07b5f296e3c25c6f34a2b"
+  },
+  "sourceChecks": {
+    "cacheFeatureCount": 1,
+    "cacheGeometryType": "MultiPolygon",
+    "cachePropertyKeys": [
+      "OBJECTID",
+      "maptaxlot"
+    ],
+    "cacheNativeId": "1703294000301",
+    "cacheLayerId": 4,
+    "cacheNativeWkid": 2914,
+    "cachedPropertyExplorerTitle": "403 - Forbidden"
+  },
+  "admissionGates": "No independently evidenced fresh native-ID adapter reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, or headed Details-panel verification. No runtime/catalog/report admission."
+}

@@ -1,0 +1,106 @@
+{
+  "name": "Kudus",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 810,
+  "point": [
+    -6.80022976376465,
+    110.853823705097
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kudus Indonesia official land registry cadastral map parcel boundaries public GIS",
+        "scope": "Find city-local registry evidence and a safe anonymous geometry-only parcel route for Kudus.",
+        "result": "Official Kudus government pages list municipal land-asset and tax services, permitting that references BPN, and a formal cooperation agreement with BPN Kabupaten Kudus. BHUMI ATR/BPN documentation describes an open interactive map with parcel layers and search by land identifiers, but its public map/info interactions may expose cadastral or legal attributes. No geometry-only response schema or local Kudus parcel vector service was verified; no point/parcel lookup was made.",
+        "actualResultUrls": [
+          "https://kuduskab.go.id/",
+          "https://diskominfo.kuduskab.go.id/portal/berita/id/penandatanganan-mou-antara-pemkab-kudus-dengan-badan-pertanahan-nasional-kab-kudus"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kudus BHUMI ATR BPN tanah bidang peta kadaster layanan pertanahan",
+        "scope": "Find primary local registry evidence and publicly documented geometry services for Kudus.",
+        "result": "Official Kudus government pages list municipal land-asset and tax services, permitting that references BPN, and a formal cooperation agreement with BPN Kabupaten Kudus. BHUMI ATR/BPN documentation describes an open interactive map with parcel layers and search by land identifiers, but its public map/info interactions may expose cadastral or legal attributes. No geometry-only response schema or local Kudus parcel vector service was verified; no point/parcel lookup was made.",
+        "actualResultUrls": [
+          "https://kuduskab.go.id/",
+          "https://diskominfo.kuduskab.go.id/portal/berita/id/penandatanganan-mou-antara-pemkab-kudus-dengan-badan-pertanahan-nasional-kab-kudus"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kudus municipal government / ATR-BPN BHUMI",
+        "operator": "Kudus Regency Government; Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+        "homeUrl": "https://kuduskab.go.id/",
+        "observation": "Official Kudus government pages list municipal land-asset and tax services, permitting that references BPN, and a formal cooperation agreement with BPN Kabupaten Kudus. BHUMI ATR/BPN documentation describes an open interactive map with parcel layers and search by land identifiers, but its public map/info interactions may expose cadastral or legal attributes. No geometry-only response schema or local Kudus parcel vector service was verified; no point/parcel lookup was made."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "id-kudus-official-parcel-research",
+    "name": "Kudus municipal government / ATR-BPN BHUMI",
+    "url": "https://kuduskab.go.id/",
+    "operator": "Kudus Regency Government; Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+    "serviceType": "Official local registry evidence reviewed; safe anonymous geometry status recorded separately.",
+    "geometryType": null,
+    "nativeIdField": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kudus Regency’s official municipal site documents land-use permitting and coordination with BPN, and the official Kudus local-government news portal records an MoU with Badan Pertanahan Nasional Kabupaten Kudus. This establishes a local land-registration office, but not an open public parcel geometry dataset. The city links tax/PBB and property-asset applications; those personal/account routes were not used.",
+    "verifiedOpenScope": "No anonymous city parcel polygon coverage was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "No verified city-specific anonymous geometry-only response. The local official portals expose land/tax/account or identifier-based workflows, while BHUMI documentation describes parcel lookup and attribute interactions without a schema contract that can be restricted to geometry plus a safe native ID.",
+  "remainingUncertainty": "Whether an anonymous Kudus-specific vector service exists behind a public map layer. No cadastral identifier, parcel selection, account or property lookup was submitted.",
+  "nextStep": "Review the source and sample before any runtime/adaptor enablement; confirm full-city coverage and privacy-safe query behavior first.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7262,
+  "cityId": "wup2025:7262",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -6.80022976376465,
+    110.853823705097
+  ],
+  "queueRank": 810,
+  "population2025": 671940,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "population2025k": 671.94,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "No verified city-specific anonymous geometry-only response. The local official portals expose land/tax/account or identifier-based workflows, while BHUMI documentation describes parcel lookup and attribute interactions without a schema contract that can be restricted to geometry plus a safe native ID.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/kudus-service-review.json"
+  },
+  "registryBasis": "Kudus Regency’s official municipal site documents land-use permitting and coordination with BPN, and the official Kudus local-government news portal records an MoU with Badan Pertanahan Nasional Kabupaten Kudus. This establishes a local land-registration office, but not an open public parcel geometry dataset. The city links tax/PBB and property-asset applications; those personal/account routes were not used.",
+  "registryEvidenceUrls": [
+    "https://kuduskab.go.id/",
+    "https://diskominfo.kuduskab.go.id/portal/berita/id/penandatanganan-mou-antara-pemkab-kudus-dengan-badan-pertanahan-nasional-kab-kudus"
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "rootPrimarySupplement": "Primary Kudus communications-office article dated 17 June 2020 confirms the local BPN land-office cooperation for systematic registration and title certification. It is historical institutional evidence, not a fresh geometry service or citywide cadastral claim.",
+  "rootPrimaryReadback": {
+    "url": "https://kuduskab.go.id/",
+    "fetch": "error",
+    "reason": "The read operation timed out"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

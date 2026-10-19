@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "kind": "workstream_research_index",
+  "checkedAt": "2026-10-08",
+  "scope": "South workstream: Dushanbe (Tajikistan), Tashkent (Uzbekistan), Ashgabat (Turkmenistan) from the five-capital Central Asia queue.",
+  "cityCount": 3,
+  "summary": {
+    "verifiedGeometryCities": 0,
+    "promisingUnavailableCities": 2,
+    "officialServiceNoGeometryCities": 1
+  },
+  "cities": [
+    {
+      "cityId": "capital:TJ:dushanbe",
+      "name": "Dushanbe",
+      "countryCode": "TJ",
+      "resultCategory": "promising_unavailable",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-dushanbe.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "targetGeometryEvidence": "none",
+      "blocker": "A per-request TLS certificate exception reaches the public portal, web map and OLD_DATA Dushanbe parcel-layer metadata. Actual count, spatial and object-ID reads return ArcGIS error 400 through both FeatureServer and MapServer, including on a second network. CADASTR_NEW parcel-layer metadata times out after 55 seconds locally and 80 seconds on the second network despite a completed TLS handshake. No nonempty parcel response was obtained; the evidence points to a provider-side data-service failure whose exact internal cause is unexposed. The certificate exception is working.",
+      "nextStep": "Retry the published OLD_DATA/OLD_DATA/FeatureServer/6 and MapServer/6 queries, plus CADASTR/CADASTR_NEW/FeatureServer/1, after the service recovers. A source-specific certificate exception is authorized; normal certificate validation remains the default. After obtaining polygons, audit local coverage, validity/overlaps, cadastral-code availability and repeatability before enabling the source.",
+      "diagnosticFile": "research/central-asia-capitals-2026-10-08/dushanbe-service-diagnostic.json"
+    },
+    {
+      "cityId": "wup2025:3082",
+      "name": "Tashkent",
+      "countryCode": "UZ",
+      "resultCategory": "promising_unavailable",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-tashkent.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "targetGeometryEvidence": "none",
+      "blocker": "Official sources describe open.ngis.uz as a public geoportal with parcel/real-estate information, but bounded HTTPS and HTTP GETs both timed out. The viewer scripts/service API and anonymous geometry remain inaccessible and unverified.",
+      "nextStep": "Retry open.ngis.uz in the ordinary public viewer, inspect its own scripts/network calls, and test a tiny bbox around the WUP point with only parcel ID and geometry fields if available."
+    },
+    {
+      "cityId": "capital:TM:ashgabat",
+      "name": "Ashgabat",
+      "countryCode": "TM",
+      "resultCategory": "public_service_no_geometry",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-ashgabat.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "targetGeometryEvidence": "none",
+      "blocker": "The law proves cadastral maps exist for Ashgabat and define parcels with boundaries, coordinates and unique numbers, but this search found no ordinary public viewer or bounded digital feature endpoint. The law indicates access is provided under established procedures and may be paid/restricted.",
+      "nextStep": "Search for a publicly advertised official Ashgabat land-resource/registration map or dataset; use only a published public service and bounded feature query if found."
+    }
+  ],
+  "overallFinding": "No parcel polygon was verified for these three cities. Dushanbe now has confirmed public parcel-layer metadata reached with a source-scoped certificate exception, but actual reads fail on two networks and the newer cadastral service times out. Tashkent’s official portal times out over both HTTP and HTTPS. Turkmen law confirms Ashgabat cadastral maps exist, but this search found no anonymous online service; statutory information access can be paid or restricted."
+}

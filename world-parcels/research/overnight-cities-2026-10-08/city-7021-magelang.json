@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Magelang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "registryFound": true,
+  "registryBasis": "Official ATR/BPN and Kota Magelang sources establish city-local land registration. Municipal Geoportal is a public geospatial catalog/viewer, but inspected shell and first-page titles do not verify a parcel layer or safe native parcel schema.",
+  "registryEvidenceUrls": [
+    "https://kot-magelang.atrbpn.go.id/",
+    "https://magelangkota.go.id/view/wali-kota-magelang-serahkan-13-sertipikat-tanah-warga-terdampak-proyek-flyover-canguk",
+    "https://geoportal.magelangkota.go.id/",
+    "https://geoportal.magelangkota.go.id/api/v2/datasets/?limit=100",
+    "https://datago.magelangkota.go.id/frontend/metadata/metadata/index?page=108"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7021,
+  "cityId": "wup2025:7021",
+  "centerLatLon": [
+    -7.52579327848381,
+    110.237614068471
+  ],
+  "point": [
+    -7.52579327848381,
+    110.237614068471
+  ],
+  "rank": 844,
+  "queueRank": 844,
+  "population2025": 640707,
+  "population2025k": 640.707,
+  "populationPlausibility2025": "High",
+  "notes": null,
+  "coverageAssessment": {
+    "claimedScope": "Official ATR/BPN and Kota Magelang sources establish city-local land registration. Municipal Geoportal is a public geospatial catalog/viewer, but inspected shell and first-page titles do not verify a parcel layer or safe native parcel schema.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with safe stable ID was verified; findings and limits are described in source and service review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Indonesian",
+        "query": "Kota Magelang peta bidang tanah BPN Kota Magelang geoportal persil kadaster data resmi",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "Official city sources identify the local Land Office and title registration. Public municipal catalog metadata reviewed; no parcel-feature layer established.",
+        "actualResultUrls": [
+          "https://kot-magelang.atrbpn.go.id/",
+          "https://magelangkota.go.id/view/wali-kota-magelang-serahkan-13-sertipikat-tanah-warga-terdampak-proyek-flyover-canguk",
+          "https://geoportal.magelangkota.go.id/",
+          "https://geoportal.magelangkota.go.id/api/v2/datasets/?limit=100",
+          "https://datago.magelangkota.go.id/frontend/metadata/metadata/index?page=108"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      },
+      {
+        "language": "English",
+        "query": "Magelang City Indonesia official land registry cadastral parcel map GIS BPN",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "Local BPN office/city reporting confirm registration. No anonymous parcel geometry dataset/schema verified. City metadata row Peta Bidang Tanah is only a lead, not a vector download.",
+        "actualResultUrls": [
+          "https://kot-magelang.atrbpn.go.id/",
+          "https://magelangkota.go.id/view/wali-kota-magelang-serahkan-13-sertipikat-tanah-warga-terdampak-proyek-flyover-canguk",
+          "https://geoportal.magelangkota.go.id/",
+          "https://geoportal.magelangkota.go.id/api/v2/datasets/?limit=100",
+          "https://datago.magelangkota.go.id/frontend/metadata/metadata/index?page=108"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kot-magelang.atrbpn.go.id/",
+        "observation": "Official ATR/BPN site identifies Kantor Pertanahan Kota Magelang; no authenticated workflow used."
+      },
+      {
+        "url": "https://magelangkota.go.id/view/wali-kota-magelang-serahkan-13-sertipikat-tanah-warga-terdampak-proyek-flyover-canguk",
+        "observation": "Official city article describes title issuance with BPN Kota Magelang."
+      },
+      {
+        "url": "https://geoportal.magelangkota.go.id/",
+        "observation": "Geoportal GET HTTP 200 (60,126 bytes); datasets API HTTP 200 (211,507 bytes), 161 entries with 10 in first page, urban themes. Metadata only."
+      },
+      {
+        "url": "https://geoportal.magelangkota.go.id/api/v2/datasets/?limit=100",
+        "observation": "Separate city metadata listing includes BPN/SIPD variable Peta Bidang Tanah; no vector download/schema verified."
+      }
+    ]
+  },
+  "source": {
+    "name": "Kota Magelang municipal Geoportal and ATR/BPN Kantor Pertanahan Kota Magelang.",
+    "urls": [
+      "https://kot-magelang.atrbpn.go.id/",
+      "https://magelangkota.go.id/view/wali-kota-magelang-serahkan-13-sertipikat-tanah-warga-terdampak-proyek-flyover-canguk",
+      "https://geoportal.magelangkota.go.id/",
+      "https://geoportal.magelangkota.go.id/api/v2/datasets/?limit=100",
+      "https://datago.magelangkota.go.id/frontend/metadata/metadata/index?page=108"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "No city parcel dataset with documented geometry+safe-ID allowlist verified. Public catalog does not establish cadastral feature publication; no feature data queried.",
+  "scopeLimits": "Bounded public-source review. No owner, address, tax/account, applicant, identity or property-specific data queried or retained. No completeness or legal/survey accuracy claim.",
+  "remainingUncertainty": "Peta Bidang Tanah metadata may be administrative; public access/schema unknown. No WUP hit or completeness established.",
+  "resultCategory": "city_registry_and_public_geospatial_catalogue_no_safe_parcel_schema_verified",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "No city parcel dataset with documented geometry+safe-ID allowlist verified. Public catalog does not establish cadastral feature publication; no feature data queried."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://kot-magelang.atrbpn.go.id/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": null
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

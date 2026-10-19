@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8695-qiqihar.json",
+  "purpose": "City-specific official registration/cadastre and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local registration/cadastre evidence was found, but no anonymous public parcel feature response was verified at the ranked point.",
+  "registryAssessment": "Qiqihar Government Service Network lists local Natural Resources Bureau services including real-estate registration-record inquiries. Heilongjiang provincial-government reporting confirms a Qiqihar Real Estate Registration Center and online registration workflows. No anonymous parcel GIS was verified.",
+  "searchQueries": [
+    {
+      "language": "Chinese",
+      "query": "齐齐哈尔市 不动产登记中心 地籍图 地块 查询 官方 自然资源局",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "The WUP point is a settlement locator, not a parcel identity. Published local services are registration/document workflows; no anonymous full-polygon feature endpoint or exact-point response was verified.",
+      "actualResultUrls": [
+        "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+        "https://www.hlj.gov.cn/hlj/c107858/202212/c00_31506389.shtml",
+        "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31727335.shtml"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    },
+    {
+      "language": "English",
+      "query": "Qiqihar China official cadastral parcel map real estate registration land registry GIS natural resources bureau",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "The WUP point is a settlement locator, not a parcel identity. Published local services are registration/document workflows; no anonymous full-polygon feature endpoint or exact-point response was verified.",
+      "actualResultUrls": [
+        "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+        "https://www.hlj.gov.cn/hlj/c107858/202212/c00_31506389.shtml",
+        "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31727335.shtml"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+      "observation": "City service portal lists local registration-record inquiries and collective-land registration under Qiqihar Natural Resources Bureau; municipal service-hall address."
+    },
+    {
+      "url": "https://www.hlj.gov.cn/hlj/c107858/202212/c00_31506389.shtml",
+      "observation": "Provincial government reports online workflows at Qiqihar Real Estate Registration Center requiring submission of application documents; not anonymous parcel geometry."
+    },
+    {
+      "url": "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31727335.shtml",
+      "observation": "Provincial Natural Resources Department identifies the Qiqihar bureau and registration center; no public parcel feature route is described."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "viewerUrl": "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+    "apiBase": null,
+    "observedClientRoutes": [],
+    "notes": "The WUP point is a settlement locator, not a parcel identity. Published local services are registration/document workflows; no anonymous full-polygon feature endpoint or exact-point response was verified."
+  },
+  "geometryEvidence": null,
+  "privacy": "No owner/address properties or credentials are retained. Marseille sample retains only native IDU and geometry; no owner/plot report was queried for other cities.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

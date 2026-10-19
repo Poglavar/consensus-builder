@@ -1,0 +1,1434 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32618",
+  "featureCount": 202,
+  "validNonemptyCount": 202,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 64.05756398103748,
+    "median": 112.19363019732933,
+    "max": 129390.6923071333
+  },
+  "features": [
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-31357",
+      "areaM2": 129390.6923071333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-74004",
+      "areaM2": 466.52781593434196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-2381",
+      "areaM2": 201.74279231719584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-10447",
+      "areaM2": 103.64007190846792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-20273",
+      "areaM2": 256.6574140463278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-32915",
+      "areaM2": 107.83021283818346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-39278",
+      "areaM2": 122.33374163442545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-52981",
+      "areaM2": 112.06283222589002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-53357",
+      "areaM2": 88.63324975924135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-60752",
+      "areaM2": 88.34103256474329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-71877",
+      "areaM2": 133.1896907749973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-73178",
+      "areaM2": 126.41328260929328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-74648",
+      "areaM2": 178.0772649274769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-77654",
+      "areaM2": 116.24896636236409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-87664",
+      "areaM2": 531.988724310029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-92826",
+      "areaM2": 125.3149558265226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-95595",
+      "areaM2": 214.98982754333372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-99033",
+      "areaM2": 127.23856686377066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-103479",
+      "areaM2": 122.49250076602488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-103700",
+      "areaM2": 104.25284786644372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-104489",
+      "areaM2": 101.09723375823476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-105923",
+      "areaM2": 280.31859162263675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-117990",
+      "areaM2": 104.04213366008015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-123582",
+      "areaM2": 123.37950283307069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-125056",
+      "areaM2": 103.66186562880695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-125524",
+      "areaM2": 140.39721800254443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-143221",
+      "areaM2": 124.14247665025486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-146313",
+      "areaM2": 182.84187731935447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-148151",
+      "areaM2": 102.91498349854966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-152482",
+      "areaM2": 155.22871099546805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-153980",
+      "areaM2": 156.70775934234712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-155874",
+      "areaM2": 118.42226550950572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-158042",
+      "areaM2": 86.18850498764256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-159627",
+      "areaM2": 248.0585254408948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-160938",
+      "areaM2": 122.09231727392202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-164819",
+      "areaM2": 119.6880445426402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-165220",
+      "areaM2": 113.8315551344173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-166324",
+      "areaM2": 181.0816916145633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-169575",
+      "areaM2": 199.7618409908173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-179500",
+      "areaM2": 139.4430787775288,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-185643",
+      "areaM2": 149.44260281438574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-202410",
+      "areaM2": 86.47571609636381,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-209388",
+      "areaM2": 112.09553104718236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-218501",
+      "areaM2": 114.8430118644888,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-11094",
+      "areaM2": 104.00668292455333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-12933",
+      "areaM2": 85.26764748453412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-16789",
+      "areaM2": 107.39088424037867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-17126",
+      "areaM2": 197.791440573774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-40546",
+      "areaM2": 3522.3855594351403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-52583",
+      "areaM2": 201.90622268388438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-54137",
+      "areaM2": 108.74859882452971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-55384",
+      "areaM2": 104.67406290642842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-55507",
+      "areaM2": 104.93755139047855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-63169",
+      "areaM2": 103.18125295150152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-71771",
+      "areaM2": 178.23249605348053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-75896",
+      "areaM2": 130.99534826573492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-76467",
+      "areaM2": 181.13189189895922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-79574",
+      "areaM2": 108.21125946850097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-82624",
+      "areaM2": 107.49563393880591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-84995",
+      "areaM2": 598.4058330235304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-96584",
+      "areaM2": 105.94845909731659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-97044",
+      "areaM2": 195.31064039318807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-107054",
+      "areaM2": 106.44738866311486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-109563",
+      "areaM2": 189.00511444350894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-111215",
+      "areaM2": 184.8443490455532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-132835",
+      "areaM2": 108.34795898783545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-148382",
+      "areaM2": 105.64622360104413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-149766",
+      "areaM2": 197.21481701563386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-149775",
+      "areaM2": 100.49680396026235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-152690",
+      "areaM2": 188.45502226992255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-154746",
+      "areaM2": 210.1860583286033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-158720",
+      "areaM2": 926.3131008065016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-159702",
+      "areaM2": 198.643560616052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-160653",
+      "areaM2": 209.9481920032117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-162878",
+      "areaM2": 101.99151322272994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-170973",
+      "areaM2": 104.10555414716424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-179675",
+      "areaM2": 101.72329015263367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-181482",
+      "areaM2": 102.42087923605824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-183262",
+      "areaM2": 105.51480521631316,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-196040",
+      "areaM2": 108.70265626599291,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-198897",
+      "areaM2": 202.36318897403004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-205107",
+      "areaM2": 103.06395335353184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-212729",
+      "areaM2": 106.30068111096634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-217391",
+      "areaM2": 111.50753234185866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-91247",
+      "areaM2": 206.0344909076916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-112586",
+      "areaM2": 108.48384473599612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-118208",
+      "areaM2": 570.0635787889353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-178170",
+      "areaM2": 183.74341567554822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-213712",
+      "areaM2": 165.96725491385305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-7218",
+      "areaM2": 71.69130443749367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-13058",
+      "areaM2": 113.74772187849624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-18235",
+      "areaM2": 119.72772556442274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-30519",
+      "areaM2": 112.18192414308467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-35773",
+      "areaM2": 114.73046534496805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-38833",
+      "areaM2": 83.86524568099907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-41219",
+      "areaM2": 112.48325378351389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-42703",
+      "areaM2": 109.46906678526393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-43969",
+      "areaM2": 73.87272950730588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-61012",
+      "areaM2": 113.3529411279287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-65688",
+      "areaM2": 113.4463889280558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-74691",
+      "areaM2": 520.8341633521346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-97551",
+      "areaM2": 113.18458435467956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-99129",
+      "areaM2": 113.96779562086522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-100700",
+      "areaM2": 116.10302794375531,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-110917",
+      "areaM2": 115.28511942679417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-114900",
+      "areaM2": 123.54629102388748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-115224",
+      "areaM2": 167.94104990282102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-119114",
+      "areaM2": 111.6347671657133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-126110",
+      "areaM2": 248.15712183112387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-129883",
+      "areaM2": 122.10046752624906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-134767",
+      "areaM2": 92.32807823797417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-138315",
+      "areaM2": 34909.54043963777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-139327",
+      "areaM2": 107.84533090991414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-147832",
+      "areaM2": 110.49106920479659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-149328",
+      "areaM2": 109.5229279965848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-150970",
+      "areaM2": 110.59943724530602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-152337",
+      "areaM2": 85.89586756716753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-153398",
+      "areaM2": 109.74974264021489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-157050",
+      "areaM2": 96.70339782881908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-164286",
+      "areaM2": 110.09205999391648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-168052",
+      "areaM2": 112.92726758632399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-178653",
+      "areaM2": 95.35722576604351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-180319",
+      "areaM2": 112.28589821090263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-195491",
+      "areaM2": 107.15888650204482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-197389",
+      "areaM2": 115.05525713290602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-200300",
+      "areaM2": 112.51655397025166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-201216",
+      "areaM2": 115.37497925861119,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-204876",
+      "areaM2": 112.21051436082092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-216849",
+      "areaM2": 71.32310937671721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-218485",
+      "areaM2": 108.9567098438761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-223442",
+      "areaM2": 82.43054336512517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-224277",
+      "areaM2": 82.52281961788627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-79927",
+      "areaM2": 100.45788567339545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-145197",
+      "areaM2": 110.6689122042471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-195527",
+      "areaM2": 101.08656184393054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-216997",
+      "areaM2": 105.06741949300499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-23048",
+      "areaM2": 129.7480468245036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-40761",
+      "areaM2": 109.20809287409323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-45299",
+      "areaM2": 126.65888476290208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-51419",
+      "areaM2": 126.8762093680832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-77057",
+      "areaM2": 126.04747495448399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-126962",
+      "areaM2": 123.78796786917734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-127878",
+      "areaM2": 74.05977782766709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-148368",
+      "areaM2": 113324.06990113111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-150598",
+      "areaM2": 123.99789177813096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-177745",
+      "areaM2": 130.44557019789661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-186020",
+      "areaM2": 148.43716886770693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-191629",
+      "areaM2": 111.41579046295283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-199488",
+      "areaM2": 123.61798924725906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-23097",
+      "areaM2": 112.20533625157397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-87454",
+      "areaM2": 111.80966620732634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-207645",
+      "areaM2": 108.28449645576859,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-18898",
+      "areaM2": 66.83887501198024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-32332",
+      "areaM2": 92.5005097558473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-38305",
+      "areaM2": 69.25334843315727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-44903",
+      "areaM2": 99.72472336547376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-47513",
+      "areaM2": 743.7181107885895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-53634",
+      "areaM2": 100.37077361562439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-66867",
+      "areaM2": 69.25089378644844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-73509",
+      "areaM2": 335.0914644375678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-75687",
+      "areaM2": 66.41770682872195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-86816",
+      "areaM2": 99.99007131842964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-103769",
+      "areaM2": 98.59355124800797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-122820",
+      "areaM2": 68.94388552457295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-125828",
+      "areaM2": 66.42490445096576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-138904",
+      "areaM2": 64.05756398103748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-163310",
+      "areaM2": 68.31317495017126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-166885",
+      "areaM2": 98.38184113907734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-167402",
+      "areaM2": 96.7144472769912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-168017",
+      "areaM2": 68.78761664299263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-178262",
+      "areaM2": 77.10031317844113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-187703",
+      "areaM2": 100.30144244651969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-194458",
+      "areaM2": 95.83445806537148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-197313",
+      "areaM2": 66.63875691962954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-204475",
+      "areaM2": 80.84499519602582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-205201",
+      "areaM2": 96.60269626828769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-220877",
+      "areaM2": 68.90787271717846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-8358",
+      "areaM2": 384.5879937649683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-9554",
+      "areaM2": 243.2012283328384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-20493",
+      "areaM2": 190.58952868205168,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-21870",
+      "areaM2": 293.47812461459625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-26199",
+      "areaM2": 203.3747580137813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-32387",
+      "areaM2": 105.98693858671113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-32730",
+      "areaM2": 103.24003178094455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-33684",
+      "areaM2": 112.48334101152082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-39023",
+      "areaM2": 103.49726138329594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-43554",
+      "areaM2": 154.07984048680657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-62936",
+      "areaM2": 307.6407469330431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-64813",
+      "areaM2": 289.4305958536722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-74615",
+      "areaM2": 192.69239528114693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-80594",
+      "areaM2": 206.67507102663197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-93140",
+      "areaM2": 108.01226833717793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-99851",
+      "areaM2": 106.28130114394948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-128907",
+      "areaM2": 108.33244868375418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-140388",
+      "areaM2": 274.87091613621715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-155795",
+      "areaM2": 107.55763535665353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-157373",
+      "areaM2": 110.07019704720665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-162728",
+      "areaM2": 106.4391476916865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-207619",
+      "areaM2": 269.8452944342966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-211134",
+      "areaM2": 188.90220426704863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-218090",
+      "areaM2": 104.22399368150089,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MD-BALTIMORE-OBJECTID-223979",
+      "areaM2": 98.42263066845554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

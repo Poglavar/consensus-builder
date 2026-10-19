@@ -1,0 +1,226 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "sm-cadastre:F42M423",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              12.445115945135138,
+              43.93605768128811
+            ],
+            [
+              12.445187347968828,
+              43.935990110843456
+            ],
+            [
+              12.445253569337686,
+              43.93601714057622
+            ],
+            [
+              12.445152387013925,
+              43.93610282980479
+            ],
+            [
+              12.445102013931905,
+              43.936149672216494
+            ],
+            [
+              12.445060988478172,
+              43.93612396430915
+            ],
+            [
+              12.445086401437294,
+              43.93608992673784
+            ],
+            [
+              12.445099754346735,
+              43.93607404118944
+            ],
+            [
+              12.445115945135138,
+              43.93605768128811
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "sm-cadastre:F42M423",
+        "id": "sm-cadastre:F42M423",
+        "sourceId": "sm-public-cadastral-ground",
+        "sourceParcelId": "F42M423",
+        "parcelNumber": "F42M423",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 2417,
+          "FOG_MAP": "F42M423",
+          "FOGLIO": 42,
+          "MAPPALE": 423,
+          "NOME": "PAR",
+          "CATA_NAME": "TERRENO",
+          "CATA_ST": 28,
+          "CATA_LIVE": 17
+        },
+        "sourcePartCount": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sm-cadastre:F42M240",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              12.445263516538132,
+              43.93508629199473
+            ],
+            [
+              12.44525922957925,
+              43.935091439781
+            ],
+            [
+              12.445346232620357,
+              43.935129529158566
+            ],
+            [
+              12.445399158280214,
+              43.93515270002808
+            ],
+            [
+              12.445412558686176,
+              43.935158566193685
+            ],
+            [
+              12.44540688506479,
+              43.93516453146299
+            ],
+            [
+              12.445386110320875,
+              43.93519144811977
+            ],
+            [
+              12.445210523311756,
+              43.935412560258065
+            ],
+            [
+              12.445191587631701,
+              43.93543579380492
+            ],
+            [
+              12.44516522893566,
+              43.93542965763712
+            ],
+            [
+              12.44507986884847,
+              43.935409785871634
+            ],
+            [
+              12.444961523545027,
+              43.93535670724982
+            ],
+            [
+              12.445189928834655,
+              43.93506943968039
+            ],
+            [
+              12.445199780033455,
+              43.935057053801806
+            ],
+            [
+              12.445263516538132,
+              43.93508629199473
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "sm-cadastre:F42M240",
+        "id": "sm-cadastre:F42M240",
+        "sourceId": "sm-public-cadastral-ground",
+        "sourceParcelId": "F42M240",
+        "parcelNumber": "F42M240",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5525,
+          "FOG_MAP": "F42M240",
+          "FOGLIO": 42,
+          "MAPPALE": 240,
+          "NOME": "PAR",
+          "CATA_NAME": "TERRENO",
+          "CATA_ST": 28,
+          "CATA_LIVE": 17
+        },
+        "sourcePartCount": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "sm-cadastre:F42M590",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              12.445416530615034,
+              43.935154392302735
+            ],
+            [
+              12.445412558686176,
+              43.935158566193685
+            ],
+            [
+              12.445399158280214,
+              43.93515270002808
+            ],
+            [
+              12.445346232620357,
+              43.935129529158566
+            ],
+            [
+              12.44525922957925,
+              43.935091439781
+            ],
+            [
+              12.445263516538132,
+              43.93508629199473
+            ],
+            [
+              12.445349731944507,
+              43.9351258423239
+            ],
+            [
+              12.445416530615034,
+              43.935154392302735
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "sm-cadastre:F42M590",
+        "id": "sm-cadastre:F42M590",
+        "sourceId": "sm-public-cadastral-ground",
+        "sourceParcelId": "F42M590",
+        "parcelNumber": "F42M590",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5531,
+          "FOG_MAP": "F42M590",
+          "FOGLIO": 42,
+          "MAPPALE": 590,
+          "NOME": "PAR",
+          "CATA_NAME": "TERRENO",
+          "CATA_ST": 28,
+          "CATA_LIVE": 17
+        },
+        "sourcePartCount": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "podbrezje",
+  "title": "Podbrežje – rekonstrukcija UPU-a",
+  "planTitle": "Podbrežje – izvedene i planirane zgrade, park i prometnice",
+  "sourcePlan": "UPU Podbrežje",
+  "planYears": "UPU 2007.; izmjene 2011.",
+  "implementationStatus": "četiri stambena bloka izvedena; A11 u gradnji; ostatak plana fazno neizveden",
+  "generatedAt": "2026-08-14T00:00:00.000Z",
+  "planSlug": "podbrezje",
+  "localPath": "/proposals/podbrezje?city=zagreb",
+  "sources": [
+    "https://zagreb.hr/izmjene-i-dopune-urbanistickog-plana-ure%C4%91enja-podb/89126",
+    "https://www.log-urbis.hr/development-podbrezje",
+    "https://www.zgh.hr/podbrezje/najcesca-pitanja-faq/4506",
+    "https://zagreb.hr/gradonacelnik-tomasevic-obisao-radove-na-zgradi-za/217781",
+    "https://data.zagreb.hr/dataset/geoportal-urbanisticki-planovi-uredenja"
+  ],
+  "context": {
+    "file": "plan-land-use.geojson",
+    "areaM2": 194283.10389678026
+  },
+  "proposals": [
+    {
+      "proposalId": "reconstruction-podbrezje-roads",
+      "kind": "road",
+      "file": "proposal-roads.geojson",
+      "geometryCount": 23
+    },
+    {
+      "proposalId": "reconstruction-podbrezje-park-z1-538",
+      "kind": "park",
+      "file": "proposal-park-z1-538.geojson",
+      "geometryCount": 1
+    },
+    {
+      "proposalId": "reconstruction-podbrezje-buildings",
+      "kind": "building",
+      "file": "proposal-buildings.geojson",
+      "geometryCount": 11
+    }
+  ],
+  "statistics": {
+    "proposalCount": 3,
+    "buildingCount": 11,
+    "observedBuildingCount": 4,
+    "planDerivedBuildingCount": 7,
+    "parkCount": 1,
+    "squareCount": 0,
+    "roadCentrelineCount": 23,
+    "roadLengthM": 1463.7462492563045,
+    "roadFootprintAreaM2": 37900.11885947515
+  }
+}

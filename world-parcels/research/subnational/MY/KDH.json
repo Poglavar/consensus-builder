@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "KDH",
+ "regionName": "Kedah",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://ptg.kedah.gov.my/",
+   "observation": "PTG Kedah portal loads (HTTP 200); no GIS/lot map found in links"
+  },
+  {
+   "url": "https://gis.kedah.gov.my/",
+   "observation": "200 but only IIS default page"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ptg.kedah.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal, no parcel service"
+  },
+  {
+   "url": "https://gis.kedah.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "IIS default page"
+  },
+  {
+   "url": "https://gis.kedah.gov.my/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "application/json",
+   "assessment": "no ArcGIS Server at guessed path"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "No state GIS host located; several guessed hosts unreachable.",
+ "nextStep": "Find Kedah state GIS (JUPEM Kedah / SUK) portal."
+}

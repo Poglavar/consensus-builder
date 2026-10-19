@@ -1,0 +1,43 @@
+{
+  "cityCode": 7279,
+  "queueRank": 1349,
+  "name": "Uvira",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-3.38572977318456, 29.1429622424188],
+  "population2025": 416523,
+  "population2025k": 416.523,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "The national Ministry of Land Affairs officially identifies the cadastral administration and a pilot digitization project, and an official ministry-linked service description says provincial land affairs operate through cadastral jurisdictions. No Uvira-specific local registry custodian, public parcel map, or open parcel lookup was evidenced. National-agency prose is not treated as local registry evidence.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Uvira Democratic Republic of the Congo official cadastral map land registry parcel API local government",
+        "result": "Search found the official DRC Ministry of Land Affairs cadastral site, the official ministry-linked ImmoRDC service description, and BIC (Bureau d'Informations Cadastrales). These establish national cadastral context but exposed no Uvira parcel viewer, safe native parcel identity, CRS, or anonymous parcel geometry endpoint.",
+        "actualResultUrls": ["https://www.affairesfoncieres.gouv.cd/", "https://immordc.cd/comptes/ministere-des-affaires-foncieres-rdc", "https://bic.cd/"]
+      },
+      {
+        "language": "French",
+        "query": "Uvira cadastre parcellaire République démocratique du Congo carte foncière service officiel",
+        "result": "La recherche a trouvé le site officiel du Ministère des Affaires Foncières, son projet pilote de numérisation du cadastre et les portails BIC/ImmoRDC. Aucun service public anonyme propre à Uvira ne fournissait une identité parcellaire sûre, une géométrie complète, un schéma ou un SCR; les pages décrivent surtout l'administration nationale et la numérisation des archives.",
+        "actualResultUrls": ["https://www.affairesfoncieres.gouv.cd/", "https://www.affairesfoncieres.gouv.cd/ressources/lois-decrets-arretes", "https://immordc.cd/comptes/ministere-des-affaires-foncieres-rdc", "https://bic.cd/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url":"https://www.affairesfoncieres.gouv.cd/","role":"National Ministry of Land Affairs official site","observation":"The site describes the ministry's cadastral remit and displays a pilot cadastral-digitization project; the current page exposes no public Uvira parcel layer or anonymous geometry query."},
+    {"url":"https://immordc.cd/comptes/ministere-des-affaires-foncieres-rdc","role":"Official ministry-linked public service description","observation":"The page states that cadastre inventories immovable property and that provincial ministry operations use land jurisdictions; it provides no Uvira parcel response or public vector service."},
+    {"url":"https://bic.cd/","role":"Bureau d'Informations Cadastrales public portal","observation":"The current site is a professional cadastral platform. Its loaded JavaScript exposed a public aggregate home-count function but no anonymous parcel layer, schema, CRS, or Uvira geometry route."}
+  ],
+  "geometryDecision": {"verified":false,"sampleCount":0,"sampleFile":null,"reason":"No safe native parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point [-3.38572977318456, 29.1429622424188] was preserved and not shifted. Missing Uvira-specific viewer/API access is not evidence of citywide absence."},
+  "coverageAssessment": {"claimedScope":"Official DRC national cadastral portals and bounded public routes reviewed for Uvira applicability.","verifiedOpenScope":"National cadastral administration and digitization context only; Uvira-specific parcel-vector access, exact-point containment, native identity, schema, CRS, and citywide coverage were not verified.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "runtimeReadiness":"held",
+  "researchAttempt":1,
+  "checkedAt":"2026-10-09"
+}

@@ -1,0 +1,134 @@
+{
+  "cityCode": 187,
+  "queueRank": 2026,
+  "name": "Manta",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "point": [-0.969966482756839, -80.7128401246128],
+  "population2025": 287756,
+  "population2025k": 287.756,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["manta"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Manta Ecuador official cadastral parcel map GIS land registry public viewer API",
+        "result": "Found the official GeoManta municipal viewer, the Manta citizen predial consultation portal, the national cadastral program, and an official municipal report describing active and digitized cadastral units. GeoManta exposed a public WMS/WFS service after following its current JavaScript configuration.",
+        "actualResultUrls": [
+          "https://geo.manta.gob.ec/buildVisorVentaTerrenos",
+          "https://portalciudadano.manta.gob.ec/consulta",
+          "https://www.registrospublicos.gob.ec/programas-servicios/servicios/sistema-nacional-de-catastro/",
+          "https://manta.gob.ec/db/2025/transparencia/RC2025/al/INFORME%20GESTION%20GAD%20MANTA%202024%20-%2006062025%20-%20PRELIMINAR.pdf"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Manta Ecuador catastro predial visor geográfico parcelas predios sitio oficial",
+        "result": "La búsqueda oficial encontró GeoManta de la Alcaldía de Manta, la consulta municipal de impuesto predial y la ordenanza de valoración de predios. El visor carga un servicio WMS/WFS público; la ruta de consulta general es un servicio predial/tributario y no se usó para solicitar datos personales.",
+        "actualResultUrls": [
+          "https://geo.manta.gob.ec/buildVisorVentaTerrenos",
+          "https://portalciudadano.manta.gob.ec/consulta",
+          "https://manta.gob.ec/db/municipio/Ordenanzas/2021/ORDENANZA%20038-2021%20Valoraci%C3%B3n%20de%20los%20Predios%20Urbanos-Rurales%202022-2023.docx.pdf",
+          "https://manta.gob.ec/geomanta-una-herramienta-para-la-formacion-academica/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Gobierno Autónomo Descentralizado Municipal del Cantón Manta, Dirección de Avalúos y Catastro",
+    "basis": "The first-party municipal GeoManta viewer and Manta ordinance identify the municipal cadastre/predial system; the public WFS response is served by the GeoManta domain.",
+    "urls": [
+      "https://geo.manta.gob.ec/buildVisorVentaTerrenos",
+      "https://manta.gob.ec/db/municipio/Ordenanzas/2021/ORDENANZA%20038-2021%20Valoraci%C3%B3n%20de%20los%20Predios%20Urbanos-Rurales%202022-2023.docx.pdf"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://geo.manta.gob.ec/buildVisorVentaTerrenos",
+      "observation": "Official GeoManta viewer; its HTML loads app_geoportal.js and identifies the municipal map application.",
+      "scope": "Manta municipal GeoManta service; city/canton scope is indicated by the first-party host and viewer layers."
+    },
+    {
+      "url": "https://manta.gob.ec/geomanta-una-herramienta-para-la-formacion-academica/",
+      "observation": "Manta municipal page describes GeoManta as a free official geographic information tool with updated territorial data.",
+      "scope": "Manta canton municipal geospatial information."
+    },
+    {
+      "url": "https://manta.gob.ec/db/2025/transparencia/RC2025/al/INFORME%20GESTION%20GAD%20MANTA%202024%20-%2006062025%20-%20PRELIMINAR.pdf",
+      "observation": "Municipal report states 93,531 active cadastral units and 81,941 digitized in SIG; this is contextual coverage evidence, not a substitute for the bounded geometry response.",
+      "scope": "Manta canton cadastral program."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geo.manta.gob.ec/buildVisorVentaTerrenos",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched official viewer HTML and followed its current JavaScript configuration."
+    },
+    {
+      "url": "https://geo.manta.gob.ec/js/app_geoportal.js?v_8.9.1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "outcome": "Inspected current code: viewer uses /geoserver-proxy/workspace_geomanta/wms and exposes layer names including geo_predio; its application JSON routes returned an authentication page when called without the viewer session."
+    },
+    {
+      "url": "https://geo.manta.gob.ec/geoserver-proxy/workspace_geomanta/wms?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "outcome": "Public WMS capabilities returned EPSG:4326 and layer geo_predio."
+    },
+    {
+      "url": "https://geo.manta.gob.ec/geoserver-proxy/workspace_geomanta/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "outcome": "Public WFS capabilities returned workspace_geomanta:geo_predio, geo_manzana, and geo_predio_juridico."
+    },
+    {
+      "url": "https://geo.manta.gob.ec/geoserver-proxy/workspace_geomanta/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=workspace_geomanta:geo_predio&outputFormat=application/json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Schema inspection found native lote_id, clavecatastral, geom, and other fields. Only lote_id, clavecatastral, and geom were requested in the sample; owner, address, tax, and personal fields were not requested or retained."
+    },
+    {
+      "url": "https://geo.manta.gob.ec/geoserver-proxy/workspace_geomanta/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=workspace_geomanta:geo_predio&outputFormat=application%2Fjson&srsName=EPSG%3A4326&propertyName=lote_id%2Cclavecatastral%2Cgeom&bbox=-80.715%2C-0.972%2C-80.710%2C-0.967%2CEPSG%3A4326&count=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Bounded anonymous response returned three Polygon features with native lote_id/clavecatastral and EPSG:4326 geometry. The retained sample removes all source properties except canonical id values derived from lote_id."
+    },
+    {
+      "url": "https://geo.manta.gob.ec/listLayers?action=listLayers",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Returned GeoManta authentication HTML rather than layer JSON; not treated as evidence of absence."
+    }
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sampleFile": "manta-sample.geojson",
+  "source": "GeoManta municipal GeoServer WFS workspace_geomanta:geo_predio",
+  "sourceIds": ["lote_id=52169", "lote_id=52137", "lote_id=52172"],
+  "coverageAssessment": {
+    "claimedScope": "Manta municipal GeoManta cadastral layers; municipal report provides canton-wide cadastral-unit context.",
+    "verifiedOpenScope": "A bounded WFS bbox around the preserved WUP point returned three parcel polygons; this is local sample evidence, not a complete citywide extract.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "resultCategory": "municipal_public_wfs_geometry_verified",
+  "remainingUncertainty": "The WFS sample proves a public local parcel geometry route and three native identifiers, but does not establish complete citywide availability, update cadence, or adapter robustness. The exact WUP point was preserved; the nearby bbox sample was not used to infer exact-point presence or absence.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-187-manta.json"
+}

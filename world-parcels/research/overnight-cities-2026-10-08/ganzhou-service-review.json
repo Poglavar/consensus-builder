@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11378-ganzhou.json",
+  "purpose": "Document first-party city-specific registry evidence and bounded anonymous parcel geometry/schema review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official city-map article links a RAR5 archive that an ordinary anonymous HTTPS GET fetched successfully (HTTP 200; 20,223,190 bytes). Its non-extracting archive manifest contains exactly three static JPEG map images (traffic, administrative, and general maps; all dated 2021-11-19), with no GIS/vector files or parcel-feature schema. The city registration guide limits record queries to eligible parties and application channels; no record query was made. No anonymous parcel geometry was returned or retained.",
+  "registryAssessment": "The official Ganzhou Natural Resources Bureau names the Ganzhou Real Estate Registration Center as the receiving unit and provides local registration-record channels; this confirms city-specific registry operations, not public geometry access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bnr.ganzhou.gov.cn/",
+      "observation": "Official Ganzhou Natural Resources Bureau site, including local Real Estate Registration Center notices and registration-result announcements."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/37c014fd574640ce8abbce3c0529110b.shtml",
+      "observation": "Official organizational page names the Ganzhou Real Estate Registration Center, its local office, and its role in central-urban-area real-estate registration."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102687/202008/86c0a9a965ab45dbac538bf088cecca2.shtml",
+      "observation": "Bureau article links a downloadable 2021 city-map RAR5 archive; its fetched contents are three static JPEG map products, not a feature service or vector parcel dataset."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102695/202504/8f4d4e1f3c5d4a6cbc96d917181fb94c.shtml",
+      "observation": "Official service guide names Ganzhou Real Estate Registration Center and limits file/record queries to rights holders, interested parties, or authorized bodies; applications and proof are required."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ganzhou official cadastral parcel map land registry GIS natural resources bureau 赣州 地籍图 不动产登记",
+      "result": "The official city-map article links a RAR5 archive that an ordinary anonymous HTTPS GET fetched successfully (HTTP 200; 20,223,190 bytes). Its non-extracting archive manifest contains exactly three static JPEG map images (traffic, administrative, and general maps; all dated 2021-11-19), with no GIS/vector files or parcel-feature schema. The city registration guide limits record queries to eligible parties and application channels; no record query was made. No anonymous parcel geometry was returned or retained.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    },
+    {
+      "language": "Chinese",
+      "query": "赣州市 地籍图 不动产登记 查询 官方 自然资源局 赣州地图",
+      "result": "The official city-map article links a RAR5 archive that an ordinary anonymous HTTPS GET fetched successfully (HTTP 200; 20,223,190 bytes). Its non-extracting archive manifest contains exactly three static JPEG map images (traffic, administrative, and general maps; all dated 2021-11-19), with no GIS/vector files or parcel-feature schema. The city registration guide limits record queries to eligible parties and application channels; no record query was made. No anonymous parcel geometry was returned or retained.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/37c014fd574640ce8abbce3c0529110b.shtml",
+      "method": "GET official city registration-center directory",
+      "httpStatus": 200,
+      "observation": "Names the Ganzhou Real Estate Registration Center, local office address, and responsibilities for central-urban-area real-estate registration."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102687/202008/86c0a9a965ab45dbac538bf088cecca2.shtml",
+      "method": "GET official city-map article",
+      "httpStatus": 200,
+      "observation": "Article publishes a 2021 city map download as an archive; no web map, layer list, or feature-service schema is exposed."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102687/202008/86c0a9a965ab45dbac538bf088cecca2/files/44b1cc085ed5462ea755afdedc87e3df.rar",
+      "method": "GET linked public map attachment",
+      "httpStatus": 200,
+      "observation": "Anonymous HTTPS GET succeeded (RAR5, 20,223,190 bytes). Non-extracting archive manifest contains exactly three JPEG map images and no GIS/vector file, parcel schema, or feature API."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102695/202504/8f4d4e1f3c5d4a6cbc96d917181fb94c.shtml",
+      "method": "GET official registration-query guide",
+      "httpStatus": 200,
+      "observation": "Query eligibility and application requirements are specified; no property, owner, or registration record was requested."
+    },
+    {
+      "url": "https://bnr.ganzhou.gov.cn/gzzrzy/c102687/202008/86c0a9a965ab45dbac538bf088cecca2/files/44b1cc085ed5462ea755afdedc87e3df.rar",
+      "method": "Non-extracting archive listing of fetched public attachment",
+      "httpStatus": 200,
+      "observation": "RAR5 archive has three JPEG entries only: 赣州市地图（交通版16开）.jpg (1,514,170 bytes), 赣州市地图（政区版16开）.jpg (1,236,349 bytes), and 赣州市地图.jpg (19,830,024 bytes), all dated 2021-11-19. No vector/GIS files or parcel schema."
+    }
+  ],
+  "geometryEvidence": null,
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

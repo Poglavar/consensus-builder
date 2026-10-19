@@ -1,0 +1,71 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "IA",
+ "regionName": "Iowa",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-ia-parcels-2017",
+  "name": "Iowa Statewide Parcel Data, 2017",
+  "operator": "University of Iowa (ArcGIS Online org of rcowling@uiowa.edu_uiowa; publisher of record not confirmed)",
+  "scope": "Statewide compilation, 2017 vintage; groupBy COUNTYNAME returned 99 distinct groups",
+  "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+  "method": "GET ArcGIS REST /query",
+  "responseFormat": "Esri JSON polygons (rings)",
+  "crs": "requested outSR=4326",
+  "reuseStatus": "Terms/licence text not read on the service."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ia-parcels-2017",
+  "requestUrl": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-93.6100%2C41.5860%2C-93.6085%2C41.5870&outFields=STATEPARID%2CPARCELNUMB%2CCOUNTYNAME",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -93.61,
+   41.586,
+   -93.6085,
+   41.587
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "$.features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "STATEPARID",
+  "responseFile": "IA-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar kept; no headers-dependent change observed",
+ "regionWideClaimed": true,
+ "regionWideBasis": "Item title \"Iowa Statewide Parcel Data, 2017\"; a group-by-county statistics query returned 99 groups (Iowa has 99 counties).",
+ "subregionsVerified": [
+  "Polk County (Des Moines)",
+  "Johnson County (Iowa City)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer",
+   "observation": "anonymous ArcGIS Online feature service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-93.6100%2C41.5860%2C-93.6085%2C41.5870&outFields=STATEPARID%2CPARCELNUMB%2CCOUNTYNAME",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 parcel polygons with STATEPARID"
+  },
+  {
+   "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&returnGeometry=true&outSR=4326&inSR=4326&f=json&resultRecordCount=3&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&geometry=-91.5310%2C41.6600%2C-91.5295%2C41.6610&outFields=STATEPARID%2CPARCELNUMB%2CCOUNTYNAME",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "Iowa City, Johnson County: 3 polygons"
+  }
+ ],
+ "reuseStatus": "Terms/licence text not read on the service.",
+ "remainingUncertainty": "Data is a 2017 snapshot, not current; not an official state-run layer as far as verified. Attributes include DEEDHOLDER (not requested). First Des Moines request timed out once (40 s) and succeeded on retry.",
+ "nextStep": "Look for a current statewide/county source; read item terms."
+}

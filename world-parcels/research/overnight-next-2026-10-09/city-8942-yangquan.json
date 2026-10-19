@@ -1,0 +1,154 @@
+{
+  "name": "Yangquan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1190,
+  "point": [
+    37.8659735411705,
+    113.536135376174
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yangquan official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://ghhzy.yq.gov.cn/yqgtbdc/"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "阳泉 不动产登记 地籍图 自然资源局 地图",
+        "result": "Official Yangquan real-estate registration bureau publishes registration notices and procedures, but no anonymous map or parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://ghhzy.yq.gov.cn/yqgtbdc/"
+        ],
+        "method": "Separate Chinese (Simplified)-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://ghhzy.yq.gov.cn/yqgtbdc/",
+        "operator": "Yangquan Real Estate Registration Bureau / Natural Resources Bureau",
+        "scope": "Official city bureau offers registration guidance and notices; no public coordinate-based parcel layer or full polygon was verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Yangquan Real Estate Registration Bureau / Natural Resources Bureau",
+    "url": "https://ghhzy.yq.gov.cn/yqgtbdc/",
+    "operator": "Yangquan Real Estate Registration Bureau / Natural Resources Bureau",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Yangquan municipal planning and natural-resources bureau publishes a city registration portal and guides. Cached first-party text establishes local registration services; current direct portal and linked query-route timeouts do not establish geometry absence.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8942,
+  "cityId": "wup2025:8942",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    37.8659735411705,
+    113.536135376174
+  ],
+  "population2025k": 467.148,
+  "populationUnit": "persons",
+  "queueRank": 1190,
+  "population2025": 467148,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Yangquan municipal planning and natural-resources bureau publishes a city registration portal and guides. Cached first-party text establishes local registration services; current direct portal and linked query-route timeouts do not establish geometry absence.",
+  "registryEvidenceUrls": [
+    "https://ghhzy.yq.gov.cn/yqgtbdc/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "priorCustodyAssessment": {
+    "registryFound": true,
+    "registryBasis": "City-government bureau portal is the local registration custodian; parcel geometry delivery is not documented on the public page.",
+    "registryEvidenceUrls": [
+      "https://ghhzy.yq.gov.cn/yqgtbdc/"
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 8942,
+      "url": "https://ghhzy.yq.gov.cn/yqgtbdc/",
+      "checkedAt": "2026-10-09T08:58:47.820079+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error timed out>",
+      "responseVerified": false
+    },
+    {
+      "wupCityCode": 8942,
+      "url": "http://yqbdcdj.yqctc.cn:801/",
+      "checkedAt": "2026-10-09T08:59:13.427721+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error timed out>",
+      "responseVerified": false
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "Yangquan municipal planning and natural-resources bureau publishes a city registration portal and guides. Cached first-party text establishes local registration services; current direct portal and linked query-route timeouts do not establish geometry absence.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://ghhzy.yq.gov.cn/yqgtbdc/",
+      "observation": "Yangquan municipal planning and natural-resources bureau publishes a city registration portal and guides. Cached first-party text establishes local registration services; current direct portal and linked query-route timeouts do not establish geometry absence.",
+      "method": "Root primary-page review plus scoped direct network checks"
+    }
+  ],
+  "integratedAt": "2026-10-09T09:09:44.889046+00:00"
+}

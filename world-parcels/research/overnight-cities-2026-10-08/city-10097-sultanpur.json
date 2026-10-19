@@ -1,0 +1,104 @@
+{
+  "name": "Sultanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 975,
+  "point": [
+    26.2584581123261,
+    82.0708146054256
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sultanpur Uttar Pradesh official cadastral map land records district BhuNaksha",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "The district land-records page links UP Bhulekh; official dashboards report cadastral map sheets and georeferenced villages across Sultanpur tehsils, including Sultanpur tehsil. UP revenue pages describe plot maps as revenue-village maps and BhuNaksha is an official revenue map tool; the national NIC description says the map-management application is for authorized officials. Aggregate village statistics do not identify the point’s map extent, and no safe anonymous full geometry response was verified.",
+        "actualResultUrls": [
+          "https://sultanpur.nic.in/service/land-records/"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Hindi",
+        "query": "सुल्तानपुर भू नक्शा खसरा नक्शा भूमि अभिलेख उत्तर प्रदेश सरकारी",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "The district land-records page links UP Bhulekh; official dashboards report cadastral map sheets and georeferenced villages across Sultanpur tehsils, including Sultanpur tehsil. UP revenue pages describe plot maps as revenue-village maps and BhuNaksha is an official revenue map tool; the national NIC description says the map-management application is for authorized officials. Aggregate village statistics do not identify the point’s map extent, and no safe anonymous full geometry response was verified.",
+        "actualResultUrls": [
+          "https://sultanpur.nic.in/service/land-records/"
+        ],
+        "executionMethod": "Separate Hindi-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Sultanpur district administration and UP Bhulekh/BhuNaksha",
+        "operator": "Government of Uttar Pradesh Board of Revenue and Sultanpur district administration",
+        "homeUrl": "https://sultanpur.nic.in/service/land-records/",
+        "observation": "The district land-records page links UP Bhulekh; official dashboards report cadastral map sheets and georeferenced villages across Sultanpur tehsils, including Sultanpur tehsil. UP revenue pages describe plot maps as revenue-village maps and BhuNaksha is an official revenue map tool; the national NIC description says the map-management application is for authorized officials. Aggregate village statistics do not identify the point’s map extent, and no safe anonymous full geometry response was verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-10097-LOCAL-CADASTRE-REVIEW",
+    "name": "Sultanpur district administration and UP Bhulekh/BhuNaksha",
+    "url": "https://sultanpur.nic.in/service/land-records/",
+    "operator": "Government of Uttar Pradesh Board of Revenue and Sultanpur district administration",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local district revenue-record and cadastral-map coverage is established at tehsil aggregate level; exact point-level map coverage is not.",
+    "verifiedOpenScope": "The district land-records page links UP Bhulekh; official dashboards report cadastral map sheets and georeferenced villages across Sultanpur tehsils, including Sultanpur tehsil. UP revenue pages describe plot maps as revenue-village maps and BhuNaksha is an official revenue map tool; the national NIC description says the map-management application is for authorized officials. Aggregate village statistics do not identify the point’s map extent, and no safe anonymous full geometry response was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No open geometry-only response was verified. Public portals orient search around revenue village/plot identifiers; no individual plot lookup was submitted.",
+  "remainingUncertainty": "The exact ranked city point may be urban and not associated with a georeferenced village map in the aggregate dashboard.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10097,
+  "cityId": "wup2025:10097",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    26.2584581123261,
+    82.0708146054256
+  ],
+  "population2025k": 562.032,
+  "populationUnit": "persons",
+  "queueRank": 975,
+  "population2025": 562032,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The district land-records page links UP Bhulekh; official dashboards report cadastral map sheets and georeferenced villages across Sultanpur tehsils, including Sultanpur tehsil. UP revenue pages describe plot maps as revenue-village maps and BhuNaksha is an official revenue map tool; the national NIC description says the map-management application is for authorized officials. Aggregate village statistics do not identify the point’s map extent, and no safe anonymous full geometry response was verified.",
+  "registryEvidenceUrls": [
+    "https://sultanpur.nic.in/service/land-records/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No open geometry-only response was verified. Public portals orient search around revenue village/plot identifiers; no individual plot lookup was submitted."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://sultanpur.nic.in/service/land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Land Records | District Sultanpur, Government of  Uttar Pradesh | India    "
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

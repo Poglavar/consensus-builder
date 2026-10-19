@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": null,
+  "purpose": "Service review for WUP2025 rank 794 Youyi (city code 10464); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "China",
+  "sourceUrl": "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+  "registryFound": true,
+  "registryBasis": "Primary Dalian Jinpu New Area government pages identify Youyi Subdistrict (友谊街道) as a local administrative unit and identify the Jinpu Real Estate Registration Center’s local registration work. This resolves the WUP name as Youyi Subdistrict in Jinpu, Dalian, rather than a different settlement called Youyi. The available evidence is a local registry/administrative match; it does not independently locate the exact WUP centroid inside a cadastral coverage boundary.",
+  "officialSources": [
+    {
+      "url": "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+      "observation": "Jinpu government identifies Youyi Subdistrict (友谊街道), its local government office and subdistrict administrative remit."
+    },
+    {
+      "url": "https://www.dljp.gov.cn/dt/001006/001006003/001006003001/001006003001014/20240613/7a64436b-a443-4f14-9c8c-a0a7e164c2c3.html",
+      "observation": "Official Jinpu Natural Resources page documents the Jinpu Real Estate Registration Center and local registration services."
+    },
+    {
+      "url": "https://liaoning.tianditu.gov.cn/dalian/",
+      "observation": "Official Dalian map portal presents general map services; no publicly documented parcel feature schema/geometry endpoint was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Youyi Dalian Jinpu official real estate registration center cadastral map",
+      "result": "Official Dalian/Jinpu sources identify Youyi Subdistrict and a Jinpu real-estate registration center. The Dalian public Tianditu map presents general basemap/vector/imagery/terrain services; no parcel feature schema or geometry-only route was found.",
+      "urls": [
+        "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+        "https://www.dljp.gov.cn/dt/001006/001006003/001006003001/001006003001014/20240613/7a64436b-a443-4f14-9c8c-a0a7e164c2c3.html",
+        "https://liaoning.tianditu.gov.cn/dalian/"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "大连 金普新区 友谊街道 不动产登记中心 地籍图 官方",
+      "result": "金普新区政府确认友谊街道及其辖区管理职责，官方自然资源页面列出金普新区不动产登记中心业务。大连天地图公开页面展示通用底图、矢量、影像、地形等，没有核实地籍地块图层或只返回几何和稳定编号的匿名接口。",
+      "urls": [
+        "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+        "https://www.dljp.gov.cn/dt/001006/001006003/001006003001/001006003001014/20240613/7a64436b-a443-4f14-9c8c-a0a7e164c2c3.html",
+        "https://liaoning.tianditu.gov.cn/dalian/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_safe_public_geometry_contract_verified",
+    "reason": "No public anonymous parcel feature layer with a verified geometry-and-safe-ID schema was identified. Public basemaps and generic city map layers are not full parcel geometry."
+  },
+  "requestEvidence": [],
+  "technicalBlocker": "No public anonymous parcel feature layer with a verified geometry-and-safe-ID schema was identified. Public basemaps and generic city map layers are not full parcel geometry.",
+  "sampleDisposition": "No parcel polygons or parcel feature attributes retained.",
+  "remainingUncertainty": "The WUP settlement identity is resolved to Youyi Subdistrict in Dalian Jinpu New Area, but no official cadastral boundary/coverage polygon was overlaid against the exact centroid. The subdistrict registration evidence does not prove a parcel at the point or citywide coverage."
+}

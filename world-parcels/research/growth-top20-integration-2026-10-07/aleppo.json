@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:1601",
+  "name": "Aleppo",
+  "countryCode": "SY",
+  "checkedAt": "2026-10-07T18:34:26Z",
+  "previousEvidenceFile": "research/growth-top20-2026-10-07/city-1601.json",
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
+    "Accept-Language": "ar-SY,ar;q=0.9,en;q=0.5",
+    "Referer": "https://sana.sy/"
+  },
+  "requests": [
+    {
+      "url": "https://ecsc.gov.sy/",
+      "method": "GET",
+      "checkedAt": "2026-10-07T18:34:00Z",
+      "browserHeaders": true,
+      "cookies": "requests.Session cookie jar",
+      "httpStatus": null,
+      "error": "ConnectTimeout"
+    },
+    {
+      "url": "https://www.syrianrealestate.gov.sy/",
+      "method": "GET",
+      "checkedAt": "2026-10-07T18:34:00Z",
+      "browserHeaders": true,
+      "cookies": "requests.Session cookie jar",
+      "httpStatus": null,
+      "error": "ConnectionError"
+    },
+    {
+      "url": "https://www.cadastre.gov.sy/",
+      "method": "GET",
+      "checkedAt": "2026-10-07T18:34:00Z",
+      "browserHeaders": true,
+      "cookies": "requests.Session cookie jar",
+      "httpStatus": null,
+      "error": "ConnectionError"
+    }
+  ],
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "adapterCreated": false,
+  "runtimeReadiness": "target_geometry_unverified",
+  "officialEvidence": [
+    {
+      "url": "https://sana.sy/governorates/aleppo/2256077/",
+      "publishedAt": "2025-07-29",
+      "observation": "Aleppo cadastral office issues registry statements and cadastral plans; the report links no map or vector service."
+    },
+    {
+      "url": "https://sana.sy/governorates/2433432/",
+      "publishedAt": "2026-03-24",
+      "observation": "National e-registry service launch via Anjez/Maamelati. Listed launch coverage is Damascus, Daraa, Quneitra and Latakia. Survey-plan services and other governorates are announced as future additions; later Aleppo coverage was not verified in this attempt."
+    },
+    {
+      "url": "https://sana.sy/locals/2538365/",
+      "publishedAt": "2026-07-27",
+      "observation": "Registry office resumes operation in Al-Bab, in Aleppo governorate. This is not the Aleppo city target and no vector parcel endpoint is linked."
+    }
+  ],
+  "searchQueries": [
+    {
+      "text": "حلب السجل العقاري خريطة عقارية نظم المعلومات الجغرافية موقع",
+      "language": "Arabic",
+      "script": "Arabic with Latin technical terms where present",
+      "date": "2026-10-07",
+      "resultURLsReviewed": [
+        "https://sana.sy/governorates/aleppo/2256077/",
+        "https://sana.sy/governorates/2433432/",
+        "https://sana.sy/locals/2538365/"
+      ],
+      "resultGrouping": "Result URLs reviewed from the two three-query batches; no new parcel service located."
+    },
+    {
+      "text": "سوريا خريطة عقارية حلب geoportal GIS",
+      "language": "Arabic",
+      "script": "Arabic with Latin technical terms where present",
+      "date": "2026-10-07",
+      "resultURLsReviewed": [
+        "https://sana.sy/governorates/aleppo/2256077/",
+        "https://sana.sy/governorates/2433432/",
+        "https://sana.sy/locals/2538365/"
+      ],
+      "resultGrouping": "Result URLs reviewed from the two three-query batches; no new parcel service located."
+    },
+    {
+      "text": "site.gov.sy حلب مخطط مساحي إلكتروني",
+      "language": "Arabic",
+      "script": "Arabic with Latin technical terms where present",
+      "date": "2026-10-07",
+      "resultURLsReviewed": [
+        "https://sana.sy/governorates/aleppo/2256077/",
+        "https://sana.sy/governorates/2433432/",
+        "https://sana.sy/locals/2538365/"
+      ],
+      "resultGrouping": "Result URLs reviewed from the two three-query batches; no new parcel service located."
+    },
+    {
+      "text": "حلب \"خريطة\" \"المصالح العقارية\" إلكترونية",
+      "language": "Arabic",
+      "script": "Arabic with Latin technical terms where present",
+      "date": "2026-10-07",
+      "resultURLsReviewed": [
+        "https://sana.sy/governorates/aleppo/2256077/",
+        "https://sana.sy/governorates/2433432/",
+        "https://sana.sy/locals/2538365/"
+      ],
+      "resultGrouping": "Result URLs reviewed from the two three-query batches; no new parcel service located."
+    },
+    {
+      "text": "\"حلب\" \"geoportal\"",
+      "language": "Arabic",
+      "script": "Arabic with Latin technical terms where present",
+      "date": "2026-10-07",
+      "resultURLsReviewed": [
+        "https://sana.sy/governorates/aleppo/2256077/",
+        "https://sana.sy/governorates/2433432/",
+        "https://sana.sy/locals/2538365/"
+      ],
+      "resultGrouping": "Result URLs reviewed from the two three-query batches; no new parcel service located."
+    },
+    {
+      "text": "\"سوريا\" \"البوابة الجغرافية\" عقارية",
+      "language": "Arabic",
+      "script": "Arabic with Latin technical terms where present",
+      "date": "2026-10-07",
+      "resultURLsReviewed": [
+        "https://sana.sy/governorates/aleppo/2256077/",
+        "https://sana.sy/governorates/2433432/",
+        "https://sana.sy/locals/2538365/"
+      ],
+      "resultGrouping": "Result URLs reviewed from the two three-query batches; no new parcel service located."
+    }
+  ],
+  "technicalBlockers": [
+    "No anonymous viewport or exact-ID parcel geometry endpoint verified for Aleppo.",
+    "The officially linked electronic-service portal did not connect from this network; this is temporary availability evidence, not proof of no parcel data.",
+    "Other historical candidate cadastral hosts have no verified current official viewer or vector route in this attempt."
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "nextStep": "An official Aleppo vector service, georeferenced parcel dataset, or authorized account with an inspectable parcel-map interface is required to implement a live source."
+}

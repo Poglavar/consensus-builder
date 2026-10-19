@@ -1,0 +1,71 @@
+{
+  "cityRecord": "city-9677-bidar.json",
+  "schemaVersion": "1.0",
+  "cityCode": 9677,
+  "queueRank": 1837,
+  "city": "Bidar",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Bidar district land-record custody and current NAKSHA configuration were found, but the Karnataka parcel FeatureServer and bounded geometry query both returned Token Required anonymously. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Kannada first-party discovery queries and actual result URLs are recorded in city-9677-bidar.json. The Bidar District land-record pages establish a local registry custodian and Bhoomi survey-number service context; DILRMP establishes cadastral-status context; NAKSHA configuration exposes a Karnataka parcel service but not anonymous access.",
+  "requestOutcomes": "The Karnataka land-record host timed out. NAKSHA HTML/configuration loaded, but service metadata and a bounded ID-plus-geometry request returned ArcGIS HTTP 499 Token Required. No login, credentials, private token, unsafe field request, CAPTCHA/Cloudflare bypass or TLS disablement was used.",
+  "attemptedRoutes": [
+    "Official Bidar District English land-record page",
+    "Official Bidar District Kannada land-record page",
+    "DILRMP Bidar cadastral-map/ULPIN status route",
+    "Karnataka land-record host",
+    "National NAKSHA viewer HTML and current JavaScript/configuration",
+    "NAKSHA Karnataka FeatureServer metadata",
+    "NAKSHA Karnataka bounded anonymous FeatureServer query"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [17.9093292688742, 77.5145528508122] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Bidar parcel geometry, stable native parcel identity, usable public schema response or anonymous feature response was retrieved.",
+    "The district land-record pages, DILRMP status and viewer configuration do not establish citywide open geometry coverage.",
+    "Timeout and token-required responses are not evidence that Bidar lacks cadastral records.",
+    "No owner, address, titleholder, contact, tax/account or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "EPSG:32643 identified in NAKSHA configuration; no feature response verified",
+  "geometryQuality": "not applicable; no Bidar geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Bounded query around the exact WUP point returned Token Required before feature evaluation. No hit/miss inference was made.",
+    "requestEvidence": [
+      "https://bidar.nic.in/en/service/land-records/",
+      "https://bidar.nic.in/service/%E0%B2%AD%E0%B3%82-%E0%B2%A6%E0%B2%BE%E0%B2%96%E0%B2%B2%E0%B3%86%E0%B2%97%E0%B2%B3%E0%B3%81/",
+      "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/560",
+      "https://naksha.dolr.gov.in/NakshaPortal/",
+      "https://nakshagis.dolr.gov.in/utm4243/rest/services/Naksha_43/Naksha_ka_29_43/FeatureServer/0"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bidar district custody, Karnataka Bhoomi service context, DILRMP status and NAKSHA Karnataka parcel service configuration.",
+    "verifiedOpenScope": "Custodian and service configuration only; no open Bidar parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current Bhoomi route/schema, NAKSHA authorization, parcel field mapping, native identity, update currency, legal status and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title or completeness of Indian cadastral data.",
+  "retainedSample": null
+}

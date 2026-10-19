@@ -1,0 +1,35 @@
+{
+  "attempts": [
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=LMS_PLOT_I+%3E+0&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 822
+      }
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=UTM_CODE+NOT+LIKE+%27+%25%27&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "error": "nonJSON"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=TEMPORALST%3D%27+%27&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "response": {
+        "count": 10815
+      }
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=LMS_PLOT_I+%3E+0&geometry=55.708%2C24.115%2C55.713%2C24.120&geometryType=esriGeometryEnvelope&inSR=4326&returnGeometry=false&outFields=UTM_CODE%2CLMS_PLOT_I%2CTEMPORALST%2CSTATUS%2CDISTRICT_1%2CCOMMUNITY1%2CROAD_NO_L1%2CPLOT_NUM1&f=json",
+      "origin": "authorized laptop direct curl",
+      "exit": 0,
+      "nativeSamples": [],
+      "statuses": [],
+      "returnedRows": 0,
+      "truncated": null
+    }
+  ]
+}

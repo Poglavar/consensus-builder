@@ -1,0 +1,19 @@
+{
+  "cityRecord": "city-72-al-zawiyah.json",
+  "cityCode": 72,
+  "queueRank": 2759,
+  "city": "Al Zawiyah",
+  "country": "Libya",
+  "countryCode": "LY",
+  "reviewStatus": "held",
+  "reviewOutcome": "A Zawiya-area RERA custodian and official LSDI geospatial catalog are evidenced, but no qualifying public parcel-polygon service or safe retained parcel geometry sample was verified.",
+  "queryAndRequestOutcomes": "Separate English and Arabic discovery was performed and recorded in the city record. The LSDI viewer and GeoServer were inspected. RERA metadata exposes parcel-related catalog records, while aoi_rera returns only a broad general AOI multipolygon; no parcel-level ID+geometry response was obtained.",
+  "cityOrLocalCustodian": "The RERA page for the Zawiya area evidences a local branch/administration. RERA and the Survey Authority in LSDI are national custodians/catalogs; the LSDI GeoServer layer inspected was not proven city-specific or parcel-level.",
+  "safeFieldAllowlist": ["stable native parcel identity when independently verified", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "aoi_rera DescribeFeatureType reported geom MultiPolygon, description, and md_fk; WFS advertised EPSG:4326. This schema is for a general AOI layer, not verified parcel identities. No parcel composite-key rules were found.",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "A broad geometry response, catalog availability No, and any future timeout or map extent miss would not prove citywide absence. The exact WUP point [32.7635335720711, 12.6537472589886] was preserved and not shifted to force a hit.",
+  "integrationDisposition": "Research packet only; not source integration or admission. No registry/catalog/runtime files were changed."
+}

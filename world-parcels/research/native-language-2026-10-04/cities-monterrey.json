@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 116,
+  "city": "Monterrey",
+  "countryCode": "MX",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/monterrey.json",
+  "query": {
+    "language": "Spanish",
+    "script": "Latin",
+    "text": "Monterrey catastro lotes parcelas datos geográficos SIG datos abiertos México"
+  },
+  "results": [
+    {
+      "title": "Nuevo León Institute of Registry and Cadastre — parcel location/information procedure",
+      "url": "https://ircnl.gob.mx/tramites-catastrales/tramites-generales/ubicacion-y-o-informacion-de-predios/",
+      "kind": "official-service",
+      "note": "Individual cadastral information is available through a service procedure; no open geospatial layer was found."
+    }
+  ],
+  "assessment": "Search surfaced official parcel information procedures, but not citywide open parcel geometry or an anonymous query service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

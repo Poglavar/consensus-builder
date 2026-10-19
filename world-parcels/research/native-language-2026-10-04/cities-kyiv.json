@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 192,
+  "city": "Kyiv (Kiev)",
+  "countryCode": "UA",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kyiv.json",
+  "query": {
+    "language": "Ukrainian",
+    "script": "Cyrillic",
+    "text": "Київ кадастрова карта земельні ділянки відкриті геодані WFS GIS"
+  },
+  "results": [
+    {
+      "title": "Kyiv city cadastral land-information FeatureServer layer",
+      "url": "https://gisserver.kyivcity.gov.ua/mayno/rest/services/kop/%D0%9A%D0%9E%D0%9F2000/FeatureServer/5/query",
+      "kind": "official-city-ArcGIS-layer-candidate",
+      "note": "Search index identifies a `Земельний кадастр` query layer. Need verify service status, layer geometry/schema, extent and exact-ID capability."
+    },
+    {
+      "title": "Kyiv region urban-planning geoportal",
+      "url": "https://mbk.koda.gov.ua/",
+      "kind": "regional-geoportal",
+      "note": "Regional urban planning portal; separate from city cadastral layer."
+    }
+  ],
+  "assessment": "Strong specific lead: Kyiv city GIS indexes a land-cadastre FeatureServer query endpoint. Need test metadata/ID behavior and completeness before integration; previously recorded temporary status is preserved.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

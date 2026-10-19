@@ -1,0 +1,12 @@
+{
+  "originalNativeProperties": {
+    "flstkennz": "05327700500316______"
+  },
+  "runtimeId": "DE-NRW-05327700500316______",
+  "rawCoordinateArraysIdentical": false,
+  "topologicallyIdentical": false,
+  "metricSrid": 32632,
+  "symmetricDifferenceM2": 0.009930055320692783,
+  "hausdorffDistanceM": 6.262769377568821e-06,
+  "sourceCoordinatesModified": false
+}

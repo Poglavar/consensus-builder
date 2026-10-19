@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:182",
+  "queueRank": 182,
+  "name": "Coyah (Conacry)",
+  "country": "Guinea",
+  "countryCode": "GN",
+  "centerLatLon": [
+    9.64830229365228,
+    -13.5649835400196
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mvuh.gov.gn/",
+      "observation": "Ministry of Urban Planning, Housing (MVUH; candidate host for cadastre/land); unreachable through the proxy."
+    },
+    {
+      "url": "https://mines.gov.gn/",
+      "observation": "Ministry of Mines site returned HTTP 202 with a 169-byte body; the mining cadastre is not a land-parcel dataset in any case."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search",
+      "observation": "ArcGIS Online searches for Conakry/Guinea cadastre and parcels returned only historic urban-growth tile maps and personal web maps, no parcel layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cadastre.gov.gn/ , https://mvuh.gov.gn/ , https://www.mvuh.gov.gn/ , https://sig.gov.gn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure through the proxy; unreachable, not a verdict"
+    },
+    {
+      "url": "https://cadastreminier.gov.gn/ , https://guinee.cadastrecentral.com , https://portals.flexicadastre.com/guinea/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://mines.gov.gn/",
+      "method": "GET",
+      "httpStatus": 202,
+      "contentType": "text/html",
+      "assessment": "169-byte placeholder body; nothing to assess"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (Conakry parcelles/cadastre; Guinea cadastre parcels)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no parcel layers"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No Guinean land-parcel service located; Guinea's cadastral coverage of the Conakry/Coyah area is unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All candidate government hosts were unreachable, so nothing could be tested. Coyah is a prefecture adjoining Conakry; the queue coordinate falls in the Conakry-Coyah agglomeration. Absence of an open source is not shown.",
+  "nextStep": "Retry Guinean ministry hosts from another network; look for a Conakry land-registry (Service du Cadastre) GIS or a donor-funded parcel dataset with a public bounded query."
+}

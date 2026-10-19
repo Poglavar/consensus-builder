@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1169",
+  "queueRank": 168,
+  "wupCityCode": 1169,
+  "name": "Lubango",
+  "country": "Angola",
+  "countryCode": "AO",
+  "centerLatLon": [
+    -14.9071396924962,
+    13.5144246201527
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 168,
+  "population2025": 1280986,
+  "annualGrowthPct2015To2025": 4.969598,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_sample_candidate_extent_excludes_target",
+  "priorEvidence": [
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-city-1169.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-provider-AO.json"
+  ],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ws-provider-AO-followup.json",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Identify a documented official local/provincial feature service whose advertised extent includes this target, then make a small ID+geometry bbox query.",
+  "requests": [],
+  "resultCategory": "candidate_layer_extent_excludes_target_center",
+  "evidenceType": "shared_provider_followup_no_new_target_probe",
+  "followup": {
+    "checkedAt": "2026-10-08",
+    "previousTargetProbe": {
+      "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query",
+      "method": "GET",
+      "outcome": "timeout / HTTP 000 in prior pass; no feature count or geometry returned",
+      "scope": "This is a carried-forward failed attempt, not a negative.",
+      "provenance": "Inherited shared-provider result from the initial pass; not a new city-specific request in this follow-up.",
+      "fanoutCount": 8,
+      "individualRequestUrlsRetained": false
+    },
+    "extentGate": "A single shared metadata GET succeeded on the ordinary host network (see africa-ws-provider-AO-followup.json). The target WUP center lies outside the candidate extent; no new target parcel query was sent.",
+    "officialLead": "Angola IGCA is the national cartography/cadastre authority and lists geographic database creation, surveying and map sales; official pages describe administrative land-right concession service, but no bounded public geometry API was exposed. See africa-ws-provider-AO-followup.json.",
+    "sharedProviderCheck": {
+      "providerEvidence": "africa-ws-provider-AO-followup.json",
+      "method": "GET FeatureServer layer metadata only",
+      "httpStatus": 200,
+      "targetParcelQuerySent": false
+    }
+  },
+  "priorCityLocalSearch": {
+    "languageScript": "Portuguese (Latin script)",
+    "exactQueries": [
+      "\"Lubango\" cadastro predial parcelas Angola"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [],
+    "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification.",
+    "provenance": "Inherited from world-parcels/research/india-africa-2026-10-08/africa-ws-city-1169.json; initial-pass search, not fresh in this follow-up.",
+    "timingRelativeToFollowup": "Initial pass; before the current metadata/DNS check."
+  },
+  "targetProbeProvenance": "The prior `targetEndpointProbePerformed: true` refers only to the initial shared Angola provider assessment dated 2026-10-08: eight bounded target requests were attempted and timed out/returned HTTP 000; the initial shared record does not preserve individual parameterized request URLs. The follow-up metadata request first failed DNS in the sandbox, then succeeded with HTTP 200 on the ordinary host network. Its advertised extent excludes this target center. No city-specific parcel query was sent in this follow-up.",
+  "inheritedTargetEndpointProbePerformed": true,
+  "targetEndpointProbePerformed": false,
+  "extentAssessment": {
+    "candidateService": "Luanda_AGT_Oficial_2_gdb layer 0",
+    "serviceExtentWKID": 102100,
+    "serviceExtent3857": [
+      1446622.0050001144,
+      -1044748.8887000084,
+      2145383.0154038696,
+      -973494.5757770063
+    ],
+    "wupCenterLatLon": [
+      -14.9071396924962,
+      13.5144246201527
+    ],
+    "wupCenterEPSG3857Meters": [
+      1504418.867,
+      -1678500.64
+    ],
+    "centerInsideServiceExtent": false,
+    "conclusion": "Center excluded by advertised layer extent; this layer cannot verify a parcel sample at the target center."
+  }
+}

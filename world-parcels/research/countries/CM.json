@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CM",
+ "country": "Cameroon",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Ministry of State Property, Surveys and Land Tenure (MINDCAF)",
+ "portalsFound": [
+  {
+   "url": "https://www.mindcaf.gov.cm/",
+   "observation": "MINDCAF site reachable; services and titles described, no parcel data links."
+  },
+  {
+   "url": "https://geocameroun.cm",
+   "observation": "Unreachable from proxy."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.mindcaf.gov.cm/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable, no open parcel data"
+  },
+  {
+   "url": "https://geocameroun.cm/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "digitisation of ~130,000 titles / 480,000 parcels in pilot cities reported (Douala, Yaounde, Garoua, Maroua); no public access",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "GeoCameroun unreachable; absence unconfirmed.",
+ "nextStep": "Retry geocameroun.cm; check PAMOCCA project outputs."
+}

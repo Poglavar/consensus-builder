@@ -1,0 +1,138 @@
+{
+  "name": "Auckland",
+  "country": "New Zealand",
+  "countryCode": "NZ",
+  "rank": 462,
+  "point": [
+    -36.9024908859156,
+    174.777123817482
+  ],
+  "population2025": 1123094,
+  "population2025k": 1123.094,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Auckland city-scoped verification of the shared LINZ current primary-parcel publication. The initial 13 aligned cells and four adjacent pans were expanded to 30 cells, a wider viewport and four pans around the unchanged WUP locator, yielding 184 distinct full parcel geometries. All 47 checks passed with the existing runtime descriptor: page size 100, native id identity, OBJECTID transport manifests, and safe appellation/topology labels. Forced three-row paging completed in 48 geometry pages; all 184 fresh native-id reads reproduced geometry; explicit absence, full footprint lookup and complete proposal binding passed. The WUP-containing native parcel 5211850 also matched its prior full geometry. GEOS in EPSG:32760 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. The shared Wellington runtime settings are retained. Current primary parcels only; non-primary interests, historic/pending parcels, whole-city completeness, source publication freshness and identity continuity after revision remain unverified. Retain LINZ attribution and CC BY 4.0 conditions; source accuracy notices remain informational.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Toitū Te Whenua LINZ publishes the NZ Primary Parcels layer as current official parcel polygons and links it to title interests; the exact Auckland locator returned one feature. The sample read did not request title, ownership, address or legal-description attributes.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Auckland-wide completeness and exact source-to-city boundary coverage were not tested here; only current primary parcels are represented, while non-primary, historic and pending records are separate. City-specific pagination/quality checks remain for root review.",
+  "nextStep": "Inspect enabled shared LINZ provider in headed Auckland app.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Auckland official property parcel map LINZ cadastral parcel GIS public map cadastral survey",
+        "result": "LINZ official data service identifies NZ Primary Parcels as an available current polygon layer; follow-up inspected its official layer metadata and public ArcGIS service.",
+        "method": "Separate English-language discovery search plus public official layer/service metadata."
+      },
+      {
+        "language": "Te reo Māori",
+        "query": "Tāmaki Makaurau mahere whenua rohenga whenua LINZ tapuwae whenua",
+        "result": "No additional local-language parcel feature service was established; primary parcel evidence came from LINZ.",
+        "method": "Separate Te reo Māori discovery search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+        "observation": "LINZ describes the current primary parcel polygon layer, data contents, accuracy caveat, separate non-primary/historic layers and CC BY 4.0 license."
+      },
+      {
+        "url": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+        "observation": "LINZ-linked public ArcGIS FeatureServer layer for current primary parcels; native key is `id`."
+      },
+      {
+        "url": "https://data.linz.govt.nz/layer/122657-nz-property-boundaries/",
+        "observation": "LINZ explains its separate composite property-boundary layer combines rating units, title polygons and primary parcels where needed; not used in this sample."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "LINZ official layer metadata and linked ArcGIS endpoint were traced. One bounded exact-point WGS84 query returned one polygon with `id=5211850`; geometry was retained in city-1005-auckland-samples.geojson. An initial request timed out; a retry with the same safe-field allowlist succeeded.",
+      "geometryStatus": "HTTP 200 exact-point query returned one polygon",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 1,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "HTTP 200 exact-point query returned one polygon (id 5211850)",
+      "retainedFeatures": 1,
+      "fieldsRequested": [
+        "OBJECTID",
+        "id"
+      ],
+      "geometryRetained": true,
+      "geojsonFile": "city-1005-auckland-samples.geojson"
+    }
+  },
+  "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+  ],
+  "queueRank": 462,
+  "wupCityCode": 1005,
+  "cityId": "wup2025:1005",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    -36.9024908859156,
+    174.777123817482
+  ],
+  "verifiedSampleFile": "city-1005-auckland-samples.geojson",
+  "adapterReady": true,
+  "source": {
+    "sourceId": "nz-linz-primary-parcels-arcgis",
+    "name": "NZ Primary Parcels",
+    "operator": "Toitū Te Whenua Land Information New Zealand (LINZ)",
+    "url": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+    "layer": 0,
+    "geometryType": "Polygon",
+    "coordinateReferenceSystem": "EPSG:4326 requested output",
+    "nativeIdFields": [
+      "id"
+    ],
+    "requestedAttributes": [
+      "OBJECTID",
+      "id",
+      "geometry"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "Auckland city-scoped verification of the shared LINZ current primary-parcel publication. The initial 13 aligned cells and four adjacent pans were expanded to 30 cells, a wider viewport and four pans around the unchanged WUP locator, yielding 184 distinct full parcel geometries. All 47 checks passed with the existing runtime descriptor: page size 100, native id identity, OBJECTID transport manifests, and safe appellation/topology labels. Forced three-row paging completed in 48 geometry pages; all 184 fresh native-id reads reproduced geometry; explicit absence, full footprint lookup and complete proposal binding passed. The WUP-containing native parcel 5211850 also matched its prior full geometry. GEOS in EPSG:32760 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. The shared Wellington runtime settings are retained. Current primary parcels only; non-primary interests, historic/pending parcels, whole-city completeness, source publication freshness and identity continuity after revision remain unverified. Retain LINZ attribution and CC BY 4.0 conditions; source accuracy notices remain informational."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Exact WUP locator point in Auckland; no citywide completeness claim.",
+    "verifiedOpenScope": "Auckland city-scoped verification of the shared LINZ current primary-parcel publication. The initial 13 aligned cells and four adjacent pans were expanded to 30 cells, a wider viewport and four pans around the unchanged WUP locator, yielding 184 distinct full parcel geometries. All 47 checks passed with the existing runtime descriptor: page size 100, native id identity, OBJECTID transport manifests, and safe appellation/topology labels. Forced three-row paging completed in 48 geometry pages; all 184 fresh native-id reads reproduced geometry; explicit absence, full footprint lookup and complete proposal binding passed. The WUP-containing native parcel 5211850 also matched its prior full geometry. GEOS in EPSG:32760 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. The shared Wellington runtime settings are retained. Current primary parcels only; non-primary interests, historic/pending parcels, whole-city completeness, source publication freshness and identity continuity after revision remain unverified. Retain LINZ attribution and CC BY 4.0 conditions; source accuracy notices remain informational.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+    "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "Auckland city-scoped verification of the shared LINZ current primary-parcel publication. The initial 13 aligned cells and four adjacent pans were expanded to 30 cells, a wider viewport and four pans around the unchanged WUP locator, yielding 184 distinct full parcel geometries. All 47 checks passed with the existing runtime descriptor: page size 100, native id identity, OBJECTID transport manifests, and safe appellation/topology labels. Forced three-row paging completed in 48 geometry pages; all 184 fresh native-id reads reproduced geometry; explicit absence, full footprint lookup and complete proposal binding passed. The WUP-containing native parcel 5211850 also matched its prior full geometry. GEOS in EPSG:32760 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. The shared Wellington runtime settings are retained. Current primary parcels only; non-primary interests, historic/pending parcels, whole-city completeness, source publication freshness and identity continuity after revision remain unverified. Retain LINZ attribution and CC BY 4.0 conditions; source accuracy notices remain informational.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/auckland-linz-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/auckland-linz-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/auckland-linz-service-review.json"
+  },
+  "appCityId": "auckland",
+  "runtimeQualification": {
+    "sourceId": "nz-linz-primary-parcels-arcgis",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/auckland-linz-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/auckland-linz-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T00:44:53.163117+00:00"
+}

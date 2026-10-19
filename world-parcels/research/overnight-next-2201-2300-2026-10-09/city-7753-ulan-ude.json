@@ -1,0 +1,37 @@
+{
+  "cityCode": 7753,
+  "queueRank": 2220,
+  "name": "Ulan-Ude",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [51.8301487205853, 107.614176276488],
+  "population2025": 262433,
+  "population2025k": 262.433,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ulan-Ude official cadastral map parcel viewer API Rosreestr Buryatia",
+        "result": "Search located the official Buryatia state cadastral-valuation agency notice stating that Russia's public cadastral map moved to the National Spatial Data System (NSPD), with access through the NSPD Maps section. No directly reachable official parcel API response was obtained.",
+        "actualResultUrls": [
+          "https://xn--03-6kcat8a7bhj.xn--p1ai/novosti/1527-publichnaya-kadastrovaya-karta-perenesena-na-novuyu-platformu-nspd.html?special=changeOff",
+          "https://nspd.gov.ru/"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Улан-Удэ официальный кадастровый карта земельные участки публичная кадастровая карта Бурятия",
+        "result": "The official Buryatia agency search result identifies the NSPD public cadastral map as the current public map and a city-specific result describes public cadastral-map coverage for Ulan-Ude, Buryatia. The city-specific page is not an official registry endpoint; it was not used as geometry evidence.",
+        "actualResultUrls": [
+          "https://xn--03-6kcat8a7bhj.xn--p1ai/novosti/1527-publichnaya-kadastrovaya-karta-perenesena-na-novuyu-platformu-nspd.html?special=changeOff",
+          "https://xn-----6kcacmsaq0aijlqsu1ahlr4b8bxfwa.xn--p1ai/kadastr-karta/d611fc02-92d8-44e5-aa68-9a5a0df460e0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Official national cadastral-map coverage is evidenced for the Russian Federation and the official Buryatia agency identifies the current NSPD route; the exact point was preserved. The anonymous official WMS request timed out, so no parcel identity or geometry is claimed. This packet is not source integration or runtime admission."
+}

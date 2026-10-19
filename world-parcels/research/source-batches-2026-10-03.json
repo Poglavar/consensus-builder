@@ -1,0 +1,127 @@
+{
+  "description": "Parcel runtime continuation batches; linked source histories retain every failed and successful check.",
+  "checkedAt": "2026-10-03",
+  "batches": [
+    {
+      "name": "Original batch",
+      "sources": [
+        {
+          "sourceId": "de-nrw-lika-flurstueck",
+          "status": "enabled",
+          "cityIds": [
+            "essen"
+          ],
+          "evidenceFile": "research/essen-live.json"
+        },
+        {
+          "sourceId": "us-ca-sf-datasf-active-parcels",
+          "status": "enabled",
+          "cityIds": [
+            "san_francisco"
+          ],
+          "evidenceFile": "research/san-francisco-live.json"
+        },
+        {
+          "sourceId": "ca-qc-cadastre-bd-allegee",
+          "status": "held",
+          "evidenceFile": "research/montreal-live-assessment.json",
+          "reason": "Exact geometry reuse rights unresolved; identity and complete paging verification incomplete."
+        }
+      ]
+    },
+    {
+      "name": "Additional batch1",
+      "sources": [
+        {
+          "sourceId": "de-be-alkis-flurstuecke-wfs",
+          "status": "enabled",
+          "cityIds": [
+            "berlin"
+          ],
+          "evidenceFile": "research/berlin-live.json"
+        },
+        {
+          "sourceId": "br-curitiba-ippuc-lote-cadastral",
+          "status": "held",
+          "cityIds": [
+            "curitiba"
+          ],
+          "reason": "Reuse rights unresolved; repeated rows in forced multipage query.",
+          "evidenceFile": "research/curitiba-live-assessment.json"
+        },
+        {
+          "sourceId": "br-rio-prefeitura-lotes-2013",
+          "status": "held",
+          "cityIds": [
+            "rio_de_janeiro"
+          ],
+          "reason": "No documented durable parcel key; repeated display lot labels and system-maintained OID only.",
+          "evidenceFile": "research/rio-live-assessment.json"
+        }
+      ]
+    },
+    {
+      "name": "Additional batch2",
+      "sources": [
+        {
+          "sourceId": "it-agenzia-entrate-inspire-cadastral-wfs",
+          "status": "held",
+          "cityIds": [
+            "milan"
+          ],
+          "reason": "Rights look viable, but current source access is blocked (403) and GML handling/lat-lon axis order need runtime validation. Keep held; do not add as ready.",
+          "evidenceFile": "research/milan-live-assessment.json"
+        },
+        {
+          "sourceId": "hk-landsd-lot-index-api",
+          "status": "enabled",
+          "cityIds": [
+            "hong_kong"
+          ],
+          "evidenceFile": "research/hong-kong-live.json"
+        }
+      ]
+    },
+    {
+      "name": "Additional batch3",
+      "sources": [
+        {
+          "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
+          "status": "held",
+          "cityIds": [
+            "tel_aviv"
+          ],
+          "reason": "Current bounded query returned municipal maintenance HTML; source-specific reuse rights remain unresolved.",
+          "evidenceFile": "research/tel-aviv-live-assessment.json"
+        },
+        {
+          "sourceId": "jo-dls-cassini-mapserver",
+          "status": "held",
+          "cityIds": [
+            "amman"
+          ],
+          "reason": "Bounded samples show useful polygons and pagination support, but reuse terms are unresolved and the official service was not freshly verified through the available fetcher.",
+          "evidenceFile": "research/amman-live-assessment.json"
+        },
+        {
+          "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
+          "status": "held",
+          "cityIds": [
+            "colombo"
+          ],
+          "reason": "Current official service requires a token; old coverage is partial and source-specific reuse rights remain unresolved.",
+          "evidenceFile": "research/colombo-live-assessment.json"
+        },
+        {
+          "sourceId": "bj-andf-efoncier-geoserver",
+          "status": "held",
+          "cityIds": [
+            "cotonou"
+          ],
+          "reason": "Official technical source, but service reuse rights, personal-data implications, version/currentness, and broader coverage are unresolved.",
+          "evidenceFile": "research/cotonou-live-assessment.json"
+        }
+      ]
+    }
+  ]
+}

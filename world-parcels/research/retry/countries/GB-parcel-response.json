@@ -1,0 +1,111 @@
+{
+ "note": "First 3 of 956 features from HMLR INSPIRE Index Polygons GML for Council of the Isles of Scilly (anonymous download, OGL v3 stated on page). Geometry ring truncated to 5 vertices.",
+ "numberMatched": 956,
+ "features": [
+  {
+   "properties": {
+    "INSPIREID": "14732483",
+    "LABEL": "14732483",
+    "NATIONALCADASTRALREFERENCE": "14732483",
+    "VALIDFROM": "2006-01-11T00:00:00Z",
+    "BEGINLIFESPANVERSION": "2006-01-11T00:00:00Z"
+   },
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 2042,
+   "exteriorRingFirst5": [
+    [
+     94253.65,
+     14819.59
+    ],
+    [
+     94252.02,
+     14816.77
+    ],
+    [
+     94250.86,
+     14814.78
+    ],
+    [
+     94246.65,
+     14816.16
+    ],
+    [
+     94244.85,
+     14818.45
+    ]
+   ]
+  },
+  {
+   "properties": {
+    "INSPIREID": "14732457",
+    "LABEL": "14732457",
+    "NATIONALCADASTRALREFERENCE": "14732457",
+    "VALIDFROM": "2006-01-11T00:00:00Z",
+    "BEGINLIFESPANVERSION": "2006-01-11T00:00:00Z"
+   },
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 203,
+   "exteriorRingFirst5": [
+    [
+     94643.21,
+     14895.87
+    ],
+    [
+     94643.27,
+     14892.92
+    ],
+    [
+     94643.95,
+     14890.04
+    ],
+    [
+     94644.22,
+     14889.35
+    ],
+    [
+     94645.64,
+     14886.76
+    ]
+   ]
+  },
+  {
+   "properties": {
+    "INSPIREID": "14732501",
+    "LABEL": "14732501",
+    "NATIONALCADASTRALREFERENCE": "14732501",
+    "VALIDFROM": "2006-01-11T00:00:00Z",
+    "BEGINLIFESPANVERSION": "2006-01-11T00:00:00Z"
+   },
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 336,
+   "exteriorRingFirst5": [
+    [
+     95209.61,
+     14096.55
+    ],
+    [
+     95209.7,
+     14095.78
+    ],
+    [
+     95210.07,
+     14095.0
+    ],
+    [
+     95210.66,
+     14094.36
+    ],
+    [
+     95211.41,
+     14093.95
+    ]
+   ]
+  }
+ ]
+}

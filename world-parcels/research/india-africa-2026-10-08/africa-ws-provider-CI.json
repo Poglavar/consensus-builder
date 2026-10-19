@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "CI",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "SIGFU MCLU public parcel viewer / data API",
+    "operator": "Ministère de la Construction, du Logement et de l’Urbanisme, Côte d’Ivoire",
+    "scope": "Public portal advertises approved subdivisions/lots; geographic target coverage not verified",
+    "endpoint": "https://sigfu.gouv.ci/parcelles ; API base https://sigfu.gouv.ci/api-sigfu-portail-data ; documented localites route /query-parcelle/query-parcelle/localites",
+    "geometry": "viewer shows parcels; API JS exposes localites, lotissements, lots, ilots; parcel endpoints do not expose bbox query in reviewed module",
+    "access": "Portal and JS retrieved; safe locality-list GET returned HTTP 502 with fr-CI headers, cookie jar and Referer. No owner-bearing dataset requests made.",
+    "assessment": "Promising official lead, temporarily unavailable; require an explicitly bounded privacy-safe feature query and sample."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "French (Latin)",
+      "exactQueries": [
+        "\"Bata\" Guinea Ecuatorial catastro parcelas geoportal SIG",
+        "\"Akakopé\" Togo cadastre parcelles géoportail SIG",
+        "\"Saint-Louis\" Sénégal \"parcelles cadastrales\" cadastre SIG",
+        "\"Dakar\" Sénégal \"parcelles cadastrales\" géoportail cadastre",
+        "\"Abidjan\" \"parcelles cadastrales\" géoportail SIG Côte d'Ivoire cadastre",
+        "\"Ouagadougou\" \"parcelles cadastrales\" géoportail SIG cadastre Burkina Faso",
+        "\"Siguiri\" \"cadastre\" parcelles SIG Guinée portail géographique",
+        "\"Coyah\" \"cadastre\" parcelles SIG Guinée Conakry"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sigfu.gouv.ci/parcelles",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Public viewer page and JS loaded."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": "unknown",
+      "assessment": "Documented locality-list endpoint unavailable; no parcel geometry read."
+    },
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "assessment": "Ordinary retry with viewer Referer and existing cookie jar also returned HTTP 502; remains temporarily unavailable."
+    }
+  ],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "url": "https://umaps.momah.gov.sa/server/rest/services/umaps?f=json",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "application/json; charset=UTF-8",
+    "bytes": 62,
+    "scriptUrls": [],
+    "links": [],
+    "serviceError": {
+      "code": 499,
+      "message": "Token Required"
+    },
+    "assessment": "Official publicly listed service folder requires token; no account or CAPTCHA used."
+  },
+  {
+    "url": "https://umaps.momah.gov.sa/server/rest/services/MOJ?f=json",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "application/json; charset=UTF-8",
+    "bytes": 62,
+    "scriptUrls": [],
+    "links": [],
+    "serviceError": {
+      "code": 499,
+      "message": "Token Required"
+    },
+    "assessment": "Official publicly listed service folder requires token; no account or CAPTCHA used."
+  },
+  {
+    "url": "https://umaps.momah.gov.sa/server/rest/services/Hosted?f=json",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "application/json; charset=UTF-8",
+    "bytes": 62,
+    "scriptUrls": [],
+    "links": [],
+    "serviceError": {
+      "code": 499,
+      "message": "Token Required"
+    },
+    "assessment": "Official publicly listed service folder requires token; no account or CAPTCHA used."
+  }
+]

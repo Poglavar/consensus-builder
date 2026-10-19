@@ -1,0 +1,32 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "EH",
+ "country": "Western Sahara",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "None identified (disputed non-self-governing territory; administered in part by Morocco - see MA - and in part by the Sahrawi Arab Democratic Republic)",
+ "portalsFound": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Western%20Sahara%20cadastre",
+   "observation": "ArcGIS Online search returned 0 results."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Western%20Sahara%20cadastre&f=json&num=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "total 0"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "None",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only one catalogue search; Moroccan ANCFCC cadastre may nominally cover the administered part (see MA.json) - not verified for this territory.",
+ "nextStep": "Check ANCFCC coverage of Laayoune/Dakhla."
+}

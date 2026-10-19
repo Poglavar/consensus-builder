@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:122",
+  "queueRank": 122,
+  "name": "Ürümqi",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    43.8286425957356,
+    87.5924087199406
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyt.xinjiang.gov.cn/",
+      "observation": "Xinjiang Department of Natural Resources site (HTTP 200); no open parcel dataset or service seen."
+    },
+    {
+      "url": "https://www.xinjiang.gov.cn/",
+      "observation": "Xinjiang regional government portal (HTTP 200)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyt.xinjiang.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "homepage only"
+    },
+    {
+      "url": "https://www.urumqi.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://gtj.urumqi.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://data.xinjiang.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html",
+      "assessment": "blocked for this client"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Chinese cadastral parcels are held by natural-resources/real-estate registries; no open polygon service seen",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Municipal hosts and national mnr.gov.cn unreachable; weak negative consistent with other Chinese cities (Taiyuan, Wenzhou).",
+  "nextStep": "Try Urumqi natural resources bureau and open-data platform from a China-reachable network."
+}

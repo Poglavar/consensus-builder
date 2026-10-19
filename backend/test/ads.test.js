@@ -62,7 +62,7 @@ describe('GET /ads', () => {
                     ad_parcel_url: 'https://example.test/parcel',
                     ai_model: 'gpt',
                     ai_prompt: 'prompt',
-                    ai_response: 'response',
+                    processing_result: 'response',
                     parcel_score: 0.9,
                     ad_parcel_updated_at: '2026-01-02T00:00:00.000Z',
                     ad_parcel_updated_by: 'system',
@@ -133,7 +133,7 @@ describe('GET /ads', () => {
                 ad_parcel_url: 'https://example.test/parcel',
                 ai_model: 'gpt',
                 ai_prompt: 'prompt',
-                ai_response: 'response',
+                processing_result: 'response',
                 parcel_score: 0.9,
                 ad_parcel_updated_at: '2026-01-02T00:00:00.000Z',
                 ad_parcel_updated_by: 'system',
@@ -148,6 +148,22 @@ describe('GET /ads', () => {
         expect(res.body.count).toBe(1);
         expect(res.body.items[0].parcel.parcelId).toBe('HR-339318-7396');
         expect(res.body.items[0].ad.id).toBe('ad-1');
+        expect(res.body.items[0].adParcel.processing_result).toBe('response');
+    });
+
+    // ads.ad_parcel columns as of 2026-09-24 (`\d ads.ad_parcel`, local and prod identical). The
+    // route once selected ap.ai_response, which does not exist, so every /ads request 500'd while
+    // the mock-pool tests above stayed green.
+    it('selects only columns that exist on ads.ad_parcel', async () => {
+        const AD_PARCEL_COLUMNS = new Set([
+            'ad_platform', 'ad_id', 'ad_url', 'ai_model', 'ai_prompt', 'processing_result',
+            'cestica_id', 'parcel_score', 'updated_at', 'updated_by'
+        ]);
+        pool.setResult({ rows: [], rowCount: 0 });
+        await request(app).get('/ads?min_publication_date=2026-01-01');
+        const referenced = [...pool.getCalls()[0].sql.matchAll(/\bap\.(\w+)/g)].map(m => m[1]);
+        expect(referenced.length).toBeGreaterThan(0);
+        expect(referenced.filter(col => !AD_PARCEL_COLUMNS.has(col))).toEqual([]);
     });
 
     it('returns 500 when the ad query fails', async () => {

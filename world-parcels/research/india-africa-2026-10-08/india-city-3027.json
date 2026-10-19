@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 3027,
+  "cityId": "wup2025:3027",
+  "name": "Lanckhul",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    33.574648740408,
+    74.9436957142741
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 106,
+  "stateOrUT": "Jammu and Kashmir",
+  "administrativeIdentity": {
+    "district": "Kulgam",
+    "tehsilOrTaluk": "Damhal Hanjipora",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/growth-top20-2026-10-07/city-3027.json"
+    ],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/growth-top20-2026-10-07/city-3027.json",
+        "checkedAt": "2026-10-07",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "J&K LRIS provides digital cadastral map scans and other land records; cited 2025 audit reports 6,334 of 6,850 maps digitized and 6,163 georeferenced UT-wide, while RoR linkage is partial. Kulgam/Lanckhul coverage not confirmed.",
+        "source": {
+          "sourceId": "jklr-lris",
+          "name": "Jammu & Kashmir Land Records Information System (LRIS) and JK Revenue records portal",
+          "operator": "Revenue Department, Government of Jammu and Kashmir / JaKLaRMA",
+          "scope": "J&K land records; cadastral map scans and records are documented UT-wide, but Kulgam/Lanckhul record or map linkage is unconfirmed",
+          "endpoint": "https://landrecords.jk.gov.in/ (LRIS); https://d14fnjoywemmi.cloudfront.net/jklr/ (new JK-Revenue static app/API)",
+          "method": "LRIS browser portal; JK-Revenue API POST routes require authenticated session",
+          "responseFormat": "LRIS portal publishes scans/records per official description; new API JSON for textual Jamabandi/Khasra records",
+          "crs": null,
+          "reuseStatus": "No anonymous parcel geometry endpoint established. The linked JK-Revenue API explicitly returned HTTP 401 Unauthorized for district/village/parcel-record routes; no login or access controls were bypassed."
+        },
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://landrecords.jk.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "Direct browser-like request attempted with Chrome User-Agent, Accept, target-country Accept-Language and requests cookie session; environment DNS resolution failed before HTTP response. No response body; this is not evidence of no-data."
+          },
+          {
+            "method": "GET",
+            "url": "https://landrecords.jk.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "Outside-sandbox request with browser-like headers and cookie session timed out at 35 seconds; temporary unavailability, not a no-data result."
+          },
+          {
+            "method": "POST",
+            "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-districts",
+            "httpStatus": 401,
+            "contentType": "application/json",
+            "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+          },
+          {
+            "method": "POST",
+            "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-tehsil-by-district",
+            "httpStatus": 401,
+            "contentType": "application/json",
+            "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+          },
+          {
+            "method": "POST",
+            "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-village-by-tehsil",
+            "httpStatus": 401,
+            "contentType": "application/json",
+            "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+          },
+          {
+            "method": "POST",
+            "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-khasra-by-khata",
+            "httpStatus": 401,
+            "contentType": "application/json",
+            "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+          },
+          {
+            "method": "POST",
+            "url": "https://d14fnjoywemmi.cloudfront.net/jklr-api/api/v1/get-jamabandi-by-khasra",
+            "httpStatus": 401,
+            "contentType": "application/json",
+            "assessment": "Unauthenticated public request returned explicit Unauthorized / full authentication required. Route not tested further and no login bypass attempted."
+          }
+        ],
+        "conclusion": null,
+        "nextStep": "If open parcel geometry is required, ask J&K Revenue for a public GIS/data export or use a legally authorized portal path; the currently linked JK-Revenue APIs require authentication and LRIS was temporarily unresponsive. Do not treat this as a negative for cadastral-map existence."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Urdu",
+        "query": "لنکخول جموں و کشمیر زمین کا نقشہ ریونیو گاؤں",
+        "scope": "WUP 3027 Lanckhul cohort label retained; native-script query searched for official local/state cadastral records.",
+        "result": "Native Urdu search returned no official city/revenue-village map result. Inherited state portal evidence: LRIS DNS failed, and unauthenticated JK-Revenue API routes returned HTTP 401; this is an access barrier, not an absence of state data.",
+        "checkedAt": "2026-10-08",
+        "script": "Arabic-derived Urdu",
+        "actualResultUrls": [
+          "https://stategisportal.nic.in/stategisportal/home/map/1",
+          "https://stategisportal.nic.in/stategisportal/Home/Map/1",
+          "https://play.google.com/store/apps/details?hl=en_GB&id=mm.marsman.jammuandkashmirbhumi",
+          "https://srinagar.nic.in/document-category/%D8%B2%D9%85%DB%8C%D9%86-%DA%A9%DB%8C-%D8%B4%D8%B1%D8%AD/",
+          "https://d14fnjoywemmi.cloudfront.net/jklr/",
+          "https://www.knskashmir.com/kulgam-revenue-records-digitised--jamabandi-as-on-may-2026-uploaded-on-portal-204745",
+          "https://2bigha.ai/blogs/bhu-naksha-jammu-kashmir-land-records-online",
+          "https://services.india.gov.in/service/detail/land-records-information-system-jammu-and-kashmir-1",
+          "https://igr.jk.gov.in/",
+          "https://www.landrecordsindia.com/jk-land-records-online-guide/",
+          "https://akhairkar.github.io/BhumiRecord/states/jammu-and-kashmir.html",
+          "https://www.mylandrecord.com/jk-land-records/",
+          "https://www.reddit.com/r/Kashmiri/comments/1t1yoji/my_current_map_in_progress_showing_provincial/",
+          "https://www.reddit.com/r/Kashmiri/comments/1o808w2",
+          "https://www.reddit.com/r/Urdu/comments/1shliis/found_this_at_my_friends_home_i_can_read_but_its/",
+          "https://www.ncertbooks.net/textbook/pdf/luab101.pdf"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Jammu and Kashmir land records/map entry point",
+        "operator": "State government source as identified on portal/search result; see observation",
+        "homeUrl": "https://landrecords.jk.gov.in/",
+        "mapUrl": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+        "observation": "Native Urdu search returned no official city/revenue-village map result. Inherited state portal evidence: LRIS DNS failed, and unauthenticated JK-Revenue API routes returned HTTP 401; this is an access barrier, not an absence of state data."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=33.574648740408&lon=74.9436957142741&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Yarikha, Dobdabyan, Damhal Hanjipora, Kulgam, Jammu and Kashmir, India",
+        "osmType": "way",
+        "osmId": 319038458,
+        "address": {
+          "hamlet": "Yarikha",
+          "village": "Dobdabyan",
+          "county": "Damhal Hanjipora",
+          "state_district": "Kulgam",
+          "state": "Jammu and Kashmir",
+          "ISO3166-2-lvl4": "IN-JK",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://landrecords.jk.gov.in/",
+        "httpStatus": 0,
+        "contentType": "",
+        "assessment": "Native Urdu search returned no official city/revenue-village map result. Inherited state portal evidence: LRIS DNS failed, and unauthenticated JK-Revenue API routes returned HTTP 401; this is an access barrier, not an absence of state data."
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://landrecords.jk.gov.in/",
+          "https://d14fnjoywemmi.cloudfront.net/jklr/"
+        ],
+        "scope": "Exact official endpoint/result URLs checked or surfaced during the city query; the state service is a lead, not confirmation of WUP-point parcel coverage."
+      }
+    ]
+  },
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_open_endpoint_after_attempts",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Identify a reachable official public cadastral-map route and resolve the WUP point to its revenue village; test only public unauthenticated access for parcel geometry and stable khasra identity."
+}

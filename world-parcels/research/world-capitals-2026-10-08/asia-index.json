@@ -1,0 +1,251 @@
+{
+  "purpose": "Completed regional slice of the remaining world-capital research batch.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "complete",
+  "group": "asia",
+  "cityCount": 20,
+  "cities": [
+    {
+      "cityId": "capital:BH:manama",
+      "name": "Manama",
+      "countryCode": "BH",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-manama.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:BT:thimphu",
+      "name": "Thimphu",
+      "countryCode": "BT",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-thimphu.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "bt-thimphu-taba-plots"
+      ],
+      "appCityId": "thimphu"
+    },
+    {
+      "cityId": "capital:BN:bandar-seri-begawan",
+      "name": "Bandar Seri Begawan",
+      "countryCode": "BN",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-bandar-seri-begawan.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "bn-survey-cadas-bsb"
+      ],
+      "appCityId": "bandarseribegawan"
+    },
+    {
+      "cityId": "capital:KH:phnom-penh",
+      "name": "Phnom Penh",
+      "countryCode": "KH",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-phnom-penh.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:CY:north-nicosia",
+      "name": "North Nicosia",
+      "countryCode": "CY",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-north-nicosia.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "cy-dls-north-nicosia-parcels"
+      ]
+    },
+    {
+      "cityId": "capital:ID:nusantara",
+      "name": "Nusantara",
+      "countryCode": "ID",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-nusantara.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:IL:jerusalem",
+      "name": "Jerusalem",
+      "countryCode": "IL",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-jerusalem.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "il-govmap-cadastral-parcel-rows"
+      ],
+      "appCityId": "jerusalem"
+    },
+    {
+      "cityId": "capital:LA:vientiane",
+      "name": "Vientiane",
+      "countryCode": "LA",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-vientiane.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:LB:beirut",
+      "name": "Beirut",
+      "countryCode": "LB",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-beirut.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "lb-bbed-beirut-parcels"
+      ],
+      "appCityId": "beirut"
+    },
+    {
+      "cityId": "capital:MY:putrajaya",
+      "name": "Putrajaya",
+      "countryCode": "MY",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-putrajaya.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:MV:male",
+      "name": "Male",
+      "countryCode": "MV",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-male.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "mv-hdc-parcels-public-view"
+      ]
+    },
+    {
+      "cityId": "capital:MM:naypyidaw",
+      "name": "Naypyidaw",
+      "countryCode": "MM",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-naypyidaw.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:KR:sejong",
+      "name": "Sejong",
+      "countryCode": "KR",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-sejong.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:PS:east-jerusalem",
+      "name": "East Jerusalem",
+      "countryCode": "PS",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-east-jerusalem.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "il-govmap-cadastral-parcel-rows"
+      ],
+      "appCityId": "eastjerusalem"
+    },
+    {
+      "cityId": "capital:PS:ramallah",
+      "name": "Ramallah",
+      "countryCode": "PS",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-ramallah.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "runtimeReadiness": "held_quality_review",
+      "sourceIds": [
+        "ps-ramallah-municipal-parcels"
+      ]
+    },
+    {
+      "cityId": "capital:TL:dili",
+      "name": "Dili",
+      "countryCode": "TL",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-dili.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:YE:aden",
+      "name": "Aden",
+      "countryCode": "YE",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-aden.json",
+      "registryFound": true,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:AZ:baku",
+      "name": "Baku",
+      "countryCode": "AZ",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-baku.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:GE:sukhumi",
+      "name": "Sukhumi",
+      "countryCode": "GE",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-sukhumi.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityId": "capital:GE:tskhinvali",
+      "name": "Tskhinvali",
+      "countryCode": "GE",
+      "group": "asia",
+      "researchFile": "research/world-capitals-2026-10-08/city-tskhinvali.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    }
+  ]
+}

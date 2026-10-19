@@ -1,0 +1,159 @@
+{
+  "cityCode": 5134,
+  "queueRank": 1662,
+  "name": "Augsburg",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso2": "DE",
+  "iso3": "DEU",
+  "locId": 276,
+  "point": [48.3618416588452, 10.8920528462585],
+  "population2025": 344255,
+  "population2025k": 344.255,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Augsburg official cadastral map parcel Bayern BayernAtlas Flurstücke WMS WFS",
+        "result": "First-party discovery located the official Amt für Digitalisierung, Breitband und Vermessung Augsburg pages, the Bavarian LDBV BayernAtlas documentation, Geoportal Bayern service catalogue, and the official Bavaria ALKIS parcel-map service documentation. The open service is a raster WMS; vector parcel services are listed as authenticated/licensed.",
+        "actualResultUrls": [
+          "https://vermessungsamt-augsburg.de/produkte/liegenschaftsinformationen/flurkarte.html",
+          "https://adbv-augsburg.de/produkte/dienste/bayernatlas.html",
+          "https://geoportal.bayern.de/geoportalbayern/suche/suche?57844=&f=true&q=Alkis",
+          "https://www.geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=parzellarkarte"
+        ]
+      },
+      {
+        "language": "German",
+        "query": "Augsburg amtliche Flurkarte Liegenschaftskataster Bayern Atlas Flurstücke",
+        "result": "Die amtlichen Seiten bestätigen das Amt für Digitalisierung, Breitband und Vermessung Augsburg als zuständige örtliche Stelle und ALKIS/Flurkarte als Katastergrundlage. Der kostenfreie ALKIS-Parzellarkarte-WMS liefert nur eine reduzierte Darstellung ohne Flurstücksnummern; der WFS ALKIS-vereinfacht und der Flurstückssuchdienst verlangen Freischaltung bzw. persönlichen Authentifizierungstoken.",
+        "actualResultUrls": [
+          "https://vermessungsamt-augsburg.de/vermessung/kataster/allgemein.html",
+          "https://www.augsburg.de/buergerservice-rathaus/buergerservice/aemter-behoerden/staedtische-dienststellen/g/geodatenamt",
+          "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis",
+          "https://geodatenonline.bayern.de/geodatenonline/seiten/dienste/rest_flurstueck.html",
+          "https://www.geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=parzellarkarte"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://vermessungsamt-augsburg.de/vermessung/kataster/allgemein.html",
+      "observation": "Official Augsburg surveying-office page identifies the local office and explains that ALKIS contains parcel, building, actual-use and owner object areas. It directs public inspection and extracts to the competent office; owner information requires a justified interest."
+    },
+    {
+      "url": "https://www.augsburg.de/buergerservice-rathaus/buergerservice/aemter-behoerden/staedtische-dienststellen/g/geodatenamt",
+      "observation": "Official City of Augsburg Geodatenamt page offers ordering of official cadastral extracts and digital city-map CAD extracts. It is a local service/procedure page, not an anonymous parcel-geometry endpoint."
+    },
+    {
+      "url": "https://www.geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=parzellarkarte",
+      "observation": "Official LDBV OpenData catalogue documents the CC BY 4.0 ALKIS-Parzellarkarte WMS. It explicitly says the reduced map has parcel boundaries but no parcel numbers or boundary markers; it is image-only."
+    },
+    {
+      "url": "https://geoportal.bayern.de/geoportalbayern/suche/suche?57844=&f=true&q=Alkis",
+      "observation": "Official Geoportal catalogue lists INSPIRE-WMS/WFS BY Flurstücke/Grundstücke ALKIS, with authentication and paid/special terms, and identifies LDBV as provider."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://vermessungsamt-augsburg.de/vermessung/kataster/allgemein.html",
+      "method": "GET; anonymous; browser headers; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official local custodian page fetched. No public vector endpoint or parcel response embedded."
+    },
+    {
+      "url": "https://www.augsburg.de/buergerservice-rathaus/buergerservice/aemter-behoerden/staedtische-dienststellen/g/geodatenamt",
+      "method": "GET; anonymous; browser headers; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official city Geodatenamt page fetched. It describes ordering procedures and CAD extracts; no anonymous parcel API was exposed."
+    },
+    {
+      "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis",
+      "method": "GET; anonymous; browser headers; cookie jar; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official service page exposed https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?, feature type ave:Flurstueck, EPSG:25832 default plus 4326, and Bavaria-wide scope. Page states the service is only for framework/department customers and requires activation."
+    },
+    {
+      "url": "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET; anonymous; browser headers; Referer=https://atlas.bayern.de/; TLS verification enabled",
+      "httpStatus": 401,
+      "contentType": "text/html",
+      "assessment": "Basic-auth wall (WFS-Authentifizierung); no capabilities or geometry returned. No credentials were attempted."
+    },
+    {
+      "url": "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave:Flurstueck&count=3&srsName=EPSG:4326&bbox=10.8905,48.3605,10.8935,48.3635,urn:ogc:def:crs:EPSG::4326&outputFormat=application/json",
+      "method": "GET; anonymous; browser headers; Referer=https://atlas.bayern.de/; TLS verification enabled",
+      "httpStatus": 401,
+      "contentType": "text/html",
+      "assessment": "Bounded ID+geometry query around the exact WUP point was blocked by the service authentication wall; no hit/miss inference was made."
+    },
+    {
+      "url": "https://geoservices.bayern.de/bvvapi/tb/flurstuecke?x=10.8920528462585&y=48.3618416588452&srid=4326",
+      "method": "GET; anonymous; browser headers; Referer=https://atlas.bayern.de/; TLS verification enabled",
+      "httpStatus": 404,
+      "contentType": "application/json",
+      "assessment": "The documented base route returned {\"error_msg\":\"404 Route Not Found\"} without the personal authentication token described by the official documentation. No token was guessed or requested."
+    },
+    {
+      "url": "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?service=WMS&version=1.3.0&request=GetCapabilities",
+      "method": "GET; anonymous; browser headers; Referer=https://atlas.bayern.de/; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "OpenData WMS capabilities returned. Service covers Bavaria, supports EPSG:4326 and lists by_alkis_parzellarkarte_farbe plus related layers. Metadata says the reduced map has parcel boundaries but no parcel numbers or boundary markers."
+    },
+    {
+      "url": "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?service=WMS&version=1.3.0&request=GetMap&layers=by_alkis_parzellarkarte_farbe&styles=&crs=EPSG:4326&bbox=10.8905,48.3605,10.8935,48.3635&width=512&height=512&format=image/png&transparent=true",
+      "method": "GET; anonymous; browser headers; Referer=https://atlas.bayern.de/; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "assessment": "Bounded map image returned for an extent containing the exact WUP point. This confirms an open raster portrayal only; it does not provide parcel polygons or a safe native parcel ID."
+    },
+    {
+      "url": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET; anonymous; browser headers; TLS verification enabled",
+      "httpStatus": 401,
+      "contentType": "text/html",
+      "assessment": "Official Geoportal-listed INSPIRE cadastral-parcels WFS was tested as a candidate route and required authentication; no data was returned."
+    },
+    {
+      "url": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/vs/wms?service=WMS&version=1.3.0&request=GetCapabilities",
+      "method": "GET; anonymous; browser headers; TLS verification enabled",
+      "httpStatus": 401,
+      "contentType": "text/html",
+      "assessment": "Official Geoportal-listed INSPIRE cadastral-parcels WMS was tested as a candidate route and required authentication; no map or feature data was returned."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Amt für Digitalisierung, Breitband und Vermessung Augsburg and City of Augsburg Geodatenamt pages evidence the local cadastral/map custodians and public extract procedures. This is custodian evidence, not evidence of an open anonymous parcel-vector adapter.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Bayerische Vermessungsverwaltung / Landesamt für Digitalisierung, Breitband und Vermessung, with Amt für Digitalisierung, Breitband und Vermessung Augsburg as local office",
+    "viewerUrls": ["https://atlas.bayern.de/"],
+    "publicRasterEndpoint": "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?",
+    "vectorEndpoints": [
+      "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?",
+      "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs?"
+    ],
+    "crs": "Public raster WMS advertises EPSG:4326; authenticated vector WFS documents EPSG:25832 default and supports EPSG:4326."
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_custodian_and_open_raster_only_vector_requires_authentication",
+  "coverageAssessment": {
+    "claimedScope": "Bavaria-wide ALKIS parcel cartography and cadastral services, with Augsburg served by the local surveying office.",
+    "verifiedOpenScope": "A Bavaria-wide open raster WMS was verified over a small Augsburg extent, but no open parcel-vector response with stable native IDs was obtained.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_geometry",
+  "remainingUncertainty": "The official open WMS confirms visual parcel-boundary coverage but intentionally omits parcel numbers and cannot supply retained polygons. Vector WFS and coordinate lookup may be available under a paid/licensed or authenticated agreement; this attempt did not use credentials, request unsafe fields, or infer parcel absence from the authentication wall or exact-point result.",
+  "nextStep": "Serial reviewer may independently assess whether an authorized, safe vector adapter is admissible; research packet itself remains held and is not source integration."
+}

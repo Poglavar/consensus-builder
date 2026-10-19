@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Panjin",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Panjin Municipal Natural Resources Bureau documents the city’s unified property-registration and cadastral-data model, including cadastral areas/subareas, units, boundary points/lines. Local registration information queries require eligible interests/identity documentation; no public anonymous parcel geometry layer was identified.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.panjin.gov.cn/2024_07/31_13/content-481623.html",
+    "https://zrzyj.panjin.gov.cn/2017_03/17_09/content-211857.html",
+    "https://zrzyj.panjin.gov.cn/2024_12/31_16/content-484871.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10016,
+  "cityId": "wup2025:10016",
+  "centerLatLon": [
+    41.1312011032452,
+    122.083495772631
+  ],
+  "rank": 995,
+  "queueRank": 995,
+  "population2025": 551709,
+  "population2025k": 551.709,
+  "populationPlausibility": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Panjin Natural Resources Bureau explains cadastral feature schema and registration-data linkage. Its inquiry guide requires application, purpose, and identity/interest materials for registry queries; local registration-center contacts are published. No anonymous geometry service established.",
+  "scopeLimits": "The Panjin Municipal Natural Resources Bureau documents the city’s unified property-registration and cadastral-data model, including cadastral areas/subareas, units, boundary points/lines. Local registration information queries require eligible interests/identity documentation; no public anonymous parcel geometry layer was identified.",
+  "remainingUncertainty": "The exact parcel coverage of the WUP settlement centroid and the complete public geometry coverage in the locality remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Panjin China official cadastre cadastral parcel map GIS land registry",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "Panjin Natural Resources Bureau explains cadastral feature schema and registration-data linkage. Its inquiry guide requires application, purpose, and identity/interest materials for registry queries; local registration-center contacts are published. No anonymous geometry service established.",
+        "actualResultUrls": [
+          "https://zrzyj.panjin.gov.cn/2024_07/31_13/content-481623.html",
+          "https://zrzyj.panjin.gov.cn/2017_03/17_09/content-211857.html",
+          "https://zrzyj.panjin.gov.cn/2024_12/31_16/content-484871.html"
+        ],
+        "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      },
+      {
+        "language": "Chinese",
+        "query": "盘锦市 不动产登记 地籍图 查询 宗地 官方 盘锦市自然资源局",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "Panjin Natural Resources Bureau explains cadastral feature schema and registration-data linkage. Its inquiry guide requires application, purpose, and identity/interest materials for registry queries; local registration-center contacts are published. No anonymous geometry service established.",
+        "actualResultUrls": [
+          "https://zrzyj.panjin.gov.cn/2024_07/31_13/content-481623.html",
+          "https://zrzyj.panjin.gov.cn/2017_03/17_09/content-211857.html",
+          "https://zrzyj.panjin.gov.cn/2024_12/31_16/content-484871.html"
+        ],
+        "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyj.panjin.gov.cn/2024_07/31_13/content-481623.html",
+        "observation": "Panjin Natural Resources Bureau explains cadastral feature schema and registration-data linkage. Its inquiry guide requires application, purpose, and identity/interest materials for registry queries; local registration-center contacts are published. No anonymous geometry service established."
+      },
+      {
+        "url": "https://zrzyj.panjin.gov.cn/2017_03/17_09/content-211857.html",
+        "observation": "Panjin Natural Resources Bureau explains cadastral feature schema and registration-data linkage. Its inquiry guide requires application, purpose, and identity/interest materials for registry queries; local registration-center contacts are published. No anonymous geometry service established."
+      },
+      {
+        "url": "https://zrzyj.panjin.gov.cn/2024_12/31_16/content-484871.html",
+        "observation": "Panjin Natural Resources Bureau explains cadastral feature schema and registration-data linkage. Its inquiry guide requires application, purpose, and identity/interest materials for registry queries; local registration-center contacts are published. No anonymous geometry service established."
+      }
+    ],
+    "metadataReviewFile": "panjin-service-review.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "Official cadastral/property-record service identified; anonymous full geometry not verified in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The Panjin Municipal Natural Resources Bureau documents the city’s unified property-registration and cadastral-data model, including cadastral areas/subareas, units, boundary points/lines. Local registration information queries require eligible interests/identity documentation; no public anonymous parcel geometry layer was identified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Panjin Municipal Natural Resources Bureau documents the city’s unified property-registration and cadastral-data model, including cadastral areas/subareas, units, boundary points/lines. Local registration information queries require eligible interests/identity documentation; no public anonymous parcel geometry layer was identified.",
+    "verifiedOpenScope": "No full parcel geometry retained; no citywide coverage is inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Panjin Natural Resources Bureau explains cadastral feature schema and registration-data linkage. Its inquiry guide requires application, purpose, and identity/interest materials for registry queries; local registration-center contacts are published. No anonymous geometry service established."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://zrzyj.panjin.gov.cn/2024_07/31_13/content-481623.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "不动产登记和地籍数据_一问一答_盘锦市自然资源局"
+  },
+  "rootReviewNote": "Root reviewed the exact primary institutional evidence and specific local jurisdiction, preserving source dates, application/access limits and failed readbacks. Registry presence and public full parcel geometry are separate findings. No public full geometry was verified in this city discovery record.",
+  "rootReviewedAt": "2026-10-09T05:10:15.053712+00:00",
+  "populationPlausibility2025": "High",
+  "point": [
+    41.1312011032452,
+    122.083495772631
+  ],
+  "sourceIds": []
+}

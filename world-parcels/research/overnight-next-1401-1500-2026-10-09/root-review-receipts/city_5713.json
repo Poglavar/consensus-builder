@@ -1,0 +1,14 @@
+{
+  "taskId": "city:5713",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5713-rangkasbitung.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/rangkasbitung-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/rangkasbitung-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-09T17:17:27Z",
+  "reason": "Immutable WUP identity and bilingual searches match the cohort record. The three safe-ID sample polygons match the cached original WFS response, but metric GEOS found a self-intersecting ring in one source polygon. Fresh exact-ID reads, forced paging, thirteen bounded cells, full adapter geometry/operation checks, source binding, and headed Details verification are not evidenced; runtime admission remains held."
+}

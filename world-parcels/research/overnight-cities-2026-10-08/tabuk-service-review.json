@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-123-tabuk.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local municipality and nationwide U Maps plot-map scope documented; no anonymously accessible feature schema or point geometry was verified. The public service documentation describes interactive map layers but does not expose a feature API/schema in the reviewed sources. No login, account, or personal lookup was used.",
+  "registryAssessment": "The Ministry’s official Tabuk Municipality branch page identifies the local municipal authority. Its Urban Maps service states that U Maps covers urban data across Saudi cities and displays land plots and related details to the public. This establishes a national plot-map service for the city by its stated all-city scope, but no Tabuk-specific layer/schema or WUP-point feature response was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://momah.gov.sa/ar/branches/tabuk-province-municipality",
+      "observation": "Official Ministry page identifies the Tabuk Municipality branch and its location."
+    },
+    {
+      "url": "https://momah.gov.sa/en/node/15098",
+      "observation": "Official Urban Maps service documentation says the service covers all Saudi urban areas and includes land plots and plot details, free for individuals and without documents."
+    },
+    {
+      "url": "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+      "observation": "Arabic official service page gives the same U Maps service scope and workflow."
+    },
+    {
+      "url": "https://balady.gov.sa/ar/node/11430",
+      "observation": "Balady service channel linked from the official Ministry page."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tabuk Saudi Arabia official urban maps land plots Ministry of Municipalities Housing GIS Balady",
+      "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+      "result": "The public service documentation describes interactive map layers but does not expose a feature API/schema in the reviewed sources. No login, account, or personal lookup was used. Official registry evidence: The Ministry’s official Tabuk Municipality branch page identifies the local municipal authority. Its Urban Maps service states that U Maps covers urban data across Saudi cities and displays land plots and related details to the public. This establishes a national plot-map service for the city by its stated all-city scope, but no Tabuk-specific layer/schema or WUP-point feature response was verified.",
+      "actualResultUrls": [
+        "https://momah.gov.sa/ar/branches/tabuk-province-municipality",
+        "https://momah.gov.sa/en/node/15098",
+        "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+        "https://balady.gov.sa/ar/node/11430"
+      ],
+      "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+    },
+    {
+      "language": "Arabic",
+      "query": "أمانة تبوك الخرائط الحضرية قطع الأراضي بلدي",
+      "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+      "result": "The public service documentation describes interactive map layers but does not expose a feature API/schema in the reviewed sources. No login, account, or personal lookup was used. Official registry evidence: The Ministry’s official Tabuk Municipality branch page identifies the local municipal authority. Its Urban Maps service states that U Maps covers urban data across Saudi cities and displays land plots and related details to the public. This establishes a national plot-map service for the city by its stated all-city scope, but no Tabuk-specific layer/schema or WUP-point feature response was verified.",
+      "actualResultUrls": [
+        "https://momah.gov.sa/ar/branches/tabuk-province-municipality",
+        "https://momah.gov.sa/en/node/15098",
+        "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+        "https://balady.gov.sa/ar/node/11430"
+      ],
+      "executionMethod": "Separate Arabic-language web search, followed by review of first-party source pages; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No full anonymous parcel feature response was obtained. No geometry sample is retained; exact point geometry remains unverified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official local sources and the exact unchanged WUP locator only; no citywide parcel completeness is claimed.",
+    "limits": "No Tabuk-specific endpoint or geometry at the WUP locator was verified; statewide service coverage statement does not establish actual plot-layer completeness."
+  },
+  "attempts": [
+    {
+      "url": "https://momah.gov.sa/ar/branches/tabuk-province-municipality",
+      "method": "Official public source/service review",
+      "result": "Official Ministry page identifies the Tabuk Municipality branch and its location."
+    },
+    {
+      "url": "https://momah.gov.sa/en/node/15098",
+      "method": "Official public source/service review",
+      "result": "Official Urban Maps service documentation says the service covers all Saudi urban areas and includes land plots and plot details, free for individuals and without documents."
+    },
+    {
+      "url": "https://momah.gov.sa/ar/e-services/alkhrayt-alhdryt",
+      "method": "Official public source/service review",
+      "result": "Arabic official service page gives the same U Maps service scope and workflow."
+    },
+    {
+      "url": "https://balady.gov.sa/ar/node/11430",
+      "method": "Official public source/service review",
+      "result": "Balady service channel linked from the official Ministry page."
+    }
+  ],
+  "remainingUncertainty": "No Tabuk-specific endpoint or geometry at the WUP locator was verified; statewide service coverage statement does not establish actual plot-layer completeness."
+}

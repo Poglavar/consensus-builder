@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5880-beni-suef.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Egyptian Survey Authority identifies a Beni Suef survey directorate/local office and publishes city/governorate survey mapping products. This supports local survey/registry activity, but the reviewed materials describe map products or project records rather than an anonymous city parcel-vector service. No full parcel polygon at the WUP locator was verified.",
+  "registryAssessment": "The Egyptian Survey Authority identifies a Beni Suef survey directorate/local office and publishes city/governorate survey mapping products. This supports local survey/registry activity, but the reviewed materials describe map products or project records rather than an anonymous city parcel-vector service. No full parcel polygon at the WUP locator was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official ESA mission includes topographic mapping and property registers; it does not establish a public vector service for this point."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "observation": "Official national map services catalogue."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "observation": "Official digital-map room describes a written request, area/scale/layers/format specification and payment workflow rather than anonymous download."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "observation": "Official topographic map index lists Beni Suef-area map products; these are not parcel vectors."
+    },
+    {
+      "url": "https://assets.mof.gov.eg/filese1ec3bd0-4b7e-11eb-a290-a134cc8a56b4.pdf",
+      "observation": "Official government directory lists the Beni Suef Survey Directorate/local office."
+    },
+    {
+      "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/100624/WQ134_20250619_8841.pdf?isAllowed=y&sequence=2",
+      "observation": "Official Gazette notice references Beni Suef survey sheets/maps in a local project; no public parcel layer is provided."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Arabic",
+      "query": "بني سويف مديرية المساحة السجل العيني خريطة مساحية قطع الأراضي رسمي",
+      "result": "تشير المصادر الرسمية لهيئة المساحة المصرية إلى أعمال المساحة والسجلات العقارية ووجود مكتب محلي في بني سويف؛ الخرائط الرقمية تُطلب عبر إجراء شراء محدد بالمنطقة والمقياس والطبقات والصيغة. لم يُعثر على خدمة هندسية عامة أو مضلع قطعة عند نقطة WUP.",
+      "urls": [
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/services.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "https://assets.mof.gov.eg/filese1ec3bd0-4b7e-11eb-a290-a134cc8a56b4.pdf",
+        "https://mediadr.sis.gov.eg/bitstream/handle/123456789/100624/WQ134_20250619_8841.pdf?isAllowed=y&sequence=2"
+      ],
+      "scope": "Verify city-local registry/cadastre evidence and inspect safe anonymous geometry routes."
+    },
+    {
+      "language": "English",
+      "query": "Beni Suef Egypt official cadastral survey property registry parcel map GIS public",
+      "result": "Official Egyptian Survey Authority sources describe property-register/survey responsibilities and digital map products, with a local Beni Suef survey office and local survey-sheet notices. Digital maps are requested for purchase with a defined area/scale/layer/format; no anonymous feature service or WUP-point parcel response was found.",
+      "urls": [
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/services.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "https://assets.mof.gov.eg/filese1ec3bd0-4b7e-11eb-a290-a134cc8a56b4.pdf",
+        "https://mediadr.sis.gov.eg/bitstream/handle/123456789/100624/WQ134_20250619_8841.pdf?isAllowed=y&sequence=2"
+      ],
+      "scope": "Cross-check source identity, service availability, and public full geometry at the WUP point."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official ESA overview describes national survey/property-register mandate, supplemented by local Beni Suef office evidence."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official public first-party information reviewed; it documents local service/map activity but does not expose a generic anonymous full-polygon schema."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official ESA digital map request/purchase instructions; no anonymous parcel vector endpoint documented."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official topographic map index includes Beni Suef area products; topographic index does not establish parcel geometry."
+    },
+    {
+      "url": "https://assets.mof.gov.eg/filese1ec3bd0-4b7e-11eb-a290-a134cc8a56b4.pdf",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official public first-party information reviewed; it documents local service/map activity but does not expose a generic anonymous full-polygon schema."
+    },
+    {
+      "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/100624/WQ134_20250619_8841.pdf?isAllowed=y&sequence=2",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official public first-party information reviewed; it documents local service/map activity but does not expose a generic anonymous full-polygon schema."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, account, taxpayer, applicant, assessment, sale, or identity fields were requested or retained; no account-like token value was stored.",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "No anonymous parcel-vector endpoint or full polygon response was verified at the unchanged WUP locator. Official digital map access is a request-and-purchase workflow; map index evidence is topographic/project-level, not proof of public parcel geometry."
+  },
+  "geometryDisposition": "No full geometry sample retained because no safe anonymous full-polygon schema and valid feature identity at the WUP point were verified."
+}

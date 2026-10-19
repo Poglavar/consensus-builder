@@ -1,69 +1,223 @@
 /* ========== Map ========== */
 
-/* Map 3D toggle button */
-#mode-3d-toggle.map-mode-toggle {
-    position: absolute;
-    right: 10px;
-    bottom: 48px;
-    z-index: 1000;
-    background: white;
-    border: 1px solid rgba(0,0,0,0.2);
-    border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    padding: 8px 10px;
-    min-width: 40px;
-    min-height: 36px;
-    box-sizing: border-box;
-    font-weight: 600;
-    color: #333;
-    cursor: pointer;
+/* Map view buttons — the mode strip down the left edge.
+   Stacked controls, top → bottom: cadastre view, then the 2D / model / photo radio group
+   (the globe is styled in photoreal-mode.css), then the mode-scoped tools. The selected view's
+   button is aria-pressed and takes the "pressed" ring (see the end of this file).
+
+   They live in the LOWER-LEFT corner in every view — 2D, model and photo — so they never move when
+   the view changes (they used to sit under the search box in 2D and drop to the corner in 3D). The
+   scale bar went to the lower right to make room (below). The right edge belongs to the docked
+   panels and the shell's buttons. One variable so all the buttons move together. */
+body {
+    --map-mode-stack-left: 10px;
+
+    /* ONE SLOT PER BUTTON, and a button never changes slot. Two rules follow from that:
+       an icon means the same thing in the same place in every mode (nothing to re-learn when
+       you switch view), and no two buttons can occupy one slot. They are all absolutely
+       positioned at the same `left`, so sharing a slot is not a layout squeeze — the later
+       one in index.html silently PAINTS OVER the other and the covered button becomes
+       unreachable. That is what the cadastre grid did to the walk button when both sat at 240,
+       and what walk did to the AI wand before that when both sat at 192.
+
+       A button whose mode is off is HIDDEN, never moved, so the stack never shuffles under the
+       cursor. Slots are ordered by how often the button is present, which keeps the visible run
+       contiguous — the empty slots land at the far END, not as holes in the middle. Cadastre view
+       takes the first slot: it is the first rung of the frame ladder (rethink-proposals.md §11,
+       official / effective / plan), so the ground truth heads the views built on it.
+
+         slot 1  #cadastre-view-toggle    cadastre view   always
+         slot 2  #mode-2d-toggle          2D              always
+         slot 3  #mode-3d-toggle          model (3D)      always
+         slot 4  #mode-realistic-toggle   aerial 3D      always            [photoreal-mode.css]
+         slot 5  #mode-ai-toggle          AI wand         3D only, inert in model view [ai-scene.css]
+         slot 6  #mode-walk-toggle        walk-through    model view, walk-configured cities
+
+       Each slot is a TOP offset counted up from the bottom row the shell keeps clear
+       (--map-shell-bottom-clearance, css/map-shell.css: the desktop button row, the phone bar), so
+       the last slot's 36px button ends on that line. 48px apart: 36px min-height + 12px gap.
+       Adding a button means adding a slot here, not picking an offset by eye —
+       backend/test/map-mode-stack.test.js fails on a duplicate.
+
+       Declared on body, not :root: a custom property is resolved where it is declared, so the
+       phone selection tray (css/selection-tray.css) can lift the whole ladder by overriding
+       --map-mode-stack-bottom on body only if the slots are computed there too. */
+    --map-mode-stack-bottom: calc(100dvh - var(--app-safe-area-bottom, 0px) - var(--map-shell-bottom-clearance));
+    --map-mode-slot-1: calc(var(--map-mode-stack-bottom) - 276px);
+    --map-mode-slot-2: calc(var(--map-mode-stack-bottom) - 228px);
+    --map-mode-slot-3: calc(var(--map-mode-stack-bottom) - 180px);
+    --map-mode-slot-4: calc(var(--map-mode-stack-bottom) - 132px);
+    --map-mode-slot-5: calc(var(--map-mode-stack-bottom) - 84px);
+    --map-mode-slot-6: calc(var(--map-mode-stack-bottom) - 36px);
+
+    /* The left edge the stack owns: its offset, a 40px button and a 10px gap. The map's own
+       top-left corner starts right of it. */
+    --map-mode-strip: calc(var(--map-mode-stack-left) + 50px);
 }
 
-/* Walk-through button — appears just above the 3D toggle while in 3D mode.
-   Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit.
-   Matches the 3D toggle's box dimensions and uses a yellow fill so it stands out from the
-   3D / 2D mode-toggle pair. */
-#mode-walk-toggle.map-mode-walk-btn {
+/* Phones: the strip hangs from the top-left under the search box instead of standing on the
+   bottom bar, so it always sits in the upper third of the screen and every bottom sheet can take
+   the bottom half at full width. Same ladder, its bottom moved to where slot 1 meets the top
+   clearance (slot 1 is 276px above the ladder's bottom). */
+@media (max-width: 767.98px) {
+    body {
+        --map-mode-stack-bottom: calc(var(--map-shell-top-clearance) + 276px);
+    }
+}
+
+/* The view strip's three tiles (.map-mode-tile, canonical map chrome): their slot on the left edge.
+   Rules here and in photoreal-mode.css / ai-scene.css key each button on its id plus its canonical
+   class (map-mode-tile, map-shell-button); the -btn classes on them are only script hooks. */
+#mode-2d-toggle.map-mode-toggle,
+#mode-3d-toggle.map-mode-toggle,
+#mode-realistic-toggle.map-mode-tile {
     position: absolute;
-    right: 10px;
-    bottom: 96px;
-    z-index: 1000;
-    background: #fdd835;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    padding: 8px 10px;
-    min-width: 40px;
-    min-height: 36px;
-    box-sizing: border-box;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1;
-    color: #333;
-    cursor: pointer;
+    left: var(--map-mode-stack-left);
+    z-index: var(--cb-z-map-chrome);
+    /* Centre the label so it — and the loading spinner, which centres on the button — coincide. */
+    display: flex;
     align-items: center;
     justify-content: center;
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-sm);
+    box-shadow: var(--cb-shadow-sm);
+    padding: var(--cb-space-2);
+    min-width: var(--cb-space-8);
+    min-height: var(--cb-control-height);
+    box-sizing: border-box;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
+    cursor: pointer;
 }
 
-/* Honour the [hidden] attribute that three-mode.js toggles on enter/exit 3D.
-   Without this, the inline-flex layout below would override the user-agent's
-   display: none for hidden, leaving the button visible in 2D mode. */
-#mode-walk-toggle.map-mode-walk-btn[hidden] {
-    display: none !important;
+#mode-2d-toggle.map-mode-toggle { top: var(--map-mode-slot-2); }
+#mode-3d-toggle.map-mode-toggle { top: var(--map-mode-slot-3); }
+
+/* The scale bar sits in the lower right, in the row right above the dock, the row the credits take
+   from the lower left (both Leaflet corners sit at --map-visible-bottom; css/map-shell.css). The
+   status toast is centred in that row on desktop and one row up on a phone, where it spans the
+   width. No box: a dark bar and its label with a halo, straight on the map. */
+/* Leaflet gives the scale bar a 5px margin where every other control gets 10px; the credits keep
+   Leaflet's 10px, so the two share one bottom edge. */
+.leaflet-bottom .leaflet-control-scale {
+    margin-bottom: 10px;
 }
 
-#mode-walk-toggle.map-mode-walk-btn:not([hidden]) {
-    display: inline-flex;
+.leaflet-control-scale-line {
+    background: transparent;
+    border-color: var(--cb-text);
+    color: var(--cb-text);
+    text-shadow: var(--cb-text-halo);
 }
 
-#mode-walk-toggle.map-mode-walk-btn:hover {
-    background: #fbc02d;
+/* The scale bar measures the flat 2D map. Over the perspective model/photo views it is simply
+   wrong (a metre near the camera is not a metre at the horizon), so it goes while they are up. */
+body.three-mode-active .leaflet-control-scale {
+    display: none;
 }
 
-#mode-walk-toggle.map-mode-walk-btn.active {
-    background: #f9a825;
-    color: #1a1a1a;
-    border-color: #f9a825;
+/* A docked panel (desktop) or bottom sheet (phone) covers the scale bar's corner; the panel wins. */
+body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
+    display: none;
+}
+/* Slot 1 — the head of the mode strip (see the ladder at the top of this file). It used to share
+   a slot with the walk button and drew over it; the official cadastre is the frame the other
+   views are read against, so it anchors the stack rather than trailing after them. */
+
+
+
+/* Cadastre view (claims model, rethink-proposals.md §13): the original cadastral parcels are the
+   only interactive citizens; every proposal layer dims to context. The clone pane and the base
+   tiles stay full-strength. Leaflet strips the 'Pane' suffix when naming pane classes, so the
+   'cadastreViewPane' pane renders as .leaflet-cadastreView-pane. */
+body.cadastre-view .leaflet-map-pane > .leaflet-pane {
+    opacity: 0.25;
+    pointer-events: none;
+}
+body.cadastre-view .leaflet-map-pane > .leaflet-tile-pane,
+body.cadastre-view .leaflet-map-pane > .leaflet-cadastreView-pane,
+body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
+    opacity: 1;
+    pointer-events: auto;
+}
+/* A live geometry editor owns its preview and handle panes while it is open. Keep other
+   proposal layers click-through in cadastre view, but let its footprint and handles receive input. */
+body.cadastre-view.on-map-editing .leaflet-map-pane > .leaflet-onMapEditor-pane,
+body.cadastre-view.on-map-editing .leaflet-map-pane > .leaflet-onMapEditorHandles-pane,
+body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pane > .leaflet-reparcelPlots-pane,
+body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pane > .leaflet-reparcelTools-pane {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Claims breadcrumb: the base parcels a proposal stands on, at the top of its details panel. */
+.claim-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    padding: 6px 8px;
+    margin-bottom: 8px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-sm);
+}
+.claim-breadcrumb-label { color: var(--cb-text-muted); font-weight: var(--cb-weight-semibold); }
+/* Each parcel in the crumb is a script link (button.cb-link, js/proposals/claims-ui.js). */
+
+/* Loading spinner over a mode-strip label while that view composes. three-mode.js sets
+   .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
+   streaming Google tiles). The label steps aside while the ring is shown. */
+.map-mode-tile.mode-btn-loading { pointer-events: none; }
+.map-mode-tile.mode-btn-loading::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    /* border-box so the 2px border is INSIDE the 18px box; with content-box the box would be 22px
+       and the -9px margin (half of 18) would leave the ring 2px off-centre down-right. */
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border: 2px solid rgba(128, 128, 128, 0.4);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: map-mode-spin 0.7s linear infinite;
+    z-index: var(--cb-z-local-2);
+    pointer-events: none;
+}
+@keyframes map-mode-spin { to { transform: rotate(360deg); } }
+
+/* Walk-through button — slot 6, the end of the mode strip, only visible while in 3D (model) mode
+   and only in cities that configure a walk overlay (three-mode.js, city-config `walk.url`).
+   Hidden by default via the [hidden] attribute; three-mode.js toggles visibility on enter/exit.
+   It is map chrome (.map-shell-button, css/map-shell.css) like the shell's other floating buttons;
+   only its slot is set here. It is the rarest button in the stack, hence the last slot: when it
+   is absent the gap is after everything else rather than inside. */
+#mode-walk-toggle.map-shell-button {
+    position: absolute;
+    left: var(--map-mode-stack-left);
+    top: var(--map-mode-slot-6);
+    z-index: var(--cb-z-map-chrome);
+}
+
+/* Honour the [hidden] attribute that three-mode.js toggles on enter/exit 3D: the shell button's
+   own display would otherwise override the user-agent's display: none. Picking the ground to start
+   from is a mode that is on: aria-pressed, the shell button's selected look (css/map-shell.css). */
+#mode-walk-toggle.map-shell-button[hidden] {
+    display: none;
+}
+
+/* Abstract 3D uses map-style primary-drag panning; right-drag remains orbit/tilt. */
+#three-container.active:not(.three-mode-walk-pick) canvas {
+    cursor: grab;
+}
+
+#three-container.active:not(.three-mode-walk-pick) canvas:active {
+    cursor: grabbing;
 }
 
 /* While the user is choosing a walk start point, swap the 3D canvas cursor for a walk icon. */
@@ -71,64 +225,63 @@
     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'><path fill='%23222' stroke='white' stroke-width='1' d='M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7'/></svg>") 4 24, crosshair;
 }
 
-/* 3D mode in-view controls */
-#three-container .three-mode-ui-panel {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+/* 3D layer controls share the map's Layers sheet. */
+#model-layer-controls .three-mode-ui-panel {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 8px 10px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    pointer-events: auto;
-    z-index: 10;
+    gap: var(--cb-space-2);
 }
 
-/* Top-centre "loading buildings" badge, shown while built buildings (city meshes + uploaded
-   glTF models) are still loading. Sits clear of the top-left parcel panel and top-right controls. */
-#three-container .three-mode-buildings-loader {
-    position: absolute;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
+/* Floor-plan toggle and source-accuracy status inside the 3D controls. */
+#model-layer-controls .three-mode-xray-row {
+    display: grid;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-2);
+    padding-top: var(--cb-space-3);
+    border-top: 1px solid var(--cb-line-strong);
+}
+
+/* X-ray and its suggested-layouts companion sit side by side: .btn toggles, each pressed
+   (aria-pressed) while on. The companions (the layouts toggle, the existing-buildings checkbox)
+   come and go with X-ray; a .btn and the toggle rows set their own display, so [hidden] needs
+   saying. */
+#model-layer-controls .three-mode-xray-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+#model-layer-controls .three-mode-xray-row [hidden] {
+    display: none;
+}
+
+/* The existing-buildings checkbox under the two buttons; hidden with the toggle off. */
+#model-layer-controls .three-mode-suggested-existing:not([hidden]) {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 12px;
-    background: rgba(0, 0, 0, 0.72);
-    color: #fff;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    pointer-events: none;
-    z-index: 11;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.15s ease;
+    gap: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
 }
 
-#three-container .three-mode-buildings-loader.is-visible {
-    opacity: 1;
-    visibility: visible;
+#model-layer-controls .three-mode-xray-note {
+    max-width: 240px;
+    font-size: var(--cb-text-xs);
+    line-height: var(--cb-leading);
+    color: var(--cb-text-muted);
 }
 
-#three-container .three-mode-loader-spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: three-mode-spin 0.7s linear infinite;
+#model-layer-controls .three-mode-floor-cutaway:not([hidden]) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
 }
 
-@keyframes three-mode-spin {
-    to { transform: rotate(360deg); }
+#model-layer-controls .three-mode-floor-cutaway select {
+    flex: 1;
+    min-width: 0;
+    max-width: 145px;
 }
 
 /* Left-side parcel value panel (shown when a parcel is isolated/clicked in 3D). */
@@ -139,22 +292,95 @@
     width: 232px;
     max-width: calc(100vw - 24px);
     padding: 10px 12px;
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-md);
+    box-shadow: var(--cb-shadow-md);
     pointer-events: auto;
-    z-index: 10;
-    font-size: 12px;
-    color: #2d3748;
+    z-index: var(--cb-z-local-10);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text);
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-title {
+    flex: 1;
+    min-width: 0;
+    font-weight: var(--cb-weight-bold);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-strong);
+    word-break: break-word;
+}
+
+/* The panel's way out is a close-circle-btn, tucked into the corner. */
+#three-container .three-mode-parcel-panel .parcel-panel-close {
+    margin: -4px -4px 0 0;
+}
+
+/* "Proposal: <name> [show]" row in the parcel panel (the name is a .cb-link), and the proposal
+   name in the aggregate proposal panel. */
+#three-container .three-mode-parcel-panel .parcel-panel-proposal {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: -2px 0 8px;
+    font-size: var(--cb-text-sm);
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-label {
+    color: var(--cb-text-muted);
+    flex: none;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-show {
+    word-break: break-word;
+}
+
+/* The [show] tag inside the proposal's cb-link button reads as a hint, not part of the title. */
+#three-container .three-mode-parcel-panel .show-tag {
+    color: var(--cb-text-faint);
+    white-space: nowrap;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-proposal-name {
     font-weight: 700;
     font-size: 13px;
-    margin-bottom: 8px;
-    color: #1a202c;
+    margin-bottom: 4px;
+    color: var(--cb-primary);
     word-break: break-word;
+}
+
+/* Proposal panel: "Parcels: N" subnote and the average-gain-per-parcel line. */
+#three-container .three-mode-parcel-panel .parcel-panel-subnote {
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-faint);
+    margin: 0 0 8px;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg {
+    margin-top: 2px;
+    font-weight: 600;
+    font-size: var(--cb-text-sm);
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg:empty {
+    display: none;
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-positive {
+    color: var(--cb-success);
+}
+
+#three-container .three-mode-parcel-panel .parcel-panel-avg.gain-negative {
+    color: var(--cb-danger);
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-table {
@@ -172,171 +398,249 @@
 #three-container .three-mode-parcel-panel .parcel-panel-table th:first-child,
 #three-container .three-mode-parcel-panel .parcel-panel-table td:first-child {
     text-align: left;
-    color: #5a6472;
+    color: var(--cb-text-muted);
     padding-right: 8px;
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-table th {
     font-weight: 600;
-    color: #5a6472;
-    border-bottom: 1px solid #e2e6ec;
+    color: var(--cb-text-muted);
+    border-bottom: 1px solid var(--cb-line);
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-note {
-    font-size: 11px;
-    color: #8a93a0;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-faint);
     margin: 4px 0 8px;
     text-align: right;
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-value-title {
     font-weight: 600;
-    color: #5a6472;
-    border-top: 1px solid #e2e6ec;
+    color: var(--cb-text-muted);
+    border-top: 1px solid var(--cb-line);
     padding-top: 6px;
 }
 
+/* The slider takes the primary accent every native control has (css/tokens.css). */
 #three-container .three-mode-parcel-panel .parcel-panel-price-slider {
     width: 100%;
     margin: 6px 0 2px;
-    accent-color: #2c6cb0;
     cursor: pointer;
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-gain {
     margin-top: 4px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: var(--cb-text-base);
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-gain.gain-positive {
-    color: #1c8a4a;
+    color: var(--cb-success);
 }
 
 #three-container .three-mode-parcel-panel .parcel-panel-gain.gain-negative {
-    color: #c0392b;
+    color: var(--cb-danger);
 }
+
+/* Top-centre banner shown while the 3D view is filtered to one parcel or one proposal.
+   Isolation is entered by a click but exited by clicking elsewhere — which nothing on
+   screen said; the banner names the view and its × is the explicit way out. */
+#three-container .three-mode-isolation-banner {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 4px 4px 12px;
+    background: var(--cb-glass);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-pill);
+    box-shadow: var(--cb-shadow-md);
+    pointer-events: auto;
+    z-index: var(--cb-z-local-10);
+    font-size: var(--cb-text-sm);
+    font-weight: 600;
+    color: var(--cb-text);
+    white-space: nowrap;
+}
+
+/* Its × is a close-circle-btn; the pill hugs it. */
 
 /* On phones there is no horizontal room for the parcel panel (top-left) and the
    Built/Both/Planned controls (top-right) side by side, so the panel docks to the
-   bottom of the 3D view instead. The right inset keeps it clear of the 2D/walk
-   toggle buttons that sit along the right edge. */
-@media (max-width: 768px) {
+   bottom of the 3D view instead, edge to edge: the mode strip hangs from the top-left on
+   phones, so the bottom is the panels'. */
+@media (max-width: 767.98px) {
     #three-container .three-mode-parcel-panel {
         top: auto;
-        bottom: 12px;
+        bottom: calc(var(--map-shell-dock-height) + var(--cb-space-3));
         left: 12px;
-        right: 64px;
+        right: 12px;
         width: auto;
         max-width: 360px;
     }
+
+    /* The top edge belongs to the menu button, the Guest pill and the settings gear. The
+       isolation pill takes the row under them instead of sliding beneath the Guest pill. */
+    #three-container .three-mode-isolation-banner {
+        top: 62px;
+    }
+
+    /* The bottom-docked parcel/proposal panel overlaps the floating status message
+       ("Applied building proposal …") on small screens. While an info box is open the box
+       takes over that corner, so hide the status to avoid the text bleeding through. */
+    body.three-mode-active.three-info-open .floating-status {
+        display: none !important;
+    }
 }
 
-#three-container .three-mode-radius-row {
+#model-layer-controls .three-mode-radius-row {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-#three-container .three-mode-radius-header {
+#model-layer-controls .three-mode-radius-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-#three-container .three-mode-radius-value {
+#model-layer-controls .three-mode-radius-value {
     font-size: 12px;
     font-weight: 600;
-    color: #2c6cb0;
+    color: var(--cb-primary);
 }
 
-#three-container .three-mode-radius-slider {
+#model-layer-controls .three-mode-radius-slider {
     width: 100%;
     margin: 0;
-    accent-color: #2c6cb0;
     cursor: pointer;
 }
 
-#three-container .three-mode-emphasis-row {
+#model-layer-controls .three-mode-emphasis-row {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-#three-container .three-mode-emphasis-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #5a6472;
-}
-
-#three-container .three-mode-emphasis-row .three-mode-segmented {
-    flex: 1;
-}
-
-#three-container .three-mode-emphasis-row .three-mode-segment {
-    flex: 1;
-    padding: 4px 8px;
-    font-size: 12px;
-}
-
-#three-container .three-mode-reset-btn {
-    appearance: none;
-    flex: 1;
-    border: 1px solid #2c6cb0;
-    border-radius: 8px;
-    background: #2c6cb0;
-    color: #fff;
-    padding: 6px 12px;
-    font-weight: 600;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background 120ms ease;
-}
-
-#three-container .three-mode-reset-btn:hover {
-    background: #24578d;
-}
-
-#three-container .three-mode-segmented {
+#model-layer-controls .three-mode-decor-toggles {
     display: flex;
-    border: 1px solid #d4d7dd;
-    border-radius: 8px;
-    overflow: hidden;
+    flex-direction: column;
+    gap: 4px;
 }
 
-#three-container .three-mode-segment {
-    appearance: none;
-    border: none;
-    background: #f5f7fa;
-    color: #2d3748;
-    padding: 6px 12px;
-    font-weight: 600;
+#model-layer-controls .three-mode-trees-row {
+    display: flex;
+    align-items: center;
+}
+
+#model-layer-controls .three-mode-trees-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     cursor: pointer;
-    transition: background 120ms ease, color 120ms ease;
 }
 
-#three-container .three-mode-segment + .three-mode-segment {
-    border-left: 1px solid #d4d7dd;
+/* A toggle that shares its row with nothing takes the panel's whole width, so its label reads on one
+   line instead of being squeezed into a column the width of the checkbox plus a word. */
+#model-layer-controls .three-mode-wide-row {
+    width: 100%;
 }
 
-#three-container .three-mode-segment:hover {
-    background: #e9ecf1;
+#model-layer-controls .three-mode-wide-toggle {
+    width: 100%;
 }
 
-#three-container .three-mode-segment--active {
-    background: #2c6cb0;
-    color: #fff;
+#model-layer-controls .three-mode-wide-toggle .three-mode-emphasis-label {
+    flex: 1 1 auto;
+    white-space: nowrap;
 }
 
-/* Hide sidebar toggles and bubbles in 3D mode */
-body.three-mode-active #toggle-sidebar-desktop,
-body.three-mode-active #toggle-sidebar-mobile,
-body.three-mode-active #username-display,
+/* The checkboxes take the primary accent every native control has (css/tokens.css). */
+#model-layer-controls .three-mode-trees-toggle input[type="checkbox"] {
+    cursor: pointer;
+    margin: 0;
+}
+
+#model-layer-controls .three-mode-facade-label {
+    flex: 0 0 70px;
+    min-width: 0;
+}
+
+#model-layer-controls .three-mode-facade-label .three-mode-emphasis-label {
+    flex: 1 1 auto;
+}
+
+#model-layer-controls .three-mode-facade-note {
+    max-width: 246px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+    line-height: 1.4;
+}
+
+#model-layer-controls .three-mode-emphasis-label {
+    font-size: var(--cb-text-sm);
+    font-weight: 600;
+    color: var(--cb-text-muted);
+}
+
+/* Abstract 3D has four Built states but only three Planned states. Two same-width selects avoid
+   uneven segmented cells and keep long translated labels fully readable. The selects take their
+   look from the base form controls (css/primitives.css); only their width is set here. */
+#model-layer-controls .three-mode-display-select {
+    flex: 0 0 168px;
+    width: 168px;
+    min-width: 0;
+}
+
+/* Massing / Build-out / Both, with the re-roll dice (.btn .btn-icon) beside it. The select gives
+   up the width the button takes so the row still lines up with the Built and Planned rows above
+   it. */
+#model-layer-controls .three-mode-representation-row .three-mode-display-select {
+    flex: 0 0 126px;
+    width: 126px;
+}
+
+#model-layer-controls .three-mode-reroll-btn {
+    flex: 0 0 auto;
+}
+
+/* Re-deriving and re-extruding every proposal blocks the main thread, so the die spins and the
+   button locks (disabled) for the duration — otherwise a slow roll looks like a click that did
+   nothing. Reduced motion keeps the busy state legible without the spin. */
+@media (prefers-reduced-motion: no-preference) {
+    #model-layer-controls .three-mode-reroll-btn.is-busy .three-mode-reroll-die {
+        animation: three-mode-reroll-spin 600ms linear infinite;
+    }
+}
+
+@keyframes three-mode-reroll-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* On phones, layer controls grow to finger height inside their sheet. */
+@media (max-width: 480px) {
+    #model-layer-controls .three-mode-display-select {
+        flex: 1 1 auto;
+        width: auto;
+        height: 38px;
+    }
+}
+
+@media (pointer: coarse) {
+    #model-layer-controls .three-mode-display-select {
+        height: 40px;
+    }
+}
+
+/* Agents are browsed from Activity; the shared profile control remains available in 3D. */
 body.three-mode-active #agent-bubbles-container {
     display: none !important;
-    pointer-events: none;
 }
-
 
 /* Position zoom box below username bubble */
 /* removed zoom-info-control */
@@ -355,10 +659,12 @@ body.three-mode-active #agent-bubbles-container {
     cursor: wait;
 }
 
-/* Add CSS for zoom control positioning */
-.leaflet-top.leaflet-left {
-    transition: left 0.3s ease;
-    left: 30px;
+/* The main map's top-left control corner: under the search slot and right of the mode strip, so a
+   control added there cannot land on either. Scoped to #map: the small maps inside dialogs (road
+   designation) keep Leaflet's own corner. */
+#map .leaflet-top.leaflet-left {
+    top: var(--map-mode-slot-1);
+    left: var(--map-mode-strip);
 }
 
 /* Map screenshot container styles */
@@ -369,9 +675,9 @@ body.three-mode-active #agent-bubbles-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f0f0f0;
+    background-color: var(--cb-surface-3);
     border-radius: 4px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     overflow: hidden;
     margin: 0 auto;
 }
@@ -390,23 +696,23 @@ body.three-mode-active #agent-bubbles-container {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: #fff;
-    color: #000;
+    background: var(--cb-surface);
+    color: var(--cb-text-strong);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 22px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     pointer-events: none;
-    border: 1px solid #000;
-    z-index: 1100;
+    border: 1px solid var(--cb-text-strong);
+    z-index: var(--cb-z-map-raised);
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     font-size: 14px;
     box-sizing: border-box;
@@ -415,13 +721,13 @@ body.three-mode-active #agent-bubbles-container {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: var(--cb-primary);
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .proposal-summary {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     padding: 15px;
     margin-top: 15px;
@@ -429,7 +735,7 @@ body.three-mode-active #agent-bubbles-container {
 
 .proposal-summary h3 {
     margin: 0 0 10px 0;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .proposal-summary p {
@@ -451,7 +757,7 @@ body.three-mode-active #agent-bubbles-container {
     padding: 0;
     font-size: 11px;
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
     text-align: center;
     white-space: nowrap;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -464,6 +770,21 @@ body.three-mode-active #agent-bubbles-container {
     line-height: 1;
 }
 
+/* A zero-size Leaflet anchor lets the auto-sized label child center itself at the parcel point. */
+.parcel-number-label-anchor.leaflet-div-icon {
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.parcel-number-label-anchor > .parcel-number-label {
+    position: relative;
+    transform: translate(-50%, -50%);
+}
+
 /* Parcel owner count labels */
 .parcel-owner-count-label {
     background: transparent !important;
@@ -474,7 +795,7 @@ body.three-mode-active #agent-bubbles-container {
     height: auto;
     font-size: 12px;
     font-weight: 600;
-    color: #000;
+    color: var(--cb-text-strong);
     text-align: center;
     white-space: nowrap;
     display: flex;
@@ -546,10 +867,440 @@ body.three-mode-active #agent-bubbles-container {
     text-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
 }
 
-    /* Map controls mobile positioning */
-    .leaflet-top.leaflet-left {
-        top: 60px !important; /* Below toggle button */
-        left: 10px !important;
+/* Display-state rows keep one stable label column in both abstract and photoreal 3D. */
+#model-layer-controls .three-mode-emphasis-label {
+    flex: 0 0 70px;
+}
+
+#model-layer-controls .three-mode-emphasis-row .three-mode-segment {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: 4px 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Locked while the cross-section editor is docked: the map is a viewport there, not a control
+   surface, so changing what it shows is off the table (see corridorEditorLockMap). Greyed rather
+   than hidden so the buttons do not jump around, and NOT `pointer-events: none` — that would
+   suppress the tooltip explaining why they are inert.
+   Each selector carries the button's ID *and* its canonical class, because the rules it has to beat
+   are ID-scoped and live in files that load LATER (photoreal-mode.css styles a disabled globe as
+   "busy activating": cursor progress). Matching their specificity would lose on order; this outranks
+   them outright. Same trap as the Leaflet `.leaflet-interactive` rule in corridor-editor.css. */
+#mode-2d-toggle.map-mode-toggle.map-mode-btn--locked:disabled,
+#mode-3d-toggle.map-mode-toggle.map-mode-btn--locked:disabled,
+#mode-realistic-toggle.map-mode-tile.map-mode-btn--locked:disabled,
+#mode-walk-toggle.map-shell-button.map-mode-btn--locked:disabled,
+#mode-ai-toggle.map-shell-button.map-mode-btn--locked:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* The drill panel: the vertical stack found under a map click — the middle slot of the right
+   dock, between the proposal card and the parcel panel (drill-ui.js computes top/max-height so
+   the three never overlap and keep one --right-dock-gap between them). Width comes from
+   .right-dock-panel, same as its neighbours. One row per object (top of the stack first, each a
+   cb-option with a cb-badge for its kind), a connector glyph between rows. */
+#drill-stack-panel {
+    position: fixed;
+    right: var(--right-dock-gap, 10px);
+    top: 10px;
+    display: none;
+    flex-direction: column;
+    padding: 8px 12px 10px;
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-md);
+    z-index: var(--cb-z-panel); /* the right dock's rung; the proposal card sits a step above it, so an expanded card wins the corner */
+    overflow-y: auto;
+    /* Wide content scrolls inside its own row (the parcel strip below) — never the panel. */
+    overflow-x: hidden;
+}
+
+#drill-stack-panel.visible {
+    display: flex;
+}
+
+/* The slot between the neighbours got too small to be usable — hide rather than squeeze. */
+#drill-stack-panel.no-room {
+    display: none;
+}
+
+#drill-stack-panel .drill-stack-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--cb-tracking-caps);
+    color: var(--cb-text-muted);
+    margin-bottom: 6px;
+}
+
+/* A level of the stack: a cb-option row, its kind badge then its name on one line. */
+#drill-stack-panel .drill-stack-row {
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+#drill-stack-panel .drill-stack-row .cb-badge {
+    flex-shrink: 0;
+}
+
+#drill-stack-panel .drill-stack-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* A formed parcel minted from several base parcels shows them ALL (§15a): count badge first,
+   then a horizontally scrollable strip of small parcel buttons (btn btn-sm, aria-pressed). The
+   row frames them like the cb-option rows around it but is not itself a choice. */
+#drill-stack-panel .drill-stack-row--multi {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+    min-width: 0;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+}
+
+#drill-stack-panel .drill-stack-parcel-strip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+}
+
+#drill-stack-panel .drill-stack-parcel-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* The connector glyph between rows: the lower row is the ground the upper one stands on. */
+#drill-stack-panel .drill-stack-connector {
+    text-align: center;
+    font-size: var(--cb-text-xs);
+    line-height: 1;
+    color: var(--cb-text-faint);
+    padding: 2px 0;
+    user-select: none;
+}
+
+/* Phones: the stack takes a full-width row under the top bar (drill-ui.js sets top below the menu
+   button and Guest pill). At 200px in the top-right corner it lay over the Guest pill and cut the
+   parcel number to "7160…". A single row repeats the header of the sheet below, so it stays hidden. */
+@media (max-width: 767.98px) {
+    #drill-stack-panel {
+        left: 10px;
+        right: 10px;
+        width: auto;
     }
-    
-    /* When sidebar is open, move map controls */
+
+    #drill-stack-panel.is-single {
+        display: none;
+    }
+}
+
+/* One cursor for the map surface. Every point on the 2D map now resolves to a claim — the drill
+   picks the topmost proposal/parcel wherever you click, background included — so the whole
+   surface reads as clickable instead of alternating between pointer (over an interactive path)
+   and Leaflet's default grab (wherever no path happened to be under the cursor). Dragging still
+   shows `grabbing`, and genuinely DRAGGABLE things keep `grab`: a different affordance stays a
+   different cursor. */
+#map.leaflet-grab,
+#map .leaflet-interactive:not(.road-node-handle):not(.leaflet-marker-draggable) {
+    cursor: pointer;
+}
+
+#map.leaflet-dragging.leaflet-grab,
+#map.leaflet-dragging .leaflet-interactive:not(.road-node-handle):not(.leaflet-marker-draggable) {
+    cursor: grabbing;
+}
+
+
+/* View thumbnails distinguish the map, authored geometry, and aerial mesh. Labels stay readable
+   over every image; the selected border never replaces the artwork with a flat fill. */
+#mode-2d-toggle.map-mode-tile,
+#mode-3d-toggle.map-mode-tile,
+#mode-realistic-toggle.map-mode-tile {
+    width: var(--cb-control-height-lg);
+    height: var(--cb-space-8);
+    padding: 0;
+    border: 2px solid var(--cb-surface);
+    background-color: var(--cb-inverse);
+    background-image: var(--map-mode-art);
+    background-position: center;
+    background-size: cover;
+    color: var(--cb-inverse-ink);
+}
+
+#mode-2d-toggle.map-mode-tile { --map-mode-art: url('../assets/view-modes/map.svg'); }
+#mode-3d-toggle.map-mode-tile { --map-mode-art: url('../assets/view-modes/models.svg'); }
+#mode-realistic-toggle.map-mode-tile { --map-mode-art: url('../assets/view-modes/aerial.jpg'); }
+
+.map-mode-tile > span {
+    padding: 0 var(--cb-space-1);
+    border-radius: var(--cb-radius-sm);
+    background: color-mix(in srgb, var(--cb-inverse) 85%, transparent);
+    color: var(--cb-inverse-ink);
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-bold);
+    line-height: var(--cb-leading);
+    pointer-events: none;
+}
+
+#mode-2d-toggle.map-mode-tile:hover,
+#mode-3d-toggle.map-mode-tile:hover,
+#mode-realistic-toggle.map-mode-tile:hover {
+    border-color: var(--cb-primary);
+}
+
+/* The selected view is aria-pressed (map-mode-loader.js, three-mode.js, photoreal-mode.js): a
+   primary ring outside the tile, so the artwork stays whole. */
+#mode-2d-toggle.map-mode-tile[aria-pressed="true"],
+#mode-3d-toggle.map-mode-tile[aria-pressed="true"],
+#mode-realistic-toggle.map-mode-tile[aria-pressed="true"] {
+    border-color: var(--cb-primary);
+    box-shadow: 0 0 0 2px var(--cb-surface), 0 0 0 var(--cb-space-1) var(--cb-primary);
+}
+
+.map-mode-tile:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: var(--cb-space-1);
+}
+
+.map-mode-tile.mode-btn-loading > span { visibility: hidden; }
+
+.map-mode-tile.mode-btn-loading::after {
+    background: var(--cb-inverse);
+    box-shadow: 0 0 0 var(--cb-space-1) var(--cb-inverse);
+}
+
+/* 3D container overlay on top of the map */
+#three-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: var(--cb-z-three); /* below UI bubbles like username/status, above the Leaflet tiles when active */
+    pointer-events: none; /* disabled until 3D is active */
+    display: none; /* hidden in 2D mode */
+}
+
+#three-container.active {
+    display: block;
+    pointer-events: auto; /* enable interaction in 3D mode */
+}
+
+/* Provenance of the 3D context buildings (OSM: how many heights are estimated). */
+#model-layer-controls .three-mode-source-note {
+    margin: var(--cb-space-2) 0 0;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
+}
+
+/* Suggested layouts on the 2D map (js/suggested-layouts-2d.js): the ground floor of the default
+   layout of each proposed building without a modelled interior, on its own SVG pane. The roles are
+   custom properties so the script can read the same values back for its inline path colours. */
+:root {
+    --suggested-layout-slab: var(--cb-surface);
+    --suggested-layout-line: var(--cb-line-strong);
+    --suggested-layout-wall: var(--cb-text-strong);
+    --suggested-layout-core: var(--cb-text-muted);
+    --suggested-layout-window: var(--cb-primary);
+    --suggested-layout-door: var(--cb-warning);
+    --suggested-layout-entrance: var(--cb-success);
+    --suggested-layout-lift: var(--cb-text-faint);
+    --suggested-layout-flagged: var(--cb-danger);
+}
+
+.cb-suggested-layout--slab {
+    fill: var(--suggested-layout-slab);
+    stroke: var(--suggested-layout-line);
+}
+
+.cb-suggested-layout--wall {
+    fill: var(--suggested-layout-wall);
+    stroke: var(--suggested-layout-wall);
+}
+
+.cb-suggested-layout--landing {
+    fill: var(--suggested-layout-core);
+}
+
+.cb-suggested-layout--stair,
+.cb-suggested-layout--railing {
+    stroke: var(--suggested-layout-core);
+}
+
+.cb-suggested-layout--window {
+    stroke: var(--suggested-layout-window);
+}
+
+.cb-suggested-layout--door {
+    stroke: var(--suggested-layout-door);
+}
+
+.cb-suggested-layout--glazed-door {
+    stroke: var(--suggested-layout-entrance);
+}
+
+.cb-suggested-layout--sliding-door {
+    stroke: var(--suggested-layout-lift);
+}
+
+/* A slice too small for a minimum stair core: red and dashed, as the 3D view paints it red. */
+.cb-suggested-layout--flagged {
+    fill: var(--suggested-layout-flagged);
+    stroke: var(--suggested-layout-flagged);
+}
+
+/* Why a slice is flagged (the generator's reasons): wrapped, not one long line across the map. */
+.leaflet-tooltip.cb-suggested-layout-tooltip {
+    max-width: min(280px, 70vw);
+    white-space: normal;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text);
+    border-color: var(--suggested-layout-flagged);
+}
+
+/* ---- Before/after divider (js/ui/map-before-after.js) ----
+   A second map clipped by a draggable divider inside a Leaflet container, above the host's panes.
+   Hosts: the land readjustment modal, the proposal details panel. Tracked in dividers.md. */
+.map-compare__before {
+    position: absolute;
+    inset: 0;
+    z-index: var(--cb-z-map-compare);
+    pointer-events: none;
+}
+
+.map-compare__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px solid var(--cb-inverse-ink);
+    box-shadow: 0 0 0 1px var(--cb-backdrop);
+    z-index: calc(var(--cb-z-map-compare) + 1);
+    cursor: ew-resize;
+    transform: translateX(-1px);
+    touch-action: none;
+}
+
+.map-compare__handle:focus-visible .map-compare__grip {
+    outline: 3px solid var(--cb-primary);
+    outline-offset: 3px;
+}
+
+.map-compare__grip {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-sm);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text);
+    cursor: ew-resize;
+}
+
+.map-compare__label {
+    position: absolute;
+    bottom: 10px;
+    z-index: calc(var(--cb-z-map-compare) + 2);
+    padding: 2px 7px;
+    border-radius: var(--cb-radius-sm);
+    background: color-mix(in srgb, var(--cb-inverse) 75%, transparent);
+    color: var(--cb-inverse-ink);
+    font-size: var(--cb-text-xs);
+    pointer-events: none;
+}
+
+.map-compare__label--before { left: 10px; }
+.map-compare__label--after { right: 10px; }
+
+/* Labels beside the grip, for a map whose bottom corners sit under other chrome (the main map). */
+.map-compare__label--divider {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    white-space: nowrap;
+}
+
+.map-compare__label--divider.map-compare__label--before { left: auto; right: 24px; }
+.map-compare__label--divider.map-compare__label--after { left: 24px; right: auto; }
+
+/* ---- Leaflet's own chrome on the tokens ----
+   Popups, tooltips and the control bars take the surface and text colours, so the dark theme
+   reaches them too; Leaflet's stylesheet loads before ours and paints them white. */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    box-shadow: var(--cb-shadow-md);
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: var(--cb-text-muted);
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+    color: var(--cb-text-strong);
+}
+
+.leaflet-tooltip {
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    border-color: var(--cb-line);
+    box-shadow: var(--cb-shadow-sm);
+}
+
+/* Leaflet renders its bar buttons (zoom) as bare <a> and its stylesheet colours them through this
+   selector, so the theme override has to use it too; they are map buttons, not text links. */
+.leaflet-bar a,
+.leaflet-bar a:hover {
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    border-bottom-color: var(--cb-line);
+}
+
+.leaflet-bar a:hover {
+    background: var(--cb-surface-2);
+}
+
+/* Leaflet colours every link on the map (.leaflet-container a); links there are cb-link like
+   everywhere else (credits, popups), so the primitive's colours are restated at its specificity. */
+.leaflet-container a.cb-link {
+    color: var(--cb-link);
+}
+
+.leaflet-container a.cb-link--quiet {
+    color: inherit;
+}
+
+.leaflet-container a.cb-link:hover {
+    color: var(--cb-link-hover);
+}

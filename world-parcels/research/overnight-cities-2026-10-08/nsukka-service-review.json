@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7830-nsukka.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A local registry/service center and an official parcel map offering are confirmed. The public map route includes owner/address/parcel search and the viewer launch requires login, so no anonymous schema-safe geometry path was verified.",
+  "registryAssessment": "The Enugu State Government’s ENGIS identifies itself as the state digital land-administration platform and lists a Nsukka zonal land center. Its Surveyor General’s public maps page describes mapped parcel/property boundaries and official land records. This confirms a Nsukka-linked state land-service center, but not WUP-point coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://engis.enugustate.gov.ng/",
+      "observation": "The Enugu State Government’s ENGIS identifies itself as the state digital land-administration platform and lists a Nsukka zonal land center. Its Surveyor General’s public maps page describes mapped parcel/property boundaries and official land records. This confirms a Nsukka-linked state land-service center, but not WUP-point coverage."
+    },
+    {
+      "url": "https://survey.engis.en.gov.ng/maps/",
+      "observation": "Official public map/service context reviewed; no geometry-only schema was confirmed."
+    },
+    {
+      "url": "https://enugustate.gov.ng/lgas/",
+      "observation": "Official local/regional context reviewed; no parcel lookup was performed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nsukka official land registry cadastral parcel GIS map Enugu State ENGIS",
+      "result": "English and Igbo-oriented local-language searches surfaced the official Enugu State ENGIS platform and its Nsukka zonal land center. The Surveyor General map page advertises public map viewing, but it also supports survey-number and owner/address/parcel searches. The Launch Map Viewer link redirects to an account login. No login, search term, or parcel identifier was supplied; no field schema or geometry was queried.",
+      "method": "Separate English query and first-party source review."
+    },
+    {
+      "language": "Igbo-oriented local-language search",
+      "query": "Nsukka ala ndebanye ala map Enugu ENGIS; ala map Nsukka registry",
+      "result": "English and Igbo-oriented local-language searches surfaced the official Enugu State ENGIS platform and its Nsukka zonal land center. The Surveyor General map page advertises public map viewing, but it also supports survey-number and owner/address/parcel searches. The Launch Map Viewer link redirects to an account login. No login, search term, or parcel identifier was supplied; no field schema or geometry was queried.",
+      "method": "Separate local-language query and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no public feature route with a verified geometry-only and non-personal schema was identified.",
+  "coverageAssessment": {
+    "claimedScope": "The Enugu State Government’s ENGIS identifies itself as the state digital land-administration platform and lists a Nsukka zonal land center. Its Surveyor General’s public maps page describes mapped parcel/property boundaries and official land records. This confirms a Nsukka-linked state land-service center, but not WUP-point coverage.",
+    "verifiedOpenScope": "A local registry/service center and an official parcel map offering are confirmed. The public map route includes owner/address/parcel search and the viewer launch requires login, so no anonymous schema-safe geometry path was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://survey.engis.en.gov.ng/maps/",
+      "method": "Read public maps information page",
+      "result": "Page advertises interactive parcel maps, official land records, property boundaries, and a property search supporting address, parcel number, or owner name. No forms were submitted and no map feature was requested."
+    },
+    {
+      "url": "https://survey.engis.en.gov.ng/survey/sg-survey-plans/",
+      "method": "Follow public Launch Map Viewer link",
+      "result": "Redirects to the account login page. No credentials were entered and no authenticated route was accessed."
+    },
+    {
+      "url": "https://engis.enugustate.gov.ng/",
+      "method": "Read official Enugu State ENGIS public description",
+      "result": "Identifies ENGIS as a state land registry/platform and lists Nsukka among its zonal land centers; access to service transactions requires an account."
+    },
+    {
+      "url": "N/A",
+      "method": "Anonymous parcel geometry query",
+      "result": "Not attempted: no safe geometry-only service schema and coverage extent were established."
+    }
+  ],
+  "remainingUncertainty": "Whether a separate anonymous geometry-only endpoint exists for Nsukka that does not expose title/owner/address data and whether this location is covered."
+}

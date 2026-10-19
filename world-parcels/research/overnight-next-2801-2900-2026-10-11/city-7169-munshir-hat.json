@@ -1,0 +1,80 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 7169,
+  "queueRank": 2852,
+  "name": "Munshir Hat",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [22.7842250844935, 90.8534040728251],
+  "population2025": 208908,
+  "population2025k": 208.908,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Munshir Hat Bangladesh cadastral parcel map official land records Bhumi Sheba",
+        "result": "First-party discovery found the Government of Bangladesh Department of Land Records and Surveys Online Land Records and Survey Management map viewer, Ministry of Land land map portal, and official local-government references locating Munshir Hat in Burhanuddin, Bhola.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.land.gov.bd/", "https://www.barisalboard.gov.bd/sscexaminer_search/examiner/3872"]
+      },
+      {
+        "language": "Bengali",
+        "query": "মুন্সির হাট বাংলাদেশ খতিয়ান মৌজা নকশা সরকারি ভূমি রেকর্ড",
+        "result": "বাংলা first-party discovery found the DLRS map-search service and the Ministry of Land digital land-map portal. Official search material also identifies মুন্সির হাট as a postal/locality name in Bhola; no parcel polygon for the exact WUP point was exposed anonymously.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.land.gov.bd/", "https://tobgiup.bhola.gov.bd/pages/static-pages/69789acc35ce18e1c066cebe"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "The first-party DLRS viewer is a public cadastral/map service under the Ministry of Land. Its current map-search JavaScript exposes division, district, survey, thana/upazila, mouza, sheet, parcel, boundary, per-sheet GeoJSON, and parcel vector-tile routes; the Bhola district is present in the Barisal division enumeration.",
+    "localCustodianScope": "Observed local administrative scope is Bhola district, Barisal division, with an official search result placing Munshir Hat in Burhanuddin upazila. The tested public data route did not return a usable Burhanuddin mouza list, so local cadastral coverage for this named locality remains unverified.",
+    "urls": ["https://settlement.gov.bd/", "https://settlement.gov.bd/Map/MapSearch", "https://map.land.gov.bd/", "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map"]
+  },
+  "officialSources": [
+    {"url": "https://settlement.gov.bd/Map/MapSearch", "observation": "Current DLRS map-search page identifies the Government of Bangladesh land-record and survey authority and presents district, survey, thana/upazila, mouza, sheet and dag/plot selection controls."},
+    {"url": "https://map.land.gov.bd/", "observation": "Current Ministry of Land digital land-map portal states that mouza and plot map sheets are digitized and georeferenced; its public UI exposes division, district, upazila and mouza selectors."},
+    {"url": "https://www.barisalboard.gov.bd/sscexaminer_search/examiner/3872", "observation": "Official Barisal education-board page gives the local administrative reference MUNSHIR HAT, Burhanuddin, Bhola."},
+    {"url": "https://dlrs.gov.bd/site/page/767754cd-5340-4356-851f-210c944f5ba8/Find-Mouza-Map", "observation": "DLRS guidance describes obtaining official mouza maps from the relevant upazila settlement office/publication camp."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Bangladesh Department of Land Records and Surveys Online Land Records and Survey Management map service",
+    "viewerUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "serviceBase": "https://settlement.gov.bd",
+    "administrativeSelection": {"divisionCode": "060000000", "division": "Barisal", "districtCode": "060400000", "district": "Bhola", "localityReference": "Burhanuddin upazila (from official local reference; not selected in the parcel viewer)"},
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "Not observed in a parcel response",
+    "geometryType": null
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://settlement.gov.bd/Map/MapSearch", "outcome": "200; current official viewer HTML retrieved and MapSearch.js identified."},
+    {"method": "GET", "url": "https://settlement.gov.bd/js/MapSearch.js", "outcome": "200; current JavaScript inspected; public selection, per-sheet GeoJSON, and parcel vector-tile routes observed."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Map/GetDivisionList", "outcome": "200; Barisal division code 060000000 returned."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise", "outcome": "200; Bhola district code 060400000 and a separate Bhola Diara entry were returned."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "outcome": "200; Bhola regular survey list returned BDS and BRS survey codes, but subsequent thana enumeration was empty."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "outcome": "200; Bhola regular BDS and BRS requests returned empty arrays; no local mouza or parcel route could be selected anonymously."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise", "outcome": "200; Bhola Diara survey entry returned, but this is not evidence that Munshir Hat is in the Diara survey."},
+    {"method": "POST", "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap", "outcome": "200; Bhola Diara enumeration returned only Kanchanpur/Tazumuddin, not Burhanuddin or Munshir Hat; no geometry requested or retained."},
+    {"method": "GET", "url": "https://tiles.settlement.gov.bd/catalog", "outcome": "200; public tile catalog retrieved, but it listed general overlays and no Munshir Hat parcel layer or usable parcel identity."},
+    {"method": "GET", "url": "https://map.land.gov.bd/", "outcome": "200; official Ministry of Land land-map portal retrieved; public landing page exposed selectors but no anonymous parcel geometry response was obtained."}
+  ],
+  "resultCategory": "city_registry_present_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS public land-record/map service and Ministry of Land mouza/plot digital land-map portal.",
+    "verifiedOpenScope": "Official service presence, Bhola district enumeration, and public route/schema behavior were verified. No exact-point or bounded city/locality parcel polygon was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. The public viewer's Bhola regular-survey thana routes returned empty arrays and the Diara route exposed only Kanchanpur/Tazumuddin; this is an access/coverage limitation, not evidence of citywide absence. No parcel ID, source schema, CRS, or geometry was observed. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. This packet is research evidence only and is not source integration or admission."
+}

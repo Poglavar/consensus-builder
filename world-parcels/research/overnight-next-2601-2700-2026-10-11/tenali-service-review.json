@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-10719-tenali.json",
+  "cityCode": 10719,
+  "queueRank": 2676,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "conclusion": "Official Andhra Pradesh cadastral and Tenali municipal GIS routes were evidenced. APSAC configuration exposes a public statewide cadastral MapServer, but its anonymous REST metadata request returned HTTP 403; no Tenali parcel feature, native identity, schema, or geometry was verified. Runtime readiness remains held.",
+  "attemptedRoutes": [
+    {"route": "English web discovery", "outcome": "Found official Tenali Municipality GIS route, APSAC AP Cadastral Map application, and DILRMP Tenali Mandal map-digitization status."},
+    {"route": "Telugu web discovery", "outcome": "Found official Andhra Pradesh BhuSeva/land-record references and APSAC state GIS/cadastral references; no Tenali-specific public parcel feed."},
+    {"route": "Official APSAC dashboard and current application configuration", "outcome": "HTTP 200; Web AppBuilder data exposed web map b54a4a9a00b441a2bdd8f993d140edd5 and statewide cadastral MapServer URL."},
+    {"route": "Official APSAC cadastral ArcGIS REST metadata", "outcome": "HTTP 403 Forbidden on anonymous MapServer metadata request; no schema or feature query proceeded."},
+    {"route": "Official Tenali Municipality GIS page", "outcome": "HTTP 200 HTML; no public parcel API or safe parcel identity exposed in bounded inspection."}
+  ],
+  "scopeLimits": [
+    "No map extent miss, HTTP 403, timeout, login wall, or unusable UI was treated as parcel absence.",
+    "The APSAC application indicates statewide cadastral intent, but Tenali coverage was not independently demonstrated.",
+    "The DILRMP record is digitization/status evidence, not an open parcel feature service.",
+    "No sample GeoJSON is retained because no safe Tenali parcel response was obtained.",
+    "Exact WUP point [16.2384731991918,80.6452406809308] was not moved or substituted."
+  ],
+  "safeFieldPolicy": {
+    "allowed": ["id", "geometry"],
+    "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "document details"],
+    "retainedNativeFields": false,
+    "reason": "No Tenali feature was available; only official service configuration and route metadata were retained."
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": "Tenali Municipality, Government of Andhra Pradesh, official GIS-map route",
+    "generalAgencyEvidence": ["Andhra Pradesh Space Applications Centre (APSAC) AP Cadastral Map", "Department of Land Resources DILRMP Tenali Mandal status"],
+    "verifiedForTenali": false,
+    "reason": "Official routes exist, but a live safe Tenali parcel response and local coverage were not evidenced."
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The 403 may reflect service access policy, network allowlisting, or current service configuration; it does not establish absence.",
+    "Tenali may be covered by the APSAC statewide layer, a separate revenue service, or a municipal property GIS that was not anonymously queryable.",
+    "The public municipal GIS page may load additional client-side services under a browser context not reproduced by bounded shell inspection."
+  ],
+  "completionSummary": {"parcelSourceVerified": false, "geometrySampleRetained": 0, "unsafeFieldsRequested": false, "tlsExceptions": 0}
+}

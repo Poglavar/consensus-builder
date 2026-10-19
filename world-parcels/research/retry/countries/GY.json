@@ -1,0 +1,53 @@
+{
+ "kind": "country",
+ "key": "GY",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GY,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.glsc.gov.gy/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "now serves a generic Plesk 'Web Server's Default Page' (1.6 KB), not the Next.js site seen on 2026-09-29; no viewer to inspect"
+  },
+  {
+   "url": "https://lands.gov.gy/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://gis.glsc.gov.gy/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=GLSC%20Guyana&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "ArcGIS Online: only third-party items (UWI 'Guyana_Land_Information_System' = Cotton Tree Village land-use, no parcels; a consultant's 'GLSC Data' dashboard / 'LIMS Parcels' web map with no public service URL)"
+  },
+  {
+   "url": "https://services1.arcgis.com/NUSHso3rgWERZOFF/arcgis/rest/services/Guyana_Land_Information_System/FeatureServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layers: roads, structures, land-use classes for one village; not cadastral parcels, not official"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "Site answers 200 (misconfigured hosting), other hosts fail to connect; no evidence of a geo block.",
+ "notes": "Official GLSC site regressed to a hosting default page (unlike previous record); ArcGIS Online search found no official GLSC parcel service. Previous 'viewer_only' had no viewer evidence, so downgraded to temporarily_unavailable rather than claiming absence.",
+ "nextStep": "Retry glsc.gov.gy later; look for a GLSC ArcGIS Online org / e-lands portal."
+}

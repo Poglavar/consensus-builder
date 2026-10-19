@@ -1,0 +1,25 @@
+{
+  "taskId": "city:6412",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-6412-c-rdoba.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/c-rdoba-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:15:32.928471+00:00",
+  "reason": "Córdoba, Mexico: code 6412, rank 2577, point [18.8931697496791,-96.9504822927765], and 228187 persons match the immutable queue. English and Spanish executed searches and the municipal Catastro notice support registryFound=true. The official RAN viewer returned access denied; there is no anonymous source polygon or native ID, no durable sample, and no independent adapter qualification. The access wall does not show parcel absence.",
+  "geometryReview": {
+    "fullPolygonsRetainedInPairedEvidence": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

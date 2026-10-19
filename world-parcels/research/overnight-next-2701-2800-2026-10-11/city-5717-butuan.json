@@ -1,0 +1,101 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Butuan, Philippines; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 5717,
+  "queueRank": 2747,
+  "name": "Butuan",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "point": [8.96303598990931, 125.541023764139],
+  "population2025": 214823,
+  "population2025k": 214.823,
+  "populationUnit": "persons",
+  "aliases": ["butuan"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Butuan Philippines official cadastral parcel map GIS land registry",
+        "result": "First-party results identified the official Butuan City land-use planning pages, the national Geoportal Philippines map, the LMB Parcel data layer, and LRA cadastral-map procedure material. No city-specific public parcel feature response was established.",
+        "actualResultUrls": ["https://www.geoportal.gov.ph/", "https://www.butuan.gov.ph/comprehensive-development-plans/", "https://lra.gov.ph/images/Transparency_Page/XI.CC/LRA%20CITIZEN%20CHARTER%2007132022.pdf"]
+      },
+      {
+        "language": "Cebuano (local-language attempt)",
+        "query": "Butuan mapa sa mga parsela yuta cadastre GIS rehistro yuta opisyal",
+        "result": "The official Butuan City result in Cebuano documented the city Comprehensive Land Use Plan and City Planning and Development Department, but not parcel-level geometry or a public cadastral API. The national Geoportal remained the only observed public parcel-layer route.",
+        "actualResultUrls": ["https://www.butuan.gov.ph/%F0%9D%97%95%F0%9D%97%A8%F0%9D%97%A7%F0%9D%97%A8%F0%9D%97%94%F0%9D%97%A1-%F0%9D%97%96%F0%9D%97%9C%F0%9D%97%A7%F0%9D%97%AC-%F0%9D%97%96%F0%9D%97%A2%F0%9D%97%A0%F0%9D%97%A3%F0%9D%97%A5%F0%9D%97%98-2/", "https://www.geoportal.gov.ph/"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "observation": "The live public Geoportal Philippines viewer exposes an LMB layer titled Parcel data. Its current JavaScript loads layers from /layers/fetchlayers and configures the public WMS at https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms. The layer metadata identifies the national source as LMB, but does not by itself prove Butuan citywide coverage."
+    },
+    {
+      "url": "https://www.butuan.gov.ph/comprehensive-development-plans/",
+      "observation": "Official Butuan City page publishes city development plans and terms for city data/maps; this is local planning custodian evidence, not a parcel geometry service."
+    },
+    {
+      "url": "https://lra.gov.ph/images/Transparency_Page/XI.CC/LRA%20CITIZEN%20CHARTER%2007132022.pdf",
+      "observation": "Official Land Registration Authority citizen-charter material references cadastral maps/previous approved plans in registry procedures; it does not expose an anonymous Butuan parcel API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "method": "GET viewer HTML and current JavaScript/configuration",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Anonymous public viewer loaded. Current script was inspected and showed the layer endpoint and GeoServer WMS URL. No credentials, login, CAPTCHA/Cloudflare bypass, or private token was used."
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/layers/fetchlayers",
+      "method": "GET layer catalog",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Returned the current layer catalog; bounded inspection found agency LMB, layer_name denr_parcel_data, title Parcel data. Native schema and CRS were not supplied by this catalog response."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=geoportal:denr_parcel_data&QUERY_LAYERS=geoportal:denr_parcel_data&STYLES=&SRS=EPSG:4326&BBOX=125.530,8.953,125.552,8.973&WIDTH=101&HEIGHT=101&X=50&Y=50&INFO_FORMAT=application/json&FEATURE_COUNT=3",
+      "method": "GET bounded anonymous GetFeatureInfo around exact WUP point",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Request timed out after 20 seconds with no response. This is not evidence of a parcel miss or citywide absence."
+    },
+    {
+      "url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms?service=WMS&request=GetCapabilities",
+      "method": "GET WMS capabilities",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Request timed out after 30 seconds with no response; no schema or CRS was inferred."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "The national LMB parcel layer and Butuan City planning custodian were evidenced, but no local Butuan registry/cadastre procedure or city-specific parcel service was independently verified.",
+  "registryEvidenceUrls": ["https://www.geoportal.gov.ph/", "https://www.butuan.gov.ph/comprehensive-development-plans/"],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms",
+  "sourceIds": [],
+  "nativeSchema": null,
+  "resultCategory": "national_parcel_layer_found_city_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "National Geoportal exposes an LMB Parcel data layer.",
+    "verifiedOpenScope": "Layer catalog presence only; no bounded Butuan parcel feature response, schema, CRS, or citywide completeness was verified.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "asia",
+  "remainingUncertainty": "The public Geoportal WMS may serve parcel geometry when responsive or through a different bounded viewer request. The exact WUP point was preserved and not shifted. A timeout is not evidence of citywide absence.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"]
+}

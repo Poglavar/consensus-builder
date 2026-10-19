@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MA",
+ "country": "Morocco",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+ "portalsFound": [
+  {
+   "url": "https://www.ancfcc.gov.ma/portail",
+   "observation": "Portal loads (200); links are to professional/e-services spaces (notaires, adouls, ingenieurs geometres topographes, complaints). No public parcel map or feed link found."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 to root with browser UA (earlier probe: maintenance page)"
+  },
+  {
+   "url": "https://www.ancfcc.gov.ma/portail",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal HTML, no parcel service"
+  },
+  {
+   "url": "https://www.ancfcc.gov.ma/nos-m%C3%A9tiers/cartographie/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "cartography page, no data endpoint"
+  },
+  {
+   "url": "https://cadastre.ancfcc.gov.ma/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://data.gov.ma/data/api/3/action/package_search?q=cadastre&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "success, count 0"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National statutory land registry and cadastre (ANCFCC)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No public parcel endpoint located; professional e-spaces may require registration. See research/casablanca.json.",
+ "nextStep": "Retry cadastre.ancfcc.gov.ma / any 'Cadastre en ligne' viewer later; search for ANCFCC WMS/WFS."
+}

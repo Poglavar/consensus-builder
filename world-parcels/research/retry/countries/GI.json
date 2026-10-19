@@ -1,0 +1,74 @@
+{
+ "kind": "country",
+ "key": "GI",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GB,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gis.gov.gi/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "still no response; host appears defunct (geoportal is at geoportal.gov.gi)"
+  },
+  {
+   "url": "https://www.lps.gi/land-registry",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "LPS Land Registry page; links to Land Registry Online (landregistry.gi/deeds, login/API) and to Gibraltar GeoPortal"
+  },
+  {
+   "url": "https://www.landregistry.gi/deeds",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "deeds registry app with /api/Login; credentialed, not parcel geometry"
+  },
+  {
+   "url": "https://www.geoportal.gov.gi/index.php/downloads/download-service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "advertises WMS/WFS/CSW at download.geoportal.gov.gi/geoserver"
+  },
+  {
+   "url": "https://viewers.geoportal.gov.gi/webviewer/DefaultOptions.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "Heron viewer config; WFS/WMS at https://download.geoportal.gov.gi/geoserver/gibgis/; layer list has buildings_py, structures_py, thoroughfare_pl, landform*, no cadastral parcel layer"
+  },
+  {
+   "url": "https://download.geoportal.gov.gi/geoserver/gibgis/wfs?service=WFS&version=1.1.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "'This site is not accessible' block page"
+  },
+  {
+   "url": "https://download.geoportal.gov.gi/geoserver/gibgis/wms?service=WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "block page"
+  },
+  {
+   "url": "https://download.geoportal.gov.gi/geoserver/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "block page"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "download.geoportal.gov.gi (GeoServer WFS/WMS/CSW) returns a generic 403 'This site is not accessible' WAF page (32 KB) to every request from this network while the viewer and geoportal pages on other hosts return 200; consistent with geo/IP filtering",
+ "notes": "New: found the real service (GeoServer gibgis workspace, EPSG:25830, INSPIRE download service) via viewer JS. Not tested for parcels because blocked; viewer config layers suggest buildings/topography, not legal parcels. Did not use the viewer's heron.cgi proxy to route around the block.",
+ "nextStep": "Retry download.geoportal.gov.gi from another network; if reachable list gibgis feature types for a parcel/cadastral layer."
+}

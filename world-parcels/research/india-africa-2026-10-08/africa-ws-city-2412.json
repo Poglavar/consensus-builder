@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2412",
+  "queueRank": 101,
+  "wupCityCode": 2412,
+  "name": "Mansa",
+  "country": "Zambia",
+  "countryCode": "ZM",
+  "centerLatLon": [
+    -11.2027334066671,
+    28.8914856820841
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 101,
+  "population2025": 335503,
+  "annualGrowthPct2015To2025": 5.839984,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ws-provider-ZM.json",
+  "freshCityLocalSearch": {
+    "languageScript": "English (official Zambia/Mansa municipal terminology; Latin script)",
+    "exactQueries": [
+      "Mansa Zambia parcels cadastre land plot GIS Ministry of Lands"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.mansacouncil.gov.zm/?page_id=2435",
+      "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer"
+    ],
+    "summary": "Search found Mansa Municipal Council Survey Section (boundary, survey diagram and GIS duties) and the national Zambia NSDI Lots/cadaster service with ZILMIS keyword, but no verified Mansa sample; bounded target reads timed out."
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "zm-nsdi-cadaster-new",
+    "name": "Zambia NSDI CadasterNew MapServer layer 0 (Lots; service keywords include Cadaster and ZILMIS)",
+    "operator": "Zambia national mapping / NSDI host at map.gov.zm; exact layer custodian not independently confirmed",
+    "scope": "Public national NSDI cadastre candidate; Mansa coverage not verified",
+    "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "method": "ArcGIS REST query",
+    "responseFormat": "GeoJSON",
+    "crs": "Service metadata advertises EPSG:32735; target request used inSR=4326 and outSR=4326",
+    "reuseStatus": "Not assessed"
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "Candidate metadata and bounded Mansa feature query timed out from this network (HTTP 000); target city coverage and stable parcel identifiers remain unverified.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Retry the bounded Mansa query when the official NSDI endpoint responds, then confirm the layer’s target coverage and native parcel identifier semantics.",
+  "requests": [
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Metadata request timed out after 20 seconds with zero bytes."
+    },
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "requestParameters": {
+        "where": "1=1",
+        "geometry": "28.8904856820841,-11.2037334066671,28.8924856820841,-11.2017334066671",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "assessment": "Correctly encoded ~200 m bbox/count=3 request timed out after 15 seconds with zero bytes; no sample returned."
+    }
+  ],
+  "resultCategory": "candidate_service_temporarily_unavailable",
+  "evidenceType": "new_or_retry_target_service_probe",
+  "targetEndpointProbePerformed": true
+}

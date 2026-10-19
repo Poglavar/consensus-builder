@@ -1,0 +1,64 @@
+{
+  "cityCode": 5067,
+  "queueRank": 3295,
+  "name": "Sunderland",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "iso3": "GBR",
+  "locId": 826,
+  "capital": false,
+  "point": [54.9022790588835, -1.40594484606918],
+  "population2025": 182966,
+  "population2025k": 182.966,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sunderland City Council official interactive map land parcels GIS cadastral HM Land Registry INSPIRE",
+        "result": "Found Sunderland City Council official Interactive Maps and Ownership Queries pages, the official Sunderland ArcGIS REST host, and HM Land Registry INSPIRE guidance/download metadata. The council states it keeps maps for council-owned land only; the national INSPIRE dataset is the relevant public cadastral index source for England and Wales.",
+        "actualResultUrls": [
+          "https://www.sunderland.gov.uk/article/15997/Interactive-Maps?ccp=true",
+          "https://www.sunderland.gov.uk/article/12669/Ownership-Queries?ccp=true",
+          "https://arcgis.sunderland.gov.uk/arcgis/rest/services?f=pjson",
+          "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data"
+        ]
+      },
+      {
+        "language": "English (United Kingdom local language)",
+        "query": "Sunderland City Council official parcel boundaries map cadastral land registry property polygons",
+        "result": "The local-language search context is English. First-party results confirmed council ownership maps are limited to council-owned land, while private boundary questions are referred to HM Land Registry; the official download catalogue lists Sunderland City Council as a local-authority INSPIRE file area.",
+        "actualResultUrls": [
+          "https://www.sunderland.gov.uk/article/12669/Ownership-Queries?ccp=true",
+          "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+          "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&REQUEST=GetCapabilities"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "HM Land Registry for England-and-Wales INSPIRE index polygons; Sunderland City Council is evidenced as a local mapping publisher for council-owned land and planning layers.",
+    "evidence": [
+      "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "https://www.sunderland.gov.uk/article/12669/Ownership-Queries?ccp=true"
+    ],
+    "publicParcelService": "https://inspire.landregistry.gov.uk/inspire/ows",
+    "localAuthorityDownload": "https://use-land-property-data.service.gov.uk/datasets/inspire/download"
+  },
+  "parcelSource": {
+    "serviceReview": "sunderland-service-review.json",
+    "layer": "inspire:CP.CadastralParcel",
+    "serviceType": "OGC WMS 1.3.0 view service; WFS probe attempted and reported disabled",
+    "nativeCrs": "EPSG:27700 (also advertised EPSG:3035, EPSG:900913, CRS:84)",
+    "responseCrs": null,
+    "sample": null
+  },
+  "runtimeReadiness": "held"
+}

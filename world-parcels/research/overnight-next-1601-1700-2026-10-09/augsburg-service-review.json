@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-5134-augsburg.json",
+  "cityCode": 5134,
+  "queueRank": 1662,
+  "city": "Augsburg",
+  "country": "Germany",
+  "countryCode": "DE",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Augsburg and Bavarian surveying sources were found. The open ALKIS-Parzellarkarte WMS returned a bounded Augsburg map image, but no parcel IDs or vector geometry. The official ALKIS WFS, INSPIRE parcel WFS/WMS, and coordinate lookup are authenticated/licensed or require a personal token; runtime remains held.",
+  "queryOutcomes": "Separate English and German first-party discovery queries are recorded in city-5134-augsburg.json. They located the local Augsburg surveying office, City Geodatenamt, BayernAtlas, Geoportal Bayern catalogue, and LDBV service pages.",
+  "requestOutcomes": "All requests used browser-like User-Agent, Accept, German Accept-Language, cookies where applicable, viewer Referer for service calls, TLS verification, and bounded extents. The open raster WMS capabilities and Augsburg GetMap succeeded. Authenticated vector candidates returned 401; the documented coordinate route returned 404 without its required token. No credentials, login, CAPTCHA/Cloudflare bypass, private token, TLS disablement, owner/address/titleholder/tax/contact fields, or formal extract request was used.",
+  "scopeLimits": [
+    "The local office and city Geodatenamt establish cadastral custodianship and procedures, not anonymous vector access.",
+    "The open WMS is a reduced raster portrayal and explicitly omits parcel numbers and boundary markers; it cannot yield safe native parcel identity or retained polygon geometry.",
+    "The Bavaria-wide claim for authenticated ALKIS vector services was not converted into an open citywide parcel source claim.",
+    "The exact WUP point was preserved and used inside a small bounded WMS extent; authentication walls and the 404 lookup response were not treated as parcel presence or absence.",
+    "No GeoJSON sample was retained because no safe native parcel ID plus full polygon response was obtained.",
+    "This packet is research evidence only and must not be treated as source integration or adapter admission."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was returned anonymously. Do not synthesize one from raster pixels, response order, WMS layer names, or internal row numbers.",
+  "nativeFieldMapping": {
+    "documentedVectorType": "ave:Flurstueck",
+    "documentedCadastralTheme": "INSPIRE Cadastral Parcels / Flurstücke-Grundstücke",
+    "mappingStatus": "schema not retrieved because vector endpoints require authentication"
+  },
+  "compositeKeyProvenance": null,
+  "crs": "Open raster WMS capabilities: EPSG:4326 among supported CRSs. Authenticated ALKIS WFS documentation: EPSG:25832 default, also EPSG:25833, EPSG:4258, EPSG:4326, EPSG:3857.",
+  "geometryQuality": "Raster map image only; vector geometry not evaluated.",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A licensed or authenticated vector service may support Augsburg parcels, and the open raster confirms visual parcel-boundary depiction. Public vector schema, stable native identity, licensing for reuse, and anonymous runtime access remain unresolved.",
+  "retainedSample": null
+}

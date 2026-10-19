@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-2880-ngaound-r.json",
+  "schemaVersion": "1.0",
+  "cityCode": 2880,
+  "queueRank": 1658,
+  "city": "Ngaoundéré",
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "MINDCAF official pages evidence Cameroon cadastral custody and Ngaoundéré-specific geodetic work, while the ACAGER municipal gateway publishes thematic mapping rather than a verified parcel layer. Bounded anonymous requests found no safe public parcel ID plus geometry response; runtime remains held.",
+  "queryOutcomes": "Separate English and French first-party discovery queries are recorded in city-2880-ngaound-r.json. They identified ACAGER's Ngaoundéré cartographic gateway, MINDCAF cadastral organization/docs, and an official Ngaoundéré geodetic-densification notice.",
+  "requestOutcomes": "TLS-verified GETs to MINDCAF organization/docs returned HTTP 200. ACAGER French/English gateways and bounded GeoServer/WFS route checks returned HTTP 403. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or retained geometry was used.",
+  "scopeLimits": [
+    "MINDCAF custody/procedure evidence establishes a registry/cadastral route, not anonymous parcel geometry availability.",
+    "ACAGER thematic municipal layers are not treated as cadastral parcels.",
+    "No exact-point hit or miss, map extent miss, HTTP 403, timeout, login wall or unavailable UI was treated as evidence of citywide cadastral absence, and the WUP point was not shifted.",
+    "No GeoJSON sample was retained because no safe native parcel identity and full polygon were verified.",
+    "This packet is research evidence only; serial reviewer qualification and runtime adapter admission remain pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from map rows, search results, response order or internal records.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel service was reached. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ngaoundéré municipal thematic map plus MINDCAF cadastral services applicable to the city.",
+    "verifiedOpenScope": "Institutional custody and thematic municipal mapping only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The ACAGER backend, any restricted cadastral viewer, parcel schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title records, or completeness of any Cameroonian cadastral dataset.",
+  "retainedSample": null
+}

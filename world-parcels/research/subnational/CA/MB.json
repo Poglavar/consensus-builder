@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "MB",
+ "regionName": "Manitoba",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-mb-winnipeg-assessment-parcels",
+  "name": "City of Winnipeg Assessment Parcels",
+  "operator": "City of Winnipeg Assessment and Taxation Dept (Open Data Winnipeg, Socrata)",
+  "scope": "City of Winnipeg",
+  "endpoint": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson",
+  "method": "Socrata SoQL GET",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "Catalogue lists Canada Open Government Licence (http://open.canada.ca/en/open-government-licence-canada); text not read."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-mb-winnipeg-assessment-parcels",
+  "requestUrl": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson?$select=gisid,geometry&$limit=3&$where=within_box(geometry,49.8950,-97.1450,49.8965,-97.1430)",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/vnd.geo+json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -97.145,
+   49.895,
+   -97.143,
+   49.8965
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "gisid",
+  "responseFile": "MB-parcel-response.json",
+  "pagination": "SoQL $limit/$offset",
+  "regionSampled": "Winnipeg"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Municipal dataset only. Data MB (geoportal.gov.mb.ca) search for parcel/cadastre returned original survey grid, municipal boundaries and roll entries, no province-wide parcel polygons.",
+ "subregionsVerified": [
+  "City of Winnipeg"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geoportal.gov.mb.ca/",
+   "observation": "Data MB hub; no provincial parcel fabric found by API search."
+  },
+  {
+   "url": "https://data.winnipeg.ca/",
+   "observation": "Open Data Winnipeg; Assessment Parcels d4mq-wa44 has multipolygon geometry + gisid; owner-free fields selected only."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson?$select=gisid,geometry&$limit=3&$where=within_box(geometry,49.8950,-97.1450,49.8965,-97.1430)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/vnd.geo+json; charset=UTF-8",
+   "assessment": "3 multipolygon parcels, gisid only"
+  }
+ ],
+ "reuseStatus": "Canada OGL per Socrata metadata; not read.",
+ "remainingUncertainty": "Manitoba Property Registry / provincial parcels not shown as open. Brandon and rural municipalities untested.",
+ "nextStep": "Check Manitoba Land Titles / Teranet Manitoba terms."
+}

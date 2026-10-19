@@ -1,0 +1,17 @@
+{
+  "taskId": "city:3258",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:38:30Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-3258-jiayuguan.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/jiayuguan-service-review.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/jiayuguan-safe-sample.geojson",
+    "tmp/valhalla-parcel-research/jiayuguan/zongdi-sample.json",
+    "tmp/valhalla-parcel-research/jiayuguan/zongdi-schema.xml",
+    "tmp/valhalla-parcel-research/jiayuguan/wfs-capabilities.xml"
+  ],
+  "review": "WUP 2025 code 3258, rank 2718, China, point [39.7930141031446,98.2707265971408], and 217789 persons match the hashed UN source roster, immutable queue, packet, and paired review. English and Chinese queries and first-party URLs are recorded. The original WFS cache reports 3831 matched and 3 returned; the retained sample has exactly 3 complete matching MultiPolygons with safe IDs zongdi.1–3 and no unsafe source attributes. This is a bounded discovery only. Fresh exact native-ID reads, forced paging, stable manifest, 13 aligned bounded cells, independent metric GEOS validity/duplicate/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission or citywide acceptance metric is established."
+}

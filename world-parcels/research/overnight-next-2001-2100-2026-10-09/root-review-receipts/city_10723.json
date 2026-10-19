@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10723",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-10723-mayiladuthurai.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/mayiladuthurai-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T20:58:29Z",
+  "reason": "Identity rank 2013, India, [11.0956356140632,79.6301887033496], 288923 persons matches queue. English and Tamil executed-search records and official links are present. The district Revenue page independently confirms land-record custody. No original public native-ID polygon response or live adapter qualification exists; timeouts do not prove absence.",
+  "firstPartyUrlsChecked": [
+    "https://mayiladuthurai.nic.in/revenue/",
+    "https://mayiladuthurai.nic.in/town-and-country-planning/"
+  ]
+}

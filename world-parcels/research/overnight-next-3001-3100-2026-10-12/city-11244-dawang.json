@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "cityCode": 11244,
+  "wupCityCode": 11244,
+  "queueRank": 3064,
+  "name": "Dawang",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:11244",
+  "point": [23.2853853691007, 112.807902743604],
+  "population2025": 195693,
+  "population2025k": 195.693,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dawang Zhaoqing Guangdong China official cadastral map parcel land registration Natural Resources Bureau",
+        "result": "First-party discovery identified the Zhaoqing Municipal Natural Resources Bureau and the Guangdong government-services portal for Zhaoqing. The local high-tech-zone/Dawang public-information route was also identified, but no anonymous public parcel feature service was found.",
+        "actualResultUrls": [
+          "https://ysqgk.gd.gov.cn/758018/selecttype?jump=false",
+          "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+          "https://ysqgk.gd.gov.cn/758411/selecttype"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "肇庆市自然资源局 高新区分局 大旺街道 不动产登记 地籍图 官方",
+        "result": "First-party discovery confirmed 肇庆市自然资源局 as the municipal natural-resources custodian and identified the official 肇庆高新区大旺街道 government-information route. Public pages expose government-information and service procedures, not an anonymous parcel ID plus unchanged polygon response.",
+        "actualResultUrls": [
+          "https://ysqgk.gd.gov.cn/758018/selecttype?jump=false",
+          "https://ysqgk.gd.gov.cn/758411/choice",
+          "https://www.gdzwfw.gov.cn/portal/index?region=441200"
+        ]
+      }
+    ],
+    "officialLeads": [
+      {
+        "url": "https://ysqgk.gd.gov.cn/758018/selecttype?jump=false",
+        "operator": "Zhaoqing Municipal Natural Resources Bureau",
+        "evidence": "Official Guangdong government-information disclosure system identifies 肇庆市自然资源局 and its public-information request route."
+      },
+      {
+        "url": "https://ysqgk.gd.gov.cn/758411/selecttype",
+        "operator": "Dawang Subdistrict, Zhaoqing High-Tech Zone",
+        "evidence": "Official government-information disclosure system identifies 肇庆高新区大旺街道 and its public-information route."
+      },
+      {
+        "url": "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+        "operator": "Guangdong Government Services Network, Zhaoqing region",
+        "evidence": "Official regional portal exposes 不动产登记资料查询 as a service entry, but the inspected anonymous HTML did not expose parcel geometry or an open map API."
+      }
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://ysqgk.gd.gov.cn/758018/selecttype?jump=false",
+      "method": "GET via public web discovery and TLS-verified curl",
+      "status": "HTTP 200",
+      "summary": "Official Zhaoqing Natural Resources Bureau information-request page loaded; no parcel viewer, layer schema, CRS, or anonymous geometry endpoint was exposed. No form was submitted."
+    },
+    {
+      "url": "https://ysqgk.gd.gov.cn/758411/choice",
+      "method": "GET via public web discovery and TLS-verified curl",
+      "status": "HTTP 200",
+      "summary": "Official Dawang Subdistrict information-request page loaded; it describes an identity/document-bearing request workflow, not an anonymous parcel API. No form was submitted."
+    },
+    {
+      "url": "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+      "method": "GET via public web discovery and TLS-verified curl",
+      "status": "HTTP 200",
+      "summary": "Official Zhaoqing regional services portal loaded and exposed 不动产登记资料查询. The bounded anonymous page inspection found no safe ID-plus-polygon response, public cadastral service URL, schema, or CRS."
+    },
+    {
+      "url": "https://zrzyj.zhaoqing.gov.cn/",
+      "method": "GET via TLS-verified curl",
+      "status": "DNS resolution failed",
+      "summary": "The apparent official bureau hostname did not resolve in this environment; this is not evidence of cadastral absence and no certificate exception was used."
+    },
+    {
+      "url": "https://www.dlhitech.gov.cn/",
+      "method": "GET via TLS-verified curl after a search lead",
+      "status": "HTTP 200 but wrong jurisdiction",
+      "summary": "The hostname resolved to Dalian High-Tech Zone content, not Zhaoqing/Dawang; it was rejected and no data was retained."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Dawang locality / Zhaoqing High-Tech Zone and its municipal natural-resources custody and public service procedures.",
+    "verifiedOpenScope": "Local institutional custody and public service/request pages only; no open parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_verified_open_parcel_geometry",
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [23.2853853691007, 112.807902743604] was preserved in latitude/longitude order; no coordinate shift or exact-point hit/miss inference was made.",
+    "Official custodian and service/request evidence does not establish an anonymous parcel API or citywide open coverage.",
+    "No parcel polygon, stable native parcel identity, source schema, or CRS was retrieved or retained.",
+    "DNS failure, inaccessible viewer, map extent miss, timeout, login/identity wall, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public parcel viewer/API route, if any, layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

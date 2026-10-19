@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10522-anqiu.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-specific registration-center evidence is present in the official court source. No public geometry route was verified. City/Weifang administrative mapping references do not establish parcel-vector schema or point coverage.",
+  "registryAssessment": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.sdcourt.gov.cn/wfzy/resource/cms/article/442628/39665025/2025051916451337038.pdf",
+      "observation": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint."
+    },
+    {
+      "url": "https://www.weifang.gov.cn/",
+      "observation": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Anqiu Shandong China official real estate registration center cadastral map GIS",
+      "result": "Primary city-specific evidence is an official court document naming the Anqiu Real Estate Registration Center; no public feature service found.",
+      "method": "English-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "安丘市 不动产登记中心 地籍图 GIS 自然资源和规划局 官方",
+      "result": "中文检索找到官方法院材料提及安丘市不动产登记中心；未发现公开宗地几何接口。",
+      "method": "Local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying public geometry-only sample was available.",
+  "coverageAssessment": {
+    "claimedScope": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint.",
+    "verifiedOpenScope": "No citywide coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "kind": "static-source-and-route-review",
+      "httpStatus": "not asserted",
+      "result": "Official source pages and public map/service references reviewed. No public geometry request was sent because a safe feature endpoint and geometry/identifier schema were not verified."
+    }
+  ],
+  "remainingUncertainty": "The center’s full service scope and WUP-point parcel availability remain unknown."
+}

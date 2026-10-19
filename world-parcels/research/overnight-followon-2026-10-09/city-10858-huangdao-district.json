@@ -1,0 +1,100 @@
+{
+  "name": "Huangdao District",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1007,
+  "point": [
+    35.962887528099,
+    120.202829533761
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huangdao District Qingdao official cadastral parcel map land registration GIS China",
+        "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry.",
+        "result": "The West Coast New Area government says anyone may use the official apps, Qingdao Online Real Estate, or the registry-center account to query natural conditions and cadastral-map information by registered property address, certificate number, or unit number; rights-holder authorization is required for expanded details. Qingdao Online Real Estate links a “public cadastral map query”. This is a property-identifier query flow, not a coordinate-based parcel feature API. No owner/address or registration details were queried.",
+        "executionMethod": "Separate English-language web search followed by first-party page review."
+      },
+      {
+        "language": "Chinese",
+        "query": "青岛西海岸新区 地籍图公开查询 不动产登记 黄岛区 官方",
+        "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality.",
+        "result": "The West Coast New Area government says anyone may use the official apps, Qingdao Online Real Estate, or the registry-center account to query natural conditions and cadastral-map information by registered property address, certificate number, or unit number; rights-holder authorization is required for expanded details. Qingdao Online Real Estate links a “public cadastral map query”. This is a property-identifier query flow, not a coordinate-based parcel feature API. No owner/address or registration details were queried.",
+        "executionMethod": "Separate local-language web search followed by first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Qingdao Online Real Estate cadastral map public query and West Coast New Area registry guidance",
+        "operator": "Qingdao Real Estate Registration Center and Housing Transaction Center; Qingdao West Coast New Area Natural Resources Bureau",
+        "homeUrl": "https://www.xihaian.gov.cn/ztzl/zcwd/bm/qzrzyj/202306/t20230630_7266777.shtml",
+        "observation": "The West Coast New Area government says anyone may use the official apps, Qingdao Online Real Estate, or the registry-center account to query natural conditions and cadastral-map information by registered property address, certificate number, or unit number; rights-holder authorization is required for expanded details. Qingdao Online Real Estate links a “public cadastral map query”. This is a property-identifier query flow, not a coordinate-based parcel feature API. No owner/address or registration details were queried."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-10858-LOCAL-CADASTRE-REVIEW",
+    "name": "Qingdao Online Real Estate cadastral map public query and West Coast New Area registry guidance",
+    "url": "https://www.xihaian.gov.cn/ztzl/zcwd/bm/qzrzyj/202306/t20230630_7266777.shtml",
+    "operator": "Qingdao Real Estate Registration Center and Housing Transaction Center; Qingdao West Coast New Area Natural Resources Bureau",
+    "serviceType": "Official local registry/map service reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local registry service is confirmed for Qingdao West Coast New Area/Huangdao. The public-map entry is visible, but the WUP coordinate cannot be resolved from the published instructions without a property identifier; no open parcel geometry coverage is claimed.",
+    "verifiedOpenScope": "The West Coast New Area government says anyone may use the official apps, Qingdao Online Real Estate, or the registry-center account to query natural conditions and cadastral-map information by registered property address, certificate number, or unit number; rights-holder authorization is required for expanded details. Qingdao Online Real Estate links a “public cadastral map query”. This is a property-identifier query flow, not a coordinate-based parcel feature API. No owner/address or registration details were queried.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The published query flow accepts registered property addresses, certificate numbers or unit numbers. No source-native safe identifier for the unchanged locator, field-projected anonymous full-polygon response, or executable endpoint was verified.",
+  "remainingUncertainty": "No point-specific parcel/geometry response; the WUP point’s neighborhood/village parcel map coverage remains unknown.",
+  "nextStep": "If the official source later exposes a documented public feature service, inspect metadata first and make only a bounded query retaining safe native IDs plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10858,
+  "cityId": "wup2025:10858",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.962887528099,
+    120.202829533761
+  ],
+  "population2025k": 545.983,
+  "populationUnit": "persons",
+  "queueRank": 1007,
+  "population2025": 545983,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The West Coast New Area government says anyone may use the official apps, Qingdao Online Real Estate, or the registry-center account to query natural conditions and cadastral-map information by registered property address, certificate number, or unit number; rights-holder authorization is required for expanded details. Qingdao Online Real Estate links a “public cadastral map query”. This is a property-identifier query flow, not a coordinate-based parcel feature API. No owner/address or registration details were queried.",
+  "registryEvidenceUrls": [
+    "https://www.xihaian.gov.cn/ztzl/zcwd/bm/qzrzyj/202306/t20230630_7266777.shtml",
+    "https://www.qdfd.com.cn/qdweb/realweb/indexnew.jsp",
+    "https://www.xihaian.gov.cn/zwgk/bmgk/zrzy/gkml/zdgz/bdcdj/202409/t20240911_8259059.shtml"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The published query flow accepts registered property addresses, certificate numbers or unit numbers. No source-native safe identifier for the unchanged locator, field-projected anonymous full-polygon response, or executable endpoint was verified."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The West Coast New Area government says anyone may use the official apps, Qingdao Online Real Estate, or the registry-center account to query natural conditions and cadastral-map information by registered property address, certificate number, or unit number; rights-holder authorization is required for expanded details. Qingdao Online Real Estate links a “public cadastral map query”. This is a property-identifier query flow, not a coordinate-based parcel feature API. No owner/address or registration details were queried."
+}

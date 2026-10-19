@@ -1,0 +1,379 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-08T08:47:16.229496+04:00",
+  "status": "completed",
+  "scope": "Next ten unresolved India/Africa cohort targets after the prior local follow-up. Each selected city gets its own outcome; shared service metadata is not counted as city parcel verification.",
+  "baseQueue": "world-parcels/queue-india-africa.json",
+  "priorFollowupIndex": "research/india-africa-followup-2026-10-08/index.json",
+  "cityCount": 10,
+  "indiaCount": 5,
+  "africaCount": 5,
+  "selectionMethod": "Five Indian and five African targets with unresolved public mapping leads, excluding the previous 19 direct follow-up targets and configured app entries. Prior cohort ranks and exact saved points are retained.",
+  "cities": [
+    {
+      "cityId": "wup2025:9949",
+      "wupCityCode": 9949,
+      "name": "Bengaluru",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        13.0062665301097,
+        77.5626340229947
+      ],
+      "largestRank": 24,
+      "growthRank": null,
+      "population2025": 13187098,
+      "annualGrowthPct2015To2025": 2.04404,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "india",
+      "selectionReason": "Karnataka state and municipal GIS alternatives to the previously inspected portal shell.",
+      "priorEvidenceFiles": [
+        "research/bengaluru.json",
+        "research/india-africa-2026-10-08/india-city-9949.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-9949.json",
+        "resultCategory": "no_verified_open_endpoint_after_attempts",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+        "nextStep": "Find a reachable official cadastral-map service beyond BBMP e-Aasthi, resolve the WUP point to its survey/revenue-village location, and verify a parcel polygon with stable survey ID."
+      },
+      "status": "completed",
+      "resultCategory": "no_verified_target_parcel_geometry"
+    },
+    {
+      "cityId": "wup2025:10747",
+      "wupCityCode": 10747,
+      "name": "Chennai",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        13.0444628101411,
+        80.2033736591079
+      ],
+      "largestRank": 29,
+      "growthRank": null,
+      "population2025": 11153205,
+      "annualGrowthPct2015To2025": 0.999491,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "india",
+      "selectionReason": "Tamil Nadu state and Chennai municipal map routes; resolve usable geometry and native identity.",
+      "priorEvidenceFiles": [
+        "research/chennai.json",
+        "research/retry/cities/chennai.json",
+        "research/india-africa-2026-10-08/india-city-10747.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-10747.json",
+        "resultCategory": "no_verified_open_endpoint_after_attempts",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+        "nextStep": "Reach official eServices from its landing page, resolve the WUP point to the applicable FMB or urban TSLR hierarchy, and verify a map boundary with a stable survey identifier."
+      },
+      "status": "completed",
+      "resultCategory": "no_verified_target_parcel_geometry"
+    },
+    {
+      "cityId": "wup2025:9913",
+      "wupCityCode": 9913,
+      "name": "Hyderabad",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        17.4138906547212,
+        78.475689046214
+      ],
+      "largestRank": 37,
+      "growthRank": null,
+      "population2025": 9190795,
+      "annualGrowthPct2015To2025": 1.014582,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "india",
+      "selectionReason": "Public Telangana selector is reachable; resolve a city-specific cadastral village and bounded geometry route.",
+      "priorEvidenceFiles": [
+        "research/hyderabad.json",
+        "research/retry/cities/hyderabad.json",
+        "research/india-africa-2026-10-08/india-city-9913.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-9913.json",
+        "resultCategory": "no_verified_sample_candidate_citywide",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+        "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier."
+      },
+      "status": "completed",
+      "resultCategory": "aggregate_geometry_not_parcel"
+    },
+    {
+      "cityId": "wup2025:10035",
+      "wupCityCode": 10035,
+      "name": "Ghatkesar",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        17.4300271469809,
+        78.6542279686069
+      ],
+      "largestRank": null,
+      "growthRank": 90,
+      "population2025": 167897,
+      "annualGrowthPct2015To2025": 6.008776,
+      "cohorts": [
+        "growth200"
+      ],
+      "workstream": "india",
+      "selectionReason": "Distinct growth-cohort target in the same Telangana source family; verify its own point and native parcels.",
+      "priorEvidenceFiles": [
+        "research/india-africa-2026-10-08/india-city-10035.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-10035.json",
+        "resultCategory": "no_verified_sample_candidate_citywide",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+        "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier."
+      },
+      "status": "completed",
+      "resultCategory": "bounded_grid_native_ids_exact_read_blocked"
+    },
+    {
+      "cityId": "wup2025:6408",
+      "wupCityCode": 6408,
+      "name": "Ahmedabad",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        23.0208369805955,
+        72.5971679403649
+      ],
+      "largestRank": 44,
+      "growthRank": null,
+      "population2025": 7632408,
+      "annualGrowthPct2015To2025": 1.102372,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "root",
+      "selectionReason": "Ahmedabad municipal or development-authority plot maps as alternatives to the timed-out AnyRoR route.",
+      "priorEvidenceFiles": [
+        "research/ahmedabad.json",
+        "research/india-africa-2026-10-08/india-city-6408.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-6408.json",
+        "resultCategory": "no_verified_open_endpoint_after_attempts",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
+        "nextStep": "Reach AnyRoR through a functioning official browser route, resolve the WUP coordinate to the official village/survey hierarchy, and test whether a public response yields parcel polygon geometry and a stable survey ID."
+      },
+      "status": "completed",
+      "resultCategory": "live_integration_enabled_local"
+    },
+    {
+      "cityId": "wup2025:1265",
+      "wupCityCode": 1265,
+      "name": "Lagos",
+      "country": "Nigeria",
+      "countryCode": "NG",
+      "region": "Africa",
+      "centerLatLon": [
+        6.56844874683968,
+        3.31028078517139
+      ],
+      "largestRank": 26,
+      "growthRank": null,
+      "population2025": 12791699,
+      "annualGrowthPct2015To2025": 1.425783,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "africa_west",
+      "selectionReason": "Seek a Lagos-relevant parcel service after the previous candidate proved outside the target.",
+      "priorEvidenceFiles": [
+        "research/lagos.json",
+        "research/india-africa-2026-10-08/africa-ws-city-1265.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-1265.json",
+        "resultCategory": "candidate_service_outside_target",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Candidate layer extent is far outside Lagos and bounded target query returned zero features.",
+        "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only."
+      },
+      "status": "completed",
+      "resultCategory": "target_polygon_geometry_without_parcel_semantics_or_id"
+    },
+    {
+      "cityId": "wup2025:33",
+      "wupCityCode": 33,
+      "name": "Dakar",
+      "country": "Senegal",
+      "countryCode": "SN",
+      "region": "Africa",
+      "centerLatLon": [
+        14.7439034455783,
+        -17.3893643705506
+      ],
+      "largestRank": 120,
+      "growthRank": null,
+      "population2025": 3852475,
+      "annualGrowthPct2015To2025": 1.828571,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "africa_west",
+      "selectionReason": "Senegal cadastral and city GIS routes, including official map-service discovery.",
+      "priorEvidenceFiles": [
+        "research/dakar.json",
+        "research/retry/cities/dakar.json",
+        "research/india-africa-2026-10-08/africa-ws-city-33.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-33.json",
+        "resultCategory": "no_new_verified_target_sample",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+        "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only."
+      },
+      "status": "completed",
+      "resultCategory": "no_verified_target_parcel_sample"
+    },
+    {
+      "cityId": "wup2025:2033",
+      "wupCityCode": 2033,
+      "name": "Nairobi",
+      "country": "Kenya",
+      "countryCode": "KE",
+      "region": "Africa",
+      "centerLatLon": [
+        -1.26592113731299,
+        36.845161927435
+      ],
+      "largestRank": 65,
+      "growthRank": null,
+      "population2025": 6134334,
+      "annualGrowthPct2015To2025": 2.718356,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "africa_east",
+      "selectionReason": "Municipal and published parcel-map alternatives to account-oriented land services.",
+      "priorEvidenceFiles": [
+        "research/nairobi.json",
+        "research/india-africa-2026-10-08/africa-ne-city-nairobi.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-nairobi.json",
+        "resultCategory": "public_service_no_geometry",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No anonymous Nairobi parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+        "nextStep": "Check the Nairobi land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically."
+      },
+      "status": "completed",
+      "resultCategory": "anonymous_outline_geometry_without_public_id"
+    },
+    {
+      "cityId": "wup2025:3566",
+      "wupCityCode": 3566,
+      "name": "Dar es Salaam",
+      "country": "United Republic of Tanzania",
+      "countryCode": "TZ",
+      "region": "Africa",
+      "centerLatLon": [
+        -6.83352843774764,
+        39.2241417477354
+      ],
+      "largestRank": 42,
+      "growthRank": null,
+      "population2025": 7795114,
+      "annualGrowthPct2015To2025": 4.029294,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "africa_east",
+      "selectionReason": "Municipal and planning GIS alternatives; distinguish cadastral plots from planning or informal-enumeration geometry.",
+      "priorEvidenceFiles": [
+        "research/dar-es-salaam.json",
+        "research/retry/cities/dar-es-salaam.json",
+        "research/india-africa-2026-10-08/africa-ne-city-dar-es-salaam.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-dar-es-salaam.json",
+        "resultCategory": "public_service_no_geometry",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No anonymous Dar es Salaam parcel polygons or stable IDs were verified; e-Ardhi is an account-oriented land-service workflow, not evidence of a public city feature endpoint.",
+        "nextStep": "Check the Dar es Salaam land office or e-Ardhi operator for an open map/API or anonymous bounded parcel extract and verify IDs."
+      },
+      "status": "completed",
+      "resultCategory": "nearby_candidate_extent_excludes_target"
+    },
+    {
+      "cityId": "wup2025:1961",
+      "wupCityCode": 1961,
+      "name": "Antananarivo",
+      "country": "Madagascar",
+      "countryCode": "MG",
+      "region": "Africa",
+      "centerLatLon": [
+        -18.8651082509313,
+        47.5377709219744
+      ],
+      "largestRank": 118,
+      "growthRank": null,
+      "population2025": 3916219,
+      "annualGrowthPct2015To2025": 3.945163,
+      "cohorts": [
+        "largest200"
+      ],
+      "workstream": "africa_east",
+      "selectionReason": "Resolve the prior PLOF WFS candidate semantics, extent and native parcel identity.",
+      "priorEvidenceFiles": [
+        "research/antananarivo.json",
+        "research/retry/cities/antananarivo.json",
+        "research/india-africa-2026-10-08/africa-ne-city-antananarivo.json"
+      ],
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-antananarivo.json",
+        "resultCategory": "unresolved",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No verified parcel layer for Antananarivo was established. Antananarivo’s prior PLOF WFS candidate remains semantically unconfirmed and partial; it cannot establish parcel coverage for this city.",
+        "nextStep": "For Antananarivo, verify the relevant PLOF layer’s meaning, attributes, ID stability and city coverage; do not transfer Antananarivo’s partial lead to this city."
+      },
+      "status": "completed",
+      "resultCategory": "planning_geometry_not_cadastre"
+    }
+  ],
+  "completedAt": "2026-10-08T05:25:09.641379+00:00"
+}

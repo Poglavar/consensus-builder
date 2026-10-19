@@ -1,0 +1,162 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "country": "Switzerland",
+ "checkedAt": "2026-09-30",
+ "status": "national_online_cadastre_verified_sample",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "swisstopo / Federal Directorate for Cadastral Surveying (Amtliche Vermessung); data held by cantons, aggregated by geodienste.ch (cantons + Confederation)",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "Machine-readable list: 27 AV entries (26 cantons + FL) with publication_data, contract flags and WFS/OGC-API URLs"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&REQUEST=GetCapabilities",
+   "observation": "Open-data AV WFS 2.0, default CRS EPSG:2056, feature type ms:RESF = Liegenschaft/parcel (also ms:LCSF land cover, ms:PLSF, ms:MBSF etc.)"
+  },
+  {
+   "url": "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.swisstopo-vd.amtliche-vermessung",
+   "observation": "Federal identify layer OpenData-AV (previous evidence)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "AV publication status per canton (see cantonStatus)"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2683000,1248000,2683150,1248150,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 RESF polygons, Kanton ZH"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2600500,1199500,2600650,1199650,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 polygons, Kanton BE"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2500500,1117500,2500650,1117650,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 polygons, Kanton GE"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2745000,1254000,2745150,1254150,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 polygons, Kanton SG"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2720000,1272000,2720150,1272150,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 polygons, Kanton TG"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2666000,1211000,2666150,1211150,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "0 features in LU: canton requires release (Freigabe erforderlich), as expected"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2538500,1152500,2538650,1152650,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "0 features in VD: release required, as expected"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "ch-geodienste-av0",
+  "requestUrl": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2683000,1248000,2683150,1248150,urn:ogc:def:crs:EPSG::2056",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml",
+  "spatialTestAreaLonLat": "LV95 150 m boxes, e.g. E2683000 N1248000 (Zurich)",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/ms:RESF",
+  "geometryType": "gml:Polygon",
+  "closedRings": true,
+  "idField": "ms:EGRIS_EGRID / ms:Nummer + ms:NBIdent",
+  "responseFile": "europe/CH-parcel-response.json",
+  "pagination": "WFS 2.0 STARTINDEX/COUNT (next link in reply)",
+  "regionSampled": "ZH, BE, GE, SG, TG"
+ },
+ "cantonStatus": {
+  "open_free_data_per_services.json": [
+   "AG",
+   "AI",
+   "AR",
+   "BE",
+   "BL",
+   "BS",
+   "FR",
+   "GE",
+   "GL",
+   "GR",
+   "SG",
+   "SH",
+   "SO",
+   "SZ",
+   "TG",
+   "TI",
+   "UR",
+   "VS",
+   "ZG",
+   "ZH",
+   "FL (Liechtenstein)"
+  ],
+  "release_or_contract_required": {
+   "JU": "free up to 10 ha, contract and fee above",
+   "LU": "area-based fees, contract",
+   "NE": "contract; cantonal coverage flag false",
+   "NW": "contract",
+   "OW": "release required",
+   "VD": "release required"
+  },
+  "verified_open_by_wfs_sample": [
+   "ZH",
+   "BE",
+   "GE",
+   "SG",
+   "TG"
+  ],
+  "notes": "av_0 WFS filter FILTER_ALLOWED_CANTONS lists the 21 open cantons; TI, NE, VS flagged cantonal_coverage false. VS test point returned 0 features (not a confirmed gap). LU and VD returned 0 as expected."
+ },
+ "coverageAssessment": {
+  "claimedScope": "Open AV parcels for ~20 of 26 cantons via one WFS; the other cantons require release/contract",
+  "regionsVerified": [
+   "ZH",
+   "BE",
+   "GE",
+   "SG",
+   "TG"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open (per canton; JU, LU, NE, NW, OW, VD gated)",
+ "regionsSampled": [
+  "ZH",
+  "BE",
+  "GE",
+  "SG",
+  "TG"
+ ],
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; cookie jar used; Accept-Language de-CH; Referer https://geodienste.ch/",
+ "remainingUncertainty": "Not all cantons are open (six gated); nationwide flag true only means two+ regions from the same source/schema, not full national coverage. Licence text per canton: 'Freie Nutzung' / 'Quellenangabe ist Pflicht' for most, 'keine Angabe' for others; not independently read. Attributes returned: BFSNr, NBIdent, Nummer, EGRIS_EGRID, Flaeche, Kanton (no owner data).",
+ "nextStep": "Coordinator should record source as geodienste.ch av_0 WFS with per-canton open list; check OGC-API Features variant listed in services.json."
+}

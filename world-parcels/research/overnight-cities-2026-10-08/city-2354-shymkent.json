@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Shymkent",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Shymkent’s public Regional GIS map lists a city-specific land-plot layer labeled “Жер телімі (МЖКААЖ)” and a cadastral-number input. Static client code configures GeoServer WMS rendering. The public map’s presence verifies a local cadastral-map service, but no georeferenced polygon/schema response was retrieved.",
+  "registryEvidenceUrls": [
+    "https://geo-shym.kz/map/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2354,
+  "cityId": "wup2025:2354",
+  "centerLatLon": [
+    42.3369257073586,
+    69.5992009029268
+  ],
+  "rank": 437,
+  "queueRank": 437,
+  "population2025": 1184337,
+  "population2025k": 1184.337,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The public map client exposes WMS image rendering at the GeoServer endpoint. Direct HTTPS WFS and WMS GetCapabilities requests failed certificate verification before any HTTP response, so the layer schema and any geometry-only feature route could not be safely inspected. TLS verification was not disabled; no raster image was treated as vector geometry.",
+  "scopeLimits": "The inspected public map page lists a Shymkent land-plot layer. No cadastral feature coverage or citywide completeness is inferred from the layer label.",
+  "remainingUncertainty": "The GeoServer service could not be inspected while standard TLS certificate verification failed. A verified service endpoint and geometry-only feature contract remain unestablished; no feature data or parcel attributes were requested.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Shymkent Kazakhstan official public cadastral map land plots GIS parcel service",
+        "scope": "Find city-local cadastral layers and anonymous full-polygon access.",
+        "result": "Shymkent’s public Regional GIS page lists a land-plot cadastral layer. The client configures WMS rendering; attempts to retrieve WFS/WMS capabilities failed standard TLS verification before an HTTP status. No vector schema or feature geometry was verified.",
+        "urls": [
+          "https://geo-shym.kz/map/"
+        ]
+      },
+      {
+        "language": "Kazakh",
+        "query": "Шымкент жер кадастр картасы жер учаскелері ашық карта кадастр",
+        "scope": "Шымкент қаласының жер учаскелері қабатын және анонимді геометрия жолдарын табу.",
+        "result": "Шымкенттің ашық РГИС картасында «Жер телімі (МЖКААЖ)» қабаты мен кадастрлық нөмір енгізу өрісі бар. Клиент GeoServer WMS кескіндерін көрсетеді; стандартты TLS тексеруі capabilities сұрауларын тоқтатты. Полигон алынбады.",
+        "urls": [
+          "https://geo-shym.kz/map/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://geo-shym.kz/map/",
+        "observation": "Anonymous direct GET of the city RGIS page returned HTTP 200 with a JavaScript shell. Its rendered public layer listing, found in indexed page content, shows “Жер телімі (МЖКААЖ)” and a cadastral-number input. Static client inspection identifies GeoServer WMS rendering; no polygon geometry was returned."
+      },
+      {
+        "url": "https://geo-shym.kz/map/main.js",
+        "observation": "Public static client bundle returned HTTP 200 (648,840 bytes). It configures GeoServer WMS rendering/legend requests; no vector feature/schema contract was found in inspected client strings."
+      }
+    ],
+    "metadataReviewFile": "shymkent-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-2354-shymkent-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "kz-shymkent-rgis-land-plot-layer",
+    "name": "Shymkent local registry and public parcel-map route review",
+    "operator": "РГИС Шымкент (Shymkent Regional GIS)",
+    "url": "https://geo-shym.kz/map/",
+    "scope": "The inspected public map page lists a Shymkent land-plot layer. No cadastral feature coverage or citywide completeness is inferred from the layer label.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature ID or geometry returned.",
+    "geometryStatus": "public_local_cadastral_layer_listed_geometry_schema_unverified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The inspected public map page lists a Shymkent land-plot layer. No cadastral feature coverage or citywide completeness is inferred from the layer label.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00",
+  "sourceIds": [],
+  "point": [
+    42.3369257073586,
+    69.5992009029268
+  ]
+}

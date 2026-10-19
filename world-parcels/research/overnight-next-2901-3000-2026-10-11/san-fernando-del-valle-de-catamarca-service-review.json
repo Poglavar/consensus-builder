@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-1648-san-fernando-del-valle-de-catamarca.json",
+  "cityCode": 1648,
+  "queueRank": 2935,
+  "name": "San Fernando del Valle de Catamarca",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "packetStatus": "complete",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "queryOutcomes": "See city record freshResearch. English and Spanish first-party discovery queries were executed and their actual result URLs are recorded there.",
+  "requestOutcomes": "See city record sourceReview.attempts. The official municipal geoservices catalog exposed a parcel WFS/WMS route, but all bounded anonymous service probes timed out or returned no usable response; the municipal cadastral application was a login page.",
+  "serviceScope": {
+    "localCustodian": "Municipalidad de la Ciudad de San Fernando del Valle de Catamarca, via the official SFVC Geoportal and geoservices catalog.",
+    "provincialCustodian": "Administración General de Catastro / Dirección General de Catastro de Catamarca (ARCAT), evidenced by official government references; no parcel geometry response qualified in this attempt.",
+    "generalAgencyContext": "Instituto Geográfico Nacional listing and provincial ARCAT site were used for custodian discovery, not treated as evidence of a usable local parcel API."
+  },
+  "retainedArtifacts": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe native parcel ID plus unchanged full geometry was returned by the bounded anonymous requests."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "geometry",
+    "source CRS",
+    "bounded response metadata"
+  ],
+  "uncertainty": [
+    "The public municipal service may be offline, network-inaccessible, or require a route/configuration not exposed by the current page; this cannot be distinguished from the bounded timeout evidence.",
+    "The official page examples show EPSG:22183 for municipal parcel WMS examples, but the live WFS schema/response CRS was not verified.",
+    "No citywide coverage conclusion is made from the failed service probes or login wall.",
+    "Runtime remains held pending independent serial review."
+  ],
+  "completionSummary": "complete; first-party municipal and provincial custodian evidence recorded; anonymous parcel service route documented but unavailable; no geometry sample retained; runtime held"
+}

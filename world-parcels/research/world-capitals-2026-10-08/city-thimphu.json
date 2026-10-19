@@ -1,0 +1,223 @@
+{
+  "cityId": "capital:BT:thimphu",
+  "name": "Thimphu",
+  "country": "Bhutan",
+  "countryCode": "BT",
+  "centerLatLon": [
+    27.466666666666665,
+    89.633333
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Thimphu Bhutan official GIS cadastral parcel map land records open data",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://moit.gov.bt/launched-zhichar-the-integrated-system-for-spatial-plans-and-buildings/",
+        "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0",
+        "https://nsdi.systems.gov.bt/data/Planning%20and%20cadastre?keyword=Plot+Boundary",
+        "https://nsdi.systems.gov.bt/portal/sharing/rest/content/items/a7754f73891c4b1e8ee3dbc8eff044e7/info/metadata/metadata.xml?format=default&output=html"
+      ]
+    },
+    {
+      "query": "ཐིམ་ཕུག་ས་ཁྲ land parcel cadastral map Bhutan Thimphu official",
+      "language": "Dzongkha (Tibetan script mixed with English terms)",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0",
+        "https://nsdi.systems.gov.bt/data/Planning%20and%20cadastre?keyword=Plot+Boundary"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://nsdi.systems.gov.bt/data/Planning%20and%20cadastre?keyword=Plot+Boundary",
+      "observation": "National Spatial Data Infrastructure catalogue lists National Land Commission Secretariat “Cadastral Boundary” as Open and describes cadastral plot shapes."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/portal/sharing/rest/content/items/a7754f73891c4b1e8ee3dbc8eff044e7/info/metadata/metadata.xml?format=default&output=html",
+      "observation": "Metadata names NLCS as publisher; plot boundary is vector cadastral data, 0.10 m resolution, extents include Thimphu, and local surveys were transformed to Drukref03."
+    },
+    {
+      "url": "https://moit.gov.bt/launched-zhichar-the-integrated-system-for-spatial-plans-and-buildings/",
+      "observation": "Bhutan Ministry of Infrastructure and Transport says Zhichar connects plan boundaries, building stock and land cadastre and validates plot boundaries through NLCS."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0",
+      "observation": "Official NLCS Plot Boundary polygon layer. Native fields include fid, originalco, spatialacc, datemodifi, mapsheet, originalpr, plotid, fcode, shape__are and shape__len. Metadata says 238,000 surfaces, 0.10 m resolution, created 2008-06-01, metadata revised 2024-11-07, update frequency as needed; extent includes Thimphu. No personal fields are needed for parcel geometry identity."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+      "observation": "tt_taba_plots public municipal plot layer; all 112 qualified polygons lie within the published tt_bdy2010 Thromde boundary. No documented legal, current or planning status."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0/query",
+      "method": "GET ArcGIS REST bounded query via curl",
+      "params": {
+        "where": "1=1",
+        "geometry": "9974500,3168000,9982300,3186000",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 3857,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "fid",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "f": "geojson",
+        "resultRecordCount": 2
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:54:56Z",
+      "outcome": "application/geo+json returned two non-empty Polygon features in Thimphu bbox, requesting fid and geometry only.",
+      "coverageCorrection": "Returned national-layer samples are outside the published municipal boundary; this response does not establish Thimphu city coverage."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Public municipal Taba plot records establish city-level land mapping activity. Their legal registration, lifecycle and planning status are undocumented; the original national cadastral sample lies outside the municipal boundary.",
+  "registryEvidenceUrls": [
+    "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+    "publisher": "Bhutan NSDI / Thimphu Thromde",
+    "scope": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+    "safeSampleFile": "thimphu-taba-adapter-sample.geojson",
+    "sampleAttributes": "fid only"
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureCount": 112,
+    "retainedSampleCount": 3,
+    "sampleFile": "research/world-capitals-2026-10-08/thimphu-taba-adapter-sample.geojson",
+    "sampleMeaning": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only."
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "Taba municipal plot layer",
+    "verifiedOpenScope": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "enabled",
+  "status": "complete",
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "remainingUncertainty": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+  "runtimeQualification": {
+    "acceptanceFile": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/thimphu-taba-quality.json",
+    "sourceId": "bt-thimphu-taba-plots"
+  },
+  "supersededNationalCandidate": {
+    "sourceCandidate": {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0",
+      "kind": "ArcGIS FeatureServer polygon layer",
+      "publisher": "National Land Commission Secretariat",
+      "queryUrl": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0/query",
+      "geometryType": "Polygon",
+      "scope": "National extent; Thimphu bbox verified",
+      "safeSampleFile": "thimphu-safe-sample.geojson",
+      "sampleAttributes": "omitted",
+      "nativeFields": [
+        "fid",
+        "originalco",
+        "spatialacc",
+        "datemodifi",
+        "mapsheet",
+        "originalpr",
+        "plotid",
+        "fcode",
+        "shape__are",
+        "shape__len"
+      ]
+    },
+    "verifiedParcelResponse": {
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "featureCount": 2,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "bbox3857": [
+        9974500,
+        3168000,
+        9982300,
+        3186000
+      ],
+      "sampleFile": "thimphu-safe-sample.geojson"
+    },
+    "runtimeQualification": {
+      "adapter": "backend/parcels/arcgis-source.js",
+      "descriptorId": "asia-thimphu-research",
+      "transportOidsOnly": true,
+      "transportOidField": "fid",
+      "viewportGrid": {
+        "completedCells": 13,
+        "alignedGridCells": 9,
+        "adjacentPanCells": 4,
+        "totalFeatureResponses": 81,
+        "uniqueParcelIds": 62
+      },
+      "completePagingForcedAtPageSize": 3,
+      "forcedPageFeatureCount": 15,
+      "forcedGeometryPages": 5,
+      "explicitAbsenceCheck": {
+        "complete": true,
+        "featureCount": 0,
+        "absentId": "thimphu:9876543210"
+      },
+      "freshExactIdHashRereads": {
+        "queried": 62,
+        "allPresent": true,
+        "allGeometryHashesMatch": true,
+        "absentIds": []
+      },
+      "footprintRead": {
+        "complete": true,
+        "intersectingParcelCount": 3
+      },
+      "computeSourceBinding": {
+        "computed": true
+      },
+      "projectedTopologyAudit": {
+        "file": "/tmp/asia-capitals-2026-10-08/shapely-topology-audit.json",
+        "projection": "EPSG:3857",
+        "shapelyVersion": "2.1.2",
+        "uniqueFeatures": 62,
+        "invalidGeometryCount": 0,
+        "positiveAreaOverlapCount": 0,
+        "auditToleranceSquareMeters": 1e-06
+      },
+      "privacy": "Query attributes limited to native object IDs; no owner/contact fields requested."
+    },
+    "registryBasis": "The national cadastral plot dataset is published by NLCS; the exact city bbox response confirms Thimphu coverage. This does not establish whole-city completeness or legal-title completeness.",
+    "disposition": "The 62 sampled national cadastre polygons are outside the published Thimphu Thromde boundary in Chang Gewog; superseded as evidence for this city. See thimphu-coverage-diagnostic.json. Earlier claims of city coverage are withdrawn."
+  },
+  "sourceIds": [
+    "bt-thimphu-taba-plots"
+  ],
+  "appCityId": "thimphu",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "112 complete public Taba plot polygons in 13 cells, all inside the published Thimphu Thromde boundary and valid without sampled overlaps. Layer legal registration, lifecycle, vintage and planning status are undocumented. Partial municipal plot coverage only.",
+    "evidenceFile": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/thimphu-taba-quality.json"
+  },
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/thimphu-taba-adapter-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      27.515,
+      89.642
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.001
+  }
+}

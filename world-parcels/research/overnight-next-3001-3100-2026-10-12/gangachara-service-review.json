@@ -1,0 +1,51 @@
+{
+  "cityRecord": "city-2284-gangachara.json",
+  "cityCode": 2284,
+  "queueRank": 3085,
+  "city": "Gangachara",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Bangla first-party discovery identified Bangladesh DLRS/Online Land Record and Survey Management and the official Gangachara Upazila Land Office. The current public viewer exposes hierarchy, administrative boundary, per-sheet GeoJSON, and parcel vector-tile routes. Rangpur hierarchy and district-boundary requests worked, but the public survey-to-upazila lookup returned no rows and bounded candidate parcel metadata was empty. No safe Gangachara parcel ID-plus-geometry response was qualified; no sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, response outcomes, current JavaScript routes, schema/CRS checks, field mapping, safe field allowlist, scope limits, and uncertainty are recorded in city-2284-gangachara.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Bangladesh Department of Land Records and Surveys (DLRS) / Online Land Record and Survey Management",
+      "scope": "National land-record and survey custodian with the official public map viewer and survey hierarchy.",
+      "evidence": "https://settlement.gov.bd/Map/MapSearch"
+    },
+    {
+      "name": "Gangachara Upazila Land Office, Rangpur",
+      "scope": "Local official land-office custodian; local administrative context was evidenced, but no local parcel API was qualified.",
+      "evidence": "https://acl.gangachara.rangpur.gov.bd/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": "No parcel feature response obtained.",
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {
+      "clientFeatureId": "properties._fid (not accepted as native identity)",
+      "displayParcelLabel": "meta.dags[].dag (not accepted as native identity)"
+    },
+    "compositeKeyProvenance": "rsnum + comcod + unitcod are service-routing components only; no stable parcel identity was proven."
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "Empty hierarchy/metadata outcomes and the lack of an exact-point request are not evidence of parcel absence.",
+    "No anonymous safe ID-plus-geometry response, native identity, CRS, or citywide vector coverage was qualified.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "A valid current survey/mouza key may be required before Gangachara parcel data is returned.",
+    "The bounded candidate unit-code probes do not exhaust possible administrative keys.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

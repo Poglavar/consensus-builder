@@ -1,0 +1,81 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "key": "ZW",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-ZW,en;q=0.9; cookie jar (curl -c/-b) kept",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.deeds.gov.zw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.lands.gov.zw",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://www.surveyorgeneral.gov.zw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://opendata.gov.zw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://zimgeoportal.org.zw/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "inspected: Django catalogue, links to cadastral.kms.co.zw (geodetic control explorer) and mysurveyor.kms.co.zw"
+  },
+  {
+   "url": "https://cadastral.kms.co.zw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://zimgeoportal.org.zw/datasets/?theme=15",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "lists Marondera cadastral stands layer, Marondera centroids, council masterplans"
+  },
+  {
+   "url": "https://zimgeoportal.org.zw/datasets/marondera-property-cadastral-stands-layer/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "GeoJSON download requires login; licence 'None' listed"
+  },
+  {
+   "url": "https://services7.arcgis.com/uIx4DcYtJ6IrYNdp/arcgis/rest/services/Gweru_Land_Parcels/FeatureServer/0/query?where=1%3D1&resultRecordCount=2&outFields=*&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 499 Token Required"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Government .gov.zw hosts and kms.co.zw fail at connect/reset while geoportal responds; unconfirmed.",
+ "notes": "New: geoportal catalogue inspected; found Marondera stands layer (municipal, GeoJSON behind registration/login) and Gweru still tokened. No national open parcel service; nothing verified.",
+ "nextStep": "Register-only download not attempted; retry Surveyor-General hosts elsewhere."
+}

@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "endpoint": "https://gis.okc.gov/arcgis/rest/services/Public/EncodeOKCWebMap/MapServer/8",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "json": false,
+      "error": "Non-JSON HTML response; body not retained"
+    },
+    {
+      "endpoint": "https://gis.okc.gov/arcgis/rest/services/Public/EncodeOKCWebMap2/MapServer/8",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "json": false,
+      "error": "Non-JSON HTML response; body not retained"
+    }
+  ]
+}

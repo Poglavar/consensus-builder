@@ -1,0 +1,52 @@
+[
+ {
+  "iso2": "UA",
+  "name": "Ukraine",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/UA.json",
+   "research/retry/countries/UA.json"
+  ],
+  "hints": "Ukraine: map.land.gov.ua (Referer), kadastr.live (third-party), data.gov.ua; record geo-block if it persists."
+ },
+ {
+  "iso2": "RU",
+  "name": "Russian Federation",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/RU.json",
+   "research/retry/countries/RU.json"
+  ],
+  "hints": "Russia: nspd.gov.ru / pkk.rosreestr.ru with Referer; record geo-block if it persists."
+ },
+ {
+  "iso2": "GE",
+  "name": "Georgia",
+  "previousStatus": "national_cadastre_viewer_only",
+  "previousEvidence": [
+   "research/countries/GE.json",
+   "research/retry/countries/GE.json"
+  ],
+  "hints": "Georgia: maps.gov.ge LR_PARCELS via its map service (GetFeatureInfo), NAPR; try Referer https://maps.gov.ge/."
+ },
+ {
+  "iso2": "AM",
+  "name": "Armenia",
+  "previousStatus": "national_cadastre_viewer_only",
+  "previousEvidence": [
+   "research/countries/AM.json",
+   "research/retry/countries/AM.json"
+  ],
+  "hints": "Armenia: geoportal.am WMS V_VALID_MAP_PARCELS: try GetFeatureInfo (info_format json) even though WFS is off."
+ },
+ {
+  "iso2": "AZ",
+  "name": "Azerbaijan",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/AZ.json",
+   "research/retry/countries/AZ.json"
+  ],
+  "hints": "Azerbaijan: e-emlak.gov.az, unvanportali.az; record geo-block if it persists."
+ }
+]

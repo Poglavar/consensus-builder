@@ -1,0 +1,85 @@
+{
+  "cityCode": 10196,
+  "queueRank": 1713,
+  "name": "Tianmen",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [30.6609881862624, 113.146923612677],
+  "population2025": 334299,
+  "population2025k": 334.299,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tianmen China official cadastral map land registration parcel map GIS",
+        "result": "Search identified Tianmen's official government property-registration information pages and a government map-query page. The public map page is a general government place map; no anonymous parcel feature schema, safe parcel ID, or geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.tianmen.gov.cn/zwgk/zfxxgkml/ggzypz/bdcdjxx/",
+          "https://www.tianmen.gov.cn/zwfw/bdcx/dtcx/index.shtml?chnlid=72480"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "天门市 不动产登记 地籍图 查询 官方",
+        "result": "Search identified Tianmen municipal government property-registration announcements, the local natural-resources bureau page, and the local government map-query page. The results evidence local registration custody and public notices, but no anonymous parcel vector response or public cadastral layer was found.",
+        "actualResultUrls": [
+          "https://www.tianmen.gov.cn/zwgk/zfxxgkml/ggzypz/bdcdjxx/bdcdjbg/",
+          "https://www.tianmen.gov.cn/zwgk/bmhxzxxgkml/bm/szrzyhghj/zfxxgk/fdzdgknr/jgzn/jgsz/t_3830985.shtml",
+          "https://www.tianmen.gov.cn/zwfw/bdcx/dtcx/index.shtml?chnlid=72480"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Tianmen municipal government publishes local real-estate registration notices and identifies the Tianmen real-estate registration bureau as responsible for citywide registration and public record-query services. This is local custody evidence, not evidence of an open parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://www.tianmen.gov.cn/zwgk/bmhxzxxgkml/bm/szrzyhghj/zfxxgk/fdzdgknr/jgzn/jgsz/t_3830985.shtml",
+      "observation": "Official Tianmen government organization page states that the Tianmen real-estate registration bureau undertakes citywide real-estate registration and related public record-query services."
+    },
+    {
+      "url": "https://www.tianmen.gov.cn/zwgk/zfxxgkml/ggzypz/bdcdjxx/bdcdjbg/",
+      "observation": "Official Tianmen government registration-report index exposes public registration and integrated house-and-land registration notices; it does not expose safe parcel geometry or an anonymous parcel query."
+    },
+    {
+      "url": "https://www.tianmen.gov.cn/zwfw/bdcx/dtcx/index.shtml?chnlid=72480",
+      "observation": "Official Tianmen map-query page uses Baidu Maps and local page JavaScript for general institution/address map display; no cadastral parcel layer or public parcel API was identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.tianmen.gov.cn/zwfw/bdcx/dtcx/index.shtml?chnlid=72480",
+      "method": "GET",
+      "outcome": "HTTP page fetched successfully; current HTML and inline JavaScript were inspected. The page initializes Baidu Maps for general government map points and contains no parcel feature request or parcel schema."
+    },
+    {
+      "url": "https://www.tianmen.gov.cn/zwgk/zfxxgkml/ggzypz/bdcdjxx/",
+      "method": "GET via official search/open",
+      "outcome": "Official local registration-information index was available and lists registration notices. No public anonymous parcel geometry service was linked."
+    },
+    {
+      "url": "https://www.tianmen.gov.cn/zwgk/bmhxzxxgkml/bm/szrzyhghj/zfxxgk/fdzdgknr/jgzn/jgsz/t_3830985.shtml",
+      "method": "GET via official search/open",
+      "outcome": "Official local agency page was available and described the Tianmen real-estate registration bureau's citywide remit and public-query role; no parcel endpoint or safe native ID response was exposed."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Tianmen municipal real-estate registration custody and the public Tianmen government map-query page.",
+    "verifiedOpenScope": "Local registration custody and public notices; general government place-map UI only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss inference was made. A zero exact-point hit, map extent miss, inaccessible UI, timeout, or absent public endpoint is not evidence of citywide cadastral absence. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS-disabling action was used. Packet completion is not source integration or runtime admission."
+}

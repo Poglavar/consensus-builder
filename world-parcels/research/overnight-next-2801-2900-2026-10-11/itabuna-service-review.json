@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-8313-itabuna.json",
+  "cityCode": 8313,
+  "queueRank": 2855,
+  "name": "Itabuna",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "pointLatLon": [-14.7940448174858, -39.2757002919296],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": "See city-8313-itabuna.json attemptedRoutes; all executed routes and outcomes are recorded there.",
+  "localCustodianAssessment": "The official Prefeitura de Itabuna portal, Secretaria de Planejamento, SIURB references, and municipal Cadastro Imobiliário notices establish local custodian evidence. The 2022 procurement specification describes a planned cadastral GIS with parcel lookup, but no live public parcel response was qualified.",
+  "schemaAndCrs": "No parcel API, native identity field, source mapping, geometry transport, or parcel CRS was exposed. The IBGE contextual map references SIRGAS 2000 but is not cadastral evidence.",
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently returned by a public route", "bounded public response metadata", "source service URL", "source CRS/coordinate order when declared", "retrieval date", "full unchanged polygon geometry only when safely obtained"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local custodian and cadastral-GIS intent were evidenced, but no anonymous parcel schema, stable identity, CRS, or geometry was obtained. Adapter qualification remains a separate serial review."},
+  "scopeLimits": ["Exact WUP point and latitude/longitude order were preserved.", "No coordinate was shifted and no exact-point parcel hit/miss was inferred.", "No full parcel polygon is retained and no sample GeoJSON is created.", "FBDS environmental and IBGE census datasets were not treated as cadastral parcel sources.", "No unsafe personal, ownership, address, title, tax, or certificate fields were requested or retained.", "Raw request/cache evidence remains under ignored tmp/valhalla-parcel-research/8313/.", "This packet is research evidence only and is not source integration or admission."],
+  "uncertainty":"Official municipal custodian evidence and cadastral-GIS procurement intent are confirmed, but current anonymous parcel coverage, public endpoint availability, citywide completeness, native schema/CRS, identity semantics, licensing, and update cadence remain unverified."
+}

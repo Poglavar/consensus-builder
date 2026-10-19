@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 75,
+  "city": "Mashhad",
+  "countryCode": "IR",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/mashhad.json",
+  "query": {
+    "language": "Persian",
+    "script": "Perso-Arabic",
+    "text": "مشهد نقشه کاداستر زمین اداره ثبت اسناد خراسان رضوی"
+  },
+  "results": [
+    {
+      "title": "Iran National Cartographic Center",
+      "url": "https://www.ncc.gov.ir/",
+      "kind": "official-national-mapping-agency",
+      "note": "Native-script result review did not establish a current cadastral feature service or Mashhad-specific coverage."
+    }
+  ],
+  "assessment": "No direct official Mashhad cadastral parcel service surfaced in the query. Historical temporary-unavailable status remains unresolved.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:7072",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Persian",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "مشهد نقشه کاداستر زمین اداره ثبت اسناد خراسان رضوی",
+    "englishQuery": "Mashhad cadastral land map and land registration organization in Razavi Khorasan",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

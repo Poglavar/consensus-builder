@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3589",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3589-modesto.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/modesto-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:46:12Z",
+  "reason": "Held: official City GIS custody is supported, but the parcel service timed out on independent direct access; no safe native-ID polygon response, fresh adapter reads, paging, 13 cells, metric checks, source binding, or headed Details evidence. The second search uses Spanish terms but is labelled English, so bilingual execution is not clearly evidenced."
+}

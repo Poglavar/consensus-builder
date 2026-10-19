@@ -21,141 +21,8 @@ const OSS_TOKEN = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a
 const ROAD_USAGE_CODES = new Set(['520', '521', '522', '523', '524', '526', '544', '545', '547']);
 const HTRS_WFS_CONVERSION = { sourceSrid: 'EPSG:3765', suppressHTRSWarning: true };
 
-// ============================================================================
-// Road Parcels Storage Module
-// Centralized storage for road parcel IDs using a single array in PersistentStorage
-// ============================================================================
-const ROAD_PARCELS_KEY = 'roadParcels';
-
-// In-memory cache for fast lookups
-let roadParcelsSet = new Set();
-let roadParcelsLoaded = false;
-
-/**
- * Load road parcels from PersistentStorage into memory
- */
-function loadRoadParcels() {
-    if (roadParcelsLoaded) return;
-    try {
-        const stored = PersistentStorage.getItem(ROAD_PARCELS_KEY);
-        if (stored) {
-            const arr = JSON.parse(stored);
-            if (Array.isArray(arr)) {
-                roadParcelsSet = new Set(arr.map(String));
-            }
-        }
-        roadParcelsLoaded = true;
-    } catch (e) {
-        console.warn('Failed to load roadParcels from storage:', e);
-        roadParcelsSet = new Set();
-        roadParcelsLoaded = true;
-    }
-}
-
-/**
- * Save road parcels to PersistentStorage
- */
-function saveRoadParcels() {
-    try {
-        const arr = Array.from(roadParcelsSet);
-        PersistentStorage.setItem(ROAD_PARCELS_KEY, JSON.stringify(arr));
-    } catch (e) {
-        console.warn('Failed to save roadParcels to storage:', e);
-    }
-}
-
-/**
- * Check if a parcel is marked as a road
- * @param {string} parcelId
- * @returns {boolean}
- */
-function isRoadParcel(parcelId) {
-    if (!parcelId) return false;
-    loadRoadParcels();
-    return roadParcelsSet.has(String(parcelId));
-}
-
-/**
- * Mark a parcel as a road
- * @param {string} parcelId
- */
-function addRoadParcel(parcelId) {
-    if (!parcelId) return;
-    loadRoadParcels();
-    const id = String(parcelId);
-    if (!roadParcelsSet.has(id)) {
-        roadParcelsSet.add(id);
-        saveRoadParcels();
-    }
-}
-
-/**
- * Remove road status from a parcel
- * @param {string} parcelId
- */
-function removeRoadParcel(parcelId) {
-    if (!parcelId) return;
-    loadRoadParcels();
-    const id = String(parcelId);
-    if (roadParcelsSet.has(id)) {
-        roadParcelsSet.delete(id);
-        saveRoadParcels();
-    }
-}
-
-/**
- * Clear all road parcels
- */
-function clearAllRoadParcels() {
-    roadParcelsSet.clear();
-    roadParcelsLoaded = true;
-    PersistentStorage.removeItem(ROAD_PARCELS_KEY);
-}
-
-/**
- * Get all road parcel IDs
- * @returns {string[]}
- */
-function getAllRoadParcels() {
-    loadRoadParcels();
-    return Array.from(roadParcelsSet);
-}
-
-function readPersistedRoadProperties(parcelId) {
-    if (!parcelId || typeof readPersistedParcelRecord !== 'function') return null;
-    const record = readPersistedParcelRecord(parcelId);
-    return record?.properties || null;
-}
-
-function writePersistedRoadProperties(parcelId, mutator) {
-    if (!parcelId || typeof writePersistedParcelRecord !== 'function') return;
-    writePersistedParcelRecord(parcelId, record => {
-        const nextProps = { ...(record.properties || {}) };
-        try { mutator(nextProps); } catch (_) { /* ignore */ }
-        record.properties = nextProps;
-    });
-}
-
-/**
- * Get the count of road parcels
- * @returns {number}
- */
-function getRoadParcelCount() {
-    loadRoadParcels();
-    return roadParcelsSet.size;
-}
-
-/**
- * Repaint all road parcels with road styling after parcels are loaded
- * Call this after browser reload once parcels are available
- */
-// Expose road parcels API globally
-window.isRoadParcel = isRoadParcel;
-window.addRoadParcel = addRoadParcel;
-window.removeRoadParcel = removeRoadParcel;
-window.clearAllRoadParcels = clearAllRoadParcels;
-window.getAllRoadParcels = getAllRoadParcels;
-window.getRoadParcelCount = getRoadParcelCount;
+// The road-parcel registry (isRoadParcel, addRoadParcel, ...) and the curated road fetch live in
+// js/road-parcels.js, which always loads; this optional tool holds the road DETECTORS.
 
 // ============================================================================
 
@@ -177,10 +44,80 @@ function resolveParcelId(feature) {
     return null;
 }
 
+function roadDetectionServices() {
+    const fabric = window.LiveParcelFabric;
+    const presenter = window.ParcelPresenter;
+    if (!fabric || typeof fabric.queryBounds !== 'function'
+        || typeof fabric.list !== 'function'
+        || typeof fabric.cadastreIdsForParcelIds !== 'function') return null;
+    if (!presenter || typeof presenter.getLayer !== 'function') return null;
+    return { fabric, presenter };
+}
+
+function roadDetectionFeaturesInView() {
+    const services = roadDetectionServices();
+    if (!services || typeof map === 'undefined' || !map || typeof map.getBounds !== 'function') return [];
+    return services.fabric.queryBounds(map.getBounds(), { includeCorridors: true });
+}
+
+function roadDetectionFeatureBounds(feature) {
+    try {
+        const bounds = turf.bbox(feature);
+        return Array.isArray(bounds) && bounds.length >= 4 && bounds.every(Number.isFinite)
+            ? bounds
+            : null;
+    } catch (_) {
+        return null;
+    }
+}
+
+function roadDetectionBoundsIntersect(left, right) {
+    return !!left && !!right
+        && left[0] <= right[2] && left[2] >= right[0]
+        && left[1] <= right[3] && left[3] >= right[1];
+}
+
+function roadDetectionCadastreIds(feature) {
+    const services = roadDetectionServices();
+    const parcelId = resolveParcelId(feature);
+    if (!services || !parcelId) return [];
+    try {
+        return services.fabric.cadastreIdsForParcelIds([parcelId]);
+    } catch (error) {
+        console.warn(`[road-detection] Missing cadastral provenance for ${parcelId}`, error);
+        return [];
+    }
+}
+
+function roadDetectionLayer(featureOrId) {
+    const services = roadDetectionServices();
+    const id = typeof featureOrId === 'string'
+        ? featureOrId
+        : resolveParcelId(featureOrId);
+    return services && id ? services.presenter.getLayer(id) : null;
+}
+
+function markRoadFeature(feature) {
+    const cadastreIds = roadDetectionCadastreIds(feature);
+    if (!cadastreIds.length) return false;
+    cadastreIds.forEach(addRoadParcel);
+    const layer = roadDetectionLayer(feature);
+    if (layer && typeof layer.setStyle === 'function') layer.setStyle(roadStyle);
+    return true;
+}
+
+function isMarkedRoadFeature(feature) {
+    // A cadastral road may have been replaced by buildings, parks and road remnants. Its
+    // classification belongs to that exact parcel, not every live piece sharing its provenance.
+    // Derived road/corridor pieces carry their own isRoad flag, read by the base-style resolver.
+    return isRoadParcel(resolveParcelId(feature));
+}
+
 // Fetch DKP_NACINI_UPORABE features in current bbox, paginated if needed
 async function fetchWFSUsageInBbox() {
     const bounds = map.getBounds();
-    const bbox = typeof getBboxFromBounds === 'function' ? getBboxFromBounds(bounds) : null;
+    // The OSS WFS takes EPSG:3765 (srsName below), named here, never the active city's CRS.
+    const bbox = typeof bboxInCrs === 'function' ? bboxInCrs(bounds, 'EPSG:3765') : null;
     if (!bbox) {
         throw new Error('Could not compute bbox');
     }
@@ -265,7 +202,7 @@ function computeIoU(featureA, featureB) {
 
 // Main entry: Detect roads from DGU DKP_NACINI_UPORABE by parcel intersection
 async function detectRoadsFromWFS() {
-    if (!parcelLayer) {
+    if (!roadDetectionServices()) {
         updateStatus('No parcels loaded. Please refresh data first.');
         return;
     }
@@ -273,6 +210,7 @@ async function detectRoadsFromWFS() {
     const trigger = async () => {
         const progressContainer = document.getElementById('progressContainer');
         const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
         if (progressContainer) progressContainer.style.display = 'block';
         if (progressText) progressText.textContent = 'Fetching DGU usage data...';
 
@@ -296,25 +234,27 @@ async function detectRoadsFromWFS() {
                 progressText.textContent = `Matching ${roadUseFeatures.length} DGU polygons to parcel geometries (overlap)...`;
             }
 
-            // Prepare parcels in current view
-            const parcelsInView = parcelLayer.getLayers().filter(layer => {
-                try { return map.getBounds().intersects(layer.getBounds()); } catch (_) { return false; }
-            });
-            const parcelEntries = parcelsInView.map(layer => ({ layer, bounds: layer.getBounds(), gj: layer.toGeoJSON() }));
+            // The committed fabric is the sole geometry source. Leaflet is only updated after a
+            // parcel has been classified.
+            const parcelEntries = roadDetectionFeaturesInView().map(feature => ({
+                feature,
+                bounds: roadDetectionFeatureBounds(feature)
+            })).filter(entry => entry.bounds);
 
             let processed = 0;
-            let marked = 0;
+            const marked = new Set();
             const total = roadUseFeatures.length;
 
             for (const usage of roadUseFeatures) {
                 processed++;
                 // Prefilter by bounds overlap to reduce comparisons
-                let uBounds = null;
-                try { uBounds = L.geoJSON(usage).getBounds(); } catch (_) { }
-                const candidates = uBounds ? parcelEntries.filter(pe => { try { return uBounds.intersects(pe.bounds); } catch (_) { return true; } }) : parcelEntries;
+                const usageBounds = roadDetectionFeatureBounds(usage);
+                const candidates = usageBounds
+                    ? parcelEntries.filter(entry => roadDetectionBoundsIntersect(usageBounds, entry.bounds))
+                    : parcelEntries;
 
                 for (const pe of candidates) {
-                    const parcelGeoJSON = pe.gj;
+                    const parcelGeoJSON = pe.feature;
                     if (!parcelGeoJSON || !parcelGeoJSON.geometry) continue;
                     // Compute overlap ratios instead of strict IoU threshold
                     let overlapA = 0; // intersection / area(parcel)
@@ -334,13 +274,9 @@ async function detectRoadsFromWFS() {
 
                     // Loosen match: consider a match if either polygon overlaps the other by >= 90%
                     if (overlapA >= 0.9 || overlapB >= 0.9) {
-                        const parcelFeature = pe.layer?.feature || (typeof pe.layer?.toGeoJSON === 'function' ? pe.layer.toGeoJSON() : null);
-                        const parcelId = resolveParcelId(parcelFeature);
+                        const parcelId = resolveParcelId(pe.feature);
                         if (!parcelId) continue;
-                        addRoadParcel(parcelId);
-                        pe.layer.setStyle(roadStyle);
-                        pe.layer.feature.properties.isRoad = true;
-                        marked++;
+                        if (markRoadFeature(pe.feature)) marked.add(parcelId);
                     }
                 }
 
@@ -350,7 +286,7 @@ async function detectRoadsFromWFS() {
                 await new Promise(r => setTimeout(r, 0));
             }
 
-            updateStatus(`Geometry-based DGU detection complete. Marked ${marked} parcels as roads.`);
+            updateStatus(`Geometry-based DGU detection complete. Marked ${marked.size} parcels as roads.`);
             updateParcelStyles();
         } catch (err) {
             console.error('Error detecting roads from DGU:', err);
@@ -364,7 +300,7 @@ async function detectRoadsFromWFS() {
 
     const button = document.querySelector('button[onclick="detectRoadsFromWFS()"]');
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Detecting...', trigger);
+        return runWithButtonBusyState(button, { key: 'common.busy.detecting', fallback: 'Detecting...' }, trigger);
     }
     return trigger();
 }
@@ -455,9 +391,10 @@ function toggleWFSPolygons() {
 
 window.toggleWFSPolygons = toggleWFSPolygons;
 
-// Function to fetch road data from OpenStreetMap using Overpass API
+// Road and railway data from OpenStreetMap, through our backend (/osm-road: the ingested table, else
+// its Tracestrack-first Overpass chain; js/osm-roads-source.js). Public Overpass is asked directly
+// only when our server itself does not answer.
 async function fetchOSMRoads() {
-    const status = document.getElementById('status');
     updateStatus('Fetching road data from OpenStreetMap...');
 
     try {
@@ -474,28 +411,26 @@ async function fetchOSMRoads() {
             return cachedData;
         }
 
-        // Overpass API query for roads (highway) and railways; exclude footpaths explicitly
-        const overpassQuery = `
-            [out:json][timeout:60];
-            (
-                way[highway][name](${south},${west},${north},${east});
-                way[highway~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|service|living_street)$"](${south},${west},${north},${east});
-                way[railway](${south},${west},${north},${east});
-            );
-            out body geom;
-        `;
-
-        const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`;
-
-        const response = await fetch(overpassUrl);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch OSM data: ${response.statusText}`);
+        let data;
+        try {
+            const base = typeof getBackendBase === 'function' ? getBackendBase() : '';
+            const answer = await window.OsmRoadsSource.fetchFromBackend([west, south, east, north], { base });
+            if (answer.tooLarge) {
+                const key = 'status.messages.zoom_in_to_fetch_osm_roads';
+                const text = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+                updateStatus(typeof text === 'string' && text && text !== key ? text : 'Zoom in to fetch OSM roads: this view is too large');
+                return null;
+            }
+            data = { elements: answer.elements };
+            if (answer.partial) console.warn(`[${new Date().toISOString()}] [road-detection] OSM roads incomplete for this view (a part could not be fetched or hit the cap)`);
+            // A partial answer is not cached, so the next fetch asks again for what is missing.
+            if (!answer.partial) cacheOSMData(data, south, west, north, east);
+        } catch (error) {
+            if (!error || !error.backendUnavailable) throw error;
+            console.warn(`[${new Date().toISOString()}] [road-detection] ${error.message}; asking public Overpass directly`);
+            data = await fetchOSMRoadsFromPublicOverpass(south, west, north, east);
+            cacheOSMData(data, south, west, north, east);
         }
-
-        const data = await response.json();
-
-        // Cache the result
-        cacheOSMData(data, south, west, north, east);
 
         updateStatus(`Fetched ${data.elements.length} roads from OpenStreetMap`);
         return data;
@@ -504,6 +439,25 @@ async function fetchOSMRoads() {
         updateStatus(`Error fetching OSM data: ${error.message}`);
         return null;
     }
+}
+
+// The fallback for when our server is down: the public Overpass server, from the browser.
+async function fetchOSMRoadsFromPublicOverpass(south, west, north, east) {
+    // Overpass API query for roads (highway) and railways; exclude footpaths explicitly
+    const overpassQuery = `
+        [out:json][timeout:60];
+        (
+            way[highway][name](${south},${west},${north},${east});
+            way[highway~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|service|living_street)$"](${south},${west},${north},${east});
+            way[railway](${south},${west},${north},${east});
+        );
+        out body geom;
+    `;
+    const response = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(overpassQuery)}`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch OSM data: ${response.statusText}`);
+    }
+    return response.json();
 }
 
 // Function to store OSM data in cache
@@ -563,6 +517,10 @@ function osmToGeoJSON(osmData) {
                 highway: element.tags.highway,
                 railway: element.tags.railway,
                 width: element.tags.width,
+                // The node ids ARE the topology in OSM: two ways are connected exactly when they
+                // share a node. Dropping them (as this used to) turns a connected street network
+                // into a heap of unrelated lines, which is why OSM roads look "disconnected".
+                osmNodes: Array.isArray(element.nodes) ? element.nodes : null,
                 osmTags: element.tags
             },
             geometry: {
@@ -630,7 +588,7 @@ async function fetchGUPRoads(force = false) {
         : 'oss.uredjenazemlja.hr';
 
     const bounds = map && typeof map.getBounds === 'function' ? map.getBounds() : null;
-    const bboxHTRS = bounds && typeof getBboxFromBounds === 'function' ? getBboxFromBounds(bounds) : '';
+    const bboxHTRS = bounds && typeof bboxInCrs === 'function' ? bboxInCrs(bounds, 'EPSG:3765') : '';
     const geometryEnvelope = bounds
         ? JSON.stringify({
             xmin: bounds.getWest(),
@@ -787,13 +745,13 @@ async function drawGUPRoads() {
     };
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Loading...', run, { restoreFocus: true });
+        return runWithButtonBusyState(button, { key: 'common.busy.loading', fallback: 'Loading...' }, run, { restoreFocus: true });
     }
     return run();
 }
 
 async function detectRoadsFromGUP() {
-    if (!parcelLayer) {
+    if (!roadDetectionServices()) {
         updateStatus('No parcels loaded. Please refresh data first.');
         return;
     }
@@ -821,10 +779,7 @@ async function detectRoadsFromGUP() {
                 toggleGUPRoadLines();
             }
 
-            const mapBounds = map.getBounds();
-            const parcelsInView = parcelLayer.getLayers().filter(layer => {
-                try { return mapBounds.intersects(layer.getBounds()); } catch (_) { return false; }
-            });
+            const parcelsInView = roadDetectionFeaturesInView();
 
             if (parcelsInView.length === 0) {
                 updateStatus('No parcels in the current view to analyze.');
@@ -849,7 +804,7 @@ async function detectRoadsFromGUP() {
     };
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Detecting...', execute, { restoreFocus: true });
+        return runWithButtonBusyState(button, { key: 'common.busy.detecting', fallback: 'Detecting...' }, execute, { restoreFocus: true });
     }
     return execute();
 }
@@ -863,6 +818,11 @@ function toggleGUPRoadLines() {
             gupRoadLayer.addTo(map);
         } else if (window.gupRoadGeoJSON) {
             displayGUPRoads(window.gupRoadGeoJSON);
+        } else {
+            // Nothing drawn yet: ticking the layer is a request to see it. The toggle lives in the
+            // Layers sheet and "Draw Roads from GUP" in the Tools sheet, so a tick that waited for
+            // the button looked broken.
+            drawGUPRoads();
         }
     } else if (gupRoadLayer) {
         map.removeLayer(gupRoadLayer);
@@ -872,18 +832,22 @@ function toggleGUPRoadLines() {
 // Toggle OSM road lines visibility
 function toggleOSMRoadLines() {
     const cb = document.getElementById('showOSMRoadLines');
-    if (cb && window.osmRoadLayer) {
+    if (!cb) return;
+    if (window.osmRoadLayer) {
         if (cb.checked) {
             window.osmRoadLayer.addTo(map);
         } else {
             map.removeLayer(window.osmRoadLayer);
         }
+    } else if (cb.checked) {
+        // Nothing drawn yet: fetch and draw, like the DGU polygons toggle (see toggleGUPRoadLines).
+        drawOSMRoads();
     }
 }
 
 // Function to detect which parcels are roads based on OSM data
 async function detectRoadsFromOSM() {
-    if (!parcelLayer) {
+    if (!roadDetectionServices()) {
         updateStatus('No parcels loaded. Please refresh data first.');
         return;
     }
@@ -910,15 +874,7 @@ async function detectRoadsFromOSM() {
             const osmGeoJSON = osmToGeoJSON(osmData);
             displayOSMRoads(osmGeoJSON);
 
-            const mapBounds = map.getBounds();
-            const allParcels = parcelLayer.getLayers();
-            const parcels = allParcels.filter(layer => {
-                try {
-                    return mapBounds.intersects(layer.getBounds());
-                } catch (e) {
-                    return false;
-                }
-            });
+            const parcels = roadDetectionFeaturesInView();
             const totalParcels = parcels.length;
             if (totalParcels === 0) {
                 updateStatus('No parcels in the current view to analyze.');
@@ -943,7 +899,7 @@ async function detectRoadsFromOSM() {
 
     const button = document.querySelector('button[onclick="detectRoadsFromOSM()"]');
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Detecting...', execute);
+        return runWithButtonBusyState(button, { key: 'common.busy.detecting', fallback: 'Detecting...' }, execute);
     }
     return execute();
 }
@@ -990,17 +946,15 @@ async function processRoadDetectionInChunks(parcels, osmGeoJSON) {
 // Detect if a specific parcel is a road and assign road name
 async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
     try {
-        if (!parcel || !parcel.feature || !parcel.feature.geometry || !parcel.feature.properties) {
+        if (!parcel || !parcel.geometry || !parcel.properties) {
             return false;
         }
 
-        const parcelId = resolveParcelId(parcel.feature);
-        const parcelGeoJSON = parcel.toGeoJSON();
+        const parcelId = resolveParcelId(parcel);
+        const parcelGeoJSON = parcel;
 
         // Skip shape analysis and use only OSM data for detection
         let isRoad = false;
-        let bestRoadName = null;
-        let bestRoadId = null;
         let bestRoadConfidence = 0;
 
         // Buffer the parcel to check for intersections (using Turf.js)
@@ -1062,19 +1016,12 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
                     // Calculate overlap ratio (more strict threshold)
                     const intersectionArea = turf.area(intersection);
                     const parcelArea = turf.area(parcelGeoJSON);
-                    const parcelBufferArea = turf.area(parcelBuffer);
-
-                    // Calculate both ratios - intersection to parcel and intersection to buffer
+                    // Calculate the portion of the parcel covered by the buffered road.
                     const overlapRatioToParcel = intersectionArea / parcelArea;
-                    const overlapRatioToBuffer = intersectionArea / parcelBufferArea;
-
-                    // Use the more accurate ratio for detection
                     const overlapRatio = overlapRatioToParcel;
 
                     if (overlapRatio > maxOverlap) {
                         maxOverlap = overlapRatio;
-                        bestRoadName = roadFeature.properties.name;
-                        bestRoadId = roadFeature.properties.id;
                         bestRoadConfidence = overlapRatio;
                     }
 
@@ -1091,25 +1038,7 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
 
         // Save the result only if it's a road with good confidence
         if (isRoad && bestRoadConfidence > 0.5) {  // Increased confidence threshold from 0.3 to 0.5
-            // Store road information
-            addRoadParcel(parcelId);
-            writePersistedRoadProperties(parcelId, props => {
-                props.isRoad = true;
-                props.isCorridor = true;
-                props.roadName = bestRoadName || 'Unnamed Road';
-                props.roadId = bestRoadId || '';
-                props.roadConfidence = bestRoadConfidence;
-            });
-
-            // Update the parcel style
-            parcel.setStyle(roadStyle);
-
-            // Update feature properties for later use
-            parcel.feature.properties.isRoad = true;
-            parcel.feature.properties.isCorridor = true;
-            parcel.feature.properties.roadName = bestRoadName || 'Unnamed Road';
-            parcel.feature.properties.roadId = bestRoadId || '';
-            parcel.feature.properties.roadConfidence = bestRoadConfidence;
+            markRoadFeature(parcelGeoJSON);
         }
 
         return isRoad;
@@ -1121,37 +1050,26 @@ async function detectIfParcelIsRoad(parcel, osmGeoJSON) {
 
 // Update styles for all parcels based on road detection
 function updateParcelStyles() {
-    if (!parcelLayer) return;
+    const services = roadDetectionServices();
+    if (!services) return;
 
-    parcelLayer.eachLayer(layer => {
-        const parcelId = resolveParcelId(layer.feature);
+    services.fabric.list().forEach(feature => {
+        const parcelId = resolveParcelId(feature);
         if (!parcelId) return;
-        const isRoad = isRoadParcel(parcelId);
+        const layer = services.presenter.getLayer(parcelId);
+        if (!layer) return;
+        const isRoad = feature.properties?.isRoad === true || isMarkedRoadFeature(feature);
 
-        if (isRoad) {
-            layer.setStyle(roadStyle);
-
-            // Get road name for tooltip
-            const persistedProps = readPersistedRoadProperties(parcelId) || {};
-            const roadName = layer.feature?.properties?.roadName || persistedProps.roadName || 'Unnamed Road';
-
-            // Add or update tooltip with road name
-            if (layer.getTooltip()) {
-                layer.setTooltipContent(roadName);
-            } else {
-                layer.bindTooltip(roadName, {
-                    permanent: false,
-                    direction: 'center',
-                    className: 'road-name-tooltip'
-                });
-            }
-        } else {
-            layer.setStyle(normalStyle);
-            // Remove any existing tooltip
-            if (layer.getTooltip()) {
-                layer.unbindTooltip();
-            }
+        // Road parcels get no name labels — we care where roads are and how big, not what
+        // they are called. Any tooltip a previous build bound is taken off here.
+        const boundTooltip = layer.getTooltip?.();
+        if (boundTooltip?.options?.className === 'road-name-tooltip') {
+            layer.unbindTooltip();
         }
+        const style = typeof window.getParcelBaseStyle === 'function'
+            ? window.getParcelBaseStyle(parcelId, layer, { isRoad })
+            : (isRoad ? roadStyle : normalStyle);
+        layer.setStyle(style);
     });
 }
 
@@ -1160,13 +1078,13 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
 
-    // Build quick spatial index by parcel bounds
-    const parcelEntries = parcels.map(layer => {
-        const b = layer.getBounds();
-        return { layer, bounds: b };
-    });
+    // Build the prefilter from authoritative features, never from Leaflet's projection.
+    const parcelEntries = parcels.map(feature => ({
+        feature,
+        bounds: roadDetectionFeatureBounds(feature)
+    })).filter(entry => entry.bounds);
 
-    let marked = 0;
+    const marked = new Set();
     let processed = 0;
     const total = (osmGeoJSON.features || []).length;
 
@@ -1183,15 +1101,14 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
             } catch (_) { continue; }
 
             // Rough prefilter: compute bbox of buffered road
-            const br = L.geoJSON(bufferedRoad).getBounds();
+            const roadBounds = roadDetectionFeatureBounds(bufferedRoad);
+            if (!roadBounds) continue;
 
             // Check only parcels whose bounds intersect this bbox
-            const candidates = parcelEntries.filter(pe => {
-                try { return br.intersects(pe.bounds); } catch (_) { return false; }
-            });
+            const candidates = parcelEntries.filter(entry => roadDetectionBoundsIntersect(roadBounds, entry.bounds));
 
             for (const pe of candidates) {
-                const parcelGeoJSON = pe.layer.toGeoJSON();
+                const parcelGeoJSON = pe.feature;
                 let parcelBuffer;
                 try {
                     parcelBuffer = turf.buffer(parcelGeoJSON, 2, { units: 'meters' });
@@ -1207,25 +1124,9 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
                 const parcelArea = turf.area(parcelGeoJSON);
                 const overlapRatio = intersectionArea / parcelArea;
                 if (overlapRatio > 0.5) {
-                    const parcelId = resolveParcelId(pe.layer.feature);
+                    const parcelId = resolveParcelId(pe.feature);
                     if (!parcelId) continue;
-                    const name = roadFeature.properties.name || 'Unnamed Road';
-                    const roadId = roadFeature.properties.id || '';
-                    addRoadParcel(parcelId);
-                    writePersistedRoadProperties(parcelId, props => {
-                        props.isRoad = true;
-                        props.isCorridor = true;
-                        props.roadName = name;
-                        props.roadId = roadId;
-                        props.roadConfidence = overlapRatio;
-                    });
-                    pe.layer.setStyle(roadStyle);
-                    pe.layer.feature.properties.isRoad = true;
-                    pe.layer.feature.properties.isCorridor = true;
-                    pe.layer.feature.properties.roadName = name;
-                    pe.layer.feature.properties.roadId = roadId;
-                    pe.layer.feature.properties.roadConfidence = overlapRatio;
-                    marked++;
+                    if (markRoadFeature(pe.feature)) marked.add(parcelId);
                 }
             }
         } catch (_) { }
@@ -1237,14 +1138,15 @@ async function detectRoadsByOSMLinesFirst(parcels, osmGeoJSON) {
         await new Promise(r => setTimeout(r, 0));
     }
 
-    return marked;
+    return marked.size;
 }
 
 // Function to clear all detected roads
 function clearDetectedRoads() {
     const status = document.getElementById('status');
 
-    if (!parcelLayer) {
+    const services = roadDetectionServices();
+    if (!services) {
         updateStatus('No parcels to clear.');
         return;
     }
@@ -1252,39 +1154,25 @@ function clearDetectedRoads() {
     // Get count before clearing
     const roadCount = getRoadParcelCount();
 
-    // Remove road metadata keys (roadName, roadId, roadConfidence)
-    const roadParcelIds = getAllRoadParcels();
-    for (const parcelId of roadParcelIds) {
-        writePersistedRoadProperties(parcelId, props => {
-            delete props.roadName;
-            delete props.roadId;
-            delete props.roadConfidence;
-            props.isRoad = false;
-            props.isCorridor = false;
-        });
-    }
-
     // Clear the roadParcels array
     clearAllRoadParcels();
 
-    // Update styles on all parcel layers
-    parcelLayer.eachLayer(layer => {
+    // Update presentation by authoritative parcel id; no map-layer enumeration is a domain read.
+    services.fabric.list().forEach(feature => {
+        const parcelId = resolveParcelId(feature);
+        const layer = parcelId ? services.presenter.getLayer(parcelId) : null;
+        if (!layer) return;
         // Remove road styling
-        layer.setStyle(normalStyle);
+        const style = typeof window.getParcelBaseStyle === 'function'
+            ? window.getParcelBaseStyle(parcelId, layer, { isRoad: feature.properties?.isRoad === true })
+            : normalStyle;
+        layer.setStyle(style);
 
         // Remove tooltip
         if (layer.getTooltip()) {
             layer.unbindTooltip();
         }
 
-        // Update feature properties
-        if (layer.feature && layer.feature.properties) {
-            layer.feature.properties.isRoad = false;
-            layer.feature.properties.isCorridor = false;
-            delete layer.feature.properties.roadName;
-            delete layer.feature.properties.roadId;
-            delete layer.feature.properties.roadConfidence;
-        }
     });
 
     // Remove any OSM road layer
@@ -1308,23 +1196,36 @@ function clearDetectedRoads() {
 }
 
 // Run all available detection strategies sequentially and restore a clear map view when done
+
 async function detectExistingRoads() {
     const controlButton = document.getElementById('detectExistingRoadsButton');
-    const originalLabel = controlButton ? controlButton.textContent : null;
+    // Restored as markup: the button holds an icon and a translatable label span.
+    const originalLabelHtml = controlButton ? controlButton.innerHTML : null;
+    const tr = (key, fallback) => {
+        const value = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+        return (typeof value === 'string' && value && value !== key) ? value : fallback;
+    };
 
-    const sidebarDisableMessage = 'Detecting existing roads...';
-
-    if (typeof window.setSidebarDisabled === 'function') {
-        try { window.setSidebarDisabled(true, sidebarDisableMessage); } catch (_) { }
+    // Lock the Roads controls (their sheets, and their upkeep in Settings) while the detectors run.
+    if (window.MapShell) {
+        window.MapShell.setSectionBusy('roads', true, tr('sidebar.roads.detectingExisting', 'Detecting existing roads...'));
     }
 
     if (controlButton) {
         controlButton.disabled = true;
-        controlButton.textContent = 'Detecting...';
+        controlButton.textContent = tr('common.busy.detecting', 'Detecting...');
     }
 
     try {
-        updateStatus('Detecting existing roads using all available sources...');
+        // A curated source is authoritative: use it INSTEAD of the three client-side detectors.
+        if (curatedRoadsAvailable()) {
+            updateStatus('Loading existing roads from the curated source...');
+            const added = await fetchCuratedRoadParcels();
+            updateStatus(`Existing roads loaded — ${added} parcels newly marked as roads.`);
+            return;
+        }
+
+        updateStatus(tr('status.messages.detecting_existing_roads_using_all_available_sources', 'Detecting existing roads using all available sources...'));
 
         await detectRoadsFromOSM();
         await detectRoadsFromGUP();
@@ -1366,13 +1267,11 @@ async function detectExistingRoads() {
 
     } catch (error) {
         console.error('Error detecting existing roads:', error);
-        updateStatus('Error detecting existing roads using all sources.');
+        updateStatus(tr('status.messages.error_detecting_existing_roads_using_all_sources', 'Error detecting existing roads using all sources.'));
     } finally {
-        if (typeof window.setSidebarDisabled === 'function') {
-            try { window.setSidebarDisabled(false); } catch (_) { }
-        }
+        if (window.MapShell) window.MapShell.setSectionBusy('roads', false);
         if (controlButton) {
-            controlButton.textContent = originalLabel || 'Detect Existing Roads';
+            if (originalLabelHtml) controlButton.innerHTML = originalLabelHtml;
             controlButton.disabled = false;
         }
     }

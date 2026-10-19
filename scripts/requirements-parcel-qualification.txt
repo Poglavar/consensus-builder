@@ -1,0 +1,3 @@
+# Independent metric audit; Shapely 2 provides index-returning STRtree queries.
+pyproj>=3.6,<4
+shapely>=2,<3

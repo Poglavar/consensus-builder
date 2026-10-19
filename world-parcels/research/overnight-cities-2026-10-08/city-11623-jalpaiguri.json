@@ -1,0 +1,117 @@
+{
+  "name": "Jalpaiguri",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 840,
+  "point": [
+    26.5275226382758,
+    88.7137877913337
+  ],
+  "population2025": 642158,
+  "population2025k": 642.158,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Jalpaiguri district portal identifies Land Records as a citizen-service route; the district NIC page describes West Bengal eBhuchitra as the Land & Land Reforms Department G2C system for mutation/conversion and digitally signed record-of-rights, and Banglarbhumi as the portal for record-of-rights and plot information. These are land-record pathways but no Jalpaiguri urban parcel geometry schema or point-specific map coverage was verified.",
+  "registryEvidenceUrls": [
+    "https://jalpaiguri.gov.in/",
+    "https://jalpaiguri.gov.in/nic/",
+    "https://jalpaiguri.gov.in/map/",
+    "https://banglarbhumi.gov.in/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. At most two full polygons retained for Toulouse; no geometry retained for the other cities. Citywide/countrywide completeness, legal title, survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_district_land_records_services_geometry_unverified",
+  "technicalBlocker": "Official district sources route to West Bengal land-record systems, but no anonymous city parcel-vector endpoint and safe field schema were identified. The district’s public map page lists administrative/district/block maps, not parcel polygons; no plot-level query was submitted.",
+  "remainingUncertainty": "The WUP locator was not resolved to a municipal ward, mouza, or map-sheet boundary; local record services may include areas beyond the settlement and do not prove point coverage.",
+  "nextStep": "If a primary public parcel layer is identified or the existing Toulouse provider is considered for extension, complete parent-owned source qualification independently; no runtime/config change made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jalpaiguri official land records cadastral map mouza plot map West Bengal district portal",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "The official Jalpaiguri district portal identifies Land Records as a citizen-service route; the district NIC page describes West Bengal eBhuchitra as the Land & Land Reforms Department G2C system for mutation/conversion and digitally signed record-of-rights, and Banglarbhumi as the portal for record-of-rights and plot information. These are land-record pathways but no Jalpaiguri urban parcel geometry schema or point-specific map coverage was verified. Official district sources route to West Bengal land-record systems, but no anonymous city parcel-vector endpoint and safe field schema were identified. The district’s public map page lists administrative/district/block maps, not parcel polygons; no plot-level query was submitted.",
+        "actualResultUrls": [
+          "https://jalpaiguri.gov.in/",
+          "https://jalpaiguri.gov.in/nic/",
+          "https://jalpaiguri.gov.in/map/",
+          "https://banglarbhumi.gov.in/"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      },
+      {
+        "language": "Bengali",
+        "query": "জলপাইগুড়ি সরকারি মৌজা মানচিত্র দাগ খতিয়ান ভূমি রেকর্ড জেলা",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "The official Jalpaiguri district portal identifies Land Records as a citizen-service route; the district NIC page describes West Bengal eBhuchitra as the Land & Land Reforms Department G2C system for mutation/conversion and digitally signed record-of-rights, and Banglarbhumi as the portal for record-of-rights and plot information. These are land-record pathways but no Jalpaiguri urban parcel geometry schema or point-specific map coverage was verified. Official district sources route to West Bengal land-record systems, but no anonymous city parcel-vector endpoint and safe field schema were identified. The district’s public map page lists administrative/district/block maps, not parcel polygons; no plot-level query was submitted.",
+        "actualResultUrls": [
+          "https://jalpaiguri.gov.in/",
+          "https://jalpaiguri.gov.in/nic/",
+          "https://jalpaiguri.gov.in/map/",
+          "https://banglarbhumi.gov.in/"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      },
+      {
+        "language": "Bengali",
+        "query": "জলপাইগুড়ি শহর ভূমি ও ভূমি সংস্কার আধিকারিক জেলা ভূমি রেকর্ড সরকারি",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "The official Jalpaiguri district portal identifies Land Records as a citizen-service route; the district NIC page describes West Bengal eBhuchitra as the Land & Land Reforms Department G2C system for mutation/conversion and digitally signed record-of-rights, and Banglarbhumi as the portal for record-of-rights and plot information. These are land-record pathways but no Jalpaiguri urban parcel geometry schema or point-specific map coverage was verified. Official district sources route to West Bengal land-record systems, but no anonymous city parcel-vector endpoint and safe field schema were identified. The district’s public map page lists administrative/district/block maps, not parcel polygons; no plot-level query was submitted.",
+        "actualResultUrls": [
+          "https://jalpaiguri.gov.in/",
+          "https://jalpaiguri.gov.in/nic/",
+          "https://jalpaiguri.gov.in/map/",
+          "https://banglarbhumi.gov.in/"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "IN-JALPAIGURI-LAND-RECORDS",
+    "name": "Official Jalpaiguri district administration site links Land Records as",
+    "url": "https://jalpaiguri.gov.in/",
+    "operator": "West Bengal Land & Land Reforms Department / Jalpaiguri District Administration",
+    "serviceType": "Official local land-record / property-registration service; no public parcel feature layer and safe field schema verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 11623,
+  "cityId": "wup2025:11623",
+  "queueRank": 840,
+  "sourceIds": [],
+  "centerLatLon": [
+    26.5275226382758,
+    88.7137877913337
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official Jalpaiguri district portal identifies Land Records as a citizen-service route; the district NIC page describes West Bengal eBhuchitra as the Land & Land Reforms Department G2C system for mutation/conversion and digitally signed record-of-rights, and Banglarbhumi as the portal for record-of-rights and plot information. These are land-record pathways but no Jalpaiguri urban parcel geometry schema or point-specific map coverage was verified. Official district sources route to West Bengal land-record systems, but no anonymous city parcel-vector endpoint and safe field schema were identified. The district’s public map page lists administrative/district/block maps, not parcel polygons; no plot-level query was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Parent owns protocol qualification and runtime decisions; this discovery pass made no adapter or runtime changes."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://jalpaiguri.gov.in/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Jalpaiguri District, Govt of West Bengal | Jalpaiguri District Administration, W.B. | India    "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

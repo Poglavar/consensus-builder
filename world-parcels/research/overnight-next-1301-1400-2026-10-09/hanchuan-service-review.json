@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10388-hanchuan.json",
+  "cityCode": 10388,
+  "purpose": "Document first-party discovery, current public service routes, bounded anonymous access review, and evidence limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "First-party Hubei sources establish Hanchuan Natural Resources and Planning Bureau custody and refer to an existing Hanchuan real-estate registration management platform. A bounded anonymous parcel response with safe ID and geometry was not obtained. Hanchuan government and bureau hosts were unreachable from this client, while public Tianditu hosts returned an anti-automation response without service metadata. No parcel sample is retained.",
+  "registryAssessment": "Local registry/platform custody is evidenced by official Hubei project documentation, so registryFound is true. This is not evidence of an open public parcel-vector service or adapter readiness.",
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {"language":"English","query":"Hanchuan China official cadastral map parcel GIS Hanchuan land registration natural resources","outcome":"First-party Hubei results identified local custody and one-map/registration platform context; no English public parcel endpoint found.","actualResultUrls":["https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202509/t20250923_5777770.shtml","https://zrzyt.hubei.gov.cn/bmdt/sxdt/202609/t20260911_6012201.shtml"]},
+    {"language":"Chinese","query":"汉川市 不动产登记 地图 地籍图 自然资源局","outcome":"First-party Hubei results identified 汉川市自然资源和规划局 and 汉川市不动产登记中心 and described the registration platform; no anonymous parcel geometry endpoint found.","actualResultUrls":["https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202509/t20250923_5777770.shtml","https://zrzyt.hubei.gov.cn/zdwwgk/Zdgk/nzdgzs/150544/z20250421_6845623.aspx?AreaCode=420900","https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdczcjd/202512/t20251212_5832680.shtml"]}
+  ],
+  "attempts": [
+    {"url":"https://www.hanchuan.gov.cn/","method":"GET","httpStatus":"connection reset","result":"Anonymous request reset by remote host; no viewer/configuration obtained."},
+    {"url":"http://www.hanchuan.gov.cn/","method":"GET","httpStatus":"connection reset","result":"Anonymous HTTP request reset by remote host; no viewer/configuration obtained."},
+    {"url":"https://zrzyj.hanchuan.gov.cn/","method":"GET","httpStatus":"DNS failure","result":"Host did not resolve; no local bureau viewer endpoint obtained."},
+    {"url":"https://map.tianditu.gov.cn/","method":"GET","httpStatus":418,"result":"Public Tianditu host returned HTTP 418 anti-automation HTML; no cadastral schema/API or token was requested or bypassed."},
+    {"url":"https://www.tianditu.gov.cn/","method":"GET","httpStatus":418,"result":"Public Tianditu host returned HTTP 418 anti-automation HTML; no cadastral schema/API or token was requested or bypassed."},
+    {"url":"https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202509/t20250923_5777770.shtml","method":"GET via first-party search/open","httpStatus":200,"result":"Official Hubei source confirmed Hanchuan existing real-estate registration management platform and local bureau custody; no public parcel endpoint exposed."},
+    {"url":"https://zrzyt.hubei.gov.cn/bmdt/sxdt/202609/t20260911_6012201.shtml","method":"GET via first-party search/open","httpStatus":200,"result":"Official Hubei source described Hanchuan citywide one-map/3D natural-resource monitoring; not a cadastral parcel-vector response."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. The WUP point [30.6505972534677,113.840623778221] was preserved exactly and not shifted; endpoint failures are not evidence of citywide absence."},
+  "remainingUncertainty":"The local viewer's current JavaScript/configuration, service endpoint, CRS, native parcel identity, exact-point parcel, and open coverage remain unverified. A serial reviewer would need an independently reachable public map/API route before considering adapter qualification.",
+  "runtimeAssessment":"held; serial reviewer must independently qualify any adapter"
+}

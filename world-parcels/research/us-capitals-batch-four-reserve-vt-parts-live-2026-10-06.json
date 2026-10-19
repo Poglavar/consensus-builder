@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "montpelier",
+      "stateCode": "VT",
+      "sourceId": "us-vt-montpelier-parcels",
+      "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.58,
+            44.2575,
+            -72.5775,
+            44.26
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5775,
+            44.2575,
+            -72.575,
+            44.26
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.575,
+            44.2575,
+            -72.5725,
+            44.26
+          ],
+          "count": 63,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.58,
+            44.26,
+            -72.5775,
+            44.262499999999996
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5775,
+            44.26,
+            -72.575,
+            44.262499999999996
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.575,
+            44.26,
+            -72.5725,
+            44.262499999999996
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.58,
+            44.262499999999996,
+            -72.5775,
+            44.265
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5775,
+            44.262499999999996,
+            -72.575,
+            44.265
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.575,
+            44.262499999999996,
+            -72.5725,
+            44.265
+          ],
+          "count": 49,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5725,
+            44.2575,
+            -72.57000000000001,
+            44.26
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.57000000000001,
+            44.2575,
+            -72.5675,
+            44.26
+          ],
+          "count": 37,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5675,
+            44.2575,
+            -72.565,
+            44.26
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5725,
+            44.26,
+            -72.57000000000001,
+            44.262499999999996
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.57000000000001,
+            44.26,
+            -72.5675,
+            44.262499999999996
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5675,
+            44.26,
+            -72.565,
+            44.262499999999996
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5725,
+            44.262499999999996,
+            -72.57000000000001,
+            44.265
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.57000000000001,
+            44.262499999999996,
+            -72.5675,
+            44.265
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.5675,
+            44.262499999999996,
+            -72.565,
+            44.265
+          ],
+          "count": 40,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -72.58,
+          44.262499999999996,
+          -72.5775,
+          44.265
+        ],
+        "forcedPageSize": 3,
+        "count": 13,
+        "returned": 11,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 581,
+      "exactResolved": 581,
+      "nativeIds": [
+        "405-126-11382",
+        "405-126-10381",
+        "405-126-10537"
+      ],
+      "footprintCount": 5,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-vt-montpelier-parcels",
+        "parcels": 1,
+        "siteM2": 2232.75
+      },
+      "requests": 159
+    }
+  ]
+}

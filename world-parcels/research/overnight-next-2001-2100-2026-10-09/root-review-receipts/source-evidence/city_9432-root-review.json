@@ -1,0 +1,61 @@
+{
+  "taskId": "city:9432",
+  "decision": "held",
+  "checkedAt": "2026-10-10T20:45:27Z",
+  "identity": {
+    "cityCode": 9432,
+    "rank": 2004,
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      34.7532102004985,
+      112.976781206795
+    ],
+    "populationPersons": 289951,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Chinese"
+    ],
+    "pairedPacketAndReviewInspected": true,
+    "resultUrlsRecorded": true
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://public.gongyishi.gov.cn/D1603Y/7612271.jhtml",
+      "observation": "Official bureau duties include citywide natural-resource and real-estate registration, cadastral surveys, and registration information-platform management."
+    },
+    {
+      "url": "https://www.zhengzhou.gov.cn/yshj01/9923804.jhtml",
+      "observation": "Official Zhengzhou report identifies the Gongyi real-estate registration center and its registration services."
+    }
+  ],
+  "firstPartyCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/gongyi/gongyi-home.html",
+      "sha256": "b052fc1bf996ea3a11d54b49a9d4b72ca3613e44c41ff74cf6a245822785be0d",
+      "bytes": 24019,
+      "observation": "Official government home page HTML, not a parcel feature response."
+    }
+  ],
+  "custody": {
+    "registryFound": true,
+    "assessment": "Local registration custody is grounded by first-party government pages. No anonymous parcel ID-plus-polygon response or adapter was independently verified."
+  },
+  "samples": {
+    "retainedFullPolygonCount": 0,
+    "safeNativeParcelIdObserved": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "scopeCaveat": "No verified public native-ID parcel polygon response. Access errors, login controls or an unavailable viewer do not establish citywide cadastral absence."
+}

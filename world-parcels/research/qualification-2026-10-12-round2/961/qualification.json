@@ -1,0 +1,1939 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "961",
+  "cityName": "Hadera",
+  "sourceId": "il-govmap-cadastral-parcel-rows",
+  "candidateSha256": "9b336c0b7a31b54915db3bed876c10572c0e156372e405159c46c66d4408d78a",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2,
+      "freshCollectedIds": 133,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 133,
+      "collectedUniqueCount": 133
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 436
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 2
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "60bd1ef3a11a0f22e332eeece0df978219d316bb95e35ec064b7196aff709c1c",
+      "featureCount": 133,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32636",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "60bd1ef3a11a0f22e332eeece0df978219d316bb95e35ec064b7196aff709c1c",
+  "featureCount": 133,
+  "sampleIds": [
+    "govmap:row:926122",
+    "govmap:row:926126"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        34.917,
+        32.436,
+        34.918,
+        32.437
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "govmap:row:924615",
+        "govmap:row:924872",
+        "govmap:row:924873",
+        "govmap:row:925618",
+        "govmap:row:925854",
+        "govmap:row:925855",
+        "govmap:row:925856",
+        "govmap:row:925857",
+        "govmap:row:925858",
+        "govmap:row:925859",
+        "govmap:row:925860",
+        "govmap:row:925861",
+        "govmap:row:926124"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        34.918,
+        32.436,
+        34.919,
+        32.437
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "govmap:row:923833",
+        "govmap:row:925366",
+        "govmap:row:925367",
+        "govmap:row:925368",
+        "govmap:row:925854",
+        "govmap:row:925855",
+        "govmap:row:925856",
+        "govmap:row:926123",
+        "govmap:row:926124",
+        "govmap:row:926125",
+        "govmap:row:926126",
+        "govmap:row:927083",
+        "govmap:row:927087"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        34.919,
+        32.436,
+        34.92,
+        32.437
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "govmap:row:923833",
+        "govmap:row:924611",
+        "govmap:row:924862",
+        "govmap:row:924863",
+        "govmap:row:924870",
+        "govmap:row:924871",
+        "govmap:row:925625",
+        "govmap:row:925626",
+        "govmap:row:926118",
+        "govmap:row:926119",
+        "govmap:row:926120",
+        "govmap:row:926121",
+        "govmap:row:926124",
+        "govmap:row:926125",
+        "govmap:row:926862",
+        "govmap:row:926863",
+        "govmap:row:926864",
+        "govmap:row:926865",
+        "govmap:row:927083",
+        "govmap:row:927084",
+        "govmap:row:927085",
+        "govmap:row:927087"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        34.917,
+        32.437,
+        34.918,
+        32.438
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "govmap:row:924065",
+        "govmap:row:924330",
+        "govmap:row:925369",
+        "govmap:row:925370",
+        "govmap:row:925371",
+        "govmap:row:926117",
+        "govmap:row:926123",
+        "govmap:row:926124",
+        "govmap:row:926857",
+        "govmap:row:926858",
+        "govmap:row:926859",
+        "govmap:row:926861",
+        "govmap:row:927345",
+        "govmap:row:927346",
+        "govmap:row:927347",
+        "govmap:row:927348"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        34.918,
+        32.437,
+        34.919,
+        32.438
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "govmap:row:924612",
+        "govmap:row:924618",
+        "govmap:row:924619",
+        "govmap:row:924620",
+        "govmap:row:924865",
+        "govmap:row:924866",
+        "govmap:row:924867",
+        "govmap:row:925371",
+        "govmap:row:926117",
+        "govmap:row:926119",
+        "govmap:row:926122",
+        "govmap:row:926123",
+        "govmap:row:926124",
+        "govmap:row:926125",
+        "govmap:row:926126",
+        "govmap:row:926858",
+        "govmap:row:927345",
+        "govmap:row:927346",
+        "govmap:row:927348"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        34.919,
+        32.437,
+        34.92,
+        32.438
+      ],
+      "complete": true,
+      "featureCount": 28,
+      "ids": [
+        "govmap:row:923845",
+        "govmap:row:924051",
+        "govmap:row:924610",
+        "govmap:row:924618",
+        "govmap:row:924633",
+        "govmap:row:924859",
+        "govmap:row:924860",
+        "govmap:row:924862",
+        "govmap:row:924864",
+        "govmap:row:924865",
+        "govmap:row:924866",
+        "govmap:row:924867",
+        "govmap:row:924869",
+        "govmap:row:925624",
+        "govmap:row:925625",
+        "govmap:row:925626",
+        "govmap:row:925627",
+        "govmap:row:925628",
+        "govmap:row:925629",
+        "govmap:row:925630",
+        "govmap:row:925850",
+        "govmap:row:925851",
+        "govmap:row:926119",
+        "govmap:row:926120",
+        "govmap:row:926121",
+        "govmap:row:926122",
+        "govmap:row:926125",
+        "govmap:row:926126"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        34.917,
+        32.438,
+        34.918,
+        32.439
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "govmap:row:924327",
+        "govmap:row:924330",
+        "govmap:row:924331",
+        "govmap:row:924613",
+        "govmap:row:926846",
+        "govmap:row:926848",
+        "govmap:row:926849",
+        "govmap:row:926850",
+        "govmap:row:926851",
+        "govmap:row:926856",
+        "govmap:row:926857",
+        "govmap:row:926858",
+        "govmap:row:926859",
+        "govmap:row:927345",
+        "govmap:row:927346"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        34.918,
+        32.438,
+        34.919,
+        32.439
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "govmap:row:924612",
+        "govmap:row:924613",
+        "govmap:row:924614",
+        "govmap:row:924618",
+        "govmap:row:924619",
+        "govmap:row:924622",
+        "govmap:row:924624",
+        "govmap:row:924625",
+        "govmap:row:924861",
+        "govmap:row:924865",
+        "govmap:row:926845",
+        "govmap:row:926846",
+        "govmap:row:926849",
+        "govmap:row:926850",
+        "govmap:row:926851",
+        "govmap:row:926853",
+        "govmap:row:926854",
+        "govmap:row:926856",
+        "govmap:row:926858",
+        "govmap:row:927345"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        34.919,
+        32.438,
+        34.92,
+        32.439
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "govmap:row:924618",
+        "govmap:row:924621",
+        "govmap:row:924622",
+        "govmap:row:924623",
+        "govmap:row:924624",
+        "govmap:row:924625",
+        "govmap:row:924626",
+        "govmap:row:924627",
+        "govmap:row:924628",
+        "govmap:row:924631",
+        "govmap:row:924632",
+        "govmap:row:924861",
+        "govmap:row:924864",
+        "govmap:row:924869",
+        "govmap:row:926119"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        34.918,
+        32.435,
+        34.919,
+        32.436
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "govmap:row:923833",
+        "govmap:row:923834",
+        "govmap:row:923835",
+        "govmap:row:923836",
+        "govmap:row:924340",
+        "govmap:row:924872",
+        "govmap:row:925854",
+        "govmap:row:925862",
+        "govmap:row:926580",
+        "govmap:row:927087",
+        "govmap:row:927089"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        34.918,
+        32.439,
+        34.919,
+        32.44
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "govmap:row:924330",
+        "govmap:row:924623",
+        "govmap:row:924624",
+        "govmap:row:926116",
+        "govmap:row:926598",
+        "govmap:row:926599",
+        "govmap:row:926600",
+        "govmap:row:926602",
+        "govmap:row:926603",
+        "govmap:row:926839",
+        "govmap:row:926843",
+        "govmap:row:926844",
+        "govmap:row:926845",
+        "govmap:row:926846"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        34.916,
+        32.437,
+        34.917,
+        32.438
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "govmap:row:924063",
+        "govmap:row:924064",
+        "govmap:row:924065",
+        "govmap:row:925128",
+        "govmap:row:925617",
+        "govmap:row:925618",
+        "govmap:row:925619",
+        "govmap:row:925620",
+        "govmap:row:925621",
+        "govmap:row:925622",
+        "govmap:row:926124",
+        "govmap:row:926859"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        34.92,
+        32.437,
+        34.921,
+        32.438
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "govmap:row:923843",
+        "govmap:row:923844",
+        "govmap:row:923845",
+        "govmap:row:924051",
+        "govmap:row:924321",
+        "govmap:row:924322",
+        "govmap:row:924323",
+        "govmap:row:924610",
+        "govmap:row:924632",
+        "govmap:row:924859",
+        "govmap:row:924860",
+        "govmap:row:924869",
+        "govmap:row:925624",
+        "govmap:row:925625",
+        "govmap:row:925846",
+        "govmap:row:925847",
+        "govmap:row:925848",
+        "govmap:row:925849",
+        "govmap:row:925850",
+        "govmap:row:925851"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 81,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:21:43.811Z",
+      "queryHash": "78c6a4d8b5ecea1a96ba7af6a047f019c2d0b20dcfe42573b17bd55de38b09a9",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5273
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:21:49.102Z",
+      "queryHash": "78c6a4d8b5ecea1a96ba7af6a047f019c2d0b20dcfe42573b17bd55de38b09a9",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5027
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:21:54.141Z",
+      "queryHash": "8c42c762583e5292c85ecb8471c580da4d4c069c9ece2cbb57a2f48c55b08f8e",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 4371
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:21:58.515Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 531
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:21:59.175Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 152
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:21:59.455Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 158
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:21:59.873Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 151
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:00.028Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 146
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:00.427Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 148
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:00.579Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 151
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:00.858Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 152
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:01.014Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 156
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:01.306Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:01.496Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 268
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:01.805Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 272
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:02.454Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 217
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:02.924Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 678
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:03.729Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 144
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:04.001Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 268
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:04.272Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 147
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:04.547Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 163
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:04.713Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:05.025Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 265
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:05.419Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 196
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:05.620Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 144
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:05.893Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 293
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:06.538Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 170
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:06.805Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 155
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:07.088Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 272
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:07.614Z",
+      "queryHash": "80f45df35100211cf5be0741114a22c751c017a4f082f303a8db00f947b50d12",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5821
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:13.440Z",
+      "queryHash": "83e1f243d75282e91ba752a66765f6a0521a3db89dfb82aa20b8ea420fd37eda",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 7518
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:20.969Z",
+      "queryHash": "adfd4cd63eb490eaf46e25f19723ef9b9fe99878016cbd7b7b0cbc014a4b9093",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 7855
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:28.826Z",
+      "queryHash": "60a650df9d9642aac826c83e035df619ea65a0143cbd2fb4e150a616b1b4ea1e",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6988
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:35.816Z",
+      "queryHash": "5bf105c285c6de9e24cd32cf55827d5c985d9a30e3615f2dd5eb33e7dc0678d5",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6919
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:42.742Z",
+      "queryHash": "78c6a4d8b5ecea1a96ba7af6a047f019c2d0b20dcfe42573b17bd55de38b09a9",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 9143
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:51.910Z",
+      "queryHash": "eaf5f2f49010a8ce5f57476c440d73cacccaa1c6491b729d5d873ad8e3581640",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1053
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:22:53.043Z",
+      "queryHash": "3aace144fe5cdc295db22cad5324fb15d7c2ddefbd680904afd07185212c154e",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 8960
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:02.006Z",
+      "queryHash": "465d2359e0126c273baa11a937c3a6e515ce34307a655bc2407e95c0bc9bbe94",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 8191
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:10.203Z",
+      "queryHash": "ec1c46a778955b413364194f0f9be89bb873cd658c6c8382688bd23b11d6be3a",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5734
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:15.938Z",
+      "queryHash": "ec2bf852b4da31ba2e91b9d661ddfd8c22c77d3b9b2c9b67239c0b9ede3d4fca",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 10511
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:26.472Z",
+      "queryHash": "f30fccfe9b46b84a41d970614289aed3c972984083eb887ae06de0a85908e272",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6067
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:32.548Z",
+      "queryHash": "aed40771b2220460974c338f1632057c7cbe8b4923b70849006472ccd1e56d85",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5799
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:38.348Z",
+      "queryHash": "d8e8537bd1d19aca0fe16a8bb114d015cbf17b2c57fcb68cb954bfce4a1d7d5b",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6761
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:45.110Z",
+      "queryHash": "5a785589a2c29b43f035c473b59bcf7db2b1723c28863c39c1066e81db595d2f",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 8393
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:53.507Z",
+      "queryHash": "ae0a8fe82f5972d1c618738ae0faab67788443229fc87417f8b66f2e7d6c6b5d",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5907
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:23:59.421Z",
+      "queryHash": "f0be4ef1c10a63a3adb7215334841ef19b7974de4ec66f0720a6392379d0a5d4",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6717
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:06.140Z",
+      "queryHash": "73091dbe5dfc50b9805b2c748bf37927c0e5b1204c663f4c53f83f6619ddeff0",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 7148
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:13.296Z",
+      "queryHash": "d80dfceed8d7812f50bf0632d2e1649a0d90b3bcd9234f86def9016d0b1e416e",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6363
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:19.660Z",
+      "queryHash": "453bb32952a032c883fe4f3cea32e60b0613d09c69ca1158b359dcc414224e9f",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6963
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:26.629Z",
+      "queryHash": "90b12ac00f8b596d47efe3cdced0cdb32d32d48af54e41dd605ca52b4003f626",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 9009
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:35.639Z",
+      "queryHash": "ab12c51e99c4061317e09aa165e0f31f0279d8d666eda1cb2ec9db8dcd40070f",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 7021
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:42.661Z",
+      "queryHash": "bd9bda66218dc0ef6acfc77b4b47612d0bc6e94f682b43c77b176eb9bf8b964f",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6959
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:49.639Z",
+      "queryHash": "c5558e6b73c7cd136aeac428e054a8d073f2384672b8cc76cafb80665a6e4f89",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6011
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:24:55.654Z",
+      "queryHash": "172c8b7d76fcbd4b67db51ea8e681abc1615ebc7d31180bff803b25e210ad0f6",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6012
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:01.678Z",
+      "queryHash": "3a250c711fe4a1e38815b3c18c6d06d5c1eac1242deb2582f8179437d8137d41",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 8444
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:10.123Z",
+      "queryHash": "ba246cedd84c390d571aca6cc730fd2fc85173173b69f92ee8e360387569bb82",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 7187
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:17.316Z",
+      "queryHash": "86f024da55df45ec68be79802fe36dde31171caf1b9488d2f2725e2eca90e049",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6737
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:24.055Z",
+      "queryHash": "4f8297d12ac6a1e9597ae746c7ef386968151015ddd63ec01f90a24aab6357f7",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6285
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:30.342Z",
+      "queryHash": "17f22633baec8d15b5d6d06b3b593e027da40449a3cfd274868319e85dfe7026",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5645
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:35.988Z",
+      "queryHash": "4f9c01ef6119df51b6ac79fd95ddacaf4005dc8fb49943b0d4e4ebd4fa7aca27",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5929
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:41.919Z",
+      "queryHash": "7c6a3c69c69899084f6eb0d8959b971e9b38295eb195c9f838c7cf33174b1bf2",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5797
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:47.717Z",
+      "queryHash": "1c18e126c9603a500498bde898855f27a39660961e4497839ff723ef2be62616",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5723
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:53.452Z",
+      "queryHash": "056c1d2e7c68fe70c2eb7f69edd7ec5a668fc0f296f2cc969588a8dd0c9627bf",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5058
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:25:58.511Z",
+      "queryHash": "5e02ae468ddf33a0850466a97db58be085a6e71a6004916b2cbf03d80777d0e2",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5598
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:04.110Z",
+      "queryHash": "10234b8fd774f06148563271afe28b9c0a1ffb2a3e718a2e9a6f0476404853c2",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5811
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:09.922Z",
+      "queryHash": "043703be7fee85c1cab237524072066e125d27ba501a93da4b7f9812b1c525b4",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6032
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:15.956Z",
+      "queryHash": "4c8f59e4d6c8986c975391e5e8009b13f7aecdf56b148dcaecc6c77dd9a5d44e",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6369
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:22.327Z",
+      "queryHash": "526a0bfed49e5d987937d5c2a286e809cf8eb842d3568af9a6f12f2ee691c39d",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5534
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:27.865Z",
+      "queryHash": "5ac8d392142f84f582064dfebf7fcffa89b61d89eba6b5190163694c6359fc7e",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5543
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:33.410Z",
+      "queryHash": "c8432e5428c3114a51b07e0de1d7da30a4f29bf6ebf7b61972cbf743aeb0807f",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 6329
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:39.742Z",
+      "queryHash": "b152e8440cf4d6422740b4d01e11706c38e9997c99501831a7f38b111beb5d37",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5495
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:45.238Z",
+      "queryHash": "6295a0c7c579eb5a372c1c1059172ab0d94761851ba42a5df69d4aec0471431c",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5919
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:51.168Z",
+      "queryHash": "292cb54d6058d6df8894c232ecded9af811df63ad4bc97e9da9ded27321d7298",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5599
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:26:56.772Z",
+      "queryHash": "33f78fbbc4940ea5ea4888ec68c3152fe8759a813a0707b47997b5d3440d4982",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5713
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:27:02.486Z",
+      "queryHash": "4f621024c68c9c5c4158ea355f1c7ea638048a1632a21ecdc682fc3f1cf4c361",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5795
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:27:08.283Z",
+      "queryHash": "036f3ff45b01a5131de79a1847f477c1169ac7678e9f78a17cad538be68d2acc",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5701
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:27:13.986Z",
+      "queryHash": "57df66dba58a8651d8de6d0fba8f62d8e49437ea7131ae94a968ae8144703407",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5551
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:27:19.540Z",
+      "queryHash": "8a949f27828ab0efc11558b5260df09ade374cbec1c07b8f3d346627460cf3d2",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5630
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:27:25.171Z",
+      "queryHash": "475a46d12723c0ec920e1f0d90552e6e57d66fc2eb28fcdad79b7c778d9e39c2",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5612
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:27:30.785Z",
+      "queryHash": "de46cf6515dcdfc18754d817ffbb41cbc83c1c31683bd905c0f7aa7e08a470c3",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5535
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "open.govmap.gov.il",
+      "method": "GET",
+      "startedAt": "2026-10-12T13:27:36.324Z",
+      "queryHash": "d0f0261dcf796b6686bac4da59f18809c4283d0763de60dc2c0b648d91c6d705",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 5120
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

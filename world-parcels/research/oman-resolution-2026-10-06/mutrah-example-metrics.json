@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+  "attempts": [
+    {
+      "nativeId": 154383,
+      "httpStatus": 200,
+      "rows": 2,
+      "metrics": [
+        {
+          "newNumbers": [
+            "147",
+            "148"
+          ],
+          "areas": [
+            814.3426486012823,
+            814.6243792974858
+          ],
+          "intersectionM2": 0,
+          "symmetricDifferenceM2": 1628.9670278987683
+        }
+      ]
+    },
+    {
+      "nativeId": 153136,
+      "httpStatus": 200,
+      "rows": 2,
+      "metrics": [
+        {
+          "newNumbers": [
+            "143",
+            "143"
+          ],
+          "areas": [
+            570.6471163269364,
+            570.5733981042148
+          ],
+          "intersectionM2": 0,
+          "symmetricDifferenceM2": 1141.220514431151
+        }
+      ]
+    }
+  ]
+}

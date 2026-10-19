@@ -1,0 +1,186 @@
+[
+  {
+    "city": "charleston",
+    "center": [
+      38.3498,
+      -81.6326
+    ],
+    "liveRadiusKm": 6,
+    "descriptor": {
+      "id": "us-wv-charleston-parcels",
+      "name": "West Virginia statewide parcels — Charleston",
+      "adapter": "arcgis",
+      "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "idField": "CleanParcelID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{20}$",
+      "idPrefix": "US-WV-CHARLESTON-",
+      "outFields": [
+        "OBJECTID",
+        "CleanParcelID"
+      ],
+      "parcelNumberField": "CleanParcelID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "metricSrid": 32617,
+      "countryCode": "US",
+      "stateCode": "WV",
+      "cityIds": [
+        "charleston"
+      ],
+      "operator": "West Virginia GIS Technical Center / county assessors",
+      "scope": "West Virginia assessment compilation with county-qualified CleanParcelID; configured for Charleston only, no statewide completeness claim.",
+      "catalogueUrl": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "caveats": [
+        "Assessment mapping; coverage and update dates vary.",
+        "Live service declares Tax Year 2023."
+      ],
+      "maxConcurrentQueries": 2
+    },
+    "sourceNote": "Tax Year 2023 · assessment mapping"
+  },
+  {
+    "city": "olympia",
+    "center": [
+      47.0379,
+      -122.9007
+    ],
+    "liveRadiusKm": 6,
+    "descriptor": {
+      "id": "us-wa-olympia-parcels",
+      "name": "Thurston County parcels — olympia",
+      "adapter": "arcgis",
+      "endpoint": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+      "idField": "PARCEL_NO",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "US-WA-OLYMPIA-THURSTON-",
+      "outFields": [
+        "OBJECTID",
+        "PARCEL_NO",
+        "STATUS_IND"
+      ],
+      "parcelNumberField": "PARCEL_NO",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32610,
+      "countryCode": "US",
+      "stateCode": "WA",
+      "cityIds": [
+        "olympia"
+      ],
+      "operator": "Thurston County",
+      "scope": "Thurston County assessment parcel mapping configured for olympia. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://tconline.co.thurston.wa.us/server/rest/services/Common_Layers/Parcels/FeatureServer/4",
+      "caveats": [
+        "Assessment mapping; not a boundary survey.",
+        "Native PARCEL_NO is the county’s 11-digit assessor property identifier. The complete set of source polygons with this property identifier is treated as one assessment-property footprint, without asserting it is one legal lot.",
+        "Only active assessment-property records STATUS_IND=A are configured. Fabric-only records without assessment lifecycle attributes include short internal numbers, RR and UNKNOWN and are outside this scope."
+      ],
+      "idPattern": "^[0-9]{11}$",
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "partsCoordinatePrecision": 9,
+      "attributeFilters": {
+        "STATUS_IND": "A"
+      }
+    },
+    "sourceNote": "Active Thurston County assessor property footprints · multiple mapped components fully enumerated"
+  },
+  {
+    "city": "madison",
+    "center": [
+      43.0731,
+      -89.4012
+    ],
+    "liveRadiusKm": 6,
+    "descriptor": {
+      "id": "us-wi-madison-parcels",
+      "name": "Dane County parcels — madison",
+      "adapter": "arcgis",
+      "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "US-WI-MADISON-DANE-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "CONAME"
+      ],
+      "parcelNumberField": "PARCELID",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32616,
+      "countryCode": "US",
+      "stateCode": "WI",
+      "cityIds": [
+        "madison"
+      ],
+      "operator": "Wisconsin State Cartographer’s Office / Dane County",
+      "scope": "Dane County assessment parcel mapping configured for madison. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://services3.arcgis.com/n6uYoouQZW75n5WI/ArcGIS/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "caveats": [
+        "Assessment mapping; not a boundary survey."
+      ],
+      "attributeFilters": {
+        "CONAME": "DANE"
+      }
+    },
+    "sourceNote": "V12 2026 statewide compilation · Dane County assessment mapping"
+  },
+  {
+    "city": "cheyenne",
+    "center": [
+      41.14,
+      -104.8202
+    ],
+    "liveRadiusKm": 6,
+    "descriptor": {
+      "id": "us-wy-cheyenne-parcels",
+      "name": "Laramie County parcels — cheyenne",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "idField": "statepidn",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPrefix": "US-WY-CHEYENNE-LARAMIE-",
+      "outFields": [
+        "objectid",
+        "statepidn",
+        "accountno"
+      ],
+      "parcelNumberField": "statepidn",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32613,
+      "countryCode": "US",
+      "stateCode": "WY",
+      "cityIds": [
+        "cheyenne"
+      ],
+      "operator": "Laramie County",
+      "scope": "Laramie County assessment parcel mapping configured for cheyenne. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "caveats": [
+        "Assessment mapping; not a boundary survey.",
+        "Assessment parcels with accountno present only; RAILROAD placeholder with null assessment account and lifecycle fields is excluded."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeNotNull": [
+        "accountno"
+      ]
+    },
+    "sourceNote": "Laramie County account-identified assessment parcel mapping"
+  }
+]

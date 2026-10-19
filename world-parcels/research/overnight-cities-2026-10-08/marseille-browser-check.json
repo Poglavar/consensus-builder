@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-09T01:49:07.693087+00:00",
+  "city": "marseille",
+  "sourceId": "fr-ign-parcellaire-express",
+  "result": "passed_manual_headed_app_check",
+  "loadedParcels": 630,
+  "visibleCenterCount": 121,
+  "selectedParcelId": "FR-PCI-132048180B0142",
+  "detailsIdMatchesSelection": true,
+  "pointerClick": {
+    "x": 600,
+    "y": 409,
+    "pointBasis": "unchanged settlement locator inside verified source polygon"
+  },
+  "mapBounds": "5.398849546909333,43.305279679953216,5.402068197727204,43.30687628793922",
+  "uncaughtPageErrors": 0,
+  "sourceUnavailableWarnings": [],
+  "browserClosed": true
+}

@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-1038-sidi-bel-abbes.json",
+  "cityCode": 1038,
+  "queueRank": 2235,
+  "name": "Sidi Bel Abbes",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "pointLatLon": [35.1992735132539, -0.62683122186824],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method":"SEARCH","url":"https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx","httpStatus":"timeout","outcome":"Official ASGA InfoGéoAlgérie national cartographic viewer was discovered; bounded anonymous GET did not complete within 20 seconds, so its current JavaScript/configuration and parcel API could not be inspected."},
+    {"method":"GET","url":"https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx","httpStatus":"timeout","outcome":"Direct ordinary public request timed out. No login, CAPTCHA, Cloudflare bypass, credentials, private token, or TLS-disable request was used."},
+    {"method":"SEARCH","url":"https://www.joradp.dz/FTP/jo-francais/1992/F1992021.PDF","httpStatus":200,"outcome":"Official Journal PDF identifies Conservation Foncière de Sidi Bel Abbes and its territorial remit. This is custodian/legal evidence, not a public parcel map or API."},
+    {"method":"SEARCH","url":"https://www.mf.gov.dz/images/pdf/publication/2022_S1.pdf","httpStatus":200,"outcome":"Official Ministry of Finance publication was found as a general national cadastre/conservation-foncière source; no city parcel endpoint was evidenced in the bounded review."},
+    {"method":"SEARCH","url":"https://www.anfu.dz/","httpStatus":200,"outcome":"Official ANFU site describes national urban-land and GIS missions and regional coverage; it is general agency prose, not a Sidi Bel Abbes cadastral parcel service."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "ASGA InfoGéoAlgérie BNDG viewer URL was identified, but the page timed out before configuration or service endpoints could be read.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope":"Official viewer discovery and direct public GET only", "exactPointFeatureCount":null, "nearbyEnvelopeFeatureCount":null, "nativeIdentity":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed", "polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness":"held", "reason":"No usable first-party local cadastral adapter endpoint or anonymous safe ID-plus-geometry response was evidenced in this attempt."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and not shifted.",
+    "A viewer timeout is not evidence of citywide parcel absence or map extent miss.",
+    "The Journal officiel source identifies the local Conservation Foncière custodian, but does not provide a public parcel geometry API.",
+    "The ASGA viewer is a national cartographic source and could not be inspected past its timeout; schema, CRS, layer names, and query semantics remain unknown.",
+    "No GeoJSON sample is retained because no safe native parcel identity and unchanged geometry were obtained.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.",
+    "This packet is not source integration or admission; runtimeReadiness remains held."
+  ],
+  "uncertainty": "The public national viewer may expose additional cadastral or parcel services through browser JavaScript/configuration, but the bounded anonymous request timed out. Local coverage, service availability, native field schema, CRS, and parcel identity stability therefore remain unverified. registryFound stays null rather than true because only custodian/legal evidence, not a local public map/API, was established."
+}

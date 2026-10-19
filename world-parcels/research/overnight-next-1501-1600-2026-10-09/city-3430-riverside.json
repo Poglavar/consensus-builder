@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityCode": 3430,
+  "queueRank": 1557,
+  "name": "Riverside",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [33.9351928344791, -117.443821994716],
+  "population2025": 367336,
+  "population2025k": 367.336,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Riverside California official parcel GIS map ArcGIS REST parcels Riverside County",
+        "result": "Search identified official City of Riverside Map Riverside public cadastral service and official Riverside County GIS/Assessor parcel services.",
+        "actualResultUrls": [
+          "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer",
+          "https://gis.rivco.org/",
+          "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Riverside California official cadastral parcel map mapa catastral parcelas",
+        "result": "United States local-language context is English; the separate localized query returned the same official City of Riverside and Riverside County parcel-service leads.",
+        "actualResultUrls": [
+          "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer",
+          "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40"
+        ]
+      }
+    ],
+    "sources": [
+      "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer",
+      "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86",
+      "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40"
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official City of Riverside cadastral MapServer and Riverside County Assessor parcel MapServer expose public parcel layers and geometry queries; the county layer is explicitly maintained as a taxable-parcel polygon layer.",
+  "verifiedParcelResponse": {
+    "source": "Riverside County Assessor OpenData PARCELS layer",
+    "sampleFile": "riverside-exact-point-sample.geojson",
+    "sampleCount": 1,
+    "nativeIdField": "OBJECTID",
+    "nativeId": "44648",
+    "queryPointHit": true,
+    "geometryCrs": "EPSG:4326"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Riverside cadastral parcel layer is city-scoped; Riverside County Assessor PARCELS layer is county-scoped and described as taxable parcels replicated from the CountyGIS geodatabase.",
+    "verifiedOpenScope": "Anonymous service metadata and one exact-WUP-point polygon response were verified. Citywide completeness, update lineage beyond service descriptions, and all parcel attributes were not independently audited.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "geometryDecision": {
+    "verified": true,
+    "sampleCount": 1,
+    "sampleFile": "riverside-exact-point-sample.geojson",
+    "nativeId": "44648",
+    "nativeIdField": "OBJECTID",
+    "exactWupPointTest": "County parcel query returned one polygon containing the exact WUP coordinate; City of Riverside parcel query also returned one polygon with native OBJECTID 44648.",
+    "retainedProperties": "Only canonical native identity id is retained in GeoJSON; raw source fields are not retained."
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The exact point is a bounded qualification sample, not evidence of citywide parcel completeness. The City service query initially rejected resultRecordCount pagination; the retry without that parameter succeeded. No owner, address, contact, titleholder, tax/account, or other unsafe fields were requested or retained."
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "NE",
+  "state": "Nebraska",
+  "capital": "Lincoln",
+  "centerLatLon": [
+    40.8136,
+    -96.7026
+  ],
+  "query": {
+    "language": "English",
+    "text": "Nebraska statewide parcel service Lincoln Nebraska capital parcel GIS official; Lincoln Lancaster Assessor TaxParcels GIS"
+  },
+  "references": [
+    "https://map-nebraska.hub.arcgis.com/",
+    "https://gis.lincoln.ne.gov/public/rest/services/Assessor/TaxParcels/MapServer/0",
+    "https://gismaps.outdoornebraska.gov/server/rest/services/NGPC_GIS_HQ_StateParcels/MapServer/0"
+  ],
+  "attempts": [
+    {
+      "url": "https://gismaps.outdoornebraska.gov/server/rest/services/NGPC_GIS_HQ_StateParcels/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "20-second timeout; statewide polygon layer is an official parcel data lead but metadata/sample were not obtained."
+    },
+    {
+      "url": "https://gis.lincoln.ne.gov/public/rest/services/Assessor/TaxParcels/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "20-second timeout to City of Lincoln/Lancaster Assessor parcel layer; capital sample unverified."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gismaps.outdoornebraska.gov/server/rest/services/NGPC_GIS_HQ_StateParcels/MapServer/0",
+    "adapter": "arcgis",
+    "name": "NGPC_GIS_HQ_StateParcels",
+    "operator": "Nebraska Office of the Chief Information Officer; county assessor contributions",
+    "idField": null,
+    "objectIdField": null,
+    "idType": null,
+    "idPattern": null,
+    "outFields": "parcel key unconfirmed"
+  },
+  "verification": {
+    "bbox": null,
+    "count": null,
+    "nativeIDs": [],
+    "exactCount": null,
+    "geometryvalid": null,
+    "capitalLocation": false
+  },
+  "status": "temporarily_unavailable",
+  "nextStep": "Retry the Lincoln Assessor TaxParcels service when its GIS host responds; inspect metadata to identify a native PIN field, then query a few downtown polygons and exact-read one PIN."
+}

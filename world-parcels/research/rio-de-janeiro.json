@@ -1,0 +1,78 @@
+{
+  "cityId": "queue:35",
+  "queueRank": 35,
+  "name": "Rio de Janeiro",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "centerLatLon": [
+    -22.8458,
+    -43.3667
+  ],
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "br-rio-prefeitura-lotes-2013",
+    "requestUrl": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1/query?where=1%3D1&geometry=-43.3680%2C-22.8465%2C-43.3660%2C-22.8450&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -43.368,
+      -22.8465,
+      -43.366,
+      -22.845
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "cod_lote",
+    "responseFile": "rio-de-janeiro-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true"
+  },
+  "source": {
+    "sourceId": "br-rio-prefeitura-lotes-2013",
+    "name": "Lotes (2013) - Quadras_Lotes_Edificacoes FeatureServer layer 1, Prefeitura do Rio (DATA.RIO)",
+    "operator": "Prefeitura da Cidade do Rio de Janeiro",
+    "scope": "Municipality of Rio de Janeiro; physical lots restituted from the 2013 aerial survey (updated 2019 in places)",
+    "endpoint": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+    "method": "GET ArcGIS query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326 requested via outSR (native not checked)",
+    "reuseStatus": "ArcGIS item licenseInfo shows Creative Commons Attribution 4.0 (CC BY 4.0); attribution required"
+  },
+  "portalsFound": [
+    {
+      "url": "https://datariov2-pcrj.hub.arcgis.com/",
+      "observation": "DATA.RIO ArcGIS Hub; search API surfaced 'Lotes (2013)' item e7a93d5c81844e07ab82ccfc45b436f4."
+    },
+    {
+      "url": "https://pgeo3.rio.rj.gov.br/arcgis/rest/services",
+      "observation": "Municipal ArcGIS Server; CadParcel/IMOVEIS_TERRITORIAIS has 1786 municipal-property polygons only; CadParcel/GeoPAL layer 0 is lot-number points; Fazenda/IPTU is points."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/CadParcel/IMOVEIS_TERRITORIAIS/MapServer/0/query?returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "count 1786, municipal-owned properties only; not citywide"
+    },
+    {
+      "url": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1/query?where=1%3D1&geometry=-43.3680%2C-22.8465%2C-43.3660%2C-22.8450&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "3 lot polygons, verified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "physical lots for the municipality from 2013 flight",
+    "verifiedOpenScope": "three lots in the north zone near the queue centre point",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Lots are photogrammetric physical lots (2013 vintage), not legal registry parcels (RGI). Completeness across the municipality and the wider metro area untested; identity of 'Lotes (2013)' layer vs other layers in the service not fully reviewed.",
+  "nextStep": "Confirm layer extent/count, check for a newer lot layer, and test another neighbourhood.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

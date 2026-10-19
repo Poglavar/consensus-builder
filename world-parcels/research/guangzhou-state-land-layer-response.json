@@ -1,0 +1,230 @@
+{
+ "currentVersion": 10.5,
+ "id": 0,
+ "name": "国有建设用地使用权_点",
+ "type": "Feature Layer",
+ "description": "",
+ "geometryType": "esriGeometryPoint",
+ "sourceSpatialReference": {
+  "wkid": 4547,
+  "latestWkid": 4547
+ },
+ "copyrightText": "",
+ "parentLayer": null,
+ "subLayers": [],
+ "minScale": 0,
+ "maxScale": 0,
+ "drawingInfo": {
+  "renderer": {
+   "type": "simple",
+   "symbol": {
+    "type": "esriSMS",
+    "style": "esriSMSCircle",
+    "color": [
+     115,
+     223,
+     255,
+     255
+    ],
+    "size": 4,
+    "angle": 0,
+    "xoffset": 0,
+    "yoffset": 0,
+    "outline": {
+     "color": [
+      0,
+      0,
+      0,
+      255
+     ],
+     "width": 1
+    }
+   },
+   "label": "",
+   "description": ""
+  },
+  "transparency": 0,
+  "labelingInfo": null
+ },
+ "defaultVisibility": true,
+ "extent": {
+  "xmin": 112.95528206024576,
+  "ymin": 22.57484693825889,
+  "xmax": 114.02037439078654,
+  "ymax": 23.9023490267257,
+  "spatialReference": {
+   "wkid": 4490,
+   "latestWkid": 4490
+  }
+ },
+ "hasAttachments": false,
+ "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+ "displayField": "BDCDYH",
+ "typeIdField": null,
+ "fields": [
+  {
+   "name": "OBJECTID",
+   "type": "esriFieldTypeOID",
+   "alias": "OBJECTID",
+   "domain": null
+  },
+  {
+   "name": "SHAPE",
+   "type": "esriFieldTypeGeometry",
+   "alias": "SHAPE",
+   "domain": null
+  },
+  {
+   "name": "BDCDYH",
+   "type": "esriFieldTypeString",
+   "alias": "BDCDYH",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "BDCID",
+   "type": "esriFieldTypeString",
+   "alias": "BDCID",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "BDCQZH",
+   "type": "esriFieldTypeString",
+   "alias": "BDCQZH",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "BJSJ",
+   "type": "esriFieldTypeDate",
+   "alias": "BJSJ",
+   "length": 8,
+   "domain": null
+  },
+  {
+   "name": "BZ",
+   "type": "esriFieldTypeString",
+   "alias": "BZ",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "GUID",
+   "type": "esriFieldTypeString",
+   "alias": "GUID",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "QLLX",
+   "type": "esriFieldTypeString",
+   "alias": "QLLX",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "QXDM",
+   "type": "esriFieldTypeString",
+   "alias": "QXDM",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "SYQMJ",
+   "type": "esriFieldTypeString",
+   "alias": "SYQMJ",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "YWH",
+   "type": "esriFieldTypeString",
+   "alias": "YWH",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "QLRMC",
+   "type": "esriFieldTypeString",
+   "alias": "QLRMC",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "OBJECTIDCP",
+   "type": "esriFieldTypeString",
+   "alias": "OBJECTIDCP",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "ZL",
+   "type": "esriFieldTypeString",
+   "alias": "ZL",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "QLR",
+   "type": "esriFieldTypeString",
+   "alias": "QLR",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "ZDDM",
+   "type": "esriFieldTypeString",
+   "alias": "ZDDM",
+   "length": 200,
+   "domain": null
+  },
+  {
+   "name": "QLRLX",
+   "type": "esriFieldTypeString",
+   "alias": "QLRLX",
+   "length": 200,
+   "domain": null
+  }
+ ],
+ "indexes": [
+  {
+   "name": "FDO_OBJECTID",
+   "fields": "OBJECTID",
+   "isAscending": true,
+   "isUnique": true,
+   "description": ""
+  },
+  {
+   "name": "FDO_SHAPE",
+   "fields": "SHAPE",
+   "isAscending": true,
+   "isUnique": false,
+   "description": ""
+  }
+ ],
+ "relationships": [],
+ "canModifyLayer": true,
+ "canScaleSymbols": false,
+ "hasLabels": false,
+ "capabilities": "Map,Query,Data",
+ "maxRecordCount": 1000,
+ "supportsStatistics": true,
+ "supportsAdvancedQueries": true,
+ "supportedQueryFormats": "JSON, AMF, geoJSON",
+ "ownershipBasedAccessControlForFeatures": {"allowOthersToQuery": true},
+ "useStandardizedQueries": true,
+ "advancedQueryCapabilities": {
+  "useStandardizedQueries": true,
+  "supportsStatistics": true,
+  "supportsOrderBy": true,
+  "supportsDistinct": true,
+  "supportsPagination": true,
+  "supportsTrueCurve": true,
+  "supportsReturningQueryExtent": true,
+  "supportsQueryWithDistance": true,
+  "supportsSqlExpression": false
+ },
+ "supportsDatumTransformation": true,
+ "dateFieldsTimeReference": null
+}

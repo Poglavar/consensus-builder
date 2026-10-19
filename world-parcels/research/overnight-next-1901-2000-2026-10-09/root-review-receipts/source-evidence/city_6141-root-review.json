@@ -1,0 +1,40 @@
+{
+  "taskId": "city:6141",
+  "checkedAt": "2026-10-10T20:26:25.049980Z",
+  "queueIdentity": {
+    "cityCode": 6141,
+    "name": "Myeik",
+    "country": "Myanmar",
+    "rank": 1993,
+    "point": [
+      12.4433845169715,
+      98.60611888729
+    ],
+    "population2025Persons": 291218
+  },
+  "registryFound": null,
+  "identityEvidence": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "samplePolygonCount": 0,
+  "citywideAbsenceInferred": false,
+  "firstPartyCacheChecks": [],
+  "independentHttpCheck": {
+    "url": "https://slrd.gov.mm/en",
+    "status": 403,
+    "bodySha256": "305e7ad2b477f79f4296f1db7355ad3e38397b13927624d0cd2bbb43aca94e13",
+    "finding": "Direct verified-TLS first-party request returned 403; no Myeik parcel data was exposed. Official site indexed pages identify the national SLRD, without a local service."
+  },
+  "englishQuery": "Myeik Myanmar official cadastral map parcel land registry Department of Agricultural Land Management and Statistics",
+  "nativeQuery": "မြိတ် မြန်မာ မြေစာရင်း မြေပုံ တရားဝင်",
+  "registryFinding": "National land-records department identified; Myeik-local record custody unresolved."
+}

@@ -1,0 +1,74 @@
+{
+ "kind": "country",
+ "key": "TH",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: th-TH,th;q=0.9,en;q=0.8; cookie jar (curl -c/-b) kept per country",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://landsmaps.dol.go.th/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Incapsula bot-challenge stub (~1 KB) again with full browser headers and cookie jar; no app content, so viewer JS could not be inspected. Challenge not bypassed."
+  },
+  {
+   "url": "https://landsmaps.dol.go.th/geoserver/wfs",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Incapsula challenge stub, not WFS"
+  },
+  {
+   "url": "https://data.go.th/dataset/mapland-parcel",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "'Access Denied - blocked by our security systems' with browser headers"
+  },
+  {
+   "url": "https://www.dol.go.th/landmap/Pages/default.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Radware captcha page"
+  },
+  {
+   "url": "https://www.dol.go.th/landmap/home/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect to captcha-protected page"
+  },
+  {
+   "url": "https://gdcatalog.go.th/api/3/action/package_show?id=gdpublish-mapland-parcel",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Official Thai government data catalogue (CKAN) record 'Parcel shape by deed number' (DOL). Access steps: (1) written request for permission, (2) build an application, (3) verify with DOL-issued Consumer-Key/Secret, (4) 100,000 requests/day/agency. isopen=false, license not specified. Only resource is the LandsMaps HTML viewer."
+  },
+  {
+   "url": "https://gdcatalog.go.th/api/3/action/package_search?q=parcel (and Thai queries for parcel/cadastre)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Other hits are provincial CSVs, NHA, ALRO, Treasury valuation; no open polygon service"
+  },
+  {
+   "url": "https://gdc.dol.go.th/ , https://bpt.dol.go.th/landspublic",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "WAF Access Denied / unreachable"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "data.go.th returns an 'Access Denied' block page and DOL hosts serve Incapsula/Radware bot challenges to this network; cannot tell whether that is a Thai-only geo restriction or bot scoring",
+ "notes": "New: the official gdcatalog.go.th record for the DOL parcel API states the access conditions explicitly (permission letter, DOL-issued Consumer-Key/Secret, 100k req/day/agency), confirming credentialed access. Headers did not change any blocked result. Viewer JS not reachable behind WAF challenge (not bypassed).",
+ "nextStep": "Apply to DOL for the API key; retry LandsMaps from a real browser session or a Thai network to inspect its geoserver layer names."
+}

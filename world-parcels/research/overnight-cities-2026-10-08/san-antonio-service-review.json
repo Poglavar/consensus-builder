@@ -1,0 +1,1052 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5956-san-antonio.json",
+  "purpose": "Bounded public ArcGIS organization/service verification and adapter qualification; only geometry, OBJECTID and Prop_ID were requested/retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "fullPolygonsInTemporaryAdapterCache": 115,
+    "maxFullPolygonsPerViewportResponse": 18,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "115 unique full parcel polygons returned through 13 bounded 0.001-degree cells around the WUP locator. All 13 viewport reads, forced 3-row paging (18 features across six pages), 115 fresh exact-ID reads, explicit absent-ID semantics, a footprint query, and source binding passed through the existing ArcGIS adapter. All fresh geometries matched viewport hashes. The exact WUP locator is outside all retained polygons. This verifies a local sample only; city-boundary coverage and citywide completeness remain unverified. The official GBRA Open Data portal and matching ArcGIS organization ID establish that GBRA hosts and publishes this public mirror. The item credits Bexar CAD via TNRIS and is a 2022 snapshot; no claim is made that it represents current BCAD records. The WUP point is not itself a parcel point, and citywide coverage is unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.sanantonio.gov/GIS/GISdata",
+      "observation": "Official City GIS directs parcel data requests to Bexar County Appraisal District."
+    },
+    {
+      "url": "https://www.gbra.org/conditions/",
+      "observation": "Official GBRA website links its Open Data hub to ArcGIS and links GBRA interactive maps to ArcGIS."
+    },
+    {
+      "url": "https://opengbra-gbra.hub.arcgis.com/",
+      "observation": "GBRA-branded Open Data hub hosted on ArcGIS."
+    },
+    {
+      "url": "https://www.gbra.org/wp-content/uploads/2021/04/minutes190220.pdf",
+      "observation": "GBRA board minutes identify Misty Downing as GIS Administrator."
+    },
+    {
+      "url": "https://www.gbra.org/wp-content/uploads/2021/04/minutes191023.pdf",
+      "observation": "GBRA board minutes record the GIS Administrator presenting Web GIS and GBRA’s internal GIS portal."
+    },
+    {
+      "url": "https://gbra.maps.arcgis.com/sharing/rest/portals/self?f=pjson",
+      "observation": "Public ArcGIS portal metadata: GBRA organization ID Q6vsXnxTnYcWB7qg, URL key gbra, public access."
+    },
+    {
+      "url": "https://gbra.maps.arcgis.com/sharing/rest/content/items/ddc97094771f45be81fc6cd4842a1901?f=pjson",
+      "observation": "Public BEXAR PARCELS item is owned by mdowning_gbra, belongs to org Q6vsXnxTnYcWB7qg, and its snippet says TNRIS DataHub 2022."
+    },
+    {
+      "url": "https://gbra.maps.arcgis.com/sharing/rest/community/users/mdowning_gbra?f=pjson",
+      "observation": "Public account profile identifies Misty Downing, consistent with GBRA board minutes naming the GIS Administrator."
+    },
+    {
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+      "observation": "Layer metadata: Polygon; TNRIS acquisition Jan 2022; credit Bexar CAD via bcad.org; Prop_ID is nullable string length 10; native CRS EPSG:26914."
+    },
+    {
+      "url": "https://tnris.org/stratmap/land-parcels.html",
+      "observation": "Official TNRIS/TxGIO statewide parcel program and source notes."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gbra.maps.arcgis.com/sharing/rest/portals/self?f=pjson",
+      "method": "GET",
+      "result": "HTTP 200; portal ID Q6vsXnxTnYcWB7qg; name Guadalupe-Blanco River Authority; URL key gbra; access public."
+    },
+    {
+      "url": "https://gbra.maps.arcgis.com/sharing/rest/content/items/ddc97094771f45be81fc6cd4842a1901?f=pjson",
+      "method": "GET",
+      "result": "HTTP 200; public BEXAR PARCELS Feature Service item; orgId matches GBRA portal ID; owner mdowning_gbra."
+    },
+    {
+      "url": "https://gbra.maps.arcgis.com/sharing/rest/community/users/mdowning_gbra?f=pjson",
+      "method": "GET",
+      "result": "HTTP 200; public profile identifies Misty Downing; GBRA board minutes independently identify her as GIS Administrator."
+    },
+    {
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "result": "HTTP 200; Polygon Feature Layer; native CRS EPSG:26914; Prop_ID nullable string length 10; source description says TNRIS DataHub acquired January 2022 and copyright Bexar CAD."
+    },
+    {
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query",
+      "method": "GET via existing ArcGIS adapter",
+      "parameters": "13 bounded 0.001-degree viewport cells; outFields=OBJECTID,Prop_ID; returnGeometry=true; outSR=4326. Exact field whitelist was enforced by the descriptor.",
+      "result": "All 13 complete viewport queries passed; 115 unique parcels accumulated; no owner/address values were requested or retained."
+    },
+    {
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query",
+      "method": "GET via existing ArcGIS adapter",
+      "parameters": "Fresh exact-ID reads for all 115 unique Prop_ID values in batches of 40,40,35; outFields=OBJECTID,Prop_ID; returnGeometry=true; outSR=4326.",
+      "result": "All IDs resolved and every full geometry hash matched the viewport sample."
+    },
+    {
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query",
+      "method": "GET via existing ArcGIS adapter",
+      "parameters": "Explicit exact lookup for Prop_ID 9999999999; safe fields only.",
+      "result": "Complete response established absence; no geometry claimed for this ID."
+    }
+  ],
+  "archiveCopyMetadata": {
+    "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+    "serviceItemId": "ddc97094771f45be81fc6cd4842a1901",
+    "publisherOrganizationId": "Q6vsXnxTnYcWB7qg",
+    "publisherOrganizationName": "Guadalupe-Blanco River Authority",
+    "itemOwner": "mdowning_gbra",
+    "access": "public",
+    "source": "Bexar CAD via TNRIS; TNRIS acquisition January 2022",
+    "nativeGeometry": "Polygon EPSG:26914",
+    "nativeId": "Prop_ID",
+    "transportId": "OBJECTID",
+    "publisherAuthorityEstablished": true,
+    "itemPageTerms": "No explicit reuse terms supplied in item metadata; review preserves public access and source attribution without inferring a license.",
+    "catalogLinkStatus": "GBRA official site links the Open Data hub to ArcGIS; public GBRA org metadata and matching item orgId establish GBRA as publisher. The underlying item attribution is Bexar CAD via TNRIS."
+  },
+  "qualification": "Passed 13/13 bounded viewport cells, forced 3-row pagination, 115 fresh exact-ID geometry reads with hash equality, complete absent-ID semantics, footprint, and source binding using the existing ArcGIS adapter with only OBJECTID and Prop_ID. Independent GEOS QA found 115 valid nonempty temporary metric polygons, zero exact duplicates, zero positive-area overlaps, and zero operation errors. This is local sample evidence; citywide completeness and current BCAD state remain unverified.",
+  "retainedRepositoryGeometryCount": 3,
+  "stableNativeIdCheck": {
+    "field": "Prop_ID",
+    "type": "esriFieldTypeString",
+    "length": 10,
+    "query": "Adapter exact-ID reads with safe Prop_ID and OBJECTID fields only.",
+    "result": "115 complete fresh exact-ID responses matched viewport IDs and geometry hashes; an explicit nonmatching Prop_ID returned complete absence.",
+    "qualificationLimit": "ID behavior qualifies for this public archival mirror sample; this does not establish citywide completeness or current assessor status."
+  },
+  "publisherAuthority": {
+    "established": true,
+    "organizationId": "Q6vsXnxTnYcWB7qg",
+    "organizationName": "Guadalupe-Blanco River Authority",
+    "organizationUrlKey": "gbra",
+    "publicItemOwner": "mdowning_gbra",
+    "itemOrganizationId": "Q6vsXnxTnYcWB7qg",
+    "evidence": "Official GBRA site → Open Data ArcGIS Hub; official gbra.maps.arcgis.com organization profile; public service item’s orgId matches; board minutes identify the item owner as GBRA GIS Administrator.",
+    "scopeLimit": "GBRA is verified as public mirror publisher/host; the layer credits Bexar CAD via TNRIS for underlying parcels and does not claim a current BCAD feed."
+  },
+  "technicalBlocker": null,
+  "remainingUncertainty": "Citywide completeness and current BCAD state remain unverified; the exact WUP settlement locator is outside every sampled parcel polygon.",
+  "rawArtifacts": [
+    "/tmp/overnight-cities-2026-10-08/san-antonio-acceptance.json",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-cache.geojson",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-metric.geojson",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-quality.json",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-adapter-sample.geojson",
+    "/private/tmp/sanantonio-gbra-org-self.json",
+    "/private/tmp/sanantonio-gbra-org-item.json",
+    "/private/tmp/sanantonio-gbra-owner.json"
+  ],
+  "qualificationResults": {
+    "adapter": "existing ArcGIS parcel adapter; research-only descriptor, not in source catalogue",
+    "descriptor": {
+      "id": "us-tx-bexar-bcad-public-archive-2022-propid",
+      "endpoint": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+      "nativeIdField": "Prop_ID",
+      "transportObjectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "Prop_ID"
+      ],
+      "nativeIdType": "string",
+      "nativeIdPattern": "^[0-9]{1,10}$",
+      "outputCrs": "EPSG:4326",
+      "metricCrs": "EPSG:26914",
+      "maxBboxKm2": 25,
+      "maxFeatures": 5000
+    },
+    "testDesign": {
+      "grid": "13 bounded 0.001-degree cells around WUP locator",
+      "forcedPageSize": 3,
+      "freshExactIdRetrieval": true,
+      "explicitAbsentId": "US-TX-BEXAR-BCAD-2022-9999999999",
+      "footprint": "one selected parcel footprint query",
+      "sourceBinding": "one selected parcel binding test",
+      "repositoryGeometryRetained": 0,
+      "repositoryGeometryLimit": 3
+    },
+    "results": {
+      "successfulViewports": 13,
+      "failedViewports": [],
+      "uniqueCompleteParcels": 115,
+      "forcedThreeRowPages": 6,
+      "forcedPaginationFeatures": 18,
+      "freshIdsVerified": 115,
+      "freshIdBatches": [
+        40,
+        40,
+        35
+      ],
+      "geometryHashesMatched": true,
+      "explicitAbsencePassed": true,
+      "wupPointContained": false,
+      "footprintPassed": true,
+      "footprintSelectedId": "US-TX-BEXAR-BCAD-2022-386240",
+      "footprintResultCount": 3,
+      "sourceBindingPassed": true,
+      "sourceBindingCoverage": "complete",
+      "sourceBindingSiteM2": 875.07,
+      "sourceBindingParcels": 1,
+      "adapterRequests": 26,
+      "allAcceptanceTestsPassed": true
+    },
+    "quality": {
+      "report": "/tmp/overnight-cities-2026-10-08/san-antonio-quality.json",
+      "library": "Shapely 2.2.0 / GEOS",
+      "metricCrs": "EPSG:26914",
+      "features": 115,
+      "validNonempty": 115,
+      "invalid": 0,
+      "exactDuplicates": 0,
+      "positiveAreaOverlaps": 0,
+      "operationErrors": 0,
+      "sumPairwiseOverlapM2": 0
+    },
+    "rawArtifacts": [
+      "/tmp/overnight-cities-2026-10-08/san-antonio-acceptance.json",
+      "/tmp/overnight-cities-2026-10-08/san-antonio-cache.geojson",
+      "/tmp/overnight-cities-2026-10-08/san-antonio-metric.geojson",
+      "/tmp/overnight-cities-2026-10-08/san-antonio-quality.json",
+      "/tmp/overnight-cities-2026-10-08/san-antonio-adapter-sample.geojson",
+      "/private/tmp/sanantonio-gbra-org-self.json",
+      "/private/tmp/sanantonio-gbra-org-item.json",
+      "/private/tmp/sanantonio-gbra-owner.json"
+    ]
+  },
+  "rootReviewedAt": "2026-10-08T22:33:03.687721+00:00",
+  "rootDecision": "Public GBRA archive qualified and approved for bounded local runtime integration. Snapshot age, attribution and survey disclaimers are provenance, not technical gates.",
+  "rootIndependentQuality": {
+    "schemaVersion": 1,
+    "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+    "library": "Shapely 2.2.0",
+    "metricCrs": "EPSG:26914",
+    "featureCount": 115,
+    "validNonemptyCount": 115,
+    "invalidFeatures": [],
+    "exactDuplicateGeometryPairs": [],
+    "positiveAreaOverlapPairsAbove0_01M2": [],
+    "sumPairwiseOverlapM2": 0,
+    "operationErrors": [],
+    "areaM2": {
+      "min": 168.51373477869288,
+      "median": 871.3817532338799,
+      "max": 12148.761842414344
+    },
+    "features": [
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434663",
+        "areaM2": 1314.639911906741,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434662",
+        "areaM2": 1237.844542278515,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434660",
+        "areaM2": 1339.0036622107943,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434661",
+        "areaM2": 1262.0623328393135,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434653",
+        "areaM2": 1141.9286830356946,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434642",
+        "areaM2": 12148.761842414344,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434646",
+        "areaM2": 1107.1829440765498,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-1245399",
+        "areaM2": 1906.5163178698683,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434666",
+        "areaM2": 1114.5396909259157,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434665",
+        "areaM2": 1355.013645279483,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434664",
+        "areaM2": 1229.8045618920046,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432921",
+        "areaM2": 899.2218353265077,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432922",
+        "areaM2": 951.6490532329425,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432911",
+        "areaM2": 1800.1812487228308,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432912",
+        "areaM2": 1227.249265775108,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432913",
+        "areaM2": 1176.1461820166312,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432914",
+        "areaM2": 1118.249404498113,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432910",
+        "areaM2": 5201.753125487678,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386332",
+        "areaM2": 334.6545482102109,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386333",
+        "areaM2": 356.93507354842916,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386334",
+        "areaM2": 651.9428921971983,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386335",
+        "areaM2": 696.3695765005164,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386337",
+        "areaM2": 782.270108578993,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386338",
+        "areaM2": 912.9425419548675,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386319",
+        "areaM2": 827.269276027598,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386318",
+        "areaM2": 686.9763452591715,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386317",
+        "areaM2": 810.7837409620345,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386316",
+        "areaM2": 800.333627124169,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386315",
+        "areaM2": 846.8543772751034,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386314",
+        "areaM2": 776.4694026534931,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386313",
+        "areaM2": 833.0214809126983,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-1161679",
+        "areaM2": 1422.0036879575052,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386324",
+        "areaM2": 337.07482882543513,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386323",
+        "areaM2": 281.8952489553935,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386322",
+        "areaM2": 168.51373477869288,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386325",
+        "areaM2": 1151.724971505903,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386326",
+        "areaM2": 334.7303482727722,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386328",
+        "areaM2": 341.75442279081136,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386329",
+        "areaM2": 344.54230623388673,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386330",
+        "areaM2": 333.5980971933968,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386331",
+        "areaM2": 346.8483082757972,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386321",
+        "areaM2": 2105.541158764677,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386320",
+        "areaM2": 989.8000192226132,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386373",
+        "areaM2": 705.7581407607643,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386374",
+        "areaM2": 733.6753479319354,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386380",
+        "areaM2": 1944.8375068914288,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386379",
+        "areaM2": 450.46878871312583,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386376",
+        "areaM2": 189.4319214525603,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386357",
+        "areaM2": 677.1931167992115,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386356",
+        "areaM2": 1182.9260040460833,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386355",
+        "areaM2": 1868.3245025067847,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386394",
+        "areaM2": 858.8248068559843,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386395",
+        "areaM2": 927.5363007533364,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386396",
+        "areaM2": 800.7859040445302,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386397",
+        "areaM2": 780.2137126789629,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386398",
+        "areaM2": 789.7228346579479,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386399",
+        "areaM2": 758.2624906885254,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386400",
+        "areaM2": 792.6497760354499,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386392",
+        "areaM2": 1315.4394707735837,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386391",
+        "areaM2": 874.8365174076413,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386390",
+        "areaM2": 942.5638797554576,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386389",
+        "areaM2": 1104.2433274431314,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386388",
+        "areaM2": 999.2031207952009,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386393",
+        "areaM2": 1175.3157475219234,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-1358293",
+        "areaM2": 192.31903232614945,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386300",
+        "areaM2": 6853.171997263401,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386296",
+        "areaM2": 670.5130827675853,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386297",
+        "areaM2": 687.4643383016817,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386298",
+        "areaM2": 904.5644615847878,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386299",
+        "areaM2": 1031.3048558188157,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386277",
+        "areaM2": 718.2924977823868,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386276",
+        "areaM2": 703.9557394363374,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386275",
+        "areaM2": 765.9551144124308,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386274",
+        "areaM2": 905.283789356614,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432928",
+        "areaM2": 1457.5367337588245,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434687",
+        "areaM2": 1313.9526552750453,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434685",
+        "areaM2": 2214.72956128929,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434686",
+        "areaM2": 1724.14386482832,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432919",
+        "areaM2": 1200.527895893727,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434675",
+        "areaM2": 1897.8684901344993,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434676",
+        "areaM2": 1306.9707377210477,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434674",
+        "areaM2": 1169.3016595287113,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386245",
+        "areaM2": 669.5566073533815,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386246",
+        "areaM2": 878.4199115547835,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386247",
+        "areaM2": 845.9234615887956,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386248",
+        "areaM2": 691.5776286702785,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386249",
+        "areaM2": 709.1041207920562,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386250",
+        "areaM2": 1228.6401768027981,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386242",
+        "areaM2": 699.1372240432866,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386241",
+        "areaM2": 726.8068905752214,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386240",
+        "areaM2": 871.3817532338799,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386239",
+        "areaM2": 765.4434179376419,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386236",
+        "areaM2": 1998.686240622087,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386234",
+        "areaM2": 943.307876285588,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386339",
+        "areaM2": 828.8559391152279,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386354",
+        "areaM2": 729.2544327837221,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386353",
+        "areaM2": 771.7051447238689,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386352",
+        "areaM2": 776.7059976064854,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386351",
+        "areaM2": 938.3103944013667,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386312",
+        "areaM2": 826.085308235354,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-434644",
+        "areaM2": 8166.831325625091,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432917",
+        "areaM2": 1384.2556077597706,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432915",
+        "areaM2": 1487.189873239688,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-432916",
+        "areaM2": 932.6427522603365,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386368",
+        "areaM2": 689.5896641839503,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386369",
+        "areaM2": 1053.0383101611476,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386370",
+        "areaM2": 1004.1798292973621,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386371",
+        "areaM2": 670.9400296977519,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386372",
+        "areaM2": 656.3282588200052,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386363",
+        "areaM2": 698.2474783535215,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386362",
+        "areaM2": 697.5142822223431,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386361",
+        "areaM2": 1051.2571349156315,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386360",
+        "areaM2": 702.0928034320882,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386359",
+        "areaM2": 706.0060274816432,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-BEXAR-BCAD-2022-386358",
+        "areaM2": 690.9044904996267,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      }
+    ]
+  },
+  "acceptanceFile": "san-antonio-acceptance.json",
+  "qualityFile": "san-antonio-quality.json",
+  "sampleFile": "san-antonio-adapter-sample.geojson"
+}

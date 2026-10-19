@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "GM",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GM,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://data.gov.gm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 60 self-signed certificate; not bypassed"
+  },
+  {
+   "url": "https://www.moj.gm/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Ministry of Justice site; no cadastre service"
+  },
+  {
+   "url": "https://lands.gov.gm/, www.lands.gov.gm, www.gambia.gm, www.gambia.gov.gm, www.kmc.gm, molg.gov.gm, gbos.gov.gm",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response (hosts do not resolve/connect)"
+  },
+  {
+   "url": "https://www.gm.undp.org/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "not informative"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "data.gov.gm fails TLS verification (self-signed cert), not a region block",
+ "notes": "No new information; no Gambian lands/cadastre host reached.",
+ "nextStep": "Look for Department of Lands and Surveys / KMC GIS via non-government sources; retry data.gov.gm if the certificate is fixed."
+}

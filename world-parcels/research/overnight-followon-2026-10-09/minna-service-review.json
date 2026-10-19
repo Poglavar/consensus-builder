@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7053-minna.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used.",
+  "registryAssessment": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used.",
+  "officialPrimarySources": [
+    {
+      "url": "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+      "observation": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used."
+    },
+    {
+      "url": "https://nspc.nigerstate.gov.ng/",
+      "observation": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Minna Niger State land registry GIS cadastral map official land records",
+      "result": "Niger State’s official NIGIS registration guideline names a Minna customer-service centre; the State Planning Commission identifies geo-mapping/modern land administration as an activity. No anonymous safe polygon endpoint was identified.",
+      "method": "Separate English-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    },
+    {
+      "language": "Hausa",
+      "query": "rijistar filaye Minna Niger State land records GIS cadastral map official",
+      "result": "Binciken Hausa bai nuna wani sabis na taswirar filaye na jama’a mai bada iyakar fili da ID ba. Ana samun shaidar rajistar filaye ta Minna daga takardar jagorar gwamnati ta NIGIS da bayanin hukumar shirin jihar, amma ba a gwada wata hanyar sauke taswira ko tsarin biyan kuɗi ba.",
+      "method": "Separate local-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe exact-point public polygon was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used.",
+    "verifiedOpenScope": "No public anonymous point-level parcel polygon verified at the exact WUP locator. No citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "requests": [],
+  "portals": [
+    {
+      "homeUrl": "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+      "observation": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used."
+    },
+    {
+      "homeUrl": "https://nspc.nigerstate.gov.ng/",
+      "observation": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used."
+    }
+  ]
+}

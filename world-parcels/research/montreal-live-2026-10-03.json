@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03T10:26:31.540Z",
+  "sourceId": "ca-qc-cadastre-bd-allegee",
+  "adapterStrategy": "ArcGIS object-ID-first bounded query with GlobalID exact reads",
+  "descriptor": {
+    "idField": "GlobalID",
+    "idType": "string",
+    "idQueryBraces": true,
+    "transportField": "OBJECTID",
+    "semanticNumberField": "NO_LOT",
+    "pageSize": 50,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "requestTimeoutMs": 15000
+  },
+  "centerLonLat": [
+    -73.569,
+    45.50375
+  ],
+  "grid": {
+    "baseCells": 9,
+    "panCells": 9,
+    "cellWidthDegrees": 0.0025,
+    "panDegrees": [
+      0.004,
+      0.004
+    ],
+    "attemptedCells": 18,
+    "completeCells": 18,
+    "failedCells": 0,
+    "cells": [
+      {
+        "pan": "base",
+        "row": -1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 49,
+        "uniqueGlobalIds": 49,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 1217
+      },
+      {
+        "pan": "base",
+        "row": -1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 23,
+        "uniqueGlobalIds": 23,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 613
+      },
+      {
+        "pan": "base",
+        "row": -1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 31,
+        "uniqueGlobalIds": 31,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 622
+      },
+      {
+        "pan": "base",
+        "row": 0,
+        "col": -1,
+        "complete": true,
+        "featureCount": 28,
+        "uniqueGlobalIds": 28,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 606
+      },
+      {
+        "pan": "base",
+        "row": 0,
+        "col": 0,
+        "complete": true,
+        "featureCount": 49,
+        "uniqueGlobalIds": 49,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 865
+      },
+      {
+        "pan": "base",
+        "row": 0,
+        "col": 1,
+        "complete": true,
+        "featureCount": 44,
+        "uniqueGlobalIds": 44,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 989
+      },
+      {
+        "pan": "base",
+        "row": 1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 47,
+        "uniqueGlobalIds": 47,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 635
+      },
+      {
+        "pan": "base",
+        "row": 1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 46,
+        "uniqueGlobalIds": 46,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 802
+      },
+      {
+        "pan": "base",
+        "row": 1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 53,
+        "uniqueGlobalIds": 53,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 1046
+      },
+      {
+        "pan": "northEastPan",
+        "row": -1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 47,
+        "uniqueGlobalIds": 47,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 678
+      },
+      {
+        "pan": "northEastPan",
+        "row": -1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 41,
+        "uniqueGlobalIds": 41,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 637
+      },
+      {
+        "pan": "northEastPan",
+        "row": -1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 68,
+        "uniqueGlobalIds": 68,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 1766
+      },
+      {
+        "pan": "northEastPan",
+        "row": 0,
+        "col": -1,
+        "complete": true,
+        "featureCount": 44,
+        "uniqueGlobalIds": 44,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 831
+      },
+      {
+        "pan": "northEastPan",
+        "row": 0,
+        "col": 0,
+        "complete": true,
+        "featureCount": 22,
+        "uniqueGlobalIds": 22,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 670
+      },
+      {
+        "pan": "northEastPan",
+        "row": 0,
+        "col": 1,
+        "complete": true,
+        "featureCount": 43,
+        "uniqueGlobalIds": 43,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 618
+      },
+      {
+        "pan": "northEastPan",
+        "row": 1,
+        "col": -1,
+        "complete": true,
+        "featureCount": 53,
+        "uniqueGlobalIds": 53,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 1009
+      },
+      {
+        "pan": "northEastPan",
+        "row": 1,
+        "col": 0,
+        "complete": true,
+        "featureCount": 48,
+        "uniqueGlobalIds": 48,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 958
+      },
+      {
+        "pan": "northEastPan",
+        "row": 1,
+        "col": 1,
+        "complete": true,
+        "featureCount": 76,
+        "uniqueGlobalIds": 76,
+        "crossCellGeometryConflicts": 0,
+        "elapsedMs": 864
+      }
+    ]
+  },
+  "spatialRead": {
+    "uniqueGlobalIds": 534,
+    "observedNonblankNoLotValues": 534,
+    "crossCellGeometryConflicts": 0
+  },
+  "exactIdentity": {
+    "batchSize": 80,
+    "batchCount": 7,
+    "batches": [
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "complete": true,
+        "geometryMismatches": 0
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "complete": true,
+        "geometryMismatches": 0
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "complete": true,
+        "geometryMismatches": 0
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "complete": true,
+        "geometryMismatches": 0
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "complete": true,
+        "geometryMismatches": 0
+      },
+      {
+        "inputIds": 80,
+        "features": 80,
+        "absentIds": 0,
+        "complete": true,
+        "geometryMismatches": 0
+      },
+      {
+        "inputIds": 54,
+        "features": 54,
+        "absentIds": 0,
+        "complete": true,
+        "geometryMismatches": 0
+      }
+    ],
+    "featureTotal": 534,
+    "absentTotal": 0,
+    "geometryMismatchTotal": 0,
+    "allComplete": true
+  },
+  "under": {
+    "httpStatus": 200,
+    "complete": true,
+    "featureCount": 26,
+    "error": null,
+    "elapsedMs": 631
+  },
+  "network": {
+    "requestCount": 75,
+    "httpStatuses": [
+      200
+    ],
+    "maxRequestMs": 720,
+    "timedOutRequests": 0
+  },
+  "persistence": "Metadata only; no parcel identifiers, geometries, or personal fields are recorded."
+}

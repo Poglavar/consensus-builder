@@ -1,0 +1,52 @@
+{
+ "kind": "country",
+ "key": "MW",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: en-MW,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.lands.gov.mw/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry homepage; Department of Surveys pages, no map viewer link"
+  },
+  {
+   "url": "https://www.malawi.gov.mw/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "now reachable (previously failed); general government portal"
+  },
+  {
+   "url": "https://www.registrargeneral.gov.mw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=malawi parcel",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "hit 'Land Ownership Feature Service' (cwt_project) tested"
+  },
+  {
+   "url": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layers are DIVA-GIS admin boundaries and world cities, not parcels"
+  }
+ ],
+ "geoBlockSuspected": "false",
+ "notes": "malawi.gov.mw now loads; no cadastre link. The ArcGIS Online 'Land Ownership' service named like a cadastre is only regional admin boundaries (Africa-wide wildlife-trafficking dataset), so it is not parcel data.",
+ "nextStep": "Locate Malawi Land Information System / Customary Land Registration portal (Ministry of Lands) and test."
+}

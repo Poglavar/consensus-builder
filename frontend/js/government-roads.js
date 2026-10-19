@@ -16,6 +16,8 @@
     const planWorkerPending = new Map();
     let planWorkerDisabledReason = null;
     let lastPlanComputationMode = 'not-run';
+    const GOVERNMENT_PLAN_PANE = 'governmentRoadPlanPane';
+    let planCanvasRenderer = null;
 
     function isLocalFileOrigin() {
         try {
@@ -569,84 +571,35 @@
         return null;
     }
 
+    function cadastreIdsForLiveParcelIds(parcelIds) {
+        const fabric = (typeof window !== 'undefined') ? window.LiveParcelFabric : null;
+        if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+            throw new Error('Live parcel fabric is unavailable while authoring the government road proposal.');
+        }
+        return fabric.cadastreIdsForParcelIds(parcelIds);
+    }
+
     function collectVisibleParcels(bounds, targetParcelIds) {
-        if (!window.parcelLayer || typeof window.parcelLayer.eachLayer !== 'function') {
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || typeof fabric.queryBounds !== 'function') {
             return { parcels: [], hasMore: false };
         }
 
         const viewBounds = bounds || getActiveMapBounds();
-        const totalLayerCount = (typeof window.parcelLayer.getLayers === 'function')
-            ? window.parcelLayer.getLayers().length
-            : 0;
-
-        let candidateLayers = [];
-        if (viewBounds && typeof window.getParcelLayersWithinBounds === 'function') {
-            try {
-                const result = window.getParcelLayersWithinBounds(viewBounds);
-                if (Array.isArray(result)) {
-                    candidateLayers = result;
-                }
-            } catch (_) { }
-        }
-
-        if (!Array.isArray(candidateLayers) || !candidateLayers.length) {
-            // Fallback: only use full scan if parcel count is reasonable
-            // This should rarely happen now that getParcelLayersWithinBounds exists
-            if (totalLayerCount < 1000) {
-                window.parcelLayer.eachLayer(layer => {
-                    if (layer) {
-                        candidateLayers.push(layer);
-                    }
-                });
-                candidateLayers._source = 'full-scan';
-            } else {
-                // Too many parcels - return empty rather than scanning all
-                console.warn('[collectVisibleParcels] Too many parcels and getParcelLayersWithinBounds unavailable, returning empty');
-                candidateLayers = [];
-                candidateLayers._source = 'skipped-too-many';
-            }
-        }
-
-        const layerSource = (candidateLayers && candidateLayers._source) ? candidateLayers._source : 'full-scan';
-
-        const seenLayers = new Set();
-        const uniqueLayers = [];
-        candidateLayers.forEach(layer => {
-            if (layer && !seenLayers.has(layer)) {
-                seenLayers.add(layer);
-                uniqueLayers.push(layer);
-            }
-        });
+        const candidates = viewBounds
+            ? fabric.queryBounds(viewBounds, { includeCorridors: true })
+            : fabric.list();
+        const totalFeatureCount = fabric.snapshot?.().featureCount ?? candidates.length;
 
         const targetIds = (targetParcelIds && targetParcelIds.size)
             ? new Set(Array.from(targetParcelIds).map(id => normalizeParcelIdValue(id)).filter(Boolean))
             : null;
 
         const parcels = [];
-        let outsideBounds = 0;
         let skippedRoads = 0;
         let skippedTargets = 0;
 
-        uniqueLayers.forEach(layer => {
-            if (!layer) {
-                return;
-            }
-
-            if (viewBounds && typeof layer.getBounds === 'function') {
-                try {
-                    const layerBounds = layer.getBounds();
-                    if (!layerBounds || !layerBounds.isValid || !layerBounds.isValid() || !layerBounds.intersects(viewBounds)) {
-                        outsideBounds++;
-                        return;
-                    }
-                } catch (_) { }
-            }
-
-            const featureRef = layer.feature || (typeof layer.toGeoJSON === 'function' ? layer.toGeoJSON() : null);
-            if (!featureRef) {
-                return;
-            }
-
+        candidates.forEach(featureRef => {
             const parcelId = resolveParcelId(featureRef);
             if (!parcelId) {
                 return;
@@ -665,13 +618,13 @@
             parcels.push({
                 parcelId,
                 feature: cloneFeatureSafely(featureRef),
-                layer
+                layer: window.ParcelPresenter?.getLayer?.(parcelId) || null
             });
         });
 
-        console.log(`[collectVisibleParcels] Total layers: ${totalLayerCount}, Considered: ${uniqueLayers.length}, Collected: ${parcels.length}, Outside bounds: ${outsideBounds}, Skipped roads: ${skippedRoads}, Skipped targets: ${skippedTargets}, Source: ${layerSource}`);
+        console.log(`[collectVisibleParcels] Fabric: ${totalFeatureCount}, Considered: ${candidates.length}, Collected: ${parcels.length}, Skipped roads: ${skippedRoads}, Skipped targets: ${skippedTargets}`);
 
-        return { parcels, hasMore: false, source: layerSource };
+        return { parcels, hasMore: false, source: 'live-fabric' };
     }
     function isParcelMergeInProgress() {
         try {
@@ -756,143 +709,6 @@
         return null;
     }
 
-    function normalizeProposalForStorage(proposal) {
-        if (!proposal) {
-            return proposal;
-        }
-        if (typeof proposalStorage !== 'undefined' && typeof proposalStorage._normalizeProposal === 'function') {
-            return proposalStorage._normalizeProposal({ ...proposal });
-        }
-        return proposal;
-    }
-
-    function updateProposalFromBuild(storedProposal, build) {
-        if (!storedProposal || !build || !build.roadProposal) {
-            return null;
-        }
-
-        // Replace core proposal fields with the current batch (canonical schema)
-        storedProposal.parentParcelIds = build.proposalData.parentParcelIds || [];
-        storedProposal.childParcelIds = build.proposalData.childParcelIds || [];
-        storedProposal.geometry = Object.assign({}, storedProposal.geometry || {}, {
-            roadPlan: build.proposalData.geometry?.roadPlan || build.roadProposal?.definition || null,
-            roadGeometry: build.proposalData.geometry?.roadGeometry || build.roadProposal?.roadGeometry || null
-        });
-
-        // Keep minimal roadProposal for metadata/status only (no embedded features)
-        storedProposal.roadProposal = Object.assign({}, build.roadProposal || {}, {
-            parentParcelIds: storedProposal.parentParcelIds.slice(),
-            childParcelIds: storedProposal.childParcelIds.slice(),
-            parentFeatures: undefined,
-            childFeatures: undefined
-        });
-        delete storedProposal.roadProposal.parentFeatures;
-        delete storedProposal.roadProposal.childFeatures;
-
-        // Update tags, preserving governmentPlan markers
-        storedProposal.tags = Object.assign({}, storedProposal.tags || {}, build.proposalData.tags || {});
-
-        // Update counts
-        storedProposal.segmentCount = build.segmentCount
-            ?? build.roadProposal?.segmentCount
-            ?? 0;
-        storedProposal.parcelCount = storedProposal.parentParcelIds.length;
-        storedProposal.updatedAt = new Date().toISOString();
-
-        return storedProposal;
-    }
-
-    async function applyGovernmentPlanIncrement(proposalId, storedProposal, mergeResult, planHash) {
-        const manager = getProposalManager();
-        if (!manager || typeof manager.applyProposal !== 'function') {
-            return { applied: false, reason: 'manager-unavailable' };
-        }
-
-        const { aggregated, newParentFeatures, newChildFeatures, newParentsToRemove } = mergeResult;
-        if (!aggregated || !newChildFeatures.length) {
-            return { applied: false, reason: 'no-new-features' };
-        }
-
-        const originalSnapshot = cloneFeatureSafely(storedProposal);
-        const aggregatedSnapshot = cloneFeatureSafely(aggregated);
-
-        const batchProposal = cloneFeatureSafely(storedProposal);
-        batchProposal.parentParcelIds = Array.isArray(aggregatedSnapshot.parentParcelIds)
-            ? aggregatedSnapshot.parentParcelIds.slice()
-            : [];
-        batchProposal.tags = Object.assign({}, aggregatedSnapshot.tags || {});
-        batchProposal.status = 'Active';
-        batchProposal.updatedAt = new Date().toISOString();
-        const parentIdsFromBatch = newParentFeatures
-            .map(feature => resolveParcelId(feature))
-            .filter(Boolean)
-            .map(id => id.toString());
-        const parentsToRemove = Array.isArray(newParentsToRemove) && newParentsToRemove.length
-            ? newParentsToRemove
-            : (parentIdsFromBatch.length
-                ? parentIdsFromBatch
-                : (Array.isArray(aggregatedSnapshot.roadProposal?.parentsToRemove)
-                    ? aggregatedSnapshot.roadProposal.parentsToRemove.map(id => id && id.toString ? id.toString() : String(id))
-                    : []));
-
-        batchProposal.roadProposal = Object.assign({}, batchProposal.roadProposal || {}, {
-            status: 'unapplied',
-            planDescriptor: aggregatedSnapshot.roadProposal?.planDescriptor,
-            planSource: aggregatedSnapshot.roadProposal?.planSource,
-            planHash: aggregatedSnapshot.roadProposal?.planHash || planHash,
-            parentsToRemove,
-            parentParcelIds: batchProposal.parentParcelIds.slice(),
-            childParcelIds: Array.isArray(aggregatedSnapshot.childParcelIds) ? aggregatedSnapshot.childParcelIds.slice() : [],
-            segmentCount: aggregatedSnapshot.roadProposal?.segmentCount || aggregatedSnapshot.segmentCount || 0
-        });
-        batchProposal.geometry = Object.assign({}, batchProposal.geometry || {}, {
-            roadPlan: aggregatedSnapshot.geometry?.roadPlan || aggregatedSnapshot.roadProposal?.definition || null,
-            roadGeometry: aggregatedSnapshot.geometry?.roadGeometry || aggregatedSnapshot.roadProposal?.roadGeometry || null
-        });
-
-        const normalizedBatch = normalizeProposalForStorage(batchProposal) || batchProposal;
-        normalizedBatch.proposalId = storedProposal.proposalId || proposalId;
-        normalizedBatch.createdAt = storedProposal.createdAt;
-
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(normalizedBatch);
-        }
-        proposalStorage.save();
-
-        const applied = await manager.applyProposal(proposalId);
-        if (!applied) {
-            if (typeof proposalStorage._indexProposal === 'function') {
-                proposalStorage._indexProposal(originalSnapshot);
-            }
-            proposalStorage.save();
-            return { applied: false, reason: 'apply-failed' };
-        }
-
-        const normalizedAggregated = normalizeProposalForStorage(aggregatedSnapshot) || aggregatedSnapshot;
-        normalizedAggregated.proposalId = proposalId;
-        normalizedAggregated.createdAt = storedProposal.createdAt;
-        const nextStatus = (typeof PROPOSAL_STATUS_APPLIED !== 'undefined') ? PROPOSAL_STATUS_APPLIED : 'Applied';
-        normalizedAggregated.status = nextStatus;
-        normalizedAggregated.updatedAt = new Date().toISOString();
-        if (normalizedAggregated.roadProposal) {
-            normalizedAggregated.roadProposal.status = 'applied';
-        }
-
-        if (typeof proposalStorage._indexProposal === 'function') {
-            proposalStorage._indexProposal(normalizedAggregated);
-        }
-        proposalStorage.save();
-
-        if (typeof updateProposalLayer === 'function') {
-            try { updateProposalLayer(); } catch (_) { }
-        }
-        if (typeof updateProposalList === 'function') {
-            try { updateProposalList(); } catch (_) { }
-        }
-
-        return { applied: true, aggregated: normalizedAggregated };
-    }
-
     async function upsertGovernmentPlanProposalFromBuild(build, context) {
         if (typeof proposalStorage === 'undefined' || typeof proposalStorage.addProposal !== 'function') {
             return { applied: false, reason: 'storage-unavailable' };
@@ -905,7 +721,9 @@
         // This prevents issues where updating an existing proposal causes
         // parent parcels to be removed without having their complete child replacements.
         // The remainingPlanGeometry mechanism handles incremental application.
-        const proposalId = proposalStorage.addProposal(build.proposalData);
+        const proposalId = proposalStorage.addProposal(build.proposalData, {
+            selectedParcelIds: build.selectedLiveParcelIds
+        });
         if (!proposalId) {
             return { applied: false, reason: 'add-failed' };
         }
@@ -956,7 +774,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Select parcels before applying the government road plan.');
+                window.updateStatus(planI18n('status.messages.select_parcels_before_applying_the_government_road_plan', 'Select parcels before applying the government road plan.'));
             }
             return false;
         }
@@ -973,7 +791,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Zoom in further to apply the government road plan.');
+                window.updateStatus(planI18n('status.messages.zoom_in_further_to_apply_the_government_road_plan', 'Zoom in further to apply the government road plan.'));
             }
             return false;
         }
@@ -985,7 +803,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Waiting for parcel merge to complete before applying the government road plan…');
+                window.updateStatus(planI18n('status.messages.waiting_for_parcel_merge_to_complete_before_applying_the_government_road_plan', 'Waiting for parcel merge to complete before applying the government road plan…'));
             }
             return false;
         }
@@ -995,7 +813,7 @@
             stats.durationMs = Math.round(getNowMs() - startTime);
             logAutoApplyStats(stats);
             if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                window.updateStatus('Government road plan is still loading. Try again in a moment.');
+                window.updateStatus(planI18n('status.messages.government_road_plan_is_still_loading_try_again_in_a_moment', 'Government road plan is still loading. Try again in a moment.'));
             }
             return false;
         }
@@ -1120,7 +938,7 @@
                         stats.selectionFallback = 'viewport';
                         hasSelection = false;
                         if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                            window.updateStatus('Selected parcels were not found in the current view. Applying the government plan to visible parcels instead.');
+                            window.updateStatus(planI18n('status.messages.selected_parcels_were_not_found_in_the_current_view_applying_the_government_plan_to_visible_parcels_instead', 'Selected parcels were not found in the current view. Applying the government plan to visible parcels instead.'));
                         }
                     }
                 }
@@ -1134,11 +952,11 @@
                 }
                 if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
                     if (stats.result === 'selection-already-road') {
-                        window.updateStatus('Selected parcels already match the government road plan.');
+                        window.updateStatus(planI18n('status.messages.selected_parcels_already_match_the_government_road_plan', 'Selected parcels already match the government road plan.'));
                     } else if (hasSelection) {
-                        window.updateStatus('Selected parcels are outside the view or already aligned with the government road plan.');
+                        window.updateStatus(planI18n('status.messages.selected_parcels_are_outside_the_view_or_already_aligned_with_the_government_road_plan', 'Selected parcels are outside the view or already aligned with the government road plan.'));
                     } else {
-                        window.updateStatus('No parcels available in the current view.');
+                        window.updateStatus(planI18n('status.messages.no_parcels_available_in_the_current_view', 'No parcels available in the current view.'));
                     }
                 }
                 return false;
@@ -1148,7 +966,7 @@
             if (!Array.isArray(targetPlanPieces) || !targetPlanPieces.length) {
                 stats.result = 'no-plan-pieces-for-selection';
                 if (opts.reason === 'manual-invoke' && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
-                    window.updateStatus('Government road plan has no geometry overlapping the parcels in view.');
+                    window.updateStatus(planI18n('status.messages.government_road_plan_has_no_geometry_overlapping_the_parcels_in_view', 'Government road plan has no geometry overlapping the parcels in view.'));
                 }
                 return false;
             }
@@ -1194,10 +1012,10 @@
             }
 
             const roadSegmentCount = Number.isFinite(build.segmentCount) ? build.segmentCount : 0;
-            const hasChildFeatureData = Array.isArray(build.childFeatures) || Array.isArray(build.roadProposal?.childFeatures);
-            const buildChildFeatures = Array.isArray(build.childFeatures)
-                ? build.childFeatures
-                : (Array.isArray(build.roadProposal?.childFeatures) ? build.roadProposal.childFeatures : []);
+            // Preview materialization is an implementation detail of this builder. It is returned
+            // beside the authored proposal, never nested inside it or written to proposalStorage.
+            const hasChildFeatureData = Array.isArray(build.childFeatures);
+            const buildChildFeatures = hasChildFeatureData ? build.childFeatures : [];
             const appliedRoadFeatures = hasChildFeatureData
                 ? buildChildFeatures.filter(f => f?.properties?.isRoad)
                 : [];
@@ -1374,15 +1192,33 @@
         }
 
         const impacted = [];
-        const hasCandidates = Array.isArray(candidateParcels) && candidateParcels.length > 0;
+        let candidates = Array.isArray(candidateParcels) ? candidateParcels : [];
+        if (!candidates.length) {
+            const fabric = window.LiveParcelFabric;
+            const boxes = featureEntries.map(entry => entry.bbox).filter(box => Array.isArray(box) && box.length >= 4);
+            const queryBounds = boxes.length ? [
+                Math.min(...boxes.map(box => box[0])),
+                Math.min(...boxes.map(box => box[1])),
+                Math.max(...boxes.map(box => box[2])),
+                Math.max(...boxes.map(box => box[3]))
+            ] : null;
+            if (fabric && queryBounds && typeof fabric.queryBounds === 'function') {
+                candidates = fabric.queryBounds(queryBounds).map(feature => ({
+                    feature,
+                    parcelId: resolveParcelId(feature),
+                    layer: window.ParcelPresenter?.getLayer?.(resolveParcelId(feature)) || null
+                }));
+            }
+        }
+        const hasCandidates = candidates.length > 0;
 
         if (statsTarget && hasCandidates) {
-            statsTarget.candidateParcels = candidateParcels.length;
+            statsTarget.candidateParcels = candidates.length;
         }
 
         if (hasCandidates) {
-            for (let idx = 0; idx < candidateParcels.length; idx++) {
-                const candidate = candidateParcels[idx];
+            for (let idx = 0; idx < candidates.length; idx++) {
+                const candidate = candidates[idx];
                 if (!candidate) {
                     continue;
                 }
@@ -1432,59 +1268,6 @@
             return impacted;
         }
 
-        if (!window.parcelLayer || typeof window.parcelLayer.eachLayer !== 'function') {
-            if (statsTarget) {
-                statsTarget.impactedParcels = impacted.length;
-            }
-            return impacted;
-        }
-
-        const layers = [];
-        window.parcelLayer.eachLayer(layer => {
-            if (layer) {
-                layers.push(layer);
-            }
-        });
-
-        for (let idx = 0; idx < layers.length; idx++) {
-            const layer = layers[idx];
-            if (!layer || typeof layer.toGeoJSON !== 'function') continue;
-            const feature = layer.toGeoJSON();
-            if (!isPolygonGeometry(feature)) continue;
-            const candidateBbox = computeFeatureBbox(feature);
-            let intersects = false;
-            for (const entry of featureEntries) {
-                const piece = entry.feature;
-                if (!piece) continue;
-                if (candidateBbox && entry.bbox && !bboxesOverlap(candidateBbox, entry.bbox)) {
-                    if (statsTarget) {
-                        statsTarget.booleanBBoxSkips = (statsTarget.booleanBBoxSkips || 0) + 1;
-                    }
-                    continue;
-                }
-                try {
-                    if (statsTarget) {
-                        statsTarget.booleanChecks = (statsTarget.booleanChecks || 0) + 1;
-                    }
-                    if (turf.booleanIntersects(feature, piece)) {
-                        intersects = true;
-                        if (statsTarget) {
-                            statsTarget.booleanHits = (statsTarget.booleanHits || 0) + 1;
-                        }
-                        break;
-                    }
-                } catch (_) { }
-            }
-            if (intersects) {
-                impacted.push({
-                    feature: cloneFeatureSafely(feature),
-                    layer
-                });
-            }
-            if ((idx + 1) % 10 === 0) {
-                await yieldToAutoApply();
-            }
-        }
         if (statsTarget) {
             statsTarget.impactedParcels = impacted.length;
         }
@@ -1561,11 +1344,8 @@
         }
 
         const allocatorState = new Map();
-        const parentFeatures = impactedParcels.map(item => cloneFeatureSafely(item.feature));
         const childFeatures = [];
-        const parentsToRemoveSet = new Set();
         const parentIdsSet = new Set();
-        const parentNumbersSet = new Set();
         let intersectionsFoundCount = 0;
         let roadSegmentsCount = 0;
 
@@ -1575,16 +1355,17 @@
 
         function getRootInfo(feature) {
             const props = feature?.properties || {};
-            const parcelId = resolveParcelId(feature);
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
-            const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootParcelId = props.rootParcelId || _extractRootParcelId(parcelId || '');
+            const rootNumber = props.rootParcelNumber || parcelNumber;
+            const rootParcelId = Array.isArray(props.cadastreParcelIds) && props.cadastreParcelIds.length
+                ? String(props.cadastreParcelIds[0])
+                : (props.rootParcelId ? String(props.rootParcelId) : '');
             return { rootNumber, rootParcelId };
         }
 
         function getNextIdentity(rootNumber, rootParcelId) {
             if (!rootNumber || !rootParcelId) return null;
-            const key = `${rootNumber || ''}__${rootParcelId || ''}`;
+            const key = syntheticParcelAllocatorKey(rootParcelId, rootNumber);
             let state = allocatorState.get(key);
             if (!state) {
                 state = { baseId: rootParcelId, nextIndex: 1 };
@@ -1598,12 +1379,6 @@
             };
         }
 
-        const parentIdsList = impactedParcels
-            .map(item => resolveParcelId(item.feature))
-            .filter(Boolean)
-            .map(String);
-        const parentNumbersList = impactedParcels.map(item => item.feature?.properties?.BROJ_CESTICE).filter(Boolean).map(String);
-
         for (let parcelIndex = 0; parcelIndex < impactedParcels.length; parcelIndex++) {
             const item = impactedParcels[parcelIndex];
             const originalFeature = item.feature;
@@ -1616,7 +1391,7 @@
             // Show progress for long operations
             if ((parcelIndex + 1) % 5 === 0 && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
                 const progress = Math.round(((parcelIndex + 1) / impactedParcels.length) * 100);
-                window.updateStatus(`Processing parcels: ${parcelIndex + 1}/${impactedParcels.length} (${progress}%)…`);
+                window.updateStatus(planI18n('status.messages.processing_parcels_progress', `Processing parcels: ${parcelIndex + 1}/${impactedParcels.length} (${progress}%)…`, { processed: parcelIndex + 1, total: impactedParcels.length, percent: progress }));
             }
 
             if (!originalFeature || !isPolygonGeometry(originalFeature)) {
@@ -1624,11 +1399,18 @@
             }
 
             const originalProps = originalFeature.properties || {};
+            const originalCadastreIds = Array.from(new Set(
+                (Array.isArray(originalProps.cadastreParcelIds) ? originalProps.cadastreParcelIds : [])
+                    .map(String)
+                    .filter(Boolean)
+            ));
+            if (!originalCadastreIds.length) {
+                throw new Error(`Live parcel ${resolveParcelId(originalFeature) || '(unknown)'} has no cadastral provenance.`);
+            }
             const parcelRoadFeatures = [];
             const parcelRemainderFeatures = [];
             const parcelId = resolveParcelId(originalFeature);
             if (parcelId) parentIdsSet.add(parcelId);
-            if (originalProps.BROJ_CESTICE) parentNumbersSet.add(originalProps.BROJ_CESTICE.toString());
 
             const rootInfo = getRootInfo(originalFeature);
             let parcelGeometry;
@@ -1691,11 +1473,9 @@
                     roadName,
                     isProposed: true,
                     proposalId,
+                    producedByProposalId: proposalId,
                     proposalSource: 'government_plan',
-                    parentParcelId: parcelId,
-                    parentParcelNumber: originalProps.BROJ_CESTICE || null,
-                    parentParcelIds: parentIdsList.slice(),
-                    parentParcelNumbers: parentNumbersList.slice(),
+                    cadastreParcelIds: originalCadastreIds.slice(),
                     rootParcelNumber: rootInfo.rootNumber,
                     rootParcelId: rootInfo.rootParcelId,
                     planDescriptor: descriptor,
@@ -1773,11 +1553,10 @@
                 newProperties.parcelId = allocatedParcelId;
                 newProperties.BROJ_CESTICE = allocatedParcelNumber;
                 newProperties.calculatedArea = part.area;
-                newProperties.parentParcelId = parcelId;
-                newProperties.parentParcelNumber = originalProps.BROJ_CESTICE || null;
+                newProperties.cadastreParcelIds = originalCadastreIds.slice();
                 newProperties.rootParcelNumber = rootInfo.rootNumber;
                 newProperties.rootParcelId = rootInfo.rootParcelId;
-                newProperties.proposalId = proposalId;
+                newProperties.producedByProposalId = proposalId;
                 newProperties.proposalSource = 'government_plan';
                 newProperties.isRoad = parentIsRoad;
                 delete newProperties.roadName;
@@ -1795,7 +1574,6 @@
                 const fullyCovered = Number.isFinite(parcelArea) && parcelArea > 0 && roadAreaForParcel >= parcelArea * 0.95;
                 const remainderAdded = parcelRemainderFeatures.length > 0;
                 if (remainderAdded || fullyCovered) {
-                    parentsToRemoveSet.add(parcelId.toString());
                     if (fullyCovered && statsTarget) {
                         statsTarget.parentsFullyCovered = (statsTarget.parentsFullyCovered || 0) + 1;
                     }
@@ -1834,7 +1612,7 @@
 
         if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
             const totalProcessed = impactedParcels.length;
-            window.updateStatus(`Processing parcels: ${totalProcessed}/${totalProcessed} (100%)`);
+            window.updateStatus(planI18n('status.messages.processing_parcels_progress_complete', `Processing parcels: ${totalProcessed}/${totalProcessed} (100%)`, { processed: totalProcessed, total: totalProcessed }));
         }
 
         if (!childFeatures.length) {
@@ -1846,35 +1624,34 @@
         }
 
         const parcelIds = Array.from(parentIdsSet);
+        const cadastreParcelIds = cadastreIdsForLiveParcelIds(parcelIds);
         const title = descriptor ? `Government Plan · ${descriptor}` : 'Government Road Plan';
         const description = descriptor ? `Government road plan segments from ${descriptor}` : 'Government road plan segments.';
 
         const roadProposal = {
             id: proposalId,
-            definition: { kind: 'government_plan', descriptor, source, planHash, isCorridor: true },
-            parentParcelIds: parcelIds.slice(),
-            childParcelIds: [],
-            status: 'unapplied',
+            definition: {
+                kind: 'government_plan',
+                descriptor,
+                source,
+                planHash,
+                isCorridor: true,
+                polygon: cloneFeatureSafely(planPolygon.geometry || planPolygon)
+            },
             planDescriptor: descriptor,
             planSource: source,
             planHash,
-            parentsToRemove: Array.from(parentsToRemoveSet),
             segmentCount: roadSegmentsCount,
             isCorridor: true
         };
 
         const proposalData = {
             type: 'road',
+            goal: 'road-track',
             title,
             author: 'Government Plan',
             description,
-            parentParcelIds: parcelIds.slice(),
-            childParcelIds: [],
-            childFeatures,
-            geometry: {
-                roadPlan: roadProposal.definition,
-                roadGeometry: null
-            },
+            cadastreParcelIds,
             roadProposal,
             isCorridor: true,
             tags: {
@@ -1895,6 +1672,7 @@
         return {
             proposalData,
             roadProposal,
+            selectedLiveParcelIds: parcelIds,
             parcelCount: parcelIds.length,
             segmentCount: roadSegmentsCount,
             childFeatures,
@@ -1982,11 +1760,8 @@
         }
 
         const allocatorState = new Map();
-        const parentFeatures = [];
         const childFeatures = [];
-        const parentsToRemoveSet = new Set();
         const parentIdsSet = new Set();
-        const parentNumbersSet = new Set();
         let intersectionsFoundCount = 0;
         let roadSegmentsCount = 0;
 
@@ -1997,15 +1772,16 @@
         function getRootInfo(feature) {
             const props = feature?.properties || {};
             const parcelNumber = props.BROJ_CESTICE ? String(props.BROJ_CESTICE) : '';
-            const parcelId = resolveParcelId(feature) || '';
-            const rootNumber = props.rootParcelNumber || _extractRootParcelNumber(parcelNumber);
-            const rootParcelId = props.rootParcelId || _extractRootParcelId(parcelId);
+            const rootNumber = props.rootParcelNumber || parcelNumber;
+            const rootParcelId = Array.isArray(props.cadastreParcelIds) && props.cadastreParcelIds.length
+                ? String(props.cadastreParcelIds[0])
+                : (props.rootParcelId ? String(props.rootParcelId) : '');
             return { rootNumber, rootParcelId };
         }
 
         function getNextIdentity(rootNumber, rootParcelId) {
             if (!rootNumber || !rootParcelId) return null;
-            const key = `${rootNumber || ''}__${rootParcelId || ''}`;
+            const key = syntheticParcelAllocatorKey(rootParcelId, rootNumber);
             let state = allocatorState.get(key);
             if (!state) {
                 state = { baseId: rootParcelId, nextIndex: 1 };
@@ -2018,15 +1794,6 @@
                 subNumber: current
             };
         }
-
-        const parentIdsList = processedParcels
-            .map(item => normalizeParcelIdValue(item.parcelId ?? item.parcel_id ?? item.id))
-            .filter(Boolean)
-            .map(String);
-        const parentNumbersList = processedParcels
-            .map(item => item.parcelNumber)
-            .filter(number => number !== undefined && number !== null)
-            .map(number => number.toString());
 
         for (let parcelIndex = 0; parcelIndex < processedParcels.length; parcelIndex++) {
             const entry = processedParcels[parcelIndex];
@@ -2041,16 +1808,21 @@
             }
             if ((parcelIndex + 1) % 5 === 0 && typeof window !== 'undefined' && typeof window.updateStatus === 'function') {
                 const progress = Math.round(((parcelIndex + 1) / processedParcels.length) * 100);
-                window.updateStatus(`Worker Processing parcels: ${parcelIndex + 1}/${processedParcels.length} (${progress}%)…`);
+                window.updateStatus(planI18n('status.messages.worker_processing_parcels_progress', `Worker Processing parcels: ${parcelIndex + 1}/${processedParcels.length} (${progress}%)…`, { processed: parcelIndex + 1, total: processedParcels.length, percent: progress }));
             }
 
-            parentFeatures.push(cloneFeatureSafely(originalFeature));
-
             const originalProps = originalFeature.properties || {};
+            const originalCadastreIds = Array.from(new Set(
+                (Array.isArray(originalProps.cadastreParcelIds) ? originalProps.cadastreParcelIds : [])
+                    .map(String)
+                    .filter(Boolean)
+            ));
+            if (!originalCadastreIds.length) {
+                throw new Error(`Live parcel ${parcelId || '(unknown)'} has no cadastral provenance.`);
+            }
             const parentIsRoad = originalProps.isRoad === true || originalProps.isRoad === 'true';
             const rootInfo = getRootInfo(originalFeature);
             if (parcelId) parentIdsSet.add(parcelId);
-            if (entry.parcelNumber) parentNumbersSet.add(entry.parcelNumber.toString());
 
             const parcelRoadFeatures = [];
             const parcelRemainderFeatures = [];
@@ -2102,11 +1874,9 @@
                     roadName,
                     isProposed: true,
                     proposalId,
+                    producedByProposalId: proposalId,
                     proposalSource: 'government_plan',
-                    parentParcelId: parcelId,
-                    parentParcelNumber: originalProps.BROJ_CESTICE || null,
-                    parentParcelIds: parentIdsList.slice(),
-                    parentParcelNumbers: parentNumbersList.slice(),
+                    cadastreParcelIds: originalCadastreIds.slice(),
                     rootParcelNumber: rootInfo.rootNumber,
                     rootParcelId: rootInfo.rootParcelId,
                     planDescriptor: descriptor,
@@ -2144,11 +1914,10 @@
                 newProperties.parcelId = allocatedParcelId;
                 newProperties.BROJ_CESTICE = allocatedParcelNumber;
                 newProperties.calculatedArea = area;
-                newProperties.parentParcelId = parcelId;
-                newProperties.parentParcelNumber = originalProps.BROJ_CESTICE || null;
+                newProperties.cadastreParcelIds = originalCadastreIds.slice();
                 newProperties.rootParcelNumber = rootInfo.rootNumber;
                 newProperties.rootParcelId = rootInfo.rootParcelId;
-                newProperties.proposalId = proposalId;
+                newProperties.producedByProposalId = proposalId;
                 newProperties.proposalSource = 'government_plan';
                 newProperties.isRoad = parentIsRoad;
                 delete newProperties.roadName;
@@ -2165,9 +1934,6 @@
             const remainderAdded = parcelRemainderFeatures.length > 0;
 
             if (remainderAdded || fullyCovered) {
-                if (parcelId) {
-                    parentsToRemoveSet.add(parcelId);
-                }
                 if (fullyCovered && statsTarget) {
                     statsTarget.parentsFullyCovered = (statsTarget.parentsFullyCovered || 0) + 1;
                 }
@@ -2207,35 +1973,34 @@
         }
 
         const parcelIds = Array.from(parentIdsSet);
+        const cadastreParcelIds = cadastreIdsForLiveParcelIds(parcelIds);
         const title = descriptor ? `Government Plan · ${descriptor}` : 'Government Road Plan';
         const description = descriptor ? `Government road plan segments from ${descriptor}` : 'Government road plan segments.';
 
         const roadProposal = {
             id: proposalId,
-            definition: { kind: 'government_plan', descriptor, source, planHash, isCorridor: true },
-            parentParcelIds: parcelIds.slice(),
-            childParcelIds: [],
-            status: 'unapplied',
+            definition: {
+                kind: 'government_plan',
+                descriptor,
+                source,
+                planHash,
+                isCorridor: true,
+                polygon: cloneFeatureSafely(planPolygon.geometry || planPolygon)
+            },
             planDescriptor: descriptor,
             planSource: source,
             planHash,
-            parentsToRemove: Array.from(parentsToRemoveSet),
             segmentCount: roadSegmentsCount,
             isCorridor: true
         };
 
         const proposalData = {
             type: 'road',
+            goal: 'road-track',
             title,
             author: 'Government Plan',
             description,
-            parentParcelIds: parcelIds.slice(),
-            childParcelIds: [],
-            childFeatures,
-            geometry: {
-                roadPlan: roadProposal.definition,
-                roadGeometry: null
-            },
+            cadastreParcelIds,
             roadProposal,
             isCorridor: true,
             tags: {
@@ -2256,6 +2021,7 @@
         return {
             proposalData,
             roadProposal,
+            selectedLiveParcelIds: parcelIds,
             parcelCount: parcelIds.length,
             segmentCount: roadSegmentsCount,
             childFeatures,
@@ -2295,12 +2061,12 @@
 
         const existing = planHash ? findExistingGovernmentPlanProposal(planHash) : null;
 
-        if (existing && existing.roadProposal && existing.roadProposal.status === 'applied') {
+        if (existing && existing.roadProposal && isApplied(existing, existing.roadProposal)) {
             governmentPlanProposalId = existing.proposalId;
             return {
                 proposalId: existing.proposalId,
                 proposalData: existing,
-                parcelCount: Array.isArray(existing.parentParcelIds) ? existing.parentParcelIds.length : 0,
+                parcelCount: Array.isArray(existing.cadastreParcelIds) ? existing.cadastreParcelIds.length : 0,
                 segmentCount: existing.roadProposal?.segmentCount || existing.segmentCount || 0,
                 wasExisting: true,
                 isApplied: true
@@ -2325,18 +2091,18 @@
                 const merged = Object.assign({}, existing, build.proposalData, { proposalId: existing.proposalId });
                 merged.tags = Object.assign({}, existing.tags || {}, build.proposalData.tags || {});
                 merged.updatedAt = new Date().toISOString();
-                merged.status = existing.status === 'Applied' ? 'Applied' : 'Active';
-                if (existing.roadProposal && existing.roadProposal.status === 'applied') {
-                    merged.roadProposal = Object.assign({}, existing.roadProposal, { status: 'applied' });
+                const mergedApplied = isApplied(existing, existing.roadProposal);
+                merged.applied = mergedApplied;
+                if (mergedApplied) {
+                    merged.roadProposal = Object.assign({}, existing.roadProposal);
                 } else {
-                    merged.roadProposal = Object.assign({}, build.roadProposal, { status: 'unapplied' });
+                    merged.roadProposal = Object.assign({}, build.roadProposal);
                 }
                 if (typeof proposalStorage._normalizeProposal === 'function') {
                     const normalized = proposalStorage._normalizeProposal(merged);
                     normalized.proposalId = existing.proposalId;
                     normalized.updatedAt = new Date().toISOString();
-                    normalized.status = merged.status;
-                    normalized.roadProposal.status = merged.roadProposal.status;
+                    normalized.applied = merged.applied;
                     if (typeof proposalStorage._indexProposal === 'function') {
                         proposalStorage._indexProposal(normalized);
                     } else {
@@ -2357,14 +2123,16 @@
                     parcelCount: build.parcelCount,
                     segmentCount: build.segmentCount,
                     wasExisting: true,
-                    isApplied: merged.roadProposal.status === 'applied'
+                    isApplied: merged.applied === true
                 };
             } catch (err) {
                 console.warn('Failed to update existing government plan proposal', err);
             }
         }
 
-        const proposalId = proposalStorage.addProposal(build.proposalData);
+        const proposalId = proposalStorage.addProposal(build.proposalData, {
+            selectedParcelIds: build.selectedLiveParcelIds
+        });
         if (!proposalId) {
             return null;
         }
@@ -2398,10 +2166,6 @@
         dashArray: '',
         interactive: false
     };
-    const planCanvasRenderer = (typeof L !== 'undefined' && typeof L.canvas === 'function')
-        ? L.canvas({ padding: 0.5 })
-        : null;
-
     const planCatalogState = {
         promise: null
     };
@@ -2411,6 +2175,24 @@
         if (typeof window === 'undefined' || typeof window.map === 'undefined' || !window.map) {
             throw new Error('Map is not initialized yet.');
         }
+    }
+
+    function governmentPlanRenderer() {
+        ensureMapReady();
+        if (typeof L === 'undefined' || typeof L.canvas !== 'function') return undefined;
+        let pane = window.map.getPane(GOVERNMENT_PLAN_PANE);
+        if (!pane && typeof window.map.createPane === 'function') {
+            pane = window.map.createPane(GOVERNMENT_PLAN_PANE);
+        }
+        if (!pane) return undefined;
+        // The plan is display-only. Its own pane keeps its full-viewport canvas from ever taking a
+        // click away from the parcel canvas, including after the plan paths have been cleared.
+        pane.style.zIndex = '410';
+        pane.style.pointerEvents = 'none';
+        if (!planCanvasRenderer) {
+            planCanvasRenderer = L.canvas({ pane: GOVERNMENT_PLAN_PANE, padding: 0.5 });
+        }
+        return planCanvasRenderer;
     }
 
     function initialiseGovernmentPlanProposalState() {
@@ -2436,41 +2218,16 @@
             return null;
         }
 
-        // // Check if sidebar is visible and adjust bounds to exclude it
-        // const sidebar = document.getElementById('sidebar');
-        // const isSidebarVisible = sidebar && !sidebar.classList.contains('collapsed');
-
-        // if (isSidebarVisible && typeof window.map.getSize === 'function' &&
-        //     typeof window.map.containerPointToLatLng === 'function') {
-        //     try {
-        //         const mapSize = window.map.getSize();
-        //         const sidebarWidth = 320; // From index.css #sidebar width
-
-        //         // Get bounds excluding the sidebar area
-        //         const topLeft = window.map.containerPointToLatLng([sidebarWidth, 0]);
-        //         const bottomRight = window.map.containerPointToLatLng([mapSize.x, mapSize.y]);
-
-        //         const adjustedBounds = L.latLngBounds(topLeft, bottomRight);
-        //         console.log(`[getActiveMapBounds] Adjusted for sidebar. Map size: ${mapSize.x}x${mapSize.y}, Visible: ${mapSize.x - sidebarWidth}x${mapSize.y}`);
-        //         return adjustedBounds;
-        //     } catch (err) {
-        //         console.warn('Failed to calculate visible bounds, falling back to full map bounds:', err);
-        //     }
-        // }
-
         return window.map.getBounds();
     }
 
+    // The government road services take their own CRS, EPSG:3765 — named here, never the active
+    // city's (projections.md §4).
     function getBboxFromBounds(bounds) {
-        if (!bounds || typeof window.getBboxFromBounds !== 'function') {
+        if (!bounds || typeof window.bboxInCrs !== 'function') {
             return '';
         }
-        try {
-            return window.getBboxFromBounds(bounds);
-        } catch (err) {
-            console.warn('Failed to obtain bbox from bounds.', err);
-            return '';
-        }
+        return window.bboxInCrs(bounds, 'EPSG:3765');
     }
 
     function buildBoundsPolygon(bounds) {
@@ -2854,8 +2611,11 @@
             return planLayer;
         }
         ensureMapReady();
+        const renderer = governmentPlanRenderer();
         planLayer = L.geoJSON([], {
-            renderer: planCanvasRenderer || undefined,
+            pane: renderer ? GOVERNMENT_PLAN_PANE : undefined,
+            renderer,
+            interactive: false,
             style: () => getPlanLayerStyle(useHighlightStyle)
         }).addTo(window.map);
         try { planLayer.bringToFront(); } catch (_) { }
@@ -2895,20 +2655,11 @@
 
     function collectRoadParcelsInView(bounds) {
         const features = [];
-        if (!window.parcelLayer || typeof window.parcelLayer.eachLayer !== 'function') {
+        const fabric = window.LiveParcelFabric;
+        if (!fabric || typeof fabric.queryBounds !== 'function') {
             return features;
         }
-        window.parcelLayer.eachLayer(layer => {
-            if (!layer || typeof layer.toGeoJSON !== 'function' || typeof layer.getBounds !== 'function') {
-                return;
-            }
-            let intersects = true;
-            try {
-                const layerBounds = layer.getBounds();
-                intersects = layerBounds && layerBounds.isValid && layerBounds.isValid() && layerBounds.intersects(bounds);
-            } catch (_) { }
-            if (!intersects) return;
-            const feature = layer.toGeoJSON();
+        fabric.queryBounds(bounds, { includeCorridors: true }).forEach(feature => {
             if (!isPolygonGeometry(feature)) return;
             if (!isRoadParcelProperties(feature.properties || {})) return;
             features.push(cloneFeatureSafely(feature));
@@ -3098,7 +2849,7 @@
         if (!cachedPlanCollection || !Array.isArray(cachedPlanCollection.features)) {
             clearGovernmentRoadPlanLayer();
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('No government plan segments available for this view.');
+                window.updateStatus(planI18n('status.messages.no_government_plan_segments_available_for_this_view', 'No government plan segments available for this view.'));
             }
             return;
         }
@@ -3107,7 +2858,7 @@
         if (!features.length) {
             clearGovernmentRoadPlanLayer();
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Government road plan fully applied.');
+                window.updateStatus(planI18n('status.messages.government_road_plan_fully_applied', 'Government road plan fully applied.'));
             }
             return;
         }
@@ -3125,6 +2876,57 @@
         }
     }
 
+    function planI18n(key, fallback, params) {
+        const api = window.i18n;
+        if (api && typeof api.t === 'function') {
+            const text = api.t(key, params || {});
+            if (text && text !== key) return text;
+        }
+        return fallback;
+    }
+
+    function isBackendPlanSource() {
+        const dataSource = getCurrentDataSource();
+        return dataSource === 'localhost' || dataSource === 'api.urbangametheory.xyz';
+    }
+
+    // Mirrors backend/routes/planned-roads.js: area of the EPSG:3765 bbox we would send.
+    function isPlanViewTooLargeForBackend(bounds) {
+        if (!isBackendPlanSource()) return false;
+        const limit = window.ViewBboxLimit;
+        if (!limit) throw new Error('view-bbox-limit.js is not loaded; cannot guard /planned-road.');
+        const area = limit.metricBboxAreaKm2(getBboxFromBounds(bounds));
+        // No usable bbox is also a guaranteed 400, and zooming is what produces a usable one.
+        return area === null || limit.isViewTooLarge(area);
+    }
+
+    let planZoomRetryHandler = null;
+
+    function disarmPlanZoomRetry() {
+        if (planZoomRetryHandler && window.map && typeof window.map.off === 'function') {
+            window.map.off('moveend', planZoomRetryHandler);
+        }
+        planZoomRetryHandler = null;
+    }
+
+    // One moveend listener while the plan is on but the view is too big; it fetches on the first
+    // view the backend will accept, and removes itself when the toggle is turned off.
+    function armPlanZoomRetry() {
+        if (planZoomRetryHandler || !window.map || typeof window.map.on !== 'function') return;
+        planZoomRetryHandler = () => {
+            const toggle = document.getElementById('showGovernmentRoadPlan');
+            if (!toggle || !toggle.checked) {
+                disarmPlanZoomRetry();
+                return;
+            }
+            const bounds = getActiveMapBounds();
+            if (!bounds || isPlanViewTooLargeForBackend(bounds)) return;
+            disarmPlanZoomRetry();
+            drawGovernmentRoadPlan();
+        };
+        window.map.on('moveend', planZoomRetryHandler);
+    }
+
     async function drawGovernmentRoadPlan(options) {
         const opts = Object.assign({ forceRefetch: false, skipStatus: false }, options || {});
         if (isFetchingGovernmentPlan) {
@@ -3134,7 +2936,7 @@
             ensureMapReady();
         } catch (err) {
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Map is not ready yet. Please wait.');
+                window.updateStatus(planI18n('status.messages.map_is_not_ready_yet_please_wait', 'Map is not ready yet. Please wait.'));
             }
             console.warn(err.message);
             return;
@@ -3143,13 +2945,26 @@
         const bounds = getActiveMapBounds();
         if (!bounds) {
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Unable to determine map bounds for government plans.');
+                window.updateStatus(planI18n('status.messages.unable_to_determine_map_bounds_for_government_plans', 'Unable to determine map bounds for government plans.'));
             }
             return;
         }
 
+        // The backend 400s a view over MAX_VIEW_BBOX_KM2, so don't ask: tell the user to zoom
+        // in and fetch once they have. Not clearGovernmentRoadPlanLayer() — that unchecks the toggle.
+        if (isPlanViewTooLargeForBackend(bounds)) {
+            armPlanZoomRetry();
+            if (!opts.skipStatus && typeof window.updateStatus === 'function') {
+                window.updateStatus(planI18n('status.messages.zoom_in_to_see_government_road_plan',
+                    'Zoom in to see the government road plan.'));
+            }
+            window.dispatchEvent(new CustomEvent('governmentPlanLoaded', { detail: { featureCount: 0, tooLarge: true } }));
+            return;
+        }
+        disarmPlanZoomRetry();
+
         if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-            window.updateStatus('Fetching government road plan...');
+            window.updateStatus(planI18n('status.messages.fetching_government_road_plan', 'Fetching government road plan...'));
         }
 
         isFetchingGovernmentPlan = true;
@@ -3165,7 +2980,7 @@
                 clearGovernmentRoadPlanLayer();
                 if (!opts.skipStatus && typeof window.updateStatus === 'function') {
                     const vertexSummary = cachedPlanVertexCount > 0 ? ` (${cachedPlanVertexCount} plan vertices)` : '';
-                    window.updateStatus(`No government plan segments overlap this view${vertexSummary}.`);
+                    window.updateStatus(planI18n('status.messages.no_government_plan_segments_overlap_this_view', `No government plan segments overlap this view${vertexSummary}.`, { vertexSummary }));
                 }
                 try { window.governmentRoadPlanLastDescriptor = () => lastPlanDescriptor; } catch (_) { }
                 return;
@@ -3175,13 +2990,13 @@
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
                 const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
                 const vertexSummary = cachedPlanVertexCount > 0 ? ` · ${cachedPlanVertexCount} plan vertices` : '';
-                window.updateStatus(`Government road plan loaded${suffix}${vertexSummary}.`);
+                window.updateStatus(planI18n('status.messages.government_road_plan_loaded_summary', `Government road plan loaded${suffix}${vertexSummary}.`, { descriptor: suffix, vertexSummary }));
             }
         } catch (error) {
             console.error('Failed to draw government road plan:', error);
             clearGovernmentRoadPlanLayer();
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus('Failed to draw government road plan. Check console for details.');
+                window.updateStatus(planI18n('status.messages.failed_to_draw_government_road_plan_check_console_for_details', 'Failed to draw government road plan. Check console for details.'));
             }
             activePlanHashToken = null;
         } finally {
@@ -3192,10 +3007,13 @@
     async function applyGovernmentRoadPlan(options) {
         const opts = Object.assign({ skipStatus: false, ignoreZoomGuard: true }, options || {});
         const applyButton = document.getElementById('applyGovernmentRoadPlanButton');
-        const originalLabel = applyButton ? applyButton.textContent : null;
+        // Restored as markup: the button holds an icon and a translatable label span.
+        const originalLabelHtml = applyButton ? applyButton.innerHTML : null;
         if (applyButton) {
             applyButton.disabled = true;
-            applyButton.textContent = 'Applying...';
+            const busyKey = 'common.busy.applying';
+            const busy = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(busyKey) : null;
+            applyButton.textContent = (typeof busy === 'string' && busy && busy !== busyKey) ? busy : 'Applying...';
         }
 
         let result = null;
@@ -3203,7 +3021,7 @@
             const suffix = lastPlanDescriptor ? ` (${lastPlanDescriptor})` : '';
 
             if (!opts.skipStatus && typeof window.updateStatus === 'function') {
-                window.updateStatus(`Applying government road plan${suffix}...`);
+                window.updateStatus(planI18n('status.messages.applying_government_road_plan', `Applying government road plan${suffix}...`, { descriptor: suffix }));
             }
 
             result = await performAutoApply({
@@ -3255,7 +3073,7 @@
         } finally {
             if (applyButton) {
                 applyButton.disabled = false;
-                applyButton.textContent = originalLabel || 'Apply Government Road Plan';
+                if (originalLabelHtml) applyButton.innerHTML = originalLabelHtml;
             }
         }
 
@@ -3271,9 +3089,10 @@
                 if (planCheckbox.checked) {
                     drawGovernmentRoadPlan();
                 } else {
+                    disarmPlanZoomRetry();
                     clearGovernmentRoadPlanLayer();
                     if (typeof window.updateStatus === 'function') {
-                        window.updateStatus('Government road plan hidden.');
+                        window.updateStatus(planI18n('status.messages.government_road_plan_hidden', 'Government road plan hidden.'));
                     }
                 }
             });

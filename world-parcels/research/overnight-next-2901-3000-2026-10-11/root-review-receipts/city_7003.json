@@ -1,0 +1,28 @@
+{
+  "taskId": "city:7003",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-7003-havelian-cantonment.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/havelian-cantonment-service-review.json",
+    "tmp/valhalla-parcel-research/havelian-cantonment/mlc.html",
+    "tmp/valhalla-parcel-research/havelian-cantonment/pbs.html",
+    "tmp/valhalla-parcel-research/havelian-cantonment/pulse.html"
+  ],
+  "checkedAt": "2026-10-11T22:30:01Z",
+  "reason": "WUP identity matches packet and queue. The claimed native/local search string is entirely English, so executed Urdu-language search is not evidenced. Cached ML&C page is an access challenge; PBS describes administrative GIS/Mussavi scanning, while PULSE explicitly covers Punjab, outside Havelian in KP. General institutional custody does not establish a Havelian public registry; registryFound remains null. No native parcel polygon or source adapter qualification is evidenced.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": false,
+  "registryFound": null,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

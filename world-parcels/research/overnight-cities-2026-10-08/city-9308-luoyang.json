@@ -1,0 +1,109 @@
+{
+  "name": "Luoyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 284,
+  "point": [
+    34.665049724558,
+    112.413619190637
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Simplified Chinese",
+        "query": "洛阳市 自然资源 地籍图 地块 查询 GIS 不动产 登记",
+        "scope": "Find city-specific cadastral/registration evidence and an anonymous parcel-map service.",
+        "result": "The official Henan government-services entry identifies Luoyang Natural Resources and Planning Bureau as the municipal body for 不动产查询; materials and conditions require an application. A municipal bureau budget also names construction of a Luoyang internet cadastral-map inquiry platform, but no public geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=410300000000",
+          "https://oss.ly.gov.cn/lyszrzyhghj/upload/1/editor/1726022127284.pdf"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "洛阳市不动产登记资料查询 洛阳地籍图",
+        "scope": "Check city-specific registration-record access conditions and whether it publishes geometry.",
+        "result": "Official municipal service is available online/in person but requires an application and valid identity and, when applicable, proof of interest; this is record access rather than an anonymous full-polygon layer.",
+        "actualResultUrls": [
+          "https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=410300000000"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      },
+      {
+        "language": "English",
+        "query": "Luoyang China public cadastral parcel GIS map service official natural resources",
+        "scope": "Cross-check English references for city-owned parcel layers or open map endpoints.",
+        "result": "Search results identified municipal registration procedures and a planned cadastral-map query platform, but no anonymous public polygon service.",
+        "actualResultUrls": [
+          "https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=410300000000"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      }
+    ],
+    "portals": [
+      {
+        "name": "Luoyang 不动产查询",
+        "operator": "Luoyang Natural Resources and Planning Bureau through Henan Government Services",
+        "homeUrl": "https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=410300000000",
+        "observation": "Municipal public-service procedure for registration-record inquiries; application materials/identity requirements apply. The procedure is not an anonymous parcel-vector API."
+      },
+      {
+        "name": "Luoyang internet cadastral-map inquiry platform (budgeted)",
+        "operator": "Luoyang Municipal Natural Resources and Planning Bureau / Luoyang Real Estate Registration Center",
+        "homeUrl": "https://oss.ly.gov.cn/lyszrzyhghj/upload/1/editor/1726022127284.pdf",
+        "observation": "Official 2023 budget lists construction of an internet cadastral-map query platform; operational route and public access conditions were not found."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.hnzwfw.gov.cn/portal/guide/3E97244FCC85278A1F1D2BCAFC3413BD?region=410300000000",
+        "method": "GET via web index",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official guide lists municipal bureau as implementing body, eligibility, required application and identity documents, and online/in-person modalities."
+      },
+      {
+        "url": "https://oss.ly.gov.cn/lyszrzyhghj/upload/1/editor/1726022127284.pdf",
+        "method": "GET via web index",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Official bureau budget identifies an internet cadastral-map inquiry platform project; no live public service link or polygon response was exposed."
+      }
+    ],
+    "observedCandidate": "Municipal registration platform project is documented, but service path and anonymous polygon capability remain unverified."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Luoyang municipal real-estate registration inquiry service and a city-funded internet cadastral-map inquiry platform project.",
+    "verifiedOpenScope": "City-specific registry service and planned platform are documented; no anonymous full-polygon geometry response or coverage is verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "registry_evidence_no_public_geometry",
+  "technicalBlocker": "The identified municipal query requires application materials/identity, and the documented internet cadastral-map platform lacks a confirmed public endpoint. No public anonymous full polygon was retrieved.",
+  "remainingUncertainty": "Whether the city platform is operational and what access, identity and geometry export routes it supports; no evidence establishes public vector access.",
+  "nextStep": "Locate the actual Luoyang cadastral-map platform URL and published service/access terms; only then test a small anonymous feature query without submitting personal information.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9308,
+  "cityId": "wup2025:9308",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    34.665049724558,
+    112.413619190637
+  ],
+  "queueRank": 284,
+  "population2025": 1727744,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The municipal service page names the Luoyang Natural Resources and Planning Bureau as implementing body for real-estate registration record inquiry.",
+  "rootReviewedAt": "2026-10-08T22:06:54.103695+00:00"
+}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "id-pekalongan-city-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Kantor Pertanahan Kota Pekalongan and Kota Pekalongan GIS portal",
+  "sourceUrl": "https://mpp.pekalongankota.go.id/portal/layanan/detail/Konsultasi-layanan-Pertanahan",
+  "registryFound": true,
+  "registryBasis": "Official Kota Pekalongan sources identify the Kota Pekalongan Land Office (Kantor Pertanahan Kota Pekalongan) and city-specific land services. The city’s One Map portal advertises geospatial layers and parcel (persil) mapping metrics, but no parcel feature schema or public polygon response was accessible. siMANTAN is the city DPUPR’s spatial-planning web-GIS, not verified as a title-cadastre feed.",
+  "officialSources": [
+    {
+      "url": "https://mpp.pekalongankota.go.id/portal/layanan/detail/Konsultasi-layanan-Pertanahan",
+      "observation": "Official Kota Pekalongan sources identify the Kota Pekalongan Land Office (Kantor Pertanahan Kota Pekalongan) and city-specific land services. The city’s One Map portal advertises geospatial layers and parcel (persil) mapping metrics, but no parcel feature schema or public polygon response was accessible. siMANTAN is the city DPUPR’s spatial-planning web-GIS, not verified as a title-cadastre feed."
+    },
+    {
+      "url": "https://pekalongankota.go.id/berita/kantah-dukung-kebijakan-layanan-balik-nama-sertipikat-lebih-cepat-dan-pasti.html",
+      "observation": "Official Kota Pekalongan sources identify the Kota Pekalongan Land Office (Kantor Pertanahan Kota Pekalongan) and city-specific land services. The city’s One Map portal advertises geospatial layers and parcel (persil) mapping metrics, but no parcel feature schema or public polygon response was accessible. siMANTAN is the city DPUPR’s spatial-planning web-GIS, not verified as a title-cadastre feed."
+    },
+    {
+      "url": "https://gis.pekalongankota.go.id/",
+      "observation": "Official Kota Pekalongan sources identify the Kota Pekalongan Land Office (Kantor Pertanahan Kota Pekalongan) and city-specific land services. The city’s One Map portal advertises geospatial layers and parcel (persil) mapping metrics, but no parcel feature schema or public polygon response was accessible. siMANTAN is the city DPUPR’s spatial-planning web-GIS, not verified as a title-cadastre feed."
+    },
+    {
+      "url": "https://dpupr.pekalongankota.go.id/berita/launching-simantan.html",
+      "observation": "Official Kota Pekalongan sources identify the Kota Pekalongan Land Office (Kantor Pertanahan Kota Pekalongan) and city-specific land services. The city’s One Map portal advertises geospatial layers and parcel (persil) mapping metrics, but no parcel feature schema or public polygon response was accessible. siMANTAN is the city DPUPR’s spatial-planning web-GIS, not verified as a title-cadastre feed."
+    },
+    {
+      "url": "https://simantan.pekalongankota.go.id/",
+      "observation": "Official Kota Pekalongan sources identify the Kota Pekalongan Land Office (Kantor Pertanahan Kota Pekalongan) and city-specific land services. The city’s One Map portal advertises geospatial layers and parcel (persil) mapping metrics, but no parcel feature schema or public polygon response was accessible. siMANTAN is the city DPUPR’s spatial-planning web-GIS, not verified as a title-cadastre feed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Pekalongan official city land registration office cadastral parcel map GIS Indonesia",
+      "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Official Kota Pekalongan pages document the local Land Office and land-transfer services. The city One Map page advertises geospatial datasets, kelurahan mapping, and mapped parcel metrics. Direct anonymous GETs to the One Map and siMANTAN hosts timed out before an HTTP status; no static schema or geometry-only request contract was available, and no map query was submitted.",
+      "actualResultUrls": [
+        "https://mpp.pekalongankota.go.id/portal/layanan/detail/Konsultasi-layanan-Pertanahan",
+        "https://pekalongankota.go.id/berita/kantah-dukung-kebijakan-layanan-balik-nama-sertipikat-lebih-cepat-dan-pasti.html",
+        "https://gis.pekalongankota.go.id/",
+        "https://dpupr.pekalongankota.go.id/berita/launching-simantan.html",
+        "https://simantan.pekalongankota.go.id/"
+      ]
+    },
+    {
+      "language": "Indonesian",
+      "query": "Kota Pekalongan Kantor Pertanahan peta persil bidang tanah GIS resmi",
+      "scope": "Find local-language city-specific registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Sumber resmi Kota Pekalongan menyebut Kantor Pertanahan Kota Pekalongan dan layanan pertanahan setempat. Portal Satu Peta menampilkan katalog geospasial serta metrik pemetaan persil, tetapi tidak menyediakan skema fitur bidang yang dapat diverifikasi. GET anonim ke portal peta dan siMANTAN mengalami timeout sebelum memperoleh status HTTP; tidak ada pencarian lokasi atau bidang yang dilakukan.",
+      "actualResultUrls": [
+        "https://mpp.pekalongankota.go.id/portal/layanan/detail/Konsultasi-layanan-Pertanahan",
+        "https://pekalongankota.go.id/berita/kantah-dukung-kebijakan-layanan-balik-nama-sertipikat-lebih-cepat-dan-pasti.html",
+        "https://gis.pekalongankota.go.id/",
+        "https://dpupr.pekalongankota.go.id/berita/launching-simantan.html",
+        "https://simantan.pekalongankota.go.id/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The official GIS hosts did not connect in bounded anonymous GETs (curl connection timeout after 5 seconds; no HTTP response). Search-indexed portal content exposes only catalog/aggregate map descriptions, not a safe vector schema or full polygon response. No resident, parcel, owner, address, tax or account lookup was attempted.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://gis.pekalongankota.go.id/",
+      "method": "GET",
+      "status": "not_obtained_connection_timeout",
+      "httpStatusObtained": false,
+      "observation": "Bounded anonymous curl GET timed out during connect after 5 seconds; no HTTP status/body."
+    },
+    {
+      "url": "https://simantan.pekalongankota.go.id/",
+      "method": "GET",
+      "status": "not_obtained_connection_timeout",
+      "httpStatusObtained": false,
+      "observation": "Bounded anonymous curl GET timed out during connect after 5 seconds; no HTTP status/body."
+    },
+    {
+      "url": "https://mpp.pekalongankota.go.id/portal/layanan/detail/Konsultasi-layanan-Pertanahan",
+      "method": "public page search/open",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Official municipal service page describes land consultation at Kantor Pertanahan Kota Pekalongan; no consultation request or data lookup."
+    },
+    {
+      "url": "https://pekalongankota.go.id/berita/kantah-dukung-kebijakan-layanan-balik-nama-sertipikat-lebih-cepat-dan-pasti.html",
+      "method": "public city page search/open",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "City government article identifies the local land office and municipal land-transfer service coordination."
+    }
+  ],
+  "technicalBlocker": "The official GIS hosts did not connect in bounded anonymous GETs (curl connection timeout after 5 seconds; no HTTP response). Search-indexed portal content exposes only catalog/aggregate map descriptions, not a safe vector schema or full polygon response. No resident, parcel, owner, address, tax or account lookup was attempted.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "The portal’s current feature catalogue, schemas, geometry endpoint and spatial coverage could not be inspected because both public map hosts timed out. No polygon geometry or feature ID was obtained."
+}

@@ -1,0 +1,117 @@
+{
+ "countryCode": "PA",
+ "country": "Panama",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "ANATI (national land authority); data served from the IGNTG/ANATI ArcGIS Enterprise at sigigntg.anati.gob.pa",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://sigigntg.anati.gob.pa/portal/sharing/rest/search",
+   "observation": "Found via web search (sigigntg.anati.gob.pa experience link). Public portal search lists ~45 public hosted feature services on /arcgisserver/rest/services/Hosted incl. PREDIOS_TITULADOS_MIGRADOS, FINCAS_MADRES, Fincas_tituladas_v1, CAPA DE PROPIETARIO MIGRADA (not queried, owner data), COMUNIDADES_TIERRAS_COLECTIVAS; 'Datos Fundamentales' experience lists 'Parcelas de Tierra' as a fundamental dataset."
+  },
+  {
+   "url": "https://sigigntg.anati.gob.pa/arcgisserver/rest/services/Hosted/PREDIOS_TITULADOS_MIGRADOS/FeatureServer/0",
+   "observation": "82,902 polygons, maxRecordCount 2000. Fields: numero_finca, provincia/distrito/corregimiento names, estado_titulo, fecha_titulo, tipo_tramite. Only provinces Colon and Panama present (distinct provincia_nombre), i.e. a migrated subset."
+  },
+  {
+   "url": "https://geoportal-catastronacional.hub.arcgis.com/",
+   "observation": "NOT Panama: Dominican Republic cadastre hub."
+  },
+  {
+   "url": "https://geoportal-miviot.hub.arcgis.com/",
+   "observation": "MIVIOT open data hub: zoning/POT layers, no parcels."
+  },
+  {
+   "url": "https://geoportal.miambiente.gob.pa/server/rest/services",
+   "observation": "MiAmbiente server: environmental layers only."
+  },
+  {
+   "url": "https://mupa.gob.pa/",
+   "observation": "Panama City municipal site: no geoportal link found (earlier guessed geoportal host resets)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://sigigntg.anati.gob.pa/portal/sharing/rest/search?q=type:\"Feature Service\"&f=json&num=50",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "public hosted services list"
+  },
+  {
+   "url": "https://sigigntg.anati.gob.pa/arcgisserver/rest/services/Hosted/PREDIOS_TITULADOS_MIGRADOS/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon layer, fields listed"
+  },
+  {
+   "url": "...FeatureServer/0/query?where=provincia_nombre='COLÓN'&resultRecordCount=3 (ids, no owner fields)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 polygons Portobelo, estado_titulo SIN_TITULO"
+  },
+  {
+   "url": "...FeatureServer/0/query?where=provincia_nombre='PANAMÁ'&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 polygons San Miguelito (Belisario Porras)"
+  },
+  {
+   "url": "...FeatureServer/0/query?where=provincia_nombre='CHIRIQUI'",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "0 features: Chiriqui/David not in this layer"
+  },
+  {
+   "url": "fincas_tituladas_vista_publica, Fincas_tituladas_v1, FINCAS_MADRES (Hosted FeatureServer/0)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "'Service not found'/'Layer not found' although listed in portal; not usable"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "pa-anati-predios-titulados-migrados",
+  "requestUrl": "https://sigigntg.anati.gob.pa/arcgisserver/rest/services/Hosted/PREDIOS_TITULADOS_MIGRADOS/FeatureServer/0/query?where=provincia_nombre='PANAMÁ'&outFields=gid,numero_finca,provincia_nombre,distrito_nombre,corregimiento_nombre,estado_titulo&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json",
+  "spatialTestAreaLonLat": "San Miguelito ~-79.50,9.05; Portobelo ~-79.65,9.55",
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "gid (GUID); numero_finca often null in sample",
+  "responseFile": "research/developed/PA-parcel-response.json",
+  "pagination": "resultRecordCount/resultOffset (max 2000)",
+  "regionSampled": "Panama province (Panama City area); Colon province"
+ },
+ "coverageAssessment": {
+  "claimedScope": "ANATI titled-parcel layer, 82,902 polygons, only Panama and Colon provinces present; David/Chiriqui returned 0",
+  "regionsVerified": [
+   "Panama province (San Miguelito)",
+   "Colon province (Portobelo)"
+  ],
+  "nationwideVerified": false,
+  "scopeNote": "two provinces sampled from one source, but the layer itself covers only those two provinces, so not nationwide"
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read. Panama City core vs San Miguelito coverage not tested. Other ANATI hosted layers (Fincas_tituladas, FINCAS_MADRES) appear listed but not served; unclear if a fuller layer exists in the portal's own viewer (Catastro SM web map).",
+ "nextStep": "Inspect the 'Catastro SM' and 'Datos Fundamentales' web map JSON for the current parcel layer; retest Chiriqui via other layers.",
+ "foundViaViewerInspection": true,
+ "geoBlockSuspected": false,
+ "changedByHeaders": false,
+ "regionsSampled": [
+  "Panama province",
+  "Colon province"
+ ],
+ "schemaVersion": 1,
+ "checkedAt": "2026-09-30",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-PA,es;q=0.9,en;q=0.8; cookie jar used; Referer set to viewer origin where relevant"
+}

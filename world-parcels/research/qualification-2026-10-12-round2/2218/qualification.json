@@ -1,0 +1,1235 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "2218",
+  "cityName": "Livermore",
+  "sourceId": "us-ca-calfire-statewide-parcels",
+  "candidateSha256": "77a5472290be8e1ad03cb88114bfe034c6fb2e7613724f304719cff03c812c6c",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 113,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 113,
+      "collectedUniqueCount": 113
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 340
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "f1f974034f828e631354467b6a6be08dba8cb3752bccc346fa33adffea66ccae",
+      "featureCount": 113,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32610",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "f1f974034f828e631354467b6a6be08dba8cb3752bccc346fa33adffea66ccae",
+  "featureCount": 113,
+  "sampleIds": [
+    "US-CA-STATEWIDE-06001~97-36-3",
+    "US-CA-STATEWIDE-06001~97-36-2-2",
+    "US-CA-STATEWIDE-06001~97-49-1"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -121.769,
+        37.677,
+        -121.768,
+        37.678
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-48-10",
+        "US-CA-STATEWIDE-06001~97-48-2",
+        "US-CA-STATEWIDE-06001~97-48-1-2",
+        "US-CA-STATEWIDE-06001~97-48-11",
+        "US-CA-STATEWIDE-06001~97-48-13",
+        "US-CA-STATEWIDE-06001~97-48-5",
+        "US-CA-STATEWIDE-06001~97-48-12",
+        "US-CA-STATEWIDE-06001~97-49-5-4",
+        "US-CA-STATEWIDE-06001~97-49-6-1",
+        "US-CA-STATEWIDE-06001~97-49-5-1",
+        "US-CA-STATEWIDE-06001~97-49-5-5",
+        "US-CA-STATEWIDE-06001~97-56-7-2",
+        "US-CA-STATEWIDE-06001~97-48-1-1",
+        "US-CA-STATEWIDE-06001~97-48-7",
+        "US-CA-STATEWIDE-06001~97-57-10",
+        "US-CA-STATEWIDE-06001~97-57-7",
+        "US-CA-STATEWIDE-06001~97-57-9",
+        "US-CA-STATEWIDE-06001~97-57-8"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -121.768,
+        37.677,
+        -121.767,
+        37.678
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-49-5-4",
+        "US-CA-STATEWIDE-06001~97-49-2",
+        "US-CA-STATEWIDE-06001~97-49-4-1",
+        "US-CA-STATEWIDE-06001~97-49-5-1",
+        "US-CA-STATEWIDE-06001~97-49-5-5",
+        "US-CA-STATEWIDE-06001~97-49-5-6",
+        "US-CA-STATEWIDE-06001~97-56-7-2",
+        "US-CA-STATEWIDE-06001~97-56-1-1",
+        "US-CA-STATEWIDE-06001~97-56-1-2",
+        "US-CA-STATEWIDE-06001~97-49-3-2",
+        "US-CA-STATEWIDE-06001~97-56-7-3",
+        "US-CA-STATEWIDE-06001~97-56-7-4",
+        "US-CA-STATEWIDE-06001~97-56-2",
+        "US-CA-STATEWIDE-06001~97-56-6",
+        "US-CA-STATEWIDE-06001~97-56-8",
+        "US-CA-STATEWIDE-06001~97-56-3-2"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -121.767,
+        37.677,
+        -121.766,
+        37.678
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-56-1-2",
+        "US-CA-STATEWIDE-06001~97-56-2",
+        "US-CA-STATEWIDE-06001~97-50-1",
+        "US-CA-STATEWIDE-06001~97-56-3-2"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -121.769,
+        37.678,
+        -121.768,
+        37.679
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-37-4-2",
+        "US-CA-STATEWIDE-06001~97-36-7",
+        "US-CA-STATEWIDE-06001~97-36-8",
+        "US-CA-STATEWIDE-06001~97-37-3",
+        "US-CA-STATEWIDE-06001~97-36-6",
+        "US-CA-STATEWIDE-06001~97-36-5",
+        "US-CA-STATEWIDE-06001~97-36-9",
+        "US-CA-STATEWIDE-06001~97-36-1-2",
+        "US-CA-STATEWIDE-06001~97-36-1-3",
+        "US-CA-STATEWIDE-06001~97-36-3",
+        "US-CA-STATEWIDE-06001~97-36-4",
+        "US-CA-STATEWIDE-06001~97-36-2-2",
+        "US-CA-STATEWIDE-06001~97-48-2",
+        "US-CA-STATEWIDE-06001~97-48-1-2",
+        "US-CA-STATEWIDE-06001~97-49-5-4",
+        "US-CA-STATEWIDE-06001~97-49-7",
+        "US-CA-STATEWIDE-06001~97-49-8",
+        "US-CA-STATEWIDE-06001~97-49-6-2",
+        "US-CA-STATEWIDE-06001~97-49-6-1",
+        "US-CA-STATEWIDE-06001~97-48-1-1"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -121.768,
+        37.678,
+        -121.767,
+        37.679
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-36-1-2",
+        "US-CA-STATEWIDE-06001~97-36-1-3",
+        "US-CA-STATEWIDE-06001~97-35-4",
+        "US-CA-STATEWIDE-06001~97-35-5",
+        "US-CA-STATEWIDE-06001~97-36-3",
+        "US-CA-STATEWIDE-06001~97-36-2-2",
+        "US-CA-STATEWIDE-06001~97-49-1",
+        "US-CA-STATEWIDE-06001~97-49-5-4",
+        "US-CA-STATEWIDE-06001~97-49-7",
+        "US-CA-STATEWIDE-06001~97-49-8",
+        "US-CA-STATEWIDE-06001~97-49-6-1",
+        "US-CA-STATEWIDE-06001~97-49-2",
+        "US-CA-STATEWIDE-06001~97-49-4-1",
+        "US-CA-STATEWIDE-06001~97-49-3-2",
+        "US-CA-STATEWIDE-06001~97-50-1"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -121.767,
+        37.678,
+        -121.766,
+        37.679
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-35-4",
+        "US-CA-STATEWIDE-06001~97-50-1",
+        "US-CA-STATEWIDE-06001~97-51-8"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -121.769,
+        37.679,
+        -121.768,
+        37.68
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-31-1",
+        "US-CA-STATEWIDE-06001~97-36-7",
+        "US-CA-STATEWIDE-06001~97-36-8",
+        "US-CA-STATEWIDE-06001~97-36-9",
+        "US-CA-STATEWIDE-06001~97-36-1-3"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -121.768,
+        37.679,
+        -121.767,
+        37.68
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-31-1",
+        "US-CA-STATEWIDE-06001~97-32-5",
+        "US-CA-STATEWIDE-06001~97-32-2-1",
+        "US-CA-STATEWIDE-06001~97-32-6",
+        "US-CA-STATEWIDE-06001~97-32-4-1",
+        "US-CA-STATEWIDE-06001~97-32-4-2",
+        "US-CA-STATEWIDE-06001~97-32-7",
+        "US-CA-STATEWIDE-06001~97-32-3",
+        "US-CA-STATEWIDE-06001~97-36-1-2",
+        "US-CA-STATEWIDE-06001~97-36-1-3",
+        "US-CA-STATEWIDE-06001~97-35-6",
+        "US-CA-STATEWIDE-06001~97-35-7",
+        "US-CA-STATEWIDE-06001~97-35-4",
+        "US-CA-STATEWIDE-06001~97-35-5",
+        "US-CA-STATEWIDE-06001~97-35-8-2",
+        "US-CA-STATEWIDE-06001~97-35-9"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -121.767,
+        37.679,
+        -121.766,
+        37.68
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-32-2-1",
+        "US-CA-STATEWIDE-06001~97-33-2",
+        "US-CA-STATEWIDE-06001~97-35-1-2",
+        "US-CA-STATEWIDE-06001~97-34-9",
+        "US-CA-STATEWIDE-06001~97-34-7",
+        "US-CA-STATEWIDE-06001~97-34-8",
+        "US-CA-STATEWIDE-06001~97-35-7",
+        "US-CA-STATEWIDE-06001~97-35-4",
+        "US-CA-STATEWIDE-06001~97-35-8-2",
+        "US-CA-STATEWIDE-06001~97-35-2-2",
+        "US-CA-STATEWIDE-06001~97-35-10",
+        "US-CA-STATEWIDE-06001~97-35-9",
+        "US-CA-STATEWIDE-06001~97-34-6",
+        "US-CA-STATEWIDE-06001~97-34-5",
+        "US-CA-STATEWIDE-06001~97-51-8"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -121.768,
+        37.676,
+        -121.767,
+        37.677
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-56-7-4",
+        "US-CA-STATEWIDE-06001~97-56-2",
+        "US-CA-STATEWIDE-06001~97-56-5",
+        "US-CA-STATEWIDE-06001~97-56-6",
+        "US-CA-STATEWIDE-06001~97-56-3-1",
+        "US-CA-STATEWIDE-06001~97-57-2",
+        "US-CA-STATEWIDE-06001~97-56-4",
+        "US-CA-STATEWIDE-06001~97-59-8",
+        "US-CA-STATEWIDE-06001~97-58-2",
+        "US-CA-STATEWIDE-06001~97-58-3",
+        "US-CA-STATEWIDE-06001~97-58-4",
+        "US-CA-STATEWIDE-06001~97-59-7",
+        "US-CA-STATEWIDE-06001~97-59-6-1",
+        "US-CA-STATEWIDE-06001~97-57-3",
+        "US-CA-STATEWIDE-06001~97-56-3-2",
+        "US-CA-STATEWIDE-06001~97-59-5",
+        "US-CA-STATEWIDE-06001~97-59-1-2"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -121.768,
+        37.68,
+        -121.767,
+        37.681
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-17-11-2",
+        "US-CA-STATEWIDE-06001~97-17-10",
+        "US-CA-STATEWIDE-06001~97-17-9",
+        "US-CA-STATEWIDE-06001~97-17-11-3",
+        "US-CA-STATEWIDE-06001~97-17-12",
+        "US-CA-STATEWIDE-06001~97-17-2",
+        "US-CA-STATEWIDE-06001~97-17-3",
+        "US-CA-STATEWIDE-06001~97-17-5",
+        "US-CA-STATEWIDE-06001~97-17-4",
+        "US-CA-STATEWIDE-06001~97-17-7",
+        "US-CA-STATEWIDE-06001~97-17-8",
+        "US-CA-STATEWIDE-06001~97-32-5",
+        "US-CA-STATEWIDE-06001~97-32-2-1",
+        "US-CA-STATEWIDE-06001~97-32-6",
+        "US-CA-STATEWIDE-06001~97-32-8",
+        "US-CA-STATEWIDE-06001~97-32-4-1",
+        "US-CA-STATEWIDE-06001~97-32-7",
+        "US-CA-STATEWIDE-06001~97-32-3"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -121.77,
+        37.678,
+        -121.769,
+        37.679
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-30-4",
+        "US-CA-STATEWIDE-06001~97-30-3",
+        "US-CA-STATEWIDE-06001~97-37-4-2",
+        "US-CA-STATEWIDE-06001~97-37-3",
+        "US-CA-STATEWIDE-06001~97-48-9",
+        "US-CA-STATEWIDE-06001~97-48-10",
+        "US-CA-STATEWIDE-06001~97-48-1-2"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -121.766,
+        37.678,
+        -121.765,
+        37.679
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-CA-STATEWIDE-06001~97-50-1",
+        "US-CA-STATEWIDE-06001~97-51-8",
+        "US-CA-STATEWIDE-06001~97-51-9",
+        "US-CA-STATEWIDE-06001~97-51-6",
+        "US-CA-STATEWIDE-06001~97-51-7",
+        "US-CA-STATEWIDE-06001~97-51-5-2",
+        "US-CA-STATEWIDE-06001~97-51-10",
+        "US-CA-STATEWIDE-06001~97-51-11",
+        "US-CA-STATEWIDE-06001~97-51-2",
+        "US-CA-STATEWIDE-06001~97-51-5-1",
+        "US-CA-STATEWIDE-06001~97-51-3",
+        "US-CA-STATEWIDE-06001~97-54-12-2",
+        "US-CA-STATEWIDE-06001~97-54-13-2",
+        "US-CA-STATEWIDE-06001~97-54-1-1",
+        "US-CA-STATEWIDE-06001~97-51-1",
+        "US-CA-STATEWIDE-06001~97-51-4"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 43,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:26.225Z",
+      "queryHash": "d78adb46ac543a8f98bae3abdaa554ea4518a078356e5d15afb2a0e31aad615a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2070
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:28.301Z",
+      "queryHash": "d78adb46ac543a8f98bae3abdaa554ea4518a078356e5d15afb2a0e31aad615a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1316
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:29.629Z",
+      "queryHash": "7560ce30aa68811caf25a45c6c57e80c861eaf72974018ec8a958e26b2a0b91d",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1197
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:30.828Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 584
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:31.414Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 286
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:31.703Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 297
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:32.002Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 293
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:32.299Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 307
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:32.607Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 504
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:33.112Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 289
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:33.407Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 285
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:33.699Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 292
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:33.992Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 294
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:34.288Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 294
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:34.583Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 298
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:34.883Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 284
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:35.170Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 296
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:35.468Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:35.759Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 378
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:36.137Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 289
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:36.434Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 299
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:36.735Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 392
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:37.128Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 349
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:37.479Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 306
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:37.871Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 498
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:38.377Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 308
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:38.686Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 289
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:38.976Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 285
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:39.262Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 285
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:39.564Z",
+      "queryHash": "f09dbc58394bb78c20a13fdf13ac20674fee5fd2e1605c13c261316a2641953b",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1197
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:40.762Z",
+      "queryHash": "619ab7df9c044f23f68366bef427ed99501528addd0204d3769d417b4000534c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1854
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:42.617Z",
+      "queryHash": "d398ee3f95e73ea649bc5fe76fae89d92d62a246e071a5eac106953554f966e6",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1231
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:43.849Z",
+      "queryHash": "548fc21aa4289f9e6ff6a7c3d5f4ec71890a55ae23fb906ca82173e888681f13",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1195
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:45.051Z",
+      "queryHash": "a5132a636166fbf8958069771d82c44af827f5a4781cc7e4cb42648641b108bd",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1244
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:46.300Z",
+      "queryHash": "18a4946a59d7e4804cfec13bc58cc4a759fbcbd93abfdfe5d328076f89f2d3c0",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1565
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:47.872Z",
+      "queryHash": "32e9aa9f85faf54cedd4c80662d513b31fc7ba89f06ceb75f640fcfa5cc46465",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1956
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:49.833Z",
+      "queryHash": "a73dfd68d3b81c3f47cd43abd2117a5e06ed025d8b2d5453de14ac47d8537157",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1165
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:50.999Z",
+      "queryHash": "69943e1d790d7b2ea952c21a087f361edb25eea6b70a0162927c8e5df7e1e6d3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1237
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:52.240Z",
+      "queryHash": "518bd4954cce7f9a23a9fb6c905f867e89eb24cafcfd664176b7571233539ea3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 2062
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:54.314Z",
+      "queryHash": "d78adb46ac543a8f98bae3abdaa554ea4518a078356e5d15afb2a0e31aad615a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 86
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-12T12:51:54.409Z",
+      "queryHash": "210800932001130b483e8f32eb290acbfe10530255d9e7e04e222d2c56b306d4",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 543
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:51:55.101Z",
+      "queryHash": "a23091a6b34f46af2be44f5e26bcc6de9a12b66b532a58de3079aa948828669c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1032
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "bz1uwwpkuinzbk94.svcs5.arcgis.com",
+      "method": "POST",
+      "startedAt": "2026-10-12T12:51:56.143Z",
+      "queryHash": "95fc1ca1e1560b83ea037d2b71d6e98eaf28911aff9b03a75bdaa1af2c4b42dc",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1073
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

@@ -1,0 +1,1436 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32722",
+  "featureCount": 201,
+  "validNonemptyCount": 201,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "BR-JOINVILLE-IQ-13-20-15-81-1804",
+        "BR-JOINVILLE-IQ-13-20-15-81-1771"
+      ],
+      "overlapM2": 0.014359680948647289,
+      "fractionOfSmaller": 4.35632062787638e-06
+    }
+  ],
+  "sumPairwiseOverlapM2": 0.014359680948647289,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 192.6549000193783,
+    "median": 426.5504999922139,
+    "max": 179259.2864739265
+  },
+  "features": [
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3390",
+      "areaM2": 2748.3139770421994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3381",
+      "areaM2": 1638.2348690593751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3545",
+      "areaM2": 427.5536150188241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3578",
+      "areaM2": 402.2444500278018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-540",
+      "areaM2": 1242.047436964115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-91-130",
+      "areaM2": 2344.1229999422153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-632",
+      "areaM2": 740.54760004583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3606",
+      "areaM2": 360.328300021809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3441",
+      "areaM2": 710.6603199676617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-527",
+      "areaM2": 2880.503565601057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-555",
+      "areaM2": 1188.8044911484044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-671",
+      "areaM2": 566.808350055158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-585",
+      "areaM2": 1769.6295379261596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-651",
+      "areaM2": 571.5296999646633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3591",
+      "areaM2": 296.54765000722614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3543",
+      "areaM2": 565.0791204722717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3497",
+      "areaM2": 445.24395001794227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3482",
+      "areaM2": 402.2512500087672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3544",
+      "areaM2": 409.2879849554674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3522",
+      "areaM2": 1629.359134499759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3410",
+      "areaM2": 884.6941050346552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-493",
+      "areaM2": 1235.5401310131938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1853",
+      "areaM2": 2270.255157221671,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-260",
+      "areaM2": 218.46212876941792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-193",
+      "areaM2": 305.31630000587035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-675",
+      "areaM2": 330.7891000104152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-695",
+      "areaM2": 430.3212499926373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1898",
+      "areaM2": 888.7616000376289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-174",
+      "areaM2": 293.98624999866706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-227",
+      "areaM2": 312.86884999438314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1880",
+      "areaM2": 812.7618000022705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-420",
+      "areaM2": 474.28960000066166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1890",
+      "areaM2": 803.503099998348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-160",
+      "areaM2": 563.4055999672477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-590",
+      "areaM2": 279.64460000821583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-247",
+      "areaM2": 406.69139403461446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-708",
+      "areaM2": 361.97565002255146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-214",
+      "areaM2": 434.4957999927605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-3621",
+      "areaM2": 364.6417499612829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-721",
+      "areaM2": 324.8452500088515,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-383",
+      "areaM2": 2426.632599974021,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-661",
+      "areaM2": 340.25599745426985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-602",
+      "areaM2": 245.45666807197074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-651",
+      "areaM2": 627.1543261872221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-187",
+      "areaM2": 1132.9831426135536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-781",
+      "areaM2": 357.79876654221624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-363",
+      "areaM2": 407.66445000059207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-272",
+      "areaM2": 419.4638260028745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-495",
+      "areaM2": 563.3638740535717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-608",
+      "areaM2": 412.217800024765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-747",
+      "areaM2": 699.633499990971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-623",
+      "areaM2": 412.4748999842348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-638",
+      "areaM2": 407.9075499991218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-653",
+      "areaM2": 383.7665999908813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-667",
+      "areaM2": 371.8203700101389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-292",
+      "areaM2": 417.5963000014192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-181",
+      "areaM2": 364.175807005974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-78-767",
+      "areaM2": 365.1080499909748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-307",
+      "areaM2": 426.5504999922139,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-671",
+      "areaM2": 501.66037046328347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-350",
+      "areaM2": 387.96850000120446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-263",
+      "areaM2": 370.1765499786314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-242",
+      "areaM2": 434.7257000286266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-257",
+      "areaM2": 413.815049982295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-160",
+      "areaM2": 474.98846794582187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-484",
+      "areaM2": 1112.97999797214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-497",
+      "areaM2": 1130.1348540807169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-691",
+      "areaM2": 496.2338850207501,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-469",
+      "areaM2": 2071.9018829889364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1029",
+      "areaM2": 179259.2864739265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-731",
+      "areaM2": 10864.880533593963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-421",
+      "areaM2": 382.32934999887016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1119",
+      "areaM2": 376.90408033573067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1147",
+      "areaM2": 376.7584726804377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-425",
+      "areaM2": 9640.976758089639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1161",
+      "areaM2": 382.2371357514409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1133",
+      "areaM2": 385.05757754548307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-452",
+      "areaM2": 2181.121830333033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1175",
+      "areaM2": 471.2848500223072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-444",
+      "areaM2": 667.6097589897165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-508",
+      "areaM2": 660.5439999985628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-359",
+      "areaM2": 449.636749993566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-597",
+      "areaM2": 815.5633499705525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-573",
+      "areaM2": 410.34549999811725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-609",
+      "areaM2": 407.2110499957587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-772",
+      "areaM2": 357.79264999477266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-563",
+      "areaM2": 783.0815500108605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-939",
+      "areaM2": 373.19009999513463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-406",
+      "areaM2": 527.5261500230791,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-719",
+      "areaM2": 406.6070000125335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-593",
+      "areaM2": 406.841350014633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-720",
+      "areaM2": 355.3713499892789,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-984",
+      "areaM2": 367.2722499975356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-727",
+      "areaM2": 366.88120000920844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-674",
+      "areaM2": 683.0888500094735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-740",
+      "areaM2": 356.15684999068674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-621",
+      "areaM2": 432.2766000009658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-756",
+      "areaM2": 367.4743000464059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-97-578",
+      "areaM2": 378.1738999696746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-561",
+      "areaM2": 385.0841999939333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-965",
+      "areaM2": 384.89888182759313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1007",
+      "areaM2": 377.13933240258143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1049",
+      "areaM2": 389.230616115584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1063",
+      "areaM2": 405.38805292531094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1021",
+      "areaM2": 380.33136689176484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-575",
+      "areaM2": 353.43169553423706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1035",
+      "areaM2": 342.454790556604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-993",
+      "areaM2": 414.2061397998739,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-979",
+      "areaM2": 379.8924910515724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-565",
+      "areaM2": 773.2675005051052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-435",
+      "areaM2": 373.1118000159436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-463",
+      "areaM2": 349.810850003469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-477",
+      "areaM2": 376.2449999955628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-519",
+      "areaM2": 459.73494999203825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-533",
+      "areaM2": 386.8314000325861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-449",
+      "areaM2": 348.7951999918193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-339",
+      "areaM2": 5322.933400031894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-285",
+      "areaM2": 741.3975000068941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-505",
+      "areaM2": 376.45940002050196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-491",
+      "areaM2": 351.22269994364603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1091",
+      "areaM2": 751.7252458428795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-1105",
+      "areaM2": 385.5126718637312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-297",
+      "areaM2": 820.2477500129103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-340",
+      "areaM2": 759.0758000053636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1013",
+      "areaM2": 531.667950029727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-333",
+      "areaM2": 605.7909500157348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-18-114",
+      "areaM2": 547.3267000073483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-18-81",
+      "areaM2": 375.5052000267823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-18-782",
+      "areaM2": 1147.7830999903783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-18-68",
+      "areaM2": 327.52930000259533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-18-55",
+      "areaM2": 308.09804998105733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-291",
+      "areaM2": 516.4765000052369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-998",
+      "areaM2": 362.5553999796566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-298",
+      "areaM2": 520.2139000244359,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-319",
+      "areaM2": 944.6616999898639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-349",
+      "areaM2": 435.38469997146314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1856",
+      "areaM2": 799.0100499982776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1876",
+      "areaM2": 803.0278499499816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1895",
+      "areaM2": 790.6790499982659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1804",
+      "areaM2": 3296.2865168276994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1894",
+      "areaM2": 781.1500284433879,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1771",
+      "areaM2": 3449.642257014074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-81-1270",
+      "areaM2": 36073.40793474651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-37-122",
+      "areaM2": 8563.452849980536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-72",
+      "areaM2": 289.49142552125176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-163",
+      "areaM2": 441.7240052575003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-26-140",
+      "areaM2": 280.2149999960384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-37-70",
+      "areaM2": 441.754599998544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-37-192",
+      "areaM2": 598.6140500183732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-206",
+      "areaM2": 345.7249419729176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-194",
+      "areaM2": 440.0552881040514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-589",
+      "areaM2": 371.26149297383597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-36",
+      "areaM2": 277.29625016289015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-24",
+      "areaM2": 284.80972377598414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-12",
+      "areaM2": 298.14864206694176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-180",
+      "areaM2": 437.4008831976563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-37-55",
+      "areaM2": 390.78329998488556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-48",
+      "areaM2": 260.998144912475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-131",
+      "areaM2": 435.452766965334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-60",
+      "areaM2": 263.7612411265486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-26-205",
+      "areaM2": 322.4348999928635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-26-181",
+      "areaM2": 320.21045000507775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-26-193",
+      "areaM2": 379.8881500081212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-116",
+      "areaM2": 395.8552500258912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-37-85",
+      "areaM2": 451.55035002377787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-26-217",
+      "areaM2": 324.2120499831184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-146",
+      "areaM2": 442.9801500047297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-268",
+      "areaM2": 541.3843000095559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-273",
+      "areaM2": 356.69024998219066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-25-19-279",
+      "areaM2": 385.5199500142713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-91-120",
+      "areaM2": 3617.873905134425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-91-347",
+      "areaM2": 2849.3318999894345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-91-135",
+      "areaM2": 5273.700860108834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-91-151",
+      "areaM2": 1044.4486999495998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-91-159",
+      "areaM2": 6537.589634928653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-853",
+      "areaM2": 292.71570995632476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-146",
+      "areaM2": 345.1207544180553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-826",
+      "areaM2": 465.42222619236054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1158",
+      "areaM2": 1179.1309320234438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1146",
+      "areaM2": 723.0511279360608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-842",
+      "areaM2": 505.0956341996149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1248",
+      "areaM2": 519.844105661957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1135",
+      "areaM2": 500.65909058508555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1098",
+      "areaM2": 597.4678999635262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-869",
+      "areaM2": 419.3609000259111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-925",
+      "areaM2": 395.46290001742113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-800",
+      "areaM2": 373.5988499870548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1249",
+      "areaM2": 192.6549000193783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1116",
+      "areaM2": 1024.1164500490277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-898",
+      "areaM2": 364.99194998381836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1072",
+      "areaM2": 653.4162499985979,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1082",
+      "areaM2": 583.1677999786401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1120",
+      "areaM2": 970.8489999953701,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-911",
+      "areaM2": 372.0082499750606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1129",
+      "areaM2": 411.7285000328536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1124",
+      "areaM2": 503.2398999876563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-884",
+      "areaM2": 361.68340001811123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-784",
+      "areaM2": 375.964949987969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-549",
+      "areaM2": 385.845099987751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-1247",
+      "areaM2": 877.8698500107048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JOINVILLE-IQ-13-20-15-98-537",
+      "areaM2": 372.9002000038293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

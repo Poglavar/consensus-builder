@@ -1,0 +1,13 @@
+{
+  "taskId": "city:10386",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-10386-yongcheng.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/yongcheng-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T18:39:03.217566Z",
+  "reviewFinding": "UN 2025 source and immutable rank 1922 agree (Yongcheng, CHN, 299180 persons, exact point). English and Chinese search records have queries and result URLs. Independently opened official Yongcheng notice: its title identifies the Real Estate Registration Affairs Center; the linked Shangqiu natural-resources host returned HTTP 403. No anonymous native-ID polygon, forced paging, 13 cells, metric GEOS checks, source binding, or headed Details proof. Access limitation does not establish absence."
+}

@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-6857-qingbaijiang.json",
+  "cityCode": 6857,
+  "queueRank": 3282,
+  "city": "Qingbaijiang",
+  "country": "China",
+  "countryCode": "CN",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Chengdu Qingbaijiang District Planning and Natural Resources Bureau (成都市青白江区规划和自然资源局)",
+  "publicMapLead": null,
+  "queryOutcomes": "Separate English and Chinese first-party discovery queries were executed. Exact query text, outcomes, and actual URLs are recorded in city-6857-qingbaijiang.json.",
+  "requestOutcomes": "The official Sichuan service page returned HTTP 200 and exposed current service HTML plus attachments; no parcel viewer/configuration or anonymous geometry endpoint was exposed. A direct local-government hostname failed default TLS hostname verification and was not bypassed. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [30.8884626190814, 104.236949783366] was preserved and not moved to force a hit.",
+    "No usable parcel endpoint was reached; this is not evidence of citywide absence.",
+    "The official evidence establishes local custodial/procedural responsibility, not open parcel-vector coverage.",
+    "No parcel polygon or source-specific raw attribute set is retained.",
+    "Independent serial review is required before any adapter/runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No safe native parcel ID-plus-geometry response or citywide Qingbaijiang parcel coverage was qualified."
+  },
+  "uncertainty": "A separate Chengdu/Qingbaijiang-local map service or authenticated workflow may exist. The bounded service-page inspection and TLS failure do not prove service or cadastral absence.",
+  "admissionDecision": "held",
+  "geometrySamples": []
+}

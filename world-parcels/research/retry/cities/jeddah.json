@@ -1,0 +1,88 @@
+{
+ "kind": "city",
+ "key": "jeddah",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-SA,ar;q=0.9,en;q=0.7; cookie jar (curl -b/-c) used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://my.gov.sa/en/content/gis",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare 403 with full headers"
+  },
+  {
+   "url": "https://nationalgeoplatform.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://www.momra.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://balady.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://open.data.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://www.rega.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://gis.eamana.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://www.jeddah.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://maps.jeddah.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://gis.momra.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Saudi government hosts fail at CONNECT or Cloudflare 403 through this proxy; likely regional restriction.",
+ "notes": "No change; no SA country retry file exists. Nothing reachable to inspect.",
+ "nextStep": "Retry from a Saudi/regional network; national geospatial platform is registration-based."
+}

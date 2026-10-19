@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "3890",
+  "cityName": "Stoke-on-Trent",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/3890/attempt-1/evidence/full-safe.geojson",
+    "sha256": "82662fb540446f6b51f6df81e5061de862d53bb086323e13c24b7087e58677af",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 174
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "70483a1770d39612b96075eb36c1e9280530347e21a5e64afdc1daefe1151e18",
+    "geometryPass": true,
+    "featureCount": 174,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

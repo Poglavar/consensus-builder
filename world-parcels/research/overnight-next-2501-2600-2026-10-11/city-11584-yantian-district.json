@@ -1,0 +1,78 @@
+{
+  "cityCode": 11584,
+  "queueRank": 2545,
+  "name": "Yantian District",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [22.5757089564737, 114.249725274837],
+  "population2025": 230981,
+  "population2025k": 230.981,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yantian District Shenzhen official cadastral parcel map GIS API land registry",
+        "result": "First-party discovery identified the Shenzhen Real Estate Registration Center cadastral-map query service. Its official page states that the service covers all Shenzhen except the Shenzhen-Shantou Special Cooperation Zone, is publicly queryable, is updated in real time, and provides parcel boundaries, parcel number/code, area, use, and location; it identifies Shenzhen Planning and Natural Resources Bureau as mapping authority and CGCS2000 as the coordinate system.",
+        "actualResultUrls": ["https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html", "https://pnr.sz.gov.cn/d-rer/ycwx/wx/index/index.html", "https://www.szgeoinfo.com.cn/"]
+      },
+      {
+        "language": "Chinese",
+        "query": "盐田区 深圳 官方 不动产 登记 地图 地籍图 GIS 服务",
+        "result": "第一方检索发现深圳市不动产登记中心的官方地籍图查询系统。官方页面说明查询范围为深圳市全市域（不含深汕合作区），任何人可查询，数据实时更新，并可查看宗地边界、宗地号和宗地代码、土地面积、土地用途、土地位置；制图单位为深圳市规划和自然资源局，坐标系为CGCS2000。",
+        "actualResultUrls": ["https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html", "https://pnr.sz.gov.cn/d-rer/ycwx/wx/index/index.html"]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Shenzhen Real Estate Registration Center is the evidenced municipal registration-service custodian; Shenzhen Planning and Natural Resources Bureau is identified as mapping authority. The official Shenzhen Government Yantian District page provides district context but is not itself a parcel service.",
+    "parcelService": "Shenzhen Real Estate Registration Center cadastral-map query service at https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html.",
+    "registryBasis": "A first-party municipal cadastral-map service is explicitly identified and states Shenzhen-wide coverage including Yantian District, public access, real-time updates, and parcel-level map/query content. This supports registryFound=true for source discovery only, not adapter qualification.",
+    "registryFoundReason": "The official service is a local Shenzhen cadastral/real-estate-registration map and procedure service with explicit parcel query scope; no private or owner data was requested."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+    "responseType": null,
+    "geometryType": null,
+    "geometryCrs": "CGCS2000 (official page statement; no response geometry inspected)",
+    "nativeIdentity": "Official page documents parcel number and parcel code as query outputs; exact response field name not inspected.",
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "inspectionNote": "A bounded anonymous shell GET to the official viewer returned curl error 52 (empty reply) after redirect handling. The page was therefore not available for current JavaScript/configuration inspection or safe feature retrieval. No login, token, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a qualified parcel endpoint; the exact WUP point was preserved and not shifted.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Shenzhen cadastral-map query service claims all Shenzhen citywide coverage except the Shenzhen-Shantou Special Cooperation Zone, which includes Yantian District.",
+    "verifiedOpenScope": "Service identity and stated coverage only; no anonymous parcel geometry, map extent, or current response schema was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [22.5757089564737, 114.249725274837] was preserved in latitude/longitude order and was not shifted.",
+    "The empty-reply viewer request is not evidence of a zero exact-point hit, map extent miss, or citywide absence.",
+    "No native parcel identity field, safe feature schema, parcel geometry, or response CRS was obtained; no sample GeoJSON is retained.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The official Shenzhen service clearly evidences a current local cadastral-map source and stated coverage for Yantian District, but the live viewer could not be anonymously inspected within the bounded request. Current JavaScript/configuration, endpoint schema, native identity field, geometry response, and citywide completeness remain unverified."
+}

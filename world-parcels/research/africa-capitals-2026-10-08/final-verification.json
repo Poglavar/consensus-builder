@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Final artifact and integration verification for the remaining African-capital batch.",
+  "checkedAt": "2026-10-08T16:11:06.890325+00:00",
+  "summary": {
+    "rosterSeats": 66,
+    "previouslyChecked": 23,
+    "newlyChecked": 43,
+    "registryPresenceFound": 35,
+    "registryPresenceUnestablished": 8,
+    "verifiedGeometryCities": 5,
+    "newAppCities": 3,
+    "geometryQualityHeldCities": 2
+  },
+  "headlessTestsFile": "final-headless-tests.json",
+  "browserCheckFile": "browser-check.json",
+  "servedArtifacts": [
+    {
+      "file": "frontend/data/parcel-coverage-report.json",
+      "httpStatus": 200,
+      "cacheControl": "no-store, must-revalidate",
+      "servedBytesMatch": true,
+      "sha256": "787789a0d1abe318d8ad50b4d359d04292c029e44dd689d080ee7f6fc5e1730b"
+    },
+    {
+      "file": "frontend/js/city-config.js",
+      "httpStatus": 200,
+      "cacheControl": "no-store, must-revalidate",
+      "servedBytesMatch": true,
+      "sha256": "85f0382ca995f912cb57d2bb43705f7899871841c1c781397a9f3b2055c2fc02"
+    }
+  ],
+  "integration": {
+    "newCityRows": 43,
+    "changedPreexistingCityRows": [],
+    "newRuntimeSourceIds": [
+      "gaborone-bofinet-plots-provisional",
+      "za-mangaung-cadastre-2025",
+      "za-tshwane-registered-parcels"
+    ],
+    "catalogueSourceCount": 107,
+    "configuredAppCityCount": 120,
+    "preexistingConcurrentWorkPreserved": true
+  },
+  "report": {
+    "all43NewCitiesCheckedAndDated": true,
+    "warnings": [],
+    "metadata": {
+      "asOf": "2026-10-08",
+      "demographicSnapshotDate": "2026-10-07",
+      "statisticsYear": 2025,
+      "cityCount": 510,
+      "countryCount": 255,
+      "statisticalJurisdictions": 237,
+      "checkedCityCount": 427,
+      "uncheckedCityCount": 83,
+      "cityRegistryFoundCount": 205,
+      "verifiedCitySampleCount": 151,
+      "nationalCadastreCount": 72,
+      "countryTwoRegionCount": 50,
+      "populationMatchedCount": 431,
+      "growthMatchedCount": 430,
+      "checkedCitiesMissingDate": 0,
+      "wikiCityCount": 282,
+      "configuredAppCityCount": 120,
+      "unmatchedStatisticalAmounts": {
+        "landAreaKm2": 0,
+        "builtUpAreaKm2": 0.003000000026077032,
+        "population": 2
+      },
+      "warnings": []
+    }
+  },
+  "scope": "Geometry samples and configured city entries do not establish citywide or countrywide completeness. Porto-Novo and Victoria are geometry-quality holds, not absent-data findings.",
+  "git": {
+    "committed": false,
+    "deployed": false
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2257",
+  "queueRank": 60,
+  "wupCityCode": 2257,
+  "name": "Umm Danga",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "centerLatLon": [
+    10.9478732946973,
+    24.5773143460892
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 60,
+  "population2025": 172622,
+  "annualGrowthPct2015To2025": 6.82682,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-SD.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic",
+    "exactQuery": "أم دنقا السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://ayah1122.github.io/Sudan_GIS/",
+      "https://mapcarta.com/26397994",
+      "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "https://mapcarta.com/13106022",
+      "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer/0",
+      "https://aqari.nctr.sd/ar/about",
+      "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Darfur_Action_plan/FeatureServer/0",
+      "https://kadgis.kdsg.gov.ng/"
+    ],
+    "summary": "Official NIC describes a national OGC WMS/WFS portal and Judiciary land-services platform; linked geoportal currently cannot be reached. No city-specific polygon sample.",
+    "additionalOfficialLead": "NIC project page identifies the Sudan Spatial Portal WMS/WFS; linked host unavailable from this network.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://ayah1122.github.io/Sudan_GIS/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mapcarta.com/26397994",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mapcarta.com/13106022",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aqari.nctr.sd/ar/about",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Darfur_Action_plan/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://kadgis.kdsg.gov.ng/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Umm Danga\" Sudan (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Umm+Danga%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No Umm Danga parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Umm Danga extent; check whether a public parcel layer is exposed without partner authentication.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Umm+Danga%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "officialPortalLead": {
+    "portal": "https://www.geoportal.gov.sd/",
+    "discoveredVia": "https://nic.gov.sd/public/projectDetails/3",
+    "claimedServices": [
+      "WMS",
+      "WFS"
+    ],
+    "directProbeStatus": "DNS resolution failure in this environment",
+    "assessment": "Promising national map portal, but no viewer/layer/capabilities inspection or city polygon test possible."
+  },
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-07",
+      "sourceUrl": "https://services.arcgis.com/qovwaCdMoEzUUFzS/arcgis/rest/services/Darfur_Action_plan/FeatureServer/0",
+      "classification": "regional_action_plan_polygon_not_parcels",
+      "auditSummary": "Single polygon layer is SDN_action_plan_darfur, an action-plan region layer. Its Darfur extent overlaps some target centers, but it is not a cadastral parcel layer.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-07",
+      "sourceUrl": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Darfur_Action_plan/FeatureServer/0",
+      "classification": "regional_action_plan_polygon_not_parcels",
+      "auditSummary": "Single polygon layer is SDN_action_plan_darfur, an action-plan region layer. Its Darfur extent overlaps some target centers, but it is not a cadastral parcel layer.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Single polygon layer is SDN_action_plan_darfur, an action-plan region layer. Its Darfur extent overlaps some target centers, but it is not a cadastral parcel layer."
+}

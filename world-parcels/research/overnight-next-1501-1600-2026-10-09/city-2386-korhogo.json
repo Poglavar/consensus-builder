@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2386",
+  "cityCode": 2386,
+  "wupCityCode": 2386,
+  "name": "Korhogo",
+  "country": "Côte d'Ivoire",
+  "countryCode": "CI",
+  "iso2": "CI",
+  "iso3": "CIV",
+  "rank": 1591,
+  "queueRank": 1591,
+  "point": [9.46259545807729, -5.62781909839446],
+  "centerLatLon": [9.46259545807729, -5.62781909839446],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 357761,
+  "population2025k": 357.761,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An official DGI publication identifies the Korhogo land-conservation district (circonscription foncière de Korhogo), its Korhogo book of land records, and competence over the Korhogo department and neighboring departments. The official SIGFU system provides Côte d'Ivoire's urban land parcel/lot search. This establishes city-specific custody and a public procedure/channel, not open citywide geometry.",
+  "registryEvidenceUrls": [
+    "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/CIRCONSCRIPTIONS_FONCIERES_241031_160555.pdf",
+    "https://www.sigfu.gouv.ci/parcelles",
+    "https://www.idufci.gouv.ci/index.html",
+    "https://servicepublic.gouv.ci/accueil/detaildemarcheparticulier/1/475/29"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official SIGFU page was found through indexed first-party search results and describes locality/lot/parcel search, but the direct local GET failed normal TLS certificate-chain verification. No retry with verification disabled was made. No verified anonymous service configuration, schema, CRS, safe native parcel ID, or complete polygon response was obtained. No login, token, CAPTCHA bypass, or unsafe field request was attempted.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Korhogo-specific official land-conservation custody plus Côte d'Ivoire's official SIGFU urban parcel/lot search and IDUFCI identifier framework.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Korhogo Côte d'Ivoire official cadastral parcel map land registry cadastre",
+        "scope": "Identify a Korhogo-specific official cadastral custodian and a safe public parcel geometry route.",
+        "result": "Search located the official SIGFU urban parcel search, the official IDUFCI parcel-identifier site, the official DGI cadastre page/procedure, and the official DGI land-circonscriptions publication naming Korhogo. No verified anonymous safe parcel ID-plus-polygon response was found.",
+        "actualResultUrls": [
+          "https://www.sigfu.gouv.ci/parcelles",
+          "https://www.idufci.gouv.ci/index.html",
+          "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/CIRCONSCRIPTIONS_FONCIERES_241031_160555.pdf",
+          "https://servicepublic.gouv.ci/accueil/detaildemarcheparticulier/1/475/29"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "French",
+        "query": "Korhogo cadastre officiel Côte d'Ivoire parcelle carte registre foncier",
+        "scope": "Independent local-language search for Korhogo's cadastral custodian and public cadastral map/API.",
+        "result": "Search confirmed the official SIGFU parcel-search page, the IDUFCI unique land-identifier framework, the DGI procedure for requesting a section plan, and the DGI publication naming the Korhogo land-conservation district. The public indexed material did not expose a verified anonymous feature schema or polygon response.",
+        "actualResultUrls": [
+          "https://www.sigfu.gouv.ci/parcelles",
+          "https://sigfu.gouv.ci/public",
+          "https://www.idufci.gouv.ci/index.html",
+          "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/CIRCONSCRIPTIONS_FONCIERES_241031_160555.pdf",
+          "https://servicepublic.gouv.ci/accueil/detaildemarcheparticulier/1/475/29"
+        ],
+        "executionMethod": "Separate French-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "No exact-point query was used to infer absence. The exact WUP point was preserved. SIGFU/IDUFCI current JavaScript/API routes, anonymous access policy, CRS, native identity field, geometry coverage, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a first-party digital cadastral route; do not enable runtime from this packet alone."
+}

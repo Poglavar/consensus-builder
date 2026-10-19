@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:10737",
+  "wupCityCode": 10737,
+  "name": "Darauli",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.1350913588765,
+    84.1658019427551
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "priorStatus": "no_verified_sample_candidate_citywide",
+  "priorEvidenceFiles": [
+    "research/growth-top20-integration-2026-10-07/bihar.json",
+    "research/growth-top20-2026-10-07/city-10737.json"
+  ],
+  "freshFollowup": true,
+  "sourceId": "bihar-bhunaksha",
+  "sourceFamilyEvidence": "bihar-family-viewer.json",
+  "nativeSearchQueries": [
+    {
+      "query": "पटना मानचित्र भू नक्शा भू अभिलेख राजस्व गांव नक्शा बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "हाजीपुर भू नक्शा बिहार गांव खेसरा नक्शा राजस्व",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "दरौली सीवान भू नक्शा राजस्व गांव खेसरा मानचित्र बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    }
+  ],
+  "headersUsed": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "acceptLanguage": "hi-IN,hi;q=0.9,en-IN;q=0.8,en;q=0.7",
+    "origin": "https://bhunaksha.bihar.gov.in",
+    "referer": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "cookieSession": "Persisted normal anonymous browser session; cookie names/values not saved."
+  },
+  "administrativeIdentity": {
+    "districtCode": "16",
+    "district": "SIWAN",
+    "subdivisionCode": "01",
+    "subdivision": "सिवान सदर",
+    "circleCode": "01",
+    "circle": "Darauli",
+    "revenueVillageCode": "0046",
+    "revenueVillage": "Darauli(157)",
+    "surveyType": "CS",
+    "mapType": "06",
+    "sheets": [
+      "01",
+      "02",
+      "03",
+      "04"
+    ],
+    "assessment": "The official selector contains namesake Darauli(157), but every returned CS sheet extent is separate from the WUP point; the exact adjacent revenue mauza remains unresolved."
+  },
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "giscode": "",
+        "xEPSG32645": 216614.05,
+        "yEPSG32645": 2893733.54
+      },
+      "httpStatus": 204,
+      "contentType": null,
+      "bytes": 0,
+      "assessment": "Fresh direct target-point identify attempt with no selected GIS code returned no content. The viewer flow normally requires a previously selected cadastral sheet; this does not establish absence of nearby mapped parcels."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "gisLevels": "16,01,01,0046,CS,06,<sheet>,",
+        "srs": "0"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Fresh extent reads for sheets 01–04 returned EPSG:32645. Target WUP point [216614.05, 2893733.54] lies outside each extent; sheet 04 has a degenerate near-zero-area extent."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "giscode": "CS16010100461570601",
+        "xEPSG32645": 216614.05,
+        "yEPSG32645": 2893733.54
+      },
+      "httpStatus": 204,
+      "contentType": null,
+      "bytes": 0,
+      "assessment": "The exact WUP coordinate returned no plot for the namesake Darauli(157) sheet 01."
+    }
+  ],
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Bihar BhuNaksha viewer; selected cadastral map sheets and point clicks",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "No target-point parcel identity or polygon was returned. The shared viewer returns 204 for the exact WUP coordinate without a selected sheet GIS code, and its current click/report/highlight flow exposes only point IDs, plot number, EPSG:32645 bbox, and raster images. The source-level result applies to the viewer, not all Bihar services.",
+  "remainingUncertainty": "Exact target revenue village and any other city-specific open parcel source remain unresolved; no target parcel geometry was verified.",
+  "nextStep": "Resolve the WUP point to an official revenue mauza or boundary. Revisit the point with that exact map sheet if the viewer adds a vector/feature endpoint; otherwise test an independent official urban/regional parcel source.",
+  "officialSelectorRequests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "1",
+        "codes": "16,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "District 16 descendants include subdivision code 01 सिवान सदर."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "2",
+        "codes": "16,01,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "Siwan Sadar descendants include circle code 01 Darauli."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "3",
+        "codes": "16,01,01,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "108 mapped village choices; namesake village code 0046 is Darauli(157)."
+    }
+  ]
+}

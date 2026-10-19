@@ -1,0 +1,20 @@
+{
+  "taskId": "city:2467",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-2467-chlef.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/chlef-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T174007-164b0608/stdout.jsonl",
+    "tmp/valhalla-parcel-research/chlef/dgdn.headers",
+    "tmp/valhalla-parcel-research/chlef/dgdn.html"
+  ],
+  "reason": "WUP queue and packet agree on code 2467, rank 2680, Algeria, exact point and 220634 persons. English and Arabic searches are visible as executed web_search results in the worker trace. The official Chlef Directorate page independently lists Cadastre and Conservation Foncière; this establishes local custody, not a public polygon service. DGDN returned 503 and ASGA timed out. No safe parcel response or polygon sample exists; source, adapter, paging, 13 cells, metric GEOS checks, binding, and headed Details verification are absent. No citywide absence is inferred.",
+  "retainedFullPolygons": 0,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T17:44:11Z",
+  "sourceUrlsChecked": [
+    "https://www.dcw-chlef.dz/fr/index.php/wil34/admins-liens"
+  ]
+}

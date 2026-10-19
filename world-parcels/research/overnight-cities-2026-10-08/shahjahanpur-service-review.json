@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "wup2025:9365",
+  "purpose": "City-specific parcel registry and safe public geometry route review",
+  "primaryPublisher": "https://www.nagarnigamshahjahanpur.in/en/article/map?brd=1",
+  "sourceUrl": "https://www.nagarnigamshahjahanpur.in/en/article/map?brd=1",
+  "registryFound": true,
+  "registryBasis": "Shahjahanpur Nagar Nigam publishes a city map page and the official district portal links government land-record services. UP’s official BhuNaksha and Bhulekh portals provide cadastral-map/land-record services, tying the municipal and state workflow to Shahjahanpur, though not establishing parcel coverage for only the urban corporation.",
+  "officialSources": [
+    {
+      "url": "https://www.nagarnigamshahjahanpur.in/en/article/map?brd=1",
+      "observation": "Shahjahanpur Nagar Nigam publishes a city map page and the official district portal links government land-record services. UP’s official BhuNaksha and Bhulekh portals provide cadastral-map/land-record services, tying the municipal and state workflow to Shahjahanpur, though not establishing parcel coverage for only the urban corporation. The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified."
+    },
+    {
+      "url": "https://shahjahanpur.nic.in/",
+      "observation": "Shahjahanpur Nagar Nigam publishes a city map page and the official district portal links government land-record services. UP’s official BhuNaksha and Bhulekh portals provide cadastral-map/land-record services, tying the municipal and state workflow to Shahjahanpur, though not establishing parcel coverage for only the urban corporation. The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "observation": "Shahjahanpur Nagar Nigam publishes a city map page and the official district portal links government land-record services. UP’s official BhuNaksha and Bhulekh portals provide cadastral-map/land-record services, tying the municipal and state workflow to Shahjahanpur, though not establishing parcel coverage for only the urban corporation. The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "Shahjahanpur Nagar Nigam publishes a city map page and the official district portal links government land-record services. UP’s official BhuNaksha and Bhulekh portals provide cadastral-map/land-record services, tying the municipal and state workflow to Shahjahanpur, though not establishing parcel coverage for only the urban corporation. The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shahjahanpur official cadastral land registry parcel map city",
+      "scope": "Identify city-specific registry evidence and safe public geometry routes.",
+      "result": "Shahjahanpur Nagar Nigam publishes a city map page and the official district portal links government land-record services. UP’s official BhuNaksha and Bhulekh portals provide cadastral-map/land-record services, tying the municipal and state workflow to Shahjahanpur, though not establishing parcel coverage for only the urban corporation. The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified.",
+      "actualResultUrls": [
+        "https://www.nagarnigamshahjahanpur.in/en/article/map?brd=1",
+        "https://shahjahanpur.nic.in/",
+        "https://upbhunaksha.gov.in/home/",
+        "https://upbhulekh.gov.in/"
+      ],
+      "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+    },
+    {
+      "language": "Hindi",
+      "query": "शाहजहांपुर नगर निगम नक्शा भू नक्शा आधिकारिक खसरा",
+      "scope": "Identify local-language primary evidence for city registry and public parcel-map services.",
+      "result": "Shahjahanpur Nagar Nigam publishes a city map page and the official district portal links government land-record services. UP’s official BhuNaksha and Bhulekh portals provide cadastral-map/land-record services, tying the municipal and state workflow to Shahjahanpur, though not establishing parcel coverage for only the urban corporation. The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified.",
+      "actualResultUrls": [
+        "https://www.nagarnigamshahjahanpur.in/en/article/map?brd=1",
+        "https://shahjahanpur.nic.in/",
+        "https://upbhunaksha.gov.in/home/",
+        "https://upbhulekh.gov.in/"
+      ],
+      "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified."
+  },
+  "requestEvidence": {
+    "method": "public official source review",
+    "propertySpecificRequestSent": false,
+    "geometryRequestSent": false,
+    "notes": "No owner, address, tax-account, title, parcel-number, or person-specific lookup was performed."
+  },
+  "technicalBlocker": "The city map page is a static map; the official BhuNaksha viewer requires location and plot selection and can return land-record attributes. No district/tehsil/village/plot selection or parcel query was made because geometry-and-ID-only response fields were not verified.",
+  "sampleDisposition": "No polygon retained; no verified safe geometry endpoint.",
+  "remainingUncertainty": "The state viewer feature schema and urban coverage were not verified; no complete polygon sample is available.",
+  "rootRuntimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The state viewer feature schema and urban coverage were not verified; no complete polygon sample is available."
+  }
+}

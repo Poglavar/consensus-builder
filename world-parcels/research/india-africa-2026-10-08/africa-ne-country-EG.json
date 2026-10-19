@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "EG",
+  "country": "Egypt",
+  "checkedAt": "2026-10-08",
+  "status": "no_online_cadastre_found",
+  "accessModel": "unknown",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Arabic",
+      "exactQuery": "مصر الهيئة العامة للمساحة قطع الأراضي خريطة كادستر GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://www.esa.gov.eg/egyptmap.aspx",
+        "https://www.esa.gov.eg/services.aspx",
+        "https://www.esa.gov.eg/",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "https://www.esa.gov.eg/main2.aspx",
+        "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/73916/OG39_20240926_1489.pdf?isAllowed=y&sequence=2",
+        "https://www.esa.gov.eg/benya.aspx"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://www.esa.gov.eg/",
+      "observation": "Egyptian Survey Authority has cadastral/maps products and historic city maps; prior JS inspection found no anonymous WFS/FeatureServer."
+    },
+    {
+      "url": "https://lands.nuca.gov.eg/ar/Cities.aspx",
+      "observation": "Official NUCA land-offering city catalog; normal public AJAX listed 27 new-city offerings. Not a national cadastral index."
+    },
+    {
+      "url": "https://lands.nuca.gov.eg/ar/ViewZone.aspx?ID=4797",
+      "observation": "New Cairo offer-zone page reached from public city/project navigation. HTTP 200; OpenSeadragon raster tiles and active offer table only; unrelated to general Cairo cadastral coverage."
+    },
+    {
+      "url": "https://www.esa.gov.eg/cairo_alex_maps.aspx",
+      "observation": "Official ESA page lists Cairo/Alexandria historic map products, not a public feature service."
+    },
+    {
+      "url": "https://geoportal.mwri.gov.eg/portal",
+      "observation": "Government geoportal; prior city searches found no cadastral layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://lands.nuca.gov.eg/ar/Cities.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Public city-offerings page; script calls GetSiteCities."
+    },
+    {
+      "url": "https://lands.nuca.gov.eg/ar/Cities.aspx/GetSiteCities",
+      "method": "POST JSON {}",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Viewer method returned 27 new-city catalogue records. New Cairo ID 1 and Borg El Arab New ID 1025 are unrelated offered-city areas."
+    },
+    {
+      "url": "https://lands.nuca.gov.eg/ar/ViewCity.aspx?ID=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "New Cairo project list, with land-offer project links."
+    },
+    {
+      "url": "https://lands.nuca.gov.eg/ar/ViewProject.aspx?ID=2284",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Public project details links to a valid offer-zone ID 4797."
+    },
+    {
+      "url": "https://lands.nuca.gov.eg/ar/ViewZone.aspx?ID=4797",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "New Cairo offer zone serves OpenSeadragon raster tile XML and offered-plot table. Offered lots only; not general cadastral polygons or the target city Cairo."
+    },
+    {
+      "url": "https://www.esa.gov.eg/cairo_alex_maps.aspx",
+      "method": "search result/open",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Historical map products for Cairo and Alexandria, not a public feature feed."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Identify an anonymous ESA or municipality cadastre feature service and verify bounded polygons plus native parcel identifiers."
+}

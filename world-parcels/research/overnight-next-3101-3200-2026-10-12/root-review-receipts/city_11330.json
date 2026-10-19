@@ -1,0 +1,25 @@
+{
+  "taskId": "city:11330",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-11330-poyang.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/poyang-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T04:20:30Z",
+  "finding": "Poyang: original WUP 2025 row, rank 3155, queue, and packet agree on code 11330, China, point [28.9927722565779,116.684336800528], and 190393 persons. English and Simplified Chinese executed searches are recorded. Candidate local government HEAD returned 405, national registration site HEAD returned 418, and no first-party local parcel geometry or native ID was observed. Local record custody remains unresolved (registryFound null); access failures are not citywide absence. No sample polygons or independent live adapter qualification gates are evidenced.",
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": [
+    "fresh native-ID reads",
+    "forced paging and stable manifest",
+    "13 bounded cells",
+    "independent metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

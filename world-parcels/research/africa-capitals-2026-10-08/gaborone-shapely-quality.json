@@ -1,0 +1,1178 @@
+{
+  "schemaVersion": 1,
+  "method": "Shapely 2.1.2 / GEOS on repo-proj4 EPSG:32735 output; no geometry repair. OGC validity via Shapely is_valid; exact intersections on all bbox-overlapping feature pairs.",
+  "sourceFile": "gaborone-quality-input-epsg32735.geojson",
+  "featureCount": 76,
+  "metricCRS": "EPSG:32735",
+  "validity": {
+    "validCount": 76,
+    "invalidCount": 0,
+    "invalidExamples": []
+  },
+  "areaM2": {
+    "min": 0.26880231706565616,
+    "p10": 148.56054345042025,
+    "median": 148.58402570247114,
+    "p90": 2444.283590306398,
+    "max": 29850.90811459805,
+    "below1m2Count": 2,
+    "below25m2Count": 3,
+    "below1m2Examples": [
+      {
+        "id": "gaborone:bofinet:681~9341",
+        "fid": 9103,
+        "lotId": "681",
+        "objectId1": 9341,
+        "areaM2": 0.26880231706565616
+      },
+      {
+        "id": "gaborone:bofinet:681~9897",
+        "fid": 9645,
+        "lotId": "681",
+        "objectId1": 9897,
+        "areaM2": 0.3879081383555597
+      }
+    ],
+    "below25m2Examples": [
+      {
+        "id": "gaborone:bofinet:681~9340",
+        "fid": 9102,
+        "lotId": "681",
+        "objectId1": 9340,
+        "areaM2": 4.6081394469161765
+      },
+      {
+        "id": "gaborone:bofinet:681~9341",
+        "fid": 9103,
+        "lotId": "681",
+        "objectId1": 9341,
+        "areaM2": 0.26880231706565616
+      },
+      {
+        "id": "gaborone:bofinet:681~9897",
+        "fid": 9645,
+        "lotId": "681",
+        "objectId1": 9897,
+        "areaM2": 0.3879081383555597
+      }
+    ],
+    "below1m2Fraction": 0.02631578947368421,
+    "below25m2Fraction": 0.039473684210526314
+  },
+  "duplicateGeometry": {
+    "normalizedDuplicateGroupCount": 0,
+    "groups": []
+  },
+  "positiveAreaOverlap": {
+    "pairCount": 0,
+    "maximumIntersectionAreaM2": 0.0,
+    "maximumRatioOfSmallerParcel": 0.0,
+    "examples": [],
+    "overlayErrorCount": 0,
+    "overlayErrors": [],
+    "allUniqueFeaturePairs": 2850,
+    "bboxCandidatePairs": 80,
+    "bboxRejectedPairs": 2770,
+    "exactGEOSIntersectionsEvaluated": 80
+  },
+  "parcelAudit": [
+    {
+      "id": "gaborone:bofinet:6036~47323",
+      "sourceRowReference": [
+        "6036",
+        47323
+      ],
+      "fid": 46241,
+      "lotId": "6036",
+      "objectId1": 47323,
+      "areaM2": 880.629087079488,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "546d91b3ba6a114d6841d964da351a4e71c456e49d0e21a6488c6ac304d8ca9c"
+    },
+    {
+      "id": "gaborone:bofinet:6035~47324",
+      "sourceRowReference": [
+        "6035",
+        47324
+      ],
+      "fid": 46242,
+      "lotId": "6035",
+      "objectId1": 47324,
+      "areaM2": 882.7466251712531,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "7845e27efc994eadff2edc75828c7ad5d4946a5b56b5bb2ddb93a3d30117c56c"
+    },
+    {
+      "id": "gaborone:bofinet:REM%20OF%20LOT%20681~47613",
+      "sourceRowReference": [
+        "REM OF LOT 681",
+        47613
+      ],
+      "fid": 46531,
+      "lotId": "REM OF LOT 681",
+      "objectId1": 47613,
+      "areaM2": 3873.5945964208286,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "b8c57600b8fe7fb4817cd49fd828bdfb15c425c16666d84ffc36073636811645"
+    },
+    {
+      "id": "gaborone:bofinet:28551~47614",
+      "sourceRowReference": [
+        "28551",
+        47614
+      ],
+      "fid": 46532,
+      "lotId": "28551",
+      "objectId1": 47614,
+      "areaM2": 3672.531840592839,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "1323af29119e6b9c3768f79296bfc9a61ca8340a7bbc1c108f6adbbd6b35330f"
+    },
+    {
+      "id": "gaborone:bofinet:683~3276",
+      "sourceRowReference": [
+        "683",
+        3276
+      ],
+      "fid": 3178,
+      "lotId": "683",
+      "objectId1": 3276,
+      "areaM2": 927.5559295127505,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "870e48c2d86d4e1314c830ed57cbd8c6e6c958d8b302cf575d2acfd3fa024ce7"
+    },
+    {
+      "id": "gaborone:bofinet:681~9340",
+      "sourceRowReference": [
+        "681",
+        9340
+      ],
+      "fid": 9102,
+      "lotId": "681",
+      "objectId1": 9340,
+      "areaM2": 4.6081394469161765,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "937a12b4e37e4cb11e0b67835e84da0ebdfe475b25f679daa38453ba7e83e36b"
+    },
+    {
+      "id": "gaborone:bofinet:698~11439",
+      "sourceRowReference": [
+        "698",
+        11439
+      ],
+      "fid": 11157,
+      "lotId": "698",
+      "objectId1": 11439,
+      "areaM2": 921.5475047076675,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8d4e7bb0f514004b73c9875931df15bddd369611df7735c311c8098561877c5f"
+    },
+    {
+      "id": "gaborone:bofinet:691~16577",
+      "sourceRowReference": [
+        "691",
+        16577
+      ],
+      "fid": 16169,
+      "lotId": "691",
+      "objectId1": 16577,
+      "areaM2": 928.5982507276458,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "03bc706097cfc8065662a49d635cef7cb2537ce6fd4a79d48e2036010772927d"
+    },
+    {
+      "id": "gaborone:bofinet:695~16943",
+      "sourceRowReference": [
+        "695",
+        16943
+      ],
+      "fid": 16529,
+      "lotId": "695",
+      "objectId1": 16943,
+      "areaM2": 950.8398972036496,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ab9c0175b179b468160fa6ada326c17199938298862a589682a2b0cb57799e52"
+    },
+    {
+      "id": "gaborone:bofinet:692~18218",
+      "sourceRowReference": [
+        "692",
+        18218
+      ],
+      "fid": 17776,
+      "lotId": "692",
+      "objectId1": 18218,
+      "areaM2": 928.597032066014,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "c95c65c846d3a45b1e9ba8f8c81cc83ec9e0e29d8a323fe6db9d0a6bd48ebf81"
+    },
+    {
+      "id": "gaborone:bofinet:696~20128",
+      "sourceRowReference": [
+        "696",
+        20128
+      ],
+      "fid": 19648,
+      "lotId": "696",
+      "objectId1": 20128,
+      "areaM2": 822.4151890806831,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "bc7cc4ae37ae788154d0631bbc61c1c5c580a4b6bf0cb44717d0981715b31e93"
+    },
+    {
+      "id": "gaborone:bofinet:697~35059",
+      "sourceRowReference": [
+        "697",
+        35059
+      ],
+      "fid": 34245,
+      "lotId": "697",
+      "objectId1": 35059,
+      "areaM2": 889.9190893399402,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "d338d83a31152850a23b593bda70014c0e93c587d404a6ab21af9933d3c08699"
+    },
+    {
+      "id": "gaborone:bofinet:682~35178",
+      "sourceRowReference": [
+        "682",
+        35178
+      ],
+      "fid": 34360,
+      "lotId": "682",
+      "objectId1": 35178,
+      "areaM2": 927.584682149075,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "92464a5921c6413b30ca484e8cd39e9d8f21c3aac1a9401a9951ad4e7377a328"
+    },
+    {
+      "id": "gaborone:bofinet:6034~47325",
+      "sourceRowReference": [
+        "6034",
+        47325
+      ],
+      "fid": 46243,
+      "lotId": "6034",
+      "objectId1": 47325,
+      "areaM2": 689.7258028990668,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "88847f5b9650ac06ac133a36f31bf3a75cf954fb958e7ceb3efbd58b18ed54cf"
+    },
+    {
+      "id": "gaborone:bofinet:681~9341",
+      "sourceRowReference": [
+        "681",
+        9341
+      ],
+      "fid": 9103,
+      "lotId": "681",
+      "objectId1": 9341,
+      "areaM2": 0.26880231706565616,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "edabf1a9571167a88d4bccd4485200f9e12cd41864ad96c628e79750aa92404b"
+    },
+    {
+      "id": "gaborone:bofinet:1197~24779",
+      "sourceRowReference": [
+        "1197",
+        24779
+      ],
+      "fid": 24192,
+      "lotId": "1197",
+      "objectId1": 24779,
+      "areaM2": 475.93234214340555,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e800adb6627ff10525d6efaa6b6fb13427b46f098bf02a3b861c019eb6658fd7"
+    },
+    {
+      "id": "gaborone:bofinet:1188~6094",
+      "sourceRowReference": [
+        "1188",
+        6094
+      ],
+      "fid": 5931,
+      "lotId": "1188",
+      "objectId1": 6094,
+      "areaM2": 148.58552051768856,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ae8378a7919b734a56bacc835a740187c8646ac58f6978802e29fe0b422182c2"
+    },
+    {
+      "id": "gaborone:bofinet:1187~8502",
+      "sourceRowReference": [
+        "1187",
+        8502
+      ],
+      "fid": 8280,
+      "lotId": "1187",
+      "objectId1": 8502,
+      "areaM2": 148.56906276813262,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e09483dcab8f291e24c89603f027bd7146c4f95d90abe7148646a3b07d2273d1"
+    },
+    {
+      "id": "gaborone:bofinet:1845~8853",
+      "sourceRowReference": [
+        "1845",
+        8853
+      ],
+      "fid": 8625,
+      "lotId": "1845",
+      "objectId1": 8853,
+      "areaM2": 148.5721359842916,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "81dbf0e9fd3a9af19e16e2c8eb2e735ecca92025ec58c14271c2429b8ad82d14"
+    },
+    {
+      "id": "gaborone:bofinet:1838~8870",
+      "sourceRowReference": [
+        "1838",
+        8870
+      ],
+      "fid": 8642,
+      "lotId": "1838",
+      "objectId1": 8870,
+      "areaM2": 148.58066575338765,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "4851035e4bfe58c1f5b0f4a24c02d3cc650ce3e93082e1409793cb0e590ecce0"
+    },
+    {
+      "id": "gaborone:bofinet:681~9897",
+      "sourceRowReference": [
+        "681",
+        9897
+      ],
+      "fid": 9645,
+      "lotId": "681",
+      "objectId1": 9897,
+      "areaM2": 0.3879081383555597,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "911ac31d17c044d43486cacf4cc32db68fc7650c5ff091ccabb1be3f3f369299"
+    },
+    {
+      "id": "gaborone:bofinet:1086~10526",
+      "sourceRowReference": [
+        "1086",
+        10526
+      ],
+      "fid": 10261,
+      "lotId": "1086",
+      "objectId1": 10526,
+      "areaM2": 148.57760978191544,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "2409e1660a89bb82737d6243b50d7122dc6831418bae4e3bfbc67b891509ce8b"
+    },
+    {
+      "id": "gaborone:bofinet:1185~12927",
+      "sourceRowReference": [
+        "1185",
+        12927
+      ],
+      "fid": 12600,
+      "lotId": "1185",
+      "objectId1": 12927,
+      "areaM2": 148.58214326506766,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "d5371cec69619fc71ee1958f7ae180029b0a96a6d2ea11dc75b324b0581ea830"
+    },
+    {
+      "id": "gaborone:bofinet:1088~15294",
+      "sourceRowReference": [
+        "1088",
+        15294
+      ],
+      "fid": 14914,
+      "lotId": "1088",
+      "objectId1": 15294,
+      "areaM2": 148.57789636140544,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e62881d1a9f8896ce81109c38c8ebbe41bc5231c05d949312515f9a5162b485d"
+    },
+    {
+      "id": "gaborone:bofinet:1186~16060",
+      "sourceRowReference": [
+        "1186",
+        16060
+      ],
+      "fid": 15660,
+      "lotId": "1186",
+      "objectId1": 16060,
+      "areaM2": 148.56996737913272,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "a5a4b53c675e5fbf26362d8c4d2906ce60358fc44100707c86941d422497da4d"
+    },
+    {
+      "id": "gaborone:bofinet:1191~21182",
+      "sourceRowReference": [
+        "1191",
+        21182
+      ],
+      "fid": 20679,
+      "lotId": "1191",
+      "objectId1": 21182,
+      "areaM2": 148.57245869831246,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "7d907efdabcd7b2338808e85422ffbf3dfee29fe2f2ec4f4934eb142f84e2db0"
+    },
+    {
+      "id": "gaborone:bofinet:1194~21215",
+      "sourceRowReference": [
+        "1194",
+        21215
+      ],
+      "fid": 20710,
+      "lotId": "1194",
+      "objectId1": 21215,
+      "areaM2": 148.58345199104946,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ae265ec4e41b9ea7a4ada731fb4dd2aa19acfbdd8d30cc4838223645bbdc2393"
+    },
+    {
+      "id": "gaborone:bofinet:1193~25156",
+      "sourceRowReference": [
+        "1193",
+        25156
+      ],
+      "fid": 24565,
+      "lotId": "1193",
+      "objectId1": 25156,
+      "areaM2": 148.57003987898054,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "916c0dd55cde91fdabe927996ae10c749ad7b980fa6cff02fbb109ce9b2e13c8"
+    },
+    {
+      "id": "gaborone:bofinet:1087~25779",
+      "sourceRowReference": [
+        "1087",
+        25779
+      ],
+      "fid": 25177,
+      "lotId": "1087",
+      "objectId1": 25779,
+      "areaM2": 148.56054345042025,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "2a2eaf298597b99514887e7d18fb20f789c4c6b64be8c18e6b4897067f712086"
+    },
+    {
+      "id": "gaborone:bofinet:1198~26809",
+      "sourceRowReference": [
+        "1198",
+        26809
+      ],
+      "fid": 26182,
+      "lotId": "1198",
+      "objectId1": 26809,
+      "areaM2": 1429.9983829719151,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "9676b5c0c701cb7bab58e89f6c2cfe24bef796ea6c363907a799ba2b477a13f6"
+    },
+    {
+      "id": "gaborone:bofinet:1089~30492",
+      "sourceRowReference": [
+        "1089",
+        30492
+      ],
+      "fid": 29774,
+      "lotId": "1089",
+      "objectId1": 30492,
+      "areaM2": 148.58154343755012,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "11c7b7f3b2e8b6196e5d8930af310dbbd97b5d2949e70491a55dd3fd373e6316"
+    },
+    {
+      "id": "gaborone:bofinet:1085~30683",
+      "sourceRowReference": [
+        "1085",
+        30683
+      ],
+      "fid": 29960,
+      "lotId": "1085",
+      "objectId1": 30683,
+      "areaM2": 148.58402570247114,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "65c760d6185928b7c7c01dd57b4c45fa768a0f9e69962871987b079d30295c34"
+    },
+    {
+      "id": "gaborone:bofinet:1195~32383",
+      "sourceRowReference": [
+        "1195",
+        32383
+      ],
+      "fid": 31628,
+      "lotId": "1195",
+      "objectId1": 32383,
+      "areaM2": 148.57858727745008,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "727844d62852093dd425f001e0a9f09fa03a3a0f76213d11bbfd2a0b57f042ab"
+    },
+    {
+      "id": "gaborone:bofinet:1196~32634",
+      "sourceRowReference": [
+        "1196",
+        32634
+      ],
+      "fid": 31874,
+      "lotId": "1196",
+      "objectId1": 32634,
+      "areaM2": 148.57006708468424,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "7c5db801cd83561ad94532f10c8272152c218a7d7f4973355b2d21f0ef5949c4"
+    },
+    {
+      "id": "gaborone:bofinet:1090~33029",
+      "sourceRowReference": [
+        "1090",
+        33029
+      ],
+      "fid": 32261,
+      "lotId": "1090",
+      "objectId1": 33029,
+      "areaM2": 148.58214343518256,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e465461ff452688ce7e49c98a777b05ff0b30cecbbbc9cee6cb656ee9cbc5af0"
+    },
+    {
+      "id": "gaborone:bofinet:1190~34068",
+      "sourceRowReference": [
+        "1190",
+        34068
+      ],
+      "fid": 33271,
+      "lotId": "1190",
+      "objectId1": 34068,
+      "areaM2": 148.57915127346357,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "43feef78f5de62535feb409852d1b1a6be9689b4161ea9e0ab2fad4881f7580d"
+    },
+    {
+      "id": "gaborone:bofinet:1189~35551",
+      "sourceRowReference": [
+        "1189",
+        35551
+      ],
+      "fid": 34725,
+      "lotId": "1189",
+      "objectId1": 35551,
+      "areaM2": 148.58035179464363,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "402034c625685427aa6d3dc3745ad6124735fcab533d205fdcb242ec44ad7b8c"
+    },
+    {
+      "id": "gaborone:bofinet:1192~40565",
+      "sourceRowReference": [
+        "1192",
+        40565
+      ],
+      "fid": 39626,
+      "lotId": "1192",
+      "objectId1": 40565,
+      "areaM2": 148.58130124322156,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "a6fa0ad6b969ea501ed90a545ece73c1dcec32379520c7c6b07da9039739c405"
+    },
+    {
+      "id": "gaborone:bofinet:22~23563",
+      "sourceRowReference": [
+        "22",
+        23563
+      ],
+      "fid": 23004,
+      "lotId": "22",
+      "objectId1": 23563,
+      "areaM2": 2784.216483960664,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "90095281720d23b661f0a59f1629ea7b39e0fb8c21c6d5a614eedb8f7d446d6d"
+    },
+    {
+      "id": "gaborone:bofinet:21~25718",
+      "sourceRowReference": [
+        "21",
+        25718
+      ],
+      "fid": 25117,
+      "lotId": "21",
+      "objectId1": 25718,
+      "areaM2": 2444.283590306398,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "7d744f2d37919184b33ae707f4d50e57d9c7f8048083055270c21ed13e7f97f0"
+    },
+    {
+      "id": "gaborone:bofinet:1078~28229",
+      "sourceRowReference": [
+        "1078",
+        28229
+      ],
+      "fid": 27567,
+      "lotId": "1078",
+      "objectId1": 28229,
+      "areaM2": 475.931585475592,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "e99d65174fbc68714d3133dd35e5ed19feedae2dd029e3e12f5e47100aabfc3e"
+    },
+    {
+      "id": "gaborone:bofinet:1199~2953",
+      "sourceRowReference": [
+        "1199",
+        2953
+      ],
+      "fid": 2865,
+      "lotId": "1199",
+      "objectId1": 2953,
+      "areaM2": 1430.0567320631458,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "1d70ff856c71704e70a92cede7ee343629d48d58fe9490ad18e214f2101a21ad"
+    },
+    {
+      "id": "gaborone:bofinet:29~15349",
+      "sourceRowReference": [
+        "29",
+        15349
+      ],
+      "fid": 14968,
+      "lotId": "29",
+      "objectId1": 15349,
+      "areaM2": 2028.543356936107,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "218dcba5d8aa0485d257a0d6e03e987d10b1a5b09aad077f21db377fbb2b57a9"
+    },
+    {
+      "id": "gaborone:bofinet:28~33164",
+      "sourceRowReference": [
+        "28",
+        33164
+      ],
+      "fid": 32391,
+      "lotId": "28",
+      "objectId1": 33164,
+      "areaM2": 2139.85109078023,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "9b2c8575f499a5182d7a79e95b46c3e908c8ef6bac9e11f2c14ff21ace2a7bd6"
+    },
+    {
+      "id": "gaborone:bofinet:1069~6596",
+      "sourceRowReference": [
+        "1069",
+        6596
+      ],
+      "fid": 6420,
+      "lotId": "1069",
+      "objectId1": 6596,
+      "areaM2": 972.5929092626739,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "94a49a058c4a765aa5aae9957e1dd4ecc5556232e3b3f0cf2508e2a900a034cb"
+    },
+    {
+      "id": "gaborone:bofinet:50350~17889",
+      "sourceRowReference": [
+        "50350",
+        17889
+      ],
+      "fid": 17456,
+      "lotId": "50350",
+      "objectId1": 17889,
+      "areaM2": 11205.113226872672,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "a33e700643fbede15654b2bc347282f2172e14bfdfb03e0385875a8a4e00e722"
+    },
+    {
+      "id": "gaborone:bofinet:6040~47316",
+      "sourceRowReference": [
+        "6040",
+        47316
+      ],
+      "fid": 46234,
+      "lotId": "6040",
+      "objectId1": 47316,
+      "areaM2": 788.822590424336,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "55dd5e6d02a513a52a91c9d48e7a71c747da483c1290d4156036db06f9c94b9a"
+    },
+    {
+      "id": "gaborone:bofinet:6039~47317",
+      "sourceRowReference": [
+        "6039",
+        47317
+      ],
+      "fid": 46235,
+      "lotId": "6039",
+      "objectId1": 47317,
+      "areaM2": 788.8130823887564,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "f6e0515e7c7457c96bde94503f50447f2a96d1888c65397ee303c104305ef68a"
+    },
+    {
+      "id": "gaborone:bofinet:6038~47320",
+      "sourceRowReference": [
+        "6038",
+        47320
+      ],
+      "fid": 46238,
+      "lotId": "6038",
+      "objectId1": 47320,
+      "areaM2": 679.409255095733,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "4a5cff1964a4d313fffb3826f115597a52fcdd67fc329bf64a170169186b7554"
+    },
+    {
+      "id": "gaborone:bofinet:REM%20OF%20LOT%20680~47321",
+      "sourceRowReference": [
+        "REM OF LOT 680",
+        47321
+      ],
+      "fid": 46239,
+      "lotId": "REM OF LOT 680",
+      "objectId1": 47321,
+      "areaM2": 5834.925706497621,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8e15de94289b519b4702e0c0a7b6ff3ba131d188fd65eaf6f2431f0f097d45e2"
+    },
+    {
+      "id": "gaborone:bofinet:6037~47322",
+      "sourceRowReference": [
+        "6037",
+        47322
+      ],
+      "fid": 46240,
+      "lotId": "6037",
+      "objectId1": 47322,
+      "areaM2": 734.8469119966808,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "80e639ef267248e4e3ff8dff58cf774a4b313610ccc79f98fc5c021896bbd57e"
+    },
+    {
+      "id": "gaborone:bofinet:24~31831",
+      "sourceRowReference": [
+        "24",
+        31831
+      ],
+      "fid": 31084,
+      "lotId": "24",
+      "objectId1": 31831,
+      "areaM2": 2968.4819595062904,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "3670da3b4a080262bce7867be5808cf12b360fbccf04d4114999eb495240c1a9"
+    },
+    {
+      "id": "gaborone:bofinet:17938~32642",
+      "sourceRowReference": [
+        "17938",
+        32642
+      ],
+      "fid": 31882,
+      "lotId": "17938",
+      "objectId1": 32642,
+      "areaM2": 29850.90811459805,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8c79f6b26dd7005711d485cfcaa273434987cdbf0ae292881837b42abed8bc39"
+    },
+    {
+      "id": "gaborone:bofinet:23~32724",
+      "sourceRowReference": [
+        "23",
+        32724
+      ],
+      "fid": 31963,
+      "lotId": "23",
+      "objectId1": 32724,
+      "areaM2": 3199.644474452087,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "8579566927d5c9036cba6e21a77a25a4a1859d9a5dca8396ed29f40f9d59a672"
+    },
+    {
+      "id": "gaborone:bofinet:1092~2462",
+      "sourceRowReference": [
+        "1092",
+        2462
+      ],
+      "fid": 2386,
+      "lotId": "1092",
+      "objectId1": 2462,
+      "areaM2": 143.92660514731887,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "2c36126ce5c4f986f925cae4e3a50096c4e6b25bce63553cc08ac9ba7206fdfc"
+    },
+    {
+      "id": "gaborone:bofinet:1094~3550",
+      "sourceRowReference": [
+        "1094",
+        3550
+      ],
+      "fid": 3441,
+      "lotId": "1094",
+      "objectId1": 3550,
+      "areaM2": 143.93520161798892,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "82544297af4795ce39aec0d3c9fc9704ca408de6da087a2871e58d657fc5aee6"
+    },
+    {
+      "id": "gaborone:bofinet:1184~3677",
+      "sourceRowReference": [
+        "1184",
+        3677
+      ],
+      "fid": 3566,
+      "lotId": "1184",
+      "objectId1": 3677,
+      "areaM2": 148.57969726435425,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ca229cf0770ba86602d92238afa513aa107a74dcc92680970334d32fd496df55"
+    },
+    {
+      "id": "gaborone:bofinet:1201~4279",
+      "sourceRowReference": [
+        "1201",
+        4279
+      ],
+      "fid": 4156,
+      "lotId": "1201",
+      "objectId1": 4279,
+      "areaM2": 913.9213876687123,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "f06fc1f23214816acf56a458bdffae535f2ec9b134635940b755548fbc373839"
+    },
+    {
+      "id": "gaborone:bofinet:1096~11690",
+      "sourceRowReference": [
+        "1096",
+        11690
+      ],
+      "fid": 11400,
+      "lotId": "1096",
+      "objectId1": 11690,
+      "areaM2": 148.57074526415818,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "aa097a59c69c8326ff5ac0b2914cf3ef88688eb294b86dc7ccbc854981b7c1f8"
+    },
+    {
+      "id": "gaborone:bofinet:1095~12586",
+      "sourceRowReference": [
+        "1095",
+        12586
+      ],
+      "fid": 12270,
+      "lotId": "1095",
+      "objectId1": 12586,
+      "areaM2": 148.56710100503977,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "054d13f1962175d66a5fa4063fe86660154a20b681d95f1fd536469c5400a49c"
+    },
+    {
+      "id": "gaborone:bofinet:1091~14119",
+      "sourceRowReference": [
+        "1091",
+        14119
+      ],
+      "fid": 13761,
+      "lotId": "1091",
+      "objectId1": 14119,
+      "areaM2": 148.56751230088855,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "02217c9b2b389fc9883a465d144234b68901557ea6214341ea82f28d137e07e4"
+    },
+    {
+      "id": "gaborone:bofinet:1175~14537",
+      "sourceRowReference": [
+        "1175",
+        14537
+      ],
+      "fid": 14172,
+      "lotId": "1175",
+      "objectId1": 14537,
+      "areaM2": 148.57102280875017,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "9c8ef7f7c885617c214d05be416fd36d218b78a952ca40a39ed122f9f82e9496"
+    },
+    {
+      "id": "gaborone:bofinet:1181~20290",
+      "sourceRowReference": [
+        "1181",
+        20290
+      ],
+      "fid": 19809,
+      "lotId": "1181",
+      "objectId1": 20290,
+      "areaM2": 812.4845736633839,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "dca5d06733a5574e19cd607eb6cc7ee621434180825e86295849aef6a9642d27"
+    },
+    {
+      "id": "gaborone:bofinet:1182~22289",
+      "sourceRowReference": [
+        "1182",
+        22289
+      ],
+      "fid": 21763,
+      "lotId": "1182",
+      "objectId1": 22289,
+      "areaM2": 812.4971446085249,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "0b512568aada91b4c39b876485b91572ae9696159b956a3730e153f6179ee1f0"
+    },
+    {
+      "id": "gaborone:bofinet:1099~24527",
+      "sourceRowReference": [
+        "1099",
+        24527
+      ],
+      "fid": 23947,
+      "lotId": "1099",
+      "objectId1": 24527,
+      "areaM2": 148.57864014700365,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "98ac05831439b913fe3c82ce364eb123c95bce6c977d8d7dcbe0bcfa938a98d7"
+    },
+    {
+      "id": "gaborone:bofinet:1176~25741",
+      "sourceRowReference": [
+        "1176",
+        25741
+      ],
+      "fid": 25140,
+      "lotId": "1176",
+      "objectId1": 25741,
+      "areaM2": 148.56920398429673,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "d27c5021dd441de561079f4218cbd57602e5ddacd8e1a34b429479117f656ca5"
+    },
+    {
+      "id": "gaborone:bofinet:686~25804",
+      "sourceRowReference": [
+        "686",
+        25804
+      ],
+      "fid": 25202,
+      "lotId": "686",
+      "objectId1": 25804,
+      "areaM2": 871.3283855387945,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "02d5a24bbff1b2f091aff2c24877113524c174a39cd5d2b4ff35229a074d6315"
+    },
+    {
+      "id": "gaborone:bofinet:684~26321",
+      "sourceRowReference": [
+        "684",
+        26321
+      ],
+      "fid": 25704,
+      "lotId": "684",
+      "objectId1": 26321,
+      "areaM2": 927.5538014936996,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "6459afc9a218b55a9ae70dc80619c11cde58f1d4bf2df3797e1c6497144df302"
+    },
+    {
+      "id": "gaborone:bofinet:1180~30445",
+      "sourceRowReference": [
+        "1180",
+        30445
+      ],
+      "fid": 29728,
+      "lotId": "1180",
+      "objectId1": 30445,
+      "areaM2": 143.91951469588835,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "6ab8371a8af774408fd01be3e37a94fecfa922c17e94e3041b105590c7467065"
+    },
+    {
+      "id": "gaborone:bofinet:1177~31670",
+      "sourceRowReference": [
+        "1177",
+        31670
+      ],
+      "fid": 30927,
+      "lotId": "1177",
+      "objectId1": 31670,
+      "areaM2": 148.58322588205328,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "ad543ea1453f54db3b7bb169dbc06e2d6f2f7ec89a3d949a944f5c6e7505fa31"
+    },
+    {
+      "id": "gaborone:bofinet:685~38860",
+      "sourceRowReference": [
+        "685",
+        38860
+      ],
+      "fid": 37961,
+      "lotId": "685",
+      "objectId1": 38860,
+      "areaM2": 927.5710017689063,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "4de42bc9e218b165b4a8bd4a3d024b49e073d3b6efb9120f91fa29330266c59e"
+    },
+    {
+      "id": "gaborone:bofinet:1183~39306",
+      "sourceRowReference": [
+        "1183",
+        39306
+      ],
+      "fid": 38397,
+      "lotId": "1183",
+      "objectId1": 39306,
+      "areaM2": 143.92858374340926,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "69fc3693935d1bfa8ce567ae7b8a7b80e4c8420e3984b73143805759c9b82f23"
+    },
+    {
+      "id": "gaborone:bofinet:1178~39881",
+      "sourceRowReference": [
+        "1178",
+        39881
+      ],
+      "fid": 38962,
+      "lotId": "1178",
+      "objectId1": 39881,
+      "areaM2": 148.58079795310408,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "5e8cbd3ca5f48854063688dbe639b6f23b520be540a23540be009ef851cc2235"
+    },
+    {
+      "id": "gaborone:bofinet:1097~40864",
+      "sourceRowReference": [
+        "1097",
+        40864
+      ],
+      "fid": 39920,
+      "lotId": "1097",
+      "objectId1": 40864,
+      "areaM2": 148.57622073583588,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "65ba1012deb5ae6baf2184737e0687cad9a09bc22d50cb46328772ddd9832a71"
+    },
+    {
+      "id": "gaborone:bofinet:1098~44608",
+      "sourceRowReference": [
+        "1098",
+        44608
+      ],
+      "fid": 43577,
+      "lotId": "1098",
+      "objectId1": 44608,
+      "areaM2": 148.5707271665294,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "410e5e03280ec7afdc1d830c4dd13e107cf93c2a1098d8fed3b030cb6098c2d7"
+    },
+    {
+      "id": "gaborone:bofinet:1179~45926",
+      "sourceRowReference": [
+        "1179",
+        45926
+      ],
+      "fid": 44865,
+      "lotId": "1179",
+      "objectId1": 45926,
+      "areaM2": 148.58141606586145,
+      "valid": true,
+      "validityReason": null,
+      "geometrySha256": "d0752bfe5136d2a1aef39642b8ef8a6a90cef085056b8987e5900b3fac2533fc"
+    }
+  ],
+  "qualityHold": false,
+  "qualityHoldReasons": [],
+  "quantileMethod": "nearest-index floor((n-1)*q)",
+  "fragmentContext": {
+    "allBelow25m2Ids": [
+      {
+        "id": "gaborone:bofinet:681~9340",
+        "fid": 9102,
+        "lotId": "681",
+        "objectId1": 9340,
+        "areaM2": 4.6081394469161765
+      },
+      {
+        "id": "gaborone:bofinet:681~9341",
+        "fid": 9103,
+        "lotId": "681",
+        "objectId1": 9341,
+        "areaM2": 0.26880231706565616
+      },
+      {
+        "id": "gaborone:bofinet:681~9897",
+        "fid": 9645,
+        "lotId": "681",
+        "objectId1": 9897,
+        "areaM2": 0.3879081383555597
+      }
+    ],
+    "sharedLotId": "681",
+    "sharedTownLotI": 681,
+    "sharedSrNo": "11/1963",
+    "sharedDiagramNo": "48/1963",
+    "note": "All three small rows belong to the repeated LotId 681 group. They were retained and audited without filtering or geometry repair."
+  },
+  "qualityHoldRationale": "No invalid polygons, duplicate geometries, positive-area overlaps or overlay errors were found. Three of 76 rows (3.95%) are below 25 m2 and all cluster in the repeated LotId 681 group; that is a localized source-interpretation issue, not a widespread fragment pattern in this sample. No rows were filtered or repaired."
+}

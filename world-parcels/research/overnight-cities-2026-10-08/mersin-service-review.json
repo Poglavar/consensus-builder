@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5529-mersin.json",
+  "purpose": "City-specific official registry/map evidence and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official documents establish an open public parcel search/map service and Mersin-local cadastre office. The exact WUP coordinate request reached the API but was stopped by its daily query limit; no feature or absence is inferred.",
+  "registryAssessment": "The official TKGM Parsel Sorgu service is documented as a free public parcel-map/query service with coordinate, address and administrative search and parcel area, sheet, type, coordinates and KML/PDF outputs; the official Mersin Cadastre Directorate is the local office. Anonymous point API request was rate-limited before returning a feature, so no polygon was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "Official TKGM page describes the public/free Parsel Sorgu search and map, supported coordinate/address/admin inputs, parcel area, sheet, type, coordinates and KML/PDF output; owner name and Turkish identity-number lookup are not offered."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/hatay-bm/bagli-mudurlukler/mersin-kadastro-mudurlugu",
+      "observation": "Official local Mersin Cadastre Directorate contact page."
+    },
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "observation": "Official portal entry for the parcel-query app; portal also presents authenticated access options."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mersin Turkey official cadastral parcels public map land registry GIS TKGM",
+      "result": "TKGM documents a free public parcel search/map with coordinates, parcel area, sheet/type and KML/PDF outputs; exact anonymous coordinate request hit the service daily limit.",
+      "method": "Separate-language discovery and official-source review."
+    },
+    {
+      "language": "Turkish",
+      "query": "Mersin parsel sorgu kadastro müdürlüğü resmi parsel haritası koordinat sorgulama",
+      "result": "Resmî TKGM Parsel Sorgu ücretsiz parsel haritası ve koordinat/adres/idarî arama, alan, pafta, nitelik, koordinat ve KML/PDF çıktılarını belgeliyor; Mersin Kadastro Müdürlüğü yerel birimdir. Anonim koordinat isteği günlük sorgu sınırına takıldı.",
+      "method": "Separate-language discovery and official-source review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "method": "GET",
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/36.8107872459797/34.6176386115012/",
+      "httpStatus": 403,
+      "contentType": "text/plain",
+      "observation": "Exact ranked-point anonymous coordinate request with official portal Referer/Origin returned 'Günlük sorgu limitini aştınız.' (daily query limit exceeded). This is rate limiting, not a zero-feature response; no geometry was returned and the endpoint was not retried."
+    }
+  ],
+  "privacy": "Only safe source-native parcel identifiers and geometry are retained where returned. No owner, address, title, account or tax data were requested.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "geometryAttempt": {
+    "attempted": true,
+    "status": "HTTP 403 daily query limit exceeded before feature response",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "fieldsRequested": [],
+    "geometryRetained": false
+  },
+  "remainingUncertainty": "Whether this exact point resolves to a polygon and what safe polygon schema/coverage the API returns after the daily limit resets."
+}

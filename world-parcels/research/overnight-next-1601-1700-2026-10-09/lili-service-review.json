@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-11742-lili.json",
+  "cityCode": 11742,
+  "queueRank": 1613,
+  "city": "Lili",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "First-party sources identify Lili as 黎里镇 in Wujiang District, Suzhou and evidence the local natural-resources/planning custodian plus Jiangsu land-registration service. No public parcel geometry, stable parcel ID response, or downloadable cadastral layer was verified. Runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese first-party discovery queries are recorded in city-11742-lili.json. They found official place, planning, natural-resources 一张图, and registration-service pages, but no public parcel geometry endpoint.",
+  "requestOutcomes": "Official discovery/open succeeded for the cited pages. A bounded GET to wujiang.gov.cn/robots.txt timed out with no bytes; no login, credentials, private token, CAPTCHA/Cloudflare bypass, TLS disablement, or unsafe lookup was used. The timeout is recorded as an access limitation rather than absence evidence.",
+  "scopeLimits": [
+    "Planning and 一张图 database evidence does not prove that a public cadastral parcel layer is available.",
+    "The Jiangsu registration portal is a procedure/service navigator, not a public parcel geometry API in the observed route.",
+    "No exact-point hit or miss was used as a citywide presence/absence claim, and the WUP point was not shifted.",
+    "No GeoJSON sample was retained because no safe native parcel geometry and identity response was obtained.",
+    "Local custodian evidence is distinct from general national-agency prose, but no public adapter qualification was possible."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from search results, row order, or internal records.",
+  "nativeFieldMapping": {},
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The official local database could contain additional restricted or non-public layers. Public availability, schema, CRS, parcel identity, coverage, and safe runtime access remain unresolved. This packet must not be treated as source integration/admission.",
+  "retainedSample": null
+}

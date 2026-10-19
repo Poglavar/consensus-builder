@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-10-11",
+  "providerResearch": {
+    "verifiedCityDiscoveries": 275,
+    "alreadyProduction": 23,
+    "newDiscoveries": 252
+  },
+  "qualification": {
+    "awaitingFirstQualification": 270,
+    "heldAfterThisAdmission": 40,
+    "newlyAdmitted": 24
+  },
+  "production": {
+    "beforeCities": 193,
+    "afterCities": 217,
+    "increase": 24,
+    "beforeCatalogProviders": 165,
+    "afterCatalogProviders": 187
+  },
+  "qualificationEvidence": "research/qualification-admission-2026-10-11.json",
+  "definitions": {
+    "providerDiscovery": "A city with a successful provider query, stable native identities, an independent exact-ID reread and retained ID-only parcel sample; discovery is not production admission.",
+    "awaitingFirstQualification": "Unique positive UN city identities across web, provider and qualification records, excluding production cities and all cities already attempted by qualification.",
+    "held": "Previously attempted qualification requiring data-source fixes, adapter work or reliable provider access; excludes the five adapter cities admitted in this release."
+  }
+}

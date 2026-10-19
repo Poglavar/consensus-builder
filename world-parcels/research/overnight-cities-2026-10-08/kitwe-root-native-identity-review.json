@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:45:50.431533+00:00",
+  "features": [
+    {
+      "runtimeId": "ZM-NSDI-LOT-112196",
+      "originalNativeProperties": {
+        "SDE.Lots.UPID": "KIT/1005"
+      },
+      "originalSampleMatchesFreshFullGeometry": true,
+      "rawCoordinateArraysIdentical": true,
+      "topologicallyIdentical": true,
+      "metricSrid": 32735,
+      "symmetricDifferenceM2": 0.0,
+      "hausdorffDistanceM": 0.0
+    },
+    {
+      "runtimeId": "ZM-NSDI-LOT-112202",
+      "originalNativeProperties": {
+        "SDE.Lots.UPID": "KIT/444"
+      },
+      "originalSampleMatchesFreshFullGeometry": true,
+      "rawCoordinateArraysIdentical": true,
+      "topologicallyIdentical": true,
+      "metricSrid": 32735,
+      "symmetricDifferenceM2": 0.0,
+      "hausdorffDistanceM": 0.0
+    },
+    {
+      "runtimeId": "ZM-NSDI-LOT-112211",
+      "originalNativeProperties": {
+        "SDE.Lots.UPID": "KIT/1653"
+      },
+      "originalSampleMatchesFreshFullGeometry": true,
+      "rawCoordinateArraysIdentical": true,
+      "topologicallyIdentical": true,
+      "metricSrid": 32735,
+      "symmetricDifferenceM2": 0.0,
+      "hausdorffDistanceM": 0.0
+    }
+  ],
+  "sourceCoordinatesModified": false,
+  "fullGeometryRetainedInReview": false
+}

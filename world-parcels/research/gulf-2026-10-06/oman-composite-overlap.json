@@ -1,0 +1,110 @@
+[
+  {
+    "nativePair": [
+      "01-03-002-01-6220",
+      "6220"
+    ],
+    "metrics": [
+      {
+        "areaA": 370,
+        "areaB": 350,
+        "intersectionM2": 350,
+        "symmetricDifferenceM2": 20,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 370,
+        "areaB": 345,
+        "intersectionM2": 345,
+        "symmetricDifferenceM2": 25,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 370,
+        "areaB": 370,
+        "intersectionM2": 370,
+        "symmetricDifferenceM2": 0,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 350,
+        "areaB": 345,
+        "intersectionM2": 345,
+        "symmetricDifferenceM2": 6,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 350,
+        "areaB": 370,
+        "intersectionM2": 350,
+        "symmetricDifferenceM2": 20,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 345,
+        "areaB": 370,
+        "intersectionM2": 345,
+        "symmetricDifferenceM2": 25,
+        "overlapRatio": 1
+      }
+    ]
+  },
+  {
+    "nativePair": [
+      "01-05-007-01-6216",
+      "6216"
+    ],
+    "metrics": [
+      {
+        "areaA": 703,
+        "areaB": 704,
+        "intersectionM2": 703,
+        "symmetricDifferenceM2": 0,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 703,
+        "areaB": 704,
+        "intersectionM2": 703,
+        "symmetricDifferenceM2": 0,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 704,
+        "areaB": 704,
+        "intersectionM2": 704,
+        "symmetricDifferenceM2": 0,
+        "overlapRatio": 1
+      }
+    ]
+  },
+  {
+    "nativePair": [
+      "01-05-007-01-6222",
+      "6222"
+    ],
+    "metrics": [
+      {
+        "areaA": 704,
+        "areaB": 704,
+        "intersectionM2": 704,
+        "symmetricDifferenceM2": 0,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 704,
+        "areaB": 704,
+        "intersectionM2": 704,
+        "symmetricDifferenceM2": 0,
+        "overlapRatio": 1
+      },
+      {
+        "areaA": 704,
+        "areaB": 704,
+        "intersectionM2": 704,
+        "symmetricDifferenceM2": 0,
+        "overlapRatio": 1
+      }
+    ]
+  }
+]

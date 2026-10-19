@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 120,
+  "city": "Dakar",
+  "countryCode": "SN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/dakar.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Dakar cadastre parcellaire données géographiques SIG WFS données ouvertes Sénégal"
+  },
+  "results": [
+    {
+      "title": "GeoSenegal — Occupation du sol Dakar ND 28 XIII",
+      "url": "https://www.geosenegal.gouv.sn/occupation-du-sol-dakar-nd-28-xiii.html",
+      "kind": "official-land-use",
+      "note": "Land-use layer; not cadastral parcels."
+    }
+  ],
+  "assessment": "Search found GeoSenegal vector land-use data for Dakar and PROCASEF material, but land-use coverage is not cadastral parcels and no parcel service or stable identifier was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6484-izhevsk.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No official anonymous full-polygon endpoint, safe feature schema or exact-point response was verified. Public-map search results were not sufficient to establish current access.",
+  "registryAssessment": "A government municipal page from nearby Votkinsk identifies the Udmurtia Rosreestr cadastral/registration authority and an Izhevsk office. This supports a local federal registry presence but is not direct city-government evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.votkinsk.ru/city/employment_service/rosreestr/",
+      "observation": "Official Votkinsk municipal page describes the Rosreestr Udmurtia cadastral/registration office and gives an Izhevsk branch address; this is state authority evidence but not an Izhevsk city page."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "observation": "Federal Rosreestr portal, the national registration/cadastre authority; no anonymous vector service at the WUP point was verified."
+    },
+    {
+      "url": "https://izh.ru/",
+      "observation": "Izhevsk municipal portal reviewed for city land/urban planning context; no local open cadastral geometry layer was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Izhevsk Russia official cadastral map Rosreestr Udmurt Republic city land registry",
+      "result": "Search results identified the federal Rosreestr cadastral/registration authority and an Udmurtia office in Izhevsk via an official neighboring-municipality page; no anonymous city geometry endpoint was verified.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Russian",
+      "query": "Ижевск официальный сайт земельный кадастр Росреестр Удмуртия публичная кадастровая карта",
+      "result": "Russian-language results identified Rosreestr cadastral administration in Izhevsk but no first-party public vector schema or live feature service.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Reviewed public administrative descriptions only; no account-based rights, parcel, owner or address lookup submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

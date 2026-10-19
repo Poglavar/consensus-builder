@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9997",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-9997-chandrapur.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/chandrapur-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T14:52:59.800571Z",
+  "reason": "Official Chandrapur district and Maharashtra land-record pages support registry custody, but the public viewer timed out and no native parcel polygon or adapter qualification was recorded."
+}

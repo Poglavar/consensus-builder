@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-4241-mweka.json",
+  "cityCode": 4241,
+  "queueRank": 2079,
+  "city": "Mweka",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official discovery found the Ministry of Land Affairs jurisdiction directory listing Mweka in Kasaï and the official register-research service; no public parcel geometry route was found.",
+    "native": "La recherche française a confirmé la circonscription foncière de Mweka au Kasaï et la procédure officielle de recherche dans les registres; aucune géométrie parcellaire publique et anonyme n'a été vérifiée."
+  },
+  "custodian": {
+    "name": "Ministère des Affaires Foncières de la République Démocratique du Congo",
+    "role": "National ministry with a specifically listed Mweka cadastral/land jurisdiction in Kasaï; the directory is local-jurisdiction evidence, but no open parcel-data service was verified.",
+    "evidenceUrls": [
+      "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "https://servicepublic.gouv.cd/service/4671"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "result": "Official directory lists Mweka under Kasaï."},
+    {"route": "French first-party discovery", "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes", "result": "Official French workflow confirms formal research through the selected Mweka jurisdiction; it requires identity/request documents."},
+    {"route": "Official Ministry home shell", "url": "https://affairesfoncieres.gouv.cd/", "result": "HTTP 200; current JS/configuration references were inspected, with no public parcel viewer exposed."},
+    {"route": "Official jurisdiction directory", "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "result": "HTTP 200; Mweka listed, but static directory has no parcel map/API."},
+    {"route": "Official research form", "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes", "result": "HTTP 200; JS exposes POST /api/demandes-foncieres, a formal document-backed request route, not a parcel data service."},
+    {"route": "Anonymous API probe", "url": "https://www.affairesfoncieres.gouv.cd/api/demandes-foncieres", "result": "GET returned HTTP 405; POST was not attempted because the route is a protected formal request workflow requiring personal documents."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "source field names and mapping in metadata only", "request metadata"],
+    "sourceFieldMapping": null,
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "encumbrances"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No anonymous public parcel ID-plus-geometry response was exposed by the inspected official site, current JavaScript/configuration, or formal-request route. No exact-point hit or miss was used as evidence of citywide cadastral absence."
+  },
+  "scopeLimits": [
+    "Exact WUP point [-4.84977608052538, 21.5592303637001] was preserved in latitude/longitude order and was not shifted.",
+    "The evidence establishes the Ministry and its listed Mweka jurisdiction, not a verified open digital parcel layer.",
+    "No public parcel API/viewer, schema, CRS, or bounded ID-plus-geometry response was verified, so no sample GeoJSON was retained.",
+    "The formal request route was not submitted because it requires identity and signed-request documents; no credentials or private tokens were used.",
+    "Packet completion and absence of a retained sample do not constitute source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Mweka local jurisdiction is first-party evidenced, but public digital parcel coverage and current parcel schema/CRS remain unknown."
+  }
+}

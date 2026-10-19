@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7176-al-ismailiya.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "ESA sources establish a national survey authority with cadastral-map responsibilities and Ismailia-related survey/map coverage, including topographic sheets and state-property mapping. The examined sources do not establish a complete city parcel registry or anonymous parcel geometry service; a government gazette parcel sketch is location-specific and does not establish WUP-point coverage.",
+  "registryAssessment": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+    },
+    {
+      "url": "https://www.esa.gov.eg/amlak.aspx",
+      "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+    },
+    {
+      "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/99452/OG22_20250529_3325.pdf?isAllowed=y&sequence=2",
+      "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ismailia Egypt official cadastral parcel map GIS Survey Authority land registry",
+      "result": "ESA describes its national survey and cadastral-map role; inspected Ismailia materials were topographic or government-land/legal notices, not a public city parcel GIS.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    },
+    {
+      "language": "Arabic",
+      "query": "الإسماعيلية خريطة مساحية كادستر قطع أراضي سجل عقاري رسمي الهيئة العامة للمساحة",
+      "result": "مصادر الهيئة العامة للمساحة التي تم فحصها تتناول الخرائط الطبوغرافية أو أملاك الدولة وإجراءات المسح، ولم يظهر عارض عام لقطع الأراضي على مستوى المدينة.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact WUP settlement point and reviewed official sources only.",
+    "limits": "Whether a city-level registry or public parcel GIS covers the exact WUP settlement locator is unverified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET Egyptian Survey Authority official homepage",
+      "result": "General authority and cadastral-map role identified; no Ismailia city parcel viewer exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "method": "GET official topographic map index",
+      "result": "Lists Ismailia sheets at 1:100,000; topographic mapping is not parcel geometry."
+    },
+    {
+      "url": "https://www.esa.gov.eg/amlak.aspx",
+      "method": "GET official state-property page",
+      "result": "Describes state-property inventory mapping, which does not establish a complete private-parcel register."
+    }
+  ],
+  "remainingUncertainty": "Whether a city-level registry or public parcel GIS covers the exact WUP settlement locator is unverified."
+}

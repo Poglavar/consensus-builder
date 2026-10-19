@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Ahmedabad",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 6408,
+  "capital": false,
+  "lon": 72.5971679403649,
+  "lat": 23.0208369805955,
+  "pop2025k": 7632.408,
+  "rank": 44
+ },
+ {
+  "name": "Hangzhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11700,
+  "capital": false,
+  "lon": 120.251210061553,
+  "lat": 30.2812755535444,
+  "pop2025k": 7500.208,
+  "rank": 45
+ },
+ {
+  "name": "Wuhan",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 10474,
+  "capital": false,
+  "lon": 114.29680212821,
+  "lat": 30.566050128464,
+  "pop2025k": 7363.548,
+  "rank": 46
+ },
+ {
+  "name": "Tianjin",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 9414,
+  "capital": false,
+  "lon": 117.194186505366,
+  "lat": 39.1326804781437,
+  "pop2025k": 7285.342,
+  "rank": 47
+ },
+ {
+  "name": "Alexandria",
+  "country": "Egypt",
+  "iso2": "EG",
+  "cityCode": 275,
+  "capital": false,
+  "lon": 29.9517660943627,
+  "lat": 31.1933695758061,
+  "pop2025k": 7266.957,
+  "rank": 48
+ },
+ {
+  "name": "Nagoya",
+  "country": "Japan",
+  "iso2": "JP",
+  "cityCode": 5245,
+  "capital": false,
+  "lon": 136.926722955036,
+  "lat": 35.1653670097016,
+  "pop2025k": 7146.16,
+  "rank": 49
+ },
+ {
+  "name": "Johannesburg",
+  "country": "South Africa",
+  "iso2": "ZA",
+  "cityCode": 3664,
+  "capital": false,
+  "lon": 27.8600917239307,
+  "lat": -26.1204492874788,
+  "pop2025k": 7077.175,
+  "rank": 50
+ },
+ {
+  "name": "Chongqing",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 8833,
+  "capital": false,
+  "lon": 106.515968495144,
+  "lat": 29.5454097856414,
+  "pop2025k": 7071.073,
+  "rank": 51
+ },
+ {
+  "name": "Ar-Riyāḑ (Riyadh)",
+  "country": "Saudi Arabia",
+  "iso2": "SA",
+  "cityCode": 2961,
+  "capital": true,
+  "lon": 46.7206037028758,
+  "lat": 24.6885868840551,
+  "pop2025k": 6916.417,
+  "rank": 52
+ },
+ {
+  "name": "Surat",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 7233,
+  "capital": false,
+  "lon": 72.7789187685758,
+  "lat": 21.1776194957192,
+  "pop2025k": 6908.925,
+  "rank": 53
+ }
+]

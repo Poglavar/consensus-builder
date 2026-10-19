@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5783",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5783-pleiku.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pleiku-service-review.json",
+    "tmp/valhalla-parcel-research/5783/maps.html",
+    "tmp/valhalla-parcel-research/5783/maps.headers"
+  ],
+  "reason": "WUP 2025 source archive and immutable queue agree on code 5783, rank 2619, Viet Nam, point [13.9810796315592,108.00609393472], and 225153 persons. English and Vietnamese searches are recorded. Official Pleiku material supports local land-registration custody, while the GDLA viewer loaded and recorded anonymous cadastral feature/detail/tile requests returned HTTP 401 login responses. No native-ID polygon or sample exists. A login wall is not citywide absence. All live adapter, pagination, 13-cell, metric GEOS, binding, and headed Details admission gates remain unproved. Hold without runtime admission.",
+  "custodyFinding": "true: official Pleiku land-administration material identifies the Gia Lai land-registration branch; public anonymous parcel geometry remains unverified",
+  "retainedFullPolygons": 0,
+  "checkedAt": "2026-10-11T16:17:38Z",
+  "runtimeAdmitted": false
+}

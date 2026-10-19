@@ -1,0 +1,86 @@
+{
+  "cityCode": 1443,
+  "queueRank": 3000,
+  "name": "San Luis Río Colorado",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [32.4485637631645, -114.764890687057],
+  "population2025": 199412,
+  "population2025k": 199.412,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "San Luis Río Colorado Sonora cadastre parcel map official",
+        "result": "Found the official municipal Dirección de Catastro page, the state ICReSON local registry page, and official Sonora cadastral-cartography procedure material. No public anonymous parcel feature service was found.",
+        "actualResultUrls": [
+          "https://sanluisrc.gob.mx/gobierno/dependencias/direccion-de-catastro/",
+          "https://icreson.sonora.gob.mx/index.php?id=44&option=com_sppagebuilder&view=page",
+          "https://www.sonora.gob.mx/servicios-y-tramites/639.761-impresion-de-cartografia-catastral"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "San Luis Río Colorado Sonora catastro parcelas visor mapa oficial",
+        "result": "Confirmed the municipal Catastro custodian, municipal property/cadastral procedures, and the public municipal online-tramites host. The accessible pages expose procedures and a cadastral key label but no safe anonymous parcel ID-plus-geometry response.",
+        "actualResultUrls": [
+          "https://sanluisrc.gob.mx/gobierno/dependencias/direccion-de-catastro/",
+          "https://sanluisrc.gob.mx/tramites/mi-propiedad/",
+          "https://sanluisrc.gob.mx/tramites/mis-tramites/ficha-catastral/",
+          "https://lucca.sanluisrc.gob.mx/lucca?p1=5&p2=0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "custodians": [
+    {
+      "name": "Dirección de Catastro, Ayuntamiento de San Luis Río Colorado",
+      "scope": "Local municipal cadastral custody and cartography/procedure services",
+      "evidenceUrl": "https://sanluisrc.gob.mx/gobierno/dependencias/direccion-de-catastro/"
+    },
+    {
+      "name": "Instituto Catastral y Registral del Estado de Sonora (ICReSON), San Luis Río Colorado office",
+      "scope": "State real-estate registry office serving San Luis Río Colorado",
+      "evidenceUrl": "https://icreson.sonora.gob.mx/index.php?id=44&option=com_sppagebuilder&view=page"
+    }
+  ],
+  "queryAndRequestOutcomes": {
+    "officialViewerFollowed": "The municipal site links to the Lucca online-tramites host; its current HTML was inspected. It is a procedure/transaction interface, not an exposed parcel geometry API.",
+    "parcelSchema": null,
+    "nativeIdFieldsObserved": ["Clave Catastral (UI label only; no value requested or retained)"],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "anonymousGeometryResponse": false
+  },
+  "attemptedRoutes": [
+    {"url": "https://sanluisrc.gob.mx/gobierno/dependencias/direccion-de-catastro/", "method": "GET", "outcome": "HTTP 200; official municipal Catastro page identifies the department, functions, procedures, address and telephone; no map/API/configuration endpoint."},
+    {"url": "https://sanluisrc.gob.mx/tramites/mi-propiedad/", "method": "GET", "outcome": "HTTP 200; official property-service page lists cadastral cartography, subdivision/fusion and cadastral-record procedures; no public parcel geometry."},
+    {"url": "https://sanluisrc.gob.mx/tramites/mis-tramites/ficha-catastral/", "method": "GET", "outcome": "HTTP 200; official cadastral-certificate procedure page; no anonymous parcel response."},
+    {"url": "https://lucca.sanluisrc.gob.mx/lucca?p1=5&p2=0", "method": "GET", "outcome": "HTTP 200; current municipal online-tramites HTML inspected. Cadastral workflow labels are present, but no safe anonymous ID-plus-geometry endpoint was exposed; unsafe property fields were not requested."},
+    {"url": "https://icreson.sonora.gob.mx/index.php?id=44&option=com_sppagebuilder&view=page", "method": "GET", "outcome": "Search evidence identifies the official ICReSON San Luis Río Colorado registry office and contact/location details; direct retrieval returned a Cloudflare challenge, so no bypass or TLS exception was used."},
+    {"url": "https://www.sonora.gob.mx/servicios-y-tramites/639.761-impresion-de-cartografia-catastral", "method": "GET", "outcome": "Search evidence identifies the official state cadastral-cartography printing procedure; no parcel feature payload."},
+    {"url": "https://boletinoficial.sonora.gob.mx/boletin/images/boletinesPdf/2017/diciembre/2017CC48VI.pdf", "method": "GET", "outcome": "Official historical cadastral/value-map PDF found; it is a map/value publication, not a safe native parcel feature service, and no polygon was retained."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if explicitly source-proven", "full parcel polygon geometry", "geometry type", "source/output CRS", "public layer/schema metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "titleholder", "address", "contact", "personal identity", "tax/account", "certificate", "title", "property-rights details"],
+  "geometry": {"verified": false, "sampleFile": null, "sampleCount": 0, "fullNativeGeometryRetained": false},
+  "coverageLimits": {
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "exactPointTestedAgainstVerifiedParcelEndpoint": false,
+    "note": "The exact WUP point was preserved and not shifted. No exact-point hit or miss, map-extent miss, challenge, or absent public feature endpoint is treated as evidence of citywide absence."
+  },
+  "runtimeReadiness": "held_pending_independent_public_geometry_qualification",
+  "adapterReady": false,
+  "integrationState": "not_integrated",
+  "uncertainty": "Local municipal cadastral custody and a state registry office are evidenced, but a safe anonymous parcel geometry route, schema, CRS, native identity, and citywide coverage remain unverified. Serial review must independently qualify any future adapter; packet completion is not source integration/admission.",
+  "cohort": "overnight-next-2901-3000-2026-10-11",
+  "cohortState": "research_complete_pending_root_review"
+}

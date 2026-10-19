@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:4325",
+  "queueRank": 56,
+  "wupCityCode": 4325,
+  "name": "Al-Kharṭūm (Khartoum)",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "centerLatLon": [
+    15.6335384772136,
+    32.4952458979726
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 56,
+  "growthRank": null,
+  "population2025": 6809355,
+  "annualGrowthPct2015To2025": 1.438109,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [
+    {
+      "path": "research/khartoum.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-SD.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic",
+    "exactQuery": "الخرطوم السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://ayah1122.github.io/Sudan_GIS/",
+      "https://aqari.nctr.sd/ar",
+      "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "https://aqari.nctr.sd/ar/about",
+      "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer/0",
+      "https://sd.linkedin.com/company/ministry-of-physical-planning-general-directorate-of-survey",
+      "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+      "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer/19"
+    ],
+    "summary": "Official NIC describes a national OGC WMS/WFS portal and Judiciary land-services platform; linked geoportal currently cannot be reached. No city-specific polygon sample.",
+    "additionalOfficialLead": "NIC project page identifies the Sudan Spatial Portal WMS/WFS; linked host unavailable from this network.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://ayah1122.github.io/Sudan_GIS/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aqari.nctr.sd/ar",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aqari.nctr.sd/ar/about",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://sd.linkedin.com/company/ministry-of-physical-planning-general-directorate-of-survey",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer/19",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Al-Kharṭūm\" Sudan (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Al-Khar%E1%B9%AD%C5%ABm%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No Al-Kharṭūm (Khartoum) parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Al-Kharṭūm (Khartoum) extent; check whether a public parcel layer is exposed without partner authentication.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Al-Khar%E1%B9%AD%C5%ABm%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "officialPortalLead": {
+    "portal": "https://www.geoportal.gov.sd/",
+    "discoveredVia": "https://nic.gov.sd/public/projectDetails/3",
+    "claimedServices": [
+      "WMS",
+      "WFS"
+    ],
+    "directProbeStatus": "DNS resolution failure in this environment",
+    "assessment": "Promising national map portal, but no viewer/layer/capabilities inspection or city polygon test possible."
+  },
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-09",
+      "sourceUrl": "https://services.arcgis.com/qovwaCdMoEzUUFzS/ArcGIS/rest/services/Khartoum_offices_and_GH_WFL1/FeatureServer/0",
+      "classification": "urban_facility_and_route_layers_not_parcels",
+      "auditSummary": "Owner item is Khartoum offices and GH_WFL1; layer list contains an office point and itinerary polylines. Geographic extent is around Khartoum, but this is a facilities/routes map, not cadastral polygons.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-15",
+      "sourceUrl": "https://services5.arcgis.com/BQze1FcqlULgeygv/ArcGIS/rest/services/%D9%82%D8%B7%D8%B9_%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A_view/FeatureServer",
+      "classification": "parcel_polygon_layer_outside_assigned_countries",
+      "auditSummary": "Public polygon FeatureServer; item owner is ArcGIS user `husam_fw`; public item metadata does not identify a government publisher. Metadata extent in EPSG:28191 transforms to about 35.1231–35.2099E, 31.8739–31.9973N (Ramallah/Palestine), far from every assigned Africa target. Layer 0 is قطع الاراضي with parcel number/area fields; CITY has default Ramallah. This is a real parcel candidate outside scope; no features queried.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-13",
+      "sourceUrl": "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/RU_Sahel_Final_WFL1/FeatureServer/19",
+      "classification": "global_conflict_and_country_boundary_layers_not_parcels",
+      "auditSummary": "Layer list contains conflict/mine points and country/admin boundary polygons (including Sudan_pre2024/Sudan), not parcel polygons. The world-like Web Mercator fullExtent is not a useful city coverage claim.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Layer list contains conflict/mine points and country/admin boundary polygons (including Sudan_pre2024/Sudan), not parcel polygons. The world-like Web Mercator fullExtent is not a useful city coverage claim.; Owner item is Khartoum offices and GH_WFL1; layer list contains an office point and itinerary polylines. Geographic extent is around Khartoum, but this is a facilities/routes map, not cadastral polygons.; Public polygon FeatureServer; item owner is ArcGIS user `husam_fw`; public item metadata does not identify a government publisher. Metadata extent in EPSG:28191 transforms to about 35.1231–35.2099E, 31.8739–31.9973N (Ramallah/Palestine), far from every assigned Africa target. Layer 0 is قطع الاراضي with parcel number/area fields; CITY has default Ramallah. This is a real parcel candidate outside scope; no features queried."
+}

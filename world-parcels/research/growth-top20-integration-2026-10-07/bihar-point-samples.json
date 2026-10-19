@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "sourceId": "bihar-bhunaksha",
+  "sourceUrl": "https://bhunaksha.bihar.gov.in/",
+  "checkedAt": "2026-10-07",
+  "note": "Sanitized point-lookup evidence only. These sample points were chosen inside named village map sheets, not at the supplied WUP city coordinates. Personal/owner attributes and response links were omitted. The bbox values are envelopes only, not parcel polygons.",
+  "samples": [
+    {
+      "city": "Darauli",
+      "selectedRevenueMauza": "0046 Darauli(157)",
+      "wupPointTested": false,
+      "sampleProjectedXY": [
+        213140.829,
+        2887022.731
+      ],
+      "crs": "EPSG:32645",
+      "gisCode": "CS16010100461570601",
+      "mapSheet": "01",
+      "pointIdentify": {
+        "httpStatus": 200,
+        "parcelId": "0sJER7H2RTKuyqV9nFbJfQ",
+        "plotNo": "1506"
+      },
+      "scalarDatahandlerOP4": {
+        "httpStatus": 200,
+        "has_data": "Y",
+        "parcelId": "0sJER7H2RTKuyqV9nFbJfQ",
+        "plotNo": "1506",
+        "bbox": [
+          213136.16248706373,
+          2886997.740605208,
+          213222.01519499876,
+          2887193.046091306
+        ],
+        "geometryReturned": false
+      }
+    },
+    {
+      "city": "Raghunathpur",
+      "selectedRevenueMauza": "0493 Raghunathpur(384)",
+      "wupPointTested": false,
+      "sampleProjectedXY": [
+        226656.881,
+        2878102.093
+      ],
+      "crs": "EPSG:32645",
+      "gisCode": "CS16010604933840601",
+      "mapSheet": "01",
+      "pointIdentify": {
+        "httpStatus": 200,
+        "parcelId": "_otcjTEGR06qCIZfZwr6Bw",
+        "plotNo": "437"
+      },
+      "scalarDatahandlerOP4": {
+        "httpStatus": 200,
+        "has_data": "Y",
+        "parcelId": "_otcjTEGR06qCIZfZwr6Bw",
+        "plotNo": "437",
+        "bbox": [
+          226591.0824627539,
+          2878011.4926303173,
+          226662.56441725584,
+          2878117.856441516
+        ],
+        "geometryReturned": false
+      }
+    }
+  ]
+}

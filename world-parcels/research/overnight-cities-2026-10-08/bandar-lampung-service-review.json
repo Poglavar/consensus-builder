@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "id-bandarlampung-atrbpn-city-office-public-map-review",
+  "purpose": "Service review for WUP2025 rank 438 Bandar Lampung (city code 5407); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Kantor Pertanahan Kota Bandar Lampung (ATR/BPN) and Pemerintah Kota Bandar Lampung",
+  "sourceUrl": "https://kot-bandarlampung.atrbpn.go.id/",
+  "registryFound": true,
+  "registryBasis": "The official city ATR/BPN portal identifies the local land office, and the national public-service listing records a local map (“Peta”) service product. The city’s own JIGN Geoportal is described as exposing GIS web services, but its anonymous homepage request returned HTTP 502. The ATR/BPN root is a JavaScript shell; no anonymous parcel geometry contract was exposed by inspected HTML or static bundles.",
+  "officialSources": [
+    {
+      "url": "https://kot-bandarlampung.atrbpn.go.id/",
+      "observation": "Official city ATR/BPN portal returned HTTP 200 (6,855 bytes) with a JS application shell. Its two public JavaScript bundles returned HTTP 200; inspected static text contained no map/feature-service schema route."
+    },
+    {
+      "url": "https://bandarlampungkota.ina-sdi.or.id/",
+      "observation": "City JIGN Geoportal description states geospatial data/services can be discovered and GIS web services are provided. Direct anonymous homepage request returned HTTP 502, so no service catalog was available."
+    },
+    {
+      "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=persil",
+      "observation": "Official city open-data API returned HTTP 200 with zero matching datasets."
+    },
+    {
+      "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=pertanahan",
+      "observation": "Official city open-data API returned HTTP 200 with zero matching datasets."
+    },
+    {
+      "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=tanah",
+      "observation": "Official city dataset search returned two published records matching “tanah.” Only public titles/producer labels were inspected; returned table values were not inspected or retained. Both titles concerned non-spatial fertilizer/fisheries topics."
+    },
+    {
+      "url": "https://sippn.menpan.go.id/api/api/v1/layanan-publik/8105875/pdf",
+      "observation": "Government public-service listing for Kantor Pertanahan Kota Bandar Lampung identifies a local map (Peta) product; it is a local office service record, not an anonymous parcel feature service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bandar Lampung Indonesia official cadastral parcel map land office GIS geoportal",
+      "scope": "Find city-local parcel registry sources and anonymous geometry routes.",
+      "result": "The local BPN office portal is public but loads as a JavaScript shell. The city JIGN Geoportal route returned HTTP 502. City open-data metadata searches returned no parcel-specific layer. No public parcel polygon was verified.",
+      "urls": [
+        "https://kot-bandarlampung.atrbpn.go.id/",
+        "https://bandarlampungkota.ina-sdi.or.id/",
+        "https://satudata.bandarlampungkota.go.id/"
+      ]
+    },
+    {
+      "language": "Indonesian",
+      "query": "Peta bidang tanah persil Kota Bandar Lampung geoportal resmi ATR BPN",
+      "scope": "Mencari sumber persil/bidang tanah khusus Kota Bandar Lampung dan layanan geometri anonim.",
+      "result": "Portal JIGN Kota Bandar Lampung tidak dapat dibaca saat pemeriksaan (HTTP 502). Portal ATR/BPN lokal hanya mengirim shell JavaScript dan bundel statisnya tidak menampilkan rute fitur bidang tanah. API Satu Data tidak menemukan dataset persil/pertanahan.",
+      "urls": [
+        "https://kot-bandarlampung.atrbpn.go.id/",
+        "https://bandarlampungkota.ina-sdi.or.id/",
+        "https://satudata.bandarlampungkota.go.id/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "The city JIGN Geoportal homepage returned HTTP 502, so no service catalog or schema could be fetched. The official city ATR/BPN app returned a JavaScript shell; its two public static bundles expose no map or cadastral feature route. Public city data API searches for “persil” and “pertanahan” returned zero records; “tanah” returned two unrelated non-spatial datasets. No anonymous parcel geometry route was verified.",
+    "broadPublicCatalogTableValuesInspected": false
+  },
+  "requestEvidence": [
+    {
+      "url": "https://kot-bandarlampung.atrbpn.go.id/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 6855,
+      "observation": "Official city ATR/BPN app shell; HTML contains no map/schema payload."
+    },
+    {
+      "url": "https://kot-bandarlampung.atrbpn.go.id/static/js/9.91086518.chunk.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/javascript",
+      "bytes": 373297,
+      "observation": "Public client bundle; no WMS/WFS/GeoJSON cadastral route exposed."
+    },
+    {
+      "url": "https://kot-bandarlampung.atrbpn.go.id/static/js/main.19b7118b.chunk.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/javascript",
+      "bytes": 100175,
+      "observation": "Public app bundle; no public parcel geometry contract exposed."
+    },
+    {
+      "url": "https://bandarlampungkota.ina-sdi.or.id/",
+      "method": "GET",
+      "status": 502,
+      "contentType": null,
+      "bytes": null,
+      "observation": "Anonymous Geoportal homepage failed with HTTP 502; no service catalog or layer schema returned."
+    },
+    {
+      "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=persil",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 193,
+      "observation": "Public metadata search returned zero datasets."
+    },
+    {
+      "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=pertanahan",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 197,
+      "observation": "Public metadata search returned zero datasets."
+    },
+    {
+      "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=tanah",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3108,
+      "observation": "Two dataset titles match “tanah”; both are non-spatial fertilizer/fisheries topics. Table values were not inspected."
+    },
+    {
+      "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=bidang",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 146579,
+      "observation": "Metadata search is broad (191 results over two pages); only dataset titles were filtered for land/parcel/cadastre terms, and no cadastral geometry dataset was identified."
+    }
+  ],
+  "technicalBlocker": "The city JIGN Geoportal homepage returned HTTP 502, so no service catalog or schema could be fetched. The official city ATR/BPN app returned a JavaScript shell; its two public static bundles expose no map or cadastral feature route. Public city data API searches for “persil” and “pertanahan” returned zero records; “tanah” returned two unrelated non-spatial datasets. No anonymous parcel geometry route was verified.",
+  "sampleDisposition": "No parcel polygons or feature attributes retained.",
+  "remainingUncertainty": "A separate local land-office mapping route or service may exist, but the current public Geoportal request failed and the ATR/BPN frontend client did not expose an anonymous vector geometry contract."
+}

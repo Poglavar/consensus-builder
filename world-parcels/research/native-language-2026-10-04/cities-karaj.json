@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 131,
+  "city": "Karaj",
+  "countryCode": "IR",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/karaj.json",
+  "query": {
+    "language": "Persian",
+    "script": "Perso-Arabic",
+    "text": "کرج نقشه کاداستر زمین اداره ثبت اسناد استان البرز"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Persian",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "کرج نقشه کاداستر زمین اداره ثبت اسناد استان البرز",
+    "englishQuery": "Karaj cadastral land map and Alborz Province land registration",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Iran National Cartographic Center",
+      "url": "https://www.ncc.gov.ir/",
+      "kind": "official-national-mapping-agency",
+      "note": "Native-script search did not surface an attributable Alborz/Karaj cadastral parcel service."
+    }
+  ],
+  "assessment": "No current official Karaj parcel-vector endpoint surfaced in this search; historic temporary-unavailable status remains unchanged.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:5114",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

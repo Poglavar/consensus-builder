@@ -1,0 +1,50 @@
+[
+ {
+  "iso2": "UA",
+  "name": "Ukraine"
+ },
+ {
+  "iso2": "AE",
+  "name": "United Arab Emirates"
+ },
+ {
+  "iso2": "GB",
+  "name": "United Kingdom"
+ },
+ {
+  "iso2": "TZ",
+  "name": "United Republic of Tanzania"
+ },
+ {
+  "iso2": "US",
+  "name": "United States of America"
+ },
+ {
+  "iso2": "UY",
+  "name": "Uruguay"
+ },
+ {
+  "iso2": "UZ",
+  "name": "Uzbekistan"
+ },
+ {
+  "iso2": "VU",
+  "name": "Vanuatu"
+ },
+ {
+  "iso2": "VE",
+  "name": "Venezuela (Bolivarian Republic of)"
+ },
+ {
+  "iso2": "VN",
+  "name": "Viet Nam"
+ },
+ {
+  "iso2": "EH",
+  "name": "Western Sahara"
+ },
+ {
+  "iso2": "YE",
+  "name": "Yemen"
+ }
+]

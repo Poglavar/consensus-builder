@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bakhtiyarpur",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Patna tehsil page explicitly lists Bakhtiyarpur as a revenue circle and explains its Circle Officer/DCLR system. The Bihar Revenue and Land Reforms directory separately lists Circle Officer, Bakhtiyarpur. This is first-party city-local revenue-record evidence; the municipality-branded .net portal remains supplementary discovery evidence, with its operator independently unverified. No anonymous cadastral polygon response was verified.",
+  "registryEvidenceUrls": [
+    "https://patna.nic.in/tehsil/",
+    "https://betastate.bihar.gov.in/lrc/DyPageView?PageTitleID=10428",
+    "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "https://dlrs.bihar.gov.in/services.html",
+    "https://biharbhumi.bihar.gov.in/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11123,
+  "cityId": "wup2025:11123",
+  "centerLatLon": [
+    25.4720590732933,
+    85.5715086998054
+  ],
+  "rank": 623,
+  "queueRank": 623,
+  "population2025": 843195,
+  "population2025k": 843.195,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The city-specific portal exposes municipal property/mutation workflows; the Bihar cadastral viewer is a survey-unit/plot-oriented map service. No safe anonymous full-polygon response or schema was verified for this settlement, and no plot or owner lookup was submitted.",
+  "scopeLimits": "First-party source discovery only. No owner, address, tax, personal-identity, credential, account, or property-identifier lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Whether an anonymous city-scoped full-polygon service exists and whether the WUP point corresponds to the named local record unit remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bakhtiyarpur Bihar Nagar Parishad official land records cadastral parcel map BhuNaksha",
+        "scope": "Find official local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "result": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur.",
+        "actualResultUrls": [
+          "https://nagarparishadbakhtiyarpur.net/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://biharbhumi.bihar.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "बख्तियारपुर भूमि रिकॉर्ड भू नक्शा नगर परिषद बिहार राजस्व नक्शा सरकारी",
+        "scope": "Find native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+        "result": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur.",
+        "actualResultUrls": [
+          "https://nagarparishadbakhtiyarpur.net/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://biharbhumi.bihar.gov.in/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://nagarparishadbakhtiyarpur.net/",
+        "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+      },
+      {
+        "url": "https://dlrs.bihar.gov.in/services.html",
+        "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+      },
+      {
+        "url": "https://biharbhumi.bihar.gov.in/",
+        "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+      }
+    ],
+    "metadataReviewFile": "bakhtiyarpur-service-review.json"
+  },
+  "source": {
+    "sourceId": "in-bakhtiyarpur-registry-review",
+    "name": "Bakhtiyarpur local registry/cadastre route review",
+    "operator": "Nagar Parishad Bakhtiyarpur / Directorate of Land Records & Survey, Bihar",
+    "url": "https://nagarparishadbakhtiyarpur.net/",
+    "scope": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "point": [
+    25.4720590732933,
+    85.5715086998054
+  ],
+  "rootLocalRegistryReview": {
+    "urls": [
+      "https://patna.nic.in/tehsil/",
+      "https://betastate.bihar.gov.in/lrc/DyPageView?PageTitleID=10428"
+    ],
+    "basis": "The official Patna tehsil page explicitly lists Bakhtiyarpur as a revenue circle and explains its Circle Officer/DCLR system. The Bihar Revenue and Land Reforms directory separately lists Circle Officer, Bakhtiyarpur. This is first-party city-local revenue-record evidence; the municipality-branded .net portal remains supplementary discovery evidence, with its operator independently unverified. No anonymous cadastral polygon response was verified.",
+    "checkedAt": "2026-10-09"
+  },
+  "rootReviewedAt": "2026-10-09T02:09:36.300766+00:00"
+}

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2377",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-2377-santiago-de-cuba.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/santiago-de-cuba-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T14:02:49Z",
+  "reason": "English and Spanish searches are recorded, but no reachable Santiago-specific first-party parcel response, geometry, native ID, or adapter qualification exists. Registry custody stays unresolved; route failures do not prove absence."
+}

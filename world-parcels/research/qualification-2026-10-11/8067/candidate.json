@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "8067",
+    "name": "Pittsburgh",
+    "point": [
+      -79.9703261647027,
+      40.4196878479719
+    ]
+  },
+  "descriptor": {
+    "id": "us-pa-allegheny-parcels",
+    "name": "Allegheny County parcel boundaries",
+    "adapter": "arcgis",
+    "endpoint": "https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer/0",
+    "idPrefix": "US-PA-ALLEGHENY-",
+    "idField": "PIN",
+    "idType": "string",
+    "idPattern": "^[0-9A-Z]{16}$",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "PIN",
+      "OBJECTID"
+    ],
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "queryFormat": "geojson",
+    "pageSize": 200,
+    "idBatchSize": 80,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 1,
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "countryCode": "US",
+    "stateCode": "PA",
+    "metricSrid": 32617,
+    "cityIds": [
+      "8067"
+    ],
+    "operator": "Allegheny County DCS-GIS",
+    "attribution": "Allegheny County DCS-GIS parcel boundaries",
+    "catalogueUrl": "https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1",
+    "licenceNote": "County-published regional catalogue specifies no licence; reuse rights require separate primary review.",
+    "scope": "Allegheny County parcel-boundary layer including Pittsburgh. Qualification is bounded around the frozen WUP point and does not establish citywide completeness, legal title, survey accuracy or currentness. Native CRS EPSG:2272 / WKID 102729; queries request WGS84 GeoJSON outSR=4326.",
+    "evidenceFile": "attempt-01/evidence/official-source-inspection.json"
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen city-8067-pittsburgh.json registry.sourceScope and geometry.nativeIdentity identify the Allegheny County public parcel-boundary layer including Pittsburgh; pittsburgh-service-review.json officialPrimarySources and geometryDecision bind PIN 0013G00229000000 to an anonymous polygon query at the unchanged WUP point. The frozen sample SHA-256 matches the queue.",
+      "The Allegheny County publisher describes the dataset as boundaries of individual parcels across the county, with block and lot identifiers, in https://data.wprdc.org/dataset/allegheny-county-parcel-boundaries1. The live county endpoint https://gisdata.alleghenycounty.us/arcgis/rest/services/OPENDATA/Parcels/MapServer identifies the DCS-GIS custodian and public parcel purpose; layer 0 exposes polygon geometry and string PIN identity. Safe metadata, a short exact purpose excerpt, schema and download-link inspection are retained in evidence/official-source-inspection.json.",
+      "The frozen service review documents official Pittsburgh GIS discovery and county scope. An independent bounded live query at [-79.9703261647027,40.4196878479719] returned the same PIN 0013G00229000000 and polygon geometry with only PIN and OBJECTID requested. This confirms a parcel at the Pittsburgh locator; it is not a citywide coverage assertion."
+    ]
+  },
+  "sourceCandidateSha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+  "qualificationRecordedSha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+  "sourceCandidatePath": "qualification/evidence/cities/8067/candidate.json",
+  "originalSeedSha256": "c5d36bc5d7fbfce21d2da82b6820118dffad0e2fcc0d8140ead092adaa152a29",
+  "originalSeedPath": "qualification/evidence/cities/8067/candidate.json"
+}

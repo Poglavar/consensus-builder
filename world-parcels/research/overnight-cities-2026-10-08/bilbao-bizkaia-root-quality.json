@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32630",
+  "featureCount": 79,
+  "validNonemptyCount": 79,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 28.960999978811362,
+    "median": 396.2727500243982,
+    "max": 104163.76010165484
+  },
+  "features": [
+    {
+      "id": "ES-BIZKAIA-20~1105~3020",
+      "areaM2": 328.3509500095551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3019",
+      "areaM2": 333.73525001656196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3022",
+      "areaM2": 319.8210499886104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3021",
+      "areaM2": 330.74719997050386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3008",
+      "areaM2": 326.94564998276417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3009",
+      "areaM2": 324.09530001487434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3014",
+      "areaM2": 323.61520000856217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3016",
+      "areaM2": 326.0844500076658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3018",
+      "areaM2": 324.48575000412103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3023",
+      "areaM2": 336.0877500004451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3010",
+      "areaM2": 325.4567499855384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3011",
+      "areaM2": 326.5351500083618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3012",
+      "areaM2": 323.42540000078543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3013",
+      "areaM2": 321.04995000415477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3006",
+      "areaM2": 327.1914500200401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3007",
+      "areaM2": 324.5327499773315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3015",
+      "areaM2": 326.1578500076506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3017",
+      "areaM2": 319.1902000089533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3024",
+      "areaM2": 327.66095002068676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1104~71001",
+      "areaM2": 1906.5917999172666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~70001",
+      "areaM2": 11955.653950394742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~70001",
+      "areaM2": 9886.717850773664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~3005",
+      "areaM2": 23782.01035030687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1104~3003",
+      "areaM2": 287.27734999831785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~243",
+      "areaM2": 16757.659400146593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~142",
+      "areaM2": 7885.568500127374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~144",
+      "areaM2": 4786.792600057041,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~143",
+      "areaM2": 1085.6610499649755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~1004",
+      "areaM2": 387.6079000574424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~1005",
+      "areaM2": 390.36129997156274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~1006",
+      "areaM2": 376.6046999963283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2001",
+      "areaM2": 653.3696500434758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~1002",
+      "areaM2": 982.1124000023672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2002",
+      "areaM2": 396.2727500243982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2004",
+      "areaM2": 344.03499999999485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2005",
+      "areaM2": 340.478600020808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~1003",
+      "areaM2": 406.61460000992594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2003",
+      "areaM2": 375.47584998697033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~147",
+      "areaM2": 3808.572200000628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~145",
+      "areaM2": 688.4665000080952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~146",
+      "areaM2": 759.1842000041374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~148",
+      "areaM2": 5984.518500266161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3002",
+      "areaM2": 331.0842500043549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3004",
+      "areaM2": 329.26300001494747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3003",
+      "areaM2": 325.2537500071584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3005",
+      "areaM2": 326.7641999954027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~2002",
+      "areaM2": 3198.4846499069276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~2001",
+      "areaM2": 5265.05075008992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1105~3001",
+      "areaM2": 328.58125001894047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2005",
+      "areaM2": 682.5221500081536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2006",
+      "areaM2": 579.327300008094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2008",
+      "areaM2": 249.74545001748058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2010",
+      "areaM2": 241.02430001210908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2007",
+      "areaM2": 606.8304000355279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2009",
+      "areaM2": 233.56255000766689,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~70001",
+      "areaM2": 4474.659899794633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~1001",
+      "areaM2": 977.5734000195487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~136",
+      "areaM2": 13067.155099982421,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~141",
+      "areaM2": 12420.93315020664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~140",
+      "areaM2": 2114.8537000511524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~133",
+      "areaM2": 14564.853050384603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~139",
+      "areaM2": 2090.2411999647916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~135",
+      "areaM2": 236.321800035806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2003",
+      "areaM2": 722.1679000528495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1106~2004",
+      "areaM2": 737.9274500342027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~126",
+      "areaM2": 104163.76010165484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~137",
+      "areaM2": 5401.500700287605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~256",
+      "areaM2": 85.7425999831054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~261",
+      "areaM2": 46422.48940075223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2009",
+      "areaM2": 429.2588000074028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2006",
+      "areaM2": 321.33320001277787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2007",
+      "areaM2": 327.95640000013145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1109~2008",
+      "areaM2": 443.24015001962266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~7~255",
+      "areaM2": 2841.241849980684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1104~72001",
+      "areaM2": 4685.065650087086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1104~70001",
+      "areaM2": 28.960999978811362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1104~3006",
+      "areaM2": 6298.475950067183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~1104~2001",
+      "areaM2": 2129.0657499829194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-BIZKAIA-20~5~325",
+      "areaM2": 53401.68395095462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "name": "Cusco",
+  "country": "Peru",
+  "countryCode": "PE",
+  "rank": 1133,
+  "point": [
+    -13.5289629692674,
+    -71.9549113931789
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cusco Peru official cadastral GIS parcel map municipal cadastre",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+        "actualResultUrls": [
+          "https://web.cusco.gob.pe/",
+          "https://catastroweb.cusco.gob.pe/",
+          "https://puccu.cusco.gob.pe/modulo-visor-catastral/",
+          "https://centrohistorico.cusco.gob.pe/inmuebles_urbanos/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Cusco catastro municipal visor catastral Municipalidad Provincial del Cusco",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+        "actualResultUrls": [
+          "https://web.cusco.gob.pe/",
+          "https://catastroweb.cusco.gob.pe/",
+          "https://puccu.cusco.gob.pe/modulo-visor-catastral/"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://web.cusco.gob.pe/",
+        "operator": "Cusco Provincial Municipality",
+        "observation": "Official municipal home links a separate Catastro Web viewer. The linked public app shell at catastroweb.cusco.gob.pe is anonymous, but its checked JavaScript is an Angular municipal service application, includes a login route, and exposed no parcel schema or safe full-geometry endpoint. The distinct PUCCU “cadastral viewer” is limited to stormwater infrastructure, not cadastral parcels."
+      },
+      {
+        "url": "https://catastroweb.cusco.gob.pe/",
+        "operator": "Cusco municipal Catastro Web",
+        "observation": "Anonymous landing application only; page scripts are main/runtime/polyfills. Static main bundle has no parcel/cadastral geometry API route (the only `/api/` route identified is panic alerts) and includes a login component. No login/API submission."
+      },
+      {
+        "url": "https://puccu.cusco.gob.pe/modulo-visor-catastral/",
+        "operator": "Cusco municipal PUCCU",
+        "observation": "Official public cadastral-labelled viewer is for stormwater drainage infrastructure; not evidence of property parcel geometry."
+      },
+      {
+        "url": "https://centrohistorico.cusco.gob.pe/inmuebles_urbanos/",
+        "operator": "Cusco Historic Center Programme",
+        "observation": "Official city source documents urban real-estate records in the historic-center programme; it is a local records source, not a citywide public vector service."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://catastroweb.cusco.gob.pe/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 5339,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      },
+      {
+        "url": "https://catastroweb.cusco.gob.pe/main.1c4dcdd60efc5e95.js",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "bytesRead": 579077,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      },
+      {
+        "url": "https://puccu.cusco.gob.pe/modulo-visor-catastral/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 8313,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://web.cusco.gob.pe/",
+    "url": "https://web.cusco.gob.pe/",
+    "operator": "Cusco Provincial Municipality",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry was retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limitations in registryBasis, freshResearch and service review."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local municipal property/cadastral record responsibility is documented, including historic-center urban real-estate records. The Catastro Web link is an anonymous app shell, but no safe public parcel geometry/schema was exposed; PUCCU is stormwater infrastructure only.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness.",
+  "remainingUncertainty": "Local municipal property/cadastral record responsibility is documented, including historic-center urban real-estate records. The Catastro Web link is an anonymous app shell, but no safe public parcel geometry/schema was exposed; PUCCU is stormwater infrastructure only. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3216,
+  "cityId": "wup2025:3216",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -13.5289629692674,
+    -71.9549113931789
+  ],
+  "population2025k": 490.968,
+  "populationUnit": "persons",
+  "queueRank": 1133,
+  "population2025": 490968,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Local municipal property/cadastral record responsibility is documented, including historic-center urban real-estate records. The Catastro Web link is an anonymous app shell, but no safe public parcel geometry/schema was exposed; PUCCU is stormwater infrastructure only.",
+  "registryEvidenceUrls": [
+    "https://web.cusco.gob.pe/",
+    "https://catastroweb.cusco.gob.pe/",
+    "https://puccu.cusco.gob.pe/modulo-visor-catastral/",
+    "https://centrohistorico.cusco.gob.pe/inmuebles_urbanos/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Local municipal property/cadastral record responsibility is documented, including historic-center urban real-estate records. The Catastro Web link is an anonymous app shell, but no safe public parcel geometry/schema was exposed; PUCCU is stormwater infrastructure only.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

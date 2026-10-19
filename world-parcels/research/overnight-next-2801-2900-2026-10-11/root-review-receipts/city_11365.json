@@ -1,0 +1,27 @@
+{
+  "taskId": "city:11365",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-11365-srikakulam.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/srikakulam-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T214657-78ba8fe3/stdout.jsonl",
+    "tmp/valhalla-parcel-research/11365/apsac-config.json",
+    "tmp/valhalla-parcel-research/11365/apsac-item.json",
+    "tmp/valhalla-parcel-research/11365/apsac-data.json"
+  ],
+  "checkedAt": "2026-10-11T21:49:45Z",
+  "reason": "Srikakulam rank 2870, India, exact WUP point and 207661 persons match the immutable queue. Executed English and Telugu searches are visible in the run trace. The state cadastral custodian and APSAC viewer lead are supported, but the saved Web AppBuilder config has an empty map item ID and no operational parcel layer; the queried ArcGIS item/data return inaccessible-item errors and Bhunaksha requests timed out. No native parcel ID plus full polygon response, sample, or independent adapter qualification is evidenced; city-specific open coverage stays unresolved.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

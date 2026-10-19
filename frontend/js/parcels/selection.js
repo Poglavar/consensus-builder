@@ -3,16 +3,41 @@
 
     let lastHoverLayer = null;
     let lastHoverParcelId = null;
+    let lastHoverScope = null;
 
-    function getParcelIdFromFeature(feature) {
-        if (!feature) return null;
-        const props = feature.properties || {};
-        return (typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
-            : (props.parcelId))?.toString?.() || null;
+    function currentPresentationScope() {
+        const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
+        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        return `${city}|${revision}`;
+    }
+
+    function parcelIdForLayer(layer) {
+        const id = global.ParcelPresenter?.getIdForLayer?.(layer);
+        return id === undefined || id === null ? null : String(id);
+    }
+
+    function liveFeatureForLayer(layer) {
+        const id = parcelIdForLayer(layer);
+        return id ? global.LiveParcelFabric?.get?.(id) || null : null;
+    }
+
+    function discardStaleHover() {
+        const scope = currentPresentationScope();
+        if (lastHoverScope !== null && lastHoverScope !== scope) {
+            lastHoverLayer = null;
+            lastHoverParcelId = null;
+        }
+        lastHoverScope = scope;
+    }
+
+    function isStationPlacementMapInteractionActive() {
+        return global.transitStationPlacementMode === true
+            || (typeof global.isTransitStationPlacementActive === 'function'
+                && global.isTransitStationPlacementActive());
     }
 
     function clearPreviousHover(currentLayer) {
+        discardStaleHover();
         if (!lastHoverLayer || lastHoverLayer === currentLayer) {
             return;
         }
@@ -25,9 +50,26 @@
     }
 
     function highlightFeature(e) {
+        if (global.UrbanBlocksView?.ownsClicks()) return;
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // The drill owns hover when active: it highlights the TOPMOST claim at the cursor —
+        // which may be a building or structure standing above this parcel — so the parcel's own
+        // hover (style change + proposal hover overlay) must not compete with it.
+        if (global.__drillUi && typeof global.__drillUi.ownsHover === 'function' && global.__drillUi.ownsHover()) return;
+        // Proposal browse mode (the proposals list is open): the map is inert to parcels — no hover
+        // highlight, matching the click behaviour (only proposals are interactive).
+        if (global.proposalListBrowseMode) return;
+        // Share-plan panel open: the map is pan/zoom only — parcels are fully inert, hover included.
+        if (global.sharePlanMode) return;
+        // Station placement owns every map-surface pointer event. Parcels stay visually inert
+        // while the carried station preview and compatible-track overlay respond to the cursor.
+        if (isStationPlacementMapInteractionActive()) return;
+        // No parcel hover while an editing mode owns the map.
+        if (global.__mapEditLock?.isHeld()) return;
+        if (typeof global.isStructureGeometryEditorActive === 'function' && global.isStructureGeometryEditorActive()) return;
+        if (typeof global.isTransitStationGeometryEditorActive === 'function' && global.isTransitStationGeometryEditorActive()) return;
         const layer = e.target;
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = parcelIdForLayer(layer);
         if (!parcelId) return;
 
         clearPreviousHover(layer);
@@ -35,18 +77,21 @@
         const proposalUIActive = (typeof global.isProposalUIActive === 'function')
             ? global.isProposalUIActive()
             : (document.getElementById('showProposalsCheckbox') && document.getElementById('showProposalsCheckbox').checked);
-        const activeProposalParcelIds = Array.isArray(global.currentlyHighlightedProposal?.parentParcelIds)
-            ? global.currentlyHighlightedProposal.parentParcelIds.map(id => id.toString())
-            : (Array.isArray(global.currentlyHighlightedProposal?.childParcelIds)
-                ? global.currentlyHighlightedProposal.childParcelIds.map(id => id.toString())
-                : []);
-        const restrictHoverToActiveProposal = proposalUIActive && activeProposalParcelIds.length > 0;
-        const parcelInActiveProposal = restrictHoverToActiveProposal && activeProposalParcelIds.includes(parcelId);
+        const activeProposalCadastreIds = global.currentlyHighlightedProposal && global.__claims
+            ? global.__claims.cadastreParcelIdsOf(global.currentlyHighlightedProposal)
+            : [];
+        const liveFeature = global.LiveParcelFabric?.get?.(parcelId) || null;
+        const parcelCadastreIds = liveFeature
+            ? global.LiveParcelFabric.explicitCadastreIds(liveFeature)
+            : [];
+        const restrictHoverToActiveProposal = proposalUIActive && activeProposalCadastreIds.length > 0;
+        const parcelInActiveProposal = restrictHoverToActiveProposal
+            && parcelCadastreIds.some(id => activeProposalCadastreIds.includes(id));
 
         // Only use proposal hover overlay when Proposal UI is active
         try {
             if (proposalUIActive && typeof global.proposalStorage !== 'undefined') {
-                const proposals = global.proposalStorage.getProposalsForParcel(parcelId, { hydrateRoadAssets: false }).filter(p => p.status !== 'Executed');
+                const proposals = global.proposalStorage.getProposalsForParcel(parcelId).filter(p => getLifecycleStatus(p) !== 'Executed');
                 if (proposals && proposals.length > 0) {
                     // When a proposal is already open, only highlight its parcels on hover
                     const allowProposalHover = !restrictHoverToActiveProposal || parcelInActiveProposal;
@@ -78,16 +123,11 @@
         if (isMultiSelected) {
             return;
         }
-        // Do not apply hover styling if parcel is locked for road drawing (green highlighting)
+        // Do not apply hover styling if the parcel is locked for corridor drawing (green highlighting).
+        // One corridor tool draws roads and tracks alike, so one check covers both.
         const isLockedForRoad = typeof global.isParcelLockedForRoadDrawing === 'function' &&
             global.isParcelLockedForRoadDrawing(parcelId);
         if (isLockedForRoad) {
-            return;
-        }
-        // Do not apply hover styling if parcel is committed for track drawing (green highlighting)
-        const isCommittedForTrack = typeof global.isParcelCommittedForTrackDrawing === 'function' &&
-            global.isParcelCommittedForTrackDrawing(parcelId);
-        if (isCommittedForTrack) {
             return;
         }
         // Do not overwrite an active proposal highlight — the proposal style is sticky until
@@ -97,23 +137,28 @@
             && global.proposalHighlightStyleOverride.has(layer)) {
             return;
         }
-        // Proposal-aware: only change border, not fill
+        // Proposal-aware: only change border, not fill. Road parcels have a dark asphalt fill
+        // (#2b2b2b), so the default grey #666 hover border blends into it and reads as "no hover" —
+        // give roads a bright, high-contrast border instead. Normal (transparent-fill) parcels keep #666.
+        const isRoad = (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
         layer.setStyle({
             weight: 5,
-            color: '#666',
+            color: isRoad ? '#00e5ff' : '#666',
             dashArray: '',
             // Do not change fillColor/fillOpacity
         });
         lastHoverLayer = layer;
         lastHoverParcelId = parcelId;
+        lastHoverScope = currentPresentationScope();
         if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
             layer.bringToFront();
         }
     }
 
     function restoreParcelLayerStyle(layer) {
-        const parcelId = getParcelIdFromFeature(layer?.feature);
+        const parcelId = parcelIdForLayer(layer);
         if (!parcelId) return;
+        const liveFeature = liveFeatureForLayer(layer);
 
         // If a proposal highlight is active on this layer, restore it rather than falling back
         // to the base parcel style. The proposal highlight stays until clearProposalHighlights().
@@ -129,7 +174,7 @@
             const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
                 ? global.selectedBlockName
                 : (typeof global !== 'undefined' ? global.selectedBlockName : null);
-            const layerBlockName = layer?.feature?.properties?.block;
+            const layerBlockName = global.parcelBlockNameForId?.(parcelId) || null;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 const parcelHighlightStyle = {
                     fillColor: '#3388ff',
@@ -143,8 +188,8 @@
         } catch (_) { }
 
         // Track parcels: restore stored track style or default track style
-        const isTrackParcel = layer?.feature?.properties?.isTrack === true;
-        const storedTrackStyle = (layer && (layer._trackStyle || (layer.feature && layer.feature._trackStyle))) || null;
+        const isTrackParcel = liveFeature?.properties?.isTrack === true;
+        const storedTrackStyle = layer?._trackStyle || null;
         const defaultTrackStyle = {
             color: '#000000',
             weight: 2,
@@ -163,44 +208,12 @@
             global.isParcelLockedForRoadDrawing(parcelId);
 
         if (isLockedForRoad) {
-            // Keep green highlighting for committed road parcels
+            // Keep green highlighting for parcels the corridor being drawn has committed
             layer.setStyle({
                 fillColor: 'green',
                 fillOpacity: 0.6,
                 color: 'green',
                 weight: 3
-            });
-            return;
-        }
-
-        // Check if this parcel is committed for track drawing (green highlighting)
-        const isCommittedForTrack = typeof global.isParcelCommittedForTrackDrawing === 'function' &&
-            global.isParcelCommittedForTrackDrawing(parcelId);
-
-        if (isCommittedForTrack) {
-            // Keep green highlighting for committed track parcels
-            layer.setStyle({
-                fillColor: 'green',
-                fillOpacity: 0.6,
-                color: 'green',
-                weight: 3
-            });
-            return;
-        }
-
-        // Check if this parcel is in track preview (orange highlighting during track drawing)
-        // Use Set for O(1) lookup instead of array iteration for better performance
-        const isInTrackPreview = typeof global.trackPreviewAffectedParcelIds !== 'undefined' &&
-            global.trackPreviewAffectedParcelIds instanceof Set &&
-            global.trackPreviewAffectedParcelIds.has(parcelId);
-
-        if (isInTrackPreview) {
-            // Keep orange highlighting for track preview
-            layer.setStyle({
-                fillColor: '#ff6600', // Orange
-                fillOpacity: 0.4,
-                color: '#ff6600',
-                weight: 2
             });
             return;
         }
@@ -228,7 +241,7 @@
             const currentSelectedBlockName = (typeof global.selectedBlockName !== 'undefined' && global.selectedBlockName)
                 ? global.selectedBlockName
                 : (typeof global !== 'undefined' ? global.selectedBlockName : null);
-            const layerBlockName = layer?.feature?.properties?.block;
+            const layerBlockName = global.parcelBlockNameForId?.(parcelId) || null;
             const blocksShown = document.getElementById('parcelBlocksCheckbox') && document.getElementById('parcelBlocksCheckbox').checked;
             if (blocksShown && currentSelectedBlockName && layerBlockName && currentSelectedBlockName === layerBlockName) {
                 layer.setStyle({ fillColor: '#3388ff', fillOpacity: 0.4, color: '#3388ff', weight: 2 });
@@ -246,8 +259,11 @@
 
     function resetHighlight(e) {
         if (global.AreaMonitorPaint && global.AreaMonitorPaint.isActive()) return;
+        // Mirror of the drill guard in highlightFeature: when the drill owns hover it also owns
+        // clearing — a mouseout here would wipe the drill's outline from the shared hover group.
+        if (global.__drillUi && typeof global.__drillUi.ownsHover === 'function' && global.__drillUi.ownsHover()) return;
         const layer = e.target;
-        const parcelId = getParcelIdFromFeature(layer.feature);
+        const parcelId = parcelIdForLayer(layer);
         if (!parcelId) return;
         if (lastHoverLayer === layer || lastHoverParcelId === parcelId) {
             lastHoverLayer = null;
@@ -276,20 +292,33 @@
         restoreParcelLayerStyle(layer);
     }
 
+    function clearParcelHover() {
+        const previousLayer = lastHoverLayer;
+        lastHoverLayer = null;
+        lastHoverParcelId = null;
+        lastHoverScope = currentPresentationScope();
+        if (previousLayer) {
+            try { restoreParcelLayerStyle(previousLayer); } catch (_) { }
+        }
+        try {
+            if (typeof global.clearProposalInfoHoverOverlay === 'function') {
+                global.clearProposalInfoHoverOverlay();
+            }
+        } catch (_) { }
+    }
+
     // This function will be called on each created feature
     function onEachFeature(feature, layer) {
-        // Check if drawing mode is active - if so, don't attach click handlers
-        const isDrawingMode = typeof global.isParcelDrawingModeActive === 'function'
-            ? global.isParcelDrawingModeActive()
-            : false;
-
         const events = {
             mouseover: highlightFeature,
             mouseout: resetHighlight
         };
 
-        // Only attach click handler if not in drawing mode
-        if (!isDrawingMode && global.onParcelClick) {
+        // Always attach the click handler — onParcelClick ignores clicks while a drawing tool
+        // is active (a CLICK-time decision). Gating the attach on the drawing flag baked it in
+        // forever: child slices applied MID-drawing (absorbs) and parcels fetched while drawing
+        // came out permanently unclickable.
+        if (global.onParcelClick) {
             events.click = global.onParcelClick;
         }
 
@@ -304,30 +333,24 @@
     }
 
     function selectParcel(parcelOrId, showPanel = true) {
-        if (!global.parcelLayer) return;
-        const parcelId = parcelOrId && parcelOrId.feature
-            ? getParcelIdFromFeature(parcelOrId.feature)
-            : parcelOrId;
-        if (!parcelId) return;
-
-        const selectedLayer = parcelOrId && parcelOrId.feature
+        if (isStationPlacementMapInteractionActive()) return;
+        const parcelId = typeof parcelOrId === 'string' || typeof parcelOrId === 'number'
             ? parcelOrId
-            : global.parcelLayer.getLayers().find(layer => {
-                if (!layer.feature || !layer.feature.properties) return false;
-                const layerParcelId = getParcelIdFromFeature(layer.feature);
-                return layerParcelId && layerParcelId.toString() === parcelId.toString();
-            });
+            : parcelIdForLayer(parcelOrId);
+        if (!parcelId) return;
+        const nextSelectedId = parcelId.toString();
+        const fabric = global.LiveParcelFabric;
+        const presenter = global.ParcelPresenter;
+        if (!fabric?.get?.(nextSelectedId) || !presenter?.getLayer) return;
+
+        const selectedLayer = presenter.getLayer(nextSelectedId);
 
         if (selectedLayer) {
-            const nextSelectedId = parcelId.toString();
             const previousSelectedId = global.selectedParcelId ? global.selectedParcelId.toString() : null;
             const previousSelectedLayer = previousSelectedId && previousSelectedId !== nextSelectedId
                 ? ((global.currentParcel?.id?.toString?.() === previousSelectedId && global.currentParcel?.layer)
                     ? global.currentParcel.layer
-                    : global.parcelLayer.getLayers().find(layer => {
-                        const layerParcelId = getParcelIdFromFeature(layer?.feature);
-                        return layerParcelId === previousSelectedId;
-                    }))
+                    : presenter.getLayer(previousSelectedId))
                 : null;
 
             global.selectedParcelId = nextSelectedId;
@@ -359,10 +382,11 @@
             if (Array.isArray(layersToProcess) && layersToProcess.length > 0) {
                 // Use viewport-filtered layers
                 layersToProcess.forEach(layer => {
-                    if (layer && layer.feature && layer.feature.properties) {
-                        const layerParcelId = getParcelIdFromFeature(layer.feature);
+                    const layerParcelId = parcelIdForLayer(layer);
+                    const feature = layerParcelId ? fabric.get(layerParcelId) : null;
+                    if (layer && layerParcelId && feature) {
                         const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
-                        const isTrack = (layer.feature.properties.isTrack === true) || Boolean(layer._trackStyle);
+                        const isTrack = feature.properties?.isTrack === true || Boolean(layer._trackStyle);
                         if (layerParcelId !== parcelId.toString()) {
                             // Check if this parcel is part of multi-selection before resetting style
                             const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
@@ -376,34 +400,9 @@
                         }
                     }
                 });
-            } else {
-                // Fallback: only process if we have a small number of parcels (safety check)
-                const totalLayers = (global.parcelLayer && typeof global.parcelLayer.getLayers === 'function')
-                    ? global.parcelLayer.getLayers().length
-                    : 0;
-                if (totalLayers < 1000) {
-                    // Only fallback to full scan if parcel count is reasonable
-                    global.parcelLayer.eachLayer(layer => {
-                        if (layer.feature && layer.feature.properties) {
-                            const layerParcelId = getParcelIdFromFeature(layer.feature);
-                            const isRoad = (layerParcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(layerParcelId) : false;
-                            const isTrack = (layer.feature.properties.isTrack === true) || Boolean(layer._trackStyle);
-                            if (layerParcelId !== parcelId.toString()) {
-                                // Check if this parcel is part of multi-selection before resetting style
-                                const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
-                                    global.multiParcelSelection.isActive &&
-                                    global.multiParcelSelection.selectedParcels.has(layerParcelId);
-                                if (!isMultiSelected) {
-                                    // Use getParcelStyle to preserve ownership highlighting
-                                    const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
-                                    layer.setStyle(styleFn(layerParcelId, layer, { isRoad, isTrack }));
-                                }
-                            }
-                        }
-                    });
-                }
             }
-            const isTrackSelected = (selectedLayer?.feature?.properties?.isTrack === true) || Boolean(selectedLayer?._trackStyle);
+            const selectedFeature = fabric.get(nextSelectedId);
+            const isTrackSelected = selectedFeature?.properties?.isTrack === true || Boolean(selectedLayer?._trackStyle);
             if (isTrackSelected) {
                 const styleFn = typeof global.getParcelStyle === 'function' ? global.getParcelStyle : global.getParcelBaseStyle;
                 // Keep track fill; optionally bump stroke weight for selection
@@ -424,11 +423,7 @@
                 ? global.Parcels.uiParcelPanel.showParcelInfoPanel
                 : global.showParcelInfoPanel;
             if (showPanel && typeof showParcelInfoPanel === 'function') {
-                showParcelInfoPanel(selectedLayer.feature);
-                const roadCheckbox = document.getElementById('roadCheckbox');
-                if (roadCheckbox) {
-                    roadCheckbox.checked = global.currentParcel.isRoad;
-                }
+                showParcelInfoPanel(selectedFeature);
                 const parcelInfoPanel = document.getElementById('parcel-info-panel');
                 if (parcelInfoPanel) {
                     parcelInfoPanel.classList.add('visible');
@@ -442,19 +437,20 @@
             if (typeof global.verticesDisplayActive !== 'undefined' && global.verticesDisplayActive) {
                 global.verticesDisplayActive = false;
                 const verticesBtn = document.getElementById('verticesButton');
-                if (verticesBtn) verticesBtn.classList.remove('active');
+                if (verticesBtn) verticesBtn.setAttribute('aria-pressed', 'false');
                 if (typeof global.clearVertexMarkers === 'function') {
                     global.clearVertexMarkers();
                 }
             }
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus(`Selected parcel ${selectedLayer.feature.properties.BROJ_CESTICE}`);
+                global.updateStatus(`Selected parcel ${selectedFeature?.properties?.BROJ_CESTICE || nextSelectedId}`);
             }
         }
     }
 
     global.highlightFeature = highlightFeature;
     global.resetHighlight = resetHighlight;
+    global.clearParcelHover = clearParcelHover;
     global.onEachFeature = onEachFeature;
     global.restoreParcelLayerStyle = restoreParcelLayerStyle;
     global.selectParcel = selectParcel;

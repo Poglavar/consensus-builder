@@ -1,0 +1,78 @@
+{
+  "cityId": "queue:34",
+  "queueRank": 34,
+  "name": "Hajipur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.981,
+    85.451
+  ],
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "observation": "Bihar Bhu-Naksha (NIC) cadastral map portal; landing page is a login/captcha-style entry that calls internal /rest/GetMapInstanceMap endpoints; no documented open parcel API."
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "observation": "Bihar land records portal (Dept. of Revenue and Land Reforms); 198-byte redirect stub."
+    },
+    {
+      "url": "https://www.nakshauat.dolr.gov.in/",
+      "observation": "National DoLR NAKSHA portal (urban land survey); connection failed from this environment."
+    },
+    {
+      "url": "https://bhuvan-app1.nrsc.gov.in/",
+      "observation": "ISRO Bhuvan portal reachable (HTML); no parcel feature service tested for Hajipur."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "HTML login page only"
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/GetMapInstanceMap/getMapInstance",
+      "method": "GET",
+      "httpStatus": 405,
+      "contentType": "text/html",
+      "assessment": "internal endpoint requires POST/session; not an open API and not probed further"
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/VillageMapInfo/getVillageList",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "not found"
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "stub"
+    },
+    {
+      "url": "https://www.nakshauat.dolr.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure (000)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bihar village cadastral maps (viewer)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Bhu-Naksha likely has plot polygons for Vaishali district villages, but only through a session-based viewer; no open bounded polygon endpoint verified, and reuse terms unread.",
+  "nextStep": "Inspect the Bhu-Naksha viewer's network flow/terms for a permitted API; check Bihar open-data and Bhuvan for ULB property GIS.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

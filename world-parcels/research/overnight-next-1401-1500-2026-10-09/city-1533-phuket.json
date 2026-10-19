@@ -1,0 +1,57 @@
+{
+  "cityCode": 1533,
+  "queueRank": 1465,
+  "country": "Thailand",
+  "countryCode": "TH",
+  "point": [7.87278877865705, 98.3676348479171],
+  "population2025": 389376,
+  "population2025k": 389.376,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Phuket Thailand official cadastral map parcel land registry Department of Lands LandsMaps",
+        "result": "Official Department of Lands material identifies LandsMaps as its public land-parcel map service. Official Phuket Provincial Land Office material identifies the provincial office as the local land-registration, title, survey, and mapping custodian. The LandsMaps host timed out during a bounded anonymous GET; no public API, schema, CRS, or geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/home/",
+          "https://landsmaps.dol.go.th/",
+          "https://phuketdol.go.th/frontpage",
+          "https://www.phuketdol.go.th/content/cate/2"
+        ]
+      },
+      {
+        "language": "Thai",
+        "query": "ภูเก็ต แผนที่แปลงที่ดิน กรมที่ดิน สำนักงานที่ดินจังหวัดภูเก็ต",
+        "result": "Official Thai-language Phuket Provincial Land Office material identifies the office and its responsibilities for land registration, title documents, cadastral evidence, surveying, and mapping. Official Department of Lands search results identify LandsMaps as the parcel-map service; its host timed out on the bounded anonymous request.",
+        "actualResultUrls": [
+          "https://phuketdol.go.th/frontpage",
+          "https://www.phuketdol.go.th/content/cate/2",
+          "https://landsmaps.dol.go.th/",
+          "https://www.dol.go.th/home/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Department of Lands, Ministry of Interior, Thailand",
+    "localOffice": "สำนักงานที่ดินจังหวัดภูเก็ต / Phuket Provincial Land Office",
+    "localOfficeEvidenceUrl": "https://www.phuketdol.go.th/content/cate/2",
+    "sourceScope": "The official provincial office states responsibility for land registration, land-title issuance, land-registration evidence, surveying, mapping, and condominium registration across Phuket's districts.",
+    "geometryAccess": "DOL advertises LandsMaps as the public parcel-map service, but the anonymous host request timed out before the current JavaScript/configuration or service endpoint could be inspected."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a usable public feature service. The timeout and lack of a geometry response are not evidence of citywide absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real local registry custodian was verified, but no anonymous safe-ID geometry response, schema/CRS, or independently qualified adapter was found.",
+    "adapterAdmission": false
+  }
+}

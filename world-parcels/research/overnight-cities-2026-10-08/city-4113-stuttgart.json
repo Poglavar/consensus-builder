@@ -1,0 +1,178 @@
+{
+  "name": "Stuttgart",
+  "country": "Germany",
+  "countryCode": "DE",
+  "rank": 576,
+  "point": [
+    48.7945602765168,
+    9.20116965816696
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "German",
+        "query": "Stuttgart ALKIS WFS Flurstücke LGL Baden-Württemberg offizielle offene Geodaten",
+        "result": "Die Stadt Stuttgart beschreibt ihr Geoportal und die Flurstücksauskunft; der LGL Baden-Württemberg stellt einen anonym nutzbaren ALKIS-WFS bereit. Eine auf 40 × 40 m um den WUP-Punkt begrenzte Abfrage lieferte drei vollständige Stuttgarter Flurstückspolygone. Der WUP-Punkt liegt in keinem dieser drei Polygone.",
+        "urls": [
+          "https://www.stuttgart.de/leben/bauen/geoportal/dienste-und-auskunftssysteme",
+          "https://opendata.stuttgart.de/dataset/alkis",
+          "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html",
+          "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Stuttgart official open ALKIS cadastral parcel WFS feature geometry safe field schema",
+        "result": "Official ALKIS WFS returned three complete Polygon features identified as Stuttgart. The exact WUP point is not covered by those three; citywide coverage and completeness were not tested.",
+        "urls": [
+          "https://www.stuttgart.de/leben/bauen/geoportal/dienste-und-auskunftssysteme",
+          "https://opendata.stuttgart.de/dataset/alkis",
+          "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html",
+          "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.stuttgart.de/leben/bauen/geoportal/dienste-und-auskunftssysteme",
+        "observation": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons."
+      },
+      {
+        "url": "https://opendata.stuttgart.de/dataset/alkis",
+        "observation": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons."
+      },
+      {
+        "url": "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html",
+        "observation": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=nora%3Av_al_flurstueck&COUNT=3&SRSNAME=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25832&OUTPUTFORMAT=application%2Fjson&PROPERTYNAME=gml_id%2Cflurstueckskennzeichen%2Cgemeinde_id%2Cgemeinde_name%2Cgeom&BBOX=514754.47%2C5404617.94%2C514794.47%2C5404657.94%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25832",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json",
+        "responseBytes": 9381,
+        "featureType": "nora:v_al_flurstueck",
+        "geometryType": "Polygon",
+        "responseCrs": "EPSG:25832",
+        "queryBbox": [
+          514754.47,
+          5404617.94,
+          514794.47,
+          5404657.94
+        ],
+        "queryBboxCrs": "EPSG:25832",
+        "count": 3,
+        "numberMatched": 6,
+        "numberReturned": 3,
+        "schemaSafeFields": [
+          "gml_id",
+          "flurstueckskennzeichen",
+          "gemeinde_id",
+          "gemeinde_name",
+          "geom"
+        ],
+        "returnedCity": "Stuttgart",
+        "pointContainedByAnyReturnedPolygon": false,
+        "sampleFile": "samples/stuttgart-alkis-wup576-bbox.geojson",
+        "sampleSha256": "39f554918e1100db47ce875ab94a1f172f9a5f57582eb1d22f50f29942e96a16",
+        "retainedIdentifiers": [
+          "08146000000678000000",
+          "08146000000688000200",
+          "08146000001247000200"
+        ]
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": "nora:v_al_flurstueck",
+    "responseType": "FeatureCollection",
+    "responseCrs": "EPSG:25832",
+    "returnedFullPolygonCount": 3,
+    "uniqueFullPolygonCount": 3,
+    "wupPointContained": false,
+    "limitations": "Three full city-scoped polygons retained; no citywide pagination/completeness qualification."
+  },
+  "source": {
+    "sourceId": "de-bw-lgl-alkis-flurstueck",
+    "name": "Baden-Württemberg LGL ALKIS cadastral parcels",
+    "operator": "Landesamt für Geoinformation und Landentwicklung Baden-Württemberg (LGL)",
+    "url": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+    "serviceType": "wfs",
+    "layer": "nora:v_al_flurstueck",
+    "geometryType": "Polygon/MultiPolygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "flurstueckskennzeichen",
+    "scope": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "identityBasis": "Fresh bounded adapter qualification uses the publisher native cadastral key, preserving complete geometry and separate transport IDs."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official parcel layer contains features identified as Stuttgart.",
+    "verifiedOpenScope": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Whether the source has complete citywide enumeration and whether the WUP population point lies inside the formal municipal boundary remain unverified.",
+  "nextStep": "Qualify source paging/completeness and municipality coverage before considering runtime use; do not infer WUP-point coverage from other city samples.",
+  "sourceIds": [
+    "de-bw-lgl-alkis-flurstueck"
+  ],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4113,
+  "cityId": "wup2025:4113",
+  "queueRank": 576,
+  "population2025": 899103,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    48.7945602765168,
+    9.20116965816696
+  ],
+  "runtimeReadiness": "enabled",
+  "adapterReady": false,
+  "scopeLimits": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+  "registryEvidenceUrls": [
+    "https://www.stuttgart.de/leben/bauen/geoportal/dienste-und-auskunftssysteme",
+    "https://opendata.stuttgart.de/dataset/alkis",
+    "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html"
+  ],
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00",
+  "appCityId": "stuttgart",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/stuttgart-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "de-bw-lgl-alkis-flurstueck",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-quality.json"
+  },
+  "discoverySource": {
+    "operator": "Landesamt für Geoinformation und Landentwicklung Baden-Württemberg; City of Stuttgart Geoportal",
+    "url": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+    "format": "OGC WFS 2.0.0 GeoJSON, nora:v_al_flurstueck, source EPSG:25832; sample transformed to OGC:CRS84",
+    "nativeIdField": "flurstueckskennzeichen",
+    "basis": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons.",
+    "urls": [
+      "https://www.stuttgart.de/leben/bauen/geoportal/dienste-und-auskunftssysteme",
+      "https://opendata.stuttgart.de/dataset/alkis",
+      "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html"
+    ],
+    "scope": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 109,
+  "city": "Douala",
+  "countryCode": "CM",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/douala.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Douala cadastre parcellaire SIG données géographiques ouvertes Cameroun"
+  },
+  "results": [
+    {
+      "title": "MINHDU public Web-SIG",
+      "url": "https://www.minhdu.gov.cm/sigwebminhdu/public/index.php/home",
+      "kind": "official"
+    }
+  ],
+  "assessment": "Search surfaced the official Ministry of Housing and Urban Development public Web-GIS. Its indexed topics cover urban contracts, infrastructure/equipment and planning documents; no cadastral parcel layer was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,121 @@
+{
+  "cityCode": 5166,
+  "queueRank": 1631,
+  "name": "Mwene-Ditu",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "locId": 180,
+  "point": [-7.01076547534769, 23.4534559905586],
+  "population2025": 351319,
+  "population2025k": 351.319,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mwene-Ditu Democratic Republic of the Congo official cadastral map land registry parcel cadastre",
+        "result": "First-party discovery located the official Ministry of Land Affairs site and its current directory of land and cadastral circumscriptions. The directory identifies Mwene-Ditu as a circumscription in Lomami. No public city-bounded parcel map or parcel API was found in the English discovery results.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Mwene-Ditu République démocratique du Congo carte cadastrale cadastre registre foncier",
+        "result": "La recherche officielle en français a confirmé la circonscription foncière et cadastrale de Mwene-Ditu dans la province de Lomami, ainsi que la procédure ministérielle de demande de recherche foncière. Les pages observées ne publient pas de couche parcellaire anonyme, d'identifiant parcellaire sûr, ni d'API publique de géométrie pour la ville.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/ressources/documents",
+          "https://servicepublic.gouv.cd/service/4671"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "Official Ministry directory of land and cadastral circumscriptions. It lists Mwene-Ditu under Lomami, establishing a local cadastral/land custodian route, but provides no parcel geometry or downloadable city layer."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "observation": "Official Ministry land-search procedure. It requests a circumscription and property references through a formal workflow; it is not an anonymous parcel geometry API and was not submitted."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/ressources/documents",
+      "observation": "Official document catalogue exposing a pilot cadastral digitization document. The document evidence describes an institutional digitization initiative, not an open Mwene-Ditu parcel service."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "Official public-service catalogue describing consultation of cadastral and land registers through the competent Conservateur or Chef de Division du Cadastre; it involves a formal request and unsafe owner/title details were not sought."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. Current rendered content listed Mwene-Ditu under Lomami. No parcel map, service configuration, geometry endpoint, schema, or CRS was exposed."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Fetched successfully. The page describes a formal research request with circumscription and property-reference fields. No request was submitted and no parcel data was returned."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/api/documents?view=catalog",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Official document catalogue response received. It included the pilot cadastral digitization document metadata, but no parcel feature collection or safe parcel identity."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/api/circonscriptions",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "outcome": "No separate JSON circumscription endpoint was available at this guessed route; the official HTML directory remained the source of the Mwene-Ditu listing."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/robots.txt",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "outcome": "Robots policy was read for route discovery; it exposed no cadastral viewer or parcel API route."
+    },
+    {
+      "url": "https://backend-cadastre.193.203.191.123.sslip.io/wp-json/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "The Ministry-linked backend responded with standard WordPress namespaces only; no parcel/cadastre geometry endpoint or safe parcel response was found. No private token or authenticated route was used."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Ministry of Land Affairs directory explicitly lists the Mwene-Ditu land/cadastral circumscription under Lomami. This is local custodian evidence, not evidence of an open parcel adapter or current anonymous parcel coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "operator": "Ministère des Affaires Foncières de la République démocratique du Congo, via the Lomami / Mwene-Ditu land and cadastral circumscription",
+    "viewerUrls": [],
+    "crs": null
+  },
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "resultCategory": "official_local_custodian_no_public_parcel_endpoint",
+  "coverageAssessment": {
+    "claimedScope": "Official Ministry land and cadastral administration for the Mwene-Ditu circumscription in Lomami.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel record, stable native parcel identity, schema, CRS, or geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The official ministry and linked backend may support restricted, formal-request, or not-yet-published cadastral data. The absence of a public response in these bounded requests is not evidence of citywide parcel absence. No unsafe owner, address, titleholder, tax, account, or contact fields were requested."
+}

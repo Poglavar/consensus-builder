@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-4197-kassel.json",
+  "cityCode": 4197,
+  "queueRank": 2473,
+  "name": "Kassel",
+  "country": "Germany",
+  "countryCode": "DE",
+  "pointLatLon": [51.3151466598024, 9.48755550595054],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://www.kassel.de/geoportal","httpStatus":200,"outcome":"Official City of Kassel Geoportal page loaded and identifies the public Regionalstadtplan and municipal geodata services."},
+    {"method":"GET","url":"https://geoportal.kassel.de/portal/sharing/rest/content/items/86758ddc1d474f968c5cf9057f0ac8c7/data?f=pjson","httpStatus":200,"outcome":"Current Regionalstadtplan Web App configuration loaded. It uses EPSG:25832 and the Kassel ArcGIS portal/geocoder; no parcel layer was asserted from the configuration."},
+    {"method":"SEARCH","url":"https://hvbg.hessen.de/geoinformation/afis-alkis-atkis-modell/amtliches-liegenschaftskatasterinformationssystem","httpStatus":200,"outcome":"Official Hessen cadastral authority page documents ALKIS and its parcel objects, including Flurstücke; owner data was not requested."},
+    {"method":"SEARCH","url":"https://opendata.hessen.de/de/dataset/alkis-amtliches-liegenschaftskatasterinformationssystem1","httpStatus":200,"outcome":"Official Hessen open-data catalogue identifies ALKIS WFS resources, including adv:AX_Flurstueck."},
+    {"method":"GET","url":"https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/nas/wfs?SERVICE=WFS&REQUEST=GetCapabilities","httpStatus":200,"outcome":"Anonymous WFS capabilities returned WFS HE ALKIS NAS-konform and adv:AX_Flurstueck; capability evidence was saved under ignored tmp/valhalla-parcel-research/4197/."},
+    {"method":"GET","url":"https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/nas/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=DescribeFeatureType&TYPENAMES=adv:AX_Flurstueck","httpStatus":200,"outcome":"Schema returned flurstueckskennzeichen and position geometry. No owner, address, contact, titleholder, tax/account, or personal fields were requested."},
+    {"method":"GET","url":"https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/nas/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=adv:AX_Flurstueck&BBOX=533879,5684884,534079,5685084,urn:ogc:def:crs:EPSG::25832&COUNT=3&PROPERTYNAME=flurstueckskennzeichen,position","httpStatus":200,"outcome":"Bounded anonymous request returned three AX_Flurstueck GML polygons. They were transformed from EPSG:25832 to WGS84 GeoJSON and retained with only the native flurstueckskennzeichen as properties.id."},
+    {"method":"GET","url":"https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/nas/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=adv:AX_Flurstueck&BBOX=533879,5684884,534079,5685084,urn:ogc:def:crs:EPSG::25832&COUNT=3&OUTPUTFORMAT=application/json&PROPERTYNAME=flurstueckskennzeichen,position","httpStatus":400,"outcome":"Server rejected application/json as an unknown output format; the same bounded request without that format returned GML successfully. No retry used unsafe fields or credentials."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Kassel Regionalstadtplan ArcGIS Web App item 86758ddc1d474f968c5cf9057f0ac8c7; configured map coordinate system EPSG:25832.",
+    "apiBase": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/nas/wfs",
+    "geometryCrs": "EPSG:25832 (ETRS89 / UTM zone 32N) in source GML; retained sample is GeoJSON WGS84 longitude/latitude.",
+    "nativeIdentity": "flurstueckskennzeichen; three values retained as properties.id.",
+    "sourceFieldMapping": "adv:AX_Flurstueck.flurstueckskennzeichen -> GeoJSON properties.id; adv:AX_Flurstueck.position -> GeoJSON geometry.",
+    "boundedAnonymousResponse": {"requestScope":"200 m x 200 m EPSG:25832 bbox centered approximately on the exact WUP point","featureCount":3,"nativeIdentity":["061530009013670037__","06153000900038______","061530009000390003__"]}
+  },
+  "localCustodianAssessment": "The City of Kassel Geoportal and municipal Vermessung und Geoinformation context are evidenced; Hessen HVBG/GDS is the state ALKIS service custodian. The returned parcel service is state-level but covers Kassel. This is source evidence, not runtime adapter admission.",
+  "safeFieldAllowlist": ["stable native parcel identity", "polygon geometry", "source CRS", "latitude/longitude", "source service URL", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "mortgage", "dispute", "payment", "audit"],
+  "sampleGeoJSON": "kassel-sample.geojson",
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A public ALKIS parcel WFS and safe bounded identity+geometry response are evidenced, but adapter admission remains a separate serial review."},
+  "scopeLimits": [
+    "Exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "The bounded bbox response is not a citywide coverage or completeness claim.",
+    "Only three full parcel polygons were retained; larger unchanged GML and request evidence remain under ignored tmp/valhalla-parcel-research/4197/.",
+    "Native field names and source mapping are documented here; raw source attribute sets were not retained.",
+    "No unsafe owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+    "TLS verification remained enabled; no certificate exception was used.",
+    "This packet does not claim source integration, licensing clearance, or runtime admission."
+  ],
+  "uncertainty": "The bounded response proves public anonymous parcel identity and geometry for the tested extent, but citywide coverage, update cadence, licensing/redistribution conditions, and runtime adapter behavior remain unresolved."
+}

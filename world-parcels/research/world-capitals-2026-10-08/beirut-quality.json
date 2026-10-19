@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS topology audit of bounded adapter-returned features projected to EPSG:3857; no geometry repair. Counts describe the tested viewport only.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:3857",
+  "featureCount": 3,
+  "validNonemptyCount": 3,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryGroups": [],
+  "positiveAreaOverlapPairsAbove1e-6M2": [],
+  "areaM2": {
+    "min": 869295.0958300261,
+    "median": 900740.0010219383,
+    "max": 1429278.4705020196
+  },
+  "features": [
+    {
+      "id": "beirut:780",
+      "areaM2": 900740.0010219383,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "beirut:802",
+      "areaM2": 869295.0958300261,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    },
+    {
+      "id": "beirut:807",
+      "areaM2": 1429278.4705020196,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "parts": 1
+    }
+  ],
+  "featureSemantics": "Unresolved: provider layer named Cadastral_new; the three observed polygons may represent cadastral districts rather than individual plots. Excluded from parcel-geometry acceptance pending official plot-level semantics."
+}

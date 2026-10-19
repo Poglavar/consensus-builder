@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11495-purnia.json",
+  "purpose": "Document first-party local registry/map evidence, current viewer routes, bounded anonymous requests, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Bihar's official BhuNaksha viewer is a real first-party cadastral map service. Its current client configuration points to anonymous REST endpoints at the site root. Those endpoints returned Purnia district and local administrative/map lists, but the bounded extent request returned HTTP 204 and the attempted WMS GetCapabilities route returned the viewer error page. No full parcel polygon is retained.",
+  "registryAssessment": "registryFound=true is supported by the official Directorate of Land Records & Survey/Government of Bihar BhuNaksha viewer and the returned Purnia administrative branches. This is local/state cadastral-map custody evidence, not proof of a citywide parcel API or complete city coverage.",
+  "officialPrimarySources": [
+    {"url":"https://bhunaksha.bihar.gov.in/10/index.jsp","observation":"Official Bihar cadastral-map landing page; names the Directorate of Land Records & Survey and NIC cadastral mapping service."},
+    {"url":"https://land.bihar.gov.in/landbihar/Default.aspx","observation":"Official Bihar Revenue and Land Reforms portal lists Bhu-Naksha/भू-मानचित्र as the revenue-map service."},
+    {"url":"https://purnea.nic.in/departments/revenue-department/","observation":"Official Purnea district Revenue Department page; local land-record service context, without parcel geometry on the reviewed page."}
+  ],
+  "searchQueries": [
+    {"language":"English","query":"Purnia Bihar official cadastral map land parcels Bhu Naksha Bihar official","result":"Found official BhuNaksha, Bihar Revenue and Purnea district sources; public viewer identified, city geometry not established by search.","actualResultUrls":["https://bhunaksha.bihar.gov.in/10/index.jsp","https://land.bihar.gov.in/landbihar/Default.aspx","https://purnea.nic.in/departments/revenue-department/"]},
+    {"language":"native/local","query":"Purnia Bihar official भू नक्शा khasra plot map revenue","result":"Found official Bihar भू-नक्शा/BhuNaksha references and the public viewer; no safe city geometry verified.","actualResultUrls":["https://biharbhumi.bihar.gov.in/","https://bhunaksha.bihar.gov.in/10/index.jsp"]}
+  ],
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":null,"exactWupPointTest":"Not completed because the viewer's returned map coordinate system/extent for the exact WUP point was not available in the bounded anonymous response.","requestEvidence":["POST /rest/MapInfo/getVVVVExtentGeoref returned HTTP 204 for a bounded Purnia East branch probe.","GET /10/WMS?service=WMS&request=GetCapabilities returned the viewer error page."]},
+  "coverageAssessment": {"claimedScope":"Bihar public digitized cadastral-map viewer.","verifiedOpenScope":"Purnia district code 09, Sadar Purnia subdivision code 02, Purnia East circle code 06, and a returned village/map list were observed anonymously.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "attempts": [
+    {"url":"https://bhunaksha.bihar.gov.in/rest/Levels/count","method":"POST","parameters":"state=10","httpStatus":200,"result":"7 location levels."},
+    {"url":"https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel","method":"POST","parameters":"state=10; level=0; codes=; hasmap=true","httpStatus":200,"result":"District list included Purnia code 09."},
+    {"url":"https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel","method":"POST","parameters":"state=10; level=1; codes=09,02,; hasmap=true","httpStatus":200,"result":"Returned Sadar Purnia and Purnia East branch data."},
+    {"url":"https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel","method":"POST","parameters":"state=10; level=1; codes=09,02,06,; hasmap=true","httpStatus":200,"result":"Returned Purnia East village/map list; only safe administrative/map identifiers and names were reviewed."},
+    {"url":"https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref","method":"POST","parameters":"state=10; gisLevels=09_02_06_0609; srs=0","httpStatus":204,"result":"No content; not evidence of absence."},
+    {"url":"https://bhunaksha.bihar.gov.in/10/WMS?service=WMS&request=GetCapabilities","method":"GET","httpStatus":200,"result":"Viewer error HTML rather than capabilities; no geometry/schema retained."}
+  ],
+  "remainingUncertainty":"The exact village/map branch containing the WUP point, the viewer's native CRS/coordinate transform, and a safe geometry-only parcel response remain unverified. A zero/empty bounded result would not establish citywide absence.",
+  "runtimeAssessment":"held; no adapter admission or runtime integration performed"
+}

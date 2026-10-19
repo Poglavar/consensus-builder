@@ -1,0 +1,40 @@
+{
+  "taskId": "city:8066",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-8066-banjarbaru.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/banjarbaru-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/banjarbaru-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T15:10:02Z",
+  "findings": {
+    "identity": "WUP rank 2573, Indonesia, point [-3.43380911020272,114.835932888486], 228534 persons; packet and queue match the SHA256-verified official archive.",
+    "search": "English and Indonesian executed-query records each include source results and actual URLs.",
+    "source": "Original ArcGIS app and web-map cache binds Persil Lahan to Banjarbaru_Utara/FeatureServer/1; layer metadata identifies polygon geometry and OBJECTID. Original bounded query has three complete Polygon geometries with OBJECTID 1, 2, 3 and exceededTransferLimit=true. Durable sample copies those geometries exactly and retains only qualified IDs. Original exact-point response has zero features; this is only a point miss.",
+    "hold": "Fresh exact native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, complete source binding to an adapter, and headed Details-panel verification are not independently evidenced. No citywide absence or runtime admission is inferred."
+  },
+  "originalArtifactChecks": [
+    {
+      "path": "tmp/valhalla-parcel-research/8066/service.json",
+      "sha256": "f84e624aae92dc2133ccf4e89be81b8a30186510fcb32441dd73aa39a9b84ebc"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/8066/map.json",
+      "sha256": "c105d6494b0369f46bd42a55191826512684de0800943b1d78e309f08896adf4"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/8066/webmap.json",
+      "sha256": "6902d6da494d00dd1185a2cd6c8e59f7c17cefdcc05f7198bd14803a1a194bbd"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/8066/exact.geojson",
+      "sha256": "1ce7eb457779acd1dc230a1bcb4692d06f27533481f26cbfe0e9e599134c0cd4"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/8066/sample3.geojson",
+      "sha256": "045d8449f97a0861d98871c068f136a69f37ab0d9bbcb7d0e653286bb6ddbe2d"
+    }
+  ]
+}

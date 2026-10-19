@@ -1,0 +1,278 @@
+{
+  "city": "Luanda, Angola",
+  "checkedAt": "2026-10-03",
+  "modelUsed": "gpt-6-luna (low)",
+  "sourceId": "ao-arcgis-luanda-agt-property-polygons",
+  "candidateDescriptor": {
+    "id": "ao-arcgis-luanda-agt-property-polygons",
+    "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+    "idField": "GlobalID_1",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "AO-LUANDA-AGT-",
+    "idType": "string",
+    "idPattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+    "idQueryBraces": true,
+    "parcelNumberField": "ID_GGPEN",
+    "outFields": [
+      "OBJECTID",
+      "GlobalID_1",
+      "ID_GGPEN",
+      "ID_AGT",
+      "Municipio",
+      "Comuna"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "adapter": "arcgis",
+    "name": "GGPEN Luanda property polygons",
+    "countryCode": "AO",
+    "metricSrid": 32733,
+    "cityIds": [
+      "luanda"
+    ],
+    "scope": "Property polygons in a Maianga sample; not verified as the authoritative legal parcel register. Only the bounded Luanda globe entry is enabled.",
+    "evidenceFile": "research/luanda-live.json",
+    "licenceNote": "No explicit reuse licence is published in the checked service metadata; source conditions remain informational.",
+    "catalogueUrl": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+    "attribution": "GGPEN / Luanda_AGT_Oficial_2_gdb layer 0. Preserve the publisher and layer name in source metadata.",
+    "boundsQueryMode": "object-ids"
+  },
+  "sourceNotice": {
+    "publisher": "ArcGIS item owner ANGOLA_GGPEN; GGPEN is an Angolan public-law body (https://ggpen.gov.ao/). The layer title includes AGT; a primary link confirming AGT authority/custody was not found.",
+    "attribution": "GGPEN / Luanda_AGT_Oficial_2_gdb layer 0. Preserve the publisher and layer name in source metadata.",
+    "dataScopeNotice": "Property polygons in a Maianga sample; not verified as the authoritative legal parcel register.",
+    "licenseInfo": null,
+    "copyrightText": "",
+    "licenseNotUsedAsGate": true
+  },
+  "identityAndWhitelist": {
+    "nativeId": "GlobalID_1 (esriFieldTypeGlobalID), official metadata designates it globalIdField and lists a unique index.",
+    "canonicalForm": "bare GUID; the idQueryBraces flag wraps GUID literals only upstream. Verified canonical sourceParcelId values stay bare.",
+    "sampleIdCount": 16,
+    "uniqueNativeIds": 16,
+    "idConflicts": 0,
+    "ID_AGT": "blank in all 16 sampled rows; not an ID candidate.",
+    "ID_GGPEN": "populated candidate label but no unique index; used only as parcelNumber display field.",
+    "ownerFieldsRequested": false,
+    "outFields": [
+      "OBJECTID",
+      "GlobalID_1",
+      "ID_GGPEN",
+      "ID_AGT",
+      "Municipio",
+      "Comuna"
+    ]
+  },
+  "liveTests": [
+    {
+      "kind": "live metadata/count",
+      "status": 200,
+      "count": 2239859,
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0?f=pjson; layer query returnCountOnly=true&f=json"
+    },
+    {
+      "kind": "bounds count",
+      "bboxWgs84": [
+        13.233,
+        -8.8375,
+        13.235,
+        -8.836
+      ],
+      "status": 200,
+      "count": 16,
+      "seconds": 0.326,
+      "requestParams": "returnCountOnly=true; geometryType=esriGeometryEnvelope; spatialRel=esriSpatialRelIntersects; inSR=4326; f=json"
+    },
+    {
+      "kind": "returnIdsOnly bbox",
+      "bboxWgs84": [
+        13.233,
+        -8.8375,
+        13.235,
+        -8.836
+      ],
+      "status": 200,
+      "idCount": 16,
+      "distinctIds": 16,
+      "seconds": 0.3,
+      "requestParams": "returnIdsOnly=true; geometryType=esriGeometryEnvelope; spatialRel=esriSpatialRelIntersects; inSR=4326; f=json",
+      "transferLimit": "objectIds list length equalled independent bbox count (16); no transfer-limit flag emitted."
+    },
+    {
+      "kind": "bounded geometry pages by objectIds",
+      "statusByPage": [
+        200,
+        200
+      ],
+      "pageCounts": [
+        10,
+        6
+      ],
+      "secondsByPage": [
+        0.274,
+        0.392
+      ],
+      "totalFeatures": 16,
+      "allReturnedOidsMatched": true,
+      "geometryType": "Polygon",
+      "requestParams": "objectIds=<10 then 6 returned OIDs>; outFields=OBJECTID,GlobalID_1,ID_GGPEN,ID_AGT,Municipio,Comuna; returnGeometry=true; outSR=4326; f=geojson"
+    },
+    {
+      "kind": "existing ArcGIS adapter queryBounds",
+      "bboxWgs84": [
+        13.233,
+        -8.8375,
+        13.235,
+        -8.836
+      ],
+      "pageSize": 10,
+      "status": 504,
+      "elapsedSeconds": 15,
+      "failure": "Parcel provider timed out."
+    },
+    {
+      "kind": "existing ArcGIS adapter queryBounds tiny box",
+      "bboxWgs84": [
+        13.23382,
+        -8.8376,
+        13.23412,
+        -8.8374
+      ],
+      "bboxCount": 2,
+      "pageSize": 1,
+      "status": 504,
+      "elapsedSeconds": 15,
+      "failure": "Parcel provider timed out."
+    },
+    {
+      "kind": "existing ArcGIS adapter exact queryIds all bbox GUIDs",
+      "status": 200,
+      "seconds": 0.629,
+      "inputIds": 16,
+      "returnedIds": 16,
+      "absentIds": 0,
+      "geometryOrOidConflicts": 0,
+      "canonicalIdsBare": true,
+      "requestParams": "idQueryBraces=true; where=GlobalID_1 IN (<16 brace-wrapped GUID literals>); pageSize=500"
+    }
+  ],
+  "technicalAssessment": "Enabled: bounded count and OID manifest followed by exact object-ID batches; long queries use form POST. Browser viewport, footprint, binding and 80 native-ID lookups complete.",
+  "description": "Metadata-only live source verification; no parcel polygons are stored in this evidence file.",
+  "runtimeContract": {
+    "adapter": "arcgis",
+    "cityId": "luanda",
+    "metricSrid": 32733,
+    "boundsQueryMode": "object-ids",
+    "termsAreInformational": true
+  },
+  "requestTransportVerification": {
+    "execution": {
+      "attemptedAt": "2026-10-03T08:21:19.985Z",
+      "adapter": "createArcgisParcelSource from repository",
+      "grid": {
+        "origin": [
+          13.234,
+          -8.83675
+        ],
+        "cellDegrees": 0.0025,
+        "shape": "3x3 centered",
+        "panShiftDegrees": [
+          0.0049,
+          0.0049
+        ]
+      },
+      "pageSizes": [
+        50,
+        500
+      ],
+      "pageSize50Summary": {
+        "complete": 18,
+        "failed": 0
+      },
+      "pageSize500Summary": {
+        "complete": 16,
+        "failed": 2
+      },
+      "networkNote": "Tests required escalated read-only network after sandbox DNS restriction; live results below supersede initial network-environment error note."
+    },
+    "postComparisons": {
+      "page500FailureCells": [
+        {
+          "bbox": [
+            13.23525,
+            -8.8405,
+            13.23775,
+            -8.838
+          ],
+          "oids": 531,
+          "get": {
+            "status": 404,
+            "urlBytes": 5560
+          },
+          "post": {
+            "status": 200,
+            "features": 531
+          }
+        },
+        {
+          "bbox": [
+            13.23515,
+            -8.8306,
+            13.23765,
+            -8.8281
+          ],
+          "oids": 221,
+          "get": {
+            "status": 404,
+            "urlBytes": 2460
+          },
+          "post": {
+            "status": 200,
+            "features": 221
+          }
+        }
+      ],
+      "exactGlobalIdBatch": {
+        "requested": 80,
+        "returned": 80,
+        "get": {
+          "status": 404,
+          "urlBytes": 4379
+        },
+        "post": {
+          "status": 200,
+          "features": 80
+        },
+        "whereLength": 3295,
+        "geometryStored": false
+      },
+      "method": "application/x-www-form-urlencoded POST to the same /query with same parameters; response metadata only"
+    }
+  },
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "mode": "manual headed browser",
+    "initialFeatures": 1458,
+    "retainedAfterPan": 2012,
+    "backCached": true,
+    "backRequestCount": 0,
+    "rendered": 2013,
+    "under": {
+      "status": 200,
+      "complete": true,
+      "features": 1
+    },
+    "binding": {
+      "status": 200,
+      "coverage": "complete",
+      "parcels": 1
+    },
+    "exactIds": {
+      "status": 200,
+      "complete": true,
+      "features": 80,
+      "absent": 0
+    }
+  }
+}

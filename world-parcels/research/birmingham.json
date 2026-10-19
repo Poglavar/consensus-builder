@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:191",
+  "queueRank": 191,
+  "name": "Birmingham",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "centerLatLon": [
+    52.5046010416867,
+    -1.96039982513583
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
+    "requestUrl": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query?where=1%3D1&geometry=-1.9795,52.4965,-1.9765,52.4985&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,INSPIREID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -1.9795,
+      52.4965,
+      -1.9765,
+      52.4985
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "INSPIREID",
+    "responseFile": "birmingham-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; returnCountOnly for the test box returned 362"
+  },
+  "source": {
+    "sourceId": "gb-arcgis-geodom-land-registry-inspire-2021",
+    "name": "'Land Registry Inspire Sites 20211022' public ArcGIS Online FeatureServer layer 0 (third-party copy of HM Land Registry INSPIRE index polygons)",
+    "operator": "ArcGIS Online user 'Geodom' (unofficial third party; not HM Land Registry)",
+    "scope": "22,075 polygons in one Midlands extract around Birmingham; not a complete national or city dataset",
+    "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "Esri JSON",
+    "crs": "native EPSG:27700; outSR=4326 returned WGS84",
+    "reuseStatus": "item has no licence text; the original HMLR INSPIRE index polygons are described (per search summaries in the London record, not re-read here) as OGL with Crown copyright and database-right attribution; the copy's own terms are unconfirmed"
+  },
+  "portalsFound": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "observation": "Official HM Land Registry INSPIRE Index Polygons service: per-local-authority GML downloads, needs a session; see London record. Not a queryable API."
+    },
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer",
+      "observation": "Third-party 2021 INSPIRE extract (public, owner Geodom); the extent of x 388269-407892, y 282232-306867 covers Birmingham."
+    },
+    {
+      "url": "https://www.birmingham.gov.uk/",
+      "observation": "Birmingham City Council site reachable (200); no parcel service located. data.birmingham.gov.uk returned a proxy CONNECT 502."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "layer description: polygon, INSPIREID only, maxRecordCount 2000, EPSG:27700; not counted"
+    },
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query (bbox at UN centre -1.9604,52.5046 +-0.001, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "count 0"
+    },
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query (bbox -1.9,52.47,-1.88,52.49, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "count 0"
+    },
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query (bbox -2.2,52.3,-1.6,52.7, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "count 22075: the layer's whole feature count; coverage is sparse (several 2 km boxes returned 0 or 1)"
+    },
+    {
+      "url": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0/query?where=1%3D1&geometry=-1.9795,52.4965,-1.9765,52.4985&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,INSPIREID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "verified: 3 closed polygons with INSPIREID near Handsworth/Hockley, Birmingham; test box has 362"
+    },
+    {
+      "url": "https://data.birmingham.gov.uk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "a 2021 extract of HM Land Registry INSPIRE index polygons around Birmingham",
+    "verifiedOpenScope": "three parcel-like index polygons in a ~250 m box about 1.5 km west of the UN centre point",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Unofficial third-party copy, dated Oct 2021, only 22,075 polygons so coverage of Birmingham is patchy; INSPIRE polygons are freehold registered extents, not full cadastral parcels, and are not a legal cadastre. Copy licence unconfirmed. The official HMLR bulk download (Birmingham City Council area GML) needs an account session and was not obtained. Birmingham City Council's own GIS/open data was not reached.",
+  "nextStep": "Obtain the official HMLR INSPIRE GML for Birmingham (and check OGL), or locate a hosted official/queryable service; test Birmingham City Council open data."
+}

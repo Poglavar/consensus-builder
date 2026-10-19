@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 3447,
+  "cityId": "queue:1241",
+  "queueRank": 1241,
+  "name": "Mannheim",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso3": "DEU",
+  "locId": 276,
+  "point": [49.485482134892, 8.47482558079509],
+  "centerLatLon": [49.485482134892, 8.47482558079509],
+  "population2025": 448203,
+  "population2025k": 448.203,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mannheim official cadastral parcel map Liegenschaftskarte Flurstücke GIS WFS",
+        "result": "Found the official Mannheim Geobasisdaten page and official city Geoportal; it documents the Liegenschaftskataster/ALKIS and links the municipal map service.",
+        "actualResultUrls": [
+          "https://www.mannheim.de/de/stadt-gestalten/verwaltung/aemter-fachbereiche-eigenbetriebe/geoinformation-und-stadtplanung/geobasisdaten",
+          "https://www.mannheim.de/de/stadtkarten",
+          "https://www.gis-mannheim.de/mannheim/index.php?lang=de"
+        ]
+      },
+      {
+        "language": "German (local)",
+        "query": "Mannheim offizielles Geoportal Flurstücke Liegenschaftskarte WFS Kataster",
+        "result": "Found the official Mannheim Geoportal, its Flurstücksuche, the municipal OGC services page, and the public ALKIS parcel layer configured in the viewer.",
+        "actualResultUrls": [
+          "https://www.gis-mannheim.de/mannheim/index.php?lang=de",
+          "https://www.gis-mannheim.de/mannheim/mod_ogc/index.php",
+          "https://www.mannheim.de/de/stadt-gestalten/verwaltung/aemter-fachbereiche-eigenbetriebe/geoinformation-und-stadtplanung/geobasisdaten"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-09"
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Stadt Mannheim, Fachbereich Geoinformation und Stadtplanung, Abteilung Geobasisdaten",
+    "localRegistryBasis": "The official city page states that the Liegenschaftskataster is the comprehensive register of parcels and buildings and that ALKIS contains structured geometry and attribute data; the city Geoportal exposes a Flurstücke layer and Flurstücksuche.",
+    "viewerUrl": "https://www.gis-mannheim.de/mannheim/index.php?lang=de",
+    "layerName": "alkis_flurstuecke",
+    "viewerServiceUrl": "https://www.gis-mannheim.de/mannheim/mod_mapserver/map.php",
+    "viewerConfiguration": "The current viewer JavaScript/config declares map CRS EPSG:25832 and configures alkis_flurstuecke as a WMS layer; the ALKIS module uses the public flur_search.php search route.",
+    "scope": "Municipal Mannheim Geoportal / Mannheim city area; not evidence of Germany-wide open parcel coverage."
+  },
+  "source": {
+    "sourceId": "DE-MA-mannheim-geoportal-alkis",
+    "name": "Mannheim Geoportal ALKIS parcel layer",
+    "operator": "Stadt Mannheim, Fachbereich Geoinformation und Stadtplanung",
+    "scope": "Mannheim municipal Geoportal",
+    "endpoint": "https://www.gis-mannheim.de/mannheim/mod_mapserver/map.php",
+    "method": "WMS; viewer coordinate query via https://www.gis-mannheim.de/mannheim/ajax/query.php",
+    "responseFormat": "WMS image/png; coordinate query text/HTML",
+    "crs": "EPSG:25832 (viewer); WUP point retained in EPSG:4326 latitude/longitude",
+    "reuseStatus": "Held: public viewer/service was reachable, but this attempt did not obtain a bounded safe ID+polygon response."
+  },
+  "requests": [
+    {
+      "url": "https://www.gis-mannheim.de/mannheim/index.php?lang=de",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official public viewer loaded; JavaScript/config inspected. Browser User-Agent, Accept, Accept-Language, Referer, and cookie jar used."
+    },
+    {
+      "url": "https://www.gis-mannheim.de/mannheim/mod_mapserver/map.php?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=alkis_flurstuecke&STYLES=&SRS=EPSG:25832&BBOX=461700,5481300,462200,5481800&WIDTH=256&HEIGHT=256&FORMAT=image/png",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "assessment": "Bounded 500 m map request returned a rendered image, confirming a public WMS map route but not parcel vector geometry or safe native IDs."
+    },
+    {
+      "url": "https://www.gis-mannheim.de/mannheim/mod_mapserver/map.php?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=alkis_flurstuecke&QUERY_LAYERS=alkis_flurstuecke&STYLES=&INFO_FORMAT=application/json&SRS=EPSG:25832&BBOX=461700,5481300,462200,5481800&WIDTH=101&HEIGHT=101&X=53&Y=49&FEATURE_COUNT=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Returned 'not all parameters!' rather than feature data; treated as unusable, not as absence."
+    },
+    {
+      "url": "https://www.gis-mannheim.de/mannheim/ajax/query.php?qx=461962.2246&qy=5481559.3393&x=50&y=50&activepoilayer=&activelayer=alkis_flurstuecke&restrictlayer=&deactivatelayer=&qextent=461700,5481300,462200,5481800&qsize=101%20101&lang=de&service=mannheim&qt=&qtm=",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Viewer coordinate query returned a normal result shell with exact coordinate echo and 'Kein Ergebnis für diese Abfrage'; exact-point miss is not citywide absence and yielded no polygon/ID."
+    },
+    {
+      "url": "https://www.gis-mannheim.de/mannheim/mod_ogc/index.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official OGC services explanation page; general service documentation, not by itself proof of a parcel vector response."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Municipal Mannheim Geoportal provides city geodata and an ALKIS parcel layer; the city page describes the underlying cadastral register as statewide in Baden-Württemberg, but this packet does not verify that broader scope.",
+    "verifiedOpenScope": "No bounded open parcel polygon response with safe native ID verified in this attempt.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["native parcel identity if exposed", "geometry"],
+  "nativeFieldMapping": {
+    "expectedViewerLayer": "alkis_flurstuecke",
+    "nativeIdField": "Not observed in a returned vector record",
+    "geometryField": "Not observed in a returned vector record",
+    "compositeKeyProvenance": "None retained; no native feature record was returned."
+  },
+  "runtimeReadiness": "held_pending_independent_serial_review",
+  "remainingUncertainty": "The public viewer visibly renders the municipal ALKIS parcel layer, but the tested anonymous routes did not provide a bounded vector feature response. The exact WUP point query returned no feature and is not evidence of citywide absence. No login, credential, CAPTCHA bypass, unsafe field request, or TLS exception was used.",
+  "nextStep": "Serial reviewer should independently qualify whether the municipal mapserver has a supported anonymous vector/feature-info route or whether the source remains viewer-only for this integration."
+}

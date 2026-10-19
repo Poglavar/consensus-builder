@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6351-malatya.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "TKGM’s official organization list includes the Malatya Cadastre Directorate, and its public parcel map guide documents parcel search/map functions. One normal public point request to the documented viewer API at the unchanged WUP locator returned HTTP 403 with the service message “Günlük sorgu limitini aştınız.” No alternate route or retry was used; no parcel geometry was verified.",
+  "registryAssessment": "First-party sources establish a local registry/cadastre custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+      "observation": "Official land-registry organization page lists the Malatya Cadastre Directorate."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "Official guide documents public parcel search and interactive map by administrative area and parcel number."
+    },
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "observation": "Official public parcel map viewer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Malatya Türkiye official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+      "result": "TKGM’s official organization list includes the Malatya Cadastre Directorate, and its public parcel map guide documents parcel search/map functions. One normal public point request to the documented viewer API at the unchanged WUP locator returned HTTP 403 with the service message “Günlük sorgu limitini aştınız.” No alternate route or retry was used; no parcel geometry was verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+      "actualResultUrls": [
+        "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+        "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "https://parselsorguv2.tkgm.gov.tr/"
+      ]
+    },
+    {
+      "language": "Turkish",
+      "query": "Malatya kadastro müdürlüğü parsel sorgu resmi ada parsel harita",
+      "result": "TKGM’s official organization list includes the Malatya Cadastre Directorate, and its public parcel map guide documents parcel search/map functions. One normal public point request to the documented viewer API at the unchanged WUP locator returned HTTP 403 with the service message “Günlük sorgu limitini aştınız.” No alternate route or retry was used; no parcel geometry was verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+      "actualResultUrls": [
+        "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+        "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "https://parselsorguv2.tkgm.gov.tr/"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "TKGM’s official organization list includes the Malatya Cadastre Directorate, and its public parcel map guide documents parcel search/map functions. One normal public point request to the documented viewer API at the unchanged WUP locator returned HTTP 403 with the service message “Günlük sorgu limitini aştınız.” No alternate route or retry was used; no parcel geometry was verified.",
+    "verifiedOpenScope": "TKGM’s official organization list includes the Malatya Cadastre Directorate, and its public parcel map guide documents parcel search/map functions. One normal public point request to the documented viewer API at the unchanged WUP locator returned HTTP 403 with the service message “Günlük sorgu limitini aştınız.” No alternate route or retry was used; no parcel geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.3470232345555/38.3022656904749/",
+      "result": "HTTP 403: daily query limit exceeded (Günlük sorgu limitini aştınız.); no retry or alternate-route attempt."
+    }
+  ],
+  "remainingUncertainty": "The point’s feature result remains unresolved because the public service reported its daily query limit; this does not establish that a parcel is absent.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry"
+}

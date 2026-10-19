@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 66,
+  "city": "Kozhikode",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kozhikode.json",
+  "query": {
+    "language": "Malayalam",
+    "script": "Malayalam",
+    "text": "കോഴിക്കോട് ഭൂമി നികുതി ഭൂപടം സർവേ ഭൂരേഖ സർക്കാർ കേരള GIS"
+  },
+  "results": [
+    {
+      "title": "Ente Bhoomi - Digital Land Records System for Kerala",
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "kind": "official-state-land-records",
+      "note": "Kerala survey portal describes digitally surveyed parcel maps; exact Kozhikode coverage and anonymous vector access unverified."
+    },
+    {
+      "title": "Bhu-Naksha Kerala",
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "kind": "official-state-cadastral-viewer",
+      "note": "Government cadastral mapping interface supports re-surveyed sketches and survey/subdivision selection; no direct feature service established."
+    },
+    {
+      "title": "Revenue eServices: e-maps",
+      "url": "https://revenue.kerala.gov.in/pages/home.php",
+      "kind": "official-state-department",
+      "note": "Department describes cadastral mapping and public updated parcel sketches, but does not prove open vector export."
+    }
+  ],
+  "assessment": "Official Kerala portals expose cadastral map and land-record services. Kozhikode coverage and machine-readable anonymous access remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:9587",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Malayalam",
+    "queryScript": "Malayalam",
+    "nativeQuery": "കോഴിക്കോട് ഭൂമി നികുതി ഭൂപടം സർവേ ഭൂരേഖ സർക്കാർ കേരള GIS",
+    "englishQuery": "Kozhikode land tax, survey map, land records and Kerala GIS",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

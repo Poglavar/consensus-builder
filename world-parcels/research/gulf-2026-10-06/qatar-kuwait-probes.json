@@ -1,0 +1,291 @@
+{
+  "checkedAt": "2026-10-06",
+  "networkOrigin": "authorized laptop network",
+  "attempts": [
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0?f=json",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 4925,
+      "metadata": {
+        "name": "حدود الأراضي المساحية المعتمدة",
+        "geometryType": "esriGeometryPolygon",
+        "displayField": "PDSM",
+        "capabilities": "Map,Query,Data",
+        "maxRecordCount": 2000,
+        "extent": {
+          "xmin": 153892.213,
+          "ymin": 302450.560000001,
+          "xmax": 244885.345,
+          "ymax": 492350,
+          "spatialReference": {
+            "wkid": 2932,
+            "latestWkid": 2932,
+            "xyTolerance": 0.001,
+            "zTolerance": 0.001,
+            "mTolerance": 0.001,
+            "falseX": -5423300,
+            "falseY": -12407500,
+            "xyUnits": 450254153.0110919,
+            "falseZ": -100000,
+            "zUnits": 10000,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        }
+      },
+      "fields": [
+        "OBJECTID",
+        "ENDDATE",
+        "PDSM",
+        "GFCODE",
+        "CDST_KEY",
+        "PIN",
+        "JOB",
+        "PDAREA",
+        "STARTDATE",
+        "EMP_NUM",
+        "SHAPE",
+        "SHAPE.AREA",
+        "SHAPE.LEN",
+        "GLOBALID"
+      ]
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 16,
+      "response": {
+        "count": 251282
+      }
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlot/MapServer/0/query?where=1%3D1&returnGeometry=false&outFields=PIN%2CCDST_KEY%2CPDSM%2CENDDATE%2CSTARTDATE%2CGFCODE&resultRecordCount=3&f=json",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 1011,
+      "metadata": {
+        "name": null,
+        "geometryType": null,
+        "displayField": null,
+        "capabilities": null,
+        "maxRecordCount": null,
+        "extent": null
+      },
+      "fields": [
+        "PIN",
+        "CDST_KEY",
+        "PDSM",
+        "ENDDATE",
+        "STARTDATE",
+        "GFCODE"
+      ]
+    },
+    {
+      "url": "https://geoportal.gisqatar.org.qa/printpin/",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 21344,
+      "links": [
+        "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
+        "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
+        "https://js.arcgis.com/3.21/",
+        "http://www.gisqatar.org.qa",
+        "https://code.jquery.com/jquery-3.2.1.min.js",
+        "https://js.arcgis.com/3.21/dijit/themes/claro/claro.css",
+        "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
+        "https://raw.githubusercontent.com/suytt/esri.symbol.MultiLineTextSymbol/master/esri.symbol.MultiLineTextSymbol.js",
+        "image/CGIS1.png",
+        "https://js.arcgis.com/3.21/esri/css/esri.css",
+        "image/Mncp_CGIS_logo.png"
+      ],
+      "assessment": "HTML page; not parcel data"
+    },
+    {
+      "url": "https://services.gisqatar.org.qa/server/rest/services/Vector?f=json",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 509,
+      "response": {
+        "currentVersion": 11.3,
+        "folders": [],
+        "services": [
+          {
+            "name": "Vector/Custom_LandmarksLocator",
+            "type": "GeocodeServer"
+          },
+          {
+            "name": "Vector/ExportWebMap",
+            "type": "GPServer"
+          },
+          {
+            "name": "Vector/GetLayoutTemplatesInfo",
+            "type": "GPServer"
+          },
+          {
+            "name": "Vector/Landmarks",
+            "type": "MapServer"
+          },
+          {
+            "name": "Vector/LandPricing2026",
+            "type": "MapServer"
+          },
+          {
+            "name": "Vector/QARS_CompoundLocator",
+            "type": "GeocodeServer"
+          },
+          {
+            "name": "Vector/QARS_Custom_Locator",
+            "type": "GeocodeServer"
+          },
+          {
+            "name": "Vector/Qatar_District_LandPricing",
+            "type": "MapServer"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1?f=json",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": 403,
+      "error": "HTTP Error 403: Forbidden",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://kuwaitportal.paci.gov.kw/arcgisportal/rest/services/?f=json",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": null,
+      "error": "<urlopen error timed out>",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://www.kuwaitfinder.com/",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": null,
+      "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://www.kmun.gov.kw/",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": null,
+      "error": "<urlopen error timed out>",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    },
+    {
+      "url": "https://kuwait-geohub.org/geohub/gis-maps",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 78768,
+      "links": [
+        "../shapefiles/marine_coastal/distribution_of_dolomite_1984.zip",
+        "../shapefiles/terrestrial/areas_of_aeolian_activity_2019.zip",
+        "../shapefiles/basemap/oil_released_areas_2005.zip",
+        "../images/dhruma_formation_isopach_1997.png",
+        "../shapefiles/regional/basemap/oceans_naturalearth_2023.zip",
+        "../shapefiles/terrestrial/sand_dune_fields_2000.zip",
+        "../shapefiles/terrestrial/minefields_breaching_sector_2003.zip",
+        "../shapefiles/natural_resources/gravel_sources_2000.zip",
+        "../images/agricultural_and_livestock_areas_2005.png",
+        "../images/regional/natural/jurassic_lithofacies_1970.png",
+        "https://hitwebcounter.com/counter/counter.php?page=10357477&style=0024&nbdigits=6&type=page&initCount=0",
+        "../shapefiles/regional/natural/landscape_of_the_arabian_peninsula_2001.zip",
+        "../shapefiles/natural_resources/agricultural_and_livestock_future_expansion_2005.zip",
+        "../images/regional/natural/generalized_geology_of_arabia_2010.png",
+        "../shapefiles/marine_coastal/pearl_diving_2014_source.zip",
+        "../images/sand_transport_zones_misak_2013.png",
+        "../shapefiles/regional/natural/arabian_gulf_pearl_1915.zip",
+        "../shapefiles/regional/natural/variation_of_soil_types_of_the_arabian_peninsula_2001.zip",
+        "../images/sand_dune_fields_2000.png",
+        "../shapefiles/terrestrial/simplified_geomorphology_1993.zip",
+        "../shapefiles/terrestrial/sand_transport_rate_2009.zip",
+        "../shapefiles/terrestrial/soil_compaction_gulf_war_1991.zip",
+        "../shapefiles/terrestrial/geomorphological_provices_2000.zip",
+        "../shapefiles/terrestrial/gatch_like_deposits_2013.zip",
+        "../shapefiles/hydrology/dammam_aquifer_isosalinity_2000.zip",
+        "../images/sand_encroachment_2006.png",
+        "../shapefiles/regional/natural/arabian_gulf_productive_trawling_grounds_1997.zip",
+        "../images/free_air_anomaly_1990.png",
+        "../images/sabkha_kleo_2011.png",
+        "../images/regional/basemap/natural_earth_land.png",
+        "../shapefiles/terrestrial/great_soil_group_2001.zip",
+        "../images/geomorphology_elbaz_2000.png",
+        "https://fonts.googleapis.com",
+        "../shapefiles/terrestrial/khabra_1990.zip",
+        "../css/webflow.css",
+        "../images/sand_encroachment_misak_2003.png",
+        "../shapefiles/terrestrial/physiographic_provinces_1984.zip",
+        "../images/kuwait_jurassic_isopach_1997.png",
+        "../images/physiographic_prov_khalaf_1984.png",
+        "../images/lag_deposits_khalaf_1993.png",
+        "../images/sand_sources_Misak_2013.png",
+        "../shapefiles/basemap/international_railroad_2005.zip",
+        "/geohub/contact2",
+        "../images/geomorphological_units_2001.png",
+        "../shapefiles/terrestrial/free_air_anomaly_1990.zip",
+        "../images/regional/natural/landscape_of_the_arabian_peninsula_2001.png",
+        "../images/simplified_structural_map_1999.png",
+        "../shapefiles/regional/natural/mid_permian_deposition_1980.zip",
+        "../images/gotnia_formation_isopach_1997.png",
+        "../images/gov_paci_2023.png",
+        "../shapefiles/basemap/nbhoods_paci.zip",
+        "../shapefiles/marine_coastal/kuwait_bay_living_ostracods_1983.zip",
+        "../images/mineral_resources_elbaz_2000.png",
+        "../images/divided_zone_marine_boundary_2024.png",
+        "../images/dibbdiba_gravel_1980.jpg",
+        "../images/military_areas_2005.png",
+        "../shapefiles/terrestrial/sedimentomorphic_1984.zip",
+        "../shapefiles/terrestrial/gotnia_formation_isopach_1997.zip",
+        "../shapefiles/hydrology/kuwait_group_2010_predicted_depletion_1998.zip",
+        "../images/iraqi_minefields_2001.png",
+        "../images/dammam_aquifer_isosalinity_2000.png",
+        "../images/top_hith_formation_structure_1997.png",
+        "../images/historical_sites_2005.png",
+        "../images/tidal_flat_2021_albannay.png",
+        "../shapefiles/hydrology/dammam_aquifer_relative_abundance_water_quality_2010.zip",
+        "../images/active_sand_zones_2005.png",
+        "../images/kuwait_bay_seabed_texture_khalaf_1984.png",
+        "../css/open-geoportal.webflow.css",
+        "../shapefiles/natural_resources/vegetation_1969.zip",
+        "../images/vegetation_omar_2001.png",
+        "../shapefiles/regional/natural/late_jurassic_late_oxfordian_early_kimmeridgian_1980.zip",
+        "../images/isohypes_dammam_1994.png",
+        "../images/simplified_surface_sediments_1989.png",
+        "../images/glo30_2016.png",
+        "../images/soil_compaction_gulf_war_misak_2003.png",
+        "../images/regional/natural/arabian_gulf_bottom_types_1997.png",
+        "../images/groundwater_tds_2002.png",
+        "../shapefiles/marine_coastal/coral_reefs_2003.zip",
+        "../shapefiles/natural_resources/vegetation_1966.zip",
+        "../shapefiles/terrestrial/marrat_formation_isopach_1997.zip"
+      ],
+      "assessment": "HTML page; not parcel data"
+    },
+    {
+      "url": "https://www.mof.gov.kw/GIS/GIS.aspx",
+      "method": "GET",
+      "origin": "laptop direct urllib",
+      "status": null,
+      "error": "<urlopen error timed out>",
+      "classification": "network/TLS/WAF unavailable; not provider absence"
+    }
+  ]
+}

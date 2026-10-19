@@ -1,0 +1,1383 @@
+// World view: a full-viewport three.js globe for choosing a place. Land is painted by parcel-data
+// coverage (world-coverage.js), country by country and, where coverage differs inside a country,
+// region by region (US states, England, ...); clicking anywhere shows what is available there, a
+// search box flies to a place, and flyTo() dives the camera to a point for the handoff into the 2D map.
+// Browser only; depends on window.whenThreeReady() (index.html import map), window.GlobeMath and
+// window.WorldCoverage and window.WorldCityDisplay. Nothing here touches the app's map or city config:
+// every action is a callback.
+//
+// API (window.WorldView)
+//   open(opts) -> Promise<void>   builds #world-view and resolves after the first frame.
+//     opts.onOpenCity(cityId, point)   tier 'live' action ("Open <city>")
+//     opts.chooseCity(place) -> cityId  which live city a 'live' place opens (default place.cityId)
+//     opts.onExplore(point)            "Explore anyway" (non-live tiers)
+//     opts.onRequestCity(place)        "Ask for this city" (tier 'source'); may return a Promise —
+//                                      resolved shows a thank-you, rejected shows an error line
+//     opts.onClose()                   after the view closed through its own close button / Escape
+//     opts.closable (default true)     show a return control; opts.closeLabel is its i18n key
+//     opts.initialView {lat, lon, altitudeKm}   starting camera
+//     opts.coverageUrl                 default 'data/world-coverage.json'
+//   close()                          removes the overlay and frees every GPU resource
+//   isOpen() -> boolean
+//   flyTo(point, { altitudeKm = 120, onDone }) -> Promise<cameraState>
+//     dives to point {lat, lon}; ≈1.5-2.5 s eased, instant under reduced motion. cameraState is
+//     { lat, lon, altitudeKm, leafletZoom } (leafletZoom from GlobeMath.altitudeToLeafletZoom).
+//   captureHandoffFrame({ maxWidth = 960, quality = 0.82 }) -> JPEG data URL of the current frame
+//   getCamera() -> { lat, lon, altitudeKm }
+//   selectPlace(lat, lon) -> Promise  turns the globe to a point and opens its popup
+//   project(lat, lon) -> { x, y } | null   viewport pixels of a point (null on the far side)
+// `point` passed to callbacks: { lat, lon, place } where place is a WorldCoverage Place.
+(function (global) {
+    'use strict';
+
+    const GM = global.GlobeMath;
+    const CityDisplay = global.WorldCityDisplay;
+    const R_KM = GM.EARTH_RADIUS_KM;
+    const FOV = 40;
+    const MIN_USER_ALT_KM = 1500;
+    const MAX_ALT_KM = 42000;
+    const IDLE_SPIN_DEG_PER_S = 3.2;
+    const IDLE_DELAY_MS = 3500;
+    const TAP_MAX_PX = 7;
+    const TAP_MAX_MS = 600;
+    // Country extent and app city availability are separate dimensions, including in the legend.
+    // `mostly` is full coverage where a parcel check failed in a minority of cities: a lighter green.
+    const COVERAGE_COLORS = { full: '#71bc91', mostly: '#b1dac2', partial: '#ffc24b', none: '#d8918c', unknown: '#a4acb8' };
+    const TIER_COLORS = { live: '#43e6a6', source: COVERAGE_COLORS.partial, none: COVERAGE_COLORS.none, unknown: COVERAGE_COLORS.unknown };
+    const COVERAGE_LABELS = { full: 'Full country coverage', mostly: 'Most checked cities work', partial: 'Some open data', none: 'Checked: none found', unknown: 'Unchecked / inconclusive' };
+    const REGION_COVERAGE_LABELS = { full: 'Full region coverage', mostly: 'Most checked cities in this region work', partial: 'Some open data in this region', none: 'Checked: none found in this region', unknown: 'Region unchecked / inconclusive' };
+    const TIER_LABELS = { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Unconfirmed' };
+
+    let coveragePromise = null;
+    let view = null;
+
+    function t(key, fallback, params) {
+        let text = fallback;
+        try {
+            if (global.i18n && typeof global.i18n.t === 'function') {
+                const translated = global.i18n.t(key, params || {});
+                if (translated && translated !== key) return translated;
+            }
+        } catch (_) { /* fall back to English */ }
+        if (params) Object.keys(params).forEach(name => { text = text.replace(new RegExp('\\{\\{\\s*' + name + '\\s*\\}\\}', 'g'), params[name]); });
+        return text;
+    }
+
+    function reducedMotion() {
+        try {
+            if (typeof global.prefersReducedMotion === 'function') return !!global.prefersReducedMotion();
+            if (global.__reducedMotion) return true;
+            if (new URLSearchParams(global.location.search).has('reduceMotion')) return true;
+            return !!(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        } catch (_) { return false; }
+    }
+
+    const log = message => console.log('[' + new Date().toISOString() + '] [world] ' + message);
+
+    function el(tag, className, attrs) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (attrs) Object.keys(attrs).forEach(k => {
+            if (k === 'text') node.textContent = attrs[k];
+            else node.setAttribute(k, attrs[k]);
+        });
+        return node;
+    }
+
+    function formatLatLon(lat, lon) {
+        const ns = lat >= 0 ? 'N' : 'S'; const ew = lon >= 0 ? 'E' : 'W';
+        return Math.abs(lat).toFixed(2) + '°' + ns + ' ' + Math.abs(lon).toFixed(2) + '°' + ew;
+    }
+
+    // ---- texture painting --------------------------------------------------------------------
+
+    function project(lon, lat, W, H) { return [((lon + 180) / 360) * W, ((90 - lat) / 180) * H]; }
+
+    function traceRings(ctx, rings, W, H) {
+        ctx.beginPath();
+        for (const ring of rings) {
+            for (let i = 0; i < ring.length; i += 2) {
+                const [x, y] = project(ring[i], ring[i + 1], W, H);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+        }
+    }
+
+    function noiseTile(size, alpha) {
+        const c = document.createElement('canvas'); c.width = c.height = size;
+        const g = c.getContext('2d'); const img = g.createImageData(size, size);
+        let seed = 1234567;
+        const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+        for (let i = 0; i < img.data.length; i += 4) {
+            const v = rnd() < 0.5 ? 0 : 255;
+            img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+            img.data[i + 3] = Math.floor(rnd() * alpha);
+        }
+        g.putImageData(img, 0, 0);
+        return c;
+    }
+
+    // Returns { color: canvas W×H, mask: canvas (ocean = white) } painted from the coverage outlines.
+    function paintEarth(coverage, W, H) {
+        const color = document.createElement('canvas'); color.width = W; color.height = H;
+        const ctx = color.getContext('2d');
+        const s = W / 4096;
+
+        // Ocean: deep at the poles, brighter toward the tropics.
+        const ocean = ctx.createLinearGradient(0, 0, 0, H);
+        ocean.addColorStop(0, '#081a3d'); ocean.addColorStop(0.28, '#0d3170');
+        ocean.addColorStop(0.5, '#124596'); ocean.addColorStop(0.72, '#0d3170'); ocean.addColorStop(1, '#081a3d');
+        ctx.fillStyle = ocean; ctx.fillRect(0, 0, W, H);
+
+        const landAreas = [...coverage.countries, ...(coverage.territories || [])].filter(c => c.rings.length);
+
+        // Continental shelf: a soft cyan halo hugging every coast.
+        ctx.save();
+        ctx.fillStyle = 'rgba(64, 170, 235, 0.55)';
+        ctx.shadowColor = 'rgba(90, 200, 255, 0.9)';
+        ctx.shadowBlur = 26 * s;
+        for (const c of landAreas) { traceRings(ctx, c.rings, W, H); ctx.fill('evenodd'); }
+        ctx.restore();
+
+        // Graticule every 15°, faint, with the equator a touch stronger.
+        ctx.save();
+        ctx.lineWidth = Math.max(1, 1.6 * s);
+        for (let lon = -180; lon <= 180; lon += 15) {
+            ctx.strokeStyle = 'rgba(170, 210, 255, 0.10)';
+            const [x] = project(lon, 0, W, H);
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let lat = -75; lat <= 75; lat += 15) {
+            ctx.strokeStyle = lat === 0 ? 'rgba(170, 210, 255, 0.2)' : 'rgba(170, 210, 255, 0.10)';
+            const [, y] = project(0, lat, W, H);
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+        ctx.restore();
+
+        // Land on its own layer so grain and inner shading stay on land.
+        const land = document.createElement('canvas'); land.width = W; land.height = H;
+        const lctx = land.getContext('2d');
+        for (const c of landAreas) {
+            lctx.fillStyle = COVERAGE_COLORS[c.coverage];
+            traceRings(lctx, c.rings, W, H); lctx.fill('evenodd');
+        }
+        // Regions repaint their part of a country with their own coverage (England green over a
+        // partial United Kingdom). source-atop keeps the finer region outlines on the country land
+        // already drawn, so they never spill past the coarse coastline; a stroke in the same colour
+        // closes hairline gaps between independently simplified neighbours.
+        const regions = coverage.regions.filter(r => r.rings.length);
+        lctx.save();
+        lctx.globalCompositeOperation = 'source-atop';
+        lctx.lineJoin = 'round';
+        lctx.lineWidth = Math.max(1, 1.4 * s);
+        for (const r of regions) {
+            lctx.fillStyle = lctx.strokeStyle = COVERAGE_COLORS[r.coverage];
+            traceRings(lctx, r.rings, W, H); lctx.fill('evenodd'); lctx.stroke();
+        }
+        // Region borders: fainter than the country borders drawn below.
+        lctx.strokeStyle = 'rgba(12, 30, 62, 0.22)';
+        lctx.lineWidth = Math.max(1, 1 * s);
+        for (const r of regions) { traceRings(lctx, r.rings, W, H); lctx.stroke(); }
+        lctx.restore();
+        lctx.save();
+        lctx.globalCompositeOperation = 'source-atop';
+        lctx.fillStyle = lctx.createPattern(noiseTile(256, 12), 'repeat');
+        lctx.fillRect(0, 0, W, H);
+        // Latitude shading: land darkens slightly toward the poles.
+        const shade = lctx.createLinearGradient(0, 0, 0, H);
+        shade.addColorStop(0, 'rgba(10, 25, 60, 0.28)'); shade.addColorStop(0.35, 'rgba(10, 25, 60, 0)');
+        shade.addColorStop(0.65, 'rgba(10, 25, 60, 0)'); shade.addColorStop(1, 'rgba(10, 25, 60, 0.28)');
+        lctx.fillStyle = shade; lctx.fillRect(0, 0, W, H);
+        lctx.restore();
+        // Country borders: thin, darker, so neighbours of the same tier still read as countries.
+        lctx.lineJoin = 'round';
+        lctx.strokeStyle = 'rgba(12, 30, 62, 0.45)';
+        lctx.lineWidth = Math.max(1, 1.8 * s);
+        for (const c of landAreas) { traceRings(lctx, c.rings, W, H); lctx.stroke(); }
+        ctx.drawImage(land, 0, 0);
+        // Coastline highlight.
+        ctx.strokeStyle = 'rgba(225, 245, 255, 0.35)';
+        ctx.lineWidth = Math.max(1, 1.2 * s);
+        for (const c of landAreas) { traceRings(ctx, c.rings, W, H); ctx.stroke(); }
+
+        const mask = document.createElement('canvas'); mask.width = 1024; mask.height = 512;
+        const mctx = mask.getContext('2d');
+        mctx.fillStyle = '#fff'; mctx.fillRect(0, 0, 1024, 512);
+        mctx.fillStyle = '#000';
+        for (const c of landAreas) { traceRings(mctx, c.rings, 1024, 512); mctx.fill('evenodd'); }
+        return { color, mask };
+    }
+
+    // ---- shaders -----------------------------------------------------------------------------
+
+    const EARTH_VERT = `
+        varying vec2 vUv; varying vec3 vNormal; varying vec3 vView;
+        void main() {
+            vUv = uv;
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vView = -mv.xyz;
+            gl_Position = projectionMatrix * mv;
+        }`;
+    const EARTH_FRAG = `
+        uniform sampler2D map; uniform sampler2D oceanMask; uniform vec3 lightDir; uniform float haze;
+        varying vec2 vUv; varying vec3 vNormal; varying vec3 vView;
+        void main() {
+            vec3 base = texture2D(map, vUv).rgb;
+            float ocean = texture2D(oceanMask, vUv).r;
+            vec3 n = normalize(vNormal); vec3 v = normalize(vView); vec3 l = normalize(lightDir);
+            float diff = max(dot(n, l), 0.0);
+            vec3 col = base * (0.5 + 0.7 * diff);
+            vec3 h = normalize(l + v);
+            col += vec3(0.7, 0.86, 1.0) * pow(max(dot(n, h), 0.0), 70.0) * 0.5 * ocean;
+            float fres = pow(1.0 - max(dot(n, v), 0.0), 3.0);
+            col = mix(col, vec3(0.42, 0.7, 1.0), fres * 0.45);
+            // Descending through the atmosphere: below a few thousand km the coarse texture would
+            // blur, so a sky haze takes over; it is what the handoff frame dissolves out of.
+            float hz = haze * (0.9 + 0.1 * sin(vUv.x * 1800.0 + vUv.y * 900.0) * sin(vUv.y * 1500.0));
+            col = mix(col, vec3(0.8, 0.89, 0.97), hz);
+            gl_FragColor = vec4(col, 1.0);
+        }`;
+    const ATMO_VERT = `
+        varying vec3 vNormal; varying vec3 vView;
+        void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vView = -mv.xyz;
+            gl_Position = projectionMatrix * mv;
+        }`;
+    const ATMO_FRAG = `
+        uniform float limb;
+        varying vec3 vNormal; varying vec3 vView;
+        void main() {
+            float d = -dot(normalize(vNormal), normalize(vView));
+            float i = pow(clamp(d / limb, 0.0, 1.0), 2.2);
+            vec3 col = mix(vec3(0.16, 0.42, 1.0), vec3(0.5, 0.78, 1.0), i * i);
+            gl_FragColor = vec4(col * i * 0.95, i);
+        }`;
+    const POINTS_VERT = `
+        attribute float size; attribute vec3 color; attribute float pulse; attribute float opacity; attribute float painted;
+        uniform float pixelRatio; uniform float time;
+        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity; varying float vPainted;
+        void main() {
+            vColor = color; vPulse = pulse; vOpacity = opacity; vPainted = painted;
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vec3 n = normalize(normalMatrix * normalize(position));
+            vFade = smoothstep(0.0, 0.25, dot(n, normalize(-mv.xyz)));
+            float grow = pulse > 0.5 ? 1.0 + 0.18 * sin(time * 2.4) : 1.0;
+            gl_PointSize = size * pixelRatio * grow;
+            gl_Position = projectionMatrix * mv;
+        }`;
+    // A city with proposals is a painted dot: a bright core inside a ring, at every scale,
+    // whether or not its label fits; the pulse and halo stay with the labelled/selected ones.
+    // (`active` is a reserved word in GLSL; the attribute is `painted`.)
+    const POINTS_FRAG = `
+        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity; varying float vPainted;
+        void main() {
+            vec2 p = gl_PointCoord - 0.5; float r = length(p) * 2.0;
+            if (r > 1.0) discard;
+            float core = 1.0 - smoothstep(0.42, 0.55, r);
+            float ring = (vPulse > 0.5 || vPainted > 0.5) ? smoothstep(0.62, 0.74, r) * (1.0 - smoothstep(0.86, 1.0, r)) : 0.0;
+            float halo = vPulse > 0.5 ? (1.0 - r) * 0.35 : 0.0;
+            vec3 col = mix(vColor, vec3(1.0), core * (vPainted > 0.5 ? 0.6 : 0.25));
+            float a = max(max(core, ring * 0.9), halo) * vFade * vOpacity;
+            gl_FragColor = vec4(col, a);
+        }`;
+    const STARS_VERT = `
+        attribute float size; attribute float bright; uniform float pixelRatio; varying float vBright;
+        void main() { vBright = bright; gl_PointSize = size * pixelRatio; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+    const STARS_FRAG = `
+        varying float vBright;
+        void main() { float r = length(gl_PointCoord - 0.5) * 2.0; if (r > 1.0) discard;
+            gl_FragColor = vec4(vec3(0.85, 0.9, 1.0) * vBright, (1.0 - r) * vBright); }`;
+
+    // ---- the view ----------------------------------------------------------------------------
+
+    function hexToRgb(hex) {
+        const n = parseInt(hex.slice(1), 16);
+        return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+    }
+
+    function buildStars(THREE, count) {
+        const pos = new Float32Array(count * 3); const size = new Float32Array(count); const bright = new Float32Array(count);
+        let seed = 42;
+        const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+        for (let i = 0; i < count; i++) {
+            const u = rnd() * 2 - 1; const a = rnd() * Math.PI * 2; const r = Math.sqrt(1 - u * u);
+            pos[i * 3] = 120 * r * Math.cos(a); pos[i * 3 + 1] = 120 * u; pos[i * 3 + 2] = 120 * r * Math.sin(a);
+            const m = rnd();
+            size[i] = 0.8 + m * m * 2.4; bright[i] = 0.25 + rnd() * 0.75;
+        }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        g.setAttribute('size', new THREE.BufferAttribute(size, 1));
+        g.setAttribute('bright', new THREE.BufferAttribute(bright, 1));
+        return g;
+    }
+
+    function buildCityPoints(THREE) {
+        // A fixed-size GPU buffer: adding cities to the catalog cannot add draw work.
+        const g = new THREE.BufferGeometry();
+        for (const [name, components] of [['position', 3], ['color', 3], ['size', 1], ['pulse', 1], ['opacity', 1], ['painted', 1]]) {
+            g.setAttribute(name, new THREE.BufferAttribute(new Float32Array(CityDisplay.MAX_MARKERS * components), components)
+                .setUsage(THREE.DynamicDrawUsage));
+        }
+        g.setDrawRange(0, 0);
+        return g;
+    }
+
+    function createView(THREE, coverage, opts) {
+        const reduce = reducedMotion();
+        const root = el('div', 'world-view', { id: 'world-view', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('world.title', 'Choose a place') });
+        const stage = el('div', 'world-view__stage');
+        root.appendChild(stage);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: false });
+        renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2));
+        renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+        renderer.setClearColor(0x000000, 0);
+        renderer.domElement.className = 'world-view__canvas';
+        renderer.domElement.setAttribute('tabindex', '0');
+        renderer.domElement.setAttribute('aria-label', t('world.canvasLabel', 'Globe. Drag to rotate, scroll to zoom, click a place to check parcel data.'));
+        stage.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(FOV, 1, 0.001, 400);
+        const disposables = [];
+
+        const maxTex = renderer.capabilities.maxTextureSize || 4096;
+        const W = Math.min(4096, maxTex); const H = W / 2;
+        const t0 = performance.now();
+        const painted = paintEarth(coverage, W, H);
+        log('painted ' + W + '×' + H + ' earth texture in ' + Math.round(performance.now() - t0) + ' ms');
+        const colorTex = new THREE.CanvasTexture(painted.color);
+        colorTex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        colorTex.colorSpace = THREE.NoColorSpace;
+        const maskTex = new THREE.CanvasTexture(painted.mask);
+        maskTex.colorSpace = THREE.NoColorSpace;
+        disposables.push(colorTex, maskTex);
+
+        const sphereGeo = new THREE.SphereGeometry(1, 160, 96);
+        const earthMat = new THREE.ShaderMaterial({
+            uniforms: { map: { value: colorTex }, oceanMask: { value: maskTex }, lightDir: { value: new THREE.Vector3(-0.55, 0.5, 0.7) }, haze: { value: 0 } },
+            vertexShader: EARTH_VERT, fragmentShader: EARTH_FRAG
+        });
+        const earth = new THREE.Mesh(sphereGeo, earthMat);
+        scene.add(earth);
+
+        const atmoScale = 1.16;
+        const atmoMat = new THREE.ShaderMaterial({
+            uniforms: { limb: { value: Math.sqrt(1 - 1 / (atmoScale * atmoScale)) } },
+            vertexShader: ATMO_VERT, fragmentShader: ATMO_FRAG,
+            side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        });
+        const atmo = new THREE.Mesh(sphereGeo, atmoMat);
+        atmo.scale.setScalar(atmoScale);
+        scene.add(atmo);
+
+        const pixelRatio = { value: renderer.getPixelRatio() };
+        const time = { value: 0 };
+        const starGeo = buildStars(THREE, 2600);
+        const starMat = new THREE.ShaderMaterial({
+            uniforms: { pixelRatio }, vertexShader: STARS_VERT, fragmentShader: STARS_FRAG,
+            transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
+        });
+        scene.add(new THREE.Points(starGeo, starMat));
+
+        const cityEntries = CityDisplay.rankCities(coverage).map(entry => ({
+            ...entry, vec: GM.latLonToVector(entry.city.lat, entry.city.lon, 1.002),
+            color: hexToRgb(entry.live ? TIER_COLORS.live : TIER_COLORS[entry.city.tier] || TIER_COLORS.unknown),
+            labelWidth: 0, labelHeight: 0
+        }));
+        const cityGeo = buildCityPoints(THREE);
+        const cityMat = new THREE.ShaderMaterial({
+            uniforms: { pixelRatio, time }, vertexShader: POINTS_VERT, fragmentShader: POINTS_FRAG,
+            // Screen-facing circles must not intersect the globe's depth surface. POINTS_VERT
+            // fades the entire marker at the horizon and hides cities on the far side.
+            transparent: true, depthWrite: false, depthTest: false
+        });
+        const cityPoints = new THREE.Points(cityGeo, cityMat);
+        // The active points move within a fixed sphere, so do not cache a partial bounding sphere.
+        cityPoints.frustumCulled = false;
+        cityPoints.renderOrder = 2;
+        scene.add(cityPoints);
+        disposables.push(sphereGeo, earthMat, atmoMat, starGeo, starMat, cityGeo, cityMat);
+
+        // ---- DOM chrome ----
+        const top = el('div', 'world-view__top');
+        const searchWrap = el('div', 'world-search');
+        const searchInput = el('input', 'world-search__input', {
+            type: 'search', role: 'combobox', 'aria-autocomplete': 'list', 'aria-expanded': 'false',
+            'aria-controls': 'world-search-results', autocomplete: 'off', spellcheck: 'false'
+        });
+        const results = el('ul', 'world-search__results', { id: 'world-search-results', role: 'listbox' });
+        results.hidden = true;
+        // "Show my location": the browser's position, flown to and opened like a search hit.
+        const locateBtn = el('button', 'map-search__icon-button world-search__locate', { type: 'button' });
+        locateBtn.appendChild(el('i', 'fas fa-crosshairs', { 'aria-hidden': 'true' }));
+        const searchField = el('div', 'world-search__field');
+        searchField.append(searchInput, locateBtn);
+        searchWrap.append(searchField, results);
+        top.append(searchWrap);
+        const reach = el('div', 'world-reach', { role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true' });
+        const reachHeadline = el('p', 'world-reach__headline');
+        const reachCaption = el('p', 'world-reach__caption');
+        reach.append(reachHeadline, reachCaption);
+        reach.hidden = coverage.liveSummary.cityCount === 0;
+        top.appendChild(reach);
+        let reachTimer = null;
+        function dismissReach() {
+            global.clearTimeout(reachTimer);
+            reachTimer = null;
+            reach.classList.add('world-reach--dismissed');
+            reach.setAttribute('aria-hidden', 'true');
+            dirty = true;
+            cityLayoutDirty = true;
+        }
+        root.appendChild(top);
+
+        // The shared controls (css/primitives.css, css/map-shell.css) read the dark tokens the world
+        // view wears (css/tokens.css): the close is the one close-circle-btn, "Back to the map" a
+        // btn, the phone legend toggle map chrome. The world-* classes beside them only place them.
+        const closeBtn = el('button', 'close-circle-btn close-circle-btn--lg world-view__close', { type: 'button' });
+        closeBtn.textContent = opts.closeLabel ? '' : '×';
+        if (opts.closeLabel) {
+            root.classList.add('world-view--back-to-map');
+            closeBtn.className = 'btn world-view__close world-view__close--back';
+        }
+        if (opts.closable !== false) (opts.closeLabel ? top : root).appendChild(closeBtn);
+
+        const overview = el('div', 'world-view__overview');
+        root.appendChild(overview);
+        const legend = el('div', 'world-legend');
+        const legendToggle = el('button', 'map-shell-button world-legend__toggle', {
+            type: 'button', 'aria-expanded': 'false', 'aria-controls': 'world-legend-content'
+        });
+        legendToggle.appendChild(el('i', 'fas fa-list-ul', { 'aria-hidden': 'true' }));
+        const legendContent = el('div', 'world-legend__content', { id: 'world-legend-content' });
+        const legendTitle = el('p', 'world-legend__title');
+        const legendList = el('ul', 'world-legend__list');
+        const legendCities = el('p', 'world-legend__cities');
+        legendContent.append(legendTitle, legendList, legendCities);
+        legend.append(legendToggle, legendContent);
+        overview.appendChild(legend);
+        const activity = global.WorldActivity.mount(overview, { t, reducedMotion: reduce, coverage });
+        const activityNode = overview.querySelector('.world-activity');
+
+        function setLegendExpanded(expanded) {
+            legend.classList.toggle('world-legend--open', expanded);
+            legendToggle.setAttribute('aria-expanded', String(expanded));
+            dirty = true;
+            cityLayoutDirty = true;
+        }
+        legendToggle.addEventListener('click', () => setLegendExpanded(legendToggle.getAttribute('aria-expanded') !== 'true'));
+
+        const labelLayer = el('div', 'world-view__labels');
+        root.appendChild(labelLayer);
+        const liveLabels = Array.from({ length: CityDisplay.MAX_LABELS }, () => {
+            const node = el('button', 'world-city-label world-city-label--hidden', { type: 'button' });
+            const name = el('span', 'world-city-label__name');
+            const count = el('span', 'world-city-label__count');
+            count.hidden = true;
+            node.append(name, count);
+            const item = { city: null, node, name, count, entry: null, placement: null };
+            node.addEventListener('click', ev => {
+                ev.stopPropagation();
+                // Pointer taps use the shared drag gesture; keyboard activation stays native.
+                if (ev.detail === 0 && item.city) select(coverage.tierAt(item.city.lat, item.city.lon));
+            });
+            labelLayer.appendChild(node);
+            return item;
+        });
+
+        const pin = el('div', 'world-pin');
+        pin.hidden = true;
+        root.appendChild(pin);
+        const popup = el('div', 'world-popup', { role: 'dialog', 'aria-live': 'polite' });
+        popup.hidden = true;
+        root.appendChild(popup);
+
+        function renderStaticText() {
+            root.setAttribute('aria-label', t('world.title', 'Choose a place'));
+            searchInput.placeholder = t('world.search.placeholder', 'Search a city or country');
+            searchInput.setAttribute('aria-label', t('world.search.label', 'Search places'));
+            locateBtn.setAttribute('aria-label', t('world.search.locate', 'Show my location'));
+            locateBtn.title = t('world.search.locate', 'Show my location');
+            reachHeadline.textContent = t('world.reach.headline', '{{cities}} cities · {{countries}} countries', {
+                cities: global.CbFormat.formatInteger(coverage.liveSummary.cityCount),
+                countries: global.CbFormat.formatInteger(coverage.liveSummary.countryCount)
+            });
+            reachCaption.textContent = t('world.reach.caption', 'With parcel data, ready to explore');
+            const closeLabel = opts.closeLabel ? t(opts.closeLabel, 'Back to map') : t('world.close', 'Close');
+            closeBtn.textContent = opts.closeLabel ? closeLabel : '×';
+            closeBtn.setAttribute('aria-label', closeLabel);
+            closeBtn.title = closeLabel;
+            const legendLabel = t('world.legend.toggle', 'Map legend');
+            legendToggle.setAttribute('aria-label', legendLabel);
+            legendToggle.title = legendLabel;
+            legendTitle.textContent = t('world.legend.title', 'Parcel coverage by country and region');
+            legendList.textContent = '';
+            global.WorldCoverage.COVERAGE_LEVELS.forEach(level => {
+                const li = el('li', 'world-legend__item');
+                // Regions are painted too, so the green entry cannot say "country".
+                const label = level === 'full' ? t('world.legend.full', 'Full country or region coverage')
+                    : level === 'mostly' ? t('world.legend.mostly', 'Full coverage, but checks failed in a few cities')
+                    : t('world.coverage.' + level + '.short', COVERAGE_LABELS[level]);
+                li.append(el('span', 'world-tier-dot world-tier-dot--' + level), el('span', '', { text: label }));
+                legendList.appendChild(li);
+            });
+            legendCities.textContent = '';
+            legendCities.append(el('span', 'world-tier-dot world-tier-dot--city'), el('span', '', { text: t('world.legend.cities', 'City with parcels in the app') }));
+            activity.render();
+            if (selected) renderPopup();
+        }
+
+        // ---- camera state & interaction ----
+        const initial = opts.initialView || {};
+        const cam = {
+            lat: Number.isFinite(initial.lat) ? initial.lat : 28,
+            lon: Number.isFinite(initial.lon) ? initial.lon : 12,
+            altitudeKm: Number.isFinite(initial.altitudeKm) ? initial.altitudeKm : 0 // 0 = fit on first resize
+        };
+        const vel = { lat: 0, lon: 0 };
+        let lastInteraction = -Infinity;
+        let flight = null;
+        let zoomTarget = null;
+        let selected = null;
+        let dirty = true;
+        let raf = 0;
+        let lastFrame = performance.now();
+        let viewport = { w: 1, h: 1 };
+        let closed = false;
+        let cityLayoutDirty = true;
+        let lastCityLayout = -Infinity;
+        let cityLayoutSignature = '';
+        let visibleMarkers = [];
+        let blockedCityAreas = [];
+
+        function fitAltitude() {
+            const vf = FOV * Math.PI / 180;
+            const hf = 2 * Math.atan(Math.tan(vf / 2) * (viewport.w / viewport.h));
+            // Portrait phones: let the globe nearly touch the sides, it is width-limited there.
+            const angular = Math.min(vf, hf) / 2 * (viewport.w / viewport.h < 0.8 ? 0.94 : 0.72);
+            return (1 / Math.sin(angular) - 1) * R_KM;
+        }
+
+        function resize() {
+            const w = Math.max(1, root.clientWidth); const h = Math.max(1, root.clientHeight);
+            viewport = { w, h };
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            // Nudge the globe below the search box: shift the view centre down a little.
+            camera.setViewOffset(w, h, 0, w >= 1100 ? -Math.round(Math.min(48, h * 0.045)) : Math.round(h * 0.06), w, h);
+            camera.updateProjectionMatrix();
+            if (!cam.altitudeKm) cam.altitudeKm = fitAltitude();
+            dirty = true;
+            cityLayoutDirty = true;
+        }
+
+        function placeCamera() {
+            cam.lat = GM.clamp(cam.lat, -80, 80);
+            cam.lon = GM.wrapLon(cam.lon);
+            const d = 1 + cam.altitudeKm / R_KM;
+            const p = GM.latLonToVector(cam.lat, cam.lon, d);
+            camera.position.set(p[0], p[1], p[2]);
+            camera.up.set(0, 1, 0);
+            camera.lookAt(0, 0, 0);
+            const altUnits = cam.altitudeKm / R_KM;
+            camera.near = Math.max(0.0002, altUnits * 0.25);
+            camera.far = d + 150;
+            camera.updateProjectionMatrix();
+            camera.updateMatrixWorld();
+        }
+
+        function degPerPx() {
+            const altUnits = cam.altitudeKm / R_KM;
+            const perPx = (2 * Math.tan(FOV * Math.PI / 360) * altUnits) / viewport.h;
+            return Math.min(0.5, perPx * 180 / Math.PI);
+        }
+
+        const pointers = new Map();
+        let drag = null;
+        let pinch = null;
+
+        function touch() { lastInteraction = performance.now(); dirty = true; }
+
+        function onPointerDown(ev) {
+            if (flight || ev.button !== 0 || !ev.target.closest('.world-view__canvas, .world-city-label')) return;
+            zoomTarget = null;
+            renderer.domElement.setPointerCapture(ev.pointerId);
+            pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+            vel.lat = vel.lon = 0;
+            touch();
+            if (pointers.size === 1) {
+                const label = liveLabels.find(item => item.node === ev.target.closest('.world-city-label'));
+                drag = { x0: ev.clientX, y0: ev.clientY, x: ev.clientX, y: ev.clientY, t0: performance.now(), moved: 0, samples: [], city: label?.city };
+            } else if (pointers.size === 2) {
+                const [a, b] = [...pointers.values()];
+                pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), alt: cam.altitudeKm };
+                drag = null;
+            }
+        }
+
+        function onPointerMove(ev) {
+            if (!pointers.has(ev.pointerId)) return;
+            pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+            touch();
+            if (pinch && pointers.size >= 2) {
+                const [a, b] = [...pointers.values()];
+                const dist = Math.max(10, Math.hypot(a.x - b.x, a.y - b.y));
+                cam.altitudeKm = GM.clamp(pinch.alt * (pinch.dist / dist), MIN_USER_ALT_KM, MAX_ALT_KM);
+                return;
+            }
+            if (!drag) return;
+            const dx = ev.clientX - drag.x; const dy = ev.clientY - drag.y;
+            drag.x = ev.clientX; drag.y = ev.clientY;
+            drag.moved = Math.max(drag.moved, Math.hypot(ev.clientX - drag.x0, ev.clientY - drag.y0));
+            const k = degPerPx();
+            const dLon = -dx * k / Math.max(0.2, Math.cos(cam.lat * Math.PI / 180));
+            const dLat = dy * k;
+            cam.lon += dLon; cam.lat += dLat;
+            const now = performance.now();
+            drag.samples.push({ t: now, dLon, dLat });
+            while (drag.samples.length && now - drag.samples[0].t > 90) drag.samples.shift();
+        }
+
+        function onPointerUp(ev) {
+            if (!pointers.has(ev.pointerId)) return;
+            pointers.delete(ev.pointerId);
+            touch();
+            if (pinch) { if (pointers.size < 2) pinch = null; drag = null; return; }
+            if (!drag) return;
+            const elapsed = performance.now() - drag.t0;
+            if (drag.moved <= TAP_MAX_PX && elapsed <= TAP_MAX_MS) {
+                if (drag.city) select(coverage.tierAt(drag.city.lat, drag.city.lon));
+                else pickAt(ev.clientX, ev.clientY);
+            } else if (drag.samples.length > 1) {
+                const span = Math.max(16, drag.samples[drag.samples.length - 1].t - drag.samples[0].t);
+                const sum = drag.samples.reduce((acc, s) => ({ lon: acc.lon + s.dLon, lat: acc.lat + s.dLat }), { lon: 0, lat: 0 });
+                if (!reduce) { vel.lon = GM.clamp((sum.lon / span) * 1000, -150, 150); vel.lat = GM.clamp((sum.lat / span) * 1000, -90, 90); }
+            }
+            drag = null;
+        }
+
+        function onPointerCancel(ev) {
+            if (!pointers.delete(ev.pointerId)) return;
+            drag = pinch = null;
+            vel.lat = vel.lon = 0;
+            touch();
+        }
+
+        function onWheel(ev) {
+            // Labels cross the pointer during zoom. Handle their bubbling wheel events on the
+            // globe root too, while leaving the overlay controls and scrollable panels alone.
+            if (ev.target.closest('.world-search, .world-activity, .world-popup, .world-view__close, .world-legend')) return;
+            ev.preventDefault();
+            if (flight) return;
+            const delta = GM.wheelDeltaPixels(ev.deltaY, ev.deltaMode, viewport.h);
+            zoomTo((zoomTarget === null ? cam.altitudeKm : zoomTarget) * Math.exp(delta * 0.0014));
+        }
+
+        function zoomTo(altitudeKm) {
+            zoomTarget = GM.clamp(altitudeKm, MIN_USER_ALT_KM, MAX_ALT_KM);
+            if (reduce) { cam.altitudeKm = zoomTarget; zoomTarget = null; }
+            touch();
+        }
+
+        function onCanvasKey(ev) {
+            const step = 12 * degPerPx() * 10;
+            const moves = { ArrowLeft: [0, -step], ArrowRight: [0, step], ArrowUp: [step, 0], ArrowDown: [-step, 0] };
+            if (moves[ev.key]) { cam.lat += moves[ev.key][0]; cam.lon += moves[ev.key][1]; touch(); ev.preventDefault(); }
+            else if (ev.key === '+' || ev.key === '=') { zoomTo((zoomTarget === null ? cam.altitudeKm : zoomTarget) / 1.3); }
+            else if (ev.key === '-' || ev.key === '_') { zoomTo((zoomTarget === null ? cam.altitudeKm : zoomTarget) * 1.3); }
+        }
+
+        function onRootKey(ev) {
+            // The globe is modal: no key pressed in it reaches the map's document-level handlers
+            // (/, Ctrl-K, the T/O/P/C hotkeys, multi-select and panel Escape chains) underneath.
+            ev.stopPropagation();
+            if (ev.key !== 'Escape') return;
+            if (!results.hidden) return; // search handles its own Escape
+            if (selected) { deselect(); return; }
+            if (legendToggle.getAttribute('aria-expanded') === 'true') {
+                setLegendExpanded(false);
+                legendToggle.focus();
+                ev.preventDefault();
+                return;
+            }
+            if (opts.closable !== false) {
+                ev.preventDefault();
+                global.WorldView.close();
+                if (typeof opts.onClose === 'function') opts.onClose();
+            }
+        }
+
+        // Screen position of a unit-sphere point, or null when it is behind the globe.
+        const tmp = new THREE.Vector3();
+        function screenOf(vec) {
+            tmp.set(vec[0], vec[1], vec[2]);
+            if (camera.position.dot(tmp) <= tmp.lengthSq()) return null;
+            tmp.project(camera);
+            return { x: (tmp.x + 1) / 2 * viewport.w, y: (1 - tmp.y) / 2 * viewport.h };
+        }
+
+        // The label reads "<city> <count>": the name, and a small count badge when the city has
+        // published proposals. The accessible name says the same in words.
+        function fillCityLabel(item, entry) {
+            const count = entry.count > 0 ? entry.count : 0;
+            item.name.textContent = entry.city.name;
+            item.count.textContent = count ? global.CbFormat.formatInteger(count) : '';
+            item.count.hidden = !count;
+            item.node.setAttribute('aria-label', count
+                ? entry.city.name + ', ' + t('agentDialog.proposalCount', '{{count}} proposals', { count })
+                : entry.city.name);
+        }
+
+        function measureCityLabels() {
+            const { node, name, count } = liveLabels[0];
+            const previous = { name: name.textContent, count: count.textContent, hidden: count.hidden };
+            name.textContent = 'M';
+            count.textContent = '8';
+            count.hidden = false;
+            const style = global.getComputedStyle(node);
+            const countStyle = global.getComputedStyle(count);
+            const context = document.createElement('canvas').getContext('2d');
+            const extra = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+                + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+            const countExtra = parseFloat(countStyle.marginLeft) + parseFloat(countStyle.marginRight)
+                + parseFloat(countStyle.paddingLeft) + parseFloat(countStyle.paddingRight);
+            const minimumWidth = parseFloat(style.minWidth) || 0;
+            const height = node.offsetHeight;
+            cityEntries.forEach(entry => {
+                if (!entry.live) return;
+                context.font = style.font;
+                let width = context.measureText(entry.city.name).width + extra;
+                if (entry.count > 0) {
+                    context.font = countStyle.font;
+                    width += context.measureText(global.CbFormat.formatInteger(entry.count)).width + countExtra;
+                }
+                entry.labelWidth = Math.max(minimumWidth, Math.ceil(width));
+                entry.labelHeight = height;
+            });
+            name.textContent = previous.name;
+            count.textContent = previous.count;
+            count.hidden = previous.hidden;
+            cityLayoutDirty = true;
+        }
+
+        // Proposal counts arrive after the first frame. They re-rank the catalog in place (the
+        // label pool keeps pointing at the same entries), widen the labels that gain a badge, and
+        // mark the dots to paint. A failed read leaves the globe as it was: every count zero.
+        let countsRequest = null;
+        async function loadCityCounts() {
+            countsRequest = new AbortController();
+            try {
+                const base = String(global.getBackendBase()).replace(/\/+$/, '');
+                const response = await fetch(base + '/activity/cities', { cache: 'no-store',
+                    signal: AbortSignal.any([countsRequest.signal, AbortSignal.timeout(15000)]) });
+                if (!response.ok) throw new Error('City counts HTTP ' + response.status);
+                const payload = await response.json();
+                if (closed) return;
+                CityDisplay.applyCounts(cityEntries, payload.cities);
+                liveLabels.forEach(item => { if (item.entry) fillCityLabel(item, item.entry); });
+                measureCityLabels();
+                dirty = true;
+                schedule();
+                log('city counts loaded for ' + cityEntries.filter(entry => entry.count > 0).length + ' cities');
+            } catch (error) {
+                if (!closed) console.warn('[world] City counts could not load', error);
+            } finally {
+                countsRequest = null;
+            }
+        }
+
+        function cityObstacles() {
+            const nodes = [top, closeBtn, legend, activityNode];
+            if (!reach.hidden && !reach.classList.contains('world-reach--dismissed')) nodes.push(reach);
+            if (!results.hidden) nodes.push(results);
+            if (!popup.hidden && !popup.classList.contains('world-popup--offscreen')) nodes.push(popup);
+            return nodes.filter(node => node && node.isConnected).map(node => node.getBoundingClientRect())
+                .filter(rect => rect.width > 0 && rect.height > 0)
+                .map(rect => ({ x: rect.left, y: rect.top, w: rect.width, h: rect.height }));
+        }
+
+        function updateCityDisplay(now) {
+            // Camera movement projects the catalog at most ten times per second. Only the bounded
+            // label pool follows it every frame; dot positions continue moving smoothly on the GPU.
+            if (!cityLayoutDirty && now - lastCityLayout < 100) return;
+            lastCityLayout = now;
+            const blocked = cityObstacles();
+            const pinnedKeys = [];
+            if (selected) pinnedKeys.push(selected.kind === 'live-city' ? 'live:' + selected.cityId : 'research:' + selected.placeKey);
+            const focused = liveLabels.find(item => item.node === document.activeElement);
+            if (focused?.entry) pinnedKeys.push(focused.entry.key);
+            const signature = JSON.stringify([cam.lat, cam.lon, cam.altitudeKm, viewport, blocked, pinnedKeys]);
+            if (!cityLayoutDirty && signature === cityLayoutSignature) return;
+            cityLayoutDirty = false;
+            cityLayoutSignature = signature;
+            blockedCityAreas = blocked;
+            const candidates = [];
+            for (const entry of cityEntries) {
+                const point = screenOf(entry.vec);
+                if (!point || point.x < 0 || point.y < 0 || point.x > viewport.w || point.y > viewport.h) continue;
+                candidates.push({ entry, x: point.x, y: point.y, labelWidth: entry.labelWidth, labelHeight: entry.labelHeight });
+            }
+            const layout = CityDisplay.layout(candidates,
+                { width: viewport.w, height: viewport.h, altitudeKm: cam.altitudeKm, fov: FOV }, { blocked, pinnedKeys });
+            visibleMarkers = layout.markers;
+            visibleMarkers.forEach((marker, i) => {
+                cityGeo.attributes.position.array.set(marker.entry.vec, i * 3);
+                cityGeo.attributes.color.array.set(marker.entry.color, i * 3);
+                cityGeo.attributes.size.array[i] = marker.size;
+                cityGeo.attributes.pulse.array[i] = marker.glow ? 1 : 0;
+                cityGeo.attributes.opacity.array[i] = marker.opacity;
+                cityGeo.attributes.painted.array[i] = marker.painted ? 1 : 0;
+            });
+            Object.values(cityGeo.attributes).forEach(attribute => { attribute.needsUpdate = true; });
+            cityGeo.setDrawRange(0, visibleMarkers.length);
+
+            // Reuse each city's existing node so keyboard focus survives a camera/layout update.
+            const wanted = new Set(layout.labels.map(label => label.entry.key));
+            liveLabels.forEach(item => {
+                if (item.entry && wanted.has(item.entry.key)) return;
+                item.city = item.entry = item.placement = null;
+                item.node.classList.add('world-city-label--hidden');
+            });
+            layout.labels.forEach(placement => {
+                const item = liveLabels.find(label => label.entry?.key === placement.entry.key)
+                    || liveLabels.find(label => !label.entry);
+                if (item.entry !== placement.entry) fillCityLabel(item, placement.entry);
+                item.entry = placement.entry;
+                item.city = placement.entry.city;
+                item.placement = placement;
+            });
+        }
+
+        function positionCityLabels() {
+            const placed = blockedCityAreas.slice();
+            const bounds = { width: viewport.w, height: viewport.h };
+            for (const item of liveLabels) {
+                const point = item.entry && screenOf(item.entry.vec);
+                const box = point && { x: point.x + item.placement.offsetX, y: point.y + item.placement.offsetY,
+                    w: item.placement.w, h: item.placement.h };
+                const visible = box && CityDisplay.canPlace(box, bounds, placed, 4);
+                item.node.classList.toggle('world-city-label--hidden', !visible);
+                if (!visible) continue;
+                placed.push(box);
+                item.node.style.setProperty('--x', box.x + 'px');
+                item.node.style.setProperty('--y', box.y + 'px');
+            }
+        }
+
+        function pickAt(clientX, clientY) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            const x = clientX - rect.left; const y = clientY - rect.top;
+            // Snap only to drawn markers; a hidden city must never steal a visible dot's tap.
+            let snap = null; let best = Infinity;
+            visibleMarkers.forEach(marker => {
+                const s = screenOf(marker.entry.vec); if (!s) return;
+                const d = Math.hypot(s.x - x, s.y - y);
+                if (d < (marker.entry.live ? 14 : 8) && d < best) { best = d; snap = marker.entry.city; }
+            });
+            if (snap) { select(coverage.tierAt(snap.lat, snap.lon)); return; }
+            const ndc = new THREE.Vector3((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1, 0.5).unproject(camera);
+            const dir = ndc.sub(camera.position);
+            const hit = GM.raySphere(camera.position.toArray(), dir.toArray(), 1);
+            if (!hit) { deselect(); return; }
+            const ll = GM.vectorToLatLon(hit);
+            select(coverage.tierAt(ll.lat, ll.lon));
+        }
+
+        // ---- popup ----
+        function select(place) {
+            selected = place;
+            requestState = null;
+            vel.lat = vel.lon = 0;
+            renderPopup();
+            dirty = true;
+            cityLayoutDirty = true;
+        }
+
+        function deselect() {
+            selected = null;
+            popup.hidden = true; pin.hidden = true;
+            dirty = true;
+            cityLayoutDirty = true;
+        }
+
+        let requestState = null; // null | 'sending' | 'done' | 'error'
+
+        function renderPopup() {
+            if (!selected) return;
+            const place = selected;
+            const tier = place.tier;
+            const country = place.kind === 'country';
+            const region = place.kind === 'region';
+            const area = country || region;
+            const status = area ? place.coverage : tier;
+            const statusKey = global.WorldCoverage.statusKey(place);
+            popup.textContent = '';
+            popup.className = 'world-popup world-popup--' + status;
+            const close = el('button', 'close-circle-btn world-popup__close', { type: 'button', 'aria-label': t('world.close', 'Close'), text: '×' });
+            close.addEventListener('click', deselect);
+            const badge = el('p', 'world-popup__tier');
+            badge.append(el('span', 'world-tier-dot world-tier-dot--' + status), el('span', '', {
+                text: t(statusKey + '.short', region ? REGION_COVERAGE_LABELS[status] : country ? COVERAGE_LABELS[status] : TIER_LABELS[status])
+            }));
+            const heading = place.kind === 'ocean' ? t('world.popup.ocean', 'Open water') : place.name;
+            const titleNode = el('h2', 'world-popup__title', { text: heading });
+            const subtitleParts = [];
+            if (place.kind !== 'country' && place.country) subtitleParts.push(place.country);
+            subtitleParts.push(formatLatLon(place.lat, place.lon));
+            const subtitle = el('p', 'world-popup__subtitle', { text: subtitleParts.join(' · ') });
+            const texts = {
+                live: 'Parcels, proposals and 3D are ready here.',
+                source: 'Open parcel data exists here, but it is not in the app yet. You can still draw a site and propose here — without parcels, a proposal executes only through an authority\'s verdict — or ask for this place to be added.',
+                none: 'We looked and found no open parcel data here. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.',
+                unknown: 'Open parcel data has not been confirmed here; this place is unchecked or the check was inconclusive. You can still draw a site and propose here; without parcels, a proposal executes only through an authority\'s verdict.'
+            };
+            const countryTexts = {
+                full: 'Open parcel data is confirmed for the whole country. Cities available in the app are marked separately.',
+                mostly: 'Open parcel data covers the whole country, and it works in most cities we checked, but the parcel check failed in a few. Cities available in the app are marked separately.',
+                partial: 'Open parcel data is confirmed in at least one city or region. Coverage at this specific location, or across the whole country, is not confirmed. Cities available in the app are marked separately.',
+                none: 'We checked for open parcel data in this country and found none. This records the result of our search, not proof that no source exists.',
+                unknown: 'This country has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
+            };
+            const regionTexts = {
+                full: 'Open parcel data is confirmed for this whole region. Cities available in the app are marked separately.',
+                mostly: 'Open parcel data covers this whole region, and it works in most cities we checked, but the parcel check failed in a few. Cities available in the app are marked separately.',
+                partial: 'Open parcel data is confirmed somewhere in this region. Coverage at this specific location, or across the whole region, is not confirmed. Cities available in the app are marked separately.',
+                none: 'We checked for open parcel data in this region and found none. This records the result of our search, not proof that no source exists.',
+                unknown: 'This region has not been checked, or the check was inconclusive. We have not confirmed whether open parcel data is available.'
+            };
+            const text = el('p', 'world-popup__text', {
+                text: place.kind === 'ocean'
+                    ? t('world.popup.oceanText', 'No land here, so no parcels. You can still open the map at this spot.')
+                    : place.sourceId
+                        ? (place.queryMode === 'point'
+                            ? t('world.tier.live.pointText', 'Tap the map to load and select an individual parcel. Loading every parcel in an area is unavailable for this source.')
+                            : place.dataVersion
+                            ? t('world.tier.live.datedStreamText', 'Parcels load as you zoom in and pan. This source is a {{version}} dataset; current boundaries may differ.', { version: place.dataVersion })
+                            : t('world.tier.live.streamText', 'Parcels load from the local source as you zoom in and pan. Nearby municipalities may use different data.'))
+                    : t(statusKey + '.text', region ? regionTexts[status] : country ? countryTexts[status] : texts[tier])
+            });
+            popup.append(close, badge, titleNode, subtitle, text);
+            if (place.note && (area || tier !== 'live')) popup.appendChild(el('p', 'world-popup__note', { text: place.note }));
+            for (const source of place.coverageSources || []) {
+                if (!/^https:\/\//.test(source.url)) continue;
+                popup.appendChild(el('a', 'world-popup__source', {
+                    href: source.url, target: '_blank', rel: 'noopener noreferrer',
+                    text: t('world.popup.coverageSource', 'Coverage source') + ': ' + source.title
+                }));
+            }
+            const actions = el('div', 'world-popup__actions');
+            const point = { lat: place.lat, lon: place.lon, place };
+            const liveCityId = tier === 'live' && place.cityId
+                ? (typeof opts.chooseCity === 'function' && opts.chooseCity(place)) || place.cityId
+                : null;
+            if (liveCityId) {
+                const cityLabel = (coverage.liveCities.find(c => c.id === liveCityId) || {}).name || place.name;
+                const open = el('button', 'btn btn-primary', { type: 'button', text: t('world.action.open', 'Open {{city}}', { city: cityLabel }) });
+                // Landing flies, looks up the city's latest proposal and loads it: the button spins meanwhile.
+                open.addEventListener('click', () => {
+                    if (typeof opts.onOpenCity === 'function') global.BusyControl.track(open, () => opts.onOpenCity(liveCityId, point));
+                });
+                actions.appendChild(open);
+            } else {
+                const explore = el('button', 'btn' + (tier === 'source' ? '' : ' btn-primary'), { type: 'button', text: t('world.action.explore', 'Open the map here') });
+                explore.addEventListener('click', () => {
+                    if (typeof opts.onExplore === 'function') global.BusyControl.track(explore, () => opts.onExplore(point));
+                });
+                if (tier === 'source') {
+                    const labels = {
+                        sending: t('world.request.sending', 'Sending…'),
+                        done: t('world.request.done', 'Request noted, thank you'),
+                        error: t('world.request.error', 'Could not send the request. Try again?')
+                    };
+                    const ask = el('button', 'btn btn-primary', {
+                        type: 'button',
+                        text: requestState === 'done' || requestState === 'sending' ? labels[requestState]
+                            : area ? t('world.action.askArea', 'Ask for this area') : t('world.action.askCity', 'Ask for this city')
+                    });
+                    if (requestState === 'done' || requestState === 'sending') ask.disabled = true;
+                    ask.addEventListener('click', () => {
+                        if (typeof opts.onRequestCity !== 'function') return;
+                        const current = selected;
+                        requestState = 'sending'; renderPopup();
+                        Promise.resolve(opts.onRequestCity(place)).then(() => {
+                            if (selected === current) { requestState = 'done'; renderPopup(); }
+                        }, error => {
+                            console.error('[' + new Date().toISOString() + '] [world] city request failed', error);
+                            if (selected === current) { requestState = 'error'; renderPopup(); }
+                        });
+                    });
+                    actions.append(ask, explore);
+                    if (requestState === 'error') popup.appendChild(el('p', 'world-popup__error', { text: labels.error }));
+                } else {
+                    actions.appendChild(explore);
+                }
+            }
+            popup.appendChild(actions);
+            popup.setAttribute('aria-label', heading);
+            popup.hidden = false; pin.hidden = false;
+            positionOverlays();
+        }
+
+        function positionOverlays() {
+            if (selected) {
+                const s = screenOf(GM.latLonToVector(selected.lat, selected.lon, 1.001));
+                pin.hidden = !s;
+                if (s) { pin.style.setProperty('--x', s.x + 'px'); pin.style.setProperty('--y', s.y + 'px'); }
+                const sheet = viewport.w <= 600;
+                popup.classList.toggle('world-popup--sheet', sheet);
+                // Rotated round to the far side: an anchored popup has nothing to point at.
+                popup.classList.toggle('world-popup--offscreen', !sheet && !s);
+                if (!sheet && s) {
+                    const pw = popup.offsetWidth || 300; const ph = popup.offsetHeight || 180;
+                    const above = s.y - ph - 22 > 70;
+                    const x = GM.clamp(s.x - pw / 2, 12, viewport.w - pw - 12);
+                    const y = above ? s.y - ph - 18 : Math.min(viewport.h - ph - 12, s.y + 18);
+                    popup.classList.toggle('world-popup--below', !above);
+                    popup.style.setProperty('--x', x + 'px'); popup.style.setProperty('--y', y + 'px');
+                    popup.style.setProperty('--caret', GM.clamp(s.x - x, 18, pw - 18) + 'px');
+                }
+            }
+        }
+
+        // ---- search ----
+        let searchHits = [];
+        let activeIndex = -1;
+
+        function renderResults() {
+            results.textContent = '';
+            searchHits.forEach((place, i) => {
+                const li = el('li', 'world-search__result' + (i === activeIndex ? ' world-search__result--active' : ''), {
+                    role: 'option', id: 'world-search-opt-' + i, 'aria-selected': i === activeIndex ? 'true' : 'false'
+                });
+                const area = place.kind === 'country' || place.kind === 'region';
+                li.append(el('span', 'world-tier-dot world-tier-dot--' + (area ? place.coverage : place.tier)));
+                const textWrap = el('span', 'world-search__text');
+                textWrap.append(el('span', 'world-search__name', { text: place.name }),
+                    el('span', 'world-search__meta', { text: place.kind === 'country'
+                        ? t('world.search.country', 'Country') + ' · ' + t(global.WorldCoverage.statusKey(place) + '.short', COVERAGE_LABELS[place.coverage])
+                        : place.kind === 'region'
+                            ? place.country + ' · ' + t(global.WorldCoverage.statusKey(place) + '.short', REGION_COVERAGE_LABELS[place.coverage])
+                        : place.kind === 'territory' ? t('world.search.territory', 'Territory')
+                        : place.country }));
+                li.append(textWrap);
+                li.addEventListener('pointerdown', ev => ev.preventDefault());
+                li.addEventListener('click', () => choose(place));
+                results.appendChild(li);
+            });
+            if (!searchHits.length && searchInput.value.trim()) {
+                results.appendChild(el('li', 'world-search__empty', { text: t('world.search.noResults', 'No matching place') }));
+            }
+            const open = !!searchInput.value.trim();
+            results.hidden = !open;
+            searchInput.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (activeIndex >= 0) searchInput.setAttribute('aria-activedescendant', 'world-search-opt-' + activeIndex);
+            else searchInput.removeAttribute('aria-activedescendant');
+        }
+
+        function onSearchInput() {
+            searchHits = coverage.searchPlaces(searchInput.value, { limit: 7 });
+            activeIndex = searchHits.length ? 0 : -1;
+            renderResults();
+        }
+
+        function onSearchKey(ev) {
+            if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+                if (!searchHits.length) return;
+                ev.preventDefault();
+                activeIndex = (activeIndex + (ev.key === 'ArrowDown' ? 1 : -1) + searchHits.length) % searchHits.length;
+                renderResults();
+            } else if (ev.key === 'Enter') {
+                ev.preventDefault();
+                if (searchHits[activeIndex]) choose(searchHits[activeIndex]);
+            } else if (ev.key === 'Escape') {
+                ev.stopPropagation();
+                if (searchInput.value) { searchInput.value = ''; onSearchInput(); } else searchInput.blur();
+            }
+        }
+
+        function choose(place) {
+            searchInput.value = place.name;
+            searchHits = []; activeIndex = -1;
+            results.hidden = true; searchInput.setAttribute('aria-expanded', 'false');
+            searchInput.blur();
+            deselect();
+            const area = place.kind === 'country' || place.kind === 'region' || place.kind === 'territory';
+            const altitudeKm = area ? Math.max(11000, Math.min(cam.altitudeKm, 16000)) : 8500;
+            const popupPlace = area ? Object.assign({}, place) : coverage.tierAt(place.lat, place.lon);
+            fly({ lat: place.lat, lon: place.lon, altitudeKm }, { hop: 0.6 }).then(() => select(popupPlace));
+        }
+
+        // Asks the browser for its position (the browser's own permission prompt is the consent) and
+        // treats it as a search hit: fly there and open what is available at that point.
+        function locateMe() {
+            if (global.BusyControl.isBusy(locateBtn)) return;
+            const position = new Promise((resolve, reject) => {
+                if (!navigator.geolocation) { reject(new Error('navigator.geolocation is not available')); return; }
+                navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, maximumAge: 60_000, timeout: 15_000 });
+            });
+            global.BusyControl.track(locateBtn, position).then(({ coords }) => {
+                if (closed) return;
+                searchInput.value = '';
+                searchHits = []; activeIndex = -1;
+                results.hidden = true; searchInput.setAttribute('aria-expanded', 'false');
+                deselect();
+                const lat = coords.latitude; const lon = coords.longitude;
+                log('located at ' + formatLatLon(lat, lon) + ' ±' + Math.round(coords.accuracy) + ' m');
+                fly({ lat, lon, altitudeKm: 8500 }, { hop: 0.6 }).then(() => select(coverage.tierAt(lat, lon)));
+            }, error => {
+                console.warn('[' + new Date().toISOString() + '] [world] location unavailable:', error && (error.message || error.code));
+                if (closed) return;
+                results.textContent = '';
+                results.appendChild(el('li', 'world-search__empty', { role: 'status', text: t('world.search.locateFailed', 'Could not get your location.') }));
+                results.hidden = false;
+                // The note stays until the next press anywhere in the view.
+                root.addEventListener('pointerdown', () => { results.hidden = true; }, { once: true, capture: true });
+            });
+        }
+
+        // ---- flights ----
+        function fly(target, options) {
+            vel.lat = vel.lon = 0;
+            zoomTarget = null;
+            const from = { lat: cam.lat, lon: cam.lon, altitudeKm: cam.altitudeKm };
+            const to = { lat: GM.clamp(target.lat, -80, 80), lon: target.lon, altitudeKm: target.altitudeKm };
+            return new Promise(resolve => {
+                if (flight) flight.resolve(false);
+                if (reduce) {
+                    Object.assign(cam, to); flight = null; dirty = true; render(performance.now());
+                    resolve(true); return;
+                }
+                const arc = GM.angularDistance(from, to);
+                const dive = Math.abs(Math.log(Math.max(1, to.altitudeKm) / Math.max(1, from.altitudeKm)));
+                const duration = options && options.durationMs
+                    ? options.durationMs : GM.clamp(900 + 700 * (arc / Math.PI) + 220 * dive, 1500, 2500);
+                flight = { from, to, start: performance.now(), duration, hop: options && typeof options.hop === 'number' ? options.hop : 1, resolve };
+                touch();
+            });
+        }
+
+        function stepFlight(now) {
+            if (!flight) return;
+            const tNorm = Math.min(1, (now - flight.start) / flight.duration);
+            Object.assign(cam, GM.flyInterpolate(flight.from, flight.to, tNorm, { hop: flight.hop }));
+            dirty = true;
+            if (tNorm >= 1) { const done = flight.resolve; flight = null; done(true); }
+        }
+
+        // ---- loop ----
+        function render(now) {
+            placeCamera();
+            time.value = now / 1000;
+            const h = GM.clamp((1400 - cam.altitudeKm) / (1400 - 250), 0, 1);
+            earthMat.uniforms.haze.value = 0.88 * h * h * (3 - 2 * h);
+            positionOverlays();
+            updateCityDisplay(now);
+            renderer.render(scene, camera);
+            positionCityLabels();
+            dirty = false;
+        }
+
+        function frame(now) {
+            raf = 0;
+            if (closed) return;
+            const dt = Math.min(0.1, (now - lastFrame) / 1000);
+            lastFrame = now;
+            let moving = false;
+            if (flight) { stepFlight(now); moving = true; }
+            else {
+                if (zoomTarget !== null) {
+                    cam.altitudeKm = GM.dampAltitude(cam.altitudeKm, zoomTarget, dt);
+                    if (cam.altitudeKm === zoomTarget) zoomTarget = null;
+                    moving = true;
+                }
+                if (Math.abs(vel.lon) > 0.01 || Math.abs(vel.lat) > 0.01) {
+                    cam.lon += vel.lon * dt; cam.lat += vel.lat * dt;
+                    const decay = Math.exp(-dt * 2.6);
+                    vel.lon *= decay; vel.lat *= decay;
+                    moving = true;
+                } else if (!reduce && !drag && !pinch && !selected && !root.classList.contains('world-view--diving') && now - lastInteraction > IDLE_DELAY_MS) {
+                    cam.lon += IDLE_SPIN_DEG_PER_S * dt * Math.min(1, (now - lastInteraction - IDLE_DELAY_MS) / 1500);
+                    moving = true;
+                }
+            }
+            // Live dots pulse, so keep drawing unless motion is reduced.
+            if (moving || dirty || !reduce) render(now);
+            schedule();
+        }
+
+        function schedule() {
+            if (!raf && !closed && !document.hidden) raf = requestAnimationFrame(frame);
+        }
+
+        function onVisibility() {
+            if (document.hidden) { if (raf) cancelAnimationFrame(raf); raf = 0; }
+            else { lastFrame = performance.now(); dirty = true; schedule(); }
+        }
+
+        const resizeObserver = new ResizeObserver(() => { resize(); if (!raf) render(performance.now()); });
+        // Loaded activity, translated text and expanded panels can change the available label
+        // area even when reduced motion leaves the camera still.
+        const overlayObserver = new ResizeObserver(() => { dirty = true; cityLayoutDirty = true; schedule(); });
+
+        // ---- wiring ----
+        const canvas = renderer.domElement;
+        // The welcome count steps aside as soon as the visitor starts exploring.
+        root.addEventListener('pointerdown', dismissReach, { once: true, capture: true });
+        root.addEventListener('keydown', dismissReach, { once: true, capture: true });
+        // Labels and canvas share one gesture surface; controls are filtered in onPointerDown.
+        // Capture on the canvas keeps drags alive when labels move or disappear under a finger.
+        root.addEventListener('pointerdown', onPointerDown);
+        root.addEventListener('pointermove', onPointerMove);
+        root.addEventListener('pointerup', onPointerUp);
+        root.addEventListener('pointercancel', onPointerCancel);
+        root.addEventListener('lostpointercapture', onPointerCancel);
+        root.addEventListener('wheel', onWheel, { passive: false });
+        canvas.addEventListener('keydown', onCanvasKey);
+        root.addEventListener('keydown', onRootKey);
+        // UI changes also invalidate labels when reduced motion leaves the camera stationary.
+        root.addEventListener('focusin', () => { dirty = true; cityLayoutDirty = true; });
+        root.addEventListener('focusout', () => { dirty = true; cityLayoutDirty = true; });
+        searchInput.addEventListener('input', () => { dirty = true; cityLayoutDirty = true; });
+        searchInput.addEventListener('input', onSearchInput);
+        searchInput.addEventListener('keydown', onSearchKey);
+        searchInput.addEventListener('blur', () => { results.hidden = true; searchInput.setAttribute('aria-expanded', 'false'); });
+        searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) onSearchInput(); });
+        locateBtn.addEventListener('click', locateMe);
+        closeBtn.addEventListener('click', () => { global.WorldView.close(); if (typeof opts.onClose === 'function') opts.onClose(); });
+        document.addEventListener('visibilitychange', onVisibility);
+        const onLanguage = () => {
+            renderStaticText();
+            liveLabels.forEach(item => { if (item.entry) fillCityLabel(item, item.entry); });
+            measureCityLabels();
+            dirty = true;
+        };
+        if (global.i18n && typeof global.i18n.onChange === 'function') global.i18n.onChange(onLanguage);
+        global.addEventListener('i18n:translationsLoaded', onLanguage);
+
+        document.body.appendChild(root);
+        root.__unregisterEscape = global.ModalEscape?.register(root, () => {
+            if (!results.hidden) return false; // let the focused search input clear its results
+            if (selected) { deselect(); return true; }
+            if (legendToggle.getAttribute('aria-expanded') === 'true') {
+                setLegendExpanded(false);
+                legendToggle.focus();
+                return true;
+            }
+            if (opts.closable === false) return false;
+            global.WorldView.close();
+            if (typeof opts.onClose === 'function') opts.onClose();
+            return true;
+        });
+        document.body.classList.add('world-view-open');
+        renderStaticText();
+        measureCityLabels();
+        resizeObserver.observe(root);
+        [top, legend, activityNode, popup, results, reach].forEach(node => { if (node) overlayObserver.observe(node); });
+        resize();
+        render(performance.now());
+        reachTimer = global.setTimeout(dismissReach, 8000);
+        schedule();
+        loadCityCounts();
+
+        const api = {
+            root,
+            close() {
+                if (closed) return;
+                closed = true;
+                global.clearTimeout(reachTimer);
+                countsRequest?.abort();
+                root.__unregisterEscape?.();
+                if (raf) cancelAnimationFrame(raf);
+                if (flight) { flight.resolve(false); flight = null; }
+                resizeObserver.disconnect();
+                overlayObserver.disconnect();
+                activity.destroy();
+                document.removeEventListener('visibilitychange', onVisibility);
+                if (global.i18n && typeof global.i18n.offChange === 'function') global.i18n.offChange(onLanguage);
+                global.removeEventListener('i18n:translationsLoaded', onLanguage);
+                disposables.forEach(d => d.dispose());
+                renderer.dispose();
+                renderer.forceContextLoss();
+                root.remove();
+                document.body.classList.remove('world-view-open');
+                log('closed; GPU resources released');
+            },
+            flyTo(point, options) {
+                const o = options || {};
+                deselect();
+                root.classList.add('world-view--diving');
+                const altitudeKm = Number.isFinite(o.altitudeKm) ? o.altitudeKm : 120;
+                return fly({ lat: point.lat, lon: point.lon, altitudeKm }, { hop: 0.5, durationMs: o.durationMs }).then(completed => {
+                    if (!completed) return null;
+                    const state = {
+                        lat: cam.lat, lon: cam.lon, altitudeKm: cam.altitudeKm,
+                        leafletZoom: GM.altitudeToLeafletZoom(cam.altitudeKm, cam.lat, viewport.h, FOV)
+                    };
+                    render(performance.now());
+                    if (typeof o.onDone === 'function') o.onDone(state);
+                    return state;
+                });
+            },
+            captureHandoffFrame(options) {
+                const o = options || {};
+                const maxWidth = o.maxWidth || 960;
+                render(performance.now()); // same task as the copy: the drawing buffer is still intact
+                const scale = Math.min(1, maxWidth / canvas.width);
+                const out = document.createElement('canvas');
+                out.width = Math.round(canvas.width * scale); out.height = Math.round(canvas.height * scale);
+                const g = out.getContext('2d');
+                // The page background is CSS; paint the same space gradient under the transparent canvas.
+                const bg = g.createRadialGradient(out.width / 2, out.height / 2, 0, out.width / 2, out.height / 2, Math.max(out.width, out.height) * 0.75);
+                bg.addColorStop(0, '#0d1d44'); bg.addColorStop(1, '#030712');
+                g.fillStyle = bg; g.fillRect(0, 0, out.width, out.height);
+                g.drawImage(canvas, 0, 0, out.width, out.height);
+                return out.toDataURL('image/jpeg', o.quality || 0.82);
+            },
+            getCamera() { return { lat: cam.lat, lon: cam.lon, altitudeKm: cam.altitudeKm }; },
+            project(lat, lon) { placeCamera(); return screenOf(GM.latLonToVector(lat, lon, 1.001)); },
+            selectPlace(lat, lon) {
+                const place = coverage.tierAt(lat, lon);
+                return fly({ lat, lon, altitudeKm: cam.altitudeKm }, { hop: 0.3 }).then(() => select(place));
+            }
+        };
+        return api;
+    }
+
+    const WorldView = {
+        TIER_COLORS,
+        COVERAGE_COLORS,
+        async open(opts) {
+            if (view) return;
+            const options = opts || {};
+            const ok = await global.whenThreeReady();
+            if (!ok || !global.THREE) throw new Error('WorldView: three.js failed to load');
+            if (!coveragePromise) coveragePromise = global.WorldCoverage.load(options.coverageUrl);
+            let coverage;
+            try { coverage = await coveragePromise; } catch (error) { coveragePromise = null; throw error; }
+            if (view) return;
+            view = createView(global.THREE, coverage, options);
+            WorldView.coverage = coverage;
+            // Take focus like a dialog does, so Escape and the arrow keys reach the globe at once
+            // (focus was on whatever opened it, now covered: the city chip, a Settings button).
+            const canvas = view.root.querySelector('.world-view__canvas');
+            if (canvas) canvas.focus({ preventScroll: true });
+            log('opened');
+        },
+        close() { if (view) { const v = view; view = null; v.close(); } },
+        isOpen() { return !!view; },
+        flyTo(point, options) { if (!view) return Promise.reject(new Error('WorldView is not open')); return view.flyTo(point, options); },
+        captureHandoffFrame(options) { if (!view) throw new Error('WorldView is not open'); return view.captureHandoffFrame(options); },
+        getCamera() { return view ? view.getCamera() : null; },
+        // Viewport pixel position of a lat/lon, or null when it is on the far side (tests, tours).
+        project(lat, lon) { return view ? view.project(lat, lon) : null; },
+        selectPlace(lat, lon) { return view ? view.selectPlace(lat, lon) : Promise.resolve(); }
+    };
+
+    global.WorldView = WorldView;
+})(window);

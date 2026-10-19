@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4792-sheffield.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "HM Land Registry publishes monthly INSPIRE Index Polygons as a free OGL GML dataset, partitioned by local authority; the current 2026-09-06 listing names Sheffield City Council and provides a ZIP containing the GML. The polygons cover freehold registered property only, are indicative extents, and each has a documented Land Registry INSPIRE ID. The public archive was not downloaded or spatially filtered during this packet pass, so no feature geometry or point hit is verified; this does not imply geometry is absent.",
+  "registryAssessment": "HM Land Registry’s current authority-partition listing includes Sheffield City Council. Official guidance describes free monthly GML INSPIRE downloads under OGL, with a unique INSPIRE identifier per polygon; these are indicative freehold registered-property extents only.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "observation": "HM Land Registry explains INSPIRE is a free open GML dataset for indicative locations/extents of freehold registered property in England and Wales and that each polygon has a unique Land Registry INSPIRE ID."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "observation": "Current official download page states dataset publication date 6 September 2026 and lists Sheffield City Council as a downloadable authority partition."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Sheffield_City_Council.zip",
+      "observation": "Exact public GML ZIP URL exposed by Sheffield City Council row on the official HMLR download listing. The archive was not downloaded in this packet pass."
+    },
+    {
+      "url": "https://www.gov.uk/get-information-about-property-and-land/search-the-index-map",
+      "observation": "Separate contextual service: this address/plan index-map lookup is application/fee based; it is not the public INSPIRE archive and is not the geometry source."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sheffield UK official cadastral parcel map property GIS land registry polygons council open data",
+      "result": "HM Land Registry publishes monthly INSPIRE Index Polygons as a free OGL GML dataset, partitioned by local authority; the current 2026-09-06 listing names Sheffield City Council and provides a ZIP containing the GML. The polygons cover freehold registered property only, are indicative extents, and each has a documented Land Registry INSPIRE ID. The public archive was not downloaded or spatially filtered during this packet pass, so no feature geometry or point hit is verified; this does not imply geometry is absent.",
+      "method": "Separate English-language web search followed by first-party page review.",
+      "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry."
+    },
+    {
+      "language": "English",
+      "query": "HM Land Registry Sheffield title plan cadastral parcel map registered land official",
+      "result": "HM Land Registry publishes monthly INSPIRE Index Polygons as a free OGL GML dataset, partitioned by local authority; the current 2026-09-06 listing names Sheffield City Council and provides a ZIP containing the GML. The polygons cover freehold registered property only, are indicative extents, and each has a documented Land Registry INSPIRE ID. The public archive was not downloaded or spatially filtered during this packet pass, so no feature geometry or point hit is verified; this does not imply geometry is absent.",
+      "method": "Separate local-language web search followed by first-party page review.",
+      "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality."
+    }
+  ],
+  "geometryDecision": "Public polygon dataset documented and local authority partition listed, but no actual Sheffield feature geometry was read or retained during this pass; point-level geometry remains unverified.",
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry’s Sheffield City Council partition contains indicative registered freehold-property polygons only; title and tenure coverage is partial, and geometry is not a legal-boundary statement.",
+    "verifiedOpenScope": "Partition availability and format are documented. No feature response, WUP-point hit, or citywide completeness is verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "result": "HTTP 200 via normal TLS; the official page listed Sheffield City Council with a download link to Sheffield_City_Council.zip."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Sheffield_City_Council.zip",
+      "result": "Exact official download URL identified from the listing; archive bytes/HTTP response and spatial features were not fetched in this pass."
+    },
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "result": "Official guidance confirms monthly public GML, freehold-only scope, indicative extents and INSPIRE ID semantics."
+    }
+  ],
+  "remainingUncertainty": "Whether an INSPIRE polygon covers the exact WUP point, and how many nearby polygons exist, remains unverified until the local-authority GML is spatially filtered. The dataset is limited to freehold registered property and its geometry is indicative, not a legal boundary."
+}

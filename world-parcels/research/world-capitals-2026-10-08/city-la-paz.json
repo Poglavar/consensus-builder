@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:BO:la-paz",
+  "name": "La Paz",
+  "country": "Bolivia",
+  "countryCode": "BO",
+  "centerLatLon": [
+    -16.5,
+    -68.15
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "La Paz Bolivia gobierno municipal catastro mapa parcelas GIS official",
+      "language": "Spanish/English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    },
+    {
+      "query": "La Paz Bolivia municipal cadastral parcels GIS official property map",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://sitservicios.lapaz.bo/sit/catastro/",
+        "https://sim.lapaz.bo/nuevocatastro"
+      ]
+    },
+    {
+      "query": "La Paz Bolivia gobierno municipal catastro mapa parcelas GIS official",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://sitservicios.lapaz.bo/sit/catastro/",
+        "https://sim.lapaz.bo/nuevocatastro"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://sitservicios.lapaz.bo/sit/catastro/",
+      "observation": "Municipal SIT page identifies the Autoridad Catastral Municipal as the source of cadastral information, links to the municipal cadastral map, and describes lookup by cadastral code or address."
+    },
+    {
+      "url": "https://sim.lapaz.bo/nuevocatastro",
+      "observation": "Government of La Paz cadastral map page embeds the public map client at https://sitservicios.lapaz.bo/SITOL/msitolpre.html."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/SITOL/Scripts/Geo/js/mapaSitOnlinePre.js",
+      "observation": "Public municipal map client points to the cadastral GeoServer and includes a WMS lot layer; following its public configuration exposed the feature service."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&request=GetCapabilities",
+      "observation": "Municipal GeoServer WFS capabilities response identifies provider GAMLP and exposes lot feature types including catastro:lotesCertificados, catastro:lotes2, and catastro:lotes."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sitservicios.lapaz.bo/SITOL/msitolpre.html",
+      "method": "GET",
+      "params": {},
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T17:43Z",
+      "outcome": "Retrieved public municipal map client HTML; it loads mapaSitOnlinePre.js."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "params": {
+        "service": "WFS",
+        "request": "GetCapabilities"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:47Z",
+      "outcome": "application/xml; WFS names include catastro:lotesCertificados and other municipal lot layers."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=catastro%3AlotesCertificados",
+      "method": "GET",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "DescribeFeatureType",
+        "typeNames": "catastro:lotesCertificados"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:48Z",
+      "outcome": "Schema identifies idpredio and geom. The bounded feature request selected only those fields; no owner, address, or contact attributes were requested."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=catastro%3AlotesCertificados&maxFeatures=3&outputFormat=application%2Fjson&srsName=EPSG%3A4326&propertyName=idpredio%2Cgeom&bbox=-68.151%2C-16.5%2C-68.149%2C-16.498%2CEPSG%3A4326",
+      "method": "GET",
+      "params": {
+        "service": "WFS",
+        "version": "1.1.0",
+        "request": "GetFeature",
+        "typeName": "catastro:lotesCertificados",
+        "maxFeatures": 3,
+        "outputFormat": "application/json",
+        "srsName": "EPSG:4326",
+        "propertyName": "idpredio,geom",
+        "bbox": "-68.151,-16.5,-68.149,-16.498,EPSG:4326"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T17:46:58Z",
+      "outcome": "Returned three Polygon features in the requested central La Paz bbox (256 matched); only idpredio and geom were selected."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/sit/catastro/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official municipal cadastral portal open attempted; web inspection tool returned 502."
+    },
+    {
+      "url": "https://sim.lapaz.bo/nuevocatastro",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official municipal territorial-information page opened; it identifies the municipal government and cadastral authority and embeds the public map."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/SITOL/Scripts/Geo/js/mapaSitOnlinePre.js",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official public map client open attempted; web inspection tool reported URL not accessible, while its configuration was separately inspected using a read-only request."
+    },
+    {
+      "url": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&request=GetCapabilities",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official public WFS capabilities open attempted; web inspection tool could not fetch it, while capabilities were separately obtained with a read-only request."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "The municipal government identifies the Autoridad Catastral Municipal, city cadastral map and lookup by cadastral code; municipal GeoServer exposes lot feature types and a bounded central-city query returned three polygons.",
+    "urls": [
+      "https://sitservicios.lapaz.bo/sit/catastro/",
+      "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&request=GetCapabilities",
+      "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+    ]
+  },
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "source": {
+    "name": "Municipal cadastral lots — certified lots",
+    "operator": "Gobierno Autónomo Municipal de La Paz, Autoridad Catastral Municipal (GAMLP)",
+    "scope": "Municipal lot polygons; this sample establishes activity only near the city centre, not complete municipal coverage.",
+    "endpoint": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs",
+    "protocol": "OGC WFS 1.1.0",
+    "featureType": "catastro:lotesCertificados",
+    "geometryField": "geom",
+    "sourceIdField": "idpredio",
+    "requestProperties": [
+      "idpredio",
+      "geom"
+    ],
+    "responseFormat": "application/json",
+    "crs": "EPSG:4326"
+  },
+  "verifiedParcelResponse": {
+    "requestUrl": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=catastro%3AlotesCertificados&maxFeatures=3&outputFormat=application%2Fjson&srsName=EPSG%3A4326&propertyName=idpredio%2Cgeom&bbox=-68.151%2C-16.5%2C-68.149%2C-16.498%2CEPSG%3A4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "checkedAt": "2026-10-08T17:46:58Z",
+    "spatialTestAreaLonLat": [
+      -68.151,
+      -16.5,
+      -68.149,
+      -16.498
+    ],
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "idField": "idpredio",
+    "responseFile": "la-paz-safe-sample.json"
+  },
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The municipal government identifies the Autoridad Catastral Municipal, city cadastral map and lookup by cadastral code; municipal GeoServer exposes lot feature types and a bounded central-city query returned three polygons.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_access_review",
+  "status": "complete",
+  "purpose": "City-specific parcel-source research; registry activity and a bounded public geometry sample are assessed separately from complete city coverage.",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The municipal government identifies the Autoridad Catastral Municipal, city cadastral map and lookup by cadastral code; municipal GeoServer exposes lot feature types and a bounded central-city query returned three polygons.",
+  "registryEvidenceUrls": [
+    "https://sitservicios.lapaz.bo/sit/catastro/",
+    "https://sitservicios.lapaz.bo/geoserver/catastro/wfs?service=WFS&request=GetCapabilities",
+    "https://services2.arcgis.com/CK9GXvmosMB7QXv8/arcgis/rest/services/Percelen_Online/FeatureServer/6"
+  ],
+  "sourceIds": [
+    "bo-gamlp-lapaz-wfs"
+  ],
+  "runtimeAssessment": {
+    "status": "held_access_review",
+    "reason": "Initial bounded geometry sample succeeded, but all 13 real-adapter cell queries and absence query returned HTTP 502 in the follow-up. Runtime retrieval is not reliable.",
+    "evidenceFile": "research/world-capitals-2026-10-08/city-la-paz.json"
+  },
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/la-paz-safe-sample.json"
+}

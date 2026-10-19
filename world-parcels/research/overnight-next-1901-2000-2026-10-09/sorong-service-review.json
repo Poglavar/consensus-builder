@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-8606-sorong.json",
+  "cityCode": 8606,
+  "queueRank": 1921,
+  "city": "Sorong",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Kantor Pertanahan Kota Sorong / ATR-BPN BHUMI and ATLAS",
+  "serviceUrl": "https://bhumi.atrbpn.go.id/bhumigs/umum",
+  "scope": "Official city-government reporting identifies the local Kantor Pertanahan Kota Sorong and says the city is Kota Lengkap with all parcels digitally mapped; the national public Bidang Tanah layer is configured as umum:Persil, but Sorong feature geometry was not verified.",
+  "schemaAndCrs": "Current layer metadata exposes safe fields penggunaan, tipehak, luas, nib, and akurasibidang. CRS and geometry type were not confirmed because anonymous OWS routes returned 404 HTML.",
+  "nativeIdentity": "nib (Nomor Identifikasi Bidang) is the documented preferred native identity. No synthetic identity, OBJECTID, or composite key was used.",
+  "fieldMapping": {"nib": "canonical native parcel identity if independently retrieved", "geometry": "parcel polygon geometry if independently retrieved"},
+  "requestOutcome": "Official BHUMI map, published-layer metadata, ATLAS public resource listing, and official Sorong city-government source were reachable. Anonymous WFS capabilities and bounded ID-plus-geometry requests returned 404 application HTML. Exact WUP point was not treated as a negative result.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and rights-detail fields were not requested or retained.",
+  "officialCustodyEvidence": "Official Pemerintah Kota Sorong reporting names Kantor Pertanahan Kota Sorong and reports digitally mapped citywide parcels; ATR/BPN official BHUMI/ATLAS configuration evidences the national cadastral map service.",
+  "limits": [
+    "The citywide Kota Lengkap statement does not substitute for a returned parcel feature response.",
+    "No exact-point feature response was available; this is not evidence of citywide absence.",
+    "The public OWS route may be proxied, changed, or require a map-session route; no login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "No raw source attribute set or parcel polygon was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm the current anonymous feature endpoint, CRS handling, Sorong coverage, NIB stability, and adapter safety before admission."
+}

@@ -1,0 +1,489 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:25832",
+  "featureCount": 67,
+  "validNonemptyCount": 67,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 58.29095846152277,
+    "median": 1201.318391962095,
+    "max": 29878.397501378582
+  },
+  "features": [
+    {
+      "id": "DE-HH-ALKIS-020301___01581______",
+      "areaM2": 9022.835770346153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01582______",
+      "areaM2": 29878.397501378582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01558______",
+      "areaM2": 127.21218311157784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02335______",
+      "areaM2": 872.6547355529905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01658______",
+      "areaM2": 288.10095201445466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01732______",
+      "areaM2": 10688.515899537195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00237______",
+      "areaM2": 530.8321264908261,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00238______",
+      "areaM2": 520.9599755020785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00239______",
+      "areaM2": 469.32223198100723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00240______",
+      "areaM2": 3025.40986651561,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00241______",
+      "areaM2": 597.2370434727985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00379______",
+      "areaM2": 1183.826481003146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02161______",
+      "areaM2": 3655.4840646075327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02334______",
+      "areaM2": 436.57082098003536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02515______",
+      "areaM2": 4671.102105970777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02559______",
+      "areaM2": 18167.422810734493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00712______",
+      "areaM2": 1837.0956169867025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00713______",
+      "areaM2": 1836.5973355516924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00714______",
+      "areaM2": 723.3927815043862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00715______",
+      "areaM2": 871.2294554922934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00716______",
+      "areaM2": 1214.633522995837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00729______",
+      "areaM2": 2881.085381513237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___01391______",
+      "areaM2": 4739.527323479859,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00430______",
+      "areaM2": 649.3836095494995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00431______",
+      "areaM2": 599.0732940181678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00717______",
+      "areaM2": 585.0057485646076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00731______",
+      "areaM2": 474.51860348925135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___01221______",
+      "areaM2": 471.25233898294675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02002______",
+      "areaM2": 201.01940007467368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02581______",
+      "areaM2": 14238.09940498007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00191______",
+      "areaM2": 2487.1526723758247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02427______",
+      "areaM2": 1851.3631110799038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02476______",
+      "areaM2": 1679.175185536501,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02511______",
+      "areaM2": 1614.20190932215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00725______",
+      "areaM2": 1413.5900425093002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00726______",
+      "areaM2": 1412.3657444761757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00728______",
+      "areaM2": 2348.4913892963646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00761______",
+      "areaM2": 7753.373499147009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02339______",
+      "areaM2": 653.3737244631245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02340______",
+      "areaM2": 1613.2475369086046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00730______",
+      "areaM2": 480.7526894557586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00813______",
+      "areaM2": 648.9611280046779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00814______",
+      "areaM2": 551.5765974814461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00818______",
+      "areaM2": 1333.0836729988666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02168______",
+      "areaM2": 1460.6951960239678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02425______",
+      "areaM2": 3631.8867321384323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02426______",
+      "areaM2": 610.9782715013746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02428______",
+      "areaM2": 1063.5698595168794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02564______",
+      "areaM2": 155.38516248169574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01546______",
+      "areaM2": 58.29095846152277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01654______",
+      "areaM2": 15966.0812143439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01661______",
+      "areaM2": 917.5448001026016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01663______",
+      "areaM2": 507.88547955738284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020301___01928______",
+      "areaM2": 7282.330781850733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00762______",
+      "areaM2": 7402.355606871654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02394______",
+      "areaM2": 177.7618144785962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02587______",
+      "areaM2": 271.6067114866024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00709______",
+      "areaM2": 750.3995735138282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00710______",
+      "areaM2": 1201.318391962095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00711______",
+      "areaM2": 2369.65494552768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___00719______",
+      "areaM2": 2720.2993375114415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02010______",
+      "areaM2": 2009.579480842532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02019______",
+      "areaM2": 1202.9229725053713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02034______",
+      "areaM2": 3209.4031220183906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02091______",
+      "areaM2": 413.6101545652242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02477______",
+      "areaM2": 838.7287455134328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-HH-ALKIS-020302___02513______",
+      "areaM2": 670.0957929675352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

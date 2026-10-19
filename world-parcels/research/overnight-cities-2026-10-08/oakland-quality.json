@@ -1,0 +1,1441 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32610",
+  "featureCount": 203,
+  "validNonemptyCount": 203,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 20.870560249762207,
+    "median": 459.62714101404833,
+    "max": 3804.984130898198
+  },
+  "features": [
+    {
+      "id": "US-CA-OAK-044 496902700",
+      "areaM2": 580.359137209285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496901400",
+      "areaM2": 875.0480343724049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496901300",
+      "areaM2": 583.1092796292489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902800",
+      "areaM2": 580.3393496391495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902600",
+      "areaM2": 580.3347680363876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496901200",
+      "areaM2": 291.48544261522744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496901100",
+      "areaM2": 291.4350385691977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902200",
+      "areaM2": 435.25535146685246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902500",
+      "areaM2": 435.25258704410294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902400",
+      "areaM2": 435.26115518258376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902300",
+      "areaM2": 435.2534154183297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902100",
+      "areaM2": 290.1752980138559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496902000",
+      "areaM2": 435.2555473993079,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496802000",
+      "areaM2": 422.30428308111004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496800800",
+      "areaM2": 533.7613036722055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496800202",
+      "areaM2": 1782.122334221956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496801800",
+      "areaM2": 278.5761602678556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496800700",
+      "areaM2": 449.6653418464334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496800301",
+      "areaM2": 2647.188671200319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496801700",
+      "areaM2": 371.3902529267471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496801900",
+      "areaM2": 474.67905037131743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496802200",
+      "areaM2": 421.7488509509565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496802100",
+      "areaM2": 452.95813200082307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496800900",
+      "areaM2": 421.2271745101244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496801000",
+      "areaM2": 280.74150540268374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496801100",
+      "areaM2": 561.2743836982794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900600",
+      "areaM2": 417.0133163494512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496901000",
+      "areaM2": 582.7103998678838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900700",
+      "areaM2": 231.66877524078956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900800",
+      "areaM2": 231.67007472789518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900100",
+      "areaM2": 226.54287722090123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900900",
+      "areaM2": 240.93901219205495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900300",
+      "areaM2": 231.678032147205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900400",
+      "areaM2": 231.6741937880767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900500",
+      "areaM2": 278.0055487415157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496900200",
+      "areaM2": 231.6707488866324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542402301",
+      "areaM2": 2785.6347005513203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400200",
+      "areaM2": 538.4081920660769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542402500",
+      "areaM2": 234.02939225574724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542402400",
+      "areaM2": 233.2467300045506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400100",
+      "areaM2": 617.8496070602334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301801",
+      "areaM2": 3017.215900754467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542902600",
+      "areaM2": 464.6874876737825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400400",
+      "areaM2": 395.0768884898456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542401407",
+      "areaM2": 387.0507191932545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400500",
+      "areaM2": 507.2299313878098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542401302",
+      "areaM2": 691.4295433192065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542402600",
+      "areaM2": 3020.0779339740247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542401200",
+      "areaM2": 695.0145563970896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542401100",
+      "areaM2": 695.8702488027587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400300",
+      "areaM2": 369.5858012233656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542402000",
+      "areaM2": 698.1501551031578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400900",
+      "areaM2": 20.870560249762207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400600",
+      "areaM2": 570.2568171122606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542400801",
+      "areaM2": 1140.248086442607,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542902700",
+      "areaM2": 381.2859568466527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702800",
+      "areaM2": 3003.766822590396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701001",
+      "areaM2": 1861.8654194220264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702500",
+      "areaM2": 266.7679062165076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542302300",
+      "areaM2": 3804.984130898198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542302500",
+      "areaM2": 328.5127142273937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301700",
+      "areaM2": 1212.78453453099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301000",
+      "areaM2": 454.5304289624776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301100",
+      "areaM2": 423.88271128428255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301500",
+      "areaM2": 408.554189169325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542300900",
+      "areaM2": 408.2821034796954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301400",
+      "areaM2": 408.56285262377367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542300800",
+      "areaM2": 410.5276460480777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301300",
+      "areaM2": 408.5585304284898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301200",
+      "areaM2": 408.5632035285431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002500",
+      "areaM2": 501.9200578772027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001100",
+      "areaM2": 696.4062385049756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001900",
+      "areaM2": 372.72455590358544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002400",
+      "areaM2": 501.9253360160695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001700",
+      "areaM2": 557.5027977898669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002000",
+      "areaM2": 371.98444478698076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002300",
+      "areaM2": 501.92127353842676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542301600",
+      "areaM2": 372.1613418953727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001200",
+      "areaM2": 343.56283634299996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001600",
+      "areaM2": 654.9951101749253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002201",
+      "areaM2": 571.6373263559473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002100",
+      "areaM2": 371.97571864286147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900200",
+      "areaM2": 523.6937521041613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900100",
+      "areaM2": 511.47897124696107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542902800",
+      "areaM2": 418.4773158975745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496600502",
+      "areaM2": 140.9046672826837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496600600",
+      "areaM2": 233.68535884173917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496600400",
+      "areaM2": 264.5560749124825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496600800",
+      "areaM2": 258.9489117254733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496600700",
+      "areaM2": 233.60659552143557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542302400",
+      "areaM2": 981.0176753730242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201500",
+      "areaM2": 278.4967690591022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201702",
+      "areaM2": 1377.77505815879,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201600",
+      "areaM2": 556.6561762720792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201300",
+      "areaM2": 184.24167937507647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542202001",
+      "areaM2": 682.6450214454744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201202",
+      "areaM2": 764.5657340643512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201902",
+      "areaM2": 281.3385417519345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542202100",
+      "areaM2": 1402.104856442283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201402",
+      "areaM2": 415.607459131703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201201",
+      "areaM2": 446.50612011317315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542202200",
+      "areaM2": 348.78527631474606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102100",
+      "areaM2": 647.9468707786659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102201",
+      "areaM2": 927.4951601696362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542300400",
+      "areaM2": 451.4637983692863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002800",
+      "areaM2": 697.1227022959563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542300502",
+      "areaM2": 403.9161704107475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542300600",
+      "areaM2": 557.2515300199641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542300501",
+      "areaM2": 403.9108542473721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000200",
+      "areaM2": 654.6289852531929,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002700",
+      "areaM2": 501.922447738729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000300",
+      "areaM2": 654.6152463253352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000100",
+      "areaM2": 656.6129763701581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201401",
+      "areaM2": 402.6079061977207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543502600",
+      "areaM2": 692.5547083645597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543502700",
+      "areaM2": 322.26834899492263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543500100",
+      "areaM2": 321.2965191494205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543003000",
+      "areaM2": 278.5625019286279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002900",
+      "areaM2": 376.0557430520481,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001000",
+      "areaM2": 626.7742628842577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000800",
+      "areaM2": 835.6868244483143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000500",
+      "areaM2": 654.6198836030794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000900",
+      "areaM2": 626.7674133587955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000700",
+      "areaM2": 696.414609888333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543000400",
+      "areaM2": 654.6259489940422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543002600",
+      "areaM2": 501.92096007961976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497100104",
+      "areaM2": 2054.404024390735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497000101",
+      "areaM2": 769.6695645324071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497000803",
+      "areaM2": 1841.0674682940646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497002400",
+      "areaM2": 556.0096924254333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497000902",
+      "areaM2": 372.9123691498701,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497001002",
+      "areaM2": 558.0047264582038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497002300",
+      "areaM2": 558.2452475041741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497002200",
+      "areaM2": 557.1320474397396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497001100",
+      "areaM2": 451.84549543857224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497001901",
+      "areaM2": 357.6772233288547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497002100",
+      "areaM2": 557.1271563166332,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497001300",
+      "areaM2": 453.1442972139023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497001400",
+      "areaM2": 567.3927377868081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497001200",
+      "areaM2": 395.9308480678865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 497002000",
+      "areaM2": 556.0061873957592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101501",
+      "areaM2": 692.0780207692161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543103100",
+      "areaM2": 371.2889509205668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102600",
+      "areaM2": 696.4070704810246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102700",
+      "areaM2": 579.7765600014495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101401",
+      "areaM2": 682.3907883934187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102800",
+      "areaM2": 432.2853936528559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101100",
+      "areaM2": 459.62714101404833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543103000",
+      "areaM2": 449.1001467286286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101001",
+      "areaM2": 844.0505178174046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101800",
+      "areaM2": 539.141349509144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102202",
+      "areaM2": 371.4218820420936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101901",
+      "areaM2": 540.1382095616298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102400",
+      "areaM2": 557.1214711170273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101200",
+      "areaM2": 445.70559163589775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102500",
+      "areaM2": 654.6316317666153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102300",
+      "areaM2": 557.1268796617989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101300",
+      "areaM2": 487.4826223065205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543102900",
+      "areaM2": 427.240442366261,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543101402",
+      "areaM2": 692.0734093847309,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542201100",
+      "areaM2": 686.4814170392889,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701500",
+      "areaM2": 328.8745303802269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702300",
+      "areaM2": 250.70922810436207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701002",
+      "areaM2": 585.1397163197144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702400",
+      "areaM2": 248.85009577100047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702600",
+      "areaM2": 390.63712387343367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702700",
+      "areaM2": 479.87117738506856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701200",
+      "areaM2": 585.14610219165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702000",
+      "areaM2": 435.26627026284183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701600",
+      "areaM2": 603.5634050471697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701100",
+      "areaM2": 468.1428253795854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701400",
+      "areaM2": 493.27416488588665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701700",
+      "areaM2": 580.3472387258201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496701300",
+      "areaM2": 488.6100717703307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702200",
+      "areaM2": 250.70501717434774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496702100",
+      "areaM2": 435.2484297749129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496600900",
+      "areaM2": 423.51971648829385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496601500",
+      "areaM2": 536.104528026834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496601601",
+      "areaM2": 402.0740896495941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496602100",
+      "areaM2": 533.9132601468643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496601400",
+      "areaM2": 268.05216117529744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496601000",
+      "areaM2": 402.0784195321896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496601300",
+      "areaM2": 402.07138739916667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496602200",
+      "areaM2": 533.9137958827007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496601100",
+      "areaM2": 536.1000827078383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-044 496601200",
+      "areaM2": 402.07896539455567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543502000",
+      "areaM2": 370.7629472951461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543501900",
+      "areaM2": 608.5629422120453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001500",
+      "areaM2": 483.2072132576029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001400",
+      "areaM2": 297.50576533899346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543001300",
+      "areaM2": 185.7119882592675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542902500",
+      "areaM2": 464.69823702549905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900300",
+      "areaM2": 785.549279265742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900700",
+      "areaM2": 380.70767849872107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543600200",
+      "areaM2": 327.3189694414507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 543600100",
+      "areaM2": 645.2904683988834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900900",
+      "areaM2": 417.8387271127206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542901102",
+      "areaM2": 696.4122229456004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900800",
+      "areaM2": 417.84890669225655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542901000",
+      "areaM2": 557.1295636179718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900600",
+      "areaM2": 278.56444724473295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900400",
+      "areaM2": 343.55540957301605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-OAK-046 542900500",
+      "areaM2": 306.42133876775074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11633-dhulian.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "West Bengal’s official Banglarbhumi portal exposes mouza-map and plot-map services, and the state urban property workflow selects district/block/mouza and uses land/registration databases. However, no Dhulian-specific mouza/map availability result, exact point-to-mouza match or local parcel registry response was obtained. The Dhulian municipal map found is an administrative map, not a cadastre. No full parcel polygons were retained."
+}

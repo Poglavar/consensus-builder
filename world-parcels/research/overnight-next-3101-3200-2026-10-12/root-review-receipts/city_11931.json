@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11931",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-11931-bohori.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/bohori-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:12:21Z",
+  "finding": "Bohori, India, WUP rank 3110, point [26.2673137503951,91.1637219475427], 193105 persons matches both queue and ranked roster. English and Assamese searches with result URLs are recorded. First-party Assam ILRMS names Bhunaksha as cadastral software; cached Chenga circle and village responses include Bahari and Niz Bahari, supporting a local custodian lead without settling parcel scope. No verified dag number, native-ID full polygon, parcel_info response, adapter qualification, or headed Details verification is evidenced. No citywide absence or runtime admission inferred.",
+  "registryFound": true,
+  "geometrySamplesRetained": 0,
+  "runtimeAdmitted": false
+}

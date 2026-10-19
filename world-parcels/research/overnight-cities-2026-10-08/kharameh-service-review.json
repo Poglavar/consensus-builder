@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6718-kharameh.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The searches did not establish a city-specific public parcel-map source. No geometry request was made, and a non-governmental report of a local registration office is not sufficient to claim verified city-scope geometry availability.",
+  "registryAssessment": "No current first-party source for a Kharameh local cadastral/registry interface was verified. National registration services were excluded as locality proof.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ssaa.ir/",
+      "observation": "The national Registration Organization is not evidence of Kharameh-specific map coverage; no locality-specific public parcel service was found from the reviewed search results."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Persian",
+      "query": "خرامه شیراز نقشه کاداستر زمین املاک ثبت اسناد نقشه قطعه شهرداری",
+      "result": "No trusted official city/county parcel viewer or geometry endpoint surfaced; results were mainly secondary or unrelated.",
+      "method": "Separate Persian-language discovery search; first-party-source filtering."
+    },
+    {
+      "language": "English",
+      "query": "Kharameh Iran cadastral parcel map land registry official GIS Shiraz Fars cadastral",
+      "result": "No official local parcel-map endpoint found; surfaced national or non-primary material.",
+      "method": "Separate English-language discovery search."
+    },
+    {
+      "language": "Persian",
+      "query": "site:ssaa.ir خرامه ثبت اسناد املاک شهرستان اداره ثبت",
+      "result": "No indexed first-party local registry result surfaced.",
+      "method": "Targeted Persian search restricted to the national registration authority domain."
+    },
+    {
+      "language": "Persian",
+      "query": "site:fars.gov.ir خرامه ثبت اسناد املاک نقشه کاداستر",
+      "result": "No indexed first-party city parcel-map result surfaced.",
+      "method": "Targeted Persian search restricted to Fars provincial government."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "privacy": "No parcel query or geometry was made; no private attributes or identifiers retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11277",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-11277-birpur.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/birpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:48:16Z",
+  "reason": "Immutable WUP identity and English/Hindi searches agree with the roster. The saved first-party Bihar BhuNaksha hierarchy identifies Begusarai/Birpur(435), but its extent response has null coordinates and EPSG; the GIS code is selection provenance, not a native parcel ID. WMS returned no usable capabilities and plot detail was unauthorized. No full native-ID polygon was retained. Registry route custody is supported, parcel geometry and runtime qualification are unresolved; these responses do not establish citywide absence.",
+  "firstPartyArtifactsInspected": [
+    "tmp/valhalla-parcel-research/birpur/birpur-levels.json",
+    "tmp/valhalla-parcel-research/birpur/extent.json",
+    "tmp/valhalla-parcel-research/birpur/wms-capabilities.xml"
+  ],
+  "admissionGates": "No fresh parcel native-ID read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime remains held."
+}

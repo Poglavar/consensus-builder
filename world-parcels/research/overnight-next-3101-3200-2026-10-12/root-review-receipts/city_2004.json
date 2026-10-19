@@ -1,0 +1,20 @@
+{
+  "taskId": "city:2004",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-2004-saida.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/saida-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:57:42Z",
+  "finding": "WUP code 2004, rank 3140, Algeria, point [34.8476062951272,0.150704190374577], 191050 persons match the SHA-256-verified original 2025 WUP Pop field, ranked roster, queue, and packet. English and Arabic executed queries with result URLs are recorded. The official Saida administration page names the local Cadastre office, supporting custody; the national FADAELDJAZAIR portal timed out. Neither a live parcel feature response nor a safe native-ID full polygon was obtained, and city coverage remains unresolved. No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel proof; runtime remains held.",
+  "firstPartyUrlsChecked": [
+    "https://officetourisme-saida.dz/OTS/fr/information-pratiques/administration-public",
+    "https://fadaeldjazair.mf.gov.dz/fr/"
+  ],
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

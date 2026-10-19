@@ -1,0 +1,91 @@
+{
+  "cityCode": 8404,
+  "queueRank": 2254,
+  "name": "Mossoró",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-5.18781240816959, -37.3469601198617],
+  "population2025": 259132,
+  "population2025k": 259.132,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mossoró Brazil official cadastral parcel map GIS prefeitura cadastre geoserver",
+        "result": "First-party municipal QGIS2Web map found; its page advertises a LOTES layer and the anonymous static layer was retrieved and inspected.",
+        "actualResultUrls": ["https://qgis.mossoro.rn.gov.br/", "https://mapa.mossoro.rn.gov.br/"],
+        "scope": "Identify a city-local public parcel/map custodian without submitting owner, address, tax, titleholder or other unsafe fields."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Mossoró cadastro territorial multifinalitário mapa parcelas prefeitura serviço oficial",
+        "result": "The municipal planning portal and official municipal documents describe Cadastro Territorial Multifinalitário responsibility and georeferenced cadastral work; the municipal QGIS map exposes a LOTES layer.",
+        "actualResultUrls": ["https://qgis.mossoro.rn.gov.br/", "https://planodiretor.mossoro.rn.gov.br/documentos", "https://dom.mossoro.rn.gov.br/dom/publicacao/1861"],
+        "scope": "Separate local-language discovery of municipal custody and public map/parcel evidence."
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "sourceId": "mossoro-qgis2web-LOTES_2",
+    "name": "Mossoró Prefeitura QGIS2Web public map",
+    "url": "https://qgis.mossoro.rn.gov.br/",
+    "operator": "Prefeitura de Mossoró / municipal planning GIS publication",
+    "serviceType": "Official local public map with municipal lot layer",
+    "layer": "LOTES_2",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "CRS84 (urn:ogc:def:crs:OGC:1.3:CRS84)",
+    "nativeIdField": "idlote",
+    "nativeIdEvidence": "The anonymous LOTES_2 feature schema contains idlote and objectid; idlote values are repeated as parcel identity fields in the public export. No synthetic row number was used.",
+    "nativeFieldMapping": {"idlote": "native lot identity", "objectid": "source object identifier", "geometry": "parcel polygon"},
+    "attributesRequested": ["idlote", "objectid", "geometry"],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "verified_public_static_export",
+    "operatorNote": "The public map is a static QGIS2Web export, not a qualified feature-service endpoint. Raw source attributes were not retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The municipal public map publishes a LOTES_2 layer with 102712 features covering the mapped Mossoró area.",
+    "verifiedOpenScope": "Anonymous GET of the LOTES_2 JavaScript export succeeded; schema and CRS were inspected. Two feature bounding boxes (idlote 18205 and 97137) include the unchanged WUP point, but no point-in-polygon claim is made.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "exactPointCheck": "Map extent/static data check only; a zero or non-point hit would not establish citywide absence."
+  },
+  "verifiedParcelResponse": {
+    "available": true,
+    "responseKind": "anonymous static GeoJSON embedded in JavaScript",
+    "featureCount": 102712,
+    "boundedPointCandidateCount": 2,
+    "candidateNativeIds": ["18205", "97137"],
+    "fullPolygonsRetained": false,
+    "requestUrl": "https://qgis.mossoro.rn.gov.br/data/LOTES_2.js"
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "resultCategory": "official_local_registry_geometry_verified_static_export",
+  "technicalBlocker": "Runtime adapter remains held: the source is a large static JavaScript export with no independently qualified bounded feature-query contract or pagination semantics.",
+  "remainingUncertainty": "The municipal map's publication date, update cadence, legal cadastral status, and idlote durability were not established. The exported layer contains additional source fields, but none were retained or queried beyond the safe allowlist.",
+  "nextStep": "Serial reviewer should qualify update semantics and a bounded anonymous adapter before runtime admission.",
+  "safeFieldAllowlist": ["idlote", "objectid", "geometry"],
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "wupCityCode": 8404,
+  "cityId": "wup2025:8404",
+  "runtimeReadiness": "held_static_export_not_qualified_adapter",
+  "adapterReady": false,
+  "centerLatLon": [-5.18781240816959, -37.3469601198617],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "sourceIds": ["mossoro-qgis2web-LOTES_2"],
+  "registryBasis": "The Prefeitura de Mossoró publishes an anonymous municipal QGIS2Web map whose LOTES_2 layer contains parcel-like lot MultiPolygons and native-looking idlote/objectid fields. Municipal planning documents separately describe CTM and georeferenced cadastral responsibilities.",
+  "registryEvidenceUrls": ["https://qgis.mossoro.rn.gov.br/", "https://qgis.mossoro.rn.gov.br/data/LOTES_2.js", "https://planodiretor.mossoro.rn.gov.br/documentos", "https://dom.mossoro.rn.gov.br/dom/publicacao/1861"],
+  "runtimeAssessment": {"status": "held_static_export_not_qualified_adapter", "reason": "Verified public geometry is available, but the static export has not been admitted as a runtime service adapter."},
+  "cohort": "overnight-next-2201-2300",
+  "cohortState": "researched_locally",
+  "integrationState": "integrated_locally"
+}

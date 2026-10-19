@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:126",
+  "queueRank": 126,
+  "name": "Brazzaville",
+  "country": "Congo",
+  "countryCode": "CG",
+  "centerLatLon": [
+    -4.24419486632791,
+    15.2626288363336
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://download.geofabrik.de/africa/congo-brazzaville.html",
+      "observation": "OpenStreetMap extract only; not an official cadastre."
+    },
+    {
+      "url": "https://wri-sites.s3.amazonaws.com/forest-atlas.org/assets.forest-atlas.org/cog/resources/amenagementterritoire/Foncier/MAFDP_Regime_cadastral.pdf",
+      "observation": "Document on the land/cadastral regime; no online parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.humdata.org/api/3/action/package_search?q=brazzaville+cadastre",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 datasets for parcelles/cadastre/foncier queries"
+    },
+    {
+      "url": "https://cadastre.gouv.cg",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "unreachable via proxy (guessed host; not proof of absence)"
+    },
+    {
+      "url": "https://sig.mairie-brazzaville.org",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "unreachable via proxy (guessed host)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Republic of the Congo cadastre (national mapping agency CERGEC per web sources); no online service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No official portal was found through web/HDX search; guessed hosts were unreachable and are not proof of absence.",
+  "nextStep": "Search for a Ministry of Land Affairs (Affaires foncieres) or cadastre portal; contact CERGEC."
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1484",
+  "wupCityCode": 1484,
+  "name": "Lobito",
+  "country": "Angola",
+  "countryCode": "AO",
+  "rank": 1077,
+  "queueRank": 1077,
+  "point": [
+    -12.3770177059619,
+    13.5833733415789
+  ],
+  "centerLatLon": [
+    -12.3770177059619,
+    13.5833733415789
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 516153,
+  "population2025k": 516.153,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The official MAT public service-post directory includes Lobito, but the material found does not establish a local cadastral/title-register custodian. A secondary republication of the municipal organic statute describes land/cadastral responsibilities, but it is not primary evidence and is not used to assert local custody. No evidence from Luanda or Benguela is transferred to Lobito.",
+  "registryEvidenceUrls": [
+    "https://mat.gov.ao/web/pontos-atendimentos",
+    "https://www.angolex.com/paginas/decreto-executivo/estatuto-organico-da-administracao-municipal-do-lobito-78a-25a.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent.",
+  "scopeLimits": "No full parcel polygon or personal property attributes retained. The exact UN WUP2025 weighted settlement point is a search locator only; it is not a parcel-coverage claim. No complete native parcel polygon was verified; `publicParcelGeometryFound:false` records an unverified result, not proof that no public geometry exists.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "The official MAT public service-post directory includes Lobito, but the material found does not establish a local cadastral/title-register custodian. A secondary republication of the municipal organic statute describes land/cadastral responsibilities, but it is not primary evidence and is not used to assert local custody. No evidence from Luanda or Benguela is transferred to Lobito.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lobito Angola official cadastre property register land parcel map public GIS municipal government",
+        "scope": "Fresh city-specific registry-custody and anonymous parcel-geometry discovery.",
+        "result": "No primary city-local custodian or safe anonymous full-parcel geometry endpoint was established. The official directory only confirms a public service post. No geometry query was made because no target-specific public parcel feature service was identified.",
+        "actualResultUrls": [
+          "https://mat.gov.ao/web/pontos-atendimentos",
+          "https://www.angolex.com/paginas/decreto-executivo/estatuto-organico-da-administracao-municipal-do-lobito-78a-25a.html"
+        ],
+        "executionMethod": "Separately executed web search; first-party sources inspected."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Lobito Angola cadastro predial cadastro urbano cartografia parcela município administração municipal",
+        "scope": "Independent local-language search for local custody and anonymous full-parcel geometry.",
+        "result": "No primary city-local custodian or safe anonymous full-parcel geometry endpoint was established. The official directory only confirms a public service post. No geometry query was made because no target-specific public parcel feature service was identified.",
+        "actualResultUrls": [
+          "https://mat.gov.ao/web/pontos-atendimentos",
+          "https://www.angolex.com/paginas/decreto-executivo/estatuto-organico-da-administracao-municipal-do-lobito-78a-25a.html"
+        ],
+        "executionMethod": "Separately executed native/local-language web search; first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://mat.gov.ao/web/pontos-atendimentos",
+        "method": "GET",
+        "result": "Local read timed out before an HTTP response; this is not evidence of provider downtime."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://mat.gov.ao/web/pontos-atendimentos",
+        "observation": "Official Ministry of Territorial Administration public-attendance directory; Lobito appears as a service-post locality, without evidence that the post maintains cadastral/title records."
+      },
+      {
+        "homeUrl": "https://www.angolex.com/paginas/decreto-executivo/estatuto-organico-da-administracao-municipal-do-lobito-78a-25a.html",
+        "observation": "Secondary republication of an organic statute; considered as a lead only, not relied on to assert primary local custody."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Whether the Lobito municipal administration or a local registry office holds cadastral/title records, and whether anonymous full parcel polygons are available, remain unverified.",
+  "nextStep": "Locate a primary Lobito municipal or land-registry service record and its public feature endpoint, if any; do not infer from other Angolan jurisdictions.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

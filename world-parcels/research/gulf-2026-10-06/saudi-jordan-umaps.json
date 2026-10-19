@@ -1,0 +1,46 @@
+[
+  {
+    "url": "https://umaps.balady.gov.sa/",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "text/html",
+    "bytes": 78090,
+    "scriptUrls": [
+      "assets/scripts/three.min.js",
+      "assets/scripts/browser.min.js",
+      "assets/scripts/Photo-Sphere-Viewer/photo-sphere-viewer.js",
+      "assets/scripts/Photo-Sphere-Viewer/plugins/markers.js",
+      "polyfills-OYTHSGNX.js",
+      "main-73KWGRT7.js"
+    ]
+  },
+  {
+    "url": "https://umaps.balady.gov.sa/arcgis/rest/services?f=json",
+    "httpStatus": 200,
+    "origin": "laptop direct urllib TLS verified",
+    "contentType": "text/html",
+    "bytes": 78090,
+    "scriptUrls": [
+      "assets/scripts/three.min.js",
+      "assets/scripts/browser.min.js",
+      "assets/scripts/Photo-Sphere-Viewer/photo-sphere-viewer.js",
+      "assets/scripts/Photo-Sphere-Viewer/plugins/markers.js",
+      "polyfills-OYTHSGNX.js",
+      "main-73KWGRT7.js"
+    ]
+  },
+  {
+    "url": "https://geoportal.rcrc.gov.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+    "scriptUrls": []
+  },
+  {
+    "url": "https://rer.sa/",
+    "httpStatus": null,
+    "origin": "laptop direct urllib TLS verified",
+    "cause": "<urlopen error timed out>",
+    "scriptUrls": []
+  }
+]

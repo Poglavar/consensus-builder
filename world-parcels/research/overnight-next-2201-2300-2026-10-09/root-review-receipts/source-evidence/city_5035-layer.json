@@ -1,0 +1,259 @@
+{
+ "currentVersion": 10.21,
+ "id": 5,
+ "name": "cgc_par",
+ "type": "Feature Layer",
+ "description": "",
+ "geometryType": "esriGeometryPolygon",
+ "copyrightText": "",
+ "parentLayer": null,
+ "subLayers": [],
+ "minScale": 2500,
+ "maxScale": 0,
+ "drawingInfo": {
+  "renderer": {
+   "type": "uniqueValue",
+   "field1": "CLASE",
+   "field2": null,
+   "field3": null,
+   "fieldDelimiter": ", ",
+   "defaultSymbol": null,
+   "defaultLabel": null,
+   "uniqueValueInfos": [
+    {
+     "symbol": {
+      "type": "esriSFS",
+      "style": "esriSFSSolid",
+      "color": [
+       255,
+       235,
+       190,
+       127
+      ],
+      "outline": {
+       "type": "esriSLS",
+       "style": "esriSLSSolid",
+       "color": [
+        168,
+        112,
+        0,
+        127
+       ],
+       "width": 1.5
+      }
+     },
+     "value": "D",
+     "label": "D; U",
+     "description": ""
+    },
+    {
+     "symbol": {
+      "type": "esriSFS",
+      "style": "esriSFSSolid",
+      "color": [
+       255,
+       235,
+       190,
+       127
+      ],
+      "outline": {
+       "type": "esriSLS",
+       "style": "esriSLSSolid",
+       "color": [
+        168,
+        112,
+        0,
+        127
+       ],
+       "width": 1.5
+      }
+     },
+     "value": "U",
+     "label": "D; U",
+     "description": ""
+    },
+    {
+     "symbol": {
+      "type": "esriSFS",
+      "style": "esriSFSSolid",
+      "color": [
+       205,
+       205,
+       102,
+       127
+      ],
+      "outline": {
+       "type": "esriSLS",
+       "style": "esriSLSSolid",
+       "color": [
+        115,
+        115,
+        0,
+        127
+       ],
+       "width": 1.5
+      }
+     },
+     "value": "R",
+     "label": "R",
+     "description": ""
+    },
+    {
+     "symbol": {
+      "type": "esriSFS",
+      "style": "esriSFSSolid",
+      "color": [
+       205,
+       205,
+       102,
+       127
+      ],
+      "outline": {
+       "type": "esriSLS",
+       "style": "esriSLSSolid",
+       "color": [
+        137,
+        137,
+        68,
+        127
+       ],
+       "width": 1.5
+      }
+     },
+     "value": "X",
+     "label": "X",
+     "description": ""
+    }
+   ]
+  },
+  "transparency": 0,
+  "labelingInfo": null
+ },
+ "defaultVisibility": true,
+ "extent": {
+  "xmin": 411967.469,
+  "ymin": 4596636.0675,
+  "xmax": 422354.981,
+  "ymax": 4611293.6055,
+  "spatialReference": {
+   "wkid": 25831,
+   "latestWkid": 25831
+  }
+ },
+ "hasAttachments": false,
+ "htmlPopupType": "esriServerHTMLPopupTypeNone",
+ "displayField": "REFCAD",
+ "typeIdField": null,
+ "fields": [
+  {
+   "name": "FID",
+   "type": "esriFieldTypeOID",
+   "alias": "FID",
+   "domain": null
+  },
+  {
+   "name": "Shape",
+   "type": "esriFieldTypeGeometry",
+   "alias": "Shape",
+   "domain": null
+  },
+  {
+   "name": "AREA",
+   "type": "esriFieldTypeDouble",
+   "alias": "AREA",
+   "domain": null
+  },
+  {
+   "name": "PERIMETER",
+   "type": "esriFieldTypeDouble",
+   "alias": "PERIMETER",
+   "domain": null
+  },
+  {
+   "name": "DPARC",
+   "type": "esriFieldTypeString",
+   "alias": "DPARC",
+   "length": 25,
+   "domain": null
+  },
+  {
+   "name": "CODIFICACI",
+   "type": "esriFieldTypeString",
+   "alias": "CODIFICACI",
+   "length": 7,
+   "domain": null
+  },
+  {
+   "name": "NUM_PARCEL",
+   "type": "esriFieldTypeString",
+   "alias": "NUM_PARCEL",
+   "length": 2,
+   "domain": null
+  },
+  {
+   "name": "REFCAD",
+   "type": "esriFieldTypeString",
+   "alias": "REFCAD",
+   "length": 15,
+   "domain": null
+  },
+  {
+   "name": "CLASE",
+   "type": "esriFieldTypeString",
+   "alias": "CLASE",
+   "length": 254,
+   "domain": null
+  },
+  {
+   "name": "X_COORD",
+   "type": "esriFieldTypeDouble",
+   "alias": "X_COORD",
+   "domain": null
+  },
+  {
+   "name": "Y_COORD",
+   "type": "esriFieldTypeDouble",
+   "alias": "Y_COORD",
+   "domain": null
+  },
+  {
+   "name": "PCAT1",
+   "type": "esriFieldTypeString",
+   "alias": "PCAT1",
+   "length": 7,
+   "domain": null
+  },
+  {
+   "name": "PCAT2",
+   "type": "esriFieldTypeString",
+   "alias": "PCAT2",
+   "length": 7,
+   "domain": null
+  },
+  {
+   "name": "MASA",
+   "type": "esriFieldTypeString",
+   "alias": "MASA",
+   "length": 5,
+   "domain": null
+  },
+  {
+   "name": "DATA_ALTA",
+   "type": "esriFieldTypeString",
+   "alias": "DATA_ALTA",
+   "length": 8,
+   "domain": null
+  }
+ ],
+ "relationships": [],
+ "canModifyLayer": false,
+ "canScaleSymbols": false,
+ "hasLabels": true,
+ "capabilities": "Map,Query,Data",
+ "maxRecordCount": 1000,
+ "supportsStatistics": false,
+ "supportsAdvancedQueries": false,
+ "supportedQueryFormats": "JSON, AMF",
+ "ownershipBasedAccessControlForFeatures": {"allowOthersToQuery": true},
+ "useStandardizedQueries": true
+}

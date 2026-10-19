@@ -1,0 +1,157 @@
+// Multi-tab guard. Tabs of the same city share one IndexedDB database, but each tab loads its own
+// in-memory copy once at startup with no cross-tab sync — so two tabs writing means last-writer-wins
+// and can silently drop saved proposals. To warn about that, we detect OTHER ACTIVE tabs on the same
+// database via a BroadcastChannel ping/pong: a fresh tab pings, and only established, active tabs
+// answer. A truly-alone tab hears nothing, so it never warns. The channel is keyed by the database
+// (persistent-storage.js announces it once the city binds it): every city has its own, so a tab in
+// another city is not read-only. This deliberately avoids the Web Locks API — locks are still held
+// by pages that are navigating away or frozen in the back/forward cache, which produced false
+// "another tab is open" warnings on a single tab. Frozen/dead pages don't answer a ping, so this
+// approach has no such false positive. Unsupported browsers → no-op.
+(function () {
+    const scope = typeof window !== 'undefined' ? window : self;
+    if (typeof scope.BroadcastChannel !== 'function') return;
+
+    const CHANNEL = 'consensus-builder-tabs';
+    const DETECT_MS = 600; // probe window: how long to wait for another tab to answer our ping
+    let channel = null; // opened for this page's database (start)
+
+    let established = false; // true once we've decided we're a live tab (and will answer others' pings)
+    let secondary = false;
+
+    // English fallback shown until the translation JSON finishes loading (it loads async, after this
+    // guard runs). The data-i18n-key lets the app's applyTranslations swap in the localized string.
+    const FALLBACK_TEXT = 'This city is already open in another tab, so changes here aren’t saved to the plan. They’re kept in a recovery copy, offered back when you reopen this city with its other tabs closed. Other cities can stay open.';
+
+    function attachBanner() {
+        if (typeof document === 'undefined') return;
+        const attach = () => {
+            if (document.getElementById('cb-multitab-banner')) return;
+            const banner = document.createElement('div');
+            banner.id = 'cb-multitab-banner';
+            banner.className = 'cb-multitab-banner cb-banner cb-banner--warning';
+            banner.setAttribute('role', 'alert');
+
+            const message = document.createElement('span');
+            message.setAttribute('data-i18n-key', 'multitab.warning');
+            message.setAttribute('data-i18n-attr', 'text');
+            message.textContent = FALLBACK_TEXT;
+
+            // The one close control (css/primitives.css); the class beside it only places it.
+            const dismiss = document.createElement('button');
+            dismiss.type = 'button';
+            dismiss.className = 'close-circle-btn cb-multitab-banner__close';
+            dismiss.setAttribute('aria-label', 'Close');
+            dismiss.setAttribute('data-i18n-key', 'common.close');
+            dismiss.setAttribute('data-i18n-attr', 'aria-label');
+            dismiss.textContent = '×';
+            // Dismissing hides the notice, not the read-only state — and the flag stays set, so the
+            // banner used to be a one-time warning after which work silently stopped being saved.
+            // Any later dropped write re-attaches it (see reportSecondaryWriteBlocked).
+            dismiss.addEventListener('click', () => banner.remove());
+
+            banner.appendChild(message);
+            banner.appendChild(dismiss);
+            // The shared banner card (js/ui/banner-stack.js; ephemerals.md), else the page itself.
+            const stackApi = scope.__BannerStack;
+            if (!(stackApi && typeof stackApi.mount === 'function' && stackApi.mount(banner))) {
+                (document.body || document.documentElement).appendChild(banner);
+            }
+
+            try {
+                if (scope.i18n && typeof scope.i18n.applyTranslations === 'function') {
+                    scope.i18n.applyTranslations(banner);
+                }
+            } catch (_) { }
+        };
+        if (document.body) attach();
+        else document.addEventListener('DOMContentLoaded', attach);
+    }
+
+    function removeBanner() {
+        if (typeof document === 'undefined') return;
+        const el = document.getElementById('cb-multitab-banner');
+        if (el) el.remove();
+    }
+
+    function becomeSecondary() {
+        if (secondary) return;
+        secondary = true;
+        scope.__cbSecondaryTab = true; // proposalStorage._persist checks this and skips writes
+        attachBanner();
+    }
+
+    function clearSecondary() {
+        secondary = false;
+        scope.__cbSecondaryTab = false;
+        removeBanner();
+    }
+
+    function probe() {
+        if (!channel) return;
+        try { channel.postMessage({ type: 'ping' }); } catch (_) { }
+        // No completion signal exists for "nobody is out there", so absence must be inferred from a
+        // short quiet window: if no active tab answered by now, we're alone and become primary.
+        scope.setTimeout(() => {
+            if (!secondary) established = true;
+        }, DETECT_MS);
+    }
+
+    function onMessage(event) {
+        const msg = event && event.data;
+        if (!msg || typeof msg !== 'object') return;
+        if (msg.type === 'ping') {
+            // Only an established, active (primary) tab answers, so a departing/frozen page stays silent.
+            if (established && !secondary) {
+                try { channel.postMessage({ type: 'pong' }); } catch (_) { }
+            }
+        } else if (msg.type === 'pong') {
+            becomeSecondary();
+        } else if (msg.type === 'leaving') {
+            // The primary is closing/navigating away — re-elect by probing again.
+            if (secondary) { clearSecondary(); established = false; probe(); }
+        }
+    }
+
+    // Announce departure so a secondary tab can promote itself instead of staying read-only forever,
+    // and immediately stop answering pings — otherwise, during a same-tab navigation, this outgoing
+    // page could still pong the incoming one and falsely mark it as a second tab.
+    scope.addEventListener('pagehide', () => {
+        if (established && !secondary && channel) {
+            try { channel.postMessage({ type: 'leaving' }); } catch (_) { }
+        }
+        established = false;
+    });
+
+    // Restored from the back/forward cache: another tab may now be active (or gone) — re-check.
+    scope.addEventListener('pageshow', (event) => {
+        if (event && event.persisted) {
+            clearSecondary();
+            established = false;
+            probe();
+        }
+    });
+
+    // Called by proposalStorage._persist when it parks a write because this tab is read-only. A
+    // parked write IS what the banner warns about, so it brings the banner back even if it was
+    // dismissed — the warning cannot outlive its own dismissal while work is not being saved. The
+    // banner is the one message for this: no toast repeats it.
+    scope.__cbReportSecondaryWriteBlocked = function () {
+        if (!secondary) return;
+        attachBanner();
+    };
+
+    // One channel per database: the page's own, once storage knows it.
+    function start(databaseName) {
+        if (channel || !databaseName) return;
+        channel = new scope.BroadcastChannel(`${CHANNEL}:${databaseName}`);
+        channel.onmessage = onMessage;
+        probe();
+    }
+
+    scope.__cbSecondaryTab = false;
+    const bound = scope.PersistentStorage && typeof scope.PersistentStorage.databaseName === 'function'
+        ? scope.PersistentStorage.databaseName() : null;
+    if (bound) start(bound);
+    else scope.addEventListener('persistentstoragedatabase', event => start(event && event.detail && event.detail.name), { once: true });
+})();

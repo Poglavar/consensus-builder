@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4924-can-tho.json",
+  "purpose": "Verify local official registry/cadastre evidence and inspect anonymous public map HTML/static JS/schema and geometry-safe routes for city parcel coverage.",
+  "scopeLimits": "Reviewed official city government SPP description, the city land-registration-office administrative-map page, and indexed ArcGIS portal metadata. The city office map is described as administrative; the SPP is described as land and planning lookup. No map identify, address, legal parcel identifier, owner field, login, or record query was attempted.",
+  "assessment": "The official city SPP/GIS host and the official land-registration-office subdomain fail direct anonymous DNS resolution from this client, with no HTTP response. The public indexed SPP description confirms land-information and planning lookups, but the indexed ArcGIS Instant Apps item prompts the visitor to sign in. No anonymous feature layer, public parcel schema, or geometry-only service could be directly verified.",
+  "registryAssessment": "The official Cần Thơ Land Registration Office identifies its cadastral registration role and publishes an administrative map page. A city government article describes the city Spatial Planning Platform (SPP) at gis.cantho.gov.vn as providing land-information and land-use-planning lookups, and reports land-information GIS layers and VBDLIS deployment. The advertised SPP is not evidence of anonymous parcel-vector access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.cnvpdkkv4.cantho.gov.vn/home/b%E1%BA%A3n-%C4%91%E1%BB%93-h%C3%A0nh-ch%C3%ADnh-34-t%E1%BB%89nh-th%C3%A0nh",
+      "observation": "Official Cần Thơ Land Registration Office page titled “Administrative map”; identifies the authoring/updating office and contact. Search/open indexed content was accessible, while direct GET failed DNS resolution."
+    },
+    {
+      "url": "https://btgdv.cantho.gov.vn/vi/news/dua-nghi-quyet-cua-dang-vao-cuoc-song/can-tho-tiep-tuc-doi-moi-hoan-thien-the-che-chinh-sach-nang-cao-hieu-luc-hieu-qua-quan-ly-va-su-dung-dat-dai-theo-tinh-than-nghi-quyet-so-18-nq-tw-1580.html",
+      "observation": "Official city Party Committee article says the city SPP at gis.cantho.gov.vn supports land-information and land-use-planning lookups; it reports 16 GIS layers from the natural-resources department and VBDLIS operation in 6/9 localities at that time. It does not describe an anonymous parcel-vector endpoint."
+    },
+    {
+      "url": "https://gis.cantho.gov.vn/portal/apps/instantgallery/index.html?webmap=2f90698e50684964a78f80d8953f7389",
+      "observation": "Indexed official ArcGIS Instant Apps page displays a sign-in prompt for the item; direct requests to the gis.cantho.gov.vn host could not resolve, so no HTTP status is claimed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Vietnamese",
+      "query": "Cần Thơ cổng GIS SPP tra cứu thông tin đất đai bản đồ địa chính thửa đất",
+      "result": "Found the official city SPP description and official city land-registration-office administrative map. Direct map host DNS failure prevented inspection of HTML/JS/schema."
+    },
+    {
+      "language": "English",
+      "query": "Can Tho official land registration office cadastral map parcel GIS",
+      "result": "Found the city land-registration-office map page and ArcGIS portal references; no anonymous parcel vector route verified."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "directRequests": [
+      {
+        "url": "https://gis.cantho.gov.vn/",
+        "method": "GET",
+        "status": null,
+        "error": "getaddrinfo ENOTFOUND; no HTTP response"
+      },
+      {
+        "url": "https://gis.cantho.gov.vn/portal/sharing/rest/content/items/2f90698e50684964a78f80d8953f7389/data?f=json",
+        "method": "GET",
+        "status": null,
+        "error": "getaddrinfo ENOTFOUND; no HTTP response"
+      },
+      {
+        "url": "https://www.cnvpdkkv4.cantho.gov.vn/home/b%E1%BA%A3n-%C4%91%E1%BB%93-h%C3%A0nh-ch%C3%ADnh-34-t%E1%BB%89nh-th%C3%A0nh",
+        "method": "GET",
+        "status": null,
+        "error": "getaddrinfo ENOTFOUND; no HTTP response"
+      },
+      {
+        "url": "https://btgdv.cantho.gov.vn/vi/news/dua-nghi-quyet-cua-dang-vao-cuoc-song/can-tho-tiep-tuc-doi-moi-hoan-thien-the-che-chinh-sach-nang-cao-hieu-luc-hieu-qua-quan-ly-va-su-dung-dat-dai-theo-tinh-than-nghi-quyet-so-18-nq-tw-1580.html",
+        "method": "GET",
+        "status": null,
+        "error": "getaddrinfo ENOTFOUND; no HTTP response"
+      }
+    ],
+    "geometryDisposition": "No parcel geometry retained; no anonymous geometry-only route verified.",
+    "panGridRequests": 0,
+    "panGridReason": "No anonymous map client, schema, or geometry-safe route was reachable; the only advertised map item prompts for sign-in."
+  },
+  "geometryDecision": "No qualifying anonymous parcel polygon geometry was obtained or retained.",
+  "sampleDisposition": "No qualifying sample.",
+  "nativeAndTransportIdentity": {
+    "nativeParcelIdValueRequested": false,
+    "propertyAttributesRequested": false,
+    "credentialsUsed": false,
+    "httpStatusRecordedOnlyForActualHttpResponses": true
+  },
+  "privacy": "No credentials, owner names, addresses, personal records, parcel identifiers, Khatian data, or property-detail lookups were submitted. Static schema and route names were inspected only where publicly exposed.",
+  "remainingUncertainty": "Whether the city SPP or a VBDLIS instance provides an anonymous geometry-only map when accessed from a resolving browser/network; whether the advertised layer set contains parcel vectors rather than planning/land-information summaries.",
+  "nextStep": "Root review; no runtime source adapter or global registry/catalog change is justified by the verified geometry evidence."
+}

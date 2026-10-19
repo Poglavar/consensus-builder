@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-11052-luoding.json",
+  "cohort": "overnight-next-2301-2400-2026-10-11",
+  "cityCode": 11052,
+  "queueRank": 2349,
+  "name": "Luoding",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [22.7685940332689, 111.571822678892],
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "assessment": "Local registry custody is evidenced by official Luoding municipal and Natural Resources Bureau material. No public parcel viewer/API or safe anonymous ID-plus-polygon response was verified, so no sample GeoJSON was retained and runtime remains held.",
+  "queryAndRequestOutcome": "Separate English and Chinese first-party discovery queries found official local registration, cadastral-survey, and policy pages. Direct TLS-verified curl to one official portal route failed before HTTP because the certificate was expired; no bypass was attempted. No public parcel endpoint was invented or treated as successful.",
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native public parcel ID if source-proven", "full parcel polygon geometry", "geometry type", "source CRS", "source service URL", "retrieval date", "administrative codes"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Registry custody is documented, but no live feature schema, CRS, native parcel identity, or safe parcel geometry was retrieved."},
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift.", "No zero-hit, map-extent miss, timeout, login wall, certificate failure, or unusable UI was treated as citywide absence.", "Local registry custodian evidence does not substitute for parcel-feature evidence.", "No raw source-specific attribute set retained.", "No GeoJSON sample retained; maximum allowed would have been three full parcel polygons."],
+  "reviewDecision": "held_no_verified_public_geometry",
+  "uncertainty": "A different official Guangdong or Luoding viewer route may expose safe geometry later. This packet is research evidence only and is not source integration/admission.",
+  "evidenceUrls": [
+    "https://www.luoding.gov.cn/ldsrmzf/zfxxgk/szfxxgk/szfbmxxgkml/",
+    "https://www.luoding.gov.cn/yfldzrzy/gkmlpt/content/1/1949/post_1949898.html",
+    "https://www.luoding.gov.cn/attachment/0/107/107466/1906128.pdf",
+    "https://www.luoding.gov.cn/ldsrmzf/zwgk/jdhy/zcjd/content/mpost_1625909.html",
+    "https://www.luoding.gov.cn/ldsrmzf/zwgk/zcfg/content/mpost_1871632.html"
+  ]
+}

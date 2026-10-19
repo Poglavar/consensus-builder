@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "basis": "Mumbai qualified on NCSCM's CZMP 2019 Maharashtra survey-plot layer (ArcGIS, outline-derived references) on 2026-10-13",
+  "pointOrder": "latitude-longitude",
+  "counts": {
+    "qualified": 1
+  },
+  "cities": [
+    {
+      "cityCode": 7945,
+      "cityName": "Mumbai",
+      "countryCode": "IN",
+      "point": [
+        19.12248075999,
+        72.8833426320986
+      ],
+      "sourceIds": [
+        "in-mh-ncscm-czmp-survey-plots"
+      ],
+      "outcome": "qualified",
+      "summary": "All eight gates passed on NCSCM's CZMP 2019 Maharashtra survey-plot layer (52 parcels, 113 requests) with outline-derived references; independent metric audit passed.",
+      "finishedAt": "2026-10-13T11:08:40.706267+00:00"
+    }
+  ]
+}

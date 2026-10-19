@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 5762,
+  "queueRank": 1991,
+  "name": "Pangkalpinang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-2.12314548715739, 106.111445288954],
+  "population2025": 291683,
+  "population2025k": 291.683,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pangkalpinang Indonesia official cadastral parcel map ATR BPN geoportal",
+        "result": "Found official ATR/BPN BHUMI and ATLAS public map documentation. No Pangkalpinang-specific open parcel API or feature response was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://atlas.atrbpn.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Pangkalpinang peta bidang tanah resmi ATR BPN geoportal",
+        "result": "Found official ATR/BPN BHUMI guidance and ATLAS portal references to bidang tanah. No city-specific anonymous parcel geometry was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/landing", "https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://atlas.atrbpn.go.id/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+      "evidence": "Official public map route retrieved over verified TLS; help pages describe public spatial layers including bidang tanah. The site disclaimer says official use requires an information-service request."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "operator": "ATR/BPN ATLAS",
+      "evidence": "Official geospatial portal retrieved in discovery results; public description includes land-parcel attributes such as area, village, NIB, object name, rights status, and land use, but no Pangkalpinang feature was obtained."
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=pjson",
+      "operator": "Badan Informasi Geospasial / BIG Satu Peta",
+      "evidence": "Anonymous service directory returned HTTP 200 and lists provincial land-ownership sublayers, but no Kepulauan Bangka Belitung/Pangkalpinang sublayer was present in the returned directory."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official BHUMI landing HTML retrieved over verified TLS."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official public map HTML retrieved over verified TLS and exposed current Next.js bundle references. No login or private token was used."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/_next/static/chunks/app/page-6a74b90a5b0544cd.js",
+      "method": "GET",
+      "status": 200,
+      "summary": "Current map bundle request returned 864 bytes, but it did not expose a usable anonymous parcel endpoint. Retrieval of the complete referenced bundle set timed out; this is a route limitation, not absence evidence."
+    },
+    {
+      "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "summary": "Service metadata returned over verified TLS. Listed land-ownership layers include Jawa Tengah and other provinces, but not Kepulauan Bangka Belitung; no city query was possible from this service directory."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta (anonymous UI/API inspection)",
+      "method": "GET",
+      "status": "not completed",
+      "summary": "No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe owner/address query, or TLS exception was used. No parcel ID-plus-geometry response was retained."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": "nib (documented by official ATLAS description; not retrieved for this city)",
+    "fallbackOidField": "objectid where exposed by a compatible BIG layer; not used",
+    "compositeKey": null,
+    "fieldMapping": {
+      "nib": "Native Nomor Identifikasi Bidang referenced by ATLAS documentation; no Pangkalpinang feature retrieved.",
+      "geometry": "Expected parcel polygon geometry from a public map layer; no city geometry retrieved.",
+      "objectid": "Service object identifier only; not retained as a canonical parcel identity."
+    },
+    "crs": "Not verified for a Pangkalpinang parcel response",
+    "geometryType": "Not verified for a Pangkalpinang parcel response"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official ATR/BPN BHUMI/ATLAS national public map documentation; BIG Satu Peta public provincial land-ownership service.",
+    "verifiedOpenScope": "Official public map pages and BIG service metadata were reachable, but Pangkalpinang-specific parcel features were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No exact-point query was completed; no hit or miss is inferred. A map/API access limitation is not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "status-of-rights details", "tipehak", "luas"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_national_cadastral_map_metadata_geometry_unverified_for_city",
+  "remainingUncertainty": "A serial reviewer should independently inspect the current BHUMI/ATLAS JavaScript and network route, determine whether a public Pangkalpinang/Bangka Belitung parcel layer exists, verify CRS and stable NIB identity, and test bounded geometry retrieval without unsafe fields."
+}

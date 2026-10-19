@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "GY",
+  "name": "Guyana",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/GY.json"
+ },
+ {
+  "kind": "country",
+  "key": "HN",
+  "name": "Honduras",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/HN.json"
+ },
+ {
+  "kind": "country",
+  "key": "HT",
+  "name": "Haiti",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/HT.json"
+ },
+ {
+  "kind": "country",
+  "key": "IQ",
+  "name": "Iraq",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/IQ.json"
+ },
+ {
+  "kind": "country",
+  "key": "IR",
+  "name": "Iran (Islamic Republic of)",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/IR.json"
+ },
+ {
+  "kind": "country",
+  "key": "IS",
+  "name": "Iceland",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/IS.json"
+ },
+ {
+  "kind": "country",
+  "key": "JE",
+  "name": "Jersey",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/JE.json"
+ },
+ {
+  "kind": "country",
+  "key": "JM",
+  "name": "Jamaica",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/JM.json"
+ }
+]

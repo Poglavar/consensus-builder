@@ -1,0 +1,184 @@
+{
+  "name": "Tembisa",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "rank": 398,
+  "point": [
+    -26.0160233303594,
+    28.2050144110193
+  ],
+  "population2025": 1298512,
+  "population2025k": 1298.512,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "231 valid, distinct Ekurhuleni municipal stand references verified in thirteen bounded 0.001-degree cells around the unchanged Tembisa WUP locator. GIS_KEY supplies native identity; every source component is retained and administrative references must agree. Complete object-ID manifests, three-row paging of the 45-row viewport and its full component refresh (fifteen geometry pages each), all 231 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Stand S850000000000900000 retains eight disjoint components totalling about 1.963 km²; matching township/property/portion/SG references support its shared source identity. It is not excluded by size, flattened, clipped or repaired. Coverage, title, survey accuracy and identity beyond this bounded evidence are unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 4433,
+  "cityId": "wup2025:4433",
+  "queueRank": 398,
+  "centerLatLon": [
+    -26.0160233303594,
+    28.2050144110193
+  ],
+  "registryFound": true,
+  "registryBasis": "City of Ekurhuleni public GIS portal exposes a Property Data > Stands map layer to public users; municipal GIS Division says it maintains property data and municipal cadastre. Polygon service returned a stand intersecting the Tembisa WUP locator.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "sourceIds": [
+    "za-ekurhuleni-stands"
+  ],
+  "technicalBlocker": null,
+  "remainingUncertainty": "Municipality-wide completeness, legal title and survey accuracy beyond this bounded evidence remain unverified.",
+  "nextStep": "Inspect the enabled local parcel map and normal parcel selection.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tembisa Ekurhuleni official GIS cadastral stands parcels public map query full geometry",
+        "result": "Official GIS portal says public users may query/view maps and data and lists Property Data > Stands. Municipal GIS Division says it maintains erf/property data and municipal cadastre.",
+        "actualResultUrls": [
+          "https://gis.ekurhuleni.gov.za/",
+          "https://www.ekurhuleni.gov.za/geographic-information-systems-gis-division/"
+        ],
+        "executionMethod": "English-language search, first-party metadata, anonymous adapter requests; safe cadastral IDs and geometry only."
+      },
+      {
+        "language": "isiZulu",
+        "query": "iTembisa imephu yendawo amapulani umhlaba GIS Ekurhuleni City parcels",
+        "result": "Native-language search surfaced no distinct official isiZulu parcel service; English official City GIS material is the primary service evidence.",
+        "actualResultUrls": [
+          "https://gis.ekurhuleni.gov.za/",
+          "https://www.ekurhuleni.gov.za/geographic-information-systems-gis-division/"
+        ],
+        "executionMethod": "Separate native/English-language search and first-party page review; no login, owner, address, or property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gis.ekurhuleni.gov.za/",
+        "observation": "Official public City GIS portal supports map/data viewing and lists Property Data > Stands."
+      },
+      {
+        "url": "https://gis.ekurhuleni.gov.za/arcgis/rest/services/Ekurhuleni/Ekurhuleni_Propety_Data_Map/MapServer",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "ArcGIS Server 11.3; layer 1 Stands is polygon geometry with full city extent, GeoJSON query/paging support and maxRecordCount 500000. Safe ID fields used; other attributes not requested."
+      },
+      {
+        "url": "https://www.ekurhuleni.gov.za/geographic-information-systems-gis-division/",
+        "observation": "Municipal GIS Division says it manages spatial property data and maintains municipal cadastre."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Existing ArcGIS adapter passed thirteen bounded cells, forced 3-row paging, exact-ID re-reads, explicit absence, footprint and source binding. Returned 23 distinct canonical polygons in 139 requests; WUP point intersects a stand.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 3,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "qualitySummary": {
+      "library": "Shapely 2.2.0 / GEOS",
+      "metricCrs": "EPSG:32735",
+      "sampleCount": 23,
+      "validNonemptyCount": 23,
+      "invalidCount": 0,
+      "duplicatePairs": 0,
+      "overlapPairsAbove0_01m2": 0,
+      "operationErrors": 0,
+      "areaM2": {
+        "min": 262.7983,
+        "median": 281.7241,
+        "max": 1962735.3993
+      },
+      "reviewNote": "One eight-part merged parcel has a large 1.96 km² area; valid and disjoint in the checked sample but remains an outlier for review."
+    },
+    "rootRuntimeDescriptorQualification": {
+      "tests": 23,
+      "requestCount": 144,
+      "uniqueParcels": 231,
+      "allTestsPassed": true,
+      "metricCrs": "EPSG:32735",
+      "gridSizeDegrees": 0.001
+    }
+  },
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 3,
+    "bounded": true,
+    "pointLocated": true,
+    "note": "Twenty-three full polygons from thirteen bounded cells passed adapter checks. Citywide completeness is not claimed. Independent GEOS found all valid, no duplicates/positive-area overlaps above 0.01 m². One eight-part feature has a 1.96 km² area outlier."
+  },
+  "source": {
+    "id": "za-ekurhuleni-stands",
+    "adapter": "arcgis",
+    "name": "City of Ekurhuleni public Stands layer",
+    "operator": "City of Ekurhuleni Geographic Information Systems",
+    "endpoint": "https://gis.ekurhuleni.gov.za/arcgis/rest/services/Ekurhuleni/Ekurhuleni_Propety_Data_Map/MapServer/1",
+    "layer": "Stands (MapServer layer 1)",
+    "geometryType": "esriGeometryPolygon",
+    "coordinateReferenceSystem": "EPSG:102100 layer; query responses EPSG:4326 GeoJSON",
+    "idPrefix": "ZA-EKU-STAND-",
+    "idField": "GIS_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "GIS_KEY",
+      "TOWNSHIP_CODE",
+      "PROPNO",
+      "PTNO",
+      "SG_CODE"
+    ],
+    "nativeGeometryMode": "parts",
+    "disjointParts": true,
+    "partMatchFields": [
+      "TOWNSHIP_CODE",
+      "PROPNO",
+      "PTNO",
+      "SG_CODE"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "directGeometryQueryVerified": true,
+    "personalAttributesRequested": false,
+    "sampleFile": "city-4433-tembisa-samples.geojson",
+    "acceptanceFile": "tembisa-parcels-acceptance.json",
+    "qualityFile": "tembisa-parcels-quality.json",
+    "scope": "231 valid, distinct Ekurhuleni municipal stand references verified in thirteen bounded 0.001-degree cells around the unchanged Tembisa WUP locator. GIS_KEY supplies native identity; every source component is retained and administrative references must agree. Complete object-ID manifests, three-row paging of the 45-row viewport and its full component refresh (fifteen geometry pages each), all 231 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Stand S850000000000900000 retains eight disjoint components totalling about 1.963 km²; matching township/property/portion/SG references support its shared source identity. It is not excluded by size, flattened, clipped or repaired. Coverage, title, survey accuracy and identity beyond this bounded evidence are unverified.",
+    "pageSize": 3,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 1,
+    "boundsSrid": 4326,
+    "boundsProjection": "EPSG:4326"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official published cadastral/reference polygons; whole-city completeness unverified.",
+    "verifiedOpenScope": "231 valid, distinct Ekurhuleni municipal stand references verified in thirteen bounded 0.001-degree cells around the unchanged Tembisa WUP locator. GIS_KEY supplies native identity; every source component is retained and administrative references must agree. Complete object-ID manifests, three-row paging of the 45-row viewport and its full component refresh (fifteen geometry pages each), all 231 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Stand S850000000000900000 retains eight disjoint components totalling about 1.963 km²; matching township/property/portion/SG references support its shared source identity. It is not excluded by size, flattened, clipped or repaired. Coverage, title, survey accuracy and identity beyond this bounded evidence are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "rootReviewedAt": "2026-10-08T23:39:53.824168+00:00",
+  "appCityId": "tembisa",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "231 valid, distinct Ekurhuleni municipal stand references verified in thirteen bounded 0.001-degree cells around the unchanged Tembisa WUP locator. GIS_KEY supplies native identity; every source component is retained and administrative references must agree. Complete object-ID manifests, three-row paging of the 45-row viewport and its full component refresh (fifteen geometry pages each), all 231 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Stand S850000000000900000 retains eight disjoint components totalling about 1.963 km²; matching township/property/portion/SG references support its shared source identity. It is not excluded by size, flattened, clipped or repaired. Coverage, title, survey accuracy and identity beyond this bounded evidence are unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/tembisa-parcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/tembisa-parcels-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/tembisa-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "za-ekurhuleni-stands",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/tembisa-parcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/tembisa-parcels-quality.json"
+  }
+}

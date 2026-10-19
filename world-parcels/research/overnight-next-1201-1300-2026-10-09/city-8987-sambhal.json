@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:8987",
+  "wupCityCode": 8987,
+  "queueRank": 1285,
+  "rank": 1285,
+  "name": "Sambhal",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [28.5763003175642, 78.5685801713154],
+  "centerLatLon": [28.5763003175642, 78.5685801713154],
+  "pointBasis": "Immutable WUP 2025 coordinate, copied without adjustment.",
+  "population2025": 435760,
+  "population2025k": 435.76,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "registryFound": null,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review_no_verified_research_evidence",
+  "resultCategory": "research_evidence_unavailable_on_validation_retry",
+  "blocker": "The prior Sambhal research packet and any referenced sample were absent from the cohort and Git history. This validation retry created the missing city record only; no source discovery or network request was repeated, and no registry or geometry finding is asserted.",
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "url": null,
+    "operator": null,
+    "serviceType": null,
+    "geometryStatus": "not_verified",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeIdField": null,
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "None; no prior Sambhal source evidence was available to this retry.",
+    "verifiedOpenScope": "None.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sambhal India official cadastral map land records parcel GIS",
+        "result": "Validation retry did not repeat discovery. No prior executed-query record was available; the listed URL is retained only as an unverified official-source candidate, not as evidence of a successful result.",
+        "actualResultUrls": ["https://upbhulekh.gov.in/"]
+      },
+      {
+        "language": "Hindi",
+        "query": "सम्भल उत्तर प्रदेश आधिकारिक भू-अभिलेख नक्शा भू-खण्ड GIS",
+        "result": "Validation retry did not repeat discovery. No prior executed-query record was available; the listed URL is retained only as an unverified official-source candidate, not as evidence of a successful result.",
+        "actualResultUrls": ["https://upbhulekh.gov.in/"]
+      }
+    ],
+    "portals": [],
+    "requests": []
+  },
+  "remainingUncertainty": "Official local registry custody, current public viewer/API routes, schema, CRS, anonymous safe parcel identity, geometry, and coverage are all unverified.",
+  "checkedAt": "2026-10-09",
+  "cohortState": "validation_retry_packet_created_source_finding_held",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false
+}

@@ -1,0 +1,44 @@
+{
+  "cityCode": 10108,
+  "queueRank": 2499,
+  "name": "Shanxian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [34.792488201439, 116.080663490125],
+  "population2025": 234538,
+  "population2025k": 234.538,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shanxian China cadastral parcel map official land registration service GIS",
+        "result": "Search did not locate a Shanxian-specific anonymous parcel-vector service. It identified the official Shanxian county government domain and the national Real Estate Registration Center (Ministry of Natural Resources) site, but national explanatory material is not city-specific service evidence.",
+        "actualResultUrls": [
+          "http://www.shanxian.gov.cn",
+          "https://www.rerc.com.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "单县 不动产登记 地籍图 自然资源和规划局 GIS 官方",
+        "result": "Search did not verify a public Shanxian cadastral viewer or anonymous parcel geometry API. The official county domain was found; search results also returned general official Chinese cadastral-registration guidance from other jurisdictions, which was not treated as local registry evidence.",
+        "actualResultUrls": [
+          "http://www.shanxian.gov.cn",
+          "https://www.rerc.com.cn/",
+          "https://xxgk.qinshui.gov.cn/xzf/qszrzyj/fdzdgknr/gzdt/202312/t20231208_1900050.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "The local county government domain is evidenced, but no local registry/cadastre custodian page, public parcel viewer, safe native parcel identity, schema/CRS response, or full parcel polygon was verified. This packet is research evidence only and is not source integration or runtime admission.",
+  "serviceReview": "shanxian-service-review.json",
+  "sampleGeoJSON": null
+}

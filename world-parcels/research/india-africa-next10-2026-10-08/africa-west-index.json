@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_research_index",
+  "checkedAt": "2026-10-08",
+  "workstream": "africa_west",
+  "queue": "queue.json",
+  "cities": [
+    {
+      "wupCityCode": 1265,
+      "name": "Lagos",
+      "resultCategory": "candidate_service_no_parcel_semantics",
+      "freshTargetGeometry": true,
+      "nativeId": "not_verified; lot/plan fields null; OBJECTID is transport only",
+      "technicalBlocker": "Exact target returned two identical large polygons with null lot fields; expanded ~4.4 km query for any non-null lot/plan field returned count=0. This bounded result is not citywide absence; no native ID.",
+      "evidenceFile": "city-1265.json",
+      "evidenceSupport": "africa-west-lagos-arcgis-probes.json"
+    },
+    {
+      "wupCityCode": 33,
+      "name": "Dakar",
+      "resultCategory": "no_new_verified_target_sample",
+      "freshTargetGeometry": false,
+      "nativeId": "not_verified",
+      "technicalBlocker": "Official public GeoSenegal products found are topographic; DGID parcel extract is an administrative request; old cadastral catalog record HTTP reset/timeout.",
+      "evidenceFile": "city-33.json"
+    }
+  ],
+  "sharedRouteEvidence": {
+    "LagosArcGISFolder": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services?f=pjson",
+    "LagosBoundedProbe": "africa-west-lagos-arcgis-probes.json (exact target and expanded local non-null-field check; limited neighborhood only)",
+    "DakarGeoSenegalCatalog": "https://www.geosenegal.gouv.sn/georepertoire.html",
+    "DakarCadastralCatalogRetry": "http://www.georepertoire.gouv.sn/catalog/search/resource/details.page?uuid=%7BF8264ED8-8268-4F69-8BAB-64F0BC72E453%7D",
+    "classification": "Lagos target polygon geometry was obtained but not verified as parcels or native-ID capable; Dakar shared catalog/documentary routes only, no feature geometry."
+  }
+}

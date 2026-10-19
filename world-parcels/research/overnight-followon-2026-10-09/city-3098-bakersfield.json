@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3098",
+  "wupCityCode": 3098,
+  "name": "Bakersfield",
+  "country": "United States",
+  "countryCode": "US",
+  "rank": 1098,
+  "queueRank": 1098,
+  "point": [
+    35.3492651317935,
+    -119.024876869726
+  ],
+  "centerLatLon": [
+    35.3492651317935,
+    -119.024876869726
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 503676,
+  "population2025k": 503.676,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The first-party City of Bakersfield GIS Cadastre service publishes parcel polygons; Kern County Assessor-Recorder separately documents parcel mapping GIS. Exact WUP-point query returned one polygon with safe Esri OBJECTID only.",
+  "registryEvidenceUrls": [
+    "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+    "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "us-bakersfield-municipal-cadastral-parcels"
+  ],
+  "adapterReady": true,
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "scopeLimits": "119 distinct native APN references passed thirteen 0.001-degree cells around the unchanged Bakersfield WUP locator, complete native-projected bounds manifests and all fresh exact native identity reads. A separate 1 km metric-square envelope supplied 761 full source polygons; an independent root EPSG:32611 GEOS audit found all valid and distinct, with no overlaps above 0.01 m² or operation errors. APN_ID strings are preserved independently of OBJECTID transport keys; APN 14734302 maps to OBJECTID 127663 and contains the locator. Forced three-feature paging, explicit absence, full footprint and source binding passed. Native EPSG:2229 bounds projection resolves the previously inconsistent WGS84 count/manifests without changing geometry. Earlier failed probes are retained in the acceptance record. This bounded evidence does not establish citywide completeness, legal title, accuracy or currentness.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "The first-party City of Bakersfield GIS Cadastre service publishes parcel polygons; Kern County Assessor-Recorder separately documents parcel mapping GIS. Exact WUP-point query returned one polygon with safe Esri OBJECTID only.",
+    "verifiedOpenScope": "119 distinct native APN references passed thirteen 0.001-degree cells around the unchanged Bakersfield WUP locator, complete native-projected bounds manifests and all fresh exact native identity reads. A separate 1 km metric-square envelope supplied 761 full source polygons; an independent root EPSG:32611 GEOS audit found all valid and distinct, with no overlaps above 0.01 m² or operation errors. APN_ID strings are preserved independently of OBJECTID transport keys; APN 14734302 maps to OBJECTID 127663 and contains the locator. Forced three-feature paging, explicit absence, full footprint and source binding passed. Native EPSG:2229 bounds projection resolves the previously inconsistent WGS84 count/manifests without changing geometry. Earlier failed probes are retained in the acceptance record. This bounded evidence does not establish citywide completeness, legal title, accuracy or currentness.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "119 distinct native APN references passed thirteen 0.001-degree cells around the unchanged Bakersfield WUP locator, complete native-projected bounds manifests and all fresh exact native identity reads. A separate 1 km metric-square envelope supplied 761 full source polygons; an independent root EPSG:32611 GEOS audit found all valid and distinct, with no overlaps above 0.01 m² or operation errors. APN_ID strings are preserved independently of OBJECTID transport keys; APN 14734302 maps to OBJECTID 127663 and contains the locator. Forced three-feature paging, explicit absence, full footprint and source binding passed. Native EPSG:2229 bounds projection resolves the previously inconsistent WGS84 count/manifests without changing geometry. Earlier failed probes are retained in the acceptance record. This bounded evidence does not establish citywide completeness, legal title, accuracy or currentness.",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/bakersfield-native-bounds-requalification-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/bakersfield-root-quality.json",
+    "qualityReviewFile": "research/overnight-followon-2026-10-09/bakersfield-root-quality-review.json"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bakersfield Kern County official parcel map GIS cadastral layer",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested.",
+        "actualResultUrls": [
+          "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+          "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis"
+        ],
+        "executionMethod": "Separate English-language web search and official-source review."
+      },
+      {
+        "language": "Spanish",
+        "query": "Bakersfield mapa catastral parcelas GIS oficial ciudad Kern County",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested.",
+        "actualResultUrls": [
+          "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+          "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis"
+        ],
+        "executionMethod": "Separate local-language web search and official-source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+        "operator": "City of Bakersfield / Kern County",
+        "homeUrl": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+        "observation": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested."
+      },
+      {
+        "name": "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis",
+        "operator": "City of Bakersfield / Kern County",
+        "homeUrl": "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis",
+        "observation": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "returnedSourceRows": 1,
+    "boundedFullPolygonCount": 1,
+    "retainedFullPolygonCount": 1,
+    "nativeParcelIdentifiers": [
+      127663
+    ],
+    "wupPointContained": true,
+    "sampleFile": "samples/city-3098-bakersfield-samples.geojson",
+    "reviewFile": "bakersfield-service-review.json"
+  },
+  "source": {
+    "sourceId": "us-bakersfield-municipal-cadastral-parcels",
+    "name": "Bakersfield official parcel/registry source",
+    "url": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+    "operator": "City of Bakersfield GIS",
+    "serviceType": "Official local parcel geometry verified at exact point",
+    "layer": "General/Cadastre/MapServer/1",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "APN_ID",
+    "nativeIdEvidence": "Published APN_ID string; native 14734302 independently binds to OBJECTID127663.",
+    "attributesRequested": [
+      "OBJECTID"
+    ],
+    "sampleCount": 1,
+    "sampleFile": "samples/city-3098-bakersfield-samples.geojson"
+  },
+  "rootReviewedAt": "2026-10-09T06:49:54.753760+00:00",
+  "appCityId": "bakersfield",
+  "nextStep": "Qualified bounded city profile enabled locally.",
+  "sampleFile": "samples/city-3098-bakersfield-samples.geojson",
+  "remainingUncertainty": "Qualified bounded source-reference geometry only; whole-city completeness, legal title, survey accuracy, currentness and future revision identity continuity remain unverified."
+}

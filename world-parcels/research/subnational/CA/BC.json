@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "BC",
+ "regionName": "British Columbia",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-bc-parcelmap-bc",
+  "name": "ParcelMap BC Parcel Fabric",
+  "operator": "Province of British Columbia (openmaps.gov.bc.ca)",
+  "scope": "British Columbia",
+  "endpoint": "https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows",
+  "method": "WFS 2.0",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:3005 returned (EPSG:4326 bbox accepted)",
+  "reuseStatus": "Open Government Licence - BC per publisher; text not read in this pass."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-bc-parcelmap-bc",
+  "requestUrl": "https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW&count=2&outputFormat=application/json&bbox=-123.1225,49.2825,-123.1205,49.2840,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -123.1225,
+   49.2825,
+   -123.1205,
+   49.284
+  ],
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "PARCEL_FABRIC_POLY_ID / PID",
+  "responseFile": "../../countries/CA-bc-parcel-response.json (reused, not re-requested)",
+  "pagination": "WFS count/startIndex",
+  "regionSampled": "Vancouver downtown"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Publisher describes it as the province-wide parcel fabric (ParcelMap BC). Only Vancouver was sampled.",
+ "subregionsVerified": [
+  "Vancouver"
+ ],
+ "reuse": "Evidence reused from research/countries/CA.json (checked 2026-09-29); no new request.",
+ "portalsFound": [
+  {
+   "url": "https://openmaps.gov.bc.ca/geo/pub/WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW/ows",
+   "observation": "Open WFS, province-wide fabric."
+  }
+ ],
+ "requests": [],
+ "reuseStatus": "Open Government Licence - BC (not read here).",
+ "remainingUncertainty": "A second BC region was not sampled; fabric returned in EPSG:3005.",
+ "nextStep": "Sample a rural BC bbox to confirm province-wide."
+}

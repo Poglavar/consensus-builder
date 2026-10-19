@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 2907,
+      "cityCode": 5359,
+      "name": "Burien",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 205.095,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/5359/city-5359-provider-5359.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/5359/provider-5359-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2924,
+      "cityCode": 11415,
+      "name": "Asarganj",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 204.072,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11415.json",
+          "cityId": "wup2025:11415",
+          "cityName": "Asarganj",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2926,
+      "cityCode": 429,
+      "name": "Livingstone",
+      "country": "Zambia",
+      "iso2": "ZM",
+      "pop2025k": 203.972,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/429/city-429-provider-429.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/429/provider-429-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2952,
+      "cityCode": 8116,
+      "name": "Dale City",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 201.864,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/8116/city-8116-provider-8116.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/8116/provider-8116-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2970,
+      "cityCode": 6901,
+      "name": "Narayanpur",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pop2025k": 201.1,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/growth-top20-2026-10-07/city-6901.json",
+          "cityId": "wup2025:6901",
+          "cityName": "Narayanpur",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-6901.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2985,
+      "cityCode": 11347,
+      "name": "Gamharia",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 200.505,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11347.json",
+          "cityId": "wup2025:11347",
+          "cityName": "Gamharia",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

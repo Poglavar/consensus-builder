@@ -1,0 +1,126 @@
+{
+ "note": "3 of the features returned; owner name, ID number and valuation fields REDACTED (personal data); geometry truncated; outSR 4326",
+ "geometryType": "esriGeometryPolygon",
+ "features": [
+  {
+   "attributes": {
+    "OBJECTID": 22946,
+    "CatLoteId": 425656,
+    "Predio": 571307,
+    "Propiedad": "HOR",
+    "Nomenclatura": "N37-71",
+    "DestEconomico": "HABITACIONAL",
+    "ArTerrLote": 461.2,
+    "Parroquia": "Rumipamba",
+    "AdmZonal": "EUGENIO ESPEJO",
+    "ZONIFICACION": "URBANO"
+   },
+   "geometry": {
+    "rings0_first5": [
+     [
+      -78.4898075784942,
+      -0.17419539371178
+     ],
+     [
+      -78.4898431158469,
+      -0.174380093666196
+     ],
+     [
+      -78.490006157376,
+      -0.174350142176661
+     ],
+     [
+      -78.4900007576028,
+      -0.174321600137287
+     ],
+     [
+      -78.4899999652887,
+      -0.174317404125996
+     ]
+    ],
+    "vertexCount": 16,
+    "closed": true
+   }
+  },
+  {
+   "attributes": {
+    "OBJECTID": 22947,
+    "CatLoteId": 425656,
+    "Predio": 571306,
+    "Propiedad": "HOR",
+    "Nomenclatura": "N37-71",
+    "DestEconomico": "HABITACIONAL",
+    "ArTerrLote": 461.2,
+    "Parroquia": "Rumipamba",
+    "AdmZonal": "EUGENIO ESPEJO",
+    "ZONIFICACION": "URBANO"
+   },
+   "geometry": {
+    "rings0_first5": [
+     [
+      -78.4898075784942,
+      -0.17419539371178
+     ],
+     [
+      -78.4898431158469,
+      -0.174380093666196
+     ],
+     [
+      -78.490006157376,
+      -0.174350142176661
+     ],
+     [
+      -78.4900007576028,
+      -0.174321600137287
+     ],
+     [
+      -78.4899999652887,
+      -0.174317404125996
+     ]
+    ],
+    "vertexCount": 16,
+    "closed": true
+   }
+  },
+  {
+   "attributes": {
+    "OBJECTID": 22948,
+    "CatLoteId": 307306,
+    "Predio": 804711,
+    "Propiedad": "UNI",
+    "Nomenclatura": null,
+    "DestEconomico": "HABITACIONAL",
+    "ArTerrLote": 386.7,
+    "Parroquia": "Rumipamba",
+    "AdmZonal": "EUGENIO ESPEJO",
+    "ZONIFICACION": "URBANO"
+   },
+   "geometry": {
+    "rings0_first5": [
+     [
+      -78.490006157376,
+      -0.174350142176661
+     ],
+     [
+      -78.4898431158469,
+      -0.174380093666196
+     ],
+     [
+      -78.4898485856886,
+      -0.17440852790815
+     ],
+     [
+      -78.489888948791,
+      -0.17440102880692
+     ],
+     [
+      -78.489904009945,
+      -0.174398232364379
+     ]
+    ],
+    "vertexCount": 27,
+    "closed": true
+   }
+  }
+ ]
+}

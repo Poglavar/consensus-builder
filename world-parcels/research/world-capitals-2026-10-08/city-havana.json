@@ -1,0 +1,112 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:CU:havana",
+  "name": "Havana",
+  "country": "Cuba",
+  "countryCode": "CU",
+  "centerLatLon": [
+    23.116666666666667,
+    -82.35
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Havana Cuba official land registry cadastral parcels government official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    },
+    {
+      "query": "La Habana Gobierno de La Habana catastro urbano parcela registro de propiedad mapa oficial",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": []
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.lahabana.gob.cu/",
+      "observation": "Official Havana city portal opened. Its geographic-search link led to a tourism-oriented CubaMaps page; no municipal parcel or cadastral service was identified."
+    },
+    {
+      "url": "https://www.minjus.gob.cu/es/",
+      "observation": "Official Ministry of Justice homepage opened; general ministry services/contact content did not identify a Havana parcel registry or public geometry service."
+    },
+    {
+      "url": "https://cubamaps.travel/",
+      "observation": "CubaMaps homepage opened and describes tourist points of interest (including lodging, food, and transport); no cadastral/parcel service identified."
+    },
+    {
+      "url": "https://www.gacetaoficial.gob.cu/es",
+      "observation": "Official Gazette publication hub opened; no Havana-specific parcel registry service identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lahabana.gob.cu/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Havana city portal opened. Its Buscador geográfico link was followed to CubaMaps; that destination could not be opened through the web inspection tool (Cache miss)."
+    },
+    {
+      "url": "https://www.minjus.gob.cu/es/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Ministry of Justice homepage opened; no city parcel registry or public geometry service was identified."
+    },
+    {
+      "url": "https://cubamaps.travel/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "CubaMaps homepage opened; it describes tourist points of interest rather than parcel/cadastral mapping."
+    },
+    {
+      "url": "https://www.gacetaoficial.gob.cu/es",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Gazette homepage opened as a publications hub; no city-specific parcel service was identified."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "Official Havana and MINJUS homepages were inspected, with separate English and Spanish searches. The city portal geographic-search link led to CubaMaps, whose homepage describes tourist points of interest; no city parcel registry or geometry source was verified.",
+    "urls": [
+      "https://www.lahabana.gob.cu/",
+      "https://www.minjus.gob.cu/es/",
+      "https://cubamaps.travel/",
+      "https://www.gacetaoficial.gob.cu/es"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "Official Havana and MINJUS homepages were inspected, with separate English and Spanish searches. The city portal geographic-search link led to CubaMaps, whose homepage describes tourist points of interest; no city parcel registry or geometry source was verified."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "Official Havana and MINJUS homepages were inspected, with separate English and Spanish searches. The city portal geographic-search link led to CubaMaps, whose homepage describes tourist points of interest; no city parcel registry or geometry source was verified.",
+  "registryEvidenceUrls": [
+    "https://www.lahabana.gob.cu/",
+    "https://www.minjus.gob.cu/es/",
+    "https://cubamaps.travel/",
+    "https://www.gacetaoficial.gob.cu/es"
+  ],
+  "sourceIds": []
+}

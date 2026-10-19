@@ -1,0 +1,126 @@
+{
+  "name": "Solapur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 468,
+  "point": [
+    17.6588009809577,
+    75.9160596383266
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Marathi",
+        "query": "सोलापूर नगर भूमापन कार्यालय मालमत्ता पत्रक नकाशा शहर GIS",
+        "scope": "Find the local city-survey and property-record custodian and any public parcel-vector map.",
+        "result": "Maharashtra Land Records lists a Solapur City Survey Officer and a Special Deputy Superintendent for city survey; the Solapur Municipal Corporation Record Keeper manages property cards. The municipal GIS page inspected exposes Sector Boundary, while the separate DP GIS catalogue lists Cadastral Boundary but no parcel layer.",
+        "urls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=36",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=36&source=DistrictContact",
+          "https://www.solapurcorporation.gov.in/smc/abhilekhapal_marathi",
+          "https://smcgis.solapurcorporation.org/gis_all_layer.aspx?Pram=Sector",
+          "https://gis-dp.solapurcorporation.org/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Solapur official city survey office property card GIS cadastral parcel map Maharashtra",
+        "scope": "Cross-check local registration responsibilities and public GIS contents in English.",
+        "result": "Municipal records office explicitly lists Property Card management; the Maharashtra state BhuNaksha portal is an interactive cadastral map, but a direct city-bound public vector schema/query was not verified. Solapur municipal public GIS evidence is planning/boundary layers, not general lot geometry.",
+        "urls": [
+          "https://www.solapurcorporation.gov.in/smc/abhilekhapal_english",
+          "https://www.solapurcorporation.gov.in/smc/rts_panel_english",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://gis-dp.solapurcorporation.org/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Solapur City Survey Office",
+        "operator": "Maharashtra Land Records Department, Solapur city-survey office",
+        "homeUrl": "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=36",
+        "observation": "State land-records directory lists City Survey Officer and city-survey deputy superintendent offices located in Solapur."
+      },
+      {
+        "name": "Solapur Municipal Corporation Record Keeper",
+        "operator": "Solapur Municipal Corporation",
+        "homeUrl": "https://www.solapurcorporation.gov.in/smc/abhilekhapal_english",
+        "observation": "Municipal office manages property-card records; document services are not an anonymous parcel-vector interface."
+      },
+      {
+        "name": "Solapur Municipal GIS / DP GIS",
+        "operator": "Solapur Municipal Corporation",
+        "homeUrl": "https://smcgis.solapurcorporation.org/gis_all_layer.aspx?Pram=Sector",
+        "observation": "Observed municipal GIS layer is Sector Boundary. DP GIS catalogue names City Survey Boundary, Cadastral Boundary and planning layers, but no parcel-lot feature layer was verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://smcgis.solapurcorporation.org/gis_all_layer.aspx?Pram=Sector",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Municipal GIS page returns an iframe labelled Sector Boundary, not individual parcel polygons."
+      },
+      {
+        "url": "https://gis-dp.solapurcorporation.org/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Municipal DP GIS catalogue lists Cadastral Boundary and City Survey Boundary; inspected map shell is a planning portal, not a verified lot query service."
+      },
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "method": "GET",
+        "observation": "Official generic state BhuNaksha map route appears in public search results. Direct shell request from this environment timed out; this is not evidence that the provider is down, and no parcel query was attempted."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "IN-MH-SOLAPUR-CITY-SURVEY-RECORDS",
+    "name": "Solapur City Survey and municipal property-card administration",
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=36",
+    "operator": "Maharashtra Land Records Department, Solapur City Survey Office; Solapur Municipal Corporation Record Keeper",
+    "serviceType": "City survey/property-card registry and municipal GIS layers; no anonymous parcel feature service verified.",
+    "geometryType": "Not verified for individual lots.",
+    "nativeIdField": "Not inspected.",
+    "nativeIdEvidence": "No anonymous parcel-vector schema or geometry response was obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-bound official sources identify Solapur City Survey Office and municipal property-card management. The city GIS surfaces sector and cadastral boundaries, not individually addressable lot polygons.",
+    "verifiedOpenScope": "City-bound official sources identify Solapur City Survey Office and municipal property-card management. The city GIS surfaces sector and cadastral boundaries, not individually addressable lot polygons.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "city_registry_no_anonymous_geometry",
+  "technicalBlocker": "No city-specific anonymous full parcel-vector endpoint was found. The municipal GIS exposes sector/planning boundaries; Maharashtra BhuNaksha shell was not reachable from this environment and was not queried.",
+  "remainingUncertainty": "Whether BhuNaksha exposes Solapur city-survey parcel geometry through an anonymous queryable endpoint; no individual survey or property record was looked up.",
+  "nextStep": "Recheck a publicly documented city-survey polygon service if the state publishes geometry and ID-only query semantics; otherwise keep source as registry evidence only.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9287,
+  "cityId": "wup2025:9287",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    17.6588009809577,
+    75.9160596383266
+  ],
+  "queueRank": 468,
+  "population2025": 1102702,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Solapur municipal Record Keeper manages Property Cards, and Maharashtra Land Records lists the local Solapur City Survey Officer and city-survey deputy superintendent.",
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00",
+  "registryEvidenceUrls": [
+    "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=36",
+    "https://www.solapurcorporation.gov.in/smc/abhilekhapal_english",
+    "https://smcgis.solapurcorporation.org/gis_all_layer.aspx?Pram=Sector"
+  ]
+}

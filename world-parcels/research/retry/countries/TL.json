@@ -1,0 +1,46 @@
+{
+ "kind": "country",
+ "key": "TL",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: pt-TL,pt;q=0.9,en;q=0.8; cookie jar (curl -c/-b) kept per country",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gov.tl/, https://geoportal.gov.tl/, https://www.dnts.gov.tl/, geoportal.tl, geoportal.mj.gov.tl, ita-nia-rai.mj.gov.tl, dnts.mj.gov.tl, tlgeoportal.org",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502), no response from host"
+  },
+  {
+   "url": "https://www.mj.gov.tl/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "Ministry of Justice landing page; links only news/tenders (incl. a geodesy control-point tender), no cadastre map service"
+  },
+  {
+   "url": "https://timor-leste.gov.tl/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "government portal; only links to mj.gov.tl"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Timor-Leste parcel OR cadastre OR terras&f=json&num=10",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "10 hits: soils, population, literacy, maritime boundaries; no parcel layer"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "most .gov.tl hosts fail at proxy CONNECT (502) while mj.gov.tl and timor-leste.gov.tl load",
+ "notes": "No change in outcome; the Ministry site and government portal were re-read with browser headers and contain no cadastre service link. No parcel layer on ArcGIS Online.",
+ "nextStep": "Search for Ita Nia Rai / DNTPSC portal from another network; Timor-Leste may only have a title-registration system without an online map."
+}

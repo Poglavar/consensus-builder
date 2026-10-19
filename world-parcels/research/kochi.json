@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:80",
+  "queueRank": 80,
+  "name": "Kochi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    10.0612792171801,
+    76.3088105504372
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://entebhoomi.kerala.gov.in/",
+      "observation": "Ente Bhoomi, citizen portal of Kerala's Integrated Land Information and Management System / Digital Resurvey Mission; connection reset from research proxy."
+    },
+    {
+      "url": "https://erekha.kerala.gov.in/",
+      "observation": "e-Rekha (Kerala Land Information Mission) survey/cadastral maps; unreachable from proxy."
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/State/32",
+      "observation": "NIC State GIS Portal for Kerala; TLS chain not verifiable (self-signed certificate) so not retrieved."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/home/",
+      "observation": "Kerala Survey & Land Records Department (found via search; not fetched)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://entebhoomi.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed/reset or TLS self-signed; no content"
+    },
+    {
+      "url": "https://erekha.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed/reset or TLS self-signed; no content"
+    },
+    {
+      "url": "https://relis.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed/reset or TLS self-signed; no content"
+    },
+    {
+      "url": "https://digitalsurvey.kerala.gov.in",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed/reset or TLS self-signed; no content"
+    },
+    {
+      "url": "https://opendata.kerala.gov.in",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed/reset or TLS self-signed; no content"
+    },
+    {
+      "url": "https://data.gov.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed/reset or TLS self-signed; no content"
+    },
+    {
+      "url": "https://stategisportal.nic.in/stategisportal/Home/State/32",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed/reset or TLS self-signed; no content"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Kerala state digital resurvey; Kochi coverage unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No Kerala or India government host reachable from the proxy, so no portal contents or bounded parcel query could be evaluated. TLS verification was not bypassed. State-level services would not imply India-wide coverage.",
+  "nextStep": "Retry from a network that reaches Kerala/NIC hosts; inspect Ente Bhoomi / e-Rekha web-map network calls for a bounded parcel query."
+}

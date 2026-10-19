@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "JO",
+  "name": "Jordan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/JO.json"
+ },
+ {
+  "kind": "country",
+  "key": "KE",
+  "name": "Kenya",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/KE.json"
+ },
+ {
+  "kind": "country",
+  "key": "KG",
+  "name": "Kyrgyzstan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/KG.json"
+ },
+ {
+  "kind": "country",
+  "key": "KH",
+  "name": "Cambodia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/KH.json"
+ },
+ {
+  "kind": "country",
+  "key": "KI",
+  "name": "Kiribati",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/KI.json"
+ },
+ {
+  "kind": "country",
+  "key": "KM",
+  "name": "Comoros",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/KM.json"
+ },
+ {
+  "kind": "country",
+  "key": "KP",
+  "name": "Dem. People's Republic of Korea",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/KP.json"
+ },
+ {
+  "kind": "country",
+  "key": "KR",
+  "name": "Republic of Korea",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/KR.json"
+ }
+]

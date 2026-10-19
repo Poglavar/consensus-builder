@@ -1,0 +1,120 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BE",
+ "country": "Belgium",
+ "checkedAt": "2026-09-30",
+ "status": "national_online_cadastre_verified_sample",
+ "previousStatus": "subnational_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "FPS Finance (SPF Finances / FOD Financien), General Administration of Patrimonial Documentation (cadastre)",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://finance.belgium.be/en/experts-partners/open-data-patrimony/datasets/cadastral-map/web-services",
+   "observation": "Official FPS Finance page for cadastral parcel map web services (WAF challenge page returned to a scripted request; page not read in full)"
+  },
+  {
+   "url": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services",
+   "observation": "Federal ArcGIS Server 10.9.1, anonymous; folders COF, INSPIRE, Utilities, WMS; INSPIRE/CP and INSPIRE/AU MapServers"
+  },
+  {
+   "url": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services/INSPIRE/CP/MapServer",
+   "observation": "Layer 0 Cadastral_Zoning, layer 1 Cadastral_Parcel (polygon, native WGS84 output, maxRecordCount 1000, minScale 1:20000)"
+  },
+  {
+   "url": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services/WMS",
+   "observation": "Cadastral_Layers / Cadastral_LayersWFS MapServers (not needed, not tested)"
+  },
+  {
+   "url": "https://eservices.minfin.fgov.be/mymap/",
+   "observation": "MyMap viewer redirects to ForgeRock login; not needed"
+  },
+  {
+   "url": "https://geo.api.vlaanderen.be/GRB/wfs",
+   "observation": "Flanders GRB ADP WFS, open (previous evidence)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "anonymous folder listing incl. INSPIRE"
+  },
+  {
+   "url": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services/INSPIRE/CP/MapServer/1/query?f=json&where=1%3D1&geometry=4.3517,50.8467,4.3547,50.8487&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&resultRecordCount=3&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 Cadastral_Parcel polygons, Brussels; id_namespace BE:FED:GAPD:CP, versionId 2026-01-01"
+  },
+  {
+   "url": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services/INSPIRE/CP/MapServer/1/query?f=json&where=1%3D1&geometry=5.5700,50.6320,5.5730,50.6340&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&resultRecordCount=3&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons, Liege (Wallonia)"
+  },
+  {
+   "url": "...outFields=id_localId,id_namespace,label&returnGeometry=false bbox 4.3500,51.2100,4.3520,51.2120",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 records, Antwerp (Flanders), exceededTransferLimit true"
+  },
+  {
+   "url": "https://eservices.minfin.fgov.be/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "returns error/404 page; the working host is ccff02.minfin.fgov.be"
+  },
+  {
+   "url": "https://inspire-geoportal.ec.europa.eu/srv/api/search/records/_search",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "geoportal search API now redirects to data.europa.eu HTML; not usable via POST from here"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "be-fps-finance-inspire-cp",
+  "requestUrl": "https://ccff02.minfin.fgov.be/geoservices/arcgis/rest/services/INSPIRE/CP/MapServer/1/query?f=json&where=1%3D1&geometry=4.3517,50.8467,4.3547,50.8487&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&resultRecordCount=3&returnGeometry=true",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   4.3517,
+   50.8467,
+   4.3547,
+   50.8487
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon (rings)",
+  "closedRings": true,
+  "idField": "attributes.id_localId (CAPAKEY style, e.g. 21802B1269/00C000)",
+  "responseFile": "europe/BE-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (maxRecordCount 1000)",
+  "regionSampled": "Brussels-Capital and Wallonia (Liege); Flanders (Antwerp) also returns records"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Federal FPS Finance INSPIRE Cadastral Parcels, all of Belgium",
+  "regionsVerified": [
+   "Brussels-Capital",
+   "Wallonia (Liege)",
+   "Flanders (Antwerp, IDs only)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "regionsSampled": [
+  "Brussels",
+  "Wallonia (Liege)",
+  "Flanders (Antwerp)"
+ ],
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; cookie jar used",
+ "remainingUncertainty": "Licence terms not read (finance.belgium.be page served a WAF challenge). Layer only draws at scale <= 1:20000 but query works with small bbox. Data version 2026-01-01. Whether a WFS/ATOM download service exists in the INSPIRE catalogue (geo.be) was not checked.",
+ "nextStep": "Read the FPS Finance open-data terms; locate the INSPIRE metadata record on geo.be; optionally test WMS/WFS in the WMS folder."
+}

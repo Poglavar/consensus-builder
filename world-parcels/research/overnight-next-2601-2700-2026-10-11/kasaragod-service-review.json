@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-9341-kasaragod.json",
+  "cityCode": 9341,
+  "queueRank": 2696,
+  "city": "Kasaragod",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Kerala first-party eMaps/Bhu-Naksha and Ente Bhoomi sources establish a cadastral/land-record system, and the Directorate directory evidences Kasaragod district survey custodians. The legacy eMaps host redirected but failed TLS verification; the current Ente Bhoomi page was readable, its cadastral host returned 403, and staging timed out. No safe anonymous parcel geometry and stable native ID were obtained.",
+  "queryOutcomes": "Separate English and Malayalam discovery queries are recorded in the city record. They identified Kerala eMaps/Bhu-Naksha, Ente Bhoomi, Kasaragod district survey offices, digital-survey camp offices, and district revenue references. No public anonymous parcel API response was identified.",
+  "requestOutcomes": "The current Ente Bhoomi HTML and home JavaScript were fetched. Its CSP identifies current BhuNaksha hosts, but the cadastral host returned HTTP 403 and staging timed out. The legacy eMaps HTTP route redirected to HTTPS, whose expired certificate prevented safe retrieval. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS disablement was used.",
+  "sourceScope": {
+    "custodian": "Kerala Directorate of Survey and Land Records / Kerala Land Records Modernization Mission",
+    "localRegistryCustodian": "Kasaragod district Survey and Land Records offices listed by the Directorate of Survey and Land Records",
+    "service": "Kerala eMaps/Bhu-Naksha and Ente Bhoomi",
+    "claimedScope": "Kerala cadastral and integrated land-information services with Kasaragod district survey administration",
+    "verifiedScope": "Official local custodianship and portal descriptions only; citywide parcel completeness and public feature-service access were not verified."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source": "Unknown", "retainedSample": null},
+  "geometryDecision": {"verified": false, "sampleFile": null, "sampleCount": 0, "nativeIds": [], "exactWupPointHit": null, "boundedSample": false},
+  "scopeLimits": [
+    "Exact WUP point [12.5107289264317,75.0078012656782] was preserved and not shifted.",
+    "No exact-point or bounded geometry query completed; access failures and a login/403 boundary are not evidence of citywide absence.",
+    "No unsafe ownership, address, contact, titleholder, personal, tax, account, or document fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_serial_adapter_qualification",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A session-bound or separately maintained public cadastral route may exist. The precise Kasaragod municipal boundary, complete parcel coverage, native identity fields, CRS, update date, and production adapter behavior remain unresolved.",
+  "retainedSample": {"file": null, "features": 0, "properties": "none retained"}
+}

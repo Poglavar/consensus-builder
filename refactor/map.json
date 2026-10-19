@@ -1,0 +1,4593 @@
+{
+  "totals": {
+    "lines": 26376,
+    "topFunctions": 446,
+    "topVars": 75,
+    "topClasses": 0,
+    "windowAssigns": 75,
+    "windowUnique": 75,
+    "otherTopStatements": 27
+  },
+  "windowUniqueNames": [
+    "applyContiguityConstraints",
+    "applyProposalToMap",
+    "buildGeometryFromParcels",
+    "buildOwnerAcceptanceSectionHtml",
+    "calculateDecayedOffer",
+    "calculateProposalBounds",
+    "cancelMultiParcelSelection",
+    "centerOnProposal",
+    "checkAndUpdateProposalExpiry",
+    "clearLocalProposalData",
+    "closeProposalBoostDialog",
+    "closeProposalDialog",
+    "closeProposalList",
+    "createProposal",
+    "currentlyHighlightedProposal",
+    "deleteProposal",
+    "enableShowProposalsMode",
+    "focusProposalDetails",
+    "formatProposalOfferValue",
+    "getCurrentParcelSelectionContext",
+    "getDecayProgress",
+    "getProposalAuthorValue",
+    "getProposalOwnerAcceptanceState",
+    "getSelectedProposalTool",
+    "handleMultiSelectChange",
+    "handleProposalOfferInput",
+    "handleProposalParcelClick",
+    "handleProposalToolButton",
+    "handleReparcellizationAlgorithmClick",
+    "handleShowProposalsChange",
+    "handleUrbanRuleMainTypeClick",
+    "handleUrbanRuleTypologyClick",
+    "handleUserRejectProposal",
+    "hideProposalDetailsPanel",
+    "initializeDecayCountdown",
+    "initializeExpiryCountdown",
+    "isApplyingProposalHighlights",
+    "isProposalExpired",
+    "isProposalUIActive",
+    "multiParcelSelection",
+    "onProposalLandUseChange",
+    "onProposalOwnershipChange",
+    "onProposalParcelsChange",
+    "onProposalRecipientScopeChange",
+    "openProposalBoostDialog",
+    "openProposalFromList",
+    "parseProposalOfferValue",
+    "populateProposalAuthorUI",
+    "proposalStorage",
+    "reapplyProposalHighlights",
+    "refreshProposalData",
+    "removeProposalFromMap",
+    "requirePersonalizedUser",
+    "returnToParcelInfo",
+    "selectAndHighlightProposal",
+    "selectLandUse",
+    "selectProposalFromList",
+    "selectedParcelInProposal",
+    "setProposalAcquisitionMode",
+    "setProposalBoundaryMode",
+    "setProposalMainType",
+    "setProposalType",
+    "shareAppliedProposals",
+    "shareProposalFromDetails",
+    "showAllProposalsModal",
+    "showProposalDetailsModal",
+    "showProposalDialog",
+    "showStructureProposalDialog",
+    "submitProposalBoost",
+    "switchProposalTab",
+    "toggleDecayInput",
+    "toggleExpiryInput",
+    "toggleProposalDetailsPanelMinimized",
+    "updateProposalLayer",
+    "updateShowProposalsButton"
+  ],
+  "topVars": [
+    {
+      "name": "PROPOSALS_STORAGE_KEY",
+      "kind": "const",
+      "sl": 8,
+      "initType": "Literal",
+      "readers": 0
+    },
+    {
+      "name": "PROPOSALS_NEXT_ID_KEY",
+      "kind": "const",
+      "sl": 9,
+      "initType": "Literal",
+      "readers": 0
+    },
+    {
+      "name": "proposalMetadataFetchPromises",
+      "kind": "const",
+      "sl": 10,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "proposalListTranslationsHydrated",
+      "kind": "const",
+      "sl": 776,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "proposalAreaCache",
+      "kind": "const",
+      "sl": 779,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "_parcelRecordWriteCache",
+      "kind": "let",
+      "sl": 871,
+      "initType": "Literal",
+      "readers": 4
+    },
+    {
+      "name": "proposalStorage",
+      "kind": "const",
+      "sl": 1652,
+      "initType": "ObjectExpression",
+      "readers": 56
+    },
+    {
+      "name": "proposalHighlightState",
+      "kind": "const",
+      "sl": 2760,
+      "initType": "ObjectExpression",
+      "readers": 4
+    },
+    {
+      "name": "currentProposalPreviewId",
+      "kind": "let",
+      "sl": 2768,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "currentProposalDetailsContext",
+      "kind": "let",
+      "sl": 2769,
+      "initType": "Literal",
+      "readers": 4
+    },
+    {
+      "name": "proposalFeatureCache",
+      "kind": "const",
+      "sl": 3211,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "proposalHighlightStyleOverride",
+      "kind": "const",
+      "sl": 3754,
+      "initType": "ObjectExpression",
+      "readers": 3
+    },
+    {
+      "name": "multiParcelSelection",
+      "kind": "const",
+      "sl": 4343,
+      "initType": "ObjectExpression",
+      "readers": 22
+    },
+    {
+      "name": "proposalLayer",
+      "kind": "let",
+      "sl": 5293,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "PROPOSAL_COLORS",
+      "kind": "const",
+      "sl": 5296,
+      "initType": "ArrayExpression",
+      "readers": 1
+    },
+    {
+      "name": "APPLY_DISABLED_TYPE_KEYS",
+      "kind": "const",
+      "sl": 5950,
+      "initType": "NewExpression",
+      "readers": 2
+    },
+    {
+      "name": "originalOnParcelClick",
+      "kind": "let",
+      "sl": 6237,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "proposalDetailsEscapeHandler",
+      "kind": "let",
+      "sl": 8515,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "DEFAULT_PROPOSAL_TYPE",
+      "kind": "const",
+      "sl": 8535,
+      "initType": "Literal",
+      "readers": 4
+    },
+    {
+      "name": "PROPOSAL_GOAL_ICON_MAP",
+      "kind": "const",
+      "sl": 8536,
+      "initType": "ObjectExpression",
+      "readers": 1
+    },
+    {
+      "name": "currentOwnershipTransferDirection",
+      "kind": "let",
+      "sl": 8555,
+      "initType": "Literal",
+      "readers": 0
+    },
+    {
+      "name": "currentProposalTool",
+      "kind": "let",
+      "sl": 8556,
+      "initType": "Literal",
+      "readers": 5
+    },
+    {
+      "name": "currentGeometryGoal",
+      "kind": "let",
+      "sl": 8557,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "proposalGeometrySubmitted",
+      "kind": "let",
+      "sl": 8558,
+      "initType": "Literal",
+      "readers": 3
+    },
+    {
+      "name": "proposalAcquisitionLabels",
+      "kind": "let",
+      "sl": 8559,
+      "initType": "ObjectExpression",
+      "readers": 2
+    },
+    {
+      "name": "currentOwnershipMode",
+      "kind": "let",
+      "sl": 8564,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalModalScreenshotDataUrl",
+      "kind": "let",
+      "sl": 8566,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "proposalModalScreenshotPromise",
+      "kind": "let",
+      "sl": 8567,
+      "initType": "Literal",
+      "readers": 3
+    },
+    {
+      "name": "proposalDialogOverrides",
+      "kind": "let",
+      "sl": 8568,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "pendingRoadDrawingProposal",
+      "kind": "let",
+      "sl": 8569,
+      "initType": "Literal",
+      "readers": 3
+    },
+    {
+      "name": "PROPOSAL_SCREENSHOT_SKIP_GOALS",
+      "kind": "const",
+      "sl": 8628,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "_proposalScreenshotInFlight",
+      "kind": "const",
+      "sl": 9130,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "DEFAULT_CORRIDOR_WIDTHS",
+      "kind": "const",
+      "sl": 9408,
+      "initType": "ObjectExpression",
+      "readers": 5
+    },
+    {
+      "name": "pendingConstrainedCorridor",
+      "kind": "let",
+      "sl": 9413,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "constrainedCorridorState",
+      "kind": "let",
+      "sl": 9414,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalFacetState",
+      "kind": "const",
+      "sl": 10458,
+      "initType": "ObjectExpression",
+      "readers": 7
+    },
+    {
+      "name": "PROPOSAL_PUBLIC_GOOD_USES",
+      "kind": "const",
+      "sl": 10459,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "proposalSingleParcelSelection",
+      "kind": "let",
+      "sl": 10460,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "PROPOSAL_GOAL_TYPE_LABELS",
+      "kind": "const",
+      "sl": 10461,
+      "initType": "ObjectExpression",
+      "readers": 1
+    },
+    {
+      "name": "reparcellizationModulePromise",
+      "kind": "let",
+      "sl": 10877,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "teardownProposalBalanceWatcher",
+      "kind": "let",
+      "sl": 11750,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalBalanceRequestSeq",
+      "kind": "let",
+      "sl": 11751,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "addressesJsonCache",
+      "kind": "let",
+      "sl": 11752,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "addressesJsonPromise",
+      "kind": "let",
+      "sl": 11753,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "expiryCountdownInterval",
+      "kind": "let",
+      "sl": 13157,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "decayCountdownInterval",
+      "kind": "let",
+      "sl": 13260,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "LAKE_GRAPHICS_VERSION",
+      "kind": "const",
+      "sl": 13545,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "LAKE_SHORE_TARGET_RATIO",
+      "kind": "const",
+      "sl": 13546,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "proposalListState",
+      "kind": "const",
+      "sl": 16135,
+      "initType": "ObjectExpression",
+      "readers": 8
+    },
+    {
+      "name": "SERVER_PROPOSAL_SUMMARY_LIMIT",
+      "kind": "const",
+      "sl": 16145,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "serverProposalCache",
+      "kind": "const",
+      "sl": 16147,
+      "initType": "ObjectExpression",
+      "readers": 5
+    },
+    {
+      "name": "PROPOSAL_SORT_OPTIONS",
+      "kind": "const",
+      "sl": 16449,
+      "initType": "ArrayExpression",
+      "readers": 1
+    },
+    {
+      "name": "PROPOSAL_SORT_I18N_KEYS",
+      "kind": "const",
+      "sl": 16464,
+      "initType": "ObjectExpression",
+      "readers": 2
+    },
+    {
+      "name": "PROPOSAL_GOAL_FILTERS",
+      "kind": "const",
+      "sl": 16479,
+      "initType": "ArrayExpression",
+      "readers": 1
+    },
+    {
+      "name": "PROPOSAL_GOAL_FILTER_I18N_KEYS",
+      "kind": "const",
+      "sl": 16494,
+      "initType": "ObjectExpression",
+      "readers": 1
+    },
+    {
+      "name": "PROPOSAL_GOAL_LABELS",
+      "kind": "const",
+      "sl": 16509,
+      "initType": "ObjectExpression",
+      "readers": 1
+    },
+    {
+      "name": "PROPOSAL_INACTIVE_STATUSES",
+      "kind": "const",
+      "sl": 16907,
+      "initType": "NewExpression",
+      "readers": 1
+    },
+    {
+      "name": "PROPOSAL_LIST_FILTER_INPUT_DEBOUNCE_MS",
+      "kind": "const",
+      "sl": 17478,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "_proposalListFilterInputDebounceTimer",
+      "kind": "let",
+      "sl": 17479,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "url3DModeHandled",
+      "kind": "let",
+      "sl": 22016,
+      "initType": "Literal",
+      "readers": 4
+    },
+    {
+      "name": "singleProposalShareHandled",
+      "kind": "let",
+      "sl": 22148,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "sharedProposalsHandled",
+      "kind": "let",
+      "sl": 22149,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalLoadOverlay",
+      "kind": "let",
+      "sl": 23807,
+      "initType": "Literal",
+      "readers": 4
+    },
+    {
+      "name": "proposalLoadStatusEl",
+      "kind": "let",
+      "sl": 23808,
+      "initType": "Literal",
+      "readers": 3
+    },
+    {
+      "name": "proposalLoadTitleEl",
+      "kind": "let",
+      "sl": 23809,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "proposalLoadBytesEl",
+      "kind": "let",
+      "sl": 23810,
+      "initType": "Literal",
+      "readers": 3
+    },
+    {
+      "name": "proposalLoadBytes",
+      "kind": "let",
+      "sl": 23811,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalLoadProgressTextEl",
+      "kind": "let",
+      "sl": 23812,
+      "initType": "Literal",
+      "readers": 2
+    },
+    {
+      "name": "proposalLoadProgressBarEl",
+      "kind": "let",
+      "sl": 23813,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalLoadProgressFillEl",
+      "kind": "let",
+      "sl": 23814,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalLoadProgressDone",
+      "kind": "let",
+      "sl": 23815,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "proposalLoadProgressTotal",
+      "kind": "let",
+      "sl": 23816,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "_proposalHighlightRefreshHandle",
+      "kind": "let",
+      "sl": 25299,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "PROPOSAL_HIGHLIGHT_REFRESH_DEBOUNCE_MS",
+      "kind": "const",
+      "sl": 25300,
+      "initType": "Literal",
+      "readers": 1
+    },
+    {
+      "name": "createProposalHotkeyAttached",
+      "kind": "let",
+      "sl": 26006,
+      "initType": "Literal",
+      "readers": 1
+    }
+  ],
+  "sharedMutable": [
+    {
+      "name": "_parcelRecordWriteCache",
+      "kind": "let",
+      "sl": 871,
+      "readers": 4
+    },
+    {
+      "name": "currentProposalDetailsContext",
+      "kind": "let",
+      "sl": 2769,
+      "readers": 4
+    },
+    {
+      "name": "originalOnParcelClick",
+      "kind": "let",
+      "sl": 6237,
+      "readers": 2
+    },
+    {
+      "name": "proposalDetailsEscapeHandler",
+      "kind": "let",
+      "sl": 8515,
+      "readers": 2
+    },
+    {
+      "name": "currentProposalTool",
+      "kind": "let",
+      "sl": 8556,
+      "readers": 5
+    },
+    {
+      "name": "currentGeometryGoal",
+      "kind": "let",
+      "sl": 8557,
+      "readers": 2
+    },
+    {
+      "name": "proposalGeometrySubmitted",
+      "kind": "let",
+      "sl": 8558,
+      "readers": 3
+    },
+    {
+      "name": "proposalAcquisitionLabels",
+      "kind": "let",
+      "sl": 8559,
+      "readers": 2
+    },
+    {
+      "name": "proposalModalScreenshotDataUrl",
+      "kind": "let",
+      "sl": 8566,
+      "readers": 2
+    },
+    {
+      "name": "proposalModalScreenshotPromise",
+      "kind": "let",
+      "sl": 8567,
+      "readers": 3
+    },
+    {
+      "name": "pendingRoadDrawingProposal",
+      "kind": "let",
+      "sl": 8569,
+      "readers": 3
+    },
+    {
+      "name": "pendingConstrainedCorridor",
+      "kind": "let",
+      "sl": 9413,
+      "readers": 2
+    },
+    {
+      "name": "proposalSingleParcelSelection",
+      "kind": "let",
+      "sl": 10460,
+      "readers": 2
+    },
+    {
+      "name": "proposalBalanceRequestSeq",
+      "kind": "let",
+      "sl": 11751,
+      "readers": 2
+    },
+    {
+      "name": "url3DModeHandled",
+      "kind": "let",
+      "sl": 22016,
+      "readers": 4
+    },
+    {
+      "name": "proposalLoadOverlay",
+      "kind": "let",
+      "sl": 23807,
+      "readers": 4
+    },
+    {
+      "name": "proposalLoadStatusEl",
+      "kind": "let",
+      "sl": 23808,
+      "readers": 3
+    },
+    {
+      "name": "proposalLoadTitleEl",
+      "kind": "let",
+      "sl": 23809,
+      "readers": 2
+    },
+    {
+      "name": "proposalLoadBytesEl",
+      "kind": "let",
+      "sl": 23810,
+      "readers": 3
+    },
+    {
+      "name": "proposalLoadProgressTextEl",
+      "kind": "let",
+      "sl": 23812,
+      "readers": 2
+    }
+  ],
+  "otherTop": [
+    {
+      "type": "IfStatement",
+      "sl": 989
+    },
+    {
+      "type": "IfStatement",
+      "sl": 1518
+    },
+    {
+      "type": "IfStatement",
+      "sl": 3818
+    },
+    {
+      "type": "IfStatement",
+      "sl": 5989
+    },
+    {
+      "type": "IfStatement",
+      "sl": 8831
+    },
+    {
+      "type": "IfStatement",
+      "sl": 9153
+    },
+    {
+      "type": "IfStatement",
+      "sl": 9162
+    },
+    {
+      "type": "IfStatement",
+      "sl": 10217
+    },
+    {
+      "type": "IfStatement",
+      "sl": 11486
+    },
+    {
+      "type": "IfStatement",
+      "sl": 11736
+    },
+    {
+      "type": "CallExpression",
+      "sl": 13827,
+      "callee": null
+    },
+    {
+      "type": "CallExpression",
+      "sl": 13828,
+      "callee": null
+    },
+    {
+      "type": "CallExpression",
+      "sl": 13829,
+      "callee": null
+    },
+    {
+      "type": "CallExpression",
+      "sl": 13830,
+      "callee": null
+    },
+    {
+      "type": "IfStatement",
+      "sl": 16585
+    },
+    {
+      "type": "IfStatement",
+      "sl": 16962
+    },
+    {
+      "type": "IfStatement",
+      "sl": 17234
+    },
+    {
+      "type": "IfStatement",
+      "sl": 18566
+    },
+    {
+      "type": "TryStatement",
+      "sl": 18582
+    },
+    {
+      "type": "IfStatement",
+      "sl": 19135
+    },
+    {
+      "type": "IfStatement",
+      "sl": 20048
+    },
+    {
+      "type": "CallExpression",
+      "sl": 25256,
+      "callee": null
+    },
+    {
+      "type": "IfStatement",
+      "sl": 25335
+    },
+    {
+      "type": "CallExpression",
+      "sl": 25987,
+      "callee": null
+    },
+    {
+      "type": "IfStatement",
+      "sl": 26050
+    },
+    {
+      "type": "IfStatement",
+      "sl": 26070
+    },
+    {
+      "type": "CallExpression",
+      "sl": 26080,
+      "callee": null
+    }
+  ],
+  "refs": {
+    "isLocalProposalId": [],
+    "isProposalMinted": [
+      "getProposalNftInfo",
+      "isLocalProposalId"
+    ],
+    "buildChainProposalId": [],
+    "walrusAggregatorBase": [],
+    "resolveProposalResourceUrl": [
+      "walrusAggregatorBase"
+    ],
+    "getProposalMetadataUrl": [
+      "resolveProposalResourceUrl"
+    ],
+    "fetchProposalMetadataJson": [
+      "resolveProposalResourceUrl",
+      "proposalMetadataFetchPromises"
+    ],
+    "isInCity": [],
+    "getProposalNftInfo": [],
+    "parseOnChainErrorMessage": [],
+    "handleUrbanRuleMainTypeClick": [
+      "setProposalMainType",
+      "setProposalType",
+      "updateProposalDescription",
+      "resetUrbanRuleTypologySelection",
+      "applyContiguityConstraints"
+    ],
+    "applyContiguityConstraints": [
+      "getCurrentParcelSelectionContext",
+      "areParcelsContiguous"
+    ],
+    "resetUrbanRuleTypologySelection": [],
+    "handleUrbanRuleTypologyClick": [
+      "setProposalMainType",
+      "setProposalType",
+      "launchRowHouseToolForSelection",
+      "launchParcelBasedToolForSelection",
+      "launchUrbanRuleToolForSelection"
+    ],
+    "normalizeParcelId": [],
+    "getParcelIdFromProperties": [
+      "normalizeParcelId"
+    ],
+    "getParcelIdFromFeature": [
+      "normalizeParcelId",
+      "getParcelIdFromProperties"
+    ],
+    "ensureParcelIdOnFeature": [
+      "normalizeParcelId",
+      "getParcelIdFromProperties"
+    ],
+    "parseOwnerShareFraction": [],
+    "normalizeParcelIdList": [
+      "normalizeParcelId"
+    ],
+    "normalizeFeature": [
+      "ensureParcelIdOnFeature"
+    ],
+    "normalizeOwnerAcceptances": [],
+    "normalizeLensEntries": [],
+    "getProposalLensEntries": [
+      "normalizeLensEntries"
+    ],
+    "fetchLensFromChain": [
+      "normalizeLensEntries"
+    ],
+    "applyLensPatternToButton": [
+      "normalizeLensEntries"
+    ],
+    "getOwnerSlotsForParcel": [
+      "getProposalI18nHelper"
+    ],
+    "setParcelInfoPanelTitle": [],
+    "tParcelMulti": [],
+    "ensureOwnerAcceptanceEntry": [],
+    "getProposalOwnerAcceptanceState": [
+      "getOwnerSlotsForParcel",
+      "ensureOwnerAcceptanceEntry"
+    ],
+    "getProposalI18nHelper": [],
+    "getConstrainedCorridorTranslator": [],
+    "getCorridorI18nHelper": [
+      "getProposalI18nHelper",
+      "getConstrainedCorridorTranslator"
+    ],
+    "flattenObject": [],
+    "ensureProposalListTranslations": [
+      "proposalListTranslationsHydrated",
+      "flattenObject"
+    ],
+    "showProposalAlertMessage": [
+      "getProposalI18nHelper"
+    ],
+    "requirePersonalizedUser": [
+      "getProposalI18nHelper"
+    ],
+    "_startParcelWriteCache": [],
+    "_flushParcelWriteCache": [
+      "_parcelRecordWriteCache"
+    ],
+    "_discardParcelWriteCache": [],
+    "isParcelReplacedByChildren": [
+      "readPersistedParcelRecord",
+      "proposalStorage"
+    ],
+    "readPersistedParcelRecord": [
+      "_parcelRecordWriteCache"
+    ],
+    "writePersistedParcelRecord": [
+      "_parcelRecordWriteCache",
+      "readPersistedParcelRecord"
+    ],
+    "clearPersistedParcelRecord": [
+      "_parcelRecordWriteCache"
+    ],
+    "getProposalAreaMap": [
+      "getProposalKey",
+      "proposalAreaCache",
+      "getCachedParcelFeature",
+      "readPersistedParcelRecord"
+    ],
+    "buildOwnerAcceptanceSectionHtml": [
+      "getProposalOwnerAcceptanceState",
+      "isProposalExpired",
+      "getProposalAreaMap",
+      "escapeHtml",
+      "getProposalI18nHelper",
+      "parseOwnerShareFraction",
+      "proposalRecipientConsentRow"
+    ],
+    "buildParcelAcceptanceStatusHtml": [
+      "getProposalI18nHelper"
+    ],
+    "buildProposalOwnerAcceptanceSummaryFast": [],
+    "buildOwnerAcceptanceStatusHtml": [
+      "getProposalI18nHelper",
+      "buildProposalOwnerAcceptanceSummary",
+      "escapeHtml"
+    ],
+    "buildProposalOwnerAcceptanceSummary": [
+      "getProposalOwnerAcceptanceState"
+    ],
+    "applyProposalOwnershipTransfer": [],
+    "proposalRecipientConsentSatisfied": [],
+    "recordRecipientConsent": [
+      "proposalStorage"
+    ],
+    "claimSaleOffer": [
+      "proposalStorage",
+      "isProposalOpenSaleOffer",
+      "showProposalInfo",
+      "renderProposalListModal",
+      "applyProposalHighlights",
+      "updateShowProposalsButton"
+    ],
+    "isProposalOpenSaleOffer": [],
+    "proposalRecipientConsentRow": [],
+    "acceptAsRecipient": [
+      "recordRecipientConsent",
+      "proposalStorage",
+      "showProposalInfo"
+    ],
+    "autoApplyExecutedProposalToMap": [
+      "proposalStorage",
+      "showProposalInfo",
+      "applyProposalHighlights"
+    ],
+    "serialiseRoadCoordinates": [],
+    "serialiseGeometry": [],
+    "hashStringDeterministic": [],
+    "serialiseRoadDefinition": [],
+    "buildGeometryMetadataPayload": [
+      "hashStringDeterministic"
+    ],
+    "getProposalKey": [],
+    "resolveProposalIdKey": [
+      "proposalStorage"
+    ],
+    "getProposalByIdOrHash": [
+      "proposalStorage",
+      "resolveProposalIdKey"
+    ],
+    "ensureProposalHighlightPanes": [],
+    "ensureProposalOverlayGroups": [
+      "ensureProposalHighlightPanes"
+    ],
+    "clearProposalBackgroundLayers": [
+      "ensureProposalOverlayGroups"
+    ],
+    "clearProposalAcceptedLayers": [
+      "ensureProposalOverlayGroups"
+    ],
+    "clearProposalPreviewLayers": [
+      "ensureProposalOverlayGroups"
+    ],
+    "clearProposalHoverLayers": [
+      "ensureProposalOverlayGroups"
+    ],
+    "updateParcelNumberFilterForProposal": [
+      "proposalHighlightState"
+    ],
+    "getFeatureCentroid": [],
+    "highlightFeaturesForHover": [
+      "ensureProposalOverlayGroups",
+      "getParcelDisplayNumberFromFeature",
+      "getFeatureCentroid"
+    ],
+    "getParcelFeatureForHighlight": [
+      "getCachedParcelFeature",
+      "multiParcelSelection",
+      "buildProposalFeatureCache"
+    ],
+    "collectProposalHighlightFeatures": [
+      "buildProposalFeatureCache",
+      "resolveProposalGoalKey",
+      "getParcelFeatureForHighlight"
+    ],
+    "highlightParcelHover": [
+      "getParcelFeatureForHighlight",
+      "highlightFeaturesForHover"
+    ],
+    "highlightProposalHover": [
+      "collectProposalHighlightFeatures",
+      "highlightFeaturesForHover"
+    ],
+    "collectProposalBuildingFeatures": [],
+    "renderProposalBuildingPreview": [
+      "ensureProposalOverlayGroups",
+      "collectProposalBuildingFeatures"
+    ],
+    "highlightProposalHoverById": [
+      "proposalStorage",
+      "highlightProposalHover"
+    ],
+    "isCameraMovementSuppressed": [],
+    "cloneGeoJSONFeature": [],
+    "normaliseToFeature": [
+      "cloneGeoJSONFeature"
+    ],
+    "getProposalFeatureCacheKey": [
+      "getProposalKey"
+    ],
+    "loadRoadAssetsForCache": [],
+    "buildProposalFeatureCache": [
+      "getProposalFeatureCacheKey",
+      "proposalFeatureCache",
+      "normaliseToFeature",
+      "getParcelIdFromFeature",
+      "loadRoadAssetsForCache"
+    ],
+    "getCachedParcelFeature": [
+      "buildProposalFeatureCache",
+      "cloneGeoJSONFeature"
+    ],
+    "forEachProposalParcelInViewport": [
+      "getParcelIdFromFeature"
+    ],
+    "resolveProposalParcelsInViewport": [
+      "forEachProposalParcelInViewport"
+    ],
+    "collectProposalHighlightParcelIdSet": [
+      "resolveProposalGoalKey"
+    ],
+    "collectProposalFeatureSets": [
+      "buildProposalFeatureCache",
+      "resolveProposalGoalKey",
+      "DEFAULT_CORRIDOR_WIDTHS",
+      "normaliseToFeature"
+    ],
+    "applyBlinkToLayerGroup": [],
+    "addFeatureToGroup": [
+      "applyBlinkToLayerGroup"
+    ],
+    "highlightParcelLayerInPlace": [
+      "getParcelIdFromFeature",
+      "proposalHighlightStyleOverride"
+    ],
+    "renderAppliedProposalHighlight": [
+      "ensureProposalOverlayGroups",
+      "proposalHighlightStyleOverride",
+      "collectProposalFeatureSets",
+      "resolveProposalGoalKey",
+      "DEFAULT_CORRIDOR_WIDTHS",
+      "addFeatureToGroup",
+      "collectProposalHighlightParcelIdSet",
+      "forEachProposalParcelInViewport"
+    ],
+    "renderPreviewOverlay": [
+      "ensureProposalOverlayGroups",
+      "collectProposalFeatureSets",
+      "resolveProposalGoalKey",
+      "addFeatureToGroup",
+      "DEFAULT_CORRIDOR_WIDTHS"
+    ],
+    "clearProposalPreview": [
+      "ensureProposalOverlayGroups"
+    ],
+    "getFirstSelectableParcel": [
+      "multiParcelSelection"
+    ],
+    "previewProposalOnMap": [
+      "proposalStorage",
+      "getProposalByIdOrHash",
+      "getProposalKey",
+      "resolveProposalIdKey",
+      "renderPreviewOverlay",
+      "computeBoundsFromFeatures",
+      "calculateProposalBounds"
+    ],
+    "getFeatureByParcelId": [
+      "getParcelIdFromFeature"
+    ],
+    "computeBoundsFromFeatures": [],
+    "syncMultiSelectCheckboxes": [],
+    "getProposalColor": [
+      "PROPOSAL_COLORS"
+    ],
+    "blendColors": [],
+    "updateProposalLayer": [],
+    "refreshProposalsLayer": [
+      "updateShowProposalsButton",
+      "syncProposalsIndicator"
+    ],
+    "refreshProposalData": [
+      "updateShowProposalsButton",
+      "syncProposalsIndicator",
+      "proposalStorage",
+      "showProposalInfo"
+    ],
+    "showRoadProposalInfo": [
+      "clearProposalHighlights",
+      "escapeHtml",
+      "resolveProposalGoalKey"
+    ],
+    "applyProposalHighlights": [
+      "proposalHighlightState",
+      "renderAppliedProposalHighlight",
+      "getProposalKey",
+      "updateParcelNumberFilterForProposal"
+    ],
+    "clearProposalHighlights": [
+      "proposalHighlightStyleOverride",
+      "clearProposalPreviewLayers",
+      "clearProposalHoverLayers",
+      "updateParcelNumberFilterForProposal",
+      "proposalHighlightState",
+      "multiParcelSelection"
+    ],
+    "reapplyProposalHighlights": [
+      "applyProposalHighlights"
+    ],
+    "tryBoundsFromRoadProposalDefinition": [],
+    "resolveStandaloneProposalFocusBounds": [
+      "tryBoundsFromRoadProposalDefinition",
+      "buildLeafletBoundsFromArray",
+      "computeBoundsFromGeoJSONFeatures"
+    ],
+    "selectAndHighlightProposal": [
+      "resolveProposalIdKey",
+      "getProposalByIdOrHash",
+      "getProposalKey",
+      "proposalListState",
+      "showProposalInfo",
+      "hideProposalDetailsPanel",
+      "isProposalApplied",
+      "applyProposalHighlights",
+      "clearProposalPreviewLayers",
+      "clearProposalHighlights",
+      "isCameraMovementSuppressed",
+      "updateProposalLayer",
+      "resolveStandaloneProposalFocusBounds",
+      "multiParcelSelection",
+      "focusMapOnSharedProposal",
+      "isProposalUIActive",
+      "clearProposalInfoHoverOverlay"
+    ],
+    "focusProposalDetails": [
+      "proposalStorage",
+      "getProposalByIdOrHash",
+      "getProposalKey",
+      "resolveProposalIdKey",
+      "selectAndHighlightProposal",
+      "ensureParentParcelsLoaded"
+    ],
+    "openProposalFromList": [
+      "proposalStorage",
+      "getProposalByIdOrHash",
+      "getFirstSelectableParcel",
+      "closeProposalList",
+      "getProposalKey",
+      "resolveProposalIdKey",
+      "focusProposalDetails"
+    ],
+    "normalizeProposalGoalKey": [],
+    "resolveProposalGoalKey": [
+      "normalizeProposalGoalKey"
+    ],
+    "resolveProposalActionTypeKey": [
+      "resolveProposalGoalKey"
+    ],
+    "applyProposalToMap": [
+      "proposalStorage",
+      "computeProposalCategoryFlags",
+      "resolveProposalActionTypeKey",
+      "APPLY_DISABLED_TYPE_KEYS",
+      "getProposalI18nHelper",
+      "clearProposalPreviewLayers",
+      "getProposalKey",
+      "focusProposalDetails"
+    ],
+    "removeProposalFromMap": [
+      "proposalStorage",
+      "getProposalI18nHelper"
+    ],
+    "collapseSidebarIfOpen": [],
+    "getCorrectClickHandler": [
+      "originalOnParcelClick"
+    ],
+    "proposalAwareParcelClickHandler": [
+      "originalOnParcelClick"
+    ],
+    "showProposalInfo": [
+      "collapseSidebarIfOpen",
+      "ensureArrayOfStrings",
+      "proposalStorage",
+      "getCachedParcelFeature",
+      "readPersistedParcelRecord",
+      "ensureParcelIdOnFeature",
+      "isParcelReplacedByChildren",
+      "getParcelIdFromFeature",
+      "buildOwnerAcceptanceSectionHtml",
+      "getParcelDisplayNumberFromProperties",
+      "getProposalI18nHelper",
+      "buildProposalOwnerAcceptanceSummaryFast",
+      "getProposalDisplayTitle",
+      "getProposalDisplayTypeLabel",
+      "getProposalDisplayDescription",
+      "escapeHtml",
+      "computeProposalCategoryFlags",
+      "resolveProposalActionTypeKey",
+      "APPLY_DISABLED_TYPE_KEYS",
+      "isProposalApplied",
+      "isProposalMinted",
+      "getProposalLifecycleKey",
+      "getProposalLifecycleClass",
+      "getProposalLifecycleLabel",
+      "getProposalNftInfo",
+      "buildProposalNftExplorerUrl",
+      "isProposalOpenSaleOffer",
+      "getProposalLensEntries",
+      "calculateDecayedOffer",
+      "getDecayProgress",
+      "resolveProposalGoalKey",
+      "buildParcelAcceptanceStatusHtml",
+      "buildProposalOwnerAcceptanceSummary",
+      "buildOwnerAcceptanceStatusHtml",
+      "applyLensPatternToButton",
+      "fetchLensFromChain",
+      "openProposalLens",
+      "ensureProposalMetadataLoaded",
+      "currentProposalDetailsContext",
+      "getProposalKey",
+      "handleAncestorItemHover",
+      "clearProposalHoverLayers",
+      "handleAncestorItemClick",
+      "restoreProposalDetailsScroll",
+      "renderProposalBuildingPreview",
+      "ensureProposalOverlayGroups",
+      "clearProposalInfoHoverOverlay",
+      "showProposalInfoHoverOverlay",
+      "handleDescendantItemHover",
+      "handleDescendantItemClick",
+      "initializeExpiryCountdown",
+      "initializeDecayCountdown",
+      "setProposalDetailsPanelMinimized",
+      "getProposalDetailsPanelLabels",
+      "installProposalDetailsEscapeHandler"
+    ],
+    "resolveProposalForBoost": [
+      "proposalStorage"
+    ],
+    "openProposalBoostDialog": [
+      "getProposalI18nHelper",
+      "resolveProposalForBoost",
+      "showProposalAlertMessage",
+      "closeProposalBoostDialog"
+    ],
+    "closeProposalBoostDialog": [],
+    "openAcceptOwnershipTransferDialog": [
+      "getProposalI18nHelper",
+      "resolveProposalForBoost",
+      "showProposalAlertMessage",
+      "closeAcceptOwnershipTransferDialog"
+    ],
+    "closeAcceptOwnershipTransferDialog": [],
+    "submitAcceptOwnershipTransfer": [
+      "closeAcceptOwnershipTransferDialog"
+    ],
+    "normalizeChainIdForBoost": [],
+    "submitProposalBoost": [
+      "getProposalI18nHelper",
+      "parseProposalOfferValue",
+      "showProposalAlertMessage",
+      "resolveProposalForBoost",
+      "getProposalNftInfo",
+      "normalizeChainIdForBoost",
+      "proposalStorage",
+      "closeProposalBoostDialog",
+      "showProposalInfo",
+      "refreshProposalsLayer"
+    ],
+    "focusParcelInMap": [
+      "multiParcelSelection",
+      "isCameraMovementSuppressed"
+    ],
+    "handleDescendantItemHover": [
+      "highlightProposalHoverById",
+      "highlightParcelHover"
+    ],
+    "handleDescendantItemClick": [
+      "clearProposalHoverLayers",
+      "getProposalByIdOrHash",
+      "selectAndHighlightProposal",
+      "getProposalKey",
+      "focusParcelInMap",
+      "highlightParcelHover"
+    ],
+    "handleAncestorItemHover": [
+      "highlightProposalHoverById"
+    ],
+    "handleAncestorItemClick": [
+      "clearProposalHoverLayers",
+      "getProposalByIdOrHash",
+      "selectAndHighlightProposal",
+      "getProposalKey"
+    ],
+    "openProposalLens": [
+      "proposalStorage",
+      "getProposalByIdOrHash",
+      "getProposalLensEntries"
+    ],
+    "handleProposalParcelClick": [
+      "multiParcelSelection",
+      "proposalStorage",
+      "selectAndHighlightProposal",
+      "getProposalKey",
+      "focusOnRemovedParcelLocation",
+      "returnToParcelInfo"
+    ],
+    "focusOnRemovedParcelLocation": [
+      "proposalStorage",
+      "readPersistedParcelRecord",
+      "ensureParcelIdOnFeature"
+    ],
+    "returnToParcelInfo": [
+      "hideProposalDetailsPanel",
+      "closeProposalList",
+      "updateProposalLayer"
+    ],
+    "hideProposalDetailsPanel": [
+      "setProposalDetailsPanelMinimized",
+      "teardownProposalDetailsEscapeHandler",
+      "clearProposalInfoHoverOverlay",
+      "clearProposalHighlights"
+    ],
+    "getProposalDetailsPanelLabels": [
+      "getProposalI18nHelper"
+    ],
+    "setProposalDetailsPanelMinimized": [
+      "getProposalDetailsPanelLabels"
+    ],
+    "toggleProposalDetailsPanelMinimized": [
+      "setProposalDetailsPanelMinimized"
+    ],
+    "installProposalDetailsEscapeHandler": [
+      "proposalDetailsEscapeHandler",
+      "hideProposalDetailsPanel"
+    ],
+    "teardownProposalDetailsEscapeHandler": [
+      "proposalDetailsEscapeHandler"
+    ],
+    "getSelectedProposalTool": [
+      "currentProposalTool"
+    ],
+    "normalizeGoalKey": [],
+    "updateProposalScreenshotGoalIcon": [
+      "getProposalGoalBadge"
+    ],
+    "getProposalGoalBadge": [
+      "normalizeGoalKey",
+      "PROPOSAL_GOAL_ICON_MAP"
+    ],
+    "shouldSkipProposalScreenshot": [
+      "normalizeGoalKey",
+      "PROPOSAL_SCREENSHOT_SKIP_GOALS"
+    ],
+    "getStoredProposalById": [
+      "proposalStorage"
+    ],
+    "getBackendBaseUrl": [],
+    "uploadProposalScreenshotDataUrl": [
+      "getBackendBaseUrl"
+    ],
+    "patchProposalScreenshotOnServer": [
+      "getSerialProposalId",
+      "getBackendBaseUrl"
+    ],
+    "persistProposalScreenshotUrl": [
+      "getStoredProposalById",
+      "proposalStorage"
+    ],
+    "persistProposalScreenshotDataUrl": [
+      "getStoredProposalById",
+      "proposalStorage"
+    ],
+    "captureAndPersistProposalScreenshot": [
+      "getStoredProposalById",
+      "shouldSkipProposalScreenshot",
+      "persistProposalScreenshotUrl",
+      "patchProposalScreenshotOnServer",
+      "proposalModalScreenshotDataUrl",
+      "proposalModalScreenshotPromise",
+      "reconstructProposalScreenshotDataUrl",
+      "persistProposalScreenshotDataUrl",
+      "uploadProposalScreenshotDataUrl"
+    ],
+    "resolveProposalPolygonForScreenshot": [
+      "normalizeGoalKey"
+    ],
+    "computeLatLngBoundsFromGeoJsonPolygon": [],
+    "collectParcelPolygonsFromParcelLayer": [],
+    "collectNeighbourPolygonsByBounds": [
+      "getParcelIdFromFeature"
+    ],
+    "reconstructProposalScreenshotDataUrl": [
+      "normalizeGoalKey",
+      "resolveProposalPolygonForScreenshot",
+      "collectParcelPolygonsFromParcelLayer",
+      "computeLatLngBoundsFromGeoJsonPolygon",
+      "collectNeighbourPolygonsByBounds",
+      "getProposalGoalBadge"
+    ],
+    "triggerProposalScreenshotRegeneration": [
+      "_proposalScreenshotInFlight",
+      "captureAndPersistProposalScreenshot"
+    ],
+    "setProposalModalDimmed": [],
+    "setGeometryStatus": [
+      "updateCreateProposalSubmitState"
+    ],
+    "goalRequiresGeometry": [],
+    "updateCreateProposalSubmitState": [
+      "currentGeometryGoal",
+      "getSelectedProposalTool",
+      "goalRequiresGeometry",
+      "proposalGeometrySubmitted"
+    ],
+    "renderGeometrySection": [
+      "getProposalI18nHelper",
+      "setGeometryStatus",
+      "handleGeometryAction",
+      "updateCreateProposalSubmitState"
+    ],
+    "openUrbanRuleGeometry": [
+      "handleUrbanRuleTypologyClick"
+    ],
+    "handleGeometryAction": [
+      "getProposalI18nHelper",
+      "getConstrainedCorridorTranslator",
+      "currentGeometryGoal",
+      "handleReparcellizationAlgorithmClick",
+      "launchSingleBuildingToolForSelection",
+      "openConstrainedCorridorModal",
+      "openUrbanRuleGeometry",
+      "setGeometryStatus",
+      "getCurrentParcelSelectionContext",
+      "formatParcelSelectionLabel",
+      "updateCreateProposalSubmitState"
+    ],
+    "openConstrainedCorridorModal": [
+      "getCurrentParcelSelectionContext",
+      "getProposalI18nHelper",
+      "getConstrainedCorridorTranslator",
+      "areParcelsContiguous",
+      "showProposalAlertMessage",
+      "buildGeometryFromParcels",
+      "constrainedCorridorState",
+      "DEFAULT_CORRIDOR_WIDTHS",
+      "pendingConstrainedCorridor",
+      "setGeometryStatus"
+    ],
+    "setProposalAcquisitionMode": [],
+    "setProposalBoundaryMode": [],
+    "computeOwnershipStatsFromSelection": [
+      "getParcelIdFromFeature"
+    ],
+    "updateGoalDependentSections": [
+      "proposalAcquisitionLabels",
+      "setProposalMainType",
+      "handleUrbanRuleTypologyClick",
+      "getCurrentParcelSelectionContext",
+      "computeOwnershipStatsFromSelection",
+      "setProposalBoundaryMode",
+      "setOwnershipTransferDirection",
+      "setProposalAcquisitionMode",
+      "resetOwnershipTransferOptions",
+      "renderGeometrySection"
+    ],
+    "setOwnershipTransferDirection": [
+      "updateProposalNameAndDescription",
+      "updateProposalScreenshotGoalIcon",
+      "updateOwnershipTransferOptions",
+      "renderGeometrySection",
+      "updateCreateProposalSubmitState"
+    ],
+    "updateOwnershipTransferOptions": [],
+    "resetOwnershipTransferOptions": [],
+    "getProposalRecipientAddress": [],
+    "facetModeLabel": [],
+    "applyFacetLockUI": [
+      "facetModeLabel"
+    ],
+    "setProposalParcelsMode": [
+      "proposalFacetState",
+      "applyFacetLockUI",
+      "proposalSingleParcelSelection"
+    ],
+    "setProposalOwnershipMode": [
+      "proposalFacetState",
+      "applyFacetLockUI",
+      "updateRecipientAddressVisibility"
+    ],
+    "updateRecipientAddressVisibility": [],
+    "onProposalRecipientScopeChange": [
+      "updateRecipientAddressVisibility",
+      "syncProposalFacets"
+    ],
+    "ownershipNameType": [
+      "proposalFacetState"
+    ],
+    "showProposalPerSliceOption": [],
+    "setProposalLandUseMode": [
+      "proposalFacetState"
+    ],
+    "onProposalLandUseChange": [
+      "selectLandUse"
+    ],
+    "relocateProposalGeometryGroup": [],
+    "selectLandUse": [
+      "getCurrentParcelSelectionContext",
+      "areParcelsContiguous",
+      "showProposalAlertMessage",
+      "setProposalLandUseMode",
+      "showProposalPerSliceOption",
+      "facetModeLabel",
+      "setProposalParcelsMode",
+      "setProposalOwnershipMode",
+      "PROPOSAL_PUBLIC_GOOD_USES",
+      "proposalSingleParcelSelection",
+      "syncProposalFacets"
+    ],
+    "onProposalParcelsChange": [
+      "proposalFacetState",
+      "showProposalPerSliceOption",
+      "setProposalOwnershipMode",
+      "facetModeLabel",
+      "syncProposalFacets"
+    ],
+    "onProposalOwnershipChange": [
+      "setProposalOwnershipMode",
+      "syncProposalFacets"
+    ],
+    "deriveProposalGoalKey": [
+      "proposalFacetState"
+    ],
+    "syncProposalFacets": [
+      "proposalFacetState",
+      "getProposalRecipientAddress",
+      "deriveProposalGoalKey",
+      "updateGoalDependentSections",
+      "relocateProposalGeometryGroup",
+      "updateProposalScreenshotGoalIcon",
+      "setOwnershipTransferDirection",
+      "updateProposalNameAndDescription",
+      "ownershipNameType",
+      "PROPOSAL_GOAL_TYPE_LABELS",
+      "currentProposalTool",
+      "updateCreateProposalSubmitState"
+    ],
+    "initProposalFacets": [
+      "setProposalLandUseMode",
+      "setProposalParcelsMode",
+      "setProposalOwnershipMode",
+      "showProposalPerSliceOption",
+      "normalizeGoalKey",
+      "syncProposalFacets",
+      "onProposalParcelsChange",
+      "onProposalOwnershipChange",
+      "selectLandUse"
+    ],
+    "setProposalCreateButtonState": [
+      "getProposalI18nHelper"
+    ],
+    "setProposalModalInteractivity": [],
+    "showProposalWaitingPopup": [],
+    "hideProposalWaitingPopup": [],
+    "showProposalWaitingPopupTemporary": [
+      "showProposalWaitingPopup",
+      "hideProposalWaitingPopup"
+    ],
+    "getCurrentParcelSelectionContext": [
+      "multiParcelSelection"
+    ],
+    "formatParcelSelectionLabel": [],
+    "setProposalType": [
+      "DEFAULT_PROPOSAL_TYPE",
+      "updateProposalScreenshotGoalIcon",
+      "currentProposalTool",
+      "updateProposalDescription"
+    ],
+    "ensureReparcellizationModuleLoaded": [
+      "reparcellizationModulePromise"
+    ],
+    "setProposalMainType": [
+      "handleReparcellizationAlgorithmClick",
+      "setProposalType",
+      "currentProposalTool",
+      "DEFAULT_PROPOSAL_TYPE"
+    ],
+    "handleReparcellizationAlgorithmClick": [
+      "currentOwnershipMode",
+      "ensureReparcellizationModuleLoaded",
+      "getProposalI18nHelper"
+    ],
+    "resolveProposalAuthorName": [],
+    "populateProposalAuthorUI": [
+      "resolveProposalAuthorName"
+    ],
+    "getProposalAuthorValue": [
+      "resolveProposalAuthorName"
+    ],
+    "buildProposalScreenshotContext": [
+      "normalizeGoalKey",
+      "buildGeometryFromParcels",
+      "multiParcelSelection",
+      "getParcelIdFromFeature"
+    ],
+    "buildGeometryFromParcels": [],
+    "areParcelsContiguous": [],
+    "launchStructureToolForSelection": [
+      "getCurrentParcelSelectionContext",
+      "areParcelsContiguous",
+      "showProposalAlertMessage",
+      "buildGeometryFromParcels",
+      "showStructureProposalDialog",
+      "closeProposalDialog",
+      "formatParcelSelectionLabel"
+    ],
+    "launchUrbanRuleToolForSelection": [
+      "getCurrentParcelSelectionContext",
+      "formatParcelSelectionLabel"
+    ],
+    "launchBlockifyToolForSelection": [
+      "launchUrbanRuleToolForSelection"
+    ],
+    "launchSingleBuildingToolForSelection": [
+      "getCurrentParcelSelectionContext",
+      "formatParcelSelectionLabel"
+    ],
+    "launchRowHouseToolForSelection": [
+      "getCurrentParcelSelectionContext",
+      "formatParcelSelectionLabel"
+    ],
+    "launchParcelBasedToolForSelection": [
+      "getCurrentParcelSelectionContext",
+      "formatParcelSelectionLabel"
+    ],
+    "generateDefaultProposalName": [
+      "getProposalI18nHelper",
+      "getProposalTypeLabel"
+    ],
+    "generateDefaultProposalDescription": [
+      "resolveProposalAuthorName",
+      "getProposalI18nHelper",
+      "getProposalTypeLabel"
+    ],
+    "updateProposalNameAndDescription": [
+      "generateDefaultProposalName",
+      "generateDefaultProposalDescription"
+    ],
+    "updateProposalDescription": [
+      "updateProposalNameAndDescription"
+    ],
+    "handleProposalToolButton": [
+      "normalizeGoalKey",
+      "setProposalParcelsMode",
+      "onProposalParcelsChange",
+      "setProposalOwnershipMode",
+      "onProposalOwnershipChange",
+      "selectLandUse"
+    ],
+    "collapseProposalGoalGroup": [],
+    "expandProposalGoalGroup": [],
+    "clearProposalBalanceWatcher": [
+      "teardownProposalBalanceWatcher",
+      "proposalBalanceRequestSeq"
+    ],
+    "getProposalBalanceChainContext": [],
+    "readEnvLikeValue": [],
+    "loadAddressesJson": [
+      "addressesJsonCache",
+      "addressesJsonPromise"
+    ],
+    "resolveErc20AddressForCurrency": [
+      "loadAddressesJson",
+      "readEnvLikeValue"
+    ],
+    "formatProposalBalanceText": [
+      "getProposalI18nHelper"
+    ],
+    "ensureProposalOfferBalanceElement": [
+      "formatProposalBalanceText"
+    ],
+    "refreshProposalBalanceDisplay": [
+      "ensureProposalOfferBalanceElement",
+      "proposalBalanceRequestSeq",
+      "formatProposalBalanceText",
+      "getProposalBalanceChainContext",
+      "resolveErc20AddressForCurrency"
+    ],
+    "attachProposalCurrencyHandlers": [
+      "clearProposalBalanceWatcher",
+      "ensureProposalOfferBalanceElement",
+      "refreshProposalBalanceDisplay",
+      "getProposalBalanceChainContext"
+    ],
+    "showProposalDialog": [
+      "requirePersonalizedUser",
+      "getProposalI18nHelper",
+      "normalizeGoalKey",
+      "proposalDialogOverrides",
+      "getCurrentParcelSelectionContext",
+      "pendingRoadDrawingProposal",
+      "buildProposalScreenshotContext",
+      "computeOwnershipStatsFromSelection",
+      "getParcelIdFromFeature",
+      "getParcelDisplayNumberFromProperties",
+      "getProposalGoalBadge",
+      "currentProposalTool",
+      "updateProposalScreenshotGoalIcon",
+      "proposalModalScreenshotPromise",
+      "initProposalFacets",
+      "setProposalAcquisitionMode",
+      "setProposalBoundaryMode",
+      "proposalAcquisitionLabels",
+      "applyContiguityConstraints",
+      "setGeometryStatus",
+      "proposalGeometrySubmitted",
+      "updateCreateProposalSubmitState",
+      "populateProposalAuthorUI",
+      "updateProposalNameAndDescription",
+      "DEFAULT_PROPOSAL_TYPE",
+      "generateDefaultProposalName",
+      "generateDefaultProposalDescription",
+      "attachProposalCurrencyHandlers",
+      "proposalStorage",
+      "escapeHtml",
+      "resolveProposalGoalKey",
+      "formatProposalTypeLabel",
+      "openProposalFromList"
+    ],
+    "closeProposalDialog": [
+      "clearProposalBalanceWatcher",
+      "pendingRoadDrawingProposal",
+      "multiParcelSelection",
+      "syncMultiSelectCheckboxes",
+      "setProposalModalDimmed"
+    ],
+    "toggleExpiryInput": [],
+    "toggleDecayInput": [],
+    "toggleDepositInput": [],
+    "calculateDecayedOffer": [],
+    "getDecayProgress": [],
+    "parseExpiryTime": [],
+    "isProposalExpired": [],
+    "checkAndUpdateProposalExpiry": [
+      "isProposalExpired",
+      "proposalStorage"
+    ],
+    "formatRemainingTime": [],
+    "initializeExpiryCountdown": [
+      "expiryCountdownInterval",
+      "proposalStorage",
+      "checkAndUpdateProposalExpiry",
+      "updateProposalList",
+      "showProposalInfo",
+      "formatRemainingTime"
+    ],
+    "initializeDecayCountdown": [
+      "decayCountdownInterval",
+      "proposalStorage"
+    ],
+    "_randomFrom": [],
+    "generateStructureName": [
+      "_randomFrom"
+    ],
+    "showStructureProposalDialog": [
+      "getProposalI18nHelper",
+      "multiParcelSelection",
+      "areParcelsContiguous",
+      "showProposalAlertMessage",
+      "getParcelDisplayNumberFromProperties",
+      "generateStructureName",
+      "populateProposalAuthorUI",
+      "updateProposalDescription",
+      "attachProposalCurrencyHandlers",
+      "createStructureProposalFromDialog"
+    ],
+    "computeLakeZonesForGeometry": [
+      "LAKE_SHORE_TARGET_RATIO"
+    ],
+    "buildLakeGraphicsFromGeometry": [
+      "computeLakeZonesForGeometry",
+      "LAKE_SHORE_TARGET_RATIO",
+      "LAKE_GRAPHICS_VERSION"
+    ],
+    "createStructureProposalFromDialog": [
+      "getProposalAuthorValue",
+      "showProposalAlertMessage",
+      "parseExpiryTime",
+      "buildLakeGraphicsFromGeometry",
+      "normalizeParcelIdList",
+      "normalizeLensEntries",
+      "proposalStorage",
+      "closeProposalDialog",
+      "updateShowProposalsButton",
+      "enableShowProposalsMode",
+      "applyProposalToMap",
+      "focusProposalDetails"
+    ],
+    "findVisibleDescendant": [
+      "proposalStorage",
+      "getProposalByIdOrHash",
+      "readPersistedParcelRecord"
+    ],
+    "calculateBoundsForLastAppliedProposal": [
+      "proposalStorage",
+      "findVisibleDescendant",
+      "getProposalByIdOrHash",
+      "ensureArrayOfStrings",
+      "calculateProposalBounds",
+      "calculateProposalGeometryBounds"
+    ],
+    "calculateProposalGeometryBounds": [],
+    "calculateProposalBounds": [
+      "buildProposalFeatureCache",
+      "multiParcelSelection"
+    ],
+    "checkParcelsHaveNFTsSolana": [],
+    "checkParcelsHaveNFTs": [],
+    "showWalletNotConnectedModal": [
+      "getProposalI18nHelper",
+      "setProposalModalDimmed"
+    ],
+    "showMissingParcelsModal": [
+      "getProposalI18nHelper",
+      "setProposalModalDimmed"
+    ],
+    "showOnchainMintFailedModal": [
+      "getProposalI18nHelper",
+      "setProposalModalDimmed"
+    ],
+    "createProposal": [
+      "getProposalI18nHelper",
+      "getSelectedProposalTool",
+      "showProposalAlertMessage",
+      "goalRequiresGeometry",
+      "proposalGeometrySubmitted",
+      "updateCreateProposalSubmitState",
+      "getProposalGoalBadge",
+      "getProposalAuthorValue",
+      "DEFAULT_PROPOSAL_TYPE",
+      "setProposalCreateButtonState",
+      "setProposalModalInteractivity",
+      "hideProposalWaitingPopup",
+      "setProposalModalDimmed",
+      "multiParcelSelection",
+      "checkParcelsHaveNFTsSolana",
+      "checkParcelsHaveNFTs",
+      "showMissingParcelsModal",
+      "calculateProposalBounds",
+      "parseExpiryTime",
+      "buildGeometryFromParcels",
+      "formatParcelSelectionLabel",
+      "pendingConstrainedCorridor",
+      "pendingRoadDrawingProposal",
+      "DEFAULT_CORRIDOR_WIDTHS",
+      "getCorridorI18nHelper",
+      "normalizeLensEntries",
+      "showProposalWaitingPopup",
+      "ensureParcelIdOnFeature",
+      "getParcelIdFromFeature",
+      "getShareI18nHelper",
+      "proposalModalScreenshotPromise",
+      "proposalModalScreenshotDataUrl",
+      "getProposalLensEntries",
+      "resolveProposalGoalKey",
+      "buildGeometryMetadataPayload",
+      "buildChainProposalId",
+      "proposalStorage",
+      "showProposalWaitingPopupTemporary",
+      "showOnchainMintFailedModal",
+      "updateShowProposalsButton",
+      "enableShowProposalsMode",
+      "closeProposalDialog",
+      "updateProposalList",
+      "selectAndHighlightProposal",
+      "showProposalDetailsModal",
+      "showProposalMintSuccessModal"
+    ],
+    "resolveCurrentCityCode": [],
+    "normalizeCityCodeForApi": [],
+    "normalizeServerProposalSummary": [
+      "resolveCurrentCityCode",
+      "normalizeProposalGoalKey"
+    ],
+    "isServerProposalDownloaded": [
+      "proposalStorage"
+    ],
+    "resetServerProposalCache": [
+      "serverProposalCache"
+    ],
+    "fetchServerProposalSummaries": [
+      "normalizeCityCodeForApi",
+      "resolveCurrentCityCode",
+      "serverProposalCache",
+      "renderProposalListModal",
+      "resolveBackendBaseUrl",
+      "SERVER_PROPOSAL_SUMMARY_LIMIT",
+      "normalizeServerProposalSummary"
+    ],
+    "ensureServerProposals": [
+      "normalizeCityCodeForApi",
+      "resolveCurrentCityCode",
+      "serverProposalCache",
+      "resetServerProposalCache",
+      "fetchServerProposalSummaries"
+    ],
+    "fetchServerProposalById": [
+      "resolveBackendBaseUrl"
+    ],
+    "handleProposalDownloadClick": [
+      "getProposalI18nHelper",
+      "fetchServerProposalById",
+      "resolveCurrentCityCode",
+      "proposalStorage",
+      "updateShowProposalsButton"
+    ],
+    "handleBlockchainSyncClick": [
+      "renderProposalListModal"
+    ],
+    "getLocalizedProposalSortOptions": [
+      "getProposalI18nHelper",
+      "PROPOSAL_SORT_OPTIONS",
+      "PROPOSAL_SORT_I18N_KEYS"
+    ],
+    "getLocalizedProposalGoalFilters": [
+      "getProposalI18nHelper",
+      "PROPOSAL_GOAL_FILTERS",
+      "PROPOSAL_GOAL_FILTER_I18N_KEYS"
+    ],
+    "getProposalGoalLabel": [
+      "getProposalI18nHelper",
+      "normalizeProposalGoalKey",
+      "PROPOSAL_GOAL_LABELS"
+    ],
+    "getProposalTypeLabel": [
+      "getProposalGoalLabel"
+    ],
+    "resolveStructureProposal": [
+      "proposalStorage"
+    ],
+    "computeProposalCategoryFlags": [
+      "resolveProposalGoalKey",
+      "resolveStructureProposal"
+    ],
+    "getProposalDisplayType": [
+      "resolveProposalGoalKey"
+    ],
+    "formatProposalTypeLabel": [
+      "getProposalTypeLabel"
+    ],
+    "isGenericProposalDisplayText": [],
+    "collectProposalDisplayCandidates": [
+      "resolveStructureProposal"
+    ],
+    "getProposalDisplayTitle": [
+      "resolveProposalGoalKey",
+      "getProposalGoalLabel",
+      "collectProposalDisplayCandidates",
+      "isGenericProposalDisplayText"
+    ],
+    "getProposalDisplayTypeLabel": [
+      "resolveProposalGoalKey",
+      "formatProposalTypeLabel"
+    ],
+    "getProposalDisplayDescription": [
+      "isGenericProposalDisplayText"
+    ],
+    "ensureProposalMetadataLoaded": [
+      "getProposalMetadataUrl",
+      "fetchProposalMetadataJson",
+      "proposalStorage"
+    ],
+    "isProposalApplied": [
+      "resolveStructureProposal",
+      "resolveProposalGoalKey"
+    ],
+    "getProposalLifecycleKey": [
+      "PROPOSAL_INACTIVE_STATUSES"
+    ],
+    "getProposalLifecycleLabel": [
+      "getProposalI18nHelper"
+    ],
+    "getProposalLifecycleClass": [],
+    "getParcelAreaById": [
+      "multiParcelSelection",
+      "getParcelIdFromFeature",
+      "readPersistedParcelRecord"
+    ],
+    "computeProposalArea": [
+      "getParcelAreaById"
+    ],
+    "computeProposalMetrics": [
+      "computeProposalArea",
+      "resolveProposalGoalKey",
+      "isProposalApplied"
+    ],
+    "formatAreaMetric": [],
+    "formatCurrencyMetric": [],
+    "applyProposalListFilters": [
+      "proposalListState"
+    ],
+    "sortProposalDataset": [
+      "proposalListState"
+    ],
+    "buildProposalActionButtons": [
+      "isProposalOpenSaleOffer",
+      "getProposalI18nHelper"
+    ],
+    "buildProposalThumbHtml": [
+      "shouldSkipProposalScreenshot",
+      "getProposalKey",
+      "proposalStorage",
+      "escapeHtml",
+      "normalizeGoalKey",
+      "getProposalGoalBadge",
+      "getProposalI18nHelper"
+    ],
+    "buildProposalListItemsHtml": [
+      "getProposalI18nHelper",
+      "escapeHtml",
+      "getProposalKey",
+      "getSerialProposalId",
+      "getProposalColor",
+      "getProposalLifecycleKey",
+      "getProposalLifecycleLabel",
+      "getProposalLifecycleClass",
+      "formatProposalTypeLabel",
+      "formatAreaMetric",
+      "formatCurrencyMetric",
+      "proposalHighlightState",
+      "proposalListState",
+      "currentProposalPreviewId",
+      "isProposalApplied",
+      "isProposalMinted",
+      "buildProposalThumbHtml",
+      "buildProposalActionButtons"
+    ],
+    "refreshProposalOwnerAcceptanceUI": [
+      "buildParcelAcceptanceStatusHtml",
+      "buildOwnerAcceptanceStatusHtml",
+      "buildOwnerAcceptanceSectionHtml"
+    ],
+    "clearProposalListFilterInputDebounce": [
+      "_proposalListFilterInputDebounceTimer"
+    ],
+    "scheduleDebouncedProposalListModalRender": [
+      "clearProposalListFilterInputDebounce",
+      "renderProposalListModal",
+      "PROPOSAL_LIST_FILTER_INPUT_DEBOUNCE_MS"
+    ],
+    "renderProposalListModal": [
+      "clearProposalListFilterInputDebounce",
+      "ensureProposalListTranslations",
+      "getProposalI18nHelper",
+      "getLocalizedProposalGoalFilters",
+      "getLocalizedProposalSortOptions",
+      "proposalListState",
+      "resolveCurrentCityCode",
+      "proposalStorage",
+      "checkAndUpdateProposalExpiry",
+      "applyProposalListFilters",
+      "sortProposalDataset",
+      "computeProposalMetrics",
+      "normalizeCityCodeForApi",
+      "serverProposalCache",
+      "resetServerProposalCache",
+      "fetchServerProposalSummaries",
+      "ensureServerProposals",
+      "getProposalKey",
+      "escapeHtml",
+      "PROPOSAL_SORT_I18N_KEYS",
+      "buildProposalListItemsHtml",
+      "isServerProposalDownloaded",
+      "updateShowProposalsButton",
+      "scheduleDebouncedProposalListModalRender",
+      "handleProposalListItemClick",
+      "handleProposalDownloadClick"
+    ],
+    "resetParcelSelectionForProposalListInteraction": [
+      "multiParcelSelection"
+    ],
+    "showProposalDownloadConfirm": [
+      "getProposalI18nHelper"
+    ],
+    "handleProposalListItemClick": [
+      "proposalListState",
+      "getProposalByIdOrHash",
+      "showProposalDownloadConfirm",
+      "fetchServerProposalById",
+      "resolveCurrentCityCode",
+      "proposalStorage",
+      "updateShowProposalsButton",
+      "getProposalKey",
+      "resetParcelSelectionForProposalListInteraction",
+      "openProposalFromList"
+    ],
+    "showProposalDetailsModal": [
+      "openProposalFromList"
+    ],
+    "showAllProposalsModal": [
+      "resetParcelSelectionForProposalListInteraction",
+      "clearProposalInfoHoverOverlay",
+      "renderProposalListModal"
+    ],
+    "switchProposalTab": [
+      "proposalListState",
+      "renderProposalListModal"
+    ],
+    "closeProposalList": [
+      "clearProposalInfoHoverOverlay",
+      "clearProposalHighlights",
+      "proposalListState"
+    ],
+    "updateProposalList": [
+      "showAllProposalsModal"
+    ],
+    "updateShowProposalsButton": [
+      "proposalStorage",
+      "serverProposalCache",
+      "isProposalCurrentlyApplied",
+      "syncProposalsIndicator"
+    ],
+    "syncProposalsIndicator": [],
+    "getExplorerBaseUrlForChain": [],
+    "showProposalMintSuccessModal": [
+      "getExplorerBaseUrlForChain",
+      "showProposalDetailsModal"
+    ],
+    "buildProposalNftExplorerUrl": [
+      "getProposalNftInfo",
+      "getExplorerBaseUrlForChain"
+    ],
+    "showMintedShareModal": [
+      "getShareI18nHelper",
+      "getProposalI18nHelper",
+      "buildProposalNftExplorerUrl",
+      "showSimpleShareModal"
+    ],
+    "isProposalUIActive": [],
+    "deleteProposal": [
+      "proposalStorage",
+      "resolveProposalGoalKey",
+      "clearProposalHighlights",
+      "updateProposalLayer",
+      "updateProposalList",
+      "updateShowProposalsButton"
+    ],
+    "centerOnProposal": [
+      "getProposalByIdOrHash",
+      "selectAndHighlightProposal",
+      "getProposalKey"
+    ],
+    "clearLocalProposalData": [
+      "proposalStorage",
+      "clearProposalHighlights",
+      "proposalLayer",
+      "closeProposalList",
+      "updateShowProposalsButton"
+    ],
+    "initialiseProposalStorage": [
+      "proposalStorage",
+      "updateShowProposalsButton"
+    ],
+    "rerenderProposalListIfOpen": [
+      "renderProposalListModal"
+    ],
+    "handleMultiSelectChange": [
+      "syncMultiSelectCheckboxes",
+      "updateProposalLayer",
+      "multiParcelSelection"
+    ],
+    "handleShowProposalsChange": [],
+    "enableShowProposalsMode": [],
+    "findParcelLayerById": [
+      "multiParcelSelection",
+      "getParcelIdFromFeature"
+    ],
+    "base64UrlEncodeBytes": [],
+    "base64UrlDecodeToBytes": [],
+    "compressBytes": [],
+    "inflateBytes": [],
+    "decodeBytesToJson": [],
+    "computeBoundsFromGeoJSONFeatures": [],
+    "buildLeafletBoundsFromArray": [],
+    "focusMapOnSharedProposal": [
+      "isCameraMovementSuppressed",
+      "buildLeafletBoundsFromArray",
+      "ensureArrayOfStrings",
+      "getParcelFeatureForHighlight",
+      "computeBoundsFromGeoJSONFeatures",
+      "findParcelLayerById",
+      "buildBoundsFromSharedPayload"
+    ],
+    "getShareI18nHelper": [
+      "getProposalI18nHelper"
+    ],
+    "getSharedInspectorI18nHelper": [
+      "getProposalI18nHelper"
+    ],
+    "collectProposalParentParcelIdsForShare": [],
+    "checkParcelsOriginal": [
+      "getParcelIdFromFeature",
+      "readPersistedParcelRecord"
+    ],
+    "collectParcelProposalPairs": [
+      "getParcelIdFromFeature",
+      "readPersistedParcelRecord"
+    ],
+    "showNonOriginalParcelShareBlockedModal": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "collectParcelProposalPairs",
+      "showSimpleShareModal",
+      "showUploadProposalModal"
+    ],
+    "getServerProposalId": [],
+    "getSerialProposalId": [],
+    "sortProposalIdsForShare": [],
+    "shareAppliedProposals": [
+      "showSharePlanModal"
+    ],
+    "showSharePlanModal": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "proposalStorage",
+      "isProposalCurrentlyApplied",
+      "getProposalKey",
+      "sortProposalIdsForShare",
+      "buildCityQueryParam",
+      "resolveFrontendBaseUrl",
+      "resolveProposalGoalKey",
+      "ensureAncestorProposalsUploaded",
+      "getServerProposalId",
+      "uploadProposalToServer",
+      "headProposalExists",
+      "getSerialProposalId",
+      "resolveBackendBaseUrl",
+      "syncProposalWithServerId",
+      "showSimpleShareModal"
+    ],
+    "shareSingleProposal": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "proposalStorage",
+      "getProposalKey",
+      "currentProposalDetailsContext",
+      "getProposalByIdOrHash",
+      "collectProposalParentParcelIdsForShare",
+      "checkParcelsOriginal",
+      "showNonOriginalParcelShareBlockedModal",
+      "showUploadProposalModal"
+    ],
+    "shareProposalFromDetails": [
+      "currentProposalDetailsContext",
+      "shareSingleProposal"
+    ],
+    "showWalkUploadGateModal": [
+      "proposalStorage",
+      "showSimpleShareModal",
+      "getSerialProposalId",
+      "isProposalCurrentlyApplied",
+      "getProposalKey",
+      "ensureAncestorProposalsUploaded",
+      "uploadProposalToServer",
+      "resolveProposalGoalKey"
+    ],
+    "isProposalCurrentlyApplied": [],
+    "isProposalAppliedAndMaterialized": [
+      "isProposalCurrentlyApplied"
+    ],
+    "buildSharedProposalsPayload": [
+      "resolveProposalGoalKey",
+      "ensureArrayOfStrings",
+      "isProposalMinted",
+      "normalizeLensEntries",
+      "getParcelFeatureForHighlight",
+      "deepClone",
+      "deepCloneArray",
+      "computeSharedBoundingBoxFromFeatures"
+    ],
+    "deepClone": [],
+    "deepCloneArray": [
+      "deepClone"
+    ],
+    "ensureArrayOfStrings": [],
+    "escapeHtml": [],
+    "getParcelDisplayNumberFromProperties": [
+      "getParcelIdFromProperties"
+    ],
+    "getParcelDisplayNumberFromFeature": [
+      "getParcelDisplayNumberFromProperties"
+    ],
+    "decodeSharedPayload": [
+      "base64UrlDecodeToBytes",
+      "inflateBytes",
+      "decodeBytesToJson"
+    ],
+    "computeSharedBoundingBoxFromFeatures": [
+      "collectCoordinatesFromGeometry"
+    ],
+    "collectCoordinatesFromGeometry": [],
+    "showShareLinkModal": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "escapeHtml",
+      "showSimpleShareModal",
+      "savePlanPayloadAsJson"
+    ],
+    "showShareTooLargeModal": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "showSimpleShareModal"
+    ],
+    "resolveBackendBaseUrl": [],
+    "resolveFrontendBaseUrl": [],
+    "buildCityQueryParam": [],
+    "migrateRoadAssetsToNewId": [
+      "proposalStorage"
+    ],
+    "mapGoalToBackendType": [],
+    "buildUploadReadyProposal": [
+      "resolveProposalGoalKey",
+      "mapGoalToBackendType",
+      "ensureArrayOfStrings"
+    ],
+    "syncProposalWithServerId": [
+      "proposalStorage",
+      "migrateRoadAssetsToNewId"
+    ],
+    "uploadProposalToServer": [
+      "buildUploadReadyProposal",
+      "resolveBackendBaseUrl",
+      "syncProposalWithServerId"
+    ],
+    "headProposalExists": [
+      "resolveBackendBaseUrl",
+      "isLocalProposalId",
+      "syncProposalWithServerId"
+    ],
+    "ensureAncestorProposalsUploaded": [
+      "proposalStorage",
+      "getProposalKey",
+      "getServerProposalId",
+      "headProposalExists"
+    ],
+    "showUploadProposalModal": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "buildCityQueryParam",
+      "getServerProposalId",
+      "resolveFrontendBaseUrl",
+      "getProposalNftInfo",
+      "buildProposalNftExplorerUrl",
+      "ensureAncestorProposalsUploaded",
+      "buildUploadReadyProposal",
+      "uploadProposalToServer",
+      "proposalStorage",
+      "getProposalKey",
+      "selectAndHighlightProposal",
+      "showProposalInfo",
+      "getProposalLensEntries",
+      "multiParcelSelection",
+      "checkParcelsHaveNFTs",
+      "showMissingParcelsModal",
+      "findParcelLayerById",
+      "resolveProposalGoalKey",
+      "getExplorerBaseUrlForChain",
+      "buildChainProposalId",
+      "currentProposalDetailsContext",
+      "showSimpleShareModal"
+    ],
+    "showSimpleShareModal": [
+      "getProposalI18nHelper",
+      "appendModalBody"
+    ],
+    "appendModalBody": [],
+    "isTruthyUrlFlag": [],
+    "is3DModeRequestedFromUrl": [
+      "isTruthyUrlFlag"
+    ],
+    "roughlyEqualLatLng": [],
+    "createLeafletViewSettlePromise": [
+      "roughlyEqualLatLng"
+    ],
+    "tryEnterThreeMode": [],
+    "focusMapThenMaybeEnter3D": [
+      "is3DModeRequestedFromUrl",
+      "url3DModeHandled",
+      "createLeafletViewSettlePromise",
+      "tryEnterThreeMode"
+    ],
+    "handleSingleProposalShareFromUrl": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "singleProposalShareHandled",
+      "decodeSharedPayload",
+      "showSimpleShareModal",
+      "cleanSharedQuery",
+      "loadSharedProposalFromLink",
+      "escapeHtml"
+    ],
+    "loadSharedProposalFromLink": [
+      "isCameraMovementSuppressed",
+      "prepareProposalForImport",
+      "ensureParentParcelsFetched",
+      "proposalStorage",
+      "ensureArrayOfStrings",
+      "getParcelIdFromFeature",
+      "preloadProposalParcelOwners",
+      "getProposalKey",
+      "selectAndHighlightProposal",
+      "showProposalInfo",
+      "focusMapThenMaybeEnter3D",
+      "focusMapOnSharedProposal",
+      "getProposalI18nHelper"
+    ],
+    "ensureParentParcelsLoaded": [
+      "findMissingParentParcels",
+      "preloadProposalParcelOwners",
+      "fetchParcelsForIds"
+    ],
+    "waitForParcelLayersReady": [
+      "ensureArrayOfStrings",
+      "isInCity",
+      "isParcelLayerReady",
+      "readPersistedParcelRecord",
+      "isParcelReplacedByChildren"
+    ],
+    "isParcelLayerReady": [
+      "getParcelIdFromFeature"
+    ],
+    "stageSharedProposalDependencies": [
+      "ensureArrayOfStrings",
+      "ensureParentParcelsLoaded",
+      "waitForParcelLayersReady",
+      "preloadProposalParcelOwners"
+    ],
+    "fetchParcelsForIds": [],
+    "preloadProposalParcelOwners": [],
+    "buildBoundsFromSharedPayload": [],
+    "handleSharedProposalsFromUrl": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "sharedProposalsHandled",
+      "decodeSharedPayload",
+      "showSimpleShareModal",
+      "cleanSharedQuery",
+      "showSharedPayloadInspector",
+      "applySharedProposalsFromPayload"
+    ],
+    "cleanSharedQuery": [],
+    "applySharedProposalsFromPayload": [
+      "getProposalKey",
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "importAndApplySharedProposal",
+      "updateProposalLayer",
+      "updateShowProposalsButton",
+      "findVisibleDescendant",
+      "calculateBoundsForLastAppliedProposal",
+      "focusProposalDetails",
+      "escapeHtml",
+      "showSimpleShareModal",
+      "clearProposalInfoHoverOverlay",
+      "clearProposalHighlights",
+      "url3DModeHandled",
+      "is3DModeRequestedFromUrl",
+      "createLeafletViewSettlePromise",
+      "tryEnterThreeMode"
+    ],
+    "computeRequiredParentIdsForSharedProposal": [
+      "ensureArrayOfStrings"
+    ],
+    "showSharedPayloadInspector": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "getSharedInspectorI18nHelper",
+      "escapeHtml",
+      "showSimpleShareModal"
+    ],
+    "savePlanPayloadAsJson": [
+      "getShareI18nHelper"
+    ],
+    "gatherParentParcelIdsFromSharedProposals": [
+      "ensureArrayOfStrings"
+    ],
+    "findMissingParentParcels": [
+      "multiParcelSelection",
+      "isParcelLayerReady"
+    ],
+    "focusMapForSharedPayload": [],
+    "waitForMapIdle": [],
+    "promptMissingParentParcelsModal": [
+      "showSimpleShareModal",
+      "escapeHtml"
+    ],
+    "prepareProposalForImport": [
+      "ensureArrayOfStrings",
+      "normalizeProposalGoalKey",
+      "normalizeLensEntries",
+      "deepClone",
+      "deepCloneArray"
+    ],
+    "ensureParentParcelsFetched": [
+      "computeRequiredParentIdsForSharedProposal",
+      "multiParcelSelection",
+      "fetchParcelsForIds"
+    ],
+    "ensureRoadParentParcelIds": [
+      "ensureArrayOfStrings"
+    ],
+    "getStoredApplyFailureInfo": [
+      "ensureArrayOfStrings"
+    ],
+    "sameStringArrays": [
+      "ensureArrayOfStrings"
+    ],
+    "syncCanonicalSharedProposalState": [
+      "ensureArrayOfStrings",
+      "sameStringArrays"
+    ],
+    "importAndApplySharedProposal": [
+      "getProposalKey",
+      "prepareProposalForImport",
+      "proposalStorage",
+      "syncCanonicalSharedProposalState",
+      "isProposalCurrentlyApplied",
+      "syncProposalsIndicator",
+      "ensureParentParcelsFetched",
+      "ensureArrayOfStrings",
+      "computeRequiredParentIdsForSharedProposal",
+      "ensureRoadParentParcelIds",
+      "getStoredApplyFailureInfo",
+      "findMissingParentParcels"
+    ],
+    "ensureProposalLoadOverlay": [
+      "proposalLoadOverlay",
+      "proposalLoadTitleEl",
+      "proposalLoadStatusEl",
+      "proposalLoadBytesEl",
+      "proposalLoadProgressTextEl"
+    ],
+    "renderProposalLoadProgress": [
+      "proposalLoadProgressBarEl",
+      "proposalLoadProgressFillEl",
+      "proposalLoadProgressTotal",
+      "proposalLoadProgressDone",
+      "proposalLoadProgressTextEl"
+    ],
+    "showProposalLoadOverlay": [
+      "ensureProposalLoadOverlay",
+      "proposalLoadTitleEl",
+      "proposalLoadStatusEl",
+      "proposalLoadBytesEl",
+      "renderProposalLoadProgress",
+      "proposalLoadOverlay"
+    ],
+    "updateProposalLoadOverlay": [
+      "proposalLoadOverlay",
+      "proposalLoadStatusEl",
+      "proposalLoadBytesEl",
+      "proposalLoadBytes",
+      "renderProposalLoadProgress"
+    ],
+    "hideProposalLoadOverlay": [
+      "proposalLoadOverlay"
+    ],
+    "addResponseBytes": [
+      "updateProposalLoadOverlay"
+    ],
+    "formatSharedProposalLabel": [],
+    "formatSharedProposalTypeLabel": [
+      "resolveProposalGoalKey"
+    ],
+    "handleSharedPlanRoute": [
+      "getProposalI18nHelper",
+      "getShareI18nHelper",
+      "showProposalLoadOverlay",
+      "resolveBackendBaseUrl",
+      "updateProposalLoadOverlay",
+      "ensureArrayOfStrings",
+      "computeRequiredParentIdsForSharedProposal",
+      "is3DModeRequestedFromUrl",
+      "proposalStorage",
+      "isProposalAppliedAndMaterialized",
+      "getServerProposalId",
+      "hideProposalLoadOverlay",
+      "findVisibleDescendant",
+      "calculateBoundsForLastAppliedProposal",
+      "focusProposalDetails",
+      "tryEnterThreeMode",
+      "showSimpleShareModal",
+      "escapeHtml",
+      "isParcelReplacedByChildren",
+      "isParcelLayerReady",
+      "fetchParcelsForIds",
+      "ensureParentParcelsLoaded",
+      "waitForParcelLayersReady",
+      "formatSharedProposalTypeLabel",
+      "getStoredApplyFailureInfo",
+      "formatSharedProposalLabel",
+      "addResponseBytes",
+      "importAndApplySharedProposal",
+      "url3DModeHandled",
+      "updateProposalLayer",
+      "updateShowProposalsButton",
+      "createLeafletViewSettlePromise"
+    ],
+    "handleProposalRouteFromUrl": [
+      "showAllProposalsModal",
+      "handleSharedPlanRoute"
+    ],
+    "handleStandalone3DModeFromUrl": [
+      "url3DModeHandled",
+      "is3DModeRequestedFromUrl",
+      "tryEnterThreeMode"
+    ],
+    "selectProposalFromList": [
+      "getProposalByIdOrHash",
+      "selectAndHighlightProposal",
+      "getProposalKey"
+    ],
+    "cancelMultiParcelSelection": [
+      "multiParcelSelection",
+      "syncMultiSelectCheckboxes"
+    ],
+    "scheduleHighlightRefresh": [
+      "_proposalHighlightRefreshHandle",
+      "reapplyProposalHighlights",
+      "PROPOSAL_HIGHLIGHT_REFRESH_DEBOUNCE_MS"
+    ],
+    "setupMultiParcelHighlightListeners": [
+      "multiParcelSelection",
+      "scheduleHighlightRefresh"
+    ],
+    "acceptProposal": [
+      "showProposalAlertMessage",
+      "proposalStorage",
+      "normalizeParcelId",
+      "normalizeParcelIdList",
+      "getOwnerSlotsForParcel",
+      "ensureOwnerAcceptanceEntry",
+      "multiParcelSelection",
+      "proposalRecipientConsentSatisfied",
+      "updateShowProposalsButton",
+      "autoApplyExecutedProposalToMap",
+      "applyProposalOwnershipTransfer",
+      "getProposalI18nHelper",
+      "resolveProposalGoalKey"
+    ],
+    "restoreProposalDetailsScroll": [],
+    "handleUserAcceptProposal": [
+      "showProposalAlertMessage",
+      "proposalStorage",
+      "normalizeParcelId",
+      "getOwnerSlotsForParcel",
+      "ensureOwnerAcceptanceEntry",
+      "getProposalNftInfo",
+      "parseOnChainErrorMessage",
+      "acceptProposal",
+      "refreshProposalOwnerAcceptanceUI",
+      "restoreProposalDetailsScroll",
+      "renderProposalListModal",
+      "refreshProposalsLayer"
+    ],
+    "handleUserRejectProposal": [
+      "showProposalAlertMessage",
+      "proposalStorage",
+      "getProposalOwnerAcceptanceState",
+      "getProposalNftInfo",
+      "normalizeParcelId",
+      "parseOnChainErrorMessage",
+      "rejectProposal",
+      "refreshProposalOwnerAcceptanceUI",
+      "restoreProposalDetailsScroll"
+    ],
+    "rejectProposal": [
+      "proposalStorage",
+      "showProposalAlertMessage",
+      "normalizeParcelId",
+      "normalizeOwnerAcceptances",
+      "ensureOwnerAcceptanceEntry",
+      "getOwnerSlotsForParcel",
+      "normalizeParcelIdList",
+      "applyProposalHighlights"
+    ],
+    "isEditableElement": [],
+    "handleCreateProposalHotkey": [
+      "isEditableElement",
+      "getCurrentParcelSelectionContext",
+      "getProposalI18nHelper",
+      "showProposalDialog"
+    ],
+    "attachCreateProposalHotkey": [
+      "createProposalHotkeyAttached",
+      "handleCreateProposalHotkey"
+    ],
+    "showProposalInfoHoverOverlay": [
+      "isProposalUIActive",
+      "highlightParcelHover"
+    ],
+    "clearProposalInfoHoverOverlay": [
+      "clearProposalHoverLayers"
+    ],
+    "formatProposalOfferValue": [],
+    "handleProposalOfferInput": [
+      "formatProposalOfferValue"
+    ],
+    "parseProposalOfferValue": []
+  },
+  "topFns": {
+    "isLocalProposalId": {
+      "sl": 12,
+      "el": 16
+    },
+    "isProposalMinted": {
+      "sl": 18,
+      "el": 27
+    },
+    "buildChainProposalId": {
+      "sl": 29,
+      "el": 42
+    },
+    "walrusAggregatorBase": {
+      "sl": 44,
+      "el": 49
+    },
+    "resolveProposalResourceUrl": {
+      "sl": 51,
+      "el": 75
+    },
+    "getProposalMetadataUrl": {
+      "sl": 77,
+      "el": 94
+    },
+    "fetchProposalMetadataJson": {
+      "sl": 96,
+      "el": 116
+    },
+    "isInCity": {
+      "sl": 118,
+      "el": 149
+    },
+    "getProposalNftInfo": {
+      "sl": 151,
+      "el": 167
+    },
+    "parseOnChainErrorMessage": {
+      "sl": 169,
+      "el": 195
+    },
+    "handleUrbanRuleMainTypeClick": {
+      "sl": 197,
+      "el": 204
+    },
+    "applyContiguityConstraints": {
+      "sl": 208,
+      "el": 243
+    },
+    "resetUrbanRuleTypologySelection": {
+      "sl": 245,
+      "el": 248
+    },
+    "handleUrbanRuleTypologyClick": {
+      "sl": 250,
+      "el": 296
+    },
+    "normalizeParcelId": {
+      "sl": 298,
+      "el": 302
+    },
+    "getParcelIdFromProperties": {
+      "sl": 304,
+      "el": 319
+    },
+    "getParcelIdFromFeature": {
+      "sl": 321,
+      "el": 331
+    },
+    "ensureParcelIdOnFeature": {
+      "sl": 333,
+      "el": 340
+    },
+    "parseOwnerShareFraction": {
+      "sl": 342,
+      "el": 364
+    },
+    "normalizeParcelIdList": {
+      "sl": 366,
+      "el": 376
+    },
+    "normalizeFeature": {
+      "sl": 378,
+      "el": 382
+    },
+    "normalizeOwnerAcceptances": {
+      "sl": 384,
+      "el": 418
+    },
+    "normalizeLensEntries": {
+      "sl": 420,
+      "el": 446
+    },
+    "getProposalLensEntries": {
+      "sl": 448,
+      "el": 465
+    },
+    "fetchLensFromChain": {
+      "sl": 467,
+      "el": 489
+    },
+    "applyLensPatternToButton": {
+      "sl": 491,
+      "el": 505
+    },
+    "getOwnerSlotsForParcel": {
+      "sl": 507,
+      "el": 529
+    },
+    "setParcelInfoPanelTitle": {
+      "sl": 531,
+      "el": 552
+    },
+    "tParcelMulti": {
+      "sl": 554,
+      "el": 561
+    },
+    "ensureOwnerAcceptanceEntry": {
+      "sl": 563,
+      "el": 676
+    },
+    "getProposalOwnerAcceptanceState": {
+      "sl": 678,
+      "el": 739
+    },
+    "getProposalI18nHelper": {
+      "sl": 741,
+      "el": 759
+    },
+    "getConstrainedCorridorTranslator": {
+      "sl": 761,
+      "el": 768
+    },
+    "getCorridorI18nHelper": {
+      "sl": 770,
+      "el": 773
+    },
+    "flattenObject": {
+      "sl": 781,
+      "el": 792
+    },
+    "ensureProposalListTranslations": {
+      "sl": 794,
+      "el": 829
+    },
+    "showProposalAlertMessage": {
+      "sl": 830,
+      "el": 839
+    },
+    "requirePersonalizedUser": {
+      "sl": 846,
+      "el": 867
+    },
+    "_startParcelWriteCache": {
+      "sl": 873,
+      "el": 875
+    },
+    "_flushParcelWriteCache": {
+      "sl": 877,
+      "el": 886
+    },
+    "_discardParcelWriteCache": {
+      "sl": 888,
+      "el": 890
+    },
+    "isParcelReplacedByChildren": {
+      "sl": 909,
+      "el": 922
+    },
+    "readPersistedParcelRecord": {
+      "sl": 924,
+      "el": 944
+    },
+    "writePersistedParcelRecord": {
+      "sl": 946,
+      "el": 974
+    },
+    "clearPersistedParcelRecord": {
+      "sl": 976,
+      "el": 987
+    },
+    "getProposalAreaMap": {
+      "sl": 998,
+      "el": 1048
+    },
+    "buildOwnerAcceptanceSectionHtml": {
+      "sl": 1050,
+      "el": 1168
+    },
+    "buildParcelAcceptanceStatusHtml": {
+      "sl": 1170,
+      "el": 1225
+    },
+    "buildProposalOwnerAcceptanceSummaryFast": {
+      "sl": 1227,
+      "el": 1280
+    },
+    "buildOwnerAcceptanceStatusHtml": {
+      "sl": 1282,
+      "el": 1338
+    },
+    "buildProposalOwnerAcceptanceSummary": {
+      "sl": 1340,
+      "el": 1388
+    },
+    "applyProposalOwnershipTransfer": {
+      "sl": 1394,
+      "el": 1408
+    },
+    "proposalRecipientConsentSatisfied": {
+      "sl": 1413,
+      "el": 1421
+    },
+    "recordRecipientConsent": {
+      "sl": 1423,
+      "el": 1431
+    },
+    "claimSaleOffer": {
+      "sl": 1436,
+      "el": 1485
+    },
+    "isProposalOpenSaleOffer": {
+      "sl": 1488,
+      "el": 1494
+    },
+    "proposalRecipientConsentRow": {
+      "sl": 1498,
+      "el": 1506
+    },
+    "acceptAsRecipient": {
+      "sl": 1509,
+      "el": 1516
+    },
+    "autoApplyExecutedProposalToMap": {
+      "sl": 1525,
+      "el": 1560
+    },
+    "serialiseRoadCoordinates": {
+      "sl": 1562,
+      "el": 1572
+    },
+    "serialiseGeometry": {
+      "sl": 1574,
+      "el": 1581
+    },
+    "hashStringDeterministic": {
+      "sl": 1584,
+      "el": 1596
+    },
+    "serialiseRoadDefinition": {
+      "sl": 1598,
+      "el": 1617
+    },
+    "buildGeometryMetadataPayload": {
+      "sl": 1619,
+      "el": 1650
+    },
+    "getProposalKey": {
+      "sl": 2771,
+      "el": 2780
+    },
+    "resolveProposalIdKey": {
+      "sl": 2782,
+      "el": 2793
+    },
+    "getProposalByIdOrHash": {
+      "sl": 2795,
+      "el": 2799
+    },
+    "ensureProposalHighlightPanes": {
+      "sl": 2801,
+      "el": 2834
+    },
+    "ensureProposalOverlayGroups": {
+      "sl": 2836,
+      "el": 2886
+    },
+    "clearProposalBackgroundLayers": {
+      "sl": 2888,
+      "el": 2891
+    },
+    "clearProposalAcceptedLayers": {
+      "sl": 2893,
+      "el": 2896
+    },
+    "clearProposalPreviewLayers": {
+      "sl": 2898,
+      "el": 2903
+    },
+    "clearProposalHoverLayers": {
+      "sl": 2905,
+      "el": 2909
+    },
+    "updateParcelNumberFilterForProposal": {
+      "sl": 2911,
+      "el": 2920
+    },
+    "getFeatureCentroid": {
+      "sl": 2922,
+      "el": 2945
+    },
+    "highlightFeaturesForHover": {
+      "sl": 2947,
+      "el": 2998
+    },
+    "getParcelFeatureForHighlight": {
+      "sl": 3000,
+      "el": 3033
+    },
+    "collectProposalHighlightFeatures": {
+      "sl": 3035,
+      "el": 3081
+    },
+    "highlightParcelHover": {
+      "sl": 3083,
+      "el": 3095
+    },
+    "highlightProposalHover": {
+      "sl": 3097,
+      "el": 3102
+    },
+    "collectProposalBuildingFeatures": {
+      "sl": 3104,
+      "el": 3131
+    },
+    "renderProposalBuildingPreview": {
+      "sl": 3133,
+      "el": 3163
+    },
+    "highlightProposalHoverById": {
+      "sl": 3165,
+      "el": 3171
+    },
+    "isCameraMovementSuppressed": {
+      "sl": 3174,
+      "el": 3176
+    },
+    "cloneGeoJSONFeature": {
+      "sl": 3178,
+      "el": 3184
+    },
+    "normaliseToFeature": {
+      "sl": 3186,
+      "el": 3208
+    },
+    "getProposalFeatureCacheKey": {
+      "sl": 3213,
+      "el": 3220
+    },
+    "loadRoadAssetsForCache": {
+      "sl": 3222,
+      "el": 3254
+    },
+    "buildProposalFeatureCache": {
+      "sl": 3256,
+      "el": 3308
+    },
+    "getCachedParcelFeature": {
+      "sl": 3310,
+      "el": 3321
+    },
+    "forEachProposalParcelInViewport": {
+      "sl": 3344,
+      "el": 3386
+    },
+    "resolveProposalParcelsInViewport": {
+      "sl": 3394,
+      "el": 3404
+    },
+    "collectProposalHighlightParcelIdSet": {
+      "sl": 3411,
+      "el": 3429
+    },
+    "collectProposalFeatureSets": {
+      "sl": 3431,
+      "el": 3697
+    },
+    "applyBlinkToLayerGroup": {
+      "sl": 3699,
+      "el": 3715
+    },
+    "addFeatureToGroup": {
+      "sl": 3717,
+      "el": 3735
+    },
+    "highlightParcelLayerInPlace": {
+      "sl": 3829,
+      "el": 3850
+    },
+    "renderAppliedProposalHighlight": {
+      "sl": 3852,
+      "el": 4047
+    },
+    "renderPreviewOverlay": {
+      "sl": 4049,
+      "el": 4172
+    },
+    "clearProposalPreview": {
+      "sl": 4174,
+      "el": 4180
+    },
+    "getFirstSelectableParcel": {
+      "sl": 4182,
+      "el": 4199
+    },
+    "previewProposalOnMap": {
+      "sl": 4201,
+      "el": 4306
+    },
+    "getFeatureByParcelId": {
+      "sl": 4308,
+      "el": 4315
+    },
+    "computeBoundsFromFeatures": {
+      "sl": 4317,
+      "el": 4331
+    },
+    "syncMultiSelectCheckboxes": {
+      "sl": 4333,
+      "el": 4341
+    },
+    "getProposalColor": {
+      "sl": 5309,
+      "el": 5314
+    },
+    "blendColors": {
+      "sl": 5315,
+      "el": 5329
+    },
+    "updateProposalLayer": {
+      "sl": 5332,
+      "el": 5332
+    },
+    "refreshProposalsLayer": {
+      "sl": 5335,
+      "el": 5339
+    },
+    "refreshProposalData": {
+      "sl": 5342,
+      "el": 5366
+    },
+    "showRoadProposalInfo": {
+      "sl": 5369,
+      "el": 5430
+    },
+    "applyProposalHighlights": {
+      "sl": 5439,
+      "el": 5453
+    },
+    "clearProposalHighlights": {
+      "sl": 5456,
+      "el": 5496
+    },
+    "reapplyProposalHighlights": {
+      "sl": 5499,
+      "el": 5504
+    },
+    "tryBoundsFromRoadProposalDefinition": {
+      "sl": 5507,
+      "el": 5555
+    },
+    "resolveStandaloneProposalFocusBounds": {
+      "sl": 5557,
+      "el": 5594
+    },
+    "selectAndHighlightProposal": {
+      "sl": 5597,
+      "el": 5842
+    },
+    "focusProposalDetails": {
+      "sl": 5859,
+      "el": 5899
+    },
+    "openProposalFromList": {
+      "sl": 5901,
+      "el": 5946
+    },
+    "normalizeProposalGoalKey": {
+      "sl": 5952,
+      "el": 5979
+    },
+    "resolveProposalGoalKey": {
+      "sl": 5981,
+      "el": 5987
+    },
+    "resolveProposalActionTypeKey": {
+      "sl": 5994,
+      "el": 5996
+    },
+    "applyProposalToMap": {
+      "sl": 5998,
+      "el": 6173
+    },
+    "removeProposalFromMap": {
+      "sl": 6175,
+      "el": 6228
+    },
+    "collapseSidebarIfOpen": {
+      "sl": 6239,
+      "el": 6245
+    },
+    "getCorrectClickHandler": {
+      "sl": 6251,
+      "el": 6265
+    },
+    "proposalAwareParcelClickHandler": {
+      "sl": 6273,
+      "el": 6283
+    },
+    "showProposalInfo": {
+      "sl": 6289,
+      "el": 7661
+    },
+    "resolveProposalForBoost": {
+      "sl": 7663,
+      "el": 7670
+    },
+    "openProposalBoostDialog": {
+      "sl": 7672,
+      "el": 7770
+    },
+    "closeProposalBoostDialog": {
+      "sl": 7772,
+      "el": 7777
+    },
+    "openAcceptOwnershipTransferDialog": {
+      "sl": 7779,
+      "el": 7835
+    },
+    "closeAcceptOwnershipTransferDialog": {
+      "sl": 7837,
+      "el": 7842
+    },
+    "submitAcceptOwnershipTransfer": {
+      "sl": 7844,
+      "el": 7849
+    },
+    "normalizeChainIdForBoost": {
+      "sl": 7851,
+      "el": 7875
+    },
+    "submitProposalBoost": {
+      "sl": 7877,
+      "el": 8091
+    },
+    "focusParcelInMap": {
+      "sl": 8094,
+      "el": 8116
+    },
+    "handleDescendantItemHover": {
+      "sl": 8118,
+      "el": 8143
+    },
+    "handleDescendantItemClick": {
+      "sl": 8145,
+      "el": 8169
+    },
+    "handleAncestorItemHover": {
+      "sl": 8171,
+      "el": 8182
+    },
+    "handleAncestorItemClick": {
+      "sl": 8184,
+      "el": 8195
+    },
+    "openProposalLens": {
+      "sl": 8199,
+      "el": 8229
+    },
+    "handleProposalParcelClick": {
+      "sl": 8231,
+      "el": 8298
+    },
+    "focusOnRemovedParcelLocation": {
+      "sl": 8300,
+      "el": 8390
+    },
+    "returnToParcelInfo": {
+      "sl": 8392,
+      "el": 8430
+    },
+    "hideProposalDetailsPanel": {
+      "sl": 8438,
+      "el": 8457
+    },
+    "getProposalDetailsPanelLabels": {
+      "sl": 8459,
+      "el": 8466
+    },
+    "setProposalDetailsPanelMinimized": {
+      "sl": 8468,
+      "el": 8500
+    },
+    "toggleProposalDetailsPanelMinimized": {
+      "sl": 8502,
+      "el": 8510
+    },
+    "installProposalDetailsEscapeHandler": {
+      "sl": 8517,
+      "el": 8527
+    },
+    "teardownProposalDetailsEscapeHandler": {
+      "sl": 8529,
+      "el": 8533
+    },
+    "getSelectedProposalTool": {
+      "sl": 8571,
+      "el": 8573
+    },
+    "normalizeGoalKey": {
+      "sl": 8575,
+      "el": 8584
+    },
+    "updateProposalScreenshotGoalIcon": {
+      "sl": 8586,
+      "el": 8613
+    },
+    "getProposalGoalBadge": {
+      "sl": 8615,
+      "el": 8623
+    },
+    "shouldSkipProposalScreenshot": {
+      "sl": 8635,
+      "el": 8639
+    },
+    "getStoredProposalById": {
+      "sl": 8641,
+      "el": 8651
+    },
+    "getBackendBaseUrl": {
+      "sl": 8653,
+      "el": 8664
+    },
+    "uploadProposalScreenshotDataUrl": {
+      "sl": 8669,
+      "el": 8699
+    },
+    "patchProposalScreenshotOnServer": {
+      "sl": 8701,
+      "el": 8720
+    },
+    "persistProposalScreenshotUrl": {
+      "sl": 8722,
+      "el": 8739
+    },
+    "persistProposalScreenshotDataUrl": {
+      "sl": 8743,
+      "el": 8765
+    },
+    "captureAndPersistProposalScreenshot": {
+      "sl": 8770,
+      "el": 8829
+    },
+    "resolveProposalPolygonForScreenshot": {
+      "sl": 8850,
+      "el": 8951
+    },
+    "computeLatLngBoundsFromGeoJsonPolygon": {
+      "sl": 8953,
+      "el": 8970
+    },
+    "collectParcelPolygonsFromParcelLayer": {
+      "sl": 8972,
+      "el": 8985
+    },
+    "collectNeighbourPolygonsByBounds": {
+      "sl": 8987,
+      "el": 9008
+    },
+    "reconstructProposalScreenshotDataUrl": {
+      "sl": 9011,
+      "el": 9127
+    },
+    "triggerProposalScreenshotRegeneration": {
+      "sl": 9132,
+      "el": 9151
+    },
+    "setProposalModalDimmed": {
+      "sl": 9182,
+      "el": 9190
+    },
+    "setGeometryStatus": {
+      "sl": 9192,
+      "el": 9200
+    },
+    "goalRequiresGeometry": {
+      "sl": 9202,
+      "el": 9209
+    },
+    "updateCreateProposalSubmitState": {
+      "sl": 9211,
+      "el": 9224
+    },
+    "renderGeometrySection": {
+      "sl": 9226,
+      "el": 9325
+    },
+    "openUrbanRuleGeometry": {
+      "sl": 9327,
+      "el": 9344
+    },
+    "handleGeometryAction": {
+      "sl": 9346,
+      "el": 9406
+    },
+    "openConstrainedCorridorModal": {
+      "sl": 9416,
+      "el": 10215
+    },
+    "setProposalAcquisitionMode": {
+      "sl": 10221,
+      "el": 10230
+    },
+    "setProposalBoundaryMode": {
+      "sl": 10232,
+      "el": 10263
+    },
+    "computeOwnershipStatsFromSelection": {
+      "sl": 10265,
+      "el": 10307
+    },
+    "updateGoalDependentSections": {
+      "sl": 10309,
+      "el": 10366
+    },
+    "setOwnershipTransferDirection": {
+      "sl": 10368,
+      "el": 10401
+    },
+    "updateOwnershipTransferOptions": {
+      "sl": 10403,
+      "el": 10430
+    },
+    "resetOwnershipTransferOptions": {
+      "sl": 10432,
+      "el": 10451
+    },
+    "getProposalRecipientAddress": {
+      "sl": 10467,
+      "el": 10470
+    },
+    "facetModeLabel": {
+      "sl": 10475,
+      "el": 10480
+    },
+    "applyFacetLockUI": {
+      "sl": 10484,
+      "el": 10501
+    },
+    "setProposalParcelsMode": {
+      "sl": 10503,
+      "el": 10509
+    },
+    "setProposalOwnershipMode": {
+      "sl": 10511,
+      "el": 10518
+    },
+    "updateRecipientAddressVisibility": {
+      "sl": 10521,
+      "el": 10529
+    },
+    "onProposalRecipientScopeChange": {
+      "sl": 10531,
+      "el": 10534
+    },
+    "ownershipNameType": {
+      "sl": 10538,
+      "el": 10544
+    },
+    "showProposalPerSliceOption": {
+      "sl": 10546,
+      "el": 10549
+    },
+    "setProposalLandUseMode": {
+      "sl": 10551,
+      "el": 10554
+    },
+    "onProposalLandUseChange": {
+      "sl": 10556,
+      "el": 10559
+    },
+    "relocateProposalGeometryGroup": {
+      "sl": 10564,
+      "el": 10584
+    },
+    "selectLandUse": {
+      "sl": 10588,
+      "el": 10618
+    },
+    "onProposalParcelsChange": {
+      "sl": 10620,
+      "el": 10632
+    },
+    "onProposalOwnershipChange": {
+      "sl": 10634,
+      "el": 10640
+    },
+    "deriveProposalGoalKey": {
+      "sl": 10643,
+      "el": 10651
+    },
+    "syncProposalFacets": {
+      "sl": 10653,
+      "el": 10705
+    },
+    "initProposalFacets": {
+      "sl": 10708,
+      "el": 10722
+    },
+    "setProposalCreateButtonState": {
+      "sl": 10724,
+      "el": 10749
+    },
+    "setProposalModalInteractivity": {
+      "sl": 10751,
+      "el": 10772
+    },
+    "showProposalWaitingPopup": {
+      "sl": 10774,
+      "el": 10807
+    },
+    "hideProposalWaitingPopup": {
+      "sl": 10809,
+      "el": 10814
+    },
+    "showProposalWaitingPopupTemporary": {
+      "sl": 10816,
+      "el": 10821
+    },
+    "getCurrentParcelSelectionContext": {
+      "sl": 10823,
+      "el": 10841
+    },
+    "formatParcelSelectionLabel": {
+      "sl": 10843,
+      "el": 10849
+    },
+    "setProposalType": {
+      "sl": 10851,
+      "el": 10875
+    },
+    "ensureReparcellizationModuleLoaded": {
+      "sl": 10879,
+      "el": 10895
+    },
+    "setProposalMainType": {
+      "sl": 10897,
+      "el": 10942
+    },
+    "handleReparcellizationAlgorithmClick": {
+      "sl": 10944,
+      "el": 10982
+    },
+    "resolveProposalAuthorName": {
+      "sl": 10984,
+      "el": 11004
+    },
+    "populateProposalAuthorUI": {
+      "sl": 11006,
+      "el": 11040
+    },
+    "getProposalAuthorValue": {
+      "sl": 11042,
+      "el": 11046
+    },
+    "buildProposalScreenshotContext": {
+      "sl": 11048,
+      "el": 11284
+    },
+    "buildGeometryFromParcels": {
+      "sl": 11286,
+      "el": 11430
+    },
+    "areParcelsContiguous": {
+      "sl": 11432,
+      "el": 11484
+    },
+    "launchStructureToolForSelection": {
+      "sl": 11490,
+      "el": 11523
+    },
+    "launchUrbanRuleToolForSelection": {
+      "sl": 11525,
+      "el": 11540
+    },
+    "launchBlockifyToolForSelection": {
+      "sl": 11543,
+      "el": 11545
+    },
+    "launchSingleBuildingToolForSelection": {
+      "sl": 11547,
+      "el": 11561
+    },
+    "launchRowHouseToolForSelection": {
+      "sl": 11563,
+      "el": 11577
+    },
+    "launchParcelBasedToolForSelection": {
+      "sl": 11579,
+      "el": 11593
+    },
+    "generateDefaultProposalName": {
+      "sl": 11595,
+      "el": 11638
+    },
+    "generateDefaultProposalDescription": {
+      "sl": 11640,
+      "el": 11681
+    },
+    "updateProposalNameAndDescription": {
+      "sl": 11683,
+      "el": 11699
+    },
+    "updateProposalDescription": {
+      "sl": 11701,
+      "el": 11704
+    },
+    "handleProposalToolButton": {
+      "sl": 11706,
+      "el": 11718
+    },
+    "collapseProposalGoalGroup": {
+      "sl": 11722,
+      "el": 11727
+    },
+    "expandProposalGoalGroup": {
+      "sl": 11729,
+      "el": 11732
+    },
+    "clearProposalBalanceWatcher": {
+      "sl": 11755,
+      "el": 11761
+    },
+    "getProposalBalanceChainContext": {
+      "sl": 11763,
+      "el": 11786
+    },
+    "readEnvLikeValue": {
+      "sl": 11788,
+      "el": 11812
+    },
+    "loadAddressesJson": {
+      "sl": 11814,
+      "el": 11832
+    },
+    "resolveErc20AddressForCurrency": {
+      "sl": 11834,
+      "el": 11930
+    },
+    "formatProposalBalanceText": {
+      "sl": 11932,
+      "el": 11952
+    },
+    "ensureProposalOfferBalanceElement": {
+      "sl": 11954,
+      "el": 11966
+    },
+    "refreshProposalBalanceDisplay": {
+      "sl": 11968,
+      "el": 12072
+    },
+    "attachProposalCurrencyHandlers": {
+      "sl": 12074,
+      "el": 12143
+    },
+    "showProposalDialog": {
+      "sl": 12146,
+      "el": 12983
+    },
+    "closeProposalDialog": {
+      "sl": 12986,
+      "el": 13035
+    },
+    "toggleExpiryInput": {
+      "sl": 13038,
+      "el": 13048
+    },
+    "toggleDecayInput": {
+      "sl": 13051,
+      "el": 13064
+    },
+    "toggleDepositInput": {
+      "sl": 13067,
+      "el": 13078
+    },
+    "calculateDecayedOffer": {
+      "sl": 13081,
+      "el": 13102
+    },
+    "getDecayProgress": {
+      "sl": 13105,
+      "el": 13118
+    },
+    "parseExpiryTime": {
+      "sl": 13121,
+      "el": 13129
+    },
+    "isProposalExpired": {
+      "sl": 13132,
+      "el": 13137
+    },
+    "checkAndUpdateProposalExpiry": {
+      "sl": 13140,
+      "el": 13154
+    },
+    "formatRemainingTime": {
+      "sl": 13160,
+      "el": 13167
+    },
+    "initializeExpiryCountdown": {
+      "sl": 13170,
+      "el": 13257
+    },
+    "initializeDecayCountdown": {
+      "sl": 13263,
+      "el": 13321
+    },
+    "_randomFrom": {
+      "sl": 13324,
+      "el": 13324
+    },
+    "generateStructureName": {
+      "sl": 13325,
+      "el": 13332
+    },
+    "showStructureProposalDialog": {
+      "sl": 13335,
+      "el": 13543
+    },
+    "computeLakeZonesForGeometry": {
+      "sl": 13548,
+      "el": 13619
+    },
+    "buildLakeGraphicsFromGeometry": {
+      "sl": 13621,
+      "el": 13676
+    },
+    "createStructureProposalFromDialog": {
+      "sl": 13678,
+      "el": 13803
+    },
+    "findVisibleDescendant": {
+      "sl": 13840,
+      "el": 13923
+    },
+    "calculateBoundsForLastAppliedProposal": {
+      "sl": 13931,
+      "el": 13985
+    },
+    "calculateProposalGeometryBounds": {
+      "sl": 13987,
+      "el": 14029
+    },
+    "calculateProposalBounds": {
+      "sl": 14031,
+      "el": 14125
+    },
+    "checkParcelsHaveNFTsSolana": {
+      "sl": 14128,
+      "el": 14210
+    },
+    "checkParcelsHaveNFTs": {
+      "sl": 14213,
+      "el": 14434
+    },
+    "showWalletNotConnectedModal": {
+      "sl": 14437,
+      "el": 14510
+    },
+    "showMissingParcelsModal": {
+      "sl": 14513,
+      "el": 14626
+    },
+    "showOnchainMintFailedModal": {
+      "sl": 14629,
+      "el": 14706
+    },
+    "createProposal": {
+      "sl": 14709,
+      "el": 16133
+    },
+    "resolveCurrentCityCode": {
+      "sl": 16156,
+      "el": 16174
+    },
+    "normalizeCityCodeForApi": {
+      "sl": 16176,
+      "el": 16183
+    },
+    "normalizeServerProposalSummary": {
+      "sl": 16185,
+      "el": 16213
+    },
+    "isServerProposalDownloaded": {
+      "sl": 16215,
+      "el": 16221
+    },
+    "resetServerProposalCache": {
+      "sl": 16223,
+      "el": 16229
+    },
+    "fetchServerProposalSummaries": {
+      "sl": 16231,
+      "el": 16278
+    },
+    "ensureServerProposals": {
+      "sl": 16280,
+      "el": 16294
+    },
+    "fetchServerProposalById": {
+      "sl": 16296,
+      "el": 16314
+    },
+    "handleProposalDownloadClick": {
+      "sl": 16316,
+      "el": 16390
+    },
+    "handleBlockchainSyncClick": {
+      "sl": 16392,
+      "el": 16447
+    },
+    "getLocalizedProposalSortOptions": {
+      "sl": 16524,
+      "el": 16533
+    },
+    "getLocalizedProposalGoalFilters": {
+      "sl": 16535,
+      "el": 16544
+    },
+    "getProposalGoalLabel": {
+      "sl": 16546,
+      "el": 16552
+    },
+    "getProposalTypeLabel": {
+      "sl": 16555,
+      "el": 16557
+    },
+    "resolveStructureProposal": {
+      "sl": 16559,
+      "el": 16583
+    },
+    "computeProposalCategoryFlags": {
+      "sl": 16589,
+      "el": 16626
+    },
+    "getProposalDisplayType": {
+      "sl": 16628,
+      "el": 16654
+    },
+    "formatProposalTypeLabel": {
+      "sl": 16656,
+      "el": 16658
+    },
+    "isGenericProposalDisplayText": {
+      "sl": 16660,
+      "el": 16668
+    },
+    "collectProposalDisplayCandidates": {
+      "sl": 16670,
+      "el": 16706
+    },
+    "getProposalDisplayTitle": {
+      "sl": 16708,
+      "el": 16747
+    },
+    "getProposalDisplayTypeLabel": {
+      "sl": 16749,
+      "el": 16756
+    },
+    "getProposalDisplayDescription": {
+      "sl": 16758,
+      "el": 16779
+    },
+    "ensureProposalMetadataLoaded": {
+      "sl": 16781,
+      "el": 16839
+    },
+    "isProposalApplied": {
+      "sl": 16841,
+      "el": 16905
+    },
+    "getProposalLifecycleKey": {
+      "sl": 16918,
+      "el": 16929
+    },
+    "getProposalLifecycleLabel": {
+      "sl": 16931,
+      "el": 16945
+    },
+    "getProposalLifecycleClass": {
+      "sl": 16947,
+      "el": 16960
+    },
+    "getParcelAreaById": {
+      "sl": 16969,
+      "el": 17022
+    },
+    "computeProposalArea": {
+      "sl": 17024,
+      "el": 17043
+    },
+    "computeProposalMetrics": {
+      "sl": 17045,
+      "el": 17074
+    },
+    "formatAreaMetric": {
+      "sl": 17076,
+      "el": 17081
+    },
+    "formatCurrencyMetric": {
+      "sl": 17083,
+      "el": 17088
+    },
+    "applyProposalListFilters": {
+      "sl": 17090,
+      "el": 17114
+    },
+    "sortProposalDataset": {
+      "sl": 17116,
+      "el": 17154
+    },
+    "buildProposalActionButtons": {
+      "sl": 17156,
+      "el": 17167
+    },
+    "buildProposalThumbHtml": {
+      "sl": 17171,
+      "el": 17232
+    },
+    "buildProposalListItemsHtml": {
+      "sl": 17238,
+      "el": 17399
+    },
+    "refreshProposalOwnerAcceptanceUI": {
+      "sl": 17401,
+      "el": 17475
+    },
+    "clearProposalListFilterInputDebounce": {
+      "sl": 17480,
+      "el": 17484
+    },
+    "scheduleDebouncedProposalListModalRender": {
+      "sl": 17485,
+      "el": 17491
+    },
+    "renderProposalListModal": {
+      "sl": 17493,
+      "el": 17926
+    },
+    "resetParcelSelectionForProposalListInteraction": {
+      "sl": 17928,
+      "el": 17956
+    },
+    "showProposalDownloadConfirm": {
+      "sl": 17958,
+      "el": 18003
+    },
+    "handleProposalListItemClick": {
+      "sl": 18005,
+      "el": 18054
+    },
+    "showProposalDetailsModal": {
+      "sl": 18056,
+      "el": 18059
+    },
+    "showAllProposalsModal": {
+      "sl": 18062,
+      "el": 18075
+    },
+    "switchProposalTab": {
+      "sl": 18078,
+      "el": 18089
+    },
+    "closeProposalList": {
+      "sl": 18092,
+      "el": 18105
+    },
+    "updateProposalList": {
+      "sl": 18108,
+      "el": 18117
+    },
+    "updateShowProposalsButton": {
+      "sl": 18120,
+      "el": 18158
+    },
+    "syncProposalsIndicator": {
+      "sl": 18162,
+      "el": 18172
+    },
+    "getExplorerBaseUrlForChain": {
+      "sl": 18174,
+      "el": 18194
+    },
+    "showProposalMintSuccessModal": {
+      "sl": 18196,
+      "el": 18302
+    },
+    "buildProposalNftExplorerUrl": {
+      "sl": 18304,
+      "el": 18317
+    },
+    "showMintedShareModal": {
+      "sl": 18319,
+      "el": 18398
+    },
+    "isProposalUIActive": {
+      "sl": 18401,
+      "el": 18418
+    },
+    "deleteProposal": {
+      "sl": 18424,
+      "el": 18487
+    },
+    "centerOnProposal": {
+      "sl": 18490,
+      "el": 18499
+    },
+    "clearLocalProposalData": {
+      "sl": 18502,
+      "el": 18556
+    },
+    "initialiseProposalStorage": {
+      "sl": 18558,
+      "el": 18564
+    },
+    "rerenderProposalListIfOpen": {
+      "sl": 18573,
+      "el": 18580
+    },
+    "handleMultiSelectChange": {
+      "sl": 18596,
+      "el": 18617
+    },
+    "handleShowProposalsChange": {
+      "sl": 18622,
+      "el": 18624
+    },
+    "enableShowProposalsMode": {
+      "sl": 18630,
+      "el": 18632
+    },
+    "findParcelLayerById": {
+      "sl": 18637,
+      "el": 18663
+    },
+    "base64UrlEncodeBytes": {
+      "sl": 18665,
+      "el": 18676
+    },
+    "base64UrlDecodeToBytes": {
+      "sl": 18678,
+      "el": 18690
+    },
+    "compressBytes": {
+      "sl": 18692,
+      "el": 18706
+    },
+    "inflateBytes": {
+      "sl": 18708,
+      "el": 18724
+    },
+    "decodeBytesToJson": {
+      "sl": 18726,
+      "el": 18738
+    },
+    "computeBoundsFromGeoJSONFeatures": {
+      "sl": 18740,
+      "el": 18760
+    },
+    "buildLeafletBoundsFromArray": {
+      "sl": 18762,
+      "el": 18776
+    },
+    "focusMapOnSharedProposal": {
+      "sl": 18778,
+      "el": 18879
+    },
+    "getShareI18nHelper": {
+      "sl": 18881,
+      "el": 18885
+    },
+    "getSharedInspectorI18nHelper": {
+      "sl": 18887,
+      "el": 18891
+    },
+    "collectProposalParentParcelIdsForShare": {
+      "sl": 18893,
+      "el": 18934
+    },
+    "checkParcelsOriginal": {
+      "sl": 18936,
+      "el": 18983
+    },
+    "collectParcelProposalPairs": {
+      "sl": 18985,
+      "el": 19038
+    },
+    "showNonOriginalParcelShareBlockedModal": {
+      "sl": 19040,
+      "el": 19133
+    },
+    "getServerProposalId": {
+      "sl": 19139,
+      "el": 19151
+    },
+    "getSerialProposalId": {
+      "sl": 19157,
+      "el": 19181
+    },
+    "sortProposalIdsForShare": {
+      "sl": 19183,
+      "el": 19194
+    },
+    "shareAppliedProposals": {
+      "sl": 19196,
+      "el": 19198
+    },
+    "showSharePlanModal": {
+      "sl": 19200,
+      "el": 19754
+    },
+    "shareSingleProposal": {
+      "sl": 19756,
+      "el": 19821
+    },
+    "shareProposalFromDetails": {
+      "sl": 19824,
+      "el": 19839
+    },
+    "showWalkUploadGateModal": {
+      "sl": 19846,
+      "el": 20046
+    },
+    "isProposalCurrentlyApplied": {
+      "sl": 20052,
+      "el": 20067
+    },
+    "isProposalAppliedAndMaterialized": {
+      "sl": 20080,
+      "el": 20107
+    },
+    "buildSharedProposalsPayload": {
+      "sl": 20109,
+      "el": 20313
+    },
+    "deepClone": {
+      "sl": 20315,
+      "el": 20322
+    },
+    "deepCloneArray": {
+      "sl": 20324,
+      "el": 20327
+    },
+    "ensureArrayOfStrings": {
+      "sl": 20329,
+      "el": 20341
+    },
+    "escapeHtml": {
+      "sl": 20346,
+      "el": 20357
+    },
+    "getParcelDisplayNumberFromProperties": {
+      "sl": 20361,
+      "el": 20381
+    },
+    "getParcelDisplayNumberFromFeature": {
+      "sl": 20383,
+      "el": 20389
+    },
+    "decodeSharedPayload": {
+      "sl": 20391,
+      "el": 20428
+    },
+    "computeSharedBoundingBoxFromFeatures": {
+      "sl": 20430,
+      "el": 20463
+    },
+    "collectCoordinatesFromGeometry": {
+      "sl": 20465,
+      "el": 20519
+    },
+    "showShareLinkModal": {
+      "sl": 20521,
+      "el": 20636
+    },
+    "showShareTooLargeModal": {
+      "sl": 20638,
+      "el": 20646
+    },
+    "resolveBackendBaseUrl": {
+      "sl": 20648,
+      "el": 20662
+    },
+    "resolveFrontendBaseUrl": {
+      "sl": 20664,
+      "el": 20673
+    },
+    "buildCityQueryParam": {
+      "sl": 20675,
+      "el": 20691
+    },
+    "migrateRoadAssetsToNewId": {
+      "sl": 20693,
+      "el": 20699
+    },
+    "mapGoalToBackendType": {
+      "sl": 20701,
+      "el": 20720
+    },
+    "buildUploadReadyProposal": {
+      "sl": 20722,
+      "el": 20756
+    },
+    "syncProposalWithServerId": {
+      "sl": 20758,
+      "el": 20796
+    },
+    "uploadProposalToServer": {
+      "sl": 20798,
+      "el": 20838
+    },
+    "headProposalExists": {
+      "sl": 20840,
+      "el": 20867
+    },
+    "ensureAncestorProposalsUploaded": {
+      "sl": 20869,
+      "el": 20908
+    },
+    "showUploadProposalModal": {
+      "sl": 20910,
+      "el": 21871
+    },
+    "showSimpleShareModal": {
+      "sl": 21873,
+      "el": 22001
+    },
+    "appendModalBody": {
+      "sl": 22003,
+      "el": 22012
+    },
+    "isTruthyUrlFlag": {
+      "sl": 22018,
+      "el": 22033
+    },
+    "is3DModeRequestedFromUrl": {
+      "sl": 22035,
+      "el": 22042
+    },
+    "roughlyEqualLatLng": {
+      "sl": 22044,
+      "el": 22051
+    },
+    "createLeafletViewSettlePromise": {
+      "sl": 22053,
+      "el": 22095
+    },
+    "tryEnterThreeMode": {
+      "sl": 22097,
+      "el": 22105
+    },
+    "focusMapThenMaybeEnter3D": {
+      "sl": 22107,
+      "el": 22146
+    },
+    "handleSingleProposalShareFromUrl": {
+      "sl": 22151,
+      "el": 22219
+    },
+    "loadSharedProposalFromLink": {
+      "sl": 22221,
+      "el": 22312
+    },
+    "ensureParentParcelsLoaded": {
+      "sl": 22314,
+      "el": 22339
+    },
+    "waitForParcelLayersReady": {
+      "sl": 22341,
+      "el": 22418
+    },
+    "isParcelLayerReady": {
+      "sl": 22420,
+      "el": 22446
+    },
+    "stageSharedProposalDependencies": {
+      "sl": 22448,
+      "el": 22479
+    },
+    "fetchParcelsForIds": {
+      "sl": 22481,
+      "el": 22506
+    },
+    "preloadProposalParcelOwners": {
+      "sl": 22508,
+      "el": 22532
+    },
+    "buildBoundsFromSharedPayload": {
+      "sl": 22534,
+      "el": 22547
+    },
+    "handleSharedProposalsFromUrl": {
+      "sl": 22549,
+      "el": 22627
+    },
+    "cleanSharedQuery": {
+      "sl": 22629,
+      "el": 22639
+    },
+    "applySharedProposalsFromPayload": {
+      "sl": 22641,
+      "el": 22943
+    },
+    "computeRequiredParentIdsForSharedProposal": {
+      "sl": 22945,
+      "el": 22961
+    },
+    "showSharedPayloadInspector": {
+      "sl": 22964,
+      "el": 23155
+    },
+    "savePlanPayloadAsJson": {
+      "sl": 23157,
+      "el": 23185
+    },
+    "gatherParentParcelIdsFromSharedProposals": {
+      "sl": 23187,
+      "el": 23195
+    },
+    "findMissingParentParcels": {
+      "sl": 23197,
+      "el": 23226
+    },
+    "focusMapForSharedPayload": {
+      "sl": 23229,
+      "el": 23229
+    },
+    "waitForMapIdle": {
+      "sl": 23231,
+      "el": 23252
+    },
+    "promptMissingParentParcelsModal": {
+      "sl": 23254,
+      "el": 23281
+    },
+    "prepareProposalForImport": {
+      "sl": 23283,
+      "el": 23442
+    },
+    "ensureParentParcelsFetched": {
+      "sl": 23449,
+      "el": 23477
+    },
+    "ensureRoadParentParcelIds": {
+      "sl": 23483,
+      "el": 23506
+    },
+    "getStoredApplyFailureInfo": {
+      "sl": 23508,
+      "el": 23535
+    },
+    "sameStringArrays": {
+      "sl": 23537,
+      "el": 23545
+    },
+    "syncCanonicalSharedProposalState": {
+      "sl": 23547,
+      "el": 23582
+    },
+    "importAndApplySharedProposal": {
+      "sl": 23584,
+      "el": 23772
+    },
+    "ensureProposalLoadOverlay": {
+      "sl": 23818,
+      "el": 23912
+    },
+    "renderProposalLoadProgress": {
+      "sl": 23914,
+      "el": 23930
+    },
+    "showProposalLoadOverlay": {
+      "sl": 23932,
+      "el": 23949
+    },
+    "updateProposalLoadOverlay": {
+      "sl": 23951,
+      "el": 23971
+    },
+    "hideProposalLoadOverlay": {
+      "sl": 23973,
+      "el": 23980
+    },
+    "addResponseBytes": {
+      "sl": 23982,
+      "el": 23994
+    },
+    "formatSharedProposalLabel": {
+      "sl": 23996,
+      "el": 24005
+    },
+    "formatSharedProposalTypeLabel": {
+      "sl": 24007,
+      "el": 24014
+    },
+    "handleSharedPlanRoute": {
+      "sl": 24016,
+      "el": 25165
+    },
+    "handleProposalRouteFromUrl": {
+      "sl": 25167,
+      "el": 25220
+    },
+    "handleStandalone3DModeFromUrl": {
+      "sl": 25222,
+      "el": 25254
+    },
+    "selectProposalFromList": {
+      "sl": 25266,
+      "el": 25275
+    },
+    "cancelMultiParcelSelection": {
+      "sl": 25278,
+      "el": 25291
+    },
+    "scheduleHighlightRefresh": {
+      "sl": 25302,
+      "el": 25317
+    },
+    "setupMultiParcelHighlightListeners": {
+      "sl": 25321,
+      "el": 25332
+    },
+    "acceptProposal": {
+      "sl": 25348,
+      "el": 25524
+    },
+    "restoreProposalDetailsScroll": {
+      "sl": 25526,
+      "el": 25570
+    },
+    "handleUserAcceptProposal": {
+      "sl": 25573,
+      "el": 25767
+    },
+    "handleUserRejectProposal": {
+      "sl": 25770,
+      "el": 25902
+    },
+    "rejectProposal": {
+      "sl": 25904,
+      "el": 25984
+    },
+    "isEditableElement": {
+      "sl": 25995,
+      "el": 26003
+    },
+    "handleCreateProposalHotkey": {
+      "sl": 26008,
+      "el": 26041
+    },
+    "attachCreateProposalHotkey": {
+      "sl": 26043,
+      "el": 26047
+    },
+    "showProposalInfoHoverOverlay": {
+      "sl": 26324,
+      "el": 26340
+    },
+    "clearProposalInfoHoverOverlay": {
+      "sl": 26342,
+      "el": 26348
+    },
+    "formatProposalOfferValue": {
+      "sl": 26350,
+      "el": 26356
+    },
+    "handleProposalOfferInput": {
+      "sl": 26358,
+      "el": 26365
+    },
+    "parseProposalOfferValue": {
+      "sl": 26367,
+      "el": 26371
+    }
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Calabar",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Cross River State Ministry of Lands identifies the Land Department as custodian of land registration/title records and locates it in Calabar. The official CRGIA, based in Calabar, manages state land/geospatial information, surveying and C-of-O services; state budget materials also identify cadastral-survey work in Calabar Municipal. This is local office and city-area evidence, while the registry mandate covers the wider state.",
+  "registryEvidenceUrls": [
+    "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+    "https://crgia.crossriverstate.gov.ng/",
+    "https://www.crossriverstate.gov.ng/download/Bureau%20of%20Statistics/STATISTICAL%20YEAR%20BOOK%202024%20EDITION.pdf",
+    "https://crgia.portal.crossriverstate.gov.ng/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8459,
+  "cityId": "wup2025:8459",
+  "centerLatLon": [
+    5.00401483767401,
+    8.34439857983818
+  ],
+  "rank": 807,
+  "queueRank": 807,
+  "population2025": 673427,
+  "population2025k": 673.427,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The government agency/registry is located in Calabar, but its online CRGIA portal is authentication-gated and the public site documents service/application workflows rather than anonymous feature geometry. No personal or parcel form was submitted.",
+  "scopeLimits": "Registry authority is state-wide, not exclusively Calabar. No safe public geometry schema, parcel at the WUP point, or citywide Calabar coverage was verified.",
+  "remainingUncertainty": "Registry authority is state-wide, not exclusively Calabar. No safe public geometry schema, parcel at the WUP point, or citywide Calabar coverage was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Calabar Nigeria official land registry cadastral GIS CRGIA public parcel map",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "Cross River State’s official Ministry of Lands identifies its Land Department and state land registry in Calabar; CRGIA manages geospatial and land-record services. The publicly accessible agency shell links application/services, while its separate portal is a username/password sign-in page. No login or parcel request was attempted; no safe public geometry schema was found.",
+        "actualResultUrls": [
+          "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+          "https://crgia.crossriverstate.gov.ng/",
+          "https://crgia.portal.crossriverstate.gov.ng/"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      },
+      {
+        "language": "Efik (search context)",
+        "query": "Efik Calabar land registry GIS cadastral map CRGIA public parcels",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "No Efik-language public cadastral dataset or geometry endpoint surfaced. Official English-language Cross River government sources identify the Calabar-based land department/CRGIA and the state-wide registry scope; the public portal requires sign-in. No account, form or parcel lookup was used.",
+        "actualResultUrls": [
+          "https://crgia.crossriverstate.gov.ng/",
+          "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+          "https://www.crossriverstate.gov.ng/download/Bureau%20of%20Statistics/STATISTICAL%20YEAR%20BOOK%202024%20EDITION.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+        "observation": "Official Cross River Ministry of Lands says its Land Department maintains land records and is custodian of registration/title records across the State; its listed location is Calabar."
+      },
+      {
+        "url": "https://crgia.crossriverstate.gov.ng/",
+        "observation": "Official CRGIA describes state-wide land/geospatial data management, survey information, C-of-O processing and geospatial products; no anonymous parcel feature schema appears in the public landing page."
+      },
+      {
+        "url": "https://www.crossriverstate.gov.ng/download/Bureau%20of%20Statistics/STATISTICAL%20YEAR%20BOOK%202024%20EDITION.pdf",
+        "observation": "Official state yearbook map includes Calabar Municipal and Calabar South as distinct urban local-government areas."
+      },
+      {
+        "url": "https://crgia.portal.crossriverstate.gov.ng/",
+        "observation": "Public agency portal landing page shows a username/password login form; no authentication was attempted."
+      }
+    ],
+    "metadataReviewFile": "calabar-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-8459-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Registry authority is state-wide, not exclusively Calabar. No safe public geometry schema, parcel at the WUP point, or citywide Calabar coverage was verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel feature was verified; local registry evidence is not a parcel-coverage claim."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-ID schema was established.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "point": [
+    5.00401483767401,
+    8.34439857983818
+  ],
+  "sampleFeatureCount": 0,
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "Ministry of Lands | Cross River State"
+  },
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

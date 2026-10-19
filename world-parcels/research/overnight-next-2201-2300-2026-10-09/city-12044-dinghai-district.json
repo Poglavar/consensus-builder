@@ -1,0 +1,81 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 12044,
+  "queueRank": 2265,
+  "name": "Dinghai District",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [30.0201113409173, 122.10513345838],
+  "population2025": 257524,
+  "population2025k": 257.524,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dinghai District Zhoushan official cadastral parcel map real estate registration GIS natural resources",
+        "result": "Found official Zhoushan Natural Resources and Planning Bureau material covering Dinghai real-estate registration, online service, cadastral-map access, and the registration-center custodian; no anonymous parcel geometry API was verified.",
+        "actualResultUrls": [
+          "https://www.zhoushan.gov.cn/art/2023/2/28/art_1229295579_1652421.html",
+          "https://www.zhoushan.gov.cn/art/2024/8/16/art_1229810954_173837.html",
+          "https://www.zhoushan.gov.cn/module/download/downfile.jsp?classid=0&filename=b09edb7e8c5549b48039a61708792101.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "定海区 不动产登记 地籍图 宗地图 自然资源 官方",
+        "result": "Found official Zhoushan notices stating that Dinghai is within the online registration scope and that rights holders may view/download cadastral parcel maps through Zhejiang government-service channels; the public pages do not expose an anonymous parcel feature response.",
+        "actualResultUrls": [
+          "https://www.zhoushan.gov.cn/art/2023/2/28/art_1229295579_1652421.html",
+          "https://www.zhoushan.gov.cn/art/2024/10/9/art_1229029499_72751.html",
+          "https://www.zhoushan.gov.cn/art/2024/8/16/art_1229810954_173837.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Official Zhoushan Natural Resources and Planning Bureau material states that Dinghai District is covered by the city real-estate registration workflow; the official city registration-center page assigns natural-resource cadastral and real-estate cadastral survey, results application, and registration-information query duties; the official 2024 budget identifies the Zhoushan Dinghai Real Estate Registration Center.",
+    "urls": [
+      "https://www.zhoushan.gov.cn/art/2023/2/28/art_1229295579_1652421.html",
+      "https://www.zhoushan.gov.cn/art/2024/8/16/art_1229810954_173837.html",
+      "https://www.zhoushan.gov.cn/module/download/downfile.jsp?classid=0&filename=b09edb7e8c5549b48039a61708792101.pdf"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.zhoushan.gov.cn/art/2023/2/28/art_1229295579_1652421.html",
+      "observation": "Official city bureau notice says that from 2023-04-01 Dinghai and Putuo are within the online real-estate registration scope, and that cadastral parcel and unit maps can be viewed/downloaded through the Zhejiang service channels by eligible rights holders."
+    },
+    {
+      "url": "https://www.zhoushan.gov.cn/art/2024/8/16/art_1229810954_173837.html",
+      "observation": "Official city government page assigns the Zhoushan Real Estate Registration Center natural-resource and real-estate cadastral survey, cadastral-results application, registration-information query, and certificate-management duties."
+    },
+    {
+      "url": "https://www.zhoushan.gov.cn/module/download/downfile.jsp?classid=0&filename=b09edb7e8c5549b48039a61708792101.pdf",
+      "observation": "Official 2024 budget identifies the Zhoushan Dinghai Real Estate Registration Center and its registration-management project; the stated objective includes maintaining 1:500 and 1:2000 base databases for declassified/desensitized social sharing."
+    },
+    {
+      "url": "https://www.zhoushan.gov.cn/art/2024/10/9/art_1229029499_72751.html",
+      "observation": "Official city implementation opinion describes a citywide integrated natural-resources and real-estate registration database and an online full-chain land-management workflow, but publishes no open parcel feature endpoint."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_found_local_custodian_and_service_routes_but_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Dinghai District under the Zhoushan municipal natural-resources and real-estate registration system.",
+    "verifiedOpenScope": "Official procedure and custodian evidence only; no anonymous city-bounded parcel feature response, schema, CRS, native identity, or safe polygon sample was retrieved.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The official notice indicates cadastral-map downloads through authenticated or rights-holder-oriented Zhejiang service channels. The public first-party pages inspected do not expose a safe anonymous parcel API. A local curl attempt to the official pages timed out on DNS resolution in this environment; this does not establish service or parcel absence. No login, credentials, CAPTCHA/Cloudflare bypass, TLS-verification disablement, or unsafe owner/address/contact/titleholder/personal/tax/account fields were used."
+}

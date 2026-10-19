@@ -1,0 +1,21 @@
+{
+  "taskId": "city:4445",
+  "checkedAt": "2026-10-10T21:24:21Z",
+  "originalDehResponse": "tmp/valhalla-parcel-research/shikarpur/bindTaluka.json",
+  "responseSha256": "3d0e00e8a1f50573080e09fbf7f19eb9eaf088be52d61b82992872e5327ceede",
+  "originalTalukaPage": "tmp/valhalla-parcel-research/shikarpur/taluka.html",
+  "talukaPageSha256": "8e4ff8cf5c8ef96ea394c69195accfc6c504144fb4eb7748d4a38f7fd198c099",
+  "originalDistrictMapPage": "tmp/valhalla-parcel-research/shikarpur/map-responses.html",
+  "districtMapPageSha256": "208c6d32dfa98147b1cacadf66bf40a7a160e7459ed6b15bfa694a8c5f160abf",
+  "sourceUrl": "https://sindhzameen.gos.pk/map/Taluka.aspx?district=Shikarpur",
+  "observed": {
+    "dehNamesInOriginalResponse": 26,
+    "uniqueDehNames": 26,
+    "parcelGeometryInDehResponse": false,
+    "directFreshTalukaPageHttpStatus": 200,
+    "directFreshTalukaPageMatchesCachedHash": true,
+    "retainedSampleCount": 0
+  },
+  "localSearchNote": "Worker local-script query used سکھرپور, which is not the Shikarpur spelling. Root separately searched شکارپور سندھ سرکاری زمین ریکارڈ نقشہ سندھ زمین and found the official Sindh Zameen portal.",
+  "limits": "Static map and deh-name navigation cannot establish either open parcel geometry or citywide parcel absence. No native parcel ID, CRS, paging, bounded-cell behavior, metric checks, source binding or headed Details verification."
+}

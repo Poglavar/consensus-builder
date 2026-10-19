@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4477-ad-diwaniyah.json",
+  "purpose": "Read-only official local registry/map-service discovery; no property or owner lookup.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateTokensRetained": false
+  },
+  "assessment": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits. No anonymous public full-polygon geometry endpoint or safe feature schema was verified.",
+  "officialEvidence": [
+    {
+      "url": "https://www.moj.gov.iq/contact_us.php",
+      "observation": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits."
+    },
+    {
+      "url": "https://www.moj.gov.iq/view.9996/",
+      "observation": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits."
+    },
+    {
+      "url": "https://diw-mun.gov.iq/Building.aspx",
+      "observation": "Municipal building-permit form requires a recent title/registration extract and certified boundary-fixing map; it is not a public parcel viewer."
+    }
+  ],
+  "serviceTrace": {
+    "officialServiceUrl": "https://www.moj.gov.iq/contact_us.php",
+    "serviceFormat": "Official local registry directory/news and municipal permit document workflow; no public geometry service verified",
+    "observation": "No parcel-level query was made because a public full-polygon schema/route was not established. The official routes use documented local record/document workflows."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No public full-polygon API or safe geometry schema was verified; no property-specific identifiers were submitted."
+  },
+  "runtimeBlocker": "No anonymous public vector/full-polygon endpoint was verified; attribute/document flows require user-specific survey/property information."
+}

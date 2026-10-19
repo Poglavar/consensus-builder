@@ -1,0 +1,164 @@
+{
+  "purpose": "Exact public Mauritius catalog and WFS metadata inventory checked for Port Louis parcel coverage.",
+  "checkedAt": "2026-10-08",
+  "catalogRequest": {
+    "url": "https://geoportal.govmu.org/api/datasets/?limit=1000",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "outcome": "20 public dataset records returned; list and geometry types are included in the city evidence and catalog artifact; no cadastral dataset."
+  },
+  "catalogCount": 20,
+  "catalog": [
+    {
+      "name": "pharmacy",
+      "title": "List of pharmacies",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "post_offices",
+      "title": "Post Offices",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "tourist_spots",
+      "title": "Tourist Spots",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "social_welfare_centres",
+      "title": "Social Welfare Centres",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "Fix_speed_cameras",
+      "title": "Fix speed cameras",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "metro_stations",
+      "title": "Metro Stations",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "railway",
+      "title": "railway",
+      "geometryType": "MultiLineString",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "hospitals_clinics",
+      "title": "Hospitals Clinics",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "primary_schools",
+      "title": "Primary Schools",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "islet_parks",
+      "title": "Islet National Parks",
+      "geometryType": "None",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "ict_comp",
+      "title": "ICT companies",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "police_stations0",
+      "title": "Police Stations",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "Reservoirs",
+      "title": "Reservoirs",
+      "geometryType": "MultiPolygon",
+      "crs": "EPSG:32740"
+    },
+    {
+      "name": "fads",
+      "title": "Fish Aggregating Devices (FADs)",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "ATMs",
+      "title": "ATMs",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "dangerous_bathing",
+      "title": "Dangerous Bathing",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "districts",
+      "title": "Districts",
+      "geometryType": "MultiPolygon",
+      "crs": "EPSG:32740"
+    },
+    {
+      "name": "shoppingmall",
+      "title": "Shopping Mall",
+      "geometryType": "Point",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "bustransport",
+      "title": "bustransport",
+      "geometryType": "MultiLineString",
+      "crs": "EPSG:4326"
+    },
+    {
+      "name": "busstops",
+      "title": "Bus Stops",
+      "geometryType": "Point",
+      "crs": "EPSG:32740"
+    }
+  ],
+  "wfsRequest": {
+    "url": "https://geoportal.govmu.org/geoserver/ows?service=WFS&version=1.1.0&request=GetCapabilities",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/xml",
+    "responseBytes": 39140,
+    "outcome": "19 feature types enumerated; exact qualified names recorded; no parcel/cadastre feature type."
+  },
+  "wfsFeatureTypes": [
+    "geonode:ATMs",
+    "geonode:Fix_speed_cameras",
+    "geonode:Reservoirs",
+    "geonode:busstops",
+    "geonode:bustransport",
+    "geonode:dangerous_bathing",
+    "geonode:districts",
+    "geonode:fads",
+    "geonode:hospitals_clinics",
+    "geonode:ict_comp",
+    "geonode:islet_parks",
+    "geonode:metro_stations",
+    "geonode:police_stations0",
+    "geonode:post_offices",
+    "geonode:primary_schools",
+    "geonode:railway",
+    "geonode:shoppingmall",
+    "geonode:social_welfare_centres",
+    "geonode:tourist_spots"
+  ],
+  "conclusion": "Neither public catalog endpoint lists cadastral parcels or land-plot features; no feature query was made."
+}

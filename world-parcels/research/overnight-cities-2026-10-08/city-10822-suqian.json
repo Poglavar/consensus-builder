@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Suqian",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 739,
+  "point": [
+    33.9560573509983,
+    118.29337606438
+  ],
+  "population2025": 725070,
+  "population2025k": 725.07,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "wupCityCode": 10822,
+  "cityId": "wup2025:10822",
+  "queueRank": 739,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Jiangsu government-service record names Suqian’s Natural Resources and Planning Bureau for real-estate first registration. An official Jiangsu government report describes Suqian’s unified citywide cadastral survey and one-map base. Neither source exposes a safe anonymous parcel feature service or schema.",
+  "registryEvidenceUrls": [
+    "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+    "https://www.js.gov.cn/art/2025/4/10/art_84324_11549091.html",
+    "https://suqian.gov.cn/cnsq/zjsq/zjsq.shtml"
+  ],
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "adapterReady": false,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "宿迁市 自然资源和规划局 地籍图 宗地图 不动产登记 地图查询 官方",
+        "scope": "Verify city-level land registry/cadastral evidence and an anonymous safe geometry service.",
+        "result": "政府服务页面确认宿迁市自然资源和规划局承担不动产首次登记；省政府资料描述宿迁全市统一地籍调查和一张图基础，但未找到可匿名访问的宗地矢量服务或字段模式。",
+        "actualResultUrls": [
+          "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+          "https://www.js.gov.cn/art/2025/4/10/art_84324_11549091.html",
+          "https://suqian.gov.cn/cnsq/zjsq/zjsq.shtml"
+        ],
+        "executionMethod": "Separate English and Simplified Chinese discovery; official government-service and bureau materials reviewed. No parcel-specific or owner lookup."
+      },
+      {
+        "language": "English",
+        "query": "Suqian official natural resources planning bureau cadastral parcel map land registration GIS",
+        "scope": "Verify city-level land registry/cadastral evidence and an anonymous safe geometry service.",
+        "result": "Official service and city/government materials confirm Suqian’s local registration and cadastral program. No public map viewer endpoint, feature layer, or safe field schema was identified.",
+        "actualResultUrls": [
+          "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+          "https://www.js.gov.cn/art/2025/4/10/art_84324_11549091.html",
+          "https://suqian.gov.cn/cnsq/zjsq/zjsq.shtml"
+        ],
+        "executionMethod": "Separate English and Simplified Chinese discovery; official government-service and bureau materials reviewed. No parcel-specific or owner lookup."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The WUP point identifies the ranked Suqian entry. Local registry/cadastral administration is documented, but no parcel geometry was verified at the point.",
+    "verifiedOpenScope": "No safe anonymous full polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "cn-jiangsu-suqian-real-estate-registration",
+    "name": "Suqian Municipal Natural Resources and Planning Bureau / real-estate registration service",
+    "url": "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+    "operator": "Suqian Municipal Natural Resources and Planning Bureau",
+    "serviceType": "Official city-level first registration service for state-owned construction land/real-estate rights; citywide cadastral survey and map work is documented, but no public vector endpoint/schema found.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "City-specific registry or cadastral administration is documented, but no anonymous safe parcel-geometry response and usable feature schema were verified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/suqian-service-review.json"
+  },
+  "technicalBlocker": "City-specific registry or cadastral administration is documented, but no anonymous safe parcel-geometry response and usable feature schema were verified.",
+  "remainingUncertainty": "Whether a public map has a documented anonymous vector service, safe non-sensitive field allowlist, and coverage at the exact WUP point remains unverified.",
+  "scopeLimits": "No full parcel polygons, owner names, addresses, applicant, taxpayer, title, assessment, or sale data were requested or retained. No citywide completeness claim.",
+  "rootPrimaryReadback": {
+    "url": "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+    "fetch": 200,
+    "contentType": "text/html;charset=UTF-8",
+    "title": "国有建设用地使用权及房屋所有权首次登记"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "centerLatLon": [
+    33.9560573509983,
+    118.29337606438
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

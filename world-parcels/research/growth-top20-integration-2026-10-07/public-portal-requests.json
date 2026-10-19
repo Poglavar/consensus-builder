@@ -1,0 +1,121 @@
+[
+  {
+    "target": "zhengzhou",
+    "url": "https://zzbdc.zrzyhghj.zhengzhou.gov.cn:8443/",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:17:15Z",
+    "browserHeaders": true,
+    "httpStatus": null,
+    "error": "ConnectTimeout"
+  },
+  {
+    "target": "mbale",
+    "url": "https://ugnlis.mlhud.go.ug/public",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:17:15Z",
+    "browserHeaders": true,
+    "httpStatus": 200,
+    "contentType": "text/html",
+    "bytes": 31018,
+    "finalUrl": "https://ugnlis.mlhud.go.ug/public",
+    "scripts": [
+      "https://ugnlis.mlhud.go.ug/runtime.feef167cd20bfc0f.js",
+      "https://ugnlis.mlhud.go.ug/polyfills.7626f7ef3e7f56d2.js",
+      "https://ugnlis.mlhud.go.ug/main.8123d6213976b174.js"
+    ],
+    "links": []
+  },
+  {
+    "target": "putian",
+    "url": "https://zrzyj.putian.gov.cn/",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:17:15Z",
+    "browserHeaders": true,
+    "httpStatus": null,
+    "error": "ConnectTimeout"
+  },
+  {
+    "target": "aleppo",
+    "url": "https://ecsc.gov.sy/",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:17:15Z",
+    "browserHeaders": true,
+    "httpStatus": null,
+    "error": "ConnectTimeout"
+  },
+  {
+    "url": "https://ugnlis.mlhud.go.ug/main.8123d6213976b174.js",
+    "checkedAt": "2026-10-07T18:19:17Z",
+    "method": "GET",
+    "httpStatus": 200,
+    "bytes": 1478605,
+    "contentType": "application/javascript"
+  },
+  {
+    "target": "mbale-wfs",
+    "url": "https://gis.mlhud.go.ug/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:21:02Z",
+    "httpStatus": 404,
+    "contentType": "text/html;charset=utf-8",
+    "bytes": 768
+  },
+  {
+    "target": "mbale-wms",
+    "url": "https://gis.mlhud.go.ug/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:21:02Z",
+    "httpStatus": 404,
+    "contentType": "text/html;charset=utf-8",
+    "bytes": 768
+  },
+  {
+    "target": "mbale-runtime",
+    "url": "https://ugnlis.mlhud.go.ug/runtime.feef167cd20bfc0f.js",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:21:02Z",
+    "httpStatus": 200,
+    "contentType": "application/javascript",
+    "bytes": 8796
+  },
+  {
+    "target": "mbale",
+    "url": "https://ugnlis.mlhud.go.ug/3242.adff7e30b24a66ff.js",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:24:20Z",
+    "browserHeaders": true,
+    "httpStatus": 200,
+    "contentType": "application/javascript",
+    "bytes": 17834
+  },
+  {
+    "target": "mbale",
+    "url": "https://ugnlis.mlhud.go.ug/4667.a3ef9b7296c3ce0f.js",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:24:20Z",
+    "browserHeaders": true,
+    "httpStatus": 200,
+    "contentType": "application/javascript",
+    "bytes": 2541
+  },
+  {
+    "target": "mbale",
+    "url": "https://ugnlis.mlhud.go.ug/8166.36a3d30450eaa949.js",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:24:20Z",
+    "browserHeaders": true,
+    "httpStatus": 200,
+    "contentType": "application/javascript",
+    "bytes": 315765
+  },
+  {
+    "target": "mbale",
+    "url": "https://ugnlis.mlhud.go.ug/8365.b1d0cc9fe61e428b.js",
+    "method": "GET",
+    "checkedAt": "2026-10-07T18:24:20Z",
+    "browserHeaders": true,
+    "httpStatus": 200,
+    "contentType": "application/javascript",
+    "bytes": 113965
+  }
+]

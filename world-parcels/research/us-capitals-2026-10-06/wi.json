@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "WI",
+  "state": "Wisconsin",
+  "capital": "Madison",
+  "centerLatLon": [
+    43.0731,
+    -89.4012
+  ],
+  "query": {
+    "language": "English",
+    "text": "Wisconsin parcels Madison Dane County GIS parcels official ArcGIS"
+  },
+  "references": [
+    {
+      "url": "https://www.sco.wisc.edu/data/parcels/",
+      "observation": "Official source found by the recorded English web query."
+    },
+    {
+      "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+      "observation": "Official parcel layer endpoint tested with an ID-and-geometry-only spatial sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "ArcGIS layer metadata retrieved; schema inspected without requesting personal parcel fields."
+    },
+    {
+      "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-89.4023%2C43.071999999999996%2C-89.40010000000001%2C43.0742&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PARCELID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Tiny capital-centered bbox; requested only PARCELID and geometry; count=3, geometry valid=True, null IDs=0, duplicate IDs=False."
+    },
+    {
+      "url": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0/query?f=geojson&where=PARCELID%3D%27070914305010%27&outFields=PARCELID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact ID round trip for 070914305010: exact count 1, geometry valid=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services3.arcgis.com/n6uYoouQZW75n5WI/arcgis/rest/services/Wisconsin_Statewide_Parcels_DB/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Wisconsin Statewide Parcel Layer V12",
+    "operator": "Wisconsin State Cartographer's Office / Wisconsin Land Information Program",
+    "scope": "Statewide compilation with documented unmapped pockets",
+    "idField": "PARCELID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "PARCELID"
+    ],
+    "parcelNumberField": "PARCELID",
+    "metricSrid": 3857,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -89.4023,
+      43.071999999999996,
+      -89.40010000000001,
+      43.0742
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "070914305010",
+      "070923205011",
+      "070923207025"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "This verifies a small parcel sample at the capital only; completeness across the city/county is untested."
+}

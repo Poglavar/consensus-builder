@@ -1,0 +1,1075 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "85",
+  "cityName": "Liepaja",
+  "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+  "candidateSha256": "6be114bd2330a60b9396a190aaf486e8e78f436e08669979a1af1cbcde027e7c",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 71,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 71,
+      "collectedUniqueCount": 71
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 290
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "11ab6bae0cba2543b94e382e4db13db115337b5519e711a99433380d81e5df29",
+      "featureCount": 71,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32634",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "11ab6bae0cba2543b94e382e4db13db115337b5519e711a99433380d81e5df29",
+  "featureCount": 71,
+  "sampleIds": [
+    "LV-VZD-17000310249",
+    "LV-VZD-17000300028",
+    "LV-VZD-17000300013"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        21.012,
+        56.511,
+        21.013,
+        56.512
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "LV-VZD-17000320033",
+        "LV-VZD-17000320056",
+        "LV-VZD-17000320061",
+        "LV-VZD-17000320062",
+        "LV-VZD-17000320102",
+        "LV-VZD-17000320105",
+        "LV-VZD-17000320139",
+        "LV-VZD-17000320140",
+        "LV-VZD-17000320261",
+        "LV-VZD-17000320262",
+        "LV-VZD-17000320298",
+        "LV-VZD-17000330298",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        21.013,
+        56.511,
+        21.014,
+        56.512
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "LV-VZD-17000320056",
+        "LV-VZD-17000320060",
+        "LV-VZD-17000320062",
+        "LV-VZD-17000320105",
+        "LV-VZD-17000320138",
+        "LV-VZD-17000320140",
+        "LV-VZD-17000320236",
+        "LV-VZD-17000320261",
+        "LV-VZD-17000330216",
+        "LV-VZD-17000330298",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        21.014,
+        56.511,
+        21.015,
+        56.512
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "LV-VZD-17000330075",
+        "LV-VZD-17000330077",
+        "LV-VZD-17000330078",
+        "LV-VZD-17000330127",
+        "LV-VZD-17000330216",
+        "LV-VZD-17000330221",
+        "LV-VZD-17000330248",
+        "LV-VZD-17000330255",
+        "LV-VZD-17000330269",
+        "LV-VZD-17000330291",
+        "LV-VZD-17000330298",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        21.012,
+        56.512,
+        21.013,
+        56.513
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "LV-VZD-17000300013",
+        "LV-VZD-17000300015",
+        "LV-VZD-17000300028",
+        "LV-VZD-17000300049",
+        "LV-VZD-17000300051",
+        "LV-VZD-17000310181",
+        "LV-VZD-17000310249",
+        "LV-VZD-17000320261",
+        "LV-VZD-17000330298",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        21.013,
+        56.512,
+        21.014,
+        56.513
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "LV-VZD-17000300013",
+        "LV-VZD-17000300028",
+        "LV-VZD-17000310249",
+        "LV-VZD-17000320261",
+        "LV-VZD-17000330298",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        21.014,
+        56.512,
+        21.015,
+        56.513
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "LV-VZD-17000260006",
+        "LV-VZD-17000260007",
+        "LV-VZD-17000300013",
+        "LV-VZD-17000300028",
+        "LV-VZD-17000310249",
+        "LV-VZD-17000330197",
+        "LV-VZD-17000330255",
+        "LV-VZD-17000330291",
+        "LV-VZD-17000330298",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        21.012,
+        56.513,
+        21.013,
+        56.514
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "LV-VZD-17000100019",
+        "LV-VZD-17000100147",
+        "LV-VZD-17000200199",
+        "LV-VZD-17000200485",
+        "LV-VZD-17000200502",
+        "LV-VZD-17000200504",
+        "LV-VZD-17000300013",
+        "LV-VZD-17000300051",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        21.013,
+        56.513,
+        21.014,
+        56.514
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "LV-VZD-17000100019",
+        "LV-VZD-17000100147",
+        "LV-VZD-17000100441",
+        "LV-VZD-17000200139",
+        "LV-VZD-17000200140",
+        "LV-VZD-17000200199",
+        "LV-VZD-17000200485",
+        "LV-VZD-17000200502",
+        "LV-VZD-17000210262",
+        "LV-VZD-17000260006",
+        "LV-VZD-17000300013",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        21.014,
+        56.513,
+        21.015,
+        56.514
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "LV-VZD-17000100147",
+        "LV-VZD-17000100441",
+        "LV-VZD-17000200139",
+        "LV-VZD-17000200140",
+        "LV-VZD-17000200502",
+        "LV-VZD-17000210225",
+        "LV-VZD-17000210226",
+        "LV-VZD-17000210262",
+        "LV-VZD-17000220135",
+        "LV-VZD-17000260006",
+        "LV-VZD-17000260007",
+        "LV-VZD-17000300013",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        21.013,
+        56.51,
+        21.014,
+        56.511
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "LV-VZD-17000320056",
+        "LV-VZD-17000320122",
+        "LV-VZD-17000320123",
+        "LV-VZD-17000320261",
+        "LV-VZD-17000320296",
+        "LV-VZD-17000330055",
+        "LV-VZD-17000330066",
+        "LV-VZD-17000330100",
+        "LV-VZD-17000330264",
+        "LV-VZD-17000330279",
+        "LV-VZD-17000330298",
+        "LV-VZD-17000330329",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        21.013,
+        56.514,
+        21.014,
+        56.515
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "LV-VZD-17000100147",
+        "LV-VZD-17000200108",
+        "LV-VZD-17000200139",
+        "LV-VZD-17000200199",
+        "LV-VZD-17000200329",
+        "LV-VZD-17000200330",
+        "LV-VZD-17000200331",
+        "LV-VZD-17000200334",
+        "LV-VZD-17000200336",
+        "LV-VZD-17000200485",
+        "LV-VZD-17000200490",
+        "LV-VZD-17000200502",
+        "LV-VZD-17000200524",
+        "LV-VZD-17000210262",
+        "LV-VZD-17000300013",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        21.011,
+        56.512,
+        21.012,
+        56.513
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "LV-VZD-17000300013",
+        "LV-VZD-17000300015",
+        "LV-VZD-17000300028",
+        "LV-VZD-17000300049",
+        "LV-VZD-17000300051",
+        "LV-VZD-17000310180",
+        "LV-VZD-17000310181",
+        "LV-VZD-17000310213",
+        "LV-VZD-17000320261",
+        "LV-VZD-17000330298",
+        "LV-VZD-17400010001"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        21.015,
+        56.512,
+        21.016,
+        56.513
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "LV-VZD-17000260007",
+        "LV-VZD-17000330067",
+        "LV-VZD-17000330197",
+        "LV-VZD-17000330255",
+        "LV-VZD-17000330265",
+        "LV-VZD-17000330291",
+        "LV-VZD-17000330298",
+        "LV-VZD-17000330321",
+        "LV-VZD-17400010001"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 37,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:55.042Z",
+      "queryHash": "d7137f6450c2fb344f85f81a4c7fa57f50a8c3d0c75315e37e6a5f5799da10e7",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 508
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:55.554Z",
+      "queryHash": "d7137f6450c2fb344f85f81a4c7fa57f50a8c3d0c75315e37e6a5f5799da10e7",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 119
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:55.805Z",
+      "queryHash": "c4bd952fef9fc12289365948a5396406ca475b8b74a045fddccbf5687ada9ba8",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 137
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:56.057Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 179
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:56.308Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 130
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:56.560Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 154
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:56.812Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 152
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:57.066Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 241
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:57.320Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 137
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:57.571Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 139
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:57.823Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 174
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:58.075Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 176
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:58.326Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 150
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:58.576Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 172
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:58.826Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 228
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:59.077Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 205
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:59.327Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 182
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:59.577Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 159
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:56:59.829Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 144
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:00.079Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 181
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:00.329Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 149
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:00.580Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 211
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:00.831Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 322
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:01.156Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 151
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:01.407Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 166
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:01.657Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 3381
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:05.056Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 198
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:05.307Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 165
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:05.558Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 421
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:05.981Z",
+      "queryHash": "d1a41ed5c7e71fcbd1344c5ee54bee00089403b9af7904bc6a548b0dfd220cc1",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 220
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:06.233Z",
+      "queryHash": "39ca2c727cf2b6ae70756db0632ee6c1c5de865b9b6960c718f0b26581e0d1a0",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 365
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:06.598Z",
+      "queryHash": "9c2ce23ee9dec0ab7d1ba8c384eed385ed7a8387b5e7b58aa4690902bfadd996",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 398
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:07.000Z",
+      "queryHash": "3b78968f5a8a14926cdd40791ca0a19cfbd864715b2a104d4d7ecbf05ee29a78",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1354
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:08.354Z",
+      "queryHash": "0243fc07a3093429fb851f0109180d25f3cda100e5e46fc17243f4a357628e96",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 304
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:08.659Z",
+      "queryHash": "d7137f6450c2fb344f85f81a4c7fa57f50a8c3d0c75315e37e6a5f5799da10e7",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 339
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:09.011Z",
+      "queryHash": "24bfc9787be70ff652b50069573aebcb49a1afe9b17a64068883f640a1db85ad",
+      "safeParamNames": [
+        "count",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 388
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "geolatvija.lv",
+      "method": "GET",
+      "startedAt": "2026-10-12T11:57:09.432Z",
+      "queryHash": "301911276c02601fb3c43620f406a5d7d6e4937c7c0ae3aaae59fe289583e76d",
+      "safeParamNames": [
+        "count",
+        "cql_filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1000,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1398
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

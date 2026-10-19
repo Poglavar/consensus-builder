@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:81",
+  "queueRank": 81,
+  "name": "Hà Nội (Hanoi)",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "centerLatLon": [
+    21.0118048844826,
+    105.836912720905
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://quyhoach.hanoi.vn/",
+      "observation": "Official Hanoi planning portal (per search results); served only a JavaScript bot-check/reload page to a non-browser client, so no data or API was inspectable."
+    },
+    {
+      "url": "http://qhkhsdd.hanoi.gov.vn/",
+      "observation": "Hanoi land-use planning portal listed by search results; HTTP 404 on plain http, TLS host unreachable."
+    },
+    {
+      "url": "https://sotnmt.hanoi.gov.vn",
+      "observation": "Hanoi Dept of Agriculture and Environment/Natural Resources site; only a 301 redirect fetched."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://quyhoach.hanoi.vn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "anti-bot challenge page only"
+    },
+    {
+      "url": "http://qhkhsdd.hanoi.gov.vn/",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html; charset=us-ascii",
+      "assessment": "not found"
+    },
+    {
+      "url": "https://qhkhsdd.hanoi.gov.vn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://dichvucong.gov.vn",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://csdldatdai.monre.gov.vn",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://dvc.monre.gov.vn",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "text/plain; charset=utf-8",
+      "assessment": "auth wall"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Hanoi planning and land-use viewers; third-party commercial aggregators (GISLand, hanoigis.com, VinaGIS) claim parcel layers",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official viewers may serve parcel/planning polygons but are protected by bot checks or unreachable; third-party sites are not official cadastre. Ho Chi Minh City had a similar negative. Vietnam-wide land database (MONRE) is not confirmed open.",
+  "nextStep": "Inspect the browser network calls of quyhoach.hanoi.vn for an open parcel/planning service; check MONRE national land database access terms."
+}

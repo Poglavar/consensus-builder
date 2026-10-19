@@ -1,0 +1,79 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:MY:putrajaya",
+  "name": "Putrajaya",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "centerLatLon": [
+    2.9264,
+    101.6964
+  ],
+  "capitalRole": "administrative seat",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Putrajaya cadastral map lot parcel official Malaysia GIS JUPEM geoportal",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.jupem.gov.my/",
+        "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home"
+      ]
+    },
+    {
+      "query": "Peta kadaster lot tanah Putrajaya data GIS rasmi",
+      "language": "Malay",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.jupem.gov.my/",
+        "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.jupem.gov.my/",
+      "observation": "JUPEM, Malaysia’s survey and mapping department, describes MyLot as an online land-lot location/boundary checking application and MyGeoServe as a geospatial data platform."
+    },
+    {
+      "url": "https://sites.google.com/jupem.gov.my/jupemgeospatialwebservices/home",
+      "observation": "MyGeoServe lists current Peninsular Malaysia cadastral lots (NDCDB) among the cadastral products; public service/download path and Putrajaya geometry were not confirmed."
+    },
+    {
+      "url": "https://www.jupem.gov.my/",
+      "observation": "JUPEM official site request failed local TLS certificate verification in this run; no portal configuration or geometry request was observed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.jupem.gov.my/",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Request failed TLS certificate verification; no page or geometry was accepted.",
+      "error": "HTTPSConnectionPool(host='www.jupem.gov.my', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certifica"
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "JUPEM/MyGeoServe describe national cadastral products, but the inspected sources do not establish Putrajaya-specific registry coverage or a public parcel feature query.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "national_registry_candidate_city_scope_unverified",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "JUPEM/MyGeoServe describe national cadastral products, but the inspected sources do not establish Putrajaya-specific registry coverage or a public parcel feature query.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

@@ -1,0 +1,218 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2312-edinburgh.json",
+  "purpose": "Trace and audit the official public RoS county download route. Source terms are recorded as informational context; the published anonymous GET requires no account.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ros-inspire.themapcloud.com/",
+      "observation": "The public RoS INSPIRE Download Service has a county selector, an explicit Open Government Licence 3 terms panel, a checkbox labelled 'I accept the Terms and Conditions of Use', and a Submit button. The page links to the WMS view service and a dataset information sheet."
+    },
+    {
+      "url": "https://ros-inspire.themapcloud.com/assets/files/INSPIRE_dataset_specification_v1.5_March2025.pdf",
+      "observation": "The March 2025 RoS specification says the dataset is available as un-styled ESRI shapefile polygons or via a Web Feature Server, in EPSG:27700 and EPSG:4258. The Links section lists the download service and WMS URL, but no distinct WFS URL. It also says polygons are incomplete, with about 30% of Land Register titles missing from the INSPIRE parcel subset, and that overlaps are valid in parts of the data model."
+    },
+    {
+      "url": "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+      "observation": "National Data Library metadata names Registers of Scotland as responsible party, states no limitations on public access, reports EPSG:27700 and quarterly updates, and links the RoS download service. Its published metadata XML was followed for source details; it lists the download service but no WFS endpoint."
+    }
+  ],
+  "downloadRoute": {
+    "discoveredFrom": "First-party Next.js JavaScript asset referenced by the official download page; the page's download handler calls fetch('/maps/download/ros-cp.cadastralparcel/'+selectedCounty).",
+    "routeTemplate": "https://ros-inspire.themapcloud.com/maps/download/ros-cp.cadastralparcel/{countyCode}",
+    "countySelectorEvidence": "The first-party asset maps Midlothian to code MID; this is the registered county relevant to the Edinburgh record under review.",
+    "testedRoute": "https://ros-inspire.themapcloud.com/maps/download/ros-cp.cadastralparcel/MID",
+    "responseEvidence": [
+      {
+        "method": "HEAD",
+        "httpStatus": 403,
+        "assessment": "HEAD is not accepted on this route; no content body retrieved."
+      },
+      {
+        "method": "GET",
+        "requestHeader": "Range: bytes=0-1023",
+        "httpStatus": 206,
+        "contentType": "application/zip",
+        "contentRange": "bytes 0-1023/66775343",
+        "bytesRead": 1024,
+        "assessment": "The route returns a ZIP response through the official selector handler. The response redirects to a time-limited signed object URL; that URL and its query signature were redacted and not stored. Only the bounded first 1 KiB was fetched; the archive was not extracted or parsed."
+      },
+      {
+        "method": "GET",
+        "requestHeader": null,
+        "httpStatus": 200,
+        "contentType": "application/zip",
+        "contentLength": 66775343,
+        "bytesRead": 66775343,
+        "archiveSha256": "1fef5621cae5b37201d0ae2d9f98c3a37e93e7795a4d0a19e0f2842e75710756",
+        "assessment": "Following parent authorization, the full archive was fetched through the exact route disclosed by the official page JavaScript. The generated signed redirect and token-bearing query string were not saved. Only the BNG Shapefile components were parsed for a bounded local audit; only inspireid was read from DBF records."
+      }
+    ],
+    "explicitTermsGate": {
+      "present": true,
+      "uiCondition": "The official page disables Submit unless the terms checkbox is checked, a county is selected, and a download is not already in progress.",
+      "acceptedOrSubmitted": false,
+      "followThrough": "The checkbox requirement is present in the UI, but no checkbox acceptance or form submission was automated. After parent authorization, the official first-party public GET selector route was called directly; it returned the county ZIP without login or other credentials."
+    },
+    "fullCountyDatasetRetrieved": true,
+    "fullCountyGeometryAuditPerformed": true,
+    "oneKilometreWupClipOrScanPerformed": true,
+    "retainedGeometryCount": 3,
+    "archiveInventory": {
+      "zipEntryCount": 8,
+      "bngComponents": [
+        "MID_bng.shp",
+        "MID_bng.shx",
+        "MID_bng.dbf",
+        "MID_bng.prj"
+      ],
+      "etrs89ComponentsPresentButNotExtracted": [
+        "MID_etrs89.shp",
+        "MID_etrs89.shx",
+        "MID_etrs89.dbf",
+        "MID_etrs89.prj"
+      ],
+      "bngFeatureCount": 137796,
+      "bngCrs": "EPSG:27700",
+      "fileFieldRead": "inspireid only"
+    }
+  },
+  "wfsRoute": {
+    "documentedBySpecification": true,
+    "firstPartyEndpointDiscovered": false,
+    "basis": "The specification describes delivery via WFS but its Links section points only to the download service and WMS. The official page JavaScript constructs a GetCapabilities URL for /maps/wms and contains no WFS URL or WFS request. The linked national metadata XML lists the download service, not WFS.",
+    "wmsCapabilitiesRequest": {
+      "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml; charset=utf-8; charset=utf-8",
+      "bytesRead": 8903,
+      "declaredService": "WMS",
+      "assessment": "The returned capabilities document advertises WMS and the cadastral parcel layer. No WFS endpoint was disclosed in the page bundle, capabilities document, or linked metadata, so no WFS URL was guessed or queried."
+    },
+    "endpointSearchResult": "No WFS endpoint was present in the first-party JavaScript bundle, official download page, official WMS capabilities, or linked National Data Library metadata XML. No guessed WFS URL was requested."
+  },
+  "temporaryEvidence": {
+    "directory": "/private/tmp/edinburgh-ros-inspire-assets",
+    "files": [
+      {
+        "path": "index.html",
+        "sha256": "9a3eeee3569bdf3bcac0106a5c55d3bae9ce19dbc0532dd71bfaa5639ea81c84"
+      },
+      {
+        "path": "26e70de4851e6dd2.js",
+        "sha256": "7fa85c7dbb08519ccdc798588587e0dcd44846552cd4c3707f753c4a56658caf"
+      },
+      {
+        "path": "data-gov-metadata.xml",
+        "sha256": "41c20a60e6effc7a8f03b7572fdd5ecfc6898d8d31cc1b3480549bdb933bac73"
+      },
+      {
+        "path": "wms-capabilities.xml",
+        "sha256": "80cb2290af7caac5a0c1b076523e3a4c3da87936f588f51f3d3bea85bff7cf05"
+      },
+      {
+        "path": "MID.zip (removed after bounded audit)",
+        "bytes": 66775343,
+        "sha256": "1fef5621cae5b37201d0ae2d9f98c3a37e93e7795a4d0a19e0f2842e75710756",
+        "retention": "Full source archive and unfiltered Shapefile components were deleted from temporary storage after the bounded geometry-only scan; summary and three safe local geometries remain."
+      },
+      {
+        "path": "edinburgh-mid-bng-nearest-3.geojson",
+        "sha256": "168180749b1e12b30f66ead0b69c02eb5a28598ce25d7f9a3fde44cd47548728",
+        "properties": [
+          "inspireid"
+        ],
+        "geometryOnly": true
+      },
+      {
+        "path": "audit_mid.py",
+        "description": "Temporary reproducible analysis code; the fetched full county archive and extracted source DBF/SHP components were removed after the audit."
+      }
+    ],
+    "signedRedirectUrlOrCredentialsRetained": false,
+    "parcelGeometryRetained": false,
+    "propertyOwnerOrAddressAttributesRetained": false,
+    "personalOrAddressAttributesRetained": false,
+    "retentionNote": "Temporary files named in this historical audit no longer exist after scratch cleanup; the durable report and original safe WMS sample remain."
+  },
+  "conclusion": "The first-party Midlothian county download route was discovered from the official page JavaScript and returned a full 66,775,343-byte ZIP after parent authorization. A geometry-only audit of the native EPSG:27700 BNG Shapefile found 2,222 full polygons intersecting a 1 km circle around the exact transformed WUP point; the point itself is covered by zero polygons, with nearest INSPIRE feature gb.ros.lr.SCT0009110317 2.961 m away. All 3,148 bbox candidates were valid and had no ring-closure or ring-grouping errors. Local overlap counts are reported but are not treated as failures because RoS documents stacked/overlapping polygons as valid in its data model. Three nearest full polygons with only inspireid and geometry remain in /private/tmp; the full county archive and unfiltered components were deleted after the scan. No property-owner/address fields or signed redirect were retained.",
+  "remainingUncertainty": "This bounded local audit is not a countywide topology or completeness validation. The WMS representation of the nearest same-ID parcel differs from the county download by approximately 0.498 m Hausdorff distance after transformation; source revision/transformation differences remain unresolved. The specification refers to WFS, but no first-party WFS endpoint was found in the linked materials.",
+  "geometryAudit": {
+    "method": "The exact UN WUP2025 point was transformed from EPSG:4326 to EPSG:27700 using the local PROJ EPSG operation for Great Britain (OSTN15 grid; nominal 1 m operation accuracy). The query was a 1,000 m circular buffer around that unchanged point; an enclosing ±1,000 m native-coordinate bbox was used only to preselect candidates. Full native polygons were tested and not clipped for the audit. Shapefile rings were grouped by ESRI orientation; no repair was performed. Only inspireid was read from DBF; all other attributes were excluded from processing/output.",
+    "wupPointLatLon": [
+      55.9440001355415,
+      -3.20068690290672
+    ],
+    "wupPointEPSG27700": [
+      325105.88593559,
+      672980.067265603
+    ],
+    "radiusM": 1000,
+    "preselectionBoundsEPSG27700": [
+      324105.88593559,
+      671980.067265603,
+      326105.88593559,
+      673980.067265603
+    ],
+    "countySourceFeatureCount": 137796,
+    "bboxCandidateCount": 3148,
+    "featuresIntersectingExact1kmCircle": 2222,
+    "bboxCandidateGeometryValidCount": 3148,
+    "bboxCandidateGeometryInvalidCount": 0,
+    "emptyGeometryCount": 0,
+    "unclosedRingCount": 0,
+    "unassignedHoleRingCount": 0,
+    "orientationFallbackCount": 0,
+    "duplicateInspireIdCountAmongSelected": 0,
+    "exactWupPointCoveringFeatureCount": 0,
+    "nearestFeature": {
+      "inspireid": "gb.ros.lr.SCT0009110317",
+      "distanceM": 2.960882,
+      "containsWupPoint": false,
+      "geometryValid": true,
+      "areaM2": 186.261
+    },
+    "nearestThreeFeatures": [
+      {
+        "inspireid": "gb.ros.lr.SCT0009110317",
+        "distanceM": 2.960882
+      },
+      {
+        "inspireid": "gb.ros.lr.SCT0004678611",
+        "distanceM": 13.018847
+      },
+      {
+        "inspireid": "gb.ros.lr.SCT0006402512",
+        "distanceM": 17.681242
+      }
+    ],
+    "pairwiseTopologyWithin1kmCircle": {
+      "candidatePairsChecked": 6574,
+      "positiveAreaOverlapPairs": 1709,
+      "overlapPairsAtLeast1m2": 1259,
+      "operationErrors": 0,
+      "maximumOverlapAreaM2": 14313.205
+    },
+    "overlapInterpretation": "RoS dataset specification says overlapping and stacked polygons are a valid part of its current data model, and holes may be represented by overlapping polygons. Overlap counts are recorded, not treated as invalidity findings. This audit does not assert parcel topology is defect-free or complete.",
+    "boundedSampleFile": {
+      "path": "/private/tmp/edinburgh-ros-inspire-assets/edinburgh-mid-bng-nearest-3.geojson",
+      "sha256": "168180749b1e12b30f66ead0b69c02eb5a28598ce25d7f9a3fde44cd47548728",
+      "featureCount": 3,
+      "properties": [
+        "inspireid"
+      ],
+      "crs": "EPSG:27700"
+    },
+    "countyWideGeometryOrTopologyAudited": false,
+    "citywideCompletenessAsserted": false
+  },
+  "wmsCrossCheck": {
+    "sameNearestInspireidAsPriorWmsSample": true,
+    "inspireid": "gb.ros.lr.SCT0009110317",
+    "wmsSampleDistanceFromWupM": 2.507177,
+    "downloadSampleDistanceFromWupM": 2.960882,
+    "transformedWmsToBngHausdorffDistanceM": 0.497891,
+    "assessment": "Both complete geometries are valid, carry the same INSPIRE ID, and do not cover the exact WUP point. After transforming the prior WMS sample to BNG, its boundary differs from the downloaded county geometry by about 0.498 m Hausdorff distance. This is recorded as a source/version or transformation difference; the WMS sample is not substituted for the county download geometry."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "description": "Dated candidate assessment; current runtime remains disabled.",
+  "checkedAt": "2026-10-02",
+  "runtimeEnabled": false,
+  "sourceId": "de-be-alkis-flurstuecke-wfs",
+  "cityCoverage": [
+    "Berlin"
+  ],
+  "operator": "Land Berlin, Senatsverwaltung für Stadtentwicklung, Bauen und Wohnen / Geoportal Berlin",
+  "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+  "protocol": "Official WFS 2.0.0 GetFeature; saved test used count/startIndex, application/json and srsName=EPSG:4326; 3 features returned from 10 matched in a small Berlin bbox. Expected paginated WFS GET requests.",
+  "verification": {
+    "currentnessAndScope": "Berlin Open Data record updated 2026-09-22. Berlin Senatsverwaltung says ALKIS WFS/WMS is updated monthly and covers Berlin. Previous saved bbox sample reported numberMatched=10 and Berlin totalFeatures about 403526, but this exact count was not freshly re-fetched in this turn.",
+    "directProbeBlocker": "Local urllib/curl cannot resolve external hosts in this sandbox; prior direct curl reported a self-signed certificate in chain. Official WFS GetCapabilities can be reached by web reader (XML type unsupported), but the web reader cannot return the outputFormat=application/json query body. Do not disable TLS validation or claim a fresh exact-ID query.",
+    "fieldsAndIdentity": "Official ALKIS schema lists `uuid` as Objekt-ID (feature object ID), `fsko` as Flurstückskennzeichen. Saved GeoJSON sample exposes `uuid` and WFS feature id (`flurstuecke.<uuid>`); sample had no `fsko` property. ALKIS Berlin object catalogue states Flurstückskennzeichen is object-forming. Prefer confirm availability and exact filtering of fsko before persisting it; uuid is the verified returned native field but long-term parcel continuity semantics were not established in this bounded turn."
+  },
+  "crs": "Native EPSG:25833 (ETRS89 / UTM 33N); WFS sample requests EPSG:4326 GeoJSON output.",
+  "terms": "Datenlizenz Deutschland – Zero – Version 2.0; official license permits commercial/non-commercial reuse, modification, onward transmission without conditions.",
+  "scopeAndCaveats": "Complete Berlin state/city scope; Germany-wide scope is not covered because ALKIS is administered by each Land. Do not conflate Berlin with broader metro municipalities.",
+  "primarySources": [
+    "https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7",
+    "https://www.berlin.de/sen/stadt/stadtdaten/geoinformation/liegenschaftskataster/geobasisdaten-online/datenbereitstellung/",
+    "https://gdi.berlin.de/data/alkis/docs/datenformatbeschreibung_alkis_berlin.pdf",
+    "https://www.govdata.de/dl-de/zero-2-0"
+  ]
+}

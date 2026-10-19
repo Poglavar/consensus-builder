@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 11862,
+  "queueRank": 3237,
+  "name": "Xixi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [22.9921492392626, 116.178405729153],
+  "population2025": 186436,
+  "population2025k": 186.436,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xixi China Jieyang cadastral map parcel official GIS",
+        "result": "Discovery found Guangdong's official Tianditu public map service and the national geographic-information catalog, but no first-party Xixi/Jieyang cadastral parcel viewer or open parcel endpoint was identified.",
+        "actualResultUrls": [
+          "https://guangdong.tianditu.gov.cn/ggdt/",
+          "https://www.webmap.cn/main.do?method=index2"
+        ]
+      },
+      {
+        "language": "Chinese (native/local-language discovery)",
+        "query": "揭阳 西溪 地籍图 宗地 官方 自然资源",
+        "result": "Chinese-language discovery identified the official Guangdong Tianditu portal and Guangdong Natural Resources Department as the map publisher, but did not identify a public Xixi/Jieyang parcel registry or parcel geometry API.",
+        "actualResultUrls": [
+          "https://guangdong.tianditu.gov.cn/ggdt/",
+          "https://nr.gd.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": null,
+  "officialSources": [
+    {
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/",
+      "publisher": "Guangdong Natural Resources Department / Guangdong Map Institute",
+      "observation": "Official Guangdong public map portal; current HTML and JavaScript were retrieved anonymously over TLS. The visible/configured public service is a general map platform, not an evidenced cadastral registry for Xixi."
+    },
+    {
+      "url": "https://nr.gd.gov.cn/",
+      "publisher": "Guangdong Natural Resources Department",
+      "observation": "Provincial natural-resources authority link used by the official map portal; no city-specific public parcel service was evidenced in this attempt."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index2",
+      "publisher": "National Geomatics Center of China / Ministry of Natural Resources ecosystem",
+      "observation": "Official national geographic-information resource catalog landing page; general catalog evidence only, not a verified Xixi parcel source."
+    }
+  ],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/",
+      "httpStatus": 200,
+      "outcome": "TLS-verified live portal HTML retrieved. It referenced current JavaScript/configuration files."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/config/index.js",
+      "httpStatus": 200,
+      "outcome": "Current configuration exposed the Guangdong map service URL, village-map path, and public map settings; no cadastral layer or parcel schema was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/js/app.a49e255d.js",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript retrieved and inspected for cadastral/parcel routes; observed public vector-tile/base-map references and portal service routes, but no safe parcel ID-plus-geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://guangdong.tianditu.gov.cn/ggdt/mapService/server/rest/services/Hosted/%E6%96%B0%E5%B9%BF%E4%B8%9C%E5%85%A8%E7%9C%81/VectorTileServer?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Endpoint returned ArcGIS-style JSON error code 499, Token Required. No token was requested, inferred, or bypassed; no schema or geometry was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webmap.cn/main.do?method=index2",
+      "httpStatus": 200,
+      "outcome": "Official national catalog landing page retrieved; no bounded Xixi parcel request was available from the public landing response."
+    }
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "No qualified city/local cadastral source; Guangdong Tianditu public map portal inspected as a first-party lead",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "canonicalId": "Not observed in a public parcel response",
+      "safeGeometry": "No parcel geometry response was returned"
+    },
+    "compositeKeyProvenance": "No parcel identity or composite cadastral key was returned; no synthetic identity was assigned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Guangdong provincial public map portal and national geographic-information catalog landing page.",
+    "verifiedOpenScope": "General public map configuration was verified, but no open Xixi/Jieyang parcel layer, schema, or geometry was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "exactPointParcelSample": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "uncertainty": [
+    "The public hosted vector-tile endpoint required a token; no authentication or token circumvention was attempted.",
+    "The map portal's general administrative/base layers do not establish cadastral availability or citywide parcel coverage.",
+    "The exact WUP point was preserved and was not shifted or used as an absence test.",
+    "No local Xixi/Jieyang registry custodian with public parcel geometry was evidenced in this attempt."
+  ],
+  "doNotInfer": [
+    "A token-required endpoint, lack of a visible cadastral layer, or no exact-point hit is not evidence of citywide parcel absence.",
+    "General provincial/national map catalog pages are not a city cadastral registry.",
+    "Packet completion is not source integration or admission."
+  ],
+  "completionSummary": {
+    "packetComplete": true,
+    "registryFound": null,
+    "cityPointParcelSample": false,
+    "runtimeReadiness": "held",
+    "nextAttemptNeeded": true
+  }
+}

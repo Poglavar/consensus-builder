@@ -1,38 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import { randomUUID } from 'crypto';
 import { createJsonBodyValidator, isPlainObject, validators } from '../utils/request-validation.js';
+import {
+    saveImageBuffer,
+    decodeImageDataUrl,
+    ensureImageDirectories,
+    METADATA_DIR
+} from '../utils/image-store.js';
+import { publicFileUrl } from '../utils/public-base-url.js';
 
-const UPLOAD_ROOT = path.resolve('uploads');
-const IMAGE_DIR = path.join(UPLOAD_ROOT, 'images');
-const METADATA_DIR = path.join(UPLOAD_ROOT, 'metadata');
-const STATIC_PROPOSAL_IMAGE_URL = 'https://urbangametheory.xyz/images/consensus-builder-logo.png';
 const MAX_FILE_NAME_LENGTH = 255;
-
-function sanitizeFileName(raw, fallbackPrefix) {
-    const base = (raw || '').toString().trim();
-    const safe = base
-        .toLowerCase()
-        .replace(/[^a-z0-9-_]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-    if (safe) return safe;
-    return `${fallbackPrefix}-${Date.now()}-${randomUUID()}`;
-}
-
-function ensureUploadDirectories() {
-    [UPLOAD_ROOT, IMAGE_DIR, METADATA_DIR].forEach(dir => {
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-    });
-}
-
-function resolveBaseUrl(req) {
-    const protocol = req.protocol;
-    const host = req.get('host');
-    return `${protocol}://${host}`;
-}
 
 const assetsUploadBodyValidator = createJsonBodyValidator({
     schema: {
@@ -64,43 +41,34 @@ const assetsUploadBodyValidator = createJsonBodyValidator({
 });
 
 export function setupAssetsRoute(app) {
-    ensureUploadDirectories();
+    ensureImageDirectories();
 
     app.post('/assets/upload', assetsUploadBodyValidator, async (req, res) => {
         try {
             const { imageData, metadata, fileName } = req.validatedBody;
 
-            const matches = imageData.match(/^data:(.+);base64,(.+)$/);
-            if (!matches || matches.length < 3) {
+            // Same decode + write helpers the server-side thumbnail renderer uses, so images land in
+            // one place with one URL scheme no matter who produced them.
+            const decoded = decodeImageDataUrl(imageData);
+            if (!decoded) {
                 return res.status(400).json({ error: 'imageData must be a base64 data URL.' });
             }
-
-            const contentType = matches[1];
-            const base64Payload = matches[2];
-            const buffer = Buffer.from(base64Payload, 'base64');
-            if (!buffer.length) {
+            if (!decoded.buffer.length) {
                 return res.status(400).json({ error: 'Decoded image data is empty.' });
             }
+            if (!decoded.contentType) {
+                return res.status(400).json({ error: 'imageData must be a PNG, JPEG or WEBP image.' });
+            }
 
-            const extension = (() => {
-                const typeParts = contentType.split('/');
-                if (typeParts.length === 2 && typeParts[1]) {
-                    const ext = typeParts[1].split('+')[0];
-                    if (ext) return ext.toLowerCase();
-                }
-                return 'png';
-            })();
+            // saveImageBuffer picks the extension from the sniffed bytes and appends a random id; the
+            // metadata file reuses that exact base, so neither can be named (and overwritten) by a client.
+            const { fileName: imageFileName, imagePath } = saveImageBuffer(decoded.buffer, fileName || 'road-proposal');
+            const metadataFilename = `${imageFileName.replace(/\.[a-z]+$/, '')}.json`;
 
-            const safeBase = sanitizeFileName(fileName, 'road-proposal');
-            const imageFilename = `${safeBase}.${extension}`;
-            const metadataFilename = `${safeBase}.json`;
-
-            ensureUploadDirectories();
-            fs.writeFileSync(path.join(IMAGE_DIR, imageFilename), buffer);
-
-            const baseUrl = resolveBaseUrl(req);
-            const uploadedImageUrl = `${baseUrl}/uploads/images/${imageFilename}`;
-            const imageUrl = uploadedImageUrl || STATIC_PROPOSAL_IMAGE_URL;
+            // Pinned public base (or the bare path) — never the request's Host header, which the
+            // client controls and which would otherwise be baked into metadata that minted tokens point to.
+            const uploadedImageUrl = publicFileUrl(imagePath);
+            const imageUrl = uploadedImageUrl;
             const existingProperties = isPlainObject(metadata.properties)
                 ? metadata.properties
                 : {};
@@ -114,9 +82,13 @@ export function setupAssetsRoute(app) {
                     uploadedImageUrl
                 }
             };
-            fs.writeFileSync(path.join(METADATA_DIR, metadataFilename), JSON.stringify(metadataToSave, null, 2), 'utf8');
+            fs.writeFileSync(
+                path.join(METADATA_DIR, metadataFilename),
+                JSON.stringify(metadataToSave, null, 2),
+                { encoding: 'utf8', flag: 'wx' }
+            );
 
-            const metadataUrl = `${baseUrl}/uploads/metadata/${metadataFilename}`;
+            const metadataUrl = publicFileUrl(`/uploads/metadata/${metadataFilename}`);
 
             res.json({
                 imageUri: imageUrl,

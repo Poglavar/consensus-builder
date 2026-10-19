@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-5975-corpus-christi.json",
+  "cityCode": 5975,
+  "queueRank": 2446,
+  "name": "Corpus Christi",
+  "country": "United States of America",
+  "countryCode": "US",
+  "pointLatLon": [27.7290358614509, -97.3978332058705],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://addressing.cctexas.com/","outcome":"Official City of Corpus Christi Development Services GIS/address viewer. The page describes an address and tax-ID search and states that its GIS data is informational and approximate."},
+    {"method":"SEARCH","url":"https://nuecescad.net/","outcome":"Official Nueces Central Appraisal District site identifies responsibility for real and business personal property in Nueces County, lists Corpus Christi among its taxing entities, and links an Interactive Map."},
+    {"method":"GET","url":"https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/610","outcome":"Public ArcGIS REST group layer page identifies NUECES COUNTY and a Parcels (2024) sublayer; supported query formats include JSON, geoJSON, and PBF. Page reports native spatial reference 102740 (2278)."},
+    {"method":"GET","url":"https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/1090","outcome":"Public ArcGIS REST parcel-layer page identifies polygon geometry, max record count 2000, supported geoJSON, and fields including OBJECTID, Prop_ID, GEO_ID, and many unsafe owner/address/value fields. Only safe identity candidates were considered for a query; unsafe fields were not requested."},
+    {"method":"GET","url":"https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/1090?f=pjson","outcome":"Attempted anonymous metadata request with TLS verification enabled; request timed out after 30 seconds in this environment. The HTML REST layer page above supplied the recorded schema evidence."},
+    {"method":"GET","url":"https://maps.pape-dawson.com/server2/rest/services/PD_GIS_Webmap/PD_GIS_WebMap__CorpusChristi_External/MapServer/1090/query","outcome":"Attempted anonymous exact-point and bounded-envelope GeoJSON queries using WGS84 input, intersects, returnGeometry=true, outSR=4326, resultRecordCount=3, and outFields=OBJECTID,Prop_ID. The request path timed out after 30 seconds; no feature count, identity, or geometry was inferred."}
+  ],
+  "schemaAndCrs": {
+    "serviceType": "ArcGIS REST Feature Layer",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "ESRI:102740 / EPSG:2278 as reported by service page",
+    "queryCrs": "4326 requested for WUP-coordinate query; no response received",
+    "nativeIdentityCandidates": ["Prop_ID", "GEO_ID", "OBJECTID"],
+    "sourceFieldMapping": {"safeIdentity":"Prop_ID or GEO_ID if stable in a returned feature; OBJECTID retained only as legacy-compatible fallback", "geometry":"Shape", "unsafeFieldsExcluded":["OWNER_NAME","NAME_CARE","SITUS_ADDR","MAIL_ADDR","LAND_VALUE","IMP_VALUE","MKT_VALUE"]},
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point plus approximately 0.008-degree WGS84 envelope around it", "featureCount":null, "nativeIdentity":null, "geometryRetained":false, "outcome":"timeout"}
+  },
+  "sourceFieldMapping": {"serviceLayer":"Parcels (2024), layer 1090", "identityProvenance":"The service exposes Prop_ID, GEO_ID, and OBJECTID; no returned feature established which is the stable native parcel identity.", "compositeKeyProvenance":null},
+  "localCustodianAssessment":"The City of Corpus Christi GIS/address viewer and Nueces Central Appraisal District are local custodians/evidence. The Pape-Dawson ArcGIS service is a public map service linked by search results but is a service host/provider rather than the local governmental custodian. General federal/national mapping results were not used as registry evidence.",
+  "safeFieldAllowlist":["stable native parcel identity if independently confirmed from an anonymous response","full parcel polygon only when bounded and anonymously returned","source service URL","native CRS and requested output CRS","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","property value","legal description","personal data","mailing data"],
+  "sampleGeoJSON":null,
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Public local GIS custodians and a parcel-layer schema/CRS are evidenced, but the bounded anonymous feature request timed out, so no stable native identity or geometry was independently qualified."},
+  "scopeLimits":["Exact WUP point [27.7290358614509,-97.3978332058705] was preserved and not shifted.","A timeout is not evidence of an exact-point miss, map extent miss, or citywide absence.","No parcel polygon is retained.","No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification exception was used.","The layer page reports a 2024 name but its description says data date March 2019; freshness and update cadence remain uncertain.","This research packet does not admit or integrate a runtime adapter."],
+  "uncertainty":"The local custodians and public ArcGIS parcel layer are evidenced. Anonymous metadata/feature requests from this environment timed out, leaving feature availability at the WUP point, stable identity selection, citywide coverage, and current geometry unverified. Runtime readiness remains held for serial review."
+}

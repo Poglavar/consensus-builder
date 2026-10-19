@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11T00:00:00Z",
+  "cityRecord": "city-2181-kaluga.json",
+  "cohort": "overnight-next-2101-2200-2026-10-09",
+  "purpose": "Independent service review for Kaluga official cadastral and parcel-oriented map sources.",
+  "assessment": "Kaluga has an evidenced official municipal/regional cadastral custodian and current NSPD public-map entry point. Bounded anonymous NSPD requests timed out, so no safe native parcel ID, schema, CRS, or polygon was verified. The packet is complete for attempt 1 and runtime readiness remains held.",
+  "registryAssessment": "Official Kaluga municipal publications quote the Rosreestr Kaluga Oblast office and identify the public cadastral map; the 2025 notice states that the map operates in NSPD and includes Kaluga Oblast. This is local/regional registry-custodian evidence, not proof of open vector access or citywide parcel completeness.",
+  "coverageAssessment": {"claimedScope": "Official NSPD public cadastral map and Rosreestr/Roskadastr Kaluga regional custodian.", "verifiedOpenScope": "Official service identity and Kaluga-specific cadastral references only; no anonymous parcel vector.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "officialPrimarySources": [
+    {"url": "https://nspd.gov.ru/", "operator": "Rosreestr / Roskadastr", "scope": "Current official National Spatial Data Platform public cadastral map entry point; anonymous transport timed out."},
+    {"url": "https://www.kaluga-gov.ru/news/53666/", "operator": "Kaluga municipal administration / Rosreestr Kaluga Oblast office", "scope": "Official notice that the public cadastral map operates in NSPD and covers Kaluga Oblast."},
+    {"url": "https://www.kaluga-gov.ru/upload/iblock/ccb/078c1cbelnde8k6q1cqvh4tq63n6t3v2.pdf", "operator": "Kaluga municipal administration / cadastral-plan publication", "scope": "Official Kaluga cadastral territory-plan context; no geometry retained."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Kaluga Russia official cadastral map parcel GIS land registry Rosreestr Kaluga official", "result": "Found official Kaluga municipal and NSPD/Rosreestr references; discovery did not establish an open parcel-geometry API.", "actualResultUrls": ["https://nspd.gov.ru/", "https://kaluga-gov.ru/news/15318/", "https://kaluga-gov.ru/news/53666/"]},
+    {"language": "Russian", "query": "Калуга официальная кадастровая карта земельные участки Росреестр публичная карта", "result": "Найдены официальные материалы администрации Калуги и Росреестра о публичной кадастровой карте, НСПД и кадастровых планах; анонимная геометрия участков не подтверждена.", "actualResultUrls": ["https://www.kaluga-gov.ru/news/53666/", "https://www.kaluga-gov.ru/news/15318/", "https://www.kaluga-gov.ru/upload/iblock/ccb/078c1cbelnde8k6q1cqvh4tq63n6t3v2.pdf"]}
+  ],
+  "attempts": [
+    "Ran separate English and Russian first-party discovery queries.",
+    "Reviewed official NSPD entry-point evidence, Kaluga municipal notices quoting the regional Rosreestr office, and an official Kaluga cadastral-plan publication.",
+    "Attempted anonymous GET of https://nspd.gov.ru/ with TLS verification; connection timed out after 12 seconds.",
+    "Attempted anonymous GET of https://nspd.gov.ru/map with TLS verification; no response in the bounded request window.",
+    "Fetched https://www.kaluga-gov.ru/news/53666/ anonymously with TLS verification; HTTP 200 HTML loaded, but it contained service-description prose rather than a parcel-vector response.",
+    "A separate non-www official URL had certificate-name mismatch under normal TLS verification; no certificate exception was used and the request was not treated as evidence.",
+    "Did not log in, submit credentials, use private tokens, defeat CAPTCHA/Cloudflare, query owner/address/titleholder/tax/account/personal fields, shift the WUP point, or retain source-specific attribute sets."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run: no anonymous full parcel-geometry endpoint was verified. Exact WUP coordinate [54.5272064850054, 36.2745770924796] preserved unchanged.", "requestEvidence": [{"url": "https://nspd.gov.ru/", "method": "GET; anonymous", "httpStatus": null, "error": "connection timeout after 12 seconds", "assessment": "Transport failure only; not evidence of no parcels."}, {"url": "https://nspd.gov.ru/map", "method": "GET; anonymous", "httpStatus": null, "error": "bounded request produced no response", "assessment": "No schema or geometry inferred."}]},
+  "safeFieldAllowlist": ["safe cadastral identifier only if exposed by a future anonymous endpoint", "geometry", "CRS/layer metadata", "official service metadata"],
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The live NSPD backend, any public map-service endpoints, native ID, CRS, and extent of open parcel coverage for Kaluga remain unknown. The exact-point route was not run because no full geometry endpoint was verified; this is not an absence finding.",
+  "runtimeReadiness": "held",
+  "nextStep": "Serial reviewer should independently qualify the current NSPD/Rosreestr backend and public parcel geometry route; keep runtime held until safe native IDs and real polygon geometry are independently verified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

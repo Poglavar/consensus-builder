@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "AB",
+ "regionName": "Alberta",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-ab-calgary-parcel-with-roll",
+  "name": "City of Calgary Parcel with Roll 2025",
+  "operator": "The City of Calgary (ArcGIS Online org calgary.ca)",
+  "scope": "City of Calgary",
+  "endpoint": "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/arcgis/rest/services/Parcel_with_Roll_2025/FeatureServer/0",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native 3857)",
+  "reuseStatus": "Licence text not read; layer carries assessment fields, only CPID and geometry were requested."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-ab-calgary-parcel-with-roll",
+  "requestUrl": "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/arcgis/rest/services/Parcel_with_Roll_2025/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=CPID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-114.0720,51.0450,-114.0700,51.0465",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -114.072,
+   51.045,
+   -114.07,
+   51.0465
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "CPID",
+  "responseFile": "AB-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; exceededTransferLimit=true; maxRecordCount 1000",
+  "regionSampled": "Calgary downtown"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Municipal layer only. Alberta's province-wide parcel fabric is distributed by AltaLIS (Alberta Data Partnerships) under licence; no open province-wide query service found. Hosted third-party copies exist (e.g. Blackfalds, Lethbridge) but are not authoritative and were not tested.",
+ "subregionsVerified": [
+  "City of Calgary"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/arcgis/rest/services",
+   "observation": "City of Calgary ArcGIS Online org: Parcel_with_Roll_2025 polygon parcels, open query."
+  },
+  {
+   "url": "https://services3.arcgis.com/MWrw92Lq0JlIALnC/arcgis/rest/services/Real_Property_Governance_View_Land_Parcels/FeatureServer",
+   "observation": "Government of Alberta owned-property parcels only (has owner/name fields, not a general fabric); not queried."
+  },
+  {
+   "url": "https://maps.gov.ab.ca/arcgis/rest/services",
+   "observation": "Unreachable in earlier country pass (research/countries/CA.json)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/AVP60cs0Q9PEA8rH/arcgis/rest/services/Parcel_with_Roll_2025/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=CPID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-114.0720,51.0450,-114.0700,51.0465",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygon parcels, CPID only"
+  }
+ ],
+ "reuseStatus": "Not verified; check Open Calgary / City of Calgary Open Data licence before reuse.",
+ "remainingUncertainty": "Province-wide open layer not found (AltaLIS is licensed). Edmonton and other municipal layers untested.",
+ "nextStep": "Read the Calgary licence; probe Edmonton open data parcels; check AltaLIS terms."
+}

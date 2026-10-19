@@ -1,0 +1,206 @@
+{
+ "Montevideo": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": 454290,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -56.19070911909821,
+        -34.90460230950631
+       ],
+       [
+        -56.19082865298714,
+        -34.904611806175126
+       ],
+       [
+        -56.19080606095507,
+        -34.904807863443715
+       ],
+       [
+        -56.190683199887985,
+        -34.90479853035071
+       ],
+       [
+        -56.19070911909821,
+        -34.90460230950631
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "OBJECTID": 454290,
+     "Codigo": "VAA0007203",
+     "tipo": "U",
+     "nomDepto": "MONTEVIDEO",
+     "nomLocCat": "MONTEVIDEO",
+     "codDepto": "V",
+     "codLocCat": "AA",
+     "DeptoPadron": null,
+     "NroPadron": 7203,
+     "CodDepartamento": 10,
+     "SHAPE.STArea()": 243.17647326,
+     "SHAPE.STLength()": 65.97495215547083
+    }
+   },
+   {
+    "type": "Feature",
+    "id": 454354,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -56.19024841515598,
+        -34.904918391790474
+       ],
+       [
+        -56.19023265932444,
+        -34.90507766705037
+       ],
+       [
+        -56.19001422517596,
+        -34.90506268916244
+       ],
+       [
+        -56.19002990156367,
+        -34.90490452433159
+       ],
+       [
+        -56.19024841515598,
+        -34.904918391790474
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "OBJECTID": 454354,
+     "Codigo": "VAA0007381",
+     "tipo": "U",
+     "nomDepto": "MONTEVIDEO",
+     "nomLocCat": "MONTEVIDEO",
+     "codDepto": "V",
+     "codLocCat": "AA",
+     "DeptoPadron": null,
+     "NroPadron": 7381,
+     "CodDepartamento": 10,
+     "SHAPE.STArea()": 353.64801595,
+     "SHAPE.STLength()": 75.37074697276103
+    }
+   }
+  ],
+  "exceededTransferLimit": true
+ },
+ "Salto": {
+  "type": "FeatureCollection",
+  "features": [
+   {
+    "type": "Feature",
+    "id": 374474,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -57.96082680578828,
+        -31.389415800004922
+       ],
+       [
+        -57.96094995942412,
+        -31.389400416483813
+       ],
+       [
+        -57.96100843664526,
+        -31.389782940820457
+       ],
+       [
+        -57.96100884484192,
+        -31.389785638073526
+       ],
+       [
+        -57.960894155737364,
+        -31.389800266228587
+       ],
+       [
+        -57.96089368445428,
+        -31.389797570350105
+       ],
+       [
+        -57.96088728732509,
+        -31.38976106257269
+       ],
+       [
+        -57.96082680578828,
+        -31.389415800004922
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "OBJECTID": 374474,
+     "Codigo": "HAA0005666",
+     "tipo": "U",
+     "nomDepto": "SALTO",
+     "nomLocCat": "SALTO",
+     "codDepto": "H",
+     "codLocCat": "AA",
+     "DeptoPadron": null,
+     "NroPadron": 5666,
+     "CodDepartamento": 15,
+     "SHAPE.STArea()": 492.34865255,
+     "SHAPE.STLength()": 109.01751369169871
+    }
+   },
+   {
+    "type": "Feature",
+    "id": 374479,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -57.96081845984365,
+        -31.390147508307123
+       ],
+       [
+        -57.96090256503778,
+        -31.39014021161128
+       ],
+       [
+        -57.96095273654244,
+        -31.390455665685277
+       ],
+       [
+        -57.96086038783242,
+        -31.39046598253758
+       ],
+       [
+        -57.96081845984365,
+        -31.390147508307123
+       ]
+      ]
+     ]
+    },
+    "properties": {
+     "OBJECTID": 374479,
+     "Codigo": "HAA0011275",
+     "tipo": "U",
+     "nomDepto": "SALTO",
+     "nomLocCat": "SALTO",
+     "codDepto": "H",
+     "codLocCat": "AA",
+     "DeptoPadron": null,
+     "NroPadron": 11275,
+     "CodDepartamento": 15,
+     "SHAPE.STArea()": 299.00938073,
+     "SHAPE.STLength()": 87.70804978387842
+    }
+   }
+  ],
+  "exceededTransferLimit": true
+ }
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1185241",
+  "checkedAt": "2026-09-28",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "bd-dlrs-bds-sheets",
+    "request": {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "method": "POST",
+      "contentType": "application/x-www-form-urlencoded",
+      "form": {
+        "rsnum": "201901",
+        "comcod": "4105",
+        "unitcod": "010505005",
+        "sheetno": "001"
+      }
+    },
+    "httpStatus": 200,
+    "responseContentType": "application/json",
+    "responseFile": "dhaka-sheet-001-response.json",
+    "recordListPath": "features",
+    "parcelRecordCount": 186,
+    "geometryTypes": ["Polygon"],
+    "allSampleRingsClosed": true,
+    "responseCrs": "EPSG:4326",
+    "responseBboxLonLat": [90.47520750484635, 23.830931365315973, 90.4790939232851, 23.834232757813954],
+    "samplePropertyNames": ["FID", "Id", "Dag_No"],
+    "spatialNote": "Patira mouza in Gulshan thana, northeast of the GeoNames Dhaka center; this proves only a small Dhaka-area sample, not full city coverage."
+  },
+  "selectorEvidence": [
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "httpStatus": 200,
+      "selected": {"unitcod": "010000000", "unitnam": "ঢাকা"}
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "form": {"divid": "010000000"},
+      "httpStatus": 200,
+      "selected": {"unitcod": "010500000", "unitnam": "ঢাকা", "comcod": "4105"}
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "form": {"districtid": "010500000", "comcod": "4105"},
+      "httpStatus": 200,
+      "selected": {"rsnum": "201901", "rsname": "বি ডি এস"}
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "form": {"comcod": "4105", "rsno1": "201901", "districtid": "010500000"},
+      "httpStatus": 200,
+      "selected": {"upzcod": "010505000", "upazila": "গুলশান থানা"}
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetMouzaListBySurveyMap",
+      "method": "POST",
+      "form": {"comcod": "4105", "rsnum": "201901", "unitcod": "010505000"},
+      "httpStatus": 200,
+      "selected": {"unitcod": "010505005", "unitnam": "পাতিরা", "shetnum": "001"}
+    }
+  ],
+  "otherPortalsChecked": [
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official DLRS portal offers purchase of official mouza maps; this is distinct from the public sample GeoJSON request above."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "observation": "Official land-zoning portal describes plot-level maps but did not yield an independently verified parcel-list request in this pass."
+    }
+  ],
+  "reuseStatus": "Public endpoint responded without credentials, but redistribution, persistent caching, and production use terms have not been established. The official map-copy portal charges for some products.",
+  "nextStep": "Check usage rights and geographic coverage before enabling this source for users; verify stable parcel identity across sheets and survey editions."
+}

@@ -1,0 +1,32 @@
+{
+  "taskId": "city:2299",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-2299-florencia.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/florencia-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T02:57:35.561006Z",
+  "city": "Florencia",
+  "queueRank": 3099,
+  "registryFound": true,
+  "identityCheck": "Exact city code, rank, country, ISO2, 2025 point and population persons match the immutable ranked roster and pending queue; the original WUP 2025 CSV source row and its SHA-256 were independently read and checked.",
+  "searchCheck": "Packet records separate English and Spanish executed query texts with actual result URLs; review packet was inspected.",
+  "polygonCheck": "Zero retained full parcel polygons and zero retained parcel ID attributes; below the three-polygon maximum.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "No public parcel layer, native parcel ID or full parcel polygon response was verified. Fresh IGAC MapServer metadata returned construction layer 0 as esriGeometryPoint; the service lists base cartography layers, not parcel polygons.",
+  "scopeLimit": "Custody and service metadata do not establish anonymous parcel-vector access, citywide coverage, or runtime admission. No runtime, catalog, registry, or generated coverage state was changed.",
+  "sourceUrls": [
+    "https://www.igac.gov.co/node/504",
+    "https://mapas.igac.gov.co/server/rest/services/carto/carto10000florencia18001/MapServer/0?f=pjson"
+  ]
+}

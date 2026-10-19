@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:98",
+  "queueRank": 98,
+  "name": "Kumasi",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "centerLatLon": [
+    6.69546322877124,
+    -1.61389130350228
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mlnr.gov.gh/agency/lands-commission/",
+      "observation": "Lands Commission (Ministry of Lands and Natural Resources) agency page; land administration via GELIS/ELIS, online services for registration and searches."
+    },
+    {
+      "url": "https://www.mdpi.com/2073-445X/13/4/528",
+      "observation": "Paper on Ghana's digital land information system; describes GELIS rollout, not an open parcel API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mlnr.gov.gh/agency/lands-commission/",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "text/html",
+      "assessment": "informational page only"
+    },
+    {
+      "url": "https://onlineservices.lc.gov.gh/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://data.humdata.org/api/3/action/package_search?q=parcels%20Kumasi&rows=3",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "0 datasets"
+    },
+    {
+      "url": "https://ghanaopendata.gov.gh/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Lands Commission GELIS (transactional); no open parcel service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Online services portal unreachable from this client; searches found no public parcel polygon endpoint for Kumasi.",
+  "nextStep": "Retry onlineservices.lc.gov.gh and look for any public GELIS map service; check KMA/LUSPA GIS."
+}

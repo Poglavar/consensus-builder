@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "workstream": "africa_east",
+  "verifiedParcelResponse": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "cityId": "wup2025:1961",
+  "wupCityCode": 1961,
+  "name": "Antananarivo",
+  "country": "Madagascar",
+  "countryCode": "MG",
+  "centerLatLon": [
+    -18.8651082509313,
+    47.5377709219744
+  ],
+  "status": "unresolved",
+  "priorEvidence": [
+    "research/india-africa-2026-10-08/africa-ne-city-antananarivo.json",
+    "research/india-africa-2026-10-08/africa-ne-country-MG.json",
+    "research/retry/cities/antananarivo.json"
+  ],
+  "newFindings": [
+    {
+      "source": "OITF PLOF explanation",
+      "url": "https://observatoire-territoire.mg/opt/",
+      "evidence": "PLOF is a local land-information plan used by communes and technical services for territorial planning and land management; communes include priority-area untitled private land and community-managed spaces. This does not make it a cadastral parcel register."
+    },
+    {
+      "source": "OITF planning-tool statistics",
+      "url": "https://observatoire-territoire.mg/opt-stat/",
+      "evidence": "Lists two completed PLOFs (By-pass and Vontovorona); Antananarivo is listed instead as a completed PUDi urban plan. The WFS has partial Avaradrano/Atsimondrano/Laniera PLOF layers, not demonstrated citywide coverage."
+    },
+    {
+      "source": "OITF Antananarivo PUDI MapServer WFS, fresh repeat",
+      "url": "https://observatoire-territoire.mg/cgi-bin/mapserv",
+      "evidence": "Fresh viewer-selected WFS GetCapabilities and bounded requests returned a three-feature sample from plof_avaradrano_1, geometry-only schema, three large __plof_laniera_plof polygons, and zero features in the WUP-centre bbox. No stable GML IDs or parcel attributes."
+    }
+  ],
+  "discoveryChecks": [
+    {
+      "target": "PLOF meaning",
+      "method": "OITF primary explanatory page and current statistics page review",
+      "result": "PLOF is a local land-information/planning instrument for land status and tenure-related planning; not equivalent to a cadastral parcel register."
+    },
+    {
+      "target": "PLOF extent",
+      "method": "OITF completion list and inherited WFS layer/sample review",
+      "result": "The OITF list names By-pass and Vontovorona as completed PLOFs; the candidate WFS contains only selected peripheral/local-zone layers. The city-centre bounded query returned no features. Citywide coverage is not established."
+    },
+    {
+      "target": "WFS feature identity",
+      "method": "Inherited OGC WFS GetFeature request capped at MAXFEATURES=3, plus city-centre BBOX",
+      "result": "Three geometry-only Polygon results; no attributes/GML IDs. City-centre BBOX returned zero. No stable native parcel ID verified."
+    },
+    {
+      "target": "PUDi distinction",
+      "method": "OITF planning inventory",
+      "result": "Antananarivo listed as completed PUDi (Plan d’Urbanisme Directeur); this is an urban-planning instrument and does not validate cadastral parcel semantics."
+    }
+  ],
+  "sourceQuality": "OITF is the official territorial observatory/service publisher as represented by its own materials, but the site has quality/integrity concerns noted in earlier review. Its explanatory semantics and lists should be confirmed with the responsible land agency before implementation; technical WFS behavior is direct service evidence only.",
+  "blocker": "Fresh OITF WFS checks reproduce three geometry-only PLOF polygons and a zero-feature city-centre bbox. DescribeFeatureType exposes only msGeometry; no feature ID or parcel attributes are present. PLOF is a land-status/planning inventory, not a verified cadastre.",
+  "remainingUncertainty": "The PLOF features may encode land-status zones and may be useful for planning, but exact polygon semantics, authoritative maintenance, city coverage, and relationship to titled parcel boundaries remain unverified.",
+  "nextStep": "Do not classify the PLOF layers as cadastral parcels. Ask OITF or the land administration for layer definitions/metadata, native IDs, coverage boundary, and any separate cadastral service; only reconsider after a bounded feature returns parcel semantics and stable IDs.",
+  "freshServiceAudit": {
+    "service": "OITF public MapServer WFS for the viewer-selected PUDI_antananarivo.map",
+    "selectionMethod": "Anonymous viewer GET /carte/ then its published POST /carte/p/oatmap/web/ajax.php with ajax_entity=DMap\\LoadConf\\Choix and action=path_map_siloat. The current config selected Antananarivo / PUDI_antananarivo.map. Server-side MAP path value was held in memory only and omitted from this record.",
+    "transport": "HTTPS with default certificate validation; requests URL parameters were encoded by the client; no credentials or authenticated profile used. Each body capped at 2 MiB.",
+    "results": [
+      {
+        "request": "GET /cgi-bin/mapserv?MAP=<viewer-supplied-map>&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities",
+        "httpStatus": 200,
+        "contentType": "text/xml; charset=UTF-8",
+        "responseBytes": 54151,
+        "featureTypeCount": 62,
+        "relevantFeatureTypes": [
+          "plof_atsimondrano_1",
+          "plof_atsimondrano_2",
+          "__plof_atsimondrano_plof",
+          "plof_avaradrano_1",
+          "plof_avaradrano_2",
+          "__plof_avaradrano_plof",
+          "__plof_laniera_plof",
+          "pude_vontovorona_1",
+          "pude_bypass_zoning_1",
+          "tana_os_1",
+          "__tana_os_pudi"
+        ]
+      },
+      {
+        "request": "GET /cgi-bin/mapserv?MAP=<viewer-supplied-map>&SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=plof_avaradrano_1",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.1.1; charset=UTF-8",
+        "responseBytes": 971,
+        "schemaElements": [
+          "plof_avaradrano_1",
+          "msGeometry"
+        ],
+        "assessment": "Schema exposes only the geometry field; no native parcel identifier or descriptive attribute."
+      },
+      {
+        "request": "GET /cgi-bin/mapserv?MAP=<viewer-supplied-map>&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=plof_avaradrano_1&MAXFEATURES=3&OUTPUTFORMAT=GML3",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.1.1; charset=UTF-8",
+        "responseBytes": 4125,
+        "featureCount": 3,
+        "geometryTypes": [
+          "Polygon"
+        ],
+        "featureIdsPresent": false,
+        "attributeElementNames": [
+          "lowerCorner",
+          "upperCorner"
+        ],
+        "assessment": "Three geometry-only polygons; bounding metadata only, no feature ID."
+      },
+      {
+        "request": "GET /cgi-bin/mapserv?MAP=<viewer-supplied-map>&SERVICE=WFS&VERSION=1.1.0&REQUEST=DescribeFeatureType&TYPENAME=__plof_laniera_plof",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.1.1; charset=UTF-8",
+        "responseBytes": 977,
+        "schemaElements": [
+          "__plof_laniera_plof",
+          "msGeometry"
+        ],
+        "assessment": "Layer schema is geometry-only."
+      },
+      {
+        "request": "GET /cgi-bin/mapserv?MAP=<viewer-supplied-map>&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=__plof_laniera_plof&MAXFEATURES=3&OUTPUTFORMAT=GML3",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.1.1; charset=UTF-8",
+        "responseBytes": 8138,
+        "featureCount": 3,
+        "geometryTypes": [
+          "Polygon"
+        ],
+        "featureIdsPresent": false,
+        "assessment": "Three large zone-perimeter polygons, not parcel records."
+      },
+      {
+        "request": "GET /cgi-bin/mapserv?MAP=<viewer-supplied-map>&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&TYPENAME=plof_avaradrano_1&MAXFEATURES=3&OUTPUTFORMAT=GML3&BBOX=5291580,-2139361,5292180,-2138761,EPSG:3857",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.1.1; charset=UTF-8",
+        "responseBytes": 800,
+        "featureCount": 0,
+        "assessment": "Fresh bounded query around the WUP centre returned no features."
+      }
+    ],
+    "assessment": "Current responses reproduce the earlier partial WFS geometry candidate and the zero centre result. The layer schema and feature payloads have no native feature IDs or attributes, and OITF defines PLOF as land-information/planning, not cadastral parcel registration."
+  }
+}

@@ -1,153 +1,323 @@
 /* ========== Proposals ========== */
 
-/* Proposal system styles */
-/* Proposal modal styles */
-.create-proposal-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+/* ---- The create-proposal dialogs (proposals/dialog-create.js) ----
+   CbDialogs (js/ui/dialogs.js): the backdrop, card, header, close, footer, stacking and phone bottom
+   sheet are the primitive's. Their identity classes stay for the scripts and these inner rules: the
+   overlay is .create-proposal-modal, the card .proposal-modal-content, the footer
+   .proposal-modal-footer. The footer carries the lens button left of Cancel and the submit action
+   (css/modals.css places it) and, under them, the reason the submit is disabled. */
+
+.proposal-geometry-hint {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-danger);
+    text-align: right;
+}
+
+.proposal-geometry-hint:empty {
+    display: none;
+}
+
+/* The choice blocks (facets, acquisition, the hidden main type and transfer direction): spaced like
+   a form group but outside .form-group, whose legacy label rules would undo the segmented pills. */
+.proposal-choices {
+    margin-bottom: var(--cb-space-4);
+}
+
+/* Name and Plan epoch: the label and its field on one line. */
+.form-group > .proposal-inline-field {
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 11000 !important;
+    gap: var(--cb-space-2);
 }
 
-.proposal-modal-content {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    max-height: 80vh;
-    overflow: hidden;
-    width: 90%;
-    display: flex;
-    flex-direction: column;
-}
-
-.create-proposal-modal:not(.road-proposal-modal):not(.track-proposal-modal):not(.wallet-choice-modal) .proposal-modal-content {
-    width: min(540px, 96%);
-    height: auto;
-    max-height: 90vh;
-    border-radius: 12px;
-    margin: 0;
-}
-
-/* Road and track proposal modals - with margins and rounded edges on desktop */
-.road-proposal-modal .proposal-modal-content,
-.track-proposal-modal .proposal-modal-content {
-    max-width: 400px;
-    max-height: calc(100vh - 20px);
-    height: calc(100vh - 20px);
-    width: 400px;
-    border-radius: 12px;
-    margin: 0;
-}
-
-@media (max-width: 768px) {
-    .road-proposal-modal .proposal-modal-content,
-    .track-proposal-modal .proposal-modal-content {
-        width: 100% !important;
-        max-width: 100% !important;
-        height: 100vh !important;
-        max-height: 100vh !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
-    }
-}
-
-.proposal-modal-header {
-    padding: 5px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-}
-
-.proposal-modal-header h2 {
-    margin: 0;
-    color: #333;
-    font-size: 18px;
-    line-height: 1.25;
-}
-
-.proposal-modal-body {
-    padding: 20px;
+.proposal-inline-field > input,
+.proposal-inline-field > select {
     flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow-x: hidden;
+    min-width: 0;
 }
 
-.proposal-modal-footer {
-    padding: 16px;
-    display: flex;
-    gap: 12px;
-    justify-content: flex-start;
-    align-items: center;
-    border-top: 1px solid #eee;
-    flex-direction: row;
+/* Options and Summary fold under a heading row. */
+.proposal-options-collapsible {
+    margin-top: var(--cb-space-2);
 }
 
-.proposal-modal-footer .btn-proposal {
-    flex: 1;
-    margin-left: auto;
+.proposal-collapsible-header {
+    cursor: pointer;
 }
 
-.proposal-modal-footer.lens-footer-layout {
+.proposal-collapsible-title {
+    display: inline;
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.proposal-collapsible-chevron {
+    margin-left: var(--cb-space-2);
+}
+
+/* The offer (or boost) amount and its currency on one row. */
+.proposal-offer-row > input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.proposal-offer-row > select {
+    flex: 0 0 112px;
+    width: 112px;
+}
+
+/* An option row: a checkbox and its label, then a helper text or the option's value. */
+.proposal-options-section .proposal-option-row + .proposal-option-row {
+    margin-top: var(--cb-space-2);
+}
+
+.proposal-option-row.proposal-option-row--split {
     display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 12px;
-    align-items: start;
+    grid-template-columns: 1fr 1fr;
 }
 
-.proposal-modal-footer.lens-footer-layout .btn-proposal {
-    justify-self: stretch;
-    align-self: stretch;
-    margin-left: 0;
+.proposal-option-row[data-disabled] {
+    opacity: 0.6;
 }
 
-.proposal-modal-footer.lens-footer-layout .lens-pattern-button {
-    align-self: stretch;
-    height: 40px;
-    min-height: 40px;
-    max-height: 40px;
-}
-
-.proposal-modal-footer.lens-footer-layout .lens-footer-row {
+.proposal-option-toggle {
+    flex: 1;
     display: flex;
-    align-items: stretch;
+    align-items: center;
+    gap: var(--cb-space-2);
 }
 
-.proposal-modal-footer.lens-footer-layout #proposalGeometryRequirementHint {
-    grid-column: 1 / -1;
-    justify-self: end;
+.proposal-option-row .proposal-option-toggle > label {
+    margin: 0;
+    cursor: pointer;
 }
 
-.proposal-actions-block {
-    margin-top: 14px;
+.proposal-option-helper {
+    flex: 1;
+    font-size: var(--cb-text-sm);
+    line-height: 1.3;
+    color: var(--cb-text-muted);
+}
+
+.proposal-option-value {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-1);
+}
+
+.proposal-option-value--end {
+    justify-content: flex-end;
+}
+
+.proposal-option-value--indent {
+    padding-left: var(--cb-space-6);
+}
+
+.proposal-option-row .proposal-option-number {
+    width: 64px;
+    text-align: center;
+}
+
+.proposal-option-row .proposal-option-time {
+    width: 100%;
+    text-align: center;
+}
+
+.proposal-option-suffix {
+    color: var(--cb-text-muted);
+}
+
+/* The owner avatar beside a parcel in the summary list. */
+.proposal-parcel-item .parcel-owner-avatar {
+    width: 20px;
+    height: 20px;
+    margin-right: var(--cb-space-2);
+    border: 2px solid var(--cb-primary);
+    border-radius: 50%;
+}
+
+.proposal-summary-extra {
+    margin-top: var(--cb-space-2);
+}
+
+.proposal-summary-extra h4 {
+    margin: var(--cb-space-2) 0 var(--cb-space-1);
+}
+
+/* Similar proposals on the same parcels: cb-option rows that open them. */
+.proposal-similar-section {
+    margin-top: var(--cb-space-3);
+}
+
+.proposal-similar-section > h4 {
+    margin: 0 0 var(--cb-space-2);
+}
+
+.proposal-screenshot-unavailable {
+    color: var(--cb-text-faint);
+}
+
+/* Upload before walking (showWalkUploadGateModal): the applied proposals the walk view still needs
+   on the server, one row each. */
+.walk-upload-gate {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
+    gap: var(--cb-space-3);
 }
 
-.proposal-actions-block .lens-footer-row {
-    justify-content: center;
-    width: 100%;
+.walk-upload-gate__intro {
+    margin: 0;
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
-.proposal-actions-block .lens-pattern-button {
-    margin: 0 auto;
-    height: 40px;
-    min-height: 40px;
-    max-height: 40px;
+.walk-upload-gate__status {
+    min-height: 18px;
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-danger);
+}
+
+.walk-upload-gate__list {
+    max-height: 320px;
+    overflow-y: auto;
+    padding: var(--cb-space-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+}
+
+.walk-upload-gate__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-1);
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.walk-upload-gate__row:last-child {
+    border-bottom: 0;
+}
+
+.walk-upload-gate__row[data-uploaded="true"] {
+    opacity: 0.55;
+}
+
+.walk-upload-gate__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.walk-upload-gate__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.walk-upload-gate__meta {
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
+}
+
+.walk-upload-gate__row > .btn {
+    flex-shrink: 0;
+}
+
+/* Replacement-edit availability and immutable source lineage in proposal details. */
+.proposal-edit-unavailable {
+    flex-basis: 100%;
+    color: var(--cb-warning-soft-ink);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.proposal-list-edit-btn {
+    padding: 5px 8px;
+    color: var(--cb-primary-hover);
+    background: var(--cb-primary-soft);
+    border: 1px solid var(--cb-primary-soft);
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* "Based on <source>": the source is a script link (button.cb-link) into this panel. */
+.proposal-based-on-row {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+    margin-top: 4px;
+}
+
+.proposal-land-fork-relation {
+    margin-top: 2px;
+    color: var(--cb-text-muted);
+}
+
+/* Counterproposals and forks made from this proposal (proposals/lineage.js): a short list of
+   script links under the description, each opening that proposal in this panel. */
+.proposal-lineage {
+    margin-top: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.proposal-lineage__title {
+    margin: 0;
+}
+
+.proposal-lineage__list {
+    margin: var(--cb-space-1) 0 0;
+    padding-left: var(--cb-space-4);
+}
+
+.proposal-lineage__note {
+    color: var(--cb-text-faint);
+}
+
+/* Binding drift notice (binding-drift-panel.js): today's cadastre binds this published record's
+   site differently; offers Re-bind, which publishes a new derived record. */
+.proposal-binding-drift {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--cb-warning);
+    border-radius: 8px;
+    background-color: var(--cb-warning-soft);
+    color: #78350f;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.proposal-binding-drift-title {
+    font-weight: 600;
+}
+
+.proposal-binding-drift-title i {
+    margin-right: 4px;
+    color: var(--cb-warning);
+}
+
+.proposal-binding-drift-list {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    overflow-wrap: anywhere;
+}
+
+.proposal-binding-drift-note {
+    margin: 6px 0;
+    color: var(--cb-warning-soft-ink);
+}
+
+.proposal-binding-drift-rebind {
+    margin-top: 2px;
 }
 
 .proposal-id-row {
@@ -161,20 +331,6 @@
 
 .proposal-id-row .proposal-id-label {
     margin: 0;
-}
-
-.proposal-lens-button {
-    width: 92px;
-    height: 26px;
-    font-size: 16px;
-    padding: 4px 8px;
-}
-
-.proposal-lens-button--empty {
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    color: #111827;
-    cursor: default;
 }
 
 .share-plan-button {
@@ -201,7 +357,7 @@
     display: none;
     font-size: 12px;
     line-height: 1.2;
-    color: #0f172a;
+    color: var(--cb-text-strong);
     flex-basis: 100%;
     text-align: center;
     width: 100%;
@@ -211,29 +367,54 @@
     display: block;
 }
 
-/* Proposal list modal styles */
+/* The proposal list lives inside the MapShell Proposals sheet. */
+#proposals-sheet > .map-sheet-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#proposal-list-host {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
 .proposal-list-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    z-index: 12000; /* Above sidebar (z<=4000) and info panels */
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .proposal-list-modal-content {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: min(520px, calc(100% - 20px));
-    max-height: calc(var(--app-viewport-height) - 20px);
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 12px;
-    box-shadow: 0 20px 60px rgba(15, 30, 45, 0.3);
+    position: static;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    min-height: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
+    pointer-events: auto;
+}
+
+@media (max-width: 767.98px) {
+    /* The title gets its own line: squeezed next to the number, status pill and action button it
+       was cut to "Block 2109…", dropping exactly the part that tells sibling proposals apart. */
+    .proposal-card-head {
+        flex-wrap: wrap;
+    }
+
+    .proposal-list-item--compact .proposal-list-title {
+        flex: 1 1 calc(100% - 28px);
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
 }
 
 .proposal-list-modal-header {
@@ -241,12 +422,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
 }
 
 .proposal-list-modal-header h2 {
     margin: 0;
-    color: #333;
+    color: var(--cb-text);
     font-size: 16px;
     font-weight: 600;
     line-height: 1.3;
@@ -259,35 +440,14 @@
     padding: 10px 16px 0;
 }
 
-.proposal-source-btn {
-    border: 1px solid #cdd4de;
-    background: #fff;
-    color: #334;
-    border-radius: 24px;
-    padding: 8px 16px;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.proposal-source-btn:hover {
-    background-color: #f2f5fa;
-    border-color: #aeb8c7;
-    color: #111;
-}
-
-.proposal-source-btn.active {
-    background-color: #0b4f91;
-    color: #fff;
-    border-color: #0b4f91;
-    box-shadow: 0 6px 18px rgba(11, 79, 145, 0.18);
-}
+/* The source toggle (This browser · Published · Minted, js/proposals/dialog-share.js). Its markup
+   still carries .active; these rules mirror cb-segmented's look in tokens until it moves to
+   cb-segmented with aria-pressed, when they go. */
 
 .proposal-list-tabs {
     display: flex;
-    border-bottom: 1px solid #ddd;
-    background-color: #f8f9fa;
+    border-bottom: 1px solid var(--cb-line);
+    background-color: var(--cb-surface-2);
 }
 
 .proposal-list-controls {
@@ -295,8 +455,17 @@
     flex-wrap: wrap;
     gap: 12px;
     padding: 16px 20px 12px;
-    border-bottom: 1px solid #eee;
-    background-color: #fafbfc;
+    border-bottom: 1px solid var(--cb-line);
+    background-color: var(--cb-surface-2);
+}
+
+/* Filtered-result count line that replaced the per-tab counts. */
+.proposal-list-count {
+    padding: 6px 20px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+    background-color: var(--cb-surface-2);
+    border-bottom: 1px solid var(--cb-line);
 }
 
 .proposal-filter-group {
@@ -305,6 +474,116 @@
     gap: 4px;
     min-width: 160px;
     flex: 1 1 calc(50% - 12px);
+}
+
+/* "Filters" toggle row (button + result count). Hidden on tall desktop windows, where the filters
+   are always shown; on the phone bottom sheet and on short windows the filters fold behind it so the
+   list keeps the height. */
+.proposal-filters-toggle-row {
+    display: none;
+}
+
+/* The phone's Filters toggle (js/proposals/dialog-share.js), in tokens until it moves to
+   btn btn-sm btn-quiet with aria-expanded. */
+
+.proposal-filters-chevron {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.proposal-filters-toggle[aria-expanded="true"] .proposal-filters-chevron {
+    transform: rotate(180deg);
+}
+
+.proposal-filters-toggle-count {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+@media (max-width: 767.98px) {
+    .proposal-filters-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 14px;
+        background-color: var(--cb-surface-2);
+        border-bottom: 1px solid var(--cb-line);
+        flex-shrink: 0;
+    }
+
+    /* The count lives in the toggle row here. */
+    .proposal-list-count {
+        display: none;
+    }
+
+    .proposal-list-controls {
+        gap: 8px;
+        padding: 10px 14px;
+        flex-shrink: 0;
+    }
+
+    .proposal-list-controls.is-collapsed {
+        display: none;
+    }
+
+    .proposal-filter-group {
+        min-width: 0;
+    }
+
+    .proposal-source-toggle {
+        gap: 6px;
+        padding: 8px 10px 0;
+        flex-shrink: 0;
+    }
+
+    /* The body (15px, from the shared modal group in game.css) and the tab content (20px) each
+       padded the cards in, leaving a 300px-wide card on a 370px phone. */
+    .proposal-list-modal-body {
+        min-height: 0;
+    }
+
+    .proposal-list-modal-content .proposal-list-modal-body {
+        padding: 0;
+    }
+
+    .proposal-list-modal-body .proposal-tab-content {
+        padding: 10px;
+    }
+
+    /* A wallet address as author is one unbreakable 44-character word: let it break. */
+    .proposal-card-sub span {
+        overflow-wrap: anywhere;
+        min-width: 0;
+    }
+}
+
+/* Short desktop windows: the Proposals sheet is capped to the window (MapShell --sheet-max-height)
+   and is 340px wide, so the seven filter fields stack one per row and filled the whole sheet,
+   leaving the list itself 0px tall. Fold them behind the toggle as on phones. */
+@media (min-width: 768px) and (max-height: 900px) {
+    .proposal-filters-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 20px;
+        background-color: var(--cb-surface-2);
+        border-bottom: 1px solid var(--cb-line);
+        flex-shrink: 0;
+    }
+
+    .proposal-list-count {
+        display: none;
+    }
+
+    .proposal-list-controls {
+        flex-shrink: 0;
+    }
+
+    .proposal-list-controls.is-collapsed {
+        display: none;
+    }
 }
 
 .proposal-filter-group label {
@@ -321,7 +600,7 @@
     border-radius: 6px;
     padding: 6px 10px;
     font-size: 13px;
-    background-color: #fff;
+    background-color: var(--cb-surface);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -332,48 +611,36 @@
     box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.18);
 }
 
-.proposal-tab-btn {
-    flex: 1;
-    padding: 12px 16px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    color: #666;
-    transition: all 0.2s;
-    border-bottom: 2px solid transparent;
-}
-
-.proposal-tab-btn:hover {
-    background-color: #e9ecef;
-    color: #333;
-}
-
-.proposal-tab-btn.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
-    background-color: white;
-}
-
 .proposal-list-modal-body {
     padding: 0;
     overflow-y: auto;
+    min-height: 0;
     flex: 1;
 }
 
-.proposal-tab-content {
-    display: none;
-    padding: 20px;
+.proposal-list-footer {
+    flex: 0 0 auto;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: 1.35;
 }
 
-.proposal-tab-content.active {
-    display: block;
+.proposal-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--cb-space-2);
+}
+
+/* The one list region of the proposals list (dialog-share.js renders it). */
+.proposal-tab-content {
+    padding: 20px;
 }
 
 .empty-proposals {
     text-align: center;
-    color: #666;
+    color: var(--cb-text-muted);
     font-style: italic;
     padding: 40px 20px;
     margin: 0;
@@ -381,32 +648,40 @@
 
 .proposal-list-item {
     padding: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     margin-bottom: 10px;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
+/* Local-only (neither minted nor uploaded) proposals carry unsaved work. A warm wash plus the dashed
+   left accent-bar and the "Unsaved" badge flag them at a glance. The extra :not() specificity lets the
+   warm wash win over the applied-green (most unsaved proposals are also applied) while still yielding
+   to selection/preview, so a selected card stays highlighted. */
+.proposal-list-item.is-unsaved:not(.is-selected):not(.is-previewing) {
+    background-color: var(--cb-warning-soft);
+}
+
 .proposal-list-item:hover {
-    background-color: #f8f9fa;
-    border-color: #007bff;
+    background-color: var(--cb-surface-2);
+    border-color: var(--cb-primary);
 }
 
 .proposal-list-item.is-selected {
-    border-color: #4c8cfa;
-    box-shadow: 0 0 0 3px rgba(76, 140, 250, 0.12);
-    background-color: #f5f8ff;
+    border-color: var(--cb-primary);
+    box-shadow: 0 0 0 3px var(--cb-focus-ring);
+    background-color: var(--cb-primary-soft);
 }
 
 .proposal-list-item.is-previewing {
-    border-color: #8e24aa;
-    box-shadow: 0 0 0 3px rgba(142, 36, 170, 0.1);
+    border-color: var(--cb-info);
+    box-shadow: 0 0 0 3px var(--cb-focus-ring);
 }
 
 .proposal-list-item.is-applied:not(.is-executed) {
-    background-color: rgba(76, 175, 80, 0.08);
-    border-color: rgba(76, 175, 80, 0.45);
+    background-color: var(--cb-success-soft);
+    border-color: var(--cb-success);
 }
 
 .proposal-list-item.is-executed {
@@ -426,6 +701,41 @@
 }
 
 /* Thumbnail */
+/* Share modal header: name + type + screenshot of the proposal being shared. */
+.share-modal-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.share-modal-identity .proposal-thumb {
+    width: 64px;
+    height: 64px;
+}
+
+.share-modal-identity-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.share-modal-identity-text strong {
+    font-size: 15px;
+    color: var(--cb-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.share-modal-identity-text span {
+    font-size: 12px;
+    color: var(--cb-text-muted);
+}
+
 .proposal-thumb {
     position: relative;
     flex: 0 0 auto;
@@ -452,62 +762,16 @@
     border-radius: 6px;
 }
 
+/* Placeholder for a proposal with no image yet: just the goal badge. It is NOT clickable —
+   thumbnails are rendered server-side at upload, so there is nothing here for a user to trigger. */
 .proposal-thumb-empty {
-    cursor: pointer;
     flex-direction: column;
-    gap: 4px;
-    font-size: 11px;
-    line-height: 1.2;
     text-align: center;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.proposal-thumb-empty:hover {
-    background-color: #e1e9f4;
-    border-color: #8aa6cc;
-    color: #2c3e50;
 }
 
 .proposal-thumb-empty .proposal-thumb-icon {
     font-size: 22px;
     line-height: 1;
-}
-
-.proposal-thumb-empty .proposal-thumb-label {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.proposal-thumb-spinner {
-    display: none;
-    position: absolute;
-    inset: 0;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.7);
-}
-
-.proposal-thumb-spinner::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 22px;
-    height: 22px;
-    margin: -11px 0 0 -11px;
-    border: 3px solid #cfd9e6;
-    border-top-color: #4c8cfa;
-    border-radius: 50%;
-    animation: proposal-thumb-spin 0.8s linear infinite;
-}
-
-.proposal-thumb-loading .proposal-thumb-spinner {
-    display: block;
-}
-
-@keyframes proposal-thumb-spin {
-    to { transform: rotate(360deg); }
 }
 
 /* Hover-to-enlarge popup. Only renders for cards that already have a screenshot.
@@ -522,13 +786,13 @@
     transform: translate(-50%, -50%);
     width: min(90vw, 1600px);
     height: min(90vh, 1100px);
-    border: 1px solid #d6dde6;
+    border: 1px solid var(--cb-line);
     border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 24px 64px rgba(15, 30, 60, 0.32);
+    background-color: var(--cb-surface);
+    box-shadow: var(--cb-shadow-lg);
     overflow: hidden;
-    /* High enough to clear modal overlays (share modal uses z-index ~10000). */
-    z-index: 100000;
+    /* High enough to clear the dialogs it is hovered from. */
+    z-index: var(--cb-z-preview);
     pointer-events: none;
 }
 
@@ -542,34 +806,11 @@
     display: block;
 }
 
-.proposal-download-btn {
-    border: none;
-    background-color: rgba(0, 123, 255, 0.08);
-    color: #0d47a1;
-    border-radius: 4px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.proposal-download-btn:hover:not(:disabled) {
-    background-color: rgba(13, 71, 161, 0.15);
-    color: #0a2f6b;
-}
-
-.proposal-download-btn:disabled {
-    opacity: 0.5;
-    cursor: default;
-    color: #6b7280;
-    background-color: rgba(107, 114, 128, 0.08);
-}
-
-.proposal-description-input {
+/* The structure-proposal dialog's description is a 2-row <textarea>: keep it at a fixed height
+   so it scrolls instead of growing. The main create dialog's description is a single-line
+   <input>, which takes the normal input height and therefore matches Name and Offer exactly —
+   that is how those three boxes stay equalized (and compact). */
+textarea.proposal-description-input {
     line-height: 1.4;
     height: 4.2em;
     min-height: 4.2em;
@@ -578,11 +819,368 @@
     resize: none;
 }
 
+.proposal-description-input {
+    overflow-y: auto;
+    resize: none;
+}
+
 /* Proposal info styles */
 .proposal-info h3 {
     margin: 0 0 15px 0;
-    color: #333;
+    color: var(--cb-text);
     font-size: 18px;
+}
+
+.proposal-funding-card {
+    margin: 14px 0;
+    padding: 14px;
+    border: 1px solid #d7e1ec;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f7fbff, #ffffff);
+    box-shadow: 0 5px 18px rgba(31, 78, 121, 0.08);
+}
+
+.proposal-market-card {
+    margin: 14px 0;
+    padding: 14px;
+    border: 1px solid #d9d7f3;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #faf9ff, #ffffff);
+    box-shadow: 0 5px 18px rgba(69, 57, 143, 0.08);
+}
+
+.proposal-possibility-card {
+    margin: 14px 0;
+    padding: 14px;
+    border: 1px solid #d8ded7;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #f5faf4, #ffffff);
+    box-shadow: 0 5px 18px rgba(48, 92, 61, 0.08);
+}
+
+/* auto-fit, not a fixed 4: the details panel is often ~350px wide on desktop, where four columns
+   left each step ~21px and broke text per character. Steps now stack vertically until the card is
+   wide enough for 200px columns (2 across, then 4). */
+.proposal-possibility-timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.proposal-possibility-timeline li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 8px;
+    min-width: 0;
+    padding: 9px;
+    border: 1px solid #dfe8df;
+    border-radius: 9px;
+    background: var(--cb-surface);
+}
+
+.proposal-possibility-timeline li.is-current { border-color: #d5ad42; background: #fffaf0; }
+.proposal-possibility-timeline li.is-pending { opacity: 0.62; }
+
+.proposal-possibility-marker {
+    display: grid;
+    place-items: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #dbe9df;
+    color: #24543d;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.proposal-possibility-timeline .is-current .proposal-possibility-marker { background: #f5d681; color: #624c12; }
+.proposal-possibility-timeline .is-pending .proposal-possibility-marker { background: #e7ebee; color: #687785; }
+.proposal-possibility-timeline strong { display: block; color: #24543d; font-size: 12px; }
+.proposal-possibility-timeline p { margin: 2px 0 5px; color: #52687b; font-size: 10px; line-height: 1.35; overflow-wrap: break-word; }
+.proposal-possibility-timeline small { display: block; color: #66788a; font-size: 9px; line-height: 1.35; overflow-wrap: anywhere; }
+.proposal-possibility-timeline .cb-link { display: inline-block; margin-top: 4px; }
+
+.proposal-market-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.proposal-market-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #e4e1f7;
+    border-radius: 9px;
+    background: var(--cb-surface);
+}
+
+.proposal-market-grid span,
+.proposal-market-grid small,
+.proposal-market-status,
+.proposal-market-muted {
+    color: #66788a;
+    font-size: 11px;
+}
+
+.proposal-market-grid strong {
+    color: #302c5f;
+    font-size: 14px;
+}
+
+.proposal-market-you {
+    margin-top: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: #f2f1ff;
+    color: #403a78;
+    font-size: 12px;
+}
+
+.proposal-market-lifecycle {
+    display: grid;
+    gap: 7px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #e4e1f7;
+    border-radius: 9px;
+    background: var(--cb-surface);
+}
+
+.proposal-market-lifecycle > div {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 8px;
+    color: #52687b;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.proposal-market-lifecycle strong { color: #302c5f; }
+
+.proposal-market-oracle {
+    display: grid;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #d9e6df;
+    border-radius: 9px;
+    background: #f8fcfa;
+    color: #52687b;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.proposal-market-oracle strong { color: #24543d; }
+.proposal-market-oracle > span { min-width: 0; overflow-wrap: anywhere; }
+
+/* A sha256 in oracle text: one ellipsized line (full value in the title) plus a copy button. */
+.proposal-hash-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 100%;
+    min-width: 0;
+    vertical-align: bottom;
+}
+.proposal-hash-chip code {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 10px;
+}
+/* Copy beside a hash: a square quiet icon button (btn btn-quiet btn-sm btn-icon). */
+.proposal-hash-copy {
+    flex: 0 0 auto;
+}
+.proposal-market-card[data-oracle-tone="success"] .proposal-market-oracle { border-color: #78b997; background: #f0fbf5; }
+.proposal-market-card[data-oracle-tone="error"] .proposal-market-oracle { border-color: #d89a98; background: #fff6f5; }
+
+/* Recent bets: one line each, the transaction a cb-link--external. */
+.proposal-market-history {
+    display: grid;
+    gap: 4px;
+    margin-top: 10px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+}
+
+.proposal-market-history strong { color: var(--cb-text-strong); }
+
+/* The market's actions; the bet pair is btn btn-yes / btn btn-no (css/primitives.css). */
+.proposal-market-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.proposal-market-controls .btn { margin: 0; }
+
+.proposal-market-status {
+    min-height: 18px;
+    margin-top: 9px;
+    line-height: 1.45;
+}
+
+.proposal-market-status a { margin-left: 3px; }
+
+/* The stake dialog after a confirmed bet: the pool as it stands, read back from the chain, with the
+   wallet's own bets under it. Tokens only. */
+.proposal-market-placed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    line-height: var(--cb-leading);
+    color: var(--cb-text);
+}
+
+.proposal-market-placed__title {
+    margin: 0;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.proposal-market-placed__pool {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--cb-space-1) var(--cb-space-3);
+    margin: 0;
+}
+
+.proposal-market-placed__pool dt {
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text-strong);
+}
+
+.proposal-market-placed__pool dd {
+    margin: 0;
+    text-align: right;
+}
+
+.proposal-market-placed__pool dd span {
+    display: block;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
+}
+
+.proposal-market-placed__mine {
+    margin: 0;
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-success-soft-ink);
+}
+
+.proposal-market-currency {
+    flex: 0 0 auto;
+    padding: 0 10px;
+    color: #52687b;
+    font-size: 13px;
+}
+
+.proposal-funding-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.proposal-funding-head h3 {
+    margin: 2px 0 0;
+    font-size: 16px;
+}
+
+.proposal-funding-eyebrow,
+.proposal-funding-grid span,
+.proposal-funding-grid small {
+    color: #66788a;
+    font-size: 11px;
+}
+
+.proposal-funding-eyebrow {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.proposal-funding-state {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #e6f2ff;
+    color: #0a5ea8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.proposal-funding-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.proposal-funding-grid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid #e3eaf1;
+    border-radius: 9px;
+    background: var(--cb-surface);
+}
+
+.proposal-funding-grid strong {
+    color: #203246;
+    font-size: 14px;
+}
+
+.proposal-funding-you {
+    margin-top: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: #eef7ee;
+    color: #245b2a;
+    font-size: 12px;
+}
+
+.proposal-funding-explainer,
+.proposal-support-wallet-summary {
+    margin-top: 10px;
+    color: #52687b;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.proposal-funding-explainer > div + div { margin-top: 5px; }
+
+.proposal-support-wallet-summary {
+    padding: 8px 10px;
+    border: 1px solid #dbe6ef;
+    border-radius: 8px;
+    background: #f7fbff;
+}
+
+.proposal-boost-send:disabled {
+    cursor: wait;
+    opacity: 0.58;
+}
+
+/* The explorer links under a funding or market card: a cb-link-row of external links. */
+.proposal-funding-links {
+    margin-top: 10px;
+}
+
+@media (max-width: 520px) {
+    .proposal-funding-grid,
+    .proposal-market-grid { grid-template-columns: 1fr; }
 }
 
 .proposal-list {
@@ -591,7 +1189,7 @@
 
 .proposal-item {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     margin-bottom: 8px;
     cursor: pointer;
@@ -599,19 +1197,19 @@
 }
 
 .proposal-item:hover {
-    background-color: #f8f9fa;
-    border-color: #007bff;
+    background-color: var(--cb-surface-2);
+    border-color: var(--cb-primary);
 }
 
 .proposal-title {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
     margin-bottom: 4px;
 }
 
 .proposal-meta {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 .proposals-container {
@@ -670,7 +1268,7 @@
     right: 0;
     bottom: 0;
     display: flex;
-    z-index: 0;
+    z-index: var(--cb-z-local-0);
 }
 
 .proposal-offer-bar.with-decay .offer-bar-remaining {
@@ -690,13 +1288,13 @@
     top: 0;
     bottom: 0;
     width: 2px;
-    background-color: #333;
-    z-index: 1;
+    background-color: var(--cb-text-strong);
+    z-index: var(--cb-z-local-1);
 }
 
 .proposal-offer-bar.with-decay .offer-bar-content {
     position: relative;
-    z-index: 2;
+    z-index: var(--cb-z-local-2);
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -726,7 +1324,7 @@
 
 .proposal-offer-bar.with-decay .offer-original {
     font-size: 11px;
-    color: #6c757d;
+    color: var(--cb-text-muted);
     font-style: italic;
     font-family: 'Courier New', Consolas, monospace;
 }
@@ -752,32 +1350,9 @@
     min-width: 0;
 }
 
+/* "Accept ownership transfer" on the offer bar: a square icon button (btn btn-sm btn-icon). */
 .offer-boost-button {
-    border: none;
-    background: #ffffff;
-    color: #0f5132;
-    font-size: 16px;
-    line-height: 1;
-    padding: 6px 10px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(21, 87, 36, 0.25);
-    cursor: pointer;
     flex-shrink: 0;
-    transition: background-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.offer-boost-button:hover {
-    background-color: #c3e6cb;
-    box-shadow: 0 3px 8px rgba(21, 87, 36, 0.28);
-}
-
-.offer-boost-button:active {
-    transform: translateY(1px);
-}
-
-.offer-boost-button:focus-visible {
-    outline: 2px solid #198754;
-    outline-offset: 2px;
 }
 
 /* Deposit bars inside offer bar */
@@ -846,16 +1421,18 @@
     align-items: stretch;
 }
 
+/* 34px matches the natural height of the Name and Description inputs, so the three
+   create-proposal boxes read as one compact, uniform block. */
 #proposalOffer {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
     padding: 0 12px;
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     font-size: 14px;
-    line-height: 44px;
+    line-height: 32px;
 }
 
 #proposalOffer::-webkit-outer-spin-button,
@@ -865,15 +1442,15 @@
 }
 
 #proposalCurrency {
-    height: 44px;
-    min-height: 44px;
-    max-height: 44px;
+    height: 34px;
+    min-height: 34px;
+    max-height: 34px;
     padding: 0 12px;
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     font-size: 14px;
-    background-color: #fff;
+    background-color: var(--cb-surface);
     cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -886,7 +1463,7 @@
 
 .proposal-offer-balance {
     margin-top: 4px;
-    color: #6b7280;
+    color: var(--cb-text-muted);
     font-size: 12px;
     line-height: 1.4;
 }
@@ -917,7 +1494,7 @@
     text-align: center;
     margin: 10px 0;
     padding: 0 10px;
-    color: #555;
+    color: var(--cb-text-muted);
     line-height: 1.5;
     font-size: 1.25rem;
     font-weight: 500;
@@ -925,53 +1502,124 @@
 
 .proposal-header h4 {
     margin: 0;
-    color: #333;
+    color: var(--cb-text);
     font-size: 16px;
     font-weight: 600;
 }
 
-.proposal-status {
-    font-size: 11px;
-    padding: 2px 6px;
+.proposal-agent-provenance {
+    margin: 10px 0 14px;
+    padding: 13px;
+    border: 1px solid #ddd6fe;
     border-radius: 10px;
-    font-weight: 500;
+    background: linear-gradient(145deg, #faf8ff 0%, #f5f3ff 100%);
+    color: #312e81;
+}
+
+.proposal-agent-provenance-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.proposal-agent-eyebrow {
+    color: #6d28d9;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
 }
 
-.proposal-badges-row .proposal-status {
-    margin-left: 0;
+.proposal-agent-persona {
+    margin-top: 2px;
+    color: #2e1065;
+    font-size: 16px;
+    font-weight: 750;
 }
 
-.proposal-status.active {
-    background-color: #e3f2fd;
-    color: #1976d2;
-    border: 1px solid #bbdefb;
+.proposal-agent-payment {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border: 1px solid #c4b5fd;
+    border-radius: 999px;
+    background: var(--cb-surface);
+    color: #5b21b6;
+    font-size: 12px;
+    font-weight: 750;
 }
 
-.proposal-status.executed {
-    background-color: #e8f5e8;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
+.proposal-agent-rationale {
+    margin: 10px 0;
+    color: #4c466f;
+    font-size: 13px;
+    line-height: 1.45;
 }
 
-.proposal-status.inactive {
-    background-color: #fff3e0;
-    color: #f57c00;
-    border: 1px solid #ffe0b2;
+.proposal-agent-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 12px;
+    margin: 10px 0 0;
 }
 
-.proposal-status.expired {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+.proposal-agent-facts > div {
+    min-width: 0;
 }
-.proposal-status.is-minted {
-    background-color: #e0f2fe;
-    color: #075985;
-    border: 1px solid #bae6fd;
+
+.proposal-agent-facts dt {
+    color: #7c6fa3;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
+
+.proposal-agent-facts dd {
+    margin: 2px 0 0;
+    overflow: hidden;
+    color: #312e81;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.proposal-agent-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd6fe;
+    color: #6d28d9;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.02em;
+}
+
+.proposal-agent-flow .fa-arrow-right {
+    color: #a78bfa;
+    font-size: 9px;
+}
+
+@media (max-width: 520px) {
+    .proposal-agent-facts {
+        grid-template-columns: 1fr;
+    }
+
+    .proposal-agent-flow {
+        align-items: stretch;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .proposal-agent-flow .fa-arrow-right {
+        transform: rotate(90deg);
+    }
+}
+
 .proposal-mint-state.minted-glow {
     position: relative;
     overflow: hidden;
@@ -991,34 +1639,6 @@
     50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.1); }
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
-.proposal-status.is-local {
-    background-color: #f3f4f6;
-    color: #374151;
-    border: 1px solid #e5e7eb;
-}
-
-.proposal-application-status {
-    font-size: 11px;
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    flex-shrink: 0;
-}
-
-.proposal-application-status.applied {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-}
-
-.proposal-application-status.not-applied {
-    background-color: #f5f5f5;
-    color: #616161;
-    border: 1px solid #e0e0e0;
-}
-
 .proposal-conditionality {
     font-size: 11px;
     padding: 4px 10px;
@@ -1030,27 +1650,27 @@
 }
 
 .proposal-conditionality.conditional {
-    background-color: #eef2ff;
+    background-color: var(--cb-primary-soft);
     color: #4338ca;
     border: 1px solid #c7d2fe;
 }
 
 .proposal-conditionality.partial {
-    background-color: #fff7ed;
+    background-color: var(--cb-warning-soft);
     color: #c2410c;
     border: 1px solid #fed7aa;
 }
 
 .proposal-apply-hint {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-top: 6px;
     display: inline-block;
 }
 
 .proposal-hash {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
     font-family: monospace;
     text-align: center;
     margin: 10px 0;
@@ -1059,7 +1679,7 @@
 .proposal-parcels-list {
     max-height: 150px;
     overflow-y: auto;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     margin-top: 8px;
 }
@@ -1078,159 +1698,212 @@
 
 .proposal-parcels-list .parcel-number {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .proposal-parcels-list .parcel-details {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 12px;
 }
 
-
-
 /* Username display styles */
-.username-display {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    border: 1px solid #dee2e6;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #495057;
-    min-width: unset; /* overrides earlier min-width */
-    max-width: fit-content; /* allow bubble to grow only as needed */
-    width: fit-content; /* explicit so the element shrinks to its content */
-}
 
 .username-display i {
-    color: #007bff;
+    color: var(--cb-primary);
     font-size: 13px;
 }
 
-/* Proposal Info Modal */
-.proposal-info-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: stretch; /* allow modal to use full height */
-    z-index: 2001;
+/* "Compare proposals here" (js/proposals/parcel-compare-ui.js): two proposals side by side for one
+   parcel, a native <dialog> (showModal) wearing the dialog primitive (css/primitives.css): card,
+   header, body. Only what a native dialog needs on top is here: no UA border or padding, centred
+   when open (a bottom sheet on phones), the token backdrop. Columns A and B carry their own
+   colour, matched by the preview SVG. */
+.parcel-compare {
+    --pc-a: var(--cb-primary);
+    --pc-b: var(--cb-warning);
+    --pc-a-fill: color-mix(in srgb, var(--pc-a) 38%, transparent);
+    --pc-b-fill: color-mix(in srgb, var(--pc-b) 38%, transparent);
+    max-width: none;
     padding: 0;
+    border: 0;
 }
-
-/* Compare table styles */
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
+.parcel-compare:not([open]) {
+    display: none;
 }
-.comparison-table th {
-    text-align: left;
-    border-bottom: 1px solid #eee;
-    padding: 6px 4px;
+.parcel-compare[open] {
+    position: fixed;
+    inset: 50% auto auto 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
 }
-.comparison-table td.label {
-    padding: 6px 4px;
-    color: #555;
+.parcel-compare::backdrop {
+    background: var(--cb-backdrop);
 }
-.comparison-table td.value {
-    padding: 6px 4px;
-    text-align: right;
-}
-.profit-positive {
-    color: #28a745;
-}
-.profit-negative {
-    color: #dc3545;
-}
-
-/* Result tag styles for compare modal */
-.result-tag {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    line-height: 1;
-    vertical-align: middle;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
-}
-.result-tag-profit {
-    color: #1f3a1f;
-    background: linear-gradient(135deg, #ffd700, #ffc107, #ffec80);
-    border: 1px solid rgba(255, 193, 7, 0.6);
-}
-.result-tag-loss {
-    color: #6b1f1f;
-    background: linear-gradient(135deg, #ffb3b3, #ff7a7a, #ffc1c1);
-    border: 1px solid rgba(220, 53, 69, 0.4);
-}
-
-/* Animated background for difference amount */
-.metric-value .animated-amount {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: linear-gradient(270deg, rgba(255,215,0,0.18), rgba(0,201,87,0.18), rgba(30,144,255,0.18), rgba(255,215,0,0.18));
-    background-size: 600% 600%;
-    animation: amountShimmer 14s ease infinite;
-}
-
-@keyframes amountShimmer {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .metric-value .animated-amount { animation: none; }
-}
-
-.proposal-info-modal-content {
-    background: white;
-    border-radius: 0;
-    width: 90%;
-    max-width: 700px;
-    max-height: 85vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+.parcel-compare__empty {
     margin: 0;
 }
-
-.proposal-info-modal-header {
+.parcel-compare__top {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px 0 24px;
-    border-bottom: 1px solid #dee2e6;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: var(--cb-space-3);
 }
-
-.proposal-info-modal-header h2 {
-    margin: 0;
-    color: #333;
-}
-
-.proposal-info-modal-close:hover {
-    background-color: #f8f9fa;
-    color: #333;
-}
-
-.proposal-info-modal-body {
-    padding: 20px 24px;
+.parcel-compare__pickers {
     flex: 1;
-    overflow-y: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    min-width: 0;
+}
+.parcel-compare__picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+    padding: 8px;
+    border: 2px solid var(--pc-a);
+    border-radius: 8px;
+}
+.parcel-compare__picker--b {
+    border-color: var(--pc-b);
+}
+.parcel-compare__select {
+    flex: 1 1 calc(100% - 32px);
+    min-width: 0;
+}
+.parcel-compare__type {
+    flex: 1;
+    font-size: 0.8rem;
+    color: var(--cb-text-muted);
+}
+.parcel-compare__details {
+    margin-left: auto;
+}
+.parcel-compare__marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--pc-a);
+    color: var(--cb-primary-ink);
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.parcel-compare__marker--b {
+    background: var(--pc-b);
+}
+.parcel-compare__preview {
+    flex: 0 0 160px;
+}
+.parcel-compare-svg {
+    display: block;
+    width: 160px;
+    height: 160px;
+}
+.parcel-compare-svg__parcel {
+    fill: var(--cb-surface-2);
+}
+.parcel-compare-svg__outline {
+    stroke: var(--cb-text);
+    stroke-width: 1.5;
+}
+.parcel-compare-svg__take--a {
+    fill: var(--pc-a-fill);
+    stroke: var(--pc-a);
+    stroke-width: 1;
+}
+.parcel-compare-svg__take--b {
+    fill: var(--pc-b-fill);
+    stroke: var(--pc-b);
+    stroke-width: 1;
+    stroke-dasharray: 3 2;
+}
+.parcel-compare__section {
+    margin-top: 12px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--cb-line);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--cb-text-muted);
+}
+.parcel-compare__row {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.8fr) 1fr 1fr;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--cb-line);
+    font-size: 0.88rem;
+}
+.parcel-compare__label {
+    color: var(--cb-text-muted);
+}
+.parcel-compare__cell {
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.parcel-compare__cell .parcel-compare__marker {
+    display: none;
+}
+.parcel-compare-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 4px 0;
+    font-size: 0.82rem;
+    color: var(--cb-text-muted);
+}
+.proposal-item-compare {
+    float: right;
+    margin: -4px -4px 4px 8px;
+    padding: 4px;
+    cursor: pointer;
+}
+.proposal-item-compare input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+}
+#drill-stack-panel .drill-stack-compare {
+    width: 100%;
+    margin-top: 6px;
+}
+
+/* Phones: a bottom sheet, and the two columns stack — each row shows its label, then A, then B. */
+@media (max-width: 767.98px) {
+    .parcel-compare[open] {
+        inset: auto 0 0;
+        transform: none;
+        margin: 0 auto;
+    }
+    .parcel-compare__top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .parcel-compare__pickers {
+        grid-template-columns: 1fr;
+    }
+    .parcel-compare__preview {
+        align-self: center;
+    }
+    .parcel-compare__row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+    .parcel-compare__cell .parcel-compare__marker {
+        display: inline-flex;
+    }
 }
 
 .proposal-details .metric-group,
@@ -1286,7 +1959,7 @@
 
 .proposal-details .metric-label {
     font-weight: 500;
-    color: #555;
+    color: var(--cb-text-muted);
     min-width: 140px;
     margin-bottom: 2px;
 }
@@ -1297,7 +1970,7 @@
 }
 
 .proposal-details .metric-value {
-    color: #333;
+    color: var(--cb-text);
     flex: 1;
     text-align: right;
 }
@@ -1308,8 +1981,80 @@
 
 .proposal-parcels h4 {
     margin: 0 0 12px 0;
-    color: #333;
+    color: var(--cb-text);
     font-size: 16px;
+}
+
+.proposal-parcel-set-card {
+    margin: 12px 0;
+    padding: 14px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface-2);
+}
+
+.proposal-parcel-set-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.proposal-parcel-set-head h3 {
+    margin: 2px 0 0;
+    font-size: 16px;
+}
+
+/* The set's parcel count is a cb-badge (js/proposals/details-panel.js). */
+.proposal-parcel-set-count {
+    flex-shrink: 0;
+}
+
+.proposal-parcel-set-card > p {
+    margin: 10px 0;
+    color: var(--cb-text-muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.proposal-parcel-set-hash {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 8px 0 10px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-xs);
+}
+
+.proposal-parcel-set-hash code {
+    overflow: hidden;
+    color: var(--cb-text);
+    text-overflow: ellipsis;
+}
+
+/* The other proposals on this land: cb-option rows (title, relation, a lifecycle cb-badge and a
+   chevron), each opening that proposal. */
+.proposal-parcel-set-relations {
+    margin-top: 10px;
+}
+
+.proposal-parcel-set-relation {
+    align-items: center;
+}
+
+.proposal-parcel-set-relation-main {
+    flex: 1 1 auto;
+}
+
+.proposal-parcel-set-relation-state {
+    flex-shrink: 0;
+}
+
+@media (max-width: 767.98px) {
+    .proposal-parcel-set-relation-state {
+        display: none;
+    }
 }
 
 .proposal-parcels-list,
@@ -1317,26 +2062,26 @@
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
-    border: 1px solid #dee2e6;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     padding: 8px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    background-color: #f8f9fa;
+    background-color: var(--cb-surface-2);
 }
 
 .proposal-descendants-list .descendant-item {
     margin: 4px 0;
     padding: 6px 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 3px;
     cursor: pointer;
-    background-color: white;
+    background-color: var(--cb-surface);
 }
 
 .proposal-descendants-list .descendant-item:hover {
-    background-color: #e9ecef;
+    background-color: var(--cb-surface-3);
     border-color: #adb5bd;
 }
 
@@ -1370,7 +2115,7 @@
 
 .proposal-parcel-item .parcel-details {
     font-size: 13px;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 .parcel-owner-acceptance {
@@ -1438,7 +2183,7 @@
 }
 
 .status-accepted {
-    color: #28a745;
+    color: var(--cb-success);
     font-weight: 500;
     margin-left: 8px;
 }
@@ -1447,13 +2192,6 @@
     color: #ffc107;
     font-weight: 500;
     margin-left: 8px;
-}
-
-.proposal-info-modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #dee2e6;
-    display: flex;
-    justify-content: flex-end;
 }
 
 /* Author with avatar styling */
@@ -1468,7 +2206,7 @@
 
 .author-avatar {
     flex-shrink: 0;
-    border: 2px solid #007bff !important;
+    border: 2px solid var(--cb-primary) !important;
     margin-right: 0 !important;
     object-fit: cover;
 }
@@ -1482,81 +2220,25 @@
     align-items: center;
 }
 
-/* Proposal details parcel list styling */
+/* Proposal details parcel list styling (the details panel's own rows, with their states, are in
+   css/proposal-details.css) */
 .proposal-parcel-item:hover {
-    background-color: #f0f8ff !important;
-    border-color: #007bff !important;
+    background-color: var(--cb-primary-soft);
+    border-color: var(--cb-primary);
 }
 
-/* Proposal boost modal */
-.proposal-boost-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 13000;
-    padding: 12px;
-    box-sizing: border-box;
-}
-
-.proposal-boost-modal {
-    background: #ffffff;
-    width: min(420px, 92vw);
-    border-radius: 12px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+/* ---- The boost and accept-transfer dialogs ----
+   CbDialogs with the identity class .proposal-boost-modal (the boost in proposals/details-panel.js,
+   Accept ownership transfer in proposals/execution.js); the chrome is the primitive's. */
+.proposal-boost-modal .cb-dialog__body {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    z-index: 13001;
-}
-
-.proposal-boost-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 16px 18px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.proposal-boost-header h3 {
-    margin: 0;
-    font-size: 18px;
-    color: #111827;
-}
-
-.proposal-boost-close {
-    border: none;
-    background: transparent;
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    color: #4b5563;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.12s ease;
-}
-
-.proposal-boost-close:hover {
-    background-color: #f3f4f6;
-}
-
-.proposal-boost-body {
-    padding: 16px 18px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    gap: var(--cb-space-3);
 }
 
 .proposal-boost-copy {
     margin: 0;
-    color: #4b5563;
+    color: var(--cb-text-muted);
     line-height: 1.45;
 }
 
@@ -1572,7 +2254,7 @@
     max-height: 44px;
     padding: 0 12px;
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     font-size: 14px;
     line-height: 44px;
@@ -1590,10 +2272,10 @@
     max-height: 44px;
     padding: 0 12px;
     box-sizing: border-box;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     font-size: 14px;
-    background-color: #fff;
+    background-color: var(--cb-surface);
     cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -1604,59 +2286,496 @@
     padding-right: 36px;
 }
 
-.proposal-boost-send {
-    background: #007bff;
-    color: #ffffff;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 3px 12px rgba(0, 123, 255, 0.32);
-    transition: background-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
-    margin: 0;
+/* Under the amount: the status of the last attempt, on a line kept free so nothing jumps. */
+.proposal-boost-status,
+.accept-transfer-status {
+    min-height: 18px;
+    font-size: var(--cb-text-sm);
+    text-align: center;
 }
 
-.proposal-boost-send:hover {
-    background: #0069d9;
-    box-shadow: 0 4px 14px rgba(0, 123, 255, 0.4);
+/* Accept ownership transfer: the amount still needed, centred under the explanation. */
+.accept-transfer-amount-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--cb-space-2);
+    margin: var(--cb-space-2) 0;
 }
 
-.proposal-boost-send:active {
-    transform: translateY(1px);
+.accept-transfer-amount-label {
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
 }
 
-.proposal-boost-send:focus-visible {
-    outline: 2px solid #cfe2ff;
-    outline-offset: 2px;
+.accept-transfer-amount-value {
+    font-size: var(--cb-text-2xl);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-success);
 }
 
-@media (max-width: 640px) {
-    .proposal-boost-modal {
-        width: 100%;
+/* ---- Owner acceptance rows (proposals/execution.js buildOwnerAcceptanceSectionHtml) ----
+   Owner, share and the Accept / Undo action on one line; a directed recipient (City, third party)
+   has its own line above the owners. */
+.owner-acceptance-list > .owner-acceptance-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-1) 0;
+}
+
+.owner-acceptance-list > .owner-acceptance-recipient {
+    border-bottom: 1px dashed var(--cb-line-strong);
+}
+
+.owner-acceptance-row > .owner-identity {
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-medium);
+}
+
+.owner-acceptance-recipient > .owner-identity {
+    font-weight: var(--cb-weight-semibold);
+}
+
+.owner-acceptance-recipient-tag {
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-normal);
+    color: var(--cb-text-muted);
+}
+
+.owner-acceptance-row > .owner-share {
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+    text-align: right;
+}
+
+.owner-share > .owner-share,
+.owner-share > .owner-payout {
+    font-size: 0.85em;
+}
+
+.owner-payout {
+    color: var(--cb-text);
+}
+
+.owner-acceptance-row > .owner-actions {
+    text-align: right;
+}
+
+.owner-actions .btn {
+    min-width: 60px;
+}
+
+.owner-acceptance-accepted {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-success);
+}
+
+/* Acceptance progress (more than 65 parcels or owners): the fill's width is the accepted share. */
+.acceptance-progress-bar {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    overflow: hidden;
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface-3);
+}
+
+.acceptance-progress-fill {
+    height: 100%;
+    background: var(--cb-success);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .acceptance-progress-fill {
+        transition: width 0.3s ease;
     }
 }
 
-/* Proposal actions group - buttons share row on desktop */
+/* Proposal actions group - two buttons per row on narrow screens (2x2 with 4 buttons),
+   three per row on desktop (below). */
 .proposal-actions-group {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     margin: 12px 0;
 }
 
 .proposal-actions-group button {
-    width: 100%;
+    width: auto;
     min-height: 40px;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-@media (min-width: 769px) {
-    .proposal-actions-group {
-        flex-direction: row;
+/* One filled action per card (docs/design-language.md): it comes first and takes the whole row;
+   the quiet and secondary actions share the rows under it. */
+.proposal-actions-group > .btn-primary,
+.proposal-actions-group > .btn-success {
+    order: -1;
+    grid-column: 1 / -1;
+}
+
+/* Phones: the card starts right of the mode buttons, so a half-row is ~125px. The generic mobile
+   .btn padding (16px a side) left ~70px for icon + label and cut "Fork proposal" to "Fork prop…";
+   tighter padding, and a label that wraps to a second line rather than losing its end. */
+@media (max-width: 767.98px) {
+    .proposal-actions-group button {
+        padding: 8px 6px;
+        white-space: normal;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
     }
-    
+}
+
+@media (min-width: 768px) {
+    /* Uniform compact grid: up to three equal buttons per row; a long label wraps to a second
+       line rather than being clipped ("Fork with c…") or stretching its button. */
+    .proposal-actions-group {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
     .proposal-actions-group button {
         width: auto;
-        flex: 1;
+        min-height: 36px;
+        margin: 0;
+        padding: 6px 8px;
+        overflow: hidden;
+        font-size: 12.5px;
+        line-height: 1.2;
+        white-space: normal;
     }
+}
+
+/* Buy on an open sale offer (Ownership: Third party · Anyone), in proposal list rows and the
+   details card, is btn btn-success; claimSaleOffer() binds the buyer and transfers the parcels. */
+
+/* The create dialog opens immediately; its map preview is built a tick later and lands here. The
+   placeholder holds the dialog's height steady so the form does not jump when the preview arrives. */
+.proposal-screenshot-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    background: #f4f4f4;
+    border-radius: 4px;
+}
+
+.proposal-screenshot-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--cb-line);
+    border-top-color: #888;
+    border-radius: 50%;
+    animation: proposal-screenshot-spin 0.8s linear infinite;
+}
+
+@keyframes proposal-screenshot-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* "Mints on <chain>" — minting follows whichever wallet is connected, or Canton mode, and the user
+   otherwise has no way to know where a proposal is about to go. */
+.proposal-mint-target {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.proposal-mint-target--onchain {
+    background: var(--cb-success-soft);
+    color: var(--cb-success-soft-ink);
+}
+
+.proposal-mint-target--offchain {
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+}
+
+/* Offer flow: land-use and parcels are locked to "no change" — visibly inert, ownership stays live. */
+.proposal-goal-section--locked {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* --- Share Plan panel -------------------------------------------------------------------------
+   Right-docked, full-height panel (mobile: lower-half dock) mirroring the proposals-list panel.
+   The panel takes only its own box, so the map stays pannable/zoomable beside it. */
+.share-plan-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: clamp(360px, 33vw, 560px);
+    z-index: var(--cb-z-dialog); /* Above the shell's sheets (1600) and info panels, same plane as the proposals list */
+}
+
+.share-plan-panel-content {
+    position: absolute;
+    inset: 0;
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-lg);
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 767.98px) {
+    .share-plan-panel {
+        top: auto;
+        left: 0;
+        width: 100%;
+        height: 50vh;
+    }
+
+    .share-plan-panel-content {
+        border-radius: 12px 12px 0 0;
+    }
+}
+
+.share-plan-panel-header {
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.share-plan-panel-header h2 {
+    margin: 0;
+    color: var(--cb-text);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.share-plan-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    flex: 1;
+    min-height: 0; /* lets the row list shrink and scroll instead of overflowing the panel */
+}
+
+/* Counted progress while the panel asks the server, one proposal at a time, which of them it
+   already has. Removed once the tally is done — a spinner that never stops reads as a hang. */
+.share-plan-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--cb-line);
+    border-radius: 8px;
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+    font-size: 12px;
+    flex: 0 0 auto;
+}
+
+.share-plan-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    border: 1px solid var(--cb-line);
+    border-radius: 8px;
+    padding: 8px;
+    background: var(--cb-surface-2);
+}
+
+.share-plan-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.share-plan-row:hover {
+    background: var(--cb-surface-3);
+}
+
+/* The row's Upload button is un-hidden by setting display:inline-flex from JS, which turns the
+   <button> into a flex CONTAINER — and a flex container does not do the centring a button does for
+   itself. Its label lands at flex-start and stretches: top-left of a box that .btn gives a 40px
+   min-height. Say the centring here, so it holds whatever display value the state juggling picks.
+   (The modal's copy of this control already does it via .share-modal .share-plan-action.) */
+.share-plan-row .btn {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Swatch matching the colour the proposal is painted with on the map: an empty cb-badge (the pill
+   shape) with the proposal's colour inline; its outline says uploaded (solid) or not (dashed), the
+   way the map draws them. */
+.share-plan-color-chip {
+    flex: 0 0 auto;
+    border: 1px solid var(--cb-line-strong);
+}
+
+/* Unchecked = out of the plan: the row dims and its chip fades with the map colouring. */
+.share-plan-row.is-excluded {
+    opacity: 0.6;
+}
+
+.share-plan-row.is-excluded .share-plan-color-chip {
+    opacity: 0.25;
+}
+
+/* Picked from the MAP: a click on a proposal out there scrolls its row into view here, and this is
+   what says which one arrived. It has to survive :hover (the pointer is on the map, not the row)
+   and read at a glance in a list of several hundred, so it is a filled bar with a hard left edge
+   rather than a tint. Only ever on one row — the JS clears the previous holder. */
+.share-plan-row.is-picked {
+    background: var(--cb-primary-soft);
+    box-shadow: inset 3px 0 0 0 var(--cb-primary);
+}
+
+/* Uploaded, and the map agrees: solid there, solid here. Not-yet-uploaded rows are the DEFAULT
+   state rather than a modifier, because a plan starts out entirely local — styling the exception is
+   what keeps a fresh panel from being a wall of warning colour. */
+.share-plan-row.is-uploaded .share-plan-color-chip {
+    border-color: var(--cb-text-strong);
+    border-width: 2px;
+}
+
+.share-plan-row:not(.is-uploaded) .share-plan-color-chip {
+    border-style: dashed;
+}
+
+/* The subset filter row. Aligned to the SAME 14px gutter as the panel header and body — it used to
+   carry a legend and sat on its own 2px inset, which left it visibly out of line with everything
+   below it. */
+.share-plan-filter {
+    display: flex;
+    align-items: center;
+    padding: 0 14px 10px;
+}
+
+/* Share entire plan: "Who decides?" once for the plan, on the panel's 14px gutter. */
+.share-plan-kind {
+    padding: 0 14px 10px;
+}
+
+.share-plan-kind__hint {
+    margin: var(--cb-space-1) 0 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+/* A segmented control rather than a dropdown: three options that are switched between constantly
+   should cost one click, not two. */
+.share-plan-mode-switch {
+    margin-left: auto;
+    user-select: none;
+}
+
+/* Subset highlighting: everything that is NOT the chosen subset drops back, so "Not uploaded yet"
+   shows the one proposal that is not uploaded rather than the whole city with one more shape on it.
+   Selecting on Leaflet's own pane structure rather than on this app's pane NAMES, so a new fabric
+   pane is dimmed automatically instead of being the one thing left bright.
+   The tile pane is excluded — dimming the basemap as well removes the context you are reading the
+   subset against, and the highlight pane is excluded because it IS the subset. */
+body.share-plan-highlighting .leaflet-map-pane > .leaflet-pane:not(.leaflet-tile-pane):not(.leaflet-shareplan-highlight-pane) {
+    opacity: 0.15;
+    transition: opacity 120ms ease-out;
+}
+
+body.share-plan-highlighting .leaflet-shareplan-highlight-pane {
+    opacity: 1;
+}
+
+.share-plan-share-area {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid #e5e9f5;
+    padding-top: 10px;
+}
+
+/* Share-plan mode lockdown: while the panel is open the map is pan/zoom ONLY. The floating shell
+   (its buttons, sheets, the search box and the selection tray) and the mode switches
+   are disabled; Leaflet controls too — except zoom, which stays. The / and Ctrl-K shortcuts check
+   window.sharePlanMode themselves (js/ui/map-search.js, js/ui/command-palette.js). */
+body.share-plan-mode .map-shell-cluster,
+body.share-plan-mode .map-shell-slot,
+body.share-plan-mode .map-sheet,
+body.share-plan-mode .map-mode-tile,
+body.share-plan-mode #mode-walk-toggle,
+body.share-plan-mode #mode-ai-toggle {
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+body.share-plan-mode .leaflet-control-container .leaflet-control {
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+body.share-plan-mode .leaflet-control-container .leaflet-control-zoom {
+    pointer-events: auto;
+    opacity: 1;
+}
+.proposal-support-actions {
+    display: contents;
+}
+.owner-acceptance-changed {
+    display: block;
+    color: var(--text-secondary, var(--cb-text-muted));
+    font-weight: normal;
+    line-height: 1.35;
+}
+
+.readjustment-cash-review {
+    margin: 8px 0 12px;
+    padding: 10px;
+    border: 1px solid var(--border-color, var(--cb-line));
+    border-radius: 8px;
+}
+
+.readjustment-cash-review h4 { margin: 0 0 4px; font-size: 13px; }
+.readjustment-cash-review p { margin: 0 0 8px; font-size: 12px; color: var(--text-secondary, var(--cb-text-muted)); }
+.readjustment-cash-review ul { margin: 0; padding: 0; list-style: none; }
+.readjustment-cash-review li,
+.readjustment-cash-review-total {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 4px 0;
+    font-size: 13px;
+}
+.readjustment-cash-review li span { overflow-wrap: anywhere; }
+.readjustment-cash-review strong { white-space: nowrap; }
+.readjustment-cash-review-total { border-top: 1px solid var(--border-color, var(--cb-line)); margin-top: 4px; }
+.readjustment-cash-review-invalid { color: var(--color-danger, var(--cb-danger)); font-size: 13px; }
+
+/* The kind ("Who decides?", proposal-kinds.md) picks the terms: money for an owner deal, a voting
+   period for a vote. create.js applyProposalKindToDialog sets data-proposal-kind on the overlay. */
+.create-proposal-modal[data-proposal-kind="owner-vote"] .proposal-deal-term,
+.create-proposal-modal[data-proposal-kind="community-vote"] .proposal-deal-term,
+.create-proposal-modal[data-proposal-kind="owner-deal"] .proposal-vote-term {
+    display: none;
+}
+
+/* Terms for a record that already exists (create.js openPublishTermsDialog): its design, site and
+   parcel summary are done, so only the kind, details and terms show. */
+.create-proposal-modal[data-publish-in-place] .proposal-design-only {
+    display: none;
+}
+
+.proposal-kind-explain {
+    margin: var(--cb-space-1) 0 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
 }

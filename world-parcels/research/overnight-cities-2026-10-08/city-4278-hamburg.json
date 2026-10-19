@@ -1,0 +1,200 @@
+{
+  "name": "Hamburg",
+  "country": "Germany",
+  "countryCode": "DE",
+  "rank": 280,
+  "point": [
+    53.5745088975748,
+    9.99288544960732
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "German",
+        "query": "Hamburg ALKIS Flurstücke WFS Geoportal Grundstücke Flurstück Hamburg official",
+        "result": "Hamburg’s official open-data catalog exposes the LGV INSPIRE Flurstücke WFS, described as ALKIS parcel boundaries, parcel numbers and cadastral districts. Root confirmed native geometry contains circular arcs.",
+        "actualResultUrls": [
+          "https://suche.transparenz.hamburg.de/dataset/inspire-hh-flurstuecke-grundstuecke-alkis",
+          "https://www.hamburg.de/service/info/11257949/"
+        ],
+        "executionMethod": "Official metadata and city-service pages plus anonymous direct WFS capabilities, schema, count-only probes, and bounded feature request."
+      },
+      {
+        "language": "English",
+        "query": "Hamburg official cadastral parcel dataset ALKIS WFS cadastral parcels open data",
+        "result": "Official Hamburg metadata identifies the dataset operator LGV, Datenlizenz Deutschland Namensnennung 2.0 licensing and WFS/WMS/GML access; anonymous WFS capabilities list INSPIRE CadastralParcel.",
+        "actualResultUrls": [
+          "https://suche.transparenz.hamburg.de/dataset/inspire-hh-flurstuecke-grundstuecke-alkis",
+          "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke?SERVICE=WFS&REQUEST=GetCapabilities"
+        ],
+        "executionMethod": "English-language search followed by source page and direct endpoint inspection."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke?SERVICE=WFS&REQUEST=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "observation": "Anonymous WFS 2.0 capabilities list cp:CadastralParcel and cp:CadastralZoning; no access constraints."
+      },
+      {
+        "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke?SERVICE=WFS&VERSION=2.0.0&REQUEST=DescribeFeatureType&TYPENAME=cp%3ACadastralParcel",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "Feature schema includes nationalCadastralReference, label, areaValue, identifier and geometry. Full feature returned its safe parcel identifier fields."
+      },
+      {
+        "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "observation": "CRS:84 bbox near WUP, COUNT=3 returned three distinct full cp:CadastralParcel members; root numberMatched=unknown and numberReturned=0 contradict actual payload. CRS EPSG:25832. One sample native reference 020302___02581______ contains WUP center."
+      },
+      {
+        "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "observation": "Thirteen adjacent small-cell RESULTTYPE=hits GETs all returned count-only responses; numberMatched values [3,2,5,6,6,4,3,3,4,4,4,4,4], numberReturned=0 and zero members in each. Counts are overlapping and local only."
+      },
+      {
+        "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "observation": "Forced startIndex=3,count=1 for the WUP bbox returned zero members; count-only hit count for bbox was 3. Header again reported numberMatched=unknown and numberReturned=0; cannot qualify reliable pagination."
+      },
+      {
+        "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke",
+        "method": "GET",
+        "httpStatus": 400,
+        "contentType": "application/xml;charset=UTF-8",
+        "observation": "Same bounded GetFeature query with outputFormat=application/json rejected: not configured to handle application/json; repository GeoJSON WFS adapter cannot consume this WFS."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Hamburg ALKIS INSPIRE Flurstücke dataset",
+        "operator": "Landesbetrieb Geoinformation und Vermessung (LGV), Free and Hanseatic City of Hamburg",
+        "homeUrl": "https://suche.transparenz.hamburg.de/dataset/inspire-hh-flurstuecke-grundstuecke-alkis",
+        "observation": "Official dataset metadata says cadastral parcel boundaries, parcel numbers and cadastral districts from ALKIS; dataset offers public WFS/WMS/GML, Datenlizenz Deutschland Namensnennung 2.0."
+      }
+    ],
+    "savedSamples": [
+      "hamburg-alkis-adapter-sample.geojson"
+    ],
+    "savedQa": [
+      "hamburg-alkis-geos-qa.json",
+      "hamburg-initial-sample-retention.json",
+      "hamburg-alkis-acceptance.json",
+      "hamburg-alkis-quality.json"
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": "ave:Flurstueck",
+    "responseType": "GeoJSON",
+    "responseCrs": "EPSG:4326",
+    "returnedFullPolygonCount": 67,
+    "uniqueFullPolygonCount": 67,
+    "retainedFullPolygonCount": 3,
+    "wupPointContained": null,
+    "limitations": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified."
+  },
+  "source": {
+    "sourceId": "de-hh-alkis-flurstueck",
+    "id": "de-hh-alkis-flurstueck",
+    "name": "Hamburg simplified ALKIS cadastral parcels",
+    "operator": "Landesbetrieb Geoinformation und Vermessung Hamburg",
+    "url": "https://geodienste.hamburg.de/WFS_HH_ALKIS_vereinfacht",
+    "format": "WFS 2.0; provider-generated full WGS84 GeoJSON",
+    "access": "Anonymous public GET; only safe native cadastral reference and transport oid retained. PROPERTYNAME may be ignored by the provider; unrequested street fields are discarded.",
+    "nativeIdField": "flstkennz",
+    "geometryCrs": "EPSG:4326",
+    "scope": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hamburg cadastral parcel boundaries from ALKIS, as described in official city metadata.",
+    "verifiedOpenScope": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official Hamburg metadata describes the LGV dataset as ALKIS cadastral parcel boundaries with parcel numbers and cadastral districts; official Hamburg Geoportal documents free public map access.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Bounded nearby cells only; broader municipal completeness and long-term reference permanence are unverified.",
+  "qaFile": "hamburg-alkis-quality.json",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:29:25.592806+00:00",
+  "wupCityCode": 4278,
+  "cityId": "wup2025:4278",
+  "queueRank": 280,
+  "population2025": 1759377,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    53.5745088975748,
+    9.99288544960732
+  ],
+  "sourceIds": [
+    "de-hh-alkis-flurstueck"
+  ],
+  "nextStep": "Integrate the tested dedicated adapter and verify parcel selection in the local app.",
+  "sampleRetentionFile": "hamburg-initial-sample-retention.json",
+  "registryEvidenceUrls": [
+    "https://suche.transparenz.hamburg.de/dataset/inspire-hh-flurstuecke-grundstuecke-alkis",
+    "https://api.hamburg.de/datasets/v1/alkis_vereinfacht/collections?f=json"
+  ],
+  "priorCandidate": {
+    "source": {
+      "id": "de-hh-alkis-inspire-cadastralparcel",
+      "name": "Hamburg ALKIS INSPIRE cadastral parcels",
+      "operator": "LGV, Free and Hanseatic City of Hamburg",
+      "url": "https://geodienste.hamburg.de/HH_WFS_INSPIRE_Flurstuecke",
+      "format": "WFS 2.0 GML 3.2",
+      "access": "Anonymous GET; official catalog specifies Datenlizenz Deutschland Namensnennung 2.0.",
+      "nativeIdField": "nationalCadastralReference",
+      "geometryCrs": "EPSG:25832"
+    },
+    "verifiedParcelResponse": {
+      "httpStatus": 200,
+      "featureType": "cp:CadastralParcel",
+      "responseType": "GML 3.2",
+      "responseCrs": "EPSG:25832",
+      "returnedFullPolygonCount": 3,
+      "uniqueFullPolygonCount": 3,
+      "numberMatched": "unknown",
+      "numberReturned": 0,
+      "sampleNativeReference": "020302___02581______",
+      "wupPointContained": null,
+      "limitations": "Native GML includes curved Ring/Curve/Arc boundaries. Geometry availability is established, but earlier GeoJSON conversion and point containment are invalidated. Count header zero is a documented unknown sentinel in the response comment; independent count/paging still require qualification."
+    },
+    "technicalBlocker": "Original INSPIRE service needs a reader for EPSG:25832 Ring/Curve/Arc boundaries and independently verified counts; the earlier conversion was not faithful. Root discovered an official simplified ALKIS WFS and OGC API and is investigating their provider-produced GeoJSON before adapter integration.",
+    "invalidatedConversionFile": "hamburg-initial-sample-retention.json"
+  },
+  "appCityId": "hamburg",
+  "scopeLimits": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified.",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/hamburg-alkis-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/hamburg-alkis-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/hamburg-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "de-hh-alkis-flurstueck",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/hamburg-alkis-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/hamburg-alkis-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T22:29:25.752135+00:00"
+}

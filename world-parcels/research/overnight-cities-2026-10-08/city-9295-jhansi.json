@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [],
+  "name": "Jhansi",
+  "country": "India",
+  "countryCode": "IN",
+  "registryFound": true,
+  "registryBasis": "Jhansi district’s official land-record page links UP Bhulekh and describes khatauni records. UP BhuNaksha is the official state cadastral map viewer; its current shell responds, but the exact WUP city point was not resolved to a village or safe full-polygon output.",
+  "registryEvidenceUrls": [
+    "https://jhansi.nic.in/service/land-records/",
+    "https://upbhunaksha.gov.in/home/",
+    "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+    "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9295,
+  "cityId": "wup2025:9295",
+  "centerLatLon": [
+    25.4537107812342,
+    78.5688190162174
+  ],
+  "point": [
+    25.4537107812342,
+    78.5688190162174
+  ],
+  "rank": 822,
+  "queueRank": 822,
+  "population2025": 662059,
+  "population2025k": 662.059,
+  "populationPlausibility2025": "High",
+  "scopeLimits": "No full polygon is retained. Registry or map-service evidence is a research lead only; it does not establish citywide completeness or geometry.",
+  "remainingUncertainty": "State parcel maps are village/plot selected. The WUP point does not itself identify the correct revenue village, and no bounded full polygon/native parcel identity was verified. Khatauni access is a textual land-record workflow, not geometry.",
+  "nextStep": "If pursued, resolve the unchanged point to a Jhansi tehsil/village through the state selectors and inspect only public full polygon geometry with safe parcel key; do not query owner/khatauni details.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Hindi",
+        "query": "झांसी भू नक्शा official cadastral map",
+        "result": "Official Jhansi district land-record page and UP BhuNaksha viewer route were reviewed; no full-polygon response was obtained.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://jhansi.nic.in/service/land-records/",
+          "https://upbhunaksha.gov.in/home/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+          "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "English",
+        "query": "Jhansi cadastral map official UP Bhunaksha",
+        "result": "The official UP viewer is live as an application shell, but exact village/plot geometry remains unverified.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://jhansi.nic.in/service/land-records/",
+          "https://upbhunaksha.gov.in/home/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+          "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "English",
+        "query": "site:upbhunaksha.gov.in Jhansi map",
+        "result": "Search confirms the official state viewer; no city-locator parcel identity or anonymous geometry response was returned.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://jhansi.nic.in/service/land-records/",
+          "https://upbhunaksha.gov.in/home/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+          "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://jhansi.nic.in/service/land-records/",
+        "observation": "Official Jhansi district page says UP Bhulekh provides online khatauni copies and identifies the local collectorate."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "observation": "Official UP BhuNaksha current map application shell; city-specific village/plot selection is needed."
+      },
+      {
+        "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+        "observation": "Official NIC BhuNaksha implementation status lists Uttar Pradesh."
+      },
+      {
+        "url": "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf",
+        "observation": "Official NIC guide documents district/tehsil/village GIS code and plot-based cadastral map workflow."
+      }
+    ]
+  },
+  "source": {
+    "name": "Official city/national cadastral and land-record sources",
+    "urls": [
+      "https://jhansi.nic.in/service/land-records/",
+      "https://upbhunaksha.gov.in/home/",
+      "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+    ],
+    "operator": "Jhansi district administration / Uttar Pradesh Revenue Department",
+    "url": "https://jhansi.nic.in/service/land-records/",
+    "serviceType": "Official land-record, cadastral viewer or parcel-map candidate",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official local registry/map service evidence reviewed; no full geometry response verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jhansi district’s official land-record page links UP Bhulekh and describes khatauni records. UP BhuNaksha is the official state cadastral map viewer; its current shell responds, but the exact WUP city point was not resolved to a village or safe full-polygon output.",
+    "verifiedOpenScope": "No public full-polygon coverage verified at exact WUP point. This is source evidence/candidate status only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No anonymous full-polygon/native-key response was verified at the unchanged WUP locator; the public map/registry lead remains unqualified for runtime."
+  },
+  "resultCategory": "official_land_record_and_cadastral_viewer_candidate",
+  "geometryEvidence": "No full parcel geometry was retained. Official viewer availability and land-record workflow establish a candidate only; no public full polygon/native-ID response was verified at the unchanged WUP point.",
+  "adapterReady": false,
+  "rootPrimaryReadback": {
+    "url": "https://jhansi.nic.in/service/land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Online Land Records | District Jhansi, Government of Uttar Pradesh | India    "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

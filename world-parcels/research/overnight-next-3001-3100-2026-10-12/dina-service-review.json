@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-7639-dina.json",
+  "cityCode": 7639,
+  "queueRank": 3042,
+  "city": "Dina",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Urdu first-party discovery identified PLRA/PULSE as the relevant provincial land-record and cadastral-map custodian. The live PULSE viewer exposes a Jhelum cadastral-map option and the PLRA-hosted Punjab cadastral ArcGIS service, but the service metadata and bounded exact-point query returned Token Required (499). No safe anonymous parcel ID-plus-geometry response or GeoJSON sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, viewer configuration, token-required outcomes, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-7639-dina.json. No login, CAPTCHA/Cloudflare bypass, credentials, private token, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Punjab Land Records Authority (PLRA) / PULSE, Government of Punjab",
+      "scope": "Provincial land-record and cadastral-map custodian with a public Jhelum cadastral-map viewer configuration relevant to Dina's district.",
+      "evidence": "https://lis.pulse.gop.pk/"
+    },
+    {
+      "name": "No separately evidenced Dina local registry custodian",
+      "scope": "Official planning material identifies MC Dina in Jhelum District but did not expose a separate local parcel service.",
+      "evidence": "https://pmu-lgcdd.gop.pk/jhelum/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "The configured Jhelum cadastral service is not evidence of citywide vector coverage for Dina.",
+    "Token-required responses are access/qualification outcomes, not evidence of parcel absence.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "Protected or separately configured PULSE parcel layers may exist beyond the anonymous routes inspected.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

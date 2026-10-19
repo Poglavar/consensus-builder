@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-mangaluru-municipal-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only route without querying personal/property attributes.",
+  "primaryPublisher": "Mangalore City Corporation",
+  "sourceUrl": "https://mccportal.in/",
+  "registryFound": true,
+  "registryBasis": "Mangalore City Corporation’s own citizen-services portal identifies itself as an official MCC service, lists its Mangaluru address, and provides municipal property-tax services including registering a new property. This supports a city-specific municipal property register, not a public land-title parcel map.",
+  "officialSources": [
+    {
+      "url": "https://mccportal.in/",
+      "observation": "Mangalore City Corporation’s own citizen-services portal identifies itself as an official MCC service, lists its Mangaluru address, and provides municipal property-tax services including registering a new property. This supports a city-specific municipal property register, not a public land-title parcel map."
+    },
+    {
+      "url": "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf",
+      "observation": "Mangalore City Corporation’s own citizen-services portal identifies itself as an official MCC service, lists its Mangaluru address, and provides municipal property-tax services including registering a new property. This supports a city-specific municipal property register, not a public land-title parcel map."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mangaluru City Corporation official property register property tax land records",
+      "scope": "Find city-specific registry/cartography basis and safe anonymous geometry routes.",
+      "result": "The MCC portal states it is an official Mangalore City Corporation portal and lists municipal property-tax services including new-property registration. The linked user guide describes the municipal service. No parcel geometry route was advertised or verified; property lookup/payment workflows were not entered.",
+      "actualResultUrls": [
+        "https://mccportal.in/",
+        "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf"
+      ]
+    },
+    {
+      "language": "Kannada",
+      "query": "ಮಂಗಳೂರು ಮಹಾನಗರ ಪಾಲಿಕೆ ಆಸ್ತಿ ತೆರಿಗೆ ಆಸ್ತಿ ನೋಂದಣಿ ಅಧಿಕೃತ",
+      "scope": "Find local-language city-specific registry/cartography basis and safe anonymous geometry routes.",
+      "result": "ಮಂಗಳೂರು ಮಹಾನಗರ ಪಾಲಿಕೆಯ ಅಧಿಕೃತ ನಾಗರಿಕ ಸೇವಾ ಪೋರ್ಟಲ್ ಆಸ್ತಿ ತೆರಿಗೆ ಮತ್ತು ಹೊಸ ಆಸ್ತಿ ನೋಂದಣಿ ಸೇವೆಗಳನ್ನು ನೀಡುತ್ತದೆ. ಇದು ನಗರಪಾಲಿಕೆ ಆಸ್ತಿ/ತೆರಿಗೆ ನೋಂದಣಿ ಸೇವೆಯ ಸಾಕ್ಷಿ ಮಾತ್ರ; ಭೂಹಕ್ಕಿನ ಕೇಡಾಸ್ಟ್ರಲ್ ಜ್ಯಾಮಿತಿಯ ಸಾರ್ವಜನಿಕ ವೆಕ್ಟರ್ ಮೂಲ ಕಂಡುಬಂದಿಲ್ಲ.",
+      "actualResultUrls": [
+        "https://mccportal.in/",
+        "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The municipal portal exposes citizen transactions and tax services; no anonymous geometry-only parcel schema or full-polygon route was identified. No property identifier, address, owner or tax record was entered or queried.",
+    "nativeIdsUsed": "No safe parcel feature identifier read; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://mccportal.in/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "Anonymous portal landing confirms MCC administration and lists Property Tax / Register New Property. No transaction route opened."
+    }
+  ],
+  "technicalBlocker": "The municipal portal exposes citizen transactions and tax services; no anonymous geometry-only parcel schema or full-polygon route was identified. No property identifier, address, owner or tax record was entered or queried.",
+  "sampleDisposition": "No parcel geometry or attributes retained.",
+  "remainingUncertainty": "No city parcel geometry, public feature schema, or geometry-only endpoint was verified. The property-services portal should not be treated as a public cadastral geometry feed."
+}

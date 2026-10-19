@@ -1,0 +1,37 @@
+{
+  "taskId": "city:7625",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-7625-taubat.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/taubat-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T17:01:16.135894Z",
+  "reason": "Local municipal technical and property cadastre custody is supported by first-party municipal pages. The saved SEPLAN response is a Cloudflare 403. No anonymous safe native-ID parcel polygon response, source schema, or CRS was verified; access denial is not parcel absence.",
+  "sourceUrlsReviewed": [
+    "https://taubate.sp.gov.br/secretarias-municipais/planejamento-urbano-e-habitacao",
+    "https://www.taubate.sp.gov.br/secretarias-municipais/fazenda"
+  ],
+  "identity": {
+    "cityCode": 7625,
+    "queueRank": 1857,
+    "name": "Taubaté",
+    "country": "Brazil",
+    "countryCode": "BR",
+    "point": [
+      -23.0183922105621,
+      -45.561567466541
+    ],
+    "populationPersons": 310170,
+    "verifiedAgainst": "cohort ranked-population.json and pending-queue.json"
+  },
+  "searchLanguagesVerified": [
+    "English",
+    "Brazilian Portuguese"
+  ],
+  "registryFound": true,
+  "retainedFullPolygons": 0,
+  "admissionGates": "No independently qualified live adapter. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not evidenced."
+}

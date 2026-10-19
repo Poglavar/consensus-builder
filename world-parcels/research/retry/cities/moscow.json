@@ -1,0 +1,45 @@
+{
+ "kind": "city",
+ "key": "moscow",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_countrywide",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ru-RU (cookie jar used)",
+ "changedByHeaders": "Retry NSPD from a Russia-reachable network; register for a data.mos.ru key only with the owner's consent.",
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://nspd.gov.ru/ and /api/geoportal/v2/search/geoportal",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://rosreestr.gov.ru/ ; https://pkk.rosreestr.ru/api/features/1",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://data.mos.ru/opendata/7705031674-zemelnye-uchastki",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "SPA shell loads now (91 KB); no data"
+  },
+  {
+   "url": "https://apidata.mos.ru/",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json",
+   "assessment": "'api_key required' - Moscow open-data API needs registration key; not attempted"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "nspd.gov.ru and rosreestr hosts reset from this network; Russian government hosts commonly restrict foreign networks (unproven).",
+ "nextStep": "data.mos.ru now loads but its API requires an api_key (registration). NSPD still unreachable."
+}

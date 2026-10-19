@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:2381",
+  "checkedAt": "2026-10-09",
+  "purpose": "Bounded qualification of the existing repository WFS adapter against the City of Córdoba municipal cadastre. This is not a citywide completeness claim.",
+  "officialSources": [
+    {
+      "name": "GeoPortal Municipalidad de Córdoba",
+      "url": "https://geoportal.cordoba.gob.ar/",
+      "observation": "First-party city GeoPortal says it publishes official city maps and live GIS services."
+    },
+    {
+      "name": "Catastro Municipal Parcelarios",
+      "url": "https://solucionesgis.cordoba.gob.ar/parcelarios/index_test.php",
+      "observation": "The City Directorate of Cadastre supports no-login block-plan lookup by district/zone/block nomenclature; it identifies the plancheta as an official document."
+    }
+  ],
+  "source": {
+    "operator": "Municipalidad de Córdoba, Dirección de Catastro",
+    "wfsEndpoint": "https://geomap.dev.cordoba.gob.ar/geoserver/ows",
+    "featureType": "CATASTRO:vm_t_parcelas",
+    "layerTitle": "vm_t_parcelas",
+    "geometryField": "shape",
+    "nativeIdField": "id_parcela",
+    "nativeIdType": "integer",
+    "wfsVersion": "2.0.0",
+    "coordinateReferenceSystem": "EPSG:22174 native; adapter requests CRS:84 / GeoJSON WGS84",
+    "schemaUrl": "https://geomap.dev.cordoba.gob.ar/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=CATASTRO%3Avm_t_parcelas",
+    "responseType": "GeoJSON"
+  },
+  "privacy": {
+    "requestedFields": [
+      "shape",
+      "id_parcela"
+    ],
+    "ownerNameAddressOrPersonalAttributesRequested": false,
+    "savedSampleProperties": [
+      "parcelId",
+      "sourceId",
+      "sourceParcelId"
+    ],
+    "fullPolygonsRetainedInRepository": 3
+  },
+  "adapter": {
+    "id": "AR-CORDOBA-MUNI-CATASTRO-WFS",
+    "type": "wfs",
+    "idField": "id_parcela",
+    "idType": "integer",
+    "idPrefix": "AR-CORDOBA-MUNI-",
+    "pageSize": 3,
+    "allAdapterTestsPassed": true,
+    "httpRequestCount": 384,
+    "uniquePolygonsObserved": 440
+  },
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "count": 24,
+      "complete": true,
+      "uniqueParcelIdCount": 24,
+      "bbox": [
+        -64.208,
+        -31.401,
+        -64.207,
+        -31.4
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "count": 21,
+      "complete": true,
+      "uniqueParcelIdCount": 21,
+      "bbox": [
+        -64.207,
+        -31.401,
+        -64.206,
+        -31.4
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "count": 20,
+      "complete": true,
+      "uniqueParcelIdCount": 20,
+      "bbox": [
+        -64.206,
+        -31.401,
+        -64.205,
+        -31.4
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "count": 40,
+      "complete": true,
+      "uniqueParcelIdCount": 40,
+      "bbox": [
+        -64.208,
+        -31.4,
+        -64.207,
+        -31.399
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "count": 58,
+      "complete": true,
+      "uniqueParcelIdCount": 58,
+      "bbox": [
+        -64.207,
+        -31.4,
+        -64.206,
+        -31.399
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "count": 60,
+      "complete": true,
+      "uniqueParcelIdCount": 60,
+      "bbox": [
+        -64.206,
+        -31.4,
+        -64.205,
+        -31.399
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "count": 65,
+      "complete": true,
+      "uniqueParcelIdCount": 65,
+      "bbox": [
+        -64.208,
+        -31.399,
+        -64.207,
+        -31.398
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "count": 70,
+      "complete": true,
+      "uniqueParcelIdCount": 70,
+      "bbox": [
+        -64.207,
+        -31.399,
+        -64.206,
+        -31.398
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "count": 55,
+      "complete": true,
+      "uniqueParcelIdCount": 55,
+      "bbox": [
+        -64.206,
+        -31.399,
+        -64.205,
+        -31.398
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "count": 34,
+      "complete": true,
+      "uniqueParcelIdCount": 34,
+      "bbox": [
+        -64.207,
+        -31.402,
+        -64.206,
+        -31.401
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "count": 71,
+      "complete": true,
+      "uniqueParcelIdCount": 71,
+      "bbox": [
+        -64.207,
+        -31.398,
+        -64.206,
+        -31.397
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "count": 40,
+      "complete": true,
+      "uniqueParcelIdCount": 40,
+      "bbox": [
+        -64.209,
+        -31.4,
+        -64.208,
+        -31.399
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "count": 24,
+      "complete": true,
+      "uniqueParcelIdCount": 24,
+      "bbox": [
+        -64.205,
+        -31.4,
+        -64.204,
+        -31.399
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "count": 71,
+      "geometryPages": 24,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-120",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-160",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-200",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-240",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-280",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-320",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-360",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-400",
+      "passed": true,
+      "count": 40,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "coverage": "complete",
+      "siteM2": 211.55,
+      "boundParcels": 1
+    }
+  ],
+  "geometryQa": {
+    "engine": "Shapely 2.2.0",
+    "metricCrs": "EPSG:32720",
+    "boundedGeometryCount": 440,
+    "validNonemptyCount": 418,
+    "invalidCount": 22,
+    "invalidCategories": {
+      "selfIntersection": 9,
+      "tooFewPoints": 13
+    },
+    "exactDuplicateGeometryPairs": 0,
+    "positiveAreaOverlapPairsAbove0_01M2": 3,
+    "sumPairwiseOverlapM2": 395.2412798502627,
+    "overlayOperationErrors": 5,
+    "noGeometryRepairApplied": true,
+    "repoSampleGeometryCheck": {
+      "count": 3,
+      "allValid": true,
+      "positiveAreaOverlapPairs": 0
+    }
+  },
+  "qualification": {
+    "passed": false,
+    "adapterBehavior": "Complete paging, exact-ID lookup, synthetic-absence semantics, footprint selection and one complete source-binding query all passed on the bounded city-core window.",
+    "runtimeDecision": "Hold pending review because independent GEOS QA found invalid polygons, positive-area overlaps and overlay errors within the bounded 440-feature sample. No source geometries were repaired."
+  },
+  "limitations": [
+    "13 cells cover a small central view around the WUP point, not the whole municipal cadastral layer.",
+    "There are 22 invalid polygons among 440 sampled unique features; 3 positive-area overlap pairs and 5 overlay operation errors were also measured.",
+    "The existing adapter accepts these polygons structurally, but source topology quality is insufficient to claim complete runtime qualification without review."
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "requests": [
+    {
+      "name": "joburg-bbox-count-uncapped",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnCountOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:47.949486+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 12,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 1108
+    },
+    {
+      "name": "joburg-bbox-ids-uncapped",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnIdsOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:47.950006+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 137,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 13,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 1113
+    },
+    {
+      "name": "giscoe-bbox-count-uncapped",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnCountOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:47.950176+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 12,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 0,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 870
+    },
+    {
+      "name": "giscoe-bbox-ids-uncapped",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "method": "GET",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "returnGeometry": "false",
+        "returnIdsOnly": "true"
+      },
+      "checkedAt": "2026-10-07T21:16:48.821586+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytesRead": 142,
+      "bodyCapped": false,
+      "featureCount": 0,
+      "objectIdCount": 12,
+      "exceededTransferLimit": null,
+      "error": null,
+      "elapsedMs": 333
+    },
+    {
+      "name": "pune-gis-page",
+      "url": "https://autodcr.pmc.gov.in/AutoDCR.DashBoard/PMC/GIS.aspx",
+      "method": "GET",
+      "parameters": null,
+      "checkedAt": "2026-10-07T21:16:49.058564+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://autodcr.pmc.gov.in/AutoDCR.Dashboard2/PMC/pmcdash.aspx"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 1712,
+      "bodyCapped": false,
+      "elapsedMs": 806
+    }
+  ]
+}

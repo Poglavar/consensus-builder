@@ -1,0 +1,116 @@
+{
+  "purpose": "Usage and validation record for the requested Chapter 7 audiobook.",
+  "created_at": "2026-10-08T19:09:30.943934+00:00",
+  "audio_file": "metrocoalescence-chapter-7-elevenlabs.mp3",
+  "model": "eleven_v4",
+  "voice": "Brian — Deep, Resonant and Comforting",
+  "accent": "American English",
+  "duration_seconds": 1790.56,
+  "input_characters": 28469,
+  "plan": {
+    "name": "Starter",
+    "monthly_base_usd": 6,
+    "standard_monthly_credits": 30000,
+    "period_credit_limit": 34300,
+    "credits_used_before": 2899,
+    "credits_used_after": 6031,
+    "credits_remaining": 28269,
+    "next_reset_local": "2026-11-06T03:57:45+04:00"
+  },
+  "cost": {
+    "generation_credits": 3132,
+    "additional_charge_usd": 0,
+    "included_allowance_equivalent_usd": 0.6264,
+    "verification_credits": 0,
+    "verification_note": "Optional external transcription was blocked by automatic approval review and is awaiting explicit user authorization."
+  },
+  "segments": [
+    {
+      "index": 1,
+      "section": "Urban Self",
+      "characters": 514,
+      "credits": 57,
+      "duration_seconds": 32.56
+    },
+    {
+      "index": 2,
+      "section": "Urban Self",
+      "characters": 3427,
+      "credits": 377,
+      "duration_seconds": 212.96
+    },
+    {
+      "index": 3,
+      "section": "Placating the Mortal Fear of Change",
+      "characters": 3089,
+      "credits": 340,
+      "duration_seconds": 190.72
+    },
+    {
+      "index": 4,
+      "section": "Guardians of the Empty Vault",
+      "characters": 2374,
+      "credits": 261,
+      "duration_seconds": 148.96
+    },
+    {
+      "index": 5,
+      "section": "Transforming NIMBYism",
+      "characters": 2221,
+      "credits": 244,
+      "duration_seconds": 138.4
+    },
+    {
+      "index": 6,
+      "section": "Transforming NIMBYism",
+      "characters": 3419,
+      "credits": 376,
+      "duration_seconds": 218.48
+    },
+    {
+      "index": 7,
+      "section": "Transforming NIMBYism",
+      "characters": 3440,
+      "credits": 378,
+      "duration_seconds": 215.76
+    },
+    {
+      "index": 8,
+      "section": "Transforming NIMBYism",
+      "characters": 3027,
+      "credits": 333,
+      "duration_seconds": 187.68
+    },
+    {
+      "index": 9,
+      "section": "Transforming NIMBYism",
+      "characters": 3571,
+      "credits": 393,
+      "duration_seconds": 217.04
+    },
+    {
+      "index": 10,
+      "section": "Transforming NIMBYism",
+      "characters": 2363,
+      "credits": 260,
+      "duration_seconds": 147.6
+    },
+    {
+      "index": 11,
+      "section": "Author’s Notes",
+      "characters": 1024,
+      "credits": 113,
+      "duration_seconds": 80.4
+    }
+  ],
+  "validation": {
+    "all_request_text_preserved_in_chunks": true,
+    "returned_alignments_match_requests": true,
+    "full_mp3_decode_passed": true,
+    "section_markers": 5,
+    "silence_over_5_seconds_detected": false,
+    "peak_dbfs": -1.8,
+    "independent_transcription_performed": false
+  },
+  "pricing_source": "https://elevenlabs.io/pricing/api"
+}

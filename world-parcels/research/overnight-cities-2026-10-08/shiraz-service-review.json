@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6300-shiraz.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Persian sources point to municipal smart-map and renewal-tax/property services, but the relevant first-party shells could not be verified directly. No formal city cadastral/title registry or public full-parcel geometry is established.",
+  "officialEvidence": [
+    {
+      "url": "https://shiraz.ir/",
+      "observation": "Official city domain, but direct retrieval timed out locally; this is not treated as provider outage."
+    },
+    {
+      "url": "https://map.shiraz.ir/",
+      "observation": "Municipal map subdomain referenced by city-service guides; its layers and public geometry contract remain unverified."
+    },
+    {
+      "url": "https://eshahr.shiraz.ir/",
+      "observation": "City citizen-service subdomain may host property/renewal-fee workflows; direct page retrieval timed out and no data/schema was accessed."
+    },
+    {
+      "url": "https://sarv.shiraz.ir/",
+      "observation": "City-branded portal is reported to handle renewal fees/self-declaration; direct page and records were not inspected."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://map.shiraz.ir/",
+      "routes": [
+        "City-service sources point to a municipal smart map with location/layer functions.",
+        "City citizen-service sources point to property/renewal-tax workflows by municipal renewal code or location. No direct first-party route schema was inspected because the pages were not retrieved."
+      ],
+      "notes": "No account, resident identity, property code, tax lookup or feature request was used."
+    },
+    "notes": "Municipal tax/urban-planning records, if present, must remain separate from formal land-title cadastre evidence."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No directly verified first-party parcel-vector service or safe feature schema was found; no geometry request was made."
+  }
+}

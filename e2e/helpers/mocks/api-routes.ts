@@ -1,8 +1,10 @@
 import { Page } from '@playwright/test';
 import { sampleParcels } from './parcel-data';
 import { sampleProposalsList, makeRoadProposal } from './proposal-data';
+import { fixtureSiteBinding } from './site-binding';
+import { mockOvertureTiles } from './overture-tiles';
 
-const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
+export const isApiDataRequest = (pageUrl: string, resourceType: string, endpoint: string): boolean => {
   if (resourceType !== 'fetch' && resourceType !== 'xhr') {
     return false;
   }
@@ -70,6 +72,13 @@ export async function mockAllApiRoutes(page: Page): Promise<void> {
   await mockBuildingsRoute(page);
   await mockPlannedRoadsRoute(page);
   await mockStreetsRoute(page);
+  await page.route('**/road-parcels**', route => {
+    if (!isApiDataRequest(route.request().url(), route.request().resourceType(), 'road-parcels')) return route.continue();
+    return route.fulfill({ json: { ids: [], truncated: false } });
+  });
+  // Last, so it answers before '**/buildings**' (newest route first): the archive URL ends in
+  // buildings.pmtiles. Cities on Overture's tiles read an empty archive instead of the real CDN.
+  await mockOvertureTiles(page);
 }
 
 export async function mockHealthRoute(page: Page): Promise<void> {
@@ -93,11 +102,30 @@ export async function mockAreaMonitorsRoute(page: Page): Promise<void> {
       return;
     }
 
-    if (method === 'GET' && /\/area-monitors\/1$/.test(url.pathname)) {
+    if (method === 'GET' && /\/area-monitors\/\d+\/?$/.test(url.pathname)) {
+      const id = Number(url.pathname.match(/area-monitors\/(\d+)/)?.[1]);
+      const detail = id === 1 ? sampleAreaMonitorDetail : id === 2 ? {
+        ...sampleAreaMonitorDetail,
+        monitor: { ...sampleAreaMonitorDetail.monitor, id: 2, name: 'Vukovarska Corridor' },
+      } : null;
+      if (!detail) {
+        route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'Area monitor not found' }) });
+        return;
+      }
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(sampleAreaMonitorDetail),
+        body: JSON.stringify(detail),
+      });
+      return;
+    }
+
+    // The detail loader paints this independent GeoJSON read after the metadata request.
+    if (method === 'GET' && /\/area-monitors\/\d+\/overlay\/?$/.test(url.pathname)) {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/geo+json',
+        body: JSON.stringify({ type: 'FeatureCollection', features: [] }),
       });
       return;
     }
@@ -111,8 +139,8 @@ export async function mockAreaMonitorsRoute(page: Page): Promise<void> {
       return;
     }
 
-    if (method === 'HEAD' && /\/area-monitors\/1$/.test(url.pathname)) {
-      route.fulfill({ status: 200, body: '' });
+    if (method === 'HEAD' && /\/area-monitors\/\d+\/?$/.test(url.pathname)) {
+      route.fulfill({ status: url.pathname.match(/area-monitors\/(\d+)/)?.[1] === '1' || url.pathname.match(/area-monitors\/(\d+)/)?.[1] === '2' ? 200 : 404, body: '' });
       return;
     }
 
@@ -129,7 +157,7 @@ export async function mockParcelsRoute(page: Page): Promise<void> {
     }
 
     // Return parcel data for any parcel request
-    if (request.method() === 'GET') {
+    if (request.method() === 'GET' || (request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/parcels/under'))) {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -149,7 +177,10 @@ export async function mockProposalsRoute(page: Page): Promise<void> {
       return;
     }
 
-    if (request.method() === 'GET') {
+    if (request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/proposals/binding')) {
+      const body = request.postDataJSON();
+      route.fulfill({ status: 200, json: { binding: fixtureSiteBinding(body.site, body.toleranceM) } });
+    } else if (request.method() === 'GET') {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -167,6 +198,8 @@ export async function mockProposalsRoute(page: Page): Promise<void> {
   });
 }
 
+// Covers both surveys: ?source=gdi (the working set, object_id) and ?source=dgu (the cadastre
+// reference layer). `truncated: false` says the bbox is fully covered.
 export async function mockBuildingsRoute(page: Page): Promise<void> {
   await page.route('**/buildings**', (route) => {
     const request = route.request();
@@ -175,10 +208,11 @@ export async function mockBuildingsRoute(page: Page): Promise<void> {
       return;
     }
 
+    const source = new URL(request.url()).searchParams.get('source') || 'gdi';
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ type: 'FeatureCollection', features: [] }),
+      body: JSON.stringify({ type: 'FeatureCollection', features: [], source, truncated: false }),
     });
   });
 }

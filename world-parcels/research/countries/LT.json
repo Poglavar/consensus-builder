@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LT",
+ "country": "Lithuania",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "State Enterprise Centre of Registers (Registru centras) cadastre; National Land Service (NZT) and geoportal.lt as INSPIRE hub",
+ "portalsFound": [
+  {
+   "url": "https://www.geoportal.lt/map/",
+   "observation": "National geoportal viewer reachable (200)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.geoportal.lt/mapproxy/gisc_nzt_kadastras/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "text/html",
+   "assessment": "401 Unauthorized (endpoint path guessed; not confirmed as the cadastre service)"
+  },
+  {
+   "url": "https://www.geoportal.lt/mapproxy/nzt_kadastras?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "text/html",
+   "assessment": "401, guessed path"
+  },
+  {
+   "url": "https://www.registrucentras.lt/atviri_duomenys/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare 'Just a moment' challenge"
+  },
+  {
+   "url": "https://www.geoportal.lt/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "no ArcGIS REST at this path"
+  },
+  {
+   "url": "https://data.gov.lt/api/3/action/package_search?q=kadastr",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "text/html",
+   "assessment": "server error"
+  },
+  {
+   "url": "https://get.data.gov.lt/datasets/gov/rc/ntr/",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "text/html",
+   "assessment": "server error"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National cadastre (Nekilnojamojo turto kadastras) exists; open parcel service unconfirmed",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "The real WFS/ArcGIS URL was not identified; 401s may be an auth wall or a wrong path. Registru centras blocked by bot challenge; data.gov.lt returned 500.",
+ "nextStep": "Find the INSPIRE cadastral parcels service URL from geoportal.lt metadata, or the Registru centras open-data page, and query with bbox."
+}

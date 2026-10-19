@@ -1,0 +1,85 @@
+{
+  "name": "Dehradun",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 421,
+  "point": [
+    30.3107530334774,
+    78.0382920323781
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dehradun official cadastral parcel map land records Uttarakhand Bhunaksha GIS Dehradun municipal",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point.",
+        "actualResultUrls": [
+          "https://dehradun.nic.in/service/land-records/",
+          "https://gis.eregistrationukgov.in/gisportal/Home.aspx",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/60",
+          "https://bhulekh.uk.gov.in/Bhulekh"
+        ],
+        "executionMethod": "Separate English web search followed by direct review of official local pages and anonymous public map/service entry points."
+      },
+      {
+        "language": "Hindi",
+        "query": "देहरादून भू नक्शा खसरा आधिकारिक उत्तराखंड भूमि अभिलेख देहरादून",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point.",
+        "actualResultUrls": [
+          "https://dehradun.nic.in/service/land-records/",
+          "https://gis.eregistrationukgov.in/gisportal/Home.aspx",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/60",
+          "https://bhulekh.uk.gov.in/Bhulekh"
+        ],
+        "executionMethod": "Separate native-language web search followed by direct review of official local pages and anonymous public map/service entry points."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-8508-PUBLIC-CADASTRE",
+    "name": "District Dehradun Land Records and Uttarakhand property GIS portals",
+    "url": "https://dehradun.nic.in/service/land-records/",
+    "operator": "District Administration Dehradun / Board of Revenue, Uttarakhand",
+    "serviceType": "Official city-local land-record or registration services; no anonymous public parcel-vector endpoint/schema verified",
+    "layer": "No anonymous parcel feature layer verified",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "No public safe parcel identifier returned",
+    "nativeIdEvidence": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point.",
+    "verifiedOpenScope": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The district administration identifies the Board of Revenue in Dehradun and local tehsil land-record computer centres; it confirms city/district land-record activity but not public parcel geometry at the WUP point.",
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The official district land-record page links Bhulekh for view-only records; its linked page timed out through the anonymous reader. The state registration GIS citizen portal is a dynamic shell and exposes no parcel-vector schema in the inspected public page.",
+  "remainingUncertainty": "The district page and DILRMP dashboard do not establish whether the exact WUP point has a digitized urban parcel map; completeness and exact point coverage remain unverified.",
+  "nextStep": "Recheck if the official local provider exposes an anonymous safe-ID parcel-vector layer or point-to-feature schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8508,
+  "cityId": "wup2025:8508",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.3107530334774,
+    78.0382920323781
+  ],
+  "population2025k": 1219.198,
+  "populationUnit": "persons",
+  "queueRank": 421,
+  "population2025": 1219198,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

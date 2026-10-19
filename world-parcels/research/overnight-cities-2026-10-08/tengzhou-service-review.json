@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10316-tengzhou.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official public sources establish a Tengzhou-linked real-estate registration function. No anonymously accessible parcel feature schema or geometry-only response was verified, so no polygon was retained.",
+  "registryAssessment": "A Shandong Provincial Big Data Bureau publication names Tengzhou and describes Tengzhou municipal housing/real-estate systems that share data with its real-estate registration center, including digitized property-registration workflows and cadastral building survey data. This confirms a city-level registry function, but not parcel service coverage at the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bdb.shandong.gov.cn/art/2024/11/1/art_79182_10331068.html",
+      "observation": "A Shandong Provincial Big Data Bureau publication names Tengzhou and describes Tengzhou municipal housing/real-estate systems that share data with its real-estate registration center, including digitized property-registration workflows and cadastral building survey data. This confirms a city-level registry function, but not parcel service coverage at the WUP point."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/",
+      "observation": "Official public map/service context reviewed; no geometry-only schema was confirmed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tengzhou China public cadastral map parcel GIS official",
+      "result": "English and Chinese searches found a city-linked property-registration workflow through the official Shandong provincial data bureau report and the provincial public geospatial portal. The provincial map portal exposes general geospatial resources; no Tengzhou parcel feature schema or geometry-only query route was verified.",
+      "method": "Separate English query and first-party source review."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "滕州市 自然资源局 不动产登记中心 地籍图 地图 官方",
+      "result": "English and Chinese searches found a city-linked property-registration workflow through the official Shandong provincial data bureau report and the provincial public geospatial portal. The provincial map portal exposes general geospatial resources; no Tengzhou parcel feature schema or geometry-only query route was verified.",
+      "method": "Separate local-language query and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no public feature route with a verified geometry-only and non-personal schema was identified.",
+  "coverageAssessment": {
+    "claimedScope": "A Shandong Provincial Big Data Bureau publication names Tengzhou and describes Tengzhou municipal housing/real-estate systems that share data with its real-estate registration center, including digitized property-registration workflows and cadastral building survey data. This confirms a city-level registry function, but not parcel service coverage at the WUP point.",
+    "verifiedOpenScope": "Official public sources establish a Tengzhou-linked real-estate registration function. No anonymously accessible parcel feature schema or geometry-only response was verified, so no polygon was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://bdb.shandong.gov.cn/art/2024/11/1/art_79182_10331068.html",
+      "method": "Read official publication",
+      "result": "Describes Tengzhou smart-housing integration with its real-estate registration center and digitized housing transaction/registration workflows. It does not document an anonymous parcel polygon service."
+    },
+    {
+      "url": "https://www.sdmap.gov.cn/",
+      "method": "Review official public geospatial portal landing page",
+      "result": "Provincial map/catalog portal is public. The inspected landing page did not establish a Tengzhou cadastral feature layer or safe geometry-only schema."
+    },
+    {
+      "url": "https://zwfw.sd.gov.cn/sdzw/front/web/cw.do",
+      "method": "Search-index review of official provincial service portal regional selectors",
+      "result": "Tengzhou appears under the Zaozhuang municipal region selector, but no parcel-map or public vector service was identified; no selector was submitted."
+    },
+    {
+      "url": "N/A",
+      "method": "Anonymous parcel geometry query",
+      "result": "Not attempted: no safe geometry-only service schema and coverage extent were established."
+    }
+  ],
+  "remainingUncertainty": "Whether Tengzhou publishes a separate local cadastre map/service that supports anonymous geometry-only export, and whether it covers the WUP point."
+}

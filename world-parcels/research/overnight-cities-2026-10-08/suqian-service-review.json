@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10822-suqian.json",
+  "purpose": "Document city-scope registry/cadastre evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-specific registry or cadastral administration is documented, but no anonymous safe parcel-geometry response and usable feature schema were verified.",
+  "registryAssessment": "The official Jiangsu government-service record names Suqian’s Natural Resources and Planning Bureau for real-estate first registration. An official Jiangsu government report describes Suqian’s unified citywide cadastral survey and one-map base. Neither source exposes a safe anonymous parcel feature service or schema.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+      "observation": "The official Jiangsu government-service record names Suqian’s Natural Resources and Planning Bureau for real-estate first registration. An official Jiangsu government report describes Suqian’s unified citywide cadastral survey and one-map base. Neither source exposes a safe anonymous parcel feature service or schema."
+    },
+    {
+      "url": "https://www.js.gov.cn/art/2025/4/10/art_84324_11549091.html",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://suqian.gov.cn/cnsq/zjsq/zjsq.shtml",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "宿迁市 自然资源和规划局 地籍图 宗地图 不动产登记 地图查询 官方",
+      "result": "政府服务页面确认宿迁市自然资源和规划局承担不动产首次登记；省政府资料描述宿迁全市统一地籍调查和一张图基础，但未找到可匿名访问的宗地矢量服务或字段模式。",
+      "actualResultUrls": [
+        "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+        "https://www.js.gov.cn/art/2025/4/10/art_84324_11549091.html",
+        "https://suqian.gov.cn/cnsq/zjsq/zjsq.shtml"
+      ],
+      "method": "Separate English and Simplified Chinese discovery; official government-service and bureau materials reviewed. No parcel-specific or owner lookup."
+    },
+    {
+      "language": "English",
+      "query": "Suqian official natural resources planning bureau cadastral parcel map land registration GIS",
+      "result": "Official service and city/government materials confirm Suqian’s local registration and cadastral program. No public map viewer endpoint, feature layer, or safe field schema was identified.",
+      "actualResultUrls": [
+        "https://sq.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321300MB1505043X3000715001007&iddept_yw_inf=11321300MB1505043X300071500100701&ql_kind=07&webId=11",
+        "https://www.js.gov.cn/art/2025/4/10/art_84324_11549091.html",
+        "https://suqian.gov.cn/cnsq/zjsq/zjsq.shtml"
+      ],
+      "method": "Separate English and Simplified Chinese discovery; official government-service and bureau materials reviewed. No parcel-specific or owner lookup."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "City-specific registry or cadastral administration is documented, but no anonymous safe parcel-geometry response and usable feature schema were verified."
+  },
+  "privacy": "No owner, address, applicant, taxpayer, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "City-specific registry or cadastral administration is documented, but no anonymous safe parcel-geometry response and usable feature schema were verified."
+  }
+}

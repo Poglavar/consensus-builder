@@ -1,0 +1,66 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "OH",
+ "regionName": "Ohio",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-oh-ogrip-statewide-parcels",
+  "name": "Ohio Statewide Parcels Public View",
+  "operator": "OGRIP / Ohio Geographically Referenced Information Program (Ohio Dept of Administrative Services OIT), Esri/Axiomatic/Woolpert build",
+  "scope": "statewide",
+  "endpoint": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:3735 (Ohio South, ft) native",
+  "reuseStatus": "Public hub (ohioparcels-geohio.hub.arcgis.com); licence text not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-oh-ogrip-statewide-parcels",
+  "requestUrl": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "StateParcelID",
+  "responseFile": "OH-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "OGRIP 2023 project combined county parcel and assessment records into one standardized statewide dataset (publisher description as found via search).",
+ "subregionsVerified": [
+  "Franklin County",
+  "Cuyahoga County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://ohioparcels-geohio.hub.arcgis.com/",
+   "observation": "Ohio Parcels hub"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0/query?where=OBJECTID<=2&returnGeometry=false",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "attribute query works"
+  },
+  {
+   "url": "https://services2.arcgis.com/MlJ0G8iWUyC7jAmu/arcgis/rest/services/OhioStatewidePacels_full_view/FeatureServer/0/query?geometry=<bbox>&outSR=4326 (Columbus, Cleveland)",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "timed out at 40 s twice each (spatial+reprojection); temporarily slow"
+  }
+ ],
+ "reuseStatus": "Public; licence not read.",
+ "remainingUncertainty": "Spatial-envelope queries timed out at 40 s (likely reprojection load); geometry verified via attribute-filtered queries in native EPSG:3735, not a small bbox. Franklin StateParcelID values were null in the sample (LocalParcelID exists).",
+ "nextStep": "Retry a bbox query in native SR 3735 or with a longer timeout."
+}

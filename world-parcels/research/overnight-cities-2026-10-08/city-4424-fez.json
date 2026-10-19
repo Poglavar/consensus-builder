@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Fez",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Morocco’s ANCFCC lists separate Fès Medina and Fès Zouagha My Yacoub land-conservation and cadastre offices, confirming local cadastral coverage in Fez. Its cadastral-plan ordering service requires personal/organization details, a land-title number, CAPTCHA and SMS verification; it is not an anonymous public feature service.",
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "https://www.ancfcc.gov.ma/cadastre/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage",
+    "https://www.ancfcc.gov.ma/ProduitsCadastreAr"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4424,
+  "cityId": "wup2025:4424",
+  "centerLatLon": [
+    34.0298208099528,
+    -5.00068534851991
+  ],
+  "rank": 373,
+  "queueRank": 373,
+  "population2025": 1359989,
+  "population2025k": 1359.989,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The public ANCFCC site describes cadastral products and separately lists Fès local cadastre offices, but direct anonymous requests to the cadastral-plan form and the official cartography products page returned HTTP 403. The indexed form requires personal/organization details, a title number, CAPTCHA and SMS verification. No anonymous full parcel geometry route was found and no form was submitted.",
+  "scopeLimits": "ANCFCC’s official pages and search-indexed content confirm Fès local cadastre/conservation offices and cadastral map products. The public plan-order form is a per-title request requiring identity details and CAPTCHA/SMS. Direct anonymous GETs to the plan form and map-product pages returned 403 from the origin path, so no route/schema/geometry was obtained. No login, form submission, CAPTCHA, or owner lookup was attempted.",
+  "remainingUncertainty": "A professional cadastral/cartography workspace may provide separate map services, but it is not advertised as an anonymous public parcel map and was not accessed. The public map products reviewed are ordered cartographic products, not a verified machine-readable full-parcel service.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Fez Morocco official cadastre parcel map land registry ANCFCC public GIS",
+        "scope": "Find city-local cadastral offices and any anonymous full parcel map or geometry service.",
+        "result": "ANCFCC official materials identify Fez cadastral offices and a public online service to request a cadastral plan. The plan-order workflow is title-specific and requires identity information, a title number, CAPTCHA and SMS verification; no anonymous full geometry service was identified.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "English-language web search followed by direct inspection of official ANCFCC pages."
+      },
+      {
+        "language": "Arabic",
+        "query": "فاس المغرب الخريطة العقارية المسح العقاري المحافظة العقارية ANCFCC خرائط رسمية",
+        "scope": "البحث عن مكاتب التحفيظ والمسح العقاري بفاس وخدمة خرائط عامة مجهولة الهوية ذات هندسة كاملة للقطع.",
+        "result": "تؤكد صفحات الوكالة الرسمية خدمات المسح العقاري والخرائط، وتظهر المكاتب المحلية في فاس. خدمة طلب التصميم العقاري تتطلب بيانات شخصية ورقم الرسم العقاري ورمز تحقق ورسالة نصية؛ لم يتم إثبات خدمة مجهولة تعرض مضلعات كاملة.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ar",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "بحث باللغة العربية ومراجعة مباشرة لصفحات ANCFCC الرسمية بالفرنسية والعربية."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+        "observation": "Official ANCFCC directory lists Fès Medina and Fès Zouagha My Yacoub conservation/cadastre offices with Fez locations."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/cadastre/",
+        "observation": "ANCFCC states that it establishes and maintains the national cadastre and cadastral plans, and makes cadastral data available in digital or analog form."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "observation": "Official cadastral-plan order form requests personal/organization information, title number, CAPTCHA and SMS verification. No form was submitted."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr",
+        "observation": "Arabic ANCFCC product page describes cadastral plans and map sheets as land-survey products."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "observation": "Direct anonymous GET returned HTTP 403 (49381-byte HTML response). The public form structure was visible in official indexed content, but no form field was entered or submitted."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Cartographie/",
+        "observation": "Direct anonymous GET returned HTTP 403 (49381-byte HTML response); no public map viewer or feature endpoint was exposed by the response."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr",
+        "observation": "Direct anonymous GET returned HTTP 403 (49381-byte HTML response); official indexed Arabic product content describes cadastral plans/map sheets, not a public vector service."
+      }
+    ],
+    "metadataReviewFile": "fez-service-review.json",
+    "routeInspectionFile": "../../../../tmp/overnight-cities-2026-10-08/city-4424-fez-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "ma-ancfcc-fez-cadastre",
+    "name": "ANCFCC Fès Medina and Fès Zouagha cadastre offices",
+    "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "scope": "City-local cadastre offices verified; public parcel plan ordering is per title and identity-gated.",
+    "nativeIdField": null,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "ANCFCC documentation confirms national cadastral functions and its official directory lists two Fez cadastre/conservation offices. The public online plan service is an application to order a named-title cadastral document, not a bulk or anonymous full-polygon query. No geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00",
+  "sourceIds": [],
+  "point": [
+    34.0298208099528,
+    -5.00068534851991
+  ]
+}

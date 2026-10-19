@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-1420-turkmenabat.json",
+  "cohort": "overnight-next-2301-2400-2026-10-11",
+  "purpose": "Document first-party Turkmenistan cadastral-source discovery and bounded anonymous access review for Turkmenabat.",
+  "assessment": "Official Turkmenistan legal and Ministry of Agriculture sources evidence State Land Cadastre custody, territorial cadastral bodies, cadastral maps, and cadastral numbers. No public Turkmenabat parcel viewer/API or safe anonymous ID-plus-geometry response was qualified; no GeoJSON sample is retained and runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by first-party Turkmenistan government, Ministry of Agriculture, court.gov.tm, and Mejlis sources describing the State Land Cadastre and territorial administration. This evidences national/state cadastral custody, not an admitted parcel adapter.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceInferred": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre", "operator": "Government of Turkmenistan", "scope": "Official Russian-language State Land Cadastre law."},
+    {"url": "https://turkmenistan.gov.tm/tk/habar/58709/dowlet-yer-kadastry-hakynda-turkmenistanyn-kanuny", "operator": "Government of Turkmenistan", "scope": "Official Turkmen-language State Land Cadastre law."},
+    {"url": "https://minagri.gov.tm/file/D%C3%B6wlet%20%C3%BDer%20kadastry%20hakynda.pdf", "operator": "Ministry of Agriculture of Turkmenistan", "scope": "Official Turkmen-language law PDF."},
+    {"url": "https://turkmenistan.gov.tm/ru/post/82861/kadastr-uchyot-zemelnyh-resursov", "operator": "Government of Turkmenistan", "scope": "Official 2024 report on digital land-cadastre work."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Turkmenabat Turkmenistan official cadastral map parcel GIS land registry", "result": "First-party State Land Cadastre law and official digital-cadastre report found; no public Turkmenabat parcel feature route verified.", "resultUrls": ["https://turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre", "https://turkmenistan.gov.tm/ru/post/82861/kadastr-uchyot-zemelnyh-resursov"]},
+    {"language": "Turkmen", "query": "Türkmenabat resmi kadastr kartasy ýer kadastry GIS", "result": "First-party Turkmen-language law and Ministry of Agriculture sources found; no public viewer/API or safe parcel geometry response verified.", "resultUrls": ["https://turkmenistan.gov.tm/tk/habar/58709/dowlet-yer-kadastry-hakynda-turkmenistanyn-kanuny", "https://minagri.gov.tm/file/D%C3%B6wlet%20%C3%BDer%20kadastry%20hakynda.pdf"]}
+  ],
+  "attempts": [
+    {"url": "https://turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre", "method": "SEARCH/GET anonymous; TLS verified by search fetch", "httpStatus": 200, "outcome": "Official law page loaded; national and territorial cadastral administration plus cadastral maps/numbers documented."},
+    {"url": "https://turkmenistan.gov.tm/tk/habar/58709/dowlet-yer-kadastry-hakynda-turkmenistanyn-kanuny", "method": "SEARCH/GET anonymous; TLS verified by search fetch", "httpStatus": 200, "outcome": "Official Turkmen law page loaded; corroborated cadastral-map and identity provisions."},
+    {"url": "https://turkmenistan.gov.tm/ru/post/82861/kadastr-uchyot-zemelnyh-resursov", "method": "SEARCH/GET anonymous; TLS verified by search fetch", "httpStatus": 200, "outcome": "Official digital-cadastre article loaded; no public parcel endpoint or geometry response."},
+    {"url": "https://minagri.gov.tm/file/D%C3%B6wlet%20%C3%BDer%20kadastry%20hakynda.pdf", "method": "GET anonymous; TLS verified by search fetch", "httpStatus": 200, "outcome": "Official Ministry PDF loaded; no viewer/API configuration or parcel feature response."},
+    {"url": "https://court.gov.tm/media/laws/pdf/tm/416_-_D%C3%B6wlet_%C3%BDer%20kadastry%20hakynda.pdf", "method": "GET anonymous; TLS verified by search fetch", "httpStatus": 200, "outcome": "Official court-hosted Turkmen law PDF loaded; no public geometry service exposed."},
+    {"url": "https://minagri.gov.tm/", "method": "GET anonymous; TLS verification default", "httpStatus": null, "outcome": "Bounded direct request could not connect in the environment; not treated as absence; no bypass or credentials used."}
+  ],
+  "safeFieldAllowlist": ["native public cadastral parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official Turkmenistan State Land Cadastre legal/service evidence and bounded anonymous source inspection.", "verifiedOpenScope": "National/state cadastral custody and legal schema concepts only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A non-indexed territorial service or future public viewer may expose parcel geometry. The current official-source evidence does not establish current anonymous access, CRS, stable native IDs in returned features, or completeness.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

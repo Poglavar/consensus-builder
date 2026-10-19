@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Pingxiang",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Pingxiang Natural Resources and Planning Bureau article dated 28 May 2025 documents local real-property registration with online/offline application and one-code handling. It establishes a city-local registration function, not anonymous parcel-vector access.",
+  "registryEvidenceUrls": [
+    "https://www.pingxiang.gov.cn/",
+    "https://www.webmap.cn/store.do?method=store&storeId=714",
+    "https://gtghj.pingxiang.gov.cn/art/2025/5/28/art_507_1427726.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10898,
+  "cityId": "wup2025:10898",
+  "centerLatLon": [
+    27.6316285427579,
+    113.831508173714
+  ],
+  "rank": 866,
+  "queueRank": 866,
+  "population2025": 623055,
+  "population2025k": 623.055,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official city homepage timed out in the web reader (no HTTP status). No official public cadastral feature service or geometry-only schema was verified. Search results from Jiangxi news outlets are not treated as first-party evidence.",
+  "scopeLimits": "The WUP point identifies Pingxiang, Jiangxi. Searches found secondary/republication reporting about municipal real-estate registration but no accessible city-first-party registry source. No parcel geometry route or schema was verified.",
+  "remainingUncertainty": "A city registry/cadastral service may exist, but its first-party service page and any public feature schema remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Pingxiang Jiangxi official real estate registration center cadastral map GIS public",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "City-first-party registry and safe public geometry schema were not established; no parcel query was made.",
+        "actualResultUrls": [
+          "https://www.pingxiang.gov.cn/",
+          "https://www.webmap.cn/store.do?method=store&storeId=714"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "萍乡市自然资源和规划局 不动产登记中心 地籍图 官方",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Search surfaced mainly media republications and a generic map catalogue; no accessible city-first-party parcel schema was verified.",
+        "actualResultUrls": [
+          "https://www.pingxiang.gov.cn/",
+          "https://www.webmap.cn/store.do?method=store&storeId=714"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.pingxiang.gov.cn/",
+        "observation": "The WUP point identifies Pingxiang, Jiangxi. Searches found secondary/republication reporting about municipal real-estate registration but no accessible city-first-party registry source. No parcel geometry route or schema was verified."
+      },
+      {
+        "url": "https://www.webmap.cn/store.do?method=store&storeId=714",
+        "observation": "The WUP point identifies Pingxiang, Jiangxi. Searches found secondary/republication reporting about municipal real-estate registration but no accessible city-first-party registry source. No parcel geometry route or schema was verified."
+      }
+    ],
+    "metadataReviewFile": "pingxiang-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-10898-pingxiang-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The WUP point identifies Pingxiang, Jiangxi. Searches found secondary/republication reporting about municipal real-estate registration but no accessible city-first-party registry source. No parcel geometry route or schema was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "No city-first-party registry basis was verified. Search results include third-party or republication-only reporting about the Pingxiang Natural Resources and Planning Bureau; the city government homepage request timed out in the web reader. These do not establish the registry basis under the current primary-source rule.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official city homepage timed out in the web reader (no HTTP status). No official public cadastral feature service or geometry-only schema was verified. Search results from Jiangxi news outlets are not treated as first-party evidence."
+  },
+  "rootReview": "pending",
+  "point": [
+    27.6316285427579,
+    113.831508173714
+  ],
+  "sourceIds": [],
+  "rootPrimarySupplement": "Indexed primary bureau source explicitly documents local registration. Original city-homepage transport failure is retained independently.",
+  "rootPrimaryReadback": {
+    "url": "https://www.pingxiang.gov.cn/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": null
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

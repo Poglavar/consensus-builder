@@ -1,0 +1,111 @@
+{
+  "cityCode": 11156,
+  "queueRank": 2582,
+  "name": "Binhai",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [33.9938446895287, 119.817482882412],
+  "population2025": 227533,
+  "population2025k": 227.533,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Binhai Jiangsu China cadastral parcel map GIS official land registry",
+        "result": "Search found the official Binhai County government service portal, a county natural-resources/real-estate-registration notice stating that cadastral maps are available through online visualized query, and the Jiangsu one-window real-estate registration platform. No anonymous parcel feature service or public schema response was found.",
+        "actualResultUrls": [
+          "https://www.binhai.gov.cn/art/2025/4/30/art_11036_4318597.html",
+          "https://www.binhai.gov.cn/col/col11031/index.html",
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "滨海县 不动产登记 地籍图 宗地图 GIS 官方",
+        "result": "Official Chinese search found Binhai County natural-resources/registration service evidence, including online 地籍图 (cadastral-map) visualization and the county entry in Jiangsu's registration platform. The county entry points to a public HTTPS redirect endpoint, but an anonymous request timed out; no ID+geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.binhai.gov.cn/art/2025/4/30/art_11036_4318597.html",
+          "https://ycbh.jszwfw.gov.cn/col/col138156/index.html",
+          "https://www.jszwfw.gov.cn/bdczt/json.js"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Binhai County government material identifies the county Natural Resources and Planning Bureau's real-estate registration service and says cadastral maps are offered through online visualized query. The official Jiangsu platform lists Binhai County (code 320922) and supplies its registration-service redirect endpoint. This evidences a local custodian/workflow, not an open parcel dataset.",
+  "registryEvidenceUrls": [
+    "https://www.binhai.gov.cn/art/2025/4/30/art_11036_4318597.html",
+    "https://www.binhai.gov.cn/col/col11031/index.html",
+    "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+    "https://www.jszwfw.gov.cn/bdczt/json.js"
+  ],
+  "requests": [
+    {
+      "url": "https://www.binhai.gov.cn/art/2025/4/30/art_11036_4318597.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official county notice fetched successfully. It describes online one-stop registration and cadastral-map online visualized query, but contains no public parcel schema, IDs, geometry, CRS, or API URL."
+    },
+    {
+      "url": "https://www.binhai.gov.cn/col/col11031/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official county service page fetched successfully. It links to Jiangsu government service and the county government service map; it does not expose parcel features."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Jiangsu one-window registration landing page fetched successfully; it presents city/county selection and does not expose anonymous parcel geometry."
+    },
+    {
+      "url": "https://www.jszwfw.gov.cn/bdczt/json.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official current JavaScript configuration fetched. It maps Binhai County (320922) to https://218.206.157.226/estateplat-olcommon/api/v2/jszwfwModel/gjycRedirectUrl; this is a service redirect, not a parcel schema."
+    },
+    {
+      "url": "https://218.206.157.226/estateplat-olcommon/api/v2/jszwfwModel/gjycRedirectUrl",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Anonymous TLS request timed out after 20 seconds with no response bytes. No login, CAPTCHA bypass, private token, or TLS-verification disablement was attempted."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "outcome": "National map portal returned HTTP 418 to the public request; no Binhai parcel schema or geometry was obtained. Treated as access failure, not absence evidence."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier if publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, application, or personal fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Binhai County local registration and cadastral-map service, as described by official county and Jiangsu government portals.",
+    "verifiedOpenScope": "Local custodian and service workflow verified; no anonymous parcel ID+geometry response, schema, CRS, or citywide feature coverage verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet documents source discovery only and is not source integration/admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The current county registration redirect may expose cadastral visualization after an additional public-service flow, but its endpoint, authentication boundary, response schema, CRS, safe native identity, and citywide coverage remain unknown. Exact WUP point was preserved and not used to infer citywide absence."
+}

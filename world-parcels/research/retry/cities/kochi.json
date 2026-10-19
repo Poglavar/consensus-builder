@@ -1,0 +1,101 @@
+{
+ "kind": "city",
+ "key": "kochi",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "no_verified_open_endpoint_after_attempts",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-IN,en;q=0.9; cookie jar (curl -b/-c) used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://entebhoomi.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Ente Bhoomi portal now loads (intermittent: same URL also gave connection resets on other attempts); links to /web/ilms/map public map and survey.entebhoomi.kerala.gov.in/portal (login)"
+  },
+  {
+   "url": "https://entebhoomi.kerala.gov.in/web/taluk/gid?districtId=<Ernakulam gid>",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "public JSON dropdown: 7 taluks of Ernakulam incl. Kanayannur (Kochi city area)"
+  },
+  {
+   "url": "https://entebhoomi.kerala.gov.in/web/village/gid?talukId=<Kanayannur>&loadPublishedVillage=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "25 published villages incl. Kakkanad (location code 070217 in viewer config)"
+  },
+  {
+   "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view (POST districtGid,talukGid,villageGid + session CSRF)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer config for village 070217, layer LAND_PARCEL (attrs parcel_gid, survey_no, block_no), EPSG:32643; embeds a per-session short-lived anonymous auth_key (<PUBLIC_TOKEN>, issued by the portal to anonymousUser) and bhunaksha.entebhoomi.kerala.gov.in WMS/tile/FGB URLs"
+  },
+  {
+   "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v1/map/wms/070217?...REQUEST=GetFeatureInfo&auth_key=<PUBLIC_TOKEN>",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "image/png",
+   "assessment": "returned image/png, not a feature list; GetMap also PNG only (raster, not parcel records)"
+  },
+  {
+   "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/fgb/070217?auth_key=<PUBLIC_TOKEN>",
+   "method": "GET",
+   "httpStatus": 405,
+   "contentType": "text/html",
+   "assessment": "GET not allowed (Allow: POST); export is per whole village so not attempted as a bounded query"
+  },
+  {
+   "url": "https://entebhoomi.kerala.gov.in/web/proxy/click_info/multiple/070217 (POST layer_code,crs,x,y + CSRF)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "returned the portal HTML page instead of JSON (CSRF/session handling not resolved); no parcel record obtained"
+  },
+  {
+   "url": "https://erekha.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TLS self-signed chain, not bypassed"
+  },
+  {
+   "url": "https://relis.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://digitalresurvey.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://stategisportal.nic.in/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TLS self-signed chain, not bypassed"
+  },
+  {
+   "url": "https://dslr.kerala.gov.in/en/home/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "department site loads; no service link found"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: Kerala's Ente Bhoomi public map (village-by-village, published villages only) is reachable and its viewer config was inspected; it exposes a public anonymous token and a bhunaksha WMS, but responses obtained were raster PNG or HTML, no polygon records. Village 070217 (Kakkanad) chosen as it contains 10.061N,76.309E (converted to EPSG:32643 643424,1112474). Not marked temporarily_unavailable because the site answered; not a permanent negative because the click_info JSON proxy and POST FGB export were not fully tested. No IN country retry file exists.",
+ "nextStep": "Reproduce the browser click_info call with the exact viewer session (CSRF + cookies from /web/ilms/map/view) or POST the bhunaksha FGB export for a small village; read Kerala terms."
+}

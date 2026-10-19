@@ -1,0 +1,111 @@
+{
+  "name": "Taizhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 343,
+  "point": [
+    28.5733123079214,
+    121.395147887368
+  ],
+  "population2025": 1483994,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local registration/land-record evidence was found, but no anonymous public parcel polygon was verified for this locator. No full geometry or owner/address data is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Taizhou bureau responsibility documents identify the city Real Estate Registration Service Center and its cadastral-investigation, registration, database, and issuance duties.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "The official city data/map portal was not reachable or did not expose a parcel feature endpoint through the available public review; no safe point-specific geometry query was available.",
+  "remainingUncertainty": "Whether the official TianDiTu Taizhou or spatial-data platform exposes parcel polygons to anonymous clients, and whether that service covers the WUP point.",
+  "nextStep": "Obtain an accessible official map-service endpoint or metadata from the city bureau, then test a bounded anonymous geometry-only query at the WUP point.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Taizhou Zhejiang official cadastral parcel map land registry GIS 自然资源和规划局 地籍图 不动产登记",
+        "result": "The Taizhou, Zhejiang Natural Resources and Planning Bureau agency documents identify a city Real Estate Registration Service Center responsible for cadastral investigation and registration. Official GIS/data portal and TianDiTu Taizhou references were found, but no accessible parcel-vector service or exact locator geometry was verified. A similarly named Jiangsu Taizhou map service was excluded.",
+        "method": "Separate English-language web search; official agency documents and spatial data portal reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "台州市自然资源和规划局 地籍图 查询 不动产登记 官方",
+        "result": "台州市不动产登记服务中心职责包括地籍调查、登记受理审核发证及数据库维护；官方空间数据平台及天地图相关材料存在，但未能验证公开宗地矢量图层或该定位点的覆盖。",
+        "method": "Separate Chinese-language search; official agency responsibilities and GIS sources reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "台州 自然资源 地图服务 台州 地理信息公共服务平台 天地图·台州",
+        "result": "官方文件提及天地图·台州及城市空间数据库更新；访问到的官方门户未暴露可验证的宗地查询/矢量接口。误认的江苏泰州地图未作为证据。",
+        "method": "Separate Chinese-language focused search and official data-portal review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3485/site/attach/0/50356288654b4d2b8bfabd856875eb51.pdf",
+        "observation": "Official Taizhou Natural Resources and Planning Bureau agency-responsibilities document; identifies Taizhou Real Estate Registration Service Center duties including cadastral investigation and registration."
+      },
+      {
+        "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3485/site/attach/0/6b01b6cd516143febb2749ba7cfacd74.pdf",
+        "observation": "Official Taizhou document on TianDiTu Taizhou and municipal spatial database update/fusion; not a parcel geometry endpoint."
+      },
+      {
+        "url": "https://data.zjtz.gov.cn/",
+        "observation": "Official Taizhou spatial data portal; web application loaded but no parcel vector service was confirmed."
+      },
+      {
+        "url": "https://zrzy.zjtz.gov.cn/",
+        "observation": "Official Taizhou Natural Resources and Planning Bureau site; direct access timed out during review."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Official Taizhou bureau documents and municipal spatial-data portal were reviewed. Portal access did not reveal a public cadastral feature service, and the Zhejiang public-map host returned HTTP 420 during the read-only request. A superficially similar Jiangsu Taizhou (泰州) portal was excluded because the ranked point is Taizhou, Zhejiang (台州). No geometry request was made.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no safe anonymous full-vector geometry query",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3485/site/attach/0/50356288654b4d2b8bfabd856875eb51.pdf",
+    "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3485/site/attach/0/6b01b6cd516143febb2749ba7cfacd74.pdf",
+    "https://data.zjtz.gov.cn/",
+    "https://zrzy.zjtz.gov.cn/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Taizhou bureau responsibility documents identify the city Real Estate Registration Service Center and its cadastral-investigation, registration, database, and issuance duties.",
+    "verifiedOpenScope": "The official city data/map portal was not reachable or did not expose a parcel feature endpoint through the available public review; no safe point-specific geometry query was available.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Taizhou local registry/map evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3485/site/attach/0/50356288654b4d2b8bfabd856875eb51.pdf",
+    "scope": "Official Taizhou bureau responsibility documents identify the city Real Estate Registration Service Center and its cadastral-investigation, registration, database, and issuance duties."
+  },
+  "wupCityCode": 12098,
+  "cityId": "wup2025:12098",
+  "queueRank": 343,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    28.5733123079214,
+    121.395147887368
+  ],
+  "rootReviewedAt": "2026-10-08T22:44:29.461431+00:00"
+}

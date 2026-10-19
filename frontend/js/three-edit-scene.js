@@ -6,10 +6,9 @@
 
 (function () {
     if (typeof window === 'undefined') return;
-    if (typeof THREE === 'undefined') {
-        console.warn('[ThreeEditScene] THREE.js not available; skipping init.');
-        return;
-    }
+    // No parse-time THREE usage in this file: window.THREE loads on demand
+    // (whenThreeReady), so the availability check lives inside create() where
+    // the callers — who await whenThreeReady() first — actually need it.
 
     function clearGroup(group) {
         if (!group) return;
@@ -73,6 +72,9 @@
     // opts: { container, defaultHeight = 200, background = 0xf8f9fa, gridSize = 2000,
     //         gridDivisions = 40, axesSize = 80, dampingFactor = 0.08 }
     function create(opts) {
+        if (typeof THREE === 'undefined') {
+            throw new Error('[ThreeEditScene] THREE.js is not loaded; await window.whenThreeReady() first.');
+        }
         const container = opts && opts.container;
         if (!container) throw new Error('[ThreeEditScene] container is required');
 
@@ -112,8 +114,9 @@
         controls.dampingFactor = dampingFactor;
         controls.enablePan = true;
 
-        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8 * Math.PI));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.6 * Math.PI);
         dirLight.position.set(300, 300, 500);
         scene.add(dirLight);
 

@@ -1,0 +1,132 @@
+{
+  "cityCode": 7919,
+  "queueRank": 2480,
+  "name": "Sampit",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-2.54093722817364, 112.95508783912],
+  "population2025": 236458,
+  "population2025k": 236.458,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sampit Indonesia official cadastral parcel map API ATR BPN",
+        "result": "First-party discovery identified the official BHUMI ATR/BPN public map/help surface and the ATLAS geospatial portal. Search results described BHUMI as integrated with ATLAS, but no indexed Sampit parcel-vector service or local public API was identified.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://atlas.atrbpn.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Sampit peta bidang tanah resmi ATR BPN",
+        "result": "Pencarian sumber resmi berbahasa Indonesia menemukan portal BHUMI/ATLAS ATR/BPN dan situs Kantor Pertanahan Kabupaten Kotawaringin Timur. Tidak ditemukan layanan publik anonim yang terindeks untuk geometri bidang tanah Sampit.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/",
+          "https://kab-kotawaringintimur.atrbpn.go.id/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "nationalService": "BHUMI ATR/BPN and ATLAS are official national geospatial/map surfaces. Their public documentation establishes portal scope, not Sampit parcel coverage.",
+    "localCustodian": "The official Kantor Pertanahan Kabupaten Kotawaringin Timur hostname was reachable, but its returned page contained no usable text or public parcel-service configuration in the bounded inspection.",
+    "registryEvidence": "No local registry/map/procedure with Sampit parcel coverage was sufficiently evidenced; registryFound remains null."
+  },
+  "requestOutcomes": "TLS-verified bounded GET requests returned HTTP 200 for BHUMI, the BHUMI map help page, ATLAS, the Kotawaringin Timur government site, and the local ATR/BPN hostname. BHUMI HTML and current JavaScript chunks were downloaded and inspected; no public parcel endpoint, parcel schema, CRS, or safe ID-plus-geometry response was exposed. No login, credentials, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/",
+      "httpStatus": 200,
+      "outcome": "Official BHUMI landing page loaded. Current Next.js HTML exposed current JavaScript asset URLs; no parcel layer or API endpoint was directly present in the landing HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "httpStatus": 200,
+      "outcome": "Official BHUMI map-help page loaded according to bounded GET. It documents the interactive map and ATLAS integration, but no Sampit-specific public feature response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://atlas.atrbpn.go.id/",
+      "httpStatus": 200,
+      "outcome": "Official ATLAS portal loaded. Public search/index content exposed general datasets and map metadata, but no Sampit cadastral parcel layer or anonymous feature endpoint was verified."
+    },
+    {
+      "method": "GET",
+      "url": "https://kab-kotawaringintimur.atrbpn.go.id/",
+      "httpStatus": 200,
+      "outcome": "Official local ATR/BPN hostname returned HTTP 200 but no usable page text or public parcel viewer configuration in the bounded response. This is not evidence of local cadastral absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://kotimkab.go.id/",
+      "httpStatus": 200,
+      "outcome": "Official Kotawaringin Timur government hostname returned HTTP 200. No cadastral parcel API was identified in the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/_next/static/chunks/app/page-6a74b90a5b0544cd.js and related current chunks",
+      "httpStatus": 200,
+      "outcome": "Current BHUMI JavaScript assets were retrieved and searched for API, WMS, GeoJSON, parcel, and bidang routes. No usable anonymous Sampit parcel request was identified."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "BHUMI current landing/help pages and current JavaScript assets were inspected; no Sampit parcel-layer configuration was exposed.",
+    "parcelApi": null,
+    "geometryTransport": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Official portal landing/help/configuration inspection only; exact WUP point was preserved and no coordinate shift or exact-point parcel query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No safe parcel ID-plus-unchanged-geometry response qualified; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public Sampit parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Indonesia national ATR/BPN geospatial portals and the local Kotawaringin Timur ATR/BPN hostname.",
+    "verifiedOpenScope": "Official portal reachability and general map documentation only; no anonymous Sampit parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "scopeLimits": [
+    "Exact WUP point [-2.54093722817364, 112.95508783912] was preserved in latitude/longitude order and not shifted.",
+    "A zero exact-point hit, map extent miss, unavailable UI, or missing endpoint was not treated as citywide cadastral absence.",
+    "No safe native parcel identifier plus full unchanged polygon was obtained; no GeoJSON sample is retained.",
+    "No citywide coverage, public parcel schema, service CRS, stable parcel-identity semantics, or update cadence was verified.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Official national BHUMI/ATLAS portal reachability and general map scope are evidenced. Current anonymous Sampit parcel feature access, local registry coverage, schema, CRS, stable native identity semantics, and citywide completeness remain unverified. Runtime readiness remains held."
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "city:6908",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-6908-kamituga.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/kamituga-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/provenance.json",
+    "tmp/valhalla-parcel-research/6908/ministry.html",
+    "tmp/valhalla-parcel-research/6908/bic.js",
+    "tmp/valhalla-parcel-research/6908/bounded-query-results.txt",
+    "tmp/valhalla-parcel-research/6908/headers-parcels.txt"
+  ],
+  "checkedAt": "2026-10-11T11:23:07Z",
+  "reason": "Official WUP row confirms code 6908, rank 2404, DR Congo, exact point and 243261 persons. English and French searches are recorded. Original cached Ministry HTML names Mwenga-Kamituga; the cached anonymous BIC table responses are empty, and a recorded bounding request uses longitude 0.1886-0.2487 instead of the WUP longitude 28.188654, so it cannot establish local absence. No full polygon or returned native ID. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are unevidenced. Custodian evidence is not admission."
+}

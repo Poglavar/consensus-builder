@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2340",
+  "queueRank": 194,
+  "wupCityCode": 2340,
+  "name": "Kapoeta",
+  "country": "South Sudan",
+  "countryCode": "SS",
+  "centerLatLon": [
+    4.766216524227,
+    33.5936396125836
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 194,
+  "population2025": 270167,
+  "annualGrowthPct2015To2025": 4.814777,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-SS.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic and English",
+    "exactQuery": "كابويتا جنوب السودان قطع الأراضي كادستر سجل الأراضي land parcels cadastral GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+      "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+      "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+      "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+      "https://www.amazon.com/GIS-2020-",
+      "https://geohub.data.undp.org/data/bfc7a2019b585d3b966ad8a2905c2070",
+      "https://geoportal.icpac.net/layers/geonode%3Assd_adm2",
+      "https://shambamap.org/Sheet/SheetSearch"
+    ],
+    "summary": "No official public city parcel map identified in this local-language search; ministry and land office evidence remains unavailable.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.amazon.com/GIS-2020-",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://geohub.data.undp.org/data/bfc7a2019b585d3b966ad8a2905c2070",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://geoportal.icpac.net/layers/geonode%3Assd_adm2",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://shambamap.org/Sheet/SheetSearch",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Kapoeta\" South Sudan (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Kapoeta%22+South+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No public parcel service or verified parcel sample for Kapoeta was found in the city search; the returned land-policy and settlement references do not establish parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Seek a public cadastral map or anonymous bounded extract from the Kapoeta municipal survey office or South Sudan land authority, then verify parcel IDs and polygons.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Kapoeta%22+South+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-17",
+      "sourceUrl": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+      "classification": "locality_boundary_polygons_not_parcels",
+      "auditSummary": "Layer 2 is LOCALITIES with locality codes, region/state and population attributes, not a cadastre. Its Sudan bounding box overlaps several Sudan target centers; no feature sample was needed.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-10",
+      "sourceUrl": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+      "classification": "africa_admin_boundaries_not_parcels",
+      "auditSummary": "Although the item title/description mentions ownership and land parcels, its 84 listed sublayers are Africa/GADM/DIVA administrative boundaries at country and subnational scales (plus a world-cities point layer); no parcel feature layer is listed. Pan-African extent is not city-level evidence.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-01",
+      "sourceUrl": "https://geoportal.icpac.net/layers/geonode%3Assd_adm2",
+      "classification": "south_sudan_admin_boundary_layer",
+      "auditSummary": "ICPAC GeoNode title is South Sudan - Admin Level 2; public WMS capabilities identifies geonode:ssd_adm2 with geographic bounds 24.1519–35.8699E, 3.4806–12.2190N. It is an admin layer, not parcels. WFS/WMS capabilities were read; no feature query.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Although the item title/description mentions ownership and land parcels, its 84 listed sublayers are Africa/GADM/DIVA administrative boundaries at country and subnational scales (plus a world-cities point layer); no parcel feature layer is listed. Pan-African extent is not city-level evidence.; ICPAC GeoNode title is South Sudan - Admin Level 2; public WMS capabilities identifies geonode:ssd_adm2 with geographic bounds 24.1519–35.8699E, 3.4806–12.2190N. It is an admin layer, not parcels. WFS/WMS capabilities were read; no feature query.; Layer 2 is LOCALITIES with locality codes, region/state and population attributes, not a cadastre. Its Sudan bounding box overlaps several Sudan target centers; no feature sample was needed."
+}

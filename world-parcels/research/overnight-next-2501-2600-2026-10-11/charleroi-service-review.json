@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-1372-charleroi.json",
+  "cityCode": 1372,
+  "queueRank": 2591,
+  "name": "Charleroi",
+  "country": "Belgium",
+  "countryCode": "BE",
+  "reviewStatus": "held",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "attempt": 1,
+  "point": [50.419275845001, 4.45536570243897],
+  "requestSummary": "Official English and French discovery found Belgian SPF Finance/AGDP CadGIS documentation and Charleroi municipal cadastral-map references. The tested ArcGIS CadGIS2025 parcel layer returned HTTP 200 metadata but its extent is Flanders-only; exact-point and bounded Charleroi queries returned zero features. A guessed federal WFS endpoint returned HTTP 404. No parcel sample was retained.",
+  "safeFieldAllowlist": ["native parcel identity", "geometry", "CRS", "source layer/service", "feature count", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "certificate/title"],
+  "requests": "See city-1372-charleroi.json requestsAndEndpointChecks for every executed request and status.",
+  "schemaAndCrs": "The tested Kadastrale planpercelen layer is polygon geometry in EPSG:31370 and exposes CaPaKey, but its published extent does not cover Charleroi. Federal CadGIS metadata also identifies EPSG:3812 and EPSG:31370 for the national viewer.",
+  "sampleGeoJson": null,
+  "scopeLimits": ["No exact-point hit", "Flanders-only tested layer misses Charleroi", "No citywide or countrywide geometry verified", "No sample retained", "No adapter admission or runtime integration"],
+  "uncertainty": "The federal source family is authoritative and public, but a current anonymous Charleroi vector response was not obtained. A zero exact-point or extent-miss response is not evidence of citywide absence.",
+  "completionSummary": "Research attempts accurately recorded; packet complete as a held research record with no retained parcel geometry and runtime qualification deferred."
+}

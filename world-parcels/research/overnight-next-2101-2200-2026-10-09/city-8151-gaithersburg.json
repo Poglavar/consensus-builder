@@ -1,0 +1,76 @@
+{
+  "cityCode": 8151,
+  "queueRank": 2116,
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [39.1540081427406, -77.2246960079017],
+  "population2025": 274439,
+  "population2025k": 274.439,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gaithersburg Maryland official GIS parcel map ArcGIS",
+        "result": "Found the official City of Gaithersburg Maps / GIS page, which links Address & Parcel Info and Open GIS Data.",
+        "actualResultUrls": [
+          "https://www.gaithersburgmd.gov/about-us/maps-gis",
+          "https://data-gaithersburgmd.opendata.arcgis.com/"
+        ]
+      },
+      {
+        "language": "English (local/native language)",
+        "query": "Gaithersburg Maryland official cadastral parcel data GIS",
+        "result": "Found the official City parcel viewer documentation and the City-hosted ArcGIS REST parcel layer; the documentation states parcel boundaries are maintained by City staff and attribute information comes from Maryland SDAT.",
+        "actualResultUrls": [
+          "https://maps.gaithersburgmd.gov/addressparcelinfo/about.html",
+          "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "name": "City of Gaithersburg GIS / MyGaithersburg ArcGIS REST service",
+    "custodian": "City of Gaithersburg, Maryland",
+    "serviceUrl": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer",
+    "layerUrl": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0",
+    "layerName": "Parcels_MyGaithersburg",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "EPSG:2893",
+    "nativeIdentity": "fullacctno",
+    "safeFieldAllowlist": ["fullacctno", "OBJECTID", "Shape"],
+    "sampleFile": "gaithersburg-sample.geojson"
+  },
+  "attempts": [
+    {
+      "route": "City GIS page and official open-data portal",
+      "outcome": "Succeeded; official parcel viewer/open-data links identified.",
+      "urls": ["https://www.gaithersburgmd.gov/about-us/maps-gis", "https://data-gaithersburgmd.opendata.arcgis.com/"]
+    },
+    {
+      "route": "ArcGIS REST layer metadata GET with f=pjson",
+      "outcome": "Succeeded; polygon layer, schema, extent, native WKID 2893, and GeoJSON support observed. Schema contains additional unsafe fields, which were not retained.",
+      "url": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0?f=pjson"
+    },
+    {
+      "route": "Anonymous bounded query where=1=1, outFields=fullacctno, returnGeometry=true, resultRecordCount=3, outSR=4326, f=geojson",
+      "outcome": "Succeeded; three full parcel polygons returned and retained with only canonical id properties.",
+      "url": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0/query"
+    },
+    {
+      "route": "Anonymous exact-point intersects query at the immutable WUP point, inSR=4326, returnGeometry=false",
+      "outcome": "Succeeded with zero features. This is an exact-point miss only and is not evidence of citywide absence.",
+      "url": "https://gaia.gaithersburgmd.gov/arcgis/rest/services/layers/MyGaithersburg/MapServer/0/query"
+    }
+  ],
+  "qualification": {
+    "citywideCoverage": "The service metadata extent and City description support municipal parcel coverage, but this audit did not download or validate the complete citywide dataset.",
+    "identityProvenance": "The retained ids are the native fullacctno field values returned by the service; no synthetic row numbers were used.",
+    "geometryProvenance": "Retained geometries are unchanged GeoJSON geometries returned by the service after requesting outSR=4326.",
+    "unsafeFieldsExcluded": ["owner_name_line_1", "owner_name_line_2", "Address", "sdat_weblink", "MC_Tax_Bill_weblink", "and all other non-allowlisted attributes"],
+    "runtimeReadiness": "held",
+    "uncertainty": ["Exact WUP point falls outside a returned parcel despite being within the service extent; no inference of absence is made.", "No adapter integration or serial reviewer qualification was performed."]
+  }
+}

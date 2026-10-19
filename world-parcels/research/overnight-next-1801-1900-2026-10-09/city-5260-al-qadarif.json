@@ -1,0 +1,64 @@
+{
+  "cityCode": 5260,
+  "queueRank": 1808,
+  "name": "Al-Qadarif",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "iso3": "SDN",
+  "point": [14.0395560096589, 35.3847641921929],
+  "population2025": 317258,
+  "population2025k": 317.258,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Al-Qadarif Sudan official cadastral parcel map land registry GIS",
+        "result": "Found first-party Sudan Judiciary land-registration guidance, a first-party Judiciary court record naming a registered parcel in Al-Qadarif, and the National Information Center description of the Sudan Spatial Portal. No directly queryable parcel layer was established.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://sj.gov.sd/ar/content/book/%D8%A7%D9%84%D8%B4%D9%8A%D8%AE-%D8%A3%D8%AD%D9%85%D8%AF-%D8%B9%D8%A8%D8%AF-%D8%A7%D9%84%D9%85%D8%B7%D9%84%D8%A8-%D8%B6%D8%AF-%D8%AD%D8%A7%D9%85%D8%AF-%D9%82%D9%85%D8%B1-%D8%A7%D9%84%D8%A3%D9%86%D8%A8%D9%8A%D8%A7%D8%A1-%D9%88-%D8%A2%D8%AE%D8%B1",
+          "https://www.nic.gov.sd/public/projectDetails/3"
+        ]
+      },
+      {
+        "language": "Arabic (local/official)",
+        "query": "القضارف مكتب تسجيلات الأراضي السودان مصلحة الأراضي خريطة قطع الأراضي",
+        "result": "Found first-party Sudan Judiciary land-registration guidance, a first-party Judiciary search result describing land-registration offices in Al-Qadarif State, and the official Aqari property-registration platform. The public pages expose service descriptions, not anonymous parcel ID-plus-geometry data.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://sj.gov.sd/ar/content/book/%D8%A7%D9%84%D8%B4%D9%8A%D8%AE-%D8%A3%D8%AD%D9%85%D8%AF-%D8%B9%D8%A8%D8%AF-%D8%A7%D9%84%D9%85%D8%B7%D9%84%D8%A8-%D8%B6%D8%AF-%D8%AD%D8%A7%D9%85%D8%AF-%D9%82%D9%85%D8%B1-%D8%A7%D9%84%D8%A3%D9%86%D8%A8%D9%8A%D8%A7%D8%A1-%D9%88-%D8%A2%D8%AE%D8%B1",
+          "https://aqari.nctr.sd/ar",
+          "https://www.geoportal.gov.sd/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Sudan Judiciary / General Land Registrar; National Information Center Spatial Portal",
+    "service": "No public anonymous parcel service verified",
+    "serviceUrl": "https://www.geoportal.gov.sd/",
+    "serviceType": "Officially described national WMS/WFS spatial portal; endpoint/configuration could not be retrieved in this attempt",
+    "safeFieldsRequested": ["parcel identity if exposed", "parcel geometry if exposed"],
+    "sampleFile": null
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "reason": "No bounded parcel ID-plus-geometry response was obtained; no geometry retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sudan land-registration system and nationally described spatial portal; local Al-Qadarif parcel-layer coverage was not proven.",
+    "verifiedOpenScope": "Official procedural and judicial evidence that land registration exists in Al-Qadarif, plus official description of national WMS/WFS capability.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent adapter review required",
+  "notes": "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained. No coordinate was shifted. Packet completion records research outcomes only and does not admit a runtime adapter."
+}

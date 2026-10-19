@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T06:49:54.697828+00:00",
+  "method": "Independent GEOS/Shapely validity, exact topological equality and complete STRtree candidate-pair intersections; unmodified full polygon geometry.",
+  "inputSha256": "2674a464d7737fa23c37039bdb319650cfed158e06b4d59fdcbcbf0a562e8c15",
+  "metricCrs": "EPSG:32611",
+  "featureCount": 761,
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicatePairCount": 0,
+  "duplicatePairs": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalOverlapM2": 0,
+  "overlaps": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "metricCrsBasis": "Qualification script explicitly projects WGS84 full source geometries to EPSG:32611 before writing the unchanged audit input; the input FeatureCollection omits a CRS property."
+}

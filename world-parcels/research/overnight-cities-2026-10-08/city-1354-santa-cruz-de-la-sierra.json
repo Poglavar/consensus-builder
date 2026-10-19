@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Bolivia (Plurinational State of)",
+  "countryCode": "BO",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP centroid is a population-cluster point, not a cadastral parcel or municipal limit. The municipal Guía Urbana is a planning/reference map and does not establish parcel boundaries. Municipal cadastral procedures establish a local registry function, not anonymous parcel-vector access. No owner, property tax, address, applicant, or account data was queried or retained; no login, CAPTCHA, or credentials were used.",
+  "wupCityCode": 1354,
+  "queueRank": 249,
+  "name": "Santa Cruz de la Sierra",
+  "centerLatLon": [
+    -17.797174136035,
+    -63.1597299024411
+  ],
+  "population2025": 1980432,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Santa Cruz de la Sierra municipal government lists a Dirección de Gestión Catastral and property cadastral procedures, including property valuation, registration of subdivisions/urbanizations, and issuance of provisional property-tax nomenclature. The municipality’s Guía Urbana is an official public map for urban planning and reference, but its listed layers focus on services, districts, roads, and planning; no parcel-vector or cadastral layer was verified.",
+  "resultCategory": "official_municipal_cadastral_office_and_public_planning_gis_no_parcel_vector_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Santa Cruz de la Sierra Bolivia official municipal cadastral parcel map GIS catastro urban map",
+        "scope": "Locate the city government’s cadastral office and any public parcel-map service.",
+        "result": "The municipal government has a Dirección de Gestión Catastral service catalogue, and the official Guía Urbana is a public planning/reference map. The map’s indexed layers include urban districts and municipal facilities but no parcel/cadastral layer; no full parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.gmsantacruz.gob.bo/Tramites-Municipales/Tramites-de-la-Secretaria-Municipal-de-Planificacion/Direccion-de-Gestion-Catastral/?id=19",
+          "https://guiaurbana.gmsantacruz.gob.bo/"
+        ],
+        "executionMethod": "English-language web search; official municipal cadastral-service page and public Guía Urbana page reviewed."
+      },
+      {
+        "language": "Spanish",
+        "query": "Santa Cruz de la Sierra Bolivia catastro municipal mapa parcelas Dirección de Gestión Catastral GIS",
+        "scope": "Check Spanish-language official municipal evidence for cadastral procedures and open parcel maps.",
+        "result": "El Gobierno Autónomo Municipal publica trámites de la Dirección de Gestión Catastral, incluidos avalúos y empadronamiento de urbanizaciones. La Guía Urbana municipal ofrece capas de planificación, distritos, equipamientos y servicios como información referencial; no se identificó una capa de parcelas catastrales ni una descarga de polígonos prediales completos.",
+        "actualResultUrls": [
+          "https://www.gmsantacruz.gob.bo/Tramites-Municipales/Tramites-de-la-Secretaria-Municipal-de-Planificacion/Direccion-de-Gestion-Catastral/?id=19",
+          "https://guiaurbana.gmsantacruz.gob.bo/"
+        ],
+        "executionMethod": "Búsqueda separada en español y revisión de páginas municipales oficiales."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.gmsantacruz.gob.bo/Tramites-Municipales/Tramites-de-la-Secretaria-Municipal-de-Planificacion/Direccion-de-Gestion-Catastral/?id=19",
+        "operator": "Gobierno Autónomo Municipal de Santa Cruz de la Sierra",
+        "observation": "Official municipal page lists the Dirección de Gestión Catastral and local property/cadastre procedures, including valuation, urbanization registration, and technical reports. It is a service catalogue, not a public polygon service."
+      },
+      {
+        "url": "https://guiaurbana.gmsantacruz.gob.bo/",
+        "operator": "Municipal Secretariat for Planning and Environment, Santa Cruz de la Sierra",
+        "observation": "Municipal public Guía Urbana was opened and its live layer catalogue and JavaScript inspected. It presents planning/reference layers (districts, UV/manzanos labels, services and transport) and thematic routes, but no parcel-vector layer or parcel API was advertised."
+      },
+      {
+        "url": "https://www.gmsantacruz.gob.bo/Publicaciones-Municipales/rendicion_de_cuentas_2025_inicial.pdf",
+        "operator": "Gobierno Autónomo Municipal de Santa Cruz de la Sierra",
+        "observation": "Municipal accountability publication describes Guía Urbana as a public georeferenced infrastructure information portal for population and municipal departments, supporting its planning/reference scope rather than parcel-record coverage."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.gmsantacruz.gob.bo/Tramites-Municipales/Tramites-de-la-Secretaria-Municipal-de-Planificacion/Direccion-de-Gestion-Catastral/?id=19",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official municipal service catalogue lists Dirección de Gestión Catastral procedures; no map endpoint or polygon download is presented."
+      },
+      {
+        "url": "https://guiaurbana.gmsantacruz.gob.bo/guiaurbana/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "responseBytes": 142797,
+        "observation": "Actual public map loaded. Visible layers/catalogue include basemaps, UV/manzano labels, administrative divisions/urban districts, transport, services, and facilities; no cadastral parcel/predio/lote polygon layer was listed."
+      },
+      {
+        "url": "https://guiaurbana.gmsantacruz.gob.bo/guiaurbana/public/js/inicio.min.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "responseBytes": 150995,
+        "observation": "Inspected public viewer JavaScript route names. Routes are thematic APIs for health, education, culture, sports, security, infrastructure, and microbus routes; no cadastral/parcel/predio/lote route was found. No parcel candidate query was appropriate."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "No citywide polygon scope is claimed.",
+      "verifiedOpenScope": "Official city registry-function discovery and live planning-map catalogue inspection only; no parcel vector candidate advertised and no full parcel polygon verified.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "The city’s public interactive map is a planning/reference service and does not expose parcel boundaries in its indexed layer catalogue. The municipal cadastral office page describes administrative procedures but no anonymous full-polygon endpoint.",
+    "remainingUncertainty": "Whether the Dirección de Gestión Catastral or its tax systems provide a separate public parcel geometry map outside the inspected municipal service catalogue and Guía Urbana."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "cityId": "wup2025:1354",
+  "populationPlausibility2025": "Moderate",
+  "technicalBlocker": "The municipal Guía Urbana loaded successfully and its actual layer/category catalog and JavaScript were inspected. It provides planning, administrative, transport, and public-facility themes but no parcel/cadastral layer; the inspected API route names are thematic only. No advertised parcel candidate exists to query.",
+  "remainingUncertainty": "Whether Dirección de Gestión Catastral or another municipal system offers a separate public parcel map outside the inspected service catalogue and Guía Urbana.",
+  "nextStep": "If revisited, identify a distinct official parcel/cadastral layer first, then test a tiny bounded full-polygon response with safe identifier fields only.",
+  "rootReviewedAt": "2026-10-08T21:44:23.947164+00:00",
+  "sourceIds": [],
+  "point": [
+    -17.797174136035,
+    -63.1597299024411
+  ]
+}

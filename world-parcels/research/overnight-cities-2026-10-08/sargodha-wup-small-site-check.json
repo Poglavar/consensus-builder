@@ -1,0 +1,90 @@
+{
+  "checkedAt": "2026-10-09T00:23:20.699Z",
+  "purpose": "Verify queryGeometry and source binding for a small polygon around the exact WUP locator; token-free IDs, hashes and statuses only.",
+  "point": {
+    "lat": 32.0741373423495,
+    "lon": 72.6818543153866
+  },
+  "requests": [
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090904.7859099135%2C3773043.617026827%2C8090909.238689547%2C3773048.8719015988&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "count": 1
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090904.7859099135%2C3773043.617026827%2C8090909.238689547%2C3773048.8719015988&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "objectIds": [
+        8559909
+      ]
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909",
+      "method": "GET",
+      "httpStatus": 200,
+      "features": [
+        {
+          "id": 8559909,
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090904.7859099135%2C3773043.617026827%2C8090909.238689547%2C3773048.8719015988&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "count": 1
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090904.7859099135%2C3773043.617026827%2C8090909.238689547%2C3773048.8719015988&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "objectIds": [
+        8559909
+      ]
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909",
+      "method": "GET",
+      "httpStatus": 200,
+      "features": [
+        {
+          "id": 8559909,
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "small-site-footprint",
+      "passed": true,
+      "complete": true,
+      "count": 1,
+      "ids": [
+        "PK-PULSE-SARGODHA-8559909"
+      ],
+      "siteAreaM2": 16.8008493075884
+    },
+    {
+      "name": "small-site-source-binding",
+      "passed": true,
+      "complete": "complete",
+      "count": 1,
+      "ids": [
+        "PK-PULSE-SARGODHA-8559909"
+      ],
+      "siteAreaM2": 16.8008493075884,
+      "boundSiteM2": 16.8
+    }
+  ],
+  "siteGeometrySha256": "eb3c93aba2d564913afad08457c55f1809bb50c58c6c0f8e6eb8849f5bb8ecd3",
+  "publicViewerBootstrap": {
+    "path": "/api/gis/token",
+    "httpStatus": 200,
+    "success": true,
+    "hasToken": true
+  }
+}

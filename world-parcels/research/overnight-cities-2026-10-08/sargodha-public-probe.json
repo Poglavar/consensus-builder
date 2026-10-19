@@ -1,0 +1,70 @@
+{
+  "checkedAt": "2026-10-09T00:20:50.625Z",
+  "viewerOrigin": "https://lis.pulse.gop.pk/",
+  "serviceLayer": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30",
+  "accessMethod": "anonymous official public-viewer token bootstrap; no account login",
+  "safeOutFields": [
+    "OBJECTID"
+  ],
+  "requests": [
+    {
+      "path": "/api/gis/token",
+      "httpStatus": 200,
+      "responseKeys": [
+        "success",
+        "token",
+        "expiresAt",
+        "error"
+      ],
+      "success": true,
+      "hasReaderToken": true
+    },
+    {
+      "path": "/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30",
+      "queryKeys": [
+        "f"
+      ],
+      "httpStatus": 200
+    },
+    {
+      "path": "/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query",
+      "queryKeys": [
+        "f",
+        "geometry",
+        "geometryType",
+        "inSR",
+        "outFields",
+        "outSR",
+        "resultRecordCount",
+        "returnGeometry",
+        "spatialRel",
+        "where"
+      ],
+      "httpStatus": 200
+    }
+  ],
+  "layer": {
+    "geometryType": "esriGeometryPolygon",
+    "maxRecordCount": 2000,
+    "wkid": 3857,
+    "objectIdFieldDefinition": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID"
+      }
+    ]
+  },
+  "exactWupPoint": {
+    "lat": 32.0741373423495,
+    "lon": 72.6818543153866,
+    "count": 1,
+    "exceededTransferLimit": false,
+    "features": [
+      {
+        "id": 8559909,
+        "geometryType": "Polygon",
+        "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+      }
+    ]
+  }
+}

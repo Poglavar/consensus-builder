@@ -1,0 +1,93 @@
+{
+  "name": "Gyanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 412,
+  "point": [
+    25.3054757579608,
+    82.4338131685258
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gyanpur official land records cadastral map Bhulekh Uttar Pradesh Gyanpur tehsil Bhadohi",
+        "scope": "Find official city land registry/cadastral sources and inspect anonymous map or parcel geometry routes.",
+        "result": "The Bhadohi/Gyanpur public map-progress report explicitly lists ज्ञानपुर ना.क्षे. (Gyanpur urban area), village code 219502. Its row reports Revenue Village=1 and Village Khatauni=1 but Scannable Village, Scanned/Verified Village, Linked Village (Bhunaksha), Georeferenced Village and all map-sheet progress values=0. No map-backed urban village or anonymous parcel geometry was found for the WUP point.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198&tehsilCode=00998",
+          "https://upbhunaksha.gov.in/upbhunaksha/",
+          "https://upbhulekh.gov.in/"
+        ],
+        "executionMethod": "Separate English/local-language search followed by first-party official page review and bounded anonymous service-route inspection where available."
+      },
+      {
+        "language": "Hindi",
+        "query": "ज्ञानपुर भू नक्शा आधिकारिक तहसील भदोही भूमि अभिलेख नक्शा",
+        "scope": "Find official city land registry/cadastral sources and inspect anonymous map or parcel geometry routes.",
+        "result": "The Bhadohi/Gyanpur public map-progress report explicitly lists ज्ञानपुर ना.क्षे. (Gyanpur urban area), village code 219502. Its row reports Revenue Village=1 and Village Khatauni=1 but Scannable Village, Scanned/Verified Village, Linked Village (Bhunaksha), Georeferenced Village and all map-sheet progress values=0. No map-backed urban village or anonymous parcel geometry was found for the WUP point.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198&tehsilCode=00998",
+          "https://upbhunaksha.gov.in/upbhunaksha/",
+          "https://upbhulekh.gov.in/"
+        ],
+        "executionMethod": "Separate English/local-language search followed by first-party official page review and bounded anonymous service-route inspection where available."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-10281-PUBLIC-CADASTRE",
+    "name": "Uttar Pradesh BhuNaksha / Bhulekh Gyanpur map-progress report",
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198&tehsilCode=00998",
+    "operator": "Government of Uttar Pradesh, Board of Revenue",
+    "serviceType": "Public revenue records and map digitization dashboard; BhuNaksha map viewer has no linked mapsheet for the Gyanpur urban village code",
+    "layer": "No anonymous full-vector parcel layer verified",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "Urban revenue village code 219502 (ज्ञानपुर ना.क्षे.)",
+    "nativeIdEvidence": "The official dashboard includes Gyanpur urban revenue village but shows no scanned, linked or georeferenced cadastral mapsheet; no parcel geometry coverage verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official dashboard includes Gyanpur urban revenue village but shows no scanned, linked or georeferenced cadastral mapsheet; no parcel geometry coverage verified.",
+    "verifiedOpenScope": "The official dashboard includes Gyanpur urban revenue village but shows no scanned, linked or georeferenced cadastral mapsheet; no parcel geometry coverage verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The Bhadohi/Gyanpur public map-progress report explicitly lists ज्ञानपुर ना.क्षे. (Gyanpur urban area), village code 219502. Its row reports Revenue Village=1 and Village Khatauni=1 but Scannable Village, Scanned/Verified Village, Linked Village (Bhunaksha), Georeferenced Village and all map-sheet progress values=0. No map-backed urban village or anonymous parcel geometry was found for the WUP point.",
+  "remainingUncertainty": "Whether the official survey/map service will publish public, map-backed cadastral geometry for the exact settlement point; this review makes no citywide completeness claim.",
+  "nextStep": "Recheck only if an official public point-to-parcel or map-backed vector service becomes available for the city point.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10281,
+  "cityId": "wup2025:10281",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.3054757579608,
+    82.4338131685258
+  ],
+  "population2025k": 1237.249,
+  "populationUnit": "persons",
+  "queueRank": 412,
+  "population2025": 1237249,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Bhadohi/Gyanpur dashboard names the Gyanpur urban revenue village, code 219502, and reports one khatauni village. Its scanned/linked/georeferenced cadastral-map counts are all zero. Urban land-record presence is established; anonymous parcel geometry remains unverified.",
+  "registryEvidenceUrls": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198&tehsilCode=00998"
+  ],
+  "rootSupplementalResearch": [
+    {
+      "checkedAt": "2026-10-08T23:47:22.433534+00:00",
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198&tehsilCode=00998",
+      "observation": "The official Bhadohi/Gyanpur dashboard names the Gyanpur urban revenue village, code 219502, and reports one khatauni village. Its scanned/linked/georeferenced cadastral-map counts are all zero. Urban land-record presence is established; anonymous parcel geometry remains unverified."
+    }
+  ],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

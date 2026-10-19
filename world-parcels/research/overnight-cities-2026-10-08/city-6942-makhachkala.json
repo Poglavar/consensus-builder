@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Makhachkala",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Dagestan Ministry of Land and Property Relations notice for cadastral-complex work in city cadastral quarter 05:40:000019 names the regional Rosreestr office and Roskadastr branch at Makhachkala addresses and identifies the Makhachkala city administration as the map-plan approval authority. This is direct city-specific cadastral work, but consultation/objections require identity and rights documents. The regional offices have Republic of Dagestan remit; this does not establish municipality-only parcel coverage. No anonymous geometry-only route or safe attribute allowlist was verified.",
+  "registryEvidenceUrls": [
+    "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasitelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-na-territorii-goroda-maxackaly",
+    "https://lkkadastr.ru/respublika-dagestan/",
+    "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasitelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-pri-vypolnenii-kkr-v-gorode-buinaksk",
+    "https://riadagestan.ru/news/economy/aktualizirovany_granitsy_makhachkaly",
+    "https://nspd.gov.ru/map"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6942,
+  "cityId": "wup2025:6942",
+  "centerLatLon": [
+    42.9639254303687,
+    47.4829031886187
+  ],
+  "rank": 749,
+  "queueRank": 749,
+  "population2025": 717618,
+  "population2025k": 717.618,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "An official 2026 Dagestan Ministry notice documents cadastral-complex work for a quarter within the Makhachkala city district and lists official government/registry locations for consulting the project map plan. Participation and objections require personal identity and land-right documents, so no such submission or feature request was made. The official NSPD public map URL was attempted in the web reader but timed out without HTTP status; no schema or geometry was exposed. Do not treat the city cadastral-work notice or updated settlement boundary as proof of full parcel-layer coverage.",
+  "scopeLimits": "No owner, address, taxpayer, title, parcel-record, account, or protected-attribute lookup was performed. No geometry or attributes were retained.",
+  "remainingUncertainty": "The registry offices and one city-specific cadastral project are confirmed, but the region-level registry remit spans Dagestan and does not imply Makhachkala-only coverage. No anonymous geometry+safe-ID schema, CRS, complete parcel coverage, or WUP-point parcel presence was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Makhachkala Dagestan official land registry cadastral register Rosreestr public map",
+        "scope": "Verify city-bound registry evidence and look for an anonymous parcel geometry route with an explicit safe geometry and stable-ID schema.",
+        "result": "Search results identified the Dagestan regional Rosreestr/Roskadastr institutions in Makhachkala and the public NSPD cadastral-map platform, but no city parcel feature schema/field allowlist was found.",
+        "actualResultUrls": [
+          "https://lkkadastr.ru/respublika-dagestan/",
+          "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasitelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-pri-vypolnenii-kkr-v-gorode-buinaksk",
+          "https://riadagestan.ru/news/economy/aktualizirovany_granitsy_makhachkaly",
+          "https://nspd.gov.ru/map"
+        ],
+        "executionMethod": "English-language web search, followed by review of official source pages; no feature or property query."
+      },
+      {
+        "language": "Russian",
+        "query": "Махачкала Росреестр Роскадастр кадастровый учет реестр недвижимости публичная карта официальный",
+        "scope": "Verify city-bound registry evidence and look for an anonymous parcel geometry route with an explicit safe geometry and stable-ID schema.",
+        "result": "Официальные материалы Республики Дагестан указывают региональные подразделения Росреестра и Роскадастра в Махачкале. В 2026 году филиал Роскадастра внес обновленные сведения о границе населенного пункта Махачкалы в ЕГРН/НСПД; это не слой земельных участков и не подтверждение городского покрытия кадастровыми полигонами.",
+        "actualResultUrls": [
+          "https://lkkadastr.ru/respublika-dagestan/",
+          "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasitelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-pri-vypolnenii-kkr-v-gorode-buinaksk",
+          "https://riadagestan.ru/news/economy/aktualizirovany_granitsy_makhachkaly",
+          "https://nspd.gov.ru/map"
+        ],
+        "executionMethod": "Local-language web search, followed by review of official source pages; no feature or property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasitelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-na-territorii-goroda-maxackaly",
+        "observation": "Official Dagestan Ministry of Land and Property Relations notice (2026-06-22) identifies a completed cadastral-complex project for city cadastral quarter 05:40:000019; city administration is map-plan approval authority and the Roskadastr/ Rosreestr regional offices are located in Makhachkala. Review/objections require personal identity and land-right documents; no project features were fetched."
+      },
+      {
+        "url": "https://lkkadastr.ru/respublika-dagestan/",
+        "observation": "Roskadastr Dagestan regional service page lists regional service offices at Akushinsky 5V and Nauchnaya 8 in Makhachkala. The office serves the republic region; no municipality-only coverage is inferred."
+      },
+      {
+        "url": "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasovatelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-pri-vypolnenii-kkr-v-gorode-buinaksk",
+        "observation": "Official Dagestan Ministry of Land and Property Relations KKR notice identifies the regional Rosreestr administration and regional Roskadastr branch as responsible participants and gives Makhachkala contact/office locations; the notice’s work area is Buynaksk, not Makhachkala."
+      },
+      {
+        "url": "https://riadagestan.ru/news/economy/aktualizirovany_granitsy_makhachkaly",
+        "observation": "2026 report says the Dagestan Roskadastr branch entered updated Makhachkala settlement boundary information into EGRN and made it available on NSPD. This is boundary evidence, not cadastral parcel geometry."
+      },
+      {
+        "url": "https://nspd.gov.ru/map",
+        "observation": "Federal National Spatial Data System map is the destination cited for the updated settlement boundary. The public map page timed out in the web reader; no status or feature schema was established."
+      }
+    ],
+    "metadataReviewFile": "makhachkala-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The located registries have republic-wide Dagestan remit, and the recent city-specific action concerns the Makhachkala settlement boundary rather than parcel polygons. No city-only parcel coverage, anonymous geometry schema, CRS, or WUP-point parcel presence was established."
+  },
+  "coverageAssessment": {
+    "status": "unknown",
+    "basis": "The registry offices and one city-specific cadastral project are confirmed, but the region-level registry remit spans Dagestan and does not imply Makhachkala-only coverage. No anonymous geometry+safe-ID schema, CRS, complete parcel coverage, or WUP-point parcel presence was verified.",
+    "wupPointParcelPresence": "not_established",
+    "citywideCompleteness": "not_asserted",
+    "geographicScopeCaveat": "Project evidence is limited to one city cadastral quarter. The responsible registry is a regional Dagestan office; neither citywide coverage nor municipality-only registry data coverage is established."
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The registry offices and one city-specific cadastral project are confirmed, but the region-level registry remit spans Dagestan and does not imply Makhachkala-only coverage. No anonymous geometry+safe-ID schema, CRS, complete parcel coverage, or WUP-point parcel presence was verified."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasovatelnoi-komissii-po-voprosu-soglasovaniia-mestopolozheniia-granic-zemelnyx-ucastkov-na-territorii-goroda-maxackaly",
+    "fetch": "error",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    42.9639254303687,
+    47.4829031886187
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

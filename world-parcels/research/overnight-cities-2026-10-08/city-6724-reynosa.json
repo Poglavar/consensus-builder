@@ -1,0 +1,132 @@
+{
+  "name": "Reynosa",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 877,
+  "point": [
+    26.0440943085345,
+    -98.3025378234559
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish (local official language)",
+        "query": "Reynosa catastro municipal mapa catastral predios plataforma oficial municipio Reynosa Tamaulipas",
+        "scope": "Find municipal cadastral registry, public maps, and safe geometry service.",
+        "result": "Official Reynosa pages identify the municipal Dirección de Predial y Catastro and municipal property-manifestation/assessment workflow. The public predial transaction asks for a cadastral key and returns payment/receipt information; no property lookup was submitted. No anonymous municipal parcel map or feature schema was found.",
+        "urls": [
+          "https://www.reynosa.gob.mx/",
+          "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/150",
+          "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/152",
+          "https://www.reynosa.gob.mx/2026/09/19/invita-gobierno-de-reynosa-a-regularizar-el-predial-con-beneficio-de-quinquenio/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Reynosa Tamaulipas official cadastral parcel map land registry GIS municipal public parcel boundaries",
+        "scope": "Locate an official city parcel viewer or open vector source.",
+        "result": "Search surfaced municipal Catastro/Predial services, not an anonymous public geometry API. No feature service or downloadable city parcel polygon schema was located.",
+        "urls": [
+          "https://www.reynosa.gob.mx/",
+          "https://www.reynosa.gob.mx/category/predial/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.reynosa.gob.mx/2026/09/19/invita-gobierno-de-reynosa-a-regularizar-el-predial-con-beneficio-de-quinquenio/",
+        "observation": "Current municipal notice quotes the Director of Predial and Catastro on property record/update and payment status."
+      },
+      {
+        "url": "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/150",
+        "observation": "Official municipal tax process uses cadastral-key submission to calculate payment; no request was made."
+      },
+      {
+        "url": "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/152",
+        "observation": "Official property-manifestation process is a municipal catastro filing; online lookup is not offered on the page."
+      }
+    ],
+    "serviceChecks": [
+      {
+        "url": "https://www.reynosa.gob.mx/",
+        "method": "Official municipal portal and local-language search",
+        "status": 200,
+        "observation": "Current portal features Predial/Catastro services."
+      },
+      {
+        "url": "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/150",
+        "method": "Official service description review",
+        "status": 200,
+        "observation": "Cadastral-key payment workflow; no property-specific value entered."
+      },
+      {
+        "url": "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/152",
+        "method": "Official service description review",
+        "status": 200,
+        "observation": "Municipal catastro filing workflow; no application submitted."
+      }
+    ],
+    "geometryDecision": "No full city-bound parcel polygon retained.",
+    "serviceReviewFile": "reynosa-service-review.json"
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "mx-reynosa-municipal-catastro",
+    "name": "Dirección Municipal de Predial y Catastro de Reynosa",
+    "url": "https://www.reynosa.gob.mx/category/predial/",
+    "operator": "Gobierno Municipal de Reynosa",
+    "serviceType": "Municipal property-tax and cadastral-attribute administration; no public parcel geometry service observed.",
+    "geometryType": null,
+    "coordinateCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Reynosa municipal cadastral and property-administration workflows.",
+    "verifiedOpenScope": "First-party municipal service pages confirm an active Dirección de Predial y Catastro and property registration/assessment workflows. No public vector map or full polygon response was observed.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_service_no_public_full_geometry_sample",
+  "technicalBlocker": "The public municipal services reviewed are transaction/document workflows keyed by a cadastral identifier or filed by an owner/authorized party; the pages do not expose full parcel geometry. No identifier or property record was submitted.",
+  "remainingUncertainty": "Whether a separate city GIS or state feature service exists outside the municipality pages discovered in this review.",
+  "nextStep": "Parent may add a public city GIS source if located; no runtime candidate established.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6724,
+  "cityId": "wup2025:6724",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    26.0440943085345,
+    -98.3025378234559
+  ],
+  "queueRank": 877,
+  "population2025": 615168,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Reynosa municipal information identifies a local Predial and Catastro authority and cadastral services; it does not document anonymous full parcel polygons.",
+  "registryEvidenceUrls": [
+    "https://www.reynosa.gob.mx/",
+    "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/150",
+    "https://intranet.reynosa.gob.mx/Tecnica/TramitesServicios/Informacion/152",
+    "https://www.reynosa.gob.mx/2026/09/19/invita-gobierno-de-reynosa-a-regularizar-el-predial-con-beneficio-de-quinquenio/",
+    "https://www.reynosa.gob.mx/directorio/"
+  ],
+  "verifiedParcelResponse": null,
+  "runtimeAssessment": {
+    "status": "not_assessed_no_public_full_geometry",
+    "reason": "Source discovery only; parent owns runtime qualification. No application/backend/catalog/global configuration was changed."
+  },
+  "rootPrimarySupplement": "Fresh indexed primary municipal directory/homepage publishes Predial yCatastro services. Earlier hostname-resolution failure is preserved, with no absent-service inference.",
+  "rootPrimaryReadback": {
+    "url": "https://www.reynosa.gob.mx/",
+    "fetch": "error",
+    "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

@@ -1,0 +1,496 @@
+/* ========== Bets sheet ==========
+   Contests (proposals on the same land) with each proposal's yes/no pool, listed the way a
+   prediction market lists an event's outcomes: a chance, a pool and a yes/no pair per row. Tokens
+   only (docs/design-language.md); the sheet frame itself is css/map-shell.css. */
+
+.bets-sheet-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+}
+
+.bets-tagline {
+    margin: 0;
+    font-size: var(--cb-text-base);
+    line-height: var(--cb-leading);
+    color: var(--cb-text);
+}
+
+.bets-tagline strong {
+    display: block;
+    font-size: var(--cb-text-xl);
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-text-strong);
+}
+
+.bets-status {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-status--error {
+    color: var(--cb-danger);
+}
+
+.bets-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+}
+
+.bets-contest {
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-surface);
+    padding: var(--cb-space-3);
+}
+
+.bets-contest__title {
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.bets-contest__land {
+    margin: var(--cb-space-1) 0 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-rows {
+    list-style: none;
+    margin: var(--cb-space-3) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+}
+
+.bets-row {
+    border-top: 1px solid var(--cb-line);
+    padding-top: var(--cb-space-2);
+}
+
+.bets-row__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--cb-space-2);
+}
+
+/* The proposal name is the way into its bet; a quiet button (btn btn-quiet), left-aligned like a
+   row title. Only its place in the row is set here; the look is the button's. */
+.bets-row__title {
+    flex: 1 1 auto;
+    text-align: left;
+    justify-content: flex-start;
+    white-space: normal;
+    line-height: var(--cb-leading);
+}
+
+.bets-row__chance {
+    flex: 0 0 auto;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-text-strong);
+    white-space: nowrap;
+}
+
+.bets-row.is-resolved-yes .bets-row__chance {
+    color: var(--cb-success);
+}
+
+.bets-row.is-resolved-no .bets-row__chance {
+    color: var(--cb-danger);
+}
+
+.bets-row__bar {
+    height: 6px;
+    margin-top: var(--cb-space-1);
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-surface-3);
+    overflow: hidden;
+}
+
+.bets-row__bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--cb-success);
+}
+
+.bets-row__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-1) var(--cb-space-2);
+    margin-top: var(--cb-space-1);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+/* The row's shareable link sits in the meta line as a quiet cb-link, sized like the words around it. */
+
+.bets-row__actions {
+    display: flex;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-2);
+}
+
+.bets-row__actions .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0;
+    line-height: var(--cb-leading);
+    padding-top: var(--cb-space-1);
+    padding-bottom: var(--cb-space-1);
+}
+
+.bets-bet__side {
+    font-size: var(--cb-text-base);
+}
+
+.bets-bet__pays {
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-medium);
+}
+
+.bets-row__note {
+    margin: var(--cb-space-1) 0 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+/* The connected wallet's own bets on this proposal ("Your bets: yes 0.05 USDC"). */
+.bets-row__mine {
+    margin: var(--cb-space-1) 0 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-success-soft-ink);
+}
+
+/* The row a confirmed bet just changed keeps a soft tint until the next load, so the new chance,
+   payout and pool are found next to the person's own bet; with motion allowed it settles from a
+   stronger flash. */
+.bets-row.is-updated {
+    background: var(--cb-success-soft);
+    box-shadow: 0 0 0 var(--cb-space-2) var(--cb-success-soft);
+    border-radius: var(--cb-radius-sm);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .bets-row.is-updated {
+        animation: bets-row-updated 1.6s ease-out;
+    }
+
+    @keyframes bets-row-updated {
+        from {
+            background: var(--cb-success);
+            box-shadow: 0 0 0 var(--cb-space-2) var(--cb-success);
+        }
+    }
+}
+
+.bets-how {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-how summary {
+    cursor: pointer;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
+}
+
+.bets-how p {
+    margin: var(--cb-space-2) 0 0;
+    line-height: var(--cb-leading);
+}
+
+/* A word on the Bets button ("New") instead of a count, until the sheet has been opened once. */
+.map-shell-badge--text {
+    min-width: 0;
+    padding: 0 var(--cb-space-2);
+    font-size: var(--cb-text-xs);
+    letter-spacing: var(--cb-tracking-caps);
+    text-transform: uppercase;
+    background: var(--cb-success);
+    color: var(--cb-success-ink);
+}
+
+@media (max-width: 767.98px) {
+    /* On the phone bar the word sits beside the icon, not over it. */
+    .map-shell-cluster--bottom-right .map-shell-button--labelled .map-shell-badge--text {
+        right: auto;
+        left: calc(50% + var(--cb-space-1));
+    }
+}
+
+/* ---- The list as a catalogue ----
+   A row's title opens the bet's own dialog; the chance sits beside it. The sheet's frame is the
+   shared dock-sheet one (.map-sheet--dock in css/map-shell.css), as wide as Proposals and Activity. */
+
+/* The filter row above the contests (All · Open · Settled · Mine) is the shared cb-segmented
+   control (css/primitives.css). */
+
+/* The row's second line: who proposed it and when, which tells twins of one title apart. */
+.bets-row__who {
+    margin: var(--cb-space-1) 0 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+/* Rows nothing can be done with fold away under a count; a plan's older versions fold the same way
+   under its row (.bets-versions). */
+.bets-more,
+.bets-versions {
+    margin-top: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-more > summary,
+.bets-versions > summary {
+    cursor: pointer;
+    padding: var(--cb-space-1) 0;
+}
+
+.bets-more > .bets-rows,
+.bets-versions > .bets-rows {
+    margin-top: var(--cb-space-1);
+}
+
+/* A named plan's row: "Plan of N proposals" is a cb-badge, the row's kind ahead of its pool. */
+
+/* The row of a settled pool the wallet can still collect from. */
+.bets-row__collect {
+    display: flex;
+    gap: var(--cb-space-2);
+    margin-top: var(--cb-space-2);
+}
+
+/* ---- The bet's own dialog (js/bets/bets-dialog.js) ----
+   A cb-dialog (primitives.css): header, a scrolling body and a footer that keeps the actions in
+   reach; on phones the primitive makes it a bottom sheet with the footer above the thumb. */
+.bets-dialog {
+    --cb-dialog-width: 520px;
+}
+
+.bets-dialog__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-3);
+}
+
+.bets-dialog__eyebrow {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    letter-spacing: var(--cb-tracking-caps);
+    text-transform: uppercase;
+    color: var(--cb-text-muted);
+}
+
+/* "N on this land": a script link (button.cb-link) back to the rivals in the Bets sheet. */
+.bets-dialog__contest {
+    align-self: flex-start;
+}
+
+.bets-dialog__thumb {
+    display: block;
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: var(--cb-radius-md);
+    border: 1px solid var(--cb-line);
+}
+
+/* The thumbnail and the same ground without the proposal under one divider
+   (js/ui/map-before-after.js attachDivider; dividers.md M3). The frame carries the border. */
+.bets-dialog__compare {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--cb-radius-md);
+    border: 1px solid var(--cb-line);
+}
+
+.bets-dialog__compare .bets-dialog__thumb {
+    border: 0;
+    border-radius: 0;
+}
+
+.bets-dialog__compare .map-compare__before {
+    height: 100%;
+}
+
+.bets-dialog__chance-word {
+    display: block;
+    font-size: var(--cb-text-2xl);
+    font-weight: var(--cb-weight-bold);
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__chance.is-resolved-yes .bets-dialog__chance-word {
+    color: var(--cb-success);
+}
+
+.bets-dialog__chance.is-resolved-no .bets-dialog__chance-word {
+    color: var(--cb-danger);
+}
+
+.bets-dialog__chance .bets-row__bar {
+    margin-top: var(--cb-space-2);
+}
+
+.bets-dialog__facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--cb-space-1) var(--cb-space-3);
+    margin: 0;
+    font-size: var(--cb-text-sm);
+}
+
+.bets-dialog__facts dt {
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__facts dd {
+    margin: 0;
+    color: var(--cb-text);
+}
+
+.bets-dialog__mine {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-success-soft-ink);
+}
+
+.bets-dialog__collect {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+}
+
+/* What a plan builds: its member proposals, folded under the bet. */
+.bets-dialog__members {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__members > summary {
+    cursor: pointer;
+    padding: var(--cb-space-1) 0;
+}
+
+.bets-dialog__members ul {
+    margin: var(--cb-space-1) 0 0;
+    padding-left: var(--cb-space-4);
+    max-height: 12rem;
+    overflow-y: auto;
+}
+
+.bets-dialog__rule {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    padding: var(--cb-space-3);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__rule strong {
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__note {
+    margin: 0;
+    min-height: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__note:empty {
+    display: none;
+}
+
+/* The explorer links: a cb-link-row of external links. */
+.bets-dialog__links {
+    margin: 0;
+}
+
+.bets-dialog__sides {
+    flex: 1 0 100%;
+    display: flex;
+    gap: var(--cb-space-2);
+}
+
+.bets-dialog__sides .bets-dialog__bet {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    line-height: var(--cb-leading);
+}
+
+/* The stake form. */
+.bets-dialog__lead {
+    margin: 0;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__copy {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__amount {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+.bets-dialog__amount-label {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__amount input {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: var(--cb-text-lg);
+}
+
+/* The quick stakes under the amount are a cb-segmented row (css/primitives.css); "Max" stays
+   hidden until the wallet's balance is read (the option's own display would show it). */
+.bets-dialog__chip[hidden] {
+    display: none;
+}
+
+.bets-dialog__towin {
+    margin: 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.bets-dialog__towin strong {
+    display: block;
+    font-size: var(--cb-text-base);
+    color: var(--cb-text-strong);
+}
+
+.bets-dialog__towin:empty {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .bets-dialog {
+        max-height: 100dvh;
+    }
+}

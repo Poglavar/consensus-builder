@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10228-fushun.json",
+  "purpose": "Document city-local registry evidence and schema-first anonymous public geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fushun’s municipal Natural Resources Bureau and Natural Resources Affairs Service Center provide local real-estate registration and cadastral work. Official city sources establish the local custodian; however, no public anonymous parcel-vector service or safe geometry schema was exposed. No parcel-record query was made.",
+  "registryAssessment": "Fushun’s official municipal Natural Resources Bureau reports the Fushun Natural Resources Affairs Service Center real-estate registration hall and describes local registration services. The city’s 2024 bureau budget identifies that municipal center as the implementing unit for real-estate registration and cadastral-survey-result completeness. This establishes a city registry/cadastral custodian, not a public parcel-vector endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.fushun.gov.cn/",
+      "observation": "Fushun’s municipal Natural Resources Bureau and Natural Resources Affairs Service Center provide local real-estate registration and cadastral work. Official city sources establish the local custodian; however, no public anonymous parcel-vector service or safe geometry schema was exposed. No parcel-record query was made."
+    },
+    {
+      "url": "https://fushun.gov.cn/ywdt/001003/20260409/d14fbeeb-b1bc-4e52-9369-b138c3559675.html",
+      "observation": "Fushun’s municipal Natural Resources Bureau and Natural Resources Affairs Service Center provide local real-estate registration and cadastral work. Official city sources establish the local custodian; however, no public anonymous parcel-vector service or safe geometry schema was exposed. No parcel-record query was made."
+    },
+    {
+      "url": "https://fushun.gov.cn/ywdt/001003/20260415/ce68021e-98b3-4ccc-9c2e-fd48659e1afe.html",
+      "observation": "Fushun’s municipal Natural Resources Bureau and Natural Resources Affairs Service Center provide local real-estate registration and cadastral work. Official city sources establish the local custodian; however, no public anonymous parcel-vector service or safe geometry schema was exposed. No parcel-record query was made."
+    },
+    {
+      "url": "https://zrzy.fushun.gov.cn/zrzyj/e7049abf-549a-454e-a9b8-f2646e89c30d/7655f58e-82cf-4ed2-8dfe-cacb6e86a9ca/20240204091902014236.pdf",
+      "observation": "Fushun’s municipal Natural Resources Bureau and Natural Resources Affairs Service Center provide local real-estate registration and cadastral work. Official city sources establish the local custodian; however, no public anonymous parcel-vector service or safe geometry schema was exposed. No parcel-record query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Fushun China official real estate registration center cadastral map parcel GIS natural resources bureau Fushun",
+      "result": "Search located the municipal Natural Resources Bureau and city-government reporting about the Fushun Natural Resources Affairs Service Center registration hall; 2024 budget notes real-estate registration and cadastral survey results. No anonymous public feature layer/schema was found.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "Chinese",
+      "query": "抚顺市 不动产登记中心 地籍图 宗地 查询 官方 自然资源局",
+      "result": "Fushun official sources identify the municipal natural-resources service center and an in-person real-estate registration hall. No public anonymous cadastral polygon service or safe feature schema was identified.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "English",
+      "query": "Fushun municipal real estate registration center cadastral map China",
+      "result": "Official Fushun City Government coverage confirms a city registration service hall; no public parcel geometry endpoint identified.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "Chinese",
+      "query": "site:zrzy.fushun.gov.cn 抚顺市 不动产登记中心 登记中心 地籍 测绘 业务",
+      "result": "Official bureau budget/report results identify the municipal service center’s registration and cadastral work; no public parcel-vector schema exposed.",
+      "method": "Separate language-specific search and official source/service review."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "retainedPolygonCount": 0,
+    "reason": "The official sources establish a city registry and cadastral work, but the reviewed public pages do not expose a schema or anonymous parcel-vector endpoint. No parcel-identifying lookup or authenticated workflow was used."
+  },
+  "coverageAssessment": {
+    "citywideVerified": false,
+    "exactWupPointCoverageVerified": false,
+    "evidence": "Public availability, precise coverage, and geometry semantics of Fushun cadastral data were not verified; the WUP weighted centroid is not an administrative or parcel-coverage boundary."
+  },
+  "attempts": [
+    {
+      "source": "https://zrzy.fushun.gov.cn/",
+      "outcome": "Official public source review only. No anonymous safe geometry service/schema was identified, so no parcel feature or personal/property-specific lookup was submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://fushun.gov.cn/ywdt/001003/20260409/d14fbeeb-b1bc-4e52-9369-b138c3559675.html",
+      "outcome": "Official public source review only. No anonymous safe geometry service/schema was identified, so no parcel feature or personal/property-specific lookup was submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://fushun.gov.cn/ywdt/001003/20260415/ce68021e-98b3-4ccc-9c2e-fd48659e1afe.html",
+      "outcome": "Official public source review only. No anonymous safe geometry service/schema was identified, so no parcel feature or personal/property-specific lookup was submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://zrzy.fushun.gov.cn/zrzyj/e7049abf-549a-454e-a9b8-f2646e89c30d/7655f58e-82cf-4ed2-8dfe-cacb6e86a9ca/20240204091902014236.pdf",
+      "outcome": "Official public source review only. No anonymous safe geometry service/schema was identified, so no parcel feature or personal/property-specific lookup was submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Public availability, precise coverage, and geometry semantics of Fushun cadastral data were not verified; the WUP weighted centroid is not an administrative or parcel-coverage boundary.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; no runtime contract or adapter qualification was tested."
+  },
+  "technicalBlocker": "The official sources establish a city registry and cadastral work, but the reviewed public pages do not expose a schema or anonymous parcel-vector endpoint. No parcel-identifying lookup or authenticated workflow was used."
+}

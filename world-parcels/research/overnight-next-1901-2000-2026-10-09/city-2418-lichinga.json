@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 2418,
+  "queueRank": 1975,
+  "name": "Lichinga",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "iso3": "MOZ",
+  "point": [-13.3067135962889, 35.2567895732004],
+  "population2025": 294317,
+  "population2025k": 294.317,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lichinga Mozambique official cadastral parcel map cadastre geoportal",
+        "result": "Found the official MOZGIS Lichinga municipal web map and the official Municipality of Lichinga portal. The Lichinga map service is spatially bounded to the municipality, but its published layers are health units, markets, terminals, neighborhoods, and population-risk; no parcel layer was exposed. A separate official parcel feature layer was discoverable, but its UTM extent is not Lichinga and it was not used as Lichinga evidence.",
+        "actualResultUrls": [
+          "https://www.mozgis.gov.mz/portal/home/webmap/viewer.html?isAdmin=true&layers=9e597eab9ff243cc868d5c769fad3515",
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Municipio_de_Lichinga/MapServer",
+          "https://www.cmcl.co.mz/"
+        ]
+      },
+      {
+        "language": "Portuguese (local/official language)",
+        "query": "Lichinga Moçambique cadastro predial mapa parcelas geoprocessamento oficial",
+        "result": "Found the official Municipality of Lichinga service description naming Planeamento Físico, urbano e Cadastro, and the official Portuguese diagnostic report describing municipal cadastral registers and cadastral atlas. The public MOZGIS Lichinga service still exposed no parcel feature layer or parcel schema.",
+        "actualResultUrls": [
+          "https://www.cmcl.co.mz/servicos.php",
+          "https://www.pdul.gov.mz/content/download/211/1138/file/DIISB4_LICHINGA_Final%2012%2011%202020.pdf",
+          "https://www.mozgis.gov.mz/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.mozgis.gov.mz/portal/home/webmap/viewer.html?isAdmin=true&layers=9e597eab9ff243cc868d5c769fad3515",
+      "operator": "Agência Nacional de Desenvolvimento Geo-Espacial / MOZGIS",
+      "evidence": "Official web map item titled Municipio de Lichinga points to the public MapServer recorded below."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Municipio_de_Lichinga/MapServer",
+      "operator": "MOZGIS official federated ArcGIS service",
+      "evidence": "MapServer extent is 35.12031275333095 to 35.36871999952842 longitude and -13.41230277515291 to -13.19559000037816 latitude, covering Lichinga. Group layer 0 lists only Unidade Sanitária, Mercados, Terminais, Bairros, and Nível de risco por densidade populacional; no cadastral parcel layer is present. Layer 4 is explicitly Bairros extracted from CAD, not parcels."
+    },
+    {
+      "url": "https://www.cmcl.co.mz/servicos.php",
+      "operator": "Município de Lichinga",
+      "evidence": "First-party municipal service page identifies Serviços de Planeamento Físico, urbano e Cadastro and cadastral planning/licensing responsibilities; this is local municipal-custodian evidence, not merely national agency prose."
+    },
+    {
+      "url": "https://www.pdul.gov.mz/content/download/211/1138/file/DIISB4_LICHINGA_Final%2012%2011%202020.pdf",
+      "operator": "Programa de Desenvolvimento Urbano e Local / Municipality of Lichinga diagnostic report",
+      "evidence": "Official Portuguese report describes municipal cadastral atlas, plot/talhão registers, and the need for an informatized municipal cadastre; it is documentary custody/context evidence and does not expose a public parcel feature service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.mozgis.gov.mz/portal/sharing/rest/content/items/9e597eab9ff243cc868d5c769fad3515?f=json",
+      "method": "GET",
+      "status": 200,
+      "summary": "Official web map item resolved to Municipio_de_Lichinga MapServer."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Municipio_de_Lichinga/MapServer?f=json",
+      "method": "GET",
+      "status": 200,
+      "summary": "Map service configuration and Lichinga extent retrieved over verified TLS; no parcel sublayer listed."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Municipio_de_Lichinga/MapServer/0?f=json",
+      "method": "GET",
+      "status": 200,
+      "summary": "Group-layer configuration retrieved; sublayers are health units, markets, terminals, neighborhoods, and population-risk only."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Municipio_de_Lichinga/MapServer/4/query?where=1%3D1&outFields=*&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET",
+      "status": 200,
+      "summary": "Bounded anonymous query returned three neighborhood records. Fields include Bairros and population/service aggregates; no parcel geometry or parcel identity was requested or retained."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0?f=json",
+      "method": "GET",
+      "status": 200,
+      "summary": "A public polygon layer named vwCMCMPlanCadastroParcela was inspected because search discovery exposed it. Its extent is EPSG:32736 X 445590.7052-448279.3497, Y 7132893.6125-7134776.0129, inconsistent with the Lichinga service extent/point, so it was not attributed to Lichinga and no sample was retained."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CIdParcela&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET",
+      "status": 200,
+      "summary": "The unrelated parcel layer returned three safe ID-only records (OBJECTID and IdParcela); geometry and source attributes were not retained."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available for a Lichinga parcel layer.",
+      "native identity": "Not established for a Lichinga parcel layer."
+    },
+    "crs": "Lichinga MapServer layers use EPSG:4326; no parcel CRS was exposed for Lichinga. The separately inspected non-Lichinga parcel layer uses EPSG:32736.",
+    "geometryType": "No Lichinga parcel geometry layer exposed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal planning/cadastre custody is evidenced by the Municipality of Lichinga service page and diagnostic report; the official MOZGIS map service covers the municipality extent.",
+    "verifiedOpenScope": "Public Lichinga map service coverage verified for non-parcel municipal layers only. Parcel coverage, parcel schema, native parcel identity, and parcel geometry were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No parcel point query was performed against a Lichinga parcel layer because none was exposed. The absence of a parcel layer is a publication/configuration finding, not evidence of citywide parcel absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "tax", "account", "legal description", "rights/title details", "municipal population/service attributes"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_cadastre_custodian_public_nonparcel_map",
+  "remainingUncertainty": "The municipality has a documented cadastral function and an official public map service, but the current service does not publish parcel polygons. A separately discoverable parcel layer belongs to another extent and cannot safely be associated with Lichinga. A serial reviewer should inspect authenticated-free current municipal/ADE services for a dedicated parcel endpoint before any adapter admission.",
+  "nextStep": "Serial reviewer should independently verify whether the Municipality of Lichinga or ADE publishes a separate anonymous parcel service, then confirm native parcel identity, CRS, city coverage, and safe field exposure."
+}

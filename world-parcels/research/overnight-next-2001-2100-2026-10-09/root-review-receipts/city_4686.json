@@ -1,0 +1,17 @@
+{
+  "taskId": "city:4686",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-4686-ikirun.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ikirun-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_4686-root-review.json",
+    "tmp/valhalla-parcel-research/4686/osun-surveyor.html",
+    "tmp/valhalla-parcel-research/4686/cofo.html",
+    "tmp/valhalla-parcel-research/4686/519-a2e2c8402cad9c41.js",
+    "tmp/valhalla-parcel-research/4686/api-root.txt"
+  ],
+  "checkedAt": "2026-10-10T22:04:26Z",
+  "reason": "State cadastral/survey custody is supported by the official Osun page. The saved CofO client calls POST /verify using document data; its API root returns a welcome JSON, not parcel IDs or geometry."
+}

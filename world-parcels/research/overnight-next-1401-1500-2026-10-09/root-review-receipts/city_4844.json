@@ -1,0 +1,13 @@
+{
+  "taskId": "city:4844",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4844-hawrah.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/hawrah-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:17:27Z",
+  "reason": "Immutable WUP identity and English/Arabic searches match the cohort record. National registry context is documented, but Hawrah-specific custody remains unresolved and no anonymous native-ID parcel geometry or independent runtime qualification is evidenced. The unavailable viewer/search route does not establish parcel absence."
+}

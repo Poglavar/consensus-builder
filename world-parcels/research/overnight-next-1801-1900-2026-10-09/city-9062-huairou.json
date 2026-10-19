@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 9062,
+  "queueRank": 1858,
+  "cityId": "queue:1858",
+  "name": "Huairou",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [40.3141864459695, 116.638644918272],
+  "centerLatLon": [40.3141864459695, 116.638644918272],
+  "population2025": 309856,
+  "population2025k": 309.856,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huairou cadastral parcel map official Beijing land registration map API",
+        "result": "First-party results identified Beijing's official real-estate registration/cadastral query documentation, the official Beijing service map, and the Huairou district registration center. The public query platform itself did not expose an anonymous parcel feature response.",
+        "actualResultUrls": [
+          "https://ghzrzyw.beijing.gov.cn/cs/",
+          "https://www.beijing.gov.cn/zhengce/zhengcefagui/202205/t20220523_2718876.html",
+          "https://www.bjhr.gov.cn/zt/hrqzwfwtyyy/index.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "怀柔 不动产登记 地图 官方 宗地 查询 北京",
+        "result": "First-party Chinese-language results identified the Huairou real-estate registration center and Beijing's official cadastral-map/visual query rules. The official service is an authenticated registration query workflow; no anonymous parcel ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://www.bjhr.gov.cn/zt/hrqzwfwtyyy/index.html",
+          "https://ghzrzyw.beijing.gov.cn/cs/",
+          "https://www.beijing.gov.cn/zhengce/gfxwj/sj/202406/t20240626_3729180.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "First-party web discovery followed by TLS-verified bounded GET and inspection of official documentation and service entrypoints. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.bjhr.gov.cn/zt/hrqzwfwtyyy/index.html",
+      "observation": "Official Huairou district page identifies the Huairou real-estate registration center, its address, phone, hours, and registration services. This establishes a local registry custodian, not an open parcel API."
+    },
+    {
+      "url": "https://www.beijing.gov.cn/zhengce/zhengcefagui/202205/t20220523_2718876.html",
+      "observation": "Official Beijing notice describes the visual real-estate/cadastral-map query service and says map/property querying requires the Beijing registration platform and identity authentication."
+    },
+    {
+      "url": "https://ghzrzyw.beijing.gov.cn/cs/",
+      "observation": "Official Beijing natural-resources registration page documents authorized online queries and cadastral/registration information rules; it is not an anonymous parcel feature service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bdc.ghzrzyw.beijing.gov.cn/e0/wizard/mainMenu.go",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "TLS-verified request timed out after 20 seconds. No response, schema, CRS, native ID, or geometry was obtained; timeout is not evidence of cadastral absence."
+    },
+    {
+      "url": "https://ghzrzyw.beijing.gov.cn/cs/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official registration/cadastral documentation page loaded. It exposed policy and procedure information, not an anonymous parcel geometry endpoint."
+    },
+    {
+      "url": "https://www.bjhr.gov.cn/zt/hrqzwfwtyyy/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Huairou district service page loaded and identified the local real-estate registration center and services."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Huairou district real-estate registration administration under Beijing, plus Beijing municipal cadastral/registration query documentation.",
+    "verifiedOpenScope": "Local registry custodian and official query procedure only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel geometry query was reached. The exact WUP point was preserved and no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current local cadastral viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency, legal access conditions and citywide coverage remain unresolved. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+  "nextStep": "A later attempt may inspect an officially exposed Beijing/Huairou public API route and issue only a bounded anonymous safe-ID-plus-geometry request if one is revealed."
+}

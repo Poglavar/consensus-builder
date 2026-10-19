@@ -1,0 +1,7 @@
+{
+  "checkedAt": "2026-10-09T06:46:30.956530+00:00",
+  "decision": "held_native_geometry_conflicts",
+  "basis": "The complete local HMLR freehold-index geometry audit found 1661 full valid polygons in the independently projected WUP-centered 1 km square, six equal-geometry pairs and 207 overlaps above 0.01 m², totaling 14089.256 m² pairwise overlap. The earlier approximate projected window returns 1662 with identical conflict totals. Native index polygons are indicative property extents; these overlapping published features cannot be admitted as exclusive 2D ground parcels without changing the source or representing its tenure/context model. No repair, deduplication, clipping or clean-subset selection was performed.",
+  "geometryChangedOrRepaired": false,
+  "qualityFile": "research/overnight-followon-2026-10-09/leicester-root-topology-audit.json"
+}

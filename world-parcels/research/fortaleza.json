@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:149",
+  "queueRank": 149,
+  "name": "Fortaleza",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "centerLatLon": [
+    -3.77702211074443,
+    -38.5599910685237
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "br-fortaleza-ipplan-zeis-pici-lotes",
+    "requestUrl": "https://dados.fortaleza.ce.gov.br/dataset/9d2863b7-c238-4b25-bf01-a2c82d4d0b9c/resource/39e0185f-1a69-4fde-8680-4a47b38a552f/download/pirf-zeis-pici-lotes-zeis-pici.geojson",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/octet-stream (GeoJSON body)",
+    "spatialTestAreaLonLat": "ZEIS Pici area (first lot vertex -38.5719,-3.7601); whole-file download, not a bbox query",
+    "parcelRecordCount": 5370,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "id",
+    "responseFile": "fortaleza-parcel-response.json",
+    "pagination": "none; static file of 3.05 MB (only first 3 features saved)"
+  },
+  "source": {
+    "sourceId": "br-fortaleza-ipplan-zeis-pici-lotes",
+    "name": "PIRF ZEIS Pici - Lotes (Fortaleza open data)",
+    "operator": "IPPLAN Fortaleza (municipal planning institute) via dados.fortaleza.ce.gov.br CKAN",
+    "scope": "one special-interest social-housing zone (ZEIS Pici); similar per-ZEIS files exist for Lagamar, Pirambu, Serviluz, Bom Jardim, Dionisio Torres",
+    "endpoint": "https://dados.fortaleza.ce.gov.br/api/3/action/package_search?q=lotes",
+    "method": "GET static GeoJSON download",
+    "responseFormat": "GeoJSON (EPSG:4326)",
+    "crs": "EPSG:4326",
+    "reuseStatus": "CKAN licence field null for this dataset; not reviewed"
+  },
+  "portalsFound": [
+    {
+      "url": "https://dados.fortaleza.ce.gov.br/",
+      "observation": "Fortaleza CKAN open-data portal; package search for 'lotes' lists per-ZEIS lot GeoJSON files (2019 UFC regularisation plans) and a KMZ 'Fracao do Lote' parameter layer, no citywide cadastral lot service found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dados.fortaleza.ce.gov.br/api/3/action/package_search?q=lotes&rows=10",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "dataset listing"
+    },
+    {
+      "url": "https://dados.fortaleza.ce.gov.br/api/3/action/package_search?q=cadastro+OR+parcelas+OR+lote+OR+terreno&rows=10",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results for that OR query syntax"
+    },
+    {
+      "url": "https://dados.fortaleza.ce.gov.br/dataset/9d2863b7-c238-4b25-bf01-a2c82d4d0b9c/resource/39e0185f-1a69-4fde-8680-4a47b38a552f/download/pirf-zeis-pici-lotes-zeis-pici.geojson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/octet-stream",
+      "assessment": "5370 closed MultiPolygon lots with area_lote; verification (partial area)"
+    },
+    {
+      "url": "https://mapas.fortaleza.ce.gov.br/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://geoportal.sefin.fortaleza.ce.gov.br/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "individual ZEIS neighbourhood surveys (2019)",
+    "verifiedOpenScope": "ZEIS Pici only (5370 lots)",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Covers a few informal-settlement zones only, dated 2019 and produced for a planning study; the municipal tax cadastre (SEFIN) geoportal hosts were unreachable, and Brazil-wide coverage (e.g. SIGEF/CAR rural) not assessed here.",
+  "nextStep": "Test SEFIN/SEUMA map services for a citywide lot layer; review dataset licence."
+}

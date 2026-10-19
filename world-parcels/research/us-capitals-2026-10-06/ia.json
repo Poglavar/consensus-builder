@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "IA",
+  "state": "Iowa",
+  "capital": "Des Moines",
+  "centerLatLon": [
+    41.5868,
+    -93.625
+  ],
+  "query": {
+    "language": "English",
+    "text": "official Iowa Des Moines Polk County GIS parcels parcel GIS"
+  },
+  "references": [
+    {
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0?f=pjson",
+      "observation": "Source layer metadata queried for geometry, native key field and object ID schema."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=official%20Iowa%20Des%20Moines%20Polk%20County%20GIS%20parcels%20parcel%20GIS",
+      "observation": "English web search used to locate official capital/state parcel information."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Layer metadata confirms esriGeometryPolygon and native STATEPARID field (esriFieldTypeString)."
+    },
+    {
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=1%3D1&geometry=-93.62565%2C41.5863125%2C-93.62435%2C41.587287499999995&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=STATEPARID&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Capital bbox returned 6 polygons, native IDs and geometry only; rings checked closed and finite."
+    },
+    {
+      "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0/query?where=STATEPARID%3D%2777-02001173001000%27&outFields=STATEPARID&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact native key read returned 1 feature(s), includes the same key and valid geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Iowa Statewide Parcel Data, 2017",
+    "operator": "University of Iowa (ArcGIS Online org of rcowling@uiowa.edu_uiowa; publisher of record not confirmed)",
+    "idField": "STATEPARID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Returned native text values preserved verbatim (including leading zeros and any whitespace).",
+    "outFields": [
+      "STATEPARID"
+    ],
+    "parcelNumberField": "STATEPARID",
+    "metricSrid": "requested outSR=4326",
+    "proposedIdPrefix": "us-ia-county"
+  },
+  "verification": {
+    "bbox": [
+      -93.62565,
+      41.5863125,
+      -93.62435,
+      41.587287499999995
+    ],
+    "count": 6,
+    "nativeIDs": [
+      "77-02001173001000",
+      "77-02000936001000",
+      "77-02001160001000"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "Statewide 2017 snapshot; source operator/publisher of record is not fully established. Capital geometry and exact key access were verified.",
+  "priorResearchFile": "research/subnational/US/IA.json"
+}

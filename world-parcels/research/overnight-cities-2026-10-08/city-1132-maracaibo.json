@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "name": "Maracaibo",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "rank": 243,
+  "queueRank": 243,
+  "wupCityCode": 1132,
+  "cityId": "wup2025:1132",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "population2025": 2030633,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    10.6445657604184,
+    -71.6499683212905
+  ],
+  "point": [
+    10.6445657604184,
+    -71.6499683212905
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Municipal CPU/OMCAT official indexed pages document cadastral code, cadastral survey-plan registration, boundaries and property procedures specifically for Maracaibo. Current direct service access failed DNS; this establishes documented city activity, not a live parcel feed.",
+  "registryEvidenceUrls": [
+    "https://cpu.alcaldiademaracaibo.org/quienes-somos/",
+    "https://cpu.alcaldiademaracaibo.org/tramite/quieres-realizar-el-tramite-de-codigo-catastral/",
+    "https://cpu.alcaldiabolivarianademaracaibo.org/tramites-omcat/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "sourceIds": [],
+  "source": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "Maracaibo catastro mapa parcelas alcaldía geoportal oficial",
+        "executionMethod": "Executed web search, indexed municipal sources reviewed; direct public-host requests attempted.",
+        "actualResultUrls": [
+          "https://mapas.alcaldiademaracaibo.org/",
+          "https://visor.alcaldiademaracaibo.org/",
+          "https://cpu.alcaldiademaracaibo.org/preguntas-y-respuestas-frecuentes/"
+        ],
+        "result": "Official CPU FAQ and OMCAT workflows establish cadastral activity. The indexed geographic viewer primarily describes zoning; SIT appears as a GeoNode catalogue, but live layer schemas and any cadastral polygons remain unread."
+      },
+      {
+        "language": "English",
+        "query": "Maracaibo official land cadastre parcel map GIS registry",
+        "executionMethod": "Executed separate English web search and reviewed city-specific official results.",
+        "actualResultUrls": [
+          "https://cpu.alcaldiademaracaibo.org/quienes-somos/",
+          "https://visor.alcaldiademaracaibo.org/"
+        ],
+        "result": "Official municipal cadastral and territorial information pages found; no retrieved parcel feature response."
+      },
+      {
+        "language": "Spanish",
+        "query": "Maracaibo alcaldia catastro portal oficial 2026",
+        "executionMethod": "Executed current-service follow-up web search.",
+        "actualResultUrls": [
+          "https://cpu.alcaldiabolivarianademaracaibo.org/tramites-omcat/",
+          "https://www.maracaibo.gob.ve/vecinos-de-francisco-eugenio-bustamante-y-olegario-villalobos-recibieron-sus-nomenclaturas-por-parte-de-la-alcaldia-de-maracaibo/"
+        ],
+        "result": "City cadastral procedures remain indexed, including cadastral codes and survey plans; no alternative current anonymous polygon endpoint identified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://visor.alcaldiademaracaibo.org/",
+        "error": "fetch failed",
+        "cause": "ENOTFOUND"
+      },
+      {
+        "url": "https://mapas.alcaldiademaracaibo.org/",
+        "error": "fetch failed",
+        "cause": "ENOTFOUND"
+      },
+      {
+        "url": "https://cpu.alcaldiabolivarianademaracaibo.org/quienes-somos/",
+        "error": "fetch failed",
+        "cause": "ENOTFOUND"
+      },
+      {
+        "url": "https://cpu.alcaldiabolivarianademaracaibo.org/tramites-omcat/",
+        "error": "fetch failed",
+        "cause": "ENOTFOUND"
+      }
+    ],
+    "networkControl": {
+      "checkedAt": "2026-10-08T21:20:47.963376+00:00",
+      "successfulPublicControlUrls": [
+        "https://population.un.org/wup/",
+        "https://api.urbangametheory.xyz/parcel-sources"
+      ],
+      "httpStatus": 200,
+      "meaning": "Other public sites were reachable in the same check. Municipal ENOTFOUND responses are recorded as specific host-resolution failures, not proof that services have been discontinued."
+    },
+    "webFetchAttempts": [
+      {
+        "url": "https://visor.alcaldiademaracaibo.org/",
+        "result": "Web fetch failed with 502 Bad Gateway."
+      },
+      {
+        "url": "https://mapas.alcaldiademaracaibo.org/",
+        "result": "Web fetch failed with 502 Bad Gateway."
+      },
+      {
+        "url": "https://cpu.alcaldiademaracaibo.org/quienes-somos/",
+        "result": "Web fetch failed with 502 Bad Gateway."
+      },
+      {
+        "url": "https://cpu.alcaldiabolivarianademaracaibo.org/tramites-omcat/",
+        "result": "Web tool returned the indexed official municipal procedures page, including cadastral code, survey-plan registration and boundary delimitation; direct DNS for this hostname failed in the same research run."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official city cadastral and zoning/territorial viewer information for Maracaibo.",
+    "verifiedOpenScope": "City-specific procedures are documented in indexed primary pages; viewer/catalogue hosts could not be retrieved and no full polygon was read.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "resultCategory": "official_city_registry_public_geometry_not_verified",
+  "technicalBlocker": "The publicly indexed municipal viewer, territorial catalogue and CPU hosts failed DNS resolution in direct requests; web retrieval also failed. No live bundle or parcel layer could be inspected.",
+  "remainingUncertainty": "Current host addresses, live catalogue layers, public parcel geometry availability and coverage near the WUP settlement locator are unverified.",
+  "nextStep": "If these documented public hosts become reachable, inspect the SIT layer catalogue and viewer service configuration and test bounded full-polygon retrieval before enabling a provider.",
+  "rootReviewedAt": "2026-10-08T21:21:03.426520+00:00"
+}

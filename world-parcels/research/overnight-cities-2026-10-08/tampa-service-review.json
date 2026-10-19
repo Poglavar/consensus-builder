@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7159-tampa.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Tampa GIS Tax Parcel layer documents polygon geometry, HCPA parcel provenance, supported GeoJSON queries, and daily updates. HCPA identifies itself as county property appraiser. Direct bounded WUP-point GeoJSON request returned HTTP 403; geometry not independently verified.",
+  "registryAssessment": "Hillsborough County Property Appraiser is the county valuation office; City of Tampa GIS publishes a Tax Parcel ArcGIS polygon layer sourced from HCPA and updated daily. A bounded point-intersection request to the official FeatureServer returned HTTP 403, so no geometry sample was retained.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hcpafl.org/",
+      "observation": "Official Tampa GIS Tax Parcel layer documents polygon geometry, HCPA parcel provenance, supported GeoJSON queries, and daily updates. HCPA identifies itself as county property appraiser. Direct bounded WUP-point GeoJSON request returned HTTP 403; geometry not independently verified."
+    },
+    {
+      "url": "https://data.hillspafl.gov/map",
+      "observation": "Official Tampa GIS Tax Parcel layer documents polygon geometry, HCPA parcel provenance, supported GeoJSON queries, and daily updates. HCPA identifies itself as county property appraiser. Direct bounded WUP-point GeoJSON request returned HTTP 403; geometry not independently verified."
+    },
+    {
+      "url": "https://arcgis.tampagov.net/arcgis/rest/services/Parcels/TaxParcel/FeatureServer/0",
+      "observation": "Official Tampa GIS Tax Parcel layer documents polygon geometry, HCPA parcel provenance, supported GeoJSON queries, and daily updates. HCPA identifies itself as county property appraiser. Direct bounded WUP-point GeoJSON request returned HTTP 403; geometry not independently verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tampa United States of America official cadastre cadastral parcel map GIS land registry",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "Official Tampa GIS Tax Parcel layer documents polygon geometry, HCPA parcel provenance, supported GeoJSON queries, and daily updates. HCPA identifies itself as county property appraiser. Direct bounded WUP-point GeoJSON request returned HTTP 403; geometry not independently verified.",
+      "actualResultUrls": [
+        "https://www.hcpafl.org/",
+        "https://data.hillspafl.gov/map",
+        "https://arcgis.tampagov.net/arcgis/rest/services/Parcels/TaxParcel/FeatureServer/0"
+      ],
+      "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry retained: bounded WUP-point GeoJSON query returned HTTP 403.",
+  "coverageAssessment": {
+    "claimedScope": "Hillsborough County Property Appraiser is the county valuation office; City of Tampa GIS publishes a Tax Parcel ArcGIS polygon layer sourced from HCPA and updated daily. A bounded point-intersection request to the official FeatureServer returned HTTP 403, so no geometry sample was retained.",
+    "verifiedOpenScope": "Official polygon layer metadata is visible, but direct feature query failed with HTTP 403; no point-level parcel presence is claimed.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://arcgis.tampagov.net/arcgis/rest/services/Parcels/TaxParcel/FeatureServer/0/query",
+      "method": "GET",
+      "request": "Bounded WUP-point spatial intersection; requested OBJECTID and full geometry as GeoJSON in WGS84; no property attributes.",
+      "result": "HTTP 403 returned by remote endpoint through this read-only request. The public layer description confirms polygon type and GeoJSON query support, but no feature geometry was received.",
+      "geometryRetained": false
+    }
+  ],
+  "remainingUncertainty": "Public anonymous parcel geometry, exact WUP-point coverage, and citywide coverage remain unverified."
+}

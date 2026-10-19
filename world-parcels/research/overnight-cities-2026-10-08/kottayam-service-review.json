@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-kottayam-registry-map-review",
+  "purpose": "City-specific registry/map source review and bounded safe route inspection for the WUP ranked settlement point.",
+  "primaryPublisher": "Kerala Department of Survey and Land Records; Kerala Land Records Modernization Mission",
+  "sourceUrl": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+  "registryFound": true,
+  "registryBasis": "Official Kerala Survey & Land Records page lists Kottayam district survey, re-survey, mapping and digitization offices; the Kerala BhuNaksha portal advertises cadastral map selectors. This establishes local survey/registry infrastructure, but not exact WUP-point parcel coverage or an accessible vector route.",
+  "officialSources": [
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "observation": "Official Kerala Survey and Land Records office directory lists multiple survey/mapping/re-survey offices and a District Digitization Centre in Kottayam district."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "observation": "Official Kerala BhuNaksha portal search listing identifies Revenue, Survey and Registration Department and exposes Block No., Survey No., Sub Division No. and Plot Info UI; direct shell HTTPS validation failed because the certificate was expired, and was not bypassed."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+      "observation": "Official Ente Bhoomi page provides a land-information form with district/taluk/village/block selectors plus survey and subdivision number and captcha fields; no form was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kottayam Kerala official cadastral parcel map GIS land survey resurvey public map",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "The official Kerala survey-office directory lists the Deputy Director, Assistant Director (Re-Survey), Assistant Director (Mapping), District Survey Superintendent, and District Digitization Centre in Kottayam. The state BhuNaksha portal advertises parcel/map selectors and Plot Info, but its direct HTTPS request failed certificate validation (expired certificate); no bypass was attempted. The public Ente Bhoomi survey search page asks for a survey number, subdivision number, and captcha; no parcel fields were submitted. No safe anonymous full-polygon schema/endpoint was verified.",
+      "actualResultUrls": [
+        "https://dslr.kerala.gov.in/en/sub-offices-2/",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+      ],
+      "executionMethod": "English-language web search plus direct anonymous inspection of official public routes."
+    },
+    {
+      "language": "Malayalam",
+      "query": "കോട്ടയം ഭൂ നികുതി ഭൂപടം കഡസ്ട്രൽ മാപ്പ് ഔദ്യോഗിക GIS Kerala",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "The official Kerala survey-office directory lists the Deputy Director, Assistant Director (Re-Survey), Assistant Director (Mapping), District Survey Superintendent, and District Digitization Centre in Kottayam. The state BhuNaksha portal advertises parcel/map selectors and Plot Info, but its direct HTTPS request failed certificate validation (expired certificate); no bypass was attempted. The public Ente Bhoomi survey search page asks for a survey number, subdivision number, and captcha; no parcel fields were submitted. No safe anonymous full-polygon schema/endpoint was verified.",
+      "actualResultUrls": [
+        "https://dslr.kerala.gov.in/en/sub-offices-2/",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "https://survey.entebhoomi.kerala.gov.in/portal/survey/search"
+      ],
+      "executionMethod": "Local-language search plus review of primary public official pages; no parcel-specific or private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "inspected_no_geometry_only_vector_response",
+    "reason": "The public BhuNaksha interface search result exposes administrative and plot selectors, but direct route inspection was blocked by expired TLS validation. Ente Bhoomi HTML exposes a citizen search form; its parcel-specific fields were not submitted. No vector feature schema was found.",
+    "nativeIdsUsed": "none",
+    "sampleFile": null
+  },
+  "requestEvidence": [
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 69939,
+      "observation": "Official Kottayam survey-office directory fetched anonymously."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 40584,
+      "observation": "Static survey-information form inspected; no survey number, subdivision, captcha, or search submitted."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "method": "GET",
+      "status": null,
+      "error": "TLS certificate expired; validation error; no bypass attempted",
+      "observation": "No static client scripts or geometry schema retrieved."
+    }
+  ],
+  "technicalBlocker": "The public BhuNaksha interface search result exposes administrative and plot selectors, but direct route inspection was blocked by expired TLS validation. Ente Bhoomi HTML exposes a citizen search form; its parcel-specific fields were not submitted. No vector feature schema was found.",
+  "sampleDisposition": "No full parcel polygons retained; no geometry-only feature response verified.",
+  "remainingUncertainty": "No complete georeferenced polygon or native feature ID was verified at the WUP point; public map viewers may provide display-only or identity-dependent workflows not tested.",
+  "viewerClientInspection": {
+    "candidateMapFound": true,
+    "clientInspection": "The public BhuNaksha interface search result exposes administrative and plot selectors, but direct route inspection was blocked by expired TLS validation. Ente Bhoomi HTML exposes a citizen search form; its parcel-specific fields were not submitted. No vector feature schema was found."
+  }
+}

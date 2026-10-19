@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8762",
+  "decision": "held",
+  "reason": "Titi rank 1276, Nigeria, immutable point and 436744 persons match the SHA-256 verified WUP roster. Packet and review record English and Hausa searches. Original GOGIS pages describe Gombe land administration and a map-order workflow, and the state site lists GOGIS; these support institutional custody but expose no anonymous parcel feature payload or safe native ID. No geometry, fresh ID read, forced paging, 13-cell check, metric topology check, source binding, or headed Details verification supports admission; no citywide absence is inferred.",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8762-titi.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/titi-service-review.json",
+    "tmp/valhalla-parcel-research/8762/gogis.html",
+    "tmp/valhalla-parcel-research/8762/mapshop.html",
+    "tmp/valhalla-parcel-research/8762/gombestate.html"
+  ],
+  "checkedAt": "2026-10-09T12:50:56.006Z"
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Changshu",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Changshu Natural Resources and Planning Bureau is responsible for unified registration of natural resources and real estate, cadastral investigation, and surveying. The city’s published basic-survey plan describes a public “Tianditu·Changshu” map service, but the reviewed material establishes base mapping rather than parcel feature access.",
+  "registryEvidenceUrls": [
+    "https://www.changshu.gov.cn/zgcs/c107489/202002/240a360105be436da55ca0a08aca12d5.shtml",
+    "https://www.changshu.gov.cn/zgcs/c108192/202202/63f9b0a2508c4605bdeb01dcaf71384f.shtml",
+    "https://www.changshu.gov.cn/zgcs/c100283/listtt.shtml"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11652,
+  "cityId": "wup2025:11652",
+  "centerLatLon": [
+    31.6427806566294,
+    120.769122385826
+  ],
+  "rank": 687,
+  "queueRank": 687,
+  "population2025": 774010,
+  "population2025k": 774.01,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official public map reference is to general Tianditu mapping. No public parcel geometry schema or anonymous full-polygon query was documented in reviewed city sources.",
+  "scopeLimits": "City-local natural-resource/registry remit and published public map-plan material reviewed. No registry announcement row, owner/address, transaction, tax, or property query was used.",
+  "remainingUncertainty": "A separate registry cadastral map may exist outside the public base-map service; no anonymous route was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Changshu Jiangsu official land registry cadastral parcel map public GIS Tianditu",
+        "scope": "Find city-specific official registry evidence and safe anonymous full parcel geometry.",
+        "result": "Official Changshu Natural Resources and Planning Bureau functions establish city-local real-estate registration and cadastral-survey duties. The city basic-survey plan advertises a public Tianditu map service; no legal parcel feature route or schema was found.",
+        "actualResultUrls": [
+          "https://www.changshu.gov.cn/zgcs/c107489/202002/240a360105be436da55ca0a08aca12d5.shtml",
+          "https://www.changshu.gov.cn/zgcs/c108192/202202/63f9b0a2508c4605bdeb01dcaf71384f.shtml",
+          "https://www.changshu.gov.cn/zgcs/c100283/listtt.shtml"
+        ],
+        "executionMethod": "English and local-language web searches, followed by official public-page and route metadata review."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "常熟市 不动产登记 地籍调查 天地图常熟 公众版 宗地地图 GIS 官方",
+        "scope": "Find city-specific official registry evidence and safe anonymous full parcel geometry.",
+        "result": "常熟市自然资源和规划局承担不动产统一确权登记、权籍调查和不动产测绘；市基础测绘规划提及“天地图·常熟”公众版，但属于基础地图服务，未证明公开宗地矢量。",
+        "actualResultUrls": [
+          "https://www.changshu.gov.cn/zgcs/c107489/202002/240a360105be436da55ca0a08aca12d5.shtml",
+          "https://www.changshu.gov.cn/zgcs/c108192/202202/63f9b0a2508c4605bdeb01dcaf71384f.shtml",
+          "https://www.changshu.gov.cn/zgcs/c100283/listtt.shtml"
+        ],
+        "executionMethod": "English and local-language web searches, followed by official public-page and route metadata review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.changshu.gov.cn/zgcs/c107489/202002/240a360105be436da55ca0a08aca12d5.shtml",
+        "observation": "Official Changshu bureau statement assigns city-wide natural-resource and real-estate registration, cadastral investigation and real-estate surveying duties to the local bureau."
+      },
+      {
+        "url": "https://www.changshu.gov.cn/zgcs/c108192/202202/63f9b0a2508c4605bdeb01dcaf71384f.shtml",
+        "observation": "Official city basic-survey plan says the city provides public and government “Tianditu·Changshu” map services; it does not document cadastral vector access."
+      },
+      {
+        "url": "https://www.changshu.gov.cn/zgcs/c100283/listtt.shtml",
+        "observation": "Official city page gives Changshu geographic extent, consistent with the queued point."
+      }
+    ],
+    "metadataReviewFile": "changshu-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository",
+    "sampleFile": null
+  },
+  "source": {
+    "sourceId": "cn-changshu-official-land-records",
+    "name": "Changshu city-local registry and parcel-route review",
+    "operator": "Changshu local land-record authority",
+    "url": "https://www.changshu.gov.cn/zgcs/c107489/202002/240a360105be436da55ca0a08aca12d5.shtml",
+    "scope": "City-specific registry remit reviewed; no public parcel polygon verified.",
+    "nativeIdField": null,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Exact WUP point only; no citywide coverage claim.",
+    "verifiedOpenScope": "Official city-local registry/service information reviewed. No anonymous full parcel geometry was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00",
+  "sourceIds": [],
+  "point": [
+    31.6427806566294,
+    120.769122385826
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "WS",
+  "country": "Samoa",
+  "checkedAt": "2026-09-29",
+  "status": "no_online_cadastre_found",
+  "cadastreAuthority": "Ministry of Natural Resources and Environment (MNRE) - Land Registry / Survey (Samoa Lands Information)",
+  "portalsFound": [
+    {
+      "url": "https://www.mnre.gov.ws/",
+      "observation": "Ministry site reachable (HTTP 200); no parcel viewer or open data endpoint seen on landing page"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mnre.gov.ws/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "landing page only; no parcel service"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Samoa%20parcels%20cadastre&f=json&num=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "generic hits (US PAD-US); no Samoan parcel layers"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "None found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Only a landing page and one ArcGIS Online search checked; a Ministry viewer or Pacific data hub layer could exist.",
+  "nextStep": "Check Pacific Data Hub (pacificdata.org) and MNRE GIS for Samoa cadastre layers."
+}

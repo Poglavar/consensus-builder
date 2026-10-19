@@ -1,0 +1,33 @@
+{
+  "taskId": "city:8574",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-8574-bitung.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/bitung-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T210710-b6b482e7/stdout.jsonl",
+    "tmp/valhalla-parcel-research/8574/kot-bitung.html",
+    "tmp/valhalla-parcel-research/8574/konsolbhumi.html",
+    "tmp/valhalla-parcel-research/8574/konsol.html"
+  ],
+  "checkedAt": "2026-10-11T21:11:02Z",
+  "reason": "English and Indonesian search executions checked in worker log. Official ATR/BPN material names Kantor Pertanahan Kota Bitung; the kot-bitung.atrbpn.go.id first-party shell returned HTTP 200. BHUMI and konsolbhumi caches expose a viewer shell, not a safe Bitung native-ID/full-polygon response. Local custodian presence is grounded; geometry and adapter qualification are unverified.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "firstPartyChecks": {
+    "localCustodianGet": "HTTP 200, generic first-party application shell",
+    "bhumiViewer": "first-party wrapper and application shell inspected; no parcel response accepted"
+  },
+  "admissionGatesEvidenced": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeStateChanged": false
+}

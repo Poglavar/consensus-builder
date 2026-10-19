@@ -1,0 +1,97 @@
+{
+  "cityCode": 11542,
+  "queueRank": 1238,
+  "name": "Heyuan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1238,
+  "point": [23.707934644016, 114.682376540749],
+  "population2025": 449860,
+  "population2025k": 449.86,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Heyuan China official cadastral parcel map land registry public map API",
+        "result": "First-party discovery identified the official Heyuan real-estate-registration portal and Heyuan government material describing online registration-information access. The portal's public HTML and current JavaScript/configuration were inspected anonymously. No anonymous parcel-vector endpoint was exposed or verified.",
+        "actualResultUrls": [
+          "https://bdc.heyuan.gov.cn/",
+          "https://www.heyuan.gov.cn/bmjy/hysbdcdjzx/gggs/content/post_615315.html",
+          "https://www.heyuan.gov.cn/bmjy/hyszrzyj/zrzy/content/post_420698.html"
+        ],
+        "scope": "Find a first-party local registry/cadastre/map service and safe anonymous parcel IDs plus geometry; do not request owner, address, contact, titleholder, tax, account, or certificate data."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "河源市 不动产登记 地籍图 宗地图 官方 地图 查询",
+        "result": "First-party Chinese-language discovery found the Heyuan Natural Resources Bureau / Real Estate Registration Center portal and official instructions. The portal advertises a land-parcel/house attachment-map query entry, but the query workflow is login-gated. No public anonymous cadastral geometry response was verified.",
+        "actualResultUrls": [
+          "https://bdc.heyuan.gov.cn/HYApplyOnline/home_new.html",
+          "https://www.heyuan.gov.cn/hyszrzyj/gkmlpt/content/0/529/post_529352.html",
+          "https://www.heyuan.gov.cn/bmjy/hysbdcdjzx/mindex.html"
+        ],
+        "method": "Independent Simplified-Chinese discovery followed by anonymous first-party portal/configuration and bounded API review.",
+        "scope": "Verify local custody and any public source-native parcel geometry only; identity-authenticated registration queries were not used."
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Heyuan Natural Resources Bureau / Heyuan Real Estate Registration Center portal",
+    "url": "https://bdc.heyuan.gov.cn/",
+    "operator": "Heyuan Natural Resources Bureau; Heyuan Real Estate Registration Center",
+    "serviceType": "Official local registration portal and organization directory; no anonymous parcel geometry service verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "The anonymous organization-directory response identifies the local registration custodian. The portal's parcel/house attachment-map query is within the authenticated query workflow; no parcel geometry or native parcel identity was requested or retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Heyuan registration portal, first-party Chinese and English discovery, current portal HTML/JavaScript/configuration, and one bounded anonymous organization-directory POST.",
+    "verifiedOpenScope": "Local registry custody and portal workflow are evidenced; anonymous parcel geometry, schema, CRS, native ID, exact-point hit, and citywide completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymously accessible cadastral geometry endpoint was identified. The official portal routes land-parcel/house attachment-map queries through the logged-in query area; no login, credentials, CAPTCHA bypass, or private-token use was attempted.",
+  "remainingUncertainty": "A separately published municipal or provincial map service may exist, but no current public anonymous parcel-vector URL was verified. Exact-point testing was not performed against a verified cadastral endpoint and no absence inference is made.",
+  "nextStep": "If independently reviewing this city again, continue only from an official published anonymous map service or safe metadata endpoint; do not use identity-authenticated property-record queries.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11542,
+  "cityId": "wup2025:11542",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [23.707934644016, 114.682376540749],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Heyuan portal identifies the Heyuan Natural Resources Bureau and Heyuan Real Estate Registration Center; its official instructions describe registration-information and attached-map services, with personal/property queries requiring login. This establishes local institutional custody, not public anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://bdc.heyuan.gov.cn/",
+    "https://bdc.heyuan.gov.cn/HYApplyOnline/home_new.html",
+    "https://www.heyuan.gov.cn/bmjy/hysbdcdjzx/gggs/content/post_615315.html",
+    "https://www.heyuan.gov.cn/hyszrzyj/gkmlpt/content/0/529/post_529352.html"
+  ],
+  "runtimeAssessment": {
+    "status": "unknown_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry endpoint was verified or queried at the exact WUP point. The portal's record/map workflow is login-gated; no absence claim is made."
+  },
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

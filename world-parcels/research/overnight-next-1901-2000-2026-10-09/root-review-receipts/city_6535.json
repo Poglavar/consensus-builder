@@ -1,0 +1,23 @@
+{
+  "taskId": "city:6535",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-6535-hazro.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/hazro-service-review.json",
+    "tmp/valhalla-parcel-research/hazro/pulse.html",
+    "tmp/valhalla-parcel-research/hazro/cadastral-mapserver.json",
+    "tmp/valhalla-parcel-research/hazro/cadastral-layer0.json"
+  ],
+  "checkedAt": "2026-10-10T20:12:35.591316Z",
+  "findings": "Immutable WUP identity and English/Urdu search records match the queue. Official PLRA/PULSE and Attock land-record administration support registryFound=true; Hazro planning maps establish local planning scope but are not parcel geometry. Original cadastral MapServer and layer responses contain ArcGIS error 499 Token Required. No safe native-ID polygon was returned; this does not imply cadastral absence.",
+  "admissionGates": "No independently qualified live parcel adapter: fresh native-ID reads, forced paging, thirteen bounded cells, metric GEOS checks, source binding, and headed Details verification are all missing.",
+  "sourceUrls": [
+    "https://lis.pulse.gop.pk/",
+    "https://attock.punjab.gov.pk/administration",
+    "https://pmu-lgcdd.gop.pk/attock/",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson"
+  ]
+}

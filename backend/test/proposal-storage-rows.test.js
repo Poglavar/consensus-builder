@@ -1,0 +1,330 @@
+// Durable proposal storage is one row per record plus a manifest. A mutation writes only the rows
+// it touched; a whole-store save writes only rows whose projection changed; a corrupt row costs
+// itself, not the log. The pre-row single-blob layout ('cadastre_proposals') is abandoned: never
+// read, converted or deleted (user decision 2026-10-18).
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const { ParcelMutation } = require('../../frontend/js/proposals/apply/transaction.js');
+const formationDepth = require('../../frontend/js/proposals/formation-depth.js');
+const planOrder = require('../../frontend/js/proposals/plan-order.js');
+const dataSource = readFileSync(new URL('../../frontend/js/proposals/data.js', import.meta.url), 'utf8');
+const storageSource = readFileSync(new URL('../../frontend/js/proposals/storage.js', import.meta.url), 'utf8');
+const deterministicHash = new Function(`${storageSource}\nreturn hashStringDeterministic;`)();
+
+const saved = new Map();
+function install(name, value) {
+    if (!saved.has(name)) saved.set(name, { existed: Object.prototype.hasOwnProperty.call(globalThis, name), value: globalThis[name] });
+    globalThis[name] = value;
+}
+afterEach(() => {
+    for (const [name, prior] of saved) {
+        if (prior.existed) globalThis[name] = prior.value; else delete globalThis[name];
+    }
+    saved.clear();
+});
+
+function fakeStorage(seed = {}) {
+    const values = new Map(Object.entries(seed));
+    const writes = [];
+    return {
+        values, writes,
+        getItem: key => (values.has(key) ? values.get(key) : null),
+        setItem: (key, value) => values.set(key, String(value)),
+        removeItem: key => values.delete(key),
+        forEach: callback => values.forEach((value, key) => callback(value, key)),
+        async atomicWrite(change) {
+            writes.push({ puts: new Map(change.puts), deletes: [...(change.deletes || [])] });
+            (change.deletes || []).forEach(key => values.delete(key));
+            (change.puts || new Map()).forEach((value, key) => values.set(key, String(value)));
+        }
+    };
+}
+
+function bootStore(storage, options = {}) {
+    install('window', globalThis);
+    install('__cbSecondaryTab', options.secondaryTab === true);
+    install('__formationDepth', formationDepth);
+    install('__planOrder', planOrder);
+    install('normalizeParcelIdList', values => Array.from(new Set((values || []).map(String))));
+    install('normalizeOwnerAcceptances', value => value || {});
+    install('normalizeLensEntries', value => value || []);
+    install('normalizeProposalStatusAxes', proposal => proposal);
+    install('normalizeProposalGoalKey', value => String(value || '').trim().toLowerCase());
+    install('isLocalProposalId', value => /^local-/.test(String(value || '')));
+    install('PersistentStorage', storage);
+    return (0, eval)(dataSource + '\n;proposalStorage');
+}
+
+const record = (id, extra = {}) => ({ proposalId: id, goal: 'buildings', typologyType: 'block', cadastreParcelIds: ['HR-1'], applied: false, title: id, ...extra });
+const rowKeys = storage => Array.from(storage.values.keys()).filter(key => key.startsWith('proposal:')).sort();
+
+function run(store, storage, body) {
+    return ParcelMutation.run({ kind: 'test' }, body, { proposalStore: store, agentStore: null, storage, fabric: null, runtime: {} });
+}
+
+describe('proposal rows: mutations', () => {
+    it('writes one row and the manifest for one touched record out of three hundred', async () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        for (let i = 0; i < 300; i += 1) store.proposals.set(`p${i}`, record(`p${i}`));
+        await run(store, storage, async context => {
+            context.proposals.getProposal('p7').title = 'edited';
+            return true;
+        });
+        expect(storage.writes).toHaveLength(1);
+        expect([...storage.writes[0].puts.keys()].sort()).toEqual(['cadastre_proposals_manifest', 'proposal:p7']);
+        expect(storage.writes[0].deletes).toEqual([]);
+        expect(JSON.parse(storage.values.get('proposal:p7')).title).toBe('edited');
+        expect(storage.writes[0].puts.get('proposal:p7').length).toBeLessThan(500);
+    });
+
+    it('writes a delete for a removed record and a row for an added one', async () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        store.proposals.set('keep', record('keep'));
+        store.proposals.set('gone', record('gone'));
+        await run(store, storage, async context => {
+            context.proposals.proposals.delete('gone');
+            context.proposals.proposals.set('new', record('new'));
+            context.proposals.nextProposalId = 9;
+            return true;
+        });
+        expect(storage.writes).toHaveLength(1);
+        expect(storage.writes[0].deletes).toEqual(['proposal:gone']);
+        expect([...storage.writes[0].puts.keys()].sort()).toEqual(['cadastre_proposals_manifest', 'proposal:new']);
+        expect(JSON.parse(storage.values.get('cadastre_proposals_manifest'))).toEqual({ manifestVersion: 1, nextProposalId: 9 });
+    });
+
+    it('in a read-only tab, writes no shared row: the change stays in memory and is parked', async () => {
+        // multi-tab-guard.js marked this tab secondary: its city is open in another tab
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        store.proposals.set('p1', record('p1'));
+        const blocked = vi.fn();
+        const runtime = { __cbSecondaryTab: true, __cbReportSecondaryWriteBlocked: blocked };
+        await ParcelMutation.run({ kind: 'test' }, async context => {
+            context.proposals.getProposal('p1').title = 'edited here';
+            return true;
+        }, { proposalStore: store, agentStore: null, storage, fabric: null, runtime });
+        expect(storage.writes).toEqual([]);
+        expect(rowKeys(storage)).toEqual([]);
+        expect(store.getProposal('p1').title).toBe('edited here');
+        // parked under the recovery key (a store of this tab's own), and the user is told
+        expect(JSON.parse(storage.values.get('cadastre_proposals_recovery')).records.map(r => r.title)).toEqual(['edited here']);
+        expect(blocked).toHaveBeenCalledOnce();
+    });
+
+    it('leaves an abandoned single-blob store alone when a mutation writes', async () => {
+        const blob = JSON.stringify({ version: 2, nextProposalId: 0, records: [] });
+        const storage = fakeStorage({ cadastre_proposals: blob });
+        const store = bootStore(storage);
+        store.proposals.set('a', record('a'));
+        await run(store, storage, async context => { context.proposals.getProposal('a').title = 'x'; return true; });
+        expect(storage.writes).toHaveLength(1);
+        expect(storage.writes[0].deletes).toEqual([]);
+        expect(storage.values.get('cadastre_proposals')).toBe(blob);
+    });
+});
+
+describe('proposal rows: deterministic ID collisions', () => {
+    it('allocates unique ids when several authored proposals share one immutable seed in the same millisecond, and reloads every row', () => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2026-10-16T12:34:56.000Z'));
+        try {
+            const storage = fakeStorage();
+            const store = bootStore(storage);
+            install('getCurrentCityId', () => 'zagreb');
+            install('hashStringDeterministic', deterministicHash);
+            const base = {
+                goal: 'buildings',
+                cadastreParcelIds: ['HR-1'],
+                applied: false,
+                geometry: {},
+            };
+            const titles = ['First scheme', 'Second scheme', 'Third scheme', 'Fourth scheme'];
+            expect(store._buildHashSeed({ ...base, title: titles[0] })).toBe(store._buildHashSeed({ ...base, title: titles[1] }));
+            const ids = titles.map(title => store.addProposal({ ...base, title }));
+
+            expect(ids[0]).toMatch(/^p-[a-z0-9]+$/);
+            expect(new Set(ids).size).toBe(titles.length);
+            expect(store.proposals.size).toBe(titles.length);
+            expect(store.getAllProposals().map(proposal => proposal.title).sort()).toEqual(titles.slice().sort());
+
+            const reloaded = bootStore(storage);
+            reloaded.load();
+            expect(reloaded.getAllProposals()).toHaveLength(titles.length);
+            expect(reloaded.getAllProposals().map(proposal => proposal.proposalId)).toEqual(ids);
+            expect(reloaded.getAllProposals().map(proposal => proposal.title).sort()).toEqual(titles.slice().sort());
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+});
+
+describe('proposal rows: load', () => {
+    it('loads from rows, seeds the fragment cache, and writes nothing', () => {
+        const storage = fakeStorage({
+            cadastre_proposals_manifest: JSON.stringify({ manifestVersion: 1, nextProposalId: 5 }),
+            'proposal:a': JSON.stringify(record('a')),
+            'proposal:b': JSON.stringify(record('b', { applied: true }))
+        });
+        const store = bootStore(storage);
+        store.load();
+        expect(store.getAllProposals().map(p => p.proposalId).sort()).toEqual(['a', 'b']);
+        expect(store.getProposal('b').applied).toBe(true);
+        expect(store.nextProposalId).toBe(5);
+        expect(storage.writes).toHaveLength(0);
+        expect(store._persistFragments.get('a')).toBe(storage.values.get('proposal:a'));
+    });
+
+    it('skips a corrupt row and keeps the rest', () => {
+        const storage = fakeStorage({
+            cadastre_proposals_manifest: JSON.stringify({ manifestVersion: 1, nextProposalId: 1 }),
+            'proposal:ok': JSON.stringify(record('ok')),
+            'proposal:bad': '{not json'
+        });
+        const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const store = bootStore(storage);
+        store.load();
+        expect(store.getAllProposals().map(p => p.proposalId)).toEqual(['ok']);
+        expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('Rejected invalid stored proposal bad'), expect.any(Error));
+        consoleError.mockRestore();
+    });
+
+    it('boots empty from an empty store and writes nothing', () => {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        store.load();
+        expect(store.getAllProposals()).toEqual([]);
+        expect(store.nextProposalId).toBe(0);
+        expect(storage.writes).toHaveLength(0);
+    });
+
+    it('ignores an abandoned single-blob store: never read, converted or deleted', () => {
+        const blob = JSON.stringify({ version: 2, nextProposalId: 3, records: [record('a'), record('b')] });
+        const storage = fakeStorage({ cadastre_proposals: blob });
+        const read = vi.spyOn(storage, 'getItem');
+        const store = bootStore(storage);
+        store.load();
+        expect(store.getAllProposals()).toEqual([]);
+        expect(store.nextProposalId).toBe(0);
+        expect(read.mock.calls.map(call => call[0])).not.toContain('cadastre_proposals');
+        expect(storage.writes).toHaveLength(0);
+        expect(storage.values.get('cadastre_proposals')).toBe(blob);
+    });
+
+    it('loads rows and ignores an abandoned blob beside them', () => {
+        const blob = JSON.stringify({ version: 2, nextProposalId: 9, records: [record('old')] });
+        const storage = fakeStorage({
+            cadastre_proposals: blob,
+            cadastre_proposals_manifest: JSON.stringify({ manifestVersion: 1, nextProposalId: 2 }),
+            'proposal:a': JSON.stringify(record('a'))
+        });
+        const store = bootStore(storage);
+        store.load();
+        expect(store.getAllProposals().map(p => p.proposalId)).toEqual(['a']);
+        expect(store.nextProposalId).toBe(2);
+        store.getProposal('a').title = 'changed';
+        store._persist();
+        expect(storage.writes).toHaveLength(1);
+        expect(storage.writes[0].deletes).toEqual([]);
+        expect(storage.values.get('cadastre_proposals')).toBe(blob);
+    });
+});
+
+describe('proposal rows: whole-store save and clear', () => {
+    it('_persist writes only rows whose projection changed, deletes orphan rows, and the manifest', () => {
+        // Rows written by the store itself, so a reload followed by a save sees them as unchanged.
+        const storage = fakeStorage();
+        const writer = bootStore(storage);
+        ['a', 'b', 'orphan'].forEach(id => writer._indexProposal(record(id)));
+        writer.nextProposalId = 2;
+        writer._persist();
+        expect(rowKeys(storage)).toEqual(['proposal:a', 'proposal:b', 'proposal:orphan']);
+        storage.writes.length = 0;
+
+        const store = bootStore(storage);
+        store.load();
+        store.proposals.delete('orphan');
+        store.getProposal('b').title = 'changed';
+        store._persist();
+        expect(storage.writes).toHaveLength(1);
+        expect([...storage.writes[0].puts.keys()].sort()).toEqual(['cadastre_proposals_manifest', 'proposal:b']);
+        expect(storage.writes[0].deletes).toEqual(['proposal:orphan']);
+        expect(rowKeys(storage)).toEqual(['proposal:a', 'proposal:b']);
+    });
+
+    it('clear removes every row, the manifest and the recovery blob in one write, and nothing else', () => {
+        const blob = '{"version":2,"nextProposalId":0,"records":[]}';
+        const storage = fakeStorage({
+            cadastre_proposals: blob,
+            cadastre_proposals_manifest: '{"manifestVersion":1,"nextProposalId":1}',
+            'proposal:a': JSON.stringify(record('a')),
+            cadastre_proposals_recovery: '{}',
+            'parcel_HR-1_owner': 'agent-1'
+        });
+        const store = bootStore(storage);
+        store.load();
+        store.clear();
+        expect(storage.writes).toHaveLength(1);
+        expect(storage.writes[0].deletes.sort()).toEqual(['cadastre_proposals_manifest', 'cadastre_proposals_recovery', 'proposal:a']);
+        expect(Array.from(storage.values.keys()).sort()).toEqual(['cadastre_proposals', 'parcel_HR-1_owner']);
+        expect(store.getAllProposals()).toEqual([]);
+    });
+});
+
+describe('proposal rows: a record is stored only in its own city', () => {
+    // projections.md §10 M8: storage refuses another city's record (CityConfigManager.foreignCityFor);
+    // every link and list route catches the refusal and opens the record in its city instead.
+    function bootInCity(foreign, current = 'zagreb') {
+        const storage = fakeStorage();
+        const store = bootStore(storage);
+        install('getLifecycleStatus', proposal => proposal.lifecycleStatus || 'Active');
+        install('parkProposalForImport', () => {});
+        install('CityConfigManager', {
+            resolveCityId: city => (['zagreb', 'split', 'paris', 'new_york'].includes(city) ? city : null),
+            getCitiesByParcelSource: source => (source === 'oss-wfs' ? [{ id: 'zagreb' }, { id: 'split' }] : []),
+            foreignCityFor: city => (foreign.includes(city) ? city : null),
+            getCityLabel: id => ({ paris: 'Paris', zagreb: 'Zagreb' })[id] || id,
+            getCurrentCityId: () => current
+        });
+        return { storage, store };
+    }
+
+    it('refuses a record of a city with other parcel data, writing nothing', () => {
+        const { storage, store } = bootInCity(['paris']);
+        let refusal = null;
+        try { store.importProposal(record('p1', { city: 'paris' })); } catch (error) { refusal = error; }
+        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'paris' });
+        expect(refusal.message).toMatch(/Paris/);
+        expect(store.getProposal('p1')).toBeFalsy();
+        expect(rowKeys(storage)).toEqual([]);
+    });
+
+    // A cancelled server record used to be rewritten to Active on import, so a link to it applied it.
+    it('keeps the lifecycle an imported record arrives with', () => {
+        const { store } = bootInCity(['paris']);
+        store.importProposal(record('c1', { lifecycleStatus: 'Cancelled' }));
+        store.importProposal(record('e1', { lifecycleStatus: 'Expired' }));
+        expect(store.getProposal('c1').lifecycleStatus).toBe('Cancelled');
+        expect(store.getProposal('e1').lifecycleStatus).toBe('Expired');
+    });
+
+    it('imports its own city\'s records, those of a city on the same cadastre and those naming no city', () => {
+        const { store } = bootInCity(['paris']);
+        expect(store.importProposal(record('z1', { city: 'zagreb' }))).toBeTruthy();
+        expect(store.importProposal(record('s1', { city: 'split' }))).toBeTruthy();
+        expect(store.importProposal(record('n1'))).toBeTruthy();
+    });
+
+    it('places a record naming no city by its parcels: a Croatian one is not New York\'s', () => {
+        const { storage, store } = bootInCity(['zagreb'], 'new_york');
+        let refusal = null;
+        try { store.importProposal(record('legacy', { city: 'city', cadastreParcelIds: ['HR-335649-100'] })); } catch (error) { refusal = error; }
+        expect(refusal).toMatchObject({ code: 'proposal-in-other-city', cityId: 'zagreb' });
+        expect(rowKeys(storage)).toEqual([]);
+    });
+});

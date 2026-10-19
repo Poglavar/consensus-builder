@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:93",
+  "queueRank": 93,
+  "name": "Cape Town",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "centerLatLon": [
+    -33.9805360922243,
+    18.5999587421507
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "za-cct-land-parcels",
+    "requestUrl": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A18.4180%2C%22ymin%22%3A-33.9270%2C%22xmax%22%3A18.4200%2C%22ymax%22%3A-33.9255%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSG26_CODE%2CPRTY_NMBR%2CSTR_NAME%2CZONING&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      18.418,
+      -33.927,
+      18.42,
+      -33.9255
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "SG26_CODE (21-char Surveyor-General code); also PRTY_NMBR, OBJECTID",
+    "responseFile": "cape-town-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true"
+  },
+  "source": {
+    "sourceId": "za-cct-land-parcels",
+    "name": "Land Parcels (City of Cape Town Open Data Portal)",
+    "operator": "City of Cape Town (ODP / GIS)",
+    "scope": "City of Cape Town metropolitan municipality",
+    "endpoint": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0",
+    "method": "GET (ArcGIS REST query)",
+    "responseFormat": "Esri JSON (f=json)",
+    "crs": "EPSG:4326 requested via outSR",
+    "reuseStatus": "City open data portal listing; licence terms not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://odp-cctegis.opendata.arcgis.com/datasets/cctegis::land-parcels/about",
+      "observation": "City of Cape Town Open Data Portal: Land Parcels dataset (City cadastre/erf polygons)."
+    },
+    {
+      "url": "https://odp-cctegis.opendata.arcgis.com/api/search/v1/collections/dataset/items?q=land%20parcels",
+      "observation": "Hub search API resolved the dataset to the Property FeatureServer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://odp-cctegis.opendata.arcgis.com/api/search/v1/collections/dataset/items?q=land%20parcels&limit=4",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=utf-8",
+      "assessment": "catalogue lookup; gives FeatureServer URL"
+    },
+    {
+      "url": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "service description: one layer 'Land Parcels', polygon; not counted"
+    },
+    {
+      "url": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0/query (bbox 18.5990,-33.9810,18.6010,-33.9795)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "2 polygons at the queue point (Cape Town Airport parcels)",
+      "parcelRecordCount": 2
+    },
+    {
+      "url": "https://services6.arcgis.com/nyYfO9SxHU2ChQd9/arcgis/rest/services/Property/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A18.4180%2C%22ymin%22%3A-33.9270%2C%22xmax%22%3A18.4200%2C%22ymax%22%3A-33.9255%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSG26_CODE%2CPRTY_NMBR%2CSTR_NAME%2CZONING&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "3 polygons near the CBD",
+      "parcelRecordCount": 3
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City of Cape Town cadastre (erven)",
+    "verifiedOpenScope": "5 parcels across two small test areas",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "City scope only; completeness and update frequency are unverified. The attribute table includes street-address fields; no owner fields were seen (owner data not requested in the saved reply). Licence terms not read. The hosted layer may move as the City reorganises its services (ODP_SPLIT services in 2025).",
+  "nextStep": "Read the City's open data licence; consider the City ArcGIS ODP_SPLIT services if this layer moves; implement bounded ArcGIS pagination. South Africa's national cadastre is a separate question."
+}

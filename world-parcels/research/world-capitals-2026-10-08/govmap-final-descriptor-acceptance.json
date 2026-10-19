@@ -1,0 +1,1056 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Read-only live verification of the final shared Govmap source identity across the two city records. Historic city-specific acceptance traces remain unchanged; this file records new namespace mapping and actual calls.",
+  "checkedAt": "2026-10-08T19:11:06.686Z",
+  "descriptor": {
+    "adapter": "wfs",
+    "id": "il-govmap-cadastral-parcel-rows",
+    "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+    "featureType": "opendata:PARCEL_ALL",
+    "geometryField": "the_geom",
+    "requestProperties": true,
+    "version": "2.0.0",
+    "idField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "govmap:row:",
+    "outFields": [
+      "OBJECTID",
+      "PARCEL_ID",
+      "GUSH_NUM",
+      "GUSH_SUFFI",
+      "PARCEL"
+    ],
+    "pageSize": 100,
+    "idBatchSize": 3,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "responseSrid": 3857,
+    "minRequestIntervalMs": 100
+  },
+  "identity": {
+    "sourceId": "il-govmap-cadastral-parcel-rows",
+    "idField": "OBJECTID",
+    "idPrefix": "govmap:row:",
+    "meaning": "Shared provider row identifier. OBJECTID is unique in bounded tests but is not asserted to be a statutory parcel number.",
+    "cityMappings": [
+      {
+        "city": "jerusalem",
+        "historicalDescriptorId": "govmap-parcel-all-jerusalem-rowid",
+        "historicalCityPrefixedId": "IL-JERUSALEM-ROW-1091864",
+        "sharedId": "govmap:row:1091864",
+        "geometrySha256": "b47f062373e697c0eba783c7426c559c58e06ceb21b6f829a3c7905c0081317e"
+      },
+      {
+        "city": "east-jerusalem",
+        "historicalDescriptorId": "govmap-parcel-all-east-jerusalem-rowid",
+        "historicalCityPrefixedId": "IL-EAST-JERUSALEM-ROW-786513",
+        "sharedId": "govmap:row:786513",
+        "geometrySha256": "19359d114ccbf4f4e5b7dea9feb5098feda1f0c2184f80c8a563f75cf106bac1"
+      }
+    ]
+  },
+  "cities": [
+    {
+      "city": "jerusalem",
+      "historicalCityDescriptorId": "govmap-parcel-all-jerusalem-rowid",
+      "historicalCityPrefixedId": "IL-JERUSALEM-ROW-1091864",
+      "sharedId": "govmap:row:1091864",
+      "objectId": 1091864,
+      "geometrySha256FromHistoricCache": "b47f062373e697c0eba783c7426c559c58e06ceb21b6f829a3c7905c0081317e",
+      "descriptorId": "il-govmap-cadastral-parcel-rows",
+      "tests": [
+        {
+          "name": "shared-exact-id",
+          "passed": true,
+          "result": {
+            "complete": true,
+            "queried": 1,
+            "returned": 1,
+            "absentIds": [],
+            "geometryType": "MultiPolygon",
+            "geometrySha256": "b47f062373e697c0eba783c7426c559c58e06ceb21b6f829a3c7905c0081317e",
+            "hashMatchesHistoricalCityCache": true,
+            "elapsedMs": 4744
+          }
+        },
+        {
+          "name": "shared-footprint-read",
+          "passed": true,
+          "result": {
+            "complete": true,
+            "intersectingFeatureCount": 9,
+            "containsSelectedId": true,
+            "selectedHashMatchesHistoricalCache": true,
+            "elapsedMs": 531,
+            "features": [
+              {
+                "id": "govmap:row:714146",
+                "objectId": 714146,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "40fadc3172d403b4ed91d2250dd8319a8040ae45bd5fb1ddb4d489b92e92770d",
+                "sourceProperties": {
+                  "OBJECTID": 714146,
+                  "PARCEL_ID": 1073178,
+                  "GUSH_NUM": 30847,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 17
+                }
+              },
+              {
+                "id": "govmap:row:1082692",
+                "objectId": 1082692,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "fa0a6a2861b9cdc81e608101100923bd65fcaead57b29b20179b8b3ae5abc056",
+                "sourceProperties": {
+                  "OBJECTID": 1082692,
+                  "PARCEL_ID": 1076449,
+                  "GUSH_NUM": 31420,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 3
+                }
+              },
+              {
+                "id": "govmap:row:1082695",
+                "objectId": 1082695,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "2ff177f00c38450272506bd55a333d9472918682ff6e7a96a91a56dc3c30d5c9",
+                "sourceProperties": {
+                  "OBJECTID": 1082695,
+                  "PARCEL_ID": 1073115,
+                  "GUSH_NUM": 31420,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 5
+                }
+              },
+              {
+                "id": "govmap:row:1082697",
+                "objectId": 1082697,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "5ffb21914af47c35d5d680dc5496788100098fe7cd2584c6b6e9e7de630ee829",
+                "sourceProperties": {
+                  "OBJECTID": 1082697,
+                  "PARCEL_ID": 1073117,
+                  "GUSH_NUM": 31420,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 8
+                }
+              },
+              {
+                "id": "govmap:row:1082699",
+                "objectId": 1082699,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "3bd9c49c91002480fbf29be0b55eeb84f1a2f48c6fe84dfb0e6393a0af7e3b15",
+                "sourceProperties": {
+                  "OBJECTID": 1082699,
+                  "PARCEL_ID": 1076452,
+                  "GUSH_NUM": 31420,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 6
+                }
+              },
+              {
+                "id": "govmap:row:1091863",
+                "objectId": 1091863,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "a25b6f96ac05e5c023554f4543e06558a24771694afaafe6f1d72065ed5e0286",
+                "sourceProperties": {
+                  "OBJECTID": 1091863,
+                  "PARCEL_ID": 1076485,
+                  "GUSH_NUM": 30843,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 22
+                }
+              },
+              {
+                "id": "govmap:row:1091864",
+                "objectId": 1091864,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "b47f062373e697c0eba783c7426c559c58e06ceb21b6f829a3c7905c0081317e",
+                "sourceProperties": {
+                  "OBJECTID": 1091864,
+                  "PARCEL_ID": 1076486,
+                  "GUSH_NUM": 30843,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 29
+                }
+              },
+              {
+                "id": "govmap:row:1091866",
+                "objectId": 1091866,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "633ad9f03f409933cf166314bb327ba6fc561dc778d0ab3b52066f6d29813725",
+                "sourceProperties": {
+                  "OBJECTID": 1091866,
+                  "PARCEL_ID": 1076488,
+                  "GUSH_NUM": 30843,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 28
+                }
+              },
+              {
+                "id": "govmap:row:1091867",
+                "objectId": 1091867,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "129e4898b12ec9c205f121318a84b699591b1b418a35caa6224bace568e9fb2a",
+                "sourceProperties": {
+                  "OBJECTID": 1091867,
+                  "PARCEL_ID": 1076489,
+                  "GUSH_NUM": 30843,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 23
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "shared-compute-source-binding",
+          "passed": true,
+          "result": {
+            "computed": true,
+            "coverage": "complete",
+            "siteM2": 454.83,
+            "boundParcels": 1,
+            "containsSelectedId": true,
+            "selectedHashMatchesHistoricalCache": true,
+            "elapsedMs": 287
+          }
+        }
+      ],
+      "requestCount": 3,
+      "requests": [
+        {
+          "operation": "shared-exact-id",
+          "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091864%29",
+          "method": "GET",
+          "checkedAt": "2026-10-08T19:10:54.834Z",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "elapsedMs": 4742,
+          "bytes": 862,
+          "numberMatched": 1,
+          "numberReturned": 1,
+          "featureCount": 1,
+          "responsePropertyNames": [
+            "OBJECTID",
+            "PARCEL_ID",
+            "GUSH_NUM",
+            "GUSH_SUFFI",
+            "PARCEL"
+          ],
+          "features": [
+            {
+              "transportId": "PARCEL_ALL.258179",
+              "properties": {
+                "OBJECTID": 1091864,
+                "PARCEL_ID": 1076486,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 29
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+            }
+          ]
+        },
+        {
+          "operation": "shared-footprint-read",
+          "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.21436675965057%2C31.781522976185773%2C35.214680176639014%2C31.782007017578753%2CCRS%3A84",
+          "method": "GET",
+          "checkedAt": "2026-10-08T19:10:59.577Z",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "elapsedMs": 530,
+          "bytes": 14570,
+          "numberMatched": 9,
+          "numberReturned": 9,
+          "featureCount": 9,
+          "responsePropertyNames": [
+            "OBJECTID",
+            "PARCEL_ID",
+            "GUSH_NUM",
+            "GUSH_SUFFI",
+            "PARCEL"
+          ],
+          "features": [
+            {
+              "transportId": "PARCEL_ALL.709722",
+              "properties": {
+                "OBJECTID": 714146,
+                "PARCEL_ID": 1073178,
+                "GUSH_NUM": 30847,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 17
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "f67243b48a9e8c5e565f91fe3cd35b06541127889d150d5d18225b22125561cb"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079736",
+              "properties": {
+                "OBJECTID": 1082692,
+                "PARCEL_ID": 1076449,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 3
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079739",
+              "properties": {
+                "OBJECTID": 1082695,
+                "PARCEL_ID": 1073115,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 5
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "2eff2012d4fde86fe52c0cb688e638154fbe4cec1cefc978e44cfc85961aef53"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079741",
+              "properties": {
+                "OBJECTID": 1082697,
+                "PARCEL_ID": 1073117,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 8
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "472df361b617a8866bba9e37a739ed363f7f43ba46c4b42e990d4bbf40c2e0f4"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079743",
+              "properties": {
+                "OBJECTID": 1082699,
+                "PARCEL_ID": 1076452,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 6
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "3fd18069d26678e109c04ab08f39e53bb657ddef8b784e2bb4750647de6ed479"
+            },
+            {
+              "transportId": "PARCEL_ALL.258181",
+              "properties": {
+                "OBJECTID": 1091863,
+                "PARCEL_ID": 1076485,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 22
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+            },
+            {
+              "transportId": "PARCEL_ALL.258179",
+              "properties": {
+                "OBJECTID": 1091864,
+                "PARCEL_ID": 1076486,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 29
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+            },
+            {
+              "transportId": "PARCEL_ALL.789590",
+              "properties": {
+                "OBJECTID": 1091866,
+                "PARCEL_ID": 1076488,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 28
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+            },
+            {
+              "transportId": "PARCEL_ALL.789593",
+              "properties": {
+                "OBJECTID": 1091867,
+                "PARCEL_ID": 1076489,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 23
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "109c45609beaa07dd598698303ebd8f8d163c3ed5490e8d356c7b31eae9693c2"
+            }
+          ]
+        },
+        {
+          "operation": "shared-compute-source-binding",
+          "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.21436675965057%2C31.781522976185773%2C35.214680176639014%2C31.782007017578753%2CCRS%3A84",
+          "method": "GET",
+          "checkedAt": "2026-10-08T19:11:00.110Z",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "elapsedMs": 262,
+          "bytes": 14570,
+          "numberMatched": 9,
+          "numberReturned": 9,
+          "featureCount": 9,
+          "responsePropertyNames": [
+            "OBJECTID",
+            "PARCEL_ID",
+            "GUSH_NUM",
+            "GUSH_SUFFI",
+            "PARCEL"
+          ],
+          "features": [
+            {
+              "transportId": "PARCEL_ALL.709722",
+              "properties": {
+                "OBJECTID": 714146,
+                "PARCEL_ID": 1073178,
+                "GUSH_NUM": 30847,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 17
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "f67243b48a9e8c5e565f91fe3cd35b06541127889d150d5d18225b22125561cb"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079736",
+              "properties": {
+                "OBJECTID": 1082692,
+                "PARCEL_ID": 1076449,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 3
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079739",
+              "properties": {
+                "OBJECTID": 1082695,
+                "PARCEL_ID": 1073115,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 5
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "2eff2012d4fde86fe52c0cb688e638154fbe4cec1cefc978e44cfc85961aef53"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079741",
+              "properties": {
+                "OBJECTID": 1082697,
+                "PARCEL_ID": 1073117,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 8
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "472df361b617a8866bba9e37a739ed363f7f43ba46c4b42e990d4bbf40c2e0f4"
+            },
+            {
+              "transportId": "PARCEL_ALL.1079743",
+              "properties": {
+                "OBJECTID": 1082699,
+                "PARCEL_ID": 1076452,
+                "GUSH_NUM": 31420,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 6
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "3fd18069d26678e109c04ab08f39e53bb657ddef8b784e2bb4750647de6ed479"
+            },
+            {
+              "transportId": "PARCEL_ALL.258181",
+              "properties": {
+                "OBJECTID": 1091863,
+                "PARCEL_ID": 1076485,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 22
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+            },
+            {
+              "transportId": "PARCEL_ALL.258179",
+              "properties": {
+                "OBJECTID": 1091864,
+                "PARCEL_ID": 1076486,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 29
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+            },
+            {
+              "transportId": "PARCEL_ALL.789590",
+              "properties": {
+                "OBJECTID": 1091866,
+                "PARCEL_ID": 1076488,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 28
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+            },
+            {
+              "transportId": "PARCEL_ALL.789593",
+              "properties": {
+                "OBJECTID": 1091867,
+                "PARCEL_ID": 1076489,
+                "GUSH_NUM": 30843,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 23
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "109c45609beaa07dd598698303ebd8f8d163c3ed5490e8d356c7b31eae9693c2"
+            }
+          ]
+        }
+      ],
+      "gridUniqueIds": 123,
+      "footprintFeatureCount": 9,
+      "unionFeatureCount": 123,
+      "unionFile": "/tmp/world-capitals-2026-10-08/jerusalem-shared-union-metric.geojson",
+      "unionMetricCrs": "EPSG:32636",
+      "topologyUnionAudit": {
+        "repoFile": "jerusalem-quality-footprint-union.json",
+        "metricCrs": "EPSG:32636",
+        "library": "Shapely 2.1.2",
+        "gridFeatureCount": 123,
+        "footprintFeatureCount": 9,
+        "unionUniqueFeatureCount": 123,
+        "validNonemptyCount": 123,
+        "invalidGeometryCount": 0,
+        "overlapPairCountAbove0_01M2": 0,
+        "exactDuplicateGeometryGroupCount": 0
+      }
+    },
+    {
+      "city": "east-jerusalem",
+      "historicalCityDescriptorId": "govmap-parcel-all-east-jerusalem-rowid",
+      "historicalCityPrefixedId": "IL-EAST-JERUSALEM-ROW-786513",
+      "sharedId": "govmap:row:786513",
+      "objectId": 786513,
+      "geometrySha256FromHistoricCache": "19359d114ccbf4f4e5b7dea9feb5098feda1f0c2184f80c8a563f75cf106bac1",
+      "descriptorId": "il-govmap-cadastral-parcel-rows",
+      "tests": [
+        {
+          "name": "shared-exact-id",
+          "passed": true,
+          "result": {
+            "complete": true,
+            "queried": 1,
+            "returned": 1,
+            "absentIds": [],
+            "geometryType": "MultiPolygon",
+            "geometrySha256": "19359d114ccbf4f4e5b7dea9feb5098feda1f0c2184f80c8a563f75cf106bac1",
+            "hashMatchesHistoricalCityCache": true,
+            "elapsedMs": 4504
+          }
+        },
+        {
+          "name": "shared-footprint-read",
+          "passed": true,
+          "result": {
+            "complete": true,
+            "intersectingFeatureCount": 10,
+            "containsSelectedId": true,
+            "selectedHashMatchesHistoricalCache": true,
+            "elapsedMs": 764,
+            "features": [
+              {
+                "id": "govmap:row:786313",
+                "objectId": 786313,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "c9455d7f6db2ea8bc68aa92a215542d68dad334f2f0db2bedb71e75bd0fc9697",
+                "sourceProperties": {
+                  "OBJECTID": 786313,
+                  "PARCEL_ID": 781028,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 43
+                }
+              },
+              {
+                "id": "govmap:row:786508",
+                "objectId": 786508,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "a125a6cd6575654d49a0d3bd26941a9d38f488567fa8e34ca41cf19d8f809b4f",
+                "sourceProperties": {
+                  "OBJECTID": 786508,
+                  "PARCEL_ID": 1096278,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 45
+                }
+              },
+              {
+                "id": "govmap:row:786509",
+                "objectId": 786509,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "e9b0ee7bb2f3ea2c3a16f10da7c518f3ace2612a840d3bfdbe5a9af97e5b2eaa",
+                "sourceProperties": {
+                  "OBJECTID": 786509,
+                  "PARCEL_ID": 781033,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 34
+                }
+              },
+              {
+                "id": "govmap:row:786512",
+                "objectId": 786512,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "ed7dce72259a1cc70683751a8c0ea0a8860db7b513cd55fcfcd85c5d4c40691a",
+                "sourceProperties": {
+                  "OBJECTID": 786512,
+                  "PARCEL_ID": 781036,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 33
+                }
+              },
+              {
+                "id": "govmap:row:786513",
+                "objectId": 786513,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "19359d114ccbf4f4e5b7dea9feb5098feda1f0c2184f80c8a563f75cf106bac1",
+                "sourceProperties": {
+                  "OBJECTID": 786513,
+                  "PARCEL_ID": 781037,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 39
+                }
+              },
+              {
+                "id": "govmap:row:786514",
+                "objectId": 786514,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "52f16a78ee35f503806409391e346412a4dde0d4a0a4574b00dcc137cbdfc17d",
+                "sourceProperties": {
+                  "OBJECTID": 786514,
+                  "PARCEL_ID": 781038,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 38
+                }
+              },
+              {
+                "id": "govmap:row:786737",
+                "objectId": 786737,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "af3754494d2fa747f52f0b208e859133e7d39ebb130b7daeca7f97ac77316d45",
+                "sourceProperties": {
+                  "OBJECTID": 786737,
+                  "PARCEL_ID": 781039,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 37
+                }
+              },
+              {
+                "id": "govmap:row:786738",
+                "objectId": 786738,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "8f887f3562b7db7ca1c4c70a5dc62695694ed08f27307930f985181dbfdd0f27",
+                "sourceProperties": {
+                  "OBJECTID": 786738,
+                  "PARCEL_ID": 781040,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 35
+                }
+              },
+              {
+                "id": "govmap:row:786739",
+                "objectId": 786739,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "4d4b98a1e96e5ee8a6d4ca3dd53c62ee965866e3835e3d21c5190e6854903e3d",
+                "sourceProperties": {
+                  "OBJECTID": 786739,
+                  "PARCEL_ID": 781041,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 44
+                }
+              },
+              {
+                "id": "govmap:row:786740",
+                "objectId": 786740,
+                "geometryType": "MultiPolygon",
+                "geometrySha256": "d2d3532db74146881b1b7648562bff7bc697723b2ff3eb1b5c1c39ecabf07917",
+                "sourceProperties": {
+                  "OBJECTID": 786740,
+                  "PARCEL_ID": 781042,
+                  "GUSH_NUM": 30529,
+                  "GUSH_SUFFI": 0,
+                  "PARCEL": 36
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "shared-compute-source-binding",
+          "passed": true,
+          "result": {
+            "computed": true,
+            "coverage": "complete",
+            "siteM2": 15275.23,
+            "boundParcels": 1,
+            "containsSelectedId": true,
+            "selectedHashMatchesHistoricalCache": true,
+            "elapsedMs": 1013
+          }
+        }
+      ],
+      "requestCount": 3,
+      "requests": [
+        {
+          "operation": "shared-exact-id",
+          "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28786513%29",
+          "method": "GET",
+          "checkedAt": "2026-10-08T19:11:00.403Z",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "elapsedMs": 4503,
+          "bytes": 6260,
+          "numberMatched": 1,
+          "numberReturned": 1,
+          "featureCount": 1,
+          "responsePropertyNames": [
+            "OBJECTID",
+            "PARCEL_ID",
+            "GUSH_NUM",
+            "GUSH_SUFFI",
+            "PARCEL"
+          ],
+          "features": [
+            {
+              "transportId": "PARCEL_ALL.784314",
+              "properties": {
+                "OBJECTID": 786513,
+                "PARCEL_ID": 781037,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 39
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "72ec15d461ad1f2ef62159bed9e8a88bb6bc89d6b8ca9d3d4af9335f41f7ae13"
+            }
+          ]
+        },
+        {
+          "operation": "shared-footprint-read",
+          "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.24623397233085%2C31.789388026373725%2C35.249393730904245%2C31.794941970280064%2CCRS%3A84",
+          "method": "GET",
+          "checkedAt": "2026-10-08T19:11:04.907Z",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "elapsedMs": 759,
+          "bytes": 43220,
+          "numberMatched": 10,
+          "numberReturned": 10,
+          "featureCount": 10,
+          "responsePropertyNames": [
+            "OBJECTID",
+            "PARCEL_ID",
+            "GUSH_NUM",
+            "GUSH_SUFFI",
+            "PARCEL"
+          ],
+          "features": [
+            {
+              "transportId": "PARCEL_ALL.782377",
+              "properties": {
+                "OBJECTID": 786313,
+                "PARCEL_ID": 781028,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 43
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "3076ae269f2e22af225845d7517770b11af1771321b47bfdcea6d81dc940af56"
+            },
+            {
+              "transportId": "PARCEL_ALL.784162",
+              "properties": {
+                "OBJECTID": 786508,
+                "PARCEL_ID": 1096278,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 45
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "ccc4995a127025e5c76dd2b48e4422d0d3cd1cf0d3936ff731c16c396332228b"
+            },
+            {
+              "transportId": "PARCEL_ALL.784163",
+              "properties": {
+                "OBJECTID": 786509,
+                "PARCEL_ID": 781033,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 34
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "1d5529cea7b6404332846d171f7fde85bb3080376509105f6da506a63e8a2e77"
+            },
+            {
+              "transportId": "PARCEL_ALL.784313",
+              "properties": {
+                "OBJECTID": 786512,
+                "PARCEL_ID": 781036,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 33
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "7700d3decb9589d12da534a3277bd643ba9c4cda82f035aa11ec77b2e2a40596"
+            },
+            {
+              "transportId": "PARCEL_ALL.784314",
+              "properties": {
+                "OBJECTID": 786513,
+                "PARCEL_ID": 781037,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 39
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "72ec15d461ad1f2ef62159bed9e8a88bb6bc89d6b8ca9d3d4af9335f41f7ae13"
+            },
+            {
+              "transportId": "PARCEL_ALL.784315",
+              "properties": {
+                "OBJECTID": 786514,
+                "PARCEL_ID": 781038,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 38
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "2c5930604ce9e48a67bc027bf1cf574fa78e91adbc10d0e841006054a8fb76f9"
+            },
+            {
+              "transportId": "PARCEL_ALL.785311",
+              "properties": {
+                "OBJECTID": 786737,
+                "PARCEL_ID": 781039,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 37
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "aa9cf407e93d94c99db80aeb6ba997da5d2c1a0fdd4f0c02012eeb0add0711c9"
+            },
+            {
+              "transportId": "PARCEL_ALL.785312",
+              "properties": {
+                "OBJECTID": 786738,
+                "PARCEL_ID": 781040,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 35
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "d6960a7ed7ffa54d735517144472a54079afe73b1f984abb391ec8e31eb6437c"
+            },
+            {
+              "transportId": "PARCEL_ALL.785313",
+              "properties": {
+                "OBJECTID": 786739,
+                "PARCEL_ID": 781041,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 44
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "b01dd11719e78932de4f5c8e3cfa146b3b91680b553c768c8df2b9864a272232"
+            },
+            {
+              "transportId": "PARCEL_ALL.785314",
+              "properties": {
+                "OBJECTID": 786740,
+                "PARCEL_ID": 781042,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 36
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "45fae8e6963e297fcffac6980b9fa59740f2ca3c7b18a7486089c9abd20f5c5e"
+            }
+          ]
+        },
+        {
+          "operation": "shared-compute-source-binding",
+          "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.24623397233085%2C31.789388026373725%2C35.249393730904245%2C31.794941970280064%2CCRS%3A84",
+          "method": "GET",
+          "checkedAt": "2026-10-08T19:11:05.672Z",
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8",
+          "elapsedMs": 985,
+          "bytes": 43220,
+          "numberMatched": 10,
+          "numberReturned": 10,
+          "featureCount": 10,
+          "responsePropertyNames": [
+            "OBJECTID",
+            "PARCEL_ID",
+            "GUSH_NUM",
+            "GUSH_SUFFI",
+            "PARCEL"
+          ],
+          "features": [
+            {
+              "transportId": "PARCEL_ALL.782377",
+              "properties": {
+                "OBJECTID": 786313,
+                "PARCEL_ID": 781028,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 43
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "3076ae269f2e22af225845d7517770b11af1771321b47bfdcea6d81dc940af56"
+            },
+            {
+              "transportId": "PARCEL_ALL.784162",
+              "properties": {
+                "OBJECTID": 786508,
+                "PARCEL_ID": 1096278,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 45
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "ccc4995a127025e5c76dd2b48e4422d0d3cd1cf0d3936ff731c16c396332228b"
+            },
+            {
+              "transportId": "PARCEL_ALL.784163",
+              "properties": {
+                "OBJECTID": 786509,
+                "PARCEL_ID": 781033,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 34
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "1d5529cea7b6404332846d171f7fde85bb3080376509105f6da506a63e8a2e77"
+            },
+            {
+              "transportId": "PARCEL_ALL.784313",
+              "properties": {
+                "OBJECTID": 786512,
+                "PARCEL_ID": 781036,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 33
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "7700d3decb9589d12da534a3277bd643ba9c4cda82f035aa11ec77b2e2a40596"
+            },
+            {
+              "transportId": "PARCEL_ALL.784314",
+              "properties": {
+                "OBJECTID": 786513,
+                "PARCEL_ID": 781037,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 39
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "72ec15d461ad1f2ef62159bed9e8a88bb6bc89d6b8ca9d3d4af9335f41f7ae13"
+            },
+            {
+              "transportId": "PARCEL_ALL.784315",
+              "properties": {
+                "OBJECTID": 786514,
+                "PARCEL_ID": 781038,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 38
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "2c5930604ce9e48a67bc027bf1cf574fa78e91adbc10d0e841006054a8fb76f9"
+            },
+            {
+              "transportId": "PARCEL_ALL.785311",
+              "properties": {
+                "OBJECTID": 786737,
+                "PARCEL_ID": 781039,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 37
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "aa9cf407e93d94c99db80aeb6ba997da5d2c1a0fdd4f0c02012eeb0add0711c9"
+            },
+            {
+              "transportId": "PARCEL_ALL.785312",
+              "properties": {
+                "OBJECTID": 786738,
+                "PARCEL_ID": 781040,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 35
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "d6960a7ed7ffa54d735517144472a54079afe73b1f984abb391ec8e31eb6437c"
+            },
+            {
+              "transportId": "PARCEL_ALL.785313",
+              "properties": {
+                "OBJECTID": 786739,
+                "PARCEL_ID": 781041,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 44
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "b01dd11719e78932de4f5c8e3cfa146b3b91680b553c768c8df2b9864a272232"
+            },
+            {
+              "transportId": "PARCEL_ALL.785314",
+              "properties": {
+                "OBJECTID": 786740,
+                "PARCEL_ID": 781042,
+                "GUSH_NUM": 30529,
+                "GUSH_SUFFI": 0,
+                "PARCEL": 36
+              },
+              "geometryType": "MultiPolygon",
+              "geometrySha256": "45fae8e6963e297fcffac6980b9fa59740f2ca3c7b18a7486089c9abd20f5c5e"
+            }
+          ]
+        }
+      ],
+      "gridUniqueIds": 6,
+      "footprintFeatureCount": 10,
+      "unionFeatureCount": 10,
+      "unionFile": "/tmp/world-capitals-2026-10-08/east-jerusalem-shared-union-metric.geojson",
+      "unionMetricCrs": "EPSG:32636",
+      "topologyUnionAudit": {
+        "repoFile": "east-jerusalem-quality-footprint-union.json",
+        "metricCrs": "EPSG:32636",
+        "library": "Shapely 2.1.2",
+        "gridFeatureCount": 6,
+        "footprintFeatureCount": 10,
+        "unionUniqueFeatureCount": 10,
+        "validNonemptyCount": 10,
+        "invalidGeometryCount": 0,
+        "overlapPairCountAbove0_01M2": 0,
+        "exactDuplicateGeometryGroupCount": 0
+      }
+    }
+  ],
+  "allTestsPassed": true
+}

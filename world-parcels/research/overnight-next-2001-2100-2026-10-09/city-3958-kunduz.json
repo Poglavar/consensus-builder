@@ -1,0 +1,46 @@
+{
+  "cityCode": 3958,
+  "queueRank": 2028,
+  "name": "Kunduz",
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "iso3": "AFG",
+  "point": [36.7220947823134, 68.8695100850333],
+  "population2025": 287295,
+  "population2025k": 287.295,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kunduz Afghanistan official cadastral parcel map land registry GIS Ministry of Agriculture land authority",
+        "result": "Official Afghanistan National Portal, MAIL and MUDH results identified Kunduz land-registration, property-rights verification and cadastral-survey activity. The public PRMIS/MIS shell and official pages did not expose an anonymous parcel feature service with a stable safe ID and geometry.",
+        "actualResultUrls": [
+          "https://mail.gov.af/en/node/20832",
+          "https://www.mudh.gov.af/index.php/en/over-209000-jeribs-land-registered-kunduz",
+          "https://pms.moj.gov.af/",
+          "https://afg.gov.af/provinces/kunduz"
+        ]
+      },
+      {
+        "language": "Dari/Pashto local",
+        "query": "کادستر نقشه ثبت ملکیت زمین کندز اداره اراضی افغانستان",
+        "result": "Official MAIL Dari/Pashto pages document a Kunduz property-rights verification center, provincial cadastral survey work and cadastral maps/sketches in Kunduz cases. No public anonymous parcel geometry endpoint or safe native parcel ID response was found.",
+        "actualResultUrls": [
+          "https://mail.gov.af/dr/%D8%B3%D9%81%D8%B1-%D9%87%DB%8C%D8%A6%D8%AA-%D9%88%D8%B2%D8%A7%D8%B1%D8%AA-%D8%B2%D8%B1%D8%A7%D8%B9%D8%AA-%D8%A8%D9%87-%D9%85%D9%86%D8%B8%D9%88%D8%B1-%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D9%85%D8%B1%D9%83%D8%B2-%D9%88%D8%A7%D8%AD%D8%AF-%D8%AA%D8%AB%D8%A8%DB%8C%D8%AA-%D9%85%D9%84%D9%83%DB%8C%D8%AA-%D8%AF%D8%B1-%D9%83%D9%86%D8%AF%D8%B2-0",
+          "https://www.mail.gov.af/dr/node/21114",
+          "https://www.mail.gov.af/dr/node/12806"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "First-party MAIL pages identify the provincial land/agriculture authority and a Kunduz property-rights verification center; official Kunduz case reports explicitly reference cadastral maps, cadastral pieces, coordinates and sketches. This evidences a local/provincial cadastral or land-registry custodian, not an open parcel API.",
+  "registryEvidenceUrls": [
+    "https://mail.gov.af/dr/%D8%B3%D9%81%D8%B1-%D9%87%D9%8A%D8%A6%D8%AA-%D9%88%D8%B2%D8%A7%D8%B1%D8%AA-%D8%B2%D8%B1%D8%A7%D8%B9%D8%AA-%D8%A8%D9%87-%D9%85%D9%86%D8%B8%D9%88%D8%B1-%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D9%85%D8%B1%D9%83%D8%B2-%D9%88%D8%A7%D8%AD%D8%AF-%D8% تثبيت-%D9%85%D9%84%D9%83%DB%8C%D8%AA-%D8% در-%D9%83%D9%86%D8%AF%D8%B2-0",
+    "https://www.mail.gov.af/dr/node/12806",
+    "https://www.mudh.gov.af/index.php/en/over-209000-jeribs-land-registered-kunduz"
+  ]
+}

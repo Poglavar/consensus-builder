@@ -1,0 +1,34 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "TAM",
+ "regionName": "Tamaulipas",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "not established",
+ "subregionsVerified": [],
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar; viewer-origin Referer where applicable",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://finanzas.tamaulipas.gob.mx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "redirected to ShieldSquare/perfdrive challenge page; not bypassed"
+  },
+  {
+   "url": "https://catastro.tamaulipas.gob.mx, tamaulipas.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "No parcel service could be reached or verified from this network; not a permanent negative.",
+ "nextStep": "Retry from another network / inspect state viewer directly."
+}

@@ -1,0 +1,11 @@
+{
+  "taskId": "city:5665",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-5665-pandeglang.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pandeglang-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:47:52.943439Z",
+  "reason": "First-party ATR/BPN portal and local office shells support a custody lead, but no parcel geometry or native ID response was saved; adapter qualification is absent."
+}

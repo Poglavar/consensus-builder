@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "baton_rouge",
+      "stateCode": "LA",
+      "sourceId": "us-la-ebr-baton-rouge-parcels",
+      "endpoint": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.19,
+            30.447499999999998,
+            -91.1875,
+            30.45
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1875,
+            30.447499999999998,
+            -91.185,
+            30.45
+          ],
+          "count": 66,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned a missing or invalid native parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 3,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 306,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    }
+  ]
+}

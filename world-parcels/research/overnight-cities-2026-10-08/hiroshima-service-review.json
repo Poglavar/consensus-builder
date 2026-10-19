@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "jp-moj-hiroshima-naka-registered-map-2025",
+  "purpose": "Service review for WUP2025 rank 435 Hiroshima (city code 3037); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Ministry of Justice (Japan); dataset distributed by Geospatial Information Center",
+  "sourceUrl": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1584",
+  "registryFound": true,
+  "registryBasis": "The official Geospatial Information Center catalog publishes 2025 Registry Office Map Data for Hiroshima City Naka Ward (Hiroshima Legal Affairs Bureau). The anonymous archive contains georeferenced registered parcel polygons in EPSG:6671 as well as arbitrary-coordinate map sheets. Geometry-only processing retained the three nearest georeferenced polygons, 363.568534–389.076280 m from the exact WUP point; none contains the point. No parcel identifiers or attribute values were read or retained.",
+  "officialSources": [
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1584",
+      "observation": "Official catalog page for Hiroshima City Naka Ward (Hiroshima Legal Affairs Bureau) 2025 Registry Office Map Data. Anonymous metadata lists the 2025 ZIP resource as 8,191,652 bytes; direct bounded range returned 206 and full archive GET returned 200."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2025-1-1584",
+      "observation": "Anonymous package metadata returned HTTP 200 and listed the Hiroshima Naka Ward 2025 ZIP plus terms PDF. No archive attributes were requested through API."
+    },
+    {
+      "url": "https://www.city.hiroshima.lg.jp/shisei/gyosei/1021856/1006054/1027541/1013017.html",
+      "observation": "Hiroshima City’s official topographic-map page, updated 2025-04-04, offers CC BY PDF topographic sheets. It is not a cadastral parcel geometry route."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1584/resource/47871bf1-4c85-48f7-a8fe-b27c6643c1c5/download/license.pdf",
+      "observation": "Dataset terms allow copying, public transmission, translation/adaptation and commercial use with attribution; they prohibit collecting personal data or identifying people by joining data. We read no parcel identifiers or row attributes."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hiroshima City official parcel map public GIS cadastral map shape data",
+      "scope": "Find city-local registered parcel geometry and anonymous routes.",
+      "result": "Official Hiroshima City topographic sheets are public but are not parcel boundaries. The official catalog has a Hiroshima Naka Ward registry-map dataset; its 2025 archive is anonymously downloadable. Geometry-only inspection found nearby polygons, but none contains the exact WUP point.",
+      "urls": [
+        "https://www.city.hiroshima.lg.jp/shisei/gyosei/1021856/1006054/1027541/1013017.html",
+        "https://www.geospatial.jp/ckan/dataset/2075b8c2-bd3d-499e-be33-5f56efab570b"
+      ]
+    },
+    {
+      "language": "Japanese",
+      "query": "広島市 地番図 公開 市役所 地籍 登記所備付地図データ",
+      "scope": "広島市固有の登記所備付地図と匿名で取得できる筆界ジオメトリを確認。",
+      "result": "広島市公式の地形図PDFと、広島市中区の法務局登記所備付地図データ（2025）を確認。公開アーカイブを匿名取得し、属性値を参照せずジオメトリのみで地点との位置関係を検査した。WUP地点を含む筆はなく、最近傍は363.568534m。",
+      "urls": [
+        "https://www.city.hiroshima.lg.jp/shisei/gyosei/1021856/1006054/1027541/1013017.html",
+        "https://www.geospatial.jp/ckan/dataset/2075b8c2-bd3d-499e-be33-5f56efab570b"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 3,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "static_open_archive_nearby_geometry_verified_no_exact_point_match",
+    "reason": "The public 2025 Naka Ward map archive was geometry-tested at the exact WUP point: no retained registry polygon contains it; the nearest is 363.568534 m away. A three-polygon nearby sample is retained, but it does not identify the WUP-point parcel. The static archive uses sheet and record ordering for sample identity; no live viewport or exact-feature contract has been verified."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.city.hiroshima.lg.jp/shisei/gyosei/1021856/1006054/1027541/1013017.html",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 57765,
+      "observation": "City topographic-map information; downloadable PDF sheets are not cadastral parcel geometry."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=houmusyouchizu-2025-1-1584",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 5290,
+      "observation": "Anonymous metadata for Hiroshima City Naka Ward 2025 registry-map data and resource links."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1584/resource/f9e40783-8e75-4844-8a30-09d351475634/download/34101-2400-2025.zip",
+      "method": "GET Range bytes=0-4095",
+      "status": 206,
+      "contentType": "application/zip",
+      "bytes": 4096,
+      "observation": "Anonymous bounded range confirmed ZIP resource access; no content was printed."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1584/resource/f9e40783-8e75-4844-8a30-09d351475634/download/34101-2400-2025.zip",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/zip",
+      "bytes": 8191652,
+      "observation": "Full public archive downloaded temporarily. It contains 105 nested map-sheet ZIPs and one CSV; nested map XMLs were processed for geometry only, then raw archives deleted."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/houmusyouchizu-2025-1-1584/resource/47871bf1-4c85-48f7-a8fe-b27c6643c1c5/download/license.pdf",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/pdf",
+      "bytes": 141976,
+      "observation": "Read dataset use terms: attribution required; copying/adaptation permitted; personal-data collection and identification through joins prohibited."
+    },
+    {
+      "url": "local geometry-only inspection",
+      "method": "offline parse",
+      "status": "completed",
+      "observation": "Among 105 map-sheet XMLs, 17 declare Public Coordinate System III (EPSG:6671) and 88 arbitrary coordinate system. Geometry-only inspection found 9,068 georeferenced parcel shapes. Exact WUP point is not contained; nearest is 363.568534 m away. Three nearest closed polygons are converted to CRS84 and retained; no parcel label/number values were read."
+    }
+  ],
+  "technicalBlocker": "The public 2025 Naka Ward map archive was geometry-tested at the exact WUP point: no retained registry polygon contains it; the nearest is 363.568534 m away. A three-polygon nearby sample is retained, but it does not identify the WUP-point parcel. The static archive uses sheet and record ordering for sample identity; no live viewport or exact-feature contract has been verified.",
+  "sampleDisposition": "Retained 3 geometry-only polygons at samples/hiroshima-registry-map-wup435.geojson (none contains WUP point). No parcel identifiers or attribute values read.",
+  "remainingUncertainty": "No candidate polygon contains the WUP point. The nearest geometry may be a neighbor and its map-sheet/ordinal identity is snapshot-specific. No parcel-name/number fields were read, no attribute join was performed, and no live map endpoint was qualified."
+}

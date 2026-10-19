@@ -1,0 +1,225 @@
+{
+  "checkedAt": "2026-10-03",
+  "scope": "Official Chinese municipal cadastral/property-map data portals for Shanghai, Beijing and Tianjin; distinguish title/cadastre parcels from planning plots, land-sale lots and buildings.",
+  "method": "Reviewed the existing bounded research records dated 2026-09-28/29, then checked official portal/policy pages and search-indexed metadata. No personal login, private owner attributes, or parcel polygon records were accessed or persisted. Direct official-host requests that failed are recorded as client reachability failures, not absence. No tiny-bbox query was run because no anonymous cadastral vector endpoint was identified.",
+  "cities": [
+    {
+      "city": "Shanghai",
+      "officialDataExists": "Yes: official cadastral-map query and map-based real-estate/property inquiry are documented.",
+      "openVectorOrAnonymousQueryApi": "Not verified. The official cadastral-map entry leads to an account-oriented registration service; the one-map property query is interactive/building-based and is not a documented bulk parcel feed. Shanghai open-data direct request returned HTTP 412 anti-automation response; this does not establish absence.",
+      "falsePositiveChecked": "Shanghai Tianditu public Detailed Plan Map exposes ArcGIS/GeoScene planblock and planscopeline planning layers with plot/permit/planning fields; these are planning polygons/lines, not cadastral title boundaries. Tokenless ArcGIS metadata requests failed from this client; not queried for features.",
+      "nextStep": "Use an authorized account on the bureau-linked cadastral service or obtain an official catalog answer confirming whether a parcel geometry product is available; test its documented metadata/bounded endpoint and check coverage and native parcel ID.",
+      "sources": [
+        {
+          "url": "https://ghzyj.sh.gov.cn/bdcgl/index.html",
+          "note": "Shanghai NR bureau entry page; 地籍图查询 link.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Page date not stated; checked 2026-10-03",
+          "sourceTitle": "上海市规划和自然资源局 不动产登记办事入口（含地籍图查询）"
+        },
+        {
+          "url": "https://zwdt.sh.gov.cn/govPortals/bsfw/item/3621e368-5106-45b8-a420-cbb8e073e6bc",
+          "note": "Official 不动产查询（以图查房） individual map/property query; describes registration information, floor plans and 宗地图.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Page date not stated; checked 2026-10-03",
+          "sourceTitle": "不动产查询（以图查房）"
+        },
+        {
+          "url": "https://data.sh.gov.cn/view/",
+          "note": "Official open-data portal; HTTP 412 observed in direct request.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Portal; checked 2026-10-03",
+          "sourceTitle": "上海市公共数据开放平台"
+        },
+        {
+          "url": "https://shanghai.tianditu.gov.cn/xg/map.html",
+          "note": "Official public detailed-planning map; ArcGIS layer is planning, not title/cadastre.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Page date not stated; checked 2026-10-03",
+          "sourceTitle": "详细规划一张图公众版（试运行）"
+        }
+      ],
+      "termsAreInformational": true
+    },
+    {
+      "city": "Beijing",
+      "officialDataExists": "Yes: the 2022-05-17 Chinese municipal announcement offers an individual visual lookup of registered buildings and their cadastral map; any person/entity can use it after authenticated login.",
+      "openVectorOrAnonymousQueryApi": "Not verified. The current Chinese notice is explicit about a visual, selected-building query through an identity-verified portal. No anonymous bulk polygon service or downloadable parcel feed was found. Direct portal/data-site requests from this client failed.",
+      "falsePositiveChecked": "Public Tianditu base-map/service catalog did not establish a cadastral polygon layer; base maps are not parcel title data.",
+      "nextStep": "Check the authenticated portal/catalog for a documented geometry-bearing dataset or bounded feature endpoint, its coverage and stable native parcel identifier; do not infer that the visual query exposes bulk vectors.",
+      "sources": [
+        {
+          "url": "https://ghzrzyw.beijing.gov.cn/zhengwuxinxi/zcwj/qtwj/202405/t20240521_3689773.html",
+          "sourceTitle": "北京市规划和自然资源委员会关于提供不动产登记信息及地籍图可视化查询服务的公告",
+          "publicationDate": "2022-05-17 (发布日期/实施日期 in the notice)",
+          "checkedOn": "2026-10-03",
+          "note": "Current Chinese municipal notice: permits any person/entity to visually query the natural/right-restriction status and cadastral map of buildings first-registered since unified registration began in 2015; login through the online registration portal and identity verification via Beijing Tong, Yizheng Tong or business e-license are required. Individual building query, not anonymous bulk parcel API."
+        },
+        {
+          "url": "https://www.beijing.gov.cn/zhengce/zhengcefagui/202004/t20200408_1798073.html",
+          "note": "Official municipal policy describes cadastral map lookup scope and parcel-specific query.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "2019 policy; official page published 2020-04-08",
+          "sourceTitle": "北京市不动产登记资料查询暂行办法 (official municipal policy page; 2019 policy text)"
+        },
+        {
+          "url": "https://data.beijing.gov.cn/",
+          "note": "Official open-data portal; direct request failed from this client.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Portal; checked 2026-10-03",
+          "sourceTitle": "北京市公共数据开放平台"
+        },
+        {
+          "url": "https://beijing.tianditu.gov.cn/",
+          "note": "Official geographic information portal; no cadastral layer verified in this pass.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Page date not stated; checked 2026-10-03",
+          "sourceTitle": "天地图·北京 / 北京市地理信息公共服务平台"
+        },
+        {
+          "url": "https://english.beijing.gov.cn/government/policytoolkittwo/INV_Policy_Text/202411/t20241127_3951281.html",
+          "sourceTitle": "Announcement of Beijing Municipal Commission of Planning and Natural Resources on the Provision of Real Estate Registration Information and Cadastral Map Visualization Inquiry Service",
+          "publicationDate": "Notice dated 2022-05-12; English page path is dated 2024-11-27",
+          "checkedOn": "2026-10-03",
+          "note": "English corroborating version explicitly describes login and identity verification for map/building/address query."
+        }
+      ],
+      "termsAreInformational": true
+    },
+    {
+      "city": "Tianjin",
+      "officialDataExists": "Registration/cadastral holdings are supported by an official search-indexed budget-document excerpt; full PDF context was not inspected. The official Tianditu handbook also lists real-property registration in a results catalogue, without a specific parcel dataset. Public development-plot maps are not title cadastre.",
+      "openVectorOrAnonymousQueryApi": "Not verified. Tianjin Tianditu's official handbook says the results catalog covers thematic data including 不动产登记 and supports metadata/coverage/update inspection and download applications, some requiring approval. It does not name a parcel-boundary dataset, provide a public feature service or confirm downloadable geometry. Tianjin open-data portal is live, but category/keyword searches did not surface a cadastre layer; catalog search is bounded, not exhaustive. The portal's normal map/developer resources and documented data APIs require identity/key and describe generic base maps/structured data; no parcel feature endpoint identified.",
+      "falsePositiveChecked": "Tianjin 土地码/码上看地 presents about 95 mature, tradeable development parcels with planning/investment information; treat these as project/land-sale lots, not cadastral coverage. Tianditu base vector maps/tiles are roads/water/settlements, not cadastre.",
+      "nextStep": "Follow Tianjin Tianditu 成果目录's 不动产登记 category and request the actual dataset metadata/product specification: boundary geometry, coverage, native parcel ID, update cadence, delivery format and access/approval. Then test a bounded metadata or sample query after confirming its technical access requirements.",
+      "sources": [
+        {
+          "url": "https://tianjin.tianditu.gov.cn/",
+          "note": "Official municipal geospatial public-service platform; operated under Tianjin planning/natural-resources bureau and survey center.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Page date not stated; checked 2026-10-03",
+          "sourceTitle": "天津市地理信息公众服务平台 天地图·天津"
+        },
+        {
+          "url": "https://tianjin.tianditu.gov.cn/static/help/note.html",
+          "note": "Official-hosted handbook: lines 299-314 describe results catalog, thematic category 不动产登记 and application/approval workflow; no concrete parcel layer/service specified.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Page states © 2026; exact issue date not stated",
+          "sourceTitle": "天地图·天津 用户操作使用手册"
+        },
+        {
+          "url": "https://open.data.tj.gov.cn/",
+          "note": "Official municipal open-data portal. Earlier request to legacy data.tj.gov.cn was HTTP 403; current host responds, but bounded category/keyword search yielded no cadastral polygon dataset.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "Portal; checked 2026-10-03",
+          "sourceTitle": "天津市公共数据开放平台"
+        },
+        {
+          "url": "https://www.zfgjj.cn/tjgjjcms/mainSiteApp/content/app_xwdt/app_jjdt/app_jjdt/365137.html",
+          "note": "Official Tianjin publication dated 2024-01-19 on the 土地码 project/land-development parcel map; not title cadastre.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "2024-01-19",
+          "sourceTitle": "Official Tianjin “土地码” / “码上看地” announcement"
+        },
+        {
+          "url": "https://cz.tj.gov.cn/zwgk_53713/yjsgktypt/jxgk/2024ztzcjxmb/202402/W020240229606553918417.pdf",
+          "note": "Official PDF URL; the official search-indexed excerpt reports approx. 110,000 state-construction parcel maps and approx. 267,000 real-estate floor plans to be integrated, plus registration-system operation/data submission. PDF was not directly opened or page-numbered in this pass; treat these precise quantities as indexed excerpt evidence, not firsthand document inspection. Internal data is not proof of public endpoint availability.",
+          "checkedOn": "2026-10-03",
+          "publicationDate": "2024-02-29 (date encoded in official PDF URL; exact displayed issue date not independently page-verified)",
+          "sourceTitle": "整体支出绩效目标表（2024年度）— 天津市规划和自然资源局"
+        }
+      ],
+      "termsAreInformational": true
+    }
+  ],
+  "overall": "No anonymous cadastral polygon endpoint was verified for any of the three cities in this bounded pass. This does not show that cadastral records are absent. Integration research can continue against an identified geometry-bearing source, its technical query/authentication model, coverage and stable native key; terms are informational and are not a stop condition.",
+  "schemaVersion": 1,
+  "description": "Bounded official-portal audit. Metadata and reachability outcomes only; no parcel geometries or personal fields.",
+  "networkOutcomes": {
+    "shanghai": [
+      {
+        "url": "https://ghzyj.sh.gov.cn/bdcgl/index.html",
+        "method": "GET",
+        "outcome": "HTTP 200; bureau page links 地籍图查询."
+      },
+      {
+        "url": "https://biz.ghzyj.sh.gov.cn/bdcdj/forwardHouseStateQuery",
+        "method": "GET",
+        "outcome": "Node fetch() rejected with message \"fetch failed\" (about 2.3 s); not evidence of service absence."
+      },
+      {
+        "url": "https://data.sh.gov.cn/view/",
+        "method": "GET",
+        "outcome": "HTTP 412 anti-automation HTML; no dataset body."
+      },
+      {
+        "url": "https://shanghai.tianditu.gov.cn/xg/map.html",
+        "method": "GET",
+        "outcome": "HTTP 200; public detailed planning app names planblock/planscopeline. No feature query attempted because layers are planning, not title cadastre."
+      },
+      {
+        "url": "https://map4.shanghai-map.net/arcgis/rest/services/planblock/MapServer?f=pjson",
+        "method": "GET",
+        "outcome": "Node fetch() rejected with message \"fetch failed\" (about 2.3 s); planning layer only and not queried for features."
+      }
+    ],
+    "beijing": [
+      {
+        "url": "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go",
+        "method": "GET",
+        "outcome": "Node fetch() rejected with message \"fetch failed\" after about 10.5 s; no inference of service absence."
+      },
+      {
+        "url": "https://bdc.ghzrzyw.beijing.gov.cn/eo/wizard/mainMenu.go?method=mainMenu",
+        "method": "GET",
+        "outcome": "Node fetch() rejected with message \"fetch failed\" after about 10.5 s; no inference of service absence."
+      },
+      {
+        "url": "https://data.beijing.gov.cn/",
+        "method": "GET",
+        "outcome": "Node fetch() rejected with message \"fetch failed\" after about 0.6 s; no inference of catalog absence."
+      },
+      {
+        "url": "https://beijing.tianditu.gov.cn/",
+        "method": "GET",
+        "outcome": "HTTP 200 homepage; no cadastral vector layer documented/verified in this pass."
+      }
+    ],
+    "tianjin": [
+      {
+        "url": "https://open.data.tj.gov.cn/sjj/index.htm",
+        "method": "GET",
+        "outcome": "HTTP 200; municipal open-data portal accessible."
+      },
+      {
+        "url": "https://open.data.tj.gov.cn/sjjk/index.htm",
+        "method": "GET",
+        "outcome": "HTTP 200; municipal API/catalog portal accessible."
+      },
+      {
+        "url": "https://data.tj.gov.cn/",
+        "method": "GET",
+        "outcome": "HTTP 403 on legacy portal hostname; current open.data.tj.gov.cn is reachable, so prior result is stale-host reachability only."
+      },
+      {
+        "url": "https://tianjin.tianditu.gov.cn/",
+        "method": "GET",
+        "outcome": "HTTP 200 homepage; official handbook lists 不动产登记 in the result catalog but provides no specific parcel dataset/service endpoint."
+      },
+      {
+        "url": "https://tianjin.tianditu.gov.cn/TDTUserLogin/auth/userInfo",
+        "method": "GET",
+        "outcome": "JSON code -1, message 用户数据为空; no logged-in user/session."
+      }
+    ]
+  },
+  "termsAreInformational": true,
+  "termsNote": "No licensing/terms assessment is used as an integration gate in this audit. Terms, if present, remain informational; the unresolved questions here are technical access, actual parcel geometry, geographic coverage, and stable native identity.",
+  "boundedSearchQueries": [
+    "site:tianjin.tianditu.gov.cn \"不动产登记\" 成果目录 天津",
+    "site:webmap.cn/store.do 地籍 宗地 天津 不动产登记 数据服务目录",
+    "site:mulu.tianditu.gov.cn 天津 地籍 宗地 服务",
+    "site:beijing.gov.cn 不动产登记 可视化查询 地籍图 北京通 2024",
+    "site:cz.tj.gov.cn W020240229606553918417.pdf 天津 不动产登记 地籍 数据库"
+  ]
+}

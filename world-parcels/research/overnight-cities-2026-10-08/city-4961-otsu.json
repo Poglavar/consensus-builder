@@ -1,0 +1,104 @@
+{
+  "name": "Otsu",
+  "country": "Japan",
+  "countryCode": "JP",
+  "rank": 978,
+  "point": [
+    35.0275788911215,
+    135.934138565062
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Otsu Japan official cadastral parcel map land registry GIS public city map",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "Otsu City conducts cadastral surveys and publishes survey-implementation maps. Its official My Town map-service page explicitly says it does not include parcel-number (地番図) map information; certificates/records are handled through specific application channels. No public parcel feature endpoint or geometry was found.",
+        "actualResultUrls": [
+          "https://www.city.otsu.lg.jp/machi/c/ch/1395209266135.html"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Japanese",
+        "query": "大津市 地籍図 地番図 地図情報サービス 地籍調査 公式",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "Otsu City conducts cadastral surveys and publishes survey-implementation maps. Its official My Town map-service page explicitly says it does not include parcel-number (地番図) map information; certificates/records are handled through specific application channels. No public parcel feature endpoint or geometry was found.",
+        "actualResultUrls": [
+          "https://www.city.otsu.lg.jp/machi/c/ch/1395209266135.html"
+        ],
+        "executionMethod": "Separate Japanese-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Otsu City cadastral survey office / City map search service",
+        "operator": "Otsu City Construction Department, Road Administration Division; local Legal Affairs Bureau for registry maps",
+        "homeUrl": "https://www.city.otsu.lg.jp/machi/c/ch/1395209266135.html",
+        "observation": "Otsu City conducts cadastral surveys and publishes survey-implementation maps. Its official My Town map-service page explicitly says it does not include parcel-number (地番図) map information; certificates/records are handled through specific application channels. No public parcel feature endpoint or geometry was found."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "JP-4961-LOCAL-CADASTRE-REVIEW",
+    "name": "Otsu City cadastral survey office / City map search service",
+    "url": "https://www.city.otsu.lg.jp/machi/c/ch/1395209266135.html",
+    "operator": "Otsu City Construction Department, Road Administration Division; local Legal Affairs Bureau for registry maps",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral survey and registered-map workflows are real, but the city’s public map service explicitly omits parcel-number mapping.",
+    "verifiedOpenScope": "Otsu City conducts cadastral surveys and publishes survey-implementation maps. Its official My Town map-service page explicitly says it does not include parcel-number (地番図) map information; certificates/records are handled through specific application channels. No public parcel feature endpoint or geometry was found.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No public parcel geometry layer/schema is exposed by the official City map service. Survey products and registered maps use application or landowner workflows.",
+  "remainingUncertainty": "No public geometry at the WUP point was verified; cadastral survey coverage varies by area.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4961,
+  "cityId": "wup2025:4961",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.0275788911215,
+    135.934138565062
+  ],
+  "population2025k": 559.798,
+  "populationUnit": "persons",
+  "queueRank": 978,
+  "population2025": 559798,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Otsu City conducts cadastral surveys and publishes survey-implementation maps. Its official My Town map-service page explicitly says it does not include parcel-number (地番図) map information; certificates/records are handled through specific application channels. No public parcel feature endpoint or geometry was found.",
+  "registryEvidenceUrls": [
+    "https://www.city.otsu.lg.jp/machi/c/ch/1395209266135.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No public parcel geometry layer/schema is exposed by the official City map service. Survey products and registered maps use application or landowner workflows."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.city.otsu.lg.jp/machi/c/ch/1395209266135.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "大津市の地籍調査について／大津市"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

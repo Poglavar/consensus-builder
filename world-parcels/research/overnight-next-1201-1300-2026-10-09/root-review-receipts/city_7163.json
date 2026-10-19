@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7163",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7163-maragha.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/maragha-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:39:21Z",
+  "identityReview": "Immutable roster and pending queue match WUP code 7163, rank 1268, Egypt, exact point, and population in persons.",
+  "searchReview": "Paired city packet and service review record executed English and Arabic searches and first-party result URLs.",
+  "sourceReview": "The official ITDA Maragha office is a commercial registry and does not establish land-record custody. The Survey Authority describes digital-map procurement; the official Ministry of Justice notice is available only through indexed first-party text after direct TLS failure. Local land-record custody is therefore not independently established by the ITDA office, and the packet custody claim remains qualified pending direct cadastral evidence. The live IDSC FeatureServer metadata lists buildings and administrative layers, with no parcel layer.",
+  "admissionReview": "No full source parcel polygon or safe native ID was retained. Fresh exact native-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity/duplicates/overlap checks, full-parcel source binding, and headed Details-panel verification are absent. No runtime or catalog admission; unverified geometry access is not citywide absence."
+}

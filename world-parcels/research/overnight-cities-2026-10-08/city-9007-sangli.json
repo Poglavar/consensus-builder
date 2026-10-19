@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Sangli",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Sangli-Miraj-Kupwad Municipal Corporation advertises property part-plan/layout information and zone-certificate services; Maharashtra Land Records lists a Sangli City Survey Office. This establishes local cadastral/property-plan activity but not anonymous downloadable parcel polygons.",
+  "registryEvidenceUrls": [
+    "https://www.smkc.gov.in/",
+    "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+    "https://smkc.gov.in/SMKC_New_Election_Final.aspx"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9007,
+  "cityId": "wup2025:9007",
+  "centerLatLon": [
+    16.8517830477309,
+    74.605865738511
+  ],
+  "rank": 699,
+  "queueRank": 699,
+  "population2025": 761451,
+  "population2025k": 761.451,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted.",
+  "scopeLimits": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted.",
+  "remainingUncertainty": "The part-plan service may provide property-specific maps after applicant/parcel selection; whether any anonymous map endpoint publishes full parcel geometry is unverified. No feature schema or geometry was safely exposed by the reviewed pages.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sangli Maharashtra municipal property part plan cadastral map parcel GIS official",
+        "scope": "Identify the city-specific registry and a public, anonymous parcel-geometry source.",
+        "result": "Municipal property-plan services and a city survey office are verified. Public ward-election maps are administrative boundaries, and no parcel-feature endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.smkc.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+          "https://smkc.gov.in/SMKC_New_Election_Final.aspx"
+        ],
+        "executionMethod": "Separate language-specific web search, filtering to official municipal, registry, or government sources."
+      },
+      {
+        "language": "Marathi",
+        "query": "सांगली महानगरपालिका भाग नकाशा मालमत्ता सिटी सर्व्हे भूमी अभिलेख अधिकृत",
+        "scope": "Identify the city-specific registry and a public, anonymous parcel-geometry source.",
+        "result": "Municipal property-plan services and a city survey office are verified. Public ward-election maps are administrative boundaries, and no parcel-feature endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.smkc.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+          "https://smkc.gov.in/SMKC_New_Election_Final.aspx"
+        ],
+        "executionMethod": "Separate language-specific web search, filtering to official municipal, registry, or government sources."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.smkc.gov.in/",
+        "observation": "The Sangli-Miraj-Kupwad Municipal Corporation advertises property part-plan/layout information and zone-certificate services; Maharashtra Land Records lists a Sangli City Survey Office. This establishes local cadastral/property-plan activity but not anonymous downloadable parcel polygons."
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+        "observation": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted."
+      },
+      {
+        "url": "https://smkc.gov.in/SMKC_New_Election_Final.aspx",
+        "observation": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted."
+      }
+    ],
+    "metadataReviewFile": "sangli-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No anonymously verified full parcel-geometry endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted."
+  },
+  "coverageAssessment": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "point": [
+    16.8517830477309,
+    74.605865738511
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00",
+  "sourceIds": []
+}

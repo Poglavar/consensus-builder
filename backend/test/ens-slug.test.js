@@ -27,7 +27,6 @@ describe('parcelToSlug', () => {
 
 describe('parcelIdToCity', () => {
     const cases = [
-        ['HR-335258-4341/2', 'zagreb', 'zg'],
         ['US-NY-6201001005440048', 'new_york', 'ny'],
         ['US-CO-12345', 'colorado', 'co'],
         ['SI-99', 'ljubljana', 'lj'],
@@ -39,6 +38,10 @@ describe('parcelIdToCity', () => {
         const result = parcelIdToCity(id);
         expect(result).toMatchObject({ cityId, cityCode });
         expect(result.cityName).toBeTruthy();
+    });
+
+    it('names no city for a Croatian id: one countrywide cadastre serves several cities', () => {
+        expect(parcelIdToCity('HR-335258-4341/2')).toBeNull();
     });
 
     it('returns null for ids without a recognizable prefix', () => {

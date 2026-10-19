@@ -1,0 +1,24 @@
+{
+  "taskId": "city:8007",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8007-chishtian-sharif.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/chishtian-sharif-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8007-chishtian-sharif-sample.geojson",
+    "tmp/valhalla-parcel-research/8007/pulse.html",
+    "tmp/valhalla-parcel-research/8007/cadastral-mapserver-auth.json",
+    "tmp/valhalla-parcel-research/8007/bahawalnagar-layer.json",
+    "tmp/valhalla-parcel-research/8007/bbox-query.geojson",
+    "tmp/valhalla-parcel-research/8007/point-query.geojson"
+  ],
+  "checkedAt": "2026-10-12T07:49:00Z",
+  "findings": {
+    "identity": "UN WUP 2025 gzip SHA-256 matches roster source metadata; source row, rank 3277 roster, pending queue, and packet agree on Pakistan, point [29.7965667323216,72.8601389630638], and 184022 persons.",
+    "searches": "Packet and paired review record executed English and Urdu queries with result URLs. Cached first-party PULSE page binds to Punjab Cadastral Maps MapServer; original service metadata lists Bahawalnagar layer 1, polygon geometry, EPSG:3857 and OBJECTID OID.",
+    "geometry": "Original bounded response has three full polygons with native OBJECTID values 1032919-1032921 and exceededTransferLimit=true. Retained sample geometry is coordinate-identical and has only id properties. Independent EPSG:32643 GEOS check found three valid, nonoverlapping polygons, about 4046.9 square metres each. Exact-point response has zero features, which is not citywide absence. The three similarly sized shapes and bare OID do not by themselves establish parcel semantics or persistent legal identity.",
+    "admission": "Held: response is transfer-limited; no fresh exact-ID read, forced paging, 13-cell coverage, complete metric checks, source-to-proposal binding, or headed Details verification is independently evidenced. No runtime or coverage state changed."
+  }
+}

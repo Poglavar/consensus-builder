@@ -1,0 +1,15 @@
+{
+  "cityRecord": "city-7460-qift.json",
+  "cityCode": 7460,
+  "queueRank": 3129,
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "service": "Egyptian Survey Authority (ESA) / Qena Survey Directorate; Qift local administration evidence",
+  "queryAndRequestOutcome": "English and Arabic first-party discovery completed. ESA service, digital-map workflow, directorate map and official SIS gazette evidence were inspected. ESA exposes map-request/purchase procedures and formats/scales, but no anonymous parcel feature API, schema, CRS or safe native parcel identity was obtained. No GeoJSON sample is retained.",
+  "scopeLimits": ["National ESA service pages and local Qift administrative evidence are not equivalent to an open citywide parcel layer", "A map image, paid/request workflow, login wall or unavailable API is not evidence of citywide absence", "WUP municipal boundary correspondence and parcel completeness were not established", "No citywide completeness or adapter readiness was established"],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "reproduction metadata for the public service"],
+  "retainedSamples": [],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": ["No full parcel polygon or safe native parcel ID was observed", "ESA digital maps may require an official request/purchase and were not treated as anonymously queryable", "No unsafe landholder or title-related fields were requested", "Packet records research evidence only and requires independent serial adapter review before any runtime use"]
+}

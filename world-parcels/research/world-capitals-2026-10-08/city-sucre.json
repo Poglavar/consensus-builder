@@ -1,0 +1,78 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:BO:sucre",
+  "name": "Sucre",
+  "country": "Bolivia",
+  "countryCode": "BO",
+  "centerLatLon": [
+    -19.0196,
+    -65.2619
+  ],
+  "capitalRole": "constitutional capital",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Sucre Bolivia municipio catastro parcelario mapa GIS official",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos",
+        "https://sucre.bo/"
+      ]
+    },
+    {
+      "query": "Sucre Bolivia municipal cadastral parcel map GIS official government",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos",
+      "observation": "Official government cadastral-certification procedure identifies Gobierno Autónomo Municipal de Sucre and cites Ley Municipal Autonómica 236/22, Ley de Catastro del Municipio de Sucre; no public polygon service identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official government cadastral-certification procedure page opened; it identifies the municipal provider and municipal cadastral law, but no public polygon service."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "The official government cadastral-certification procedure names the Gobierno Autónomo Municipal de Sucre and cites its municipal cadastral law. No public city polygon service was identified.",
+    "urls": [
+      "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The official government cadastral-certification procedure names the Gobierno Autónomo Municipal de Sucre and cites its municipal cadastral law. No public city polygon service was identified."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The official government cadastral-certification procedure names the Gobierno Autónomo Municipal de Sucre and cites its municipal cadastral law. No public city polygon service was identified.",
+  "registryEvidenceUrls": [
+    "https://www.gob.bo/tramites/certificacion-catastral-para-pago-de-impuestos-y-tramites-administrativos"
+  ],
+  "sourceIds": []
+}

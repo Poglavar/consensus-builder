@@ -1,0 +1,68 @@
+{
+  "stateCode": "PA",
+  "city": "harrisburg",
+  "endpoint": "https://mapservices.pasda.psu.edu/server/rest/services/pasda/DauphinCounty/MapServer/0",
+  "status": "diagnosed",
+  "query": {
+    "where": "1=1",
+    "geometry": "-76.89,40.27,-76.88,40.28",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "outFields": "PID,UPI,SUBDIVIDED,PARENT_PAR,UNIT",
+    "returnGeometry": "false",
+    "resultRecordCount": "2000",
+    "f": "json"
+  },
+  "rows": 1000,
+  "distinctPID": 992,
+  "duplicateGroups": [
+    [
+      {
+        "PID": "07-004-027",
+        "UPI": " ",
+        "SUBDIVIDED": null,
+        "PARENT_PAR": " ",
+        "UNIT": " "
+      },
+      {
+        "PID": "07-004-027",
+        "UPI": " ",
+        "SUBDIVIDED": null,
+        "PARENT_PAR": " ",
+        "UNIT": " "
+      }
+    ],
+    [
+      {
+        "PID": "06-008-037",
+        "UPI": " ",
+        "SUBDIVIDED": null,
+        "PARENT_PAR": " ",
+        "UNIT": " "
+      },
+      {
+        "PID": "06-008-037",
+        "UPI": " ",
+        "SUBDIVIDED": null,
+        "PARENT_PAR": " ",
+        "UNIT": " "
+      }
+    ],
+    [
+      {
+        "PID": "11-011-068",
+        "UPI": " ",
+        "SUBDIVIDED": null,
+        "PARENT_PAR": " ",
+        "UNIT": " "
+      },
+      {
+        "PID": "11-011-068",
+        "UPI": " ",
+        "SUBDIVIDED": null,
+        "PARENT_PAR": " ",
+        "UNIT": " "
+      }
+    ]
+  ]
+}

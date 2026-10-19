@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Zhangjiakou",
+  "nativeName": "张家口",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An official government procurement listing names Zhangjiakou Natural Resources and Planning Bureau and a city cadastral database/property-rights base-layer project. This is direct city-specific cadastral infrastructure evidence, but not proof of operational public access or WUP-point parcel coverage.",
+  "registryEvidenceUrls": [
+    "https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202609/t20260917_27347987.htm"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleGeometryFile": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8268,
+  "cityId": "wup2025:8268",
+  "centerLatLon": [
+    40.7997394561617,
+    114.881204391828
+  ],
+  "rank": 896,
+  "queueRank": 896,
+  "population2025": 606124,
+  "population2025k": 606.124,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No public geometry-only route and safe parcel-ID schema was found.",
+  "scopeLimits": "Official procurement material documents the municipal bureau cadastral database/base-layer project. No anonymous public parcel feature service or safe geometry schema was verified.",
+  "remainingUncertainty": "The deployed project, geographic scope, current public access and parcel presence at the WUP point are unknown.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Zhangjiakou China official cadastral database property registration parcel map GIS",
+        "result": "Official government procurement material identifies a municipal cadastral database/property base-layer project; no public feature schema found.",
+        "method": "English-language search followed by official-source review.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      },
+      {
+        "language": "Chinese",
+        "query": "张家口市 自然资源和规划局 地籍数据库 不动产登记 地籍图 官方",
+        "result": "本地中文检索找到市级自然资源和规划局地籍数据库项目招采记录；未发现可安全核验的公开宗地几何服务.",
+        "method": "Local-language search followed by official-source review. Separate English and local-language searches plus official-source review; no owner, address, title, tax, account, applicant, or personal fields were queried.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202609/t20260917_27347987.htm",
+        "observation": "An official government procurement listing names Zhangjiakou Natural Resources and Planning Bureau and a city cadastral database/property-rights base-layer project. This is direct city-specific cadastral infrastructure evidence, but not proof of operational public access or WUP-point parcel coverage."
+      }
+    ],
+    "metadataReviewFile": "zhangjiakou-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-8268-zhangjiakou-route-inspection.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "An official government procurement listing names Zhangjiakou Natural Resources and Planning Bureau and a city cadastral database/property-rights base-layer project. This is direct city-specific cadastral infrastructure evidence, but not proof of operational public access or WUP-point parcel coverage.",
+    "verifiedOpenScope": "No public parcel geometry or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "enabled": false,
+    "reason": "Root qualification remains separate; local sample/endpoint evidence alone does not authorize runtime configuration.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202609/t20260917_27347987.htm",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "张家口市自然资源和规划局地籍数据库—产权底板建设项目2包第二次公开招标中标公告"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00",
+  "point": [
+    40.7997394561617,
+    114.881204391828
+  ]
+}

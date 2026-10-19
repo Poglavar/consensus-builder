@@ -1,0 +1,118 @@
+{
+  "cityCode": 5602,
+  "queueRank": 3052,
+  "name": "Buta",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [2.80824270124581, 24.7416340693805],
+  "population2025": 196091,
+  "population2025k": 196.091,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Buta Democratic Republic of the Congo official cadastral parcel map land registry GIS service",
+        "result": "First-party discovery found the official Ministry of Land Affairs service catalogue and cadastral-circumscriptions directory. The directory lists Buta under Bas-Uélé. The official BIC cadastral portal describes a parcel-information/map service, but its public landing page says the service is available for Nord-Kivu and Sud-Kivu, not Bas-Uélé. No Buta parcel viewer or anonymous parcel vector service was identified.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Buta RDC cadastre parcelles registre foncier carte interactive service officiel",
+        "result": "La recherche de première partie a confirmé la circonscription foncière de Buta dans le Bas-Uélé et la procédure officielle de consultation des registres. Le portail BIC public annonce une couverture limitée au Nord-Kivu et au Sud-Kivu. Aucun service public anonyme de parcelles avec identifiant et géométrie pour Buta n'a été qualifié.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://bic.cd/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Ministère des Affaires Foncières de la République démocratique du Congo; circonscription foncière de Buta",
+    "scope": "The official ministry directory lists Buta as a local land/cadastral circumscription in Bas-Uélé. The official consultation service states that registry/cadastral research is handled by the competent Conservateur des Titres Immobiliers or Chef de Division du Cadastre.",
+    "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  "localCustodianContext": {
+    "name": "Circonscription foncière de Buta, Bas-Uélé",
+    "scope": "Local registry/cadastral custodian context is evidenced by the ministry's official directory. No local public parcel map/API or Buta-specific downloadable parcel dataset was exposed by the reviewed first-party pages.",
+    "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  "service": {
+    "name": "Bureau d'Informations Cadastrales (BIC) public cadastral portal; coverage not qualified for Buta",
+    "viewerUrl": "https://bic.cd/",
+    "baseUrl": "https://bic.cd/",
+    "viewerConfiguration": "The current public JavaScript identifies a Supabase-backed cadastral_parcels data service and safe parcel fields including parcel_number, latitude, longitude, and gps_coordinates. The public landing page states service availability for Nord-Kivu and Sud-Kivu. No Buta/Bas-Uélé coverage was advertised or qualified.",
+    "schemaAndCrs": {
+      "parcelSchema": "cadastral_parcels (viewer configuration; no full schema requested)",
+      "nativeIdFields": ["parcel_number"],
+      "geometryCrs": null,
+      "fieldMapping": {
+        "parcel_number": "stable public parcel identifier requested from the service",
+        "latitude": "parcel reference latitude",
+        "longitude": "parcel reference longitude",
+        "gps_coordinates": "public parcel geometry/coordinate field referenced by viewer"
+      },
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "status": 200,
+      "outcome": "Official ministry directory loaded. Buta is listed among the three Bas-Uélé circonscriptions. No parcel geometry or API endpoint was exposed on the page."
+    },
+    {
+      "method": "GET",
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "status": "discovery result",
+      "outcome": "Official service description documents consultation of cadastral and land registers through the competent local officials. It is a request/procedure service, not an anonymous parcel geometry endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/",
+      "status": 200,
+      "outcome": "Public BIC landing page loaded. It advertises cadastral parcel information and map functions but states availability for Nord-Kivu and Sud-Kivu only."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels?select=parcel_number,latitude,longitude,gps_coordinates&latitude=gte.24.70&latitude=lte.24.78&longitude=gte.2.76&longitude=lte.2.86&limit=3",
+      "status": 200,
+      "outcome": "Anonymous bounded safe-field query around the exact WUP point returned an empty JSON array. This is not evidence of citywide absence, and no exact-point miss or coverage conclusion is drawn. No owner, address, contact, titleholder, tax/account, certificate, or other unsafe fields were requested."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/5602/ (unchanged HTML, JavaScript, headers, and bounded safe query response)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [2.80824270124581, 24.7416340693805] was preserved in latitude/longitude order and was not shifted.",
+    "The ministry directory proves a local Buta cadastral/land-registry custodian, but not public vector access.",
+    "The BIC service's stated public coverage excludes Bas-Uélé; its bounded anonymous response was empty and cannot establish citywide absence.",
+    "No full parcel schema, geometry CRS, or ID-plus-geometry response for Buta was qualified; no GeoJSON sample is retained.",
+    "No login, CAPTCHA/Cloudflare bypass, credentials, private token, TLS bypass, or unsafe-field request occurred.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The local Buta office may hold non-public paper or restricted digital parcel records accessible only through the official request procedure.",
+    "BIC coverage/configuration may change, but the current public page and inspected client did not qualify Bas-Uélé coverage.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

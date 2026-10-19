@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9415",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-9415-achalpur.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/achalpur-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-12T07:04:19Z",
+  "reason": "Immutable WUP identity and English/Marathi search records match. The official Achalpur land-record office establishes custody, but no native parcel ID plus full polygon response or independent adapter qualification exists. The service timeout is not citywide absence; runtime admission remains held."
+}

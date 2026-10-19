@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_coverage_diagnostic",
+  "purpose": "Determine whether the previously verified southern Thimphu Plot Boundary sample lies inside Thimphu Thromde/Babesa city coverage, and identify public city-specific plot layers.",
+  "cityId": "capital:BT:thimphu",
+  "checkedAt": "2026-10-08T19:01:20Z",
+  "conclusion": {
+    "southernSampleInsideThimphuThromdeBoundary": false,
+    "southernSampleAdministrativeArea": "Chang Gewog, Thimphu Dzongkhag",
+    "evidence": "The 62 Plot Boundary polygons from the 13-cell southern sample set do not intersect the public tt_bdy2010 municipal boundary; their minimum distance is 225.62 m, median 765.40 m and maximum 1209.92 m in EPSG:3857. A count-only query on the official Gewog boundary layer for the southern sample cell returned Chang (gewog code 1402, dzo code 14).",
+    "centralSample": "The separately recorded 13 city-centre cells around 27.4716, 89.6379 returned zero Plot_Boundary_view features. Their tested envelope lies within the published Thimphu Thromde boundary polygon.",
+    "publicUrbanPlotLayer": "The Thimphu Thromde hosted service also exposes tt_taba_plots, a polygon layer with 685 features in its published Taba-area extent. A safe three-feature sample (fid and geometry only) returned valid polygons, all covered by tt_bdy2010. This is limited Taba coverage; it returned zero in both the central-cell envelope and the southern sample cell and does not establish citywide plot coverage.",
+    "otherPublicPlots": "NHDCL Plots is an open, national housing-corporation plot layer and is not a general cadastral layer. A count-only city-centre envelope query returned 10 and the southern cell returned 0. A one-cell central query was reset before an HTTP response, so no count is recorded for that narrower cell. The municipal GeoInfo page advertises broader plot, locality, demkhong, and Thromde layers, but its viewer requires an access password and downloader requires login; no restricted access was attempted.",
+    "dataInterpretation": "The southern 62-feature batch is verified national cadastral geometry in Chang Gewog, outside the published 2010 Thromde boundary. It must not be counted as Thimphu city/Babesa coverage. The national layer may cover rural properties outside the city. Public Thimphu-specific Taba polygons exist, but no citywide public cadastral plot layer was verified."
+  },
+  "priorResearch": {
+    "nationalPlotLayer": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0",
+    "southAcceptance": "/tmp/asia-capitals-2026-10-08/thimphu-adapter-acceptance.json",
+    "southGeometryAuditInput": "/tmp/asia-capitals-2026-10-08/all-viewports-projected.geojson",
+    "southUniqueFeatures": 62,
+    "southGridCellCount": 13,
+    "cityCentreAcceptance": "research/world-capitals-2026-10-08/thimphu-central-acceptance.json",
+    "cityCentreCells": 13,
+    "cityCentreFeatureCount": 0
+  },
+  "sources": [
+    {
+      "url": "https://nsdi.systems.gov.bt/data/Planning%20and%20cadastre",
+      "observation": "Official NSDI catalogue lists National Land Commission Secretariat Cadastral Boundary as Open and describes plot-boundary shapefile data. This is national coverage, not a city boundary claim."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer",
+      "observation": "Public Thimphu Thromde FeatureServer metadata exposes tt_bdy2010 polygon boundary (layer 1) and tt_taba_plots polygon plots (layer 3)."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Gewog_Boundary/FeatureServer/0",
+      "observation": "Official GewogArea polygon service used for the public administrative-name lookup; schema exposes name_eng and administrative codes."
+    },
+    {
+      "url": "https://geoinfo.thimphu.gov.bt/",
+      "observation": "Official municipal GeoInfo page lists Plots, Localities, Demkhong and Thromde map layers (including Babesa under Demkhong), but shows viewer/query access requires a password and download requires login."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/nhdcl_plots_view/FeatureServer/0",
+      "observation": "Official NSDI service metadata identifies national NHDCL plot polygons. Only count-only query results were used; no plot numbers, location labels or other plot attributes were requested."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/data/Planning%20and%20cadastre?keyword=Plot+Boundary",
+      "observation": "Official NSDI planning/cadastre catalogue describes Cadastral Boundary as open plot-boundary geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Public service metadata lists tt_road (0), tt_bdy2010 polygon (1), and tt_taba_plots polygon (3); full extent EPSG:3857 [9974323.5221,3174510.4774,9983336.3332,3192091.1877]."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/1?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Layer tt_bdy2010; esriGeometryPolygon; OID fid; spatial reference EPSG:3857; one municipal-boundary feature."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/1/query?where=1%3D1&outFields=fid&returnGeometry=true&outSR=3857&f=geojson",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "One Polygon returned, fields requested fid and geometry only. Geometry SHA-256 2808494e052647480066306fd1b6348971df7e7502c5b8435eab29f8175728eb. Full geometry kept outside the repository."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Gewog_Boundary/FeatureServer/0",
+      "method": "GET metadata open",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08",
+      "resultSummary": "Layer GewogArea polygon; public fields include fid, name_eng, gewog_code and dzo_code."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Gewog_Boundary/FeatureServer/0/query?where=1%3D1&geometry=89.636%2C27.42%2C89.638%2C27.422&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=fid%2Cname_eng%2Cgewog_code%2Cdzo_code&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:02Z",
+      "resultSummary": "One Gewog polygon matched the exact southern sample cell: Chang; gewog_code 1402, dzo_code 14. Only administrative names/codes returned."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Plot_Boundary_view/FeatureServer/0/query?where=1%3D1&geometry=89.636%2C27.42%2C89.638%2C27.422&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Count-only query returned 15 national cadastral polygons in this southern sample cell."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/Drainage_Network/FeatureServer/0/query?where=1%3D1&geometry=89.636%2C27.42%2C89.638%2C27.422&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Count-only query returned zero Thimphu Thromde drainage-network polygons in the southern sample cell."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Layer tt_taba_plots; esriGeometryPolygon; OID fid; EPSG:3857 extent [9978176.4994,3186941.1475,9979689.3259,3188991.7121]."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.63548457043507%2C27.50685968254555%2C89.64907452245508%2C27.523196665278846&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:01Z",
+      "resultSummary": "Count-only query over the exact published layer extent returned 685 polygons."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.63548457043507%2C27.50685968254555%2C89.64907452245508%2C27.523196665278846&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=fid&returnGeometry=true&outSR=4326&orderByFields=fid&resultRecordCount=3&resultOffset=0&f=geojson",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:01Z",
+      "resultSummary": "Three valid Polygon features returned from the published Taba extent; only fid and geometry requested. All three polygons are covered by the public tt_bdy2010 boundary. Geometry SHA-256 e7c5c31c5c8e8e29967bdadfd35438b75ab1214bc8955dbdc376e19a844b7786; sample geometries kept outside the repository."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.636%2C27.42%2C89.638%2C27.422&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Zero city Taba polygons returned in the southern Chang sample cell."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3/query?where=1%3D1&geometry=89.635%2C27.469%2C89.640%2C27.474&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Zero city Taba polygons returned in the aggregate central-cell envelope."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/nhdcl_plots_view/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:01Z",
+      "resultSummary": "Public esriGeometryPolygon national NHDCL plots layer; only schema names and extent inspected. No plot-number or location values requested."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/nhdcl_plots_view/FeatureServer/0/query?where=1%3D1&geometry=89.635%2C27.469%2C89.640%2C27.474&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Ten NHDCL polygons matched the wider city-centre envelope. Count only; this is a partial housing-corporation plot inventory, not general cadastre."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/nhdcl_plots_view/FeatureServer/0/query?where=1%3D1&geometry=89.636%2C27.42%2C89.638%2C27.422&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&returnGeometry=false&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:00Z",
+      "resultSummary": "Zero NHDCL polygons matched the southern Chang sample cell."
+    },
+    {
+      "url": "https://geoinfo.thimphu.gov.bt/",
+      "method": "web.run search result/open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:59Z",
+      "resultSummary": "Official GeoInfo page reveals the city plots, locality, Demkhong and Thromde layers; it requires an access password for the viewer and login for downloads. No credentials or restricted endpoints used."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3?f=pjson",
+      "method": "GET (public layer metadata inspection)",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T19:07:00Z",
+      "resultSummary": "Layer name and description are both tt_taba_plots; displayField is location; fields are fid (OID), location (string), pricinct (string), plus virtual SHAPE__Length/SHAPE__Area. timeInfo and editFieldsInfo are null; no status/date/lifecycle field exists. Layer metadata itself does not identify the polygons as registered cadastre or a planning proposal."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/portal/sharing/rest/content/items/b7b99c56f5d54a1f9349a86732568955?f=pjson",
+      "method": "GET (public ArcGIS item metadata inspection)",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T19:07:00Z",
+      "resultSummary": "Connection reset by peer before an HTTP response; no item title or description was obtained."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/portal/sharing/rest/content/items/b7b99c56f5d54a1f9349a86732568955/data?f=pjson",
+      "method": "GET (public ArcGIS item data inspection)",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 0,
+      "checkedAt": "2026-10-08T19:07:00Z",
+      "resultSummary": "HTTP 200 with empty response body; no additional semantics retrieved."
+    },
+    {
+      "url": "https://nsdi.systems.gov.bt/portal/sharing/rest/content/items/b7b99c56f5d54a1f9349a86732568955/info/metadata/metadata.xml?format=default&output=html",
+      "method": "GET (public ArcGIS item metadata document inspection)",
+      "httpStatus": 404,
+      "checkedAt": "2026-10-08T19:07:00Z",
+      "resultSummary": "Metadata document endpoint returned HTTP 404."
+    }
+  ],
+  "analysis": {
+    "nationalPlotOverlay": {
+      "boundarySource": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/1/query",
+      "boundaryCrs": "EPSG:3857",
+      "boundaryPolygonValid": true,
+      "boundaryPolygonFeatureCount": 1,
+      "testedExistingNationalPlotFeatureCount": 62,
+      "insideBoundaryCount": 0,
+      "intersectingBoundaryCount": 0,
+      "outsideBoundaryCount": 62,
+      "distanceToBoundaryMeters": {
+        "minimum": 225.6243,
+        "median": 765.398,
+        "maximum": 1209.9221
+      },
+      "distanceMethod": "Shapely 2.1.2, source geometries and boundary in EPSG:3857; no clipping or repair."
+    },
+    "cityTabaSample": {
+      "geometryCrs": "EPSG:4326",
+      "featuresRequested": 3,
+      "featureCount": 3,
+      "validPolygonCount": 3,
+      "coveredByBoundaryCount": 3,
+      "requestedAttributes": [
+        "fid"
+      ],
+      "fullGeometriesStoredInRepository": false
+    },
+    "NHDCLCoverage": {
+      "geometryType": "esriGeometryPolygon",
+      "centralEnvelopeFeatureCount": 10,
+      "southSampleFeatureCount": 0,
+      "use": "Supplemental NHDCL-held plots only; not evidence of complete city or cadastral coverage."
+    }
+  },
+  "limitations": [
+    "The available Thimphu municipal boundary layer is explicitly tt_bdy2010; it is a published 2010 boundary, not a verified current legal boundary revision.",
+    "The 685 tt_taba_plots polygons are one north-Thimphu/Taba extent. Their existence does not imply citywide availability.",
+    "The 10 count-only NHDCL plot hits in a broad central envelope are incomplete institutional holdings; geometry was not requested from that layer.",
+    "No whole-city completeness, currentness or legal-title guarantee was found for any public source."
+  ],
+  "tabaAdapterQualification": {
+    "file": "research/world-capitals-2026-10-08/thimphu-taba-acceptance.json",
+    "descriptorId": "bt-thimphu-taba-plots",
+    "idField": "fid",
+    "idType": "integer",
+    "idPrefix": "bt-thimphu-taba:",
+    "endpoint": "https://nsdi.systems.gov.bt/server/rest/services/Hosted/thimphu_thromde_1_view/FeatureServer/3",
+    "anchorWgs84": [
+      89.642,
+      27.515
+    ],
+    "metricProjection": "EPSG:32645",
+    "uniqueNativeIds": 112,
+    "viewportCells": 13,
+    "allTestsPassed": true,
+    "requestCount": 66,
+    "freshNativeIdHashRereads": {
+      "queried": 112,
+      "allPresent": true,
+      "allGeometryHashesMatch": true
+    },
+    "forcedThreeRowPaging": {
+      "features": 22,
+      "geometryPages": 8,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    "explicitAbsence": {
+      "id": "bt-thimphu-taba:9876543210",
+      "complete": true,
+      "featureCount": 0
+    },
+    "footprintAndSourceBinding": {
+      "complete": true,
+      "selectedId": "bt-thimphu-taba:402",
+      "intersections": 7,
+      "bindingCoverage": "complete",
+      "boundParcels": 1
+    },
+    "projectedTopology": {
+      "features": 112,
+      "valid": 112,
+      "invalid": 0,
+      "duplicates": 0,
+      "positiveAreaOverlapsAbove0_01M2": 0
+    },
+    "boundaryCoverage": {
+      "boundary": "tt_bdy2010",
+      "covered": 112,
+      "outside": 0
+    },
+    "datasetInterpretation": "Geometry candidate limited to Taba; service metadata does not establish planning designation, cadastral registration, legal title, or currentness. No lifecycle filter is available."
+  }
+}

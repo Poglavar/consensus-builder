@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "NSW",
+ "regionName": "New South Wales",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": {
+  "sourceId": "au-nsw-six-cadastre-lot",
+  "name": "NSW Cadastre (Lot layer 9), SIX Maps public MapServer",
+  "operator": "NSW Spatial Services (Department of Customer Service)",
+  "scope": "New South Wales (state/territory-wide layer)",
+  "endpoint": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "native EPSG:3857; outSR=4326 honoured",
+  "reuseStatus": "NSW Spatial Services terms not read; unreviewed."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "au-nsw-six-cadastre-lot",
+  "requestUrl": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid,cadid,lotnumber,plannumber&geometry=151.079,-33.859,151.08,-33.858",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   151.079,
+   -33.859,
+   151.08,
+   -33.858
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "cadid (objectid also required in outFields; requests without objectid or with only cadid/lotidstring returned HTTP 200 with error 400 \"Failed to execute query\")",
+  "responseFile": "NSW-parcel-response.json",
+  "pagination": "resultRecordCount/resultOffset; exceededTransferLimit true",
+  "regionSampled": "Sydney (Lidcombe area) and Dubbo"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer named NSW Cadastre, published by the state land agency for all NSW; not explicitly tested state-wide beyond two areas.",
+ "subregionsVerified": [
+  "Sydney (Lidcombe area)",
+  "Dubbo"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+   "observation": "Public ArcGIS REST endpoint; no referer needed; content-type text/plain but body is JSON"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid,cadid,lotnumber,plannumber&geometry=151.079,-33.859,151.08,-33.858",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, closed rings (Sydney (Lidcombe area))"
+  },
+  {
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=objectid,cadid,lotnumber,plannumber&geometry=148.601,-32.244,148.602,-32.243",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon features returned, closed rings (Dubbo)"
+  }
+ ],
+ "reuseStatus": "NSW Spatial Services terms not read; unreviewed.",
+ "remainingUncertainty": "Two bounded samples only; full-state completeness and currency not verified. Earlier NSW evidence: research/sydney.json; country-file re-test had timed out, today OK.",
+ "nextStep": "Read the publisher licence before any bulk use."
+}

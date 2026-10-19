@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 53,
+  "city": "Surat",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/surat.json",
+  "query": {
+    "language": "Gujarati",
+    "script": "Gujarati",
+    "text": "સુરત જમીન નકશો સિટી સર્વે રેકોર્ડ ભૌગોલિક માહિતી ગુજરાત સરકાર"
+  },
+  "results": [
+    {
+      "title": "Services | District Surat, Government of Gujarat",
+      "url": "https://surat.nic.in/services/",
+      "kind": "official-district-government",
+      "note": "Gujarati search result lists E-Dhara land-record service among district services; no feature endpoint or parcel geometry export is described."
+    },
+    {
+      "title": "Revenue Department, Government of Gujarat: H Branch",
+      "url": "https://revenuedepartment.gujarat.gov.in/branch/h-branch",
+      "kind": "official-state-department",
+      "note": "State branch oversees survey and city-survey matters and lists online land-record services. Surat coverage and vector API remain unverified."
+    },
+    {
+      "title": "GIL e-Dhara – Land records online",
+      "url": "https://gil.gujarat.gov.in/edhara",
+      "kind": "official-state-eGovernment-project",
+      "note": "Describes state land-record retrieval/maintenance via e-Dhara Kendras and village services, with fees; not evidence of open vector geometry."
+    }
+  ],
+  "assessment": "Gujarati-script follow-up confirms official district E-Dhara and state city-survey/land-record services. Search does not verify Surat cadastral geometry access or a public machine-readable endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:7233",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Gujarati",
+    "queryScript": "Gujarati",
+    "nativeQuery": "સુરત જમીન નકશો સિટી સર્વે રેકોર્ડ ભૌગોલિક માહિતી ગુજરાત સરકાર",
+    "englishQuery": "Surat land map, city survey records, and geographic information from Gujarat government",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence",
+    "additionalQueries": [
+      {
+        "nativeQuery": "સુરત જમીન રેકોર્ડ city survey map government portal",
+        "englishQuery": "Surat land records, city-survey map and government portal",
+        "queryLanguage": "Gujarati",
+        "queryScript": "Gujarati"
+      },
+      {
+        "nativeQuery": "સુરત જમીન રેકોર્ડ ઇ-ધરા સિટી સર્વે નકશા સુરત જિલ્લા સરકાર",
+        "englishQuery": "Surat land records, e-Dhara, city-survey maps and Surat district government",
+        "queryLanguage": "Gujarati",
+        "queryScript": "Gujarati"
+      },
+      {
+        "nativeQuery": "ગુજરાત જમીનના નકશા GIS સરકાર કેડસ્ટ્રલ",
+        "englishQuery": "Gujarat government cadastral maps and land GIS",
+        "queryLanguage": "Gujarati",
+        "queryScript": "Gujarati"
+      }
+    ]
+  },
+  "searchedAt": "2026-10-04T01:44:00+04:00"
+}

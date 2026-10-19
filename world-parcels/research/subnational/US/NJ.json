@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NJ",
+ "regionName": "New Jersey",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-nj-njogis-parcels-composite",
+  "name": "Parcels Composite of NJ (Web Mercator)",
+  "operator": "NJ Office of Information Technology, Office of GIS (NJOGIS)",
+  "scope": "statewide composite of county/municipal parcels with MOD-IV attributes",
+  "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "EPSG:3857 native; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-nj-njogis-parcels-composite",
+  "requestUrl": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0/query?geometry=<bbox ~150m>&outFields=PAMS_PIN&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-74.1732,40.7349,-74.1716,40.7365]",
+   "[-74.7437,40.2163,-74.7421,40.2179]"
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PAMS_PIN",
+  "responseFile": "research/subnational/US/NJ-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Essex County (Newark area)",
+   "Mercer County (Trenton area)"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: \"provides access to the latest statewide parcels in Web Mercator... integrating MOD-IV attributes\"; OWNER_NAME is redacted per Daniel's Law for public web access. Layer minScale 1:50,000 (tiny-bbox queries fine). Sources are the 21 counties/NJOGIS.",
+ "subregionsVerified": [
+  "Essex County area (PAMS_PIN prefix 07)",
+  "Mercer County area (PAMS_PIN prefix 11)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://njogis-newjersey.opendata.arcgis.com/documents/406cf6860390467d9f328ed19daa359d/about",
+   "observation": "download page named in the service description"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0/query?geometry=<bbox ~150m near Essex County (Newark area)>&outFields=PAMS_PIN...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0/query?geometry=<bbox ~150m near Mercer County (Trenton area)>&outFields=PAMS_PIN...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+ "remainingUncertainty": "Coverage completeness per county not checked; composite quality varies by municipality (PCLLASTUPD field).",
+ "nextStep": "Read the NJOGIS terms page; consider bulk download for volume."
+}

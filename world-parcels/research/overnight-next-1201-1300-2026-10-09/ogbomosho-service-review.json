@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T12:10:00Z",
+  "cityRecord": "city-3848-ogbomosho.json",
+  "purpose": "Document first-party Oyo/Ogbomosho registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official Oyo State Lands/OyoGISS pages evidence a local/state property-reference and land-management custodian relevant to Ogbomosho, including Ogbomosho North and South enumeration context. The public property-search link was bounded by an anonymous HTTP 403 response, and no safe public parcel-vector response was verified.",
+  "registryAssessment": "Local/state registry or property procedure evidenced through official Oyo State material; this is institutional custody evidence, not admission of a public parcel source or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "officialPrimarySources": [
+    {"url": "https://lands.oyostate.gov.ng/oyo-giss.html", "observation": "Official OyoGISS page describes state spatial-data, property-reference, and land-management services and says properties across all 33 LGAs were digitized and coded."},
+    {"url": "https://lands.oyostate.gov.ng/property-search.html", "observation": "Official property-search procedure page links to the Oyo property databank; described ownership/legal-status fields were not accessed or retained."},
+    {"url": "https://lands.oyostate.gov.ng/land-use-charge.html", "observation": "Official Oyo report includes OGBOMOSHO SOUTH and OGBOMOSHO NORTH property enumeration entries and identifies the state lands ministry contact."},
+    {"url": "https://osgof.gov.ng/cadastral-legal-surveys/", "observation": "Federal cadastral-GIS function page; general national context only, not city-specific vector evidence."},
+    {"url": "https://ngsa.gov.ng/mgcp-topographic-maps-of-nigeria/", "observation": "Official NGSA topographic map index lists Sheet 222: Ogbomosho; topographic coverage is not cadastral parcel geometry."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Ogbomosho Nigeria cadastral parcel map official land registry GIS", "result": "First-party Oyo State Lands/OyoGISS and national survey sources found; no anonymous public Ogbomosho parcel polygon route verified.", "resultUrls": ["https://lands.oyostate.gov.ng/oyo-giss.html", "https://lands.oyostate.gov.ng/property-search.html", "https://lands.oyostate.gov.ng/land-use-charge.html", "https://osgof.gov.ng/cadastral-legal-surveys/", "https://ngsa.gov.ng/mgcp-topographic-maps-of-nigeria/"]},
+    {"language": "Yoruba", "query": "Ogbomosho Nigeria official cadastral map land registry GIS Yoruba ilẹ̀ Ogbómọ̀ṣọ́", "result": "Official Oyo land/property pages were found and Ogbomosho local-government coverage was evidenced, but no Yoruba-language or anonymous public parcel-vector endpoint was exposed.", "resultUrls": ["https://lands.oyostate.gov.ng/land-use-charge.html", "https://lands.oyostate.gov.ng/property-search.html", "https://lands.oyostate.gov.ng/oyo-giss.html"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [8.12637049117599, 4.23682772844258] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://lands.oyostate.gov.ng/oyo-giss.html", "method": "GET via first-party indexed result; anonymous; TLS verification enabled", "httpStatus": "web result available", "result": "Official page read successfully; no public map/API service URL, schema, CRS, or parcel payload exposed."},
+    {"url": "https://lands.oyostate.gov.ng/property-search.html", "method": "GET via first-party indexed result; anonymous; TLS verification enabled", "httpStatus": "web result available", "result": "Official procedure read successfully; linked databank was not accessed with credentials or record-specific data."},
+    {"url": "https://las.oysglands.com/", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 403, "result": "Cloudflare response; no CAPTCHA bypass, login, credential, private-token, or unsafe-field request."},
+    {"url": "https://lands.oyostate.gov.ng/land-use-charge.html", "method": "GET via first-party indexed result; anonymous; TLS verification enabled", "httpStatus": "web result available", "result": "Official Ogbomosho North/South enumeration context read; no parcel geometry returned."}
+  ],
+  "coverageAssessment": {"claimedScope": "OyoGISS describes state-wide property digitization; Oyo land-use-charge report includes Ogbomosho North and South.", "verifiedOpenScope": "Official registry/property procedure and enumeration context only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "A restricted or separately published OyoGISS service may exist, but no anonymous safe parcel-vector route, native ID, schema, CRS, or exact-point response was observed. The 403 property-search result is an access limitation, not evidence of citywide absence."
+}

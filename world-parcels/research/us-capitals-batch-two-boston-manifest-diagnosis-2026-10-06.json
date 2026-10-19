@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Aggregate count/manifest diagnosis; no geometry or raw OID manifest retained.",
+  "sources": [
+    {
+      "checkedAt": "2026-10-06",
+      "city": "boston",
+      "stateCode": "MA",
+      "endpoint": "https://gisportal.boston.gov/arcgis/rest/services/Parcels/Parcels_current/MapServer/0",
+      "status": "manifest-diagnosis",
+      "observations": [
+        {
+          "operation": "returnCountOnly",
+          "httpStatus": 200,
+          "count": 33,
+          "nullManifest": false,
+          "uniqueManifestCount": null,
+          "invalidManifestCount": null
+        },
+        {
+          "operation": "returnIdsOnly",
+          "httpStatus": 200,
+          "objectIdFieldName": "OBJECTID",
+          "manifestCount": 34,
+          "nullManifest": false,
+          "uniqueManifestCount": 34,
+          "invalidManifestCount": 0
+        }
+      ]
+    }
+  ]
+}

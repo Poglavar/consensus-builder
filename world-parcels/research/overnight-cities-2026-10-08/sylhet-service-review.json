@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7221-sylhet.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official DLRS Map Search is active and has anonymous administrative selectors, but the current Sylhet district survey entry is RS (digital survey, marked ongoing), and its GetThanaListBySurveyMap selector returned an empty list. The inspected selector chain supplies no map-backed upazila/mouza for a city-point geometry query; city-point coverage remains unestablished. The separate national map.land.gov.bd route is land-use zoning rather than a verified cadastral-title layer; its documented GeoServer host returned HTTP 503 over HTTPS. No parcel geometry was retained.",
+  "registryAssessment": "Official selectors confirm Sylhet Division / Sylhet District, but the only listed RS survey is marked ongoing and the public map-backed upazila selector returned no entries; city-point map coverage is not established.",
+  "officialPrimarySources": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "observation": "Department of Land Records and Surveys (DLRS), Ministry of Land official Map Search viewer with survey / upazila / mouza / sheet / dag selectors and public map search UI."
+    },
+    {
+      "url": "https://sylhet.gov.bd/pages/static-pages/696cb437c4774958d7ba3e26",
+      "observation": "Sylhet District citizen charter lists delivery of mouza maps as a local land-record service by application with required documents and fees."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "observation": "Ministry of Land Mouza & Plot Based National Digital Land Zoning project viewer; the official program describes plot-based land-use zoning and map sheets, not the land-title register."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sylhet official cadastral map land records Bangladesh ePorcha mouza map GIS land registry",
+      "result": "The official DLRS Map Search is active and has anonymous administrative selectors, but the current Sylhet district survey entry is RS (digital survey, marked ongoing), and its GetThanaListBySurveyMap selector returned an empty list. The inspected selector chain supplies no map-backed upazila/mouza for a city-point geometry query; city-point coverage remains unestablished. The separate national map.land.gov.bd route is land-use zoning rather than a verified cadastral-title layer; its documented GeoServer host returned HTTP 503 over HTTPS. No parcel geometry was retained.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    },
+    {
+      "language": "Bengali",
+      "query": "সিলেট মৌজা ম্যাপ অনলাইন ভূমি রেকর্ড ম্যাপ সেবা সরকারি ভূমি রেকর্ড ও জরিপ অধিদপ্তর",
+      "result": "The official DLRS Map Search is active and has anonymous administrative selectors, but the current Sylhet district survey entry is RS (digital survey, marked ongoing), and its GetThanaListBySurveyMap selector returned an empty list. The inspected selector chain supplies no map-backed upazila/mouza for a city-point geometry query; city-point coverage remains unestablished. The separate national map.land.gov.bd route is land-use zoning rather than a verified cadastral-title layer; its documented GeoServer host returned HTTP 503 over HTTPS. No parcel geometry was retained.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST anonymous selector",
+      "httpStatus": 200,
+      "observation": "Returned Sylhet division code 050000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST anonymous selector",
+      "httpStatus": 200,
+      "observation": "For division code 050000000, returned Sylhet district code 050100000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST anonymous selector",
+      "httpStatus": 200,
+      "observation": "For Sylhet district, returned a single survey entry RS / code 201901, status ongoing (চলমান). No landowner or record search submitted."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST anonymous selector",
+      "httpStatus": 200,
+      "observation": "For Sylhet district, survey 201901 returned an empty JSON list; the map search has no map-backed upazila entries for this survey at present."
+    },
+    {
+      "url": "https://gis.land.gov.bd/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET anonymous HTTPS capabilities probe",
+      "httpStatus": 503,
+      "observation": "The separate Ministry land-zoning viewer references this public GeoServer host in JavaScript; endpoint returned 503 Service Unavailable. It is thematic zoning, not a verified cadastral-title layer."
+    }
+  ],
+  "geometryEvidence": null,
+  "temporaryEvidence": [
+    "/private/tmp/overnight-cities-2026-10-08/sylhet-map-selector-chain.json",
+    "/private/tmp/overnight-cities-2026-10-08/bd-mapsearch.txt",
+    "/private/tmp/overnight-cities-2026-10-08/mapbd-main.js"
+  ]
+}

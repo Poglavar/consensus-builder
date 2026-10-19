@@ -1,0 +1,98 @@
+{
+  "name": "Culiacán",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 765,
+  "point": [
+    24.7928752109654,
+    -107.402476360497
+  ],
+  "population2025": 701609,
+  "population2025k": 701.609,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    24.7928752109654,
+    -107.402476360497
+  ],
+  "adapterReady": false,
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Whether the official viewer exposes an anonymous geometry-only layer and whether it covers this WUP point remain unknown. No runtime adapter checks were performed."
+  },
+  "scopeLimits": "This is a scoped source review only. It does not establish citywide or countrywide parcel completeness, title, survey accuracy, or runtime suitability.",
+  "registryFound": true,
+  "registryBasis": "The official municipal Catastro states it maintains property records for municipality parcels and links its Visor Catastral for open geography, zoning, and parcel information. The official viewer host returned HTTP 403 on ordinary access; no safe feature schema or geometry was verified.",
+  "registryEvidenceUrls": [
+    "https://catastro.culiacan.gob.mx/",
+    "https://visor.catastro.culiacan.gob.mx/",
+    "https://economia.culiacan.gob.mx/images/Catlogo%20TYS/2025/CATALOGO%20GENERAL%202025%201_compressed%201.pdf"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "Official viewer host returned HTTP 403. Its app configuration, safe field allowlist, and parcel feature schema could not be verified; no query or bypass was attempted.",
+  "remainingUncertainty": "Whether the official viewer exposes an anonymous geometry-only layer and whether it covers this WUP point remain unknown.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Culiacan official municipal cadastral parcel viewer GIS Catastro polygon",
+        "scope": "Identify primary city-specific registry evidence and an anonymous safe parcel-geometry schema.",
+        "result": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded.",
+        "actualResultUrls": [
+          "https://catastro.culiacan.gob.mx/",
+          "https://visor.catastro.culiacan.gob.mx/",
+          "https://economia.culiacan.gob.mx/images/Catlogo%20TYS/2025/CATALOGO%20GENERAL%202025%201_compressed%201.pdf"
+        ],
+        "executionMethod": "Separate English-language search; inspect only official sources and service metadata. No owner/address/account fields requested."
+      },
+      {
+        "language": "Spanish",
+        "query": "Culiacán visor catastral parcelas catastro municipal mapa geográfico oficial",
+        "scope": "Identify primary local-language city-specific registry/map evidence and verify safe public geometry access.",
+        "result": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded.",
+        "actualResultUrls": [
+          "https://catastro.culiacan.gob.mx/",
+          "https://visor.catastro.culiacan.gob.mx/",
+          "https://economia.culiacan.gob.mx/images/Catlogo%20TYS/2025/CATALOGO%20GENERAL%202025%201_compressed%201.pdf"
+        ],
+        "executionMethod": "Separate local-language search; inspect only official sources. No personal property lookup or sensitive fields requested."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "MX-CULIACAN-CATASTRO-VISOR",
+    "name": "Culiacán Municipal Catastro and Visor Catastral",
+    "url": "https://catastro.culiacan.gob.mx/",
+    "operator": "Dirección de Catastro, Municipio de Culiacán",
+    "serviceType": "Official municipal cadastral records and linked public viewer; vector schema not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 2372,
+  "cityId": "wup2025:2372",
+  "queueRank": 765,
+  "rootPrimaryReadback": {
+    "url": "https://catastro.culiacan.gob.mx/",
+    "fetch": "error",
+    "reason": "The read operation timed out"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "sourceIds": []
+}

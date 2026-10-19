@@ -1,0 +1,116 @@
+{
+  "name": "Gulin",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 745,
+  "point": [
+    38.804471838534,
+    117.467512717992
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "天津 滨海新区 古林街道 不动产登记 地籍图 宗地 官方",
+        "scope": "Local-language/official-source search for exact city land registry, cadastral service, and anonymous full parcel geometry.",
+        "result": "Official Tianjin sources document Gulin Subdistrict in Binhai and citywide natural-resource/land-registration programs; no public parcel-vector route or exact WUP-to-subdistrict reconciliation was found.",
+        "actualResultUrls": [
+          "https://tianjin.tianditu.gov.cn/static/help/note.html",
+          "https://open.data.tj.gov.cn/sjj/80634cb172f44c77ad00a8377a2970b3.htm",
+          "https://www.tj.gov.cn/zmhd/zwft/fthg1/202408/t20240830_6712194.html"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      },
+      {
+        "language": "English",
+        "query": "Gulin Tianjin China official cadastre land registry parcel map public GIS",
+        "scope": "Cross-check exact WUP candidate identity and official public parcel-vector access.",
+        "result": "Official Tianjin geographic and government information portals were found, but no safe public full parcel geometry service or direct identity crosswalk for this WUP record was verified.",
+        "actualResultUrls": [
+          "https://tianjin.tianditu.gov.cn/static/help/note.html",
+          "https://open.data.tj.gov.cn/sjj/80634cb172f44c77ad00a8377a2970b3.htm",
+          "https://www.tj.gov.cn/zmhd/zwft/fthg1/202408/t20240830_6712194.html"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Official sources reviewed",
+        "operator": "See source URLs and observations in the service-review artifact.",
+        "homeUrl": "https://tianjin.tianditu.gov.cn/static/help/note.html",
+        "observation": "The coordinate is consistent with a Tianjin/Binhai Gulin candidate, while the separate Ningbo Haishu Gulin Town homonym is excluded. Exact WUP-to-subdistrict identity and parcel coverage remain unverified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-CITY-9592-OFFICIAL-REGISTRY-REVIEW",
+    "name": "Gulin official service review",
+    "url": "https://tianjin.tianditu.gov.cn/static/help/note.html",
+    "operator": "Official local/national government agency as cited in the service review.",
+    "serviceType": "Official registry or land-administration service review; no verified anonymous parcel-geometry service.",
+    "layer": "No cadastral parcel vector layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel feature response was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tianjin public geographic-information portal documentation and government-level land-administration context; no parcel layer or geometry was identified.",
+    "verifiedOpenScope": "Official institutional or service evidence reviewed; no complete anonymous full parcel polygons or citywide coverage claim. The WUP point is a population-weighted centroid, not a legal boundary or proof of parcel coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "The official Tianjin administrative-data/open-data results identify a Gulin Subdistrict (古林街道) in Binhai New Area, and official Tianjin planning resources describe land-registration and land-use administration. The WUP point suggests this candidate, but no primary page directly maps the exact WUP city-code/locality to the subdistrict; registry presence is therefore left unverified for this candidate.",
+  "registryEvidenceUrls": [
+    "https://tianjin.tianditu.gov.cn/static/help/note.html",
+    "https://open.data.tj.gov.cn/sjj/80634cb172f44c77ad00a8377a2970b3.htm",
+    "https://www.tj.gov.cn/zmhd/zwft/fthg1/202408/t20240830_6712194.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "identity_review_no_public_geometry",
+  "technicalBlocker": "No anonymous cadastral parcel feature service/schema was exposed in the reviewed official public geographic-information documentation.",
+  "remainingUncertainty": "Exact administrative identity for WUP city code 9592 remains to be reconciled against an official gazetteer; no parcel coverage or registry jurisdiction is asserted.",
+  "nextStep": "Confirm exact WUP locality via official Tianjin/Binhai gazetteer, then inspect only a documented anonymous full-geometry cadastral service.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:10:00Z",
+  "wupCityCode": 9592,
+  "cityId": "wup2025:9592",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    38.804471838534,
+    117.467512717992
+  ],
+  "queueRank": 745,
+  "population2025": 718364,
+  "population2025k": 718.364,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "No anonymous cadastral parcel feature service/schema was exposed in the reviewed official public geographic-information documentation."
+  },
+  "scopeLimits": [
+    "No parcel/owner/address or person query was made.",
+    "No full parcel geometry was verified; no sample retained.",
+    "Do not treat WUP centroid as a cadastral parcel or legal boundary."
+  ],
+  "rootRegistryDecisionNote": "Local registry presence is unestablished; candidate or generic pages do not prove absence.",
+  "rootPrimaryReadback": {
+    "url": "https://tianjin.tianditu.gov.cn/static/help/note.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "天地图·天津 用户操作使用手册"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

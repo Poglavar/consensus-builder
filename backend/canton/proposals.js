@@ -17,6 +17,19 @@ const PUBLIC_HINT = 'CantonPublic';
 const PUBLIC_FILE = new URL('./.public-party.json', import.meta.url);
 let publicPartyCache = null;
 
+// The public party id if it is already known (env override or the local cache file), WITHOUT
+// allocating one — for callers that must never cause a ledger write, such as the read routes'
+// "is this the public party?" check.
+export async function knownPublicParty(cfg = cantonConfig()) {
+  if (cfg.publicParty) return cfg.publicParty;
+  if (publicPartyCache) return publicPartyCache;
+  try {
+    const saved = JSON.parse(await readFile(PUBLIC_FILE, 'utf8'));
+    if (saved && saved.party) { publicPartyCache = saved.party; return publicPartyCache; }
+  } catch (_) { /* no local cache yet */ }
+  return null;
+}
+
 async function getPublicParty(cfg = cantonConfig()) {
   if (cfg.publicParty) return cfg.publicParty;          // explicit override wins
   if (publicPartyCache) return publicPartyCache;
@@ -58,13 +71,15 @@ function mapProposal(ev) {
     buyer: a.buyer,
     owner: a.owner,
     lens: a.lens,
+    // Optional Text → a string when set, null when not (incl. contracts created before 0.4.0).
+    imageUri: a.imageUri || undefined,
   };
 }
 
 function mapSale(ev) {
   const a = ev.createArgument || {};
   // lens is Optional Party → a string when set, null/undefined when not.
-  return { contractId: ev.contractId, parcelId: a.parcelId, price: a.price, buyer: a.buyer, owner: a.owner, lens: a.lens || undefined };
+  return { contractId: ev.contractId, parcelId: a.parcelId, price: a.price, buyer: a.buyer, owner: a.owner, lens: a.lens || undefined, imageUri: a.imageUri || undefined };
 }
 
 // Active purchase proposals visible to `party` (as buyer, owner-observer, or lens).
@@ -106,7 +121,9 @@ export async function createProposal(args, cfg = cantonConfig()) {
 
   await createContract(cfg, {
     templateId: templateId(cfg, 'PurchaseProposal'),
-    args: { buyer, owner, lens, parcelId, price, certCid: cert.contractId }, actAs: buyer,
+    // imageUri is Optional Text on the ledger: null, not undefined, when the proposal has no metadata.
+    args: { buyer, owner, lens, parcelId, price, certCid: cert.contractId, imageUri: args.imageUri || null },
+    actAs: buyer,
   });
   const props = await activeContracts(cfg, buyer, templateId(cfg, 'PurchaseProposal'));
   const created = props.find((p) => p.createArgument?.parcelId === parcelId && p.createArgument?.owner === owner);
@@ -121,7 +138,7 @@ export async function createProposal(args, cfg = cantonConfig()) {
     });
   }
 
-  return { parcelId, price, lens, owner, buyer, proposalContractId: created?.contractId };
+  return { parcelId, price, lens, owner, buyer, imageUri: args.imageUri || undefined, proposalContractId: created?.contractId };
 }
 
 // Owner accepts a proposal → archives it, creates the Sale. Returns the owner's sales.

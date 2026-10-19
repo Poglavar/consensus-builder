@@ -1,0 +1,38 @@
+[
+ {
+  "kind": "city",
+  "key": "manchester",
+  "rank": 196,
+  "name": "Manchester",
+  "country": "United Kingdom",
+  "iso2": "GB",
+  "lat": 53.49383,
+  "lon": -2.25537,
+  "previousStatus": "no_verified_sample_candidate_countrywide",
+  "evidenceFile": "research/manchester.json"
+ },
+ {
+  "kind": "city",
+  "key": "quito",
+  "rank": 197,
+  "name": "Quito",
+  "country": "Ecuador",
+  "iso2": "EC",
+  "lat": -0.20343,
+  "lon": -78.4989,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/quito.json"
+ },
+ {
+  "kind": "city",
+  "key": "bhopal",
+  "rank": 199,
+  "name": "Bhopal",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 23.23991,
+  "lon": 77.42391,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/bhopal.json"
+ }
+]

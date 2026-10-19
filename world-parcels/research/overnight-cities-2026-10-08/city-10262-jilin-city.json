@@ -1,0 +1,95 @@
+{
+  "name": "Jilin City",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 349,
+  "point": [
+    43.8535161678457,
+    126.555936776175
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "吉林市 不动产登记 地籍图 查询 吉林市规划和自然资源局 官方",
+        "scope": "Find the first-party city real-estate registry and anonymous parcel map/vector.",
+        "result": "Jilin City Planning and Natural Resources Bureau maintains a real-estate registration guide and a 2025 Q&A. The Q&A describes access to records for rights-holders, legally interested parties and government organs under applicable rules. No anonymous public parcel map/vector was found.",
+        "actualResultUrls": [
+          "https://ghzr.jlcity.gov.cn/ztzl/bdcdjzl/fwzn/",
+          "https://ghzr.jlcity.gov.cn/ztzl/bdcdjzl/fwzn/202404/t20240415_1201494.html"
+        ],
+        "executionMethod": "Chinese-language search and read-only inspection of first-party municipal natural-resources/registration pages; no person-specific record lookup."
+      },
+      {
+        "language": "English",
+        "query": "Jilin City official real estate registration center cadastral map parcel GIS public viewer",
+        "scope": "Cross-check city-local registry ownership and public geometry availability.",
+        "result": "The official city Planning and Natural Resources Bureau site provides local registration guides and confirms regulated query eligibility. No English-language anonymous parcel-vector viewer was found in the reviewed municipal sources.",
+        "actualResultUrls": [
+          "https://ghzr.jlcity.gov.cn/ztzl/bdcdjzl/fwzn/",
+          "https://ghzr.jlcity.gov.cn/ztzl/bdcdjzl/fwzn/202404/t20240415_1201494.html"
+        ],
+        "executionMethod": "Separate English-language search followed by first-party municipal page inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Jilin City real-estate registration guide",
+        "operator": "Jilin City Planning and Natural Resources Bureau",
+        "homeUrl": "https://ghzr.jlcity.gov.cn/ztzl/bdcdjzl/fwzn/",
+        "observation": "First-party local registry column provides service guides and materials."
+      },
+      {
+        "name": "Jilin City registration access Q&A (2025)",
+        "operator": "Jilin City Planning and Natural Resources Bureau",
+        "homeUrl": "https://ghzr.jlcity.gov.cn/ztzl/bdcdjzl/fwzn/202404/t20240415_1201494.html",
+        "observation": "Describes eligible parties and government organs that may query/copy registration records under applicable rules; not an anonymous public parcel map."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": false,
+    "fullGeometrySampleCount": 0,
+    "bounded": true,
+    "pointLocated": false,
+    "note": "No full parcel geometry was verified."
+  },
+  "source": {
+    "operator": "Jilin City Planning and Natural Resources Bureau",
+    "endpoint": null,
+    "featureType": null,
+    "geometryField": null,
+    "nativeIdField": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false
+  },
+  "coverageAssessment": "No public parcel-vector coverage verified.",
+  "registryFound": true,
+  "registryBasis": "City Planning and Natural Resources Bureau’s local real-estate registration guide and eligibility guidance confirm city-local registration activity.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_access_restricted_no_public_parcel_geometry_found",
+  "technicalBlocker": "The registry guidance describes restricted query eligibility; no anonymous cadastral vector endpoint was found.",
+  "remainingUncertainty": "No public geometry source was verified. Public notices containing personal registration details were excluded from research.",
+  "sourceIds": [],
+  "nextStep": "If needed, ask the municipal bureau whether a non-personal public parcel layer is available.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10262,
+  "cityId": "wup2025:10262",
+  "queueRank": 349,
+  "population2025": 1448955,
+  "population2025k": 1448.955,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    43.8535161678457,
+    126.555936776175
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

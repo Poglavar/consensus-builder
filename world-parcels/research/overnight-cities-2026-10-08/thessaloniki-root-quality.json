@@ -1,0 +1,2596 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32634",
+  "featureCount": 368,
+  "validNonemptyCount": 368,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 9.413570568833373,
+    "median": 36.101638989052056,
+    "max": 112994.88663663802
+  },
+  "features": [
+    {
+      "id": "GR-THESS-KAEK-190442130015",
+      "areaM2": 283.1461818829687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130013",
+      "areaM2": 363.97224655322196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130003",
+      "areaM2": 254.06141143743918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140012",
+      "areaM2": 1937.636085769915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130005",
+      "areaM2": 263.19599472064266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131012",
+      "areaM2": 3171.1475165946035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130006",
+      "areaM2": 262.5126230010079,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130001",
+      "areaM2": 202.7623141043926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130004",
+      "areaM2": 258.74329786016324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130014",
+      "areaM2": 200.0753547446584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140007",
+      "areaM2": 323.6647483607517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140011",
+      "areaM2": 308.6882573443807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130016",
+      "areaM2": 505.6238713045537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130007",
+      "areaM2": 273.0996923379499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130012",
+      "areaM2": 365.37982349606006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140010",
+      "areaM2": 316.50161854447697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130002",
+      "areaM2": 155.95301290023374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-19044ΕΚ21001",
+      "areaM2": 67498.93283289092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128005",
+      "areaM2": 331.1169164247753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128006",
+      "areaM2": 263.92218055412184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130008",
+      "areaM2": 264.20946340107014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130011",
+      "areaM2": 336.43390427290865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130010",
+      "areaM2": 276.89673901109404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128002",
+      "areaM2": 545.2892919369525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128004",
+      "areaM2": 543.4096137501115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128003",
+      "areaM2": 543.4736791788479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128014",
+      "areaM2": 493.3986285312826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128001",
+      "areaM2": 321.7472281864877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128015",
+      "areaM2": 416.7293884039595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130017",
+      "areaM2": 364.64025667240736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442401002",
+      "areaM2": 609.8258115466328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442130009",
+      "areaM2": 278.85496679073356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-19044ΕΚ24001",
+      "areaM2": 43158.332232450266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402006",
+      "areaM2": 267.37514574761605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402007",
+      "areaM2": 337.3190314316901,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402003",
+      "areaM2": 355.162022890704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442404002",
+      "areaM2": 301.31384873334184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442410001",
+      "areaM2": 6664.871572801736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402008",
+      "areaM2": 230.9610478395816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402012",
+      "areaM2": 270.27603585251376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402002",
+      "areaM2": 357.75679670874405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402010",
+      "areaM2": 226.079892999039,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402001",
+      "areaM2": 508.57598002021984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402009",
+      "areaM2": 226.94284072867447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402015",
+      "areaM2": 277.5884554981097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442404010",
+      "areaM2": 267.6186335397809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402011",
+      "areaM2": 228.78798422319787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402005",
+      "areaM2": 337.81662096204116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402004",
+      "areaM2": 352.0081260277623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116008",
+      "areaM2": 10.932257741140765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116020",
+      "areaM2": 23.98140566083711,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119004",
+      "areaM2": 16.84278775123377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119009",
+      "areaM2": 9.72365007827523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119011",
+      "areaM2": 10.062857469471094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119016",
+      "areaM2": 16.690782735371158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119018",
+      "areaM2": 17.198474384884697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121007",
+      "areaM2": 11.939434614271747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121009",
+      "areaM2": 15.236422928937374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121012",
+      "areaM2": 10.704974000868141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121018",
+      "areaM2": 71.81095352319969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122006",
+      "areaM2": 17.733350175330546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118011",
+      "areaM2": 12.063054413157587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118014",
+      "areaM2": 11.535907703209709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122012",
+      "areaM2": 17.554997213938503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122018",
+      "areaM2": 15.905174060989406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121011",
+      "areaM2": 12.23699442899519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122002",
+      "areaM2": 16.895921096256526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122015",
+      "areaM2": 17.475152777240663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123005",
+      "areaM2": 9.972978156986798,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125001",
+      "areaM2": 17.398593479504452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126001",
+      "areaM2": 29.02302070588336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126009",
+      "areaM2": 233.9728138171692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120017",
+      "areaM2": 9.949932419883513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123010",
+      "areaM2": 17.579381054785074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123018",
+      "areaM2": 17.231401970113808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125015",
+      "areaM2": 20.470811935472398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126017",
+      "areaM2": 21.879553269496782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116027",
+      "areaM2": 32.84573999376511,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120009",
+      "areaM2": 16.497715490297036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121003",
+      "areaM2": 11.878805982009307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122014",
+      "areaM2": 17.109974139776007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125003",
+      "areaM2": 20.366540711171073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126002",
+      "areaM2": 30.048512193575828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117008",
+      "areaM2": 31.99447302288736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120012",
+      "areaM2": 17.384989512438572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121015",
+      "areaM2": 11.312607574642115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123004",
+      "areaM2": 9.786140955280786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125016",
+      "areaM2": 19.89978576223912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126011",
+      "areaM2": 28.793302417894704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126012",
+      "areaM2": 28.165169683948804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120016",
+      "areaM2": 9.901470286259299,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120018",
+      "areaM2": 17.121549612889694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120005",
+      "areaM2": 17.04193749111436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121008",
+      "areaM2": 15.473668040501321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123006",
+      "areaM2": 17.49638160831581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123011",
+      "areaM2": 17.734521819988014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123014",
+      "areaM2": 33.192071820422136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126008",
+      "areaM2": 231.96856380164786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125008",
+      "areaM2": 17.029084142381578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126004",
+      "areaM2": 30.559326462570148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131013",
+      "areaM2": 654.9151368514989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119013",
+      "areaM2": 17.212391643221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120007",
+      "areaM2": 17.325216355025542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122003",
+      "areaM2": 17.288120852704456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122005",
+      "areaM2": 16.772579521689305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122016",
+      "areaM2": 16.51573931713898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125013",
+      "areaM2": 19.622671208478526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126010",
+      "areaM2": 236.07176280490106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126028",
+      "areaM2": 22.639431433736004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119005",
+      "areaM2": 17.54510800968238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120015",
+      "areaM2": 9.908317389465058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123001",
+      "areaM2": 17.541672037012827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125006",
+      "areaM2": 17.236674556170044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116015",
+      "areaM2": 11.119605190398797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119002",
+      "areaM2": 17.344119446023733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120001",
+      "areaM2": 16.17868190081636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122010",
+      "areaM2": 9.88577852351722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125011",
+      "areaM2": 17.578984620181544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126025",
+      "areaM2": 30.34657497169498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119017",
+      "areaM2": 16.901322243008998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121017",
+      "areaM2": 11.338210880249973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122013",
+      "areaM2": 17.66550863672363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442124001",
+      "areaM2": 637.8830643676118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118012",
+      "areaM2": 12.149889471137376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120011",
+      "areaM2": 17.044825018313887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120019",
+      "areaM2": 17.294164848576244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122008",
+      "areaM2": 16.837604150641656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125012",
+      "areaM2": 17.490233349536886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117020",
+      "areaM2": 9.787398661084085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121016",
+      "areaM2": 11.649400406189837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123008",
+      "areaM2": 17.649337318881212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126003",
+      "areaM2": 30.43305273043237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126013",
+      "areaM2": 30.373151904352248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119010",
+      "areaM2": 17.21178430105088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120008",
+      "areaM2": 16.722262988903356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126019",
+      "areaM2": 35.87371062246699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116016",
+      "areaM2": 9.694971998916557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120004",
+      "areaM2": 17.152666146628672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123013",
+      "areaM2": 17.15930774797252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125004",
+      "areaM2": 19.467502960585588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126005",
+      "areaM2": 30.560278574178025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116022",
+      "areaM2": 335.72133410153714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116026",
+      "areaM2": 30.275935245982325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121013",
+      "areaM2": 15.479486839294385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121014",
+      "areaM2": 15.552441143084554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122011",
+      "areaM2": 9.996062059540185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123009",
+      "areaM2": 17.241289613418857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125007",
+      "areaM2": 16.465077366822158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119012",
+      "areaM2": 9.730835155618843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120014",
+      "areaM2": 17.862082942047085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123003",
+      "areaM2": 9.924080771473605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125010",
+      "areaM2": 18.128029019940833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126029",
+      "areaM2": 29.928558801329956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116014",
+      "areaM2": 25.845886912402747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120013",
+      "areaM2": 17.53032659681707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121004",
+      "areaM2": 11.318741802256513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123017",
+      "areaM2": 16.443856139526865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126015",
+      "areaM2": 423.07082226218813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121002",
+      "areaM2": 11.942501612989382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121006",
+      "areaM2": 9.612384586361683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121010",
+      "areaM2": 11.652865176016078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125014",
+      "areaM2": 19.597771895486627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118003",
+      "areaM2": 68.20721589348149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119001",
+      "areaM2": 17.24143956806291,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120006",
+      "areaM2": 16.74646074509483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126007",
+      "areaM2": 230.98227913160386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126023",
+      "areaM2": 30.25532400695432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119008",
+      "areaM2": 17.217971155513148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119019",
+      "areaM2": 18.109753546823633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122009",
+      "areaM2": 17.12719489790479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123015",
+      "areaM2": 17.547122982594768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116013",
+      "areaM2": 12.744415447909637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118013",
+      "areaM2": 15.132598269105321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120010",
+      "areaM2": 17.217104902153974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122007",
+      "areaM2": 9.878911413220568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123012",
+      "areaM2": 17.176553157574375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126014",
+      "areaM2": 28.327584525349963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126026",
+      "areaM2": 30.38966334436373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123002",
+      "areaM2": 17.05414784247231,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125005",
+      "areaM2": 18.135661740968587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126024",
+      "areaM2": 30.462167245441027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116012",
+      "areaM2": 15.588663114189162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118017",
+      "areaM2": 15.808351710288582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442123007",
+      "areaM2": 16.98245841070456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116028",
+      "areaM2": 31.07792706923383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117019",
+      "areaM2": 9.803593018250442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119006",
+      "areaM2": 18.12530929790085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122004",
+      "areaM2": 17.49196729930253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126006",
+      "areaM2": 177.29833795700364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116011",
+      "areaM2": 30.629041375446945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118015",
+      "areaM2": 9.413570568833373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122001",
+      "areaM2": 17.42427075160497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442122017",
+      "areaM2": 16.830952109350836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126027",
+      "areaM2": 30.471355811350314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442121001",
+      "areaM2": 11.649733378228618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442126016",
+      "areaM2": 30.2248986890449,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125002",
+      "areaM2": 16.54573391970675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442125009",
+      "areaM2": 17.392532064048723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442120002",
+      "areaM2": 17.955218142943174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119003",
+      "areaM2": 17.072437355729384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127014",
+      "areaM2": 267.34317989530945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128009",
+      "areaM2": 261.66907157999185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128012",
+      "areaM2": 218.09049758018313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128008",
+      "areaM2": 261.28909131790675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127001",
+      "areaM2": 219.1037992418575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127017",
+      "areaM2": 409.9251812491182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127013",
+      "areaM2": 372.450798780451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127006",
+      "areaM2": 217.75067947506213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127009",
+      "areaM2": 413.2670517831031,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127016",
+      "areaM2": 407.9741320565372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128011",
+      "areaM2": 269.7906821125269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127005",
+      "areaM2": 220.7805752624641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127004",
+      "areaM2": 221.7700986144851,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127015",
+      "areaM2": 329.6700695418948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127011",
+      "areaM2": 415.1444245419791,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128010",
+      "areaM2": 262.9420208504458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127012",
+      "areaM2": 218.42656802492795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127003",
+      "areaM2": 221.72564183576566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127002",
+      "areaM2": 220.41280910172472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128013",
+      "areaM2": 219.97424915890213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127010",
+      "areaM2": 411.0215311740094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442128007",
+      "areaM2": 258.5075989219448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-19044ΕΚ20001",
+      "areaM2": 60955.263576355115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127007",
+      "areaM2": 331.57752530037345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127008",
+      "areaM2": 367.6466399788034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442617001",
+      "areaM2": 5269.967954723133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022004",
+      "areaM2": 287.1033183151276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022012",
+      "areaM2": 196.70693121173852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402016",
+      "areaM2": 212.36812612979196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442127018",
+      "areaM2": 268.90077529504833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022008",
+      "areaM2": 313.10882194675315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-19044ΕΚ26012",
+      "areaM2": 112994.88663663802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115012",
+      "areaM2": 21.462484832987172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117013",
+      "areaM2": 31.34963034943641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117018",
+      "areaM2": 9.912879325533753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118008",
+      "areaM2": 11.309773720676477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117017",
+      "areaM2": 10.449931563126572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115009",
+      "areaM2": 34.939075682730746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117003",
+      "areaM2": 34.41431120186694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118007",
+      "areaM2": 14.767880141337665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115017",
+      "areaM2": 43.58886916701242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117002",
+      "areaM2": 31.94872658787303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117006",
+      "areaM2": 34.29968473218061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115013",
+      "areaM2": 401.3109763087222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117010",
+      "areaM2": 256.0846549126344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442019002",
+      "areaM2": 1500.2844443786596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117014",
+      "areaM2": 30.9316040010669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117016",
+      "areaM2": 10.474019774351095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115003",
+      "areaM2": 26.54756777567712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117011",
+      "areaM2": 254.21038034710767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117001",
+      "areaM2": 35.10115883768957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115014",
+      "areaM2": 296.7382469969118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115006",
+      "areaM2": 43.1018325138857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118002",
+      "areaM2": 12.124725484857954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117004",
+      "areaM2": 31.56912143440516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117007",
+      "areaM2": 34.947835681186056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117012",
+      "areaM2": 260.5712553186008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118009",
+      "areaM2": 11.272262792694743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118016",
+      "areaM2": 11.00081054983906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115015",
+      "areaM2": 17.39746114430027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115007",
+      "areaM2": 20.249159490377632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117005",
+      "areaM2": 33.324128864443104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119014",
+      "areaM2": 15.79680267205685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118004",
+      "areaM2": 15.786411648726286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442119015",
+      "areaM2": 16.386059286619737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115001",
+      "areaM2": 365.92197413094715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118010",
+      "areaM2": 12.05588793208804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115004",
+      "areaM2": 36.459284681857284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118005",
+      "areaM2": 11.700333758614228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118006",
+      "areaM2": 11.787782917493152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115016",
+      "areaM2": 15.139176789025482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115002",
+      "areaM2": 239.95948260316675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115005",
+      "areaM2": 42.653289231379546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442117015",
+      "areaM2": 10.130631766005989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442019003",
+      "areaM2": 35743.96299020897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115011",
+      "areaM2": 13.676812521544544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115010",
+      "areaM2": 18.870958374180702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442118001",
+      "areaM2": 11.62876831061476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442115008",
+      "areaM2": 36.142612765860065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023006",
+      "areaM2": 318.74619316831973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023001",
+      "areaM2": 298.0633054381417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023004",
+      "areaM2": 273.7375334647037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023005",
+      "areaM2": 230.5185007836093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023008",
+      "areaM2": 1438.1323957078878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442020014",
+      "areaM2": 767.5165417317353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023002",
+      "areaM2": 239.17416549161456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022013",
+      "areaM2": 246.55575021220653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442020002",
+      "areaM2": 170.38198105868688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021004",
+      "areaM2": 174.94790918981138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022002",
+      "areaM2": 179.64321364241397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022003",
+      "areaM2": 180.2522940412863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023003",
+      "areaM2": 189.8804568647953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021009",
+      "areaM2": 262.614657831474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021003",
+      "areaM2": 178.57597124758564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022001",
+      "areaM2": 179.60956312814426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021002",
+      "areaM2": 180.27510445246938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442020001",
+      "areaM2": 255.9784076968861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022007",
+      "areaM2": 227.88577938083023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442020012",
+      "areaM2": 223.1941958932224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021007",
+      "areaM2": 208.7588889529009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022009",
+      "areaM2": 225.75778430680333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022005",
+      "areaM2": 222.80190021171813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022011",
+      "areaM2": 422.5932132586872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442023007",
+      "areaM2": 182.262262274291,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021005",
+      "areaM2": 242.93552923473237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022006",
+      "areaM2": 225.47699312015885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021008",
+      "areaM2": 212.2364288579539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442021010",
+      "areaM2": 175.59150418083343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442022010",
+      "areaM2": 183.84550997952164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413001",
+      "areaM2": 7032.241778980346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413011",
+      "areaM2": 402.6254251701592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413014",
+      "areaM2": 401.54277511989267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413024",
+      "areaM2": 364.05850482327634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140003",
+      "areaM2": 414.2182375486978,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140009",
+      "areaM2": 280.5753018086026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413026",
+      "areaM2": 270.2734111878273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413016",
+      "areaM2": 804.5562833433463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413023",
+      "areaM2": 370.81125852779735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140008",
+      "areaM2": 221.03407594015312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413027",
+      "areaM2": 401.90750807442686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442140002",
+      "areaM2": 291.42683209844586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413022",
+      "areaM2": 370.3189451970838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413025",
+      "areaM2": 245.52208530606637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413012",
+      "areaM2": 392.0500314770056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413013",
+      "areaM2": 419.52731849384173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442413017",
+      "areaM2": 403.243978558584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116004",
+      "areaM2": 245.04275607991684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116019",
+      "areaM2": 35.317938628509296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131008",
+      "areaM2": 468.70393624688364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116003",
+      "areaM2": 240.47014741924923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131003",
+      "areaM2": 1032.9557016680155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116006",
+      "areaM2": 35.16841092403898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116009",
+      "areaM2": 22.554263973062394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116010",
+      "areaM2": 21.79660373723864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116021",
+      "areaM2": 21.94665494693205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131009",
+      "areaM2": 263.71922613626606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116017",
+      "areaM2": 37.013905269150534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131007",
+      "areaM2": 507.7138144357831,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116025",
+      "areaM2": 594.4229032652677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442112015",
+      "areaM2": 269.57449105825606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131002",
+      "areaM2": 258.3639843858351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116007",
+      "areaM2": 36.06066521224405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116024",
+      "areaM2": 300.58711645143023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131014",
+      "areaM2": 1284.358088420867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116018",
+      "areaM2": 35.261281243930235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116001",
+      "areaM2": 21.88983399920319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116005",
+      "areaM2": 22.794629058765594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131010",
+      "areaM2": 1017.4707670733237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442116002",
+      "areaM2": 281.2141920874196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442131001",
+      "areaM2": 983.3179545566945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618004",
+      "areaM2": 334.27435825276166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618007",
+      "areaM2": 286.6736403419233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442615001",
+      "areaM2": 3603.2052583194095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402013",
+      "areaM2": 225.83043583866325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618013",
+      "areaM2": 282.082760879767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618003",
+      "areaM2": 315.9704600795454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618008",
+      "areaM2": 209.03710475937072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618015",
+      "areaM2": 287.54141816202616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618005",
+      "areaM2": 283.7319738006164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618012",
+      "areaM2": 128.54198543805927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618014",
+      "areaM2": 341.596476460134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618011",
+      "areaM2": 210.31213188672035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442402014",
+      "areaM2": 256.64395613902946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618009",
+      "areaM2": 349.91449658279765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442615003",
+      "areaM2": 34.040473645856274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618002",
+      "areaM2": 224.01327958808076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618001",
+      "areaM2": 151.18400693619188,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GR-THESS-KAEK-190442618018",
+      "areaM2": 15.682376253279944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

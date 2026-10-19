@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityCode": 8177,
+  "queueRank": 2123,
+  "rank": 2123,
+  "cityRecord": "city-8177-yibin.json",
+  "city": "Yibin",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [28.7579007034079, 104.630174752774],
+  "attempt": 1,
+  "maxAttempts": 3,
+  "status": "held",
+  "registryFound": true,
+  "registryBasis": "Official Yibin Natural Resources and Planning Bureau pages evidence a local 不动产登记 section and online registration route. This distinguishes local registry custody from general national/provincial prose; it does not establish an open parcel-vector API.",
+  "assessment": "Attempt 1 completed. First-party English and Chinese discovery found the local bureau, its registration section, and a documented Yibin GIS-platform initiative. Bounded anonymous checks of the official bureau, linked registration portal, and GIS-platform route produced no usable parcel ID-plus-geometry response. Runtime remains held.",
+  "searchQueries": [
+    {"language": "English", "query": "Yibin China official cadastral parcel map GIS land registration public map service 宜宾 cadastral parcel map official", "outcome": "Official Sichuan/Yibin natural-resources custodian and GIS-platform evidence found; no anonymous parcel feature route.", "actualResultUrls": ["https://dnr.sc.gov.cn/scdnr/scxxhjs/2019/4/12/0848e2ebed8f432d9475034613074478.shtml", "https://zygh.yibin.gov.cn/"]},
+    {"language": "Chinese (Simplified)", "query": "宜宾 官方 地籍图 地块 查询 GIS 不动产 登记 地图", "outcome": "Official local 不动产登记 section and linked portal found; no safe public parcel geometry response.", "actualResultUrls": ["https://zygh.yibin.gov.cn/gk/bdcdj/", "http://bdc.ybdlr.gov.cn/bdc.php", "https://rerc.com.cn/"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://zygh.yibin.gov.cn/", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "outcome": "Official bureau homepage loaded."},
+    {"url": "https://zygh.yibin.gov.cn/gk/bdcdj/", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "outcome": "Official registration section loaded; procedures/news/notices and linked portal were visible, but no parcel API/schema was exposed."},
+    {"url": "http://bdc.ybdlr.gov.cn/bdc.php", "method": "GET; anonymous", "httpStatus": null, "outcome": "Bounded request timed out or returned no usable response; no login or credentials attempted."},
+    {"url": "http://202.61.89.138/zd/zdplatform/Index.html", "method": "GET; anonymous", "httpStatus": null, "outcome": "Bounded request returned no usable response; no TLS bypass or authentication attempted."},
+    {"url": "https://dnr.sc.gov.cn/scdnr/scxxhjs/2019/4/12/0848e2ebed8f432d9475034613074478.shtml", "method": "GET; anonymous; TLS verification enabled", "httpStatus": 200, "outcome": "Official provincial report documented Yibin GIS public-platform planning; no live parcel feature response."}
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "crs": null, "exactWupPointTest": "Not performed against a verified cadastral endpoint; point preserved exactly and not shifted."},
+  "coverageAssessment": {"claimedScope": "Yibin local registry and documented municipal/provincial GIS-platform discovery.", "verifiedOpenScope": "Local registry custody only; no anonymous parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable public native parcel/source ID if available", "parcel polygon or multipolygon geometry", "CRS and non-sensitive service/schema metadata", "HTTP status/content type"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"],
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "unsafeFieldsRequested": false, "citywideCompletenessAsserted": false, "exactPointHitTest": false},
+  "qualification": {"verifiedParcelGeometry": false, "verifiedNativeIdentity": false, "runtimeReadiness": "held", "serialReviewerRequired": true},
+  "uncertainty": "A current local or provincial service may exist behind the linked portal, restricted network, or an undiscovered route. Timeouts and lack of a public response do not establish citywide cadastral absence.",
+  "conclusion": "Packet complete for attempt 1 as a held research result; no GeoJSON sample is justified and no adapter qualification is claimed."
+}

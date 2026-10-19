@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "harrisburg",
+      "stateCode": "PA",
+      "sourceId": "us-pa-harrisburg-parcels",
+      "endpoint": "https://services5.arcgis.com/9n3LUAMi3B692MBL/ArcGIS/rest/services/Property_Tax_Parcels_September_2026/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.89,
+            40.27,
+            -76.8875,
+            40.2725
+          ],
+          "count": 210,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.8875,
+            40.27,
+            -76.885,
+            40.2725
+          ],
+          "count": 94,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.885,
+            40.27,
+            -76.88250000000001,
+            40.2725
+          ],
+          "count": 16,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 4,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 263,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8"
+      }
+    },
+    {
+      "city": "providence",
+      "stateCode": "RI",
+      "sourceId": "us-ri-providence-parcels",
+      "endpoint": "https://engineering.provwater.com/arconline/rest/services/eMap/eMap_Base2/FeatureServer/19",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider is unavailable.",
+        "code": "parcel-source-unavailable",
+        "cause": "fetch failed"
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 304
+      }
+    },
+    {
+      "city": "carson_city",
+      "stateCode": "NV",
+      "sourceId": "us-nv-carson_city-parcels",
+      "endpoint": "https://arcgis.water.nv.gov/arcgis/rest/services/BaseLayers/County_Parcels_in_Nevada/MapServer/0",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned an incomplete or invalid object-ID list.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 2,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "manifest",
+        "parameterLength": 200,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=UTF-8"
+      }
+    }
+  ]
+}

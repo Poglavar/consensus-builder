@@ -1,0 +1,74 @@
+{
+  "name": "Touba",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "rank": 446,
+  "point": [
+    14.8546868767574,
+    -15.8898691981172
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "site:adm.sn Touba cadastre parcellaire foncier SIG commune registre parcelles",
+        "scope": "Find Touba-specific municipal/cadastral registry operations and any public full-geometry map service.",
+        "result": "The official ADM records a 2026 collaboration protocol with the Commune de Touba and later municipal-development planning workshops. The material inspected concerns city planning/development and does not document a parcel register, city cadastral office, or parcel GIS. DGID describes a Senegal-wide NICAD/cadastre process and local cadastral offices generally, but the sources inspected do not bind a particular office or published parcel dataset to Touba.",
+        "actualResultUrls": [
+          "https://www.adm.sn/en/%F0%9D%90%93%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%9B%F0%9D%90%9A%20_%F0%9D%90%8B%27%F0%9D%90%80%F0%9D%90%83%F0%9D%90%8C_%F0%9D%90%9E%F0%9D%90%AD_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A8%F0%9D%90%A6%F0%9D%90%A6%F0%9D%90%AE%F0%9D%90%A7%F0%9D%90%9E_%F0%9D%90%AC%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A7%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%AE%F0%9D%90%A7_%F0%9D%90%A9%F0%9D%90%AB%F0%9D%90%A8%F0%9D%90%AD%F0%9D%90%A8%F0%9D%90%9C%F0%9D%90%A8%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%A9%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%AB_%F0%9D%90%9A%F0%9D%90%9C%F0%9D%90%9C%F0%9D%90%9E%CC%81%F0%9D%90%A5%F0%9D%90%9E%CC%81%F0%9D%90%AB%F0%9D%90%9E%F0%9D%90%A7_%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%9D%F0%9D%90%9E%CC%81%F0%9D%90%AF%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A8%F0%9D%90%A9%F0%9D%90%A9%F0%9D%90%9E%F0%9D%90%A6%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%9D%F0%9D%90%9E_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A2%F0%9D%90%AD%F0%9D%90%9E%CC%81_%F0%9D%90%91%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A2%F0%9D%90%9E%F0%9D%90%AE%F0%9D%90%AC%F0%9D%90%9E",
+          "https://www.adm.sn/en/%F0%9D%90%93%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%9B%F0%9D%90%9A%20_%F0%9D%90%8B%27%F0%9D%90%80%F0%9D%90%83%F0%9D%90%8C_%F0%9D%90%9E%F0%9D%90%AD_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A8%F0%9D%90%A6%F0%9D%90%A6%F0%9D%90%AE%F0%9D%90%A7%F0%9D%90%9E_%F0%9D%90%AC%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A7%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%AE%F0%9D%90%A7_%F0%9D%90%A9%F0%9D%90%AB%F0%9D%90%A8%F0%9D%90%AD%F0%9D%90%A8%F0%9D%90%9C%F0%9D%90%A8%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%A9%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%AB_%F0%9D%90%9A%F0%9D%90%9C%F0%9D%90%9C%F0%9D%90%9E%CC%81%F0%9D%90%A5%F0%9D%90%9E%CC%81%F0%9D%90%AB%F0%9D%90%9E%F0%9D%90%A7_%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%9D%F0%9D%90%9E%CC%81%F0%9D%90%AF%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A8%F0%9D%90%A9%F0%9D%90%A9%F0%9D%90%9E%F0%9D%90%A6%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%9D%F0%9D%90%9E_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A2%F0%9D%90%AD%F0%9D%90%9E%CC%81_%F0%9D%90%91%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A2%F0%9D%90%9E%F0%9D%90%AE%F0%9D%90%AC%F0%9D%90%9E"
+        ],
+        "executionMethod": "Official Senegalese municipal-development and DGID searches/page inspection."
+      },
+      {
+        "language": "English",
+        "query": "Touba Senegal official city parcel cadastre municipal land registry public GIS map",
+        "scope": "Cross-check the local evidence and distinguish national cadastre procedures from a Touba-bound service.",
+        "result": "No official Touba-specific cadastral office or public parcel viewer/vector download was found. The DGID NICAD service requires local cadastral-office processing with title/allocation evidence, site plan, and owner ID; this national procedure is not proof of a Touba city source. No parcel geometry was returned.",
+        "actualResultUrls": [
+          "https://www.dgid.sn/fiches/nicad",
+          "https://www.urbanisme.gouv.sn/faqs",
+          "https://www.adm.sn/en/%F0%9D%90%93%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%9B%F0%9D%90%9A%20_%F0%9D%90%8B%27%F0%9D%90%80%F0%9D%90%83%F0%9D%90%8C_%F0%9D%90%9E%F0%9D%90%AD_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A8%F0%9D%90%A6%F0%9D%90%A6%F0%9D%90%AE%F0%9D%90%A7%F0%9D%90%9E_%F0%9D%90%AC%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A7%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%AE%F0%9D%90%A7_%F0%9D%90%A9%F0%9D%90%AB%F0%9D%90%A8%F0%9D%90%AD%F0%9D%90%A8%F0%9D%90%9C%F0%9D%90%A8%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%A9%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%AB_%F0%9D%90%9A%F0%9D%90%9C%F0%9D%90%9C%F0%9D%90%9E%CC%81%F0%9D%90%A5%F0%9D%90%9E%CC%81%F0%9D%90%AB%F0%9D%90%9E%F0%9D%90%A7_%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%9D%F0%9D%90%9E%CC%81%F0%9D%90%AF%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A8%F0%9D%90%A9%F0%9D%90%A9%F0%9D%90%9E%F0%9D%90%A6%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%9D%F0%9D%90%9E_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A2%F0%9D%90%AD%F0%9D%90%9E%CC%81_%F0%9D%90%91%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A2%F0%9D%90%9E%F0%9D%90%AE%F0%9D%90%AC%F0%9D%90%9E"
+        ],
+        "executionMethod": "Official Senegal government source search and page inspection."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official ADM city-commune materials inspected relate to municipal development planning. National DGID guidance describes cadastral identifiers and a local-office application process, but no Touba-specific public viewer, parcel download, or service binding was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "city_specific_registry_or_public_geometry_not_verified",
+  "technicalBlocker": "No Touba-bound official cadastral register or anonymous public parcel-geometry source was verified. National DGID guidance and city planning cooperation are insufficient to establish a local parcel source.",
+  "remainingUncertainty": "Touba’s unusual land-administration arrangements and any city-specific registry or project inventory are not documented by the public sources inspected. No absence claim is made.",
+  "nextStep": null,
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 1829,
+  "cityId": "wup2025:1829",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    14.8546868767574,
+    -15.8898691981172
+  ],
+  "queueRank": 446,
+  "population2025": 1151552,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "registryBasis": "The 2026 official ADM article documents cooperation between ADM and the Commune de Touba on municipal development. The DGID describes a national NICAD process delivered through the cadastral office local to a parcel, but the sources inspected do not identify an operating Touba cadastral office or a Touba parcel inventory. Registry status therefore remains unverified.",
+  "registryEvidenceUrls": [
+    "https://www.adm.sn/en/%F0%9D%90%93%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%9B%F0%9D%90%9A%20_%F0%9D%90%8B%27%F0%9D%90%80%F0%9D%90%83%F0%9D%90%8C_%F0%9D%90%9E%F0%9D%90%AD_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A8%F0%9D%90%A6%F0%9D%90%A6%F0%9D%90%AE%F0%9D%90%A7%F0%9D%90%9E_%F0%9D%90%AC%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A7%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%AE%F0%9D%90%A7_%F0%9D%90%A9%F0%9D%90%AB%F0%9D%90%A8%F0%9D%90%AD%F0%9D%90%A8%F0%9D%90%9C%F0%9D%90%A8%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%A9%F0%9D%90%A8%F0%9D%90%AE%F0%9D%90%AB_%F0%9D%90%9A%F0%9D%90%9C%F0%9D%90%9C%F0%9D%90%9E%CC%81%F0%9D%90%A5%F0%9D%90%9E%CC%81%F0%9D%90%AB%F0%9D%90%9E%F0%9D%90%A7_%F0%9D%90%A5%F0%9D%90%9E_%F0%9D%90%9D%F0%9D%90%9E%CC%81%F0%9D%90%AF%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A8%F0%9D%90%A9%F0%9D%90%A9%F0%9D%90%9E%F0%9D%90%A6%F0%9D%90%9E%F0%9D%90%A7%F0%9D%90%AD_%F0%9D%90%9D%F0%9D%90%9E_%F0%9D%90%A5%F0%9D%90%9A_%F0%9D%90%82%F0%9D%90%A2%F0%9D%90%AD%F0%9D%90%9E%CC%81_%F0%9D%90%91%F0%9D%90%9E%F0%9D%90%A5%F0%9D%90%A2%F0%9D%90%A0%F0%9D%90%A2%F0%9D%90%9E%F0%9D%90%AE%F0%9D%90%AC%F0%9D%90%9E",
+    "https://www.dgid.sn/fiches/nicad"
+  ],
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00",
+  "sourceIds": []
+}

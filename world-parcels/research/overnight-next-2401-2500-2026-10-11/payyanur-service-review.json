@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-9395-payyanur.json",
+  "cityCode": 9395,
+  "queueRank": 2437,
+  "name": "Payyanur",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [12.1186390957407, 75.1968061737617],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html","httpStatus":200,"outcome":"Official Kerala Bhu-Naksha page was identified by first-party search and linked from Kerala government land-record portals. Direct curl followed an HTTP 307 redirect to HTTPS, then stopped on certificate-expired verification failure; no TLS exception was used."},
+    {"method":"SEARCH","url":"https://survey.entebhoomi.kerala.gov.in/portal/","httpStatus":200,"outcome":"Official Kerala Survey and Land Records digital-survey portal loaded. Its public page links to Bhu-Naksha and describes digital survey records and land-information services."},
+    {"method":"GET","url":"https://survey.entebhoomi.kerala.gov.in/portal/survey/search","httpStatus":200,"outcome":"Public search form loaded. Current HTML/JavaScript inspected: districtId, talukId, villageId, blockCode, surveyNo, subDivNo, and CAPTCHA are form fields; no owner or personal fields were requested."},
+    {"method":"GET","url":"https://survey.entebhoomi.kerala.gov.in/portal/district/taluk/gid?districtId=b4f8b6cb-a70a-49b1-af73-fcba250cdded","httpStatus":200,"outcome":"Anonymous hierarchy response returned Kannur taluks, including Malayalam Payyannur (gid a6004b98-57d7-4a48-8c64-60958b7b010e; talukcode 05). Response reported zero parcel counts in the hierarchy metadata."},
+    {"method":"GET","url":"https://survey.entebhoomi.kerala.gov.in/portal/district/village/gid?talukId=a6004b98-57d7-4a48-8c64-60958b7b010e","httpStatus":200,"outcome":"Anonymous hierarchy response returned 22 villages, including Malayalam പയ്യന്നൂര്‍ (gid 6bb36e25-6a61-4367-a355-308fa58dbcd2; villagecode 03). Response reported zero parcel counts in the hierarchy metadata."},
+    {"method":"GET","url":"https://survey.entebhoomi.kerala.gov.in/portal/survey/blocks?villageId=6bb36e25-6a61-4367-a355-308fa58dbcd2","httpStatus":200,"outcome":"Public block lookup returned reqstatus T with an empty blockCodes array. This is an empty public-service response, not evidence that Payyanur has no parcels citywide."},
+    {"method":"SEARCH","url":"https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/8300","httpStatus":200,"outcome":"Government of India DILRMP status page lists Payyanur among Kannur/Payyanur villages: 5/5 map sheets digitized, but georeferenced cadastral maps and linked ROR are marked Not Done in the displayed status."},
+    {"method":"SEARCH","url":"https://landrevenue.kerala.gov.in/core/Office_websites/about_village.php?nm=735735Payyannurvillageoffice","httpStatus":200,"outcome":"Official Kerala Revenue Payyanur Village Office page confirms Payyannur as a village/municipal town/taluk and gives approximate public geography; it is local custodian context, not a parcel geometry endpoint."},
+    {"method":"GET","url":"https://survey.entebhoomi.kerala.gov.in/portal/assets/js/survey/taluk_village_custom.js","httpStatus":200,"outcome":"Current public JavaScript inspected. It confirms the anonymous GET routes for taluk, village, and block hierarchy used above."},
+    {"method":"GET","url":"https://survey.entebhoomi.kerala.gov.in/portal/assets/js/survey/survey_search.js","httpStatus":200,"outcome":"Current public JavaScript inspected. Search submission is POST /portal/survey/search/ and includes CAPTCHA; no CAPTCHA was attempted or bypassed."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig":"Bhu-Naksha viewer page was not retrievable over verified TLS during this attempt. Ente Bhoomi public hierarchy JSON schema was inspected.",
+    "apiBase":"https://survey.entebhoomi.kerala.gov.in/portal/",
+    "geometryCrs":null,
+    "nativeIdentity":null,
+    "sourceFieldMapping":{"hierarchyFields":["districtId","talukId","villageId","blockCode"],"parcelFields":null},
+    "boundedAnonymousResponse":{"requestScope":"Payyanur village hierarchy/block lookup","featureCount":0,"nativeIdentity":null,"geometry":null}
+  },
+  "sourceFieldMapping":{"nativeSourceFields":["gid","talukName","talukcode","villageName","villagecode","noOfParcels","noOfUlpinGenerated","blockCodes"],"compositeKeyProvenance":"Official hierarchy UUIDs and village/taluk codes identify service scope only; they were not treated as parcel identities."},
+  "localCustodianAssessment":"Kerala Survey and Land Records Department and Kerala Revenue Department are first-party state custodians; the Revenue Payyanur Village Office page is local-village custodian context. Bhu-Naksha is the official cadastral-map viewer. No municipal parcel API was evidenced on the Payyannur Municipality page.",
+  "safeFieldAllowlist":["stable native parcel identity if later exposed anonymously","full parcel polygon only if later exposed anonymously and bounded","source service URL","source CRS and coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax/account","certificate/title","personal data","mobile number","OTP","CAPTCHA contents"],
+  "sampleGeoJSON":null,
+  "qualification":{"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"First-party Kerala registry/map services and Payyanur hierarchy are evidenced, but no anonymous parcel schema, native parcel identity, CRS, or parcel geometry response was obtained. The Bhu-Naksha route was blocked by its expired TLS certificate and the Ente Bhoomi block response was empty."},
+  "scopeLimits":["Exact WUP point [12.1186390957407,75.1968061737617] was preserved and not shifted.","No exact-point hit or miss was claimed; no parcel query was executed against the point, and the empty block lookup does not establish citywide absence.","The Bhu-Naksha TLS certificate failure is a transport/access limitation, not evidence of absent cadastral data.","No full parcel polygon is retained.","No owner, address, contact, titleholder, tax/account, personal, certificate, mobile, OTP, or CAPTCHA data was requested or retained.","Ente Bhoomi public search submission requires CAPTCHA; no login, credentials, CAPTCHA defeat, or unsafe fields were used."],
+  "uncertainty":"Official Kerala cadastral and survey services are verified, and the Payyanur village hierarchy is directly observed. Anonymous parcel feature identity, geometry, CRS, citywide coverage, update cadence, and licensing remain unverified. Runtime adapter qualification remains held for serial review."
+}

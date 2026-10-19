@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:11027",
+  "wupCityCode": 11027,
+  "name": "Hajipur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.9809989936602,
+    85.4509953679278
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "priorStatus": "no_verified_sample_candidate_citywide",
+  "priorEvidenceFiles": [
+    "research/hajipur.json"
+  ],
+  "freshFollowup": true,
+  "sourceId": "bihar-bhunaksha",
+  "sourceFamilyEvidence": "bihar-family-viewer.json",
+  "nativeSearchQueries": [
+    {
+      "query": "पटना मानचित्र भू नक्शा भू अभिलेख राजस्व गांव नक्शा बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "हाजीपुर भू नक्शा बिहार गांव खेसरा नक्शा राजस्व",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "दरौली सीवान भू नक्शा राजस्व गांव खेसरा मानचित्र बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    }
+  ],
+  "headersUsed": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "acceptLanguage": "hi-IN,hi;q=0.9,en-IN;q=0.8,en;q=0.7",
+    "origin": "https://bhunaksha.bihar.gov.in",
+    "referer": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "cookieSession": "Persisted normal anonymous browser session; cookie names/values not saved."
+  },
+  "administrativeIdentity": {
+    "districtCode": "14",
+    "district": "MUZAFFARPUR",
+    "subdivisionCode": "02",
+    "subdivision": "मुजफ्फरपुर पूर्व",
+    "circleCode": "02",
+    "circle": "Sakra",
+    "villageOptionsReturned": 120,
+    "nameMatch": "No village option containing Sakra was found in the returned list.",
+    "assessment": "The WUP label Hajipur is not silently treated as the municipal Hajipur location. The inherited Nominatim lead places this WUP coordinate in Muzaffarpur/Sakra, but this is not an official revenue-village match. The official viewer confirms a Muzaffarpur East/Sakra selector branch, but the exact revenue mauza containing the WUP point is unresolved."
+  },
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "giscode": "",
+        "xEPSG32645": 344942.58,
+        "yEPSG32645": 2874497.95
+      },
+      "httpStatus": 204,
+      "contentType": null,
+      "bytes": 0,
+      "assessment": "Fresh direct target-point identify attempt with no selected GIS code returned no content. The viewer flow normally requires a previously selected cadastral sheet; this does not establish absence of nearby mapped parcels."
+    }
+  ],
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Bihar BhuNaksha viewer; selected cadastral map sheets and point clicks",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "No target-point parcel identity or polygon was returned. The shared viewer returns 204 for the exact WUP coordinate without a selected sheet GIS code, and its current click/report/highlight flow exposes only point IDs, plot number, EPSG:32645 bbox, and raster images. The source-level result applies to the viewer, not all Bihar services.",
+  "remainingUncertainty": "Exact target revenue village and any other city-specific open parcel source remain unresolved; no target parcel geometry was verified.",
+  "nextStep": "Resolve the WUP point to an official revenue mauza or boundary. Revisit the point with that exact map sheet if the viewer adds a vector/feature endpoint; otherwise test an independent official urban/regional parcel source.",
+  "officialSelectorRequests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "1",
+        "codes": "14,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "District 14 descendants include subdivision code 02 मुजफ्फरपुर पूर्व."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "2",
+        "codes": "14,02,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "Muzaffarpur East descendants include circle code 02 Sakra."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "3",
+        "codes": "14,02,02,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "120 mapped village choices; no option name contains Sakra."
+    }
+  ]
+}

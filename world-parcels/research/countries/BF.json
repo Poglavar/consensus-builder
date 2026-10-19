@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BF",
+ "country": "Burkina Faso",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Direction Générale des Impôts (DGI) - SYC@D land/cadastre management platform",
+ "portalsFound": [
+  {
+   "url": "https://dgi.bf/digitalisation-de-la-gestion-fonciere-la-plateforme-sycd-en-marche/",
+   "observation": "DGI page on SYC@D digital land management platform; menu lists SYC@D and eCADASTRE e-services; no public parcel service documented."
+  },
+  {
+   "url": "https://dgi.bf/informatisation-du-cadastre-national-les-plans-cadastraux-de-07-arrondissements-de-ouagadougou-en-cours-de-numerisation/",
+   "observation": "Cadastral plans of 7 Ouagadougou arrondissements being digitised (from city evidence)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://dgi.bf/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "DGI homepage, reachable"
+  },
+  {
+   "url": "https://sycad.dgi.bf/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "host unreachable/timeout from proxy"
+  },
+  {
+   "url": "https://www.finances.gov.bf/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry portal, no parcel data"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National cadastre run by tax administration; no public parcel service verified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "eCADASTRE/SYC@D appear to be login-based e-services; not accessed. sycad host unreachable.",
+ "nextStep": "Look at the eCADASTRE menu target and any IDE/geoportal (e.g. IGB) for open layers."
+}

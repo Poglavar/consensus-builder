@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:151",
+  "queueRank": 151,
+  "name": "Kunming",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    25.0418689141859,
+    102.72110339014
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyghj.km.gov.cn/",
+      "observation": "Municipal natural-resources bureau host; could not be reached from this client."
+    },
+    {
+      "url": "https://www.km.gov.cn/",
+      "observation": "Municipal government portal; could not be reached from this client."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyghj.km.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://www.km.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official hosts were unreachable, so no cadastre query could be tested. Registered parcel (不动产/地籍) data in China is generally served through login/real-name systems (see other China city files); no anonymous polygon endpoint was found. Absence of an open service is unconfirmed.",
+  "nextStep": "Retry from a network that can reach mainland-China government hosts; look for a documented public feature service."
+}

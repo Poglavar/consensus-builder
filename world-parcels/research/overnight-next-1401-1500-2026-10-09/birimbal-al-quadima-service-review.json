@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6714-birimbal-al-quadima.json",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "purpose": "Review first-party Egyptian cadastral and map channels for anonymous parcel geometry with safe native identifiers.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [31.169460159851, 31.798149461348]
+  },
+  "assessment": "The official ESA pages and Dakahlia map guide establish relevant national survey/map custody and available map products, but the public digital-map route is request/quotation based and publishes no anonymous parcel feature service. CAPMAS's official geospatial portal timed out. No parcel geometry or safe native parcel ID was verified.",
+  "registryAssessment": "Local Birimbal/Dakahlia registry custody is not sufficiently evidenced for registryFound=true. ESA is national authority evidence; the reviewed pages do not identify a local Birimbal registry endpoint or public parcel layer.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Birimbal al Quadima Egypt cadastral parcel map GIS Egyptian Survey Authority",
+      "result": "Official ESA pages found; no city-specific anonymous parcel endpoint.",
+      "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://www.esa.gov.eg/files/Topographic_Maps.pdf"]
+    },
+    {
+      "language": "Arabic",
+      "query": "بربمبل القديمة خريطة مساحية قطع الأراضي سجل عيني الدقهلية هيئة المساحة المصرية",
+      "result": "عُثر على صفحات الهيئة الرسمية ودليل خرائط الدقهلية، دون عارض قطع أو واجهة API عامة مجهولة للقرية.",
+      "actualResultUrls": ["https://www.esa.gov.eg/main.aspx", "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "https://www.esa.gov.eg/amlak.aspx", "https://www.esa.gov.eg/files/Topographic_Maps.pdf"]
+    }
+  ],
+  "attempts": [
+    {"url": "https://www.esa.gov.eg/main.aspx", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Official ESA home page retrieved; agency mapping/cadastral role and service links reviewed; no parcel API exposed."},
+    {"url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Official digital-map page retrieved; request/quotation/purchase workflow documented; HTML inspection found no FeatureServer, MapServer, WFS or parcel API."},
+    {"url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf", "method": "GET; first-party indexed document", "httpStatus": "accessible in web search", "assessment": "Dakahlia map scales and production context reviewed; no parcel schema, CRS endpoint or safe ID response."},
+    {"url": "https://geoportal.capmas.gov.eg/", "method": "GET; anonymous", "httpStatus": "timeout after 8 seconds", "assessment": "No response; no access-control bypass or login attempted."}
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "exactWupPointTest": "Not run because no documented anonymous parcel endpoint was found. The exact point was not shifted and no hit/miss absence inference was made."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source CRS", "service layer name"],
+  "nativeSchema": {"inspected": false, "crs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null},
+  "coverageAssessment": {"claimedScope": "ESA national mapping/cadastral responsibilities plus Dakahlia map-product context and CAPMAS portal lead.", "verifiedOpenScope": "No anonymous full parcel geometry or stable safe native parcel ID verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "ESA holdings, CAPMAS portal contents, Dakahlia/local registry accessibility, parcel-layer schema, CRS, exact-point inclusion and citywide coverage remain unknown.",
+  "nextStep": "Retry only through a documented first-party public parcel route if one becomes available; keep runtime readiness held until a serial reviewer independently qualifies a real adapter."
+}

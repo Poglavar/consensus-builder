@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bandar Lampung",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official city ATR/BPN portal identifies the local land office, and the national public-service listing records a local map (“Peta”) service product. The city’s own JIGN Geoportal is described as exposing GIS web services, but its anonymous homepage request returned HTTP 502. The ATR/BPN root is a JavaScript shell; no anonymous parcel geometry contract was exposed by inspected HTML or static bundles.",
+  "registryEvidenceUrls": [
+    "https://kot-bandarlampung.atrbpn.go.id/",
+    "https://bandarlampungkota.ina-sdi.or.id/",
+    "https://sippn.menpan.go.id/api/api/v1/layanan-publik/8105875/pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5407,
+  "cityId": "wup2025:5407",
+  "centerLatLon": [
+    -5.39421157704629,
+    105.266358528897
+  ],
+  "rank": 438,
+  "queueRank": 438,
+  "population2025": 1184054,
+  "population2025k": 1184.054,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The city JIGN Geoportal homepage returned HTTP 502, so no service catalog or schema could be fetched. The official city ATR/BPN app returned a JavaScript shell; its two public static bundles expose no map or cadastral feature route. Public city data API searches for “persil” and “pertanahan” returned zero records; “tanah” returned two unrelated non-spatial datasets. No anonymous parcel geometry route was verified.",
+  "scopeLimits": "Review covered Bandar Lampung’s local ATR/BPN application shell, its municipal JIGN Geoportal route, and city open-data search metadata. No city parcel polygons or schema were verified.",
+  "remainingUncertainty": "A separate local land-office mapping route or service may exist, but the current public Geoportal request failed and the ATR/BPN frontend client did not expose an anonymous vector geometry contract.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bandar Lampung Indonesia official cadastral parcel map land office GIS geoportal",
+        "scope": "Find city-local parcel registry sources and anonymous geometry routes.",
+        "result": "The local BPN office portal is public but loads as a JavaScript shell. The city JIGN Geoportal route returned HTTP 502. City open-data metadata searches returned no parcel-specific layer. No public parcel polygon was verified.",
+        "urls": [
+          "https://kot-bandarlampung.atrbpn.go.id/",
+          "https://bandarlampungkota.ina-sdi.or.id/",
+          "https://satudata.bandarlampungkota.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Peta bidang tanah persil Kota Bandar Lampung geoportal resmi ATR BPN",
+        "scope": "Mencari sumber persil/bidang tanah khusus Kota Bandar Lampung dan layanan geometri anonim.",
+        "result": "Portal JIGN Kota Bandar Lampung tidak dapat dibaca saat pemeriksaan (HTTP 502). Portal ATR/BPN lokal hanya mengirim shell JavaScript dan bundel statisnya tidak menampilkan rute fitur bidang tanah. API Satu Data tidak menemukan dataset persil/pertanahan.",
+        "urls": [
+          "https://kot-bandarlampung.atrbpn.go.id/",
+          "https://bandarlampungkota.ina-sdi.or.id/",
+          "https://satudata.bandarlampungkota.go.id/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kot-bandarlampung.atrbpn.go.id/",
+        "observation": "Official city ATR/BPN portal returned HTTP 200 (6,855 bytes) with a JS application shell. Its two public JavaScript bundles returned HTTP 200; inspected static text contained no map/feature-service schema route."
+      },
+      {
+        "url": "https://bandarlampungkota.ina-sdi.or.id/",
+        "observation": "City JIGN Geoportal description states geospatial data/services can be discovered and GIS web services are provided. Direct anonymous homepage request returned HTTP 502, so no service catalog was available."
+      },
+      {
+        "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=persil",
+        "observation": "Official city open-data API returned HTTP 200 with zero matching datasets."
+      },
+      {
+        "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=pertanahan",
+        "observation": "Official city open-data API returned HTTP 200 with zero matching datasets."
+      },
+      {
+        "url": "https://satudata.bandarlampungkota.go.id/api/public/v1/dataset-records?per_page=100&search=tanah",
+        "observation": "Official city open-data API returned HTTP 200 with two matching records; their public dataset titles describe fertilizer-use and fisheries sample testing, not cadastral geometry."
+      },
+      {
+        "url": "https://sippn.menpan.go.id/api/api/v1/layanan-publik/8105875/pdf",
+        "observation": "Government public-service listing for Kantor Pertanahan Kota Bandar Lampung identifies a local map (Peta) product; it is a local office service record, not an anonymous parcel feature service."
+      }
+    ],
+    "metadataReviewFile": "bandar-lampung-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-5407-bandar-lampung-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "id-bandarlampung-atrbpn-city-office-public-map-review",
+    "name": "Bandar Lampung local registry and public parcel-map route review",
+    "operator": "Kantor Pertanahan Kota Bandar Lampung (ATR/BPN) and Pemerintah Kota Bandar Lampung",
+    "url": "https://kot-bandarlampung.atrbpn.go.id/",
+    "scope": "Review covered Bandar Lampung’s local ATR/BPN application shell, its municipal JIGN Geoportal route, and city open-data search metadata. No city parcel polygons or schema were verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature ID or geometry returned.",
+    "geometryStatus": "local_registry_service_evidenced_no_anonymous_parcel_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Review covered Bandar Lampung’s local ATR/BPN application shell, its municipal JIGN Geoportal route, and city open-data search metadata. No city parcel polygons or schema were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00",
+  "sourceIds": [],
+  "point": [
+    -5.39421157704629,
+    105.266358528897
+  ]
+}

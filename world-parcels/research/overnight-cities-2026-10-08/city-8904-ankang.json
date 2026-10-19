@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Ankang",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Ankang Natural Resources Bureau and Ankang Real Estate Registration Center publish city-specific registration guidance. The 2024 online-query announcement says the scope is Ankang municipality but requires the rights-holder’s name and ID; online portal records additionally require registration/login and identity/face verification. No public anonymous parcel-vector service or full polygon response was verified.",
+  "registryEvidenceUrls": [
+    "https://zrzy.ankang.gov.cn/Content-2753951.html",
+    "https://zrzy.ankang.gov.cn/Content-2721411.html",
+    "https://www.ankang.gov.cn/Content-2618353.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8904,
+  "cityId": "wup2025:8904",
+  "centerLatLon": [
+    32.703478282197,
+    109.028675593474
+  ],
+  "point": [
+    32.703478282197,
+    109.028675593474
+  ],
+  "rank": 800,
+  "queueRank": 800,
+  "population2025": 678483,
+  "population2025k": 678.483,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous full-polygon parcel geometry route was identified. The city official online registration lookup is identity-gated; no account or personal data was entered.",
+  "scopeLimits": "Bounded public-source and anonymous service review only. No owner, address, applicant, account, taxpayer, identity or property-specific query inputs were submitted. No geometry sample is retained.",
+  "remainingUncertainty": "No anonymous parcel-vector service, safe geometry schema or full polygon at the exact WUP point was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "安康市 不动产登记中心 地籍图 宗地图 不动产登记资料查询 官方",
+        "scope": "Verify city-local registry/cadastre activity and inspect anonymous public parcel-map geometry without owner/address/account/property-specific inputs.",
+        "result": "安康市自然资源局公告覆盖市本级不动产登记信息，但在线查档要求权利人本人姓名和身份证号；陕西不动产登记网站流程需注册登录和实名认证/人脸识别。未发现匿名公开宗地矢量接口，也未获得完整宗地多边形。",
+        "actualResultUrls": [
+          "https://zrzy.ankang.gov.cn/Content-2753951.html",
+          "https://zrzy.ankang.gov.cn/Content-2721411.html",
+          "https://www.ankang.gov.cn/Content-2618353.html"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source inspection and route/schema checks. No personal or property-specific inputs were submitted."
+      },
+      {
+        "language": "English",
+        "query": "Ankang China official real estate registration cadastral parcel map public GIS land registry",
+        "scope": "Cross-check local institution identity and determine whether full public parcel geometry can be verified at the WUP point.",
+        "result": "City bureau and registration-center sources establish a local registry. The official online lookup requires rights-holder identity, account registration, and face verification. A public anonymous parcel-geometry service or full polygon response was not identified.",
+        "actualResultUrls": [
+          "https://zrzy.ankang.gov.cn/Content-2753951.html",
+          "https://zrzy.ankang.gov.cn/Content-2721411.html",
+          "https://www.ankang.gov.cn/Content-2618353.html"
+        ],
+        "executionMethod": "Separate English-language web search followed by official source/service inspection; no personal or property-specific inputs were submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzy.ankang.gov.cn/Content-2753951.html",
+        "observation": "Official Ankang Natural Resources Bureau notice (2024) states city-level registration-information query scope and requires the rights-holder name/ID; online path requires registration/login and real-name/face verification."
+      },
+      {
+        "url": "https://zrzy.ankang.gov.cn/Content-2721411.html",
+        "observation": "Official city bureau service guide describes rights-holder, interested-party and government query workflows with required documentation and city service-center handling."
+      },
+      {
+        "url": "https://www.ankang.gov.cn/Content-2618353.html",
+        "observation": "Official Ankang government organization page identifies the Natural Resources Bureau, city-level unified registration and cadastre responsibilities."
+      }
+    ]
+  },
+  "source": {
+    "name": "Ankang Natural Resources Bureau / Real Estate Registration Center",
+    "urls": [
+      "https://zrzy.ankang.gov.cn/Content-2753951.html",
+      "https://zrzy.ankang.gov.cn/Content-2721411.html",
+      "https://www.ankang.gov.cn/Content-2618353.html"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Ankang Natural Resources Bureau and Ankang Real Estate Registration Center publish city-specific registration guidance. The 2024 online-query announcement says the scope is Ankang municipality but requires the rights-holder’s name and ID; online portal records additionally require registration/login and identity/face verification. No public anonymous parcel-vector service or full polygon response was verified.",
+    "verifiedOpenScope": "City-level registry service is verified; official online query is identity-gated and no anonymous full polygon was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_exact_point_full_polygon",
+    "reason": "No anonymous full-polygon parcel geometry route was identified. The city official online registration lookup is identity-gated; no account or personal data was entered.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/ankang-service-review.json"
+  },
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "serviceCandidateNote": "No anonymous public parcel-geometry candidate was verified.",
+  "rootPrimaryReadback": {
+    "url": "https://zrzy.ankang.gov.cn/Content-2753951.html",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "关于开通网上查询不动产登记信息服务的公告-安康市自然资源局"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

@@ -1,0 +1,54 @@
+{
+  "cityCode": 6000,
+  "queueRank": 2034,
+  "name": "Osmaniye",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "iso3": "TUR",
+  "point": [37.0686596131803, 36.2502319679722],
+  "population2025": 286108,
+  "population2025k": 286.108,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Osmaniye Türkiye cadastral parcel map registry official TKGM municipality GIS",
+        "result": "Search found the official TKGM Parsel Sorgu service and the official Osmaniye Municipality website linking its Kent Rehberi and E-İmar services. No anonymous Osmaniye parcel geometry response, safe parcel ID response, schema, or CRS was obtained.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorgu.tkgm.gov.tr/",
+          "https://osmaniye-bld.gov.tr/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Osmaniye parsel sorgu kadastro haritası resmi belediye kent rehberi e-imar",
+        "result": "Turkish search found the official TKGM parcel-query service and Osmaniye Municipality's official links to Kent Rehberi and E-İmar. General official descriptions confirm parcel/address queries, but no public anonymous Osmaniye parcel API response or safe parcel geometry was evidenced.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://parselsorgu.tkgm.gov.tr/",
+          "https://osmaniye-bld.gov.tr/"
+        ]
+      }
+    ]
+  },
+  "attempt": 1,
+  "cohort": "overnight-next-2001-2100-2026-10-09",
+  "sourceAssessment": {
+    "localCustodian": "Osmaniye Municipality is evidenced as a local GIS/service custodian through its official website links to Kent Rehberi and E-İmar, but the linked viewer did not return a usable public response during this attempt.",
+    "nationalAuthorities": [
+      {
+        "name": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)",
+        "role": "National cadastral and land-registry authority operating the official Parsel Sorgu viewer.",
+        "parcelService": "Public viewer and documented province/district/neighborhood/parcel and coordinate query functions; anonymous API response was not obtained here."
+      }
+    ],
+    "safeFieldsAllowed": ["stable native parcel ID", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "transaction details"]
+  },
+  "runtimeReadiness": "held",
+  "notes": "Exact WUP point was preserved in latitude/longitude order and was not shifted. No GeoJSON sample retained. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not treated as citywide cadastral absence. Packet is complete for this attempt; source integration/admission remains unqualified."
+}

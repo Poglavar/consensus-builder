@@ -1,0 +1,39 @@
+{
+  "taskId": "city:4034",
+  "queueIdentity": {
+    "cityCode": 4034,
+    "rank": 1972,
+    "name": "Simferopol",
+    "country": "Ukraine",
+    "point": [
+      44.9501606488552,
+      34.101582292379
+    ],
+    "populationPersons": 294735
+  },
+  "bilingualSearches": [
+    {
+      "language": "English",
+      "query": "Simferopol official cadastral map public parcel map Ukraine"
+    },
+    {
+      "language": "native/local",
+      "query": "Сімферополь офіційна кадастрова карта земельні ділянки кадастр"
+    }
+  ],
+  "sourceArtifactReview": {
+    "firstPartyDocument": "https://wikimap.dzk.gov.ua/wiki/Публічна_кадастрова_карта",
+    "observation": "Official public-map documentation opened: it states that the map publishes State Land Cadastre information and permits cadastral-number search. The regional GIS request timed out; no parcel feature response was accepted."
+  },
+  "durableParcelPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "decision": "held",
+  "reason": "No verified city-scoped full parcel polygon with safe native ID or independently qualified live adapter."
+}

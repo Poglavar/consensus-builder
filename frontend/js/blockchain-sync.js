@@ -33,10 +33,18 @@
     /**
      * Get last synced token ID for a chain/contract
      */
+    // The position is per city: localStorage is shared by every city, while each sync adds only its
+    // own city's proposals — one shared position made a city skip its own tokens below the position
+    // another city had reached.
+    function syncPositionKey(chainId, contractAddress) {
+        const city = global.CityConfigManager?.getCurrentCityId?.() || 'none';
+        return `${city}|${chainId}-${contractAddress.toLowerCase()}`;
+    }
+
     function getLastSyncedTokenId(chainId, contractAddress) {
         try {
             const data = JSON.parse(localStorage.getItem(LAST_SYNC_KEY) || '{}');
-            const key = `${chainId}-${contractAddress.toLowerCase()}`;
+            const key = syncPositionKey(chainId, contractAddress);
             return data[key] || 0;
         } catch (error) {
             console.warn('Failed to read last sync position', error);
@@ -50,7 +58,7 @@
     function setLastSyncedTokenId(chainId, contractAddress, tokenId) {
         try {
             const data = JSON.parse(localStorage.getItem(LAST_SYNC_KEY) || '{}');
-            const key = `${chainId}-${contractAddress.toLowerCase()}`;
+            const key = syncPositionKey(chainId, contractAddress);
             data[key] = tokenId;
             localStorage.setItem(LAST_SYNC_KEY, JSON.stringify(data));
         } catch (error) {
@@ -106,6 +114,23 @@
         return `${chain}-${address}-${token}`;
     }
 
+    function canonicalCadastreParcelIds(values) {
+        if (!Array.isArray(values) || !values.length) {
+            throw new Error('Chain proposal has no cadastreParcelIds.');
+        }
+        const ids = values.map(value => String(value == null ? '' : value).trim());
+        if (ids.some(id => !id) || new Set(ids).size !== ids.length) {
+            throw new Error('Chain proposal has an invalid cadastreParcelIds declaration.');
+        }
+        const isDerived = global.ProposalAuthoredRecord?.isDerivedParcelId;
+        if (typeof isDerived !== 'function') {
+            throw new Error('Authored proposal validation is unavailable.');
+        }
+        const generatedId = ids.find(id => isDerived(id));
+        if (generatedId) throw new Error(`Chain proposal names generated parcel ${generatedId}.`);
+        return ids;
+    }
+
     /**
      * Find local proposal by parent parcel IDs
      */
@@ -120,15 +145,15 @@
         }
 
         const allProposals = global.proposalStorage.getAllProposals();
-        const normalizedSearchIds = parcelIds.map(id =>
+        const normalizedSearchIds = canonicalCadastreParcelIds(parcelIds).map(id =>
             typeof global.normalizeParcelId === 'function'
                 ? global.normalizeParcelId(id)
                 : id.toString()
         );
 
         return allProposals.find(proposal => {
-            const proposalParcelIds = Array.isArray(proposal.parentParcelIds)
-                ? proposal.parentParcelIds
+            const proposalParcelIds = Array.isArray(proposal.cadastreParcelIds)
+                ? proposal.cadastreParcelIds
                 : [];
 
             if (proposalParcelIds.length !== normalizedSearchIds.length) {
@@ -149,16 +174,10 @@
      * Parse contract status to string
      */
     function parseContractStatus(statusCode) {
-        const statusMap = {
-            0: 'Pending',
-            1: 'Active',
-            2: 'Accepted',
-            3: 'Executed',
-            4: 'Rejected',
-            5: 'Expired',
-            6: 'Cancelled'
-        };
-        return statusMap[statusCode] || 'Unknown';
+        const codec = global.ProposalChainStatus;
+        return codec && typeof codec.decodeProposalStatus === 'function'
+            ? codec.decodeProposalStatus(statusCode)
+            : 'Unknown';
     }
 
     /**
@@ -170,17 +189,17 @@
 
         const proposalId = buildChainProposalId(chainId, contractAddress, tokenId);
         const statusStr = parseContractStatus(status);
+        const cadastreParcelIds = canonicalCadastreParcelIds(parcelIds);
 
         return {
             proposalId,
-            parentParcelIds: Array.isArray(parcelIds) ? parcelIds : [],
-            childParcelIds: [],
+            cadastreParcelIds,
             name: `Proposal #${tokenId}`,
             description: `Minted proposal from blockchain`,
             author: owner || 'Unknown',
             type: 'Purchase',
             proposalMainType: 'Purchase',
-            status: statusStr,
+            lifecycleStatus: statusStr,
             acquisitionStrategy: isConditional ? 'conditional' : 'partial',
             isMinted: true,
             nft: {
@@ -212,6 +231,14 @@
                ethBalance, tokenBalance, acceptanceCount, expiryTimestamp, expiringPercentage] = onchainData;
 
         const statusStr = parseContractStatus(status);
+        const chainCadastreIds = canonicalCadastreParcelIds(parcelIds);
+        const localCadastreIds = Array.isArray(proposal.cadastreParcelIds)
+            ? proposal.cadastreParcelIds.map(String)
+            : [];
+        if (chainCadastreIds.length !== localCadastreIds.length
+            || chainCadastreIds.some(id => !localCadastreIds.includes(id))) {
+            throw new Error('Chain proposal cadastral selection does not match the local proposal.');
+        }
 
         // Update minting status
         proposal.isMinted = true;
@@ -236,9 +263,13 @@
             imageURI: imageURI || proposal.imageUrl || null
         };
 
-        // Update status if changed
-        if (statusStr !== 'Unknown' && proposal.status !== statusStr) {
-            proposal.status = statusStr;
+        // Update the LIFECYCLE status only. statusStr is the on-chain ProposalStatus enum
+        // (Active/Executed/Cancelled/Expired) — a marketplace phase, NOT a map-application state.
+        // It must NEVER touch `applied`, or every chain poll would silently un-apply a road (the
+        // exact bug the status split fixes). The legacy `status` is kept mirrored for un-repointed
+        // readers during the transition.
+        if (statusStr !== 'Unknown' && proposal.lifecycleStatus !== statusStr) {
+            proposal.lifecycleStatus = statusStr;
         }
 
         // Update acquisition strategy
@@ -288,6 +319,8 @@
      * Get wallet provider for blockchain operations
      */
     async function getWalletProvider() {
+        // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+        if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
         if (!global.ethers) {
             throw new Error('Ethers library not available');
         }
@@ -318,6 +351,8 @@
                 throw new Error('Wallet not connected - cannot sync blockchain data');
             }
 
+            // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+            if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
             if (!global.ethers) {
                 throw new Error('Ethers library not available');
             }
@@ -374,6 +409,9 @@
                 }
 
                 console.log(`Updated proposal ${chainProposalId} from blockchain`);
+            } else if (typeof global.chainProposalBelongsHere === 'function' && !global.chainProposalBelongsHere(onchainData && onchainData[0])) {
+                // another city's minted proposal (or one with no parcels): not this store's
+                return false;
             } else {
                 // Create new proposal from blockchain data
                 const newProposal = createProposalFromChainData({
@@ -410,6 +448,8 @@
                 throw new Error('Wallet not connected - cannot sync blockchain data');
             }
 
+            // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+            if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
             if (!global.ethers) {
                 throw new Error('Ethers library not available');
             }
@@ -418,6 +458,13 @@
             const provider = await getWalletProvider();
             if (!provider) {
                 throw new Error(`No provider available`);
+            }
+            // The wallet reads only the chain it is on: a city's contract on another chain is
+            // skipped, not read at an address that holds nothing there.
+            const walletChainId = String((await provider.getNetwork()).chainId);
+            if (walletChainId !== String(chainId)) {
+                console.log(`[${new Date().toISOString()}] [blockchain-sync] skipping ${contractAddress} on chain ${chainId}: the wallet is on chain ${walletChainId}`);
+                return { synced: 0, total: 0, skipped: true };
             }
 
             // Create contract instance
@@ -573,12 +620,16 @@
                 ? global.getCityConfig()
                 : null;
 
-            if (!cityConfig || !cityConfig.blockchain || !cityConfig.blockchain.proposalContracts) {
-                console.log('No blockchain proposal contracts configured for current city');
+            // Per-city contracts if configured, else the global Base Sepolia fallback (so sync works
+            // everywhere). Wallet-gated by the isWalletConnected() check upstream.
+            const contracts = (global.ProposalContracts && typeof global.ProposalContracts.resolveProposalContracts === 'function')
+                ? global.ProposalContracts.resolveProposalContracts(cityConfig)
+                : (cityConfig && cityConfig.blockchain && cityConfig.blockchain.proposalContracts) || [];
+            if (!contracts.length) {
+                console.log('No blockchain proposal contracts resolved for current city');
                 return { totalSynced: 0, contracts: [] };
             }
 
-            const contracts = cityConfig.blockchain.proposalContracts;
             const results = [];
 
             for (const { chainId, contractAddress } of contracts) {
@@ -652,6 +703,8 @@
                 return;
             }
 
+            // ethers loads on demand (index.html ensureWalletVendors): wait for it, as the mint does.
+            if (typeof global.ensureWalletVendors === 'function') await global.ensureWalletVendors();
             if (!global.ethers) {
                 throw new Error('Ethers library not available');
             }
@@ -670,6 +723,12 @@
             const provider = await getWalletProvider();
             if (!provider) {
                 console.warn(`No provider available, skipping event listeners`);
+                return;
+            }
+            // As in syncContract: the wallet only hears the chain it is on.
+            const walletChainId = String((await provider.getNetwork()).chainId);
+            if (walletChainId !== String(chainId)) {
+                console.log(`[${new Date().toISOString()}] [blockchain-sync] no listeners for ${contractAddress} on chain ${chainId}: the wallet is on chain ${walletChainId}`);
                 return;
             }
 
@@ -717,11 +776,12 @@
                 ? global.getCityConfig()
                 : null;
 
-            if (!cityConfig || !cityConfig.blockchain || !cityConfig.blockchain.proposalContracts) {
+            const contracts = (global.ProposalContracts && typeof global.ProposalContracts.resolveProposalContracts === 'function')
+                ? global.ProposalContracts.resolveProposalContracts(cityConfig)
+                : (cityConfig && cityConfig.blockchain && cityConfig.blockchain.proposalContracts) || [];
+            if (!contracts.length) {
                 return;
             }
-
-            const contracts = cityConfig.blockchain.proposalContracts;
 
             for (const { chainId, contractAddress } of contracts) {
                 await setupContractEventListeners(chainId, contractAddress);

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. Absence of a public polygon in this pass does not establish that no cadastral records exist. No personal owner, address, tax, or account fields were requested or copied; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 10889,
+  "queueRank": 202,
+  "name": "Dighwara",
+  "centerLatLon": [
+    25.9220863457788,
+    84.8502742086066
+  ],
+  "population2025": 2469443,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Bihar DLRS and the official Bihar Bhu-Naksha viewer provide a public Saran/Sonpur/Dighwara revenue-village map hierarchy, with Dighwara village code 1652 and five CS map sheets. This establishes local cadastral mapping activity, not coverage at the WUP cluster centroid or parcel-vector availability.",
+  "resultCategory": "official_local_cadastral_map_raster_only_wup_point_outside_named_village_sheets",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Dighwara cadastral map land records Bihar official भू नक्शा दिघवारा",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Hindi",
+        "query": "बिहार भू-नक्शा बिहार सरकारी नक्शा भूमि रिकॉर्ड",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Hindi",
+        "query": "site:bhunaksha.bihar.gov.in दिघवारा भू नक्शा बिहार",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+        "observation": "Official Bihar land-resources department portal; links the state land record and map ecosystem."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "observation": "Official Bihar Bhu-Naksha public viewer; selector exposes district, subdivision, circle, mauza, survey type, map instance and sheet. Dighwara is Saran district 17 / Sonpur subdivision 03 / Dighwara circle 19 / village 1652; CS map instance 06 has sheets 01–05."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Public viewer page loaded; form contains administrative map selectors. No parcel record selected."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public selector metadata confirmed the Dighwara village hierarchy and five sheet names. No parcel attributes requested."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Extent metadata for sheets 01–05 returned successfully. WUP point transformed from EPSG:4326 to EPSG:32645 as (284687.31, 2868821.74); it falls outside each sheet extent (around easting 299 km / northing 2.85 Mm)."
+      },
+      {
+        "method": "GET",
+        "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+        "checkedAt": "2026-10-08",
+        "httpStatus": "500/empty response",
+        "observation": "Unscoped capabilities check did not provide a usable public feature service. The viewer code exposed raster WMS and selector/click lookup calls, not a verified public vector/GeoJSON layer."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Public village-selector hierarchy and cadastral sheet extents for named Dighwara revenue village only.",
+      "wupPointCoveredByNamedVillageSheets": false,
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "The official map viewer exposes cadastral maps as raster WMS; no anonymous vector response was verified. The WUP population centroid lies outside all sheets for the named Dighwara revenue village, so those sheets cannot be treated as geometry for the WUP urban cluster.",
+    "remainingUncertainty": "Which revenue villages comprise the WUP Dighwara urban cluster; whether a public map series covers those villages; parcel IDs, vector geometry, update vintage and full urban coverage."
+  },
+  "cityId": "wup2025:10889",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [],
+  "point": [
+    25.9220863457788,
+    84.8502742086066
+  ]
+}

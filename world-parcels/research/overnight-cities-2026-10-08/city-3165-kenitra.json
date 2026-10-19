@@ -1,0 +1,120 @@
+{
+  "name": "Kenitra",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "rank": 967,
+  "point": [
+    34.2551508754912,
+    -6.58547448910353
+  ],
+  "population2025": 566802,
+  "population2025k": 566.802,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "ANCFCC lists a Cadastre office in Kenitra (Avenue Arryada, Eaux et Forêts, BP 400) and the official product catalogue lists Kenitra cadastral maps. This is specific local custodian evidence.",
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+    "https://www.ancfcc.gov.ma/ProduitsCadastreAr/"
+  ],
+  "resultCategory": "local_cadastre_confirmed_official_map_products_no_open_full_geometry",
+  "remainingUncertainty": "Whether ANCFCC has another public parcel viewer or API beyond its listed map products; citywide vector coverage and WUP-point geometry were not verified.",
+  "scopeLimits": "No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MA-KENITRA-ANCFCC-CADASTRE",
+    "name": "ANCFCC Kenitra Cadastre and cadastral-map products",
+    "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC), Kenitra Cadastre office",
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "serviceType": "Local public cadastral custodian and product catalogue. The catalogue lists Kenitra cadastral maps and urban plans; no anonymous full parcel-vector endpoint was verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": "Land-title/cadastral map identifiers (not resolved for WUP center)."
+  },
+  "sourceIds": [],
+  "wupCityCode": 3165,
+  "cityId": "wup2025:3165",
+  "queueRank": 967,
+  "centerLatLon": [
+    34.2551508754912,
+    -6.58547448910353
+  ],
+  "technicalBlocker": "ANCFCC public sources describe cadastral maps and map products, but inspected catalog/service pages do not offer an anonymous full-polygon feature endpoint.",
+  "coverageAssessment": {
+    "claimedScope": "ANCFCC operates a Kenitra Cadastre office and lists cadastral map products for Kenitra.",
+    "verifiedOpenScope": "Official cadastral products are listed, including Kenitra city-map products. No anonymous parcel geometry service or complete polygon response was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_full_polygon_sample",
+    "reason": "ANCFCC public sources describe cadastral maps and map products, but inspected catalog/service pages do not offer an anonymous full-polygon feature endpoint."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "French / Arabic",
+        "query": "القنيطرة المحافظة العقارية المسح العقاري الخريطة التأريفية قطع أرضية بوابة رسمية",
+        "scope": "Find Kenitra-specific official cadastral custodian, parcel-map products, and any public geometry viewer.",
+        "result": "Official ANCFCC sources identify the Kenitra Cadastre office and describe cadastral mapping products; no open full-polygon endpoint is listed.",
+        "method": "Separate French/Arabic-language searches and official ANCFCC source review.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/"
+        ],
+        "executionMethod": "Separate French/Arabic-language searches and official ANCFCC source review."
+      },
+      {
+        "language": "English",
+        "query": "Kenitra Morocco official cadastral parcel map GIS ANCFCC public vector",
+        "scope": "Cross-check local parcel-viewer and vector-service availability.",
+        "result": "Official results resolve to ANCFCC and its city map catalogue. The catalogue lists four Kenitra cadastral maps at 1:10,000 (2016) and Kenitra Est/Ouest urban plans at 1:12,500 (2018); these are products, not a verified anonymous polygon API.",
+        "method": "Separate English-language search followed by first-party catalogue and office directory review.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/"
+        ],
+        "executionMethod": "Separate English-language search followed by first-party catalogue and office directory review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+        "observation": "Official ANCFCC external-office directory lists a Cadastre office in Kenitra at Avenue Arryada, Eaux et Forêts, BP 400."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+        "observation": "ANCFCC catalogue lists Kenitra cadastral mapping products (four 1:10,000 sheets, dated 2016) and separate Kenitra East/West urban plans dated 2018. The catalogue documents map products, not an open parcel-vector service."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+        "observation": "ANCFCC describes cadastral plans and technical cadastral documents, supporting the agency’s cadastral role."
+      }
+    ]
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "fetch": "error",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

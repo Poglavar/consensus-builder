@@ -1,0 +1,111 @@
+{
+ "kind": "country",
+ "key": "TT",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: en-TT,en;q=0.9; cookie jar (curl -c/-b) kept per country",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "tt-smd-agol-tt-parcels",
+  "requestUrl": "https://services6.arcgis.com/AHlNpA8CDt3bXVVp/arcgis/rest/services/TT_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-61.5185,10.6580,-61.5165,10.6600&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,PARCEL_ID,STATUS,AREA_TEXT&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -61.5185,
+   10.658,
+   -61.5165,
+   10.66
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID / OBJECTID",
+  "responseFile": "research/retry/countries/TT-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (ArcGIS FeatureServer)",
+  "regionSampled": "Port of Spain, Trinidad; also 3 features each at Scarborough (Tobago) and south-west Trinidad (bbox -61.4120,10.2740,-61.4080,10.2780); total layer count 199444"
+ },
+ "source": {
+  "sourceId": "tt-smd-agol-tt-parcels",
+  "name": "TT_Parcels (Parcel Vue TT)",
+  "operator": "Surveys and Mapping Division (SMD), Trinidad and Tobago, per viewer disclaimer; hosted on ArcGIS Online account 'surmaptt' (publisher affiliation inferred)",
+  "scope": "Trinidad and Tobago (islands), ~199k parcel polygons",
+  "endpoint": "https://services6.arcgis.com/AHlNpA8CDt3bXVVp/arcgis/rest/services/TT_Parcels/FeatureServer/0",
+  "method": "GET query",
+  "responseFormat": "Esri JSON / GeoJSON",
+  "crs": "EPSG:3857 native; outSR=4326 accepted",
+  "reuseStatus": "public access, no token; licence not read; described as reference only, not legal boundaries"
+ },
+ "requests": [
+  {
+   "url": "https://www.gisportal.gov.tt/arcgis/rest/services?f=json, lands.gov.tt, landsandsurvey.gov.tt, mhuf.gov.tt",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502), no response from host"
+  },
+  {
+   "url": "https://services6.arcgis.com/AHlNpA8CDt3bXVVp/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folder root lists ~37 FeatureServers incl. TT_Parcels, TTO_Parcels_JAN2023, TT_parcels10000, MapIndex, SurveyPlans, CMIS_* (surmaptt ArcGIS Online org)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=title:TT_Parcels owner:surmaptt&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "TT_Parcels + TT_parcels10000 public feature services, plus public web experiences 'Parcel Vue TT' whose disclaimer names the Surveys and Mapping Division (SMD) and says data is reference only, not a legal survey"
+  },
+  {
+   "url": ".../TT_Parcels/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "esriGeometryPolygon, fields incl. PARCEL_ID, STATUS, BOOK, FOLIO, OWNER (owner not saved)"
+  },
+  {
+   "url": ".../TT_Parcels/FeatureServer/0/query?where=1=1&returnCountOnly=true&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 199444"
+  },
+  {
+   "url": ".../TT_Parcels/FeatureServer/0/query bbox -61.5185,10.6580,-61.5165,10.6600 (Port of Spain), resultRecordCount=3, f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed-ring Polygon features, PARCEL_ID/STATUS 'PERM CURR'"
+  },
+  {
+   "url": ".../TT_Parcels/FeatureServer/0/query bbox -60.7360,11.1780,-60.7320,11.1820 (Scarborough, Tobago), count 3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 features"
+  },
+  {
+   "url": ".../TT_Parcels/FeatureServer/0/query bbox -61.4120,10.2740,-61.4080,10.2780 (south-west Trinidad), count 3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 features"
+  },
+  {
+   "url": ".../TT_parcels10000/FeatureServer/0/query (outFields subset)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 400 invalid outFields (my field names); layer not sampled"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "proxy CONNECT failures on gov.tt hosts (gisportal, lands) look like unreachability of those hosts; ArcGIS Online is reachable",
+ "notes": "New and decisive: previously the probe only found CMIS_Surveyor_Parcels staging data. The same public ArcGIS Online org also hosts TT_Parcels, a ~199k-polygon layer (book/folio/plan attributes, 'PERM CURR' status) that returned parcel polygons in Port of Spain, Tobago and south-west Trinidad, and is published under a Parcel Vue TT public viewer attributed to the Surveys and Mapping Division. Caveats: the publisher is a generic AGOL account (surmaptt), the affiliation to SMD is inferred from the viewer disclaimer and layer names; data is stated to be reference only, not legal; licence terms not read; layer holds an OWNER field, so any use must handle personal data. The old GISportal host is still unreachable.",
+ "nextStep": "Confirm publisher/licence with SMD, read the item terms on ArcGIS Online, check maxRecordCount and whether OWNER is populated (privacy), and consider TTO_Parcels_JAN2023 (state land/tenure) and TT_parcels10000 as further layers."
+}

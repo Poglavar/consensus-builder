@@ -1,0 +1,143 @@
+{
+  "name": "Kitwe",
+  "country": "Zambia",
+  "countryCode": "ZM",
+  "rank": 798,
+  "point": [
+    -12.8099306286313,
+    28.222405935667
+  ],
+  "population2025": 678749,
+  "population2025k": 678.749,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Zambia’s government NSDI service `NSDI_Vector/CadasterNew/MapServer/0` identifies its `Lots` parcel layer as “Lots from ZILMIS”. The layer has Polygon geometry, EPSG:32735 source coordinates, public query capability and safe native `SDE.Lots.UPID` (“Plot ID”). Kitwe City Council separately lists planning/land-use services. A bounded 100 m query around the WUP point found four transport IDs and a safe-field fetch retained three full polygons with only UPID. No owner/address/account attributes or transport OIDs were retained.",
+  "registryEvidenceUrls": [
+    "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+    "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+    "https://www.kitwecouncil.gov.zm/",
+    "https://www.kitwecouncil.gov.zm/?page_id=770"
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Citywide completeness, legal title, currentness, survey accuracy and long-term native GIS identity continuity remain unverified.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect additional first-party metadata and use only bounded geometry requests with a safe native GIS key.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kitwe Zambia official cadastral parcel map land registry GIS City Council",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested.",
+        "actualResultUrls": [
+          "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+          "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+          "https://www.kitwecouncil.gov.zm/",
+          "https://www.kitwecouncil.gov.zm/?page_id=770"
+        ],
+        "executionMethod": "Separate language search; official government portal/service review; no property-specific lookup."
+      },
+      {
+        "language": "Bemba",
+        "query": "Kitwe cadastral map land registry parcels Bemba ubutaka amapepa official",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested.",
+        "actualResultUrls": [
+          "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+          "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+          "https://www.kitwecouncil.gov.zm/",
+          "https://www.kitwecouncil.gov.zm/?page_id=770"
+        ],
+        "executionMethod": "Separate language search; official government portal/service review; no property-specific lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "ZM-ZILMIS-NSDI-LOTS",
+    "name": "Zambia NSDI ZILMIS lot polygons",
+    "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "operator": "Government of Zambia National Spatial Data Infrastructure / ZILMIS",
+    "serviceType": "Public ArcGIS Feature Layer, query-enabled; bounded nearby query verified three complete safe-key parcel polygons.",
+    "layer": "NSDI_Vector/CadasterNew/MapServer/0 — Lots",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:4326 GeoJSON requested; native EPSG:32735",
+    "nativeIdField": "SDE.Lots.OBJECTID",
+    "nativeIdEvidence": "Fresh exact native GIS reference reads reproduce complete source polygons; legal-title identity remains separate.",
+    "requestedAttributes": [
+      "SDE.Lots.OBJECTID",
+      "SDE.Lots.UPID"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified."
+  },
+  "wupCityCode": 1774,
+  "cityId": "wup2025:1774",
+  "queueRank": 798,
+  "sourceIds": [
+    "zm-nsdi-zilmis-lots"
+  ],
+  "centerLatLon": [
+    -12.8099306286313,
+    28.222405935667
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Zambia’s government NSDI service `NSDI_Vector/CadasterNew/MapServer/0` identifies its `Lots` parcel layer as “Lots from ZILMIS”. The layer has Polygon geometry, EPSG:32735 source coordinates, public query capability and safe native `SDE.Lots.UPID` (“Plot ID”). Kitwe City Council separately lists planning/land-use services. A bounded 100 m query around the WUP point found four transport IDs and a safe-field fetch retained three full polygons with only UPID. No owner/address/account attributes or transport OIDs were retained.",
+    "verifiedOpenScope": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/kitwe-root-quality-review.json"
+  },
+  "verifiedParcelResponse": {
+    "source": "Zambia NSDI ZILMIS Lots layer",
+    "layer": "NSDI_Vector/CadasterNew/MapServer/0",
+    "queryPoint": [
+      -12.8099306286313,
+      28.222405935667
+    ],
+    "queryCrs": "EPSG:32735 native query centered at [632668.65,8583569.36]",
+    "queryMethod": "100 m distance buffer; transport-only object IDs; fetch capped to three exact features",
+    "radiusMeters": 100,
+    "safeFieldsRequested": [
+      "SDE.Lots.UPID",
+      "geometry"
+    ],
+    "transportIdsRetained": false,
+    "httpStatus": 200,
+    "featureCount": 3,
+    "sampleFile": "samples/city-1774-kitwe-zilmis-lots.geojson",
+    "geometrySha256": "c4d058a2cb52f528cb2fecf336a852c92d0a48e5e4d1002159d0605b5996f573",
+    "retainedProperties": [
+      "SDE.Lots.UPID"
+    ],
+    "exactPointQueryFeatureCount": 0,
+    "nearbyIdCount": 4
+  },
+  "sampleFile": "samples/city-1774-kitwe-zilmis-lots.geojson",
+  "rootReviewedAt": "2026-10-09T03:45:57.993973+00:00",
+  "appCityId": "kitwe",
+  "runtimeQualification": {
+    "sourceId": "zm-nsdi-zilmis-lots",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-quality.json"
+  }
+}

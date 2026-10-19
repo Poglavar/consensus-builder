@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:119",
+  "queueRank": 119,
+  "name": "Varanasi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.3130953149596,
+    83.0050363443188
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Uttar Pradesh Bhunaksha (NIC) Angular viewer, HTTP 200. Its script references endpoints such as MapInfo/getPlotAtXY and getPlotByPlotNo keyed by a village giscode; no anonymous parcel list documented."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "UP Bhulekh land-records portal (HTTP 200), record lookup rather than polygons."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA shell only"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/Levels/stateCode",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA fallback HTML, not JSON"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/rest/Levels/levelLabels",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA fallback HTML"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/MapInfo/getPlotAtXY?gisCode=09,01,01&x=83.0&y=25.3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA fallback HTML; correct API prefix/method and Varanasi village gis codes not established"
+    },
+    {
+      "url": "https://vsk.up.gov.in",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "UP Bhunaksha village cadastral maps (village-by-village; coverage of Varanasi villages unverified)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The Bhunaksha API needs correct method/prefix, a village gis code and possibly captcha; not confirmed anonymous or bulk-permitted. Result is a weak negative. Same platform serves other Indian states.",
+  "nextStep": "Capture the viewer's real network calls in a browser to get the API base, village listing for Varanasi tehsils, and a getPlotAtXY response."
+}

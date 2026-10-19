@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GN",
+ "country": "Guinea",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Ministere de l'Urbanisme, de l'Habitat / Direction Nationale du Cadastre (land cadastre, no online service found); Ministry of Mines runs a separate mining cadastre",
+ "portalsFound": [
+  {
+   "url": "https://guinee.cadastreminier.org/en/",
+   "observation": "Guinea Mining Cadastre Map Portal (Spatial Dimension Landfolio): mining licence polygons only, not land parcels"
+  },
+  {
+   "url": "https://cadastre.mines.gov.gn",
+   "observation": "Mining cadastre host loads (200)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://guinee.cadastreminier.org/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "mining licence viewer, not land parcels"
+  },
+  {
+   "url": "https://cadastre.mines.gov.gn",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "mining cadastre"
+  },
+  {
+   "url": "https://www.sigmof.gov.gn",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://www.cadastreminier.gov.gn",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "No land-parcel cadastre found online; mining cadastre only",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Limited search; no Guinean land-registry or urban cadastre host was reachable or identified. Conakry/urban cadastre may exist offline or on an unfound host.",
+ "nextStep": "Search for Conakry commune / Direction Nationale du Cadastre geoportal; check mining cadastre API for non-parcel use only."
+}

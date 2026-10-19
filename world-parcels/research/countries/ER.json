@@ -1,0 +1,27 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ER",
+ "country": "Eritrea",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "unknown (Ministry of Land, Water and Environment presumed)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.eritrea.gov.er/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Host unreachable; an online cadastre is unlikely but unproven.",
+ "nextStep": "Retry later; low priority."
+}

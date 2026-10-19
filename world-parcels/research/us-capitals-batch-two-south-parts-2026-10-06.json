@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "baton_rouge",
+      "stateCode": "LA",
+      "sourceId": "us-la-ebr-baton-rouge-parcels",
+      "endpoint": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.19,
+            30.447499999999998,
+            -91.1875,
+            30.45
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1875,
+            30.447499999999998,
+            -91.185,
+            30.45
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.185,
+            30.447499999999998,
+            -91.1825,
+            30.45
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.19,
+            30.45,
+            -91.1875,
+            30.4525
+          ],
+          "count": 84,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1875,
+            30.45,
+            -91.185,
+            30.4525
+          ],
+          "count": 75,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.185,
+            30.45,
+            -91.1825,
+            30.4525
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.19,
+            30.4525,
+            -91.1875,
+            30.455
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1875,
+            30.4525,
+            -91.185,
+            30.455
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.185,
+            30.4525,
+            -91.1825,
+            30.455
+          ],
+          "count": 123,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1825,
+            30.447499999999998,
+            -91.18,
+            30.45
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.18,
+            30.447499999999998,
+            -91.1775,
+            30.45
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1775,
+            30.447499999999998,
+            -91.175,
+            30.45
+          ],
+          "count": 73,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1825,
+            30.45,
+            -91.18,
+            30.4525
+          ],
+          "count": 48,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.18,
+            30.45,
+            -91.1775,
+            30.4525
+          ],
+          "count": 60,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1775,
+            30.45,
+            -91.175,
+            30.4525
+          ],
+          "count": 100,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1825,
+            30.4525,
+            -91.18,
+            30.455
+          ],
+          "count": 80,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.18,
+            30.4525,
+            -91.1775,
+            30.455
+          ],
+          "count": 83,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -91.1775,
+            30.4525,
+            -91.175,
+            30.455
+          ],
+          "count": 43,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -91.19,
+          30.4525,
+          -91.1875,
+          30.455
+        ],
+        "forcedPageSize": 3,
+        "count": 10,
+        "returned": 10,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 1018,
+      "exactResolved": 1018,
+      "nativeIds": [
+        "001-0170-2",
+        "001-0184-2",
+        "001-0186-9"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-la-ebr-baton-rouge-parcels",
+        "parcels": 1,
+        "siteM2": 126.2
+      },
+      "requests": 190
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-2267-naqamte.json",
+  "cityCode": 2267,
+  "queueRank": 2612,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "conclusion": "A first-party Ethiopian cadastral viewer and public WFS were discovered, but the current configuration and successful control response demonstrate Addis Ababa coverage only. The bounded Naqamte probe returned an empty FeatureCollection. This packet does not claim Naqamte absence and does not qualify a runtime adapter.",
+  "attemptedRoutes": [
+    {"route": "English web discovery", "outcome": "Found official e-Land viewer and federal cadastral legal material; no Naqamte-specific service identified."},
+    {"route": "Amharic web discovery", "outcome": "Found official land/cadastre legal material and the Addis e-Land viewer; no Naqamte-specific service identified."},
+    {"route": "Official viewer shell and current configuration", "outcome": "HTTP 200; exposed GeoServer WFS, layer/schema/CRS, and Addis-only city configuration."},
+    {"route": "Official WFS Naqamte bbox", "outcome": "HTTP 200 JSON; zero matched/returned features."},
+    {"route": "Official WFS Addis control bbox", "outcome": "HTTP 200 JSON; one returned parcel, 1503 total features, MultiPolygon, EPSG:4326."}
+  ],
+  "scopeLimits": [
+    "No map extent miss, timeout, login wall, or unusable UI was treated as absence.",
+    "The WFS bbox test is bounded and representative only; it is not a citywide survey.",
+    "The discovered viewer's scope is Addis Ababa (AA-ADS); national or Oromia coverage was not established.",
+    "No sample GeoJSON is retained because there was no safe Naqamte parcel response."
+  ],
+  "safeFieldPolicy": {
+    "allowed": ["id", "geometry"],
+    "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "document details"],
+    "retainedNativeFields": false,
+    "reason": "No Naqamte feature was available; the Addis control response was used only to validate service schema and was not retained."
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": null,
+    "generalAgencyEvidence": ["Land Holding Registration and Information Agency / e-Land viewer", "Federal cadastral legal material"],
+    "verifiedForNaqamte": false,
+    "reason": "A real official endpoint responded, but city scope and a nonempty Naqamte parcel response were not evidenced."
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "Naqamte may have a separate municipal, Oromia regional, paper-only, restricted, or not-indexed cadastral source.",
+    "The zero WFS result cannot distinguish unsupported coverage from an empty tested area.",
+    "Further research should use a first-party Oromia/Naqamte custodian or an official viewer discovered from that jurisdiction."
+  ],
+  "completionSummary": {"parcelSourceVerified": false, "geometrySampleRetained": 0, "unsafeFieldsRequested": false, "tlsExceptions": 0}
+}

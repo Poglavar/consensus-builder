@@ -1,0 +1,65 @@
+{
+  "cityCode": 7771,
+  "queueRank": 2685,
+  "name": "Chita",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [52.0385449728567, 113.489126921784],
+  "population2025": 220419,
+  "population2025k": 220.419,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chita Russia official cadastral map public parcel viewer Rosreestr GIS",
+        "result": "Discovery identified the official Russian cadastral custodian Rosreestr and the current public-cadastral-map destination at the National Spatial Data System (NSPD). Search results also exposed a Chita-specific map page, but it is a non-first-party mirror and was not used as source-integration evidence.",
+        "actualResultUrls": ["https://nspd.gov.ru/", "https://kartgeocentre.ru/produkty-i-uslugi/publichnaya-kadastrovaya-karta-teper-dostupna-na-cifrovoy-platforme-nacionalnaya", "https://kk.reestr54.ru/chita/"]
+      },
+      {
+        "language": "Russian (native/local)",
+        "query": "Чита официальный кадастровая карта публичная карта земельный кадастр Росреестр",
+        "result": "Russian-language discovery found Rosreestr/Zabaykalsky regional-office evidence and public-cadastral-map references. The official regional-office material identifies cadastral registration and related functions in Chita/Zabaykalsky Krai; no safe anonymous parcel feature response was obtained.",
+        "actualResultUrls": ["https://roscadaster.ru/html/zabaikalsky_kray/Scan%2014.PDF", "https://zabaikalskadm.ru/docs/zemelnie-otnosheniya/%D0%9F%D1%80%D0%B5%D1%81%D1%81-%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7.pdf", "https://xn--80aknbjnlj2g.xn--p1ai/%D1%80%D0%BE%D1%81%D1%80%D0%B5%D0%B5%D1%81%D1%82%D1%80-%D0%BF%D1%80%D0%B5%D1%81%D1%81-%D1%80%D0%B5%D0%BB%D0%B8%D0%B7/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "officialSourceAssessment": {
+    "localRegistryCustodian": "Rosreestr regional office for Zabaykalsky Krai, with Chita address/function evidence in official regional material.",
+    "generalAgencyEvidence": ["Rosreestr national cadastral mandate and NSPD public-map transition", "Federal cadastral chamber / Rosreestr regional cadastral-registration material"],
+    "verifiedForChita": true,
+    "reason": "A relevant regional cadastral custodian is evidenced, but a current public anonymous Chita parcel-vector route was not qualified. Non-first-party Chita map mirrors were not treated as official service integration evidence."
+  },
+  "attemptsRecorded": [
+    {"method": "SEARCH", "url": "https://nspd.gov.ru/", "httpStatus": null, "outcome": "TLS-verified anonymous GET timed out after 20 seconds before HTML, JavaScript, or viewer configuration could be inspected. This is an unavailable-route observation only, not evidence of cadastral absence."},
+    {"method": "SEARCH", "url": "https://kartgeocentre.ru/produkty-i-uslugi/publichnaya-kadastrovaya-karta-teper-dostupna-na-cifrovoy-platforme-nacionalnaya", "httpStatus": 200, "outcome": "Search result/article records Rosreestr's statement that the public cadastral map moved to NSPD; this is agency/service-discovery evidence, not a parcel feature response."},
+    {"method": "SEARCH", "url": "https://roscadaster.ru/html/zabaikalsky_kray/Scan%2014.PDF", "httpStatus": 200, "outcome": "Regional Rosreestr document identifies the Zabaykalsky Krai office in Chita and cadastral-registration functions. No parcel geometry or public API schema was embedded."},
+    {"method": "SEARCH", "url": "https://zabaikalskadm.ru/docs/zemelnie-otnosheniya/%D0%9F%D1%80%D0%B5%D1%81%D1%81-%D0%A0%D0%B5%D0%BB%D0%B8%D0%B7.pdf", "httpStatus": 200, "outcome": "Official municipal-domain press material identifies the regional cadastral-chamber/Rosreestr role in registration and cadastral accounting. No safe parcel feature response."},
+    {"method": "SEARCH", "url": "https://kk.reestr54.ru/chita/", "httpStatus": 200, "outcome": "Non-first-party Chita map mirror displayed parcel-layer labels and a coordinate/cadastral-number search UI. It was not used to claim official endpoint, schema, CRS, coverage, or native geometry, and no data was retained."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "NSPD timed out before current JavaScript/configuration could be inspected.",
+    "geometryTransport": "Not observed; no parcel feature response returned.",
+    "geometryCrs": "Not observed for a Chita parcel layer.",
+    "nativeIdentity": "Not observed; no parcel feature response returned.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {"requestScope": "Exact WUP point [52.0385449728567, 113.489126921784] was preserved; no coordinate shift or exact-point query was used.", "featureCount": null, "geometryFeatureCount": 0, "result": "No safe official parcel ID-plus-unchanged-geometry response qualified; no exact-point hit or miss inferred."}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "scopeLimits": ["Exact WUP point and latitude/longitude order were preserved and not shifted.", "A timeout, inaccessible viewer, map extent, or zero exact-point result was not treated as citywide cadastral absence.", "No parcel polygon is retained because no unchanged official polygon with a source-proven native identity was obtained.", "No citywide coverage, current service CRS, stable parcel-identity semantics, or update cadence was verified.", "This packet records research only and is not source integration or runtime admission."],
+  "uncertainty": "Rosreestr and its Zabaykalsky regional office are evidenced as the relevant cadastral custodian. Current anonymous NSPD access, Chita-specific parcel-vector endpoint, schema, CRS, native identity semantics, and citywide coverage remain unverified."
+}

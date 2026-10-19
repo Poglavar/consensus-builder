@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research_index",
+  "checkedAt": "2026-10-08",
+  "workstream": "africa_east",
+  "cityCount": 3,
+  "verifiedGeometryCount": 1,
+  "registryFoundCount": 0,
+  "cities": [
+    {
+      "cityId": "wup2025:2033",
+      "wupCityCode": 2033,
+      "name": "Nairobi",
+      "countryCode": "KE",
+      "priorEvidence": [
+        "research/india-africa-2026-10-08/africa-ne-city-nairobi.json",
+        "research/india-africa-2026-10-08/africa-ne-country-KE.json"
+      ],
+      "resultCategory": "verified_anonymous_parcel_outline_geometry_no_public_id",
+      "freshVerifiedSample": true,
+      "registryFound": null,
+      "file": "africa-east-city-2033.json",
+      "blocker": "Anonymous polygon geometry is available at zooms 16–19, but the public viewport and point-identify responses contain no native ID or attributes. The viewer’s app gates parcel/plan details to Gold/Platinum/Admin; no paid or organisation key route was used.",
+      "nextStep": "Use the published anonymous endpoint only for geometry-only display with provider provenance. For parcel/plan joins, wait for a government-published service or another public endpoint that returns stable IDs without paid/authenticated access."
+    },
+    {
+      "cityId": "wup2025:3566",
+      "wupCityCode": 3566,
+      "name": "Dar es Salaam",
+      "countryCode": "TZ",
+      "priorEvidence": [
+        "research/india-africa-2026-10-08/africa-ne-city-dar-es-salaam.json",
+        "research/india-africa-2026-10-08/africa-ne-country-TZ.json"
+      ],
+      "resultCategory": "no_verified_sample_candidate_extent_excludes_target",
+      "freshVerifiedSample": false,
+      "registryFound": null,
+      "file": "africa-east-city-3566.json",
+      "blocker": "A public partial parcel candidate exists, but its extent lies about 28.7 km from the WUP point, a 1 km centre count is zero, and the item does not document Dar-city affiliation. No city-centre parcel geometry or authoritative registry endpoint was found.",
+      "nextStep": "Ask the publishing agency or data custodian for the service scope/authority and a published endpoint whose extent includes the WUP point or documented Dar municipality; then make a bounded parcel-ID+geometry query.",
+      "nearbyCandidateSampleVerified": true
+    },
+    {
+      "cityId": "wup2025:1961",
+      "wupCityCode": 1961,
+      "name": "Antananarivo",
+      "countryCode": "MG",
+      "priorEvidence": [
+        "research/india-africa-2026-10-08/africa-ne-city-antananarivo.json",
+        "research/india-africa-2026-10-08/africa-ne-country-MG.json",
+        "research/retry/cities/antananarivo.json"
+      ],
+      "resultCategory": "unresolved",
+      "freshVerifiedSample": false,
+      "registryFound": null,
+      "file": "africa-east-city-1961.json",
+      "blocker": "Fresh OITF WFS checks reproduce three geometry-only PLOF polygons and a zero-feature city-centre bbox. DescribeFeatureType exposes only msGeometry; no feature ID or parcel attributes are present. PLOF is a land-status/planning inventory, not a verified cadastre.",
+      "nextStep": "Do not classify the PLOF layers as cadastral parcels. Ask OITF or the land administration for layer definitions/metadata, native IDs, coverage boundary, and any separate cadastral service; only reconsider after a bounded feature returns parcel semantics and stable IDs."
+    }
+  ],
+  "anonymousOutlineCities": 1
+}

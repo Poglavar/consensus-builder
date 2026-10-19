@@ -1,0 +1,99 @@
+// proposals/state.js — shared mutable state for the proposals subsystem.
+// Extracted from proposals.js. Loaded FIRST (before all other proposal modules) so every module
+// reads/writes these bindings by bare name via the shared classic-script global lexical scope.
+
+
+let currentProposalPreviewId = null;
+
+let currentProposalDetailsContext = null;
+
+let proposalLayer = null;
+
+let originalOnParcelClick = null;
+
+let proposalDetailsEscapeHandler = null;
+
+let currentOwnershipTransferDirection = 'to-me';
+
+let currentProposalTool = null;
+
+let currentGeometryGoal = null;
+
+let proposalGeometrySubmitted = false;
+
+let proposalAcquisitionLabels = {
+    full: 'Full acquisition',
+    partial: 'Partial acquisition',
+    partialPreferred: 'Partial acquisition preferred'
+};
+
+let currentOwnershipMode = 'multiple';
+
+let proposalModalScreenshotDataUrl = null;
+
+let proposalModalScreenshotPromise = null;
+
+let proposalDialogOverrides = null;
+
+let pendingRoadDrawingProposal = null;
+
+let pendingConstrainedCorridor = null;
+
+let constrainedCorridorState = null;
+
+let reparcellizationModulePromise = null;
+
+let teardownProposalBalanceWatcher = null;
+
+let proposalBalanceRequestSeq = 0;
+
+let addressesJsonCache = null;
+
+let addressesJsonPromise = null;
+
+let expiryCountdownInterval = null;
+
+let decayCountdownInterval = null;
+
+let _proposalListFilterInputDebounceTimer = null;
+
+let url3DModeHandled = false;
+
+let singleProposalShareHandled = false;
+
+let sharedProposalsHandled = false;
+
+let proposalLoadOverlay = null;
+
+let proposalLoadStatusEl = null;
+
+let proposalLoadTitleEl = null;
+
+let proposalLoadBytesEl = null;
+
+let proposalLoadBytes = 0;
+
+let proposalLoadProgressTextEl = null;
+
+let proposalLoadProgressBarEl = null;
+
+let proposalLoadProgressFillEl = null;
+
+let proposalLoadProgressDone = 0;
+
+let proposalLoadProgressTotal = 0;
+
+let _proposalHighlightRefreshHandle = null;
+
+let createProposalHotkeyAttached = false;
+
+// Universal draft publishing lives in its own module, outside this classic-script lexical scope.
+// Expose one narrow setter instead of duplicating proposal state on window.
+function setCurrentProposalToolFromDraft(tool) {
+    currentProposalTool = tool || null;
+    return currentProposalTool;
+}
+
+if (typeof window !== 'undefined') {
+    window.setCurrentProposalToolFromDraft = setCurrentProposalToolFromDraft;
+}

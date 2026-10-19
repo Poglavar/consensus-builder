@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "KM",
+  "country": "Comoros",
+  "checkedAt": "2026-09-29",
+  "status": "no_online_cadastre_found",
+  "cadastreAuthority": "Unknown (land administration by Ministry in charge of land affairs; no cadastre agency identified)",
+  "portalsFound": [],
+  "requests": [
+    {
+      "url": "https://cadastre.gov.km/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "guessed host unreachable (proxy/connection failure)"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Only a guessed host was tried; search discovery was limited. Unreachable is not proof of absence.",
+  "nextStep": "Search for Comoros land registry / cadastre projects (World Bank, AFD) and any geoportal."
+}

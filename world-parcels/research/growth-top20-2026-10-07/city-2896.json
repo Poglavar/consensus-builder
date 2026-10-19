@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:2896",
+  "queueRank": 2,
+  "growthCohort": "top20-2015-2025",
+  "name": "Mutuati",
+  "countryCode": "KE",
+  "centerLatLon": [
+    0.306228592288694,
+    37.9499417669457
+  ],
+  "administrativeIdentity": "Mutuati in Meru County, Kenya; county sources identify Mutuati as a Meru market/town. The WUP point is roughly 8 km south of the common Mutuati village centroid, so exact locality/urban area requires confirmation.",
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://ardhisasa.lands.go.ke/",
+      "observation": "Official national Ardhisasa land information platform. Prior JS inspection found account/registration flows and parcel lookup by parcel number; no spatial/WFS endpoint identified."
+    },
+    {
+      "url": "https://lands.go.ke/land-survey-searches",
+      "observation": "Official State Department for Lands explains land survey searches for official survey records, plans and maps; requires title copy and charges KSh 500."
+    },
+    {
+      "url": "https://meru.go.ke/county-maps/",
+      "observation": "Official Meru County GIS maps cover administrative areas, land use and thematic maps; no cadastral parcels observed."
+    },
+    {
+      "url": "https://meru.go.ke/1043/state-county-address-by-he-governor-kiraitu-murungi/",
+      "observation": "Official Meru county source names Mutuati among major towns/markets."
+    }
+  ],
+  "portalsFound": [],
+  "requests": [
+    {
+      "url": "https://ardhisasa.lands.go.ke/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official SPA; previous bundle inspection documented account-based services and no public spatial endpoint."
+    },
+    {
+      "url": "https://lands.go.ke/land-survey-searches",
+      "method": "GET",
+      "httpStatus": "web-search",
+      "contentType": "text/html",
+      "assessment": "Official survey-search service description; document/title-based and paid, not a public vector parcel endpoint."
+    },
+    {
+      "url": "https://meru.go.ke/county-maps/",
+      "method": "GET",
+      "httpStatus": "web-search",
+      "contentType": "text/html",
+      "assessment": "Official county GIS map catalog; thematic maps rather than demonstrated cadastral polygons."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "official Kenya cadastral parcel map Mutuati Meru land survey Ardhisasa",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://ardhisasa.lands.go.ke/",
+        "https://lands.go.ke/land-survey-searches",
+        "https://meru.go.ke/county-maps/"
+      ]
+    },
+    {
+      "language": "Swahili",
+      "exactQuery": "ramani ya ardhi viwanja Mutuati Meru huduma za upimaji ardhi rasmi",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://ardhisasa.lands.go.ke/",
+        "https://lands.go.ke/land-survey-searches",
+        "https://meru.go.ke/county-maps/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National Ardhisasa land services and Meru County thematic GIS maps; Mutuati local parcel coverage unknown",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "targetAreaRegistryConfirmed": false
+  },
+  "nextStep": "Exact WUP point is south of the common Mutuati centroid; confirm intended settlement/area. Ask Meru Land Registry/Survey Office for Mutuati cadastral coverage or parcel-map extracts; public vector endpoint remains unverified.",
+  "failedAttemptsPreserved": [
+    {
+      "reference": "world-parcels/research/retry/countries/KE.json",
+      "note": "Prior dated country retry retained; see this record’s requests for current follow-up and note status history."
+    }
+  ],
+  "requestHeadersUsed": "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml,application/json,*/*;q=0.8; Accept-Language varied by target country (en-SS/ar; en-KE/sw-KE; en-UG; fr-DZ/ar; fr-MG/mg); cookie jar enabled in direct requests. Web research used for official indexed pages.",
+  "registryLeadFound": true,
+  "registryFoundReason": "Ardhisasa and the official Meru County thematic map catalog are broader candidate sources; no cadastral records or parcel service were tied to the WUP point. The WUP point is about 8 km south of the common Mutuati centroid, so the target urban/locality extent is also unresolved.",
+  "scopedConclusion": {
+    "targetArea": "Mutuati in Meru County, Kenya; county sources identify Mutuati as a Meru market/town. The WUP point is roughly 8 km south of the common Mutuati village centroid, so exact locality/urban area requires confirmation.",
+    "cadastralRegistryConfirmedAtTarget": false,
+    "registryLeadFound": true,
+    "conclusion": "Ardhisasa and the official Meru County thematic map catalog are broader candidate sources; no cadastral records or parcel service were tied to the WUP point. The WUP point is about 8 km south of the common Mutuati centroid, so the target urban/locality extent is also unresolved.",
+    "coverageBoundary": "This conclusion is limited to the named target area and supplied WUP coordinate; national or other-area sources are leads only."
+  },
+  "registryBasis": "Ardhisasa and the official Meru County thematic map catalog are broader candidate sources; no cadastral records or parcel service were tied to the WUP point. The WUP point is about 8 km south of the common Mutuati centroid, so the target urban/locality extent is also unresolved.",
+  "registryEvidenceUrls": [
+    "https://ardhisasa.lands.go.ke/",
+    "https://lands.go.ke/land-survey-searches",
+    "https://meru.go.ke/county-maps/",
+    "https://meru.go.ke/1043/state-county-address-by-he-governor-kiraitu-murungi/"
+  ]
+}

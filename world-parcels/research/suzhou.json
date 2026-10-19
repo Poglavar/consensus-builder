@@ -1,0 +1,78 @@
+{
+  "cityId": "queue:43",
+  "queueRank": 43,
+  "name": "Suzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    31.3814,
+    120.6235
+  ],
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzy.suzhou.gov.cn/",
+      "observation": "Suzhou Natural Resources and Planning Bureau; connection failed from this environment."
+    },
+    {
+      "url": "https://data.suzhou.gov.cn/",
+      "observation": "Suzhou public data portal; connection failed."
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/",
+      "observation": "Jiangsu provincial natural resources department; connection failed."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu platform; returned 418 to the proxy (automated-client block); it serves basemaps, not parcel polygons."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzy.suzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://data.suzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://www.jiangsu.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://zrzy.jiangsu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "blocked; no parcel data"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Chinese government hosts were unreachable, so this is at least partly an access failure. Consistent with other Chinese city records, cadastral parcel polygons are generally not published as open feature services; land-transfer parcel notices and viewers may exist but no bounded polygon endpoint was verified.",
+  "nextStep": "Retry from a network able to reach .gov.cn; check Suzhou land-transfer (土地出让) notice maps and Jiangsu Tianditu for parcel layers, and confirm reuse terms.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

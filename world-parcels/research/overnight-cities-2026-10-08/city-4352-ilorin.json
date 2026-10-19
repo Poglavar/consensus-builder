@@ -1,0 +1,114 @@
+{
+  "name": "Ilorin",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 399,
+  "point": [
+    8.48225278066279,
+    4.57545631487647
+  ],
+  "population2025": 1282219,
+  "population2025k": 1282.219,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a settlement locator, not a municipal boundary. No anonymous full parcel polygon service was identified; no property or owner query was submitted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 4352,
+  "cityId": "wup2025:4352",
+  "queueRank": 399,
+  "centerLatLon": [
+    8.48225278066279,
+    4.57545631487647
+  ],
+  "registryFound": true,
+  "registryBasis": "The official KW-GIS page describes land registration/title-search functions and locates its agency office in Ilorin. This establishes city-located registry activity; public parcel-vector coverage is unverified.",
+  "resultCategory": "official_land_registry_and_digital_administration_public_geometry_unverified",
+  "technicalBlocker": "No anonymous public parcel viewer or full-polygon endpoint was found in inspected official KW-GIS pages. The public map-shop page exposed no downloadable polygon service; the linked Merlin application appears transaction-oriented and was not used to query land records.",
+  "remainingUncertainty": "Whether KW-GIS has a separate anonymous map or public vector service beyond title-search/application workflow.",
+  "nextStep": "If an anonymous geometry endpoint is later documented, inspect metadata and bounded full-polygon behavior only.",
+  "sourceIds": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ilorin official Kwara GIS public parcel map land administration polygons online",
+        "result": "Official materials confirm digital land administration, GIS, title-search and land-registration workflows. No anonymous vector parcel endpoint was documented in inspected public service pages.",
+        "actualResultUrls": [
+          "https://www.kwgis.org/",
+          "https://www.kwgis.org/about-us/",
+          "https://kwarastate.gov.ng/press_releases/cofo-ready-in-30-days-as-kwara-governor-launches-digital-land-administration/",
+          "https://www.kwgis.org/map-shop/",
+          "https://www.kwgis.org/e-services/",
+          "https://www.kwgis.org/apply-online/"
+        ],
+        "executionMethod": "Separate native/English-language search and first-party page review; no login, owner, address, or property query."
+      },
+      {
+        "language": "Yorùbá",
+        "query": "ìlú Ilorin GIS ilẹ̀ ìjọba Kwara KWGIS maapu ilẹ̀ parcel query",
+        "result": "Native-language search surfaced no distinct official Yoruba parcel layer; primary evidence came from Kwara State Government and KW-GIS service pages.",
+        "actualResultUrls": [
+          "https://www.kwgis.org/",
+          "https://kwarastate.gov.ng/press_releases/cofo-ready-in-30-days-as-kwara-governor-launches-digital-land-administration/"
+        ],
+        "executionMethod": "Separate native/English-language search and first-party page review; no login, owner, address, or property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.kwgis.org/",
+        "observation": "Official Kwara State Geographic Information Service site presents land administration/GIS."
+      },
+      {
+        "url": "https://www.kwgis.org/about-us/",
+        "observation": "KW-GIS describes land information/title-search services and prescribed public search fees."
+      },
+      {
+        "url": "https://kwarastate.gov.ng/press_releases/cofo-ready-in-30-days-as-kwara-governor-launches-digital-land-administration/",
+        "observation": "State government describes digital administration, digitally captured parcels and controlled platform access."
+      },
+      {
+        "url": "https://www.kwgis.org/map-shop/",
+        "observation": "Inspected public map-shop page did not document anonymous vector downloads."
+      },
+      {
+        "url": "https://www.kwgis.org/apply-online/",
+        "observation": "Apply Online route points to a land-administration application; no authentication or property query used."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Inspected official KW-GIS public service pages and linked application/map-shop routes; no anonymous public full-polygon route identified.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "outcome": "No verified public geometry endpoint was available to query."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryEvidenceUrls": [
+    "https://www.kwgis.org/about-us/"
+  ],
+  "rootSupplementalResearch": [
+    {
+      "checkedAt": "2026-10-08T23:47:22.430530+00:00",
+      "url": "https://www.kwgis.org/about-us/",
+      "observation": "The official KW-GIS page describes land registration/title-search functions and locates its agency office in Ilorin. This establishes city-located registry activity; public parcel-vector coverage is unverified."
+    }
+  ],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

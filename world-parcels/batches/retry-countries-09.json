@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "KW",
+  "name": "Kuwait",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/KW.json"
+ },
+ {
+  "kind": "country",
+  "key": "KZ",
+  "name": "Kazakhstan",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/KZ.json"
+ },
+ {
+  "kind": "country",
+  "key": "LA",
+  "name": "Lao People's Democratic Republic",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/LA.json"
+ },
+ {
+  "kind": "country",
+  "key": "LB",
+  "name": "Lebanon",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/LB.json"
+ },
+ {
+  "kind": "country",
+  "key": "LR",
+  "name": "Liberia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/LR.json"
+ },
+ {
+  "kind": "country",
+  "key": "LS",
+  "name": "Lesotho",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/LS.json"
+ },
+ {
+  "kind": "country",
+  "key": "LT",
+  "name": "Lithuania",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/LT.json"
+ },
+ {
+  "kind": "country",
+  "key": "LY",
+  "name": "Libya",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/LY.json"
+ }
+]

@@ -1,0 +1,3214 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T18:24:27.720Z",
+  "city": "chisinau",
+  "descriptor": {
+    "id": "md-geodata-cadastral-parcels",
+    "name": "Moldova Geodata cadastral parcels",
+    "adapter": "wfs",
+    "endpoint": "https://geodata.gov.md/geoserver/cadastru_data/wfs",
+    "featureType": "cadastru_data:terenuri",
+    "geometryField": "geom",
+    "idField": "codcadastral",
+    "idType": "string",
+    "idPrefix": "md-geodata:",
+    "parcelNumberField": "cod_parcel",
+    "outFields": [
+      "codcadastral",
+      "cod_parcel"
+    ],
+    "responseSrid": 3857,
+    "pageSize": 100,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 25,
+    "responseCoordinatePrecision": 4
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        28.831,
+        47.021,
+        28.832,
+        47.022
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        28.832,
+        47.021,
+        28.833,
+        47.022
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        28.833,
+        47.021,
+        28.834,
+        47.022
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        28.831,
+        47.022,
+        28.832,
+        47.023
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        28.832,
+        47.022,
+        28.833,
+        47.023
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        28.833,
+        47.022,
+        28.834,
+        47.023
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        28.831,
+        47.023,
+        28.832,
+        47.024
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        28.832,
+        47.023,
+        28.833,
+        47.024
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        28.833,
+        47.023,
+        28.834,
+        47.024
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        28.832,
+        47.02,
+        28.833,
+        47.021
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        28.832,
+        47.024,
+        28.833,
+        47.025
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        28.83,
+        47.022,
+        28.831,
+        47.023
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        28.834,
+        47.022,
+        28.835,
+        47.023
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 451,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        28.831,
+        47.021,
+        28.832,
+        47.022
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "md-geodata:01002050023",
+          "geometrySha256": "77f7fe68b97122e87985cd6437f0f7a6a92776977d60810757619c4bdbd2f91d"
+        },
+        {
+          "id": "md-geodata:01002050034",
+          "geometrySha256": "df649fa8ea6dfc4e704790786a26e5052c25d378f2384a8d366d4208efccbda2"
+        },
+        {
+          "id": "md-geodata:01002050178",
+          "geometrySha256": "e1ef3f76b40d4082d4c4b94ac5ff4ef85125eee3d2dd1d0418af3ff487ea2729"
+        },
+        {
+          "id": "md-geodata:01002050209",
+          "geometrySha256": "0901a4fb9f6e6c9b5e58fada78f3f595f02ecae7d43ec9b076702039ba8105d8"
+        },
+        {
+          "id": "md-geodata:01002050278",
+          "geometrySha256": "02cde61d398f458462311208760768c931f07d5036cfc91348ec0330a9509806"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002050575",
+          "geometrySha256": "f416f85d807b4e6889c0497f0f9afeea0fc0a57824bec615fa8200bfc31ae0dc"
+        },
+        {
+          "id": "md-geodata:01005200228",
+          "geometrySha256": "dec3127e99faeaabcf5d8ee34f4324b192b6c4b3c43ae1da97913049a16d8862"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 125,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        28.832,
+        47.021,
+        28.833,
+        47.022
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "md-geodata:01002050178",
+          "geometrySha256": "e1ef3f76b40d4082d4c4b94ac5ff4ef85125eee3d2dd1d0418af3ff487ea2729"
+        },
+        {
+          "id": "md-geodata:01002050209",
+          "geometrySha256": "0901a4fb9f6e6c9b5e58fada78f3f595f02ecae7d43ec9b076702039ba8105d8"
+        },
+        {
+          "id": "md-geodata:01002050241",
+          "geometrySha256": "b77d69b3c6ddee4d59c25660d16c53c68cdf738baccc9b57b01742a0d4e70b07"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002050575",
+          "geometrySha256": "f416f85d807b4e6889c0497f0f9afeea0fc0a57824bec615fa8200bfc31ae0dc"
+        },
+        {
+          "id": "md-geodata:01005200228",
+          "geometrySha256": "dec3127e99faeaabcf5d8ee34f4324b192b6c4b3c43ae1da97913049a16d8862"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 127,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        28.833,
+        47.021,
+        28.834,
+        47.022
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "md-geodata:01002050168",
+          "geometrySha256": "eea941bf3ea49eabe2f4ad4ba4a4ad39ce6b4588fc6acfb49d8896ece99f7727"
+        },
+        {
+          "id": "md-geodata:01002050173",
+          "geometrySha256": "b8fdb57a1f86df30ec7aff8f2be458f16c441895b84f25a9e628fadc323dd8a2"
+        },
+        {
+          "id": "md-geodata:01002050209",
+          "geometrySha256": "0901a4fb9f6e6c9b5e58fada78f3f595f02ecae7d43ec9b076702039ba8105d8"
+        },
+        {
+          "id": "md-geodata:01002050241",
+          "geometrySha256": "b77d69b3c6ddee4d59c25660d16c53c68cdf738baccc9b57b01742a0d4e70b07"
+        },
+        {
+          "id": "md-geodata:01002050248",
+          "geometrySha256": "a5b93304a4ffa46b12ea21ef14abde41e534b613c2339bb9e44a84da3b0315ec"
+        },
+        {
+          "id": "md-geodata:01002050419",
+          "geometrySha256": "56aa27d2a9fd1b52a385c7614dd487c87b3a735067dbb66cc3155e9a24b56c9b"
+        },
+        {
+          "id": "md-geodata:01002050436",
+          "geometrySha256": "ff4d60cb764c460948b214bfc8361268384c1b83bde3c6ce40993ef6ea4dd221"
+        },
+        {
+          "id": "md-geodata:01002050520",
+          "geometrySha256": "3d905897deec925c52e6f8cc9fc99822fec215bacd19e73aa62b66fb6d00f7e4"
+        },
+        {
+          "id": "md-geodata:01002050528",
+          "geometrySha256": "893d16042bbf04c79d4dce44ac8f2a8d2623227f0224896d06716406acebcbf1"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002050575",
+          "geometrySha256": "f416f85d807b4e6889c0497f0f9afeea0fc0a57824bec615fa8200bfc31ae0dc"
+        },
+        {
+          "id": "md-geodata:01002060367",
+          "geometrySha256": "d138bd221250e86b7f744b5bb61dfd2e9caa5177e78737da19bc4b7602ebe673"
+        },
+        {
+          "id": "md-geodata:01002060368",
+          "geometrySha256": "65c18aefb7465b0f5d0cbf13e43eafd8a0093eeb39f454cf3726c8764d306fd5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 118,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        28.831,
+        47.022,
+        28.832,
+        47.023
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "md-geodata:01002050058",
+          "geometrySha256": "eddc8c581da4a9b42fc1ef449130464ffc5d18135f070721795a7ed7cae80544"
+        },
+        {
+          "id": "md-geodata:01002050178",
+          "geometrySha256": "e1ef3f76b40d4082d4c4b94ac5ff4ef85125eee3d2dd1d0418af3ff487ea2729"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002050575",
+          "geometrySha256": "f416f85d807b4e6889c0497f0f9afeea0fc0a57824bec615fa8200bfc31ae0dc"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        },
+        {
+          "id": "md-geodata:01005200228",
+          "geometrySha256": "dec3127e99faeaabcf5d8ee34f4324b192b6c4b3c43ae1da97913049a16d8862"
+        },
+        {
+          "id": "md-geodata:01005200269",
+          "geometrySha256": "641e8bed03629c4f25515d87c3c8f9a6e04e3d6f224622bb3e3d807782d12316"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 121,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        28.832,
+        47.022,
+        28.833,
+        47.023
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "md-geodata:01002050048",
+          "geometrySha256": "3f3f9fb71e399550e50b57b8eb686d6818140113d0d44e8b04884cccde7e34b9"
+        },
+        {
+          "id": "md-geodata:01002050166",
+          "geometrySha256": "ea4a935977d7a60b6b3f899ad6ad4edaa91937a89f0cbc239e5072b1d2fddbe1"
+        },
+        {
+          "id": "md-geodata:01002050178",
+          "geometrySha256": "e1ef3f76b40d4082d4c4b94ac5ff4ef85125eee3d2dd1d0418af3ff487ea2729"
+        },
+        {
+          "id": "md-geodata:01002050226",
+          "geometrySha256": "e47255befa466e70456953fdaecbb25c4352d90c1216719f3d3eeaa90ddf9d83"
+        },
+        {
+          "id": "md-geodata:01002050243",
+          "geometrySha256": "a29a44d261e61ca7863c7bc4071f147a3f7a545969219042a3edc9aaf8322fa7"
+        },
+        {
+          "id": "md-geodata:01002050440",
+          "geometrySha256": "be579923a9b101480e970e2cdffe3a4ad287e6ee604ee0d972e21b2fa8567f4b"
+        },
+        {
+          "id": "md-geodata:01002050446",
+          "geometrySha256": "997157c5d6e6142fcd1991076899451d2ffa2c5f8c3d839b8d1aca4b1f25a2d9"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002050575",
+          "geometrySha256": "f416f85d807b4e6889c0497f0f9afeea0fc0a57824bec615fa8200bfc31ae0dc"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        },
+        {
+          "id": "md-geodata:01005200228",
+          "geometrySha256": "dec3127e99faeaabcf5d8ee34f4324b192b6c4b3c43ae1da97913049a16d8862"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 120,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        28.833,
+        47.022,
+        28.834,
+        47.023
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "md-geodata:01002050083",
+          "geometrySha256": "c745b333c8d04c77d71dfc0d0261fd68bad1fe450df7d9a83362eddc70dc358a"
+        },
+        {
+          "id": "md-geodata:01002050162",
+          "geometrySha256": "dd7281512cc43223040dfe0a16854da7f966042c598abca698a12a6731c08523"
+        },
+        {
+          "id": "md-geodata:01002050166",
+          "geometrySha256": "ea4a935977d7a60b6b3f899ad6ad4edaa91937a89f0cbc239e5072b1d2fddbe1"
+        },
+        {
+          "id": "md-geodata:01002050173",
+          "geometrySha256": "b8fdb57a1f86df30ec7aff8f2be458f16c441895b84f25a9e628fadc323dd8a2"
+        },
+        {
+          "id": "md-geodata:01002050200",
+          "geometrySha256": "211afbcc42bb00095c895cb5f992e726682958f0bbdebd1d7286938347a26de9"
+        },
+        {
+          "id": "md-geodata:01002050216",
+          "geometrySha256": "11359a7c508b09aba50aed1b3aad57fb8547c52af1570c35d48d3f87a6e52279"
+        },
+        {
+          "id": "md-geodata:01002050243",
+          "geometrySha256": "a29a44d261e61ca7863c7bc4071f147a3f7a545969219042a3edc9aaf8322fa7"
+        },
+        {
+          "id": "md-geodata:01002050248",
+          "geometrySha256": "a5b93304a4ffa46b12ea21ef14abde41e534b613c2339bb9e44a84da3b0315ec"
+        },
+        {
+          "id": "md-geodata:01002050419",
+          "geometrySha256": "56aa27d2a9fd1b52a385c7614dd487c87b3a735067dbb66cc3155e9a24b56c9b"
+        },
+        {
+          "id": "md-geodata:01002050440",
+          "geometrySha256": "be579923a9b101480e970e2cdffe3a4ad287e6ee604ee0d972e21b2fa8567f4b"
+        },
+        {
+          "id": "md-geodata:01002050492",
+          "geometrySha256": "cbb3d0ff973bc75dd7f64e5041927f3347a1c8eef183ec5e9b01f8e7d94d0895"
+        },
+        {
+          "id": "md-geodata:01002050519",
+          "geometrySha256": "692192d09b77a172206aeea58ea347e904a88ffbd3d519e543049a615045905b"
+        },
+        {
+          "id": "md-geodata:01002050521",
+          "geometrySha256": "a677d961bbc51dbd31f8657fe0ac5f5e71fb547999cd9bc52a5063728a99ce4f"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002050575",
+          "geometrySha256": "f416f85d807b4e6889c0497f0f9afeea0fc0a57824bec615fa8200bfc31ae0dc"
+        },
+        {
+          "id": "md-geodata:01002060367",
+          "geometrySha256": "d138bd221250e86b7f744b5bb61dfd2e9caa5177e78737da19bc4b7602ebe673"
+        },
+        {
+          "id": "md-geodata:01002060368",
+          "geometrySha256": "65c18aefb7465b0f5d0cbf13e43eafd8a0093eeb39f454cf3726c8764d306fd5"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 140,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        28.831,
+        47.023,
+        28.832,
+        47.024
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01005190246",
+          "geometrySha256": "06c24b768dd558e612cdffb340cac3174163fe5bdac272d387d0dfbcd9990b8f"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        },
+        {
+          "id": "md-geodata:01005200228",
+          "geometrySha256": "dec3127e99faeaabcf5d8ee34f4324b192b6c4b3c43ae1da97913049a16d8862"
+        },
+        {
+          "id": "md-geodata:01005200269",
+          "geometrySha256": "641e8bed03629c4f25515d87c3c8f9a6e04e3d6f224622bb3e3d807782d12316"
+        },
+        {
+          "id": "md-geodata:01005200362",
+          "geometrySha256": "d27ba4a22a0518dd028dc17127f2ddd3dc146f6fbe6cca469cf1b5c6a9b621a7"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 121,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        28.832,
+        47.023,
+        28.833,
+        47.024
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01005190246",
+          "geometrySha256": "06c24b768dd558e612cdffb340cac3174163fe5bdac272d387d0dfbcd9990b8f"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        },
+        {
+          "id": "md-geodata:01005200228",
+          "geometrySha256": "dec3127e99faeaabcf5d8ee34f4324b192b6c4b3c43ae1da97913049a16d8862"
+        },
+        {
+          "id": "md-geodata:01005200362",
+          "geometrySha256": "d27ba4a22a0518dd028dc17127f2ddd3dc146f6fbe6cca469cf1b5c6a9b621a7"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 127,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        28.833,
+        47.023,
+        28.834,
+        47.024
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "md-geodata:01002050162",
+          "geometrySha256": "dd7281512cc43223040dfe0a16854da7f966042c598abca698a12a6731c08523"
+        },
+        {
+          "id": "md-geodata:01002050166",
+          "geometrySha256": "ea4a935977d7a60b6b3f899ad6ad4edaa91937a89f0cbc239e5072b1d2fddbe1"
+        },
+        {
+          "id": "md-geodata:01002050207",
+          "geometrySha256": "ffb0251bbffc672c9a5e530e8f5d76a4e75dc08ca05643412f41e0b1d5205cd5"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002060367",
+          "geometrySha256": "d138bd221250e86b7f744b5bb61dfd2e9caa5177e78737da19bc4b7602ebe673"
+        },
+        {
+          "id": "md-geodata:01002060368",
+          "geometrySha256": "65c18aefb7465b0f5d0cbf13e43eafd8a0093eeb39f454cf3726c8764d306fd5"
+        },
+        {
+          "id": "md-geodata:01005190246",
+          "geometrySha256": "06c24b768dd558e612cdffb340cac3174163fe5bdac272d387d0dfbcd9990b8f"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        },
+        {
+          "id": "md-geodata:01005200362",
+          "geometrySha256": "d27ba4a22a0518dd028dc17127f2ddd3dc146f6fbe6cca469cf1b5c6a9b621a7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 125,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        28.832,
+        47.02,
+        28.833,
+        47.021
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "md-geodata:01002040509",
+          "geometrySha256": "f0ad439e85948d2a8ae0f9f96e75a8f4c8f00cb0f5e8cd3de23f92329d20a765"
+        },
+        {
+          "id": "md-geodata:01002050004",
+          "geometrySha256": "4bf7f97bfaffcf18cb8159709d2a8aa43abce81fac925e561e95df189c21e9e8"
+        },
+        {
+          "id": "md-geodata:01002050086",
+          "geometrySha256": "6066711f2beb96499feaa69769820819fe016b7506c621b83bc4b142cdcfa699"
+        },
+        {
+          "id": "md-geodata:01002050101",
+          "geometrySha256": "15bc31ecf7c08c20c528b9c429c86d7205833ca2694be2428a9af335ec1d4975"
+        },
+        {
+          "id": "md-geodata:01002050104",
+          "geometrySha256": "718bbc9eab93789ab7f0ce5d5eb3ba0a0d2e9e0f5353bb60fcb00174bc3a640f"
+        },
+        {
+          "id": "md-geodata:01002050123",
+          "geometrySha256": "3dd72cd5c35b779506cdc20a4c783ed3daa41790452700126cd2a03ade28e7ef"
+        },
+        {
+          "id": "md-geodata:01002050185",
+          "geometrySha256": "f440b5e4961d3cdb7ed572324e31c76c389e066514b5dea12a5aa3b440fd490d"
+        },
+        {
+          "id": "md-geodata:01002050196",
+          "geometrySha256": "a41d2a433fc5952a4f6854bc3f16c45a3de0b13b33a3687fca0a6593200f7ddb"
+        },
+        {
+          "id": "md-geodata:01002050209",
+          "geometrySha256": "0901a4fb9f6e6c9b5e58fada78f3f595f02ecae7d43ec9b076702039ba8105d8"
+        },
+        {
+          "id": "md-geodata:01002050229",
+          "geometrySha256": "de817c7e9725598e443f687080cb64c3524a6d0636cd2d701d75dc2a0a2270fd"
+        },
+        {
+          "id": "md-geodata:01002050241",
+          "geometrySha256": "b77d69b3c6ddee4d59c25660d16c53c68cdf738baccc9b57b01742a0d4e70b07"
+        },
+        {
+          "id": "md-geodata:01002050249",
+          "geometrySha256": "b33a7ef42cf53bdbb443d9b8c64145f5263c56ba35b6d7bc64164b76c8836360"
+        },
+        {
+          "id": "md-geodata:01002050267",
+          "geometrySha256": "d041df7f2ad0b911e9888c5759080228429f621e9ddc731dc8d3fbac69758118"
+        },
+        {
+          "id": "md-geodata:01002050525",
+          "geometrySha256": "e16d0afceff45f6a91a8b3233f102a3ca8343399545acc459df7c96b5ca9312a"
+        },
+        {
+          "id": "md-geodata:01002050529",
+          "geometrySha256": "ef98c34471576a579e2045ae4f7e42e581083e9bbea31d3a0e9de4636b949ea5"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 116,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        28.832,
+        47.024,
+        28.833,
+        47.025
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "md-geodata:01005190246",
+          "geometrySha256": "06c24b768dd558e612cdffb340cac3174163fe5bdac272d387d0dfbcd9990b8f"
+        },
+        {
+          "id": "md-geodata:01005190247",
+          "geometrySha256": "75b11bfdc31e290fc0998f4585492e8fc72877344fb43df7a0ed074b20834b86"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        },
+        {
+          "id": "md-geodata:01005200362",
+          "geometrySha256": "d27ba4a22a0518dd028dc17127f2ddd3dc146f6fbe6cca469cf1b5c6a9b621a7"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 118,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        28.83,
+        47.022,
+        28.831,
+        47.023
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01005200003",
+          "geometrySha256": "6e5b56608258107370828b0add1cc1c7ac575e0597937bf58d9827b6939cb972"
+        },
+        {
+          "id": "md-geodata:01005200181",
+          "geometrySha256": "f135755e52642428388034fd9321ff9db0de93c25100e350d44a42b37b36a973"
+        },
+        {
+          "id": "md-geodata:01005200228",
+          "geometrySha256": "dec3127e99faeaabcf5d8ee34f4324b192b6c4b3c43ae1da97913049a16d8862"
+        },
+        {
+          "id": "md-geodata:01005200238",
+          "geometrySha256": "b6e9b6365acf031f43e891fb70bd244587e84b130d40b4cad2a6c53ba9151f45"
+        },
+        {
+          "id": "md-geodata:01005200269",
+          "geometrySha256": "641e8bed03629c4f25515d87c3c8f9a6e04e3d6f224622bb3e3d807782d12316"
+        },
+        {
+          "id": "md-geodata:01005200316",
+          "geometrySha256": "ae3c97e3d0f14ada8c2224e3dabb78235392d8644ac460065e955d470972818e"
+        },
+        {
+          "id": "md-geodata:01005200364",
+          "geometrySha256": "f3f457dd36a50e3c9d4cc29f59f272304c991661975f5876e9e80b34994d0c7c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 127,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        28.834,
+        47.022,
+        28.835,
+        47.023
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "md-geodata:01002050162",
+          "geometrySha256": "dd7281512cc43223040dfe0a16854da7f966042c598abca698a12a6731c08523"
+        },
+        {
+          "id": "md-geodata:01002050200",
+          "geometrySha256": "211afbcc42bb00095c895cb5f992e726682958f0bbdebd1d7286938347a26de9"
+        },
+        {
+          "id": "md-geodata:01002050248",
+          "geometrySha256": "a5b93304a4ffa46b12ea21ef14abde41e534b613c2339bb9e44a84da3b0315ec"
+        },
+        {
+          "id": "md-geodata:01002050255",
+          "geometrySha256": "1b473e4f3abf588b13ab142989659e0cd70ed01fd768170a9cf097ed2dbfdf92"
+        },
+        {
+          "id": "md-geodata:01002050419",
+          "geometrySha256": "56aa27d2a9fd1b52a385c7614dd487c87b3a735067dbb66cc3155e9a24b56c9b"
+        },
+        {
+          "id": "md-geodata:01002050515",
+          "geometrySha256": "d1251ff89f6ce535c35d9656dd74b96778a1f9df98b326b897913de4faac2fe7"
+        },
+        {
+          "id": "md-geodata:01002050518",
+          "geometrySha256": "4654a52b99ea3ae11ea814284c6ca275cd0b6554d7e3b46ef6d503fd5091fa72"
+        },
+        {
+          "id": "md-geodata:01002050549",
+          "geometrySha256": "72eff98f10529087cc32af5e27ee64d66fd4660ca933f105fada180920e8e944"
+        },
+        {
+          "id": "md-geodata:01002060171",
+          "geometrySha256": "f103aa8e5397c6a9b5c9662ac69a672448afde40458b42d2c60c4e5f4f8c0f6b"
+        },
+        {
+          "id": "md-geodata:01002060367",
+          "geometrySha256": "d138bd221250e86b7f744b5bb61dfd2e9caa5177e78737da19bc4b7602ebe673"
+        },
+        {
+          "id": "md-geodata:01002060368",
+          "geometrySha256": "65c18aefb7465b0f5d0cbf13e43eafd8a0093eeb39f454cf3726c8764d306fd5"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 690,
+      "requestIndexes": [
+        13,
+        18
+      ],
+      "count": 18,
+      "geometryPages": 6,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 5399,
+      "requestIndexes": [
+        19,
+        19
+      ],
+      "count": 40,
+      "ids": [
+        "md-geodata:01002040509",
+        "md-geodata:01002050004",
+        "md-geodata:01002050023",
+        "md-geodata:01002050034",
+        "md-geodata:01002050048",
+        "md-geodata:01002050058",
+        "md-geodata:01002050083",
+        "md-geodata:01002050086",
+        "md-geodata:01002050101",
+        "md-geodata:01002050104",
+        "md-geodata:01002050123",
+        "md-geodata:01002050162",
+        "md-geodata:01002050166",
+        "md-geodata:01002050168",
+        "md-geodata:01002050173",
+        "md-geodata:01002050178",
+        "md-geodata:01002050185",
+        "md-geodata:01002050196",
+        "md-geodata:01002050200",
+        "md-geodata:01002050207",
+        "md-geodata:01002050209",
+        "md-geodata:01002050216",
+        "md-geodata:01002050226",
+        "md-geodata:01002050229",
+        "md-geodata:01002050241",
+        "md-geodata:01002050243",
+        "md-geodata:01002050248",
+        "md-geodata:01002050249",
+        "md-geodata:01002050255",
+        "md-geodata:01002050267",
+        "md-geodata:01002050278",
+        "md-geodata:01002050419",
+        "md-geodata:01002050436",
+        "md-geodata:01002050440",
+        "md-geodata:01002050446",
+        "md-geodata:01002050492",
+        "md-geodata:01002050515",
+        "md-geodata:01002050518",
+        "md-geodata:01002050519",
+        "md-geodata:01002050520"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 2169,
+      "requestIndexes": [
+        20,
+        20
+      ],
+      "count": 19,
+      "ids": [
+        "md-geodata:01002050521",
+        "md-geodata:01002050525",
+        "md-geodata:01002050528",
+        "md-geodata:01002050529",
+        "md-geodata:01002050549",
+        "md-geodata:01002050575",
+        "md-geodata:01002060171",
+        "md-geodata:01002060367",
+        "md-geodata:01002060368",
+        "md-geodata:01005190246",
+        "md-geodata:01005190247",
+        "md-geodata:01005200003",
+        "md-geodata:01005200181",
+        "md-geodata:01005200228",
+        "md-geodata:01005200238",
+        "md-geodata:01005200269",
+        "md-geodata:01005200316",
+        "md-geodata:01005200362",
+        "md-geodata:01005200364"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 108,
+      "requestIndexes": [
+        21,
+        21
+      ],
+      "absentIds": [
+        "md-geodata:00000000000"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 128,
+      "requestIndexes": [
+        22,
+        22
+      ],
+      "selectedParcelId": "md-geodata:01002050229",
+      "count": 5,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 157,
+      "requestIndexes": [
+        23,
+        23
+      ],
+      "selectedParcelId": "md-geodata:01002050229",
+      "coverage": "complete",
+      "siteM2": 1155.36,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.831%2C47.021%2C28.832%2C47.022%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:27.722Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 55395,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "terenuri.7893622",
+          "properties": {
+            "codcadastral": "01002050023",
+            "cod_parcel": " 0023"
+          },
+          "geometrySha256": "d1ae92009f6680944157049fcb458627ce9120a1540d701b55c774b0bff86aac"
+        },
+        {
+          "transportId": "terenuri.7893656",
+          "properties": {
+            "codcadastral": "01002050034",
+            "cod_parcel": " 0034"
+          },
+          "geometrySha256": "40596c6ed560eb5f1e56b5aaa925b63cb09b00f0f6f74d85327016f9233484bd"
+        },
+        {
+          "transportId": "terenuri.7953525",
+          "properties": {
+            "codcadastral": "01002050178",
+            "cod_parcel": " 0178"
+          },
+          "geometrySha256": "efd2ac3f373f491c107eb4bb5bd49461a34cd20a31e0f7ebba21bb1937cde6ab"
+        },
+        {
+          "transportId": "terenuri.7966620",
+          "properties": {
+            "codcadastral": "01002050209",
+            "cod_parcel": " 0209"
+          },
+          "geometrySha256": "4e86cf6b3f615126c70718080faf9e83e58eccf61bfb91390098157dc31fcd10"
+        },
+        {
+          "transportId": "terenuri.7955297",
+          "properties": {
+            "codcadastral": "01002050278",
+            "cod_parcel": " 0278"
+          },
+          "geometrySha256": "16359319524606e81a055cd86b05eaf285c834f0f207a9900a0c057f38b884f1"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "ecb2d7d7445f0e89a2f38f29d278a399c2e08dd912fbadd985b35a4d3134f2e7"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "43bb7663e72b0ad3ef1bcaa7f8187552c2aebe2db340c11388bca8dd963fe411"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "92b4819f7124153f07b5637aa8133d1eb93b7b21516d6d83191b7730e35bba12"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.832%2C47.021%2C28.833%2C47.022%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:28.176Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 57856,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "terenuri.7953525",
+          "properties": {
+            "codcadastral": "01002050178",
+            "cod_parcel": " 0178"
+          },
+          "geometrySha256": "0b1ae4c49b357a6f60c5bd88f4d8b116ec52887261b4449b80cfc16aab7c747e"
+        },
+        {
+          "transportId": "terenuri.7966620",
+          "properties": {
+            "codcadastral": "01002050209",
+            "cod_parcel": " 0209"
+          },
+          "geometrySha256": "2db1698441c3e79809fdd9f2a4fc61da5ea9d8c21c4868d1c57a5c7c32210fbb"
+        },
+        {
+          "transportId": "terenuri.7894000",
+          "properties": {
+            "codcadastral": "01002050241",
+            "cod_parcel": " 0241"
+          },
+          "geometrySha256": "4c787d64cc023fb23817a0412a0b1107143d31992de7b738bd96e0fd594d47fc"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "e4a73df67620774f666441b67d6b8307f8c7d5bde2b876b91396d44fb8c043d0"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "a5364d4f6ab9dc69c7543be46104b979fe95f2da71a327b701dcb4f6afed0801"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "9d68cafa7abe5c0934c5b3fd8e426ded60c3a93e39efaf2479f455b2a0a97f42"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.833%2C47.021%2C28.834%2C47.022%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:28.301Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 72719,
+      "numberMatched": 13,
+      "numberReturned": 13,
+      "features": [
+        {
+          "transportId": "terenuri.7944256",
+          "properties": {
+            "codcadastral": "01002050168",
+            "cod_parcel": " 0168"
+          },
+          "geometrySha256": "f5b08d320faafd593741614a864b9eaa014047da4fb6dba024a301e7c04fec3c"
+        },
+        {
+          "transportId": "terenuri.7960679",
+          "properties": {
+            "codcadastral": "01002050173",
+            "cod_parcel": " 0173"
+          },
+          "geometrySha256": "4e6b1469fce55cb74a6a8d8c366e95dc035703a217170a0a124cbd08fbab5766"
+        },
+        {
+          "transportId": "terenuri.7966620",
+          "properties": {
+            "codcadastral": "01002050209",
+            "cod_parcel": " 0209"
+          },
+          "geometrySha256": "4e86cf6b3f615126c70718080faf9e83e58eccf61bfb91390098157dc31fcd10"
+        },
+        {
+          "transportId": "terenuri.7894000",
+          "properties": {
+            "codcadastral": "01002050241",
+            "cod_parcel": " 0241"
+          },
+          "geometrySha256": "d3d215976731ed9c0fb60855e786f07d0c36e6f25cc9846a8dead8a636d997f4"
+        },
+        {
+          "transportId": "terenuri.7894022",
+          "properties": {
+            "codcadastral": "01002050248",
+            "cod_parcel": " 0248"
+          },
+          "geometrySha256": "3be9f20e693a74dd48d833af5c28bb8684d30fa3f56812f8fe60c5962e847306"
+        },
+        {
+          "transportId": "terenuri.7956846",
+          "properties": {
+            "codcadastral": "01002050419",
+            "cod_parcel": " 0419"
+          },
+          "geometrySha256": "a7851452f3b94f3a135cbb5e2f76540f5b9a43a566b6dcc3ea2f556065d43b8b"
+        },
+        {
+          "transportId": "terenuri.7944254",
+          "properties": {
+            "codcadastral": "01002050436",
+            "cod_parcel": " 0436"
+          },
+          "geometrySha256": "7ff884c48d9c31d7121be74f61a9bf0c5c2d44a011400df72909f687ffe8f974"
+        },
+        {
+          "transportId": "terenuri.7960782",
+          "properties": {
+            "codcadastral": "01002050520",
+            "cod_parcel": " 0520"
+          },
+          "geometrySha256": "012c0edc43d67fdfb53fb0b2b79ca3d750b102432afba10478b49751673fbfd8"
+        },
+        {
+          "transportId": "terenuri.7964216",
+          "properties": {
+            "codcadastral": "01002050528",
+            "cod_parcel": " 0528"
+          },
+          "geometrySha256": "717f6791b81280d7ab67867ad0a14a2000e30c8df0d0852d015b65879130f8da"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "ecb2d7d7445f0e89a2f38f29d278a399c2e08dd912fbadd985b35a4d3134f2e7"
+        },
+        {
+          "transportId": "terenuri.7965206",
+          "properties": {
+            "codcadastral": "01002060367",
+            "cod_parcel": " 0367"
+          },
+          "geometrySha256": "52ec952d962bac9b0834005ef8436e886010c88469abb8be81a17dadf37eb8e0"
+        },
+        {
+          "transportId": "terenuri.7966346",
+          "properties": {
+            "codcadastral": "01002060368",
+            "cod_parcel": " 0368"
+          },
+          "geometrySha256": "2ac898c05fd380d777e8b7b7fbc01bb4183cde21ebcdd9df810924d8dd343f99"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.831%2C47.022%2C28.832%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:28.429Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 60020,
+      "numberMatched": 8,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "terenuri.7953007",
+          "properties": {
+            "codcadastral": "01002050058",
+            "cod_parcel": " 0058"
+          },
+          "geometrySha256": "d89c5879867b52b736c3c08b3feb131368a4fd37c988ffeb702d8df31560b3ea"
+        },
+        {
+          "transportId": "terenuri.7953525",
+          "properties": {
+            "codcadastral": "01002050178",
+            "cod_parcel": " 0178"
+          },
+          "geometrySha256": "0b1ae4c49b357a6f60c5bd88f4d8b116ec52887261b4449b80cfc16aab7c747e"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "e4a73df67620774f666441b67d6b8307f8c7d5bde2b876b91396d44fb8c043d0"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "7a70d045c3e8ef7b02d81490b83bb4b44aa99ba33b582e3bcc83af7b0c5ff4c5"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "a5364d4f6ab9dc69c7543be46104b979fe95f2da71a327b701dcb4f6afed0801"
+        },
+        {
+          "transportId": "terenuri.7953489",
+          "properties": {
+            "codcadastral": "01005200269",
+            "cod_parcel": " 0269"
+          },
+          "geometrySha256": "b405d730f3b3c878778190313064c51310470a86b56f89217a5e640ed478b5f3"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "9d68cafa7abe5c0934c5b3fd8e426ded60c3a93e39efaf2479f455b2a0a97f42"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.832%2C47.022%2C28.833%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:28.548Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 63008,
+      "numberMatched": 12,
+      "numberReturned": 12,
+      "features": [
+        {
+          "transportId": "terenuri.7953393",
+          "properties": {
+            "codcadastral": "01002050048",
+            "cod_parcel": " 0048"
+          },
+          "geometrySha256": "10a6625e648f4eef0000da1a8fd32285025b6808772ed267d7f432bef0d19129"
+        },
+        {
+          "transportId": "terenuri.7893899",
+          "properties": {
+            "codcadastral": "01002050166",
+            "cod_parcel": " 0166"
+          },
+          "geometrySha256": "c47d40fa36438315d2ec015fd81419aa713901d6151039c971797a1a1d585ffc"
+        },
+        {
+          "transportId": "terenuri.7953525",
+          "properties": {
+            "codcadastral": "01002050178",
+            "cod_parcel": " 0178"
+          },
+          "geometrySha256": "efd2ac3f373f491c107eb4bb5bd49461a34cd20a31e0f7ebba21bb1937cde6ab"
+        },
+        {
+          "transportId": "terenuri.7893977",
+          "properties": {
+            "codcadastral": "01002050226",
+            "cod_parcel": " 0226"
+          },
+          "geometrySha256": "d54a96a971337ba4c3820be0e3e28faa5e87166f0641ba3ce19f21dc61ea8d14"
+        },
+        {
+          "transportId": "terenuri.7966013",
+          "properties": {
+            "codcadastral": "01002050243",
+            "cod_parcel": " 0243"
+          },
+          "geometrySha256": "3a0683c566a65bd4d9bc561704f3367a103ffcd5b6f64a652f86bdd1ae257b79"
+        },
+        {
+          "transportId": "terenuri.7952776",
+          "properties": {
+            "codcadastral": "01002050440",
+            "cod_parcel": " 0440"
+          },
+          "geometrySha256": "2a658af3834bbce5accb559200cacf321ac34d48a9b018720af8ccfd6aee9ce7"
+        },
+        {
+          "transportId": "terenuri.7953394",
+          "properties": {
+            "codcadastral": "01002050446",
+            "cod_parcel": " 0446"
+          },
+          "geometrySha256": "a0bb2fe0d4eac21b353a8a67bc9dbac6f4635367f67216560b3495ca116050ee"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "ecb2d7d7445f0e89a2f38f29d278a399c2e08dd912fbadd985b35a4d3134f2e7"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "bca73a239a7399f3d9e3cbf24f4477665ef555193970fdd3541fc60583ca8ac8"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "43bb7663e72b0ad3ef1bcaa7f8187552c2aebe2db340c11388bca8dd963fe411"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "92b4819f7124153f07b5637aa8133d1eb93b7b21516d6d83191b7730e35bba12"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.833%2C47.022%2C28.834%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:28.670Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 99423,
+      "numberMatched": 18,
+      "numberReturned": 18,
+      "features": [
+        {
+          "transportId": "terenuri.7960680",
+          "properties": {
+            "codcadastral": "01002050083",
+            "cod_parcel": " 0083"
+          },
+          "geometrySha256": "6ed0f1a46ef6d6526ace3cc1b048ce135fa0ee39d6218a4e562e906ab6daed14"
+        },
+        {
+          "transportId": "terenuri.7964098",
+          "properties": {
+            "codcadastral": "01002050162",
+            "cod_parcel": " 0162"
+          },
+          "geometrySha256": "b6ec57a83038d1d9363a0a4486dc73619b21ebd5909d6f04aecc3799423bf5c8"
+        },
+        {
+          "transportId": "terenuri.7893899",
+          "properties": {
+            "codcadastral": "01002050166",
+            "cod_parcel": " 0166"
+          },
+          "geometrySha256": "b0e33f5c95011a90cfa64cfb6e133349f2d0dcfe2fc0521a7be00f7ad26f1432"
+        },
+        {
+          "transportId": "terenuri.7960679",
+          "properties": {
+            "codcadastral": "01002050173",
+            "cod_parcel": " 0173"
+          },
+          "geometrySha256": "fa737222ccc6cb3d78d69b008dda72be6b3c1fb21d8e444787ac851a952af32d"
+        },
+        {
+          "transportId": "terenuri.7958850",
+          "properties": {
+            "codcadastral": "01002050200",
+            "cod_parcel": " 0200"
+          },
+          "geometrySha256": "040fb5b6b63f8781dd055f3b110c73fe00e41c64bd5177217673a9a238dfcba4"
+        },
+        {
+          "transportId": "terenuri.7964169",
+          "properties": {
+            "codcadastral": "01002050216",
+            "cod_parcel": " 0216"
+          },
+          "geometrySha256": "8160bb47b8ada4a0f680fc9e1beed798f456556842fc7927d78b110a4cd899e3"
+        },
+        {
+          "transportId": "terenuri.7966013",
+          "properties": {
+            "codcadastral": "01002050243",
+            "cod_parcel": " 0243"
+          },
+          "geometrySha256": "4ed52a9bd41ec27875e93cabe417baf536f0d48254a01c8f23fb6f7b419551d5"
+        },
+        {
+          "transportId": "terenuri.7894022",
+          "properties": {
+            "codcadastral": "01002050248",
+            "cod_parcel": " 0248"
+          },
+          "geometrySha256": "e2c84587f9b0e010f2d48e4035ab4f59195c4399ae8ade966f93117a55a4c5ce"
+        },
+        {
+          "transportId": "terenuri.7956846",
+          "properties": {
+            "codcadastral": "01002050419",
+            "cod_parcel": " 0419"
+          },
+          "geometrySha256": "c97b334b23a5971dd6d48301be28bce31a9f5bbe9a067ce1220bdfcddc8de7de"
+        },
+        {
+          "transportId": "terenuri.7952776",
+          "properties": {
+            "codcadastral": "01002050440",
+            "cod_parcel": " 0440"
+          },
+          "geometrySha256": "b3a5ba0b18190179fb28eb65d482ab0c2d81e885b164e489f644125715a1112a"
+        },
+        {
+          "transportId": "terenuri.7964172",
+          "properties": {
+            "codcadastral": "01002050492",
+            "cod_parcel": " 0492"
+          },
+          "geometrySha256": "55cb217bed80fa62df823698323ff470e219fb1babbd45f759da33a3fe1947ee"
+        },
+        {
+          "transportId": "terenuri.7960781",
+          "properties": {
+            "codcadastral": "01002050519",
+            "cod_parcel": " 0519"
+          },
+          "geometrySha256": "af736efd66fc2455d195c855252a84954b971226b1433ad605e83316f681d6dd"
+        },
+        {
+          "transportId": "terenuri.7964127",
+          "properties": {
+            "codcadastral": "01002050521",
+            "cod_parcel": " 0521"
+          },
+          "geometrySha256": "b3e96c00a207907177c040a6ed4f06c5f492d4aaf25d44c3d084baec8080de0d"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "e4a73df67620774f666441b67d6b8307f8c7d5bde2b876b91396d44fb8c043d0"
+        },
+        {
+          "transportId": "terenuri.7965206",
+          "properties": {
+            "codcadastral": "01002060367",
+            "cod_parcel": " 0367"
+          },
+          "geometrySha256": "e9cba496200afc9864e66986d34cc12f454959680c24a73bfa53d81942d56792"
+        },
+        {
+          "transportId": "terenuri.7966346",
+          "properties": {
+            "codcadastral": "01002060368",
+            "cod_parcel": " 0368"
+          },
+          "geometrySha256": "e1513144a17629a75635804cb1d6d20b3c6c08dd24e852637eee04aa6563fa8f"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "7a70d045c3e8ef7b02d81490b83bb4b44aa99ba33b582e3bcc83af7b0c5ff4c5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.831%2C47.023%2C28.832%2C47.024%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:28.790Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 49609,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        },
+        {
+          "transportId": "terenuri.7957176",
+          "properties": {
+            "codcadastral": "01005190246",
+            "cod_parcel": " 0246"
+          },
+          "geometrySha256": "05bea87792c44534d7715a8f9d65534245cbe3b2cdcee49d957fc2d201166d39"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "bca73a239a7399f3d9e3cbf24f4477665ef555193970fdd3541fc60583ca8ac8"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "43bb7663e72b0ad3ef1bcaa7f8187552c2aebe2db340c11388bca8dd963fe411"
+        },
+        {
+          "transportId": "terenuri.7953489",
+          "properties": {
+            "codcadastral": "01005200269",
+            "cod_parcel": " 0269"
+          },
+          "geometrySha256": "b18c07c8cfd8e2669c2466124428ab9d641017e15e0254f407a3533ca475af07"
+        },
+        {
+          "transportId": "terenuri.7962026",
+          "properties": {
+            "codcadastral": "01005200362",
+            "cod_parcel": " 0362"
+          },
+          "geometrySha256": "04d7ed08fbfb1fe21866ac1b4703440e19dafa308185f00ca805b85ff21b94a2"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "92b4819f7124153f07b5637aa8133d1eb93b7b21516d6d83191b7730e35bba12"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.832%2C47.023%2C28.833%2C47.024%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:28.932Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 46606,
+      "numberMatched": 6,
+      "numberReturned": 6,
+      "features": [
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        },
+        {
+          "transportId": "terenuri.7957176",
+          "properties": {
+            "codcadastral": "01005190246",
+            "cod_parcel": " 0246"
+          },
+          "geometrySha256": "05bea87792c44534d7715a8f9d65534245cbe3b2cdcee49d957fc2d201166d39"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "bca73a239a7399f3d9e3cbf24f4477665ef555193970fdd3541fc60583ca8ac8"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "43bb7663e72b0ad3ef1bcaa7f8187552c2aebe2db340c11388bca8dd963fe411"
+        },
+        {
+          "transportId": "terenuri.7962026",
+          "properties": {
+            "codcadastral": "01005200362",
+            "cod_parcel": " 0362"
+          },
+          "geometrySha256": "04d7ed08fbfb1fe21866ac1b4703440e19dafa308185f00ca805b85ff21b94a2"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "92b4819f7124153f07b5637aa8133d1eb93b7b21516d6d83191b7730e35bba12"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.833%2C47.023%2C28.834%2C47.024%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.054Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 61881,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "terenuri.7964098",
+          "properties": {
+            "codcadastral": "01002050162",
+            "cod_parcel": " 0162"
+          },
+          "geometrySha256": "98d941485858f56d60bea0db629836e0ce59f577eb7f59ddfdc473e40dcb30a4"
+        },
+        {
+          "transportId": "terenuri.7893899",
+          "properties": {
+            "codcadastral": "01002050166",
+            "cod_parcel": " 0166"
+          },
+          "geometrySha256": "c47d40fa36438315d2ec015fd81419aa713901d6151039c971797a1a1d585ffc"
+        },
+        {
+          "transportId": "terenuri.7893939",
+          "properties": {
+            "codcadastral": "01002050207",
+            "cod_parcel": " 0207"
+          },
+          "geometrySha256": "23bd2dd9110763535c57636a778fccdd5d375e174d6627e1f8c3a766eb16fecc"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        },
+        {
+          "transportId": "terenuri.7965206",
+          "properties": {
+            "codcadastral": "01002060367",
+            "cod_parcel": " 0367"
+          },
+          "geometrySha256": "52ec952d962bac9b0834005ef8436e886010c88469abb8be81a17dadf37eb8e0"
+        },
+        {
+          "transportId": "terenuri.7966346",
+          "properties": {
+            "codcadastral": "01002060368",
+            "cod_parcel": " 0368"
+          },
+          "geometrySha256": "2ac898c05fd380d777e8b7b7fbc01bb4183cde21ebcdd9df810924d8dd343f99"
+        },
+        {
+          "transportId": "terenuri.7957176",
+          "properties": {
+            "codcadastral": "01005190246",
+            "cod_parcel": " 0246"
+          },
+          "geometrySha256": "05bea87792c44534d7715a8f9d65534245cbe3b2cdcee49d957fc2d201166d39"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "bca73a239a7399f3d9e3cbf24f4477665ef555193970fdd3541fc60583ca8ac8"
+        },
+        {
+          "transportId": "terenuri.7962026",
+          "properties": {
+            "codcadastral": "01005200362",
+            "cod_parcel": " 0362"
+          },
+          "geometrySha256": "04d7ed08fbfb1fe21866ac1b4703440e19dafa308185f00ca805b85ff21b94a2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.832%2C47.02%2C28.833%2C47.021%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.183Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 85635,
+      "numberMatched": 16,
+      "numberReturned": 16,
+      "features": [
+        {
+          "transportId": "terenuri.7965325",
+          "properties": {
+            "codcadastral": "01002040509",
+            "cod_parcel": " 0509"
+          },
+          "geometrySha256": "468927dbe689fbd3c8a86ac0c3a14211cab2c300d433fc97edc1214fdd7fddd8"
+        },
+        {
+          "transportId": "terenuri.7893558",
+          "properties": {
+            "codcadastral": "01002050004",
+            "cod_parcel": " 0004"
+          },
+          "geometrySha256": "e465871fad6794ba9f438f20c09f21f1b04cad3eaf1ebfcf40b47d716f0ac9cc"
+        },
+        {
+          "transportId": "terenuri.7967192",
+          "properties": {
+            "codcadastral": "01002050086",
+            "cod_parcel": " 0086"
+          },
+          "geometrySha256": "c66704792c5f2c46f19e6b53b7a5cc444d8ff1bd05f209ae99781107692d4934"
+        },
+        {
+          "transportId": "terenuri.7893795",
+          "properties": {
+            "codcadastral": "01002050101",
+            "cod_parcel": " 0101"
+          },
+          "geometrySha256": "41a438ae9115128366dd092f648a34ccadc59a702d81c2a095d4a3206674baa7"
+        },
+        {
+          "transportId": "terenuri.7960788",
+          "properties": {
+            "codcadastral": "01002050104",
+            "cod_parcel": " 0104"
+          },
+          "geometrySha256": "fca6c5f2e11105dd0e5c560df52367cc553910718145cc73c6375a95d84c96be"
+        },
+        {
+          "transportId": "terenuri.7893827",
+          "properties": {
+            "codcadastral": "01002050123",
+            "cod_parcel": " 0123"
+          },
+          "geometrySha256": "79cb703662bab244edc361a40fd031079bd1c69166659230dbb53fd8c0910ac4"
+        },
+        {
+          "transportId": "terenuri.7967284",
+          "properties": {
+            "codcadastral": "01002050185",
+            "cod_parcel": " 0185"
+          },
+          "geometrySha256": "a18a09c4c3ceaceffab474913c0d23d58b850a74707a5c1ff38707b1f8738769"
+        },
+        {
+          "transportId": "terenuri.7960783",
+          "properties": {
+            "codcadastral": "01002050196",
+            "cod_parcel": " 0196"
+          },
+          "geometrySha256": "a61453f356c919aedd9fdc7394d1ddacabeafc3405b990a844a9b8d0a8cd50c5"
+        },
+        {
+          "transportId": "terenuri.7966620",
+          "properties": {
+            "codcadastral": "01002050209",
+            "cod_parcel": " 0209"
+          },
+          "geometrySha256": "2db1698441c3e79809fdd9f2a4fc61da5ea9d8c21c4868d1c57a5c7c32210fbb"
+        },
+        {
+          "transportId": "terenuri.7965332",
+          "properties": {
+            "codcadastral": "01002050229",
+            "cod_parcel": " 0229"
+          },
+          "geometrySha256": "9d074fca26303e6f3441f25da6d31c009baa12628d32ea6e8ef5bec3a1021df5"
+        },
+        {
+          "transportId": "terenuri.7894000",
+          "properties": {
+            "codcadastral": "01002050241",
+            "cod_parcel": " 0241"
+          },
+          "geometrySha256": "4c787d64cc023fb23817a0412a0b1107143d31992de7b738bd96e0fd594d47fc"
+        },
+        {
+          "transportId": "terenuri.7894028",
+          "properties": {
+            "codcadastral": "01002050249",
+            "cod_parcel": " 0249"
+          },
+          "geometrySha256": "73a93dae48d32231cae090b86de67beb3fb185f8599020cc7b8a3ea414282b1f"
+        },
+        {
+          "transportId": "terenuri.7958851",
+          "properties": {
+            "codcadastral": "01002050267",
+            "cod_parcel": " 0267"
+          },
+          "geometrySha256": "c7b29792a0f64631a17179931c985d95c2b176b90984a06da966b169d3595e85"
+        },
+        {
+          "transportId": "terenuri.7964229",
+          "properties": {
+            "codcadastral": "01002050525",
+            "cod_parcel": " 0525"
+          },
+          "geometrySha256": "56f9603ee372aa2546717629aeabebdef249571ec71313ca015a67f2fa55491e"
+        },
+        {
+          "transportId": "terenuri.7960789",
+          "properties": {
+            "codcadastral": "01002050529",
+            "cod_parcel": " 0529"
+          },
+          "geometrySha256": "b19564f315f82888aea55d9204f3d0fcaee3cba7a44ad0a981b9f55b7be5c56b"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.832%2C47.024%2C28.833%2C47.025%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.310Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 35841,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "terenuri.7957176",
+          "properties": {
+            "codcadastral": "01005190246",
+            "cod_parcel": " 0246"
+          },
+          "geometrySha256": "778de19421d8270ae5abf07a07680f58d12d18afa2ed82851146b5997b203de6"
+        },
+        {
+          "transportId": "terenuri.7957201",
+          "properties": {
+            "codcadastral": "01005190247",
+            "cod_parcel": " 0247"
+          },
+          "geometrySha256": "f53bf36fc83106a1d4e53b34562420e92c67a4e1db2c1f256827ace53bcaa9e9"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "7a70d045c3e8ef7b02d81490b83bb4b44aa99ba33b582e3bcc83af7b0c5ff4c5"
+        },
+        {
+          "transportId": "terenuri.7962026",
+          "properties": {
+            "codcadastral": "01005200362",
+            "cod_parcel": " 0362"
+          },
+          "geometrySha256": "72714ace70c7ba1c07ffe0d61f57e8077f8f9c51a3e105ba256f9e76d898611a"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "9d68cafa7abe5c0934c5b3fd8e426ded60c3a93e39efaf2479f455b2a0a97f42"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.83%2C47.022%2C28.831%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.427Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 60867,
+      "numberMatched": 8,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "7a70d045c3e8ef7b02d81490b83bb4b44aa99ba33b582e3bcc83af7b0c5ff4c5"
+        },
+        {
+          "transportId": "terenuri.7944967",
+          "properties": {
+            "codcadastral": "01005200181",
+            "cod_parcel": " 0181"
+          },
+          "geometrySha256": "115100a4afb8f376b7fbdb3c8365d6ae40b02b69e8b56a350de9ff5d54a8abe8"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "a5364d4f6ab9dc69c7543be46104b979fe95f2da71a327b701dcb4f6afed0801"
+        },
+        {
+          "transportId": "terenuri.7953478",
+          "properties": {
+            "codcadastral": "01005200238",
+            "cod_parcel": " 0238"
+          },
+          "geometrySha256": "f885a51256e12fa529d40daebe866fcc33f0cab5858e593172b3ec91153db696"
+        },
+        {
+          "transportId": "terenuri.7953489",
+          "properties": {
+            "codcadastral": "01005200269",
+            "cod_parcel": " 0269"
+          },
+          "geometrySha256": "b405d730f3b3c878778190313064c51310470a86b56f89217a5e640ed478b5f3"
+        },
+        {
+          "transportId": "terenuri.7962006",
+          "properties": {
+            "codcadastral": "01005200316",
+            "cod_parcel": " 0316"
+          },
+          "geometrySha256": "9bed36306c1d343c5b0fcf44f36dff1474fcbc03015285c67f6492985a297d76"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "9d68cafa7abe5c0934c5b3fd8e426ded60c3a93e39efaf2479f455b2a0a97f42"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.834%2C47.022%2C28.835%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.547Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 78681,
+      "numberMatched": 11,
+      "numberReturned": 11,
+      "features": [
+        {
+          "transportId": "terenuri.7964098",
+          "properties": {
+            "codcadastral": "01002050162",
+            "cod_parcel": " 0162"
+          },
+          "geometrySha256": "b6ec57a83038d1d9363a0a4486dc73619b21ebd5909d6f04aecc3799423bf5c8"
+        },
+        {
+          "transportId": "terenuri.7958850",
+          "properties": {
+            "codcadastral": "01002050200",
+            "cod_parcel": " 0200"
+          },
+          "geometrySha256": "040fb5b6b63f8781dd055f3b110c73fe00e41c64bd5177217673a9a238dfcba4"
+        },
+        {
+          "transportId": "terenuri.7894022",
+          "properties": {
+            "codcadastral": "01002050248",
+            "cod_parcel": " 0248"
+          },
+          "geometrySha256": "e2c84587f9b0e010f2d48e4035ab4f59195c4399ae8ade966f93117a55a4c5ce"
+        },
+        {
+          "transportId": "terenuri.7957330",
+          "properties": {
+            "codcadastral": "01002050255",
+            "cod_parcel": " 0255"
+          },
+          "geometrySha256": "294cb81883b3f205e470536144fc84b2b7002bd0d4065319c965ddfb1adc490c"
+        },
+        {
+          "transportId": "terenuri.7956846",
+          "properties": {
+            "codcadastral": "01002050419",
+            "cod_parcel": " 0419"
+          },
+          "geometrySha256": "c97b334b23a5971dd6d48301be28bce31a9f5bbe9a067ce1220bdfcddc8de7de"
+        },
+        {
+          "transportId": "terenuri.7964119",
+          "properties": {
+            "codcadastral": "01002050515",
+            "cod_parcel": " 0515"
+          },
+          "geometrySha256": "9452f56896a75d1a12dd875e63bac03d3cc9decb0d8fe5c2b1e1d9c0e21f8c0e"
+        },
+        {
+          "transportId": "terenuri.7964123",
+          "properties": {
+            "codcadastral": "01002050518",
+            "cod_parcel": " 0518"
+          },
+          "geometrySha256": "7c869eb9d8ede85aa62b62282aecc142cf0e349c7b83638b5614f436054892d6"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        },
+        {
+          "transportId": "terenuri.7957956",
+          "properties": {
+            "codcadastral": "01002060171",
+            "cod_parcel": " 0171"
+          },
+          "geometrySha256": "bd9217690b529ba4a5db01868bdc259307ff6f810c04f5184d78ac70ac95729a"
+        },
+        {
+          "transportId": "terenuri.7965206",
+          "properties": {
+            "codcadastral": "01002060367",
+            "cod_parcel": " 0367"
+          },
+          "geometrySha256": "e9cba496200afc9864e66986d34cc12f454959680c24a73bfa53d81942d56792"
+        },
+        {
+          "transportId": "terenuri.7966346",
+          "properties": {
+            "codcadastral": "01002060368",
+            "cod_parcel": " 0368"
+          },
+          "geometrySha256": "e1513144a17629a75635804cb1d6d20b3c6c08dd24e852637eee04aa6563fa8f"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=3&startIndex=0&bbox=28.833%2C47.022%2C28.834%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.677Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 10659,
+      "numberMatched": 18,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "terenuri.7960680",
+          "properties": {
+            "codcadastral": "01002050083",
+            "cod_parcel": " 0083"
+          },
+          "geometrySha256": "3ab97d19e7d7880161c06fa4f0bedb4ad0e31571b6f61771af17aef1cf0053e9"
+        },
+        {
+          "transportId": "terenuri.7964098",
+          "properties": {
+            "codcadastral": "01002050162",
+            "cod_parcel": " 0162"
+          },
+          "geometrySha256": "98d941485858f56d60bea0db629836e0ce59f577eb7f59ddfdc473e40dcb30a4"
+        },
+        {
+          "transportId": "terenuri.7893899",
+          "properties": {
+            "codcadastral": "01002050166",
+            "cod_parcel": " 0166"
+          },
+          "geometrySha256": "c47d40fa36438315d2ec015fd81419aa713901d6151039c971797a1a1d585ffc"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=3&startIndex=3&bbox=28.833%2C47.022%2C28.834%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.791Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 10377,
+      "numberMatched": 18,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "terenuri.7960679",
+          "properties": {
+            "codcadastral": "01002050173",
+            "cod_parcel": " 0173"
+          },
+          "geometrySha256": "4e6b1469fce55cb74a6a8d8c366e95dc035703a217170a0a124cbd08fbab5766"
+        },
+        {
+          "transportId": "terenuri.7958850",
+          "properties": {
+            "codcadastral": "01002050200",
+            "cod_parcel": " 0200"
+          },
+          "geometrySha256": "251ff91ba3793185691f728621d8c6e18d1363ec8da67dc85188d05f0a678e8d"
+        },
+        {
+          "transportId": "terenuri.7964169",
+          "properties": {
+            "codcadastral": "01002050216",
+            "cod_parcel": " 0216"
+          },
+          "geometrySha256": "433227b84ed82c1edb73dff4521170051cf78bb8b332f41d697fb1f412608e32"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=3&startIndex=6&bbox=28.833%2C47.022%2C28.834%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:29.902Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 10754,
+      "numberMatched": 18,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "terenuri.7966013",
+          "properties": {
+            "codcadastral": "01002050243",
+            "cod_parcel": " 0243"
+          },
+          "geometrySha256": "4ed52a9bd41ec27875e93cabe417baf536f0d48254a01c8f23fb6f7b419551d5"
+        },
+        {
+          "transportId": "terenuri.7894022",
+          "properties": {
+            "codcadastral": "01002050248",
+            "cod_parcel": " 0248"
+          },
+          "geometrySha256": "e2c84587f9b0e010f2d48e4035ab4f59195c4399ae8ade966f93117a55a4c5ce"
+        },
+        {
+          "transportId": "terenuri.7956846",
+          "properties": {
+            "codcadastral": "01002050419",
+            "cod_parcel": " 0419"
+          },
+          "geometrySha256": "c97b334b23a5971dd6d48301be28bce31a9f5bbe9a067ce1220bdfcddc8de7de"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=3&startIndex=9&bbox=28.833%2C47.022%2C28.834%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:30.014Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 9620,
+      "numberMatched": 18,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "terenuri.7952776",
+          "properties": {
+            "codcadastral": "01002050440",
+            "cod_parcel": " 0440"
+          },
+          "geometrySha256": "2a658af3834bbce5accb559200cacf321ac34d48a9b018720af8ccfd6aee9ce7"
+        },
+        {
+          "transportId": "terenuri.7964172",
+          "properties": {
+            "codcadastral": "01002050492",
+            "cod_parcel": " 0492"
+          },
+          "geometrySha256": "e9386abcde67fe3c7ee0dd803c83c8dec958972334a7c426c86b9195895d4f3e"
+        },
+        {
+          "transportId": "terenuri.7960781",
+          "properties": {
+            "codcadastral": "01002050519",
+            "cod_parcel": " 0519"
+          },
+          "geometrySha256": "ea443b84d64fef5f09649beefa67d50bf201235a656dafd53deb29b84458aa76"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=3&startIndex=12&bbox=28.833%2C47.022%2C28.834%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:30.133Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 26570,
+      "numberMatched": 18,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "terenuri.7964127",
+          "properties": {
+            "codcadastral": "01002050521",
+            "cod_parcel": " 0521"
+          },
+          "geometrySha256": "b3e96c00a207907177c040a6ed4f06c5f492d4aaf25d44c3d084baec8080de0d"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "e4a73df67620774f666441b67d6b8307f8c7d5bde2b876b91396d44fb8c043d0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=3&startIndex=15&bbox=28.833%2C47.022%2C28.834%2C47.023%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:30.248Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 29276,
+      "numberMatched": 18,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "terenuri.7965206",
+          "properties": {
+            "codcadastral": "01002060367",
+            "cod_parcel": " 0367"
+          },
+          "geometrySha256": "52ec952d962bac9b0834005ef8436e886010c88469abb8be81a17dadf37eb8e0"
+        },
+        {
+          "transportId": "terenuri.7966346",
+          "properties": {
+            "codcadastral": "01002060368",
+            "cod_parcel": " 0368"
+          },
+          "geometrySha256": "2ac898c05fd380d777e8b7b7fbc01bb4183cde21ebcdd9df810924d8dd343f99"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "bca73a239a7399f3d9e3cbf24f4477665ef555193970fdd3541fc60583ca8ac8"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&cql_filter=codcadastral+IN+%28%2701002040509%27%2C%2701002050004%27%2C%2701002050023%27%2C%2701002050034%27%2C%2701002050048%27%2C%2701002050058%27%2C%2701002050083%27%2C%2701002050086%27%2C%2701002050101%27%2C%2701002050104%27%2C%2701002050123%27%2C%2701002050162%27%2C%2701002050166%27%2C%2701002050168%27%2C%2701002050173%27%2C%2701002050178%27%2C%2701002050185%27%2C%2701002050196%27%2C%2701002050200%27%2C%2701002050207%27%2C%2701002050209%27%2C%2701002050216%27%2C%2701002050226%27%2C%2701002050229%27%2C%2701002050241%27%2C%2701002050243%27%2C%2701002050248%27%2C%2701002050249%27%2C%2701002050255%27%2C%2701002050267%27%2C%2701002050278%27%2C%2701002050419%27%2C%2701002050436%27%2C%2701002050440%27%2C%2701002050446%27%2C%2701002050492%27%2C%2701002050515%27%2C%2701002050518%27%2C%2701002050519%27%2C%2701002050520%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:30.369Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 136183,
+      "numberMatched": 40,
+      "numberReturned": 40,
+      "features": [
+        {
+          "transportId": "terenuri.7965325",
+          "properties": {
+            "codcadastral": "01002040509",
+            "cod_parcel": " 0509"
+          },
+          "geometrySha256": "ef941a7e996819b0513a041aa7c084d91f2940f4772e707c72c1532469170b2f"
+        },
+        {
+          "transportId": "terenuri.7893558",
+          "properties": {
+            "codcadastral": "01002050004",
+            "cod_parcel": " 0004"
+          },
+          "geometrySha256": "1de6ffe00e8bed69cf817bf5e525f5340532c345ccce60970bd3a97a84006db8"
+        },
+        {
+          "transportId": "terenuri.7893622",
+          "properties": {
+            "codcadastral": "01002050023",
+            "cod_parcel": " 0023"
+          },
+          "geometrySha256": "d1ae92009f6680944157049fcb458627ce9120a1540d701b55c774b0bff86aac"
+        },
+        {
+          "transportId": "terenuri.7893656",
+          "properties": {
+            "codcadastral": "01002050034",
+            "cod_parcel": " 0034"
+          },
+          "geometrySha256": "40596c6ed560eb5f1e56b5aaa925b63cb09b00f0f6f74d85327016f9233484bd"
+        },
+        {
+          "transportId": "terenuri.7953393",
+          "properties": {
+            "codcadastral": "01002050048",
+            "cod_parcel": " 0048"
+          },
+          "geometrySha256": "10a6625e648f4eef0000da1a8fd32285025b6808772ed267d7f432bef0d19129"
+        },
+        {
+          "transportId": "terenuri.7953007",
+          "properties": {
+            "codcadastral": "01002050058",
+            "cod_parcel": " 0058"
+          },
+          "geometrySha256": "3d68f28d2b432469432c1e9f2ffa67e68634737c13d2133f78ce323275ae9370"
+        },
+        {
+          "transportId": "terenuri.7960680",
+          "properties": {
+            "codcadastral": "01002050083",
+            "cod_parcel": " 0083"
+          },
+          "geometrySha256": "3ab97d19e7d7880161c06fa4f0bedb4ad0e31571b6f61771af17aef1cf0053e9"
+        },
+        {
+          "transportId": "terenuri.7967192",
+          "properties": {
+            "codcadastral": "01002050086",
+            "cod_parcel": " 0086"
+          },
+          "geometrySha256": "b95d47b1746c491b77b804f02c07606dbc5127f5c68d8fbacdc0d840d0280bfb"
+        },
+        {
+          "transportId": "terenuri.7893795",
+          "properties": {
+            "codcadastral": "01002050101",
+            "cod_parcel": " 0101"
+          },
+          "geometrySha256": "fbf6d7f9d788d4f7e753d1974efaa70e1862d53583599d74c53e3593aa2c11ca"
+        },
+        {
+          "transportId": "terenuri.7960788",
+          "properties": {
+            "codcadastral": "01002050104",
+            "cod_parcel": " 0104"
+          },
+          "geometrySha256": "7585b81759a52affba21a7cddfab266d51a9ec52b269d40dcf3bebd77a3bf340"
+        },
+        {
+          "transportId": "terenuri.7893827",
+          "properties": {
+            "codcadastral": "01002050123",
+            "cod_parcel": " 0123"
+          },
+          "geometrySha256": "e5908aa63e01d6bac34bc65008a2c29f405bab4e3f2f017126bdc548a868ad58"
+        },
+        {
+          "transportId": "terenuri.7964098",
+          "properties": {
+            "codcadastral": "01002050162",
+            "cod_parcel": " 0162"
+          },
+          "geometrySha256": "98d941485858f56d60bea0db629836e0ce59f577eb7f59ddfdc473e40dcb30a4"
+        },
+        {
+          "transportId": "terenuri.7893899",
+          "properties": {
+            "codcadastral": "01002050166",
+            "cod_parcel": " 0166"
+          },
+          "geometrySha256": "c47d40fa36438315d2ec015fd81419aa713901d6151039c971797a1a1d585ffc"
+        },
+        {
+          "transportId": "terenuri.7944256",
+          "properties": {
+            "codcadastral": "01002050168",
+            "cod_parcel": " 0168"
+          },
+          "geometrySha256": "f5b08d320faafd593741614a864b9eaa014047da4fb6dba024a301e7c04fec3c"
+        },
+        {
+          "transportId": "terenuri.7960679",
+          "properties": {
+            "codcadastral": "01002050173",
+            "cod_parcel": " 0173"
+          },
+          "geometrySha256": "4e6b1469fce55cb74a6a8d8c366e95dc035703a217170a0a124cbd08fbab5766"
+        },
+        {
+          "transportId": "terenuri.7953525",
+          "properties": {
+            "codcadastral": "01002050178",
+            "cod_parcel": " 0178"
+          },
+          "geometrySha256": "efd2ac3f373f491c107eb4bb5bd49461a34cd20a31e0f7ebba21bb1937cde6ab"
+        },
+        {
+          "transportId": "terenuri.7967284",
+          "properties": {
+            "codcadastral": "01002050185",
+            "cod_parcel": " 0185"
+          },
+          "geometrySha256": "8216f4dbc6aba90a8f0a99d7a3356c2159f884e0392676e2f3f5eeb64b51404f"
+        },
+        {
+          "transportId": "terenuri.7960783",
+          "properties": {
+            "codcadastral": "01002050196",
+            "cod_parcel": " 0196"
+          },
+          "geometrySha256": "2b1c96634a209ff5c5b95adf42f4d31eaaa64c861d81553f6a899b46b7f51281"
+        },
+        {
+          "transportId": "terenuri.7958850",
+          "properties": {
+            "codcadastral": "01002050200",
+            "cod_parcel": " 0200"
+          },
+          "geometrySha256": "251ff91ba3793185691f728621d8c6e18d1363ec8da67dc85188d05f0a678e8d"
+        },
+        {
+          "transportId": "terenuri.7893939",
+          "properties": {
+            "codcadastral": "01002050207",
+            "cod_parcel": " 0207"
+          },
+          "geometrySha256": "23bd2dd9110763535c57636a778fccdd5d375e174d6627e1f8c3a766eb16fecc"
+        },
+        {
+          "transportId": "terenuri.7966620",
+          "properties": {
+            "codcadastral": "01002050209",
+            "cod_parcel": " 0209"
+          },
+          "geometrySha256": "4e86cf6b3f615126c70718080faf9e83e58eccf61bfb91390098157dc31fcd10"
+        },
+        {
+          "transportId": "terenuri.7964169",
+          "properties": {
+            "codcadastral": "01002050216",
+            "cod_parcel": " 0216"
+          },
+          "geometrySha256": "433227b84ed82c1edb73dff4521170051cf78bb8b332f41d697fb1f412608e32"
+        },
+        {
+          "transportId": "terenuri.7893977",
+          "properties": {
+            "codcadastral": "01002050226",
+            "cod_parcel": " 0226"
+          },
+          "geometrySha256": "d54a96a971337ba4c3820be0e3e28faa5e87166f0641ba3ce19f21dc61ea8d14"
+        },
+        {
+          "transportId": "terenuri.7965332",
+          "properties": {
+            "codcadastral": "01002050229",
+            "cod_parcel": " 0229"
+          },
+          "geometrySha256": "725b9646bcf49111a8f2d9d38f0ff209fbbe97810b817f7b15761bdadf5159f6"
+        },
+        {
+          "transportId": "terenuri.7894000",
+          "properties": {
+            "codcadastral": "01002050241",
+            "cod_parcel": " 0241"
+          },
+          "geometrySha256": "d3d215976731ed9c0fb60855e786f07d0c36e6f25cc9846a8dead8a636d997f4"
+        },
+        {
+          "transportId": "terenuri.7966013",
+          "properties": {
+            "codcadastral": "01002050243",
+            "cod_parcel": " 0243"
+          },
+          "geometrySha256": "3a0683c566a65bd4d9bc561704f3367a103ffcd5b6f64a652f86bdd1ae257b79"
+        },
+        {
+          "transportId": "terenuri.7894022",
+          "properties": {
+            "codcadastral": "01002050248",
+            "cod_parcel": " 0248"
+          },
+          "geometrySha256": "3be9f20e693a74dd48d833af5c28bb8684d30fa3f56812f8fe60c5962e847306"
+        },
+        {
+          "transportId": "terenuri.7894028",
+          "properties": {
+            "codcadastral": "01002050249",
+            "cod_parcel": " 0249"
+          },
+          "geometrySha256": "0083085e4a5c03db36cc3f80760e914bb118e1b03bc4a79f5dde7b6f8639c41d"
+        },
+        {
+          "transportId": "terenuri.7957330",
+          "properties": {
+            "codcadastral": "01002050255",
+            "cod_parcel": " 0255"
+          },
+          "geometrySha256": "dcb14df6ad7bb5ef77973dad77a113b736301d70f9cdfa41035de4bbebf2ce18"
+        },
+        {
+          "transportId": "terenuri.7958851",
+          "properties": {
+            "codcadastral": "01002050267",
+            "cod_parcel": " 0267"
+          },
+          "geometrySha256": "17d8b44dbe5706bc935b47320e02b5bc236bd3d31983551dbce04c7dd547a259"
+        },
+        {
+          "transportId": "terenuri.7955297",
+          "properties": {
+            "codcadastral": "01002050278",
+            "cod_parcel": " 0278"
+          },
+          "geometrySha256": "16359319524606e81a055cd86b05eaf285c834f0f207a9900a0c057f38b884f1"
+        },
+        {
+          "transportId": "terenuri.7956846",
+          "properties": {
+            "codcadastral": "01002050419",
+            "cod_parcel": " 0419"
+          },
+          "geometrySha256": "a7851452f3b94f3a135cbb5e2f76540f5b9a43a566b6dcc3ea2f556065d43b8b"
+        },
+        {
+          "transportId": "terenuri.7944254",
+          "properties": {
+            "codcadastral": "01002050436",
+            "cod_parcel": " 0436"
+          },
+          "geometrySha256": "7ff884c48d9c31d7121be74f61a9bf0c5c2d44a011400df72909f687ffe8f974"
+        },
+        {
+          "transportId": "terenuri.7952776",
+          "properties": {
+            "codcadastral": "01002050440",
+            "cod_parcel": " 0440"
+          },
+          "geometrySha256": "2a658af3834bbce5accb559200cacf321ac34d48a9b018720af8ccfd6aee9ce7"
+        },
+        {
+          "transportId": "terenuri.7953394",
+          "properties": {
+            "codcadastral": "01002050446",
+            "cod_parcel": " 0446"
+          },
+          "geometrySha256": "a0bb2fe0d4eac21b353a8a67bc9dbac6f4635367f67216560b3495ca116050ee"
+        },
+        {
+          "transportId": "terenuri.7964172",
+          "properties": {
+            "codcadastral": "01002050492",
+            "cod_parcel": " 0492"
+          },
+          "geometrySha256": "e9386abcde67fe3c7ee0dd803c83c8dec958972334a7c426c86b9195895d4f3e"
+        },
+        {
+          "transportId": "terenuri.7964119",
+          "properties": {
+            "codcadastral": "01002050515",
+            "cod_parcel": " 0515"
+          },
+          "geometrySha256": "5e94eb376792754945ad90121c1fe855be20a7b3fe0340e624618901e1a8b60a"
+        },
+        {
+          "transportId": "terenuri.7964123",
+          "properties": {
+            "codcadastral": "01002050518",
+            "cod_parcel": " 0518"
+          },
+          "geometrySha256": "0ef92226617f1026badfe328020dea7285fddea5d1a7c944a6a04c80669f77a0"
+        },
+        {
+          "transportId": "terenuri.7960781",
+          "properties": {
+            "codcadastral": "01002050519",
+            "cod_parcel": " 0519"
+          },
+          "geometrySha256": "ea443b84d64fef5f09649beefa67d50bf201235a656dafd53deb29b84458aa76"
+        },
+        {
+          "transportId": "terenuri.7960782",
+          "properties": {
+            "codcadastral": "01002050520",
+            "cod_parcel": " 0520"
+          },
+          "geometrySha256": "012c0edc43d67fdfb53fb0b2b79ca3d750b102432afba10478b49751673fbfd8"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&cql_filter=codcadastral+IN+%28%2701002050521%27%2C%2701002050525%27%2C%2701002050528%27%2C%2701002050529%27%2C%2701002050549%27%2C%2701002050575%27%2C%2701002060171%27%2C%2701002060367%27%2C%2701002060368%27%2C%2701005190246%27%2C%2701005190247%27%2C%2701005200003%27%2C%2701005200181%27%2C%2701005200228%27%2C%2701005200238%27%2C%2701005200269%27%2C%2701005200316%27%2C%2701005200362%27%2C%2701005200364%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:35.768Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 107492,
+      "numberMatched": 19,
+      "numberReturned": 19,
+      "features": [
+        {
+          "transportId": "terenuri.7964127",
+          "properties": {
+            "codcadastral": "01002050521",
+            "cod_parcel": " 0521"
+          },
+          "geometrySha256": "d0b4b26d6ac0900e5f7dcd46b5981de67c9faae8a995c87b10225488cf1d908e"
+        },
+        {
+          "transportId": "terenuri.7964229",
+          "properties": {
+            "codcadastral": "01002050525",
+            "cod_parcel": " 0525"
+          },
+          "geometrySha256": "1a1f9195f2a5400de145a36adb5ab55e828578e80aadd08cb36743b1c9221014"
+        },
+        {
+          "transportId": "terenuri.7964216",
+          "properties": {
+            "codcadastral": "01002050528",
+            "cod_parcel": " 0528"
+          },
+          "geometrySha256": "717f6791b81280d7ab67867ad0a14a2000e30c8df0d0852d015b65879130f8da"
+        },
+        {
+          "transportId": "terenuri.7960789",
+          "properties": {
+            "codcadastral": "01002050529",
+            "cod_parcel": " 0529"
+          },
+          "geometrySha256": "934d8499df0f7fc8498cb5035d5827e80469ab5ea70f655b546a500b5e30fe01"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        },
+        {
+          "transportId": "terenuri.7966619",
+          "properties": {
+            "codcadastral": "01002050575",
+            "cod_parcel": " 0575"
+          },
+          "geometrySha256": "ecb2d7d7445f0e89a2f38f29d278a399c2e08dd912fbadd985b35a4d3134f2e7"
+        },
+        {
+          "transportId": "terenuri.7957956",
+          "properties": {
+            "codcadastral": "01002060171",
+            "cod_parcel": " 0171"
+          },
+          "geometrySha256": "5c634dcb64bfed5d6a426398189ff9f9144225a7eae5e88b43e2b7fb049c04aa"
+        },
+        {
+          "transportId": "terenuri.7965206",
+          "properties": {
+            "codcadastral": "01002060367",
+            "cod_parcel": " 0367"
+          },
+          "geometrySha256": "52ec952d962bac9b0834005ef8436e886010c88469abb8be81a17dadf37eb8e0"
+        },
+        {
+          "transportId": "terenuri.7966346",
+          "properties": {
+            "codcadastral": "01002060368",
+            "cod_parcel": " 0368"
+          },
+          "geometrySha256": "2ac898c05fd380d777e8b7b7fbc01bb4183cde21ebcdd9df810924d8dd343f99"
+        },
+        {
+          "transportId": "terenuri.7957176",
+          "properties": {
+            "codcadastral": "01005190246",
+            "cod_parcel": " 0246"
+          },
+          "geometrySha256": "05bea87792c44534d7715a8f9d65534245cbe3b2cdcee49d957fc2d201166d39"
+        },
+        {
+          "transportId": "terenuri.7957201",
+          "properties": {
+            "codcadastral": "01005190247",
+            "cod_parcel": " 0247"
+          },
+          "geometrySha256": "e4de9ab3ac3994a571bba780fc726cbf2b5afe1f515db7e870132e3840a14e80"
+        },
+        {
+          "transportId": "terenuri.7934610",
+          "properties": {
+            "codcadastral": "01005200003",
+            "cod_parcel": " 0003"
+          },
+          "geometrySha256": "bca73a239a7399f3d9e3cbf24f4477665ef555193970fdd3541fc60583ca8ac8"
+        },
+        {
+          "transportId": "terenuri.7944967",
+          "properties": {
+            "codcadastral": "01005200181",
+            "cod_parcel": " 0181"
+          },
+          "geometrySha256": "4f7c620af2cb61f503edd2f6cbb647d0fcadc53305941db6522e87370cf6dd53"
+        },
+        {
+          "transportId": "terenuri.7950715",
+          "properties": {
+            "codcadastral": "01005200228",
+            "cod_parcel": " 0228"
+          },
+          "geometrySha256": "43bb7663e72b0ad3ef1bcaa7f8187552c2aebe2db340c11388bca8dd963fe411"
+        },
+        {
+          "transportId": "terenuri.7953478",
+          "properties": {
+            "codcadastral": "01005200238",
+            "cod_parcel": " 0238"
+          },
+          "geometrySha256": "94eeae7eb4f338a2c661605bc7ef805b4b6f1651a66aa0f6815c107252f132bf"
+        },
+        {
+          "transportId": "terenuri.7953489",
+          "properties": {
+            "codcadastral": "01005200269",
+            "cod_parcel": " 0269"
+          },
+          "geometrySha256": "b18c07c8cfd8e2669c2466124428ab9d641017e15e0254f407a3533ca475af07"
+        },
+        {
+          "transportId": "terenuri.7962006",
+          "properties": {
+            "codcadastral": "01005200316",
+            "cod_parcel": " 0316"
+          },
+          "geometrySha256": "84deda19fdf7df49445e256506587e4be41b27734aab0cb8e3a419685eb09859"
+        },
+        {
+          "transportId": "terenuri.7962026",
+          "properties": {
+            "codcadastral": "01005200362",
+            "cod_parcel": " 0362"
+          },
+          "geometrySha256": "04d7ed08fbfb1fe21866ac1b4703440e19dafa308185f00ca805b85ff21b94a2"
+        },
+        {
+          "transportId": "terenuri.7966433",
+          "properties": {
+            "codcadastral": "01005200364",
+            "cod_parcel": " 0364"
+          },
+          "geometrySha256": "92b4819f7124153f07b5637aa8133d1eb93b7b21516d6d83191b7730e35bba12"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&cql_filter=codcadastral+IN+%28%2700000000000%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:37.938Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.83229129353813%2C47.01986231800671%2C28.832965976825534%2C47.02026815121758%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:38.050Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 61390,
+      "numberMatched": 11,
+      "numberReturned": 11,
+      "features": [
+        {
+          "transportId": "terenuri.7965325",
+          "properties": {
+            "codcadastral": "01002040509",
+            "cod_parcel": " 0509"
+          },
+          "geometrySha256": "ef941a7e996819b0513a041aa7c084d91f2940f4772e707c72c1532469170b2f"
+        },
+        {
+          "transportId": "terenuri.7967192",
+          "properties": {
+            "codcadastral": "01002050086",
+            "cod_parcel": " 0086"
+          },
+          "geometrySha256": "b95d47b1746c491b77b804f02c07606dbc5127f5c68d8fbacdc0d840d0280bfb"
+        },
+        {
+          "transportId": "terenuri.7893795",
+          "properties": {
+            "codcadastral": "01002050101",
+            "cod_parcel": " 0101"
+          },
+          "geometrySha256": "fbf6d7f9d788d4f7e753d1974efaa70e1862d53583599d74c53e3593aa2c11ca"
+        },
+        {
+          "transportId": "terenuri.7967284",
+          "properties": {
+            "codcadastral": "01002050185",
+            "cod_parcel": " 0185"
+          },
+          "geometrySha256": "8216f4dbc6aba90a8f0a99d7a3356c2159f884e0392676e2f3f5eeb64b51404f"
+        },
+        {
+          "transportId": "terenuri.7967235",
+          "properties": {
+            "codcadastral": "01002050188",
+            "cod_parcel": " 0188"
+          },
+          "geometrySha256": "65688d75251eeb6f909a29f758437a9943100be30f3a2b70429a4ea8b1498c9d"
+        },
+        {
+          "transportId": "terenuri.7960783",
+          "properties": {
+            "codcadastral": "01002050196",
+            "cod_parcel": " 0196"
+          },
+          "geometrySha256": "2b1c96634a209ff5c5b95adf42f4d31eaaa64c861d81553f6a899b46b7f51281"
+        },
+        {
+          "transportId": "terenuri.7965332",
+          "properties": {
+            "codcadastral": "01002050229",
+            "cod_parcel": " 0229"
+          },
+          "geometrySha256": "725b9646bcf49111a8f2d9d38f0ff209fbbe97810b817f7b15761bdadf5159f6"
+        },
+        {
+          "transportId": "terenuri.7894000",
+          "properties": {
+            "codcadastral": "01002050241",
+            "cod_parcel": " 0241"
+          },
+          "geometrySha256": "d3d215976731ed9c0fb60855e786f07d0c36e6f25cc9846a8dead8a636d997f4"
+        },
+        {
+          "transportId": "terenuri.7894028",
+          "properties": {
+            "codcadastral": "01002050249",
+            "cod_parcel": " 0249"
+          },
+          "geometrySha256": "0083085e4a5c03db36cc3f80760e914bb118e1b03bc4a79f5dde7b6f8639c41d"
+        },
+        {
+          "transportId": "terenuri.7960789",
+          "properties": {
+            "codcadastral": "01002050529",
+            "cod_parcel": " 0529"
+          },
+          "geometrySha256": "934d8499df0f7fc8498cb5035d5827e80469ab5ea70f655b546a500b5e30fe01"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "c78207153babe21ca89826870588ee68678b8513395bb78889d0feb13c5e65a0"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geodata.gov.md/geoserver/cadastru_data/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cadastru_data%3Aterenuri&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=codcadastral&count=100&startIndex=0&bbox=28.83229129353813%2C47.01986231800671%2C28.832965976825534%2C47.02026815121758%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:24:38.180Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 70751,
+      "numberMatched": 11,
+      "numberReturned": 11,
+      "features": [
+        {
+          "transportId": "terenuri.7965325",
+          "properties": {
+            "codcadastral": "01002040509",
+            "cod_parcel": " 0509"
+          },
+          "geometrySha256": "468927dbe689fbd3c8a86ac0c3a14211cab2c300d433fc97edc1214fdd7fddd8"
+        },
+        {
+          "transportId": "terenuri.7967192",
+          "properties": {
+            "codcadastral": "01002050086",
+            "cod_parcel": " 0086"
+          },
+          "geometrySha256": "c66704792c5f2c46f19e6b53b7a5cc444d8ff1bd05f209ae99781107692d4934"
+        },
+        {
+          "transportId": "terenuri.7893795",
+          "properties": {
+            "codcadastral": "01002050101",
+            "cod_parcel": " 0101"
+          },
+          "geometrySha256": "41a438ae9115128366dd092f648a34ccadc59a702d81c2a095d4a3206674baa7"
+        },
+        {
+          "transportId": "terenuri.7967284",
+          "properties": {
+            "codcadastral": "01002050185",
+            "cod_parcel": " 0185"
+          },
+          "geometrySha256": "a18a09c4c3ceaceffab474913c0d23d58b850a74707a5c1ff38707b1f8738769"
+        },
+        {
+          "transportId": "terenuri.7967235",
+          "properties": {
+            "codcadastral": "01002050188",
+            "cod_parcel": " 0188"
+          },
+          "geometrySha256": "4823a59d35e3011441ac1b3b3ad66e03efd88b39cfe8846d913b277ae21d8b6d"
+        },
+        {
+          "transportId": "terenuri.7960783",
+          "properties": {
+            "codcadastral": "01002050196",
+            "cod_parcel": " 0196"
+          },
+          "geometrySha256": "a61453f356c919aedd9fdc7394d1ddacabeafc3405b990a844a9b8d0a8cd50c5"
+        },
+        {
+          "transportId": "terenuri.7965332",
+          "properties": {
+            "codcadastral": "01002050229",
+            "cod_parcel": " 0229"
+          },
+          "geometrySha256": "9d074fca26303e6f3441f25da6d31c009baa12628d32ea6e8ef5bec3a1021df5"
+        },
+        {
+          "transportId": "terenuri.7894000",
+          "properties": {
+            "codcadastral": "01002050241",
+            "cod_parcel": " 0241"
+          },
+          "geometrySha256": "4c787d64cc023fb23817a0412a0b1107143d31992de7b738bd96e0fd594d47fc"
+        },
+        {
+          "transportId": "terenuri.7894028",
+          "properties": {
+            "codcadastral": "01002050249",
+            "cod_parcel": " 0249"
+          },
+          "geometrySha256": "73a93dae48d32231cae090b86de67beb3fb185f8599020cc7b8a3ea414282b1f"
+        },
+        {
+          "transportId": "terenuri.7960789",
+          "properties": {
+            "codcadastral": "01002050529",
+            "cod_parcel": " 0529"
+          },
+          "geometrySha256": "b19564f315f82888aea55d9204f3d0fcaee3cba7a44ad0a981b9f55b7be5c56b"
+        },
+        {
+          "transportId": "terenuri.7965371",
+          "properties": {
+            "codcadastral": "01002050549",
+            "cod_parcel": " 0549"
+          },
+          "geometrySha256": "747e0434cac2b2dce8fcbb28b6aec401e170b218244992a9d231da35b24ddcc6"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/world-capitals-2026-10-08/chisinau-quality.json",
+  "uniqueParcels": 59,
+  "requestCount": 24,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T18:24:38.343Z",
+  "qualityStatus": "audited",
+  "qualitySummary": {
+    "featureCount": 59,
+    "validNonemptyCount": 59,
+    "invalidFeatures": [],
+    "exactDuplicateGeometryPairs": [],
+    "sumPairwiseOverlapM2": 58.294937038337224,
+    "overlapPairCount": 13
+  },
+  "runtimeQualified": false
+}

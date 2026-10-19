@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:6993",
+  "wupCityCode": 6993,
+  "name": "Kendal",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 1021,
+  "queueRank": 1021,
+  "point": [
+    -6.9471650419436,
+    110.155736238751
+  ],
+  "centerLatLon": [
+    -6.9471650419436,
+    110.155736238751
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 541030,
+  "population2025k": 541.03,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric.",
+  "registryEvidenceUrls": [
+    "https://new.kendalkab.go.id/berita/pemkab_kendal_dan_atrbpn_perkuat_integrasi_data_pertanahan_dan_perpajakan",
+    "https://petaaset.kendalkab.go.id/",
+    "https://petaaset.kendalkab.go.id/peta/2"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_native_geometry_conflicts",
+  "technicalBlocker": "The native982-row KIB A Tanah response includes96 incomplete/nonfinite/open paths; among886 closed finite paths GEOS finds2 invalid polygons,77 material positive-area overlap pairs and3 topology operation errors. Snapshot revision, complete runtime retrieval, exact identity and source binding are not qualified. Retained valid samples do not clear those source failures.",
+  "scopeLimits": "Three full valid regional government land-asset polygons retained, at877.44,1168.72and1657.90metres from the unchanged settlement locator. None of the 886 closed finite diagnostic polygons contains the exact locator; the 96 unhandled native paths leave point coverage unresolved. The municipal asset map is partial government ground, not private cadastral/title fabric. No geometric repair or source subset admission.",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric.",
+    "verifiedOpenScope": "Three full valid regional government land-asset polygons retained, at877.44,1168.72and1657.90metres from the unchanged settlement locator. None of the 886 closed finite diagnostic polygons contains the exact locator; the 96 unhandled native paths leave point coverage unresolved. The municipal asset map is partial government ground, not private cadastral/title fabric. No geometric repair or source subset admission.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_native_geometry_conflicts",
+    "reason": "The native982-row KIB A Tanah response includes96 incomplete/nonfinite/open paths; among886 closed finite paths GEOS finds2 invalid polygons,77 material positive-area overlap pairs and3 topology operation errors. Snapshot revision, complete runtime retrieval, exact identity and source binding are not qualified. Retained valid samples do not clear those source failures."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kendal Indonesia official cadastral land office parcel map",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric.",
+        "actualResultUrls": [
+          "https://new.kendalkab.go.id/berita/pemkab_kendal_dan_atrbpn_perkuat_integrasi_data_pertanahan_dan_perpajakan",
+          "https://petaaset.kendalkab.go.id/",
+          "https://petaaset.kendalkab.go.id/peta/2"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kabupaten Kendal Kantor Pertanahan peta bidang tanah BHUMI resmi",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric.",
+        "actualResultUrls": [
+          "https://new.kendalkab.go.id/berita/pemkab_kendal_dan_atrbpn_perkuat_integrasi_data_pertanahan_dan_perpajakan",
+          "https://petaaset.kendalkab.go.id/",
+          "https://petaaset.kendalkab.go.id/peta/2"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:16.612819+00:00",
+        "url": "https://new.kendalkab.go.id/berita/pemkab_kendal_dan_atrbpn_perkuat_integrasi_data_pertanahan_dan_perpajakan",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "finalUrl": "https://new.kendalkab.go.id/berita/pemkab_kendal_dan_atrbpn_perkuat_integrasi_data_pertanahan_dan_perpajakan",
+        "bytesRead": 393678,
+        "boundedReadIncomplete": false,
+        "sha256": "1b6e5cce0e608c3b5bc060ab392c4b09ee41beb4d0080f4ec9e1df770c7f4e6b",
+        "title": "Pemkab Kendal dan ATR/BPN Perkuat Integrasi Data Pertanahan dan Perpajakan - Portal Kabupaten Kendal"
+      },
+      {
+        "checkedAt": "2026-10-09T05:29:16.612880+00:00",
+        "url": "https://petaaset.kendalkab.go.id/",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "finalUrl": "https://petaaset.kendalkab.go.id/",
+        "bytesRead": 27572,
+        "boundedReadIncomplete": false,
+        "sha256": "d6e10ce2c7e66c61d5ceedd25d36f4c488c2c21595a5855dd02c56a3694fd5f9",
+        "title": "SISTEM INFORMASI PETA ASET DAERAH | HOME"
+      },
+      {
+        "checkedAt": "2026-10-09T05:29:19.373064+00:00",
+        "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "finalUrl": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "bytesRead": 30917,
+        "boundedReadIncomplete": false,
+        "sha256": "92eba10dfd42f4058b22fe908b995689de4d721425bef23b37926d465c59a0c5",
+        "title": "Peta – BHUMI"
+      },
+      {
+        "url": "https://petaaset.kendalkab.go.id/front/load_polygon?nama_tabel=t_table8",
+        "httpStatus": 200,
+        "bytes": 325889,
+        "responseType": "JSON native982-row public municipal land-asset vertex paths",
+        "retainedAttributes": [
+          "id",
+          "titik coordinate geometry"
+        ],
+        "personalOrLocationValuesRetained": false
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://new.kendalkab.go.id/berita/pemkab_kendal_dan_atrbpn_perkuat_integrasi_data_pertanahan_dan_perpajakan",
+        "observation": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric."
+      },
+      {
+        "homeUrl": "https://petaaset.kendalkab.go.id/",
+        "observation": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric."
+      },
+      {
+        "homeUrl": "https://petaaset.kendalkab.go.id/peta/2",
+        "observation": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "The official Kendal government report dated2026-09-23 confirms the local land office and integration of land-registration and municipal tax data. BPKAD publishes a public land-asset map whose KIB A Tanah interface returns982 native-ID vertex paths. These refer to regional government land assets, not the complete privately-owned cadastral/title fabric. Three full valid regional government land-asset polygons retained, at877.44,1168.72and1657.90metres from the unchanged settlement locator. None of the 886 closed finite diagnostic polygons contains the exact locator; the 96 unhandled native paths leave point coverage unresolved. The municipal asset map is partial government ground, not private cadastral/title fabric. No geometric repair or source subset admission.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "sampleGeometryFile": "city-6993-kendal-samples.geojson",
+    "nativeIdField": "id",
+    "nativeParcelIdentifiers": [
+      "610",
+      "1157",
+      "879"
+    ],
+    "retainedFullPolygonCount": 3,
+    "wupPointContained": false,
+    "qualityReviewFile": "kendal-assets-root-review.json",
+    "returnedNativePathRowCount": 982,
+    "diagnosticClosedFinitePolygonCount": 886,
+    "unhandledNativePathCount": 96
+  },
+  "source": {
+    "name": "BPKAD Kendal KIB A Tanah land-asset reference ground",
+    "operator": "BPKAD Kabupaten Kendal",
+    "url": "https://petaaset.kendalkab.go.id/",
+    "endpoint": "https://petaaset.kendalkab.go.id/front/load_polygon?nama_tabel=t_table8",
+    "layer": "t_table8",
+    "geometryType": "native single-ring vertex path",
+    "nativeIdField": "id",
+    "scope": "Three full valid regional government land-asset polygons retained, at877.44,1168.72and1657.90metres from the unchanged settlement locator. No source polygon contains the exact locator. The municipal asset map is partial government ground, not private cadastral/title fabric. No geometric repair or source subset admission.",
+    "personalAttributesRequested": false,
+    "requestedAttributes": [],
+    "serverSupportsFieldProjection": false,
+    "attributesRetained": [
+      "id",
+      "geometry"
+    ]
+  }
+}

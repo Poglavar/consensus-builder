@@ -1,0 +1,219 @@
+{
+  "checkedAt": "2026-10-08",
+  "scope": "Four 100m x 100m sample-centered windows compared with four 50m quadrants; one fresh exact-sample and one synthetic absent-ID lookup per village. No full village export.",
+  "results": [
+    {
+      "code": 9587,
+      "locationCode": "110114",
+      "districtGid": "2ece95c1-1675-4a41-9044-c3cbffeec718",
+      "talukGid": "f6220330-f761-40c4-9f51-d322eb85834a",
+      "villageGid": "31374b48-8a5d-4e89-96c7-55fc46d77504",
+      "centerCount": 59,
+      "quadrantUnionCount": 59,
+      "idsEqual": true,
+      "geometriesEqual": true,
+      "sampleExact": true,
+      "exactGeometryMatchesClick": true,
+      "absentRecords": 0,
+      "bytes": 211359,
+      "sampleClickParcelPresent": true,
+      "allBoundedGeometriesValid": true,
+      "validatedGeometryCount": 59,
+      "actualPolygonIntersectionCounts": [
+        57,
+        17,
+        16,
+        21,
+        19
+      ],
+      "providerRawResponseCounts": [
+        59,
+        18,
+        19,
+        23,
+        21
+      ],
+      "nonIntersectingCandidateCountDeltas": [
+        2,
+        1,
+        3,
+        2,
+        2
+      ],
+      "singleComponentMultipolygonsOnly": true,
+      "clickCoordinateWgs84LonLat": [
+        75.82866662,
+        11.1611574
+      ],
+      "distanceFromWupTargetToClickCoordinateMeters": 5916.09,
+      "clickCoordinateInsideSampleParcel": true,
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    },
+    {
+      "code": 9765,
+      "locationCode": "070211",
+      "districtGid": "e0d2187c-2a19-444c-90c9-ffedf9eb5d69",
+      "talukGid": "20d024a3-6bca-4478-9678-8294a15b484f",
+      "villageGid": "a95a17f6-d671-497d-a791-54a351ef7858",
+      "centerCount": 35,
+      "quadrantUnionCount": 35,
+      "idsEqual": true,
+      "geometriesEqual": true,
+      "sampleExact": true,
+      "exactGeometryMatchesClick": true,
+      "absentRecords": 0,
+      "bytes": 305918,
+      "sampleClickParcelPresent": true,
+      "allBoundedGeometriesValid": true,
+      "validatedGeometryCount": 35,
+      "actualPolygonIntersectionCounts": [
+        33,
+        10,
+        10,
+        15,
+        12
+      ],
+      "providerRawResponseCounts": [
+        35,
+        13,
+        12,
+        17,
+        14
+      ],
+      "nonIntersectingCandidateCountDeltas": [
+        2,
+        3,
+        2,
+        2,
+        2
+      ],
+      "singleComponentMultipolygonsOnly": true,
+      "clickCoordinateWgs84LonLat": [
+        76.36082896,
+        9.96340681
+      ],
+      "distanceFromWupTargetToClickCoordinateMeters": 12234.17,
+      "clickCoordinateInsideSampleParcel": true,
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    },
+    {
+      "code": 9847,
+      "locationCode": "020301",
+      "districtGid": "724af3d5-147d-416b-a956-b968b6c7f38b",
+      "talukGid": "a92fa901-eab7-40ae-abe9-f1b45f41cfaa",
+      "villageGid": "a5f8cb4b-9b03-4f8a-a391-5304842a8f7a",
+      "centerCount": 27,
+      "quadrantUnionCount": 27,
+      "idsEqual": true,
+      "geometriesEqual": true,
+      "sampleExact": true,
+      "exactGeometryMatchesClick": true,
+      "absentRecords": 0,
+      "bytes": 78000,
+      "sampleClickParcelPresent": true,
+      "allBoundedGeometriesValid": true,
+      "validatedGeometryCount": 27,
+      "actualPolygonIntersectionCounts": [
+        25,
+        10,
+        7,
+        10,
+        12
+      ],
+      "providerRawResponseCounts": [
+        27,
+        12,
+        9,
+        11,
+        14
+      ],
+      "nonIntersectingCandidateCountDeltas": [
+        2,
+        2,
+        2,
+        1,
+        2
+      ],
+      "singleComponentMultipolygonsOnly": true,
+      "clickCoordinateWgs84LonLat": [
+        76.62751009,
+        8.84755083
+      ],
+      "distanceFromWupTargetToClickCoordinateMeters": 54470.31,
+      "clickCoordinateInsideSampleParcel": true,
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    },
+    {
+      "code": 10013,
+      "locationCode": "010111",
+      "districtGid": "dfd75e07-cae4-45e8-875b-6292909b8089",
+      "talukGid": "dbf9909e-af46-40ae-9ad6-0fa83789d7b5",
+      "villageGid": "a58a0b11-6829-4fd0-8d7a-a12ef5befd0b",
+      "centerCount": 60,
+      "quadrantUnionCount": 60,
+      "idsEqual": true,
+      "geometriesEqual": true,
+      "sampleExact": true,
+      "exactGeometryMatchesClick": true,
+      "absentRecords": 0,
+      "bytes": 136262,
+      "sampleClickParcelPresent": true,
+      "allBoundedGeometriesValid": true,
+      "validatedGeometryCount": 60,
+      "actualPolygonIntersectionCounts": [
+        59,
+        25,
+        21,
+        16,
+        19
+      ],
+      "providerRawResponseCounts": [
+        60,
+        28,
+        23,
+        17,
+        20
+      ],
+      "nonIntersectingCandidateCountDeltas": [
+        1,
+        3,
+        2,
+        1,
+        1
+      ],
+      "singleComponentMultipolygonsOnly": true,
+      "clickCoordinateWgs84LonLat": [
+        76.95605474,
+        8.53918293
+      ],
+      "distanceFromWupTargetToClickCoordinateMeters": 3488.22,
+      "clickCoordinateInsideSampleParcel": true,
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    }
+  ],
+  "summary": {
+    "cities": 4,
+    "centerExports": 4,
+    "quadrantExports": 16,
+    "centerAndQuadrantIdGeometryUnionsMatch": true,
+    "sampleParcelIncludedAndExactGeometryRevalidated": true,
+    "syntheticAbsentIdsReturnedZero": true,
+    "allBoundedFeaturesValidAfterProj4": true,
+    "boundedFeaturesValidated": 181,
+    "fullVillageOrCityCoverageProven": false,
+    "nonIntersectingCandidatesPresent": true,
+    "explanation": "Provider returned a few rows whose polygon geometries do not intersect the requested boxes. Each is a one-component MultiPolygon; disconnected components do not explain the extras. Most have envelope overlap but no polygon intersection, consistent with coarse envelope/candidate selection; one candidate misses its query envelope by about 1 cm. Consumers must exact-filter geometry locally."
+  }
+}

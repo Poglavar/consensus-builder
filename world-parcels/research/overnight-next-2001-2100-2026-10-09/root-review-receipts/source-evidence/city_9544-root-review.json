@@ -1,0 +1,35 @@
+{
+  "firstPartyUrls": [
+    "https://tianjin.tianditu.gov.cn/static/html/bzmap.html",
+    "https://ghhzrzy.tj.gov.cn/ywpd/tdgl_43019/tdzs/zdxzdc/202012/W020201206203417127743.pdf"
+  ],
+  "firstPartyObservation": "Official Tianjin platform names the municipal natural-resources authority and lists a Jinnan map; official Jinnan survey material shows a bounded project map, not an open citywide parcel service.",
+  "originalParcelResponseAvailable": false,
+  "retainedFullPolygonCount": 0,
+  "taskId": "city:9544",
+  "checkedAt": "2026-10-10T22:37:42Z",
+  "immutableQueueIdentity": {
+    "cityCode": 9544,
+    "rank": 2085,
+    "country": "China",
+    "iso2": "CN",
+    "point": [
+      38.9833467530819,
+      117.389965630398
+    ],
+    "populationPersons": 278673
+  },
+  "queryLanguages": [
+    "English",
+    "Chinese"
+  ],
+  "qualificationMissing": [
+    "fresh exact native-ID read",
+    "forced pagination",
+    "13 bounded cells",
+    "metric GEOS validity/overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ],
+  "decision": "held"
+}

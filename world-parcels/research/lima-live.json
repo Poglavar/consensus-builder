@@ -1,0 +1,148 @@
+{
+  "city": "Lima, Peru",
+  "checkedAt": "2026-10-03",
+  "modelUsed": "gpt-6-luna (low)",
+  "sourceId": "pe-sedapal-publicaciones-lotes",
+  "candidateDescriptor": {
+    "id": "pe-sedapal-publicaciones-lotes",
+    "endpoint": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+    "idField": "GLOBALID",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "PE-SEDAPAL-LOT-",
+    "idType": "string",
+    "idPattern": "^\\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}$",
+    "parcelNumberField": "PARCELCODE",
+    "outFields": [
+      "OBJECTID",
+      "GLOBALID",
+      "DISTRICTCODE",
+      "SQUARECODE",
+      "PARCELCODE",
+      "PROPERTYCODE",
+      "LASTUPDATE"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "adapter": "arcgis",
+    "name": "SEDAPAL Lima lots",
+    "countryCode": "PE",
+    "metricSrid": 32718,
+    "cityIds": [
+      "lima"
+    ],
+    "scope": "Utility mapping/lot layer; legal-cadastre status and citywide coverage are not established by this sample. Only the bounded Lima globe entry is enabled.",
+    "evidenceFile": "research/lima-live.json",
+    "licenceNote": "No explicit reuse licence is published in the checked service metadata; source conditions remain informational.",
+    "catalogueUrl": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21",
+    "attribution": "SEDAPAL — Proyectos_Sedapal / Lotes. The third-party copy describes a SEDAPAL-commissioned Consorcio Servicios Integrales vector file; preserve that attribution when appropriate."
+  },
+  "sourceNotice": {
+    "publisher": "SEDAPAL GIS service on sedapal.com.pe; service folder Publicaciones/Proyectos_Sedapal, layer Lotes.",
+    "attribution": "SEDAPAL — Proyectos_Sedapal / Lotes. The third-party copy describes a SEDAPAL-commissioned Consorcio Servicios Integrales vector file; preserve that attribution when appropriate.",
+    "dataScopeNotice": "Utility mapping/lot layer; legal-cadastre status and citywide coverage are not established by this sample.",
+    "licenseInfo": null,
+    "copyrightText": "",
+    "licenseNotUsedAsGate": true
+  },
+  "identityAndWhitelist": {
+    "nativeId": "GLOBALID (esriFieldTypeGlobalID). MapServer does not designate globalIdField/uniqueIdField and its GlobalID index reports non-unique; all 80 bounded samples were distinct, exact-read and checked for conflicting geometry.",
+    "oid": "OBJECTID unique index; system-maintained paging transport only.",
+    "sampleIdCount": 80,
+    "uniqueNativeIds": 80,
+    "idConflicts": 0,
+    "exactAbsentIds": 0,
+    "sampleIdentity": "{3B2589FA-5690-45BC-A9F2-26BEE2963350} → OBJECTID 544451; district 036 / square 85809 / parcel 602234.",
+    "ownerFieldsRequested": false,
+    "outFields": [
+      "OBJECTID",
+      "GLOBALID",
+      "DISTRICTCODE",
+      "SQUARECODE",
+      "PARCELCODE",
+      "PROPERTYCODE",
+      "LASTUPDATE"
+    ],
+    "sampleNulls": {
+      "PROPERTYCODE": 80,
+      "LASTUPDATE": 80
+    }
+  },
+  "liveTests": [
+    {
+      "kind": "layer metadata",
+      "status": 200,
+      "geometryType": "Polygon",
+      "nativeCRS": "EPSG:32718",
+      "supportedQueryFormats": "JSON, geoJSON",
+      "maxRecordCount": 1000,
+      "supportsPagination": true,
+      "requestUrl": "https://gisprdsdp.sedapal.com.pe/arcgis/rest/services/Publicaciones/Proyectos_Sedapal/MapServer/21?f=pjson"
+    },
+    {
+      "kind": "adapter bounded GeoJSON at final descriptor",
+      "bboxWgs84": [
+        -76.969,
+        -12.0155,
+        -76.9675,
+        -12.0145
+      ],
+      "pageSize": 500,
+      "status": 200,
+      "seconds": 1.372,
+      "featureCount": 80,
+      "complete": true,
+      "uniqueGlobalIds": 80,
+      "requestParams": "resultRecordCount=500; resultOffset=0; returnGeometry=true; outSR=4326; f=geojson; orderByFields=OBJECTID"
+    },
+    {
+      "kind": "adapter exact queryIds all bounded GUIDs",
+      "status": 200,
+      "seconds": 0.348,
+      "inputIds": 80,
+      "returnedIds": 80,
+      "absentIds": 0,
+      "geometryConflicts": 0,
+      "requestParams": "GLOBALID IN (<80 exact brace-wrapped GUID values>); resultRecordCount=500; outSR=4326; f=geojson"
+    },
+    {
+      "kind": "unbounded countOnly",
+      "status": 403,
+      "result": "Full-layer count is denied; bounded geometry/exact-ID reads work and this is not a bounded-query failure."
+    }
+  ],
+  "technicalAssessment": "Ready for read-only/passthrough integration using the candidate descriptor and conflict rejection. A full 80-feature bounded response completed in one page, and exact retrieval of all 80 GlobalIDs completed with no absent IDs or geometry conflicts. Do not create a persistent parcel import or local parcel store.",
+  "description": "Metadata-only live source verification; no parcel polygons are stored in this evidence file.",
+  "runtimeContract": {
+    "adapter": "arcgis",
+    "cityId": "lima",
+    "metricSrid": 32718,
+    "boundsQueryMode": "offset",
+    "termsAreInformational": true
+  },
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "mode": "manual headed browser",
+    "initialFeatures": 1291,
+    "retainedAfterPan": 2037,
+    "backCached": true,
+    "backRequestCount": 0,
+    "rendered": 2037,
+    "under": {
+      "status": 200,
+      "complete": true,
+      "features": 2
+    },
+    "binding": {
+      "status": 200,
+      "coverage": "complete",
+      "parcels": 1
+    },
+    "globalMapSelection": {
+      "city": "lima",
+      "status": "ready",
+      "features": 1291,
+      "sourceNoticeOpen": false
+    }
+  }
+}

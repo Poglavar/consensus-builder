@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12016-beilun-district.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API.",
+  "registryAssessment": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API.",
+  "officialPrimarySources": [
+    {
+      "url": "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html",
+      "operator": "Ningbo Municipal Real Estate Registration Center",
+      "scope": "City registration service covers Beilun among its districts; the public page is an实名 appointment/registration workflow. It does not expose parcel geometry."
+    },
+    {
+      "url": "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html",
+      "operator": "Government source with the jurisdictional scope stated in observation",
+      "observation": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Beilun District official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "宁波 北仑 不动产登记中心 地籍图 地图服务",
+      "result": "Official Ningbo booking portal lists six districts including Beilun and requires real-name appointment for registration service; no anonymous cadastral geometry was found.",
+      "actualResultUrls": [
+        "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html"
+      ],
+      "method": "Separate Chinese (Simplified)-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "Ningbo municipal registration appointment guidance explicitly includes Beilun district, excluding Daxie and the bonded area. This supports jurisdictionally local registration services at that stated scope; the appointment form is not a parcel API.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 12016,
+      "url": "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html",
+      "checkedAt": "2026-10-09T08:58:47.233130+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://xkjg.zgj.ningbo.gov.cn/bdc/Html/bdcyy.html",
+      "contentType": "text/html",
+      "bytesRead": 24553,
+      "sha256": "4d8e12140e38d445129c6c9ee108f44427c4d2c3f11eeaa8ef7712939b0247ad",
+      "complete": true,
+      "termPresence": {
+        "不动产": true,
+        "地籍": false,
+        "北仑": true,
+        "桐乡": false,
+        "晋中": false,
+        "登记": true,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ]
+}

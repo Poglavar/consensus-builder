@@ -1,0 +1,2658 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fresh acceptance of the filtered Ahmedabad catalogue descriptor; no parcel database import.",
+  "checkedAt": "2026-10-08T05:14:38.095Z",
+  "cityId": "wup2025:6408",
+  "descriptor": {
+    "id": "in-gj-tpvd-final-plots",
+    "name": "Gujarat TPVD — Ahmedabad final planning plots",
+    "adapter": "wfs",
+    "version": "1.1.0",
+    "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+    "featureType": "ctp:final_plot_boundary",
+    "geometryField": "the_geom",
+    "idField": "search",
+    "idType": "string",
+    "idPrefix": "IN-GJ-TPVD-",
+    "parcelNumberField": "fp_no",
+    "outFields": [
+      "search",
+      "fp_no",
+      "tps_id",
+      "tps_no",
+      "tps_name",
+      "village",
+      "city",
+      "authority",
+      "district",
+      "status"
+    ],
+    "attributeFilters": {
+      "status": "Final",
+      "city": "Ahmedabad",
+      "authority": "AMC"
+    },
+    "pageSize": 1000,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 6,
+    "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+    "countryCode": "IN",
+    "metricSrid": 32643,
+    "cityIds": [
+      "ahmedabad"
+    ],
+    "scope": "Published final town-planning plots in Ahmedabad Municipal Corporation schemes only. The native search reference combines the provider's village, town-planning scheme and final-plot labels; fp_no is the display number. Bounded central Ahmedabad samples are verified; citywide completeness, current legal registration and ownership are not established.",
+    "evidenceFile": "research/india-africa-next10-2026-10-08/city-6408.json",
+    "attribution": "Government of Gujarat, Town Planning and Valuation Department (TPVD) — final AMC planning plots. Partial coverage; registration and currentness unverified. Adapted to WGS84.",
+    "catalogueUrl": "https://townplanning.gujarat.gov.in/Home",
+    "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+    "caveats": [
+      "The official TPVD website links to the public TPWebGIS host; no account is used.",
+      "Final planning plots are not proof of current land title or ownership. Draft, preliminary and non-AMC schemes are excluded by fixed upstream and response-validated filters.",
+      "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+      "WFS FIDs and gid are transport data, not parcel identities.",
+      "The legacy WFS misreports the total on a final partial offset page. Queries request up to 1000 records and reject match counts above 1000; no offset-counter relaxation is applied."
+    ]
+  },
+  "cellSize": 0.005,
+  "centerLatLon": [
+    23.0208369805955,
+    72.5971679403649
+  ],
+  "tests": [
+    {
+      "name": "six-simultaneous-cold-cells",
+      "passed": true,
+      "elapsedMs": 1855,
+      "cells": [
+        {
+          "bbox": [
+            72.59,
+            23.015,
+            72.595,
+            23.02
+          ],
+          "count": 50,
+          "elapsedMs": 1854,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.595,
+            23.015,
+            72.6,
+            23.02
+          ],
+          "count": 17,
+          "elapsedMs": 1368,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.6,
+            23.015,
+            72.605,
+            23.02
+          ],
+          "count": 18,
+          "elapsedMs": 1554,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.59,
+            23.02,
+            72.595,
+            23.025
+          ],
+          "count": 0,
+          "elapsedMs": 938,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.595,
+            23.02,
+            72.6,
+            23.025
+          ],
+          "count": 4,
+          "elapsedMs": 1051,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.6,
+            23.02,
+            72.605,
+            23.025
+          ],
+          "count": 44,
+          "elapsedMs": 1722,
+          "complete": true
+        }
+      ],
+      "totalElapsedMs": 1854
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 284,
+      "bbox": [
+        72.59,
+        23.025,
+        72.595,
+        23.03
+      ],
+      "count": 0,
+      "complete": true
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 228,
+      "bbox": [
+        72.595,
+        23.025,
+        72.6,
+        23.03
+      ],
+      "count": 0,
+      "complete": true
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 259,
+      "bbox": [
+        72.6,
+        23.025,
+        72.605,
+        23.03
+      ],
+      "count": 17,
+      "complete": true
+    },
+    {
+      "name": "fresh-exact-0",
+      "passed": true,
+      "elapsedMs": 897,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Sarangpur 18 10",
+        "IN-GJ-TPVD-Sarangpur 18 12",
+        "IN-GJ-TPVD-Sarangpur 18 8",
+        "IN-GJ-TPVD-Sarangpur 18 9",
+        "IN-GJ-TPVD-Kankaria_Varid 2 50/A",
+        "IN-GJ-TPVD-Kankaria_Varid 2 52",
+        "IN-GJ-TPVD-Kankaria_Varid 2 53",
+        "IN-GJ-TPVD-Kankaria_Varid 2 54",
+        "IN-GJ-TPVD-Kankaria_Varid 2 55",
+        "IN-GJ-TPVD-Sarangpur 18 11",
+        "IN-GJ-TPVD-Sarangpur 18 16",
+        "IN-GJ-TPVD-Sarangpur 18 17",
+        "IN-GJ-TPVD-Sarangpur 18 18",
+        "IN-GJ-TPVD-Sarangpur 18 19",
+        "IN-GJ-TPVD-Sarangpur 18 20",
+        "IN-GJ-TPVD-Sarangpur 18 21",
+        "IN-GJ-TPVD-Sarangpur 18 27",
+        "IN-GJ-TPVD-Sarangpur 18 28",
+        "IN-GJ-TPVD-Sarangpur 18 29",
+        "IN-GJ-TPVD-Kankaria_Varid 2 188+189+190+191",
+        "IN-GJ-TPVD-Sarangpur 18 13",
+        "IN-GJ-TPVD-Sarangpur 18 14",
+        "IN-GJ-TPVD-Sarangpur 18 15",
+        "IN-GJ-TPVD-Sarangpur 18 30",
+        "IN-GJ-TPVD-Sarangpur 18 31",
+        "IN-GJ-TPVD-Sarangpur 18 32",
+        "IN-GJ-TPVD-Sarangpur 18 33",
+        "IN-GJ-TPVD-Sarangpur 18 34",
+        "IN-GJ-TPVD-Shaher_Kotda 16 186",
+        "IN-GJ-TPVD-Shaher_Kotda 16 187",
+        "IN-GJ-TPVD-Shaher_Kotda 16 188",
+        "IN-GJ-TPVD-Shaher_Kotda 16 229",
+        "IN-GJ-TPVD-Shaher_Kotda 16 308",
+        "IN-GJ-TPVD-Sarangpur 18 1",
+        "IN-GJ-TPVD-Sarangpur 18 2+3",
+        "IN-GJ-TPVD-Sarangpur 18 4",
+        "IN-GJ-TPVD-Sarangpur 18 5",
+        "IN-GJ-TPVD-Sarangpur 18 6",
+        "IN-GJ-TPVD-Sarangpur 18 7",
+        "IN-GJ-TPVD-Shaher_Kotda 16 101"
+      ]
+    },
+    {
+      "name": "fresh-exact-40",
+      "passed": true,
+      "elapsedMs": 767,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Shaher_Kotda 16 104",
+        "IN-GJ-TPVD-Shaher_Kotda 16 145",
+        "IN-GJ-TPVD-Shaher_Kotda 16 151",
+        "IN-GJ-TPVD-Shaher_Kotda 16 152",
+        "IN-GJ-TPVD-Shaher_Kotda 16 153",
+        "IN-GJ-TPVD-Shaher_Kotda 16 154",
+        "IN-GJ-TPVD-Shaher_Kotda 16 155",
+        "IN-GJ-TPVD-Shaher_Kotda 16 156",
+        "IN-GJ-TPVD-Shaher_Kotda 16 157",
+        "IN-GJ-TPVD-Shaher_Kotda 16 158",
+        "IN-GJ-TPVD-Shaher_Kotda 16 159",
+        "IN-GJ-TPVD-Shaher_Kotda 16 160",
+        "IN-GJ-TPVD-Shaher_Kotda 16 161",
+        "IN-GJ-TPVD-Shaher_Kotda 16 162",
+        "IN-GJ-TPVD-Shaher_Kotda 16 163",
+        "IN-GJ-TPVD-Shaher_Kotda 16 164",
+        "IN-GJ-TPVD-Shaher_Kotda 16 165",
+        "IN-GJ-TPVD-Shaher_Kotda 16 166",
+        "IN-GJ-TPVD-Shaher_Kotda 16 167",
+        "IN-GJ-TPVD-Shaher_Kotda 16 168",
+        "IN-GJ-TPVD-Shaher_Kotda 16 169",
+        "IN-GJ-TPVD-Shaher_Kotda 16 170",
+        "IN-GJ-TPVD-Shaher_Kotda 16 171",
+        "IN-GJ-TPVD-Shaher_Kotda 16 172",
+        "IN-GJ-TPVD-Shaher_Kotda 16 173",
+        "IN-GJ-TPVD-Shaher_Kotda 16 174",
+        "IN-GJ-TPVD-Shaher_Kotda 16 181",
+        "IN-GJ-TPVD-Shaher_Kotda 16 183",
+        "IN-GJ-TPVD-Shaher_Kotda 16 184",
+        "IN-GJ-TPVD-Shaher_Kotda 16 185",
+        "IN-GJ-TPVD-Jamalpur 1 108",
+        "IN-GJ-TPVD-Jamalpur 1 11",
+        "IN-GJ-TPVD-Jamalpur 1 12",
+        "IN-GJ-TPVD-Kankaria_Varid 2 1/1",
+        "IN-GJ-TPVD-Kankaria_Varid 2 1/2",
+        "IN-GJ-TPVD-Kankaria_Varid 2 11",
+        "IN-GJ-TPVD-Kankaria_Varid 2 12",
+        "IN-GJ-TPVD-Kankaria_Varid 2 13",
+        "IN-GJ-TPVD-Kankaria_Varid 2 14/1",
+        "IN-GJ-TPVD-Kankaria_Varid 2 14/2"
+      ]
+    },
+    {
+      "name": "fresh-exact-80",
+      "passed": true,
+      "elapsedMs": 801,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Kankaria_Varid 2 14/A",
+        "IN-GJ-TPVD-Kankaria_Varid 2 15",
+        "IN-GJ-TPVD-Kankaria_Varid 2 17",
+        "IN-GJ-TPVD-Kankaria_Varid 2 18",
+        "IN-GJ-TPVD-Kankaria_Varid 2 19",
+        "IN-GJ-TPVD-Kankaria_Varid 2 2",
+        "IN-GJ-TPVD-Kankaria_Varid 2 20",
+        "IN-GJ-TPVD-Kankaria_Varid 2 21",
+        "IN-GJ-TPVD-Kankaria_Varid 2 22",
+        "IN-GJ-TPVD-Kankaria_Varid 2 23",
+        "IN-GJ-TPVD-Kankaria_Varid 2 24",
+        "IN-GJ-TPVD-Kankaria_Varid 2 25",
+        "IN-GJ-TPVD-Kankaria_Varid 2 26",
+        "IN-GJ-TPVD-Kankaria_Varid 2 27",
+        "IN-GJ-TPVD-Kankaria_Varid 2 28",
+        "IN-GJ-TPVD-Kankaria_Varid 2 29",
+        "IN-GJ-TPVD-Kankaria_Varid 2 3",
+        "IN-GJ-TPVD-Kankaria_Varid 2 30",
+        "IN-GJ-TPVD-Kankaria_Varid 2 31",
+        "IN-GJ-TPVD-Kankaria_Varid 2 32",
+        "IN-GJ-TPVD-Kankaria_Varid 2 33",
+        "IN-GJ-TPVD-Kankaria_Varid 2 34",
+        "IN-GJ-TPVD-Kankaria_Varid 2 35",
+        "IN-GJ-TPVD-Kankaria_Varid 2 36",
+        "IN-GJ-TPVD-Kankaria_Varid 2 37",
+        "IN-GJ-TPVD-Kankaria_Varid 2 38",
+        "IN-GJ-TPVD-Kankaria_Varid 2 4",
+        "IN-GJ-TPVD-Kankaria_Varid 2 41+42+43",
+        "IN-GJ-TPVD-Kankaria_Varid 2 47/1",
+        "IN-GJ-TPVD-Kankaria_Varid 2 47/2",
+        "IN-GJ-TPVD-Kankaria_Varid 2 48",
+        "IN-GJ-TPVD-Kankaria_Varid 2 49",
+        "IN-GJ-TPVD-Kankaria_Varid 2 5",
+        "IN-GJ-TPVD-Kankaria_Varid 2 50",
+        "IN-GJ-TPVD-Kankaria_Varid 2 51",
+        "IN-GJ-TPVD-Kankaria_Varid 2 6+8",
+        "IN-GJ-TPVD-Kankaria_Varid 2 7",
+        "IN-GJ-TPVD-Kankaria_Varid 2 9+10",
+        "IN-GJ-TPVD-Shaher_Kotda 16 100",
+        "IN-GJ-TPVD-Shaher_Kotda 16 105"
+      ]
+    },
+    {
+      "name": "fresh-exact-120",
+      "passed": true,
+      "elapsedMs": 640,
+      "count": 12,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Shaher_Kotda 16 106",
+        "IN-GJ-TPVD-Shaher_Kotda 16 107",
+        "IN-GJ-TPVD-Shaher_Kotda 16 88",
+        "IN-GJ-TPVD-Shaher_Kotda 16 89",
+        "IN-GJ-TPVD-Shaher_Kotda 16 90",
+        "IN-GJ-TPVD-Shaher_Kotda 16 93",
+        "IN-GJ-TPVD-Shaher_Kotda 16 94",
+        "IN-GJ-TPVD-Shaher_Kotda 16 95",
+        "IN-GJ-TPVD-Shaher_Kotda 16 96",
+        "IN-GJ-TPVD-Shaher_Kotda 16 97",
+        "IN-GJ-TPVD-Shaher_Kotda 16 98",
+        "IN-GJ-TPVD-Shaher_Kotda 16 99"
+      ]
+    },
+    {
+      "name": "complete-bounded-single-response",
+      "passed": true,
+      "elapsedMs": 533,
+      "bbox": [
+        72.59,
+        23.015,
+        72.595,
+        23.02
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 1000,
+      "count": 50,
+      "upstreamRequests": 1,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 388,
+      "absentId": "IN-GJ-TPVD-NoSuchScheme 000000 999999",
+      "complete": true
+    },
+    {
+      "name": "footprint-read",
+      "passed": true,
+      "elapsedMs": 262,
+      "selectedId": "IN-GJ-TPVD-Sarangpur 18 10",
+      "count": 3,
+      "complete": true
+    },
+    {
+      "name": "complete-source-binding",
+      "passed": true,
+      "elapsedMs": 316,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "selectedId": "IN-GJ-TPVD-Sarangpur 18 10"
+    },
+    {
+      "name": "exact-parcel-act-binding",
+      "passed": true,
+      "elapsedMs": 503,
+      "coverage": "complete",
+      "parcelCount": 1
+    },
+    {
+      "name": "positive-area-overlaps",
+      "passed": true,
+      "elapsedMs": 4452,
+      "comparedPairs": 277,
+      "overlapCountAbove001M2": 0
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-08T05:14:38.097Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 1007
+    },
+    {
+      "at": "2026-10-08T05:14:38.114Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.595%2C23.015%2C72.6%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 946
+    },
+    {
+      "at": "2026-10-08T05:14:38.119Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.6%2C23.015%2C72.605%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 914
+    },
+    {
+      "at": "2026-10-08T05:14:38.124Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.02%2C72.595%2C23.025%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 910
+    },
+    {
+      "at": "2026-10-08T05:14:38.129Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.595%2C23.02%2C72.6%2C23.025%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 1017
+    },
+    {
+      "at": "2026-10-08T05:14:38.135Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.6%2C23.02%2C72.605%2C23.025%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 1046
+    },
+    {
+      "at": "2026-10-08T05:14:39.952Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.025%2C72.595%2C23.03%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 282
+    },
+    {
+      "at": "2026-10-08T05:14:40.236Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.595%2C23.025%2C72.6%2C23.03%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 228
+    },
+    {
+      "at": "2026-10-08T05:14:40.465Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.6%2C23.025%2C72.605%2C23.03%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 253
+    },
+    {
+      "at": "2026-10-08T05:14:40.726Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Sarangpur+18+10%27%2C%27Sarangpur+18+12%27%2C%27Sarangpur+18+8%27%2C%27Sarangpur+18+9%27%2C%27Kankaria_Varid+2+50%2FA%27%2C%27Kankaria_Varid+2+52%27%2C%27Kankaria_Varid+2+53%27%2C%27Kankaria_Varid+2+54%27%2C%27Kankaria_Varid+2+55%27%2C%27Sarangpur+18+11%27%2C%27Sarangpur+18+16%27%2C%27Sarangpur+18+17%27%2C%27Sarangpur+18+18%27%2C%27Sarangpur+18+19%27%2C%27Sarangpur+18+20%27%2C%27Sarangpur+18+21%27%2C%27Sarangpur+18+27%27%2C%27Sarangpur+18+28%27%2C%27Sarangpur+18+29%27%2C%27Kankaria_Varid+2+188%2B189%2B190%2B191%27%2C%27Sarangpur+18+13%27%2C%27Sarangpur+18+14%27%2C%27Sarangpur+18+15%27%2C%27Sarangpur+18+30%27%2C%27Sarangpur+18+31%27%2C%27Sarangpur+18+32%27%2C%27Sarangpur+18+33%27%2C%27Sarangpur+18+34%27%2C%27Shaher_Kotda+16+186%27%2C%27Shaher_Kotda+16+187%27%2C%27Shaher_Kotda+16+188%27%2C%27Shaher_Kotda+16+229%27%2C%27Shaher_Kotda+16+308%27%2C%27Sarangpur+18+1%27%2C%27Sarangpur+18+2%2B3%27%2C%27Sarangpur+18+4%27%2C%27Sarangpur+18+5%27%2C%27Sarangpur+18+6%27%2C%27Sarangpur+18+7%27%2C%27Shaher_Kotda+16+101%27%29%29",
+      "status": 200,
+      "elapsedMs": 676
+    },
+    {
+      "at": "2026-10-08T05:14:41.622Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Shaher_Kotda+16+104%27%2C%27Shaher_Kotda+16+145%27%2C%27Shaher_Kotda+16+151%27%2C%27Shaher_Kotda+16+152%27%2C%27Shaher_Kotda+16+153%27%2C%27Shaher_Kotda+16+154%27%2C%27Shaher_Kotda+16+155%27%2C%27Shaher_Kotda+16+156%27%2C%27Shaher_Kotda+16+157%27%2C%27Shaher_Kotda+16+158%27%2C%27Shaher_Kotda+16+159%27%2C%27Shaher_Kotda+16+160%27%2C%27Shaher_Kotda+16+161%27%2C%27Shaher_Kotda+16+162%27%2C%27Shaher_Kotda+16+163%27%2C%27Shaher_Kotda+16+164%27%2C%27Shaher_Kotda+16+165%27%2C%27Shaher_Kotda+16+166%27%2C%27Shaher_Kotda+16+167%27%2C%27Shaher_Kotda+16+168%27%2C%27Shaher_Kotda+16+169%27%2C%27Shaher_Kotda+16+170%27%2C%27Shaher_Kotda+16+171%27%2C%27Shaher_Kotda+16+172%27%2C%27Shaher_Kotda+16+173%27%2C%27Shaher_Kotda+16+174%27%2C%27Shaher_Kotda+16+181%27%2C%27Shaher_Kotda+16+183%27%2C%27Shaher_Kotda+16+184%27%2C%27Shaher_Kotda+16+185%27%2C%27Jamalpur+1+108%27%2C%27Jamalpur+1+11%27%2C%27Jamalpur+1+12%27%2C%27Kankaria_Varid+2+1%2F1%27%2C%27Kankaria_Varid+2+1%2F2%27%2C%27Kankaria_Varid+2+11%27%2C%27Kankaria_Varid+2+12%27%2C%27Kankaria_Varid+2+13%27%2C%27Kankaria_Varid+2+14%2F1%27%2C%27Kankaria_Varid+2+14%2F2%27%29%29",
+      "status": 200,
+      "elapsedMs": 551
+    },
+    {
+      "at": "2026-10-08T05:14:42.390Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Kankaria_Varid+2+14%2FA%27%2C%27Kankaria_Varid+2+15%27%2C%27Kankaria_Varid+2+17%27%2C%27Kankaria_Varid+2+18%27%2C%27Kankaria_Varid+2+19%27%2C%27Kankaria_Varid+2+2%27%2C%27Kankaria_Varid+2+20%27%2C%27Kankaria_Varid+2+21%27%2C%27Kankaria_Varid+2+22%27%2C%27Kankaria_Varid+2+23%27%2C%27Kankaria_Varid+2+24%27%2C%27Kankaria_Varid+2+25%27%2C%27Kankaria_Varid+2+26%27%2C%27Kankaria_Varid+2+27%27%2C%27Kankaria_Varid+2+28%27%2C%27Kankaria_Varid+2+29%27%2C%27Kankaria_Varid+2+3%27%2C%27Kankaria_Varid+2+30%27%2C%27Kankaria_Varid+2+31%27%2C%27Kankaria_Varid+2+32%27%2C%27Kankaria_Varid+2+33%27%2C%27Kankaria_Varid+2+34%27%2C%27Kankaria_Varid+2+35%27%2C%27Kankaria_Varid+2+36%27%2C%27Kankaria_Varid+2+37%27%2C%27Kankaria_Varid+2+38%27%2C%27Kankaria_Varid+2+4%27%2C%27Kankaria_Varid+2+41%2B42%2B43%27%2C%27Kankaria_Varid+2+47%2F1%27%2C%27Kankaria_Varid+2+47%2F2%27%2C%27Kankaria_Varid+2+48%27%2C%27Kankaria_Varid+2+49%27%2C%27Kankaria_Varid+2+5%27%2C%27Kankaria_Varid+2+50%27%2C%27Kankaria_Varid+2+51%27%2C%27Kankaria_Varid+2+6%2B8%27%2C%27Kankaria_Varid+2+7%27%2C%27Kankaria_Varid+2+9%2B10%27%2C%27Shaher_Kotda+16+100%27%2C%27Shaher_Kotda+16+105%27%29%29",
+      "status": 200,
+      "elapsedMs": 575
+    },
+    {
+      "at": "2026-10-08T05:14:43.191Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Shaher_Kotda+16+106%27%2C%27Shaher_Kotda+16+107%27%2C%27Shaher_Kotda+16+88%27%2C%27Shaher_Kotda+16+89%27%2C%27Shaher_Kotda+16+90%27%2C%27Shaher_Kotda+16+93%27%2C%27Shaher_Kotda+16+94%27%2C%27Shaher_Kotda+16+95%27%2C%27Shaher_Kotda+16+96%27%2C%27Shaher_Kotda+16+97%27%2C%27Shaher_Kotda+16+98%27%2C%27Shaher_Kotda+16+99%27%29%29",
+      "status": 200,
+      "elapsedMs": 636
+    },
+    {
+      "at": "2026-10-08T05:14:43.832Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 306
+    },
+    {
+      "at": "2026-10-08T05:14:44.366Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27NoSuchScheme+000000+999999%27%29%29",
+      "status": 200,
+      "elapsedMs": 386
+    },
+    {
+      "at": "2026-10-08T05:14:44.754Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.5995575803485%2C23.01998786864109%2C72.59996321171639%2C23.02017302263933%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 256
+    },
+    {
+      "at": "2026-10-08T05:14:45.017Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.5995575803485%2C23.01998786864109%2C72.59996321171639%2C23.02017302263933%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 285
+    },
+    {
+      "at": "2026-10-08T05:14:45.333Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Sarangpur+18+10%27%29%29",
+      "status": 200,
+      "elapsedMs": 502
+    }
+  ],
+  "nativeGeometryHashes": [
+    {
+      "id": "IN-GJ-TPVD-Jamalpur 1 108",
+      "sha256": "6ab55ebc7f7603c3fb017f41de68b82504115def88c3376ed2393bc115400725",
+      "nativeProperties": {
+        "search": "Jamalpur 1 108",
+        "fp_no": "108",
+        "tps_id": 550,
+        "tps_no": "1",
+        "tps_name": "Jamalpur_1",
+        "village": "Jamalpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Jamalpur 1 11",
+      "sha256": "975e21cd0cb748d1320f6910db0733888663a0c79afdfe4be6a3c4c73ed12554",
+      "nativeProperties": {
+        "search": "Jamalpur 1 11",
+        "fp_no": "11",
+        "tps_id": 550,
+        "tps_no": "1",
+        "tps_name": "Jamalpur_1",
+        "village": "Jamalpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Jamalpur 1 12",
+      "sha256": "f229743e72749cda225648a44a6843a3412208cb384bcdd33751a83797cb5240",
+      "nativeProperties": {
+        "search": "Jamalpur 1 12",
+        "fp_no": "12",
+        "tps_id": 550,
+        "tps_no": "1",
+        "tps_name": "Jamalpur_1",
+        "village": "Jamalpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 1/1",
+      "sha256": "8d5073232165876d44adb43166096ab00ad3ba8020b70e9d47f253e5708409d1",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 1/1",
+        "fp_no": "1/1",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 1/2",
+      "sha256": "89ab3eb61913d856db8ad1673aad1215c9f5e2620e29342c1c68d892355e74b0",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 1/2",
+        "fp_no": "1/2",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 11",
+      "sha256": "ac9e1596c859abb6f9c5f1e3965c673e60924d430b7704875c47847eefd3a77f",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 11",
+        "fp_no": "11",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 12",
+      "sha256": "60f96ee7610ad89ab102294dde5a225c36678b1753d213aba7659a555565dbf2",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 12",
+        "fp_no": "12",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 13",
+      "sha256": "5ecf430c5f8e26f0a898b462d7a0632f350db30b7d0679972da1825e19e71f96",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 13",
+        "fp_no": "13",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 14/1",
+      "sha256": "6a16212053866bd5236fc5ce99cd2f3d2a8292c20f39aadd31f64f2e5cc7a2db",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 14/1",
+        "fp_no": "14/1",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 14/2",
+      "sha256": "1b2f2455b6a0d2635d2e5cb461b0e1a50b9400f605605165f8dbaffdc6968ccf",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 14/2",
+        "fp_no": "14/2",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 14/A",
+      "sha256": "992001cbfcb5d3b2f0e9c6ceb12674046a0441b96bed5f7d812806b300bb1830",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 14/A",
+        "fp_no": "14/A",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 15",
+      "sha256": "a9a75b2b3506e8b9771bdb2f06db13fb4cb993595cd79802102ad05e843aa952",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 15",
+        "fp_no": "15",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 17",
+      "sha256": "415c3926e1d31665341690d0728847e7073d7d490d02773ea7fec482a0050e32",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 17",
+        "fp_no": "17",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 18",
+      "sha256": "29939e3b9c15af388a973917592e9dfdb14e2b3a24079a6cb71dae8930f833be",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 18",
+        "fp_no": "18",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 19",
+      "sha256": "5783a400230d11c6ed0fd144da8ea5c4f991a3e26f525fa75d22d967396e4e0d",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 19",
+        "fp_no": "19",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 2",
+      "sha256": "1360d7c62b685027c584bced7d50e726040f60feef8f7d8edcbac367ae6f4a42",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 2",
+        "fp_no": "2",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 20",
+      "sha256": "6ae867587b7e0d5eeaa87148c2739d10ab896d6ad0d3a5f39d98b7596edb2b5e",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 20",
+        "fp_no": "20",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 21",
+      "sha256": "0bc94c5d3dd2f5c4079d22048d100791d1c64b102b7a9ac5559b0754f7de39ac",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 21",
+        "fp_no": "21",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 22",
+      "sha256": "6511bba66af418d44455323614e5de81feedb4910b61359e336c9b2e8750afc2",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 22",
+        "fp_no": "22",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 23",
+      "sha256": "0e51bab04e9d171a8a7511569baf160994e16a1caa03a731732740dcb0ba5229",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 23",
+        "fp_no": "23",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 24",
+      "sha256": "af43289d98a1157a4cbda53b1eb440580ca5c0125e951f09ccee5dac0414bd75",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 24",
+        "fp_no": "24",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 25",
+      "sha256": "08d8d5d1bfb750e422b79f16a43c0381ede3320f202cc9ae1fff6b897bbe4f6f",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 25",
+        "fp_no": "25",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 26",
+      "sha256": "ed99aacc7b9ba357124e277877816770212ab6a873554e1fc2760d080af4ec4a",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 26",
+        "fp_no": "26",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 27",
+      "sha256": "a803d426f9e469951dae9bc8ac70b147043f5e1cd6863569ad42fe7945e87df3",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 27",
+        "fp_no": "27",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 28",
+      "sha256": "b6ed8acefdb407433673688590a06988b122e40f02f85a3ee0f512864be03451",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 28",
+        "fp_no": "28",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 29",
+      "sha256": "77b47a6b4604e75cea9091d00d13b61eb1f671c498f649ad82f2a070b26b67c0",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 29",
+        "fp_no": "29",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 3",
+      "sha256": "acbb778b2291ab72468e9d5c71bf511d5259d8b6e7eac42c112d9b6e5f657935",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 3",
+        "fp_no": "3",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 30",
+      "sha256": "dbde9b9c268b7e0148893c19ae45c8575af89b311e0560a051f7088af093b11e",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 30",
+        "fp_no": "30",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 31",
+      "sha256": "7f954ba30bfc08cdeab271f2fa5e0f90a2f91fedb68721858d8138b20b641cf2",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 31",
+        "fp_no": "31",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 32",
+      "sha256": "d7a0558f1a1c671ca8f3e483f41ab17bbdceeec7c5368d998ce64b980215b61b",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 32",
+        "fp_no": "32",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 33",
+      "sha256": "41589f1e5fba3f77c3a5a576b375368a8bd481bfd856fa8ad76570321f342607",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 33",
+        "fp_no": "33",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 34",
+      "sha256": "3f095b5cd9c7a2d1fb17c61e15970be56e72080e2d31e9d140b186bed5998b67",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 34",
+        "fp_no": "34",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 35",
+      "sha256": "3eac06fa5792cf9605eb451c14d48bcd9b51d025d6b4d7542616a4354ae7c241",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 35",
+        "fp_no": "35",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 36",
+      "sha256": "561e3ca2d88852eafddec19db748d20815d9f685e7d3df9d07aa544e752f144d",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 36",
+        "fp_no": "36",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 37",
+      "sha256": "f1fcdcc936b009669a39540150258f5484bec060d5c7f8e7651110cc36c897f5",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 37",
+        "fp_no": "37",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 38",
+      "sha256": "d37e1d73c96484d86077c50cd960a344ae4720657476617ef7a0bc8d7a512ba4",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 38",
+        "fp_no": "38",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 4",
+      "sha256": "dfd52d56b6460d7816a9ffd0d93eed14e42e3d4a53fd8998a8d91de231558bd3",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 4",
+        "fp_no": "4",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 41+42+43",
+      "sha256": "14173776e2bfa6748b1a3dc9e7cb084cfe4f2141892cd554da3fb815f47477a5",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 41+42+43",
+        "fp_no": "41+42+43",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 47/1",
+      "sha256": "f5172c81ea2a0818facd2fe0220c62333c2f97004440810398d1aac3783ce8ea",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 47/1",
+        "fp_no": "47/1",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 47/2",
+      "sha256": "ee2bb0e6ffe02cbd1ddce3179b85b963b10f91fc8f6531954b55d50c735dac39",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 47/2",
+        "fp_no": "47/2",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 188+189+190+191",
+      "sha256": "a860a11fbd0dcbaa9f22bc2742948220be8725d231a2c4e1f518d6b802096297",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 188+189+190+191",
+        "fp_no": "188+189+190+191",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 48",
+      "sha256": "3e1960bf1bc2c3b90783158ffd0f96728b6c4d5cb18278d6633e51c19abb8220",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 48",
+        "fp_no": "48",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 49",
+      "sha256": "1049a2e56a50e69d2679908abc2f6c8959c53a02e5c248dd02f27f420523eb81",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 49",
+        "fp_no": "49",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 5",
+      "sha256": "93acbf2b9106e84dc710edd786bde99e77beceaba4c472809907faac3e0f065c",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 5",
+        "fp_no": "5",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 50",
+      "sha256": "3d7140c9ffa2f64b7ec158445731e229e70edd2e8487009508cfb050066cd3f3",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 50",
+        "fp_no": "50",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 50/A",
+      "sha256": "4932764354ee8892b288c1de2d5ece138b075c8b5da3ccd22fd3193c27b961ea",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 50/A",
+        "fp_no": "50/A",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 51",
+      "sha256": "11246e2f149a99245f724c4e13d6756cac6e9b33d70e96c2860c26bf5e6cd6c0",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 51",
+        "fp_no": "51",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 52",
+      "sha256": "6b610a30369cf2dfca7c2769157a255e76f9500100892c932cbd7646ec29bab2",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 52",
+        "fp_no": "52",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 53",
+      "sha256": "5a10ceb24e128604349a7d04282c340902e7121c375183de26aa994b47a3da7a",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 53",
+        "fp_no": "53",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 54",
+      "sha256": "a60a4a2b622d788ea45b945b7f54c83d85a5caec2011da45e6c459357f6373c7",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 54",
+        "fp_no": "54",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 55",
+      "sha256": "3c87029779c6063ae0caccfe8aafe637af89aad02ff799575d72d127387e5c7e",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 55",
+        "fp_no": "55",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 6+8",
+      "sha256": "fd5cbdec7bc049735584f249f79653da74e2a3a2e751bececa18542c60923c29",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 6+8",
+        "fp_no": "6+8",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 7",
+      "sha256": "12df1064415ef6bb02825beaaba69decd4c075d499b23dae8ec38dbd8333e257",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 7",
+        "fp_no": "7",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Kankaria_Varid 2 9+10",
+      "sha256": "cb24ce2f7c574dcf3b0d1639333b5af178c25e86b9a8e2a22719330bb999f033",
+      "nativeProperties": {
+        "search": "Kankaria_Varid 2 9+10",
+        "fp_no": "9+10",
+        "tps_id": 290,
+        "tps_no": "2",
+        "tps_name": "Kankaria_Varid_2",
+        "village": "Kankaria_Varid",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 10",
+      "sha256": "4e3fc830223a6bd4fe7cf3496779b40be0a171e3681ef0f184de135246af49fa",
+      "nativeProperties": {
+        "search": "Sarangpur 18 10",
+        "fp_no": "10",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 11",
+      "sha256": "3386ae2bc0a55aa47d2bc742bff1737a613059bc22572fd132b36201ec4fb9e9",
+      "nativeProperties": {
+        "search": "Sarangpur 18 11",
+        "fp_no": "11",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 12",
+      "sha256": "4b89196d8242979c014337465d61d5137edf2938df6fb95e4aaf69d586810950",
+      "nativeProperties": {
+        "search": "Sarangpur 18 12",
+        "fp_no": "12",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 13",
+      "sha256": "9b198b2431cfb188e9dac897f46d52573f2b1d91644dc8beeab69a487a658a1c",
+      "nativeProperties": {
+        "search": "Sarangpur 18 13",
+        "fp_no": "13",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 14",
+      "sha256": "00c089dcd0091692bd69728d5a3c6ca9a36e205dc1a606cfc97aba5f901b652c",
+      "nativeProperties": {
+        "search": "Sarangpur 18 14",
+        "fp_no": "14",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 15",
+      "sha256": "f885f4083b0f0c03f39b12040746f91306c1e091a8c656823c2cc300d2baa6e7",
+      "nativeProperties": {
+        "search": "Sarangpur 18 15",
+        "fp_no": "15",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 16",
+      "sha256": "69aa17459ce24a2cd6bbc2e06b3bc0b6c09b70316638ef41728e719aa96924d0",
+      "nativeProperties": {
+        "search": "Sarangpur 18 16",
+        "fp_no": "16",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 17",
+      "sha256": "3d3812a0442c0bc7c5f3121ef17dd86f161c1338a72b29da9dc212c1f41df0f1",
+      "nativeProperties": {
+        "search": "Sarangpur 18 17",
+        "fp_no": "17",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 18",
+      "sha256": "12268c6365193a22382bb5c6a21c8c6450178429bbe0c4bc79bff9c44142d023",
+      "nativeProperties": {
+        "search": "Sarangpur 18 18",
+        "fp_no": "18",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 19",
+      "sha256": "1ee6ead5adeac026cc1a1322a3e60387267e0b38b2e3cfbd9608c101e9cd4443",
+      "nativeProperties": {
+        "search": "Sarangpur 18 19",
+        "fp_no": "19",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 20",
+      "sha256": "5f74dd9b09d5293168dccca8c6ae4bd555556922c02906336b17059e7e67f75f",
+      "nativeProperties": {
+        "search": "Sarangpur 18 20",
+        "fp_no": "20",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 21",
+      "sha256": "cb799362464162ba39a9551e9d5346f9d1b6e50bcce469982eea1b4716fda9b0",
+      "nativeProperties": {
+        "search": "Sarangpur 18 21",
+        "fp_no": "21",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 27",
+      "sha256": "fe8c506cb1cd2a76ff6c01958d94f38bd0b8591a1d5c3031d5100c11bfa4e06b",
+      "nativeProperties": {
+        "search": "Sarangpur 18 27",
+        "fp_no": "27",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 28",
+      "sha256": "a9e1223c1efda680f54236ec7f6eb7e474cf04df8f27cd2cc67e92cfdabdeac9",
+      "nativeProperties": {
+        "search": "Sarangpur 18 28",
+        "fp_no": "28",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 29",
+      "sha256": "e944d3ab755eb39717905165d7a03d4f3bc6ccd71d80c1206d5f350580104729",
+      "nativeProperties": {
+        "search": "Sarangpur 18 29",
+        "fp_no": "29",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 30",
+      "sha256": "10c8658695e8cbe3af807b72abb6a530ba0d6b055ba2554561156d2c7c32fdf7",
+      "nativeProperties": {
+        "search": "Sarangpur 18 30",
+        "fp_no": "30",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 31",
+      "sha256": "5840e2a0b821c5bde84dddba10c5ae010ae47fabe7b9fa661a36087ae043154a",
+      "nativeProperties": {
+        "search": "Sarangpur 18 31",
+        "fp_no": "31",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 32",
+      "sha256": "924e118f46b4846a735cbc7ff50dce9486a601d4c8d504da0e8aa14aa4033b62",
+      "nativeProperties": {
+        "search": "Sarangpur 18 32",
+        "fp_no": "32",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 33",
+      "sha256": "9b6ae84f3c348d3d04f0bbb6ac13a013f6b5018f32d876feb5baf11308ff57cc",
+      "nativeProperties": {
+        "search": "Sarangpur 18 33",
+        "fp_no": "33",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 34",
+      "sha256": "07395b68743cad63c14a59f184b0226e65d9b089acbc2e0c73ec3320a3dcc7b6",
+      "nativeProperties": {
+        "search": "Sarangpur 18 34",
+        "fp_no": "34",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 8",
+      "sha256": "6005c80061702395f8f30a4ebdadd8a002115bfc2447228aca9fd34c09e3e8ac",
+      "nativeProperties": {
+        "search": "Sarangpur 18 8",
+        "fp_no": "8",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 186",
+      "sha256": "71795833de681fdb34e5c744560b851bb33a2b6a195979d21d523cd576a16a40",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 186",
+        "fp_no": "186",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 187",
+      "sha256": "84026ec77caee8d3a05c4cec650d78952f46d0744ac933454062e7d6761c75ed",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 187",
+        "fp_no": "187",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 188",
+      "sha256": "55335d09b59eb974cd533d64ea06f3d7f5f1ef96abd3675e72d32235ecd0c13a",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 188",
+        "fp_no": "188",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 229",
+      "sha256": "c0bea936fe2841568437c9f4fe53fd8178b19253d869ca5094bff03d029cecf9",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 229",
+        "fp_no": "229",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 308",
+      "sha256": "4ffe8d2358d760401193567519d3ff104dbe84bdd60928cd76703337117dee7a",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 308",
+        "fp_no": "308",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 1",
+      "sha256": "1b71de7eea89fa2663e1ad1c213a61c35f7afb077c8bffb0148cae04b0ec768f",
+      "nativeProperties": {
+        "search": "Sarangpur 18 1",
+        "fp_no": "1",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 2+3",
+      "sha256": "67189d36f705335ff33f1ee805fd2e10c71ec024ed7575ebbc6cb7621a42947f",
+      "nativeProperties": {
+        "search": "Sarangpur 18 2+3",
+        "fp_no": "2+3",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 4",
+      "sha256": "841d7fda02efbd97f8b84204910a1f9965f6917347fe19ade201db4576c0f96a",
+      "nativeProperties": {
+        "search": "Sarangpur 18 4",
+        "fp_no": "4",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 5",
+      "sha256": "7c3c6f3fa77d35145fb8734c9124027236e4d022ccaceb8a2993eb1ab9c4a2b9",
+      "nativeProperties": {
+        "search": "Sarangpur 18 5",
+        "fp_no": "5",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 6",
+      "sha256": "6ae77d61bfaf05373766800b81a5c93536eb0a3b2cc170f332a600a5c292f2d3",
+      "nativeProperties": {
+        "search": "Sarangpur 18 6",
+        "fp_no": "6",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 7",
+      "sha256": "9a6c06124509cbdf3b4420a43a85dacaad68755d8ac742b540b676bc06feb1f3",
+      "nativeProperties": {
+        "search": "Sarangpur 18 7",
+        "fp_no": "7",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Sarangpur 18 9",
+      "sha256": "ba6d78fc11fa73284ed4fdaf181d5d8ba44e56af95903e724bcf2644636ce689",
+      "nativeProperties": {
+        "search": "Sarangpur 18 9",
+        "fp_no": "9",
+        "tps_id": 100,
+        "tps_no": "18",
+        "tps_name": "Sarangpur_18",
+        "village": "Sarangpur",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 100",
+      "sha256": "d1b8af8570dd1dbeacdc67873772507cb290c78fcef8b4c9dfbd5ada09efbddc",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 100",
+        "fp_no": "100",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 101",
+      "sha256": "ee6246ae206055b17f20c055cd759503236cc8c5ca0cd34ee97d06745a98f59b",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 101",
+        "fp_no": "101",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 104",
+      "sha256": "b8d9444aa1bee90038bbea6adc7f4b038cdf9d704fa0ae30de71a9c7fe0f1627",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 104",
+        "fp_no": "104",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 105",
+      "sha256": "13c20579096f48ce3249e2b4c52516bfb58a4b206674339286451e76c11b2b08",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 105",
+        "fp_no": "105",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 145",
+      "sha256": "330244f82f77c12bcd932af191347c15f4c2ad2f031d30a74deeecfa16161025",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 145",
+        "fp_no": "145",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 151",
+      "sha256": "67a6bf30a8baaf7dbaf674c6f5db934cb02b9e387467e983421fecec746cac88",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 151",
+        "fp_no": "151",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 152",
+      "sha256": "c89eb1fc70c91653bea1dfb4b73764c9ea9cca284ef5706b7da7d5f975786be8",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 152",
+        "fp_no": "152",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 153",
+      "sha256": "ba4bf86261aa6a89c6919a8d5553b72c3ae53fec97a60c0e49289a0bd33084d6",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 153",
+        "fp_no": "153",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 154",
+      "sha256": "7989d9c2dfe2cc4ed7382ae6c3de3635e1042ba2c3c046c6672c399641a47738",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 154",
+        "fp_no": "154",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 155",
+      "sha256": "87ecf730438140a06e3bd0f43d72d487698c43b6744340016fe7e39554c3a997",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 155",
+        "fp_no": "155",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 156",
+      "sha256": "6eec3bd5020dac28448633ea5f0ac72f171da99109f4923b709becfcb9b82990",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 156",
+        "fp_no": "156",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 157",
+      "sha256": "2eda1098f92088df6c8a5831ef19e8262ed756fec9160efd641346a7634230d3",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 157",
+        "fp_no": "157",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 158",
+      "sha256": "6912bc4ff74c7e008088bf248708bf141bd4b85af9bdfb6294f4514849351890",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 158",
+        "fp_no": "158",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 159",
+      "sha256": "c843eaf606d79f6291dbbe4d87d82279e5fa2577058fb271961e8293846fa5b5",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 159",
+        "fp_no": "159",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 160",
+      "sha256": "ad8cff803ea883a0ffd9f12e966c985a93b890d74ea1100347b149e22e8469cc",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 160",
+        "fp_no": "160",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 161",
+      "sha256": "f5919d4e041e92be90ec9292103ad95e1697a95456f3a8b6b02a5fd38acdb4a4",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 161",
+        "fp_no": "161",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 162",
+      "sha256": "c5a8e2b5d5a9da3d514f2d5ea0ebb42e315c1b8e749f2ea16bc53688f693a2c5",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 162",
+        "fp_no": "162",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 163",
+      "sha256": "ed17c898fed223ae6261858c7c90c60918eaba30c637faa29e40909601dd29c1",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 163",
+        "fp_no": "163",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 164",
+      "sha256": "3059a2d19cc7299c04fe3dd3c2c497336e0520dc9e68e57c72c87fc7c07289e5",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 164",
+        "fp_no": "164",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 165",
+      "sha256": "7a7c406e5b036f4cb3b720bf440741ac6b0facc7744e5a61e104f2cfaf72fd2f",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 165",
+        "fp_no": "165",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 166",
+      "sha256": "b5d1697c7d2fdc7dfff0828495c2c53a25dd2156ada61156ebdb16ab2fe2ee62",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 166",
+        "fp_no": "166",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 167",
+      "sha256": "a74af4fb9a539cbee44f18ba05ba5e599149517c1042e497db9344f62d7a78f2",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 167",
+        "fp_no": "167",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 168",
+      "sha256": "1a499d1369aa8a67ca94dd53fe7f13d699c08a939c57fa9fa5530b83c4783625",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 168",
+        "fp_no": "168",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 169",
+      "sha256": "d2ab4bc361bd2571f4fddf09d84c71f70395361ebe735f67f582b0de92f01260",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 169",
+        "fp_no": "169",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 170",
+      "sha256": "d88f3878aa1f5bdb7e26653f462b9beb9ac9f8b8dd2f3a01d3197fdb70faf2bf",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 170",
+        "fp_no": "170",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 171",
+      "sha256": "43e85f6e945e90e14df3e30ff383b7255b37d9f7683a5265cdd303ddebec5aff",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 171",
+        "fp_no": "171",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 172",
+      "sha256": "a446e119e6b1e24f0a0ddd8a4bee44508b7211940957cbc0f6755d976c3475c9",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 172",
+        "fp_no": "172",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 173",
+      "sha256": "813b8c35d31d6f6e4607cbbc32185a1161d6ff23985f1703f23e92a1c3b36b4d",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 173",
+        "fp_no": "173",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 174",
+      "sha256": "8a080f06e3e03ec3ec6a6310eddc084600a523156ee9082dcf58f4f0548e632a",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 174",
+        "fp_no": "174",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 181",
+      "sha256": "f217672a8fdd5e1016abd04391e8bae1ae584924d5f957da666c7944d07b3128",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 181",
+        "fp_no": "181",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 183",
+      "sha256": "48a0372e460dc1c3f37e587461be4c828375b0b837443aaaa7336afb4d4550f9",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 183",
+        "fp_no": "183",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 184",
+      "sha256": "e636fec30e68cf3b48dc0a72d0aaf7b45ed267bc1256bf0d2a906b5d3d8d5e96",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 184",
+        "fp_no": "184",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 185",
+      "sha256": "79bd9872adac6e3c80812f1670183c90b25ef4337fd1e9a281a8dad5f76bd80a",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 185",
+        "fp_no": "185",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 106",
+      "sha256": "e2be7aa0f00638c1b5adc4669a8fd4339cf160965c5436e2768404027b0d63a1",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 106",
+        "fp_no": "106",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 107",
+      "sha256": "6858f2e7e4c802345cedacab98791fbf0e7450ee2a8c316b3419dffbf3c894e6",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 107",
+        "fp_no": "107",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 88",
+      "sha256": "64de7ecec1427edfa9273f23a66dec3ad32f14420ff01b3f34499ea15367c7ac",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 88",
+        "fp_no": "88",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 89",
+      "sha256": "458fb311cc2b176168450f81519af7be28fb1c753506119c51440bd2eef3ef52",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 89",
+        "fp_no": "89",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 90",
+      "sha256": "c2f4fce998973dd95b74d93201d03ce4e8c99a32b0559c213b738e79a85b95a4",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 90",
+        "fp_no": "90",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 93",
+      "sha256": "0a48adf12639e972144dd7a64144dfbad1653820f4f60ef30d3bb8cd962fd3b3",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 93",
+        "fp_no": "93",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 94",
+      "sha256": "e0bc0e9c82d80e0210be01e36f6740b803b189c78e69e82d3245586e0a36b80e",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 94",
+        "fp_no": "94",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 95",
+      "sha256": "8a7e28154dfbc3f4d01cd672b5b48c7c3b2f58f5d96e53bed70fe2116486819a",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 95",
+        "fp_no": "95",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 96",
+      "sha256": "460fe3a266591302bb4268f51057c17a6c979306123eb561d8f638d86461f0f3",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 96",
+        "fp_no": "96",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 97",
+      "sha256": "3b72f411ed63e37d1bd19f0c9c0bdbe7829ff3be55c160fae419ee6007896532",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 97",
+        "fp_no": "97",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 98",
+      "sha256": "9f34645cf0d9b9ecbde20d27e8e1b05de81ac31c35d98d9f29cf1aea0d3d29c0",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 98",
+        "fp_no": "98",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    },
+    {
+      "id": "IN-GJ-TPVD-Shaher_Kotda 16 99",
+      "sha256": "e765744a7db7a416a0ce5c70409a6db015d27cc16a25be2475f77e436116eff1",
+      "nativeProperties": {
+        "search": "Shaher_Kotda 16 99",
+        "fp_no": "99",
+        "tps_id": 415,
+        "tps_no": "16",
+        "tps_name": "Shaher_Kotda_16",
+        "village": "Shaher_Kotda",
+        "city": "Ahmedabad",
+        "authority": "AMC",
+        "district": "Ahmedabad",
+        "status": "Final"
+      }
+    }
+  ],
+  "result": "passed",
+  "harnessCorrection": {
+    "initialFailure": {
+      "message": "Cannot read properties of undefined (reading 'type')"
+    },
+    "reason": "Temporary overlap-audit helper used the Turf 7 argument form against installed Turf 6.5.0. Corrected to intersect(feature1,feature2); no app or adapter logic changed.",
+    "freshNativeReads": [
+      {
+        "count": 40,
+        "elapsedMs": 2404,
+        "allHashesMatch": true
+      },
+      {
+        "count": 40,
+        "elapsedMs": 702,
+        "allHashesMatch": true
+      },
+      {
+        "count": 40,
+        "elapsedMs": 840,
+        "allHashesMatch": true
+      },
+      {
+        "count": 12,
+        "elapsedMs": 444,
+        "allHashesMatch": true
+      }
+    ]
+  },
+  "overlaps": [],
+  "uniqueNativeCount": 132,
+  "geometryImported": false,
+  "priorFailedAttempt": "research/india-africa-next10-2026-10-08/ahmedabad-small-page-failure.json",
+  "counterDiagnostic": "research/india-africa-next10-2026-10-08/ahmedabad-small-page-counter-check.json",
+  "completedAt": "2026-10-08T05:16:16.324Z"
+}

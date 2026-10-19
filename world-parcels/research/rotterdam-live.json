@@ -1,0 +1,41 @@
+{
+  "description": "Additional city enabled through a shared verified provider without changing canonical parcel IDs.",
+  "sourceId": "nl-pdok-brk-kadastrale-kaart",
+  "cityId": "rotterdam",
+  "checkedAt": "2026-10-03",
+  "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+  "adapter": "ogc-api",
+  "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "catalogueUrl": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+  "bboxWgs84": [
+    4.4787,
+    51.922,
+    4.479699999999999,
+    51.923
+  ],
+  "bboxCount": 7,
+  "forcedPageSize": 3,
+  "complete": true,
+  "exactIdCount": 7,
+  "absentIds": [],
+  "responseFile": "research/rotterdam-live-response.json",
+  "identity": "Same provider-native key and prefix used by every city served by this source. City is a viewport entry, not part of parcel identity.",
+  "scope": "Bounded city entry only; no whole-country live coverage claim.",
+  "routing": "Ambiguous parcel prefixes are resolved by exact geometry through the repository’s read-only locateIds; lookup cannot publish ground into the wrong city repository.",
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "surface": "Owned headed Chrome against local frontend 5638 / API 4638",
+    "actualGlobeButtonOpened": true,
+    "exactGeometryResolvedCity": "rotterdam",
+    "underFootprintComplete": true,
+    "bindingCoverage": "complete",
+    "uncaughtBrowserErrors": 0,
+    "proposalSaved": false,
+    "loadedParcels": 505,
+    "retainedAfterPan": 849,
+    "newCellRequests": 8,
+    "cachedReturnRequests": 0,
+    "deepLinkStartCity": "amsterdam",
+    "deepLinkParcelId": "NL-BRK-19560042670000"
+  }
+}

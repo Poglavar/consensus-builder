@@ -1,0 +1,2830 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32735",
+  "featureCount": 335,
+  "validNonemptyCount": 335,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002262000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038701000000"
+      ],
+      "overlapM2": 2.327021794761838,
+      "fractionOfSmaller": 0.008974796609386795
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002263000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038701000000"
+      ],
+      "overlapM2": 0.1389121681483548,
+      "fractionOfSmaller": 0.0005352046225267569
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002263000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038700000000"
+      ],
+      "overlapM2": 2.2262383717163914,
+      "fractionOfSmaller": 0.008577312436132791
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002265000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038699000000"
+      ],
+      "overlapM2": 1.3458624776810533,
+      "fractionOfSmaller": 0.005188676643281499
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002265000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038698000000"
+      ],
+      "overlapM2": 1.0960456554433275,
+      "fractionOfSmaller": 0.004225562854065008
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002266000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038698000000"
+      ],
+      "overlapM2": 1.988845101667458,
+      "fractionOfSmaller": 0.0076506932573366035
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002266000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038697000000"
+      ],
+      "overlapM2": 0.5037011636792551,
+      "fractionOfSmaller": 0.0019376386292942306
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002264000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038700000000"
+      ],
+      "overlapM2": 0.7320543895670975,
+      "fractionOfSmaller": 0.0028204080799043773
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002264000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038699000000"
+      ],
+      "overlapM2": 1.6760264679751289,
+      "fractionOfSmaller": 0.006457277846808651
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002256000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038706000000"
+      ],
+      "overlapM2": 0.6159961842163093,
+      "fractionOfSmaller": 0.002376205386883213
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002256000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038705000000"
+      ],
+      "overlapM2": 1.3860835853656965,
+      "fractionOfSmaller": 0.005346817669668875
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002258000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038704000000"
+      ],
+      "overlapM2": 2.1694087638585327,
+      "fractionOfSmaller": 0.008345587319566515
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002260000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038703000000"
+      ],
+      "overlapM2": 0.9854547474861794,
+      "fractionOfSmaller": 0.0037933596927222984
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002260000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038702000000"
+      ],
+      "overlapM2": 1.2582593340601929,
+      "fractionOfSmaller": 0.00484347987869679
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002259000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038704000000"
+      ],
+      "overlapM2": 0.16010072861871566,
+      "fractionOfSmaller": 0.000617660117332166
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002259000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038703000000"
+      ],
+      "overlapM2": 2.0426531277563584,
+      "fractionOfSmaller": 0.007880447399859119
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002257000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038705000000"
+      ],
+      "overlapM2": 1.498661208099092,
+      "fractionOfSmaller": 0.005782765810101138
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002257000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038704000000"
+      ],
+      "overlapM2": 0.6281228238394341,
+      "fractionOfSmaller": 0.0024236880027408377
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002261000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038702000000"
+      ],
+      "overlapM2": 1.8576763649661672,
+      "fractionOfSmaller": 0.00715034473495604
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002261000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038701000000"
+      ],
+      "overlapM2": 0.4330685261133147,
+      "fractionOfSmaller": 0.0016669153540239548
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002268000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038697000000"
+      ],
+      "overlapM2": 0.11934057189853892,
+      "fractionOfSmaller": 0.00045879136442509563
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002268000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038696000000"
+      ],
+      "overlapM2": 2.4576112880379055,
+      "fractionOfSmaller": 0.009448009324306176
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002270000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038695000000"
+      ],
+      "overlapM2": 1.422519797282753,
+      "fractionOfSmaller": 0.005469868200974793
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002270000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038694000000"
+      ],
+      "overlapM2": 1.2346755469951067,
+      "fractionOfSmaller": 0.004747570139923545
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002271000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038694000000"
+      ],
+      "overlapM2": 2.1008692838528464,
+      "fractionOfSmaller": 0.008084071095713874
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002271000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038693000000"
+      ],
+      "overlapM2": 0.58643451565017,
+      "fractionOfSmaller": 0.0022565793854638356
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002273000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038693000000"
+      ],
+      "overlapM2": 0.08338257317700423,
+      "fractionOfSmaller": 0.00032091062097655494
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002273000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038692000000"
+      ],
+      "overlapM2": 2.695535542646856,
+      "fractionOfSmaller": 0.010374181941098213
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002275000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038691000000"
+      ],
+      "overlapM2": 1.486223272543251,
+      "fractionOfSmaller": 0.005730202949745024
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002275000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038690000000"
+      ],
+      "overlapM2": 1.3671096883774334,
+      "fractionOfSmaller": 0.005270954986164366
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002276000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038690000000"
+      ],
+      "overlapM2": 2.1975293225336383,
+      "fractionOfSmaller": 0.008423666967894773
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002276000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038689000000"
+      ],
+      "overlapM2": 0.6585823132954067,
+      "fractionOfSmaller": 0.0025245069639162113
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002267000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038697000000"
+      ],
+      "overlapM2": 2.5281052402082556,
+      "fractionOfSmaller": 0.009732566067428616
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002269000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038696000000"
+      ],
+      "overlapM2": 0.7557623010561425,
+      "fractionOfSmaller": 0.002910434863463713
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002269000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038695000000"
+      ],
+      "overlapM2": 1.8529654215574922,
+      "fractionOfSmaller": 0.007135755721286025
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002272000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038693000000"
+      ],
+      "overlapM2": 2.732247025450402,
+      "fractionOfSmaller": 0.010511959919959813
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002274000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038692000000"
+      ],
+      "overlapM2": 0.7723032727904569,
+      "fractionOfSmaller": 0.002974616343929115
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002274000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038691000000"
+      ],
+      "overlapM2": 2.0476148848814106,
+      "fractionOfSmaller": 0.007886628112598154
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002285000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038683000000"
+      ],
+      "overlapM2": 1.5530786421548077,
+      "fractionOfSmaller": 0.005980443405158175
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002285000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038682000000"
+      ],
+      "overlapM2": 1.6037616896349878,
+      "fractionOfSmaller": 0.006175608729584771
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002286000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038681000000"
+      ],
+      "overlapM2": 0.8310315137699058,
+      "fractionOfSmaller": 0.0031975170704125148
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002286000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038682000000"
+      ],
+      "overlapM2": 2.35991513831601,
+      "fractionOfSmaller": 0.00908012369501987
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002284000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038684000000"
+      ],
+      "overlapM2": 0.764222992647619,
+      "fractionOfSmaller": 0.002938083190923211
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002284000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038683000000"
+      ],
+      "overlapM2": 2.354886086591608,
+      "fractionOfSmaller": 0.009053445518020429
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002278000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038689000000"
+      ],
+      "overlapM2": 0.037740551869702724,
+      "fractionOfSmaller": 0.00014529323311262014
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002278000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038688000000"
+      ],
+      "overlapM2": 2.8222100940581902,
+      "fractionOfSmaller": 0.010864918735275933
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002280000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038687000000"
+      ],
+      "overlapM2": 1.4909832163860681,
+      "fractionOfSmaller": 0.0057375781816123034
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002280000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038686000000"
+      ],
+      "overlapM2": 1.457928763085023,
+      "fractionOfSmaller": 0.005610378553889538
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002281000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038686000000"
+      ],
+      "overlapM2": 2.2440809530360646,
+      "fractionOfSmaller": 0.00863917176301731
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002281000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038685000000"
+      ],
+      "overlapM2": 0.738436634930768,
+      "fractionOfSmaller": 0.002842803383113465
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002283000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038684000000"
+      ],
+      "overlapM2": 3.0802034570756436,
+      "fractionOfSmaller": 0.011850808938919778
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002277000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038689000000"
+      ],
+      "overlapM2": 2.831524646757563,
+      "fractionOfSmaller": 0.010894716631072835
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002279000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038687000000"
+      ],
+      "overlapM2": 2.152113468410537,
+      "fractionOfSmaller": 0.00828258132808082
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002279000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038688000000"
+      ],
+      "overlapM2": 0.7528634104326715,
+      "fractionOfSmaller": 0.0028974552305786596
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002282000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038685000000"
+      ],
+      "overlapM2": 3.041923114542464,
+      "fractionOfSmaller": 0.011704659584992401
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002287000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038681000000"
+      ],
+      "overlapM2": 3.19792135992963,
+      "fractionOfSmaller": 0.012315102661242729
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002287000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038680000000"
+      ],
+      "overlapM2": 0.03953136044978735,
+      "fractionOfSmaller": 0.0001522341256973356
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002288000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038680000000"
+      ],
+      "overlapM2": 3.2778158577292156,
+      "fractionOfSmaller": 0.01261130424516744
+    }
+  ],
+  "sumPairwiseOverlapM2": 88.80117779906321,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 241.79497136752732,
+    "median": 261.1783210163998,
+    "max": 21391.57014143464
+  },
+  "features": [
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002402000000",
+      "areaM2": 260.36388071116994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002404000000",
+      "areaM2": 258.886233057034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002380000000",
+      "areaM2": 260.6993745653904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002382000000",
+      "areaM2": 262.8467955323505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002383000000",
+      "areaM2": 256.0465926572279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002385000000",
+      "areaM2": 259.2792611133866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002386000000",
+      "areaM2": 260.08357066776273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002388000000",
+      "areaM2": 261.1256149372498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002381000000",
+      "areaM2": 258.3448493669548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002384000000",
+      "areaM2": 260.7837037658231,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002387000000",
+      "areaM2": 259.27479977583675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002389000000",
+      "areaM2": 257.8868102080081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002401000000",
+      "areaM2": 259.4601353567017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002403000000",
+      "areaM2": 259.47009731465414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002522000000",
+      "areaM2": 21391.57014143464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002405000000",
+      "areaM2": 261.3574152204799,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002407000000",
+      "areaM2": 265.65935186205445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002409000000",
+      "areaM2": 260.45842926871404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002410000000",
+      "areaM2": 261.3291286854939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002262000000",
+      "areaM2": 259.2840702738591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002263000000",
+      "areaM2": 259.54964195289637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002265000000",
+      "areaM2": 259.38453486472866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002266000000",
+      "areaM2": 259.9561941344678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002325000000",
+      "areaM2": 259.6597743311816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002327000000",
+      "areaM2": 260.45544148148656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002328000000",
+      "areaM2": 255.91088953865463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002330000000",
+      "areaM2": 258.57693832234696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002332000000",
+      "areaM2": 259.3832532808665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002333000000",
+      "areaM2": 260.0148045173992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002300000000",
+      "areaM2": 259.5859546466975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002301000000",
+      "areaM2": 256.4948449186853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002303000000",
+      "areaM2": 255.32400936842677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002305000000",
+      "areaM2": 254.1912084560662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002306000000",
+      "areaM2": 260.6553911793769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002308000000",
+      "areaM2": 261.15801290230877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002309000000",
+      "areaM2": 259.79503308849746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002378000000",
+      "areaM2": 257.8668111529365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002264000000",
+      "areaM2": 259.55619499995083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002299000000",
+      "areaM2": 285.9397517244862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002302000000",
+      "areaM2": 259.718115701938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002304000000",
+      "areaM2": 263.7002114311358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002307000000",
+      "areaM2": 263.76896856335156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002326000000",
+      "areaM2": 260.8704928413552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002329000000",
+      "areaM2": 264.9993287954841,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002331000000",
+      "areaM2": 263.80610434892634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002334000000",
+      "areaM2": 269.92570745230876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002379000000",
+      "areaM2": 259.1406476286821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002406000000",
+      "areaM2": 258.01007834082543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002408000000",
+      "areaM2": 258.73393821181025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002411000000",
+      "areaM2": 259.8100944151906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002256000000",
+      "areaM2": 259.2352444012806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002258000000",
+      "areaM2": 259.9468055138887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002260000000",
+      "areaM2": 259.78415634478614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002259000000",
+      "areaM2": 259.20522327106397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002257000000",
+      "areaM2": 259.1599344177628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002261000000",
+      "areaM2": 259.8023499320957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038602000000",
+      "areaM2": 266.32184261601986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038603000000",
+      "areaM2": 263.00108227338416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038604000000",
+      "areaM2": 259.67778060759514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038698000000",
+      "areaM2": 303.82395880610164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038699000000",
+      "areaM2": 303.8226043906418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038700000000",
+      "areaM2": 303.8233665399819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038701000000",
+      "areaM2": 303.8213424368801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038702000000",
+      "areaM2": 333.40235236350406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038703000000",
+      "areaM2": 333.4015759128987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038704000000",
+      "areaM2": 333.40187621768996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038705000000",
+      "areaM2": 333.39829813912263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038706000000",
+      "areaM2": 332.01861672239676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038611000000",
+      "areaM2": 244.141147932054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038612000000",
+      "areaM2": 241.79497136752732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038613000000",
+      "areaM2": 244.802550729521,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038615000000",
+      "areaM2": 250.81673199281192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038616000000",
+      "areaM2": 253.82400803766083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038617000000",
+      "areaM2": 256.83093659113877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038614000000",
+      "areaM2": 247.80881250240193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038618000000",
+      "areaM2": 259.8382368098643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038619000000",
+      "areaM2": 262.8449242234354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038620000000",
+      "areaM2": 265.8525679717401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002397000000",
+      "areaM2": 261.8176445052635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002399000000",
+      "areaM2": 263.33123069895754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002400000000",
+      "areaM2": 257.9869145273319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002414000000",
+      "areaM2": 260.00968340076884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002415000000",
+      "areaM2": 260.1556717771756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002315000000",
+      "areaM2": 259.2636592845732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002335000000",
+      "areaM2": 250.05099543742463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002336000000",
+      "areaM2": 260.2117059365075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002637000000",
+      "areaM2": 1934.497964198418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002453000000",
+      "areaM2": 259.76362655193543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002454000000",
+      "areaM2": 250.199728796819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002390000000",
+      "areaM2": 262.77307299845813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002391000000",
+      "areaM2": 258.6978727883929,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002393000000",
+      "areaM2": 259.0316400523363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002396000000",
+      "areaM2": 259.12111158861785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002314000000",
+      "areaM2": 259.74630448124225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002395000000",
+      "areaM2": 250.04055237363107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002316000000",
+      "areaM2": 250.4410327049594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002376000000",
+      "areaM2": 249.68992380194067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002392000000",
+      "areaM2": 261.24097203909014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002394000000",
+      "areaM2": 248.9085879908779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002398000000",
+      "areaM2": 258.39134788917465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002452000000",
+      "areaM2": 259.96129427220615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002413000000",
+      "areaM2": 249.55295161869563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002416000000",
+      "areaM2": 259.90546407263963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002268000000",
+      "areaM2": 260.11948164735566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002270000000",
+      "areaM2": 260.06473008421733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002271000000",
+      "areaM2": 259.87763578263366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002317000000",
+      "areaM2": 248.9652258368869,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002318000000",
+      "areaM2": 258.32803109228644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002320000000",
+      "areaM2": 258.9454798978936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002322000000",
+      "areaM2": 257.42008478470257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002323000000",
+      "areaM2": 264.88322988872306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002273000000",
+      "areaM2": 259.8311421518703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002275000000",
+      "areaM2": 259.36660281978027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002276000000",
+      "areaM2": 260.8756175795066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002311000000",
+      "areaM2": 257.3915650312082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002313000000",
+      "areaM2": 258.6719979952154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002267000000",
+      "areaM2": 259.7573160760666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002269000000",
+      "areaM2": 259.6733259842513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002272000000",
+      "areaM2": 259.9179454882137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002310000000",
+      "areaM2": 264.74565498864723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002312000000",
+      "areaM2": 259.0541719437896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002319000000",
+      "areaM2": 261.2708958862965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002321000000",
+      "areaM2": 259.6616560117584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002324000000",
+      "areaM2": 256.7687900404711,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002274000000",
+      "areaM2": 259.6312208015155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038691000000",
+      "areaM2": 303.8319747629166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038692000000",
+      "areaM2": 303.832041583968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038693000000",
+      "areaM2": 303.8282676333382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038690000000",
+      "areaM2": 303.8305655083876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038694000000",
+      "areaM2": 303.8275857008751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038695000000",
+      "areaM2": 303.82592822504233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038696000000",
+      "areaM2": 303.82770410025296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038697000000",
+      "areaM2": 303.82706030364676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038627000000",
+      "areaM2": 286.90074658101395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038628000000",
+      "areaM2": 289.9081443950082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038629000000",
+      "areaM2": 292.91835089102227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038594000000",
+      "areaM2": 292.91298148492405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038595000000",
+      "areaM2": 289.58937418294687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038596000000",
+      "areaM2": 286.26365080831016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038597000000",
+      "areaM2": 282.9403259373977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038598000000",
+      "areaM2": 279.62040103823426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038599000000",
+      "areaM2": 276.2946079884355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038600000000",
+      "areaM2": 272.97172177441945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038601000000",
+      "areaM2": 269.6461088966061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038621000000",
+      "areaM2": 268.8587812892343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038622000000",
+      "areaM2": 271.86687090784204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038623000000",
+      "areaM2": 274.87483492441726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038624000000",
+      "areaM2": 277.8790015205095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038625000000",
+      "areaM2": 280.8881861203378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038626000000",
+      "areaM2": 283.8938077520429,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038489000000",
+      "areaM2": 322.92542976467263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038491000000",
+      "areaM2": 316.0675505626604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038490000000",
+      "areaM2": 322.9224303304265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002417000000",
+      "areaM2": 260.5758925682764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002418000000",
+      "areaM2": 260.19703783830175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002420000000",
+      "areaM2": 260.2863700554568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002422000000",
+      "areaM2": 260.600895667245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002424000000",
+      "areaM2": 260.2587107605768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002671000000",
+      "areaM2": 331.46831525390064,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002338000000",
+      "areaM2": 260.23789915802627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002340000000",
+      "areaM2": 260.6856968172544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002342000000",
+      "areaM2": 260.40008972149076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002285000000",
+      "areaM2": 259.69289180385294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002286000000",
+      "areaM2": 259.8990077206042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002344000000",
+      "areaM2": 259.76321710887606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002345000000",
+      "areaM2": 260.2554776817837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002366000000",
+      "areaM2": 260.3989430678329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002368000000",
+      "areaM2": 259.85133382468416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002370000000",
+      "areaM2": 259.5158662622393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002372000000",
+      "areaM2": 260.5036754419254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002373000000",
+      "areaM2": 259.89706370534066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002375000000",
+      "areaM2": 259.27939931983906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002442000000",
+      "areaM2": 259.91671559191815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002444000000",
+      "areaM2": 259.43723413525083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002445000000",
+      "areaM2": 259.96232808525536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002447000000",
+      "areaM2": 259.7823307101122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002449000000",
+      "areaM2": 259.71080924761344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002450000000",
+      "areaM2": 260.0596267446461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002346000000",
+      "areaM2": 260.1957482330073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002451000000",
+      "areaM2": 259.9579396931562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002341000000",
+      "areaM2": 259.892150036407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002337000000",
+      "areaM2": 260.3924968082825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002367000000",
+      "areaM2": 259.8961111091483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002371000000",
+      "areaM2": 260.2486764077554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002374000000",
+      "areaM2": 259.44400765109333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002443000000",
+      "areaM2": 259.62107059344254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002446000000",
+      "areaM2": 259.8799869656622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002448000000",
+      "areaM2": 259.79738860309726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002284000000",
+      "areaM2": 260.1093784575525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002339000000",
+      "areaM2": 260.49765291628705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002343000000",
+      "areaM2": 260.02114482764176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002419000000",
+      "areaM2": 260.36263642980737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002421000000",
+      "areaM2": 260.34749652312655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002369000000",
+      "areaM2": 260.12191914873387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002423000000",
+      "areaM2": 260.307116240083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002278000000",
+      "areaM2": 259.754367503469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002280000000",
+      "areaM2": 259.86281479603133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002281000000",
+      "areaM2": 259.7564922418325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002283000000",
+      "areaM2": 259.91503811691774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002277000000",
+      "areaM2": 259.89887967180056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002279000000",
+      "areaM2": 259.8360804637229,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002282000000",
+      "areaM2": 259.8899260977045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038655000000",
+      "areaM2": 307.7131486382631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038654000000",
+      "areaM2": 314.8434630466395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038653000000",
+      "areaM2": 317.87574875508284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038652000000",
+      "areaM2": 362.1988147147578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038651000000",
+      "areaM2": 304.0685999271455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038682000000",
+      "areaM2": 303.8389755054078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038683000000",
+      "areaM2": 303.840713387902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038684000000",
+      "areaM2": 303.83935900068343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038685000000",
+      "areaM2": 303.83662411736435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038686000000",
+      "areaM2": 303.8374016582863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038687000000",
+      "areaM2": 303.83496994703364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038688000000",
+      "areaM2": 303.8343260757788,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038689000000",
+      "areaM2": 303.8347216285733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038630000000",
+      "areaM2": 295.9215207553327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038631000000",
+      "areaM2": 298.9295229421138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038632000000",
+      "areaM2": 311.72699936764764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038633000000",
+      "areaM2": 315.6272178721992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038507000000",
+      "areaM2": 383.73140347274614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038586000000",
+      "areaM2": 307.6791598881485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038587000000",
+      "areaM2": 307.7771779333457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038588000000",
+      "areaM2": 307.8739384686579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038589000000",
+      "areaM2": 323.91815699586726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038590000000",
+      "areaM2": 306.20549091735967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038591000000",
+      "areaM2": 302.88212020941506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038592000000",
+      "areaM2": 299.55746573266106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038593000000",
+      "areaM2": 296.2347017346525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038497000000",
+      "areaM2": 366.82190098937195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038496000000",
+      "areaM2": 311.6112391006003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038495000000",
+      "areaM2": 333.5118027771968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038501000000",
+      "areaM2": 297.1023594326829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038502000000",
+      "areaM2": 307.87593790099976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038500000000",
+      "areaM2": 303.87930041325336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038499000000",
+      "areaM2": 311.56249678466145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038498000000",
+      "areaM2": 366.77958666938497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038505000000",
+      "areaM2": 306.1762624307836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038504000000",
+      "areaM2": 307.8168430562052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038503000000",
+      "areaM2": 300.32580841937545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038506000000",
+      "areaM2": 1209.9143733597434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038508000000",
+      "areaM2": 304.25893875016976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600000568000000",
+      "areaM2": 259.55122089897543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600000627000000",
+      "areaM2": 259.94759701755845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600000623000000",
+      "areaM2": 260.0482326389041,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600000624000000",
+      "areaM2": 259.6039211616752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002412000000",
+      "areaM2": 316.99845042141425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002520000000",
+      "areaM2": 255.20109315009583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002511000000",
+      "areaM2": 256.3646273689552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002513000000",
+      "areaM2": 258.0396306181961,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002515000000",
+      "areaM2": 259.93298119490646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002516000000",
+      "areaM2": 265.9265316041819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002518000000",
+      "areaM2": 259.0080929104418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002377000000",
+      "areaM2": 333.15277185185573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002456000000",
+      "areaM2": 259.7784434760364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002457000000",
+      "areaM2": 265.9447040026691,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002459000000",
+      "areaM2": 260.27743814168446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002461000000",
+      "areaM2": 258.7528017640634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002462000000",
+      "areaM2": 266.4680676707098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002464000000",
+      "areaM2": 259.78805782637187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002466000000",
+      "areaM2": 259.63188328575694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600000625000000",
+      "areaM2": 257.51139235208916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600000622000000",
+      "areaM2": 259.30719636364637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600000626000000",
+      "areaM2": 262.02951453760727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002458000000",
+      "areaM2": 260.2004409133541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002460000000",
+      "areaM2": 260.7703562816424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002463000000",
+      "areaM2": 261.1783210163998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002465000000",
+      "areaM2": 258.67760776957584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002512000000",
+      "areaM2": 261.92595665795295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002514000000",
+      "areaM2": 260.65186956207265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002517000000",
+      "areaM2": 261.6653009591898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002519000000",
+      "areaM2": 265.8046880935411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002287000000",
+      "areaM2": 259.6747625981158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002288000000",
+      "areaM2": 259.9109333981258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038577000000",
+      "areaM2": 303.897835378899,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038578000000",
+      "areaM2": 309.5110273080389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038579000000",
+      "areaM2": 303.78174969786915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038580000000",
+      "areaM2": 309.0002858476301,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038664000000",
+      "areaM2": 307.7595214308201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038663000000",
+      "areaM2": 307.7537893959251,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038662000000",
+      "areaM2": 307.74808414138715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038660000000",
+      "areaM2": 307.739194563403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038659000000",
+      "areaM2": 307.73347537403833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038658000000",
+      "areaM2": 307.72835269255904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038661000000",
+      "areaM2": 307.74324637057424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038657000000",
+      "areaM2": 307.72382652074054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038656000000",
+      "areaM2": 307.7170097261673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038650000000",
+      "areaM2": 307.8106914895631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038649000000",
+      "areaM2": 307.8067614993177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038648000000",
+      "areaM2": 307.80156893754406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038647000000",
+      "areaM2": 307.7990079391966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038646000000",
+      "areaM2": 307.79595892856827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038645000000",
+      "areaM2": 307.7912682419368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038644000000",
+      "areaM2": 307.7843955574167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038643000000",
+      "areaM2": 307.78018054270564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038677000000",
+      "areaM2": 303.87405184249207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038678000000",
+      "areaM2": 303.8597831502602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038679000000",
+      "areaM2": 303.8419585242002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038680000000",
+      "areaM2": 303.8444071970915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038681000000",
+      "areaM2": 303.8416724395339,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002523000000",
+      "areaM2": 13153.199297024035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002673000000",
+      "areaM2": 412.57779331679194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002674000000",
+      "areaM2": 425.1069904338747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002676000000",
+      "areaM2": 259.3458215042732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002638000000",
+      "areaM2": 328.96919581551913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002743000000",
+      "areaM2": 416.33740850692254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002706000000",
+      "areaM2": 255.9366222154608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002672000000",
+      "areaM2": 541.5468493931305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002675000000",
+      "areaM2": 258.89347191829285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002705000000",
+      "areaM2": 261.14905532306454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002707000000",
+      "areaM2": 838.8806084199337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002744000000",
+      "areaM2": 867.5610525498876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038470000000",
+      "areaM2": 376.11211643488804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038473000000",
+      "areaM2": 358.25248489449143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038472000000",
+      "areaM2": 371.8139721215685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038471000000",
+      "areaM2": 363.2083498616794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038474000000",
+      "areaM2": 358.26058380652955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038475000000",
+      "areaM2": 371.8196037944538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038476000000",
+      "areaM2": 334.9555050807135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038477000000",
+      "areaM2": 390.02453567678856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038478000000",
+      "areaM2": 368.54451286215976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038485000000",
+      "areaM2": 382.3838107045884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038486000000",
+      "areaM2": 383.6790432490358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038479000000",
+      "areaM2": 343.1231273654471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038480000000",
+      "areaM2": 309.6233825963788,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038481000000",
+      "areaM2": 349.58934848807814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038482000000",
+      "areaM2": 349.58802081895374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038483000000",
+      "areaM2": 309.62358982104115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038484000000",
+      "areaM2": 316.1478756806171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038488000000",
+      "areaM2": 316.07139028402344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038487000000",
+      "areaM2": 343.89777720099727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038493000000",
+      "areaM2": 382.3780281721044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038492000000",
+      "areaM2": 314.3148289904362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038879000000",
+      "areaM2": 341.6367933761554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038880000000",
+      "areaM2": 313.5147390155463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038881000000",
+      "areaM2": 296.7509121772106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

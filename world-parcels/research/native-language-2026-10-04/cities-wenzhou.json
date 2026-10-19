@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 106,
+  "city": "Wenzhou",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/wenzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "温州 地籍 宗地 不动产 GIS 开放数据 地块查询"
+  },
+  "results": [
+    {
+      "title": "Wenzhou data open platform",
+      "url": "https://data.wenzhou.gov.cn/",
+      "kind": "official-open-data-catalog",
+      "note": "Catalog has a geospatial-information domain and large number of open datasets; search did not identify an individual parcel layer."
+    },
+    {
+      "title": "Wenzhou TianDiTu GIS dataset entry",
+      "url": "https://data.wenzhou.gov.cn/jdop_front/detail/data.do?iid=6228",
+      "kind": "official-open-data-entry",
+      "note": "Describes a fully open API resource in the city public geographic information system; the indexed entry is not confirmed as cadastral parcels."
+    }
+  ],
+  "assessment": "Official Wenzhou catalogs expose open geospatial APIs, but the search result did not identify cadastral parcels as a dataset or verify stable exact parcel identifiers.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

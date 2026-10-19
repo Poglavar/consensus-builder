@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Jafar Muhammad Ali",
+  "nativeName": "جعفر محمد علي",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Unknown. The Iraqi Ministry of Justice publishes a General Directorate of Real Estate Registration and a list of branches, but the local official material reviewed did not identify a branch or cadastral office for this WUP settlement. No countrywide or Baghdad-wide inference is made; the WUP entry also has low population plausibility.",
+  "registryEvidenceUrls": [
+    "https://www.moj.gov.iq/contact_us.php"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3515,
+  "cityId": "wup2025:3515",
+  "centerLatLon": [
+    33.6574117623855,
+    44.3825287864214
+  ],
+  "rank": 960,
+  "queueRank": 960,
+  "population2025": 570883,
+  "population2025k": 570.883,
+  "populationPlausibility2025": "Low",
+  "point": [
+    33.6574117623855,
+    44.3825287864214
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Settlement-specific identity and local registry custodian remain unresolved; registryFound is null rather than false.",
+  "resultCategory": "unknown_local_registry_evidence_no_verified_geometry_sample",
+  "scopeLimits": "Research is limited to the exact unchanged WUP locator and reviewed local official sources. No owner, address, tax-account, private property, credential, or token values were requested or retained. No citywide completeness or legal-title claim is made.",
+  "remainingUncertainty": "Citywide coverage, source currentness, legal title and survey accuracy remain unverified; no full parcel geometry was retained.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jafar Muhammad Ali Iraq official municipality land registry cadastral maps Baghdad cadastre",
+        "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+        "result": "Search results did not establish an official city-specific registry or parcel geometry source for the named settlement.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/contact_us.php"
+        ],
+        "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+      },
+      {
+        "language": "Arabic",
+        "query": "جعفر محمد علي العراق مديرية التسجيل العقاري قضاء الموقع الجغرافي",
+        "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+        "result": "The official Ministry of Justice lists the national real-estate registration directorate and named branches, but no branch-specific proof for this WUP settlement was found. No personal or property search was made.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/contact_us.php"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.moj.gov.iq/contact_us.php",
+        "observation": "Official Ministry of Justice contact directory lists the General Directorate of Real Estate Registration and numerous named branches; no local branch for this WUP settlement was confirmed."
+      }
+    ],
+    "geometryReview": "No public parcel geometry route or sample verified. No private, owner, or property-record endpoint was queried."
+  },
+  "sourceIds": [],
+  "adapterReady": false,
+  "coverageAssessment": {
+    "claimedScope": "Unknown. The Iraqi Ministry of Justice publishes a General Directorate of Real Estate Registration and a list of branches, but the local official material reviewed did not identify a branch or cadastral office for this WUP settlement. No countrywide or Baghdad-wide inference is made; the WUP entry also has low population plausibility.",
+    "verifiedOpenScope": "Local institutional/registry context only; no verified parcel sample.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Settlement-specific identity and local registry custodian remain unresolved; registryFound is null rather than false."
+  },
+  "priorEvidenceAudit": {
+    "attemptState": "pending",
+    "evidenceFiles": [],
+    "possiblePriorMatches": [],
+    "cityRecordFilesAbsentAtStart": true
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.moj.gov.iq/contact_us.php",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "وزارة العدل - جمهورية العراق"
+  },
+  "rootReviewNote": "Reviewed the local institutional evidence separately from public geometry. Indexed official evidence and direct readback failures are distinguished; no full polygon response was verified. Registry null indicates uncertainty rather than absence.",
+  "rootReviewedAt": "2026-10-09T04:48:05.515266+00:00"
+}

@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "BI",
+  "name": "Burundi",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/BI.json"
+ },
+ {
+  "kind": "country",
+  "key": "BJ",
+  "name": "Benin",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/BJ.json"
+ },
+ {
+  "kind": "country",
+  "key": "BN",
+  "name": "Brunei Darussalam",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/BN.json"
+ },
+ {
+  "kind": "country",
+  "key": "BO",
+  "name": "Bolivia (Plurinational State of)",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/BO.json"
+ },
+ {
+  "kind": "country",
+  "key": "BS",
+  "name": "Bahamas",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/BS.json"
+ },
+ {
+  "kind": "country",
+  "key": "BT",
+  "name": "Bhutan",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/BT.json"
+ },
+ {
+  "kind": "country",
+  "key": "BW",
+  "name": "Botswana",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/BW.json"
+ },
+ {
+  "kind": "country",
+  "key": "BY",
+  "name": "Belarus",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/BY.json"
+ }
+]

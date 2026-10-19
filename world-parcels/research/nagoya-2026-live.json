@@ -1,0 +1,280 @@
+{
+  "checkedAt": "2026-10-03T10:17:29.418Z",
+  "city": "nagoya",
+  "code": "23101",
+  "descriptor": {
+    "id": "jp-moj-geospatial-2026",
+    "adapter": "geojson-snapshot",
+    "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/23/aigid-moj-23101/23101_%E5%90%8D%E5%8F%A4%E5%B1%8B%E5%B8%82%E5%8D%83%E7%A8%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%997%E7%B3%BB_%E7%AD%86R_2026.geojson",
+    "idPrefix": "JP-MOJ-2026-",
+    "idFields": [
+      "市区町村C",
+      "地図名",
+      "ID"
+    ],
+    "outFields": [
+      "ID",
+      "市区町村C",
+      "大字コード",
+      "丁目コード",
+      "小字コード",
+      "予備コード",
+      "市区町村名",
+      "大字名",
+      "地番",
+      "精度区分",
+      "座標値種別",
+      "地図名",
+      "座標系",
+      "測地系判別"
+    ],
+    "parcelNumberField": "地番",
+    "maxSnapshotBytes": 246616,
+    "maxSnapshotFeatures": 284,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "expectedSnapshotFeatures": 284,
+    "expectedEtag": "\"48f56c86e848d68d7a509bef0e9bd8d2\""
+  },
+  "center": {
+    "lat": 35.163716454,
+    "lon": 136.984010139
+  },
+  "metricSrid": 32653,
+  "snapshot": {
+    "status": 200,
+    "bytes": 224196,
+    "etag": "\"48f56c86e848d68d7a509bef0e9bd8d2\"",
+    "lastModified": "Fri, 07 Aug 2026 05:48:27 GMT"
+  },
+  "featureCount": 284,
+  "uniqueNativeKeys": 284,
+  "cells": [
+    {
+      "bbox": [
+        136.980260139,
+        35.159966454000006,
+        136.982760139,
+        35.162466454000004
+      ],
+      "pan": 0,
+      "count": 15,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.982760139,
+        35.159966454000006,
+        136.985260139,
+        35.162466454000004
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.985260139,
+        35.159966454000006,
+        136.987760139,
+        35.162466454000004
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.980260139,
+        35.162466454000004,
+        136.982760139,
+        35.164966454
+      ],
+      "pan": 0,
+      "count": 19,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.982760139,
+        35.162466454000004,
+        136.985260139,
+        35.164966454
+      ],
+      "pan": 0,
+      "count": 205,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.985260139,
+        35.162466454000004,
+        136.987760139,
+        35.164966454
+      ],
+      "pan": 0,
+      "count": 55,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.980260139,
+        35.164966454,
+        136.982760139,
+        35.167466454
+      ],
+      "pan": 0,
+      "count": 2,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.982760139,
+        35.164966454,
+        136.985260139,
+        35.167466454
+      ],
+      "pan": 0,
+      "count": 3,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.985260139,
+        35.164966454,
+        136.987760139,
+        35.167466454
+      ],
+      "pan": 0,
+      "count": 2,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98426013899999,
+        35.159966454000006,
+        136.98676013899998,
+        35.162466454000004
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98676013899998,
+        35.159966454000006,
+        136.98926013899998,
+        35.162466454000004
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98926013899998,
+        35.159966454000006,
+        136.99176013899998,
+        35.162466454000004
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98426013899999,
+        35.162466454000004,
+        136.98676013899998,
+        35.164966454
+      ],
+      "pan": 0.004,
+      "count": 179,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98676013899998,
+        35.162466454000004,
+        136.98926013899998,
+        35.164966454
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98926013899998,
+        35.162466454000004,
+        136.99176013899998,
+        35.164966454
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98426013899999,
+        35.164966454,
+        136.98676013899998,
+        35.167466454
+      ],
+      "pan": 0.004,
+      "count": 2,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98676013899998,
+        35.164966454,
+        136.98926013899998,
+        35.167466454
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        136.98926013899998,
+        35.164966454,
+        136.99176013899998,
+        35.167466454
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    }
+  ],
+  "observedNativeKeys": 273,
+  "exact": {
+    "batchSize": 80,
+    "batches": 4,
+    "resolved": 284,
+    "geometryConflicts": 0,
+    "absentVerified": true
+  },
+  "under": {
+    "complete": true,
+    "count": 26
+  },
+  "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-23101",
+  "licence": "cc-by",
+  "scope": "愛知県-名古屋市千種区 public-coordinate sheets only, 2026 converted MOJ publication; partial city coverage.",
+  "sampleIds": [
+    "JP-MOJ-2026-23101~SYOUWA_KYOKU2~H000000020",
+    "JP-MOJ-2026-23101~SYOUWA_KYOKU2~H000000019",
+    "JP-MOJ-2026-23101~SYOUWA_KYOKU2~H000000018"
+  ],
+  "technicalResult": "ready",
+  "resourceBbox": [
+    136.976276393,
+    35.160693342,
+    136.986396858,
+    35.165507393
+  ],
+  "description": "Metadata-only full published package native-key and viewport verification; partial ward coverage."
+}

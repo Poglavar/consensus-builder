@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "PLS",
+ "regionName": "Perlis",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://explore.perlis.gov.my/smartmap",
+   "observation": "linked from www.perlis.gov.my; host refused by the proxy (502), so not inspected"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.perlis.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "state portal loads; link to explore.perlis.gov.my/smartmap"
+  },
+  {
+   "url": "https://explore.perlis.gov.my/smartmap",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "ptg.perlis.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "gis.perlis.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "smartmap.perlis.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "Perlis SmartMap viewer may show lots; not inspected.",
+ "nextStep": "Retry from another network; read SmartMap JS for layer endpoints."
+}

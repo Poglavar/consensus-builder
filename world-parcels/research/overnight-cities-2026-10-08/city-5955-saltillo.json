@@ -1,0 +1,119 @@
+{
+  "name": "Saltillo",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 728,
+  "point": [
+    25.4195427495544,
+    -100.985381620302
+  ],
+  "population2025k": 737.662,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "UN WUP 2025 population-weighted settlement centroid is a locator, not an official city boundary or parcel identity. No owner, address, tax or account fields were requested or copied; no login credentials or private tokens were used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Municipality of Saltillo describes the city Catastro office/e-Catastro and the Visor Saltillo as a public territorial viewer with property information and a parcel-selection flow. The viewer documents searching a property by address and clicking it to display information, with identity validation used for predial/account access. No anonymous polygon service schema or full parcel feature was verified.",
+  "resultCategory": "official_city_cadastral_viewer_and_services_no_anonymous_vector_schema_verified",
+  "technicalBlocker": "No anonymous full polygon feature response or safe source schema was verified in this pass.",
+  "remainingUncertainty": "Whether the selected-lot map UI obtains full polygon geometry through a public service, what its native safe identifier fields are, and the current coverage/update lineage.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Saltillo official cadastral map parcel GIS municipal cadastre property",
+        "result": "Official municipal sources describe e-Catastro services and Visor Saltillo, which presents parcel/property information and allows a property to be located on the map. No public vector endpoint, safe field schema, or full polygon response was identified.",
+        "method": "Separate language-specific web search and review of official primary sources"
+      },
+      {
+        "language": "Spanish",
+        "query": "site:saltillo.gob.mx Catastro mapa predios Saltillo geovisor cartografía catastral",
+        "result": "El Municipio de Saltillo describe e-Catastro, Catastro municipal y Visor Saltillo; el visor permite localizar predios y consultar información territorial. La consulta asociada al predial valida identidad y no se encontró un esquema de servicio vectorial anónimo ni una respuesta de polígono completo.",
+        "method": "Separate language-specific web search and review of official primary sources"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://saltillo.gob.mx/de-5-dias-a-menos-de-24-horas-moderniza-saltillo-sus-avaluos-catastrales-con-e-catastro/",
+        "observation": "Official city announcement identifies e-Catastro, a digital municipal cadastral workflow, and says Visor Urbano exposes territorial information including parcel information and location."
+      },
+      {
+        "url": "https://visor.saltillo.gob.mx/",
+        "observation": "Official municipal Visor Saltillo is a public map viewer with a “Detalle del Lote” selection panel, city layers and Catastro services; its visible property-payment function is distinct from anonymous full-geometry access."
+      },
+      {
+        "url": "https://saltillo.gob.mx/aprovecha-formas-de-pago-de-predial-en-linea/",
+        "observation": "Official city guide says to locate a property by address in Visor Saltillo and select it for online predial payment; account access requires identity validation. No owner/account fields were entered."
+      },
+      {
+        "url": "https://saltillo.gob.mx/presenta-javier-diaz-la-plataforma-visor-saltillo/",
+        "observation": "Official city announcement describes the public Visor Saltillo territorial map developed with Catastro, Urban Development and Systems departments."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Official Saltillo sources establish municipal cadastral services and a public city map that can locate/select parcels. The public documentation and viewer page do not expose an anonymous full polygon API or safe feature schema, so geometry remains unverified.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "The official public map/service evidence does not expose a verified anonymous parcel polygon response with a safe schema.",
+    "remainingUncertainty": "Whether the selected-lot map UI obtains full polygon geometry through a public service, what its native safe identifier fields are, and the current coverage/update lineage."
+  },
+  "cityId": "wup2025:5955",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "queueRank": 728,
+  "wupCityCode": 5955,
+  "centerLatLon": [
+    25.4195427495544,
+    -100.985381620302
+  ],
+  "population2025": 737662,
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "name": "Saltillo official cadastral services and city map",
+    "operator": "Municipio de Saltillo / Catastro municipal and Visor Saltillo",
+    "url": "https://saltillo.gob.mx/de-5-dias-a-menos-de-24-horas-moderniza-saltillo-sus-avaluos-catastrales-con-e-catastro/",
+    "serviceType": "The official Municipality of Saltillo describes the city Catastro office/e-Catastro and the Visor Saltillo as a public territorial viewer with property information and a parcel-selection flow. The viewer documents searching a property by address and clicking it to display information, with identity validation used for predial/account access. No anonymous polygon service schema or full parcel feature was verified.",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeIdEvidence": "No public feature schema or parcel record returned.",
+    "scope": "Official Saltillo sources establish municipal cadastral services and a public city map that can locate/select parcels. The public documentation and viewer page do not expose an anonymous full polygon API or safe feature schema, so geometry remains unverified."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official Saltillo sources establish municipal cadastral services and a public city map that can locate/select parcels. The public documentation and viewer page do not expose an anonymous full polygon API or safe feature schema, so geometry remains unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official Municipality of Saltillo describes the city Catastro office/e-Catastro and the Visor Saltillo as a public territorial viewer with property information and a parcel-selection flow. The viewer documents searching a property by address and clicking it to display information, with identity validation used for predial/account access. No anonymous polygon service schema or full parcel feature was verified."
+  },
+  "registryEvidenceUrls": [
+    "https://saltillo.gob.mx/de-5-dias-a-menos-de-24-horas-moderniza-saltillo-sus-avaluos-catastrales-con-e-catastro/",
+    "https://visor.saltillo.gob.mx/",
+    "https://saltillo.gob.mx/aprovecha-formas-de-pago-de-predial-en-linea/",
+    "https://saltillo.gob.mx/presenta-javier-diaz-la-plataforma-visor-saltillo/"
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://saltillo.gob.mx/de-5-dias-a-menos-de-24-horas-moderniza-saltillo-sus-avaluos-catastrales-con-e-catastro/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "De 5 días a menos de 24 horas: moderniza Saltillo sus avalúos catastrales con e-Catastro &#8211; Municipio de Saltillo"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

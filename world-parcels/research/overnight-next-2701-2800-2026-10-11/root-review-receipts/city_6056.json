@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6056",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:33:59Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-6056-city.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-service-review.json"
+  ],
+  "review": "WUP 2025 code 6056, rank 2717, Egypt, point [31.1888754277692,31.5277742798036], and 217913 persons match the verified source archive, immutable roster, queue, packet, and paired review. English and Arabic searches have recorded queries, outcomes, and result URLs. ESA official pages ground national survey/map custody. The inspected IDSC FeatureServer advertises Building, CITY, CENTER, and STATE layers, not a parcel layer; its empty CITY point result is administrative only and does not establish parcel absence. No full polygon was retained. Native parcel ID reads, forced pagination, 13 bounded cells, metric checks, source binding, and headed Details-panel verification are missing. Hold without admission."
+}

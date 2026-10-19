@@ -1,0 +1,140 @@
+{
+  "name": "Salta",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "rank": 881,
+  "point": [
+    -24.7999287325476,
+    -65.4167676647554
+  ],
+  "population2025": 613956,
+  "population2025k": 613.956,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_native_node_tls_transport",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained.",
+  "registryEvidenceUrls": [
+    "https://inmuebles.gov.ar/",
+    "https://www.salta.gob.ar/prensa/noticias/la-provincia-cuenta-con-un-mapa-catastral-digitalizado-80566",
+    "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer"
+  ],
+  "resultCategory": "verified_public_geometry_sample",
+  "remainingUncertainty": "A one-feature point query proves only that the WUP locator intersects a returned urban parcel; it does not establish municipal completeness, legal title, survey accuracy or long-term identifier continuity.",
+  "scopeLimits": "Research is limited to official sources and the exact unchanged WUP settlement locator. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": {
+    "source": "Salta provincial cadastral GIS (DGI / official SIGSA)",
+    "requestMethod": "GET anonymous bounded point intersection",
+    "requestStatus": 200,
+    "requestGeometry": "EPSG:4326 point using unchanged WUP locator",
+    "responseCount": 1,
+    "nativeIdField": "OBJECTID",
+    "nativeId": 918703,
+    "geometryType": "Polygon",
+    "geometryCompleteness": "Full returned feature geometry; one polygon",
+    "sourceCrs": "EPSG:4326",
+    "retainedFields": [
+      "OBJECTID",
+      "geometry"
+    ],
+    "geometrySampleFile": "city-507-salta-samples.geojson"
+  },
+  "source": {
+    "sourceId": "AR-507-salta-cadastre-review",
+    "name": "Salta provincial cadastral GIS (DGI / official SIGSA)",
+    "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer",
+    "operator": "Argentina",
+    "serviceType": "Official ArcGIS MapServer; urban parcel polygon sublayer queried at the exact WUP coordinate.",
+    "layer": "Urban parcel polygon layer 2",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "OBJECTID",
+    "nativeIdEvidence": "Official response returned OBJECTID 918703 with full polygon geometry."
+  },
+  "wupCityCode": 507,
+  "cityId": "wup2025:507",
+  "queueRank": 881,
+  "centerLatLon": [
+    -24.7999287325476,
+    -65.4167676647554
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The bounded curl-backed qualification passes all checks for 244 valid, distinct urban source polygons, with no sampled overlaps. Actual production Node TLS transport rejects unsafe legacy renegotiation before any HTTP response. No TLS-security bypass or executable runtime source was added.",
+  "coverageAssessment": {
+    "claimedScope": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained.",
+    "verifiedOpenScope": "One exact-point parcel sample only.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Salta Argentina official cadastral map parcel polygon GIS DGI",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "Official DGI portal describes the free public map viewer; official provincial GIS publishes the cadastral MapServer with urban parcel polygons.",
+        "actualResultUrls": [
+          "https://inmuebles.gov.ar/",
+          "https://www.salta.gob.ar/prensa/noticias/la-provincia-cuenta-con-un-mapa-catastral-digitalizado-80566",
+          "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      },
+      {
+        "language": "Spanish",
+        "query": "Salta mapa catastral parcelas urbanas DGI oficial servicio GIS",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "El portal oficial de DGI describe un visor catastral público y gratuito; el servicio GIS oficial publica una capa poligonal de parcelas urbanas.",
+        "actualResultUrls": [
+          "https://inmuebles.gov.ar/",
+          "https://www.salta.gob.ar/prensa/noticias/la-provincia-cuenta-con-un-mapa-catastral-digitalizado-80566",
+          "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://inmuebles.gov.ar/",
+        "observation": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained."
+      },
+      {
+        "url": "https://www.salta.gob.ar/prensa/noticias/la-provincia-cuenta-con-un-mapa-catastral-digitalizado-80566",
+        "observation": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained."
+      },
+      {
+        "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer",
+        "observation": "The provincial DGI cadastre portal documents a free public cadastral map. The official Salta ArcGIS MapServer layer 2 returned one polygon at the unchanged WUP point with only safe native OBJECTID and geometry retained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/Servicio_GIS/Mapa_Catastral_Salta/MapServer/2/query?geometry=-65.4167676647554%2C-24.7999287325476&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+        "method": "GET bounded official ArcGIS point-intersection query",
+        "observation": "HTTP 200; one Polygon returned, native OBJECTID 918703. Requested only OBJECTID and geometry; no owner/address fields requested."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "held_native_node_tls_transport",
+    "reason": "The bounded curl-backed qualification passes all checks for 244 valid, distinct urban source polygons, with no sampled overlaps. Actual production Node TLS transport rejects unsafe legacy renegotiation before any HTTP response. No TLS-security bypass or executable runtime source was added.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/salta-city-507-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/salta-city-507-quality.json"
+  },
+  "sampleFile": "city-507-salta-samples.geojson",
+  "rootReviewedAt": "2026-10-09T04:26:41.788097+00:00"
+}

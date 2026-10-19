@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Pierre",
+      "stateCode": "SD",
+      "sourceId": "us-sd-pierre-parcels",
+      "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.355,
+            44.365,
+            -100.3525,
+            44.3675
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3525,
+            44.365,
+            -100.35000000000001,
+            44.3675
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.35000000000001,
+            44.365,
+            -100.34750000000001,
+            44.3675
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.355,
+            44.3675,
+            -100.3525,
+            44.37
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3525,
+            44.3675,
+            -100.35000000000001,
+            44.37
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.35000000000001,
+            44.3675,
+            -100.34750000000001,
+            44.37
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.355,
+            44.37,
+            -100.3525,
+            44.3725
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3525,
+            44.37,
+            -100.35000000000001,
+            44.3725
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.35000000000001,
+            44.37,
+            -100.34750000000001,
+            44.3725
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34750000000001,
+            44.365,
+            -100.34500000000001,
+            44.3675
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34500000000001,
+            44.365,
+            -100.3425,
+            44.3675
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3425,
+            44.365,
+            -100.34,
+            44.3675
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34750000000001,
+            44.3675,
+            -100.34500000000001,
+            44.37
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34500000000001,
+            44.3675,
+            -100.3425,
+            44.37
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3425,
+            44.3675,
+            -100.34,
+            44.37
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34750000000001,
+            44.37,
+            -100.34500000000001,
+            44.3725
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34500000000001,
+            44.37,
+            -100.3425,
+            44.3725
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3425,
+            44.37,
+            -100.34,
+            44.3725
+          ],
+          "count": 2,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -100.35000000000001,
+          44.365,
+          -100.34750000000001,
+          44.3675
+        ],
+        "forcedPageSize": 3,
+        "count": 9,
+        "returned": 8,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 349,
+      "exactResolved": 349,
+      "nativeIds": [
+        "6359",
+        "7879",
+        "6335"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-sd-pierre-parcels",
+        "parcels": 1,
+        "siteM2": 168.42
+      },
+      "requests": 149
+    }
+  ]
+}

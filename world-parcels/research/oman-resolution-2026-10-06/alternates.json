@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "OM",
+  "checkedAt": "2026-10-06",
+  "status": "official-mutrah-regional-subset; compound-parts-disjoint; null-newplot-unresolved",
+  "summary": "The official Mutrah parcel layer is publicly queryable by native 3857 bboxes and matched ordinary 4326 counts. The source has 18,752 features, but PLOTUID alone is not unique. For the 12,212 rows with both PLOTUID and NEWPLOTNO non-null, there are 12,185 compound keys after accounting for 27 extra rows across 22 repeated pairs; all 22 repeated pairs are geometrically disjoint in 38 Turf comparisons and can be combined as multipart components. New phase, new housing-area, area code and block attributes agree within these pairs, though legacy PLOTNO/edit/area fields sometimes differ. A 6,534-row null NEWPLOTNO subset and six null PLOTUID rows remain unresolved; only the identified subset is a viable candidate.",
+  "candidate": {
+    "publisher": "Muscat Municipality Geoportal (official geoportal.mm.gov.om)",
+    "service": "Mutrah_Directorate_Map_Service_MIL1 / MapServer / 4",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4",
+    "type": "polygon feature layer; Arabic display name قطع الأراضي",
+    "identity": {
+      "field": "PLOTUID",
+      "type": "integer",
+      "publisherDescription": "system generated unique ID for each plot",
+      "assessment": "PLOTUID is publisher-documented as system-generated unique ID per plot, but is not unique across the live feature rows; use PLOTUID+NEWPLOTNO for the identified non-null subset, merging disjoint same-pair components."
+    },
+    "spatialReference": {
+      "sourceWkid": 32640,
+      "serviceOutputWkid": 3857,
+      "supportsNative3857BboxProbe": true
+    },
+    "coverage": "Mutrah Directorate only; no national coverage claim",
+    "queryability": "confirmed for Mutrah regional source: total count=18,752; native 3857 and converted 4326 query envelopes both returned five features; sampled exact PLOTUID queries resolved. Compound identity PLOTUID+NEWPLOTNO yields 12,185 disjoint-part groups from 12,212 rows where both are non-null, after unioning repeated pairs; 6,534 rows with null NEWPLOTNO and six rows with null PLOTUID remain unresolved.",
+    "fieldSelectionForFutureProbe": [
+      "PLOTUID",
+      "NEWPLOTNO"
+    ],
+    "geometryRetention": "none",
+    "sampledRecordCount": 3,
+    "bboxProbe": {
+      "wkid": 3857,
+      "bbox": [
+        6518301.6014,
+        2704283.5651,
+        6518431.5311,
+        2704486.5609
+      ],
+      "equivalentWkid4326": [
+        58.5548995503,
+        23.5962297403,
+        58.5560667288,
+        23.5979008035
+      ],
+      "featureCount3857": 5,
+      "featureCount4326": 5,
+      "durationMs3857": 1166,
+      "durationMs4326": 454,
+      "geometryRetained": false,
+      "additionalIdsRetained": false
+    },
+    "sourceCount": 18752,
+    "oidManifestCount": 18752,
+    "identityAudit": {
+      "totalRows": 18752,
+      "positivePLOTUIDRows": 18746,
+      "nonNullPLOTUIDRows": 18746,
+      "nullPLOTUIDRows": 6,
+      "distinctPositivePLOTUIDs": 18482,
+      "duplicateRowOccurrences": 264,
+      "zeroPLOTUIDRows": 0,
+      "finding": "PLOTUID does not uniquely identify all current features; duplicate values exist. Three sampled exact PLOTUID lookups each resolved one feature, which does not establish global uniqueness.",
+      "duplicatePLOTUIDGroups": 209,
+      "rowsInDuplicatePLOTUIDGroups": 473,
+      "duplicateGroupAuditComplete": true,
+      "duplicateGroupQueryErrors": 0,
+      "duplicateGroupOverTransferLimit": 0,
+      "duplicateGroupMaxRows": 10,
+      "positiveRowsWithNonNullNEWPLOTNO": 12212,
+      "positiveRowsWithNullNEWPLOTNO": 6534,
+      "blankNEWPLOTNORows": 0,
+      "literalNullNEWPLOTNORows": 0,
+      "distinctNonNullCompoundPairsInferred": 12185,
+      "compoundPairDuplicateGroups": 22,
+      "compoundPairExtraRows": 27,
+      "compoundPairCountBasis": "all 209 duplicate-PLOTUID groups queried separately; 473 rows accounted for; repeated PLOTUID+NEWPLOTNO pairs counted from those features. Because a repeated compound pair necessarily lies within a repeated PLOTUID group, duplicate extras=27; 12,212 both-nonnull rows minus27 gives12,185 distinct non-null pairs.",
+      "newPlotNullRowsAmongDuplicatePLOTUIDGroups": 133,
+      "duplicatePLOTUIDGroupsContainingNullNEWPLOTNO": 79,
+      "duplicateCompoundPairGeometryAudit": {
+        "groups": 22,
+        "features": 49,
+        "maxFeaturesPerGroup": 6,
+        "overLimit": 0,
+        "errors": 0,
+        "pairwiseTurfComparisons": 38,
+        "disjointGroups": 22,
+        "overlappingGroups": 0,
+        "nearIdenticalOverlaps": 0,
+        "partialOverlaps": 0,
+        "geometryConversion": "3857 to WGS84 transiently for Turf; geometry not retained",
+        "totalFeatureAreaM2": 17783.61
+      },
+      "compoundAttributeConsistency": {
+        "repeatedNonNullPairGroups": 22,
+        "featureRows": 49,
+        "mismatchedPairGroups": {
+          "PLOTNO": 17,
+          "NEWPHASECD": 0,
+          "NEWPHASESNAME_E": 0,
+          "NEWHOUSINGAREACD": 0,
+          "NEWHOUSINGAREANAME_E": 0,
+          "HOUSINGAREACD": 1,
+          "HOUSINGAREANAME_E": 1,
+          "AREACD": 0,
+          "BLOCKNO": 0,
+          "SQUARENO": 6,
+          "PLOTAREA": 12,
+          "MODIFYDATE": 19
+        },
+        "interpretation": "Current new phase, new housing-area, area-code and block values agree within each repeated key; old PLOTNO, edit timestamp, source area and selected legacy housing/square fields vary."
+      }
+    },
+    "sampledFeatures": [
+      {
+        "lookupCount": 1,
+        "lookupDurationMs": 1169,
+        "extent3857": [
+          6518301.6014,
+          2704283.5651,
+          6518431.5311,
+          2704486.5609
+        ],
+        "centroid3857": [
+          6518366.5662,
+          2704385.063
+        ]
+      },
+      {
+        "lookupCount": 1,
+        "lookupDurationMs": 1170,
+        "extent3857": [
+          6519561.2504,
+          2702448.7198,
+          6519594.1509,
+          2702487.3991
+        ],
+        "centroid3857": [
+          6519577.7007,
+          2702468.0595
+        ]
+      },
+      {
+        "lookupCount": 1,
+        "lookupDurationMs": 561,
+        "extent3857": [
+          6523010.4795,
+          2704145.6881,
+          6523031.7153,
+          2704170.3756
+        ],
+        "centroid3857": [
+          6523021.0974,
+          2704158.0319
+        ]
+      }
+    ],
+    "localDensityGrid": {
+      "center3857": [
+        6518366.5662,
+        2704385.063
+      ],
+      "cellSizeM": 300,
+      "rowsSouthToNorth": [
+        [
+          32,
+          22,
+          7
+        ],
+        [
+          23,
+          15,
+          1
+        ],
+        [
+          19,
+          3,
+          1
+        ]
+      ],
+      "occupiedCells": 9,
+      "cellHitSum": 123,
+      "note": "Each count is an independent intersects query; edge-crossing parcels may contribute to multiple cells. This local sample does not define directorate boundaries."
+    },
+    "duplicatePairAudit": {
+      "approach": "attribute-only queries for every duplicate PLOTUID group (2 concurrent); then one bounded geometry query per repeated non-null PLOTUID+NEWPLOTNO key (2 concurrent), Turf metrics calculated in memory; no geometry persisted",
+      "duplicatePLOTUIDGroups": 209,
+      "rows": 473,
+      "duplicateCompoundGroups": 22,
+      "duplicateCompoundRows": 49,
+      "extraRows": 27,
+      "compoundDistinctRowsWithBothFieldsNonNull": 12185,
+      "compoundRowsWithBothFieldsNonNull": 12212,
+      "rowsWithNullNEWPLOTNO": 6534,
+      "rowsWithBlankNEWPLOTNO": 0,
+      "rowsWithLiteralNullNEWPLOTNO": 0,
+      "repeatedPairGeometry": {
+        "groups": 22,
+        "features": 49,
+        "groupsFullyDisjoint": 22,
+        "groupsWithAnyOverlap": 0,
+        "pairwiseComparisons": 38,
+        "maxPartsInPairGroup": 6,
+        "intersectionsAreaM2": 0,
+        "method": "Turf intersection and geodesic area on transient 3857→4326 transformed polygons"
+      },
+      "pairExamples": [
+        {
+          "PLOTUID": 154383,
+          "PLOTNO": "322",
+          "NEWPLOTNO": "147",
+          "NEWPHASECD": 17,
+          "NEWPHASESNAME_E": "M.B.D South",
+          "NEWHOUSINGAREACD": 101018,
+          "NEWHOUSINGAREANAME_E": "M.B.D South",
+          "HOUSINGAREACD": 113,
+          "HOUSINGAREANAME_E": "M . B . D South",
+          "AREACD": 5,
+          "BLOCKNO": 142,
+          "PLOTAREA": 0,
+          "MODIFYDATE": 1516106818000,
+          "geometryAreaM2": 814.34,
+          "relationship": "one of two disjoint new plots under old PLOTNO 322; companion NEWPLOTNO 148"
+        },
+        {
+          "PLOTUID": 154383,
+          "PLOTNO": "322",
+          "NEWPLOTNO": "148",
+          "NEWPHASECD": 17,
+          "NEWPHASESNAME_E": "M.B.D South",
+          "NEWHOUSINGAREACD": 101018,
+          "NEWHOUSINGAREANAME_E": "M.B.D South",
+          "HOUSINGAREACD": 113,
+          "HOUSINGAREANAME_E": "M . B . D South",
+          "AREACD": 5,
+          "BLOCKNO": 142,
+          "PLOTAREA": 0,
+          "MODIFYDATE": 1516106818000,
+          "geometryAreaM2": 814.62,
+          "relationship": "disjoint from NEWPLOTNO 147, same phase/area/edit timestamp"
+        },
+        {
+          "PLOTUID": 153136,
+          "PLOTNO": "332",
+          "NEWPLOTNO": "143",
+          "NEWPHASECD": 17,
+          "NEWPHASESNAME_E": "M.B.D South",
+          "NEWHOUSINGAREACD": 101018,
+          "NEWHOUSINGAREANAME_E": "M.B.D South",
+          "HOUSINGAREACD": 113,
+          "HOUSINGAREANAME_E": "M . B . D South",
+          "AREACD": 5,
+          "BLOCKNO": 142,
+          "PLOTAREA": 0,
+          "MODIFYDATE": 1516106818000,
+          "duplicateFeatureCount": 2,
+          "geometryAreasM2": [
+            570.65,
+            570.57
+          ],
+          "intersectionM2": 0,
+          "symmetricDifferenceM2": 1141.22,
+          "relationship": "same exact PLOTUID+NEWPLOTNO and same attributes/date; geometries are disjoint, consistent with separate parts requiring a multipolygon union"
+        }
+      ],
+      "thirdSelectedGroupAggregateOnly": {
+        "recordCount": 10,
+        "distinctNonNullNEWPLOTNO": 10,
+        "pairwiseDisjoint": true,
+        "pairwiseComparisons": 45,
+        "overlaps": 0,
+        "totalFeatureAreaM2": 599.4,
+        "areaRangeM2": [
+          20.58,
+          191.53
+        ],
+        "attributePLOTAREAValuesAllZero": true,
+        "NEWPHASECDNullForAll": true,
+        "nativeIdentifiersOmittedToRespectThreePairSampleLimit": true,
+        "sampleDescription": "An additional selected group (native identifier omitted under the three-pair cap) had 10 rows with 10 distinct non-null NEWPLOTNOs; all 45 polygon comparisons were disjoint. Its NEWPHASECD was null and source PLOTAREA values were zero."
+      },
+      "compoundAttributeConsistency": {
+        "repeatedNonNullPairGroups": 22,
+        "featureRows": 49,
+        "mismatchedPairGroups": {
+          "PLOTNO": 17,
+          "NEWPHASECD": 0,
+          "NEWPHASESNAME_E": 0,
+          "NEWHOUSINGAREACD": 0,
+          "NEWHOUSINGAREANAME_E": 0,
+          "HOUSINGAREACD": 1,
+          "HOUSINGAREANAME_E": 1,
+          "AREACD": 0,
+          "BLOCKNO": 0,
+          "SQUARENO": 6,
+          "PLOTAREA": 12,
+          "MODIFYDATE": 19
+        },
+        "interpretation": "Current new phase, new housing-area, area-code and block values agree within each repeated key; old PLOTNO, edit timestamp, source area and selected legacy housing/square fields vary."
+      },
+      "distinctPairCountDirectQuery": {
+        "result": "Unsupported: ArcGIS returnCountOnly+returnDistinctValues with two outFields returns HTTP200/code400.",
+        "alternative": "All 209 duplicate-PLOTUID groups were enumerated, and no duplicate compound key can occur outside those groups. Both-nonnull rows 12,212 minus 27 repeated compound-row extras yields 12,185 distinct pairs."
+      },
+      "nullValueChecks": {
+        "NEWPLOTNO_IS_NULL": 6534,
+        "NEWPLOTNO_single_space": 0,
+        "NEWPLOTNO_empty_string": 0,
+        "NEWPLOTNO_literal_NULL": 0,
+        "PLOTUID_IS_NULL": 6,
+        "PLOTUID_zero": 0
+      }
+    }
+  },
+  "findings": [
+    {
+      "service": "SeebContract_MIL1/MapServer/11",
+      "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11",
+      "type": "polygon parcel candidate",
+      "identity": "PLOTUID integer, documented as system generated unique plot ID",
+      "result": "official alternate exists; count previously returned 499 Token Required; metadata/query attempts here unresolved",
+      "assessment": "potential peer layer, require public endpoint/query success before admission"
+    },
+    {
+      "service": "Linking_business_activities_spatially_MIL1/MapServer/9",
+      "url": "https://geoportal.mm.gov.om/server/rest/services/Linking_business_activities_spatially_MIL1/MapServer/9",
+      "type": "cadastral plot polygons, based on official iteminfo",
+      "identity": "PLOTUID described by official iteminfo as unique plot identifier",
+      "result": "live metadata and query endpoints return HTTP 200 with ArcGIS 499 Token Required; query not publicly usable without token under tested requests",
+      "assessment": "official parcel geometry candidate, but token gate prevents public runtime admission; metadata identity is not a queryability bypass"
+    },
+    {
+      "service": "MMPDC family",
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MMPDC/MapServer",
+      "type": "official Muscat polygon service",
+      "result": "only Spot Points and Spot Polygons; pest-control context",
+      "assessment": "not cadastral"
+    },
+    {
+      "service": "OmanReal commercial mirror",
+      "url": "https://omanreal.com/Map",
+      "type": "commercial parcel lookup",
+      "identity": "PAIN lookup reported in prior research",
+      "result": "no public complete viewport enumeration endpoint established",
+      "assessment": "not an official public feed; no alternate enumeration evidence"
+    }
+  ],
+  "probes": [
+    {
+      "target": "Live root catalog",
+      "method": "Node fetch, browser headers, bounded timeout",
+      "result": "HTTP 200 JSON; ArcGIS 11.5; current root lists Mutrah_Directorate_Map_Service_MIL1 and omits SeebContract_MIL1; MM subcatalog lists ArabicWebsite_mmm12c, EnglishWebsite_mmm12c and EnglishWebsiteLighting_mmm12c"
+    },
+    {
+      "target": "Mutrah layer metadata",
+      "method": "Node fetch f=pjson",
+      "result": "HTTP 200; polygon, PLOTUID integer documented system-generated unique per plot; source WKID32640, output latestWkid3857; maxRecordCount2000"
+    },
+    {
+      "target": "Mutrah all-row count",
+      "method": "where=1=1 returnCountOnly, 35s bound",
+      "result": "HTTP 200 count 18,752; 1.1s"
+    },
+    {
+      "target": "Mutrah OID manifest",
+      "method": "returnIdsOnly, 45s bound",
+      "result": "HTTP 200, manifest size 18,752; raw OIDs discarded; OBJECTID is not parcel identity"
+    },
+    {
+      "target": "PLOTUID non-null and null counts",
+      "method": "scalar returnCountOnly by PLOTUID IS NOT NULL / IS NULL",
+      "result": "HTTP 200: 18,746 non-null; 6 null; each under 0.5s"
+    },
+    {
+      "target": "Distinct native IDs",
+      "method": "returnDistinctValues=true, outFields=PLOTUID, returnGeometry=false, returnCountOnly=true, where=PLOTUID IS NOT NULL",
+      "result": "HTTP 200 count 18,482; 0.5s; 264 more non-null rows than distinct values, establishing duplicate PLOTUID values"
+    },
+    {
+      "target": "Zero sentinel check",
+      "method": "scalar count where PLOTUID=0 and where PLOTUID>0",
+      "result": "HTTP 200: zero-ID rows 0; positive rows 18,746"
+    },
+    {
+      "target": "Exact native ID lookups",
+      "method": "three separate where=PLOTUID equality requests, outFields=PLOTUID, geometry transiently returned, 35s each",
+      "result": "all HTTP 200; PLOTUID 153134 count1 1.17s, 173085 count1 1.17s, 338955 count1 0.56s; compact extent/centroid only persisted"
+    },
+    {
+      "target": "Native 3857 bbox and equivalent 4326 bbox",
+      "method": "the first exact sample envelope queried twice with inSR=3857 and transformed corners inSR=4326, returnCountOnly",
+      "result": "HTTP 200, 5 features in both; durations 1.17s and 0.45s"
+    },
+    {
+      "target": "Local density grid",
+      "method": "3x3 grid of 300m 3857 cells around first sample centroid; scalar counts only",
+      "result": "all nine cells non-empty; counts south-to-north rows [[32,22,7],[23,15,1],[19,3,1]], individual durations 0.26–0.88s"
+    },
+    {
+      "target": "PLOTUID aggregate count attempt",
+      "method": "combined count statistics request, bounded 35s",
+      "result": "HTTP 200 transport with ArcGIS code400 Unable to complete operation; replaced by supported returnDistinctValues count"
+    },
+    {
+      "target": "Distinct values with returnExtentOnly",
+      "method": "bounded distinct values + returnExtentOnly request",
+      "result": "HTTP 200 transport with ArcGIS code400 Failed to execute query; not used for conclusions"
+    },
+    {
+      "target": "Arbitrary extent-midpoint envelopes",
+      "method": "1km and10km 3857 boxes around full extent midpoint",
+      "result": "HTTP 200 zero matches; these coordinates were not grounded in a known parcel and are not absence evidence"
+    },
+    {
+      "target": "Seeb and Linking_business layer9",
+      "method": "scalar count / metadata queries",
+      "result": "ArcGIS 499 Token Required; parent confirms layer9 iteminfo documents cadastral polygons and unique PlotUID, but runtime query is gated"
+    },
+    {
+      "target": "Full duplicate and compound-key audit",
+      "method": "209 exact PLOTUID group queries, then 22 exact compound-pair geometry queries; no more than two concurrent; max20 rows/group; attribute-only for discovery; Turf geometry transient",
+      "result": "all 209 groups and 22 repeated compound groups succeeded with HTTP200, no query errors/over-limit; 473 duplicate-PLOTUID rows and 49 repeated-compound rows accounted for; all 38 Turf comparisons among 22 repeated compound groups were disjoint"
+    }
+  ],
+  "catalog": {
+    "url": "https://geoportal.mm.gov.om/server/rest/services",
+    "observedVersion": 11.5,
+    "directories": [
+      "AddressFDC",
+      "CAMPING_LOCATION",
+      "eNOC",
+      "Hosted",
+      "MM",
+      "MM_Survey",
+      "TechnicalStudies",
+      "Utilities"
+    ],
+    "assessment": "no new national parcel service identified; root includes Mutrah and Seeb official services"
+  },
+  "searches": {
+    "english": [
+      "site:geoportal.mm.gov.om/server/rest/services Oman MapServer PLOTUID",
+      "site:geoportal.mm.gov.om/server/rest/services MMPDC Plots",
+      "site:geoportal.mm.gov.om/server/rest/services PlotUID Oman"
+    ],
+    "arabic": [
+      "عمان مسقط طبقة الأراضي قطع الأراضي ArcGIS وزارة الإسكان GIS",
+      "عمان مسقط قطع الأراضي ArcGIS خدمات بلدية الأراضي"
+    ]
+  },
+  "limitations": [
+    "This is a Mutrah Directorate source, not national Oman coverage.",
+    "PLOTUID alone is not unique: 18,746 non-null rows yield 18,482 distinct PLOTUID values, six PLOTUIDs are null, and 264 row occurrences repeat an existing PLOTUID.",
+    "PLOTUID+NEWPLOTNO is complete only for 12,212 rows where both are non-null; 6,534 NEWPLOTNO-null rows and six PLOTUID-null rows remain unkeyed by this pair.",
+    "All 22 repeated non-null compound pairs were disjoint in 38 Turf comparisons; geometry union is supported for this snapshot, with no overlapping same-key variants found.",
+    "Within repeated pairs, NEWPHASE and new housing/area/block values match, but legacy PLOTNO and edit metadata sometimes differ. This probe does not establish lifecycle status or temporal currency.",
+    "Source PLOTAREA was zero in the three sampled examples; areas in this report are calculated from geometry. No raw geometry or owner data were retained."
+  ],
+  "evidenceUrls": [
+    "https://geoportal.mm.gov.om/server/rest/services",
+    "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/layers",
+    "https://geoportal.mm.gov.om/server/rest/services/Mutrah_Directorate_Map_Service_MIL1/MapServer/4?f=pjson",
+    "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/layers",
+    "https://geoportal.mm.gov.om/server/rest/services/Linking_business_activities_spatially_MIL1/MapServer/layers",
+    "https://geoportal.mm.gov.om/server/rest/services/MMPDC/MapServer/layers"
+  ],
+  "nextStep": "Use only the PLOTUID+NEWPLOTNO non-null subset with a strict disjoint-parts union check; keep null-key rows unresolved. The root session independently passed the Mutrah regional geographic gate; do not extend this finding to national Oman coverage."
+}

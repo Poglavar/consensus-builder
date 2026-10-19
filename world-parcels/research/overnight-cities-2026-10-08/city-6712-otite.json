@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Otite",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "KOGIS has statewide land-registry jurisdiction and an official project record places Otite in Kogi State. Those facts establish jurisdiction, but do not verify an Otite-local cadastral map, registry office or parcel inventory. City-specific registry presence remains unestablished.",
+  "registryEvidenceUrls": [
+    "https://kogistate.gov.ng/wp-content/uploads/KOGI-STATE-EXECUTIVE-ORDER-ON-KOGIS-AGENCY.pdf",
+    "https://kogistate.gov.ng/wp-content/uploads/KOGI-STATE-GUIDELINES-FOR-OBTAINING-SURVEY-LIFTING-1.pdf",
+    "https://msmd.gov.ng/wp-content/uploads/2023/03/2019-Appropriation.pdf",
+    "https://housing.kogistate.gov.ng/",
+    "https://kogistate.gov.ng/structure/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6712,
+  "cityId": "wup2025:6712",
+  "centerLatLon": [
+    7.5553588236408,
+    6.20724184387302
+  ],
+  "rank": 503,
+  "queueRank": 503,
+  "population2025": 1020218,
+  "population2025k": 1020.218,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Statewide land-registry jurisdiction is documented, but no anonymous public parcel-vector route, feature schema, safe native ID, or polygon sample was verified. The exact WUP point is retained as a settlement locator and is not treated as a city boundary.",
+  "scopeLimits": "Kogi State Executive Order No. 3 of 2022 gives KOGIS state-wide responsibility for land registration, state GIS, mapping all lands and managing the state land registry; it requires all land and titles in Kogi State to be registered with the agency. An official government project record names Otite community in Adavi LGA, Kogi State, tying the locality to that statewide jurisdiction. This supports registry jurisdiction, not a public local parcel dataset; no Kogi or Otite geometry route was verified. No public anonymous parcel polygons were retained; the route review is limited to the official informational/map-product sources listed.",
+  "remainingUncertainty": "The WUP point is not an official boundary; exact Otite locality and Adavi jurisdiction around that locator have not been validated from an official boundary layer. KOGIS public geometry availability and current operating status are unknown.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English (official language)",
+        "query": "Otite Nigeria official land registry cadastral map GIS land records",
+        "scope": "Determine the state/locality and identify city-bound official registry coverage plus a safe public geometry route.",
+        "result": "Search results identify an official Kogi State GIS agency and state land registry mandate; a government project record places an Otite community in Adavi LGA, Kogi State. The official statutory mandate covers land throughout Kogi, but no anonymous public parcel service or safe geometry schema was identified. The Kogi ministry landing page timed out on open; this is not interpreted as a server status or outage.",
+        "actualResultUrls": [
+          "https://kogistate.gov.ng/wp-content/uploads/KOGI-STATE-EXECUTIVE-ORDER-ON-KOGIS-AGENCY.pdf",
+          "https://kogistate.gov.ng/wp-content/uploads/2023/03/2019-Appropriation.pdf",
+          "https://housing.kogistate.gov.ng/"
+        ],
+        "executionMethod": "English-language search plus review of official pages."
+      },
+      {
+        "language": "English (official land-administration terminology)",
+        "query": "Kogi State Bureau of Lands KOGIS survey land registry Otite Adavi official",
+        "scope": "Check official state agency jurisdiction and whether Otite is within the jurisdiction.",
+        "result": "The state executive order assigns KOGIS a statewide GIS, mapping and land-registry function, including all lands and titles in Kogi State; the locality appears in a government project record under Adavi LGA. No public parcel-vector download/schema was found in the reviewed official sources.",
+        "actualResultUrls": [
+          "https://kogistate.gov.ng/wp-content/uploads/KOGI-STATE-EXECUTIVE-ORDER-ON-KOGIS-AGENCY.pdf",
+          "https://msmd.gov.ng/wp-content/uploads/2023/03/2019-Appropriation.pdf"
+        ],
+        "executionMethod": "English-language search plus review of official pages."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kogistate.gov.ng/wp-content/uploads/KOGI-STATE-EXECUTIVE-ORDER-ON-KOGIS-AGENCY.pdf",
+        "observation": "Kogi State Executive Order No. 3 of 2022 establishes KOGIS and assigns it statewide land mapping and registry functions; order states all land titles in Kogi State are registered with the agency."
+      },
+      {
+        "url": "https://msmd.gov.ng/wp-content/uploads/2023/03/2019-Appropriation.pdf",
+        "observation": "Government budget document names Otite community, Nagazi Ward, Adavi LGA, Kogi State. Used only to localize the named settlement to the state, not to establish parcel availability."
+      },
+      {
+        "url": "https://kogistate.gov.ng/wp-content/uploads/KOGI-STATE-GUIDELINES-FOR-OBTAINING-SURVEY-LIFTING-1.pdf",
+        "observation": "Kogi State official survey guidance is applicant/survey-plan oriented; it is not an anonymous map or geometry endpoint."
+      },
+      {
+        "url": "https://housing.kogistate.gov.ng/",
+        "observation": "Official Kogi Ministry of Housing site search result identifies the state ministry; page open timed out, so no response status is asserted."
+      },
+      {
+        "url": "https://kogistate.gov.ng/structure/",
+        "observation": "Official Kogi State structure page lists Adavi among the state council areas; used only with the separate government record naming Otite community in Adavi LGA to locate the locality inside Kogi statutory coverage."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "ng-kogi-state-kogis-land-registry",
+    "name": "Otite local land-registration and public-map source review",
+    "operator": "Kogi State Geographic Information System Agency (KOGIS) / Bureau of Lands",
+    "url": "https://kogistate.gov.ng/wp-content/uploads/KOGI-STATE-EXECUTIVE-ORDER-ON-KOGIS-AGENCY.pdf",
+    "scope": "Kogi State Executive Order No. 3 of 2022 gives KOGIS state-wide responsibility for land registration, state GIS, mapping all lands and managing the state land registry; it requires all land and titles in Kogi State to be registered with the agency. An official government project record names Otite community in Adavi LGA, Kogi State, tying the locality to that statewide jurisdiction. This supports registry jurisdiction, not a public local parcel dataset; no Kogi or Otite geometry route was verified. No complete public parcel geometry was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local or jurisdictional registry/survey evidence was found; no anonymous full parcel polygons were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    7.5553588236408,
+    6.20724184387302
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "Statewide land-registry jurisdiction is documented, but no anonymous public parcel-vector route, feature schema, safe native ID, or polygon sample was verified. The exact WUP point is retained as a settlement locator and is not treated as a city boundary."
+  },
+  "rootReview": {
+    "registryDecision": "city_local_presence_unestablished",
+    "reason": "KOGIS has statewide land-registry jurisdiction and an official project record places Otite in Kogi State. Those facts establish jurisdiction, but do not verify an Otite-local cadastral map, registry office or parcel inventory. City-specific registry presence remains unestablished."
+  },
+  "rootReviewedAt": "2026-10-09T01:02:36.862973+00:00"
+}

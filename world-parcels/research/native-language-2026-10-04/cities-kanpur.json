@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 97,
+  "city": "Kanpur",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kanpur.json",
+  "query": {
+    "language": "Hindi",
+    "script": "Devanagari",
+    "text": "कानपुर भू नक्शा खसरा नक्शा राजस्व विभाग उत्तर प्रदेश सरकारी"
+  },
+  "results": [
+    {
+      "title": "राजस्व परिषद् उत्तर प्रदेश",
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "kind": "official-state-land-records",
+      "note": "Government Revenue Council provides village maps and plot-boundary views; Kanpur coverage and anonymous vector downloads were not verified."
+    },
+    {
+      "title": "भूलेख उत्तर प्रदेश",
+      "url": "https://upbhulekh.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "State land-record portal links records/maps; no direct parcel feature endpoint surfaced."
+    }
+  ],
+  "assessment": "The state’s official village map tools may serve Kanpur land records; query did not confirm current spatial API or city coverage.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:9603",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Hindi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "कानपुर भू नक्शा खसरा नक्शा राजस्व विभाग उत्तर प्रदेश सरकारी",
+    "englishQuery": "Kanpur land map and khasra map from Uttar Pradesh Revenue Department",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

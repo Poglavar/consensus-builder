@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32633",
+  "featureCount": 51,
+  "validNonemptyCount": 51,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 220.13473602218608,
+    "median": 874.0373679018492,
+    "max": 62554.82120303511
+  },
+  "features": [
+    {
+      "id": "AT-BEV-01004:1129/2",
+      "areaM2": 1355.0360210105787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1144",
+      "areaM2": 965.1027256913721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1665",
+      "areaM2": 7917.940285365968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1672",
+      "areaM2": 1978.4744793995599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:579",
+      "areaM2": 644.1436008605465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:580",
+      "areaM2": 584.8340162367953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:581",
+      "areaM2": 536.4311809490704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:582",
+      "areaM2": 431.0797353008855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1664",
+      "areaM2": 1627.4905479500699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:588/1",
+      "areaM2": 1571.5982599602423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:588/2",
+      "areaM2": 1310.9634770937867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:588/3",
+      "areaM2": 504.4214225159799,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1663",
+      "areaM2": 721.8608437075919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:589",
+      "areaM2": 352.2059763377978,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:600",
+      "areaM2": 409.08065724279976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:601",
+      "areaM2": 868.1033121111465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1660/1",
+      "areaM2": 2230.042331013098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1660/2",
+      "areaM2": 662.1220423529472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1661",
+      "areaM2": 390.64375605227787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:572",
+      "areaM2": 1243.9965869310383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:576",
+      "areaM2": 3242.56731257971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:577",
+      "areaM2": 220.13473602218608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:578",
+      "areaM2": 535.3032907634104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:571",
+      "areaM2": 882.6038162183964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1654",
+      "areaM2": 2494.6145735226432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:565",
+      "areaM2": 1177.7963770000129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1656/1",
+      "areaM2": 4510.882577395354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1659",
+      "areaM2": 355.9968155159465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1657",
+      "areaM2": 252.29608192354016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:563/1",
+      "areaM2": 1176.9410591282447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:564",
+      "areaM2": 304.057122638016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:573",
+      "areaM2": 775.251090797033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:551/1",
+      "areaM2": 1058.9031217100987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:551/2",
+      "areaM2": 1264.9169264737543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:552/3",
+      "areaM2": 345.5995459252094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1126",
+      "areaM2": 877.5706203765819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1127/1",
+      "areaM2": 386.64875462097757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1128",
+      "areaM2": 864.5227033188249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1675",
+      "areaM2": 2815.61844556389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1677",
+      "areaM2": 3473.13842704785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1681",
+      "areaM2": 2553.9340811079783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1616",
+      "areaM2": 729.3627888305632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:388",
+      "areaM2": 463.5849004421049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:397",
+      "areaM2": 1234.533711130797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:398/1",
+      "areaM2": 874.0373679018492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1146",
+      "areaM2": 574.250753346461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:603/3",
+      "areaM2": 1256.48037409661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:605/3",
+      "areaM2": 873.0103872271351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:609",
+      "areaM2": 1062.7179674749373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:387/1",
+      "areaM2": 572.2079433746786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1",
+      "areaM2": 62554.82120303511,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

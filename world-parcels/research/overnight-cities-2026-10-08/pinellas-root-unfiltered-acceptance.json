@@ -1,0 +1,2495 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T02:03:51.681Z",
+  "city": "pinellas-root",
+  "descriptor": {
+    "id": "us-fl-pinellas-parcels",
+    "name": "Pinellas County public cadastral parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0",
+    "idField": "PGIS.PGIS.ParcelsPublic.PARCELID",
+    "objectIdField": "PGIS.PGIS.ParcelsPublic.OBJECTID",
+    "idType": "string",
+    "idPattern": "^[0-9]{18}$",
+    "idPrefix": "US-FL-PINELLAS-",
+    "outFields": [
+      "PGIS.PGIS.ParcelsPublic.OBJECTID",
+      "PGIS.PGIS.ParcelsPublic.PARCELID"
+    ],
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "US",
+    "metricSrid": 32617,
+    "cityIds": [
+      "saint-petersburg-us"
+    ],
+    "maxConcurrentQueries": 2
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -82.732,
+        27.87,
+        -82.731,
+        27.871
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -82.731,
+        27.87,
+        -82.73,
+        27.871
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -82.73,
+        27.87,
+        -82.729,
+        27.871
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -82.732,
+        27.871,
+        -82.731,
+        27.872
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -82.731,
+        27.871,
+        -82.73,
+        27.872
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -82.73,
+        27.871,
+        -82.729,
+        27.872
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -82.732,
+        27.872,
+        -82.731,
+        27.873
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -82.731,
+        27.872,
+        -82.73,
+        27.873
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -82.73,
+        27.872,
+        -82.729,
+        27.873
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -82.731,
+        27.869,
+        -82.73,
+        27.87
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -82.731,
+        27.873,
+        -82.73,
+        27.874
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -82.733,
+        27.871,
+        -82.732,
+        27.872
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -82.729,
+        27.871,
+        -82.728,
+        27.872
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 890,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        -82.732,
+        27.87,
+        -82.731,
+        27.871
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-183016215820010010",
+          "geometrySha256": "6ae4d9056c2725f1942e163d4e23d8b6bcb4717590d395c85cd864ad9e7b9b70"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684004703",
+          "geometrySha256": "40e2f183a5f5455c7988a148ceac388b27dc0050e7d4d83594877f07de88e6db"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016215820020030",
+          "geometrySha256": "c520f6ee6c7afdf201b97beb2d0a0f8f365d18c017db451c34bed54ac9840ed4"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016303380000131",
+          "geometrySha256": "6a4ed19bafef009509df3d76d590a6f38fbc2892a10823bf8c20d61f1001f177"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016215820020010",
+          "geometrySha256": "6e4175a524c8d976f3133099ba2ebdeba0c8779bd44bf1156c36741a2adf4b56"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": false,
+      "elapsedMs": 266,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "error": "Geometry changed between adjacent viewports: US-FL-PINELLAS-183016215820010010"
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 248,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        -82.73,
+        27.87,
+        -82.729,
+        27.871
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-183016697684003306",
+          "geometrySha256": "b2fde642f34c826fb7d5034725cb3bfd9fa22670b0852f95a7f35ca2aecfbbc3"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003310",
+          "geometrySha256": "c75a01f163068d522354137bbbf3cdaf8d5346e3ee1a811ff727c12f9b82cf5a"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003303",
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003304",
+          "geometrySha256": "b04c09a37d8b4bd4943ed5cb3498081a1a063e4d82240c3a0abd0caeb135df1a"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003302",
+          "geometrySha256": "a63b803dc88e9a242e41c5a7ff968f5c735c839d001985874592beb6d14f703d"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684004801",
+          "geometrySha256": "ebc187a907c0d7bf77c91d9faabeda279eca862e656a35c8c4f373522a737205"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003305",
+          "geometrySha256": "e8c19f1f8252032599bdad15b48ff32ed7a6e8385298fe071a1de41a22f6d4a6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 252,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        -82.732,
+        27.871,
+        -82.731,
+        27.872
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-183016215820010010",
+          "geometrySha256": "6ae4d9056c2725f1942e163d4e23d8b6bcb4717590d395c85cd864ad9e7b9b70"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 242,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        -82.731,
+        27.871,
+        -82.73,
+        27.872
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-183016697684003303",
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016215820010010",
+          "geometrySha256": "6ae4d9056c2725f1942e163d4e23d8b6bcb4717590d395c85cd864ad9e7b9b70"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003308",
+          "geometrySha256": "44b33ee3234493a44a8905256c6b1977c45060a475497b787e6aedec762c961c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 243,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        -82.73,
+        27.871,
+        -82.729,
+        27.872
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-183016697684003310",
+          "geometrySha256": "c75a01f163068d522354137bbbf3cdaf8d5346e3ee1a811ff727c12f9b82cf5a"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003303",
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003304",
+          "geometrySha256": "b04c09a37d8b4bd4943ed5cb3498081a1a063e4d82240c3a0abd0caeb135df1a"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003301",
+          "geometrySha256": "ae6e09b457afebe286c6e797b1f57a2dd8b025fbf07504fa8e197d31b9dc46ae"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016697684003302",
+          "geometrySha256": "a63b803dc88e9a242e41c5a7ff968f5c735c839d001985874592beb6d14f703d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 262,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        -82.732,
+        27.872,
+        -82.731,
+        27.873
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-183016663010000080",
+          "geometrySha256": "79ab25805dc3d62334a52d27f65b09ed70c35765a56e16874eb97b7810e3b10f"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016663010000090",
+          "geometrySha256": "9b2c988c0c8806bee803043274b82f723eccb0e66e0433cc018cf49ad974043e"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016663010000060",
+          "geometrySha256": "67f8215740d3eb6c47f189ed78cb8dad8de6b578cbd1b26351f4171e341db261"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 260,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        -82.731,
+        27.872,
+        -82.73,
+        27.873
+      ],
+      "complete": true,
+      "count": 21,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-183016665520000110",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000140",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000010",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000040",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000160",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000080",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000090",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016557510000010",
+          "geometrySha256": "fce99ab1d17d41c8c5f8e5e5468d12f312bc214c28d4ccbcc4376eabd519e0c4"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000130",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016663010000020",
+          "geometrySha256": "60f817b6ae86ee52e3063f475fe23f7cc607ee32bbe5a1c5308ed32b97250ee5"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000100",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000001",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000070",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000150",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016663010000090",
+          "geometrySha256": "9b2c988c0c8806bee803043274b82f723eccb0e66e0433cc018cf49ad974043e"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000060",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000050",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000020",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000030",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016665520000120",
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "id": "US-FL-PINELLAS-183016663010000051",
+          "geometrySha256": "51ab69bfc635b3ca745d86ab9fb40bb9b7e218720ee9adad3736743d49ad6646"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": false,
+      "elapsedMs": 249,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "error": "Geometry changed between adjacent viewports: US-FL-PINELLAS-183016663010000020"
+    },
+    {
+      "name": "viewport-9",
+      "passed": false,
+      "elapsedMs": 247,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "error": "Geometry changed between adjacent viewports: US-FL-PINELLAS-183016697684004801"
+    },
+    {
+      "name": "viewport-10",
+      "passed": false,
+      "elapsedMs": 251,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "error": "Geometry changed between adjacent viewports: US-FL-PINELLAS-183016665520000110"
+    },
+    {
+      "name": "viewport-11",
+      "passed": false,
+      "elapsedMs": 244,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "error": "Geometry changed between adjacent viewports: US-FL-PINELLAS-183016215820010010"
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 256,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        -82.729,
+        27.871,
+        -82.728,
+        27.872
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "US-FL-PINELLAS-173016060290000040",
+          "geometrySha256": "10d1e32c24443f96bc9a1a81d0e2d024a462a522b0eef0bcddbc17d9516c3734"
+        },
+        {
+          "id": "US-FL-PINELLAS-173016060290000060",
+          "geometrySha256": "1965de80ace6d50e157245607da93c8be476dd8fa0cf9090fe6e72a7418d1621"
+        },
+        {
+          "id": "US-FL-PINELLAS-173016060290000070",
+          "geometrySha256": "fe678c1a6f8a55fd7e17be0bebf833074110634c7f94844dd36247deb1bf36fc"
+        },
+        {
+          "id": "US-FL-PINELLAS-173016017730001190",
+          "geometrySha256": "ea0dc3de976dd27d99a65f08c19e2131d93b5d11e8d20691865bbcea0f0f8f9d"
+        },
+        {
+          "id": "US-FL-PINELLAS-173016060290000050",
+          "geometrySha256": "eab0bb3a70ca100c6cf0d630d0686c4f22de9a0b53900bad2612a9f717c27a1b"
+        },
+        {
+          "id": "US-FL-PINELLAS-173016017730000050",
+          "geometrySha256": "5eeaff9e0f29a93095c3e6bda3c542b70c7170dff60f91d34c675d1ff35538ce"
+        },
+        {
+          "id": "US-FL-PINELLAS-173016060290000080",
+          "geometrySha256": "376ce04a82f567efe0b230a836724652bc63b97c51dca715ef40efb8d7a131bc"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": false,
+      "elapsedMs": 16053,
+      "requestIndexes": [
+        13,
+        17
+      ],
+      "error": "Parcel provider timed out.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": false,
+      "elapsedMs": 974,
+      "requestIndexes": [
+        18,
+        18
+      ],
+      "error": "Fresh exact-ID read changed or omitted parcels"
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": false,
+      "elapsedMs": 1497,
+      "requestIndexes": [
+        19,
+        19
+      ],
+      "error": "Fresh exact-ID read changed or omitted parcels"
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 357,
+      "requestIndexes": [
+        20,
+        20
+      ],
+      "absentIds": [
+        "US-FL-PINELLAS-999999999999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 250,
+      "requestIndexes": [
+        21,
+        21
+      ],
+      "selectedParcelId": "US-FL-PINELLAS-183016557510000010",
+      "count": 20,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 287,
+      "requestIndexes": [
+        22,
+        22
+      ],
+      "selectedParcelId": "US-FL-PINELLAS-183016557510000010",
+      "coverage": "complete",
+      "siteM2": 6852.24,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.732%2C27.87%2C-82.731%2C27.871&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:51.683Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3365,
+      "features": [
+        {
+          "transportId": 848107,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 848107,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820010010"
+          },
+          "geometrySha256": "6ae4d9056c2725f1942e163d4e23d8b6bcb4717590d395c85cd864ad9e7b9b70"
+        },
+        {
+          "transportId": 917467,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 917467,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004703"
+          },
+          "geometrySha256": "40e2f183a5f5455c7988a148ceac388b27dc0050e7d4d83594877f07de88e6db"
+        },
+        {
+          "transportId": 966906,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 966906,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820020030"
+          },
+          "geometrySha256": "c520f6ee6c7afdf201b97beb2d0a0f8f365d18c017db451c34bed54ac9840ed4"
+        },
+        {
+          "transportId": 1063983,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1063983,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016303380000131"
+          },
+          "geometrySha256": "6a4ed19bafef009509df3d76d590a6f38fbc2892a10823bf8c20d61f1001f177"
+        },
+        {
+          "transportId": 1094652,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1094652,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820020010"
+          },
+          "geometrySha256": "6e4175a524c8d976f3133099ba2ebdeba0c8779bd44bf1156c36741a2adf4b56"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.731%2C27.87%2C-82.73%2C27.871&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:52.574Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 8688,
+      "features": [
+        {
+          "transportId": 390700,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 390700,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003307"
+          },
+          "geometrySha256": "6b983595c96da5001a291d1d2560fca84acaa81d73deaba9909b42104edfb712"
+        },
+        {
+          "transportId": 402128,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 402128,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003306"
+          },
+          "geometrySha256": "b2fde642f34c826fb7d5034725cb3bfd9fa22670b0852f95a7f35ca2aecfbbc3"
+        },
+        {
+          "transportId": 722527,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722527,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003310"
+          },
+          "geometrySha256": "c75a01f163068d522354137bbbf3cdaf8d5346e3ee1a811ff727c12f9b82cf5a"
+        },
+        {
+          "transportId": 740498,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 740498,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003303"
+          },
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "transportId": 801990,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 801990,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003314"
+          },
+          "geometrySha256": "1cdabc43bdf9ead03fe94bcd8f3162810e90fb7a7a55d66d7f25223b4348e9a4"
+        },
+        {
+          "transportId": 848107,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 848107,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820010010"
+          },
+          "geometrySha256": "ec6068230dc7737150461c0c7cdbe8bd4f873267f3474123309f03b5ce86c908"
+        },
+        {
+          "transportId": 917467,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 917467,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004703"
+          },
+          "geometrySha256": "eb038bedcdab0e21b17620a4c11d7751c72d2da4ac93427ce43cc02274bfb7a6"
+        },
+        {
+          "transportId": 928802,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 928802,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003302"
+          },
+          "geometrySha256": "a63b803dc88e9a242e41c5a7ff968f5c735c839d001985874592beb6d14f703d"
+        },
+        {
+          "transportId": 981813,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 981813,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003308"
+          },
+          "geometrySha256": "44b33ee3234493a44a8905256c6b1977c45060a475497b787e6aedec762c961c"
+        },
+        {
+          "transportId": 1001095,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1001095,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004801"
+          },
+          "geometrySha256": "ebc187a907c0d7bf77c91d9faabeda279eca862e656a35c8c4f373522a737205"
+        },
+        {
+          "transportId": 1026156,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1026156,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003305"
+          },
+          "geometrySha256": "e8c19f1f8252032599bdad15b48ff32ed7a6e8385298fe071a1de41a22f6d4a6"
+        },
+        {
+          "transportId": 1063983,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1063983,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016303380000131"
+          },
+          "geometrySha256": "6a4ed19bafef009509df3d76d590a6f38fbc2892a10823bf8c20d61f1001f177"
+        },
+        {
+          "transportId": 1094652,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1094652,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820020010"
+          },
+          "geometrySha256": "6e4175a524c8d976f3133099ba2ebdeba0c8779bd44bf1156c36741a2adf4b56"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.73%2C27.87%2C-82.729%2C27.871&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:52.841Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4235,
+      "features": [
+        {
+          "transportId": 402128,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 402128,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003306"
+          },
+          "geometrySha256": "b2fde642f34c826fb7d5034725cb3bfd9fa22670b0852f95a7f35ca2aecfbbc3"
+        },
+        {
+          "transportId": 722527,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722527,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003310"
+          },
+          "geometrySha256": "c75a01f163068d522354137bbbf3cdaf8d5346e3ee1a811ff727c12f9b82cf5a"
+        },
+        {
+          "transportId": 740498,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 740498,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003303"
+          },
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "transportId": 781214,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 781214,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003304"
+          },
+          "geometrySha256": "b04c09a37d8b4bd4943ed5cb3498081a1a063e4d82240c3a0abd0caeb135df1a"
+        },
+        {
+          "transportId": 928802,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 928802,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003302"
+          },
+          "geometrySha256": "a63b803dc88e9a242e41c5a7ff968f5c735c839d001985874592beb6d14f703d"
+        },
+        {
+          "transportId": 1001095,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1001095,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004801"
+          },
+          "geometrySha256": "ebc187a907c0d7bf77c91d9faabeda279eca862e656a35c8c4f373522a737205"
+        },
+        {
+          "transportId": 1026156,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1026156,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003305"
+          },
+          "geometrySha256": "e8c19f1f8252032599bdad15b48ff32ed7a6e8385298fe071a1de41a22f6d4a6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.732%2C27.871%2C-82.731%2C27.872&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:53.089Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1049,
+      "features": [
+        {
+          "transportId": 848107,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 848107,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820010010"
+          },
+          "geometrySha256": "6ae4d9056c2725f1942e163d4e23d8b6bcb4717590d395c85cd864ad9e7b9b70"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.731%2C27.871%2C-82.73%2C27.872&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:53.341Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2619,
+      "features": [
+        {
+          "transportId": 740498,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 740498,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003303"
+          },
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "transportId": 848107,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 848107,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820010010"
+          },
+          "geometrySha256": "6ae4d9056c2725f1942e163d4e23d8b6bcb4717590d395c85cd864ad9e7b9b70"
+        },
+        {
+          "transportId": 981813,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 981813,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003308"
+          },
+          "geometrySha256": "44b33ee3234493a44a8905256c6b1977c45060a475497b787e6aedec762c961c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.73%2C27.871%2C-82.729%2C27.872&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:53.583Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2594,
+      "features": [
+        {
+          "transportId": 722527,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722527,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003310"
+          },
+          "geometrySha256": "c75a01f163068d522354137bbbf3cdaf8d5346e3ee1a811ff727c12f9b82cf5a"
+        },
+        {
+          "transportId": 740498,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 740498,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003303"
+          },
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "transportId": 781214,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 781214,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003304"
+          },
+          "geometrySha256": "b04c09a37d8b4bd4943ed5cb3498081a1a063e4d82240c3a0abd0caeb135df1a"
+        },
+        {
+          "transportId": 798780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 798780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003301"
+          },
+          "geometrySha256": "ae6e09b457afebe286c6e797b1f57a2dd8b025fbf07504fa8e197d31b9dc46ae"
+        },
+        {
+          "transportId": 928802,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 928802,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003302"
+          },
+          "geometrySha256": "a63b803dc88e9a242e41c5a7ff968f5c735c839d001985874592beb6d14f703d"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.732%2C27.872%2C-82.731%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:53.826Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2331,
+      "features": [
+        {
+          "transportId": 750418,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 750418,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000080"
+          },
+          "geometrySha256": "79ab25805dc3d62334a52d27f65b09ed70c35765a56e16874eb97b7810e3b10f"
+        },
+        {
+          "transportId": 982937,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 982937,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000090"
+          },
+          "geometrySha256": "9b2c988c0c8806bee803043274b82f723eccb0e66e0433cc018cf49ad974043e"
+        },
+        {
+          "transportId": 1032436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1032436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000060"
+          },
+          "geometrySha256": "67f8215740d3eb6c47f189ed78cb8dad8de6b578cbd1b26351f4171e341db261"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.731%2C27.872%2C-82.73%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:54.090Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15399,
+      "features": [
+        {
+          "transportId": 196279,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 196279,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000110"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 283785,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 283785,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000140"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 722666,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722666,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000010"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 737780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 737780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000040"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 763455,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 763455,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000160"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 795551,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 795551,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000080"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 796616,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 796616,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000090"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 807436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 807436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016557510000010"
+          },
+          "geometrySha256": "fce99ab1d17d41c8c5f8e5e5468d12f312bc214c28d4ccbcc4376eabd519e0c4"
+        },
+        {
+          "transportId": 811082,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811082,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000130"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 811187,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811187,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000020"
+          },
+          "geometrySha256": "60f817b6ae86ee52e3063f475fe23f7cc607ee32bbe5a1c5308ed32b97250ee5"
+        },
+        {
+          "transportId": 816756,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 816756,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000100"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 824492,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 824492,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000001"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 838473,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 838473,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000070"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 953615,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 953615,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000150"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 982937,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 982937,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000090"
+          },
+          "geometrySha256": "9b2c988c0c8806bee803043274b82f723eccb0e66e0433cc018cf49ad974043e"
+        },
+        {
+          "transportId": 1014295,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1014295,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000060"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1053308,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1053308,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000050"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1083148,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1083148,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000020"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1084992,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1084992,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000030"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1089619,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1089619,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000120"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1094120,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1094120,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000051"
+          },
+          "geometrySha256": "51ab69bfc635b3ca745d86ab9fb40bb9b7e218720ee9adad3736743d49ad6646"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.73%2C27.872%2C-82.729%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:54.351Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1081,
+      "features": [
+        {
+          "transportId": 807436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 807436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016557510000010"
+          },
+          "geometrySha256": "fce99ab1d17d41c8c5f8e5e5468d12f312bc214c28d4ccbcc4376eabd519e0c4"
+        },
+        {
+          "transportId": 811187,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811187,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000020"
+          },
+          "geometrySha256": "e37e3aa094f1dd28f23509b5e0e7559098fd8726a395fe9bce16c68a2cd2eb91"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.731%2C27.869%2C-82.73%2C27.87&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:54.601Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4331,
+      "features": [
+        {
+          "transportId": 402167,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 402167,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004803"
+          },
+          "geometrySha256": "7337e31f4c3cb7e44758f3718da009c5f1b6db7ad2099e9f9e27be6e43f9d057"
+        },
+        {
+          "transportId": 846578,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 846578,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004701"
+          },
+          "geometrySha256": "df17b5a8b35f31c19c4118d760ecc2d7bf83861af0fe7ee48876541c7ba616a6"
+        },
+        {
+          "transportId": 898597,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 898597,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004802"
+          },
+          "geometrySha256": "aa6d4a15d72c54ebc1b86d49d29879df59dbae65d67259535611a3171da9a5e9"
+        },
+        {
+          "transportId": 917467,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 917467,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004703"
+          },
+          "geometrySha256": "40e2f183a5f5455c7988a148ceac388b27dc0050e7d4d83594877f07de88e6db"
+        },
+        {
+          "transportId": 937672,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 937672,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004808"
+          },
+          "geometrySha256": "ec0ab7d73fed659a86db54fa7812240a8da166191e92ee2417a65c7d06458376"
+        },
+        {
+          "transportId": 1001095,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1001095,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004801"
+          },
+          "geometrySha256": "01e9c58e03e7a8dc9f50a8b01f11e6c580d26e4a6ee078b524b61798e3f041a7"
+        },
+        {
+          "transportId": 1012039,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1012039,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016822730010010"
+          },
+          "geometrySha256": "73d565c3f0a7e41b318c684d1df8c3a77d900f69a6a45ab804ebf3d9f2d71ea8"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.731%2C27.873%2C-82.73%2C27.874&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:54.849Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15794,
+      "features": [
+        {
+          "transportId": 196279,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 196279,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000110"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 283785,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 283785,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000140"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 722666,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722666,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000010"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 737780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 737780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000040"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 763455,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 763455,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000160"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 795551,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 795551,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000080"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 796616,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 796616,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000090"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 803928,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 803928,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000011"
+          },
+          "geometrySha256": "9384f552546865ee7da1a325a51d0f16352e27fa1183bfa3d85de13681344085"
+        },
+        {
+          "transportId": 811082,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811082,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000130"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 811187,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811187,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000020"
+          },
+          "geometrySha256": "e37e3aa094f1dd28f23509b5e0e7559098fd8726a395fe9bce16c68a2cd2eb91"
+        },
+        {
+          "transportId": 816756,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 816756,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000100"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 824492,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 824492,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000001"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 838473,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 838473,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000070"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 855743,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 855743,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000010"
+          },
+          "geometrySha256": "c9d34e6c238b243f05b8cbc39a54f54db6ca1e0c65df9d3fe37c78f40e0f4942"
+        },
+        {
+          "transportId": 953615,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 953615,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000150"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 982937,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 982937,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000090"
+          },
+          "geometrySha256": "9b2c988c0c8806bee803043274b82f723eccb0e66e0433cc018cf49ad974043e"
+        },
+        {
+          "transportId": 1014295,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1014295,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000060"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1053308,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1053308,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000050"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1082514,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1082514,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000100"
+          },
+          "geometrySha256": "ffe0abee9567bba8f239f27e879f094e1346f03edd2847fd1a2eb5a427f6e313"
+        },
+        {
+          "transportId": 1083148,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1083148,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000020"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1084992,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1084992,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000030"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1089619,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1089619,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000120"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.733%2C27.871%2C-82.732%2C27.872&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:55.102Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1049,
+      "features": [
+        {
+          "transportId": 848107,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 848107,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820010010"
+          },
+          "geometrySha256": "ec6068230dc7737150461c0c7cdbe8bd4f873267f3474123309f03b5ce86c908"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.729%2C27.871%2C-82.728%2C27.872&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:55.347Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4660,
+      "features": [
+        {
+          "transportId": 722119,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722119,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000040"
+          },
+          "geometrySha256": "10d1e32c24443f96bc9a1a81d0e2d024a462a522b0eef0bcddbc17d9516c3734"
+        },
+        {
+          "transportId": 898846,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 898846,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000060"
+          },
+          "geometrySha256": "1965de80ace6d50e157245607da93c8be476dd8fa0cf9090fe6e72a7418d1621"
+        },
+        {
+          "transportId": 930132,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 930132,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000070"
+          },
+          "geometrySha256": "fe678c1a6f8a55fd7e17be0bebf833074110634c7f94844dd36247deb1bf36fc"
+        },
+        {
+          "transportId": 949348,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 949348,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016017730001190"
+          },
+          "geometrySha256": "ea0dc3de976dd27d99a65f08c19e2131d93b5d11e8d20691865bbcea0f0f8f9d"
+        },
+        {
+          "transportId": 997451,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 997451,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000050"
+          },
+          "geometrySha256": "eab0bb3a70ca100c6cf0d630d0686c4f22de9a0b53900bad2612a9f717c27a1b"
+        },
+        {
+          "transportId": 1040198,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1040198,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016017730000050"
+          },
+          "geometrySha256": "5eeaff9e0f29a93095c3e6bda3c542b70c7170dff60f91d34c675d1ff35538ce"
+        },
+        {
+          "transportId": 1101144,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1101144,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000080"
+          },
+          "geometrySha256": "376ce04a82f567efe0b230a836724652bc63b97c51dca715ef40efb8d7a131bc"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=3&resultOffset=0&geometry=-82.731%2C27.872%2C-82.73%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:55.606Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2368,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 196279,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 196279,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000110"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 283785,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 283785,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000140"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 722666,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722666,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000010"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=3&resultOffset=3&geometry=-82.731%2C27.872%2C-82.73%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:55.856Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2368,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 737780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 737780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000040"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 763455,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 763455,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000160"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 795551,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 795551,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000080"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=3&resultOffset=6&geometry=-82.731%2C27.872%2C-82.73%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:56.115Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2081,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 796616,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 796616,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000090"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 807436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 807436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016557510000010"
+          },
+          "geometrySha256": "fce99ab1d17d41c8c5f8e5e5468d12f312bc214c28d4ccbcc4376eabd519e0c4"
+        },
+        {
+          "transportId": 811082,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811082,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000130"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=3&resultOffset=9&geometry=-82.731%2C27.872%2C-82.73%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:56.361Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2163,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 811187,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811187,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000020"
+          },
+          "geometrySha256": "60f817b6ae86ee52e3063f475fe23f7cc607ee32bbe5a1c5308ed32b97250ee5"
+        },
+        {
+          "transportId": 816756,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 816756,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000100"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 824492,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 824492,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000001"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=3&resultOffset=12&geometry=-82.731%2C27.872%2C-82.73%2C27.873&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:03:56.646Z",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=PGIS.PGIS.ParcelsPublic.PARCELID+IN+%28%27173016017730000050%27%2C%27173016017730001190%27%2C%27173016060290000040%27%2C%27173016060290000050%27%2C%27173016060290000060%27%2C%27173016060290000070%27%2C%27173016060290000080%27%2C%27183016215820010010%27%2C%27183016215820020010%27%2C%27183016215820020030%27%2C%27183016303380000131%27%2C%27183016557510000010%27%2C%27183016663010000020%27%2C%27183016663010000051%27%2C%27183016663010000060%27%2C%27183016663010000080%27%2C%27183016663010000090%27%2C%27183016665520000001%27%2C%27183016665520000010%27%2C%27183016665520000020%27%2C%27183016665520000030%27%2C%27183016665520000040%27%2C%27183016665520000050%27%2C%27183016665520000060%27%2C%27183016665520000070%27%2C%27183016665520000080%27%2C%27183016665520000090%27%2C%27183016665520000100%27%2C%27183016665520000110%27%2C%27183016665520000120%27%2C%27183016665520000130%27%2C%27183016665520000140%27%2C%27183016665520000150%27%2C%27183016665520000160%27%2C%27183016697684003301%27%2C%27183016697684003302%27%2C%27183016697684003303%27%2C%27183016697684003304%27%2C%27183016697684003305%27%2C%27183016697684003306%27%29&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:04:11.659Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 27766,
+      "features": [
+        {
+          "transportId": 196279,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 196279,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000110"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 283785,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 283785,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000140"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 402128,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 402128,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003306"
+          },
+          "geometrySha256": "b2fde642f34c826fb7d5034725cb3bfd9fa22670b0852f95a7f35ca2aecfbbc3"
+        },
+        {
+          "transportId": 722119,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722119,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000040"
+          },
+          "geometrySha256": "10d1e32c24443f96bc9a1a81d0e2d024a462a522b0eef0bcddbc17d9516c3734"
+        },
+        {
+          "transportId": 722666,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722666,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000010"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 737780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 737780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000040"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 740498,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 740498,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003303"
+          },
+          "geometrySha256": "266c270f52d768bc93072090d223f4502c4e52b1e48ae7d15b51bda1aa99388a"
+        },
+        {
+          "transportId": 750418,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 750418,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000080"
+          },
+          "geometrySha256": "79ab25805dc3d62334a52d27f65b09ed70c35765a56e16874eb97b7810e3b10f"
+        },
+        {
+          "transportId": 763455,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 763455,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000160"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 781214,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 781214,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003304"
+          },
+          "geometrySha256": "b04c09a37d8b4bd4943ed5cb3498081a1a063e4d82240c3a0abd0caeb135df1a"
+        },
+        {
+          "transportId": 795551,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 795551,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000080"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 796616,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 796616,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000090"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 798780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 798780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003301"
+          },
+          "geometrySha256": "ae6e09b457afebe286c6e797b1f57a2dd8b025fbf07504fa8e197d31b9dc46ae"
+        },
+        {
+          "transportId": 807436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 807436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016557510000010"
+          },
+          "geometrySha256": "fce99ab1d17d41c8c5f8e5e5468d12f312bc214c28d4ccbcc4376eabd519e0c4"
+        },
+        {
+          "transportId": 811082,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811082,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000130"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 811187,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811187,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000020"
+          },
+          "geometrySha256": "e37e3aa094f1dd28f23509b5e0e7559098fd8726a395fe9bce16c68a2cd2eb91"
+        },
+        {
+          "transportId": 816756,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 816756,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000100"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 824492,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 824492,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000001"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 838473,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 838473,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000070"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 848107,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 848107,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820010010"
+          },
+          "geometrySha256": "ec6068230dc7737150461c0c7cdbe8bd4f873267f3474123309f03b5ce86c908"
+        },
+        {
+          "transportId": 898846,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 898846,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000060"
+          },
+          "geometrySha256": "1965de80ace6d50e157245607da93c8be476dd8fa0cf9090fe6e72a7418d1621"
+        },
+        {
+          "transportId": 928802,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 928802,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003302"
+          },
+          "geometrySha256": "a63b803dc88e9a242e41c5a7ff968f5c735c839d001985874592beb6d14f703d"
+        },
+        {
+          "transportId": 930132,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 930132,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000070"
+          },
+          "geometrySha256": "fe678c1a6f8a55fd7e17be0bebf833074110634c7f94844dd36247deb1bf36fc"
+        },
+        {
+          "transportId": 949348,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 949348,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016017730001190"
+          },
+          "geometrySha256": "ea0dc3de976dd27d99a65f08c19e2131d93b5d11e8d20691865bbcea0f0f8f9d"
+        },
+        {
+          "transportId": 953615,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 953615,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000150"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 966906,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 966906,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820020030"
+          },
+          "geometrySha256": "c520f6ee6c7afdf201b97beb2d0a0f8f365d18c017db451c34bed54ac9840ed4"
+        },
+        {
+          "transportId": 982937,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 982937,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000090"
+          },
+          "geometrySha256": "9b2c988c0c8806bee803043274b82f723eccb0e66e0433cc018cf49ad974043e"
+        },
+        {
+          "transportId": 997451,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 997451,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000050"
+          },
+          "geometrySha256": "eab0bb3a70ca100c6cf0d630d0686c4f22de9a0b53900bad2612a9f717c27a1b"
+        },
+        {
+          "transportId": 1014295,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1014295,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000060"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1026156,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1026156,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003305"
+          },
+          "geometrySha256": "e8c19f1f8252032599bdad15b48ff32ed7a6e8385298fe071a1de41a22f6d4a6"
+        },
+        {
+          "transportId": 1032436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1032436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000060"
+          },
+          "geometrySha256": "67f8215740d3eb6c47f189ed78cb8dad8de6b578cbd1b26351f4171e341db261"
+        },
+        {
+          "transportId": 1040198,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1040198,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016017730000050"
+          },
+          "geometrySha256": "5eeaff9e0f29a93095c3e6bda3c542b70c7170dff60f91d34c675d1ff35538ce"
+        },
+        {
+          "transportId": 1053308,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1053308,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000050"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1063983,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1063983,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016303380000131"
+          },
+          "geometrySha256": "6a4ed19bafef009509df3d76d590a6f38fbc2892a10823bf8c20d61f1001f177"
+        },
+        {
+          "transportId": 1083148,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1083148,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000020"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1084992,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1084992,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000030"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1089619,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1089619,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000120"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1094120,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1094120,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000051"
+          },
+          "geometrySha256": "51ab69bfc635b3ca745d86ab9fb40bb9b7e218720ee9adad3736743d49ad6646"
+        },
+        {
+          "transportId": 1094652,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1094652,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016215820020010"
+          },
+          "geometrySha256": "6e4175a524c8d976f3133099ba2ebdeba0c8779bd44bf1156c36741a2adf4b56"
+        },
+        {
+          "transportId": 1101144,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1101144,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "173016060290000080"
+          },
+          "geometrySha256": "376ce04a82f567efe0b230a836724652bc63b97c51dca715ef40efb8d7a131bc"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=PGIS.PGIS.ParcelsPublic.PARCELID+IN+%28%27183016697684003307%27%2C%27183016697684003308%27%2C%27183016697684003310%27%2C%27183016697684003314%27%2C%27183016697684004701%27%2C%27183016697684004703%27%2C%27183016697684004801%27%2C%27183016697684004802%27%2C%27183016697684004803%27%2C%27183016697684004808%27%29&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:04:12.634Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5966,
+      "features": [
+        {
+          "transportId": 390700,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 390700,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003307"
+          },
+          "geometrySha256": "6b983595c96da5001a291d1d2560fca84acaa81d73deaba9909b42104edfb712"
+        },
+        {
+          "transportId": 402167,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 402167,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004803"
+          },
+          "geometrySha256": "7337e31f4c3cb7e44758f3718da009c5f1b6db7ad2099e9f9e27be6e43f9d057"
+        },
+        {
+          "transportId": 722527,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722527,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003310"
+          },
+          "geometrySha256": "c75a01f163068d522354137bbbf3cdaf8d5346e3ee1a811ff727c12f9b82cf5a"
+        },
+        {
+          "transportId": 801990,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 801990,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003314"
+          },
+          "geometrySha256": "1cdabc43bdf9ead03fe94bcd8f3162810e90fb7a7a55d66d7f25223b4348e9a4"
+        },
+        {
+          "transportId": 846578,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 846578,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004701"
+          },
+          "geometrySha256": "df17b5a8b35f31c19c4118d760ecc2d7bf83861af0fe7ee48876541c7ba616a6"
+        },
+        {
+          "transportId": 898597,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 898597,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004802"
+          },
+          "geometrySha256": "aa6d4a15d72c54ebc1b86d49d29879df59dbae65d67259535611a3171da9a5e9"
+        },
+        {
+          "transportId": 917467,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 917467,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004703"
+          },
+          "geometrySha256": "eb038bedcdab0e21b17620a4c11d7751c72d2da4ac93427ce43cc02274bfb7a6"
+        },
+        {
+          "transportId": 937672,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 937672,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004808"
+          },
+          "geometrySha256": "ec0ab7d73fed659a86db54fa7812240a8da166191e92ee2417a65c7d06458376"
+        },
+        {
+          "transportId": 981813,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 981813,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684003308"
+          },
+          "geometrySha256": "44b33ee3234493a44a8905256c6b1977c45060a475497b787e6aedec762c961c"
+        },
+        {
+          "transportId": 1001095,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1001095,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016697684004801"
+          },
+          "geometrySha256": "ebc187a907c0d7bf77c91d9faabeda279eca862e656a35c8c4f373522a737205"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=PGIS.PGIS.ParcelsPublic.PARCELID+IN+%28%27999999999999999999%27%29&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:04:14.133Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.73001907079104%2C27.872080771875073%2C-82.72933218705128%2C27.873132671624862&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:04:14.491Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 14593,
+      "features": [
+        {
+          "transportId": 196279,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 196279,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000110"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 283785,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 283785,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000140"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 722666,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722666,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000010"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 737780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 737780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000040"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 763455,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 763455,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000160"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 795551,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 795551,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000080"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 796616,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 796616,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000090"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 807436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 807436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016557510000010"
+          },
+          "geometrySha256": "fce99ab1d17d41c8c5f8e5e5468d12f312bc214c28d4ccbcc4376eabd519e0c4"
+        },
+        {
+          "transportId": 811082,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811082,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000130"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 811187,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811187,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000020"
+          },
+          "geometrySha256": "e37e3aa094f1dd28f23509b5e0e7559098fd8726a395fe9bce16c68a2cd2eb91"
+        },
+        {
+          "transportId": 816756,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 816756,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000100"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 824492,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 824492,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000001"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 838473,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 838473,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000070"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 953615,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 953615,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000150"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1014295,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1014295,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000060"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1053308,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1053308,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000050"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1083148,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1083148,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000020"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1084992,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1084992,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000030"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1089619,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1089619,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000120"
+          },
+          "geometrySha256": "743f8156bc26a7429d12e695ff74baabe958e82cbdbb89e66c7fe6bcbc6beca6"
+        },
+        {
+          "transportId": 1094120,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1094120,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000051"
+          },
+          "geometrySha256": "51ab69bfc635b3ca745d86ab9fb40bb9b7e218720ee9adad3736743d49ad6646"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0/query?where=1%3D1&outFields=PGIS.PGIS.ParcelsPublic.OBJECTID%2CPGIS.PGIS.ParcelsPublic.PARCELID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=PGIS.PGIS.ParcelsPublic.OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-82.73001907079104%2C27.872080771875073%2C-82.72933218705128%2C27.873132671624862&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:04:14.742Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 14593,
+      "features": [
+        {
+          "transportId": 196279,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 196279,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000110"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 283785,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 283785,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000140"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 722666,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 722666,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000010"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 737780,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 737780,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000040"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 763455,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 763455,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000160"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 795551,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 795551,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000080"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 796616,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 796616,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000090"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 807436,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 807436,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016557510000010"
+          },
+          "geometrySha256": "fce99ab1d17d41c8c5f8e5e5468d12f312bc214c28d4ccbcc4376eabd519e0c4"
+        },
+        {
+          "transportId": 811082,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811082,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000130"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 811187,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 811187,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000020"
+          },
+          "geometrySha256": "60f817b6ae86ee52e3063f475fe23f7cc607ee32bbe5a1c5308ed32b97250ee5"
+        },
+        {
+          "transportId": 816756,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 816756,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000100"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 824492,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 824492,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000001"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 838473,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 838473,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000070"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 953615,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 953615,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000150"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1014295,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1014295,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000060"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1053308,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1053308,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000050"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1083148,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1083148,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000020"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1084992,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1084992,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000030"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1089619,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1089619,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016665520000120"
+          },
+          "geometrySha256": "8d6c6274dd38f8966454fd5518b5535c1f7a281d824002fa6425927caff50345"
+        },
+        {
+          "transportId": 1094120,
+          "properties": {
+            "PGIS.PGIS.ParcelsPublic.OBJECTID": 1094120,
+            "PGIS.PGIS.ParcelsPublic.PARCELID": "183016663010000051"
+          },
+          "geometrySha256": "51ab69bfc635b3ca745d86ab9fb40bb9b7e218720ee9adad3736743d49ad6646"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-09/pinellas-root-quality.json",
+  "uniqueParcels": 50,
+  "requestCount": 23,
+  "allTestsPassed": false,
+  "finishedAt": "2026-10-09T02:04:15.033Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

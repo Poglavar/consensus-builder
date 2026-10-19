@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:60",
+  "queueRank": 60,
+  "name": "Abidjan",
+  "country": "Côte d'Ivoire",
+  "countryCode": "CI",
+  "centerLatLon": [
+    5.35604816980528,
+    -4.01965468787951
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://cadastrenational.dgi.gouv.ci/",
+      "observation": "Official e-cadastre portal of the tax directorate (DGI); its TLS certificate had expired, so the request failed verification and was not bypassed."
+    },
+    {
+      "url": "https://geoportail.anstat.ci/",
+      "observation": "ANSTAT geoportal returned a Cloudflare 'Just a moment' challenge page, not data; statistical indicators rather than parcels."
+    },
+    {
+      "url": "https://cotedivoire.africageoportal.com/",
+      "observation": "Esri Africa GeoPortal hub loads; an ArcGIS Online search for Abidjan parcels/cadastre returned zero feature services."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cadastrenational.dgi.gouv.ci/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS certificate has expired; not bypassed"
+    },
+    {
+      "url": "https://geoportail.anstat.ci/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "assessment": "bot-challenge page, no data"
+    },
+    {
+      "url": "https://cotedivoire.africageoportal.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "hub landing page only"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=parcels Abidjan cadastre type:Feature Service&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    },
+    {
+      "url": "https://www.ccia.ci/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.anafor.ci/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "DGI e-cadastre and a 2022 Abidjan cadastral-mapping reinforcement effort reported in search results; public parcel polygons not confirmed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The main official portal was blocked by an expired certificate, which may be temporary; whether it exposes anonymous parcel geometry is unknown.",
+  "nextStep": "Retry the DGI e-cadastre later and inspect its network calls for a bounded parcel query and access terms."
+}

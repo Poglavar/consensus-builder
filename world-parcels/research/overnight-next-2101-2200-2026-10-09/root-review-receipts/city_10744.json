@@ -1,0 +1,39 @@
+{
+  "taskId": "city:10744",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-10744-laiyang.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/laiyang-service-review.json",
+    "tmp/valhalla-parcel-research/laiyang/org.html",
+    "tmp/valhalla-parcel-research/laiyang/land.html"
+  ],
+  "checkedAt": "2026-10-11T01:15:32Z",
+  "queueIdentity": {
+    "rank": 2199,
+    "cityCode": 10744,
+    "name": "Laiyang",
+    "country": "China",
+    "point": [
+      36.9702350418536,
+      120.712180641319
+    ],
+    "population2025Persons": 265318
+  },
+  "review": {
+    "englishAndNativeSearchesRecorded": true,
+    "nativeLanguage": "Chinese (Simplified)",
+    "retainedFullPolygonCount": 0,
+    "safeNativeParcelIdAndGeometryResponse": false,
+    "registryFound": true,
+    "custodyBasis": "Official municipal page and original HTML cache describe citywide registration-center and mapping duties; anonymous geometry is unresolved.",
+    "adapterQualification": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification is evidenced. No parcel response exists from which to compute acceptance metrics.",
+    "absenceClaim": "No citywide parcel absence inferred from unavailable service, timeout, or lack of point result.",
+    "runtimeAdmitted": false
+  },
+  "firstPartyUrlsReviewed": [
+    "https://www.laiyang.gov.cn/col/col102158/index.html",
+    "https://www.laiyang.gov.cn/art/2022/12/6/art_102158_10771.html"
+  ]
+}

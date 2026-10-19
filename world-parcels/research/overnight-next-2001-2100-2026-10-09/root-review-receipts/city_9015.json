@@ -1,0 +1,54 @@
+{
+  "taskId": "city:9015",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-9015-dhaulpur.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/dhaulpur-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:47:43Z",
+  "identityCheck": {
+    "wupArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "cityCode": 9015,
+    "rank": 2092,
+    "country": "India",
+    "point": [
+      26.7014103659841,
+      77.8902844733414
+    ],
+    "populationPersons": 277498,
+    "queueAndRosterMatch": true
+  },
+  "researchCheck": {
+    "englishAndLocalSearchRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeIdGeometryResponseVerified": false,
+    "custodyFound": true,
+    "sourceAssessment": "Official viewer HTML names Dhaulpur in a district selector, while its configured Khasra feature layer is JDA/Jaipur scoped; no Dhaulpur native-ID polygon response was captured.",
+    "firstPartyCachesOpened": [
+      {
+        "path": "tmp/valhalla-parcel-research/9015/rajdharaa.html",
+        "sha256": "7bce406306beaad196fba788416fbcb6b2048abbafdfc005d9e849a601e42820"
+      },
+      {
+        "path": "tmp/valhalla-parcel-research/9015/Config.js",
+        "sha256": "ee5c5fb9a1ae35a37f038eff90c07919e3d2a4d8a3f6bf1394181b23c9c830af"
+      },
+      {
+        "path": "tmp/valhalla-parcel-research/9015/map.js",
+        "sha256": "cabc1045835823fea9cd45dd9185af2b99146cde0063c2f04752fab6b2a64ff8"
+      }
+    ]
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "runtimeEnabled": false
+  },
+  "holdReason": "No independently evidenced anonymous city-scoped native-ID full-polygon adapter qualification. Viewer timeout, gateway failure, or unavailable route is unresolved access, not parcel absence."
+}

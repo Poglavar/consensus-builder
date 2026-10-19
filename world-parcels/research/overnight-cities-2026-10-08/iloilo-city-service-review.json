@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4454-iloilo-city.json",
+  "purpose": "Document city-scope registry/cadastre evidence, identity resolution, and bounded safe-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The city’s assessor and citywide tax-map maintenance are confirmed, but no anonymous vector endpoint or safe feature schema was found.",
+  "registryAssessment": "Iloilo City Government lists a local City Assessor’s Office. The city’s Comprehensive Development Plan assigns it citywide real-property assessment and maintenance of tax maps. These are city-specific assessment/map records, not evidence of a public downloadable cadastral feature layer.",
+  "officialPrimarySources": [
+    {
+      "url": "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+      "observation": "Iloilo City Government lists a local City Assessor’s Office. The city’s Comprehensive Development Plan assigns it citywide real-property assessment and maintenance of tax maps. These are city-specific assessment/map records, not evidence of a public downloadable cadastral feature layer."
+    },
+    {
+      "url": "https://iloilocity.gov.ph/main/wp-content/uploads/2023/05/CDP2023-2028_4-13_Final-Document.pdf",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    },
+    {
+      "url": "https://iloilocity.gov.ph/organizational-structure/",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Hiligaynon / Filipino",
+      "query": "Iloilo City opisyal City Assessor tax map cadastral mapa sang duta",
+      "result": "Nakit-an sa opisyal nga listahan sang gobyerno sang Iloilo City ang City Assessor’s Office. Ang city plan naghatag sa opisina sang responsibilidad sa real-property assessment kag pagmentinar sang tax maps sa bilog nga siyudad; wala makita nga anonymous vector endpoint ukon safe schema.",
+      "actualResultUrls": [
+        "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+        "https://iloilocity.gov.ph/main/wp-content/uploads/2023/05/CDP2023-2028_4-13_Final-Document.pdf",
+        "https://iloilocity.gov.ph/organizational-structure/"
+      ],
+      "method": "Separate English and Hiligaynon/Filipino discovery followed by official city directory and plan review. No parcel or taxpayer lookup."
+    },
+    {
+      "language": "English",
+      "query": "Iloilo City official city assessor cadastral tax maps property assessment",
+      "result": "The official city directory identifies the City Assessor’s Office, and the official city plan assigns it real-property assessment and citywide tax-map maintenance. No anonymous parcel vector endpoint or safe schema was identified.",
+      "actualResultUrls": [
+        "https://iloilocity.gov.ph/iloilo-city-government-directory/",
+        "https://iloilocity.gov.ph/main/wp-content/uploads/2023/05/CDP2023-2028_4-13_Final-Document.pdf",
+        "https://iloilocity.gov.ph/organizational-structure/"
+      ],
+      "method": "Separate English and Hiligaynon/Filipino discovery followed by official city directory and plan review. No parcel or taxpayer lookup."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The city’s assessor and citywide tax-map maintenance are confirmed, but no anonymous vector endpoint or safe feature schema was found."
+  },
+  "privacy": "No owner, address, applicant, taxpayer, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The city’s assessor and citywide tax-map maintenance are confirmed, but no anonymous vector endpoint or safe feature schema was found."
+  }
+}

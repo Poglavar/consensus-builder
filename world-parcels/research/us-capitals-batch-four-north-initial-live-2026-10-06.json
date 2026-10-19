@@ -1,0 +1,940 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "raleigh",
+      "stateCode": "NC",
+      "sourceId": "us-raleigh-parcels",
+      "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+      "attempts": [],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned a missing or invalid native parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 1,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 311,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      "failureOrigin": "local-descriptor-validation",
+      "assessment": "The temporary descriptor inherited an explanatory sentence as idPattern, which rejected valid native values. The corrected descriptor passed; this attempt is not a provider identity failure."
+    },
+    {
+      "city": "bismarck",
+      "stateCode": "ND",
+      "sourceId": "us-bismarck-parcels",
+      "endpoint": "https://services1.arcgis.com/GOcSXpzwBHyk2nog/arcgis/rest/services/NDGISHUB_Parcels/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7875,
+            46.805,
+            -100.785,
+            46.8075
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.785,
+            46.805,
+            -100.7825,
+            46.8075
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7825,
+            46.805,
+            -100.78,
+            46.8075
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7875,
+            46.8075,
+            -100.785,
+            46.809999999999995
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.785,
+            46.8075,
+            -100.7825,
+            46.809999999999995
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7825,
+            46.8075,
+            -100.78,
+            46.809999999999995
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7875,
+            46.809999999999995,
+            -100.785,
+            46.8125
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.785,
+            46.809999999999995,
+            -100.7825,
+            46.8125
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7825,
+            46.809999999999995,
+            -100.78,
+            46.8125
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.78,
+            46.805,
+            -100.7775,
+            46.8075
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7775,
+            46.805,
+            -100.77499999999999,
+            46.8075
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.77499999999999,
+            46.805,
+            -100.7725,
+            46.8075
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.78,
+            46.8075,
+            -100.7775,
+            46.809999999999995
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7775,
+            46.8075,
+            -100.77499999999999,
+            46.809999999999995
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.77499999999999,
+            46.8075,
+            -100.7725,
+            46.809999999999995
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.78,
+            46.809999999999995,
+            -100.7775,
+            46.8125
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.7775,
+            46.809999999999995,
+            -100.77499999999999,
+            46.8125
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.77499999999999,
+            46.809999999999995,
+            -100.7725,
+            46.8125
+          ],
+          "count": 71,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -100.78,
+          46.8075,
+          -100.7775,
+          46.809999999999995
+        ],
+        "forcedPageSize": 3,
+        "count": 8,
+        "returned": 8,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 508,
+      "exactResolved": 508,
+      "nativeIds": [
+        "1-064-005",
+        "1-050-030",
+        "1-048-055"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-bismarck-parcels",
+        "parcels": 1,
+        "siteM2": 627.7
+      },
+      "requests": 31
+    },
+    {
+      "city": "columbus",
+      "stateCode": "OH",
+      "sourceId": "us-columbus-parcels",
+      "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83.0025,
+            39.9575,
+            -83,
+            39.96
+          ],
+          "count": 240,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83,
+            39.9575,
+            -82.9975,
+            39.96
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9975,
+            39.9575,
+            -82.995,
+            39.96
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83.0025,
+            39.96,
+            -83,
+            39.9625
+          ],
+          "count": 163,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83,
+            39.96,
+            -82.9975,
+            39.9625
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9975,
+            39.96,
+            -82.995,
+            39.9625
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83.0025,
+            39.9625,
+            -83,
+            39.965
+          ],
+          "count": 290,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -83,
+            39.9625,
+            -82.9975,
+            39.965
+          ],
+          "count": 166,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9975,
+            39.9625,
+            -82.995,
+            39.965
+          ],
+          "count": 86,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.995,
+            39.9575,
+            -82.9925,
+            39.96
+          ],
+          "count": 57,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9925,
+            39.9575,
+            -82.99,
+            39.96
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.99,
+            39.9575,
+            -82.9875,
+            39.96
+          ],
+          "count": 153,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.995,
+            39.96,
+            -82.9925,
+            39.9625
+          ],
+          "count": 284,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9925,
+            39.96,
+            -82.99,
+            39.9625
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.99,
+            39.96,
+            -82.9875,
+            39.9625
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.995,
+            39.9625,
+            -82.9925,
+            39.965
+          ],
+          "count": 119,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.9925,
+            39.9625,
+            -82.99,
+            39.965
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -82.99,
+            39.9625,
+            -82.9875,
+            39.965
+          ],
+          "count": 41,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "AssertionError",
+        "message": "Live acceptance comparison failed (strictEqual); geometry/completeness details omitted.",
+        "code": "ERR_ASSERTION"
+      },
+      "requests": 27,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 263,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    },
+    {
+      "city": "oklahoma-city",
+      "stateCode": "OK",
+      "sourceId": "us-oklahoma-city-parcels",
+      "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.465,
+            -97.5175,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.465,
+            -97.515,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.465,
+            -97.5125,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.4675,
+            -97.5175,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.4675,
+            -97.515,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.4675,
+            -97.5125,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.47,
+            -97.5175,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.47,
+            -97.515,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.47,
+            -97.5125,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.465,
+            -97.51,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.465,
+            -97.5075,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.465,
+            -97.505,
+            35.4675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.4675,
+            -97.51,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.4675,
+            -97.5075,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.4675,
+            -97.505,
+            35.47
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.47,
+            -97.51,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.47,
+            -97.5075,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.47,
+            -97.505,
+            35.472500000000004
+          ],
+          "count": 0,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "AssertionError",
+        "message": "Live acceptance comparison failed (==); geometry/completeness details omitted.",
+        "code": "ERR_ASSERTION"
+      },
+      "requests": 18,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 278,
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8"
+      }
+    },
+    {
+      "city": "salem",
+      "stateCode": "OR",
+      "sourceId": "us-salem-parcels",
+      "endpoint": "https://gis.co.marion.or.us/arcgis/rest/services/Public/Parcels/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.04,
+            44.940000000000005,
+            -123.03750000000001,
+            44.9425
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03750000000001,
+            44.940000000000005,
+            -123.03500000000001,
+            44.9425
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03500000000001,
+            44.940000000000005,
+            -123.03250000000001,
+            44.9425
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.04,
+            44.9425,
+            -123.03750000000001,
+            44.945
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03750000000001,
+            44.9425,
+            -123.03500000000001,
+            44.945
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03500000000001,
+            44.9425,
+            -123.03250000000001,
+            44.945
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.04,
+            44.945,
+            -123.03750000000001,
+            44.947500000000005
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03750000000001,
+            44.945,
+            -123.03500000000001,
+            44.947500000000005
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03500000000001,
+            44.945,
+            -123.03250000000001,
+            44.947500000000005
+          ],
+          "count": 37,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03250000000001,
+            44.940000000000005,
+            -123.03000000000002,
+            44.9425
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03000000000002,
+            44.940000000000005,
+            -123.0275,
+            44.9425
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.0275,
+            44.940000000000005,
+            -123.025,
+            44.9425
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03250000000001,
+            44.9425,
+            -123.03000000000002,
+            44.945
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03000000000002,
+            44.9425,
+            -123.0275,
+            44.945
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.0275,
+            44.9425,
+            -123.025,
+            44.945
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03250000000001,
+            44.945,
+            -123.03000000000002,
+            44.947500000000005
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.03000000000002,
+            44.945,
+            -123.0275,
+            44.947500000000005
+          ],
+          "count": 72,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -123.0275,
+            44.945,
+            -123.025,
+            44.947500000000005
+          ],
+          "count": 35,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -123.03000000000002,
+          44.940000000000005,
+          -123.0275,
+          44.9425
+        ],
+        "forcedPageSize": 3,
+        "count": 12,
+        "returned": 12,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 460,
+      "exactResolved": 460,
+      "nativeIds": [
+        "073W22DC04500",
+        "073W22DC04600",
+        "073W22DC06200"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-salem-parcels",
+        "parcels": 1,
+        "siteM2": 6388.96
+      },
+      "requests": 32
+    }
+  ]
+}

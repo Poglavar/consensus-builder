@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-11687-dhupguri.json",
+  "cityCode": 11687,
+  "queueRank": 2377,
+  "name": "Dhupguri",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [26.5856214018981, 89.0051750146763],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "assessment": "West Bengal official land-record/map custody is evidenced by Banglarbhumi, and the Government of India DILRMP page identifies Dhupguri tehsil in Jalpaiguri and reports digitized village cadastral-map progress. The bounded anonymous route did not yield safe parcel features; runtime remains held.",
+  "officialPrimarySources": [
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "operator": "Land and Land Reforms and Refugee Relief and Rehabilitation Department, Government of West Bengal", "scope": "Official public land-record service page listing Plot Map Request and Mouza Map Request."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211", "operator": "Department of Land Resources, Government of India", "scope": "Official map-digitization status for West Bengal, Jalpaiguri, Dhupguri tehsil; page reports village map sheets digitized and e-Bhuchitra noted."},
+    {"url": "https://jalpaiguri.gov.in/", "operator": "Jalpaiguri District Administration, Government of West Bengal", "scope": "District custodian context and official Dhupguri notices; not a parcel feature endpoint."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Dhupguri West Bengal official cadastral map parcel GIS land records", "result": "Official Banglarbhumi, DILRMP Dhupguri tehsil status, and Jalpaiguri district sources found; no safe parcel geometry response verified.", "resultUrls": ["https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211", "https://jalpaiguri.gov.in/"]},
+    {"language": "Bengali", "query": "ধূপগুড়ি পশ্চিমবঙ্গ সরকারি জমির নকশা ভূমি রেকর্ড ক‍্যাডাস্ট্রাল ম্যাপ", "result": "Official West Bengal land-record/map custodian and DILRMP Dhupguri status page found; no safe native parcel ID-plus-geometry response verified.", "resultUrls": ["https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211"]}
+  ],
+  "attempts": [
+    {"method": "SEARCH", "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "httpStatus": "Discovery result available", "outcome": "Official page identified Plot Map Request, Mouza Map Request, RS-LR information, and the West Bengal land-record custodian."},
+    {"method": "SEARCH", "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211", "httpStatus": "Discovery result available", "outcome": "Official page identifies State West Bengal, District Jalpaiguri, Tehsil Dhupguri and reports village map digitization status; it is progress metadata, not parcel geometry."},
+    {"method": "SEARCH", "url": "https://jalpaiguri.gov.in/", "httpStatus": "Discovery result available", "outcome": "Official district administration source; Dhupguri-related notices were visible, but no parcel API was identified."},
+    {"method": "GET", "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "httpStatus": "timeout after 20 seconds", "outcome": "Bounded ordinary public GET timed out. No login, CAPTCHA bypass, credential, or TLS exception was attempted."},
+    {"method": "GET", "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/2211", "httpStatus": "TLS verification failed in local curl after 20 seconds", "outcome": "Request was not retried with disabled or broadened TLS verification. Web discovery content was used instead."}
+  ],
+  "schemaAndCrs": {"viewerConfig": "No current Banglarbhumi JavaScript/configuration or parcel service endpoint was retrieved in the bounded requests.", "geometryCrs": null, "nativeIdentity": null, "sourceFieldMapping": null, "compositeKeyProvenance": null, "boundedAnonymousResponse": {"requestScope": "Exact WUP point [26.5856214018981, 89.0051750146763] was not submitted to a verified parcel endpoint.", "featureCount": 0, "nativeIdentity": null, "result": "No parcel query response obtained; no absence inference."}},
+  "safeFieldAllowlist": ["native public parcel ID if available", "native polygon geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes", "source service URL", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official custodian and Dhupguri tehsil map-digitization evidence exist, but no anonymous native parcel ID-plus-geometry response or CRS/schema was obtained."},
+  "scopeLimits": ["Exact WUP point [26.5856214018981, 89.0051750146763] was preserved and not shifted.", "No exact-point hit or miss was tested against a verified parcel endpoint; no citywide absence is inferred.", "No GeoJSON sample is retained because no safe native identity plus unchanged full polygon was obtained.", "Banglarbhumi is a state-level service custodian; Dhupguri-specific parcel coverage, endpoint capability, native identity semantics, and update cadence remain unverified.", "DILRMP status is digitization/progress metadata, not evidence that a public geometry API is open.", "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained."],
+  "uncertainty": "A future or session-backed Banglarbhumi route may expose plot/mouza maps or records, but this attempt did not safely expose parcel geometry. Runtime/admission remains held and no source integration is claimed.",
+  "integrationDecision": "not_integrated"
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BY",
+  "country": "Belarus",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "National Cadastral Agency (NCA / Natsionalnoe kadastrovoe agentstvo) under State Property Committee (gki.gov.by)",
+  "portalsFound": [
+    {
+      "url": "https://map.nca.by/",
+      "observation": "Public cadastral map (web SPA) reachable; no open parcel API identified"
+    },
+    {
+      "url": "https://www.nca.by/",
+      "observation": "NCA site"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://map.nca.by/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA shell only"
+    },
+    {
+      "url": "https://map.nca.by/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "returns SPA HTML, not WFS"
+    },
+    {
+      "url": "https://geoportal.nca.by/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Countrywide public cadastral map (map.nca.by)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "Viewer's backing API not inspected; sanctions/regional access may affect reachability.",
+  "nextStep": "Inspect map.nca.by network calls in a browser for its parcel layer endpoint."
+}

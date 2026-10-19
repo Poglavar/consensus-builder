@@ -1,0 +1,42 @@
+{
+  "taskId": "city:11969",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-11969-borigaon.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/borigaon-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T03:28:37Z",
+  "identity": {
+    "queueRank": 2299,
+    "cityCode": 11969,
+    "name": "Borigaon",
+    "country": "India",
+    "pointLatLon": [
+      26.4310167500445,
+      92.5406925865649
+    ],
+    "populationPersons": 253566
+  },
+  "reviewFindings": {
+    "bilingualSearchesRecorded": [
+      "English",
+      "Assamese"
+    ],
+    "durableFullPolygonSamples": 0,
+    "safeNativeIdAndPolygonResponseVerified": false,
+    "independentLiveAdapterQualification": false,
+    "admissionGatesMissing": [
+      "fresh native-ID reads",
+      "forced paging",
+      "13 bounded cells",
+      "metric GEOS validity and overlap checks",
+      "source binding",
+      "headed details-panel verification"
+    ],
+    "reason": "Assam land-record services and Udalguri administrative context are evidenced, but the viewer district list omits Udalguri and no Borigaon parcel response exists. The first-party PDF lists multiple Borigaon-named villages; it does not bind a parcel to the WUP point. The city packet omits population, which is checked directly against the immutable roster.",
+    "absenceConclusion": false
+  }
+}

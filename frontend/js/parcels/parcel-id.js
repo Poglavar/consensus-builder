@@ -28,15 +28,20 @@
     }
 
     function getParcelId(input) {
-        if (input && typeof input === 'object' && 'properties' in input) {
-            return ensureParcelId(input);
-        }
         if (input && typeof input === 'object') {
-            return ensureParcelId({ properties: input });
+            const props = 'properties' in input ? input.properties : input;
+            if (!props || typeof props !== 'object') return null;
+            return coerceId(props.parcelId ?? props.parcel_id ?? props.id);
         }
         return coerceId(input);
     }
 
     global.ensureParcelId = ensureParcelId;
     global.getParcelId = getParcelId;
+
+    // Also export for node, so these pure helpers can be unit-tested without a browser
+    // (backend/test/parcel-id.test.js). The browser path above is unchanged.
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = { ensureParcelId, getParcelId };
+    }
 })(typeof window !== 'undefined' ? window : globalThis);

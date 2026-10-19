@@ -1,0 +1,40 @@
+{
+  "taskId": "city:11015",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:13:55Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-11015-rafiganj.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/rafiganj-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "tmp/valhalla-parcel-research/11015/rafiganj-3.json",
+    "tmp/valhalla-parcel-research/11015/index.js",
+    "tmp/valhalla-parcel-research/11015/wms-headers.txt",
+    "tmp/valhalla-parcel-research/11015/getplot-empty.txt",
+    "tmp/valhalla-parcel-research/11015/wms-capabilities.xml"
+  ],
+  "queueIdentity": {
+    "cityCode": 11015,
+    "rank": 3070,
+    "country": "India",
+    "point": [
+      24.8197040704828,
+      84.6332459441564
+    ],
+    "populationPersons": 195539
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": true,
+  "reason": "Official Bihar BhuNaksha and Rafiganj administrative hierarchy support registry custody. The saved mauza enumeration contains रफीगंज(419), which the packet bounded-search note missed; it does not establish a matching parcel response. WMS returned 500, unparameterized identify yielded an error, and no full safe polygon or independent adapter qualification is evidenced. These failures do not establish citywide absence."
+}

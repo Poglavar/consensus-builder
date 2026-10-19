@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7850-shahkot.json",
+  "city": "Shahkot",
+  "wupCityCode": 7850,
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "purpose": "Correct the prior wrong-country registry evidence and verify city-local custody using Pakistan Punjab first-party sources.",
+  "assessment": "Confirmed Pakistan Punjab Land Records Authority (PLRA) Arazi Record Center for Tehsil Shah Kot, District Nankana Sahib. An official PLRA procurement document lists the centre as “Arazi Record Center Tehsil Shah Kot, TMA Office District Nankana Sahib” (entry 128). The PLRA official site states that ARCs deliver land-record services. This is direct Pakistan jurisdiction evidence; Indian Punjab/DILRMP material and jamabandi.punjab.gov.in are not used.",
+  "registryCustody": "confirmed_city_local_pakistan_plra_arc",
+  "registryFound": true,
+  "registryBasis": "PLRA first-party procurement document identifies an Arazi Record Center at Tehsil Shah Kot, TMA Office, Nankana Sahib District, Punjab, Pakistan. PLRA states ARCs provide land-record services. This resolves the city-local custody question, but does not establish a public parcel-geometry route.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf",
+      "observation": "Official Punjab Land Records Authority domain. Table entry 128 explicitly lists Shahkot / Arazi Record Center Tehsil Shah Kot / TMA Office / District Nankana Sahib. This is the direct city-local source."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority site identifies PLRA, its Arazi Record Centre network and describes ARCs as one-window centers providing land services."
+    },
+    {
+      "url": "https://nankana.punjab.gov.pk/Assistant_Commissioner_Shahkot",
+      "observation": "Government of Punjab Nankana Sahib district page titled Assistant Commissioner Shahkot; search result mentions Assistant Director Land Record in the Shahkot tehsil administration, corroborating local jurisdiction, but not relied upon instead of PLRA listing."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shahkot Nankana Sahib Punjab Pakistan land records service center PLRA Board of Revenue official",
+      "result": "Found first-party PLRA site and official procurement PDF. The PDF explicitly lists the Shah Kot tehsil Arazi Record Center at TMA Office, Nankana Sahib District. Indian Punjab results were rejected as wrong jurisdiction.",
+      "method": "Separate English-language web search, followed by reading the first-party PLRA page and PDF."
+    },
+    {
+      "language": "Urdu",
+      "query": "شاہ کوٹ ننکانہ صاحب اراضی ریکارڈ سنٹر پنجاب لینڈ ریکارڈ اتھارٹی",
+      "result": "Search surfaced a non-government Urdu republication of ARC addresses; it was not treated as primary evidence. Cross-checked the Shah Kot entry against the first-party Punjab PLRA procurement PDF, which confirms the same Nankana Sahib location. Excluded Indian Punjab land-record portals and all India DILRMP results.",
+      "method": "Separate Urdu-language web search, then first-party PLRA source verification."
+    }
+  ],
+  "geometryAssessment": "No parcel geometry route was examined for this custody-only followthrough. No parcel/property/owner identifiers were queried or retained.",
+  "correction": "The existing draft’s DILRMP/Indian Punjab basis is inapplicable to Pakistan and is superseded by this file. The correct local authority is Punjab Land Records Authority (Pakistan), Arazi Record Center Tehsil Shah Kot, District Nankana Sahib. No existing city/service packet was edited.",
+  "scopeLimits": {
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "geometryQueried": false,
+    "citywideGeometryCompletenessAsserted": false
+  }
+}

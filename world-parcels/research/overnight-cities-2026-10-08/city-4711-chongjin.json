@@ -1,0 +1,79 @@
+{
+  "name": "Chŏngjin",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "rank": 779,
+  "point": [
+    41.7712452831857,
+    129.762988405309
+  ],
+  "population2025": 690409,
+  "population2025k": 690.409,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "No first-party Chŏngjin or North Hamgyong land-registry office, local cadastral viewer, or parcel service was identified in the English- and Korean-language searches. General material about land administration elsewhere in the DPRK is not evidence for this city; registry presence and public geometry remain unresolved.",
+  "registryEvidenceUrls": [],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No full parcel polygons were retained. Citywide/countrywide completeness, title and legal survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "local_registry_evidence_unresolved",
+  "technicalBlocker": "No verifiable first-party local registry/map source or public parcel schema was found. No anonymous geometry query was possible without a primary endpoint.",
+  "remainingUncertainty": "Whether Chŏngjin has a city-level registry or public parcel mapping service could not be established from accessible first-party sources.",
+  "nextStep": "If continuing discovery, obtain an official schema-safe vector layer or field restriction, then issue only a bounded geometry request at this point.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "official Chongjin North Hamgyong land registry cadastral office land registration DPRK",
+        "scope": "Find first-party local registry/cadastral-map evidence and safe public parcel geometry schema.",
+        "result": "Searches did not locate relevant first-party local records. Search results describing DPRK geography and general land administration were not treated as city registry evidence.",
+        "actualResultUrls": [],
+        "executionMethod": "Separate English-language search and official source review; no personal or property-specific lookup."
+      },
+      {
+        "language": "Korean",
+        "query": "청진시 토지 등록 지적도 토지관리소 공식",
+        "scope": "Cross-check local-language official sources for the city registry, map and public feature schema.",
+        "result": "Searches did not locate relevant first-party local records. Search results describing DPRK geography and general land administration were not treated as city registry evidence.",
+        "actualResultUrls": [],
+        "executionMethod": "Separate local-language search and official source review."
+      }
+    ]
+  },
+  "source": null,
+  "wupCityCode": 4711,
+  "cityId": "wup2025:4711",
+  "queueRank": 779,
+  "sourceIds": [],
+  "centerLatLon": [
+    41.7712452831857,
+    129.762988405309
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No first-party Chŏngjin or North Hamgyong land-registry office, local cadastral viewer, or parcel service was identified in the English- and Korean-language searches. General material about land administration elsewhere in the DPRK is not evidence for this city; registry presence and public geometry remain unresolved.",
+    "verifiedOpenScope": "Searches did not locate relevant first-party local records. Search results describing DPRK geography and general land administration were not treated as city registry evidence.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime contract or adapter behavior was tested."
+  },
+  "rootRegistryDecisionNote": "Local registry presence is unestablished; generic institution pages and search failures do not establish absence.",
+  "rootPrimaryReadback": {
+    "url": null,
+    "fetch": "no_primary_candidate"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

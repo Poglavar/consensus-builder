@@ -1,0 +1,54 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:168",
+ "queueRank": 168,
+ "name": "Aleppo",
+ "country": "Syrian Arab Republic",
+ "countryCode": "SY",
+ "centerLatLon": [
+  36.2044832004488,
+  37.142929022666
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "no_verified_open_endpoint_after_attempts",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.cadastre.gov.sy/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://www.moh.gov.sy/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "unrelated ministry landing page reached; no cadastre content"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Aleppo parcels cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  },
+  {
+   "url": "https://opendata.arcgis.com/api/v3/search?q=parcels Aleppo",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no Aleppo parcel dataset identified in results reviewed"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "none found",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "The Syrian cadastre authority's site did not resolve/respond from this client and no public geospatial service was found; see damascus.json. Conflict-related data gaps are likely but not established here.",
+ "nextStep": "Retry cadastre authority hosts from another network path; check for humanitarian (e.g. HDX/UNOSAT) building/parcel-like layers, which would not be cadastral."
+}

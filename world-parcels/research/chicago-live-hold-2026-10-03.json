@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "cityId": "chicago",
+  "status": "held",
+  "method": "Official Cook County Socrata adapter bounded-query and exact-ID verification; 3x3 grid of 0.0025-degree cells at WUP Chicago center and same grid shifted +0.004 degrees lon/lat. Polygon data were held in memory only; this record contains no parcel IDs or geometries.",
+  "source": {
+    "id": "us-il-cook-county-clerk-parcels-2021",
+    "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+    "datasetName": "ccgisdata - Parcel 2021",
+    "publisher": "Cook County Clerk / Map Department (Cook County GIS)",
+    "vintage": "Tax parcel polygons as they existed 2021-01-01 through 2021-12-31",
+    "nativeGroundKey": {
+      "field": "pin10",
+      "type": "text",
+      "definition": "10-digit base parcel number: first 10 digits of 14-digit PIN",
+      "parceltypeCodes": {
+        "1": "Baseparcel",
+        "2": "Elevated",
+        "3": "Condominium",
+        "4": "NoPIN",
+        "5": "ElevatedCondo",
+        "6": "Leasehold",
+        "7": "ElevatedLeasehold",
+        "8": "ROWOverlap",
+        "9": "CondominiumLeasehold"
+      }
+    },
+    "transportFields": [
+      "pin10",
+      "parceltype",
+      ":id",
+      ":updated_at",
+      "the_geom"
+    ],
+    "rowIdField": ":id",
+    "revisionField": ":updated_at",
+    "datasetLicenseId": "SEE_TERMS_OF_USE",
+    "reuseTermsReviewed": false,
+    "attribution": "Cook County Clerk / Map Department; source 2021 tax parcel geometry adapted to WGS84."
+  },
+  "test": {
+    "cellCount": 18,
+    "completeCells": 15,
+    "failedCells": 3,
+    "timeoutCells": 1,
+    "integrityConflictCells": 2,
+    "completedFeatureRows": 1825,
+    "uniqueCandidateGroundIds": 1459,
+    "totalCellHits": 1825,
+    "exactReadBatches": 19,
+    "exactReadBatchesComplete": 17,
+    "exactReadBatchesConflicted": 2,
+    "exactFeaturesRead": 1299,
+    "absentIds": 0,
+    "underlyingResponseStatusCounts": {
+      "200": 246,
+      "network-error": 1
+    },
+    "adapterFailureSemantics": {
+      "timeout": "one cell returned two HTTP 200 responses followed by a fetch network timeout; adapter surfaced 504",
+      "integrity": "two cells and two exact-ID batches were rejected by adapter geometry-conflict checks (adapter status 502); all captured underlying HTTP responses for those reads were 200"
+    }
+  },
+  "conflictTypeDiagnostic": {
+    "sourceFile": "research/chicago-conflict-types-2026-10-03.json",
+    "batches": [
+      {
+        "batch": 8,
+        "requestedIds": 80,
+        "httpStatus": 200,
+        "rows": 86,
+        "distinctPIN10": 80,
+        "conflictingPIN10": 6,
+        "conflictsParceltype": "all conflicting PIN10 groups contain parceltype 1 only"
+      },
+      {
+        "batch": 11,
+        "requestedIds": 80,
+        "httpStatus": 200,
+        "rows": 81,
+        "distinctPIN10": 80,
+        "conflictingPIN10": 1,
+        "conflictsParceltype": "the conflicting PIN10 group contains parceltype 1 only"
+      }
+    ],
+    "filterAssessment": "The publisher defines parceltype=1 as Baseparcel, but every geometry conflict was already parceltype=1; filtering to the documented baseparcel type does not resolve the key conflicts."
+  },
+  "priorCurrentRouteReview": {
+    "endpoint": "https://gis12.cookcountyil.gov/arcgis/rest/services/CookViewer3Dynamic/MapServer/2025",
+    "alternativeEndpoint": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/0",
+    "checkedAt": "2026-10-02",
+    "outcome": "direct bounded requests timed out; no complete bbox/exact-ID proof"
+  },
+  "environmentNote": "An initial default-sandbox shell attempt could not resolve datacatalog.cookcountyil.gov; this was a local sandbox DNS restriction, not a provider failure. Authorized escalated network execution reached the dataset and produced the results above.",
+  "technicalBlockers": [
+    "2021 bounded pagination did not complete all 18 cells: one fetch timed out and two cells failed the adapter geometry-conflict check.",
+    "Two exact-ID batches also failed because multiple parceltype=1 polygons share a PIN10; first-winner geometry selection would be lossy and is not permitted.",
+    "Current 2025/ArcGIS service routes timed out during the prior review; current runtime reliability is unproven."
+  ],
+  "decision": "Do not integrate/enable Cook/Chicago from this candidate until a current source or an authoritative native key safely resolves geometry conflicts and all bounded/exact gates pass.",
+  "evidenceInputs": [
+    "Temporary compact summary from /tmp/next5-chicago-2021.json",
+    "Temporary compact summary from /tmp/chicago-conflict-types.json",
+    "Dataset metadata from /tmp/cook-2021-meta.json"
+  ]
+}

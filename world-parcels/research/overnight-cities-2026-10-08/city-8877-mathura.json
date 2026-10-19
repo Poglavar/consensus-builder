@@ -1,0 +1,123 @@
+{
+  "name": "Mathura",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 968,
+  "point": [
+    27.4562052249401,
+    77.673810775121
+  ],
+  "population2025": 566188,
+  "population2025k": 566.188,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Government of Uttar Pradesh public cadastral digitization dashboard includes Mathura district tehsils and village map counts; the official viewer provides Mathura/Sadar revenue-village selectors. This confirms a local cadastral record service.",
+  "registryEvidenceUrls": [
+    "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=145",
+    "https://upbhulekh.gov.in/"
+  ],
+  "resultCategory": "public_cadastral_viewer_present_wup_point_not_resolved_no_full_polygon_sample",
+  "remainingUncertainty": "Which Sadar revenue-village map covers the WUP population-weighted point; map extent rectangles do not establish parcel containment. The public viewer displays cadastral parcels, but a complete native feature response at the exact city point was not obtained.",
+  "scopeLimits": "No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-UP-BHUNAKSHA-MATHURA",
+    "name": "Uttar Pradesh BhuNaksha public cadastral viewer",
+    "operator": "Uttar Pradesh Board of Revenue / state cadastral-map service (public viewer hosted at upbhunaksha.gov.in)",
+    "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+    "serviceType": "Public village cadastral-map viewer with administrative selectors and parcel display. The viewer exposes a public map extent API and click-query API; no complete parcel polygon was returned for the WUP center.",
+    "geometryType": "Cadastral parcel map display; complete feature geometry response not verified at the WUP point.",
+    "outputCrs": "EPSG:32644 (Mathura Sadar village map extent metadata)",
+    "nativeIdField": "District, tehsil, revenue-village GIS code and plot/khasra number."
+  },
+  "sourceIds": [],
+  "wupCityCode": 8877,
+  "cityId": "wup2025:8877",
+  "queueRank": 968,
+  "centerLatLon": [
+    27.4562052249401,
+    77.673810775121
+  ],
+  "technicalBlocker": "Public Mathura Sadar selectors and map extents respond, but the WUP center’s revenue-village coverage was not resolved. A click query using Mathura Bangar’s GIS code at the exact WUP coordinate returned an empty JSON object; its map extent begins north of the WUP point. No polygon was retained.",
+  "coverageAssessment": {
+    "claimedScope": "Public BhuNaksha map service covers selected Uttar Pradesh revenue villages; the Mathura district dashboard reports digitized and georeferenced cadastral maps for district tehsils.",
+    "verifiedOpenScope": "The anonymous viewer exposes public district/tehsil/village selectors, Mathura Sadar village extent metadata in EPSG:32644, and a map click-query route. Exact WUP-point map coverage remains unresolved; no complete polygon sample or citywide completeness is claimed.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_full_polygon_sample",
+    "reason": "Public Mathura Sadar selectors and map extents respond, but the WUP center’s revenue-village coverage was not resolved. A click query using Mathura Bangar’s GIS code at the exact WUP coordinate returned an empty JSON object; its map extent begins north of the WUP point. No polygon was retained."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Hindi",
+        "query": "मथुरा भू नक्शा भूलेख राजस्व परिषद उत्तर प्रदेश cadastral map official",
+        "scope": "Find official Mathura cadastral map viewer, local revenue selectors and digitization status.",
+        "result": "Government UP BhuNaksha viewer is public. Official dashboard shows Mathura district tehsils with digitized and georeferenced map statistics, including Mathura tehsil.",
+        "method": "Separate Hindi-language search followed by public official viewer and district dashboard inspection.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=145",
+          "https://upbhulekh.gov.in/"
+        ],
+        "executionMethod": "Separate Hindi-language search followed by public official viewer and district dashboard inspection."
+      },
+      {
+        "language": "English",
+        "query": "Mathura cadastral parcel map public GIS BhuNaksha Uttar Pradesh official",
+        "scope": "Cross-check anonymous geometry access, native IDs and local point coverage.",
+        "result": "The official UP viewer serves public parcel maps with district, tehsil, revenue-village and plot selectors. Mathura Sadar village extents are available in EPSG:32644. The WUP point was outside the tested Mathura Bangar extent; a click query there returned an empty JSON object, so no polygon sample was retained.",
+        "method": "Separate English-language search and safe read-only requests to public selectors/extent/click-query endpoints. No owner, khata holder, address, or plot-info endpoint queried.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=145",
+          "https://bhunaksha.nic.in/bhunaksha/userhome.jsp"
+        ],
+        "executionMethod": "Separate English-language search and safe read-only requests to public selectors/extent/click-query endpoints. No owner, khata holder, address, or plot-info endpoint queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+        "observation": "Official Uttar Pradesh public BhuNaksha viewer exposes District, Tehsil, Village selection and parcel-map display. The public application has a Mathura Sadar selector route."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=145",
+        "observation": "Government of Uttar Pradesh dashboard reports Mathura tehsil totals for scanned, verified, georeferenced and BhuNaksha-linked cadastral maps; this establishes digitized local map coverage, not citywide parcel completeness."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/",
+        "observation": "UP Revenue Board portal describes public land record and BhuNaksha/plot information services."
+      }
+    ]
+  },
+  "rootPrimaryReadback": {
+    "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Bhunaksha"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

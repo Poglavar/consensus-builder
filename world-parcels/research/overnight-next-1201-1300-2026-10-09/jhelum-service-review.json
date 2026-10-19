@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7715-jhelum.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official MC Jhelum publishes a city base-map PDF whose legend explicitly includes parcel boundaries. Punjab PULSE/PLRA public viewer material lists Jhelum cadastral maps and parcels, but the referenced ArcGIS REST service and layer metadata routes returned HTTP 499 Token Required. No viewer token was requested or used. No anonymous safe polygon response, parcel ID, schema, or CRS was retained.",
+  "registryAssessment": "Local registry/map evidence is present through MC Jhelum’s official parcel-boundary base map; district revenue administration and LRMIS custody are documented by the official Jhelum district portal. This is registry/map evidence, not proof of legal title scope or complete citywide vector coverage.",
+  "officialPrimarySources": [
+    {"url": "https://mcjhelum.lgpunjab.org.pk/map/", "observation": "Official MC Jhelum services-map index lists the Base Map Jhelum City."},
+    {"url": "https://mcjhelum.lgpunjab.org.pk/wp-content/uploads/Base-Map_2023-24_Jhelum-City.pdf", "observation": "Official rendered city map prepared by MC Jhelum GIS staff; legend includes Parcel Boundary."},
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official/public Punjab PULSE viewer lists Jhelum under Cadastral Maps and exposes a Parcels layer with an indicative-boundary disclaimer."},
+    {"url": "https://jhelum.punjab.gov.pk/district_administration_jhelum", "observation": "Official district portal describes land-record maintenance and LRMIS supervision by Revenue Administration."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Jhelum Pakistan official cadastral map land records parcel GIS Punjab", "result": "Found MC Jhelum parcel-boundary base map, PULSE/PLRA cadastral viewer, Punjab land-record interface, and district revenue custody page."},
+    {"language": "Urdu", "query": "جہلم پاکستان سرکاری کادستر نقشہ اراضی ریکارڈ GIS پارسل", "result": "Found official Punjab Land Records cadastral-map interface and Punjab PULSE/PLRA land-record services; no anonymous safe Jhelum polygon response."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run because anonymous service metadata was token-gated; WUP point was not moved.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Official MC Jhelum city map and Punjab cadastral viewer material.", "verifiedOpenScope": "Rendered parcel-boundary map only; no anonymous vector feature response.", "citywideVerified": false, "countrywideVerified": false},
+  "attempts": [
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson", "method": "GET", "httpStatus": 200, "result": "ArcGIS error code 499 Token Required."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0?f=pjson", "method": "GET", "httpStatus": 200, "result": "ArcGIS error code 499 Token Required; no layer schema."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Pulse_Map/MapServer?f=pjson", "method": "GET", "httpStatus": 200, "result": "ArcGIS error code 404 Service not found."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Jehlum/Pind_Dadan_Khan/MapServer?f=pjson", "method": "GET", "httpStatus": 200, "result": "ArcGIS error code 404 Service not found."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson", "method": "GET", "httpStatus": 200, "result": "ArcGIS error code 499 Token Required."}
+  ],
+  "safeFieldAllowlist": ["OBJECTID", "safe parcel/cadastral identifier", "geometry"],
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "No anonymous safe feature response was available; PDF parcel lines may be generalized/rendered, and viewer coverage/currency/legal status remain unverified."
+}

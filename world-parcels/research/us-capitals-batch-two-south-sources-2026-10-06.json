@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Source provenance, safe identity findings, and bounded acceptance evidence for southern research leads; no raw parcel geometry or owner fields retained.",
+  "sources": [
+    {
+      "city": "indianapolis",
+      "stateCode": "IN",
+      "status": "passed_identity_revision",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "publisher": "Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap",
+      "officialReference": "https://www.in.gov/gis/geoinsights/posts/data-harvest/",
+      "metadata": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0?f=pjson",
+      "nativeIdentity": {
+        "field": "local_id",
+        "type": "string",
+        "countyFilter": { "field": "county_id", "value": "49" },
+        "displayParcelNumberField": "state_parcel_id",
+        "objectIdField": "objectid",
+        "outFields": ["objectid", "local_id", "county_id", "state_parcel_id"],
+        "prefix": "US-IN-MARION-"
+      },
+      "identitySemantics": "Official IGIO harvest/service metadata defines LOCAL_ID as the local identifier for each feature if supplied by a county, SOURCE_FEATUREID as the county source feature ID, and STATE_PARCEL_ID as the statewide parcel feature identifier. For the repeated state_parcel_id 491112237030000101, the two records share parcel_id and safe locality/classification metadata but have different local_id values (1050337, 1383056), NGUID values, source_featureid values (309214, 309213), and distinct adjacent/slightly overlapping polygon metrics (~2494 and ~1161 m2). Use the county-supplied per-feature local_id as identity; preserve state_parcel_id as display/tax parcel key. No grouping or geometry parts policy inferred.",
+      "initialAttempt": "world-parcels/research/us-capitals-batch-two-indianapolis-2026-10-06.json: failed because state_parcel_id repeated with non-identical geometry.",
+      "finalAttempt": "world-parcels/research/us-capitals-batch-two-indianapolis-localid-2026-10-06.json",
+      "gate": { "status": "passed", "viewportCells": 18, "uniqueNativeIds": 988, "exactResolved": 988, "forcedPageSize": 3, "providerCount": 11, "returned": 11, "footprintCount": 2, "bindingCoverage": "complete", "requests": 38 },
+      "metricSrid": 32616,
+      "scope": "Fixed Marion County county_id=49 filter, Indianapolis city entry only."
+    },
+    {
+      "city": "des_moines",
+      "stateCode": "IA",
+      "status": "not_admitted_publisher_unconfirmed",
+      "candidateEndpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "candidatePublisher": "University of Iowa ArcGIS Online account is visible; publisher of record not confirmed.",
+      "candidateMetadata": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0?f=pjson",
+      "candidateNativeField": "STATEPARID (string)",
+      "candidateObservation": "2017 snapshot capital sample and exact-key request succeeded in initial research, but historical age and unclear publisher make it unsuitable as a current county-owned source.",
+      "officialPolkCountyLead": "https://www.polkcountyiowa.gov/county-auditor/property-tax/information-and-announcements/real-estate-atlas/",
+      "officialPolkCountyFinding": "County atlas landing is the relevant official lead; no current official parcel feature service with verified publisher/native identity was confirmed within the bounded search. Des Moines County is not the county containing Des Moines city.",
+      "initialResearch": "world-parcels/research/us-capitals-2026-10-06/ia.json",
+      "gate": "Not run; no verified current official descriptor."
+    },
+    {
+      "city": "frankfort",
+      "stateCode": "KY",
+      "status": "held_native_key_geometry_conflict",
+      "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+      "publisher": "Franklin County Property Valuation Administrator, hosted by Schneider Geospatial.",
+      "nativeField": "PARCEL_ID (string)",
+      "objectIdField": "OBJECTID",
+      "conflict": { "nativeKey": "MAPNUM=061-00-00-103.00", "objectIds": [22277, 22278], "safeEvidence": "Both rows report v_SY=2017 and TAX_DIST=03; SOURCE_TYP differs PVA MAP versus DEED, PARCEL label differs 103 versus 103.18, and polygon geometries differ." },
+      "initialGate": "world-parcels/research/us-capitals-batch-two-south-2026-10-06.json: failed after four viewport cells with conflicting geometry for one parcel ID.",
+      "decision": "Held. No grouping or fixed exclusion is justified without an authoritative key policy."
+    },
+    {
+      "city": "baton_rouge",
+      "stateCode": "LA",
+      "status": "passed_complete_assessor_account_groups",
+      "endpoint": "https://maps.brla.gov/gis/rest/services/Cadastral/Tax_Parcel/MapServer/0",
+      "publisher": "EBRGIS; East Baton Rouge Parish Assessor's Office; Department of Information Services.",
+      "officialReferences": ["https://www.brla.gov/1328/Maps-and-Location-Based-Data", "https://catalog.data.gov/dataset/tax-parcel"],
+      "nativeIdentity": { "field": "ASSESSMENT_NUM", "type": "string", "objectIdField": "ID", "outFields": ["ID", "ASSESSMENT_NUM"], "prefix": "US-LA-EBR-", "metricSrid": 32615 },
+      "semantics": "Official EBRGIS layer metadata says tax-parcel features can represent a single lot or group of lots held under one taxpayer account. Accordingly the descriptor explicitly configures complete same-key assessor-account geometry groups as parts; this is not a claim that an account equals one legal parcel.",
+      "placeholderExclusion": { "field": "ASSESSMENT_NUM", "value": "000-0000-0", "evidence": "Bounded matching rows have null PRONO, STATUS, WARD_SECTION, SUBDIVISION, LOT and BLOCK; this all-zero placeholder otherwise maps many conflicting geometries." },
+      "nativeKeyFormat": "Numeric segments separated by hyphens; preserve exact leading zeroes and hyphens. Valid observed formats include 001-0935-5 and 0006000-0.",
+      "initialResearch": "world-parcels/research/us-capitals-2026-10-06/la.json",
+      "attempts": [
+        "world-parcels/research/us-capitals-batch-two-south-2026-10-06.json: initial conflict on all-zero placeholder.",
+        "world-parcels/research/us-capitals-batch-two-south-retry-2026-10-06.json: exclusion applied; overly narrow pattern rejected valid 0006000-0 format.",
+        "world-parcels/research/us-capitals-batch-two-south-retry2-2026-10-06.json: broadened numeric-hyphen pattern; genuine repeated account key discovered.",
+        "world-parcels/research/us-capitals-batch-two-south-parts-2026-10-06.json: passed with complete native geometry parts."
+      ],
+      "conflictGroup": { "nativeKey": "000-5174-8", "objectIds": [204293, 204294], "safeEvidence": "Exactly two rows; both PRONO=51748 and STATUS=EX; adjacent account polygons, approximately 298 m2 each. Full manifest and exact retrieval passed." },
+      "gate": { "status": "passed", "viewportCells": 18, "uniqueNativeIds": 1018, "exactResolved": 1018, "forcedPageSize": 3, "providerCount": 10, "returned": 10, "footprintCount": 4, "bindingCoverage": "complete", "requests": 190 }
+    },
+    {
+      "city": "augusta",
+      "stateCode": "ME",
+      "status": "passed",
+      "endpoint": "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Parcels_Organized_Towns/FeatureServer/10",
+      "publisher": "Maine GeoLibrary organized-town parcel layer; municipality-submitted parcel data contributors.",
+      "officialReference": "https://www.maine.gov/geolib/",
+      "metadata": "https://services1.arcgis.com/RbMX0mRVOFNTdLzd/arcgis/rest/services/Maine_Parcels_Organized_Towns/FeatureServer/10?f=pjson",
+      "nativeIdentity": { "field": "MAP_BK_LOT", "type": "string", "objectIdField": "OBJECTID", "outFields": ["OBJECTID", "TOWN", "MAP_BK_LOT"], "fixedFilter": { "field": "TOWN", "value": "Augusta" }, "prefix": "US-ME-AUGUSTA-", "metricSrid": 32619 },
+      "identitySemantics": "MAP_BK_LOT text is unique only within TOWN; retain internal spaces and leading zeroes verbatim. Current organized-town layer is municipality-submitted and metadata indicates updates are nonregular; this is not a statewide completeness claim.",
+      "olderLead": "Initial DEP-hosted Maine parcel service was superseded by the current GeoLibrary organized towns layer in the final descriptor.",
+      "initialResearch": "world-parcels/research/us-capitals-2026-10-06/me.json",
+      "gate": { "status": "passed", "viewportCells": 18, "uniqueNativeIds": 432, "exactResolved": 432, "forcedPageSize": 3, "providerCount": 4, "returned": 4, "footprintCount": 8, "bindingCoverage": "complete", "requests": 29 }
+    }
+  ]
+}

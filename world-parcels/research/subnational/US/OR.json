@@ -1,0 +1,78 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "OR",
+ "regionName": "Oregon",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-or-lane-county-parcels",
+  "name": "Lane County Parcels (AddressParcel MapServer layer 2)",
+  "operator": "Lane County GIS (RLID)",
+  "scope": "Lane County only",
+  "endpoint": "https://lcmaps.lanecounty.org/arcgis/rest/services/LaneCountyMaps/AddressParcel/MapServer/2",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:2914 native, 4326 via outSR",
+  "reuseStatus": "licence text not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-or-lane-county-parcels",
+  "requestUrl": "https://lcmaps.lanecounty.org/arcgis/rest/services/LaneCountyMaps/AddressParcel/MapServer/2/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -123.088,
+   44.0515,
+   -123.0865,
+   44.0525
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "MAPTAXLOT",
+  "responseFile": "OR-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "ORMAP (Oregon DOR) is a statewide tax map, but its data page says to contact the county assessor for the tax lot layer; the ODF WebMercator/TaxlotsDisplay MapServer compiles 36 counties but exposes capability 'Map' only (query/identify refused).",
+ "subregionsVerified": [
+  "Lane County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.odf.oregon.gov/ags1/rest/services/WebMercator/TaxlotsDisplay/MapServer",
+   "observation": "36 county taxlot layers (ORTaxlot field) but capabilities=Map only; query and identify return 'capability not supported'"
+  },
+  {
+   "url": "https://data.oregon.gov/Administrative/ORMAP-The-Oregon-Property-Tax-Map/4wpq-zwd9",
+   "observation": "ORMAP; contact county assessor for tax lot layer"
+  },
+  {
+   "url": "https://services3.arcgis.com/tNPgIZWOB0Efvm0g/ArcGIS/rest/services/Tax_Lots/FeatureServer",
+   "observation": "Umatilla County taxlots (FeatureServer)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.odf.oregon.gov/ags1/rest/services/WebMercator/TaxlotsDisplay/MapServer/25/query",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "application/json",
+   "assessment": "capability not supported (Map only)"
+  },
+  {
+   "url": "https://lcmaps.lanecounty.org/arcgis/rest/services/LaneCountyMaps/AddressParcel/MapServer/2/query",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons; ID fields only requested"
+  }
+ ],
+ "reuseStatus": "Not read.",
+ "remainingUncertainty": "No statewide queryable layer found; ODF display service is render-only. Multnomah/Portland not queried (Metro RLIS is download only).",
+ "nextStep": "Check Oregon Metro RLIS and Multnomah services; read the ODF service for a WMS/export path (not a data query)."
+}

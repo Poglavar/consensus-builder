@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "city": "Sokoto",
+  "countryCode": "NG",
+  "wupCityCode": 5746,
+  "rank": 572,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://molhs.sk.gov.ng/sogis/",
+    "https://sogis.org.ng/",
+    "https://mbep.sk.gov.ng/wp-content/uploads/2025/07/2025_Sokoto_State_Q2-BIRCN_CR.pdf"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The state agency and Sokoto-township cadastral mapping are documented, but the public SOGIS landing page exposes no safe anonymous parcel-vector service/schema. The application route was not opened. Runtime remains disabled.",
+    "nativeIdsUsed": "No safe parcel feature identifier read; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://molhs.sk.gov.ng/sogis/",
+      "method": "anonymous HTTPS GET and static HTML link/script inspection",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "Ministry page names SOGIS. Generic site scripts and informational links only; no parcel service endpoint. Application route not opened."
+    },
+    {
+      "url": "https://sogis.org.ng/",
+      "method": "anonymous HTTPS GET and static landing-page link inspection",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "SOGIS agency landing page; no anonymous parcel layer schema exposed. Apply link not opened."
+    },
+    {
+      "url": "https://mbep.sk.gov.ng/wp-content/uploads/2025/07/2025_Sokoto_State_Q2-BIRCN_CR.pdf",
+      "method": "official government search-indexed budget source",
+      "status": "indexed_official_document",
+      "observation": "Budget line documents Sokoto township cadastral-map reproduction/mapping; no GIS service request made."
+    }
+  ],
+  "technicalBlocker": "The state agency and Sokoto-township cadastral mapping are documented, but the public SOGIS landing page exposes no safe anonymous parcel-vector service/schema. The application route was not opened. Runtime remains disabled.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "remainingUncertainty": "Evidence supports a Sokoto-city mapping program and state land-agency presence. No actual public parcel polygons, safe feature identifier contract, data license, or coverage completeness were verified."
+}

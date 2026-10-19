@@ -1,0 +1,92 @@
+{
+  "name": "Pointe-Noire",
+  "country": "Republic of the Congo",
+  "countryCode": "CG",
+  "rank": 294,
+  "point": [
+    -4.78295803415215,
+    11.8939876324471
+  ],
+  "population2025": 1662537,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. Official Gazette plans and the national cadastre announcement establish local cadastral activity, but no publicly accessible city parcel viewer, JavaScript layer configuration or anonymous feature endpoint was found. Published plans are case-specific and do not establish coverage at the ranked point. No plan polygon or owner/address data was retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Republic of the Congo publications identify the Pointe-Noire departmental land-affairs/cadastre/topography service and include parcel-specific survey-plan notices for land in Pointe-Noire. The national cadastre initiative includes Pointe-Noire. These establish local cadastral/registry procedures but do not reveal a public interactive parcel geometry service.",
+  "resultCategory": "local_cadastral_procedure_confirmed_no_public_parcel_geometry_endpoint_found",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Pointe-Noire Republic of the Congo official cadastral parcel map land registry public GIS cadastre",
+        "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+        "result": "Official government publications show the departmental land/cadastre service and parcel-specific cadastral plan notices in Pointe-Noire; a national city cadastre initiative includes the city. No public interactive parcel service was found.",
+        "actualResultUrls": [
+          "https://www.sgg.cg/textes-officiels/arretes/2023/congo-arrete-2023-10731.pdf",
+          "https://www.rppr.cg/fr/projet-plan-cadastre-national-des-villes-de-brazzaville-pointe-noire-nkayi-et-owando"
+        ],
+        "executionMethod": "Separate English web search and official gazette/presidency source review."
+      },
+      {
+        "language": "French",
+        "query": "Pointe-Noire cadastre foncier carte parcelle registre foncier République du Congo cadastre géoportail",
+        "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+        "result": "Les publications officielles identifient le service départemental des affaires foncières, du cadastre et de la topographie et publient des plans parcellaires à Pointe-Noire. Aucun géoportail public avec géométries cadastrales interrogeables n’a été trouvé.",
+        "actualResultUrls": [
+          "https://www.sgg.cg/textes-officiels/arretes/2023/congo-arrete-2023-10731.pdf",
+          "https://www.rppr.cg/fr/projet-plan-cadastre-national-des-villes-de-brazzaville-pointe-noire-nkayi-et-owando"
+        ],
+        "executionMethod": "Recherche française séparée et consultation du Journal officiel/de la Présidence."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.sgg.cg/textes-officiels/arretes/2023/congo-arrete-2023-10731.pdf",
+        "method": "Official page and source inspection",
+        "observation": "Official Gazette notice includes a survey plan for a specified parcel in arrondissement 1, P.F. Lumumba, commune of Pointe-Noire."
+      },
+      {
+        "url": "https://www.rppr.cg/fr/projet-plan-cadastre-national-des-villes-de-brazzaville-pointe-noire-nkayi-et-owando",
+        "method": "Official page and source inspection",
+        "observation": "Official Presidency representative announcement of a national cadastral plan project covering Brazzaville, Pointe-Noire, Nkayi and Owando."
+      },
+      {
+        "url": "https://www.sgg.cg/textes-officiels/lois/2021/congo-loi-2021-03.pdf",
+        "method": "Official page and source inspection",
+        "observation": "Official publication names the Directorate-General/departmental land affairs, cadastre and topography services; the plan is for a different location and is used only to establish the official departmental service."
+      }
+    ],
+    "viewerAndServiceTrace": null
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CG-PNR-DEPARTMENTAL-CADASTRE",
+    "name": "Pointe-Noire departmental land affairs/cadastre service",
+    "url": "https://www.sgg.cg/textes-officiels/arretes/2023/congo-arrete-2023-10731.pdf",
+    "operator": "Republic of the Congo departmental land affairs, cadastre and topography service",
+    "serviceType": "Official city-specific registry/cadastral office or map-service evidence; no anonymous parcel-geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "wupCityCode": 76,
+  "cityId": "wup2025:76",
+  "queueRank": 294,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    -4.78295803415215,
+    11.8939876324471
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:09:53.255025+00:00"
+}

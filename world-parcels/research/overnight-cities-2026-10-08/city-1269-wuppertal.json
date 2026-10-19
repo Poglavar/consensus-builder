@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [
+    "de-nrw-lika-flurstueck"
+  ],
+  "name": "Wuppertal",
+  "country": "Germany",
+  "countryCode": "DE",
+  "registryFound": true,
+  "registryBasis": "Wuppertal’s official Open Data page and catalog identify weekly updated ALKIS parcel polygons, approximately 100,000 parcels, under DL-Zero. The official NRW simplified ALKIS WFS advertises parcel features without owners; its schema exposes a safe parcel key and full MultiSurface geometry. A bounded exact-WUP-point query returned one full parcel polygon and key. This proves a point sample only, not citywide completeness or runtime readiness.",
+  "registryEvidenceUrls": [
+    "https://www.wuppertal.de/vv/produkte/102/Liegenschaftskataster_Open_Data.php",
+    "https://www.offenedaten-wuppertal.de/dataset/alkis-flurst%C3%BCcke-wuppertal",
+    "https://www.offenedaten-wuppertal.de/api/3/action/package_show?id=e3b59f06-5e7b-46e3-8a8a-ce829c633d98",
+    "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+    "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=2.0.0&TYPENAME=ave%3AFlurstueck",
+    "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 1269,
+  "cityId": "wup2025:1269",
+  "centerLatLon": [
+    51.2196383633976,
+    7.10247286125364
+  ],
+  "point": [
+    51.2196383633976,
+    7.10247286125364
+  ],
+  "rank": 820,
+  "queueRank": 820,
+  "population2025": 662663,
+  "population2025k": 662.663,
+  "populationPlausibility2025": "High",
+  "scopeLimits": "Seven valid distinct NRW ALKIS cadastral references verified in thirteen bounded 0.001-degree cells around the unchanged Wuppertal WUP settlement locator. Complete offset paging, forced three-row geometry pages, all seven fresh exact native cadastral identities, explicit absence, footprint and source binding passed in twenty requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Existing official North Rhine-Westphalia OGC API and native flstkennz namespace are reused. The original exact-point WFS sample and API polygon share the same native key; independent projected comparison finds Hausdorff distance 0.000006263 metres and symmetric difference 0.0099301 m², consistent with the two published CRS transformations, rather than byte-identical coordinates. Both complete source shapes remain unchanged. Wider municipal completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+  "remainingUncertainty": "The exact-point WFS response and source identity are verified. Citywide completeness, polygon validity/topology at scale, long-term key stability, and a runtime adapter are not reviewed. The city bulk GeoJSON is ~98 MB; the bounded WFS route is preferable.",
+  "nextStep": "Root may review the WFS source and sample, then perform source-level bounded quality/coverage tests before qualifying runtime.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "German (local government terminology)",
+        "query": "Wuppertal ALKIS Flurstücke Open Data GeoJSON WFS",
+        "result": "Official city page, catalog and NRW WFS were inspected. The city publishes ~100,000 weekly updated polygons; exact-point WFS request returned one parcel.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.wuppertal.de/vv/produkte/102/Liegenschaftskataster_Open_Data.php",
+          "https://www.offenedaten-wuppertal.de/dataset/alkis-flurst%C3%BCcke-wuppertal",
+          "https://www.offenedaten-wuppertal.de/api/3/action/package_show?id=e3b59f06-5e7b-46e3-8a8a-ce829c633d98",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=2.0.0&TYPENAME=ave%3AFlurstueck",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "English",
+        "query": "Wuppertal cadastre parcel data open data ALKIS official",
+        "result": "Official city and NRW sources confirm public parcel polygons and direct-access WFS; exact WUP locator returned one complete feature.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.wuppertal.de/vv/produkte/102/Liegenschaftskataster_Open_Data.php",
+          "https://www.offenedaten-wuppertal.de/dataset/alkis-flurst%C3%BCcke-wuppertal",
+          "https://www.offenedaten-wuppertal.de/api/3/action/package_show?id=e3b59f06-5e7b-46e3-8a8a-ce829c633d98",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=2.0.0&TYPENAME=ave%3AFlurstueck",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "German",
+        "query": "Wuppertal ALKIS Flurstücke WFS GetFeature Geobasis NRW",
+        "result": "Official NRW WFS schema confirms simplified ALKIS parcel features without owner data; one exact-point feature was returned.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.wuppertal.de/vv/produkte/102/Liegenschaftskataster_Open_Data.php",
+          "https://www.offenedaten-wuppertal.de/dataset/alkis-flurst%C3%BCcke-wuppertal",
+          "https://www.offenedaten-wuppertal.de/api/3/action/package_show?id=e3b59f06-5e7b-46e3-8a8a-ce829c633d98",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=2.0.0&TYPENAME=ave%3AFlurstueck",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.wuppertal.de/vv/produkte/102/Liegenschaftskataster_Open_Data.php",
+        "observation": "Official city page documents approximately 100,000 weekly updated ALKIS parcel polygons and DL-Zero licensing."
+      },
+      {
+        "url": "https://www.offenedaten-wuppertal.de/dataset/alkis-flurst%C3%BCcke-wuppertal",
+        "observation": "Official city data portal lists the ALKIS parcel dataset and GeoJSON/Atom distributions."
+      },
+      {
+        "url": "https://www.offenedaten-wuppertal.de/api/3/action/package_show?id=e3b59f06-5e7b-46e3-8a8a-ce829c633d98",
+        "observation": "Official catalog API identifies the complete GeoJSON distribution and city-published Atom feed."
+      },
+      {
+        "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+        "observation": "Official NRW WFS capabilities describe a direct-access download service for simplified ALKIS parcels without owner data."
+      },
+      {
+        "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=2.0.0&TYPENAME=ave%3AFlurstueck",
+        "observation": "Official schema exposes `flstkennz` and `geometrie`; only these two fields were requested."
+      },
+      {
+        "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht",
+        "observation": "Exact WUP-point GetFeature request returned one full parcel feature, with only `flstkennz` and `geometrie` requested."
+      }
+    ]
+  },
+  "source": {
+    "name": "Geobasis NRW ALKIS parcels",
+    "urls": [
+      "https://www.wuppertal.de/vv/produkte/102/Liegenschaftskataster_Open_Data.php",
+      "https://www.offenedaten-wuppertal.de/dataset/alkis-flurst%C3%BCcke-wuppertal",
+      "https://www.offenedaten-wuppertal.de/api/3/action/package_show?id=e3b59f06-5e7b-46e3-8a8a-ce829c633d98",
+      "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+      "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=2.0.0&TYPENAME=ave%3AFlurstueck",
+      "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht"
+    ],
+    "operator": "City of Wuppertal / Geobasis NRW",
+    "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+    "serviceType": "Official simplified ALKIS WFS parcel polygons",
+    "nativeIdField": "flstkennz",
+    "nativeIdEvidence": "WFS DescribeFeatureType identifies flstkennz as the parcel key; exact-point response returned one value.",
+    "requestedAttributes": [
+      "flstkennz",
+      "objid",
+      "flurstid",
+      "aktualit",
+      "flaeche",
+      "gemarkung",
+      "gemaschl",
+      "flur",
+      "flstnrzae",
+      "flstnrnen",
+      "gemeinde",
+      "gmdschl"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "Seven valid distinct NRW ALKIS cadastral references verified in thirteen bounded 0.001-degree cells around the unchanged Wuppertal WUP settlement locator. Complete offset paging, forced three-row geometry pages, all seven fresh exact native cadastral identities, explicit absence, footprint and source binding passed in twenty requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Existing official North Rhine-Westphalia OGC API and native flstkennz namespace are reused. The original exact-point WFS sample and API polygon share the same native key; independent projected comparison finds Hausdorff distance 0.000006263 metres and symmetric difference 0.0099301 m², consistent with the two published CRS transformations, rather than byte-identical coordinates. Both complete source shapes remain unchanged. Wider municipal completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Wuppertal’s official Open Data page and catalog identify weekly updated ALKIS parcel polygons, approximately 100,000 parcels, under DL-Zero. The official NRW simplified ALKIS WFS advertises parcel features without owners; its schema exposes a safe parcel key and full MultiSurface geometry. A bounded exact-WUP-point query returned one full parcel polygon and key. This proves a point sample only, not citywide completeness or runtime readiness.",
+    "verifiedOpenScope": "Seven valid distinct NRW ALKIS cadastral references verified in thirteen bounded 0.001-degree cells around the unchanged Wuppertal WUP settlement locator. Complete offset paging, forced three-row geometry pages, all seven fresh exact native cadastral identities, explicit absence, footprint and source binding passed in twenty requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Existing official North Rhine-Westphalia OGC API and native flstkennz namespace are reused. The original exact-point WFS sample and API polygon share the same native key; independent projected comparison finds Hausdorff distance 0.000006263 metres and symmetric difference 0.0099301 m², consistent with the two published CRS transformations, rather than byte-identical coordinates. Both complete source shapes remain unchanged. Wider municipal completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "Seven valid distinct NRW ALKIS cadastral references verified in thirteen bounded 0.001-degree cells around the unchanged Wuppertal WUP settlement locator. Complete offset paging, forced three-row geometry pages, all seven fresh exact native cadastral identities, explicit absence, footprint and source binding passed in twenty requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Existing official North Rhine-Westphalia OGC API and native flstkennz namespace are reused. The original exact-point WFS sample and API polygon share the same native key; independent projected comparison finds Hausdorff distance 0.000006263 metres and symmetric difference 0.0099301 m², consistent with the two published CRS transformations, rather than byte-identical coordinates. Both complete source shapes remain unchanged. Wider municipal completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/wuppertal-root-quality-review.json"
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "geometryEvidence": "One full polygon was returned by the official NRW WFS exact-point Intersects request at unchanged WUP city locator. WFS schema and owner-exclusion statement were reviewed first. The retained GeoJSON includes only `flstkennz` and full geometry, transformed from EPSG:25832 to EPSG:4326. Citywide completeness and runtime quality remain unverified.",
+  "adapterReady": true,
+  "sampleFile": "research/overnight-cities-2026-10-08/city-1269-wuppertal-samples.geojson",
+  "sampleFeatureCount": 1,
+  "sampleCrs": "EPSG:4326",
+  "appCityId": "wuppertal",
+  "runtimeQualification": {
+    "sourceId": "de-nrw-lika-flurstueck",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T03:49:45.556237+00:00"
+}

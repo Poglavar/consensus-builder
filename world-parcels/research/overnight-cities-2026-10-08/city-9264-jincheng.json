@@ -1,0 +1,71 @@
+{
+  "name": "Jincheng",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 667,
+  "point": [
+    35.5000476385291,
+    112.848048555313
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jincheng Shanxi official cadastral map GIS real estate registration land registry",
+        "result": "Found the official Jincheng Real Estate Registration and Transaction Center, a city registry, and an official cadastral-map query guide. No map or parcel query was performed.",
+        "method": "Separate English-language search followed by official Jincheng registry portal review."
+      },
+      {
+        "language": "Chinese",
+        "query": "晋城市 不动产登记中心 地籍图查询 地图服务 官方",
+        "result": "Official Jincheng registration-center pages confirm a municipal registrar and publish cadastral-map query instructions. The available guide describes an object-level query, but no property was selected or searched.",
+        "method": "Separate Chinese-language search and official Jincheng city registry-page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Jincheng official land registry / map sources",
+        "operator": "Official city, regional or national authority as scoped in the observations",
+        "homeUrl": "https://bdc.jcgov.gov.cn/",
+        "observation": "City-specific Jincheng registry presence is directly confirmed by the official municipal registration-center portal. Its cadastral-map query guide is an image-based instructions page; no account, address, unit number, title number, search, or map selection was used. No public geometry-only service schema or safe allowlist was verified."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "The official Jincheng Real Estate Registration and Transaction Center identifies itself as a municipal registration institution under the Jincheng Planning and Natural Resources Bureau; the official city government portal confirms the municipal jurisdiction. Queue coordinates at 35.5000 N, 112.8480 E place this at 晋城, Shanxi. The center provides registration services but does not establish public parcel-vector access.",
+    "verifiedOpenScope": "No anonymous public geometry-only parcel response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The discovered cadastral service is object-query oriented and no anonymous geometry-only feature schema was exposed by the public instructions page.",
+  "remainingUncertainty": "Whether a separate Jincheng map service can return geometry plus only safe native IDs without registration/status/property attributes.",
+  "nextStep": "If parcel geometry is required, first verify an official public endpoint whose response can be limited to geometry and safe native IDs, then review coverage at the city point.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9264,
+  "cityId": "wup2025:9264",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.5000476385291,
+    112.848048555313
+  ],
+  "queueRank": 667,
+  "population2025": 794234,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Jincheng Real Estate Registration and Transaction Center identifies itself as a municipal registration institution under the Jincheng Planning and Natural Resources Bureau; the official city government portal confirms the municipal jurisdiction. Queue coordinates at 35.5000 N, 112.8480 E place this at 晋城, Shanxi. The center provides registration services but does not establish public parcel-vector access.",
+  "registryEvidenceUrls": [
+    "https://bdc.jcgov.gov.cn/"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

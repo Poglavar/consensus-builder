@@ -1,0 +1,69 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:NU:alofi",
+  "name": "Alofi",
+  "country": "Niue",
+  "countryCode": "NU",
+  "centerLatLon": [
+    -19.0554,
+    -169.9179
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/NU.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/NU.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Alofi Niue land registry cadastral map GIS land parcels official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Niue Land Registry Handbook Lands Survey Alofi",
+      "language": "English / official language not English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Niue kelekele map Alofi land survey map",
+      "language": "Niuean-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.gov.nu/projects/niue-land-registry-handbook",
+      "observation": "Official Government of Niue identifies Department of Justice, Lands & Survey and Land Registry at Alofi. It provides registry procedures/maps by request, not an online city parcel query endpoint; historical topographic maps are not parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.gov.nu/projects/niue-land-registry-handbook",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Official Niue handbook page states Lands & Survey registry at Fonukula, Alofi; no parcel query service linked."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-alofi.json"
+}

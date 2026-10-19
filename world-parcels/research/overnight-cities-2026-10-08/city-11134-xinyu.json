@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Xinyu",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Xinyu government material names the municipal real-estate registration center and describes it as handling local property-rights registration. The city natural-resources bureau is also named in current official city-government material. These establish a local registry service, but not anonymous parcel geometry or public map coverage at the WUP locator.",
+  "registryEvidenceUrls": [
+    "https://xfj.xinyu.gov.cn/xfj/zcjdx/2019-10/30/content_f1c4f825c0ba438fa17ab086eb859f27.shtml",
+    "https://lyj.xinyu.gov.cn/lyj/slyyw/2026-07/24/content_a56572583ec742d4b33a9c6941f7dd1b.shtml",
+    "https://lyj.xinyu.gov.cn/lyj/zcjdm/2026-07/24/content_8528821369824d259e63bd16987ff827.shtml"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11134,
+  "cityId": "wup2025:11134",
+  "centerLatLon": [
+    27.8135511872524,
+    114.938214020062
+  ],
+  "rank": 707,
+  "queueRank": 707,
+  "population2025": 756365,
+  "population2025k": 756.365,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous full-polygon geometry response was verified at the supplied WUP locator. Bonn's documented official WFS could not be queried from this environment; other portals did not publish a reviewed safe vector schema.",
+  "scopeLimits": "Official city-government sources establish a local Xinyu real-estate registration center and its registration functions, but do not expose a public parcel geometry service. Searches found no official city-specific public feature schema or anonymous parcel endpoint. No geometry request was made and no full polygon retained. No owner/address or identity data queried.",
+  "priorEvidenceFiles": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Xinyu China official natural resources bureau real estate registration center cadastral parcel map GIS",
+        "scope": "Find city-specific official registry/cadastre evidence and public parcel geometry; do not submit owner, address, identity, or property-specific lookup inputs.",
+        "result": "No city-specific public cadastral feature service or geometry schema was identified. City-government material did verify the local real-estate registration center.",
+        "actualResultUrls": [
+          "https://xfj.xinyu.gov.cn/xfj/zcjdx/2019-10/30/content_f1c4f825c0ba438fa17ab086eb859f27.shtml",
+          "https://lyj.xinyu.gov.cn/lyj/slyyw/2026-07/24/content_a56572583ec742d4b33a9c6941f7dd1b.shtml",
+          "https://lyj.xinyu.gov.cn/lyj/zcjdm/2026-07/24/content_8528821369824d259e63bd16987ff827.shtml"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal/property-specific inputs submitted."
+      },
+      {
+        "language": "Chinese",
+        "query": "新余市 自然资源局 不动产登记中心 地籍图 地籍调查 官方 新余市政府",
+        "scope": "Find city-specific official registry/cadastre evidence and public parcel geometry; do not submit owner, address, identity, or property-specific lookup inputs.",
+        "result": "Official city-government pages name the Xinyu real-estate registration center and local registration functions. No anonymous parcel-geometry service or schema surfaced.",
+        "actualResultUrls": [
+          "https://xfj.xinyu.gov.cn/xfj/zcjdx/2019-10/30/content_f1c4f825c0ba438fa17ab086eb859f27.shtml",
+          "https://lyj.xinyu.gov.cn/lyj/slyyw/2026-07/24/content_a56572583ec742d4b33a9c6941f7dd1b.shtml",
+          "https://lyj.xinyu.gov.cn/lyj/zcjdm/2026-07/24/content_8528821369824d259e63bd16987ff827.shtml"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal/property-specific inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://xfj.xinyu.gov.cn/xfj/zcjdx/2019-10/30/content_f1c4f825c0ba438fa17ab086eb859f27.shtml",
+        "observation": "Official Xinyu government department policy explainer says the city real-estate registration center handles property-rights registration and gives the administrative-service-center location; this is registry-service evidence, not a parcel GIS."
+      },
+      {
+        "url": "https://lyj.xinyu.gov.cn/lyj/slyyw/2026-07/24/content_a56572583ec742d4b33a9c6941f7dd1b.shtml",
+        "observation": "Current official Xinyu Forestry Bureau report discusses linking forest-right registration data with the municipal real-estate registration system; it confirms ongoing local registration infrastructure, not a public parcel-map endpoint."
+      },
+      {
+        "url": "https://lyj.xinyu.gov.cn/lyj/zcjdm/2026-07/24/content_8528821369824d259e63bd16987ff827.shtml",
+        "observation": "Official multi-agency Xinyu notice naming the municipal natural-resources and forestry bureaus; no public parcel geometry schema."
+      }
+    ]
+  },
+  "populationPlausibility2025": "High",
+  "point": [
+    27.8135511872524,
+    114.938214020062
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00",
+  "sourceIds": []
+}

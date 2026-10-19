@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "sg-data-gov-d_e7395d743076a2bcc487b0d12b9bf33b",
+  "wupCityCode": 329,
+  "rank": 593,
+  "purpose": "City-specific registry/map source review and safe route inspection for ranked WUP settlement point.",
+  "primaryPublisher": "Singapore Land Authority",
+  "sourceUrl": "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+  "registryFound": true,
+  "registryBasis": "The Singapore Land Authority publishes a current nationwide cadastral land-parcel GeoJSON described as the entire cadastral map of Singapore. Its polygon at the Sembawang WUP point was verified by geometry-only point-in-polygon inspection. This establishes public geometry at the locator, not title or legal boundary status.",
+  "officialSources": [
+    {
+      "url": "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+      "observation": "Singapore Land Authority dataset page describes a nationwide cadastral polygon GeoJSON, data from Nov 2025, last updated 2026-10-05, updated weekly. The page states the dataset is free for personal or commercial use under the Open Data Licence."
+    },
+    {
+      "url": "https://api-open.data.gov.sg/v2/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/metadata",
+      "observation": "Anonymous metadata GET returned 200 and described full Singapore cadastral coverage, GeoJSON format, 144,800,984 bytes, and properties including snapshot object ID and other attributes. Output retains only object ID and geometry."
+    },
+    {
+      "url": "https://www.sla.gov.sg/regulatory/property-boundaries/",
+      "observation": "SLA says it maintains cadastral maps and survey plans; the coordinate cadastre defines property boundaries by coordinates."
+    },
+    {
+      "url": "https://www.onemap.gov.sg/docs/maps/landlot.html",
+      "observation": "Official OneMap documentation exposes a LandLot raster/TileJSON/WMS view; no LandQuery or ownership search was used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sembawang Singapore official cadastral land parcel map SLA geojson",
+      "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+      "result": "The Singapore Land Authority publishes a current nationwide cadastral land-parcel GeoJSON described as the entire cadastral map of Singapore. Its polygon at the Sembawang WUP point was verified by geometry-only point-in-polygon inspection. This establishes public geometry at the locator, not title or legal boundary status. Official data.gov.sg metadata was anonymously fetched (HTTP 200) and listed a 144,800,984-byte GEOJSON maintained by SLA. The public poll-download endpoint returned 201; the dataset was streamed temporarily, with only geometry tested against the WUP point. One containing Polygon (73 ring vertices) was retained with snapshot OBJECTID_1 80598974 only. Full source deleted. OneMap separately advertises a LandLot basemap and LandQuery; no ownership or lot-number lookup was used."
+    },
+    {
+      "language": "Malay",
+      "query": "Sembawang Singapura peta kadaster lot tanah rasmi SLA",
+      "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+      "result": "The Singapore Land Authority publishes a current nationwide cadastral land-parcel GeoJSON described as the entire cadastral map of Singapore. Its polygon at the Sembawang WUP point was verified by geometry-only point-in-polygon inspection. This establishes public geometry at the locator, not title or legal boundary status. Official data.gov.sg metadata was anonymously fetched (HTTP 200) and listed a 144,800,984-byte GEOJSON maintained by SLA. The public poll-download endpoint returned 201; the dataset was streamed temporarily, with only geometry tested against the WUP point. One containing Polygon (73 ring vertices) was retained with snapshot OBJECTID_1 80598974 only. Full source deleted. OneMap separately advertises a LandLot basemap and LandQuery; no ownership or lot-number lookup was used."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://api-open.data.gov.sg/v2/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/metadata",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 1275,
+      "observation": "Dataset metadata only."
+    },
+    {
+      "url": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+      "method": "GET",
+      "status": 201,
+      "contentType": "application/json",
+      "bytes": null,
+      "observation": "Anonymous public poll-download returned a transient signed resource link; its query string was not recorded or exposed."
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/geo+json",
+      "bytes": 144800984,
+      "observation": "Temporary full public snapshot was streamed using a transient signed URL from the public poll-download endpoint. Only resource host/path are recorded; the signed query is deliberately omitted. One geometry match was retained, and the full download was deleted.",
+      "resourceHostname": "s3.ap-southeast-1.amazonaws.com",
+      "resourcePath": "/blobs.data.gov.sg/d_e7395d743076a2bcc487b0d12b9bf33b.geojson",
+      "signedQueryOmitted": true,
+      "locatorIsNotAnonymousRequestUrl": true
+    }
+  ],
+  "routeInspectionSummary": "Official data.gov.sg metadata was anonymously fetched (HTTP 200) and listed a 144,800,984-byte GEOJSON maintained by SLA. The public poll-download endpoint returned 201; the dataset was streamed temporarily, with only geometry tested against the WUP point. One containing Polygon (73 ring vertices) was retained with snapshot OBJECTID_1 80598974 only. Full source deleted. OneMap separately advertises a LandLot basemap and LandQuery; no ownership or lot-number lookup was used.",
+  "geometrySampleCount": 1,
+  "geometryRetained": true,
+  "nativeIdField": "OBJECTID_1",
+  "attributesRequested": [],
+  "attributesRetained": [
+    "sourceObjectId"
+  ],
+  "runtimeEnabled": false,
+  "rootQualificationStatus": "held_snapshot_adapter_qualification",
+  "rootResourceLocatorCorrection": {
+    "publicPollDownloadUrl": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+    "httpStatus": 201,
+    "actualResourceHostname": "s3.ap-southeast-1.amazonaws.com",
+    "actualResourcePath": "/blobs.data.gov.sg/d_e7395d743076a2bcc487b0d12b9bf33b.geojson",
+    "signedQueryRetained": false,
+    "correction": "The original resource locator incorrectly treated the S3 path prefix as a hostname. A fresh metadata request verified the actual host/path; the large file was not downloaded again."
+  },
+  "rootRuntimeReview": {
+    "status": "held_snapshot_adapter_qualification",
+    "reason": "One complete SLA polygon is verified at the Sembawang settlement locator, but a faithful executable contract for the 144,800,984-byte weekly national snapshot, its transient resource link and revision-scoped native object identity has not been qualified. Source notices are informational. No cropped geometry corpus or proxy ID is substituted for the full source."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-1935-gdynia.json",
+  "cityCode": 1935,
+  "queueRank": 2831,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Official Gdynia WebEWID map documentation identifies the city's public map viewer; the verified parcel-vector response was obtained from GUGiK's official aggregate EGiB WFS, which aggregates county cadastral services.",
+  "nationalAgencyLeads": ["https://www.gov.pl/web/gugik/zbiorcza-usluga-wfs-dla-ewidencji-gruntow-i-budynkow-udostepniona-w-modulach-mapowych-serwisu-geoportalgovpl", "https://mapy.geoportal.gov.pl/wss/service/PZGIK/EGIB/WFS/UslugaZbiorcza"],
+  "localLeads": ["https://nasze.miasto.gdynia.pl/dokuweb/portal-mapowy/portal-mapowy.html"],
+  "queryOutcomes": "Separate English and Polish discovery queries found official Gdynia WebEWID documentation and official GUGiK EGiB WFS documentation/service URLs. Local documentation confirms parcel search; national WFS supplied the qualified sample.",
+  "requestOutcomes": "Gdynia historical map URL returned 404; current official documentation returned 200. GUGiK GetCapabilities, DescribeFeatureType, and bounded GetFeature returned 200. The bounded response returned three parcel polygons and native IDs. No credentials, login, CAPTCHA/Cloudflare bypass, private token, TLS exception, or unsafe field request was used.",
+  "schemaAndCrs": {
+    "parcelSchema": "ms:dzialki",
+    "nativeIdField": "ID_DZIALKI",
+    "geometryField": "geom",
+    "geometryCrs": "EPSG:4326 retained; service default EPSG:2180",
+    "fieldMapping": {"id": "ID_DZIALKI", "geometry": "geom"},
+    "compositeKeyProvenance": "Native ID values include cadastral unit/precinct/parcel components; no synthetic row number was used."
+  },
+  "boundedResponse": {"featureCount": 3, "geometryFeatureCount": 3, "sampleFile": "gdynia-parcel-sample.geojson", "nativeIds": ["226201_1.0026.704", "226201_1.0026.718", "226201_1.0026.719"]},
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [54.5322041862711, 18.5076341710355] was preserved and not shifted.", "Three returned polygons are bounded sample evidence, not citywide coverage proof.", "National aggregate service evidence does not by itself qualify a runtime adapter.", "No unsafe personal, ownership, title, address, contact, tax/account, or certificate fields were requested or retained."],
+  "qualification": {"verifiedSample": true, "parcelGeometryVerified": true, "runtimeReadiness": "held", "reason": "Safe native IDs and unchanged geometry were verified, but independent serial review and citywide coverage qualification remain required."},
+  "uncertainty": "The sample is strong first-party evidence for public parcel geometry in Gdynia, while the local live viewer endpoint and citywide completeness remain unverified."
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:146",
+  "queueRank": 146,
+  "name": "Busan",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "centerLatLon": [
+    35.1597692255284,
+    129.058963034942
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.data.go.kr/data/15045882/fileData.do",
+      "observation": "Ministry catalog for the nationwide continuous cadastral polygon dataset (province/city SHP files); see seoul.json. Catalog page not a parcel response."
+    },
+    {
+      "url": "https://www.vworld.kr/",
+      "observation": "VWorld national spatial-data service (WFS/data API for continuous cadastral map layer LP_PA_CBND_BUBUN) requires an API key; hosts api.vworld.kr and www.vworld.kr could not be reached from this client."
+    },
+    {
+      "url": "https://data.busan.go.kr/",
+      "observation": "Busan open-data portal returned a 302 redirect only; not explored further."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&geomFilter=BOX(129.0585,35.1595,129.0595,35.1605)&size=3&format=json",
+      "method": "GET",
+      "httpStatus": "none",
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence; a key would also be required"
+    },
+    {
+      "url": "https://www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23",
+      "method": "GET",
+      "httpStatus": "none",
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://apis.data.go.kr/1611000/nsdi/IndvdLandPriceService/wms/getIndvdLandPriceWMS",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "application/xml",
+      "assessment": "API reports service not found; not a parcel endpoint"
+    },
+    {
+      "url": "https://www.busan.go.kr/",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "text/html",
+      "assessment": "access denied page"
+    },
+    {
+      "url": "https://data.busan.go.kr/",
+      "method": "GET",
+      "httpStatus": 302,
+      "contentType": "text/html",
+      "assessment": "redirect only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "South Korea continuous cadastral map (national, per ministry catalog)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Strong national candidate, but VWorld hosts were unreachable and an API key is required, so no Busan parcel sample was obtained.",
+  "nextStep": "Register for a VWorld key or download the province SHP for Busan and test a bounded read; retry VWorld from another network."
+}

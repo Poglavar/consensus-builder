@@ -1,0 +1,175 @@
+{
+  "name": "Meerut",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 227,
+  "point": [
+    28.9861081836674,
+    77.7028155330327
+  ],
+  "population2025": 2209886,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The exact WUP locator [28.9861081836674, 77.7028155330327] is a population-cluster point, not a parcel identity. The official UP Bhulekh dashboard identifies Meerut Sadar village Meerut (219037), linked to BhuNaksha with eight scanned/verified mapsheets. The correct three-level BhuNaksha POST (district 138, tehsil 00734, village 219037) returned HTTP 200 and GIS code 13800734219037, with attribution naming मेरठ, but its xmin/ymin/xmax/ymax are all 0. No map extent or point identify was obtained, and no Agra default map was used. No owner/address data was saved.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official UP selectors and the Bhulekh dashboard identify Meerut Sadar village Meerut (219037), linked to BhuNaksha with eight scanned/verified mapsheets. The correctly selected three-level map-info request resolves the official attribution and GIS code, but returns a zero extent; exact locator coverage and parcel geometry remain unverified.",
+  "resultCategory": "official_local_village_map_indexed_zero_extent_exact_point_unverified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "official Meerut cadastral parcel map land records Uttar Pradesh Bhu Naksha site:meerut.nic.in OR site:upbhunaksha.gov.in",
+        "scope": "Find Meerut-specific government land-record mapping and public parcel access.",
+        "result": "The official UP BhuNaksha viewer declares the public map server. Anonymous selectors resolve Meerut district code 138 and Sadar tehsil 00734. The official UP Bhulekh dashboard lists Meerut Sadar revenue village Meerut (219037), linked to BhuNaksha, and eight scanned/verified mapsheets. A two-level BhuNaksha getVVVVExtentGeoref request failed with HTTP 500 because its internal GIS-code creation call returned HTTP 403; no village extent or point geometry was obtained.",
+        "actualResultUrls": [
+          "https://meerut.nic.in/",
+          "https://upbhunaksha.gov.in/upbhunaksha/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=138&tehsilCode=00734"
+        ],
+        "executionMethod": "Separate English web search; official district page and cadastral dashboard review; public viewer shell, selector and bounded map-info request inspection."
+      },
+      {
+        "language": "Hindi",
+        "query": "मेरठ भू नक्शा आधिकारिक पार्सल नक्शा उत्तर प्रदेश भूलेख",
+        "scope": "Check Hindi-language official references for Meerut cadastral mapping and land records.",
+        "result": "Official BhuNaksha selectors resolve Meerut district and Sadar tehsil. The official UP Bhulekh cadastral-map dashboard lists Sadar revenue village मेरठ, code 219037; its BhuNaksha-linked village flag is 1 and it has eight verified/scanned mapsheets, but map georeference flags are 0. This does not establish the WUP point’s village or parcel geometry. The map-info request at tehsil-only selection failed before any point identify.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/upbhunaksha/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=138&tehsilCode=00734"
+        ],
+        "executionMethod": "Separate Hindi-language search followed by review of official UP selectors and district-specific cadastral digitization dashboard; no unsupported coordinate-to-village inference."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://meerut.nic.in/",
+        "httpStatus": 200,
+        "observation": "Official district portal; its service navigation links state revenue/land-record and mapping resources."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+        "observation": "Official Uttar Pradesh cadastral map viewer shell. Downloaded bundle declares base URL https://upbhunaksha.gov.in/bhunakshaserver."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Anonymous selector labels are District, Tehsil, Village."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain",
+        "observation": "Viewer resolves state code 09, Uttar Pradesh."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "requestBody": "level=1&codes=",
+        "observation": "District selector returned Meerut with code 138."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "requestBody": "level=2&codes=138",
+        "observation": "Meerut tehsil selector returned Sadar (00734), Mawana and Sardhana."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "requestBody": "level=3&codes=138,00734",
+        "observation": "Sadar village selector returned 45,348 bytes of selector JSON; multiple entries flag map data. No parcel feature response was requested."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=138&tehsilCode=00734",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official UP Bhulekh report for district 138 and Meerut Sadar (tehsil code 00734) lists revenue village मेरठ (code 219037); Village Khatauni, scanned, verified and BhuNaksha-linked flags are 1, village georeference flag is 0, and 8 mapsheets are scanned/verified. This is an index/processing status, not a geometry response."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 500,
+        "contentType": "application/json",
+        "requestBody": "gisLevels=138,00734",
+        "observation": "BhuNaksha map-info request at Meerut district and Sadar tehsil selection failed. The internal GIS-code creation request returned HTTP 403, so no valid selected map extent was produced; no point identify was attempted without an extent, village code, and verified coordinate reference."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewer": "https://upbhunaksha.gov.in/upbhunaksha/",
+      "bundleUrl": "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+      "bundleBytes": 2972677,
+      "bundleSha256": "071268458e19e27270071323d228d059e521d3fc4d87968a0247d148bcb15780",
+      "apiBase": "https://upbhunaksha.gov.in/bhunakshaserver",
+      "observedClientRoutes": [
+        "GET /Levels/levelLabels",
+        "GET /Levels/stateCode",
+        "POST /masterdata/levelvalue",
+        "POST /MapInfo/getPlotAtXY",
+        "GET /WMS",
+        "POST /MapInfo/getVVVVExtentGeoref (selection-level map extent; failed before village map selection)",
+        "POST /MapInfo/getPlotAtXY (advertised identify route; not invoked without valid extent/village code)"
+      ],
+      "notes": "The official UP Bhulekh dashboard narrows the local match to Sadar revenue village मेरठ (219037), with eight scanned/verified mapsheets and the Bhunaksha link flag set. Village georeference and mapsheet georeference flags are zero. The public viewer’s two-level map-info request failed before a valid map extent was returned; the WUP point was not passed as pixel/map XY to getPlotAtXY, and no parcel geometry was retrieved.",
+      "threeLevelMapInfoRequest": {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "selectedCodes": [
+          "138",
+          "00734",
+          "219037"
+        ],
+        "gisCode": "13800734219037",
+        "httpStatus": 200,
+        "extent": {
+          "xmin": 0.0,
+          "ymin": 0.0,
+          "xmax": 0.0,
+          "ymax": 0.0
+        },
+        "attribution": "जिला : 138 मेरठ, तहसील : 00734 सदर, गाँव : 219037 मेरठ",
+        "outcome": "Official village selection resolved, but no usable map extent; point identify not attempted."
+      }
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-UP-MEERUT-SADAR-BHUNAKSHA",
+    "name": "Uttar Pradesh BhuNaksha, Meerut Sadar urban-village map index",
+    "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+    "operator": "Board of Revenue, Uttar Pradesh",
+    "serviceType": "Official cadastral map viewer; three-level district/tehsil/village selection resolves, but the village map extent is zero and no parcel response was available.",
+    "layer": "Meerut Sadar revenue village Meerut, code 219037 (index); mapsheets not fetched",
+    "geometryType": "Polygon expected from viewer, none observed",
+    "outputCrs": null,
+    "nativeIdField": "Village selector code (not parcel identifier)",
+    "nativeIdEvidence": "Official UP Bhulekh dashboard lists Meerut Sadar village मेरठ code 219037 and marks it BhuNaksha-linked. The selected map-info response returned GIS code 13800734219037, but zero extent; no parcel feature returned."
+  },
+  "wupCityCode": 8652,
+  "cityId": "wup2025:8652",
+  "queueRank": 227,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    28.9861081836674,
+    77.7028155330327
+  ],
+  "rootReviewedAt": "2026-10-08T21:44:23.947164+00:00",
+  "sourceIds": []
+}

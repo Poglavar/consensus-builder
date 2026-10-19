@@ -16,8 +16,8 @@ function toggleMeasureTool() {
     const mapContainer = map.getContainer();
 
     if (window.measureMode) {
-        // Activate measurement mode
-        measureButton.classList.add('active-black-border');
+        // Activate measurement mode: the tool that is on is aria-pressed (css/primitives.css).
+        measureButton.setAttribute('aria-pressed', 'true');
         mapContainer.classList.add('crosshairs-cursor');
         map.getContainer().style.cursor = 'crosshair';
 
@@ -34,7 +34,7 @@ function toggleMeasureTool() {
         updateStatus('Click on the map to start measuring');
     } else {
         // Deactivate measurement mode
-        measureButton.classList.remove('active-black-border');
+        measureButton.setAttribute('aria-pressed', 'false');
         mapContainer.classList.remove('crosshairs-cursor');
         map.getContainer().style.cursor = '';
 
@@ -80,21 +80,27 @@ function handleMeasureClick(e) {
         }).addTo(map);
         measureMarkers.push(endMarker);
 
-        // Calculate the distance
-        const htrsStartPoint = wgs84ToHTRS96(measureStartPoint.lat, measureStartPoint.lng);
-        const htrsEndPoint = wgs84ToHTRS96(measureEndPoint.lat, measureEndPoint.lng);
+        // The distance on the ellipsoid: measuring needs no projection (projections.md §2), so it
+        // is the same whichever city is active
+        const distanceMeters = window.__metricFrame.geodesicDistance(
+            [measureStartPoint.lng, measureStartPoint.lat],
+            [measureEndPoint.lng, measureEndPoint.lat]
+        );
 
-        // Calculate distance in meters (using HTRS96/TM coordinates)
-        const dx = htrsEndPoint[0] - htrsStartPoint[0];
-        const dy = htrsEndPoint[1] - htrsStartPoint[1];
-        const distanceMeters = Math.sqrt(dx * dx + dy * dy);
-
-        // Format the distance
-        const formattedDistance = distanceMeters.toFixed(1);
+        // Format the distance: a measuring tool keeps its decimetre in every language
+        // (frontend-measurement-tool.test.js runs this file without js/format.js)
+        const formattedDistance = typeof CbFormat !== 'undefined'
+            ? CbFormat.formatLength(distanceMeters, { maxFractionDigits: 1, minFractionDigits: 1 })
+            : `${distanceMeters.toFixed(1)} m`;
 
         // Draw the final measurement line
         if (measureMouseLine) {
             map.removeLayer(measureMouseLine);
+            measureMouseLine = null;
+        }
+        if (measureMouseMarker) {
+            map.removeLayer(measureMouseMarker);
+            measureMouseMarker = null;
         }
 
         measureLine = L.polyline([measureStartPoint, measureEndPoint], {
@@ -111,7 +117,7 @@ function handleMeasureClick(e) {
         measureLabel = L.marker(midpoint, {
             icon: L.divIcon({
                 className: 'measurement-label',
-                html: `${formattedDistance} m`,
+                html: formattedDistance,
                 iconSize: [80, 20],
                 iconAnchor: [40, 10]
             }),
@@ -196,10 +202,11 @@ function clearAllMeasurements() {
     updateStatus('All measurements cleared');
 }
 
-// Update the visibility of the Cancel Measurements button
+// Update the visibility of the Cancel Measurements button (the hidden attribute; .btn[hidden] in
+// css/primitives.css)
 function updateCancelMeasurementsButton() {
     const button = document.getElementById('clearMeasurementsButton');
-    button.style.display = allMeasurements.length > 0 ? 'inline-block' : 'none';
+    button.hidden = allMeasurements.length === 0;
 }
 
 // Handle mouse movement for measurement preview
@@ -229,25 +236,28 @@ function handleMeasureMouseMove(e) {
             interactive: false
         }).addTo(map);
 
-        // Calculate and display the current distance
-        const htrsStartPoint = wgs84ToHTRS96(measureStartPoint.lat, measureStartPoint.lng);
-        const htrsMousePoint = wgs84ToHTRS96(e.latlng.lat, e.latlng.lng);
+        // Calculate and display the current distance, on the ellipsoid
+        const distanceMeters = window.__metricFrame.geodesicDistance(
+            [measureStartPoint.lng, measureStartPoint.lat],
+            [e.latlng.lng, e.latlng.lat]
+        );
 
-        const dx = htrsMousePoint[0] - htrsStartPoint[0];
-        const dy = htrsMousePoint[1] - htrsStartPoint[1];
-        const distanceMeters = Math.sqrt(dx * dx + dy * dy);
-
-        // Format the distance
-        const formattedDistance = distanceMeters.toFixed(1);
+        // Format the distance: a measuring tool keeps its decimetre in every language
+        // (frontend-measurement-tool.test.js runs this file without js/format.js)
+        const formattedDistance = typeof CbFormat !== 'undefined'
+            ? CbFormat.formatLength(distanceMeters, { maxFractionDigits: 1, minFractionDigits: 1 })
+            : `${distanceMeters.toFixed(1)} m`;
 
         // Update status with current measurement
-        updateStatus(`Distance: ${formattedDistance} m (click to set end point, ESC to cancel)`);
+        updateStatus(`Distance: ${formattedDistance} (click to set end point, ESC to cancel)`);
     }
 }
 
 // Handle keydown events for measurement tool
 function handleMeasureKeydown(e) {
     if (e.key === 'Escape') {
+        // One Escape, one step: the Tools sheet Measure was started from stays open for the next.
+        e.preventDefault();
         if (measureStartPoint || measureLine) {
             clearMeasurement();
             updateStatus('Measurement cancelled. Click to start measuring.');

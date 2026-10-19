@@ -1,0 +1,25 @@
+{
+  "taskId": "city:6690",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-6690-himatnagar.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/himatnagar-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261012T001323-ec00ac3b/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-12T00:17:18Z",
+  "reason": "The original WUP 2025 row agrees with queue and packet: city 6690, rank 2988, India, exact point [23.5982431443311,72.9659549977241], 200338 persons. English and Gujarati searches with result URLs are recorded. Official Gujarat land-record procedure supports registryFound true, but the AnyRoR request timed out; no first-party parcel ID-plus-geometry response, full polygon, or safe native ID was obtained. Timeout is not evidence of citywide absence. No independent live adapter qualification or headed Details check exists.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

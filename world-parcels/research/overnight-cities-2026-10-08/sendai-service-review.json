@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "jp-sendai-city-published-chibanzu-reference-map",
+  "purpose": "Service review for WUP2025 rank 406 Sendai (city code 5593); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "www.city.sendai.jp",
+  "sourceUrl": "https://www.city.sendai.jp/sisanze-chose/chibannzu.html",
+  "registryFound": true,
+  "registryBasis": "Sendai City publishes a tax-reference chibanzu map and a CC BY open-data shape archive through G空間情報センター. The 2026-07-13 land-area archive contains a 645,056-record Polygon shapefile in JGD2011 / Japan Plane Rectangular CS X (EPSG:6678). Geometry-only extraction confirms a polygon containing the exact WUP 2025 rank-406 point and two nearby polygons. The city warns that the reference map is not proof of parcel boundaries, exact position/shape, or rights, is unsuitable for measurement, and has unprepared areas.",
+  "officialSources": [
+    {
+      "url": "https://www.city.sendai.jp/sisanze-chose/chibannzu.html",
+      "observation": "City page says the tax-reference map is based on cadastral/public maps, shows land locations, town names and lot numbers, offers a shape-format open-data download and a public web-map search; its disclaimers exclude proof of boundaries, exact position/shape or rights and say some areas are not prepared."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/chibanzu",
+      "observation": "Public dataset catalogue lists the Sendai lot-map package. Its land-area archive was downloaded anonymously (HTTP 200, 41,289,785 bytes); only geometry files were extracted after inspecting DBF schema descriptors without reading any row values."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=chibanzu",
+      "observation": "Anonymous CKAN metadata lists the land-area archive as 7z, 41,289,785 bytes, updated 2026-07-13. Full archive temporary download succeeded; the directory lists tochi.dbf, .prj, .shp, and .shx. DBF header and field descriptors only were read; no row values were read."
+    },
+    {
+      "url": "https://www2.wagmap.jp/sendaicity/Portal",
+      "observation": "Anonymous homepage lists map ID 299 as “地番図（参考図）”, describes it as a reference map of land locations/town names/lot numbers, and marks guest AuthLevel 0."
+    },
+    {
+      "url": "https://guide.callcenter.city.sendai.jp/hc/ja/articles/5130091029918-%E5%9C%B0%E7%95%AA%E5%9B%B3%E3%81%AE%E9%96%B2%E8%A6%A7%E6%96%B9%E6%B3%95%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84",
+      "observation": "Municipal FAQ confirms anyone may view the reference lot map and that a GIS-use shapefile is published; the map remains a tax reference rather than an authoritative rights/boundary source."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sendai Japan official land parcel map cadastral parcels public map shapefile",
+      "scope": "Find Sendai-specific parcel reference data and anonymous geometry routes.",
+      "result": "Sendai City publishes a tax-reference chibanzu map and a CC BY open-data shape archive through G空間情報センター. The 2026-07-13 land-area archive contains a 645,056-record Polygon shapefile in JGD2011 / Japan Plane Rectangular CS X (EPSG:6678). Geometry-only extraction confirms a polygon containing the exact WUP 2025 rank-406 point and two nearby polygons. The city warns that the reference map is not proof of parcel boundaries, exact position/shape, or rights, is unsuitable for measurement, and has unprepared areas. Anonymous download returned the complete archive; DBF header/schema only were inspected; three geometry-only polygons are retained.",
+      "actualResultUrls": [
+        "https://www.city.sendai.jp/sisanze-chose/chibannzu.html",
+        "https://www2.wagmap.jp/sendaicity/Portal",
+        "https://www.geospatial.jp/ckan/dataset/chibanzu"
+      ],
+      "executionMethod": "English-language search followed by direct anonymous inspection of the city page, WAGMap HTML and CKAN public metadata."
+    },
+    {
+      "language": "Japanese",
+      "query": "仙台市 公式 地番図 公開 シェープデータ 地番図（参考図）",
+      "scope": "仙台市の地番図（参考図）を確認し、対象地点の匿名公開ジオメトリ経路を探す。",
+      "result": "Sendai City publishes a tax-reference chibanzu map and a CC BY open-data shape archive through G空間情報センター. The 2026-07-13 land-area archive contains a 645,056-record Polygon shapefile in JGD2011 / Japan Plane Rectangular CS X (EPSG:6678). Geometry-only extraction confirms a polygon containing the exact WUP 2025 rank-406 point and two nearby polygons. The city warns that the reference map is not proof of parcel boundaries, exact position/shape, or rights, is unsuitable for measurement, and has unprepared areas. Anonymous download returned the complete archive; DBF header/schema only were inspected; three geometry-only polygons are retained.",
+      "actualResultUrls": [
+        "https://www.city.sendai.jp/sisanze-chose/chibannzu.html",
+        "https://guide.callcenter.city.sendai.jp/hc/ja/articles/5130091029918-%E5%9C%B0%E7%95%AA%E5%9B%B3%E3%81%AE%E9%96%B2%E8%A6%A7%E6%96%B9%E6%B3%95%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84",
+        "https://www.geospatial.jp/ckan/dataset/chibanzu",
+        "https://www2.wagmap.jp/sendaicity/Portal"
+      ],
+      "executionMethod": "日本語検索後、仙台市公式ページ、公開地図HTML、CKAN公開メタデータを匿名で直接確認。"
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 3,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "public_open_data_archive_geometry_verified",
+    "reason": "Static WAGMap review found the anonymous geometry endpoint requires a feature ID, while its list route would expose labels and coordinates and its coordinate-identify route returns attributes; neither was called. Separately, the official CC BY land-area archive was downloaded anonymously, its DBF header/field descriptors were inspected without reading any row values, and only SHP/SHX/PRJ were extracted. The geometry sample is tied to 1-based SHP record numbers only; DBF attributes and their values were not joined or retained. This research sample does not enable a production runtime source.",
+    "sampleCrs": "EPSG:6678 source; OGC:CRS84 output",
+    "nativeIdsUsed": "1-based SHP record numbers only; DBF not joined",
+    "dbfRecordValuesRead": false,
+    "sampleFile": "samples/sendai-chibanzu-wup406.geojson",
+    "dbfHeaderInspected": true
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.city.sendai.jp/sisanze-chose/chibannzu.html",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 24191,
+      "observation": "Anonymous Japanese city page fetched; it documents shape-format open data and the public web map and states boundary/coverage caveats."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=chibanzu",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 11196,
+      "observation": "Public metadata only: land-area resource is a 7z archive (41,289,785 bytes), updated 2026-07-13. No geometry or attribute schema was queried."
+    },
+    {
+      "url": "https://www2.wagmap.jp/sendaicity/Portal",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 69299,
+      "observation": "Anonymous homepage HTML lists the guest-visible parcel-reference map as map ID 299, AuthLevel 0."
+    },
+    {
+      "url": "https://www2.wagmap.jp/sendaicity/PositionSelect?mid=299&nm=%E5%9C%B0%E7%95%AA%E5%9B%B3%EF%BC%88%E5%8F%82%E8%80%83%E5%9B%B3%EF%BC%89&ctnm=%E4%BD%8F%E5%AE%85%E3%83%BB%E5%9C%B0%E7%95%AA%E5%9B%B3%EF%BC%88%E5%8F%82%E8%80%83%E5%9B%B3%EF%BC%89",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 25668,
+      "effectiveUrl": "https://www2.wagmap.jp/sendaicity/Agreement?IsPost=False&MapId=299",
+      "observation": "Anonymous map selection resolved to terms. After informational consent-only MapId=299 POST (HTTP 200), the map was opened; no identity, application, payment, or personal fields were sent."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/c5e2303a-6b57-4901-a31b-99acd7bac7a3/resource/90801b2a-52fa-401b-9cd9-66ece7852689/download/tochi.7z",
+      "method": "GET (bounded range probe)",
+      "status": 206,
+      "contentType": "application/x-7z-compressed",
+      "bytes": 16384,
+      "observation": "Anonymous archive access verified; full archive later returned HTTP 200 (41,289,785 bytes). It was temporarily extracted only for SHP/SHX/PRJ and deleted; DBF header and field descriptors only were inspected, without reading any records."
+    },
+    {
+      "url": "https://www.geospatial.jp/ckan/dataset/c5e2303a-6b57-4901-a31b-99acd7bac7a3/resource/90801b2a-52fa-401b-9cd9-66ece7852689/download/tochi.7z",
+      "method": "GET (bounded range probe)",
+      "status": 206,
+      "contentType": "application/x-7z-compressed",
+      "bytes": 89785,
+      "observation": "Anonymous archive access verified; full archive later returned HTTP 200 (41,289,785 bytes). It was temporarily extracted only for SHP/SHX/PRJ and deleted; DBF header and field descriptors only were inspected, without reading any records."
+    },
+    {
+      "url": "https://www2.wagmap.jp/v/common/Scripts/bundles/scripts.plugin.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/javascript",
+      "bytes": 766116,
+      "observation": "Public client bundle statically inspected. It configures GetFeature geometry calls with only `fid` and/or `ufid`; the response parser consumes geometry arrays/part markers. The feature-list component posts layer identifiers/codesets and reads name/fid/x/y, with no ID-only field-selection option."
+    },
+    {
+      "url": "https://www2.wagmap.jp/v/common/Scripts/bundles/scripts.pages.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/javascript",
+      "bytes": 388399,
+      "observation": "Public page bundle statically inspected. Its map layer tree is initialized with empty data; it adds selected layer/codeset values for GetFeatureList and does not provide a feature-ID-only selector."
+    }
+  ],
+  "technicalBlocker": "Static WAGMap review found the anonymous geometry endpoint requires a feature ID, while its list route would expose labels and coordinates and its coordinate-identify route returns attributes; neither was called. Separately, the official CC BY land-area archive was downloaded anonymously, its DBF header/field descriptors were inspected without reading any row values, and only SHP/SHX/PRJ were extracted. The geometry sample is tied to 1-based SHP record numbers only; DBF attributes and their values were not joined or retained. This research sample does not enable a production runtime source.",
+  "sampleDisposition": "Retained three complete Polygon geometries from public SHP records 309577, 303660, and 644804 in samples/sendai-chibanzu-wup406.geojson; record 309577 contains the exact WUP point. Only DBF header/schema descriptors were inspected; no DBF record values were read or joined.",
+  "remainingUncertainty": "Native parcel labels/IDs and DBF attribute values were intentionally not read. The sample uses 1-based SHP record numbers from the archive snapshot. Archive currency is as listed in public CKAN metadata (updated 2026-07-13); area coverage beyond the retained nearby sample is not assessed. The city’s tax-reference disclaimers and unprepared areas limit positional/legal use.",
+  "viewerClientInspection": {
+    "candidateMapFound": true,
+    "mapId": 299,
+    "mapName": "地番図（参考図）",
+    "guestAuthLevel": 0,
+    "directAnonymousRouteStatus": "viewer_opened_after_informational_consent",
+    "consentPost": {
+      "url": "https://www2.wagmap.jp/sendaicity/Agreement/Agree",
+      "status": 200,
+      "fieldsSent": [
+        "MapId=299"
+      ]
+    },
+    "mapView": {
+      "url": "https://www2.wagmap.jp/sendaicity/Map?mid=299&mpx=140.907061123702&mpy=38.2731458211357&bsw=1200&bsh=800",
+      "status": 200
+    },
+    "mapRenderingRoute": "../Map/GetMapImage",
+    "geometryRoute": {
+      "url": "../Map/GetFeature",
+      "method": "POST",
+      "inputContract": {
+        "FeatureId": "fid",
+        "UFeatureId": "ufid"
+      },
+      "responseContract": "Client parses JsonResult.fp coordinate arrays and fpt part/ring markers; no geometry call performed."
+    },
+    "featureListRoute": {
+      "url": "../Map/GetFeatureList",
+      "method": "POST",
+      "inputContract": {
+        "themeLayer": "lid+mcl",
+        "userLayer": "ulid+mucl"
+      },
+      "responseContract": "Client reads JsonResult.infos[].name, fid, x, y; no field-selection/ID-only parameter exposed."
+    },
+    "coordinateIdentificationRoute": {
+      "url": "../Map/GetAttribute",
+      "method": "POST",
+      "inputContract": "map click coordinate via cp/mcx/mcy",
+      "responseContract": "trecord/urecord attribute arrays; not called."
+    },
+    "featureIdAvailableAtInitialPage": false,
+    "initialFeatureId": "",
+    "geometryRequestPerformed": false,
+    "reason": "No geometry-by-ID call was made because the inspected client supplied no safe live feature-ID selector. The static archive was subsequently fetched successfully and SHP/SHX/PRJ extracted selectively; solid compression is not an access blocker."
+  },
+  "rootDecision": "sample_verified_runtime_not_enabled",
+  "rootAssessment": "Three complete polygons were verified by selective geometry-only extraction from the official public 2026-07-13 archive; one contains the exact ranked WUP point. Original native EPSG:6678 rings pass root GEOS validity and nonduplicate checks. No anonymous live viewport, complete paging, fresh exact parcel-ID or footprint/binding contract has been qualified; retained identities are archive-snapshot SHP record numbers. The tax-reference and accuracy notices are informational and are not the runtime gate.",
+  "rootQualityFile": "sendai-native-geometry-quality.json"
+}

@@ -1,0 +1,942 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32724",
+  "featureCount": 127,
+  "validNonemptyCount": 127,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "BR-VIX-LOTE-20889~59446",
+        "BR-VIX-LOTE-24567~17739"
+      ],
+      "overlapM2": 0.06670860885863664,
+      "fractionOfSmaller": 5.94457802723814e-05
+    },
+    {
+      "ids": [
+        "BR-VIX-LOTE-24567~17739",
+        "BR-VIX-LOTE-47307~17920"
+      ],
+      "overlapM2": 0.1723253606357551,
+      "fractionOfSmaller": 0.00017673263577846316
+    },
+    {
+      "ids": [
+        "BR-VIX-LOTE-29214~56441",
+        "BR-VIX-LOTE-36024~56440"
+      ],
+      "overlapM2": 0.013447111268093614,
+      "fractionOfSmaller": 6.57342935309871e-05
+    },
+    {
+      "ids": [
+        "BR-VIX-LOTE-47315~17926",
+        "BR-VIX-LOTE-47317~17927"
+      ],
+      "overlapM2": 0.12030942228344166,
+      "fractionOfSmaller": 0.0003196563296560708
+    }
+  ],
+  "sumPairwiseOverlapM2": 0.372790503045927,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 57.3474546087197,
+    "median": 388.58854725538555,
+    "max": 55214.39535449582
+  },
+  "features": [
+    {
+      "id": "BR-VIX-LOTE-24731~17736",
+      "areaM2": 13479.45605923115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44208~17729",
+      "areaM2": 1068.9734050274208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44812~56821",
+      "areaM2": 3701.789849233944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44813~17731",
+      "areaM2": 652.1518997019091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47316~17730",
+      "areaM2": 388.58854725538555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-78008~71404",
+      "areaM2": 3462.053766501047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23102~17728",
+      "areaM2": 844.8540520509191,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23104~17727",
+      "areaM2": 637.1025088180397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24730~17735",
+      "areaM2": 1965.866682788029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-19256~17734",
+      "areaM2": 627.5008568958381,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-20519~51452",
+      "areaM2": 133.49303611045173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-20889~59446",
+      "areaM2": 1122.175679299302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24567~17739",
+      "areaM2": 15709.4850089647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47307~17920",
+      "areaM2": 975.0624714937617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-13547~17597",
+      "areaM2": 6072.84234951203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-19071~17690",
+      "areaM2": 273.4806746065847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23099~17732",
+      "areaM2": 639.210182338224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23105~17711",
+      "areaM2": 285.04863870252314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23110~17713",
+      "areaM2": 538.9726588828496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23111~17712",
+      "areaM2": 516.295274395848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23256~17710",
+      "areaM2": 119.11890706418183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23265~17733",
+      "areaM2": 1019.7359257244551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23271~17725",
+      "areaM2": 11423.871342612265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23297~17689",
+      "areaM2": 849.2642190197718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23311~17707",
+      "areaM2": 9726.695302497634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-29746~17691",
+      "areaM2": 1193.5575713997528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44567~66441",
+      "areaM2": 175.08982110924163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3136~17726",
+      "areaM2": 692.197948877931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3132~17724",
+      "areaM2": 321.1950725211725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3138~17959",
+      "areaM2": 302.13934687980424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3139~17958",
+      "areaM2": 274.3455057882169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-7359~17939",
+      "areaM2": 1279.8248333926572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23101~17723",
+      "areaM2": 251.09397767492814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23107~17722",
+      "areaM2": 222.33560274177842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23257~17721",
+      "areaM2": 216.26385412052767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23261~17960",
+      "areaM2": 359.4801203986436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23264~17957",
+      "areaM2": 686.3270064788649,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-28453~17963",
+      "areaM2": 214.20477477463984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-29739~17719",
+      "areaM2": 340.4326583586564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-29744~17962",
+      "areaM2": 350.79275689825045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44207~17720",
+      "areaM2": 223.8215001118698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44213~17961",
+      "areaM2": 328.40775521096174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5198~68778",
+      "areaM2": 218.39969016675718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5201~17519",
+      "areaM2": 137.9672205709603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-13540~17687",
+      "areaM2": 190.3985760173205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-13541~17684",
+      "areaM2": 759.8778227547116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23295~17598",
+      "areaM2": 186.77097283191839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23303~17605",
+      "areaM2": 635.4817735710476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23304~17608",
+      "areaM2": 252.0140578261404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23310~17609",
+      "areaM2": 133.58599342897435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24570~17686",
+      "areaM2": 124.95556970298016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-28628~17682",
+      "areaM2": 588.0392460384862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-28633~17611",
+      "areaM2": 290.52933723658913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-28634~17683",
+      "areaM2": 559.0435507197132,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-33637~17520",
+      "areaM2": 264.10102987070496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-33638~68776",
+      "areaM2": 269.17720553013646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-33639~68777",
+      "areaM2": 161.76722776955344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-40613~17610",
+      "areaM2": 274.7517596680962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44015~17688",
+      "areaM2": 230.07014679326704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44016~17606",
+      "areaM2": 174.73897422031575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44017~17685",
+      "areaM2": 547.1710016890328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44018~17607",
+      "areaM2": 184.54698994581176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-48046~17603",
+      "areaM2": 316.9371106449924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-158026~17604",
+      "areaM2": 1307.1163139572816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-28626~17704",
+      "areaM2": 6695.996527735378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5339~18141",
+      "areaM2": 34542.27504977343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-18174~17565",
+      "areaM2": 55214.39535449582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5290~54175",
+      "areaM2": 1631.0847808505819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5291~17695",
+      "areaM2": 856.3026296144845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-13542~17681",
+      "areaM2": 173.4774017339305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-13543~17678",
+      "areaM2": 518.2347123004621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-13544~17623",
+      "areaM2": 629.199911763687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-18158~17592",
+      "areaM2": 2003.0840917817964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-19018~53951",
+      "areaM2": 291.07889546486865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23618~17619",
+      "areaM2": 1892.63327914765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24368~17675",
+      "areaM2": 443.59040080545657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24571~17680",
+      "areaM2": 176.27750624523165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24572~17679",
+      "areaM2": 138.9169602501434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24729~54192",
+      "areaM2": 2448.3140113227487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-41629~17676",
+      "areaM2": 323.377093122013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-41630~17677",
+      "areaM2": 915.5468259489936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-42731~17621",
+      "areaM2": 611.7188052759271,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44019~17616",
+      "areaM2": 355.8375403837404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44020~17615",
+      "areaM2": 207.96625917806747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3124~56840",
+      "areaM2": 1653.0377513906537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3127~17715",
+      "areaM2": 190.04522872596473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3140~17709",
+      "areaM2": 259.98625025656435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5192~56837",
+      "areaM2": 387.03754890440416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5193~56838",
+      "areaM2": 319.48679708355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5292~17717",
+      "areaM2": 248.4998241266137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-5293~17716",
+      "areaM2": 176.05669106354537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23103~56839",
+      "areaM2": 450.1621162198796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23108~17708",
+      "areaM2": 209.0968798183212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24251~56439",
+      "areaM2": 220.76845250623035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-25304~56442",
+      "areaM2": 98.9569368969013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-25307~56438",
+      "areaM2": 2345.6620826574963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-29214~56441",
+      "areaM2": 422.125372077616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-29742~17693",
+      "areaM2": 331.9913609136742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-36024~56440",
+      "areaM2": 204.56767002074272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44219~17694",
+      "areaM2": 288.81000586641863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44221~17692",
+      "areaM2": 540.3678911589612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47328~17714",
+      "areaM2": 185.07630690956998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47885~56836",
+      "areaM2": 720.4265000639206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-258464~56824",
+      "areaM2": 5090.904823845978,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-362884~71686",
+      "areaM2": 90.37767597514897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-15441~56428",
+      "areaM2": 57.3474546087197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-15442~56427",
+      "areaM2": 118.79603484367547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-25301~56425",
+      "areaM2": 188.34757268974138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-25302~56426",
+      "areaM2": 100.65453327583693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-25303~56429",
+      "areaM2": 105.4328610283313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3122~17928",
+      "areaM2": 368.20185016789367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-7283~17941",
+      "areaM2": 287.42014818587865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-17099~17924",
+      "areaM2": 348.1795405871303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23267~17956",
+      "areaM2": 742.5780408498165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23268~17951",
+      "areaM2": 1003.2146889148019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23269~17955",
+      "areaM2": 714.4983421479105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24561~17940",
+      "areaM2": 2024.7403310374484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-29743~17950",
+      "areaM2": 683.3614655817414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44209~17954",
+      "areaM2": 621.8000224488328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44212~17953",
+      "areaM2": 1115.5868793133238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44810~17923",
+      "areaM2": 432.02204578565994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47308~17921",
+      "areaM2": 647.7463856784098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47310~17922",
+      "areaM2": 1103.3866254214392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47314~17925",
+      "areaM2": 523.5404143763326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47315~17926",
+      "areaM2": 395.99709652694355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47317~17927",
+      "areaM2": 376.371155900109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-50375~17942",
+      "areaM2": 716.2898689521539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

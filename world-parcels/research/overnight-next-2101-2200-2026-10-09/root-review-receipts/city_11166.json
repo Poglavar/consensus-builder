@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11166",
+  "decision": "held",
+  "checkedAt": "2026-10-11T01:02:00Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-11166-yaguang.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/yaguang-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/11166/hefei-service.json",
+    "tmp/valhalla-parcel-research/11166/hefei-layer34.json",
+    "tmp/valhalla-parcel-research/11166/hefei-layer37.json",
+    "tmp/valhalla-parcel-research/11166/query-layer37.json"
+  ],
+  "reason": "The official WUP source, immutable roster, queue, city packet and paired review agree on code 11166, rank 2187, China, point [31.6113460540737,117.855148201685], and 266899 persons. English and Simplified Chinese searches and result URLs are recorded. The original cached ArcGIS response lists thematic layers only; layer 37 is buildings with FID, NAME and floor, and its extent excludes the WUP point. Its zero point response is no evidence of citywide parcel absence. The cited procurement page was inaccessible on independent review, so local parcel custody remains a packet-level claim and is not promoted into admission evidence. No safe native parcel ID, full parcel polygon, or independent adapter qualification is present."
+}

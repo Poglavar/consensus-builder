@@ -1,0 +1,57 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 6851,
+  "queueRank": 2871,
+  "name": "Khasavyurt",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [43.2503689221095, 46.5918985803961],
+  "population2025": 207485,
+  "population2025k": 207.485,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khasavyurt cadastral parcel map official public map Rosreestr",
+        "result": "The official municipal cadastral-valuation page and federal Rosreestr/public-map leads were identified; no city-specific public parcel API or safe parcel response was identified.",
+        "actualResultUrls": ["https://xacavurt.ru/documentation/cadastral-valuation/", "https://rosreestr.gov.ru/", "https://pkk.rosreestr.ru/"]
+      },
+      {
+        "language": "Russian (local/native-language discovery)",
+        "query": "Хасавюрт кадастровая карта официальный публичная карта Росреестр",
+        "result": "The first-party municipal page documents cadastral valuation, comprehensive cadastral work, and cadastral-quarter plan approval. No city-specific anonymous parcel API was exposed; third-party map pages were excluded.",
+        "actualResultUrls": ["https://xacavurt.ru/documentation/cadastral-valuation/", "https://xacavurt.ru/documentation/ordinance_doc/14969-postanovlenie-ot-21-oktjabrja-2025-g-267p-ob-utverzhdenii-kart-planov-territorij-kadastrovyh-kvartalov-raspolozhennyh-v-administrativno-territorialnyh-granicah-gorodskogo-okruga-gorod-hasavj.html", "https://rosreestr.gov.ru/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official municipal administration domain publishes city-specific cadastral procedures, including 2026 comprehensive cadastral-work notices and the 21 October 2025 approval of cadastral-quarter plans 05:41:000085, 05:41:000086, 05:41:000087, etc. This evidences a local procedure/custodian, not a public parcel API.",
+  "officialSources": [
+    {"url": "https://xacavurt.ru/documentation/cadastral-valuation/", "observation": "Official municipal cadastral-valuation index with city-specific notices."},
+    {"url": "https://xacavurt.ru/documentation/ordinance_doc/14969-postanovlenie-ot-21-oktjabrja-2025-g-267p-ob-utverzhdenii-kart-planov-territorij-kadastrovyh-kvartalov-raspolozhennyh-v-administrativno-territorialnyh-granicah-gorodskogo-okruga-gorod-hasavj.html", "observation": "Official municipal cadastral-quarter-plan notice; HTTP 200, document images only."},
+    {"url": "https://rosreestr.gov.ru/", "observation": "First-party federal host; direct request timed out."},
+    {"url": "https://pkk.rosreestr.ru/", "observation": "First-party public cadastral-map host; direct request timed out."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://xacavurt.ru/documentation/cadastral-valuation/", "outcome": "TLS-verified HTTP 200; cadastral procedures confirmed."},
+    {"method": "GET", "url": "https://xacavurt.ru/documentation/ordinance_doc/14969-postanovlenie-ot-21-oktjabrja-2025-g-267p-ob-utverzhdenii-kart-planov-territorij-kadastrovyh-kvartalov-raspolozhennyh-v-administrativno-territorialnyh-granicah-gorodskogo-okruga-gorod-hasavj.html", "outcome": "TLS-verified HTTP 200; no parcel API, schema, CRS, or parcel identity."},
+    {"method": "GET", "url": "https://rosreestr.gov.ru/", "outcome": "TLS-verified timeout after 20 seconds; no certificate exception."},
+    {"method": "GET", "url": "https://pkk.rosreestr.ru/", "outcome": "TLS-verified timeout after 8 seconds; no certificate exception."}
+  ],
+  "schemaAndCrs": null,
+  "resultCategory": "local_cadastral_procedure_verified_but_public_parcel_geometry_unverified",
+  "coverageAssessment": {"claimedScope": "Municipal cadastral procedures and cadastral-quarter notices.", "verifiedOpenScope": "Official municipal HTML/document pages only; no parcel response, native ID, schema, CRS, or geometry.", "countrywideVerified": false},
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "Timeouts limited federal viewer inspection. The exact WUP point was preserved and not moved; no point/extent miss was used to infer absence. No unsafe fields were requested or retained. Research evidence only; not source integration or admission."
+}

@@ -1,0 +1,50 @@
+{
+  "cityRecord": "city-11185-khajauli.json",
+  "cityCode": 11185,
+  "queueRank": 2414,
+  "name": "Khajauli",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [26.441727041218, 86.1324777988631],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://bhunaksha.bihar.gov.in/index.jsp","httpStatus":200,"outcome":"Official Bihar BhuNaksha landing page loaded; it identifies the Bihar State cadastral mapping service."},
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/10/index.jsp","httpStatus":200,"outcome":"Official Bihar state map viewer loaded with state code 10 and current JavaScript/configuration references."},
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/assets/misc/config.js","httpStatus":200,"outcome":"Viewer configuration inspected; SERVICE_PATH is same-origin and the viewer uses REST endpoints plus WMS."},
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/index.js","httpStatus":200,"outcome":"Current viewer JavaScript inspected. It documents Levels/count, Levels/ListsAfterLevel, MapInfo/getVVVVExtentGeoref, MapInfo/getPlotAtXY, ScalarDatahandler, and WMS routes. No login or credentials were used."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/Levels/count","httpStatus":200,"outcome":"Returned 7 hierarchy levels."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel","httpStatus":200,"outcome":"Resolved official hierarchy: district 05 MADHUBANI, subdivision 02 सदर मधुबनी, circle 08 Khajauli, mauza 0489 Khajauli(92). Further options exposed Revisional Survey (RS), RS Map (07), sheets 01-04."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref","httpStatus":200,"outcome":"For levels 05,02,08,0489,RS,07,01 returned EPSG:32645, gisCode RS05020804890920701 and extent xmin 416860.7674, ymin 2926401.4151, xmax 418638.2050, ymax 2928166.5690."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY","httpStatus":200,"outcome":"Bounded anonymous plot probe inside the returned extent at UTM 417800,2927200 returned safe plot identity id SXVCjd7aS6qtFMiE9JxPuQ and plot number 1777; attributes_json was null."},
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=4&state=10&levels=05%2C02%2C08%2C0489%2CRS%2C07%2C01%2C&x=417800&y=2927200","httpStatus":200,"outcome":"Returned plot 1777 bounded extent and the same native ID. Response also contained non-retained report links and textual land fields; unsafe owner/address fields were not requested or retained."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY","httpStatus":200,"outcome":"Exact WUP point transformed only for the request to EPSG:32645 as x 413505.6589, y 2924895.4093; it was outside the selected Khajauli(92) map extent. This is recorded as an exact-point/extent limitation, not citywide absence."},
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/WMS","httpStatus":200,"outcome":"A bounded VILLAGE_MAP GetMap request for plot 1777 returned a PNG map image. No vector polygon or safe GeoJSON response was returned, so no sample was retained."},
+    {"method":"SEARCH","url":"https://madhubani.nic.in/service/land-record-computerization/","httpStatus":200,"outcome":"Official Madhubani district page identifies land-record computerization services and respective circle offices; it supports local custodianship context but does not expose a parcel API itself."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://bhunaksha.bihar.gov.in/10/index.jsp, assets/misc/config.js, index.js",
+    "apiBase": "https://bhunaksha.bihar.gov.in/rest/",
+    "geometryCrs": "EPSG:32645 (UTM zone 45N) from getVVVVExtentGeoref; exact WUP input remains stored as latitude/longitude.",
+    "nativeIdentity": "id SXVCjd7aS6qtFMiE9JxPuQ returned by getPlotAtXY; plot number 1777 is a separate source field and was not used as the sole retained identity.",
+    "sourceFieldMapping": {"id":"stable native viewer plot identity", "kide":"source plot/khesra number", "gisCode":"viewer map-instance hierarchy code"},
+    "compositeKeyProvenance": "RS05020804890920701 is assembled by the official viewer from district 05, subdivision 02, circle 08, mauza 0489, Revisional Survey, RS Map 07, sheet 01.",
+    "boundedAnonymousResponse": {"requestScope":"one plot probe within official Khajauli(92) sheet extent", "featureCount":1, "nativeIdentity":"SXVCjd7aS6qtFMiE9JxPuQ", "fullPolygonReturned":false}
+  },
+  "localCustodianAssessment": "Bihar Directorate of Land Records & Survey / Bihar BhuNaksha is the first-party state cadastral map service, and the Madhubani district page points to respective circle offices. The public service evidenced Khajauli coverage; no separate Khajauli municipal registry was found or needed for this state cadastral route.",
+  "safeFieldAllowlist": ["stable native parcel identity", "plot number only as source parcel reference", "polygon geometry if publicly returned", "latitude/longitude or source CRS", "source service URL", "retrieval date", "official hierarchy/map-instance code"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "mortgage", "dispute", "payment", "audit"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A real official public service and safe native identity were evidenced, but no full polygon GeoJSON was returned and adapter behavior has not been independently qualified."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and not shifted; its transformed coordinate lies outside the selected Khajauli(92) sheet extent.",
+    "A point/extent miss is not evidence of citywide parcel absence; the successful bounded probe proves service coverage in the named mauza sheet.",
+    "Only one bounded plot response was inspected; no citywide completeness, update cadence, licensing, or download capability was established.",
+    "No full unchanged native geometry was returned by the inspected anonymous REST/WMS routes, so no GeoJSON sample is retained.",
+    "Larger unchanged HTML, JavaScript, JSON responses, PNG response, and request evidence are under ignored tmp/valhalla-parcel-research/11185/.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception was used."
+  ],
+  "uncertainty": "Attempt 1 is complete for the queue packet. Public Bihar cadastral coverage and schema/CRS are evidenced for Khajauli(92), while citywide coverage, geometry download/API shape, licensing, and runtime adapter qualification remain unresolved."
+}

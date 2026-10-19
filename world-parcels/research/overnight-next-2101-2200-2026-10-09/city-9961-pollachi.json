@@ -1,0 +1,141 @@
+{
+  "cityCode": 9961,
+  "queueRank": 2182,
+  "name": "Pollachi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [10.658330676877, 77.013629141109],
+  "population2025": 267200,
+  "population2025k": 267.2,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pollachi Tamil Nadu official cadastral parcel map land records GIS",
+        "result": "First-party discovery identified Tamil Nadu official land-record/e-services, TNGLMS, TNGIS, Coimbatore district revenue administration, and Pollachi Municipality master-plan/map pages. These establish custodianship and map context, but no anonymous Pollachi parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://eservices.tn.gov.in/",
+          "https://tnglms.in/links.php",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://coimbatore.nic.in/revenue-administration/",
+          "https://www.tnurbantree.tn.gov.in/pollachi/master-plan-and-land-use/",
+          "https://www.tnurbantree.tn.gov.in/pollachi/wp-content/uploads/sites/85/2022/03/Pollachi-TownMap-with-Ward-Boundry-2021.pdf"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "பொள்ளாச்சி நில அளவை வரைபடம் அரசு இணையதளம்",
+        "result": "Tamil-language discovery identified the official Tamil Pollachi Municipality page and Tamil Nadu land-record/cadastral service context. The result establishes official procedure/custodian context, not a retrievable anonymous parcel geometry response.",
+        "actualResultUrls": [
+          "https://www.tnurbantree.tn.gov.in/pollachi/ta/%E0%AE%AE%E0%AF%81%E0%AE%95%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%81/",
+          "https://tnglms.in/links.php",
+          "https://eservices.tn.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://tnglms.in/links.php",
+      "observation": "Official Tamil Nadu Government Land Management System links page. It exposes the Any time / Any where land records service, Tamil Nadu Registration Department, and government land systems; the visible account route is not a public parcel API."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/",
+      "observation": "Official Tamil Nadu land-record e-services endpoint identified by government discovery as the integrated land-record service. The bounded anonymous request timed out."
+    },
+    {
+      "url": "https://www.tnurbantree.tn.gov.in/pollachi/",
+      "observation": "Official Pollachi Municipality page confirms Pollachi municipality and provides municipal land/map-related links; municipal planning maps are not treated as cadastral parcel geometry."
+    },
+    {
+      "url": "https://www.tnurbantree.tn.gov.in/pollachi/master-plan-and-land-use/",
+      "observation": "Official Pollachi Municipality master-plan page provides existing/proposed land-use documents, not parcel-level native IDs or downloadable cadastral polygons."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "observation": "Official Tamil Nadu GIS application directory; no Pollachi parcel layer/configuration was verified in the bounded anonymous request."
+    },
+    {
+      "url": "https://coimbatore.nic.in/revenue-administration/",
+      "observation": "Official Coimbatore district administration page identifies Pollachi Revenue Division, establishing the local revenue-administration custodian context."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Tamil Nadu official land-record/cadastral services and the official Pollachi Municipality plus Coimbatore district revenue pages establish a local/state registry and map custodian context. A public Pollachi parcel layer or anonymous parcel geometry response was not verified, so this is not evidence of citywide parcel coverage.",
+  "sourceCandidate": "in-tamil-nadu-land-records-tamilnilam-pollachi",
+  "service": "Tamil Nadu Government land-record / TamilNilam cadastral map services",
+  "serviceUrl": "https://eservices.tn.gov.in/",
+  "requests": [
+    {
+      "url": "https://tnglms.in/links.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Loaded. Current HTML was inspected; it links the official public land-record service and exposes a sign-in form. No credentials, captcha, or private route was used."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/",
+      "method": "GET",
+      "outcome": "Timed out after 20 seconds; no response body, schema, CRS, or parcel geometry retained."
+    },
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/index.html",
+      "method": "GET",
+      "outcome": "Timed out after 20 seconds; no current JavaScript/configuration or parcel endpoint retained."
+    },
+    {
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "method": "GET",
+      "outcome": "Timed out after 15 seconds; no application configuration or parcel layer endpoint retained."
+    },
+    {
+      "url": "https://www.stategisportal.nic.in/stategisportal/Home/Map/33",
+      "method": "GET",
+      "outcome": "TLS certificate-chain validation failed; request was not retried with a certificate exception because none was pre-authorized. No data retained."
+    },
+    {
+      "url": "https://tamilnilam.tn.gov.in/citizen",
+      "method": "GET",
+      "outcome": "Attempted as the official citizen route; bounded request did not produce a usable anonymous response. No schema, CRS, or parcel geometry retained."
+    }
+  ],
+  "query": {
+    "pointLatLon": [10.658330676877, 77.013629141109],
+    "exactPointChecked": false,
+    "result": {
+      "featureCount": 0,
+      "nativeIds": [],
+      "reason": "No public parcel API/layer was reached; no exact-point absence inference is made."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identity if publicly exposed",
+    "full parcel polygon geometry if publicly exposed",
+    "geometry CRS/service metadata"
+  ],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Tamil Nadu official land-record and cadastral-map procedures, with Pollachi Municipality and Coimbatore revenue-administration context.",
+    "cityCoverage": "Not verified; no public parcel layer or bounded parcel response was obtained.",
+    "exactPointChecked": false
+  },
+  "scopeLimits": [
+    "Exact WUP point [10.658330676877, 77.013629141109] was preserved and was not shifted to force a hit.",
+    "A zero exact-point hit, timeout, TLS validation failure, sign-in/captcha wall, or unusable UI is not evidence of citywide absence.",
+    "No login, captcha bypass, credentials, private tokens, or unsafe owner/address/contact/titleholder/tax/account fields were used or retained.",
+    "No GeoJSON sample is retained because no safe native parcel identity and full polygon response was verified.",
+    "Municipal ward, town, and master-plan maps are not treated as cadastral parcel coverage.",
+    "Packet completion is not source integration or runtime admission."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The official sources establish Tamil Nadu cadastral/land-record custodianship and Pollachi administrative context, but the public anonymous map/API route could not be followed to a schema, CRS, or parcel geometry response in this attempt. Portal accessibility, citywide completeness, update currency, and parcel identity semantics remain unverified."
+}

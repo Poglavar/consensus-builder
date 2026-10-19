@@ -1,0 +1,59 @@
+{
+  "descriptor": {
+    "id": "ca-qc-cadastre-bd-allegee",
+    "name": "Quebec cadastre renovated-lot polygons (GO01_Polygones_Lots)",
+    "adapter": "arcgis",
+    "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+    "idField": "GlobalID",
+    "idType": "string",
+    "idPattern": "^\\{?[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\\}?$",
+    "idQueryBraces": true,
+    "objectIdField": "OBJECTID",
+    "idPrefix": "CA-QC-CADASTRE-",
+    "outFields": [
+      "GlobalID",
+      "OBJECTID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "pageSize": 50,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "CA",
+    "metricSrid": 32618,
+    "scope": "Quebec-wide generalized renewed-cadastre lot polygons; Montreal is an indicative entry area only, not a Montreal-specific layer. Geometry is indicative and has no legal value; some polygons may represent complementary plans.",
+    "evidenceFile": "research/montreal-live-2026-10-03.json",
+    "licenceNote": "Reuse terms are informational; integration is enabled based on verified public endpoint behavior. Preserve attribution and the indicative-only caveat.",
+    "catalogueUrl": "https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55",
+    "attribution": "Gouvernement du Québec · cadastre_bd_allegee / GO01_Polygones_Lots. Indicative cadastral geometry; coordinates have no legal value. Adapted to WGS84.",
+    "cityIds": [
+      "montreal",
+      "3696"
+    ]
+  },
+  "city": {
+    "code": "3696",
+    "name": "Saint-Jérôme",
+    "point": [
+      -73.9977167770777,
+      45.7822725905303
+    ]
+  },
+  "sampleIds": [
+    "CA-QC-CADASTRE-55c5f934-bdf5-4967-ad1d-c49fc18d7210",
+    "CA-QC-CADASTRE-0c9007c0-071c-4dbc-934b-4660351a18f0",
+    "CA-QC-CADASTRE-4a03c613-6fcb-4415-9464-188e952a08e1"
+  ],
+  "absentId": "CA-QC-CADASTRE-99f9f999-fff9-9999-ff9f-f99ff99f9999",
+  "metricEpsg": "EPSG:32618",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Quebec cadastre renovated-lot polygons (GO01_Polygones_Lots)",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Quebec cadastre renovated-lot polygons (GO01_Polygones_Lots); Quebec-wide generalized renewed-cadastre lot polygons; Montreal is an indicative entry area only, not a Montreal-specific layer. Geometry is indicative and has no legal value; some polygons may represent complementary plans."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "5328f5b024e514791c5d7fe9a548990da97f65c9194b94276a5d8532586fc664",
+  "qualificationRecordedSha256": "1e5233773f204988715dde8d890fbd610af6f9f0363a71ffdd1680a28c7c81cf",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/3696/attempt-01/candidate.json"
+}

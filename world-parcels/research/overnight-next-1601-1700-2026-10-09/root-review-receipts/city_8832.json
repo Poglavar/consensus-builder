@@ -1,0 +1,13 @@
+{
+  "taskId": "city:8832",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-8832-khurja.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/khurja-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:23:02Z",
+  "reason": "Official Khurja tehsil cadastral-map custody is supported, but no safe native parcel ID or full polygon response was verified; zero map extent does not establish absence.",
+  "admissionGates": "No parcel polygon or native ID response; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not evidenced. No runtime admission."
+}

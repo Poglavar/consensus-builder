@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7086-kerman.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The English and Persian searches surfaced a Kerman notaries association and references to provincial registration offices, but no first-party source clearly establishing a city-specific registry/cadastre custodian for Kerman. City custody therefore remains undetermined. No anonymous map or parcel service was verified.",
+  "registryAssessment": "The English and Persian searches surfaced a Kerman notaries association and references to provincial registration offices, but no first-party source clearly establishing a city-specific registry/cadastre custodian for Kerman. City custody therefore remains undetermined. No anonymous map or parcel service was verified.",
+  "officialPrimarySources": [],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kerman Iran official cadastral map land registry municipality",
+      "result": "The English search surfaced a notaries association and no first-party city-specific land registry or public cadastral geometry source. City custody remains undetermined.",
+      "method": "Separate English-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    },
+    {
+      "language": "Persian",
+      "query": "ثبت اسناد املاک کرمان نقشه کاداستر استان کرمان سازمان ثبت",
+      "result": "جستجوی فارسی نتایج مرتبطی از کانون سردفتران استان کرمان نشان داد، اما منبع رسمی قابل اتکایی که متولی ثبت یا کاداستر مختص شهر کرمان را مشخص کند پیدا نشد. جستجوی داده‌های هندسی عمومی نیز به مسیر امن و ناشناس منجر نشد.",
+      "method": "Separate local-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe exact-point public polygon was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The English and Persian searches surfaced a Kerman notaries association and references to provincial registration offices, but no first-party source clearly establishing a city-specific registry/cadastre custodian for Kerman. City custody therefore remains undetermined. No anonymous map or parcel service was verified.",
+    "verifiedOpenScope": "No public anonymous point-level parcel polygon verified at the exact WUP locator. No citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "requests": [],
+  "portals": [
+    {
+      "homeUrl": "https://kermannotary.ir/",
+      "observation": "The English and Persian searches surfaced a Kerman notaries association and references to provincial registration offices, but no first-party source clearly establishing a city-specific registry/cadastre custodian for Kerman. City custody therefore remains undetermined. No anonymous map or parcel service was verified."
+    }
+  ]
+}

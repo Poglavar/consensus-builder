@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2630",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-2630-kafr-al-sheikh.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/kafr-al-sheikh-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T15:01:02.057322Z",
+  "reason": "Official governorate spatial service requires login, the public map request timed out, and Survey Authority program pages do not provide an anonymous parcel response. English and Arabic searches and zero retained polygons are recorded. Registry custody at this settlement remains unresolved; no native ID, full polygon, or independent adapter qualification. Neither timeout nor login is citywide absence.",
+  "admission": "not_integrated"
+}

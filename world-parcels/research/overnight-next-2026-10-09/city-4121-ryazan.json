@@ -1,0 +1,114 @@
+{
+  "name": "Ryazan",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 1191,
+  "point": [
+    54.6244799579635,
+    39.7195409037211
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ryazan official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://admshack.ryazan.gov.ru/documents/otsenka_reguliruyushchego_vozdeystviya/ekspertiza_npa/",
+          "https://nspd.gov.ru/"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Russian",
+        "query": "Рязань публичная кадастровая карта Росреестр НСПД кадастровый план",
+        "result": "Official Ryazan government material says Rosreestr’s public cadastral map moved to NSPS/NSPD and is available free without login; exact full-feature geometry response was not obtained.",
+        "actualResultUrls": [
+          "https://admshack.ryazan.gov.ru/documents/otsenka_reguliruyushchego_vozdeystviya/ekspertiza_npa/",
+          "https://nspd.gov.ru/"
+        ],
+        "method": "Separate Russian-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://admshack.ryazan.gov.ru/documents/otsenka_reguliruyushchego_vozdeystviya/ekspertiza_npa/",
+        "operator": "Rosreestr / National Spatial Data System (NSPD)",
+        "scope": "Official registry map is now served through the national spatial data portal. This review confirmed the public map route but did not submit cadastral-number/property searches or verify a full geometry response at the WUP point."
+      },
+      {
+        "url": "https://nspd.gov.ru/",
+        "operator": "Rosreestr / National Spatial Data System (NSPD)",
+        "scope": "Official registry map is now served through the national spatial data portal. This review confirmed the public map route but did not submit cadastral-number/property searches or verify a full geometry response at the WUP point."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Rosreestr / National Spatial Data System (NSPD)",
+    "url": "https://admshack.ryazan.gov.ru/documents/otsenka_reguliruyushchego_vozdeystviya/ekspertiza_npa/",
+    "operator": "Rosreestr / National Spatial Data System (NSPD)",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official registry map is now served through the national spatial data portal. This review confirmed the public map route but did not submit cadastral-number/property searches or verify a full geometry response at the WUP point.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Official registry map is now served through the national spatial data portal. This review confirmed the public map route but did not submit cadastral-number/property searches or verify a full geometry response at the WUP point.",
+  "remainingUncertainty": "Official registry map is now served through the national spatial data portal. This review confirmed the public map route but did not submit cadastral-number/property searches or verify a full geometry response at the WUP point. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4121,
+  "cityId": "wup2025:4121",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    54.6244799579635,
+    39.7195409037211
+  ],
+  "population2025k": 466.086,
+  "populationUnit": "persons",
+  "queueRank": 1191,
+  "population2025": 466086,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Ryazan government page identifies the migrated Rosreestr public cadastral-map route and access terms.",
+  "registryEvidenceUrls": [
+    "https://admshack.ryazan.gov.ru/documents/otsenka_reguliruyushchego_vozdeystviya/ekspertiza_npa/",
+    "https://nspd.gov.ru/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

@@ -1,0 +1,29 @@
+{
+  "taskId": "city:4996",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4996-dumaguete.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/dumaguete-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T01:57:16.586925Z",
+  "city": "Dumaguete",
+  "queueRank": 3055,
+  "registryFound": true,
+  "identityCheck": "Packet code, rank, country, original 2025 WUP point and population persons match the immutable cohort roster, pending queue, and official WUP 2025 compressed source (SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114).",
+  "searchCheck": "English and Filipino searches are recorded with result URLs in the immutable paired packet.",
+  "firstPartyCheck": "The Dumaguete CPDO first-party indexed page describes cadastral maps supplied on request; a direct check returned HTTP 403. The Geoportal LMB metadata endpoint returned HTTP 200 and describes selected Metro Manila areas, not Dumaguete. The worker WFS/WMS requests timed out, with no response payload.",
+  "polygonCheck": "Zero full sample polygons and zero retained parcel ID attributes; within the maximum of three full polygons and no unsafe attributes retained.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "No anonymous Dumaguete polygon or native ID was retrieved; a timeout and another layer’s stated scope cannot establish citywide absence.",
+  "scopeLimit": "Research completion is not integration or admission. No citywide parcel absence inferred, and no runtime, catalog or coverage/report state changed."
+}

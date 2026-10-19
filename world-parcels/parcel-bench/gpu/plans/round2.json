@@ -1,0 +1,699 @@
+{
+ "name": "round2",
+ "purpose": "PLAN.md steps 2 and 3: transfer table with three seeds, Split-only learning curve and Zagreb-donor fine-tune curve on split-v1; Zagreb-only runs also scored zero-shot on Split, Split-trained runs on Zagreb.",
+ "runs": [
+  {
+   "name": "zagreb-n1600-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/zagreb-v1.json",
+    "--pool",
+    "world-parcels/parcel-bench/manifests/zagreb-pool-v2.json",
+    "--train-tiles",
+    "1600",
+    "--seed",
+    "1",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/split-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "zagreb-n1600-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/zagreb-v1.json",
+    "--pool",
+    "world-parcels/parcel-bench/manifests/zagreb-pool-v2.json",
+    "--train-tiles",
+    "1600",
+    "--seed",
+    "2",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/split-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "zagreb-n1600-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/zagreb-v1.json",
+    "--pool",
+    "world-parcels/parcel-bench/manifests/zagreb-pool-v2.json",
+    "--train-tiles",
+    "1600",
+    "--seed",
+    "3",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/split-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "joint-n3039-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--pool",
+    "world-parcels/parcel-bench/manifests/hr-pool-v1.json",
+    "--seed",
+    "1",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "joint-n3039-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--pool",
+    "world-parcels/parcel-bench/manifests/hr-pool-v1.json",
+    "--seed",
+    "2",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "joint-n3039-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--pool",
+    "world-parcels/parcel-bench/manifests/hr-pool-v1.json",
+    "--seed",
+    "3",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "finetune-n896-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--seed",
+    "1",
+    "--init",
+    "{runs}/zagreb-n1600-s1/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s1"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "split-n896-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--seed",
+    "1",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "finetune-n896-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--seed",
+    "2",
+    "--init",
+    "{runs}/zagreb-n1600-s2/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "split-n896-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--seed",
+    "2",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "finetune-n896-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--seed",
+    "3",
+    "--init",
+    "{runs}/zagreb-n1600-s3/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s3"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "split-n896-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--seed",
+    "3",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": [
+    {
+     "manifest": "world-parcels/parcel-bench/manifests/zagreb-v1.json"
+    }
+   ]
+  },
+  {
+   "name": "finetune-n400-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "400",
+    "--seed",
+    "1",
+    "--init",
+    "{runs}/zagreb-n1600-s1/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s1"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n400-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "400",
+    "--seed",
+    "1",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n400-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "400",
+    "--seed",
+    "2",
+    "--init",
+    "{runs}/zagreb-n1600-s2/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n400-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "400",
+    "--seed",
+    "2",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n400-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "400",
+    "--seed",
+    "3",
+    "--init",
+    "{runs}/zagreb-n1600-s3/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s3"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n400-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "400",
+    "--seed",
+    "3",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n200-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "200",
+    "--seed",
+    "1",
+    "--init",
+    "{runs}/zagreb-n1600-s1/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s1"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n200-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "200",
+    "--seed",
+    "1",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n200-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "200",
+    "--seed",
+    "2",
+    "--init",
+    "{runs}/zagreb-n1600-s2/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n200-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "200",
+    "--seed",
+    "2",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n200-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "200",
+    "--seed",
+    "3",
+    "--init",
+    "{runs}/zagreb-n1600-s3/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s3"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n200-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "200",
+    "--seed",
+    "3",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n100-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "100",
+    "--seed",
+    "1",
+    "--init",
+    "{runs}/zagreb-n1600-s1/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s1"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n100-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "100",
+    "--seed",
+    "1",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n100-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "100",
+    "--seed",
+    "2",
+    "--init",
+    "{runs}/zagreb-n1600-s2/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n100-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "100",
+    "--seed",
+    "2",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n100-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "100",
+    "--seed",
+    "3",
+    "--init",
+    "{runs}/zagreb-n1600-s3/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s3"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n100-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "100",
+    "--seed",
+    "3",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n50-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "50",
+    "--seed",
+    "1",
+    "--init",
+    "{runs}/zagreb-n1600-s1/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s1"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n50-s1",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "50",
+    "--seed",
+    "1",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n50-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "50",
+    "--seed",
+    "2",
+    "--init",
+    "{runs}/zagreb-n1600-s2/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n50-s2",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "50",
+    "--seed",
+    "2",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  },
+  {
+   "name": "finetune-n50-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "50",
+    "--seed",
+    "3",
+    "--init",
+    "{runs}/zagreb-n1600-s3/best.pt",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "after": [
+    "zagreb-n1600-s3"
+   ],
+   "evals": []
+  },
+  {
+   "name": "split-n50-s3",
+   "train": [
+    "--manifest",
+    "world-parcels/parcel-bench/manifests/split-v1.json",
+    "--train-tiles",
+    "50",
+    "--seed",
+    "3",
+    "--epochs",
+    "30",
+    "--eval-every",
+    "2"
+   ],
+   "evals": []
+  }
+ ]
+}

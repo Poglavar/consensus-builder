@@ -1,0 +1,64 @@
+{
+  "cityCode": 1251,
+  "queueRank": 2057,
+  "name": "Ziguinchor",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "point": [12.5660118868597, -16.2721765081404],
+  "population2025": 282751,
+  "population2025k": 282.751,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["ziguinchor"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ziguinchor Senegal official cadastral map parcel GIS land registry public viewer API",
+        "result": "First-party results identified Senegal's DGID cadastral authority, its CSF Ziguinchor, and the official ONDDL SIG geospatial portal. No first-party public parcel polygon service was found in discovery.",
+        "actualResultUrls": ["https://www.dgid.sn/", "https://sig.onddl.sn/", "https://www.geosenegal.gouv.sn/-base-de-donnees-geographiques-.html"]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Ziguinchor Sénégal cadastre carte parcellaire registre foncier SIG officiel parcelles",
+        "result": "Les résultats officiels indiquent la DGID et le CSF de Ziguinchor comme service foncier/cadastral, et ONDDL SIG comme portail géospatial. Aucun service public de géométrie parcellaire n'a été vérifié.",
+        "actualResultUrls": ["https://www.dgid.sn/", "https://sig.onddl.sn/", "https://www.geosenegal.gouv.sn/occupation-du-sol-ziguinchor-nd-28-ii.html"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Direction générale des Impôts et des Domaines (DGID), avec Centre des services fiscaux (CSF) Ziguinchor; local cadastral bureau evidence also appears in DGID material.",
+    "basis": "The official DGID site identifies the agency as responsible for land and cadastral policy and lists CSF Ziguinchor at Rue Struch, Ziguinchor. Official DGID-hosted material states that the Ziguinchor cadastral bureau updates cadastral sections and records parcels/NICADs. This is custodian/procedure evidence, not an open parcel download.",
+    "urls": ["https://www.dgid.sn/", "https://www.dgid.sn/wp-content/uploads/2022/10/Magazine-ID-N%C2%B032_juillet_aou%CC%82t_septembre-2022-1_compressed.pdf"]
+  },
+  "officialSources": [
+    {"url": "https://www.dgid.sn/", "observation": "Official DGID landing page; identifies DGID's land/cadastral role, cadastral services, and lists CSF Ziguinchor.", "scope": "National cadastral custodian with a named local service; no anonymous parcel geometry endpoint exposed on the page."},
+    {"url": "https://sig.onddl.sn/", "observation": "Official ONDDL SIG GeoNode portal; current configuration points to its public GeoServer and catalog.", "scope": "National geospatial portal; published catalog inspected during this attempt."},
+    {"url": "https://www.dgid.sn/wp-content/uploads/2022/10/Magazine-ID-N%C2%B032_juillet_aou%CC%82t_septembre-2022-1_compressed.pdf", "observation": "Official DGID magazine states the Ziguinchor cadastral bureau updates sections and records parcels/NICADs.", "scope": "Institutional/procedural evidence; not a downloadable parcel layer."},
+    {"url": "https://www.geosenegal.gouv.sn/occupation-du-sol-ziguinchor-nd-28-ii.html", "observation": "Official Géo Sénégal page offers vector land-use downloads for Ziguinchor, not cadastral parcels.", "scope": "Land-use coverage only; not admitted as parcel source."}
+  ],
+  "requests": [
+    {"url": "https://sig.onddl.sn/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Fetched official viewer shell and read embedded current GeoNode/MapStore configuration; public GeoServer base is https://sig.onddl.sn/geoserver/."},
+    {"url": "https://sig.onddl.sn/info.json", "method": "GET", "httpStatus": 200, "contentType": "application/json", "outcome": "Fetched current viewer info/configuration; default CRS is EPSG:3857 and no parcel layer was configured in the landing-page catalog settings."},
+    {"url": "https://sig.onddl.sn/api/base/?page=1&page_size=1000&search=", "method": "GET", "httpStatus": 200, "contentType": "application/json", "outcome": "Anonymous catalog returned 9 published resources: administrative/GADM and Casamance layers only; no cadastral or parcel resource."},
+    {"url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities", "method": "GET", "httpStatus": 200, "contentType": "text/xml", "outcome": "Current WFS schema advertised geonode:dep_pole_casamance, departement, region and GADM layers only; no parcel feature type."},
+    {"url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode:dep_pole_casamance&outputFormat=application%2Fjson&count=1&srsName=EPSG:4326&bbox=-16.28,12.55,-16.26,12.58,EPSG:4326", "method": "GET", "httpStatus": 200, "contentType": "application/json", "outcome": "Bounded anonymous response returned one non-parcel administrative point for ZIGUINCHOR with geometry CRS EPSG:4326 and fields fid/id/name/reg/dept/codes; no parcel polygon."},
+    {"url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode:parcelle&outputFormat=application%2Fjson&count=1", "method": "GET", "httpStatus": 400, "contentType": "text/xml", "outcome": "Likely parcel layer name was rejected as unknown feature type; this is not evidence of citywide parcel absence."},
+    {"url": "https://sig.onddl.sn/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=geonode:parcelles&outputFormat=application%2Fjson&count=1", "method": "GET", "httpStatus": 400, "contentType": "text/xml", "outcome": "Likely parcel layer name was rejected as unknown feature type; this is not evidence of citywide parcel absence."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleFile": null,
+  "source": "Senegal DGID / CSF Ziguinchor and ONDDL SIG GeoNode/GeoServer",
+  "sourceIds": [],
+  "coverageAssessment": {"claimedScope": "DGID national cadastral administration with a named CSF Ziguinchor; ONDDL SIG national geospatial catalog.", "verifiedOpenScope": "Only administrative geometry was anonymously verified; no parcel ID+polygon response was found.", "countrywideVerified": false},
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "resultCategory": "local_cadastral_custodian_open_geometry_not_verified",
+  "remainingUncertainty": "DGID/CSF Ziguinchor custody is evidenced, but public parcel geometry, stable parcel identity field mapping, citywide coverage, and adapter robustness remain unverified. The exact WUP point was preserved and not shifted; the administrative-point response is not a parcel hit or absence claim.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-1251-ziguinchor.json"
+}

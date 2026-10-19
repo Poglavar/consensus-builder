@@ -1,28 +1,46 @@
 (function (global) {
     'use strict';
 
-    // Ownership type highlight colors (light but visible)
+    // Ownership type highlight colors (light but visible). Four hues that must stay apart at 30%
+    // fill over a green basemap — private individual is red rather than green, which read as the
+    // government blue's twin once both were washed over terrain.
+    // THE definition: the sidebar legend swatches and parcel styling both read it from here
+    // (ParcelsOwnershipHighlight.styleFor). Copies drift — styles.js used to hold two of them.
     const OWNERSHIP_HIGHLIGHT_COLORS = {
         'government': { fillColor: '#4a90e2', fillOpacity: 0.3, color: '#2e5c8a', weight: 2 },
         'institution': { fillColor: '#9b59b6', fillOpacity: 0.3, color: '#6b3d8f', weight: 2 },
         'company': { fillColor: '#f39c12', fillOpacity: 0.3, color: '#b8730d', weight: 2 },
-        'private individual': { fillColor: '#27ae60', fillOpacity: 0.3, color: '#1e8449', weight: 2 }
+        'private individual': { fillColor: '#e74c3c', fillOpacity: 0.3, color: '#a93226', weight: 2 }
     };
 
-    const resolveParcelId = (feature) => {
-        const props = feature?.properties || {};
-        const id = typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
-            : (props.parcelId ?? props.parcel_id ?? props.id);
-        return id !== undefined && id !== null ? id : null;
+    const parcelIdFor = parcelOrId => {
+        if (typeof parcelOrId === 'string' || typeof parcelOrId === 'number') return String(parcelOrId);
+        const presentedId = global.ParcelPresenter?.getIdForLayer?.(parcelOrId);
+        if (presentedId) return String(presentedId);
+        if (parcelOrId?.type !== 'Feature') return null;
+        const props = parcelOrId.properties || {};
+        const id = props.parcelId ?? props.parcel_id ?? props.id;
+        return id === undefined || id === null ? null : String(id);
     };
 
     let selectedOwnershipTypes = new Set();
     let ownershipTypeCache = new Map(); // Cache ownership types for parcels
+    let ownershipTypeCacheScope = null;
     let ownershipHighlightMapListenersAttached = false;
     let ownershipHighlightHotkeyAttached = false;
     let ownershipHighlightDebounceTimer = null;
     const OWNERSHIP_HIGHLIGHT_DEBOUNCE_MS = 150;
+
+    function ownershipCacheKey(parcelId) {
+        const city = global.CityConfigManager?.getCurrentCityId?.() || 'default';
+        const revision = global.LiveParcelFabric?.snapshot?.().revision ?? 'none';
+        const scope = `${city}|${revision}`;
+        if (scope !== ownershipTypeCacheScope) {
+            ownershipTypeCache.clear();
+            ownershipTypeCacheScope = scope;
+        }
+        return `${scope}\u0000${parcelId}`;
+    }
 
     const isEditableTarget = (target) => {
         if (!target) return false;
@@ -36,33 +54,32 @@
 
     /**
      * Calculate ownership type for a parcel based on owner data
-     * @param {Object} parcelLayer - Leaflet layer representing a parcel
+     * @param {string|Object} parcelOrId - A parcel id or its current presentation layer
      * @returns {string|null} Ownership type or null if cannot be determined
      */
-    async function calculateOwnershipTypeForParcel(parcelLayer) {
-        if (!parcelLayer || !parcelLayer.feature) {
-            return null;
-        }
-
-        const parcelId = resolveParcelId(parcelLayer.feature);
+    async function calculateOwnershipTypeForParcel(parcelOrId) {
+        const parcelId = parcelIdFor(parcelOrId);
         if (!parcelId) {
             return null;
         }
 
         const parcelIdStr = parcelId.toString();
+        const cacheKey = ownershipCacheKey(parcelIdStr);
+        const feature = global.LiveParcelFabric?.get?.(parcelIdStr) || null;
+        if (!feature) return null;
 
         // Check cache first
-        if (ownershipTypeCache.has(parcelIdStr)) {
-            return ownershipTypeCache.get(parcelIdStr);
+        if (ownershipTypeCache.has(cacheKey)) {
+            return ownershipTypeCache.get(cacheKey);
         }
 
-        const props = parcelLayer.feature.properties;
+        const props = feature.properties || {};
 
         // First priority: Use ownershipType directly from backend (new format)
         if (props.ownershipType && typeof props.ownershipType === 'string') {
             const ownershipType = props.ownershipType.trim();
             if (ownershipType) {
-                ownershipTypeCache.set(parcelIdStr, ownershipType);
+                ownershipTypeCache.set(cacheKey, ownershipType);
                 return ownershipType;
             }
         }
@@ -82,16 +99,14 @@
                 if (ownerTypes.length > 0) {
                     const uniqueTypes = Array.from(new Set(ownerTypes));
                     const ownershipType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'mixed';
-                    ownershipTypeCache.set(parcelIdStr, ownershipType);
-                    props.ownershipType = ownershipType;
+                    ownershipTypeCache.set(cacheKey, ownershipType);
                     return ownershipType;
                 }
             }
             // If ownershipList exists, we always return here (either with calculated type or default)
             // This prevents API calls when ownership data is already present in parcel properties
             const defaultType = 'private individual';
-            ownershipTypeCache.set(parcelIdStr, defaultType);
-            props.ownershipType = defaultType;
+            ownershipTypeCache.set(cacheKey, defaultType);
             return defaultType;
         }
 
@@ -105,8 +120,7 @@
         if (!getOwnershipTypeFn) {
             // Default to private individual if no owner info and no function available
             const defaultType = 'private individual';
-            ownershipTypeCache.set(parcelIdStr, defaultType);
-            props.ownershipType = defaultType;
+            ownershipTypeCache.set(cacheKey, defaultType);
             return defaultType;
         }
 
@@ -141,15 +155,13 @@
             if (ownerLabel) {
                 const ownershipType = getOwnershipTypeFn(ownerLabel);
                 if (ownershipType) {
-                    ownershipTypeCache.set(parcelIdStr, ownershipType);
-                    props.ownershipType = ownershipType;
+                    ownershipTypeCache.set(cacheKey, ownershipType);
                     return ownershipType;
                 }
             }
             // Default to private individual if no owner info
             const defaultType = 'private individual';
-            ownershipTypeCache.set(parcelIdStr, defaultType);
-            props.ownershipType = defaultType;
+            ownershipTypeCache.set(cacheKey, defaultType);
             return defaultType;
         }
 
@@ -161,8 +173,7 @@
 
         if (ownerTypes.length === 0) {
             const defaultType = 'private individual';
-            ownershipTypeCache.set(parcelIdStr, defaultType);
-            props.ownershipType = defaultType;
+            ownershipTypeCache.set(cacheKey, defaultType);
             return defaultType;
         }
 
@@ -170,8 +181,7 @@
         const uniqueTypes = Array.from(new Set(ownerTypes));
         const ownershipType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'mixed';
 
-        ownershipTypeCache.set(parcelIdStr, ownershipType);
-        props.ownershipType = ownershipType;
+        ownershipTypeCache.set(cacheKey, ownershipType);
         return ownershipType;
     }
 
@@ -179,31 +189,23 @@
      * Calculate ownership types for all parcels currently in memory
      */
     async function calculateOwnershipTypesForAllParcels() {
-        if (!global.parcelLayer || typeof global.parcelLayer.eachLayer !== 'function') {
+        const fabric = global.LiveParcelFabric;
+        if (!fabric || typeof fabric.list !== 'function' || typeof fabric.featureId !== 'function') {
             return;
         }
 
         const parcels = [];
-        global.parcelLayer.eachLayer(layer => {
-            if (layer && layer.feature) {
-                const parcelId = resolveParcelId(layer.feature);
-                if (parcelId) {
-                    const parcelIdStr = parcelId.toString();
-                    // If already cached, skip
-                    if (ownershipTypeCache.has(parcelIdStr)) {
-                        return;
-                    }
-                    // If ownershipType is already in properties (from backend), cache it and skip calculation
-                    if (layer.feature.properties.ownershipType) {
-                        ownershipTypeCache.set(parcelIdStr, layer.feature.properties.ownershipType);
-                        return;
-                    }
-                    // If ownershipList is already in properties (from backend), we can calculate from it without API call
-                    // Skip adding to parcels list - it will be handled by calculateOwnershipTypeForParcel which checks ownershipList first
-                    // Otherwise, add to list for calculation
-                    parcels.push(layer);
-                }
+        fabric.list().forEach(feature => {
+            const parcelId = fabric.featureId(feature);
+            if (!parcelId) return;
+            const parcelIdStr = String(parcelId);
+            const cacheKey = ownershipCacheKey(parcelIdStr);
+            if (ownershipTypeCache.has(cacheKey)) return;
+            if (feature.properties?.ownershipType) {
+                ownershipTypeCache.set(cacheKey, feature.properties.ownershipType);
+                return;
             }
+            parcels.push(parcelIdStr);
         });
 
         // If all parcels already have ownership data, just refresh styles
@@ -271,13 +273,13 @@
         updateOwnershipHighlightMapListeners();
     }
 
+    // A pan brings parcels that were never classified, so the answer is to CLASSIFY, not merely to
+    // repaint: restyling alone left every newly loaded parcel plain, and the ones re-ingested over
+    // the same ground lost their tint with the feature object that carried it. Cached ids cost
+    // nothing here — the pass skips them and goes straight to the repaint.
     function refreshOwnershipHighlightsIfActive() {
         if (selectedOwnershipTypes.size === 0) return;
-        if (typeof global.refreshParcelStylesForAppliedProposals === 'function') {
-            global.refreshParcelStylesForAppliedProposals();
-        } else {
-            refreshOwnershipHighlights();
-        }
+        calculateOwnershipTypesForAllParcels();
     }
 
     function handleOwnershipHighlightMapChange() {
@@ -302,6 +304,10 @@
         try {
             global.map.on('moveend', handleOwnershipHighlightMapChangeDebounced);
             global.map.on('zoomend', handleOwnershipHighlightMapChangeDebounced);
+            // moveend fires before the parcels it triggered have arrived, so the map settling is
+            // only half the signal — the fetch landing is the other half, and it is the one that
+            // brings unclassified ground.
+            global.addEventListener('parcelDataLoaded', handleOwnershipHighlightMapChangeDebounced);
             ownershipHighlightMapListenersAttached = true;
         } catch (_) { /* ignore */ }
     }
@@ -314,6 +320,7 @@
         try {
             global.map.off('moveend', handleOwnershipHighlightMapChangeDebounced);
             global.map.off('zoomend', handleOwnershipHighlightMapChangeDebounced);
+            global.removeEventListener('parcelDataLoaded', handleOwnershipHighlightMapChangeDebounced);
             // Clear any pending debounced call
             if (ownershipHighlightDebounceTimer) {
                 clearTimeout(ownershipHighlightDebounceTimer);
@@ -358,6 +365,19 @@
         ownershipHighlightHotkeyAttached = true;
     }
 
+    // Each row carries the colour it paints the map with, so the list IS the legend. Painted from
+    // the same constant the highlighting uses — a second copy in CSS is a legend that can lie.
+    function paintOwnershipLegendSwatches() {
+        document.querySelectorAll('.ownership-type-checkbox').forEach(checkbox => {
+            const label = checkbox.closest('label');
+            const swatch = label ? label.querySelector('.ownership-legend-swatch') : null;
+            const style = OWNERSHIP_HIGHLIGHT_COLORS[checkbox.getAttribute('data-ownership-type')];
+            if (!swatch || !style) return;
+            swatch.style.backgroundColor = style.fillColor;
+            swatch.style.borderColor = style.color;
+        });
+    }
+
     /**
      * Initialize ownership type highlighting UI
      */
@@ -369,6 +389,7 @@
                 handleOwnershipTypeCheckboxChange(ownershipType, this.checked);
             });
         });
+        paintOwnershipLegendSwatches();
 
         updateOwnershipHighlightMapListeners();
         attachOwnershipHighlightHotkey();
@@ -389,9 +410,24 @@
         refreshOwnershipHighlights,
         handleOwnershipTypeCheckboxChange,
         getSelectedOwnershipTypes: () => new Set(selectedOwnershipTypes),
-        clearCache: () => { ownershipTypeCache.clear(); }
+        // The Leaflet style for an ownership type, or null when it has none. Every painter goes
+        // through here so the map, the legend and any future consumer cannot disagree.
+        styleFor: (ownershipType) => {
+            const style = OWNERSHIP_HIGHLIGHT_COLORS[ownershipType];
+            return style ? { ...style } : null;
+        },
+        // What a current parcel's ownership type is. Geometry and source properties always come
+        // from the fabric; the derived classification cache is scoped to that fabric revision.
+        typeFor: (parcelOrId) => {
+            const parcelId = parcelIdFor(parcelOrId);
+            const feature = parcelId ? global.LiveParcelFabric?.get?.(parcelId) : null;
+            if (!feature?.properties) return null;
+            const fromProps = feature.properties.ownershipType;
+            if (fromProps) return fromProps;
+            return ownershipTypeCache.get(ownershipCacheKey(parcelId)) || null;
+        },
+        clearCache: () => { ownershipTypeCache.clear(); ownershipTypeCacheScope = null; }
     };
 
 })(typeof window !== 'undefined' ? window : globalThis);
-
 

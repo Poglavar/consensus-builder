@@ -1,0 +1,53 @@
+{
+ "kind": "country",
+ "key": "GH",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GH,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.lc.gov.gh/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "institutional site; SMD page lists functions only, no map service"
+  },
+  {
+   "url": "https://onlineservices.lc.gov.gh/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "account-based LC Online Portal landing page; no map/parcel JS or service URLs, no public parcel search"
+  },
+  {
+   "url": "https://mlnr.gov.gh/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site; no GIS service link"
+  },
+  {
+   "url": "https://data.gov.gh/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed via proxy, still unreachable"
+  },
+  {
+   "url": "https://geoportal.gh/, opendata.gov.gh, gelis.gov.gh, gis.lc.gov.gh, maps.lc.gov.gh, geoportal.lc.gov.gh",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response (hosts do not resolve/connect)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "data.gov.gh and other Ghana hosts fail at connection level (DNS/tunnel), not a 403 region page",
+ "notes": "Headers did not change results. LC online portal inspected: transactional, login-based (ground rent, registration); no public parcel query found. No new open endpoint.",
+ "nextStep": "Check whether GELIS/LC offers public map search behind registration; retry data.gov.gh later."
+}

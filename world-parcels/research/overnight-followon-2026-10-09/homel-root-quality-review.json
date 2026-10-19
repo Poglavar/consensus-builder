@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-09T06:46:30.956530+00:00",
+  "decision": "held_unqualified_wfs_reader",
+  "basis": "One unmodified valid nearby public WFS parcel (object_id 6722720) was returned through the official viewer-compatible anonymous query. It does not contain the unchanged WUP locator; the exact point query returned zero features. Current generic WFS adapter rejects the published UUID-with-hyphens feature type and does not implement the observed WFS 1.0.0 route. Complete paging/count consistency, all-grid fresh identities, footprint lookup and source binding remain unqualified. This is verified public geometry nearby, with runtime held for an unqualified reader, not evidence of parcel absence.",
+  "retainedGeometryValid": true,
+  "nativeId": 6722720,
+  "exactWupPointContained": false,
+  "geometryChangedOrRepaired": false
+}

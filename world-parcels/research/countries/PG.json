@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PG",
+ "country": "Papua New Guinea",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Department of Lands and Physical Planning (DLPP) - Land Titles Registry; no public online cadastre confirmed",
+ "portalsFound": [
+  {
+   "url": "https://dlpp.gov.pg/",
+   "observation": "DLPP site reachable (redirect); no cadastre/GIS service observed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.dlpp.gov.pg/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "DLPP home after redirect; no parcel service"
+  },
+  {
+   "url": "https://lands.gov.pg/",
+   "method": "GET",
+   "httpStatus": 301,
+   "contentType": "text/html",
+   "assessment": "redirects to dlpp.gov.pg"
+  },
+  {
+   "url": "https://www.gov.pg",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "None found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only the department home page was checked; PNG land records are largely paper/customary and no online parcel service was found, but that is not proven.",
+ "nextStep": "Search for DLPP land information system or PNG NMSA GIS portals."
+}

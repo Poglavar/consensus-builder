@@ -1,0 +1,118 @@
+// The write rate limiter must not count read-only endpoints that happen to use POST.
+//
+// Two endpoints take a POST purely because their input is too big for a query string: /buildings/near
+// and /parcels/under. Both are reads. /parcels/under was being counted as a write, and the shape of
+// that mistake was ugly: a fabric replay asks it once per applied formation, so a plan of twenty
+// roads spends twenty of the fifty-per-fifteen-minutes budget every time a road is finished. Four
+// finishes exhausted it; after that the ground fetches 429'd, the fabric was not loaded, and the
+// coverage gate refused members with "could not re-apply and were set aside" — intermittently, on a
+// rolling window that healed itself, which is exactly how it was reported.
+//
+// So this drives the REAL middleware stack past the limit rather than reading the allowlist, and
+// checks a genuine write is still limited — an exemption that leaked to every POST would be worse
+// than the bug.
+
+import http from 'node:http';
+import { describe, it, expect } from 'vitest';
+import request from 'supertest';
+import { createApp, WRITE_RATE_LIMIT } from '../index.js';
+
+const WRITE_LIMIT = WRITE_RATE_LIMIT;   // read, never restated
+
+// A pool that answers everything with nothing: this test is about the middleware in front of the
+// routes, not about what they return.
+const stubPool = {
+    query: async () => ({ rows: [] }),
+    connect: async () => ({ query: async () => ({ rows: [] }), release: () => { } }),
+    on: () => { },
+    end: async () => { }
+};
+
+function app() {
+    // createApp hands back { app, pool }; supertest wants the express app itself.
+    return createApp({ env: { ...process.env, NODE_ENV: 'test' }, pool: stubPool }).app;
+}
+
+// An origin check sits IN FRONT of the limiter and 403s any write POST without one (the read-only
+// POSTs below are exempt from it, the genuine write at the end is not), so a request that
+// forgets the header never reaches the thing under test — and an assertion of "no 429" would then
+// pass on a wall of 403s. Every request here carries an allowed origin, and every test asserts the
+// requests were actually served.
+//
+// One listening server per burst, over one keep-alive connection. Handing supertest a bare express
+// app makes it start and stop a fresh HTTP server for EVERY request; at WRITE_RATE_LIMIT (600) that
+// is ~3,600 listen/close cycles per run, and roughly one request in a couple of thousand was reset
+// against a closing server (ECONNRESET / "socket hang up") — half of all runs failed, on a random
+// test each time, on an idle machine.
+async function hammer(expressApp, path, body, times) {
+    const server = http.createServer(expressApp);
+    await new Promise(resolve => server.listen(0, resolve));
+    const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
+    const codes = [];
+    try {
+        for (let i = 0; i < times; i += 1) {
+            const res = await request(server).post(path).agent(agent).send(body).set('Origin', 'http://localhost:5583');
+            codes.push(res.status);
+        }
+    } finally {
+        agent.destroy();
+        await new Promise(resolve => server.close(resolve));
+    }
+    return codes;
+}
+
+const served = codes => codes.filter(code => code !== 403 && code !== 429).length;
+
+describe('read-only POSTs are not rationed as writes', () => {
+    it('serves /parcels/under well past the write budget', async () => {
+        const geometry = { type: 'Polygon', coordinates: [[[15.9, 43.73], [15.91, 43.73], [15.91, 43.74], [15.9, 43.73]]] };
+        const codes = await hammer(app(), '/parcels/under', { geometry }, WRITE_LIMIT + 10);
+        expect(codes).not.toContain(403);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 10);
+    }, 30000);
+
+    it('serves /buildings/near past it too, as it always did', async () => {
+        const codes = await hammer(app(), '/buildings/near', { lat: 43.73, lng: 15.9, radius: 100 }, WRITE_LIMIT + 5);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 5);
+    }, 30000);
+
+    it('serves /buildings/under past it — one refused bulk scan would starve a whole replay', async () => {
+        // The bulk endpoint replaces hundreds of per-proposal footprint fetches with one request.
+        // Rationing it as a write would refuse the one request that matters, and the client would
+        // fall back to the hundreds it was built to avoid.
+        const geometry = { type: 'Polygon', coordinates: [[[15.9, 43.73], [15.91, 43.73], [15.91, 43.74], [15.9, 43.73]]] };
+        const codes = await hammer(app(), '/buildings/under', { regions: [{ key: 'a', geometry }], city: 'sibenik' }, WRITE_LIMIT + 5);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 5);
+    }, 30000);
+
+    it('serves /buildings/footprints past it, because a demolition scan asks once per proposal', async () => {
+        // Applying a building proposal scans for the buildings it would demolish, and that scan
+        // fetches footprints. A batch of a hundred block rules therefore spends a hundred of the
+        // budget — and once refused, the scan finds nothing to demolish and the proposal is stored
+        // as demolishing nothing. The failure is silent, which is what makes it worth a test.
+        const geometry = { type: 'Polygon', coordinates: [[[15.9, 43.73], [15.91, 43.73], [15.91, 43.74], [15.9, 43.73]]] };
+        const codes = await hammer(app(), '/buildings/footprints', { geometry, city: 'sibenik' }, WRITE_LIMIT + 10);
+        expect(codes).not.toContain(403);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 10);
+    }, 30000);
+
+    it('serves /proposals/batch past it because it only reads proposal records', async () => {
+        const codes = await hammer(app(), '/proposals/batch', { ids: ['one', 'two'] }, WRITE_LIMIT + 5);
+        expect(codes).not.toContain(403);
+        expect(codes).not.toContain(429);
+        expect(served(codes)).toBe(WRITE_LIMIT + 5);
+    }, 30000);
+});
+
+describe('genuine writes are still rationed', () => {
+    it('starts refusing an actual write endpoint once the budget is spent', async () => {
+        const codes = await hammer(app(), '/proposals', { title: 'x' }, WRITE_LIMIT + 5);
+        expect(codes).toContain(429);
+        // The first fifty got through: the limiter rations, it does not simply block.
+        expect(codes.slice(0, WRITE_LIMIT)).not.toContain(429);
+    }, 30000);
+});

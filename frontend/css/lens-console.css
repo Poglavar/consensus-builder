@@ -1,0 +1,38 @@
+/* Standalone, mobile-first layout for lens.html (the lens member console) under the shared page
+   header (css/page-chrome.css). Colours are the product tokens and the controls are the primitives
+   (css/primitives.css: btn, cb-link, cb-badge, the base inputs); this file only lays them out. No
+   viewport lock, works from 320px up. */
+* { box-sizing:border-box; }
+.lc-body { font-size:15px; line-height:1.45; }
+.lc-wrap { max-width:820px; margin:auto; padding:16px 16px 40px; }
+.lc-intro { margin-bottom:14px; }
+.lc-intro p { margin:4px 0 0; color:var(--cb-text-muted); max-width:72ch; }
+.lc-card { margin:0 0 12px; padding:12px; background:var(--cb-surface); border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); }
+.lc-card h2 { margin:0 0 8px; font-size:1rem; }
+.lc-label { display:block; margin:8px 0 3px; font-size:.85rem; color:var(--cb-text-muted); }
+.lc-field { width:100%; min-width:0; min-height:var(--cb-control-height); }
+.lc-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.lc-row .lc-field { flex:1 1 200px; }
+.lc-grid { display:grid; grid-template-columns:1fr; }
+.lc-submit { margin-top:12px; justify-self:start; }
+.lc-output { margin-top:8px; }
+.lc-output:empty { display:none; }
+.lc-kv { display:flex; flex-wrap:wrap; gap:2px 8px; padding:3px 0; border-bottom:1px solid var(--cb-line); }
+.lc-kv:last-child { border-bottom:0; }
+.lc-k { flex:0 0 auto; min-width:110px; color:var(--cb-text-muted); font-size:.85rem; }
+.lc-v { flex:1 1 180px; min-width:0; overflow-wrap:anywhere; }
+code.lc-v, .lc-mono { font:12px/1.4 var(--cb-font-mono); overflow-wrap:anywhere; }
+.lc-list { display:grid; gap:8px; margin:0; padding:0; list-style:none; }
+.lc-item { padding:9px; border:1px solid var(--cb-line); border-left:3px solid var(--cb-primary); border-radius:var(--cb-radius-sm); }
+.lc-item-head { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:4px; }
+.lc-muted { color:var(--cb-text-muted); }
+.lc-ok { color:var(--cb-success-soft-ink); }
+.lc-warn { color:var(--cb-warning-soft-ink); }
+.lc-error { color:var(--cb-danger); overflow-wrap:anywhere; }
+@media (min-width:640px) {
+    .lc-wrap { padding:20px 18px 48px; }
+    .lc-grid { grid-template-columns:minmax(150px,220px) minmax(0,1fr); align-items:center; column-gap:10px; }
+    .lc-grid .lc-label { margin:6px 0; }
+    .lc-grid .lc-field { margin:4px 0; }
+    .lc-grid .lc-submit { grid-column:2; }
+}

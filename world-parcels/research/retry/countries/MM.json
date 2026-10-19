@@ -1,0 +1,80 @@
+{
+ "kind": "country",
+ "key": "MM",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: my-MM,my;q=0.9,en;q=0.6",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.dalr.gov.mm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.dalms.gov.mm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://landrecords.gov.mm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://gis2.onemapmyanmar.info/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.opendevelopmentmyanmar.net/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset/failed via proxy with full browser headers (curl exit 35/000, no HTTP reply); unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.moali.gov.mm",
+   "method": "GET",
+   "httpStatus": 522,
+   "contentType": "text/plain",
+   "assessment": "Cloudflare 522 origin timeout"
+  },
+  {
+   "url": "https://onemapmyanmar.info/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirected to an unrelated adult-content spam site: domain no longer the OneMap Myanmar service; ignored"
+  },
+  {
+   "url": "https://geonode.themimu.info/api/layers/?title__icontains=parcel&limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 layers"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Myanmar%20parcel%20land%20record&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Government land-record hosts unreachable or timing out; MIMU GeoNode has no parcel layers. No evidence of a public national cadastre viewer.",
+ "nextStep": "Retry SLRD hosts later; check for a DALMS/land-records e-service."
+}

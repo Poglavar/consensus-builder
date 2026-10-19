@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "San Juan",
+  "country": "Puerto Rico",
+  "countryCode": "PR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Puerto Rico’s official GIS portal describes Catastro Digital CRIM as the islandwide parcel cadastre, and the Commonwealth statute identifies CRIM as cadastre custodian. The official CRIM ArcGIS layer metadata confirms a polygon parcel layer whose extent includes the ranked San Juan point. Its schema contains many additional cadastral/edit fields, so the attempted request explicitly allowlisted only OBJECTID and GLOBALID; transport timed out before an HTTP response or geometry was obtained.",
+  "registryEvidenceUrls": [
+    "https://gis.pr.gov/Pages/default.aspx",
+    "https://casp.pr.gov/Leyes/Ley_Num_107-2020.pdf",
+    "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson",
+    "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0/query"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8242,
+  "cityId": "wup2025:8242",
+  "centerLatLon": [
+    18.3925883366554,
+    -66.0806722858878
+  ],
+  "rank": 793,
+  "queueRank": 793,
+  "population2025": 681030,
+  "population2025k": 681.03,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The only query was a point intersection against the official layer with explicit outFields=OBJECTID,GLOBALID, geometry return enabled, and output EPSG:4326. Direct HTTPS transport timed out with no HTTP status or body, so no feature was verified and no outage or parcel absence is inferred.",
+  "scopeLimits": "The service metadata does not prove a parcel at the WUP point or citywide completeness. The layer is islandwide and describes maps compiled from older raster conversion plus later approved plans; freshness/positional accuracy are not established.",
+  "remainingUncertainty": "The service metadata does not prove a parcel at the WUP point or citywide completeness. The layer is islandwide and describes maps compiled from older raster conversion plus later approved plans; freshness/positional accuracy are not established.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "San Juan Puerto Rico official CRIM cadastral parcel GIS public ArcGIS layer",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "Official GIS and statutory sources establish CRIM’s islandwide cadastre. Layer metadata is a public polygon Feature Layer in EPSG:32161; its extent includes the WUP point. The schema has additional fields, so a point-only anonymous request was attempted with outFields=OBJECTID,GLOBALID; it timed out before HTTP status/body. No attributes or geometry were received.",
+        "actualResultUrls": [
+          "https://gis.pr.gov/Pages/default.aspx",
+          "https://casp.pr.gov/Leyes/Ley_Num_107-2020.pdf",
+          "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      },
+      {
+        "language": "Spanish",
+        "query": "San Juan Puerto Rico catastro CRIM mapa parcelas GIS oficial consulta geográfica",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "El portal SIG oficial presenta Catastro Digital CRIM como inventario parcelario insular; la capa ArcGIS pública es poligonal y su extensión incluye el punto de San Juan. El esquema contiene otros campos, por lo que la consulta anónima puntual limitó outFields a OBJECTID,GLOBALID. La conexión agotó el tiempo sin respuesta HTTP; no se recibió geometría ni atributo.",
+        "actualResultUrls": [
+          "https://gis.pr.gov/Pages/default.aspx",
+          "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson",
+          "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0/query"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gis.pr.gov/Pages/default.aspx",
+        "observation": "Official Puerto Rico GIS portal describes Catastro Digital CRIM as an islandwide inventory of about 1.25 million parcels."
+      },
+      {
+        "url": "https://casp.pr.gov/Leyes/Ley_Num_107-2020.pdf",
+        "observation": "Puerto Rico statute identifies CRIM as custodian of the parcel cadastre."
+      },
+      {
+        "url": "https://sigejp.pr.gov/server/rest/services/crim/crim_parcelas/MapServer/0?f=pjson",
+        "observation": "Official ArcGIS metadata: Polygon Feature Layer named Parcelario, EPSG:32161, query operation available, extent includes the WUP point. The exposed schema includes additional fields beyond safe geometry/IDs; a restricted outFields request was used for the one point."
+      }
+    ],
+    "metadataReviewFile": "san-juan-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-8242-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "scope": "The service metadata does not prove a parcel at the WUP point or citywide completeness. The layer is islandwide and describes maps compiled from older raster conversion plus later approved plans; freshness/positional accuracy are not established."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel features were received; registry evidence and map/service descriptions are not parcel coverage claims."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No complete public parcel polygon was verified under a schema that returns only geometry and safe identifiers.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "point": [
+    18.3925883366554,
+    -66.0806722858878
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://gis.pr.gov/Pages/default.aspx",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "\r\n\t\r\n\tHome-Portal gis.pr.gov-Inicio\r\n\r\n"
+  },
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

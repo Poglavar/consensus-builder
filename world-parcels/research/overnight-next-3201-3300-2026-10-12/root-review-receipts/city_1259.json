@@ -1,0 +1,13 @@
+{
+  "taskId": "city:1259",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-1259-koudougou.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/koudougou-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-1259-koudougou-sample.geojson",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-12T08:10:00Z",
+  "reason": "WUP1259 rank 3287 Burkina Faso, unchanged point and 183409 persons match the verified UN archive and queue. English/French discovery is recorded. Cached first-party exact-point response has one native FID ulJBtjmx4Ih and full EPSG:4326 MultiPolygon; the retained sample geometry matches exactly and keeps only id. This establishes bounded public geometry, but FID stability, fresh exact-ID adapter reads, forced paging, 13 cells, independent metric GEOS operation/overlap checks, source binding, and headed Details verification are not evidenced. Hold runtime admission and citywide claims."
+}

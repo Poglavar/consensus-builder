@@ -1,0 +1,281 @@
+{
+  "checkedAt": "2026-10-03T10:15:54.814Z",
+  "city": "tokyo",
+  "code": "13101",
+  "descriptor": {
+    "id": "jp-moj-geospatial-2026",
+    "adapter": "geojson-snapshot",
+    "endpoint": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/13/aigid-moj-13101/13101_%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%999%E7%B3%BB_%E7%AD%86R_2026.geojson",
+    "idPrefix": "JP-MOJ-2026-",
+    "idFields": [
+      "市区町村C",
+      "地図名",
+      "ID"
+    ],
+    "outFields": [
+      "ID",
+      "市区町村C",
+      "大字コード",
+      "丁目コード",
+      "小字コード",
+      "予備コード",
+      "市区町村名",
+      "大字名",
+      "丁目名",
+      "地番",
+      "精度区分",
+      "座標値種別",
+      "地図名",
+      "座標系",
+      "測地系判別"
+    ],
+    "parcelNumberField": "地番",
+    "maxSnapshotBytes": 220048,
+    "maxSnapshotFeatures": 236,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "expectedSnapshotFeatures": 236,
+    "expectedEtag": "\"f6ca82248a5cc33967dfd22022ea8723\""
+  },
+  "center": {
+    "lat": 35.696623934,
+    "lon": 139.766899192
+  },
+  "metricSrid": 32654,
+  "snapshot": {
+    "status": 200,
+    "bytes": 200043,
+    "etag": "\"f6ca82248a5cc33967dfd22022ea8723\"",
+    "lastModified": "Fri, 07 Aug 2026 04:33:52 GMT"
+  },
+  "featureCount": 236,
+  "uniqueNativeKeys": 236,
+  "cells": [
+    {
+      "bbox": [
+        139.76314919200001,
+        35.692873934000005,
+        139.765649192,
+        35.695373934
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.765649192,
+        35.692873934000005,
+        139.768149192,
+        35.695373934
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.768149192,
+        35.692873934000005,
+        139.770649192,
+        35.695373934
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.76314919200001,
+        35.695373934,
+        139.765649192,
+        35.697873934
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.765649192,
+        35.695373934,
+        139.768149192,
+        35.697873934
+      ],
+      "pan": 0,
+      "count": 15,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.768149192,
+        35.695373934,
+        139.770649192,
+        35.697873934
+      ],
+      "pan": 0,
+      "count": 2,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.76314919200001,
+        35.697873934,
+        139.765649192,
+        35.700373934
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.765649192,
+        35.697873934,
+        139.768149192,
+        35.700373934
+      ],
+      "pan": 0,
+      "count": 6,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.768149192,
+        35.697873934,
+        139.770649192,
+        35.700373934
+      ],
+      "pan": 0,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.767149192,
+        35.692873934000005,
+        139.769649192,
+        35.695373934
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.769649192,
+        35.692873934000005,
+        139.772149192,
+        35.695373934
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.772149192,
+        35.692873934000005,
+        139.774649192,
+        35.695373934
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.767149192,
+        35.695373934,
+        139.769649192,
+        35.697873934
+      ],
+      "pan": 0.004,
+      "count": 11,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.769649192,
+        35.695373934,
+        139.772149192,
+        35.697873934
+      ],
+      "pan": 0.004,
+      "count": 0,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.772149192,
+        35.695373934,
+        139.774649192,
+        35.697873934
+      ],
+      "pan": 0.004,
+      "count": 3,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.767149192,
+        35.697873934,
+        139.769649192,
+        35.700373934
+      ],
+      "pan": 0.004,
+      "count": 5,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.769649192,
+        35.697873934,
+        139.772149192,
+        35.700373934
+      ],
+      "pan": 0.004,
+      "count": 16,
+      "complete": true
+    },
+    {
+      "bbox": [
+        139.772149192,
+        35.697873934,
+        139.774649192,
+        35.700373934
+      ],
+      "pan": 0.004,
+      "count": 65,
+      "complete": true
+    }
+  ],
+  "observedNativeKeys": 90,
+  "exact": {
+    "batchSize": 80,
+    "batches": 3,
+    "resolved": 236,
+    "geometryConflicts": 0,
+    "absentVerified": true
+  },
+  "under": {
+    "complete": true,
+    "count": 2
+  },
+  "catalogueUrl": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-13101",
+  "licence": "cc-by",
+  "scope": "東京都-千代田区 public-coordinate sheets only, 2026 converted MOJ publication; partial city coverage.",
+  "sampleIds": [
+    "JP-MOJ-2026-13101~13101_2018_0~H000000012",
+    "JP-MOJ-2026-13101~13101_2018_0~H000000011",
+    "JP-MOJ-2026-13101~13101_2018_0~H000000010"
+  ],
+  "technicalResult": "ready",
+  "resourceBbox": [
+    139.743406757,
+    35.673049887,
+    139.775413613,
+    35.702415611
+  ],
+  "description": "Metadata-only full published package native-key and viewport verification; partial ward coverage."
+}

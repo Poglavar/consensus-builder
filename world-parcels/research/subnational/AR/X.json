@@ -1,0 +1,82 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "X",
+ "regionName": "Córdoba",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": null,
+  "name": "Parcelas (idecor:parcelas)",
+  "operator": "IDECOR / Gobierno de la Provincia de Córdoba (Dirección General de Catastro)",
+  "scope": "Province of Córdoba, unified parcel layer",
+  "endpoint": "https://idecor-ws.mapascordoba.gob.ar/geoserver/ows",
+  "method": "WFS 2.0.0 GetFeature, no key",
+  "responseFormat": "GeoJSON",
+  "crs": "native EPSG:22174 (POSGAR 98 faja 4); EPSG:4326 via srsName"
+ },
+ "verifiedParcelResponse": {
+  "requestUrl": "https://idecor-ws.mapascordoba.gob.ar/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=idecor:parcelas&count=3&outputFormat=application/json&srsName=urn:ogc:def:crs:EPSG::4326&propertyName=Nomenclatura,geom&bbox=-31.4205,-64.1895,-31.4195,-64.1885,urn:ogc:def:crs:EPSG::4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "Nomenclatura",
+  "responseFile": "research/subnational/AR/X-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex (numberMatched 1,960,430 unfiltered)",
+  "regionSampled": "Córdoba city and Río Cuarto (about 220 km apart)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer capabilities abstract says it integrates all available survey scales at highest detail; unfiltered numberMatched=1,960,430 parcels province-wide. Licence text not read.",
+ "subregionsVerified": [
+  "Córdoba city",
+  "Río Cuarto"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.idecor.gob.ar/trabajando-con-el-catastro-y-demas-datos-provinciales-en-tu-aplicacion-desktop-o-web-como-usar-los-servicios-wfs-de-idecor/",
+   "observation": "IDECOR guide to its WFS services (found by search)"
+  },
+  {
+   "url": "https://www.mapascordoba.gob.ar/",
+   "observation": "Official viewer; used as Referer"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://idecor-ws.mapascordoba.gob.ar/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "lists idecor:parcelas plus many municipal parcel layers"
+  },
+  {
+   "url": "(idecor:parcelas, lat/lon bbox in plain EPSG:4326)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "empty: GeoServer reads plain EPSG:4326 bbox as lon,lat; use urn form for lat,lon"
+  },
+  {
+   "url": "(Córdoba bbox, urn EPSG::4326)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, numberMatched 11"
+  },
+  {
+   "url": "(Río Cuarto bbox)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, numberMatched 31"
+  }
+ ],
+ "reuseStatus": "Not read. The layer also carries valuation and cuenta fields (not requested or saved); only Nomenclatura and geom were requested.",
+ "remainingUncertainty": "Licence unknown; output coordinates appear rounded to 4 decimals with srsName 4326 in this request (native CRS 22174 is metre-precise).",
+ "nextStep": "Read IDECOR terms; use native CRS for precision."
+}

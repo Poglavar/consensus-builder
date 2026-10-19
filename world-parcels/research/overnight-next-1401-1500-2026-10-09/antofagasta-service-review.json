@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-356-antofagasta.json",
+  "purpose": "Document first-party cadastral discovery, bounded anonymous geometry access, schema/CRS review, and retention decision.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointHitUsedAsAbsenceEvidence": false
+  },
+  "assessment": "Official MINVU/Geoportal metadata identifies a Predios parcel-division dataset covering Antofagasta. The downloadable 2017 Antofagasta SHP was inspected: 123771 polygon features in EPSG:32719, with only COMUNA, CUT_COM, CUT_REG, and CUT_PROV exposed in the DBF schema. Geometry is real and public, but no stable native parcel identity field was exposed, so no full polygon sample was retained. An independent ArcGIS fiscal-property layer returned one polygon at the exact WUP point, but it is not verified general parcel coverage and was not retained.",
+  "registryAssessment": "A first-party national cadastral/map custodian is evidenced (MINVU/Geoportal); a separate local municipal parcel custodian or current municipal API was not verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://geoportal.cl/geoportal/catalog/35406/Predios",
+      "observation": "Official metadata names the Predios resource, identifies MINVU/CECT as organization, includes Antofagasta in the covered communes, and links the SHP download."
+    },
+    {
+      "url": "https://www.sii.cl/destacados/impuesto_territorial/index.html",
+      "observation": "SII documents its official Cartografía Digital for spatial property/cadastral-tax viewing; no unsafe property lookup was attempted."
+    },
+    {
+      "url": "https://services6.arcgis.com/9yX8xdylSYIPqL3X/ArcGIS/rest/services/Base_de_Datos_Antofagasta_WFL1/FeatureServer/2",
+      "observation": "Public ArcGIS layer metadata describes Propiedad_Fiscal polygon coverage for Región de Antofagasta."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Antofagasta Chile official cadastral parcel map GIS property parcels",
+      "result": "Official Geoportal Predios metadata, SII cadastral-cartography documentation, and MINVU map-service references found.",
+      "method": "Separate first-party discovery search and source review.",
+      "scope": "Identify official custodian and safe public parcel geometry."
+    },
+    {
+      "language": "Spanish/local",
+      "query": "Antofagasta catastro predial mapa parcelas oficial municipal",
+      "result": "Official Geoportal/MINVU parcel dataset and municipal 2025 assessment roll found; no municipal parcel API verified.",
+      "method": "Separate first-party discovery search and source review.",
+      "scope": "Cross-check local-language discovery and local-vs-national custodian."
+    }
+  ],
+  "safeFieldAllowlist": ["geometry", "COMUNA", "CUT_COM", "CUT_REG", "CUT_PROV", "OBJECTID"],
+  "nativeFieldMapping": {
+    "Geoportal/MINVU Predios": ["COMUNA", "CUT_COM", "CUT_REG", "CUT_PROV"],
+    "ArcGIS Propiedad_Fiscal": ["OBJECTID", "geometry"]
+  },
+  "attempts": [
+    {
+      "url": "https://geoportal.cl/geoportal/catalog/download/b77b1e63-742d-335b-8649-04b5bced563e",
+      "method": "GET",
+      "result": "Downloaded and inspected official archive. Antofagasta SHP contains 123771 polygons, EPSG:32719; no stable identity field was available for retention."
+    },
+    {
+      "url": "https://services6.arcgis.com/9yX8xdylSYIPqL3X/ArcGIS/rest/services/Base_de_Datos_Antofagasta_WFL1/FeatureServer/2?f=pjson",
+      "method": "GET",
+      "result": "HTTP 200 anonymous layer metadata."
+    },
+    {
+      "url": "https://services6.arcgis.com/9yX8xdylSYIPqL3X/ArcGIS/rest/services/Base_de_Datos_Antofagasta_WFL1/FeatureServer/2/query",
+      "method": "GET",
+      "result": "Exact WUP-point geometry-only bounded request returned one OBJECTID 4 fiscal polygon; not retained because source scope is fiscal property, not verified general parcels."
+    }
+  ],
+  "geometryDecision": "No GeoJSON retained. The primary source has public parcel polygons but no stable native identity field; the secondary exact-point response is fiscal-property coverage and not a general parcel sample.",
+  "coverageAssessment": {
+    "claimedScope": "MINVU metadata claims parcel-division coverage for Antofagasta among listed communes.",
+    "verifiedOpenScope": "The downloaded 2017 Antofagasta file is open and polygonal with 123771 features; citywide completeness, currentness, and adapter suitability remain unqualified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "remainingUncertainty": "The source archive is dated 2017/2019 metadata and does not expose a stable native parcel identifier in the inspected Antofagasta schema. Current SII map-service internals and any municipal cadastral integration were not pursued through login-gated or unsafe property queries.",
+  "runtimeReadiness": "held_pending_serial_review"
+}

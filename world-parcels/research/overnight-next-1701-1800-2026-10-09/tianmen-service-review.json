@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-10196-tianmen.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10196,
+  "queueRank": 1713,
+  "city": "Tianmen",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Tianmen municipal government pages evidence a local real-estate registration custodian and public registration notices. The official map-query page was fetched and its current JavaScript inspected, but it is a general government place map and no anonymous public parcel ID plus full geometry response was verified. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text and actual result URLs are recorded in city-10196-tianmen.json.",
+  "requestOutcomes": "Official Tianmen registration pages and the map-query HTML were fetched. The map page initializes Baidu Maps for general government map points; no cadastral layer, parcel schema, CRS, safe native identity, or geometry request was found.",
+  "attemptedRoutes": [
+    {"route": "Tianmen official map-query viewer", "url": "https://www.tianmen.gov.cn/zwfw/bdcx/dtcx/index.shtml?chnlid=72480", "outcome": "HTML and inline JavaScript fetched; general Baidu map only, no parcel endpoint or schema identified"},
+    {"route": "Tianmen official registration-information index", "url": "https://www.tianmen.gov.cn/zwgk/zfxxgkml/ggzypz/bdcdjxx/", "outcome": "local registration notices available; no anonymous parcel geometry service linked"},
+    {"route": "Tianmen official registration-bureau organization page", "url": "https://www.tianmen.gov.cn/zwgk/bmhxzxxgkml/bm/szrzyhghj/zfxxgk/fdzdgknr/jgzn/jgsz/t_3830985.shtml", "outcome": "local registration bureau remit and public-query role described; no public parcel response"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [30.6609881862624, 113.146923612677] was preserved; no exact-point hit/miss inference was made.",
+    "No city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Local registration custody is evidenced by municipal government pages, but custody evidence is not proof of an open vector parcel API.",
+    "A zero exact-point hit, map extent miss, inaccessible viewer, timeout or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public geometry query reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Tianmen municipal registration custodian and official public map-query page.", "verifiedOpenScope": "Local registration pages and general place-map UI only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current local cadastral viewer/API, access controls, layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness.",
+  "retainedSample": null
+}

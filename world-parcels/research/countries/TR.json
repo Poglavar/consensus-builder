@@ -1,0 +1,70 @@
+{
+ "country": "Turkiye",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Tapu ve Kadastro Genel Mudurlugu (TKGM, General Directorate of Land Registry and Cadastre)",
+ "portalsFound": [
+  {
+   "url": "https://parselsorgu.tkgm.gov.tr",
+   "observation": "TKGM national Parsel Sorgu viewer (backend is the cbsapi endpoint below); from ankara.json/izmir.json."
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}",
+   "observation": "Undocumented point-in-parcel API returning GeoJSON Feature polygon."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/37.8746/32.4932",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "Konya: GeoJSON Polygon parcel"
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/41.0150/28.9600",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "Istanbul (Fatih): GeoJSON Polygon parcel"
+  },
+  {
+   "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/41.0082/28.9784",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "no parcel at this point (Parsel Bulunamadi); same for 41.0369/28.9850 and 39.9208/32.8541"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "tr-tkgm-cbsapi-parsel",
+  "requestUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/37.8746/32.4932",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "point lookups at Konya (32.4932,37.8746) and Istanbul (28.9600,41.0150)",
+  "parcelRecordCount": 2,
+  "recordListPath": "one GeoJSON Feature per reply; saved file merges two",
+  "geometryType": "Polygon (GeoJSON Feature)",
+  "closedRings": true,
+  "idField": "properties.ozet / adaNo / parselNo / mahalleId",
+  "responseFile": "countries/TR-parcel-response.json",
+  "pagination": "none; point lookup and /parsel/{mahalleId}/{ada}/{parsel}",
+  "regionSampled": "Konya, Istanbul (plus Ankara and Izmir in existing city records)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Turkey-wide TKGM parcel query service behind the national viewer",
+  "regionsVerified": [
+   "Konya",
+   "Istanbul",
+   "Ankara",
+   "Izmir"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Undocumented viewer backend: no terms, quota or stability guarantee read; single-parcel point lookups only, no bbox listing; heavy scraping likely not permitted. Some points return 404 (no parcel/unregistered land).",
+ "nextStep": "Check TKGM terms and any official WFS/Web service offering (TKGM web servisleri) for bounded bbox access.",
+ "schemaVersion": 1,
+ "countryCode": "TR",
+ "checkedAt": "2026-09-29"
+}

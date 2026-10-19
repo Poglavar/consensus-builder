@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10120-zibo.json",
+  "purpose": "Read-only city parcel-source discovery; no runtime, global, catalog, or registry integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The bureau documents a public-facing “以图查房” map search, but its report does not expose a direct live viewer URL or service endpoint. The official /land/index.html link is a separate secondary-market transaction platform, not the registry/map viewer. No anonymous cadastral polygon response was obtained.",
+  "registryAssessment": "Official bureau report says an entry is available on the bureau website and WeChat; map browse/locate, registration-information query and cadastral/house-plan downloads are described as available to anyone. No direct live viewer/API URL was located.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zibo China official cadastral parcel map GIS public land parcels feature service",
+      "result": "English search found the Zibo Natural Resources and Planning Bureau official report of its “以图查房” map-based property query and a local rule describing vector cadastral outputs as SHAPE supplied through professional survey; no direct open polygon endpoint was found.",
+      "urls": [
+        "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcd2a40661f2aebb98a8/",
+        "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcc7a40661f2aebb98a4/doc_65854c41af42b78c11e761d8.html"
+      ],
+      "method": "Separate English web search and public official-source review."
+    },
+    {
+      "language": "Simplified Chinese",
+      "query": "淄博市 自然资源和规划局 地籍图 宗地 不动产登记 查询 GIS 官方",
+      "result": "官方2023年度公开报告记载，网站和微信公众号开通“以图查房”入口，可地图定位/按房屋坐落查询不动产自然属性与限制信息、查看和下载宗地图及房屋分户图；未给出直达入口或机器可读面服务。官方权籍调查规范要求宗地图矢量 SHAPE 作为测绘成果提交，未声明公开下载。",
+      "urls": [
+        "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcd2a40661f2aebb98a8/",
+        "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcc7a40661f2aebb98a4/doc_65854c41af42b78c11e761d8.html",
+        "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_n_1605682664.8936/doc_5fb4783b01f4b32c920dd496.html"
+      ],
+      "method": "Separate Simplified Chinese search; official city bureau report/procedure pages opened, no viewer link/service route exposed by results."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcd2a40661f2aebb98a8/",
+      "method": "GET via web reader",
+      "observation": "HTTP 200 official bureau page; lines 617–623 state map-based query and downloadable plot/house plans, available to anyone, but omit direct entry URL.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_5fb3bcc7a40661f2aebb98a4/doc_65854c41af42b78c11e761d8.html",
+      "method": "GET via web search result",
+      "observation": "Official city survey procedure says cadastral vector outputs are SHAPE survey products with application/purpose conditions; this is not an open data service.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://gtj.zibo.gov.cn/gongkai/channel_c_5f9fa491ab327f36e4c1305c_n_1605682664.8936/doc_5fb4783b01f4b32c920dd496.html",
+      "method": "GET via web search result",
+      "observation": "Official city cadastral-survey rules describe parcel survey datasets and registered-record access; no anonymous bulk geometry service is identified.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://gtj.zibo.gov.cn/land/index.html",
+      "method": "Direct anonymous HTTPS GET with browser-like headers; official bureau homepage link followed",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "observation": "Page title identifies the Zibo Land Secondary Market Trading Service Platform, not the reported “以图查房” registry viewer. The page embeds a Tianditu base-map script with a public token in the HTML; token value was not recorded or reused. No cadastral feature endpoint was verified."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "attempted": true,
+    "summary": "The bureau documents a public-facing “以图查房” map search, but its report does not expose a direct live viewer URL or service endpoint. The official /land/index.html link is a separate secondary-market transaction platform, not the registry/map viewer. No anonymous cadastral polygon response was obtained.",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "credentialsOrTokenValuesRetained": false
+  },
+  "geometryAttempt": {
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "outcome": "No full parcel polygon was verified; no geometry has been retained."
+  },
+  "remainingUncertainty": "Whether the map UI remains operational, whether map browsing returns full parcel polygons or only on-demand map sheets, and whether viewing/download requires authentication. Current direct viewer entry is unknown.",
+  "nextStep": "Find the current “以图查房” entry from the bureau site/official WeChat and inspect its public HTML/JS; test a small anonymous geometry-only query only if it exposes vector features."
+}

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:4035",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-4035-ivanovo.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ivanovo-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T09:08:31.077922Z",
+  "reviewFindings": "No anonymous parcel ID-plus-polygon response; NSPD request timed out, so geometry coverage remains unknown.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are not independently evidenced; no runtime admission."
+}

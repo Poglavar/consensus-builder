@@ -1,0 +1,113 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MT",
+ "country": "Malta",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Malta Planning Authority / Land Registry (INSPIRE CP published under msdi.data.gov.mt namespace 'RegisteredLandParcels'), hosted on haleconnect.com",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: <per country, e.g. el-GR,el;q=0.9,en;q=0.8>; cookie jar on; Referer = viewer/portal origin",
+ "inspireRecordUrl": "https://data.europa.eu/api/hub/search/datasets/80b0bb83-1fc2-4955-9b59-86e0290f5e37 (WMS) and .../ffde9f0c-5a4c-47ef-9091-2c93f60ff7ac (WFS), catalogue 'Malta Inspire Geoportal'",
+ "portalsFound": [
+  {
+   "url": "https://haleconnect.com/ows/services/org.1261.9e965259-f5a1-4e3e-8a64-41281f4d7ffe_wfs?SERVICE=WFS&Request=GetCapabilities",
+   "observation": "WFS 2.0.0, feature type cp:CadastralParcel, default CRS EPSG:4258, other 4326/25832, outputs GML 3.2, geo+json, csv; bbox 14.18-14.58E 35.80-36.08N"
+  },
+  {
+   "url": "https://msdi.data.gov.mt/, https://www.pa.org.mt/",
+   "observation": "Cloudflare challenge, not bypassed; not needed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://haleconnect.com/ows/services/org.1261.9e965259-f5a1-4e3e-8a64-41281f4d7ffe_wfs?SERVICE=WFS&Request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "capabilities"
+  },
+  {
+   "url": "https://haleconnect.com/ows/services/org.1261.9e965259-f5a1-4e3e-8a64-41281f4d7ffe_wfs?...&RESULTTYPE=hits",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml",
+   "assessment": "numberMatched=58820"
+  },
+  {
+   "url": "https://haleconnect.com/ows/services/org.1261.9e965259-f5a1-4e3e-8a64-41281f4d7ffe_wfs?...&COUNT=3&BBOX=35.895,14.508,35.900,14.515,urn:ogc:def:crs:EPSG::4258 (GML)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/gml+xml",
+   "assessment": "numberReturned=0: GML output/axis order returns empty here"
+  },
+  {
+   "url": "https://haleconnect.com/ows/services/org.1261.9e965259-f5a1-4e3e-8a64-41281f4d7ffe_wfs?...&COUNT=3&OUTPUTFORMAT=application/geo+json&BBOX=35.895,14.508,35.900,14.515,urn:ogc:def:crs:EPSG::4326 (Valletta area)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 Polygon features, closed rings"
+  },
+  {
+   "url": "same, bbox 36.040,14.236,36.046,14.243 (Gozo)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 Polygon features"
+  },
+  {
+   "url": "same, bbox 35.950,14.390,35.956,14.400 (northern Malta)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 Polygon features"
+  },
+  {
+   "url": "GetFeatureById stored query ID=CP_10140_8044 outputFormat geo+json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "returns the feature"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "mt-haleconnect-inspire-cp",
+  "requestUrl": "https://haleconnect.com/ows/services/org.1261.9e965259-f5a1-4e3e-8a64-41281f4d7ffe_wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=cp:CadastralParcel&COUNT=2&OUTPUTFORMAT=application/geo%2Bjson&BBOX=35.895,14.508,35.900,14.515,urn:ogc:def:crs:EPSG::4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   14.508,
+   35.895,
+   14.515,
+   35.9
+  ],
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "id / properties.nationalCadastralReference",
+  "responseFile": "europe/MT-parcel-response.json",
+  "pagination": "COUNT/STARTINDEX; numberMatched 58820 via resultType=hits",
+  "regionSampled": "Malta island (Valletta/Grand Harbour area and northern Malta) and Gozo (Victoria)"
+ },
+ "regionsSampled": [
+  "Malta island (Valletta area)",
+  "Malta island (north)",
+  "Gozo (Victoria)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE Cadastral Parcels, dataset namespace 'RegisteredLandParcels' (registered land only), 58,820 parcels",
+  "regionsVerified": [
+   "Malta island",
+   "Gozo"
+  ],
+  "nationwideVerified": true,
+  "note": "same source/schema in Malta and Gozo; whether 58,820 covers all parcels of the archipelago not established"
+ },
+ "accessModel": "open",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "remainingUncertainty": "Licence not read. Data is 'RegisteredLandParcels', which may exclude unregistered land. Service host is a third party (haleconnect / wetransform) on behalf of Malta, not a government domain. GML output with bbox returned empty in the same calls; use geo+json.",
+ "nextStep": "Read the MetadataURL record for licence and completeness; use application/geo+json output."
+}

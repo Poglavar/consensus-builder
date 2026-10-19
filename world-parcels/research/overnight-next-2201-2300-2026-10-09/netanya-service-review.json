@@ -1,0 +1,77 @@
+{
+  "cityRecord": "city-844-netanya.json",
+  "cityCode": 844,
+  "queueRank": 2262,
+  "city": "Netanya",
+  "country": "Israel",
+  "countryCode": "IL",
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-11",
+  "routes": [
+    {
+      "route": "Netanya Municipality GIS description",
+      "url": "https://www.netanya.muni.il/homepage?CategoryID=230",
+      "outcome": "HTTP page found; official Hebrew page describes a public municipal GIS, aerial imagery and search by block/parcel, while warning that displayed information is informative and non-binding. No direct service endpoint was exposed in the fetched HTML.",
+      "scope": "Local municipal custodian evidence; not treated as proof that every layer is downloadable or current."
+    },
+    {
+      "route": "GovMap public map",
+      "url": "https://govmap.gov.il/map.html?lang=en",
+      "outcome": "Public map page reachable; it advertises search for layer/address/block/parcel. The route was not used for an automated data extraction.",
+      "scope": "General national public viewer; not a local Netanya registry custodian."
+    },
+    {
+      "route": "Survey of Israel / Israel Mapping Center cadastral FeatureServer metadata",
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "outcome": "HTTP 200 JSON metadata. Layer is polygonal cadastral parcels; source description identifies Israel Mapping Center, ITM/EPSG:2039 service context and public parcel identification attributes. The query was made with TLS verification enabled and no credentials.",
+      "scope": "National cadastral source; public and anonymous."
+    },
+    {
+      "route": "Exact WUP-point parcel query",
+      "url": "https://services8.arcgis.com/JcXY3lLZni6BK4El/arcgis/rest/services/%D7%97%D7%9C%D7%A7%D7%95%D7%AA/FeatureServer/0/query",
+      "method": "GET",
+      "parameters": {
+        "f": "geojson",
+        "where": "1=1",
+        "outFields": "OBJECTID,PARCEL_ID,GUSH_NUM,GUSH_SUFFI,PARCEL",
+        "geometry": {"x": 34.8598375549541, "y": 32.3143145554001, "spatialReference": {"wkid": 4326}},
+        "geometryType": "esriGeometryPoint",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outSR": 4326,
+        "returnGeometry": true
+      },
+      "outcome": "HTTP 200 GeoJSON response with one polygon intersecting the exact WUP point. Native response identity fields: OBJECTID 561962, PARCEL_ID 566567, GUSH_NUM 8242, GUSH_SUFFI 0, PARCEL 116. Retained sample uses only PARCEL_ID as canonical native identity.",
+      "scope": "One exact-point hit only; not evidence of citywide completeness."
+    }
+  ],
+  "schemaAndCrs": {
+    "geometryType": "esriGeometryPolygon",
+    "serviceCrs": "EPSG:2039 (Israel TM Grid) according to service/item metadata",
+    "queryOutputCrs": "EPSG:4326",
+    "nativeIdentity": "PARCEL_ID",
+    "safeRequestedFields": ["PARCEL_ID", "OBJECTID", "GUSH_NUM", "GUSH_SUFFI", "PARCEL"],
+    "excludedFields": ["LEGAL_AREA", "STATUS", "STATUS_TEX", "LOCALITY_I", "LOCALITY_N", "REG_MUN_ID", "COUNTY_ID", "REGION_ID", "TALAR_NUMB", "TALAR_YEAR", "SYS_DATE", "IS3D", "Shape__Area", "Shape__Length", "GushHelka"],
+    "fieldMapping": {
+      "PARCEL_ID": "stable native parcel identity retained in sample",
+      "OBJECTID": "service record identifier observed but not used as canonical sample identity",
+      "GUSH_NUM": "block number, metadata only",
+      "GUSH_SUFFI": "sub-block suffix, metadata only",
+      "PARCEL": "parcel number, metadata only"
+    }
+  },
+  "sample": {
+    "file": "netanya-parcel-sample.geojson",
+    "featureCount": 1,
+    "nativeIdentity": "PARCEL_ID=566567",
+    "geometryPreserved": "full unchanged query geometry, transformed only by requested output CRS to EPSG:4326"
+  },
+  "uncertaintyAndLimits": [
+    "The municipal page is descriptive and explicitly non-binding.",
+    "The exact-point hit demonstrates availability at one location only; it does not establish citywide coverage, freshness beyond service metadata, or legal cadastral status.",
+    "No owner, address, contact, titleholder, tax/account, or other unsafe personal fields were requested or retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS disablement was used.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ]
+}

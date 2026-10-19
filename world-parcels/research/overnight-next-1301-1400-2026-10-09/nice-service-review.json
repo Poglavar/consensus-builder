@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityRecord": "city-4796-nice.json",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "purpose": "Independent service review for Nice official cadastral and parcel-oriented map sources.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Nice has an evidenced official metropolitan ArcGIS cadastral service. Current viewer configuration, layer schema, CRS, and an anonymous exact-point query were inspected; one safe parcel polygon and stable native CODEIDENT were returned. Runtime readiness remains held pending serial review.",
+  "registryAssessment": "The official Métropole Nice Côte d’Azur GIS/open-data catalog identifies a local metropolitan cadastral map/data custodian. This is not evidence of ownership, titleholder, or other restricted registry records.",
+  "coverageAssessment": {"claimedScope": "Cadastre of the Métropole Nice Côte d’Azur.", "verifiedOpenScope": "Anonymous viewer shell and current JavaScript configuration, ArcGIS service/layer metadata, official open-data catalog, and one exact WUP-point query.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "officialPrimarySources": [
+    {"url": "https://cartes.nicecotedazur.org/apps/er/", "operator": "Métropole Nice Côte d’Azur", "scope": "Official public viewer describing parcel-layer interrogation."},
+    {"url": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer", "operator": "Métropole Nice Côte d’Azur / Direction de l’Information Géographique", "scope": "Official public ArcGIS cadastral service; layer 8 is Parcelles (Contours)."},
+    {"url": "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur", "operator": "Métropole Nice Côte d’Azur", "scope": "Official open-data parcel dataset; metadata identifies DGFiP July 2025 source and RGF93/Lambert-93 publication."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Nice France official cadastral map parcel GIS", "result": "Official metropolitan parcel open-data record and cadastral ArcGIS service found.", "actualResultUrls": ["https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur", "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer"]},
+    {"language": "French", "query": "Nice cadastre officiel carte parcellaire géoservice parcelles", "result": "Official metropolitan GIS viewer and parcel dataset found; viewer documentation states parcel layers can be queried.", "actualResultUrls": ["https://cartes.nicecotedazur.org/apps/er/", "https://www.nice.fr/fr/donnees-geographiques-publiques", "https://opendata.nicecotedazur.org/data/dataset/parcelles-cadastrales-de-la-metropole-nice-cote-d-azur"]}
+  ],
+  "attempts": [
+    "Ran separate English and French first-party discovery queries.",
+    "Fetched the official public viewer anonymously over TLS and followed its current Angular JavaScript configuration.",
+    "Fetched ArcGIS MapServer service metadata and layer 8 metadata; confirmed EPSG:2154, query capability, parcel layer name, and native identity fields.",
+    "Queried layer 8 at the exact immutable WUP point [43.6987107905202, 7.23303214314509] using inSR=4326 and outSR=4326; one polygon returned HTTP 200 GeoJSON.",
+    "Verified returned native identity CODEIDENT `060088   MT0022`, with CODCOMM `060088` and IDENT `   MT0022`; retained only canonical id in sample properties.",
+    "Fetched the official open-data catalog page and recorded its GeoJSON/Shapefile resource metadata.",
+    "Did not shift coordinates, log in, use credentials/private tokens, defeat access controls, request owner/titleholder/personal/contact/address/account data, or retain raw source attributes."
+  ],
+  "geometryEvidence": {"verified": true, "sampleCount": 1, "sampleFile": "nice-parcel-sample.geojson", "nativeId": "060088   MT0022", "nativeIdField": "CODEIDENT", "exactWupPointTest": "One parcel polygon intersected the exact immutable WUP point; this is a bounded feature test, not a citywide completeness claim.", "requestEvidence": [{"url": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8?f=pjson", "method": "GET; anonymous", "httpStatus": 200, "assessment": "Parcel layer schema and EPSG:2154 metadata."}, {"url": "https://cartes.nicecotedazur.org/heberge2/rest/services/Cadastre/Cadastre/MapServer/8/query", "method": "GET; anonymous exact WUP point, GeoJSON, outSR=4326", "httpStatus": 200, "assessment": "One full polygon returned with stable public CODEIDENT; only canonical id retained in sample."}]},
+  "safeFieldAllowlist": ["canonical native parcel identity", "public layer/service URL", "geometry", "CRS/layer metadata", "request status/content type"],
+  "nextStep": "Serial reviewer should independently re-run the current viewer/service and qualify native identity, geometry, CRS, and coverage before runtime admission.",
+  "remainingUncertainty": "The exact-point query and service extent do not prove citywide completeness or current adapter compatibility; open-data metadata and service layer may have different refresh timing.",
+  "runtimeDecision": "held_pending_serial_review"
+}

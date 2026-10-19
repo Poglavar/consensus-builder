@@ -1,0 +1,80 @@
+{
+ "kind": "country",
+ "key": "MX",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://phina.ran.gob.mx/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Akamai Access Denied even with full headers"
+  },
+  {
+   "url": "https://sig.ran.gob.mx/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Akamai Access Denied"
+  },
+  {
+   "url": "https://www.ran.gob.mx/ , rangeo.ran.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure"
+  },
+  {
+   "url": "https://www.inegi.org.mx/temas/catastro/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "theme page only"
+  },
+  {
+   "url": "https://gaia.inegi.org.mx/mdm6/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "INEGI Mapa Digital viewer HTML loads; not a parcel cadastre; not deep-inspected"
+  },
+  {
+   "url": "https://sig.nl.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Nuevo Leon technology page; no parcel service in HTML"
+  },
+  {
+   "url": "https://catastro.queretaro.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirects to irc.gob.mx portal; no service tested"
+  },
+  {
+   "url": "https://datos.cdmx.gob.mx/ , sig.cdmx.gob.mx, catastro.cdmx.gob.mx, idejalisco, catastro.yucatan.gob.mx, catastro.nl.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failures"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios OR lotes catastro",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "hits are Colombia/Ecuador/Chile, none Mexican"
+  }
+ ],
+ "geoBlockSuspected": "true (RAN Akamai 403 only from this network; several state hosts refuse connection)",
+ "notes": "No change in outcome. Some previously failing hosts now answer (nl.gob.mx, inegi, datos.gob.mx) but none expose a parcel service; RAN and CDMX still blocked/unreachable. Mexico is decentralised (32 state catastros) so any find would be subnational.",
+ "nextStep": "Test CDMX SIG/Catastro, Jalisco IITEJ, RAN PHINA from a browser-capable client."
+}

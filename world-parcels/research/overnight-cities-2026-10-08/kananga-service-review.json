@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4580-kananga.json",
+  "purpose": "Read-only city source research and bounded public-service validation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "No public viewer HTML/JS/API or full polygon endpoint was identified in official sources; did not submit identity or property details."
+}

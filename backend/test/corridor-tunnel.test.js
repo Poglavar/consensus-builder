@@ -1,0 +1,487 @@
+// Unit tests for building collision detection and stable tunnel-edge metadata.
+import { describe, it, expect } from 'vitest';
+import { createRequire } from 'node:module';
+import * as turf from '@turf/turf';
+
+const require = createRequire(import.meta.url);
+const {
+    corridorTunnelEdgeKey,
+    corridorEdgeFetchSegments,
+    applyDemolitionRecordsToBuildingFeatures,
+    findBuildingTunnelIntersections,
+    makeBuildingTunnelRecord,
+    addBuildingTunnelRecord,
+    removeBuildingTunnelEdge,
+    corridorSurfaceRuns,
+    retainLiveCorridorTunnelRecords,
+    demolishBuildingsUnderFootprint,
+    upsertCutRecord,
+    consolidateCorridorDemolitionRecords,
+    consolidateBuildingDemolitionRecords,
+    collectObstacleProposalImpacts,
+    buildBuildingObstaclePrompt,
+    resolveBuildingObstacles
+} = require('../../frontend/js/corridor-tunnel.js');
+
+function fakeTurf(intersections = new Map()) {
+    return {
+        intersect: (_corridor, building) => intersections.get(building.properties.id) || null,
+        area: feature => feature.properties.area
+    };
+}
+
+describe('corridor building tunnels', () => {
+    const from = { lat: 45.8, lng: 15.9 };
+    const to = { lat: 45.81, lng: 15.91 };
+
+    it('uses the same edge key in either drawing direction', () => {
+        expect(corridorTunnelEdgeKey(from, to)).toBe(corridorTunnelEdgeKey(to, from));
+    });
+
+    it('drops a tunnel record as soon as a node move changes its exact edge', () => {
+        const middle = { lat: 45.805, lng: 15.905 };
+        const moved = { lat: 45.806, lng: 15.906 };
+        const records = [
+            { id: 'keep', edgeKey: corridorTunnelEdgeKey(from, middle), buildingIds: ['a'] },
+            { id: 'stale', edgeKey: corridorTunnelEdgeKey(middle, to), buildingIds: ['b'] }
+        ];
+
+        expect(retainLiveCorridorTunnelRecords([[from, middle], [moved, to]], records))
+            .toEqual([records[0]]);
+    });
+
+    it('splits a long diagonal into bounded fetch edges without losing its endpoints', () => {
+        const parts = corridorEdgeFetchSegments(from, to, 150);
+        expect(parts.length).toBeGreaterThan(8);
+        expect(parts[0][0]).toEqual(from);
+        expect(parts[parts.length - 1][1]).toEqual(to);
+        for (let i = 1; i < parts.length; i += 1) expect(parts[i][0]).toEqual(parts[i - 1][1]);
+    });
+
+    it('keeps only building intersections with meaningful overlap', () => {
+        const buildings = [
+            { type: 'Feature', properties: { id: 'a' }, geometry: { type: 'Polygon', coordinates: [] } },
+            { type: 'Feature', properties: { id: 'b' }, geometry: { type: 'Polygon', coordinates: [] } }
+        ];
+        const overlaps = new Map([
+            ['a', { type: 'Feature', properties: { area: 12 }, geometry: { type: 'Polygon', coordinates: [] } }],
+            ['b', { type: 'Feature', properties: { area: 0.1 }, geometry: { type: 'Polygon', coordinates: [] } }]
+        ]);
+        const hits = findBuildingTunnelIntersections(
+            { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [] } },
+            buildings,
+            fakeTurf(overlaps)
+        );
+        expect(hits.map(hit => hit.id)).toEqual(['a']);
+    });
+
+    it('adds, replaces and removes records by edge rather than direction', () => {
+        const first = makeBuildingTunnelRecord(from, to, [{ id: 'building-a' }], { segmentId: 's1' });
+        const replacement = makeBuildingTunnelRecord(to, from, [{ id: 'building-b' }], { segmentId: 's1' });
+        const records = addBuildingTunnelRecord([], first);
+        addBuildingTunnelRecord(records, replacement);
+        expect(records).toHaveLength(1);
+        expect(records[0].buildingIds).toEqual(['building-b']);
+        expect(removeBuildingTunnelEdge(records, from, to)).toEqual([]);
+    });
+});
+
+describe('structure demolition scan', () => {
+    it('turns an overlapping GDI footprint into an object_id-keyed demolition record', async () => {
+        const footprint = turf.polygon([[[15.97, 45.81], [15.9704, 45.81], [15.9704, 45.8103], [15.97, 45.8103], [15.97, 45.81]]], {
+            object_id: 61075
+        });
+        const structure = turf.polygon([[[15.9699, 45.8099], [15.9705, 45.8099], [15.9705, 45.8104], [15.9699, 45.8104], [15.9699, 45.8099]]]);
+        const keys = ['turf', 'buildingFeaturePool', 'proposedBuildings', 'proposalStorage', 'ensureBuildingFootprintsForBounds', 'ProposalManager'];
+        const descriptors = new Map(keys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
+        try {
+            globalThis.turf = turf;
+            globalThis.buildingFeaturePool = [footprint];
+            globalThis.proposedBuildings = [];
+            globalThis.proposalStorage = { getAllProposals: () => [] };
+            globalThis.ensureBuildingFootprintsForBounds = async () => true;
+            globalThis.ProposalManager = null;
+
+            const records = await demolishBuildingsUnderFootprint(structure.geometry);
+
+            expect(records).toHaveLength(1);
+            expect(records[0].id).toBe('61075');
+            expect(records[0].geometry).toEqual(footprint.geometry);
+            expect(records[0].remainder).toBeUndefined();
+        } finally {
+            keys.forEach(key => {
+                const descriptor = descriptors.get(key);
+                if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+                else delete globalThis[key];
+            });
+        }
+    });
+});
+
+describe('proposal-owned building impact preflight', () => {
+    const proposalHit = (proposalId, buildingIndex) => ({
+        id: `proposal:${proposalId}:${buildingIndex}`,
+        feature: {
+            type: 'Feature',
+            properties: { proposalId, buildingIndex },
+            geometry: { type: 'Polygon', coordinates: [] }
+        }
+    });
+
+    it('deduplicates proposal owners and names every one in the surface/tunnel dialog', () => {
+        const hits = [proposalHit('p-1', 0), proposalHit('p-1', 1), proposalHit('p-2', 0), { id: 'gdi-1' }];
+        const proposals = new Map([
+            ['p-1', { proposalId: 'p-1', title: 'Central Block' }],
+            ['p-2', { proposalId: 'p-2', title: 'Station Offices' }]
+        ]);
+        const impacts = collectObstacleProposalImpacts(hits, id => proposals.get(id));
+        expect(impacts).toEqual([
+            { proposalId: 'p-1', title: 'Central Block' },
+            { proposalId: 'p-2', title: 'Station Offices' }
+        ]);
+
+        const prompt = buildBuildingObstaclePrompt(hits, 'road', impacts);
+        expect(prompt.message).toContain('Central Block');
+        expect(prompt.message).toContain('Station Offices');
+        expect(prompt.message.match(/Central Block/g)).toHaveLength(1);
+        expect(prompt.message).toContain('takes their ground during replay');
+        expect(prompt.message).toContain('not the parcel-taking footprint');
+        expect(prompt.choices.map(choice => choice.value)).toEqual(['surface', 'tunnel', 'cancel']);
+        expect(prompt.message).toContain('same cadastral ground');
+    });
+
+    it('collects the choice without mutating either proposal record', async () => {
+        const keys = ['getProposalByIdOrHash', 'getProposalDisplayTitle', 'showStyledChoice', 'ProposalManager', 'i18n'];
+        const descriptors = new Map(keys.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
+        const proposals = new Map([
+            ['p-1', { proposalId: 'p-1', title: 'Central Block' }],
+            ['p-2', { proposalId: 'p-2', title: 'Station Offices' }]
+        ]);
+        const hits = [proposalHit('p-1', 0), proposalHit('p-2', 0), { id: 'gdi-1', feature: { geometry: null } }];
+        const events = [];
+        try {
+            globalThis.i18n = null;
+            globalThis.getProposalByIdOrHash = id => proposals.get(id) || null;
+            globalThis.getProposalDisplayTitle = proposal => proposal.title;
+            globalThis.ProposalManager = { unapplyProposal: async id => events.push(`unapply:${id}`) };
+            globalThis.showStyledChoice = async (message) => {
+                expect(events).toEqual([]);
+                expect(message).toContain('Central Block');
+                expect(message).toContain('Station Offices');
+                events.push('prompt');
+                return 'surface';
+            };
+
+            const surface = await resolveBuildingObstacles(hits, 'road');
+            expect(events).toEqual(['prompt']);
+            expect(surface.surfaceHits.map(hit => hit.id)).toEqual(hits.map(hit => hit.id));
+            expect(surface.tunnelHits).toEqual([]);
+
+            events.length = 0;
+            globalThis.showStyledChoice = async (message) => {
+                expect(message).toContain('Central Block');
+                events.push('prompt');
+                return 'tunnel';
+            };
+            const tunnel = await resolveBuildingObstacles(hits, 'road');
+            expect(events).toEqual(['prompt']);
+            expect(tunnel.surfaceHits).toEqual([]);
+            expect(tunnel.tunnelHits.map(hit => hit.id)).toEqual(hits.map(hit => hit.id));
+        } finally {
+            keys.forEach(key => {
+                const descriptor = descriptors.get(key);
+                if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+                else delete globalThis[key];
+            });
+        }
+    });
+});
+
+describe('merged corridor building cuts', () => {
+    const footprint = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]]);
+    const vertical = turf.polygon([[[0.0002, 0], [0.0004, 0], [0.0004, 0.001], [0.0002, 0.001], [0.0002, 0]]]);
+    const horizontal = turf.polygon([[[0, 0.0006], [0.001, 0.0006], [0.001, 0.0008], [0, 0.0008], [0, 0.0006]]]);
+    const hit = { id: 'gdi-1', feature: footprint };
+
+    it('combines two partial records for one object_id into one cut against the merged road', () => {
+        const first = [];
+        const second = [];
+        upsertCutRecord(first, hit, vertical, turf);
+        upsertCutRecord(second, hit, horizontal, turf);
+        expect(first[0].remainder).toBeTruthy();
+        expect(second[0].remainder).toBeTruthy();
+
+        const mergedRoad = turf.union(vertical, horizontal);
+        const consolidated = consolidateCorridorDemolitionRecords([...first, ...second], mergedRoad, turf);
+        expect(consolidated).toHaveLength(1);
+        expect(consolidated[0].id).toBe('gdi-1');
+        const expectedRemainder = turf.difference(footprint, mergedRoad);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: consolidated[0].remainder }))
+            .toBeCloseTo(turf.area(expectedRemainder), 4);
+    });
+
+    it('keeps a full demolition final when another record only cuts the same building', () => {
+        const partial = [];
+        upsertCutRecord(partial, hit, vertical, turf);
+        const full = { id: 'gdi-1', geometry: footprint.geometry };
+        const consolidated = consolidateCorridorDemolitionRecords([partial[0], full], vertical, turf);
+        expect(consolidated).toEqual([full]);
+    });
+});
+
+describe('cuts across independent proposals', () => {
+    const footprint = turf.polygon([[[0, 0], [0.001, 0], [0.001, 0.001], [0, 0.001], [0, 0]]], { object_id: 'gdi-1' });
+    const vertical = turf.polygon([[[0.0002, 0], [0.0004, 0], [0.0004, 0.001], [0.0002, 0.001], [0.0002, 0]]]);
+    const horizontal = turf.polygon([[[0, 0.0006], [0.001, 0.0006], [0.001, 0.0008], [0, 0.0008], [0, 0.0006]]]);
+
+    it('keeps a partial remainder in the collision pool and accumulates the next road cut', () => {
+        const firstRoad = [];
+        upsertCutRecord(firstRoad, { id: 'gdi-1', feature: footprint }, vertical, turf);
+
+        const survivors = applyDemolitionRecordsToBuildingFeatures([footprint], firstRoad);
+        expect(survivors).toHaveLength(1);
+        expect(turf.area(survivors[0])).toBeCloseTo(turf.area({
+            type: 'Feature', properties: {}, geometry: firstRoad[0].remainder
+        }), 4);
+
+        const hits = findBuildingTunnelIntersections(horizontal, survivors, turf);
+        expect(hits).toHaveLength(1);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: hits[0].originalGeometry }))
+            .toBeCloseTo(turf.area(footprint), 4);
+
+        const secondRoad = [];
+        upsertCutRecord(secondRoad, hits[0], horizontal, turf);
+        const combined = consolidateBuildingDemolitionRecords([...firstRoad, ...secondRoad], turf);
+        const expectedRemoved = turf.union(vertical, horizontal);
+        const expectedRemainder = turf.difference(footprint, expectedRemoved);
+        expect(combined).toHaveLength(1);
+        expect(turf.area({ type: 'Feature', properties: {}, geometry: combined[0].remainder }))
+            .toBeCloseTo(turf.area(expectedRemainder), 4);
+    });
+
+    it('removes a building from collision detection only after a full demolition', () => {
+        const visible = applyDemolitionRecordsToBuildingFeatures(
+            [footprint],
+            [{ id: 'gdi-1', geometry: footprint.geometry }]
+        );
+        expect(visible).toEqual([]);
+    });
+});
+
+// Tunnel spans are covered structures that acquire nothing: surface runs are the centerline
+// minus tunnelled edges, and they drive parent collection and parcel splitting.
+describe('corridorSurfaceRuns', () => {
+    const p = (lng) => ({ lat: 0, lng });
+    const seg = [p(0), p(1), p(2), p(3)];
+    const tunnelOn = (a, b) => [{ edgeKey: corridorTunnelEdgeKey(a, b) }];
+
+    it('passes the whole segment through when there are no tunnels', () => {
+        expect(corridorSurfaceRuns([seg], [])).toEqual([seg]);
+    });
+
+    it('splits a segment into runs around a tunnelled edge', () => {
+        const runs = corridorSurfaceRuns([seg], tunnelOn(p(1), p(2)));
+        expect(runs).toEqual([[p(0), p(1)], [p(2), p(3)]]);
+    });
+
+    it('is direction-agnostic about the tunnel edge key', () => {
+        const runs = corridorSurfaceRuns([seg], tunnelOn(p(2), p(1)));
+        expect(runs).toEqual([[p(0), p(1)], [p(2), p(3)]]);
+    });
+
+    it('returns nothing for a fully tunnelled segment', () => {
+        const short = [p(0), p(1)];
+        expect(corridorSurfaceRuns([short], tunnelOn(p(0), p(1)))).toEqual([]);
+    });
+
+    it('drops runs shorter than one edge (tunnels on both sides of a vertex)', () => {
+        const records = [...tunnelOn(p(0), p(1)), ...tunnelOn(p(1), p(2))];
+        expect(corridorSurfaceRuns([seg], records)).toEqual([[p(2), p(3)]]);
+    });
+
+    it('accepts a single flat polyline as well as a segment list', () => {
+        const runs = corridorSurfaceRuns(seg, tunnelOn(p(1), p(2)));
+        expect(runs).toEqual([[p(0), p(1)], [p(2), p(3)]]);
+    });
+
+    it('handles multiple segments independently', () => {
+        const other = [p(10), p(11)];
+        const runs = corridorSurfaceRuns([seg, other], tunnelOn(p(1), p(2)));
+        expect(runs).toEqual([[p(0), p(1)], [p(2), p(3)], [p(10), p(11)]]);
+    });
+});
+
+// Tunnels exist only while inside buildings: the clip splits an edge at facade crossings and
+// flags only the inside sub-edges. The fake turf below does the same planar math the real one
+// does, with degrees scaled to metres so the function's minimum-length guards behave.
+describe('clipCorridorEdgeThroughBuildings', () => {
+    const { clipCorridorEdgeThroughBuildings } = require('../../frontend/js/corridor-tunnel.js');
+    const SCALE = 100000; // 1 degree == 100 km in the fake planar world
+
+    function planarTurf() {
+        const coordsOf = feature => feature.geometry.coordinates;
+        return {
+            lineString: coords => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } }),
+            point: coords => ({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: coords } }),
+            length: line => {
+                const [a, b] = coordsOf(line);
+                return Math.hypot(b[0] - a[0], b[1] - a[1]) * SCALE;
+            },
+            along: (line, distance) => {
+                const [a, b] = coordsOf(line);
+                const t = distance / (Math.hypot(b[0] - a[0], b[1] - a[1]) * SCALE);
+                return { type: 'Feature', geometry: { type: 'Point', coordinates: [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t] } };
+            },
+            buffer: feature => feature, // facade buffering is a browser concern; identity here
+            lineIntersect: (line, zone) => {
+                const [a, b] = coordsOf(line);
+                const ring = zone.geometry.coordinates[0];
+                const features = [];
+                for (let i = 0; i < ring.length - 1; i++) {
+                    const c = ring[i];
+                    const d = ring[i + 1];
+                    const den = (b[0] - a[0]) * (d[1] - c[1]) - (b[1] - a[1]) * (d[0] - c[0]);
+                    if (Math.abs(den) < 1e-18) continue;
+                    const t = ((c[0] - a[0]) * (d[1] - c[1]) - (c[1] - a[1]) * (d[0] - c[0])) / den;
+                    const u = ((c[0] - a[0]) * (b[1] - a[1]) - (c[1] - a[1]) * (b[0] - a[0])) / den;
+                    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+                        features.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])] } });
+                    }
+                }
+                return { type: 'FeatureCollection', features };
+            },
+            nearestPointOnLine: (line, pt) => {
+                const [a, b] = coordsOf(line);
+                const p = pt.geometry.coordinates;
+                const dx = b[0] - a[0];
+                const dy = b[1] - a[1];
+                const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy)));
+                return { type: 'Feature', properties: { location: t * Math.hypot(dx, dy) * SCALE }, geometry: { type: 'Point', coordinates: [a[0] + t * dx, a[1] + t * dy] } };
+            },
+            booleanPointInPolygon: (pt, zone) => {
+                const p = pt.geometry.coordinates;
+                const ring = zone.geometry.coordinates[0];
+                let inside = false;
+                for (let i = 0, j = ring.length - 2; i < ring.length - 1; j = i++) {
+                    const xi = ring[i][0];
+                    const yi = ring[i][1];
+                    const xj = ring[j][0];
+                    const yj = ring[j][1];
+                    if (((yi > p[1]) !== (yj > p[1])) && (p[0] < (xj - xi) * (p[1] - yi) / (yj - yi) + xi)) inside = !inside;
+                }
+                return inside;
+            }
+        };
+    }
+
+    function squareBuilding(id, lngMin, lngMax, latMin = -0.0001, latMax = 0.0001) {
+        return {
+            id,
+            feature: {
+                type: 'Feature',
+                properties: { id },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [[[lngMin, latMin], [lngMax, latMin], [lngMax, latMax], [lngMin, latMax], [lngMin, latMin]]]
+                }
+            }
+        };
+    }
+
+    const edgeFrom = { lat: 0, lng: 0 };
+    const edgeTo = { lat: 0, lng: 0.001 }; // 100 m in the fake world
+
+    it('splits the edge at the facades and tunnels only the inside part', () => {
+        const hit = squareBuilding('b1', 0.0004, 0.0006);
+        const plan = clipCorridorEdgeThroughBuildings(edgeFrom, edgeTo, [hit], 0, planarTurf());
+        expect(plan).toHaveLength(3);
+        expect(plan.map(sub => sub.inside)).toEqual([false, true, false]);
+        expect(plan[0].from).toEqual(edgeFrom); // endpoints preserved exactly
+        expect(plan[2].to).toEqual(edgeTo);
+        expect(plan[1].from.lng).toBeCloseTo(0.0004, 6);
+        expect(plan[1].to.lng).toBeCloseTo(0.0006, 6);
+        expect(plan[1].hits).toEqual([hit]);
+    });
+
+    it('handles several buildings on one edge as separate tunnels', () => {
+        const first = squareBuilding('b1', 0.0002, 0.0003);
+        const second = squareBuilding('b2', 0.0006, 0.0008);
+        const plan = clipCorridorEdgeThroughBuildings(edgeFrom, edgeTo, [first, second], 0, planarTurf());
+        expect(plan.map(sub => sub.inside)).toEqual([false, true, false, true, false]);
+        expect(plan[1].hits).toEqual([first]);
+        expect(plan[3].hits).toEqual([second]);
+    });
+
+    it('returns null when the centerline never enters a footprint', () => {
+        const grazing = squareBuilding('b1', 0.0004, 0.0006, 0.0002, 0.0004); // beside the line
+        expect(clipCorridorEdgeThroughBuildings(edgeFrom, edgeTo, [grazing], 0, planarTurf())).toBeNull();
+    });
+});
+
+// Partial demolition: a building straddling the demolition region loses only the inside part.
+describe('splitDemolitionFootprint', () => {
+    const { splitDemolitionFootprint } = require('../../frontend/js/corridor-tunnel.js');
+
+    // Planar fake turf: degrees ARE metres here, so areas come out in "square metres".
+    function planarAreaTurf() {
+        const ringArea = ring => {
+            let sum = 0;
+            for (let i = 0; i < ring.length - 1; i++) sum += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+            return Math.abs(sum / 2);
+        };
+        return {
+            intersect: (a, b) => {
+                // Axis-aligned rectangle intersection is enough for these fixtures.
+                const bbox = f => {
+                    const ring = f.geometry.coordinates[0];
+                    const xs = ring.map(c => c[0]);
+                    const ys = ring.map(c => c[1]);
+                    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+                };
+                const [ax1, ay1, ax2, ay2] = bbox(a);
+                const [bx1, by1, bx2, by2] = bbox(b);
+                const x1 = Math.max(ax1, bx1), y1 = Math.max(ay1, by1);
+                const x2 = Math.min(ax2, bx2), y2 = Math.min(ay2, by2);
+                if (x2 <= x1 || y2 <= y1) return null;
+                return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]] } };
+            },
+            difference: (a, b) => {
+                // Fixtures cut a rectangle by a half-plane rectangle: remainder is the leftover box.
+                const inter = planarAreaTurf().intersect(a, b);
+                if (!inter) return a;
+                const ringA = a.geometry.coordinates[0];
+                const ringI = inter.geometry.coordinates[0];
+                const [ax1, ay1, ax2, ay2] = [Math.min(...ringA.map(c => c[0])), Math.min(...ringA.map(c => c[1])), Math.max(...ringA.map(c => c[0])), Math.max(...ringA.map(c => c[1]))];
+                const [ix1, , ix2] = [Math.min(...ringI.map(c => c[0])), 0, Math.max(...ringI.map(c => c[0]))];
+                if (ix1 <= ax1 && ix2 >= ax2) return null; // fully consumed
+                const [rx1, rx2] = ix1 > ax1 ? [ax1, ix1] : [ix2, ax2];
+                return { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[rx1, ay1], [rx2, ay1], [rx2, ay2], [rx1, ay2], [rx1, ay1]]] } };
+            },
+            area: f => ringArea(f.geometry.coordinates[0])
+        };
+    }
+
+    const box = (x1, y1, x2, y2) => ({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1]]] } });
+
+    it('splits a straddling building into demolished part and remainder', () => {
+        const building = box(0, 0, 20, 10);   // 200 m²
+        const region = box(10, -5, 40, 15);   // covers the right half (100 m²)
+        const split = splitDemolitionFootprint(building, region, planarAreaTurf());
+        expect(split.full).toBe(false);
+        expect(split.demolishedPart).toBeTruthy();
+        expect(split.remainder).toBeTruthy();
+    });
+
+    it('demolishes fully when the remainder is a sliver', () => {
+        const building = box(0, 0, 20, 10);
+        const region = box(1, -5, 40, 15);    // leaves a 1 m strip (10 m² < max(10, 15%*200)=30)
+        const split = splitDemolitionFootprint(building, region, planarAreaTurf());
+        expect(split.full).toBe(true);
+    });
+
+    it('ignores a barely-touched building', () => {
+        const building = box(0, 0, 20, 10);
+        const region = box(19.9, 9.8, 40, 15); // clip ~0.02 m² < 2 m²
+        expect(splitDemolitionFootprint(building, region, planarAreaTurf())).toBeNull();
+    });
+});

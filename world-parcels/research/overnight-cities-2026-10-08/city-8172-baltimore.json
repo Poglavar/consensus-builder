@@ -1,0 +1,140 @@
+{
+  "name": "Baltimore",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 451,
+  "point": [
+    39.3242171668751,
+    -76.6248975263197
+  ],
+  "population2025": 1145219,
+  "population2025k": 1145.219,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_protocol_review",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The thirteen-cell native-CRS run passes 202 distinct valid geometries, forced paging, fresh exact identities, absence, footprint and binding. The wider actual desktop app load exposes additional cells with incomplete native-CRS count/ID manifests and source warnings. A separate sequential check of [-76.624,39.322,-76.623,39.323] reproduces count 61 versus 60 IDs. Runtime is held for wider viewport completeness; no count validation was weakened and no source polygons were filtered or repaired. Previous EPSG:4326 manifest and offset-page failures remain preserved.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Baltimore City operates the public EGIS Parcel polygon layer, and the exact WUP locator returned a point-intersecting city parcel polygon. This is direct local city-vector evidence.",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "technicalBlocker": "The thirteen-cell native-CRS run passes 202 distinct valid geometries, forced paging, fresh exact identities, absence, footprint and binding. The wider actual desktop app load exposes additional cells with incomplete native-CRS count/ID manifests and source warnings. A separate sequential check of [-76.624,39.322,-76.623,39.323] reproduces count 61 versus 60 IDs. Runtime is held for wider viewport completeness; no count validation was weakened and no source polygons were filtered or repaired. Previous EPSG:4326 manifest and offset-page failures remain preserved.",
+  "remainingUncertainty": "Longer-term OID stability and municipality-wide coverage/geometry quality were not verified.",
+  "nextStep": "Publisher/service completeness review is required before enabling normal app viewport queries.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Baltimore City official parcel map GIS parcel boundaries city EGIS",
+        "result": "Official Baltimore City EGIS exposes a polygon Parcel MapServer layer with schema-defined OBJECTID and BLOCKLOT keys; a point-intersection query with those two fields returned one feature containing the exact WUP point.",
+        "method": "Separate English search, official ArcGIS layer metadata review, then bounded geometry request with outFields=OBJECTID,BLOCKLOT."
+      },
+      {
+        "language": "English",
+        "query": "Baltimore City EGIS public parcel data MapServer parcel boundaries",
+        "result": "The City map service supports anonymous query/GeoJSON and polygon output. Metadata was reviewed before a single exact-point feature request; only OBJECTID, BLOCKLOT and geometry were requested.",
+        "method": "Second distinct English-language query and official service-layer review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer",
+        "observation": "Official Baltimore City EGIS parcel map service, layer geodata.EGISDATA.parcel."
+      },
+      {
+        "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0?f=pjson",
+        "observation": "Layer metadata (schema before data) identifies a Polygon layer, OBJECTID OID, safe BLOCKLOT identifier, and separate edit/user and other fields not requested."
+      },
+      {
+        "url": "https://data.baltimorecity.gov/",
+        "observation": "Official Baltimore City Open Data portal; service is on the City EGIS host."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Initial offset and EPSG:4326 manifest checks failed. Root native-CRS thirteen-cell qualification passed, but wider actual app view and a separate sequential native-CRS read reproduce incomplete manifests. The source is held.",
+      "geometryAttempted": true,
+      "geometryStatus": "HTTP 200, one point-intersecting polygon returned with safe outFields only",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 1,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "HTTP 200, one point-intersecting polygon returned with safe outFields only",
+      "retainedFeatures": 1,
+      "fieldsRequested": [
+        "OBJECTID",
+        "BLOCKLOT"
+      ],
+      "geometryRetained": true,
+      "geojsonFile": "city-8172-baltimore-samples.geojson"
+    }
+  },
+  "source": {
+    "name": "Baltimore City EGIS Parcel layer",
+    "operator": "Baltimore City Enterprise GIS",
+    "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0",
+    "geometryType": "Polygon",
+    "nativeIdFields": [
+      "BLOCKLOT"
+    ],
+    "transportIdFields": [
+      "OBJECTID"
+    ],
+    "requestedAttributes": [
+      "OBJECTID",
+      "BLOCKLOT"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "The thirteen-cell native-CRS run passes 202 distinct valid geometries, forced paging, fresh exact identities, absence, footprint and binding. The wider actual desktop app load exposes additional cells with incomplete native-CRS count/ID manifests and source warnings. A separate sequential check of [-76.624,39.322,-76.623,39.323] reproduces count 61 versus 60 IDs. Runtime is held for wider viewport completeness; no count validation was weakened and no source polygons were filtered or repaired. Previous EPSG:4326 manifest and offset-page failures remain preserved.",
+    "nativeIdField": "OBJECTID",
+    "nativeIdEvidence": "Publisher OID declaration; all 202 fresh exact reads reproduce geometry."
+  },
+  "sourceIds": [
+    "us-md-baltimore-city-parcel"
+  ],
+  "queueRank": 451,
+  "wupCityCode": 8172,
+  "cityId": "wup2025:8172",
+  "centerLatLon": [
+    39.3242171668751,
+    -76.6248975263197
+  ],
+  "verifiedSampleFile": "city-8172-baltimore-samples.geojson",
+  "adapterReady": false,
+  "coverageAssessment": {
+    "verifiedOpenScope": "The thirteen-cell native-CRS run passes 202 distinct valid geometries, forced paging, fresh exact identities, absence, footprint and binding. The wider actual desktop app load exposes additional cells with incomplete native-CRS count/ID manifests and source warnings. A separate sequential check of [-76.624,39.322,-76.623,39.323] reproduces count 61 versus 60 IDs. Runtime is held for wider viewport completeness; no count validation was weakened and no source polygons were filtered or repaired. Previous EPSG:4326 manifest and offset-page failures remain preserved.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer",
+    "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0?f=pjson",
+    "https://data.baltimorecity.gov/"
+  ],
+  "runtimeAssessment": {
+    "status": "held_protocol_review",
+    "reason": "The thirteen-cell native-CRS run passes 202 distinct valid geometries, forced paging, fresh exact identities, absence, footprint and binding. The wider actual desktop app load exposes additional cells with incomplete native-CRS count/ID manifests and source warnings. A separate sequential check of [-76.624,39.322,-76.623,39.323] reproduces count 61 versus 60 IDs. Runtime is held for wider viewport completeness; no count validation was weakened and no source polygons were filtered or repaired. Previous EPSG:4326 manifest and offset-page failures remain preserved.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/baltimore-root-native-acceptance.json",
+    "widerProbeFile": "research/overnight-cities-2026-10-08/baltimore-wider-native-probe.json",
+    "browserCheckFile": "research/overnight-cities-2026-10-08/baltimore-browser-check.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/baltimore-root-quality.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-md-baltimore-city-parcel",
+    "status": "held_protocol_review",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/baltimore-root-native-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/baltimore-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T00:31:15.859566+00:00"
+}

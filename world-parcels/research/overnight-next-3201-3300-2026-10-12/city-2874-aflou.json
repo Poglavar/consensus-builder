@@ -1,0 +1,110 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 2874,
+  "queueRank": 3256,
+  "name": "Aflou",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "point": [34.1098418150604, 2.09913232769948],
+  "population2025": 185069,
+  "population2025k": 185.069,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Aflou Algeria cadastral map parcel cadastre official",
+        "result": "First-party discovery found the official Wilaya de Laghouat Aflou commune page and the official Algerian national land/cadastre service context, but no Aflou parcel viewer or anonymous parcel vector response.",
+        "actualResultUrls": [
+          "https://www.wilaya-laghouat.dz/CTOIC/Fr/Data/Dossier_html/0319/index.html",
+          "https://www.mfdgi.gov.dz/fr/particuliers/taxe-fonciere-sur-les-proprietes-baties-et-non-baties",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+        ]
+      },
+      {
+        "language": "French (native/local-language discovery)",
+        "query": "Algérie Aflou cadastre carte parcelles site officiel",
+        "result": "French discovery found the official Wilaya de Laghouat Aflou commune and territorial pages, plus the official ASGA cartographic viewer and national land-service references. The results establish administrative/cartographic context only; no city-scoped cadastral parcel API or safe ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.wilaya-laghouat.dz/CTOIC/Fr/Data/Dossier_html/0319/index.html",
+          "https://www.wilaya-laghouat.dz/CTOIC/Fr/Data/Synthese_wilaya.pdf",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+          "https://dzds.online/service/extrait-plan-cadastral-dgdn"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": "Official Wilaya de Laghouat pages identify Aflou as commune code 0319 and provide administrative boundaries and general development information. The official ASGA viewer is general cartography at 1:200,000, not evidence of a local cadastral parcel service. National land/cadastre service references were not city-scoped. Therefore local cadastral custody/service evidence remains unresolved and registryFound is null.",
+  "officialSources": [
+    {
+      "url": "https://www.wilaya-laghouat.dz/CTOIC/Fr/Data/Dossier_html/0319/index.html",
+      "observation": "First-party Wilaya de Laghouat page for the commune of Aflou; gives ONS code 0319, 405 km2 area, and commune boundaries, but no parcel layer or cadastral API."
+    },
+    {
+      "url": "https://www.wilaya-laghouat.dz/CTOIC/Fr/Data/Synthese_wilaya.pdf",
+      "observation": "First-party Wilaya territorial synthesis; places Aflou in the Aflou administrative district and provides broad territorial context, not parcel geometry."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "observation": "Official ASGA InfoGéolAlgérie 1:200,000 cartographic viewer; visible layers include boundaries, communes, relief and raster cartography, with no observed cadastral parcel layer in the fetched/indexed content."
+    },
+    {
+      "url": "https://www.mfdgi.gov.dz/fr/particuliers/taxe-fonciere-sur-les-proprietes-baties-et-non-baties",
+      "observation": "Official Ministry of Finance page describing national property-tax administration; general legal/service context, not an Aflou cadastral map or parcel API."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Official Wilaya de Laghouat Aflou administrative context and ASGA general cartography; no qualified public cadastral parcel service",
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.wilaya-laghouat.dz/CTOIC/Fr/Data/Dossier_html/0319/index.html",
+      "outcome": "TLS-default GET/search fetch succeeded. The page identified Aflou and administrative facts but returned no parcel schema, native parcel IDs, or parcel geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.wilaya-laghouat.dz/CTOIC/Fr/Data/Synthese_wilaya.pdf",
+      "outcome": "First-party indexed result identified Aflou district/commune context. No parcel feature response was exposed or retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "outcome": "TLS-default curl timed out after 20 seconds before HTML/configuration or map-service metadata was received. No login, credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mfdgi.gov.dz/fr/particuliers/taxe-fonciere-sur-les-proprietes-baties-et-non-baties",
+      "outcome": "First-party search result returned national property-tax guidance. It did not provide a city-scoped parcel map or public geometry service."
+    },
+    {
+      "method": "GET",
+      "url": "https://dzds.online/service/extrait-plan-cadastral-dgdn",
+      "outcome": "Search result described a cadastral-plan extract request attributed to DGDN, but this is a secondary service-description page and not an anonymous parcel geometry endpoint; no request for unsafe records or login was made."
+    }
+  ],
+  "schemaAndCrs": {
+    "observedService": "No parcel service response obtained.",
+    "geometryType": null,
+    "crs": null,
+    "nativeIdentityCandidates": [],
+    "qualification": "No bounded anonymous ID-plus-polygon response was observed, so schema, CRS, native identity, and citywide coverage are unqualified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Aflou city queue point and the official Wilaya de Laghouat/ASGA discovery leads.",
+    "verifiedOpenScope": "Administrative and general cartographic context only; no open parcel geometry or local cadastral service was qualified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The ASGA viewer may have additional current JavaScript/configuration or map services that were unavailable after timeout, and Algeria's DGDN/local services may provide cadastral plans through authenticated or office-mediated procedures. The exact WUP point was preserved and not used as an absence test. No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested. No GeoJSON sample is retained because no safe native parcel identity and full parcel polygon were observed. This packet is research evidence only and is not source integration or admission.",
+  "completionSummary": {"packetComplete": true, "registryFound": null, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

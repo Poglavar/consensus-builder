@@ -1,0 +1,147 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "US-PA-PHILADELPHIA-DOR-014N080161",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.1623550753328,
+              39.9796306642007
+            ],
+            [
+              -75.1624130460496,
+              39.9793688502497
+            ],
+            [
+              -75.1624774509571,
+              39.9793769546189
+            ],
+            [
+              -75.1624190884979,
+              39.9796387588631
+            ],
+            [
+              -75.1623550753328,
+              39.9796306642007
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-PA-PHILADELPHIA-DOR-014N080161",
+        "id": "US-PA-PHILADELPHIA-DOR-014N080161",
+        "sourceId": "us-pa-philadelphia-dor-active-ground",
+        "sourceParcelId": "014N080161",
+        "parcelNumber": "014N080161",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "objectid": 6843,
+          "mapreg": "014N080161",
+          "status": 1,
+          "elev_flag": 0
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-PA-PHILADELPHIA-DOR-014N080099",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.161823927171,
+              39.9799733770753
+            ],
+            [
+              -75.1618335189774,
+              39.9799307590761
+            ],
+            [
+              -75.1620837484374,
+              39.9799631623121
+            ],
+            [
+              -75.1620751247716,
+              39.9800059499274
+            ],
+            [
+              -75.161823927171,
+              39.9799733770753
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-PA-PHILADELPHIA-DOR-014N080099",
+        "id": "US-PA-PHILADELPHIA-DOR-014N080099",
+        "sourceId": "us-pa-philadelphia-dor-active-ground",
+        "sourceParcelId": "014N080099",
+        "parcelNumber": "014N080099",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "objectid": 38714,
+          "mapreg": "014N080099",
+          "status": 1,
+          "elev_flag": 0
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-PA-PHILADELPHIA-DOR-014N080088",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -75.1619722152503,
+              39.9795807290851
+            ],
+            [
+              -75.1620315465505,
+              39.9793186855837
+            ],
+            [
+              -75.1620950838198,
+              39.9793271814669
+            ],
+            [
+              -75.1620368034632,
+              39.9795887297101
+            ],
+            [
+              -75.1620058537188,
+              39.9795849647004
+            ],
+            [
+              -75.1619722152503,
+              39.9795807290851
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-PA-PHILADELPHIA-DOR-014N080088",
+        "id": "US-PA-PHILADELPHIA-DOR-014N080088",
+        "sourceId": "us-pa-philadelphia-dor-active-ground",
+        "sourceParcelId": "014N080088",
+        "parcelNumber": "014N080088",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "objectid": 47850,
+          "mapreg": "014N080088",
+          "status": 1,
+          "elev_flag": 0
+        }
+      }
+    }
+  ]
+}

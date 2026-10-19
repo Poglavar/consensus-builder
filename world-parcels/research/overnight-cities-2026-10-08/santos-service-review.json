@@ -1,0 +1,189 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7505-santos.json",
+  "purpose": "Document local registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official SIGSantos WFS qualification completed on 13 aligned 0.001° cells and four adjacent pans using only `GEOM,lote`. All 13 raw collection member counts matched numberMatched and numberReturned. The existing adapter passed all 13 cells, fresh reads for all 171 distinct native lote IDs, exact explicit absence, full parcel footprint lookup and proposal binding. It failed forced pageSize=3 because its hardcoded `sortBy=lote` is non-unique and the provider repeated FIDs across sorted offsets. The WFS itself supports count/startIndex paging when sortBy is omitted (62/62 unique FIDs over 21 pages), but this existing adapter cannot express that contract. Runtime remains disabled pending a safe pagination/identity contract.",
+  "registryAssessment": "The municipal SIGSantos portal publishes an official `santos:lotes` Polygon WFS layer. `DescribeFeatureType` reports `lote` as a string and `GEOM` as geometry, alongside additional non-requested fields. The bounded query requested only `GEOM,lote`. The native `lote` value repeats across distinct FIDs in 40 groups, although tested same-lote copies had equal geometry; it must not be used as a unique stable sort key.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.santos.sp.gov.br/?q=servico%2Fsantos-mapeada",
+      "observation": "The municipal mapping portal identifies SIGSantos as a city system; official public article describes digital information about lots. WFS schema safely exposes lote ID and geometry. No owner/address attributes requested."
+    },
+    {
+      "url": "https://www.santos.sp.gov.br/?q=noticia%2Fsantos-abre-acesso-digital-a-informacoes-sobre-uso-e-ocupacao-de-lotes",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/santosmapeada/",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Portuguese",
+      "query": "Santos SP cadastro imobiliário mapa de lotes geoprocessamento prefeitura",
+      "result": "Found the official SIGSantos/Santos Mapeada city mapping service and parcel-layer evidence.",
+      "method": "Separate Portuguese-language discovery search and first-party portal review."
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:santos.sp.gov.br \"Santos Mapeada\" cadastro mapa lotes cadastro imobiliário",
+      "result": "Found city information describing digital lot/use information and Santos Mapeada.",
+      "method": "Separate targeted Portuguese-language search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "WFS GetCapabilities and DescribeFeatureType; schema-first review",
+      "httpStatus": 200,
+      "observation": "Official layer `santos:lotes` (“Lotes Oficiais”), Polygon, CRS EPSG:31983 source geometry; `lote:string`, `GEOM:GeometryPropertyType`. Only GEOM,lote requested in feature queries."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "Existing repository WFS adapter, 13 aligned .001° cells plus four adjacent pans; WFS 2.0.0, count=1000",
+      "httpStatus": 200,
+      "observation": "All 13 complete cell queries passed; raw `numberMatched`, `numberReturned` and actual members agreed in every cell. 419 cell occurrences, 257 distinct GeoServer FIDs, 171 distinct native lote values."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "Existing repository WFS adapter with forced pageSize=3; sorted by native `lote`",
+      "httpStatus": 200,
+      "observation": "Adapter rejected offset pages because offsets 0 and 3 repeated transport FIDs (`lotes.49845` and `lotes.49843`) where the non-unique lote sort tied. Do not treat the adapter’s partial pages as complete."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "Direct bounded WFS 2.0.0 `count=3,startIndex=0..60`, safe fields GEOM,lote; sortBy omitted",
+      "httpStatus": 200,
+      "observation": "Default-order paging completed 62 of 62 rows over 21 pages, with 62 unique FIDs and stable declared counts. Existing adapter cannot express this no-sort contract."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "Existing repository WFS adapter; fresh exact native lote reads for all 171 distinct IDs in bounded union",
+      "httpStatus": 200,
+      "observation": "Five bounded ID batches completed; every returned canonical geometry hash matched the grid result. Repeated source rows sharing a native lote were exact geometry copies in the responses reviewed."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "Existing repository WFS adapter; complete empty query for native-shaped lote 999999999999999",
+      "httpStatus": 200,
+      "observation": "Returned complete empty feature collection and explicit absent ID."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "Existing repository WFS adapter full selected-parcel footprint query",
+      "httpStatus": 200,
+      "observation": "Parcel BR-SANTOS-LOTE-55042037 returned with its exact geometry hash."
+    },
+    {
+      "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+      "method": "computeSourceBinding against selected full parcel footprint, tolerance 0",
+      "httpStatus": 200,
+      "observation": "Complete binding, 317.38 m² site, one bound parcel."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-7505-santos-samples.geojson",
+    "featureCount": 3,
+    "attributes": [
+      "lote"
+    ],
+    "geometryType": "Polygon",
+    "crs": "WGS84",
+    "exactLocatorFeature": true,
+    "exactFeatureId": "lotes.20499",
+    "exactNativeLote": "55044022",
+    "originalPointGeometryHashMatched": true
+  },
+  "privacy": "Every bounded feature request selected only GEOM and native lote; no owner, address, numero, street, legal-description or credentials data were requested or retained. Full raw geometries and QA products remain under /tmp; the repository retains only three sample polygons.",
+  "runtimeAssessment": "not_enabled_current_wfs_adapter_pagination_ordering_incompatible",
+  "qualification": {
+    "status": "bounded_local_geometry_verified_runtime_blocked",
+    "grid": {
+      "alignedCells": 9,
+      "adjacentPans": 4,
+      "gridStepDegrees": 0.001,
+      "rawCellOccurrences": 419,
+      "uniqueWfsFids": 257,
+      "uniqueNativeLoteStrings": 171,
+      "cellCountsAllMatched": true
+    },
+    "adapterChecks": {
+      "freshIds": {
+        "status": "pass",
+        "distinctNativeIds": 171,
+        "batches": 5,
+        "allGeometryHashesMatched": true
+      },
+      "explicitAbsence": {
+        "status": "pass",
+        "nativeId": "999999999999999"
+      },
+      "footprint": {
+        "status": "pass",
+        "parcelId": "BR-SANTOS-LOTE-55042037",
+        "complete": true,
+        "geometryHashMatched": true
+      },
+      "proposalBinding": {
+        "status": "pass",
+        "coverage": "complete",
+        "siteM2": 317.38,
+        "boundParcels": 1
+      },
+      "forcedThreeRow": {
+        "status": "fail_current_adapter",
+        "reason": "Adapter hardcodes sortBy=lote; repeated native values cause overlapping FID sets across startIndex offsets."
+      },
+      "directNoSortPagination": {
+        "status": "pass",
+        "rows": 62,
+        "pages": 21,
+        "uniqueFids": 62,
+        "numberMatchedAndNumberReturnedMatched": true
+      }
+    },
+    "identityAssessment": {
+      "duplicateNativeLoteGroups": 40,
+      "rowsInGroups": 126,
+      "distinctWfsFids": 257,
+      "distinctNativeLoteValues": 171,
+      "testedSameLoteCopiesHadIdenticalGeometry": true
+    },
+    "geosQa": {
+      "artifact": "/tmp/overnight-cities-2026-10-08/santos-sigsantos-quality.json",
+      "metricCrs": "EPSG:32723",
+      "engine": "GEOS 3.14.1",
+      "inputDistinctWfsFids": 257,
+      "valid": 257,
+      "invalid": 0,
+      "topologicalDuplicateGeometryPairs": 229,
+      "positiveAreaOverlapPairsAbove0_01M2": 341,
+      "sumPairwiseOverlapM2": 1191722.8010345676,
+      "operationErrors": 0,
+      "metricUnionValid": true,
+      "metricUnionAreaM2": 177594.52903461913
+    },
+    "neededAdapterContract": "Support a WFS source with no sortBy (verified stable default-order count/startIndex paging) or a truly unique server-side sortable identity. Native lote is a parcel label but not unique among source rows, so it cannot be the generic adapter sort key. Preserve exact GEOM,lote selection and explicit count/member checks."
+  },
+  "tempAuditArtifacts": [
+    "/tmp/overnight-cities-2026-10-08/santos-sigsantos-acceptance-working.json",
+    "/tmp/overnight-cities-2026-10-08/santos-sigsantos-cache.geojson",
+    "/tmp/overnight-cities-2026-10-08/santos-raw-bounded-union-wgs84.geojson",
+    "/tmp/overnight-cities-2026-10-08/santos-raw-bounded-union-epsg32723.geojson",
+    "/tmp/overnight-cities-2026-10-08/santos-sigsantos-quality.json"
+  ]
+}

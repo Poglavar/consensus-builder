@@ -1,0 +1,92 @@
+{
+  "cityCode": 711,
+  "queueRank": 2310,
+  "name": "Rosetta",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [31.414022203023, 30.4118705722093],
+  "population2025": 252147,
+  "population2025k": 252.147,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rosetta Egypt official cadastral parcel map GIS API Survey of Egypt",
+        "result": "Search identified the Egyptian Survey Authority (ESA) as the first-party land-survey/cadastral custodian. Its public pages describe digital-map sales and cadastral/land-map services, but no public Rosetta parcel viewer or anonymous parcel API was exposed.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "رشيد مصر خريطة كادسترية قطع الأراضي الهيئة المصرية العامة للمساحة GIS",
+        "result": "البحث العربي أعاد صفحات الهيئة المصرية العامة للمساحة عن الخرائط الرقمية والخدمات المساحية؛ لم يُعثر على عارض عام أو واجهة API مجهولة لقطع الأراضي في رشيد. ظهر EGYLandscape كعارض تاريخي للتواصيف والحدود، وليس مصدراً كادسترياً حديثاً.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://egylandscape.huma-num.fr/map.html"
+        ]
+      }
+    ],
+    "attemptedRoutes": [
+      {
+        "route": "ESA services landing page",
+        "url": "https://www.esa.gov.eg/services.aspx",
+        "outcome": "HTTP GET succeeded; service list includes digital maps, coordinate certificates, boundary separation, and land-allocation change procedures, but no public parcel query endpoint."
+      },
+      {
+        "route": "ESA digital map sales page",
+        "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "outcome": "HTTP GET succeeded; page says digital GIS/CAD maps are requested for a specified location, scale, layers, and projection through the authority. It is a procurement/contact workflow, not an anonymous viewer/API."
+      },
+      {
+        "route": "National eGIS ArcGIS catalog",
+        "url": "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson",
+        "outcome": "HTTP GET succeeded; catalog was inspected for parcel/cadastre/Rosetta services. No clearly identified public parcel layer was found."
+      },
+      {
+        "route": "National eGIS MOC_DELayer service metadata",
+        "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer?f=pjson",
+        "outcome": "HTTP GET succeeded; layers are Entities and Egy. Layer Egy is an administrative polygon layer with OBJECTID, names/codes, and geometry, not parcel fabric."
+      },
+      {
+        "route": "Bounded exact-point anonymous query",
+        "url": "https://www.egis.idsc.gov.eg/server/rest/services/MOC_DELayer/MapServer/1/query",
+        "outcome": "GET query using the exact WUP point, inSR/outSR 4326, esriSpatialRelIntersects, where=1=1, outFields=OBJECTID, returnGeometry=true returned one broad administrative polygon (OBJECTID 10). It did not return a parcel, and is not evidence of citywide parcel absence."
+      },
+      {
+        "route": "Historical EGYLandscape viewer",
+        "url": "https://egylandscape.huma-num.fr/map.html",
+        "outcome": "Search result identifies historical toponym, village-boundary, island, and historical-map downloads based on Survey of Egypt circa 1913 material; not a modern cadastral parcel source. No parcel request made."
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": "Egyptian Survey Authority (الهيئة المصرية العامة للمساحة), evidenced by its own service pages and description of land/ownership mapping responsibilities.",
+    "localRosettaRegistry": null,
+    "nationalGeneralAgency": "IDSC national eGIS ArcGIS catalog was checked as a general government GIS source; its returned administrative layer is not a Rosetta cadastral registry.",
+    "parcelSource": null,
+    "schemaCrs": "The inspected MOC_DELayer administrative layer advertises WGS 84 / EPSG:4326 for the query response. No parcel-layer schema was found.",
+    "nativeIdentity": null,
+    "fieldAllowlist": ["OBJECTID", "geometry"],
+    "unsafeFieldsExcluded": true,
+    "compositeKeyProvenance": null,
+    "sampleFeatureCount": 0
+  },
+  "runtimeReadiness": {
+    "state": "held",
+    "reason": "No independently qualified public parcel adapter or parcel layer was evidenced. This packet is research evidence only and is not source integration/admission."
+  },
+  "uncertainty": [
+    "ESA may hold Rosetta cadastral data behind a procurement, request, or non-public workflow; the public site does not establish anonymous API access.",
+    "The exact-point administrative hit is bounded evidence for that endpoint only and cannot establish citywide presence or absence of parcels.",
+    "No parcel geometry is retained because no safe native parcel identity plus parcel polygon was obtained."
+  ]
+}

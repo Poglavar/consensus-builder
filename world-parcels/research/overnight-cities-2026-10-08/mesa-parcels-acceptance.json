@@ -1,0 +1,2035 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T23:12:55.654Z",
+  "city": "mesa-city-parcels-final",
+  "descriptor": {
+    "id": "us-az-mesa-city-parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0",
+    "idPrefix": "US-MESA-CITY-",
+    "idField": "APN",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "APN"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -111.809,
+        33.378,
+        -111.808,
+        33.379
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -111.808,
+        33.378,
+        -111.807,
+        33.379
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -111.807,
+        33.378,
+        -111.806,
+        33.379
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -111.809,
+        33.379,
+        -111.808,
+        33.38
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -111.808,
+        33.379,
+        -111.807,
+        33.38
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -111.807,
+        33.379,
+        -111.806,
+        33.38
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -111.809,
+        33.38,
+        -111.808,
+        33.381
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -111.808,
+        33.38,
+        -111.807,
+        33.381
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -111.807,
+        33.38,
+        -111.806,
+        33.381
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -111.808,
+        33.377,
+        -111.807,
+        33.378
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -111.808,
+        33.381,
+        -111.807,
+        33.382
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -111.81,
+        33.379,
+        -111.809,
+        33.38
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -111.806,
+        33.379,
+        -111.805,
+        33.38
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1400,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        -111.809,
+        33.378,
+        -111.808,
+        33.379
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-30212519A",
+          "geometrySha256": "533e3d5f7c0c3fa23a4e51677d2c08890eae9d7a0fcb8904b8193a5e65c26d39"
+        },
+        {
+          "id": "US-MESA-CITY-30212002V",
+          "geometrySha256": "762a1595181d61bfcb1bd3d314559a0b7ee7da4d46e1f1c094753102862598d5"
+        },
+        {
+          "id": "US-MESA-CITY-30212520",
+          "geometrySha256": "23e6c1d1267e47829991eb3c312f5e84d27cca51bc278ac8ef367f5bd6fa10aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 987,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        -111.808,
+        33.378,
+        -111.807,
+        33.379
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-31401005",
+          "geometrySha256": "090c8eba53a8800edef947af0ebe8bcea0efa7aef68b73890ad51f0ed2c207e9"
+        },
+        {
+          "id": "US-MESA-CITY-31401001",
+          "geometrySha256": "eedb13dbd49e0162f26a227b6e8188ff3892de7e9774ec3815680e7182c3af64"
+        },
+        {
+          "id": "US-MESA-CITY-30212002V",
+          "geometrySha256": "762a1595181d61bfcb1bd3d314559a0b7ee7da4d46e1f1c094753102862598d5"
+        },
+        {
+          "id": "US-MESA-CITY-30212520",
+          "geometrySha256": "23e6c1d1267e47829991eb3c312f5e84d27cca51bc278ac8ef367f5bd6fa10aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 896,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        -111.807,
+        33.378,
+        -111.806,
+        33.379
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-31401005",
+          "geometrySha256": "090c8eba53a8800edef947af0ebe8bcea0efa7aef68b73890ad51f0ed2c207e9"
+        },
+        {
+          "id": "US-MESA-CITY-31401001",
+          "geometrySha256": "eedb13dbd49e0162f26a227b6e8188ff3892de7e9774ec3815680e7182c3af64"
+        },
+        {
+          "id": "US-MESA-CITY-31401002",
+          "geometrySha256": "33c2c2ada3c9147b513a4e936c96c47216ca9cb762b83c2b25ddaf3c3fcca7c1"
+        },
+        {
+          "id": "US-MESA-CITY-31401006",
+          "geometrySha256": "ac8d8645f4d6ad0472866db268ff851c3c4eb3cc0142fada81d57acd3b0b4e47"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 1251,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        -111.809,
+        33.379,
+        -111.808,
+        33.38
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13911001N",
+          "geometrySha256": "610edf0f6c05ce663c4aef53308a66bf3bc78426659ea7f8e0593988dd41f447"
+        },
+        {
+          "id": "US-MESA-CITY-13911001P",
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "id": "US-MESA-CITY-13911094",
+          "geometrySha256": "2d4cdbe18e6a3b7f838e577412a188845fe9bdbdd3b719d5c80e7cf30653b4e4"
+        },
+        {
+          "id": "US-MESA-CITY-13911095",
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "id": "US-MESA-CITY-13911097C",
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 880,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        -111.808,
+        33.379,
+        -111.807,
+        33.38
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13911001R",
+          "geometrySha256": "4ad52f92c646f23cf152b903b61254fd8ac0129bfd738d986f5a0120ebb0dc89"
+        },
+        {
+          "id": "US-MESA-CITY-13911001P",
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "id": "US-MESA-CITY-13910020",
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        },
+        {
+          "id": "US-MESA-CITY-13911095",
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1228,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        -111.807,
+        33.379,
+        -111.806,
+        33.38
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13911001R",
+          "geometrySha256": "4ad52f92c646f23cf152b903b61254fd8ac0129bfd738d986f5a0120ebb0dc89"
+        },
+        {
+          "id": "US-MESA-CITY-13910021",
+          "geometrySha256": "62772ecfecd5be24516b972a9b641cb719df7ef30850afc93e1cb0f024815d89"
+        },
+        {
+          "id": "US-MESA-CITY-13910020",
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 1247,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        -111.809,
+        33.38,
+        -111.808,
+        33.381
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13911095",
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "id": "US-MESA-CITY-13911097C",
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 902,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -111.808,
+        33.38,
+        -111.807,
+        33.381
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13911095",
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "id": "US-MESA-CITY-13911097C",
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        },
+        {
+          "id": "US-MESA-CITY-13911001Q",
+          "geometrySha256": "32d4f36ef6781cb2fc7091eedbb2c92ad7a46c33ae46c261fce3a8337815bfc6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1206,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        -111.807,
+        33.38,
+        -111.806,
+        33.381
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13910020",
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        },
+        {
+          "id": "US-MESA-CITY-13910016",
+          "geometrySha256": "96e687ed8980af92bbd0cff3d55aeb8422f168b62a8fb0c707dcf919c9880404"
+        },
+        {
+          "id": "US-MESA-CITY-13910019",
+          "geometrySha256": "5e7453459e5ee9f0e37ac8b638626b5c409a2f3a8728e78c32ac52529b7d69b1"
+        },
+        {
+          "id": "US-MESA-CITY-13910018A",
+          "geometrySha256": "d94e42d7a3be54d683c564d3a981b48cef85e901041efd74220f2a5dc8a7b565"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 879,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        -111.808,
+        33.377,
+        -111.807,
+        33.378
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-30212519A",
+          "geometrySha256": "533e3d5f7c0c3fa23a4e51677d2c08890eae9d7a0fcb8904b8193a5e65c26d39"
+        },
+        {
+          "id": "US-MESA-CITY-31401005",
+          "geometrySha256": "090c8eba53a8800edef947af0ebe8bcea0efa7aef68b73890ad51f0ed2c207e9"
+        },
+        {
+          "id": "US-MESA-CITY-30212520",
+          "geometrySha256": "23e6c1d1267e47829991eb3c312f5e84d27cca51bc278ac8ef367f5bd6fa10aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 890,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        -111.808,
+        33.381,
+        -111.807,
+        33.382
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13911097C",
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        },
+        {
+          "id": "US-MESA-CITY-13911001Q",
+          "geometrySha256": "32d4f36ef6781cb2fc7091eedbb2c92ad7a46c33ae46c261fce3a8337815bfc6"
+        },
+        {
+          "id": "US-MESA-CITY-13911001K",
+          "geometrySha256": "4f1b01bfbe131273fd1c8a5ec93366c27ffa7cec1c97b7463a9fe0dd8995760e"
+        },
+        {
+          "id": "US-MESA-CITY-13911097B",
+          "geometrySha256": "08b0b0136170f240f5430297c8c4ff4b9ee7e9c5bb4629c0e5cb4f20998be1a5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 899,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        -111.81,
+        33.379,
+        -111.809,
+        33.38
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13911094",
+          "geometrySha256": "2d4cdbe18e6a3b7f838e577412a188845fe9bdbdd3b719d5c80e7cf30653b4e4"
+        },
+        {
+          "id": "US-MESA-CITY-13911097C",
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 885,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        -111.806,
+        33.379,
+        -111.805,
+        33.38
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-MESA-CITY-13910021",
+          "geometrySha256": "62772ecfecd5be24516b972a9b641cb719df7ef30850afc93e1cb0f024815d89"
+        },
+        {
+          "id": "US-MESA-CITY-13910017",
+          "geometrySha256": "3f9ad928e7ee1d5a7267e915db943e20b7a1e8f36b70d6a090e2784e9a3d6aa0"
+        },
+        {
+          "id": "US-MESA-CITY-13910022",
+          "geometrySha256": "83eb241ff3cd7ca877b2ea9fad80ae4271d6c874daa06ca23259e5c0add08ca4"
+        },
+        {
+          "id": "US-MESA-CITY-13910020",
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        },
+        {
+          "id": "US-MESA-CITY-13910016",
+          "geometrySha256": "96e687ed8980af92bbd0cff3d55aeb8422f168b62a8fb0c707dcf919c9880404"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1216,
+      "requestIndexes": [
+        39,
+        42
+      ],
+      "count": 5,
+      "geometryPages": 2,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 899,
+      "requestIndexes": [
+        43,
+        45
+      ],
+      "count": 23,
+      "ids": [
+        "US-MESA-CITY-13910016",
+        "US-MESA-CITY-13910017",
+        "US-MESA-CITY-13910018A",
+        "US-MESA-CITY-13910019",
+        "US-MESA-CITY-13910020",
+        "US-MESA-CITY-13910021",
+        "US-MESA-CITY-13910022",
+        "US-MESA-CITY-13911001K",
+        "US-MESA-CITY-13911001N",
+        "US-MESA-CITY-13911001P",
+        "US-MESA-CITY-13911001Q",
+        "US-MESA-CITY-13911001R",
+        "US-MESA-CITY-13911094",
+        "US-MESA-CITY-13911095",
+        "US-MESA-CITY-13911097B",
+        "US-MESA-CITY-13911097C",
+        "US-MESA-CITY-30212002V",
+        "US-MESA-CITY-30212519A",
+        "US-MESA-CITY-30212520",
+        "US-MESA-CITY-31401001",
+        "US-MESA-CITY-31401002",
+        "US-MESA-CITY-31401005",
+        "US-MESA-CITY-31401006"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 584,
+      "requestIndexes": [
+        46,
+        47
+      ],
+      "absentIds": [
+        "US-MESA-CITY-00000000"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1126,
+      "requestIndexes": [
+        48,
+        50
+      ],
+      "selectedParcelId": "US-MESA-CITY-13911095",
+      "count": 5,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 1006,
+      "requestIndexes": [
+        51,
+        53
+      ],
+      "selectedParcelId": "US-MESA-CITY-13911095",
+      "coverage": "complete",
+      "siteM2": 6744.46,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.378%2C-111.808%2C33.379&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:55.655Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.378%2C-111.808%2C33.379&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:56.311Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 67,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        175163,
+        175174,
+        175178
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=175163%2C175174%2C175178",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:56.764Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2109,
+      "features": [
+        {
+          "transportId": 175163,
+          "properties": {
+            "OBJECTID": 175163,
+            "APN": "30212519A"
+          },
+          "geometrySha256": "533e3d5f7c0c3fa23a4e51677d2c08890eae9d7a0fcb8904b8193a5e65c26d39"
+        },
+        {
+          "transportId": 175174,
+          "properties": {
+            "OBJECTID": 175174,
+            "APN": "30212002V"
+          },
+          "geometrySha256": "762a1595181d61bfcb1bd3d314559a0b7ee7da4d46e1f1c094753102862598d5"
+        },
+        {
+          "transportId": 175178,
+          "properties": {
+            "OBJECTID": 175178,
+            "APN": "30212520"
+          },
+          "geometrySha256": "23e6c1d1267e47829991eb3c312f5e84d27cca51bc278ac8ef367f5bd6fa10aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.378%2C-111.807%2C33.379&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:57.056Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.378%2C-111.807%2C33.379&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:57.460Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 74,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        175164,
+        175167,
+        175174,
+        175178
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=175164%2C175167%2C175174%2C175178",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:57.747Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1648,
+      "features": [
+        {
+          "transportId": 175164,
+          "properties": {
+            "OBJECTID": 175164,
+            "APN": "31401005"
+          },
+          "geometrySha256": "090c8eba53a8800edef947af0ebe8bcea0efa7aef68b73890ad51f0ed2c207e9"
+        },
+        {
+          "transportId": 175167,
+          "properties": {
+            "OBJECTID": 175167,
+            "APN": "31401001"
+          },
+          "geometrySha256": "eedb13dbd49e0162f26a227b6e8188ff3892de7e9774ec3815680e7182c3af64"
+        },
+        {
+          "transportId": 175174,
+          "properties": {
+            "OBJECTID": 175174,
+            "APN": "30212002V"
+          },
+          "geometrySha256": "762a1595181d61bfcb1bd3d314559a0b7ee7da4d46e1f1c094753102862598d5"
+        },
+        {
+          "transportId": 175178,
+          "properties": {
+            "OBJECTID": 175178,
+            "APN": "30212520"
+          },
+          "geometrySha256": "23e6c1d1267e47829991eb3c312f5e84d27cca51bc278ac8ef367f5bd6fa10aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.807%2C33.378%2C-111.806%2C33.379&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.042Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.807%2C33.378%2C-111.806%2C33.379&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.344Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 74,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        175164,
+        175167,
+        175168,
+        175171
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=175164%2C175167%2C175168%2C175171",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.644Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2199,
+      "features": [
+        {
+          "transportId": 175164,
+          "properties": {
+            "OBJECTID": 175164,
+            "APN": "31401005"
+          },
+          "geometrySha256": "090c8eba53a8800edef947af0ebe8bcea0efa7aef68b73890ad51f0ed2c207e9"
+        },
+        {
+          "transportId": 175167,
+          "properties": {
+            "OBJECTID": 175167,
+            "APN": "31401001"
+          },
+          "geometrySha256": "eedb13dbd49e0162f26a227b6e8188ff3892de7e9774ec3815680e7182c3af64"
+        },
+        {
+          "transportId": 175168,
+          "properties": {
+            "OBJECTID": 175168,
+            "APN": "31401002"
+          },
+          "geometrySha256": "33c2c2ada3c9147b513a4e936c96c47216ca9cb762b83c2b25ddaf3c3fcca7c1"
+        },
+        {
+          "transportId": 175171,
+          "properties": {
+            "OBJECTID": 175171,
+            "APN": "31401006"
+          },
+          "geometrySha256": "ac8d8645f4d6ad0472866db268ff851c3c4eb3cc0142fada81d57acd3b0b4e47"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.379%2C-111.808%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:58.938Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.379%2C-111.808%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:59.617Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31272,
+        31275,
+        31351,
+        32283,
+        32847
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31272%2C31275%2C31351%2C32283%2C32847",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:12:59.901Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2934,
+      "features": [
+        {
+          "transportId": 31272,
+          "properties": {
+            "OBJECTID": 31272,
+            "APN": "13911001N"
+          },
+          "geometrySha256": "610edf0f6c05ce663c4aef53308a66bf3bc78426659ea7f8e0593988dd41f447"
+        },
+        {
+          "transportId": 31275,
+          "properties": {
+            "OBJECTID": 31275,
+            "APN": "13911001P"
+          },
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "transportId": 31351,
+          "properties": {
+            "OBJECTID": 31351,
+            "APN": "13911094"
+          },
+          "geometrySha256": "2d4cdbe18e6a3b7f838e577412a188845fe9bdbdd3b719d5c80e7cf30653b4e4"
+        },
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.379%2C-111.807%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:00.189Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.379%2C-111.807%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:00.490Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31075,
+        31275,
+        32083,
+        32283
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31075%2C31275%2C32083%2C32283",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:00.781Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2770,
+      "features": [
+        {
+          "transportId": 31075,
+          "properties": {
+            "OBJECTID": 31075,
+            "APN": "13911001R"
+          },
+          "geometrySha256": "4ad52f92c646f23cf152b903b61254fd8ac0129bfd738d986f5a0120ebb0dc89"
+        },
+        {
+          "transportId": 31275,
+          "properties": {
+            "OBJECTID": 31275,
+            "APN": "13911001P"
+          },
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "transportId": 32083,
+          "properties": {
+            "OBJECTID": 32083,
+            "APN": "13910020"
+          },
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        },
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.807%2C33.379%2C-111.806%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:01.070Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.807%2C33.379%2C-111.806%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:01.713Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 64,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31075,
+        31076,
+        32083
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31075%2C31076%2C32083",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:02.007Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1695,
+      "features": [
+        {
+          "transportId": 31075,
+          "properties": {
+            "OBJECTID": 31075,
+            "APN": "13911001R"
+          },
+          "geometrySha256": "4ad52f92c646f23cf152b903b61254fd8ac0129bfd738d986f5a0120ebb0dc89"
+        },
+        {
+          "transportId": 31076,
+          "properties": {
+            "OBJECTID": 31076,
+            "APN": "13910021"
+          },
+          "geometrySha256": "62772ecfecd5be24516b972a9b641cb719df7ef30850afc93e1cb0f024815d89"
+        },
+        {
+          "transportId": 32083,
+          "properties": {
+            "OBJECTID": 32083,
+            "APN": "13910020"
+          },
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.38%2C-111.808%2C33.381&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:02.297Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.38%2C-111.808%2C33.381&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:02.942Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 58,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        32283,
+        32847
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=32283%2C32847",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:03.245Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1558,
+      "features": [
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.38%2C-111.807%2C33.381&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:03.545Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.38%2C-111.807%2C33.381&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:03.874Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 64,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        32283,
+        32847,
+        33717
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=32283%2C32847%2C33717",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:04.161Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2526,
+      "features": [
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        },
+        {
+          "transportId": 33717,
+          "properties": {
+            "OBJECTID": 33717,
+            "APN": "13911001Q"
+          },
+          "geometrySha256": "32d4f36ef6781cb2fc7091eedbb2c92ad7a46c33ae46c261fce3a8337815bfc6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.807%2C33.38%2C-111.806%2C33.381&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:04.448Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.807%2C33.38%2C-111.806%2C33.381&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.063Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        32083,
+        33870,
+        34098,
+        34865
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=32083%2C33870%2C34098%2C34865",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.357Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 8081,
+      "features": [
+        {
+          "transportId": 32083,
+          "properties": {
+            "OBJECTID": 32083,
+            "APN": "13910020"
+          },
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        },
+        {
+          "transportId": 33870,
+          "properties": {
+            "OBJECTID": 33870,
+            "APN": "13910016"
+          },
+          "geometrySha256": "96e687ed8980af92bbd0cff3d55aeb8422f168b62a8fb0c707dcf919c9880404"
+        },
+        {
+          "transportId": 34098,
+          "properties": {
+            "OBJECTID": 34098,
+            "APN": "13910019"
+          },
+          "geometrySha256": "5e7453459e5ee9f0e37ac8b638626b5c409a2f3a8728e78c32ac52529b7d69b1"
+        },
+        {
+          "transportId": 34865,
+          "properties": {
+            "OBJECTID": 34865,
+            "APN": "13910018A"
+          },
+          "geometrySha256": "d94e42d7a3be54d683c564d3a981b48cef85e901041efd74220f2a5dc8a7b565"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.377%2C-111.807%2C33.378&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.654Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.377%2C-111.807%2C33.378&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:05.960Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 67,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        175163,
+        175164,
+        175178
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=175163%2C175164%2C175178",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:06.247Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2183,
+      "features": [
+        {
+          "transportId": 175163,
+          "properties": {
+            "OBJECTID": 175163,
+            "APN": "30212519A"
+          },
+          "geometrySha256": "533e3d5f7c0c3fa23a4e51677d2c08890eae9d7a0fcb8904b8193a5e65c26d39"
+        },
+        {
+          "transportId": 175164,
+          "properties": {
+            "OBJECTID": 175164,
+            "APN": "31401005"
+          },
+          "geometrySha256": "090c8eba53a8800edef947af0ebe8bcea0efa7aef68b73890ad51f0ed2c207e9"
+        },
+        {
+          "transportId": 175178,
+          "properties": {
+            "OBJECTID": 175178,
+            "APN": "30212520"
+          },
+          "geometrySha256": "23e6c1d1267e47829991eb3c312f5e84d27cca51bc278ac8ef367f5bd6fa10aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.381%2C-111.807%2C33.382&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:06.533Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808%2C33.381%2C-111.807%2C33.382&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:06.841Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 71,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        32847,
+        33717,
+        34578,
+        276809
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=32847%2C33717%2C34578%2C276809",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:07.132Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3070,
+      "features": [
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        },
+        {
+          "transportId": 33717,
+          "properties": {
+            "OBJECTID": 33717,
+            "APN": "13911001Q"
+          },
+          "geometrySha256": "32d4f36ef6781cb2fc7091eedbb2c92ad7a46c33ae46c261fce3a8337815bfc6"
+        },
+        {
+          "transportId": 34578,
+          "properties": {
+            "OBJECTID": 34578,
+            "APN": "13911001K"
+          },
+          "geometrySha256": "4f1b01bfbe131273fd1c8a5ec93366c27ffa7cec1c97b7463a9fe0dd8995760e"
+        },
+        {
+          "transportId": 276809,
+          "properties": {
+            "OBJECTID": 276809,
+            "APN": "13911097B"
+          },
+          "geometrySha256": "08b0b0136170f240f5430297c8c4ff4b9ee7e9c5bb4629c0e5cb4f20998be1a5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.81%2C33.379%2C-111.809%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:07.423Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.81%2C33.379%2C-111.809%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:07.740Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 58,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31351,
+        32847
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31351%2C32847",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.031Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1199,
+      "features": [
+        {
+          "transportId": 31351,
+          "properties": {
+            "OBJECTID": 31351,
+            "APN": "13911094"
+          },
+          "geometrySha256": "2d4cdbe18e6a3b7f838e577412a188845fe9bdbdd3b719d5c80e7cf30653b4e4"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.806%2C33.379%2C-111.805%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.323Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.806%2C33.379%2C-111.805%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.621Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31076,
+        31172,
+        32029,
+        32083,
+        33870
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31076%2C31172%2C32029%2C32083%2C33870",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:08.912Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 6095,
+      "features": [
+        {
+          "transportId": 31076,
+          "properties": {
+            "OBJECTID": 31076,
+            "APN": "13910021"
+          },
+          "geometrySha256": "62772ecfecd5be24516b972a9b641cb719df7ef30850afc93e1cb0f024815d89"
+        },
+        {
+          "transportId": 31172,
+          "properties": {
+            "OBJECTID": 31172,
+            "APN": "13910017"
+          },
+          "geometrySha256": "3f9ad928e7ee1d5a7267e915db943e20b7a1e8f36b70d6a090e2784e9a3d6aa0"
+        },
+        {
+          "transportId": 32029,
+          "properties": {
+            "OBJECTID": 32029,
+            "APN": "13910022"
+          },
+          "geometrySha256": "83eb241ff3cd7ca877b2ea9fad80ae4271d6c874daa06ca23259e5c0add08ca4"
+        },
+        {
+          "transportId": 32083,
+          "properties": {
+            "OBJECTID": 32083,
+            "APN": "13910020"
+          },
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        },
+        {
+          "transportId": 33870,
+          "properties": {
+            "OBJECTID": 33870,
+            "APN": "13910016"
+          },
+          "geometrySha256": "96e687ed8980af92bbd0cff3d55aeb8422f168b62a8fb0c707dcf919c9880404"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.379%2C-111.808%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:09.209Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.809%2C33.379%2C-111.808%2C33.38&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:09.513Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31272,
+        31275,
+        31351,
+        32283,
+        32847
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31272%2C31275%2C31351",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:09.802Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1473,
+      "features": [
+        {
+          "transportId": 31272,
+          "properties": {
+            "OBJECTID": 31272,
+            "APN": "13911001N"
+          },
+          "geometrySha256": "610edf0f6c05ce663c4aef53308a66bf3bc78426659ea7f8e0593988dd41f447"
+        },
+        {
+          "transportId": 31275,
+          "properties": {
+            "OBJECTID": 31275,
+            "APN": "13911001P"
+          },
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "transportId": 31351,
+          "properties": {
+            "OBJECTID": 31351,
+            "APN": "13911094"
+          },
+          "geometrySha256": "2d4cdbe18e6a3b7f838e577412a188845fe9bdbdd3b719d5c80e7cf30653b4e4"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=32283%2C32847",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:10.113Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1558,
+      "features": [
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=APN+IN+%28%2713910016%27%2C%2713910017%27%2C%2713910018A%27%2C%2713910019%27%2C%2713910020%27%2C%2713910021%27%2C%2713910022%27%2C%2713911001K%27%2C%2713911001N%27%2C%2713911001P%27%2C%2713911001Q%27%2C%2713911001R%27%2C%2713911094%27%2C%2713911095%27%2C%2713911097B%27%2C%2713911097C%27%2C%2730212002V%27%2C%2730212519A%27%2C%2730212520%27%2C%2731401001%27%2C%2731401002%27%2C%2731401005%27%2C%2731401006%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:10.425Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "count": 23
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=APN+IN+%28%2713910016%27%2C%2713910017%27%2C%2713910018A%27%2C%2713910019%27%2C%2713910020%27%2C%2713910021%27%2C%2713910022%27%2C%2713911001K%27%2C%2713911001N%27%2C%2713911001P%27%2C%2713911001Q%27%2C%2713911001R%27%2C%2713911094%27%2C%2713911095%27%2C%2713911097B%27%2C%2713911097C%27%2C%2730212002V%27%2C%2730212519A%27%2C%2730212520%27%2C%2731401001%27%2C%2731401002%27%2C%2731401005%27%2C%2731401006%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:10.714Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 194,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        33870,
+        31172,
+        34865,
+        34098,
+        32083,
+        31076,
+        32029,
+        34578,
+        31272,
+        31275,
+        33717,
+        31075,
+        31351,
+        32283,
+        276809,
+        32847,
+        175174,
+        175163,
+        175178,
+        175167,
+        175168,
+        175164,
+        175171
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=33870%2C31172%2C34865%2C34098%2C32083%2C31076%2C32029%2C34578%2C31272%2C31275%2C33717%2C31075%2C31351%2C32283%2C276809%2C32847%2C175174%2C175163%2C175178%2C175167%2C175168%2C175164%2C175171",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:10.997Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 19595,
+      "features": [
+        {
+          "transportId": 31075,
+          "properties": {
+            "OBJECTID": 31075,
+            "APN": "13911001R"
+          },
+          "geometrySha256": "4ad52f92c646f23cf152b903b61254fd8ac0129bfd738d986f5a0120ebb0dc89"
+        },
+        {
+          "transportId": 31076,
+          "properties": {
+            "OBJECTID": 31076,
+            "APN": "13910021"
+          },
+          "geometrySha256": "62772ecfecd5be24516b972a9b641cb719df7ef30850afc93e1cb0f024815d89"
+        },
+        {
+          "transportId": 31172,
+          "properties": {
+            "OBJECTID": 31172,
+            "APN": "13910017"
+          },
+          "geometrySha256": "3f9ad928e7ee1d5a7267e915db943e20b7a1e8f36b70d6a090e2784e9a3d6aa0"
+        },
+        {
+          "transportId": 31272,
+          "properties": {
+            "OBJECTID": 31272,
+            "APN": "13911001N"
+          },
+          "geometrySha256": "610edf0f6c05ce663c4aef53308a66bf3bc78426659ea7f8e0593988dd41f447"
+        },
+        {
+          "transportId": 31275,
+          "properties": {
+            "OBJECTID": 31275,
+            "APN": "13911001P"
+          },
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "transportId": 31351,
+          "properties": {
+            "OBJECTID": 31351,
+            "APN": "13911094"
+          },
+          "geometrySha256": "2d4cdbe18e6a3b7f838e577412a188845fe9bdbdd3b719d5c80e7cf30653b4e4"
+        },
+        {
+          "transportId": 32029,
+          "properties": {
+            "OBJECTID": 32029,
+            "APN": "13910022"
+          },
+          "geometrySha256": "83eb241ff3cd7ca877b2ea9fad80ae4271d6c874daa06ca23259e5c0add08ca4"
+        },
+        {
+          "transportId": 32083,
+          "properties": {
+            "OBJECTID": 32083,
+            "APN": "13910020"
+          },
+          "geometrySha256": "7b7f9f0ea10141b3dfe1eff85fd3f6750175ac8bf8d8970be42fad06cd0bf05c"
+        },
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        },
+        {
+          "transportId": 33717,
+          "properties": {
+            "OBJECTID": 33717,
+            "APN": "13911001Q"
+          },
+          "geometrySha256": "32d4f36ef6781cb2fc7091eedbb2c92ad7a46c33ae46c261fce3a8337815bfc6"
+        },
+        {
+          "transportId": 33870,
+          "properties": {
+            "OBJECTID": 33870,
+            "APN": "13910016"
+          },
+          "geometrySha256": "96e687ed8980af92bbd0cff3d55aeb8422f168b62a8fb0c707dcf919c9880404"
+        },
+        {
+          "transportId": 34098,
+          "properties": {
+            "OBJECTID": 34098,
+            "APN": "13910019"
+          },
+          "geometrySha256": "5e7453459e5ee9f0e37ac8b638626b5c409a2f3a8728e78c32ac52529b7d69b1"
+        },
+        {
+          "transportId": 34578,
+          "properties": {
+            "OBJECTID": 34578,
+            "APN": "13911001K"
+          },
+          "geometrySha256": "4f1b01bfbe131273fd1c8a5ec93366c27ffa7cec1c97b7463a9fe0dd8995760e"
+        },
+        {
+          "transportId": 34865,
+          "properties": {
+            "OBJECTID": 34865,
+            "APN": "13910018A"
+          },
+          "geometrySha256": "d94e42d7a3be54d683c564d3a981b48cef85e901041efd74220f2a5dc8a7b565"
+        },
+        {
+          "transportId": 175163,
+          "properties": {
+            "OBJECTID": 175163,
+            "APN": "30212519A"
+          },
+          "geometrySha256": "533e3d5f7c0c3fa23a4e51677d2c08890eae9d7a0fcb8904b8193a5e65c26d39"
+        },
+        {
+          "transportId": 175164,
+          "properties": {
+            "OBJECTID": 175164,
+            "APN": "31401005"
+          },
+          "geometrySha256": "090c8eba53a8800edef947af0ebe8bcea0efa7aef68b73890ad51f0ed2c207e9"
+        },
+        {
+          "transportId": 175167,
+          "properties": {
+            "OBJECTID": 175167,
+            "APN": "31401001"
+          },
+          "geometrySha256": "eedb13dbd49e0162f26a227b6e8188ff3892de7e9774ec3815680e7182c3af64"
+        },
+        {
+          "transportId": 175168,
+          "properties": {
+            "OBJECTID": 175168,
+            "APN": "31401002"
+          },
+          "geometrySha256": "33c2c2ada3c9147b513a4e936c96c47216ca9cb762b83c2b25ddaf3c3fcca7c1"
+        },
+        {
+          "transportId": 175171,
+          "properties": {
+            "OBJECTID": 175171,
+            "APN": "31401006"
+          },
+          "geometrySha256": "ac8d8645f4d6ad0472866db268ff851c3c4eb3cc0142fada81d57acd3b0b4e47"
+        },
+        {
+          "transportId": 175174,
+          "properties": {
+            "OBJECTID": 175174,
+            "APN": "30212002V"
+          },
+          "geometrySha256": "762a1595181d61bfcb1bd3d314559a0b7ee7da4d46e1f1c094753102862598d5"
+        },
+        {
+          "transportId": 175178,
+          "properties": {
+            "OBJECTID": 175178,
+            "APN": "30212520"
+          },
+          "geometrySha256": "23e6c1d1267e47829991eb3c312f5e84d27cca51bc278ac8ef367f5bd6fa10aa"
+        },
+        {
+          "transportId": 276809,
+          "properties": {
+            "OBJECTID": 276809,
+            "APN": "13911097B"
+          },
+          "geometrySha256": "08b0b0136170f240f5430297c8c4ff4b9ee7e9c5bb4629c0e5cb4f20998be1a5"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=APN+IN+%28%2700000000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:11.324Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=APN+IN+%28%2700000000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:11.612Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808072656128%2C33.3798408242516%2C-111.807204930636%2C33.380745614132&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:11.912Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "footprint",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808072656128%2C33.3798408242516%2C-111.807204930636%2C33.380745614132&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:12.327Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31272,
+        31275,
+        32283,
+        32847,
+        33717
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31272%2C31275%2C32283%2C32847%2C33717",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:12.726Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3368,
+      "features": [
+        {
+          "transportId": 31272,
+          "properties": {
+            "OBJECTID": 31272,
+            "APN": "13911001N"
+          },
+          "geometrySha256": "610edf0f6c05ce663c4aef53308a66bf3bc78426659ea7f8e0593988dd41f447"
+        },
+        {
+          "transportId": 31275,
+          "properties": {
+            "OBJECTID": 31275,
+            "APN": "13911001P"
+          },
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        },
+        {
+          "transportId": 33717,
+          "properties": {
+            "OBJECTID": 33717,
+            "APN": "13911001Q"
+          },
+          "geometrySha256": "32d4f36ef6781cb2fc7091eedbb2c92ad7a46c33ae46c261fce3a8337815bfc6"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808072656128%2C33.3798408242516%2C-111.807204930636%2C33.380745614132&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:13.039Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&geometry=-111.808072656128%2C33.3798408242516%2C-111.807204930636%2C33.380745614132&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:13.339Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 76,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31272,
+        31275,
+        32283,
+        32847,
+        33717
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&objectIds=31272%2C31275%2C32283%2C32847%2C33717",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:13:13.716Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3368,
+      "features": [
+        {
+          "transportId": 31272,
+          "properties": {
+            "OBJECTID": 31272,
+            "APN": "13911001N"
+          },
+          "geometrySha256": "610edf0f6c05ce663c4aef53308a66bf3bc78426659ea7f8e0593988dd41f447"
+        },
+        {
+          "transportId": 31275,
+          "properties": {
+            "OBJECTID": 31275,
+            "APN": "13911001P"
+          },
+          "geometrySha256": "7409e712969be56d52d6855708c8b20c5fa7d5b23dcd4cdd21751d9335cb53ed"
+        },
+        {
+          "transportId": 32283,
+          "properties": {
+            "OBJECTID": 32283,
+            "APN": "13911095"
+          },
+          "geometrySha256": "332dbd65f919fb06d551b00a15a168da477785a712266da3d3b0fe9bd7931240"
+        },
+        {
+          "transportId": 32847,
+          "properties": {
+            "OBJECTID": 32847,
+            "APN": "13911097C"
+          },
+          "geometrySha256": "475948e908de5cdc74f57a917afe2ebc0e7d5ebcd76def83c546d4cba8935c87"
+        },
+        {
+          "transportId": 33717,
+          "properties": {
+            "OBJECTID": 33717,
+            "APN": "13911001Q"
+          },
+          "geometrySha256": "32d4f36ef6781cb2fc7091eedbb2c92ad7a46c33ae46c261fce3a8337815bfc6"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/mesa-parcels-quality.json",
+  "uniqueParcels": 23,
+  "requestCount": 54,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T23:13:14.053Z",
+  "qualityStatus": "passed_independent_metric_topology",
+  "qualityDecision": "approved_by_root"
+}

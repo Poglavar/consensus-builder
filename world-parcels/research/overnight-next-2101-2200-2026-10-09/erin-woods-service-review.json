@@ -1,0 +1,49 @@
+{
+  "cityRecord": "city-1238-erin-woods.json",
+  "cityCode": 1238,
+  "wupCityCode": 1238,
+  "queueRank": 2105,
+  "rank": 2105,
+  "name": "Erin Woods",
+  "cityName": "Erin Woods",
+  "country": "Canada",
+  "iso2": "CA",
+  "countryCode": "CA",
+  "iso3": "CAN",
+  "point": [51.0777717901414, -113.955430930889],
+  "population2025": 275476,
+  "population2025k": 275.476,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "discoveryMethod": "First-party English and Canadian French discovery, official Calgary parcel-fabric documentation, and bounded anonymous HTTPS Socrata API inspection.",
+  "queryOutcomes": "English discovery found the City of Calgary OPF custodian page and public parcel-assessment dataset. French discovery returned the same official English-language Calgary sources and no distinct local French parcel service. The live public endpoint returned three Erin Woods records with CPID and MultiPolygon geometry.",
+  "attempts": [
+    {"method": "web search", "language": "English", "query": "Erin Woods Calgary official parcel cadastral map GIS open data", "outcome": "Official Calgary community, OPF, and open-data results found."},
+    {"method": "web search", "language": "French (Canada)", "query": "site:calgary.ca Erin Woods parcelles cadastrales Calgary données ouvertes", "outcome": "Official Calgary OPF and open-data pages found; no separate French-language viewer/API."},
+    {"method": "GET", "url": "https://data.calgary.ca/api/views/4bsw-nn7w", "httpStatus": 200, "outcome": "Socrata metadata returned schema including multipolygon geometry, cpid, and documented assessment/address fields."},
+    {"method": "GET", "url": "https://data.calgary.ca/resource/4bsw-nn7w.json?$limit=1", "httpStatus": 200, "outcome": "Anonymous sample returned a MultiPolygon record; schema inspection confirmed native geometry response."},
+    {"method": "GET", "url": "https://data.calgary.ca/resource/4bsw-nn7w.json?$select=cpid,multipolygon&$where=upper(comm_name)%20=%20%27ERIN%20WOODS%27&$limit=3", "httpStatus": 200, "outcome": "Bounded safe-field query returned three Erin Woods MultiPolygon records: CPIDs 100226505, 100226699, and 100226796. Full unchanged geometry retained in the sample file."}
+  ],
+  "sourceAssessment": {
+    "localCustodian": "The City of Calgary Asset Information & Mapping / Open Data service, with OPF documentation explicitly describing Calgary city-limit parcel fabric and Alberta Land Titles-derived inputs.",
+    "publicService": "Public Socrata resource endpoint 4bsw-nn7w; anonymous GET response verified with cpid and multipolygon fields. The official OPF product page separately states the detailed OPF is distributed through City Online.",
+    "nativeFieldsObserved": "cpid (retained as stable native identity), multipolygon (retained as geometry), plus non-retained assessment, address, legal, and account fields.",
+    "fieldMapping": {"cpid": "properties.id", "multipolygon": "Feature.geometry"},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier: cpid", "geometry: multipolygon"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "assessed_value", "roll_number", "short_legal"],
+  "scopeLimits": [
+    "The three-feature query is a bounded sample, not a complete Erin Woods export.",
+    "The exact WUP point is a locator only; no point-hit inference was used and no coordinate was shifted.",
+    "The public assessment dataset documents exclusions and is not equivalent to a complete legal OPF extract.",
+    "No owner, address, titleholder, tax, contact, personal, or other unsafe fields were requested or retained.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "sampleFile": "erin-woods-sample.geojson",
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "Public geometry and CPID identity are verified for three records, but complete community coverage, parcel-type exclusions, current OPF equivalence, and adapter-level qualification remain unresolved.",
+  "researchGroup": "north-america",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

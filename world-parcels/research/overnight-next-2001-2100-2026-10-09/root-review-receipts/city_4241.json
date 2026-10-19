@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4241",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-4241-mweka.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/mweka-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_4241-root-review.json",
+    "tmp/valhalla-parcel-research/mweka/circonscriptions.html",
+    "tmp/valhalla-parcel-research/mweka/demandes.html",
+    "tmp/valhalla-parcel-research/mweka/api-get.txt"
+  ],
+  "checkedAt": "2026-10-10T22:26:16Z",
+  "reason": "Identity and bilingual search records match the immutable 2025 queue and source row. First-party Ministry cache confirms the Mweka land jurisdiction; its formal request flow does not yield an anonymous native-ID parcel polygon response. Independent adapter qualification is missing; public geometry and citywide coverage remain unresolved.",
+  "admissionGatesVerified": false
+}

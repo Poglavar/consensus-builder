@@ -1,0 +1,66 @@
+{
+  "kind": "country",
+  "key": "QA",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "temporarily_unavailable",
+  "newStatus": "temporarily_unavailable",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-QA,ar;q=0.9,en;q=0.8",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": false,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "requests": [
+    {
+      "url": "https://www.mme.gov.qa/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "ministry site reachable; no cadastre/GIS link found"
+    },
+    {
+      "url": "https://gis.mme.gov.qa/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "default IIS start page, no content"
+    },
+    {
+      "url": "https://www.gisqatar.org.qa/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "default IIS start page, no content"
+    },
+    {
+      "url": "https://www.data.gov.qa/api/explore/v2.1/catalog/datasets?q=cadastre",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "open data portal reachable (1920 datasets); searches for parcel/cadastre/plot returned no datasets"
+    },
+    {
+      "url": "https://hukoomi.gov.qa/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "403"
+    },
+    {
+      "url": "https://www.gsdi.gov.qa/, gis.gov.qa, maps.gov.qa, moma.gov.qa, www.gov.qa, gso.gov.qa, qatarcadastre.mme.gov.qa, services.mme.gov.qa",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed/reset or tunnel 502"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=qatar parcel",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only third-party POC/contractor items; no official parcel service"
+    }
+  ],
+  "geoBlockSuspected": true,
+  "notes": "geoBlockSuspected: the hosts most likely to serve a parcel viewer (gsdi/gis.gov.qa, maps.gov.qa, moma.gov.qa) reset connections or fail at the proxy while other qa hosts answer 200. Nothing new found; no official parcel service confirmed or ruled out.",
+  "nextStep": "Retry from a Gulf-region network; locate Ministry of Municipality Qatar Cadastre e-service URL."
+}

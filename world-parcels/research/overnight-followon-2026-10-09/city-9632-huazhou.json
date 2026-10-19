@@ -1,0 +1,111 @@
+{
+  "name": "Huazhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1012,
+  "point": [
+    32.6853499439915,
+    112.086523187745
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huazhou Dengzhou Henan official cadastral parcel map real estate registration public GIS",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "WUP point [32.6853499439915,112.086523187745] is in 花洲街道, central Dengzhou, Henan, not Guangdong Huazhou. Dengzhou Natural Resources and Planning Bureau has rights-registration, cadastral-survey and mapping duties. No public parcel viewer/full geometry endpoint was exposed; no parcel lookup.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "Chinese",
+        "query": "邓州 花洲街道 不动产登记 地籍图 自然资源局 官方",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "WUP point [32.6853499439915,112.086523187745] is in 花洲街道, central Dengzhou, Henan, not Guangdong Huazhou. Dengzhou Natural Resources and Planning Bureau has rights-registration, cadastral-survey and mapping duties. No public parcel viewer/full geometry endpoint was exposed; no parcel lookup.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Dengzhou Natural Resources and Planning Bureau; Huazhou subdistrict locality evidence",
+        "operator": "Dengzhou Municipal Natural Resources and Planning Bureau, Henan",
+        "homeUrl": "https://www.dengzhou.gov.cn/zwgk/zfxxgkml/szfxxgkml/zfjg/bmjg/zrzyhghj/",
+        "observation": "WUP point [32.6853499439915,112.086523187745] is in 花洲街道, central Dengzhou, Henan, not Guangdong Huazhou. Dengzhou Natural Resources and Planning Bureau has rights-registration, cadastral-survey and mapping duties. No public parcel viewer/full geometry endpoint was exposed; no parcel lookup."
+      }
+    ],
+    "requests": [
+      {
+        "observation": "Official locality page identifies 花洲街道 as central Dengzhou; bureau page describes cadastral and real-property rights-registration duties. No parcel lookup."
+      },
+      {
+        "checkedAt": "2026-10-09T05:42:12.822135+00:00",
+        "url": "https://www.dengzhou.gov.cn/zwgk/zfxxgkml/szfxxgkml/zfjg/bmjg/zrzyhghj/",
+        "normalTlsVerification": true,
+        "httpStatus": 403,
+        "errorType": "HTTPError",
+        "error": "HTTP Error 403: Forbidden"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-9632-LOCAL-CADASTRE-REVIEW",
+    "name": "Dengzhou Natural Resources and Planning Bureau; Huazhou subdistrict locality evidence",
+    "url": "https://www.dengzhou.gov.cn/zwgk/zfxxgkml/szfxxgkml/zfjg/bmjg/zrzyhghj/",
+    "operator": "Dengzhou Municipal Natural Resources and Planning Bureau, Henan",
+    "serviceType": "Official local registry/cadastre reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official locality page identifies 花洲街道 as central Dengzhou; bureau page describes cadastral and real-property rights-registration duties. No parcel lookup.",
+    "verifiedOpenScope": "WUP point [32.6853499439915,112.086523187745] is in 花洲街道, central Dengzhou, Henan, not Guangdong Huazhou. Dengzhou Natural Resources and Planning Bureau has rights-registration, cadastral-survey and mapping duties. No public parcel viewer/full geometry endpoint was exposed; no parcel lookup.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-polygon response exposed; no owner/address lookup made.",
+  "remainingUncertainty": "Parcel presence at WUP point and any public feature endpoint remain unverified.",
+  "nextStep": "If official source later exposes a documented feature service, inspect schema and make a bounded full-geometry query.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9632,
+  "cityId": "wup2025:9632",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    32.6853499439915,
+    112.086523187745
+  ],
+  "population2025k": 543.709,
+  "populationUnit": "persons",
+  "queueRank": 1012,
+  "population2025": 543709,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official locality page identifies 花洲街道 as central Dengzhou; bureau page describes cadastral and real-property rights-registration duties. No parcel lookup.",
+  "registryEvidenceUrls": [
+    "https://www.dengzhou.gov.cn/zwgk/zfxxgkml/szfxxgkml/zfjg/bmjg/zrzyhghj/",
+    "https://www.dengzhou.gov.cn/2023/06-20/1178276.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-polygon response exposed; no owner/address lookup made."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. Official locality page identifies 花洲街道 as central Dengzhou; bureau page describes cadastral and real-property rights-registration duties. No parcel lookup."
+}

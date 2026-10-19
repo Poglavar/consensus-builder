@@ -1,0 +1,637 @@
+// _applyBuildingProposal, mixed into ProposalManager via Object.assign.
+// `this` is ProposalManager at call time (keeps using this._x() and proposal-manager.js bare-name globals).
+(function (root, factory) {
+    const api = factory();
+    if (typeof module === 'object' && module.exports) module.exports = api;
+    if (root) root.ProposalApplyBuildings = api;
+})(typeof window !== 'undefined' ? window : globalThis, function () {
+    'use strict';
+
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('../parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
+    function openGroundApi() {
+        if (typeof window !== 'undefined' && window.__openGround) return window.__openGround;
+        return typeof require === 'function' ? require('../open-ground.js') : null;
+    }
+
+    function shouldFormOwnBuildingParcel(proposalData, goalKey, featureCount) {
+        const planId = proposalData?.coordinatedPlanId;
+        const belongsToCoordinatedPlan = planId !== undefined && planId !== null
+            && String(planId).trim() !== '';
+        // A coordinated plan has already published and applied the plot tessellation on which its
+        // buildings sit. Cutting a second footprint parcel here destroys that authored fabric.
+        return goalKey === 'single' && featureCount === 1 && !belongsToCoordinatedPlan;
+    }
+
+    return {
+    shouldFormOwnBuildingParcel,
+    async _applyBuildingProposal(proposalId, proposalData, options = {}) {
+        const startTime = performance.now();
+        const idLabel = _normalizeProposalId(proposalId) || 'unknown-proposal';
+        // Step-by-step tracing, off by default. Six lines per proposal is a fine way to watch ONE
+        // apply and a terrible way to read a replay of three hundred — the useful line is the
+        // single summary _runProposalApplyWithSummary already prints. `window.DEBUG_APPLY = true`
+        // in the console brings the steps back for the next apply.
+        const traceApply = (typeof window !== 'undefined' && window.DEBUG_APPLY)
+            ? (message) => console.debug(`[_applyBuildingProposal] ${message}`)
+            : () => { };
+        traceApply(`Starting application for ${idLabel}...`);
+
+        if (!proposalData) {
+            console.warn(`[_applyBuildingProposal] Invalid proposal data`);
+            try { this._setLastApplyFailure(idLabel, { code: 'invalid-proposal', message: 'The proposal record is empty — there is no building data to apply.' }); } catch (_) { }
+            return false;
+        }
+
+        const step1Time = performance.now();
+        const buildingProposal = proposalData.buildingProposal ? { ...proposalData.buildingProposal } : {};
+        // Content buildings (blocks, rows, parcel-based, imported plans) sit on the existing parcels
+        // and partition nothing, so a defect in the cadastral source (two live parcels covering the
+        // same ground) must not refuse them; only a building that forms its own parcel needs a clean
+        // partition. The resolver is told which case this is.
+        const earlyGoalKey = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
+            ? window.__applyRoute.normalizeGoalKey(proposalData.goal)
+            : String(proposalData.goal || '');
+        const authoredCount = Array.isArray(proposalData.geometry?.buildings)
+            ? proposalData.geometry.buildings.filter(feature => feature && feature.geometry).length : 0;
+        const contentOnly = !shouldFormOwnBuildingParcel(proposalData, earlyGoalKey, authoredCount);
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building', { ...options, contentOnly });
+        if (!liveParents.ok) return false;
+        const uniqueParentIds = liveParents.ids;
+        const flatParentIds = liveParents.cadastreIds.slice();
+        traceApply(`Step 1: Resolved ${uniqueParentIds.length} live parcel(s) from geometry (${(performance.now() - step1Time).toFixed(2)}ms)`);
+
+        const step4Time = performance.now();
+        const cloneFeature = (raw) => {
+            if (!raw || typeof raw !== 'object') return null;
+            try { return JSON.parse(JSON.stringify(raw)); } catch (_) { return null; }
+        };
+
+        // Legacy buildingFeatures ignored; do not mutate
+
+        const candidateFeatures = Array.isArray(proposalData?.geometry?.buildings)
+            ? proposalData.geometry.buildings
+                .map(raw => {
+                    const cloned = cloneFeature(raw);
+                    return cloned && cloned.geometry ? cloned : null;
+                })
+                .filter(Boolean)
+            : [];
+
+        if (!candidateFeatures.length) {
+            const message = 'Building proposal missing geometry; cannot apply.';
+            console.warn(message, { proposalId });
+            if (typeof updateStatus === 'function') updateStatus(message);
+            try { this._setLastApplyFailure(idLabel, { code: 'missing-building-geometry', message: 'The proposal stores no building footprints (geometry.buildings is empty).' }); } catch (_) { }
+            return false;
+        }
+
+        const proposalState = lifecycleOf(proposalData) === 'Executed' ? 'executed' : 'applied';
+
+        const preparedFeatures = candidateFeatures
+            .map((raw, index) => {
+                if (!raw || !raw.geometry) return null;
+                const cloned = cloneFeature(raw);
+                if (!cloned || !cloned.geometry) return null;
+                const properties = {
+                    ...(cloned.properties || {}),
+                    proposalId,
+                    proposalState,
+                    title: proposalData.title || null,
+                    author: proposalData.author || null,
+                    buildingIndex: index
+                };
+                return {
+                    type: 'Feature',
+                    geometry: cloned.geometry,
+                    properties
+                };
+            })
+            .filter(Boolean);
+
+        if (!preparedFeatures.length) {
+            const message = 'Building proposal missing geometry; cannot apply.';
+            console.warn(message, { proposalId });
+            if (typeof updateStatus === 'function') updateStatus(message);
+            try { this._setLastApplyFailure(idLabel, { code: 'building-geometry-unusable', message: `All ${candidateFeatures.length} stored building footprint(s) were dropped while preparing geometry.` }); } catch (_) { }
+            return false;
+        }
+        // The authored building footprints are the scan region. Never reuse a record produced by
+        // authoring or a previous browser's fabric.
+        buildingProposal.demolishedBuildings = [];
+        delete buildingProposal.demolitionScanned;
+        try {
+            const polygons = preparedFeatures.flatMap(feature => {
+                const geometry = feature && feature.geometry;
+                if (!geometry) return [];
+                if (geometry.type === 'Polygon') return [geometry.coordinates];
+                if (geometry.type === 'MultiPolygon') return geometry.coordinates;
+                return [];
+            });
+            const demolitionRegion = polygons.length === 1
+                ? { type: 'Polygon', coordinates: polygons[0] }
+                : (polygons.length ? { type: 'MultiPolygon', coordinates: polygons } : null);
+            if (demolitionRegion && typeof this._deriveDemolishedBuildings === 'function') {
+                buildingProposal.demolishedBuildings = await this._deriveDemolishedBuildings(demolitionRegion, {
+                    ...options,
+                    proposalId: idLabel
+                });
+            }
+        } catch (error) {
+            console.error('[_applyBuildingProposal] demolition scan failed', idLabel, error);
+            // Say so where it can be seen. A scan that fails records NO demolitions, which is
+            // indistinguishable from a block that genuinely stands on empty ground — a wrong answer
+            // wearing the shape of a right one, and the proposal is then stored that way.
+            buildingProposal.demolitionScanFailed = true;
+            try {
+                const say = (typeof window !== 'undefined' && typeof window.showEphemeralMessage === 'function')
+                    ? window.showEphemeralMessage
+                    : null;
+                const message = `Could not check which buildings "${proposalData.title || idLabel}" would demolish — `
+                    + 'it is recorded as demolishing none. Re-apply it once the backend answers again.';
+                if (say) say(message, 12000);
+                else if (typeof window !== 'undefined' && typeof window.updateStatus === 'function') window.updateStatus(message);
+            } catch (_) { }
+        }
+        traceApply(`Step 4: Prepared ${preparedFeatures.length} building feature(s) (${(performance.now() - step4Time).toFixed(2)}ms)`);
+
+        // §15a building formation: a FREEFORM building (goal 'single', one footprint) forms its
+        // own parcel — footprint parcel by default, whole host parcels when
+        // buildingProposal.takeWholeParcels is set. Refusals abort before anything renders.
+        // Blocks/row/parcel-based buildings stay content on existing parcels (§9 table).
+        let workingParentIds = uniqueParentIds;
+        {
+            const goalKey = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
+                ? window.__applyRoute.normalizeGoalKey(proposalData.goal)
+                : String(proposalData.goal || '');
+            if (shouldFormOwnBuildingParcel(proposalData, goalKey, preparedFeatures.length)) {
+                const formation = await this._formBuildingParcel(
+                    proposalId, proposalData, buildingProposal, preparedFeatures[0].geometry,
+                    uniqueParentIds, idLabel, liveParents.features, options);
+                if (!formation.ok) return false;
+                workingParentIds = formation.parentIds;
+            }
+        }
+
+        const proposedCollection = options?._parcelMutation?.collections?.proposedBuildings;
+        if (!Array.isArray(proposedCollection)) {
+            throw new Error('Building application requires a proposal-collection mutation draft.');
+        }
+        preparedFeatures.forEach(feature => {
+            const existingIndex = proposedCollection.findIndex(b => b?.properties
+                && String(b.properties.proposalId || '') === String(proposalId)
+                && b.properties.buildingIndex === feature.properties.buildingIndex);
+            if (existingIndex > -1) proposedCollection[existingIndex] = feature;
+            else proposedCollection.push(feature);
+        });
+
+        // THIS proposal's buildings, not every proposal's. The full rebuild is for removals and
+        // boot; an apply has one proposal to draw and should cost one proposal.
+        if (options.deferPresentation !== true) options._parcelMutation.afterCommit(() => {
+            if (typeof drawProposedBuildingsForProposal === 'function') {
+                drawProposedBuildingsForProposal(proposalId);
+            } else if (typeof updateProposedBuildingsLayer === 'function') {
+                updateProposedBuildingsLayer();
+            }
+            const showBuildingsCheckbox = typeof document !== 'undefined'
+                ? document.getElementById('showProposedBuildings')
+                : null;
+            if (showBuildingsCheckbox && !showBuildingsCheckbox.checked) showBuildingsCheckbox.checked = true;
+        });
+
+        // `preparedFeatures` belong to the live rendering registry.  The authored record remains
+        // untouched: its GeoJSON does not acquire proposal ids, live parcel ids, or replay state.
+        persistAppliedProposal(proposalData, proposalId, options);
+
+        traceApply(`Formed from ${workingParentIds.length} live parcel(s)`);
+
+        // The status line is written once, for every type, by _runProposalApplyWithSummary.
+        if (options.deferPresentation !== true) refreshProposalUIAfterApply(null, options);
+
+        const totalTime = performance.now() - startTime;
+        traceApply(`✓ Building proposal application completed in ${totalTime.toFixed(2)}ms`);
+        return true;
+    },
+
+    // §15a building formation (decision 2026-08-05): a FREEFORM building forms its own parcel —
+    // one building, one parcel (the Croatian rule), realised against the live fabric:
+    //   default    → FOOTPRINT parcel: mint the building's parcel from its footprint, cut each
+    //                host parcel's remainder back to its owner (§14.2 — a formation owes the
+    //                owner their remainders); the minimal taking.
+    //   whole-take → buildingProposal.takeWholeParcels: adopt/merge the WHOLE host parcels as
+    //                the building's parcel (the family-house-with-yard case).
+    // Ownership goes to the PROPOSER (ownership-flow's declared destination for freeform).
+    // Buildings on existing parcels (blocks/row/parcelBased) stay content and never reach here.
+    // Open ground (PARCEL-OPTIONAL.md phase 3): the open-ground host is a parent beside the live
+    // parcels. The part of the footprint on it joins the building parcel, which then carries the
+    // host's ground id; nothing is minted for the rest of the host (open ground is not a parcel, so
+    // it has no remainder and no owner to return one to). "Whole parcels" applies to the cadastral
+    // parcels only — open ground is taken exactly where the footprint covers it.
+    async _formBuildingParcel(proposalId, proposalData, buildingProposal, footprintGeometry, declaredParentIds, idLabel, resolvedParentFeatures = null, options = {}) {
+        const formationEdit = (typeof window !== 'undefined') ? window.__formationEdit : null;
+        const turfRef = (typeof turf !== 'undefined') ? turf : null;
+        if (!formationEdit || !turfRef || typeof turfRef.intersect !== 'function') {
+            console.error('[_formBuildingParcel] formation-edit/turf missing — the building cannot form its parcel');
+            try {
+                this._setLastApplyFailure(idLabel, {
+                    code: 'building-formation-unavailable',
+                    message: 'The formation engine is unavailable in this session; the building cannot form its parcel.'
+                });
+            } catch (_) { }
+            return { ok: false };
+        }
+        const takeCtx = {
+            area: f => { try { return turfRef.area(f) || 0; } catch (_) { return 0; } },
+            // An overlap that cannot be computed is unknown, not zero: zero decides which
+            // parcels the building takes.
+            intersectionArea: (a, b) => {
+                try { const hit = turfRef.intersect(a, b); return hit ? turfRef.area(hit) : 0; } catch (error) {
+                    throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.intersectionArea', proposalId: idLabel }, [a, b]);
+                }
+            }
+        };
+        const footprint = { type: 'Feature', properties: {}, geometry: footprintGeometry };
+
+        const candidateIds = declaredParentIds.slice();
+        const candidateFeatures = Array.isArray(resolvedParentFeatures)
+            ? resolvedParentFeatures
+            : (this._resolveParcelFeaturesByIds(candidateIds, {
+                allowMissing: true,
+                _parcelMutation: options._parcelMutation
+            }) || []);
+        const ground = openGroundApi();
+        const allCandidates = candidateFeatures
+            .map(feature => ({ id: _getParcelIdFromFeature(feature), feature }))
+            .filter(entry => entry.id !== undefined && entry.id !== null);
+        const hostEntries = allCandidates.filter(entry => ground && ground.isOpenGroundHost(entry.feature));
+        const candidates = allCandidates.filter(entry => !hostEntries.includes(entry));
+        const asPlain = geometry => ({ type: 'Feature', properties: {}, geometry });
+        const takenHosts = hostEntries.filter(entry => takeCtx.intersectionArea(footprint, asPlain(entry.feature.geometry))
+            >= formationEdit.DEFAULT_TOLERANCE_M2);
+        // Ground provenance of what the building parcel takes: the open-ground host and any formed
+        // pieces on open ground among its parents.
+        const groundIdsWith = features => Array.from(new Set([
+            ...takenHosts.flatMap(entry => ground.groundIdsOf(entry.feature)),
+            ...features.flatMap(feature => ground.groundIdsOf(feature))
+        ]));
+        // The footprint's ground on the open-ground host(s): exactly footprint ∩ host.
+        const groundTakeGeometries = [];
+        takenHosts.forEach(entry => {
+            let hit = null;
+            try { hit = turfRef.intersect(footprint, asPlain(entry.feature.geometry)); } catch (error) {
+                // Null would leave the building's open ground out of its own parcel.
+                throw clipFailureApi().clipFailure('intersect', error, { site: 'apply-buildings.groundTake', proposalId: idLabel, parcelId: entry.id }, [footprint, entry.feature]);
+            }
+            if (hit && hit.geometry) groundTakeGeometries.push(hit.geometry);
+        });
+        const hostOverlapM2 = groundTakeGeometries.reduce((sum, geometry) => sum + takeCtx.area(asPlain(geometry)), 0);
+
+        const proposerName = proposalData.author || 'Proposer';
+        const proposerOwnership = { owners: [{ name: proposerName, ownerLabel: proposerName, percentageShare: 100, actualShareText: '100%' }] };
+        const ownershipContext = {
+            storage: options?._parcelMutation?.storage,
+            agentStore: options?._parcelMutation?.agents
+        };
+        const proposerAgentId = (typeof getOrCreateAgentForRecipient === 'function')
+            ? getOrCreateAgentForRecipient(proposerName, ownershipContext)
+            : null;
+
+        const finishOwnership = (ownedIds) => {
+            if (proposerAgentId && typeof transferParcelOwnership === 'function') {
+                ownedIds.forEach(pid => {
+                    transferParcelOwnership(String(pid), null, proposerAgentId, {
+                        ...ownershipContext,
+                        skipAgentSync: true
+                    });
+                });
+                if (typeof buildAgentOwnedParcelIndex === 'function' && ownershipContext.agentStore) {
+                    const ownerIndex = buildAgentOwnedParcelIndex({ storage: ownershipContext.storage });
+                    ownershipContext.agentStore.updateAgent(proposerAgentId, {
+                        ownedParcels: ownerIndex.get(proposerAgentId) || []
+                    });
+                }
+            }
+        };
+
+        if (buildingProposal.takeWholeParcels === true) {
+            let plan = candidates.length
+                ? formationEdit.wholeParcelTakePlan(footprint, candidates, takeCtx)
+                : { mode: 'refuse', reason: 'no-parcels', parcelIds: [], partials: [], uncoveredShare: 1 };
+            if (takenHosts.length && (plan.reason === 'uncovered-ground' || plan.reason === 'no-parcels')) {
+                const footprintArea = takeCtx.area(footprint);
+                const uncoveredM2 = Math.max(0, (Number(plan.uncoveredShare) || 0) * footprintArea - hostOverlapM2);
+                if (uncoveredM2 <= Math.max(formationEdit.DEFAULT_TOLERANCE_M2, footprintArea * formationEdit.DEFAULT_TOLERANCE_PCT / 100)) {
+                    plan = { mode: plan.parcelIds.length ? 'merge' : 'ground', reason: null, parcelIds: plan.parcelIds.slice(), partials: [], uncoveredShare: uncoveredM2 / footprintArea };
+                } else {
+                    plan = { ...plan, reason: 'uncovered-ground', uncoveredShare: uncoveredM2 / footprintArea };
+                }
+            }
+            if (plan.mode === 'refuse') {
+                const partialText = plan.partials
+                    .map(partial => `${partial.id} (${Math.round(partial.coveredShare * 100)}%)`)
+                    .join(', ');
+                const message = plan.reason === 'partial-parcels'
+                    ? `Taking whole parcels, but the building footprint covers only part of: ${partialText}. Cut the ground first, or place without the whole-parcel option.`
+                    : (plan.reason === 'uncovered-ground'
+                        ? `Part of the building footprint lies on no live parcel here (${Math.round(plan.uncoveredShare * 100)}% uncovered).`
+                        : 'No parcels found under the building footprint.');
+                if (typeof updateStatus === 'function') updateStatus(message);
+                try { this._setLastApplyFailure(idLabel, { code: 'building-partial-parcels', message, partials: plan.partials }); } catch (_) { }
+                return { ok: false };
+            }
+            const takenIds = plan.parcelIds.map(String);
+            const takenFeatures = candidates.filter(entry => takenIds.includes(String(entry.id))).map(entry => entry.feature);
+            // A whole-parcel adopt is still a fresh formation stamp. Always mint its parcel and
+            // hide the source instead of mutating a cadastral feature in place.
+            let unionFeature = null;
+            let unionFailure = null;
+            try {
+                unionFeature = [...takenFeatures.map(feature => feature.geometry), ...groundTakeGeometries].reduce((acc, geometry) => {
+                    const asFeat = { type: 'Feature', properties: {}, geometry };
+                    return acc ? turfRef.union(acc, asFeat) : asFeat;
+                }, null);
+            } catch (error) {
+                // Already a refusal below; the clipper's own error now travels with it.
+                unionFailure = clipFailureApi().clipFailure('union', error, { site: 'apply-buildings.hostUnion', proposalId: idLabel }, []);
+                unionFeature = null;
+            }
+            if (!unionFeature || !unionFeature.geometry) {
+                const message = unionFailure
+                    ? `Could not merge the host parcels into one parcel: ${unionFailure.originalMessage}`
+                    : 'Could not merge the host parcels into one parcel.';
+                try { this._setLastApplyFailure(idLabel, { code: 'building-merge-failed', message }); } catch (_) { }
+                return { ok: false };
+            }
+            // Nothing is built over a street — refuse before any mutation. Whole taken parcels
+            // can reach far past the drawn footprint, so this tests the ground actually taken.
+            {
+                const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
+                    ? this._appliedRoadOverlappedByTaking(unionFeature.geometry, idLabel, options) : null;
+                if (roadHit) {
+                    const road = roadHit.proposal;
+                    const roadName = road.title || road.name || road.proposalId;
+                    const message = `Cannot apply the building: its parcel take would stand on ${Math.round(roadHit.overlapM2)} m² of the applied road "${roadName}". Nothing is built over a street — move it clear, or unapply that road first.`;
+                    if (typeof updateStatus === 'function') updateStatus(message);
+                    try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
+                    try { this._setLastApplyFailure(idLabel, { code: 'building-over-road', message, roadProposalId: String(road.proposalId || ''), overlapM2: roadHit.overlapM2 }); } catch (_) { }
+                    return { ok: false };
+                }
+            }
+            const primary = takenFeatures[0];
+            const childCadastreIds = formationEdit.baseIdsOfFeatures(takenFeatures);
+            const groundIds = groundIdsWith(takenFeatures);
+            if (!childCadastreIds.length && !groundIds.length) {
+                throw new Error('Building formation has no explicit cadastral anchors.');
+            }
+            const childFeature = {
+                type: 'Feature',
+                geometry: JSON.parse(JSON.stringify(unionFeature.geometry)),
+                properties: {
+                    producedByProposalId: proposalId,
+                    rootParcelId: childCadastreIds[0] || null,
+                    rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
+                    cadastreParcelIds: childCadastreIds,
+                    ...(groundIds.length ? { groundIds } : {}),
+                    calculatedArea: Math.round(_calculateGeoJsonArea(unionFeature.geometry)),
+                    isProposed: true,
+                    ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
+                    ownershipType: 'private'
+                }
+            };
+            const bodyFeatures = [childFeature];
+            this._assignSyntheticChildIdentities(proposalId, bodyFeatures);
+            const childIds = bodyFeatures
+                .map(feature => _getParcelIdFromFeature(feature))
+                .filter(id => id !== undefined && id !== null)
+                .map(String);
+            await this._addFeaturesToMap(bodyFeatures, true, proposalData, options);
+            bodyFeatures.forEach(feature => {
+                const childId = _getParcelIdFromFeature(feature);
+                try { if (childId) this._markParcelProducedByProposal(childId, proposalId, options); } catch (_) { }
+            });
+            this._consumeFeaturesFromLiveFabric(takenFeatures, options);
+            finishOwnership(childIds);
+            return { ok: true, parentIds: takenIds.slice() };
+        }
+
+        // Default: FOOTPRINT parcel. Hosts are every live parcel the footprint genuinely overlaps;
+        // the footprint must stand on live fabric (uncovered ground refuses loudly).
+        const footprintArea = takeCtx.area(footprint);
+        if (!(footprintArea > 0)) {
+            try { this._setLastApplyFailure(idLabel, { code: 'building-footprint-degenerate', message: 'The building footprint has no usable area.' }); } catch (_) { }
+            return { ok: false };
+        }
+        const hosts = [];
+        let coveredM2 = hostOverlapM2;
+        candidates.forEach(entry => {
+            const parcelFeature = { type: 'Feature', properties: {}, geometry: entry.feature.geometry };
+            const overlap = takeCtx.intersectionArea(footprint, parcelFeature);
+            if (overlap < formationEdit.DEFAULT_TOLERANCE_M2) return;
+            coveredM2 += overlap;
+            hosts.push(entry);
+        });
+        if (!hosts.length && !takenHosts.length) {
+            const message = 'No parcels found under the building footprint.';
+            if (typeof updateStatus === 'function') updateStatus(message);
+            try { this._setLastApplyFailure(idLabel, { code: 'building-no-parcels', message }); } catch (_) { }
+            return { ok: false };
+        }
+        const uncoveredM2 = Math.max(0, footprintArea - coveredM2);
+        if (uncoveredM2 > Math.max(formationEdit.DEFAULT_TOLERANCE_M2, footprintArea * formationEdit.DEFAULT_TOLERANCE_PCT / 100)) {
+            const message = `Part of the building footprint lies on no live parcel here (${Math.round(uncoveredM2 / footprintArea * 100)}% uncovered).`;
+            if (typeof updateStatus === 'function') updateStatus(message);
+            try { this._setLastApplyFailure(idLabel, { code: 'building-uncovered-ground', message }); } catch (_) { }
+            return { ok: false };
+        }
+
+        const hostIds = hosts.map(entry => String(entry.id));
+        const hostFeatures = hosts.map(entry => entry.feature);
+        const primary = hostFeatures[0];
+        const parentEntries = hosts.flatMap(entry => formationEdit.cadastreIdsOfFeature(entry.feature)
+            .map(baseId => ({ baseId, feature: entry.feature })));
+        const buildingCadastreIds = formationEdit.overlappingBaseIds(footprint, parentEntries, takeCtx);
+        const groundIds = groundIdsWith(hostFeatures);
+        if (!buildingCadastreIds.length && !groundIds.length) {
+            throw new Error('Building formation has no explicit cadastral anchors under its footprint.');
+        }
+
+        const buildingParcel = {
+            type: 'Feature',
+            geometry: JSON.parse(JSON.stringify(footprintGeometry)),
+            properties: {
+                producedByProposalId: proposalId,
+                buildingParcel: true,
+                rootParcelId: buildingCadastreIds[0] || null,
+                rootParcelNumber: _resolveRootParcelNumberFromProperties(primary ? primary.properties : null) || null,
+                cadastreParcelIds: buildingCadastreIds,
+                ...(groundIds.length ? { groundIds } : {}),
+                calculatedArea: Math.round(_calculateGeoJsonArea(footprintGeometry)),
+                isProposed: true,
+                ownershipDetails: JSON.parse(JSON.stringify(proposerOwnership)),
+                ownershipType: 'private'
+            }
+        };
+
+        // Each host's remainder goes back to its owner (§14.2). A remainder of another
+        // formation keeps that formation's identity; only cadastral remainders become this
+        // building formation's children.
+        const ownRemainders = [];
+        const foreignRemainders = [];
+        const allocateForeignIndex = typeof this._createForeignIndexAllocator === 'function'
+            ? this._createForeignIndexAllocator(options)
+            : null;
+        // `threw` distinguishes a real "fully consumed" (null difference) from a failed
+        // computation, so the caller can refuse instead of hiding ground it never re-minted.
+        //
+        // There used to be a retry here on coordinates truncated to 7 decimals (~1.1 cm). It is
+        // gone: quantizing coordinates is what MANUFACTURES degenerate rings in the first place
+        // (a coarse grid collapses near-coincident points into identical ones), and it is the same
+        // rounding that used to leave sliver debris along every cut. Silently returning a cut
+        // computed at centimetre precision is a wrong answer wearing a right answer's clothes.
+        // A throw here is a real failure and is reported as one.
+        const safeDifference = (aGeometry, bFeature, hostId) => {
+            const a = { type: 'Feature', properties: {}, geometry: aGeometry };
+            try {
+                return { result: turfRef.difference(a, bFeature), threw: false, failure: null };
+            } catch (error) {
+                const failure = clipFailureApi().clipFailure('difference', error, { site: 'apply-buildings.hostRemainder', proposalId: idLabel, parcelId: hostId }, [a, bFeature]);
+                console.error(`[${new Date().toISOString()}] [_formBuildingParcel] ${failure.message}`);
+                return { result: null, threw: true, failure };
+            }
+        };
+        let cutFailedHostId = null;
+        let cutFailure = null;
+        hostFeatures.forEach(hostFeature => {
+            if (cutFailedHostId) return;
+            const { result: difference, threw, failure } = safeDifference(hostFeature.geometry, footprint,
+                _getParcelIdFromFeature(hostFeature));
+            if (!difference || !difference.geometry) {
+                // "Fully consumed" must be TRUE, not an exception artifact: a sweep-line throw
+                // here used to hide the host with no remainder minted — a whole parcel of DEAD
+                // ground around the building (unclickable, unhoverable). If the computation
+                // failed AND the host is not genuinely inside the footprint, refuse the apply
+                // rather than swallow ground that cannot be re-minted.
+                if (threw) {
+                    const hostArea = takeCtx.area({ type: 'Feature', properties: {}, geometry: hostFeature.geometry });
+                    const covered = takeCtx.intersectionArea(
+                        { type: 'Feature', properties: {}, geometry: hostFeature.geometry }, footprint);
+                    if (!(hostArea > 0) || (hostArea - covered) > Math.max(1, hostArea * 0.01)) {
+                        cutFailedHostId = String(_getParcelIdFromFeature(hostFeature) || 'unknown');
+                        cutFailure = failure;
+                    }
+                }
+                return; // host fully consumed by the footprint
+            }
+            const hostId = String(_getParcelIdFromFeature(hostFeature) || '');
+            const hostIdentity = formationEdit.formationIdentityOf(hostFeature);
+            const hostProducer = hostFeature.properties
+                && hostFeature.properties.producedByProposalId;
+            const isForeign = !!(hostIdentity && hostProducer
+                && String(hostProducer) !== String(proposalId));
+            const geometries = difference.geometry.type === 'MultiPolygon'
+                ? difference.geometry.coordinates.map(coordinates => ({ type: 'Polygon', coordinates }))
+                : [difference.geometry];
+            const parts = geometries.map(geometry => ({
+                geometry,
+                area: _calculateGeoJsonArea(geometry)
+            })).filter(part => part.area >= 0.5).sort((a, b) => b.area - a.area);
+
+            if (isForeign && allocateForeignIndex) allocateForeignIndex.reserve(hostIdentity.anchor, hostIdentity.token, hostIdentity.index);
+
+            parts.forEach((part, index) => {
+                const remainder = JSON.parse(JSON.stringify(hostFeature));
+                remainder.geometry = part.geometry;
+                remainder.properties = remainder.properties || {};
+                remainder.properties.calculatedArea = Math.round(part.area);
+                if (isForeign && allocateForeignIndex) {
+                    const syntheticIndex = index === 0
+                        ? hostIdentity.index
+                        : allocateForeignIndex(hostIdentity.anchor, hostIdentity.token);
+                    remainder.properties.__carryIdentity = {
+                        parcelId: index === 0
+                            ? hostId
+                            : _composeSyntheticParcelId(hostIdentity.root, hostIdentity.token, syntheticIndex),
+                        parcelNumber: index === 0
+                            ? (hostFeature.properties.BROJ_CESTICE || null)
+                            : _composeSyntheticParcelNumber(
+                                hostFeature.properties.rootParcelNumber || null,
+                                hostIdentity.token,
+                                syntheticIndex),
+                        syntheticToken: hostIdentity.token,
+                        syntheticIndex
+                    };
+                    foreignRemainders.push(remainder);
+                    return;
+                }
+                remainder.properties.producedByProposalId = proposalId;
+                ownRemainders.push(remainder);
+            });
+        });
+
+        if (cutFailedHostId) {
+            const message = `Cannot apply the building: the remainder of parcel ${cutFailedHostId} could not be computed — applying would leave its ground dead on the map.`
+                + (cutFailure ? ` (${cutFailure.originalMessage})` : '');
+            if (typeof updateStatus === 'function') updateStatus(message);
+            try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
+            try { this._setLastApplyFailure(idLabel, { code: 'building-cut-failed', message, parcelId: cutFailedHostId }); } catch (_) { }
+            return { ok: false };
+        }
+        // Nothing is built over a street — refuse before any mutation (everything above is pure
+        // computation on clones).
+        {
+            const roadHit = (typeof this._appliedRoadOverlappedByTaking === 'function')
+                ? this._appliedRoadOverlappedByTaking(footprintGeometry, idLabel, options) : null;
+            if (roadHit) {
+                const road = roadHit.proposal;
+                const roadName = road.title || road.name || road.proposalId;
+                const message = `Cannot apply the building: its footprint would stand on ${Math.round(roadHit.overlapM2)} m² of the applied road "${roadName}". Nothing is built over a street — move it clear, or unapply that road first.`;
+                if (typeof updateStatus === 'function') updateStatus(message);
+                try { if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 8000, 'error'); } catch (_) { }
+                try { this._setLastApplyFailure(idLabel, { code: 'building-over-road', message, roadProposalId: String(road.proposalId || ''), overlapM2: roadHit.overlapM2 }); } catch (_) { }
+                return { ok: false };
+            }
+        }
+        const children = [buildingParcel, ...ownRemainders, ...foreignRemainders];
+        this._assignSyntheticChildIdentities(proposalId, children);
+        await this._addFeaturesToMap(children, true, proposalData, options);
+        const childIds = [];
+        const buildingParcelIds = [];
+        children.forEach(child => {
+            const childId = _getParcelIdFromFeature(child);
+            const ownsChild = child.properties
+                && String(child.properties.producedByProposalId || proposalId) === String(proposalId);
+            if (ownsChild && childId !== undefined && childId !== null) childIds.push(String(childId));
+            if (ownsChild && child.properties && child.properties.buildingParcel === true
+                && childId !== undefined && childId !== null) buildingParcelIds.push(String(childId));
+            try {
+                if (childId) this._markParcelProducedByProposal(
+                    childId,
+                    ownsChild ? proposalId : String(child.properties.producedByProposalId),
+                    options
+                );
+            } catch (_) { }
+        });
+        // A DERIVED host's largest remainder carries the host's own id (§15b: identity flows
+        // with the ground), so _addFeaturesToMap above REPLACED that registry entry with the
+        // remainder piece. Hiding such a host by feature would hide the remainder we just
+        // minted — a whole parcel of dead, unclickable ground. Hide only hosts whose id no
+        // child re-uses.
+        const reusedHostIds = new Set(children
+            .map(child => String(_getParcelIdFromFeature(child) || ''))
+            .filter(Boolean));
+        this._consumeFeaturesFromLiveFabric(hostFeatures.filter(hostFeature => {
+            const hostId = String(_getParcelIdFromFeature(hostFeature) || '');
+            return !(hostId && reusedHostIds.has(hostId));
+        }), options);
+        finishOwnership(buildingParcelIds);
+
+        return { ok: true, parentIds: hostIds.concat(takenHosts.map(entry => String(entry.id))) };
+    },
+    };
+});

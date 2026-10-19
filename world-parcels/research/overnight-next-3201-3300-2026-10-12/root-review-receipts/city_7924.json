@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7924",
+  "decision": "held",
+  "checkedAt": "2026-10-12T05:22:20Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-7924-chittorgarh.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/chittorgarh-service-review.json"
+  ],
+  "reason": "WUP code 7924, rank 3203, country, point, and 188409 persons match the immutable roster. English and Hindi searches are recorded. Rajasthan's official map and record leads support cadastral custody, but no native-ID full polygon or bounded vector response was obtained; the BhuNaksha viewer timed out or returned 502. Fresh exact-ID reads, forced paging, thirteen bounded cells, metric geometry checks, source binding, and headed Details verification are not evidenced. A static map and unavailable viewer are not citywide absence findings."
+}

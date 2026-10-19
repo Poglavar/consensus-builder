@@ -1,0 +1,77 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:AG:saint-johns",
+  "name": "Saint John's",
+  "country": "Antigua and Barbuda",
+  "countryCode": "AG",
+  "centerLatLon": [
+    17.116666666666667,
+    -61.85
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Saint John's Antigua official government parcel map GIS cadastral parcels",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php"
+      ]
+    },
+    {
+      "query": "Saint John Antigua landregistry cadastral map landfolio vision map official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php",
+      "observation": "Government Land Registry is the repository for Antigua land records and uses Landfolio; GIS integration/public-access module is described as a vision, not a verified public parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Antigua Land Registry page opened; it describes the Landfolio registry and repository for Antigua land records, but no public parcel geometry endpoint."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "Antigua's registry records exist, but the evidence reviewed describes a national records repository and does not establish registry coverage or parcel mapping for Saint John's specifically.",
+    "urls": [
+      "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "Antigua's registry records exist, but the evidence reviewed describes a national records repository and does not establish registry coverage or parcel mapping for Saint John's specifically."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "Antigua's registry records exist, but the evidence reviewed describes a national records repository and does not establish registry coverage or parcel mapping for Saint John's specifically.",
+  "registryEvidenceUrls": [
+    "https://legalaffairs.gov.ag/detail_page.php?page=landRegistry.php"
+  ],
+  "sourceIds": []
+}

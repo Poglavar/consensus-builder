@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2845-yingxia.json",
+  "purpose": "Document exact city-scope official registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "WUP identity and local administrative hierarchy remain unresolved. Search hits for similarly named places cannot be safely joined to this low-plausibility WUP city row.",
+  "registryAssessment": "No primary source was found that securely ties the WUP locality “Yingxia” and its low-plausibility 2025 population row to a specific local administrative unit or land-registration office. A search result for the toponym at a nearby coordinate is non-primary and is not used to attach a registry office.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyt.xinjiang.gov.cn/",
+      "observation": "No primary source was found that securely ties the WUP locality “Yingxia” and its low-plausibility 2025 population row to a specific local administrative unit or land-registration office. A search result for the toponym at a nearby coordinate is non-primary and is not used to attach a registry office."
+    },
+    {
+      "url": "https://www.xinjiang.gov.cn/",
+      "observation": "Official page reviewed for public service and parcel-geometry scope; no personal or property-specific query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yingxia Xinjiang China official land registry cadastre public parcel map",
+      "result": "The WUP identity remains unresolved among local transliterations and similarly named settlements. No city-specific official registry or anonymous parcel geometry route could be safely attached.",
+      "method": "Separate English-language official-source-focused search."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "英下乡 英阿瓦提 自然资源局 不动产登记 地籍图 官方",
+      "result": "Search results surfaced multiple similarly named Xinjiang settlements and a non-primary gazetteer locality near the WUP point; no first-party page securely reconciled the WUP name, city-scale population, and responsible land office.",
+      "method": "Separate local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "No primary municipal/local government source reconciled the WUP locality and point to an administrative unit; no anonymous public parcel schema was verified."
+  },
+  "privacy": "No parcel/owner/address/tax-account lookup or login was made. No geometry or private attributes retained.",
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "No primary municipal/local government source reconciled the WUP locality and point to an administrative unit; no anonymous public parcel schema was verified."
+  }
+}

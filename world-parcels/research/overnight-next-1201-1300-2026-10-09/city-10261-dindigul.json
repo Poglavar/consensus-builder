@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:10261",
+  "wupCityCode": 10261,
+  "queueRank": 1270,
+  "rank": 1270,
+  "name": "Dindigul",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [10.3645102514528, 77.9787829314499],
+  "centerLatLon": [10.3645102514528, 77.9787829314499],
+  "pointBasis": "Exact immutable WUP 2025 queue point in latitude/longitude order; not shifted to force a parcel hit.",
+  "population2025": 438809,
+  "population2025k": 438.809,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "aliases": ["dindigul"],
+  "status": "complete",
+  "resultCategory": "official_local_registry_entry_verified_but_geometry_unavailable",
+  "registryFound": true,
+  "registryBasis": "The official Dindigul District Survey and Land Records page identifies the local Survey and Land Records office, states that F-line and sub-division surveys and patta transfers are handled through taluk offices, and reports digitized UDR A-Register/Chitta records, computerized FMS, and village-map mosaicing in progress. This establishes a local cadastral/land-record custodian but not public citywide parcel geometry.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "blocker": "The bounded anonymous attempts reached official district pages but the Tamil Nadu e-Services and TNGIS hosts timed out before current JavaScript/configuration, public API metadata, safe native parcel IDs, schema/CRS, or polygon geometry could be inspected. Timeout and lack of an exact-point hit are not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Tamil Nadu Survey and Land Records / Tamil Nadu e-Services / TNGIS",
+    "url": "https://dindigul.nic.in/survey-and-land-records/",
+    "operator": "Survey and Land Records, Government of Tamil Nadu; local custodian: Assistant Director (Survey & Land Records), Dindigul Collectorate",
+    "serviceType": "Official district land-record and survey service references, with state e-Services and GIS portals",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Dindigul district Survey and Land Records custodian and Tamil Nadu state land-record/GIS services.",
+    "verifiedOpenScope": "Local custodian and official service identities only; no anonymous parcel response or geometry obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dindigul cadastral parcel map official Tamil Nadu land records GIS API",
+        "result": "Found the official Dindigul District e-Services land page, the official Survey and Land Records page, the Tamil Nadu Government Services Portal description of land-record services, and official TNGIS references. The district page describes digitized A-Register/Chitta, FMS, and village-map work, but discovery did not expose a safe parcel geometry response.",
+        "actualResultUrls": [
+          "https://dindigul.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://dindigul.nic.in/survey-and-land-records/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "திண்டுக்கல் நில அளவை வரைபடம் அதிகாரப்பூர்வ இணையதளம் பட்டா நிலப்பதிவு",
+        "result": "The first-party discovery results identified the same official Dindigul Survey and Land Records and Tamil Nadu land-record/GIS services, including FMB/TSLR, A-Register, Chitta and map-related services. No safe native parcel ID, schema, CRS, or polygon response was exposed.",
+        "actualResultUrls": [
+          "https://dindigul.nic.in/survey-and-land-records/",
+          "https://dindigul.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://eservices.tn.gov.in/",
+          "https://www.tngis.tn.gov.in/apps.html"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://dindigul.nic.in/survey-and-land-records/",
+        "operator": "Dindigul District Administration, Government of Tamil Nadu",
+        "scope": "Local Survey and Land Records custodian; describes surveys, sub-divisions, digitized UDR records, FMS, and village-map mosaicing."
+      },
+      {
+        "url": "https://dindigul.nic.in/service/e-services-anytime-anywhere-land/",
+        "operator": "Dindigul District Administration / Government of Tamil Nadu",
+        "scope": "Links official land e-services for Patta, FMB/Chitta/TSLR, A-Register, patta verification, and poramboke verification."
+      },
+      {
+        "url": "https://eservices.tn.gov.in/",
+        "operator": "Government of Tamil Nadu",
+        "scope": "State land-record e-Services / Integrated Land Record entry point; live route was not obtained in the bounded request."
+      },
+      {
+        "url": "https://www.tngis.tn.gov.in/apps.html",
+        "operator": "Tamil Nadu Geographical Information System / TNeGA",
+        "scope": "Official state GIS application directory; indexed discovery references Dindigul and GIS data, but no parcel API response was verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://dindigul.nic.in/survey-and-land-records/",
+        "method": "GET; anonymous public page over TLS",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded; established the local Survey and Land Records custodian and digitization scope."
+      },
+      {
+        "url": "https://dindigul.nic.in/service/e-services-anytime-anywhere-land/",
+        "method": "GET; anonymous public page over TLS",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Loaded; identified official Tamil Nadu land-record service links."
+      },
+      {
+        "url": "https://eservices.tn.gov.in/",
+        "method": "HEAD/GET; anonymous public route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Timed out after 15 seconds in the bounded request; no HTML, JavaScript/configuration, API route, schema, CRS, ID, or geometry retained."
+      },
+      {
+        "url": "https://tngis.tn.gov.in/",
+        "method": "HEAD/GET; anonymous public route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Bounded request did not complete; no service configuration or parcel response retained."
+      },
+      {
+        "url": "https://www.tngis.tn.gov.in/apps.html",
+        "method": "GET; anonymous public route",
+        "httpStatus": null,
+        "contentType": null,
+        "assessment": "Timed out after 20 seconds while attempting to retrieve the current application page; indexed first-party discovery was recorded separately."
+      }
+    ],
+    "schemaCrs": {
+      "nativeCrs": null,
+      "geometryResponseSchema": "Not verified",
+      "viewerLayers": []
+    }
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "remainingUncertainty": "Whether the current Tamil Nadu e-Services, TamilNilam/Collabland, or TNGIS applications expose anonymous parcel polygons for Dindigul; the native identity field, schema, CRS, endpoint, and citywide coverage remain unknown. No exact-point parcel query was run; the exact WUP point was preserved unchanged.",
+  "registryEvidenceUrls": ["https://dindigul.nic.in/survey-and-land-records/", "https://dindigul.nic.in/service/e-services-anytime-anywhere-land/", "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu"],
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "adapterQualification": "held_pending_serial_review",
+  "nextStep": "Serial reviewer should independently inspect the current Tamil Nadu e-Services/TNGIS JavaScript and any public spatial service; keep runtime held until safe native IDs and real polygon geometry are independently qualified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

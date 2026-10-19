@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-6288-kadipaten.json",
+  "cityCode": 6288,
+  "queueRank": 2505,
+  "name": "Kadipaten",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "pointLatLon": [-6.74565875896275, 108.21985761169],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhumi.atrbpn.go.id/", "httpStatus": 200, "outcome": "Official ATR/BPN BHUMI public cadastral viewer loaded anonymously. Current HTML and referenced Next.js JavaScript chunks were inspected; no usable anonymous parcel feature/API response was obtained."},
+    {"method": "GET", "url": "https://kab-majalengka.atrbpn.go.id/", "httpStatus": 200, "outcome": "Official local Kantor Pertanahan Kabupaten Majalengka site loaded and identified as the local ATR/BPN land-office custodian; no parcel geometry request was made."},
+    {"method": "GET", "url": "https://inframap.majalengkakab.go.id/Site/home", "httpStatus": 200, "outcome": "Official Majalengka WebGIS loaded and exposed administrative/thematic map links. It was not evidenced as a cadastral parcel service, so no parcel query or sample was retained."},
+    {"method": "GET", "url": "https://majalengkakab.go.id/wp-content/uploads/2025/07/perbup2024_4rtdrkertajati-kadipaten_salinan-2.pdf", "httpStatus": "search-indexed first-party source", "outcome": "Official planning-regulation map mentioning the Kertajati-Kadipaten planning area; planning map evidence only, not cadastral parcel geometry."}
+  ],
+  "schemaAndCrs": {
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "rawAttributesRetained": false,
+    "inspection": "BHUMI's current JavaScript/configuration shell was inspected. No safe, anonymous parcel endpoint with a bounded ID-plus-geometry response was qualified."
+  },
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official source discovery is recorded, but no parcel feature response or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of absence.", "No citywide extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "BHUMI and the local land-office source are official and reachable, but a bounded anonymous parcel API/geometry response remains unresolved. Inframap is general municipal GIS evidence only."
+}

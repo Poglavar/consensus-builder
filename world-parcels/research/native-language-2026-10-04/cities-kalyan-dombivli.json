@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 156,
+  "city": "Kalyan-Dombivli",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kalyan-dombivli.json",
+  "query": {
+    "language": "Marathi",
+    "script": "Devanagari",
+    "text": "कल्याण डोंबिवली मालमत्ता नकाशा जमीन अभिलेख महाराष्ट्र सर्वे नकाशा"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Marathi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "कल्याण डोंबिवली मालमत्ता नकाशा जमीन अभिलेख महाराष्ट्र सर्वे नकाशा",
+    "englishQuery": "Kalyan-Dombivli property map and Maharashtra land survey records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Maharashtra Bhumi Abhilekh",
+      "url": "https://www.bhumiabhilekh.maharashtra.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "State land-record portal advertises Mahabhunakasha with survey numbers and property records; Kalyan-Dombivli coverage and vector access unverified."
+    }
+  ],
+  "assessment": "State cadastral map services surfaced, but city-level coverage and stable public spatial-query access were not established.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:8120",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

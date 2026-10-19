@@ -1,0 +1,159 @@
+{
+  "name": "Oujda",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "rank": 940,
+  "point": [
+    34.6803705395081,
+    -1.90738165778047
+  ],
+  "population2025": 583116,
+  "population2025k": 583.116,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "ANCFCC’s official Arabic service pages describe national cadastral mapping, land registration and products, and the official branch network lists local land-conservation/cadastre offices for Oujda and Oujda-Angad. Cadastral plans are ordered as a property-specific service and may require identity, title/property reference, payment and validation. No anonymous vector geometry service was found.",
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/cadastreAr/",
+    "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Whether additional safe anonymous parcel-geometry services or broader source coverage exist; no citywide coverage is claimed.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MA-4827-oujda-source-review",
+    "name": "Oujda official cadastral/land registry source",
+    "url": "https://www.ancfcc.gov.ma/cadastreAr/",
+    "operator": "Morocco",
+    "serviceType": "Official registry/map service evidence; no anonymous parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No safe feature query performed; native parcel key not verified.",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "Official ANCFCC sources establish the local Oujda registry/cadastre office network and cadastral plan products. The public plan-order workflow is property-specific; no public anonymous parcel-vector service or schema was identified. No property/order form was submitted."
+  },
+  "wupCityCode": 4827,
+  "cityId": "wup2025:4827",
+  "queueRank": 940,
+  "centerLatLon": [
+    34.6803705395081,
+    -1.90738165778047
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Reviewed official Arabic cadastre/products and office-directory pages. The plan order is identity/property keyed; no name, title, phone, payment or property reference was entered.",
+  "coverageAssessment": {
+    "claimedScope": "ANCFCC’s official Arabic service pages describe national cadastral mapping, land registration and products, and the official branch network lists local land-conservation/cadastre offices for Oujda and Oujda-Angad. Cadastral plans are ordered as a property-specific service and may require identity, title/property reference, payment and validation. No anonymous vector geometry service was found.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oujda Morocco official land registry cadastral parcel map ANCFCC GIS public plan",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Official ANCFCC sources establish the local Oujda registry/cadastre office network and cadastral plan products. The public plan-order workflow is property-specific; no public anonymous parcel-vector service or schema was identified. No property/order form was submitted.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastreAr/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      },
+      {
+        "language": "Arabic",
+        "query": "الوكالة الوطنية للمحافظة العقارية وجدة مصلحة المسح العقاري خرائط قطع الأراضي",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Official ANCFCC sources establish the local Oujda registry/cadastre office network and cadastral plan products. The public plan-order workflow is property-specific; no public anonymous parcel-vector service or schema was identified. No property/order form was submitted.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastreAr/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ancfcc.gov.ma/cadastreAr/",
+        "observation": "Official Arabic ANCFCC page describes the national land registration and cadastral-survey mandate."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+        "observation": "Official Arabic service catalog describes cadastral and title products and eligibility/document requirements."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+        "observation": "Official branch directory lists local Oujda and Oujda-Angad land-conservation/cadastre offices."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "observation": "Official cadastral-plan request workflow; no anonymous geometry endpoint."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://www.ancfcc.gov.ma/cadastreAr/",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Arabic cadastre/products and office-directory pages. The plan order is identity/property keyed; no name, title, phone, payment or property reference was entered."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Arabic cadastre/products and office-directory pages. The plan order is identity/property keyed; no name, title, phone, payment or property reference was entered."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Arabic cadastre/products and office-directory pages. The plan order is identity/property keyed; no name, title, phone, payment or property reference was entered."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Arabic cadastre/products and office-directory pages. The plan order is identity/property keyed; no name, title, phone, payment or property reference was entered."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Reviewed official Arabic cadastre/products and office-directory pages. The plan order is identity/property keyed; no name, title, phone, payment or property reference was entered."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.ancfcc.gov.ma/cadastreAr/",
+    "fetch": "error",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  "rootPrimarySupplement": {
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+    "fetch": "error",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

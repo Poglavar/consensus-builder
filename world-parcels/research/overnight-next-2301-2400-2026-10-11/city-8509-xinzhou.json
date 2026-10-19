@@ -1,0 +1,61 @@
+{
+  "cityCode": 8509,
+  "queueRank": 2345,
+  "name": "Xinzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [38.4275227479888, 112.726402940663],
+  "population2025": 249044,
+  "population2025k": 249.044,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinzhou Shanxi official cadastral parcel map service GIS land registry",
+        "result": "Found the official Shanxi Natural Resources Department portal, its public-service links to Shanxi Tianditu and the Shanxi natural-resources online trading platform, and the official Webmap.cn page for the Xinzhou Planning and Natural Resources Bureau. No public parcel API was exposed in the search result.",
+        "actualResultUrls": [
+          "https://zrzyt.shanxi.gov.cn/",
+          "https://www.webmap.cn/store.do?method=store&storeId=801",
+          "https://shanxi.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "忻州市 不动产登记 电子地图 地籍图 官方",
+        "result": "Found official Shanxi government material identifying the Xinzhou Natural Resources and Real Estate Registration Center among municipal registration centers, and the Shanxi Natural Resources Department page identifying Xinzhou's municipal natural-resources contact. No anonymous parcel geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://zrzyt.shanxi.gov.cn/",
+          "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+          "https://www.webmap.cn/store.do?method=store&storeId=801"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Official Shanxi Natural Resources Department material lists the Xinzhou Natural Resources and Real Estate Registration Center; the official Webmap.cn subsite identifies the Xinzhou Planning and Natural Resources Bureau.",
+    "officialPublicMap": "The official Shanxi Natural Resources Department links Shanxi Tianditu and the official Xinzhou bureau has a Webmap.cn subsite.",
+    "urls": [
+      "https://zrzyt.shanxi.gov.cn/",
+      "https://www.webmap.cn/store.do?method=store&storeId=801",
+      "https://shanxi.tianditu.gov.cn/",
+      "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf"
+    ]
+  },
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "The Xinzhou Webmap.cn route returned an HTTP 418 CloudWAF access block; Shanxi Tianditu timed out on a direct TLS-verified GET after 20 seconds. These outcomes are not evidence of citywide parcel absence or a zero exact-point hit.",
+    "No parcel feature response, native parcel ID, schema, source CRS, output CRS, or safe polygon was obtained, so no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, or personal fields were requested or retained.",
+    "This packet documents research only and does not constitute source integration, adapter admission, or runtime qualification."
+  ]
+}

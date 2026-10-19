@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RS",
+  "country": "Serbia",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Republic Geodetic Authority (RGZ) - Real Estate Cadastre (Katastar nepokretnosti), geosrbija.rs / katastar.rgz.gov.rs",
+  "portalsFound": [
+    {
+      "url": "https://www.rgz.gov.rs/",
+      "observation": "RGZ main site reachable (HTTP 200); geoportal hosts unreachable"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.rgz.gov.rs/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "institutional site only"
+    },
+    {
+      "url": "https://a3.geosrbija.rs/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://geosrbija.rs/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://katastar.rgz.gov.rs/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://data.gov.rs/api/1/datasets/?q=katastar&page_size=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 datasets; open-data portal has no cadastre dataset"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National real estate cadastre with public viewer (geosrbija); WMS/WFS openness not verified",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Geoportal hosts reset connections; RGZ is known to sell/licence data, so open bulk access is doubtful but untested.",
+  "nextStep": "Retry geosrbija.rs and RGZ INSPIRE services later or from a regional network."
+}

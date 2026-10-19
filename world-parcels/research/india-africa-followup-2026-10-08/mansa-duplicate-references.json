@@ -1,0 +1,102 @@
+{
+  "checkedAt": "2026-10-07T23:01:49.318Z",
+  "sourceId": "zm-nsdi-cadaster-new",
+  "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?f=geojson&where=SDE.Lots.UPID+IN+%28%27MAN%2F350%27%29&outFields=SDE.Lots.OBJECTID%2CSDE.Lots.UPID%2CSDE.Lots.PID%2CSDE.Lots.SRREF%2CSDE.Lots.SURVEY_ARE%2CSDE.Lots.SURVEY_UNI%2CSDE.Lots.SURVEY_DAT%2CSDE.Lots.COUNTRYCODE&returnGeometry=true&outSR=4326",
+  "httpStatus": 200,
+  "payload": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 33375,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                28.89884339161168,
+                -11.201985437843529
+              ],
+              [
+                28.899046403631385,
+                -11.202804960623869
+              ],
+              [
+                28.90022116956946,
+                -11.202567889638313
+              ],
+              [
+                28.90002395562434,
+                -11.20174641854069
+              ],
+              [
+                28.89884339161168,
+                -11.201985437843529
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "SDE.Lots.OBJECTID": 33375,
+          "SDE.Lots.UPID": "MAN/350",
+          "SDE.Lots.PID": "350",
+          "SDE.Lots.SRREF": "138/67",
+          "SDE.Lots.SURVEY_ARE": 131877.411262,
+          "SDE.Lots.SURVEY_UNI": "SQUARE FEET",
+          "SDE.Lots.SURVEY_DAT": -94694400000,
+          "SDE.Lots.COUNTRYCODE": null
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 33607,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                28.89313510280552,
+                -11.207575073246996
+              ],
+              [
+                28.893133953172537,
+                -11.207572167176423
+              ],
+              [
+                28.892829566789224,
+                -11.20680781089707
+              ],
+              [
+                28.892826024689374,
+                -11.206798836553746
+              ],
+              [
+                28.892056335479566,
+                -11.20711205847601
+              ],
+              [
+                28.892360867988966,
+                -11.207873908276952
+              ],
+              [
+                28.89313510280552,
+                -11.207575073246996
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "SDE.Lots.OBJECTID": 33607,
+          "SDE.Lots.UPID": "MAN/350",
+          "SDE.Lots.PID": "350",
+          "SDE.Lots.SRREF": "23/71",
+          "SDE.Lots.SURVEY_ARE": 89426.8743293,
+          "SDE.Lots.SURVEY_UNI": "SQUARE FEET",
+          "SDE.Lots.SURVEY_DAT": -2678400000,
+          "SDE.Lots.COUNTRYCODE": null
+        }
+      }
+    ]
+  },
+  "elapsedMs": 1908
+}

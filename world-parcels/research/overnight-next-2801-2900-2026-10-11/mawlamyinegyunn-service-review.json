@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-4780-mawlamyinegyunn.json",
+  "cityCode": 4780,
+  "queueRank": 2837,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": null,
+  "queryAndRequestOutcome": "Separate English and Burmese discovery queries were performed. Official first-party references identified the Settlement and Land Records Department (SLRD), Survey Department, Myanmar National Portal, and One Map Myanmar development activity. SLRD returned HTTP 403 to an ordinary TLS-verified GET from this environment; Survey Department timed out on ordinary TLS-verified GET; Myanmar National Portal failed local certificate verification, and no certificate exception was used. Search-result pages were readable, but no current public city-specific parcel viewer/API, schema, CRS, or bounded anonymous ID-plus-geometry response for Mawlamyinegyunn was available. No login, CAPTCHA/Cloudflare bypass, credential, private token, unsafe field, or coordinate shift was used.",
+  "attemptedRoutes": [
+    {
+      "route": "https://slrd.gov.mm/en",
+      "role": "national Settlement and Land Records Department official site",
+      "outcome": "Search result accessible; direct GET returned HTTP 403; no city-specific public parcel endpoint identified."
+    },
+    {
+      "route": "https://surveydepartment.gov.mm/",
+      "role": "national Survey Department official site",
+      "outcome": "Search result accessible; direct GET timed out after 8 seconds; One Map Myanmar references describe a geoportal project but did not expose a usable public parcel service."
+    },
+    {
+      "route": "https://myanmar.gov.mm/government-website",
+      "role": "Myanmar National Portal official government directory",
+      "outcome": "Search result identifies SLRD; direct GET failed TLS certificate verification. TLS verification was not disabled."
+    },
+    {
+      "route": "https://www.myanmar.gov.mm/en/web/guest/home",
+      "role": "Myanmar National Portal township/contact reference",
+      "outcome": "Search result lists Mawlamyaing Kyun and township contact information, but not parcel geometry or a local cadastral API."
+    },
+    {
+      "route": "https://www.surveydepartment.gov.mm/news/936 and /news/941",
+      "role": "official Survey Department One Map Myanmar notices",
+      "outcome": "Notices evidence One Map Myanmar web-development/geoportal work; no public parcel layer, service URL, schema, CRS, or anonymous feature response was exposed in the retrieved content."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [16.3803120885206, 95.2626345611321] was preserved in latitude/longitude order.",
+    "No coordinate shift was made to force a hit.",
+    "A zero exact-point hit, map extent miss, timeout, HTTP 403, TLS verification failure, or unusable UI is not evidence of citywide absence.",
+    "National SLRD and Survey Department references are general national agency evidence, not local Mawlamyinegyunn registry custody.",
+    "No raw source-specific attribute set, owner/address/titleholder field, or parcel polygon was retained."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "No safe anonymous parcel feature with a qualified native identity, geometry, schema, and CRS was obtained; independent serial adapter qualification remains required."
+  },
+  "uncertainty": "A local township or regional land-record workflow may exist offline, behind an interactive or authenticated service, or under a non-indexed Burmese endpoint. One Map Myanmar may later expose additional services. None of these possibilities was treated as verified open parcel coverage.",
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry with current official viewer discovery and independent adapter qualification."
+}

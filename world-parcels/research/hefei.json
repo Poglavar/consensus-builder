@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:87",
+  "queueRank": 87,
+  "name": "Hefei",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    31.8471765706065,
+    117.267146275218
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://stb.hfzrzy.com/portal.html",
+      "observation": "Smart Hefei spatio-temporal big-data platform portal (Hefei Natural Resources and Planning Bureau); page loads but no documented open parcel API and content fetch reset."
+    },
+    {
+      "url": "http://sjzyj.hefei.gov.cn/",
+      "observation": "Hefei Data Resources Bureau site; host did not resolve here."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://stb.hfzrzy.com/portal.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "portal shell, 6.9 KB; a follow-up fetch was reset; no parcel list"
+    },
+    {
+      "url": "https://www.hefei.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT rejected (502)"
+    },
+    {
+      "url": "https://data.hefei.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT rejected (502)"
+    },
+    {
+      "url": "http://sjzyj.hefei.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "DNS resolution failed"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "municipal natural-resources/cadastre portals; no open parcel service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "China does not publish an open national parcel polygon service in anything found; municipal portals may hold cadastral or land-use viewers behind logins, WeChat/app flows or geo-restricted hosts. Several .gov.cn hosts were rejected/reset by the proxy, so an open endpoint cannot be ruled out. Web searches (Chinese) for Hefei open parcel/cadastral data returned only general data-platform pages.",
+  "nextStep": "Look for the municipal natural-resources bureau's Tianditu-based or ArcGIS service (e.g. a 'time-space big data platform') with a documented anonymous feature query; test from a mainland-reachable network."
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:77",
+  "queueRank": 77,
+  "name": "Xi'an",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    34.2548749159638,
+    108.94684185227
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyj.xa.gov.cn/",
+      "observation": "Xi'an Municipal Bureau of Natural Resources and Planning; not reachable from the research proxy."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Platform for Common GeoSpatial Information Services; returned HTTP 418 (bot block) to the proxy."
+    },
+    {
+      "url": "https://www.landchina.com/",
+      "observation": "China Land Market site (transactions, not polygon cadastre); HTTP 418."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.xa.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "blocked or unreachable, no data"
+    },
+    {
+      "url": "https://zrzyj.xa.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "blocked or unreachable, no data"
+    },
+    {
+      "url": "https://data.xa.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "blocked or unreachable, no data"
+    },
+    {
+      "url": "https://www.xadata.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "blocked or unreachable, no data"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "blocked or unreachable, no data"
+    },
+    {
+      "url": "https://www.landchina.com/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "blocked or unreachable, no data"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Xi'an government hosts were unreachable through the proxy; other Chinese cities (Guangzhou, Shenzhen, Beijing) also had no verified anonymous polygon endpoint. Parcel (cadastral) data in China is generally held by natural-resources bureaus and not openly published.",
+  "nextStep": "Retry from a China-reachable network; look for a Xi'an open-data platform dataset or a Tianditu Shaanxi service with parcel polygons."
+}

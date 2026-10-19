@@ -1,0 +1,44 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "G",
+ "regionName": "Santiago del Estero",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "n/a",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://app.dgcsantiago.gob.ar/",
+   "observation": "Dirección General de Catastro site: institutional pages, aerial survey, GNSS stations; only a login (Ing/login.aspx) for professionals; no map viewer or OGC service link"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://app.dgcsantiago.gob.ar/",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "no parcel service links"
+  },
+  {
+   "url": "http://dgcsantiago.gob.ar/Ing/login.aspx",
+   "method": "GET",
+   "httpStatus": 404,
+   "assessment": "login page not found"
+  },
+  {
+   "url": "https://visor|geoserver|mapas.dgcsantiago.gob.ar/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "hosts do not resolve/proxy 502 (guesses)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "IDERA node for Santiago del Estero not checked; municipal (capital) services not checked.",
+ "nextStep": "Check IDERA node list and the capital's municipal GIS."
+}

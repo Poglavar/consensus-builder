@@ -1,0 +1,45 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BW",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-BW,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gov.bw/land-management/maps-and-geospatial-data",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "DSM supplies maps/geospatial data on request (in person, fax, payment) in hard copy and digital form; no online viewer or service"
+  },
+  {
+   "url": "https://www.gov.bw/lands , https://www.gov.bw/land-management",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "not found"
+  },
+  {
+   "url": "https://www.dsm.gov.bw/ , https://www.landsandhousing.gov.bw/ , https://gis.gov.bw/ , https://www.gis.gov.bw/ , https://landboard.gov.bw/ , https://www.deedsregistry.gov.bw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "guessed hosts unreachable (timeouts); may not exist"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Botswana cadastre OR parcels&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only boundaries, ecosystems, geology, parks; no parcel data"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "No change: the official page confirms request/fee-based supply; no viewer to inspect and no ArcGIS Online parcel item. Candidate DSM hosts were guesses and did not answer.",
+ "nextStep": "Find the real DSM / Land Information System URL; ask about a data request."
+}

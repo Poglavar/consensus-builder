@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6147",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6147-gravata.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/gravata-service-review.json",
+    "tmp/valhalla-parcel-research/gravatai/login.html",
+    "tmp/valhalla-parcel-research/gravatai/headers.txt"
+  ],
+  "checkedAt": "2026-10-10T14:03:09Z",
+  "reason": "Immutable WUP identity and English/Portuguese searches checked. First-party municipal SMDUR custodianship and the municipality-specific GeoMais login/public-access shell are evidenced. No anonymous parcel feature, stable native ID, CRS or polygon was obtained. Independent adapter pagination, 13-cell, metric GEOS, source binding and headed Details checks are absent; login/401 is not citywide absence."
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "name": "Al Hillah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "queueRank": 486,
+  "rank": 486,
+  "wupCityCode": 3861,
+  "cityId": "wup2025:3861",
+  "point": [
+    32.4808904072701,
+    44.3453704429249
+  ],
+  "centerLatLon": [
+    32.4808904072701,
+    44.3453704429249
+  ],
+  "population2025": 1055267,
+  "population2025k": 1055.267,
+  "populationPlausibility2025": "High",
+  "populationPlausibility": "High",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "registryFound": null,
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "resultCategory": "city_registry_presence_unestablished_no_public_geometry_verified",
+  "scopeLimits": "Official Ministry of Justice sources establish real-estate registration activity in Babil and announce two directorates, one inside the qada center and one in Abu Gharq. For the Al Hillah settlement row, assigning the qada-center branch to Al Hillah is an administrative-location inference; the announcement does not name the city or provide an address. Ministry e-title/property-map services named in the reviewed 2025 notice are limited to selected Baghdad branches. No anonymous parcel geometry or point coverage was verified at the WUP locator.",
+  "registryBasis": "Official MOJ evidence confirms Babil registration branches and an unnamed qada-center branch. It does not explicitly bind a branch location or map sheet to Al Hillah city. The city mapping in the initial packet was an inference; local city-specific registry presence remains unestablished in this pass, without implying that no registry exists.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Arabic",
+        "query": "الحلة بابل مديرية تسجيل عقاري خارطة عقار وزارة العدل",
+        "result": "Official MOJ directory and announcements confirm Babil real-estate registration branches, including a branch in the qada center; the public e-title/property-map rollout reviewed was limited to selected Baghdad directorates. No anonymous map feature source found."
+      },
+      {
+        "language": "English",
+        "query": "Al Hillah Babil Iraq official land registry cadastral parcel map public geometry Ministry of Justice",
+        "result": "Cross-check found the official Babil registry directory and branch announcements but no public parcel vector endpoint or city-specific digital-coverage statement."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.moj.gov.iq/contact_us.php",
+        "observation": "Official MOJ directory lists the Babel First Real Estate Registration Directorate and other Babil branches."
+      },
+      {
+        "url": "https://www.moj.gov.iq/view.7337/",
+        "observation": "Official MOJ announcement says one of two new property-registration directorates would be in the qada center and another in Abu Gharq; it does not explicitly name the qada-center city."
+      },
+      {
+        "url": "https://www.moj.gov.iq/view.8347/",
+        "observation": "Official MOJ field visit confirms a real-estate registration directorate in Babil governorate; the separate Hillah Central Prison reference is not used as proof of office location."
+      },
+      {
+        "url": "https://moj.gov.iq/view.9289/",
+        "observation": "Official notice describes e-title/property-map services launched in selected Baghdad registry directorates; Babil is not among the listed rollout locations."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed official MOJ contacts, branch announcements, and e-service notice. No public anonymous geometry endpoint/schema was exposed; did not submit property, owner, title, or identity searches.",
+      "geometryStatus": "No anonymous parcel geometry response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "rootSupplement": [
+      {
+        "query": "site:moj.gov.iq \"الحلة\" \"التسجيل العقاري\"",
+        "result": "Returned pages mix ministry-wide navigation with unrelated Hillah notices; no direct city-registry binding established."
+      },
+      {
+        "query": "site:babel.gov.iq \"الحلة\" \"التسجيل العقاري\"",
+        "result": "No direct city-bound official registry source established in the reviewed results."
+      }
+    ]
+  },
+  "sourceIds": [],
+  "source": {
+    "sourceId": "iq-moj-babel-registration-branches",
+    "name": "Babil Real Estate Registration Directorate branches",
+    "operator": "Iraq Ministry of Justice / General Directorate of Real Estate Registration",
+    "url": "https://www.moj.gov.iq/contact_us.php",
+    "serviceType": "Official branch directory and ministry notices; no public vector service identified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Babil governorate branches. A qada-center branch is reported but the city name/address is not stated in the announcement; Al-Hillah mapping is inferred."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Babil registry branch evidence; no geometry coverage claim.",
+    "verifiedOpenScope": "No anonymous parcel feature or WUP-point coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://www.moj.gov.iq/contact_us.php",
+    "https://www.moj.gov.iq/view.7337/",
+    "https://www.moj.gov.iq/view.8347/",
+    "https://moj.gov.iq/view.9289/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No public parcel geometry or city-specific digital coverage verified; e-title/map services in the reviewed announcement are limited to selected Baghdad offices."
+  },
+  "remainingUncertainty": "Exact location and scope of the Babil qada-center branch, city-point coverage, any public map service, and digital parcel coverage remain unverified.",
+  "rootReviewedAt": "2026-10-09T00:36:07.367105+00:00"
+}

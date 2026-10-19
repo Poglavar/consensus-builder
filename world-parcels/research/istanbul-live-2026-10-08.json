@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Verify and integrate Istanbul public TKGM point and exact-ID parcel geometry.",
+  "checkedAt": "2026-10-08",
+  "countryCode": "TR",
+  "cityId": "geonames:745044",
+  "appCityId": "istanbul",
+  "status": "verified_sample_partial_coverage",
+  "runtimeStatus": "enabled_point_lookup",
+  "sourceId": "tr-tkgm-parselsorgu-api",
+  "viewer": "https://parselsorgu.tkgm.gov.tr/",
+  "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+  "crs": "EPSG:4326",
+  "nativeIdFields": [
+    "mahalleId",
+    "adaNo",
+    "parselNo"
+  ],
+  "canonicalSampleId": "TR-TKGM-147986-1065-16",
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/41.01384/28.94966",
+      "httpStatus": 200,
+      "geometryType": "Polygon",
+      "closedRingVertexCount": 52
+    },
+    {
+      "method": "GET",
+      "path": "/147986/1065/16",
+      "httpStatus": 200,
+      "geometryType": "Polygon",
+      "sameGeometryAsPoint": true
+    },
+    {
+      "method": "GET",
+      "path": "/147986/999999/999999",
+      "httpStatus": 404,
+      "absenceEvidence": "Structured provider message matches the requested neighborhood/block/parcel identifiers."
+    },
+    {
+      "method": "GET",
+      "path": "/0/0",
+      "httpStatus": 404,
+      "absenceEvidence": "Structured provider message matches the requested point."
+    }
+  ],
+  "sampleFile": "research/istanbul-live-2026-10-08-sample.geojson",
+  "runtimeCapabilities": {
+    "pointLookup": true,
+    "exactNativeId": true,
+    "cadastralRaster": false,
+    "completeAreaEnumeration": false
+  },
+  "runtimeVerification": {
+    "freshAdapterPointAndIdQueries": true,
+    "unavailableAreaQueries": "HTTP 422 parcel-source-area-unsupported; no provider request",
+    "headedBrowserParcelSelection": true,
+    "headedBrowserDetailsOpened": true,
+    "selectedParcelId": "TR-TKGM-147986-1065-16",
+    "repositoryFeatureCountAfterClick": 1,
+    "loadedViewportCellCountAfterClick": 0,
+    "headedBrowserNativeCodeSearch": true
+  },
+  "scopeNote": "One Fatih parcel was freshly verified. The official viewer draws selected parcel geometry over its basemap; it does not expose a parcel area layer in the inspected public layer configuration. Citywide and nationwide completeness are not inferred.",
+  "reuseNote": "The public viewer terms restrict supporting-service access and commercial use. Public geometry access is verified; an open reuse licence is not claimed.",
+  "termsAreInformational": true
+}

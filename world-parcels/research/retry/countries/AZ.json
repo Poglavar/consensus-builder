@@ -1,0 +1,80 @@
+{
+ "kind": "country",
+ "key": "AZ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 (application/json,*/*;q=0.8 for JSON/API calls); Accept-Language: az-AZ,az;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://emlak.gov.az/en",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "agency site; links e-emlak.gov.az, unvanportali.az"
+  },
+  {
+   "url": "https://emlak.gov.az/az",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Azerbaijani version; no map link"
+  },
+  {
+   "url": "https://emlak.gov.az/az/sitemap",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "no map/cadastre viewer page"
+  },
+  {
+   "url": "https://www.e-emlak.gov.az/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://e-emlak.gov.az/az/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "http://unvanportali.az/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "503 (address portal, not a parcel service)"
+  },
+  {
+   "url": "https://www.unvanportali.az",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://map.emlak.gov.az/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "unreachable (guessed)"
+  },
+  {
+   "url": "https://www.arxkom.gov.az/sehersalma/interaktiv-xerite",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "urban-planning interactive map page; no service URL in HTML, parcels not indicated"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "The likely service host e-emlak.gov.az resets connections from this network (Azerbaijani government sites often filter foreign IPs; not proven), and unvanportali.az returns 503, so the previous 'no online cadastre' cannot be confirmed; downgraded to temporarily_unavailable. The emlak.gov.az site itself has no viewer.",
+ "nextStep": "Retry e-emlak.gov.az (and its map/cadastre section) from an Azerbaijani or different network; inspect its viewer JS."
+}

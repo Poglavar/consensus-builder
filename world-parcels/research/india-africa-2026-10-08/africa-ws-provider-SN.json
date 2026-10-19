@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "SN",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "DGID cadastre / Geo-Senegal catalog leads",
+    "operator": "Direction Générale des Impôts et des Domaines / national geodata catalogue",
+    "scope": "Dakar and Saint-Louis searches; national repository record refers to cadastral plan vector data but no open bounded service confirmed",
+    "endpoint": "https://www.dgid.sn/service/cadastre/ ; http://www.georepertoire.gouv.sn/catalog/search/resource/details.page?uuid=%7BF8264ED8-8268-4F69-8BAB-64F0BC72E453%7D",
+    "geometry": "Catalogue/document lead only",
+    "access": "No target-city anonymous polygon request verified in this pass.",
+    "assessment": "Potential data lead; needs service URL and bounded query."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "French (Latin)",
+      "exactQueries": [
+        "\"Bata\" Guinea Ecuatorial catastro parcelas geoportal SIG",
+        "\"Akakopé\" Togo cadastre parcelles géoportail SIG",
+        "\"Saint-Louis\" Sénégal \"parcelles cadastrales\" cadastre SIG",
+        "\"Dakar\" Sénégal \"parcelles cadastrales\" géoportail cadastre",
+        "\"Abidjan\" \"parcelles cadastrales\" géoportail SIG Côte d'Ivoire cadastre",
+        "\"Ouagadougou\" \"parcelles cadastrales\" géoportail SIG cadastre Burkina Faso",
+        "\"Siguiri\" \"cadastre\" parcelles SIG Guinée portail géographique",
+        "\"Coyah\" \"cadastre\" parcelles SIG Guinée Conakry"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

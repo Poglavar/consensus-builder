@@ -1,0 +1,70 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SI",
+ "checkedAt": "2026-09-29",
+ "country": "Slovenia",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Geodetska uprava RS (GURS), eProstor / IPI OGC services",
+ "portalsFound": [
+  {
+   "url": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs",
+   "observation": "Open GeoServer WFS 2.0.0 for the land cadastre (SI.GURS.KN namespace) with layers PARCELE, OSNOVNI_PARCELE, KATASTRSKE_OBCINE, etc. Ownership-related layers (OSEBE_PRAVNE_OS, LASTNISTVO_*) are listed too but were not queried."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "WFS capabilities, cadastre feature types listed"
+  },
+  {
+   "url": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SI.GURS.KN:PARCELE&count=2&outputFormat=application/json&srsName=EPSG:4326&bbox=46.050,14.505,46.052,14.508,urn:ogc:def:crs:EPSG::4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "2 Polygon features, Ljubljana cadastral municipality 1728"
+  },
+  {
+   "url": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SI.GURS.KN:OSNOVNI_PARCELE&count=2&outputFormat=application/json&srsName=EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "2 Polygon features in KO 251 (Prekmurje, ~46.54N 16.06E), different region"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "si-gurs-wfs-parcele",
+  "requestUrl": "https://ipi.eprostor.gov.si/wfs-si-gurs-kn/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=SI.GURS.KN:PARCELE&count=2&outputFormat=application/json&srsName=EPSG:4326&bbox=46.050,14.505,46.052,14.508,urn:ogc:def:crs:EPSG::4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   14.505,
+   46.05,
+   14.508,
+   46.052
+  ],
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "EID_PARCELA / PARCELA_ID",
+  "responseFile": "SI-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Ljubljana (KO 1728) and Prekmurje (KO 251)"
+ },
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "National land cadastre parcels (GURS)",
+  "regionsVerified": [
+   "Ljubljana",
+   "Prekmurje (KO 251)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence/reuse terms not read (GURS open-data terms should be checked). Saved reply has geometry truncated to 40 vertices/ring; no owner data was in the parcel layer attributes.",
+ "nextStep": "Read GURS open-data licence; use PARCELE with bbox paging."
+}

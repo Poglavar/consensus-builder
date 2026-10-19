@@ -1,0 +1,20 @@
+{
+  "cityRecord": "city-2694-botshabelo-n.json",
+  "cityCode": 2694,
+  "queueRank": 2715,
+  "city": "Botshabelo-N",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "reviewStatus": "held",
+  "reviewOutcome": "Public parcel polygons are verified near the WUP point, but serial qualification is still required before any adapter/runtime admission.",
+  "queryAndRequestOutcomes": "English and Afrikaans/local-language discovery was recorded. The public SMEC BotshabeloCads ArcGIS layer was inspected for schema/CRS and queried anonymously with a bounded EPSG:4326 envelope around the unchanged WUP point. The bounded response returned three Polygon features; only native id and geometry were retained.",
+  "cityOrLocalCustodian": "Botshabelo is administratively identified by official Free State material as part of Mangaung Metropolitan Municipality. The public parcel service is hosted by SMEC, and the inspected evidence does not establish that SMEC is the local registry custodian or that the service is the official Mangaung/CSG operational endpoint. Chief Surveyor-General material is general national agency documentation, not a city-bounded response.",
+  "safeFieldAllowlist": ["id (native parcel identity)", "geometry"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "schemaAndCrs": "ArcGIS layer metadata reports Polygon geometry, WKID/EPSG 4326, native object ID fid, and native identity candidates id/featureid/prcl_key/parcel_no. The retained sample uses id only; source field mapping and composite-key provenance remain in the city record.",
+  "sampleGeojson": "botshabelo-n-safe-sample.geojson",
+  "sampleFile": "botshabelo-n-safe-sample.geojson",
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "Three nearby polygons do not establish citywide completeness, legal currency, or official custodian ownership. The first broad query reported exceededTransferLimit. A refused request to the CSG data page is treated as transport evidence only, not absence. Exact-point misses, extent limits, timeouts, login walls, and unusable UI would not prove citywide absence; none were used that way here.",
+  "integrationDisposition": "Research packet only; not source integration or admission. No registry/catalog/runtime files were changed."
+}

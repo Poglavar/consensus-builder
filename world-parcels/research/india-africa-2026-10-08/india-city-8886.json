@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 8886,
+  "cityId": "wup2025:8886",
+  "name": "Indore",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    22.6991756014844,
+    75.8556700061169
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 150,
+  "stateOrUT": "Madhya Pradesh",
+  "administrativeIdentity": {
+    "district": "इन्दौर ज़िला",
+    "tehsilOrTaluk": "Juni Indore Tahsil",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "temporarily_unavailable"
+    ],
+    "previousEvidenceFiles": [
+      "research/indore.json",
+      "research/retry/cities/indore.json"
+    ],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/indore.json",
+        "checkedAt": "2026-09-29",
+        "status": "temporarily_unavailable",
+        "scope": "MP Bhulekh parcel maps claimed statewide for villages (per search results, unverified); urban Indore coverage unknown",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://mpbhulekh.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset by peer; unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.mp.gov.in/ and https://mpbhunaksha.mp.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "proxy 502; unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://landrecords.mp.gov.in/ and https://geoportal.mp.gov.in/...",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset; unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://gis.imcindore.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "proxy 502; unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.imcindore.mp.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=utf-8",
+            "assessment": "municipal site shell only"
+          }
+        ],
+        "conclusion": "The key MP state hosts were unreachable, so absence of an open service is not shown. Indian cadastral viewers (Bhu-Naksha) are typically session/captcha-based rather than open APIs.",
+        "nextStep": "Retry mpbhulekh.gov.in and geoportal.mp.gov.in later; inspect viewer network calls and terms; check Indore Smart City/IMC property GIS."
+      },
+      {
+        "path": "research/retry/cities/indore.json",
+        "checkedAt": "2026-09-30",
+        "status": "temporarily_unavailable",
+        "scope": null,
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://mpbhulekh.gov.in/ ; https://landrecords.mp.gov.in/ ; https://geoportal.mp.gov.in/ ; https://mapit.gov.in/ ; https://www.mpsedc.mp.gov.in/ ; https://mpgis.mp.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset by peer"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.mp.gov.in/ ; https://mpbhunaksha.mp.gov.in/ ; https://mapit.mp.gov.in/ ; https://sarthi.mp.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "CONNECT tunnel 502"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.nic.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "NIC Bhu-Naksha page: tool for authorised State/UT officials (Login); no public API"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.imcindore.mp.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "municipal Next.js shell; no parcel GIS layer found"
+          }
+        ],
+        "conclusion": "All *.mp.gov.in hosts reset or 502 while nic.in and imcindore respond; consistent with Indian-IP-only filtering, unproven.",
+        "nextStep": "Retry MP Bhulekh / MP Bhunaksha from an Indian network; inspect viewer calls and terms."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "इंदौर मध्य प्रदेश भू नक्शा राजस्व नक्शा खसरा भू अभिलेख",
+        "scope": "WUP 8886 Indore cohort label retained; native-script query searched for official local/state cadastral records.",
+        "result": "Official MP WebGIS opened as HTTP 200 JavaScript application shell; it presented a session security notice and no parcel payload in the text view. No target-village or feature geometry result.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://web.landeed.com/madhya-pradesh/bhulekh/hi",
+          "https://web.landeed.com/madhya-pradesh/khasra/hi",
+          "https://mpkhasrasearch.com/districts/indore",
+          "https://forestsclearance.nic.in/writereaddata/Compliancereport/UaComplianceFull_FPMPMIN1441292021_1104251810062714.pdf",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/O.A.%20No.%2073-2024%20%28CZ%29Joint%20Committee%20inspection%20report%20in%20compliance.pdf",
+          "https://mpbhawan.gov.in/Portals/0/Website/Book%20%20Date%2019-11-24.pdf",
+          "https://forestsclearance.nic.in/DownloadPdfFile.aspx?FileName=0_0_6111512291219_scanedmap_Patch6imlipura.pdf&FilePath=..%2Fwritereaddata%2FFormA%2FCAScheme%2FScannedCopyofMap%2F",
+          "https://mplandrecord.com/",
+          "https://mpbhulekhh.com/",
+          "https://www.services.mp.gov.in/eservice/eServices?srvs=19",
+          "https://mpbhulekhrecords.com/",
+          "https://mplandrecordd.com/",
+          "https://forestsclearance.nic.in/DownloadPdfFile.aspx?FileName=2023_7_03_Jul_2023_114445827_scanedmap_Basudha.pdf&FilePath=..%2Fwritereaddata%2FFormA%2FCAScheme%2FScannedCopyofMap",
+          "https://bhulekhmp.net/mp-bhulekh/",
+          "https://phonemap.in/bhu-naksha/madhya-pradesh/",
+          "https://mpbhulekhz.com/",
+          "https://bhulekhjankari.com/land-record-mp/",
+          "https://www.reddit.com/r/MadhyaPradesh/comments/1u520jq/uneven_distribution_of_land_issue_in_bara_396/",
+          "https://www.reddit.com/r/u_getKnowledge99/comments/e8w3f8",
+          "https://en.wikipedia.org/wiki/Indore",
+          "https://en.wikipedia.org/wiki/Indore_Municipal_Corporation",
+          "https://en.wikipedia.org/wiki/Khandwa_Naka"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Madhya Pradesh land records/map entry point",
+        "operator": "State government source as identified on portal/search result; see observation",
+        "homeUrl": "https://webgis2.mpbhulekh.gov.in/",
+        "mapUrl": "https://mpbhulekh.gov.in/",
+        "observation": "Official MP WebGIS opened as HTTP 200 JavaScript application shell; it presented a session security notice and no parcel payload in the text view. No target-village or feature geometry result."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=22.6991756014844&lon=75.8556700061169&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Indore City, Indore, Juni Indore Tahsil, इन्दौर ज़िला, Madhya Pradesh, 452001, India",
+        "osmType": "way",
+        "osmId": 191992283,
+        "address": {
+          "city_district": "Indore City",
+          "city": "Indore",
+          "county": "Juni Indore Tahsil",
+          "state_district": "इन्दौर ज़िला",
+          "state": "Madhya Pradesh",
+          "ISO3166-2-lvl4": "IN-MP",
+          "postcode": "452001",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://webgis2.mpbhulekh.gov.in/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official MP WebGIS opened as HTTP 200 JavaScript application shell; it presented a session security notice and no parcel payload in the text view. No target-village or feature geometry result."
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://webgis2.mpbhulekh.gov.in/",
+          "https://mpbhulekh.gov.in/"
+        ],
+        "scope": "Exact official endpoint/result URLs checked or surfaced during the city query; the state service is a lead, not confirmation of WUP-point parcel coverage."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Open the official WebGIS in a live browser session, resolve the WUP point to district/tehsil/village, and verify the parcel feature geometry and stable khasra identifier."
+}

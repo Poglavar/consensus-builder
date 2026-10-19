@@ -1,0 +1,31 @@
+{
+  "stateCode": "RI",
+  "city": "providence",
+  "endpoint": "https://data.providenceri.gov/api/views/k6gu-363f.json",
+  "status": 200,
+  "name": "Property ID Catalog",
+  "description": "This catalog contains Property ID numbers with address and Plat, Lot, Unit data, as of November 24, 2020. Us this file to look up your address and find the corresponding Property ID, needed to file your Homestead Recertification.",
+  "attribution": "City of Providence Tax Assessor",
+  "columns": [
+    {
+      "name": "PropertyID",
+      "fieldName": "propertyid",
+      "dataTypeName": "number"
+    },
+    {
+      "name": "PlatLotUnit",
+      "fieldName": "platlotunit",
+      "dataTypeName": "text"
+    },
+    {
+      "name": "Class",
+      "fieldName": "class",
+      "dataTypeName": "number"
+    },
+    {
+      "name": "Address",
+      "fieldName": "address",
+      "dataTypeName": "text"
+    }
+  ]
+}

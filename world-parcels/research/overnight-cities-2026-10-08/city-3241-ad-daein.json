@@ -1,0 +1,124 @@
+{
+  "name": "Ad Da'ein",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "rank": 944,
+  "point": [
+    11.4635511208373,
+    26.1336446119875
+  ],
+  "population2025": 581730,
+  "population2025k": 581.73,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "The official Sudan Judiciary describes a national land-registration administration with offices across the states and formal land-registration procedures, but the available official directory material does not identify an Ad Da'ein/East Darfur office. The National Spatial Portal advertises WMS/WFS; its linked portal did not load through the available read-only fetch path and no cadastral layer was confirmed.",
+  "registryEvidenceUrls": [
+    "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "https://nic.gov.sd/public/projectDetails/3"
+  ],
+  "resultCategory": "local_registry_not_confirmed",
+  "remainingUncertainty": "Whether Ad Da'ein has a currently operating local land-registration office, whether the national WFS includes cadastral parcels, and whether any public anonymous geometry covers the WUP locator.",
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourceIds": [],
+  "wupCityCode": 3241,
+  "cityId": "wup2025:3241",
+  "queueRank": 944,
+  "centerLatLon": [
+    11.4635511208373,
+    26.1336446119875
+  ],
+  "technicalBlocker": "The official spatial-portal project link timed out in the browser fetch path. No published local Ad Da'ein layer catalogue or anonymous full-polygon endpoint was found.",
+  "coverageAssessment": {
+    "claimedScope": "No city-specific registry or parcel-map extent is claimed. Sudan has a national judiciary land-registration administration and a National Spatial Portal that advertises OGC WMS/WFS services.",
+    "verifiedOpenScope": "The national court page documents land-registration procedures and multi-state offices; the national spatial portal describes WMS/WFS. No East Darfur/Ad Da'ein cadastral layer, local office, parcel identifier, or full geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official spatial-portal project link timed out in the browser fetch path. No published local Ad Da'ein layer catalogue or anonymous full-polygon endpoint was found."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Arabic",
+        "query": "الضعين شرق دارفور السجل العقاري الأراضي المساحة خريطة رسمية",
+        "scope": "Find first-party East Darfur land-registration and cadastral-map evidence.",
+        "result": "Searches surfaced the official Sudan Judiciary land-registration administration and National Spatial Portal, but not a city-specific Ad Da'ein register or published cadastral layer. The spatial-portal project link was not retrievable through the browser fetch path.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://nic.gov.sd/public/projectDetails/3"
+        ],
+        "executionMethod": "Separate Arabic search followed by official Sudan Judiciary and NIC page review."
+      },
+      {
+        "language": "English",
+        "query": "Ad Da'ein East Darfur official land registry cadastral parcel map GIS",
+        "scope": "Cross-check local registration office coverage and anonymous vector access.",
+        "result": "The official Sudan Judiciary says land registration offices operate across Sudan and documents property-specific procedures; it does not name an Ad Da'ein office. The official National Spatial Portal advertises WMS/WFS but no Ad Da'ein parcel layer was identified.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://nic.gov.sd/public/projectDetails/3",
+          "https://www.geoportal.gov.sd/"
+        ],
+        "executionMethod": "Separate English search; inspected official national source pages and followed the official portal link."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "observation": "The official Sudan Judiciary describes a national land-registration administration with offices across the states and formal land-registration procedures, but the available official directory material does not identify an Ad Da'ein/East Darfur office. The National Spatial Portal advertises WMS/WFS; its linked portal did not load through the available read-only fetch path and no cadastral layer was confirmed."
+      },
+      {
+        "url": "https://nic.gov.sd/public/projectDetails/3",
+        "observation": "The official Sudan Judiciary describes a national land-registration administration with offices across the states and formal land-registration procedures, but the available official directory material does not identify an Ad Da'ein/East Darfur office. The National Spatial Portal advertises WMS/WFS; its linked portal did not load through the available read-only fetch path and no cadastral layer was confirmed."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nic.gov.sd/public/projectDetails/3",
+        "method": "GET / official project page review",
+        "observation": "Official NIC page describes the national spatial portal as interactive and compliant with OGC WMS/WFS."
+      },
+      {
+        "url": "https://www.geoportal.gov.sd/",
+        "method": "official project link",
+        "status": "browser_fetch_timeout",
+        "observation": "The web fetch timed out before page content was returned; no origin availability conclusion is drawn."
+      },
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "method": "official page review",
+        "observation": "National judiciary explains land-registration procedures and says offices operate throughout Sudan; no local office roster entry was found."
+      }
+    ],
+    "geometryDecision": "No full parcel polygon retained. Tile/raster/document outputs, guessed layers, and unverified points are not parcel geometry."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "fetch": "error",
+    "reason": "HTTP Error 521: <none>"
+  },
+  "rootReviewNote": "Reviewed the local institutional evidence separately from public geometry. Indexed official evidence and direct readback failures are distinguished; no full polygon response was verified. Registry null indicates uncertainty rather than absence.",
+  "rootReviewedAt": "2026-10-09T04:48:05.515266+00:00"
+}

@@ -9,7 +9,7 @@
             const api = global.i18n;
             if (api && typeof api.t === 'function') {
                 const translated = api.t(key, params || {});
-                if (translated !== undefined && translated !== null) {
+                if (translated !== undefined && translated !== null && translated !== key) {
                     return translated;
                 }
             }
@@ -20,12 +20,6 @@
     const PARCEL_CLAIM_PORTAL_URLS = Object.freeze({
         development: 'http://localhost:3001/',
         production: 'https://attestify.network/'
-    });
-
-    const PARCEL_CLAIM_RPC_FALLBACKS = Object.freeze({
-        '31337': 'http://127.0.0.1:8545',
-        '11155111': 'https://rpc.sepolia.org',
-        '84532': 'https://sepolia.base.org'
     });
 
     const PARCEL_NFT_ABI_FRAGMENT = [
@@ -150,30 +144,15 @@
         return Boolean(walletState && walletState.status === 'connected' && accounts.length > 0);
     }
 
-    function extractFeatureFromLayer(layer) {
-        if (!layer) return null;
-        // Individual GeoJSON layer — has .feature directly
-        if (layer.feature && layer.feature.geometry) return layer.feature;
-        // Layer group (e.g. from L.geoJSON()) — dig into sub-layers
-        if (typeof layer.getLayers === 'function') {
-            const subLayers = layer.getLayers();
-            for (let i = 0; i < subLayers.length; i++) {
-                if (subLayers[i].feature && subLayers[i].feature.geometry) {
-                    return subLayers[i].feature;
-                }
-            }
-        }
-        // Try toGeoJSON as last resort
-        if (typeof layer.toGeoJSON === 'function') {
-            try {
-                const geojson = layer.toGeoJSON();
-                if (geojson && geojson.type === 'Feature' && geojson.geometry) return geojson;
-                if (geojson && geojson.type === 'FeatureCollection' && Array.isArray(geojson.features) && geojson.features.length > 0) {
-                    return geojson.features[0];
-                }
-            } catch (_) { /* ignore */ }
-        }
-        return null;
+    function getLiveParcelFeature(parcelId) {
+        const id = parcelId !== undefined && parcelId !== null ? String(parcelId) : '';
+        if (!id || !global.LiveParcelFabric || typeof global.LiveParcelFabric.get !== 'function') return null;
+        return global.LiveParcelFabric.get(id);
+    }
+
+    function getCurrentLiveParcelFeature() {
+        const parcelId = global.currentParcel?.id ?? global.selectedParcelId ?? null;
+        return getLiveParcelFeature(parcelId);
     }
 
     function collectMultiSelectedParcelsForMint() {
@@ -184,15 +163,21 @@
 
         const parcels = [];
         multi.selectedParcels.forEach((id) => {
-            const parcelLayer = typeof multi.findParcelById === 'function' ? multi.findParcelById(id) : null;
-            const feature = extractFeatureFromLayer(parcelLayer);
-            const parcelId = feature ? deriveParcelIdentifier(feature) : (id ? id.toString() : null);
+            const feature = getLiveParcelFeature(id);
+            if (!feature) return;
+            const parcelId = deriveParcelIdentifier(feature);
             if (!parcelId) return;
-            const props = feature && feature.properties ? feature.properties : {};
+            const props = feature.properties || {};
             const parcelName = props.name || props.parcel_name || props.parcel || props.BROJ_CESTICE || `Parcel ${parcelId}`;
-            parcels.push({ parcelId, parcelName, feature: feature || parcelLayer });
+            parcels.push({ parcelId, parcelName, feature });
         });
         return parcels;
+    }
+
+    // The Tools tab has one primary: Mint when the parcel can be minted, else Claim.
+    function setPrimaryClaimAction(mintAndClaimButton, claimButton, mintAvailable) {
+        if (mintAndClaimButton) mintAndClaimButton.classList.toggle('btn-primary', mintAvailable);
+        if (claimButton) claimButton.classList.toggle('btn-primary', !mintAvailable);
     }
 
     function setParcelClaimButtonsState(state = 'neutral') {
@@ -210,6 +195,7 @@
             const enableMintMulti = walletConnected && multiCount > 0;
             setButtonEnabledState(mintAndClaimButton, enableMintMulti);
             setButtonEnabledState(claimButton, false);
+            setPrimaryClaimAction(mintAndClaimButton, claimButton, enableMintMulti);
             return;
         }
 
@@ -221,11 +207,13 @@
         if (!['not-minted', 'minted'].includes(normalized)) {
             setButtonEnabledState(mintAndClaimButton, false);
             setButtonEnabledState(claimButton, false);
+            setPrimaryClaimAction(mintAndClaimButton, claimButton, false);
             return;
         }
 
         setButtonEnabledState(mintAndClaimButton, enableMintAndClaim);
         setButtonEnabledState(claimButton, enableClaim);
+        setPrimaryClaimAction(mintAndClaimButton, claimButton, enableMintAndClaim);
     }
 
     function computeFeatureCenter(feature) {
@@ -276,9 +264,18 @@
         }
         // Always use the chain if we have it - we attempted to check on this chain
         const chainParam = cachedChain ? { chain: cachedChain } : {};
-        const retryMessage = cachedChain
-            ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, 'NFT not found. Click to check again.')
-            : tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+        // "Not found" is only said when the chain answered that the parcel has no token. When the
+        // check itself could not run (no RPC, RPC down, wrong contract), say so — never imply absence.
+        let retryMessage;
+        if (state === 'error') {
+            retryMessage = cachedChain
+                ? tParcel('panel.parcel.nft.checkFailedRetry', chainParam, `Couldn't check NFT status on ${cachedChain}. Click to try again.`)
+                : tParcel('panel.parcel.nft.checkFailedRetryNoChain', {}, "Couldn't check NFT status. Click to try again.");
+        } else {
+            retryMessage = cachedChain
+                ? tParcel('panel.parcel.nft.notFoundRetry', chainParam, 'NFT not found. Click to check again.')
+                : tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
+        }
         const retryTooltip = tParcel('panel.parcel.nft.retryTooltip', {}, 'Click to check NFT status again');
         const resolvedMessage = message || tParcel('panel.parcel.nft.statusUnknown', {}, 'NFT status: Not checked yet.');
 
@@ -345,7 +342,7 @@
 
         const mintedLayerApi = global.ParcelsMintedLayer || null;
         const activeLayer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
-        const activeFeature = activeLayer && activeLayer.feature ? activeLayer.feature : null;
+        const activeFeature = getCurrentLiveParcelFeature();
         const parcelIdForLayer = currentParcelMintStatusCache?.parcelId
             || currentParcelMintStatusParcelId
             || resolveParcelId(activeFeature);
@@ -375,7 +372,7 @@
                     link.target = '_blank';
                     link.rel = 'noopener noreferrer';
                     link.textContent = messageText;
-                    link.title = 'View on explorer';
+                    link.title = tParcel('panel.parcel.nft.viewOnExplorer', {}, 'View on explorer');
                     messageContent = link;
                 }
             }
@@ -457,13 +454,14 @@
 
         const isMultiActive = global.multiParcelSelection && global.multiParcelSelection.isActive;
         if (isMultiActive) {
-            setParcelMintStatusIndicator('Ready to mint selected parcels. Mint will check on press.', 'neutral');
+            setParcelMintStatusIndicator(
+                tParcel('panel.parcel.nft.multiReady', {}, 'Ready to mint selected parcels. Mint will check on press.'),
+                'neutral'
+            );
             return null;
         }
 
-        const parcelFeature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             setParcelMintStatusIndicator(
                 tParcel('panel.parcel.nft.statusPrompt', {}, 'Select a parcel to check NFT status.'),
@@ -1020,11 +1018,11 @@
         });
         if (mintDeclareUrl) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Parcel not minted yet. Opening Mint & Attest flow...');
+                global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_opening_mint_attest_flow', {}, 'Parcel not minted yet. Opening Mint & Attest flow...'));
             }
             openExternalUrl(mintDeclareUrl);
         } else if (typeof global.updateStatus === 'function') {
-            global.updateStatus("Parcel not minted yet and the Mint & Attest flow couldn't be prepared.");
+            global.updateStatus(tParcel('status.messages.parcel_not_minted_yet_and_the_mint_attest_flow_couldn_t_be_prepared', {}, "Parcel not minted yet and the Mint & Attest flow couldn't be prepared."));
         }
     }
 
@@ -1041,11 +1039,10 @@
         } catch (error) {
             const isExpectedMissing = isParcelTokenMissingError(error)
                 || (error && typeof error.message === 'string' && /ParcelNFT:\s*Parcel does not exist/i.test(error.message));
+            // Only the contract's own "Parcel does not exist" revert proves absence. A network error,
+            // timeout or unrelated revert means the check did not run — surface it as an error.
             if (!isExpectedMissing) {
-                console.info('Parcel token lookup reverted; treating as not minted.', {
-                    parcelId,
-                    error
-                });
+                throw error;
             }
             const sentinel = new Error('TOKEN_NOT_MINTED');
             sentinel.cause = error;
@@ -1078,9 +1075,7 @@
             }
         }
 
-        const feature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const feature = getCurrentLiveParcelFeature();
         const props = feature ? (feature.properties || {}) : {};
 
         const parcelNumber = props.parcel || props.BROJ_CESTICE || props.parcel_number || null;
@@ -1132,18 +1127,16 @@
         } catch (error) {
             console.error('Failed to open Parcel Builder', error);
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to open Parcel Builder. Please try again.');
+                global.updateStatus(tParcel('status.messages.unable_to_open_parcel_builder_please_try_again', {}, 'Unable to open Parcel Builder. Please try again.'));
             }
         }
     }
 
     async function openClaimOnly() {
-        const parcelFeature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select a parcel before attempting to claim it.');
+                global.updateStatus(tParcel('status.messages.select_a_parcel_before_attempting_to_claim_it', {}, 'Select a parcel before attempting to claim it.'));
             }
             return;
         }
@@ -1151,7 +1144,7 @@
         const parcelId = deriveParcelIdentifier(parcelFeature);
         if (!parcelId) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to determine parcel identifier for claims.');
+                global.updateStatus(tParcel('status.messages.unable_to_determine_parcel_identifier_for_claims', {}, 'Unable to determine parcel identifier for claims.'));
             }
             return;
         }
@@ -1162,7 +1155,7 @@
 
         try {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Resolving parcel claim details...');
+                global.updateStatus(tParcel('status.messages.resolving_parcel_claim_details', {}, 'Resolving parcel claim details...'));
             }
             currentParcelMintStatusParcelId = parcelId;
             currentParcelMintStatusPromise = null;
@@ -1219,7 +1212,7 @@
             });
 
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Opening claim portal...');
+                global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
             }
             openExternalUrl(claimUrl);
         } catch (error) {
@@ -1248,25 +1241,23 @@
             );
             currentParcelMintStatusCache = null;
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to open claim portal. Please try again.');
+                global.updateStatus(tParcel('status.messages.unable_to_open_claim_portal_please_try_again', {}, 'Unable to open claim portal. Please try again.'));
             }
         }
     }
 
     async function openClaimPortal() {
-        const parcelFeature = global.currentParcel && global.currentParcel.layer && global.currentParcel.layer.feature
-            ? global.currentParcel.layer.feature
-            : null;
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select a parcel before attempting to claim it.');
+                global.updateStatus(tParcel('status.messages.select_a_parcel_before_attempting_to_claim_it', {}, 'Select a parcel before attempting to claim it.'));
             }
             return;
         }
         const parcelId = deriveParcelIdentifier(parcelFeature);
         if (!parcelId) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to determine parcel identifier for claims.');
+                global.updateStatus(tParcel('status.messages.unable_to_determine_parcel_identifier_for_claims', {}, 'Unable to determine parcel identifier for claims.'));
             }
             return;
         }
@@ -1274,7 +1265,7 @@
 
         try {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Resolving parcel claim details...');
+                global.updateStatus(tParcel('status.messages.resolving_parcel_claim_details', {}, 'Resolving parcel claim details...'));
             }
             currentParcelMintStatusCache = null;
             currentParcelMintStatusParcelId = parcelId;
@@ -1356,7 +1347,7 @@
                 parcelName
             });
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Opening claim portal...');
+                global.updateStatus(tParcel('status.messages.opening_claim_portal', {}, 'Opening claim portal...'));
             }
             openExternalUrl(claimUrl);
         } catch (error) {
@@ -1369,145 +1360,91 @@
             );
             currentParcelMintStatusCache = null;
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Unable to open claim portal. Please try again.');
+                global.updateStatus(tParcel('status.messages.unable_to_open_claim_portal_please_try_again', {}, 'Unable to open claim portal. Please try again.'));
             }
         }
     }
 
-    /* Parcel mint modal */
+    /* Parcel mint modal: the shared dialog (js/ui/dialogs.js). Its overlay keeps the
+       parcel-mint-modal-overlay id and the parcel-mint-overlay class (is-busy) as hooks. */
     const PARCEL_MINT_MODAL_ID = 'parcel-mint-modal-overlay';
     let parcelMintModalOnExit = null;
+    let parcelMintDialog = null;
+    let parcelMintSuccessDialog = null;
 
+    // The receipt after a mint: the shared dialog, closed by OK (or Escape / the close button),
+    // which runs onClose either way.
     function showParcelMintSuccessPopup({ parcelCount, transactions, chainId, onClose }) {
         try {
-            const existingPopup = global.document ? global.document.getElementById('parcel-mint-success-modal') : null;
-            if (existingPopup && existingPopup.parentNode) {
-                existingPopup.parentNode.removeChild(existingPopup);
-            }
+            if (parcelMintSuccessDialog) parcelMintSuccessDialog.close();
+            const doc = global.document;
 
-            const overlay = global.document.createElement('div');
-            overlay.id = 'parcel-mint-success-modal';
-            overlay.style.position = 'fixed';
-            overlay.style.inset = '0';
-            overlay.style.background = 'rgba(0,0,0,0.45)';
-            overlay.style.display = 'flex';
-            overlay.style.alignItems = 'center';
-            overlay.style.justifyContent = 'center';
-            overlay.style.zIndex = '12000';
-
-            const card = global.document.createElement('div');
-            card.style.background = '#fff';
-            card.style.borderRadius = '12px';
-            card.style.padding = '20px 24px';
-            card.style.maxWidth = '340px';
-            card.style.width = '90%';
-            card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
-            card.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-
-            const title = global.document.createElement('h3');
-            title.textContent = 'Success!';
-            title.style.margin = '0 0 8px 0';
-            title.style.fontSize = '20px';
-            title.style.fontWeight = '700';
-            card.appendChild(title);
-
-            const body = global.document.createElement('p');
+            const body = doc.createElement('p');
             body.textContent = parcelCount === 1
                 ? 'Parcel has been minted!'
                 : `${parcelCount} parcels have been minted!`;
-            body.style.margin = '0 0 12px 0';
-            body.style.fontSize = '14px';
-            card.appendChild(body);
+            const content = [body];
 
             const isSolana = typeof chainId === 'string' && chainId.startsWith('solana');
             const txList = Array.isArray(transactions) ? transactions.filter(t => t && t.txHash) : [];
+            const explorerTitle = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
+            const explorerLink = (url, text) => {
+                const link = doc.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.className = 'cb-link cb-link--external';
+                link.textContent = text;
+                return link;
+            };
 
-            // Build explorer links section
-            if (txList.length > 0) {
-                const linksContainer = global.document.createElement('div');
-                linksContainer.style.margin = '0 0 12px 0';
-
-                if (txList.length === 1) {
-                    // Single transaction — show as a single link
-                    const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: txList[0].txHash });
-                    if (url) {
-                        const link = global.document.createElement('a');
-                        link.href = url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        link.textContent = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
-                        link.style.color = '#0d3b66';
-                        link.style.fontWeight = '600';
-                        link.style.fontSize = '14px';
-                        linksContainer.appendChild(link);
-                    }
-                } else {
-                    // Multiple transactions — show as a numbered list
-                    const list = global.document.createElement('div');
-                    list.style.display = 'flex';
-                    list.style.flexDirection = 'column';
-                    list.style.gap = '6px';
-
-                    txList.forEach((tx, idx) => {
-                        const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: tx.txHash });
-                        if (!url) return;
-                        const row = global.document.createElement('div');
-                        row.style.fontSize = '13px';
-                        const label = tx.parcelId ? tx.parcelId : `Transaction ${idx + 1}`;
-                        const link = global.document.createElement('a');
-                        link.href = url;
-                        link.target = '_blank';
-                        link.rel = 'noopener noreferrer';
-                        link.textContent = label;
-                        link.style.color = '#0d3b66';
-                        link.style.fontWeight = '600';
-                        link.title = isSolana ? 'View on Solana Explorer' : 'View on Explorer';
-
-                        const icon = global.document.createElement('span');
-                        icon.textContent = ' \u2197';
-                        icon.style.fontSize = '11px';
-                        link.appendChild(icon);
-                        row.appendChild(link);
-                        list.appendChild(row);
-                    });
-
-                    linksContainer.appendChild(list);
+            // Explorer links: one link for one transaction, a list for several.
+            if (txList.length === 1) {
+                const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: txList[0].txHash });
+                if (url) {
+                    const row = doc.createElement('p');
+                    row.appendChild(explorerLink(url, explorerTitle));
+                    content.push(row);
                 }
-                card.appendChild(linksContainer);
+            } else if (txList.length > 1) {
+                const list = doc.createElement('div');
+                list.className = 'parcel-mint-success__links';
+                txList.forEach((tx, idx) => {
+                    const url = buildExplorerTxUrl({ chainId, chainSlug: chainId, txHash: tx.txHash });
+                    if (!url) return;
+                    const link = explorerLink(url, tx.parcelId ? tx.parcelId : `Transaction ${idx + 1}`);
+                    link.title = explorerTitle;
+                    list.appendChild(link);
+                });
+                content.push(list);
             }
 
-            const okBtn = global.document.createElement('button');
-            okBtn.textContent = 'OK';
-            okBtn.style.padding = '10px 12px';
-            okBtn.style.border = 'none';
-            okBtn.style.borderRadius = '8px';
-            okBtn.style.background = '#0d3b66';
-            okBtn.style.color = '#fff';
-            okBtn.style.cursor = 'pointer';
-            okBtn.style.width = '100%';
-            okBtn.style.marginTop = '4px';
-            okBtn.addEventListener('click', () => {
-                if (overlay.parentNode) {
-                    overlay.parentNode.removeChild(overlay);
-                }
-                if (typeof onClose === 'function') {
-                    try { onClose(); } catch (_) { }
+            const dialogApi = global.CbDialog.open({
+                title: 'Success!',
+                size: 'sm',
+                top: true,
+                className: 'parcel-mint-success',
+                body: content,
+                actions: [{ id: 'ok', label: 'OK', role: 'primary' }],
+                onClose: () => {
+                    if (parcelMintSuccessDialog === dialogApi) parcelMintSuccessDialog = null;
+                    if (typeof onClose === 'function') {
+                        try { onClose(); } catch (_) { }
+                    }
                 }
             });
-
-            card.appendChild(okBtn);
-            overlay.appendChild(card);
-            global.document.body.appendChild(overlay);
+            if (!dialogApi) return;
+            dialogApi.overlay.id = 'parcel-mint-success-modal';
+            parcelMintSuccessDialog = dialogApi;
         } catch (err) {
             console.warn('Failed to show parcel mint success popup:', err);
         }
     }
 
     function removeParcelMintModal(reason = 'dismiss') {
-        const existing = global.document ? global.document.getElementById(PARCEL_MINT_MODAL_ID) : null;
-        if (existing && existing.parentNode) {
-            existing.parentNode.removeChild(existing);
-        }
+        const dialog = parcelMintDialog;
+        parcelMintDialog = null;
+        if (dialog) dialog.close(reason);
         const onExit = parcelMintModalOnExit;
         parcelMintModalOnExit = null;
         if (typeof onExit === 'function') {
@@ -1602,16 +1539,8 @@
 
     function buildParcelThumbnailLoader(entry, imgEl, neighbours = []) {
         if (!imgEl) return;
-        let geometrySource = entry.feature?.geometry || entry.feature || {};
-        let polygons = extractPolygonCoordinateSets(geometrySource);
-        // If feature is a Leaflet layer (no geometry), try to extract from sub-layers
-        if (!polygons.length && entry.feature && typeof entry.feature.getLayers === 'function') {
-            const extracted = extractFeatureFromLayer(entry.feature);
-            if (extracted && extracted.geometry) {
-                geometrySource = extracted.geometry;
-                polygons = extractPolygonCoordinateSets(geometrySource);
-            }
-        }
+        const geometrySource = entry.feature?.geometry || {};
+        const polygons = extractPolygonCoordinateSets(geometrySource);
         if (!polygons.length) {
             imgEl.alt = 'Preview unavailable';
             return;
@@ -1655,35 +1584,11 @@
 
     async function buildParcelMintModal({ parcels, chainSlug, chainId, contractAddress, ownerAddress, onConfirm, onExit }) {
         removeParcelMintModal('replace');
-        const overlay = global.document.createElement('div');
-        overlay.id = PARCEL_MINT_MODAL_ID;
-        overlay.className = 'parcel-mint-overlay';
         parcelMintModalOnExit = typeof onExit === 'function' ? onExit : null;
 
-        const modal = global.document.createElement('div');
-        modal.className = 'parcel-mint-modal';
-
-        const header = global.document.createElement('div');
-        header.className = 'parcel-mint-header';
-        const titleWrap = global.document.createElement('div');
-        titleWrap.className = 'parcel-mint-header__text';
-        const title = global.document.createElement('h2');
-        title.textContent = 'Mint parcel representations as NFTs';
         const subtitle = global.document.createElement('p');
         subtitle.className = 'parcel-mint-subtitle';
         subtitle.textContent = 'Choose which parcels to mint on the ParcelNFT contract. If feasible (not too many), the parcels will all be minted in one transaction.';
-        titleWrap.appendChild(title);
-        titleWrap.appendChild(subtitle);
-        const closeBtn = global.document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.className = 'close-circle-btn close-circle-btn--lg parcel-mint-close';
-        closeBtn.textContent = '×';
-        closeBtn.onclick = () => removeParcelMintModal('close');
-        header.appendChild(titleWrap);
-        header.appendChild(closeBtn);
-
-        const body = global.document.createElement('div');
-        body.className = 'parcel-mint-body';
 
         const meta = global.document.createElement('div');
         meta.className = 'parcel-mint-meta';
@@ -1706,6 +1611,7 @@
                 link.href = item.url;
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
+                link.className = 'cb-link cb-link--external';
                 link.textContent = item.value;
                 value.appendChild(link);
             } else {
@@ -1720,7 +1626,7 @@
         const neighbourMap = {};
         try {
             await Promise.all(parcels.map(async (parcel) => {
-                neighbourMap[parcel.parcelId] = findNeighbourPolygonsFromCache(parcel.parcelId);
+                neighbourMap[parcel.parcelId] = findNeighbourPolygonsFromLiveFabric(parcel.parcelId);
             }));
         } catch (prefetchError) {
             console.warn('Failed to prefetch neighbours for mint thumbnails', prefetchError);
@@ -1773,16 +1679,47 @@
             buildParcelThumbnailLoader(parcel, thumb, neighbours);
         });
 
-        const footer = global.document.createElement('div');
-        footer.className = 'parcel-mint-footer';
         const status = global.document.createElement('div');
         status.className = 'parcel-mint-status';
-        const actions = global.document.createElement('div');
-        actions.className = 'parcel-mint-actions';
-        const mintBtn = global.document.createElement('button');
-        mintBtn.type = 'button';
-        mintBtn.className = 'btn btn-primary';
-        mintBtn.textContent = 'Mint';
+        status.setAttribute('role', 'status');
+
+        // The dialog has no automatic dismissals: while a mint transaction is in flight (is-busy)
+        // neither the close button, the backdrop nor Escape may close it, so it owns all three.
+        const dialogApi = global.CbDialog.open({
+            title: 'Mint parcel representations as NFTs',
+            size: 'md',
+            top: true,
+            className: 'parcel-mint-modal',
+            overlayClassName: 'parcel-mint-overlay',
+            bodyClassName: 'parcel-mint-body',
+            showClose: false,
+            closeOnBackdrop: false,
+            closeOnEscape: false,
+            body: [subtitle, meta, list, status],
+            actions: [{ id: 'mint', label: 'Mint', role: 'primary', keepOpen: true, onClick: () => mint() }]
+        });
+        if (!dialogApi) return;
+        parcelMintDialog = dialogApi;
+        const overlay = dialogApi.overlay;
+        overlay.id = PARCEL_MINT_MODAL_ID;
+        const isBusy = () => overlay.classList.contains('is-busy');
+        const closeBtn = global.document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'close-circle-btn parcel-mint-close';
+        closeBtn.setAttribute('aria-label', 'Close');
+        closeBtn.textContent = '×';
+        closeBtn.addEventListener('click', () => {
+            if (!isBusy()) removeParcelMintModal('close');
+        });
+        dialogApi.header.appendChild(closeBtn);
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay && !isBusy()) removeParcelMintModal('overlay');
+        });
+        const unregisterEscape = global.ModalEscape && typeof global.ModalEscape.register === 'function'
+            ? global.ModalEscape.register(overlay, () => { if (!isBusy()) removeParcelMintModal('escape'); })
+            : null;
+        dialogApi.closed.then(() => { if (unregisterEscape) unregisterEscape(); });
+        const mintBtn = dialogApi.getActionButton('mint');
 
         const setBusy = (busy, message) => {
             mintBtn.disabled = busy;
@@ -1790,7 +1727,7 @@
             status.textContent = message || '';
         };
 
-        mintBtn.onclick = async () => {
+        const mint = async () => {
             const selected = parcelCheckboxes
                 .filter(entry => entry.checkbox.checked)
                 .map(entry => entry.parcel);
@@ -1829,29 +1766,10 @@
                 setBusy(false, error?.message || 'Mint failed. Please try again.');
             }
         };
-
-        actions.appendChild(mintBtn);
-        footer.appendChild(status);
-        footer.appendChild(actions);
-
-        body.appendChild(meta);
-        body.appendChild(list);
-        body.appendChild(footer);
-
-        modal.appendChild(header);
-        modal.appendChild(body);
-        overlay.appendChild(modal);
-        overlay.onclick = (event) => {
-            if (event.target === overlay) {
-                removeParcelMintModal('overlay');
-            }
-        };
-        global.document.body.appendChild(overlay);
     }
 
     function collectCurrentParcelForMint() {
-        const layer = global.currentParcel && global.currentParcel.layer ? global.currentParcel.layer : null;
-        const parcelFeature = extractFeatureFromLayer(layer);
+        const parcelFeature = getCurrentLiveParcelFeature();
         if (!parcelFeature) return [];
         const parcelId = deriveParcelIdentifier(parcelFeature);
         if (!parcelId) return [];
@@ -1926,31 +1844,48 @@
         throw new Error(`Failed to create metadata URI for parcel ${parcelId}. Parcel was not minted.`);
     }
 
-    function findNeighbourPolygonsFromCache(parcelId) {
+    // Bounding boxes of immutable feature snapshots returned by the committed fabric.
+    const featureBoundingBoxCache = new WeakMap();
+
+    function featureBoundingBox(geometry) {
+        if (!geometry || !geometry.coordinates) return null;
+        const cached = featureBoundingBoxCache.get(geometry);
+        if (cached !== undefined) return cached;
+
+        let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+        const visit = (coords) => {
+            if (!Array.isArray(coords)) return;
+            if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+                if (coords[0] < minLng) minLng = coords[0];
+                if (coords[0] > maxLng) maxLng = coords[0];
+                if (coords[1] < minLat) minLat = coords[1];
+                if (coords[1] > maxLat) maxLat = coords[1];
+                return;
+            }
+            coords.forEach(visit);
+        };
+        visit(geometry.coordinates);
+
+        const box = Number.isFinite(minLng) ? [minLng, minLat, maxLng, maxLat] : null;
+        featureBoundingBoxCache.set(geometry, box);
+        return box;
+    }
+
+    // Touching counts: neighbours share an edge, so boxes that merely abut must pass.
+    function boundingBoxesTouch(a, b) {
+        if (!a || !b) return false;
+        const EPSILON = 1e-9;
+        return a[0] <= b[2] + EPSILON && b[0] <= a[2] + EPSILON
+            && a[1] <= b[3] + EPSILON && b[1] <= a[3] + EPSILON;
+    }
+
+    function findNeighbourPolygonsFromLiveFabric(parcelId) {
         if (!parcelId) return [];
         try {
-            // Get the parcel cache (grid of loaded features)
-            const cache = (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function')
-                ? global.ParcelsState.getParcelCache()
-                : global.parcelCache;
-            if (!cache || !cache.grid) return [];
-
-            // Find the target feature
+            const fabric = global.LiveParcelFabric;
+            if (!fabric || typeof fabric.get !== 'function' || typeof fabric.queryBounds !== 'function') return [];
             const targetId = parcelId.toString();
-            let targetFeature = null;
-            if (cache.byId instanceof Map) {
-                targetFeature = cache.byId.get(targetId);
-            }
-            if (!targetFeature) {
-                for (const [, cellData] of cache.grid) {
-                    if (!cellData || !Array.isArray(cellData.features)) continue;
-                    targetFeature = cellData.features.find(f => {
-                        const fId = f?.properties?.parcelId || f?.properties?.BROJ_CESTICE;
-                        return fId && fId.toString() === targetId;
-                    });
-                    if (targetFeature) break;
-                }
-            }
+            const targetFeature = fabric.get(targetId);
             if (!targetFeature || !targetFeature.geometry) return [];
 
             // Use turf to find touching/intersecting parcels from loaded cache
@@ -1961,13 +1896,21 @@
             const seen = new Set();
             seen.add(targetId);
 
-            for (const [, cellData] of cache.grid) {
-                if (!cellData || !Array.isArray(cellData.features)) continue;
-                for (const feature of cellData.features) {
+            // booleanIntersects is a full polygon-vs-polygon test, and the cache holds every parcel
+            // loaded so far — thousands of them. Reject the ones whose bounding boxes cannot touch
+            // before paying for it: a parcel a kilometre away is four number comparisons, not a
+            // segment-intersection sweep. (Without this, one selected parcel cost ~1.4 s.)
+            const targetBox = featureBoundingBox(targetFeature.geometry);
+            if (!targetBox) return [];
+
+            const candidates = fabric.queryBounds(targetBox, { includeCorridors: false });
+            for (const feature of candidates) {
+                    const id = fabric.featureId?.(feature);
                     if (!feature || !feature.geometry) continue;
-                    const fId = (feature.properties?.parcelId || feature.properties?.BROJ_CESTICE || '').toString();
+                    const fId = String(id || '');
                     if (!fId || seen.has(fId)) continue;
                     seen.add(fId);
+                    if (!boundingBoxesTouch(targetBox, featureBoundingBox(feature.geometry))) continue;
                     try {
                         if (global.turf.booleanIntersects(targetFeature, feature)) {
                             // Extract outer ring(s) as {lat, lng} arrays
@@ -1984,7 +1927,6 @@
                             }
                         }
                     } catch (_) { /* skip invalid geometry */ }
-                }
             }
             return neighbours;
         } catch (error) {
@@ -2000,9 +1942,8 @@
             let metadataUri = null;
             const neighbours = Array.isArray(neighboursByParcelId[parcel.parcelId])
                 ? neighboursByParcelId[parcel.parcelId]
-                : findNeighbourPolygonsFromCache(parcel.parcelId);
-            // Resolve the GeoJSON feature — handle both direct features and Leaflet layer groups
-            const resolvedFeature = (parcel.feature && parcel.feature.geometry) ? parcel.feature : extractFeatureFromLayer(parcel.feature);
+                : findNeighbourPolygonsFromLiveFabric(parcel.parcelId);
+            const resolvedFeature = (parcel.feature && parcel.feature.geometry) ? parcel.feature : null;
             const calculatedArea = resolvedFeature?.properties?.calculatedArea;
             const areaSquareMeters = Number.isFinite(calculatedArea) && calculatedArea > 0
                 ? Math.round(calculatedArea * 100) / 100
@@ -2281,6 +2222,47 @@
         global.document.body.removeChild(anchor);
     });
 
+    // index.html's Tools-tab buttons translate their text through data-i18n-key, but their tooltips
+    // are plain title attributes; set those here, and re-render the status line (its text is set from
+    // JS without a data-i18n-key) whenever the language changes.
+    function localizeToolsTab() {
+        const doc = global.document;
+        if (!doc) return;
+        const titles = [
+            ['mintAndClaimButton', 'panel.parcel.mintTooltip', 'Mint the parcel NFT'],
+            ['claimButton', 'panel.parcel.claimExistingTooltip', 'Claim existing parcel NFT'],
+            ['parcelBuilderButton', 'panel.parcel.builderTooltip', 'Open Parcel Builder']
+        ];
+        titles.forEach(([id, key, fallback]) => {
+            const el = doc.getElementById(id);
+            if (el) el.title = tParcel(key, {}, fallback);
+        });
+    }
+
+    function handleToolsTabLanguageChange() {
+        localizeToolsTab();
+        const toolsTab = global.document ? global.document.getElementById('tools-tab') : null;
+        if (toolsTab && !toolsTab.hidden) {
+            triggerParcelToolsTabActivated(false);
+        } else if (!currentParcelMintStatusCache && !currentParcelMintStatusPromise) {
+            resetParcelMintStatusState();
+        }
+    }
+
+    if (global.i18n && typeof global.i18n.onChange === 'function') {
+        global.i18n.onChange(handleToolsTabLanguageChange);
+    }
+    if (typeof global.addEventListener === 'function') {
+        global.addEventListener('i18n:translationsLoaded', handleToolsTabLanguageChange);
+    }
+    if (global.document && typeof global.document.addEventListener === 'function') {
+        if (global.document.readyState === 'loading') {
+            global.document.addEventListener('DOMContentLoaded', localizeToolsTab);
+        } else {
+            localizeToolsTab();
+        }
+    }
+
     global.ParcelsUIClaim = {
         getParcelMintStatusElement,
         normalizeMintStatusState,
@@ -2316,5 +2298,5 @@
     global.applyParcelMintStatusResult = applyParcelMintStatusResult;
     global.triggerParcelToolsTabActivated = triggerParcelToolsTabActivated;
     global.recheckParcelMintStatus = recheckParcelMintStatus;
-    global.findNeighbourPolygonsFromCache = findNeighbourPolygonsFromCache;
+    global.findNeighbourPolygonsFromLiveFabric = findNeighbourPolygonsFromLiveFabric;
 })(typeof window !== 'undefined' ? window : globalThis);

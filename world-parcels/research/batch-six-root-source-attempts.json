@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "description": "Metadata-only live-source checks; technical blockers, terms informational.",
+  "termsAreInformational": true,
+  "attempts": [
+    {
+      "sourceId": "br-fortaleza-ipplan-zeis-pici-lotes",
+      "endpoint": "https://dados.fortaleza.ce.gov.br/dataset/9d2863b7-c238-4b25-bf01-a2c82d4d0b9c/resource/39e0185f-1a69-4fde-8680-4a47b38a552f/download/pirf-zeis-pici-lotes-zeis-pici.geojson",
+      "operation": "current-snapshot-read",
+      "outcome": "dns-failure",
+      "detail": "Direct authorized network request returned ENOTFOUND/getaddrinfo; curl independently returned exit 6. No HTTP response; does not establish parcel absence."
+    },
+    {
+      "sourceId": "br-fortaleza-sefin-lotes-tipo",
+      "endpoint": "https://ide.sefin.fortaleza.ce.gov.br/camadas/USO_SOLO%3Alotes_tipo",
+      "operation": "official-vector-catalogue",
+      "outcome": "dns-failure",
+      "detail": "Official catalogue advertises vector layer; direct curl returned could not resolve host. No WFS geometry or native ID verified."
+    },
+    {
+      "sourceId": "in-ldo-edharti-geojson",
+      "endpoint": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+      "operation": "complete-snapshot-native-key-audit",
+      "outcome": "conflicting-native-identity",
+      "httpStatus": 200,
+      "bytes": 22117499,
+      "etag": "\"694e35e1-1517c7b\"",
+      "lastModified": "2025-12-26T07:14:41Z",
+      "featureCount": 25999,
+      "invalidGeometries": 0,
+      "fields": [
+        {
+          "field": "propertyid",
+          "distinct": 25768,
+          "missing": 0,
+          "distinctGeometryRepeats": 231
+        },
+        {
+          "field": "unique_propert_id",
+          "distinct": 25650,
+          "missing": 0,
+          "distinctGeometryRepeats": 349
+        },
+        {
+          "fields": [
+            "propertyid",
+            "unique_propert_id"
+          ],
+          "distinct": 25768,
+          "distinctGeometryRepeats": 231
+        }
+      ],
+      "detail": "Full snapshot read after initial 15-second request timeout. All rings pass validation, but published IDs and their pair identify different polygons. No polygons or lessee/address values retained."
+    },
+    {
+      "sourceId": "in-ldo-edharti-geojson",
+      "endpoint": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/VacantLand_37.js",
+      "operation": "small-alternate-snapshot",
+      "outcome": "native-identity-unverified",
+      "httpStatus": 200,
+      "bytes": 25388,
+      "etag": "\"694e35e1-632c\"",
+      "featureCount": 37,
+      "fields": [
+        "OBJECTID",
+        "Shape_Length",
+        "Shape_Area",
+        "Name",
+        "Area"
+      ],
+      "detail": "Only row OBJECTID and descriptive Name/area fields; no documented durable cadastral identifier. Not enabled as parcel ground."
+    }
+  ]
+}

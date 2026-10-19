@@ -1,0 +1,145 @@
+{
+  "name": "Al Ismailiya",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 886,
+  "point": [
+    30.5973582678848,
+    32.2700549013372
+  ],
+  "population2025": 612046,
+  "population2025k": 612.046,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence.",
+  "registryEvidenceUrls": [
+    "https://www.esa.gov.eg/main.aspx",
+    "https://www.esa.gov.eg/amlak.aspx",
+    "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+    "https://mediadr.sis.gov.eg/bitstream/handle/123456789/99452/OG22_20250529_3325.pdf?isAllowed=y&sequence=2"
+  ],
+  "resultCategory": "governorate_survey_evidence_city_scope_unverified",
+  "remainingUncertainty": "Whether a city-level registry or public parcel GIS covers the exact WUP settlement locator is unverified.",
+  "scopeLimits": "Research is limited to official sources and the exact unchanged WUP settlement locator. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "EG-7176-al-ismailiya-cadastre-review",
+    "name": "Egyptian Survey Authority (general / Ismailia governorate evidence)",
+    "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/99452/OG22_20250529_3325.pdf?isAllowed=y&sequence=2",
+    "operator": "Egypt",
+    "serviceType": "Survey authority map/record office and official map products; no city parcel vector service verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 7176,
+  "cityId": "wup2025:7176",
+  "queueRank": 886,
+  "centerLatLon": [
+    30.5973582678848,
+    32.2700549013372
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research evidence only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence.",
+    "verifiedOpenScope": "No parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ismailia Egypt official cadastral parcel map GIS Survey Authority land registry",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "ESA describes its national survey and cadastral-map role; inspected Ismailia materials were topographic or government-land/legal notices, not a public city parcel GIS.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/amlak.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/99452/OG22_20250529_3325.pdf?isAllowed=y&sequence=2"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      },
+      {
+        "language": "Arabic",
+        "query": "الإسماعيلية خريطة مساحية كادستر قطع أراضي سجل عقاري رسمي الهيئة العامة للمساحة",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "مصادر الهيئة العامة للمساحة التي تم فحصها تتناول الخرائط الطبوغرافية أو أملاك الدولة وإجراءات المسح، ولم يظهر عارض عام لقطع الأراضي على مستوى المدينة.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/amlak.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/99452/OG22_20250529_3325.pdf?isAllowed=y&sequence=2"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+      },
+      {
+        "url": "https://www.esa.gov.eg/amlak.aspx",
+        "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+      },
+      {
+        "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/99452/OG22_20250529_3325.pdf?isAllowed=y&sequence=2",
+        "observation": "The Egyptian Survey Authority documents a national role in cadastral maps and records; its Ismailia-related sources cover governorate/state-property/topographic maps, not an anonymous full-city parcel register or viewer. Local city registry coverage is not established by the reviewed evidence."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "method": "GET Egyptian Survey Authority official homepage",
+        "observation": "General authority and cadastral-map role identified; no Ismailia city parcel viewer exposed."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "method": "GET official topographic map index",
+        "observation": "Lists Ismailia sheets at 1:100,000; topographic mapping is not parcel geometry."
+      },
+      {
+        "url": "https://www.esa.gov.eg/amlak.aspx",
+        "method": "GET official state-property page",
+        "observation": "Describes state-property inventory mapping, which does not establish a complete private-parcel register."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research evidence only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.esa.gov.eg/main.aspx",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "الهيئة المصرية العامة للمساحة"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

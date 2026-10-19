@@ -1,0 +1,164 @@
+{
+  "name": "Pekanbaru",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 427,
+  "point": [
+    0.493865411692387,
+    101.436832614539
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Indonesian",
+        "query": "Pekanbaru peta bidang tanah GIS resmi geoportal Dinas Pertanahan ATR BPN Smart Petaku",
+        "scope": "Find a current official Pekanbaru parcel map and anonymous full-geometry route.",
+        "result": "Official sources document city land-asset GIS (Smart Petaku) and a local BPN Zone of Land Value map. The current city GeoPortal publicly lists CCTV, water-pipe and administrative services; the residential/building map is login-gated and not cadastral. ATR/BPN BHUMI publishes a national Bidang Tanah layer, but the viewer uses WMS map images; the anonymous image request to the official public proxy at the queued point returned HTTP 403, and no full vector response was obtained.",
+        "actualResultUrls": [
+          "https://www.pekanbaru.go.id/berita/wali-kota-pekanbaru-luncurkan-zona-nilai-tanah-di-kantor-bpn",
+          "https://geoportal.pekanbaru.go.id/",
+          "https://cctv-map.pekanbaru.go.id/",
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      },
+      {
+        "language": "English",
+        "query": "Pekanbaru official cadastral parcel GIS public geospatial map land asset BPN",
+        "scope": "Cross-check current city GIS offerings and anonymous national cadastral-map schema.",
+        "result": "The city’s 2024 official publication describes Smart Petaku as a municipal-government land-asset WebGIS, not a complete cadastral parcel data service. BHUMI’s default published layer is Bidang Tanah with map_service_url `/bhumigs/umum`, GeoServer, layer `umum:Persil`; its anonymous client renders WMS tiles rather than vector features. Current city portal does not expose an open parcel layer.",
+        "actualResultUrls": [
+          "https://www.pekanbaru.go.id/berkas_file/majalah/emag-2024-11-101-82645.pdf",
+          "https://cctv-map.pekanbaru.go.id/",
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/landing"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Pekanbaru GeoPortal / Satu Peta",
+        "operator": "Pemerintah Kota Pekanbaru; Diskominfotiksan",
+        "homeUrl": "https://cctv-map.pekanbaru.go.id/",
+        "observation": "Current official portal lists public CCTV and PDAM maps. The 65,296-building population map requires staff authentication under the city’s privacy notice; it was not accessed and is not a cadastral parcel service."
+      },
+      {
+        "name": "Smart Petaku",
+        "operator": "Dinas Pertanahan Kota Pekanbaru",
+        "homeUrl": "https://gisdinaspertanahan.pekanbaru.go.id/",
+        "observation": "Official 2024 city publication describes a government asset land/building WebGIS; current home responded with a temporary-service message and the historical /peta route returned 404. No geometry retrieved."
+      },
+      {
+        "name": "BHUMI ATR/BPN Bidang Tanah",
+        "operator": "Kementerian Agraria dan Tata Ruang/Badan Pertanahan Nasional",
+        "homeUrl": "https://bhumi.atrbpn.go.id/peta",
+        "observation": "Public nationwide map layer identifies registered land parcels; public layer metadata lists Penggunaan, Tipe Hak, Luas, NIB and Akurasi. Viewer uses WMS raster tiles; no owner fields were requested and no full geometry was obtained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter[default][_eq]=true&filter[status][_eq]=published&fields=*,fields.*",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Anonymous metadata returns default published layer Bidang Tanah; map_service_vendor GeoServer; map_service_url /bhumigs/umum; layer umum:Persil; displayed fields include land-use/type/area/NIB/accuracy. No feature data queried."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/_next/static/chunks/app/peta/page-8a839f09e317b44a.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/javascript",
+        "observation": "Public viewer route fetches published layer metadata; map component rewrites the default parcel service to /mprx/service and requests WMS GetMap images."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/mprx/service?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=bhumi_persil&STYLES=&SRS=EPSG%3A3857&CRS=EPSG%3A3857&TILED=true&WIDTH=512&HEIGHT=512&BBOX=11291646.554333007%2C54727.52693283866%2C11292146.554333007%2C55227.52693283866",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": null,
+        "observation": "A direct anonymous WMS GetMap request for a 500 m box around the Pekanbaru WUP point was denied with HTTP 403; no response body or map geometry retained. Denial is not treated as provider outage or definitive layer absence."
+      },
+      {
+        "url": "https://cctv-map.pekanbaru.go.id/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Current city portal states three service modules: CCTV, PDAM piping and a staff-gated residential/building map; no cadastral parcel layer listed."
+      },
+      {
+        "url": "https://geoportal.pekanbaru.go.id/",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Local client timed out while attempting the older GeoNode Satu Peta Bapenda host; no provider-outage conclusion drawn."
+      }
+    ],
+    "historicalContext": [
+      {
+        "url": "https://www.pekanbaru.go.id/berkas_file/majalah/emag-2024-11-101-82645.pdf",
+        "observation": "City publication describes Smart Petaku as a WebGIS of municipally owned land/building assets; it does not establish open cadastral vector access."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "ID-ATR-BPN-BHUMI-PEKANBARU",
+    "name": "BHUMI ATR/BPN Bidang Tanah (national visual layer)",
+    "url": "https://bhumi.atrbpn.go.id/peta",
+    "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+    "serviceType": "Public web map using GeoServer WMS raster tiles through /mprx/service. Anonymous direct map-image request to the queued point returned HTTP 403.",
+    "layer": "Published default layer Bidang Tanah; service layer umum:Persil.",
+    "geometryType": "Polygon layer rendered as map image; no full polygon response retrieved.",
+    "outputCrs": "Viewer requests map tiles in EPSG:3857; feature geometry output CRS not available.",
+    "nativeIdField": "NIB (metadata field; not queried).",
+    "nativeIdEvidence": "Layer metadata documents NIB as an attribute; no feature-level identity response was requested or obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "BHUMI national map catalog includes registered land-parcel layer; Pekanbaru local BPN and municipal sources document land mapping activity.",
+    "verifiedOpenScope": "No city-located full polygon retrieved. Default BHUMI layer is consumed as WMS images and direct anonymous map request was denied; no vector response/identity was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_cadastral_map_layer_raster_only_no_full_geometry",
+  "technicalBlocker": "Public viewer exposes the national parcel layer as WMS images; direct anonymous WMS request at the WUP point returned 403. The city’s current public GeoPortal has no parcel layer; historical Smart Petaku is government-land asset mapping.",
+  "remainingUncertainty": "Whether ATR/BPN offers a separate public vector route for the Pekanbaru cadastre, and whether Smart Petaku’s current replacement publishes municipal asset polygons anonymously.",
+  "nextStep": "If continuing, locate an officially documented vector export/service available without login; do not access the staff-gated residential/building map or query NIB/property details.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:51:19Z",
+  "wupCityCode": 3782,
+  "cityId": "wup2025:3782",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    0.493865411692387,
+    101.436832614539
+  ],
+  "queueRank": 427,
+  "population2025": 1208872,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T23:55:03.250694+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "A public national cadastral map layer is documented, but only image rendering was verified and the direct anonymous WMS request was denied."
+  },
+  "registryBasis": "Official Pekanbaru municipal and Riau provincial reports identify the BPN land office in Pekanbaru and local land certification/registration services. City land-value and municipal asset maps also exist, but no public parcel-vector geometry at the WUP point was verified. The national BHUMI layer alone is not the city registry-presence basis.",
+  "registryEvidenceUrls": [
+    "https://www.pekanbaru.go.id/p/news/wali-kota-pekanbaru-luncurkan-zona-nilai-tanah-di-kantor-bpn",
+    "https://ppid.riau.go.id/berita/1182/index.html"
+  ],
+  "rootSupplementalResearch": {
+    "checkedAt": "2026-10-08T23:55:03.191136+00:00",
+    "urls": [
+      "https://www.pekanbaru.go.id/p/news/wali-kota-pekanbaru-luncurkan-zona-nilai-tanah-di-kantor-bpn",
+      "https://ppid.riau.go.id/berita/1182/index.html"
+    ],
+    "observation": "Official Pekanbaru municipal and Riau provincial reports identify the BPN land office in Pekanbaru and local land certification/registration services. City land-value and municipal asset maps also exist, but no public parcel-vector geometry at the WUP point was verified. The national BHUMI layer alone is not the city registry-presence basis."
+  }
+}

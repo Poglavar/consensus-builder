@@ -1,0 +1,40 @@
+{
+  "featureCount": 761,
+  "uniqueObjectIdCount": 761,
+  "uniqueAPNCount": 761,
+  "emptyGeometryCount": 0,
+  "invalidGeometryCount": 0,
+  "invalidExamples": [],
+  "exactDuplicateGeometryGroups": 0,
+  "duplicateFeatureIdCount": 0,
+  "materialOverlapPairCount_gt_0_01m2": 0,
+  "materialOverlapPairs": [],
+  "overlayErrorCount": 0,
+  "overlayErrors": [],
+  "areaM2": {
+    "min": 13.681623486075548,
+    "median": 680.0598621149613,
+    "max": 32140.00663490848
+  },
+  "crs": "EPSG:32611",
+  "method": "Shapely 2 / GEOS; no geometry repaired, filtered, or deduplicated before QA.",
+  "gridCellCount": 13,
+  "gridReturnedRows": 170,
+  "gridUniqueObjectIdCount": 119,
+  "gridDuplicateRowCount": 51,
+  "gridPerCellCounts": [
+    15,
+    16,
+    17,
+    11,
+    15,
+    16,
+    8,
+    8,
+    10,
+    17,
+    3,
+    17,
+    17
+  ]
+}

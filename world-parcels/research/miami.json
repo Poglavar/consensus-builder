@@ -1,0 +1,85 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:170",
+ "queueRank": 170,
+ "name": "Miami",
+ "country": "United States of America",
+ "countryCode": "US",
+ "centerLatLon": [
+  25.8606111445171,
+  -80.2813649347787
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "verified_sample_county_scope",
+ "verifiedParcelResponse": {
+  "sourceId": "us-fl-miamidade-pa-parcels",
+  "requestUrl": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1/query?where=1%3D1&geometry=%7B%22xmin%22%3A-80.2830%2C%22ymin%22%3A25.8595%2C%22xmax%22%3A-80.2810%2C%22ymax%22%3A25.8610%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CFOLIO%2CPARCEL&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -80.283,
+   25.8595,
+   -80.281,
+   25.861
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "FOLIO",
+  "responseFile": "miami-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=1000"
+ },
+ "source": {
+  "sourceId": "us-fl-miamidade-pa-parcels",
+  "name": "Miami-Dade County GIS MD_PA_PropertySearch, layer 1 (MDC.Parcel_poly)",
+  "operator": "Miami-Dade County (Property Appraiser / GIS)",
+  "scope": "Miami-Dade County",
+  "endpoint": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (also f=geojson supported by ArcGIS)",
+  "crs": "EPSG:4326 requested via outSR; native not checked",
+  "reuseStatus": "Terms not read; unreviewed"
+ },
+ "portalsFound": [
+  {
+   "url": "https://gisfs.miamidade.gov/mdarcgis/rest/services?f=json",
+   "observation": "Public ArcGIS Server 11.5 root listing MD_PA_PropertySearch MapServer (folders EmergencyManagement, MDPD, SolidWaste, Utilities)."
+  },
+  {
+   "url": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer?f=json",
+   "observation": "Layers include 1 MDC.Parcel_poly, 6 MDC.PaParcel, 7 MDC.Lot_poly, 2 municipality boundaries."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PropertySearch/MapServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "wrong guessed service name; body was error 404 Service not found; not verification"
+  },
+  {
+   "url": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer description: esriGeometryPolygon, maxRecordCount 1000, fields incl. FOLIO, PARCEL; not counted"
+  },
+  {
+   "url": "https://gisfs.miamidade.gov/mdarcgis/rest/services/MD_PA_PropertySearch/MapServer/1/query?where=1%3D1&geometry=%7B%22xmin%22%3A-80.2830%2C%22ymin%22%3A25.8595%2C%22xmax%22%3A-80.2810%2C%22ymax%22%3A25.8610%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CFOLIO%2CPARCEL&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 closed polygon parcels with FOLIO ids near the Miami city centre point: verified"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Miami-Dade County parcels (Parcel_poly layer)",
+  "verifiedOpenScope": "three parcels in a bounded sample near the GeoNames/UN centre point (likely Miami-Dade county, urban agglomeration of Miami)",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "Sample proves only a tiny area; completeness, update cadence and licence/attribution terms were not reviewed. Agglomeration extends into Broward and Palm Beach counties, which need their own sources. No owner data saved (only OBJECTID, FOLIO, PARCEL).",
+ "nextStep": "Read Miami-Dade open-data terms; test Broward County parcel service for the northern part of the agglomeration."
+}

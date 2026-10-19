@@ -1,0 +1,122 @@
+{
+  "name": "Ambon",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 987,
+  "point": [
+    -3.67885594372043,
+    128.199258471786
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ambon Indonesia official city land registry parcel map cadastral geospatial portal",
+        "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+        "result": "No public cadastral layer/schema or bounded geometry query was identified. Public map materials reviewed are city/general-purpose map content. Official registry evidence: The official Kota Ambon ATR/BPN office reported local PTSL land-title registration activity in Negeri Nusaniwe in 2025. The city government Geoportal advertises geospatial web-services discovery, but the listed categories do not expose a cadastral parcel layer.",
+        "actualResultUrls": [
+          "https://kot-ambon.atrbpn.go.id/berita/penyerahan-sertipikat-ptsl-2025-di-negeri-nusaniwe",
+          "https://ambon.ina-sdi.or.id/",
+          "https://ambon.go.id/peta-ambon/"
+        ],
+        "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kota Ambon peta bidang tanah kadaster kantor pertanahan Kota Ambon resmi",
+        "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+        "result": "No public cadastral layer/schema or bounded geometry query was identified. Public map materials reviewed are city/general-purpose map content. Official registry evidence: The official Kota Ambon ATR/BPN office reported local PTSL land-title registration activity in Negeri Nusaniwe in 2025. The city government Geoportal advertises geospatial web-services discovery, but the listed categories do not expose a cadastral parcel layer.",
+        "actualResultUrls": [
+          "https://kot-ambon.atrbpn.go.id/berita/penyerahan-sertipikat-ptsl-2025-di-negeri-nusaniwe",
+          "https://ambon.ina-sdi.or.id/",
+          "https://ambon.go.id/peta-ambon/"
+        ],
+        "executionMethod": "Separate Indonesian-language web search, followed by review of first-party source pages; no personal property query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kota Ambon Land Office and municipal geospatial portal",
+        "operator": "Kantor Pertanahan Kota Ambon (ATR/BPN); Pemerintah Kota Ambon geoportal",
+        "homeUrl": "https://kot-ambon.atrbpn.go.id/berita/penyerahan-sertipikat-ptsl-2025-di-negeri-nusaniwe",
+        "observation": "Local registry activity confirmed; the city geospatial portal is a general GIS catalog and no parcel feature service was identified. No public cadastral layer/schema or bounded geometry query was identified. Public map materials reviewed are city/general-purpose map content."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "ID-8598-LOCAL-CADASTRE-REVIEW",
+    "name": "Kota Ambon Land Office and municipal geospatial portal",
+    "url": "https://kot-ambon.atrbpn.go.id/berita/penyerahan-sertipikat-ptsl-2025-di-negeri-nusaniwe",
+    "operator": "Kantor Pertanahan Kota Ambon (ATR/BPN); Pemerintah Kota Ambon geoportal",
+    "serviceType": "Local registry activity confirmed; the city geospatial portal is a general GIS catalog and no parcel feature service was identified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "Local registry activity confirmed; the city geospatial portal is a general GIS catalog and no parcel feature service was identified. No public cadastral layer/schema or bounded geometry query was identified. Public map materials reviewed are city/general-purpose map content."
+  },
+  "registryFound": true,
+  "registryBasis": "The official Kota Ambon ATR/BPN office reported local PTSL land-title registration activity in Negeri Nusaniwe in 2025. The city government Geoportal advertises geospatial web-services discovery, but the listed categories do not expose a cadastral parcel layer.",
+  "registryEvidenceUrls": [
+    "https://kot-ambon.atrbpn.go.id/berita/penyerahan-sertipikat-ptsl-2025-di-negeri-nusaniwe",
+    "https://ambon.ina-sdi.or.id/",
+    "https://ambon.go.id/peta-ambon/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "scopeLimits": "No full parcel geometry or property-owner/address data retained. No owner/address fields were requested. No credentials, tokens, personal records, or gated property lookup were used. At most 0 full polygons retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No public cadastral layer/schema or bounded geometry query was identified. Public map materials reviewed are city/general-purpose map content.",
+  "remainingUncertainty": "No exact point-to-registration coverage or parcel geometry was verified.",
+  "nextStep": "If a publicly accessible geometry-only service is documented, inspect its metadata/schema first, then query only a bounded area and retain only a safe source-native parcel ID plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8598,
+  "cityId": "wup2025:8598",
+  "queueRank": 987,
+  "centerLatLon": [
+    -3.67885594372043,
+    128.199258471786
+  ],
+  "population2025k": 555.651,
+  "populationUnit": "persons",
+  "population2025": 555651,
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "The official Kota Ambon ATR/BPN office reported local PTSL land-title registration activity in Negeri Nusaniwe in 2025. The city government Geoportal advertises geospatial web-services discovery, but the listed categories do not expose a cadastral parcel layer.",
+    "verifiedOpenScope": "Local registry activity confirmed; the city geospatial portal is a general GIS catalog and no parcel feature service was identified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No full public parcel feature response was obtained for this packet, so no city adapter was enabled or runtime-qualified."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://kot-ambon.atrbpn.go.id/berita/penyerahan-sertipikat-ptsl-2025-di-negeri-nusaniwe",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": null
+  },
+  "rootReviewNote": "Root reviewed the exact primary institutional evidence and specific local jurisdiction, preserving source dates, application/access limits and failed readbacks. Registry presence and public full parcel geometry are separate findings. No public full geometry was verified in this city discovery record.",
+  "rootReviewedAt": "2026-10-09T05:10:15.053712+00:00"
+}

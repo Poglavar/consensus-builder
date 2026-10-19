@@ -1,0 +1,130 @@
+{
+  "name": "Tétouan",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "rank": 1185,
+  "point": [
+    35.574381252055,
+    -5.36603950989224
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tétouan official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+          "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "French",
+        "query": "Tétouan cadastre plan cadastral parcelle ANCFCC carte",
+        "result": "Official ANCFCC identifies itself as Morocco’s cadastre/map and land-conservation custodian and lists the Tetouan service network. Cadastral plan order requires identity/contact/title details and is paid; not used.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+          "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "method": "Separate French-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.ancfcc.gov.ma/cadastre/",
+        "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+        "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+      },
+      {
+        "url": "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+        "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+        "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+        "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+        "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+        "scope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+    "url": "https://www.ancfcc.gov.ma/cadastre/",
+    "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved.",
+  "remainingUncertainty": "Official national cadastre and mapping custodian, with Tetouan office and a paid cadastral-plan order workflow. The plan service requires applicant/contact/title information; no such information was submitted and no geometry was retrieved. Exact WUP-point parcel geometry, legal/title meaning, coverage completeness and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4148,
+  "cityId": "wup2025:4148",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.574381252055,
+    -5.36603950989224
+  ],
+  "population2025k": 469.642,
+  "populationUnit": "persons",
+  "queueRank": 1185,
+  "population2025": 469642,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "ANCFCC mandate and Tetouan office listing establish cadastral custody; official plan service is not an anonymous coordinate query.",
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/cadastre/",
+    "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+    "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+    "https://www.ancfcc.gov.ma/Plancadastralpage"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

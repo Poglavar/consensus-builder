@@ -1,0 +1,98 @@
+[
+ {
+  "kind": "city",
+  "key": "new-delhi",
+  "rank": 4,
+  "name": "New Delhi",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 28.62137,
+  "lon": 77.2148,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/new-delhi.json"
+ },
+ {
+  "kind": "city",
+  "key": "seoul",
+  "rank": 10,
+  "name": "Seoul",
+  "country": "South Korea",
+  "iso2": "KR",
+  "lat": 37.566,
+  "lon": 126.9784,
+  "previousStatus": "no_verified_sample_candidate_countrywide",
+  "evidenceFile": "research/seoul.json"
+ },
+ {
+  "kind": "city",
+  "key": "mexico-city",
+  "rank": 15,
+  "name": "Mexico City",
+  "country": "Mexico",
+  "iso2": "MX",
+  "lat": 19.42847,
+  "lon": -99.12766,
+  "previousStatus": "no_verified_sample_candidate_citywide",
+  "evidenceFile": "research/mexico-city.json"
+ },
+ {
+  "kind": "city",
+  "key": "istanbul",
+  "rank": 18,
+  "name": "Istanbul",
+  "country": "Türkiye",
+  "iso2": "TR",
+  "lat": 41.01384,
+  "lon": 28.94966,
+  "previousStatus": "no_verified_sample_candidate_countrywide",
+  "evidenceFile": "research/istanbul.json"
+ },
+ {
+  "kind": "city",
+  "key": "moscow",
+  "rank": 19,
+  "name": "Moscow",
+  "country": "Russia",
+  "iso2": "RU",
+  "lat": 55.75204,
+  "lon": 37.61781,
+  "previousStatus": "no_verified_sample_candidate_countrywide",
+  "evidenceFile": "research/moscow.json"
+ },
+ {
+  "kind": "city",
+  "key": "buenos-aires",
+  "rank": 21,
+  "name": "Buenos Aires",
+  "country": "Argentina",
+  "iso2": "AR",
+  "lat": -34.61315,
+  "lon": -58.37723,
+  "previousStatus": "no_verified_sample_candidate_citywide",
+  "evidenceFile": "research/buenos-aires.json"
+ },
+ {
+  "kind": "city",
+  "key": "shenzhen",
+  "rank": 23,
+  "name": "Shenzhen",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 22.54554,
+  "lon": 114.0683,
+  "previousStatus": "no_verified_sample_candidate_citywide",
+  "evidenceFile": "research/shenzhen.json"
+ },
+ {
+  "kind": "city",
+  "key": "chennai",
+  "rank": 29,
+  "name": "Chennai",
+  "country": "India",
+  "iso2": "IN",
+  "lat": 13.08784,
+  "lon": 80.27847,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/chennai.json"
+ }
+]

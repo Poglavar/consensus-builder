@@ -1,0 +1,45 @@
+{
+ "kind": "city",
+ "key": "guatemala-city",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-GT,es;q=0.9; cookie jar used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://ric.gob.gt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS connect failed (SSL_ERROR_SYSCALL)"
+  },
+  {
+   "url": "https://www.muniguate.com/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "generic 3.4 KB 403 block page with browser headers"
+  },
+  {
+   "url": "https://sig.muniguate.com/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "same 403 page"
+  },
+  {
+   "url": "https://ide.segeplan.gob.gt/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS connect failed (SSL_ERROR_SYSCALL)"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Consistent with country file GT (temporarily_unavailable): RIC unreachable, Muniguate 403 to all paths. No new source.",
+ "nextStep": "Retry RIC and Muniguate SIG from another network."
+}

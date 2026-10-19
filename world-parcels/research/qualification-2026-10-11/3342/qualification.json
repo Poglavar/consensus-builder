@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3342",
+  "cityName": "Bologna",
+  "sourceId": "it-bologna-sit-parcels",
+  "candidateSha256": "f8197a14ce39381488695823ef340c7a90f8014872c4426d91c905cc30c6c67d",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 175,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 175,
+      "collectedUniqueCount": 175
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 494
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "1729452303c0deaabd24bd01ef138518738d3253fbafe7b07f6c1d967405b4d6",
+      "featureCount": 175,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32632",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "1729452303c0deaabd24bd01ef138518738d3253fbafe7b07f6c1d967405b4d6",
+  "featureCount": 175,
+  "sampleIds": [
+    "IT-BOLOGNA-SIT-A944_ 187  296"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 116,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        11.337,
+        44.493,
+        11.338,
+        44.494
+      ],
+      "complete": true,
+      "featureCount": 37
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        11.338,
+        44.493,
+        11.339,
+        44.494
+      ],
+      "complete": true,
+      "featureCount": 14
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        11.339,
+        44.493,
+        11.34,
+        44.494
+      ],
+      "complete": true,
+      "featureCount": 12
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        11.337,
+        44.494,
+        11.338,
+        44.495
+      ],
+      "complete": true,
+      "featureCount": 24
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        11.338,
+        44.494,
+        11.339,
+        44.495
+      ],
+      "complete": true,
+      "featureCount": 21
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        11.339,
+        44.494,
+        11.34,
+        44.495
+      ],
+      "complete": true,
+      "featureCount": 13
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        11.337,
+        44.495,
+        11.338,
+        44.496
+      ],
+      "complete": true,
+      "featureCount": 9
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        11.338,
+        44.495,
+        11.339,
+        44.496
+      ],
+      "complete": true,
+      "featureCount": 16
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        11.339,
+        44.495,
+        11.34,
+        44.496
+      ],
+      "complete": true,
+      "featureCount": 16
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        11.338,
+        44.492,
+        11.339,
+        44.493
+      ],
+      "complete": true,
+      "featureCount": 28
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        11.338,
+        44.496,
+        11.339,
+        44.497
+      ],
+      "complete": true,
+      "featureCount": 24
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        11.336,
+        44.494,
+        11.337,
+        44.495
+      ],
+      "complete": true,
+      "featureCount": 23
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        11.34,
+        44.494,
+        11.341,
+        44.495
+      ],
+      "complete": true,
+      "featureCount": 10
+    }
+  ]
+}

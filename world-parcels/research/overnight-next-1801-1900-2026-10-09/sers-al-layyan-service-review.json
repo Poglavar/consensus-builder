@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-3511-sers-al-layyan.json",
+  "cityCode": 3511,
+  "queueRank": 1891,
+  "city": "Sers Al Layyan",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Official Egyptian General Survey Authority sources establish a national survey/cadastral-map custodian and related map procedures, but no Sers Al Layyan-specific public parcel service or safe anonymous parcel ID plus polygon response was verified.",
+  "queryOutcomes": "Separate English and Arabic discovery queries are recorded in city-3511-sers-al-layyan.json. They identified ESA official map/service pages, the official Ministry of Justice portal, the Egyptian Tax Authority local-coverage page, and the IDSC ArcGIS directory; general national material was distinguished from local cadastral evidence.",
+  "requestOutcomes": "ESA homepage, services page, and current directorate/map page returned HTTP 200. The ESA map page resolved to a static directorate image map plus Google Maps script, not a parcel API. The IDSC ArcGIS service directory returned HTTP 200 but exposed no clearly identified public cadastral/parcel layer in the bounded review. The ETA page returned HTTP 200 but is tax-administration evidence only. No login, credentials, private token, owner/name/address/titleholder/contact/tax-account lookup, CAPTCHA/Cloudflare bypass, TLS disablement, or formal submission was used.",
+  "scopeLimits": [
+    "Exact WUP point [30.4530031406614, 30.9429228461777] was preserved in latitude/longitude order; no exact-point hit or miss was inferred.",
+    "National ESA mandate and general service descriptions are not proof of an open Sers Al Layyan parcel layer or citywide coverage.",
+    "The IDSC service-directory review was bounded by service-name inspection; absence of a clear parcel service there is not evidence of cadastral absence.",
+    "No parcel geometry, stable native parcel identity, source schema, CRS, or bounded parcel extent was retrieved or retained.",
+    "No owner, address, titleholder, contact, tax/account, personal, or unsafe fields were requested or retained.",
+    "Packet completion records executed research only; it does not qualify or admit a runtime adapter. Serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; do not synthesize one from search results, directory rows, response order, or internal records.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry query was reached; no hit/miss inference was made.",
+    "requestEvidence": ["ESA homepage HTTP 200", "ESA services HTTP 200", "ESA current map page HTTP 200; static map/no parcel API", "IDSC ArcGIS directory HTTP 200; no clearly identified parcel layer", "ETA local-coverage page HTTP 200; non-cadastral scope"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian General Survey Authority national survey and map products, with a bounded review of the IDSC national GIS directory.",
+    "verifiedOpenScope": "National custodian/service documentation only; public Sers Al Layyan parcel geometry and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A non-public, request-based, or separately indexed Monufia/ESA cadastral product may exist. Current public endpoint availability, native identity, CRS, geometry schema, and citywide coverage remain unresolved.",
+  "retainedSample": null
+}

@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-6431-southend-on-sea.json",
+  "cityCode": 6431,
+  "queueRank": 2075,
+  "city": "Southend-on-Sea",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Southend-on-Sea City Council's official page evidences a local property asset map and an Essex public-body land/property map; HM Land Registry guidance documents the national INSPIRE Index Polygons dataset.",
+    "native": "The United Kingdom's local/native public-service language is English; an independent UK-local English query found the same council map and the official HM Land Registry download index listing Southend-on-Sea Borough Council."
+  },
+  "custodian": {
+    "name": "Southend-on-Sea City Council for the local property map; HM Land Registry for national registered-property INSPIRE data",
+    "role": "The council is evidenced as the local map publisher, not as a cadastral registry custodian. HM Land Registry is the national publisher for England-and-Wales INSPIRE Index Polygons.",
+    "evidenceUrls": [
+      "https://www.southend.gov.uk/council-land-property-rights-bid-challenge/council-land-property/1",
+      "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "https://use-land-property-data.service.gov.uk/datasets/inspire"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://www.southend.gov.uk/council-land-property-rights-bid-challenge/council-land-property/1", "result": "HTTP 200; official page links the Southend property asset map, Essex land/property map, and HM Land Registry."},
+    {"route": "UK-local English first-party discovery", "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download", "result": "Official indexed page lists the Southend-on-Sea Borough Council GML file; direct anonymous fetch hit a redirect loop and did not yield a file."},
+    {"route": "Southend public ArcGIS app", "url": "https://southend.maps.arcgis.com/apps/webappviewer/index.html?id=bfe7d99d738744c3af34432d6668157d", "result": "HTTP 200; public app configuration inspected and a FeatureServer reference identified."},
+    {"route": "ArcGIS layer metadata", "url": "https://services3.arcgis.com/GHL0TW95ivGM736Z/arcgis/rest/services/EPAM200218/FeatureServer/0?f=pjson", "result": "HTTP 400 Invalid URL; no schema or CRS."},
+    {"route": "Bounded anonymous geometry query", "url": "https://services3.arcgis.com/GHL0TW95ivGM736Z/arcgis/rest/services/EPAM200218/FeatureServer/0/query", "result": "HTTP 400 Bad Request with a small WUP-area envelope and OBJECTID-only output request; no geometry."},
+    {"route": "HM Land Registry documentation", "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data", "result": "HTTP 200; confirms indicative registered-property polygons, GML distribution, and Land Registry-INSPIRE IDs, without returning Southend features."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["stable native parcel or INSPIRE identifier", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "ownership, valuation, or personal-property attributes"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "identities": [],
+    "reason": "No unchanged native parcel polygon was returned by the attempted public routes; no sample GeoJSON was retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [51.5551240047725, 0.668467014701583] was preserved in latitude/longitude order and was not shifted.",
+    "The council property asset map concerns council/public-body land ownership and was not treated as a citywide cadastral parcel layer.",
+    "HM Land Registry INSPIRE Index Polygons are indicative registered-property extents, not title, ownership, valuation, or legal-boundary evidence.",
+    "A zero or failed bounded query, redirect loop, or invalid service URL is not evidence of citywide absence.",
+    "Packet completion and registry/map evidence do not constitute source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Local map existence and national dataset documentation are verified, but a usable current public parcel endpoint, safe native identity field, CRS, bounded geometry, and citywide coverage are not verified."
+  }
+}

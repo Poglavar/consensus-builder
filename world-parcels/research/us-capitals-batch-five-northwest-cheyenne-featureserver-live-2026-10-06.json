@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "cheyenne",
+      "stateCode": "WY",
+      "sourceId": "us-wy-cheyenne-parcels",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.1375,
+            -104.8225,
+            41.14
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.1375,
+            -104.82000000000001,
+            41.14
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.1375,
+            -104.81750000000001,
+            41.14
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.14,
+            -104.8225,
+            41.1425
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.14,
+            -104.82000000000001,
+            41.1425
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.14,
+            -104.81750000000001,
+            41.1425
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.825,
+            41.1425,
+            -104.8225,
+            41.145
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8225,
+            41.1425,
+            -104.82000000000001,
+            41.145
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.82000000000001,
+            41.1425,
+            -104.81750000000001,
+            41.145
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.1375,
+            -104.81500000000001,
+            41.14
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.1375,
+            -104.8125,
+            41.14
+          ],
+          "count": 70,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.1375,
+            -104.81,
+            41.14
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.14,
+            -104.81500000000001,
+            41.1425
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.14,
+            -104.8125,
+            41.1425
+          ],
+          "count": 71,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.14,
+            -104.81,
+            41.1425
+          ],
+          "count": 80,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81750000000001,
+            41.1425,
+            -104.81500000000001,
+            41.145
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.81500000000001,
+            41.1425,
+            -104.8125,
+            41.145
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -104.8125,
+            41.1425,
+            -104.81,
+            41.145
+          ],
+          "count": 9,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -104.8125,
+          41.1425,
+          -104.81,
+          41.145
+        ],
+        "forcedPageSize": 3,
+        "count": 9,
+        "returned": 9,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 733,
+      "exactResolved": 733,
+      "nativeIds": [
+        "14663125900400",
+        "14663125900500",
+        "14663126000400"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wy-cheyenne-parcels",
+        "parcels": 1,
+        "siteM2": 812.92
+      },
+      "requests": 96
+    }
+  ]
+}

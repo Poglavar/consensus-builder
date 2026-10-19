@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-10400-fujin.json",
+  "cityCode": 10400,
+  "queueRank": 2638,
+  "name": "Fujin",
+  "country": "China",
+  "countryCode": "CN",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "summary": "Official Fujin Natural Resources Bureau material confirms the local cadastral/real-estate registration custodian and responsibilities. The current Heilongjiang Tianditu portal was inspected through its public JavaScript/configuration, but no anonymous Fujin parcel service or safe ID-plus-geometry response was exposed. No sample was retained.",
+  "queryOutcomes": [
+    {"language":"English","query":"Fujin China official cadastral map parcel GIS Fujin City natural resources bureau","outcome":"Official Fujin Natural Resources Bureau and Heilongjiang Tianditu leads found; no public cadastral parcel feature service verified."},
+    {"language":"Chinese","query":"富锦市 自然资源局 地籍图 不动产登记 GIS 地图 服务","outcome":"富锦市自然资源局登记/权籍职责 confirmed; provincial public portal inspected, but no anonymous Fujin cadastral geometry endpoint found."}
+  ],
+  "requestOutcomes": [
+    {"request":"GET Fujin Natural Resources Bureau official responsibilities page","outcome":"HTTP 200; local custodian and cadastral responsibilities evidenced; no parcel API or geometry."},
+    {"request":"GET Fujin government information-disclosure guide","outcome":"HTTP 200; official publication channel identified; no cadastral feature service."},
+    {"request":"GET Heilongjiang Tianditu portal and current web UI","outcome":"HTTP 200; public portal and current configuration loaded without login; general GIS service catalog/config inspected."},
+    {"request":"GET current Tianditu config.js","outcome":"HTTP 200; imagery, vector basemap, boundary and other general services listed; no Fujin parcel layer identified."},
+    {"request":"GET configured Heilongjiang city-boundary map service metadata","outcome":"HTTP 502 Bad Gateway; no schema or geometry returned. This failure is not evidence of cadastral absence."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point preserved as [47.2499763575058,132.028794949871] in latitude/longitude order; no coordinate shift or exact-point inference.",
+    "No parcel polygon or source-specific attribute set retained.",
+    "No citywide or countrywide absence claim; portal listing and failed map request are bounded observations only.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception used.",
+    "Packet completion is not source integration/admission."
+  ],
+  "safeFieldAllowlist": ["stable native ID if later exposed", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+  "nativeFieldMapping": {},
+  "uncertainty": "The local registry custodian is clear, but public parcel data access, service coverage, native identity schema and CRS are unverified. The provincial portal may contain additional resources not discoverable from the inspected public configuration.",
+  "serialReviewRecommendation": "Hold. Recheck official public endpoints if a specific Fujin parcel viewer or downloadable dataset is later identified; independently qualify coverage, identity stability, CRS/axis semantics and runtime admissibility."
+}

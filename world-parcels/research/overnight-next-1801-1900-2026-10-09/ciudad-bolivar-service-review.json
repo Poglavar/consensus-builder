@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-4383-ciudad-bolivar.json",
+  "schemaVersion": "1.0",
+  "cityCode": 4383,
+  "queueRank": 1869,
+  "city": "Ciudad Bolivar",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "A local municipal cadastral custodian was evidenced through the Municipality of Angostura del Orinoco's official portal and ordinance, but no anonymous public parcel geometry service was confirmed. No sample GeoJSON was retained.",
+  "queryOutcomes": "Separate English and Spanish discovery queries are recorded in city-4383-ciudad-bolivar.json. They identified the official municipal Angostura portals and an ordinance describing the Registro Catastral and ficha/cédula catastral; they did not identify an open parcel viewer/API.",
+  "requestOutcomes": [
+    {"route":"https://angostura.alcaldia.web.ve/","method":"GET","status":200,"outcome":"Official municipal revenue portal retrieved; page identifies the Servicio Autónomo Municipal de Administración Tributaria (SAMAT), but no parcel map/API was exposed."},
+    {"route":"https://ciudadpiar.sigat.net/","method":"GET","status":200,"outcome":"Official SIGAT portal retrieved; page identifies the Dirección de Hacienda del Municipio Bolivariano Angostura and links municipal ordinance material. No anonymous parcel geometry route was exposed."},
+    {"route":"https://ciudadpiar.sigat.net/documentos/ordenanzas/reforma_de_la_ordenanza_de_impuesto_sobre_inmuebles_urbanos_y_periurbanos_del_municipio_angostura.pdf","method":"GET","status":200,"outcome":"Official municipal ordinance PDF retrieved. It documents the Dirección de Catastro, Tierras y Planeamiento Urbano, Registro Catastral, and ficha/cédula catastral as the official property identifier; it is legal/procedural evidence, not a parcel geometry response."},
+    {"route":"https://angostura.alcaldia.web.ve/wp-content/uploads/2025/01/ORDENANZA-DE-IMPUESTO-Y-TASAS-SOBRE-INMUEBLES-URBANOS_06032024_Angostura.pdf","method":"GET","status":404,"outcome":"Search-result URL was unavailable on direct retrieval; no bypass or alternate private route was attempted."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[8.08467761910864,-63.556971231147],"coordinateOrderNote":"Exact WUP point preserved as latitude/longitude. No parcel query was made and no coordinate shift was applied."},
+  "safeFieldAllowlist": ["stable native cadastral identifier only if anonymously exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"ficha/cédula catastral":"official municipal cadastral identifier described by the ordinance; not exposed in this attempt","geometry":null},
+  "compositeKeyProvenance": null,
+  "crs": {"source":null,"retainedSample":null},
+  "geometryQuality": "No geometry response obtained; no sample retained.",
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not attempted because no anonymous parcel geometry endpoint was identified.","requestEvidence":null},
+  "coverageAssessment": {"claimedScope":"Municipal cadastral registration for Angostura del Orinoco.","verifiedOpenScope":"Official municipal portal and ordinance accessible anonymously; parcel geometry and citywide coverage unverified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "The municipal ordinance establishes a local registry/cadastre custodian and cadastral identifier, but does not provide an open parcel geometry API.",
+    "The public SIGAT and Alcaldía Web pages are revenue/service portals; no anonymous map, schema, CRS, or parcel response was exposed in their current HTML/JavaScript.",
+    "No owner, address, titleholder, contact, title, tax/account, personal or other unsafe fields were requested, logged or retained.",
+    "No exact-point hit, extent miss, timeout, login wall or unavailable route is evidence of citywide absence.",
+    "Packet completion is research evidence only and does not admit a runtime adapter. Independent serial review remains required."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "A municipal cadastral viewer or controlled service may exist behind an authenticated or undiscovered route. Parcel geometry, CRS, stable exposed identifier, completeness, legal status and update currency remain unverified."
+}

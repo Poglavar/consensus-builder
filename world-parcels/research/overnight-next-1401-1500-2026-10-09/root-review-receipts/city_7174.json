@@ -1,0 +1,16 @@
+{
+  "taskId": "city:7174",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7174-asaba.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/asaba-service-review.json",
+    "tmp/valhalla-parcel-research/asaba/Process-for-Obtaining-C-of-O.txt",
+    "tmp/valhalla-parcel-research/asaba/Area-Planning-Offices.txt",
+    "tmp/valhalla-parcel-research/runs/20261009T155933-f8150676/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T16:04:43Z",
+  "finding": "WUP identity and English/Igbo executed searches checked. First-party Delta State documents evidence Asaba land-administration custody; no anonymous native-ID polygon response or adapter qualification. Public geometry availability remains unresolved; city held."
+}

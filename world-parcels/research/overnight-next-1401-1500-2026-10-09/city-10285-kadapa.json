@@ -1,0 +1,124 @@
+{
+  "cityCode": 10285,
+  "queueRank": 1446,
+  "name": "Kadapa",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [14.4674787356242, 78.8328384073944],
+  "population2025": 393513,
+  "population2025k": 393.513,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kadapa Andhra Pradesh official cadastral parcel map GIS land records survey parcels",
+        "result": "Found first-party Andhra Pradesh Bhunaksha, APSAC cadastral-map application, the official YSR Kadapa district administration site, and official APSAC GIS service documentation. The current public cadastral application exposes a cached ArcGIS map service covering Andhra Pradesh; it does not expose a queryable parcel feature layer or native parcel IDs.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/",
+          "https://apsac.ap.gov.in/services/",
+          "https://kadapa.ap.gov.in/"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "కడప ఆంధ్రప్రదేశ్ అధికారిక భూ పటము కాడస్ట్రల్ పార్సెల్ మ్యాప్ భూ రికార్డులు",
+        "result": "Telugu-language discovery identified the official Andhra Pradesh Bhuseva land-information portal and the state Bhunaksha cadastral-map service. The official YSR Kadapa page identifies Telugu as the district language and links to MeeBhoomi. No Kadapa-specific anonymous parcel feature endpoint or safe parcel geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://bhudhaar.ap.gov.in/",
+          "https://kadapa.ap.gov.in/",
+          "https://meebhoomi.ap.gov.in/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bhunaksha Andhra Pradesh",
+        "operator": "Government of Andhra Pradesh, Survey, Settlements and Land Records",
+        "homeUrl": "https://bhunaksha.ap.gov.in/",
+        "observation": "Official state cadastral mapping portal identified by first-party discovery; direct fetch timed out during this attempt, so no private or authenticated route was pursued."
+      },
+      {
+        "name": "APSAC AP Cadastral Map",
+        "operator": "Andhra Pradesh Space Applications Centre, Government of Andhra Pradesh",
+        "homeUrl": "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/",
+        "observation": "Current public ArcGIS Web AppBuilder configuration was inspected. It references the public cached cadastral map service https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer. The service metadata reports one Parcel layer, Web Mercator (EPSG:3857/102100), and tiled-map capabilities, with no feature-layer fields or native IDs."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/7e3b53a1a265421483fbcbb26c275834/data?f=json",
+        "httpStatus": 200,
+        "result": "Current public app configuration fetched. Web map item b54a4a9a00b441a2bdd8f993d140edd5 and cadastral_ap_cache map service identified."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/b54a4a9a00b441a2bdd8f993d140edd5/data?f=json",
+        "httpStatus": 200,
+        "result": "Operational layer configuration confirms the public cadastral map service URL and title cadastral_ap_cache."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer?f=json",
+        "httpStatus": 200,
+        "result": "Service metadata fetched. One Parcel map layer; spatial reference WKID 102100/latestWkid 3857; cached tiled map; no query capability, fields, object ID, or GeoJSON feature response. A pjson request returned 403, while JSON metadata was available."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer/export?bbox=8774631,1626904,8776631,1628904&bboxSR=3857&imageSR=3857&size=800,800&format=png&transparent=true&f=json",
+        "httpStatus": 200,
+        "result": "Anonymous raster export returned an image URL for a 2 km Web Mercator extent centered on the exact WUP point after coordinate conversion. This is raster map evidence only; it does not establish a parcel identity or provide retained geometry."
+      },
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "httpStatus": null,
+        "result": "Direct HTTPS request timed out. No login, credentials, TLS bypass, or repeated private route was attempted."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://bhunaksha.ap.gov.in/",
+    "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/",
+    "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer?f=json"
+  ],
+  "registryBasis": "Official Andhra Pradesh cadastral mapping sources were evidenced, including a first-party Bhunaksha portal and APSAC's current public cadastral map application. Kadapa-specific parcel coverage and feature querying remain unverified.",
+  "source": {
+    "sourceId": "IN-10285-KADAPA-AP-APSAC-CADASTRAL-REVIEW",
+    "name": "Andhra Pradesh official cadastral map services",
+    "url": "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/",
+    "operator": "Andhra Pradesh Space Applications Centre / Government of Andhra Pradesh",
+    "serviceType": "Public ArcGIS cached cadastral map reviewed; no safe anonymous parcel feature response verified.",
+    "layer": "Parcel",
+    "geometryType": null,
+    "outputCrs": "EPSG:3857 (ArcGIS WKID 102100)",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The APSAC service is an Andhra Pradesh cadastral map service with a statewide-looking full extent in Web Mercator; the Bhunaksha portal describes Andhra Pradesh cadastral mapping and integration with land records.",
+    "verifiedOpenScope": "A public cached map service and a bounded raster export were verified. Kadapa parcel feature coverage, schema, native IDs, and citywide completeness were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_cadastral_map_geometry_unverified",
+  "technicalBlocker": "The current APSAC endpoint is a cached ArcGIS map service with one rendered Parcel layer but no queryable feature-layer schema or native identity fields. Bhunaksha direct access timed out. The successful exact-point-area request returned raster PNG metadata only.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The state portal may support parcel selection through UI or another endpoint not exposed by the current public app configuration. No exact-point parcel hit or citywide absence inference is made.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect a documented anonymous Bhunaksha/APSAC feature endpoint if one becomes available, confirming schema, CRS, native identity, and safe fields before retaining geometry.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [14.4674787356242, 78.8328384073944],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

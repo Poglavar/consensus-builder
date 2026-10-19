@@ -1,0 +1,66 @@
+{
+ "kind": "country",
+ "key": "MU",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: en-MU,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://landsurvey.govmu.org/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://opendata.govmu.org/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure"
+  },
+  {
+   "url": "https://housing.govmu.org/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site; links only to DocumentationWebmap.pdf and a GIS country-profile PDF"
+  },
+  {
+   "url": "https://geoportal.govmu.org/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ONSDI GeoNode portal (found by testing host guesses); public config exposes /geoserver/ with empty token"
+  },
+  {
+   "url": "https://geoportal.govmu.org/api/v2/datasets/?page_size=100",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "20 public datasets (pharmacies, schools, districts, roads etc.); no parcel/cadastre layer"
+  },
+  {
+   "url": "https://geoportal.govmu.org/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "19 feature types, none parcel-like (0 matches for cadastr/parcel/lot)"
+  },
+  {
+   "url": "https://gis.govmu.org/gis/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Government Information Service news site, unrelated"
+  }
+ ],
+ "geoBlockSuspected": "false",
+ "notes": "New: Mauritius has a working national SDI GeoNode/GeoServer (geoportal.govmu.org, open WFS) but its public catalogue holds no parcel layer. The Land Survey Division host is still unreachable, so absence of a separate cadastral viewer is not established.",
+ "nextStep": "Find the Land Survey / Registrar General e-cadastre or a Land Information System URL; check whether the geoportal has more layers when logged in (do not attempt)."
+}

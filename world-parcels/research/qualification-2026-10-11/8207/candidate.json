@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "8207",
+    "name": "Buffalo",
+    "point": [
+      -78.8390421008214,
+      42.9359928509233
+    ]
+  },
+  "descriptor": {
+    "id": "us-ny-erie-parcels",
+    "name": "Erie County Office of GIS tax parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0",
+    "idField": "OBJECTID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "US-NY-ERIE-",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "offset",
+    "idsQueryMode": "offset",
+    "queryFormat": "geojson",
+    "capabilities": {
+      "point": false,
+      "exactId": true,
+      "bbox": true,
+      "areaEnumeration": true,
+      "geometry": "full-wgs84"
+    },
+    "metricSrid": 32617,
+    "countryCode": "US",
+    "stateCode": "NY",
+    "cityIds": [
+      "buffalo"
+    ],
+    "operator": "Erie County Office of GIS",
+    "scope": "Erie County tax-parcel polygon service linked by the City of Buffalo; bounded local qualification only. Buffalo municipal completeness is unverified.",
+    "catalogueUrl": "https://www3.erie.gov/gis/internet-mapping",
+    "attribution": "Erie County Office of GIS",
+    "licenceNote": "County publishes tax parcel GIS data for free; redistribution terms and legal survey accuracy remain unverified.",
+    "caveats": [
+      "OBJECTID is the service-native identity; continuity across future service republishes is unverified.",
+      "The county website identifies the parcel layer as current to 2025; individual parcel currency and citywide completeness are unverified."
+    ]
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Frozen packet officialSources and registryBasis identify Erie County Office of GIS as tax-parcel custodian. https://www3.erie.gov/gis/internet-mapping explicitly describes searching tax parcel data and identifies the county PARCELS layer as current to 2025.",
+      "Frozen packet and live first-party https://www.buffalony.gov/543/GIS-Maps link the City of Buffalo Online Mapping Parcel Viewer and Erie County Online Mapping System, establishing city relevance without asserting municipal completeness.",
+      "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0?f=pjson describes Erie County Parcels with esriGeometryPolygon, native OBJECTID and anonymous Query capability; frozen geometry and exact WUP-point observations use that same endpoint."
+    ]
+  },
+  "sourceCandidateSha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+  "qualificationRecordedSha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+  "sourceCandidatePath": "qualification/evidence/cities/8207/candidate.json",
+  "originalSeedSha256": "2337f71dc9920e85d641fa554b33b596691851aeae39076ccc69d2cc70b284e1",
+  "originalSeedPath": "qualification/evidence/cities/8207/candidate.json"
+}

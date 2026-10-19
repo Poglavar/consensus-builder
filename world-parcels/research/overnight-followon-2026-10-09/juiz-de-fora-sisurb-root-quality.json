@@ -1,0 +1,1210 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32723",
+  "featureCount": 170,
+  "validNonemptyCount": 170,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 132.24558834796568,
+    "median": 366.38783157442805,
+    "max": 141729.80976467388
+  },
+  "features": [
+    {
+      "id": "BR-JF-SISURB-LT75248",
+      "areaM2": 904.149050074069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT86574",
+      "areaM2": 649.9296076635138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT47627",
+      "areaM2": 1991.8223782232972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT11953",
+      "areaM2": 638.3901600588606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT5986",
+      "areaM2": 593.5282866354951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT90533",
+      "areaM2": 357.36490299562723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT35284",
+      "areaM2": 363.0089987492703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT28274",
+      "areaM2": 353.11749331360966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT79163",
+      "areaM2": 352.3557453049382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT45335",
+      "areaM2": 864.7018115079281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT93674",
+      "areaM2": 581.8001451100436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT14197",
+      "areaM2": 883.8374110433051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT73806",
+      "areaM2": 356.232099522622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT35773",
+      "areaM2": 2332.2219719466584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT16067",
+      "areaM2": 780.1401645236996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT67261",
+      "areaM2": 364.2560417665693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT93222",
+      "areaM2": 24665.49905082822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT27653",
+      "areaM2": 363.65241930278654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT65400",
+      "areaM2": 461.9997591065385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT85350",
+      "areaM2": 404.4331990290108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT112492",
+      "areaM2": 420.39222624804313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT64652",
+      "areaM2": 368.48594221167605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT20487",
+      "areaM2": 676.2308593908564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT14229",
+      "areaM2": 382.938422698267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT69672",
+      "areaM2": 345.3012731419685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT96173",
+      "areaM2": 335.9965919955106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT14644",
+      "areaM2": 449.8860302037019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT35065",
+      "areaM2": 344.99739202725334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT14519",
+      "areaM2": 325.58557149725243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT42764",
+      "areaM2": 400.42145732894693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT41861",
+      "areaM2": 318.6633591340322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT27755",
+      "areaM2": 433.14526076138645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT11928",
+      "areaM2": 436.1582463555311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT36567",
+      "areaM2": 449.62912157786747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT9541",
+      "areaM2": 399.2848368503738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT19395",
+      "areaM2": 443.53070181808556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT67292",
+      "areaM2": 350.930344092731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT34432",
+      "areaM2": 320.4979535345724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT62850",
+      "areaM2": 498.47529920266265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT26234",
+      "areaM2": 359.1401937447369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT13674",
+      "areaM2": 426.31114011384705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT9077",
+      "areaM2": 367.5992828644455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT76394",
+      "areaM2": 385.63250310784986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT103331",
+      "areaM2": 141729.80976467388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT104558",
+      "areaM2": 355.51347883813384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT70429",
+      "areaM2": 382.811800672464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT77271",
+      "areaM2": 706.1471303180474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT965",
+      "areaM2": 344.5572523791761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT1235",
+      "areaM2": 357.9686563228712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT14219",
+      "areaM2": 365.32108265836206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT71083",
+      "areaM2": 379.5740167005714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT3696",
+      "areaM2": 438.2274768948742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT28625",
+      "areaM2": 354.5790831015237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT86012",
+      "areaM2": 436.3933856225482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT39741",
+      "areaM2": 2232.352277803044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT46022",
+      "areaM2": 867.8357269140953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT107423",
+      "areaM2": 831.6719474480471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT39795",
+      "areaM2": 418.1101956020759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT108957",
+      "areaM2": 826.6488421809119,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT40813",
+      "areaM2": 615.1730216377578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT89841",
+      "areaM2": 463.59681785705646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT27030",
+      "areaM2": 396.4085217343101,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT104196",
+      "areaM2": 42034.73745352221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT19289",
+      "areaM2": 376.05412169302053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT26704",
+      "areaM2": 369.32001507904675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT22573",
+      "areaM2": 674.0377167219215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT6848",
+      "areaM2": 351.122388611734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT19038",
+      "areaM2": 355.46206678844015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT21739",
+      "areaM2": 361.25790713938187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT83635",
+      "areaM2": 388.53654347494285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT81416",
+      "areaM2": 717.7941174750651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT66325",
+      "areaM2": 353.6540455759333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT89187",
+      "areaM2": 359.19315144852465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT26038",
+      "areaM2": 356.99071991609867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT82621",
+      "areaM2": 364.8301018923476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT60914",
+      "areaM2": 354.8415280481171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT11310",
+      "areaM2": 711.5778521226345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT28474",
+      "areaM2": 354.20305942659814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT23324",
+      "areaM2": 341.3070886982232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT78495",
+      "areaM2": 366.0661224631682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT90617",
+      "areaM2": 366.60370543667284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT15025",
+      "areaM2": 361.1953940362381,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT72934",
+      "areaM2": 367.2540988658823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT79767",
+      "areaM2": 352.2147174385797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT87209",
+      "areaM2": 361.3290927429516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT17076",
+      "areaM2": 364.8744315503044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT60760",
+      "areaM2": 366.17195771218326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT37451",
+      "areaM2": 361.1397065936901,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT65866",
+      "areaM2": 716.1963745685769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT79802",
+      "areaM2": 346.23903721651357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT25936",
+      "areaM2": 373.9788846520611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT82879",
+      "areaM2": 361.19199436568323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT17427",
+      "areaM2": 360.8335287679957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT84113",
+      "areaM2": 361.93266083983434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT26583",
+      "areaM2": 353.52552933388813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT86778",
+      "areaM2": 392.62553661961834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT79411",
+      "areaM2": 738.0356087543081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT71642",
+      "areaM2": 362.8802843200566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT23144",
+      "areaM2": 721.8589614985243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT21661",
+      "areaM2": 357.63398107943294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT75395",
+      "areaM2": 715.6584142758913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT91437",
+      "areaM2": 380.69747842616425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT37836",
+      "areaM2": 767.9629314406742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT98256",
+      "areaM2": 846.7723491191097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT92314",
+      "areaM2": 2117.683673092802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT47793",
+      "areaM2": 821.054048176997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT49284",
+      "areaM2": 138374.92908509233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT84657",
+      "areaM2": 146.81243286870125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT107868",
+      "areaM2": 379.1204975736018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT11938",
+      "areaM2": 132.24558834796568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT71104",
+      "areaM2": 141.3052471545342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT81887",
+      "areaM2": 232.58216075344842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT11075",
+      "areaM2": 154.93839496886267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT20493",
+      "areaM2": 142.14606699002627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT110358",
+      "areaM2": 23812.796669020416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT31987",
+      "areaM2": 237.5596056599826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT16694",
+      "areaM2": 385.2266328797485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT4725",
+      "areaM2": 372.77390664928885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT87530",
+      "areaM2": 228.16754109398124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT89564",
+      "areaM2": 221.0389146104227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT87571",
+      "areaM2": 220.14896213939332,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT102353",
+      "areaM2": 207.16644207367955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT27317",
+      "areaM2": 273.382411819774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT32070",
+      "areaM2": 235.47161863486804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT30454",
+      "areaM2": 220.47429130679686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT70029",
+      "areaM2": 263.0567558222254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT88828",
+      "areaM2": 237.0786256641133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT28657",
+      "areaM2": 273.2483476827555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT33936",
+      "areaM2": 438.5564573539657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT19378",
+      "areaM2": 272.72830324037915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT114177",
+      "areaM2": 250.31522728929374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT79319",
+      "areaM2": 230.2939285343106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT3052",
+      "areaM2": 259.20801766309614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT37936",
+      "areaM2": 271.6258807373889,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT19579",
+      "areaM2": 419.7279701352837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT33688",
+      "areaM2": 404.3836966797663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT8378",
+      "areaM2": 841.307462165497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT36828",
+      "areaM2": 569.66460642539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT93833",
+      "areaM2": 619.8464588196963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT2505",
+      "areaM2": 350.8214405730068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT37892",
+      "areaM2": 361.49054079821667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT26065",
+      "areaM2": 360.2896998054584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT19711",
+      "areaM2": 506.2892141045581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT54214",
+      "areaM2": 348.4809096692634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT74053",
+      "areaM2": 408.9731289015849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT81929",
+      "areaM2": 357.046950861548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT66993",
+      "areaM2": 739.2097551852144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT15087",
+      "areaM2": 354.3125604587053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT30061",
+      "areaM2": 357.503949680907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT13780",
+      "areaM2": 358.9736942973557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT106746",
+      "areaM2": 462.6430004841488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT70740",
+      "areaM2": 502.56114208755565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT87163",
+      "areaM2": 391.35578501597604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT70033",
+      "areaM2": 304.3227564254059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT21656",
+      "areaM2": 355.14620035307684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT59610",
+      "areaM2": 403.7866237966128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT21980",
+      "areaM2": 352.2945676277642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT17529",
+      "areaM2": 503.5508202356473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT22595",
+      "areaM2": 362.2966746453379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT70851",
+      "areaM2": 360.0767012548234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT23287",
+      "areaM2": 328.0360869332742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT22718",
+      "areaM2": 456.6069547698498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT59080",
+      "areaM2": 365.1340285442385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT29459",
+      "areaM2": 505.17693374324506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT59073",
+      "areaM2": 363.00468780654205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT101321",
+      "areaM2": 688.3762815619754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT76288",
+      "areaM2": 340.1073281609792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT96014",
+      "areaM2": 359.4231145906191,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT45932",
+      "areaM2": 545.8516947304915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-JF-SISURB-LT51313",
+      "areaM2": 357.0993991116484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

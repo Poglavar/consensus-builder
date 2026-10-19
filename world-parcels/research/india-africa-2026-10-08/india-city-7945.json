@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 7945,
+  "cityId": "wup2025:7945",
+  "name": "Mumbai",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    19.12248075999,
+    72.8833426320986
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 107,
+  "stateOrUT": "Maharashtra",
+  "administrativeIdentity": {
+    "district": "Mumbai Suburban District",
+    "tehsilOrTaluk": null,
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/mumbai.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/mumbai.json",
+        "checkedAt": "2026-09-28",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Maharashtra state viewing portal; Mumbai urban category shown",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": null
+          }
+        ],
+        "conclusion": "The map likely has plot geometry for some urban areas, but public API access, completeness, and reuse terms are unverified. This is distinct from Kolkata's West Bengal portal.",
+        "nextStep": "Inspect BhuNaksha's public requests when reachable; verify a small Mumbai City polygon sample and state coverage separately."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Marathi",
+        "query": "मुंबई भूलेख 7/12 मालमत्ता नकाशा भू-नक्शा महाराष्ट्र",
+        "scope": "WUP 7945 Mumbai cohort label retained; actual query searched Maharashtra urban land records/maps.",
+        "result": "Search surfaced official Maharashtra land-records entry points. The official Mumbai Suburban District services page was opened and describes state urban property cards and digitized property maps; city-specific village/plot geometry was not tested for this WUP center.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Home/Index",
+          "https://bhumiabhilekh.maharashtra.gov.in/EODB",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/View712",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/PropertyCardDownload",
+          "https://bhulekh.mahabhumi.gov.in/?open_in_new_tab=true",
+          "https://www.bhume.in/",
+          "https://mumbaisuburban.gov.in/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://bhumiabhilekh.maharashtra.gov.in/?q=art+7.12",
+          "https://mumbaisuburban.gov.in/%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE-2/",
+          "https://mumbaisuburban.gov.in/en/services-2/",
+          "https://cdnbbsr.s3waas.gov.in/s3b427426b8acd2c2e53827970f2c2f526/uploads/2025/10/20251006647267550.pdf",
+          "https://img.staticmb.com/mbimages/reradoc/2025/09/16/5436743DeedofAssignment-Part01_2_2.pdf",
+          "https://www.mhada.gov.in/sites/default/files/FlashNewsFiles/Facility_for_reduction_in%20premium_as_per_G_R_dtd_14_01_2021_availed_by_Society_Developer_for_Bldg_no_156_161_162_163-n-OB-13-n-14_Savali_CHSL-dtd-10-01-2025_1.pdf",
+          "https://des2.mahaonline.gov.in/files/publication/dsa_MumSub_2017.pdf",
+          "https://img.staticmb.com/mbimages/reradoc/2025/10/30/5437271LandOwnershipDocument_2_1.pdf"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Maharashtra Bhumi Abhilekh urban property map",
+        "operator": "Government of Maharashtra, Land Records Department",
+        "homeUrl": "https://www.bhumiabhilekh.maharashtra.gov.in/",
+        "mapUrl": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "observation": "Mumbai Suburban District official services page states urban records are served through property cards and BhuNaksha digitized maps joined to city survey/gat numbers. This is a shared state-service pointer; it does not prove target-city coverage."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=19.12248075999&lon=72.8833426320986&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "I, Bhawani Nagar Road, Bollywood Design Hotel, Saki Naka, K/E Ward, Mumbai Zone 3, Mumbai, Mumbai Suburban District, Maharashtra, 400096, India",
+        "osmType": "way",
+        "osmId": 959812285,
+        "address": {
+          "house_number": "I",
+          "road": "Bhawani Nagar Road",
+          "commercial": "Bollywood Design Hotel",
+          "suburb": "Saki Naka",
+          "city_district": "Mumbai Zone 3",
+          "city": "Mumbai",
+          "state_district": "Mumbai Suburban District",
+          "state": "Maharashtra",
+          "ISO3166-2-lvl4": "IN-MH",
+          "postcode": "400096",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://mumbaisuburban.gov.in/सेवा-2/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official district page in Marathi links the state map and explains urban property cards and maps linked to city survey/gat numbers."
+      },
+      {
+        "method": "GET",
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "httpStatus": 0,
+        "contentType": "",
+        "assessment": "Web open reported redirect loop; map endpoint itself was not inspected."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+}

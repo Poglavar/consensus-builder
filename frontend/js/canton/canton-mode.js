@@ -5,16 +5,31 @@
 // user-management.js reflects/opens this. See feature-daml.md §13.
 (function () {
     'use strict';
+    // Canton is switched off (environment.js CANTON_ENABLED): define nothing, request nothing.
+    if (window.CANTON_ENABLED !== true) return;
 
     const ACTIVE_KEY = 'canton.active';
     const PARTY_KEY = 'canton.party';
     const PARTIES_KEY = 'canton.parties'; // shared with canton-read.js (test parties)
 
     // Backend base URL — same precedence as canton-read.js.
+    // The backend base. data-source.js already resolves this for every environment — including the
+    // `?backend=` override that dev.sh passes so a worktree talks to its own backend — so defer to it.
+    // Rolling our own here is how Canton ended up unreachable in dev: same-origin meant the static
+    // frontend port, which serves no /canton routes.
     function apiBase() {
         try {
             const override = new URLSearchParams(window.location.search).get('api');
             if (override) return override.replace(/\/$/, '');
+        } catch (_) { }
+        try {
+            if (typeof window.getBackendBase === 'function') {
+                const base = window.getBackendBase();
+                if (base) return String(base).replace(/\/+$/, '');
+            }
+        } catch (_) { }
+        // Standalone pages (canton.html) may not load data-source.js.
+        try {
             if (window.location.protocol === 'file:') return 'http://localhost:3000';
             const h = (window.location.hostname || '').toLowerCase();
             if (h.endsWith('urbangametheory.xyz') && !h.startsWith('api.')) return 'https://api.urbangametheory.xyz';
@@ -64,65 +79,73 @@
         return j.party;
     }
 
-    const closePicker = () => { document.querySelector('.canton-id-overlay')?.remove(); };
+    // The open identity picker (a CbDialog handle), so a pick or a second open can close it.
+    let picker = null;
+    const closePicker = () => { if (picker) picker.close(); };
 
     // The "connect wallet" equivalent: choose which party you act as. Also folds in
     // the canton.html tooling — per-party Copy / CCView / Forget, and Clear all.
+    // A party is a cb-option row (aria-current marks the acting one) with its small buttons beside it.
     function partyRowsHtml(cur) {
         const list = partiesList();
         if (!list.length) return '<p class="canton-empty">No parties yet — paste one or generate a test party.</p>';
         return list.map((p) => `
-            <div class="canton-id-row2${p.party === cur ? ' is-current' : ''}">
-                <button type="button" class="canton-id-pick" data-party-select="${p.party}" title="Use this identity">
-                    <span class="canton-id-name">${hint(p.party)}</span>
-                    <span class="canton-id-role">${p.role || 'party'}${p.parcelId ? ` · ${p.parcelId}` : ''}</span>
+            <div class="canton-id-row2">
+                <button type="button" class="cb-option canton-id-pick" data-party-select="${p.party}" title="Use this identity"${p.party === cur ? ' aria-current="true"' : ''}>
+                    <span class="cb-option__text">
+                        <span class="cb-option__title canton-id-name">${hint(p.party)}</span>
+                        <span class="cb-option__desc">${p.role || 'party'}${p.parcelId ? ` · ${p.parcelId}` : ''}</span>
+                    </span>
                 </button>
                 <span class="canton-id-acts">
-                    <button type="button" data-copy="${p.party}" title="Copy full party id">Copy</button>
-                    <button type="button" data-ccview="${p.party}" title="Canton Coin balance / explorer">CCView</button>
-                    <button type="button" data-forget="${p.party}" title="Forget">×</button>
+                    <button type="button" class="btn btn-sm" data-copy="${p.party}" title="Copy full party id">Copy</button>
+                    <button type="button" class="btn btn-sm" data-ccview="${p.party}" title="Canton Coin balance / explorer">CCView</button>
+                    <button type="button" class="btn btn-sm btn-quiet btn-icon" data-forget="${p.party}" title="Forget" aria-label="Forget"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
                 </span>
                 <div class="canton-ccview-out"></div>
             </div>`).join('');
     }
 
+    // The shared dialog (CbDialog) on the upper rung: it opens from the agent dialog's network chip
+    // or from the network choice. wallet-modal / wallet-modal-overlay / canton-id-* and the data-*
+    // attributes are hooks for scripts and the e2e specs, not looks.
     function openIdentityPicker() {
         closePicker();
         const cur = getParty();
-        const overlay = document.createElement('div');
-        overlay.className = 'wallet-modal-overlay canton-id-overlay';
-        overlay.setAttribute('tabindex', '-1');
-        overlay.innerHTML = `
-            <div class="wallet-modal canton-id-modal" role="dialog" aria-modal="true">
-                <div class="wallet-modal-header">
-                    <h2>Canton identity</h2>
-                    <button type="button" class="wallet-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close" data-close>&times;</button>
-                </div>
-                <div class="wallet-modal-body">
-                    <div class="wallet-modal-description">Canton has no browser wallet — choose the party you act as.${cur ? ` Current: <b>${hint(cur)}</b>` : ''}</div>
-                    <div class="canton-id-list" data-list>${partyRowsHtml(cur)}</div>
-                    <div class="canton-id-row">
-                        <input type="text" id="canton-id-paste" placeholder="paste party id (hint::fingerprint)" autocomplete="off" />
-                        <button type="button" class="btn" data-use-paste>Use</button>
-                        <button type="button" class="btn" data-gen>New test party</button>
-                        <button type="button" class="btn canton-ghost" data-clear>Clear</button>
-                    </div>
-                    <div class="canton-id-foot">
-                        <button type="button" class="btn canton-ghost" data-explorer>Canton state explorer ↗</button>
-                        <button type="button" class="btn canton-ghost" data-switch>Use a different network</button>
-                        <button type="button" class="btn canton-ghost" data-leave>Leave Canton</button>
-                    </div>
-                    <div class="canton-id-err" data-err></div>
-                </div>
-            </div>`;
-        document.body.appendChild(overlay);
-        overlay.focus({ preventScroll: true });
-        const err = (m) => { const e = overlay.querySelector('[data-err]'); if (e) e.textContent = m; };
-        const redrawList = () => { const l = overlay.querySelector('[data-list]'); if (l) l.innerHTML = partyRowsHtml(getParty()); };
+        const content = document.createElement('div');
+        content.innerHTML = `
+            <p class="wallet-modal-description">Canton has no browser wallet — choose the party you act as.${cur ? ` Current: <b>${hint(cur)}</b>` : ''}</p>
+            <div class="canton-id-list" data-list>${partyRowsHtml(cur)}</div>
+            <div class="canton-id-row">
+                <input type="text" id="canton-id-paste" placeholder="paste party id (hint::fingerprint)" aria-label="Party id" autocomplete="off" />
+                <button type="button" class="btn btn-sm" data-use-paste>Use</button>
+                <button type="button" class="btn btn-sm" data-gen>New test party</button>
+                <button type="button" class="btn btn-sm btn-quiet" data-clear>Clear</button>
+            </div>
+            <div class="cb-actions canton-id-foot">
+                <button type="button" class="btn btn-sm" data-explorer>Canton state explorer</button>
+                <button type="button" class="btn btn-sm" data-switch>Use a different network</button>
+                <button type="button" class="btn btn-sm" data-leave>Leave Canton</button>
+            </div>
+            <div class="canton-id-err" data-err role="status" aria-live="polite"></div>`;
+        const dialog = window.CbDialog.open({
+            title: 'Canton identity',
+            size: 'md',
+            top: true,
+            className: 'wallet-modal canton-id-modal',
+            overlayClassName: 'wallet-modal-overlay canton-id-overlay',
+            body: Array.from(content.childNodes),
+            onClose: () => { if (picker === dialog) picker = null; }
+        });
+        const closeButton = dialog.header.querySelector('.close-circle-btn');
+        closeButton.classList.add('wallet-modal-close');
+        closeButton.setAttribute('data-close', '');
+        picker = dialog;
+        const root = dialog.body;
+        const err = (m) => { const e = root.querySelector('[data-err]'); if (e) e.textContent = m; };
+        const redrawList = () => { const l = root.querySelector('[data-list]'); if (l) l.innerHTML = partyRowsHtml(getParty()); };
 
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay || e.target.closest('[data-close]')) return closePicker();
-
+        root.addEventListener('click', (e) => {
             const copy = e.target.closest('[data-copy]');
             if (copy) { try { navigator.clipboard.writeText(copy.getAttribute('data-copy')); err('Copied party id.'); } catch (_) { } return; }
 
@@ -132,7 +155,7 @@
                 if (out) out.textContent = 'Looking up on CCView…';
                 ccviewParty(cc.getAttribute('data-ccview')).then((d) => {
                     if (!out) return;
-                    const link = `<a href="${d.explorerUrl}" target="_blank" rel="noopener">open on CCView ↗</a>`;
+                    const link = `<a class="cb-link cb-link--external" href="${d.explorerUrl}" target="_blank" rel="noopener noreferrer">open on CCView</a>`;
                     out.innerHTML = d.indexed
                         ? `CC balance: <b>${d.coinBalance ?? '—'}</b> · transfers: <b>${d.transfers ?? 0}</b> ${link}`
                         : `Not yet indexed (no Canton Coin activity). ${link}`;
@@ -147,7 +170,7 @@
             if (pick) { setParty(pick.getAttribute('data-party-select')); return closePicker(); }
 
             if (e.target.closest('[data-use-paste]')) {
-                const v = (overlay.querySelector('#canton-id-paste').value || '').trim();
+                const v = (root.querySelector('#canton-id-paste').value || '').trim();
                 if (v) { setParty(v); closePicker(); } else err('Enter a party id.');
                 return;
             }
@@ -197,9 +220,13 @@
             const price = String(options.price != null ? options.price : '');
             if (!(parseFloat(price) > 0)) throw new Error('Canton purchase proposals need a positive offer amount.');
 
+            // The IPFS metadata the create flow uploads for every chain. It used to be accepted here
+            // and dropped at the fetch, so Canton paid for an upload nothing ever read.
+            const imageUri = options.imageURI || null;
+
             const res = await fetch(`${apiBase()}/canton/proposals`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ parcelId, price, buyer }),
+                body: JSON.stringify({ parcelId, price, buyer, imageUri }),
             });
             const j = await res.json().catch(() => ({}));
             if (!res.ok) throw new Error(j.error || `HTTP ${res.status}`);

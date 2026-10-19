@@ -1,0 +1,81 @@
+{
+  "cityCode": 1721,
+  "queueRank": 1304,
+  "name": "Cheonan-si",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "iso3": "KOR",
+  "point": [36.815486546904, 127.135999932899],
+  "population2025": 428378,
+  "population2025k": 428.378,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cheonan-si official cadastral map parcel GIS Korea K-GeoP land parcel service",
+        "result": "Found the official K-GeoP Internet land-information map, which exposes a public parcel-information map and cadastral-map context; no safe anonymous polygon response was verified.",
+        "actualResultUrls": ["https://www.kgeop.go.kr/", "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208"]
+      },
+      {
+        "language": "Korean",
+        "query": "천안시 지적도 지적편집도 공식 토지정보 지도 지적측량",
+        "result": "공식 K-GeoP 토지정보 지도에서 일필지정보와 지적도 맥락을 확인했고, 정부24는 지적도·임야도 등본 발급/열람 민원을 안내한다. 익명 안전 필지 폴리곤은 확인하지 못했다.",
+        "actualResultUrls": ["https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208", "https://mng.cheonan.go.kr/prog/stat/gimok/list.do?mno=sub02_02_02&siteCode=stat"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "K-GEOP-PARCEL-MAP",
+    "name": "K-GeoP Internet (Ministry of Land, Infrastructure and Transport / National Spatial Data Center)",
+    "url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L",
+    "operator": "Ministry of Land, Infrastructure and Transport, National Spatial Data Center",
+    "serviceType": "Official public land/parcel map viewer; anonymous vector parcel response not verified",
+    "layer": "Viewer cadastral/parcel-information map (layer names obtained from current viewer UI/configuration)",
+    "nativeIdField": null,
+    "nativeIdEvidence": "The current viewer JavaScript exposes parcel-information and public map endpoints, but no safe bounded feature response was obtained; no synthetic identity was created.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Cheonan city official statistics confirm local land administration context, but no separate city-maintained public cadastral vector endpoint was evidenced. The Korean national service is the evidenced public cadastral-map custodian."
+  },
+  "requests": [
+    {"url": "https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "method": "GET; anonymous", "httpStatus": 200, "result": "Current official viewer HTML retrieved; UI documents 일필지정보 (single-parcel information), land layers, and the non-legal-reference nature of the map."},
+    {"url": "https://www.kgeop.go.kr/js/map/config/odf-config-wavus.json", "method": "GET; anonymous", "httpStatus": 200, "result": "Current viewer map configuration retrieved; EPSG:5179 is configured and the viewer uses public map WFS/WMS/WMTS routes through map.kgeop.go.kr:20000/bag."},
+    {"url": "http://map.kgeop.go.kr:20000/bag/api/map/wfs?service=WFS&request=GetCapabilities", "method": "GET; anonymous", "httpStatus": null, "result": "DNS resolution failed from this host; no capabilities or feature response obtained. This is a route/network failure, not evidence of cadastral absence."},
+    {"url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208", "method": "GET; anonymous", "httpStatus": 200, "result": "Official Government24 page documents cadastral-map/forest-map certificate viewing and issuance; no protected personal or title data requested."},
+    {"url": "https://mng.cheonan.go.kr/prog/stat/gimok/list.do?mno=sub02_02_02&siteCode=stat", "method": "GET; anonymous", "httpStatus": 200, "result": "Official Cheonan city land-statistics page retrieved; it confirms city land administration/statistics but is not a parcel geometry service."},
+    {"url": "https://www.eum.go.kr/web/ar/lu/luLandDet.jsp?chk=0&isNoScr=script&mode=search&pnu=4413111100104360000&scale=&selGbn=umd", "method": "GET; anonymous control/example only", "httpStatus": 200, "result": "Official land-use viewer response demonstrates Korean parcel/PNU-oriented land information, but the example parcel is outside the exact WUP point and no geometry was retained or inferred."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official national K-GeoP parcel-information viewer, Government24 cadastral-map procedure, and Cheonan city official land-information pages reviewed.",
+    "verifiedOpenScope": "Viewer existence, current JavaScript/configuration, EPSG:5179, and public map route declarations were verified; anonymous cadastral feature retrieval was not verified because the declared map host was unreachable from this host.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "The viewer's declared map.kgeop.go.kr WFS route failed DNS resolution; no feature schema, safe ID, or polygon was returned.",
+  "remainingUncertainty": "The exact WUP point may lie within cadastral coverage. Viewer route failure and lack of an exact-point feature response are not evidence of citywide absence.",
+  "nextStep": "Serial reviewer may independently qualify the current K-GeoP map WFS/WMS route from a network that resolves map.kgeop.go.kr; keep runtime readiness held until a real safe geometry adapter is independently qualified.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [36.815486546904, 127.135999932899],
+  "publicParcelGeometryFound": false,
+  "sourceIds": ["K-GEOP-PARCEL-MAP", "GOV24-CADASTRAL-MAP-PROCEDURE", "CHEONAN-OFFICIAL-LAND-STATS"],
+  "registryEvidenceUrls": ["https://www.kgeop.go.kr/info/infoMap.do?initMode=L", "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000027&FAX_TYPE=B&HighCtgCD=-&Mcode=10208", "https://mng.cheonan.go.kr/prog/stat/gimok/list.do?mno=sub02_02_02&siteCode=stat"],
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not shifted to force a parcel hit.",
+  "cohort": "overnight-next-1301-1400",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 1721,
+  "cityId": "wup2025:1721"
+}

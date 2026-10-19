@@ -1,0 +1,26 @@
+{
+  "cityRecord": "city-5717-butuan.json",
+  "cityCode": 5717,
+  "queueRank": 2747,
+  "city": "Butuan",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "reviewStatus": "held",
+  "reviewOutcome": "The national Geoportal's LMB Parcel data layer was found through its live public layer catalog, and Butuan City planning material was found. No safe anonymous Butuan parcel ID-plus-geometry response was verified, so runtime qualification remains held.",
+  "queryAndRequestOutcomes": "Separate English and Cebuano discovery queries were executed. Geoportal HTML/JavaScript and /layers/fetchlayers returned successfully; the catalog identified denr_parcel_data / Parcel data / LMB. A bounded EPSG:4326 GetFeatureInfo request around the exact WUP point and WMS GetCapabilities both timed out. Official Butuan planning and LRA procedure pages were reviewed. No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+  "cityOrLocalCustodian": "Butuan City's Planning and Development Department is evidenced as a local planning/map custodian. LMB is evidenced as the national source agency for the Geoportal Parcel data layer. No local Butuan registry/cadastre endpoint or procedure exposing parcel geometry was established.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "schemaAndCrs": null,
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "No citywide completeness claim.",
+    "No exact-point or map-extent absence inference; the WUP point remains exactly [8.96303598990931, 125.541023764139] in latitude/longitude order.",
+    "The national layer catalog entry is not proof of Butuan parcel coverage.",
+    "No parcel owner, address, titleholder, personal, tax/account, or contact fields were requested or retained.",
+    "No registry, catalog, runtime configuration, queue, identity ledger, or global report was changed."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "The Geoportal WMS may respond in a future attempt or through another public request path; timeouts do not establish parcel absence. Native parcel identity, schema, CRS, and citywide coverage remain unverified.",
+  "integrationDisposition": "Research packet only; no source integration or admission."
+}

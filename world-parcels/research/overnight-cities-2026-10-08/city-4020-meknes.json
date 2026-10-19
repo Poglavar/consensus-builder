@@ -1,0 +1,114 @@
+{
+  "name": "Meknes",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "rank": 743,
+  "point": [
+    33.8819021367936,
+    -5.54293605478824
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic/French",
+        "query": "مكناس المحافظة العقارية المسح العقاري تصميم عقاري ANCFCC Meknès cadastre officiel",
+        "scope": "Local-language/official-source search for exact city land registry, cadastral service, and anonymous full parcel geometry.",
+        "result": "ANCFCC’s official directory lists two Meknes cadastral and property-conservation offices. The online cadastral-plan service is an authenticated/identity and title request workflow, not an open geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastre/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      },
+      {
+        "language": "English",
+        "query": "Meknes Morocco official cadastral office parcel geometry public map ANCFCC",
+        "scope": "Cross-check exact WUP candidate identity and official public parcel-vector access.",
+        "result": "The official national agency directory confirms Meknes cadastral offices and a plan-cadastral request service; no public anonymous full-polygon API was found.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastre/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Official sources reviewed",
+        "operator": "See source URLs and observations in the service-review artifact.",
+        "homeUrl": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+        "observation": "ANCFCC officially lists two Meknes cadastral/property-conservation offices, but its online cadastral plan workflow requests personal and title identifiers. No public anonymous parcel geometry was verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MA-CITY-4020-OFFICIAL-REGISTRY-REVIEW",
+    "name": "Meknes official service review",
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "operator": "Official local/national government agency as cited in the service review.",
+    "serviceType": "Official registry or land-administration service review; no verified anonymous parcel-geometry service.",
+    "layer": "No cadastral parcel vector layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel feature response was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Agency office directory and cadastral product/request descriptions; no parcel-level query was made and the WUP point is not treated as a jurisdiction boundary.",
+    "verifiedOpenScope": "Official institutional or service evidence reviewed; no complete anonymous full parcel polygons or citywide coverage claim. The WUP point is a population-weighted centroid, not a legal boundary or proof of parcel coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "ANCFCC’s official property-office directory lists both Meknes Al Ismailia and Meknes El Menzeh conservation and cadastral offices. The agency describes cadastral plans as boundary/area documents, and the online plan-cadastral request asks for applicant identity and title data with CAPTCHA; no public anonymous parcel geometry is established.",
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "https://www.ancfcc.gov.ma/ProduitsCadastre/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "The public plan-request page requires applicant identity, title information, and CAPTCHA; no anonymous viewer/vector endpoint was exposed by the reviewed agency pages.",
+  "remainingUncertainty": "The geographic division of the WUP point between Meknes Al Ismailia and El Menzeh office areas was not resolved; this does not affect the existence of local agency offices.",
+  "nextStep": "Use only a subsequently documented anonymous public full-geometry endpoint; do not submit identity or title information.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:10:00Z",
+  "wupCityCode": 4020,
+  "cityId": "wup2025:4020",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    33.8819021367936,
+    -5.54293605478824
+  ],
+  "queueRank": 743,
+  "population2025": 722852,
+  "population2025k": 722.852,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "The public plan-request page requires applicant identity, title information, and CAPTCHA; no anonymous viewer/vector endpoint was exposed by the reviewed agency pages."
+  },
+  "scopeLimits": [
+    "No parcel/owner/address or person query was made.",
+    "No full parcel geometry was verified; no sample retained.",
+    "Do not treat WUP centroid as a cadastral parcel or legal boundary."
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "fetch": "error",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

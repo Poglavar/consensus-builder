@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-5082-safadasht.json",
+  "cohort": "overnight-next-1801-1900-2026-10-09",
+  "purpose": "Document bounded first-party discovery and anonymous service checks for Safadasht without treating national institutional material or unavailable routes as citywide parcel absence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Iran's official Zamin single-window portal is reachable and documents a national land-management service context, but current anonymous inspection exposed no Safadasht-local parcel viewer/API or safe parcel response. No local registry custodian, parcel schema, CRS, native identity, or geometry was verified.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Safadasht Iran official cadastral map parcel GIS land registry",
+      "actualResultUrls": [
+        "https://zamin.gov.ir",
+        "https://iraneland.ir",
+        "https://ssaa.ir",
+        "https://nezamat.ir/post-44174/"
+      ],
+      "outcome": "National portal and cadastral-context results only; no Safadasht-local open parcel endpoint identified."
+    },
+    {
+      "language": "native/local (Persian)",
+      "query": "ایران صفادشت نقشه کاداستر قطعه زمین سامانه رسمی سازمان ثبت اسناد املاک",
+      "actualResultUrls": [
+        "https://zamin.gov.ir",
+        "https://iraneland.ir",
+        "https://nezamat.ir/post-44174/"
+      ],
+      "outcome": "National land-management/cadastral references only; no Safadasht-local public map or parcel API identified."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://zamin.gov.ir",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Zamin portal HTML loaded over verified TLS. The page references the current bundled JavaScript application. No parcel layer or city-specific geometry was present in the HTML."
+    },
+    {
+      "url": "https://zamin.gov.ir/assets/index-iQP9ylQv.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current application bundle inspected. It configures same-origin /api/ routes and an /online WebSocket, but bounded static inspection did not expose a public Safadasht parcel endpoint or safe geometry schema."
+    },
+    {
+      "url": "https://zamin.gov.ir/api/",
+      "method": "GET",
+      "status": "HTTP 200 with application HTML fallback",
+      "summary": "No JSON API index or parcel schema was returned."
+    },
+    {
+      "url": "https://zamin.gov.ir/api/Location",
+      "method": "GET",
+      "status": "HTTP 200 with application HTML fallback",
+      "summary": "No JSON location response or parcel geometry was returned."
+    },
+    {
+      "url": "https://zamin.gov.ir/api/Land",
+      "method": "GET",
+      "status": "HTTP 200 with application HTML fallback",
+      "summary": "No JSON land/parcel response or schema was returned."
+    },
+    {
+      "url": "https://zamin.gov.ir/api/Map",
+      "method": "GET",
+      "status": "HTTP 200 with application HTML fallback",
+      "summary": "No JSON map response, layer metadata, CRS, or geometry was returned."
+    },
+    {
+      "url": "https://zamin.gov.ir/api/Province",
+      "method": "GET",
+      "status": "HTTP 200 with application HTML fallback",
+      "summary": "No JSON province response or local-service discovery data was returned."
+    },
+    {
+      "url": "https://iraneland.ir",
+      "method": "GET",
+      "status": "HTTP 301 then connection reset during follow-up",
+      "summary": "Related national portal was not usable for anonymous parcel-service inspection; no bypass or alternate credentialed route was attempted."
+    },
+    {
+      "url": "https://ssaa.ir",
+      "method": "GET",
+      "status": "TLS-verified request timed out after 20 seconds",
+      "summary": "National registration authority host was unavailable during the bounded check; this is not evidence of Safadasht parcel absence."
+    }
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "The unchanged WUP point [35.6846543345962, 50.8269519308257] was preserved in the city record. No exact-point hit or miss was inferred.",
+    "identityProvenance": null
+  },
+  "safeFieldAllowlist": ["geometry", "native parcel identifier only if exposed by a verified first-party service", "CRS/layer metadata"],
+  "registryBasis": "National Zamin and cadastral-context material identifies Iranian land-management/cadastral institutions, but no Safadasht-local registry office, local cadastral map, or local procedure was independently evidenced; registryFound therefore remains null.",
+  "nextStep": "Hold for serial review. Retry only through a Safadasht-local official viewer or explicitly published anonymous service, then inspect schema/CRS and issue a bounded ID-plus-geometry request. Keep runtimeReadiness held until independent adapter qualification.",
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "The current Zamin authenticated/service workflow, any province or municipality-specific integration, parcel coverage, schema, CRS and native identity remain unresolved. National portal reachability and application fallback responses are access/inspection limits, not evidence of citywide cadastral absence."
+}

@@ -1,0 +1,110 @@
+{
+ "countryCode": "CO",
+ "country": "Colombia",
+ "previousStatus": "subnational_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "IGAC (Instituto Geografico Agustin Codazzi); excludes decentralised cadastres (Bogota, Medellin, Cali, Antioquia, Barranquilla and other gestores catastrales)",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://www.colombiaenmapas.gov.co/",
+   "observation": "Official viewer (ArcGIS JS 3.44). js/index.js inspected: hosts mapas.igac.gov.co/server, mapas.igac.gov.co/portal (token endpoints present, not used), services2.arcgis.com/RVvWzU3lgJISqdke ... CATASTRO_PUBLICO_06_2021 (that URL returned 'Invalid URL' to direct call)."
+  },
+  {
+   "url": "https://mapas.igac.gov.co/server/rest/services",
+   "observation": "IGAC ArcGIS Server 11.3 is reachable now (geoportal.igac.gov.co still resets). Folders include catastro, ObservatorioInmobiliario, ordenamientoterritorial, carto."
+  },
+  {
+   "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer",
+   "observation": "Root-level MapServer 'Dato Fundamental Catastro': R_TERRENO(1), U_TERRENO(4), R_/U_CONSTRUCCION, U_MANZANA. U_TERRENO count 3,616,349; R_TERRENO 3,146,345. Fields CODIGO (30-digit NPN), MANZANA_CO, NUMERO_SUB. No owner data. Pagination not supported (resultRecordCount rejected); use small bbox/objectIds. A WHERE with LIKE was answered by a WAF page, so equality/range filters used."
+  },
+  {
+   "url": "https://www.datos.gov.co/api/catalog/v1?q=catastro%20predios",
+   "observation": "open-data portal returns tabular catastro items (e.g. Dosquebradas), not used."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.colombiaenmapas.gov.co/js/index.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "viewer script inspected"
+  },
+  {
+   "url": "https://mapas.igac.gov.co/server/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service directory listed"
+  },
+  {
+   "url": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query (returnIdsOnly, Manizales bbox) then objectIds=3 ids, outFields CODIGO,MANZANA_CO",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "17,416 ids in bbox; 3 closed urban terreno polygons returned"
+  },
+  {
+   "url": "same, Pasto bbox -77.30,1.19,-77.26,1.23",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "33,064 ids; 3 polygons, CODIGO starts 52001 (Pasto)"
+  },
+  {
+   "url": "same layer, Barranquilla/Bucaramanga/Medellin/Bogota bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 0 (decentralised or not loaded)"
+  },
+  {
+   "url": "https://geoportal.igac.gov.co/ , serviciosgeovisor.igac.gov.co:8080",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset via proxy; not bypassed"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "co-igac-dato-fundamental-catastro",
+  "requestUrl": "https://mapas.igac.gov.co/server/rest/services/Dato_Fundamental_Catastro/MapServer/4/query?objectIds=<ids>&outFields=CODIGO,MANZANA_CO&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json",
+  "spatialTestAreaLonLat": "Manizales ~-75.517,5.07; Pasto ~-77.28,1.21; also Luruaco -75.146,10.61",
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "CODIGO (30-digit NPN)",
+  "responseFile": "research/developed/CO-parcel-response.json",
+  "pagination": "no pagination; objectIds or small bbox; dataset ~3.6M urban + 3.1M rural",
+  "regionSampled": "Caldas (Manizales); Nariño (Pasto)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "IGAC cadastre for the municipalities it manages; decentralised cadastres (Bogota, Medellin, Cali, Antioquia, Barranquilla ...) are separate and returned 0 here",
+  "regionsVerified": [
+   "Manizales (Caldas)",
+   "Pasto (Narino)",
+   "Luruaco (Atlantico)"
+  ],
+  "nationwideVerified": true,
+  "scopeNote": "true for the IGAC-managed territory only; decentralised cadastres are covered separately by city files"
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read (viewer script references CC BY / CC BY-SA). Rural layer 1 not sampled for geometry. Some municipalities are missing.",
+ "nextStep": "Sample rural R_TERRENO; list which municipality codes exist (distinct on a code field, avoiding LIKE); read IGAC licence.",
+ "foundViaViewerInspection": true,
+ "geoBlockSuspected": false,
+ "changedByHeaders": false,
+ "regionsSampled": [
+  "Caldas (Manizales)",
+  "Narino (Pasto)"
+ ],
+ "schemaVersion": 1,
+ "checkedAt": "2026-09-30",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-CO,es;q=0.9,en;q=0.8; cookie jar used; Referer set to viewer origin where relevant"
+}

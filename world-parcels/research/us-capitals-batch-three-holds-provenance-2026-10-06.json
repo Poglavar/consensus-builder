@@ -1,0 +1,42 @@
+[
+  {
+    "id": "d653c8836f344d17af8ee45d2176760f",
+    "title": "Iowa Statewide Parcel Data, 2017",
+    "owner": "rcowling@uiowa.edu_uiowa",
+    "description": "<span>Statewide property parcels \nprovided by the Iowa Department of Homeland Security &amp; Emergency \nManagement public ArcGIS REST services directory (<span><a href='https://eoc.iowa.gov/arcgis/rest/services/Public/parcels_da).' target='_blank' rel='nofollow ugc noopener noreferrer'>https://eoc.iowa.gov/arcgis/rest/services/Public/parcels_da).</a></span>\n This server is now deprecated and no longer under routine maintenance. \nThese data are not current and represent, at most recent, parcels \nupdated by 2 November 2017. As such, these data are provided &quot;as is&quot; \nwithout warranty or any representation of accuracy, timeliness or \ncompleteness. The burden or determining accuracy for the appropriateness\n for use rests solely on the user. Providers make no warranties, express\n or implied, as to the use of the data. The user acknowledges and \naccepts the limitations of the data, including the fact that the data \nare not current.</span>",
+    "snippet": "2017 statewide property parcels provided by the Iowa Department of Homeland Security & Emergency Management",
+    "accessInformation": "Iowa Department of Homeland Security & Emergency Management",
+    "licenseInfo": "<span>These data are not current and represent, at most recent, parcels \nupdated by 2 November 2017. As such, these data are provided &quot;as is&quot; \nwithout warranty or any representation of accuracy, timeliness or \ncompleteness. The burden or determining accuracy for the appropriateness\n for use rests solely on the user. Providers make no warranties, express\n or implied, as to the use of the data. The user acknowledges and \naccepts the limitations of the data, including the fact that the data \nare not current.</span>",
+    "url": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer",
+    "extent": [
+      [
+        -96.63960725150963,
+        40.37561909737653
+      ],
+      [
+        -90.14285631556571,
+        43.501107076244665
+      ]
+    ]
+  },
+  {
+    "id": "03a35351f22e4962a33569eb1c3eace7",
+    "title": "Ingham County Parcels 2025",
+    "owner": "icdc_Admin",
+    "description": "",
+    "snippet": "Parcels for 2025 from Ingham County Equalization",
+    "accessInformation": "",
+    "licenseInfo": "",
+    "url": "https://services3.arcgis.com/ySzhFSJfYeginRjx/arcgis/rest/services/Ingham_County_Parcels_2025/FeatureServer",
+    "extent": [
+      [
+        -84.60348833576978,
+        42.421794809930766
+      ],
+      [
+        -84.13940738741388,
+        42.776842565279914
+      ]
+    ]
+  }
+]

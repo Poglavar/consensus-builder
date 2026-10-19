@@ -1,0 +1,84 @@
+{
+  "name": "Kirkuk",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 444,
+  "point": [
+    35.4449102567052,
+    44.3892999740969
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "site:moj.gov.iq مديرية التسجيل العقاري كركوك الأولى الثانية قاعدة بيانات الأراضي والمالكين",
+        "scope": "Confirm the city-local real-estate registry and determine whether a public parcel map/service exists.",
+        "result": "The Iraqi Ministry of Justice directory lists Real Estate Registration Directorates Kirkuk 1 and Kirkuk 2, plus nearby directorates. A July 2026 Ministry report says the director-general visited Kirkuk 1 and 2 and directed staff to begin preparing a land/property database for a housing initiative. This is evidence of an operating local registry and a database still being prepared, not a published public GIS.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/contact_us.php",
+          "https://www.moj.gov.iq/view.10383/"
+        ],
+        "executionMethod": "Official Ministry of Justice search and page inspection."
+      },
+      {
+        "language": "English",
+        "query": "Kirkuk Iraq official real estate registration directorate public cadastral map parcel service",
+        "scope": "Cross-check local registry offices and the availability of public parcel geometry.",
+        "result": "The official Ministry describes its electronic property-title/map application as initially launched at selected Baghdad directorates; Kirkuk is not among the listed offices. The available application is a request workflow, not an anonymous parcel geometry endpoint. No public full-polygon service or download was verified for Kirkuk.",
+        "actualResultUrls": [
+          "https://moj.gov.iq/view.9289/",
+          "https://www.moj.gov.iq/contact_us.php"
+        ],
+        "executionMethod": "Official Ministry of Justice English-oriented web search and source-page inspection."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IQ-MOJ-KIRKUK-REAL-ESTATE-REGISTRATION",
+    "name": "Iraqi Ministry of Justice — Kirkuk Real Estate Registration Directorates 1 and 2",
+    "url": "https://www.moj.gov.iq/contact_us.php",
+    "operator": "Iraqi Ministry of Justice, General Directorate of Real Estate Registration",
+    "serviceType": "City-local real-estate registry offices documented by the Ministry; official records/database work is administrative and not an anonymous public parcel GIS.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No anonymous parcel identifier or polygon feature was returned."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official Ministry directory lists Kirkuk Real Estate Registration Directorates 1 and 2. A 2026 Ministry visit states that a land/property database was to be prepared. The Ministry’s electronic title/map service launch lists selected Baghdad offices and does not include Kirkuk. No public anonymous full-polygon viewer, vector service, or download was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_documented_no_public_parcel_geometry",
+  "technicalBlocker": "Official sources document the Kirkuk registry, but the land/property database is described as being prepared and no city parcel geometry endpoint is published. The Ministry’s electronic title/map workflow is not an anonymous parcel GIS and was not queried.",
+  "remainingUncertainty": "Whether a separate municipality or survey-office viewer provides anonymous full parcel polygons; none was identified in the official sources inspected. The new land-property database’s deployment status and spatial data access remain unknown.",
+  "nextStep": null,
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2835,
+  "cityId": "wup2025:2835",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.4449102567052,
+    44.3892999740969
+  ],
+  "queueRank": 444,
+  "population2025": 1153160,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "registryBasis": "The official Iraqi Ministry of Justice directory lists Kirkuk Real Estate Registration Directorates 1 and 2. Its July 2026 report says the director-general instructed them to begin preparing a database of land/property for a national housing initiative. This establishes city-local registry activity, while the database is not described as deployed or public.",
+  "registryEvidenceUrls": [
+    "https://www.moj.gov.iq/contact_us.php",
+    "https://www.moj.gov.iq/view.10383/"
+  ],
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00",
+  "sourceIds": []
+}

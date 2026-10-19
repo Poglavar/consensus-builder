@@ -1,0 +1,115 @@
+{
+  "name": "Annaba",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "rank": 1168,
+  "point": [
+    36.8754393605619,
+    7.73812245011438
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Annaba official cadastral parcel map Algeria cadastre service géoportail foncier Annaba",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://a.dgdn.dz/annaba.html"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Arabic",
+        "query": "عنابة المسح العقاري خريطة قطع الأراضي الموقع الرسمي المحافظة العقارية",
+        "result": "Official local cadastre branch and public service description found; no local anonymous parcel layer verified.",
+        "actualResultUrls": [
+          "https://a.dgdn.dz/annaba.html"
+        ],
+        "method": "Separate Arabic-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://a.dgdn.dz/annaba.html",
+        "operator": "Direction Générale du Domaine National, Annaba",
+        "scope": "Official local domain/cadastre branch lists services and public/professional e-service access; no public parcel feature route verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://a.dgdn.dz/annaba.html",
+        "method": "Official local registry branch page check",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "DNS/network request did not complete; reviewed indexed first-party page establishes the branch only."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1168 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://a.dgdn.dz/annaba.html",
+    "url": "https://a.dgdn.dz/annaba.html",
+    "operator": "Direction Générale du Domaine National, Annaba",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Annaba DGDN branch documents local cadastral/domain services; no anonymous public parcel feature service was verified.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The local official cadastre branch describes services but no anonymous parcel geometry endpoint was exposed in reviewed sources.",
+  "remainingUncertainty": "The official Annaba DGDN branch documents local cadastral/domain services; no anonymous public parcel feature service was verified. Exact-point public parcel geometry, legal/title scope, coverage completeness, and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5699,
+  "cityId": "wup2025:5699",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    36.8754393605619,
+    7.73812245011438
+  ],
+  "population2025k": 474.367,
+  "populationUnit": "persons",
+  "queueRank": 1168,
+  "population2025": 474367,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Annaba DGDN branch documents local cadastral/domain services; no anonymous public parcel feature service was verified.",
+  "registryEvidenceUrls": [
+    "https://a.dgdn.dz/annaba.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native full parcel polygon response at the exact unchanged WUP point was retained; runtime remains disabled."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

@@ -1,0 +1,49 @@
+{
+  "cityRecord": "city-1146-a-coru-a.json",
+  "cityCode": 1146,
+  "queueRank": 2131,
+  "rank": 2131,
+  "name": "A Coruña",
+  "cityName": "A Coruña",
+  "country": "Spain",
+  "iso2": "ES",
+  "countryCode": "ES",
+  "iso3": "ESP",
+  "point": [43.3544183540172, -8.40764880737736],
+  "population2025": 272920,
+  "population2025k": 272.92,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "sampleFile": "city-1146-a-coru-a-sample.geojson",
+  "discoveryMethod": "Separate official English and Spanish/Galician discovery, followed by direct inspection of the Concello da Coruña ArcGIS REST layer metadata and bounded anonymous GeoJSON queries.",
+  "queryOutcomes": "Both discovery routes found Spain's official Catastro portal and Galicia/Concello map routes. The local Concello service is a genuine polygon feature layer, but its official description limits it to publicly owned/public-administration parcels. Three safe-ID polygons were retained; no claim of citywide or private-parcel coverage is made.",
+  "attempts": [
+    {"method": "web search", "language": "English", "query": "A Coruña official cadastral map parcels Xunta Galicia catastro visor", "outcome": "Found official Xunta Galicia, Spanish Catastro, and Concello da Coruña routes."},
+    {"method": "web search", "language": "Spanish/Galician", "query": "visor cartográfico parcelas A Coruña catastro oficial", "outcome": "Found official Galicia parcel viewer and municipal public-parcels service."},
+    {"method": "GET", "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2?f=pjson", "httpStatus": 200, "outcome": "Polygon layer metadata loaded; service CRS EPSG:25829; native safe candidate refcat observed."},
+    {"method": "GET", "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2/query?where=1%3D1&outFields=*&returnGeometry=true&resultRecordCount=3&f=geojson", "httpStatus": 200, "outcome": "Three polygon features returned; server reported exceededTransferLimit=true. Unsafe source properties were discarded from retained sample."},
+    {"method": "GET", "url": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2/query?geometry=-8.40764880737736%2C43.3544183540172&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=refcat&returnGeometry=true&outSR=4326&f=geojson", "httpStatus": 200, "outcome": "Zero features at exact WUP point in the public-only layer; not interpreted as citywide absence."}
+  ],
+  "sourceAssessment": {
+    "localCustodian": "Concello da Coruña official GIS is evidenced as a local municipal source for public cadastral parcels; the Spanish Dirección General del Catastro is the national cadastral custodian evidenced by its official portal.",
+    "publicService": "https://ide.coruna.gal/server/rest/services/Intranet/PARCELAS_CATASTRALES/MapServer/2 exposes anonymous ArcGIS JSON/GeoJSON polygon queries.",
+    "nativeFieldsObserved": ["objectid", "refcat", "titu_acro", "titu_cif", "titular", "tp_suelo", "fch_dato", "historico", "st_area(shape)", "st_perimeter(shape)", "url_sec"],
+    "fieldMapping": {"id": "refcat", "geometry": "geometry"},
+    "compositeKeyProvenance": null,
+    "scope": "Publicly owned/public-administration parcels only; not proven complete cadastral coverage."
+  },
+  "safeFieldAllowlist": ["stable native cadastral reference", "geometry: polygon"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"],
+  "scopeLimits": [
+    "The service description limits the layer to public parcels and the response was intentionally bounded to three features.",
+    "The exact WUP point returned no feature in this layer; no coordinate adjustment was made.",
+    "The query response reported exceededTransferLimit=true, so it is not a citywide extract.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+    "No citywide absence inference is made from the point result or layer scope.",
+    "No source integration/admission or runtime qualification is implied by this packet."
+  ],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "Public municipal polygon access and native refcat identity are verified, but complete cadastral coverage, private parcel access, pagination/completeness, and adapter qualification remain unknown.",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

@@ -1,0 +1,72 @@
+{
+  "taskId": "city:4273",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:11:30Z",
+  "identity": {
+    "cityCode": 4273,
+    "rank": 2023,
+    "country": "Spain",
+    "iso2": "ES",
+    "point": [
+      42.8175145798326,
+      -1.64665178979721
+    ],
+    "populationPersons": 288215,
+    "queueAndRankedRosterMatch": true
+  },
+  "searches": {
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "queriesAndResultUrlsPresent": true,
+    "pairedPacketAndReviewInspected": true
+  },
+  "custody": {
+    "registryFound": true,
+    "basis": "Official Navarra IDENA lists the cadastral WFS and Pamplona municipal WFS.",
+    "firstPartyUrl": "https://www.navarra.es/es/web/geoportal/idena/servicios"
+  },
+  "publicGeometry": {
+    "found": true,
+    "sampleCount": 3,
+    "sampleFile": "world-parcels/research/overnight-next-2001-2100-2026-10-09/pamplona-sample.geojson",
+    "firstPartyResponseUrl": "https://inspire.navarra.es/services/CP/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&outputFormat=application%2Fjson&count=3&srsName=EPSG%3A4326&bbox=-1.66%2C42.80%2C-1.63%2C42.83%2CEPSG%3A4326",
+    "httpStatus": 200,
+    "responseSha256": "0b8b2122349b32cdb2fb63bdf28015ad7a3947258f10f7ee26348aceb794305a",
+    "nativeIds": [
+      "ES.RRTN.CP.016220413",
+      "ES.RRTN.CP.016220899",
+      "ES.RRTN.CP.016220944"
+    ],
+    "sampleMatchesOriginalResponse": true,
+    "safeIdPropertiesOnly": true,
+    "sampleMetricCrs": "EPSG:25830",
+    "sampleMetricValid": [
+      true,
+      true,
+      true
+    ],
+    "sampleMetricAreasM2": [
+      315.8331,
+      364.5636,
+      665.9447
+    ],
+    "samplePairwiseOverlapM2": [
+      0,
+      0,
+      0
+    ],
+    "limit": "Bounded sample only; not complete manifest or citywide check."
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "fullScopeMetricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "Public regional parcel sample verified, but complete adapter manifests, fresh native-ID adapter reads, forced paging, 13 bounded cells, full-scope metric checks, source binding, and headed Details-panel verification are not independently evidenced."
+}

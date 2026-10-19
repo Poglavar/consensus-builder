@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3402",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-3402-kherson.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/kherson-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:43:34Z",
+  "reason": "WUP roster, queue and packet agree on code 3402, rank 2263, Ukraine, point [46.6527350792091, 32.6180712372204], and 257682 persons. English and Ukrainian searches are recorded. The official Kherson StateGeoCadastre procedure establishes cadastral record custody; the viewer timed out before a parcel response. No safe native-ID full polygon, adapter qualification or headed Details evidence exists. Viewer timeout is unresolved access, not citywide absence.",
+  "registryFound": true,
+  "admission": "held; no runtime/catalog/report change"
+}

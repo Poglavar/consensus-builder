@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "city": "Banjarmasin",
+  "countryCode": "ID",
+  "wupCityCode": 8045,
+  "rank": 557,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://kot-banjarmasin.atrbpn.go.id/",
+    "https://bhumi.atrbpn.go.id/",
+    "https://bhumi.atrbpn.go.id/bantuan/landing",
+    "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+    "https://sigap.banjarmasinkota.go.id/"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The local ATR/BPN page is an application shell. BHUMI documentation indicates land-parcel layers exist nationally, but the initial-use disclaimer has not been accepted and no anonymous city-specific geometry/schema route was verified. Runtime remains disabled.",
+    "nativeIdsUsed": "No safe parcel feature identifier read; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://kot-banjarmasin.atrbpn.go.id/",
+      "method": "public page inspection",
+      "status": "accessible_application_shell",
+      "observation": "Official page identifies the land-office portal and says JavaScript must be enabled; no map schema exposed in the inspected public HTML."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+      "method": "official help-page inspection",
+      "status": "accessible",
+      "observation": "Help describes the public interactive map and first-use informational disclaimer; no consent was submitted and no map query was made."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+      "method": "official help-page inspection",
+      "status": "accessible",
+      "observation": "Documentation names land parcels as a main dataset but does not supply a city-specific anonymous vector schema."
+    },
+    {
+      "url": "https://sigap.banjarmasinkota.go.id/",
+      "method": "official city portal review",
+      "status": "accessible",
+      "observation": "Government asset inventory only; not complete cadastral coverage."
+    }
+  ],
+  "technicalBlocker": "The local ATR/BPN page is an application shell. BHUMI documentation indicates land-parcel layers exist nationally, but the initial-use disclaimer has not been accepted and no anonymous city-specific geometry/schema route was verified. Runtime remains disabled.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "remainingUncertainty": "The local ATR/BPN page is an application shell. BHUMI documentation indicates land-parcel layers exist nationally, but the initial-use disclaimer has not been accepted and no anonymous city-specific geometry/schema route was verified. Runtime remains disabled.",
+  "rootTechnicalAssessment": "No city-scoped public parcel layer, safe field schema or full geometry response was verified in BHUMI. The local ATR/BPN office confirms land administration, while SIGAP covers municipal assets. The public first-use disclaimer is informational and is not an automatic eligibility gate."
+}

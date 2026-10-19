@@ -1,0 +1,74 @@
+{
+  "cityCode": 2417,
+  "queueRank": 3121,
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "point": [-1.51784836969079, 33.8054151710545],
+  "population2025": 192622,
+  "population2025k": 192.622,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registry": {
+    "name": "Musoma Municipal Council Land / Urban Planning and Lands function",
+    "scope": "Official municipal material documents the council's land department functions, including urban-plan map records, land-use administration, surveying/regularisation, and title-processing coordination; this is a local custodian/procedure record, not a public parcel API.",
+    "url": "https://musomamc.go.tz/storage/app/uploads/public/58f/306/8d8/58f3068d8d2ac337558976.pdf"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Musoma Tanzania official cadastral parcel map land registry GIS e-Ardhi",
+        "result": "Found Tanzania Ministry of Lands e-Ardhi, official Survey and Mapping service information, and official Musoma Municipal Council land-function material. The Ministry viewer exposes a public GeoServer WFS endpoint; no public Musoma-specific download or local parcel API was identified.",
+        "actualResultUrls": [
+          "https://eardhi.lands.go.tz/",
+          "https://lands.go.tz/services/surveys-and-mapping-2",
+          "https://musomamc.go.tz/storage/app/uploads/public/58f/306/8d8/58f3068d8d2ac337558976.pdf"
+        ]
+      },
+      {
+        "language": "Swahili",
+        "query": "Musoma ramani ya viwanja upimaji ardhi halmashauri manispaa huduma rasmi",
+        "result": "Found official Musoma Municipal Council pages/material describing surveyed plots, urban-planning and land functions, plus the Ministry's Swahili Survey and Mapping publication and e-Ardhi service. No public Musoma-specific parcel geometry endpoint was found in the discovery results.",
+        "actualResultUrls": [
+          "https://musomamc.go.tz/",
+          "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+          "https://eardhi.lands.go.tz/"
+        ]
+      }
+    ]
+  },
+  "service": {
+    "name": "Tanzania e-Ardhi public GeoServer WFS",
+    "serviceUrl": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs",
+    "sourceCustodian": "Ministry of Lands, Housing and Human Settlements Development; national service, not a Musoma municipal API",
+    "capabilitiesUrl": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=1.0.0&request=GetCapabilities",
+    "nativeLayersInspected": ["taspro:spatial_units", "taspro:tp_spatial_units", "taspro:survey_spatial_units", "taspro:qualified_spatial_units"],
+    "nativeIdentityFieldCandidates": ["uid", "id", "parcel_id"],
+    "nativeFieldMapping": {
+      "uid": "schema-declared spatial-unit identifier candidate",
+      "id": "schema-declared numeric feature identifier candidate",
+      "parcel_id": "schema-declared parcel identifier candidate",
+      "geom": "schema-declared geometry field"
+    },
+    "crs": "WFS request used srsName=EPSG:4326; returned empty tp_spatial_units response reported crs=null; no parcel geometry was retained",
+    "geometryType": "Not established for Musoma response",
+    "safeFieldAllowlist": ["uid", "id", "parcel_id", "geom", "geometry"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "created_by", "updated_by"],
+    "sampleFile": null,
+    "sampleCount": 0,
+    "exactPointCheck": {
+      "method": "bounded WFS bbox around the exact WUP point [-1.51784836969079, 33.8054151710545] in latitude/longitude order, requested as EPSG:4326",
+      "hit": null,
+      "result": "tp_spatial_units returned zero features for the tiny bbox; this is not evidence of citywide absence. spatial_units, survey_spatial_units, and qualified_spatial_units requests timed out or were not usable.",
+      "sourceGeometryRetained": false
+    }
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "The official national e-Ardhi WFS capabilities and DescribeFeatureType requests succeeded, but bounded parcel queries were inconsistent: tp_spatial_units returned an empty FeatureCollection while spatial_units, survey_spatial_units, and qualified_spatial_units timed out or were unusable.",
+    "The local Musoma Municipal Council land/planning material evidences a custodian and land procedures, not a public parcel geometry service or citywide parcel completeness.",
+    "No exact-point parcel hit, map extent miss, timeout, login wall, or unusable UI was treated as citywide absence.",
+    "Packet completion is not source integration or runtime adapter admission."
+  ]
+}

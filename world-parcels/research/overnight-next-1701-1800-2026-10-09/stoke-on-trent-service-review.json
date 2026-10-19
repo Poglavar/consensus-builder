@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-3890-stoke-on-trent.json",
+  "cityCode": 3890,
+  "queueRank": 1728,
+  "city": "Stoke-on-Trent",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Stoke-on-Trent City Council GIS and HM Land Registry INSPIRE polygon publication were evidenced. The council viewer is thematic and disclaims ownership-boundary use; the official HMLR local-authority download route redirected in a loop. No bounded anonymous parcel ID-plus-geometry response was verified, no sample GeoJSON was retained, and runtime remains held.",
+  "queryOutcomes": "Separate English discovery queries are recorded in city-3890-stoke-on-trent.json. The local/native-language route was conducted in English because Stoke-on-Trent is in England and no distinct statutory local language applies; it found the council local-search/map pages and HMLR official guidance.",
+  "requestOutcomes": "The official council Cadcorp viewer returned HTTP 200 and its current HTML/JavaScript configuration was inspected: EPSG:27700, restricted extent, thematic GeognoSIS REST overlay, quicksearch.asmx, and feature-info wiring. The official HMLR INSPIRE download page returned repeated HTTP 302 redirects and no GML. HMLR API documentation indicates account/licence/API-key requirements, so no credentialed request was attempted. No credentials, private tokens, CAPTCHA bypass, unsafe fields or TLS-disable action was used.",
+  "scopeLimits": [
+    "Exact WUP point [53.0159155643046, -2.17437344168429] was preserved in latitude/longitude order; no exact-point hit/miss inference was made.",
+    "The council viewer's property-boundary disclaimer means it is not evidence of legal land ownership or cadastral coverage.",
+    "No city boundary or complete city coverage was established for an open parcel geometry service.",
+    "No parcel geometry, retrieved stable native identity, HMLR feature schema or HMLR feature CRS was captured.",
+    "The HMLR download redirect loop and absent direct file are access failures, not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": "HMLR guidance documents Land Registry-INSPIRE ID as the safe stable identity, but no feature response was retrieved; council viewer fields were not retained.",
+  "compositeKeyProvenance": null,
+  "crs": "Council viewer EPSG:27700; HMLR feature CRS unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel geometry endpoint was reached; exact-point absence is not inferred.",
+    "requestEvidence": [
+      "Council map GET 200; configuration inspected, no parcel feature response captured.",
+      "HMLR INSPIRE download GET 302 redirect loop; no GML captured."
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Council thematic mapping for Stoke-on-Trent; HMLR INSPIRE local-authority files for registered freehold-property extents in England and Wales.",
+    "verifiedOpenScope": "Institutional/local mapping and official dataset publication only; anonymous parcel geometry access not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current HMLR file retrieval, exact schema/CRS, and whether the council's live thematic service has any safe parcel layer remain unresolved. This review does not assert parcel absence, legal-title status, ownership, completeness, or adapter readiness.",
+  "retainedSample": null
+}

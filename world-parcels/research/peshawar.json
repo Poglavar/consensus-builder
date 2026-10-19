@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:134",
+  "queueRank": 134,
+  "name": "Peshawar",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "centerLatLon": [
+    33.9891478051398,
+    71.5179392692637
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "observation": "KP Board of Revenue Directorate of Land Record page (HTTP 200); describes computerisation/LRMIS of land records, no parcel geometry API."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "observation": "KP Land Records portal (HTTP 200): mutation booking, e-Fard; person-linked record lookups with identity verification, not an open polygon list."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/settlement-and-land-record-7-districts/",
+      "observation": "From search results: 7-district (incl. Peshawar) land record computerisation and GIS parcel digitisation project; not fetched."
+    },
+    {
+      "url": "https://unhabitat.org.pk/digitization-of-land-records/",
+      "observation": "From search results: UN-Habitat digitisation of land records in KP; not fetched."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://kp.gov.pk/ and https://kpgis.kp.gov.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "generic KP portal shell (SPA); no GIS service"
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "department site, no open data"
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "information page only"
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "service portal, no parcel endpoint"
+    },
+    {
+      "url": "https://kpboardofrevenue.gov.pk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502; unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Peshawar district land records digitised under KP LRMIS; GIS parcel scope unconfirmed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "KP may hold parcel GIS internally (Mardan/Peshawar digitisation) but no anonymous bounded polygon endpoint was found; Pakistan provinces run separate systems, so nothing generalises.",
+  "nextStep": "Look for a public KP LRMIS/GIS map viewer network call or a KP open-data release; test a bounded Peshawar query."
+}

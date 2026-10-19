@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6925-van.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "TKGM and Van Governorate sources document local cadastral offices and the national parcel-query service. One bounded anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403. No retry, authentication, bypass, or personal-attribute query was attempted; parcel presence remains unknown.",
+  "registryAssessment": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence."
+    },
+    {
+      "url": "https://tkgm.gov.tr/van-bm/bagli-mudurlukler",
+      "observation": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence."
+    },
+    {
+      "url": "https://www.van.gov.tr/tapu-kadastro-15-bolge-mudurlugu",
+      "observation": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Van Turkey official cadastre land registry parcel map TKGM Van",
+      "result": "TKGM and Van Governorate sources document local cadastral offices and the national parcel-query service. One bounded anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403. No retry, authentication, bypass, or personal-attribute query was attempted; parcel presence remains unknown.",
+      "method": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted.",
+      "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service."
+    },
+    {
+      "language": "Turkish",
+      "query": "Van resmi parsel sorgulama kadastro tapu Van Bölge Müdürlüğü",
+      "result": "TKGM and Van Governorate sources document local cadastral offices and the national parcel-query service. One bounded anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403. No retry, authentication, bypass, or personal-attribute query was attempted; parcel presence remains unknown.",
+      "method": "Separate native-language search and official source review.",
+      "scope": "Find first-party local-language evidence for the same local registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; anonymous public parcel geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement locator and reviewed official sources only.",
+    "limits": "No public service extent or citywide parcel coverage verified."
+  },
+  "attempts": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.5071088507022/43.3803052768634",
+      "method": "One anonymous GET exact unchanged WUP latitude/longitude using inspected TKGM point adapter",
+      "result": "HTTP 403 Forbidden. No feature response retained; this access failure is not treated as parcel absence."
+    }
+  ],
+  "remainingUncertainty": "No anonymous field-safe parcel geometry response was verified; coverage at the exact WUP point remains unresolved."
+}

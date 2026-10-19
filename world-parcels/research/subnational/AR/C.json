@@ -1,0 +1,55 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "C",
+ "regionName": "Ciudad Autónoma de Buenos Aires",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": null,
+  "name": "Parcelas catastrales (catalogo_og_130:parcelas)",
+  "operator": "Gobierno de la Ciudad de Buenos Aires (IDECABA)",
+  "scope": "Ciudad Autónoma de Buenos Aires",
+  "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+  "method": "WFS 2.0.0 GetFeature, no key",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326 requested"
+ },
+ "verifiedParcelResponse": {
+  "requestUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130:parcelas&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-58.3780,-34.6140,-58.3765,-34.6125,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "nam (e.g. 02-012-003) / gid",
+  "responseFile": "research/subnational/AR/C-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "City-state; the layer is the city's parcel layer (fully re-verified today with viewer Referer https://mapa.buenosaires.gob.ar/). Earlier evidence: research/retry/cities/buenos-aires.json",
+ "subregionsVerified": [
+  "Ciudad Autónoma de Buenos Aires"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://data.buenosaires.gob.ar/dataset/parcelas",
+   "observation": "CKAN catalog page; previously CC-BY-2.5-AR (not re-read today); resource downloads hit an F5 rejection page in earlier pass"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?...count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 MultiPolygon parcels; properties gid,gna,nam,fna only"
+  }
+ ],
+ "reuseStatus": "Catalog page stated CC-BY-2.5-AR earlier; WFS terms not read.",
+ "remainingUncertainty": "Only one bbox re-sampled today (second CABA area not needed for a city-state).",
+ "nextStep": "None; a bulk download would use WFS paging."
+}

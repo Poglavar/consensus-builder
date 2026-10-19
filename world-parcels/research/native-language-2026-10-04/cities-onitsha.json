@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 69,
+  "city": "Onitsha",
+  "countryCode": "NG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/onitsha.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Onitsha cadastral parcel geospatial GIS land registry Anambra survey data map open"
+  },
+  "results": [
+    {
+      "title": "Anambra State Ministry of Lands and ANAMGIS notices",
+      "url": "https://www.mol.anambrastate.gov.ng/october-2024-newsletter/",
+      "kind": "official-state-lead",
+      "note": "Describes ANAMGIS and ongoing land-record/survey updates for Onitsha layouts, but no public parcel vector service was identified."
+    },
+    {
+      "title": "Anambra Ministry of Lands",
+      "url": "https://www.mol.anambrastate.gov.ng/",
+      "kind": "official"
+    }
+  ],
+  "assessment": "Search found an official state cadastral-GIS modernization lead that references Onitsha land records. No open parcel feature endpoint or stable ID query was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

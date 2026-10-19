@@ -1,0 +1,88 @@
+{
+  "cityCode": 11190,
+  "queueRank": 2581,
+  "name": "Anyi",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [33.2432241609582, 119.297979735798],
+  "population2025": 227568,
+  "population2025k": 227.568,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anyi China Jiangsu cadastral parcel map official GIS",
+        "result": "First-party discovery identified Jiangsu's official Tianditu provincial map portal and the Jiangsu government land-surveying/geographic-information policy pages. The search did not expose an Anyi/Baoying anonymous parcel feature service or downloadable parcel layer.",
+        "actualResultUrls": [
+          "https://jiangsu.tianditu.gov.cn/server/index",
+          "https://www.jiangsu.gov.cn/art/2021/12/14/art_84418_10235879.html",
+          "https://www.jiangsu.gov.cn/art/2012/2/21/art_46761_2680181.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "安宜 不动产登记 地图 地籍 图 服务 宝应县",
+        "result": "官方检索结果确认安宜镇属于扬州市宝应县，并找到宝应县政务服务网的不动产登记专区说明；江苏天地图专题地图集也可匿名访问。检查到的页面是办事说明或通用地图目录，没有公开的安宜宗地ID加几何匿名接口。",
+        "actualResultUrls": [
+          "https://yzby.jszwfw.gov.cn/col/col185536/",
+          "https://yzby.jszwfw.gov.cn/col/col185532/index.html",
+          "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+          "https://jiangsu.tianditu.gov.cn/server/mapArray"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Baoying County government service portal identifies Anyi Town (安宜镇) as a local township and provides its official service context. The Baoying portal's real-estate registration section identifies the county-level integrated registration service, but does not publish a parcel API.",
+    "nationalOrProvincialAuthority": "Jiangsu provincial government and the official Jiangsu Tianditu geographic-information portal; the provincial policy pages describe surveying/geographic-information administration and public map-service infrastructure.",
+    "registryBasis": "A first-party local government portal and a first-party provincial geographic-information portal were evidenced. This supports registryFound=true for source discovery context only; no parcel data endpoint was qualified.",
+    "registryFoundReason": "Official Baoying/Anyi local-government service pages and the provincial official map portal were reachable anonymously. No parcel geometry or native parcel identity was obtained."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://jiangsu.tianditu.gov.cn/server/mapArray",
+    "responseType": "HTML map-directory page",
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "inspectionNote": "The current official Jiangsu Tianditu entry page and its referenced JavaScript/configuration were inspected at a bounded level. The reachable directory exposed general thematic map entries, not a public cadastral parcel layer or an ID-plus-geometry response. Baoying/Anyi service pages exposed prose and links only. No parcel endpoint was qualified."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a qualified parcel endpoint; exact WUP point was preserved and not shifted.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Baoying/Anyi local government service context plus Jiangsu provincial public geographic-information map portal.",
+    "verifiedOpenScope": "Local administrative/service context and general map portal only; no parcel geometry, map extent, or citywide parcel coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [33.2432241609582, 119.297979735798] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel result was obtained; this is not evidence of a zero hit or citywide absence.",
+    "No native parcel identity, source field schema, CRS, or geometry was obtained; no sample GeoJSON is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "Anyi is evidenced as 安宜镇 in Baoying County, Jiangsu by a first-party county service portal. The current anonymous official pages checked did not reveal cadastral parcel access, so parcel identity, schema, CRS, geometry, and citywide coverage remain unverified."
+}

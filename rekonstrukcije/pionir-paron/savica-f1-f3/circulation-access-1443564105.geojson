@@ -1,0 +1,410 @@
+{
+  "type": "FeatureCollection",
+  "name": "Savica F1–F3 – rekonstrukcija izvedenog stanja – interna prometna mreža",
+  "bbox": [
+    15.998180054,
+    45.794305213,
+    15.998377556,
+    45.79462036
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.corridor-reconstruction.v1",
+    "proposal": {
+      "proposalId": "paron-savica-f1-f3-observed-access-1443564105",
+      "city": "zagreb",
+      "name": "Savica F1–F3 – rekonstrukcija izvedenog stanja – interna prometna mreža",
+      "title": "Savica F1–F3 – rekonstrukcija izvedenog stanja – interna prometna mreža",
+      "description": "Rekonstrukcija 37 m površinskih internih pristupnih i servisnih prometnica uz izvedeni sklop. Središnjice i oznake namjene preuzete su iz aktualnog lokalnog OSM sloja; širine slijede OSM oznake, a kada ih nema, standarde profila aplikacije. Ovo nije geodetska snimka ni geometrija iz dozvole. Podzemni, prekratki i zgradama preklopljeni potezi nisu uključeni.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "road",
+      "goal": "road-track",
+      "primaryType": "Road",
+      "isCorridor": true,
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "roads",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "cadastreParcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "parcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.998180054,
+        45.794305213,
+        15.998377556,
+        45.79462036
+      ],
+      "source": {
+        "geometryBasis": "current OSM centrelines clipped to the reconstructed current parcel union",
+        "widthBasis": "OSM tags, then consensus-builder OSM profile defaults",
+        "footprintBasis": "projected per-segment profile buffers in HTRS96/TM (EPSG:3765)",
+        "exclusions": "tunnel/covered/negative-layer; fragment < 8 m; component < 30 m; building overlap >= 1 m²",
+        "osmWayIds": [
+          1443564105
+        ],
+        "lengthM": 36.50160549651738,
+        "footprintAreaM2": 100.29670361312095,
+        "snapshotDate": "2026-08-13"
+      }
+    },
+    "roadProposal": {
+      "parentParcelIds": [
+        "HR-335649-2716/8"
+      ],
+      "childParcelIds": [],
+      "mode": "import",
+      "isCorridor": true
+    },
+    "definition": {
+      "profile": {
+        "strips": [
+          {
+            "type": "driving",
+            "width": 2.75,
+            "direction": "forward"
+          }
+        ]
+      },
+      "width": 2.75,
+      "segmentProfiles": {},
+      "tunnels": [],
+      "gradeSeparations": [],
+      "metadata": {
+        "mode": "import",
+        "type": "road",
+        "isTrack": false,
+        "isRoad": true,
+        "isCorridor": true,
+        "source": "osm-observed-state",
+        "observedReconstruction": true,
+        "sourceRows": [
+          {
+            "segmentId": "osm-1443564105-1",
+            "osmWayId": 1443564105,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": null,
+            "surface": null,
+            "tags": {
+              "highway": "service"
+            },
+            "insideLengthM": 36.50160549651738,
+            "modelledWidthM": 2.75
+          }
+        ]
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-335649-2716/8",
+        "cestica_id": 21309385,
+        "maticni_broj_ko": 335649,
+        "broj_cestice": "2716/8",
+        "areaM2": 6666.564950017974,
+        "source": "DGU katastar, aktualna čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.997258548,
+                45.794871274
+              ],
+              [
+                15.99728041,
+                45.794643002
+              ],
+              [
+                15.997294834,
+                45.794498018
+              ],
+              [
+                15.997297633,
+                45.794487143
+              ],
+              [
+                15.997303388,
+                45.79447655
+              ],
+              [
+                15.997314036,
+                45.79446535
+              ],
+              [
+                15.997327224,
+                45.794457849
+              ],
+              [
+                15.997344767,
+                45.794452438
+              ],
+              [
+                15.997363838,
+                45.794448652
+              ],
+              [
+                15.997388698,
+                45.794444803
+              ],
+              [
+                15.997429131,
+                45.794440032
+              ],
+              [
+                15.997599511,
+                45.794417656
+              ],
+              [
+                15.997743383,
+                45.794396424
+              ],
+              [
+                15.997971287,
+                45.794356664
+              ],
+              [
+                15.998085333,
+                45.794333591
+              ],
+              [
+                15.998240513,
+                45.79429918
+              ],
+              [
+                15.9983118,
+                45.794282037
+              ],
+              [
+                15.998409664,
+                45.794256013
+              ],
+              [
+                15.998480334,
+                45.794235808
+              ],
+              [
+                15.998550362,
+                45.7942156
+              ],
+              [
+                15.998550116,
+                45.794214339
+              ],
+              [
+                15.998695727,
+                45.794171158
+              ],
+              [
+                15.998723657,
+                45.794212311
+              ],
+              [
+                15.998737352,
+                45.794234236
+              ],
+              [
+                15.998739633,
+                45.794238115
+              ],
+              [
+                15.9989158,
+                45.794531412
+              ],
+              [
+                15.998918463,
+                45.794535743
+              ],
+              [
+                15.998938363,
+                45.794568673
+              ],
+              [
+                15.998928689,
+                45.7945716
+              ],
+              [
+                15.998772245,
+                45.794617883
+              ],
+              [
+                15.998551703,
+                45.79468278
+              ],
+              [
+                15.998299697,
+                45.794756357
+              ],
+              [
+                15.998067419,
+                45.794824532
+              ],
+              [
+                15.997877443,
+                45.794880384
+              ],
+              [
+                15.997572039,
+                45.794969831
+              ],
+              [
+                15.997405924,
+                45.79501832
+              ],
+              [
+                15.997389827,
+                45.795020318
+              ],
+              [
+                15.997377354,
+                45.795019904
+              ],
+              [
+                15.997366692,
+                45.795018237
+              ],
+              [
+                15.99735617,
+                45.795015401
+              ],
+              [
+                15.997345538,
+                45.795010496
+              ],
+              [
+                15.997338506,
+                45.795005696
+              ],
+              [
+                15.997331109,
+                45.794998645
+              ],
+              [
+                15.997325011,
+                45.79499016
+              ],
+              [
+                15.997320584,
+                45.794981772
+              ],
+              [
+                15.997288078,
+                45.794920353
+              ],
+              [
+                15.997277579,
+                45.794900601
+              ],
+              [
+                15.997271789,
+                45.794900756
+              ],
+              [
+                15.997262836,
+                45.794895048
+              ],
+              [
+                15.997259074,
+                45.794884234
+              ],
+              [
+                15.997258548,
+                45.794871274
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 0,
+        "consensus:segment-id": "osm-1443564105-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.998196384,
+            45.794308966
+          ],
+          [
+            15.9982813,
+            45.7944518
+          ],
+          [
+            15.9983608,
+            45.7946164
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:role": "corridor-footprint"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.998180054,
+              45.794313717
+            ],
+            [
+              15.998264737,
+              45.79445616
+            ],
+            [
+              15.998344044,
+              45.79462036
+            ],
+            [
+              15.998377556,
+              45.79461244
+            ],
+            [
+              15.998298056,
+              45.79444784
+            ],
+            [
+              15.998297631,
+              45.794447049
+            ],
+            [
+              15.998213308,
+              45.794305213
+            ],
+            [
+              15.99819639,
+              45.794308964
+            ],
+            [
+              15.998180054,
+              45.794313717
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

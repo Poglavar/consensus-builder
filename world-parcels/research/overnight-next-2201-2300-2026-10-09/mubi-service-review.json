@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-8852-mubi.json",
+  "cityCode": 8852,
+  "queueRank": 2219,
+  "name": "Mubi",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "pointLatLon": [10.264913350362, 13.270330031785],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://adgis.adamawastate.gov.ng/ova_sev/digital-land-mapping-and-cadastral-services/","httpStatus":200,"outcome":"Search-indexed official ADGIS page describes digital land mapping and cadastral services, digital land-parcel maps, land administration, and Certificates of Occupancy. This establishes a local/state custodian, not an exposed parcel API."},
+    {"method":"SEARCH","url":"https://adgis.adamawastate.gov.ng/our-services/","httpStatus":200,"outcome":"Search-indexed official ADGIS service page describes geospatial and mapping services and spatial-data collection. No public parcel viewer or downloadable parcel geometry was identified."},
+    {"method":"SEARCH","url":"https://lands.adamawastate.gov.ng/","httpStatus":200,"outcome":"Search-indexed official Adamawa State Ministry of Land and Survey page describes land records, Certificate of Occupancy, land surveying, and mapping services. It is a state land custodian route, not proof of a public parcel geometry API."},
+    {"method":"GET","url":"https://adgis.adamawastate.gov.ng/","httpStatus":403,"outcome":"Direct anonymous GET returned a Cloudflare 'Just a moment' challenge. No challenge was defeated and no browser automation or credentials were used."},
+    {"method":"GET","url":"https://adgis.adamawastate.gov.ng/ova_sev/digital-land-mapping-and-cadastral-services/","httpStatus":403,"outcome":"Direct anonymous GET returned a Cloudflare challenge. No JavaScript/configuration, viewer route, API route, schema, CRS, or parcel response could be inspected."},
+    {"method":"GET","url":"https://lands.adamawastate.gov.ng/","httpStatus":403,"outcome":"Direct anonymous GET returned a Cloudflare challenge. No land-record or parcel geometry request was attempted beyond the public landing URL."},
+    {"method":"SEARCH","url":"https://adamawastate.gov.ng/wp-content/uploads/2026/01/Adamawa-State-FY-2026-Approved-Budget.pdf","httpStatus":200,"outcome":"Official state budget search result references state-wide cadastral charting sheets, geo-portal infrastructure, and survey-record automation, with Mubi listed among state offices in the broader budget context. This is planning/procurement evidence, not an anonymous parcel dataset."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"No anonymous parcel geometry request was available after first-party discovery; direct service pages were Cloudflare-blocked.","featureCount":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed anonymously", "polygon geometry if later exposed anonymously", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A local/state cadastral custodian is evidenced, but no safe anonymous parcel schema, native identity, CRS, or geometry response was exposed. Adapter qualification remains a separate serial review."},
+  "scopeLimits": ["The exact WUP point [10.264913350362, 13.270330031785] was preserved in latitude/longitude order; no coordinate shift or parcel-hit forcing was attempted.", "Cloudflare blocking, lack of a public viewer, and no exact-point hit are not evidence of citywide parcel absence.", "ADGIS and the Ministry of Land and Survey are local/state custodial routes; general national-agency or non-custodial prose was not treated as a local parcel service.", "No GeoJSON sample is retained because no safe anonymous native ID-plus-geometry response was available.", "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.", "Request/page captures and scratch evidence belong under ignored tmp/valhalla-parcel-research/mubi/."],
+  "uncertainty": "ADGIS publicly describes cadastral and digital land services for Adamawa State, and the state Ministry of Land and Survey publicly describes land records and surveying. Public coverage of Mubi, viewer/API availability, schema, CRS, update cadence, licensing, and runtime adapter behavior remain unverified because direct anonymous pages were blocked by Cloudflare. The official budget evidence indicates planned cadastral/geo-portal work but does not establish a currently accessible parcel service."
+}

@@ -1,0 +1,151 @@
+{
+  "cityCode": 7180,
+  "queueRank": 3049,
+  "name": "Shujaabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [
+    29.8800934500022,
+    71.3038174095737
+  ],
+  "population2025": 196255,
+  "population2025k": 196.255,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakistan official Shujaabad land record cadastral map API Punjab Board of Revenue",
+        "result": "First-party discovery identified the Government of Punjab PULSE (Punjab Urban Land Systems Enhancement) public map and the Punjab Land Records Authority ArcGIS host. The PULSE viewer configuration exposes the Punjab_Cdastral_Maps service and maps Multan district to sublayer 36. An anonymous bounded ID-plus-geometry query succeeded; the exact WUP point query returned zero features. No ownership or other unsafe fields were requested.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "شو جا آباد پنجاب پاکستان سرکاری اراضی ریکارڈ کادستر نقشہ",
+        "result": "Urdu discovery found the official Punjab Land Records cadastral-map page and Punjab Zameen/PLRA references. The public cadastral page presents district, tehsil and village selection, while the PULSE viewer provides the public GIS route. No separate Shujaabad-specific first-party vector endpoint was identified.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      }
+    ],
+    "sourceDiscoveryDate": "2026-10-12",
+    "sourceCitations": [
+      "https://lis.pulse.gop.pk/",
+      "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+      "https://jamabandi.punjab.gov.in/CadastralMap.aspx"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Punjab Land Records Authority (PLRA), under the Punjab Board of Revenue / Government of Punjab; PULSE public GIS program",
+    "scope": "Punjab provincial land-record and cadastral-map custodian. The PULSE viewer and Punjab_Cdastral_Maps service provide indicative cadastral map layers; the viewer disclaimer says property lines are indicative and not legal boundaries.",
+    "evidence": "https://lis.pulse.gop.pk/"
+  },
+  "service": {
+    "name": "PULSE Punjab_Cdastral_Maps ArcGIS MapServer",
+    "viewerUrl": "https://lis.pulse.gop.pk/",
+    "baseUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer",
+    "viewerConfiguration": "Fetched the public viewer HTML and followed its current configuration: Multan is sublayer 36 in Punjab_Cdastral_Maps. The viewer obtains an anonymous short-lived ArcGIS token from /api/gis/token; the token was used only for public requests and not retained.",
+    "schemaAndCrs": {
+      "parcelSchema": "ArcGIS Feature Layer polygon; fields include OBJECTID, District, Dist_ID, Tehsil, Tehsil_ID, Mouza, Mouza_ID, M, A, QH, QH_ID, PC, PC_ID, K, SK, B, MN, Label, Karam, Khasra_ID, Remarks, Khewat_ID, Type, Shape, Shape.STArea(), Shape.STLength(), Join_Shp",
+      "nativeIdFields": [
+        "OBJECTID (ArcGIS esriFieldTypeOID; service alias FID)"
+      ],
+      "geometryCrs": "EPSG:3857 source; query output reprojected to EPSG:4326 GeoJSON",
+      "fieldMapping": {
+        "nativeIdentity": "OBJECTID -> retained properties.id",
+        "geometry": "Shape -> GeoJSON geometry",
+        "excluded": "all other native attributes"
+      },
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://lis.pulse.gop.pk/",
+      "status": 200,
+      "outcome": "Public viewer HTML fetched; current JavaScript/configuration inspected."
+    },
+    {
+      "method": "GET",
+      "url": "https://lis.pulse.gop.pk/api/gis/token",
+      "status": 200,
+      "outcome": "Anonymous short-lived public ArcGIS token returned; token not retained or exposed in packet."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=pjson",
+      "status": 200,
+      "outcome": "ArcGIS REST directory returned; VendorMaps folder is listed."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+      "status": 499,
+      "outcome": "Without the viewer token, service metadata returned Token Required; no bypass attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/36?f=pjson",
+      "status": 200,
+      "outcome": "With the anonymously obtained public token, Multan sublayer metadata returned polygon schema, OBJECTID native OID, and EPSG:3857 source CRS."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/36/query",
+      "status": 200,
+      "outcome": "Exact point [29.8800934500022,71.3038174095737] queried in EPSG:4326 with where=1=1, OBJECTID-only fields, polygon geometry requested; zero features returned. This is a point result, not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/36/query",
+      "status": 200,
+      "outcome": "Bounded envelope [71.20,29.80,71.40,29.96] queried in EPSG:4326 with OBJECTID-only fields, max three records, and GeoJSON output. Three polygons returned and retained in shujaabad-sample.geojson; the returned features are not claimed to contain the exact WUP point."
+    },
+    {
+      "method": "GET",
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "status": "DNS failure",
+      "outcome": "The guessed Pakistan host did not resolve; the discovered official page is jamabandi.punjab.gov.in and was not used as Pakistan evidence."
+    }
+  ],
+  "geometrySamples": [
+    {
+      "file": "shujaabad-sample.geojson",
+      "featureCount": 3,
+      "nativeIdentity": "OBJECTID",
+      "note": "Bounded Multan-layer sample; safe ID plus full polygon geometry only."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native OBJECTID only, retained as properties.id",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point and population are preserved; coordinate was not shifted.",
+    "Exact-point zero hit is not evidence of citywide absence.",
+    "The retained three polygons come from a wider bounded query and are not asserted to be Shujaabad parcels or exact-point hits.",
+    "PULSE states its digital map is based on Mussavie maps and shows indicative property lines, not legal boundaries.",
+    "No owner, address, contact, titleholder, personal, tax/account, Khewat, Khasra, Mouza, or other unsafe source attributes were requested or retained in the sample.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The public service's district layer is named Multan, while Shujaabad is a city/tehsil locality; citywide coverage and exact local administrative matching were not independently qualified.",
+    "The exact point may fall outside mapped polygons, in an unmapped urban area, or outside the service's current coverage; the point query alone cannot distinguish these.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

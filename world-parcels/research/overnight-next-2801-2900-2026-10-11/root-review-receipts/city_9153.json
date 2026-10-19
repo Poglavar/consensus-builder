@@ -1,0 +1,24 @@
+{
+  "taskId": "city:9153",
+  "decision": "held",
+  "checkedAt": "2026-10-11T22:13:48Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-9153-buldhana.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/buldhana-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T220825-3e036607/stdout.jsonl"
+  ],
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Rank 2887, code 9153, India, exact WUP point and 206544 persons match the immutable queue and source roster. English and Marathi searches are recorded in the worker run. Official district and state custodianship is evidenced, but the viewer timed out or redirected and no safe parcel ID plus full polygon was returned. Availability remains unresolved; no adapter qualification or runtime admission is evidenced."
+}

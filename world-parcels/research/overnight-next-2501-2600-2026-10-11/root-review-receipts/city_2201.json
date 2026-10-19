@@ -1,0 +1,25 @@
+{
+  "taskId": "city:2201",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-2201-maymana.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/maymana-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:52:09.500051+00:00",
+  "reason": "The immutable WUP rank 2560 identity, Afghanistan, point and 229355 persons match the packet. English and Dari/Pashto searches identify a national cadastre authority and Maymana municipality, supporting institutional custody context. No public Maymana native-ID polygon response, schema or CRS was obtained. The zero retained polygons indicate unresolved access, not parcel absence; every runtime qualification gate remains unproven.",
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

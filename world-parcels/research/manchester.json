@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:196",
+  "queueRank": 196,
+  "name": "Manchester",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "centerLatLon": [
+    53.4938305721117,
+    -2.25536904358391
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_sample_candidate_countrywide",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+      "observation": "HM Land Registry INSPIRE Index Polygons (freehold titles, England and Wales) are distributed as per-local-authority downloads (Manchester would be one of them); the download URL redirected (302) to a Cloudflare challenge for curl, so no file was obtained. Not a queryable API. Licence not read here."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows",
+      "observation": "Land Registry INSPIRE OGC endpoint: WFS GetFeature returns an OWS ServiceUnavailable exception; WMS capabilities answer (images only)."
+    },
+    {
+      "url": "https://www.manchester.gov.uk/open-data",
+      "observation": "Manchester City Council site behind a Cloudflare challenge (403 'Just a moment') for curl; no parcel service seen."
+    },
+    {
+      "url": "https://ckan.publishing.service.gov.uk/",
+      "observation": "data.gov.uk catalogue (reached after redirect) lists INSPIRE index polygon datasets from HM Land Registry; not tested for a bbox service."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (INSPIRE polygons)",
+      "observation": "Third-party ArcGIS copies found cover Northumberland/Cumbria, the Thames Valley and Oxfordshire-area extents, none covering Manchester; the earlier London probe recorded similar extents."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire:CP.CadastralParcel&count=3&bbox=53.4780,-2.2440,53.4790,-2.2425,urn:ogc:def:crs:EPSG::4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "parcelRecordCount": null,
+      "assessment": "OWS exception ServiceUnavailable; no features"
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "httpStatus": 302,
+      "contentType": "text/html",
+      "parcelRecordCount": null,
+      "assessment": "challenge redirect, no data"
+    },
+    {
+      "url": "https://www.manchester.gov.uk/open-data",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "parcelRecordCount": null,
+      "assessment": "Cloudflare challenge"
+    },
+    {
+      "url": "https://data.gov.uk/api/action/package_search?q=inspire+index+polygons",
+      "method": "GET",
+      "httpStatus": 301,
+      "contentType": "text/html",
+      "parcelRecordCount": null,
+      "assessment": "redirected to ckan.publishing.service.gov.uk; catalogue metadata only"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Manchester INSPIRE polygons",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 0,
+      "assessment": "no Manchester-covering feature service"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry INSPIRE index polygons for England and Wales (download only)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No bounded polygon response was obtained. The official INSPIRE download likely covers Manchester but requires a session/account step that curl did not complete; Ordnance Survey products need a key. Licence terms were not read.",
+  "nextStep": "Complete the HMLR INSPIRE download for Manchester in a real browser session (or use the OS Data Hub with a key) and extract a small bbox sample; look for a Greater Manchester or Trafford/Salford ArcGIS service."
+}

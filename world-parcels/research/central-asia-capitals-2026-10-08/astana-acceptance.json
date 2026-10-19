@@ -1,0 +1,238 @@
+{
+  "acceptedAt": "2026-10-08T06:35:06.307Z",
+  "sourceId": "kz-astana-pkk-esil",
+  "endpoint": "https://map.gov4c.kz/geoserver/wfs",
+  "viewer": "https://map.gov4c.kz/egkn/",
+  "featureType": "egkn:u_view",
+  "districtId": 254,
+  "queryCrs": "EPSG:32642",
+  "bboxGrid": {
+    "centerLat": 51.1282,
+    "centerLon": 71.4304,
+    "cellSizeDegrees": 0.0025,
+    "cellCount": 9,
+    "cells": [
+      {
+        "cell": [
+          0,
+          0
+        ],
+        "bboxWgs84": [
+          71.42665000000001,
+          51.12945,
+          71.42915,
+          51.131949999999996
+        ]
+      },
+      {
+        "cell": [
+          0,
+          1
+        ],
+        "bboxWgs84": [
+          71.42915,
+          51.12945,
+          71.43165,
+          51.131949999999996
+        ]
+      },
+      {
+        "cell": [
+          0,
+          2
+        ],
+        "bboxWgs84": [
+          71.43165,
+          51.12945,
+          71.43415,
+          51.131949999999996
+        ]
+      },
+      {
+        "cell": [
+          1,
+          0
+        ],
+        "bboxWgs84": [
+          71.42665000000001,
+          51.12695,
+          71.42915,
+          51.12945
+        ]
+      },
+      {
+        "cell": [
+          1,
+          1
+        ],
+        "bboxWgs84": [
+          71.42915,
+          51.12695,
+          71.43165,
+          51.12945
+        ]
+      },
+      {
+        "cell": [
+          1,
+          2
+        ],
+        "bboxWgs84": [
+          71.43165,
+          51.12695,
+          71.43415,
+          51.12945
+        ]
+      },
+      {
+        "cell": [
+          2,
+          0
+        ],
+        "bboxWgs84": [
+          71.42665000000001,
+          51.12445,
+          71.42915,
+          51.12695
+        ]
+      },
+      {
+        "cell": [
+          2,
+          1
+        ],
+        "bboxWgs84": [
+          71.42915,
+          51.12445,
+          71.43165,
+          51.12695
+        ]
+      },
+      {
+        "cell": [
+          2,
+          2
+        ],
+        "bboxWgs84": [
+          71.43165,
+          51.12445,
+          71.43415,
+          51.12695
+        ]
+      }
+    ]
+  },
+  "tls": {
+    "verification": "enabled",
+    "method": "createHttpsJsonFetch using source-scoped official intermediate",
+    "leafIssuer": "Sectigo Public Server Authentication CA DV R36",
+    "caCertificate": "backend/parcels/certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+    "caFingerprintSha256": "8C54C334B66BA4E426772AF4A3F9136C19A1AEC729FDB28C535C07A5A4EF22E0",
+    "verifiedCertificate": "subject=C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication CA DV R36\nissuer=C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root R46\nsha256 Fingerprint=8C:54:C3:34:B6:6B:A4:E4:26:77:2A:F4:A3:F9:13:6C:19:A1:AE:C7:29:FD:B2:8C:53:5C:07:A5:A4:EF:22:E0"
+  },
+  "baseline": {
+    "pageSize": 1000,
+    "uniqueNativeParcels": 154,
+    "distinctNativeKeys": 154,
+    "requestCount": 9,
+    "geometryHashAlgorithm": "sha256(stable JSON of canonical id, projected-back geometry, and sourceProperties)",
+    "allFeaturesHaveSafeProperties": true
+  },
+  "smallPages": {
+    "pageSize": 3,
+    "requestCount": 65,
+    "pagesExercised": true,
+    "sameIdSetAsBaseline": true,
+    "sameCanonicalGeometryHashes": true
+  },
+  "freshIds": {
+    "maxCallerBatchSize": 80,
+    "internalFilterTerms": 20,
+    "callerBatches": 2,
+    "filterRequests": 8,
+    "requested": 154,
+    "returned": 154,
+    "absent": 0,
+    "allHashesMatch": true,
+    "explicitAbsentProbe": {
+      "id": "KZ-ASTANA-PKK-99999999999999999999999999999999",
+      "returned": 0,
+      "absentIds": [
+        "KZ-ASTANA-PKK-99999999999999999999999999999999"
+      ]
+    }
+  },
+  "bindings": {
+    "sourceBinding": {
+      "coverage": "complete",
+      "parcelCount": 1,
+      "selectedParcelId": "KZ-ASTANA-PKK-213200721012"
+    },
+    "parcelActBinding": {
+      "coverage": "complete",
+      "parcelCount": 1,
+      "absentIds": []
+    }
+  },
+  "requestSummary": {
+    "baseline": {
+      "requests": 9,
+      "bboxRequests": 9,
+      "idFilterRequests": 0,
+      "pageSizes": [
+        1000
+      ],
+      "maxRequestUrlChars": 354
+    },
+    "smallPages": {
+      "requests": 65,
+      "bboxRequests": 65,
+      "idFilterRequests": 0,
+      "pageSizes": [
+        3
+      ],
+      "maxRequestUrlChars": 352
+    },
+    "freshIds": {
+      "requests": 8,
+      "bboxRequests": 0,
+      "idFilterRequests": 8,
+      "pageSizes": [
+        1000
+      ],
+      "maxRequestUrlChars": 3954
+    },
+    "explicitAbsent": {
+      "requests": 1,
+      "bboxRequests": 0,
+      "idFilterRequests": 1,
+      "pageSizes": [
+        1000
+      ],
+      "maxRequestUrlChars": 561
+    },
+    "sourceBinding": {
+      "requests": 1,
+      "bboxRequests": 1,
+      "idFilterRequests": 0,
+      "pageSizes": [
+        1000
+      ],
+      "maxRequestUrlChars": 352
+    },
+    "parcelActBinding": {
+      "requests": 1,
+      "bboxRequests": 0,
+      "idFilterRequests": 1,
+      "pageSizes": [
+        1000
+      ],
+      "maxRequestUrlChars": 541
+    }
+  },
+  "providerLimitFinding": {
+    "eightyCodeFesFilter": "HTTP 414",
+    "verifiedTwentyCodeFesFilter": "HTTP 200; 20 returned",
+    "handling": "queryIds chunks an 80-ID caller request into 20-term filters under one shared 15-second timeout and byte budget"
+  }
+}

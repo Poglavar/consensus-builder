@@ -1,0 +1,210 @@
+{
+  "name": "Balung",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 1112,
+  "point": [
+    -8.33052041665116,
+    113.567671721579
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Balung Jember official peta bidang tanah kantor pertanahan cadastral map ATR BPN",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search found official ATR/BPN BHUMI help for the national land-data map and interactive parcel (“bidang tanah”) layer. It includes accuracy and formal-use caveats.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://www.bpnkabjember.com/profil/",
+          "https://ppid.jemberkab.go.id/storage/dokumen-opd/1681110249-RENSTRA-45-2023.pdf",
+          "https://jemberkab.bps.go.id/id/publication/2022/09/26/d577f177a717fa63db622a5b/kecamatan-balung-dalam-angka-2022.html"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Balung Jember peta bidang tanah kadaster desa resmi BPN",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Indonesian search found Jember/ Balung administrative context and the candidate local land-office profile; only the ATR/BPN BHUMI government domain was treated as first-party map evidence. No geometry response was downloaded.",
+        "executionMethod": "Separate Indonesian-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://www.bpnkabjember.com/profil/",
+          "https://ppid.jemberkab.go.id/storage/dokumen-opd/1681110249-RENSTRA-45-2023.pdf",
+          "https://jemberkab.bps.go.id/id/publication/2022/09/26/d577f177a717fa63db622a5b/kecamatan-balung-dalam-angka-2022.html"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+        "operator": "Indonesia ATR/BPN",
+        "homeUrl": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+        "observation": "Official BHUMI map guide documents an interactive “bidang tanah” land-plot layer and coordinate search; it also limits legal reliance and advises formal information requests."
+      },
+      {
+        "name": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "operator": "Indonesia ATR/BPN",
+        "homeUrl": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "observation": "Official help says BHUMI interactive map distributes spatial information integrated with the ATR/BPN Atlas geoportal."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      {
+        "url": "https://www.bpnkabjember.com/profil/",
+        "observation": "Search result for a Jember land office profile on a non-ministry .com domain; not relied on as primary institutional evidence."
+      }
+    ],
+    "followthrough": {
+      "focus": "Reassess the existing registryFound=true claim against first-party city/local sources; distinguish local custodian proof from national/general map evidence and transport failure.",
+      "queries": [
+        {
+          "language": "English",
+          "query": "Balung Jember official land registration cadastral parcel map local Kantor Pertanahan ATR BPN",
+          "resultUrls": [
+            "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+            "https://bhumi.atrbpn.go.id/bantuan/peta",
+            "https://www.bpnkabjember.com/profil/"
+          ],
+          "result": "National ATR/BPN map documentation and a Jember office profile on a non-government domain were found; no verified official Balung/Jember public geometry endpoint was identified."
+        },
+        {
+          "language": "Indonesian",
+          "query": "Balung Jember kantor pertanahan resmi peta bidang tanah kadaster bidang tanah desa kecamatan",
+          "resultUrls": [
+            "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+            "https://www.bpnkabjember.com/profil/",
+            "https://kab-cianjur.atrbpn.go.id/assets/a8b68d71-41e5-44ac-a4ab-80be01dfe7be"
+          ],
+          "result": "BHUMI explains the national bidang tanah layer; local office results did not establish a verified Balung-specific service or anonymous geometry response."
+        }
+      ],
+      "officialSources": [
+        {
+          "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "observation": "Official ATR/BPN BHUMI help documents interactive map layers including bidang tanah and coordinate/parcel search. National viewer documentation alone does not prove that the Jember land office or Balung WUP area is covered by an anonymous geometry service."
+        },
+        {
+          "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "observation": "Official ATR/BPN help describes BHUMI as an interactive spatial-information map integrated with Atlas; no exact-point feature or safe full-geometry schema was verified."
+        },
+        {
+          "url": "https://www.bpnkabjember.com/profil/",
+          "observation": "Page on a non-government .com domain labels itself Kantor Pertanahan Jember and describes the office, but the domain/first-party ownership was not independently verified; not treated as primary proof of local coverage."
+        },
+        {
+          "url": "https://kab-cianjur.atrbpn.go.id/assets/a8b68d71-41e5-44ac-a4ab-80be01dfe7be",
+          "observation": "Official ATR/BPN domain document references staff at Kantor Pertanahan Kabupaten Jember; it does not describe Balung coverage or public cadastral geometry."
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "method": "official ATR/BPN map help page review",
+          "result": "Page confirms interactive parcel (“bidang tanah”) visualization and identity-based lookup; no service schema or feature geometry was downloaded."
+        },
+        {
+          "url": "https://www.bpnkabjember.com/profil/",
+          "method": "review of candidate local office profile",
+          "result": "Page claims to represent Kantor Pertanahan Jember, but first-party ownership of this .com domain was not confirmed; not used to set registryFound true."
+        },
+        {
+          "url": "https://kab-cianjur.atrbpn.go.id/assets/a8b68d71-41e5-44ac-a4ab-80be01dfe7be",
+          "method": "official-domain staff-document search result review",
+          "result": "Confirms a Jember office staff association, but not a local public map, Balung extent, or parcel API."
+        }
+      ],
+      "registryDecision": "null: local/city-specific registration or cadastral custody is not established by inspectable first-party evidence. This is uncertainty, not confirmed absence.",
+      "geometryDecision": "No safe anonymous full-polygon response was verified; no geometry query with potentially sensitive attributes was made.",
+      "uncertainty": "Whether the ATR/BPN Jember land office is the verified local custodian for the Balung settlement locator, whether BHUMI displays parcels there, and whether any anonymous safe full-polygon API exists."
+    }
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "BHUMI ATR/BPN interactive map help",
+    "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+    "operator": null,
+    "serviceType": "Candidate source reviewed; no first-party city-local custody or safe public full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Registry custody remains unconfirmed; see freshResearch followthrough and source-review record."
+  },
+  "coverageAssessment": {
+    "claimedScope": "ATR/BPN BHUMI documentation confirms a national interactive map with a bidang-tanah layer, but no query or geometry response was inspected at the unchanged Balung locator. A Jember office profile surfaced on a non-government .com domain; its official first-party status was not independently established. City/local registration custody and exact-point coverage remain unconfirmed.",
+    "verifiedOpenScope": "No anonymous full-parcel geometry response was verified; no absence or citywide coverage claim is made.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_custody_unconfirmed_geometry_unverified",
+  "technicalBlocker": "No first-party city/local registry source with a safe public full-parcel geometry schema and response was verified. Access failures and broad/national map documentation do not establish absence or point coverage.",
+  "remainingUncertainty": "Whether the ATR/BPN Jember land office is the verified local custodian for the Balung settlement locator, whether BHUMI displays parcels there, and whether any anonymous safe full-polygon API exists.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7888,
+  "cityId": "wup2025:7888",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -8.33052041665116,
+    113.567671721579
+  ],
+  "population2025k": 497.754,
+  "populationUnit": "persons",
+  "queueRank": 1112,
+  "population2025": 497754,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The public BHUMI help is national in scope. A Jember office profile and official-domain staff document were found, but neither provides a verified first-party, Balung-specific land-registry/map service or exact-point service coverage. The local .com page was not relied on as authoritative. This does not prove the local registry is absent.",
+  "registryEvidenceUrls": [
+    "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+    "https://bhumi.atrbpn.go.id/bantuan/peta"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No first-party city/local registry source with a safe public full-parcel geometry schema and response was verified. Access failures and broad/national map documentation do not establish absence or point coverage."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 7888,
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "checkedAt": "2026-10-09T07:10:39.364790+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 35736,
+      "sha256": "3e8907119294871ec0a69fb43fa456ba0dcd37679a2a466c0df88957055860cb",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The public BHUMI help is national in scope. A Jember office profile and official-domain staff document were found, but neither provides a verified first-party, Balung-specific land-registry/map service or exact-point service coverage. The local .com page was not relied on as authoritative. This does not prove the local registry is absent.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

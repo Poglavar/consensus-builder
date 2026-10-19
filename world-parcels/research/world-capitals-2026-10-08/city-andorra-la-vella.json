@@ -1,0 +1,237 @@
+{
+  "cityId": "capital:AD:andorra-la-vella",
+  "name": "Andorra la Vella",
+  "country": "Andorra",
+  "countryCode": "AD",
+  "centerLatLon": [
+    42.5,
+    1.516667
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08T18:16:02.687417+00:00",
+  "executedQueries": [
+    {
+      "query": "Andorra la Vella cadastre parcel map geoportal",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Andorra la Vella cadastre parcel·les visor cartografia",
+      "language": "Catalan",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://sit.andorralavella.ad/cadastre/",
+      "observation": "Official municipal cadastral viewer; public application config links cadastral webmap and parcel layer."
+    },
+    {
+      "url": "https://sit.andorralavella.ad/arcgis/sharing/rest/content/items/3a3e1929ddc44e01a20db703f9a4b0fd/data?f=json",
+      "observation": "The Parcel·la layer has no fixed definition expression; safe cadastral reference fields are present."
+    }
+  ],
+  "requests": [
+    {
+      "name": "andorra-cadastre",
+      "url": "https://sit.andorralavella.ad/cadastre/libs/Cadastre.js",
+      "checkedAt": "2026-10-08T18:04:16.668Z",
+      "bytes": 10439,
+      "contentType": "application/javascript",
+      "httpStatus": 200
+    },
+    {
+      "name": "andorra-config",
+      "url": "https://sit.andorralavella.ad/cadastre/config.json",
+      "checkedAt": "2026-10-08T18:04:16.604Z",
+      "bytes": 18099,
+      "contentType": "application/json",
+      "httpStatus": 200
+    },
+    {
+      "name": "andorra-env",
+      "url": "https://sit.andorralavella.ad/cadastre/env.js",
+      "checkedAt": "2026-10-08T18:01:01.282Z",
+      "bytes": 14912,
+      "contentType": "application/javascript",
+      "httpStatus": 200
+    },
+    {
+      "name": "andorra-init",
+      "url": "https://sit.andorralavella.ad/cadastre/init.js",
+      "checkedAt": "2026-10-08T18:01:01.510Z",
+      "bytes": 8587,
+      "contentType": "application/javascript",
+      "httpStatus": 200
+    },
+    {
+      "name": "andorra-layer",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0?f=json",
+      "checkedAt": "2026-10-08T18:05:37.033Z",
+      "bytes": 11772,
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "OBJECTID",
+      "httpStatus": 200
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:13.408Z",
+      "method": "GET",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=1%3D1&geometry=1.52,42.507,1.524,42.510&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "httpStatus": 200,
+      "finalUrl": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=1%3D1&geometry=1.52,42.507,1.524,42.510&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 1000
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:40.750Z",
+      "method": "GET",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?objectIds=399,2232,2228&outFields=OBJECTID,GLOBALID,REF_CADASTRAL,REF_CADASTRAL_TEXT,DATA_ALTA,DATA_BAIXA,TIPUS&outSR=4326&returnGeometry=true&f=geojson",
+      "httpStatus": 200,
+      "finalUrl": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?objectIds=399,2232,2228&outFields=OBJECTID,GLOBALID,REF_CADASTRAL,REF_CADASTRAL_TEXT,DATA_ALTA,DATA_BAIXA,TIPUS&outSR=4326&returnGeometry=true&f=geojson",
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6644
+    },
+    {
+      "checkedAt": "2026-10-08T18:09:48.424Z",
+      "method": "GET",
+      "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=1%3D1&geometry=1.52,42.507,1.524,42.510&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,GLOBALID,REF_CADASTRAL,REF_CADASTRAL_TEXT,DATA_ALTA,DATA_BAIXA,TIPUS&outSR=4326&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "httpStatus": 200,
+      "finalUrl": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0/query?where=1%3D1&geometry=1.52,42.507,1.524,42.510&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,GLOBALID,REF_CADASTRAL,REF_CADASTRAL_TEXT,DATA_ALTA,DATA_BAIXA,TIPUS&outSR=4326&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 113
+    },
+    {
+      "name": "andorra-viewer",
+      "url": "https://sit.andorralavella.ad/cadastre/",
+      "checkedAt": "2026-10-08T17:58:13.857Z",
+      "bytes": 6066,
+      "elapsedMs": 1472,
+      "contentType": "text/html",
+      "httpStatus": 200
+    },
+    {
+      "name": "andorra-webmap",
+      "url": "https://sit.andorralavella.ad/arcgis/sharing/rest/content/items/3a3e1929ddc44e01a20db703f9a4b0fd/data?f=json",
+      "checkedAt": "2026-10-08T18:05:07.505Z",
+      "bytes": 29413,
+      "contentType": "application/json; charset=utf-8",
+      "httpStatus": 200
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Public municipal parcel layer returned three Polygon records with REF_CADASTRAL_TEXT inside Andorra la Vella.",
+  "registryEvidenceUrls": [
+    "https://sit.andorralavella.ad/cadastre/",
+    "https://sit.andorralavella.ad/arcgis/sharing/rest/content/items/3a3e1929ddc44e01a20db703f9a4b0fd/data?f=json"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "ad-andorra-la-vella-cadastre"
+  ],
+  "sourceCandidate": {
+    "url": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0",
+    "publisher": "Comú d’Andorra la Vella",
+    "safeSampleFile": "andorra-la-vella-safe-sample.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastral parcel layer, central-city sample. Historic-lifecycle fields and complete ID reads require qualification.",
+    "verifiedOpenScope": "Municipal cadastral parcel layer, central-city sample. Historic-lifecycle fields and complete ID reads require qualification.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The service does not support offset pagination; a request with resultRecordCount failed with ArcGIS error400, while bounded OID manifest followed by exact objectIds returned geometry.",
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "responseFile": "research/world-capitals-2026-10-08/andorra-la-vella-safe-sample.json",
+    "sourceGeometryDiagnosis": {
+      "summary": "Native EPSG:27563, outSR=27563, outSR=4326, GeoJSON default and GeoJSON outSR=4326 each retained ring vertex counts 23/17/15. The three overlaps persisted in native and transformed results; area shifts slightly with reprojection, but overlap fractions are stable.",
+      "diagnosticRawResponses": "/tmp/world-capitals-2026-10-08/source-geometry-diagnostics.json",
+      "queryEndpoint": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0",
+      "details": {
+        "service": "https://sit.andorralavella.ad/server/rest/services/GESTIO_CADASTRAL/Gestio_Cadastral_RO/FeatureServer/0",
+        "queryFilter": "DATA_BAIXA IS NULL AND GLOBALID IN (exact three IDs below)",
+        "statusLifecycle": "All three exact features returned HTTP 200; DATA_BAIXA null and TIPUS=P for each. Kept the DATA_BAIXA IS NULL current-record filter.",
+        "records": [
+          {
+            "id": "{7881D8F8-034D-4091-B375-7531679E7056}",
+            "objectId": 401,
+            "ref": "5P000341"
+          },
+          {
+            "id": "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+            "objectId": 1785,
+            "ref": "5P000343"
+          },
+          {
+            "id": "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}",
+            "objectId": 404,
+            "ref": "5P000735"
+          }
+        ],
+        "projectionComparison": "Native EPSG:27563, outSR=27563, outSR=4326, GeoJSON default and GeoJSON outSR=4326 each retained ring vertex counts 23/17/15. The three overlaps persisted in native and transformed results; area shifts slightly with reprojection, but overlap fractions are stable.",
+        "overlaps": [
+          {
+            "ids": [
+              "{7881D8F8-034D-4091-B375-7531679E7056}",
+              "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}"
+            ],
+            "areaM2Native": 67.713034,
+            "areaM2Out4326": 67.873702,
+            "fractionsOfEach": [
+              0.26880907,
+              0.37920543
+            ],
+            "fractionOfSmaller": 0.37920543,
+            "maxInscribedDiameterM": 6.855617
+          },
+          {
+            "ids": [
+              "{7881D8F8-034D-4091-B375-7531679E7056}",
+              "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}"
+            ],
+            "areaM2Native": 6.960154,
+            "areaM2Out4326": 6.976668,
+            "fractionsOfEach": [
+              0.02763061,
+              0.02471328
+            ],
+            "fractionOfSmaller": 0.02763061,
+            "maxInscribedDiameterM": 1.288384
+          },
+          {
+            "ids": [
+              "{BD3D3CCB-383F-4A87-837E-B7BC6463BC0A}",
+              "{F3F7DB2D-C541-4186-880F-43A4FEA7C9F1}"
+            ],
+            "areaM2Native": 8.103246,
+            "areaM2Out4326": 8.122472,
+            "fractionsOfEach": [
+              0.04537967,
+              0.02877204
+            ],
+            "fractionOfSmaller": 0.04537967,
+            "maxInscribedDiameterM": 1.165944
+          }
+        ]
+      }
+    }
+  },
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Current DATA_BAIXA-null parcels still overlap materially in native coordinates: largest 67.713 m², 37.92% of the smaller parcel. No documented safe exclusion.",
+    "evidenceFile": "research/world-capitals-2026-10-08/andorra-la-vella-acceptance.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/andorra-la-vella-safe-sample.json"
+}

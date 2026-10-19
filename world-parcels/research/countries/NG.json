@@ -1,0 +1,76 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NG",
+ "country": "Nigeria",
+ "checkedAt": "2026-09-29",
+ "status": "subnational_only",
+ "cadastreAuthority": "No national cadastre: land is state-administered (Land Use Act). Office of the Surveyor-General of the Federation (OSGOF) coordinates federal survey; states run GIS (Lagos LASRERA/LASG, Kano KANGIS, Oyo, FCT AGIS)",
+ "portalsFound": [
+  {
+   "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+   "observation": "OSGOF page on cadastral/legal surveys; informational, no data service linked."
+  },
+  {
+   "url": "https://www.kangis.gov.ng/",
+   "observation": "Kano KANGIS static site (from research/kano.json); no parcel service."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://osgof.gov.ng",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "OSGOF home (301 from www); links to cadastral surveys and GIS pages only"
+  },
+  {
+   "url": "https://nigeriasurveygeneral.gov.ng",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.agis.fct.gov.ng/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.fctlands.gov.ng",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Nigeria%20cadastral%20parcels",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "5 hits, all one private estate cadastre webmap; no official parcels"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "State-level land registries/GIS only; no country-wide service found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No open state polygon endpoint verified (see research/lagos.json, kano.json, ibadan.json, onitsha.json, owerri.json); FCT AGIS unreachable. Status reflects structure of land administration plus unverified state services, not proof of absence.",
+ "nextStep": "Probe state portals (Lagos, FCT AGIS) again; check NGSA/OSGOF for a national geoportal.",
+ "subnationalServices": [
+  {
+   "name": "Kano State KANGIS",
+   "url": "https://www.kangis.gov.ng/",
+   "observation": "static site only"
+  },
+  {
+   "name": "FCT AGIS",
+   "url": "https://www.agis.fct.gov.ng/",
+   "observation": "unreachable"
+  }
+ ]
+}

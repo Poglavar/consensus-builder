@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-6710-moore.json",
+  "cityCode": 6710,
+  "queueRank": 2918,
+  "name": "Moore",
+  "country": "United States of America",
+  "countryCode": "US",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate first-party discovery checks in English and the United States local administrative language identified the City of Moore GIS Parcel Viewer, its public Experience Builder configuration, the City Hosted/Parcels ArcGIS FeatureServer, and Cleveland County Assessor GIS documentation. The current service schema and CRS were inspected. A bounded anonymous request returned three parcel polygons with native parcelid values and no unsafe attributes; the exact WUP point returned zero features and was not shifted.",
+  "attemptedRoutes": [
+    {"url": "https://www.cityofmoore.com/city-services/gis-parcel-viewer", "method": "GET", "outcome": "official City of Moore parcel-viewer page retrieved"},
+    {"url": "https://gis.cityofmoore.com/portal/apps/experiencebuilder/experience/?id=a028670273474c9587fd9d71314a81f0", "method": "GET", "outcome": "public viewer route identified from official page; no authentication used"},
+    {"url": "https://gis.cityofmoore.com/portal/sharing/rest/content/items/a028670273474c9587fd9d71314a81f0?f=pjson", "method": "GET", "outcome": "HTTP 200 public item metadata for Public Parcel Viewer"},
+    {"url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer?f=pjson", "method": "GET", "outcome": "HTTP 200 service metadata; TaxParcels layer 0"},
+    {"url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson", "method": "GET", "outcome": "HTTP 200 layer schema; polygon geometry, native objectid and parcelid fields observed"},
+    {"url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=parcelid&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3", "method": "GET", "outcome": "HTTP 200; bounded three-feature parcel polygon response with safe parcelid only; exceededTransferLimit noted"},
+    {"url": "https://gis.cityofmoore.com/arcgis/rest/services/Hosted/Parcels/FeatureServer/0/query?geometry=-97.5334069530313%2C35.3838650484031&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid&returnGeometry=true&outSR=4326&f=pjson", "method": "GET", "outcome": "HTTP 200; exact WUP point returned zero features; not interpreted as citywide absence"},
+    {"url": "https://ok-clevelandcounty.civicplus.com/351/Geographic-Information-Systems-GIS", "method": "GET", "outcome": "official Cleveland County Assessor GIS parcel-layer documentation retrieved"}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [35.3838650484031, -97.5334069530313] was preserved and not shifted; its zero-hit result is only a point miss.",
+    "The bounded three-polygon response demonstrates public parcel geometry but not complete city or county coverage, legal survey status, or currentness.",
+    "No retained GeoJSON sample was created; unchanged bounded geometry evidence remains under ignored tmp/valhalla-parcel-research/moore/.",
+    "The service extent and sampled polygons do not establish that every Moore locality or the WUP point is covered."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": "parcelid",
+    "alsoObserved": ["objectid"],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "The service schema identifies parcelid as a native string field. Three returned parcelid values have a composite-looking assessor format, but they were retained only in metadata and were not decomposed or synthesized."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "A local public City of Moore parcel viewer/service and Cleveland County Assessor parcel custodian are evidenced. The source is not admitted: exact-point coverage is absent at the WUP coordinate, the bounded query exceeded transfer limits, and the large source schema includes unsafe fields that were deliberately excluded. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+}

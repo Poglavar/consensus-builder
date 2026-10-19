@@ -1,0 +1,300 @@
+{
+  "name": "Jundiaí",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 1193,
+  "point": [
+    -23.1976446911945,
+    -46.8554383147568
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jundiaí official cadastral parcel map land registry GIS",
+        "result": "The official municipal GeoJundiaí WFS exposes public parcel polygons on GeoJundiai:lote with native ID codlote and geometry geom. The earlier employee-only fiscal-property UI finding is specific to cfImob and does not establish that no public WFS geometry exists.",
+        "actualResultUrls": [
+          "https://geo.jundiai.sp.gov.br/geojundiai/cfImob.jsp",
+          "https://geo.jundiai.sp.gov.br/geojundiai/?apenas_conteudo=S",
+          "https://jundiai.sp.gov.br/planejamento-e-meio-ambiente/geoinformacao/",
+          "https://geo.jundiai.sp.gov.br/geoserver/ows"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Jundiaí cadastro fiscal imobiliário mapa lote Geojundiaí cadastro territorial",
+        "result": "A bounded anonymous WFS query to the city-hosted GeoJundiaí parcel layer returned full public geometry; the separate fiscal-property UI remains employee-only. No owner, address, tax, account, title, or applicant values were submitted or retained.",
+        "actualResultUrls": [
+          "https://geo.jundiai.sp.gov.br/geojundiai/cfImob.jsp",
+          "https://geo.jundiai.sp.gov.br/geojundiai/?apenas_conteudo=S",
+          "https://jundiai.sp.gov.br/planejamento-e-meio-ambiente/geoinformacao/",
+          "https://geo.jundiai.sp.gov.br/geoserver/ows"
+        ],
+        "method": "Separate Portuguese-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geojundiai/cfImob.jsp",
+        "operator": "Jundiaí Municipal GeoJundiaí / Fiscal Property Cadastre",
+        "scope": "Earlier UI-only review found georeferenced fiscal-lot content while cfImob marked the fiscal-cadastre interface employee-only. That finding is limited to this UI; no parcel geometry was requested through this UI route. A separate anonymous GeoJundiaí WFS layer GeoJundiai:lote is now verified to return public parcel polygons."
+      },
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geojundiai/?apenas_conteudo=S",
+        "operator": "Jundiaí Municipal GeoJundiaí / Fiscal Property Cadastre",
+        "scope": "Earlier UI-only review found georeferenced fiscal-lot content while cfImob marked the fiscal-cadastre interface employee-only. That finding is limited to this UI; no parcel geometry was requested through this UI route. A separate anonymous GeoJundiaí WFS layer GeoJundiai:lote is now verified to return public parcel polygons."
+      },
+      {
+        "url": "https://jundiai.sp.gov.br/planejamento-e-meio-ambiente/geoinformacao/",
+        "operator": "Jundiaí Municipal GeoJundiaí / Fiscal Property Cadastre",
+        "scope": "Earlier UI-only review found georeferenced fiscal-lot content while cfImob marked the fiscal-cadastre interface employee-only. That finding is limited to this UI; no parcel geometry was requested through this UI route. A separate anonymous GeoJundiaí WFS layer GeoJundiai:lote is now verified to return public parcel polygons."
+      },
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+        "operator": "Município de Jundiaí / GeoJundiaí geospatial WFS",
+        "scope": "Anonymous public GeoServer WFS; GeoJundiai:lote exposes codlote and geom in native EPSG:31983. Bounded GeoJSON requests in CRS84 return public IDs and full lot polygons; this is a separate endpoint from the employee-only cfImob fiscal-property UI."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "bytes": 148075,
+        "sha256": "2cbd516545c0e66e44935f8f9dc5881a97a085c9ff1d4cb4c96330f48e3e220b",
+        "assessment": "wfs-capabilities"
+      },
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=GeoJundiai%3Alote",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "bytes": 974,
+        "sha256": "d9b6c48fd2ac1a9266e4b7846c539960879777b386f471781a63e61ae92a2a0a",
+        "assessment": "lote-schema"
+      },
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=GeoJundiai%3Alotes_jund",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "bytes": 985,
+        "sha256": "6328e075db92a715f0f5f5799b59050e778e632472f6e6e71e67e4ae0e178bd1",
+        "assessment": "lotes_jund-schema"
+      },
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=GeoJundiai%3Alote&srsName=CRS%3A84&bbox=-46.8559383147568%2C-23.1981446911945%2C-46.8549383147568%2C-23.1971446911945%2CCRS%3A84&propertyName=codlote%2Cgeom&outputFormat=application%2Fjson&count=3&startIndex=0",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bytes": 3645,
+        "sha256": "12068ccce4d1be625d380061122fb0a7ffe9b02aaf44e45df18124144f88aba9",
+        "numberMatched": 43,
+        "numberReturned": 3,
+        "crs": "urn:ogc:def:crs:CRS::84",
+        "requestedFields": [
+          "codlote",
+          "geom"
+        ],
+        "returnedFieldNames": [
+          "codlote"
+        ],
+        "returnedNativeIds": [
+          "210270002",
+          "210110061",
+          "210110048"
+        ],
+        "assessment": "Current exact WUP-center bbox sample; native ID and full polygon output only."
+      },
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&srsName=CRS%3A84&bbox=-46.857%2C-23.198%2C-46.856%2C-23.197%2CCRS%3A84&propertyName=geom%2Ccodlote&outputFormat=application%2Fjson&count=1000&startIndex=0",
+        "method": "GET",
+        "httpStatus": 200,
+        "numberMatched": 46,
+        "numberReturned": 46,
+        "uniqueNativeIds": 45,
+        "conflictingNativeId": "210120002",
+        "assessment": "Adjacent cell repeat exposed two different full geometries under the same public native ID; adapter rejected this cell."
+      },
+      {
+        "url": "https://geo.jundiai.sp.gov.br/geoserver/ows (WFS 2.0.0; srsName=EPSG:31983; exact three sample IDs)",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "crs": "urn:ogc:def:crs:EPSG::31983",
+        "returnedNativeIds": [
+          "210110048",
+          "210110061",
+          "210270002"
+        ],
+        "assessment": "Native CRS geometry compared vertex-by-vertex with CRS84 adapter output; see runtime report."
+      }
+    ],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched.",
+      "The prior UI-only review correctly found the cfImob fiscal-property interface employee-only, but it did not test or cover the separate public GeoJundiaí WFS parcel layer and was not evidence of parcel absence."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "sourceId": "br-jundiai-geojundiai-lote",
+    "requestUrl": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=GeoJundiai%3Alote&srsName=CRS%3A84&bbox=-46.8559383147568%2C-23.1981446911945%2C-46.8549383147568%2C-23.1971446911945%2CCRS%3A84&propertyName=codlote%2Cgeom&outputFormat=application%2Fjson&count=3&startIndex=0",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "sha256": "12068ccce4d1be625d380061122fb0a7ffe9b02aaf44e45df18124144f88aba9",
+    "numberMatched": 43,
+    "numberReturned": 3,
+    "crs": "OGC:CRS84",
+    "nativeCrs": "EPSG:31983",
+    "featureType": "GeoJundiai:lote",
+    "idField": "codlote",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "requestedFields": [
+      "codlote",
+      "geom"
+    ],
+    "returnedFieldNames": [
+      "codlote"
+    ],
+    "features": [
+      {
+        "nativeId": "210270002",
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "bca764fa48af8a4e65344a269fca8cee7281c29de31b17d4e782c54ef9312436"
+      },
+      {
+        "nativeId": "210110061",
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "f7761308378101b06b56773c3aadcbc2ad587c387b10839e5ed6dae0f7bdb203"
+      },
+      {
+        "nativeId": "210110048",
+        "geometryType": "MultiPolygon",
+        "geometrySha256": "9e0a74d885b27e8fd0b30d078a734b98bba74ed27945a3c93114f828701a6745"
+      }
+    ],
+    "sampleFile": "jundiai-parcel-samples.json",
+    "exactWupPointCovered": false,
+    "note": "The exact WUP point is not covered by polygons returned in the point cell; surrounding public geometry is verified and point-zero is not an absence gate."
+  },
+  "source": {
+    "sourceId": "br-jundiai-geojundiai-lote",
+    "name": "Jundiaí Municipal GeoJundiaí WFS parcel layer",
+    "url": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+    "operator": "Município de Jundiaí / GeoJundiaí",
+    "serviceType": "Official anonymous municipal WFS returning public parcel geometry",
+    "layer": "GeoJundiai:lote",
+    "geometryType": "MultiPolygon",
+    "nativeCrs": "EPSG:31983",
+    "outputCrs": "OGC:CRS84",
+    "nativeIdField": "codlote",
+    "nativeIdEvidence": "DescribeFeatureType HTTP 200 lists codlote as xsd:string and geom as MultiSurfacePropertyType; direct WFS responses return only codlote alongside geometry.",
+    "attributesRequested": [
+      "codlote"
+    ],
+    "sampleCount": 3,
+    "sampleFile": "jundiai-parcel-samples.json",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "verified_bounded_public_wfs_geometry",
+    "operatorNote": "Bounded public WFS polygons are distinct from the employee-only cfImob fiscal-property UI. One adjacent cell had a repeated native ID with conflicting geometries; root review is pending. Exact WUP point is not covered by polygons in its sampled cell."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public municipal GIS lot polygons",
+    "verifiedOpenScope": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "exactWupPointCovered": false,
+    "pointZeroMeansNoParcel": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Bounded qualification does not establish citywide completeness, source continuity, legal title meaning or survey accuracy. Native gid represents GIS polygon identity; codlote is not unique.",
+  "nextStep": "Locally enabled after protocol, native coordinate comparisons, independent clean205-polygon topology and actual headed pointer-selected native Details checks. Remains undeployed.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7290,
+  "cityId": "wup2025:7290",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    -23.1976446911945,
+    -46.8554383147568
+  ],
+  "population2025k": 465.531,
+  "populationUnit": "persons",
+  "queueRank": 1193,
+  "population2025": 465531,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "br-jundiai-geojundiai-lotes-jund-gid"
+  ],
+  "registryBasis": "Official GeoJundiaí municipal WFS publishes public lot geometry; stable unique gid in GeoJundiai:lotes_jund identifies full ground polygons independently of the duplicate codlote label.",
+  "registryEvidenceUrls": [
+    "https://geo.jundiai.sp.gov.br/geoserver/ows",
+    "https://geo.jundiai.sp.gov.br/geojundiai/cfImob.jsp",
+    "https://geo.jundiai.sp.gov.br/geojundiai/?apenas_conteudo=S",
+    "https://jundiai.sp.gov.br/planejamento-e-meio-ambiente/geoinformacao/"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "Public cadastral parcel geometry around the unchanged Jundiaí WUP settlement locator. Thirteen aligned cells and 205 unique full parcels passed stable counts, complete paging, fresh native-ID geometry reads, correctly shaped explicit absence and full-parcel one-parcel binding. Root independent EPSG:31983 GEOS audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact unchanged WUP locator has no parcel hit in its containing cell; nearby public parcel BR-JUNDIAI-LOTES-JUND-GID-46298 supports complete one-parcel binding. Native gid identifies individual GIS ground polygons; the duplicate codlote business reference is not used as runtime identity. Evidence is bounded and does not establish citywide or nationwide completeness, survey precision, legal ownership or currentness."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "priorCodloteRuntimeReview": {
+    "source": {
+      "sourceId": "br-jundiai-geojundiai-lote",
+      "name": "Jundiaí Municipal GeoJundiaí WFS parcel layer",
+      "url": "https://geo.jundiai.sp.gov.br/geoserver/ows",
+      "operator": "Município de Jundiaí / GeoJundiaí",
+      "serviceType": "Official anonymous municipal WFS returning public parcel geometry",
+      "layer": "GeoJundiai:lote",
+      "geometryType": "MultiPolygon",
+      "nativeCrs": "EPSG:31983",
+      "outputCrs": "OGC:CRS84",
+      "nativeIdField": "codlote",
+      "nativeIdEvidence": "DescribeFeatureType HTTP 200 lists codlote as xsd:string and geom as MultiSurfacePropertyType; direct WFS responses return only codlote alongside geometry.",
+      "attributesRequested": [
+        "codlote"
+      ],
+      "sampleCount": 3,
+      "sampleFile": "jundiai-parcel-samples.json",
+      "directGeometryQueryVerified": true,
+      "directMetadataSchemaVerified": true,
+      "geometryStatus": "verified_bounded_public_wfs_geometry",
+      "operatorNote": "Bounded public WFS polygons are distinct from the employee-only cfImob fiscal-property UI. One adjacent cell had a repeated native ID with conflicting geometries; root review is pending. Exact WUP point is not covered by polygons in its sampled cell."
+    },
+    "sourceIds": [
+      "br-jundiai-geojundiai-lote"
+    ],
+    "runtimeAssessment": {
+      "status": "awaiting_root_review",
+      "reason": "The unchanged WFS adapter completed 12 bounded cells, verified 203 full geometry ID rereads, and computed a full parcel footprint binding; one adjacent cell remains rejected because codlote 210120002 maps to two different geometries. No integration was made."
+    },
+    "technicalBlocker": "The unchanged adapter rejects one bounded 0.001-degree cell because two features share codlote 210120002 but have different full geometries. No geometry was merged, selected, or repaired; see jundiai-runtime-qualification.json.",
+    "remainingUncertainty": "The exact WUP point is not covered by the polygons in its exact containing cell, which does not imply parcel absence. One adjacent cell has a repeated codlote with conflicting geometries. The unsorted count=3 WFS sample returned different IDs on repeat despite the same 43 matched features. Citywide completeness, cadastral/legal title meaning, and source survey accuracy remain unverified.",
+    "coverageAssessment": {
+      "claimedScope": "Official municipal WFS exposes public lot polygons in EPSG:31983; 13 aligned 0.001-degree cells around the unchanged WUP point were queried and stable hit counts were observed before and after feature retrieval.",
+      "verifiedOpenScope": "Three full WGS84 polygons in a bounded WUP-center sample; 12 of 13 adapter cell queries completed, and the remaining cell was rejected for conflicting geometries under one native ID. The exact WUP point is not covered by current point-cell polygons.",
+      "countrywideVerified": false,
+      "citywideVerified": false,
+      "exactWupPointCovered": false,
+      "pointZeroMeansNoParcel": false
+    }
+  },
+  "rootReviewedAt": "2026-10-09T08:47:00.804712+00:00",
+  "appCityId": "jundiai",
+  "rootReviewEvidence": "jundiai-root-acceptance.json",
+  "integratedAt": "2026-10-09T08:47:00.968449+00:00",
+  "headedBrowserCheck": "jundiai-headed-browser-check.json"
+}

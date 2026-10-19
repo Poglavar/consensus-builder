@@ -1,0 +1,154 @@
+{
+  "name": "Ribeirao Preto",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 878,
+  "point": [
+    -21.1646832046268,
+    -47.8092772516774
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese (Brazilian)",
+        "query": "Ribeirão Preto cadastro imobiliário mapa lotes parcelas geoprocessamento oficial prefeitura",
+        "scope": "Find current official municipal lot map and safe full-geometry route.",
+        "result": "Official city pages describe a free Geoportal with property location and current “base imobiliária” lot division. The public ArcGIS MapServer exposes a Lote polygon layer. An exact WUP-point query returned one full polygon with only gid (system OID) requested; no cadastral, address, or IPTU fields were requested.",
+        "urls": [
+          "https://www.ribeiraopreto.sp.gov.br/portal/noticia/prefeitura-de-ribeirao-preto-lanca-geoportal-para-modernizar-acesso-a-informacoes-geograficas-e-urbanisticas",
+          "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+          "https://webgis.ribeiraopreto.sp.gov.br/portal/sharing/rest/content/items/d0dc6fc2453a46998d8f55995e4ac4b0/data?f=json",
+          "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0?f=pjson"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Ribeirao Preto official municipal geoportal cadastro urbano lot parcel GIS map service",
+        "scope": "Confirm that the city owns the current parcel map and discover service geometry schema.",
+        "result": "The Prefeitura department page confirms a current municipal lot-division base in the Geoportal; the viewer item data binds the Cadastro Urbano map to the municipal MapServer layer Lote.",
+        "urls": [
+          "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+          "https://www.ribeiraopreto.sp.gov.br/portal/noticia/prefeitura-de-ribeirao-preto-lanca-geoportal-para-modernizar-acesso-a-informacoes-geograficas-e-urbanisticas"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ribeiraopreto.sp.gov.br/portal/noticia/prefeitura-de-ribeirao-preto-lanca-geoportal-para-modernizar-acesso-a-informacoes-geograficas-e-urbanisticas",
+        "observation": "City news calls the Geoportal free/public and says it shows property, block/lot and cadastro urbano."
+      },
+      {
+        "url": "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+        "observation": "Planning Department says the current lot-division base is available in Geoportal; warns maps are preliminary and may not reflect later amalgamations/subdivisions."
+      }
+    ],
+    "serviceChecks": [
+      {
+        "url": "https://webgis.ribeiraopreto.sp.gov.br/portal/sharing/rest/portals/self?f=json",
+        "method": "GET",
+        "status": 200,
+        "observation": "ArcGIS Portal reports public access."
+      },
+      {
+        "url": "https://webgis.ribeiraopreto.sp.gov.br/portal/sharing/rest/search?q=%22Cadastro%20Urbano%22&f=json&num=20",
+        "method": "GET",
+        "status": 200,
+        "observation": "Three public results; municipal Cadastro Urbano Web Map item d0dc6fc2453a46998d8f55995e4ac4b0 is the map consumed by the application."
+      },
+      {
+        "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer?f=pjson",
+        "method": "GET",
+        "status": 200,
+        "observation": "Municipal service lists layer 0 Lote and layer 7 Quadra plus thematic layers."
+      },
+      {
+        "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0?f=pjson",
+        "method": "GET",
+        "status": 200,
+        "observation": "Lote is esriGeometryPolygon, EPSG:31983; schema has gid OID and other cadastral/address fields. Query selected gid only."
+      },
+      {
+        "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0/query",
+        "method": "GET exact WUP point; outFields=gid; returnGeometry=true; outSR=4326; f=geojson",
+        "status": 200,
+        "observation": "One full Polygon returned, gid only; the locator is inside the polygon."
+      }
+    ],
+    "geometryDecision": "One full official municipal Lote polygon retained with only its system OID and geometry.",
+    "serviceReviewFile": "ribeirao-preto-service-review.json"
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "br-ribeirao-preto-cadastro-urbano-lotes",
+    "name": "Geoportal Cadastro Urbano — Lote",
+    "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0",
+    "operator": "Prefeitura Municipal de Ribeirão Preto / Coderp",
+    "serviceType": "Public ArcGIS polygon layer queried at the unchanged WUP point with only the system object ID and complete geometry returned.",
+    "nativeIdField": "gid (system object ID; not an IPTU/cadastral/account value)",
+    "geometryType": "Polygon",
+    "nativeCrs": "EPSG:31983",
+    "coordinateCrs": "OGC:CRS84 (requested outSR=4326)"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal “base imobiliária atual (divisão de lotes)” and Geoportal Cadastro Urbano layer.",
+    "verifiedOpenScope": "Exact WUP point intersects one complete Lote polygon (gid 179088); Turf point-in-polygon passed. The municipal department describes it as a current lot-division reference base but explicitly warns it is preliminary and not equivalent to recorded plans or post-approval changes.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_city_polygon_sample",
+  "technicalBlocker": "All 729 qualified native GIS rows are valid, but the bounded set has 12,462 exact duplicate geometry pairs and 12,467 overlap pairs above 0.01 m². Distinct native IDs 178927 and 178928 freshly return identical full footprints of 2,636.51 m² in EPSG:31983. No documented ground-only or unit filter clears these stacked footprints; no rows were excluded or repaired.",
+  "remainingUncertainty": "How this tax/urban-mapping lot layer aligns with registered title boundaries, update date/coverage throughout city, and whether its native OID is stable across revisions.",
+  "nextStep": "Parent may qualify this anonymous GIS layer; keep legal/title-boundary semantics separate from the city’s preliminary lot-map disclaimer.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6636,
+  "cityId": "wup2025:6636",
+  "runtimeReadiness": "held_native_duplicate_ground_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -21.1646832046268,
+    -47.8092772516774
+  ],
+  "queueRank": 878,
+  "population2025": 615090,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [],
+  "registryBasis": "Municipal Geoportal and Planning Department pages describe the lot division base and urban cadastral map; official city service states the current base is preliminary and not a substitute for recorded plans.",
+  "registryEvidenceUrls": [
+    "https://www.ribeiraopreto.sp.gov.br/portal/noticia/prefeitura-de-ribeirao-preto-lanca-geoportal-para-modernizar-acesso-a-informacoes-geograficas-e-urbanisticas",
+    "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+    "https://webgis.ribeiraopreto.sp.gov.br/portal/sharing/rest/content/items/d0dc6fc2453a46998d8f55995e4ac4b0/data?f=json",
+    "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0?f=pjson"
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "br-ribeirao-preto-cadastro-urbano-lotes",
+    "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0/query",
+    "method": "GET; exact WUP point; outFields=gid; returnGeometry=true; outSR=4326; f=geojson",
+    "httpStatus": 200,
+    "featureCount": 1,
+    "outputFields": [
+      "gid"
+    ],
+    "sourceNativeId": 179088,
+    "geometryType": "Polygon",
+    "coordinateCrs": "OGC:CRS84",
+    "fullGeometryReturned": true,
+    "fullGeometryRetainedInRepository": true,
+    "sampleFile": "city-6636-ribeirao-preto-samples.geojson",
+    "pointContainedByGeometry": true
+  },
+  "runtimeAssessment": {
+    "status": "held_native_duplicate_ground_geometry",
+    "reason": "All 729 qualified native GIS rows are valid, but the bounded set has 12,462 exact duplicate geometry pairs and 12,467 overlap pairs above 0.01 m². Distinct native IDs 178927 and 178928 freshly return identical full footprints of 2,636.51 m² in EPSG:31983. No documented ground-only or unit filter clears these stacked footprints; no rows were excluded or repaired.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/ribeirao-preto-root-qualification-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/ribeirao-preto-root-qualification-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T04:40:32.554561+00:00",
+  "sampleFile": "city-6636-ribeirao-preto-samples.geojson",
+  "rootTransportNote": "Strict certificate validation works when the missing official intermediate is supplied; ground semantics remain the hold. No executable provider or certificate was admitted."
+}

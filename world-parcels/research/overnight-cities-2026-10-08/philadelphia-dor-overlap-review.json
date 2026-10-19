@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T21:06:20.439086+00:00",
+  "purpose": "Fresh native-coordinate checks of the five sampled Philadelphia boundary slivers and current official lifecycle-code mapping. Original source geometry is preserved.",
+  "request": {
+    "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0/query?f=geojson&where=mapreg+IN+%28%27015N070127%27%2C%27015N070138%27%2C%27015N060167%27%2C%27015N060166%27%2C%27015N060164%27%2C%27015N060168%27%2C%27013N070327%27%2C%27013N070249%27%2C%27015N060139%27%2C%27015N060000%27%29+AND+status%3D1+AND+elev_flag%3D0&outFields=objectid%2Cmapreg%2Cstatus%2Celev_flag&outSR=3857&returnGeometry=true&resultRecordCount=100",
+    "httpStatus": 200,
+    "features": 10,
+    "expectedIds": [
+      "015N070127",
+      "015N070138",
+      "015N060167",
+      "015N060166",
+      "015N060164",
+      "015N060168",
+      "013N070327",
+      "013N070249",
+      "015N060139",
+      "015N060000"
+    ],
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "EPSG:3857"
+      }
+    }
+  },
+  "nativeCrs": "EPSG:3857",
+  "metricAuditCrs": "EPSG:32618",
+  "allTenNativeValidNonempty": true,
+  "pairs": [
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N070127",
+        "US-PA-PHILADELPHIA-DOR-015N070138"
+      ],
+      "overlapM2": 1.0839514231722873,
+      "fractionOfSmaller": 0.0077948676922798684,
+      "overlapRectangleSidesM": [
+        27.641581133056253,
+        0.0785628077838597,
+        27.64158113285887,
+        0.07856281531335765
+      ],
+      "overlapParts": 1,
+      "freshNativeReadOverlapM2AfterMetricProjection": 1.0839513142978703,
+      "differenceFromInitialM2": -1.0887441703744116e-07,
+      "overlapPieceRectangleWidthsM": [
+        0.07841543705373244
+      ]
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N060167",
+        "US-PA-PHILADELPHIA-DOR-015N060166"
+      ],
+      "overlapM2": 5.773200967781463,
+      "fractionOfSmaller": 0.0024011467404397766,
+      "overlapRectangleSidesM": [
+        97.36897909247163,
+        38.36564962895024,
+        97.36920124025416,
+        38.36562521823364
+      ],
+      "overlapParts": 2,
+      "freshNativeReadOverlapM2AfterMetricProjection": 5.773200576680324,
+      "differenceFromInitialM2": -3.9110113903007004e-07,
+      "overlapPieceRectangleWidthsM": [
+        0.13303460432612238
+      ]
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N060164",
+        "US-PA-PHILADELPHIA-DOR-015N060168"
+      ],
+      "overlapM2": 2.2822283948363142,
+      "fractionOfSmaller": 0.0006708980049125588,
+      "overlapRectangleSidesM": [
+        36.202497857017576,
+        8.481684107701705,
+        36.20249785804707,
+        8.481684116305228
+      ],
+      "overlapParts": 2,
+      "freshNativeReadOverlapM2AfterMetricProjection": 2.282228626764941,
+      "differenceFromInitialM2": 2.3192862697030137e-07,
+      "overlapPieceRectangleWidthsM": [
+        0.12503442717791374
+      ]
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-013N070327",
+        "US-PA-PHILADELPHIA-DOR-013N070249"
+      ],
+      "overlapM2": 0.16191923674080044,
+      "fractionOfSmaller": 0.0029384284369205977,
+      "overlapRectangleSidesM": [
+        12.75390428474699,
+        0.025184410470985737,
+        12.753904284758097,
+        0.02518440480597498
+      ],
+      "overlapParts": 1,
+      "freshNativeReadOverlapM2AfterMetricProjection": 0.16191925565271426,
+      "differenceFromInitialM2": 1.891191381275803e-08,
+      "overlapPieceRectangleWidthsM": [
+        0.025318984265914876
+      ]
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N060139",
+        "US-PA-PHILADELPHIA-DOR-015N060000"
+      ],
+      "overlapM2": 0.36341564488539113,
+      "fractionOfSmaller": 0.0029776742794208042,
+      "overlapRectangleSidesM": [
+        24.41942652712498,
+        0.029637739493476468,
+        24.419426527371975,
+        0.029637732919746525
+      ],
+      "overlapParts": 1,
+      "freshNativeReadOverlapM2AfterMetricProjection": 0.363415746631615,
+      "differenceFromInitialM2": 1.0174622389058641e-07,
+      "overlapPieceRectangleWidthsM": [
+        0.029652476263019666
+      ]
+    }
+  ],
+  "currentViewerStatusMapping": {
+    "url": "https://atlas.phila.gov/assets/index-DjUuiQ2A.js",
+    "httpStatus": 200,
+    "bytes": 11083980,
+    "sha256": "4477b8c9feae067b5bd37d4f5f2eb3ff2bcc87c77dc816f7f240db568ea26fb5",
+    "offset": 758340,
+    "mapping": {
+      "1": "Active",
+      "2": "Inactive",
+      "3": "Remainder",
+      "9": "Unknown Status"
+    },
+    "interpretation": "Current official Atlas viewer agrees that status1 is active. Historical publisher field metadata documents elev_flag0 as no elevation."
+  },
+  "qualityDecision": "Qualified bounded active no-elevation sample with recorded boundary slivers. All500 source polygons are valid and distinct; all exact-ID rereads match viewport shapes. Five overlap pairs have at most0.7795% of the smaller parcel and narrow pieces. No citywide legal accuracy guarantee or overlap-free claim; no repair or undocumented exclusion."
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "population_ranked_followon_progress",
+  "cohort": "overnight-next-1201-1300",
+  "status": "paused_for_valhalla_handoff",
+  "updatedAt": "2026-10-09T09:53:29.150391+00:00",
+  "sourceFile": "ranked-population.json",
+  "sourceSha256": "3bfad4448253fa7dc9d049e4849601b990ba45bd19611da6de139b7730ad0dbd",
+  "sourceHashBasis": "immutable ranked-population roster JSON",
+  "bulkSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "rankedCities": 100,
+  "confirmedPriorAttemptSkips": 3,
+  "eligibleCities": 97,
+  "identityReviewsPending": 0,
+  "researchCompletedCities": 4,
+  "researchPendingCities": 93,
+  "rootReviewedCities": 0,
+  "integratedCities": 0,
+  "geometryVerifiedThisRun": 0,
+  "geometryFoundInResearchPackets": 1,
+  "enabledLocallyThisRun": 0,
+  "awaitingReviewOrFollowthrough": [
+    5646,
+    9127,
+    10624,
+    11162
+  ],
+  "researchReleaseState": "local_uncommitted_undeployed_research",
+  "localCheckpoint": {
+    "configuredCities": 193,
+    "providers": 165
+  },
+  "note": "Local research paused at user request for deployment and a persistent Valhalla handoff. Durable paired packets, not queue membership, count as completed investigations.",
+  "researchEvidenceFilesCreated": 8,
+  "researchedRanks": [
+    1201,
+    1202,
+    1203,
+    1204
+  ],
+  "invalidOrIncompletePackets": []
+}

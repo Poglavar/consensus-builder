@@ -1,0 +1,19 @@
+{
+  "taskId": "city:11320",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-11320-kaiping.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/kaiping-service-review.json",
+    "tmp/valhalla-parcel-research/11320/kaiping-jzdc.html",
+    "tmp/valhalla-parcel-research/11320/headers-kaiping.txt",
+    "tmp/valhalla-parcel-research/11320/guangdong-tianditu.html"
+  ],
+  "checkedAt": "2026-10-10T14:43:33Z",
+  "reason": "Official Kaiping natural-resources page links a controlled cadastral-map lookup. No anonymous native ID and full polygon response, paging, 13-cell metric audit, source binding, or headed Details verification exists. An unavailable controlled viewer is not citywide absence.",
+  "queueIdentityVerified": true,
+  "bilingualSearchesDocumented": true,
+  "retainedPolygonCount": 0,
+  "adapterQualified": false
+}

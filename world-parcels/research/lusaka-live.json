@@ -1,0 +1,92 @@
+{
+  "checkedAt": "2026-10-03",
+  "sourceId": "zm-lusaka-mtendere-east-agol-unofficial",
+  "endpoint": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0",
+  "result": "bounded-ready-only-as-explicit-partial-scope",
+  "publisher": "Unconfirmed ArcGIS Online account eodoi_medeem; not an official Zambian government service.",
+  "scope": "Layer Parcels_Mtendere_East contains only 28 polygons in one Lusaka settlement. No citywide or legal-cadastre coverage claim. Publisher authority and reuse terms are unconfirmed.",
+  "identity": {
+    "idField": "GlobalID",
+    "objectIdField": "FID",
+    "globalIdType": "esriFieldTypeGlobalID",
+    "fullLayerCount": 28,
+    "fullLayerObjectIds": 28,
+    "fullLayerGlobalIds": 28,
+    "exactGlobalIdRead": {
+      "requested": 28,
+      "returned": 28,
+      "absent": 0,
+      "httpStatus": 200,
+      "elapsedMs": 397
+    }
+  },
+  "viewportQa": {
+    "pageSize": 25,
+    "boundsQueryMode": "object-ids",
+    "cellWidthDegrees": 0.0025,
+    "panOffsetDegrees": 0.004,
+    "cityCenterLonLat": [
+      28.29152668,
+      -15.39710822
+    ],
+    "cityCenterFeaturesAcrossBoth3x3Grids": 0,
+    "sourceExtentLonLat": [
+      28.3226048,
+      -15.4081143,
+      28.3832214,
+      -15.3507062
+    ],
+    "configuredCenterLonLat": [
+      28.38004999,
+      -15.40478133
+    ],
+    "featuresWithinConfigured3x3Extent": 18,
+    "cellsAttempted": 18,
+    "cellsComplete": 18,
+    "cellsFailed": 0,
+    "unpannedFeatureHits": 21,
+    "pannedFeatureHits": 3,
+    "uniqueGlobalIdsAcrossBothGrids": 19
+  },
+  "attributes": {
+    "requested": [
+      "FID",
+      "GlobalID",
+      "Id",
+      "PCNumber",
+      "Settlement",
+      "Verified"
+    ],
+    "personalDataRequested": false
+  },
+  "reuseAndAttribution": "No licence or terms were verified. Preserve the publisher identity and explicit 28-polygon Mtendere East scope notice; source conditions are informational, not an integration gate.",
+  "geometryPersistence": "No polygon geometry was persisted; source geometries were read in memory to compute aggregate extents and bounded coverage metrics.",
+  "browserQA": {
+    "afterPan": 14,
+    "back": "ready",
+    "backCached": true,
+    "binding": {
+      "count": 1,
+      "coverage": "complete",
+      "status": 200
+    },
+    "city": "lusaka",
+    "exact": {
+      "absent": 0,
+      "count": 1,
+      "status": 200
+    },
+    "initial": "ready",
+    "initialRetained": 14,
+    "pan": "ready",
+    "rendered": 14,
+    "source": "zm-lusaka-mtendere-east-agol-unofficial",
+    "under": {
+      "complete": true,
+      "count": 1,
+      "status": 200
+    },
+    "checkedAt": "2026-10-03",
+    "globeOpenVerified": true
+  }
+}

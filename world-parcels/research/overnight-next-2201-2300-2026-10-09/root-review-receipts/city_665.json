@@ -1,0 +1,16 @@
+{
+  "taskId": "city:665",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-665-plymouth.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/plymouth-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_665-hmlr-capabilities.xml",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_665-hmlr-feature-info.gml",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_665-hmlr-wfs.xml"
+  ],
+  "checkedAt": "2026-10-11T02:57:44Z",
+  "reason": "Immutable queue identity matches Plymouth, United Kingdom, rank 2271, point [50.3914167766278,-4.14532542981983], 257281 persons. Paired evidence records English and local English searches. Saved first-party HMLR WMS capabilities mark the parcel layer nonqueryable; exact-point feature info returned LayerNotQueryable and WFS returned ServiceUnavailable. There is no safe bounded native-ID full polygon sample or independent city adapter qualification. Access and service limits do not establish citywide absence.",
+  "admission": "held; no runtime, catalog, registry or generated report change"
+}

@@ -11,17 +11,43 @@ export const selectors = {
   leafletZoomOut: '.leaflet-control-zoom-out', // Note: may be disabled (zoomControl: false)
   parcelLayer: '.leaflet-overlay-pane svg, .leaflet-overlay-pane canvas',
 
-  // Sidebar
-  sidebar: '#sidebar',
-  sidebarToggle: '#toggle-sidebar-desktop, #toggle-sidebar-mobile',
+  // Map shell (replaced the left sidebar; see UI-REWORK.md). Each button toggles the sheet named in
+  // its data-sheet-target; the controls inside the sheets kept their old sidebar ids.
+  mapShellButton: '[data-sheet-target]',
+  openSheet: '.map-sheet:not([hidden])',
+  sheetClose: '[data-sheet-close]',
+  layersButton: '#layers-button',
+  layersSheet: '#layers-sheet',
+  settingsButton: '#settings-button',
+  settingsSheet: '#settings-sheet',
+  proposalsButton: '#proposals-button',
+  proposalsSheet: '#proposals-sheet',
+  betsButton: '#bets-button',
+  betsSheet: '#bets-sheet',
+  // The ruler beside the map-mode buttons (2D only) toggles the Measure sheet.
+  measurementButton: '#measurement-button',
+  measurementSheet: '#measurement-sheet',
+  activityButton: '#activity-button',
+  activitySheet: '#activity-sheet',
+  // The Simulation section inside the Activity sheet, and the running dot on the Activity button.
+  simulationSection: '#activity-sheet .activity-simulation[data-section="game"]',
+  simulationSummary: '#activity-sheet .activity-simulation[data-section="game"] > summary',
+  simulationPlayPause: '#game-play-pause-btn',
+  simulationSettings: '#activity-sheet .activity-simulation-settings',
+  simulationRunningDot: '#activity-running-dot',
   proposalsList: '#proposals-list, [data-testid="proposals-list"]',
+
+  // Search box (top-left, #map-search-slot) with the city chip — replaced the city select and the
+  // Locate-parcel row.
+  searchSlot: '#map-search-slot',
+  searchInput: '#map-search-input',
+  searchResults: '#map-search-results',
+  searchCityChip: '#map-search-slot .map-search__chip',
+  searchCityResult: '#map-search-results .map-search__item--city',
 
   // Panels
   parcelInfoPanel: '#parcel-info-panel',
   proposalPanel: '#proposal-panel, [data-testid="proposal-panel"]',
-
-  // City switcher
-  citySwitcher: '#city-switcher, [data-testid="city-switcher"], select[name="city"]',
 
   // Language switcher
   languageSwitcher: '#language-switcher, [data-testid="language-switcher"]',

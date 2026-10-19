@@ -1,0 +1,32 @@
+{
+  "cityRecord": "city-4302-akita.json",
+  "cityCode": 4302,
+  "queueRank": 2616,
+  "name": "Akita",
+  "country": "Japan",
+  "countryCode": "JP",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": true,
+  "sampleFile": "city-4302-akita-sample.geojson",
+  "summary": "Official Ministry of Justice registry-office map data for Akita is cataloged by G-space Information Center, with a public AIGID conversion to CRS84 GeoJSON/JGD2011 public-coordinate zone 10. A three-polygon sample with native IDs was retained. Akita City’s own GIS is planning/reference-only and its current viewer route presents a login page; no authentication was used.",
+  "queryOutcomes": [
+    {"language":"English","query":"Akita City official cadastral map parcel GIS Japan","outcome":"Official Akita City GIS and Ministry of Justice/G-space Akita registry-office map catalog found; public converted GeoJSON resource verified."},
+    {"language":"Japanese","query":"秋田市 公式 地籍図 GIS 地番図 公図 不動産 登記 地図","outcome":"Official Japanese city GIS, Ministry of Justice map-data notice, Akita dataset catalog, and converted Akita GeoJSON catalog found; anonymous public polygons verified through the converted resource."}
+  ],
+  "requestOutcomes": [
+    {"request":"GET Akita City GIS page","outcome":"HTTP 200; official page limits system to approximate urban-planning/reference information and says displayed topographic map is not a land-boundary map."},
+    {"request":"GET https://webgis.alandis.jp/akita05/webgis/","outcome":"HTTP 200; current viewer returned administrator-login/guest-login page. Authentication was not attempted."},
+    {"request":"GET official CKAN package metadata for houmusyouchizu-2026-1-304","outcome":"HTTP 200; Akita City Ministry of Justice registry-office map dataset and 2025/2026 XML resources listed."},
+    {"request":"GET official CKAN package metadata for aigid-moj-05201","outcome":"HTTP 200; public-coordinate GeoJSON resources through 2026 listed; catalog states mechanical conversion and JGD2011."},
+    {"request":"GET 2026 AIGID Akita GeoJSON resource","outcome":"HTTP 200; 127270805-byte FeatureCollection parsed with 135,993 Polygon features, CRS84 declaration, and source ID field; three complete polygons retained."}
+  ],
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift or exact-point hit/miss inference.","Three retained features are bounded evidence only; no citywide completeness claim.","Map-sheet/source semantics and legal boundary accuracy vary and require serial qualification.","No unsafe fields, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception used.","Packet completion is not source integration/admission."],
+  "safeFieldAllowlist": ["stable native ID", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+  "nativeFieldMapping": {"ID":"canonical native identity retained as id","市区町村C":"observed source municipality code, not retained in GeoJSON","座標系":"observed source coordinate-system descriptor, recorded in city metadata","other attributes":"not retained; included no owner/address/titleholder/contact/tax/account fields"},
+  "uncertainty": "Public geometry and IDs are verified from an official cataloged conversion, but the city viewer is not a parcel API, the converted dataset is mechanically produced, and citywide admissibility, identity stability, map-sheet completeness and exact CRS/axis semantics remain for serial review.",
+  "serialReviewRecommendation": "Hold. Independently verify coverage semantics, native ID stability, CRS/axis handling, and runtime admissibility before enabling an adapter."
+}

@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CV",
+ "country": "Cabo Verde",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_viewer_only",
+ "cadastreAuthority": "Instituto Nacional de Gestão do Território (INGT); IDE-CV spatial data infrastructure",
+ "portalsFound": [
+  {
+   "url": "https://ingt.gov.cv/ingt/Servi%C3%A7os/cadastro-predial/",
+   "observation": "INGT property-cadastre (Cadastro Predial) service page; national property ID (NIP) and SIG platform described."
+  },
+  {
+   "url": "https://ingt.gov.cv/ingt/servicos/",
+   "observation": "INGT services list."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ingt.gov.cv/ingt/Servi%C3%A7os/cadastro-predial/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "page reachable; no open parcel service link identified"
+  },
+  {
+   "url": "https://ide.cv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://cadastre.cv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://sniig.cv/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "national property cadastre (rural and urban) under INGT; coverage progressive by island/municipality",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Actual portal URL for IDE-CV and cadastre viewer not reached; operation coverage is incomplete per sources.",
+ "nextStep": "Find IDE-CV geoportal endpoint (ArcGIS/GeoServer) and test parcel layer."
+}

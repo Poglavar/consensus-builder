@@ -1,0 +1,54 @@
+{
+ "country": "Sweden",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Lantmateriet (Swedish mapping, cadastral and land registration authority)",
+ "portalsFound": [
+  {
+   "url": "https://api.lantmateriet.se/ogc-features/v1?f=json",
+   "observation": "Public OGC API - Features catalogue listing datasets Administrativ indelning, Fastighetsindelning, Hydrografi, Marktacke."
+  },
+  {
+   "url": "https://api.lantmateriet.se/ogc-features/v1/fastighetsindelning/collections?f=json",
+   "observation": "Public collection list: granspunkter, registerenhetsomradeslinjer, registerenhetsomradespunkter, registerenhetsomradesytor (property unit polygons), nationwide bbox, storage CRS EPSG:3006."
+  },
+  {
+   "url": "https://minkarta.lantmateriet.se/",
+   "observation": "National property map viewer (HTML shell)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://api.lantmateriet.se/ogc-features/v1/?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "API overview, 4 datasets"
+  },
+  {
+   "url": "https://api.lantmateriet.se/ogc-features/v1/fastighetsindelning/collections?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "collection metadata, nationwide extent"
+  },
+  {
+   "url": "https://api.lantmateriet.se/ogc-features/v1/fastighetsindelning/collections/registerenhetsomradesytor/items?f=json&limit=3&bbox=18.06,59.33,18.065,59.335",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "Missing Credentials (Bearer token / ApiKey required); saved as SE-unauth-response.json"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Nationwide property-unit polygons via Lantmateriet OGC API Features (fastighetsindelning)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "Items endpoint needs an OAuth2/API-key credential from Lantmateriet's developer portal; not obtained, so no polygons fetched. Licence/fees for the property data not read (some Lantmateriet open data is free, property division data historically restricted/paid).",
+ "nextStep": "Register at Lantmateriet's API portal, obtain a token, query registerenhetsomradesytor with limit=3 in a small bbox (EPSG:3006 or CRS84).",
+ "schemaVersion": 1,
+ "countryCode": "SE",
+ "checkedAt": "2026-09-29"
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1275339",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp", "observation": "Maharashtra BhuNaksha map lets users select urban Mumbai City and view individual plots; no open parcel-list response was verified."},
+    {"url": "https://bhumiabhilekh.maharashtra.gov.in/Services", "observation": "State land-record department links e-maps and city survey maps; these are service/viewing links, not proof of a reusable polygon endpoint."},
+    {"url": "https://www.nakshauat.dolr.gov.in/NakshaUat/index.html", "observation": "National NAKSHA urban cadastral modernization pilot; it does not establish current all-India or Mumbai-wide open coverage."}
+  ],
+  "requests": [
+    {"url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp", "method": "GET", "httpStatus": null, "error": "Connection timed out after 20 seconds", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "Maharashtra state viewing portal; Mumbai urban category shown", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The map likely has plot geometry for some urban areas, but public API access, completeness, and reuse terms are unverified. This is distinct from Kolkata's West Bengal portal.",
+  "nextStep": "Inspect BhuNaksha's public requests when reachable; verify a small Mumbai City polygon sample and state coverage separately."
+}

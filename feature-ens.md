@@ -373,7 +373,7 @@ ENS_PUBLIC_BASE_URL=https://urbangametheory.xyz   # http://localhost:8080 in loc
 
 ```bash
 # 1) apply the table
-docker exec -i consensus-builder-db-1 psql -U zagreb_user -d zagreb < backend/ens/parcel-ens-ddl.sql
+docker exec -i consensus-builder-db-1 psql -U zagreb_user -d geodata < backend/ens/parcel-ens-ddl.sql
 # 2) populate (dry-run first, then real)
 docker compose exec backend node ens/populate-parcel-ens.js --city=ny --dry-run --limit=20
 docker compose exec backend node ens/populate-parcel-ens.js --city=ny

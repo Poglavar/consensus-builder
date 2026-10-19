@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "scope": "Thorough retry of the three remaining capitals in the 50 states plus Washington, D.C. cohort.",
+  "previousIndexFile": "research/us-capitals-2026-10-06/index.json",
+  "before": {
+    "configuredCapitals": 48,
+    "remaining": [
+      "Frankfort",
+      "Oklahoma City",
+      "Pierre"
+    ],
+    "configuredCities": 94,
+    "executableProviders": 84
+  },
+  "after": {
+    "statesWithConfiguredCities": 50,
+    "stateCodes": [
+      "AK",
+      "AL",
+      "AR",
+      "AZ",
+      "CA",
+      "CO",
+      "CT",
+      "DE",
+      "FL",
+      "GA",
+      "HI",
+      "IA",
+      "ID",
+      "IL",
+      "IN",
+      "KS",
+      "KY",
+      "LA",
+      "MA",
+      "MD",
+      "ME",
+      "MI",
+      "MN",
+      "MO",
+      "MS",
+      "MT",
+      "NC",
+      "ND",
+      "NE",
+      "NH",
+      "NJ",
+      "NM",
+      "NV",
+      "NY",
+      "OH",
+      "OK",
+      "OR",
+      "PA",
+      "RI",
+      "SC",
+      "SD",
+      "TN",
+      "TX",
+      "UT",
+      "VA",
+      "VT",
+      "WA",
+      "WI",
+      "WV",
+      "WY"
+    ],
+    "federalDistricts": [
+      "DC"
+    ],
+    "configuredCapitals": 51,
+    "configuredStateCapitals": 50,
+    "appCities": 97,
+    "USAppCities": 55,
+    "capitalsRemainingToIntegrate": 0,
+    "executableProviders": 87
+  },
+  "verification": {
+    "viewportCells": 54,
+    "uniqueNativeIds": 1613,
+    "allExactRereadsStable": true,
+    "forcedPagingAndIndependentCounts": true,
+    "completeFootprintBinding": true,
+    "proofFile": "research/us-capitals-retry-2026-10-07/live-acceptance.json",
+    "browserProofFile": "research/us-capitals-retry-2026-10-07/browser-checks.json",
+    "headlessValidation": {
+      "files": 16,
+      "passed": 344,
+      "failed": 0
+    }
+  },
+  "cities": [
+    {
+      "cityId": "frankfort",
+      "stateCode": "KY",
+      "sourceId": "us-ky-frankfort-parcels",
+      "status": "enabled",
+      "sourceNotice": "Identified Franklin County PVA map parcel groups; mixed record years, current boundary date unestablished",
+      "researchFile": "research/us-capitals-retry-2026-10-07/frankfort.json",
+      "acceptanceFile": "research/us-capitals-retry-2026-10-07/frankfort-composite-parts-gate.json",
+      "viewportCells": 18,
+      "exactNativeIds": 654,
+      "initialFailures": [
+        "research/us-capitals-retry-2026-10-07/frankfort-composite-gate.json"
+      ],
+      "caveats": [
+        "PARCEL_ID alone conflicts with native parcel components; the reversible compound identity retains both published identifiers without inventing a replacement cadastral number.",
+        "Nonblank PARCEL_ID and PARCEL required. Same-key parts must not overlap and must agree on MAP; conflicting groups fail visibly.",
+        "Mixed v_SY values are not a proven lifecycle filter or current-boundary date. No source-type or arbitrary latest-year filter is applied."
+      ]
+    },
+    {
+      "cityId": "oklahoma_city",
+      "stateCode": "OK",
+      "sourceId": "us-ok-oklahoma_city-parcels",
+      "status": "enabled",
+      "sourceNotice": "Oklahoma County assessment parcels; other Oklahoma City counties excluded",
+      "researchFile": "research/us-capitals-retry-2026-10-07/oklahoma-city.json",
+      "acceptanceFile": "research/us-capitals-retry-2026-10-07/oklahoma-city-parts-gate.json",
+      "viewportCells": 18,
+      "exactNativeIds": 610,
+      "initialFailures": [
+        "research/us-capitals-retry-2026-10-07/oklahoma-city-initial-gate.json"
+      ],
+      "caveats": [
+        "Native accountno is an assessment-account identity. Complete disjoint components must agree on pin and propertyid; overlapping or inconsistent groups fail visibly.",
+        "632 county rows lack accountno and are excluded from identified-account scope.",
+        "Layer dataLastEditDate observed 2026-09-26 is a service-edit timestamp, not the date of every legal boundary."
+      ]
+    },
+    {
+      "cityId": "pierre",
+      "stateCode": "SD",
+      "sourceId": "us-sd-pierre-parcels",
+      "status": "enabled",
+      "sourceNotice": "ISG third-party parcel mirror · 2023 snapshot · identified parcels only",
+      "researchFile": "research/us-capitals-retry-2026-10-07/pierre.json",
+      "acceptanceFile": "research/us-capitals-retry-2026-10-07/pierre-identified-parts-gate.json",
+      "viewportCells": 18,
+      "exactNativeIds": 349,
+      "initialFailures": [
+        "research/us-capitals-retry-2026-10-07/pierre-mirror-gate.json",
+        "research/us-capitals-retry-2026-10-07/pierre-mirror-parts-gate.json"
+      ],
+      "caveats": [
+        "Third-party planning-project mirror labelled 2023; layer XML records February 9, 2023 creation/synchronization. ArcGIS publication in February 2026 does not make the parcel boundaries current.",
+        "The upstream supplier is not identified in publisher metadata. Native numbering agrees with the county Beacon record convention after leading-zero formatting; provenance beyond the ISG project is not asserted.",
+        "Blank and zero parcel keys are excluded. The 674 zero-key rows share a blank RECORD_ value and cannot identify individual parcels; zero as an unassigned placeholder is an inference.",
+        "All parts of a native PARCEL_ID must agree on RECORD_ and have no material overlap; ambiguous groups fail visibly."
+      ]
+    }
+  ],
+  "invariants": [
+    "Coverage is source-specific and does not imply complete current city, county or state cadastres.",
+    "No parcel geometries or owner attributes imported into the app database or retained in this research directory.",
+    "Terms are informational; no source was held on reuse restrictions.",
+    "Historical failed probes remain intact, including now-resolved identity failures and still-blocked original endpoints."
+  ],
+  "evidenceFiles": [
+    "research/us-capitals-retry-2026-10-07/browser-checks.json",
+    "research/us-capitals-retry-2026-10-07/frankfort-composite-gate.json",
+    "research/us-capitals-retry-2026-10-07/frankfort-composite-parts-gate.json",
+    "research/us-capitals-retry-2026-10-07/frankfort.json",
+    "research/us-capitals-retry-2026-10-07/live-acceptance.json",
+    "research/us-capitals-retry-2026-10-07/oklahoma-city-identity-diagnosis.json",
+    "research/us-capitals-retry-2026-10-07/oklahoma-city-initial-gate.json",
+    "research/us-capitals-retry-2026-10-07/oklahoma-city-parts-gate.json",
+    "research/us-capitals-retry-2026-10-07/oklahoma-city.json",
+    "research/us-capitals-retry-2026-10-07/pierre-group-overlap-diagnosis.json",
+    "research/us-capitals-retry-2026-10-07/pierre-identified-parts-gate.json",
+    "research/us-capitals-retry-2026-10-07/pierre-identity-diagnosis.json",
+    "research/us-capitals-retry-2026-10-07/pierre-mirror-gate.json",
+    "research/us-capitals-retry-2026-10-07/pierre-mirror-parts-gate.json",
+    "research/us-capitals-retry-2026-10-07/pierre.json",
+    "research/us-capitals-retry-2026-10-07/runtime-network-probes.json"
+  ]
+}

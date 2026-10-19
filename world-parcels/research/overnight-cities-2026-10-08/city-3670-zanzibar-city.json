@@ -1,0 +1,110 @@
+{
+  "name": "Zanzibar City",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "rank": 538,
+  "point": [
+    -6.16406443645065,
+    39.2256614696943
+  ],
+  "population2025": 966642,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The Zanzibar Land Administration and Registration Information System (LARIS) is newly launched and aerial survey collection has begun; no public parcel query/viewer or vector endpoint is documented. The Shehia Register is role-authenticated planning/community data for buildings and boundaries, not a legal cadastral parcel layer. No login or parcel query was attempted. The WUP point is a population-weighted settlement locator, not a parcel or city boundary. No owner/address/right-holder values, accounts or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Zanzibar Assembly material from the Ministry of Lands reports that the Land Commission verified and registered land parcels in Mjini (Urban) and Magharibi districts, establishing city-local registration activity. Current Ministry materials describe title registration and surveying/mapping, while LARIS was only launched in July 2026 with aerial imagery collection beginning. No current public parcel map/vector source was found.",
+  "registryEvidenceUrls": [
+    "https://www.zanzibarassembly.go.tz/storage/documents/Budgets/all/1677742840.pdf",
+    "https://www.ardhismz.go.tz/"
+  ],
+  "resultCategory": "city_local_registration_activity_current_digital_system_under_development_no_public_vector",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Zanzibar City official cadastral parcel map land registry GIS Zanzibar City public map",
+        "scope": "Find city-local registry evidence, public service access conditions, and a schema-safe anonymous full-polygon parcel source.",
+        "result": "Official Zanzibar sources confirm land title registration and historical city-district parcel registration; the current LARIS land-information system is newly launched with mapping collection underway. No public cadastral viewer or vector schema found.",
+        "actualResultUrls": [
+          "https://www.ardhismz.go.tz/",
+          "https://www.zanzibarassembly.go.tz/storage/documents/Budgets/all/1677742840.pdf",
+          "https://shehia.planningznz.go.tz/",
+          "https://www.landtribunalsmz.go.tz/Documents/Zanzibar%20Land%20Laws___2017.pdf"
+        ],
+        "executionMethod": "Separate English or native-language public search, followed by official-source and public map/service inspection."
+      },
+      {
+        "language": "Swahili",
+        "query": "ramani ya ardhi Zanzibar City usajili viwanja Mjini Magharibi mfumo wa LARIS GIS rasmi",
+        "scope": "Find city-local registry evidence, public service access conditions, and a schema-safe anonymous full-polygon parcel source.",
+        "result": "Tovuti ya Wizara inaeleza usajili na utoaji wa hati za ardhi pamoja na upimaji na ramani. Ripoti rasmi ya Baraza la Wawakilishi inathibitisha shughuli za usajili wa maeneo katika Wilaya ya Mjini na Magharibi. Mfumo wa LARIS ulizinduliwa Julai 2026 na ukusanyaji wa picha za anga umeanza; hakuna ramani ya viwanja ya umma au huduma ya vekta iliyopatikana.",
+        "actualResultUrls": [
+          "https://www.ardhismz.go.tz/",
+          "https://www.zanzibarassembly.go.tz/storage/documents/Budgets/all/1677742840.pdf",
+          "https://shehia.planningznz.go.tz/",
+          "https://www.landtribunalsmz.go.tz/Documents/Zanzibar%20Land%20Laws___2017.pdf"
+        ],
+        "executionMethod": "Separate English or native-language public search, followed by official-source and public map/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ardhismz.go.tz/",
+        "observation": "Official Revolutionary Government of Zanzibar Ministry of Lands and Housing page describes land title registration, land surveying and mapping, and the Commission of Lands role."
+      },
+      {
+        "url": "https://www.zanzibarassembly.go.tz/storage/documents/Budgets/all/1677742840.pdf",
+        "observation": "Official Ministry of Lands budget/speech report describes Commission of Lands verification and registration of parcels in Mjini and Magharibi districts. Only district-level aggregate activity was used; no parcel/person-level data was copied."
+      },
+      {
+        "url": "https://shehia.planningznz.go.tz/",
+        "observation": "Official Zanzibar Planning Commission Shehia Register describes a role-authenticated spatial register of buildings, boundaries and community data. It is not documented as a land-title cadastral parcel map; login page only, no login attempted."
+      },
+      {
+        "url": "https://www.landtribunalsmz.go.tz/Documents/Zanzibar%20Land%20Laws___2017.pdf",
+        "observation": "Official Zanzibar land-law compilation establishes the statutory registry and Registry Map framework by registration district; it does not identify a public online vector service."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://shehia.planningznz.go.tz/",
+      "apiBase": null,
+      "observedClientRoutes": [
+        "Shehia Register sign-in"
+      ],
+      "notes": "The official visible service is role-authenticated and documents buildings/community boundaries rather than registered land parcels. LARIS is a separate current modernization project; no public viewer/vector endpoint was found. No credentials or parcel-specific data were entered."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "TZ-ZANZIBAR-MJINI-LAND-REGISTRY-RECORDS",
+    "name": "Zanzibar Commission of Lands, Mjini and Magharibi registration districts",
+    "url": "https://www.zanzibarassembly.go.tz/storage/documents/Budgets/all/1677742840.pdf",
+    "operator": "Commission of Lands, Revolutionary Government of Zanzibar",
+    "type": "City-local land registration activity; current digital cadastral modernization under way",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Aggregated official reporting verifies registration activity but no public feature schema or parcel response."
+  },
+  "wupCityCode": 3670,
+  "cityId": "wup2025:3670",
+  "queueRank": 538,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    -6.16406443645065,
+    39.2256614696943
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The Zanzibar Land Administration and Registration Information System (LARIS) is newly launched and aerial survey collection has begun; no public parcel query/viewer or vector endpoint is documented. The Shehia Register is role-authenticated planning/community data for buildings and boundaries, not a legal cadastral parcel layer. No login or parcel query was attempted.",
+  "remainingUncertainty": "Whether other current anonymous public vector services exist for this city; none was confirmed in the official sources inspected.",
+  "rootReviewedAt": "2026-10-09T01:19:13.626142+00:00"
+}

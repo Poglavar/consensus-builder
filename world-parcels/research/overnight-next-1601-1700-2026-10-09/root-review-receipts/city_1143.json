@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1143",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-1143-safi.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/safi-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T12:08:20.266905Z",
+  "reason": "WUP 2025 Safi identity agrees with the hashed source archive. English and Arabic search records identify ANCFCC and a Safi office; the direct ANCFCC path returned 403 and the urban atlas is planning context. No anonymous native parcel ID or full polygon was retrieved. Registry custody remains unresolved (null), with no adapter qualification or headed Details evidence."
+}

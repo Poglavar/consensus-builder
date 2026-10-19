@@ -1,0 +1,618 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:BN:bandar-seri-begawan",
+  "name": "Bandar Seri Begawan",
+  "country": "Brunei Darussalam",
+  "countryCode": "BN",
+  "centerLatLon": [
+    4.883333333333333,
+    114.933333
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "site:gov.bn land parcel map cadastral Brunei GIS plot",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoportal.survey.gov.bn/map",
+        "https://www.survey.gov.bn/peta/"
+      ]
+    },
+    {
+      "query": "Brunei Darussalam official land information system cadastral map parcel GIS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://geoportal.survey.gov.bn/",
+        "https://www.survey.gov.bn/peta/"
+      ]
+    },
+    {
+      "query": "Bandar Seri Begawan peta kadaster lot tanah Jabatan Ukur Bandar Seri Begawan perkhidmatan tanah rasmi",
+      "language": "Malay",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.survey.gov.bn/pengukuran-tanah/",
+        "https://www.survey.gov.bn/penjualan-peta/",
+        "https://geoportal.survey.gov.bn/start-gp"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://geoportal.survey.gov.bn/",
+      "observation": "Survey Department, Ministry of Development Geoportal states public users can search surveyed lots/TOL/gazettes and view the national land-use masterplan; it identifies registered lots as Lands Department records."
+    },
+    {
+      "url": "https://www.survey.gov.bn/peta/",
+      "observation": "Survey Department describes 1:1,000 maps for major built-up towns as including cadastral lot/boundary layers; digital data/prints require purchase."
+    },
+    {
+      "url": "https://geoportal.survey.gov.bn/map",
+      "observation": "Brunei Survey Department web map loaded over HTTPS; bundled client includes OGC WFS and ArcGIS WFSServer references, including `https://survey.gov.bn/server/services/G1_GDBD/MapServer/WFSServer`. No parcel geometry request has been verified."
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3?f=pjson",
+      "observation": "Official ArcGIS REST layer metadata identifies CADAS as a polygon Feature Layer with native CRS EPSG:5247, supports JSON/geoJSON/PBF, and exposes an OBJECTID field. A bounded request with outSR=4326 returned three features at the Bandar locator."
+    },
+    {
+      "url": "https://www.survey.gov.bn/pengukuran-tanah/",
+      "observation": "Brunei Survey Department describes official lot-boundary marking and cadastral surveying; its Geomatics Information Centre address is in Bandar Seri Begawan."
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3?f=pjson",
+      "observation": "Official ArcGIS REST layer metadata identifies CADAS as a polygon Feature Layer with native CRS EPSG:5247, supports JSON/geoJSON/PBF, and exposes an OBJECTID field. A bounded request with outSR=4326 returned three features at the Bandar locator."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.survey.gov.bn/map",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://geoportal.survey.gov.bn/map; content type text/html; 3289 bytes.",
+      "firstPartyScripts": [
+        "https://geoportal.survey.gov.bn/assets/vendor-dd10cbc164777b4f287b73c7ee77136f.js",
+        "https://geoportal.survey.gov.bn/assets/web-map-c4f893e765655323590e7250efb344b7.js"
+      ],
+      "discoveredServiceReferences": [
+        "http://www.opengis.net/ows/1.1",
+        "http://www.opengis.net/wfs",
+        "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd",
+        "http://schemas.opengis.net/wfs/1.0.0/wfs.xsd",
+        "http://mapserver.gis.umn.edu/mapserver",
+        "/ows/1.1",
+        "/wfs",
+        "/wfs/1.1.0/wfs.xsd",
+        "/wfs/1.0.0/wfs.xsd",
+        "http://www.erdas.com/wfs",
+        "https://survey.gov.bn/apollo/ogc/wfs/pt_ctl_trans_shape_gdbd",
+        "https://survey.gov.bn/server/services/G11_RSO/MapServer/WFSServer",
+        "https://survey.gov.bn/server/services/G1_GDBD/MapServer/WFSServer",
+        "https://survey.gov.bn/apollo/ogc/wfs/poi-wfs",
+        "https://survey.gov.bn/server/services/G2_GDBD_BR10/MapServer/WFSServer",
+        "http://www.opengis.net/wfs/2.0",
+        "https://survey.gov.bn/apollo/ogc/wfs/",
+        "/wfs/pt_ctl_trans_shape_gdbd",
+        "/WFSServer",
+        "/wfs/poi-wfs",
+        "/wfs/2.0",
+        "/wfs:Query",
+        "/wfs:GetFeature",
+        "/wfs/"
+      ],
+      "relevantOfficialLinks": [
+        "https://geoportal.survey.gov.bn/assets/vendor-6e4d1c515a6f3fe1dbed99f2c7d375a9.css",
+        "https://geoportal.survey.gov.bn/assets/web-map-20490ee4fe125da69326b607352d4977.css",
+        "https://geoportal.survey.gov.bn/third-party-css/animate.min-3.7.2-43d6b8fdf324505f0ceb7ea698d0b7a5.css",
+        "https://geoportal.survey.gov.bn/third-party-css/fontawesome-free-5.9.0-web/css/all.min-d4f9c4f5b1fd62ff525efda45d82db52.css"
+      ]
+    },
+    {
+      "url": "https://survey.gov.bn/server/services/G1_GDBD/MapServer/WFSServer?service=WFS&version=1.1.0&request=GetCapabilities",
+      "method": "GET official OGC WFS capabilities",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:51:00Z",
+      "outcome": "Returned 13 feature types, including G1_GDBD:CADAS, with advertised EPSG:5247; no stored credentials or user data.",
+      "contentType": "application/xml"
+    },
+    {
+      "url": "https://survey.gov.bn/server/services/G1_GDBD/MapServer/WFSServer?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=G1_GDBD%3ACADAS",
+      "method": "GET official OGC WFS DescribeFeatureType",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:51:00Z",
+      "outcome": "CADAS schema includes OBJECTID, lot-code fields and SHAPE MultiSurface. The WFS feature response ignored property projection and contained extra fields; these were discarded.",
+      "contentType": "application/xml"
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer?f=pjson",
+      "method": "GET official ArcGIS REST service metadata",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "ArcGIS REST MapServer lists layer ID 3 CADAS and advertises JSON, geoJSON and PBF query formats; map CRS is EPSG:5247.",
+      "contentType": "text/plain; charset=UTF-8"
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3?f=pjson",
+      "method": "GET official ArcGIS REST CADAS layer metadata",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Layer 3 metadata confirms Polygon geometry, EPSG:5247 native spatial reference, and OBJECTID field.",
+      "contentType": "text/plain; charset=UTF-8"
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3/query?where=1%3D1&geometry=114.93%2C4.88%2C114.936%2C4.886&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geoJSON",
+      "method": "GET official ArcGIS REST bounded GeoJSON feature query",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Bounded bbox [114.93,4.88,114.936,4.886] in EPSG:4326; requested only OBJECTID and geometry, max 3. Response was application/geo+json with three polygon features. ArcGIS output matched WFS feature coordinates after WFS 1.1 axis ordering was handled; saved sample retains only OBJECTID and geometry.",
+      "contentType": "application/geo+json; charset=UTF-8"
+    },
+    {
+      "url": "https://www.survey.gov.bn/pengukuran-tanah/",
+      "method": "web.run open official city cadastral service page",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Page inspected; it describes lot-boundary survey service and lists the Geomatics Information Centre in Bandar Seri Begawan."
+    },
+    {
+      "url": "https://geoportal.survey.gov.bn/start-gp",
+      "method": "web.run open official cadastral web map",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Web-map landing page opened but the text extraction exposed no catalogue or parcel-feature details; WFS and ArcGIS REST were inspected separately."
+    },
+    {
+      "url": "https://survey.gov.bn/server/services/G1_GDBD/MapServer/WFSServer?service=WFS&version=1.1.0&request=GetCapabilities",
+      "method": "GET official OGC WFS capabilities",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:51:00Z",
+      "outcome": "Returned 13 feature types, including G1_GDBD:CADAS, with advertised EPSG:5247; no stored credentials or user data.",
+      "contentType": "application/xml"
+    },
+    {
+      "url": "https://survey.gov.bn/server/services/G1_GDBD/MapServer/WFSServer?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=G1_GDBD%3ACADAS",
+      "method": "GET official OGC WFS DescribeFeatureType",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:51:00Z",
+      "outcome": "CADAS schema includes OBJECTID, lot-code fields and SHAPE MultiSurface. The WFS feature response ignored property projection and contained extra fields; these were discarded.",
+      "contentType": "application/xml"
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer?f=pjson",
+      "method": "GET official ArcGIS REST service metadata",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "ArcGIS REST MapServer lists layer ID 3 CADAS and advertises JSON, geoJSON and PBF query formats; map CRS is EPSG:5247.",
+      "contentType": "text/plain; charset=UTF-8"
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3?f=pjson",
+      "method": "GET official ArcGIS REST CADAS layer metadata",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Layer 3 metadata confirms Polygon geometry, EPSG:5247 native spatial reference, and OBJECTID field.",
+      "contentType": "text/plain; charset=UTF-8"
+    },
+    {
+      "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3/query?where=1%3D1&geometry=114.93%2C4.88%2C114.936%2C4.886&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geoJSON",
+      "method": "GET official ArcGIS REST bounded GeoJSON feature query",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Bounded bbox [114.93,4.88,114.936,4.886] in EPSG:4326; requested only OBJECTID and geometry, max 3. Response was application/geo+json with three polygon features. ArcGIS output matched WFS feature coordinates after WFS 1.1 axis ordering was handled; saved sample retains only OBJECTID and geometry.",
+      "contentType": "application/geo+json; charset=UTF-8"
+    },
+    {
+      "url": "https://www.survey.gov.bn/pengukuran-tanah/",
+      "method": "web.run open official city cadastral service page",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Page inspected; it describes lot-boundary survey service and lists the Geomatics Information Centre in Bandar Seri Begawan."
+    },
+    {
+      "url": "https://geoportal.survey.gov.bn/start-gp",
+      "method": "web.run open official cadastral web map",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Web-map landing page opened but the text extraction exposed no catalogue or parcel-feature details; WFS and ArcGIS REST were inspected separately."
+    },
+    {
+      "url": "https://www.survey.gov.bn/pengukuran-tanah/",
+      "method": "web.run open official lot-boundary survey service",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:53:00Z",
+      "outcome": "Official Survey Department page opened; it describes lot-boundary survey services and gives the Geomatics Information Centre address in Bandar Seri Begawan."
+    },
+    {
+      "url": "https://geoportal.survey.gov.bn/start-gp",
+      "method": "web.run open official web map",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:53:00Z",
+      "outcome": "Official web-map landing page opened; its text extraction exposed no layer list, so the WFS and ArcGIS REST endpoints were examined directly."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Brunei Survey Department’s official lot-boundary survey service identifies its Geomatics Information Centre in Bandar Seri Begawan, and the official national CADAS polygon layer returned three bounded features at the city locator.",
+  "registryEvidenceUrls": [
+    "https://www.survey.gov.bn/pengukuran-tanah/",
+    "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3?f=pjson"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": {
+    "url": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3",
+    "kind": "ArcGIS MapServer polygon layer",
+    "publisher": "Brunei Survey Department, Ministry of Development",
+    "queryUrl": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3/query",
+    "geometryType": "Polygon",
+    "scope": "National service; three features were verified only in a bounded Bandar Seri Begawan locator window.",
+    "safeSampleFile": "bandar-seri-begawan-safe-sample.geojson",
+    "sampleAttributes": "OBJECTID only",
+    "nativeFields": [
+      "OBJECTID",
+      "LOTNUM",
+      "DISTCODE",
+      "BOOKCODE",
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "F_CODE",
+      "CREATED_USER",
+      "CREATED_DATE",
+      "LAST_EDITED_USER",
+      "LAST_EDITED_DATE",
+      "SHAPE"
+    ]
+  },
+  "verifiedParcelResponse": {
+    "requestUrl": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3/query?where=1%3D1&geometry=114.93%2C4.88%2C114.936%2C4.886&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geoJSON",
+    "method": "GET",
+    "httpStatus": 200,
+    "checkedAt": "2026-10-08T18:55:00Z",
+    "spatialTestAreaLonLat": [
+      114.93,
+      4.88,
+      114.936,
+      4.886
+    ],
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "idField": "OBJECTID",
+    "responseFile": "bandar-seri-begawan-safe-sample.geojson",
+    "outputCrs": "EPSG:4326",
+    "nativeCrs": "EPSG:5247"
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "The official CADAS layer is a national cadastral service.",
+    "verifiedOpenScope": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "enabled",
+  "status": "complete",
+  "remainingUncertainty": "Only the small sampled extent around the chosen locator was qualified. Full Bandar Seri Begawan coverage and source-wide cadastral completeness remain unverified; no runtime catalogue/configuration was changed.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "adapterQualification": {
+    "status": "qualified_for_source_catalog_review",
+    "adapter": "existing ArcGIS MapServer parcel adapter",
+    "sourceId": "bn-survey-cadas-bsb",
+    "layerUrl": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3",
+    "centerLatLon": [
+      4.89,
+      114.94
+    ],
+    "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+    "checkedAt": "2026-10-08T19:06:28.847Z",
+    "metricCrs": "EPSG:32650",
+    "descriptor": {
+      "id": "bn-survey-cadas-bsb",
+      "name": "Brunei Survey Department G1_GDBD CADAS",
+      "adapter": "arcgis",
+      "endpoint": "https://survey.gov.bn/server/rest/services/G1_GDBD/MapServer/3",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "BN-SD-BSB-",
+      "parcelNumberField": "LOTNUM",
+      "outFields": [
+        "OBJECTID",
+        "LOTNUM",
+        "DISTCODE",
+        "BOOKCODE"
+      ],
+      "pageSize": 3,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids"
+    },
+    "grid": {
+      "cellDegrees": 0.004,
+      "alignedCellCount": 9,
+      "panCellCount": 4,
+      "totalCellCount": 13,
+      "pageSizeForced": 3,
+      "viewports": [
+        {
+          "name": "viewport-0",
+          "bbox": [
+            114.936,
+            4.884,
+            114.94,
+            4.888
+          ],
+          "count": 1,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-1",
+          "bbox": [
+            114.94,
+            4.884,
+            114.944,
+            4.888
+          ],
+          "count": 60,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-2",
+          "bbox": [
+            114.944,
+            4.884,
+            114.948,
+            4.888
+          ],
+          "count": 11,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-3",
+          "bbox": [
+            114.936,
+            4.888,
+            114.94,
+            4.892
+          ],
+          "count": 11,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-4",
+          "bbox": [
+            114.94,
+            4.888,
+            114.944,
+            4.892
+          ],
+          "count": 61,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-5",
+          "bbox": [
+            114.944,
+            4.888,
+            114.948,
+            4.892
+          ],
+          "count": 46,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-6",
+          "bbox": [
+            114.936,
+            4.892,
+            114.94,
+            4.896
+          ],
+          "count": 41,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-7",
+          "bbox": [
+            114.94,
+            4.892,
+            114.944,
+            4.896
+          ],
+          "count": 19,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-8",
+          "bbox": [
+            114.944,
+            4.892,
+            114.948,
+            4.896
+          ],
+          "count": 67,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-9",
+          "bbox": [
+            114.94,
+            4.88,
+            114.944,
+            4.884
+          ],
+          "count": 13,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-10",
+          "bbox": [
+            114.94,
+            4.896,
+            114.944,
+            4.9
+          ],
+          "count": 33,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-11",
+          "bbox": [
+            114.932,
+            4.888,
+            114.936,
+            4.892
+          ],
+          "count": 1,
+          "complete": true,
+          "passed": true
+        },
+        {
+          "name": "viewport-12",
+          "bbox": [
+            114.948,
+            4.888,
+            114.952,
+            4.892
+          ],
+          "count": 49,
+          "complete": true,
+          "passed": true
+        }
+      ]
+    },
+    "requestCount": 346,
+    "uniqueNativeIds": 357,
+    "uniqueNormalizedGeometryCount": 357,
+    "freshExactIdGeometryReads": {
+      "count": 9,
+      "passed": true,
+      "mismatches": 0
+    },
+    "denseCellPagination": {
+      "name": "viewport-8",
+      "bbox": [
+        114.944,
+        4.892,
+        114.948,
+        4.896
+      ],
+      "featureCount": 67,
+      "pageSize": 3,
+      "geometryPages": 23,
+      "passed": true,
+      "allGeometryHashesMatch": true
+    },
+    "absentIdProbe": {
+      "passed": true,
+      "requested": 1,
+      "returned": 0,
+      "absent": 1
+    },
+    "footprintBinding": {
+      "passed": true,
+      "parcelCount": 2,
+      "allGeometryHashesMatch": true
+    },
+    "sourceParcelBinding": {
+      "passed": true,
+      "coverage": "complete",
+      "siteM2": 972.31,
+      "boundParcels": 1
+    },
+    "geometryQuality": {
+      "pending": false,
+      "inputFeatureCount": 357,
+      "validNonemptyNonzeroCount": 357,
+      "normalizedUniqueGeometryCount": 357,
+      "intersectingPairsAreaOver0_01M2": 9,
+      "overlapHoldCount": 0,
+      "largestOverlapM2": 26.886630303638075,
+      "largestOverlapFractionOfSmaller": 0.00021507663774363085,
+      "assessment": "No material-overlap hold in bounded sample; nine small-area intersections. Not a citywide topology guarantee."
+    },
+    "sampleParcelLabels": [
+      {
+        "objectId": 20892,
+        "lotNumber": 13666,
+        "districtCode": "BM",
+        "bookCode": "BD",
+        "areaM2": 1729.5194654013007
+      },
+      {
+        "objectId": 38326,
+        "lotNumber": 66235,
+        "districtCode": "BM",
+        "bookCode": "BD",
+        "areaM2": 988.2423585215438
+      },
+      {
+        "objectId": 79118,
+        "lotNumber": 16572,
+        "districtCode": "BM",
+        "bookCode": "BD",
+        "areaM2": 271.6329524547473
+      },
+      {
+        "objectId": 17469,
+        "lotNumber": 66250,
+        "districtCode": "BM",
+        "bookCode": "BD",
+        "areaM2": 2470.8197937295135
+      },
+      {
+        "objectId": 45199,
+        "lotNumber": 66249,
+        "districtCode": "BM",
+        "bookCode": "BD",
+        "areaM2": 10601.372603551456
+      },
+      {
+        "objectId": 67126,
+        "lotNumber": 52159,
+        "districtCode": "BM",
+        "bookCode": "BD",
+        "areaM2": 683.2907989914128
+      }
+    ],
+    "acceptanceFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-quality.json",
+    "overall": "qualified_for_source_catalog_review"
+  },
+  "sourceIds": [
+    "bn-survey-cadas-bsb"
+  ],
+  "appCityId": "bandarseribegawan",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "357 valid parcel rows in 13 bounded city cells. Nine narrow source overlaps remain unchanged; largest native overlap 26.87 m², 0.02151% of the smaller parcel, maximum inscribed diameter 0.297 m. Source OBJECTID reference, LOTNUM/DISTCODE/BOOKCODE labels. Wider completeness unverified.",
+    "evidenceFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-quality.json"
+  },
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/bandar-seri-begawan-safe-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      4.894,
+      114.946
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.004
+  }
+}

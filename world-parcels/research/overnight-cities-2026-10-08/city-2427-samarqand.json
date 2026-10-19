@@ -1,0 +1,91 @@
+{
+  "name": "Samarqand",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "rank": 556,
+  "point": [
+    39.6487376270375,
+    66.958050509394
+  ],
+  "population2025": 932219,
+  "populationUnit": "persons",
+  "population2025k": 932.219,
+  "populationPlausibility2025": "Low",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official regional governor portal and State Cadastre Chamber list the Samarqand regional cadastral office at an address in Samarqand city. This establishes a local office serving the region; it does not prove WUP-point vector coverage.",
+  "registryEvidenceUrls": [
+    "https://samarkand.uz/regional_government/regional_departments",
+    "https://samarkand.uz/uz/opendata/nazorat-idoralar-reestri",
+    "https://uzdkp.uz/",
+    "https://open.ngis.uz/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Samarqand official cadastral parcel map land registry GIS cadastre agency Samarqand city",
+        "scope": "Find a city-scope registry office and anonymous parcel geometry service.",
+        "result": "The official State Cadastre Chamber and regional governor pages list the Samarqand regional office at an address in Samarqand city. The national NGIS portal is official and references cadastral lookup, but its visible offer/terms acceptance was not submitted; no anonymous parcel feature layer or city-point geometry was verified.",
+        "actualResultUrls": [
+          "https://samarkand.uz/regional_government/regional_departments",
+          "https://uzdkp.uz/",
+          "https://open.ngis.uz/"
+        ],
+        "executionMethod": "Separate English search, official regional-office listings, and static/public portal inspection without accepting terms or submitting a query."
+      },
+      {
+        "language": "Uzbek",
+        "query": "Samarqand kadastr xarita yer uchastkasi davlat kadastrlari palatasi rasmiy",
+        "scope": "Samarqand shahridagi kadastr idorasi va ochiq yer uchastkasi xaritasini aniqlash.",
+        "result": "Rasmiy viloyat hokimligi va Davlat kadastrlari palatasi sahifalarida Samarqand shahridagi viloyat boshqarmasi ko‘rsatilgan. Milliy NGIS portali topildi, biroq shartlar oynasi qabul qilinmadi; anonim vektor qatlam yoki WUP nuqtasidagi geometriya tasdiqlanmadi.",
+        "actualResultUrls": [
+          "https://samarkand.uz/regional_government/regional_departments",
+          "https://samarkand.uz/uz/opendata/nazorat-idoralar-reestri",
+          "https://uzdkp.uz/",
+          "https://open.ngis.uz/"
+        ],
+        "executionMethod": "O‘zbek tilidagi alohida qidiruv, rasmiy hududiy ro‘yxatlar va shartlarga rozilik bermasdan ochiq portal manbalarini tekshirish."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "UZ-2427-SAMARQAND-REGIONAL-CADASTRE",
+    "name": "State Cadastre Chamber, Samarqand Regional Directorate",
+    "url": "https://samarkand.uz/regional_government/regional_departments",
+    "operator": "State Cadastre Chamber / Cadastre Agency, Samarqand regional directorate",
+    "serviceType": "Official local cadastral office; national NGIS public portal identified but no anonymous geometry endpoint verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Official regional listings give the office address in Samarqand city; the public NGIS portal was inspected but no query/schema or parcel geometry was established."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official regional governor portal and State Cadastre Chamber list the Samarqand regional cadastral office at an address in Samarqand city. This establishes a local office serving the region; it does not prove WUP-point vector coverage.",
+    "verifiedOpenScope": "Local registry office evidence exists, but public parcel geometry and exact WUP point coverage remain unverified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_geometry_not_verified",
+  "technicalBlocker": "No city-scoped public parcel layer, safe field schema or full geometry response was verified in the national NGIS candidate. The public consent notice is informational and is not an automatic eligibility gate.",
+  "remainingUncertainty": "The national NGIS portal presents terms/offer acceptance, which was not submitted. No city parcel layer or exact-point geometry was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 2427,
+  "cityId": "wup2025:2427",
+  "centerLatLon": [
+    39.6487376270375,
+    66.958050509394
+  ],
+  "queueRank": 556,
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "sampleGeometryFile": null,
+  "sampleGeometrySha256": null,
+  "rootReviewedAt": "2026-10-09T01:31:18.479128+00:00"
+}

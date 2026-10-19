@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-2672-khouribga.json",
+  "cityCode": 2672,
+  "queueRank": 2631,
+  "name": "Khouribga",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "summary": "Official ANCFCC material identifies the national cadastral custodian, Khouribga conservation and cadastral offices, and Khouribga cartographic products. The current official online plan-cadastral route returned a maintenance page; no public parcel schema, native ID, CRS response, or geometry was verified, so no sample was retained.",
+  "queryOutcomes": [
+    {"language": "English", "query": "Khouribga Morocco official cadastral map parcel GIS ANCFCC", "outcome": "Official ANCFCC cadastral mandate, products, Khouribga office directory, online plan route, and cartographic catalogue found."},
+    {"language": "native/local", "query": "خريبكة المغرب الخريطة العقارية المسح العقاري الوكالة الوطنية للمحافظة العقارية", "outcome": "Official Arabic ANCFCC pages and Arabic office directory found; no public parcel-feature endpoint verified."}
+  ],
+  "requestOutcomes": [
+    {"request": "GET official ANCFCC online cadastral-plan route", "outcome": "HTTP 200 maintenance page; no form/API payload or geometry available."},
+    {"request": "GET official ANCFCC catalogue PDF URL", "outcome": "HTTP 200 maintenance HTML from shell; indexed official result records Khouribga 2017 cartographic products, but no PDF bytes or geometry were locally parsed."},
+    {"request": "GET official ANCFCC external-services directory", "outcome": "Khouribga Conservation Foncière and Cadastre offices and contacts evidenced."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point preserved as [32.8845887529241,-6.91797039175435]; no coordinate shift or exact-point hit/miss inference.",
+    "No parcel geometry, native identity, schema, or CRS response was obtained; no GeoJSON retained.",
+    "Official local-office evidence supports registryFound=true but not citywide geometry coverage or runtime admission.",
+    "Maintenance response is an availability limitation, not evidence of cadastral absence.",
+    "No unsafe fields, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception used.",
+    "Packet completion is not source integration/admission."
+  ],
+  "safeFieldAllowlist": ["stable native ID", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "uncertainty": "The official agency and local office are well evidenced, and official indexed catalog metadata mentions Khouribga products, but live service availability, parcel-level identity semantics, CRS/axis details, coverage completeness, and anonymous geometry behavior remain unverified.",
+  "serialReviewRecommendation": "Hold. Retry the current ANCFCC viewer/request route and independently qualify any public parcel endpoint before adapter or runtime consideration."
+}

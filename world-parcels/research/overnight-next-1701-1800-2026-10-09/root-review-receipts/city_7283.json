@@ -1,0 +1,33 @@
+{
+  "taskId": "city:7283",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-7283-narmashir.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/narmashir-service-review.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T14:09:41.100159Z",
+  "registryFound": null,
+  "reviewReason": "National cadastral leads were identified; ssaa.ir and the indexed legacy cadastral map timed out. Local custody, native-ID parcel geometry and adapter qualification remain unresolved.",
+  "identityCheck": {
+    "queueRank": 1742,
+    "cityCode": 7283,
+    "country": "Iran (Islamic Republic of)",
+    "point": [
+      28.9435750852175,
+      58.6940034834704
+    ],
+    "population2025Persons": 329526,
+    "matchesImmutableQueue": true
+  },
+  "bilingualQueriesRecorded": true,
+  "retainedFullPolygonCount": 0,
+  "admission": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

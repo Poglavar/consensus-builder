@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2564",
+  "queueRank": 1,
+  "wupCityCode": 2564,
+  "name": "Narus",
+  "country": "South Sudan",
+  "countryCode": "SS",
+  "centerLatLon": [
+    4.50390707903259,
+    34.1660430983317
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 1,
+  "population2025": 212131,
+  "annualGrowthPct2015To2025": 13.096541,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [
+    {
+      "path": "research/growth-top20-2026-10-07/city-2564.json",
+      "status": "temporarily_unavailable"
+    }
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-SS.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic and English",
+    "exactQuery": "ناروس جنوب السودان قطع الأراضي كادستر سجل الأراضي land parcels cadastral GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer",
+      "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+      "https://gogis.io/ar/",
+      "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+      "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+      "https://gec-group.co.za/csg",
+      "https://www.esri.com/ar-sa/industries/land-administration/strategies/parcel-management"
+    ],
+    "summary": "No official public city parcel map identified in this local-language search; ministry and land office evidence remains unavailable.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://gogis.io/ar/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://gec-group.co.za/csg",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esri.com/ar-sa/industries/land-administration/strategies/parcel-management",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Narus\" South Sudan (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Narus%22+South+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No public parcel service or verified parcel sample for Narus was found in the city search; the returned land-policy and settlement references do not establish parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Seek a public cadastral map or anonymous bounded extract from the Narus municipal survey office or South Sudan land authority, then verify parcel IDs and polygons.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Narus%22+South+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-05",
+      "sourceUrl": "https://orthophotos.geomolg.ps/adaptor/rest/services/ParcelsRegistered_Withdomain/MapServer",
+      "classification": "registered_parcel_layer_outside_assigned_countries",
+      "auditSummary": "Registered-parcel MapServer public metadata lists a polygon feature layer, but its EPSG:28191 extent transforms to 34.9069–35.5749E, 31.4103–32.5513N (Palestine/West Bank), outside all assigned target cities. The REST page exposes Login/Get Token links; owner is not exposed in public metadata. No features queried.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-17",
+      "sourceUrl": "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+      "classification": "locality_boundary_polygons_not_parcels",
+      "auditSummary": "Layer 2 is LOCALITIES with locality codes, region/state and population attributes, not a cadastre. Its Sudan bounding box overlaps several Sudan target centers; no feature sample was needed.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-19",
+      "sourceUrl": "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+      "classification": "regional_point_layer_not_parcels",
+      "auditSummary": "Soudan Sud is a single esriGeometryPoint layer. Its regional envelope overlaps some South Sudan city centers, but point geometry is not parcel geometry.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    },
+    {
+      "auditId": "AFS-10",
+      "sourceUrl": "https://services1.arcgis.com/cc7nIINtrZ67dyVJ/arcgis/rest/services/Land_Ownership/FeatureServer",
+      "classification": "africa_admin_boundaries_not_parcels",
+      "auditSummary": "Although the item title/description mentions ownership and land parcels, its 84 listed sublayers are Africa/GADM/DIVA administrative boundaries at country and subnational scales (plus a world-cities point layer); no parcel feature layer is listed. Pan-African extent is not city-level evidence.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Although the item title/description mentions ownership and land parcels, its 84 listed sublayers are Africa/GADM/DIVA administrative boundaries at country and subnational scales (plus a world-cities point layer); no parcel feature layer is listed. Pan-African extent is not city-level evidence.; Layer 2 is LOCALITIES with locality codes, region/state and population attributes, not a cadastre. Its Sudan bounding box overlaps several Sudan target centers; no feature sample was needed.; Registered-parcel MapServer public metadata lists a polygon feature layer, but its EPSG:28191 extent transforms to 34.9069–35.5749E, 31.4103–32.5513N (Palestine/West Bank), outside all assigned target cities. The REST page exposes Login/Get Token links; owner is not exposed in public metadata. No features queried.; Soudan Sud is a single esriGeometryPoint layer. Its regional envelope overlaps some South Sudan city centers, but point geometry is not parcel geometry."
+}

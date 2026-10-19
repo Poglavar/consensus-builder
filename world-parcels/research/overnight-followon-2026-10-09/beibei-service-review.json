@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8776-beibei.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A Beibei district-government notice describes online and in-person routes for querying real-property status and cadastral maps by property location; complete records are available to holders. The official service requires a location-specific property query. No user address, owner, title or property identifier was supplied, and no anonymous map-feature endpoint or WUP-point polygon API was identified.",
+  "registryAssessment": "Beibei district-government and Chongqing registration-office notices document local real-property registration and cadastral-map query services.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.beibei.gov.cn/ztlm_239/bdcdjfg/202403/P020240301359194377530.pdf",
+      "observation": "A Beibei district-government notice describes online and in-person routes for querying real-property status and cadastral maps by property location; complete records are available to holders. The official service requires a location-specific property query. No user address, owner, title or property identifier was supplied, and no anonymous map-feature endpoint or WUP-point polygon API was identified."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202107/t20210709_9462461_wap.html",
+      "observation": "A Beibei district-government notice describes online and in-person routes for querying real-property status and cadastral maps by property location; complete records are available to holders. The official service requires a location-specific property query. No user address, owner, title or property identifier was supplied, and no anonymous map-feature endpoint or WUP-point polygon API was identified."
+    },
+    {
+      "url": "https://www.beibei.gov.cn/zwfw/",
+      "observation": "A Beibei district-government notice describes online and in-person routes for querying real-property status and cadastral maps by property location; complete records are available to holders. The official service requires a location-specific property query. No user address, owner, title or property identifier was supplied, and no anonymous map-feature endpoint or WUP-point polygon API was identified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese",
+      "query": "北碚 不动产登记 便民查询 坐落 查询 宗地图 官方 北碚区人民政府",
+      "result": "A Beibei district-government notice describes online and in-person routes for querying real-property status and cadastral maps by property location; complete records are available to holders. The official service requires a location-specific property query. No user address, owner, title or property identifier was supplied, and no anonymous map-feature endpoint or WUP-point polygon API was identified.",
+      "method": "Separate native/local-language web search and first-party source review.",
+      "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "English",
+      "query": "Beibei Chongqing official property registration cadastral map public query parcel by location",
+      "result": "A Beibei district-government notice describes online and in-person routes for querying real-property status and cadastral maps by property location; complete records are available to holders. The official service requires a location-specific property query. No user address, owner, title or property identifier was supplied, and no anonymous map-feature endpoint or WUP-point polygon API was identified.",
+      "method": "Separate English-language web search and first-party source review.",
+      "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe WUP-point sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Beibei district-government and Chongqing registration-office notices document local real-property registration and cadastral-map query services.",
+    "verifiedOpenScope": "Beibei local registry/map service is evidenced. Anonymous WUP-point geometry and public citywide parcel-layer coverage remain unknown.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.beibei.gov.cn/ztlm_239/bdcdjfg/202403/P020240301359194377530.pdf",
+      "result": "Reviewed official inquiry routes. The public workflow requires a property location; no property address or parcel identifier was supplied and no coordinate-based full-geometry endpoint was documented."
+    }
+  ],
+  "remainingUncertainty": "Beibei local registry/map service is evidenced. Anonymous WUP-point geometry and public citywide parcel-layer coverage remain unknown."
+}

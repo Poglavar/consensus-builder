@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "kr-changwon-official-parcel-research",
+  "purpose": "Service review for WUP2025 rank 814 Changwon (city code 3320); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Changwon Special City; district 민원지적과 offices",
+  "sourceUrl": "https://www.changwon.go.kr/cwportal/gu/11098/11607/11640.web?amode=view&cpage=928&gcode=1129&idx=395551",
+  "registryFound": true,
+  "registryBasis": "Changwon City official notices describe an electronic cadastral-drawing information kiosk at district offices, allowing people to browse cadastral information for the integrated Changwon city land area. This is local public cadastral access, but the notice describes an on-site touchscreen service rather than an anonymous web vector API.",
+  "officialSources": [
+    {
+      "url": "https://www.changwon.go.kr/cwportal/gu/11098/11607/11640.web?amode=view&cpage=928&gcode=1129&idx=395551",
+      "observation": "Official Seongsan District notice says its public electronic-drawing kiosk provides no-fee browsing of cadastral information for all integrated Changwon land, plus land-use/value layers. The notice dates from 2010 and describes a physical kiosk."
+    },
+    {
+      "url": "https://www.changwon.go.kr/cwportal/gu/11101/12355/12399.web?amode=view&cpage=4666&gcode=1417&idx=425378",
+      "observation": "Official Jinhae District notice gives the kiosk location and lists electronic maps, land-use planning and imagery for integrated Changwon; in-person public access is described."
+    },
+    {
+      "url": "https://kgeop.go.kr/",
+      "observation": "Official national K-GeoP page distinguishes personal land search requiring identity verification; no personal land lookup was used and it does not document a Changwon-specific public feature schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Changwon South Korea official cadastral parcel map geospatial land registry",
+      "scope": "Find official local registry and anonymous parcel geometry route.",
+      "result": "Official city district notices state that electronic drawing kiosks let the public browse cadastral information and other land layers for integrated Changwon; a second district notice describes a kiosk in the civil-complaints office with public map layers. These notices are dated 2010 and describe in-person touchscreen access, not a downloadable feature service. No online anonymous geometry schema was verified.",
+      "urls": [
+        "https://www.changwon.go.kr/cwportal/gu/11098/11607/11640.web?amode=view&cpage=928&gcode=1129&idx=395551",
+        "https://www.changwon.go.kr/cwportal/gu/11101/12355/12399.web?amode=view&cpage=4666&gcode=1417&idx=425378"
+      ]
+    },
+    {
+      "language": "Korean",
+      "query": "창원시청 공식 지적도 지적정보 전자도면 민원열람 토지정보",
+      "scope": "Find first-party local registry and map service details.",
+      "result": "Official city district notices state that electronic drawing kiosks let the public browse cadastral information and other land layers for integrated Changwon; a second district notice describes a kiosk in the civil-complaints office with public map layers. These notices are dated 2010 and describe in-person touchscreen access, not a downloadable feature service. No online anonymous geometry schema was verified.",
+      "urls": [
+        "https://www.changwon.go.kr/cwportal/gu/11098/11607/11640.web?amode=view&cpage=928&gcode=1129&idx=395551",
+        "https://www.changwon.go.kr/cwportal/gu/11101/12355/12399.web?amode=view&cpage=4666&gcode=1417&idx=425378"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "The local cadastral service found is an on-site district-office kiosk. No anonymous public web geometry service or safe feature schema was identified."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.changwon.go.kr/cwportal/gu/11098/11607/11640.web?amode=view&cpage=928&gcode=1129&idx=395551",
+      "method": "GET official public page/document inspection",
+      "result": "Official Seongsan District notice says its public electronic-drawing kiosk provides no-fee browsing of cadastral information for all integrated Changwon land, plus land-use/value layers. The notice dates from 2010 and describes a physical kiosk."
+    },
+    {
+      "url": "https://www.changwon.go.kr/cwportal/gu/11101/12355/12399.web?amode=view&cpage=4666&gcode=1417&idx=425378",
+      "method": "GET official public page/document inspection",
+      "result": "Official Jinhae District notice gives the kiosk location and lists electronic maps, land-use planning and imagery for integrated Changwon; in-person public access is described."
+    },
+    {
+      "url": "https://kgeop.go.kr/",
+      "method": "GET official public page/document inspection",
+      "result": "Official national K-GeoP page distinguishes personal land search requiring identity verification; no personal land lookup was used and it does not document a Changwon-specific public feature schema."
+    }
+  ],
+  "technicalBlocker": "The local cadastral service found is an on-site district-office kiosk. No anonymous public web geometry service or safe feature schema was identified.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "The city notices are dated 2010; they establish the local cadastral service at that time but do not show whether a public web vector API has since been deployed."
+}

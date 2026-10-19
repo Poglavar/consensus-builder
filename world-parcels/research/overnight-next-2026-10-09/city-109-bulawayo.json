@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1130,
+  "population2025k": 492.771,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "Low",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:109",
+  "wupCityCode": 109,
+  "name": "Bulawayo",
+  "country": "Zimbabwe",
+  "countryCode": "ZW",
+  "centerLatLon": [
+    -20.1619068849343,
+    28.5532969683791
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "no_local_custody_evidence",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Ndebele",
+      "exactQuery": "Bulawayo umhlaba cadastre land registry map parcel government",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [],
+      "summary": "The searches did not surface a primary local Bulawayo cadastral office or public parcel map. Zimbabwe deeds-law material is national and secondary archive results are not proof of city-specific local custody."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Bulawayo Zimbabwe official cadastral parcel land survey title deeds registry government map",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [],
+      "summary": "The searches did not surface a primary local Bulawayo cadastral office or public parcel map. Zimbabwe deeds-law material is national and secondary archive results are not proof of city-specific local custody."
+    },
+    {
+      "exactQuery": "site.citybyo.co.zw land survey cadastral Bulawayo",
+      "languageScript": "English",
+      "date": "2026-10-09",
+      "executionMethod": "Root web search followed by primary-page open",
+      "resultUrls": [
+        "https://www.citybyo.co.zw/Planning/LandSurvey"
+      ],
+      "summary": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.citybyo.co.zw/Planning/LandSurvey",
+      "operator": "Bulawayo City Council",
+      "observation": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established."
+    }
+  ],
+  "requestsAndEndpointChecks": [],
+  "coverageAssessment": {
+    "claimedScope": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "No exact-city first-party registry/map source or safe public geometry endpoint found.",
+  "remainingUncertainty": "No anonymous full parcel polygon or citywide coverage verified; local custodial responsibility has the scope recorded in registryBasis.",
+  "nextStep": "No exact-city first-party registry/map source or safe public geometry endpoint found.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "registryBasis": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established.",
+  "registryEvidenceUrls": [
+    "https://www.citybyo.co.zw/Planning/LandSurvey"
+  ],
+  "population2025": 492771,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "technicalBlocker": "No exact-city first-party registry/map source or safe public geometry endpoint found.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No exact-city first-party registry/map source or safe public geometry endpoint found."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 109,
+      "url": "https://www.citybyo.co.zw/Planning/LandSurvey",
+      "checkedAt": "2026-10-09T07:10:48.907063+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://www.citybyo.co.zw/Planning/LandSurvey",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 35116,
+      "sha256": "a320c785d093ab476bd73e60bcc4e3f91846e442394c8f4106e8627ce2d201bc",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

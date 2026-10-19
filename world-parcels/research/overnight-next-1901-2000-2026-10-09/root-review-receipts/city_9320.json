@@ -1,0 +1,20 @@
+{
+  "taskId": "city:9320",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-9320-renqiu.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/renqiu-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:33:24Z",
+  "reason": "Renqiu: official municipal and registration leads have no verified anonymous native-ID-plus-polygon response or adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

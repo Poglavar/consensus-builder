@@ -1,0 +1,31 @@
+{
+  "cityRecord": "city-10817-ambikapur.json",
+  "cityCode": 10817,
+  "queueRank": 2553,
+  "name": "Ambikapur",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [23.1292257727542, 83.1869670127607],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://revenue.cg.nic.in/", "httpStatus": 200, "outcome": "Official Chhattisgarh Revenue & Disaster Management portal loaded and identified Bhuiyan and Bhu-Naksha services."},
+    {"method": "GET", "url": "https://surguja.gov.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B6%E0%A4%BE/", "httpStatus": 200, "outcome": "Official Surguja district page identified the Ambikapur tehsil office and linked the official Bhu-Naksha service."},
+    {"method": "GET", "url": "https://revenue.cg.nic.in/bhunaksha/", "httpStatus": 200, "outcome": "Official viewer HTML loaded; current assets were inspected, including config.js and index.js."},
+    {"method": "POST", "url": "https://revenue.cg.nic.in/bhunaksha/rest/Levels/count", "httpStatus": 200, "outcome": "State 22 returned four administrative selection levels."},
+    {"method": "GET", "url": "https://revenue.cg.nic.in/bhunaksha/ScalarDatahandler?OP=2&level=2&selections=39%2C&state=22", "httpStatus": 200, "outcome": "Returned Ambikapur tehsil code 01 and RI options."},
+    {"method": "GET", "url": "https://revenue.cg.nic.in/bhunaksha/ScalarDatahandler?OP=2&level=4&selections=39%2C01%2C05%2C&state=22", "httpStatus": 200, "outcome": "Returned Ambikapur village code 028 under Ambikapur-4 RI."},
+    {"method": "POST", "url": "https://revenue.cg.nic.in/bhunaksha/rest/MapInfo/getVVVVExtentGeoref", "httpStatus": 200, "outcome": "For state 22 and selections 39,01,05,028, returned gisCode 390105.028, village extent xmin 723390.1464 ymin 2556548.671 xmax 727237.193 ymax 2561484.5813, and an update timestamp. No parcel polygons were included."},
+    {"method": "GET", "url": "https://revenue.cg.nic.in/bhunaksha/ScalarDatahandler?OP=5&state=22&levels=39%2C01%2C05%2C028%2C&plotno=1", "httpStatus": 200, "outcome": "Returned has_data=Y, plotNo 1, native opaque ID t8puPTwjS8OzG13S377Pqg, gisCode 390105.028, safe center/extent coordinates, and links to plot report/detail pages. No polygon geometry or unsafe owner fields were requested or retained."},
+    {"method": "GET", "url": "https://revenue.cg.nic.in/bhunaksha/WMS?SERVICE=WMS&REQUEST=GetCapabilities", "httpStatus": 500, "outcome": "No WMS capabilities, schema, or CRS payload returned."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": null, "nativeFieldMapping": {"ID": "opaque native plot lookup identifier", "plotNo": "native plot/khasra number", "gisCode": "native village GIS code"}, "compositeKeyProvenance": "39/01/05/028 selection chain from official viewer responses -> gisCode 390105.028", "rawAttributesRetained": false, "inspection": "Viewer JavaScript uses WMS for village/layer rendering and ScalarDatahandler OP=5 for plot lookup. No safe anonymous parcel feature geometry endpoint was qualified."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Local official cadastral service and live Ambikapur village/plot responses are evidenced, but no parcel polygon geometry, CRS, or citywide coverage was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of citywide absence.", "The village extent is service coordinates, not a verified WGS84 extent.", "No citywide completeness or countrywide coverage claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The service is live and exposes safe native plot identifiers, but anonymous parcel geometry access and CRS remain unresolved. The exact WUP point was preserved and not used to force a hit."
+}

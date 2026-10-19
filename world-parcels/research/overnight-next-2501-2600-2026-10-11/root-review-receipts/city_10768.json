@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10768",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-10768-suining.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/suining-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-identity-10768-first-party-evidence.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-identity-decision-overlay.json",
+    "tmp/valhalla-parcel-research/10768/suining-gov.html",
+    "tmp/valhalla-parcel-research/10768/webmap.html"
+  ],
+  "checkedAt": "2026-10-11T13:29:30.886431Z",
+  "reason": "Immutable WUP code 10768 is the Jiangsu Suining settlement, distinct from code 7988 in Sichuan. English and Chinese searches are recorded. The cached county portal identifies the county, while the catalog route is WAF blocked; no first-party parcel geometry or native ID was returned. Custody evidence is limited to portal/catalog identification. No live adapter qualification or headed Details check exists; no absence inference."
+}

@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-7217-magnitogorsk.json",
+  "schemaVersion": "1.0",
+  "cityCode": 7217,
+  "queueRank": 1810,
+  "city": "Magnitogorsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official municipal GIS evidence establishes a local Magnitogorsk spatial-data custodian, but no anonymous public parcel ID plus polygon response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Russian discovery queries and actual result URLs are recorded in city-7217-magnitogorsk.json. Russian-language results identified the municipal GIS portal and Rosreestr public-map procedure references.",
+  "requestOutcomes": "The municipal portal returned HTML but its certificate chain failed local verification; the TLS-verified loader retry failed. A bounded public ArcGIS point query and legacy Rosreestr service probe timed out or failed to produce a usable response. No geometry, schema or CRS was accepted.",
+  "attemptedRoutes": [
+    "Magnitogorsk municipal GIS portal homepage and about page",
+    "Municipal GIS JavaScript loader/configuration route",
+    "General Rosreestr-derived ArcGIS parcel layer hosted by maps.nso.ru",
+    "Legacy Rosreestr Cadastre ArcGIS REST service"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [53.4009207599711, 59.0039817989917] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Magnitogorsk boundary or complete citywide coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Municipal GIS custody and public-map references are not proof of an open vector parcel API.",
+    "A timeout, certificate failure, map extent miss, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or other personal/sensitive fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "The exact coordinate was used in a bounded public point-query attempt, but the service timed out; no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Magnitogorsk municipal territory, Chelyabinsk Oblast, under the city administration GIS and Russian cadastral-map ecosystem.",
+    "verifiedOpenScope": "Local municipal GIS custody evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current viewer/API route, certificate trust, access controls, layer schema, CRS, stable native parcel identity, update currency, legal status and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Russian cadastral dataset.",
+  "retainedSample": null
+}

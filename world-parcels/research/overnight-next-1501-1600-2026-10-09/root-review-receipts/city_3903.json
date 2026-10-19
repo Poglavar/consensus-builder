@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3903",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3903-belgorod.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/belgorod-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/valhalla-parcel-research/belgorod/geofsm.html",
+    "tmp/valhalla-parcel-research/belgorod/map_with_cku.js",
+    "tmp/valhalla-parcel-research/runs/20261010T100248-50742a46/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T10:07:16Z",
+  "reason": "Queue code, rank, Russian Federation identity, exact point, and 363411-person population match. The worker trace records English and Russian searches. The regional Rosreestr announcement supports NSPD cadastral custody. Saved municipal GIS HTML shows a login page, and its JavaScript references a regional-boundary WFS rather than a parcel layer. NSPD timed out; no native parcel ID or full polygon was received or retained. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are unevidenced. Timeout and login access do not establish citywide absence.",
+  "sourceAdmission": "not_admitted"
+}

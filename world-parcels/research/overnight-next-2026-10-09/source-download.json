@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "population_source_download_record",
+  "status": "captured_for_pending_unintegrated_cohort",
+  "sourceOrganization": "United Nations, Department of Economic and Social Affairs, Population Division",
+  "publication": "World Urbanization Prospects: The 2025 Revision, Online Edition",
+  "downloadPage": "https://population.un.org/wup/downloads?tab=Cities",
+  "requestedUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+  "method": "GET",
+  "requestCommand": "curl -fL --retry 2 --connect-timeout 15 -D <response-headers-file> -o <archive-file> <requestedUrl>",
+  "requestStartedAtApprox": "2026-10-09T06:46:20Z",
+  "requestTimestampBasis": "Response Date and local response-header file mtime; exact process start was not separately logged.",
+  "client": "curl 8.7.1 (x86_64-apple-darwin25.0), SecureTransport TLS; standard certificate verification enabled, no custom request headers supplied.",
+  "redirects": "-L was enabled; captured response-header file contains one final HTTP/2 200 response and no intermediate redirect response.",
+  "httpVersion": "HTTP/2",
+  "httpStatus": 200,
+  "responseDate": "Fri, 09 Oct 2026 06:46:20 GMT",
+  "responseHeadersFile": "tmp/overnight-cities-2026-10-09/wup-download-response-headers.txt (ignored repository temp)",
+  "responseHeaders": {
+    "content-type": "application/x-gzip",
+    "content-length": 58726569,
+    "content-md5": "h5WBcypPcPnltGqXVmQdAw==",
+    "etag": "\"0x8DE30F526227451\"",
+    "last-modified": "Mon, 01 Dec 2025 16:17:39 GMT",
+    "server": "Windows-Azure-Web/1.0 Microsoft-HTTPAPI/2.0",
+    "x-ms-request-id": "408fed5b-f01e-004f-32b9-57a67d000000"
+  },
+  "localArchivePath": "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz (ignored repository temp)",
+  "localArchiveBytes": 58726569,
+  "localArchiveMtime": "2026-10-09T06:46:30Z",
+  "sha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "integrityCheck": "gzip stream parsed successfully by the queue builder; checksum matches the previously captured official bulk file and the follow-on 1001–1100 roster source.",
+  "requestHeaders": {
+    "User-Agent": "curl/8.7.1 (default)",
+    "Accept": "*/* (default)"
+  }
+}

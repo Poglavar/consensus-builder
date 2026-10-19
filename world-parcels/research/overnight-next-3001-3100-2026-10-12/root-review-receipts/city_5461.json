@@ -1,0 +1,36 @@
+{
+  "taskId": "city:5461",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:39:14Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-5461-metro.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/metro-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 5461,
+    "rank": 3004,
+    "country": "Indonesia",
+    "point": [
+      -5.1149642064481,
+      105.316057554457
+    ],
+    "populationPersons": 199160
+  },
+  "checks": {
+    "bilingualExecutedSearches": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "firstPartyCustodyCorroboration": [
+    "https://mpp.metrokota.go.id/tenant/kantor-pertanahan-kota-metro"
+  ],
+  "reason": "BHUMI public layer configuration and a local land-office custodian are evidenced. Anonymous WMS/WFS capability requests returned site 404 HTML and no parcel feature, schema, CRS, or stable native ID. Token-gated viewer retrieval was not used."
+}

@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-452-qaraziadin.json",
+  "cityCode": 452,
+  "queueRank": 2201,
+  "name": "Qaraziadin",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "pointLatLon": [38.8906900038709, 45.0254913217347],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method": "SEARCH", "url": "https://en.wikipedia.org/wiki/Qarah_Zia_ol_Din", "httpStatus": 200, "outcome": "English discovery resolved the queue spelling Qaraziadin to Qarah Zia ol Din; this is identity evidence, not cadastral-service evidence."},
+    {"method": "SEARCH", "url": "https://amagestate.com/wiki/kateb-guide/", "httpStatus": 200, "outcome": "Secondary Persian-language guide describes the national Kateb real-estate/cadastre workflow and authentication/request context; no local public parcel API."},
+    {"method": "SEARCH", "url": "https://amagestate.com/wiki/saqar-guide/", "httpStatus": 200, "outcome": "Persian-language search result describes map-request workflow; it does not expose anonymous parcel IDs or geometry."},
+    {"method": "SEARCH", "url": "https://nezamat.ir/post-44174/", "httpStatus": 200, "outcome": "Persian publication describes the national Single Window for Land Management and participating agencies; it is general national-agency evidence, not a Qaraziadin registry endpoint."},
+    {"method": "GET", "url": "https://shamim.ssaa.ir/", "httpStatus": 0, "outcome": "TLS/HTTP connection timed out after 20 seconds from the research host; no JavaScript/configuration or service route was obtained."},
+    {"method": "GET", "url": "https://kateb.ir/", "httpStatus": 0, "outcome": "Connection timed out after 8 seconds; no public viewer/API response obtained."},
+    {"method": "GET", "url": "https://sabtemelk.ssaa.ir/", "httpStatus": 0, "outcome": "Connection timed out after 8 seconds; no public viewer/API response obtained."},
+    {"method": "GET", "url": "https://sabt.ssaa.ir/", "httpStatus": 0, "outcome": "DNS resolution failed; host was not reachable and no request was sent."},
+    {"method": "GET", "url": "https://ssaa.ir/", "httpStatus": 0, "outcome": "Connection timed out after 8 seconds; no official site response obtained."},
+    {"method": "GET", "url": "https://lands.moi.ir/", "httpStatus": 0, "outcome": "DNS resolution failed; host was not reachable and no request was sent."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "boundedAnonymousResponse": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No local public cadastral service and no bounded anonymous parcel ID+geometry response were verified."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted; no exact-point parcel hit was obtained.",
+    "A timeout, DNS failure, unavailable UI, or absence of a search hit is not evidence of citywide cadastral absence.",
+    "National Iranian registry/cadastre references describe general agency workflows only; they do not establish a local Qaraziadin registry custodian.",
+    "No parcel polygon is retained because no safe native identity and unchanged geometry were returned."
+  ],
+  "uncertainty": "Iranian public cadastral coverage for Qaraziadin remains unresolved. This packet records executed discovery and request attempts only; completion is not source integration or admission."
+}

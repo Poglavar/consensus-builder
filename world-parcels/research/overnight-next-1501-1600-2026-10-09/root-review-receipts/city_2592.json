@@ -1,0 +1,18 @@
+{
+  "taskId": "city:2592",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-2592-mission-viejo.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/mission-viejo-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/2592/community-gis.html",
+    "tmp/valhalla-parcel-research/2592/app-config.json",
+    "tmp/valhalla-parcel-research/2592/parcel-query.json",
+    "tmp/valhalla-parcel-research/runs/20261010T095746-33412409/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T10:02:30.572119Z",
+  "reason": "Official city Community GIS cache confirms property lines but says the vendor provides and maintains the viewer; registryFound true is grounded in official city/county parcel-map custody recorded in the packet. Viewer config cache has totalResults 141 with empty data; parcel-query cache is Internal Server Error. No safe native-ID polygon response or retained polygon. Forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are absent. HTTP 500 is not parcel absence; no runtime admission.",
+  "sourceAdmission": "not_admitted"
+}

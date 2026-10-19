@@ -1,0 +1,138 @@
+{
+  "name": "Porto Alegre",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 281,
+  "point": [
+    -30.0547897995897,
+    -51.1513513865416
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese",
+        "query": "Porto Alegre mapas digitais lotes fiscais DMWEB prefeitura SMF parcelas GIS",
+        "scope": "Locate an official municipal lot layer and current public feature service.",
+        "result": "The municipal Mapas Digitais/+Dados platform exposes the SMAMUS ArcGIS publication dmweb_lotes_fiscais, described as Lotes Fiscais and sourced from SMF Porto Alegre. The direct feature layer returns full polygon geometry.",
+        "actualResultUrls": [
+          "https://prefeitura.poa.br/smamus/planejamento-urbano/mapas-digitais",
+          "https://gis-smamus.portoalegre.rs.gov.br/smamus/+dados/",
+          "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      },
+      {
+        "language": "English",
+        "query": "Porto Alegre Brazil official fiscal lot parcel polygon GIS ArcGIS municipal map",
+        "scope": "Cross-check English indexing for city-owned parcel data and the direct service.",
+        "result": "Found the official municipal ArcGIS layer; no separate English portal or data contract was needed to verify its geometry endpoint.",
+        "actualResultUrls": [
+          "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      }
+    ],
+    "portals": [
+      {
+        "name": "Mapas Digitais / +Dados Porto Alegre",
+        "operator": "Prefeitura de Porto Alegre; SMAMUS map portal with SMF-sourced fiscal lot publication",
+        "homeUrl": "https://prefeitura.poa.br/smamus/planejamento-urbano/mapas-digitais",
+        "observation": "Municipal map portal links the city GIS publication. Layer metadata identifies Lotes Fiscais, polygon geometry, and the SMF source; metadata and query support GeoJSON and pagination."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Layer metadata describes an esriGeometryPolygon layer; supports pagination and GeoJSON. Safe requested fields used for samples: objectid,id_lotes,setor,qtd."
+      },
+      {
+        "url": "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0/query?where=id_lotes+IN+%2875489%2C156806%2C69191%2C68633%2C165601%2C75983%29&outFields=objectid%2Cid_lotes&returnGeometry=true&outSR=4326&f=geojson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8",
+        "observation": "Bounded overlap diagnosis returned 8 full Polygon records for six id_lotes values using only objectid and id_lotes plus geometry; IDs 75489 and 165601 recur under separate OIDs, and several distinct-ID overlaps remain unexplained."
+      },
+      {
+        "url": "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0/query?where=1%3D1&geometry=-51.1513513865416%2C-30.0547897995897&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cid_lotes&returnGeometry=true&outSR=4326&f=geojson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8",
+        "observation": "Exact WUP point returned two complete Polygon features with safe attributes only; both native id_lotes=170121 under object IDs 410396 and 367988, 320 coordinates each."
+      }
+    ],
+    "qualificationFile": "research/overnight-cities-2026-10-08/porto-alegre-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/porto-alegre-quality.json"
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "url": "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0/query?where=1%3D1&geometry=-51.1513513865416%2C-30.0547897995897&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cid_lotes&returnGeometry=true&outSR=4326&f=geojson",
+    "httpStatus": 200,
+    "contentType": "application/geo+json",
+    "featureCount": 2,
+    "featureId": "BR-POA-SMF-170121",
+    "geometryType": "POLYGON",
+    "coordinateCount": 320,
+    "fullGeometryReturned": true,
+    "clipped": false,
+    "locationBasis": "Exact WUP centroid query; the queue point is a population-weighted settlement centroid, not a municipal boundary or coverage claim.",
+    "attributePolicy": "Only safe GIS IDs and geometry retained; no owner/address fields requested.",
+    "featureIds": [
+      "BR-POA-SMF-170121 (objectid 410396)",
+      "BR-POA-SMF-170121 (objectid 367988)"
+    ],
+    "observation": "Two complete Polygon features returned for the exact WUP point; both share id_lotes 170121 under separate object IDs, each with 320 coordinates."
+  },
+  "source": {
+    "sourceId": "br-poa-smf-fiscal-parcels",
+    "name": "Porto Alegre municipal fiscal lots (SMF) via SMAMUS DMWEB",
+    "url": "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0",
+    "operator": "Prefeitura de Porto Alegre municipal GIS publication; source is identified as SMF Porto Alegre.",
+    "serviceType": "Public ArcGIS FeatureServer polygon layer supporting bounded GeoJSON queries and pagination.",
+    "layer": "dmweb_lotes_fiscais/0 (Lotes Fiscais)",
+    "geometryType": "POLYGON",
+    "outputCrs": "GeoJSON WGS 84 for stored samples; metric audit EPSG:32722.",
+    "nativeIdField": "id_lotes",
+    "nativeIdEvidence": "Layer returns id_lotes and objectid; exact queries by the native ID returned shapes. Duplicate IDs under distinct object IDs and material overlaps remain unexplained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal fiscal lot dataset published by Porto Alegre; city portal description and layer metadata identify the municipal context.",
+    "verifiedOpenScope": "A full polygon was returned at the WUP centroid, and the repository adapter passed all 13 bounded 0.001° cells plus pagination, exact-ID reads, absence, footprint, and binding checks. This bounded sample does not establish full municipal completeness.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_candidate",
+  "technicalBlocker": "Independent GEOS audit on 139 unmodified unique shapes found 20 positive-area overlap pairs totaling 27,473.94 m² and 0 invalid geometries. A bounded native query confirmed near-coincident duplicate-like shapes under different IDs/object IDs and several distinct-ID overlaps; the service metadata does not explain lifecycle or layer grouping. Keep runtime held until the source owner documents the unit/record contract. Do not filter or repair shapes.",
+  "remainingUncertainty": "Whether duplicate and overlapping fiscal features represent duplicate records, lifecycle states, or distinct legal/tax units; citywide completeness and the queue identity review are also unresolved.",
+  "nextStep": "Request source-owner documentation for id_lotes/objectid lifecycle and grouping semantics, then requalify overlaps without arbitrary status/year/type filters. Keep the three existing safe geometry samples only and do not integrate pending review.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5995,
+  "cityId": "wup2025:5995",
+  "runtimeReadiness": "held_protocol_review",
+  "adapterReady": false,
+  "centerLatLon": [
+    -30.0547897995897,
+    -51.1513513865416
+  ],
+  "queueRank": 281,
+  "population2025": 1755917,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "br-poa-smf-fiscal-parcels"
+  ],
+  "runtimeAssessment": {
+    "status": "held_protocol_review",
+    "reason": "The direct public sample and adapter protocol pass, but independent GEOS found substantial unresolved overlaps and the source lacks a documented lifecycle/grouping contract.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/porto-alegre-service-review.json"
+  },
+  "registryBasis": "The official municipal map portal publishes SMF-sourced fiscal lot polygons; a complete public polygon was returned.",
+  "identityReviewRequired": true,
+  "rootReviewedAt": "2026-10-08T22:06:54.103695+00:00"
+}

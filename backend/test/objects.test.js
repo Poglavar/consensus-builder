@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
-import { setupObjectRoute } from '../routes/objects.js';
+import { setupObjectRoute, MAX_OBJECTS } from '../routes/objects.js';
 import { createRouteApp } from './helpers/create-route-app.js';
 import { createMockPool } from './helpers/mock-pool.js';
 
@@ -138,8 +138,28 @@ describe('GET /objects', () => {
                 type: 'Feature',
                 properties: { object_id: 101, height: 42 },
                 geometry: { type: 'Polygon', coordinates: [[[15.9, 45.79], [15.91, 45.79], [15.91, 45.78], [15.9, 45.79]]] }
-            }]
+            }],
+            truncated: false
         });
         expect(pool.getCalls()[0].params[1]).toBe(4326);
+        expect(pool.getCalls()[0].params[2]).toBe(MAX_OBJECTS + 1);
+        expect(pool.getCalls()[0].sql).toMatch(/LIMIT \$3/);
+    });
+
+    it('refuses a geometry whose extent is far beyond a lookup', async () => {
+        const geometry = encodeURIComponent(JSON.stringify({
+            type: 'Polygon',
+            coordinates: [[[-170, -80], [170, -80], [170, 80], [-170, -80]]]
+        }));
+        const res = await request(app).get(`/objects?geometry=${geometry}`);
+
+        expect(res.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
+    });
+
+    it('rejects a repeated geometry parameter instead of crashing', async () => {
+        const res = await request(app).get('/objects?geometry=a&geometry=b');
+
+        expect(res.status).toBe(400);
     });
 });

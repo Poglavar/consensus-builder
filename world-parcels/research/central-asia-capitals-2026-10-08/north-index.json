@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "workstream_research_index",
+  "checkedAt": "2026-10-08",
+  "scope": "North workstream: Astana (Kazakhstan) and Bishkek (Kyrgyzstan), two capital cities from the five-capital Central Asia queue.",
+  "cityCount": 2,
+  "summary": {
+    "verifiedGeometryCities": 2,
+    "qualifiedPendingAcceptanceCities": 0,
+    "promisingUnavailableCities": 0,
+    "officialServiceNoGeometryCities": 0,
+    "noVerifiedSampleCities": 0,
+    "partialCoverageCities": 2
+  },
+  "cities": [
+    {
+      "cityId": "capital:KZ:astana",
+      "name": "Astana",
+      "countryCode": "KZ",
+      "resultCategory": "verified_sample_partial_coverage",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-astana.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "targetGeometryEvidence": "Official national PKK u_view district 254 returned a valid closed parcel containing the selected point; a 9-cell sample yielded 154 native cadastral keys. Accepted adapter evidence confirms all 154 fresh exact-ID geometry hashes match, 65 small-page requests reproduce the baseline ID set and hashes, an explicit absent ID is absent, and sourceBinding and parcelActBinding each match one parcel. Five measured tiny overlaps were accepted unchanged.",
+      "blocker": "Esil district 254 and sampled cells only; citywide completeness and kad_nomer permanence/global uniqueness remain unverified. No geometry repair was applied.",
+      "nextStep": "Keep Esil-only app scope until other Astana districts and citywide coverage have separate evidence.",
+      "runtimeEnabled": true,
+      "acceptanceFile": "research/central-asia-capitals-2026-10-08/astana-acceptance.json",
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-astana.json",
+        "research/central-asia-capitals-2026-10-08/astana-acceptance.json",
+        "research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3-requests.json"
+      ]
+    },
+    {
+      "cityId": "capital:KG:bishkek",
+      "name": "Bishkek",
+      "countryCode": "KG",
+      "resultCategory": "verified_sample_partial_coverage",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-bishkek.json",
+      "registryFound": true,
+      "verifiedSample": true,
+      "targetGeometryEvidence": "No-cookie center query returned land parcels 0889/0890; center is inside 0890. 3x3 sample returned 111 unique parcels; 108 valid, 3 invalid; 12 positive-area overlap pairs.",
+      "blocker": "Runtime is held for local geometry QA: 3/111 sampled features are invalid and 12 pairs have positive-area intersections. The prototype adapter is implemented but not wired; PROPCODE permanence and citywide scope remain undocumented.",
+      "nextStep": "Resolve invalid geometry and overlap QA before wiring the public adapter.",
+      "runtimeEnabled": false,
+      "adapterStatus": "implemented_unwired",
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-bishkek.json",
+        "research/central-asia-capitals-2026-10-08/bishkek-query-validation.json"
+      ]
+    }
+  ],
+  "overallFinding": "Astana has an accepted official national-PKK partial sample in Esil district 254: 154 native cadastral keys across nine cells with fresh exact-ID/hash checks and both binding checks passing. Bishkek has an official anonymous sample of 111 public land-plot polygons, but runtime remains held because the neighborhood contains 3 invalid geometries and 12 positive-area intersection pairs. Neither sample establishes citywide completeness or ownership."
+}

@@ -1,0 +1,218 @@
+{
+  "name": "Mesa",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 363,
+  "point": [
+    33.3696682645346,
+    -111.806955125099
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mesa Arizona official parcel map GIS parcel polygons City of Mesa Data Hub public API",
+        "scope": "Find the city-maintained parcel layer, safe ID fields, and anonymous full-geometry route.",
+        "result": "The City of Mesa Data Hub describes current parcel polygons within Mesa and monthly reconciliation with county assessor parcel numbers. Its previously documented municipal GIS host reset in this environment. A separately published public ArcGIS Online service owned by the City GIS organization was queried directly and returned complete Polygon features with only OBJECTID/APN. The WUP center point itself returned no parcel; an adjacent 13-cell parcel-covered core sample about 1.1 km north qualified through the existing adapter.",
+        "actualResultUrls": [
+          "https://data.mesaaz.gov/Information-Technology/Parcels-Map/exwj-87im",
+          "https://opengis.mesaaz.gov/",
+          "https://gis.mesaaz.gov/mesaaz/rest/services/Accela/MesaParcels/MapServer/0?f=pjson",
+          "https://gis.mesaaz.gov/mesaaz/rest/services/Accela/MesaParcels/MapServer/0/query",
+          "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0"
+        ],
+        "executionMethod": "English-language research and anonymous HTTPS ArcGIS REST metadata/query requests. The alternate service was read using only OBJECTID, APN, and full geometry; no owner/address fields were requested. Existing adapter checks and independent GEOS QA are recorded in the adjacent acceptance and quality files."
+      },
+      {
+        "language": "English",
+        "query": "City of Mesa GIS public parcel map official polygon dataset APN",
+        "scope": "Cross-check city-local data ownership, currentness, and geometry format.",
+        "result": "City Data Hub describes current city parcel polygons reconciled monthly with county assessor parcel numbers. The independently reachable City GIS ArcGIS Online service returned complete polygons using only OBJECTID/APN; the direct municipal host reset before an HTTP response.",
+        "actualResultUrls": [
+          "https://data.mesaaz.gov/Information-Technology/Parcels-Map/exwj-87im",
+          "https://gis.mesaaz.gov/mesaaz/rest/services/Accela/MesaParcels/MapServer/0"
+        ],
+        "executionMethod": "Separate English-language search and first-party City of Mesa metadata inspection."
+      },
+      {
+        "language": "English",
+        "query": "Mesa Arizona public ArcGIS Online parcels ITDGIS FeatureServer",
+        "scope": "Find an independently reachable City GIS publisher for the public parcel layer.",
+        "result": "ArcGIS Online service root and layer 0 returned HTTP 200 directly. Layer 0 is a polygon feature layer in EPSG:2868, with OBJECTID and APN safe ID fields, query capability, maxRecordCount 2000, and a city-area extent. Total public service count was 201,714. Direct WUP point query returned zero features; a 2 km local envelope returned 43 complete Polygon features.",
+        "actualResultUrls": [
+          "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer",
+          "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0"
+        ],
+        "executionMethod": "Anonymous HTTPS GET; exact WUP center and bounded nearby envelope tested with geometry enabled and outFields=OBJECTID,APN."
+      }
+    ],
+    "portals": [
+      {
+        "name": "City of Mesa Open GIS Portal",
+        "operator": "City of Mesa Enterprise GIS",
+        "homeUrl": "https://opengis.mesaaz.gov/",
+        "observation": "City portal says it provides public access to spatial data and identifies parcel-information maps."
+      },
+      {
+        "name": "City of Mesa Data Hub Parcels Map",
+        "operator": "City of Mesa Information Technology",
+        "homeUrl": "https://data.mesaaz.gov/Information-Technology/Parcels-Map/exwj-87im",
+        "observation": "Describes current parcel polygons within Mesa reconciled monthly with Maricopa County Assessor parcel numbers; page reports last update June 12, 2026."
+      },
+      {
+        "name": "Mesa Parcels ArcGIS Feature Layer (0)",
+        "operator": "City of Mesa Enterprise GIS",
+        "homeUrl": "https://gis.mesaaz.gov/mesaaz/rest/services/Accela/MesaParcels/MapServer/0",
+        "observation": "Layer metadata: esriGeometryPolygon, EPSG:2868, maxRecordCount 1000, supports JSON/GeoJSON queries and allowOthersToQuery=true; fields include OBJECTID and APN. Geometry sample remains unverified."
+      },
+      {
+        "name": "City GIS ArcGIS Online Parcels Feature Layer",
+        "operator": "Mesa City GIS organization (ArcGIS Online owner ITDGIS)",
+        "homeUrl": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0",
+        "observation": "Direct anonymous metadata and bounded full-feature query succeeded. 201,714 service records; Polygon geometry, EPSG:2868; safe identifier fields OBJECTID and APN. This is an alternate publisher because direct requests to maps.mesaaz.gov reset before an HTTP response."
+      }
+    ],
+    "requests": [
+      {
+        "purpose": "Direct HTTPS layer metadata schema",
+        "method": "GET",
+        "url": "https://gis.mesaaz.gov/mesaaz/rest/services/Accela/MesaParcels/MapServer/0?f=json",
+        "httpStatus": null,
+        "transportError": "Node fetch TypeError: fetch failed; cause ECONNRESET during read; no HTTP response."
+      },
+      {
+        "purpose": "Bounded WUP-point full-geometry query, safe fields only",
+        "method": "GET",
+        "url": "https://gis.mesaaz.gov/mesaaz/rest/services/Accela/MesaParcels/MapServer/0/query?where=1%3D1&geometry=-111.806955%2C33.369668&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson",
+        "requestedFields": [
+          "OBJECTID",
+          "APN",
+          "geometry"
+        ],
+        "httpStatus": null,
+        "transportError": "Node fetch TypeError: fetch failed; cause ECONNRESET during read; no HTTP response."
+      },
+      {
+        "purpose": "City Data Hub public dataset API metadata and one-row check",
+        "method": "GET",
+        "url": "https://data.mesaaz.gov/api/views/exwj-87im.json",
+        "httpStatus": 200,
+        "result": "Metadata returned. Resource endpoint https://data.mesaaz.gov/resource/exwj-87im.json?$limit=1 returned HTTP 200 with [{}], so it provided no sample."
+      },
+      {
+        "purpose": "Mesa ArcGIS REST directory metadata (web-rendered reference)",
+        "method": "GET",
+        "url": "https://gis.mesaaz.gov/mesaaz/rest/services/Accela/MesaParcels/MapServer/0?f=pjson",
+        "httpStatus": null,
+        "result": "Web-rendered directory/search material reports polygon layer, fields OBJECTID/APN, GeoJSON query support and allowOthersToQuery=true; it is not a direct response from this environment."
+      },
+      {
+        "purpose": "City ArcGIS Online FeatureServer root metadata",
+        "method": "GET",
+        "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer?f=pjson",
+        "httpStatus": 200,
+        "result": "Public FeatureServer metadata confirmed."
+      },
+      {
+        "purpose": "ArcGIS layer 0 metadata schema",
+        "method": "GET",
+        "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0?f=pjson",
+        "httpStatus": 200,
+        "result": "Parcels layer; esriGeometryPolygon, EPSG:2868, OBJECTID/APN, maxRecordCount 2000, Query/Extract, totalCount 201714."
+      },
+      {
+        "purpose": "Exact WUP center parcel query",
+        "method": "GET",
+        "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?geometry=-111.806955125099%2C33.3696682645346&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson",
+        "httpStatus": 200,
+        "result": "Valid GeoJSON FeatureCollection, zero features at the WUP point."
+      },
+      {
+        "purpose": "Bounded WUP-centered 2 km envelope count and geometry query",
+        "method": "GET",
+        "url": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0/query?geometry=-111.816955%2C33.359668%2C-111.796955%2C33.379668&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=2000",
+        "httpStatus": 200,
+        "result": "43 complete Polygon features. No owner/address fields requested. City-core envelope only; not a citywide completeness claim."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 3,
+    "bounded": true,
+    "pointLocated": false,
+    "note": "Exact WUP center returned a valid HTTP 200 empty FeatureCollection. A nearby 13-cell core grid approximately 1.1 km north returned 23 unique complete Polygon features with safe OBJECTID/APN only; three trimmed features are retained. Existing adapter 13-cell, forced paging, exact-ID refresh, explicit absence, footprint, and source-binding checks passed. Independent GEOS QA found all 23 valid, no duplicates, and no positive-area overlaps in this sample."
+  },
+  "source": {
+    "operator": "Mesa City GIS organization (ArcGIS Online owner ITDGIS)",
+    "endpoint": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0",
+    "requestedAttributes": [
+      "OBJECTID",
+      "APN"
+    ],
+    "personalAttributesRequested": false,
+    "layer": "Parcels (FeatureServer layer 0)",
+    "geometryType": "esriGeometryPolygon",
+    "nativeIdFields": [
+      "APN"
+    ],
+    "transportIdField": "OBJECTID",
+    "coordinateReferenceSystem": "EPSG:2868; full feature queries returned GeoJSON in EPSG:4326",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "name": "City of Mesa GIS parcel boundaries",
+    "catalogueUrl": "https://opengis.mesaaz.gov/",
+    "scope": "23 valid, distinct City of Mesa-hosted parcel polygons verified in thirteen bounded cells around [33.3793,-111.8075], approximately 1.1 km north of the unchanged ranked WUP locator. The WUP point returned an explicit empty collection. Complete object-ID manifests, forced three-row paging, all 23 fresh APN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32612 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The app starts at the tested nearby parcel-covered reference; citywide completeness, legal title, survey accuracy and APN uniqueness outside this sample are unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-published parcel boundaries; municipality-wide completeness unverified.",
+    "verifiedOpenScope": "23 valid, distinct City of Mesa-hosted parcel polygons verified in thirteen bounded cells around [33.3793,-111.8075], approximately 1.1 km north of the unchanged ranked WUP locator. The WUP point returned an explicit empty collection. Complete object-ID manifests, forced three-row paging, all 23 fresh APN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32612 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The app starts at the tested nearby parcel-covered reference; citywide completeness, legal title, survey accuracy and APN uniqueness outside this sample are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "priorQualificationScope": "The WUP center itself has no intersecting parcel in this layer. A bounded nearby city-core 13-cell grid about 1.1 km north returned 23 complete parcels; adapter page/ID/absence/footprint/source-binding checks passed. This verifies local parcel coverage, not citywide completeness."
+  },
+  "registryFound": true,
+  "registryBasis": "City Data Hub describes current Mesa parcel polygons reconciled monthly with Maricopa County assessor parcel numbers. The alternate publicly queryable service is published by the Mesa City GIS ArcGIS organization; geometry and safe identifiers were verified directly.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Coverage, current legal title and survey accuracy beyond the sampled cells remain unverified.",
+  "sourceIds": [
+    "us-az-mesa-city-parcels"
+  ],
+  "nextStep": "Review the enabled local parcel map and normal parcel selection.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4997,
+  "cityId": "wup2025:4997",
+  "queueRank": 363,
+  "population2025": 1398369,
+  "population2025k": 1398.369,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    33.3696682645346,
+    -111.806955125099
+  ],
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "appCityId": "mesa",
+  "scopeLimits": "23 valid, distinct City of Mesa-hosted parcel polygons verified in thirteen bounded cells around [33.3793,-111.8075], approximately 1.1 km north of the unchanged ranked WUP locator. The WUP point returned an explicit empty collection. Complete object-ID manifests, forced three-row paging, all 23 fresh APN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32612 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The app starts at the tested nearby parcel-covered reference; citywide completeness, legal title, survey accuracy and APN uniqueness outside this sample are unverified.",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "23 valid, distinct City of Mesa-hosted parcel polygons verified in thirteen bounded cells around [33.3793,-111.8075], approximately 1.1 km north of the unchanged ranked WUP locator. The WUP point returned an explicit empty collection. Complete object-ID manifests, forced three-row paging, all 23 fresh APN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32612 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The app starts at the tested nearby parcel-covered reference; citywide completeness, legal title, survey accuracy and APN uniqueness outside this sample are unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/mesa-parcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/mesa-parcels-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/mesa-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-az-mesa-city-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/mesa-parcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/mesa-parcels-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00"
+}

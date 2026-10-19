@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4020-meknes.json",
+  "purpose": "Document exact city-scope official registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "ANCFCC officially lists two Meknes cadastral/property-conservation offices, but its online cadastral plan workflow requests personal and title identifiers. No public anonymous parcel geometry was verified.",
+  "registryAssessment": "ANCFCC’s official property-office directory lists both Meknes Al Ismailia and Meknes El Menzeh conservation and cadastral offices. The agency describes cadastral plans as boundary/area documents, and the online plan-cadastral request asks for applicant identity and title data with CAPTCHA; no public anonymous parcel geometry is established.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "observation": "ANCFCC’s official property-office directory lists both Meknes Al Ismailia and Meknes El Menzeh conservation and cadastral offices. The agency describes cadastral plans as boundary/area documents, and the online plan-cadastral request asks for applicant identity and title data with CAPTCHA; no public anonymous parcel geometry is established."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/ProduitsCadastre/",
+      "observation": "Official page reviewed for public service and parcel-geometry scope; no personal or property-specific query was made."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "observation": "Official page reviewed for public service and parcel-geometry scope; no personal or property-specific query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Meknes Morocco official cadastral office parcel geometry public map ANCFCC",
+      "result": "The official national agency directory confirms Meknes cadastral offices and a plan-cadastral request service; no public anonymous full-polygon API was found.",
+      "method": "Separate English-language official-source-focused search."
+    },
+    {
+      "language": "Arabic/French",
+      "query": "مكناس المحافظة العقارية المسح العقاري تصميم عقاري ANCFCC Meknès cadastre officiel",
+      "result": "ANCFCC’s official directory lists two Meknes cadastral and property-conservation offices. The online cadastral-plan service is an authenticated/identity and title request workflow, not an open geometry endpoint.",
+      "method": "Separate local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The public plan-request page requires applicant identity, title information, and CAPTCHA; no anonymous viewer/vector endpoint was exposed by the reviewed agency pages."
+  },
+  "privacy": "No parcel/owner/address/tax-account lookup or login was made. No geometry or private attributes retained.",
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "The public plan-request page requires applicant identity, title information, and CAPTCHA; no anonymous viewer/vector endpoint was exposed by the reviewed agency pages."
+  }
+}

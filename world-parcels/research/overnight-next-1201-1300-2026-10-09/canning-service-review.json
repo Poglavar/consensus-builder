@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11895-canning.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Canning's official West Bengal cadastral entry points and bounded anonymous service attempts without retaining unsafe land-record fields.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official West Bengal cadastral custody and a Canning mouza plot-information workflow were evidenced, but no safe anonymous parcel identifier plus full native polygon response was obtained. Runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by the official Directorate of Land Records and Surveys/Sarthac Canning mouza result and the official West Bengal property-record procedure. This is local/state registry-service evidence, not title or ownership evidence.",
+  "coverageAssessment": {"claimedScope": "Official West Bengal land-record entry points and bounded anonymous GET attempts.", "verifiedOpenScope": null, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["publicParcelId", "nativeGeometry", "geometryType", "sourceCrs", "sourceLayer", "retrievalTime"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not run; no anonymous parcel geometry layer was verified. Exact WUP point [22.3459469110544,88.7375117722278] was preserved unchanged.", "requestEvidence": "See city-11895-canning.json freshResearch.requests; no polygon was retained."},
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "uncertainty": "Banglarbhumi's current public JavaScript/API, native CRS, safe parcel ID fields and coverage for Canning remain unverified. Timeouts and TLS verification failure are access limitations, not evidence of absence.",
+  "nextStep": "Independent serial review should retry the official Banglarbhumi viewer/API from an available network and inspect a bounded safe ID+geometry response. Keep runtime held pending independent qualification.",
+  "integrationState": "not_integrated",
+  "runtimeReadiness": "held_pending_serial_review"
+}

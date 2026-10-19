@@ -1,0 +1,40 @@
+{
+  "cityCode": 4805,
+  "queueRank": 2308,
+  "name": "Shendi",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "point": [16.6867207850358, 33.4285918072333],
+  "population2025": 252344,
+  "population2025k": 252.344,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sudan Shendi cadastral parcel map official land registry survey authority",
+        "result": "First-party discovery identified Sudan’s Aqari national land-registration platform, the Judiciary land-registration administration, and the NIC-described Sudan Spatial Geoportal. The public evidence describes land-registration services and WMS/WFS capability, but no safe anonymous Shendi parcel feature response with native identity and geometry was obtained.",
+        "actualResultUrls": [
+          "https://aqari.nctr.sd/ar",
+          "https://www.nic.gov.sd/public/projectDetails/3",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://www.geoportal.gov.sd/"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "السودان شندي خريطة قطع الأراضي السجل العقاري المساحة",
+        "result": "البحث العربي الأولي وجد منصة عقاري التابعة للسلطة القضائية، وصفحة إدارة تسجيلات الأراضي، ووصف المركز القومي للمعلومات لبوابة السودان المكانية. لم تُحصل استجابة عامة مجهولة تحتوي على هوية قطعة آمنة وهندسة مضلع لشندي.",
+        "actualResultUrls": [
+          "https://aqari.nctr.sd/ar",
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://www.nic.gov.sd/public/projectDetails/3"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Official national custodians and service descriptions are evidenced, but a public Shendi parcel layer or bounded anonymous ID-plus-geometry response was not verified. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

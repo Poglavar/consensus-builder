@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-6012-tlaxcala.json",
+  "cohort": "overnight-next-2501-2600-2026-10-11",
+  "purpose": "Document first-party cadastral-source discovery and bounded anonymous service review for Tlaxcala, Mexico.",
+  "assessment": "A local/state cadastral custodian is evidenced, but the public state catastro route is a login wall and the official municipal atlas exposes reference maps and statistics rather than a verified anonymous parcel-feature service. No parcel geometry was retained.",
+  "registryAssessment": "registryFound=true is supported by official Instituto de Catastro del Estado de Tlaxcala pages/manual and official state/municipal mapping. This evidences local/state cadastral custody, not an open adapter qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointAbsenceInferred": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://tlaxcalacatastro.gob.mx/login.xhtml", "operator": "Instituto de Catastro del Estado de Tlaxcala", "scope": "Official public entry, currently credential-gated."},
+    {"url": "https://catastro.tlaxcala.gob.mx/index.php/home", "operator": "Instituto de Catastro del Estado de Tlaxcala", "scope": "Official institution home page."},
+    {"url": "https://catastro.tlaxcala.gob.mx/pdf/normatividad/MANUAL%20DE%20PROCEDIMIENTOS%20PUBLICADO.pdf", "operator": "Instituto de Catastro del Estado de Tlaxcala", "scope": "Official manual describing cadastral cartography and georeferencing procedures."},
+    {"url": "https://atlas.tlaxcala.gob.mx/municipios/50/", "operator": "Gobierno del Estado de Tlaxcala / CEPC", "scope": "Official Tlaxcala municipal reference atlas; WGS84 and CCL 2008 metadata, no parcel API verified."},
+    {"url": "https://sistemas.sedatu.gob.mx/PlataformaMRC/", "operator": "SEDATU", "scope": "National registral/cadastral platform description; login required and no Tlaxcala parcel response verified."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Tlaxcala Mexico official cadastral parcel map GIS service Instituto de Catastro", "result": "Official state catastro, atlas, and SEDATU sources found; no anonymous parcel feature response verified.", "resultUrls": ["https://tlaxcalacatastro.gob.mx/login.xhtml", "https://catastro.tlaxcala.gob.mx/index.php/home", "https://atlas.tlaxcala.gob.mx/municipios/50/", "https://sistemas.sedatu.gob.mx/PlataformaMRC/"]},
+    {"language": "Spanish", "query": "Tlaxcala México catastro mapa predial cartografía oficial servicio WMS WFS Instituto de Catastro", "result": "Se encontraron fuentes oficiales estatales y municipales; no se verificó una respuesta anónima de entidades parcelarias.", "resultUrls": ["https://tlaxcalacatastro.gob.mx/login.xhtml", "https://catastro.tlaxcala.gob.mx/pdf/normatividad/MANUAL%20DE%20PROCEDIMIENTOS%20PUBLICADO.pdf", "https://atlas.tlaxcala.gob.mx/municipios/50/", "https://portaldigital.tlaxcaladexicohtencatl.gob.mx/ES-SGTPortal/"]}
+  ],
+  "attempts": [
+    {"url": "https://tlaxcalacatastro.gob.mx/login.xhtml", "method": "GET anonymous via search/open; TLS verified by web fetch", "httpStatus": 502, "outcome": "Public entry identified as Instituto de Catastro login page; direct fetch returned gateway error in this environment. No login attempted."},
+    {"url": "https://catastro.tlaxcala.gob.mx/index.php/home", "method": "GET anonymous via first-party search", "httpStatus": null, "outcome": "Official home page identified; no parcel endpoint or safe anonymous geometry response exposed by the inspected result."},
+    {"url": "https://atlas.tlaxcala.gob.mx/municipios/", "method": "GET anonymous via web fetch", "httpStatus": 200, "outcome": "Official municipal atlas index retrieved; links to Tlaxcala municipality record 50."},
+    {"url": "https://atlas.tlaxcala.gob.mx/municipios/50/", "method": "GET anonymous via web fetch", "httpStatus": 200, "outcome": "Municipal reference page retrieved. It reports location, municipal indicators, and map metadata (WGS84; CCL 2008), but no parcel layer, native parcel ID, or anonymous feature endpoint."},
+    {"url": "https://sistemas.sedatu.gob.mx/PlataformaMRC/", "method": "GET anonymous via web fetch", "httpStatus": 200, "outcome": "National platform description retrieved; public interface presents login and describes WMS/WFS/WCS capability, but no anonymous Tlaxcala parcel response was obtained."},
+    {"url": "https://atlas.tlaxcala.gob.mx/municipios/50/", "method": "bounded exact-point/geometry request", "httpStatus": null, "outcome": "Not run because the inspected atlas page has no verified parcel-feature endpoint. Exact WUP point was not shifted and no absence inference is made."},
+    {"url": "https://atlas.tlaxcala.gob.mx/municipios/50/", "method": "TLS inspection with curl default verification", "httpStatus": null, "outcome": "Local curl could not validate the host certificate chain; no certificate exception was used because none was authorized. This did not change the web-fetched public-page evidence."}
+  ],
+  "safeFieldAllowlist": ["native public parcel ID if available", "native geometry", "geometry type", "source CRS", "layer/schema metadata", "administrative codes"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not run against a verified parcel endpoint; exact point [19.3169327945908,-98.2086307747163] remains unchanged and no absence inference is made."},
+  "coverageAssessment": {"claimedScope": "Official Tlaxcala state cadastral custodian and municipal reference mapping, plus national SEDATU platform discovery.", "verifiedOpenScope": "Institutional and reference-map metadata only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "The state cadastral management system may expose parcel geometry to authorized users or through an undocumented/public route. The login wall and lack of a verified open feature endpoint prevent safe anonymous adapter qualification.",
+  "runtimeDecision": "held_not_enabled",
+  "integrationDecision": "not_integrated"
+}

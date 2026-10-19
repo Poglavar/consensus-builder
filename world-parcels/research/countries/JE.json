@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "JE",
+ "country": "Jersey",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Government of Jersey (Digimap / Infrastructure, Housing & Environment) and Judicial Greffe (property records)",
+ "portalsFound": [
+  {
+   "url": "https://opendata.gov.je/api/3/action/package_search?q=parcel&rows=3",
+   "observation": "Open-data CKAN reachable, zero 'parcel' datasets."
+  },
+  {
+   "url": "https://www.gov.je/",
+   "observation": "302 redirect, not explored."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://opendata.gov.je/api/3/action/package_search?q=parcel&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 0"
+  },
+  {
+   "url": "https://mapping.gov.je/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable (guessed host)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only a guessed mapping host and one catalogue query tried; Jersey's Digimap parcel service (island-wide) not located.",
+ "nextStep": "Locate Government of Jersey Digimap/ArcGIS service via gov.je and test."
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:10330",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-10330-linqu.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/linqu-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T21:19:48Z",
+  "registryFound": true,
+  "findings": [
+    "County policy identifies natural-resources registration custody; direct official-site requests timed out.",
+    "No anonymous parcel geometry, native ID, or qualified adapter was obtained."
+  ]
+}

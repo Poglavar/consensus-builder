@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:7744",
+  "wupCityCode": 7744,
+  "cityCode": 7744,
+  "queueRank": 1256,
+  "rank": 1256,
+  "name": "Irkutsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "locId": 643,
+  "capital": false,
+  "aliases": ["irkutsk"],
+  "point": [52.2725093828849, 104.300484423056],
+  "centerLatLon": [52.2725093828849, 104.300484423056],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 442807,
+  "population2025k": 442.807,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_national_custodian_and_regional_gis_references_no_verified_parcel_geometry",
+  "registryFound": null,
+  "registryBasis": "Rosreestr/NSPD are national cadastral references. The Irkutsk regional GISOGD geoportal was identified as a planning-information portal, but no city/local cadastral parcel service or usable anonymous parcel response was verified.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "No bounded anonymous parcel ID+geometry response was verified. National map requests timed out, and the regional geoportal endpoint presented an untrusted TLS certificate; no certificate exception was used.",
+  "source": {
+    "nationalCustodian": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr)",
+    "nationalViewer": "National Spatial Data System / public cadastral map reference",
+    "regionalPlanningPortal": "Irkutsk Region GISOGD geoportal (Agate)",
+    "regionalPlanningPortalUrl": "https://geoportal.irkobl.ru/agate_usolesibirgo/map",
+    "crs": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "First-party discovery and bounded anonymous reachability checks for national cadastral references and the Irkutsk regional GISOGD portal.",
+    "verifiedOpenScope": "No parcel feature response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "technicalBlocker": "nspd.gov.ru and rosreestr.gov.ru timed out within bounded requests; geoportal.irkobl.ru failed TLS certificate verification. TLS was not disabled and no narrow exception was authorized.",
+  "remainingUncertainty": "A zero or unavailable response is not evidence of citywide absence. The official national viewer may be reachable from a different network, and the regional GISOGD portal may expose map services through JavaScript configuration not retrieved here.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Irkutsk official cadastral parcel map public viewer Rosreestr cadastral map",
+        "result": "Discovery found official Rosreestr/NSPD references and the Irkutsk regional GISOGD portal; third-party cadastral pages were not treated as first-party evidence.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/",
+          "https://geoportal.irkobl.ru/agate_usolesibirgo/map"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Иркутск публичная кадастровая карта Росреестр официальный карта земельных участков",
+        "result": "Russian-language discovery found the national public cadastral-map references, Irkutsk regional GISOGD documentation, and official Irkutsk administration references to cadastral work; no usable public parcel API was evidenced.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://rosreestr.gov.ru/",
+          "https://geoportal.irkobl.ru/doc/usages/GISOGD.portal/help.portal_start.html",
+          "https://admirk.ru/city/interaktivnye-karty/"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nspd.gov.ru/",
+        "method": "GET; anonymous; TLS verification enabled; bounded 20-second request",
+        "httpStatus": "timeout",
+        "assessment": "No response; timeout is not evidence of absence."
+      },
+      {
+        "url": "https://nspd.gov.ru/map?thematic=PKK",
+        "method": "GET; anonymous; TLS verification enabled; bounded request",
+        "httpStatus": "timeout",
+        "assessment": "Public map route was not retrieved; no bypass attempted."
+      },
+      {
+        "url": "https://rosreestr.gov.ru/",
+        "method": "GET; anonymous; TLS verification enabled; bounded request",
+        "httpStatus": "timeout",
+        "assessment": "National custodian site was not retrieved; no bypass attempted."
+      },
+      {
+        "url": "https://geoportal.irkobl.ru/agate_usolesibirgo/map",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": "TLS certificate verification failure",
+        "assessment": "Regional GISOGD portal was identified by first-party discovery, but its current HTML/configuration was not inspected. No certificate exception was used."
+      },
+      {
+        "url": "https://geoportal.irkobl.ru/doc/usages/GISOGD.portal/help.portal_start.html",
+        "method": "GET via first-party search index",
+        "httpStatus": 200,
+        "assessment": "Documentation describes the GISOGD portal as a map/document service for planning and land-related information; it does not by itself evidence a parcel geometry endpoint."
+      }
+    ],
+    "inspectedConfiguration": {
+      "viewer": null,
+      "apiBase": null,
+      "coordinateRoute": null,
+      "responseSchemaObserved": null,
+      "parcelEndpointObserved": false,
+      "schemaObserved": false,
+      "explicitCrsObserved": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://nspd.gov.ru/map?thematic=PKK",
+    "https://rosreestr.gov.ru/",
+    "https://geoportal.irkobl.ru/agate_usolesibirgo/map",
+    "https://geoportal.irkobl.ru/doc/usages/GISOGD.portal/help.portal_start.html"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "No verified anonymous parcel geometry and native safe identity; serial review would need a fresh reachable official endpoint."
+  }
+}

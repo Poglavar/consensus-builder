@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-1128-machala.json",
+  "cityCode": 1128,
+  "queueRank": 2239,
+  "name": "Machala",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "pointLatLon": [-3.26138075772121, -79.9567441994216],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "SEARCH", "url": "https://www.machala.gob.ec/", "httpStatus": 200, "outcome": "Official Municipality of Machala site identified; direct curl later received a Cloudflare challenge (HTTP 403), so challenge was not bypassed."},
+    {"method": "SEARCH", "url": "https://machaladigital.machala.gob.ec/pages/public/urbanismo/tramites-requisitos-avaluos-y-catastro.xhtml?id=13", "httpStatus": 200, "outcome": "Official municipal service page is indexed and identifies Avalúos y Catastros and its institutional email; direct request timed out/was challenge-blocked. No credentials or private fields were requested."},
+    {"method": "SEARCH", "url": "https://www.rpmachala.gob.ec/", "httpStatus": 200, "outcome": "Official Registro Municipal de la Propiedad del Cantón Machala page identifies the local public property registry and its institutional function; direct request timed out in this pass."},
+    {"method": "SEARCH", "url": "https://www.machala.gob.ec/documentosGAD/PUGS_Definitivo/MapotecaPDFFaseIII/MapasA3Generales/MapaGeneral10EstructuraParcelariadelAreaRuralMachala.pdf", "httpStatus": 200, "outcome": "Official municipal planning map states source is Catastro GAD Municipal de Machala and shows parcel-structure cartography in WGS84 UTM Zone 17 South / EPSG:32717. It is documentary map evidence, not an anonymous parcel feature API."},
+    {"method": "GET", "url": "https://www.geoportaligm.gob.ec/visorAFC/composer/", "httpStatus": 200, "outcome": "Official IGM public viewer shell loaded anonymously. Its JavaScript configuration exposed thematic AFC WMS sources (evaluation, land cover/use, socioeconomic, physiography and landscape), not a Machala cadastral parcel layer."},
+    {"method": "GET", "url": "https://www.geoportaligm.gob.ec/p_afc/ows?service=WMS&request=GetCapabilities", "httpStatus": null, "outcome": "Timed out after 20 seconds with no response; no layer schema or geometry obtained."},
+    {"method": "GET", "url": "https://www.geoportaligm.gob.ec/p_afc/eval_tierra/wms?service=WMS&request=GetCapabilities", "httpStatus": null, "outcome": "Timed out after 20 seconds with no response; no layer schema or geometry obtained."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "IGM Visor AFC composer and CapasIEE.js",
+    "geometryCrs": "Official Machala planning map documents WGS84 UTM Zone 17 South / EPSG:32717 for cartography; no parcel feature response was obtained.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry if exposed", "source service URL", "source CRS", "requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Local cadastral/property institutions are evidenced, but no anonymous parcel layer, schema, native identity or bounded geometry response was obtained."},
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel query succeeded; this is not evidence of citywide absence.",
+    "No full parcel polygons are retained.",
+    "Machala municipal Avalúos y Catastros and the Registro Municipal de la Propiedad are treated as local institutions; IGM is a national mapping agency and its thematic viewer is not treated as local cadastral custody.",
+    "Cloudflare challenge, timeout and unusable viewer/API responses were not bypassed.",
+    "The packet is complete as a research record, not source integration or runtime admission."
+  ],
+  "uncertainty": "The municipal custodian scope is evidenced by official pages and documents, but the current public parcel viewer/API route, native parcel identity, field schema, anonymous query behavior and citywide geometry coverage remain unresolved."
+}

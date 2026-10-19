@@ -1,49 +1,67 @@
 /**
  * Parcel-based Urban Rule functionality.
- * 
+ *
  * This file contains the functionality for parcel-based urban rules - generating
- * individual buildings per parcel with setback from borders and random floor counts.
- * 
+ * individual buildings per parcel with setback from borders and varying floor counts.
+ *
  * Unlike block or row typology which work with superparcels, parcel-based typology
  * generates one building per parcel using configurable rules:
  * - min_distance: setback from parcel borders
- * - max_floors: random floors from 1 to max_floors per building
+ * - max_floors: the permitted ceiling; a build-out varies from 1 up to it
+ *
+ * What the proposal SAVES is the permitted massing — one maximum envelope per parcel — because
+ * that is what the rule asserts and what the stats and the € gain must read. The varied houses
+ * shown here are one example build-out of that rule, derived from (rule, seed) by
+ * urban-rule-variation.js, so the same design always redraws the same street. See
+ * urban-rule-massing.md.
  */
 
 (function () {
+    const Variation = (typeof window !== 'undefined' && window.UrbanRuleVariation) ? window.UrbanRuleVariation : null;
+
     // Modal state
     let parcelBasedModal = null;
     let parcelBasedMap = null;
+    let parcelBasedGenerationTimer = null;
+    let parcelBasedBoundary = null;
     let parcelBasedParcelLayer = null;
     let parcelBasedBuildingLayers = [];
+    let parcelBasedEnvelopeLayers = [];
+    let parcelBasedExcludedLayers = [];
+    // The permitted massing (saved with the proposal) and the example build-out drawn from it.
     let generatedParcelBasedFeatures = [];
+    let parcelBasedBuildOut = [];
     let parcelBasedBlockNameOverride = null;
     let parcelBasedBlock = null;
+    let parcelBasedDragState = null;
     let pendingParcelBasedProposalContext = null;
 
     // Default parameter values
     const DEFAULT_MAX_FLOORS = 5;
     const DEFAULT_MIN_DISTANCE = 3; // meters from parcel borders
     const DEFAULT_FLOOR_HEIGHT = 3; // meters per floor
+    const DEFAULT_RULE_KIND = 'max'; // A: permits up to the envelope; nobody is compelled to build
+    const DEFAULT_MIN_FLOORS = 1;
+    const DEFAULT_MIN_FOOTPRINT_M2 = 0;
+    // GUP's najmanja površina građevne čestice. Small by default — buildings are possible on very
+    // small plots — but non-zero, because a sliver of a plot is not a building site.
+    const DEFAULT_MIN_PLOT_AREA_M2 = 50;
     let currentMaxFloors = DEFAULT_MAX_FLOORS;
     let currentMinDistance = DEFAULT_MIN_DISTANCE;
+    let currentRuleKind = DEFAULT_RULE_KIND;
+    let currentMinFloors = DEFAULT_MIN_FLOORS;
+    let currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
+    let currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
 
-    // 3D preview state
-    let parcelBased3D = {
-        handle: null,
-        renderer: null,
-        scene: null,
-        camera: null,
-        controls: null,
-        frameId: null,
-        container: null,
-        originHTRS: null,
-        modelGroup: null,
-        contextGroup: null,
-        resizeHandler: null,
-        hasCenteredOnce: false
-    };
-    let parcelBasedThreeLoadPromise = null;
+    // The variation seed for this design. Every house is derived from it, so the same seed always
+    // redraws the same street — on reload, in a shared link, and in a server-rendered thumbnail.
+    // Only Regenerate advances it; moving a slider re-derives from the same seed, so an edit
+    // disturbs only what it touches instead of reshuffling the whole block.
+    let currentVariationSeed = newVariationSeed();
+
+    // Parameters to restore when the modal next opens, instead of the defaults. Set by
+    // openParcelBasedForParcels({ initialParameters }); consumed once by showParcelBasedModal().
+    let parcelBasedSeedParameters = null;
 
     // Random colors for buildings
     const BUILDING_COLORS = [
@@ -56,14 +74,17 @@
     function formatParcelBasedText(template, params = {}) {
         if (!template) return '';
         return String(template).replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
-            return Object.prototype.hasOwnProperty.call(params, key) ? params[key] : match;
+            if (!Object.prototype.hasOwnProperty.call(params, key)) return match;
+            const value = params[key];
+            // An i18n plural reference ({ key, count }) without i18n loaded: its count is the best fallback.
+            return value && typeof value === 'object' && 'count' in value ? value.count : value;
         });
     }
 
     function translateParcelBasedText(key, fallback, params = {}) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
         if (api && typeof api.t === 'function') {
-            return api.t(key, params);
+            { const translated = api.t(key, params); if (translated !== key) return translated; }
         }
         return formatParcelBasedText(fallback, params);
     }
@@ -72,12 +93,7 @@
         const message = key
             ? translateParcelBasedText(`alerts.messages.${key}`, fallback, params)
             : translateParcelBasedText('', fallback, params);
-        const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function')
-            ? window.showStyledAlert
-            : window.alert;
-        if (typeof alertFn === 'function') {
-            alertFn(message);
-        }
+        window.CbDialog.alert(message);
         return message;
     }
 
@@ -124,11 +140,80 @@
     function describeParcelBasedParcelSelection(ids) {
         if (!Array.isArray(ids) || ids.length === 0) return translateParcelBasedText('parcelBased.modal.messages.selectedParcels', 'Selected Parcels');
         if (ids.length === 1) return translateParcelBasedText('parcelBased.modal.messages.singleParcelLabel', 'Parcel {{id}}', { id: ids[0] });
-        return translateParcelBasedText('parcelBased.modal.messages.multiParcelLabel', '{{count}} Parcels', { count: ids.length });
+        // The shared plural key: Croatian and Serbian need a different form for 2–4 parcels.
+        return translateParcelBasedText('proposals.autoName.parcels', '{{count}} parcels', { count: ids.length });
     }
 
-    function getRandomColor(index) {
-        return BUILDING_COLORS[index % BUILDING_COLORS.length];
+    function parcelBasedParcelsForIds(parcelIds) {
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        return ids.map(id => {
+            // Live parcels, or the synthetic design parcels of a site on bare ground
+            // (js/site-drawing.js: the site as one superparcel, or plots cut along a frontage).
+            const feature = (typeof window.resolveDesignParcelFeature === 'function'
+                ? window.resolveDesignParcelFeature(id)
+                : window.LiveParcelFabric?.get?.(id)) || null;
+            return feature ? { id, feature } : null;
+        }).filter(Boolean);
+    }
+
+    // A parcel keeps its shade whatever order the parcels arrive in. An index-based colour
+    // recoloured the whole street the moment one parcel joined or left the selection.
+    function colorForParcel(parcelId, index = 0) {
+        if (!Variation || parcelId === undefined || parcelId === null || parcelId === '') {
+            return BUILDING_COLORS[index % BUILDING_COLORS.length];
+        }
+        return BUILDING_COLORS[Variation.hashIndex(parcelId, BUILDING_COLORS.length)];
+    }
+
+    // A fresh seed for a fresh design. Random once, then stored and replayed forever after.
+    function newVariationSeed() {
+        return (Math.floor(Math.random() * 0xffffffff) >>> 0);
+    }
+
+    // The rule the sliders currently describe. This is the proposal's actual content — the
+    // geometry below is derived from it.
+    function currentParcelRule() {
+        const params = {
+            typology: 'parcelBased',
+            kind: currentRuleKind,
+            minDistance: currentMinDistance,
+            maxFloors: currentMaxFloors,
+            minFloors: currentMinFloors,
+            minFootprintAreaM2: currentMinFootprintM2,
+            minPlotAreaM2: currentMinPlotAreaM2,
+            floorHeightM: DEFAULT_FLOOR_HEIGHT
+        };
+        return Variation ? Variation.normalizeParcelRule(params) : params;
+    }
+
+    // Under "exactly this" every plot builds its full envelope, so there is no variation to roll —
+    // hide the button rather than leave a control that provably does nothing. The minimums only
+    // exist for the between-a-minimum-and-this rule.
+    function syncRuleKindControls() {
+        const minimums = document.getElementById('parcelbased-minimums');
+        if (minimums) minimums.style.display = currentRuleKind === 'range' ? '' : 'none';
+
+        const regenerate = document.getElementById('btn-parcelbased-regenerate');
+        if (regenerate) regenerate.style.display = currentRuleKind === 'exact' ? 'none' : '';
+
+        // Min floors can never exceed the ceiling it sits under.
+        const minFloorsSlider = document.getElementById('parcelbased-minfloors-slider');
+        if (minFloorsSlider) {
+            minFloorsSlider.max = String(currentMaxFloors);
+            if (currentMinFloors > currentMaxFloors) currentMinFloors = currentMaxFloors;
+            minFloorsSlider.value = String(currentMinFloors);
+            const label = document.getElementById('parcelbased-minfloors-value');
+            if (label) label.textContent = String(currentMinFloors);
+        }
+    }
+
+    // turf plus the app's own polygon sanitizers, which know the cadastre's quirks.
+    function variationDeps() {
+        return {
+            turf,
+            sanitize: (typeof sanitizePolygonFeature === 'function') ? sanitizePolygonFeature : null,
+            largestPolygon: toSingleLargestPolygonLocal
+        };
     }
 
     // --- Geometry utilities ---
@@ -165,126 +250,156 @@
         return feature;
     }
 
-    // Generate a building polygon set back from the parcel border
-    function generateSetbackPolygon(parcelFeature, minDistance) {
-        if (!parcelFeature || !parcelFeature.geometry) return null;
-
-        // Sanitize polygon first
-        let feature = parcelFeature;
-        if (typeof sanitizePolygonFeature === 'function') {
-            feature = sanitizePolygonFeature(feature) || feature;
-        }
-        feature = toSingleLargestPolygonLocal(feature) || feature;
-
-        if (!feature || !feature.geometry) return null;
-
-        // Apply negative buffer (inward setback)
-        try {
-            const buffered = turf.buffer(feature, -minDistance / 1000, { units: 'kilometers', steps: 16 });
-            if (!buffered || !buffered.geometry) {
-                // If buffer results in nothing (parcel too small), return null
-                return null;
-            }
-            // Ensure we have a valid polygon
-            const result = toSingleLargestPolygonLocal(buffered);
-            if (!result || !result.geometry) return null;
-
-            // Check if resulting polygon has reasonable area
-            const resultArea = turf.area(result);
-            if (resultArea < 1) return null; // Less than 1 m² is too small
-
-            return result;
-        } catch (e) {
-            console.warn('[ParcelBased] Error generating setback polygon:', e);
-            return null;
-        }
-    }
-
-    // Generate building for a single parcel
-    function generateBuildingForParcel(parcel, index, minDistance, maxFloors) {
+    // The permitted massing for one parcel: the parcel set back by the rule, extruded to the
+    // maximum floors, stamped with the rule and this parcel's variation seed so any consumer can
+    // derive the same example build-out from it. Returns null for a parcel the rule leaves nothing
+    // buildable on.
+    function generateBuildingForParcel(parcel, index, rule, designSeed) {
         const feature = parcel.feature;
-        if (!feature) return null;
+        if (!feature || !Variation) return { envelope: null, status: 'invalid', feature, parcelId: null };
 
-        // Get parcel ID for properties
         const props = feature.properties || {};
         const parcelId = typeof ensureParcelId === 'function'
             ? ensureParcelId(feature)
             : (props.parcelId || props.parcel_id || props.id || `parcel-${index}`);
 
-        // Generate setback polygon
-        const buildingPolygon = generateSetbackPolygon(feature, minDistance);
-        if (!buildingPolygon) {
-            console.warn(`[ParcelBased] Could not generate building for parcel ${parcelId} - polygon too small or invalid`);
-            return null;
+        const { envelope, status } = Variation.evaluateParcel(feature, rule, variationDeps());
+        if (!envelope) {
+            return { envelope: null, status, feature, parcelId };
         }
 
-        // Pick random number of floors between 1 and maxFloors
-        const floors = Math.floor(Math.random() * maxFloors) + 1;
-        const height = floors * DEFAULT_FLOOR_HEIGHT;
-
-        // Set building properties
-        buildingPolygon.properties = {
+        envelope.properties = {
+            ...envelope.properties,
             type: 'proposedParcelBasedBuilding',
             parcelId: parcelId,
-            floors: floors,
-            height: height,
-            minDistance: minDistance,
-            maxFloors: maxFloors,
-            color: getRandomColor(index),
+            urbanRule: rule,
+            variationSeed: Variation.hashSeed(designSeed, parcelId),
+            color: colorForParcel(parcelId, index),
             buildingIndex: index
         };
 
-        return buildingPolygon;
+        return { envelope, status, feature, parcelId };
     }
 
-    // Generate all buildings for the block
-    function generateBuildingsForBlock(block, minDistance, maxFloors) {
+    // The permitted massing for every parcel in the block, plus the parcels the rule leaves out.
+    // Excluded parcels are returned rather than dropped: an empty plot in the middle of a street
+    // reads as a bug unless the editor can say which rule excluded it.
+    function generateBuildingsForBlock(block, rule, designSeed) {
+        const buildings = [];
+        const excluded = [];
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
-            return [];
+            return { buildings, excluded };
         }
 
-        const buildings = [];
         block.parcels.forEach((parcel, index) => {
-            const building = generateBuildingForParcel(parcel, index, minDistance, maxFloors);
-            if (building) {
-                buildings.push(building);
-            }
+            const outcome = generateBuildingForParcel(parcel, index, rule, designSeed);
+            if (outcome.envelope) buildings.push(outcome.envelope);
+            else excluded.push(outcome);
         });
 
-        return buildings;
+        return { buildings, excluded };
     }
 
-    // Display buildings on the modal map
-    function displayBuildingsInModal(features) {
+    // One example build-out of the massing: what a street built under this rule could look like.
+    // Presentation only — the envelopes above are what the proposal stores and the stats read.
+    function buildOutFor(envelopes) {
+        if (!Variation || !Array.isArray(envelopes)) return [];
+        const deps = variationDeps();
+        return envelopes.map(envelope => Variation.realizeFeature(envelope, deps));
+    }
+
+    function excludedParcelReason(status) {
+        if (status === 'below-min-plot') {
+            return translateParcelBasedText('parcelBased.modal.messages.excludedBelowMinPlot',
+                'Smaller than the minimum plot size — it has to be merged with a neighbour before anything can be built here.');
+        }
+        if (status === 'cannot-meet-minimum') {
+            return translateParcelBasedText('parcelBased.modal.messages.excludedCannotMeet',
+                'Too small to meet the minimum this rule compels — the rule contradicts itself here.');
+        }
+        return translateParcelBasedText('parcelBased.modal.messages.excludedNoRoom',
+            'The setback leaves no room to build on this plot.');
+    }
+
+    function parcelBasedSiteFeature(features, authoredSite = null) {
+        if (authoredSite?.geometry) {
+            return {
+                type: 'Feature',
+                properties: { ...(authoredSite.properties || {}) },
+                geometry: JSON.parse(JSON.stringify(authoredSite.geometry))
+            };
+        }
+        const valid = (Array.isArray(features) ? features : []).filter(feature => feature?.geometry);
+        if (!valid.length) return null;
+        const asMultiPolygon = () => {
+            const coordinates = [];
+            valid.forEach(feature => {
+                const geometry = feature.geometry;
+                if (geometry.type === 'Polygon') coordinates.push(geometry.coordinates);
+                else if (geometry.type === 'MultiPolygon') coordinates.push(...geometry.coordinates);
+            });
+            return coordinates.length ? {
+                type: 'Feature', properties: {}, geometry: { type: 'MultiPolygon', coordinates }
+            } : null;
+        };
+        let site = valid[0];
+        for (const feature of valid.slice(1)) {
+            try { site = turf.union(site, feature) || site; } catch (_) { return asMultiPolygon(); }
+        }
+        return site;
+    }
+
+    // Draw the example build-out solid, inside the permitted envelope drawn as a dashed outline —
+    // the classic planning drawing, so the rule and a sample of it read in one picture. Parcels the
+    // rule excludes are drawn hatched with the reason on hover, never left silently empty.
+    function displayBuildingsInModal(envelopes, buildOut, excluded) {
         if (!parcelBasedMap) return;
 
-        // Clear existing building layers
-        parcelBasedBuildingLayers.forEach(layer => {
-            if (parcelBasedMap && layer) {
-                parcelBasedMap.removeLayer(layer);
-            }
+        [parcelBasedEnvelopeLayers, parcelBasedBuildingLayers, parcelBasedExcludedLayers].forEach(layers => {
+            layers.forEach(layer => {
+                if (parcelBasedMap && layer) parcelBasedMap.removeLayer(layer);
+            });
         });
+        parcelBasedEnvelopeLayers = [];
         parcelBasedBuildingLayers = [];
+        parcelBasedExcludedLayers = [];
 
-        if (!Array.isArray(features) || features.length === 0) return;
-
-        features.forEach((feature, index) => {
-            if (!feature || !feature.geometry) return;
-
-            const color = feature.properties?.color || getRandomColor(index);
-            const layer = L.geoJSON(feature, {
-                style: {
-                    fillColor: color,
-                    fillOpacity: 0.6,
-                    color: color,
-                    weight: 2
-                }
+        (Array.isArray(excluded) ? excluded : []).forEach(entry => {
+            if (!entry || !entry.feature || !entry.feature.geometry) return;
+            const layer = L.geoJSON(entry.feature, {
+                pane: parcelBasedModal?.pane,
+                style: { fillColor: '#b0453a', fillOpacity: 0.16, color: '#b0453a', weight: 1.5, dashArray: '2, 5' }
             }).addTo(parcelBasedMap);
+            layer.bindTooltip(excludedParcelReason(entry.status), { permanent: false, direction: 'center' });
+            parcelBasedExcludedLayers.push(layer);
+        });
 
-            // Add tooltip with building info
-            const floors = feature.properties?.floors || 1;
-            const parcelId = feature.properties?.parcelId || 'Unknown';
-            layer.bindTooltip(`Parcel ${parcelId}: ${floors} floor${floors > 1 ? 's' : ''}`, {
+        const permittedEnvelopes = Array.isArray(envelopes) ? envelopes : [];
+        const houses = Array.isArray(buildOut) ? buildOut : [];
+
+        permittedEnvelopes.forEach((envelope, index) => {
+            if (!envelope || !envelope.geometry) return;
+            const color = envelope.properties?.color || colorForParcel(envelope.properties?.parcelId, index);
+
+            const envelopeLayer = L.geoJSON(envelope, {
+                pane: parcelBasedModal?.pane,
+                style: { fillColor: color, fillOpacity: 0.08, color, weight: 1, dashArray: '4, 4' }
+            }).addTo(parcelBasedMap);
+            envelopeLayer.on('mousedown touchstart', startParcelBasedDrag);
+            parcelBasedEnvelopeLayers.push(envelopeLayer);
+
+            const house = houses[index];
+            if (!house || !house.geometry) return;
+            const layer = L.geoJSON(house, {
+                pane: parcelBasedModal?.pane,
+                style: { fillColor: color, fillOpacity: 0.6, color, weight: 2 }
+            }).addTo(parcelBasedMap);
+            layer.on('mousedown touchstart', startParcelBasedDrag);
+
+            const floors = house.properties?.floors || 1;
+            const permitted = envelope.properties?.floors || floors;
+            const parcelId = house.properties?.parcelId || 'Unknown';
+            layer.bindTooltip(`Parcel ${parcelId}: ${floors} of ${permitted} permitted floor${permitted > 1 ? 's' : ''}`, {
                 permanent: false,
                 direction: 'center'
             });
@@ -292,15 +407,20 @@
             parcelBasedBuildingLayers.push(layer);
         });
 
-        // Update metrics display
-        updateBuildingMetrics(features);
+        updateBuildingMetrics(envelopes, houses);
 
-        // Update 3D view
-        try { updateParcelBased3DScene(features); } catch (_) { }
+        parcelBasedModal?.setPreview({
+            draftPreview: { kind: 'buildings', features: houses },
+            boundary: parcelBasedBoundary,
+            envelopes: currentRuleKind === 'exact' ? [] : envelopes,
+            excluded: (Array.isArray(excluded) ? excluded : []).filter(entry => entry?.feature?.geometry).map(entry => entry.feature)
+        });
     }
 
-    // Calculate and display building metrics
-    function updateBuildingMetrics(features) {
+    // Footprint and volume are the PERMITTED figures, read off the envelopes — they are what the
+    // rule asserts and what the € gain uses, so re-rolling the build-out must never move them. Only
+    // the average floor count describes the example, and it is labelled as such.
+    function updateBuildingMetrics(envelopes, buildOut) {
         const buildingCountEl = document.getElementById('parcelbased-building-count-value');
         const totalAreaEl = document.getElementById('parcelbased-total-area-value');
         const totalVolumeEl = document.getElementById('parcelbased-total-volume-value');
@@ -308,42 +428,87 @@
 
         if (!buildingCountEl || !totalAreaEl || !totalVolumeEl || !avgFloorsEl) return;
 
-        if (!Array.isArray(features) || features.length === 0) {
+        const blank = () => {
             buildingCountEl.textContent = '0';
             totalAreaEl.textContent = '0';
             totalVolumeEl.textContent = '0';
             avgFloorsEl.textContent = '0';
-            return;
-        }
+        };
+
+        if (!Array.isArray(envelopes) || envelopes.length === 0) { blank(); return; }
 
         try {
-            let totalArea = 0;
-            let totalVolume = 0;
-            let totalFloors = 0;
+            let permittedArea = 0;
+            let permittedVolume = 0;
 
-            features.forEach(feature => {
-                if (!feature || !feature.geometry) return;
-                const area = turf.area(feature);
-                const height = feature.properties?.height || DEFAULT_FLOOR_HEIGHT;
-                const floors = feature.properties?.floors || 1;
-                totalArea += area;
-                totalVolume += area * height;
-                totalFloors += floors;
+            envelopes.forEach(envelope => {
+                if (!envelope || !envelope.geometry) return;
+                const area = turf.area(envelope);
+                permittedArea += area;
+                permittedVolume += area * (envelope.properties?.height || DEFAULT_FLOOR_HEIGHT);
             });
 
-            const avgFloors = features.length > 0 ? totalFloors / features.length : 0;
+            const houses = Array.isArray(buildOut) ? buildOut.filter(house => house && house.geometry) : [];
+            const totalFloors = houses.reduce((sum, house) => sum + (house.properties?.floors || 1), 0);
+            const avgFloors = houses.length > 0 ? totalFloors / houses.length : 0;
 
-            buildingCountEl.textContent = features.length.toString();
-            totalAreaEl.textContent = totalArea.toFixed(1);
-            totalVolumeEl.textContent = totalVolume.toFixed(1);
-            avgFloorsEl.textContent = avgFloors.toFixed(1);
+            buildingCountEl.textContent = envelopes.length.toString();
+            totalAreaEl.textContent = CbFormat.formatNumber(permittedArea, { maxFractionDigits: 1, minFractionDigits: 1 });
+            totalVolumeEl.textContent = CbFormat.formatNumber(permittedVolume, { maxFractionDigits: 1, minFractionDigits: 1 });
+            avgFloorsEl.textContent = CbFormat.formatNumber(avgFloors, { maxFractionDigits: 1, minFractionDigits: 1 });
         } catch (e) {
             console.warn('[ParcelBased] Error calculating metrics:', e);
-            buildingCountEl.textContent = '0';
-            totalAreaEl.textContent = '0';
-            totalVolumeEl.textContent = '0';
-            avgFloorsEl.textContent = '0';
+            blank();
         }
+    }
+
+    // Autosave each regenerated layout into the active universal draft without closing the tool.
+    function autosaveParcelBasedDraft() {
+        const activeDraft = window.getActiveProposalDesignDraft?.();
+        const block = getActiveParcelBasedBlock();
+        if (!activeDraft || !['buildings', 'row', 'parcelBased', 'single'].includes(activeDraft.adapterKey || activeDraft.goal)
+            || !generatedParcelBasedFeatures?.length || !block?.parcels?.length
+            || typeof window.syncActiveProposalDraftFromEditor !== 'function') return;
+        const parentDetails = [];
+        const parcelIds = [];
+        block.parcels.forEach(parcel => {
+            const props = parcel?.feature?.properties;
+            const parcelId = typeof ensureParcelId === 'function'
+                ? ensureParcelId(parcel?.feature)
+                : (props?.parcelId ?? props?.parcel_id ?? props?.id);
+            if (!parcelId) return;
+            const id = String(parcelId);
+            parcelIds.push(id);
+            parentDetails.push({ id, number: String(props?.BROJ_CESTICE || id) });
+        });
+        const buildings = JSON.parse(JSON.stringify(generatedParcelBasedFeatures));
+        window.syncActiveProposalDraftFromEditor('building', {
+            parcelIds,
+            parentDetails,
+            blockName: getParcelBasedDisplayName(),
+            parameters: parcelBasedDesignParameters(),
+            buildings,
+            buildingFeature: buildings[0] || null
+        }, { coalesceKey: 'parcel-based-live' });
+    }
+
+    // Everything needed to reproduce this design exactly: the rule it asserts and the seed its
+    // example build-out came from. maxFloors/minDistance stay alongside for the slider restore.
+    function parcelBasedDesignParameters() {
+        return {
+            typology: 'parcelBased',
+            rule: currentParcelRule(),
+            seed: currentVariationSeed,
+            maxFloors: Number(currentMaxFloors) || DEFAULT_MAX_FLOORS,
+            minDistance: Number(currentMinDistance) || DEFAULT_MIN_DISTANCE
+        };
+    }
+
+    // Roll a new example build-out. Only this changes the seed — a slider re-derives from the same
+    // one, so raising the height limit does not also reshuffle every footprint on the street.
+    function rerollParcelBasedBuildOut() {
+        currentVariationSeed = newVariationSeed();
+        generateBuildingsInModal();
     }
 
     // Generate buildings in modal
@@ -356,25 +521,34 @@
         setParcelBasedInfo('parcelBased.modal.generating', 'Generating buildings...');
 
         try {
-            // Ensure 3D is initialized
-            try { if (!parcelBased3D || !parcelBased3D.renderer) initParcelBased3DSimple(); } catch (_) { }
-
-            const buildings = generateBuildingsForBlock(block, currentMinDistance, currentMaxFloors);
+            const { buildings, excluded } = generateBuildingsForBlock(block, currentParcelRule(), currentVariationSeed);
 
             if (!buildings || buildings.length === 0) {
                 throw new Error('Failed to generate any buildings');
             }
 
             generatedParcelBasedFeatures = buildings;
-            displayBuildingsInModal(buildings);
+            parcelBasedBuildOut = buildOutFor(buildings);
+            displayBuildingsInModal(buildings, parcelBasedBuildOut, excluded);
+            autosaveParcelBasedDraft();
+            const freeformButton = document.getElementById('btn-parcelbased-freeform');
+            if (freeformButton) freeformButton.hidden = !parcelBasedConvertsToFreeform();
 
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) doneButton.disabled = false;
 
-            // Clear info text on successful generation
-            setParcelBasedInfo('parcelBased.modal.generatedSummary',
-                'Generated {{count}} building(s)',
-                { count: buildings.length });
+            // The counts are plural phrases of their own ("1 building", "3 buildings"; the Urban rule
+            // editor's keys), passed as i18n references so the line follows a language change.
+            const buildingsPhrase = { key: 'blockify.modal.messages.buildingCount', count: buildings.length };
+            if (excluded.length) {
+                setParcelBasedInfo('parcelBased.modal.generatedSummaryExcluded',
+                    'Generated {{buildings}} · {{excluded}}',
+                    { buildings: buildingsPhrase, excluded: { key: 'blockify.modal.messages.parcelsLeftOut', count: excluded.length } });
+            } else {
+                setParcelBasedInfo('parcelBased.modal.generatedSummary',
+                    'Generated {{buildings}}',
+                    { buildings: buildingsPhrase });
+            }
 
         } catch (error) {
             console.error('[ParcelBased] Generation error:', error);
@@ -388,241 +562,144 @@
         }
     }
 
-    // --- 3D Preview ---
+    // ---- Dragging: a Detached rule stays on its parcels ----
+    // Grabbing any house drags the whole design; the drop asks (proposal-editor-shell.js
+    // chooseRuleDrop): run the same rule on the parcels mostly inside the dropped outline, convert to
+    // Freeform buildings (one Freeform proposal per house, since a Freeform stays one building), or
+    // put it back. The houses keep their stored massing and relative positions, moved by the drag.
 
-    async function ensureThreeForParcelBased() {
-        if (typeof THREE !== 'undefined') return true;
-
-        const loadScript = (src) => new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-
-        if (!parcelBasedThreeLoadPromise) {
-            parcelBasedThreeLoadPromise = loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js');
-        }
-        await parcelBasedThreeLoadPromise;
-
-        if (typeof THREE === 'undefined') return false;
-
-        if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript('https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js');
-        }
-
-        return typeof THREE !== 'undefined';
+    function parcelBasedLatLng(event) {
+        const nativeEvent = event?.originalEvent || event;
+        const touch = nativeEvent?.changedTouches?.[0] || nativeEvent?.touches?.[0];
+        const pointer = touch ? { clientX: touch.clientX, clientY: touch.clientY } : nativeEvent;
+        return event?.latlng || parcelBasedMap.containerPointToLatLng(parcelBasedMap.mouseEventToContainerPoint(pointer));
     }
 
-    function getParcelBasedProjector() {
-        const crs = (parcelBasedMap && parcelBasedMap.options && parcelBasedMap.options.crs) || L.CRS.EPSG3857;
-        if (!crs || typeof crs.project !== 'function' || typeof crs.unproject !== 'function') return null;
-        return {
-            project: (ll) => {
-                const p = crs.project(L.latLng(ll.lat, ll.lng));
-                return [p.x, p.y];
-            },
-            unproject: (xy) => {
-                const llOut = crs.unproject(L.point(xy[0], xy[1]));
-                return [llOut.lat, llOut.lng];
-            }
+    function movedParcelBasedFeature(feature, from, to) {
+        if (!feature?.geometry || !from || !to) return feature;
+        const geometry = window.SingleBuildingGeometry?.moveGeometry?.(feature.geometry, from, to);
+        return geometry ? { ...feature, geometry } : feature;
+    }
+
+    function startParcelBasedDrag(event) {
+        if (!parcelBasedMap || parcelBasedDragState || !generatedParcelBasedFeatures?.length) return;
+        L.DomEvent?.stopPropagation?.(event);
+        event?.originalEvent?.preventDefault?.();
+        parcelBasedDragState = {
+            start: event.latlng,
+            end: event.latlng,
+            mapWasDraggable: parcelBasedMap.dragging?.enabled?.() !== false
         };
+        parcelBasedMap.dragging?.disable?.();
+        document.addEventListener('mousemove', moveParcelBasedDrag);
+        document.addEventListener('mouseup', finishParcelBasedDrag);
+        document.addEventListener('touchmove', moveParcelBasedDrag, { passive: false });
+        document.addEventListener('touchend', finishParcelBasedDrag);
+        document.addEventListener('touchcancel', finishParcelBasedDrag);
     }
 
-    function computeParcelBasedOrigin(features, projector) {
-        try {
-            if (!features || !Array.isArray(features) || features.length === 0 || !projector) return [0, 0];
-            const coords = [];
-            features.forEach(feature => {
-                if (!feature || !feature.geometry) return;
-                const geom = feature.geometry;
-                if (geom.type === 'Polygon') {
-                    geom.coordinates.forEach(ring => {
-                        ring.forEach(coord => coords.push(coord));
-                    });
-                } else if (geom.type === 'MultiPolygon') {
-                    geom.coordinates.forEach(poly => {
-                        poly.forEach(ring => {
-                            ring.forEach(coord => coords.push(coord));
-                        });
-                    });
-                }
-            });
-            if (!coords.length) return [0, 0];
-            let sumX = 0, sumY = 0;
-            coords.forEach(([lng, lat]) => {
-                const [x, y] = projector.project(L.latLng(lat, lng));
-                sumX += x;
-                sumY += y;
-            });
-            return [sumX / coords.length, sumY / coords.length];
-        } catch (_) {
-            return [0, 0];
-        }
+    function moveParcelBasedDrag(event) {
+        if (!parcelBasedDragState || !parcelBasedMap) return;
+        if (event?.cancelable) event.preventDefault();
+        const drag = parcelBasedDragState;
+        drag.end = parcelBasedLatLng(event);
+        displayBuildingsInModal(
+            generatedParcelBasedFeatures.map(feature => movedParcelBasedFeature(feature, drag.start, drag.end)),
+            parcelBasedBuildOut.map(feature => movedParcelBasedFeature(feature, drag.start, drag.end)),
+            []
+        );
     }
 
-    async function initParcelBased3DSimple() {
-        const ok = await ensureThreeForParcelBased();
-        if (!ok) return;
-        const container = document.getElementById('parcelbased-3d');
-        if (!container) return;
-
-        disposeParcelBased3D();
-
-        const handle = window.ThreeEditScene.create({ container, defaultHeight: 200 });
-
-        const modelGroup = new THREE.Group();
-        handle.scene.add(modelGroup);
-
-        parcelBased3D.handle = handle;
-        parcelBased3D.container = handle.container;
-        parcelBased3D.renderer = handle.renderer;
-        parcelBased3D.scene = handle.scene;
-        parcelBased3D.camera = handle.camera;
-        parcelBased3D.controls = handle.controls;
-        parcelBased3D.modelGroup = modelGroup;
-        parcelBased3D.contextGroup = handle.contextGroup;
-    }
-
-    function disposeParcelBased3D() {
-        if (parcelBased3D.handle && typeof parcelBased3D.handle.dispose === 'function') {
-            parcelBased3D.handle.dispose();
-        }
-        parcelBased3D.handle = null;
-        parcelBased3D.renderer = null;
-        parcelBased3D.scene = null;
-        parcelBased3D.camera = null;
-        parcelBased3D.controls = null;
-        parcelBased3D.frameId = null;
-        parcelBased3D.container = null;
-        parcelBased3D.originHTRS = null;
-        parcelBased3D.modelGroup = null;
-        parcelBased3D.contextGroup = null;
-        parcelBased3D.resizeHandler = null;
-    }
-
-    function loadParcelBasedContextBuildings(features, origin) {
-        if (!parcelBased3D.contextGroup || !window.ContextBuildings3D || !Array.isArray(features) || features.length === 0) return;
-        const projector = getParcelBasedProjector();
-        if (!projector) return;
-        let queryGeom = null;
-        try {
-            const fc = turf.featureCollection(features.filter(f => f && f.geometry));
-            if (fc.features.length === 0) return;
-            const bbox = turf.bbox(fc);
-            if (!bbox || bbox.some(v => !isFinite(v))) return;
-            const [minX, minY, maxX, maxY] = bbox;
-            queryGeom = {
-                type: 'Polygon',
-                coordinates: [[[minX, minY], [maxX, minY], [maxX, maxY], [minX, maxY], [minX, minY]]]
-            };
-        } catch (_) { return; }
-
-        const safeOrigin = Array.isArray(origin) ? origin : [0, 0];
-        const latLngToLocalXY = (lng, lat) => {
-            const [x, y] = projector.project(L.latLng(lat, lng));
-            return [x - safeOrigin[0], y - safeOrigin[1]];
-        };
-        try {
-            window.ContextBuildings3D.loadInto(parcelBased3D.contextGroup, {
-                geometry: queryGeom,
-                latLngToLocalXY
-            });
-        } catch (e) {
-            console.warn('[parcel-based] context buildings load failed:', e);
-        }
-    }
-
-    function clearThreeGroup(group) {
-        if (!group) return;
-        for (let i = group.children.length - 1; i >= 0; i--) {
-            const child = group.children[i];
-            try {
-                if (child.geometry && typeof child.geometry.dispose === 'function') child.geometry.dispose();
-            } catch (_) { }
-            try {
-                if (child.material) {
-                    if (Array.isArray(child.material)) {
-                        child.material.forEach(mat => { if (mat && typeof mat.dispose === 'function') mat.dispose(); });
-                    } else if (typeof child.material.dispose === 'function') {
-                        child.material.dispose();
-                    }
-                }
-            } catch (_) { }
-            try { group.remove(child); } catch (_) { }
-        }
-    }
-
-    function updateParcelBased3DScene(features) {
-        if (!parcelBased3D.modelGroup || typeof THREE === 'undefined' || !features || !Array.isArray(features)) return;
-
-        clearThreeGroup(parcelBased3D.modelGroup);
-
-        const projector = getParcelBasedProjector();
-        const origin = computeParcelBasedOrigin(features, projector);
-        parcelBased3D.originHTRS = origin;
-        loadParcelBasedContextBuildings(features, origin);
-
-        let maxHeight = 0;
-
-        features.forEach((feature, idx) => {
-            if (!feature || !feature.geometry) return;
-            const geom = feature.geometry;
-            if (geom.type !== 'Polygon') return;
-
-            const height = feature.properties?.height || DEFAULT_FLOOR_HEIGHT;
-            if (height > maxHeight) maxHeight = height;
-            const color = feature.properties?.color || getRandomColor(idx);
-            const ring = geom.coordinates[0];
-
-            if (!Array.isArray(ring) || ring.length < 4) return;
-
-            const shape = new THREE.Shape();
-            ring.forEach(([lng, lat], i) => {
-                const [x, y] = projector ? projector.project(L.latLng(lat, lng)) : [lng, lat];
-                const px = x - origin[0];
-                const py = y - origin[1];
-                if (i === 0) shape.moveTo(px, py); else shape.lineTo(px, py);
-            });
-
-            const extrudeGeom = new THREE.ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1 });
-
-            // Convert hex color to THREE.Color
-            const threeColor = new THREE.Color(color);
-            const material = new THREE.MeshLambertMaterial({ color: threeColor, transparent: true, opacity: 0.8 });
-            const mesh = new THREE.Mesh(extrudeGeom, material);
-            parcelBased3D.modelGroup.add(mesh);
-
-            // Add edges
-            const edgeGeom = new THREE.EdgesGeometry(extrudeGeom);
-            const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x333333 });
-            const edges = new THREE.LineSegments(edgeGeom, edgeMaterial);
-            parcelBased3D.modelGroup.add(edges);
+    function parcelBasedParcelsUnderOutline(outline) {
+        const fabric = window.LiveParcelFabric;
+        const conversion = window.__freeformConversion;
+        const order = window.__planOrder;
+        if (!outline?.geometry || !fabric?.queryBounds || !conversion || !order?.intersectionArea) return [];
+        const candidates = fabric.queryBounds(turf.bbox(outline), { includeCorridors: false })
+            .filter(feature => !(typeof window.isRoadParcel === 'function' && window.isRoadParcel(fabric.featureId(feature))))
+            .map(feature => ({ id: fabric.featureId(feature), feature }));
+        return conversion.parcelsMostlyInside(outline, candidates, {
+            intersectionArea: order.intersectionArea,
+            area: feature => turf.area(feature)
         });
-
-        // Fit camera
-        fitParcelBasedCamera(maxHeight);
     }
 
-    function fitParcelBasedCamera(height = 20) {
-        if (!parcelBased3D.camera || !parcelBased3D.controls || !parcelBased3D.modelGroup) return;
+    // Run the Detached rule, with its current parameters, on the parcels under the dropped outline.
+    function parcelBasedRuleAtOutline(outline) {
+        const ids = parcelBasedParcelsUnderOutline(outline);
+        if (!ids.length) {
+            return { ok: false, reason: translateParcelBasedText('proposalDrafts.freeform.noParcelsHere', 'No parcel lies mostly inside the dropped outline.') };
+        }
+        const parcels = parcelBasedParcelsForIds(ids);
+        const nextBlock = { parcels, parcelIds: ids, site: null, valid: true, polygon: null };
+        const generated = parcels.length === ids.length
+            ? generateBuildingsForBlock(nextBlock, currentParcelRule(), currentVariationSeed)
+            : { buildings: [] };
+        if (!generated.buildings.length) {
+            return { ok: false, reason: translateParcelBasedText('proposalDrafts.freeform.ruleFailedHere', 'The {{rule}} rule cannot build a building on the parcels here.', { rule: window.ruleDropLabel?.('parcelBased') || 'Detached' }) };
+        }
+        parcelBasedBlock = nextBlock;
+        parcelBasedBlockNameOverride = describeParcelBasedParcelSelection(ids);
+        // The design's land moves with the rule (proposal-editor-shell.js moveActiveDesignToParcels).
+        window.moveActiveDesignToParcels?.(ids);
+        displayParcelsOnMap(nextBlock);
+        generateBuildingsInModal();
+        return { ok: true };
+    }
 
-        const box = new THREE.Box3().setFromObject(parcelBased3D.modelGroup);
-        if (box.isEmpty()) return;
+    // The footer's conversion (no drag) is offered only on one parcel: one house. A Detached record on
+    // several parcels cannot be rebuilt from its merged outline after a cadastre swap, so without a
+    // drag it gets the rule re-run, not a conversion.
+    function parcelBasedConvertsToFreeform() {
+        return (getActiveParcelBasedBlock()?.parcels?.length || 0) === 1 && (generatedParcelBasedFeatures?.length || 0) === 1;
+    }
 
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        const size = new THREE.Vector3();
-        box.getSize(size);
+    // Each house as it would stand converted: its stored massing (the envelope the record saves)
+    // and its own parcel as its ground, both moved by the drag offset (none without a drag).
+    function parcelBasedHouses(from = null, to = null) {
+        const parcels = getActiveParcelBasedBlock()?.parcels || [];
+        return (generatedParcelBasedFeatures || []).filter(feature => feature?.geometry).map(envelope => {
+            const parcelId = String(envelope.properties?.parcelId || '');
+            const parcel = parcels.find(candidate => String(candidate?.id || '') === parcelId
+                || (typeof ensureParcelId === 'function' && candidate?.feature && String(ensureParcelId(candidate.feature)) === parcelId));
+            const feature = movedParcelBasedFeature(envelope, from, to);
+            const ground = parcel?.feature?.geometry ? movedParcelBasedFeature(parcel.feature, from, to) : feature;
+            return { feature, site: window.__siteDraft?.siteFromFeatures?.([ground]) || ground.geometry };
+        });
+    }
 
-        const maxDim = Math.max(size.x, size.y, size.z, 50);
-        const dist = maxDim * 1.5;
+    async function convertParcelBasedToFreeform(houses, confirm) {
+        const result = await window.convertActiveDesignToFreeformBuildings?.({ houses, typology: 'parcelBased', confirm });
+        if (result?.ok) closeParcelBasedModal({ preservePending: true });
+        return result || { ok: false };
+    }
 
-        parcelBased3D.camera.position.set(center.x + dist * 0.6, center.y + dist * 0.6, center.z + dist * 0.4);
-        parcelBased3D.controls.target.copy(center);
-        parcelBased3D.camera.lookAt(center);
+    async function finishParcelBasedDrag() {
+        if (!parcelBasedDragState) return;
+        const drag = parcelBasedDragState;
+        parcelBasedDragState = null;
+        if (drag.mapWasDraggable) parcelBasedMap?.dragging?.enable?.();
+        document.removeEventListener('mousemove', moveParcelBasedDrag);
+        document.removeEventListener('mouseup', finishParcelBasedDrag);
+        document.removeEventListener('touchmove', moveParcelBasedDrag);
+        document.removeEventListener('touchend', finishParcelBasedDrag);
+        document.removeEventListener('touchcancel', finishParcelBasedDrag);
+        const putBack = () => generateBuildingsInModal();
+        if (!drag.end || (drag.end.lat === drag.start.lat && drag.end.lng === drag.start.lng)) {
+            putBack();
+            return;
+        }
+        const outline = parcelBasedBoundary?.geometry ? movedParcelBasedFeature(parcelBasedBoundary, drag.start, drag.end) : null;
+        const houses = parcelBasedHouses(drag.start, drag.end);
+        const answer = typeof window.chooseRuleDrop === 'function'
+            ? await window.chooseRuleDrop({
+                typology: 'parcelBased',
+                buildings: houses.length,
+                tryConvert: async () => convertParcelBasedToFreeform(houses, false),
+                tryRule: async () => parcelBasedRuleAtOutline(outline)
+            })
+            : 'cancel';
+        if (answer === 'cancel' && parcelBasedModal) putBack();
     }
 
     // --- Modal management ---
@@ -631,43 +708,28 @@
         const block = getActiveParcelBasedBlock();
         if (!block || !Array.isArray(block.parcels) || block.parcels.length === 0) {
             if (typeof updateStatus === 'function') {
-                updateStatus('No parcels selected');
+                updateStatus(translateParcelBasedText('proposalDrafts.noParcels', 'No parcels selected'));
             }
-            return;
+            return false;
         }
 
         parcelBasedBlock = block;
         const blockLabel = getParcelBasedDisplayName();
-
         console.log('[ParcelBased] showParcelBasedModal called for block:', blockLabel, 'with', block.parcels.length, 'parcels');
 
-        // Create modal if it doesn't exist
-        if (!document.getElementById('parcelbased-modal')) {
-            const modalDiv = document.createElement('div');
-            modalDiv.id = 'parcelbased-modal';
-            modalDiv.className = 'parcelbased-modal-overlay';
-
+        if (!parcelBasedModal) {
             const container = document.createElement('div');
-            container.id = 'parcelbased-container';
-
             container.innerHTML = `
-                <div id="parcelbased-main">
-                    <div id="parcelbased-header">
-                        <h2 data-i18n-key="parcelBased.modal.title">Parcel-based Urban Rules</h2>
-                        <button id="parcelbased-close" type="button" class="close-circle-btn close-circle-btn--lg" data-i18n-key="parcelBased.modal.closeAria" data-i18n-attr="aria-label" aria-label="Close parcel-based modal">×</button>
-                    </div>
-                    <div id="parcelbased-map"></div>
-                    <div id="parcelbased-3d"></div>
-                    <div id="parcelbased-controls">
-                        <div id="parcelbased-info" data-i18n-attr="text"></div>
-                        <div id="parcelbased-buttons" style="display: flex; justify-content: center; gap: 10px;">
-                            <button class="btn btn-secondary" id="btn-parcelbased-regenerate" style="width: auto; padding: 8px 24px;" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
-                            <button class="btn btn-proposal" id="btn-parcelbased-done" style="width: auto; padding: 8px 24px;" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
-                        </div>
-                    </div>
-                </div>
                 <div id="parcelbased-sidebar">
-                    <h3 data-i18n-key="parcelBased.modal.parametersTitle">Parameters</h3>
+                    <h3 class="cb-kicker" data-i18n-key="parcelBased.modal.parametersTitle">Parameters</h3>
+                    <div class="parameter-group">
+                        <label for="parcelbased-ruletype-select" data-i18n-key="parcelBased.modal.labels.ruleType" data-i18n-attr="text">What the rule compels:</label>
+                        <select id="parcelbased-ruletype-select">
+                            <option value="max" data-i18n-key="parcelBased.modal.labels.ruleTypeMax" data-i18n-attr="text">At most this</option>
+                            <option value="range" data-i18n-key="parcelBased.modal.labels.ruleTypeRange" data-i18n-attr="text">Between a minimum and this</option>
+                            <option value="exact" data-i18n-key="parcelBased.modal.labels.ruleTypeExact" data-i18n-attr="text">Exactly this</option>
+                        </select>
+                    </div>
                     <div class="parameter-group">
                         <label for="parcelbased-maxfloors-slider">
                             <span data-i18n-key="parcelBased.modal.labels.maxFloors" data-i18n-attr="text">Max Floors:</span>
@@ -678,105 +740,172 @@
                     <div class="parameter-group">
                         <label for="parcelbased-mindistance-slider">
                             <span data-i18n-key="parcelBased.modal.labels.minDistance" data-i18n-attr="text">Min Distance from Borders (m):</span>
-                            <span id="parcelbased-mindistance-value">${DEFAULT_MIN_DISTANCE.toFixed(1)}</span>
+                            <span id="parcelbased-mindistance-value">${CbFormat.formatNumber(DEFAULT_MIN_DISTANCE, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                         </label>
                         <input type="range" id="parcelbased-mindistance-slider" min="0.5" max="20" value="${DEFAULT_MIN_DISTANCE}" step="0.5">
                     </div>
-                    <div class="parameter-metrics">
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.buildingCount" data-i18n-attr="text">Buildings:</span>
-                            <span id="parcelbased-building-count-value">0</span>
+                    <div id="parcelbased-minimums" style="display: none;">
+                        <div class="parameter-group">
+                            <label for="parcelbased-minfloors-slider">
+                                <span data-i18n-key="parcelBased.modal.labels.minFloors" data-i18n-attr="text">Min Floors:</span>
+                                <span id="parcelbased-minfloors-value">${DEFAULT_MIN_FLOORS}</span>
+                            </label>
+                            <input type="range" id="parcelbased-minfloors-slider" min="1" max="${DEFAULT_MAX_FLOORS}" value="${DEFAULT_MIN_FLOORS}" step="1">
                         </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.totalArea" data-i18n-attr="text">Total Footprint (m²):</span>
-                            <span id="parcelbased-total-area-value">0</span>
-                        </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Total Volume (m³):</span>
-                            <span id="parcelbased-total-volume-value">0</span>
-                        </div>
-                        <div class="metric-row">
-                            <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Avg Floors:</span>
-                            <span id="parcelbased-avg-floors-value">0</span>
+                        <div class="parameter-group">
+                            <label for="parcelbased-minfootprint-slider">
+                                <span data-i18n-key="parcelBased.modal.labels.minFootprint" data-i18n-attr="text">Min Ground Floor (m²):</span>
+                                <span id="parcelbased-minfootprint-value">${DEFAULT_MIN_FOOTPRINT_M2}</span>
+                            </label>
+                            <input type="range" id="parcelbased-minfootprint-slider" min="0" max="500" value="${DEFAULT_MIN_FOOTPRINT_M2}" step="5">
                         </div>
                     </div>
-                    <div class="parameter-info">
-                        <p>
-                            <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: each building gets a random number of floors from 1 to this value.</span>
-                            <span data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</span>
-                            <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate to randomize floor counts again.</span>
-                        </p>
+                    <div class="parameter-group">
+                        <label for="parcelbased-minplot-slider">
+                            <span data-i18n-key="parcelBased.modal.labels.minPlotArea" data-i18n-attr="text">Min Plot Size (m²):</span>
+                            <span id="parcelbased-minplot-value">${DEFAULT_MIN_PLOT_AREA_M2}</span>
+                        </label>
+                        <input type="range" id="parcelbased-minplot-slider" min="0" max="10000" value="${DEFAULT_MIN_PLOT_AREA_M2}" step="10">
+                    </div>
+                    <details class="on-map-editor__more-options">
+                        <summary data-i18n-key="onMapEditor.moreOptions">${translateParcelBasedText('onMapEditor.moreOptions', 'More options')}</summary>
+                        <div class="parameter-metrics">
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.buildingCount" data-i18n-attr="text">Buildings:</span>
+                                <span id="parcelbased-building-count-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.totalArea" data-i18n-attr="text">Permitted Footprint (m²):</span>
+                                <span id="parcelbased-total-area-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.totalVolume" data-i18n-attr="text">Permitted Volume (m³):</span>
+                                <span id="parcelbased-total-volume-value">0</span>
+                            </div>
+                            <div class="metric-row">
+                                <span data-i18n-key="parcelBased.modal.labels.avgFloors" data-i18n-attr="text">Example Floors (avg):</span>
+                                <span id="parcelbased-avg-floors-value">0</span>
+                            </div>
+                        </div>
+                        <div class="parameter-info">
+                            <p>
+                                <span data-i18n-key="parcelBased.modal.helper.ruleType">What the rule compels: at most this (nobody has to build), between a minimum and this, or exactly this (everyone builds the full envelope).</span>
+                                <span data-i18n-key="parcelBased.modal.helper.maxFloors">Max Floors: the permitted ceiling. The example build-out varies from 1 floor up to it.</span>
+                                <span data-i18n-key="parcelBased.modal.helper.minDistance">Min Distance: buildings are set back this distance from parcel borders.</span>
+                                <span data-i18n-key="parcelBased.modal.helper.minPlotArea">Min Plot Size: plots smaller than this cannot be built on under this rule, and are shown hatched. They have to be merged first.</span>
+                                <span data-i18n-key="parcelBased.modal.helper.regenerate">Click Regenerate for another example build-out. The permitted figures above never change.</span>
+                            </p>
+                        </div>
+                    </details>
+                </div>
+                <div id="parcelbased-controls" class="cb-dialog__footer">
+                    <div id="parcelbased-info" data-i18n-attr="text" role="status" aria-live="polite"></div>
+                    <div id="parcelbased-buttons">
+                        <button type="button" class="btn btn-quiet" id="btn-parcelbased-cancel" data-i18n-key="cancel" data-i18n-attr="text">Cancel</button>
+                        <button type="button" class="btn" id="btn-parcelbased-regenerate" data-i18n-key="parcelBased.modal.regenerate" data-i18n-attr="text">Regenerate</button>
+                        <button type="button" class="btn" id="btn-parcelbased-freeform" hidden data-i18n-key="proposalDrafts.freeform.title" data-i18n-attr="text">Convert to freeform building</button>
+                        <button type="button" class="btn btn-primary" id="btn-parcelbased-done" data-i18n-key="parcelBased.modal.done" data-i18n-attr="text">Done</button>
                     </div>
                 </div>
             `;
 
-            modalDiv.appendChild(container);
-            document.body.appendChild(modalDiv);
-
+            const content = container.querySelector('#parcelbased-sidebar');
+            const footer = container.querySelector('#parcelbased-controls');
+            footer?.classList.remove('cb-dialog__footer');
+            parcelBasedModal = window.OnMapEditor?.open({
+                owner: 'parcel-based',
+                id: 'parcelbased',
+                title: translateParcelBasedText('parcelBased.modal.title', 'Detached houses'),
+                content,
+                footer,
+                modes: ['2d', 'model'],
+                wide: false,
+                hints: {
+                    '2d': translateParcelBasedText('parcelBased.modal.helper.minDistance', 'Buildings stay this distance from parcel borders.'),
+                    model: translateParcelBasedText('parcelBased.modal.helper.regenerate', 'Regenerate an example build-out; permitted figures stay the same.')
+                },
+                onCancel: requestCloseParcelBasedModal
+            });
+            if (!parcelBasedModal) return false;
+            parcelBasedMap = parcelBasedModal.map;
             setParcelBasedInfo('parcelBased.modal.generating', 'Generating buildings...');
 
             // Apply translations
             try {
                 if (typeof window !== 'undefined' && window.i18n && typeof window.i18n.applyTranslations === 'function') {
-                    window.i18n.applyTranslations(container);
+                    window.i18n.applyTranslations(parcelBasedModal.content);
                 }
             } catch (_) { }
 
+            parcelBasedDesignChanges().start(document);
             document.dispatchEvent(new CustomEvent('parcelBasedModalOpened'));
             document.dispatchEvent(new CustomEvent('urbanRuleModalOpened'));
 
             // Add event listeners
-            document.getElementById('parcelbased-close').addEventListener('click', closeParcelBasedModal);
             const doneButton = document.getElementById('btn-parcelbased-done');
             if (doneButton) {
                 doneButton.addEventListener('click', saveParcelBasedDesignForProposal);
                 doneButton.disabled = true;
             }
 
+            const cancelButton = document.getElementById('btn-parcelbased-cancel');
+            if (cancelButton) cancelButton.addEventListener('click', requestCloseParcelBasedModal);
+
             const regenerateButton = document.getElementById('btn-parcelbased-regenerate');
             if (regenerateButton) {
-                regenerateButton.addEventListener('click', generateBuildingsInModal);
+                regenerateButton.addEventListener('click', rerollParcelBasedBuildOut);
+            }
+            // One house on one parcel converts like a Freeform building (proposal-editor-shell.js).
+            document.getElementById('btn-parcelbased-freeform')?.addEventListener('click', async () => {
+                if (!parcelBasedConvertsToFreeform()) return;
+                const result = await convertParcelBasedToFreeform(parcelBasedHouses(), true);
+                if (!result.ok && !result.cancelled) setParcelBasedInfo('', result.reason || '');
+            });
+
+            const ruleTypeSelect = document.getElementById('parcelbased-ruletype-select');
+            if (ruleTypeSelect) {
+                ruleTypeSelect.addEventListener('change', function (e) {
+                    currentRuleKind = e.target.value;
+                    syncRuleKindControls();
+                    generateBuildingsInModal();
+                });
             }
 
             // Slider event listeners
             document.getElementById('parcelbased-maxfloors-slider').addEventListener('input', function (e) {
                 currentMaxFloors = parseInt(e.target.value, 10);
                 document.getElementById('parcelbased-maxfloors-value').textContent = currentMaxFloors.toString();
+                syncRuleKindControls(); // the minimum rides on the ceiling
                 generateBuildingsInModal();
             });
 
             document.getElementById('parcelbased-mindistance-slider').addEventListener('input', function (e) {
                 currentMinDistance = parseFloat(e.target.value);
-                document.getElementById('parcelbased-mindistance-value').textContent = currentMinDistance.toFixed(1);
+                document.getElementById('parcelbased-mindistance-value').textContent = CbFormat.formatNumber(currentMinDistance, { maxFractionDigits: 1, minFractionDigits: 1 });
                 generateBuildingsInModal();
             });
 
-            // Close modal when clicking outside the container
-            modalDiv.addEventListener('click', (e) => {
-                if (e.target === modalDiv) {
-                    closeParcelBasedModal();
-                }
+            document.getElementById('parcelbased-minfloors-slider').addEventListener('input', function (e) {
+                currentMinFloors = Math.min(parseInt(e.target.value, 10), currentMaxFloors);
+                document.getElementById('parcelbased-minfloors-value').textContent = currentMinFloors.toString();
+                generateBuildingsInModal();
             });
 
-            // Ensure 3D canvas is interactive
-            const threeDiv = document.getElementById('parcelbased-3d');
-            if (threeDiv) {
-                threeDiv.style.pointerEvents = 'auto';
-            }
-        }
-
-        // Initialize the map if needed
-        if (!parcelBasedMap) {
-            parcelBasedMap = L.map('parcelbased-map', {
-                zoomControl: true,
-                dragging: true,
-                scrollWheelZoom: true
+            document.getElementById('parcelbased-minfootprint-slider').addEventListener('input', function (e) {
+                currentMinFootprintM2 = parseFloat(e.target.value);
+                document.getElementById('parcelbased-minfootprint-value').textContent = currentMinFootprintM2.toString();
+                generateBuildingsInModal();
             });
 
-            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(parcelBasedMap);
+            document.getElementById('parcelbased-minplot-slider').addEventListener('input', function (e) {
+                currentMinPlotAreaM2 = parseFloat(e.target.value);
+                document.getElementById('parcelbased-minplot-value').textContent = currentMinPlotAreaM2.toString();
+                generateBuildingsInModal();
+            });
+
+            // No outside-click close: a stray click on the backdrop would throw the design away.
+            // The editor is left only via the X (discard, after confirming) or Done (save).
+
         }
 
         // Display the parcels on the map
@@ -785,24 +914,55 @@
         // Reset parameters
         currentMaxFloors = DEFAULT_MAX_FLOORS;
         currentMinDistance = DEFAULT_MIN_DISTANCE;
+        currentRuleKind = DEFAULT_RULE_KIND;
+        currentMinFloors = DEFAULT_MIN_FLOORS;
+        currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
+        currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
+
+        // Restore a saved design over the defaults (e.g. a copied proposal). Geometry here is a
+        // pure function of (rule, seed), so restoring both reproduces the design exactly — houses
+        // and all. A design saved without a seed has no build-out to reproduce, so it gets a fresh
+        // one rather than silently redrawing a different street under the same name.
+        const saved = parcelBasedSeedParameters;
+        parcelBasedSeedParameters = null;
+        currentVariationSeed = newVariationSeed();
+        if (saved) {
+            const rule = saved.rule || {};
+            const restore = (value, apply) => {
+                if (typeof value === 'number' && Number.isFinite(value)) apply(value);
+            };
+            restore(saved.maxFloors ?? rule.maxFloors, v => { currentMaxFloors = v; });
+            restore(saved.minDistance ?? rule.minDistance, v => { currentMinDistance = v; });
+            restore(rule.minFloors, v => { currentMinFloors = Math.max(1, v); });
+            restore(rule.minFootprintAreaM2, v => { currentMinFootprintM2 = v; });
+            restore(rule.minPlotAreaM2, v => { currentMinPlotAreaM2 = v; });
+            if (Variation && Variation.RULE_KINDS.includes(rule.kind)) currentRuleKind = rule.kind;
+            restore(saved.seed, v => { currentVariationSeed = v >>> 0; });
+        }
 
         // Update sliders
-        const maxFloorsSlider = document.getElementById('parcelbased-maxfloors-slider');
-        const minDistanceSlider = document.getElementById('parcelbased-mindistance-slider');
-
-        if (maxFloorsSlider) {
-            maxFloorsSlider.value = currentMaxFloors;
-            document.getElementById('parcelbased-maxfloors-value').textContent = currentMaxFloors.toString();
-        }
-        if (minDistanceSlider) {
-            minDistanceSlider.value = currentMinDistance;
-            document.getElementById('parcelbased-mindistance-value').textContent = currentMinDistance.toFixed(1);
-        }
+        const setSlider = (id, value, text) => {
+            const slider = document.getElementById(id + '-slider');
+            const label = document.getElementById(id + '-value');
+            if (slider) slider.value = value;
+            if (label) label.textContent = text;
+        };
+        setSlider('parcelbased-maxfloors', currentMaxFloors, currentMaxFloors.toString());
+        setSlider('parcelbased-mindistance', currentMinDistance, CbFormat.formatNumber(currentMinDistance, { maxFractionDigits: 1, minFractionDigits: 1 }));
+        setSlider('parcelbased-minfloors', currentMinFloors, currentMinFloors.toString());
+        setSlider('parcelbased-minfootprint', currentMinFootprintM2, currentMinFootprintM2.toString());
+        setSlider('parcelbased-minplot', currentMinPlotAreaM2, currentMinPlotAreaM2.toString());
+        const ruleTypeSelect = document.getElementById('parcelbased-ruletype-select');
+        if (ruleTypeSelect) ruleTypeSelect.value = currentRuleKind;
+        syncRuleKindControls();
 
         // Generate buildings immediately
-        setTimeout(() => {
+        parcelBasedGenerationTimer = setTimeout(() => {
+            parcelBasedGenerationTimer = null;
+            if (!parcelBasedModal || parcelBasedBlock !== block) return;
             generateBuildingsInModal();
         }, 500);
+        return true;
     }
 
     function displayParcelsOnMap(block) {
@@ -818,9 +978,11 @@
             type: 'FeatureCollection',
             features: features
         };
+        parcelBasedBoundary = parcelBasedSiteFeature(features, block.site);
 
         // Add the parcels to the map with distinct styling to show borders
         parcelBasedParcelLayer = L.geoJSON(featureCollection, {
+            pane: parcelBasedModal?.pane,
             style: {
                 fillColor: '#f0f0f0',
                 fillOpacity: 0.3,
@@ -830,64 +992,90 @@
             }
         }).addTo(parcelBasedMap);
 
-        // Fit the map to the bounds of the block
-        parcelBasedMap.fitBounds(parcelBasedParcelLayer.getBounds(), {
-            padding: [50, 50]
-        });
+        parcelBasedModal?.fitFeature(parcelBasedBoundary || featureCollection, { maxZoom: 21 });
+    }
 
-        // Initialize 3D preview
-        try { initParcelBased3DSimple(); } catch (e) { console.warn('3D init failed', e); }
+    // The X / Esc path. Closing NEVER saves — only "Done" (saveParcelBasedDesignForProposal) does.
+    // When the editor is running a commit-on-confirm session (a geometry edit, or a Build-palette
+    // creation) the design would be lost, so ask first; declining keeps the editor open.
+    // Did the user change the design since the editor opened? As in the Block editor
+    // (building-blocks.js blockifyDesignChanges): the generated first design is not a change, and
+    // a drop put back where it was leaves the design as it was, so closing then asks nothing.
+    let parcelBasedDesignChangeTracker = null;
+    function parcelBasedDesignChanges() {
+        if (!parcelBasedDesignChangeTracker) {
+            parcelBasedDesignChangeTracker = window.DesignChangeTracker.createDesignChangeTracker({
+                signature: () => window.DesignChangeTracker.featuresSignature(generatedParcelBasedFeatures || [])
+            });
+        }
+        return parcelBasedDesignChangeTracker;
+    }
+
+    async function requestCloseParcelBasedModal() {
+        if (typeof window !== 'undefined' && typeof window.confirmDiscardProposalDesignSession === 'function') {
+            const proceed = await window.confirmDiscardProposalDesignSession({
+                hasDesign: Array.isArray(generatedParcelBasedFeatures) && generatedParcelBasedFeatures.length > 0
+                    && parcelBasedDesignChanges().changed()
+            });
+            if (!proceed) return;
+        }
+        closeParcelBasedModal();
     }
 
     function closeParcelBasedModal(options = {}) {
         const { preservePending = false } = options;
-
-        // Remove the map instance
-        if (parcelBasedMap) {
-            if (parcelBasedParcelLayer) {
-                parcelBasedMap.removeLayer(parcelBasedParcelLayer);
-                parcelBasedParcelLayer = null;
-            }
-            parcelBasedBuildingLayers.forEach(layer => {
-                if (parcelBasedMap && layer) {
-                    parcelBasedMap.removeLayer(layer);
-                }
-            });
-            parcelBasedBuildingLayers = [];
-            parcelBasedMap.remove();
-            parcelBasedMap = null;
+        if (parcelBasedGenerationTimer !== null) {
+            clearTimeout(parcelBasedGenerationTimer);
+            parcelBasedGenerationTimer = null;
         }
+
+        if (parcelBasedMap) {
+            [parcelBasedParcelLayer].forEach(layer => {
+                if (layer) { try { parcelBasedMap.removeLayer(layer); } catch (_) { } }
+            });
+            [parcelBasedEnvelopeLayers, parcelBasedBuildingLayers, parcelBasedExcludedLayers].forEach(layers => {
+                layers.forEach(layer => { if (layer) { try { parcelBasedMap.removeLayer(layer); } catch (_) { } } });
+            });
+        }
+        parcelBasedParcelLayer = null;
+        parcelBasedEnvelopeLayers = [];
+        parcelBasedBuildingLayers = [];
+        parcelBasedExcludedLayers = [];
+        parcelBasedBoundary = null;
+        parcelBasedMap = null;
+        if (parcelBasedDesignChangeTracker) parcelBasedDesignChangeTracker.stop();
+        const editorSession = parcelBasedModal;
+        parcelBasedModal = null;
+        editorSession?.close();
 
         // Clear state
         generatedParcelBasedFeatures = [];
+        parcelBasedBuildOut = [];
         parcelBasedBlock = null;
         parcelBasedBlockNameOverride = null;
 
-        // Dispose 3D resources
-        disposeParcelBased3D();
-
-        // Remove the modal from DOM
-        const modal = document.getElementById('parcelbased-modal');
-        if (modal) {
-            modal.remove();
-            document.dispatchEvent(new CustomEvent('parcelBasedModalClosed'));
-            document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
-        }
-
-        // Force a reflow of the main map
-        if (typeof map !== 'undefined' && map) {
-            map.invalidateSize();
-        }
+        document.dispatchEvent(new CustomEvent('parcelBasedModalClosed'));
+        document.dispatchEvent(new CustomEvent('urbanRuleModalClosed'));
 
         // Reset parameters to defaults
         currentMaxFloors = DEFAULT_MAX_FLOORS;
         currentMinDistance = DEFAULT_MIN_DISTANCE;
+        currentRuleKind = DEFAULT_RULE_KIND;
+        currentMinFloors = DEFAULT_MIN_FLOORS;
+        currentMinFootprintM2 = DEFAULT_MIN_FOOTPRINT_M2;
+        currentMinPlotAreaM2 = DEFAULT_MIN_PLOT_AREA_M2;
 
         if (!preservePending) {
             setPendingParcelBasedProposalContext(null);
             if (typeof window !== 'undefined') {
                 window.pendingParcelBasedFromModal = null;
             }
+        }
+        if (typeof window !== 'undefined') {
+            // Only "Done" commits — it tears down with preservePending after saving. Every other
+            // close abandons the design session, leaving the edited object exactly as it was.
+            if (!preservePending) window.discardProposalDraftDesignSession?.();
+            window.finishProposalDraftDesignSession?.();
         }
     }
 
@@ -948,11 +1136,7 @@
             parcelIds: normalizedParcelIds.slice(),
             parentDetails: parentDetails.slice(),
             blockName: getParcelBasedDisplayName(),
-            parameters: {
-                maxFloors: Number.isFinite(Number(currentMaxFloors)) ? Number(currentMaxFloors) : DEFAULT_MAX_FLOORS,
-                minDistance: Number.isFinite(Number(currentMinDistance)) ? Number(currentMinDistance) : DEFAULT_MIN_DISTANCE,
-                typology: 'parcelBased'
-            },
+            parameters: parcelBasedDesignParameters(),
             buildings: clonedFeatures,
             buildingFeature: clonedFeatures[0] || null
         };
@@ -987,48 +1171,39 @@
         }
     }
 
-    // Entry point for opening parcel-based modal from parcels
-    function openParcelBasedForParcels({ blockName, parcels }) {
-        const rawParcels = Array.isArray(parcels) ? parcels.filter(Boolean) : [];
-        if (!rawParcels.length) {
+    // Entry point for opening parcel-based modal from parcels. `initialParameters` (optional)
+    // reopens the editor on a previously-saved design — used by "Copy into new proposal".
+    function openParcelBasedForParcels({ blockName, parcelIds, initialParameters = null, site = null }) {
+        parcelBasedSeedParameters = initialParameters || null;
+        const ids = Array.from(new Set((Array.isArray(parcelIds) ? parcelIds : []).map(String).filter(Boolean)));
+        if (!ids.length) {
             if (typeof updateStatus === 'function') {
                 updateStatus('Select parcels before launching the parcel-based tool.');
             }
-            return;
+            return false;
         }
 
-        const seenIds = new Set();
-        const normalizedParcels = [];
-        rawParcels.forEach(layer => {
-            try {
-                const props = layer?.feature?.properties;
-                const parcelId = typeof ensureParcelId === 'function'
-                    ? ensureParcelId(layer?.feature)
-                    : (props?.parcelId ?? props?.parcel_id ?? props?.id);
-                if (!parcelId) return;
-                const idStr = parcelId.toString();
-                if (seenIds.has(idStr)) return;
-                seenIds.add(idStr);
-                normalizedParcels.push(layer);
-            } catch (_) { }
-        });
-
-        if (!normalizedParcels.length) {
+        const liveParcels = parcelBasedParcelsForIds(ids);
+        if (liveParcels.length !== ids.length) {
             if (typeof updateStatus === 'function') {
-                updateStatus('Could not resolve parcel data for the selected parcels.');
+                updateStatus(translateParcelBasedText('status.messages.could_not_resolve_parcel_data_for_the_selected_parcels', 'Could not resolve parcel data for the selected parcels.'));
             }
-            return;
+            return false;
         }
 
-        const parcelIds = Array.from(seenIds);
         parcelBasedBlock = {
-            parcels: normalizedParcels,
-            parcelIds,
+            parcels: liveParcels,
+            parcelIds: ids,
+            site: site?.geometry ? {
+                type: 'Feature',
+                properties: { ...(site.properties || {}) },
+                geometry: JSON.parse(JSON.stringify(site.geometry))
+            } : null,
             valid: true,
             polygon: null
         };
-        parcelBasedBlockNameOverride = blockName || describeParcelBasedParcelSelection(parcelIds);
-        showParcelBasedModal();
+        parcelBasedBlockNameOverride = blockName || describeParcelBasedParcelSelection(ids);
+        return showParcelBasedModal() === true;
     }
 
     // Export to window

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "city": "Frankfurt",
+  "countryCode": "DE",
+  "wupCityCode": 3500,
+  "rank": 573,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://frankfurt.de/service-und-rathaus/verwaltung/aemter-und-institutionen/stadtvermessungsamt",
+    "https://frankfurt.de/themen/planen-bauen-und-wohnen/planen/geoinformationen",
+    "https://data.gov.de/suche/daten/wfs-flurstuecke-frankfurt-am-main?ids=4e3e7e0c-137e-4bb0-ac4c-4e4e71f1f9ac",
+    "https://geowebdienste.frankfurt.de/SGK_Flurstuecke"
+  ],
+  "publicAnonymousGeometryVerified": true,
+  "completeGeoreferencedPolygonCount": 3,
+  "geometryRetained": true,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 3,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "qualified_runtime_enabled",
+    "reason": "Bounded runtime qualification now passes; see the root runtime review.",
+    "nativeIdsUsed": "OBJECTID safe integer; three values retained in the geometry sample."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://geowebdienste.frankfurt.de/SGK_Flurstuecke?service=WFS&request=GetCapabilities",
+      "method": "anonymous HTTPS GET",
+      "status": 200,
+      "contentType": "text/xml",
+      "responseBytes": 14959,
+      "observation": "Listed Amt62_Flurstuecke:Flurstueck, HistorischesFlurstueck, BesondereFlurstuecksgrenze, Flur, and Gemarkung. Default parcel CRS is urn:ogc:def:crs:EPSG::25832."
+    },
+    {
+      "url": "https://geowebdienste.frankfurt.de/SGK_Flurstuecke?service=WFS&version=2.0.0&request=DescribeFeatureType&typenames=Amt62_Flurstuecke%3AFlurstueck",
+      "method": "anonymous HTTPS GET",
+      "status": 200,
+      "contentType": "text/xml",
+      "responseBytes": 5682,
+      "observation": "Schema only: safe ID OBJECTID (xsd:int); geometry SHAPE (gml:MultiSurfacePropertyType). Other fields were not requested from feature records."
+    },
+    {
+      "url": "https://geowebdienste.frankfurt.de/SGK_Flurstuecke",
+      "method": "anonymous HTTPS GET, WFS GetFeature, count=3, propertyName=OBJECTID,SHAPE, CRS EPSG:25832, bounded bbox only",
+      "status": 200,
+      "contentType": "application/xml",
+      "responseBytes": 2916,
+      "featureCount": 3,
+      "observation": "Returned three complete polygon geometries and allowlisted OBJECTID values only; resulting sample is three polygons at approximately 26.4m, 38.7m, and 126.1m from the WUP point. No owner/address/legal/tax fields were requested."
+    },
+    {
+      "url": "https://geowebdienste.frankfurt.de/SGK_Flurstuecke",
+      "method": "WFS GetFeature exploratory request with GeoJSON output format",
+      "status": 200,
+      "contentType": "text/xml",
+      "observation": "Returned an OWS exception for unsupported outputFormat; no feature response retained."
+    },
+    {
+      "url": "https://geowebdienste.frankfurt.de/SGK_Flurstuecke",
+      "method": "WFS GetFeature exploratory request with CRS84 bbox",
+      "status": 400,
+      "contentType": "text/xml",
+      "observation": "Returned OWS exception “CRS 0 not supported”; no feature response retained. Corrected request used the service-advertised EPSG:25832 CRS."
+    }
+  ],
+  "technicalBlocker": null,
+  "sampleDisposition": "samples/frankfurt-flurstuecke-wup573.geojson",
+  "remainingUncertainty": "The city catalogue says the WFS contains Flurstück, historical Flurstück, boundary and administrative cadastral types and that the data is only for Frankfurt city. Three sample polygons were taken within a 240 m by 170 m EPSG:25832 bbox around the WUP point; they do not prove citywide completeness. The dataset is licensed under Datenlizenz Deutschland Namensnennung 2.0.",
+  "rootRuntimeReview": {
+    "checkedAt": "2026-10-09T01:54:02.483215+00:00",
+    "status": "approved_by_root",
+    "reason": "191 valid, distinct Frankfurt municipal cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. The service-advertised GEOJSON response preserves native EPSG:25832 boundaries, transformed with an explicit ETRS89 projection. FSK is native cadastral identity; OBJECTID/GmlID remain transport identity. Stable hit counts before and after all pages, strict default OBJECTID order, forced three-row pagination, all 191 fresh native FSK reads through FES equality, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Unsupported application/json and sorting requests, and the different POST serializer, remain documented; the executable profile uses only supported GET operations. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/frankfurt-wfs-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/frankfurt-wfs-root-quality.json",
+    "operations": [
+      "WFS GET outputFormat=GEOJSON native EPSG:25832; propertyName=SHAPE,FSK,OBJECTID",
+      "WFS GET resultType=hits outputFormat=GML32, counts before/after pages",
+      "WFS GET FES 2.0 exact native FSK equality; no mixed bbox/filter"
+    ],
+    "operationLimits": {
+      "maxOperationMs": 60000,
+      "maxResponseBytes": 8388608,
+      "maxTotalResponseBytes": 33554432,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1
+    },
+    "sortingCaveat": "Advertised sorting is rejected for both GET and POST; supported pages are checked for strict monotonic unique OBJECTID order, and match counts must remain stable."
+  }
+}

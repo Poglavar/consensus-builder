@@ -1,0 +1,87 @@
+{
+  "kind": "country",
+  "key": "PG",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "temporarily_unavailable",
+  "newStatus": "no_online_cadastre_found",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-PG,en;q=0.9",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": false,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "requests": [
+    {
+      "url": "https://dlpp.gov.pg/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "DLPP site reachable; nav lists Registrar of Titles, National Mapping Bureau (map products/sales), Office of Surveyor General, eLands account portal, customary land registration; no parcel map/service link"
+    },
+    {
+      "url": "https://www.lands.gov.pg/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "same site"
+    },
+    {
+      "url": "https://dlpp.gov.pg/elands",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "eLands: login/registration for lease rental payments; account-based, no public parcel map seen"
+    },
+    {
+      "url": "https://elands.dlpp.gov.pg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://www.nmsa.gov.pg/",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": "text/html",
+      "assessment": "HTTP 500, empty"
+    },
+    {
+      "url": "https://www.pngsdi.gov.pg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://www.nica.gov.pg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://data.gov.pg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://png-nmsa.maps.arcgis.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "ArcGIS Online org shell; nothing published found"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Papua New Guinea cadastre parcel&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "geoBlockSuspected": false,
+  "notes": "DLPP main site now reachable and inspected; no online parcel service, only paper/analog map products, title search and account-based eLands. NMSA and PNG SDI hosts do not answer (failed connection / 500) so absence of an SDI service is not fully proven.",
+  "nextStep": "Retry nmsa.gov.pg (500) and elands portal later; ask DLPP about digital cadastre (Lands Information System)."
+}

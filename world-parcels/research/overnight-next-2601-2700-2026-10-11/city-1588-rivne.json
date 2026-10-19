@@ -1,0 +1,67 @@
+{
+  "cityCode": 1588,
+  "queueRank": 2651,
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "point": [50.623720299177, 26.2477323548083],
+  "population2025": 222927,
+  "population2025k": 222.927,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rivne Ukraine official cadastral map public parcel map land records GIS",
+        "result": "Found the official StateGeoCadastre public cadastral-map documentation and the official Rivne municipal urban-planning GIS. The municipal portal identifies a land-parcel register and a cadastral-information map action; no anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://geo.rv.ua/map/main",
+          "https://geo.rv.ua/register/3262621605964022967",
+          "https://land.gov.ua/open-data/",
+          "https://wikimap.dzk.gov.ua/wiki/%D0%9F%D1%83%D0%B1%D0%BB%D1%96%D1%87%D0%BD%D0%B0_%D0%BA%D0%B0%D0%B4%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B2%D0%B0_%D0%BA%D0%B0%D1%80%D1%82%D0%B0"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Рівне офіційна кадастрова карта земельний кадастр геопортал земельні ділянки",
+        "result": "Found the official Rivne City Council urban-planning GIS (Геоінформаційна система Рівненської міської територіальної громади), its land-parcel register route, and the StateGeoCadastre public cadastral-map documentation. The municipal register page reports that the register is in the process of being populated; no parcel geometry was returned.",
+        "actualResultUrls": [
+          "https://geo.rv.ua/map/main",
+          "https://geo.rv.ua/register/3262621605964022967",
+          "https://arhrv.gov.ua/",
+          "https://rivnenska.land.gov.ua/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "sourceAssessment": {
+    "localCustodian": {
+      "name": "Department of Urban Planning and Architecture of the Executive Committee of Rivne City Council / Rivne municipal GIS",
+      "url": "https://geo.rv.ua/map/main",
+      "evidence": "The live municipal portal identifies the governing body as the Rivne City Council urban-planning and architecture department, exposes a map action labelled cadastral land information, and links a land-parcel register. The register URL is public but currently displays 'Реєстр в процесі наповнення' (register in the process of being populated)."
+    },
+    "generalAgency": {
+      "name": "State Service of Ukraine for Geodesy, Cartography and Cadastre (StateGeoCadastre)",
+      "url": "https://land.gov.ua/",
+      "scope": "National cadastral custodian and public cadastral-map documentation; treated as general national agency context, not as proof of a Rivne-specific anonymous API response."
+    }
+  },
+  "parcelSource": {
+    "serviceUrl": "https://geo.rv.ua/map/main",
+    "layerId": null,
+    "layerName": "Municipal cadastral land-information map action; exact backend layer endpoint not exposed in the inspected HTML/configuration",
+    "geometryType": null,
+    "sourceCrs": "Map configuration declares map SRID options including EPSG:4326 and local Ukrainian systems; no parcel-layer response was available to confirm the active parcel-layer CRS.",
+    "responseCrs": null,
+    "nativeIdentity": null,
+    "observedNativeFields": [],
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "sample": null,
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real local municipal cadastral/map custodian was evidenced, but no bounded anonymous parcel response with safe native IDs and geometry was obtained. Runtime admission remains held pending independent serial adapter qualification."
+  }
+}

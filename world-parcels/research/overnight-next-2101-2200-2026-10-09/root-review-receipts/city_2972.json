@@ -1,0 +1,28 @@
+{
+  "taskId": "city:2972",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-2972-tanjung-balai.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/tanjung-balai-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T23:48:16Z",
+  "reason": "The official city report supports local BPN land-office custody. ATR/BPN ATLAS is a candidate WFS source, but bounded bhumi:Persil requests returned zero features; no native-ID polygon was retained. A zero at a point or bounded area is not citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS validity/overlap/operation checks, source binding, and headed Details verification are unevidenced; no admission.",
+  "queueIdentity": {
+    "cityCode": 2972,
+    "rank": 2127,
+    "country": "Indonesia",
+    "point": [
+      2.96503024318831,
+      99.7966303783882
+    ],
+    "populationPersons": 273506
+  },
+  "searchLanguages": [
+    "English",
+    "Indonesian"
+  ],
+  "retainedPolygonCount": 0,
+  "runtimeAdmission": false
+}

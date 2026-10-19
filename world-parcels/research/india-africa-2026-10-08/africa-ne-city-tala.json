@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3011",
+  "queueRank": 157,
+  "wupCityCode": 3011,
+  "name": "Tala",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    30.670050069128,
+    30.9356466255227
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 157,
+  "population2025": 133029,
+  "annualGrowthPct2015To2025": 5.097663,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-EG.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic",
+    "exactQuery": "تلا المنوفية قطع الأراضي المسح العقاري كادستر خريطة",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://commons.wikimedia.org/wiki/File%3A%D9%85%D8%B1%D9%83%D8%B2_%D8%AA%D9%84%D8%A7.png",
+      "https://addarea.com/addarea/page/247668/%D9%85%D9%83%D8%AA%D8%A8-%D8%AA%D9%88%D8%AB%D9%8A%D9%82-%D8%A7%D9%84%D8%B4%D9%87%D8%B1-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%89---%D8%AA%D9%84%D8%A7/",
+      "https://www.marefa.org/%D8%AA%D9%84%D8%A7",
+      "https://addarea.com/addarea/page/136571/%D9%85%D8%A3%D9%85%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B6%D8%B1%D8%A7%D8%A6%D8%A8-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9---%D8%AA%D9%84%D8%A7/",
+      "https://www.marefa.org/%D8%AA%D9%84%D8%A7_%28%D9%85%D8%B1%D9%83%D8%B2%29",
+      "https://addarea.com/addarea/page/255313/%D8%A7%D9%84%D8%B3%D8%AC%D9%84-%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%89---%D8%AA%D9%84%D8%A7/",
+      "https://www.smsarko.com/search/lands-for-sale/markaz-tala",
+      "https://www.elwatannews.com/iframe/pdf/18039428181551195324.pdf"
+    ],
+    "summary": "Official ESA map products and NUCA land-offering viewer found; NUCA data are offered lots in separate new cities, not target-city cadastral coverage. No parcel geometry verified.",
+    "additionalOfficialLead": "NUCA normal viewer navigation lists 27 planned new cities. New Cairo and Borg El Arab New are distinct land-offering cities; Cairo/Alexandria city target is not covered by those pages.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/File%3A%D9%85%D8%B1%D9%83%D8%B2_%D8%AA%D9%84%D8%A7.png",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://addarea.com/addarea/page/247668/%D9%85%D9%83%D8%AA%D8%A8-%D8%AA%D9%88%D8%AB%D9%8A%D9%82-%D8%A7%D9%84%D8%B4%D9%87%D8%B1-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%89---%D8%AA%D9%84%D8%A7/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.marefa.org/%D8%AA%D9%84%D8%A7",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://addarea.com/addarea/page/136571/%D9%85%D8%A3%D9%85%D9%88%D8%B1%D9%8A%D8%A9-%D8%A7%D9%84%D8%B6%D8%B1%D8%A7%D8%A6%D8%A8-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9---%D8%AA%D9%84%D8%A7/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.marefa.org/%D8%AA%D9%84%D8%A7_%28%D9%85%D8%B1%D9%83%D8%B2%29",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://addarea.com/addarea/page/255313/%D8%A7%D9%84%D8%B3%D8%AC%D9%84-%D8%A7%D9%84%D9%85%D8%AF%D9%86%D9%89---%D8%AA%D9%84%D8%A7/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.smsarko.com/search/lands-for-sale/markaz-tala",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.elwatannews.com/iframe/pdf/18039428181551195324.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Tala\" Egypt (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Tala%22+Egypt+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The public city-specific search found no verified parcel polygons for Tala; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check ESA or the Tala local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Tala%22+Egypt+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "landOfferingLead": {
+    "portal": "https://lands.nuca.gov.eg/ar/ViewZone.aspx?ID=4797",
+    "zoneIdDiscoveredVia": "Cities.aspx/GetSiteCities -> ViewCity.aspx?ID=1 -> ViewProject.aspx?ID=2284",
+    "zoneRequestStatus": 200,
+    "rasterTileSource": "../Images/DataImages/Aug26/NCairo/NCairo/GeneratedImages/dzc_output.xml",
+    "assessment": "Public New Cairo offered plots with availability/price table; not general cadastral geometry and not target Cairo city scope."
+  },
+  "followupServiceAuditRefs": []
+}

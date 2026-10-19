@@ -1,0 +1,67 @@
+{
+ "kind": "city",
+ "key": "busan",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8; cookie jar used (curl -c/-b)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.vworld.kr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection died after 5 retries"
+  },
+  {
+   "url": "https://api.vworld.kr/req/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection died after 5 retries"
+  },
+  {
+   "url": "https://map.vworld.kr/ ; https://www.nsdi.go.kr/ ; https://openapi.nsdi.go.kr/ ; https://map.ngii.go.kr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection died / CONNECT 502"
+  },
+  {
+   "url": "https://www.busan.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "now 200 after redirect to /index (was 401); city homepage, no parcel service"
+  },
+  {
+   "url": "https://data.busan.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=UTF-8",
+   "assessment": "302 to /bdip/ then 200; open-data portal HTML only, no continuous-cadastre keyword found"
+  },
+  {
+   "url": "https://www.data.go.kr/tcs/dss/selectDataSetList.do?dType=API&keyword=연속지적",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=UTF-8",
+   "assessment": "catalog search page listing continuous cadastral map entries (file/API); not a parcel reply"
+  },
+  {
+   "url": "https://www.juso.go.kr/ ; https://www.ngii.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable; no keyless parcel API"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "VWorld/NSDI hosts drop connections while other .kr hosts answer 200; host-specific or region block suspected",
+ "notes": "Country retry (KR.json) reached the same conclusion: VWorld (LP_PA_CBND_BUBUN, would cover Busan) drops connections and needs a registered free key, not available. Busan city sites now respond but offer no open parcel service.",
+ "nextStep": "Retry VWorld from a Korea-reachable network with a registered key, or read the province SHP from data.go.kr."
+}

@@ -1,0 +1,1911 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "7670",
+  "cityName": "Kaithal",
+  "sourceId": "in-hr-hsac-kaithal-outlines",
+  "candidateSha256": "c403256213c0ff1f925c0f1c0ddcb0b23ee72725f7feca74b2c37ee32145c2ba",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 56,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 56,
+      "collectedUniqueCount": 56
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 212
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 21,
+      "distinctFeatureQueries": 21,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "b9406e761c549ee6db3e06cd59766d7422d80136be0e8d695da88bdededeb23c",
+      "featureCount": 56,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "b9406e761c549ee6db3e06cd59766d7422d80136be0e8d695da88bdededeb23c",
+  "featureCount": 56,
+  "sampleIds": [
+    "IN-HR-HSAC2-KAITHAL-g1~764038937~297982112~44f4a9cfd2e80d8c7145caa792277cdabc5de983cb390369deee67dd45e13d36",
+    "IN-HR-HSAC2-KAITHAL-g1~764053691~297988246~31b03816370871ad6c7ee3fc486f80c2727fec3e9a76632232640d5a62bd1009",
+    "IN-HR-HSAC2-KAITHAL-g1~764065315~297997645~a28b14a3e22888164de7619acad83681a0a9bbdef78a7b2ea5e0c271ecda42e9"
+  ],
+  "cellSizeDegrees": 0.001,
+  "densityProbe": [
+    {
+      "cellSizeDegrees": 0.001,
+      "footprintBbox": [
+        76.403,
+        29.797,
+        76.408,
+        29.802
+      ],
+      "footprintFeatures": 85,
+      "perIdCost": 1
+    }
+  ],
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        76.404,
+        29.798,
+        76.405,
+        29.799
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764038321~297980824~dbc914c5090d9ba105b3d6eac2e7601413f68ba63d412af25d21b2bdfc52e990",
+        "IN-HR-HSAC2-KAITHAL-g1~764038937~297982112~44f4a9cfd2e80d8c7145caa792277cdabc5de983cb390369deee67dd45e13d36",
+        "IN-HR-HSAC2-KAITHAL-g1~764044999~297978049~00b77d1996e228c99a9eb62f3750582a27aa8458acee82f1d44aeccee6acfc17",
+        "IN-HR-HSAC2-KAITHAL-g1~764048421~297977387~81c443df9093624813e2bb839f30013baf463cfb3b9e768e433a7880610944a1",
+        "IN-HR-HSAC2-KAITHAL-g1~764043220~297980279~c07ba7adc64a0fdb40a75daa192f3d513f145db7144a76b807852f1285081179",
+        "IN-HR-HSAC2-KAITHAL-g1~764038086~297980333~95a3e25309dba44d898affe55856ab449e2f31fc2e0ac24dcac838e0b77e4ad9"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        76.405,
+        29.798,
+        76.406,
+        29.799
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764053402~297985082~1d30f6a0668acc10e0c8636fd543181a0f57a230ad148c0a089a77dbcd339c87",
+        "IN-HR-HSAC2-KAITHAL-g1~764056216~297984074~b85d59740c9f997359cbf6b0d398bcf41590e13a6bf8acf0fa03e2d510697f79",
+        "IN-HR-HSAC2-KAITHAL-g1~764044999~297978049~00b77d1996e228c99a9eb62f3750582a27aa8458acee82f1d44aeccee6acfc17",
+        "IN-HR-HSAC2-KAITHAL-g1~764048421~297977387~81c443df9093624813e2bb839f30013baf463cfb3b9e768e433a7880610944a1",
+        "IN-HR-HSAC2-KAITHAL-g1~764054761~297976225~916f65f19bacadb3e8ea6965fc61d47d2cba24051e671c82428db56552405ed6",
+        "IN-HR-HSAC2-KAITHAL-g1~764055363~297976110~1d5241efbbc627fe8465b1d08723cf6e515211df51e9384388b09d671c2f5731",
+        "IN-HR-HSAC2-KAITHAL-g1~764050949~297976999~6d51e2e92abe36caf8c9dd761ac5e8363e8512ef76c05e7095effbe42359067f",
+        "IN-HR-HSAC2-KAITHAL-g1~764047404~297990404~6572eac173a9d0a2549713391d4f555885bbc0c476e1f89d89d920a2b0b8d6ee",
+        "IN-HR-HSAC2-KAITHAL-g1~764056946~297990578~757479db2b3cec5e837a5e098ee2de44c766f235d18cd2de8078485dd37de0b0",
+        "IN-HR-HSAC2-KAITHAL-g1~764056560~297987227~de73f5caf1652f5c7e84a11fc344fbb5092a704ee67818dfb697e28121f3df02",
+        "IN-HR-HSAC2-KAITHAL-g1~764053691~297988246~31b03816370871ad6c7ee3fc486f80c2727fec3e9a76632232640d5a62bd1009"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        76.406,
+        29.798,
+        76.407,
+        29.799
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764055363~297976110~1d5241efbbc627fe8465b1d08723cf6e515211df51e9384388b09d671c2f5731",
+        "IN-HR-HSAC2-KAITHAL-g1~764062632~297986684~ea2df0f897c32f3d580b0ed52ba75189f0ffaf0e9e78afe5fd1dfec22da897c6",
+        "IN-HR-HSAC2-KAITHAL-g1~764056946~297990578~757479db2b3cec5e837a5e098ee2de44c766f235d18cd2de8078485dd37de0b0",
+        "IN-HR-HSAC2-KAITHAL-g1~764068953~297990024~dfbae8cebb639eeffcc1b142ef040c96f5cf3a4d873855e09874a2fbec2c5fa7",
+        "IN-HR-HSAC2-KAITHAL-g1~764067450~297974820~996be7246a16984b6043009f581275ca039b3c52160f3f3252f61613ef9c60e1",
+        "IN-HR-HSAC2-KAITHAL-g1~764056560~297987227~de73f5caf1652f5c7e84a11fc344fbb5092a704ee67818dfb697e28121f3df02",
+        "IN-HR-HSAC2-KAITHAL-g1~764061176~297974898~456dfc011c67932ba4507aeb8c19de199232da94728092b56f413773cc291740",
+        "IN-HR-HSAC2-KAITHAL-g1~764066712~297974688~d8c324e9f404d66093d51b42ed8ea8a938e7bcb83e60e6b0e4ba070c7d0899ed",
+        "IN-HR-HSAC2-KAITHAL-g1~764068752~297988274~88c8b08f81bcf14675b0ffdddb1232b21eae1509d0a5a5c7be462368a0c15fe5"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        76.404,
+        29.799,
+        76.405,
+        29.8
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764041454~298000317~0973585eca96f88fbe367e09a2dfb6b1cfff9ddbc0e983e8beb3eedcbd8db157",
+        "IN-HR-HSAC2-KAITHAL-g1~764044107~298000094~98b6cee6ea61c9f30a88fea9f708cc8b935223600f0d9f4e03ae24ee57cb42a0",
+        "IN-HR-HSAC2-KAITHAL-g1~764041869~297997670~21643b95989620ce634d76cfb287495fe4047562d288eecc87d55402e24e7c09",
+        "IN-HR-HSAC2-KAITHAL-g1~764038321~297980824~dbc914c5090d9ba105b3d6eac2e7601413f68ba63d412af25d21b2bdfc52e990",
+        "IN-HR-HSAC2-KAITHAL-g1~764045629~297994921~8ce2cc9b8a69224f5d9d7abb9def9fef82f5db8f76843ceeb43fe0df5a9bddd0",
+        "IN-HR-HSAC2-KAITHAL-g1~764047404~297990404~6572eac173a9d0a2549713391d4f555885bbc0c476e1f89d89d920a2b0b8d6ee",
+        "IN-HR-HSAC2-KAITHAL-g1~764041049~298001615~cfc0f625aad699a14963cb249d7fc5beb3cb032027232c9813f47e68df3dd5d7"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        76.405,
+        29.799,
+        76.406,
+        29.8
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764045629~297994921~8ce2cc9b8a69224f5d9d7abb9def9fef82f5db8f76843ceeb43fe0df5a9bddd0",
+        "IN-HR-HSAC2-KAITHAL-g1~764047404~297990404~6572eac173a9d0a2549713391d4f555885bbc0c476e1f89d89d920a2b0b8d6ee",
+        "IN-HR-HSAC2-KAITHAL-g1~764056946~297990578~757479db2b3cec5e837a5e098ee2de44c766f235d18cd2de8078485dd37de0b0",
+        "IN-HR-HSAC2-KAITHAL-g1~764056403~297990835~dd06dfb5bc666c556767427fe29f591c5936e6292e2c6728a8c0d485941fd01b",
+        "IN-HR-HSAC2-KAITHAL-g1~764054041~297991416~6c5142533eb29e331c68326ffa977d73f500c4906638033bb9d938c2df276cc7",
+        "IN-HR-HSAC2-KAITHAL-g1~764053189~297990204~f95fff5a354509de929ba6cf00d13685157e9cb544c3257592509f190b09d70f",
+        "IN-HR-HSAC2-KAITHAL-g1~764056560~297987227~de73f5caf1652f5c7e84a11fc344fbb5092a704ee67818dfb697e28121f3df02",
+        "IN-HR-HSAC2-KAITHAL-g1~764053691~297988246~31b03816370871ad6c7ee3fc486f80c2727fec3e9a76632232640d5a62bd1009",
+        "IN-HR-HSAC2-KAITHAL-g1~764041049~298001615~cfc0f625aad699a14963cb249d7fc5beb3cb032027232c9813f47e68df3dd5d7",
+        "IN-HR-HSAC2-KAITHAL-g1~764051891~297999345~5d5a3d59fe08d8242c83d25edfc6e793d5c8884275c2156ba74e0869ea85f6aa",
+        "IN-HR-HSAC2-KAITHAL-g1~764059984~297997716~b012ce79d1523618d22cb7f4329eaa87d77b1afb864955fd81e10083a49871ff"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        76.406,
+        29.799,
+        76.407,
+        29.8
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764062632~297986684~ea2df0f897c32f3d580b0ed52ba75189f0ffaf0e9e78afe5fd1dfec22da897c6",
+        "IN-HR-HSAC2-KAITHAL-g1~764056946~297990578~757479db2b3cec5e837a5e098ee2de44c766f235d18cd2de8078485dd37de0b0",
+        "IN-HR-HSAC2-KAITHAL-g1~764065907~297997638~81e92c4d869bd663208922c55bd94cb9a640eb749e90b476cf4caa566066d332",
+        "IN-HR-HSAC2-KAITHAL-g1~764068222~297990026~c4964bd0567995ab7d16c4ea4bc670beefe977a6e9735ca62c03274e0bebf440",
+        "IN-HR-HSAC2-KAITHAL-g1~764068953~297990024~dfbae8cebb639eeffcc1b142ef040c96f5cf3a4d873855e09874a2fbec2c5fa7",
+        "IN-HR-HSAC2-KAITHAL-g1~764061176~297974898~456dfc011c67932ba4507aeb8c19de199232da94728092b56f413773cc291740",
+        "IN-HR-HSAC2-KAITHAL-g1~764066712~297974688~d8c324e9f404d66093d51b42ed8ea8a938e7bcb83e60e6b0e4ba070c7d0899ed",
+        "IN-HR-HSAC2-KAITHAL-g1~764068752~297988274~88c8b08f81bcf14675b0ffdddb1232b21eae1509d0a5a5c7be462368a0c15fe5",
+        "IN-HR-HSAC2-KAITHAL-g1~764068729~297997604~44b279fa10cc7cb6868da9cf867a408e326b3f601eaf771418eb4556b70637ad",
+        "IN-HR-HSAC2-KAITHAL-g1~764065417~297998749~682a2270526a8b7362d0939ee3d2ca5b6e48e7a7a8e19e76e8430ca51f39901e",
+        "IN-HR-HSAC2-KAITHAL-g1~764051891~297999345~5d5a3d59fe08d8242c83d25edfc6e793d5c8884275c2156ba74e0869ea85f6aa",
+        "IN-HR-HSAC2-KAITHAL-g1~764059984~297997716~b012ce79d1523618d22cb7f4329eaa87d77b1afb864955fd81e10083a49871ff",
+        "IN-HR-HSAC2-KAITHAL-g1~764065315~297997645~a28b14a3e22888164de7619acad83681a0a9bbdef78a7b2ea5e0c271ecda42e9"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        76.404,
+        29.8,
+        76.405,
+        29.801
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764041454~298000317~0973585eca96f88fbe367e09a2dfb6b1cfff9ddbc0e983e8beb3eedcbd8db157",
+        "IN-HR-HSAC2-KAITHAL-g1~764044107~298000094~98b6cee6ea61c9f30a88fea9f708cc8b935223600f0d9f4e03ae24ee57cb42a0",
+        "IN-HR-HSAC2-KAITHAL-g1~764041327~298009078~76a519805491a6c730fa0f85f2eda916a03b7214bac76a317547bc4ac7ee4e10",
+        "IN-HR-HSAC2-KAITHAL-g1~764028002~298007210~373a7602d38d0d2c1ae5e7454438d9eb78b3cf0b03f4ec6e66d01bb607c75df3",
+        "IN-HR-HSAC2-KAITHAL-g1~764028225~298007938~657844349e90917a6fd1d77d6858462d286e82c6c91861811b18c943a84dc8ff",
+        "IN-HR-HSAC2-KAITHAL-g1~764047198~298004696~791d267a396eb82e84b8f1208451fd36ce474e5b3e362018c6e76307e010df1d",
+        "IN-HR-HSAC2-KAITHAL-g1~764041607~298007479~8e8aa6f87be0c409607ef3679fce2029ba51889748d4e6d3e5207db71241c049",
+        "IN-HR-HSAC2-KAITHAL-g1~764026996~297998078~26b2fde962d3cf8e8b0c4058b09e4c06b524d3d93445d67b7d22198ae8085198",
+        "IN-HR-HSAC2-KAITHAL-g1~764041049~298001615~cfc0f625aad699a14963cb249d7fc5beb3cb032027232c9813f47e68df3dd5d7"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        76.405,
+        29.8,
+        76.406,
+        29.801
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764028002~298007210~373a7602d38d0d2c1ae5e7454438d9eb78b3cf0b03f4ec6e66d01bb607c75df3",
+        "IN-HR-HSAC2-KAITHAL-g1~764058591~298005302~edccb7b5763384702b2f5cc62bfbc88f47131996b716b72adbe29764ba0e10d2",
+        "IN-HR-HSAC2-KAITHAL-g1~764055624~298005156~c8658091d40810ecad0ecaa6ac5f9e78b0db66e1fe701456961ea87b733ad283",
+        "IN-HR-HSAC2-KAITHAL-g1~764051936~298004975~fbc2a0bb47d33f040ad67551d0dc5c717e708156812ab5656d39fda0d91f45d8",
+        "IN-HR-HSAC2-KAITHAL-g1~764047198~298004696~791d267a396eb82e84b8f1208451fd36ce474e5b3e362018c6e76307e010df1d",
+        "IN-HR-HSAC2-KAITHAL-g1~764060054~298005380~753e8e54583b8e2976ff5f71e1a5eed1b69b3fa632be608f39d60a6855d0fdc2",
+        "IN-HR-HSAC2-KAITHAL-g1~764052497~298002855~40b449658f174945a17228662f8fc8116ce9cfce649f7ff50559e4cb0066ce3d",
+        "IN-HR-HSAC2-KAITHAL-g1~764041049~298001615~cfc0f625aad699a14963cb249d7fc5beb3cb032027232c9813f47e68df3dd5d7",
+        "IN-HR-HSAC2-KAITHAL-g1~764051891~297999345~5d5a3d59fe08d8242c83d25edfc6e793d5c8884275c2156ba74e0869ea85f6aa"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        76.406,
+        29.8,
+        76.407,
+        29.801
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764068201~298015889~2c44d937457d959b0286ec809cadc08b02788be05a625af2b5a375a78a249a4f",
+        "IN-HR-HSAC2-KAITHAL-g1~764063590~298005567~02e742ae748e796f07c59fc868df1f96624d5244421ce45f5fba060528c618ae",
+        "IN-HR-HSAC2-KAITHAL-g1~764058591~298005302~edccb7b5763384702b2f5cc62bfbc88f47131996b716b72adbe29764ba0e10d2",
+        "IN-HR-HSAC2-KAITHAL-g1~764068250~298008887~2b1d7119e038ff0410979681e63c54c6b9197044d4f0db12c9747d8d2ba29ea5",
+        "IN-HR-HSAC2-KAITHAL-g1~764068729~297997604~44b279fa10cc7cb6868da9cf867a408e326b3f601eaf771418eb4556b70637ad",
+        "IN-HR-HSAC2-KAITHAL-g1~764065994~298004987~f9f65aa5358723c50716d43f800f84363962c599fc5c5ea97b81ebe6103855ae",
+        "IN-HR-HSAC2-KAITHAL-g1~764060054~298005380~753e8e54583b8e2976ff5f71e1a5eed1b69b3fa632be608f39d60a6855d0fdc2",
+        "IN-HR-HSAC2-KAITHAL-g1~764052497~298002855~40b449658f174945a17228662f8fc8116ce9cfce649f7ff50559e4cb0066ce3d",
+        "IN-HR-HSAC2-KAITHAL-g1~764065417~297998749~682a2270526a8b7362d0939ee3d2ca5b6e48e7a7a8e19e76e8430ca51f39901e",
+        "IN-HR-HSAC2-KAITHAL-g1~764051891~297999345~5d5a3d59fe08d8242c83d25edfc6e793d5c8884275c2156ba74e0869ea85f6aa",
+        "IN-HR-HSAC2-KAITHAL-g1~764059984~297997716~b012ce79d1523618d22cb7f4329eaa87d77b1afb864955fd81e10083a49871ff"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        76.405,
+        29.797,
+        76.406,
+        29.798
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764038175~297967277~3d1eacb4909f3c8626b53677dcc87205d434a94c976260aedfa67f410a02f6d4",
+        "IN-HR-HSAC2-KAITHAL-g1~764048421~297977387~81c443df9093624813e2bb839f30013baf463cfb3b9e768e433a7880610944a1",
+        "IN-HR-HSAC2-KAITHAL-g1~764054761~297976225~916f65f19bacadb3e8ea6965fc61d47d2cba24051e671c82428db56552405ed6",
+        "IN-HR-HSAC2-KAITHAL-g1~764055363~297976110~1d5241efbbc627fe8465b1d08723cf6e515211df51e9384388b09d671c2f5731",
+        "IN-HR-HSAC2-KAITHAL-g1~764050949~297976999~6d51e2e92abe36caf8c9dd761ac5e8363e8512ef76c05e7095effbe42359067f",
+        "IN-HR-HSAC2-KAITHAL-g1~764059511~297967642~9a8317437ea4ab263f0c0abbe2125d8e07eb24e650ac523bba7055841cba9ceb",
+        "IN-HR-HSAC2-KAITHAL-g1~764043497~297964485~f5dce471389cbb88dc0c6b185f35d1084c78ce9946ebe8e6ca16d1985a22b6e8"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        76.405,
+        29.801,
+        76.406,
+        29.802
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764041327~298009078~76a519805491a6c730fa0f85f2eda916a03b7214bac76a317547bc4ac7ee4e10",
+        "IN-HR-HSAC2-KAITHAL-g1~764028002~298007210~373a7602d38d0d2c1ae5e7454438d9eb78b3cf0b03f4ec6e66d01bb607c75df3",
+        "IN-HR-HSAC2-KAITHAL-g1~764058591~298005302~edccb7b5763384702b2f5cc62bfbc88f47131996b716b72adbe29764ba0e10d2",
+        "IN-HR-HSAC2-KAITHAL-g1~764055624~298005156~c8658091d40810ecad0ecaa6ac5f9e78b0db66e1fe701456961ea87b733ad283",
+        "IN-HR-HSAC2-KAITHAL-g1~764051936~298004975~fbc2a0bb47d33f040ad67551d0dc5c717e708156812ab5656d39fda0d91f45d8",
+        "IN-HR-HSAC2-KAITHAL-g1~764047198~298004696~791d267a396eb82e84b8f1208451fd36ce474e5b3e362018c6e76307e010df1d"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        76.403,
+        29.799,
+        76.404,
+        29.8
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764038321~297980824~dbc914c5090d9ba105b3d6eac2e7601413f68ba63d412af25d21b2bdfc52e990",
+        "IN-HR-HSAC2-KAITHAL-g1~764026996~297998078~26b2fde962d3cf8e8b0c4058b09e4c06b524d3d93445d67b7d22198ae8085198"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        76.407,
+        29.799,
+        76.408,
+        29.8
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-HR-HSAC2-KAITHAL-g1~764073463~297976029~177e872dfc3e747619b9374e2b4933c9d7da0384832172927eeb93fc3f279e19",
+        "IN-HR-HSAC2-KAITHAL-g1~764068953~297990024~dfbae8cebb639eeffcc1b142ef040c96f5cf3a4d873855e09874a2fbec2c5fa7",
+        "IN-HR-HSAC2-KAITHAL-g1~764072690~297975895~2990310160896ef1bbb18642fc714fb195e13f44de7e10f421f1fdcbe05127ad",
+        "IN-HR-HSAC2-KAITHAL-g1~764067450~297974820~996be7246a16984b6043009f581275ca039b3c52160f3f3252f61613ef9c60e1",
+        "IN-HR-HSAC2-KAITHAL-g1~764068729~297997604~44b279fa10cc7cb6868da9cf867a408e326b3f601eaf771418eb4556b70637ad"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 79,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:10.543Z",
+      "queryHash": "bea45f59d0fbde76fe3b802d578259b0a3814d30f4ec31da6d255a254354a431",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1175
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:11.737Z",
+      "queryHash": "aa62a26dc5925a29692608a3af437961a20566c618db994f6fdd99afd7c1f44f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 396
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:12.141Z",
+      "queryHash": "630230c45415b32b22bdbb820f6803d12dbc71bb76f7970568c9c6c1de5c0804",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 352
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:12.497Z",
+      "queryHash": "bea45f59d0fbde76fe3b802d578259b0a3814d30f4ec31da6d255a254354a431",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 355
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:12.854Z",
+      "queryHash": "aa62a26dc5925a29692608a3af437961a20566c618db994f6fdd99afd7c1f44f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 344
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:13.201Z",
+      "queryHash": "630230c45415b32b22bdbb820f6803d12dbc71bb76f7970568c9c6c1de5c0804",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 611
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:13.835Z",
+      "queryHash": "bea45f59d0fbde76fe3b802d578259b0a3814d30f4ec31da6d255a254354a431",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:14.174Z",
+      "queryHash": "4c0ecc6b4fa0b55971234ef85f3308aee731f02d3b6cd36d09f4d2cf86efbe75",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 361
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:14.776Z",
+      "queryHash": "2dec0c24c8e2b536996762b506ef4953d5d50e0ad1cbd99d92d7bf1a2e37a6df",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 362
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:15.140Z",
+      "queryHash": "cef8fdb8695d10acadc0ac9c5be3dd405ebf24645a8c2308c374eb4eb1278f63",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:15.475Z",
+      "queryHash": "edbd4694b76640d6c53d4f78cb946c571d6468784cb3e3aff97e5732feab33ae",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:15.837Z",
+      "queryHash": "5a2cc2520e9770adecb68426891f6bfeec4744ec897482fe375c736ce212c5ba",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 376
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:16.217Z",
+      "queryHash": "cced52faeb57254f2bbdc2c7f90bad46d9a3eaec8c495cccfb7964c0fd84d7df",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1998
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:18.216Z",
+      "queryHash": "1e08407ecac05177b55198b8c7b2144531ece70867da658df8e3e314e75a7d7b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 307
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:18.528Z",
+      "queryHash": "c02a9874bdec507a8eae68b4b85b063065db88ee67b5cdf653314257435b7ae1",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 352
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:18.888Z",
+      "queryHash": "eccc72e4c25d5d169e1944652d93dfde103003f8dd52f64852c54867485e398b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 782
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:19.672Z",
+      "queryHash": "c20410a0c12e032705e25a54cc1d7c95c7b22833635b92465c9edb2e974254fb",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 805
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:20.502Z",
+      "queryHash": "d359b8ce56c917dd928bd4bbf1d7bac378bb523dbf88c93c78e8e126db64a700",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 348
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:20.895Z",
+      "queryHash": "34dda0069f98cc706a40294a0533bfa9e38ca93ba8e8f4a47a1fab17d3c06cb9",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 356
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:21.266Z",
+      "queryHash": "48c10e08efce0aa7c7eb2d8fb048f5a40bdc97f39907b170b8ab4d1951ee0e58",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 326
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:21.594Z",
+      "queryHash": "8326a2aac72945722339434c7d66e2fd0f40baef37e28bc0a9142617bde4ecf7",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:21.944Z",
+      "queryHash": "2dec0c24c8e2b536996762b506ef4953d5d50e0ad1cbd99d92d7bf1a2e37a6df",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 342
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:22.289Z",
+      "queryHash": "cef8fdb8695d10acadc0ac9c5be3dd405ebf24645a8c2308c374eb4eb1278f63",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:22.631Z",
+      "queryHash": "edbd4694b76640d6c53d4f78cb946c571d6468784cb3e3aff97e5732feab33ae",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:22.972Z",
+      "queryHash": "5a2cc2520e9770adecb68426891f6bfeec4744ec897482fe375c736ce212c5ba",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:23.350Z",
+      "queryHash": "cced52faeb57254f2bbdc2c7f90bad46d9a3eaec8c495cccfb7964c0fd84d7df",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 346
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:23.704Z",
+      "queryHash": "1e08407ecac05177b55198b8c7b2144531ece70867da658df8e3e314e75a7d7b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 339
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:24.046Z",
+      "queryHash": "c02a9874bdec507a8eae68b4b85b063065db88ee67b5cdf653314257435b7ae1",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 362
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:24.423Z",
+      "queryHash": "eccc72e4c25d5d169e1944652d93dfde103003f8dd52f64852c54867485e398b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 356
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:24.781Z",
+      "queryHash": "c20410a0c12e032705e25a54cc1d7c95c7b22833635b92465c9edb2e974254fb",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 349
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:25.142Z",
+      "queryHash": "d359b8ce56c917dd928bd4bbf1d7bac378bb523dbf88c93c78e8e126db64a700",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 361
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:25.515Z",
+      "queryHash": "34dda0069f98cc706a40294a0533bfa9e38ca93ba8e8f4a47a1fab17d3c06cb9",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:25.850Z",
+      "queryHash": "48c10e08efce0aa7c7eb2d8fb048f5a40bdc97f39907b170b8ab4d1951ee0e58",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 327
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:26.179Z",
+      "queryHash": "8326a2aac72945722339434c7d66e2fd0f40baef37e28bc0a9142617bde4ecf7",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 325
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:26.518Z",
+      "queryHash": "5f6a8b23afaa7b516ecb4c9c122e9b11fc1054f4255daf11bc3bfe8810c2e38f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 327
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:26.849Z",
+      "queryHash": "65d9399e48a3a45feca0454810404431cac826e36ac5392a0b935f5073d49f80",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 624
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:27.474Z",
+      "queryHash": "52ea6b8366b841166d043349e421c4cee4ff66675096aa3bdab48cab8cd4609b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 321
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:27.795Z",
+      "queryHash": "21985e0c0687bd9879ae4c9af8e24693626ddfa27bcc6b320d168e5aab66e9be",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:28.136Z",
+      "queryHash": "76ea449e8669e7c368699570847f0e596cd031efef8d5081fae31abb25fff60e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 346
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:28.482Z",
+      "queryHash": "ba9c9f8cc91466d1447c372c0078d07792bdc0cb41e813f36ee334954c725a30",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 356
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:28.839Z",
+      "queryHash": "09007c161da4cdf3dbe422514337dd4d82a19b343fdda56cbd2a560ef45535c3",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:29.174Z",
+      "queryHash": "62f92b8d29282bd990fe57d1e332b51ca6de15a6c1dd36c332c87e8405e072f0",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 327
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:29.502Z",
+      "queryHash": "3748cf0245912aeb956c8d500b006b17b8846d591bd2c294f163d755585af3d3",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:29.836Z",
+      "queryHash": "6fd17dad978fbf34d08101c783e7f8f5f61b6cadae511ebab808acd5d08d82b3",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:30.170Z",
+      "queryHash": "ab63bfd4bb7e98a0ef2222964d5168341358397ea894fd80f433702c244caba8",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 5,
+      "httpStatus": 200,
+      "elapsedMs": 323
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:30.495Z",
+      "queryHash": "49aa2d8592848bcbac7936d2023fc84208812706091c0c4e4e8db49f82c8c078",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 6,
+      "httpStatus": 200,
+      "elapsedMs": 331
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:30.828Z",
+      "queryHash": "6703fb9ea11bfca91fcdb187b3602c993ae4c7fe8dc2ca48761299e886d520f9",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 7,
+      "httpStatus": 200,
+      "elapsedMs": 335
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:31.165Z",
+      "queryHash": "d8469b0c90f28271bd27373e17befa478743985ad5be0d746295cfdb4dc06879",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 8,
+      "httpStatus": 200,
+      "elapsedMs": 336
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:31.502Z",
+      "queryHash": "0700c7c89d1c9b25364f8530acdc1b0915334a5ad336ac311798676451ba9de3",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 340
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:31.846Z",
+      "queryHash": "70e398a65b0dd6854f0e80c2d9bf2a9e691cab494836e424389d7366119bd627",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 332
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:32.192Z",
+      "queryHash": "e431cc81fbce6b2cb6a7bb1760962cdbbbf53774997774b76ca228b4dea2ea05",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 349
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:32.543Z",
+      "queryHash": "2ad8d213621f8409df12a9230c6d5679c863c67e9c7999753535152d8bccc167",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 344
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:32.888Z",
+      "queryHash": "9b3417f57237fdf7b8878b38a77c36abdd6020808957f8d4fb67bc36ce237385",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 331
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:33.244Z",
+      "queryHash": "5ccf9fb06e587ae6326d9e0100e7015718e9f4e537cc354e14fa748ba4835732",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 342
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:33.588Z",
+      "queryHash": "3a24c9301031123be31829e872cea2f7e6deb0f2a4eff1f07d81e2eb8d47c37c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 325
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:33.921Z",
+      "queryHash": "bea45f59d0fbde76fe3b802d578259b0a3814d30f4ec31da6d255a254354a431",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:34.258Z",
+      "queryHash": "aa62a26dc5925a29692608a3af437961a20566c618db994f6fdd99afd7c1f44f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1029
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:35.309Z",
+      "queryHash": "630230c45415b32b22bdbb820f6803d12dbc71bb76f7970568c9c6c1de5c0804",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 387
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:35.722Z",
+      "queryHash": "2901e9b16316060cbe7dde51eb3ab36278f05a3f47ce1eb92c9d1a44ea3d898a",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 328
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:36.130Z",
+      "queryHash": "705e8a6472db9c87dec4595a7ba937fa98a5bf72324188f7c4a24eac21d30b79",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 322
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:36.453Z",
+      "queryHash": "e91745bdb98e47e570f50191a49ba19314cb60a717db7b7bdd9bfd0949f67ffb",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 330
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:36.785Z",
+      "queryHash": "bea45f59d0fbde76fe3b802d578259b0a3814d30f4ec31da6d255a254354a431",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 316
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:37.103Z",
+      "queryHash": "12bef7c46a04da43688896b452492dbbbc94aa7f05a44790b19947930ded6a3f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:37.441Z",
+      "queryHash": "d572ee771a890bcb84c93dd7a1e5d330e46b9bddadf9eb9a3e6488272265119f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 330
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:37.773Z",
+      "queryHash": "313db8d7c43f2dd0c8d9e675bcf990827afa1e95e7c9366ae6e240d661cc2840",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 341
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:38.115Z",
+      "queryHash": "e2ae59006002bb1c235bca9c5824c108d3f14daf01390770df42db26fc8dd07a",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:38.465Z",
+      "queryHash": "febd29d262a95f487c20fe7e256ce8593c04f11789da9f7c7c4b966e25d08ec7",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 331
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:38.797Z",
+      "queryHash": "c9e727187fdcf15141730297ce67f9537012ec8f4aeac4af9ee33fe9f521a5af",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 329
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:39.127Z",
+      "queryHash": "814ce865678b35495f0debe9db79199b5c3f8b0cdfdd6df09ab619f1c1b10b32",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 328
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:39.458Z",
+      "queryHash": "5819cc6788a2c1529033f266857da3be527b52e9394ff1f01d9399fcb9aa164b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 331
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:39.790Z",
+      "queryHash": "db444efbb6ab776e2fcbcd47f21c6198f8513bd6ea17f2fe4bcd728ce0ea8d21",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 336
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:40.127Z",
+      "queryHash": "aa62a26dc5925a29692608a3af437961a20566c618db994f6fdd99afd7c1f44f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:40.463Z",
+      "queryHash": "f3564f510029b39f38d26a374e5da13e3b746be70086292f99d8d819f930325d",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 315
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:40.781Z",
+      "queryHash": "1b144086375f4692565e887fd939a191676a77b51d6488ac844f91074d22adb9",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 326
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:41.109Z",
+      "queryHash": "f501c45036e1c8656a251b825fee8081196915a030e2d3dfbd12b8287add78ff",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 309
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:41.442Z",
+      "queryHash": "a9a07394e244c27329636c01afaa71f977bc3b6cd084b854b5faf211893abcc4",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 328
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:41.772Z",
+      "queryHash": "630230c45415b32b22bdbb820f6803d12dbc71bb76f7970568c9c6c1de5c0804",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:42.113Z",
+      "queryHash": "c45ab5524ea591a00178d4b28d8e03bb375b5a0b0fe6411865c08ccd7735d7ba",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 364
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-14T05:45:42.478Z",
+      "queryHash": "9a6aa8196bcb506f7a5f45424b0aec1b2bd600e383699f86a65ebcbeb7844600",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 339
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

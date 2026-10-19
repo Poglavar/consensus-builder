@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 59,
+  "city": "Addis Ababa",
+  "countryCode": "ET",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/addis-ababa.json",
+  "query": {
+    "language": "Amharic",
+    "script": "Ethiopic",
+    "text": "አዲስ አበባ ካዳስተር መሬት ፓርሴል ካርታ GIS ዳታ ክፍት"
+  },
+  "results": [
+    {
+      "title": "Addis Ababa legal-cadastre agency material",
+      "url": "https://www.aampco.gov.et/uploads/Publication/addis-ababa-city-administration-draft-proclamation-on-the-re-establishment-of-executive-bodies-proclamation-no-742014-2025-01-15-6787b6ed412aa.pdf",
+      "kind": "official-document",
+      "note": "Mentions legal cadastral information systems, not public geospatial data access."
+    }
+  ],
+  "assessment": "Amharic-language search surfaced city legal-cadastre system references but no public parcel geometry feed or feature endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

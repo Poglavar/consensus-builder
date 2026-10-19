@@ -1,0 +1,45 @@
+{
+  "cityRecord": "city-4677-reno.json",
+  "cityCode": 4677,
+  "queueRank": 2636,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "conclusion": "First-party Washoe County GIS/Assessor parcel services and a City of Reno parcel MapServer were identified. Official metadata indicates polygon parcels in Nevada West State Plane feet and safe ID candidates, but direct anonymous endpoint checks returned 403 or timed out. No parcel geometry is retained and runtime readiness remains held.",
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "outcome": "Found Washoe County GIS, WRMS, Open Data, Assessor, and City of Reno parcel-service leads."},
+    {"route": "Local/native-language discovery", "outcome": "Spanish query found the same official leads; United States local/native service language is English and no separate Spanish cadastral custodian was identified."},
+    {"route": "Official WashoeGIS Parcels layer metadata", "outcome": "Search-indexed metadata showed polygon geometry, safe ID candidates PIN/APN/OBJECTID, and CRS 102709/3423; direct GET returned 403."},
+    {"route": "Bounded Reno parcel envelope query", "outcome": "Prepared with geometry-only plus PIN, but not executed to a usable response after the service-layer 403; no exact-point hit/miss was inferred."},
+    {"route": "Washoe Open Data MapServer", "outcome": "Official endpoint connection timed out after 30 seconds."},
+    {"route": "Alternate Washoe Open Data FeatureServer", "outcome": "Official endpoint connection timed out after 15 seconds."},
+    {"route": "City of Reno Parcels MapServer", "outcome": "Official service metadata was discoverable and identifies Washoe County Assessor as source; no feature response was retained."}
+  ],
+  "scopeLimits": [
+    "The service descriptions support Washoe County/Reno relevance but do not establish citywide successful feature coverage in this attempt.",
+    "403, timeout, map extent miss, login wall, or unusable UI is not evidence of citywide absence.",
+    "No parcel sample GeoJSON is retained because no safe ID+geometry response was obtained.",
+    "The WUP point remains exactly [39.5301389649096,-119.79566677593] in latitude/longitude order.",
+    "Packet completion is not source integration or admission."
+  ],
+  "safeFieldPolicy": {
+    "allowed": ["id", "geometry"],
+    "candidateNativeIds": ["PIN", "APN", "OBJECTID"],
+    "excluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "document details"],
+    "retainedNativeFields": false,
+    "reason": "No feature response was received; only official service metadata was recorded."
+  },
+  "sourceAssessment": {
+    "localRegistryCustodian": "Washoe County GIS / Washoe County Assessor's Office; City of Reno GIS publishes a Reno parcel map sourced from the county Assessor.",
+    "generalAgencyEvidence": ["Washoe County GIS", "Washoe County Assessor", "City of Reno GIS"],
+    "verifiedForReno": true,
+    "reason": "Local county and municipal parcel-map custodians are evidenced by official pages and service metadata, but anonymous parcel geometry access was not verified."
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The 403 may be host/network policy rather than service absence.",
+    "The timed-out Open Data hosts may still provide data from another network or through the viewer's current configuration.",
+    "PIN/APN/OBJECTID stable identity semantics require independent inspection of a successful feature response.",
+    "Reno city boundary versus wider Washoe County parcel coverage was not tested with returned features."
+  ],
+  "completionSummary": {"parcelSourceVerified": false, "geometrySampleRetained": 0, "unsafeFieldsRequested": false, "tlsExceptions": 0}
+}

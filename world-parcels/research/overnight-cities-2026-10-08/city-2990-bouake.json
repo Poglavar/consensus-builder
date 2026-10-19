@@ -1,0 +1,113 @@
+{
+  "name": "Bouaké",
+  "country": "Côte d'Ivoire",
+  "countryCode": "CI",
+  "rank": 742,
+  "point": [
+    7.70110238103353,
+    -5.03224524120523
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Bouaké Côte d’Ivoire cadastre foncier urbain service domanial mairie parcelle carte officielle",
+        "scope": "Local-language/official-source search for exact city land registry, cadastral service, and anonymous full parcel geometry.",
+        "result": "The official national DGI cadastre directorate documents two decentralized cadastre services in Bouaké; the municipality separately lists its land/domain service. No anonymous full-parcel geometry endpoint or schema was verified.",
+        "actualResultUrls": [
+          "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/DCAD_MISSIONS_ORGANISATIONS.pdf",
+          "https://www.dgi.gouv.ci/",
+          "https://www.mairiedebouake.ci/services"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      },
+      {
+        "language": "English",
+        "query": "Bouaké Côte d’Ivoire official land registry cadastral parcel map public GIS",
+        "scope": "Cross-check exact WUP candidate identity and official public parcel-vector access.",
+        "result": "The official DGI identifies local cadastral services in Bouaké and links E-Cadastre. Reviewed pages did not expose an anonymous full-geometry parcel endpoint.",
+        "actualResultUrls": [
+          "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/DCAD_MISSIONS_ORGANISATIONS.pdf",
+          "https://www.dgi.gouv.ci/"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Official sources reviewed",
+        "operator": "See source URLs and observations in the service-review artifact.",
+        "homeUrl": "https://www.mairiedebouake.ci/",
+        "observation": "Official Bouaké municipal land/domain and permitting services are confirmed. No safe anonymous parcel geometry route was found."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CI-CITY-2990-OFFICIAL-REGISTRY-REVIEW",
+    "name": "Côte d’Ivoire DGI Cadastre Directorate and Bouaké municipal services",
+    "url": "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/DCAD_MISSIONS_ORGANISATIONS.pdf",
+    "operator": "Official local/national government agency as cited in the service review.",
+    "serviceType": "Official registry or land-administration service review; no verified anonymous parcel-geometry service.",
+    "layer": "No cadastral parcel vector layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel feature response was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal land/domain service and permitting information only; the source does not establish a citywide title-cadastre boundary or open parcel layer.",
+    "verifiedOpenScope": "Official institutional or service evidence reviewed; no complete anonymous full parcel polygons or citywide coverage claim. The WUP point is a population-weighted centroid, not a legal boundary or proof of parcel coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Côte d’Ivoire’s official DGI cadastre directorate material lists two decentralized cadastre offices in Bouaké; the official DGI site also links E-Cadastre. This confirms a local cadastre service, but does not establish anonymous public full parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/DCAD_MISSIONS_ORGANISATIONS.pdf",
+    "https://www.dgi.gouv.ci/",
+    "https://www.mairiedebouake.ci/services"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "The official DGI confirms local cadastre offices and links E-Cadastre, but reviewed public pages do not document an anonymous full-geometry endpoint or safe native parcel schema.",
+  "remainingUncertainty": "The Côte d’Ivoire national cadastre and land-registration agencies may hold parcel records; no Bouaké-specific anonymous public vector source was confirmed.",
+  "nextStep": "Continue only if an official public parcel vector route or public non-account-gated full-geometry dataset is identified.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:10:00Z",
+  "wupCityCode": 2990,
+  "cityId": "wup2025:2990",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    7.70110238103353,
+    -5.03224524120523
+  ],
+  "queueRank": 742,
+  "population2025": 724691,
+  "population2025k": 724.691,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "The official DGI confirms local cadastre offices and links E-Cadastre, but reviewed public pages do not document an anonymous full-geometry endpoint or safe native parcel schema."
+  },
+  "scopeLimits": [
+    "No parcel/owner/address or person query was made.",
+    "No full parcel geometry was verified; no sample retained.",
+    "Do not treat WUP centroid as a cadastral parcel or legal boundary."
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/DCAD_MISSIONS_ORGANISATIONS.pdf",
+    "fetch": "error",
+    "reason": "HTTP Error 302: The HTTP server returned a redirect error that would lead to an infinite loop.\nThe last 30x error message was:\nFound"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

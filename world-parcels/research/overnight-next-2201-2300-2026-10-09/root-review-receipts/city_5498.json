@@ -1,0 +1,13 @@
+{
+  "taskId": "city:5498",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-5498-skikda.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/skikda-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T03:12:57.283122Z",
+  "reason": "Live first-party Skikda wilaya directory names cadastral and land-conservation offices, but provides no parcel record or feature service. National viewer and geoportal attempts in paired review timed out, with no ID or polygon response. Packet custody remains null and city remains held; timeouts do not establish absence.",
+  "admission": "held; no runtime/catalog/report change"
+}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Yangzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Yangzhou’s official Jiangsu Government Service Portal lists the Yangzhou Natural Resources and Planning Bureau as the municipal implementing body for real-property first registration, with a municipal service-window location. This establishes local registry activity, not a public cadastral geometry endpoint.",
+  "registryEvidenceUrls": [
+    "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001007&iddept_yw_inf=11321000014407127R300071500100701&ql_kind=07&webId=7",
+    "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001006&iddept_yw_inf=11321000014407127R300071500100601&ql_kind=07&webId=7",
+    "https://yz.jszwfw.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11354,
+  "cityId": "wup2025:11354",
+  "centerLatLon": [
+    32.3896437297892,
+    119.414873340181
+  ],
+  "rank": 701,
+  "queueRank": 701,
+  "population2025": 759812,
+  "population2025k": 759.812,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made.",
+  "scopeLimits": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made.",
+  "remainingUncertainty": "Whether the municipal registry has a separate anonymous public map/feature service is unverified; no source-native geometry schema or polygon was observed.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Yangzhou China official real estate registration center cadastral parcel map GIS",
+        "scope": "Identify the city-specific registry and a public, anonymous parcel-geometry source.",
+        "result": "Municipal registry is confirmed by official service guides. The guides describe applicant-based registration processes; no public parcel geometry route was verified.",
+        "actualResultUrls": [
+          "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001007&iddept_yw_inf=11321000014407127R300071500100701&ql_kind=07&webId=7",
+          "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001006&iddept_yw_inf=11321000014407127R300071500100601&ql_kind=07&webId=7",
+          "https://yz.jszwfw.gov.cn/"
+        ],
+        "executionMethod": "Separate language-specific web search, filtering to official municipal, registry, or government sources."
+      },
+      {
+        "language": "Chinese",
+        "query": "扬州市不动产登记中心 地籍图 宗地地图 官方 扬州市自然资源和规划局",
+        "scope": "Identify the city-specific registry and a public, anonymous parcel-geometry source.",
+        "result": "Municipal registry is confirmed by official service guides. The guides describe applicant-based registration processes; no public parcel geometry route was verified.",
+        "actualResultUrls": [
+          "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001007&iddept_yw_inf=11321000014407127R300071500100701&ql_kind=07&webId=7",
+          "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001006&iddept_yw_inf=11321000014407127R300071500100601&ql_kind=07&webId=7",
+          "https://yz.jszwfw.gov.cn/"
+        ],
+        "executionMethod": "Separate language-specific web search, filtering to official municipal, registry, or government sources."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001007&iddept_yw_inf=11321000014407127R300071500100701&ql_kind=07&webId=7",
+        "observation": "Yangzhou’s official Jiangsu Government Service Portal lists the Yangzhou Natural Resources and Planning Bureau as the municipal implementing body for real-property first registration, with a municipal service-window location. This establishes local registry activity, not a public cadastral geometry endpoint."
+      },
+      {
+        "url": "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001006&iddept_yw_inf=11321000014407127R300071500100601&ql_kind=07&webId=7",
+        "observation": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made."
+      },
+      {
+        "url": "https://yz.jszwfw.gov.cn/",
+        "observation": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made."
+      }
+    ],
+    "metadataReviewFile": "yangzhou-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No anonymously verified full parcel-geometry endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made."
+  },
+  "coverageAssessment": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "point": [
+    32.3896437297892,
+    119.414873340181
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00",
+  "sourceIds": []
+}

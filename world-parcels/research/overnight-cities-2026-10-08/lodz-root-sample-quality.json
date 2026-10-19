@@ -1,0 +1,16 @@
+{
+  "purpose": "Independent GEOS audit of the retained complete Łódź sample; geometry is unchanged. This does not qualify runtime paging or exact-ID access.",
+  "metricCrs": "EPSG:2177",
+  "features": [
+    {
+      "id": null,
+      "safeNativeId": {
+        "id_dzialki": "106105_9.0006.98/1"
+      },
+      "valid": true,
+      "empty": false,
+      "areaM2": 2271.7210199551328,
+      "containsUnchangedWupPoint": true
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 197,
+  "city": "Quito",
+  "countryCode": "EC",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/quito.json",
+  "query": {
+    "language": "Spanish",
+    "script": "Latin",
+    "text": "Quito catastro predios datos geográficos geoportal WFS datos abiertos"
+  },
+  "results": [
+    {
+      "title": "Quito municipal Cartografia_predial MapServer",
+      "url": "https://geoquito.quito.gob.ec/server/rest/services/Hosted/Cartografia_predial/MapServer",
+      "kind": "official-feature-service-candidate",
+      "note": "ArcGIS service lists a `predio` sublayer and citywide-looking extent. Metadata as returned did not expose sublayer fields/ID schema or confirm query capability; not yet exact-ID verified."
+    }
+  ],
+  "assessment": "Strong specific parcel-map lead on the municipal ArcGIS host. Need inspect the predio sublayer, query support, native stable IDs and exact-ID operations before treating it as integration-ready.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

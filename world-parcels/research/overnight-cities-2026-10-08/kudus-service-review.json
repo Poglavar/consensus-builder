@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "id-kudus-official-parcel-research",
+  "purpose": "Service review for WUP2025 rank 810 Kudus (city code 7262); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Kudus Regency Government; Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN)",
+  "sourceUrl": "https://kuduskab.go.id/",
+  "registryFound": true,
+  "registryBasis": "Kudus Regency’s official municipal site documents land-use permitting and coordination with BPN, and the official Kudus local-government news portal records an MoU with Badan Pertanahan Nasional Kabupaten Kudus. This establishes a local land-registration office, but not an open public parcel geometry dataset. The city links tax/PBB and property-asset applications; those personal/account routes were not used.",
+  "officialSources": [
+    {
+      "url": "https://diskominfo.kuduskab.go.id/portal/berita/id/penandatanganan-mou-antara-pemkab-kudus-dengan-badan-pertanahan-nasional-kab-kudus",
+      "observation": "Official Kudus Regency information-office article documents cooperation between the local government and Badan Pertanahan Nasional Kabupaten Kudus; this confirms city/regency-local registry presence, not geometry coverage."
+    },
+    {
+      "url": "https://kuduskab.go.id/",
+      "observation": "Official Kudus government portal links local land-asset/PBB services and describes land-use procedures requiring BPN certificate validation and land survey/pemetaan. Account/property workflows were not opened or queried."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "Official ATR/BPN BHUMI guide says the map is an interactive land/spatial-information platform. It is national in scope and does not itself establish a Kudus-specific vector response."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "observation": "Official user guide describes parcel layer and searches by NIB/HAK/NIBEL identifiers; no identifier or parcel search was made, and no safe geometry-only response schema was verified."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+      "observation": "Official guide describes geospatial layer catalogue and data sources, but no Kudus parcel layer schema was established."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kudus Indonesia official land registry cadastral map parcel boundaries public GIS",
+      "scope": "Find official local registry and anonymous parcel geometry route.",
+      "result": "Official Kudus government pages list municipal land-asset and tax services, permitting that references BPN, and a formal cooperation agreement with BPN Kabupaten Kudus. BHUMI ATR/BPN documentation describes an open interactive map with parcel layers and search by land identifiers, but its public map/info interactions may expose cadastral or legal attributes. No geometry-only response schema or local Kudus parcel vector service was verified; no point/parcel lookup was made.",
+      "urls": [
+        "https://kuduskab.go.id/",
+        "https://diskominfo.kuduskab.go.id/portal/berita/id/penandatanganan-mou-antara-pemkab-kudus-dengan-badan-pertanahan-nasional-kab-kudus"
+      ]
+    },
+    {
+      "language": "Indonesian",
+      "query": "Kudus BHUMI ATR BPN tanah bidang peta kadaster layanan pertanahan",
+      "scope": "Find first-party local registry and map service details.",
+      "result": "Official Kudus government pages list municipal land-asset and tax services, permitting that references BPN, and a formal cooperation agreement with BPN Kabupaten Kudus. BHUMI ATR/BPN documentation describes an open interactive map with parcel layers and search by land identifiers, but its public map/info interactions may expose cadastral or legal attributes. No geometry-only response schema or local Kudus parcel vector service was verified; no point/parcel lookup was made.",
+      "urls": [
+        "https://kuduskab.go.id/",
+        "https://diskominfo.kuduskab.go.id/portal/berita/id/penandatanganan-mou-antara-pemkab-kudus-dengan-badan-pertanahan-nasional-kab-kudus"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "No verified city-specific anonymous geometry-only response. The local official portals expose land/tax/account or identifier-based workflows, while BHUMI documentation describes parcel lookup and attribute interactions without a schema contract that can be restricted to geometry plus a safe native ID."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://diskominfo.kuduskab.go.id/portal/berita/id/penandatanganan-mou-antara-pemkab-kudus-dengan-badan-pertanahan-nasional-kab-kudus",
+      "method": "GET official public page/document inspection",
+      "result": "Official Kudus Regency information-office article documents cooperation between the local government and Badan Pertanahan Nasional Kabupaten Kudus; this confirms city/regency-local registry presence, not geometry coverage."
+    },
+    {
+      "url": "https://kuduskab.go.id/",
+      "method": "GET official public page/document inspection",
+      "result": "Official Kudus government portal links local land-asset/PBB services and describes land-use procedures requiring BPN certificate validation and land survey/pemetaan. Account/property workflows were not opened or queried."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "method": "GET official public page/document inspection",
+      "result": "Official ATR/BPN BHUMI guide says the map is an interactive land/spatial-information platform. It is national in scope and does not itself establish a Kudus-specific vector response."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "method": "GET official public page/document inspection",
+      "result": "Official user guide describes parcel layer and searches by NIB/HAK/NIBEL identifiers; no identifier or parcel search was made, and no safe geometry-only response schema was verified."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+      "method": "GET official public page/document inspection",
+      "result": "Official guide describes geospatial layer catalogue and data sources, but no Kudus parcel layer schema was established."
+    }
+  ],
+  "technicalBlocker": "No verified city-specific anonymous geometry-only response. The local official portals expose land/tax/account or identifier-based workflows, while BHUMI documentation describes parcel lookup and attribute interactions without a schema contract that can be restricted to geometry plus a safe native ID.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether an anonymous Kudus-specific vector service exists behind a public map layer. No cadastral identifier, parcel selection, account or property lookup was submitted."
+}

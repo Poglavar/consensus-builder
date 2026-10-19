@@ -63,22 +63,9 @@ test.describe('Deep link and URL parameters @core', () => {
     expect(cityId.length).toBeGreaterThan(0);
   });
 
-  test('skipParcelFetchUntilProposalLoaded flag is accessible', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    // The flag should be settable and readable
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      const originalValue = w.skipParcelFetchUntilProposalLoaded;
-      w.skipParcelFetchUntilProposalLoaded = true;
-      const afterSet = w.skipParcelFetchUntilProposalLoaded;
-      w.skipParcelFetchUntilProposalLoaded = originalValue;
-      return { originalType: typeof originalValue, canSet: afterSet === true };
-    });
-
-    expect(result.canSet).toBe(true);
-  });
+  // A 'skipParcelFetchUntilProposalLoaded flag is accessible' test used to sit here. It set a
+  // property on `window` and then read it back — it tested that JavaScript objects hold values, not
+  // that the app does anything, and it booted a browser to do it.
 
   test('?city param overrides stored city preference', async ({ mockApi: page }) => {
     // First set a city via storage

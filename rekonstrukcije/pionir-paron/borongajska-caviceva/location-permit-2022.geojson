@@ -1,0 +1,430 @@
+{
+  "type": "FeatureCollection",
+  "name": "Borongajska–Čavićeva – lokacijska dozvola 2022.",
+  "bbox": [
+    16.03283431,
+    45.80397755,
+    16.03629705,
+    45.80589466
+  ],
+  "edozvola": {
+    "schema": "consensus-builder.edozvola-source.v1",
+    "archivedAt": "2026-08-13",
+    "source": "https://oss.uredjenazemlja.hr/OssWebServices/external/eDozvole",
+    "sourceService": "public national eDozvola WFS 2.0.0",
+    "sourceCrs": "EPSG:3765",
+    "outputCrs": "EPSG:4326",
+    "geometryOnly": true,
+    "caveat": "Public WFS geometry and case metadata are evidence, not a substitute for the signed permit and main project.",
+    "note": "Izvorna lokacijska dozvola kompleksa; pojedinačne faze treba rekonstruirati iz kasnijih građevinskih dozvola.",
+    "layerFeatureCounts": {
+      "eDozvola_area_polygon": 1,
+      "eDozvola_building_line": 0,
+      "eDozvola_building_point": 0,
+      "eDozvola_building_polygon": 1
+    },
+    "caseId": "P20221230-1037184-Z02",
+    "caseClass": "UP/I-350-05/22-001/22",
+    "caseType": "Lokacijska dozvola",
+    "caseStatus": "Arhiva",
+    "requestReceivedAt": "2022-01-25",
+    "requestCompleteAt": null,
+    "decisionName": null,
+    "decisionNumber": null,
+    "decisionAt": "2022-05-16",
+    "finalAt": "2022-06-09"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1037184-Z02",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z02",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": null,
+        "zavrsni_akt_urbroj_rjesenja": null,
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \" \", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_area_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_area_polygon.90641",
+        "edozvola:geometryAreaM2": 33741.52
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.03283431,
+              45.80551889
+            ],
+            [
+              16.03381063,
+              45.80564948
+            ],
+            [
+              16.0338326,
+              45.80565245
+            ],
+            [
+              16.0338398,
+              45.80565338
+            ],
+            [
+              16.03477036,
+              45.805779
+            ],
+            [
+              16.03484078,
+              45.80578847
+            ],
+            [
+              16.03496865,
+              45.80580572
+            ],
+            [
+              16.0350856,
+              45.80582159
+            ],
+            [
+              16.03626053,
+              45.80589466
+            ],
+            [
+              16.03626235,
+              45.80589304
+            ],
+            [
+              16.03626624,
+              45.80587353
+            ],
+            [
+              16.03628931,
+              45.80575935
+            ],
+            [
+              16.03629355,
+              45.80572914
+            ],
+            [
+              16.03629705,
+              45.80564889
+            ],
+            [
+              16.03628285,
+              45.80556137
+            ],
+            [
+              16.03627166,
+              45.80552983
+            ],
+            [
+              16.03624941,
+              45.8054673
+            ],
+            [
+              16.03623074,
+              45.80542268
+            ],
+            [
+              16.03616532,
+              45.80532101
+            ],
+            [
+              16.03611334,
+              45.80525952
+            ],
+            [
+              16.0360485,
+              45.8051978
+            ],
+            [
+              16.03590661,
+              45.80508718
+            ],
+            [
+              16.03589165,
+              45.80507551
+            ],
+            [
+              16.03546826,
+              45.80474951
+            ],
+            [
+              16.03534616,
+              45.80465678
+            ],
+            [
+              16.03515196,
+              45.80450923
+            ],
+            [
+              16.03490509,
+              45.80447692
+            ],
+            [
+              16.03460246,
+              45.80443483
+            ],
+            [
+              16.03458262,
+              45.8044227
+            ],
+            [
+              16.03438878,
+              45.80427893
+            ],
+            [
+              16.03440193,
+              45.80422904
+            ],
+            [
+              16.03444471,
+              45.80406644
+            ],
+            [
+              16.03446809,
+              45.80397755
+            ],
+            [
+              16.03439122,
+              45.80403149
+            ],
+            [
+              16.03423193,
+              45.80414179
+            ],
+            [
+              16.03418871,
+              45.80417167
+            ],
+            [
+              16.03415403,
+              45.80419573
+            ],
+            [
+              16.03398582,
+              45.80431094
+            ],
+            [
+              16.03380698,
+              45.80443672
+            ],
+            [
+              16.03380193,
+              45.80444012
+            ],
+            [
+              16.03346267,
+              45.8043941
+            ],
+            [
+              16.03310876,
+              45.80434605
+            ],
+            [
+              16.03304729,
+              45.804573
+            ],
+            [
+              16.0330113,
+              45.8046927
+            ],
+            [
+              16.03301606,
+              45.80486143
+            ],
+            [
+              16.03296231,
+              45.8050589
+            ],
+            [
+              16.03291426,
+              45.80523578
+            ],
+            [
+              16.0328913,
+              45.80531991
+            ],
+            [
+              16.03288904,
+              45.80532854
+            ],
+            [
+              16.03287708,
+              45.80537357
+            ],
+            [
+              16.0328646,
+              45.80542049
+            ],
+            [
+              16.0328568,
+              45.80544565
+            ],
+            [
+              16.03283431,
+              45.80551889
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "predmet_web_id": "P20221230-1037184-Z02",
+        "predmet_group_id": "V02",
+        "predmet_group": "Lokacijska dozvola",
+        "predmet_vrsta_id": "Z02",
+        "predmet_vrsta": "Lokacijska dozvola",
+        "predmet_status_id": "ARHIVA",
+        "predmet_status": "Arhiva",
+        "predmet_klasa": "UP/I-350-05/22-001/22",
+        "predmet_dat_promjene": null,
+        "predmet_url": null,
+        "zahtjev_dat_zaprimanja": "2022-01-25",
+        "zahtjev_dat_urednosti": null,
+        "zavrsni_akt_naziv": null,
+        "zavrsni_akt_urbroj_rjesenja": null,
+        "zavrsni_akt_dat_rjesavanja": "2022-05-16",
+        "zavrsni_akt_nacin_rjesavanja_id": "NR-01-01",
+        "zavrsni_akt_nacin_rjesavanja": "zahtjev usvojen",
+        "zavrsni_akt_dat_izvrsnosti": null,
+        "zavrsni_akt_dat_pravomocnosti": "2022-06-09",
+        "zavrsni_akt_url": null,
+        "nadlezno_tijelo_id": "UJ-2101015",
+        "nadlezno_tijelo": "Grad Zagreb, Gradski ured za obnovu, izgradnju, prostorno uređenje, graditeljstvo i komunalne poslove, Sektor za prostorno uređenje i graditeljstvo, Grad Zagreb, Odjel za prostorno uređenje, Središnji odsjek za prostorno uređenje",
+        "lokacija": "[{\"lokacija\": {\"lokacija_kat_cestica\": \"2692/7\", \"lokacija_kat_opcina\": \"Peščenica\", \"lokacija_mjesto\": \"Zagreb\", \"lokacija_ulica_kucni\": \" \", \"lokacija_zupanija_id\": \"ZUP-21\", \"lokacija_zupanija\": \"Grad Zagreb\", \"lokacija_samouprava_id\": \"1333\", \"lokacija_samouprava\": \"Grad Zagreb\", \"lokacija_mjesto_id\": null, \"lokacija_kat_opcina_id\": \"335533\"}}]",
+        "gradjevina_zahvat_id": null,
+        "gradjevina_zahvat": null,
+        "gradjevina_zahvat_dodatno": null,
+        "gradjevina_namjena_id": "mn_01",
+        "gradjevina_namjena": "mješovite namjene (stambeno poslovna)",
+        "gradjevina_namjena_dodatno": null,
+        "gradjevina_skupina_id": null,
+        "gradjevina_skupina": null,
+        "gradjevina_ibz": null,
+        "gradjevina_gbp": null,
+        "gradjevina_volumen": null,
+        "gradjevina_etaze": null,
+        "gradjevina_br_jedinica_id": null,
+        "gradjevina_br_jedinica": null,
+        "gradjevina_nkvg_id": null,
+        "gradjevina_nkvg": null,
+        "troskovi_gradjenja_id": null,
+        "troskovi_gradjenja": null,
+        "edozvola:sourceLayer": "eDozvola_building_polygon",
+        "edozvola:sourceFeatureId": "eDozvola_building_polygon.176213",
+        "edozvola:geometryAreaM2": 904.27
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              16.034777,
+              45.80535154
+            ],
+            [
+              16.03507181,
+              45.80539125
+            ],
+            [
+              16.03508892,
+              45.80532905
+            ],
+            [
+              16.03506245,
+              45.80532543
+            ],
+            [
+              16.03507041,
+              45.80529667
+            ],
+            [
+              16.03508172,
+              45.80529816
+            ],
+            [
+              16.03508981,
+              45.80526868
+            ],
+            [
+              16.0350785,
+              45.8052671
+            ],
+            [
+              16.0351187,
+              45.80512078
+            ],
+            [
+              16.03513001,
+              45.80512236
+            ],
+            [
+              16.03513823,
+              45.80509279
+            ],
+            [
+              16.03512679,
+              45.8050913
+            ],
+            [
+              16.03513475,
+              45.80506245
+            ],
+            [
+              16.03516123,
+              45.80506607
+            ],
+            [
+              16.03517834,
+              45.80500387
+            ],
+            [
+              16.03488354,
+              45.80496416
+            ],
+            [
+              16.03486642,
+              45.80502635
+            ],
+            [
+              16.0348929,
+              45.80502997
+            ],
+            [
+              16.03482059,
+              45.80529296
+            ],
+            [
+              16.03479412,
+              45.80528934
+            ],
+            [
+              16.034777,
+              45.80535154
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

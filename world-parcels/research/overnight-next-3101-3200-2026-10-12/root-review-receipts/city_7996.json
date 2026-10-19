@@ -1,0 +1,43 @@
+{
+  "taskId": "city:7996",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-7996-banyuwangi.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/banyuwangi-service-review.json",
+    "tmp/valhalla-parcel-research/banyuwangi/bagos.html",
+    "tmp/valhalla-parcel-research/banyuwangi/variables.js",
+    "tmp/valhalla-parcel-research/banyuwangi/wms-capabilities.xml",
+    "tmp/valhalla-parcel-research/banyuwangi/pbb.json",
+    "tmp/valhalla-parcel-research/banyuwangi/pbb-exact.json"
+  ],
+  "queueIdentity": {
+    "rank": 3200,
+    "cityCode": 7996,
+    "country": "Indonesia",
+    "point": [
+      -8.21557023643141,
+      114.365161016598
+    ],
+    "populationPersons": 188547
+  },
+  "registryFound": true,
+  "finding": "First-party BAGOS page identifies the Banyuwangi government portal; saved WMS capabilities has 253 named layers and no identified cadastral parcel layer. The saved PBB thematic WFS response has 25 matched features, three returned MultiPolygons (the packet narrative says one), with tax-theme attributes and no proven native parcel ID; the exact-point bbox response has zero. Neither is a cadastral sample or citywide absence. No durable parcel polygon sample was written.",
+  "researchChecks": {
+    "englishAndLocalLanguageQueriesRecorded": true,
+    "durableFullParcelPolygonCount": 0,
+    "safeNativeParcelIdBoundedHit": false,
+    "citywideAbsenceEstablished": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "checkedAt": "2026-10-12T05:15:47Z"
+}

@@ -252,13 +252,9 @@ class AgentBubbleManager {
         const mapBounds = mapContainer.getBoundingClientRect();
         const mapCenter = this.map.getCenter();
 
-        // Check if sidebar is collapsed
-        const sidebar = document.getElementById('sidebar');
-        const sidebarWidth = sidebar && !sidebar.classList.contains('collapsed') ? 320 : 0;
-
-        // Adjust map bounds to exclude sidebar area
-        const visibleMapWidth = mapBounds.width - sidebarWidth;
-        const visibleMapLeft = sidebarWidth;
+        // The whole map is visible: nothing docks over its left edge.
+        const visibleMapWidth = mapBounds.width;
+        const visibleMapLeft = 0;
 
         // Convert object position to screen coordinates
         let objectPoint, centerPoint;
@@ -283,10 +279,15 @@ class AgentBubbleManager {
         const dy = objectPoint.y - centerPoint.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
+        // The floating shell sits on the map's rim (search box and top-right buttons, the mode strip on
+        // the left, the bottom button row), so the bubbles ride an inset ring inside it;
+        // at a flat 35px they landed on, and blocked, those controls.
+        const inset = { top: 90, right: 35, bottom: 95, left: 90 };
+
         if (distance === 0) {
             // Object is at center, place bubble at top of visible map area
             bubbleData.element.style.left = `${visibleMapLeft + visibleMapWidth / 2 - 25}px`;
-            bubbleData.element.style.top = `10px`;
+            bubbleData.element.style.top = `${inset.top - 25}px`;
             this.updateBubbleTip(bubbleData.element, Math.PI / 2); // Point down
             return;
         }
@@ -295,8 +296,7 @@ class AgentBubbleManager {
         const dirX = dx / distance;
         const dirY = dy / distance;
 
-        // Find intersection with map edges
-        const margin = 35; // Distance from edge
+        // Find intersection with map edges.
         let edgeX, edgeY;
 
         // Calculate intersection with map boundaries
@@ -306,19 +306,19 @@ class AgentBubbleManager {
         let tLeft = Infinity, tRight = Infinity, tTop = Infinity, tBottom = Infinity;
 
         if (dirX < 0) {
-            // Going left - check intersection with left edge (accounting for sidebar)
-            tLeft = (visibleMapLeft + margin - centerPoint.x) / dirX;
+            // Going left - check intersection with left edge
+            tLeft = (visibleMapLeft + inset.left - centerPoint.x) / dirX;
         } else if (dirX > 0) {
             // Going right - check intersection with right edge (full screen width)
-            tRight = (mapBounds.width - margin - centerPoint.x) / dirX;
+            tRight = (mapBounds.width - inset.right - centerPoint.x) / dirX;
         }
 
         if (dirY < 0) {
             // Going up
-            tTop = (margin - centerPoint.y) / dirY;
+            tTop = (inset.top - centerPoint.y) / dirY;
         } else if (dirY > 0) {
             // Going down
-            tBottom = (mapBounds.height - margin - centerPoint.y) / dirY;
+            tBottom = (mapBounds.height - inset.bottom - centerPoint.y) / dirY;
         }
 
         // Find the closest intersection
@@ -328,8 +328,8 @@ class AgentBubbleManager {
         edgeY = centerPoint.y + dirY * t;
 
         // Ensure bubble stays within bounds (redundant safety check)
-        edgeX = Math.max(visibleMapLeft + margin, Math.min(mapBounds.width - margin, edgeX));
-        edgeY = Math.max(margin, Math.min(mapBounds.height - margin, edgeY));
+        edgeX = Math.max(visibleMapLeft + inset.left, Math.min(mapBounds.width - inset.right, edgeX));
+        edgeY = Math.max(inset.top, Math.min(mapBounds.height - inset.bottom, edgeY));
 
         // Position bubble (offset by half bubble size to center it)
         bubbleData.element.style.left = `${edgeX - 25}px`;
@@ -369,15 +369,8 @@ class AgentBubbleManager {
     onBubbleClick(bubbleData) {
         if (!this.map) return;
 
-        // On mobile, collapse sidebar if it's open
-        if (window.innerWidth <= 768) {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar && !sidebar.classList.contains('collapsed')) {
-                if (typeof toggleSidebar === 'function') {
-                    toggleSidebar();
-                }
-            }
-        }
+        // Fold away an open sheet so the map is clear for the fly-to
+        if (window.MapShell) window.MapShell.closeSheets();
 
         // Safety check: validate coordinates before flying to prevent world map disaster
         if (!bubbleData.objectPosition ||
@@ -389,21 +382,6 @@ class AgentBubbleManager {
             // Show user-friendly error and don't fly
             this.handleInvalidBubblePosition(bubbleData);
             return;
-        }
-
-        // Always enable show proposals mode and clear multi-selection when clicking on any agent bubble
-        if (typeof enableShowProposalsMode === 'function') {
-            enableShowProposalsMode();
-        } else {
-            // Fallback if helper function not available
-            const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
-            if (showProposalsCheckbox && !showProposalsCheckbox.checked) {
-                showProposalsCheckbox.checked = true;
-                // Trigger the change event to update the proposal layer
-                if (typeof updateProposalLayer === 'function') {
-                    updateProposalLayer();
-                }
-            }
         }
 
         // Mark this bubble as moving so it won't be repositioned by map events
@@ -498,39 +476,15 @@ class AgentBubbleManager {
      * @param {Object} bubbleData - Bubble data
      */
     showBubbleErrorNotification(bubbleData) {
-        // Create a temporary notification
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff6b6b;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 10001;
-            max-width: 350px;
-            font-size: 14px;
-            line-height: 1.4;
-        `;
-
-        notification.innerHTML = `
-            <div style="font-weight: 600; margin-bottom: 5px;">⚠️ Location Unavailable</div>
-            <div>Cannot navigate to ${bubbleData.agentName}'s ${bubbleData.action}.</div>
-            <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">
-                This can happen after browser reload when parcel data is not fully loaded.
-            </div>
-        `;
-
-        document.body.appendChild(notification);
-
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 5000);
+        // An error notice like every other (ephemerals.md): the parcel data behind the bubble's
+        // location is not loaded yet, which happens right after a reload.
+        const key = 'ephemeral.messages.agent_location_unavailable';
+        const params = { agent: bubbleData.agentName, action: bubbleData.action };
+        const translated = typeof window.i18n?.t === 'function' ? window.i18n.t(key, params) : null;
+        const text = translated && translated !== key ? translated
+            : `Cannot go to ${bubbleData.agentName}'s ${bubbleData.action}: the parcel data is not loaded yet.`;
+        if (typeof window.showEphemeralMessage === 'function') window.showEphemeralMessage(text, 5000, 'error');
+        else console.warn(`[${new Date().toISOString()}] [agent-bubbles] ${text}`);
     }
 
     /**
@@ -758,9 +712,9 @@ class AgentBubbleManager {
                 }
 
                 const proposal = proposalStorage.getProposal(proposalId);
-                const parcels = Array.isArray(proposal?.parentParcelIds)
-                    ? proposal.parentParcelIds
-                    : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+                const parcels = Array.isArray(proposal?.cadastreParcelIds)
+                    ? proposal.cadastreParcelIds
+                    : [];
 
                 if (!proposal || parcels.length === 0) {
                     console.debug('[AgentBubble] proposal/parcels unavailable for auto-select', {
@@ -858,9 +812,9 @@ class AgentBubbleManager {
     getProposalPosition(proposalId) {
         if (typeof proposalStorage !== 'undefined') {
             const proposal = proposalStorage.getProposal(proposalId);
-            const parcels = Array.isArray(proposal?.parentParcelIds)
-                ? proposal.parentParcelIds
-                : (Array.isArray(proposal?.childParcelIds) ? proposal.childParcelIds : []);
+            const parcels = Array.isArray(proposal?.cadastreParcelIds)
+                ? proposal.cadastreParcelIds
+                : [];
             if (proposal && parcels.length > 0) {
 
                 // Strategy 1: Try stored bounds first (most reliable)
@@ -936,4 +890,4 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(checkMapInterval);
         }
     }, 100);
-}); 
+});

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Barcelona",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The identity decision for WUP city code 4144 is Barcelona, Anzoátegui, Venezuela, in Simón Bolívar Municipality; it is distinct from Barcelona, Spain (code 5068). Municipal sources identify Barcelona as the local government seat and the municipal Catastro/Urban Control function. This verifies city-local cadastre administration, while no public geometry endpoint was found.",
+  "registryEvidenceUrls": [
+    "https://anzoategui.gob.ve/anzoategui/geografia/",
+    "https://simonbolivar.sigat.net/",
+    "https://simonbolivar.sigat.net/documentos/ordenanzas/ordenanza_sobre_tasas_por_servicios_administrativos_y_uso_de_bienes_publicos_del_municipio_simon_bolivar.pdf",
+    "https://consultoria.anzoategui.gob.ve/wp-content/uploads/2024/03/GACETAOFICIALN225ORD-ENCOMIENDACONVENIDAENTRELAGOBERNACIONYLAALCALDIADEBARCELONA.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4144,
+  "cityId": "wup2025:4144",
+  "centerLatLon": [
+    10.1753456191753,
+    -64.6577684039115
+  ],
+  "rank": 805,
+  "queueRank": 805,
+  "population2025": 674757,
+  "population2025k": 674.757,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The municipal Catastro function is confirmed, but public materials reviewed are administrative/tax service pages rather than an anonymous parcel GIS with a geometry-and-safe-ID schema. No tax-account or private record query was made.",
+  "scopeLimits": "No anonymous feature schema, parcel geometry, exact centroid-to-parcel relationship, or coverage completeness was verified. WUP code 4144 is Venezuela and must not reuse the separate Spain Barcelona artifact.",
+  "remainingUncertainty": "No anonymous feature schema, parcel geometry, exact centroid-to-parcel relationship, or coverage completeness was verified. WUP code 4144 is Venezuela and must not reuse the separate Spain Barcelona artifact.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Barcelona Anzoategui Venezuela official municipal cadastre registry parcel map GIS Simón Bolívar",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "Official Anzoátegui sources identify Barcelona as state capital, while the Simón Bolívar municipal portal and municipal gazette identify the local Catastro and urban-control function. No public parcel feature map/schema was found. The Barcelona, Spain record is excluded by the reviewed identity decision for WUP code 4144.",
+        "actualResultUrls": [
+          "https://anzoategui.gob.ve/anzoategui/geografia/",
+          "https://simonbolivar.sigat.net/",
+          "https://simonbolivar.sigat.net/documentos/ordenanzas/ordenanza_sobre_tasas_por_servicios_administrativos_y_uso_de_bienes_publicos_del_municipio_simon_bolivar.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      },
+      {
+        "language": "Spanish",
+        "query": "Barcelona Anzoátegui Venezuela catastro municipal municipio Simón Bolívar mapa parcelario oficial",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "La Gobernación confirma que Barcelona es la capital de Anzoátegui; el portal y la gaceta municipal de Simón Bolívar reconocen la función de Catastro y Control Urbano. No se encontró un servicio público de geometría parcelaria con esquema seguro. Se excluye expresamente Barcelona, España, del código WUP 4144.",
+        "actualResultUrls": [
+          "https://anzoategui.gob.ve/anzoategui/geografia/",
+          "https://simonbolivar.sigat.net/",
+          "https://simonbolivar.sigat.net/documentos/ordenanzas/ordenanza_sobre_tasas_por_servicios_administrativos_y_uso_de_bienes_publicos_del_municipio_simon_bolivar.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://anzoategui.gob.ve/anzoategui/geografia/",
+        "observation": "Official Anzoátegui State government says Barcelona is its capital and most populous city."
+      },
+      {
+        "url": "https://simonbolivar.sigat.net/",
+        "observation": "Municipal Simón Bolívar public portal identifies local-government services and Barcelona municipal office location; no anonymous parcel geometry interface was visible."
+      },
+      {
+        "url": "https://simonbolivar.sigat.net/documentos/ordenanzas/ordenanza_sobre_tasas_por_servicios_administrativos_y_uso_de_bienes_publicos_del_municipio_simon_bolivar.pdf",
+        "observation": "Municipal gazette document references Catastro/urban-control municipal services; it is administrative evidence, not a parcel data route."
+      },
+      {
+        "url": "https://consultoria.anzoategui.gob.ve/wp-content/uploads/2024/03/GACETAOFICIALN225ORD-ENCOMIENDACONVENIDAENTRELAGOBERNACIONYLAALCALDIADEBARCELONA.pdf",
+        "observation": "Official state-hosted gazette names Barcelona, Simón Bolívar Municipality, Anzoátegui in a city-municipal agreement."
+      }
+    ],
+    "metadataReviewFile": "barcelona-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-4144-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "No anonymous feature schema, parcel geometry, exact centroid-to-parcel relationship, or coverage completeness was verified. WUP code 4144 is Venezuela and must not reuse the separate Spain Barcelona artifact."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel feature was verified; local registry evidence is not a parcel-coverage claim."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-ID schema was established.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "point": [
+    10.1753456191753,
+    -64.6577684039115
+  ],
+  "sampleFeatureCount": 0,
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://anzoategui.gob.ve/anzoategui/geografia/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Geografía - Gobernacion del Estado Anzoategui"
+  },
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

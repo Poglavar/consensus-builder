@@ -1,0 +1,6 @@
+{
+  "url": "https://ldgis.tainan.gov.tw/TNLDWS/TNGIS_WS.asmx/SV3?QM=1&QD=%7B%22SEC%22%3A%220041%22%2C%22NO%22%3A%2200010000%22%7D&EPSG=4326",
+  "errorType": "URLError",
+  "result": "geometry_operation_transport_failure",
+  "featureValuesRetained": false
+}

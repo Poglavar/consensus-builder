@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11507-darjeeling.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official West Bengal services expose plot information and plot/mouza-map request workflows; the district government portal confirms Darjeeling is in the state service area. The separate Basundhara map offers district settlement mapping, not a verified cadastral polygon endpoint. No plot number, account, captcha, or personal record was submitted.",
+  "registryAssessment": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+      "observation": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified."
+    },
+    {
+      "url": "https://darjeeling.gov.in/",
+      "observation": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified."
+    },
+    {
+      "url": "https://basundhara.wb.gov.in/GeoPortalApp/map",
+      "observation": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Darjeeling India official land records cadastral map West Bengal Bhulekh municipal land registry",
+      "result": "Official West Bengal services expose plot information and plot/mouza-map request workflows; the district government portal confirms Darjeeling is in the state service area. The separate Basundhara map offers district settlement mapping, not a verified cadastral polygon endpoint. No plot number, account, captcha, or personal record was submitted.",
+      "method": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted.",
+      "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service."
+    },
+    {
+      "language": "Hindi",
+      "query": "दार्जिलिंग भू अभिलेख दाग खसरा नक्शा बंगाल सरकारी भूमि रिकॉर्ड",
+      "result": "Official West Bengal services expose plot information and plot/mouza-map request workflows; the district government portal confirms Darjeeling is in the state service area. The separate Basundhara map offers district settlement mapping, not a verified cadastral polygon endpoint. No plot number, account, captcha, or personal record was submitted.",
+      "method": "Separate native-language search and official source review.",
+      "scope": "Find first-party local-language evidence for the same local registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; anonymous public parcel geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement locator and reviewed official sources only.",
+    "limits": "No public service extent or citywide parcel coverage verified."
+  },
+  "attempts": [
+    {
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+      "method": "Official land-record/map-service page review",
+      "result": "Lists plot-info and plot/mouza-map request services; workflow is based on district/block/mouza and plot identifiers. No personal/property search submitted."
+    },
+    {
+      "url": "https://basundhara.wb.gov.in/GeoPortalApp/map",
+      "method": "Official geospatial portal review",
+      "result": "Provides district settlement mapping; no parcel schema or anonymous parcel geometry layer verified."
+    }
+  ],
+  "remainingUncertainty": "No anonymous field-safe parcel geometry response was verified; coverage at the exact WUP point remains unresolved."
+}

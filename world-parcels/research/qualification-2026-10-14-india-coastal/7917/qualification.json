@@ -1,0 +1,2192 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "7917",
+  "cityName": "Vasai-Virar",
+  "sourceId": "in-mh-ncscm-czmp-survey-plots",
+  "candidateSha256": "000c03d99ffc37667291d15f2890cd517a6b98427fbd26576bf9d91a7e36c50e",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 42,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 42,
+      "collectedUniqueCount": 42
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 166
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 30,
+      "distinctFeatureQueries": 30,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "0f237a015d17085a712ce8a6559386fd08b9d48b2311be9555dd977e951ac586",
+      "featureCount": 42,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "0f237a015d17085a712ce8a6559386fd08b9d48b2311be9555dd977e951ac586",
+  "featureCount": 42,
+  "sampleIds": [
+    "IN-MH-CZMP-g1~728280770~194122015~dd6c2bbaf0269e4915e21fdf13431c0af8be5aec7ee6238bead7e4d7ff4eb20f",
+    "IN-MH-CZMP-g1~728295119~194144161~90691ae7af1b73ed3a52a5a64151d6b899641fd1f91ad6ad54f78e38af096f62",
+    "IN-MH-CZMP-g1~728307881~194136782~c5fb803a4ac4a7b1a128d92f72613c26040e1683df50c7fd6f61a3b8a0db0e05"
+  ],
+  "cellSizeDegrees": 0.001,
+  "densityProbe": [
+    {
+      "cellSizeDegrees": 0.001,
+      "footprintBbox": [
+        72.827,
+        19.411,
+        72.832,
+        19.416
+      ],
+      "footprintFeatures": 57,
+      "perIdCost": 1
+    }
+  ],
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        72.828,
+        19.412,
+        72.829,
+        19.413
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-MH-CZMP-g1~728280770~194122015~dd6c2bbaf0269e4915e21fdf13431c0af8be5aec7ee6238bead7e4d7ff4eb20f",
+        "IN-MH-CZMP-g1~728284269~194125039~dc2a1727f2866eb31eaf3b25b0327430c4248af3befac0d10db25d69597d2fbc",
+        "IN-MH-CZMP-g1~728286937~194134496~c5e1d4dadfae279a9728214b02e463443ce0c5945e2f43a8bb56fcb5e952b71f",
+        "IN-MH-CZMP-g1~728277806~194127559~3940869554c5da78017bc611093ebfbf17b69e5c464b73b920daffc94145bb8e",
+        "IN-MH-CZMP-g1~728273833~194120265~e83bb621cde4b1fb28d39f504b1a1d2f68307a7bbe69668e74139703462756bf"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        72.829,
+        19.412,
+        72.83,
+        19.413
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-MH-CZMP-g1~728297788~194130049~bff11362a686e2683156603a3d851c8bea32d6ecec7c3204e83e935ab3ed1ec5",
+        "IN-MH-CZMP-g1~728293578~194125631~143bbd19333df53a7995df8f68e51e4f31c33773ca0ad47bfe00b83e1d9da88b",
+        "IN-MH-CZMP-g1~728290376~194114040~ba7580ba28f8f81220f904170de8e3a9aaa9c34a4b3ba05214f89acbb59ec470",
+        "IN-MH-CZMP-g1~728296068~194117508~7b302a9965673994236ab4628920d29ccd604ad33b5bc1728f983539f20a02e8",
+        "IN-MH-CZMP-g1~728280770~194122015~dd6c2bbaf0269e4915e21fdf13431c0af8be5aec7ee6238bead7e4d7ff4eb20f",
+        "IN-MH-CZMP-g1~728284269~194125039~dc2a1727f2866eb31eaf3b25b0327430c4248af3befac0d10db25d69597d2fbc",
+        "IN-MH-CZMP-g1~728290850~194128478~3cf94c6d016d5f0ce90c52228167349005ef100ddb1efb99f78a7079099103be",
+        "IN-MH-CZMP-g1~728286937~194134496~c5e1d4dadfae279a9728214b02e463443ce0c5945e2f43a8bb56fcb5e952b71f"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        72.83,
+        19.412,
+        72.831,
+        19.413
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "IN-MH-CZMP-g1~728303124~194118783~5da782e8e9fa93dee3afcca3a40542805268618f8d50d5eacfa4621712da118c",
+        "IN-MH-CZMP-g1~728305496~194122993~591963e2e6cec53dbb4d83033ee3aed7e32975e08f6b2fad1dbc043ad9360e9f",
+        "IN-MH-CZMP-g1~728297788~194130049~bff11362a686e2683156603a3d851c8bea32d6ecec7c3204e83e935ab3ed1ec5",
+        "IN-MH-CZMP-g1~728292570~194110186~fc2a12946eef2dd4a0a4a2a7ea1c81136e1eb6d86fef77e6edea003cef7bdf74",
+        "IN-MH-CZMP-g1~728296068~194117508~7b302a9965673994236ab4628920d29ccd604ad33b5bc1728f983539f20a02e8"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        72.828,
+        19.413,
+        72.829,
+        19.414
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "IN-MH-CZMP-g1~728284269~194125039~dc2a1727f2866eb31eaf3b25b0327430c4248af3befac0d10db25d69597d2fbc",
+        "IN-MH-CZMP-g1~728286937~194134496~c5e1d4dadfae279a9728214b02e463443ce0c5945e2f43a8bb56fcb5e952b71f",
+        "IN-MH-CZMP-g1~728277568~194142797~5fe978bd2e1043f856bb181276ce054b8d9b688679c91295fa5d43412402e091",
+        "IN-MH-CZMP-g1~728277806~194127559~3940869554c5da78017bc611093ebfbf17b69e5c464b73b920daffc94145bb8e"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        72.829,
+        19.413,
+        72.83,
+        19.414
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-MH-CZMP-g1~728295119~194144161~90691ae7af1b73ed3a52a5a64151d6b899641fd1f91ad6ad54f78e38af096f62",
+        "IN-MH-CZMP-g1~728292570~194142738~9d6b70a5cdee4144ca465265333d8f66f3702a1f7054bb2a2420ccbc94031397",
+        "IN-MH-CZMP-g1~728296661~194132302~41a02cf6d4033c5bc9f83ce758ce20e42295575c2dca9cc59494d89fc1f6f24f",
+        "IN-MH-CZMP-g1~728297788~194130049~bff11362a686e2683156603a3d851c8bea32d6ecec7c3204e83e935ab3ed1ec5",
+        "IN-MH-CZMP-g1~728290850~194128478~3cf94c6d016d5f0ce90c52228167349005ef100ddb1efb99f78a7079099103be",
+        "IN-MH-CZMP-g1~728286937~194134496~c5e1d4dadfae279a9728214b02e463443ce0c5945e2f43a8bb56fcb5e952b71f"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        72.83,
+        19.413,
+        72.831,
+        19.414
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "IN-MH-CZMP-g1~728295119~194144161~90691ae7af1b73ed3a52a5a64151d6b899641fd1f91ad6ad54f78e38af096f62",
+        "IN-MH-CZMP-g1~728292570~194142738~9d6b70a5cdee4144ca465265333d8f66f3702a1f7054bb2a2420ccbc94031397",
+        "IN-MH-CZMP-g1~728296661~194132302~41a02cf6d4033c5bc9f83ce758ce20e42295575c2dca9cc59494d89fc1f6f24f",
+        "IN-MH-CZMP-g1~728304073~194134614~ffe2df3db655a40e8d1e3356e310917c247b5fd1a55acad6fae27d93600535de",
+        "IN-MH-CZMP-g1~728307881~194136782~c5fb803a4ac4a7b1a128d92f72613c26040e1683df50c7fd6f61a3b8a0db0e05",
+        "IN-MH-CZMP-g1~728305258~194138646~b495e33cf03660c65ca43b76f47016705e7fdc64e07219f873de09d871089842",
+        "IN-MH-CZMP-g1~728297788~194130049~bff11362a686e2683156603a3d851c8bea32d6ecec7c3204e83e935ab3ed1ec5"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        72.828,
+        19.414,
+        72.829,
+        19.415
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-MH-CZMP-g1~728284091~194142797~40fe5f8f688f9ea73b44a11421c7e0829a2fa6cc2428c9229f2d5743b58f1064",
+        "IN-MH-CZMP-g1~728286937~194134496~c5e1d4dadfae279a9728214b02e463443ce0c5945e2f43a8bb56fcb5e952b71f",
+        "IN-MH-CZMP-g1~728277568~194142797~5fe978bd2e1043f856bb181276ce054b8d9b688679c91295fa5d43412402e091",
+        "IN-MH-CZMP-g1~728275315~194151869~814b5f01a0b3b436267382fa4527c22a91fe8bc38540b73ac8f17ca35b6a5478",
+        "IN-MH-CZMP-g1~728278666~194147342~1e93b244e1adf71f51175a27623254a42d6bf6b9f554d6be64fe8b8349c57085",
+        "IN-MH-CZMP-g1~728262686~194149883~b4cccb39d1bff68e58fdc1fe9bfbfe5ee303676b5e036b108a221853896643f3"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        72.829,
+        19.414,
+        72.83,
+        19.415
+      ],
+      "complete": true,
+      "featureCount": 9,
+      "ids": [
+        "IN-MH-CZMP-g1~728297076~194150475~7b52729d41c546f019ce367ac1f86c2bc3f0944d3c408f714aeea7a8973b16e0",
+        "IN-MH-CZMP-g1~728289071~194154359~d00280d137efd13ccb989857f78e0df3a6e3a22318f63f14e53081339247acf1",
+        "IN-MH-CZMP-g1~728292273~194149438~d46f137e9f344e4f840622f080debedf2dbe31321e21dd4e80c21c47bfad26fa",
+        "IN-MH-CZMP-g1~728295119~194144161~90691ae7af1b73ed3a52a5a64151d6b899641fd1f91ad6ad54f78e38af096f62",
+        "IN-MH-CZMP-g1~728292510~194146355~209133d5a82d017eb0075af1141fb5afece1db3663f0985b64ea0396cc75ce11",
+        "IN-MH-CZMP-g1~728284091~194142797~40fe5f8f688f9ea73b44a11421c7e0829a2fa6cc2428c9229f2d5743b58f1064",
+        "IN-MH-CZMP-g1~728292570~194142738~9d6b70a5cdee4144ca465265333d8f66f3702a1f7054bb2a2420ccbc94031397",
+        "IN-MH-CZMP-g1~728286937~194134496~c5e1d4dadfae279a9728214b02e463443ce0c5945e2f43a8bb56fcb5e952b71f",
+        "IN-MH-CZMP-g1~728275315~194151869~814b5f01a0b3b436267382fa4527c22a91fe8bc38540b73ac8f17ca35b6a5478"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        72.83,
+        19.414,
+        72.831,
+        19.415
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-MH-CZMP-g1~728297076~194150475~7b52729d41c546f019ce367ac1f86c2bc3f0944d3c408f714aeea7a8973b16e0",
+        "IN-MH-CZMP-g1~728306148~194146799~c1046e1217f38072222f9dfbcbc86e830d3f84766daf14d5aca90b391dbab2a9",
+        "IN-MH-CZMP-g1~728292273~194149438~d46f137e9f344e4f840622f080debedf2dbe31321e21dd4e80c21c47bfad26fa",
+        "IN-MH-CZMP-g1~728295119~194144161~90691ae7af1b73ed3a52a5a64151d6b899641fd1f91ad6ad54f78e38af096f62",
+        "IN-MH-CZMP-g1~728292570~194142738~9d6b70a5cdee4144ca465265333d8f66f3702a1f7054bb2a2420ccbc94031397",
+        "IN-MH-CZMP-g1~728305258~194138646~b495e33cf03660c65ca43b76f47016705e7fdc64e07219f873de09d871089842"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        72.829,
+        19.411,
+        72.83,
+        19.412
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-MH-CZMP-g1~728292570~194110186~fc2a12946eef2dd4a0a4a2a7ea1c81136e1eb6d86fef77e6edea003cef7bdf74",
+        "IN-MH-CZMP-g1~728291147~194113209~3c68ca71ab5ec49241654cb167a3da4aad9178827d17858747f2085293ff3cb5",
+        "IN-MH-CZMP-g1~728290376~194114040~ba7580ba28f8f81220f904170de8e3a9aaa9c34a4b3ba05214f89acbb59ec470",
+        "IN-MH-CZMP-g1~728296068~194117508~7b302a9965673994236ab4628920d29ccd604ad33b5bc1728f983539f20a02e8",
+        "IN-MH-CZMP-g1~728280770~194122015~dd6c2bbaf0269e4915e21fdf13431c0af8be5aec7ee6238bead7e4d7ff4eb20f",
+        "IN-MH-CZMP-g1~728276148~194087329~c730cb3b403230f8dc0b5634479c55ed780be69e22e25b8976a008d0eaf6a309"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        72.829,
+        19.415,
+        72.83,
+        19.416
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "IN-MH-CZMP-g1~728276027~194160822~2ea48f67ad741cad94c83cfd8ba869c74235d3abb3fa39a9077f58b3853b20ec",
+        "IN-MH-CZMP-g1~728290599~194162195~3664eb089e9db852436e6b5e26105cac09a3c52b323aa0c1b826ad48d34ddf2a",
+        "IN-MH-CZMP-g1~728291265~194154656~ff8d961fe524ded4ec7207bdf0a2bcc7dad5f5840f0d8f00bb118bd4c16d84ae",
+        "IN-MH-CZMP-g1~728297076~194150475~7b52729d41c546f019ce367ac1f86c2bc3f0944d3c408f714aeea7a8973b16e0",
+        "IN-MH-CZMP-g1~728289071~194154359~d00280d137efd13ccb989857f78e0df3a6e3a22318f63f14e53081339247acf1",
+        "IN-MH-CZMP-g1~728292273~194149438~d46f137e9f344e4f840622f080debedf2dbe31321e21dd4e80c21c47bfad26fa",
+        "IN-MH-CZMP-g1~728275315~194151869~814b5f01a0b3b436267382fa4527c22a91fe8bc38540b73ac8f17ca35b6a5478"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        72.827,
+        19.413,
+        72.828,
+        19.414
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-MH-CZMP-g1~728277568~194142797~5fe978bd2e1043f856bb181276ce054b8d9b688679c91295fa5d43412402e091",
+        "IN-MH-CZMP-g1~728277806~194127559~3940869554c5da78017bc611093ebfbf17b69e5c464b73b920daffc94145bb8e",
+        "IN-MH-CZMP-g1~728267192~194125809~1e05df8fcecc1d566630e66eab6971c16b397a8603e3f55131e2a65e72583567",
+        "IN-MH-CZMP-g1~728262686~194149883~b4cccb39d1bff68e58fdc1fe9bfbfe5ee303676b5e036b108a221853896643f3",
+        "IN-MH-CZMP-g1~728257764~194145554~d2c8c5be0da1a42a4a4475f86394fd142990f072b49686ed6bcf2f329d03f580",
+        "IN-MH-CZMP-g1~728266237~194137303~3074dfc63bd41a6c9f34299397d5d574c7ea3035dad0350be3d9119889d3001d"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        72.831,
+        19.413,
+        72.832,
+        19.414
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-MH-CZMP-g1~728304073~194134614~ffe2df3db655a40e8d1e3356e310917c247b5fd1a55acad6fae27d93600535de",
+        "IN-MH-CZMP-g1~728307881~194136782~c5fb803a4ac4a7b1a128d92f72613c26040e1683df50c7fd6f61a3b8a0db0e05",
+        "IN-MH-CZMP-g1~728305258~194138646~b495e33cf03660c65ca43b76f47016705e7fdc64e07219f873de09d871089842",
+        "IN-MH-CZMP-g1~728313975~194135326~683bcaf68a010c84cf2df569582cdeb8d75188c996dfb8adabd0a95c7159469e",
+        "IN-MH-CZMP-g1~728313915~194146562~534f5b690d29909f0c14c909c4d7c3231915949a893c4d7f5c0fa49c924513c2",
+        "IN-MH-CZMP-g1~728318422~194138528~cfe6f8b97d6a2978c53fa65eb58a0d77063cf1e169063f10a044c96f502df14f",
+        "IN-MH-CZMP-g1~728314677~194129915~c9d15de077797b774aeec53b7c9576051f8881f9dd31ef5ae680976127676f61",
+        "IN-MH-CZMP-g1~728297788~194130049~bff11362a686e2683156603a3d851c8bea32d6ecec7c3204e83e935ab3ed1ec5"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 95,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:22.606Z",
+      "queryHash": "bce4bc1512d2278969749fb7b5654b36a89a456b37341de2d20603f8bda61aec",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1557
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:24.223Z",
+      "queryHash": "1ee2038a6301eb8bcee8be24f8c5df9795354b7e7dfd55b6cdff234128e8a78b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:24.624Z",
+      "queryHash": "7802667ff22c6cc03c1aa2eaf6c0d55f6babdbdedfdaaa6d91f0c9db20be0681",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 980
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:25.639Z",
+      "queryHash": "bce4bc1512d2278969749fb7b5654b36a89a456b37341de2d20603f8bda61aec",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1090
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:26.738Z",
+      "queryHash": "1ee2038a6301eb8bcee8be24f8c5df9795354b7e7dfd55b6cdff234128e8a78b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1105
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:27.854Z",
+      "queryHash": "7802667ff22c6cc03c1aa2eaf6c0d55f6babdbdedfdaaa6d91f0c9db20be0681",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1093
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:28.962Z",
+      "queryHash": "bce4bc1512d2278969749fb7b5654b36a89a456b37341de2d20603f8bda61aec",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1042
+    },
+    {
+      "stage": "density-probe",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:30.014Z",
+      "queryHash": "9f59a00a881a750bb5e22c14cb2fd5e6bf459a0fb3a85d4b364375a38bc81d6c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:31.536Z",
+      "queryHash": "9598cb29e14b712d0467b1007a34c9a87f6882deb16cb252703df5e273f8312d",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 758
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:32.311Z",
+      "queryHash": "40e9172f95dfa62458f2eb7ca5acd1a0a3449c1427c7f23e14b199e9371ceace",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1038
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:33.358Z",
+      "queryHash": "428c604235baf9b13be976cab8f5bc14dec7916b74c08b00073e351e56479175",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1085
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:34.466Z",
+      "queryHash": "368bc8445aa360f9a067cdad74aecddf77dc62805a11cdaf6834ff8856651346",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1066
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:35.539Z",
+      "queryHash": "5928012691c9ebe1ba49fdb9f6716680a871d32b010bb8d8a43abe253ab6d91b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1106
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:36.655Z",
+      "queryHash": "dad594d9a0e2a1da05f36127b77d146ad13dee6f5fff13b1ded605bc3fce2519",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1101
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:37.761Z",
+      "queryHash": "00f5e5dc854ed3512c4a843a1caab300765767253b65b1b7a787e2e36916822a",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1079
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:38.857Z",
+      "queryHash": "b2acaa43e45d3ca04597143e7ba71871c85fabea752b13eec1ba1eaed2e51c84",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1233
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:40.105Z",
+      "queryHash": "67380118745548f4f9ebc947f5fa4aca7106bca82cf7e2e50f50a3e00725cf64",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 974
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:41.111Z",
+      "queryHash": "203d310acfbb7ae26df711ec890472e10ad717776f9579dc2bf0c107e4eccc1e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1069
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:42.187Z",
+      "queryHash": "f1f98441bf6b5ac2fb3e8644937e314c6e02346f4bd6838af493aaf79fdc934c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1107
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:43.303Z",
+      "queryHash": "984308b7400b2d65ec1094449d24c3ba48badcb930a5b10a4e542073f71635c5",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1082
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:44.389Z",
+      "queryHash": "a5f7a9677e4eeb4c9f33c8bbd357a77a37f0405520f381b4942ca4f19bdef53c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1098
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:45.504Z",
+      "queryHash": "9598cb29e14b712d0467b1007a34c9a87f6882deb16cb252703df5e273f8312d",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1076
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:46.590Z",
+      "queryHash": "40e9172f95dfa62458f2eb7ca5acd1a0a3449c1427c7f23e14b199e9371ceace",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1098
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:47.690Z",
+      "queryHash": "428c604235baf9b13be976cab8f5bc14dec7916b74c08b00073e351e56479175",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1136
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:48.837Z",
+      "queryHash": "368bc8445aa360f9a067cdad74aecddf77dc62805a11cdaf6834ff8856651346",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1041
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:49.883Z",
+      "queryHash": "5928012691c9ebe1ba49fdb9f6716680a871d32b010bb8d8a43abe253ab6d91b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1115
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:51.011Z",
+      "queryHash": "dad594d9a0e2a1da05f36127b77d146ad13dee6f5fff13b1ded605bc3fce2519",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1096
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:52.113Z",
+      "queryHash": "00f5e5dc854ed3512c4a843a1caab300765767253b65b1b7a787e2e36916822a",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1087
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:53.212Z",
+      "queryHash": "b2acaa43e45d3ca04597143e7ba71871c85fabea752b13eec1ba1eaed2e51c84",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1090
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:54.314Z",
+      "queryHash": "67380118745548f4f9ebc947f5fa4aca7106bca82cf7e2e50f50a3e00725cf64",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1104
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:55.420Z",
+      "queryHash": "203d310acfbb7ae26df711ec890472e10ad717776f9579dc2bf0c107e4eccc1e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1090
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:56.525Z",
+      "queryHash": "f1f98441bf6b5ac2fb3e8644937e314c6e02346f4bd6838af493aaf79fdc934c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1100
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:57.673Z",
+      "queryHash": "984308b7400b2d65ec1094449d24c3ba48badcb930a5b10a4e542073f71635c5",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1048
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:58.739Z",
+      "queryHash": "a5f7a9677e4eeb4c9f33c8bbd357a77a37f0405520f381b4942ca4f19bdef53c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1086
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:26:59.950Z",
+      "queryHash": "291cae7aaa0cf65a2694d0f40f729a9019c203c511d84b72238c5df25556c491",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 969
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:00.921Z",
+      "queryHash": "d5e52c681b02d584759fea1ef0253e968e6696772b583f5d8dee692eabcb5b2b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1109
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:02.038Z",
+      "queryHash": "cc0a337184d69b7f82c7eeefb2df05c20abe9b5e0b2acc367472caf0e22d0056",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 1083
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:03.127Z",
+      "queryHash": "48caa4d76516e76d99f8a33ae9f91d11250bf583e59c25a30560bcc370528233",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1095
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:04.223Z",
+      "queryHash": "17dc041b2007f0a096ea570de873c4fc739178ba2873478947b60fe63b42d52d",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1099
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:05.331Z",
+      "queryHash": "6e88d5b6f937f93aae503b58c3c25cd20afb3ea7c0de329e5e9d1cdf2aa0833c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 5,
+      "httpStatus": 200,
+      "elapsedMs": 1093
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:06.428Z",
+      "queryHash": "ca2c7d98ef9642c242a82ce1d7980c6ccf08dbbca3a2df00cc8a3e5d662c4198",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1098
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:07.531Z",
+      "queryHash": "4b57360b524fb006735a8c4ce0c74d1e99936bb94e32d7b8bb7c27f5e5bb240f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1107
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:08.640Z",
+      "queryHash": "6b9aac7de49b1fd759f7611e7d5a810a9cd83446cf285506b3eb35410a7aa01e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 1105
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:09.749Z",
+      "queryHash": "be6e9f7ea8896268b16947777703bd93a4da0b10b349a8f45998ab97ce9c02c7",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1086
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:10.841Z",
+      "queryHash": "8d67a60e583529c0addc39a6e2348ef21a35d22033e4f9a06211903d5c0d0477",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1091
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:11.933Z",
+      "queryHash": "4ff9f147dbb3d0304d74d730754c8e2da052c70e9003172be4b4d3b901e716eb",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 5,
+      "httpStatus": 200,
+      "elapsedMs": 1095
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:13.031Z",
+      "queryHash": "4ef4ac00effeec3477f2fe01e9f85f0e198958a6fa172de3e1f1c1fae761c9ce",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1113
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:14.149Z",
+      "queryHash": "5697725d4a2c9984df65d71d84d7ef3157a2cbeed7efdbec05ac4cf73607af7c",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1109
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:15.261Z",
+      "queryHash": "4abc4e795a1cf63d1b9c7c9b61ef2dda826d94831e741938a7dd647a7edd0ce1",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 1091
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:16.353Z",
+      "queryHash": "0d49c4c1450264b6fc0303861e0a83b5ac98ea0e55cb8ccaf2833c69ac591761",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1104
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:17.459Z",
+      "queryHash": "882a3837314a3c52736ae7d056bd1db715af1c0cbf59b8d8fc1c3575b0e5c5bd",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1112
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:18.576Z",
+      "queryHash": "c9218a878c131b54eb0c8fe76463a873e5df6d770f6a5d98e5b3178afb77c82d",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 5,
+      "httpStatus": 200,
+      "elapsedMs": 1089
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:19.682Z",
+      "queryHash": "6608221d1d8fedba87d0efddc6f67e9eaf1216c376b2e3dcba1f943d4927491f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 6,
+      "httpStatus": 200,
+      "elapsedMs": 1091
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:20.777Z",
+      "queryHash": "abeff09e715b7fd94d506e044adf54766deb83be67cf18f85df45a02e3ee8993",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1089
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:21.868Z",
+      "queryHash": "69f632d40d8790be0da80f2deac3b4290f1a5fb228aa7272ff8e6be8651f9920",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1106
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:22.977Z",
+      "queryHash": "7327daa91f359738915b7c94f82e5056a89608e037b0f01d7b292888da0d34a5",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 1117
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:24.102Z",
+      "queryHash": "6254fa0bbe5a5f0f9880920adea434c2d50d6ec357560b6b787fcf67b09fca5e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1090
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:25.195Z",
+      "queryHash": "ae0b9717533a0bfa2287d660131662c81e533d104840cc90e18f1ad65781f1f5",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1096
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:26.297Z",
+      "queryHash": "e721305948c7a28beea3aafcdf7c518f62999c5159c250de36b0a92bdf1a7b1a",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 5,
+      "httpStatus": 200,
+      "elapsedMs": 1094
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:27.393Z",
+      "queryHash": "ab78748328e3430d32acfd2bd63b19e3b54e8461e914a53be0c09eaf9dfff223",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1099
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:28.494Z",
+      "queryHash": "c5f7e359d069a05ac0a91100c5ea69bd252fc9cbd99afbb13a8d1e344ae36808",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1099
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:29.599Z",
+      "queryHash": "0ea5548cbe940a695eabb14b1eabe398bdb1737ac785e25a48852a7e10ba2f18",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 1106
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:30.712Z",
+      "queryHash": "ed7e7805187976a695a8dc7d0a6ac9f3d3eeac6f76715087bc634a6dd88bd884",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1107
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:31.829Z",
+      "queryHash": "77c67c9c7fff0b952052120704115c60eac7722a49ac3e5f167c0a4318de9651",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1063
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:32.899Z",
+      "queryHash": "bce4bc1512d2278969749fb7b5654b36a89a456b37341de2d20603f8bda61aec",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1135
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:34.041Z",
+      "queryHash": "1ee2038a6301eb8bcee8be24f8c5df9795354b7e7dfd55b6cdff234128e8a78b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1067
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:35.125Z",
+      "queryHash": "7802667ff22c6cc03c1aa2eaf6c0d55f6babdbdedfdaaa6d91f0c9db20be0681",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1095
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:36.320Z",
+      "queryHash": "a7544106cf8397c3d831143942a6efef6a839fa02bf854157e77f35a6e1c4375",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 999
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:38.658Z",
+      "queryHash": "b9913a0ac3c686e50a7c6fb90ce29f45f3cde3a15554b48c74c3d0057eab9d8f",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 368
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:39.031Z",
+      "queryHash": "87f736407644aa192a5012014481e0dd17f77876c98f0a16912cb4724256aec7",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1000
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:40.039Z",
+      "queryHash": "e23c605c5b34cde31dfcf2df2683803576a67a09f771fc414f78dfcde7bea4bb",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1090
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:41.134Z",
+      "queryHash": "21a75b3bd561f4ee4a213e435e13b9146bfe165b475ec89569fd5967c04486a2",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1128
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:42.266Z",
+      "queryHash": "c5b668fa7ddf969fbdbe1dd6bcac0442aa4aa100d517be0f84b14b892e94d656",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1080
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:43.352Z",
+      "queryHash": "6f2a66cf6b70ab89e016bc3c6caef3d0c143be819c2146d8da7a5b97a9ffa619",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1080
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:44.469Z",
+      "queryHash": "7735609e7f1c481b987563714dab858284359ad9137a05c61edbc602b837b84b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1084
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:45.571Z",
+      "queryHash": "834e9f7524986c06cc0e33e51a6939548af16520e474eeecfb5f7d9d1fb92953",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1114
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:46.691Z",
+      "queryHash": "692e5bab3bd0692519f709599d90da8820f55b02ba3ded427ed663ce00f56408",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1084
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:47.783Z",
+      "queryHash": "3365301ed0c180b0cb1685678744538cba80f3328f527b31221f77c7a5272787",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1144
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:48.934Z",
+      "queryHash": "bce4bc1512d2278969749fb7b5654b36a89a456b37341de2d20603f8bda61aec",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1046
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:49.984Z",
+      "queryHash": "d18b134808827a6c58090934b2723ad335b260f6f9a57fd814d18684ed9176db",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1115
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:51.122Z",
+      "queryHash": "a12b99ea99c140dfc8eae29264c3c4787c3b836c26d4186b4145bbbe4570efb0",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1076
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:52.220Z",
+      "queryHash": "a2d7ce3539ec7182e72f7d4f9700cf68cbf01509e40d4109ab895309d4eaef79",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1088
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:53.314Z",
+      "queryHash": "20c35b653b8edc9f222ffb076513c28234720e28b1139b0e50017609f8d1a1e1",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1095
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:54.438Z",
+      "queryHash": "0b60ec3cfc45ded687a90be1218d42cdbbddf981b7cb666a098167aac4704cd2",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1067
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:55.515Z",
+      "queryHash": "3b1b98468f6d4f7bcc61c2d7b6e263f28376564b3d36aa5aef6477421cabf39a",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1101
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:56.633Z",
+      "queryHash": "1a57f57a88458a426f6eff74c5c3f10370eddc2676f85ab8ac18085f42a40cdf",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1073
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:57.709Z",
+      "queryHash": "1ee2038a6301eb8bcee8be24f8c5df9795354b7e7dfd55b6cdff234128e8a78b",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1110
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:58.830Z",
+      "queryHash": "c59a9cd58bffac851ef9475714e45ae5571b7aa5e26d764e30e42e8fc34fb167",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1074
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:27:59.909Z",
+      "queryHash": "ec5ebf80bc1c226284122f6c91672d5f4bdd9f4576a8920559f3faa761fb50ca",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1162
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:28:01.081Z",
+      "queryHash": "7802667ff22c6cc03c1aa2eaf6c0d55f6babdbdedfdaaa6d91f0c9db20be0681",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1036
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:28:02.137Z",
+      "queryHash": "b61ba0ae09d32c68e2ed1e1ca7c3f51f02337b36950dbb1c964566115f486b54",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1082
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:28:03.230Z",
+      "queryHash": "1d06742fb5eac7e4b702f7525ec1fb9f1f7ac227624663faa772818f6080ef7e",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1116
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:28:04.356Z",
+      "queryHash": "737b17524901348b564893499f531e17eb3cbb4ec75b16532097db4bde023ec2",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1186
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:28:05.553Z",
+      "queryHash": "353536a8258923aa55b6111174ee9d7131f6fff6a38b1334a19f09764aabb669",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 976
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gisportal.ncscm.res.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T21:28:06.535Z",
+      "queryHash": "bc910893cc5d4ad4cb353be3c68b3cab3f42906aa9e9f8faef6fc3fbbe4811a5",
+      "safeParamNames": [
+        "geometry",
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1110
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

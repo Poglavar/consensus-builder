@@ -1,0 +1,31 @@
+{
+  "taskId": "city:187",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-187-manta.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/manta-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/manta-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T21:16:02Z",
+  "reason": "Public bounded WFS polygons are verified, but the three returned records are only a partial bbox page. Fresh adapter ID reads, forced paging, 13 bounded cells, full-scope metric checks, source binding, and headed Details verification are missing.",
+  "checks": {
+    "immutableQueueIdentity": true,
+    "bilingualExecutedSearchesRecorded": true,
+    "retainedFullPolygonCount": 3,
+    "safeSampleAttributes": true,
+    "independentLiveAdapterQualification": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "fullScopeMetricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false,
+    "sampleMatchesFirstPartyRingsAndNativeLoteIds": true,
+    "sampleMetricGeosValidAndNonoverlapping": true,
+    "sourceBboxNumberMatched": 661,
+    "sourceBboxNumberReturned": 3,
+    "sourceResponseSha256": "dd26d3ae2e2c7235e7540609ae181c3408464619a777171c0adb1002504c74ef"
+  }
+}

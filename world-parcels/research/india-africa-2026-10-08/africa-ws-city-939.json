@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:939",
+  "queueRank": 28,
+  "wupCityCode": 939,
+  "name": "Luanda",
+  "country": "Angola",
+  "countryCode": "AO",
+  "centerLatLon": [
+    -8.87823789616165,
+    13.2976677767811
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 28,
+  "growthRank": null,
+  "population2025": 11370127,
+  "annualGrowthPct2015To2025": 4.69581,
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_partial_coverage",
+  "priorEvidence": [
+    "research/luanda.json"
+  ],
+  "priorStatuses": [
+    "verified_sample_partial_coverage"
+  ],
+  "sharedCountryAssessment": "africa-ws-provider-AO.json",
+  "freshCityLocalSearch": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": true,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": "Luanda",
+    "countrywideVerified": false
+  },
+  "blocker": null,
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+  "requests": [],
+  "resultCategory": "inherited_live_baseline",
+  "evidenceType": "inherited_live_baseline",
+  "targetEndpointProbePerformed": false
+}

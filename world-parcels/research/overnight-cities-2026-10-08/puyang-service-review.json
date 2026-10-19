@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9700-puyang.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City registry and city-operated map portal are confirmed, but the map products reviewed are general maps and the public pages do not expose parcel geometry/schema.",
+  "registryAssessment": "Henan’s official government-service portal identifies the Puyang Natural Resources and Planning Bureau as the city-level implementing body for real-property transfer registration, with a Puyang administrative service-center location. Henan’s official Tianditu Puyang site is hosted by the Puyang bureau and publishes general city/urban-area maps; no cadastral parcel dataset was listed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hnzwfw.gov.cn/portal/guide/372C882BD7F4E4B9E8858924D187C75E?region=410900000000",
+      "observation": "Henan’s official government-service portal identifies the Puyang Natural Resources and Planning Bureau as the city-level implementing body for real-property transfer registration, with a Puyang administrative service-center location. Henan’s official Tianditu Puyang site is hosted by the Puyang bureau and publishes general city/urban-area maps; no cadastral parcel dataset was listed."
+    },
+    {
+      "url": "https://dnr.henan.gov.cn/2025/06-12/3168586.html",
+      "observation": "The Henan government service guide for Puyang lists the Puyang Natural Resources and Planning Bureau as the municipal implementing body for property transfer registration. The official Puyang Tianditu page is operated by the Puyang Natural Resources and Planning Bureau and Henan Geographic Information Institute; its map-download center lists ordinary Puyang city and urban-area maps and district/county maps, not parcel datasets. The map shell offers base-map/API services, not a verified cadastral feature layer. No application or parcel query was made."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/puyang/",
+      "observation": "The Henan government service guide for Puyang lists the Puyang Natural Resources and Planning Bureau as the municipal implementing body for property transfer registration. The official Puyang Tianditu page is operated by the Puyang Natural Resources and Planning Bureau and Henan Geographic Information Institute; its map-download center lists ordinary Puyang city and urban-area maps and district/county maps, not parcel datasets. The map shell offers base-map/API services, not a verified cadastral feature layer. No application or parcel query was made."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/puyang/dtxz",
+      "observation": "The Henan government service guide for Puyang lists the Puyang Natural Resources and Planning Bureau as the municipal implementing body for property transfer registration. The official Puyang Tianditu page is operated by the Puyang Natural Resources and Planning Bureau and Henan Geographic Information Institute; its map-download center lists ordinary Puyang city and urban-area maps and district/county maps, not parcel datasets. The map shell offers base-map/API services, not a verified cadastral feature layer. No application or parcel query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Puyang Henan China official property registration center cadastral parcel map GIS",
+      "result": "City registry and city-operated map portal are confirmed, but the map products reviewed are general maps and the public pages do not expose parcel geometry/schema.",
+      "method": "Separate English and local-language official-source-focused search."
+    },
+    {
+      "language": "Chinese",
+      "query": "濮阳市 不动产登记中心 宗地 地籍图 自然资源和规划局 官方",
+      "result": "City registry and city-operated map portal are confirmed, but the map products reviewed are general maps and the public pages do not expose parcel geometry/schema.",
+      "method": "Separate English and local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "The Henan government service guide for Puyang lists the Puyang Natural Resources and Planning Bureau as the municipal implementing body for property transfer registration. The official Puyang Tianditu page is operated by the Puyang Natural Resources and Planning Bureau and Henan Geographic Information Institute; its map-download center lists ordinary Puyang city and urban-area maps and district/county maps, not parcel datasets. The map shell offers base-map/API services, not a verified cadastral feature layer. No application or parcel query was made."
+  },
+  "privacy": "No parcel/property lookup, owner/address/tax-account query, login, or personal data was used.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

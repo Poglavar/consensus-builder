@@ -1,0 +1,13 @@
+{
+  "taskId": "city:3271",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/provenance.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-3271-sincelejo.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/sincelejo-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T19:41:59.201382Z",
+  "reason": "Municipal cadastral custody is evidenced, but the IGAC service is base cartography and no parcel polygon/native ID response, qualified adapter, or headed details check exists."
+}

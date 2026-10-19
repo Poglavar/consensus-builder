@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "active_research_pending_unintegrated",
+  "integrationState": "not_integrated",
+  "sourceRoster": "ranked-population.json",
+  "sourceRosterSha256": "196e3bfdd4735f178ff21388993b47809835e12507285d215b35b6c6792add8b",
+  "identityDecisionOverlay": "root-identity-decision-overlay.json",
+  "method": "Prior attempt classification from the original queue builder, followed by root identity decisions recorded in the separate overlay. No queue membership is treated as an attempt.",
+  "attempted": [
+    {
+      "rank": 1105,
+      "cityCode": 3172,
+      "name": "Ijebu-Ode",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pop2025k": 500.036,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-3172.json",
+          "cityId": "wup2025:3172",
+          "cityName": "Ijebu-Ode",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-3172.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1115,
+      "cityCode": 2556,
+      "name": "Bloemfontein",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "pop2025k": 496.295,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/central-south-index.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-bloemfontein.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1140,
+      "cityCode": 5479,
+      "name": "Timerein",
+      "country": "Sudan",
+      "iso2": "SD",
+      "pop2025k": 486.586,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-timerein.json",
+          "cityId": "wup2025:5479",
+          "cityName": "Timerein",
+          "parcelStatus": "temporarily_unavailable",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-timerein.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1152,
+      "cityCode": 6934,
+      "name": "Villahermosa",
+      "country": "Mexico",
+      "iso2": "MX",
+      "pop2025k": 481.525,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/MX/TAB.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1159,
+      "cityCode": 26,
+      "name": "Port of Spain",
+      "country": "Trinidad and Tobago",
+      "iso2": "TT",
+      "pop2025k": 478.107,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "root-confirmed-prior-city-attempt",
+          "source": "root-identity-decision-overlay.json",
+          "evidenceFile": "world-parcels/research/countries/TT.json",
+          "additionalEvidenceFile": "world-parcels/research/retry/countries/TT.json",
+          "distanceKm": 8.27,
+          "identityConfidence": "confirmed",
+          "reason": "Polygon response covers Woodbrook/St. James in the Port of Spain area; same city despite shifted centroid."
+        }
+      ],
+      "resolvedPriorMatches": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/countries/TT.json",
+          "cityId": "capital:TT:port-of-spain",
+          "cityName": "Port of Spain",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/countries/TT.json",
+              "note": "Port of Spain city bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 8.27
+        }
+      ],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "evidenceFile": "world-parcels/research/countries/TT.json"
+      }
+    }
+  ],
+  "identityReviewRequired": [],
+  "resolvedIdentityDecisions": [
+    {
+      "rank": 1158,
+      "cityCode": 6442,
+      "name": "Yulin",
+      "country": "China",
+      "iso2": "CN",
+      "decision": "released_as_different_settlement",
+      "originalPossiblePriorMatches": [
+        {
+          "kind": "same-country-name-distance-review",
+          "evidenceFile": "research/overnight-cities-2026-10-08/city-10684-yulin.json",
+          "cityId": "wup2025:10684",
+          "cityName": "Yulin",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": true,
+          "distanceKm": 1734.83,
+          "identityConfidence": "ambiguous",
+          "source": "registry"
+        },
+        {
+          "evidenceFile": "world-parcels/research/overnight-cities-2026-10-08/city-10684-yulin.json",
+          "matchedName": "Yulin",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ],
+      "overlay": "root-identity-decision-overlay.json"
+    },
+    {
+      "rank": 1159,
+      "cityCode": 26,
+      "name": "Port of Spain",
+      "country": "Trinidad and Tobago",
+      "iso2": "TT",
+      "decision": "confirmed_prior_attempt",
+      "originalPossiblePriorMatches": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/countries/TT.json",
+          "cityId": "capital:TT:port-of-spain",
+          "cityName": "Port of Spain",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/countries/TT.json",
+              "note": "Port of Spain city bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 8.27
+        }
+      ],
+      "overlay": "root-identity-decision-overlay.json"
+    }
+  ],
+  "cohortCounts": {
+    "ranked": 100,
+    "confirmedPriorAttemptSkips": 5,
+    "identityReviewHolds": 0,
+    "eligiblePending": 95
+  }
+}

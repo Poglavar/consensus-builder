@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2372-culiacan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded. Official viewer host returned HTTP 403. Its app configuration, safe field allowlist, and parcel feature schema could not be verified; no query or bypass was attempted.",
+  "registryAssessment": "The official municipal Catastro states it maintains property records for municipality parcels and links its Visor Catastral for open geography, zoning, and parcel information. The official viewer host returned HTTP 403 on ordinary access; no safe feature schema or geometry was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://catastro.culiacan.gob.mx/",
+      "observation": "The official municipal Catastro states it maintains property records for municipality parcels and links its Visor Catastral for open geography, zoning, and parcel information. The official viewer host returned HTTP 403 on ordinary access; no safe feature schema or geometry was verified."
+    },
+    {
+      "url": "https://visor.catastro.culiacan.gob.mx/",
+      "observation": "The official municipal Catastro states it maintains property records for municipality parcels and links its Visor Catastral for open geography, zoning, and parcel information. The official viewer host returned HTTP 403 on ordinary access; no safe feature schema or geometry was verified."
+    },
+    {
+      "url": "https://economia.culiacan.gob.mx/images/Catlogo%20TYS/2025/CATALOGO%20GENERAL%202025%201_compressed%201.pdf",
+      "observation": "The official municipal Catastro states it maintains property records for municipality parcels and links its Visor Catastral for open geography, zoning, and parcel information. The official viewer host returned HTTP 403 on ordinary access; no safe feature schema or geometry was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Culiacan official municipal cadastral parcel viewer GIS Catastro polygon",
+      "result": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded.",
+      "method": "Separate English-language discovery; official source review."
+    },
+    {
+      "language": "Spanish",
+      "query": "Culiacán visor catastral parcelas catastro municipal mapa geográfico oficial",
+      "result": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded.",
+      "method": "Separate local-language discovery; official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained because a safe city-specific public feature schema was not verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official municipal Catastro states it maintains property records for municipality parcels and links its Visor Catastral for open geography, zoning, and parcel information. The official viewer host returned HTTP 403 on ordinary access; no safe feature schema or geometry was verified.",
+    "verifiedOpenScope": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://catastro.culiacan.gob.mx/",
+      "outcome": "The official municipal Catastro page identifies the local parcel-record function and links the cadastral viewer. The official viewer did not open in the permitted ordinary request; unrelated or third-party layers were excluded.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether the official viewer exposes an anonymous geometry-only layer and whether it covers this WUP point remain unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime contract or adapter behavior was tested."
+  },
+  "technicalBlocker": "Official viewer host returned HTTP 403. Its app configuration, safe field allowlist, and parcel feature schema could not be verified; no query or bypass was attempted."
+}

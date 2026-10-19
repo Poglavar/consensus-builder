@@ -1,0 +1,1292 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:29:25.592806+00:00",
+  "sourceId": "de-hh-alkis-flurstueck",
+  "operator": "Landesbetrieb Geoinformation und Vermessung Hamburg",
+  "primarySourceDiscovery": {
+    "indexUrl": "https://api.hamburg.de/datasets/v1?f=json",
+    "collectionsUrl": "https://api.hamburg.de/datasets/v1/alkis_vereinfacht/collections?f=json",
+    "description": "Official Hamburg metadata describes simplified ALKIS Flurstücke and native EPSG:25832 geometry, intended for ordinary GIS clients.",
+    "wfsUrl": "https://geodienste.hamburg.de/WFS_HH_ALKIS_vereinfacht"
+  },
+  "candidateHistory": [
+    {
+      "source": "INSPIRE GML",
+      "outcome": "Geometry available, earlier conversion invalidated because it flattened circular arc control points."
+    },
+    {
+      "source": "Official OGC API",
+      "outcome": "Metadata available, four bounded items/exact/filter calls timed out."
+    },
+    {
+      "source": "Simplified WFS BBOX",
+      "outcome": "Stable paging worked; near-boundary false positives from native projected envelope were independently measured."
+    },
+    {
+      "source": "Simplified WFS exact Intersects",
+      "outcome": "All 13 cells and exact-ID/paging/absence/footprint/binding checks passed."
+    }
+  ],
+  "spatialAudit": [
+    {
+      "cell": "viewport-4",
+      "bbox": [
+        9.992,
+        53.574,
+        9.993,
+        53.575
+      ],
+      "features": [
+        {
+          "id": "020301___01558______",
+          "bbox": [
+            9.992990509462121,
+            53.57335942752454,
+            9.99329750981202,
+            53.57399466772523
+          ],
+          "vertexCount": 346,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 5.3322747675110804e-06,
+            "north": 0
+          }
+        },
+        {
+          "id": "020301___01581______",
+          "bbox": [
+            9.99195026984844,
+            53.572822558637554,
+            9.99333527612439,
+            53.57429650236312
+          ],
+          "vertexCount": 1065,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020301___01582______",
+          "bbox": [
+            9.98921070752268,
+            53.57278967871231,
+            9.992416941728697,
+            53.57426973211179
+          ],
+          "vertexCount": 761,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00430______",
+          "bbox": [
+            9.992217849866512,
+            53.57480304907173,
+            9.992840465075325,
+            53.57496917746362
+          ],
+          "vertexCount": 615,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00431______",
+          "bbox": [
+            9.99232553197828,
+            53.57444305038578,
+            9.992572562176223,
+            53.57483566565657
+          ],
+          "vertexCount": 693,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00716______",
+          "bbox": [
+            9.991879606040914,
+            53.57443080834663,
+            9.99223029115605,
+            53.57500476820574
+          ],
+          "vertexCount": 614,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00717______",
+          "bbox": [
+            9.992551763378703,
+            53.57444913165632,
+            9.992883905841817,
+            53.57471827636825
+          ],
+          "vertexCount": 577,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00729______",
+          "bbox": [
+            9.991376476992146,
+            53.574983546598425,
+            9.99279821912061,
+            53.57537066752827
+          ],
+          "vertexCount": 725,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00731______",
+          "bbox": [
+            9.992213747014954,
+            53.57495310963518,
+            9.992838580378958,
+            53.575073103778784
+          ],
+          "vertexCount": 311,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___01221______",
+          "bbox": [
+            9.992159569746981,
+            53.5744376422396,
+            9.992356436066064,
+            53.57484532729192
+          ],
+          "vertexCount": 575,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___01391______",
+          "bbox": [
+            9.988915303177144,
+            53.574183234320934,
+            9.992940856211982,
+            53.57445672533243
+          ],
+          "vertexCount": 878,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02002______",
+          "bbox": [
+            9.992544530886695,
+            53.574712761527245,
+            9.992848013062183,
+            53.574811248857486
+          ],
+          "vertexCount": 573,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02335______",
+          "bbox": [
+            9.992925848755464,
+            53.57325942884527,
+            9.993482993360693,
+            53.57426882974691
+          ],
+          "vertexCount": 421,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02559______",
+          "bbox": [
+            9.99290038465647,
+            53.56662210078813,
+            9.996117241417735,
+            53.57430742059654
+          ],
+          "vertexCount": 5098,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02581______",
+          "bbox": [
+            9.992789007481639,
+            53.57429764063147,
+            9.994358383095753,
+            53.579639612495036
+          ],
+          "vertexCount": 4913,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        }
+      ]
+    },
+    {
+      "cell": "viewport-6",
+      "bbox": [
+        9.991,
+        53.575,
+        9.992,
+        53.576
+      ],
+      "features": [
+        {
+          "id": "020302___00712______",
+          "bbox": [
+            9.990768341443067,
+            53.57440098275216,
+            9.991209052930975,
+            53.57512882370737
+          ],
+          "vertexCount": 233,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00713______",
+          "bbox": [
+            9.991114208679704,
+            53.57441071933619,
+            9.99155501179177,
+            53.575138326119735
+          ],
+          "vertexCount": 311,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00715______",
+          "bbox": [
+            9.991480574944777,
+            53.574425770771164,
+            9.991921705342037,
+            53.57499506152489
+          ],
+          "vertexCount": 426,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 4.938475115068286e-06,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00716______",
+          "bbox": [
+            9.991879606040914,
+            53.57443080834663,
+            9.99223029115605,
+            53.57500476820574
+          ],
+          "vertexCount": 614,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00725______",
+          "bbox": [
+            9.990721479191345,
+            53.57511935586768,
+            9.991080159972569,
+            53.57574220391808
+          ],
+          "vertexCount": 349,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00726______",
+          "bbox": [
+            9.991032710145936,
+            53.57512789228675,
+            9.991391223406307,
+            53.57574996274421
+          ],
+          "vertexCount": 536,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00728______",
+          "bbox": [
+            9.991360089089119,
+            53.57533307286433,
+            9.99282601951889,
+            53.575592239261
+          ],
+          "vertexCount": 493,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00729______",
+          "bbox": [
+            9.991376476992146,
+            53.574983546598425,
+            9.99279821912061,
+            53.57537066752827
+          ],
+          "vertexCount": 725,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00761______",
+          "bbox": [
+            9.990607347940824,
+            53.57573161637193,
+            9.992980608332726,
+            53.57622553139765
+          ],
+          "vertexCount": 539,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02339______",
+          "bbox": [
+            9.991343911003726,
+            53.57555381556665,
+            9.991812462727513,
+            53.57576077455155
+          ],
+          "vertexCount": 232,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02340______",
+          "bbox": [
+            9.99179636782442,
+            53.575565679702464,
+            9.992954032223592,
+            53.575787752065956
+          ],
+          "vertexCount": 382,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        }
+      ]
+    },
+    {
+      "cell": "viewport-10",
+      "bbox": [
+        9.992,
+        53.576,
+        9.993,
+        53.577
+      ],
+      "features": [
+        {
+          "id": "020302___00761______",
+          "bbox": [
+            9.990607347940824,
+            53.57573161637193,
+            9.992980608332726,
+            53.57622553139765
+          ],
+          "vertexCount": 539,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___00762______",
+          "bbox": [
+            9.991804513287029,
+            53.57621540082037,
+            9.993190942749816,
+            53.57702544714092
+          ],
+          "vertexCount": 311,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02394______",
+          "bbox": [
+            9.992980608332726,
+            53.57622553139765,
+            9.993282654483293,
+            53.57718212720184
+          ],
+          "vertexCount": 195,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02581______",
+          "bbox": [
+            9.992789007481639,
+            53.57429764063147,
+            9.994358383095753,
+            53.579639612495036
+          ],
+          "vertexCount": 4913,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02587______",
+          "bbox": [
+            9.991949872921962,
+            53.57699709330674,
+            9.992099509646264,
+            53.577267010033175
+          ],
+          "vertexCount": 198,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02589______",
+          "bbox": [
+            9.992087781402057,
+            53.577000273502456,
+            9.992595655402312,
+            53.57727022727097
+          ],
+          "vertexCount": 426,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 2.735024580147183e-07
+          }
+        }
+      ]
+    },
+    {
+      "cell": "viewport-12",
+      "bbox": [
+        9.994,
+        53.574,
+        9.995,
+        53.575
+      ],
+      "features": [
+        {
+          "id": "020302___00191______",
+          "bbox": [
+            9.993193866733012,
+            53.574798166766335,
+            9.995077824397617,
+            53.57501970582132
+          ],
+          "vertexCount": 461,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02010______",
+          "bbox": [
+            9.994868044556668,
+            53.574093052961864,
+            9.995501903214393,
+            53.57480174228065
+          ],
+          "vertexCount": 1185,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02019______",
+          "bbox": [
+            9.994758842699804,
+            53.574282362068494,
+            9.995174387012412,
+            53.57479697181548
+          ],
+          "vertexCount": 464,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02034______",
+          "bbox": [
+            9.994836173889476,
+            53.57476253113692,
+            9.996757561937734,
+            53.575056852468364
+          ],
+          "vertexCount": 1026,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02091______",
+          "bbox": [
+            9.994882754286147,
+            53.57405170016369,
+            9.996151819309562,
+            53.57420065903033
+          ],
+          "vertexCount": 2246,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02161______",
+          "bbox": [
+            9.993462798344728,
+            53.57365504569061,
+            9.995224254099014,
+            53.57407279338617
+          ],
+          "vertexCount": 381,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02427______",
+          "bbox": [
+            9.99319847959698,
+            53.57497823118443,
+            9.994325153098158,
+            53.57522751755791
+          ],
+          "vertexCount": 346,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02429______",
+          "bbox": [
+            9.99431558584706,
+            53.57500324552552,
+            9.994635996782092,
+            53.575454511728566
+          ],
+          "vertexCount": 232,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 3.245525519446346e-06
+          }
+        },
+        {
+          "id": "020302___02476______",
+          "bbox": [
+            9.993188590773894,
+            53.574591096035114,
+            9.994299025806555,
+            53.574822433797166
+          ],
+          "vertexCount": 200,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02477______",
+          "bbox": [
+            9.994286083443278,
+            53.574615777975986,
+            9.994849174182647,
+            53.57483465180976
+          ],
+          "vertexCount": 272,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02511______",
+          "bbox": [
+            9.99318840695927,
+            53.57431514394672,
+            9.994309181993772,
+            53.574615777975986
+          ],
+          "vertexCount": 423,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02513______",
+          "bbox": [
+            9.994299025806555,
+            53.5744020390723,
+            9.994784837472341,
+            53.57462599600239
+          ],
+          "vertexCount": 268,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        },
+        {
+          "id": "020302___02515______",
+          "bbox": [
+            9.993251399296012,
+            53.57394823911769,
+            9.994885347683802,
+            53.57446288134241
+          ],
+          "vertexCount": 535,
+          "separationDegrees": {
+            "west": 0,
+            "east": 0,
+            "south": 0,
+            "north": 0
+          }
+        }
+      ]
+    }
+  ],
+  "spatialDecision": "Use an exact FES2 Intersects geographic polygon; retain strict intersection verification and complete counts. No arbitrary tolerance, geometry repair or global count relaxation.",
+  "quality": {
+    "schemaVersion": 1,
+    "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+    "library": "Shapely 2.2.0",
+    "metricCrs": "EPSG:25832",
+    "featureCount": 67,
+    "validNonemptyCount": 67,
+    "invalidFeatures": [],
+    "exactDuplicateGeometryPairs": [],
+    "positiveAreaOverlapPairsAbove0_01M2": [],
+    "sumPairwiseOverlapM2": 0,
+    "operationErrors": [],
+    "areaM2": {
+      "min": 58.29095846152277,
+      "median": 1201.318391962095,
+      "max": 29878.397501378582
+    },
+    "features": [
+      {
+        "id": "DE-HH-ALKIS-020301___01581______",
+        "areaM2": 9022.835770346153,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01582______",
+        "areaM2": 29878.397501378582,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01558______",
+        "areaM2": 127.21218311157784,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02335______",
+        "areaM2": 872.6547355529905,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01658______",
+        "areaM2": 288.10095201445466,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01732______",
+        "areaM2": 10688.515899537195,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00237______",
+        "areaM2": 530.8321264908261,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00238______",
+        "areaM2": 520.9599755020785,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00239______",
+        "areaM2": 469.32223198100723,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00240______",
+        "areaM2": 3025.40986651561,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00241______",
+        "areaM2": 597.2370434727985,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00379______",
+        "areaM2": 1183.826481003146,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02161______",
+        "areaM2": 3655.4840646075327,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02334______",
+        "areaM2": 436.57082098003536,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02515______",
+        "areaM2": 4671.102105970777,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02559______",
+        "areaM2": 18167.422810734493,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00712______",
+        "areaM2": 1837.0956169867025,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00713______",
+        "areaM2": 1836.5973355516924,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00714______",
+        "areaM2": 723.3927815043862,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00715______",
+        "areaM2": 871.2294554922934,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00716______",
+        "areaM2": 1214.633522995837,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00729______",
+        "areaM2": 2881.085381513237,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___01391______",
+        "areaM2": 4739.527323479859,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00430______",
+        "areaM2": 649.3836095494995,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00431______",
+        "areaM2": 599.0732940181678,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00717______",
+        "areaM2": 585.0057485646076,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00731______",
+        "areaM2": 474.51860348925135,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___01221______",
+        "areaM2": 471.25233898294675,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02002______",
+        "areaM2": 201.01940007467368,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02581______",
+        "areaM2": 14238.09940498007,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00191______",
+        "areaM2": 2487.1526723758247,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02427______",
+        "areaM2": 1851.3631110799038,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02476______",
+        "areaM2": 1679.175185536501,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02511______",
+        "areaM2": 1614.20190932215,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00725______",
+        "areaM2": 1413.5900425093002,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00726______",
+        "areaM2": 1412.3657444761757,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00728______",
+        "areaM2": 2348.4913892963646,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00761______",
+        "areaM2": 7753.373499147009,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02339______",
+        "areaM2": 653.3737244631245,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02340______",
+        "areaM2": 1613.2475369086046,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00730______",
+        "areaM2": 480.7526894557586,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00813______",
+        "areaM2": 648.9611280046779,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00814______",
+        "areaM2": 551.5765974814461,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00818______",
+        "areaM2": 1333.0836729988666,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02168______",
+        "areaM2": 1460.6951960239678,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02425______",
+        "areaM2": 3631.8867321384323,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02426______",
+        "areaM2": 610.9782715013746,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02428______",
+        "areaM2": 1063.5698595168794,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02564______",
+        "areaM2": 155.38516248169574,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01546______",
+        "areaM2": 58.29095846152277,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01654______",
+        "areaM2": 15966.0812143439,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01661______",
+        "areaM2": 917.5448001026016,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01663______",
+        "areaM2": 507.88547955738284,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020301___01928______",
+        "areaM2": 7282.330781850733,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00762______",
+        "areaM2": 7402.355606871654,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02394______",
+        "areaM2": 177.7618144785962,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02587______",
+        "areaM2": 271.6067114866024,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00709______",
+        "areaM2": 750.3995735138282,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00710______",
+        "areaM2": 1201.318391962095,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00711______",
+        "areaM2": 2369.65494552768,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___00719______",
+        "areaM2": 2720.2993375114415,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02010______",
+        "areaM2": 2009.579480842532,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02019______",
+        "areaM2": 1202.9229725053713,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02034______",
+        "areaM2": 3209.4031220183906,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02091______",
+        "areaM2": 413.6101545652242,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02477______",
+        "areaM2": 838.7287455134328,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "DE-HH-ALKIS-020302___02513______",
+        "areaM2": 670.0957929675352,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      }
+    ]
+  },
+  "scope": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified.",
+  "acceptanceFile": "hamburg-alkis-acceptance.json",
+  "sampleFile": "hamburg-alkis-adapter-sample.geojson",
+  "adapter": "backend/parcels/hamburg-alkis-source.js",
+  "retention": "Only three full canonical safe-attribute polygons retained in repository; full QA geometry confined to temporary audit cache.",
+  "initialSandboxFailure": "Initial non-networked shell attempt failed ENOTFOUND; repeated with approved network access. That is an execution-environment failure, not provider absence."
+}

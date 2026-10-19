@@ -1,0 +1,15 @@
+{
+  "taskId": "city:11998",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11998-xianyou.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/xianyou-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261010T093612-79ae01a7/stdout.jsonl",
+    "tmp/valhalla-parcel-research/xianyou-fujian.headers"
+  ],
+  "checkedAt": "2026-10-10T09:40:52.627779Z",
+  "reviewNote": "Official Putian material identifies the Xianyou registration custodian and Fujian material documents its map platform. The map route timed out and no safe anonymous parcel ID-plus-full-polygon response or adapter and headed Details qualification exists. The timeout does not establish citywide absence.",
+  "searchReview": "Packet records English and local-language searches; reviewer executed an additional local-language query on 2026-10-10. Search results establish source leads and custody only, not parcel geometry."
+}

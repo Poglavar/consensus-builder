@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "CO",
+  "state": "Colorado",
+  "capital": "Denver",
+  "centerLatLon": [
+    39.7392,
+    -104.9903
+  ],
+  "query": {
+    "language": "English",
+    "text": "Colorado official Denver GIS parcel polygons county assessor GIS parcels"
+  },
+  "references": [
+    {
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0?f=pjson",
+      "observation": "Source layer metadata queried for geometry, native key field and object ID schema."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Colorado%20official%20Denver%20GIS%20parcel%20polygons%20county%20assessor%20GIS%20parcels",
+      "observation": "English web search used to locate official capital/state parcel information."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Layer metadata confirms esriGeometryPolygon and native parcel_id field (esriFieldTypeString)."
+    },
+    {
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-104.99095%2C39.7387125%2C-104.98965000000001%2C39.739687499999995&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=parcel_id&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Capital bbox returned 2 polygons, native IDs and geometry only; rings checked closed and finite."
+    },
+    {
+      "url": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0/query?where=parcel_id%3D%270503300002000%27&outFields=parcel_id&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Exact native key read returned 1 feature(s), includes the same key and valid geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.colorado.gov/public/rest/services/Address_and_Parcel/Colorado_Public_Parcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Colorado Public Parcels (Colorado_Public_Parcel_Composite)",
+    "operator": "Colorado Governor's Office of Information Technology (OIT) GIS Team",
+    "idField": "parcel_id",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Returned native text values preserved verbatim (including leading zeros and any whitespace).",
+    "outFields": [
+      "parcel_id"
+    ],
+    "parcelNumberField": "parcel_id",
+    "metricSrid": "EPSG:4326 native",
+    "proposedIdPrefix": "us-co-county"
+  },
+  "verification": {
+    "bbox": [
+      -104.99095,
+      39.7387125,
+      -104.98965000000001,
+      39.739687499999995
+    ],
+    "count": 2,
+    "nativeIDs": [
+      "0503300002000",
+      "0503300001000"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "Per-county completeness not audited.",
+  "priorResearchFile": "research/subnational/US/CO.json"
+}

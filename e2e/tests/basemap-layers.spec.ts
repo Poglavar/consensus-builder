@@ -1,57 +1,67 @@
 import { test, expect } from '../helpers/fixtures';
-import { waitForMapReady } from '../helpers/app';
+import { waitForMapReady, zoomToParcelLevel } from '../helpers/app';
+import { selectors } from '../helpers/selectors';
+import { selectNativeOption } from '../helpers/controls';
+
+// The fixture defaults to New York. Keep its normal cadastral startup deterministic without
+// depending on the developer's local parcel API; the polygon sits around the configured map center.
+async function mockNewYorkParcels(page: import('@playwright/test').Page): Promise<void> {
+  await page.route('**/parcel-nyc**', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { parcelId: 'US-NY-100001', parcel_id: '100001', calculatedArea: 400 },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[
+            [-74.0062, 40.7126], [-74.0058, 40.7126],
+            [-74.0058, 40.7130], [-74.0062, 40.7130],
+            [-74.0062, 40.7126],
+          ]],
+        },
+      }],
+    }),
+  }));
+}
 
 /**
- * Basemap selector and layer toggling — tile source switching, building layer visibility.
+ * Basemap selector and layer toggling — tile source switching, building layer visibility, city and
+ * data-source choice. Since the sidebar became the map shell (UI-REWORK.md) the data-source
+ * selects live in the Settings sheet (Data & maintenance), the base-map select and the buildings
+ * toggle in the Layers sheet (base map moved there in fbe3758d), and the city select was replaced by the search box's city results; the UI tests
+ * below go through those sheets the way a visitor does.
  */
 
 test.describe('Basemap and layer controls @features', () => {
-  test('tile source selector exists with correct options', async ({ mockApi: page }) => {
+  test('the Layers sheet base-map select switches the tile source', async ({ mockApi: page }) => {
+    await mockNewYorkParcels(page);
     await page.goto('/');
     await waitForMapReady(page);
 
-    const selector = await page.evaluate(() => {
-      const select = document.getElementById('tile-source-select') as HTMLSelectElement | null;
-      if (!select) return { exists: false };
-
-      const options = Array.from(select.options).map((opt) => ({
-        value: opt.value,
-        text: opt.textContent?.trim() ?? '',
-      }));
-
-      return {
-        exists: true,
-        currentValue: select.value,
-        optionCount: options.length,
-        options,
-      };
-    });
-
-    expect(selector.exists).toBe(true);
-    expect(selector.optionCount).toBeGreaterThanOrEqual(2);
+    await page.locator(selectors.layersButton).click();
+    const select = page.locator(`${selectors.layersSheet} #tile-source-select`);
+    await expect(select).toBeVisible();
     // Should have at least OpenStreetMap and MapTiler
-    const values = selector.options!.map((o: any) => o.value);
-    expect(values).toContain('openstreetmap');
+    await expect(select.locator('option[value="openstreetmap"]')).toHaveCount(1);
+    await expect(select.locator('option[value="maptiler"]')).toHaveCount(1);
+
+    const tileUrl = () => page.evaluate(() => (window as any).baseTileLayer?._url ?? null);
+    const before = await select.inputValue();
+    const beforeUrl = await tileUrl();
+    const next = before === 'openstreetmap' ? 'maptiler' : 'openstreetmap';
+
+    await selectNativeOption(select, next);
+    // The change handler (basemap.js initBasemapSelector) must swap the live Leaflet base layer.
+    await expect.poll(tileUrl).not.toBe(beforeUrl);
+    await expect(select).toHaveValue(next);
   });
 
-  test('applyBasemap function exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasApply: typeof w.applyBasemap === 'function',
-        hasInit: typeof w.initBasemapSelector === 'function',
-        hasSync: typeof w.syncBasemapSelector === 'function',
-      };
-    });
-
-    const hasSome = result.hasApply || result.hasInit || result.hasSync;
-    test.skip(!hasSome, 'Basemap module not loaded');
-    expect(result.hasApply).toBe(true);
-  });
-
+  // These two used to call a bare `window.applyBasemap`, which the app has not exposed since
+  // basemap.js moved behind the `BasemapManager` namespace — so they skipped themselves on every
+  // run and the basemap switch was in truth untested. They now call the real entry point.
   test('switching tile source updates map tiles', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
@@ -65,133 +75,142 @@ test.describe('Basemap and layer controls @features', () => {
     // Switch to a different basemap programmatically
     const switched = await page.evaluate(() => {
       const w = window as any;
-      if (typeof w.applyBasemap !== 'function') return { switched: false, reason: 'no-function' };
-
       const select = document.getElementById('tile-source-select') as HTMLSelectElement | null;
       const currentVal = select?.value ?? 'openstreetmap';
       const newVal = currentVal === 'openstreetmap' ? 'maptiler' : 'openstreetmap';
 
-      w.applyBasemap(w.map, newVal);
-      return { switched: true, from: currentVal, to: newVal };
+      w.BasemapManager.applyBasemap(w.map, newVal);
+      return { from: currentVal, to: newVal };
     });
 
-    test.skip(!switched.switched, `Could not switch basemap: ${(switched as any).reason}`);
-    await page.waitForTimeout(2000);
+    // Tiles for the new source have to actually reach the tile pane.
+    await expect
+      .poll(async () => page.evaluate(() => {
+        const imgs = document.querySelectorAll('.leaflet-tile-pane img');
+        return Array.from(imgs).map((img: any) => img.src);
+      }), { timeout: 15_000 })
+      .not.toEqual(beforeTiles);
 
-    // Check that tile URLs changed
     const afterTiles = await page.evaluate(() => {
       const imgs = document.querySelectorAll('.leaflet-tile-pane img');
       return Array.from(imgs).slice(0, 3).map((img: any) => img.src);
     });
-
-    // At least the tile source should differ (different URL pattern)
-    const tilesChanged = afterTiles.length > 0 && (
-      beforeTiles.length === 0 ||
-      afterTiles[0] !== beforeTiles[0]
-    );
-    expect(tilesChanged).toBe(true);
+    expect(afterTiles.length).toBeGreaterThan(0);
+    expect(afterTiles[0]).not.toBe(beforeTiles[0]);
+    expect(switched.to).not.toBe(switched.from);
   });
 
-  test('tile source selector syncs with applyBasemap', async ({ mockApi: page }) => {
+  test('applyBasemap syncs the tile source selector back to the applied key', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
     const result = await page.evaluate(() => {
       const w = window as any;
-      if (typeof w.applyBasemap !== 'function') return { synced: false, reason: 'no-function' };
-
-      w.applyBasemap(w.map, 'openstreetmap');
-      const select = document.getElementById('tile-source-select') as HTMLSelectElement | null;
-      return { synced: true, value: select?.value ?? '' };
+      // Start from maptiler so the switch back to openstreetmap is a real change, not a no-op.
+      w.BasemapManager.applyBasemap(w.map, 'maptiler');
+      const afterMaptiler = (document.getElementById('tile-source-select') as HTMLSelectElement | null)?.value ?? '';
+      w.BasemapManager.applyBasemap(w.map, 'openstreetmap');
+      const afterOsm = (document.getElementById('tile-source-select') as HTMLSelectElement | null)?.value ?? '';
+      return { afterMaptiler, afterOsm };
     });
 
-    test.skip(!result.synced, `Basemap function not available: ${(result as any).reason}`);
-    expect(result.value).toBe('openstreetmap');
+    expect(result.afterMaptiler).toBe('maptiler');
+    expect(result.afterOsm).toBe('openstreetmap');
   });
 
-  test('buildings checkbox exists', async ({ mockApi: page }) => {
-    await page.goto('/');
+  // Replaces "buildings checkbox exists" and a toggle test that set `checked` itself and then
+  // asserted it had changed. Zagreb: New York hides the Buildings section.
+  test('the Layers sheet buildings toggle fetches the buildings layer', async ({ mockApi: page }) => {
+    await page.goto('/?city=zg');
     await waitForMapReady(page);
+    // The building toggles are enabled only at parcel zoom (map-controls.js updateParcelsCheckboxByZoom).
+    await zoomToParcelLevel(page);
 
-    const result = await page.evaluate(() => {
-      const checkbox = document.getElementById('showBuildings') as HTMLInputElement | null;
-      return {
-        exists: !!checkbox,
-        type: checkbox?.type ?? '',
-        checked: checkbox?.checked ?? false,
-      };
-    });
-
-    expect(result.exists).toBe(true);
-    expect(result.type).toBe('checkbox');
-  });
-
-  test('toggling buildings checkbox calls toggleLayer', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
+    await page.evaluate(() => {
       const w = window as any;
-      const checkbox = document.getElementById('showBuildings') as HTMLInputElement | null;
-      if (!checkbox) return { toggled: false, reason: 'no-checkbox' };
-
-      const hasToggleLayer = typeof w.toggleLayer === 'function';
-
-      // Toggle
-      const before = checkbox.checked;
-      checkbox.checked = !before;
-      checkbox.dispatchEvent(new Event('change'));
-
-      return {
-        toggled: true,
-        hasToggleLayer,
-        before,
-        after: checkbox.checked,
+      w.__fetchBuildingsCalls = [];
+      w.fetchBuildings = (bounds: unknown, options: unknown) => {
+        w.__fetchBuildingsCalls.push(options ?? null);
+        return Promise.resolve();
       };
     });
 
-    expect(result.toggled).toBe(true);
-    expect(result.before).not.toBe(result.after);
+    await page.locator(selectors.layersButton).click();
+    const checkbox = page.locator(`${selectors.layersSheet} #showBuildings`);
+    await expect(checkbox).toBeVisible();
+    await expect(checkbox).toBeEnabled();
+    await expect(checkbox).not.toBeChecked();
+
+    await checkbox.click();
+    await expect(checkbox).toBeChecked();
+    await expect.poll(() => page.evaluate(() => (window as any).__fetchBuildingsCalls.length)).toBe(1);
+    const options = await page.evaluate(() => (window as any).__fetchBuildingsCalls[0]);
+    expect(options).toMatchObject({ announce: true });
+
+    // Turning it off hides the layer; it must not fetch again.
+    await checkbox.click();
+    await expect(checkbox).not.toBeChecked();
+    expect(await page.evaluate(() => (window as any).__fetchBuildingsCalls.length)).toBe(1);
   });
 
-  test('city selector exists and is populated', async ({ mockApi: page }) => {
+  // Was "city selector exists and is populated" (#city-select, removed with the search box).
+  test('the search box lists configured cities and switches to the chosen one', async ({ mockApi: page }) => {
+    await mockNewYorkParcels(page);
+    await page.goto('/');
+    await waitForMapReady(page);
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('new_york');
+
+    await page.locator('.map-search__icon-button').click();
+    await page.locator(selectors.searchInput).fill('Belgrade');
+    const result = page.locator(selectors.searchCityResult).filter({ hasText: 'Belgrade' });
+    await expect(result).toHaveCount(1);
+
+    await result.click();
+    await page.waitForURL(/[?&]city=belgrade\b/);
+    await waitForMapReady(page);
+    expect(await page.evaluate(() => (window as any).CityConfigManager.getCurrentCityId())).toBe('belgrade');
+  });
+
+  // Was "data source selector exists". Changing the data source wipes local data, so it asks first;
+  // declining must leave the select on the source still in use.
+  test('the Settings sheet data-source select reverts when the wipe is declined', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    const selector = await page.evaluate(() => {
-      const select = document.getElementById('city-select') as HTMLSelectElement | null;
-      if (!select) return { exists: false };
-
-      return {
-        exists: true,
-        optionCount: select.options.length,
-        currentValue: select.value,
-        options: Array.from(select.options).map((opt) => ({
-          value: opt.value,
-          text: opt.textContent?.trim() ?? '',
-        })),
+    await page.evaluate(() => {
+      const w = window as any;
+      w.__dataSourceConfirms = 0;
+      w.showStyledConfirm = async () => {
+        w.__dataSourceConfirms += 1;
+        return false;
       };
     });
 
-    expect(selector.exists).toBe(true);
-    // Should have at least a few cities
-    expect(selector.optionCount).toBeGreaterThanOrEqual(1);
-  });
+    await page.locator(selectors.settingsButton).click();
+    const select = page.locator(`${selectors.settingsSheet} #data-source-select`);
+    await expect(select).toBeVisible();
 
-  test('data source selector exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+    const current = await page.evaluate(() => (window as any).getCurrentDataSource());
+    await expect(select).toHaveValue(current);
 
-    const selector = await page.evaluate(() => {
-      const select = document.getElementById('data-source-select') as HTMLSelectElement | null;
-      if (!select) return { exists: false };
-      return {
-        exists: true,
-        optionCount: select.options.length,
-        currentValue: select.value,
-      };
-    });
+    const other = await select.evaluate((el, cur) => {
+      const options = Array.from((el as HTMLSelectElement).options)
+        .map((option, index) => ({ index, value: option.value, label: option.label, disabled: option.disabled }))
+        .filter(option => !option.disabled);
+      const selectedIndex = (el as HTMLSelectElement).selectedIndex;
+      return options.find(option => {
+        if (option.value === cur) return false;
+        const initial = option.label.trim().slice(0, 1).toLowerCase();
+        const matching = options.filter(candidate => candidate.label.trim().toLowerCase().startsWith(initial));
+        const nextMatch = matching.find(candidate => candidate.index > selectedIndex) ?? matching[0];
+        return nextMatch?.index === option.index;
+      })?.value ?? null;
+    }, current);
+    expect(other).not.toBeNull();
 
-    expect(selector.exists).toBe(true);
+    await selectNativeOption(select, other!);
+    await expect.poll(() => page.evaluate(() => (window as any).__dataSourceConfirms)).toBe(1);
+    await expect(select).toHaveValue(current);
+    expect(await page.evaluate(() => (window as any).getCurrentDataSource())).toBe(current);
   });
 });

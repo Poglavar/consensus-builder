@@ -1,0 +1,42 @@
+{
+  "cityCode": 10751,
+  "queueRank": 2241,
+  "name": "Chidambaram",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [11.3982202551027, 79.6959707526047],
+  "population2025": 260607,
+  "population2025k": 260.607,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chidambaram Tamil Nadu official cadastral parcel map GIS survey land records",
+        "result": "First-party discovery found the Tamil Nadu e-Services land-record portal, TamilNilam Geo-Info, TNGLMS, and the official Cuddalore District Survey page. The Cuddalore page identifies the district Survey and Land Records office as custodian/administrator for Chidambaram division and says A-Register, Chitta, FMB, Natham and town records are computerized through TamilNilam. No safe anonymous parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://cuddalore.nic.in/survey/",
+          "https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://eservices.tn.gov.in/",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://tnglms.in/"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "சிதம்பரம் தமிழ்நாடு நில அளவை வரைபடம் அரசு இணையதளம்",
+        "result": "Tamil-language first-party discovery located Tamil Nadu government references for land records and survey/mapping, including the Cuddalore district survey administration and Chidambaram division. The results describe official Patta, Chitta, FMB and TSLR workflows, but no bounded anonymous parcel geometry response was obtained.",
+        "actualResultUrls": [
+          "https://cuddalore.nic.in/survey/",
+          "https://eservices.tn.gov.in/",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://tnglms.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Tamil Nadu and Cuddalore first-party land-record/cadastral workflows were evidenced, including the Chidambaram survey division custodian. No safe anonymous parcel service response was qualified and no parcel sample is retained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

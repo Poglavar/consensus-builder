@@ -1,0 +1,25 @@
+{
+  "description": "Dated Santiago candidate assessment; native cadastral identity and commercial reuse not established.",
+  "checkedAt": "2026-10-02",
+  "runtimeEnabled": false,
+  "city": "Santiago",
+  "recommendation": "No-go for production; research-only backup",
+  "officialIdentity": "OCUC/Observatorio de Ciudades UC ArcGIS Online FeatureServer republication; claims MINVU as original data source, but service is third party, not an official MINVU endpoint.",
+  "endpoint": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0",
+  "sourceSemantics": "Individual predio/parcel-like polygons classified by commune with surface attributes; not verified as SII cadastral roll polygons. No rol/account field available.",
+  "scope": "Communes in Santiago Metropolitan Area only, not Chile-wide.",
+  "stableNativeField": "Only FID (system-maintained object ID) observed; sample nonnull/unique 3/3 but no durable native parcel ID.",
+  "boundedSample": "Existing response bbox [-70.6545,-33.4925,-70.6525,-33.4910], 3 San Miguel polygons; exceededTransferLimit=true; not complete. Sample area attributes flagged as inconsistent with Shape__Area in existing research.",
+  "lookupAndPaging": "FeatureServer supports GeoJSON, pagination; native property lookup unavailable. objectId=FID would only resolve current service record.",
+  "terms": "OCUC item states CC BY-NC 4.0 for its publication, subject to MINVU source terms; commercial redistribution is not established. Official SII document calls its maps referential and not evidence of parcel boundaries; it describes a WMS/image service rather than public vectors.",
+  "evidence": [
+    "https://www.arcgis.com/home/item.html?id=2f5e2e44cc80410c9e48817d797c4e4f",
+    "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0?f=pjson",
+    "https://www.sii.cl/normativa_legislacion/resoluciones/2024/reso23.pdf"
+  ],
+  "blockers": [
+    "Third-party OCUC republication; MINVU source terms unresolved.",
+    "No native cadastral ID/rol, only system FID.",
+    "Noncommercial published license plus attribute anomalies."
+  ]
+}

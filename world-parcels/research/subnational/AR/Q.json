@@ -1,0 +1,90 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "Q",
+ "regionName": "Neuquén",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": {
+  "sourceId": "ar-nqn-dpc-ide-catastro",
+  "name": "IDE/Catastro MapServer layer 4 Parcelas",
+  "operator": "Dirección Provincial de Catastro e Información Territorial (DPCeIT), Provincia del Neuquén",
+  "scope": "Provincial layer; layer extent spans the province (-71.84..-67.97 lon, -41.09..-36.09 lat); parcels returned in two distant cities",
+  "endpoint": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4",
+  "method": "ArcGIS MapServer query, f=json, no key",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 (outSR requested)",
+  "reuseStatus": "No terms text read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ar-nqn-dpc-ide-catastro",
+  "requestUrl": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4/query?where=1%3D1&geometry=-68.0620,-38.9520,-68.0600,-38.9505&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,PAR_ID,PAR_NOMENCLATURA&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -68.062,
+   -38.952,
+   -68.06,
+   -38.9505
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PAR_NOMENCLATURA / PAR_ID / OBJECTID",
+  "responseFile": "research/subnational/AR/Q-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (exceededTransferLimit true)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service is the DPC's IDE catastro service with layer extent covering the province; two cities ~250 km apart (Neuquén capital, San Martín de los Andes) both returned parcels. Completeness not measured.",
+ "subregionsVerified": [
+  "Neuquén capital",
+  "San Martín de los Andes"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://catastro.neuquen.gov.ar/portal/apps/webappviewer/index.html",
+   "observation": "Official WAB viewer on same ArcGIS Enterprise"
+  },
+  {
+   "url": "https://catastro.neuquen.gov.ar/server/rest/services?f=json",
+   "observation": "lists IDE/Catastro MapServer and Hosted/Catastro_IDE, IDE_Datos_Catastrales FeatureServers"
+  },
+  {
+   "url": "https://geonode.dpc.neuquen.gov.ar/",
+   "observation": "GeoNode, 4 datasets, no parcels seen"
+  },
+  {
+   "url": "http://geodesia.neuquen.gov.ar:8080/geoserver/ows",
+   "observation": "legacy WMS/WFS host, GetCapabilities timed out"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catastro.neuquen.gov.ar/server/rest/services/IDE/Catastro/MapServer/4?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer metadata"
+  },
+  {
+   "url": "query near Neuquén capital (see verifiedParcelResponse)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "same query bbox -71.3600,-40.1620,-71.3580,-40.1605",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons, San Martín de los Andes"
+  }
+ ],
+ "reuseStatus": "Not stated in the service metadata (copyrightText empty)",
+ "remainingUncertainty": "Attribute table has tax/valuation fields (not requested). Completeness of coverage not measured. Only ID and geometry fields requested; no owner names, addresses or tokens saved.",
+ "nextStep": "Read terms on the Catastro portal; paginate a third department; check Hosted/Catastro_IDE FeatureServer for downloads."
+}

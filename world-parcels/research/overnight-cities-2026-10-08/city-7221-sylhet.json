@@ -1,0 +1,93 @@
+{
+  "name": "Sylhet",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "rank": 409,
+  "point": [
+    24.894989393421,
+    91.8714155501162
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sylhet official cadastral map land records Bangladesh ePorcha mouza map GIS land registry",
+        "scope": "Find official city land registry/cadastral sources and inspect anonymous map or parcel geometry routes.",
+        "result": "The official DLRS Map Search is active and has anonymous administrative selectors, but the current Sylhet district survey entry is RS (digital survey, marked ongoing), and its GetThanaListBySurveyMap selector returned an empty list. The inspected selector chain supplies no map-backed upazila/mouza for a city-point geometry query; city-point coverage remains unestablished. The separate national map.land.gov.bd route is land-use zoning rather than a verified cadastral-title layer; its documented GeoServer host returned HTTP 503 over HTTPS. No parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://sylhet.gov.bd/pages/static-pages/696cb437c4774958d7ba3e26",
+          "https://map.land.gov.bd/"
+        ],
+        "executionMethod": "Separate English/local-language search followed by first-party official page review and bounded anonymous service-route inspection where available."
+      },
+      {
+        "language": "Bengali",
+        "query": "সিলেট মৌজা ম্যাপ অনলাইন ভূমি রেকর্ড ম্যাপ সেবা সরকারি ভূমি রেকর্ড ও জরিপ অধিদপ্তর",
+        "scope": "Find official city land registry/cadastral sources and inspect anonymous map or parcel geometry routes.",
+        "result": "The official DLRS Map Search is active and has anonymous administrative selectors, but the current Sylhet district survey entry is RS (digital survey, marked ongoing), and its GetThanaListBySurveyMap selector returned an empty list. The inspected selector chain supplies no map-backed upazila/mouza for a city-point geometry query; city-point coverage remains unestablished. The separate national map.land.gov.bd route is land-use zoning rather than a verified cadastral-title layer; its documented GeoServer host returned HTTP 503 over HTTPS. No parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://sylhet.gov.bd/pages/static-pages/696cb437c4774958d7ba3e26",
+          "https://map.land.gov.bd/"
+        ],
+        "executionMethod": "Separate English/local-language search followed by first-party official page review and bounded anonymous service-route inspection where available."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "BD-7221-PUBLIC-CADASTRE",
+    "name": "DLRS Online Land Records and Survey Management — Map Search",
+    "url": "https://settlement.gov.bd/Map/MapSearch",
+    "operator": "Government of Bangladesh, Ministry of Land, Department of Land Records and Surveys",
+    "serviceType": "Anonymous administrative/map selectors; map sheets and dag lookup where a survey/mouza is available; separate land-zoning map is thematic",
+    "layer": "No anonymous full-vector parcel layer verified",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "Administrative division/district/survey/upazila/mouza/sheet/dag codes",
+    "nativeIdEvidence": "Official selectors confirm Sylhet Division / Sylhet District, but the only listed RS survey is marked ongoing and the public map-backed upazila selector returned no entries; city-point map coverage is not established."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official selectors confirm Sylhet Division / Sylhet District, but the only listed RS survey is marked ongoing and the public map-backed upazila selector returned no entries; city-point map coverage is not established.",
+    "verifiedOpenScope": "Official selectors confirm Sylhet Division / Sylhet District, but the only listed RS survey is marked ongoing and the public map-backed upazila selector returned no entries; city-point map coverage is not established.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The official DLRS Map Search is active and has anonymous administrative selectors, but the current Sylhet district survey entry is RS (digital survey, marked ongoing), and its GetThanaListBySurveyMap selector returned an empty list. The inspected selector chain supplies no map-backed upazila/mouza for a city-point geometry query; city-point coverage remains unestablished. The separate national map.land.gov.bd route is land-use zoning rather than a verified cadastral-title layer; its documented GeoServer host returned HTTP 503 over HTTPS. No parcel geometry was retained.",
+  "remainingUncertainty": "Whether the official survey/map service will publish public, map-backed cadastral geometry for the exact settlement point; this review makes no citywide completeness claim.",
+  "nextStep": "Recheck only if an official public point-to-parcel or map-backed vector service becomes available for the city point.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7221,
+  "cityId": "wup2025:7221",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    24.894989393421,
+    91.8714155501162
+  ],
+  "population2025k": 1242.548,
+  "populationUnit": "persons",
+  "queueRank": 409,
+  "population2025": 1242548,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Sylhet’s official citizen charter lists land-record and mouza-map services at the district e-service centre and record room in the District Commissioner office, Sylhet. The official Sylhet Sadar land office also describes local mutation/land administration services. This confirms city-located records services, but no map-backed city polygon was returned.",
+  "registryEvidenceUrls": [
+    "https://sylhet.gov.bd/pages/static-pages/696cb437c4774958d7ba3e26"
+  ],
+  "rootSupplementalResearch": [
+    {
+      "checkedAt": "2026-10-08T23:47:22.432877+00:00",
+      "url": "https://sylhet.gov.bd/pages/static-pages/696cb437c4774958d7ba3e26",
+      "observation": "Sylhet’s official citizen charter lists land-record and mouza-map services at the district e-service centre and record room in the District Commissioner office, Sylhet. The official Sylhet Sadar land office also describes local mutation/land administration services. This confirms city-located records services, but no map-backed city polygon was returned."
+    }
+  ],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

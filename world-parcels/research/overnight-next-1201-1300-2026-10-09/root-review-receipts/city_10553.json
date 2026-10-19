@@ -1,0 +1,11 @@
+{
+  "taskId": "city:10553",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10553-padrauna.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/padrauna-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:19:10Z",
+  "reason": "Official Padrauna tehsil custody is supported, but no full city parcel polygon or independently qualified native-ID adapter; unavailable urban probes cannot establish absence."
+}

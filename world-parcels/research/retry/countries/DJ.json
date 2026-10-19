@@ -1,0 +1,67 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-DJ,fr;q=0.9,ar;q=0.8,en;q=0.7",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.dji.gov.dj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://www.presidence.dj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://www.presidence.gouv.dj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://www.ministere-habitat.dj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://www.anpi.dj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://www.gouv.dj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://data.gouv.dj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Every .dj host fails at proxy CONNECT with 502, consistent with egress policy or upstream outage; no HTTP response ever obtained.",
+ "notes": "Nothing new; no Djibouti host reachable, no cadastre authority identified.",
+ "nextStep": "Retry from another network; search Ministere de l'Urbanisme/Habitat and ANPI for a land registry or geoportal.",
+ "kind": "country",
+ "key": "DJ",
+ "checkedAt": "2026-09-30"
+}

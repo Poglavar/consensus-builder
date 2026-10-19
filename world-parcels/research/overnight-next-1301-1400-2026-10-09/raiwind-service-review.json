@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8280-raiwind.json",
+  "cohort": "overnight-next-1301-1400-2026-10-09",
+  "purpose": "Independent service review for Raiwind's official Pakistani/Punjab cadastral and parcel-oriented map sources.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "The official PULSE viewer exposes a Lahore cadastral ArcGIS layer. Metadata and a bounded anonymous geometry request verified three safe parcel polygons with native OBJECTIDs; the exact immutable WUP point returned zero features. Runtime readiness remains held because the request was bounded and the viewer's Lahore scope does not prove Raiwind/citywide completeness.",
+  "registryAssessment": "PULSE is an official Punjab urban-land map system and PLRA is the official Punjab land-record authority. The observed geometry source is a Lahore cadastral map layer; no separate Raiwind municipal registry custodian or Raiwind-specific public endpoint was evidenced.",
+  "coverageAssessment": {"claimedScope": "Lahore sublayer within Punjab cadastral maps exposed by PULSE.", "verifiedOpenScope": "Anonymous viewer shell/configuration, ArcGIS layer metadata, exact-point query, and bounded envelope query; three safe polygons retained.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "officialPrimarySources": [
+    {"url":"https://lis.pulse.gop.pk/","operator":"Punjab Urban Land Systems Enhancement, Government of Punjab","scope":"Official public map viewer; current JavaScript identifies the cadastral service and warns map property lines are indicative."},
+    {"url":"https://www.punjab-zameen.gov.pk/","operator":"Punjab Land Records Authority, Government of Punjab","scope":"Official Punjab land-record authority and service custodian context."},
+    {"url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer","operator":"Punjab government GIS service","scope":"Official ArcGIS service containing the Lahore cadastral sublayer."}
+  ],
+  "searchQueries": [
+    {"language":"English","query":"Raiwind Pakistan official cadastral parcel map land records Punjab GIS","result":"Found official PULSE, PLRA, and Lahore cadastral MapServer resources.","actualResultUrls":["https://lis.pulse.gop.pk/","https://www.punjab-zameen.gov.pk/","https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer"]},
+    {"language":"Urdu","query":"رائے ونڈ پاکستان سرکاری اراضی ریکارڈ نقشہ پلاٹ","result":"Found official Punjab land-record and PULSE resources; no separate Raiwind-specific public cadastral endpoint.","actualResultUrls":["https://lis.pulse.gop.pk/","https://onlinefard.punjab-zameen.gov.pk/","https://www.punjab-zameen.gov.pk/"]}
+  ],
+  "attempts": [
+    "Ran separate English and Urdu first-party discovery searches.",
+    "Fetched the official PULSE viewer HTML and followed its current JavaScript configuration to the Lahore cadastral ArcGIS MapServer.",
+    "Fetched the viewer's public GIS token bootstrap endpoint anonymously; used the short-lived public viewer token transiently and retained no token value.",
+    "Fetched service and Lahore sublayer metadata; verified polygon geometry, EPSG:102100/latestWkid 3857, and OBJECTID/native schema.",
+    "Queried the exact immutable WUP point without shifting it; HTTP 200 returned an empty FeatureCollection, which was not treated as absence evidence.",
+    "Queried a bounded 0.02-degree envelope around the WUP point with safe outFields and WGS84 GeoJSON output; HTTP 200 returned three polygons and exceededTransferLimit.",
+    "Retained only three full polygon geometries with canonical properties.id equal to source OBJECTID; did not retain Khasra_ID or other source attributes.",
+    "Did not log in, use credentials/private tokens, defeat CAPTCHA/Cloudflare, or request owner, address, contact, titleholder, tax, or personal data."
+  ],
+  "geometryEvidence": {"verified": true, "sampleCount": 3, "sampleFile":"raiwind-parcel-samples.geojson", "nativeIds":["4188368","4188369","4188370"], "nativeIdField":"OBJECTID", "exactWupPointTest":"Returned zero features; no absence inference made.", "requestEvidence":[{"url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/17","method":"GET; anonymous with public viewer token","httpStatus":200,"assessment":"Lahore polygon layer metadata and native OBJECTID verified."},{"url":"https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/17/query","method":"GET; anonymous bounded envelope","httpStatus":200,"assessment":"Three safe-identity polygons returned as GeoJSON with requested WGS84 coordinates; bounded response exceeded transfer limit."}]},
+  "safeFieldAllowlist": ["safe native OBJECTID", "geometry", "CRS/layer metadata", "request status/content type"],
+  "nextStep": "Serial reviewer should independently re-run the public viewer/service and qualify Lahore/Raiwind coverage, CRS handling, OBJECTID stability, and adapter boundaries; keep runtime held.",
+  "remainingUncertainty": "The exact point query was empty, the envelope query was bounded, and no citywide completeness or Raiwind-specific registry scope was established. PULSE's disclaimer also limits legal-boundary interpretation.",
+  "runtimeReadiness": "held_pending_serial_review"
+}

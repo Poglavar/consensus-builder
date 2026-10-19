@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-amravati-official-land-records",
+  "purpose": "Service review for WUP2025 rank 689 Amravati (city code 9509); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Official Maharashtra Land Records contact directory lists Amravati’s special deputy superintendent for village/city/town survey.",
+  "sourceUrl": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+  "registryFound": true,
+  "registryBasis": "The official Maharashtra Land Records Department lists an Amravati city-survey office; the Amravati district government points residents to Mahabhumi for land records and Mahabhunakasha maps. This confirms a city-local land-record function. The public viewer exposes plot-search and property-card controls, and no safe geometry-only schema was verified.",
+  "officialSources": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+      "observation": "Official Maharashtra Land Records contact directory lists Amravati’s special deputy superintendent for village/city/town survey."
+    },
+    {
+      "url": "https://amravati.gov.in/en/service/land-records/",
+      "observation": "Official Amravati district service page links to Mahabhumi for digitally signed records, property cards and Mahabhunakasha maps with land records."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Official viewer is indexed with “Search Plot No”, “Plot Info” and “Property Card Information”. Direct HTTPS fetch timed out and the web retrieval reported a redirect loop; no plot input or map data was requested."
+    },
+    {
+      "url": "https://amravaticorporation.in/en/map/",
+      "observation": "Municipal corporation map page contains a static image map, not a cadastral parcel service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Amravati Maharashtra official city survey land records BhuNaksha parcel map public GIS",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "Official Amravati district government links to Maharashtra land records and Mahabhunakasha; the state land-records directory lists a city-survey officer in Amravati. The BhuNaksha public viewer is indexed with parcel-number and property-card controls; no parcel was selected or queried.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+        "https://amravati.gov.in/en/service/land-records/",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "https://amravaticorporation.in/en/map/"
+      ],
+      "executionMethod": "Search in the stated language followed by official-page/metadata review."
+    },
+    {
+      "language": "Marathi",
+      "query": "अमरावती नगर भूमापन अधिकारी भू नकाशा जमिनीचे नकाशे भूमी अभिलेख अधिकृत",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "अमरावती जिल्हा शासनाची सेवा-पृष्ठे महाभूमी व महाभूनकाशा नकाशांकडे निर्देश करतात; महाराष्ट्र भूमी अभिलेख विभागाच्या संपर्क पृष्ठावर अमरावतीतील नगर भूमापन अधिकारी आहे. सार्वजनिक दर्शकात भूखंड क्रमांक व मिळकत-पत्रिका नियंत्रणे दिसतात; कोणताही भूखंड निवडलेला नाही.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+        "https://amravati.gov.in/en/service/land-records/",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "https://amravaticorporation.in/en/map/"
+      ],
+      "executionMethod": "Search in the stated language followed by official-page/metadata review."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "viewer_landing_unavailable_schema_not_verified",
+    "reason": "The official BhuNaksha viewer offers plot-number search and a property-card information control. Direct anonymous fetch timed out (HTTP status 000), and no geometry-only layer/schema was verified; no parcel selection or property-card request was made.",
+    "publicHtmlFetched": false,
+    "publicHtmlRoutesInspected": [],
+    "advertisedMapLinkFound": true,
+    "samplePath": null
+  },
+  "requestEvidence": [
+    {
+      "method": "official public-page/source review",
+      "observation": "No undocumented feature query or personal/property-specific route was used; no HTTP status or feature response is asserted unless separately recorded below."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "method": "anonymous public static-viewer GET",
+      "status": null,
+      "observation": "The web search index displays a plot-number input, Plot Info and a Property Card Information control. The web page reader reported a redirect loop; an independent bounded curl GET timed out after 20 seconds (HTTP status 000, zero bytes). No plot selection, property card, or data query was made."
+    }
+  ],
+  "technicalBlocker": "The official BhuNaksha viewer offers plot-number search and a property-card information control. Direct anonymous fetch timed out (HTTP status 000), and no geometry-only layer/schema was verified; no parcel selection or property-card request was made.",
+  "sampleDisposition": "No safe anonymous full polygon route verified; zero polygons retained.",
+  "remainingUncertainty": "A safe geometry-only route could exist within the BhuNaksha viewer, but its service schema and output allowlist could not be verified from the accessible static page."
+}

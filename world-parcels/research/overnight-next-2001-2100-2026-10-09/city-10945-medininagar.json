@@ -1,0 +1,140 @@
+{
+  "cityCode": 10945,
+  "queueRank": 2082,
+  "name": "Medininagar",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [24.0382114881835, 84.0652108290786],
+  "population2025": 278795,
+  "population2025k": 278.795,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["medininagar"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Medininagar Jharkhand official land records cadastral map parcel Bhu Naksha",
+        "result": "First-party discovery found the official Palamu district land-records page. It identifies Medininagar as the district headquarters, identifies the Additional Collector Office, Palamu as the local administrative contact, and links the official Jharkhand Jharbhoomi land-record portal. First-party Jharkhand GIS pages also identify Palamu as a district GIS portal, but the bounded routes did not expose a parcel schema or anonymous parcel geometry.",
+        "actualResultUrls": [
+          "https://palamu.nic.in/service/land-records/",
+          "https://www.jharkhand.gov.in/revenue",
+          "https://jharbhoomi.jharkhand.gov.in/",
+          "https://gis.jharkhand.gov.in/district_portal.html",
+          "https://gis1.jharkhand.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "मेदिनीनगर झारखंड आधिकारिक भू नक्शा भूमि अभिलेख खसरा",
+        "result": "Native-language discovery located the official Hindi Palamu district portal and the Jharkhand government revenue/land-reforms service references. The official district land-record page is available in English and points to Jharbhoomi; no anonymous safe parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://palamu.nic.in/hi/",
+          "https://palamu.nic.in/service/land-records/",
+          "https://www.jharkhand.gov.in/revenue",
+          "https://jharbhoomi.jharkhand.gov.in/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Additional Collector Office, Palamu, Jharkhand / Department of Revenue, Registration & Land Reforms, Government of Jharkhand; Jharbhoomi state land-record service.",
+    "basis": "The official Palamu district land-records page names the Additional Collector Office, Palamu in Medininagar and states that Jharkhand Revenue and Land Reforms developed the Jharbhoomi MIS portal with NIC for online Khesra and Khata details. This evidences a local district land-record custodian and state service route, but not public parcel geometry access.",
+    "urls": [
+      "https://palamu.nic.in/service/land-records/",
+      "https://www.jharkhand.gov.in/revenue",
+      "https://jharbhoomi.jharkhand.gov.in/"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://palamu.nic.in/service/land-records/",
+      "observation": "HTTP 200 from the official Palamu district government site. The page links Jharbhoomi for Jharkhand land records, describes Khesra/Khata access, and lists the Additional Collector Office, Palamu, Medininagar.",
+      "scope": "Palamu district land-record service landing page; local custodian evidence, not parcel geometry proof."
+    },
+    {
+      "url": "https://www.jharkhand.gov.in/revenue",
+      "observation": "Official Jharkhand Revenue, Registration & Land Reforms page states that revenue and registry records are digitized and links Jharbhoomi as the land-record service.",
+      "scope": "State land-record administration context; general agency prose kept separate from local district evidence."
+    },
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/",
+      "observation": "Official state land-record portal linked by both the district and state pages; bounded ordinary TLS access timed out from this environment.",
+      "scope": "State Jharbhoomi portal; current viewer/API schema and anonymous parcel response unverified."
+    },
+    {
+      "url": "https://gis.jharkhand.gov.in/district_portal.html",
+      "observation": "Official Jharkhand Space Applications Center district GIS gateway lists Palamu and describes district map/layer access, but does not establish cadastral parcel coverage.",
+      "scope": "General district GIS discovery route; not treated as a cadastral source."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://palamu.nic.in/service/land-records/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Read successfully over ordinary TLS. Page exposed official local custodian text and the Jharbhoomi link, but no parcel API, schema, CRS, or geometry."
+    },
+    {
+      "url": "https://palamu.nic.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Read successfully; official district homepage identifies Medininagar/Daltonganj as the Palamu headquarters and exposes a Land Record service category."
+    },
+    {
+      "url": "https://palamu.nic.in/hi/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Native-language route was identified during discovery; no separate parcel endpoint was exposed in the bounded inspection."
+    },
+    {
+      "url": "https://www.jharkhand.gov.in/revenue",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Read successfully; official state page links Jharbhoomi and describes digitized revenue/registry records, without exposing parcel geometry."
+    },
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/",
+      "method": "HEAD/GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Timed out after bounded ordinary TLS requests (about 12-20 seconds). No login, CAPTCHA, certificate bypass, credentials, or retry loop was attempted; no JavaScript/configuration, schema, CRS, native ID, or geometry was obtained."
+    },
+    {
+      "url": "https://gis.jharkhand.gov.in/district_portal.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official JSAC district GIS gateway read successfully and listed Palamu; no parcel-specific schema or geometry route was exposed."
+    },
+    {
+      "url": "https://gis1.jharkhand.gov.in/",
+      "method": "HEAD/GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Bounded ordinary TLS request timed out; no geometry or configuration was obtained."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Palamu district official land-record route / Jharkhand Jharbhoomi",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Palamu district land-record administration and the state Jharbhoomi digitized land-record service, with a separate general Palamu district GIS gateway.",
+    "verifiedOpenScope": "Local district land-record custodian and linked state portal were verified as official references only; no bounded anonymous parcel ID-plus-geometry response was obtained.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly returned", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "resultCategory": "local_cadastral_service_referenced_but_geometry_unavailable",
+  "remainingUncertainty": "Jharbhoomi or a linked Jharkhand cadastral map may expose parcel geometry after the current portal becomes reachable and any public location selection is completed. Native parcel identity, source field mapping, CRS, API contract, and Medininagar coverage remain unverified. The exact WUP point was preserved and was not shifted; no exact-point miss or timeout was used to infer citywide absence.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-10945-medininagar.json"
+}

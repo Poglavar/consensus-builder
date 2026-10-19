@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5243-my-tho.json",
+  "purpose": "Document first-party local cadastral/registry evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official indexed map description reports a public cadastral parcel layer credited to the provincial Land Registration Office and includes map-sheet search. Direct viewer inspection timed out; no feature response or complete polygon sample was obtained.",
+  "registryAssessment": "The official Mỹ Tho GIS viewer credits its parcel dataset to Văn phòng Đăng ký đất đai tỉnh Tiền Giang and states an update date of October 2024. This names the local provincial land-registration custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+      "observation": "Official Mỹ Tho Urban Information Management System map description says parcel data is supplied by the Tiền Giang Land Registration Office and updated through October 2024; the viewer interface includes map-sheet search. Direct inspection timed out."
+    },
+    {
+      "url": "https://tiengiang.gov.vn/van-ban/-/vanbanconfig/TXBVj3DpVeEO/Detail_Document_Config/31215685",
+      "observation": "Tiền Giang provincial government record identifies the city and provincial context for land administration. It is supplementary; parcel-layer attribution comes from the official GIS page."
+    },
+    {
+      "url": "https://giskhdt.tiengiang.gov.vn/bando",
+      "observation": "Tiền Giang Department of Planning and Investment public project map; thematic project map, not parcel cadastre."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Vietnamese",
+      "query": "Mỹ Tho bản đồ địa chính thửa đất tra cứu quy hoạch GIS chính thức Tiền Giang",
+      "result": "Official Mỹ Tho urban-information GIS map is indexed with parcel data credited to Tiền Giang Land Registration Office, updated October 2024; UI includes map-sheet search.",
+      "method": "Separate Vietnamese-language search and review of official portal description and provincial government pages.",
+      "scope": "Find current official city parcel map and named local land-registration custodian."
+    },
+    {
+      "language": "English",
+      "query": "My Tho Vietnam official cadastral parcel map GIS land registration office public map",
+      "result": "Search-indexed official portal confirms a parcel data layer from the provincial Land Registration Office, current through October 2024. The viewer request timed out; no geometry response was verified.",
+      "method": "Separate English-language search and read-only viewer request; timeout recorded as access failure, not provider absence.",
+      "scope": "Cross-check public layer and geometry endpoint availability."
+    }
+  ],
+  "geometryDecision": "No complete full polygon with a safely validated native parcel identifier was retained. The public viewer advertises/displays parcel geometry, but an exact WUP-point sample was not verified.",
+  "coverageAssessment": {
+    "claimedScope": "Mỹ Tho public urban-planning map includes parcel data from Tiền Giang provincial Land Registration Office; the data is stated to be current to October 2024.",
+    "verifiedOpenScope": "Official search-indexed viewer advertises the parcel layer and map-sheet search. Direct site request timed out, so no exact coverage or geometry schema was verified; timeout is an access failure, not evidence that the source is absent.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+      "method": "GET via official web inspection and read-only shell",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Web page fetch timed out and shell request timed out. The search-indexed official description remains available; this is an access failure, not evidence of service absence."
+    }
+  ],
+  "remainingUncertainty": "Whether the active viewer exposes a full anonymous polygon response versus rendered map only; current ward/administrative boundary changed after 2025 merger and WUP centroid coverage must be checked in the viewer."
+}

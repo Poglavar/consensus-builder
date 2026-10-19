@@ -1,0 +1,128 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 6937,
+  "queueRank": 2861,
+  "name": "Uromi",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [6.71036164905381, 6.33340197120655],
+  "population2025": 208157,
+  "population2025k": 208.157,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Uromi Nigeria official cadastral parcel map land registry GIS Edo State",
+        "result": "First-party discovery identified Edo State Geographic Information Service (EdoGIS), Edo State land-administration process pages, and a state-government report describing EdoGIS land-registration digitization and a planned Uromi zonal office. No public anonymous parcel-vector endpoint or safe parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.edogis.org/",
+          "https://edostate.gov.ng/ease-of-doing-business-processes-in-edo-state/",
+          "https://edostate.gov.ng/how-edo-raised-n3bn-in-less-than-three-years-through-ease-in-registration-enhanced-land-mgt-edogis/",
+          "https://osgof.gov.ng/"
+        ]
+      },
+      {
+        "language": "Esan/Edo local-language discovery",
+        "query": "Uromi Edo State GIS ile map cadastral",
+        "result": "Local-language-oriented discovery using Esan/Edo land terminology returned Uromi/Esan locality context and no first-party local cadastral viewer, public parcel API, schema, CRS, or safe native parcel identity. The results were not treated as parcel evidence.",
+        "actualResultUrls": [
+          "https://www.esanland.org/2016/01/uromi.html",
+          "https://www.ueohouston.org/esanheritage",
+          "https://www.edogis.org/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Edo State Government identifies EdoGIS as an agency responsible for land-administration processes, and its official report describes EdoGIS digitized land registration and a planned zonal office in Uromi.",
+    "localCustodianScope": "EdoGIS is a state land-information/registration custodian; the Uromi zonal-office reference is evidence of a local service intention, not proof of a currently reachable Uromi parcel API or citywide vector coverage.",
+    "urls": [
+      "https://edostate.gov.ng/ease-of-doing-business-processes-in-edo-state/",
+      "https://edostate.gov.ng/how-edo-raised-n3bn-in-less-than-three-years-through-ease-in-registration-enhanced-land-mgt-edogis/",
+      "https://www.edogis.org/"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://edostate.gov.ng/ease-of-doing-business-processes-in-edo-state/",
+      "observation": "Edo State Government land-administration page lists EdoGIS among responsible agencies and links EdoGIS land-registration/process documents."
+    },
+    {
+      "url": "https://edostate.gov.ng/how-edo-raised-n3bn-in-less-than-three-years-through-ease-in-registration-enhanced-land-mgt-edogis/",
+      "observation": "Edo State Government report describes EdoGIS digitization of land registration and a planned zonal office in Uromi."
+    },
+    {
+      "url": "https://www.edogis.org/",
+      "observation": "Official EdoGIS agency site was identified by discovery, but direct TLS retrieval failed in this workspace."
+    },
+    {
+      "url": "https://osgof.gov.ng/",
+      "observation": "Office of the Surveyor-General of the Federation provides national cadastral-survey/map request context; it does not establish Uromi-local open parcel coverage."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Edo State Geographic Information Service (EdoGIS)",
+    "viewerUrl": "https://www.edogis.org/",
+    "serviceBase": null,
+    "administrativeSelection": null,
+    "nativeFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "geometryType": null
+  },
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.edogis.org/",
+      "outcome": "TLS handshake failed with OpenSSL error 'tlsv1 alert internal error'; no HTML, JavaScript/configuration, service URL, schema, CRS, parcel ID, or geometry was observed. No TLS exception was used."
+    },
+    {
+      "method": "GET",
+      "url": "https://edostate.gov.ng/ease-of-doing-business-processes-in-edo-state/",
+      "outcome": "200 via first-party web retrieval; land-administration page and EdoGIS responsibility links were observed. No parcel vector response was requested or exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://edostate.gov.ng/how-edo-raised-n3bn-in-less-than-three-years-through-ease-in-registration-enhanced-land-mgt-edogis/",
+      "outcome": "200 via first-party web retrieval; report text describing EdoGIS digitized land registration and planned Uromi zonal office was observed. No parcel geometry or unsafe property fields were requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://osgof.gov.ng/",
+      "outcome": "First-party national survey/cadastral service lead identified through discovery; no Uromi-specific anonymous parcel response was obtained."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "resultCategory": "local_registry_custodian_evidenced_but_parcel_api_unavailable",
+  "coverageAssessment": {
+    "claimedScope": "EdoGIS state land-information and registration services, with a reported planned Uromi zonal office.",
+    "verifiedOpenScope": "No anonymous bounded ID-plus-geometry response, source schema, CRS, or Uromi/citywide parcel coverage was verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "EdoGIS may expose parcel maps or records through a currently unreachable or non-indexed workflow. The TLS failure and absence of an observed public API are unavailable evidence, not proof that Uromi lacks cadastral records. The exact WUP point was preserved and was not used as an absence test. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe owner/address/contact/titleholder/personal/tax/account fields, or TLS-disabling exception was used. This packet is research evidence only and is not source integration or admission."
+}

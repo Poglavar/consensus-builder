@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "featureCount": 3,
+  "metricCrs": "EPSG:6671",
+  "geometryUnmodified": true,
+  "validCount": 3,
+  "duplicatePairs": [],
+  "positiveOverlapPairs": [],
+  "areaM2": [
+    13087.164053735278,
+    643.7671078215278,
+    29.33244516830064
+  ],
+  "scope": "Independent GEOS check of three retained georeferenced source examples; no exact WUP point match or citywide completeness claim."
+}

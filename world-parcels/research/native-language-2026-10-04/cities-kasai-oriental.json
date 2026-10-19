@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 130,
+  "city": "Kasaï-Oriental",
+  "countryCode": "CD",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kasai-oriental.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Kasaï Oriental cadastre parcelles données géographiques SIG RDC données ouvertes"
+  },
+  "results": [],
+  "assessment": "French-language screening did not identify a verifiable public parcel vector service for Kasaï-Oriental. This is bounded non-verification, not a claim that no data exists.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

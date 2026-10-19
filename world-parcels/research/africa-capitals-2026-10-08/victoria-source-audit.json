@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Official Seychelles parcel-layer discovery and version-scope audit; runtime remains held for unresolved geometry overlap.",
+  "checkedAt": "2026-10-08",
+  "discoveryChain": [
+    "https://www.webgis.gov.sc/introduction.phtml",
+    "https://www.gis.gov.sc/portal/apps/experiencebuilder/experience/?id=48aa75ec829048fd942cef4f1cdb2008",
+    "https://www.gis.gov.sc/portal/sharing/rest/content/items/48aa75ec829048fd942cef4f1cdb2008/data?f=json",
+    "https://www.gis.gov.sc/portal/sharing/rest/content/items/766c789add0347628f2aa24a93030eab/data?f=json",
+    "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0?f=pjson"
+  ],
+  "discoveryNotes": "Public application data points to webmap 766c789add0347628f2aa24a93030eab; its cadastral group links survey_sv_parcel with no definitionExpression excluding historical records.",
+  "layer": {
+    "name": "survey.sv_parcel",
+    "objectIdField": "objectid",
+    "geometryType": "esriGeometryPolygon",
+    "extent": {
+      "ymin": 9224579.988,
+      "xmin": 304588.54000000004,
+      "ymax": 9580014.028,
+      "xmax": 796839.0130000003,
+      "spatialReference": {
+        "falseM": -100000,
+        "xyTolerance": 0.001,
+        "mUnits": 10000,
+        "zUnits": 10000,
+        "latestWkid": 32740,
+        "zTolerance": 0.001,
+        "wkid": 32740,
+        "xyUnits": 10000,
+        "mTolerance": 0.001,
+        "falseX": -5120900,
+        "falseY": 1900,
+        "falseZ": -100000
+      }
+    },
+    "maxRecordCount": 2000
+  },
+  "safeFieldSchema": [
+    {
+      "name": "objectid",
+      "type": "esriFieldTypeOID",
+      "alias": "OBJECTID",
+      "domain": null
+    },
+    {
+      "name": "fid",
+      "type": "esriFieldTypeInteger",
+      "alias": "fid",
+      "domain": null
+    },
+    {
+      "name": "id",
+      "type": "esriFieldTypeString",
+      "alias": "id",
+      "domain": null
+    },
+    {
+      "name": "island",
+      "type": "esriFieldTypeInteger",
+      "alias": "island",
+      "domain": null
+    },
+    {
+      "name": "category",
+      "type": "esriFieldTypeInteger",
+      "alias": "category",
+      "domain": null
+    },
+    {
+      "name": "perimeter",
+      "type": "esriFieldTypeDouble",
+      "alias": "perimeter",
+      "domain": null
+    },
+    {
+      "name": "area",
+      "type": "esriFieldTypeDouble",
+      "alias": "area",
+      "domain": null
+    },
+    {
+      "name": "geometry",
+      "type": "esriFieldTypeString",
+      "alias": "geometry",
+      "domain": null
+    },
+    {
+      "name": "validfrom",
+      "type": "esriFieldTypeDate",
+      "alias": "validfrom",
+      "domain": null
+    },
+    {
+      "name": "validtill",
+      "type": "esriFieldTypeDate",
+      "alias": "validtill",
+      "domain": null
+    },
+    {
+      "name": "SHAPE__Length",
+      "type": "esriFieldTypeDouble",
+      "alias": "SHAPE__Length",
+      "domain": null
+    },
+    {
+      "name": "SHAPE__Area",
+      "type": "esriFieldTypeDouble",
+      "alias": "SHAPE__Area",
+      "domain": null
+    },
+    {
+      "name": "globalid",
+      "type": "esriFieldTypeGlobalID",
+      "alias": "globalid",
+      "domain": null
+    }
+  ],
+  "unfilteredBoundedSample": {
+    "count": 268,
+    "openEnded": 245,
+    "ended": 23
+  },
+  "scope": {
+    "filter": "validtill = TIMESTAMP '9999-12-31 23:59:59'",
+    "localValidation": "Returned validtill must be numeric epoch 253402300799000. Ended, omitted and string dates are rejected.",
+    "limitation": "This open-ended subset still includes overlapping older/newer parcel rows. It is not sufficient to establish current valid ground."
+  },
+  "acceptanceFile": "victoria-acceptance.json",
+  "qualityFile": "victoria-shapely-quality.json",
+  "overlapReviewFile": "victoria-overlap-review.json",
+  "reliability": "Three 15-second count timeouts remain in the acceptance history; later research retries completed. Earlier restricted-execution DNS failures do not establish external source unavailability."
+}

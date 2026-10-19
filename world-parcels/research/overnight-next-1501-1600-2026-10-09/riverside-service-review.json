@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3430-riverside.json",
+  "purpose": "Document first-party local cadastral/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Both official ArcGIS REST services were reachable anonymously. Service metadata exposed parcel-layer schema and CRS. A bounded exact-WUP-point query against the City of Riverside Parcel layer and the Riverside County Assessor PARCELS layer returned polygon geometry with safe native object identity; one City polygon is retained.",
+  "registryAssessment": "Local registry/map custody is evidenced by the City of Riverside cadastral public viewer service. Countywide assessor parcel custody is separately evidenced by Riverside County GIS/Assessor OpenData. This is source qualification only, not runtime adapter admission.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer",
+      "operator": "City of Riverside",
+      "observation": "Public Cadastral_Public MapServer describes the City of Riverside public viewer, lists Parcel layer 86, uses Web Mercator, and supports Query/JSON/geoJSON."
+    },
+    {
+      "url": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86",
+      "operator": "City of Riverside",
+      "observation": "Parcel layer metadata exposes native ParcelFabric_Parcels.OBJECTID and APN fields plus polygon geometry; only OBJECTID was requested."
+    },
+    {
+      "url": "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40",
+      "operator": "Riverside County Assessor/GIS",
+      "observation": "Official layer describes taxable parcel polygons within Riverside County, replicated from the Assessor CountyGIS geodatabase; native OBJECTID and APN fields are documented, but only OBJECTID was requested."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Riverside California official parcel GIS map ArcGIS REST parcels Riverside County",
+      "resultUrls": [
+        "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer",
+        "https://gis.rivco.org/",
+        "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40"
+      ],
+      "summary": "Official City of Riverside and Riverside County parcel/GIS service leads found."
+    },
+    {
+      "language": "English/local (United States)",
+      "query": "Riverside California official cadastral parcel map mapa catastral parcelas",
+      "resultUrls": [
+        "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer",
+        "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40"
+      ],
+      "summary": "English is the relevant local language; localized wording returned the same official leads."
+    }
+  ],
+  "fieldMapping": {
+    "cityService": {
+      "nativeIdentity": "ParcelFabric_Parcels.OBJECTID",
+      "geometryField": "ParcelFabric_Parcels.SHAPE",
+      "nativeCrs": "EPSG:3857 (WKID 102100; latest WKID 3857)",
+      "notRequested": ["APN", "OwnerInfo.OBJECTID", "OwnerInfo.parcel", "OwnerInfo.situsLine1", "OwnerInfo.situsLine2", "OwnerInfo.legaldescription"]
+    },
+    "countyService": {
+      "nativeIdentity": "OBJECTID",
+      "geometryField": "SHAPE",
+      "nativeCrs": "EPSG:2230 (WKID 102646; latest WKID 2230)",
+      "notRequested": ["APN", "FLAG", "SHAPE.STArea()", "SHAPE.STLength()"]
+    },
+    "retainedSample": "The retained GeoJSON id 44648 is the City service's native ParcelFabric_Parcels.OBJECTID. No synthetic row number or composite key was used."
+  },
+  "attempts": [
+    {
+      "url": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Service metadata retrieved anonymously; public Cadastral_Public service and Web Mercator CRS confirmed."
+    },
+    {
+      "url": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Parcel layer schema retrieved anonymously; native OBJECTID and polygon geometry confirmed."
+    },
+    {
+      "url": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "parameters": "Point -117.443821994716,33.9351928344791 in EPSG:4326; intersects; geoJSON; geometry true; outFields restricted to ParcelFabric_Parcels.OBJECTID; no resultRecordCount",
+      "result": "One polygon returned with native OBJECTID 44648. A prior bounded request including resultRecordCount=3 returned service error 400 Pagination is not supported; retry without pagination succeeded."
+    },
+    {
+      "url": "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "County Assessor parcel layer metadata retrieved anonymously; taxable parcel polygon scope and CRS confirmed."
+    },
+    {
+      "url": "https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "parameters": "Point -117.443821994716,33.9351928344791 in EPSG:4326; intersects; geoJSON; geometry true; outFields restricted to OBJECTID; resultRecordCount=3",
+      "result": "One polygon returned with native OBJECTID 816856. It was used as corroborating evidence but not retained."
+    }
+  ],
+  "safeFieldAllowlist": ["native parcel object identity", "polygon geometry", "source CRS", "query method and spatial relation"],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "City of Riverside Cadastral_Public/Parcel/86",
+    "sampleCount": 1,
+    "sampleFile": "riverside-exact-point-sample.geojson",
+    "nativeId": "44648",
+    "nativeIdField": "ParcelFabric_Parcels.OBJECTID",
+    "exactWupPointTest": "Exact WUP point intersected one City polygon and one County polygon; this does not establish citywide coverage.",
+    "requestEvidence": ["City and County successful GET query responses are preserved unchanged under tmp/valhalla-parcel-research/riverside/."]
+  },
+  "coverageAssessment": {
+    "claimedScope": "City service is city-scoped; County Assessor service is county-scoped.",
+    "verifiedOpenScope": "Public anonymous metadata and exact-point response verified; broad extent and completeness not tested.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "No citywide sampling, completeness audit, temporal currency audit, or independent parcel-boundary validation was performed. The City service's APN and owner-related schema fields were deliberately excluded. No login, credentials, private tokens, CAPTCHA bypass, or unsafe fields were used."
+}

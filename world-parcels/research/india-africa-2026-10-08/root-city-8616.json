@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:8616",
+  "wupCityCode": 8616,
+  "name": "Pune",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    18.5350448991254,
+    73.8602640542245
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 55,
+  "growthRank": null,
+  "previousStatuses": [
+    "verified_sample_partial_coverage"
+  ],
+  "previousEvidenceFiles": [
+    "research/retry/cities/pune.json"
+  ],
+  "registryCityIds": [
+    "wup2025:8616"
+  ],
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "resultCategory": "previous_sample_temporarily_unavailable",
+  "freshVerifiedSample": false,
+  "registryFound": true,
+  "verifiedSample": false,
+  "historicalVerifiedSample": true,
+  "nativeLanguageSearches": [
+    {
+      "query": "site.mahabhumi.gov.in पुणे भू नकाशा मिळकत नकाशा",
+      "language": "Marathi",
+      "script": "Devanagari",
+      "resultUrls": [
+        "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "https://bhumiabhilekh.maharashtra.gov.in/Services"
+      ]
+    },
+    {
+      "language": "Marathi",
+      "script": "Devanagari",
+      "query": "site.pune.gov.in पुणे मिळकत नकाशा भू नकाशा नगर भूमापन",
+      "resultUrls": [
+        "https://pune.gov.in/service/मिळकत-पत्रिका-बघणे/",
+        "https://bhumiabhilekh.maharashtra.gov.in/Services",
+        "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=14"
+      ],
+      "assessment": "Official Pune district and state land-record sources; public records and city-survey maps exist, no geometry feed established from search."
+    },
+    {
+      "language": "English",
+      "script": "Latin",
+      "query": "site.pmc.gov.in Pune GIS cadastral property map",
+      "resultUrls": [
+        "https://autodcr.pmc.gov.in/SWC.Client/Login.aspx",
+        "https://autodcr.pmc.gov.in/AutoDCR.Dashboard2/PMC/pmcdash.aspx",
+        "https://opendata.pmc.gov.in/pmc-reports"
+      ],
+      "assessment": "Municipal AutoDCR viewer/dashboard and open-data reports are leads; polygon API not yet inspected."
+    }
+  ],
+  "requests": [
+    {
+      "name": "pune-viewer",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:04:54.668095+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/json,application/xhtml+xml,*/*;q=0.8",
+        "Accept-Language": "en-IN,en;q=0.9,hi;q=0.8,mr;q=0.7",
+        "Referer": "https://mahabhunakasha.mahabhumi.gov.in/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35671,
+      "requestLogFile": "research/india-africa-2026-10-08/root-requests.json"
+    },
+    {
+      "name": "pune-root",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:05.836706+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://mahabhumi.gov.in/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35016,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round2-requests.json"
+    },
+    {
+      "name": "pune-georef",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/georef.js",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:06.600621+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35017,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round2-requests.json"
+    },
+    {
+      "name": "pune-plot",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getPlotInfo",
+      "method": "POST",
+      "parameters": {
+        "state": "27",
+        "giscode": "UCM2515000000000000000005",
+        "plotno": "1",
+        "srs": "EPSG:4326"
+      },
+      "checkedAt": "2026-10-07T21:13:54.472681+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35007,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "pune-dashboard",
+      "url": "https://autodcr.pmc.gov.in/AutoDCR.Dashboard2/PMC/pmcdash.aspx",
+      "method": "GET",
+      "parameters": null,
+      "checkedAt": "2026-10-07T21:13:54.524758+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://autodcr.pmc.gov.in/SWC.Client/Login.aspx"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 12126,
+      "bodyCapped": false,
+      "elapsedMs": 1571,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "pune-state-services",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "method": "GET",
+      "parameters": null,
+      "checkedAt": "2026-10-07T21:13:56.097039+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://bhumiabhilekh.maharashtra.gov.in/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 37767,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round3-requests.json"
+    },
+    {
+      "name": "pune-gis-page",
+      "url": "https://autodcr.pmc.gov.in/AutoDCR.DashBoard/PMC/GIS.aspx",
+      "method": "GET",
+      "parameters": null,
+      "checkedAt": "2026-10-07T21:16:49.058564+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://autodcr.pmc.gov.in/AutoDCR.Dashboard2/PMC/pmcdash.aspx"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 1712,
+      "bodyCapped": false,
+      "elapsedMs": 806,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round4-requests.json"
+    },
+    {
+      "name": "pune-linked-map",
+      "url": "http://103.224.247.79:8181/demo/geo_tag_leaflet.html",
+      "method": "GET",
+      "parameters": null,
+      "checkedAt": "2026-10-07T21:20:23.143779+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,mr;q=0.8,hi;q=0.7,af;q=0.6",
+        "Referer": "https://autodcr.pmc.gov.in/AutoDCR.DashBoard/PMC/GIS.aspx"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35043,
+      "requestLogFile": "research/india-africa-2026-10-08/root-round5-requests.json"
+    }
+  ],
+  "source": {
+    "sourceId": "in-mh-bhunaksha",
+    "name": "Maharashtra Bhu-Naksha (Mahabhunakasha)",
+    "operator": "Maharashtra Land Records (Mahabhumi) / NIC",
+    "scope": "Maharashtra village and city survey maps; Pune only Bhamburda sampled",
+    "endpoint": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getPlotInfo",
+    "method": "anonymous POST",
+    "responseFormat": "JSON with WKT",
+    "crs": "projected metres (UTM 43N presumed)",
+    "reuseStatus": "not read"
+  },
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra city survey/village maps. Historical sample at Bhamburda, Pune; no fresh polygon sample this pass.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "viewerInspection": "MahaBhunakasha root, /27/index.html, /27/georef.js and previously successful getPlotInfo POST all timed out. PMC AutoDCR dashboard and its GIS.aspx wrapper loaded (HTTP200), exposing an ordinary HTTP map URL at 103.224.247.79:8181/demo/geo_tag_leaflet.html; that explicit linked viewer also timed out. State Services endpoint timed out. No TLS checks disabled.",
+  "technicalBlocker": "Previously sampled plot endpoint is currently unreachable. Historical WKT source CRS and complete viewport retrieval remain unconfirmed. Municipal linked map also unavailable.",
+  "nextStep": "Retry the documented official public viewer when reachable; establish its declared CRS, target revenue-village identity and complete bounded geometry/native-ID reads. Retain the historical three-plot sample separately from current availability."
+}

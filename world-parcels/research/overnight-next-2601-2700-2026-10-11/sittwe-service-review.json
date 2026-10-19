@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-617-sittwe.json",
+  "cityCode": 617,
+  "queueRank": 2642,
+  "name": "Sittwe",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "summary": "Official Myanmar land-records and mapping authorities were identified, but no public Sittwe cadastral viewer, parcel API, schema/CRS response, or safe anonymous parcel geometry was verified. The packet is complete as a negative/limited discovery result, not evidence of citywide absence and not source integration.",
+  "queryOutcomes": [
+    {"language":"English","query":"Sittwe Myanmar official cadastral map land records GIS parcel","outcome":"Official SLRD, Survey Department, Department of Population mapping, and Rakhine map references found; no indexed public Sittwe parcel geometry service found."},
+    {"language":"Burmese (မြန်မာ)","query":"စစ်တွေ မြေစာရင်း မြေပုံ ကွက်ကွင်း အစိုးရ","outcome":"Official SLRD and government mapping references found; no public Sittwe cadastral parcel service or geometry found."}
+  ],
+  "requestOutcomes": [
+    {"request":"GET https://slrd.gov.mm/en","outcome":"Direct TLS-verified curl returned HTTP 403 with 5259 bytes; indexed official page was readable through web access. No viewer/config/API route was exposed."},
+    {"request":"GET https://www.surveydepartment.gov.mm/","outcome":"Timed out after 20 seconds. TLS verification was not disabled and no certificate exception was used."},
+    {"request":"GET https://dop.gov.mm/en/mapping","outcome":"Timed out after 20 seconds. Search-indexed official result describes census enumeration maps, not cadastral parcels."},
+    {"request":"GET https://tourism.gov.mm/en/maps","outcome":"HTTP 200; official Rakhine regional tourism PDF map links were listed, but this is a general map and not parcel geometry."},
+    {"request":"Official viewer JavaScript/configuration and bounded anonymous ID+geometry response","outcome":"No Sittwe-specific public viewer or endpoint was discovered; no anonymous parcel request was made and no geometry was retained."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [20.1459064670695, 92.8910327974049] preserved; no coordinate shift or exact-point hit/miss inference.",
+    "Search and request failures do not establish citywide cadastral absence.",
+    "National SLRD and Survey Department references are not local Sittwe registry evidence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No GeoJSON sample was retained because no safe native parcel identity and geometry response was verified.",
+    "Packet completion is not source integration/admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "uncertainty": "The official national custodian is evidenced, but Sittwe-local coverage, public access, viewer/API route, schema, CRS, native identity stability, and geometry availability remain unverified. The direct SLRD 403 and network timeouts may reflect access conditions rather than data absence.",
+  "serialReviewRecommendation": "Hold. Independently verify any future Sittwe-local cadastral route, coverage semantics, safe ID field, CRS/axis handling, and runtime admissibility before enabling an adapter."
+}

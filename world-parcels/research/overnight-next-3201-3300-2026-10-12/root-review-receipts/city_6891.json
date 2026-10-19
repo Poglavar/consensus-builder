@@ -1,0 +1,22 @@
+{
+  "taskId": "city:6891",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6891-rio-claro.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/rio-claro-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:31:56Z",
+  "findings": {
+    "identity": "WUP 2025 source SHA-256, City_Code 6891, rank 3207, Brazil, exact 2025 point, and 188359 persons agree across source row, roster, queue, and packet.",
+    "searches": "Packet records executed English and Portuguese queries with outcomes and URLs; original search traces are not retained in this paired evidence.",
+    "custody": "registryFound true is supported by the municipal Planning Secretariat naming Departamento de Cadastro e Geoprocessamento. The public services page offers municipal tax/property services, not a verified parcel-vector feed.",
+    "firstPartyUrls": [
+      "https://rioclaro.sp.gov.br/secretaria/secretaria-de-planejamento/",
+      "https://rioclaro.sp.gov.br/portal-de-servicos/"
+    ],
+    "geometry": "Zero retained polygons; no public ID-plus-full-polygon response, native ID field, schema, CRS, or bounded parcel response. Cloudflare challenge and timeout are access limits, not citywide absence.",
+    "admission": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap and operation checks, source binding, or headed Details-panel check. Held; no runtime/catalog/report admission."
+  }
+}

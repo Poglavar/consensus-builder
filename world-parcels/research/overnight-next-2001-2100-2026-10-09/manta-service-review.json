@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-187-manta.json",
+  "cityCode": 187,
+  "queueRank": 2026,
+  "name": "Manta",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "serviceStatus": "held",
+  "registryFound": true,
+  "registryCustodian": "Gobierno Autónomo Descentralizado Municipal del Cantón Manta, Dirección de Avalúos y Catastro",
+  "queryAndRequestOutcome": "Separate English and Spanish first-party discovery found the municipal GeoManta viewer and predial procedures. Following the viewer JavaScript reached public GeoServer WMS/WFS capabilities. WFS schema and a bounded EPSG:4326 GetFeature request returned three parcel polygons with safe native identifiers lote_id/clavecatastral; the general application list route returned an authentication HTML page.",
+  "scopeLimits": [
+    "The three-feature bbox is a bounded sample, not a citywide parcel extract.",
+    "The municipal report's cadastral-unit counts are contextual and do not prove every unit has public geometry.",
+    "The exact WUP point [-0.969966482756839, -80.7128401246128] was preserved and not shifted; nearby sample geometry was not used as an exact-point hit or absence test.",
+    "WFS public access does not by itself establish production adapter quality, update cadence, or complete coverage."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "sourceSpecificFields": "The source schema exposes lote_id and clavecatastral as native parcel identity candidates plus geom. The retained GeoJSON uses only canonical properties.id derived from lote_id; no raw source attribute set is retained.",
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held_serial_qualification_required",
+  "qualification": "Not qualified for runtime integration or admission; the serial reviewer must independently verify the route, field mapping, CRS handling, and safe identifier choice.",
+  "uncertainty": "The route is public and geometry-verified for the bounded request, but the viewer's application JSON route showed an authentication page without its session, and citywide coverage was not exhaustively tested. No credentials, private tokens, owner/address data, or unsafe fields were requested.",
+  "status": "complete"
+}

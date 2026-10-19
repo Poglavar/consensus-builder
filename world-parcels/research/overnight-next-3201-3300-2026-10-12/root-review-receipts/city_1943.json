@@ -1,0 +1,23 @@
+{
+  "taskId": "city:1943",
+  "decision": "held",
+  "evidenceFiles": [
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-1943-ed-al-fursan.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ed-al-fursan-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:38:04Z",
+  "findings": {
+    "identity": "WUP 2025 SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, City_Code 1943, rank 3212, Sudan, point [11.5062666922159,24.31385821181], and 188089 persons match the source row, immutable roster, queue, and packet; Moderate source plausibility is preserved.",
+    "searches": "English and Arabic queries, outcomes, and actual first-party result URLs are recorded in the packet.",
+    "custody": "registryFound true is grounded at national scope by the Sudan Judiciary Aqari land-registration page; the NIC page confirms a national WMS/WFS portal. A local Ed Al Fursan custodian is not independently established.",
+    "firstPartyUrls": [
+      "https://aqari.nctr.sd/ar",
+      "https://nic.gov.sd/public/projectDetails/3"
+    ],
+    "geometry": "Zero retained polygons, no native parcel ID, schema, CRS, or bounded geometry response. Geoportal DNS and other service failures are unresolved availability, not citywide absence.",
+    "admission": "No original acceptance metrics or independent evidence for fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, or headed Details-panel verification. Held; no runtime/catalog/report admission."
+  }
+}

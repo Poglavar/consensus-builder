@@ -1,0 +1,15 @@
+normalizeParcelId
+normalizeParcelIdList
+getParcelIdFromProperties
+getParcelIdFromFeature
+ensureParcelIdOnFeature
+getParcelDisplayNumberFromProperties
+getParcelDisplayNumberFromFeature
+_startParcelWriteCache
+_flushParcelWriteCache
+_discardParcelWriteCache
+readPersistedParcelRecord
+writePersistedParcelRecord
+clearPersistedParcelRecord
+getParcelAreaById
+findVisibleDescendant

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9767-nizamabad.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Nizamabad's official Telangana cadastral-source discovery and bounded anonymous requests while separating registry evidence from geometry and runtime qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "TGRAC's official Telangana ArcGIS REST layer provides credible cadastral polygon-service and schema evidence, and TGRAC documentation names Nizamabad District parcel-map work. The bounded exact-point feature query timed out or was rejected in format negotiation, so no native feature identity or polygon is retained. Runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by the official TGRAC cadastral layer and Nizamabad-specific Bhu Bharathi project documentation. This is official source evidence, not proof of citywide open geometry coverage or title/ownership data.",
+  "coverageAssessment": {
+    "claimedScope": "Telangana state TGRAC cadastral-boundary service with Nizamabad District project documentation.",
+    "verifiedOpenScope": "Public layer metadata, EPSG:4326 schema, and service extent; no live feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "FID only if returned safely", "geometry only if independently verified"],
+  "searchQueries": [
+    {"language": "English", "query": "Nizamabad Telangana official cadastral parcel map GIS land records city survey map", "actualResultUrls": ["https://tgrac.telangana.gov.in/trac/surveyoflands-project.php", "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0", "https://bhulandrecords.in/", "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/533", "https://nizamabad.telangana.gov.in/"]},
+    {"language": "Telugu", "query": "నిజామాబాద్ తెలంగాణ అధికారిక కాడస్ట్రల్ పార్సెల్ మ్యాప్ భూ రికార్డులు GIS నగర సర్వే", "actualResultUrls": ["https://tgrac.telangana.gov.in/trac/surveyoflands-project.php", "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0", "https://bhulandrecords.in/"]}
+  ],
+  "attempts": [
+    "Performed separate English and Telugu first-party discovery queries and recorded actual result URLs.",
+    "Loaded TGRAC layer 0 metadata anonymously over TLS; verified polygon geometry, EPSG:4326, public Query/Data capability, max record count 1000, and native FID OID field.",
+    "Loaded TGRAC layer 1 metadata only; observed unsafe farmer/owner/contact-style fields and did not query or retain it.",
+    "Reviewed TGRAC project documentation; it explicitly names Nizamabad District Bhu Bharathi work, parcel-map layouts, spatial corrections, and geo-rectified village maps.",
+    "Attempted an anonymous exact-point query at immutable WUP point [18.6760713100723, 78.0987992055297] using safe outFields=FID and returnGeometry=true; request timed out after 30 seconds.",
+    "Attempted the same bounded query using f=geojson; service returned HTTP 400 without geometry.",
+    "Did not shift coordinates, log in, request owner/address/title/tax/contact fields, use credentials, bypass CAPTCHA/Cloudflare, or disable TLS verification.",
+    "No sample GeoJSON was created because no full parcel polygon response or safe native parcel identity was verified."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": "FID (schema observed, feature value not returned)",
+    "nativeCrs": "EPSG:4326 / WGS 84",
+    "exactWupPointTest": "Attempted unchanged; timed out, with no absence inference.",
+    "polygonResponse": "None; exact-point query timed out and GeoJSON negotiation returned HTTP 400."
+  },
+  "nextStep": "Independent serial review should retry the current TGRAC ArcGIS query using safe fields and independently qualify native-ID stability and polygon geometry before any adapter/runtime admission.",
+  "remainingUncertainty": "Current query responsiveness, feature presence at the exact point, citywide urban coverage, stable identity semantics for FID, and whether the layer represents individual parcels versus broader cadastral boundaries remain unverified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

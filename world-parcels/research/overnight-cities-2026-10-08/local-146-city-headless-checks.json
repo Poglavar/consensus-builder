@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:53:06.266446+00:00",
+  "configuredAppCities": 146,
+  "executableProviders": 130,
+  "vitest": {
+    "passed": 288,
+    "failed": 0,
+    "files": [
+      "backend/test/arcgis-composite-parcel-adapter.test.js",
+      "backend/test/arcgis-parcel-adapter.test.js",
+      "backend/test/catastro-wfs-source.test.js",
+      "backend/test/coverage-evidence-consistency.test.js",
+      "backend/test/esri-parcel-reader.test.js",
+      "backend/test/frontend-city-source-integrations.test.js",
+      "backend/test/frontend-world-coverage.test.js",
+      "backend/test/gml-parcel-reader.test.js",
+      "backend/test/parcel-attribute-filter.test.js",
+      "backend/test/parcel-source-city-metric.test.js",
+      "backend/test/parcel-source-concurrency.test.js",
+      "backend/test/world-coverage-build.test.js",
+      "backend/test/world-coverage-geography.test.js"
+    ]
+  },
+  "nodeQueueClassification": {
+    "passed": 5,
+    "failed": 0,
+    "file": "scripts/tests/overnight-city-queue-classification.test.mjs"
+  },
+  "scope": "Fast headless protocol, native geometry parsing, identity, source concurrency, metric CRS and generated coverage checks; manual headed source checks are recorded separately.",
+  "gitDiffCheck": "passed"
+}

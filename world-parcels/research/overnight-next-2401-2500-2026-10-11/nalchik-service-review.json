@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-6388-nalchik.json",
+  "cityCode": 6388,
+  "queueRank": 2496,
+  "name": "Nalchik",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "pointLatLon": [43.4935772664619, 43.6257957772128],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://nspd.gov.ru/map?thematic=PKK","httpStatus":null,"outcome":"Search identified the current national public cadastral map destination; direct map retrieval later timed out."},
+    {"method":"GET","url":"https://nspd.gov.ru/map?thematic=PKK","httpStatus":null,"outcome":"Timed out after 20 seconds; no HTML, JavaScript configuration, schema, CRS, or parcel response was obtained."},
+    {"method":"GET","url":"https://rosreestr.gov.ru/","httpStatus":null,"outcome":"Timed out after 15 seconds; no national viewer/API response obtained."},
+    {"method":"GET","url":"https://admnalchik.ru/","httpStatus":200,"outcome":"Official local-administration site loaded. HTML exposed the municipal land-relations section and interactive-maps section; no parcel API endpoint was exposed on the home page."},
+    {"method":"GET","url":"https://admnalchik.ru/category/urban-environment/interactive-maps/","httpStatus":200,"outcome":"Official municipal interactive-map category loaded and listed city map materials. No cadastral parcel service endpoint or bounded parcel geometry response was exposed."},
+    {"method":"SEARCH","url":"https://xn----7sbablnnmsiu1dzd9c.xn--p1ai/wp-content/uploads/2026/04/15_2026.pdf","httpStatus":200,"outcome":"Official municipal newspaper PDF search result showed a Nalchik cadastral/site plan with parcel boundaries and cadastral numbers; retained only as qualification evidence under ignored tmp, not as GeoJSON."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "apiBase": null,
+    "geometryCrs": "Not observed; no parcel geometry response was obtained.",
+    "nativeIdentity": "Not observed from a bounded anonymous parcel response.",
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"No bounded parcel request completed.","featureCount":0,"nativeIdentity":null}
+  },
+  "localCustodianAssessment": "The official Nalchik local-administration site is a local municipal custodian for land-relations information and publishes an interactive-map section. The cadastral map service identified by discovery is national Rosreestr/NSPD; its live map/API could not be inspected because requests timed out. Municipal publication evidence is not treated as a parcel API integration.",
+  "safeFieldAllowlist": ["stable native parcel identity if independently observed","polygon geometry if independently observed","source service URL","source CRS / coordinate order","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official local custodian and national cadastral-map destination are evidenced, but no current anonymous parcel API/schema/CRS response or safe parcel geometry was obtained."},
+  "scopeLimits": ["The exact WUP point was preserved and not shifted.","No exact-point hit or miss was claimed because the national map request timed out.","No retained parcel polygon is included.","Timeout and login/access uncertainty are not evidence of citywide cadastral absence.","Search-result mirror sites were not used as official service evidence.","No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained."],
+  "uncertainty": "Local municipal publication and navigation evidence is verified, but live national viewer reachability, current JavaScript/API configuration, parcel response schema, CRS, coverage, update cadence, and runtime adapter behavior remain unresolved."
+}

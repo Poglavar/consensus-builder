@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 43,
+  "city": "Suzhou",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/suzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "苏州 地籍 宗地 不动产 数据 GIS 开放平台 矢量图层"
+  },
+  "results": [
+    {
+      "title": "Suzhou public data open platform",
+      "url": "https://data.suzhou.gov.cn/",
+      "kind": "official-open-data-catalog",
+      "note": "Search did not identify cadastral parcel dataset."
+    },
+    {
+      "title": "Suzhou cadastral 3D project procurement reference",
+      "url": "https://czju.suzhou.gov.cn/zfcg/html/project/83e198354d6446da872d0fe21d93a7ef.shtml",
+      "kind": "official-procurement-record",
+      "note": "Describes internal comprehensive cadastral database; not a public feature endpoint."
+    }
+  ],
+  "assessment": "Search confirms municipal open-data portal and internal citywide cadastral 3D database project, but no public parcel geometry endpoint or stable exact ID was identified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

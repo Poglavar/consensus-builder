@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8039,
+  "cityCode": 8039,
+  "cityId": "wup2025:8039",
+  "name": "Sterling Heights",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso2": "US",
+  "iso3": "USA",
+  "centerLatLon": [42.4672562666258, -82.953282452946],
+  "point": [42.4672562666258, -82.953282452946],
+  "queueRank": 1284,
+  "population2025": 435980,
+  "population2025k": 435.98,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sterling Heights Michigan official GIS parcel map Macomb County parcel viewer",
+        "result": "First-party Sterling Heights and Macomb County results identified the city GIS OneView/map gallery, city ArcGIS parcel services, and the county GIS Parcel Explorer/open-data resources.",
+        "actualResultUrls": [
+          "https://www.sterlingheights.gov/171/Maps",
+          "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/City_Base_Map/MapServer",
+          "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/SterlingHeightsBasemap/MapServer",
+          "https://www.macombgov.org/departments/planning-and-economic-development/mapping-and-data-services"
+        ]
+      },
+      {
+        "language": "English (local-language search; United States)",
+        "query": "Sterling Heights Michigan official GIS parcel map Macomb County parcel viewer cadastral",
+        "result": "The first-party search again identified the Sterling Heights city map gallery and ArcGIS services, including Tax Parcels/Parcel Identification Number layers, plus Macomb County mapping resources. No distinct non-English local-language source is applicable for this United States locality.",
+        "actualResultUrls": [
+          "https://www.sterlingheights.gov/171/Maps",
+          "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/City_Base_Map/MapServer",
+          "https://maps.sterling-heights.net/arcgis/rest/services/GIS_Maps/City_Base_Map_CW/MapServer",
+          "https://www.macombgov.org/departments/planning-and-economic-development/mapping-and-data-services"
+        ]
+      }
+    ],
+    "officialViewerInspection": "Search results exposed the current first-party Sterling Heights ArcGIS REST service URLs. The City_Base_Map service advertises Tax Parcels and Parcel Identification Number layers; SterlingHeightsBasemap advertises a Parcel Dataset layer (172) and native spatial reference 2898/State Plane Michigan South feet. Direct TLS-verified anonymous retrieval of the service/layer JSON from this environment timed out before a response, so field schema, CRS details beyond the indexed service description, and parcel geometry were not independently verified. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe property fields were used."
+  },
+  "registryFound": true,
+  "registryBasis": "The City of Sterling Heights publishes a local GIS map gallery and public parcel map services, and Macomb County identifies its GIS mapping workgroup and public GIS Parcel Explorer as county parcel resources. This evidences local public mapping/parcel custodians, not a claim of legal title or complete cadastral coverage.",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "First-party Sterling Heights city GIS map/service discovery plus Macomb County public GIS resource discovery.",
+    "verifiedOpenScope": "Public parcel service routes were identified from first-party pages/search results, but no anonymous parcel ID plus geometry response was retrieved in the bounded request attempt.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "local_public_parcel_service_identified_no_verified_open_parcel_geometry",
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous request returned a safe native parcel identity and full polygon geometry. The exact WUP point was preserved and was not used as evidence of absence; the timeout is an availability limitation only."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The first-party ArcGIS service route was identified, but direct anonymous REST metadata retrieval timed out from the research environment before schema and query capability could be inspected. No geometry or safe native identity is retained.",
+  "remainingUncertainty": "The current public city/county parcel service may support anonymous layer metadata and geometry queries from another network path. Exact-point coverage, safe native ID field, full schema, CRS transformation behavior, service freshness, rate limits, and citywide completeness remain unverified.",
+  "nextStep": "A serial reviewer may independently qualify the identified first-party ArcGIS route after confirming current metadata, safe fields, CRS/order, and a bounded anonymous geometry response. Keep runtime held until that review."
+}

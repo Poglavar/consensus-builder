@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2087-utrecht.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Bounded OGC API query returned three full GeoJSON MultiPolygons. Point-in-ring test found no point-containing feature. Nearest polygon `26211032670000` (kadastrale parcel id) is approximately 3.56 m from the WUP point; only parcel identifier components and unchanged geometry are retained.\\nExact request: https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&limit=3&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&bbox=5.08091362175478%2C52.0839427734495%2C5.08111362175478%2C52.0841427734495&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&filter=%28status_historie_code%20%3D%20%27G%27%29&filter-lang=cql2-text\\nResult: HTTP 200; 3 GeoJSON polygons; none contains locator; nearest sample about 3.56 m away.",
+  "registryAssessment": "The national Kadaster holds the cadastral parcel dataset used in Utrecht, and the municipality publishes its geodata portal. The official open PDOK OGC API returned three polygons in a 0.0002° point-centered envelope; none contains the unchanged WUP point. The nearest returned polygon is about 3.56 m away and is retained as nearby evidence only.",
+  "officialPrimarySources": [
+    {
+      "title": "Gemeente Utrecht geodata portal",
+      "url": "https://utrecht.webgis.nl/nl/workspace/utrecht/portal",
+      "observation": "The municipal geodata portal describes itself as the catalog of geographic information published by Gemeente Utrecht."
+    },
+    {
+      "title": "Kadaster cadastral map official documentation",
+      "url": "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+      "observation": "Kadaster identifies parcel boundaries/numbers and direct open PDOK viewer, web services, downloads and OGC API."
+    },
+    {
+      "title": "PDOK/Kadaster OGC API collection",
+      "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+      "observation": "Public collection used for bounded point-centered query; full geometry, no owner/address attributes requested in retained sample."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Utrecht Netherlands official cadastral parcel map Kadaster PDOK public WFS OGC API",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://utrecht.webgis.nl/nl/workspace/utrecht/portal",
+        "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+        "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items"
+      ]
+    },
+    {
+      "language": "Dutch",
+      "query": "Utrecht kadastrale kaart perceel gemeente Utrecht Kadaster PDOK openbare kaart WFS",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://utrecht.webgis.nl/nl/workspace/utrecht/portal",
+        "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+        "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": true,
+    "sampleFile": "city-2087-utrecht-samples.geojson",
+    "details": "Bounded OGC API query returned three full GeoJSON MultiPolygons. Point-in-ring test found no point-containing feature. Nearest polygon `26211032670000` (kadastrale parcel id) is approximately 3.56 m from the WUP point; only parcel identifier components and unchanged geometry are retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The national Kadaster holds the cadastral parcel dataset used in Utrecht, and the municipality publishes its geodata portal. The official open PDOK OGC API returned three polygons in a 0.0002° point-centered envelope; none contains the unchanged WUP point. The nearest returned polygon is about 3.56 m away and is retained as nearby evidence only.",
+    "verifiedOpenScope": "Bounded OGC API query returned three full GeoJSON MultiPolygons. Point-in-ring test found no point-containing feature. Nearest polygon `26211032670000` (kadastrale parcel id) is approximately 3.56 m from the WUP point; only parcel identifier components and unchanged geometry are retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "bounded anonymous full-polygon query",
+      "requestUrl": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&limit=3&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&bbox=5.08091362175478%2C52.0839427734495%2C5.08111362175478%2C52.0841427734495&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&filter=%28status_historie_code%20%3D%20%27G%27%29&filter-lang=cql2-text",
+      "result": "HTTP 200; 3 GeoJSON polygons; none contains locator; nearest sample about 3.56 m away.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "The exact WUP locator is outside the three returned polygons; this near-neighbor request does not establish a point hit or citywide completeness."
+}

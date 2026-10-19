@@ -1,0 +1,18 @@
+{
+  "taskId": "city:9143",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-9143-shikohabad.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/shikohabad-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_9143-dashboard.html"
+  ],
+  "checkedAt": "2026-10-11T01:30:53.107130Z",
+  "reason": "Queue/roster identity matches code 9143, rank 2204, India, point, and 264322 persons. English and Hindi searches are recorded. First-party Shikohabad tehsil dashboard gives 190 villages, 181 georeferenced villages, 220 mapsheets, and 200 georeferenced mapsheets; this is tehsil coverage, not parcel geometry or a city boundary. Public BhuNaksha bootstrap attempts timed out. No native-ID polygon, adapter qualification, or headed Details proof; no citywide absence inferred.",
+  "registryFound": true,
+  "admission": "held; no runtime/catalog/report change",
+  "sourceCacheCopies": {
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_9143-dashboard.html": "f70884b1bf32be6d54c9f846c1045391d2e3ac8091b0123656fe0ecb1da62c96"
+  }
+}

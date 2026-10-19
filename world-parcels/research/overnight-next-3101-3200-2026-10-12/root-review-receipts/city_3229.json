@@ -1,0 +1,20 @@
+{
+  "taskId": "city:3229",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-3229-ago-iwoye.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ago-iwoye-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T04:34:13Z",
+  "finding": "WUP code 3229, rank 3167, Nigeria, point [6.94549138001476,3.9237345233283], 189841 persons match the SHA-256-verified 2025 UN source, roster, queue and packet. English and Yoruba-oriented mixed-language executed searches are recorded; the Yoruba query is limited and does not establish a separate local viewer. Official OLARMS establishes Ogun State land-administration custody and OLARMS-GIS advertises parcels, but the public GIS map reaches a login wall and no safe anonymous native-ID full polygon is evidenced. Registry custody true; city-specific public geometry unresolved. Sample count 0. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap and operation checks, source binding and headed Details verification are absent; runtime held.",
+  "firstPartyUrlsChecked": [
+    "https://olarmsold.ogunstate.gov.ng/",
+    "https://geosensepro.tinovo.ng/welcome/index"
+  ],
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

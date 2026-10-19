@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "cityCode": 8436,
+  "wupCityCode": 8436,
+  "cityId": "wup2025:8436",
+  "name": "Bhiwadi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "queueRank": 1411,
+  "rank": 1411,
+  "point": [28.1945622959688, 76.8451571509334],
+  "centerLatLon": [28.1945622959688, 76.8451571509334],
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 401290,
+  "population2025k": 401.29,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Bhiwadi Integrated Development Authority (BIDA), Government of Rajasthan, is a local development authority with Bhiwadi headquarters and public land/plot services. Rajasthan's official Urban GIS Portal exposes Khasra and plot map functions and identifies settlement boundaries as a source. These establish local/state custodians, but not a verified anonymous citywide parcel vector response.",
+  "registryEvidenceUrls": [
+    "https://bida.rajasthan.gov.in/content/raj/bida/en/home.html",
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+    "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "held_not_enabled_no_verified_public_geometry",
+    "reason": "The current Urban GIS JavaScript/configuration points to a Rajasthan ArcGIS Settlement_JDA Khasra layer, but anonymous metadata and exact-point query requests to the configured service timed out. No stable native parcel identity plus full polygon was verified."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhiwadi Rajasthan official cadastral parcel map land records GIS Bhiwadi municipal official",
+        "result": "First-party results found BIDA, the Rajasthan Urban GIS Portal, Rajasthan Bhu-Naksha, and official Bhiwadi planning/layout material. The Urban GIS page advertises Khasra and plot search/map functions, but no anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://bida.rajasthan.gov.in/content/raj/bida/en/home.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://bida.rajasthan.gov.in/content/dam/doitassets/bida/documents/plaining/BKT%20Map.pdf",
+          "https://bida.rajasthan.gov.in/content/dam/doitassets/bida/documents/plaining/Sector_Plan/2022%20%283%29%20%281%29_merged.pdf"
+        ],
+        "executionMethod": "Separate web search followed by first-party page, JavaScript and configuration inspection."
+      },
+      {
+        "language": "Hindi",
+        "query": "भिवाड़ी राजस्थान आधिकारिक भू अभिलेख कैडस्ट्रल पार्सल मानचित्र भूमि रिकॉर्ड GIS",
+        "result": "Hindi-language discovery led to the same official Rajasthan Urban GIS/Bhu-Naksha and BIDA sources. Official planning material is land-use/layout evidence, not a verified safe parcel feature response.",
+        "actualResultUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://bida.rajasthan.gov.in/content/dam/doitassets/bida/documents/plaining/BKT%20Map.pdf",
+          "https://www.lsg.urban.rajasthan.gov.in/content/dam/raj/udh/organizations/ctp/pdf/greater%20bhiwadi%20maps.pdf"
+        ],
+        "executionMethod": "Independent Hindi-language web search followed by first-party page inspection."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Current Rajasthan Urban GIS Portal HTML retrieved. It advertises Khasra and plot search/map tools and states that settlement/village boundaries are for viewing only; no parcel feature payload was returned in the HTML."
+      },
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Current viewer configuration retrieved. It identifies a Khasra FeatureLayer at https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0 and a JDA plot layer; this is a viewer configuration observation, not proof of Bhiwadi coverage."
+      },
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/map.js",
+        "method": "GET",
+        "status": "HTTP 200",
+        "summary": "Current viewer JavaScript retrieved. It queries FeatureLayers with returnGeometry=true and outFields=*, but its configured Khasra layer is the Jaipur/JDA service and no safe Bhiwadi-specific adapter or schema was established."
+      },
+      {
+        "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+        "method": "GET",
+        "status": "timeout after 20 seconds",
+        "summary": "Anonymous layer metadata request did not complete. No TLS bypass, login, CAPTCHA bypass or token use."
+      },
+      {
+        "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0/query",
+        "method": "GET",
+        "status": "timeout after 25 seconds",
+        "summary": "Bounded exact WUP point query with returnGeometry=true, outFields=* and outSR=4326 did not complete. This is not treated as an exact-point miss or evidence of absence."
+      },
+      {
+        "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+        "method": "GET",
+        "status": "timeout after 20 seconds",
+        "summary": "Official Bhu-Naksha page did not complete by direct anonymous GET; no retry or TLS exception."
+      },
+      {
+        "url": "https://bida.rajasthan.gov.in/content/raj/bida/en/home.html",
+        "method": "GET via first-party web inspection",
+        "status": "official page found",
+        "summary": "BIDA identifies itself as the Government of Rajasthan authority headquartered at Bhiwadi and lists plot/lease, mutation and property-ID services. No owner or property-record lookup was submitted."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "BIDA local authority pages, Rajasthan Urban GIS Portal, Rajasthan Bhu-Naksha, and the current Urban GIS ArcGIS configuration.",
+    "verifiedOpenScope": "Public authority and viewer documentation plus current viewer configuration; no anonymous native-ID-plus-polygon parcel response, CRS metadata, or citywide geometry extent was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "technicalBlocker": "The configured ArcGIS Khasra service and Bhu-Naksha page were unavailable by bounded anonymous requests. The accessible sources expose map/search procedures and planning layers, not a verified safe Bhiwadi parcel endpoint.",
+  "safeFieldAllowlist": ["stable native parcel or khasra identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "registration or encumbrance details"],
+  "remainingUncertainty": "A Bhiwadi-specific Khasra service or a recovered Bhu-Naksha workflow may expose geometry later; current machine-readable schema, CRS and citywide extent remain unresolved.",
+  "nextStep": "A serial reviewer may retry the official Bhu-Naksha/Urban GIS routes and independently qualify an adapter only after verifying a geographically scoped full polygon and stable native identity."
+}

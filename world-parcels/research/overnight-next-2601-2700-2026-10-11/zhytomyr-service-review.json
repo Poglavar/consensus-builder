@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-1940-zhytomyr.json",
+  "cityCode": 1940,
+  "queueRank": 2613,
+  "name": "Zhytomyr",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "summary": "The official Zhytomyr City geoportal and regional StateGeoCadastre authority are evidenced cadastral/map custodians. The city portal's current cadastral-division layer is raster/TMS-only, and its anonymous point-info endpoint returned 404 “layer table not found”; no safe parcel feature response with CRS, stable native ID, and full polygon was verified.",
+  "queryOutcomes": [
+    {"language":"English","query":"Zhytomyr Ukraine official cadastral map parcel GIS StateGeoCadastre","outcome":"Official city geoportal, regional StateGeoCadastre site, and national electronic cadastral portal found; no open parcel geometry endpoint verified."},
+    {"language":"Ukrainian","query":"Житомир офіційна кадастрова карта земельний кадастр GIS","outcome":"Official city cadastral-division map route found; current configuration exposes a rendered raster/TMS layer, not an anonymous parcel feature service."}
+  ],
+  "requestOutcomes": [
+    {"request":"GET https://gis.zt-rada.gov.ua/home","outcome":"200; official city geoportal loaded."},
+    {"request":"GET https://gis.zt-rada.gov.ua/map/zem_cad","outcome":"200; current configuration exposed map id zem_cad and cadastral-division layer id 3250996033106216875."},
+    {"request":"GET https://gis.zt-rada.gov.ua/api-user/gis-layer-list","outcome":"200; layer metadata returned, but cadastral-division entry was raster/TMS and had no safe parcel schema."},
+    {"request":"GET exact WUP point against city layer via /api-user/gis-format","outcome":"404 “layer table not found”; route/schema miss only, not a citywide absence finding."},
+    {"request":"GET https://e.land.gov.ua/","outcome":"200; official national electronic portal loaded; no authenticated service used."},
+    {"request":"GET https://map.land.gov.ua/","outcome":"Timeout after 25 seconds; no retries or bypasses."}
+  ],
+  "scopeLimits": [
+    "No exact-point hit/miss was used as citywide evidence.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass or unsafe field request was used.",
+    "No parcel polygon or raw source-specific attribute set was retained.",
+    "The local public layer is a rendered map service; raster display was not treated as parcel geometry evidence.",
+    "Official registry existence is distinguished from public machine-readable parcel geometry availability.",
+    "This packet is research evidence only and is not source integration/admission."
+  ],
+  "safeFieldAllowlist": ["stable native parcel/map identity", "geometry", "source CRS", "source layer/version", "retrieval timestamp"],
+  "uncertainty": "Custodians may expose parcel maps through authenticated, paid-copy, certificate, request-based, or other routes not verified anonymously. The timeout and layer-table error do not establish absence of cadastral records or citywide coverage.",
+  "serialReviewRecommendation": "Hold. Do not enable a runtime adapter until a serial reviewer independently verifies a public, bounded parcel geometry response with CRS and stable native identity."
+}

@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sanitized source and publisher-provenance audit for the proposed Bloemfontein/Mangaung parcel source. No runtime registry or city record was changed.",
+  "checkedAt": "2026-10-08T15:18:35Z",
+  "candidate": {
+    "researchCityId": "capital:ZA:bloemfontein",
+    "sourceId": "za-mangaung-cadastre-2025",
+    "serviceItemId": "018e962a48ea4669930e98fd36def1cf",
+    "featureLayerId": 11,
+    "layerTitle": "Cadastre_2025",
+    "layerDescription": "MMM cadastre  - SG Approved ",
+    "geometryType": "esriGeometryPolygon",
+    "objectIdField": "OBJECTID",
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    },
+    "extent": {
+      "xmin": 2861514.4518736694,
+      "ymin": -3517934.4321267195,
+      "xmax": 3029742.157906735,
+      "ymax": -3330935.1887441427,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      }
+    },
+    "maxRecordCount": 2000,
+    "currentLayerEditTimeUtc": "2026-02-19T08:48:47.413000Z",
+    "schemaFields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "nullable": false,
+        "role": "transport-only"
+      },
+      {
+        "name": "SG_CODE",
+        "type": "esriFieldTypeString",
+        "nullable": true,
+        "role": "proposed native key"
+      },
+      {
+        "name": "PARCEL_NR",
+        "type": "esriFieldTypeString",
+        "nullable": true,
+        "role": "nonunique parcel-number attribute"
+      }
+    ],
+    "onlyRequestedFields": [
+      "OBJECTID",
+      "SG_CODE",
+      "PARCEL_NR"
+    ],
+    "excludedSchemaFields": [
+      "owner",
+      "address",
+      "contact",
+      "transfer",
+      "price",
+      "deed",
+      "account",
+      "valuation fields"
+    ]
+  },
+  "publisherAndLineage": {
+    "arcgisItemTitle": "Map For Publishing Internal_2_WFL1",
+    "arcgisItemType": "Feature Service",
+    "access": "public",
+    "snippet": "Updated cadastre_2025",
+    "publisherOrganizationDomain": "mangaung.co.za",
+    "itemCreatedUtc": "2026-02-18T13:56:34Z",
+    "itemModifiedUtc": "2026-02-18T14:05:37Z",
+    "itemExtentWgs84": [
+      [
+        25.70542167847012,
+        -30.111849999677716
+      ],
+      [
+        27.216636873888806,
+        -28.64811852963216
+      ]
+    ],
+    "metadataXml": {
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "bytes": 198330,
+      "createdUtc": "2026-02-18T10:35:33Z",
+      "purpose": "Updated cadastre_2025",
+      "abstractPresent": false,
+      "documentedLineageElements": 0
+    },
+    "service2DataRelatedItemQuery": {
+      "httpStatus": 200,
+      "relatedItemCount": 0
+    },
+    "lineageAssessment": "Public item metadata identifies the Mangaung publisher account and the service title; the layer description marks the 2025 cadastre as SG Approved. The item has no Service2Data related items and its metadata XML supplies only the purpose, with no abstract or lineage elements. No upstream cadastral authority, derivation, or source-data date is documented in those public lineage fields."
+  },
+  "adapterAcceptance": {
+    "artifact": "bloemfontein-adapter-acceptance-initial.json",
+    "safeSample": "bloemfontein-adapter-sample-initial.geojson",
+    "result": "passed",
+    "completedAt": "2026-10-08T15:16:09.931Z",
+    "requestCount": 82,
+    "allHttpResponses200": true,
+    "alignedCells": 9,
+    "panCells": 8,
+    "distinctRetainedParcels": 53,
+    "identityDiagnostics": {
+      "distinctObjectIds": 53,
+      "adapterRetainedNativeIds": 53,
+      "missingSG_CODE": 0,
+      "missingPARCEL_NR": 0,
+      "duplicateSG_CODEGroups": [],
+      "duplicateSG_CODEGroupCount": 0,
+      "uniquePARCEL_NRCount": 52,
+      "uniqueSG_CODECount": 53
+    },
+    "checks": [
+      "complete count and OBJECTID manifest per bounded cell",
+      "all retained SG_CODE identifiers exact-reread in three fresh adapter instances with matching geometry hashes",
+      "forced page size 3",
+      "genuine absent SG_CODE lookup",
+      "footprint lookup",
+      "computeSourceBinding returned complete coverage"
+    ],
+    "sourceBinding": {
+      "coverage": "complete",
+      "parcelCount": 1,
+      "siteM2": 17125.51
+    }
+  },
+  "coverageAndUseLimitations": [
+    "The acceptance covers 9 aligned cells and 8 neighboring pan cells near the central Bloemfontein query point, not the complete layer or municipal extent.",
+    "The published layer extent is Mangaung-wide and the public metadata does not establish a city-only boundary or cadastral lineage; do not infer complete Bloemfontein coverage from this test.",
+    "SG_CODE was present and unique in the 53 retained sampled parcels only; nullable schema means completeness and uniqueness beyond this sample remain unproven.",
+    "PARCEL_NR had 52 unique values among 53 sampled parcels and is not suitable as the sole key.",
+    "This artifact is a review proposal only; integration and licensing/terms review remain outside this acceptance."
+  ]
+}

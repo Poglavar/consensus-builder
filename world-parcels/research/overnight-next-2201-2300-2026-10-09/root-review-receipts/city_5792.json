@@ -1,0 +1,32 @@
+{
+  "taskId": "city:5792",
+  "decision": "held",
+  "checkedAt": "2026-10-11T03:16:58Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-5792-tebessa.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/tebessa-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "reason": "National DGDN cadastre material does not independently establish a Tebessa local registry or a Tebessa parcel geometry service, so registryFound remains null. First-party routes were unavailable or timed out, and no anonymous native parcel ID and full polygon response was obtained. These failures are not evidence of citywide absence.",
+  "identityCheck": {
+    "queueRank": 2292,
+    "cityCode": 5792,
+    "country": "Algeria",
+    "pointLatLon": [35.4087200988178, 8.10668812203375],
+    "population2025Persons": 254557,
+    "officialWupRowChecked": true
+  },
+  "searchLanguages": ["English", "Arabic", "French"],
+  "registryFound": null,
+  "samplePolygonCount": 0,
+  "admissionChecks": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeometryAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

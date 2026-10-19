@@ -1,0 +1,176 @@
+// Spain's INSPIRE CP WFS serves GML and does not implement offset pagination.
+// Small, unpaged windows must match the collection's total; a truncated reply is unavailable.
+import proj4 from 'proj4';
+import { SaxesParser } from 'saxes';
+import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
+import { HttpError } from '../utils/helpers.js';
+import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
+import { parseGmlParcels } from './gml-parcel-reader.js';
+import { concatBytes } from './byte-utils.js';
+
+const ENDPOINT = 'https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx';
+const ID_FIELD = 'nationalCadastralReference';
+const KEY = /^[A-Z0-9]{14}$/;
+const utm = zone => `+proj=utm +zone=${zone} +ellps=GRS80 +units=m +no_defs`;
+
+// The official GetParcel query reports a missing reference as an HTTP200 OWS exception.
+// Accept only its observed, explicit message for this exact reference and requested zone.
+// General exceptions, viewport failures and malformed documents remain unavailable.
+const MISSING_ZONES = { 'EPSG::25830': '25830', 'EPSG::25831': '25831' };
+function explicitMissingReference(bytes, params) {
+    const zone = MISSING_ZONES[params.SRSNAME];
+    if (params.STOREDQUERY_ID !== 'GetParcel' || !KEY.test(params.REFCAT || '')
+        || !zone || bytes.length > 8192) return false;
+    const parser = new SaxesParser({ xmlns: true });
+    const names = ['ExceptionReport', 'Exception', 'ExceptionText'];
+    const counts = [0, 0, 0];
+    let depth = 0, text = '';
+    const reject = () => { throw new Error('Not an explicit parcel absence.'); };
+    parser.on('doctype', reject);
+    parser.on('error', reject);
+    parser.on('opentag', tag => {
+        if (tag.uri !== 'http://www.opengis.net/ows/1.1' || tag.local !== names[depth]
+            || ++counts[depth] !== 1) reject();
+        if (depth === 1 && !Object.values(tag.attributes).some(a => !a.uri
+            && a.local === 'exceptionCode' && a.value === 'OperationProcessingFailed')) reject();
+        depth++;
+    });
+    const append = value => { if (depth === 3) text += value; else if (value.trim()) reject(); };
+    parser.on('text', append);
+    parser.on('cdata', append);
+    parser.on('closetag', () => { depth--; });
+    try {
+        // The matched provider message contains ASCII only, including both echoed keys.
+        parser.write(new TextDecoder('utf-8', { fatal: true }).decode(bytes)).close();
+        return depth === 0 && counts.every(n => n === 1)
+            && text.trim() === `No se ha encontrado la parcela ${params.REFCAT} para el huso ${zone}`;
+    } catch { return false; }
+}
+
+export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch, now = Date.now } = {}) {
+    if (descriptor.endpoint !== ENDPOINT || descriptor.idField !== ID_FIELD || descriptor.idPrefix !== 'ES-DGC-'
+        || descriptor.maxBboxKm2 > 1 || !descriptor.outFields?.includes(ID_FIELD)) {
+        throw new Error('Invalid Spanish cadastral WFS descriptor.');
+    }
+    const maxFeatures = descriptor.maxFeatures || 5000;
+    const maxBytes = descriptor.maxResponseBytes || 8 * 1024 * 1024;
+    // A minute of positive viewport identities avoids one upstream request per visible parcel.
+    // Expired/unknown IDs still require the official stored query; absence is never cached.
+    const recent = new Map();
+    function remember(features) {
+        for (const feature of features) {
+            recent.delete(feature.id);
+            recent.set(feature.id, { feature: structuredClone(feature), expires: now() + 60000 });
+            if (recent.size > 10000) recent.delete(recent.keys().next().value);
+        }
+        return features;
+    }
+    async function query(params) {
+        const signal = AbortSignal.timeout(15000);
+        let reader;
+        try {
+            const url = new URL(ENDPOINT);
+            url.search = new URLSearchParams({ service: 'WFS', version: '2.0.0', request: 'GetFeature', ...params });
+            const response = await fetchImpl(url.href, { signal, redirect: 'error', headers: {
+                Accept: 'application/gml+xml, application/xml', 'Accept-Language': 'es,ca;q=0.8,en;q=0.5',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
+            } });
+            if (!response.ok) throw providerHttpError(response);
+            const declared = response.headers.get('content-length');
+            if (declared && Number(declared) > maxBytes) throw upstreamError('Cadastral WFS response exceeds byte limit; use a smaller area.');
+            reader = response.body?.getReader();
+            if (!reader) throw upstreamError('Cadastral WFS returned no readable response.');
+            const chunks = [];
+            let size = 0;
+            for (;;) {
+                const chunk = await reader.read();
+                if (chunk.done) break;
+                size += chunk.value.byteLength;
+                if (size > maxBytes) throw upstreamError('Cadastral WFS response exceeds byte limit; use a smaller area.');
+                chunks.push(chunk.value);
+            }
+            if (declared && !response.headers.get('content-encoding') && Number(declared) !== size) {
+                throw upstreamError('Cadastral WFS response body is incomplete.');
+            }
+            const bytes = concatBytes(chunks, size);
+            if (explicitMissingReference(bytes, params)) return [];
+            const parsed = await parseGmlParcels(bytes, { idField: ID_FIELD,
+                maxBytes, maxFeatures, signal });
+            if (!Number.isSafeInteger(parsed.numberMatched) || parsed.numberMatched !== parsed.featureCount
+                || parsed.duplicateNativeCount || parsed.features.some(f => !KEY.test(f.properties[ID_FIELD]))) {
+                throw upstreamError('Cadastral WFS did not return a complete unique parcel set; use a smaller area.');
+            }
+            return parsed.features.map(feature => canonicalParcelFeature(descriptor, feature, feature.properties[ID_FIELD]));
+        } catch (error) {
+            if (reader) { try { await reader.cancel(); } catch { /* Failed stream may already be closed. */ } }
+            if (error.status) throw error;
+            if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error.name)) throw upstreamError('Cadastral WFS timed out.', 504);
+            throw upstreamError('Cadastral WFS is unavailable.');
+        } finally { reader?.releaseLock(); }
+    }
+    const result = (features, extra = {}) => ({ type: 'FeatureCollection', features,
+        complete: true, sourceId: descriptor.id, returnsWGS84: true, ...extra });
+
+    // Viewports east of 0° are read in UTM31 (EPSG:25831), the rest in UTM30. An exact read must
+    // return the same coordinates as the viewport read of that parcel, so it uses the same rule.
+    const zoneForLongitude = longitude => (longitude < 0 ? 30 : 31);
+
+    async function queryBounds(bounds) {
+        validateBounds(bounds, descriptor.maxBboxKm2 || 1, descriptor);
+        const [w, s, e, n] = bounds;
+        const zone = zoneForLongitude((w + e) / 2);
+        const points = [[w, s], [w, n], [e, s], [e, n]].map(p => proj4('EPSG:4326', utm(zone), p));
+        const box = [Math.min(...points.map(p => p[0])), Math.min(...points.map(p => p[1])),
+            Math.max(...points.map(p => p[0])), Math.max(...points.map(p => p[1]))];
+        const srid = `EPSG::${25800 + zone}`;
+        return result(remember(await query({ typeNames: 'CP:CadastralParcel', srsName: srid, bbox: box.join(',') })));
+    }
+
+    // `near` ([longitude, latitude]) says where the caller expects the parcels: asking that zone
+    // first makes one request per parcel instead of two east of 0°. A wrong hint costs a re-read.
+    async function queryIds(ids, { near } = {}) {
+        if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 parcel IDs.');
+        const firstZone = Array.isArray(near) && Number.isFinite(near[0]) ? zoneForLongitude(near[0]) : 30;
+        const unique = [...new Set(ids)];
+        const native = unique.map(value => {
+            if (typeof value !== 'string' || !value.startsWith(descriptor.idPrefix)
+                || !KEY.test(value.slice(descriptor.idPrefix.length))) throw new HttpError(400, 'Invalid Spanish parcel ID.');
+            return value.slice(descriptor.idPrefix.length);
+        });
+        const features = [];
+        // This provider resets connections during parallel exact reads. Keep each batch sequential.
+        for (const key of native) {
+            const cached = recent.get(descriptor.idPrefix + key);
+            if (cached && cached.expires > now()) {
+                features.push(structuredClone(cached.feature));
+                continue;
+            }
+            recent.delete(descriptor.idPrefix + key);
+            let found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: `EPSG::${25800 + firstZone}` });
+            if (found.length > 1 || found.some(f => f.properties.sourceParcelId !== key)) {
+                throw upstreamError('Cadastral exact lookup returned an unexpected native parcel.');
+            }
+            if (found.length === 1) {
+                const [west, , east] = geometryBbox(found[0]);
+                const zone = zoneForLongitude((west + east) / 2);
+                if (zone !== firstZone) {
+                    found = await query({ STOREDQUERY_ID: 'GetParcel', REFCAT: key, SRSNAME: `EPSG::${25800 + zone}` });
+                    if (found.length !== 1 || found[0].properties.sourceParcelId !== key) {
+                        throw upstreamError(`Cadastral UTM${zone} exact lookup did not return the requested parcel.`);
+                    }
+                }
+            }
+            features.push(...remember(found));
+        }
+        const present = new Set(features.map(f => f.id));
+        return result(features, { absentIds: unique.filter(id => !present.has(id)) });
+    }
+
+    async function queryGeometry(geometry) {
+        if (!validateGeometry(geometry)) throw new HttpError(400, 'Provide a valid WGS84 Polygon or MultiPolygon.');
+        const footprint = geoFeature(geometry);
+        const bounds = await queryBounds(geometryBbox(footprint));
+        return { ...bounds, features: bounds.features.filter(parcel => booleanIntersects(parcel, footprint)) };
+    }
+    return Object.freeze({ queryBounds, queryIds, queryGeometry });
+}

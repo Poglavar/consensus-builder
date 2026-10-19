@@ -1,0 +1,79 @@
+{
+  "cityCode": 2864,
+  "queueRank": 3159,
+  "country": "Canada",
+  "countryCode": "CA",
+  "point": [43.4483939847174, -79.7169186140335],
+  "population2025": 190294,
+  "population2025k": 190.294,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registry": {
+    "name": "Town of Oakville municipal GIS / Oakville GIS public ArcGIS service",
+    "scope": "Official Town of Oakville public GIS service exposing the Assess_Parcels polygon layer for Oakville; this is municipal GIS evidence, not a land-title or ownership registry.",
+    "url": "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oakville Ontario official GIS parcel map open data cadastral property boundaries",
+        "result": "Found the Town of Oakville public ArcGIS REST server and its Assess_Parcels service; official Oakville open-data material also links to Town-maintained ArcGIS layers.",
+        "actualResultUrls": [
+          "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer",
+          "https://oakvilleiq.ca/data/",
+          "https://opendataoakville.ca/address-points"
+        ]
+      },
+      {
+        "language": "French (Canada)",
+        "query": "Oakville Ontario carte SIG parcelles cadastrales limites propriétés données ouvertes",
+        "result": "No separate French-language Oakville municipal cadastral page was found; the same official Town of Oakville GIS REST service was the usable first-party route. Canadian French federal cadastral guidance was found but is not an Oakville custodian or parcel layer.",
+        "actualResultUrls": [
+          "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer",
+          "https://ressources-naturelles.canada.ca/carte-outils-publications/cartes/limites-arpentage-terres/outils-applications-arpentage-terres-canada"
+        ]
+      }
+    ]
+  },
+  "service": {
+    "name": "Town of Oakville PGISREF_BULK Assess_Parcels",
+    "serviceUrl": "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer",
+    "layerUrl": "https://maps.oakville.ca/oakgis/rest/services/PGISREF_BULK/Assess_Parcels/MapServer/0",
+    "sourceCustodian": "Town of Oakville municipal GIS service",
+    "nativeLayer": "Assess_Parcels",
+    "nativeIdentityField": "OBJECTID",
+    "nativeFieldMapping": {
+      "OBJECTID": "ArcGIS object identifier and layer primary index",
+      "ROLL_NUMBER": "assessment roll number; inspected as a native field but not retained",
+      "PROPCODE": "property code; inspected as a native field but not retained",
+      "CODEDESC": "property-code description; inspected as a native field but not retained",
+      "FULLDESC": "source description; inspected as a native field but not retained",
+      "ENTRY_UID": "source entry UID; inspected as a native field but not retained",
+      "GISID": "source GIS integer identifier; inspected as a native field but not retained",
+      "PARENTID": "source parent identifier; inspected as a native field but not retained",
+      "SHAPE": "native polygon geometry"
+    },
+    "crs": "EPSG:26917 (NAD83 / UTM zone 17N)",
+    "geometryType": "Polygon",
+    "safeFieldAllowlist": ["OBJECTID", "SHAPE"],
+    "unsafeFieldsExcluded": ["ROLL_NUMBER", "FULLDESC", "owner", "address", "contact", "titleholder", "tax", "account", "assessment details"],
+    "sampleFile": null,
+    "sampleCount": 0,
+    "sampleIdentityProvenance": "No retained GeoJSON sample; ignored raw response contains one exact-point feature with native OBJECTID 2591645.",
+    "exactPointCheck": {
+      "method": "Anonymous ArcGIS REST query with the exact WUP point in EPSG:4326, spatialRel=esriSpatialRelIntersects, returned geometry projected to EPSG:4326.",
+      "hit": true,
+      "nativeIdentity": "2591645",
+      "sourceGeometryRetained": false
+    }
+  },
+  "runtimeReadiness": "held_independent_adapter_review",
+  "uncertainty": [
+    "The service is municipal assessment GIS and is not evidence of legal title, ownership, or a complete land-registry export.",
+    "The exact-point hit is a bounded point query and does not establish citywide completeness, update cadence, or adapter suitability.",
+    "No French-language municipal page was located; English-language first-party service metadata is the authoritative usable route for this city.",
+    "No parcel sample was retained because the returned polygon was a large complex feature and the request permits zero samples; unchanged raw response evidence is under ignored tmp/valhalla-parcel-research/oakville/."
+  ]
+}

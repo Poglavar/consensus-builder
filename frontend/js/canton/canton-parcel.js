@@ -5,11 +5,26 @@
 // (canton-read.js is the standalone page; not loaded here). See feature-daml.md §13.
 (function (global) {
     'use strict';
+    // Canton is switched off (environment.js CANTON_ENABLED): define nothing, request nothing.
+    if (global.CANTON_ENABLED !== true) return;
 
+    // The backend base. data-source.js already resolves this for every environment — including the
+    // `?backend=` override that dev.sh passes so a worktree talks to its own backend — so defer to it.
+    // Rolling our own here is how Canton ended up unreachable in dev: same-origin meant the static
+    // frontend port, which serves no /canton routes.
     function apiBase() {
         try {
             const override = new URLSearchParams(global.location.search).get('api');
             if (override) return override.replace(/\/$/, '');
+        } catch (_) { }
+        try {
+            if (typeof global.getBackendBase === 'function') {
+                const base = global.getBackendBase();
+                if (base) return String(base).replace(/\/+$/, '');
+            }
+        } catch (_) { }
+        // Standalone pages (canton.html) may not load data-source.js.
+        try {
             if (global.location.protocol === 'file:') return 'http://localhost:3000';
             const h = (global.location.hostname || '').toLowerCase();
             if (h.endsWith('urbangametheory.xyz') && !h.startsWith('api.')) return 'https://api.urbangametheory.xyz';
@@ -39,13 +54,14 @@
     function cardHtml(it, party, kind) {
         const isSale = kind === 'sale';
         const roles = ['buyer', 'owner', 'lens'].filter((r) => it[r] && it[r] === party);
-        const youTag = roles.length ? `<span class="canton-you">you: ${roles.join(', ')}</span>` : '';
+        // The status and the viewer's roles are cb-badge tones (css/primitives.css).
+        const youTag = roles.length ? `<span class="cb-badge cb-badge--primary canton-you">you: ${roles.join(', ')}</span>` : '';
         const canAccept = !isSale && it.owner && it.owner === party;
         return `
             <div class="canton-card">
                 <div class="canton-card-top">
                     <span class="canton-parcel">${it.parcelId || '—'}</span>
-                    <span class="canton-status ${isSale ? 'canton-status-accepted' : 'canton-status-open'}">${isSale ? 'Accepted' : 'Open'}</span>
+                    <span class="cb-badge ${isSale ? 'cb-badge--success' : 'cb-badge--warning'}">${isSale ? 'Accepted' : 'Open'}</span>
                     ${youTag}
                     <span class="canton-price">${price(it.price)}</span>
                 </div>
@@ -59,7 +75,7 @@
     }
 
     const section = (inner, total) =>
-        `<div class="canton-panel-section"><h4 class="canton-panel-title">Canton proposals${total ? ` <span class="canton-badge">${total}</span>` : ''}</h4>${inner}</div>`;
+        `<div class="canton-panel-section"><h4 class="canton-panel-title">Canton proposals${total ? ` <span class="cb-badge cb-badge--count">${total}</span>` : ''}</h4>${inner}</div>`;
 
     let currentParcelId = null;
 
@@ -72,6 +88,14 @@
         const total = (CC && CC.getCount) ? CC.getCount(parcelId) : 0;
         const active = !!(CM && CM.isActive && CM.isActive());
         const party = (CM && CM.getParty) ? CM.getParty() : '';
+
+        // A backend with no Canton configured returns 502 and leaves the counts empty. Saying "no
+        // proposals" there would be a lie: we do not know, because we could not ask.
+        const countsUnavailable = !!(CC && CC.getStatus && CC.getStatus() === 'unavailable');
+        if (countsUnavailable && active) {
+            el.innerHTML = section('<p class="canton-empty">Canton is unavailable on this backend — proposal counts could not be loaded.</p>', 0);
+            return;
+        }
 
         if (!total && !active) { el.innerHTML = ''; return; } // nothing relevant here
 

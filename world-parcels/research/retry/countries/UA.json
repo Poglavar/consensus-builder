@@ -1,0 +1,87 @@
+{
+ "kind": "country",
+ "key": "UA",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: uk-UA,uk;q=0.9,en;q=0.5; cookie jar (curl -c/-b) enabled",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": "Retry map.land.gov.ua from a Ukrainian or EU network and inspect its network calls for a bounded WMS/WFS query.",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://map.land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TCP/TLS connection reset by peer (curl 35)"
+  },
+  {
+   "url": "https://map.land.gov.ua/kadastrova-karta",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TCP/TLS connection reset by peer (curl 35)"
+  },
+  {
+   "url": "https://cadmap.land.gov.ua/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://kadmap.land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://gis.land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://kadastr.live/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://e.land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "e-services page loads; links to map.land.gov.ua only, no service URL in its JS"
+  },
+  {
+   "url": "https://e.land.gov.ua/back/cadaster/?cad_num=8000000000:01:001:0001",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "now redirects to /auth_select (login wall); no data"
+  },
+  {
+   "url": "https://land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "agency site; only link to map.land.gov.ua"
+  },
+  {
+   "url": "https://data.gov.ua/api/3/action/package_search?q=<земельні ділянки, percent-encoded>&rows=8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "242 datasets; first 8 are queues/lists/XLSX/CSV, one greenfield GeoJSON of investment sites; no cadastral parcel layer"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Official map host resets the connection from this network before any HTTP response, both times; consistent with geo/network filtering of non-Ukrainian sources, but not proven (e.land.gov.ua and land.gov.ua answer normally).",
+ "nextStep": "Headers did not change the result. Viewer JS could not be inspected because map.land.gov.ua is unreachable. Cadastral number lookup is now behind login. No open parcel polygons found on data.gov.ua."
+}

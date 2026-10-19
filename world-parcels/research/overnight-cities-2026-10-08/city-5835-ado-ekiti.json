@@ -1,0 +1,157 @@
+{
+  "name": "Ado Ekiti",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 911,
+  "point": [
+    7.62526816376452,
+    5.22300602215417
+  ],
+  "population2025": 598230,
+  "population2025k": 598.23,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Ekiti State Government identifies a Bureau of Land Services and Office of Surveyor-General with cadastral surveys and survey-plan approval, plus an Ekiti State Geospatial Data Center and automated land-management information system. Statewide aerial mapping was launched from Ado Ekiti and the government budget lists cadastral survey work for Ado Ekiti. Online title workflows require a registered account, approved survey plan and supporting documents; no anonymous parcel geometry service was found.",
+  "registryEvidenceUrls": [
+    "https://www.ekitistate.gov.ng/archives/30844",
+    "https://www.ekitistate.gov.ng/archives/30832",
+    "https://www.ekitistate.gov.ng/executive-council/mdas/ministry-of-housing-and-urban-development",
+    "https://www.ekitistate.gov.ng/wp-content/uploads/saber/CoOProcedure.pdf",
+    "https://ekitigeospatial.com/"
+  ],
+  "resultCategory": "state_geospatial_registry_and_city_survey_evidenced_no_public_geometry_verified",
+  "scopeLimits": "Research uses official public sources and preserves the exact unchanged WUP locator. No owner, address, account, tax, personal-property, credential or token data requested or retained. No citywide completeness asserted.",
+  "remainingUncertainty": "Aerial mapping and LMIS availability do not establish anonymous parcel geometry access or exact WUP-point layer coverage; current completion status of mapping work is not verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ado Ekiti official parcel cadastral map GIS land registry Ekiti state surveyor general",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry.",
+        "result": "Official Ekiti State sources describe state-wide aerial/GIS mapping, cadastral surveys in Ado Ekiti and the Geospatial Data Center / land-management system. No public vector endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.ekitistate.gov.ng/archives/30844",
+          "https://www.ekitistate.gov.ng/archives/30832",
+          "https://www.ekitistate.gov.ng/executive-council/mdas/ministry-of-housing-and-urban-development",
+          "https://www.ekitistate.gov.ng/wp-content/uploads/saber/CoOProcedure.pdf",
+          "https://ekitigeospatial.com/"
+        ],
+        "executionMethod": "English-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      },
+      {
+        "language": "Yoruba",
+        "query": "Ado Ekiti ilẹ̀ ìforúkọsílẹ̀ ilẹ̀ ìwádìí ilẹ̀ maapu ijọba",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry in a local language.",
+        "result": "Àwọn orísun ìjọba Ekiti sọ pé ìwádìí maapu ilẹ̀ káàkiri ìpínlẹ̀ àti ìwádìí cadastral ní Ado-Ekiti wà; a kò rí iṣẹ́ vector ilẹ̀ ìlú tí gbogbo ènìyàn lè wọlé sí.",
+        "actualResultUrls": [
+          "https://www.ekitistate.gov.ng/archives/30844",
+          "https://www.ekitistate.gov.ng/archives/30832",
+          "https://www.ekitistate.gov.ng/executive-council/mdas/ministry-of-housing-and-urban-development",
+          "https://www.ekitistate.gov.ng/wp-content/uploads/saber/CoOProcedure.pdf",
+          "https://ekitigeospatial.com/"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ekitistate.gov.ng/archives/30844",
+        "observation": "Ekiti State Government identifies a Bureau of Land Services and Office of Surveyor-General with cadastral surveys and survey-plan approval, plus an Ekiti State Geospatial Data Center and automated land-management information system. Statewide aerial mapping was launched from Ado Ekiti and the government budget lists cadastral survey work for Ado Ekiti. Online title workflows require a registered account, approved survey plan and supporting documents; no anonymous parcel geometry service was found."
+      },
+      {
+        "url": "https://www.ekitistate.gov.ng/archives/30832",
+        "observation": "Ekiti State Government identifies a Bureau of Land Services and Office of Surveyor-General with cadastral surveys and survey-plan approval, plus an Ekiti State Geospatial Data Center and automated land-management information system. Statewide aerial mapping was launched from Ado Ekiti and the government budget lists cadastral survey work for Ado Ekiti. Online title workflows require a registered account, approved survey plan and supporting documents; no anonymous parcel geometry service was found."
+      },
+      {
+        "url": "https://www.ekitistate.gov.ng/executive-council/mdas/ministry-of-housing-and-urban-development",
+        "observation": "Ekiti State Government identifies a Bureau of Land Services and Office of Surveyor-General with cadastral surveys and survey-plan approval, plus an Ekiti State Geospatial Data Center and automated land-management information system. Statewide aerial mapping was launched from Ado Ekiti and the government budget lists cadastral survey work for Ado Ekiti. Online title workflows require a registered account, approved survey plan and supporting documents; no anonymous parcel geometry service was found."
+      },
+      {
+        "url": "https://www.ekitistate.gov.ng/wp-content/uploads/saber/CoOProcedure.pdf",
+        "observation": "Ekiti State Government identifies a Bureau of Land Services and Office of Surveyor-General with cadastral surveys and survey-plan approval, plus an Ekiti State Geospatial Data Center and automated land-management information system. Statewide aerial mapping was launched from Ado Ekiti and the government budget lists cadastral survey work for Ado Ekiti. Online title workflows require a registered account, approved survey plan and supporting documents; no anonymous parcel geometry service was found."
+      },
+      {
+        "url": "https://ekitigeospatial.com/",
+        "observation": "Ekiti State Government identifies a Bureau of Land Services and Office of Surveyor-General with cadastral surveys and survey-plan approval, plus an Ekiti State Geospatial Data Center and automated land-management information system. Statewide aerial mapping was launched from Ado Ekiti and the government budget lists cadastral survey work for Ado Ekiti. Online title workflows require a registered account, approved survey plan and supporting documents; no anonymous parcel geometry service was found."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://ekitigeospatial.com/",
+        "method": "GET official Ekiti State Geospatial Data Center page",
+        "result": "Describes state GIS and land-management/registration-search services; registration searches and e-services lead to the LMIS application portal."
+      },
+      {
+        "url": "https://www.ekitistate.gov.ng/wp-content/uploads/saber/CoOProcedure.pdf",
+        "method": "GET official state Certificate of Occupancy procedure",
+        "result": "States applicants need a valid digital account, approved survey plan and supporting ownership/title documentation; no account created or property details submitted."
+      },
+      {
+        "url": "https://www.ekitistate.gov.ng/archives/30832",
+        "method": "GET official state aerial mapping launch notice",
+        "result": "Describes statewide 3D drone mapping and intended land-administration GIS; no feature service or public parcel data endpoint linked."
+      },
+      {
+        "url": "https://www.ekitistate.gov.ng/archives/30844",
+        "method": "GET official state GIS/mapping update",
+        "result": "Describes survey/mapping work and the state’s land-administration reform; no anonymous parcel geometry schema exposed."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NG-5835-ado-ekiti-cadastre-review",
+    "name": "Ekiti State Bureau of Land Services / Office of Surveyor-General / EK-SGDC",
+    "url": "https://ekitigeospatial.com/",
+    "operator": "Nigeria",
+    "serviceType": "Statewide cadastral/survey and land-registration administration, including Ado Ekiti; online title applications are identity/document-based. No public parcel feature layer verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native feature identity and geometry at the WUP point were not verified."
+  },
+  "wupCityCode": 5835,
+  "cityId": "wup2025:5835",
+  "queueRank": 911,
+  "centerLatLon": [
+    7.62526816376452,
+    5.22300602215417
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research packet only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "Ekiti State Government identifies a Bureau of Land Services and Office of Surveyor-General with cadastral surveys and survey-plan approval, plus an Ekiti State Geospatial Data Center and automated land-management information system. Statewide aerial mapping was launched from Ado Ekiti and the government budget lists cadastral survey work for Ado Ekiti. Online title workflows require a registered account, approved survey plan and supporting documents; no anonymous parcel geometry service was found.",
+    "verifiedOpenScope": "No parcel geometry verified at the exact WUP settlement point.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research packet only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.ekitistate.gov.ng/archives/30844",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "State-Wide Survey And Comprehensive GIS Mapping To Guarantee Improved Land Administration, Urban Planning – Ekiti Gov&#8217;s Aide On Lands And Survey &#8211; Ekiti State Government Website"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

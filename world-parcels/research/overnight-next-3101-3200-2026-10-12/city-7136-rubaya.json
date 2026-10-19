@@ -1,0 +1,38 @@
+{
+  "cityCode": 7136,
+  "queueRank": 3166,
+  "name": "Rubaya",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "point": [-1.54874278123716, 28.8756327586678],
+  "population2025": 189880,
+  "population2025k": 189.88,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rubaya Democratic Republic of the Congo official cadastre cadastral parcels land registry North Kivu",
+        "result": "Found the official DRC Ministry of Land Affairs cadastral-circumscription page and an official service procedure; search results also identified the BIC digital cadastral platform, which is not the government ministry.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French/local",
+        "query": "Rubaya RDC cadastre parcellaire registre foncier Nord-Kivu circonscription Kirotshe",
+        "result": "The official French-language Ministry page lists Kirotshe among North-Kivu cadastral jurisdictions; an official DRC public-service page describes registry/cadastre consultation by request. No public Rubaya parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://www.ubutabera.com/public-laws/congo/journal-officiel-2015-n-12"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Ministry of Land Affairs cadastral-circumscription list identifies Kirotshe as a North-Kivu cadastral jurisdiction. The official 2015 legal publication states that Kirotshe includes the communes of Ngungu, Rubaya and Sake. This evidences registry jurisdiction, not an open parcel API or complete city coverage."
+}

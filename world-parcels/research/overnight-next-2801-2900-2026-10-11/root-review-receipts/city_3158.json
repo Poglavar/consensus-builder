@@ -1,0 +1,29 @@
+{
+  "taskId": "city:3158",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-3158-sahag-n.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/sahag-n-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T214953-3e18f7c8/stdout.jsonl",
+    "tmp/valhalla-parcel-research/sahagun-3158/layer7.json",
+    "tmp/valhalla-parcel-research/sahagun-3158/layer14.json",
+    "tmp/valhalla-parcel-research/sahagun-3158/query7.geojson",
+    "tmp/valhalla-parcel-research/sahagun-3158/query14.geojson"
+  ],
+  "checkedAt": "2026-10-11T21:55:55Z",
+  "reason": "WUP code, rank 2872, Colombia, exact point, and 207440 persons match the immutable roster and queue. English and Spanish searches ran, but the packet quotes query wording that differs from the executed search log. First-party viewer and script were retrieved; original ArcGIS layer caches return 400 Invalid URL and bounded query caches return Bad Request. Local cadastral custody is evidenced, but no native ID or polygon was obtained. Unavailable routes do not prove citywide absence.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "searchProvenanceNote": "English and Spanish searches executed; exact recorded query strings should be corrected in worker evidence on a future authorized pass.",
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

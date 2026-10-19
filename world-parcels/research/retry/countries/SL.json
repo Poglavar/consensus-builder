@@ -1,0 +1,39 @@
+{
+ "kind": "country",
+ "key": "SL",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-SL,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mlcpe.gov.sl/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed (previously SSL_ERROR_SYSCALL); unchanged"
+  },
+  {
+   "url": "https://mlcpe.gov.sl/ | https://www.gov.sl/ | https://data.gov.sl/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Sierra%20Leone%20land%20parcels&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 hits, both irrelevant (a Rogberi data-collection layer, a Canadian web app); not a cadastre"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "",
+ "notes": "Ministry host still unreachable; no national parcel content on ArcGIS Online.",
+ "nextStep": "Retry later; look at World Bank / Freetown City Council land information projects."
+}

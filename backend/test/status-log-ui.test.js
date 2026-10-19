@@ -1,0 +1,374 @@
+// The status log is what a reload's progress is read from, and what gets pasted into a bug report.
+// Two things stopped it being usable for either:
+//
+//   * every click inside the bar toggled it, including the MOUSEUP that ends a text selection — so
+//     selecting a line closed the panel out from under the drag and there was nothing to copy;
+//   * there was no way to take the whole log at once, only line-by-line hand-selection.
+//
+// And the longest silence in a reload — several seconds between "parcels loaded" and the first
+// applied proposal — was the replay's per-member ground fetch, which said nothing at all.
+
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
+
+const read = rel => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
+const ui = read('../../frontend/js/ui-helpers.js');
+const manager = read('../../frontend/js/proposal-manager.js');
+const ground = read('../../frontend/js/parcels/ground-service.js');
+const css = read('../../frontend/css/utilities.css');
+const dictOf = locale => JSON.parse(read(`../../frontend/i18n/${locale}.json`));
+const locales = ['en', 'hr', 'sr', 'es'];
+
+it('updates both status displays with live progress without filling the session log', () => {
+    const classes = new Set();
+    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: '', parentElement: {
+        classList: { toggle(name, enabled) { if (enabled) classes.add(name); else classes.delete(name); } }
+    } } };
+    const context = vm.createContext({ window: {}, document: {
+        readyState: 'loading', addEventListener() {}, getElementById: id => elements[id] || null
+    }, CbFormat: { formatTime: () => '12:00' } });
+    vm.runInContext(ui, context);
+    context.window.updateStatus('Loading parcels');
+    for (let mb = 1; mb <= 100; mb++) context.window.updateStatus(`Downloading… ${mb} MB`, { transient: true });
+    expect(elements.status.textContent).toBe('Downloading… 100 MB');
+    expect(elements['floating-status-text'].textContent).toBe('Downloading… 100 MB');
+    expect(classes.has('has-progress')).toBe(true);
+    expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tLoading parcels');
+    context.window.updateStatus('Loaded parcels');
+    expect(classes.has('has-progress')).toBe(false);
+    expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tLoading parcels\n12:00\tLoaded parcels');
+});
+
+it('a notice logs its line without taking over the status line', () => {
+    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: 'Loading parcels', parentElement: {
+        classList: { toggle() {} }
+    } } };
+    const context = vm.createContext({ window: {}, document: {
+        readyState: 'loading', addEventListener() {}, getElementById: id => elements[id] || null
+    }, CbFormat: { formatTime: () => '12:00' } });
+    vm.runInContext(ui, context);
+    context.window.updateStatus('Applied 22 proposals.', { floating: false });
+    expect(elements.status.textContent).toBe('Applied 22 proposals.');
+    expect(elements['floating-status-text'].textContent).toBe('Loading parcels');
+    expect(vm.runInContext('statusLogText()', context)).toBe('12:00\tApplied 22 proposals.');
+});
+
+it('the status line shows a spinner while something is busy and idles out after a quiet spell', () => {
+    const classes = new Set();
+    const parent = { classList: {
+        add: n => classes.add(n), remove: n => classes.delete(n),
+        toggle(n, on) { if (on) classes.add(n); else classes.delete(n); }
+    } };
+    const elements = { status: { textContent: '' }, 'floating-status-text': { textContent: '', parentElement: parent } };
+    const timers = [];
+    const context = vm.createContext({ window: {}, document: {
+        readyState: 'loading', addEventListener() {}, getElementById: id => elements[id] || null, querySelector: () => null
+    }, CbFormat: { formatTime: () => '12:00' },
+    setTimeout: (fn, ms) => { timers.push({ fn, ms }); return timers.length; },
+    clearTimeout: id => { if (timers[id - 1]) timers[id - 1].fn = null; } });
+    vm.runInContext(ui, context);
+    const release = context.window.beginStatusActivity();
+    expect(classes.has('is-busy')).toBe(true);
+    context.window.updateStatus('Loading buildings…', { transient: true });
+    expect(timers.filter(t => t.fn && t.ms === 8000)).toHaveLength(0);
+    release();
+    expect(classes.has('is-busy')).toBe(false);
+    const idle = timers.filter(t => t.fn && t.ms === 8000);
+    expect(idle).toHaveLength(1);
+    idle[0].fn();
+    expect(classes.has('is-idle')).toBe(true);
+    context.window.updateStatus('Loaded parcels');
+    expect(classes.has('is-idle')).toBe(false);
+});
+
+describe('selecting text does not close the log', () => {
+    const handler = ui.slice(
+        ui.indexOf('    if (statusBar) {\n        let pressedAt = null;'),
+        ui.indexOf('    // Clicking outside collapses')
+    );
+
+    it('ignores a click that ends a drag', () => {
+        expect(handler).toContain("statusBar.addEventListener('mousedown'");
+        expect(handler).toContain('Math.hypot(e.clientX - start.x, e.clientY - start.y) > 4');
+    });
+
+    it('ignores a click that ends a selection, even one that never moved', () => {
+        // A double-click selects a word without the pointer travelling anywhere.
+        expect(handler).toContain('selection && !selection.isCollapsed');
+    });
+
+    it('never toggles from inside the log itself — that is where the text is', () => {
+        expect(handler).toContain("e.target.closest('#status-log-expanded')");
+        expect(handler).toContain("e.target.closest('[data-status-copy-all]')");
+    });
+
+    it('does not collapse when a selection dragged out of the bar is released outside it', () => {
+        const outside = ui.slice(ui.indexOf('    // Clicking outside collapses'), ui.indexOf('const observer = new MutationObserver'));
+        expect(outside).toContain('statusBar.contains(selection.anchorNode)');
+    });
+
+    it('lets the browser select the log at all', () => {
+        expect(css).toContain('user-select: text;');
+    });
+});
+
+describe('copy all', () => {
+    it('copies the WHOLE log, timestamp first — not the strip', () => {
+        // The strip is a preview; a preview is not what belongs in a bug report. So the two are
+        // deliberately different, and the confirmation names the count so the difference is visible
+        // rather than silent.
+        expect(ui).toContain('function statusLogText()');
+        expect(ui).toContain('return statusLog.map(entry => `${entry.timestamp}\\t${entry.message}`).join');
+        expect(ui).toContain('const copied = await copyTextWithFeedback(statusLogText());');
+    });
+
+    it('reports how many lines went to the clipboard', () => {
+        expect(ui).toContain('function copyStatusLog()');
+        expect(ui).toContain("line${statusLog.length === 1 ? '' : 's'} copied");
+        expect(ui).toContain("window.i18n.t('hud.statusLinesCopied', { count: statusLog.length })");
+    });
+
+    it('appears only while the log is expanded', () => {
+        expect(ui).toContain('function ensureStatusCopyAllButton(statusBar)');
+        expect(ui).toContain('ensureStatusCopyAllButton(statusBar);');
+        expect(css).toContain('.status-bar:not(.expanded) .status-log-actions {');
+    });
+
+    it.each(locales)('%s can name the button and the confirmation', locale => {
+        const hud = dictOf(locale).hud;
+        expect(hud.copyStatusLog, `${locale} missing copyStatusLog`).toBeTruthy();
+        expect(hud.statusLinesCopied, `${locale} missing statusLinesCopied`).toBeTruthy();
+        expect(hud.statusLinesCopied).toContain('{{count}}');
+    });
+});
+
+// The strip under the bar holds fifty lines and the log itself held a hundred, which a batch
+// outruns in seconds: applying a hundred block rules writes several hundred lines, so by the time
+// the run ended its beginning — including whatever went wrong early — had already been dropped.
+describe('the whole log, and somewhere to read it', () => {
+    const html = read('../../frontend/index.html');
+
+    it('remembers far more than the strip shows', () => {
+        expect(ui).toContain('const STATUS_LOG_MAX_ENTRIES = 2000;');
+        expect(ui).toContain('const STATUS_LOG_PREVIEW_ENTRIES = 50;');
+        // Trimmed by how far over it is, not one at a time.
+        expect(ui).toContain('statusLog.splice(0, statusLog.length - STATUS_LOG_MAX_ENTRIES);');
+    });
+
+    it('pops out into a dialog that can be scrolled and copied from', () => {
+        expect(html).toContain('id="status-log-modal"');
+        expect(html).toContain('id="status-log-modal-list"');
+        expect(html).toContain('role="dialog"');
+        expect(ui).toContain('function openStatusLogDialog()');
+        expect(ui).toContain('window.openStatusLogDialog = openStatusLogDialog;');
+        expect(css).toContain('.status-log-modal-list {');
+        expect(css.slice(css.indexOf('.status-log-modal-list {'))).toContain('user-select: text;');
+    });
+
+    it('closes on Escape and on a click outside it', () => {
+        expect(ui).toContain('window.ModalEscape?.register(parts.overlay, closeStatusLogDialog);');
+        expect(ui).toContain('if (event.target === parts.overlay) closeStatusLogDialog();');
+    });
+
+    it('appends new lines rather than rebuilding, so a busy run stays cheap', () => {
+        // The dialog holds thousands of rows; rebuilding it per message would make the run that
+        // fills it the run that cannot be watched.
+        expect(ui).toContain('function appendToStatusLogDialog()');
+        expect(ui).toContain('for (let i = statusLogDialogRendered; i < statusLog.length; i += 1)');
+        // Unless the log was trimmed under it, in which case the view would drift from the log.
+        expect(ui).toContain('if (statusLogDialogRendered > statusLog.length) {');
+    });
+
+    it('puts the message in as TEXT — a status line is not ours to trust', () => {
+        // Status lines carry proposal titles, parcel ids and error text.
+        expect(ui).toContain('message.textContent = entry.message;');
+        expect(ui).not.toContain('class="status-log-message">${entry.message}');
+    });
+
+    it.each(locales)('%s can name the dialog', locale => {
+        const hud = dictOf(locale).hud;
+        ['statusLogTitle', 'openStatusLog', 'statusLogCount', 'statusLogClose', 'statusLogEmpty']
+            .forEach(key => expect(hud[key], `${locale} missing ${key}`).toBeTruthy());
+        expect(hud.statusLogCount).toContain('{{count}}');
+    });
+});
+
+describe('the silence before the first proposal', () => {
+    const loader = manager.slice(
+        manager.indexOf('    async _loadReplayGround(appliedList, options = {}) {'),
+        manager.indexOf('    _appliedCorridorTakes(appliedList)')
+    );
+
+    it('says what it is doing, and how long it took', () => {
+        expect(loader).toContain('service.ensureProposalGround(members');
+        expect(loader).toContain('_announceApply(`Cadastral ground ready for ${members.length} proposal');
+        expect(loader).toContain('(elapsed / 1000).toFixed(1)');
+    });
+
+    it('delegates every cache/fetch decision to the ground service', () => {
+        expect(loader).not.toMatch(/fetchParcels(?:ByIds|UnderGeometry|ForIds)/);
+        expect(loader).not.toContain('_replayGroundFetched');
+        expect(ground).toContain("phase: 'ground-check'");
+        expect(ground).toContain("phase: 'ground-load-footprints'");
+        expect(ground).toContain("phase: 'ground-ready'");
+    });
+
+    it.each(locales)('%s translates every shared-plan materialization phase', locale => {
+        const plan = dictOf(locale).modal.roadWidth.share.plan;
+        expect(plan.applyingNamed).toContain('{{done}}/{{total}}');
+        expect(plan.preparingNamed).toContain('{{done}}/{{total}}');
+        [
+            'groundCheck', 'groundIdCheck', 'groundIdLoad', 'groundIdLoadProgress',
+            'groundIdWait', 'groundFootprintWait', 'groundIdsMissing', 'groundIdsReady', 'groundFootprintLoad',
+            'groundFootprintProgress', 'groundReady', 'groundIncomplete', 'buildingGroundLoad',
+            'buildingGroundProgress', 'buildingGroundReady', 'corridorStart', 'scopeReady',
+            'fabricScan', 'fabricArrange', 'mapUpdate', 'fabricReady', 'networkNoding',
+            'saving', 'corridorReady', 'rollback', 'presentation', 'corridorStrips'
+        ].forEach(key => expect(plan.progress[key], `${locale} missing progress.${key}`).toBeTruthy());
+        ['one', 'few', 'other'].forEach(form => {
+            expect(plan.progress.roadCount[form], `${locale} missing roadCount.${form}`).toBeTruthy();
+            expect(plan.progress.trackCount[form], `${locale} missing trackCount.${form}`).toBeTruthy();
+        });
+    });
+});
+
+// The bar sits in a flex column with flex-shrink:0, so a message that wrapped to a second line
+// pushed the whole sidebar up and the next short one dropped it back. On a busy reload that is
+// several times a second.
+describe('the bar holds still', () => {
+    it('reserves two rows and clamps to two rows', () => {
+        const rule = css.slice(css.indexOf('.status-bar > #status {'));
+        expect(rule.slice(0, 300)).toContain('min-height: 2.7em;');
+        // Reserving alone is not enough: a three-line message would just move the flip up a row.
+        expect(rule.slice(0, 300)).toContain('-webkit-line-clamp: 2;');
+        expect(rule.slice(0, 300)).toContain('overflow: hidden;');
+    });
+});
+
+// A log line about a proposal used to be a dead end: it named the thing but could not take you to
+// it, and finding it meant scrolling a list of several hundred.
+describe('a line about a proposal goes to that proposal', () => {
+    it('remembers WHICH proposal as a field, not as text to be re-parsed', () => {
+        // Titles are not unique, are translated, and are written by users — matching them back out
+        // of "Applied block Block 1108-0116" is not a thing that can be made to work.
+        expect(ui).toContain('const proposalId = options && options.proposalId ? String(options.proposalId) : null;');
+        expect(ui).toContain('statusLog.push({ message, timestamp, proposalId });');
+        // Matched on the SHAPE, not the wording: the announcement's verb now distinguishes a
+        // replay ("Re-derived") from an apply ("Applied"), and pinning the literal text made a
+        // wording change look like the proposal id had stopped travelling as a field.
+        expect(manager).toMatch(/_announceApply\(`\$\{verb\} \$\{kind\} \$\{label\}`, proposalId\)/);
+    });
+
+    it('renders as a real button, so it is reachable by keyboard', () => {
+        expect(ui).toContain("document.createElement(entry.proposalId ? 'button' : 'span')");
+        expect(ui).toContain("message.classList.add('is-linked')");
+        expect(css).toContain('button.status-log-message {');
+    });
+
+    it('still puts the message in as TEXT even now that it is a control', () => {
+        expect(ui).toContain('message.textContent = entry.message;');
+        expect(ui).not.toContain('message.innerHTML = entry.message');
+    });
+
+    it('does not toggle the log on its way through', () => {
+        // The bar's own click handler collapses the panel; a link click is not that click.
+        const row = ui.slice(ui.indexOf('function statusLogRow('), ui.indexOf('function goToProposalFromStatusLog'));
+        expect(row).toContain('event.stopPropagation();');
+    });
+
+    it('uses the same selector every other surface uses, not a URL', () => {
+        // There is no id-based deep link to reuse: a share URL carries the whole proposal payload.
+        expect(ui).toContain('window.selectAndHighlightProposal(String(proposalId), null, true, true);');
+        expect(ui).toContain("if (typeof window.selectAndHighlightProposal !== 'function') return;");
+    });
+
+    it.each(locales)('%s can name the action', locale => {
+        expect(dictOf(locale).hud.showThisProposal, `${locale} missing showThisProposal`).toBeTruthy();
+    });
+});
+
+describe('apply versus replay wording', () => {
+    it('calls a fresh local materialization Applied, not Re-derived', () => {
+        const summary = manager.slice(
+            manager.indexOf('async function _runProposalApplyWithSummary('),
+            manager.indexOf('async function _runProposalMutationBoundary(')
+        );
+        const fresh = manager.slice(
+            manager.indexOf('    async deriveForNewProposal('),
+            manager.indexOf('    async materializeCorridorBatch(', manager.indexOf('    async deriveForNewProposal('))
+        );
+        expect(summary).toContain("options.statusMode !== 'apply'");
+        expect(fresh).toContain("statusMode: 'apply'");
+    });
+});
+
+// A status LINE is superseded within a second on a busy reload, so by the time you look at the bar
+// there is nothing left saying the app is still working. The spinner is the part that persists.
+describe('the spinner', () => {
+    it('is ref-counted, so overlapping work cannot switch it off early', () => {
+        expect(ui).toContain('let statusActivityHolders = 0;');
+        expect(ui).toContain('statusActivityHolders += 1;');
+        expect(ui).toContain('if (statusActivityHolders > 0) return;');
+    });
+
+    it('hands back a release function, and is published for other modules', () => {
+        expect(ui).toContain('return () => endStatusActivity();');
+        expect(ui).toContain('window.beginStatusActivity = beginStatusActivity;');
+        expect(ui).toContain('window.endStatusActivity = endStatusActivity;');
+    });
+
+    it('turns for the whole plan-wide derivation, and stops even if it throws', () => {
+        // Sliced to rebuildAppliedFabric ALONE — its next sibling, not a method several hundred
+        // lines later. A wider window catches other functions' `finally` blocks, and then this test
+        // reports on whichever one happens to come last.
+        const rebuild = manager.slice(
+            manager.indexOf('    async rebuildAppliedFabric(options = {}) {'),
+            manager.indexOf('    _orderedStandingProposals() {')
+        );
+        expect(rebuild).toContain('window.beginStatusActivity()');
+        // In `finally` — a derivation that throws must not leave the bar spinning for ever.
+        const tail = rebuild.slice(rebuild.lastIndexOf('} finally {'));
+        expect(tail).toContain('spinnerHeld()');
+    });
+
+    it('keeps the mark when motion is reduced, because it is state and not decoration', () => {
+        const reduced = css.slice(css.indexOf('@media (prefers-reduced-motion: reduce) {'));
+        expect(reduced.slice(0, 300)).toContain('.status-activity-spinner');
+        expect(reduced.slice(0, 300)).toContain('animation: none;');
+    });
+});
+
+// Flat records ask the repository for their declared cadastral ids once. A record whose authored
+// footprint must be resolved spatially takes the same repository path; batching is an internal
+// repository concern and never a second consumer-side fetch path.
+describe('the replay asks for its ground once', () => {
+    const loader = ground.slice(ground.indexOf('async function ensureProposalGround('));
+
+    it('combines Polygon and MultiPolygon footprints without nesting them', () => {
+        const helper = ground.slice(
+            ground.indexOf('function multiPolygonOfFootprints(footprints) {'),
+            ground.indexOf('function createCadastralParcelRepository(', ground.indexOf('function multiPolygonOfFootprints(footprints) {'))
+        );
+        expect(helper).toContain("if (geom.type === 'Polygon') polygons.push");
+        expect(helper).toContain("else if (geom.type === 'MultiPolygon')");
+        expect(helper).toContain('if (!polygons.length) return null;');
+    });
+
+    it('sends bounded footprint batches through the repository', () => {
+        expect(loader).toContain('i += FOOTPRINT_BATCH_SIZE');
+        expect(loader).toContain('footprintEntries.slice(i, i + FOOTPRINT_BATCH_SIZE)');
+        expect(loader).toContain('multiPolygonOfFootprints(chunk.map(entry => entry.footprint))');
+        expect(loader).toContain('await ensureFootprint(geometry');
+        expect(loader).not.toMatch(/fetchParcels(?:ByIds|UnderGeometry|ForIds)/);
+    });
+
+    it('coalesces identical footprints and caches only successful repository results', () => {
+        expect(loader).toContain('const footprintGroups = new Map();');
+        expect(loader).toContain('footprintGroups.get(key).records.push(record);');
+        const request = loader.slice(loader.indexOf('const worker = async () => {'));
+        expect(request.indexOf('const result = await ensureFootprint(geometry'))
+            .toBeLessThan(request.indexOf('footprintResults.set(entry.key, clone(summary))'));
+    });
+});

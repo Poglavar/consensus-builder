@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1410-mosul.json",
+  "purpose": "Read-only source discovery and public map/service review for the exact ranked city record; no globals/runtime/catalog integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The WUP locator is a settlement centroid, not a parcel identity. Official Ministry sources confirm a Nineveh/Mosul-area registration directorate, but public deed/map e-services are limited to selected Baghdad directorates and require owner documentation. The official reconstruction GIS is project/facility mapping, not a cadastre. No anonymous city parcel layer or parcel geometry was found; no private data or credentials were used.",
+  "registryAssessment": "The Iraqi Ministry of Justice lists the Nineveh Real Estate Registration Directorate (including al-Zuhoor) as a local property-registration office. The Ministry’s electronic deed/map services are described as rolled out in selected Baghdad directorates, and the official service workflow requires owner documents; this does not establish a public parcel-map service for Mosul.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mosul Iraq cadastral parcel map registry land records official Nineveh GIS",
+      "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+      "result": "Official Ministry of Justice sources list the Nineveh Real Estate Registration Directorate and explain the limited Baghdad electronic deed/map rollout. No anonymous Mosul parcel map endpoint was identified.",
+      "actualResultUrls": [
+        "https://www.moj.gov.iq/contact_us.php",
+        "https://moj.gov.iq/view.9289/"
+      ],
+      "executionMethod": "Separate English web search and Ministry service/directory review."
+    },
+    {
+      "language": "Arabic",
+      "query": "نينوى الموصل التسجيل العقاري خارطة عقارية عقار دائرة التسجيل العقاري GIS",
+      "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+      "result": "المصادر الرسمية لوزارة العدل تسجل مديرية التسجيل العقاري في نينوى/الزهور. خدمة الخرائط الإلكترونية المعلنة متاحة لمديريات مختارة في بغداد وتتطلب مستندات المالك؛ لم يظهر عارض عام لقطع الموصل.",
+      "actualResultUrls": [
+        "https://www.moj.gov.iq/contact_us.php",
+        "https://moj.gov.iq/view.9289/"
+      ],
+      "executionMethod": "بحث عربي منفصل ومراجعة دليل الوزارة وصفحات الخدمة الرسمية."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.moj.gov.iq/contact_us.php",
+      "method": "Official page and source inspection",
+      "observation": "Official Ministry directory lists the Nineveh Real Estate Registration Directorate / al-Zuhoor office."
+    },
+    {
+      "url": "https://moj.gov.iq/view.9289/",
+      "method": "Official page and source inspection",
+      "observation": "Official Ministry notice describes e-services for deed and parcel-map requests and names the currently participating Baghdad directorates; the announcement does not include Nineveh."
+    },
+    {
+      "url": "https://mnpcd.mop.gov.iq/GovernorateDetails.php?gov=4",
+      "method": "Official page and source inspection",
+      "observation": "Government project GIS for Nineveh concerns reconstruction projects/facilities, not cadastral parcels."
+    }
+  ],
+  "viewerAndServiceTrace": null,
+  "geometryDecision": "No publicly queryable city parcel geometry verified; no polygon retained."
+}

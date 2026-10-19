@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-71-szczecin.json",
+  "cityCode": 71,
+  "queueRank": 1911,
+  "city": "Szczecin",
+  "country": "Poland",
+  "countryCode": "PL",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "City of Szczecin Portal Systemu Informacji Przestrzennej Miasta Szczecin",
+  "serviceUrl": "https://geoportal.szczecin.eu/",
+  "scope": "Municipal EGiB cadastral data, including the official Działki - EGiB parcel layer; feature coverage was not independently verified.",
+  "schemaAndCrs": "Official metadata describes identifier, cadastral district, number, unit and area attributes. CRS, geometry type, and live service schema were not confirmed because direct portal/GeoNetwork retrieval failed.",
+  "nativeIdentity": "identifier is the documented preferred native parcel identity. No synthetic identity, OBJECTID, or composite key was used.",
+  "fieldMapping": {
+    "identifier": "canonical native parcel identity if independently retrieved",
+    "geometry": "parcel polygon geometry if independently retrieved"
+  },
+  "requestOutcome": "English and Polish first-party discovery succeeded through indexed official pages. Direct portal retrieval failed with HTTP/2 protocol/empty-reply behavior and the official GeoNetwork endpoint returned 502. No public feature endpoint, schema, CRS, or parcel geometry response was obtained.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["identifier", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and ownership/rights-detail fields were not requested or retained.",
+  "officialCustodyEvidence": "The official municipal SIP portal and its official GeoNetwork catalogue evidence a City of Szczecin cadastral map/data custodian for EGiB parcels. This is local municipal registry/map evidence, not merely national-agency prose.",
+  "limits": [
+    "Metadata and search-index evidence do not prove complete live parcel coverage at the exact WUP point.",
+    "No exact-point feature response was available; this is not evidence of citywide absence.",
+    "The current JavaScript/configuration and public service endpoint could not be retrieved; no login, credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "No raw source attribute set or parcel polygon was retained.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm the current anonymous feature endpoint, CRS handling, native identifier stability, and Szczecin coverage before admission."
+}

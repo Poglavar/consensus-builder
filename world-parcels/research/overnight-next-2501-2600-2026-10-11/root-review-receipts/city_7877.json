@@ -1,0 +1,35 @@
+{
+  "taskId": "city:7877",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-7877-lalamusa.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/lalamusa-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:10:02Z",
+  "findings": {
+    "identity": "WUP rank 2576, Pakistan, point [32.7041274008137,73.9519569407633], 228248 persons; packet and queue match the SHA256-verified official archive.",
+    "search": "English and Urdu executed-query records each include source results and actual URLs.",
+    "source": "Original PULSE cache contains 352 Kharian mauza administrative records and extent hits for Dhama, Kaira, and Mundeer at the WUP point. These are not parcel polygons or parcel IDs. Original PLRA ArcGIS directory lists PULSE_LMKR folder, while probed parcel MapServer paths return 404. No durable parcel sample exists.",
+    "hold": "No native parcel ID or polygon response, and no independent adapter, paging, 13-cell, GEOS, source-binding, or headed Details qualification. Mauza extent hits and inaccessible routes do not prove parcel presence or absence."
+  },
+  "originalArtifactChecks": [
+    {
+      "path": "tmp/valhalla-parcel-research/lalamusa-mauzas-110.json",
+      "sha256": "a38ee772cf940b5436b11e5577c44f3b8b8fa99114acba8a35ee61f788d16a59"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/lalamusa-services.json",
+      "sha256": "a847ec2fbe0b54fa59c8dc4628169aeb7386560490e1a3a469a1ccedd4de0bb6"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/lalamusa-Punjab_Pulse_Map_MapServer.json",
+      "sha256": "c2bf44c3d3e9b66e0248719435d626ae76d5d1092d4866fb7c95fa1d777f0711"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/lalamusa-Punjab_PulseMap2_MapServer_0.json",
+      "sha256": "edda32c997ec134f386f1a9e902f8fdd8324905664081e38e80c1c444961bc4b"
+    }
+  ]
+}

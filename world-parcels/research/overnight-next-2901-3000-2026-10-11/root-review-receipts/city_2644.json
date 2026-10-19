@@ -1,0 +1,29 @@
+{
+  "taskId": "city:2644",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-2644-firozkoh.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/firozkoh-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:47:16Z",
+  "reason": "Immutable WUP identity and English/Dari-Pashto searches match the paired evidence. Official MUDH material establishes national cadastre duties and Firozkoh planning activity, not a verified local public parcel registry or anonymous parcel geometry. Timeout, TLS failure, and login shell remain unresolved access, not absence. No full polygon/native ID or independent adapter and headed Details qualification exists.",
+  "registryFound": null,
+  "bilingualExecutedSearchesRecorded": true,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://mudh.gov.af/dr/%D8%B1%D9%88%D9%86%D8%AF-%D8%AA%D8%B7%D8%A8%DB%8C%D9%82-%D9%82%D8%B3%D9%85%D8%AA-%D8%B4%D8%B4%D9%85-%D9%BE%D9%84%D8%A7%D9%86-%D8%AA%D9%81%D8%B5%DB%8C%D9%84%DB%8C-%D8%B4%D9%87%D8%B1-%D9%81%DB%8C%D8%B1%D9%88%D8%B2%DA%A9%D9%88%D9%87-%D8%AF%D8%B1-%D8%BA%D9%88%D8%B1-%D8%A2%D8%BA%D8%A7%D8%B2-%DA%AF%D8%B1%D8%AF%DB%8C%D8%AF",
+    "https://mudh.gov.af/dr/%D9%85%D8%B9%DB%8C%D9%86%DB%8C%D8%AA-%D8%A7%D9%85%D9%88%D8%B1-%D8%B2%D9%85%DB%8C%D9%86%D8%AF%D8%A7%D8%B1%DB%8C"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

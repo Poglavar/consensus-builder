@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "source": "gaborone-bofinet-plots-provisional",
+  "identityClassification": {
+    "kind": "provisional-source-row-reference",
+    "fields": ["LotId", "OBJECTID_1"],
+    "officialCadastralIdentity": false,
+    "note": "The composite disambiguated tested source rows. Do not describe it as an official cadastral parcel identity."
+  },
+  "descriptor": {
+    "id": "gaborone-bofinet-plots-provisional",
+    "idPrefix": "gaborone:bofinet:",
+    "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+    "idFields": ["LotId", "OBJECTID_1"],
+    "idFieldTypes": {
+      "LotId": "string",
+      "OBJECTID_1": "integer"
+    },
+    "objectIdField": "FID",
+    "outFields": ["FID", "LotId", "OBJECTID_1", "OBJECTID", "Town_Lot_I", "Extension_", "SR_No", "Diagram_No"],
+    "parcelNumberField": "LotId",
+    "pageSize": 3,
+    "idBatchSize": 20,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "evidence": {
+    "acceptanceReport": "gaborone-composite-complete-audit.json",
+    "shapelyQualityReport": "gaborone-shapely-quality.json",
+    "metricInputGeoJSON": "gaborone-quality-input-epsg32735.geojson",
+    "sampleGeoJSON": "gaborone-composite-quality-sample.geojson",
+    "pageSizeWasForcedToThree": true
+  },
+  "scope": "Proposed descriptor only; no runtime or registry files were changed."
+}

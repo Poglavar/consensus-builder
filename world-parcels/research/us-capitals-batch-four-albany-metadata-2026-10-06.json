@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "NY",
+  "city": "albany",
+  "endpoint": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1",
+  "httpStatus": 200,
+  "metadata": {
+    "name": "NYS Tax Parcels Public",
+    "description": "Publication Date: May 2026. This polygon layer is updated annually.     This layer contains 2024 parcel data only for NY State counties which gave NYS ITs Geospatatial Services permission to share this data with the public. Work to obtain parcel data from additional counties, as well as permission to share the data, is ongoing. To date, 36 counties have provided the Geospatial Services permission to share their parcel data with the public. Parcel data for counties which do not allow the Geospatial Services to redistribute their data must be obtained directly from those counties. Geospatial Services' goal is to eventually include parcel data for all counties in New York State.     Parcel geometry was incorporated as received from County Real Property Departments. No attempt was made to edge-match parcels along adjacent counties. County attribute values were populated using 2024 Assessment Roll tabular data Geospatial Services obtained from the NYS Department of Tax and Finance’s Office of Real Property Tax Services (ORPTS). Tabular assessment data was joined to the county provided parcel geometry using the SWIS &amp; SBL or SWIS &amp; PRINT KEY unique identifier for each parcel.     Detailed information about assessment attributes can be found in the ORPTS Assessor’s Manuals available here: https://www.tax.ny.gov/research/property/assess/manuals/assersmanual.htm. New York City data comes from NYC MapPluto which can be found here: https://www1.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page.     This layer displays when zoomed in below 1:37,051-scale.     This map service is available to the public.     Geometry accuracy varies by contributing county.     Thanks to the following counties that specifically authorized Geospatial Services to share their GIS tax parcel data with the public: Albany, Cayuga, Chautauqua, Cortland, Erie, Genesee, Greene, Hamilton, Lewis, Livingston, Montgomery, New York City (Bronx, Kings, New York, Queens, Richmond), Oneida, Onondaga, Ontario, Orange, Oswego, Otsego, Putnam, Rensselaer, Rockland, Schuyler, Steuben, St Lawrence, Suffolk, Sullivan, Tioga, Tompkins, Ulster, Warren, Wayne, and Westchester.    The State of New York, acting through the New York State Office of Information Technology Services, makes no representations or warranties, express or implied, with respect to the use of or reliance on the Data provided. The User accepts the Data provided “as is” with no guarantees that it is error free, complete, accurate, current or fit for any particular purpose and assumes all risks associated with its use. The State disclaims any responsibility or legal liability to Users for damages of any kind, relating to the providing of the Data or the use of it. Users should be aware that temporal changes may have occurred since this Data was created. ",
+    "serviceItemId": "c7f553baf6734f82a904761c2feea5db",
+    "geometryType": "esriGeometryPolygon",
+    "maxRecordCount": 2000,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "COUNTY_NAME",
+        "type": "esriFieldTypeString",
+        "alias": "COUNTY_NAME",
+        "length": 50,
+        "domain": null
+      },
+      {
+        "name": "SWIS_SBL_ID",
+        "type": "esriFieldTypeString",
+        "alias": "SWIS_SBL_ID",
+        "length": 50,
+        "domain": null
+      }
+    ]
+  },
+  "catalogueComparison": {
+    "url": "https://gis.ny.gov/parcel-polygon-metadata",
+    "describes": "Primarily 2025 file-geodatabase data, published May 2026",
+    "assessment": "Download metadata and current MapServer description name different assessment years; use the live endpoint description for its notice."
+  }
+}

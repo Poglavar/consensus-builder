@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 76,
+  "city": "Dubai",
+  "countryCode": "AE",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/dubai.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "دبي خريطة الأراضي قطع الأراضي السجل العقاري GIS بيانات مفتوحة"
+  },
+  "assessment": "Search found an official ArcGIS Plot sublayer candidate, but direct access returned 403 and DDA may cover only its jurisdiction. This is a promising lead requiring alternate verification and scope checks; not a verified open citywide feed.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

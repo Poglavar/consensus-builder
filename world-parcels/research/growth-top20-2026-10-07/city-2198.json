@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:2198",
+  "queueRank": 20,
+  "growthCohort": "top20-2015-2025",
+  "name": "Antsiramandroso",
+  "countryCode": "MG",
+  "centerLatLon": [
+    -18.0327220798438,
+    49.3376073680055
+  ],
+  "administrativeIdentity": "Verified intended Antsiramandroso is the rural locality near Toamasina in Sahandahatra/Toamasina II, Atsinanana, Madagascar (official voter-list and government road-project references). It is not the much more distant common-name Antsiramandroso near Antananarivo; supplied WUP point is about 5 km from the mapped locality centroid and should be treated as approximate locality center.",
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://observatoire-territoire.mg/",
+      "observation": "Official Observatoire et Intelligence Territoriale et Foncière (OITF) portal links to SILOAT Geoportal and PLOF tools; says PLOF maps land status at commune scale."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/carte/",
+      "observation": "Official-partner SILOAT/Carto OT map viewer; prior inspection found MapServer WMS and PLOF/urban-plan layers, but no parcel polygon response."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/presentation/",
+      "observation": "OITF presentation says geoportal centralizes/diffuses national territorial databases and planning tools."
+    },
+    {
+      "url": "https://cnlegis.gov.mg/uploads/LISTE_ET_EMPLACEMENT_BV.pdf",
+      "observation": "Official Madagascar election document places EPP Antsiramandroso in Sahandahatra, Toamasina Suburbaine, Toamasina II, Atsinanana."
+    },
+    {
+      "url": "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf",
+      "observation": "Government CASEF road project document names Antsiramandroso–Ambodiriana in Commune Ambodiriana, Toamasina II, Atsinanana."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://observatoire-territoire.mg/",
+      "observation": "Official Observatoire et Intelligence Territoriale et Foncière (OITF) portal links to SILOAT Geoportal and PLOF tools; says PLOF maps land status at commune scale."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/carte/",
+      "observation": "Official-partner SILOAT/Carto OT map viewer; prior inspection found MapServer WMS and PLOF/urban-plan layers, but no parcel polygon response."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/presentation/",
+      "observation": "OITF presentation says geoportal centralizes/diffuses national territorial databases and planning tools."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://observatoire-territoire.mg/carte/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Angular map app from prior check; JS config exposes MapServer WMS and limited PLOF layers; current direct request failed DNS before response, web viewer indexed."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Prior check returned MapServer error requiring MAP parameter; no guessed server-side map path accepted."
+    },
+    {
+      "url": "https://www.matsf.gov.mg/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Prior check official ministry site linked OITF; no direct parcel endpoint."
+    },
+    {
+      "url": "https://cnlegis.gov.mg/uploads/LISTE_ET_EMPLACEMENT_BV.pdf",
+      "method": "GET",
+      "httpStatus": "web-search",
+      "contentType": "application/pdf",
+      "assessment": "Official voter list identifies matching Toamasina locality; identity evidence only."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/carte/main-es2015.dc9017cc973dce451702.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/javascript",
+      "assessment": "Official viewer JS declares _urlMapServ=https://observatoire-territoire.mg/cgi-bin/mapserv and map path E:/mapserv_data/oatmap/oat/wms_home.map; names PLOF layers plof_avaradrano, plof_atsimondrano, plof_laniera (not this Toamasina site), plus locality/urban plan layers."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?MAP=E%3A%2Fmapserv_data%2Foatmap%2Foat%2Fwms_home.map&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Tiny capabilities probe with browser headers and viewer Referer returned MapServer diagnostic msLoadMap(): Unable to access file (old Windows path not valid on current host); not a data response. WMS and count-3 WFS probes failed identically; no map path guessed."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/carte/main-es2015.dc9017cc973dce451702.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/javascript",
+      "assessment": "Official viewer JS declares _urlMapServ=https://observatoire-territoire.mg/cgi-bin/mapserv and map path E:/mapserv_data/oatmap/oat/wms_home.map; names PLOF layers plof_avaradrano, plof_atsimondrano, plof_laniera (not this Toamasina site), plus locality/urban plan layers."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/cgi-bin/mapserv?MAP=E%3A%2Fmapserv_data%2Foatmap%2Foat%2Fwms_home.map&SERVICE=WFS&VERSION=1.1.0&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Tiny capabilities probe with browser headers and viewer Referer returned MapServer diagnostic msLoadMap(): Unable to access file (old Windows path not valid on current host); not a data response. WMS and count-3 WFS probes failed identically; no map path guessed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "French",
+      "exactQuery": "cadastre parcelles Antsiramandroso Toamasina II Atsinanana PLOF SILOAT",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://observatoire-territoire.mg/",
+        "https://observatoire-territoire.mg/carte/",
+        "https://cnlegis.gov.mg/uploads/LISTE_ET_EMPLACEMENT_BV.pdf",
+        "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf"
+      ]
+    },
+    {
+      "language": "Malagasy",
+      "exactQuery": "Antsiramandroso Sahandahatra Toamasina tany sarintany fananan-tany kadasitra",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://observatoire-territoire.mg/",
+        "https://observatoire-territoire.mg/carte/",
+        "https://cnlegis.gov.mg/uploads/LISTE_ET_EMPLACEMENT_BV.pdf",
+        "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf"
+      ]
+    },
+    {
+      "language": "French",
+      "exactQuery": "site:observatoire-territoire.mg Antsiramandroso PLOF foncier parcellaire",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://observatoire-territoire.mg/",
+        "https://observatoire-territoire.mg/carte/",
+        "https://cnlegis.gov.mg/uploads/LISTE_ET_EMPLACEMENT_BV.pdf",
+        "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "SILOAT/OITF territorial-information and commune-level PLOF mapping; no Antsiramandroso coverage verified",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "targetAreaRegistryConfirmed": false
+  },
+  "nextStep": "Use SILOAT viewer network from a reachable browser to identify valid MAP configuration and discover if any PLOF layer covers Ambodiriana/Sahandahatra; then run tiny feature/geometry probe. PLOF is a map lead, not verified cadastral polygons.",
+  "failedAttemptsPreserved": [
+    {
+      "reference": "world-parcels/research/retry/countries/MG.json",
+      "note": "Prior dated country retry retained; see this record’s requests for current follow-up and note status history."
+    }
+  ],
+  "requestHeadersUsed": "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml,application/json,*/*;q=0.8; Accept-Language varied by target country (en-SS/ar; en-KE/sw-KE; en-UG; fr-DZ/ar; fr-MG/mg); cookie jar enabled in direct requests. Web research used for official indexed pages.",
+  "registryLeadFound": true,
+  "registryFoundReason": "OITF/SILOAT is a national territorial-information portal, but the PLOF layers discovered are named for Antananarivo environs and do not establish cadastral coverage in Sahandahatra/Toamasina II. The locality identity is supported, but coverage at the target is not.",
+  "scopedConclusion": {
+    "targetArea": "Verified intended Antsiramandroso is the rural locality near Toamasina in Sahandahatra/Toamasina II, Atsinanana, Madagascar (official voter-list and government road-project references). It is not the much more distant common-name Antsiramandroso near Antananarivo; supplied WUP point is about 5 km from the mapped locality centroid and should be treated as approximate locality center.",
+    "cadastralRegistryConfirmedAtTarget": false,
+    "registryLeadFound": true,
+    "conclusion": "OITF/SILOAT is a national territorial-information portal, but the PLOF layers discovered are named for Antananarivo environs and do not establish cadastral coverage in Sahandahatra/Toamasina II. The locality identity is supported, but coverage at the target is not.",
+    "coverageBoundary": "This conclusion is limited to the named target area and supplied WUP coordinate; national or other-area sources are leads only."
+  },
+  "registryBasis": "OITF/SILOAT is a national territorial-information portal, but the PLOF layers discovered are named for Antananarivo environs and do not establish cadastral coverage in Sahandahatra/Toamasina II. The locality identity is supported, but coverage at the target is not.",
+  "registryEvidenceUrls": [
+    "https://observatoire-territoire.mg/",
+    "https://observatoire-territoire.mg/carte/",
+    "https://observatoire-territoire.mg/presentation/",
+    "https://cnlegis.gov.mg/uploads/LISTE_ET_EMPLACEMENT_BV.pdf",
+    "https://minae.digital.gov.mg/wp-content/uploads/pdf/CASEF/PAR_ANTSIRAMANDROSO%20AMBODIRINA_Version%20publiable.pdf"
+  ]
+}

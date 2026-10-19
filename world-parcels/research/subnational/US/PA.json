@@ -1,0 +1,65 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "PA",
+ "regionName": "Pennsylvania",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-pa-dep-parcels",
+  "name": "PA Parcels (PA DEP, 'partial dataset for WorldView and PracticeKeeper')",
+  "operator": "Pennsylvania Department of Environmental Protection",
+  "scope": "multi-county compilation, self-described as partial",
+  "endpoint": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:3857 native, 4326 via outSR",
+  "reuseStatus": "not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-pa-dep-parcels",
+  "requestUrl": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -75.166,
+   39.952,
+   -75.1645,
+   39.953
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID",
+  "responseFile": "PA-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Service description says 'PA Parcel partial dataset'; no statewide PA layer found. PASDA lists county parcel services (apps.pasda.psu.edu, PA_Parcels_2022 etc., not tested; /PA_Parcels/FeatureServer returned 500 'featureserver not found').",
+ "subregionsVerified": [
+  "Philadelphia County",
+  "Allegheny County",
+  "Centre County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://apps.pasda.psu.edu/ArcGIS/rest/services",
+   "observation": "PASDA county parcel MapServers (not tested)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.dep.pa.gov/depgisprd/rest/services/Parcels/PA_Parcels/MapServer/0/query (3 counties)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons each, ID + county only"
+  }
+ ],
+ "reuseStatus": "Not read.",
+ "remainingUncertainty": "Which counties this partial dataset covers is unknown; no full-state layer found.",
+ "nextStep": "Test PASDA PA_Parcels_2022 MapServer and county-by-county coverage list."
+}

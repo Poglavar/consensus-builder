@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "KY",
+  "capital": "Frankfort",
+  "purpose": "Metadata-only investigation of conflicting Franklin County parcel records; no parcel geometries or owner values retained.",
+  "source": {
+    "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+    "serviceName": "Parcels",
+    "geometryType": "esriGeometryPolygon",
+    "objectIdField": null,
+    "sourceSpatialReference": {
+      "wkid": 102679,
+      "latestWkid": 2246,
+      "xyTolerance": 0.003280833333333333,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -120428400,
+      "falseY": -95345400,
+      "xyUnits": 3048.0060960121928,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "maxRecordCount": 2000,
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": false,
+      "supportsCurrentUserQueries": true
+    },
+    "copyrightText": "",
+    "description": "",
+    "fields": [
+      {
+        "name": "v_SY",
+        "type": "esriFieldTypeInteger",
+        "alias": "V_SY",
+        "domain": null
+      },
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "MAPNUM",
+        "type": "esriFieldTypeString",
+        "alias": "MAPNUM",
+        "domain": null
+      },
+      {
+        "name": "PARCEL_ID",
+        "type": "esriFieldTypeString",
+        "alias": "PARCEL_ID",
+        "domain": null
+      },
+      {
+        "name": "MAP",
+        "type": "esriFieldTypeString",
+        "alias": "MAP",
+        "domain": null
+      },
+      {
+        "name": "BLOCK",
+        "type": "esriFieldTypeString",
+        "alias": "BLOCK",
+        "domain": null
+      },
+      {
+        "name": "PARCEL",
+        "type": "esriFieldTypeString",
+        "alias": "PARCEL",
+        "domain": null
+      },
+      {
+        "name": "SOURCE_TYP",
+        "type": "esriFieldTypeString",
+        "alias": "SOURCE_TYP",
+        "domain": {
+          "type": "codedValue",
+          "name": "WS1_SOURCE_TYP",
+          "description": "Property Data Source Type",
+          "codedValues": [
+            {
+              "name": "DEED",
+              "code": "DEED"
+            },
+            {
+              "name": "PLAT",
+              "code": "PLAT"
+            },
+            {
+              "name": "PVA MAP",
+              "code": "PVA MAP"
+            },
+            {
+              "name": "SURVEY",
+              "code": "SURVEY"
+            }
+          ],
+          "mergePolicy": "esriMPTDefaultValue",
+          "splitPolicy": "esriSPTDefaultValue"
+        }
+      },
+      {
+        "name": "SOURCE",
+        "type": "esriFieldTypeString",
+        "alias": "SOURCE",
+        "domain": null
+      },
+      {
+        "name": "valid_sale",
+        "type": "esriFieldTypeString",
+        "alias": "valid_sale",
+        "domain": null
+      }
+    ]
+  },
+  "publisherProvenance": {
+    "operator": "Franklin County Property Valuation Administrator, with Schneider Geospatial-hosted GIS layer; the service itself identifies only the source as Schneider WFS and has blank layer copyright/description.",
+    "references": [
+      {
+        "url": "https://franklincountypva.com/tax-lingo/",
+        "observation": "Official Franklin County PVA page defines PIN as Property Identification Number (Map number); this establishes MAPNUM semantics but does not document row lifecycle or duplicate resolution."
+      },
+      {
+        "url": "https://franklincountypva.com/",
+        "observation": "Official PVA site says its property search exposes current certified tax roll; its linked viewer is not established here as a parcel geometry service."
+      },
+      {
+        "url": "https://revenue.ky.gov/Property/Mapping-Services/Pages/default.aspx",
+        "observation": "Kentucky DOR states it supports local PVAs with mapping, provides GIS products for sale, and asks requests to start with the local PVA."
+      }
+    ]
+  },
+  "identityAssessment": {
+    "nativeCandidate": "PARCEL_ID (reported value: 061-00-00-103.00), also shown as MAPNUM in layer schema",
+    "nativeCandidateStatus": "Unusable as configured for canonical polygon identity: root-agent inspection found one PARCEL_ID on two records with distinct geometries. PVA documentation says PIN/map number is an identifier, but does not resolve duplicate feature rows. No GlobalID field exists.",
+    "otherFields": {
+      "SOURCE_TYP": "Coded values DEED, PLAT, PVA MAP, SURVEY; root observation indicates one duplicate each PVA MAP and DEED. Metadata description says Property Data Source Type, but does not say which is current authoritative parcel ground.",
+      "SOURCE": "String, no documented meaning or domain.",
+      "v_SY": "Integer year field, no metadata definition that establishes currentness or lifecycle.",
+      "MAP_BLOCK_PARCEL": "Visible cadastral components, but no source documentation reviewed says this tuple distinguishes legal parcels or explains how it should handle duplicate map-number rows.",
+      "MAPNUM": "String map number; known to duplicate PARCEL_ID in this service. Official PVA glossary calls PIN (property identification number) the map number, but this does not resolve row duplication."
+    },
+    "reportedConflictingExample": {
+      "parcelId": "061-00-00-103.00",
+      "records": 2,
+      "transportObjectIds": [
+        22277,
+        22278
+      ],
+      "sourceTypes": [
+        "PVA MAP",
+        "DEED"
+      ],
+      "parcelComponentValues": [
+        "103",
+        "103.18"
+      ],
+      "v_SYValues": [
+        2017,
+        2017
+      ],
+      "geometryRelation": "Root agent reported distinct geometries; no raw geometry retained."
+    },
+    "decision": "No safe identity, current-ground filter, or evidence-backed parts mode found. Do not configure this layer for parcel binding from current evidence. Filtering SOURCE_TYP to PVA MAP or choosing a v_SY year would discard records without a documented current-ground rule."
+  },
+  "alternativeEndpointInvestigation": {
+    "candidate": "https://services5.arcgis.com/p5Cexs4wkcaZvTjT/arcgis/rest/services/Franklin_County_Parcels/FeatureServer/0",
+    "status": "Rejected: ArcGIS item extent is in Idaho (approximately longitude -112, latitude 42) and item owner is cityofpreston; this is Franklin County, Idaho, not Franklin County, Kentucky. It must not be used as the Kentucky replacement."
+  },
+  "limitations": [
+    "No complete parcel gate or geometry retrieval was run in this investigation.",
+    "No alternate Franklin County, Kentucky official parcel polygon service with documented stable native identity was found in the three focused publisher sources reviewed.",
+    "Official PVA site is access-restricted to direct fetch from this runtime; search-indexed official page content provided the PIN definition.",
+    "Duplicate-row facts and transport object IDs are from the root agent\u2019s initial diagnosis; this subtask did not independently re-fetch those exact records."
+  ]
+}

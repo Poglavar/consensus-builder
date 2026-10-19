@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3414-al-ahsa.json",
+  "purpose": "Document city-scope registry/cadastre evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The city-specific GIS plot inquiry is publicly advertised, but the service endpoint and safe geometry schema were not available for inspection; no parcel feature response was verified.",
+  "registryAssessment": "The National Platform service listing identifies Al-Ahsa Municipality as the provider of a GIS service for the public to inquire about plot data and draw/print maps. Official municipality branch listing confirms the local municipality. This establishes city-specific plot-record service, but no anonymous feature schema or geometry response was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://my.gov.sa/en/services/272590",
+      "observation": "The National Platform service listing identifies Al-Ahsa Municipality as the provider of a GIS service for the public to inquire about plot data and draw/print maps. Official municipality branch listing confirms the local municipality. This establishes city-specific plot-record service, but no anonymous feature schema or geometry response was verified."
+    },
+    {
+      "url": "https://momah.gov.sa/ar/branches/alahsa-municipality",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://www.spa.gov.sa/N2294375",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://dga.gov.sa/sites/default/files/2024-04/%D8%AF%D9%84%D9%8A%D9%84%20%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%AC%D9%87%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9_0.pdf",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Arabic",
+      "query": "الأحساء أمانة الأحساء نظام المعلومات الجغرافية استعلام قطعة أرض خريطة مخطط رسمي",
+      "result": "أظهرت نتائج المصادر الحكومية خدمة نظم معلومات جغرافية تابعة لأمانة الأحساء تتيح للجمهور الاستعلام عن بيانات قطع الأراضي ورسم الخرائط وطباعتها. لم يتوفر مخطط حقول أو نقطة خدمة هندسية عامة يمكن التحقق منها.",
+      "actualResultUrls": [
+        "https://my.gov.sa/en/services/272590",
+        "https://momah.gov.sa/ar/branches/alahsa-municipality",
+        "https://www.spa.gov.sa/N2294375",
+        "https://dga.gov.sa/sites/default/files/2024-04/%D8%AF%D9%84%D9%8A%D9%84%20%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%AC%D9%87%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9_0.pdf"
+      ],
+      "method": "Separate language-specific discovery and official-source review; no plot identifier, personal lookup, or feature request submitted."
+    },
+    {
+      "language": "English",
+      "query": "Al Ahsa official municipality GIS land plot map cadastral parcel inquiry",
+      "result": "Official service-directory evidence identifies an Al-Ahsa Municipality GIS service for public land-plot information and map printing. The service page itself returned 403 to the web reader, and no feature endpoint/schema could be inspected; geometry remains unverified.",
+      "actualResultUrls": [
+        "https://my.gov.sa/en/services/272590",
+        "https://momah.gov.sa/ar/branches/alahsa-municipality",
+        "https://www.spa.gov.sa/N2294375",
+        "https://dga.gov.sa/sites/default/files/2024-04/%D8%AF%D9%84%D9%8A%D9%84%20%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B1%D9%82%D9%85%D9%8A%D8%A9%20%D9%84%D9%84%D8%AC%D9%87%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9_0.pdf"
+      ],
+      "method": "Separate language-specific discovery and official-source review; no plot identifier, personal lookup, or feature request submitted."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The city-specific GIS plot inquiry is publicly advertised, but the service endpoint and safe geometry schema were not available for inspection; no parcel feature response was verified."
+  },
+  "privacy": "No owner, address, applicant, taxpayer, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The city-specific GIS plot inquiry is publicly advertised, but the service endpoint and safe geometry schema were not available for inspection; no parcel feature response was verified."
+  }
+}

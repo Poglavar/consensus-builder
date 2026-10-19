@@ -1,0 +1,99 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "QC",
+ "regionName": "Quebec",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-qc-cadastre-bd-allegee",
+  "name": "cadastre_bd_allegee: GO01_Polygones_Lots (lots du cadastre renove, Registre public Cadastre Quebec, version 9 August 2026)",
+  "operator": "Gouvernement du Quebec (ArcGIS Online org 'dgti_geo')",
+  "scope": "Quebec (layer extent lon -79.6..-57.1, lat 45.0..62.4)",
+  "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native NAD83 4269)",
+  "reuseStatus": "Copyright (c) Gouvernement du Quebec. Item text: indicative only, must not be used for boundary delimitation (only a land surveyor may). Full licence not read."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-qc-cadastre-bd-allegee",
+  "requestUrl": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=NO_LOT&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-73.5700,45.5030,-73.5680,45.5045",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -73.57,
+   45.503,
+   -73.568,
+   45.5045
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "NO_LOT",
+  "responseFile": "QC-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 2000",
+  "regionSampled": "Montreal, Quebec City, Sherbrooke (three areas, same layer)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Service description: lots of the renovated cadastre from the public register Cadastre Quebec; only polygons and lot numbers. Extent spans southern to northern Quebec. Rimouski test box timed out at 40 s (not a negative).",
+ "subregionsVerified": [
+  "Montreal",
+  "Quebec City",
+  "Sherbrooke"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55",
+   "observation": "Item 'cadastre_bd_allegee' owner dgti_geo, (c) Gouvernement du Quebec."
+  },
+  {
+   "url": "https://services7.arcgis.com/caAkCarjmxwIprqo/arcgis/rest/services/Cadastre___Polygon/FeatureServer",
+   "observation": "'Cadastre - Polygon' (MERN Foncier Quebec content, third-party org, native 2949); metadata read, not queried."
+  },
+  {
+   "url": "https://donnees.montreal.ca/dataset/unites-evaluation-fonciere",
+   "observation": "Montreal property units: bulk only (see research/montreal.json); no longer needed."
+  },
+  {
+   "url": "https://servicescarto.mern.gouv.qc.ca/pes/rest/services/Territoire",
+   "observation": "MERN folder lists WMS/WFS services; no cadastre lot query service."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=NO_LOT&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-73.5700,45.5030,-73.5680,45.5045",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygon lots (NO_LOT)"
+  },
+  {
+   "url": "same layer, Quebec City box",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "same layer, Sherbrooke box",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "same layer, Rimouski box",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "40 s timeout, not retried successfully"
+  }
+ ],
+ "reuseStatus": "Indicative-only warning; check Quebec open licence before reuse.",
+ "remainingUncertainty": "Hosted on Esri ArcGIS Online, not a MERN endpoint; 'allegee' = lightened version; polygons with 'PC-' lot numbers are complementary plans (vertical cadastre).",
+ "nextStep": "Read the item's licence; confirm Quebec Government publishes it as the official open copy."
+}

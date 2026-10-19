@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "ID",
+  "state": "Idaho",
+  "capital": "Boise",
+  "centerLatLon": [
+    43.615,
+    -116.2023
+  ],
+  "query": {
+    "language": "English",
+    "text": "Idaho official Boise GIS parcel maps Ada County parcels"
+  },
+  "references": [
+    {
+      "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7?f=pjson",
+      "observation": "Source layer metadata queried for geometry, native key field and object ID schema."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Idaho%20official%20Boise%20GIS%20parcel%20maps%20Ada%20County%20parcels",
+      "observation": "English web search used to locate official capital/state parcel information."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Layer metadata confirms esriGeometryPolygon and native PARCEL_ID field (esriFieldTypeString)."
+    },
+    {
+      "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7/query?where=1%3D1&geometry=-116.20294999999999%2C43.614512500000004%2C-116.20165%2C43.6154875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Capital bbox returned 6 polygons, native IDs and geometry only; rings checked closed and finite."
+    },
+    {
+      "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7/query?where=PARCEL_ID%3D%27R1013000202%27&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact native key read returned 1 feature(s), includes the same key and valid geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+    "adapter": "arcgis",
+    "name": "Public Idaho Parcels (Parcels Public, layer 7)",
+    "operator": "State of Idaho / Idaho Geospatial Office (The Idaho Map open data hub)",
+    "idField": "PARCEL_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Returned native text values preserved verbatim (including leading zeros and any whitespace).",
+    "outFields": [
+      "PARCEL_ID"
+    ],
+    "parcelNumberField": "PARCEL_ID",
+    "metricSrid": "requested outSR=4326",
+    "proposedIdPrefix": "us-id-county"
+  },
+  "verification": {
+    "bbox": [
+      -116.20294999999999,
+      43.614512500000004,
+      -116.20165,
+      43.6154875
+    ],
+    "count": 6,
+    "nativeIDs": [
+      "R1013000202",
+      "R1013000280",
+      "R1013000542"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "Idaho layer is a voluntary county-submission partial snapshot (prior statewide coverage evidence: 13 counties; several Idaho cities had zero result). Capital sample is Ada County only. Owner fields were not requested.",
+  "priorResearchFile": "research/subnational/US/ID.json"
+}

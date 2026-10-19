@@ -1,0 +1,10 @@
+{
+  "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=LMS_PLOT_I%3D926&outFields=LMS_PLOT_I&returnGeometry=true&outSR=4326&f=geojson",
+  "origin": "authorized laptop direct curl",
+  "exit": 0,
+  "features": 32,
+  "sampleCenterLatLon": [
+    24.338919786482684,
+    55.80903522108387
+  ]
+}

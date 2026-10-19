@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:3936456",
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "pe-arcgis-lima-sedapal-lotes",
+    "requestUrl": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0/query?geometry=%7B%22xmin%22%3A-76.9690%2C%22ymin%22%3A-12.0155%2C%22xmax%22%3A-76.9675%2C%22ymax%22%3A-12.0145%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=OBJECTID,cod_dist,mza,lote,nom_dist&returnGeometry=true&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -76.969,
+      -12.0155,
+      -76.9675,
+      -12.0145
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "OBJECTID; cod_dist + mza + lote form the lot key",
+    "responseFile": "lima-lotes-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; layer count 276,848"
+  },
+  "portalsFound": [
+    {
+      "url": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer",
+      "observation": "Anonymous ArcGIS Online FeatureServer 'lotes' (Lotes-Sedapal): 276,848 lot polygons with district, block (mza) and lot fields, extent roughly eastern and central Lima. Copyright text credits SEDAPAL and Consorcio Servicios Integrales; the layer description says it is a utility-contract vector file at 1:1,000. Hosted by ArcGIS account dromeroOGIT, whose other items are Peruvian urban-planning layers marked for use by local governments and the housing ministry, but the account's institutional identity was not confirmed."
+    },
+    {
+      "url": "https://geoportal-catastronacional.hub.arcgis.com/",
+      "observation": "Geoportal Catastro Nacional hub loaded (HTTP 200) but its static HTML exposed no service URLs; search summaries mention GeoServices/WMS/WFS links that were not verified."
+    },
+    {
+      "url": "https://geoidep.gob.pe/instituto-catastral-de-lima-icl",
+      "observation": "Instituto Catastral de Lima entry on the national SDI; WebFetch got HTTP 503 and curl failed, so unread. Search summaries say Lima cadastral cartography is at 1:1,000 and linked to SUNARP partida registral lookup."
+    },
+    {
+      "url": "https://www.gob.pe/institucion/sunarp/campa%C3%B1as/5226-acceso-gratuito-a-la-ubicacion-grafica-de-predios",
+      "observation": "SUNARP offers free graphic location of properties for registry queries, a per-lookup service rather than an open polygon list."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "geometryType": "esriGeometryPolygon",
+      "maxRecordCount": 2000,
+      "assessment": "layer description only; not counted as verification"
+    },
+    {
+      "url": "a bounding box of about 300 m around the Plaza San Martin coordinate (-77.030,-12.045,-77.027,-12.0425) on the same layer",
+      "method": "GET",
+      "httpStatus": 200,
+      "parcelRecordCount": 0,
+      "assessment": "empty result; the layer does not reach central Lima at that point"
+    },
+    {
+      "url": "https://services5.arcgis.com/bHvzrGGxW8wP6Utm/arcgis/rest/services/lotes/FeatureServer/0/query?geometry=%7B%22xmin%22%3A-76.9690%2C%22ymin%22%3A-12.0155%2C%22xmax%22%3A-76.9675%2C%22ymax%22%3A-12.0145%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=OBJECTID,cod_dist,mza,lote,nom_dist&returnGeometry=true&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "parcelRecordCount": 3,
+      "geometryType": "esriGeometryPolygon",
+      "assessment": "verified nonempty lot polygons in San Juan de Lurigancho, about 9 km north-east of the city centre"
+    },
+    {
+      "url": "https://geocatastro.cofopri.gob.pe/ ; https://sigmed.minam.gob.pe/ ; https://geoidep.gob.pe/instituto-catastral-de-lima-icl",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "connection failed through the agent proxy",
+      "assessment": "unreachable; not a verdict"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "SEDAPAL water-utility service-area lots in Lima; districts sampled: San Juan de Lurigancho only",
+    "verifiedOpenScope": "three lots in San Juan de Lurigancho; central Lima test box was empty",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "This is a utility-derived layer republished by a third-party ArcGIS account, not shown to be an official cadastre, and no reuse terms were visible for it. Lots may follow utility connection records rather than legal parcels; coverage of central districts is unproven (the Plaza San Martin box returned no lots). Official cadastre from the Instituto Catastral de Lima, SUNARP or the national cadastre hub was not reached.",
+  "nextStep": "Confirm the publisher and terms, map which districts the layer covers, and retry ICL, national cadastre and SUNARP services for an authoritative bounded polygon endpoint."
+}

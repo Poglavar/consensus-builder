@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "cityFile": "city-8337-sonipat.json",
+  "cityRecord": "city-8337-sonipat.json",
+  "cityCode": 8337,
+  "queueRank": 1438,
+  "serviceReview": {
+    "reviewedAt": "2026-10-09T00:00:00Z",
+    "discovery": {
+      "english": "Official Sonipat district revenue/Jamabandi pages, Haryana Web-HALRIS, HARSAC EODB GIS, and an ArcGIS administrative boundary service were found.",
+      "native": "Hindi official Sonipat pages confirmed the Jamabandi route; no additional anonymous parcel API was exposed."
+    },
+    "requestOutcomes": [
+      "HARSAC frontend GET 200; current JavaScript/configuration revealed the /eodb_backend land-query route family.",
+      "Anonymous GET /land-query/districts and /land-query/search returned HTTP 401 Authentication required.",
+      "Anonymous POST /land-query/boundary-at-point at the exact WUP point returned HTTP 401 Authentication required.",
+      "Official Sonipat MC ArcGIS layer metadata returned HTTP 200, but it is an administrative boundary and not parcel geometry."
+    ],
+    "scopeLimits": [
+      "No login, OTP, credentials, private token, CAPTCHA bypass, or unsafe owner/address/titleholder request was used.",
+      "A 401 response is treated as access limitation only; it is not evidence of no coverage.",
+      "No GeoJSON sample is retained because no safe native parcel identity plus full parcel polygon was returned.",
+      "The municipal boundary layer does not qualify as a cadastral parcel source."
+    ],
+    "safeFieldAllowlist": ["native parcel or khasra identity", "district/tehsil/village codes", "geometry", "CRS", "non-personal service/schema metadata"],
+    "nativeFieldMapping": {
+      "frontendRouteParameters": {"dCode": "district code", "tCode": "tehsil code", "vCode": "village code", "murabbaNo": "murraba/block number", "khasraNo": "khasra parcel number"},
+      "identityRule": "No parcel identity was returned; do not substitute OBJECTID from the boundary layer or an internal row number."
+    },
+    "qualification": {
+      "registryFound": true,
+      "publicParcelGeometryFound": false,
+      "runtimeReadiness": "held",
+      "serialReviewerAction": "Independently qualify any future anonymous/public HARSAC parcel response before adapter admission."
+    },
+    "uncertainty": "The HARSAC cadastral backend is an official source candidate but its current anonymous access state and parcel response schema remain unverified."
+  }
+}

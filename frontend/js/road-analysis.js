@@ -10,7 +10,7 @@ function formatRoadAnalysisText(template, params = {}) {
 function translateRoadAnalysisText(key, fallback, params = {}) {
     const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
     if (api && typeof api.t === 'function') {
-        return api.t(key, params);
+        { const translated = api.t(key, params); if (translated !== key) return translated; }
     }
     return formatRoadAnalysisText(fallback, params);
 }
@@ -356,11 +356,9 @@ function analyzeRoadWidth(coordinates) {
 
     // console.log("Road Analysis: Input polygon coordinates:", polygonCoords.length, "points");
 
-    // Convert to HTRS96/TM for distance calculations
-    const htrsPolygonCoords = polygonCoords.map(coord => {
-        // Convert [lon, lat] to [easting, northing]
-        return wgs84ToHTRS96(coord[1], coord[0]);
-    });
+    // Metres for the distance calculations, in a frame on this polygon (projections.md §2)
+    const frame = window.__metricFrame.frameFor(polygonCoords);
+    const htrsPolygonCoords = polygonCoords.map(coord => frame.latLngToMetric(coord[1], coord[0]));
 
     // console.log("Road Analysis: Converted to HTRS coords");
 
@@ -374,7 +372,7 @@ function analyzeRoadWidth(coordinates) {
 
     // 3. Sample width measurements along each segment
     const segmentMeasurements = segments.map(segment => {
-        const measurements = measureSegmentWidths(segment, htrsPolygonCoords);
+        const measurements = measureSegmentWidths(segment, htrsPolygonCoords, frame);
         // console.log("Road Analysis: Segment width measurements:", measurements.widths?.length || 0, "measurements");
         return measurements;
     });
@@ -473,7 +471,7 @@ function identifySegments(skeleton, polygon) {
  * @param {Array} polygon - Road polygon coordinates
  * @returns {Object} Width measurements along the segment
  */
-function measureSegmentWidths(segment, polygon) {
+function measureSegmentWidths(segment, polygon, frame) {
     const points = segment.points;
     const widths = [];
     const positions = [];
@@ -567,7 +565,7 @@ function measureSegmentWidths(segment, polygon) {
 
                 // Save width line for visualization (converted to WGS84)
                 const wgs84Line = furthestPair.map(p => {
-                    const [lat, lon] = htrs96ToWGS84(p[0], p[1]);
+                    const [lat, lon] = frame.metricToLatLng(p[0], p[1]);
                     return [lon, lat];
                 });
                 widthLines.push(wgs84Line);
@@ -580,7 +578,7 @@ function measureSegmentWidths(segment, polygon) {
         positions,
         widthLines,
         segment: points.map(p => {
-            const [lat, lon] = htrs96ToWGS84(p[0], p[1]);
+            const [lat, lon] = frame.metricToLatLng(p[0], p[1]);
             return [lon, lat];
         })
     };
@@ -1132,16 +1130,18 @@ function showRoadAnalysisPanel() {
     // console.log("Road Analysis: Starting analysis for parcel", currentParcel);
 
     // Make sure we have a current parcel selected
-    if (!currentParcel || !currentParcel.layer || !currentParcel.layer.feature) {
+    const selectedId = currentParcel?.id
+        ?? window.selectedParcelId
+        ?? window.ParcelPresenter?.getIdForLayer?.(currentParcel?.layer)
+        ?? null;
+    const feature = selectedId && window.LiveParcelFabric?.get?.(String(selectedId));
+    if (!feature) {
         showRoadAnalysisAlert('please_select_a_parcel_first', 'Please select a parcel first');
         return;
     }
 
     // Do NOT mark as a road or change its state here
     // (Removed code that checked the road checkbox, set isRoad, set style, or updated PersistentStorage)
-
-    const feature = currentParcel.layer.feature;
-    // console.log("Road Analysis: Parcel feature", feature);
 
     // Validate feature geometry (supports Polygon and MultiPolygon)
     if (!feature.geometry || !feature.geometry.coordinates) {
@@ -1154,8 +1154,10 @@ function showRoadAnalysisPanel() {
         return;
     }
 
-    // Display the panel before running the analysis to show it's working
+    // Display the panel before running the analysis to show it's working; the Tools tab's
+    // "Analyze as road" stays pressed while it is open.
     document.getElementById('road-analysis-panel').classList.add('visible');
+    setAnalyzeRoadButtonPressed(true);
 
     // Clear any previous analysis visualization
     clearRoadAnalysisVisualization();
@@ -1194,7 +1196,7 @@ function showRoadAnalysisPanel() {
         // Update segments tab and make sure it's active
         updateSegmentsList(metrics.segments || []);
         const segmentsTab = document.querySelector('.tab-btn[onclick="switchTab(this, \'segments-tab\')"]');
-        if (segmentsTab && !segmentsTab.classList.contains('active')) {
+        if (segmentsTab && segmentsTab.getAttribute('aria-selected') !== 'true') {
             switchTab(segmentsTab, 'segments-tab');
         }
 
@@ -1202,13 +1204,14 @@ function showRoadAnalysisPanel() {
         // Indicate method used
         const panel = document.getElementById('road-analysis-panel');
         if (panel) {
-            let methodMsg = usedOSM ? '<span style="color: #007bff;">OSM centreline analysis</span>' : '<span style="color: #888;">Fallback (road centerline detection)</span>';
+            const methodMsg = usedOSM
+                ? '<span class="road-analysis-method__osm">OSM centreline analysis</span>'
+                : '<span class="road-analysis-method__fallback">Fallback (road centerline detection)</span>';
             let infoDiv = document.getElementById('road-analysis-method');
             if (!infoDiv) {
                 infoDiv = document.createElement('div');
                 infoDiv.id = 'road-analysis-method';
-                infoDiv.style.margin = '10px 0';
-                infoDiv.style.fontSize = '13px';
+                infoDiv.className = 'road-analysis-method';
                 panel.querySelector('.tabs').insertAdjacentElement('afterend', infoDiv);
             }
             infoDiv.innerHTML = `<b>Method:</b> ${methodMsg}`;
@@ -1219,7 +1222,14 @@ function showRoadAnalysisPanel() {
 // Hide the Road Analysis panel
 function hideRoadAnalysisPanel() {
     document.getElementById('road-analysis-panel').classList.remove('visible');
+    setAnalyzeRoadButtonPressed(false);
     clearRoadAnalysisVisualization();
+}
+
+// The parcel panel's "Analyze as road" (Tools tab) reads as on while its analysis panel is open.
+function setAnalyzeRoadButtonPressed(pressed) {
+    const button = document.getElementById('analyzeRoadButton');
+    if (button) button.setAttribute('aria-pressed', pressed ? 'true' : 'false');
 }
 
 // Clear all road analysis visualization layers
@@ -1437,6 +1447,8 @@ function visualizeRoadAnalysis(metrics) {
                         if (points.length > 1) {
                             const midPointIndex = Math.floor(points.length / 2);
                             const label = L.marker(points[midPointIndex], {
+                                interactive: false,
+                                keyboard: false,
                                 icon: L.divIcon({
                                     className: 'segment-label',
                                     html: `<div style="background: rgba(0,0,0,0.7); color: white; padding: 3px 6px; border-radius: 3px;">${index + 1}</div>`,
@@ -1553,33 +1565,30 @@ function toggleAnalysisLayer(layerType) {
     }
 }
 
-// Switch between tabs in the Road Analysis panel
+// Switch between tabs in the Road Analysis panel: the chosen tab is aria-selected, the other
+// panels are hidden.
 function switchTab(button, tabId) {
-    // Remove active class from all tab buttons and content
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
+    const panel = document.getElementById('road-analysis-panel');
+    if (!panel) return;
+    panel.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.setAttribute('aria-selected', btn === button ? 'true' : 'false');
     });
-
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
+    panel.querySelectorAll('.tab-content').forEach(content => {
+        content.hidden = content.id !== tabId;
     });
-
-    // Add active class to selected tab button and content
-    button.classList.add('active');
-    document.getElementById(tabId).classList.add('active');
 }
 
-// Helper function to format numbers
+// Helper function to format numbers: one decimal, in the UI language (js/format.js).
 function formatNumber(value) {
     if (typeof value !== 'number') return '0';
-    return value.toLocaleString('hr-HR', {
-        minimumFractionDigits: 1,
-        maximumFractionDigits: 1
-    });
+    return CbFormat.formatNumber(value, { maxFractionDigits: 1, minFractionDigits: 1 });
 }
 
 // Add a global variable to store the latest OSM GeoJSON
-window.osmRoadGeoJSON = null;
+// (guarded so node/vitest can require this file for the pure geometry helpers at the top)
+if (typeof window !== 'undefined') {
+    window.osmRoadGeoJSON = null;
+}
 
 // --- OSM-based road width analysis ---
 function analyzeRoadWidthWithOSM(parcelFeature) {
@@ -1846,39 +1855,39 @@ function analyzeRoadWidthWithOSM(parcelFeature) {
 }
 
 // Patch OSM road fetch to store GeoJSON globally
-const originalDisplayOSMRoads = window.displayOSMRoads;
-window.displayOSMRoads = function (osmGeoJSON) {
-    window.osmRoadGeoJSON = osmGeoJSON;
-    if (originalDisplayOSMRoads) originalDisplayOSMRoads(osmGeoJSON);
-};
+if (typeof window !== 'undefined') {
+    const originalDisplayOSMRoads = window.displayOSMRoads;
+    window.displayOSMRoads = function (osmGeoJSON) {
+        window.osmRoadGeoJSON = osmGeoJSON;
+        if (originalDisplayOSMRoads) originalDisplayOSMRoads(osmGeoJSON);
+    };
+}
 
 // Analyze all visible road parcels in the current map view and classify by width
 async function analyzeAllRoadsInView() {
-    if (!parcelLayer) {
+    const fabric = window.LiveParcelFabric;
+    const presenter = window.ParcelPresenter;
+    if (!fabric?.queryBounds || !presenter?.getLayer) {
         // Ensure status element exists and is updated correctly
         const status = document.getElementById('status');
         if (status) {
-            updateStatus('No parcels loaded.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_parcels_loaded', 'No parcels loaded.'));
         }
         return;
     }
     const bounds = map.getBounds();
     const visibleRoads = [];
-    parcelLayer.eachLayer(layer => {
-        if (!layer || !layer.feature || !layer.feature.properties) return;
-        const parcelId = typeof ensureParcelId === 'function' ? ensureParcelId(layer.feature) : layer.feature.properties?.parcelId;
+    fabric.queryBounds(bounds, { includeCorridors: true }).forEach(feature => {
+        const parcelId = fabric.featureId?.(feature);
         const isRoad = typeof window.isRoadParcel === 'function' ? window.isRoadParcel(parcelId) : false;
         if (!isRoad) return;
-        // Only consider parcels in view
-        try {
-            if (!bounds.intersects(layer.getBounds())) return;
-        } catch { }
-        visibleRoads.push(layer);
+        const layer = presenter.getLayer(parcelId);
+        if (layer) visibleRoads.push({ feature, layer });
     });
     if (visibleRoads.length === 0) {
         const status = document.getElementById('status');
         if (status) {
-            updateStatus('No road parcels in view.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_road_parcels_in_view', 'No road parcels in view.'));
         }
         return;
     }
@@ -1898,10 +1907,10 @@ async function analyzeAllRoadsInView() {
         { min: getLegendValue('legend-min-5', 12), max: Infinity, color: 'black', label: '>12m' }
     ];
     const classCounts = [0, 0, 0, 0, 0, 0];
-    visibleRoads.forEach(layer => {
+    visibleRoads.forEach(({ feature, layer }) => {
         let avgWidth = 0;
         try {
-            const metrics = calculateRoadMetrics(layer.feature.geometry.coordinates);
+            const metrics = calculateRoadMetrics(feature.geometry.coordinates);
             avgWidth = metrics.widths && isFinite(metrics.widths.average) ? metrics.widths.average : 0;
         } catch { avgWidth = 0; }
         // Classify
@@ -1923,7 +1932,7 @@ async function analyzeAllRoadsInView() {
     });
     // Status summary
     const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
-    updateStatus(`Analyzed ${visibleRoads.length} roads. ${summary}`);
+    updateStatus(translateRoadAnalysisText('status.messages.analyzed_roads_summary', 'Analyzed {{count}} roads. {{summary}}', { count: visibleRoads.length, summary }));
     showRoadAnalysisPanel();
 }
 
@@ -1988,19 +1997,19 @@ function showOSMRoadSegmentListPopup(segments) {
 
     const formatLength = (value) => {
         if (!Number.isFinite(value) || value <= 0) {
-            return '0 m';
+            return CbFormat.formatLength(0);
         }
         if (value >= 1000) {
-            return `${(value / 1000).toFixed(2)} km`;
+            return `${CbFormat.formatNumber(value / 1000, { maxFractionDigits: 2, minFractionDigits: 2 })}\u202fkm`;
         }
-        return `${value.toFixed(0)} m`;
+        return CbFormat.formatLength(value);
     };
 
     const formatWidth = (value) => {
         if (!Number.isFinite(value)) {
             return '—';
         }
-        return `${value.toFixed(2)} m`;
+        return CbFormat.formatLength(value);
     };
 
     const computeHistogram = (items) => {
@@ -2080,10 +2089,14 @@ function showOSMRoadSegmentListPopup(segments) {
 
     renderHistogram(histogramContainer, computeHistogram(segments || []), segments);
     renderSegmentList(listContainer, segments || []);
-    popup.style.display = 'block';
+    // A flex column, so the header stays put and the body scrolls (css/layout.css).
+    popup.style.display = 'flex';
+    // The results panel opens where the Tools sheet sits; the run started from that sheet, and the
+    // two stacked on each other.
+    if (window.MapShell && typeof window.MapShell.closeSheets === 'function') window.MapShell.closeSheets();
 }
 
-window.highlightOSMSegment = function (idx) {
+function highlightOSMSegment(idx) {
     // Remove previous highlight
     if (currentHighlightedOSMSegment) {
         if (Array.isArray(currentHighlightedOSMSegment)) {
@@ -2115,30 +2128,25 @@ window.highlightOSMSegment = function (idx) {
     currentHighlightedOSMSegment = [blackLine, purpleLine];
     // Pan/zoom to segment
     map.fitBounds(purpleLine.getBounds(), { padding: [40, 40] });
-};
+}
+
+if (typeof window !== 'undefined') {
+    window.highlightOSMSegment = highlightOSMSegment;
+}
 
 async function analyzeAllOSMRoadSegmentsInView() {
     const button = document.getElementById('analyzeAllRoadsButton');
 
     const runAnalysis = async () => {
-        if (!parcelLayer) {
-            updateStatus('No parcels loaded.');
+        const fabric = window.LiveParcelFabric;
+        if (!fabric?.queryBounds) {
+            updateStatus(translateRoadAnalysisText('status.messages.no_parcels_loaded', 'No parcels loaded.'));
             return;
         }
 
-        const sidebarScrollable = document.getElementById('sidebar-scrollable-content');
-        if (sidebarScrollable && button) {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    try {
-                        const containerRect = sidebarScrollable.getBoundingClientRect();
-                        const buttonRect = button.getBoundingClientRect();
-                        const offset = buttonRect.top - containerRect.top;
-                        const targetTop = sidebarScrollable.scrollTop + offset - (containerRect.height / 2) + (buttonRect.height / 2);
-                        sidebarScrollable.scrollTo({ top: targetTop, behavior: 'smooth' });
-                    } catch (_) { }
-                });
-            });
+        // Keep the button (and the legend that appears under it) in view in its sheet.
+        if (button) {
+            try { button.scrollIntoView({ block: 'center' }); } catch (_) { }
         }
 
         const roadLegendTitle = document.getElementById('road-legend-title');
@@ -2155,7 +2163,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
         }
 
         if (!window.osmRoadGeoJSON || !window.osmRoadGeoJSON.features || window.osmRoadGeoJSON.features.length === 0) {
-            updateStatus('No OSM road data available for analysis.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_osm_road_data_available_for_analysis', 'No OSM road data available for analysis.'));
             return;
         }
 
@@ -2170,7 +2178,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
 
         const bounds = map.getBounds();
         if (!bounds) {
-            updateStatus('Unable to determine map bounds for analysis.');
+            updateStatus(translateRoadAnalysisText('status.messages.unable_to_determine_map_bounds_for_analysis', 'Unable to determine map bounds for analysis.'));
             return;
         }
 
@@ -2235,7 +2243,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
 
         if (visibleOSMLines.length === 0) {
             if (progressContainer) progressContainer.style.display = 'none';
-            updateStatus('No OSM road segments in view.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_osm_road_segments_in_view', 'No OSM road segments in view.'));
             return;
         }
 
@@ -2270,7 +2278,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
 
         if (totalSegments === 0) {
             if (progressContainer) progressContainer.style.display = 'none';
-            updateStatus('No OSM road segments in view.');
+            updateStatus(translateRoadAnalysisText('status.messages.no_osm_road_segments_in_view', 'No OSM road segments in view.'));
             return;
         }
 
@@ -2281,7 +2289,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
             function finishAnalysis() {
                 if (progressContainer) progressContainer.style.display = 'none';
                 const summary = colorMap.map((c, i) => `${c.label}: ${classCounts[i]}`).join(' | ');
-                updateStatus(`Analyzed OSM road segments. ${summary}`);
+                updateStatus(translateRoadAnalysisText('status.messages.analyzed_osm_road_segments_summary', 'Analyzed OSM road segments. {{summary}}', { summary }));
                 if (roadLegendTitle) roadLegendTitle.style.display = 'block';
                 if (roadLegend) roadLegend.style.display = 'block';
                 segmentList.sort((a, b) => b.avgWidth - a.avgWidth);
@@ -2358,9 +2366,9 @@ async function analyzeAllOSMRoadSegmentsInView() {
                             ]);
                             let maxWidth = 0;
                             try {
-                                parcelLayer.eachLayer(parcelLayerRef => {
+                                fabric.queryBounds(turf.bbox(probe), { includeCorridors: true }).forEach(feature => {
                                     try {
-                                        const geom = parcelLayerRef?.feature?.geometry;
+                                        const geom = feature?.geometry;
                                         if (!geom) return;
                                         let boundary;
                                         if (geom.type === 'Polygon') {
@@ -2437,7 +2445,7 @@ async function analyzeAllOSMRoadSegmentsInView() {
     };
 
     if (typeof runWithButtonBusyState === 'function' && button) {
-        return runWithButtonBusyState(button, 'Analyzing...', runAnalysis, { restoreFocus: true });
+        return runWithButtonBusyState(button, { key: 'common.busy.analyzing', fallback: 'Analyzing...' }, runAnalysis, { restoreFocus: true });
     }
     return runAnalysis();
 }
@@ -2478,4 +2486,21 @@ function toggleRoadAnalysisVisibility() {
     }
 }
 
-window.toggleRoadAnalysisVisibility = toggleRoadAnalysisVisibility;
+if (typeof window !== 'undefined') {
+    window.toggleRoadAnalysisVisibility = toggleRoadAnalysisVisibility;
+}
+
+// The geometry helpers above are pure and are unit-tested in node (backend/test/road-analysis.test.js).
+// The browser keeps loading this file as a classic script, where these are already globals; this export
+// block only exists so `require()` can reach them.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        findIntersections,
+        lineIntersection,
+        isPointInPolygon,
+        closestPointOnLineSegment,
+        filterWidthOutliers,
+        createRoadWidthHistogramBuckets,
+        formatWidthBucketValue
+    };
+}

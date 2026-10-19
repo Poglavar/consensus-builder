@@ -1,248 +1,73 @@
-(function (global) {
+(function attachParcelIngest(global) {
     'use strict';
 
-    function buildHumanParcelId(props) {
-        // Build HR-<maticni_broj_ko>-<broj_cestice> when available
-        const cad = props.maticni_broj_ko ?? props.MATICNI_BROJ_KO;
-        const num = props.broj_cestice ?? props.BROJ_CESTICE;
-        if (cad !== undefined && cad !== null && num !== undefined && num !== null) {
-            return `HR-${cad}-${num}`;
+    // Rendering infrastructure shared by every ParcelPresenter layer.
+    let parcelCanvas = null;
+    function parcelCanvasRenderer() {
+        if (parcelCanvas) return parcelCanvas;
+        if (!global.L || typeof global.L.canvas !== 'function') return undefined;
+        const proto = global.L.Canvas && global.L.Canvas.prototype;
+        const extendable = proto && typeof global.L.Canvas.extend === 'function'
+            && typeof proto._requestRedraw === 'function'
+            && typeof proto._extendRedrawBounds === 'function'
+            && typeof proto._draw === 'function';
+        if (!extendable) {
+            parcelCanvas = global.L.canvas({ padding: 0.5 });
+            return parcelCanvas;
         }
-        return null;
-    }
-
-    function normalizeFeatureParcelId(feature) {
-        if (!feature || typeof feature !== 'object') return null;
-
-        // Prefer ensureParcelId helper if present
-        if (typeof global.ensureParcelId === 'function') {
-            const ensured = global.ensureParcelId(feature);
-            if (ensured) return ensured;
-        }
-
-        var props = feature.properties || {};
-
-        // Explicit parcelId from source
-        var id = props.parcelId ?? props.parcel_id ?? props.id;
-        if (id !== undefined && id !== null) {
-            props.parcelId = String(id);
-            props.id = props.id || props.parcelId;
-            feature.properties = props;
-            return props.parcelId;
-        }
-
-        // OSS fallback: synthesize from cadastral + parcel number
-        var synthesized = buildHumanParcelId(props);
-        if (synthesized) {
-            props.parcelId = synthesized;
-            props.id = props.id || synthesized;
-            feature.properties = props;
-            return synthesized;
-        }
-
-        return null;
-    }
-
-    async function ingestParcelFeatures(rawFeatures, options) {
-        if (!Array.isArray(rawFeatures) || rawFeatures.length === 0) {
-            return [];
-        }
-
-        var tStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-
-        var shouldReplaceExisting = !!(options && options.replaceExisting === true);
-
-        var tConvertStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-        var convertedFeatures = rawFeatures;
-        if (!options || !options.skipConversion) {
-            var converted = global.convertGeoJSON({ type: 'FeatureCollection', features: rawFeatures });
-            convertedFeatures = Array.isArray(converted && converted.features) ? converted.features : [];
-        }
-        var convertMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tConvertStart;
-
-        if (!convertedFeatures.length) {
-            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, nothing to ingest (' + rawFeatures.length + ' raw)');
-            return [];
-        }
-
-        if (typeof global.ensureParcelLayerInitialized === 'function') {
-            global.ensureParcelLayerInitialized();
-        }
-
-        var tPrepStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-
-        var renderableFeatures = [];
-        var idsToReplace = new Set();
-        var removedByProposalSkipped = [];
-        var mapById = (global.parcelLayerById instanceof Map) ? global.parcelLayerById : null;
-        var parcelStore = (global.ParcelsState && global.ParcelsState.getParcelCache)
-            ? global.ParcelsState.getParcelCache()
-            : global.parcelCache;
-        var skippedExisting = 0;
-        convertedFeatures.forEach(function (feature) {
-            var parcelId = normalizeFeatureParcelId(feature);
-            if (!parcelId) return;
-            if (parcelStore && parcelStore.byId instanceof Map) {
-                const existing = parcelStore.byId.get(parcelId.toString());
-                if (existing && existing.properties) {
-                    feature.properties = Object.assign({}, feature.properties, {
-                        ownershipDetails: feature.properties.ownershipDetails || existing.properties.ownershipDetails,
-                        ownershipList: feature.properties.ownershipList || existing.properties.ownershipList,
-                        ownershipType: feature.properties.ownershipType || existing.properties.ownershipType
-                    });
-                }
-                parcelStore.byId.set(parcelId.toString(), feature);
-            }
-
-            // If a proposal previously removed this parcel (replaced by children), keep it out of the map layer while retaining it in cache.
-            try {
-                const isReplaced = (typeof isParcelReplacedByChildren === 'function') ? isParcelReplacedByChildren(parcelId.toString()) : false;
-                if (isReplaced) {
-                    removedByProposalSkipped.push(parcelId.toString());
+        const stats = {
+            fullDraws: 0, fullLastMs: 0, fullMaxMs: 0, fullTotalMs: 0,
+            partialDraws: 0, partialLastMs: 0, partialMaxMs: 0, partialTotalMs: 0,
+            redrawsCoalesced: 0
+        };
+        const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+        const ParcelCanvas = global.L.Canvas.extend({
+            _requestRedraw(layer) {
+                if (this._holdDepth) {
+                    if (!this._map) return;
+                    if (layer) this._extendRedrawBounds(layer);
+                    this._heldRedraw = true;
+                    stats.redrawsCoalesced += 1;
                     return;
                 }
-            } catch (_) { /* best-effort guard */ }
-
-            if (!feature.geometry || !feature.geometry.coordinates) return;
-
-            const existsInMap = mapById && mapById.has(parcelId.toString());
-            if (existsInMap && !shouldReplaceExisting) {
-                skippedExisting++;
-                return;
-            }
-
-            if (shouldReplaceExisting) {
-                idsToReplace.add(parcelId);
-            }
-
-            var isMultiPolygon = feature.geometry && feature.geometry.type === 'MultiPolygon';
-            if (isMultiPolygon && Array.isArray(feature.geometry.coordinates)) {
-                feature.geometry.coordinates.forEach(function (polygonCoords) {
-                    renderableFeatures.push({
-                        type: 'Feature',
-                        properties: Object.assign({}, feature.properties),
-                        geometry: { type: 'Polygon', coordinates: polygonCoords }
-                    });
-                });
-            } else {
-                renderableFeatures.push(feature);
+                return global.L.Canvas.prototype._requestRedraw.call(this, layer);
+            },
+            _draw() {
+                const full = !this._redrawBounds;
+                const started = now();
+                const result = global.L.Canvas.prototype._draw.call(this);
+                const elapsed = now() - started;
+                if (full) {
+                    stats.fullDraws += 1;
+                    stats.fullLastMs = elapsed;
+                    stats.fullTotalMs += elapsed;
+                    stats.fullMaxMs = Math.max(stats.fullMaxMs, elapsed);
+                } else {
+                    stats.partialDraws += 1;
+                    stats.partialLastMs = elapsed;
+                    stats.partialTotalMs += elapsed;
+                    stats.partialMaxMs = Math.max(stats.partialMaxMs, elapsed);
+                }
+                return result;
+            },
+            holdRedraws() {
+                this._holdDepth = (this._holdDepth || 0) + 1;
+            },
+            releaseRedraws() {
+                if (this._holdDepth) this._holdDepth -= 1;
+                if (!this._holdDepth && this._heldRedraw) {
+                    this._heldRedraw = false;
+                    if (this._map) {
+                        this._redrawRequest = this._redrawRequest
+                            || global.L.Util.requestAnimFrame(this._redraw, this);
+                    }
+                }
             }
         });
-
-        // Skip logging; best-effort skip of removed ancestors only.
-
-        var prepMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tPrepStart;
-
-        var tRemoveStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-        var removedExisting = 0;
-        var removeMs = 0;
-        if (shouldReplaceExisting && idsToReplace.size > 0) {
-            if (typeof global.fastRemoveParcelLayersByIds === 'function') {
-                removedExisting = global.fastRemoveParcelLayersByIds(idsToReplace);
-            } else if (typeof global.removeParcelLayerById === 'function') {
-                idsToReplace.forEach(function (id) {
-                    global.removeParcelLayerById(id, { skipMapScan: true });
-                    removedExisting++;
-                });
-            }
-            removeMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tRemoveStart;
-        }
-
-        var addedLayers = [];
-        var tIngestStart = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
-
-        var styleFeature = function (feature) {
-            var parcelId = normalizeFeatureParcelId(feature);
-            // Check if parcel is marked as road from feature properties or stored road parcels
-            const propertyIsRoad = feature?.properties?.isRoad === true || feature?.properties?.isRoad === 'true';
-            const storedIsRoad = parcelId && typeof global.isRoad === 'function' ? global.isRoad(parcelId) : false;
-            const isRoad = propertyIsRoad || storedIsRoad;
-            return global.getParcelBaseStyle(parcelId, { isRoad: isRoad });
-        };
-
-        var attachParcelEvents = function (feature, layer) {
-            var isDrawingMode = typeof global.isParcelDrawingModeActive === 'function'
-                ? global.isParcelDrawingModeActive()
-                : false;
-
-            var events = {
-                mouseover: typeof global.highlightFeature === 'function' ? global.highlightFeature : function () { },
-                mouseout: typeof global.resetHighlight === 'function' ? global.resetHighlight : function () { }
-            };
-
-            if (!isDrawingMode && global.onParcelClick) {
-                events.click = global.onParcelClick;
-            }
-
-            layer.on(events);
-            if (layer.options) layer.options.interactive = true;
-        };
-
-        try {
-            var featureCollection = { type: 'FeatureCollection', features: renderableFeatures };
-            var geoJsonLayer = L.geoJSON(featureCollection, {
-                style: styleFeature,
-                onEachFeature: attachParcelEvents
-            });
-
-            geoJsonLayer.eachLayer(function (layer) {
-                if (!global.parcelLayer) return;
-
-                var parcelId = normalizeFeatureParcelId(layer.feature);
-
-                global.parcelLayer.addLayer(layer);
-
-                if (typeof global.setParcelLayerById === 'function') {
-                    try { global.setParcelLayerById(parcelId, layer); } catch (_) { }
-                }
-
-                if (typeof global.indexParcelLayer === 'function') {
-                    global.indexParcelLayer(layer);
-                }
-
-                addedLayers.push(layer);
-            });
-        } catch (error) {
-            console.error('[ingestParcelFeatures] Error during bulk add:', error);
-        }
-
-        var ingestMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tIngestStart;
-
-        if (addedLayers.length) {
-            if (typeof global.addParcelLayerToMapIfAppropriate === 'function') {
-                global.addParcelLayerToMapIfAppropriate();
-            }
-
-            if (global.ParcelsState && global.ParcelsState.bumpParcelCoverageVersion) {
-                global.ParcelsState.bumpParcelCoverageVersion();
-            }
-
-            try {
-                global.dispatchEvent(new CustomEvent('parcelCoverageUpdated', {
-                    detail: { source: 'ingest', timestamp: Date.now() }
-                }));
-            } catch (_) { }
-
-            try {
-                var parcelIds = convertedFeatures.map(function (f) { return normalizeFeatureParcelId(f); }).filter(Boolean);
-                global.dispatchEvent(new CustomEvent('parcelDataLoaded', {
-                    detail: { features: convertedFeatures, parcelIds: parcelIds }
-                }));
-            } catch (_) { }
-
-            if (typeof global.updateVisibleParcelsCount === 'function') {
-                global.updateVisibleParcelsCount();
-            }
-        }
-
-        var totalMs = ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now()) - tStart;
-        if (typeof console !== 'undefined' && console.debug) {
-            console.debug('[ingestParcelFeatures] timings: convert=' + (convertMs.toFixed ? convertMs.toFixed(1) : convertMs) + 'ms, prep=' + (prepMs.toFixed ? prepMs.toFixed(1) : prepMs) + 'ms, removeExisting=' + (removeMs.toFixed ? removeMs.toFixed(1) : removeMs) + 'ms, ingest=' + (ingestMs.toFixed ? ingestMs.toFixed(1) : ingestMs) + 'ms, total=' + (totalMs.toFixed ? totalMs.toFixed(1) : totalMs) + 'ms for ' + convertedFeatures.length + ' features (raw=' + rawFeatures.length + ', addedLayers=' + addedLayers.length + ', idsToReplace=' + idsToReplace.size + ', removedExisting=' + removedExisting + ', skippedExisting=' + skippedExisting + ', replaceExisting=' + shouldReplaceExisting + ')');
-        }
-
-        return addedLayers;
+        parcelCanvas = new ParcelCanvas({ padding: 0.5 });
+        global.__parcelCanvasStats = stats;
+        return parcelCanvas;
     }
 
-    global.normalizeFeatureParcelId = normalizeFeatureParcelId;
-    global.ingestParcelFeatures = ingestParcelFeatures;
+    global.parcelCanvasRenderer = parcelCanvasRenderer;
 })(typeof window !== 'undefined' ? window : globalThis);

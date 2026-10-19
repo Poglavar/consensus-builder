@@ -1,0 +1,104 @@
+{
+  "name": "Chhapra",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 980,
+  "point": [
+    25.7832172997632,
+    84.7423408466032
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chhapra Saran official cadastral parcel map Bihar land records BhuNaksha",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway.",
+        "actualResultUrls": [
+          "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Hindi",
+        "query": "छपरा सारण भू नक्शा भू अभिलेख भूमि मानचित्र बिहार आधिकारिक",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway.",
+        "actualResultUrls": [
+          "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/"
+        ],
+        "executionMethod": "Separate Hindi-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Saran district administration and Bihar Department of Revenue and Land Reforms / BhuNaksha",
+        "operator": "District Administration Saran and Government of Bihar",
+        "homeUrl": "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/",
+        "observation": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-10917-LOCAL-CADASTRE-REVIEW",
+    "name": "Saran district administration and Bihar Department of Revenue and Land Reforms / BhuNaksha",
+    "url": "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/",
+    "operator": "District Administration Saran and Government of Bihar",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local Saran/Chapra revenue-record service is established; public parcel geometry at the WUP city locator is not.",
+    "verifiedOpenScope": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No exact city mauza or safe geometry-only route was verified; no plot-identity lookup was sent.",
+  "remainingUncertainty": "The urban locator may not be represented by the currently exposed rural mauza map selection; point-to-map coverage unknown.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10917,
+  "cityId": "wup2025:10917",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.7832172997632,
+    84.7423408466032
+  ],
+  "population2025k": 559.249,
+  "populationUnit": "persons",
+  "queueRank": 980,
+  "population2025": 559249,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway.",
+  "registryEvidenceUrls": [
+    "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No exact city mauza or safe geometry-only route was verified; no plot-identity lookup was sent."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        View Khata and Jamabandi Records online | Welcome to Saran District | India    "
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

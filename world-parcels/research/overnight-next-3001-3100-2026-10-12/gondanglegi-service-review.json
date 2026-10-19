@@ -1,0 +1,54 @@
+{
+  "cityRecord": "city-7764-gondanglegi.json",
+  "cityCode": 7764,
+  "queueRank": 3088,
+  "city": "Gondanglegi",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Indonesian first-party discovery identified the official ATR/BPN BHUMI/ATLAS parcel viewer and Malang local geospatial context. Current viewer JavaScript identifies Geoserver layer umum:Persil at /bhumigs/umum, but direct WFS/WMS-style route checks returned 404 and the anonymous proxy returned an HTML-to-JSON error. LokaGeo's inspected WebGIS exposed only an OSM base layer and no cadastral endpoint. No anonymous safe parcel ID-plus-geometry response was qualified and no sample was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, viewer configuration inspection, endpoint checks, response outcomes, schema/CRS checks, safe field allowlist, scope limits, and uncertainty are recorded in city-7764-gondanglegi.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "ATR/BPN BHUMI/ATLAS",
+      "scope": "Official national land-spatial publication/viewer platform with a configured parcel layer; the underlying anonymous feature service was not qualified.",
+      "evidence": "https://atlas.atrbpn.go.id/"
+    },
+    {
+      "name": "Dinas Pertanahan Kabupaten Malang / Kecamatan Gondanglegi portals",
+      "scope": "Official local land/planning and administrative context was discovered, but a local cadastral registry or anonymous parcel feature service was not evidenced.",
+      "evidence": "https://pertanahan.malangkab.go.id/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point and population are preserved in the city record.",
+    "No anonymous ID-plus-geometry response, parcel schema, CRS, or citywide vector coverage was qualified.",
+    "No exact-point hit or map extent result was treated as evidence of parcel absence.",
+    "No unsafe land-record fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The viewer may use an internal protected request path or reverse proxy not directly reachable at the configured relative path.",
+    "The local LokaGeo pages may have additional non-public catalog paths, but no anonymous cadastral service was exposed in the inspected pages.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,42 @@
+{
+  "cityCode": 264,
+  "queueRank": 1546,
+  "name": "Brest",
+  "country": "Belarus",
+  "countryCode": "BY",
+  "point": [52.1048113105078, 23.7148717432269],
+  "population2025": 369414,
+  "population2025k": 369.414,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Brest Belarus official public cadastral map parcel cadastre GIS National Cadastral Agency",
+        "result": "Identified the official Belarus Public Cadastral Map at map.nca.by. Search results also surfaced a Brest registration/cadastre agency reference, but no separate first-party public API was evidenced.",
+        "actualResultUrls": ["https://map.nca.by/", "https://mediabrest.by/catalog/objects/brestskoe-agentstvo-po-gosudarstvennoj-registracii-i-zemelnomu-kadastru-rup-brest"]
+      },
+      {
+        "language": "Russian/Belarusian local-language discovery",
+        "query": "Брест Беларусь публичная кадастровая карта земельные участки официальный сайт",
+        "result": "Confirmed the Belarus Public Cadastral Map as the relevant official public cadastral source; a Belarusian National Cadastral Agency channel described the public map, but no Brest-specific public service endpoint was separately evidenced.",
+        "actualResultUrls": ["https://map.nca.by/", "https://t.me/s/nca_by/96"]
+      }
+    ],
+    "sourceUrls": [
+      "https://map.nca.by/",
+      "https://map.nca.by/js/app.9ad00b1f.js",
+      "https://map.nca.by/geoserver/pcm/ows"
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "name": "Belarus Public Cadastral Map / National Cadastral Agency public map",
+    "url": "https://map.nca.by/",
+    "scope": "National public cadastral map; Brest-specific parcel coverage was not qualified because the anonymous WFS route returned HTTP 403 for schema/capabilities requests.",
+    "localCustodian": "A Brest state registration and land-cadastre agency reference was found, but no separate first-party public API or map was evidenced."
+  },
+  "serviceReview": "brest-service-review.json",
+  "runtimeReadiness": "held"
+}

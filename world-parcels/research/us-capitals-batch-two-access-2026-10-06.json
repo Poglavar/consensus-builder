@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Bounded official-source access retry for Tallahassee, Springfield, and Topeka. Metadata and aggregate checks only; parcel geometry is not stored.",
+  "sources": [
+    {
+      "stateCode": "FL",
+      "state": "Florida",
+      "capital": "Tallahassee",
+      "centerLatLon": [
+        30.4383,
+        -84.2807
+      ],
+      "operator": "Tallahassee-Leon County GIS / Leon County Property Appraiser",
+      "status": "temporarily_unavailable",
+      "runtimeReadiness": "blocked",
+      "references": [
+        {
+          "url": "https://cms.leoncountyfl.gov/Government/Departments/Information-and-Technology/Tallahassee-Leon-County-GIS",
+          "observation": "Official interlocal GIS program identifies the City, County, and Property Appraiser as partners; the Property Appraiser provides property mapping information and services."
+        },
+        {
+          "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParcel_D_WM/MapServer/0?f=pjson",
+          "observation": "Official TLCGIS layer metadata describes Leon County property parcels from the Property Appraiser as polygon geometry with a limited attribute set."
+        },
+        {
+          "url": "https://www.leonpa.gov/Downloads/contactus",
+          "observation": "Official Property Appraiser download page offers parcel GIS shapefiles; its linked download is ParcelShapeFiles.zip."
+        },
+        {
+          "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0?f=pjson",
+          "observation": "Florida Department of Revenue statewide cadastral polygon service; official metadata identifies PARCEL_ID and STATE_PAR_ fields, but this capital-area access attempt did not complete."
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0/query",
+          "method": "GET",
+          "result": "HTTP 403 / access denied",
+          "assessment": "Prior capital bbox request was forbidden, including browser headers and official GIS Referer. No challenge bypass attempted."
+        },
+        {
+          "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParcel_D_WM/MapServer/0/query",
+          "method": "GET",
+          "result": "HTTP 403; HTML Access Denied response",
+          "assessment": "Alternate official TLCGIS parcel polygon service was also denied for a capital bbox query."
+        },
+        {
+          "url": "https://search.leonpa.gov/Downloads/ParcelShapeFiles.zip",
+          "method": "HEAD",
+          "result": "HTTP 403 from AkamaiGHost",
+          "assessment": "The official parcel-shapefile alternative is advertised by the Property Appraiser but could not be fetched."
+        },
+        {
+          "url": "https://gis.fdacs.gov/mapping/rest/services/GIO_Parcels_for_OAWP_Optimized/FeatureServer/0/query",
+          "method": "GET",
+          "result": "Connection timed out after 8 seconds",
+          "assessment": "State agency statewide parcel service capital-area query did not connect."
+        },
+        {
+          "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query",
+          "method": "GET",
+          "result": "Prior capital bbox query timed out after 20 seconds",
+          "assessment": "Statewide cadastral data remains an unverified lead for Tallahassee."
+        }
+      ],
+      "verification": {
+        "capitalPolygonQueryCompleted": false,
+        "nativeIDs": [],
+        "geometryValidity": null,
+        "exactNativeIDRoundtrip": null
+      },
+      "limitations": "Official metadata establishes parcel polygon availability, but no capital-area feature was accessible during this retry. No conclusion that Tallahassee lacks parcel data."
+    },
+    {
+      "stateCode": "IL",
+      "state": "Illinois",
+      "capital": "Springfield",
+      "centerLatLon": [
+        39.7817,
+        -89.6501
+      ],
+      "operator": "City of Springfield GIS; Sangamon County parcel assessment records are the underlying PIN authority",
+      "status": "passed",
+      "runtimeReadiness": "ready_for_integration",
+      "source": {
+        "id": "us-il-springfield-parcels",
+        "adapter": "arcgis",
+        "name": "City of Springfield GIS Parcels",
+        "endpoint": "https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2",
+        "catalogueUrl": "https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2?f=pjson",
+        "idField": "PIN",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": "^\\d{11}$",
+        "idPrefix": "US-IL-SPRINGFIELD-",
+        "outFields": [
+          "PIN",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "PIN",
+        "metricSrid": 32616,
+        "pageSize": 500,
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "nativeGeometryMode": "parts",
+        "countryCode": "US",
+        "stateCode": "IL",
+        "cityIds": [
+          "springfield"
+        ],
+        "scope": "City of Springfield GIS parcel-view coverage around the state capital. Capital-area and nearby viewport cells were tested; the service is not limited to city limits.",
+        "caveats": "The city zoning-view service can return multiple Polygon rows for one assessor PIN. Complete source rows are unioned per PIN before the parcel is exposed. This is approximate assessment mapping, not a legal survey or title determination.",
+        "references": [
+          "https://maps.springfield.il.us/server/rest/services/PW_Zoning/parcelZonesView/MapServer/2?f=pjson",
+          "https://maps.springfield.il.us/portal/sharing/portals/self",
+          "https://www.springfield.il.us/Departments/OPED/SiteSelection/LOIS.aspx",
+          "https://sangamonil.gov/departments/s-z/supervisor-of-assessments",
+          "https://tax.sangamonil.gov/SangamonCountyWeb/app/searchByParcelNumber.action"
+        ]
+      },
+      "publisherProvenance": "The REST portal organization metadata names the City of Springfield, Illinois. Its layer metadata names a Polygon feature layer named Parcels, sets PIN as the display field, and declares OBJECTID as the transport object ID. Sangamon County's official Supervisor of Assessments says it maintains digital parcel line records for the county; the official parcel-number search describes parcel numbers as 11 digits.",
+      "attempts": [
+        {
+          "method": "GET",
+          "request": "Capital bbox query requesting PIN, OBJECTID, and Polygon geometry only",
+          "result": "HTTP 200; 4 Polygon features; all 4 passed the adapter's geometry validation"
+        },
+        {
+          "method": "GET",
+          "request": "Exact native-key query for the three sampled PIN values, requesting PIN and OBJECTID only",
+          "result": "3 of 3 PIN values returned exactly; PIN values preserved as strings"
+        },
+        {
+          "method": "GET",
+          "request": "Full adapter gate with ordinary single-feature-per-PIN handling",
+          "result": "Failed: duplicate source polygons for a shared PIN had conflicting geometry; initial descriptor also first omitted OBJECTID from outFields and failed the adapter's OID completeness check. These failures were retained in this record."
+        },
+        {
+          "method": "GET",
+          "request": "Full adapter gate with OID manifests for bounds and exact-ID reads and complete parts aggregation by PIN",
+          "result": "Passed all 18 viewport cells, paging, exact native-ID reads, geometry-footprint read, and binding acceptance."
+        }
+      ],
+      "verification": {
+        "capitalPolygonQueryCompleted": true,
+        "viewportCells": 18,
+        "uniqueNativeIDs": 999,
+        "exactResolvedNativeIDs": 999,
+        "nativeIDs": [
+          "22040426013",
+          "22040404026",
+          "22040404032"
+        ],
+        "geometryValidity": {
+          "capitalSamplePolygons": "4 of 4 valid",
+          "allGateViewportAndCanonicalGeometries": "passed adapter polygon validation and complete-parts union validation"
+        },
+        "paging": {
+          "bboxCount": 19,
+          "forcedPageSize": 3,
+          "returnedSourceRows": 19,
+          "complete": true
+        },
+        "footprintParcelCount": 7,
+        "bindingCoverage": "complete",
+        "gateOutput": "research/us-capitals-batch-two-access-live-2026-10-06.json"
+      },
+      "limitations": "The service is a city zoning-view parcel layer and its feature rows are not one-to-one with PINs in every area. The configured parts mode resolves all source object rows for a PIN and unions them; only the capital-centered grid and bounded site footprint were validated."
+    },
+    {
+      "stateCode": "KS",
+      "state": "Kansas",
+      "capital": "Topeka",
+      "centerLatLon": [
+        39.0473,
+        -95.6752
+      ],
+      "operator": "City of Topeka GIS; Shawnee County Appraiser GIS and Mapping",
+      "status": "temporarily_unavailable",
+      "runtimeReadiness": "blocked",
+      "references": [
+        {
+          "url": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0?f=pjson",
+          "observation": "Official City of Topeka Tax Parcel Polygon layer metadata declares OBJECTID and native PIN string fields."
+        },
+        {
+          "url": "https://snco.gov/ap/mapping.php",
+          "observation": "Official Shawnee County Appraiser GIS and Mapping page documents county property mapping and approximately 75,000 parcels."
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://maps.topeka.gov/arcgis/rest/services/ParcelPublishing/Parcels_and_Subdivisions/FeatureServer/0/query",
+          "method": "GET",
+          "result": "TLS certificate verification failed: self-signed certificate",
+          "assessment": "Local Node fetch failed with DEPTH_ZERO_SELF_SIGNED_CERT, including with system CA enabled; curl also rejected the certificate. No TLS verification bypass attempted."
+        }
+      ],
+      "verification": {
+        "capitalPolygonQueryCompleted": false,
+        "nativeIDs": [],
+        "geometryValidity": null,
+        "exactNativeIDRoundtrip": null
+      },
+      "limitations": "Official metadata identifies a plausible capital-area parcel polygon source, but the feature query could not be verified with valid TLS. No claim that Topeka lacks parcel data."
+    }
+  ]
+}

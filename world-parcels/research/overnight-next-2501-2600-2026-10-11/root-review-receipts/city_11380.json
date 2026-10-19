@@ -1,0 +1,57 @@
+{
+  "taskId": "city:11380",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-11380-conghua.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/conghua-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T13:41:22.668728Z",
+  "reason": "Conghua branch and registration-center custody is verified, but no anonymous native-ID parcel geometry response or adapter qualification exists.",
+  "identityCheck": {
+    "wupCityCode": 11380,
+    "rank": 2511,
+    "country": "China",
+    "countryCode": "CN",
+    "pointLatLon": [
+      23.5453936984256,
+      113.581157869199
+    ],
+    "population2025Persons": 233861,
+    "bulkSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "searchCheck": {
+    "recordedLanguages": [
+      "English",
+      "Chinese"
+    ],
+    "pairedQueriesAndResultUrlsPresent": true
+  },
+  "registryFound": true,
+  "firstPartyChecks": [
+    {
+      "url": "https://www.conghua.gov.cn/zfjg/gzsghhzrzyjchqfj/zwgk/zfxxgkml/zzjg/lxfs/",
+      "observation": "Official district page identifies the Conghua Planning and Natural Resources branch and registration/archive-query contacts."
+    },
+    {
+      "url": "https://ghzyj.gz.gov.cn/sjb/fw/ckzy/content/post_4904337.html",
+      "observation": "Official registration-center page lists Conghua land-use, collective-land, homestead, agricultural-land and forestry registration scope."
+    }
+  ],
+  "geometryCheck": {
+    "retainedFullPolygons": 0,
+    "safeNativeIdResponse": false,
+    "citywideAbsenceInferred": false
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "runtimeAdmitted": false
+  }
+}

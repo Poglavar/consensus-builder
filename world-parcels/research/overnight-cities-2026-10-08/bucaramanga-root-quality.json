@@ -1,0 +1,42 @@
+{
+  "purpose": "Independent full bounded AMB native-record geometry audit; preserve every source feature without repairs or exclusion.",
+  "featureCount": 259,
+  "metricCrs": "EPSG:32618",
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairs": [
+    {
+      "ids": [
+        "CO-AMB-OBJECTID-45091",
+        "CO-AMB-OBJECTID-44584"
+      ],
+      "areaSquareM": 0.33380698372083106
+    }
+  ],
+  "overlayErrors": [],
+  "repeatedCadastralCodeGroups": [
+    {
+      "codigo": "680010102000001620003000000000",
+      "recordIds": [
+        "CO-AMB-OBJECTID-44608",
+        "CO-AMB-OBJECTID-45458"
+      ],
+      "pairwise": [
+        {
+          "ids": [
+            "CO-AMB-OBJECTID-44608",
+            "CO-AMB-OBJECTID-45458"
+          ],
+          "disjoint": false,
+          "equals": false,
+          "intersectionAreaSquareM": 0.0,
+          "distanceMeters": 0.0
+        }
+      ]
+    }
+  ],
+  "cadastralCodeField": "properties.sourceProperties.codigo",
+  "distinctCadastralCodeCount": 258,
+  "distinctNativeRecordIdCount": 259,
+  "auditCorrection": "Cadastral labels are read from preserved canonical sourceProperties; the initial derived grouping mistakenly looked for a top-level codigo and was corrected before the source decision."
+}

@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2412",
+  "queueRank": 101,
+  "wupCityCode": 2412,
+  "name": "Mansa",
+  "country": "Zambia",
+  "countryCode": "ZM",
+  "centerLatLon": [
+    -11.2027334066671,
+    28.8914856820841
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 101,
+  "population2025": 335503,
+  "annualGrowthPct2015To2025": 5.839984,
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_city_scope",
+  "priorEvidence": [
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-city-2412.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-provider-ZM.json"
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ws-provider-ZM.json",
+  "verifiedParcelResponse": {
+    "sourceId": "zm-nsdi-cadaster-new",
+    "requestUrl": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?objectIds=34582&outFields=SDE.Lots.OBJECTID%2CSDE.Lots.UPID&returnGeometry=true&outSR=4326&f=geojson",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/geo+json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      28.8877356820841,
+      -11.2064834066671,
+      28.8952356820841,
+      -11.1989834066671
+    ],
+    "queryGrid": "Nine adjacent 0.0025° square cells (0.0025° center spacing) around WUP center; count/ID manifest/geometry reads all completed.",
+    "parcelRecordCount": 86,
+    "spatialIntersectionRowCount": 102,
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "SDE.Lots.UPID",
+    "nativeIdSample": "MAN/434",
+    "transportObjectIdField": "SDE.Lots.OBJECTID",
+    "transportObjectIdIsCanonical": false,
+    "geometrySha256": "1b263a2677d7de7d5f00a3a4d151bb0c3a67f2757c66ceeae7bea6f39fc5d970",
+    "exactLookupBatchCount": 9,
+    "exactLookupComplete": true,
+    "exactGeometryMatches": true,
+    "recordListPath": "africa-ws-city-2412-parcel-response.json",
+    "gridManifestPath": "africa-ws-mansa-9grid.json",
+    "nativeExactEvidencePath": "africa-ws-mansa-native-exact.json",
+    "sampleGeometrySizeAssessment": "The MAN/434 polygon is about 111,155 m² (11.12 ha; approximate geodesic area) and is labelled Plot ID in source metadata. It is a large lot polygon; no household-scale interpretation is made."
+  },
+  "source": {
+    "sourceId": "zm-nsdi-cadaster-new",
+    "name": "Zambia NSDI Vector CadasterNew layer 0 (Lots from ZILMIS)",
+    "operator": "National map.gov.zm ArcGIS service; exact layer custodian not independently established",
+    "scope": "Bounded sample around Mansa WUP center only; 86 unique UPID lots observed in nine small cells, not a citywide completeness claim.",
+    "endpoint": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "method": "ArcGIS REST MapServer query",
+    "responseFormat": "GeoJSON",
+    "crs": "Service native EPSG:32735; queries used inSR=4326 and outSR=4326; source returned WGS84 GeoJSON.",
+    "nativeIdField": "SDE.Lots.UPID (Plot ID, string, length 50)",
+    "transportObjectIdField": "SDE.Lots.OBJECTID (transport only)",
+    "pagination": "Layer supportsPagination=false. Spatial and exact native-ID reads used count + objectIds + batched objectId geometry fetch; no offsets/resultRecordCount. All observed UPIDs fresh exact-resolved with count/manifest/geometry equality.",
+    "reuseStatus": "Unknown; service license/copyright fields were blank in metadata."
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "Mansa target-area sample only; not citywide.",
+    "verifiedOpenScope": "Nine adjacent cells covering ~0.83 km² around WUP center; 86 unique UPID polygon records; all observed IDs exact-resolved.",
+    "countrywideVerified": false
+  },
+  "blocker": "Raw Mansa sample evidence is verified (86 unique native UPIDs and exact geometry matches across the tested cells). Production adapter acceptance is pending the parent-led compatibility check; this record does not assert runtime integration.",
+  "remainingUncertainty": "The sample does not establish citywide completeness or source coverage outside the queried cells. The source labels records as Lots from ZILMIS; the 11.12 ha sample polygon is not evidence of household-scale parcels. License/reuse terms and exact layer custodian remain unconfirmed.",
+  "nextStep": "Complete the parent-led runtime adapter acceptance, then decide integration while keeping coverage scoped to the nine tested cells.",
+  "requests": [
+    {
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Metadata returned HTTP 200 from the canonical no-www host. The separate www-host metadata attempt timed out with HTTP 000; see priorRequests."
+    },
+    {
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Nine separate bounded count and OID-manifest queries plus complete geometry fetches; see grid evidence."
+    },
+    {
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "All 86 observed native UPIDs freshly exact-resolved; 9 batches had count=OID manifest=geometry rows, no missing IDs or duplicates, and every returned geometry hash matched grid evidence."
+    }
+  ],
+  "resultCategory": "verified_sample_city_scope",
+  "evidenceType": "new_target_bounded_city_probe",
+  "targetEndpointProbePerformed": true,
+  "adapterCompatibility": "hold_for_adapter_qualified_field_support",
+  "inheritedSearchEvidence": {
+    "languageScript": "English (official Zambia/Mansa municipal terminology; Latin script)",
+    "exactQueries": [
+      "Mansa Zambia parcels cadastre land plot GIS Ministry of Lands"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.mansacouncil.gov.zm/?page_id=2435",
+      "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer"
+    ],
+    "summary": "Initial search surfaced the Mansa Municipal Council Survey Section and Zambia NSDI CadasterNew service; its bounded request timed out on the www host. The subsequent follow-up used canonical map.gov.zm and verified geometry; see verifiedParcelResponse.",
+    "provenance": "Inherited from world-parcels/research/india-africa-2026-10-08/africa-ws-city-2412.json; this was the initial-pass search, not a fresh follow-up search.",
+    "timingRelativeToFollowup": "Initial pass; before the canonical no-www REST success and bounded sample."
+  },
+  "priorRequests": [
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "checkedAt": "2026-10-08 initial pass",
+      "assessment": "The www-host metadata attempt timed out with zero bytes. This is not the successful request below."
+    },
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "checkedAt": "2026-10-08 initial pass",
+      "assessment": "The prior bounded query to the www host timed out with zero bytes; the exact parameters are not retained in the initial shared record."
+    }
+  ],
+  "registryEvidence": {
+    "sourceId": "zm-nsdi-cadaster-new",
+    "basis": "Public Zambia NSDI ArcGIS layer titled CadasterNew, describing Lots from ZILMIS, returned 86 native UPID/Plot ID polygons in the bounded Mansa sample. This confirms a parcel/cadastre source exists for the tested Mansa cells; it does not establish nationwide coverage or the precise custodian."
+  },
+  "requestLogCorrections": [
+    {
+      "field": "requests[0].url",
+      "previousRecordedUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "correctedUrl": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "reason": "The 200 metadata response came from `https://map.gov.zm` without www. The failed www-host metadata attempt is retained separately and verbatim in priorRequests (HTTP 000); no unsuccessful request was rewritten as a success."
+    }
+  ]
+}

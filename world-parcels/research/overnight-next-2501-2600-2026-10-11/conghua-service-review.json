@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-11380-conghua.json",
+  "cityCode": 11380,
+  "queueRank": 2511,
+  "city": "Conghua",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [23.5453936984256, 113.581157869199],
+  "researchDate": "2026-10-11",
+  "outcome": "official local registry custodian evidenced; no qualifying anonymous parcel geometry response",
+  "registryFound": true,
+  "custodian": {
+    "name": "Guangzhou Planning and Natural Resources Bureau Conghua Branch and Conghua Real Estate Registration Center",
+    "scope": "Conghua land and real-estate registration, including state-owned and agricultural land, collective land ownership and construction land, homesteads, forestry rights, easements and related records",
+    "evidenceUrls": [
+      "https://www.conghua.gov.cn/zfjg/gzsghhzrzyjchqfj/zwgk/zfxxgkml/zzjg/lxfs/",
+      "https://ghzyj.gz.gov.cn/sjb/fw/ckzy/content/post_4904337.html"
+    ]
+  },
+  "queryOutcomes": "Separate English and Chinese discovery queries were executed and recorded in the city record. Both established the local Conghua custodian and official registration scope. Discovery did not reveal a public anonymous cadastral viewer or parcel geometry API.",
+  "requestOutcomes": "Official local, city, registration-query and Guangdong Tianditu pages were fetched over ordinary HTTPS GET. The registration query page and its current JavaScript show real-name identity, captcha and authenticated application flow; those routes were not submitted or bypassed. No login, credentials, CAPTCHA bypass, unsafe fields, or TLS-verification exception was used.",
+  "attemptedRoutes": [
+    "https://www.conghua.gov.cn/zfjg/gzsghhzrzyjchqfj/zwgk/zfxxgkml/zzjg/lxfs/",
+    "https://ghzyj.gz.gov.cn/sjb/fw/ckzy/content/post_4904337.html",
+    "https://bdcda.gzlpc.gov.cn/wxpro_ts/grcx/",
+    "https://bdcda.gzlpc.gov.cn/wxpro/Scripts/grcx/page.js?kk=kk1",
+    "https://ghzyj.gz.gov.cn/",
+    "https://guangdong.tianditu.gov.cn/",
+    "https://guangdong.tianditu.gov.cn/statics/config.js"
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry", "geometry CRS", "source service URL", "retrieval timestamp"],
+  "retainedSamples": [],
+  "scopeLimits": [
+    "No exact-point hit or bbox parcel query was performed; failure to find an anonymous endpoint is not citywide absence.",
+    "Official registration scope proves local custody and service responsibility, not open spatial-data access.",
+    "No native parcel field schema, CRS, stable parcel identity, or composite-key mapping was observed.",
+    "The official online query requires identity and captcha, so no personal, owner, address, titleholder, tax or account data was requested."
+  ],
+  "uncertainty": "A current public Conghua cadastral viewer or service may exist outside the reachable pages or may require authorized identity-based access. The exact WUP point was preserved and not used to force a parcel hit.",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "completion": "complete packet; held from runtime admission"
+}

@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-8568-shahada.json",
+  "cityCode": 8568,
+  "queueRank": 2842,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Shahada Tahsil/Sub-Division, Nandurbar district administration; Maharashtra Bhumi Abhilekh / MahaBhuNakasha",
+  "publicMapLead": "MahaBhuNakasha, https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+  "queryOutcomes": "Separate English and Marathi discovery queries were performed. Official Maharashtra land-record, Nandurbar district, Shahada sub-division, and talukawise-map pages were found.",
+  "requestOutcomes": "First-party custodian pages were retrieved successfully. The BhuNaksha viewer and attempted public hierarchy/map-plot routes timed out from this workspace. No JavaScript/configuration, schema, CRS, anonymous parcel ID, or geometry response was obtained. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [21.5465520586937, 74.4757521435977] was preserved; it was not moved to force a parcel hit.", "No exact-point hit or miss was inferred from timeout or unavailable viewer access.", "Shahada Tahsil and Nandurbar pages establish a local custodian/service lead, not citywide vector coverage.", "No parcel polygon or source-specific raw attribute set is retained.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Independent serial review is required before any adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "A local registry custodian and official map-service lead were evidenced, but no anonymous public parcel ID-plus-geometry response, schema, CRS, or citywide open coverage was qualified."},
+  "uncertainty": "A parcel map may exist behind the BhuNaksha administrative workflow, but its current anonymous public response, native identity semantics, geometry endpoint, CRS, and city coverage were not established safely. No sample GeoJSON is retained."
+}

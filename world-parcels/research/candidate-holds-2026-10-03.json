@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "description": "Compact metadata-only record of source probes that remain held from runtime integration. No polygon geometry or personal fields are stored.",
+  "holds": [
+    {
+      "sourceId": "za-giscoe-erven",
+      "cities": [
+        "Johannesburg",
+        "Durban"
+      ],
+      "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+      "result": {
+        "johannesburg": {
+          "cellsComplete": 18,
+          "cellsAttempted": 18,
+          "sampledFeatures": 1052,
+          "uniqueSG21KEYs": 696
+        },
+        "durban": {
+          "originalCenterAttempted": 18,
+          "alternateMappedCenterComplete": 11,
+          "alternateMappedCenterAttempted": 18,
+          "cellsWithConflictingSG21KEYGeometry": 7,
+          "exactLookup80": "timeout/conflicting geometry",
+          "originalCenterBeforeEmptyManifestFixComplete": 0,
+          "emptyManifestClarification": "The original-center count queries returned zero. Explicit null objectIds are valid when count is zero; the shared adapter now accepts this verified response shape. This historical normalization failure is not a provider outage."
+        },
+        "exactNativeKeyLookup": {
+          "uniqueSG21KEYs": 696,
+          "successfulFeatures": 0,
+          "failedBatches": 9,
+          "batchSize": 80,
+          "status": 504,
+          "smallThreeKeyProbeFeatures": 3,
+          "smallProbeElapsedMs": 10300
+        },
+        "globalIdExactLookup": {
+          "bracedKnownIdsReturned": 0,
+          "bareKnownIdsReturned": 0,
+          "upstreamHttpStatus": 200
+        },
+        "parcelGuidExactLookup": {
+          "smallBatchRequested": 33,
+          "smallBatchReturned": 33,
+          "smallBatchElapsedMs": 12500,
+          "batch80Outcome": "timeout at the 15000 ms provider deadline"
+        }
+      },
+      "technicalBlockers": [
+        "The published GlobalID field returned no known IDs for both braced and bare exact lookup literals.",
+        "SG21KEY exact batches and an 80-ParcelGuid batch timed out; Durban cells also return distinct geometries for one SG21KEY. A usable complete native-key retrieval strategy remains unverified."
+      ]
+    },
+    {
+      "sourceId": "ec-guayaquil-rural-predios-agol-thirdparty",
+      "cities": [
+        "Guayaquil"
+      ],
+      "endpoint": "https://services3.arcgis.com/PYyU96woLS4j2PN8/arcgis/rest/services/Catastro_rural_y_nivel_de_inundacion_Guayaquil/FeatureServer/43",
+      "result": {
+        "urban": {
+          "cellsComplete": 18,
+          "cellsAttempted": 18,
+          "features": 0
+        },
+        "ruralSample": {
+          "cellsComplete": 16,
+          "cellsAttempted": 18,
+          "sampledFeatures": 133,
+          "cellsWithConflictingGeometry": 2
+        },
+        "exactIdLookup": {
+          "candidateIds": 67,
+          "returned": 0,
+          "error": "conflicting geometry for one parcel ID",
+          "gatewayStatus": 502
+        }
+      },
+      "technicalBlockers": [
+        "The rural sample has incomplete conflicting cells and exact candidate-key lookup returns conflicting geometries; rct repeats and IdPredial values are often blank/reused."
+      ]
+    },
+    {
+      "sourceId": "my-selangor-jps-lot-kadaster-petaling",
+      "cities": [
+        "Kuala Lumpur viewport"
+      ],
+      "endpoint": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7",
+      "result": {
+        "cellsComplete": 0,
+        "cellsAttempted": 18,
+        "queryFailures": 18,
+        "providerError": "ArcGIS parcel query failed: Error performing query operation",
+        "exactIdsTested": 0,
+        "gatewayStatus": 502,
+        "upstreamHttpStatus": 200
+      },
+      "technicalBlockers": [
+        "All tested viewport cells failed at the ArcGIS query operation; no bounded features or exact native-ID reads were available.",
+        "The layer is a Petaling/Selangor source and does not establish coverage of Kuala Lumpur Federal Territory."
+      ]
+    }
+  ]
+}

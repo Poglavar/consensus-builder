@@ -1,0 +1,125 @@
+{
+  "name": "Lipa",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "rank": 880,
+  "point": [
+    13.9994697293547,
+    121.1450391999
+  ],
+  "population2025": 614898,
+  "population2025k": 614.898,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official City of Lipa describes an assessor tax-mapping division that can verify property location/boundaries. Its published map-request workflow is for the property owner or authorized representative and asks for title and tax declaration; no anonymous vector service was identified.",
+  "registryEvidenceUrls": [
+    "https://lipa.gov.ph/maps/",
+    "https://lipa.gov.ph/institutional-development/"
+  ],
+  "resultCategory": "local_cadastre_evidenced_no_public_geometry_verified",
+  "remainingUncertainty": "Whether a separate authenticated or unpublished local parcel GIS exists and whether any non-public cadastral coverage includes the WUP settlement locator.",
+  "scopeLimits": "Research is limited to official sources and the exact unchanged WUP settlement locator. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "PH-3691-lipa-cadastre-review",
+    "name": "City of Lipa Assessor tax-mapping division",
+    "url": "https://lipa.gov.ph/institutional-development/",
+    "operator": "Philippines",
+    "serviceType": "Local property-map/tax-mapping office with owner-authorized map-copy process; no anonymous parcel GIS endpoint identified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 3691,
+  "cityId": "wup2025:3691",
+  "queueRank": 880,
+  "centerLatLon": [
+    13.9994697293547,
+    121.1450391999
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research evidence only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The official City of Lipa describes an assessor tax-mapping division that can verify property location/boundaries. Its published map-request workflow is for the property owner or authorized representative and asks for title and tax declaration; no anonymous vector service was identified.",
+    "verifiedOpenScope": "No parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lipa Philippines official city cadastral parcel map GIS tax mapping assessor",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "Official city map page lists static thematic maps; institutional-development page describes tax-mapping verification and owner-authorized tax-map copies. No anonymous parcel geometry endpoint identified.",
+        "actualResultUrls": [
+          "https://lipa.gov.ph/maps/",
+          "https://lipa.gov.ph/institutional-development/"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      },
+      {
+        "language": "Filipino",
+        "query": "Lipa opisyal na mapa kadastral lote tax mapping assessor",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "Opisyal na pahina ng Lungsod ng Lipa ang naglalarawan ng tax-mapping division at kahilingan ng may-ari/awtorisadong kinatawan para sa kopya ng tax map; walang pampublikong vector parcel endpoint na natukoy.",
+        "actualResultUrls": [
+          "https://lipa.gov.ph/maps/",
+          "https://lipa.gov.ph/institutional-development/"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://lipa.gov.ph/maps/",
+        "observation": "The official City of Lipa describes an assessor tax-mapping division that can verify property location/boundaries. Its published map-request workflow is for the property owner or authorized representative and asks for title and tax declaration; no anonymous vector service was identified."
+      },
+      {
+        "url": "https://lipa.gov.ph/institutional-development/",
+        "observation": "The official City of Lipa describes an assessor tax-mapping division that can verify property location/boundaries. Its published map-request workflow is for the property owner or authorized representative and asks for title and tax declaration; no anonymous vector service was identified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://lipa.gov.ph/maps/",
+        "method": "GET official city maps page",
+        "observation": "Static district, education, hazard and road maps are listed; no parcel-vector download or service link was exposed."
+      },
+      {
+        "url": "https://lipa.gov.ph/institutional-development/",
+        "method": "GET official city institutional-development page",
+        "observation": "Tax-mapping verification is available through the assessor; map copies require owner/authorized representative, title and tax declaration, and a PHP 50 fee. No parcel query submitted."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research evidence only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://lipa.gov.ph/maps/",
+    "fetch": "error",
+    "reason": "HTTP Error 406: Not Acceptable"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

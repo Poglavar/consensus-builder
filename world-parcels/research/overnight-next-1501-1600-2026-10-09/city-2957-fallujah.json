@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2957",
+  "cityCode": 2957,
+  "wupCityCode": 2957,
+  "name": "Fallujah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "iso2": "IQ",
+  "iso3": "IRQ",
+  "rank": 1586,
+  "queueRank": 1586,
+  "point": [33.3497150718708, 43.7841281365146],
+  "centerLatLon": [33.3497150718708, 43.7841281365146],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 359695,
+  "population2025k": 359.695,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Iraqi Ministry of Justice publishes a dedicated Fallujah real-estate registration directorate and its official service/news pages identify the Ministry's real-estate registration directorates as the provider of property deed/map services. This establishes local registry custody, not open parcel geometry or citywide digital coverage.",
+  "registryEvidenceUrls": [
+    "https://www.moj.gov.iq/contact_us.php",
+    "https://www.moj.gov.iq/view.9274/",
+    "https://moj.gov.iq/view.9289/",
+    "https://ur.gov.iq/index/show-eservice/40227/10049/cat"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No safe anonymous first-party response containing a stable native parcel identifier and complete polygon was verified. The Ministry's public property deed/map service describes an owner-submitted information service and states that online availability is currently limited to Baghdad; the Ministry article and Ur Portal pages exposed no public parcel feature endpoint, schema, CRS, or bounded anonymous geometry response. No login, credentials, token, CAPTCHA bypass, or unsafe property field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Iraqi Ministry of Justice / Real-Estate Registration Directorate, including the Fallujah directorate and property deed/map procedures.",
+    "verifiedOpenScope": "Local registry custody and a public description of a property deed/map request service; no anonymous parcel feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fallujah Iraq official cadastral map land registry parcel GIS",
+        "result": "Discovery led to the Iraqi Ministry of Justice's official real-estate registration contact page, the Ministry's official electronic property-service announcement, and the Ur Portal's official property deed/map service page. No anonymous parcel ID-plus-geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/contact_us.php",
+          "https://moj.gov.iq/view.9289/",
+          "https://ur.gov.iq/index/show-eservice/40227/10049/cat"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Arabic",
+        "query": "الفلوجة العراق خريطة عقارية كادستر دائرة التسجيل العقاري",
+        "result": "Arabic discovery found the official Ministry page listing مديرية تسجيل عقاري الفلوجة and the official Ministry/Ur Portal property deed and map procedure. The Ur Portal describes the service as a request for an owner's deed and property map and states it is currently available electronically in Baghdad, with other directorates to follow; no public parcel geometry API was exposed.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/contact_us.php",
+          "https://www.moj.gov.iq/view.9274/",
+          "https://ur.gov.iq/index/show-eservice/40227/10049/cat"
+        ],
+        "executionMethod": "Separate Arabic web search and first-party Arabic page review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The Fallujah directorate's internal cadastral maps and records may exist without an anonymous public GIS interface. The Ur Portal service page's Baghdad availability statement does not prove that Fallujah has no digital coverage. The exact WUP point was not shifted; no exact-point hit or map-extent miss was used as evidence of citywide absence.",
+  "nextStep": "Serial reviewer should independently check for a first-party anonymous native parcel endpoint or a newly enabled Fallujah Ur service before any adapter qualification; keep runtime held."
+}

@@ -1,0 +1,137 @@
+{
+  "cityCode": 8208,
+  "queueRank": 2497,
+  "name": "Juazeiro do Norte",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-7.22175845200656, -39.315110914862],
+  "population2025": 234710,
+  "population2025k": 234.71,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Juazeiro do Norte Brazil official cadastral parcel map municipal GIS property cadastre",
+        "result": "First-party discovery identified the municipal service catalogue, official municipal open-data portal, municipal geoprocessing service description, and official city-map/publication pages. The evidence establishes a local municipal cadastre/geoprocessing custodian, but no public anonymous parcel-vector endpoint was exposed.",
+        "actualResultUrls": [
+          "https://juazeirodonorte.ce.gov.br/cartaservicos.php?sec=12",
+          "https://juazeirodonorte.ce.gov.br/cartaservicos.php?id=71",
+          "https://juazeirodonorte.ce.gov.br/dadosabertos.php",
+          "https://www.juazeirodonorte.ce.gov.br/publicacoes.php?id=6607"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazilian; native/local)",
+        "query": "Juazeiro do Norte cadastro imobiliário mapa cadastral parcelas geoprocessamento prefeitura serviço oficial",
+        "result": "A busca nativa/local located the official Prefeitura de Juazeiro do Norte service catalogue entries for Cadastro de Imóvel, Cadastro de Loteamento, and Alteração de Cadastro Imobiliário, plus the municipal geoprocessing service and official map publications. No anonymous parcel feature service or safe ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://juazeirodonorte.ce.gov.br/cartaservicos.php?sec=12",
+          "https://juazeirodonorte.ce.gov.br/cartaservicos?tag=23",
+          "https://juazeirodonorte.ce.gov.br/cartaservicos.php?id=71",
+          "https://juazeirodonorte.ce.gov.br/dadosabertos.php",
+          "https://www.juazeirodonorte.ce.gov.br/publicacoes.php?id=6607"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Prefeitura Municipal de Juazeiro do Norte, especially Secretaria Municipal de Finanças for Cadastro Imobiliário and Secretaria Municipal de Infraestrutura for geoprocessing; official service pages describe cadastral registration and municipal geoprocessing.",
+    "registryEvidence": "Local municipal evidence is present: the official service catalogue describes Cadastro de Imóvel for urban/rural property, Cadastro de Loteamento for individualized lots, and Alteração de Cadastro Imobiliário. The Infrastructure geoprocessing page says georeferenced files may be made available to the community.",
+    "generalAgencyEvidence": "IBGE official maps were found for municipal/census context only; they are not evidence of a Juazeiro do Norte parcel registry or parcel-vector API."
+  },
+  "requestOutcomes": "TLS-verified GET retrieved the official municipal service catalogue, open-data portal, services page, and publication/map pages. The service page exposed an IPTU second-copy link and a general Google Maps embed, not a cadastral parcel viewer. The open-data portal exposed generic JSON/CSV export routes for listed datasets; no parcel/cadastre dataset or parcel geometry route was identified in the bounded HTML/configuration inspection. No login, credentials, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS exception was used.",
+  "attemptedRoutes": [
+    {
+      "route": "Official municipal service catalogue / Finance cadastral services",
+      "url": "https://juazeirodonorte.ce.gov.br/cartaservicos.php?sec=12",
+      "httpStatus": 200,
+      "outcome": "Loaded. Lists Cadastro de Imóvel, Cadastro de Loteamento, Alteração de Cadastro Imobiliário, and related property-tax/cadastral procedures. No public parcel geometry or viewer configuration embedded."
+    },
+    {
+      "route": "Official municipal service search by cadastral tag",
+      "url": "https://juazeirodonorte.ce.gov.br/cartaservicos?tag=23",
+      "httpStatus": "search result; not separately fetched",
+      "outcome": "First-party result repeats the cadastral service descriptions. No parcel feature response obtained."
+    },
+    {
+      "route": "Official municipal geoprocessing service",
+      "url": "https://juazeirodonorte.ce.gov.br/cartaservicos.php?id=71",
+      "httpStatus": 200,
+      "outcome": "Loaded. States that municipal geoprocessing supports infrastructure decisions and that georeferenced files may be made available to the community. No public parcel layer URL, schema, CRS, or anonymous geometry response exposed."
+    },
+    {
+      "route": "Official municipal open-data portal",
+      "url": "https://juazeirodonorte.ce.gov.br/dadosabertos.php",
+      "httpStatus": 200,
+      "outcome": "Loaded. Page offers generic JSON/CSV exports for listed administrative datasets. Bounded inspection found no cadastral/parcels dataset or parcel geometry service."
+    },
+    {
+      "route": "Official municipal online services",
+      "url": "https://juazeirodonorte.ce.gov.br/servicos.php",
+      "httpStatus": 200,
+      "outcome": "Loaded. Exposes an IPTU second-copy service and a general city Google Maps embed; neither is a parcel-vector service."
+    },
+    {
+      "route": "Official municipal map/publication page",
+      "url": "https://www.juazeirodonorte.ce.gov.br/publicacoes.php?id=6607",
+      "httpStatus": "search result; direct document not retained",
+      "outcome": "Official publication identifies a 2021 neighborhood-delimitation map using SIRGAS 2000 / UTM zone 24S. This is administrative/neighborhood mapping, not parcel geometry or parcel identity evidence."
+    },
+    {
+      "route": "Official IBGE census urban-sector map",
+      "url": "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_para_fins_de_levantamentos_estatisticos/censo_demografico_2022/mapas_e_descritivos_de_setores_censitarios/CE/2307304/23073040500/MSU/230730405000499/A3_230730405000499_MSU.pdf",
+      "httpStatus": "search result; not used as parcel source",
+      "outcome": "Provides census-sector context and SIRGAS 2000, not a cadastral parcel registry. No parcel feature was retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No official parcel viewer JavaScript/configuration or public parcel endpoint was exposed in bounded inspection.",
+    "geometryTransport": "Not observed; no parcel feature response returned.",
+    "geometryCrs": "Not observed for parcels. SIRGAS 2000 / UTM zone 24S is documented for an official neighborhood map only and must not be generalized to parcels.",
+    "nativeIdentity": "Not observed; no parcel feature response returned.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [-7.22175845200656, -39.315110914862] was preserved in latitude/longitude order; no coordinate shift or forced parcel query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No safe parcel ID-plus-unchanged-geometry response qualified; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public Juazeiro do Norte parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Finance cadastral services and municipal Infrastructure geoprocessing/publication functions.",
+    "verifiedOpenScope": "Municipal custodianship and service descriptions were verified; anonymous parcel-vector coverage was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "scopeLimits": [
+    "Exact WUP point [-7.22175845200656, -39.315110914862] was preserved and not shifted.",
+    "A zero exact-point hit, map extent miss, unavailable endpoint, or unusable UI was not treated as citywide cadastral absence.",
+    "No safe native parcel identifier plus full unchanged polygon was obtained; no GeoJSON sample is retained.",
+    "No citywide coverage, public parcel schema, parcel service CRS, stable parcel-identity semantics, or update cadence was verified.",
+    "Packet completion is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "A restricted, browser-only, unpublished, or currently unavailable municipal parcel service may exist. Current public parcel endpoint behavior, stable native identity, CRS, and citywide coverage remain unresolved. Runtime readiness remains held."
+}

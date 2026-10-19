@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7882-volta-redonda.json",
+  "purpose": "Document first-party municipal discovery and bounded anonymous cadastral/map-service review for Volta Redonda, Rio de Janeiro, Brazil.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official municipal PortalVR geoprocessing site and Mapa Virtual expose a municipal Lotes layer. Following the public JavaScript/configuration identified an anonymous p.mapper service. A bounded query around the exact unchanged WUP point returned one safe native ID (240), the Lotes layer name, and a service geometry extent. The response did not include a full polygon, so no GeoJSON sample was retained.",
+  "registryAssessment": "A local municipal map/cadastral service and municipal cadastral-data procedure are evidenced, so registryFound=true. This is not evidence of citywide completeness or adapter admission.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www2.voltaredonda.rj.gov.br/geo/index.php",
+      "observation": "Official PortalVR Mapa Virtual help page documents municipal themes including Lotes and says lot identification can expose parcel inscriptions, house number, address, and lot area. Those unsafe fields were not retained."
+    },
+    {
+      "url": "https://www2.voltaredonda.rj.gov.br/geoprocessamento/",
+      "observation": "Official municipal geoprocessing page links the Mapa Virtual and municipal georeferenced maps."
+    },
+    {
+      "url": "https://servicos.voltaredonda.rj.gov.br/cartaServicos/114/",
+      "observation": "Official municipal service catalog identifies the Secretaria Municipal de Fazenda / Departamento de Impostos Imobiliários service for cadastral property data."
+    },
+    {
+      "url": "http://geo.epdvr.com.br/mapavirtual/map.phtml",
+      "observation": "Current public p.mapper application reviewed. Its embedded configuration names the Lotes group `lotesvr`, among the default visible groups, and identifies the public x_load/x_info request paths."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Volta Redonda Brazil official cadastral parcel map land registry GIS",
+      "result": "Official Prefeitura/PortalVR geoprocessing and Mapa Virtual sources found; a municipal Lotes layer and bounded safe-ID query were verified, but no full GeoJSON polygon was retained.",
+      "actualResultUrls": [
+        "https://www.voltaredonda.rj.gov.br/",
+        "https://www2.voltaredonda.rj.gov.br/geoprocessamento/",
+        "http://geo.epdvr.com.br/mapavirtual/map.phtml"
+      ]
+    },
+    {
+      "language": "Portuguese (Brazil)",
+      "query": "Volta Redonda mapa cadastral oficial cadastro imobiliário geoprocessamento lotes prefeitura",
+      "result": "Official Mapa Virtual and municipal cadastral-data service sources found; anonymous Lotes query was verified and no full polygon was retained.",
+      "actualResultUrls": [
+        "https://www2.voltaredonda.rj.gov.br/geo/index.php",
+        "https://www2.voltaredonda.rj.gov.br/geoprocessamento/",
+        "https://servicos.voltaredonda.rj.gov.br/cartaServicos/114/"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www2.voltaredonda.rj.gov.br/geo/index.php",
+      "method": "GET",
+      "httpStatus": 403,
+      "result": "TLS GET was denied by the origin nginx; the same official page was subsequently retrieved over its published HTTP route and reviewed."
+    },
+    {
+      "url": "http://www2.voltaredonda.rj.gov.br/geo/index.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official Mapa Virtual help page retrieved. It documents Lotes and parcel identification behavior but does not publish a modern OGC feature endpoint."
+    },
+    {
+      "url": "https://www2.voltaredonda.rj.gov.br/geoprocessamento/",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official municipal geoprocessing landing page retrieved. Its HTML links to the public map at geo.epdvr.com.br/mapavirtual/map.phtml."
+    },
+    {
+      "url": "http://geo.epdvr.com.br/voltaredonda/",
+      "method": "GET",
+      "httpStatus": 503,
+      "result": "Legacy public route unavailable. No credentials or retries against private routes were used."
+    },
+    {
+      "url": "http://geo.epdvr.com.br/mapavirtual/map.phtml",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Current public p.mapper application loaded anonymously. Embedded configuration exposed `lotesvr` as the Lotes group and `incphp/xajax/x_load.php`, `x_select.php`, and `x_info.php` request paths."
+    },
+    {
+      "url": "http://geo.epdvr.com.br/mapavirtual/incphp/xajax/x_load.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "With a fresh anonymous session and bounded 1000x700 map request, returned service extent in metre-based projected coordinates: minx 589607.08154506, maxy 7509600, xdelta 285.83690987993, ydelta 200. Public config did not explicitly state EPSG."
+    },
+    {
+      "url": "http://geo.epdvr.com.br/mapavirtual/incphp/xajax/x_toc.php",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Returned the layer tree, including `lotesvr` with display title `Lotes`; no native field schema or CRS declaration was included."
+    },
+    {
+      "url": "http://geo.epdvr.com.br/mapavirtual/incphp/xajax/x_info.php",
+      "method": "POST",
+      "httpStatus": 200,
+      "result": "At a bounded exact-point map extent derived from the unchanged WUP point, returned queryResult for layer `lotesvr`: one feature with header `@`, `ID`, `Cadastro`; safe retained identity is ID=240. It also returned native geometry extent 589696.55821559+7509468.0649987+589781.80971007+7509562.7088772. No full polygon or unsafe attribute values were retained."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "nativeIdentityField": "ID",
+    "nativeIdentityObserved": "240",
+    "geometryEvidence": "x_info response returned a parcel bounding extent, not a full polygon; no geometry sample file retained.",
+    "otherObservedFieldNames": ["@", "Cadastro"]
+  },
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "lotesvr",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": "240",
+    "nativeIdField": "ID",
+    "exactWupPointTest": "Performed against the official anonymous map service without shifting the WUP point. A hit was returned after transforming the point only for the projected service request; this is one-point evidence, not citywide coverage evidence.",
+    "requestEvidence": [
+      {
+        "serviceCrs": "Unspecified projected metre coordinates; observed values are consistent with UTM zone 23S but the public configuration did not publish an EPSG code.",
+        "wupPointLatLon": [-22.5187917359021, -44.1273388396056],
+        "requestProjectedPointApprox": [589747.98, 7509486.47],
+        "returnedExtent": [589696.55821559, 7509468.0649987, 589781.80971007, 7509562.7088772],
+        "returnedSafeId": "240"
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal Mapa Virtual / PortalVR Lotes layer; municipal geoprocessing scope is evidenced.",
+    "verifiedOpenScope": "Anonymous public access to the Lotes layer and one bounded ID-plus-extent response. No citywide completeness or bulk-download scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "remainingUncertainty": "The native field schema beyond the observed ID and other header names, explicit CRS/EPSG, full polygon retrieval method, freshness, completeness, and pagination/bulk coverage remain unverified. The service response exposed a geometry extent but not a safe full polygon payload.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

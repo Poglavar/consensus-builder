@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T15:56:58Z",
+  "purpose": "Focused headless verification after parcel registry/enrichment integration.",
+  "command": "cd backend && npx vitest run test/arcgis-parcel-adapter.test.js test/arcgis-composite-parcel-adapter.test.js test/custom-source-config.test.js test/parcel-source-binding.test.js test/parcel-report-evidence.test.js test/parcel-coverage-report.test.js test/india-africa-parcel-queue.test.js test/world-coverage-build.test.js test/frontend-city-source-integrations.test.js test/india-africa-live-parcel-sources.test.js test/shared-live-parcel-sources.test.js test/live-source-binding-wiring.test.js --pool=threads --maxWorkers=4",
+  "suites": [
+    "arcgis-parcel-adapter.test.js",
+    "arcgis-composite-parcel-adapter.test.js",
+    "custom-source-config.test.js",
+    "parcel-source-binding.test.js",
+    "parcel-report-evidence.test.js",
+    "parcel-coverage-report.test.js",
+    "india-africa-parcel-queue.test.js",
+    "world-coverage-build.test.js",
+    "frontend-city-source-integrations.test.js",
+    "india-africa-live-parcel-sources.test.js",
+    "shared-live-parcel-sources.test.js",
+    "live-source-binding-wiring.test.js"
+  ],
+  "result": {
+    "testFilesPassed": 12,
+    "testFilesFailed": 0,
+    "testsPassed": 233,
+    "testsFailed": 0,
+    "failures": []
+  },
+  "browserSuitesRun": false
+}

@@ -1,0 +1,21 @@
+{
+  "taskId": "city:8622",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-8622-manokwari.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/manokwari-service-review.json",
+    "tmp/valhalla-parcel-research/manokwari/cap.xml",
+    "tmp/valhalla-parcel-research/manokwari/proxy.json"
+  ],
+  "checkedAt": "2026-10-11T19:14:51Z",
+  "reason": "No Manokwari-bounded public parcel response or safe native ID/geometry was verified. The BHUMI route probes returned 404/400, which do not establish citywide absence.",
+  "queueIdentityVerified": true,
+  "researchSearchesReviewed": [
+    "English",
+    "Indonesian"
+  ],
+  "retainedFullPolygonSampleCount": 0,
+  "runtimeAdmission": false
+}

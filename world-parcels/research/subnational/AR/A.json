@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "A",
+ "regionName": "Salta",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar; viewer-origin Referer",
+ "source": {
+  "sourceId": "ar-salta-sigsa-inmuebles-featureserver",
+  "name": "IDE - Catastro Urbano y Rural (FeatureServer/0)",
+  "operator": "Provincia de Salta, Direccion General de Inmuebles (sigsa.inmuebles.gov.ar)",
+  "scope": "Salta province cadastre layer; sample near Salta city only",
+  "endpoint": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0",
+  "method": "ArcGIS REST query, outFields=OBJECTID,DEPARTA,NRO_PARCELA, outSR=4326",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "Terms not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ar-salta-sigsa-inmuebles-featureserver",
+  "requestUrl": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0/query?objectIds=901121,901122,901123&outFields=OBJECTID,DEPARTA,NRO_PARCELA&returnGeometry=true&outSR=4326&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -65.4096,
+   -24.755,
+   -65.4088,
+   -24.7545
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID / DEPARTA + NRO_PARCELA",
+  "responseFile": "research/subnational/AR/A-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "evidenceOrigin": "reused from earlier probe (research/countries/AR.json, research/buenos-aires.json); not re-run live today"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer titled 'Catastro Urbano y Rural' on the provincial cadastre (Inmuebles) ArcGIS server; extent not measured, only Salta city sampled",
+ "subregionsVerified": [
+  "Salta capital (Departamento 01)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0",
+   "observation": "open ArcGIS FeatureServer"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID,DEPARTA,NRO_PARCELA&returnGeometry=true&outSR=4326&resultRecordCount=2&f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "Today's live re-test failed at TLS handshake: 'unsafe legacy renegotiation disabled' (server-side TLS config). Not bypassed. Earlier 200 evidence reused."
+  }
+ ],
+ "reuseStatus": "Not read; open ArcGIS service, no token",
+ "remainingUncertainty": "Live re-verification pending (server TLS renegotiation); province-wide extent not measured; only Salta city area sampled.",
+ "nextStep": "Re-test from a client that negotiates the server's TLS normally; count by DEPARTA to confirm coverage."
+}

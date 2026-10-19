@@ -1,0 +1,34 @@
+/* Readable, mobile-first layout for actor-explorer.html (under the shared page header,
+   css/page-chrome.css) and for the map's Activity → Actors view (.activity-actors), which mounts the
+   same explorer. It avoids the map app's viewport lock. Colours are the product tokens and the
+   controls the primitives (css/primitives.css: btn, cb-option for the actor profiles, cb-badge for
+   tags, cb-link); this file only lays them out. */
+:where(.ae-body, .activity-actors), :where(.ae-body, .activity-actors) * { box-sizing:border-box; }
+.ae-body { font-size:15px; line-height:1.45; }
+.ae-wrap { max-width:1180px; margin:auto; padding:16px; }
+.ae-intro { margin-bottom:16px; }
+.ae-intro p { max-width:72ch; margin:4px 0 0; color:var(--cb-text-muted); }
+.ae-section-title { margin:0; font-size:1.15rem; }
+.ae-muted { color:var(--cb-text-muted); }
+.ae-filters,.ae-profiles,.ae-activity,.ae-run-detail { margin:0 0 14px; padding:12px; background:var(--cb-surface); border:1px solid var(--cb-line); border-radius:var(--cb-radius-lg); }
+.ae-filters { display:flex; flex-wrap:wrap; gap:8px; }
+.ae-filters input { flex:1 1 260px; min-width:0; }
+.ae-filters input,.ae-filters select { min-height:var(--cb-control-height); }
+.ae-profile-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px; margin-top:9px; }
+.ae-profile-grid > .cb-option { margin:0; min-width:0; }
+.ae-profile-grid .cb-badge { align-self:flex-start; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+.ae-wallet,.ae-provenance { display:block; max-width:100%; overflow-wrap:anywhere; font:12px/1.4 var(--cb-font-mono); }
+/* minmax(0,1fr) + anywhere: base58 proposal ids and signatures have no break points and pushed rows past a phone's width. */
+.ae-list { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; padding:0; margin:9px 0 0; list-style:none; }
+.ae-event { min-width:0; overflow-wrap:anywhere; padding:10px; border:1px solid var(--cb-line); border-left:3px solid var(--cb-primary); border-radius:var(--cb-radius-sm); }
+.ae-event.is-failed { border-left-color:var(--cb-danger); }
+.ae-event-message { display:block; margin:3px 0; }
+.ae-meta { display:flex; flex-wrap:wrap; align-items:center; gap:5px 12px; margin-top:6px; }
+.ae-run-detail:empty { display:none; }
+.ae-rationale { margin-top:9px; padding:9px; background:var(--cb-surface-2); border-radius:var(--cb-radius-sm); }
+.ae-rationale p { margin:4px 0; }
+.ae-rationale small { color:var(--cb-text-muted); }
+.ae-error { color:var(--cb-danger); }
+.ae-empty { margin:9px 0; color:var(--cb-text-muted); }
+:where(.ae-body, .activity-actors) details { margin-top:8px; } :where(.ae-body, .activity-actors) summary { cursor:pointer; color:var(--cb-text-muted); } :where(.ae-body, .activity-actors) pre { white-space:pre-wrap; }
+@media (min-width:900px) { #actor-explorer { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(270px,.8fr); gap:14px; align-items:start; } .ae-filters,.ae-profiles { grid-column:1 / -1; } .ae-activity { margin:0; } .ae-run-detail { position:sticky; top:14px; } }

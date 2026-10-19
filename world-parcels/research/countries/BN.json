@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BN",
+  "country": "Brunei Darussalam",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "Survey Department (Jabatan Ukur), Ministry of Development; Land Department for registration",
+  "portalsFound": [
+    {
+      "url": "https://geoportal.survey.gov.bn/map",
+      "observation": "Geoportal Ukur web map: view/search surveyed lots, TOLs and gazettes; buy certified plans; JS app, no open service URL identified"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.survey.gov.bn/map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "app shell only"
+    },
+    {
+      "url": "https://www.jtb.gov.bn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.landsurvey.gov.bn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National cadastral lots at 1:1000-1:9999 scale in viewer",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "Backing API not inspected; some functions need registered users.",
+  "nextStep": "Inspect web-map JS for tile/feature endpoints."
+}

@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "jackson",
+      "stateCode": "MS",
+      "sourceId": "us-ms-jackson-parcels",
+      "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.1875,
+            32.295,
+            -90.185,
+            32.2975
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.185,
+            32.295,
+            -90.1825,
+            32.2975
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.1825,
+            32.295,
+            -90.18,
+            32.2975
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.1875,
+            32.2975,
+            -90.185,
+            32.3
+          ],
+          "count": 37,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.185,
+            32.2975,
+            -90.1825,
+            32.3
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.1825,
+            32.2975,
+            -90.18,
+            32.3
+          ],
+          "count": 64,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.1875,
+            32.3,
+            -90.185,
+            32.3025
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.185,
+            32.3,
+            -90.1825,
+            32.3025
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.1825,
+            32.3,
+            -90.18,
+            32.3025
+          ],
+          "count": 49,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.18,
+            32.295,
+            -90.17750000000001,
+            32.2975
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.17750000000001,
+            32.295,
+            -90.175,
+            32.2975
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.175,
+            32.295,
+            -90.1725,
+            32.2975
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.18,
+            32.2975,
+            -90.17750000000001,
+            32.3
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.17750000000001,
+            32.2975,
+            -90.175,
+            32.3
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.175,
+            32.2975,
+            -90.1725,
+            32.3
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.18,
+            32.3,
+            -90.17750000000001,
+            32.3025
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.17750000000001,
+            32.3,
+            -90.175,
+            32.3025
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -90.175,
+            32.3,
+            -90.1725,
+            32.3025
+          ],
+          "count": 11,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -90.175,
+          32.295,
+          -90.1725,
+          32.2975
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 307,
+      "exactResolved": 307,
+      "nativeIds": [
+        "001840000001000000",
+        "001840000007000001",
+        "001840000008000000"
+      ],
+      "footprintCount": 5,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ms-jackson-parcels",
+        "parcels": 1,
+        "siteM2": 7392.93
+      },
+      "requests": 27
+    }
+  ]
+}

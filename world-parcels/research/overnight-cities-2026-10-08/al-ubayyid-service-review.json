@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4037-al-ubayyid.json",
+  "city": "Al-Ubayyid",
+  "countryCode": "SD",
+  "wupCityCode": 4037,
+  "rank": 826,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+    "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "https://aqari.nctr.sd/ar/about"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "routeInspectionStatus": "official_local_registry_verified_no_safe_public_geometry_contract",
+    "reason": "Local registry presence is supported by first-party Judiciary sources; anonymous geometry endpoint/schema was not found.",
+    "nativeIdsUsed": "No safe parcel feature identifier was confirmed; no feature attributes requested."
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Al-Ubayyid Sudan official land registry cadastral map El Obeid North Kordofan land records",
+      "result": "The official Judiciary page places the North Kordofan judicial headquarters in El Obeid and lists local land-registration facilities. The national Aqari platform describes Judiciary-owned digital registry services, but no public geometry endpoint/schema was found.",
+      "method": "Separate English web search and official Judiciary/platform review; no property-specific query."
+    },
+    {
+      "language": "Arabic",
+      "query": "الأبيض السودان مكتب تسجيلات الأراضي المساحة السجل العقاري الأبيض",
+      "result": "The official Judiciary’s North Kordofan page confirms its headquarters in El Obeid and lists land-registration offices/facilities. Its land-registration administration page describes a formal certificate procedure, not public map access. No anonymous feature schema was identified.",
+      "method": "Separate Arabic web search and official Judiciary source review; no person-specific or property-specific request."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+      "observation": "Sudan Judiciary page says the North Kordofan judicial system headquarters is in El Obeid and lists land-registration units among its facilities, including the Court of Justice complex in El Obeid."
+    },
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "observation": "Sudan Judiciary describes its land-registration administration and offices; certificate procedures require property-holder/authorized-agent documentation. This is registry process evidence, not a public map or geometry service."
+    },
+    {
+      "url": "https://aqari.nctr.sd/ar/about",
+      "observation": "Official Aqari platform identifies itself as a Judiciary-owned national digital service for land and real-estate registration; no public parcel-vector schema was identified."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Sudan Judiciary page says the North Kordofan judicial system headquarters is in El Obeid and lists land-registration units among its facilities, including the Court of Justice complex in El Obeid."
+    },
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Sudan Judiciary describes its land-registration administration and offices; certificate procedures require property-holder/authorized-agent documentation. This is registry process evidence, not a public map or geometry service."
+    },
+    {
+      "url": "https://aqari.nctr.sd/ar/about",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Official Aqari platform identifies itself as a Judiciary-owned national digital service for land and real-estate registration; no public parcel-vector schema was identified."
+    }
+  ],
+  "technicalBlocker": "Official sources establish registry presence and a national digital registry, but no safe anonymous parcel geometry service or feature schema was exposed. No login, owner-specific search, property identifier, or certificate request was made.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "coverageAssessment": {
+    "claimedScope": "The official Sudan Judiciary lists the North Kordofan judicial headquarters in El Obeid and identifies land-registration units among local facilities. The Judiciary’s land-registration administration page documents registry processes. No city-local anonymous parcel-map or vector endpoint was found.",
+    "verifiedOpenScope": "Official sources establish registry presence and a national digital registry, but no safe anonymous parcel geometry service or feature schema was exposed. No login, owner-specific search, property identifier, or certificate request was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No safe public feature schema/geometry contract was verified."
+  },
+  "remainingUncertainty": "Whether another first-party service exposes anonymous parcel geometry and which safe native identifier/CRS it uses remain unresolved."
+}

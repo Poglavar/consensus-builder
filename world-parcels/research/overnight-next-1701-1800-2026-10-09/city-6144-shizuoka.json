@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 6144,
+  "wupCityCode": 6144,
+  "cityId": "wup2025:6144",
+  "name": "Shizuoka",
+  "country": "Japan",
+  "countryCode": "JP",
+  "queueRank": 1748,
+  "point": [34.9893169984688, 138.43060038945],
+  "centerLatLon": [34.9893169984688, 138.43060038945],
+  "population2025": 328613,
+  "population2025k": 328.613,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_applicable_no_verified_parcel_response",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shizuoka City official cadastral parcel map GIS land registry public map API",
+        "result": "Found the official Shizuoka City pages for the city GIS and cadastral-map application procedure. The official page says the city GIS includes the latest fixed-asset-tax parcel reference map and building-outline map, but no anonymous parcel feature endpoint was established.",
+        "actualResultUrls": [
+          "https://www.city.shizuoka.lg.jp/s7594/s012362.html",
+          "https://www.city.shizuoka.lg.jp/shinsei/s8374/p2377.html",
+          "https://www2.wagmap.jp/shizuoka/Portal"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "静岡市 公式 地籍図 公図 GIS 土地 筆界 地番 地図",
+        "result": "Found official Shizuoka City pages stating that cadastral maps show each parcel boundary, lot number and shape, and directing users to the city GIS's latest fixed-asset-tax parcel reference map/building-outline map. The city cadastral-survey page describes local cadastral-survey results and issuance, not an open parcel API.",
+        "actualResultUrls": [
+          "https://www.city.shizuoka.lg.jp/shinsei/s8374/p2377.html",
+          "https://www.city.shizuoka.lg.jp/s8769/s007775.html",
+          "https://www.city.shizuoka.lg.jp/s8957/s008969.html"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.city.shizuoka.lg.jp/s7594/s012362.html",
+      "operator": "Shizuoka City",
+      "observation": "Official city GIS page. The listed layers include 固定資産税地番参考図・家屋外形図 (fixed-asset-tax parcel reference map/building-outline map)."
+    },
+    {
+      "url": "https://www.city.shizuoka.lg.jp/shinsei/s8374/p2377.html",
+      "operator": "Shizuoka City tax/municipal records office",
+      "observation": "Official procedure page says cadastral maps show one-parcel boundaries, lot numbers and shape; it directs users to the city GIS for the latest parcel reference map and says cadastral-map copies are issued through municipal offices."
+    },
+    {
+      "url": "https://www.city.shizuoka.geocloud.jp/",
+      "operator": "Shizuoka City GIS public host / geocloud platform",
+      "observation": "New GIS host linked by the city page; direct anonymous GET returned HTTP 403 Forbidden, so its current JavaScript/configuration and service endpoints could not be inspected."
+    },
+    {
+      "url": "https://www2.wagmap.jp/shizuoka/Portal",
+      "operator": "Shizuoka City legacy public map host",
+      "observation": "Anonymous portal loaded. Inline configuration showed only one public map category, 道路台帳図情報 (road ledger map), MapId 1; no parcel layer was present in the current public configuration."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.city.shizuoka.lg.jp/s7594/s012362.html",
+      "method": "GET/web open",
+      "status": "HTTP 200 / official page found",
+      "summary": "Confirmed city GIS link and listed fixed-asset-tax parcel reference map/building-outline layer."
+    },
+    {
+      "url": "https://www.city.shizuoka.lg.jp/shinsei/s8374/p2377.html",
+      "method": "GET/web open",
+      "status": "HTTP 200 / official page found",
+      "summary": "Confirmed cadastral-map definition, municipal issuance procedure, and link to the city GIS parcel reference map."
+    },
+    {
+      "url": "https://www2.wagmap.jp/shizuoka/Portal",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Saved response inspected. Inline JavaScript/configuration exposed only the public road-ledger map (MapId 1); no parcel geometry or parcel query endpoint was exposed."
+    },
+    {
+      "url": "https://city.shizuoka.geocloud.jp/",
+      "method": "GET",
+      "status": "HTTP 403 Forbidden",
+      "summary": "Current city GIS host linked from the official page refused the anonymous request. No bypass or alternate credentials were attempted."
+    },
+    {
+      "url": "https://www.city.shizuoka.lg.jp/s8769/s007775.html",
+      "method": "GET/web open",
+      "status": "HTTP 200 / official page found",
+      "summary": "Describes Shizuoka cadastral-survey plan and issuance of survey results; no machine-readable parcel response was provided."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Shizuoka City municipal GIS and municipal cadastral/fixed-asset-tax parcel-reference publication leads.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "scopeLimit": "Citywide availability, exact-point coverage, CRS, schema and native parcel IDs remain unverified because the accessible legacy config had no parcel layer and the current GIS host returned 403."
+  },
+  "sourceFields": null,
+  "crs": null,
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "parcel polygon geometry", "source CRS", "source layer/service identifier"],
+  "unsafeFieldsExcluded": ["owner", "address beyond necessary map search", "contact", "titleholder", "tax/account details", "personal information"],
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held_pending_independent_serial_review",
+  "runtimeEligible": false,
+  "resultCategory": "official_city_gis_and_cadastral_reference_layer_no_verified_open_parcel_geometry",
+  "blocker": "No anonymous parcel feature response with safe native ID and geometry was obtained. The current geocloud host returned 403; the accessible legacy portal's current configuration exposed only a road-ledger map.",
+  "remainingUncertainty": "The city may publish parcel-reference imagery or vector data behind the current GIS application, but this attempt did not establish its public service URL, schema, CRS, coverage, or parcel identity behavior.",
+  "nextStep": "A later attempt may inspect the current city GIS through its ordinary public bootstrap when the host permits access, then request only a small geometry-plus-ID sample near the WUP point and a bounded city-coverage check.",
+  "identityPolicy": "No synthetic or internal row identity was created; no GeoJSON sample retained."
+}

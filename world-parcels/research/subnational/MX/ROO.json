@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "ROO",
+ "regionName": "Quintana Roo",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geoportal.qroo.gob.mx/",
+   "observation": "200 Leaflet WMS geoportal, layers listed dynamically; content is COVID/hazard maps, no cadastre seen"
+  },
+  {
+   "url": "https://catastro.cancun.gob.mx/dcm/home/inicio",
+   "observation": "Benito Juárez (Cancún) catastro portal 200: tax tables and procedures, no map"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/countries/MX.json, research/retry/countries/MX.json",
+   "method": "GET",
+   "httpStatus": "-",
+   "contentType": "",
+   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+  },
+  {
+   "url": "igecq.qroo.gob.mx, igece.qroo.gob.mx, catastro.qroo.gob.mx, sigeq.qroo.gob.mx, www.cancun.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
+  },
+  {
+   "url": "https://geoportal.qroo.gob.mx/maps, /localidades",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "returned the same HTML shell; layer catalog endpoint not read",
+   "assessment": "text/html"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=<state catastro/predios queries>&f=json",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "ArcGIS Online searches for catastro/predios/lotes by state name; no state or municipal parcel layer found for this state",
+   "assessment": "application/json"
+  }
+ ],
+ "reuseStatus": "not established (no licence text read)",
+ "remainingUncertainty": "IGECE state cadastre host unreachable; geoportal layer catalogue (getMapaPrincipal) not inspected in depth.",
+ "nextStep": "Query geoportal getMapaPrincipal layer list for catastral layers; retry IGECE."
+}

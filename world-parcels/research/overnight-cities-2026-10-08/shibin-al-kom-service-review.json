@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3405-shibin-al-kom.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official survey and government service listings identify cadastral functions and local Shibin El-Kom/Monufia offices. Map indices are cartographic references, not a verified public parcel feature API.",
+  "registryAssessment": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+    },
+    {
+      "url": "https://www.esa.gov.eg/networks.aspx",
+      "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+    },
+    {
+      "url": "https://www.cairo.gov.eg/ar/Documents/Khadamat.pdf",
+      "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shibin El Kom Egypt official cadastral survey real estate registration parcel map",
+      "result": "The official Survey Authority describes cadastral mapping services; government listings identify local Shibin El-Kom and Monufia offices. No public feature schema found.",
+      "method": "English-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Arabic",
+      "query": "شبين الكوم المنوفية الهيئة المصرية العامة للمساحة الشهر العقاري خرائط رسمية",
+      "result": "تؤكد المصادر الحكومية أعمال المساحة وخدمات التوثيق في شبين الكوم والمنوفية؛ لم يظهر مسار عام آمن لهندسة القطع.",
+      "method": "Local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying public geometry-only sample was available.",
+  "coverageAssessment": {
+    "claimedScope": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point.",
+    "verifiedOpenScope": "No citywide coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "kind": "static-source-and-route-review",
+      "httpStatus": "not asserted",
+      "result": "Official source pages and public map/service references reviewed. No public geometry request was sent because a safe feature endpoint and geometry/identifier schema were not verified."
+    }
+  ],
+  "remainingUncertainty": "Local office scope, current parcel-map availability and WUP-point parcel presence remain unresolved."
+}

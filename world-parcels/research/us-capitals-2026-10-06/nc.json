@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "NC",
+  "state": "North Carolina",
+  "capital": "Raleigh",
+  "centerLatLon": [35.7796, -78.6382],
+  "query": {
+    "language": "English",
+    "text": "North Carolina statewide parcel polygons Raleigh Wake County official NC OneMap parcels"
+  },
+  "references": [
+    "https://www.nconemap.gov/pages/parcels",
+    "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1"
+  ],
+  "attempts": [
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "Official statewide layer metadata identifies parcel polygons in EPSG:2264; publisher describes aggregation of all 100 counties plus Eastern Band of Cherokee Indians. Native parcel fields include parno and stcntyfips; owner fields excluded."
+    },
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=cntyname%3D%27Wake%27&geometry=2106700%2C737800%2C2107300%2C738500&geometryType=esriGeometryEnvelope&inSR=2264&spatialRel=esriSpatialRelIntersects&outFields=parno%2Cstcntyfips&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Bounded Raleigh capital-area query, max three polygons; queried county-scoped parcel key and geometry only."
+    },
+    {
+      "url": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1/query?where=cntyname%3D%27Wake%27%20AND%20parno%3D%271703782312%27&outFields=parno%2Cstcntyfips&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "Exact native key plus county round-trip returned one polygon."
+    },
+    {
+      "url": "https://maps.wake.gov/arcgis/rest/services/Property/Property/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Official Wake County service metadata request timed out after 20 seconds; NC OneMap subsequently provided the verified capital-area sample."
+    },
+    {
+      "url": "https://maps.wake.gov/arcgis/rest/services/Property/Property/FeatureServer/0/query?where=1%3D1&geometry=-78.6392%2C35.7780%2C-78.6372%2C35.7800&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Capital-area parcel query to the same Wake County service timed out after 20 seconds."
+    },
+    {
+      "url": "https://maps.raleighnc.gov/arcgis/rest/services/Property/Property/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Raleigh City GIS parcel-layer metadata request timed out after 20 seconds; the statewide NC OneMap service supplied the verified sample."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services.gis.nc.gov/secure/rest/services/NC1Map_Parcels/MapServer/1",
+    "adapter": "arcgis",
+    "name": "NC OneMap Parcels (polys)",
+    "operator": "North Carolina Geographic Information Coordinating Council / NC OneMap, county data contributors",
+    "scope": "Statewide aggregated parcel dataset (publisher reports all 100 counties and Eastern Band of Cherokee Indians); sample verified in Wake County",
+    "idField": "parno",
+    "objectIdField": "objectid",
+    "idType": "string",
+    "idPattern": "county-assigned parcel number; use stcntyfips as county namespace",
+    "outFields": "parno,stcntyfips",
+    "parcelNumberField": "parno",
+    "crs": "EPSG:2264",
+    "filters": {"cntyname": "Wake"}
+  },
+  "verification": {
+    "bbox": [2106700, 737800, 2107300, 738500],
+    "bboxCrs": "EPSG:2264",
+    "count": 3,
+    "nativeIDs": ["1703782312", "1703782362", "1703782247"],
+    "countyNamespace": "37183",
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope",
+  "nextStep": "For streaming, preserve county namespace with each county-assigned parno. The data publisher claims statewide aggregation, but this probe verifies only Raleigh/Wake parcels, not complete feature availability or freshness throughout North Carolina."
+}

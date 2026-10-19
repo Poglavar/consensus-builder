@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "UG",
+  "country": "Uganda",
+  "checkedAt": "2026-10-08",
+  "status": "national_cadastre_credentialed_or_paid",
+  "accessModel": "unknown",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Swahili and English",
+      "exactQuery": "Uganda viwanja ramani ya ardhi cadastral NLIS GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://mlhud.go.ug/ugnlis/",
+        "https://development.finance.go.ug/knowledge-centre-reports/uganda-national-land-information-system-nlis-portal",
+        "https://ugnlis.mlhud.go.ug/--------------------------------------------------------------------------------",
+        "https://mlhud.go.ug/",
+        "https://www.memd.go.ug/public/projects/geological",
+        "https://memd.go.ug/projects/geological",
+        "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+        "https://dgsmportal.minerals.go.ug/Site/Login.aspx"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "observation": "Public NLIS application shell and cadastral-division route; official portal describes parcel search by plot details, but no public feature endpoint."
+    },
+    {
+      "url": "https://gis.mlhud.go.ug/geoserver/portal/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "observation": "Exact configured WFS tested in prior pass: 404."
+    },
+    {
+      "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+      "observation": "KCCA GIS public viewer. Its WFS capabilities previously had admin/common data, no parcel-named layer; current official KCCA catalog lists admin, utility, land-use, zoning, public facilities."
+    },
+    {
+      "url": "https://mlhud.go.ug/lands-managment/department-of-surveys-and-mapping/",
+      "observation": "Official survey/map services are document/plot checks and paid map provision."
+    }
+  ],
+  "requests": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Ask the NLIS operator for an anonymous parcel feature endpoint or extract; public admin, utility and planning layers do not establish city parcel coverage."
+}

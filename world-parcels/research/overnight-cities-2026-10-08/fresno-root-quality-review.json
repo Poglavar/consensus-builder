@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:20:11.416032+00:00",
+  "decision": "approved_by_root",
+  "scope": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "fresno-county-root-acceptance.json",
+  "qualityFile": "fresno-county-root-quality.json",
+  "nativeIdentityEvidenceFile": "fresno-root-native-identity-review.json"
+}

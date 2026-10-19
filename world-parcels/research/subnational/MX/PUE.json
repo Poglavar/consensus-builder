@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "PUE",
+ "regionName": "Puebla",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://pueblacapital.maps.arcgis.com/ (owner SigsaCat, services5.arcgis.com/R5cyFZeU9dwhhnT4)",
+   "observation": "Puebla municipal catastro org publishes trámites, adeudo, asentamientos, vialidades, restricciones layers; no parcel/lot layer found in public listing"
+  },
+  {
+   "url": "https://services9.arcgis.com/fp5f46XvVGKIUi0R/arcgis/rest/services/PUEBLA_ESCENARIOS/FeatureServer",
+   "observation": "layer 4 'PREDIOS' has 4 polygons for an emergency scenario (contains owner field, not queried or saved); not a cadastre"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/countries/MX.json, research/retry/countries/MX.json",
+   "method": "GET",
+   "httpStatus": "-",
+   "contentType": "",
+   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+  },
+  {
+   "url": "catastro.puebla.gob.mx, catastro.pueblacapital.gob.mx, sitp.puebla.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
+  },
+  {
+   "url": "https://sicammpt.pueblacapital.gob.mx/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": "404",
+   "contentType": "root directory not found (host serves Ortofoto_Puebla2019 MapServer per AGOL item)",
+   "assessment": "text/html"
+  },
+  {
+   "url": "https://pueblacapital.gob.mx/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "only predial and PDF links",
+   "assessment": "text/html"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=<state catastro/predios queries>&f=json",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "ArcGIS Online searches for catastro/predios/lotes by state name; no state or municipal parcel layer found for this state",
+   "assessment": "application/json"
+  }
+ ],
+ "reuseStatus": "not established (no licence text read)",
+ "remainingUncertainty": "State catastro host unreachable; municipal Puebla layers found are not parcels.",
+ "nextStep": "Probe sicammpt.pueblacapital.gob.mx service paths from a browser; state catastro viewer."
+}

@@ -1,0 +1,58 @@
+[
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "MOR",
+  "regionName": "Morelos",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ },
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "NAY",
+  "regionName": "Nayarit",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ },
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "NLE",
+  "regionName": "Nuevo León",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ },
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "OAX",
+  "regionName": "Oaxaca",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ },
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "PUE",
+  "regionName": "Puebla",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ },
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "QUE",
+  "regionName": "Querétaro",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ },
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "ROO",
+  "regionName": "Quintana Roo",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ },
+ {
+  "iso2": "MX",
+  "country": "Mexico",
+  "regionCode": "SLP",
+  "regionName": "San Luis Potosí",
+  "hints": "Mexico's cadastre is state and municipal; RAN (national agrarian registry) returns Akamai 403 from here and INEGI has no parcel service. Look for each state's Instituto Catastral / Dirección de Catastro geoportal or ArcGIS (e.g. Jalisco IIEG/Catastro, Nuevo León, Yucatán Catastro, Guanajuato, Querétaro, Sonora, Chihuahua, Puebla, Estado de México IGECEM, CDMX SIG-CDMX predios (download page timed out before)) and municipal capital catastro viewers; inspect viewer JS for the ArcGIS/GeoServer endpoint. Many state hosts were unreachable before; record temporarily_unavailable honestly."
+ }
+]

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4200",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-4200-lisala.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/lisala-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:15:34Z",
+  "identityCheck": "WUP 2025 CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, queue and packet agree: Lisala, code 4200, rank 2353, CD/COD, point [2.15888988497424,21.5120468157608], population 248434 persons.",
+  "searchCheck": "Paired packet and service review record executed English and French queries, result URLs, and first-party Ministry and BIC routes.",
+  "custodyAndFirstPartyCheck": "Ministry circonscription directory independently opened and lists Lisala under Mongala, supporting registryFound=true. Its national record-request procedure is not a public geometry feed. Saved BIC catalog_config body is HTTP 401 Invalid API key, contradicting the worker review claim of HTTP 200 and advertised province values from that endpoint; do not rely on that claim for coverage or admission.",
+  "sampleAndAdmissionCheck": "No Lisala sample file or full polygon is present. Native ID plus full polygon, exact-ID reads, forced paging, thirteen bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission."
+}

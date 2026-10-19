@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2214-daejeon.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fetched official cadastral-info viewer and its static JavaScript/config. The code requests WFS 1.1.0 GETFEATURE for layer LSMD_CONT_LDREG, with one feature and CQL PNU equality; its output is read as GeoJSON geometry. The configured public route https://gis.daejeon.go.kr/o2map/services/wfs returned HTTP 404 for both GetCapabilities and a one-feature bounded locator query. No PNU was used and no geometry was retained. Whether the portal’s internal O2Map WFS route is available only through viewer-side routing or a separate service host, and whether a parcel covers the WUP point. No citywide coverage test was made.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.daejeon.go.kr/",
+      "observation": "Official Daejeon Metropolitan City Spatial Information Portal; exposes dedicated real-estate and cadastral-information search."
+    },
+    {
+      "url": "https://gis.daejeon.go.kr/introMapService.do",
+      "observation": "Official service description: location/address search and parcel-related real-estate information connected to cadastral maps."
+    },
+    {
+      "url": "https://gis.daejeon.go.kr/ispmap.do?menu_cde=menu008",
+      "observation": "Official cadastral-information search viewer page and published scripts."
+    },
+    {
+      "url": "https://gis.daejeon.go.kr/js/web/isp/layout/realMapService.js",
+      "observation": "Official viewer JavaScript uses the LSMD_CONT_LDREG WFS feature type and filters by PNU for a one-feature cadastral parcel response."
+    },
+    {
+      "url": "https://gis.daejeon.go.kr/lib/o2map/config/o2Config.js",
+      "observation": "Official viewer config defines relative WFS route `o2map/services/wfs`."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.daejeon.go.kr/ispmap.do?menu_cde=menu008",
+      "method": "GET",
+      "result": "HTTP 200; official cadastral-information viewer page."
+    },
+    {
+      "url": "https://gis.daejeon.go.kr/js/web/isp/layout/realMapService.js",
+      "method": "GET",
+      "result": "HTTP 200; script uses WFS 1.1.0 GETFEATURE, type LSMD_CONT_LDREG, one feature and CQL PNU equality; geometry read from GeoJSON."
+    },
+    {
+      "url": "https://gis.daejeon.go.kr/o2map/services/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "result": "HTTP 404; regular portal not-found HTML."
+    },
+    {
+      "url": "https://gis.daejeon.go.kr/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=LSMD_CONT_LDREG&maxFeatures=1&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=127.3918%2C36.3460%2C127.3921%2C36.3463%2CEPSG%3A4326",
+      "method": "GET",
+      "result": "HTTP 404; no features or geometry returned; query was bounded to a small envelope near the WUP locator and did not request properties."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "cityCode": 11518,
+  "queueRank": 1775,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [29.713806583161, 118.301808624261],
+  "population2025": 323492,
+  "population2025k": 323.492,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huangshan China cadastral parcel map official GIS land registry",
+        "result": "First-party discovery identified Huangshan Natural Resources and Planning Bureau material describing cadastral investigation, a citywide cadastral database, and real-estate registration responsibilities. It also identified an official Huangshan GIS ArcGIS REST service listing, but no usable feature response was obtained during this attempt.",
+        "actualResultUrls": [
+          "https://zrzyj.huangshan.gov.cn/zwgk/public/6615726/11710316.html",
+          "https://www.huangshan.gov.cn/zwgk/public/6615714/11566396.html",
+          "https://plat.huangshan.gov.cn/hserver/rest/services/HS_TDT/HS_TDT_VEC_C/MapServer"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "黄山市 不动产登记 地籍图 宗地图 官方 GIS",
+        "result": "官方检索找到黄山市自然资源和规划局关于地籍调查机制、全生命周期地籍数据库和不动产登记机构的说明，也找到黄山市标准地图服务和官方 ArcGIS REST 服务目录；未取得可匿名查询的安全宗地编号加完整宗地面响应。",
+        "actualResultUrls": [
+          "https://zrzyj.huangshan.gov.cn/zwgk/public/6615726/11710316.html",
+          "https://zrzyj.huangshan.gov.cn/ztzl/hssbzdtfw/index.html",
+          "https://plat.huangshan.gov.cn/hserver/rest/services/HS_TDT/HS_TDT_VEC_C/MapServer"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Huangshan Natural Resources and Planning Bureau identifies local natural-resources and real-estate registration responsibilities and describes a full-territory cadastral database. This establishes a local custodian and cadastral system, not anonymous public parcel-geometry access.",
+  "sourceScope": "Huangshan prefecture-level city, Anhui, China; local custodial evidence and a public municipal GIS service directory were inspected. Citywide open parcel geometry coverage was not established.",
+  "attempt": 1,
+  "aliases": ["huangshan"],
+  "timeMid": 2025.5,
+  "plausibility": "High",
+  "notes": "5"
+}

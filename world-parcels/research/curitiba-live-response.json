@@ -1,0 +1,90 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "BR-CURITIBA-11150008",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -49.273878394185886,
+              -25.428768394215314
+            ],
+            [
+              -49.2737337326207,
+              -25.42909996335656
+            ],
+            [
+              -49.273511205879295,
+              -25.429016784399305
+            ],
+            [
+              -49.27341308227611,
+              -25.42898010607447
+            ],
+            [
+              -49.27310027462585,
+              -25.428863180510287
+            ],
+            [
+              -49.27316662693554,
+              -25.42870801693318
+            ],
+            [
+              -49.27335085579163,
+              -25.428768833559218
+            ],
+            [
+              -49.27357362897101,
+              -25.428812778303588
+            ],
+            [
+              -49.27362830875311,
+              -25.42881235743182
+            ],
+            [
+              -49.273689348269016,
+              -25.42881047291359
+            ],
+            [
+              -49.273754532753344,
+              -25.428800408993354
+            ],
+            [
+              -49.27382214426571,
+              -25.428784815949207
+            ],
+            [
+              -49.273878394185886,
+              -25.428768394215314
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "BR-CURITIBA-11150008",
+        "id": "BR-CURITIBA-11150008",
+        "sourceId": "br-curitiba-ippuc-lote-cadastral",
+        "sourceParcelId": "11150008",
+        "parcelNumber": "11150008",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "objectid": 1667,
+          "gtm_ind_fiscal": "11150008",
+          "gtm_cod_lote": 3279,
+          "gtm_cod_quadra": "0100001",
+          "gtm_mtr_area_terreno": 1666
+        }
+      }
+    }
+  ],
+  "complete": true,
+  "sourceId": "br-curitiba-ippuc-lote-cadastral",
+  "returnsWGS84": true,
+  "absentIds": [],
+  "description": "Single exact native-ID lookup for the held Curitiba candidate; not a complete city dataset.",
+  "checkedAt": "2026-10-03"
+}

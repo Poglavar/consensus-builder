@@ -1,0 +1,45 @@
+{
+  "taskId": "city:1856",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-1856-brasov.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/brasov-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:44:42.949270Z",
+  "reason": "Official OCPI Brasov custody and ANCPI parcel-service lead are supported, but bounded service requests returned no schema, native parcel ID, CRS, or polygon. A timeout and DNS failure do not establish parcel absence. Independent live adapter qualification, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are absent; runtime admission remains held.",
+  "identity": {
+    "queueRank": 2595,
+    "country": "Romania",
+    "point": [
+      45.651847832031,
+      25.6076169151495
+    ],
+    "population2025Persons": 226778,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "searches": {
+    "englishAndLocalExecuted": true,
+    "languages": [
+      "English",
+      "Romanian"
+    ]
+  },
+  "sourceCheck": {
+    "firstPartyUrl": "https://bv.ancpi.ro/",
+    "registryFound": true,
+    "parcelGeometryVerified": false,
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

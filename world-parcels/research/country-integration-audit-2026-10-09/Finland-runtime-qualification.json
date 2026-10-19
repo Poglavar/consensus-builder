@@ -1,0 +1,2820 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:10:58.072Z",
+  "status": "bounded-readbacks-complete-spatial-semantics-incomplete",
+  "scope": "Bounded 13-cell runtime behavior and one full Helsinki footprint around the unchanged official WUP locator; not citywide/nationwide completeness, legal ownership, survey precision, or currentness.",
+  "wup": {
+    "cityCode": 555,
+    "name": "Helsinki",
+    "year": 2025,
+    "pointLatLon": [
+      60.2151504892048,
+      24.9229563703619
+    ],
+    "source": "UN DESA WUP 2025 Revision, WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "sourceUrl": "https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "pointBasis": "Official bulk WUP 2025 City_Code 555 Year=2025 PWCent latitude/longitude, used unchanged as grid center.",
+    "archiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "descriptor": {
+    "adapter": "gml-wfs",
+    "id": "fi-inspire-cp-wfs",
+    "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+    "featureType": "cp:CadastralParcel",
+    "idField": "localId",
+    "geometryField": "geometry",
+    "responseCrs": "EPSG:3067",
+    "idPrefix": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+    "idType": "string",
+    "parcelNumberField": "localId",
+    "outFields": [
+      "localId"
+    ],
+    "pageSize": 50,
+    "maxFeatures": 1500,
+    "maxBboxKm2": 0.2,
+    "maxResponseBytes": 2097152,
+    "maxTotalResponseBytes": 8388608,
+    "timeoutMs": 12000
+  },
+  "grid": {
+    "cellSizeDegrees": 0.001,
+    "alignmentOrigin": [
+      0,
+      0
+    ],
+    "centerCell": "dx0_dy0",
+    "cellCount": 13,
+    "cells": [
+      {
+        "cell": "dx0_dy0",
+        "offset": [
+          0,
+          0
+        ],
+        "boundsWgs84": [
+          24.922,
+          60.215,
+          24.923000000000002,
+          60.216
+        ],
+        "boundsEpsg3067BboxKvp": "384859.640777678,6677166.320028898,384918.54201701726,6677279.398377886,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          1,
+          2
+        ]
+      },
+      {
+        "cell": "dx-1_dy-1",
+        "offset": [
+          -1,
+          -1
+        ],
+        "boundsWgs84": [
+          24.921,
+          60.214000000000006,
+          24.922,
+          60.215
+        ],
+        "boundsEpsg3067BboxKvp": "384800.7362164974,6677056.7298202915,384859.640777678,6677169.808994256,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          3,
+          4
+        ]
+      },
+      {
+        "cell": "dx0_dy-1",
+        "offset": [
+          0,
+          -1
+        ],
+        "boundsWgs84": [
+          24.922,
+          60.214000000000006,
+          24.923000000000002,
+          60.215
+        ],
+        "boundsEpsg3067BboxKvp": "384856.13481105916,6677054.985721748,384915.0377024701,6677168.064091737,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          5,
+          6
+        ]
+      },
+      {
+        "cell": "dx1_dy-1",
+        "offset": [
+          1,
+          -1
+        ],
+        "boundsWgs84": [
+          24.923000000000002,
+          60.214000000000006,
+          24.924,
+          60.215
+        ],
+        "boundsEpsg3067BboxKvp": "384911.5334233917,6677053.242462897,384970.4346450242,6677166.320028898,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          7,
+          8
+        ]
+      },
+      {
+        "cell": "dx-1_dy0",
+        "offset": [
+          -1,
+          0
+        ],
+        "boundsWgs84": [
+          24.921,
+          60.215,
+          24.922,
+          60.216
+        ],
+        "boundsEpsg3067BboxKvp": "384804.2438706572,6677168.064091737,384863.1467797827,6677281.143244679,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          9,
+          10
+        ]
+      },
+      {
+        "cell": "dx1_dy0",
+        "offset": [
+          1,
+          0
+        ],
+        "boundsWgs84": [
+          24.923000000000002,
+          60.215,
+          24.924,
+          60.216
+        ],
+        "boundsEpsg3067BboxKvp": "384915.0377024701,6677164.576805738,384973.93727201445,6677277.654350755,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          11,
+          12
+        ]
+      },
+      {
+        "cell": "dx-1_dy1",
+        "offset": [
+          -1,
+          1
+        ],
+        "boundsWgs84": [
+          24.921,
+          60.216,
+          24.922,
+          60.217000000000006
+        ],
+        "boundsEpsg3067BboxKvp": "384807.7515603199,6677279.398377886,384866.6528173724,6677392.477509802,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          13,
+          14
+        ]
+      },
+      {
+        "cell": "dx0_dy1",
+        "offset": [
+          0,
+          1
+        ],
+        "boundsWgs84": [
+          24.922,
+          60.216,
+          24.923000000000002,
+          60.217000000000006
+        ],
+        "boundsEpsg3067BboxKvp": "384863.1467797827,6677277.654350755,384922.0463670324,6677390.7326787375,EPSG:3067",
+        "numberMatchedBefore": 1,
+        "dataPageCount": 1,
+        "numberReturnedAcrossPages": 1,
+        "numberMatchedAfter": 1,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 1,
+        "complete": true,
+        "requestSequence": [
+          15,
+          17
+        ]
+      },
+      {
+        "cell": "dx1_dy1",
+        "offset": [
+          1,
+          1
+        ],
+        "boundsWgs84": [
+          24.923000000000002,
+          60.216,
+          24.924,
+          60.217000000000006
+        ],
+        "boundsEpsg3067BboxKvp": "384918.54201701726,6677275.911163285,384977.43993445556,6677388.988687316,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          18,
+          19
+        ]
+      },
+      {
+        "cell": "dx0_dy-2",
+        "offset": [
+          0,
+          -2
+        ],
+        "boundsWgs84": [
+          24.922,
+          60.213,
+          24.923000000000002,
+          60.214000000000006
+        ],
+        "boundsEpsg3067BboxKvp": "384852.6288799272,6676943.6514293,384911.5334233917,6677056.7298202915,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          20,
+          21
+        ]
+      },
+      {
+        "cell": "dx0_dy2",
+        "offset": [
+          0,
+          2
+        ],
+        "boundsWgs84": [
+          24.922,
+          60.217000000000006,
+          24.923000000000002,
+          60.218
+        ],
+        "boundsEpsg3067BboxKvp": "384866.6528173724,6677388.988687316,384925.55075251416,6677502.066994289,EPSG:3067",
+        "numberMatchedBefore": 1,
+        "dataPageCount": 1,
+        "numberReturnedAcrossPages": 1,
+        "numberMatchedAfter": 1,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 1,
+        "complete": true,
+        "requestSequence": [
+          22,
+          24
+        ]
+      },
+      {
+        "cell": "dx-2_dy0",
+        "offset": [
+          -2,
+          0
+        ],
+        "boundsWgs84": [
+          24.92,
+          60.215,
+          24.921,
+          60.216
+        ],
+        "boundsEpsg3067BboxKvp": "384748.8469814163,6677169.808994256,384807.7515603199,6677282.888951133,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          25,
+          26
+        ]
+      },
+      {
+        "cell": "dx2_dy0",
+        "offset": [
+          2,
+          0
+        ],
+        "boundsWgs84": [
+          24.924,
+          60.215,
+          24.925,
+          60.216
+        ],
+        "boundsEpsg3067BboxKvp": "384970.4346450242,6677162.834422256,385029.33254476625,6677275.911163285,EPSG:3067",
+        "numberMatchedBefore": 0,
+        "dataPageCount": 0,
+        "numberReturnedAcrossPages": 0,
+        "numberMatchedAfter": 0,
+        "uniqueIntersectingFeaturesAfterWgs84Postfilter": 0,
+        "complete": true,
+        "requestSequence": [
+          27,
+          28
+        ]
+      }
+    ]
+  },
+  "summary": {
+    "uniqueNativeParcelIdsAcrossCells": 2,
+    "totalWfsMatchedCellRows": 2,
+    "allCellCountsStable": true,
+    "allCellsPageComplete": true,
+    "canonicalIdPrefix": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+    "retainedGeometryCap": "No durable geometry added; full response and geometry caches are under ignored tmp only; prior maximum of three durable FI polygon samples preserved."
+  },
+  "forcedOneFeaturePaging": {
+    "scope": "One bounded Helsinki native EPSG:3067 rectangle; separate from the 13-cell WUP grid",
+    "nativeBboxEpsg3067": [
+      385000,
+      6672000,
+      385400,
+      6672300
+    ],
+    "boundsWgs84": [
+      24.92728809497759,
+      60.16866599984987,
+      24.93466107392376,
+      60.171470441074106
+    ],
+    "pageSize": 1,
+    "complete": true,
+    "stableHitCount": 36,
+    "returnedRowsAcrossDataPages": 36,
+    "pageCount": 36,
+    "pageSize50BaselineComplete": true,
+    "pageSize50BaselineHitCount": 36,
+    "pageSize50BaselinePageCount": 1,
+    "idAndGeometryHashManifestMatchesNormalPaging": true
+  },
+  "fullParcelBinding": {
+    "selectedParcelId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887",
+    "selectedNativeId": "382791887",
+    "wupPointContainedByAnyReturnedFeature": false,
+    "wupPointContainedBySelectedFeature": false,
+    "containingFeatureCount": 0,
+    "nearestFootprintDistanceFromWupPointMetres": 148.534,
+    "geometryHash": "4804ba27914499cf2e7219e6f9d9cc5a3649ef44143a166e416d287b2744528e",
+    "freshExactIdReadbackComplete": true,
+    "freshGeometryHash": "4804ba27914499cf2e7219e6f9d9cc5a3649ef44143a166e416d287b2744528e",
+    "freshGeometryHashMatches": true,
+    "footprintAreaSquareMetresInEpsg3067Approx": 223.7,
+    "selectedFeatureVertexCount": 10,
+    "nativeVsProjectedComparison": {
+      "ringCount": 1,
+      "vertexCount": 10,
+      "maxAbsoluteCoordinateErrorDegrees": 0
+    },
+    "footprintCache": "finland-runtime-cache/selected-full-footprint.geojson"
+  },
+  "explicitAbsence": {
+    "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/9999999999999999",
+    "nativeResourceId": "FI_CP_CADASTRALPARCEL_9999999999999999",
+    "complete": true,
+    "numberMatched": 0,
+    "absentIds": [
+      "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/9999999999999999"
+    ],
+    "successfulExplicitAbsence": true
+  },
+  "cache": {
+    "directory": "tmp/overnight-cities-2026-10-09/finland-runtime-cache",
+    "responseCount": 74,
+    "featureCache": "finland-runtime-cache/full-13-cell-cache.geojson",
+    "stress36MetricFeatureCache": "finland-runtime-cache/stress-36-page50-full-cache-epsg3067.geojson"
+  },
+  "requests": [
+    {
+      "sequence": 1,
+      "file": "0001.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384859.640777678%2C6677166.320028898%2C384918.54201701726%2C6677279.398377886%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384859.640777678,6677166.320028898,384918.54201701726,6677279.398377886,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "2b4e1728bb61dae0847def4f4a68de209dd0ddf4b0fddd493f7492b23316903d",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 2,
+      "file": "0002.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384859.640777678%2C6677166.320028898%2C384918.54201701726%2C6677279.398377886%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384859.640777678,6677166.320028898,384918.54201701726,6677279.398377886,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "07b6f427e05938e7861195a1e41ec1b7468d41047e65e8103a0ee2b900b2e9fc",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 3,
+      "file": "0003.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384800.7362164974%2C6677056.7298202915%2C384859.640777678%2C6677169.808994256%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384800.7362164974,6677056.7298202915,384859.640777678,6677169.808994256,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "6d2f245bf49a8254bcbc27b2b7b61ded083e4faae6b65bfc75602c4431b11de6",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 4,
+      "file": "0004.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384800.7362164974%2C6677056.7298202915%2C384859.640777678%2C6677169.808994256%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384800.7362164974,6677056.7298202915,384859.640777678,6677169.808994256,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "02b7a1ae6fb2afd6f0c18b848b6fdac43db9f829631faf76d46a7d511ab5256b",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 5,
+      "file": "0005.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384856.13481105916%2C6677054.985721748%2C384915.0377024701%2C6677168.064091737%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384856.13481105916,6677054.985721748,384915.0377024701,6677168.064091737,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "0a78a6c6efc6daf8ca560363b34c6bc30a6dc3ec6bae467c80fb688f34cda59a",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 6,
+      "file": "0006.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384856.13481105916%2C6677054.985721748%2C384915.0377024701%2C6677168.064091737%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384856.13481105916,6677054.985721748,384915.0377024701,6677168.064091737,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "36c490136ea6dc8d1b1e0f975b87a60ec7abb9408d21b9f485fd84d951e38ea7",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 7,
+      "file": "0007.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384911.5334233917%2C6677053.242462897%2C384970.4346450242%2C6677166.320028898%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384911.5334233917,6677053.242462897,384970.4346450242,6677166.320028898,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "7c8e4cabf6f454d4154c55dbcd961d172588588a6c7d9f712c9d90b54bd7d9fe",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 8,
+      "file": "0008.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384911.5334233917%2C6677053.242462897%2C384970.4346450242%2C6677166.320028898%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384911.5334233917,6677053.242462897,384970.4346450242,6677166.320028898,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "29a030fc22d8a7853abdd3b2911079b850e62199c86a5e8e1037b6cea86d3f43",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 9,
+      "file": "0009.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384804.2438706572%2C6677168.064091737%2C384863.1467797827%2C6677281.143244679%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384804.2438706572,6677168.064091737,384863.1467797827,6677281.143244679,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "4ccedd734c2172e98ce33638539358d1dddeff7b53c56610c1cc1f2734dab773",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 10,
+      "file": "0010.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384804.2438706572%2C6677168.064091737%2C384863.1467797827%2C6677281.143244679%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384804.2438706572,6677168.064091737,384863.1467797827,6677281.143244679,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "3f253f9c4fd87eb707872a828047b87e15478f19ec9670e87b708672bcfb1492",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 11,
+      "file": "0011.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384915.0377024701%2C6677164.576805738%2C384973.93727201445%2C6677277.654350755%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384915.0377024701,6677164.576805738,384973.93727201445,6677277.654350755,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "bc54bba376d5e1bb7fe3e05353c03acab8c46147fe61947f030a1a03f74e4825",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 12,
+      "file": "0012.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384915.0377024701%2C6677164.576805738%2C384973.93727201445%2C6677277.654350755%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384915.0377024701,6677164.576805738,384973.93727201445,6677277.654350755,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "447e791b55a1e888197f2e63c6f8452f90422f60198a773efbe0665608265763",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 13,
+      "file": "0013.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384807.7515603199%2C6677279.398377886%2C384866.6528173724%2C6677392.477509802%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384807.7515603199,6677279.398377886,384866.6528173724,6677392.477509802,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "1f56f66cfa2e9d41c498db5199f664dbe5983f897e11763399dafd67b9a501ab",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 14,
+      "file": "0014.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384807.7515603199%2C6677279.398377886%2C384866.6528173724%2C6677392.477509802%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384807.7515603199,6677279.398377886,384866.6528173724,6677392.477509802,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "1fd9cfc08b0c2751a7cbf65f5d641de84baecf7c567bccfac91647b2d4bc3a06",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 15,
+      "file": "0015.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384863.1467797827%2C6677277.654350755%2C384922.0463670324%2C6677390.7326787375%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384863.1467797827,6677277.654350755,384922.0463670324,6677390.7326787375,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "8e461b1c98caa6687c1db31c72e14615e115d0614a056e8f04f5419c2f516692",
+      "numberMatched": "1",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 16,
+      "file": "0016.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384863.1467797827%2C6677277.654350755%2C384922.0463670324%2C6677390.7326787375%2CEPSG%3A3067&count=1&startIndex=0",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384863.1467797827,6677277.654350755,384922.0463670324,6677390.7326787375,EPSG:3067",
+        "count": "1",
+        "startIndex": "0"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 2754,
+      "responseSha256": "d09273da17d603e76e9bfd0e2b2d2575f05c23e8575ae83485d61aa55abcf7f6",
+      "numberMatched": "1",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 17,
+      "file": "0017.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384863.1467797827%2C6677277.654350755%2C384922.0463670324%2C6677390.7326787375%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384863.1467797827,6677277.654350755,384922.0463670324,6677390.7326787375,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "59bdf9aaa5b2f8d3b0c35dafa13ba7b12f6597dbbde4c7c6089f59e49606c1b6",
+      "numberMatched": "1",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 18,
+      "file": "0018.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384918.54201701726%2C6677275.911163285%2C384977.43993445556%2C6677388.988687316%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384918.54201701726,6677275.911163285,384977.43993445556,6677388.988687316,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 958,
+      "responseSha256": "fc60aced1ce99a61add8c7d1e4fa1882688454564a3f4475f092df3a89345540",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 19,
+      "file": "0019.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384918.54201701726%2C6677275.911163285%2C384977.43993445556%2C6677388.988687316%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384918.54201701726,6677275.911163285,384977.43993445556,6677388.988687316,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 958,
+      "responseSha256": "5e7dc891fe7d27fb58260858c93a9ac9457ef8f52b0218d08f6748525fa73be2",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 20,
+      "file": "0020.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384852.6288799272%2C6676943.6514293%2C384911.5334233917%2C6677056.7298202915%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384852.6288799272,6676943.6514293,384911.5334233917,6677056.7298202915,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 955,
+      "responseSha256": "1cedd73eb88ac8e181aa5dba645dbc573e3f376e26ad2429e02b6e813544cf0b",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 21,
+      "file": "0021.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384852.6288799272%2C6676943.6514293%2C384911.5334233917%2C6677056.7298202915%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384852.6288799272,6676943.6514293,384911.5334233917,6677056.7298202915,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 955,
+      "responseSha256": "effae20ffaefcc6f84fc72b3c7b0be7e7c13670a2f6034b29d773299217ae21e",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 22,
+      "file": "0022.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384866.6528173724%2C6677388.988687316%2C384925.55075251416%2C6677502.066994289%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384866.6528173724,6677388.988687316,384925.55075251416,6677502.066994289,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "ddd9b426d3c53a78988f235cb48d085c76bef881954d002c8c747e4e86d4ed07",
+      "numberMatched": "1",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 23,
+      "file": "0023.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384866.6528173724%2C6677388.988687316%2C384925.55075251416%2C6677502.066994289%2CEPSG%3A3067&count=1&startIndex=0",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384866.6528173724,6677388.988687316,384925.55075251416,6677502.066994289,EPSG:3067",
+        "count": "1",
+        "startIndex": "0"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 4559,
+      "responseSha256": "99a05eab1cbc188877ef87d6d249831a3ee387917a316a8229b2567df9efc76e",
+      "numberMatched": "1",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 24,
+      "file": "0024.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384866.6528173724%2C6677388.988687316%2C384925.55075251416%2C6677502.066994289%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384866.6528173724,6677388.988687316,384925.55075251416,6677502.066994289,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "ebec6776a9f8617fec776a22d2541a96c42f3b843ae105ef38cfc62d114e060a",
+      "numberMatched": "1",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 25,
+      "file": "0025.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384748.8469814163%2C6677169.808994256%2C384807.7515603199%2C6677282.888951133%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384748.8469814163,6677169.808994256,384807.7515603199,6677282.888951133,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "0a54619b8eb4a3d1fc9c60bc1c2d35943660d39404997cea25efaa457f12c27c",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 26,
+      "file": "0026.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384748.8469814163%2C6677169.808994256%2C384807.7515603199%2C6677282.888951133%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384748.8469814163,6677169.808994256,384807.7515603199,6677282.888951133,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 956,
+      "responseSha256": "a860df8df02ecedd7ceb07db264c59ccdc4666b42c1ae4ad9dab662100b53b07",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 27,
+      "file": "0027.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384970.4346450242%2C6677162.834422256%2C385029.33254476625%2C6677275.911163285%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384970.4346450242,6677162.834422256,385029.33254476625,6677275.911163285,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "3a21fa671ef483dc71128df46ad30b51693081d1533c1a031a30c2083e387efe",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 28,
+      "file": "0028.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384970.4346450242%2C6677162.834422256%2C385029.33254476625%2C6677275.911163285%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384970.4346450242,6677162.834422256,385029.33254476625,6677275.911163285,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 957,
+      "responseSha256": "ed2a6c68b737716db505cb48ec799143a26c146d3157ec0f7c343bb6e759a692",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 29,
+      "file": "0029.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_382791887&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "RESOURCEID": "FI_CP_CADASTRALPARCEL_382791887",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 902,
+      "responseSha256": "06b974777c7d1a3c854b8d6f31e6c54b7dc7018e449dcd349aff0021b94db9bc",
+      "numberMatched": "1",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 30,
+      "file": "0030.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_382791887&count=1&startIndex=0",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "RESOURCEID": "FI_CP_CADASTRALPARCEL_382791887",
+        "count": "1",
+        "startIndex": "0"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 2699,
+      "responseSha256": "a9fee8d5436725caf7eaa6b7b21953f7f6959acdaedd99c2f1963641a862c558",
+      "numberMatched": "1",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 31,
+      "file": "0031.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_382791887&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "RESOURCEID": "FI_CP_CADASTRALPARCEL_382791887",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 902,
+      "responseSha256": "33c3e77c3f32dd3e4a2b0af26ed0826f22cb1ba2c4ce0e1105400ec4f2bf1fb9",
+      "numberMatched": "1",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 32,
+      "file": "0032.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_9999999999999999&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "RESOURCEID": "FI_CP_CADASTRALPARCEL_9999999999999999",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 909,
+      "responseSha256": "700315beae7b2bf9e193c821ee5d8b079089d7fe2c8a75389081d335fa994a40",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 33,
+      "file": "0033.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&RESOURCEID=FI_CP_CADASTRALPARCEL_9999999999999999&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "RESOURCEID": "FI_CP_CADASTRALPARCEL_9999999999999999",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 909,
+      "responseSha256": "ede401e3e936adee31ce541a38bb961c7517b8249d54999aa7312ed317950613",
+      "numberMatched": "0",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 34,
+      "file": "0034.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 959,
+      "responseSha256": "89ee990c8af4095a8a73bae6b9a5a10aeda58cdfbdb3616df6fd468d2e8a4450",
+      "numberMatched": "36",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 35,
+      "file": "0035.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=36&startIndex=0",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "36",
+        "startIndex": "0"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 57060,
+      "responseSha256": "a90362e973281ffd18b20856344cf260c170d0179a09d28dd983eb7e7b675f97",
+      "numberMatched": "36",
+      "numberReturned": "36"
+    },
+    {
+      "sequence": 36,
+      "file": "0036.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 959,
+      "responseSha256": "8a00e52191c7922f021e1fc8b63cbd826ae496f0319a7521f78729967fe86105",
+      "numberMatched": "36",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 37,
+      "file": "0037.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 959,
+      "responseSha256": "7ae495722c229283a2ef8e0b4643b0b49866a5664ac08a306c0f8f227a374402",
+      "numberMatched": "36",
+      "numberReturned": "0"
+    },
+    {
+      "sequence": 38,
+      "file": "0038.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=0",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "0"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3303,
+      "responseSha256": "032e82230d61d18ba4a604667a70344c04fcc3a1a05919891ca8b99206cfa3e3",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 39,
+      "file": "0039.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=1",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "1"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3408,
+      "responseSha256": "f318c9c5fc6893bd0c256944d91dc70ce80e7e34c460bb0281c0b4fac2c0aa9a",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 40,
+      "file": "0040.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=2",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "2"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3134,
+      "responseSha256": "47cd8d91eaea0c80be0d6348b68a99a8c87869996907d16e86945885198d78ab",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 41,
+      "file": "0041.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=3",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "3"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3067,
+      "responseSha256": "ede01c6df5b5a97c8c28f9f96fe4ca91bfcc9eef243abfef4b0b3ffee21fae2a",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 42,
+      "file": "0042.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=4",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "4"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3429,
+      "responseSha256": "8bd092c69aaa925c5fcdb4ee1b1bbc7d9580647c1a83d57e7b24666e6c2cfed8",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 43,
+      "file": "0043.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=5",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "5"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3063,
+      "responseSha256": "9f95abe06c9ebbf1682de090f4709eb4996121e3664fe6cadf25ad98b2a06b6d",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 44,
+      "file": "0044.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=6",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "6"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3273,
+      "responseSha256": "8ca3193cc29327fe44d4ed3f6ec0ea116869973ead00014bcd506de9cd8a27da",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 45,
+      "file": "0045.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=7",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "7"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3068,
+      "responseSha256": "73d37ae3030ef9762b95d74573da3028b1b3203caddac2c5e0177a5ce6712ab6",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 46,
+      "file": "0046.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=8",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "8"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3065,
+      "responseSha256": "188c9cfa1365bbcd03de9c1bd04cff5065cdc5a8323ebc4c22d534ee47915631",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 47,
+      "file": "0047.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=9",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "9"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3042,
+      "responseSha256": "1c5df2e0ab47e0eec93f23206141fe824e214b25ef84e36ed38caa84f26113b1",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 48,
+      "file": "0048.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=10",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "10"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3041,
+      "responseSha256": "bdec8e43b2e21689e92dece9a37faa20f465b3475f76633ddabd71ac6387a9fd",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 49,
+      "file": "0049.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=11",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "11"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3091,
+      "responseSha256": "9ab832531c2339c19e01fca741ec54c4af8f8d3ac5d4901f460624c20fcbcc79",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 50,
+      "file": "0050.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=12",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "12"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3046,
+      "responseSha256": "a6043efe119d32f78f40cc146189caadbd6f1f65f207558bc4467519dfa6278d",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 51,
+      "file": "0051.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=13",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "13"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3135,
+      "responseSha256": "771c8716868161ce0ea404c6309781fcf7b2dd6c51028a4814e7148d0831aeac",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 52,
+      "file": "0052.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=14",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "14"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3160,
+      "responseSha256": "45e70937ea9d2b229a47056552aed3cf891feb472aa662e728d6ff836e4c7819",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 53,
+      "file": "0053.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=15",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "15"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3069,
+      "responseSha256": "02e9334c596a5ec42b813194d4b270b17c872dc3fc9647d649c948aa3e8db184",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 54,
+      "file": "0054.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=16",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "16"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3047,
+      "responseSha256": "4cf6d08c7b4054fc1952e8191918f85c0a3b8b336e3eb5172ae293d7b9bbb80c",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 55,
+      "file": "0055.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=17",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "17"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3070,
+      "responseSha256": "3a843faec5402cae1d0b6647956c8eec74e43829ea4f1ac67438b50ac820b144",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 56,
+      "file": "0056.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=18",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "18"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3068,
+      "responseSha256": "71f185abeb58afc9cc92d469dfe089d4a3faa33cc393b2fd7bf762c715371333",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 57,
+      "file": "0057.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=19",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "19"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3070,
+      "responseSha256": "76c787234e30797053f7d31fed6158664e7dd333a0518695fc6f7ba034567ac5",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 58,
+      "file": "0058.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=20",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "20"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3047,
+      "responseSha256": "9d8e1cc17d9e1e42baf048ec617b909acd756fe689dba843f9469143b0e22db2",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 59,
+      "file": "0059.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=21",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "21"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3092,
+      "responseSha256": "214b4c0d27016efacb250e0577eb57704a59ef0e7765a3ae4fa06af7cbfcee84",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 60,
+      "file": "0060.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=22",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "22"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3046,
+      "responseSha256": "063fa301d0df3851b40aa0d3fa991627649ec902a44c8fe7c564fd1df44ddaf6",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 61,
+      "file": "0061.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=23",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "23"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3067,
+      "responseSha256": "2e6aa49feb8a16bf27a795a439274a453b859a9d656114657454a052044ec72d",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 62,
+      "file": "0062.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=24",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "24"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3069,
+      "responseSha256": "d0b26ed2a08162e5ef313bac75c96b86658e25794f3a66a11c03833ab2c572f8",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 63,
+      "file": "0063.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=25",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "25"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3068,
+      "responseSha256": "fd3152383163cc77815654381b697c14dfe9651313024627ec7e1f19e2d16bf9",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 64,
+      "file": "0064.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=26",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "26"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3091,
+      "responseSha256": "4d87cbb3a7d0e8d0985dcfc56f0e1ab7749115053a506a74acc47723d741d5b3",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 65,
+      "file": "0065.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=27",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "27"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3047,
+      "responseSha256": "911ba9c115ac9111c4bbadf2ed8902c438889b85960ba977c9e7832e483896d5",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 66,
+      "file": "0066.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=28",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "28"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3111,
+      "responseSha256": "89b51482751dd31f9b0875a4594ffd067c99210ed6749278dc3ac952afbb70e7",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 67,
+      "file": "0067.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=29",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "29"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3089,
+      "responseSha256": "a1a846713e0be180f132f52b3bc147dd01509d64b1aa10c1813c06b0ec5f2245",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 68,
+      "file": "0068.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=30",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "30"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 7143,
+      "responseSha256": "b3ccc03c845d8c0b5b43612fb727f5e04f9dcdb70e459ad6cc70dd0955343700",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 69,
+      "file": "0069.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=31",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "31"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3111,
+      "responseSha256": "4c5e3c4c614a23e0bb7294fd01ab62aac4fd454458c644998347f4e8c0138822",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 70,
+      "file": "0070.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=32",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "32"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3088,
+      "responseSha256": "9a28fd070b0f257025add28307bd3f5bff0d501447ade7a0ce673246df54b06a",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 71,
+      "file": "0071.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=33",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "33"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3158,
+      "responseSha256": "b3ceef028fb7ec65f56a35d0da10631d717ecd91e1a1d792d3de88bf8d0dbc24",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 72,
+      "file": "0072.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=34",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "34"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3316,
+      "responseSha256": "f8c46ad0e33ce73b1d14f975a6c436b488c45b182f738f52a9c07bb85f344160",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 73,
+      "file": "0073.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&count=1&startIndex=35",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "count": "1",
+        "startIndex": "35"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml; subtype=gml/3.2",
+      "responseBytes": 3067,
+      "responseSha256": "ec3842834672b628e08c7f203328e1f539b4b98030601ea6279d23859957fa60",
+      "numberMatched": "36",
+      "numberReturned": "1"
+    },
+    {
+      "sequence": 74,
+      "file": "0074.xml",
+      "method": "GET",
+      "url": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp%3ACadastralParcel&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A3067&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&bbox=384990.59039171773%2C6671987.476805975%2C385409.37618281087%2C6672312.524525818%2CEPSG%3A3067&resultType=hits",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "cp:CadastralParcel",
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "outputFormat": "application/gml+xml; version=3.2",
+        "bbox": "384990.59039171773,6671987.476805975,385409.37618281087,6672312.524525818,EPSG:3067",
+        "resultType": "hits"
+      },
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "responseBytes": 959,
+      "responseSha256": "77e925a68d469969b6746277f6ae1aaaa962562d6b7f703ad5949cb0343f1b35",
+      "numberMatched": "36",
+      "numberReturned": "0"
+    }
+  ],
+  "execution": {
+    "runner": "tmp/overnight-cities-2026-10-09/qualify-finland-runtime.mjs",
+    "command": "node tmp/overnight-cities-2026-10-09/qualify-finland-runtime.mjs",
+    "execSessionId": 58708,
+    "exitCode": 0,
+    "completed": true,
+    "followupFailedSessionId": 66577,
+    "followupSecondFailedSessionId": 18785,
+    "followupExactIdResponseXmlSource": "tmp/overnight-cities-2026-10-09/finland-runtime-cache/followup-session-18785/",
+    "explicitGeometryProbeResponseXmlSource": "tmp/overnight-cities-2026-10-09/finland-runtime-cache/explicit-geometry-probe/"
+  },
+  "locatorBindingAssessment": "The official WUP point is outside all parcels returned by the 13-cell grid. The nearest full returned parcel footprint is 148.534 m away. Its complete footprint does bind to its canonical INSPIRE URI/native ResourceID through an identical fresh exact-ID geometry hash; the sample does not establish citywide absence or coverage.",
+  "geometryQuality": {
+    "metricCrs": "EPSG:3067",
+    "method": "Independent Shapely 2.2.0 validity/overlap check after inverse-projecting cached WGS84 features with proj4",
+    "featureCount": 2,
+    "invalidFeatureCount": 0,
+    "intersectingDistinctPairCount": 1,
+    "positiveOverlapPairCountAbove0_01SquareMetres": 0,
+    "maxPairwiseOverlapSquareMetres": 0,
+    "metricGeometryCache": "tmp/overnight-cities-2026-10-09/finland-runtime-cache/full-13-cell-cache-epsg3067.geojson"
+  },
+  "oneMetreInteriorSiteProbe": {
+    "execSessionId": 66577,
+    "exitCode": 1,
+    "siteSideLengthMetres": 1,
+    "siteCoveredByFullParcelInEpsg3067": true,
+    "bboxKvp": "384891.622831855,6677338.622547505,384892.68573685386,6677339.685452507,EPSG:3067",
+    "numberMatchedBefore": 0,
+    "numberReturned": 0,
+    "numberMatchedAfter": 0,
+    "completeNoDataResponse": true,
+    "assessment": "The WFS reports a stable empty result for this small BBOX despite the checked 1 m site being inside the complete polygon. Retested at 8 m while remaining fully within the parcel; see verifiedInteriorSiteBinding.",
+    "cachedResponses": [
+      "tmp/overnight-cities-2026-10-09/finland-runtime-cache/interior-site-1m-pre-and-post-hit.xml",
+      "tmp/overnight-cities-2026-10-09/finland-runtime-cache/interior-site-1m-post-hit.xml"
+    ]
+  },
+  "eightMetreInteriorSiteProbe": {
+    "execSessionId": 18785,
+    "exitCode": 1,
+    "siteSideLengthMetres": 8,
+    "siteCoveredByFullParcelInEpsg3067": true,
+    "bboxKvp": "384887.90265549946,6677334.902380366,384896.4058954896,6677343.405620354,EPSG:3067",
+    "numberMatchedBefore": 0,
+    "numberReturned": 0,
+    "numberMatchedAfter": 0,
+    "completeNoDataResponse": true,
+    "assessment": "The WFS also reports a stable empty result for an 8 m square verified to be fully inside the full parcel polygon. The full parcel bbox does return the feature. The subsequent bounded-scale diagnostic tests 1/2/4/8 m and official capabilities for the spatial semantic distinction.",
+    "cachedResponses": [
+      "tmp/overnight-cities-2026-10-09/finland-runtime-cache/interior-site-8m-pre-hit.xml",
+      "tmp/overnight-cities-2026-10-09/finland-runtime-cache/interior-site-8m-post-hit.xml"
+    ]
+  },
+  "followupExactIdReadback38": {
+    "scope": "Fresh ResourceID exact readback of two features in the complete 13-cell Helsinki WUP cache plus all 36 features in the retained EPSG:3067 stress-cache response.",
+    "totalUniqueSourceParcelIds": 38,
+    "wupCellFeatureCount": 2,
+    "stressFeatureCount": 36,
+    "all38FreshRowsPresentExactlyOnce": true,
+    "all38FullGeometryHashesMatchBaseline": true,
+    "readbackRecords": [
+      {
+        "source": "13-cell WUP exact ResourceID readback",
+        "batch": null,
+        "dataResponseFile": "followup-session-18785/0076.xml",
+        "numberMatched": "2",
+        "numberReturned": "2",
+        "parsedFeatureCount": 2,
+        "countStability": {
+          "hitsPreNumberMatched": "2",
+          "dataNumberMatched": "2",
+          "dataNumberReturned": "2",
+          "hitsPostNumberMatched": "2",
+          "stable": true
+        },
+        "sequence": [
+          75,
+          77
+        ]
+      },
+      {
+        "source": "stress bbox exact ResourceID batch readback",
+        "batch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "numberMatched": "8",
+        "numberReturned": "8",
+        "parsedFeatureCount": 8,
+        "countStability": {
+          "hitsPreNumberMatched": "8",
+          "dataNumberMatched": "8",
+          "dataNumberReturned": "8",
+          "hitsPostNumberMatched": "8",
+          "stable": true
+        },
+        "sequence": [
+          78,
+          80
+        ]
+      },
+      {
+        "source": "stress bbox exact ResourceID batch readback",
+        "batch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "numberMatched": "8",
+        "numberReturned": "8",
+        "parsedFeatureCount": 8,
+        "countStability": {
+          "hitsPreNumberMatched": "8",
+          "dataNumberMatched": "8",
+          "dataNumberReturned": "8",
+          "hitsPostNumberMatched": "8",
+          "stable": true
+        },
+        "sequence": [
+          81,
+          83
+        ]
+      },
+      {
+        "source": "stress bbox exact ResourceID batch readback",
+        "batch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "numberMatched": "8",
+        "numberReturned": "8",
+        "parsedFeatureCount": 8,
+        "countStability": {
+          "hitsPreNumberMatched": "8",
+          "dataNumberMatched": "8",
+          "dataNumberReturned": "8",
+          "hitsPostNumberMatched": "8",
+          "stable": true
+        },
+        "sequence": [
+          84,
+          86
+        ]
+      },
+      {
+        "source": "stress bbox exact ResourceID batch readback",
+        "batch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "numberMatched": "8",
+        "numberReturned": "8",
+        "parsedFeatureCount": 8,
+        "countStability": {
+          "hitsPreNumberMatched": "8",
+          "dataNumberMatched": "8",
+          "dataNumberReturned": "8",
+          "hitsPostNumberMatched": "8",
+          "stable": true
+        },
+        "sequence": [
+          87,
+          89
+        ]
+      },
+      {
+        "source": "stress bbox exact ResourceID batch readback",
+        "batch": 5,
+        "dataResponseFile": "followup-session-18785/0091.xml",
+        "numberMatched": "4",
+        "numberReturned": "4",
+        "parsedFeatureCount": 4,
+        "countStability": {
+          "hitsPreNumberMatched": "4",
+          "dataNumberMatched": "4",
+          "dataNumberReturned": "4",
+          "hitsPostNumberMatched": "4",
+          "stable": true
+        },
+        "sequence": [
+          90,
+          92
+        ]
+      }
+    ],
+    "manifest": [
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297269",
+        "sourceParcelId": "158297269",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "449617976b205eaf639993f60b9fcd1aed54cb1c4d32548eba4b09224a6d9209",
+        "freshExactIdGeometrySha256": "449617976b205eaf639993f60b9fcd1aed54cb1c4d32548eba4b09224a6d9209",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 34
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297273",
+        "sourceParcelId": "158297273",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "0fd6bd5e38bf5220543e2e3df86bc838121bac89916f5ad2582bbf837b92edee",
+        "freshExactIdGeometrySha256": "0fd6bd5e38bf5220543e2e3df86bc838121bac89916f5ad2582bbf837b92edee",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 21
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297274",
+        "sourceParcelId": "158297274",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "8685b606e45bb6ca4bc50b3579f9f5290ee078f1aeb8c1ef5e2fa9484c1c842e",
+        "freshExactIdGeometrySha256": "8685b606e45bb6ca4bc50b3579f9f5290ee078f1aeb8c1ef5e2fa9484c1c842e",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 9
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297276",
+        "sourceParcelId": "158297276",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "40e244358f86644537679aab07294a499413bd17777e70bb0da04c1fc081250c",
+        "freshExactIdGeometrySha256": "40e244358f86644537679aab07294a499413bd17777e70bb0da04c1fc081250c",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297285",
+        "sourceParcelId": "158297285",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "a552d6bc0a24c7d4d5f4bfa15509ac292fb6b5322db3af7819b11e9743a44e70",
+        "freshExactIdGeometrySha256": "a552d6bc0a24c7d4d5f4bfa15509ac292fb6b5322db3af7819b11e9743a44e70",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 22
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297288",
+        "sourceParcelId": "158297288",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "18e4cb220a38ac56647ae8658d36fb67fa05f1e7c2bc074b5358c20323de7b9e",
+        "freshExactIdGeometrySha256": "18e4cb220a38ac56647ae8658d36fb67fa05f1e7c2bc074b5358c20323de7b9e",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297289",
+        "sourceParcelId": "158297289",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "c0477f9c438c0a4eb103a0eea8236a9b38d47e7717f78299d1912f524e384b35",
+        "freshExactIdGeometrySha256": "c0477f9c438c0a4eb103a0eea8236a9b38d47e7717f78299d1912f524e384b35",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 15
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297295",
+        "sourceParcelId": "158297295",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 1,
+        "dataResponseFile": "followup-session-18785/0079.xml",
+        "baselineGeometrySha256": "6dfe944ad60349b3b078c98006721b3308d25c3cfedc5f3845b90eb106b85d7e",
+        "freshExactIdGeometrySha256": "6dfe944ad60349b3b078c98006721b3308d25c3cfedc5f3845b90eb106b85d7e",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297302",
+        "sourceParcelId": "158297302",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "72318966364de9e3b20a02b68d37b5ab641f627f412a98018e7e598d38e5453d",
+        "freshExactIdGeometrySha256": "72318966364de9e3b20a02b68d37b5ab641f627f412a98018e7e598d38e5453d",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297303",
+        "sourceParcelId": "158297303",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "395716a61a9d5309e3dc21c180266a131d1c2f6317c4d1bbf92814ef48d95d78",
+        "freshExactIdGeometrySha256": "395716a61a9d5309e3dc21c180266a131d1c2f6317c4d1bbf92814ef48d95d78",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 5
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297304",
+        "sourceParcelId": "158297304",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "0fd41609246f6c7f1be834341ff6820118fc34efc8d1d3d44937ec4f4eb09ce3",
+        "freshExactIdGeometrySha256": "0fd41609246f6c7f1be834341ff6820118fc34efc8d1d3d44937ec4f4eb09ce3",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 5
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297316",
+        "sourceParcelId": "158297316",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "fe2868c28872d2f3e68475b50405984de4a58ab635ee323d1f93da780aeffbca",
+        "freshExactIdGeometrySha256": "fe2868c28872d2f3e68475b50405984de4a58ab635ee323d1f93da780aeffbca",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 7
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297317",
+        "sourceParcelId": "158297317",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "d50e0a61748378af29bf2dd54f355962166d04b2a3ea3d62219a17a28d1e2635",
+        "freshExactIdGeometrySha256": "d50e0a61748378af29bf2dd54f355962166d04b2a3ea3d62219a17a28d1e2635",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 5
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297326",
+        "sourceParcelId": "158297326",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "f93581d7d02b8eb196c1a213b9ef3c6f3ea51b384b314149fee79c497a3126b5",
+        "freshExactIdGeometrySha256": "f93581d7d02b8eb196c1a213b9ef3c6f3ea51b384b314149fee79c497a3126b5",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 9
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297328",
+        "sourceParcelId": "158297328",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "8838d6be41e1c2f196492bffac1a0e194678c9eca7e75563cae90d228f66d89d",
+        "freshExactIdGeometrySha256": "8838d6be41e1c2f196492bffac1a0e194678c9eca7e75563cae90d228f66d89d",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 10
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297348",
+        "sourceParcelId": "158297348",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 2,
+        "dataResponseFile": "followup-session-18785/0082.xml",
+        "baselineGeometrySha256": "2a20ed564f1aa5ead9f003f510f132ba416adfcf36eac3154a518994d8783bf1",
+        "freshExactIdGeometrySha256": "2a20ed564f1aa5ead9f003f510f132ba416adfcf36eac3154a518994d8783bf1",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297349",
+        "sourceParcelId": "158297349",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "784cf8a1b1984847a62cf8f355fc652f890051f2e03a4a29d92070d4a0b015b9",
+        "freshExactIdGeometrySha256": "784cf8a1b1984847a62cf8f355fc652f890051f2e03a4a29d92070d4a0b015b9",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 5
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297350",
+        "sourceParcelId": "158297350",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "5c1d1f42dcb9a8fa362db22f7d6245d7567a18f7dc3e7f865d9b901151ecf39c",
+        "freshExactIdGeometrySha256": "5c1d1f42dcb9a8fa362db22f7d6245d7567a18f7dc3e7f865d9b901151ecf39c",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297351",
+        "sourceParcelId": "158297351",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "8326de2aa5a742c5b33a7e1325930d0f7787a2bdac4332487751d6f862bafced",
+        "freshExactIdGeometrySha256": "8326de2aa5a742c5b33a7e1325930d0f7787a2bdac4332487751d6f862bafced",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297352",
+        "sourceParcelId": "158297352",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "ffbc606eb6b41479516f5257015e15647b823da2ef0ef855d94ed4837c48d5ad",
+        "freshExactIdGeometrySha256": "ffbc606eb6b41479516f5257015e15647b823da2ef0ef855d94ed4837c48d5ad",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297353",
+        "sourceParcelId": "158297353",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "45b1b793399654b653a79eb2e5851379b4f31eaea315b3d9f3007811b85ca0ba",
+        "freshExactIdGeometrySha256": "45b1b793399654b653a79eb2e5851379b4f31eaea315b3d9f3007811b85ca0ba",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 5
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297354",
+        "sourceParcelId": "158297354",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "1485e5536507cadc8e8fdbcaabf4df5466a32410b44b33a5bb6a9379a59a6188",
+        "freshExactIdGeometrySha256": "1485e5536507cadc8e8fdbcaabf4df5466a32410b44b33a5bb6a9379a59a6188",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 7
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297355",
+        "sourceParcelId": "158297355",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "f8c0046e8130157db7578d5d3478a955d731b7fab5f84cea2dfce018b6d99ebc",
+        "freshExactIdGeometrySha256": "f8c0046e8130157db7578d5d3478a955d731b7fab5f84cea2dfce018b6d99ebc",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 5
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297356",
+        "sourceParcelId": "158297356",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 3,
+        "dataResponseFile": "followup-session-18785/0085.xml",
+        "baselineGeometrySha256": "b7c5cb6b0e81139f68015bfea58396ec53dd45a83685145b5f148ddba22be2c1",
+        "freshExactIdGeometrySha256": "b7c5cb6b0e81139f68015bfea58396ec53dd45a83685145b5f148ddba22be2c1",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297357",
+        "sourceParcelId": "158297357",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "ec3a9a136ad312e4d315129cf418b4d3371726e846ec30b8f2bc2a9c84f8b23f",
+        "freshExactIdGeometrySha256": "ec3a9a136ad312e4d315129cf418b4d3371726e846ec30b8f2bc2a9c84f8b23f",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297358",
+        "sourceParcelId": "158297358",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "c5ccfa9904848df7e40c6ca7784fbff55bdab6e3d283ed78cc5577da18940dc3",
+        "freshExactIdGeometrySha256": "c5ccfa9904848df7e40c6ca7784fbff55bdab6e3d283ed78cc5577da18940dc3",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297369",
+        "sourceParcelId": "158297369",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "efc6cd377dbc62f4a244ac898efd6ace3b5d40ce815fec7750e1349e73fe0cab",
+        "freshExactIdGeometrySha256": "efc6cd377dbc62f4a244ac898efd6ace3b5d40ce815fec7750e1349e73fe0cab",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 7
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297370",
+        "sourceParcelId": "158297370",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "0a0f9bbf51947e0ae13cb76dc5d8e62aa1b4816daee27d019452831ec85aac6c",
+        "freshExactIdGeometrySha256": "0a0f9bbf51947e0ae13cb76dc5d8e62aa1b4816daee27d019452831ec85aac6c",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 5
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297396",
+        "sourceParcelId": "158297396",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "c5e06caea364b820763348913024dd30e014d53065d823ef6f7451a2e1a81439",
+        "freshExactIdGeometrySha256": "c5e06caea364b820763348913024dd30e014d53065d823ef6f7451a2e1a81439",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 8
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297397",
+        "sourceParcelId": "158297397",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "0c6730d33e1d0e9b621e805e3c879bb6705417295ead2cb738efee483511e15b",
+        "freshExactIdGeometrySha256": "0c6730d33e1d0e9b621e805e3c879bb6705417295ead2cb738efee483511e15b",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 7
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297420",
+        "sourceParcelId": "158297420",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "42d4e0af3b8b81361fd6b55b055b11c7ab3f38cdd9904dd3da943b9e0f2aa348",
+        "freshExactIdGeometrySha256": "42d4e0af3b8b81361fd6b55b055b11c7ab3f38cdd9904dd3da943b9e0f2aa348",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 185
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297423",
+        "sourceParcelId": "158297423",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 4,
+        "dataResponseFile": "followup-session-18785/0088.xml",
+        "baselineGeometrySha256": "99da5ada4ea7d40762b355f3d87df556090321bdb1aaab6e2ee58426b0bd5851",
+        "freshExactIdGeometrySha256": "99da5ada4ea7d40762b355f3d87df556090321bdb1aaab6e2ee58426b0bd5851",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 8
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297424",
+        "sourceParcelId": "158297424",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 5,
+        "dataResponseFile": "followup-session-18785/0091.xml",
+        "baselineGeometrySha256": "c31c5ca4f07eb4137579599c11fb4f63d37be2fddedd50d85cd6b0276fc492d6",
+        "freshExactIdGeometrySha256": "c31c5ca4f07eb4137579599c11fb4f63d37be2fddedd50d85cd6b0276fc492d6",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 7
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297425",
+        "sourceParcelId": "158297425",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 5,
+        "dataResponseFile": "followup-session-18785/0091.xml",
+        "baselineGeometrySha256": "f552240a0be2873b697027f5acd14c4c61ad0e8228c210203966cc739b36d40f",
+        "freshExactIdGeometrySha256": "f552240a0be2873b697027f5acd14c4c61ad0e8228c210203966cc739b36d40f",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 10
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297426",
+        "sourceParcelId": "158297426",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 5,
+        "dataResponseFile": "followup-session-18785/0091.xml",
+        "baselineGeometrySha256": "03c4124c97455db0ea4ba0a7ba2b51391224cede5c39cf00157dd4179c21885c",
+        "freshExactIdGeometrySha256": "03c4124c97455db0ea4ba0a7ba2b51391224cede5c39cf00157dd4179c21885c",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 17
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/338574840",
+        "sourceParcelId": "338574840",
+        "readbackSource": "stress bbox exact ResourceID batch readback",
+        "readbackBatch": 5,
+        "dataResponseFile": "followup-session-18785/0091.xml",
+        "baselineGeometrySha256": "331221ae2743d4579efb1b25c6655fde5681dd6fbe2d4cf6f332d52a9829730c",
+        "freshExactIdGeometrySha256": "331221ae2743d4579efb1b25c6655fde5681dd6fbe2d4cf6f332d52a9829730c",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 6
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887",
+        "sourceParcelId": "382791887",
+        "readbackSource": "13-cell WUP exact ResourceID readback",
+        "readbackBatch": null,
+        "dataResponseFile": "followup-session-18785/0076.xml",
+        "baselineGeometrySha256": "4804ba27914499cf2e7219e6f9d9cc5a3649ef44143a166e416d287b2744528e",
+        "freshExactIdGeometrySha256": "4804ba27914499cf2e7219e6f9d9cc5a3649ef44143a166e416d287b2744528e",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 10
+      },
+      {
+        "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/411715261",
+        "sourceParcelId": "411715261",
+        "readbackSource": "13-cell WUP exact ResourceID readback",
+        "readbackBatch": null,
+        "dataResponseFile": "followup-session-18785/0076.xml",
+        "baselineGeometrySha256": "704851a77b98e76a13b402e8ccbfa652630c01dc5c510f51d4d8831260d8b5e4",
+        "freshExactIdGeometrySha256": "704851a77b98e76a13b402e8ccbfa652630c01dc5c510f51d4d8831260d8b5e4",
+        "fullGeometryHashMatches": true,
+        "vertexCount": 89
+      }
+    ],
+    "note": "Offline manifest was reconstructed from the retained live response XML; no new provider query was made for these hashes."
+  },
+  "followupFullFootprintBboxRead": {
+    "sourceParcelId": "382791887",
+    "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887",
+    "nativeBboxEpsg3067": "384881.857134316,6677330.6432793215,384903.45703568053,6677348.316437719,EPSG:3067",
+    "preHitsNumberMatched": "1",
+    "dataNumberMatched": "1",
+    "dataNumberReturned": "1",
+    "dataFeatureCount": 1,
+    "postHitsNumberMatched": "1",
+    "fullGeometryHashMatchesExactIdReadback": true,
+    "requestSequences": [
+      93,
+      94,
+      95
+    ],
+    "note": "WUP locator remains unchanged at [lat,lon]=[60.2151504892048,24.9229563703619]; verified parcel footprint is 148.534 m away. The full footprint BBOX and exact ResourceID readbacks bind the same full geometry; the 1m and 8m spatial-site probes do not establish a queryGeometry site binding."
+  },
+  "spatialPredicateQualification": {
+    "source": "National Land Survey of Finland INSPIRE CP WFS GetCapabilities, DescribeFeatureType, and bounded live requests",
+    "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+    "officialCapabilitiesUrl": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+    "officialSchemaBrowserUrl": "https://inspire.ec.europa.eu/schemas/cp/4.0/",
+    "capabilitiesDocumentCached": true,
+    "advertisedGetFeatureMethods": [
+      "HTTP GET",
+      "HTTP POST"
+    ],
+    "advertisedResultTypes": [
+      "results",
+      "hits"
+    ],
+    "advertisedSpatialOperators": [
+      "BBOX",
+      "Intersects"
+    ],
+    "capabilitiesFeatureTypeDefaultCrs": "EPSG:3067",
+    "capabilitiesDeclareDefaultGeometryProperty": false,
+    "describeFeatureType": "Response is an XSD wrapper including http://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd; it does not reveal the service default geometry.",
+    "inspireModelGeometryAndReferencePoint": "The official INSPIRE CP model defines required geometry and optional referencePoint as separate properties.",
+    "knownContainedSite": {
+      "sourceParcelId": "382791887",
+      "nativeCrs": "EPSG:3067",
+      "siteGeometryFullyCoveredByFreshExactIdParcelGeometry": true,
+      "squareSideLengthMetres": 1,
+      "boundsEpsg3067": [
+        384891.65428449464,
+        6677338.654000001,
+        384892.65428449464,
+        6677339.654000001
+      ]
+    },
+    "genericKvpBbox": {
+      "oneMetrePreNumberMatched": "0",
+      "oneMetrePostNumberMatched": "0",
+      "eightMetrePreNumberMatched": "0",
+      "eightMetrePostNumberMatched": "0",
+      "eightMetreSquareSideLengthMetres": 8
+    },
+    "documentedFesPostTriad": {
+      "requestForm": "WFS 2.0 HTTP POST GetFeature with FES 2.0 BBOX and ValueReference cp:geometry; native EPSG:3067 coordinates",
+      "requestXmlTemplate": "<wfs:GetFeature xmlns:wfs=\"http://www.opengis.net/wfs/2.0\" xmlns:fes=\"http://www.opengis.net/fes/2.0\" xmlns:cp=\"http://inspire.ec.europa.eu/schemas/cp/4.0\" xmlns:gml=\"http://www.opengis.net/gml/3.2\" service=\"WFS\" version=\"2.0.0\" outputFormat=\"application/gml+xml; version=3.2\" resultType=\"hits\"><wfs:Query typeNames=\"cp:CadastralParcel\" srsName=\"urn:ogc:def:crs:EPSG::3067\"><fes:Filter><fes:BBOX><fes:ValueReference>cp:geometry</fes:ValueReference><gml:Envelope srsName=\"urn:ogc:def:crs:EPSG::3067\"><gml:lowerCorner>384891.654284 6677338.654</gml:lowerCorner><gml:upperCorner>384892.654284 6677339.654</gml:upperCorner></gml:Envelope></fes:BBOX></fes:Filter></wfs:Query></wfs:GetFeature>",
+      "hitsPreNumberMatched": "4",
+      "dataResponseBodyStartsWithGatewayRejection": true,
+      "hitsPostResponseBodyStartsWithGatewayRejection": true,
+      "hitsPostSupportId": "14476319636358586920",
+      "dataSupportId": "14476319636358709325",
+      "exactServiceNextPageRequestTimedOutSeconds": 15,
+      "predicateSemanticsEstablished": false,
+      "qualificationConclusion": "The one FES hits response reported 4 matches, while the same known-contained 1m site returned stable 0 with generic KVP BBOX; gateway-rejected data/post responses and the timed-out service continuation prevent a complete manifest and stable readback. This does not establish which geometry property the generic KVP BBOX uses."
+    },
+    "rawResponseEvidenceDirectoryIgnored": "tmp/overnight-cities-2026-10-09/finland-runtime-cache/explicit-geometry-probe",
+    "exactIdFollowupRawXmlDirectoryIgnored": "tmp/overnight-cities-2026-10-09/finland-runtime-cache/followup-session-18785"
+  },
+  "stress36MetricTopologyAudit": {
+    "status": "completed-no-repair-audit",
+    "source": "finland-runtime-cache/stress-36-page50-full-cache-epsg3067.geojson",
+    "featureCount": 36,
+    "distinctSourceIdCount": 36,
+    "geometriesRepaired": false,
+    "validityAudit": {
+      "validCount": 36,
+      "invalidCount": 0,
+      "emptyCount": 0,
+      "nonSimpleCount": 0,
+      "unexpectedGeometryTypeCount": 0,
+      "issues": []
+    },
+    "metricTopology": {
+      "pairCountChecked": 630,
+      "positiveAreaOverlapPairCount": 0,
+      "positiveAreaOverlapPairs": [],
+      "minimumFeatureAreaSquareMetres": 55.977513005425536,
+      "maximumFeatureAreaSquareMetres": 7110.304265076768,
+      "totalFeatureAreaSquareMetres": 90350.70897448558,
+      "minimumClearanceMetres": 0.1170470008035915,
+      "maximumClearanceMetres": 59.983941918584065
+    },
+    "caveat": "This describes only the 36 parcels in the retained stress bbox. Validity and overlap checks used Shapely 2.2.0 in EPSG:3067; no make-valid, snapping, buffering, or repair was applied.",
+    "standaloneAuditJsonIgnored": "finland-runtime-cache/stress-36-topology-audit-epsg3067.json"
+  },
+  "verifiedInteriorSiteBinding": {
+    "canonicalId": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/382791887",
+    "sourceParcelId": "382791887",
+    "nativeCrs": "EPSG:3067",
+    "oneMetreSquareFullyCoveredByFreshExactIdParcelGeometry": true,
+    "oneMetreGenericKvpBboxHitsPreNumberMatched": "0",
+    "oneMetreGenericKvpBboxHitsPostNumberMatched": "0",
+    "eightMetreSquareFullyCoveredByFreshExactIdParcelGeometry": true,
+    "eightMetreGenericKvpBboxHitsPreNumberMatched": "0",
+    "eightMetreGenericKvpBboxHitsPostNumberMatched": "0",
+    "queryGeometryBound": false,
+    "bindingFailureReason": "Both contained-site generic KVP BBOX hit checks were stably 0; the documented FES cp:geometry triad could not be completed because its data and post-hit responses were rejected by the gateway.",
+    "wupCenterUnchanged": [
+      60.2151504892048,
+      24.9229563703619
+    ],
+    "distanceFromWupCenterToParcelMetres": 148.534
+  },
+  "integrationAdmission": "not-admitted-pending-geometry-specific-spatial-query-qualification",
+  "integrationAdmissionReason": "The generic KVP BBOX returned stable zero for verified contained sites; the documented FES cp:geometry probe produced a hits count of four but its data and post-hit requests were rejected, so a complete binding remains unproven."
+}

@@ -1,0 +1,105 @@
+{
+  "name": "Fergana",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "rank": 671,
+  "point": [
+    40.4391536641027,
+    71.748589649778
+  ],
+  "population2025": 791877,
+  "populationUnit": "persons",
+  "population2025k": 791.877,
+  "populationPlausibility2025": "Low",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Fergana regional government and Cadastre Agency sources identify a Fergana City cadastral office and the national agency’s land/property rights-registration remit. The National Geoportal offers cadastral search controls, but its public layer/schema and a safe anonymous feature response were not verified.",
+  "registryEvidenceUrls": [
+    "https://kadastr.uz/ru/news/news-01-14-10-2023",
+    "https://gov.uz/oz/kadastr/pages/about",
+    "https://open.ngis.uz/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "url": null,
+    "httpStatus": null,
+    "contentType": null,
+    "featureType": null,
+    "nativeCrs": null,
+    "responseCount": 0,
+    "responseNumberMatched": "not queried",
+    "requestLimit": 0,
+    "requestFilter": "No anonymous safe polygon feature query was made or verified.",
+    "requestedFields": [],
+    "safeFieldsRetained": [],
+    "featureIds": [],
+    "nativeParcelIdentifier": null,
+    "wupPointContained": null,
+    "sampleGeometryFile": null,
+    "sampleSha256": null,
+    "limitations": "No public parcel polygon or native parcel ID was retrieved."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Uzbek",
+        "query": "Fargʻona shahar kadastr yer uchastkasi xaritasi Kadastr agentligi rasmiy",
+        "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+        "result": "Separate Uzbek and English searches found the official Fergana city-office listing and national Cadastre Agency/geoportal. The portal showed cadastral search controls but no loaded layer/schema and a terms/login panel; no feature request or terms acceptance was made.",
+        "actualResultUrls": [
+          "https://kadastr.uz/ru/news/news-01-14-10-2023",
+          "https://gov.uz/oz/kadastr/pages/about",
+          "https://open.ngis.uz/"
+        ],
+        "executionMethod": "Separate Uzbek and English searches followed by official-source and public portal review; no consent or login was submitted."
+      },
+      {
+        "language": "English",
+        "query": "Fergana Uzbekistan cadastral map land parcel GIS official cadastre agency",
+        "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+        "result": "Separate Uzbek and English searches found the official Fergana city-office listing and national Cadastre Agency/geoportal. The portal showed cadastral search controls but no loaded layer/schema and a terms/login panel; no feature request or terms acceptance was made.",
+        "actualResultUrls": [
+          "https://kadastr.uz/ru/news/news-01-14-10-2023",
+          "https://gov.uz/oz/kadastr/pages/about",
+          "https://open.ngis.uz/"
+        ],
+        "executionMethod": "Separate Uzbek and English searches followed by official-source and public portal review; no consent or login was submitted."
+      }
+    ]
+  },
+  "scopeLimits": "The national geoportal did not expose a verified anonymous feature schema or geometry response in the reviewed public view; no terms acceptance or login was submitted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "UZ-4554-LOCAL-CADASTRE-REGISTRY",
+    "name": "Fergana City cadastral office and National Geoportal",
+    "url": "https://kadastr.uz/ru/news/news-01-14-10-2023",
+    "operator": "Cadastre Agency of Uzbekistan / Fergana City cadastral office",
+    "serviceType": "Official local land registry/cadastre pathway; no safe anonymous parcel feature endpoint verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel feature response or safe native parcel identifier was retrieved."
+  },
+  "wupCityCode": 4554,
+  "cityId": "wup2025:4554",
+  "queueRank": 671,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The national geoportal did not expose a verified anonymous feature schema or geometry response in the reviewed public view; no terms acceptance or login was submitted.",
+  "remainingUncertainty": "Exact city coverage and whether a public anonymous geometry-only endpoint exists remain unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous parcel geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    40.4391536641027,
+    71.748589649778
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

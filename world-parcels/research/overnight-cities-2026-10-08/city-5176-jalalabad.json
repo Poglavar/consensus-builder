@@ -1,0 +1,128 @@
+{
+  "name": "Jalalabad",
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "rank": 927,
+  "point": [
+    34.427314355222,
+    70.4470830177735
+  ],
+  "population2025": 587508,
+  "population2025k": 587.508,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "No anonymous parcel feature service, safe identifier schema, or exact-point digitized-coverage result was verified. Official local pages include municipal notices and programme activity, which are not a generic public parcel feed.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Municipal land administration and national property-registration activity are visible, but this review did not verify a city-local cadastral registry office or a city-specific first-party parcel map.",
+  "resultCategory": "local_land_administration_public_geometry_unverified",
+  "technicalBlocker": "No anonymous public vector endpoint or safe feature schema was identified.",
+  "remainingUncertainty": "Whether an official local cadastral map exists and whether the exact settlement point is represented remain unknown.",
+  "nextStep": "Root review the local registry/map evidence; request an official public schema or coverage statement if city-point parcel geometry is needed, without using account-gated or property-specific searches.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jalalabad Afghanistan official municipal land registry cadastral map parcel GIS",
+        "result": "Official municipal pages describe city administration and land/lease notices, but no generic public cadastral map or vector service was located.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      },
+      {
+        "language": "Pashto/Dari",
+        "query": "جلال آباد نقشه کادستر ثبت زمین شهرداری ننگرهار",
+        "result": "No first-party local-language public parcel geometry service was located; official municipal/MUDH pages describe municipal or programme-specific land activity.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://jalalabad-m.gov.af/index.php/about-city",
+        "observation": "Official municipality overview identifies the city and its municipal administrative context; it does not document an anonymous parcel service."
+      },
+      {
+        "url": "https://jalalabad-m.gov.af/dr/node/394",
+        "observation": "Official Dari/Pashto municipality page describes Jalalabad urban districts and land-use context, not cadastral vector publication."
+      },
+      {
+        "url": "https://pms.moj.gov.af/",
+        "observation": "Ministry of Justice PRMIS portal is a property-registration system; no public spatial schema or anonymous full-polygon service was exposed in this review."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed public descriptions only; no login, identity, rights-holder, plot or address query submitted.",
+      "geometryStatus": "No anonymous full polygon response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Reviewed public descriptions only; no login, identity, rights-holder, plot or address query submitted.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 927,
+  "wupCityCode": 5176,
+  "cityId": "wup2025:5176",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    34.427314355222,
+    70.4470830177735
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "af-jalalabad-public-registry-review",
+    "name": "Jalalabad Municipality / Ministry of Justice property registry",
+    "operator": "Jalalabad Municipality / Ministry of Justice property registry",
+    "url": null,
+    "serviceType": "Municipal and national property-administration portals; no public vector service verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "No anonymous parcel feature service, safe identifier schema, or exact-point digitized-coverage result was verified. Official local pages include municipal notices and programme activity, which are not a generic public parcel feed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "No anonymous parcel feature service, safe identifier schema, or exact-point digitized-coverage result was verified. Official local pages include municipal notices and programme activity, which are not a generic public parcel feed.",
+    "verifiedOpenScope": "No anonymous full-polygon response returned in this review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://jalalabad-m.gov.af/index.php/about-city",
+    "https://jalalabad-m.gov.af/dr/node/394",
+    "https://pms.moj.gov.af/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous public vector endpoint or safe feature schema was identified."
+  },
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootPrimaryReadback": {
+    "url": "https://jalalabad-m.gov.af/index.php/about-city",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "About City | Jalalabad Municipality"
+  },
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

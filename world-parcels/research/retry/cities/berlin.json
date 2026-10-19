@@ -1,0 +1,45 @@
+{
+ "kind": "city",
+ "key": "berlin",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_citywide",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: de-DE,de;q=0.9 (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke?service=WFS&version=2.0.0&request=GetFeature&typeNames=alkis_flurstuecke:flurstuecke&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=13.3995,52.5015,13.4005,52.5022,EPSG:4326",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl TLS: self-signed certificate in certificate chain; not bypassed, so no raw HTTP reply"
+  },
+  {
+   "url": "https://gdi.berlin.de/services/wfs/alkis?service=WFS&request=GetCapabilities ; https://gdi.berlin.de/viewer/main/ ; https://fbinter.stadt-berlin.de/fb/wfs/data/senstadt/s_wfs_alkis*",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "same TLS chain error on every gdi/fbinter host"
+  },
+  {
+   "url": "https://daten.berlin.de/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Berlin open-data portal reachable (Drupal), TLS ok"
+  },
+  {
+   "url": "https://www.stadtentwicklung.berlin.de/geoinformation/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Senate geoinformation page reachable"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Not a geo-block: the TLS chain of gdi.berlin.de and fbinter.stadt-berlin.de fails verification on this egress path; not bypassed. The earlier record's parcel sample came via WebFetch, so it does not count as raw-HTTP evidence. Endpoint gdi.berlin.de/services/wfs/alkis_flurstuecke (ALKIS Flurstuecke WFS, GeoJSON) remains the strong candidate.",
+ "nextStep": "Re-run the bounded GetFeature from a network where the chain validates, then save the reply."
+}

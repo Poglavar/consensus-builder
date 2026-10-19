@@ -1,0 +1,18 @@
+{
+  "taskId": "city:5316",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-5316-derudeib.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/derudeib-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-11T12:28:07Z",
+  "registryFound": null,
+  "reason": "The first-party National Information Center describes a national WMS/WFS geoportal, and Aqari describes national registration services. The geoportal host was unresolved or timed out in the worker environment; no Derudeib-specific parcel layer, local custody, native ID or full polygon was returned. registryFound stays null. Unreachable service is not citywide absence. No independent live adapter qualification or headed Details check exists.",
+  "firstPartySourcesChecked": [
+    "https://nic.gov.sd/public/projectDetails/3",
+    "https://aqari.nctr.sd/ar"
+  ],
+  "retainedFullPolygonCount": 0
+}

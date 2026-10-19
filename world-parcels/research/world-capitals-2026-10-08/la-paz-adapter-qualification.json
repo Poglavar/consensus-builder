@@ -1,0 +1,246 @@
+{
+  "purpose": "Read-only provider adapter qualification; no catalogue or runtime configuration change.",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "city": "la-paz",
+  "sourceId": "bo-gamlp-lapaz-wfs",
+  "descriptor": {
+    "id": "bo-gamlp-lapaz-wfs",
+    "endpoint": "https://sitservicios.lapaz.bo/geoserver/catastro/wfs",
+    "idField": "idpredio",
+    "idType": "integer",
+    "idPrefix": "BO-LP-GAM-",
+    "outFields": [
+      "idpredio"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 1,
+    "metricSrid": 32719,
+    "version": "1.1.0",
+    "featureType": "catastro:lotesCertificados",
+    "minRequestIntervalMs": 100
+  },
+  "grid": {
+    "cellDegrees": 0.002,
+    "alignedCellCount": 9,
+    "panCellCount": 4,
+    "totalCellCount": 13,
+    "pageSizeForced": 3
+  },
+  "tests": [
+    {
+      "name": "aligned-0-0",
+      "bbox": [
+        -68.153,
+        -16.503,
+        -68.151,
+        -16.500999999999998
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 595
+    },
+    {
+      "name": "aligned-1-0",
+      "bbox": [
+        -68.15100000000001,
+        -16.503,
+        -68.149,
+        -16.500999999999998
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 562
+    },
+    {
+      "name": "aligned-2-0",
+      "bbox": [
+        -68.14900000000002,
+        -16.503,
+        -68.147,
+        -16.500999999999998
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 556
+    },
+    {
+      "name": "aligned-0-1",
+      "bbox": [
+        -68.153,
+        -16.501,
+        -68.151,
+        -16.499
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 565
+    },
+    {
+      "name": "aligned-1-1",
+      "bbox": [
+        -68.15100000000001,
+        -16.501,
+        -68.149,
+        -16.499
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 555
+    },
+    {
+      "name": "aligned-2-1",
+      "bbox": [
+        -68.14900000000002,
+        -16.501,
+        -68.147,
+        -16.499
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 565
+    },
+    {
+      "name": "aligned-0-2",
+      "bbox": [
+        -68.153,
+        -16.499000000000002,
+        -68.151,
+        -16.497
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 544
+    },
+    {
+      "name": "aligned-1-2",
+      "bbox": [
+        -68.15100000000001,
+        -16.499000000000002,
+        -68.149,
+        -16.497
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 589
+    },
+    {
+      "name": "aligned-2-2",
+      "bbox": [
+        -68.14900000000002,
+        -16.499000000000002,
+        -68.147,
+        -16.497
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 555
+    },
+    {
+      "name": "pan-1",
+      "bbox": [
+        -68.1525,
+        -16.501,
+        -68.1505,
+        -16.499
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 584
+    },
+    {
+      "name": "pan-2",
+      "bbox": [
+        -68.14950000000002,
+        -16.501,
+        -68.14750000000001,
+        -16.499
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 596
+    },
+    {
+      "name": "pan-3",
+      "bbox": [
+        -68.15100000000001,
+        -16.5025,
+        -68.149,
+        -16.5005
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 568
+    },
+    {
+      "name": "pan-4",
+      "bbox": [
+        -68.15100000000001,
+        -16.4995,
+        -68.149,
+        -16.4975
+      ],
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502,
+      "requestCount": 1,
+      "elapsedMs": 549
+    }
+  ],
+  "requestSummary": {
+    "count": 14,
+    "forcedPageSize": 3,
+    "allRequestsRedacted": true
+  },
+  "identity": {
+    "viewportFeatureRows": 0,
+    "uniqueNativeIds": 0,
+    "duplicateIdConflicts": 0,
+    "freshExactIds": 0,
+    "exactGeometryMismatches": 0,
+    "absentProbe": {
+      "passed": false,
+      "error": "Parcel provider is unavailable.",
+      "status": 502
+    },
+    "exactAllPassed": true
+  },
+  "footprint": {
+    "passed": false
+  },
+  "sourceBinding": {
+    "passed": false
+  },
+  "metricAudit": {
+    "pending": false,
+    "inputFeatureCount": 0,
+    "srid": 32719,
+    "noRepoGeometrySaved": true
+  },
+  "overall": "BLOCKED_runtime_provider_502",
+  "holdReason": "Existing adapter returned HTTP 502 for each of 13 bounded cells and the absent-ID probe. A separate direct, bounded public WFS request previously returned three Polygon features over verified TLS; this adapter run produced no features and is not interpreted as a remote source outage."
+}

@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SG",
+ "checkedAt": "2026-09-29",
+ "country": "Singapore",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Singapore Land Authority (SLA), published via data.gov.sg",
+ "portalsFound": [
+  {
+   "url": "https://data.gov.sg/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/view",
+   "observation": "SLA Cadastral Land Parcel dataset, island-wide GeoJSON bulk download (per earlier city evidence)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download",
+   "method": "GET",
+   "httpStatus": 201,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "returned presigned S3 URL (redacted, expires in 1 h)"
+  },
+  {
+   "url": "<presigned S3 .geojson URL> with Range: bytes=0-3000",
+   "method": "GET",
+   "httpStatus": 206,
+   "contentType": "binary/octet-stream",
+   "assessment": "GeoJSON FeatureCollection CADASTRAL_LAND_LOT, Polygon features, lon/lat near 103.719,1.3516"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "sg-sla-cadastral-land-parcel",
+  "requestUrl": "https://api-open.data.gov.sg/v1/public/api/datasets/d_e7395d743076a2bcc487b0d12b9bf33b/poll-download then presigned GET with Range: bytes=0-3000",
+  "method": "GET",
+  "httpStatus": 206,
+  "contentType": "binary/octet-stream (GeoJSON text)",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "LOT_KEY",
+  "responseFile": "SG-parcel-response.json (also ../singapore-parcel-response.json with 16 features)",
+  "pagination": "none; single ~145 MB GeoJSON; needs server-side ingest",
+  "regionSampled": "Singapore island (head of file; not spatial query)"
+ },
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "Island-wide surveyed land lots",
+  "regionsVerified": [
+   "head of bulk file only"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Bulk file only, no spatial query API found; the 3 KB range in this pass holds one complete feature (16 in the earlier city sample). Licence text not read. Airspace/strata parcels are separate datasets.",
+ "nextStep": "Download once server-side, index spatially; read the Singapore Open Data Licence."
+}

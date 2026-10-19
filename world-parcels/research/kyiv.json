@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:192",
+  "queueRank": 192,
+  "name": "Kyiv (Kiev)",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "centerLatLon": [
+    50.4491934982354,
+    30.519603206343
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://map.land.gov.ua/",
+      "observation": "Official Public Cadastral Map of Ukraine (State Geocadastre); unreachable from this environment (connection reset over HTTPS, 503 upstream timeout over HTTP)."
+    },
+    {
+      "url": "https://e.land.gov.ua/",
+      "observation": "State Geocadastre e-services portal reachable (200 HTML); links to the public cadastral map and a wikimap documentation site, no parcel endpoint located."
+    },
+    {
+      "url": "https://data.gov.ua/",
+      "observation": "National open-data portal reachable; a Ukrainian-language search for cadastral map returned 0 datasets, and 'land plots' returned 242 unrelated/unclassified datasets that were not inspected in detail."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://map.land.gov.ua/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "http://map.land.gov.ua/",
+      "method": "GET",
+      "httpStatus": 503,
+      "contentType": "text/plain",
+      "assessment": "upstream connect error / timeout"
+    },
+    {
+      "url": "https://map.land.gov.ua/kadastrova-karta",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://map.land.gov.ua/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://map.land.gov.ua/map/ows?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://e.land.gov.ua/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "HTML portal; no parcel list"
+    },
+    {
+      "url": "https://e.land.gov.ua/back/cadmap/",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "guessed path; not found"
+    },
+    {
+      "url": "https://kadastr.live/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://cdn.kadastr.live/tiles/maps/kadastr/16/38076/22139.pbf",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://gisis.kga.gov.ua/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT tunnel failed, 502"
+    },
+    {
+      "url": "https://data.gov.ua/api/3/action/package_search?q=cadastral+map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no cadastral parcel dataset found by the searches run"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Ukraine-wide public cadastral map (state), not verified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The official Public Cadastral Map host was unreachable, so nothing was learned about a bounded parcel query or terms; wartime access restrictions may also apply. Kyiv City GIS (gisis.kga.gov.ua) also unreachable. Not proof of absence.",
+  "nextStep": "Retry map.land.gov.ua from another network; inspect its map requests/WMS-WFS for a bounded parcel query and read State Geocadastre terms; check Kyiv city GIS."
+}

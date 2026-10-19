@@ -1,0 +1,26 @@
+{
+ "country": "Serbia",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Republic Geodetic Authority (RGZ)",
+ "inspireRecordUrl": null,
+ "portalsFound": [],
+ "requests": [],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "regionsSampled": [],
+ "geoBlockSuspected": true,
+ "accessModel": "unknown",
+ "notes": "a3.geosrbija.rs, geosrbija.rs, mojaadresa.geosrbija.rs, katastar.rgz.gov.rs/eKatastarPublic, rgz.gov.rs, geoportal.gov.rs, inspire.geosrbija.rs reset the TLS connection (Recv failure) even with Referer https://a3.geosrbija.rs/ and cookie jar; consistent with foreign-IP filtering. The EU INSPIRE geoportal search API now redirects (301) to data.europa.eu; the country is not an EU/EFTA INSPIRE member so no obliged CP service was expected.",
+ "remainingUncertainty": "No polygon reply obtained; hosts unreachable/blocked from this network.",
+ "nextStep": "Retry from a regional network; inspect viewer JS there.",
+ "schemaVersion": 1,
+ "countryCode": "RS",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/html,application/xml;q=0.9,*/*;q=0.8; Accept-Language: local-language,en (cookie jar; Referer https://geoportal.asig.gov.al/)"
+}

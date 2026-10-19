@@ -1,0 +1,60 @@
+{
+ "kind": "city",
+ "key": "el-djazair-algiers",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-DZ,fr;q=0.9,ar;q=0.8,en;q=0.7; cookie jar used (curl -c/-b)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Recv failure: connection reset by peer"
+  },
+  {
+   "url": "https://fadaeldjazair.mf.gov.dz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer"
+  },
+  {
+   "url": "https://data.gov.dz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://www.cadastre.gov.dz",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://www.asal.dz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "301 to asal.dz then 200 (was 500); space agency homepage, no parcel service"
+  },
+  {
+   "url": "https://www.mf.gov.dz",
+   "method": "GET",
+   "httpStatus": 301,
+   "contentType": "text/html",
+   "assessment": "redirect only"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "geoportal resets the connection with browser headers, possible foreign-IP filtering",
+ "notes": "Country retry (DZ.json): geoportal still resets, viewer could not be inspected. Only change: asal.dz now answers 200 but is not a cadastre.",
+ "nextStep": "Retry fadaeldjazair.mf.gov.dz from an Algerian network and inspect for WMS/WFS/ArcGIS endpoints."
+}

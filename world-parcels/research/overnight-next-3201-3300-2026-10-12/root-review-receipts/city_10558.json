@@ -1,0 +1,29 @@
+{
+  "taskId": "city:10558",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-10558-gushi.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/gushi-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T08:05:10.829921Z",
+  "reason": "Official county search-indexed pages establish registration custody, while direct requests returned 403; no anonymous native-ID full polygon or adapter/UI qualification.",
+  "identityVerified": true,
+  "bilingualSearchesVerified": true,
+  "samplePolygonCount": 0,
+  "registryFound": true,
+  "firstPartyUrlsChecked": [
+    "https://www.gushi.gov.cn/2025/01-09/772421.html",
+    "https://www.gushi.gov.cn/2025/07-24/760042.html"
+  ],
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": [
+    "fresh native-ID full-polygon reads",
+    "forced paging and complete manifest",
+    "13 bounded cells",
+    "metric GEOS validity/overlap/operation checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

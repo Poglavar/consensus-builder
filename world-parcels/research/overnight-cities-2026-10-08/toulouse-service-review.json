@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2391-toulouse.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 2,
+    "maxFullPolygonsRetainedInReview": 2,
+    "maxFullPolygonsRetainedInRepository": 2,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator. The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+  "registryAssessment": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+      "observation": "Open government API Carto cadastre service says it returns commune/parcel geometry as GeoJSON in WGS84, is open access, and inherits source data licensing."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/doc/cadastre.yml",
+      "observation": "Published OpenAPI schema lists parcel endpoint parameters, geometry filter, limit/start pagination, and GeoJSON feature schema."
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle",
+      "observation": "Official WFS DescribeFeatureType lists `idu` as a string native cadastral identifier and `geom` as MultiSurface; it also lists other attributes, none requested except `idu`."
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "observation": "Official Geoplatform WFS capabilities includes CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle."
+    },
+    {
+      "url": "https://metropole.toulouse.fr/demarches/faire-une-demande-dautorisation-durbanisme-toulouse",
+      "observation": "Official Toulouse Métropole guidance requires cadastral prefix, section, and parcel number for a Toulouse urban-planning application; no property-specific lookup was made."
+    },
+    {
+      "url": "https://www.insee.fr/fr/metadonnees/geographie/commune/31555-toulouse",
+      "observation": "Official INSEE code geographic reference identifies Toulouse commune 31555 and its Toulouse Métropole intercommunality."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+      "observation": "IGN user documentation states requests can be filtered by geometry, with a response limit and start offset; recommends current Parcellaire Express over the discontinued BD Parcellaire."
+    },
+    {
+      "url": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+      "observation": "Open Licence 2.0 for data.gouv.fr-listed French public datasets."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Toulouse cadastre parcels official API cadastral parcel map Toulouse Métropole IGN data.gouv.fr",
+      "result": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator. The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+      "method": "Separate language-specific search and official source review."
+    },
+    {
+      "language": "French",
+      "query": "cadastre parcelles Toulouse API cadastre officiel parcelles cadastrales Toulouse commune géoportail",
+      "result": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator. The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+      "method": "Separate language-specific search and official source review."
+    },
+    {
+      "language": "French",
+      "query": "Toulouse cadastre parcelles IGN API Carto code INSEE 31555 Toulouse Métropole données parcelles cadastrales",
+      "result": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator. The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+      "method": "Separate language-specific search and official source review."
+    }
+  ],
+  "geometryDecision": "Two full polygons retained; their native IDU strings and original WGS84 MultiPolygon geometries are preserved; neither covers the exact WUP point.",
+  "coverageAssessment": {
+    "claimedScope": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator.",
+    "verifiedOpenScope": "Bounded WFS query returned two parcels near the Toulouse WUP point; the exact point result was empty.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle",
+      "outcome": "HTTP 200; exact-point GeoJSON geometry-filter request, bounded to 3, returned an empty FeatureCollection (numberMatched=0). API Carto exposes a fixed feature schema rather than an outFields selector; no attributes were returned because the feature collection was empty. This is point-specific only, not evidence of citywide absence.",
+      "requestGeometry": "Point [1.42516148294357,43.6041456701446] (WGS84 lon/lat)",
+      "requestedFields": [
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false,
+      "fieldsRequested": [],
+      "safeFieldsRetained": []
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows",
+      "outcome": "HTTP 500 on first bounded request when adding CQL_FILTER code_insee=31555. Retried the same small BBOX without that filter; response IDs carry Toulouse INSEE prefix 31555.",
+      "requestedFields": [
+        "idu",
+        "geom"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows",
+      "outcome": "HTTP 200; WFS2 query constrained to bbox [1.42498,43.60401,1.42535,43.60430] in CRS:84 with count=3 and propertyName=idu,geom. Returned 2 complete MultiPolygon features, both intersecting the bounded box; WUP point is not covered by either retained polygon. Sample preserves geometry and idu unchanged.",
+      "requestGeometry": "Approximately 30 m × 32 m WGS84 bounding rectangle centered on the unchanged locator",
+      "requestedFields": [
+        "idu",
+        "geom"
+      ],
+      "safeFieldsRetained": [
+        "idu",
+        "geometry"
+      ],
+      "featureCount": 2,
+      "sampleFile": "samples/toulouse-ign-pci-near-wup839.geojson",
+      "sampleSha256": "3d002db3a7b0ee5064bf797df145d9fa784397a2b8f0ec683d7a86d8c8fbbe88",
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows",
+      "outcome": "HTTP 200; tiny exact-point BBOX request (approximately 0.1 m per axis) returned numberMatched=0.",
+      "requestGeometry": "Tiny WGS84 BBOX around the exact unchanged locator",
+      "requestedFields": [
+        "idu",
+        "geom"
+      ],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "The exact point lies outside returned parcels; there is no assertion that it is a parcel gap rather than a road/public space or a data alignment issue. Citywide coverage and runtime qualification remain untested.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter protocol or runtime qualification was run in this worker pass."
+  },
+  "technicalBlocker": "The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+  "sampleFile": "toulouse-ign-pci-near-wup839.geojson",
+  "sampleSha256": "3d002db3a7b0ee5064bf797df145d9fa784397a2b8f0ec683d7a86d8c8fbbe88"
+}

@@ -1,0 +1,1655 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "Government of Kerala Ente Bhoomi ILMS public map",
+    "mapUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+    "operator": "Kerala Survey and Land Records Department / NIC Kerala (portal attribution)",
+    "access": "Anonymous public map workflow; no login, payment, or CAPTCHA used.",
+    "geometryObservation": "A bounded 100 m × 100 m GeoJSON response returned native IDs and polygon geometries. Four 50 m quadrant responses had an identical union of IDs and geometries, and the clicked parcel was included. The provider returned a few rows whose polygon geometries do not intersect the requested boxes; single-component multipolygons rule out disconnected parts as the explanation, so consumers must apply exact local geometry intersection filtering. A fresh exact-ID lookup returned the click geometry; a synthetic absent ID returned no records."
+  },
+  "viewerFlow": {
+    "selectorRequests": [
+      {
+        "method": "GET",
+        "path": "/web/ilms/map",
+        "status": 200,
+        "contentType": "text/html"
+      },
+      {
+        "method": "GET",
+        "path": "/web/taluk/gid",
+        "queryKeys": [
+          "districtId"
+        ],
+        "status": 200,
+        "contentType": "application/json"
+      },
+      {
+        "method": "GET",
+        "path": "/web/village/gid",
+        "queryKeys": [
+          "talukId",
+          "loadAllVillage",
+          "loadPublishedVillage"
+        ],
+        "status": 200,
+        "contentType": "application/json"
+      },
+      {
+        "method": "POST",
+        "path": "/web/ilms/map/view",
+        "formFields": [
+          "districtGid",
+          "talukGid",
+          "villageGid"
+        ],
+        "status": 200,
+        "contentType": "text/html"
+      }
+    ],
+    "exportConfig": {
+      "status": "verified_bounded_geojson_viewport",
+      "method": "POST",
+      "path": "/bhunaksha_v5_emaps/core/v2/map/export/geojson/070211",
+      "requestBody": {
+        "map_type": "GENERIC_MAP",
+        "layer_code": "LAND_PARCEL",
+        "srs": "EPSG:32643",
+        "limit": 1000,
+        "bboxFormat": "xmin,ymin,xmax,ymax in EPSG:32643"
+      },
+      "responses": 5,
+      "responseStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "responseBytes": [
+        73788,
+        60267,
+        56687,
+        59852,
+        55324
+      ],
+      "sourceLimit": 1000,
+      "sizeCapBytes": 2097152,
+      "scope": "100 m × 100 m center window plus four 50 m quadrants; local only"
+    },
+    "privacy": "No session tokens/cookies, account data, parcel owner/person attributes, or full geometry were written. Only public selector names, location codes, endpoint paths, and status evidence are retained.",
+    "mapLayerEvidence": [
+      {
+        "name": "Land Parcel",
+        "mapType": "TILE_LAYER",
+        "host": "bhunaksha.entebhoomi.kerala.gov.in",
+        "path": "/bhunaksha_v5_emaps/core/v1/tilemap/LANDBANK_TILE_MAP/000000/{z}/{x}/{y}.png",
+        "queryKeys": [
+          "auth_key"
+        ]
+      },
+      {
+        "name": "Map Topology",
+        "mapType": "IMAGE_LAYER",
+        "host": "bhunaksha.entebhoomi.kerala.gov.in",
+        "path": "/bhunaksha_v5_emaps/core/v1/map/wms/070211",
+        "paramsKeys": [
+          "VERSION",
+          "auth_key",
+          "ignore_georef",
+          "layer_code",
+          "map_type",
+          "transparent"
+        ]
+      },
+      {
+        "name": "LRM Layer",
+        "mapType": "BHUNAKSHA_VECTOR",
+        "host": "bhunaksha.entebhoomi.kerala.gov.in",
+        "path": "/bhunaksha_v5_emaps/core/v1/map/wms/070211",
+        "paramsKeys": [
+          "VERSION",
+          "auth_key",
+          "ignore_georef",
+          "layer_code",
+          "map_type",
+          "srs",
+          "transparent"
+        ],
+        "renderer": "Bundled renderer constructs an Image layer with its ImageWMS source."
+      }
+    ],
+    "clickInfo": {
+      "method": "POST",
+      "path": "/web/proxy/click_info/multiple/070211",
+      "contentType": "multipart/form-data",
+      "formFields": {
+        "layer_code": "LAND_PARCEL",
+        "crs": "32643",
+        "x": "649170.6726",
+        "y": "1101673.1650"
+      },
+      "status": 200,
+      "responseShape": "JSON array with one parcel feature; retained sample contains only parcel_gid, survey_no, block_no and geometry WKT."
+    },
+    "boundedGeoJsonExport": {
+      "method": "POST",
+      "path": "/bhunaksha_v5_emaps/core/v2/map/export/geojson/070211",
+      "contentType": "application/json",
+      "body": {
+        "map_type": "GENERIC_MAP",
+        "layer_code": "LAND_PARCEL",
+        "srs": "EPSG:32643",
+        "limit": 1000,
+        "bboxFormat": "xmin,ymin,xmax,ymax in EPSG:32643"
+      },
+      "statusCodes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "responseBytes": [
+        73788,
+        60267,
+        56687,
+        59852,
+        55324
+      ],
+      "centerWindowMeters": 100,
+      "quadrantWindowMeters": 50,
+      "featureCountsPerRequest": [
+        35,
+        13,
+        12,
+        17,
+        14
+      ],
+      "quadrantUnionParcelCount": 35,
+      "centerAndQuadrantIdsEqual": true,
+      "centerAndQuadrantGeometriesEqual": true,
+      "sampleClickParcelInCenterWindow": true,
+      "sampleFile": "kerala-9765-bounded-export.json",
+      "providerReturnedCenterCandidateCount": 35,
+      "centerWindowActualPolygonIntersectionCount": 33
+    },
+    "exactIdLookup": {
+      "method": "POST",
+      "path": "/web/proxy/mapinfo/feature_info/070211",
+      "idField": "parcel_gid",
+      "sampleId": "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+      "status": 200,
+      "records": 1,
+      "geometryMatchesClickSample": true
+    },
+    "absentIdLookup": {
+      "method": "POST",
+      "path": "/web/proxy/mapinfo/feature_info/070211",
+      "idField": "parcel_gid",
+      "syntheticId": "00000000-0000-0000-0000-000000000000",
+      "status": 200,
+      "records": 0,
+      "absent": true
+    },
+    "spatialIntersectionAudit": {
+      "method": "@turf/turf booleanIntersects against EPSG:32643 bbox polygons, using each returned unique feature geometry; topology is CRS-independent for these planar intersections.",
+      "windows": [
+        {
+          "window": "center100m",
+          "bbox": [
+            649120.6726,
+            1101623.165,
+            649220.6726,
+            1101723.165
+          ],
+          "providerRawFeatureCount": 35,
+          "actualPolygonIntersectionCount": 33,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 0,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "southwest50m",
+          "bbox": [
+            649120.6726,
+            1101623.165,
+            649170.6726,
+            1101673.165
+          ],
+          "providerRawFeatureCount": 13,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusUnionIntersectionCount": 3,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 3,
+          "nonIntersectingEnvelopeMisses": 22,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "southeast50m",
+          "bbox": [
+            649170.6726,
+            1101623.165,
+            649220.6726,
+            1101673.165
+          ],
+          "providerRawFeatureCount": 12,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 23,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "northwest50m",
+          "bbox": [
+            649120.6726,
+            1101673.165,
+            649170.6726,
+            1101723.165
+          ],
+          "providerRawFeatureCount": 17,
+          "actualPolygonIntersectionCount": 15,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 18,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "northeast50m",
+          "bbox": [
+            649170.6726,
+            1101673.165,
+            649220.6726,
+            1101723.165
+          ],
+          "providerRawFeatureCount": 14,
+          "actualPolygonIntersectionCount": 12,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 21,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        }
+      ],
+      "allReturnedFeaturesAreSingleComponentMultiPolygons": true,
+      "explanation": "The provider returned a small number of rows whose actual polygon does not intersect a requested box. Those features are single-component multipolygons, so disconnected parts do not explain the extras. Most have envelopes overlapping the box while polygon boundaries do not, consistent with a coarse envelope/candidate filter; one Kozhikode candidate envelope misses by about 1 cm. The exact adapter intersection filter should discard them. Per-quadrant raw ID lists were not persisted, so the per-box counts compare provider raw response counts with geometry intersections over the proven-identical union."
+    },
+    "sampleCoordinateWgs84": [
+      76.36082896,
+      9.96340681
+    ],
+    "sampleCoordinateInsideParcel": true,
+    "distanceFromWupTargetToSampleCoordinateMeters": 12234.17
+  },
+  "wupCityCode": 9765,
+  "city": "Kochi",
+  "centerLatLon": [
+    10.0612792171801,
+    76.3088105504372
+  ],
+  "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+  "resultCategory": "public_service_partial_geometry_sample",
+  "registryFound": null,
+  "verifiedSample": true,
+  "officialSelection": {
+    "district": "Ernakulam",
+    "taluk": "Kanayannur",
+    "allVillageCount": 25,
+    "publishedVillageCount": 4,
+    "candidateVillageMalayalam": "തിരുവാങ്കുളം",
+    "candidateVillageLatin": "Thiruvankulam",
+    "locationCode": "070211",
+    "mapViewStatus": 200,
+    "scope": "Published candidate in Kanayannur taluk; partial Kochi/Tripunithura urban-area candidate only. Its relation to the WUP point/citywide footprint was not proven.",
+    "districtGid": "e0d2187c-2a19-444c-90c9-ffedf9eb5d69",
+    "talukGid": "20d024a3-6bca-4478-9678-8294a15b484f",
+    "villageGid": "a95a17f6-d671-497d-a791-54a351ef7858",
+    "candidateScope": "One 100 m × 100 m window around a sample parcel in published Thiruvankulam village, a southern Kochi/Tripunithura urban-fringe candidate. The sample parcel is 12.21 km from the WUP target point, so it does not establish point coverage. This is not a complete village or city inventory."
+  },
+  "geometry": {
+    "crs": "EPSG:32643",
+    "featureCount": 1,
+    "nativeParcelIdField": "parcel_gid",
+    "nativeParcelFields": {
+      "parcel_gid": "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+      "survey_no": "87",
+      "block_no": "25"
+    },
+    "sampleFile": "kerala-9765-click-sample.json",
+    "sampleGeometryType": "MULTIPOLYGON Z",
+    "sampleGeometrySha256": "30a75761a66dd47a6ab52ae9b2a549cb84b48a9a52de90a5ca42a5f7ec9caf11",
+    "sampleGeometryChars": 327,
+    "validation": {
+      "transform": {
+        "from": "EPSG:32643",
+        "to": "EPSG:4326",
+        "library": "backend package proj4 2.22.0"
+      },
+      "wgs84Bbox": [
+        76.36074577,
+        9.96324623,
+        76.3609328,
+        9.96363426
+      ],
+      "polygonCount": 1,
+      "ringCount": 1,
+      "vertexCount": 8,
+      "allRingsClosed": true,
+      "allCoordinatesFinite3d": true,
+      "allRingsPositiveArea": true,
+      "selfIntersectionCount": 0,
+      "validClosedPolygon": true,
+      "wupTargetCenterLatLon": [
+        10.0612792171801,
+        76.3088105504372
+      ],
+      "wupPointInsideParcel": false,
+      "distanceToParcelBoundaryMeters": 12210.19,
+      "distanceMethod": "Euclidean distance in EPSG:32643 between the viewer click coordinate and the projected WUP target point",
+      "viewerClickCoordinateSourceCrs": "EPSG:32643",
+      "viewerClickCoordinate": [
+        649170.6726,
+        1101673.165
+      ],
+      "viewerClickCoordinateWgs84LonLat": [
+        76.36082896,
+        9.96340681
+      ],
+      "viewerClickCoordinateInsideSampleParcel": true,
+      "distanceFromWupTargetToClickCoordinateMeters": 12234.17
+    },
+    "boundedViewportFeatureCount": 33,
+    "boundedViewportFile": "kerala-9765-bounded-export.json",
+    "sampleClickParcelReturnedByViewport": true,
+    "boundedGeometryValidation": {
+      "library": "backend/parcels/source-contract.js validateGeometry",
+      "projection": "EPSG:32643 to EPSG:4326 using backend package proj4 2.22.0, rounded to 1e-8 degrees",
+      "validFeatureCount": 35,
+      "totalFeatureCount": 35,
+      "allValid": true
+    },
+    "spatialIntersectionAudit": {
+      "method": "@turf/turf booleanIntersects against EPSG:32643 bbox polygons, using each returned unique feature geometry; topology is CRS-independent for these planar intersections.",
+      "windows": [
+        {
+          "window": "center100m",
+          "bbox": [
+            649120.6726,
+            1101623.165,
+            649220.6726,
+            1101723.165
+          ],
+          "providerRawFeatureCount": 35,
+          "actualPolygonIntersectionCount": 33,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 0,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "southwest50m",
+          "bbox": [
+            649120.6726,
+            1101623.165,
+            649170.6726,
+            1101673.165
+          ],
+          "providerRawFeatureCount": 13,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusUnionIntersectionCount": 3,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 3,
+          "nonIntersectingEnvelopeMisses": 22,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "southeast50m",
+          "bbox": [
+            649170.6726,
+            1101623.165,
+            649220.6726,
+            1101673.165
+          ],
+          "providerRawFeatureCount": 12,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 23,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "northwest50m",
+          "bbox": [
+            649120.6726,
+            1101673.165,
+            649170.6726,
+            1101723.165
+          ],
+          "providerRawFeatureCount": 17,
+          "actualPolygonIntersectionCount": 15,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 18,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        },
+        {
+          "window": "northeast50m",
+          "bbox": [
+            649170.6726,
+            1101673.165,
+            649220.6726,
+            1101723.165
+          ],
+          "providerRawFeatureCount": 14,
+          "actualPolygonIntersectionCount": 12,
+          "rawCountMinusUnionIntersectionCount": 2,
+          "actualIntersectingParcelIds": [
+            "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+            "2be8ceb0-19d4-4708-adff-f38c652c7a3c",
+            "31c451b6-a92f-4519-a62f-89f2fa70c129",
+            "33bc5063-86ad-4d71-844d-fab4708056d9",
+            "41d8c7b8-9f9f-4c9a-9778-60a6006ad212",
+            "4bf5c47e-aa12-49dc-8288-fdd94524f2f5",
+            "53e07c6a-0715-4c37-b38a-a76fc9b9ef0f",
+            "547cd77b-2348-4ce3-aaa4-247af2b79291",
+            "8f998102-386d-4ba2-9a4c-998860f90bad",
+            "c7e82b7b-6952-4269-a28e-0856a2b3cc2d",
+            "de7e0a97-7aed-4cfe-9d88-71f6df945234",
+            "fe909369-e473-42da-8390-82b63a138421"
+          ],
+          "unionCandidatesNotIntersectingWindow": [
+            "02d066fd-5e5d-4589-8ad2-6c5e872a385b",
+            "19a49bd5-7c86-4e7f-a96c-aa6ca20166ad",
+            "2cf3af65-225b-418c-9d28-cca0af133bb1",
+            "2d7cb349-982b-4724-9ec6-4d84f8efd3ea",
+            "3946dc0a-6f6d-4366-aa0e-8a355711e740",
+            "54ce758c-8ef3-4e09-a49d-633638eb6b69",
+            "57a54cdb-3267-47c2-ad0f-569f76f7a5f1",
+            "5b30ff04-19a7-4e1f-af91-9674630114a4",
+            "643563c8-06f7-4189-8439-155909fcec42",
+            "7f0080e2-a9a4-47c8-a29b-fd9f2a06a904",
+            "941fbe25-945c-4e4a-a391-861930469c6a",
+            "9deaaf2f-fbb4-49eb-a56f-a1e5fd7616eb",
+            "a59d5438-1458-423c-a457-342d292d5551",
+            "a96d5b66-8619-4805-b949-f3444ed18561",
+            "acbee6b0-377c-4315-817e-c39d17b72702",
+            "af72d225-22f4-49da-b5c1-9675fb077341",
+            "b26a0ebb-5864-4e29-8d88-e6748f7ed8d0",
+            "b88d5c9b-de3d-45df-af47-44b2c464ad9d",
+            "b93addeb-0d7d-4835-9fdc-9f3bd19d5d53",
+            "bd806d2d-98c7-4906-a63b-ac92d372bfba",
+            "f1cb5e95-2a5e-4e6b-883e-6cb8294cd3e7",
+            "f2d4eff3-a703-4bd6-9e01-b9fb33555408",
+            "f4116913-d6d6-47be-b1af-fb07696f68b3"
+          ],
+          "nonIntersectingEnvelopeOverlaps": 2,
+          "nonIntersectingEnvelopeMisses": 21,
+          "nonIntersectingGeometryPartCounts": [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "nonIntersectingRingCounts": [
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        }
+      ],
+      "allReturnedFeaturesAreSingleComponentMultiPolygons": true,
+      "explanation": "The provider returned a small number of rows whose actual polygon does not intersect a requested box. Those features are single-component multipolygons, so disconnected parts do not explain the extras. Most have envelopes overlapping the box while polygon boundaries do not, consistent with a coarse envelope/candidate filter; one Kozhikode candidate envelope misses by about 1 cm. The exact adapter intersection filter should discard them. Per-quadrant raw ID lists were not persisted, so the per-box counts compare provider raw response counts with geometry intersections over the proven-identical union."
+    },
+    "boundedViewportProviderCandidateCount": 35,
+    "boundedViewportNonIntersectingCandidateCount": 2
+  },
+  "blocker": "This establishes a bounded local retrieval path and exact-ID lookup only. The small viewport responses include a few non-intersecting candidate geometries, so exact local filtering is required. Complete village extent, full city coverage, registry status, and WUP target coverage remain unproven.",
+  "nextStep": "Use the verified location-specific GeoJSON viewport and exact-ID protocol only with strict bounds, response caps, geometry validation, and exact local footprint filtering. Do not treat this local sample as full village or city coverage.",
+  "historicalAttempts": {
+    "viewerConfiguredFgbExport": {
+      "method": "POST",
+      "host": "bhunaksha.entebhoomi.kerala.gov.in",
+      "pathTemplate": "/bhunaksha_v5_emaps/core/v2/map/export/fgb/{location_code}",
+      "queryKeys": [
+        "auth_key"
+      ],
+      "queryValueSaved": false,
+      "contentType": "application/json",
+      "requestBody": "Not present in the selected viewer initdata/output_layers. Official bundled map library’s BHUNAKSHA_FGB loader requires source_parms.input; I did not guess a payload or submit an incomplete export.",
+      "viewerLibrary": "https://entebhoomi.kerala.gov.in/assets/map-library-v3/bn-map.umd.js",
+      "libraryBehavior": "For configured BHUNAKSHA_FGB layers, POSTs source_parms.input as JSON; the selected village config exposed top-level fgb_url but no BHUNAKSHA_FGB output layer or input body."
+    },
+    "viewerConfiguredFgbOutcome": "No source_parms.input was exposed in selected viewer initdata; no FGB request body was guessed or submitted. A separate documented same-publisher GeoJSON viewport request path was subsequently verified."
+  }
+}

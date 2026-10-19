@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1117-baguio.json",
+  "purpose": "Document first-party local cadastral/registry evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The LMB FOI portal documents successful map delivery via request. Baguio public map site inspected is a COVID-case map with no parcel layer; city eBPLS is a payment service, not GIS. No complete anonymous parcel geometry endpoint or polygon response was verified.",
+  "registryAssessment": "DENR-LMB’s official eFOI record documents successful provision of a Baguio City cadastral map; the City Assessor maintains real-property assessment within the city, but LMB is the direct cadastral-map custodian found.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.foi.gov.ph/requests/cadastral-map-of-baguio-city/",
+      "observation": "Official eFOI page lists DENR-LMB as custodian and records a successful response providing a city cadastral-map attachment. Access was request-based, not an anonymous public vector endpoint."
+    },
+    {
+      "url": "https://main.baguio.gov.ph/",
+      "observation": "Official City Government portal links Baguio Open Data and local services; no parcel-vector service was identified in the inspected portal listings."
+    },
+    {
+      "url": "https://map.baguio.gov.ph/",
+      "observation": "Official public map page is a thematic COVID-19 map with health/checkpoint layers, not parcel cadastre."
+    },
+    {
+      "url": "https://ebpls.baguio.gov.ph/",
+      "observation": "Official eBPLS handles business permits and real-property tax payments by billing identifiers; it is not a public parcel-map service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Filipino",
+      "query": "Baguio mapa kadastral lote hangganan LMB City Assessor GIS opisyal",
+      "result": "Official eFOI record from DENR-LMB documents successful delivery of a Baguio City cadastral map on request. Baguio public map search results point to thematic COVID map and city service/payment portals, not an open parcel layer.",
+      "method": "Separate Filipino-language search and official DENR-LMB/City Government source review.",
+      "scope": "Find city cadastral map custodian and local public parcel services."
+    },
+    {
+      "language": "English",
+      "query": "Baguio cadastral parcel map GIS lot boundary official city government LMB",
+      "result": "Official DENR-LMB FOI page records successful request fulfillment of the city cadastral map. No anonymous parcel GIS/vector feature service was identified; the public Baguio map page is thematic and the eBPLS service handles city payments.",
+      "method": "Separate English-language search and public first-party map/service review.",
+      "scope": "Cross-check public vector viewer and native parcel schema availability."
+    }
+  ],
+  "geometryDecision": "No complete full polygon with a safely validated native parcel identifier was retained. The inspected sources did not expose an anonymous public full-polygon feature response.",
+  "coverageAssessment": {
+    "claimedScope": "LMB has provided a Baguio City cadastral map through the official eFOI workflow. No citywide vector coverage or currentness is inferred from the request record.",
+    "verifiedOpenScope": "The documented access path is an official information request. Public Baguio maps inspected are thematic; no public cadastral feature service was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether LMB or City Assessor exposes a newer parcel vector layer through a non-public GIS or data request; successful map copies may be images/PDF rather than vector features."
+}

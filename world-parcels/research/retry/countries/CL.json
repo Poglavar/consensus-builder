@@ -1,0 +1,92 @@
+{
+ "kind": "country",
+ "key": "CL",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-CL,es;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "cl-minvu-predios-valparaiso",
+  "requestUrl": "https://geoide.minvu.cl/server/rest/services/Hosted/PREDIOS_VALPARAISO/FeatureServer/0/query?where=1=1&outFields=*&resultRecordCount=3&outSR=4326&f=geojson",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/geo+json;charset=UTF-8",
+  "spatialTestAreaLonLat": "Villa Alemana / Valparaiso region, approx -71.398,-33.06 (first records)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "fid (attributes only comuna, CUT codes, area; no rol)",
+  "responseFile": "research/retry/countries/CL-parcel-response.json (2 features kept)",
+  "pagination": "resultRecordCount/resultOffset",
+  "regionSampled": "Valparaiso region (Villa Alemana)"
+ },
+ "source": {
+  "sourceId": "cl-minvu-predios-valparaiso",
+  "name": "PREDIOS_VALPARAISO",
+  "operator": "MINVU (Ministerio de Vivienda y Urbanismo) geoide ArcGIS Server",
+  "scope": "Valparaiso region communes only; second sample: Santiago metro layer from OCUC (third party) also returned polygons",
+  "endpoint": "https://geoide.minvu.cl/server/rest/services/Hosted/PREDIOS_VALPARAISO/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "Esri JSON / GeoJSON",
+  "crs": "EPSG:3857 native, 4326 requested",
+  "reuseStatus": "unknown; licence not read"
+ },
+ "requests": [
+  {
+   "url": "https://www4.sii.cl/mapasui/internet/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=UTF-8",
+   "assessment": "viewer HTML inspected: AngularJS app; loads /mapasui/common/conf/mapasui.conf.json and JS modules"
+  },
+  {
+   "url": "https://www4.sii.cl/mapasui/common/js/*.js and _content/js/*.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/javascript",
+   "assessment": "only server-side facade calls (mapasFacadeService/getPredioNacional, getFeatureInfo) and raster WMS via /mapasui/services/ui/wmsProxyService/call layer sii:BR_CART_LIMITE_COMUNAL; no public vector endpoint or token"
+  },
+  {
+   "url": "https://www4.sii.cl/mapasui/services/ui/wmsProxyService/call?service=WFS|WMS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/html",
+   "assessment": "proxy rejects capabilities requests; raster only"
+  },
+  {
+   "url": "https://geoide.minvu.cl/server/rest/services?f=json (and folders Catastros, Otros, Hosted)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folders listed; Hosted/PREDIOS_VALPARAISO found; no national predios layer"
+  },
+  {
+   "url": "https://geoide.minvu.cl/.../Hosted/PREDIOS_VALPARAISO/FeatureServer/0/query (3 records)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 closed polygons, Valparaiso region"
+  },
+  {
+   "url": "https://services9.arcgis.com/kKJR3Qt68ohAWuet/arcgis/rest/services/Predios_Santiago/FeatureServer/0/query (Santiago bbox, 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons; unofficial OCUC republication, Santiago metro"
+  },
+  {
+   "url": "https://www.ide.cl/index.php/geoportal",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "no such page"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "all Chilean hosts answered from this network",
+ "notes": "New: official MINVU ArcGIS Server serves open parcel polygons for Valparaiso region (not previously found), plus the earlier Santiago republication re-verified. SII Mapas viewer confirmed raster-only (server-side WMS proxy). Still no national vector service; the two regions come from different sources/schemas, so nationwideVerified is false.",
+ "nextStep": "Search geoide.minvu.cl for further regional predios layers; look at IDE Chile catalogue for SII rol data."
+}

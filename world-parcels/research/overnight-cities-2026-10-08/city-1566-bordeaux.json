@@ -1,0 +1,183 @@
+{
+  "name": "Bordeaux",
+  "country": "France",
+  "countryCode": "FR",
+  "rank": 856,
+  "point": [
+    44.8360390353827,
+    -0.592897717816896
+  ],
+  "population2025": 631551,
+  "population2025k": 631.551,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained.",
+  "registryEvidenceUrls": [
+    "https://apicarto.ign.fr/api/doc/",
+    "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+    "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+    "https://www.geoportail.gouv.fr/pages/faq",
+    "https://cadastre.data.gouv.fr/"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 1566,
+  "cityId": "wup2025:1566",
+  "centerLatLon": [
+    44.8360390353827,
+    -0.592897717816896
+  ],
+  "queueRank": 856,
+  "scopeLimits": "110 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 110 fresh exact native identities, explicit absence, footprint and source binding passed in 41 requests. Independent metric EPSG:32630 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. Native parcel33063000IX0001 covers the original exact WUP point and matches fresh complete geometry exactly. This is bounded settlement-local evidence, not proof of municipal cadastral completeness. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Legal title, survey accuracy, currentness, long-term identity continuity and citywide completeness remain unverified.",
+  "nextStep": "Parent review: verify source feature identity/geometry and decide runtime adapter qualification; keep exact-point coverage separate from citywide coverage.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Bordeaux cadastre parcelles géométrie API IGN API Carto parcelle cadastrale officiel",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official IGN API Carto documentation and open cadastre data were reviewed; exact WUP-point query returned one full parcel polygon in Bordeaux commune code 33063.",
+        "actualResultUrls": [
+          "https://apicarto.ign.fr/api/doc/",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://www.geoportail.gouv.fr/pages/faq",
+          "https://cadastre.data.gouv.fr/"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      },
+      {
+        "language": "English",
+        "query": "Bordeaux France cadastral parcel polygons official open cadastre API",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "IGN documents an official public GeoJSON API backed by cadastre services; one full polygon with native cadastral key was returned at the unchanged WUP point.",
+        "actualResultUrls": [
+          "https://apicarto.ign.fr/api/doc/",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://www.geoportail.gouv.fr/pages/faq",
+          "https://cadastre.data.gouv.fr/"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bordeaux official registry/cadastral review",
+        "operator": "France",
+        "homeUrl": "https://apicarto.ign.fr/api/doc/",
+        "observation": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://apicarto.ign.fr/api/doc/",
+        "method": "GET official IGN API documentation",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Documents API Carto as REST/GeoJSON in WGS84 and lists cadastre endpoints for commune, division and parcel geometry."
+      },
+      {
+        "url": "https://apicarto.ign.fr/api/cadastre/commune?code_insee=33063",
+        "method": "GET official IGN API Carto commune layer",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Returns Bordeaux commune geometry; used to confirm endpoint response and commune code."
+      },
+      {
+        "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=33063&geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-0.592897717816896%2C44.8360390353827%5D%7D",
+        "method": "GET official IGN API Carto parcel point-intersection query",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "One feature returned at exact WUP point. Full MultiPolygon; safe cadastral `idu` 33063000IX0001; ring closed. Only `idu` and geometry retained. API response is GeoJSON WGS84."
+      }
+    ]
+  },
+  "verifiedParcelResponse": {
+    "source": "Official IGN API Carto cadastre parcel endpoint",
+    "requestMethod": "GET anonymous point intersection",
+    "requestStatus": 200,
+    "requestGeometry": "WGS84 Point using unchanged WUP locator",
+    "responseCount": 1,
+    "nativeIdField": "idu",
+    "nativeId": "33063000IX0001",
+    "geometryType": "MultiPolygon",
+    "geometryCompleteness": "Full returned feature geometry; closed rings",
+    "sourceCrs": "EPSG:4326",
+    "retainedFields": [
+      "idu",
+      "geometry"
+    ],
+    "geometrySampleFile": "city-1566-bordeaux-samples.geojson"
+  },
+  "source": {
+    "sourceId": "FR-1566-bordeaux-cadastre-review",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "operator": "IGN / Direction générale des Finances publiques",
+    "serviceType": "Official national cadastral vector API queried for Bordeaux commune; full parcel geometry returned.",
+    "layer": "API Carto cadastre parcel endpoint (`/api/cadastre/parcelle`), filtered by Bordeaux commune code and WGS84 point intersection.",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "EPSG:4326 / WGS84",
+    "nativeIdField": "idu",
+    "nativeIdEvidence": "Official response property `idu` returned with full MultiPolygon at the exact WUP point.",
+    "requestedAttributes": [
+      "idu",
+      "numero",
+      "section",
+      "code_insee",
+      "nom_com",
+      "code_dep",
+      "code_com",
+      "code_arr",
+      "com_abs",
+      "contenance"
+    ],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": true,
+    "directGeometryQueryVerified": true,
+    "scope": "110 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 110 fresh exact native identities, explicit absence, footprint and source binding passed in 41 requests. Independent metric EPSG:32630 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. Native parcel33063000IX0001 covers the original exact WUP point and matches fresh complete geometry exactly. This is bounded settlement-local evidence, not proof of municipal cadastral completeness. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained.",
+    "verifiedOpenScope": "110 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 110 fresh exact native identities, explicit absence, footprint and source binding passed in 41 requests. Independent metric EPSG:32630 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. Native parcel33063000IX0001 covers the original exact WUP point and matches fresh complete geometry exactly. This is bounded settlement-local evidence, not proof of municipal cadastral completeness. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "110 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 110 fresh exact native identities, explicit absence, footprint and source binding passed in 41 requests. Independent metric EPSG:32630 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. Native parcel33063000IX0001 covers the original exact WUP point and matches fresh complete geometry exactly. This is bounded settlement-local evidence, not proof of municipal cadastral completeness. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/bordeaux-root-quality-review.json"
+  },
+  "adapterReady": true,
+  "sampleFile": "research/overnight-cities-2026-10-08/city-1566-bordeaux-samples.geojson",
+  "appCityId": "bordeaux",
+  "sourceIds": [
+    "fr-ign-parcellaire-express"
+  ],
+  "runtimeQualification": {
+    "sourceId": "fr-ign-parcellaire-express",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bordeaux-ign-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T04:02:13.534863+00:00"
+}

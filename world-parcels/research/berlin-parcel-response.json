@@ -1,0 +1,130 @@
+{
+ "type": "FeatureCollection",
+ "note": "Trimmed: 2 of the 3 returned features kept (third, DEBE02YY400004co, omitted for size). Response was read through the WebFetch tool because curl failed TLS verification against gdi.berlin.de (self-signed certificate in chain); coordinates were relayed by that tool's summariser and should be re-fetched directly for byte-exact use.",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "flurstuecke.DEBE02YY400000Fe",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        13.39873942,
+        52.50179468
+       ],
+       [
+        13.39917856,
+        52.50190633
+       ],
+       [
+        13.39963368,
+        52.5020332
+       ],
+       [
+        13.40016387,
+        52.50219238
+       ],
+       [
+        13.39847233,
+        52.5017318
+       ],
+       [
+        13.39873942,
+        52.50179468
+       ]
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "uuid": "DEBE02YY400000Fe",
+    "bezeich": "AX_Flurstueck",
+    "afl": 142,
+    "zae": "658",
+    "fln": "190",
+    "namgmk": "Kreuzberg",
+    "namgem": "Friedrichshain-Kreuzberg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "flurstuecke.DEBE02YY400000wn",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        13.39840703,
+        52.50171397
+       ],
+       [
+        13.39849097,
+        52.50159911
+       ],
+       [
+        13.39955122,
+        52.5018878
+       ],
+       [
+        13.40029967,
+        52.50209158
+       ],
+       [
+        13.40048134,
+        52.50214104
+       ],
+       [
+        13.40039725,
+        52.50225591
+       ],
+       [
+        13.40016387,
+        52.50219238
+       ],
+       [
+        13.39963368,
+        52.5020332
+       ],
+       [
+        13.39917856,
+        52.50190633
+       ],
+       [
+        13.39873942,
+        52.50179468
+       ],
+       [
+        13.39847233,
+        52.5017318
+       ],
+       [
+        13.39840703,
+        52.50171397
+       ]
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "uuid": "DEBE02YY400000wn",
+    "bezeich": "AX_Flurstueck",
+    "afl": 1930,
+    "zae": "659",
+    "fln": "190",
+    "namgmk": "Kreuzberg",
+    "namgem": "Friedrichshain-Kreuzberg"
+   }
+  }
+ ],
+ "numberMatched": 10,
+ "numberReturned": 3,
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::4326"
+  }
+ }
+}

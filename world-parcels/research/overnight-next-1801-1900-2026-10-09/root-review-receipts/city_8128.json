@@ -1,0 +1,23 @@
+{
+  "taskId": "city:8128",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-8128-zhaotong.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/zhaotong-service-review.json",
+    "tmp/valhalla-parcel-research/zhaotong/dnr-32076.html",
+    "tmp/valhalla-parcel-research/zhaotong/webmap.html"
+  ],
+  "checkedAt": "2026-10-10T18:02:36Z",
+  "registryFound": true,
+  "reason": "Saved official Yunnan page identifies Zhaotong Real Estate Registration Center and its registration/query duties. Saved national catalog page offers general map resources, not a Zhaotong parcel feature. English and Chinese queries have result URLs; no native parcel ID or polygon response, and Tianditu was WAF-blocked. No live adapter qualification.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

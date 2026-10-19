@@ -1,0 +1,736 @@
+{
+  "_purpose": "Search evidence for optional floor models across exactly the twelve imported Pionir projects; recovered sources are separate from authored models.",
+  "schema": "consensus-builder.pionir-floor-source-inventory.v1",
+  "retrievedAt": "2026-10-07",
+  "scope": "Twelve imported sites, ordered by newest known design/phase evidence. Dates overlap and are not a strict completion ranking.",
+  "notes": [
+    "A gap means not recovered in this search, not proof that no drawing exists.",
+    "Downloaded PDFs/PNGs were opened and visually checked before describing their coverage. Archived HTML is not a recovered drawing.",
+    "Search-result snippets and sales-page floor names do not count as geometry. No plans were inferred for missing floors.",
+    "Downloaded evidence is preserved in the ignored local tmp/pionir-floor-sources directory, named by SHA-256 plus file extension. URLs and checksums are the portable record.",
+    "All recovered whole-floor drawings with a verified building registration are modeled: 67 floors across nine model owners at four sites. Single-apartment images without a verified building position remain unregistered."
+  ],
+  "projects": [
+    {
+      "id": "zagrebacka-avenija-rudes",
+      "label": "Zagrebačka avenija–Rudeš",
+      "chronology": "Accepted location amendment final December 2025; later building-permit amendment pending.",
+      "findings": "No matching floor catalogue recovered. Current sales hub, portfolio, permit/planning references and indexed PDF searches were checked.",
+      "modeledFloors": 0,
+      "sources": [
+        {
+          "url": "https://pionir.hr/prodaja-nekretnina/",
+          "status": "page-checked",
+          "coverage": "Sales hub; no named Rudeš floor catalogue found."
+        },
+        {
+          "url": "https://pionir.hr/reference/stambeno-poslovni-objekti/",
+          "status": "page-checked",
+          "coverage": "Portfolio context, not interior plans."
+        }
+      ],
+      "searchQueries": [
+        "Pionir Rudeš Zagrebačka avenija tlocrt stan",
+        "Paron 799/1 Rudeš projekt tlocrt"
+      ],
+      "nextStep": "Obtain architectural floor sheets for the accepted seven-volume design; do not substitute existing buildings on the parcel."
+    },
+    {
+      "id": "borongajska-caviceva",
+      "label": "Borongajska–Čavićeva",
+      "chronology": "Ongoing sales; reconstruction preserves the accepted 2022 design.",
+      "findings": "54 floors modeled in A1, B1–B4 and C1, including the recovered A1 commercial ground floor and levels 1–8. A2/C2/C3 remain unresolved.",
+      "modeledFloors": 54,
+      "sources": [
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/a1-pp1.pdf",
+          "status": "downloaded",
+          "sha256": "8370c580566abd3162a58827451520426ebb98d2784a6736ca29ed58e94e14cf",
+          "bytes": 674585,
+          "mediaType": "application/pdf",
+          "coverage": "Whole ground-floor inset plus commercial unit PP1.",
+          "building": "A1",
+          "page": 2,
+          "level": 0,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-1.pdf",
+          "status": "downloaded",
+          "sha256": "b477878706fe0d94326e9a0172605f75432d7a158d698d7c0d86ae579a9dfd8b",
+          "bytes": 274016,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 1,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-9.pdf",
+          "status": "downloaded",
+          "sha256": "f59b46571c4373b5c3cb9bb77e818e492f1e57c653c1d726977c89511d1f2781",
+          "bytes": 274991,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 2,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-17.pdf",
+          "status": "downloaded",
+          "sha256": "612b4ceedc28103189e1d95782e327cb2a03fa1d41c97e6ccf42ff7c25cc0654",
+          "bytes": 274514,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 3,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-25.pdf",
+          "status": "downloaded",
+          "sha256": "9fea70e89058138f7a2008640ececaf0b22c1670c5b895690f391181c139dc43",
+          "bytes": 274469,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 4,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-33.pdf",
+          "status": "downloaded",
+          "sha256": "06ef9c7c6c4f917e9b09fd8768eaa006f7028661414a6cd3ea8a0cff7c1cc4a6",
+          "bytes": 274746,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 5,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-41.pdf",
+          "status": "downloaded",
+          "sha256": "6a367a688ffc004c8a2cffdace822e00d3790fb05e47b6ed6bb01f0028661fc6",
+          "bytes": 274911,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 6,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-49.pdf",
+          "status": "downloaded",
+          "sha256": "4b0d4d18bd7e151528192947e936041b4d2566d91f921042870ac5c441e72121",
+          "bytes": 274795,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 7,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/A1-57.pdf",
+          "status": "downloaded",
+          "sha256": "dc0b49f0a09bcecb9223939fe3a0d58b3e544526a37ddaf6b15ee074ba146b2e",
+          "bytes": 275308,
+          "mediaType": "application/pdf",
+          "coverage": "Whole residential-floor inset plus apartment detail and facade elevation.",
+          "building": "A1",
+          "page": 1,
+          "level": 8,
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/borongajska_caviceva_badel/zgrada_a1/a1-57.pdf",
+          "status": "http-404",
+          "coverage": "Case-variant retry; no asset recovered."
+        }
+      ],
+      "searchQueries": [
+        "site:pionir.hr Borongajska A1 8 kat",
+        "site:pionir.hr Borongajska A2 stan tlocrt",
+        "site:pionir.hr Borongajska C2 C3 tlocrt"
+      ],
+      "nextStep": "Recover A2/C2/C3 catalogues without mixing later site designs.",
+      "modelSourceManifest": "borongajska-caviceva/floor-plan-sources.json",
+      "notes": [
+        "A1 apartment pages had disappeared; case-sensitive direct PDF paths still worked.",
+        "Ground-floor commercial sheet prints 350 cm clear height and 325 cm below beams; do not copy the initial 3 m storey assumption without review.",
+        "Later catalogue site labels differ from the accepted 2022 proposal. A matching site name alone does not establish design compatibility."
+      ],
+      "modelManifest": "borongajska-caviceva/floor-plan-sources.json"
+    },
+    {
+      "id": "lovinciceva-4090-1",
+      "label": "Lovinčićeva, newer complex",
+      "chronology": "Initial permit 2020; later phases from 2022.",
+      "findings": "Modeled the shared C1/C2/CG basement -1 once under C1. E1-49 apartment PNG has no verified placement within a building floor; residential E1/E2 PDFs tried returned 404.",
+      "modeledFloors": 1,
+      "sources": [
+        {
+          "url": "https://pionir.hr/wp-content/uploads/2024/02/e1-49.png",
+          "status": "downloaded",
+          "sha256": "ab2adbe8d60905b4a68393806563c740deefb5dc1a433849892f408c66c7acdf",
+          "bytes": 74115,
+          "mediaType": "image/png",
+          "coverage": "Single apartment only; no building floor or site inset.",
+          "building": "E1",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/lovinciceva/garaze/objekt_c2/C2-03.pdf",
+          "status": "downloaded",
+          "sha256": "27b6a84663d78c1aad684bf6c5b9d3a84b72e30f57e5ab41cfe584923eb2c5b9",
+          "bytes": 276547,
+          "mediaType": "application/pdf",
+          "coverage": "Basement -1 inset covering C1, C2 and connecting garage CG; not an above-ground floor.",
+          "building": "C2",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/lovinciceva/objekt_e1/E1-49.pdf",
+          "status": "http-404",
+          "coverage": "Search-index lead; PDF not recovered."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/lovinciceva/objekt_e2/E2-08.pdf",
+          "status": "http-404",
+          "coverage": "Search-index lead; PDF not recovered."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/lovinciceva/objekt_e1/e1-49.pdf",
+          "status": "http-404",
+          "coverage": "Case-variant retry; no asset recovered."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/lovinciceva/objekt_e2/e2-08.pdf",
+          "status": "http-404",
+          "coverage": "Case-variant retry; no asset recovered."
+        }
+      ],
+      "searchQueries": [
+        "site:pionir.hr Lovinčićeva E1 E2 pdf",
+        "site:pionir.hr Lovinčićeva Banovac tlocrt",
+        "Lovinčićeva Pionir stan tlocrt"
+      ],
+      "nextStep": "Recover above-ground floor catalogues or a drawing locating E1-49. Banovac lies outside the imported parcel and is excluded.",
+      "notes": [
+        "Banovac catalogue links are indexed, but its stated parcel 4090/4 is not the imported 4090/1 site. Keep it outside this model until matching is resolved."
+      ],
+      "modelManifest": "lovinciceva-4090-1/floor-plan-sources.json"
+    },
+    {
+      "id": "spansko-sjever-a-f",
+      "label": "Špansko-Sjever A–F",
+      "chronology": "Permit series 2019–2024; accepted 2022 six-volume scheme.",
+      "findings": "Modeled the three available F levels: 1, 7 and recessed top floor 8. Five recovered PDFs corroborate those three whole-floor insets. D-B-89 returned 404; no A–E floor asset recovered.",
+      "modeledFloors": 3,
+      "sources": [
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-15.pdf",
+          "status": "downloaded",
+          "sha256": "92e34c736498cd70a4f76ebaa115a107534994b2aab9dbe24c9b10205d19d866",
+          "bytes": 92003,
+          "mediaType": "application/pdf",
+          "coverage": "Whole-floor inset, apartment detail, site position and facade elevation.",
+          "building": "F",
+          "page": 1,
+          "floorLabel": "1. kat",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-126.pdf",
+          "status": "downloaded",
+          "sha256": "39f1cc61f36f49045836415c66ae2dec320df7a7e58242b075985410aef52c7f",
+          "bytes": 104777,
+          "mediaType": "application/pdf",
+          "coverage": "Whole-floor inset, apartment detail, site position and facade elevation.",
+          "building": "F",
+          "page": 1,
+          "floorLabel": "7. kat",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-128.pdf",
+          "status": "downloaded",
+          "sha256": "63b0942cf9356c98990f7c89ff7a426418f681ecb316296641f8614c8427dd3f",
+          "bytes": 91545,
+          "mediaType": "application/pdf",
+          "coverage": "Whole-floor inset, apartment detail, site position and facade elevation.",
+          "building": "F",
+          "page": 1,
+          "floorLabel": "Uvučeni kat",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-133.pdf",
+          "status": "downloaded",
+          "sha256": "01acf1250e1948edcd8012208eecb31d6b98fa113d96c93906afc923f85befce",
+          "bytes": 101271,
+          "mediaType": "application/pdf",
+          "coverage": "Whole-floor inset, apartment detail, site position and facade elevation.",
+          "building": "F",
+          "page": 1,
+          "floorLabel": "Uvučeni kat",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_f/Spansko_sjever-F-138.pdf",
+          "status": "downloaded",
+          "sha256": "7d68652915f9b003e13ff5fa23c0f85713940ca7676dcfbc2f65bda499b6a303",
+          "bytes": 99802,
+          "mediaType": "application/pdf",
+          "coverage": "Whole-floor inset, apartment detail, site position and facade elevation.",
+          "building": "F",
+          "page": 1,
+          "floorLabel": "Uvučeni kat",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/spansko_sjever/objekt_d/D-B-89.pdf",
+          "status": "http-404",
+          "coverage": "Linked from surviving D entrance B attic page; no PDF bytes recovered."
+        }
+      ],
+      "searchQueries": [
+        "site:pionir.hr spansko_sjever objekt_f pdf",
+        "site:pionir.hr spansko-sjever objekt-d potkrovlje",
+        "site:pionir.hr spansko-sjever objekt-a objekt-b objekt-c objekt-e tlocrt"
+      ],
+      "nextStep": "Recover intervening F levels and ground floor, plus A–E catalogues. Current G/K/M/N sales belong to other phases.",
+      "modelManifest": "spansko-sjever-a-f/floor-plan-sources.json"
+    },
+    {
+      "id": "savica-f1-f3",
+      "label": "Savica F1–F3",
+      "chronology": "Building permits 2022–2024; F1/F2 residential, F3 office.",
+      "findings": "Modeled all eight F3 office floors (ground and 1–7) plus the connected F1/F2/F3 basement -1 stored once under F3. F1-68 apartment PNG has no verified placement within its building floor; indexed F1 PDFs tried returned 404.",
+      "modeledFloors": 9,
+      "sources": [
+        {
+          "url": "https://pionir.hr/wp-content/uploads/2023/11/F1-68.png",
+          "status": "downloaded",
+          "sha256": "690679caa4bce8aa02b403311a472a7b56a377d3e45e41c967c112b9745016eb",
+          "bytes": 67934,
+          "mediaType": "image/png",
+          "coverage": "Single apartment only; no building floor or site inset.",
+          "building": "F1",
+          "visuallyVerified": true
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f1/F1-23.pdf",
+          "status": "http-404",
+          "coverage": "Search-index lead; PDF not recovered."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f1/F1-68.pdf",
+          "status": "http-404",
+          "coverage": "Search-index lead; PDF not recovered."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f1/f1-68.pdf",
+          "status": "http-404",
+          "coverage": "Case-variant retry; no asset recovered."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/prizemlje-min.pdf",
+          "status": "downloaded",
+          "sha256": "277a33122cc50cb676e2a0e3a372cadb0d7b71cde0c5f3dd6a8077ee97ec0e94",
+          "bytes": 1601568,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 0,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/1kat-min.pdf",
+          "status": "downloaded",
+          "sha256": "a61bf15c590a8075debab1fd05bcdae0b6a616078bb3d597faec7a4ee73e3d27",
+          "bytes": 1272237,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 1,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/2kat-min.pdf",
+          "status": "downloaded",
+          "sha256": "d0bf8e4985c63a9ed432696915d5a5cac67679eb249c2dc1162f3c7d3b228640",
+          "bytes": 1074642,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 2,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/3kat-min.pdf",
+          "status": "downloaded",
+          "sha256": "a332e764647bf6dae2936ef5ce3f4e4d2d148a7bffd4c4dca85cbde4f0be4ae0",
+          "bytes": 1062909,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 3,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/4kat-min.pdf",
+          "status": "downloaded",
+          "sha256": "f632a782cf76f36ef010605b02a8b78a947ccfdb0c69ce71cbb72b24736c1acf",
+          "bytes": 1063935,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 4,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/5kat-min.pdf",
+          "status": "downloaded",
+          "sha256": "fb1c976b095144d6e2b490786f709f671630b7de2522e798d51d1cc357e89204",
+          "bytes": 1063180,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 5,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/6kat-min.pdf",
+          "status": "downloaded",
+          "sha256": "a9ae1aac37bfe93282a6568c63377080a94fe03649b0d6ad739824b49d140002",
+          "bytes": 1065435,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 6,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        },
+        {
+          "url": "https://pionir.hr/wp-content/katalozi/savica/objekt_f3/7kat-min.pdf",
+          "status": "downloaded",
+          "sha256": "202e3932405d75d02eff76b5cf4b994611cd1aa3d555615f6a6620d3c2903227",
+          "bytes": 1066134,
+          "mediaType": "application/pdf",
+          "coverage": "Complete office floor plan on page 1. Other sheets allocate basement parking/storage or outside areas.",
+          "building": "F3",
+          "level": 7,
+          "page": 1,
+          "visuallyVerified": true,
+          "representation": "Raster PDF; requires reviewed tracing rather than CAD extraction."
+        }
+      ],
+      "searchQueries": [
+        "site:pionir.hr savica F1 F2 F3 pdf",
+        "site:pionir.hr savica F1-68 F1-23",
+        "site:pionir.hr savica objekt-f3 prizemlje"
+      ],
+      "nextStep": "Recover residential F1/F2 whole-floor catalogues or a drawing locating F1-68. Obtain documented storey and ramp elevations to replace estimates.",
+      "modelManifest": "savica-f1-f3/floor-plan-sources.json"
+    },
+    {
+      "id": "spansko-stenjevecki-odvojak",
+      "label": "Špansko–Stenjevečki odvojak",
+      "chronology": "N2 completed 2014; final N3 completed May 2019.",
+      "findings": "Recovered archived N2 sales/floor/apartment HTML and N3 project HTML. N2 PDF and N3 linked assets were not recovered.",
+      "modeledFloors": 0,
+      "sources": [
+        {
+          "url": "https://web.archive.org/web/20140622140507/http://www.pionir.hr/objekt-n2/1-kat/2447-stan-n2-08-3-soban-5979-m2.html",
+          "status": "downloaded",
+          "sha256": "cff085a2ebb7ab9d3834eb3413120c31327cdad5fbcd17d5690c46e74a1d96d6",
+          "bytes": 44335,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://www.pionir.hr:80/objekt-n2/1-kat/2447-stan-n2-08-3-soban-5979-m2.html",
+          "capturedAt": "20140622140507",
+          "linkedAssets": [
+            "/images/stories/galeries/Spansko_Stenjevacki_odvojak/PDF/Stan_N2_08.pdf",
+            "/web/20140622140507/http://www.pionir.hr/images/stories/galeries/Spansko_Stenjevacki_odvojak/PDF/Stan_N2_08.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20181229153444/http://pionir.hr:80/spansko-stenjevecki-odvojak-n3.html",
+          "status": "downloaded",
+          "sha256": "2231ca664b05452cf39cae3e64867cdaebd878ab35e2fa6c146a9141eaa6bbe0",
+          "bytes": 26752,
+          "mediaType": "text/html",
+          "coverage": "Archived sales/apartment HTML only.",
+          "originalUrl": "http://pionir.hr:80/spansko-stenjevecki-odvojak-n3.html",
+          "capturedAt": "20181229153444"
+        },
+        {
+          "url": "https://web.archive.org/web/20181229153444/http://pionir.hr/images/stories/dokumentacija_i_dozvole/Spansko_Stenjevacki_odvojak/Objekt-N3/GD-N3-Gradjevinska.pdf",
+          "status": "archive-error-html",
+          "coverage": "Requested URL returned an archive error, not a recovered capture or drawing."
+        },
+        {
+          "url": "https://web.archive.org/web/20181229153444/http://pionir.hr/spansko-stenjevecki-odvojak-n3/spansko-stenjevaki-odvojak-objekt-n3-prizemlje.html",
+          "status": "archive-error-html",
+          "coverage": "Requested URL returned an archive error, not a recovered capture or drawing."
+        }
+      ],
+      "searchQueries": [
+        "Pionir Stenjevečki odvojak N2 N3 tlocrt PDF",
+        "Wayback archived official N2 and N3 pages and observed child links"
+      ],
+      "nextStep": "Recover archived image/PDF binaries, then establish phase-to-footprint mapping before authoring models."
+    },
+    {
+      "id": "selska-bastijanova-viteziceva",
+      "label": "Selska–Baštijanova–Vitezićeva",
+      "chronology": "Final S completed 2018; older phases archived from 2011.",
+      "findings": "Recovered archived S4/S5 and S apartment HTML with actual PDF URLs. Linked PDF/image requests returned archive error pages; a current S PDF retry returned HTTP 500.",
+      "modeledFloors": 0,
+      "sources": [
+        {
+          "url": "https://web.archive.org/web/20111006035754/http://pionir.hr/prodaja-nekretnina-selska-objekti-s4-s5/ulaz-a/prizemlje/608-stan-a1.html",
+          "status": "downloaded",
+          "sha256": "9880e3ccd46e57471a61069f88d25b8dd2e2ff9f5efd18c0a88afcb16a247c3c",
+          "bytes": 37553,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://pionir.hr:80/prodaja-nekretnina-selska-objekti-s4-s5/ulaz-a/prizemlje/608-stan-a1.html",
+          "capturedAt": "20111006035754",
+          "linkedAssets": [
+            "https://web.archive.org/web/20111006035754/http://www.pionir.hr/images/stories/pdf/selska_object_s4_s5/A_01.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20111006074128/http://pionir.hr/prodaja-nekretnina-selska-objekti-s4-s5/ulaz-a/prizemlje/609-stan-a2.html",
+          "status": "downloaded",
+          "sha256": "cd65cbbd706fdc676022e5152249337615cb58ddf17820b7ea1dbe4346414fc5",
+          "bytes": 37998,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://pionir.hr:80/prodaja-nekretnina-selska-objekti-s4-s5/ulaz-a/prizemlje/609-stan-a2.html",
+          "capturedAt": "20111006074128",
+          "linkedAssets": [
+            "https://web.archive.org/web/20111006074128/http://www.pionir.hr/images/stories/pdf/selska_object_s4_s5/A_02.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20190109162519/http://pionir.hr:80/selska-s.html",
+          "status": "downloaded",
+          "sha256": "a5497cf9012910a08b10faa9be73e46c333fccfa9662eecff9f94bc985d552ed",
+          "bytes": 25345,
+          "mediaType": "text/html",
+          "coverage": "Archived sales/apartment HTML only.",
+          "originalUrl": "http://pionir.hr:80/selska-s.html",
+          "capturedAt": "20190109162519"
+        },
+        {
+          "url": "https://web.archive.org/web/20181119180813/http://www.pionir.hr:80/selska-s/selska-s-prizemlje/4058-stan-06-4-soban-8158-m2-vrt-7202-m2.html",
+          "status": "downloaded",
+          "sha256": "df92b9a8769ec6c7c41d6dfd068e4609ff29942ef4ac7e827d3397d029136e6a",
+          "bytes": 32335,
+          "mediaType": "text/html",
+          "coverage": "Archived sales/apartment HTML only.",
+          "originalUrl": "http://www.pionir.hr:80/selska-s/selska-s-prizemlje/4058-stan-06-4-soban-8158-m2-vrt-7202-m2.html",
+          "capturedAt": "20181119180813"
+        },
+        {
+          "url": "https://web.archive.org/web/20181119180813/http://www.pionir.hr/images/stories/pdf/Selska-S/06.pdf",
+          "status": "archive-error-html",
+          "coverage": "Requested URL returned an archive error, not a recovered capture or drawing."
+        },
+        {
+          "url": "https://web.archive.org/web/20181119180813im_/http://www.pionir.hr/images/stories/galeries/selska/Selska-S/06/06.jpg",
+          "status": "archive-error-html",
+          "coverage": "Requested URL returned an archive error, not a recovered capture or drawing."
+        }
+      ],
+      "searchQueries": [
+        "Pionir Selska S S4 S5 tlocrt PDF",
+        "Wayback archived official S and S4/S5 pages and observed child links"
+      ],
+      "nextStep": "Seek archived binaries or address-matched ads for individual phases; surviving apartment lists do not supply geometry."
+    },
+    {
+      "id": "lovinciceva-f1-f5",
+      "label": "Lovinčićeva F1–F5",
+      "chronology": "Permit phases from 2013; completion date unresolved.",
+      "findings": "No matching floor-plan asset recovered. Current Lovinčićeva sales mostly describe newer parcels; guessed historical landing URLs were not archived.",
+      "modeledFloors": 0,
+      "sources": [],
+      "searchQueries": [
+        "Lovinčićeva F1 F5 tlocrt",
+        "Lovinčićeva Pionir stan tlocrt 2014",
+        "Wayback older Lovinčićeva project URL"
+      ],
+      "nextStep": "Identify the original sales URLs from archived site navigation or address-matched older ads, keeping this parcel distinct from the newer complex."
+    },
+    {
+      "id": "spansko-c-d",
+      "label": "Špansko C–D",
+      "chronology": "Completed/occupiable by March 2011.",
+      "findings": "Archived C/D apartment pages survive and expose original PDF links; C-A03 also has an image URL. No PDF/image asset recovered, including a direct archived image retry.",
+      "modeledFloors": 0,
+      "sources": [
+        {
+          "url": "https://web.archive.org/web/20111118045234/http://pionir.hr/prodaja-nekretnina-spansko-objekt-d/ulaz-a/prizemlje/194-stan-a5.html",
+          "status": "downloaded",
+          "sha256": "fb6758c8724f16b05f3b7d49d5f42e94e91cbb3f609b5c81725d3ed8b835452c",
+          "bytes": 39647,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://pionir.hr:80/prodaja-nekretnina-spansko-objekt-d/ulaz-a/prizemlje/194-stan-a5.html",
+          "capturedAt": "20111118045234",
+          "linkedAssets": [
+            "https://web.archive.org/web/20111118045234/http://www.pionir.hr/images/stories/pdf/object_d/A05.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20111118043810/http://pionir.hr/prodaja-nekretnina-spansko-objekt-d/ulaz-a/prizemlje/195-lokal-a1.html",
+          "status": "downloaded",
+          "sha256": "c73a840af290e5b1fc69241b80258d862c158e63db6093e588d1ae8b06c615e9",
+          "bytes": 39083,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://pionir.hr:80/prodaja-nekretnina-spansko-objekt-d/ulaz-a/prizemlje/195-lokal-a1.html",
+          "capturedAt": "20111118043810",
+          "linkedAssets": [
+            "https://web.archive.org/web/20111118043810/http://www.pionir.hr/images/stories/pdf/object_d/A01.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20111118045239/http://pionir.hr/prodaja-nekretnina-spansko-objekt-d/ulaz-a/prizemlje/196-stan-a4.html",
+          "status": "downloaded",
+          "sha256": "29e2c53a50eed00a59f92bd8d3aae8f1ae77f4df72350e6396ea6fa2874b590c",
+          "bytes": 40208,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://pionir.hr:80/prodaja-nekretnina-spansko-objekt-d/ulaz-a/prizemlje/196-stan-a4.html",
+          "capturedAt": "20111118045239",
+          "linkedAssets": [
+            "https://web.archive.org/web/20111118045239/http://www.pionir.hr/images/stories/pdf/object_d/A04.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20111118044847/http://pionir.hr/prodaja-nekretnina-spansko-objekt-c/ulaz-a/prizemlje/114-stan-a3.html",
+          "status": "downloaded",
+          "sha256": "229dc86a5c1f43f2aea98ad43dc03807e9dd5eb12a324b0701b898f9a5ae72c7",
+          "bytes": 41886,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://pionir.hr:80/prodaja-nekretnina-spansko-objekt-c/ulaz-a/prizemlje/114-stan-a3.html",
+          "capturedAt": "20111118044847",
+          "linkedAssets": [
+            "/web/20111118044847/http://pionir.hr/images/stories/galeries/spansko/object_c/ulaz_a/a03/Tlocrt.jpg",
+            "https://web.archive.org/web/20111118044847/http://www.pionir.hr/images/stories/pdf/object_c/A03.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20111118042247/http://pionir.hr/prodaja-nekretnina-spansko-objekt-c/ulaz-a/prizemlje/115-stan-a2.html",
+          "status": "downloaded",
+          "sha256": "3cb0c11f949b90b180ae79abba4c3932e515b73a554553be582034694a2db9e3",
+          "bytes": 40665,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://pionir.hr:80/prodaja-nekretnina-spansko-objekt-c/ulaz-a/prizemlje/115-stan-a2.html",
+          "capturedAt": "20111118042247",
+          "linkedAssets": [
+            "https://web.archive.org/web/20111118042247/http://www.pionir.hr/images/stories/pdf/object_c/A02.pdf"
+          ]
+        },
+        {
+          "url": "https://web.archive.org/web/20110525012220/http://www.pionir.hr/prodaja-nekretnina-spansko-objekt-c/ulaz-a/prizemlje/117-stan-a1.html",
+          "status": "downloaded",
+          "sha256": "7f66077a82058f3ea91a678461eda163b3f90b02f0d7a56a00992b10b6ef63a8",
+          "bytes": 38383,
+          "mediaType": "text/html",
+          "coverage": "Archived apartment HTML; linked drawing binary not recovered.",
+          "originalUrl": "http://www.pionir.hr:80/prodaja-nekretnina-spansko-objekt-c/ulaz-a/prizemlje/117-stan-a1.html",
+          "capturedAt": "20110525012220",
+          "linkedAssets": [
+            "https://web.archive.org/web/20110525012220/http://www.pionir.hr/images/stories/pdf/object_c/A01.pdf"
+          ]
+        }
+      ],
+      "searchQueries": [
+        "Pionir Špansko objekt C D tlocrt PDF",
+        "Wayback archived official C/D apartment pages and observed drawing links"
+      ],
+      "nextStep": "Recover the linked drawing binaries and resolve entrances to physical footprints before modeling."
+    },
+    {
+      "id": "folnegoviceva-rapska",
+      "label": "Folnegovićeva–Rapska",
+      "chronology": "Main project 2008; use permits 2010–2011.",
+      "findings": "Permit/context evidence and property ads found; no visually verified floor-plan asset tied to one of the three imported footprints.",
+      "modeledFloors": 0,
+      "sources": [],
+      "searchQueries": [
+        "Folnegovićeva Rapska Pionir tlocrt",
+        "Pionir Rapska stan Njuškalo",
+        "Wayback older Folnegovićeva–Rapska project URL"
+      ],
+      "nextStep": "Recover an address- and orientation-matched ad drawing or original catalogue. A property description alone cannot define a whole floor."
+    },
+    {
+      "id": "pergosiceva-a1-a4",
+      "label": "Pergošićeva A1–A4",
+      "chronology": "Completed no later than the 2008 GDI survey; exact date unresolved.",
+      "findings": "Official portfolio and apartment-ad leads checked. No verified whole-floor drawing or unambiguous A1–A4 footprint mapping.",
+      "modeledFloors": 0,
+      "sources": [
+        {
+          "url": "https://pionir.hr/reference/stambeno-poslovni-objekti/",
+          "status": "page-checked",
+          "coverage": "Building/site context only."
+        }
+      ],
+      "searchQueries": [
+        "Pergošićeva Pionir tlocrt",
+        "Pergošićeva stan Njuškalo Pionir"
+      ],
+      "nextStep": "Recover matched apartment drawings and building-label mapping; do not infer neighbouring units or entire storeys."
+    },
+    {
+      "id": "selska-drniska",
+      "label": "Selska–Drniška",
+      "chronology": "Completed no later than the 2008 GDI survey; exact date unresolved.",
+      "findings": "Portfolio establishes three buildings and storeys. No matching floor catalogue recovered through project-name, address and ad searches.",
+      "modeledFloors": 0,
+      "sources": [
+        {
+          "url": "https://pionir.hr/reference/stambeno-poslovni-objekti/",
+          "status": "page-checked",
+          "coverage": "Building/site context only."
+        }
+      ],
+      "searchQueries": [
+        "Selska Drniška Pionir tlocrt",
+        "Selska Drniška prodaja stan tlocrt"
+      ],
+      "nextStep": "Find architectural sheets or address-matched ads; portfolio photos and storey counts support massing only."
+    }
+  ]
+}

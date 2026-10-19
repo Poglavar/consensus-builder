@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1275004",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "observation": "West Bengal land-record portal offers plot information and plot-map requests; an open parcel polygon endpoint was not identified."},
+    {"url": "https://basundhara.wb.gov.in/GeoPortalApp/project", "observation": "State geoportal describes a statewide georeferenced cadastral database project, but does not expose that dataset publicly here."},
+    {"url": "https://basundhara.wb.gov.in/GeoPortalApp/", "observation": "Geoportal access is for government departments with registration by official letter."}
+  ],
+  "requests": [
+    {"url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "method": "GET", "httpStatus": null, "error": "Connection timed out after 20 seconds", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "West Bengal state cadastral project", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "Statewide project scope is not public countrywide coverage; the public plot-map service was unavailable from this client and may use non-vector delivery.",
+  "nextStep": "Recheck Banglarbhumi and seek a documented public West Bengal feature service, then test a Kolkata-area parcel sample."
+}

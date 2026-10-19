@@ -1,0 +1,24 @@
+{
+  "cityRecord": "city-1549-palmira.json",
+  "cityCode": 1549,
+  "queueRank": 2806,
+  "city": "Palmira",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and Spanish discovery found Palmira’s official IDEP cadastral viewer and IGAC’s public cadastral ArcGIS service. IGAC schema/CRS metadata was obtained, but bounded anonymous parcel requests returned a pagination error or timed out; no parcel ID or polygon was retained.",
+  "queryAndRequestOutcomes": "See city-1549-palmira.json freshResearch and requestsAndEndpointChecks; all executed routes and statuses are recorded there.",
+  "custodians": [
+    {"name": "Alcaldía de Palmira / Secretaría de Hacienda / IDEP", "scope": "municipal cadastral cartography and associated data", "evidence": "official Palmira circular naming the IDEP geovisor and providing its public viewer URL"},
+    {"name": "Instituto Geográfico Agustín Codazzi (IGAC)", "scope": "national cadastral data and public geoservices", "evidence": "official open-data documentation and live ArcGIS REST service/layer metadata"}
+  ],
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned", "geometry", "source CRS", "service metadata"],
+  "geometrySamples": [],
+  "uncertainty": ["Municipal viewer/bootstrap unavailable", "No bounded parcel feature response", "No safe native parcel ID retained", "IGAC layer field semantics not independently qualified", "No citywide coverage qualification"],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["A map/service timeout or HTTP 400/500 is not evidence that Palmira lacks parcels", "Metadata exposing a polygon layer is not a verified parcel sample", "Packet completion is not source integration/admission", "The exact WUP point was not shifted"]
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "region": "Africa north/east",
+  "cities": [
+    {
+      "cityId": "wup2025:1866",
+      "name": "Kampala",
+      "countryCode": "UG",
+      "researchFile": "city-1866.json",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "summary": "The official KCCA GIS confirms city cadastre information exists, but the actual anonymous app layer configuration lists only Boundary, Divisions, Buildings, Parishes and Villages (no CAD layer), while its anonymous WFS advertises no parcel-named layer and the bounded generic polygon query returned zero features.",
+      "resultCategory": "no_verified_open_endpoint_after_attempts"
+    },
+    {
+      "cityId": "wup2025:2076",
+      "name": "Casablanca",
+      "countryCode": "MA",
+      "researchFile": "city-2076.json",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "summary": "ANCFCC exposes products and a title-specific request workflow rather than an anonymous city-wide geometry endpoint; the AUC geoportal requires account/security-code access, its Open Data page lists no vector dataset, and Casa Maps is a city-district/POI map. The public Eaux et Forêts parcel layer is forest inventory outside the target point.",
+      "resultCategory": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "scopeNote": "This index covers only the two assigned batch4 cities. Detailed requests, candidate endpoints, bbox/CRS checks and source-specific limitations are in each city file.",
+  "sourcePolicy": "A cadastre's existence is distinct from an anonymous polygon feed. Geometry qualification requires a bounded target-area parcel polygon sample; an empty/metadata-only response does not qualify."
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3163",
+  "cityCode": 3163,
+  "wupCityCode": 3163,
+  "name": "Santa Fe",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "iso2": "AR",
+  "iso3": "ARG",
+  "rank": 1560,
+  "queueRank": 1560,
+  "point": [-31.616094006656, -60.7082262559096],
+  "centerLatLon": [-31.616094006656, -60.7082262559096],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 366960,
+  "population2025k": 366.96,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Santa Fe provincial sources identify the Servicio de Catastro e Información Territorial (SCIT) as the provincial cadastral/cartographic custodian and IDESF as the public spatial-data infrastructure. The municipal Santa Fe GeoPortal separately advertises official cadastral layers and technical resources.",
+  "registryEvidenceUrls": [
+    "https://www.santafe.gov.ar/index.php/web/content/view/full/243171",
+    "https://www.santafe.gov.ar/index.php/web/content/view/full/243182",
+    "https://www.santafe.gov.ar/idesf/geoportal/paginas/servicios",
+    "https://santafeciudad.gov.ar/geo-portal/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official IDESF WMS exposes parcel display layers but marks both scit_parcelas and scit_parcelas_identificador queryable=0. A bounded anonymous GetFeatureInfo request at the exact WUP point returned LayerNotQueryable, so no safe ID-plus-geometry response was available. The provincial parcel-search page is a lookup form requiring a parcel identifier or coordinate interaction, but no usable parcel response was obtained within the bounded request attempt.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_parcel_map_nonqueryable",
+  "coverageAssessment": {
+    "claimedScope": "Santa Fe provincial SCIT/IDESF cadastral map services and the Santa Fe municipal GeoPortal.",
+    "verifiedOpenScope": "WMS parcel layer metadata and map rendering route; no anonymous parcel feature or polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:santafeciudad.gov.ar cadastral parcels map Santa Fe Argentina official OR site:santafe.gov.ar catastro parcel map",
+        "scope": "Identify first-party Santa Fe cadastral custody and current public parcel-map/service routes.",
+        "result": "Search located official Santa Fe SCIT/IDESF pages, the provincial cadastral parcel search, the IDESF WMS service documentation, and the municipal Santa Fe GeoPortal. The official sources establish custodianship and public map access, but search results did not provide a safe parcel feature response.",
+        "actualResultUrls": [
+          "https://www.santafe.gov.ar/index.php/web/content/view/full/243171",
+          "https://www.santafe.gov.ar/idesf/buscadorparcela/tramite.php",
+          "https://www.santafe.gov.ar/idesf/geoportal/paginas/servicios-OGC",
+          "https://santafeciudad.gov.ar/geo-portal/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "native/local",
+        "query": "Santa Fe Argentina catastro parcelas mapa oficial SCIT IDESF",
+        "scope": "Independent Spanish-language discovery of the local/provincial cadastral custodian and public parcel geometry route.",
+        "result": "Search located official Spanish Santa Fe sources describing SCIT cadastral administration, IDESF services, the parcel-search form, and the municipal GeoPortal. The sources document parcel maps and public viewing, but no safe anonymous ID-plus-polygon response was found.",
+        "actualResultUrls": [
+          "https://www.santafe.gov.ar/index.php/web/content/view/full/243182",
+          "https://www.santafe.gov.ar/idesf/geoportal/paginas/servicios",
+          "https://www.santafe.gov.ar/idesf/buscadorparcela/tramite.php",
+          "https://santafeciudad.gov.ar/geo-portal/"
+        ],
+        "executionMethod": "Separate Spanish-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The native parcel identity fields, vector-service endpoint, exact coordinate-query behavior of the provincial form, and citywide parcel coverage remain unverified. A non-queryable WMS layer, timeout, login wall, or zero exact-point hit is not evidence of citywide cadastral absence.",
+  "nextStep": "Serial reviewer may independently qualify a current SCIT/IDESF vector or safe geometry route. Do not enable runtime from this packet alone."
+}

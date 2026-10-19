@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "SL",
+  "country": "Sierra Leone",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Ministry of Lands and Country Planning / Environment (MLCPE); Office of Registrar General (deeds); no known national online cadastre",
+  "portalsFound": [
+    {
+      "url": "https://www.mlcpe.gov.sl/",
+      "observation": "SSL connection error"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mlcpe.gov.sl/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "SSL_ERROR_SYSCALL"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Sierra%20Leone%20parcels%20cadastre&f=json&num=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "0 results"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "None found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Ministry site unreachable and ArcGIS Online search empty; absence not established.",
+  "nextStep": "Check Freetown city/World Bank land information system projects and retry the ministry host."
+}

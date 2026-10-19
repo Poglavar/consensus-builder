@@ -1,0 +1,83 @@
+{
+  "descriptor": {
+    "id": "fr-ign-parcellaire-express",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "adapter": "wfs",
+    "endpoint": "https://data.geopf.fr/wfs/ows",
+    "featureType": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle",
+    "idField": "idu",
+    "idType": "string",
+    "idPattern": "^[0-9A-Z]{14}$",
+    "idPrefix": "FR-PCI-",
+    "outFields": [
+      "idu"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "FR",
+    "metricSrid": 32631,
+    "scope": "IGN assembly of vectorised DGFiP cadastral parcels across France; bounded Paris, Lyon, Marseille and Lille metropolitan-settlement entries are enabled. Each added city has separate bounded evidence in additionalCityEvidence and cityScopes. Non-vectorised areas and cadastral alignment gaps remain possible.",
+    "evidenceFile": "research/paris-live-wfs.json",
+    "attribution": "IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.",
+    "licenceUrl": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+    "catalogueUrl": "https://www.data.gouv.fr/datasets/parcellaire-express-pci",
+    "cityIds": [
+      "paris",
+      "lyon",
+      "marseille",
+      "lille",
+      "toulouse",
+      "bordeaux",
+      "grenoble",
+      "3282"
+    ],
+    "additionalCityEvidence": {
+      "marseille": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
+      "lille": "research/overnight-cities-2026-10-08/lille-ign-root-acceptance.json",
+      "toulouse": "research/overnight-cities-2026-10-08/toulouse-ign-root-acceptance.json",
+      "bordeaux": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json"
+    },
+    "cityScopes": {
+      "marseille": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "lille": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+    },
+    "qualificationEvidence": [
+      {
+        "cityCode": "4353",
+        "appCityId": "grenoble",
+        "candidateSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+        "qualificationSha256": "c36c1331d186a20a4278afcfc32a156c23df0147a65a6754eef9b55cd3688649",
+        "fullSafeSha256": "cc23321972d3529121529d76adaa3b81e53ee116f12bc6e33777a1078b362455",
+        "metricReportSha256": "c5ba0704cd3ee59bf657932c40885f91fb6e4dcafd2872a3c3522c7684ca777e",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11/4353/qualification.json"
+      }
+    ]
+  },
+  "city": {
+    "code": "3282",
+    "name": "Arras",
+    "point": [
+      2.7712389505543,
+      50.2884743408313
+    ]
+  },
+  "sampleIds": [
+    "FR-PCI-62041000AC0252",
+    "FR-PCI-62041000AC0260",
+    "FR-PCI-62041000AC0261"
+  ],
+  "absentId": "FR-PCI-99999999ZZ9999",
+  "metricEpsg": "EPSG:32631",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "France IGN/DGFiP Parcellaire Express (PCI)",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; France IGN/DGFiP Parcellaire Express (PCI); IGN assembly of vectorised DGFiP cadastral parcels across France; bounded Paris, Lyon, Marseille and Lille metropolitan-settlement entries are enabled. Each added city has separate bounded evidence in additionalCityEvidence and cityScopes. Non-vectorised areas and cadastral alignment gaps remain possible.; Current official French WFS parcel source contract and bounded live verification for Paris."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "94b075fcd4beb85fb87be441ff85581760c37f1aad7c341a5ccf07ef4db8074b",
+  "qualificationRecordedSha256": "c648e38fbf737c9aab6fc433b667e783e73d51a22b839e85dc9edfe2fd9bac46",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/3282/attempt-01/candidate.json"
+}

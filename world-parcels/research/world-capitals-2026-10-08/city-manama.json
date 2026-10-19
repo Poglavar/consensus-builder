@@ -1,0 +1,106 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:BH:manama",
+  "name": "Manama",
+  "country": "Bahrain",
+  "countryCode": "BH",
+  "centerLatLon": [
+    26.233333333333334,
+    50.566667
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Bahrain Survey and Land Registration Bureau GIS cadastral map parcels Manama official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.slrb.gov.bh/en/products-and-services",
+        "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps"
+      ]
+    },
+    {
+      "query": "خريطة عقارات المنامة جهاز المساحة والتسجيل العقاري GIS البحرين قطعة أرض",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.slrb.gov.bh/ar/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.slrb.gov.bh/en/products-and-services",
+      "observation": "Official SLRB offers request/purchase of cadastral property maps at 1:1000 scale."
+    },
+    {
+      "url": "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps",
+      "observation": "Map request is filed through the Bureau and fee is BHD 15 for 1:1000 map; not a public vector feature endpoint."
+    },
+    {
+      "url": "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps",
+      "observation": "Survey and Land Registration Bureau page loaded; it describes requesting cadastral property maps as a service. No open parcel polygon viewer was identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://www.slrb.gov.bh/en/request-for-cadastral-property-maps; content type text/html; charset=utf-8; 85913 bytes.",
+      "firstPartyScripts": [
+        "https://www.slrb.gov.bh/assets/lib/jquery/jquery-3.6.3.min.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/jquery-migrate-3.4.0.min.js",
+        "https://www.slrb.gov.bh/assets/lib/owlcarousel/owl.carousel.min.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/swiper-bundle.min.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/fancybox.min.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/odometer.min.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/wow.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/navik.menu.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/simpleParallax.min.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/lang.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/datatable-scripts.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/jquery.smartmenus.min.js",
+        "https://www.slrb.gov.bh/assets/lib/jquery/themes.js"
+      ],
+      "relevantOfficialLinks": [
+        "https://cdn.datatables.net/v/dt/dt-1.13.8/r-2.5.0/datatables.min.css",
+        "https://fonts.googleapis.com",
+        "https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100..900&family=Public+Sans:ital,wght@0,100..900;1,100..900&display=swap",
+        "https://www.slrb.gov.bh/en/request-for-cadastral-property-maps#govbh-main",
+        "https://www.slrb.gov.bh/en/outstanding-government-customer-service-program",
+        "https://www.slrb.gov.bh/en/products-and-services",
+        "https://www.slrb.gov.bh/en/cadastralsurveys",
+        "https://www.slrb.gov.bh/en/land-registration-registration-and-follow-up",
+        "https://www.slrb.gov.bh/en/e-services",
+        "https://www.slrb.gov.bh/en/new-registration-applicants",
+        "https://www.slrb.gov.bh/en/e-services-property-check",
+        "https://www.slrb.gov.bh/en/e-services-fee-calculator"
+      ]
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "The Survey and Land Registration Bureau offers cadastral map services nationally; the inspected pages did not establish Manama-specific parcel coverage or an open city geometry service.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "national_registry_candidate_city_scope_unverified",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "The Survey and Land Registration Bureau offers cadastral map services nationally; the inspected pages did not establish Manama-specific parcel coverage or an open city geometry service.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "cityCode": 3862,
+  "wupCityCode": 3862,
+  "queueRank": 2122,
+  "cityId": "wup2025:3862",
+  "name": "Nacala",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "iso3": "MOZ",
+  "locId": 508,
+  "capital": false,
+  "point": [-14.5590143592164, 40.6916385246582],
+  "centerLatLon": [-14.5590143592164, 40.6916385246582],
+  "population2025": 273732,
+  "population2025k": 273.732,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_nacala_parcel_response",
+  "runtimeReadiness": "held",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nacala Mozambique cadastral parcel map official cadastre GIS",
+        "result": "Found the official Nacala municipal portal, Mozambique ADE/MOZGIS, and national map-service leads. No Nacala-specific public parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://cmnacala.gov.mz/",
+          "https://www.ade.gov.mz/",
+          "https://www.mozgis.gov.mz/server/rest/services"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Nacala Moçambique cadastro mapa parcelas oficial SIG cadastro predial",
+        "result": "Found the official Nacala municipal portal, its municipal services page, ADE/MOZGIS, and a first-party historical report stating that the municipality had a land and building cadastre. No current anonymous Nacala parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://cmnacala.gov.mz/servicos",
+          "https://www.ade.gov.mz/",
+          "https://www.mozgis.gov.mz/server/rest/services",
+          "https://documents1.worldbank.org/curated/en/515111468059081410/pdf/635380WP0MZ0P10tario0Final00Jan011.pdf"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://cmnacala.gov.mz/",
+      "operator": "Conselho Municipal de Nacala",
+      "scope": "local municipal custodian and official portal",
+      "observation": "Official municipal portal identifies the Council, Nacala location and municipal services; it does not expose a public parcel layer or parcel API in the inspected pages."
+    },
+    {
+      "url": "https://cmnacala.gov.mz/servicos",
+      "operator": "Conselho Municipal de Nacala",
+      "scope": "local municipal service procedures",
+      "observation": "Official services page says online municipal services are not currently available; no cadastral download or safe parcel query was exposed."
+    },
+    {
+      "url": "https://www.ade.gov.mz/",
+      "operator": "Agência Nacional de Desenvolvimento Geo-Espacial (ADE, IP)",
+      "scope": "national geospatial custodian and MOZGIS portal",
+      "observation": "ADE links to MOZGIS for viewing, searching and exporting maps. This is a national platform, not evidence that Nacala parcel coverage is published."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/server/rest/services",
+      "operator": "ADE / MOZGIS ArcGIS REST services",
+      "scope": "public national map-service directory",
+      "observation": "REST directory was accessible. The cadastral parcel service found by first-party search is explicitly for the Conselho Municipal da Cidade da Matola; its extent and metadata do not cover Nacala."
+    },
+    {
+      "url": "https://documents1.worldbank.org/curated/en/515111468059081410/pdf/635380WP0MZ0P10tario0Final00Jan011.pdf",
+      "operator": "World Bank-hosted historical municipal report",
+      "scope": "historical local cadastral evidence, not a current API",
+      "observation": "The report states that the Nacala municipal council had a reasonably developed land and building cadastre. It is retained as historical evidence of a local registry/cadastre, not as current open parcel coverage."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://cmnacala.gov.mz/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Nacala municipal portal loaded; page inspected for cadastral/map/service links."
+    },
+    {
+      "url": "https://cmnacala.gov.mz/servicos",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official municipal services page loaded; it reports no online services currently available and exposed no parcel endpoint."
+    },
+    {
+      "url": "https://www.ade.gov.mz/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "ADE official site loaded and linked to MOZGIS."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/server/rest/services?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public ArcGIS REST service directory returned JSON. No Nacala-named cadastral service was found in the root directory."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public parcel-layer metadata returned. Layer is named vwCMCMPlanCadastroParcela, has polygon geometry and native-looking fields including IdParcela/CodigoParcela, but metadata explicitly describes Matola and its extent is outside Nacala. No records retained."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0/query",
+      "method": "GET",
+      "status": "HTTP 200; empty FeatureCollection",
+      "summary": "Bounded anonymous point query at the exact WUP point, inSR=4326, requested only OBJECTID/IdParcela/CodigoParcela and geometry, resultRecordCount=3. Empty result is route-specific and not treated as citywide absence; no geometry or ID retained."
+    },
+    {
+      "url": "https://documents1.worldbank.org/curated/en/515111468059081410/pdf/635380WP0MZ0P10tario0Final00Jan011.pdf",
+      "method": "GET/search-result inspection",
+      "status": "HTTP/search result available",
+      "summary": "Historical report was inspected for local Nacala cadastral-custodian evidence; no current machine-readable parcel response was requested or retained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Nacala municipal cadastral existence is historically evidenced and the current municipality is identified, but no current open Nacala parcel geometry coverage is verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account details", "personal identifiers", "mutation-party details"],
+  "sourceIds": [],
+  "blocker": "No safe anonymous Nacala parcel response containing a native stable ID and geometry was verified. The discovered public cadastral service is explicitly for Matola.",
+  "remainingUncertainty": "The municipal cadastre may be maintained in non-public, interactive or unpublished systems. A zero exact-point response from the Matola route and absence of a Nacala-named root service do not establish citywide absence.",
+  "nextStep": "Retry only current first-party Nacala/ADE routes if a Nacala-specific public service is published; qualify any adapter independently before runtime use.",
+  "resultCategory": "official_local_registry_evidence_no_verified_open_nacala_geometry",
+  "runtimeEligible": false
+}

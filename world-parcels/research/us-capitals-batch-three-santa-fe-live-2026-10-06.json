@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "santa_fe",
+      "sourceId": "us-santa_fe-parcels",
+      "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.682500000000005,
+            -105.94,
+            35.685
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.682500000000005,
+            -105.9375,
+            35.685
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.682500000000005,
+            -105.935,
+            35.685
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.685,
+            -105.94,
+            35.6875
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.685,
+            -105.9375,
+            35.6875
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.685,
+            -105.935,
+            35.6875
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.6875,
+            -105.94,
+            35.690000000000005
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.6875,
+            -105.9375,
+            35.690000000000005
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.6875,
+            -105.935,
+            35.690000000000005
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.682500000000005,
+            -105.9325,
+            35.685
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.682500000000005,
+            -105.92999999999999,
+            35.685
+          ],
+          "count": 91,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.682500000000005,
+            -105.9275,
+            35.685
+          ],
+          "count": 117,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.685,
+            -105.9325,
+            35.6875
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.685,
+            -105.92999999999999,
+            35.6875
+          ],
+          "count": 99,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.685,
+            -105.9275,
+            35.6875
+          ],
+          "count": 73,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.6875,
+            -105.9325,
+            35.690000000000005
+          ],
+          "count": 70,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.6875,
+            -105.92999999999999,
+            35.690000000000005
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.6875,
+            -105.9275,
+            35.690000000000005
+          ],
+          "count": 24,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -105.9425,
+          35.682500000000005,
+          -105.94,
+          35.685
+        ],
+        "forcedPageSize": 3,
+        "count": 14,
+        "returned": 14,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 776,
+      "exactResolved": 776,
+      "nativeIds": [
+        "99306489",
+        "12048768",
+        "11488896"
+      ],
+      "footprintCount": 6,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-santa_fe-parcels",
+        "parcels": 1,
+        "siteM2": 5983.09
+      },
+      "requests": 36,
+      "proposedDescriptor": {
+        "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+        "adapter": "arcgis",
+        "name": "Santa Fe County Parcels",
+        "operator": "Santa Fe County GIS Division",
+        "idField": "parcel_number",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "parcel_number"
+        ],
+        "parcelNumberField": "parcel_number",
+        "metricSrid": 32613,
+        "id": "us-santa_fe-parcels",
+        "idPrefix": "us-santa_fe:",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "gridSize": 0.0025,
+        "maxConcurrent": 2
+      },
+      "metadata": {
+        "city": "santa_fe",
+        "metadataUrl": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2?f=pjson",
+        "geometryType": "esriGeometryPolygon",
+        "name": "Santa Fe County Parcels",
+        "description": "",
+        "copyrightText": "",
+        "serviceItemId": "892196b040024d9f9c5cf39609123d38",
+        "editingInfo": null,
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": true,
+          "supportsCurrentUserQueries": true
+        },
+        "maxRecordCount": 2000,
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "parcel_number",
+            "type": "esriFieldTypeString",
+            "alias": "parcel_number",
+            "length": 30,
+            "domain": null
+          }
+        ]
+      },
+      "officialReferences": [
+        "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+        "https://www.santafecountynm.gov/growth-management/gis",
+        "https://santafenm.gov/information-technology-telecommunications/gis"
+      ],
+      "reuseConditions": {
+        "status": "public service; provider attribution and published accuracy/use conditions retained",
+        "blocking": false
+      }
+    }
+  ]
+}

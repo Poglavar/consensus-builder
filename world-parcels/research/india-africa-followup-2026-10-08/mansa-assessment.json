@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:2412",
+  "name": "Mansa",
+  "sourceId": "zm-nsdi-cadaster-new",
+  "status": "verified_sample_runtime_identity_hold",
+  "registryFound": true,
+  "verifiedSample": true,
+  "assessment": "The public no-www NSDI endpoint returns complete bounded cadastral lot geometry. The first center-relative nine-cell audit verified all 86 UPIDs, but the wider aligned app-cell audit exposed two different plots sharing MAN/350. They are disjoint and carry different survey references (138/67 versus 23/71), survey dates and survey areas. A shared UPID alone is therefore insufficient to establish one stable ground parcel in the tested app area.",
+  "runtimeReadiness": "technical-hold",
+  "technicalBlockers": [
+    "Native UPID MAN/350 identifies two spatially separate survey records with inconsistent survey references. A publisher-supported identity/lifecycle rule separating them is not established."
+  ],
+  "decisions": [
+    "No transport OBJECTID is used as native identity.",
+    "No arbitrary survey year or row is selected.",
+    "No unproven compound identity or multipart merge is enabled.",
+    "The temporary qualified-field adapter prototype was removed after source qualification failed; the existing production adapter was left unchanged."
+  ],
+  "nextStep": "Find a publisher-documented native plot identity/lifecycle rule or another source that disambiguates the two survey records, then rerun the aligned app-cell and full exact-ID acceptance.",
+  "evidenceFiles": [
+    "research/india-africa-followup-2026-10-08/africa-ws-provider-ZM.json",
+    "research/india-africa-followup-2026-10-08/africa-ws-mansa-9grid.json",
+    "research/india-africa-followup-2026-10-08/africa-ws-mansa-native-exact.json",
+    "research/india-africa-followup-2026-10-08/mansa-initial.json",
+    "research/india-africa-followup-2026-10-08/mansa-corrected.json",
+    "research/india-africa-followup-2026-10-08/mansa-duplicate-audit.json",
+    "research/india-africa-followup-2026-10-08/mansa-duplicate-references.json"
+  ],
+  "termsAreInformational": true
+}

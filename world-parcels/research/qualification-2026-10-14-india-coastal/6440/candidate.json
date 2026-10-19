@@ -1,0 +1,63 @@
+{
+ "city": {
+  "code": "6440",
+  "name": "Bhavnagar",
+  "point": [
+   72.14945,
+   21.76805
+  ]
+ },
+ "sampleIds": [
+  "IN-GJ-CZMP-g1~721466456~217621873~e6f769a8e7a28bd7de985098c54701deb3c7883cd662543e1605c76830c84956",
+  "IN-GJ-CZMP-g1~721490334~217705949~b5a0b6550d42200638b32ba4f11bd6e86c52003dbed271cf54816476f18a484e",
+  "IN-GJ-CZMP-g1~721500954~217688816~1d72028ac674c59649a7a6c48dfa6daf25e0b1de60eb6ffeec06d18096287c1d"
+ ],
+ "absentId": "IN-GJ-CZMP-g1~721466456~217621873~0000000000000000000000000000000000000000000000000000000000000000",
+ "metricEpsg": "EPSG:32643",
+ "sourceClassification": {
+  "isParcel": true,
+  "evidence": [
+   "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+   "https://czmp.ncscm.res.in/",
+   "world-parcels/research/ncscm-czmp-cities-2026-10-13.json"
+  ]
+ },
+ "cellSizeDegrees": 0.001,
+ "descriptor": {
+  "adapter": "arcgis",
+  "identityKind": "geometry-sha256-v1",
+  "lookupCellSize": 0.001,
+  "objectIdField": "OBJECTID",
+  "maxFeatures": 2000,
+  "maxConcurrentQueries": 2,
+  "countryCode": "IN",
+  "catalogueUrl": "https://czmp.ncscm.res.in/",
+  "licenceNote": "No reuse licence is stated on the CZMP portal or the ArcGIS service; the plan is published for public viewing.",
+  "id": "in-gj-ncscm-czmp-survey-plots",
+  "name": "NCSCM CZMP — Gujarat survey plots",
+  "endpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+  "idPrefix": "IN-GJ-CZMP-",
+  "parcelNumberField": "Sno",
+  "outFields": [
+   "OBJECTID",
+   "Sno",
+   "District",
+   "Taluka",
+   "Village"
+  ],
+  "pageSize": 1000,
+  "maxBboxKm2": 25,
+  "metricSrid": 32642,
+  "cityIds": [],
+  "scope": "Survey-plot outlines on the Gujarat Coastal Zone Management Plan. Coverage follows mapped coastal planning areas and can omit city centres and inland neighbourhoods. Labels are descriptive; application references are derived from each outline and change when the outline changes.",
+  "evidenceFile": "research/ncscm-czmp-cities-2026-10-13.json",
+  "attribution": "National Centre for Sustainable Coastal Management (MoEFCC) — CZMP survey plots, Gujarat. Plot labels shown as published; references derived from geometry. Adapted to WGS84.",
+  "caveats": [
+   "Coastal-zone planning maps, not the land-records register: plot outlines are a geometry reference, not proof of current title or ownership.",
+   "Survey labels can be repeated, blank or zero. They are shown as published, never used as identity; OBJECTID is a transport field.",
+   "Application identity uses the source namespace plus canonical geometry SHA-256 at 1e-7-degree precision and a spatial locator. A changed outline gets a new reference; absence means that outline version was not returned.",
+   "The service answers browsers directly (CORS allows this site); no relay is used.",
+   "The service does not state the plan version or the survey date of the underlying plot maps."
+  ]
+ }
+}

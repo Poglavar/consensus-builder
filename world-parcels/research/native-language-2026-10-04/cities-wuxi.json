@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 193,
+  "city": "Wuxi",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/wuxi.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "无锡 不动产 地籍图 宗地 GIS 数据开放"
+  },
+  "results": [
+    {
+      "title": "Wuxi cadastral survey and mapping procedure",
+      "url": "https://zrzy.wuxi.gov.cn/doc/2021/09/16/3459882.shtml",
+      "kind": "official",
+      "note": "Says city publicly displays cadastral region/subregion and parcel map data free; users can locate by certificate, unit number, parcel code or address and view/download parcel maps."
+    },
+    {
+      "title": "Wuxi online cadastral query FAQ",
+      "url": "https://zrzy.wuxi.gov.cn/doc/2024/07/01/4341229.shtml",
+      "kind": "official-service",
+      "note": "Confirms online electronic cadastral map lookup through Jiangsu government service, app and official account."
+    }
+  ],
+  "assessment": "Strong official public-query lead: Wuxi allows free parcel map lookup/download using native parcel identifiers and address. It may serve rendered map/document outputs rather than anonymous vector geometries; vector exact-ID support remains unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

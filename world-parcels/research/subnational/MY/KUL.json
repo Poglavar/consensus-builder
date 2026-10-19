@@ -1,0 +1,81 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "KUL",
+ "regionName": "Kuala Lumpur",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.dbkl.gov.my/",
+   "observation": "DBKL site loads; no GIS/parcel service link found"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/kuala-lumpur.json: Selangor Lot_Kadaster_MIL1 layers 1, 4, 7 bbox 101.68,3.13,101.72,3.17 count",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "0 features: the Selangor layers do not cover the Federal Territory"
+  },
+  {
+   "url": "https://www.dbkl.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "no map/GIS link"
+  },
+  {
+   "url": "gis.dbkl.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "geoportal.dbkl.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "mapkl.dbkl.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "gis.kl.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "www.ptgwp.gov.my",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "https://ekadaster.jupem.gov.my/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "",
+   "assessment": "login wall (from research/countries/MY.json), not bypassed"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "Federal Territory lots sit under JUPEM/PTG-WP; only reachable DBKL page had no map service. Some DBKL GIS hosts were blocked, so a public viewer is not ruled out.",
+ "nextStep": "Retry DBKL/PTGWP GIS hosts from another network."
+}

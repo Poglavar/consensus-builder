@@ -1,0 +1,105 @@
+{
+  "name": "Rostov-on-Don",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 479,
+  "point": [
+    47.2457324974209,
+    39.7072046124532
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rostov-on-Don official public cadastral map municipal GIS parcel data",
+        "scope": "Find city-specific official registration/map sources and determine whether anonymous parcel geometry is documented.",
+        "result": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+        "actualResultUrls": [
+          "https://gis.rostov-gorod.ru/help/index/view/33",
+          "https://gis.rostov-gorod.ru/map/index",
+          "https://rosreestr.ru/wps/portal/cc_ib_opendata"
+        ],
+        "executionMethod": "Separate English and local-language web searches; official source page review; bounded anonymous HTML review where available."
+      },
+      {
+        "language": "Russian",
+        "query": "Ростов-на-Дону официальный геопортал карта земельные участки кадастровая карта Росреестр",
+        "scope": "Find city-specific official registration/map sources and determine whether anonymous parcel geometry is documented.",
+        "result": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+        "actualResultUrls": [
+          "https://gis.rostov-gorod.ru/help/index/view/33",
+          "https://gis.rostov-gorod.ru/map/index",
+          "https://rosreestr.ru/wps/portal/cc_ib_opendata"
+        ],
+        "executionMethod": "Separate English and local-language web searches; official source page review; bounded anonymous HTML review where available."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "RU-5012-CITY-PARCEL-RESEARCH",
+    "name": "Rostov-on-Don municipal urban-planning geoportal",
+    "url": "https://gis.rostov-gorod.ru/map/index",
+    "operator": "Local municipal/city authority sources",
+    "serviceType": "Registry/map source discovery; no anonymous geometry response verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel schema or stable anonymous native geometry identifier was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "No citywide parcel coverage claim.",
+    "verifiedOpenScope": "No anonymous parcel geometry was retained or verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_or_map_geometry_not_verified",
+  "technicalBlocker": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+  "remainingUncertainty": "Whether a safe anonymous geometry-only parcel endpoint exists and covers the exact WUP point; local source metadata and currentness are not fully qualified.",
+  "nextStep": "Recheck only if the local authority publishes a geometry-only service or an open-data parcel geometry package with a documented safe schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5012,
+  "cityId": "wup2025:5012",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    47.2457324974209,
+    39.7072046124532
+  ],
+  "population2025k": 1065.88,
+  "populationUnit": "persons",
+  "queueRank": 479,
+  "population2025": 1065880,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+  "registryEvidenceUrls": [
+    "https://gis.rostov-gorod.ru/help/index/view/33",
+    "https://gis.rostov-gorod.ru/map/index",
+    "https://rosreestr.ru/wps/portal/cc_ib_opendata"
+  ],
+  "rootSupplementalResearch": [
+    {
+      "checkedAt": "2026-10-09",
+      "url": "https://gis.rostov-gorod.ru/help/index/view/33",
+      "observation": "Municipal Architecture and Urban Planning Department geoportal help page identifies the “Land plots” map and references Rosreestr cadastral services/open-data resources. This help page is legacy-dated and does not establish current data currency."
+    },
+    {
+      "checkedAt": "2026-10-09",
+      "url": "https://gis.rostov-gorod.ru/map/index",
+      "observation": "Anonymous GET of the city geoportal map page returned HTTP 200. Public HTML shows the city geoportal, search controls and “Land plots” map, but also presents a login/password/CAPTCHA form; no credentials or search submitted. It does not publish a vector geometry schema in the visible HTML."
+    },
+    {
+      "checkedAt": "2026-10-09",
+      "url": "https://rosreestr.ru/wps/portal/cc_ib_opendata",
+      "observation": "Rosreestr open-data URL is referenced by municipal help content; no current city-point response was verified."
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00"
+}

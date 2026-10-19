@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 7423,
+  "wupCityCode": 7423,
+  "queueRank": 2397,
+  "cityId": "wup2025:7423",
+  "name": "Qena",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "locId": 818,
+  "centerLatLon": [26.1631772371518, 32.7283438267888],
+  "point": [26.1631772371518, 32.7283438267888],
+  "population2025": 243801,
+  "population2025k": 243.801,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qena Egypt cadastral map parcels official GIS cadastre",
+        "result": "Official Egyptian Survey Authority services and cadastral-map material were found; no anonymous Qena parcel polygon endpoint was found in the search results. An ArcGIS service published under a Qena-named item was inspected as a candidate.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/files/geo/Egyptian%20National%20Cadaster%20Information%20Systems.pdf",
+          "https://services5.arcgis.com/OesGQ9lCC4iHd7Hh/ArcGIS/rest/services/qenaa/FeatureServer"
+        ]
+      },
+      {
+        "language": "Arabic (local/native)",
+        "query": "قنا مصر خريطة كادسترية قطع الأراضي السجل العيني GIS",
+        "result": "Arabic official results identified the Egyptian Survey Authority, the public land-survey statement procedure, and Qena detailed-planning/reparcelling material; no open citywide cadastral parcel-vector service was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6",
+          "https://gopp.gov.eg/%D9%85%D8%AD%D8%A7%D9%81%D8%B8-%D9%82%D9%86%D8%A7-%D9%8A%D8%B9%D8%AA%D9%85%D8%AF-%D8%A7%D9%84%D9%86%D8%B3%D8%AE%D8%A9-%D8%A7%D9%84%D9%85%D8%AD%D8%AF%D9%91%D8%AB%D8%A9-%D9%85%D9%86-%D8%A7/"
+        ]
+      }
+    ]
+  },
+  "source": null,
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://www.esa.gov.eg/", "observation": "Egyptian General Survey Authority; official services include digital maps, cadastral/land-record work and boundary/coordinate services, but no anonymous parcel-vector API was exposed."},
+    {"url": "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6", "observation": "Official public-services listing for a land-parcel survey statement; procedure/record service, not an open citywide geometry feed."},
+    {"url": "https://gopp.gov.eg/", "observation": "Official General Organization for Physical Planning result documents Qena detailed planning and land re-arrangement work; planning evidence, not a cadastral parcel API."},
+    {"url": "https://services5.arcgis.com/OesGQ9lCC4iHd7Hh/ArcGIS/rest/services/qenaa/FeatureServer", "observation": "Public ArcGIS service named qenaa; layers include Qena governorate facilities, vacant lands, roads, administrative boundaries and a layer named قنا. It is not identified as a cadastral service."}
+  ],
+  "requests": [
+    {"url": "https://services5.arcgis.com/OesGQ9lCC4iHd7Hh/ArcGIS/rest/services/qenaa/FeatureServer?f=pjson", "method": "GET", "httpStatus": 200, "contentType": "application/json", "assessment": "Service metadata read anonymously with browser headers; layer inventory is planning/administrative and no parcel layer was identified."},
+    {"url": "https://services5.arcgis.com/OesGQ9lCC4iHd7Hh/ArcGIS/rest/services/qenaa/FeatureServer/14?f=pjson", "method": "GET", "httpStatus": 200, "contentType": "application/json", "assessment": "Layer قنا; esriGeometryPolygon, EPSG:4326, OBJECTID system ID and Name only. Extent is regional (31.954790778,25.700216847 to 33.594134221,26.699473098), not parcel-scale."},
+    {"url": "https://services5.arcgis.com/OesGQ9lCC4iHd7Hh/ArcGIS/rest/services/qenaa/FeatureServer/14/query", "method": "GET", "httpStatus": 200, "contentType": "application/geo+json", "assessment": "Bounded anonymous query at exact WUP point with 500 m distance and resultRecordCount=3 returned one large polygon whose coordinates span the governorate extent; it is not a usable parcel sample. Geometry and response retained only in ignored tmp cache."},
+    {"url": "https://www.esa.gov.eg/services.aspx", "method": "GET", "httpStatus": 200, "contentType": "text/html", "assessment": "Official service page fetched with browser headers; services list includes digital maps and cadastral-related products but no public parcel query endpoint."},
+    {"url": "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6", "method": "GET", "httpStatus": 0, "contentType": null, "assessment": "TLS certificate expired in the local runtime; request was not retried with verification disabled or an exception. Search result independently documents the procedure."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Egyptian Survey Authority has national cadastral and mapping responsibilities; Qena-specific official planning material and a Qena governorate ArcGIS service were found.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "cityRegistryBasis": "Official national survey/cadastre authority plus Qena-specific official planning/service evidence; this establishes registry/cadastre presence, not open parcel geometry access."
+  },
+  "safeFieldAllowlist": ["OBJECTID", "Name", "geometry", "source service URL", "CRS"],
+  "nativeFieldMapping": {"OBJECTID": "ArcGIS system object identifier; not accepted as a cadastral parcel identity for the returned regional polygon", "Name": "ArcGIS display field; semantics not cadastral"},
+  "uncertainty": "No city parcel polygon with a stable native cadastral identity was verified. The exact-point result was a regional polygon and therefore was not retained as a parcel sample. A zero or unusable candidate result does not establish citywide absence.",
+  "remainingUncertainty": "The Egyptian Survey Authority or a Qena local office may provide cadastral extracts or authenticated map access; credentialed/private/title-specific workflows were not accessed.",
+  "nextStep": "Locate a documented public ESA/Qena cadastral viewer or obtain an anonymous geometry-only bounded service response, then verify parcel-scale polygons, CRS, stable native IDs and city coverage before adapter qualification.",
+  "sourceIds": [],
+  "candidateGeometrySampleAvailable": false,
+  "priorEvidence": [],
+  "identityPolicy": "Do not use ArcGIS OBJECTID from the regional candidate as a parcel identity; no retained GeoJSON sample was created.",
+  "runtimeEligible": false
+}

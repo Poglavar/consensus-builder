@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:54:05.936008+00:00",
+  "status": "held_native_geometry_conflicts",
+  "qualificationFile": "provo-runtime-qualification.json",
+  "independentQualityFile": "provo-root-quality.json",
+  "scope": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry.",
+  "geometryChangedOrRepaired": false,
+  "sourceGeometryWgs84Sha256": "56080469aaf348d432d9362f65310d533fefc43d80c9da51d56ca0e3a798169b"
+}

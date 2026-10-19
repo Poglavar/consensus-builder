@@ -1,0 +1,115 @@
+{
+  "cityCode": 6131,
+  "queueRank": 2410,
+  "name": "Kambove",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-10.8708215640277, 26.5956203553808],
+  "population2025": 242939,
+  "population2025k": 242.939,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kambove cadastral map parcel registry Democratic Republic of the Congo official",
+        "result": "Search found the official DRC Ministry of Land Affairs, its national circonscriptions page, the public land-record procedure catalogue, and a non-government BIC portal. No first-party Kambove map or parcel API was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Kambove cadastre parcelles RDC service foncier officiel",
+        "result": "La recherche a trouvé le Ministère des Affaires Foncières, la liste nationale des circonscriptions, la procédure officielle de recherche foncière et un portail BIC non gouvernemental. Aucun visualiseur ou service vectoriel public de parcelles pour Kambove n'a été identifié.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://bic.cd/cadastral-map"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "officialNationalCustodian": "Ministère des Affaires Foncières de la République démocratique du Congo",
+    "localCustodian": null,
+    "assessment": "The ministry's current national list identifies eight Haut-Katanga circonscriptions (including Likasi and Kipushi entries) but does not list Kambove. The ministry's research form is a submission workflow, not an open parcel map/API. No Kambove-specific local registry, cadastral map, or public parcel endpoint was evidenced."
+  },
+  "sourceResearch": {
+    "attemptedRoutes": [
+      {
+        "route": "Official Ministry home/cadastre pages",
+        "url": "https://www.affairesfoncieres.gouv.cd/",
+        "method": "GET/search",
+        "outcome": "HTTP page retrieved; national cadastre administration and digitization material described, but no Kambove parcel layer or public geometry service exposed."
+      },
+      {
+        "route": "Official national circonscriptions directory",
+        "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "method": "GET",
+        "outcome": "HTTP 200 HTML retrieved. Haut-Katanga is listed with eight circonscriptions; Kambove is not listed. This is custodian-directory evidence only, not evidence that parcels are absent."
+      },
+      {
+        "route": "Official land-search submission workflow",
+        "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+        "method": "GET",
+        "outcome": "Public form retrieved; it requests applicant identity and property-search details and is not a safe anonymous parcel geometry/API route. No form submitted."
+      },
+      {
+        "route": "Official public-service registry consultation description",
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "method": "GET/search",
+        "outcome": "Describes paid consultation through a Conservateur des Titres Immobiliers or Chef de Division du Cadastre. General national procedure; no Kambove map, schema, CRS, native ID, or geometry."
+      },
+      {
+        "route": "Bureau d'Informations Cadastrales cadastral map",
+        "url": "https://bic.cd/cadastral-map",
+        "method": "GET",
+        "outcome": "Redirected to an authentication page. BIC landing page states service availability for Nord-Kivu and Sud-Kivu, not Haut-Katanga/Kambove. No login or account creation attempted."
+      },
+      {
+        "route": "Historical Kambove map-sheet catalogue",
+        "url": "https://geocatalogue.africamuseum.be/geonetwork/srv/api/records/BE-RMCA-EARTHS-014367",
+        "method": "GET/search",
+        "outcome": "A historical Kambove geological/surface-terrain map-sheet catalogue record was found, but it is not a cadastral parcel registry and provides no safe native parcel IDs or parcel polygons."
+      }
+    ],
+    "exactPointTest": "Not performed against a parcel endpoint because no public Kambove parcel endpoint was identified. The exact WUP point was preserved without shifting; no hit/miss or citywide absence inference is made.",
+    "schemaCrs": "unverified",
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "geometry": {
+      "verified": false,
+      "sampleCount": 0,
+      "sampleFile": null,
+      "reason": "No safe anonymous native parcel ID plus full polygon response was available."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [-10.8708215640277, 26.5956203553808] is retained in latitude/longitude order; no coordinate shift was made.",
+    "The official national directory and general land-record procedure do not establish a Kambove local registry or citywide cadastral coverage.",
+    "A missing directory entry, login wall, unavailable UI, or absence of an open parcel endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax, account, certificate, or other unsafe field was requested or retained.",
+    "Packet completion records research execution only; it is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Kambove's responsible local cadastral office, parcel-layer availability, stable native parcel identity, schema, CRS, anonymous geometry access, and citywide coverage remain unresolved. No claim is made about parcel absence, ownership, title, or completeness.",
+  "retainedSample": null
+}

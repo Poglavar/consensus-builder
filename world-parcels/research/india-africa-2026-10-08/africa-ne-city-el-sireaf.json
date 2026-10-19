@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1068",
+  "queueRank": 50,
+  "wupCityCode": 1068,
+  "name": "El Sireaf",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "centerLatLon": [
+    13.7626261207517,
+    23.4454005080571
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 50,
+  "population2025": 119375,
+  "annualGrowthPct2015To2025": 7.002003,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-SD.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic",
+    "exactQuery": "السريف السودان قطع الأراضي المسح العقاري السجل العقاري GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://ayah1122.github.io/Sudan_GIS/",
+      "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "https://aqari.nctr.sd/ar",
+      "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+      "https://www.slrb.gov.bh/ar/cadastralsurveys",
+      "https://www.esri.com/ar-sa/industries/land-administration/overview",
+      "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+      "https://www.amazon.com/GIS-2020-"
+    ],
+    "summary": "Official NIC describes a national OGC WMS/WFS portal and Judiciary land-services platform; linked geoportal currently cannot be reached. No city-specific polygon sample.",
+    "additionalOfficialLead": "NIC project page identifies the Sudan Spatial Portal WMS/WFS; linked host unavailable from this network.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://ayah1122.github.io/Sudan_GIS/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aqari.nctr.sd/ar",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.slrb.gov.bh/ar/cadastralsurveys",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.esri.com/ar-sa/industries/land-administration/overview",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.unescwa.org/sites/default/files/pubs/pdf/gis-population-housing-agriculture-census-sudan-arabic_0.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.amazon.com/GIS-2020-",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"El Sireaf\" Sudan (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22El+Sireaf%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No El Sireaf parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small El Sireaf extent; check whether a public parcel layer is exposed without partner authentication.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22El+Sireaf%22+Sudan+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "officialPortalLead": {
+    "portal": "https://www.geoportal.gov.sd/",
+    "discoveredVia": "https://nic.gov.sd/public/projectDetails/3",
+    "claimedServices": [
+      "WMS",
+      "WFS"
+    ],
+    "directProbeStatus": "DNS resolution failure in this environment",
+    "assessment": "Promising national map portal, but no viewer/layer/capabilities inspection or city polygon test possible."
+  },
+  "followupServiceAuditRefs": [
+    {
+      "auditId": "AFS-19",
+      "sourceUrl": "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+      "classification": "regional_point_layer_not_parcels",
+      "auditSummary": "Soudan Sud is a single esriGeometryPoint layer. Its regional envelope overlaps some South Sudan city centers, but point geometry is not parcel geometry.",
+      "note": "Follow-up metadata and extent audit is in africa-ne-followup-services.json; query result does not imply target-city coverage."
+    }
+  ],
+  "followupServiceSummary": "Soudan Sud is a single esriGeometryPoint layer. Its regional envelope overlaps some South Sudan city centers, but point geometry is not parcel geometry."
+}

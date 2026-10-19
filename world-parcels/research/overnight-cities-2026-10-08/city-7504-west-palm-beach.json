@@ -1,0 +1,163 @@
+{
+  "name": "West Palm Beach",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 873,
+  "point": [
+    26.6223516519297,
+    -80.1012894536897
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "West Palm Beach Florida official parcel GIS property appraiser parcel data feature service",
+        "scope": "Find city/county first-party parcel map and determine whether public geometry can be read safely.",
+        "result": "Official City GIS metadata exposes a polygon Parcels feature layer copied monthly from Palm Beach County; official County Property Appraiser GIS identifies the county map as the official property-ownership map. A safe county-level exact-point query returned one full polygon with only OBJECTID. The WUP locator projects outside the City GIS layer extent, so the County sample is not claimed as city-bound.",
+        "urls": [
+          "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson",
+          "https://pbcpao.gov/departments/gis.htm",
+          "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14?f=pjson"
+        ]
+      },
+      {
+        "language": "English (local official language)",
+        "query": "Palm Beach County Property Appraiser GIS official parcel map West Palm Beach City parcel",
+        "scope": "Verify the county’s local parcel-maintenance role and the City GIS copy relationship.",
+        "result": "Palm Beach County Property Appraiser says it maintains the county official parcel ownership map; the City of West Palm Beach layer states it is downloaded from PBC monthly. No owner, address, assessment, tax, or transaction attributes were requested.",
+        "urls": [
+          "https://pbcpao.gov/departments/gis.htm",
+          "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson",
+        "observation": "City layer Parcels is polygon geometry; its metadata says the data is downloaded from Palm Beach County on the first Monday monthly and staged/refreshed the following Sunday; it is used in public and internal applications."
+      },
+      {
+        "url": "https://pbcpao.gov/departments/gis.htm",
+        "observation": "County Property Appraiser describes the county GIS as the official parcel ownership map."
+      },
+      {
+        "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14?f=pjson",
+        "observation": "Public polygon layer metadata; safe query requested only OBJECTID and geometry."
+      }
+    ],
+    "serviceChecks": [
+      {
+        "url": "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson",
+        "method": "GET metadata via official ArcGIS REST page",
+        "status": 200,
+        "observation": "Polygon layer in EPSG:2881; map supports query; schema also contains unrelated owner/address/value attributes, none requested."
+      },
+      {
+        "url": "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0/query",
+        "method": "GET exact WUP point query via local shell, 15s timeout",
+        "status": null,
+        "observation": "No HTTP response; local request timed out. This is not evidence the provider is down."
+      },
+      {
+        "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14?f=pjson",
+        "method": "GET",
+        "status": 200,
+        "observation": "County polygon layer in EPSG:3857; only system OBJECTID was requested in feature query."
+      },
+      {
+        "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query",
+        "method": "GET exact WUP point, outFields=OBJECTID, returnGeometry=true, outSR=4326, f=geojson",
+        "status": 200,
+        "observation": "One full Polygon returned; WUP point is inside. County-wide result only; city-layer projected extent excludes point."
+      }
+    ],
+    "geometryDecision": "One complete county geometry observed at the WUP locator and retained as a safe sample; it is not represented as city-bound because the City layer extent excludes the point.",
+    "serviceReviewFile": "west-palm-beach-service-review.json"
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "us-palm-beach-county-pao-parcels-ground-oid",
+    "name": "Palm Beach County Property Appraiser parcel polygons; City of West Palm Beach monthly parcel copy",
+    "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14",
+    "operator": "Palm Beach County Property Appraiser; City of West Palm Beach GIS republishes a monthly copy",
+    "serviceType": "Public ArcGIS MapServer polygon layer (county source); query used outFields=OBJECTID and full polygon geometry only.",
+    "nativeIdField": "OBJECTID",
+    "geometryType": "Polygon",
+    "coordinateCrs": "OGC:CRS84 (requested outSR=4326)",
+    "update": "City GIS metadata says downloaded first Monday of each month and refreshed the following Sunday.",
+    "scope": "114 valid distinct Palm Beach County Property Appraiser GIS reference polygons in thirteen bounded cells around the unchanged UN WUP West Palm Beach settlement locator. Native count/OID manifests, forced three-row pages, fresh GIS-ID geometry reads, explicit absence, footprint and binding pass. Metric EPSG32617 topology found no sampled overlap or errors. The county sample contains the locator; the separate municipal parcel layer extent excludes it. This serves the WUP settlement location using county ground and makes no West Palm Beach municipal-only coverage claim. Documented PCN/PARID is nonunique across geometry features, so it is not the runtime key."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of West Palm Beach WUP 2025 settlement candidate; official county parcel service is countywide.",
+    "verifiedOpenScope": "114 valid distinct Palm Beach County Property Appraiser GIS reference polygons in thirteen bounded cells around the unchanged UN WUP West Palm Beach settlement locator. Native count/OID manifests, forced three-row pages, fresh GIS-ID geometry reads, explicit absence, footprint and binding pass. Metric EPSG32617 topology found no sampled overlap or errors. The county sample contains the locator; the separate municipal parcel layer extent excludes it. This serves the WUP settlement location using county ground and makes no West Palm Beach municipal-only coverage claim. Documented PCN/PARID is nonunique across geometry features, so it is not the runtime key.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "sourceBoundToNamedCity": false,
+    "sourceBoundToWupSettlementLocator": true
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Legal title, survey accuracy, currentness and full settlement or municipality completeness remain unverified.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7504,
+  "cityId": "wup2025:7504",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    26.6223516519297,
+    -80.1012894536897
+  ],
+  "queueRank": 873,
+  "population2025": 617035,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "us-palm-beach-county-pao-parcels-ground-oid"
+  ],
+  "registryBasis": "First-party Palm Beach County Property Appraiser and West Palm Beach GIS sources document the county parcel map and monthly City copy. The WUP locator is outside the City layer extent, so the local registry/source match remains partial.",
+  "registryEvidenceUrls": [
+    "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson",
+    "https://pbcpao.gov/departments/gis.htm",
+    "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14?f=pjson"
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "us-palm-beach-county-pao-parcels",
+    "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query",
+    "method": "GET; point intersects; outFields=OBJECTID; returnGeometry=true; outSR=4326; f=geojson",
+    "httpStatus": 200,
+    "featureCount": 1,
+    "outputFields": [
+      "OBJECTID"
+    ],
+    "sourceNativeId": 367302,
+    "geometryType": "Polygon",
+    "coordinateCrs": "OGC:CRS84",
+    "fullGeometryReturned": true,
+    "fullGeometryRetainedInRepository": true,
+    "sampleFile": "city-7504-west-palm-beach-samples.geojson",
+    "pointContainedByGeometry": true,
+    "cityLayerPointCoverage": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "114 valid distinct Palm Beach County Property Appraiser GIS reference polygons in thirteen bounded cells around the unchanged UN WUP West Palm Beach settlement locator. Native count/OID manifests, forced three-row pages, fresh GIS-ID geometry reads, explicit absence, footprint and binding pass. Metric EPSG32617 topology found no sampled overlap or errors. The county sample contains the locator; the separate municipal parcel layer extent excludes it. This serves the WUP settlement location using county ground and makes no West Palm Beach municipal-only coverage claim. Documented PCN/PARID is nonunique across geometry features, so it is not the runtime key.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/west-palm-beach-county-ground-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/west-palm-beach-county-ground-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/westpalmbeach-root-quality-review.json"
+  },
+  "sampleFile": "city-7504-west-palm-beach-samples.geojson",
+  "appCityId": "westpalmbeach",
+  "scopeLimits": "114 valid distinct Palm Beach County Property Appraiser GIS reference polygons in thirteen bounded cells around the unchanged UN WUP West Palm Beach settlement locator. Native count/OID manifests, forced three-row pages, fresh GIS-ID geometry reads, explicit absence, footprint and binding pass. Metric EPSG32617 topology found no sampled overlap or errors. The county sample contains the locator; the separate municipal parcel layer extent excludes it. This serves the WUP settlement location using county ground and makes no West Palm Beach municipal-only coverage claim. Documented PCN/PARID is nonunique across geometry features, so it is not the runtime key.",
+  "runtimeQualification": {
+    "sourceId": "us-palm-beach-county-pao-parcels-ground-oid",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/west-palm-beach-county-ground-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/west-palm-beach-county-ground-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T04:40:32.554561+00:00"
+}

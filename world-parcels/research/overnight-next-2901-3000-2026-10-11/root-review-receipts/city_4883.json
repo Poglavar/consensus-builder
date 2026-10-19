@@ -1,0 +1,45 @@
+{
+  "taskId": "city:4883",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-4883-batkhela.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/batkhela-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:55:28Z",
+  "reason": "The KP Revenue & Estate Department directly states provincial land-record custody and GIS cadastral work; its official e-stamping directory names a Batkhela service location. This supports institutional custody, but neither source supplies an anonymous Batkhela parcel vector response. SDLR/KPLR DNS failures and timeouts are access limits, not absence.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "observedBoundedPolygonCount": 0,
+  "sourceChecks": [
+    {
+      "url": "https://revenue.kp.gov.pk/dlr-msg/",
+      "observation": "Opened first-party Directorate of Land Records page; it states land-record digitization and GIS cadaster responsibilities."
+    },
+    {
+      "url": "https://estamping.kp.gov.pk/",
+      "observation": "First-party search result lists Malakand (Batkhela) service location; direct root-review retrieval timed out or failed DNS. This listing is not a parcel API or proof of citywide digital coverage."
+    }
+  ],
+  "identityCheck": {
+    "wup2025ArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueAndPacketMatch": true,
+    "fields": [
+      "cityCode",
+      "rank",
+      "country",
+      "point",
+      "populationPersons"
+    ]
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

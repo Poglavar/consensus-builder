@@ -1,0 +1,24 @@
+{
+  "taskId": "city:3247",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-3247-moshi.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/moshi-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/moshi-parcel-samples.geojson",
+    "tmp/valhalla-parcel-research/3247/query-tp_spatial_units.json",
+    "tmp/valhalla-parcel-research/3247/tp_spatial_units.xsd"
+  ],
+  "checkedAt": "2026-10-10T17:06:45.972689Z",
+  "reason": "Original WFS cache reports 1360 matched features and returns three full MultiPolygons with uid; retained geometry is bytewise equivalent after parsing and stores UUID ID only. This bounded discovery does not establish parcel semantics or adapter qualification. Fresh exact-ID reads, forced paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent.",
+  "identity": {
+    "cityCode": 3247,
+    "queueRank": 1861,
+    "populationPersons": 309202,
+    "verifiedAgainst": "ranked-population.json and pending-queue.json"
+  },
+  "retainedFullPolygons": 3,
+  "admissionGates": "Held; independent live adapter qualification and headed Details-panel verification are not evidenced."
+}

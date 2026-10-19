@@ -1,0 +1,218 @@
+{
+  "cityId": "capital:MK:skopje",
+  "name": "Skopje",
+  "country": "North Macedonia",
+  "countryCode": "MK",
+  "centerLatLon": [
+    42,
+    21.433333
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "Skopje cadastral parcels public GIS map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Скопје катастар катастарски парцели ГИС мапа",
+      "language": "Macedonian",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://gisportal.skopje.gov.mk/GisZaGragjani/",
+      "observation": "City GIS portal publishes the Old Bazaar polygon layer named Парцели."
+    },
+    {
+      "url": "https://starportal.skopje.gov.mk/DesktopDefault.aspx?tabid=564",
+      "observation": "City portal describes its public GIS."
+    }
+  ],
+  "requests": [
+    {
+      "name": "skopje-layer",
+      "url": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3?f=json",
+      "checkedAt": "2026-10-08T17:58:12.279Z",
+      "bytes": 4732,
+      "elapsedMs": 710,
+      "contentType": "application/json;charset=UTF-8",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "OBJECTID",
+      "httpStatus": 200
+    },
+    {
+      "url": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3/query?where=1%3D1&geometry=21.435%2C41.999%2C21.439%2C42.002&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CKP%2CParcela%2CBr_Blok&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+      "method": "GET",
+      "params": {
+        "where": "1=1",
+        "geometry": "21.435,41.999,21.439,42.002",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,KP,Parcela,Br_Blok",
+        "returnGeometry": "true",
+        "outSR": "4326",
+        "resultRecordCount": "3",
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:01:43.153Z",
+      "contentType": "application/geo+json;charset=UTF-8",
+      "outcome": "Three nonpersonal Polygon/MultiPolygon features retained in skopje-safe-sample.json"
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "City-published cadastral parcel polygons were retrieved in the Old Bazaar.",
+  "registryEvidenceUrls": [
+    "https://gisportal.skopje.gov.mk/GisZaGragjani/",
+    "https://starportal.skopje.gov.mk/DesktopDefault.aspx?tabid=564"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "mk-skopje-old-bazaar-parcels"
+  ],
+  "sourceCandidate": {
+    "url": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3",
+    "publisher": "City of Skopje",
+    "safeSampleFile": "skopje-old-bazaar-safe-sample.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Small Old Bazaar parcel patch (~360 by 487 metres); not citywide coverage.",
+    "verifiedOpenScope": "Small Old Bazaar parcel patch (~360 by 487 metres); not citywide coverage.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Sample parcel-reference fields KP/Parcela are null or blank. Source-scoped row identity is possible, with stability limited to the service snapshot; missing a legal parcel number does not exclude geometry.",
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "responseFile": "research/world-capitals-2026-10-08/skopje-old-bazaar-safe-sample.json",
+    "sourceGeometryDiagnosis": {
+      "summary": "OID 449 and 464 are coincident 5-vertex polygons. Both are fully covered by OID 452; the latter polygon has area about 35.9615 m2. OID 272/273 has only a sub-millimetre-wide sliver.",
+      "diagnosticRawResponses": "/tmp/world-capitals-2026-10-08/source-geometry-diagnostics.json",
+      "queryEndpoint": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3",
+      "details": {
+        "service": "https://gisportal.skopje.gov.mk/arcgis/rest/services/OUT/StaraCarsijaWGS/FeatureServer/3",
+        "records": [
+          {
+            "objectId": 272,
+            "Parcela": "Dance",
+            "KP": null,
+            "Br_Blok": null,
+            "ringVertexCount": 22
+          },
+          {
+            "objectId": 273,
+            "Parcela": "",
+            "KP": null,
+            "Br_Blok": null,
+            "ringVertexCount": 23
+          },
+          {
+            "objectId": 449,
+            "Parcela": "",
+            "KP": null,
+            "Br_Blok": null,
+            "ringVertexCount": 5
+          },
+          {
+            "objectId": 452,
+            "Parcela": "",
+            "KP": null,
+            "Br_Blok": null,
+            "ringVertexCount": 8
+          },
+          {
+            "objectId": 464,
+            "Parcela": "",
+            "KP": null,
+            "Br_Blok": null,
+            "ringVertexCount": 5
+          }
+        ],
+        "statusGrouping": "All exact OID reads HTTP 200. The only nonblank parcel label is Dance (OID 272); KP and Br_Blok are null throughout. No lifecycle/status field is exposed, so identity is source-scoped by service and OID only.",
+        "projectionComparison": "Native EPSG:32634, outSR=32634, outSR=4326, GeoJSON default and GeoJSON outSR=4326 retained 22/23/5/8/5 vertices; overlaps remained the same after transformation within measurement precision.",
+        "overlaps": [
+          {
+            "ids": [
+              272,
+              273
+            ],
+            "areaM2Native": 0.017429,
+            "areaM2Out4326": 0.017429,
+            "fractionsOfEach": [
+              7.53e-06,
+              1.708e-05
+            ],
+            "fractionOfSmaller": 1.708e-05,
+            "maxInscribedDiameterM": 0.000474
+          },
+          {
+            "ids": [
+              449,
+              452
+            ],
+            "areaM2Native": 5.872447,
+            "areaM2Out4326": 5.872447,
+            "fractionsOfEach": [
+              1.0,
+              0.16329826
+            ],
+            "fractionOfSmaller": 1.0,
+            "maxInscribedDiameterM": 1.972724
+          },
+          {
+            "ids": [
+              449,
+              464
+            ],
+            "areaM2Native": 5.872447,
+            "areaM2Out4326": 5.872447,
+            "fractionsOfEach": [
+              1.0,
+              1.0
+            ],
+            "fractionOfSmaller": 1.0,
+            "maxInscribedDiameterM": 1.972724
+          },
+          {
+            "ids": [
+              452,
+              464
+            ],
+            "areaM2Native": 5.872447,
+            "areaM2Out4326": 5.872447,
+            "fractionsOfEach": [
+              0.16329826,
+              1.0
+            ],
+            "fractionOfSmaller": 1.0,
+            "maxInscribedDiameterM": 1.972724
+          }
+        ],
+        "overlapPattern": "OID 449 and 464 are coincident 5-vertex polygons. Both are fully covered by OID 452; the latter polygon has area about 35.9615 m2. OID 272/273 has only a sub-millimetre-wide sliver."
+      }
+    },
+    "initialSampleMetadataFile": "research/world-capitals-2026-10-08/skopje-safe-sample.json"
+  },
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Old Bazaar OIDs 449 and 464 have coincident 5.872 m² shapes, both contained by OID 452. Native-coordinate rereads reproduce the duplicate/containment; no lifecycle field resolves it.",
+    "evidenceFile": "research/world-capitals-2026-10-08/skopje-old-bazaar-acceptance.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/skopje-old-bazaar-safe-sample.json"
+}

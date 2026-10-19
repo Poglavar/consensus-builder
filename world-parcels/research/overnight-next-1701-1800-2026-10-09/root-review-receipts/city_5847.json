@@ -1,0 +1,12 @@
+{
+  "taskId": "city:5847",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-5847-baoshan.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/baoshan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:24:57Z",
+  "reason": "Baoshan registration custody is evidenced by the official Registration Center report. No anonymous native parcel ID and full polygon response was verified. Fresh adapter reads, paging, 13 cells, metric GEOS checks, source binding, and headed Details verification are absent."
+}

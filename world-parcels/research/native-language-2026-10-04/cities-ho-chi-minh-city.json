@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 20,
+  "city": "Ho Chi Minh City",
+  "countryCode": "VN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/ho-chi-minh-city.json",
+  "query": {
+    "language": "Vietnamese",
+    "script": "Latin",
+    "text": "Thành phố Hồ Chí Minh bản đồ địa chính thửa đất dữ liệu GIS site:gov.vn"
+  },
+  "results": [
+    {
+      "title": "HCMC Geoportal - WebGIS dữ liệu Tài nguyên và Môi trường",
+      "url": "https://geoportal-stnmt.tphcm.gov.vn/geonetwork/srv/search?keyword=WebGIS",
+      "kind": "official-city-geospatial-catalog",
+      "note": "Catalog describes OGC WMS/WFS services and lists “Ranh thửa đất các xã phường” (ward/commune parcel boundaries); direct layer endpoint and access conditions not established."
+    },
+    {
+      "title": "WEBGIS dữ liệu TN&MT TP.HCM",
+      "url": "https://geodata-stnmt.tphcm.gov.vn/webgis/",
+      "kind": "official-city-viewer",
+      "note": "Viewer identifies 2010 HCMC parcel-boundary layer supplied by DONRE; evidence is historical and viewer-level, not a verified feature service."
+    }
+  ],
+  "assessment": "Official city geoportal lists cadastral parcel boundaries and OGC service infrastructure, but no current direct feature endpoint or anonymous access behavior was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "geonames:1566083",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Vietnamese",
+    "queryScript": "Latin",
+    "nativeQuery": "Thành phố Hồ Chí Minh bản đồ địa chính thửa đất dữ liệu GIS site:gov.vn",
+    "englishQuery": "Ho Chi Minh City cadastral parcel map, parcel data, and GIS",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

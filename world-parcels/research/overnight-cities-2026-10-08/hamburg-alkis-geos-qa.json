@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "city": "hamburg",
+  "sourceId": "de-hh-alkis-inspire-cadastralparcel",
+  "sourceCrs": "EPSG:25832",
+  "queryCrs": "CRS:84",
+  "geosVersion": "3.14.1",
+  "uniqueFullSampleCount": 3,
+  "features": [
+    {
+      "nativeCadastralReference": "020302___01391______",
+      "gmlId": "CadastralParcel_020302___01391______",
+      "insPIREIdentifier": null,
+      "reportedAreaM2": 4744,
+      "geosAreaM2": 4739.5273235810355,
+      "valid": true,
+      "coversWupCenter": false
+    },
+    {
+      "nativeCadastralReference": "020302___02581______",
+      "gmlId": "CadastralParcel_020302___02581______",
+      "insPIREIdentifier": null,
+      "reportedAreaM2": 14240,
+      "geosAreaM2": 14248.947158503617,
+      "valid": true,
+      "coversWupCenter": true
+    },
+    {
+      "nativeCadastralReference": "020302___00717______",
+      "gmlId": "CadastralParcel_020302___00717______",
+      "insPIREIdentifier": null,
+      "reportedAreaM2": 584,
+      "geosAreaM2": 585.4915524949331,
+      "valid": true,
+      "coversWupCenter": false
+    }
+  ],
+  "pairwise": {
+    "intersections": [
+      {
+        "a": "020302___01391______",
+        "b": "020302___02581______",
+        "intersects": true,
+        "overlaps": false,
+        "equals": false,
+        "intersectionAreaM2": 0
+      },
+      {
+        "a": "020302___01391______",
+        "b": "020302___00717______",
+        "intersects": true,
+        "overlaps": false,
+        "equals": false,
+        "intersectionAreaM2": 0
+      },
+      {
+        "a": "020302___02581______",
+        "b": "020302___00717______",
+        "intersects": true,
+        "overlaps": false,
+        "equals": false,
+        "intersectionAreaM2": 0
+      }
+    ],
+    "duplicateGeometries": false
+  },
+  "wupPoint": {
+    "lat": 53.5745088975748,
+    "lon": 9.99288544960732,
+    "projectedEpsg25832": [
+      565744.09,
+      5936641.38
+    ],
+    "containedByNativeReference": "020302___02581______"
+  },
+  "thirteenCellCountOnlyProbe": {
+    "method": "WFS 2.0 GetFeature RESULTTYPE=hits over thirteen adjacent 0.00024-degree cells, grid centered on WUP point",
+    "cells": [
+      {
+        "cell": 0,
+        "bbox": [
+          9.992165449607318,
+          53.574088897574796,
+          9.99240544960732,
+          53.5743288975748
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "3",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 1,
+        "bbox": [
+          9.99246544960732,
+          53.574088897574796,
+          9.992705449607321,
+          53.5743288975748
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "2",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 2,
+        "bbox": [
+          9.992765449607319,
+          53.574088897574796,
+          9.99300544960732,
+          53.5743288975748
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "5",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 3,
+        "bbox": [
+          9.993065449607318,
+          53.574088897574796,
+          9.99330544960732,
+          53.5743288975748
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "6",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 4,
+        "bbox": [
+          9.99336544960732,
+          53.574088897574796,
+          9.99360544960732,
+          53.5743288975748
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "6",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 5,
+        "bbox": [
+          9.992165449607318,
+          53.5743888975748,
+          9.99240544960732,
+          53.574628897574804
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "4",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 6,
+        "bbox": [
+          9.99246544960732,
+          53.5743888975748,
+          9.992705449607321,
+          53.574628897574804
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "3",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 7,
+        "bbox": [
+          9.992765449607319,
+          53.5743888975748,
+          9.99300544960732,
+          53.574628897574804
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "3",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 8,
+        "bbox": [
+          9.993065449607318,
+          53.5743888975748,
+          9.99330544960732,
+          53.574628897574804
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "4",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 9,
+        "bbox": [
+          9.99336544960732,
+          53.5743888975748,
+          9.99360544960732,
+          53.574628897574804
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "4",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 10,
+        "bbox": [
+          9.992165449607318,
+          53.5746888975748,
+          9.99240544960732,
+          53.57492889757481
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "4",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 11,
+        "bbox": [
+          9.99246544960732,
+          53.5746888975748,
+          9.992705449607321,
+          53.57492889757481
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "4",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      },
+      {
+        "cell": 12,
+        "bbox": [
+          9.992765449607319,
+          53.5746888975748,
+          9.99300544960732,
+          53.57492889757481
+        ],
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "numberMatched": "4",
+        "numberReturned": "0",
+        "memberCount": 0,
+        "bodyBytes": 349
+      }
+    ],
+    "totalNumberMatched": 52,
+    "note": "Counts overlap parcels across adjacent bounding boxes and are not a unique city total; each response had numberReturned=0 and no geometry."
+  },
+  "paging": {
+    "page0": {
+      "count": 3,
+      "startIndex": 0,
+      "fullGmlMembers": 3,
+      "numberMatched": "unknown",
+      "numberReturned": 0
+    },
+    "page3": {
+      "count": 1,
+      "startIndex": 3,
+      "fullGmlMembers": 0,
+      "numberMatched": "unknown",
+      "numberReturned": 0
+    },
+    "countOnlyHitsForSameBbox": {
+      "numberMatched": 3,
+      "numberReturned": 0
+    },
+    "interpretation": "The direct GML response members contradict numberReturned; the provider\u2019s count-only page contract cannot prove stable unique-ID paging."
+  },
+  "adapterQualification": {
+    "repoAdapter": "backend/parcels/wfs-source.js",
+    "format": "GeoJSON FeatureCollection",
+    "geojsonOutputRequest": {
+      "status": 400,
+      "error": "WFS is not configured to handle output/input format application/json"
+    },
+    "gmlReader": "backend/parcels/gml-parcel-reader.js",
+    "gmlReaderProbe": {
+      "input": "/private/tmp/hh-point.gml",
+      "idField": "nationalCadastralReference",
+      "namespace": "http://inspire.ec.europa.eu/schemas/cp/4.0",
+      "result": "rejected HTTP-like 502: Unsupported parcel GML coordinate system; repository reader supports EPSG:25830/25831 but not 25832."
+    },
+    "qualification": "Not adapter-qualified. The current WFS adapter contract cannot consume this service response: GeoJSON is rejected, GML declares EPSG:25832 unsupported by the repository reader, and the GML numberReturned value is inconsistent with the three returned members."
+  },
+  "limits": "Three distinct full feature geometries were retained in temporary QA only; this repository sample contains one polygon. No owner, postal address, or personal registry attributes were requested or retained.",
+  "rootDisposition": "invalidated_conversion_fidelity",
+  "limitation": "Earlier converter concatenated posList coordinates without respecting Ring/Curve/Arc structure. Circular arc control points are not straight polygon vertices; independent GEOS validity did not establish conversion fidelity. Earlier converted sample is unsuitable for runtime or geometry-accuracy claims.",
+  "faithfulNativeGeometryTopologyVerified": false
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10358-guilin.json",
+  "purpose": "Document city-scope registry and public parcel-geometry source review for the exact WUP ranked settlement point; retain only safe geometry evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City registration office existence is verified, but no city-specific open geometry source, exact map extent, or point feature was verified.",
+  "registryAssessment": "Official Guangxi tax reporting and Guilin municipal notices establish a city Real Estate Registration and Transaction Center. A separate provincial graphical cadastral lookup requires account and identity authentication; no anonymous public parcel geometry or exact WUP-place coverage was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html",
+      "observation": "Official Guangxi tax authority reports a city-level Guilin Real Estate Registration and Transaction Center and integrated local registration services."
+    },
+    {
+      "url": "https://guangxi.chinatax.gov.cn/guilin/tzgg_15124/tzgg_15125/201809/t20180926_255111.html",
+      "observation": "Official Guilin tax branch notice routes urban property-transfer registration through the municipal registration and transaction window."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+      "observation": "Official Guangxi Natural Resources Department describes a graphical cadastral lookup service with account and identity authentication; anonymous parcel geometry is not available through the reviewed workflow."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "桂林市不动产登记中心 地籍图查询 官方 桂林市自然资源局",
+      "scope": "Find the municipal real-estate registration office and any public cadastral lookup.",
+      "result": "Found official Guilin city registration-center evidence and a Guangxi-level graphical parcel lookup; the graphical lookup requires account and identity authentication, and no anonymous geometry route was verified.",
+      "actualResultUrls": [
+        "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html",
+        "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml"
+      ],
+      "executionMethod": "Separate Chinese-language search and official Guilin/Guangxi source review."
+    },
+    {
+      "language": "English",
+      "query": "Guilin China official cadastral parcel map land registry GIS parcel query government",
+      "scope": "Find city-specific registry evidence and a safe public parcel geometry source.",
+      "result": "Search corroborated the city-level registration and transaction center; no anonymous city parcel feature service or exact WUP coverage was verified.",
+      "actualResultUrls": [
+        "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html"
+      ],
+      "executionMethod": "Separate English-language search and first-party official source review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html",
+      "method": "Official first-party page review",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "observation": "Guilin Real Estate Registration and Transaction Center is identified in a 2026 official tax-authority report."
+    },
+    {
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+      "method": "Official graphical lookup workflow review",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "observation": "Graphical map service requires account and identity authentication; no anonymous vector query attempted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner/address/property detail or personal lookup requested.",
+  "runtimeAssessment": "held_authenticated_lookup_no_public_geometry"
+}

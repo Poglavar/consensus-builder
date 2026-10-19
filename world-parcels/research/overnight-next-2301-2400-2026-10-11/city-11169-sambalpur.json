@@ -1,0 +1,31 @@
+{
+  "cityCode": 11169,
+  "queueRank": 2326,
+  "name": "Sambalpur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [21.4588428060781, 83.9909803049859],
+  "population2025": 250468,
+  "population2025k": 250.468,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sambalpur Odisha official cadastral parcel map Bhunaksha Odisha land records API",
+        "result": "First-party discovery identified Odisha BhuNaksha, the Revenue & Disaster Management Department cadastral map viewer, and the official Sambalpur district site land-records link. The current Odisha landing page routes Sambalpur district code 12 to the app2 HTTPS service on port 8443.",
+        "actualResultUrls": ["https://bhunakshaodisha.nic.in/", "https://bhunakshaodisha.nic.in/bhunaksha/", "https://sambalpur.odisha.gov.in/en/quick-links"]
+      },
+      {
+        "language": "Odia",
+        "query": "ସମ୍ବଲପୁର ଓଡ଼ିଶା ଭୂନକ୍ଷା ଜମି ରେକର୍ଡ ପାର୍ସେଲ ମାନଚିତ୍ର",
+        "result": "Odia-language first-party discovery returned the Odisha BhuNaksha viewer and the Odia Sambalpur district government site. The viewer UI exposes Sambalpur district and Odia administrative selectors, but no safe parcel feature response was obtained.",
+        "actualResultUrls": ["https://bhunakshaodisha.nic.in/", "https://app2bhunakshaodisha.nic.in:8443/bhunaksha/", "https://sambalpur.odisha.gov.in/or"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "A first-party Odisha cadastral map registry/viewer is evidenced and the current JavaScript/configuration was followed to the Sambalpur-serving public app. The app exposes WMS map rendering and administrative selectors, but no bounded anonymous response containing a safe native parcel identity plus unchanged polygon geometry was qualified. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,648 @@
+{
+  "checkedAt": "2026-10-03",
+  "description": "Metadata-only complete viewport and exact-key source verification.",
+  "city": "birmingham",
+  "center": [
+    52.4975,
+    -1.978
+  ],
+  "descriptor": {
+    "id": "gb-arcgis-geodom-land-registry-inspire-2021",
+    "endpoint": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+    "idField": "INSPIREID",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "GB-HMLR-",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "INSPIREID"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32630,
+    "idPattern": "^[0-9]+$",
+    "adapter": "arcgis",
+    "name": "Birmingham HMLR title-index polygons — Geodom mirror, October 2021",
+    "countryCode": "GB",
+    "cityIds": [
+      "birmingham"
+    ],
+    "dataVersion": "2021-10-22",
+    "attributeExclusions": {
+      "INSPIREID": [
+        "No LR Title Detected"
+      ]
+    },
+    "scope": "Partial Midlands extract near Birmingham from a third-party October 22, 2021 mirror of HMLR INSPIRE title-index polygons. Non-title placeholder rows are excluded; missing native IDs cannot become canonical parcels. Empty cells mean no registered-title index polygons in this extract, not absence of physical parcels or ownership.",
+    "licenceNote": "Geodom is an unofficial mirror publisher; host-specific conditions are not documented in the checked metadata. Underlying HMLR title-index and mirror publisher conditions remain informational.",
+    "catalogueUrl": "https://services2.arcgis.com/5K9ykSNwoxdIgeYH/arcgis/rest/services/Land_Registry_Inspire_20211022/FeatureServer/0",
+    "attribution": "HM Land Registry INSPIRE title-index polygons, dated 2021-10-22; public Geodom mirror. Adapted to WGS84.",
+    "evidenceFile": "research/birmingham-live.json"
+  },
+  "fixedWhereDiagnosticOnly": "INSPIREID <> 'No LR Title Detected' AND INSPIREID IS NOT NULL",
+  "cells": [
+    {
+      "bbox": [
+        -1.9825000000000002,
+        52.495000000000005,
+        -1.98,
+        52.4975
+      ],
+      "complete": true,
+      "count": 92
+    },
+    {
+      "bbox": [
+        -1.9825000000000002,
+        52.4975,
+        -1.98,
+        52.5
+      ],
+      "complete": true,
+      "count": 282
+    },
+    {
+      "bbox": [
+        -1.9825000000000002,
+        52.5,
+        -1.98,
+        52.5025
+      ],
+      "complete": true,
+      "count": 39
+    },
+    {
+      "bbox": [
+        -1.98,
+        52.495000000000005,
+        -1.9775,
+        52.4975
+      ],
+      "complete": true,
+      "count": 224
+    },
+    {
+      "bbox": [
+        -1.98,
+        52.4975,
+        -1.9775,
+        52.5
+      ],
+      "complete": true,
+      "count": 198
+    },
+    {
+      "bbox": [
+        -1.98,
+        52.5,
+        -1.9775,
+        52.5025
+      ],
+      "complete": true,
+      "count": 8
+    },
+    {
+      "bbox": [
+        -1.9775,
+        52.495000000000005,
+        -1.975,
+        52.4975
+      ],
+      "complete": true,
+      "count": 128
+    },
+    {
+      "bbox": [
+        -1.9775,
+        52.4975,
+        -1.975,
+        52.5
+      ],
+      "complete": true,
+      "count": 108
+    },
+    {
+      "bbox": [
+        -1.9775,
+        52.5,
+        -1.975,
+        52.5025
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "bbox": [
+        -1.9775,
+        52.4975,
+        -1.975,
+        52.5
+      ],
+      "complete": true,
+      "count": 108
+    },
+    {
+      "bbox": [
+        -1.9775,
+        52.5,
+        -1.975,
+        52.5025
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "bbox": [
+        -1.9775,
+        52.5025,
+        -1.975,
+        52.505
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "bbox": [
+        -1.975,
+        52.4975,
+        -1.9725000000000001,
+        52.5
+      ],
+      "complete": true,
+      "count": 8
+    },
+    {
+      "bbox": [
+        -1.975,
+        52.5,
+        -1.9725000000000001,
+        52.5025
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "bbox": [
+        -1.975,
+        52.5025,
+        -1.9725000000000001,
+        52.505
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "bbox": [
+        -1.9725000000000001,
+        52.4975,
+        -1.97,
+        52.5
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "bbox": [
+        -1.9725000000000001,
+        52.5,
+        -1.97,
+        52.5025
+      ],
+      "complete": true,
+      "count": 0
+    },
+    {
+      "bbox": [
+        -1.9725000000000001,
+        52.5025,
+        -1.97,
+        52.505
+      ],
+      "complete": true,
+      "count": 0
+    }
+  ],
+  "retainedCount": 898,
+  "acrossCellConflicts": 0,
+  "exact": [
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 80,
+      "count": 80,
+      "absent": 0,
+      "conflicts": 0
+    },
+    {
+      "complete": true,
+      "input": 18,
+      "count": 18,
+      "absent": 0,
+      "conflicts": 0
+    }
+  ],
+  "verificationPageSize": 25,
+  "productionPageSize": 500,
+  "sourceNotice": {
+    "titleIndexOnly": true,
+    "mirrorPublisher": "Geodom (third party)",
+    "dataVersion": "2021-10-22",
+    "partialExtract": true,
+    "conditionsAreInformational": true
+  },
+  "technicalAssessment": "Forced 25-row paging and production 500-row paging each completed 18 viewport cells and all 898 exact native-ID reads without absence or geometry conflicts.",
+  "productionPageVerification": {
+    "pageSize": 500,
+    "cells": [
+      {
+        "bbox": [
+          -1.9825000000000002,
+          52.495000000000005,
+          -1.98,
+          52.4975
+        ],
+        "complete": true,
+        "count": 92
+      },
+      {
+        "bbox": [
+          -1.9825000000000002,
+          52.4975,
+          -1.98,
+          52.5
+        ],
+        "complete": true,
+        "count": 282
+      },
+      {
+        "bbox": [
+          -1.9825000000000002,
+          52.5,
+          -1.98,
+          52.5025
+        ],
+        "complete": true,
+        "count": 39
+      },
+      {
+        "bbox": [
+          -1.98,
+          52.495000000000005,
+          -1.9775,
+          52.4975
+        ],
+        "complete": true,
+        "count": 224
+      },
+      {
+        "bbox": [
+          -1.98,
+          52.4975,
+          -1.9775,
+          52.5
+        ],
+        "complete": true,
+        "count": 198
+      },
+      {
+        "bbox": [
+          -1.98,
+          52.5,
+          -1.9775,
+          52.5025
+        ],
+        "complete": true,
+        "count": 8
+      },
+      {
+        "bbox": [
+          -1.9775,
+          52.495000000000005,
+          -1.975,
+          52.4975
+        ],
+        "complete": true,
+        "count": 128
+      },
+      {
+        "bbox": [
+          -1.9775,
+          52.4975,
+          -1.975,
+          52.5
+        ],
+        "complete": true,
+        "count": 108
+      },
+      {
+        "bbox": [
+          -1.9775,
+          52.5,
+          -1.975,
+          52.5025
+        ],
+        "complete": true,
+        "count": 0
+      },
+      {
+        "bbox": [
+          -1.9775,
+          52.4975,
+          -1.975,
+          52.5
+        ],
+        "complete": true,
+        "count": 108
+      },
+      {
+        "bbox": [
+          -1.9775,
+          52.5,
+          -1.975,
+          52.5025
+        ],
+        "complete": true,
+        "count": 0
+      },
+      {
+        "bbox": [
+          -1.9775,
+          52.5025,
+          -1.975,
+          52.505
+        ],
+        "complete": true,
+        "count": 0
+      },
+      {
+        "bbox": [
+          -1.975,
+          52.4975,
+          -1.9725000000000001,
+          52.5
+        ],
+        "complete": true,
+        "count": 8
+      },
+      {
+        "bbox": [
+          -1.975,
+          52.5,
+          -1.9725000000000001,
+          52.5025
+        ],
+        "complete": true,
+        "count": 0
+      },
+      {
+        "bbox": [
+          -1.975,
+          52.5025,
+          -1.9725000000000001,
+          52.505
+        ],
+        "complete": true,
+        "count": 0
+      },
+      {
+        "bbox": [
+          -1.9725000000000001,
+          52.4975,
+          -1.97,
+          52.5
+        ],
+        "complete": true,
+        "count": 0
+      },
+      {
+        "bbox": [
+          -1.9725000000000001,
+          52.5,
+          -1.97,
+          52.5025
+        ],
+        "complete": true,
+        "count": 0
+      },
+      {
+        "bbox": [
+          -1.9725000000000001,
+          52.5025,
+          -1.97,
+          52.505
+        ],
+        "complete": true,
+        "count": 0
+      }
+    ],
+    "retainedCount": 898,
+    "acrossCellConflicts": 0,
+    "exact": [
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 80,
+        "count": 80,
+        "absent": 0,
+        "conflicts": 0
+      },
+      {
+        "complete": true,
+        "input": 18,
+        "count": 18,
+        "absent": 0,
+        "conflicts": 0
+      }
+    ],
+    "requestSummary": {
+      "count": 30,
+      "operations": {
+        "bounds": 18,
+        "exact-id-or-page": 12
+      },
+      "httpStatuses": {
+        "200": 30
+      },
+      "detail": "Individual request URLs are omitted to avoid persisting queried native parcel lists."
+    }
+  },
+  "browserQA": {
+    "afterPan": 898,
+    "back": "ready",
+    "backCached": true,
+    "binding": {
+      "count": 1,
+      "coverage": "complete",
+      "status": 200
+    },
+    "city": "birmingham",
+    "exact": {
+      "absent": 0,
+      "count": 1,
+      "status": 200
+    },
+    "initial": "ready",
+    "initialRetained": 893,
+    "pan": "ready",
+    "rendered": 898,
+    "source": "gb-arcgis-geodom-land-registry-inspire-2021",
+    "under": {
+      "complete": true,
+      "count": 5,
+      "status": 200
+    },
+    "checkedAt": "2026-10-03",
+    "globeOpenVerified": true
+  },
+  "requestSummary": {
+    "count": 106,
+    "operations": {
+      "bounds": 61,
+      "exact-id-or-page": 45
+    },
+    "httpStatuses": {
+      "200": 106
+    },
+    "detail": "Individual request URLs are omitted to avoid persisting queried native parcel lists."
+  },
+  "implementedAdapterScope": "Fixed attributeExclusions apply consistently to bounds and exact lookups; SQL inequality excludes null values and canonical validation rejects missing native IDs."
+}

@@ -1,0 +1,34 @@
+{
+  "taskId": "city:11245",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:36:31Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-11245-jhanjharpur.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/jhanjharpur-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/root-review-receipts/source-evidence/city_11245-root-review.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 11245,
+    "rank": 3003,
+    "country": "India",
+    "point": [
+      26.2676106223873,
+      86.2835535424739
+    ],
+    "populationPersons": 199196
+  },
+  "checks": {
+    "bilingualExecutedSearches": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Original Bihar BhuNaksha hierarchy cache returns seven levels, Madhubani district code 05, Jhanjharpur subdivision code 03 and circle code 11. This proves a cadastral custodian and local administrative branch, not parcel vector coverage. No native ID plus full polygon or adapter qualification."
+}

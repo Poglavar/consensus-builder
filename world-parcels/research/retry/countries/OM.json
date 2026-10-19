@@ -1,0 +1,67 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-OM,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mohup.gov.om/ (and mohup.gov.om, /en)",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.nsdi.gov.om/ (and nsdi.gov.om)",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://geoportal.om, maps.gov.om, ngis.gov.om, lands.gov.om, gis.mohup.gov.om, eservices.mohup.gov.om, www.moj.gov.om, services.moj.gov.om, www.tam.gov.om",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.housing.gov.om/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "{\"code\":\"403\",\"message\":\"Forbidden\",\"RequestId\":...} with browser headers and also with bare curl"
+  },
+  {
+   "url": "https://www.moh.gov.om/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "loads now, but this is the Ministry of Health, not housing/land: irrelevant"
+  },
+  {
+   "url": "https://www.ncsi.gov.om/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "statistics portal, no cadastre"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Oman cadastre parcel",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "housing.gov.om returns a JSON 403 both with browser headers and bare curl, other Omani gov hosts reset: consistent with geo/IP filtering, not confirmed",
+ "notes": "New: housing.gov.om answers with a JSON 403 (likely a gateway/WAF rejecting this network) and is the first live housing-ministry host seen; moh.gov.om was earlier mislabelled as a housing host (it is Health). No viewer HTML obtainable.",
+ "nextStep": "Retry housing.gov.om / MOHUP from an Oman or GCC network; look for the Oman land e-services (Ministry of Housing and Urban Planning) viewer URL.",
+ "kind": "country",
+ "key": "OM",
+ "checkedAt": "2026-09-30"
+}

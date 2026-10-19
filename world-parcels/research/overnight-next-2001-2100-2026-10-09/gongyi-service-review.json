@@ -1,0 +1,57 @@
+{
+  "cityRecord": "city-9432-gongyi.json",
+  "cityCode": 9432,
+  "queueRank": 2004,
+  "city": "Gongyi",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T20:41:22Z",
+  "discovery": {
+    "english": "Official Gongyi and Zhengzhou government sources were found for the Gongyi Natural Resources and Planning Bureau and Gongyi Real Estate Registration Center. No public anonymous parcel viewer/API was established.",
+    "native": "中文官方检索确认巩义市自然资源和规划局、巩义市不动产登记中心及登记办理/资料查询制度；未确认可匿名返回巩义宗地稳定ID和几何的公开接口。"
+  },
+  "custodian": {
+    "name": "巩义市自然资源和规划局 / 巩义市不动产登记中心",
+    "role": "Local natural-resources and real-estate registration custodian/service center described by official government sources",
+    "evidenceUrls": [
+      "https://public.gongyishi.gov.cn/D1603Y/7612271.jhtml",
+      "https://public.gongyishi.gov.cn/attachment/2025%E5%B9%B4%E5%B7%A9%E4%B9%89%E5%B8%82%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80%E9%83%A8%E9%97%A8%EF%BC%88%E6%B1%87%E6%80%BB%EF%BC%89%E9%A2%84%E7%AE%97%E5%85%AC%E5%BC%80.pdf",
+      "https://www.zhengzhou.gov.cn/yshj01/9923804.jhtml"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "Official Gongyi government portal", "url": "https://public.gongyishi.gov.cn/", "result": "HTTP 200; current HTML and navigation inspected; no cadastral map/API link or parcel schema."},
+    {"route": "Official Gongyi Natural Resources and Planning Bureau responsibilities", "url": "https://public.gongyishi.gov.cn/D1603Y/7612271.jhtml", "result": "HTTP 200; local custodian, unified registration, cadastral survey and information-platform responsibilities documented; no geometry service."},
+    {"route": "Official Gongyi registration materials/procedure page", "url": "https://public.gongyishi.gov.cn/D21X/7691043.jhtml", "result": "HTTP 200; registration materials and deadlines documented; no anonymous parcel map/API."},
+    {"route": "Official Gongyi government-information request page", "url": "https://public.gongyishi.gov.cn/?a=apply&d=3335", "result": "HTTP 200; real-estate registration records subject to special legal access rules; no protected query attempted."},
+    {"route": "Official Zhengzhou page listing Gongyi registration center", "url": "https://www.zhengzhou.gov.cn/yshj01/9923804.jhtml", "result": "HTTP 200; local registration center identified; no public geometry endpoint."},
+    {"route": "Official Gongyi cadastral compilation procurement result", "url": "https://gongyi.zfcg.henan.gov.cn/gongyi/content?infoId=1940928", "result": "HTTP 403 anonymous access denied; no bypass attempted and not treated as absence."},
+    {"route": "National Tianditu map portal", "url": "https://www.tianditu.gov.cn/", "result": "HTTP 418 anonymous access failure; no viewer configuration, schema, CRS or geometry."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [34.7532102004985, 112.976781206795] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point hit, map-extent miss, timeout, login wall or unusable UI was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens and protected owner/property queries were not attempted.",
+    "National/general-agency prose was not promoted to a Gongyi geometry source.",
+    "Registry existence is locally evidenced, but source integration/admission remains unqualified."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Public endpoint, schema, CRS, safe native identity field and citywide coverage remain unknown."
+  }
+}

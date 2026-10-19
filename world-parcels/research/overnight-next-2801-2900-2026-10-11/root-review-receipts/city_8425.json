@@ -1,0 +1,17 @@
+{
+  "taskId": "city:8425",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-8425-longchang.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/longchang-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:30:38Z",
+  "identityCheck": "Rank 2804, China, WUP point [29.3418838361459,105.284427793382], and 211655 persons match both immutable cohort rosters. English and Chinese executed queries have source URLs.",
+  "custodyDecision": "registryFound remains null: the official city and provincial map leads do not establish a local cadastral custodian or an anonymous parcel service.",
+  "reason": "No retained polygon or native parcel ID. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced. Viewer configuration and a planning-PDF timeout do not establish citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://sichuan.tianditu.gov.cn/"
+  ]
+}

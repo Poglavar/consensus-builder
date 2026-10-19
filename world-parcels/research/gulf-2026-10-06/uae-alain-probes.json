@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-10-06",
+  "attempts": [
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=1%3D1&returnGeometry=false&outFields=UTM_CODE%2CLMS_PLOT_I%2CTEMPORALST%2CSTATUS%2CDISTRICT_1%2CCOMMUNITY1%2CROAD_NO_L1%2CPLOT_NUM1&resultRecordCount=3&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=UTM_CODE+IS+NULL&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=LMS_PLOT_I+IS+NULL&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=TEMPORALST%3D%27Current%27&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=TEMPORALST%3D%27Existing%27&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=TEMPORALST+IS+NULL&returnCountOnly=true&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=1%3D1&outFields=TEMPORALST&returnDistinctValues=true&returnGeometry=false&f=json",
+      "origin": "authorized laptop direct urllib",
+      "error": "HTTP Error 403: Forbidden"
+    }
+  ]
+}

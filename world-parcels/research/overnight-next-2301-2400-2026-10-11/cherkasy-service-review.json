@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-2947-cherkasy.json",
+  "cityCode": 2947,
+  "queueRank": 2350,
+  "name": "Cherkasy",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "pointLatLon": [49.4267401580945, 32.0591032417276],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "GET", "url": "https://cherkaska.land.gov.ua/icat/kadastr-i-reiestratsiia/", "httpStatus": 200, "outcome": "Official Cherkasy regional StateGeoCadastre cadastral-and-registration page loaded; it describes the State Land Cadastre and cadastral registration."},
+    {"method": "GET", "url": "https://cherkasy-rada.gov.ua/department/departament-arhitektury-ta-mistobuduvannya/", "httpStatus": 200, "outcome": "Official Cherkasy city department page loaded; it identifies the urban-cadastre GIS function and links the municipal geoportal."},
+    {"method": "GET", "url": "https://mgis.chmr.gov.ua/server/rest/services/landuse/Landuse_update_WGS84/MapServer/52?f=pjson", "httpStatus": 200, "outcome": "Official municipal ArcGIS layer schema loaded. Geometry is polygon; source spatial reference is msk_Cherkassy/Pulkovo 1942 Gauss-Kruger; cdstr_nmbr is the cadastral-number field; objectid/globalid also exist but were not requested."},
+    {"method": "GET", "url": "https://mgis.chmr.gov.ua/server/rest/services/landuse/Landuse_update_WGS84/MapServer/52/query", "httpStatus": 200, "outcome": "Exact WUP point query returned an empty GeoJSON FeatureCollection; this was not treated as evidence of absence."},
+    {"method": "GET", "url": "https://mgis.chmr.gov.ua/server/rest/services/landuse/Landuse_update_WGS84/MapServer/52/query", "httpStatus": 200, "outcome": "Bounded envelope query with browser headers, outFields=cdstr_nmbr, resultRecordCount=3 and output CRS 4326 returned three full polygon features and exceededTransferLimit=true. Full raw response is kept only under ignored tmp/; retained sample strips all source attributes except canonical id."}
+  ],
+  "schemaAndCrs": {"localCatalog": "Cherkasy municipal ArcGIS Feature Layer 52, Внутрішні території 1:2257", "geometryCrs": {"native": "msk_Cherkassy / Pulkovo 1942 Gauss-Kruger", "response": "EPSG:4326"}, "nativeIdentity": "cdstr_nmbr / Кадастровий номер", "fieldMapping": {"cdstr_nmbr": "properties.id", "geometry": "GeoJSON Polygon"}, "observed": "Layer metadata exposes cdstr_nmbr, objectid, globalid and other source fields. Only cdstr_nmbr and geometry were requested for the bounded sample; unsafe owner/address/contact fields were not requested or retained."},
+  "sampleGeoJSON": "cherkasy-parcel-sample.geojson",
+  "sampleFile": "cherkasy-parcel-sample.geojson",
+  "safeFieldAllowlist": ["stable native cadastral number", "full polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Bounded anonymous ID+geometry response qualifies as research evidence, but serial review must independently assess adapter behavior, completeness, and reuse terms."},
+  "scopeLimits": ["The WUP point is a city locator, not a parcel-coverage test; it returned zero and was not shifted.", "The successful envelope is a small local sample and does not prove citywide completeness or countrywide coverage.", "The regional StateGeoCadastre is a custodian/procedure source; the verified geometry came from the municipal GIS service.", "The response exceeded the three-record limit; no bulk extraction was attempted."],
+  "uncertainty": "Cherkasy has a verified municipal public polygon service with native cadastral-number identities. Completeness, update cadence, licensing/reuse terms, and adapter admission remain uncertain. No login, credentials, CAPTCHA bypass, certificate exception, or unsafe owner/address fields were used."
+}

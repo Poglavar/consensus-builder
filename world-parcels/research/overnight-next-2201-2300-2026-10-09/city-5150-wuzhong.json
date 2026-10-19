@@ -1,0 +1,58 @@
+{
+  "cityCode": 5150,
+  "queueRank": 2258,
+  "name": "Wuzhong",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [37.9797858494557, 106.190279778773],
+  "population2025": 258383,
+  "population2025k": 258.383,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wuzhong Ningxia official cadastral map land parcel public map",
+        "result": "Found the official Ningxia geographic information public-service portal (Tianditu), which lists Wuzhong as a map area and advertises map/web/data APIs. Also found the official Wuzhong government page identifying its Natural Resources and Real Estate Rights Registration Center.",
+        "actualResultUrls": [
+          "https://ningxia.tianditu.gov.cn/",
+          "https://www.wuzhong.gov.cn/xxgk/jgzn/szfzcbm/zrzyj_42781/zsjg_42786/wzszrzyybdcqqdjzx/nsjg_55733/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "吴忠市 宁夏 官方 不动产登记 地籍图",
+        "result": "Found the official Wuzhong government registration-center page, which assigns the center cadastral-survey and real-estate registration duties, and the official Ningxia natural-resources portal listing the Ningxia Tianditu public map and public-service links.",
+        "actualResultUrls": [
+          "https://www.wuzhong.gov.cn/xxgk/jgzn/szfzcbm/zrzyj_42781/zsjg_42786/wzszrzyybdcqqdjzx/nsjg_55733/",
+          "https://zrzyt.nx.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Wuzhong Natural Resources and Real Estate Rights Registration Center, identified on the official Wuzhong government website; duties include cadastral surveys, registration application review, natural-resource rights, and digital archive management.",
+    "officialPublicMap": "Ningxia Geographic Information Public-Service Platform (Tianditu) lists Wuzhong map coverage and public map/web/data API categories.",
+    "urls": [
+      "https://www.wuzhong.gov.cn/xxgk/jgzn/szfzcbm/zrzyj_42781/zsjg_42786/wzszrzyybdcqqdjzx/nsjg_55733/",
+      "https://ningxia.tianditu.gov.cn/",
+      "https://zrzyt.nx.gov.cn/"
+    ]
+  },
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "The official Tianditu portal timed out on a direct HTTPS GET from this host before viewer HTML or JavaScript configuration could be retrieved; this is not evidence of citywide absence or a zero exact-point parcel hit.",
+    "No parcel feature response, native parcel ID, schema, source CRS, output CRS, or safe polygon was obtained, so no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, certificate/title, tax/account, or personal fields were requested or retained.",
+    "The local registration center is evidenced as a custodian, but no public anonymous parcel endpoint was qualified for adapter integration."
+  ]
+}

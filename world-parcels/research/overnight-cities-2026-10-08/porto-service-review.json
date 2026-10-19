@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1030-porto.json",
+  "purpose": "Document city-local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official IRN directory lists the Porto Land Registry and property-related registry services. The separate DGT national cadastral WFS has limited actual coverage: its official coverage note says legacy CGPR is predominantly south of the Tagus and CPE was limited to seven named municipalities, not Porto. No citywide geometry is inferred from the WFS service envelope. Official DGT metadata indicates that the national WFS does not provide general Porto parcel coverage: CGPR is predominantly south of the Tagus, and CPE coverage is limited to seven named municipalities that exclude Porto. The service advertises a broader envelope, but five small native-CRS 1 km² neighborhood queries around the WUP point (each count=3, geometry and two safe identifier fields only) returned zero. Porto municipal map candidates are historic 1892 cartography and an inventory of municipal-owned assets, not citywide current cadastre. The WUP point and five nearby 1 km² cells are local tests only; they do not establish citywide absence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://irn.justica.gov.pt/Contactos-do-Registo/-Registo-Predial-de-Porto",
+      "observation": "Official Portuguese Institute of Registries and Notaries lists the Porto Land Registry and property-related registry services."
+    },
+    {
+      "url": "https://www.dgterritorio.gov.pt/atividades/cadastro",
+      "observation": "Official DGT describes the national cadastral map and public viewer; coverage is limited to cadastral-operation areas, not asserted citywide."
+    },
+    {
+      "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+      "httpStatus": 200,
+      "observation": "Official INSPIRE WFS capabilities expose inspire:cadastralparcel. DescribeFeatureType exposed geometry, inspireid and nationalcadastralreference fields; no owner/address fields in schema."
+    },
+    {
+      "url": "https://www.cm-porto.pt/cartas-historicas-interativas-do-porto/cartas-historicas-interativas-do-porto",
+      "observation": "Official municipal historical map is based on the 1892 Teles Ferreira plan and initially covers the built historic core. It is a historical cartography viewer, not a current general cadastral parcel service. Its linked ArcGIS application returned HTTP 500 on direct GET during inspection."
+    },
+    {
+      "url": "https://www.cm-porto.pt/patrimonio/mipweb-sicadporto-sistema-de-inventario-dos-imoveis-municipais",
+      "observation": "Official municipal SICadPorto page describes a georeferenced inventory of municipal real estate (8,186 of 8,223 municipal asset records georeferenced as of Aug 2021), not a general citywide parcel cadastre. Linked public ArcGIS viewer returned HTTP 500 on direct GET."
+    }
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Porto Portugal official cadastral parcel map WFS land registry Porto DGT"
+    },
+    {
+      "language": "Portuguese",
+      "query": "Porto cadastro predial carta cadastral parcelas Conservatória do Registo Predial Porto oficial"
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire%3Acadastralparcel&count=3&srsName=EPSG%3A4326&outputFormat=application%2Fjson&propertyName=inspireid%2Cgeometry%2Cnationalcadastralreference&bbox=-39855.83,165117.31,-38855.83,166117.31,EPSG%3A3763",
+      "method": "Public WFS GetFeature; center 1 km² bbox in advertised native CRS EPSG:3763; count=3; only inspireid, geometry and nationalcadastralreference requested",
+      "result": "HTTP 200 application/json; totalFeatures=0; numberReturned=0."
+    },
+    {
+      "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire%3Acadastralparcel&count=3&srsName=EPSG%3A4326&outputFormat=application%2Fjson&propertyName=inspireid%2Cgeometry%2Cnationalcadastralreference&bbox=-39105.83,165117.31,-38105.83,166117.31,EPSG%3A3763",
+      "method": "Public WFS GetFeature; east 1 km² bbox in advertised native CRS EPSG:3763; count=3; only inspireid, geometry and nationalcadastralreference requested",
+      "result": "HTTP 200 application/json; totalFeatures=0; numberReturned=0."
+    },
+    {
+      "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire%3Acadastralparcel&count=3&srsName=EPSG%3A4326&outputFormat=application%2Fjson&propertyName=inspireid%2Cgeometry%2Cnationalcadastralreference&bbox=-40605.83,165117.31,-39605.83,166117.31,EPSG%3A3763",
+      "method": "Public WFS GetFeature; west 1 km² bbox in advertised native CRS EPSG:3763; count=3; only inspireid, geometry and nationalcadastralreference requested",
+      "result": "HTTP 200 application/json; totalFeatures=0; numberReturned=0."
+    },
+    {
+      "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire%3Acadastralparcel&count=3&srsName=EPSG%3A4326&outputFormat=application%2Fjson&propertyName=inspireid%2Cgeometry%2Cnationalcadastralreference&bbox=-39855.83,165867.31,-38855.83,166867.31,EPSG%3A3763",
+      "method": "Public WFS GetFeature; north 1 km² bbox in advertised native CRS EPSG:3763; count=3; only inspireid, geometry and nationalcadastralreference requested",
+      "result": "HTTP 200 application/json; totalFeatures=0; numberReturned=0."
+    },
+    {
+      "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=inspire%3Acadastralparcel&count=3&srsName=EPSG%3A4326&outputFormat=application%2Fjson&propertyName=inspireid%2Cgeometry%2Cnationalcadastralreference&bbox=-39855.83,164367.31,-38855.83,165367.31,EPSG%3A3763",
+      "method": "Public WFS GetFeature; south 1 km² bbox in advertised native CRS EPSG:3763; count=3; only inspireid, geometry and nationalcadastralreference requested",
+      "result": "HTTP 200 application/json; totalFeatures=0; numberReturned=0."
+    }
+  ],
+  "registryEvidenceUrls": [
+    "https://irn.justica.gov.pt/Contactos-do-Registo/-Registo-Predial-de-Porto",
+    "https://www.dgterritorio.gov.pt/atividades/cadastro"
+  ],
+  "municipalMapCandidates": [
+    {
+      "url": "https://www.cm-porto.pt/cartas-historicas-interativas-do-porto/cartas-historicas-interativas-do-porto",
+      "result": "Official page documents historic 1892 cadastral cartography restricted to the old built core. Linked ArcGIS viewer direct GET returned HTTP 500; this candidate is historical cartography, not current general parcel coverage."
+    },
+    {
+      "url": "https://www.cm-porto.pt/patrimonio/mipweb-sicadporto-sistema-de-inventario-dos-imoveis-municipais",
+      "result": "Official page documents SICadPorto georeferenced municipal asset inventory. Linked ArcGIS viewer direct GET returned HTTP 500; this candidate covers municipal-owned assets, not all city parcels."
+    }
+  ],
+  "queryMetadata": {
+    "layer": "inspire:cadastralparcel",
+    "advertisedDefaultCRS": "urn:ogc:def:crs:EPSG::3763",
+    "axisOrder": "Easting, Northing (PT-TM06/ETRS89)",
+    "wgs84BoundingBox": [
+      -9.67114232810413,
+      36.93438866338925,
+      -6.03890931474376,
+      42.176120405019596
+    ],
+    "geometryAndIdFieldsOnly": [
+      "inspireid",
+      "geometry",
+      "nationalcadastralreference"
+    ],
+    "generalizedGeometryRequested": false,
+    "ownerOrAddressFieldsRequested": false,
+    "neighborhoodBboxKm2": 1,
+    "countLimit": 3,
+    "resultCounts": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "retainedGeometryCount": 0
+  }
+}

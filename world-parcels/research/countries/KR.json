@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "KR",
+  "country": "Republic of Korea",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Ministry of Land, Infrastructure and Transport (MOLIT) / Korea Land Information Service; VWorld (national spatial data portal) publishes continuous cadastral map layer LP_PA_CBND_BUBUN via API",
+  "portalsFound": [
+    {
+      "url": "https://www.vworld.kr/",
+      "observation": "VWorld national platform; unreachable from this client. Earlier Busan probe (research/busan.json) notes an API key is required."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&geomFilter=BOX(126.978,37.565,126.979,37.566)&size=3&format=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failed/reset via proxy; unreachable, not evidence of absence"
+    },
+    {
+      "url": "https://www.vworld.kr/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failed/reset via proxy; unreachable, not evidence of absence"
+    },
+    {
+      "url": "https://api.vworld.kr/req/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failed/reset via proxy; unreachable, not evidence of absence"
+    },
+    {
+      "url": "https://www.data.go.kr/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failed/reset via proxy; unreachable, not evidence of absence"
+    },
+    {
+      "url": "https://openapi.nsdi.go.kr/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502; unreachable"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Nationwide continuous cadastral map (VWorld/NSDI), per published metadata not verified here",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "registration",
+  "remainingUncertainty": "All Korean hosts unreachable from this network (possible geo-restriction). VWorld API is believed to need a free API key (registration); not tested.",
+  "nextStep": "Retry from a Korean-reachable network with a VWorld key; query LP_PA_CBND_BUBUN with a small geomFilter box."
+}

@@ -1,0 +1,141 @@
+{
+  "name": "Khan Yunis",
+  "country": "State of Palestine",
+  "countryCode": "PS",
+  "rank": 905,
+  "point": [
+    31.3236029378949,
+    34.2957923854112
+  ],
+  "population2025": 601421,
+  "population2025k": 601.421,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Palestinian Land Authority describes a Gaza-wide land-information system based on cadastral maps and a geographic database of more than 30,000 parcels, linked to a central GIS server; it also documents a Khan Yunis office and land-registry/survey activity. This confirms local land administration, not anonymous current geometry for the exact WUP point.",
+  "registryEvidenceUrls": [
+    "https://www.pla.gov.ps/ar/تجربة-سلطة-الأراضي-في-مجال-نظم-معلومات-الأراضي-933.html",
+    "https://pla.gov.ps/ar/1671",
+    "https://khany-mun.org/",
+    "https://new.khany-mun.org/ar/home/page/185/وحدة-التنمية-والاستثمار"
+  ],
+  "resultCategory": "local_land_records_and_gis_evidenced_no_public_geometry_verified",
+  "scopeLimits": "Research uses official public sources and preserves the exact unchanged WUP locator. No owner, address, account, tax, personal-property, credential or token data requested or retained. No citywide completeness asserted.",
+  "remainingUncertainty": "Whether current Land Authority layers cover this exact locator and can be accessed anonymously; completeness and current status of older GIS documentation.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Khan Yunis Palestine official land registry cadastral parcel maps GIS municipality",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry.",
+        "result": "Palestinian Land Authority describes its Gaza land-information system and a local Khan Yunis office; no public feature service or viewer route was identified.",
+        "actualResultUrls": [
+          "https://www.pla.gov.ps/ar/تجربة-سلطة-الأراضي-في-مجال-نظم-معلومات-الأراضي-933.html",
+          "https://pla.gov.ps/ar/1671",
+          "https://khany-mun.org/",
+          "https://new.khany-mun.org/ar/home/page/185/وحدة-التنمية-والاستثمار"
+        ],
+        "executionMethod": "English-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      },
+      {
+        "language": "Arabic",
+        "query": "خان يونس فلسطين سلطة الأراضي خرائط مساحية سجل عقاري نظم معلومات الأراضي بلدية رسمي",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry in a local language.",
+        "result": "تصف سلطة الأراضي الفلسطينية نظام معلومات للأراضي والخرائط المساحية في قطاع غزة، وتذكر مكتب خان يونس؛ لم يتم التحقق من خدمة هندسية عامة أو عارض قطع مجهول الوصول.",
+        "actualResultUrls": [
+          "https://www.pla.gov.ps/ar/تجربة-سلطة-الأراضي-في-مجال-نظم-معلومات-الأراضي-933.html",
+          "https://pla.gov.ps/ar/1671",
+          "https://khany-mun.org/",
+          "https://new.khany-mun.org/ar/home/page/185/وحدة-التنمية-والاستثمار"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.pla.gov.ps/ar/تجربة-سلطة-الأراضي-في-مجال-نظم-معلومات-الأراضي-933.html",
+        "observation": "The Palestinian Land Authority describes a Gaza-wide land-information system based on cadastral maps and a geographic database of more than 30,000 parcels, linked to a central GIS server; it also documents a Khan Yunis office and land-registry/survey activity. This confirms local land administration, not anonymous current geometry for the exact WUP point."
+      },
+      {
+        "url": "https://pla.gov.ps/ar/1671",
+        "observation": "The Palestinian Land Authority describes a Gaza-wide land-information system based on cadastral maps and a geographic database of more than 30,000 parcels, linked to a central GIS server; it also documents a Khan Yunis office and land-registry/survey activity. This confirms local land administration, not anonymous current geometry for the exact WUP point."
+      },
+      {
+        "url": "https://khany-mun.org/",
+        "observation": "The Palestinian Land Authority describes a Gaza-wide land-information system based on cadastral maps and a geographic database of more than 30,000 parcels, linked to a central GIS server; it also documents a Khan Yunis office and land-registry/survey activity. This confirms local land administration, not anonymous current geometry for the exact WUP point."
+      },
+      {
+        "url": "https://new.khany-mun.org/ar/home/page/185/وحدة-التنمية-والاستثمار",
+        "observation": "The Palestinian Land Authority describes a Gaza-wide land-information system based on cadastral maps and a geographic database of more than 30,000 parcels, linked to a central GIS server; it also documents a Khan Yunis office and land-registry/survey activity. This confirms local land administration, not anonymous current geometry for the exact WUP point."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.pla.gov.ps/ar/تجربة-سلطة-الأراضي-في-مجال-نظم-معلومات-الأراضي-933.html",
+        "method": "GET official Palestinian Land Authority GIS description",
+        "result": "Page describes georeferenced maps, digital parcel records and a central GIS server for Gaza; it does not expose an anonymous downloadable parcel layer or query endpoint."
+      },
+      {
+        "url": "https://pla.gov.ps/ar/1671",
+        "method": "GET official Land Authority monthly activity notice",
+        "result": "Mentions surveying transactions and a Khan Yunis office. No property-specific data were queried."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "PS-117-khan-yunis-cadastre-review",
+    "name": "Palestinian Land Authority (Gaza) land information system and Khan Yunis office",
+    "url": "https://new.khany-mun.org/ar/home/page/185/وحدة-التنمية-والاستثمار",
+    "operator": "State of Palestine",
+    "serviceType": "Land Authority GIS/parcel-map records and local land office; no anonymous public parcel vector endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native feature identity and geometry at the WUP point were not verified."
+  },
+  "wupCityCode": 117,
+  "cityId": "wup2025:117",
+  "queueRank": 905,
+  "centerLatLon": [
+    31.3236029378949,
+    34.2957923854112
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research packet only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The Palestinian Land Authority describes a Gaza-wide land-information system based on cadastral maps and a geographic database of more than 30,000 parcels, linked to a central GIS server; it also documents a Khan Yunis office and land-registry/survey activity. This confirms local land administration, not anonymous current geometry for the exact WUP point.",
+    "verifiedOpenScope": "No parcel geometry verified at the exact WUP settlement point.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "rootSourceDateNote": "The PLA description of its more-than-30,000-parcel Gaza database is dated 24 January 2015. The local-office evidence is retained separately; neither establishes current anonymous vector access or present service capacity.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research packet only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.pla.gov.ps/ar/تجربة-سلطة-الأراضي-في-مجال-نظم-معلومات-الأراضي-933.html",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "reason": null
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

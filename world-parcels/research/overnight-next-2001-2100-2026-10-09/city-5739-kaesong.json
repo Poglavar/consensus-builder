@@ -1,0 +1,69 @@
+{
+  "cityCode": 5739,
+  "queueRank": 2043,
+  "name": "Kaesong",
+  "country": "Dem. People's Republic of Korea",
+  "countryCode": "KP",
+  "iso3": "PRK",
+  "point": [37.9742038364886, 126.557762621636],
+  "population2025": 285008,
+  "population2025k": 285.008,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaesong North Korea official cadastral parcel map land registry GIS API",
+        "result": "No first-party Kaesong/DPRK cadastral viewer or parcel API was evidenced. Search results identified K-GeoP, an official Republic of Korea cadastral service, which is not a source for Kaesong in the DPRK, and general non-cadastral material.",
+        "actualResultUrls": ["https://www.kgeop.go.kr/", "https://www.k-pis.go.kr/addMapView.do"]
+      },
+      {
+        "language": "native/local",
+        "query": "개성 토지 지적도 지적측량 공식 지도 API 조선민주주의인민공화국",
+        "result": "No first-party public Kaesong parcel map, cadastral API, or local registry route was evidenced. The official DPRK Naenara result was general country/investment information and did not provide parcel geometry or a cadastral viewer.",
+        "actualResultUrls": ["https://www.naenara.com.kp/", "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf"]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "No Kaesong-local or DPRK cadastral custodian with a public parcel service was evidenced. South Korean national cadastral services found in discovery were explicitly excluded as the wrong jurisdiction.",
+  "registryEvidenceUrls": ["https://www.naenara.com.kp/", "https://www.kgeop.go.kr/"],
+  "requests": [
+    {
+      "url": "https://www.naenara.com.kp/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Public HTML loaded; no cadastral map, parcel API, or Kaesong parcel layer was identified in the inspected page. No login or credential flow was used."
+    },
+    {
+      "url": "https://www.kgeop.go.kr/",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "TLS certificate verification failed in the local request environment; no certificate exception was used. Search evidence identifies this as the Republic of Korea official Smart Land Information service, so it was not retried or treated as a DPRK source."
+    },
+    {
+      "url": "https://www.naenara.com.kp/images/trade/advertise/siniju_e.pdf",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Search-indexed official DPRK PDF concerns the Sinuiju International Economic Zone, not Kaesong cadastral parcels; no parcel geometry or public API was retained."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel geometry if later returned by an official public service", "source service metadata", "CRS and response-format metadata"],
+  "unsafeFieldsNotRequested": ["owner or right-holder names", "addresses or contact details", "title or certificate details", "tax, account, identity, or application fields", "personal data and credentials"],
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": "No applicable public cadastral scope was verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "No real public parcel adapter or safe parcel response was verified; serial reviewer qualification is required. This packet is not source integration or admission.",
+  "resultCategory": "no_applicable_public_registry_or_geometry_verified",
+  "remainingUncertainty": "A zero search result, unavailable official site, and lack of public API do not establish citywide cadastral absence. DPRK internal, non-public, access-controlled, or unindexed services may exist. The exact WUP point was preserved and was not shifted; no parcel query was available against which to assess an exact-point hit."
+}

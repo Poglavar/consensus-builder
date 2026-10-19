@@ -1,0 +1,76 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MC",
+ "country": "Monaco",
+ "checkedAt": "2026-09-30",
+ "status": "national_cadastre_viewer_only",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_cadastre_viewer_only",
+ "cadastreAuthority": "Direction de la Prospective, de l'Urbanisme et de la Mobilite (UrbaMonaco), Government of Monaco",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://urbamonaco.gouv.mc/plan-parcellaire",
+   "observation": "Viewer page embeds WidgetArcgis config: layer_url https://montecarto-srv2.gouv.mc/arcgis/rest/services/URBA/URBA_Parcellaire_Public/FeatureServer/5 (field num_parcelle, sections CO/FO/JM/MT/MV), layer_api_key null, proxy_url carto.gouv.mc/proxy.php, portal_url montecarto.gouv.mc/arcgis"
+  },
+  {
+   "url": "https://montecarto-srv2.gouv.mc/arcgis/rest/info?f=json",
+   "observation": "ArcGIS Enterprise 11.3, isTokenBasedSecurity true, tokenServicesUrl montecarto.gouv.mc/arcgis/sharing/rest/generateToken (needs credentials)"
+  },
+  {
+   "url": "https://carto.gouv.mc/",
+   "observation": "403 Forbidden"
+  },
+  {
+   "url": "https://data.gouv.mc/",
+   "observation": "JS-only shell, no dataset API reachable"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://urbamonaco.gouv.mc/plan-parcellaire",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "config inspected again; no public token value embedded"
+  },
+  {
+   "url": "https://montecarto-srv2.gouv.mc/arcgis/rest/services/URBA/URBA_Parcellaire_Public/FeatureServer/5/query?where=1%3D1&resultRecordCount=3&outFields=*&f=json (Referer urbamonaco plan-parcellaire)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "body error 499 Token Required"
+  },
+  {
+   "url": "https://carto.gouv.mc/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Forbidden"
+  },
+  {
+   "url": "https://data.gouv.mc/api/1/datasets/?q=parcell",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "HTML shell, not an API"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Principality of Monaco plan parcellaire; viewer only",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "regionsSampled": [],
+ "accessModel": "viewer-only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; cookie jar used; Accept-Language fr-MC; Referer https://urbamonaco.gouv.mc/plan-parcellaire",
+ "remainingUncertainty": "Token requirement confirmed again even with viewer Referer; the viewer obtains access through a restricted proxy. Not bypassed and no token generated.",
+ "nextStep": "Record as gated; look for a published open-data extract on data.gouv.mc if it becomes reachable.",
+ "source": {
+  "sourceId": "mc-urbamonaco-parcellaire",
+  "endpoint": "https://montecarto-srv2.gouv.mc/arcgis/rest/services/URBA/URBA_Parcellaire_Public/FeatureServer/5",
+  "token": "<PUBLIC_TOKEN> not exposed (layer_api_key null)",
+  "reuseStatus": "gated: token required"
+ }
+}

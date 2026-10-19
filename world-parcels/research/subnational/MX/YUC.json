@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "YUC",
+ "regionName": "Yucatán",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "not established",
+ "subregionsVerified": [],
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar; viewer-origin Referer where applicable",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://geoportal.merida.gob.mx/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "",
+   "assessment": "Imunify360 bot-protection block with browser headers"
+  },
+  {
+   "url": "https://www.insejupy.gob.mx/mapas/catastro/index.html",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "qgis2web Leaflet map of which municipalities have decentralised catastro; municipality polygons only, no parcels"
+  },
+  {
+   "url": "https://mangomap.com/tec-geoespacial/maps/123503",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "third-party (TEC Geoespacial) Conkal cadastral web map; not official, not queried"
+  },
+  {
+   "url": "https://catastro.yucatan.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failure"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "No parcel service could be reached or verified from this network; not a permanent negative.",
+ "nextStep": "Retry from another network / inspect state viewer directly."
+}

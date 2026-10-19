@@ -1,0 +1,110 @@
+{
+  "name": "Ad Diwaniyah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 577,
+  "point": [
+    31.9933466002778,
+    44.924018077049
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "مديرية التسجيل العقاري الديوانية دائرة تسجيل عقاري الديوانية خارطة العقار",
+        "result": "تؤكد وزارة العدل وجود مديرية تسجيل عقاري في الديوانية ونشاطها المحلي. خدمة بلدية الديوانية لإجازة البناء تتطلب مستند قيد/ملكية حديثاً وخارطة تثبيت حدود مصدقة؛ وهي مسار معاملات وليست خريطة قطع عامة. لم تُجرَ أي معاينة لعقار أو مالك.",
+        "urls": [
+          "https://www.moj.gov.iq/contact_us.php",
+          "https://www.moj.gov.iq/view.9996/",
+          "https://diw-mun.gov.iq/Building.aspx"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Diwaniyah official real estate registration directorate public parcel map cadastre Iraq",
+        "result": "Iraq’s Justice Ministry directory lists a Diwaniyah Real Estate Registration Directorate and its 2026 news documents local activity. The municipality’s building-permit workflow requires current title/registration and a certified boundary map. No anonymous local parcel geometry service was found; national online title/map service pages name Baghdad directorates only.",
+        "urls": [
+          "https://www.moj.gov.iq/contact_us.php",
+          "https://www.moj.gov.iq/view.9996/",
+          "https://diw-mun.gov.iq/Building.aspx",
+          "https://moj.gov.iq/view.9289/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.moj.gov.iq/contact_us.php",
+        "observation": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits."
+      },
+      {
+        "url": "https://www.moj.gov.iq/view.9996/",
+        "observation": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits."
+      },
+      {
+        "url": "https://diw-mun.gov.iq/Building.aspx",
+        "observation": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No public full-polygon feature response was retrieved or retained."
+  },
+  "source": {
+    "operator": "Iraq Ministry of Justice, General Real Estate Registration Directorate; Diwaniyah Municipality Directorate",
+    "url": "https://www.moj.gov.iq/contact_us.php",
+    "format": "Official local registry directory/news and municipal permit document workflow; no public geometry service verified",
+    "nativeIdField": null,
+    "basis": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits.",
+    "urls": [
+      "https://www.moj.gov.iq/contact_us.php",
+      "https://www.moj.gov.iq/view.9996/",
+      "https://diw-mun.gov.iq/Building.aspx"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local cadastral or urban land-record services are documented for Ad Diwaniyah.",
+    "verifiedOpenScope": "Official local record service is confirmed, but no anonymous full-polygon endpoint or safe feature schema was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The Ministry of Justice lists the Diwaniyah Real Estate Registration Directorate, with 2026 ministry activity at the local office; the municipality requires title and certified boundary-map documents for permits.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_registry_documented_no_verified_open_vector",
+  "technicalBlocker": "No anonymous public vector/full-polygon endpoint was verified; attribute/document flows require user-specific survey/property information.",
+  "remainingUncertainty": "Whether another anonymous public city parcel geometry route exists, and exact cadastral-unit coverage of the population centroid, remain unverified.",
+  "nextStep": "If further review is necessary, inspect public help/manual pages only; do not submit an owner or parcel identifier.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4477,
+  "cityId": "wup2025:4477",
+  "queueRank": 577,
+  "population2025": 894478,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    31.9933466002778,
+    44.924018077049
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No owner/address data, personal details, credentials, private tokens, or property lookup responses retained. Up to three full city-scoped polygons are retained when schema-safe.",
+  "registryEvidenceUrls": [
+    "https://www.moj.gov.iq/contact_us.php",
+    "https://www.moj.gov.iq/view.9996/",
+    "https://diw-mun.gov.iq/Building.aspx"
+  ],
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00"
+}

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded actual-adapter qualification of the official Seychelles current parcel layer. Complete viewport manifests, exact rereads with matching geometry, forced paging, explicit absence, footprint and source binding.",
+  "checkedAt": "2026-10-08T15:35:32.016Z",
+  "descriptor": {
+    "id": "sc-mlh-current-parcels-arcgis",
+    "adapter": "arcgis",
+    "idPrefix": "SC-MLH-",
+    "endpoint": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0",
+    "idField": "id",
+    "idType": "string",
+    "objectIdField": "objectid",
+    "outFields": [
+      "objectid",
+      "id",
+      "validfrom",
+      "validtill"
+    ],
+    "parcelNumberField": "id",
+    "attributeDateEquals": {
+      "validtill": "9999-12-31T23:59:59.000Z"
+    },
+    "pageSize": 200,
+    "idBatchSize": 40,
+    "maxFeatures": 6000,
+    "maxBboxKm2": 4,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": {
+    "centerLonLat": [
+      55.4513,
+      -4.6191
+    ],
+    "step": 0.0015,
+    "alignedCells": 9,
+    "panCells": 4
+  },
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 2889,
+      "bbox": [
+        55.449,
+        -4.6215,
+        55.4505,
+        -4.62
+      ],
+      "count": 56,
+      "complete": true
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T15:35:32.018Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=55.449%2C-4.6215%2C55.4505%2C-4.62&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "error": "The operation was aborted due to timeout",
+      "elapsedMs": 15008
+    },
+    {
+      "checkedAt": "2026-10-08T15:36:25.447Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=55.449%2C-4.6215%2C55.4505%2C-4.62&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 1797
+    },
+    {
+      "checkedAt": "2026-10-08T15:36:27.247Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=55.449%2C-4.6215%2C55.4505%2C-4.62&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "object-id-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "elapsedMs": 787
+    },
+    {
+      "checkedAt": "2026-10-08T15:36:28.034Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&outFields=objectid%2Cid%2Cvalidfrom%2Cvalidtill&returnGeometry=true&outSR=4326&f=geojson&objectIds=28192359%2C28191517%2C28191612%2C28194229%2C28194236%2C28194371%2C28197134%2C28199470%2C28199511%2C28200661%2C28204898%2C28206745%2C28207862%2C28208456%2C28210296%2C28210300%2C28210453%2C28210807%2C28211588%2C28212408%2C28212439%2C28213828%2C28214347%2C28214722%2C28214901%2C28238297%2C28218294%2C28218987%2C28222220%2C28222382%2C28222962%2C28224240%2C28224640%2C28225017%2C28227400%2C28230179%2C28230225%2C28230837%2C28233273%2C28233326%2C28233507%2C28233580%2C28235037%2C28236262%2C28236265%2C28236268%2C28237317%2C28239237%2C28239433%2C28240690%2C28242555%2C28243527%2C28243766%2C28244750%2C28244925%2C28245371",
+      "method": "GET",
+      "operation": "geometry-by-oids",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "elapsedMs": 300
+    },
+    {
+      "checkedAt": "2026-10-08T15:36:28.336Z",
+      "url": "https://www.gis.gov.sc/hosting/rest/services/Hosted/survey_sv_parcel/FeatureServer/0/query?where=validtill+%3D+TIMESTAMP+%279999-12-31+23%3A59%3A59%27&geometry=55.4505%2C-4.6215%2C55.452%2C-4.62&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "error": "The operation was aborted due to timeout",
+      "elapsedMs": 15027
+    }
+  ],
+  "privacy": "Only published parcel identifiers, lifecycle timestamps and geometry are requested. No names or contacts.",
+  "result": "failed",
+  "failure": {
+    "message": "Parcel provider timed out.",
+    "status": 504
+  },
+  "completedAt": "2026-10-08T15:36:43.370Z"
+}

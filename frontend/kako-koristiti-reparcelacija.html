@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<!-- Reparcelacija: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: how-to-use-reparcellization.html. -->
+<html lang="hr">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Reparcelacija · Consensus Builder
+  </title>
+  <meta content="Odaberi automatsku podjelu, nacrtaj raspored ili zadrži postojeće čestice. Zajedno provjeri novo zemljište, vlasničke udjele i novac." name="description"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+  <link rel="canonical" href="https://urbangametheory.xyz/kako-koristiti-reparcelacija.html" />
+  <link rel="alternate" hreflang="en" href="https://urbangametheory.xyz/how-to-use-reparcellization.html" />
+  <link rel="alternate" hreflang="hr" href="https://urbangametheory.xyz/kako-koristiti-reparcelacija.html" />
+  <link rel="alternate" hreflang="x-default" href="https://urbangametheory.xyz/how-to-use-reparcellization.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Consensus Builder" />
+  <meta property="og:locale" content="hr_HR" />
+  <meta property="og:title" content="Reparcelacija · Consensus Builder" />
+  <meta property="og:description" content="Odaberi automatsku podjelu, nacrtaj raspored ili zadrži postojeće čestice. Zajedno provjeri novo zemljište, vlasničke udjele i novac." />
+  <meta property="og:url" content="https://urbangametheory.xyz/kako-koristiti-reparcelacija.html" />
+  <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Globus Consensus Buildera s prikazom dostupnosti katastarskih podataka po državama i gradovima." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@UrbanGameTheory" />
+  <meta name="twitter:title" content="Reparcelacija · Consensus Builder" />
+  <meta name="twitter:description" content="Odaberi automatsku podjelu, nacrtaj raspored ili zadrži postojeće čestice. Zajedno provjeri novo zemljište, vlasničke udjele i novac." />
+  <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta name="twitter:image:alt" content="Globus Consensus Buildera s prikazom dostupnosti katastarskih podataka po državama i gradovima.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Reparcelacija","description":"Odaberi automatsku podjelu, nacrtaj raspored ili zadrži postojeće čestice. Zajedno provjeri novo zemljište, vlasničke udjele i novac.","inLanguage":"hr","url":"https://urbangametheory.xyz/kako-koristiti-reparcelacija.html","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","isPartOf":{"@type":"WebSite","name":"Consensus Builder","url":"https://urbangametheory.xyz/"},"publisher":{"@type":"Organization","name":"Urban Game Theory","url":"https://urbangametheory.xyz/"}}</script>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Reparcelacija
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=hr">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Natrag na kartu
+   </a>
+   <nav aria-label="Jezik" class="cb-page-header__lang cb-segmented">
+    <a aria-current="page" class="cb-segmented__option" href="kako-koristiti-reparcelacija.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a class="cb-segmented__option" href="how-to-use-reparcellization.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Navigacija vodiča" class="sidebar">
+   <div class="sidebar-links">
+    <a class="btn btn-quiet" href="kako-koristiti.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     Kako koristiti
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-zgrade.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Zgrade
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-park-trg.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parkovi, trgovi i jezera
+    </a>
+    <a aria-current="page" class="btn btn-quiet" href="kako-koristiti-reparcelacija.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Reparcelacija
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-cesta.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Ceste i pruge
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-prikazi.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Prikazi i usporedbe
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     Na ovoj stranici
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#start">
+      Početni raspored
+     </a>
+     <a class="btn btn-quiet" href="#automatic">
+      Automatski
+     </a>
+     <a class="btn btn-quiet" href="#manual">
+      Slobodno nacrtaj
+     </a>
+     <a class="btn btn-quiet" href="#keep">
+      Zadrži čestice
+     </a>
+     <a class="btn btn-quiet" href="#owners">
+      Vlasnici i novac
+     </a>
+     <a class="btn btn-quiet" href="#finish">
+      Dovrši
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro">
+     <span class="eyebrow">
+      Uči kroz rad
+     </span>
+     <h2>
+      Promijeni čestice. Provjeri svakog vlasnika.
+     </h2>
+     <p>
+      Odaberi automatsku podjelu, nacrtaj raspored ili zadrži postojeće čestice. Zajedno provjeri novo zemljište, vlasničke udjele i novac.
+     </p>
+    </div>
+    <section class="guide-section" id="start">
+     <h2>
+      Odaberi početni raspored
+     </h2>
+     <p>
+      Odaberi povezane čestice ili nacrtaj lokaciju pa odaberi
+      <span class="ui-label">
+       Reparcelacija
+      </span>
+      . Karta prikazuje nove čestice;
+      <span class="ui-label">
+       Nove čestice
+      </span>
+      i
+      <span class="ui-label">
+       Stare čestice
+      </span>
+      mijenjaju popis desno između rezultata i ulaza. Izvorni katastar ostaje referenca.
+     </p>
+     <div class="table-scroll">
+      <table class="tool-table">
+       <thead>
+        <tr>
+         <th scope="col">
+          Način
+         </th>
+         <th scope="col">
+          Početno stanje
+         </th>
+        </tr>
+       </thead>
+       <tbody>
+        <tr>
+         <td>
+          Automatski
+         </td>
+         <td>
+          Paralelne podjele objedinjenog zemljišta. Zakreni smjer podjele.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Slobodno nacrtaj
+         </td>
+         <td>
+          Nepodijeljena lokacija. Sam nacrtaj čestice i podijeli ih.
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Zadrži postojeće čestice
+         </td>
+         <td>
+          Postojeće čestice i vlasnici. Prilagodi granice ili izdvoji zajedničko dvorište.
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section class="guide-section" id="automatic">
+     <h2>
+      Automatski
+     </h2>
+     <figure class="howto-video" id="watch-automatic">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:31
+       </span>
+      </div>
+      <video aria-describedby="caption-automatic" aria-label="Automatska reparcelacija" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-04-auto-readjustment-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-04-auto-readjustment-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-04-auto-readjustment-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-automatic">
+       <strong>
+        Automatska reparcelacija.
+       </strong>
+       Zakreni linije podjele i pregledaj nove čestice i vlasnike.
+       <a class="cb-link" href="videos/howto/consensus-builder-04-auto-readjustment-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Kreni načinom Automatski pa povuci ručku smjera na karti za zakretanje podjele. Za odabir s jednim vlasnikom postavi Broj čestica i raspodjelu Jednako, Nasumično ili Ručno. Provjeri površine novih čestica i raspodjelu vlasnicima.
+     </p>
+    </section>
+    <section class="guide-section" id="manual">
+     <h2>
+      Slobodno nacrtaj
+     </h2>
+     <figure class="howto-video" id="watch-manual">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:31
+       </span>
+      </div>
+      <video aria-describedby="caption-manual" aria-label="Slobodno nacrtaj čestice" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-05-manual-readjustment-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-05-manual-readjustment-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-05-manual-readjustment-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-manual">
+       <strong>
+        Slobodno nacrtaj čestice.
+       </strong>
+       Nacrtaj i podijeli čestice, dodijeli vlasnike i usporedi prije i poslije.
+       <a class="cb-link" href="videos/howto/consensus-builder-05-manual-readjustment-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      <span class="ui-label">
+       Slobodno nacrtaj
+      </span>
+      počinje nepodijeljenom lokacijom. Alatom za crtanje čestice postavi vrhove poligona i dovrši ga. Crtanje linije dijeli postojeće čestice. Brisanje granice spaja susjedne čestice, a uređivanje granica čvorovima pomiče geometriju podjele. Koristi poništavanje za povrat izmjene ili učitaj raspored iz GeoJSON-a.
+     </p>
+     <p>
+      Dodijeli vlasnike svim česticama. Uređivač provjerava pokrivenost, preklapanja i vlasničke udjele prije omogućavanja gumba Gotovo.
+     </p>
+    </section>
+    <section class="guide-section" id="keep">
+     <h2>
+      Postojeće čestice i zajednička dvorišta
+     </h2>
+     <figure class="howto-video" id="watch-keep">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:31
+       </span>
+      </div>
+      <video aria-describedby="caption-keep" aria-label="Zadrži postojeće čestice" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-06-keep-parcels-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-06-keep-parcels-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-06-keep-parcels-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-keep">
+       <strong>
+        Zadrži postojeće čestice.
+       </strong>
+       Kreni od izvornih granica i uređuj ih čvorovima.
+       <a class="cb-link" href="videos/howto/consensus-builder-06-keep-parcels-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Zadrži postojeće čestice kreće od izvornih čestica i vlasnika. Čvorovima, rezovima i brisanjem granica napravi ciljane izmjene. Opcija nije dostupna za nacrtanu lokaciju bez postojećeg rasporeda čestica koji bi zadržala.
+     </p>
+     <p>
+      Za
+      <span class="ui-label">
+       Zajedničko dvorište
+      </span>
+      odaberi
+      <span class="ui-label">
+       Iz građevnog bloka
+      </span>
+      za dvorište bloka koji preklapa odabir ili ga nacrtaj na karti. Dvorište je u zajedničkom vlasništvu. Početni udjeli slijede preostalo privatno zemljište vlasnika; uređivanjem udjela postavi fiksne postotke čiji zbroj mora biti 100%.
+     </p>
+    </section>
+    <section class="guide-section" id="owners">
+     <h2>
+      Vlasnici, udjeli i novac
+     </h2>
+     <p>
+      Odaberi pregled jednog vlasnika za njegovo ulazno zemljište, dodijeljeno zemljište i neto promjenu.
+      <span class="ui-label">
+       Prije / Poslije
+      </span>
+      preklapa dva stanja s pomičnim razdjelnikom. Isprekidani jantarni obrisi označuju ulazne čestice, a puni plavi obrisi dodijeljene čestice.
+     </p>
+     <p>
+      Obračun razlikuje unesenu vrijednost, dodijeljenu vrijednost, saldo i novac. Novac ima jedinstven predznak: pozitivno znači da vlasnik prima, negativno da plaća. Pregledaj neto iznos cijelog prijedloga i iznos svakog vlasnika. Predlagatelj financira razliku između uplata vlasnika i naknada ili prima višak. Geometrija, udjeli i novac moraju biti valjani prije dovršavanja.
+     </p>
+     <p>
+      Zajedničko dvorište može koristiti jedan sporazum ili zasebne sporazume po česticama. Zasebni sporazumi zadržavaju privatni ostatak kod izvornih vlasnika i izdvajaju dio dvorišta s te čestice. Pregledaj svaki sporazum prije objave; ponovi izradu preostalih ako su nastali samo neki.
+     </p>
+    </section>
+    <section class="guide-section" id="finish">
+     <h2>
+      Dovrši raspored
+     </h2>
+     <p>
+      <span class="ui-label">
+       Gotovo
+      </span>
+      sprema valjani raspored i dovršava izravni tijek dizajna. Kad radiš unutar obrasca prijedloga, sprema raspored u taj prijedlog; pošalji obrazac za dovršavanje.
+      <span class="ui-label">
+       Odustani
+      </span>
+      ili zatvaranje dizajnera odbacuje sesiju, uz potvrdu kad je potrebna. Dovršeni prijedlog otvori za pregled, grananje, dijeljenje ili uklanjanje s karte.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      Promjena geometrije čestica može ukloniti s karte dizajne koji stoje na tim česticama. Prije potvrde pregledaj poruku o zahvaćenim prijedlozima; nepromijenjene čestice zadržavaju svoje dizajne.
+     </div>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="kako-koristiti.html">
+      Sve upute
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=hr">
+      Isprobaj na karti
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Plan razvoja
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
+</html>

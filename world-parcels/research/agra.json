@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:180",
+  "queueRank": 180,
+  "name": "Agra",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    27.1881643913104,
+    78.0013166778967
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Uttar Pradesh Bhunaksha cadastral-map viewer (HTTP 200, 153,705-byte Angular shell). Per the Kanpur research the village maps are WMS raster tiles needing a per-village gis_code and vector plot queries need authorization."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "UP Bhulekh land-records portal (HTTP 200, 5.5 KB HTML); record search, not a spatial feed."
+    },
+    {
+      "url": "https://agrasmartcity.in/",
+      "observation": "Agra Smart City site reachable (HTTP 200); no parcel service located on landing page."
+    },
+    {
+      "url": "https://agra.nic.in/ , https://agracantt.gov.in/ , https://adaagra.in/",
+      "observation": "District, cantonment board and Agra Development Authority hosts unreachable through the proxy, unassessed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Angular app shell only"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/WMS/tile?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "SPA fallback HTML, not WMS capabilities"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?lon=78.0013&lat=27.1882",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "'Missing or invalid Authorization header'; auth wall, not verification"
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "record-search HTML only"
+    },
+    {
+      "url": "https://agrasmartcity.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "landing page only"
+    },
+    {
+      "url": "https://agra.nic.in/ , https://agracantt.gov.in/ , https://adaagra.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "unreachable through the proxy; not a verdict"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh Bhunaksha village cadastral maps (state scope, viewer only); Agra coverage not verified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The public Bhunaksha viewer serves raster tiles and its vector plot API requires authorization; Agra district's coverage in that viewer was not confirmed. Local authority hosts were unreachable. State scope would not establish India-wide coverage, and terms for automated access were not read.",
+  "nextStep": "Look for an open UP Bhunaksha vector export or WMS with a known Agra gis_code; check Agra Municipal Corporation/ADA GIS portals from another network."
+}

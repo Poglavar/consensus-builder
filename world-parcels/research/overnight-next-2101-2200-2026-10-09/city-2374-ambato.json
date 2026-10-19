@@ -1,0 +1,38 @@
+{
+  "cityCode": 2374,
+  "queueRank": 2110,
+  "name": "Ambato",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "iso3": "ECU",
+  "point": [-1.25577265065284, -78.6211311402413],
+  "population2025": 274672,
+  "population2025k": 274.672,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {"language": "English", "query": "Ambato Ecuador official cadastral map parcel viewer catastro municipio Ambato", "result": "First-party results identified the GAD Municipalidad de Ambato Dirección de Catastros y Avalúos, municipal Geoportal, and official ArcGIS cadastral layer SDE.AMBATO_PREDIAL. Indexed metadata describes a polygon layer in EPSG:32717.", "actualResultUrls": ["https://ambato.gob.ec/direccion-de-catastros-y-avaluos/", "https://geoambato-gadma.opendata.arcgis.com/", "https://arcgis.ambato.gob.ec/mapas/rest/services/Moviles/CATASTROFISICO/FeatureServer/1"]},
+      {"language": "Spanish (Ecuador)", "query": "Ambato Ecuador catastro visor predial oficial municipio", "result": "First-party results identified the same municipal Geoportal and Catastros y Avalúos department. The Geoportal states that it provides predial cadastral information for Ambato and rural parishes; no separate Spanish-language service was identified.", "actualResultUrls": ["https://geoambato-gadma.opendata.arcgis.com/", "https://ambato.gob.ec/direccion-de-catastros-y-avaluos/", "https://municipiosabiertos.gob.ec/buenas-practicas/geoportal-servicios-virtuales/"]}
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The GAD Municipalidad de Ambato is evidenced as local cadastral custodian: its official Catastros y Avalúos page describes administration and updating of urban and rural property cadastre and municipal GIS/cartography. Its official Geoportal advertises cadastral parcel information, and its ArcGIS service exposes the municipal polygon layer.",
+  "officialSources": [
+    {"url": "https://ambato.gob.ec/direccion-de-catastros-y-avaluos/", "publisher": "GAD Municipalidad de Ambato", "observation": "Official municipal department page assigns urban/rural cadastral administration, cartography, and municipal GIS responsibilities."},
+    {"url": "https://geoambato-gadma.opendata.arcgis.com/", "publisher": "GAD Municipalidad de Ambato Geoportal", "observation": "Official Geoportal states that users can access predial cadastral information for Ambato and rural parishes."},
+    {"url": "https://arcgis.ambato.gob.ec/mapas/rest/services/Moviles/CATASTROFISICO/FeatureServer/1", "publisher": "GAD Municipalidad de Ambato ArcGIS service", "observation": "Indexed first-party metadata identifies SDE.AMBATO_PREDIAL as esriGeometryPolygon, EPSG:32717 / WGS 84 UTM zone 17S, with JSON and GeoJSON formats and fields including OBJECTID and ID_CATASTR."}
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "sourceCandidate": "https://arcgis.ambato.gob.ec/mapas/rest/services/Moviles/CATASTROFISICO/FeatureServer/1",
+  "serviceMetadata": {"layerName": "SDE.AMBATO_PREDIAL", "geometryType": "esriGeometryPolygon", "crs": "EPSG:32717 / WGS 84 UTM zone 17S", "supportedQueryFormats": ["JSON", "geoJSON"], "nativeFieldsObserved": ["OBJECTID", "PRED_SEC", "PRED_PAR", "PRED_PROP", "TIPO", "ID_POLITIC", "ID_CATASTR", "ZONA", "SECTOR", "MANZANA", "PREDIO", "HECTARES", "POINT_X", "POINT_Y", "INTEGRAL", "CREATED_US", "CREATED_DA", "LAST_EDITE", "LAST_EDI_1", "DETALLE"], "safeIdentityCandidate": "ID_CATASTR, with OBJECTID as service OID fallback; neither retained because no feature response was obtained."},
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {"status": "held", "reason": "Official service metadata and local custodian are evidenced, but no anonymous parcel feature response was obtained. Research completion is not source integration, adapter admission, or runtime qualification."},
+  "pointBasis": "Immutable WUP queue point retained exactly in latitude/longitude order; no coordinate adjustment was made to obtain a parcel hit."
+}

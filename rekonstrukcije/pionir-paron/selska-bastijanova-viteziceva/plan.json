@@ -1,0 +1,57 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "selska-bastijanova-viteziceva",
+  "title": "Selska–Baštijanova–Vitezićeva – rekonstrukcija izvedenog stanja",
+  "status": "ready",
+  "reason": null,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-selska-bastijanova-viteziceva",
+  "planTitle": "Selska–Baštijanova–Vitezićeva – rekonstrukcija izvedenog stanja – zgrade, prometnice i parkirališta",
+  "localPath": "/proposals/pionir-selska-bastijanova-viteziceva?city=zagreb",
+  "building": {
+    "proposalId": "pionir-selska-bastijanova-viteziceva-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": [
+    {
+      "proposalId": "pionir-selska-bastijanova-viteziceva-observed-access-702671621",
+      "kind": "access-road",
+      "file": "circulation-access-702671621.geojson",
+      "segmentCount": 2,
+      "osmWayIds": [
+        702671621,
+        1075039422
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 36.93415829162083,
+      "footprintAreaM2": 97.79108902845208
+    },
+    {
+      "proposalId": "pionir-selska-bastijanova-viteziceva-observed-access-722014598",
+      "kind": "access-road",
+      "file": "circulation-access-722014598.geojson",
+      "segmentCount": 1,
+      "osmWayIds": [
+        722014598
+      ],
+      "parkingOsmId": null,
+      "capacity": null,
+      "lengthM": 64.1386649230448,
+      "footprintAreaM2": 176.37358592556984
+    },
+    {
+      "proposalId": "pionir-selska-bastijanova-viteziceva-observed-parking-543917934",
+      "kind": "parking",
+      "file": "circulation-parking-543917934.geojson",
+      "segmentCount": 1,
+      "osmWayIds": [
+        543917935
+      ],
+      "parkingOsmId": 543917934,
+      "capacity": 21,
+      "lengthM": null,
+      "footprintAreaM2": 530.1988690244582
+    }
+  ]
+}

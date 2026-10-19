@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:127",
+  "queueRank": 127,
+  "name": "Melbourne",
+  "country": "Australia",
+  "countryCode": "AU",
+  "centerLatLon": [
+    -37.8309340010454,
+    145.058580063275
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "au-vic-vicmap-property",
+    "requestUrl": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0/query?where=1%3D1&geometry=145.0585,-37.8312,145.0595,-37.8304&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=prop_pfi,prop_lga_code,prop_property_type,prop_status&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      145.0585,
+      -37.8312,
+      145.0595,
+      -37.8304
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "prop_pfi (property PFI); prop_ufi",
+    "responseFile": "melbourne-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000. Note: first two queries timed out at 40 s; succeeded at 60 s with a narrower outFields list and a smaller bbox."
+  },
+  "source": {
+    "sourceId": "au-vic-vicmap-property",
+    "name": "Vicmap Property - Property Map Polygons (PROPERTY_MP), FeatureServer layer 0",
+    "operator": "State of Victoria, Department of Transport and Planning (Vicmap; ArcGIS Online owner Vicmap_Prod)",
+    "scope": "State of Victoria property polygons (covers Melbourne)",
+    "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326 requested via outSR",
+    "reuseStatus": "Item licenseInfo says Vicmap data is provided under a licence (likely Creative Commons Attribution); exact terms not fully read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer",
+      "observation": "Public hosted FeatureServer, Query and Extract capabilities, one polygon layer."
+    },
+    {
+      "url": "https://enterprise.mapshare.vic.gov.au/server/rest/services",
+      "observation": "Victorian government ArcGIS Server catalogue, reachable (200)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0/query (100 m bbox, outFields=*)",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "timed out at 40 s twice; treated as transient"
+    },
+    {
+      "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0/query?where=1%3D1&geometry=145.0585,-37.8312,145.0595,-37.8304&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=prop_pfi,prop_lga_code,prop_property_type,prop_status&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "parcelRecordCount": 3,
+      "assessment": "3 closed property polygons; verified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Victoria statewide",
+    "verifiedOpenScope": "three property polygons in Melbourne (Camberwell/Hawthorn area) in a bounded sample",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Vicmap Property is property (assessment-unit) polygons; may be distinct from legal lots (Vicmap Parcel). Licence attributions unreviewed; query latency was high.",
+  "nextStep": "Compare with Vicmap Parcel layer; review Vicmap licence text."
+}

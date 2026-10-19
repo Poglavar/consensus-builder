@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "description": "Human-reviewed WUP identity decisions and prior-attempt crosswalks. Rejected evidence paths are scoped only to these decisions; later evidence remains eligible.",
+  "decisions": [
+    {
+      "wupCityCode": 100,
+      "countryCode": "BG",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Sofia",
+      "evidenceFile": "world-parcels/research/countries/BG.json",
+      "distanceKm": 0.63,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 141,
+      "countryCode": "QA",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Doha",
+      "evidenceFile": "world-parcels/research/gulf-2026-10-06/qatar-kuwait-current-acceptance.json",
+      "distanceKm": 7.66,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 260,
+      "countryCode": "LV",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Riga",
+      "evidenceFile": "world-parcels/research/europe/LV.json",
+      "distanceKm": 1.34,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 309,
+      "countryCode": "AE",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Abu Dhabi",
+      "evidenceFile": "world-parcels/research/retry/countries/AE.json",
+      "distanceKm": 7.5,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 320,
+      "countryCode": "MN",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Ulaanbaatar",
+      "evidenceFile": "world-parcels/research/countries/MN.json",
+      "distanceKm": 3.38,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 334,
+      "countryCode": "JP",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Sapporo",
+      "evidenceFile": "world-parcels/research/developed/JP.json",
+      "distanceKm": 5.99,
+      "reason": "Verified Sapporo Chuo-ku parcel response in the 2026-09-30 Japan assessment.",
+      "distanceBasis": "Approximate WUP centroid to the named Sapporo Chuo-ku sample point in developed/JP.json."
+    },
+    {
+      "wupCityCode": 377,
+      "countryCode": "IE",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Dublin",
+      "evidenceFile": "world-parcels/research/countries/IE.json",
+      "distanceKm": 3.06,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 387,
+      "countryCode": "NL",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Rotterdam",
+      "evidenceFile": "world-parcels/research/rotterdam-live-response.json",
+      "distanceKm": 3.26,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked.",
+      "distanceBasis": "WUP centroid to center of verified response bbox."
+    },
+    {
+      "wupCityCode": 450,
+      "countryCode": "GE",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Tbilisi",
+      "evidenceFile": "world-parcels/research/tbilisi-msda-2026-10-08.json",
+      "distanceKm": 0.96,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 451,
+      "countryCode": "AM",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Yerevan",
+      "evidenceFile": "world-parcels/research/retry/countries/AM.json",
+      "distanceKm": 1.57,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 542,
+      "countryCode": "CZ",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Prague",
+      "evidenceFile": "world-parcels/research/countries/CZ.json",
+      "distanceKm": 1.88,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 555,
+      "countryCode": "FI",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Helsinki",
+      "evidenceFile": "world-parcels/research/countries/FI.json",
+      "distanceKm": 5.42,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 580,
+      "countryCode": "RW",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Kigali",
+      "evidenceFile": "world-parcels/research/subnational/RW/Nyarugenge.json",
+      "distanceKm": 3.71,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 652,
+      "countryCode": "UY",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Montevideo",
+      "evidenceFile": "world-parcels/research/developed/UY.json",
+      "distanceKm": 1.87,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 680,
+      "countryCode": "DK",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Copenhagen",
+      "evidenceFile": "world-parcels/research/countries/DK.json",
+      "distanceKm": 4.77,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 695,
+      "countryCode": "AL",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Tirana",
+      "evidenceFile": "world-parcels/research/retry/countries/AL.json",
+      "distanceKm": 2.82,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 704,
+      "countryCode": "BY",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Minsk",
+      "evidenceFile": "world-parcels/research/retry/countries/BY-parcel-response.json",
+      "distanceKm": 1.31,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 776,
+      "countryCode": "JM",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Kingston",
+      "evidenceFile": "world-parcels/research/retry/countries/JM-parcel-response.json",
+      "distanceKm": 1.33,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 884,
+      "countryCode": "JP",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Fukuoka",
+      "evidenceFile": "world-parcels/research/developed/JP.json",
+      "distanceKm": 7.19,
+      "reason": "Verified Fukuoka Higashi-ku parcel response in the 2026-09-30 Japan assessment.",
+      "distanceBasis": "Approximate WUP centroid to the named Fukuoka Higashi-ku sample point in developed/JP.json."
+    },
+    {
+      "wupCityCode": 893,
+      "countryCode": "SV",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "San Salvador",
+      "evidenceFile": "world-parcels/research/retry/countries/SV.json",
+      "distanceKm": 3.34,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 931,
+      "countryCode": "NO",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Oslo",
+      "evidenceFile": "world-parcels/research/countries/NO.json",
+      "distanceKm": 1.61,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 942,
+      "countryCode": "HU",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Budapest",
+      "evidenceFile": "world-parcels/research/countries/HU.json",
+      "distanceKm": 0.18,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 1157,
+      "countryCode": "BE",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Brussels",
+      "evidenceFile": "world-parcels/research/europe/BE.json",
+      "distanceKm": 2.5,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 1160,
+      "countryCode": "DE",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Cologne",
+      "evidenceFile": "world-parcels/research/cologne-live-response.json",
+      "distanceKm": 3.24,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked.",
+      "distanceBasis": "WUP centroid to center of verified response bbox."
+    },
+    {
+      "wupCityCode": 1266,
+      "countryCode": "BE",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Antwerp",
+      "evidenceFile": "world-parcels/research/antwerp-live-response.json",
+      "distanceKm": 1.39,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked.",
+      "distanceBasis": "WUP centroid to center of verified response bbox."
+    },
+    {
+      "wupCityCode": 1421,
+      "countryCode": "OM",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Muscat",
+      "evidenceFile": "world-parcels/research/oman-resolution-2026-10-06/mutrah-acceptance.json",
+      "distanceKm": 9.57,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 1672,
+      "countryCode": "SE",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Stockholm",
+      "evidenceFile": "world-parcels/research/retry/countries/SE.json",
+      "distanceKm": 2.49,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 1754,
+      "countryCode": "NL",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Amsterdam",
+      "evidenceFile": "world-parcels/research/amsterdam-live.json",
+      "distanceKm": 3.9,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 3520,
+      "countryCode": "SA",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Dammam",
+      "evidenceFile": "world-parcels/research/gulf-2026-10-06/saudi-jordan-sa-assessment.json",
+      "distanceKm": null,
+      "reason": "Reviewed Dammam/Eastern Gulf municipal network timeout as a city attempt; unrelated Kuwait aquifer evidence is excluded.",
+      "distanceBasis": "The city-specific municipal network check timed out; the assessment records no query coordinate from which to calculate a distance."
+    },
+    {
+      "wupCityCode": 3660,
+      "countryCode": "PL",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Warsaw",
+      "evidenceFile": "world-parcels/research/countries/PL.json",
+      "distanceKm": 3.01,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 4068,
+      "countryCode": "FR",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Lyon",
+      "evidenceFile": "world-parcels/research/lyon-live-response.json",
+      "distanceKm": 2.21,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked.",
+      "distanceBasis": "WUP centroid to center of verified response bbox."
+    },
+    {
+      "wupCityCode": 4144,
+      "countryCode": "VE",
+      "decision": "different_settlement",
+      "reviewedAgainst": "world-parcels/research/barcelona.json",
+      "reason": "Reviewed Barcelona, Venezuela as unrelated to Barcelona, Spain. The existing artifact concerns ES.",
+      "excludeEvidenceFiles": [
+        "world-parcels/research/barcelona.json"
+      ]
+    },
+    {
+      "wupCityCode": 4156,
+      "countryCode": "IT",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Rome",
+      "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/roster.json",
+      "distanceKm": 2.84,
+      "reason": "Reviewed Rome bounded city sample as the same WUP Roma settlement."
+    },
+    {
+      "wupCityCode": 4858,
+      "countryCode": "US",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Phoenix",
+      "evidenceFile": "world-parcels/research/us-capitals-2026-10-06/az.json",
+      "distanceKm": 12.15,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 7079,
+      "countryCode": "US",
+      "decision": "different_settlement",
+      "reviewedAgainst": "world-parcels/research/saint-petersburg.json",
+      "reason": "Reviewed Saint Petersburg, Florida as unrelated to the WUP Saint Petersburg in Russia. The prior artifact is Russian-city evidence.",
+      "excludeEvidenceFiles": [
+        "world-parcels/research/saint-petersburg.json"
+      ]
+    },
+    {
+      "wupCityCode": 7962,
+      "countryCode": "US",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Columbus",
+      "evidenceFile": "world-parcels/research/us-capitals-2026-10-06/oh.json",
+      "distanceKm": 7.74,
+      "reason": "Reviewed as the same WUP settlement as a prior city-specific attempt; country, canonical city identity, and prior city evidence were checked."
+    },
+    {
+      "wupCityCode": 8038,
+      "countryCode": "ID",
+      "decision": "confirmed_attempt",
+      "reviewedCityName": "Denpasar",
+      "evidenceFile": "world-parcels/research/subnational/ID/BA-parcel-response.json",
+      "distanceKm": 11.28,
+      "reason": "Verified parcel geometry from the Serangan subregion; the city-centre query was empty, so this is a partial-region attempt.",
+      "distanceBasis": "Approximate WUP centroid to center of the verified Serangan parcel sample."
+    },
+    {
+      "wupCityCode": 10979,
+      "countryCode": "IN",
+      "decision": "different_settlement",
+      "reviewedAgainst": "world-parcels/research/india-africa-2026-10-08/india-city-10893.json",
+      "reason": "Reviewed Kalyanpur as a distinct WUP settlement from prior WUP City_Code 10893; the prior point is 52.38 km away. This specific prior artifact does not resolve future WUP 10979 research.",
+      "excludeEvidenceFiles": [
+        "world-parcels/research/india-africa-2026-10-08/india-city-10893.json"
+      ]
+    },
+    {
+      "wupCityCode": 11569,
+      "countryCode": "IN",
+      "decision": "different_settlement",
+      "reviewedAgainst": "world-parcels/research/cape-town-live-response.json",
+      "reason": "Reviewed Cape Town as unrelated to the South African city. The existing Cape Town artifacts concern ZA.",
+      "excludeEvidenceFiles": [
+        "world-parcels/research/cape-town-live-response.json",
+        "world-parcels/research/cape-town-live.json",
+        "world-parcels/research/cape-town-parcel-response.json",
+        "world-parcels/research/cape-town.json"
+      ]
+    }
+  ]
+}

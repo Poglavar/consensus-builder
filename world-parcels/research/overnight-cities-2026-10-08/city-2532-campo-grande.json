@@ -1,0 +1,107 @@
+{
+  "name": "Campo Grande",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 631,
+  "point": [
+    -20.4756331624637,
+    -54.6218303206542
+  ],
+  "population2025": 833403,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "This is city-source research, not a boundary or completeness assertion. No owner, address, tax, account, or other personal property data were requested or retained. No authentication, CAPTCHA, applicant form, or identifier-based property lookup was used. No full parcel polygons were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Campo Grande’s municipal government says SIMGEO integrates the municipal Cadastro Territorial Multifinalitário (CTM), its city data are georeferenced and made available to citizens, and the system supports the city’s property/infrastructure geographic information. This confirms a municipal territorial-cadastre function, but does not prove public access to a parcel-only geometry layer.",
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "The municipal cadastre and geoprocessing system is confirmed. The public map route could not be inspected to a safe feature schema; no parcel polygon was requested or retained.",
+  "remainingUncertainty": "Whether the current SIMGEO public viewer has a parcel geometry layer with a non-personal ID separable from tax/owner/address attributes, and whether that layer covers the WUP point.",
+  "nextStep": "Retry only the official public map after the service is reachable; inspect item/layer metadata before any feature query and request geometry with a safe identifier only.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Campo Grande MS municipal cadastral map property parcel GIS official SIMGEO CTM",
+        "result": "English and Portuguese searches found the official municipal SIMGEO portal and CTM description. The official news item describes city georeferenced data for citizens and integration with the municipal CTM. An indexed public ArcGIS web-app viewer route exists, but its fetched page exposed no usable layer schema; direct official SIMGEO landing fetch timed out. No parcel query was made.",
+        "method": "Separate English-language search followed by official source review and anonymous public-route inspection."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Campo Grande MS cadastro territorial multifinalitário cadastro imobiliário mapa SIMGEO prefeitura",
+        "result": "English and Portuguese searches found the official municipal SIMGEO portal and CTM description. The official news item describes city georeferenced data for citizens and integration with the municipal CTM. An indexed public ArcGIS web-app viewer route exists, but its fetched page exposed no usable layer schema; direct official SIMGEO landing fetch timed out. No parcel query was made.",
+        "method": "Separate local-language search followed by official source review; no applicant or parcel-specific search was submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.campogrande.ms.gov.br/cgnoticias/noticia/prefeitura-lanca-nova-plataforma-para-o-sistema-municipal-de-geoprocessamento/",
+        "observation": "Campo Grande’s municipal government says SIMGEO integrates the municipal Cadastro Territorial Multifinalitário (CTM), its city data are georeferenced and made available to citizens, and the system supports the city’s property/infrastructure geographic information. This confirms a municipal territorial-cadastre function, but does not prove public access to a parcel-only geometry layer."
+      },
+      {
+        "url": "https://simgeoctm.campogrande.ms.gov.br/portal/apps/webappviewer/index.html?id=59fee306ae414141ae4d199b364beff8",
+        "observation": "Public institutional/map information reviewed for the city-linked source; it did not establish a geometry-only parcel endpoint."
+      },
+      {
+        "url": "https://www.campogrande.ms.gov.br/cgnoticias/noticia/atendimentos-de-cartografia-serao-suspensos-nos-dias-29-e-30-de-maio-para-adequacoes-no-espaco/",
+        "observation": "Additional official/local context; no parcel query or private-field access was made."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The municipal cadastre and geoprocessing system is confirmed. The public map route could not be inspected to a safe feature schema; no parcel polygon was requested or retained.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "No anonymous geometry-only feature route with a verified safe schema was identified; no parcel feature request was made.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://www.campogrande.ms.gov.br/cgnoticias/noticia/prefeitura-lanca-nova-plataforma-para-o-sistema-municipal-de-geoprocessamento/",
+    "https://simgeoctm.campogrande.ms.gov.br/portal/apps/webappviewer/index.html?id=59fee306ae414141ae4d199b364beff8",
+    "https://www.campogrande.ms.gov.br/cgnoticias/noticia/atendimentos-de-cartografia-serao-suspensos-nos-dias-29-e-30-de-maio-para-adequacoes-no-espaco/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Campo Grande’s municipal government says SIMGEO integrates the municipal Cadastro Territorial Multifinalitário (CTM), its city data are georeferenced and made available to citizens, and the system supports the city’s property/infrastructure geographic information. This confirms a municipal territorial-cadastre function, but does not prove public access to a parcel-only geometry layer.",
+    "verifiedOpenScope": "The municipal cadastre and geoprocessing system is confirmed. The public map route could not be inspected to a safe feature schema; no parcel polygon was requested or retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "BR-2532-CADASTRE-RESEARCH",
+    "name": "Campo Grande local registry/map evidence",
+    "url": "https://www.campogrande.ms.gov.br/cgnoticias/noticia/prefeitura-lanca-nova-plataforma-para-o-sistema-municipal-de-geoprocessamento/",
+    "operator": "Local or state public authority named in official sources",
+    "serviceType": "Registry/cadastre function confirmed; anonymous full parcel geometry route not verified.",
+    "layer": "No safe parcel feature layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No feature-level geometry response obtained."
+  },
+  "wupCityCode": 2532,
+  "cityId": "wup2025:2532",
+  "queueRank": 631,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    -20.4756331624637,
+    -54.6218303206542
+  ],
+  "rootReviewedAt": "2026-10-09T02:12:55.238180+00:00"
+}

@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-5829-koriyama.json",
+  "cityCode": 5829,
+  "queueRank": 2607,
+  "name": "Koriyama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "checkedAt": "2026-10-11",
+  "attempt": 2,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": true,
+  "sampleFile": "koriyama-sample.geojson",
+  "summary": "Koriyama City officially links a public SonicWeb GIS whose current JavaScript configuration exposes the 地番参考図 theme and 筆界 feature class 1021(th_18). Bounded anonymous requests returned native feature IDs and three full polygons. The city warns this is a reference map, and the API response does not declare CRS; runtime admission remains held.",
+  "queryOutcomes": [
+    {"language":"English","query":"Koriyama City official cadastral map parcel GIS parcel Japan","outcome":"Official city GIS guidance and public viewer found; viewer configuration was followed to the parcel-reference layer and API."},
+    {"language":"Japanese","query":"郡山市 地番参考図 地籍図 GIS 公式 筆界","outcome":"Official Japanese viewer configuration identified 地番参考図 and 筆界 1021(th_18); anonymous geometry response verified."}
+  ],
+  "requestOutcomes": [
+    {"request":"GET https://www.sonicweb-asp.jp/koriyama2/","outcome":"HTTP 200; public viewer HTML fetched."},
+    {"request":"GET https://www.sonicweb-asp.jp/koriyama2/map.js?ver=1.0.601","outcome":"HTTP 200; current config exposed API base, theme, feature class and displayed source fields."},
+    {"request":"GET /api/feature/1021(th_18)/instance?max=3&geom=1","outcome":"HTTP 200; bounded response returned native IDs 12170901, 12170902, 12170903 and geometry metadata."},
+    {"request":"GET /api/feature/1021(th_18)/instance/12170902/detail?geom=1 and .../12170903/detail?geom=1","outcome":"HTTP 200; full Polygon geometry returned for both IDs. First polygon was full in bounded response."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [37.3960553759834, 140.36812389778] was preserved and not shifted.",
+    "A bounded sample and default viewer area do not establish citywide completeness; no exact-point hit/miss was used as absence evidence.",
+    "The official city terms describe 地番参考図 as a reference map, not proof of boundaries or rights.",
+    "API response geometry appeared longitude/latitude but declared no CRS; no CRS transformation was inferred.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+    "This packet is research evidence only and is not source integration/admission."
+  ],
+  "safeFieldAllowlist": ["stable native featureid", "geometry", "source typename", "source CRS if declared", "source layer/version", "retrieval timestamp"],
+  "nativeFieldMapping": {"featureid":"canonical native identity", "typename":"source feature class provenance", "geom":"retained geometry", "attributes":"not retained; source fields were only observed as 字名 and 地番"},
+  "uncertainty": "Native IDs and polygons are publicly returned, but legal/source completeness and CRS are unresolved. The city's cadastral-survey page separately describes registry/cadastral procedures and does not turn the public reference layer into a legal registry extract.",
+  "serialReviewRecommendation": "Hold. Independently verify CRS, native identity stability, layer coverage semantics and admissibility before enabling any runtime adapter."
+}

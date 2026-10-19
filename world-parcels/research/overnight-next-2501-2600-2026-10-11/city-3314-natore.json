@@ -1,0 +1,51 @@
+{
+  "cityCode": 3314,
+  "queueRank": 2568,
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "name": "Natore",
+  "point": [24.4107301071372, 88.9823767797248],
+  "population2025": 228849,
+  "population2025k": 228.849,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Natore Bangladesh cadastral parcel map land records official GIS",
+        "result": "First-party results identified the Bangladesh Department of Land Records and Surveys (DLRS) public Map Search, the DLRS map-purchase portal, and the Ministry of Land land-map project. These establish official national cadastral/map services, but the bounded search did not expose a Natore city parcel layer, safe parcel identity, or geometry in indexed results.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/", "https://map.land.gov.bd/"]
+      },
+      {
+        "language": "native/local",
+        "query": "নাটোর ভূমি রেকর্ড মৌজা ম্যাপ খতিয়ান সরকারি",
+        "result": "বাংলাদেশের সরকারি ফলাফলে DLRS-এর ম্যাপ অনুসন্ধান, ডিজিটাল BRS/খতিয়ান ও ভূমি নকশা প্রকল্প পাওয়া গেছে। Natore-specific public parcel geometry or safe native parcel identity was not exposed by the bounded discovery.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://dlrs.portal.gov.bd/", "https://map.land.gov.bd/"]
+      }
+    ]
+  },
+  "source": {
+    "name": "Bangladesh Department of Land Records and Surveys (DLRS) Map Search",
+    "operator": "Department of Land Records and Surveys, Ministry of Land, Bangladesh",
+    "viewerUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "scope": "Official national survey/map-search service with administrative, survey, upazila, mouza, sheet and plot selectors; Natore public parcel coverage was not verified in this attempt.",
+    "crs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_national_cadastral_map_service_no_verified_open_natore_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh national survey/map-search and land-map services; no citywide Natore parcel coverage claim.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The exact WUP point is preserved unchanged. The public viewer returned a Natore district entry and a current BDS survey entry, but its subsequent public Natore upazila/mouza request returned an empty array; this may reflect coverage, service state, or route/data limitations and is not evidence of citywide absence. No safe native parcel ID, schema/CRS response, or polygon was verified.",
+  "safeFieldAllowlist": ["geometry", "CRS", "stable native parcel identity", "source scope/provenance"],
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No GeoJSON sample was retained because no native parcel identity and geometry were verified."
+}

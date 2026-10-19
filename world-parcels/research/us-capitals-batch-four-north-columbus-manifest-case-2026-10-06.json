@@ -1,0 +1,43 @@
+[
+  {
+    "city": "columbus",
+    "center": [
+      39.9612,
+      -82.9988
+    ],
+    "descriptor": {
+      "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features_WebMercator/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Franklin County Auditor Parcels",
+      "operator": "Franklin County Auditor, GIS",
+      "scope": "county",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "PARCELID",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "PARCELID",
+      "metricSrid": 32617,
+      "idPrefix": "US-OH-FRANKLIN-",
+      "id": "us-oh-franklin-columbus-parcels",
+      "stateCode": "OH",
+      "cityIds": [
+        "columbus"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "caveats": [
+        "Capital-area acceptance only; county scope does not establish full municipal or statewide coverage."
+      ],
+      "countryCode": "US",
+      "catalogueUrl": "https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS",
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids"
+    },
+    "researchFile": "world-parcels/research/us-capitals-2026-10-06/oh.json"
+  }
+]

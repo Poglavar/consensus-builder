@@ -1,0 +1,89 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LI",
+ "country": "Liechtenstein",
+ "checkedAt": "2026-09-30",
+ "status": "national_online_cadastre_verified_sample",
+ "previousStatus": "not_probed",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Amt fuer Bau und Infrastruktur / Landesverwaltung (Amtliche Vermessung); served through geodienste.ch as 'FL'",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "Entry canton FL, publication 'Frei erh\u00e4ltlich', data terms 'Freie Nutzung. Quellenangabe ist Pflicht.'; WMS terms add commercial use only with data supplier's permission"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&REQUEST=GetCapabilities",
+   "observation": "Same open AV WFS as Switzerland; FILTER_ALLOWED_CANTONS includes FL"
+  },
+  {
+   "url": "https://geodaten.llv.li/geoportal/wfs.cgi",
+   "observation": "403 Forbidden to scripted request with browser headers; not bypassed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2757500,1215500,2757800,1215800,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 RESF polygons, Kanton=FL, BFSNr 7003"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2759500,1230500,2759800,1230800,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 polygons, Kanton=FL, BFSNr 7007"
+  },
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2758500,1224000,2758800,1224300,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "1 polygon, Kanton=FL, BFSNr 7001"
+  },
+  {
+   "url": "https://geodaten.llv.li/geoportal/wfs.cgi?SERVICE=WFS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Forbidden"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "li-geodienste-av0",
+  "requestUrl": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2757500,1215500,2757800,1215800,urn:ogc:def:crs:EPSG::2056",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml",
+  "spatialTestAreaLonLat": "LV95 300 m box E2757500 N1215500 (southern Liechtenstein)",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/ms:RESF",
+  "geometryType": "gml:Polygon",
+  "closedRings": true,
+  "idField": "ms:EGRIS_EGRID / ms:Nummer",
+  "responseFile": "europe/LI-parcel-response.json",
+  "pagination": "WFS 2.0 STARTINDEX/COUNT",
+  "regionSampled": "Liechtenstein municipalities BFS 7003, 7007 (and 7001)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Liechtenstein Amtliche Vermessung parcels (canton code FL in geodienste.ch)",
+  "regionsVerified": [
+   "BFS 7003",
+   "BFS 7007",
+   "BFS 7001"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "regionsSampled": [
+  "BFS 7003",
+  "BFS 7007",
+  "BFS 7001"
+ ],
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; cookie jar used; Accept-Language de-CH; Referer https://geodienste.ch/",
+ "remainingUncertainty": "Licence read only from geodienste.ch metadata. Note one test box near E2757000 N1222000 returned Swiss SG parcels (border), not FL. Native geodaten.llv.li endpoint blocked (403).",
+ "nextStep": "Use geodienste.ch av_0 WFS with Kanton=FL filter."
+}

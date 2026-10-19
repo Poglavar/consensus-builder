@@ -1,0 +1,84 @@
+{
+  "descriptor": {
+    "adapter": "ogc-api",
+    "attributeFilters": {
+      "status_historie_code": "G"
+    },
+    "catalogueUrl": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+    "countryCode": "NL",
+    "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+    "id": "nl-pdok-brk-kadastrale-kaart",
+    "idField": "identificatie_lokaal_id",
+    "idNamespace": {
+      "field": "identificatie_namespace",
+      "value": "NL.IMKAD.KadastraalObject"
+    },
+    "idPattern": "^[0-9]{14}$",
+    "idPrefix": "NL-BRK-",
+    "idType": "string",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "maxBboxKm2": 25,
+    "maxFeatures": 10000,
+    "metricSrid": 32631,
+    "name": "Netherlands Kadaster / PDOK cadastral map",
+    "outFields": [
+      "identificatie_lokaal_id",
+      "identificatie_namespace",
+      "status_historie_code"
+    ],
+    "pageSize": 1000,
+    "scope": "Shared public cadastral-reference provider with separately qualified bounded city entries: Amsterdam, Rotterdam, The Hague and Utrecht. Each city scope and evidence file records its own geometry, identity and runtime checks. No citywide or countrywide completeness, legal title, survey accuracy or currentness is asserted.",
+    "evidenceFile": "research/amsterdam-live.json",
+    "attribution": "Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.",
+    "cityIds": [
+      "amsterdam",
+      "rotterdam",
+      "thehague",
+      "utrecht",
+      "674"
+    ],
+    "additionalCityEvidence": {
+      "thehague": "research/world-capitals-2026-10-08/the-hague-acceptance.json",
+      "utrecht": "research/overnight-followon-2026-10-09/utrecht-root-acceptance.json"
+    },
+    "cityScopes": {
+      "thehague": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee.",
+      "utrecht": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
+      "amsterdam": "Bounded original city evidence; see research/amsterdam-live.json and research/rotterdam-live.json. Indicative cadastral boundaries; whole-city completeness unverified.",
+      "rotterdam": "Bounded original city evidence; see research/amsterdam-live.json and research/rotterdam-live.json. Indicative cadastral boundaries; whole-city completeness unverified."
+    },
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "NL",
+        "basis": "Kadaster BRK cadastral map via PDOK covers the Netherlands.",
+        "evidence": [
+          "research/countries/NL.json",
+          "research/amsterdam-live.json"
+        ]
+      }
+    }
+  },
+  "city": {
+    "code": "674",
+    "name": "Leiden",
+    "point": [
+      4.4726761074768,
+      52.1673646768043
+    ]
+  },
+  "sampleIds": [
+    "NL-BRK-23250457470000",
+    "NL-BRK-23250436170000",
+    "NL-BRK-23200187570000"
+  ],
+  "absentId": "NL-BRK-99999999999998",
+  "metricEpsg": "EPSG:32631",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Netherlands Kadaster / PDOK cadastral map",
+      "Current official Dutch OGC API source contract and bounded live verification for Amsterdam.; Kadaster BRK cadastral map via PDOK covers the Netherlands."
+    ]
+  },
+  "cellSizeDegrees": 0.001
+}

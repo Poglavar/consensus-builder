@@ -1,0 +1,90 @@
+{
+  "cityCode": 313,
+  "queueRank": 3022,
+  "name": "Turbat",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [26.0012892643014, 63.0510083064824],
+  "population2025": 198107,
+  "population2025k": 198.107,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakistan official cadastral parcel map API Balochistan Turbat land records",
+        "result": "First-party discovery identified the Balochistan Board of Revenue Land Revenue and Management Information System (BLRMIS) project. Its official project description explicitly includes Kech (Turbat Tehsil only) in the expanded phase-I scope and lists GIS, a public website, and digitized revenue records. No public anonymous parcel API or downloadable citywide vector endpoint was identified in the search results.",
+        "actualResultUrls": ["https://bor.balochistan.gov.pk/blrmis-project/", "https://bor.balochistan.gov.pk/objectives/", "https://bor.balochistan.gov.pk/downloads/"]
+      },
+      {
+        "language": "Urdu",
+        "query": "پاکستان تربت اراضی ریکارڈ کادستر نقشہ بلوچستان سرکاری",
+        "result": "Urdu discovery returned official Balochistan government/Board of Revenue references to land records, maps, and revenue administration, including a government Urdu report mentioning Turbat/Kech land-record boundary and map issues. It did not expose an anonymous parcel feature service or safe parcel ID-plus-geometry response.",
+        "actualResultUrls": ["https://dpr.gob.pk/11th-june-2026/", "https://balochistan.gov.pk/board-of-revenue-regulations/", "https://bor.balochistan.gov.pk/blrmis-project/"]
+      }
+    ],
+    "sourceDiscoveryDate": "2026-10-12",
+    "sourceCitations": ["https://bor.balochistan.gov.pk/blrmis-project/", "https://bor.balochistan.gov.pk/objectives/", "https://dpr.gob.pk/11th-june-2026/"]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Balochistan Board of Revenue / BLRMIS, with Kech district and Turbat Tehsil revenue administration in scope",
+    "scope": "Provincial land-record custodian and digitization program; the official BLRMIS project page specifically names Kech (Turbat Tehsil only) and GIS/public land-record components.",
+    "evidence": "https://bor.balochistan.gov.pk/blrmis-project/"
+  },
+  "service": {
+    "name": "Balochistan Land Revenue and Management Information System (BLRMIS) public/GIS route",
+    "viewerUrl": "https://balochistan-zameen.gob.pk/",
+    "baseUrl": "https://balochistan-zameen.gob.pk/",
+    "viewerConfiguration": "The official Board of Revenue project page documents GIS and public-website components but did not expose a usable viewer configuration or service endpoint in the fetched material. The named portal returned HTTP 500 to an anonymous HEAD request; no login or bypass was attempted.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET/HEAD",
+      "url": "https://balochistan-zameen.gob.pk/",
+      "status": "500",
+      "outcome": "Anonymous request returned HTTP 500 with HTML; no viewer JavaScript, service configuration, schema, or parcel response was obtained. This is not evidence of citywide absence."
+    },
+    {
+      "method": "GET/HEAD",
+      "url": "https://bor.balochistan.gov.pk/blrmis-project/",
+      "status": "search-indexed / direct host challenge",
+      "outcome": "Search-indexed official project material was inspected and documents Kech (Turbat Tehsil only), GIS, public website, and digitized revenue records. Direct host access returned a Cloudflare 403 challenge; no CAPTCHA/Cloudflare bypass was attempted."
+    },
+    {
+      "method": "GET/HEAD",
+      "url": "https://www.balochistan.gov.pk/",
+      "status": "403",
+      "outcome": "Anonymous request returned a Cloudflare challenge. No retry with credentials, private tokens, or challenge bypass was made."
+    },
+    {
+      "method": "GET",
+      "url": "https://dpr.gob.pk/11th-june-2026/",
+      "status": "search-indexed",
+      "outcome": "Official Urdu government report was used only as procedural/local context: it mentions Turbat/Kech land-record maps, boundary determination, overlaps, and gaps. No unsafe ownership or personal fields were requested or retained."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/313/ (route-attempts.txt; no raw unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": [
+    "Exact WUP point [26.0012892643014, 63.0510083064824] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point parcel request was submitted because no usable first-party endpoint/configuration was available; this is not evidence of a point miss or citywide absence.",
+    "The official project evidence establishes BLRMIS scope for Kech (Turbat Tehsil only), but not anonymous citywide parcel vector coverage.",
+    "Parcel schema, native identity field, geometry CRS, service configuration, and safe ID-plus-geometry response remain unqualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": ["The public GIS route may be unavailable, relocated, or protected from this network location.", "BLRMIS implementation and parcel coverage for Turbat may be incomplete despite the documented project scope.", "No independent serial reviewer has qualified a runtime adapter."],
+  "runtimeReadiness": "held"
+}

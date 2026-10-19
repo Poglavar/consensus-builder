@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:3435910",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://data.buenosaires.gob.ar/dataset/parcelas", "observation": "Official Buenos Aires City catalog offers city parcel polygons as GeoJSON and SHP under CC-BY-2.5-AR, updated about every six months; this claims the autonomous city, not Greater Buenos Aires or Argentina."},
+    {"url": "https://data.buenosaires.gob.ar/dataset/juqdkmgo-156/resource/8d8ffe66-9eb9-4f12-8f23-e1586a2d888d", "observation": "Official GeoJSON resource lists parcel identifiers and geometry, but its preview says the file is too large and the direct download did not complete in this environment."},
+    {"url": "https://idecaba.buenosaires.gob.ar/Recursos/Geoservicios", "observation": "City infrastructure advertises WFS vector downloads, but the parcel layer and working feature URL remain unverified."},
+    {"url": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0", "observation": "A real parcel layer returned three polygons, but outputSR=4326 placed them near Salta (-65.409,-24.755), not Buenos Aires; a bounded Buenos Aires count returned zero. It cannot substantiate Buenos Aires or nationwide coverage."}
+  ],
+  "requests": [
+    {"url": "https://data.buenosaires.gob.ar/dataset/parcelas/resource/8d8ffe66-9eb9-4f12-8f23-e1586a2d888d/download", "method": "GET", "httpStatus": null, "error": "Direct download timed out before a parseable response", "parcelRecordCount": null},
+    {"url": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0/query?objectIds=901121,901122,901123&outFields=OBJECTID,DEPARTA,NRO_PARCELA&returnGeometry=true&outSR=4326&f=json", "method": "GET", "httpStatus": 200, "contentType": "application/json", "parcelRecordCount": 3, "sampleCoordinateLonLat": [-65.409119844, -24.754791271], "responseFile": "buenos-aires-rejected-salta-response.json", "assessment": "Parcels are near Salta; excluded from Buenos Aires coverage"},
+    {"url": "https://sigsa.inmuebles.gov.ar/server/rest/services/IDE/IDE___Catastro_Urbano_y_Rural/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A-58.5%2C%22ymin%22%3A-34.7%2C%22xmax%22%3A-58.3%2C%22ymax%22%3A-34.5%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json", "method": "GET", "httpStatus": 200, "contentType": "application/json", "rawReply": {"count": 0}, "parcelRecordCount": 0}
+  ],
+  "coverageAssessment": {"claimedScope": "Ciudad Autónoma de Buenos Aires in official city dataset", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The city GeoJSON likely provides a full autonomous-city release, but no parcel feature could be inspected through the timed-out download; Greater Buenos Aires extends beyond that boundary.",
+  "nextStep": "Retrieve the official GeoJSON or discover its WFS layer, save a small city-located polygon sample, then assess completeness."
+}

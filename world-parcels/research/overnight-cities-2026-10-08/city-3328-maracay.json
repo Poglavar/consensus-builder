@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Maracay",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+  "registryEvidenceUrls": [
+    "https://www.alcaldiagirardot.gob.ve/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3328,
+  "cityId": "wup2025:3328",
+  "centerLatLon": [
+    10.2328904391236,
+    -67.5439805486675
+  ],
+  "rank": 621,
+  "queueRank": 621,
+  "population2025": 845329,
+  "population2025k": 845.329,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The municipal homepage presents Catastro en Línea and account fields but no safe anonymous geometry-only feature route or schema was verified. No credentials, cadastral identifier, owner, address, or property-specific form was submitted.",
+  "scopeLimits": "First-party source discovery only. No owner, address, tax, personal-identity, credential, account, or property-identifier lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Whether an anonymous city-scoped full-polygon service exists and whether the WUP point corresponds to the named local record unit remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Maracay Venezuela Girardot official municipal cadastre online cadastral parcels map GIS",
+        "scope": "Find official local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "result": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+        "actualResultUrls": [
+          "https://www.alcaldiagirardot.gob.ve/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Maracay catastro Girardot Aragua Alcaldía ficha catastral mapa parcelario oficial",
+        "scope": "Find native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+        "result": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+        "actualResultUrls": [
+          "https://www.alcaldiagirardot.gob.ve/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.alcaldiagirardot.gob.ve/",
+        "observation": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint."
+      }
+    ],
+    "metadataReviewFile": "maracay-service-review.json"
+  },
+  "source": {
+    "sourceId": "ve-maracay-registry-review",
+    "name": "Maracay local registry/cadastre route review",
+    "operator": "Alcaldía del Municipio Girardot — Dirección Ejecutiva de Catastro Municipal",
+    "url": "https://www.alcaldiagirardot.gob.ve/",
+    "scope": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "point": [
+    10.2328904391236,
+    -67.5439805486675
+  ],
+  "rootReviewedAt": "2026-10-09T02:08:28.000160+00:00"
+}

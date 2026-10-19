@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-09T04:40:32.062806+00:00",
+  "decision": "approved_by_root",
+  "geometryPreserved": true,
+  "featureCount": 79,
+  "independentAudit": "el-paso-manifest-root-quality.json",
+  "invalidCount": 0,
+  "duplicateCount": 0,
+  "overlapCountAbove0_01M2": 0,
+  "operationErrors": 0,
+  "scope": "79 valid, distinct EPCAD-source parcel reference polygons served by City of El Paso GIS, qualified in thirteen bounded cells around the unchanged WUP population-settlement locator. Complete native count and object-ID manifests, forced three-row pages, all fresh GIS-ID reads, explicit absence, footprint and binding pass. Metric EPSG32613 topology found no sampled overlaps or errors. A fresh native parcel contains the locator, which is also within the official city limits. The layer is county-source/city-publisher ground geometry, not a city-only or legal-title coverage guarantee.",
+  "nativeIdentityAndScopeReview": "elpaso-root-original-and-paging-review.json"
+}

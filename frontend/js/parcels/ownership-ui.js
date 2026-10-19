@@ -3,60 +3,46 @@
 
     const PARCEL_OWNER_VALUE_ELEMENT_ID = 'parcel-owner-value';
     const parcelOwnerErrorCache = new Map(); // Cache for failed requests to avoid repeated warnings
+    // Ownership responses are metadata, not parcel features. Keeping them in a dedicated cache
+    // prevents UI enrichment from becoming a second mutable copy of parcel geometry.
+    const parcelOwnershipMetadata = new Map();
     let parcelOwnerRequestSequence = 0;
     let suppressOwnerAcceptanceRefresh = false;
 
-    function getParcelStore() {
-        if (global.ParcelsState && typeof global.ParcelsState.getParcelCache === 'function') {
-            return global.ParcelsState.getParcelCache();
+    // Strings go through the page's i18n (global.tParcel when a host defines one, else i18n.t);
+    // the English text is only the fallback when a key is missing.
+    const tParcel = (key, params = {}, fallback = '') => {
+        if (typeof global.tParcel === 'function') {
+            return global.tParcel(key, params, fallback);
         }
-        return global.parcelCache;
-    }
+        const api = global?.i18n;
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(key, params);
+            if (translated && translated !== key) {
+                return translated;
+            }
+        }
+        return fallback || key || '';
+    };
 
-    function getParcelFeatureFromStore(parcelId, options = {}) {
+    function ownershipMetadata(parcelId, createIfMissing = false) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
         if (!normalizedId) return null;
-
-        const store = getParcelStore();
-        if (store && store.byId instanceof Map && store.byId.has(normalizedId)) {
-            return store.byId.get(normalizedId);
-        }
-
-        const layer = typeof global.resolveParcelLayerById === 'function'
-            ? global.resolveParcelLayerById(normalizedId)
-            : null;
-        if (layer && layer.feature) {
-            const feature = layer.feature;
-            if (store && store.byId instanceof Map) {
-                store.byId.set(normalizedId, feature);
-            }
-            return feature;
-        }
-
-        if (store && store.grid instanceof Map) {
-            for (const cell of store.grid.values()) {
-                if (!cell || !Array.isArray(cell.features)) continue;
-                const found = cell.features.find(f => {
-                    const props = f?.properties || {};
-                    const fid = props.parcelId ?? props.parcel_id ?? props.id;
-                    return fid && fid.toString() === normalizedId;
-                });
-                if (found) {
-                    if (store.byId instanceof Map) {
-                        store.byId.set(normalizedId, found);
-                    }
-                    return found;
-                }
-            }
-        }
-
-        if (options.createIfMissing && store && store.byId instanceof Map) {
-            const stub = { type: 'Feature', properties: { parcelId: normalizedId }, geometry: null };
-            store.byId.set(normalizedId, stub);
-            return stub;
-        }
-
-        return null;
+        if (parcelOwnershipMetadata.has(normalizedId)) return parcelOwnershipMetadata.get(normalizedId);
+        const source = global.LiveParcelFabric?.get?.(normalizedId)
+            || global.CadastralParcelRepository?.get?.(normalizedId)
+            || null;
+        const props = source?.properties || {};
+        const metadata = {
+            ownershipDetails: props.ownershipDetails ? { ...props.ownershipDetails } : {},
+            ownershipList: Array.isArray(props.ownershipList) ? props.ownershipList.slice() : null,
+            ownershipType: props.ownershipType || null
+        };
+        const hasSource = source && (metadata.ownershipList || metadata.ownershipType
+            || Object.keys(metadata.ownershipDetails).length);
+        if (!createIfMissing && !hasSource) return null;
+        parcelOwnershipMetadata.set(normalizedId, metadata);
+        return metadata;
     }
 
     function deriveOwnersFromOwnershipList(list = []) {
@@ -135,21 +121,21 @@
     }
 
     function getStoredParcelOwners(parcelId) {
-        const feature = getParcelFeatureFromStore(parcelId);
-        if (!feature || !feature.properties) return null;
+        const metadata = ownershipMetadata(parcelId);
+        if (!metadata) return null;
 
-        const details = feature.properties.ownershipDetails || {};
+        const details = metadata.ownershipDetails || {};
         if (Array.isArray(details.owners) && details.owners.length > 0) {
             return details.owners;
         }
 
-        const ownershipList = Array.isArray(feature.properties.ownershipList)
-            ? feature.properties.ownershipList
+        const ownershipList = Array.isArray(metadata.ownershipList)
+            ? metadata.ownershipList
             : null;
         if (ownershipList && ownershipList.length > 0) {
             const derived = deriveOwnersFromOwnershipList(ownershipList) || [];
             if (derived.length) {
-                feature.properties.ownershipDetails = Object.assign({}, details, { owners: derived });
+                metadata.ownershipDetails = Object.assign({}, details, { owners: derived });
                 return derived;
             }
         }
@@ -158,47 +144,32 @@
     }
 
     function setStoredParcelOwners(parcelId, owners = [], extras = {}) {
-        const feature = getParcelFeatureFromStore(parcelId, { createIfMissing: true });
-        if (!feature) return;
-        feature.properties = feature.properties || {};
-        const details = feature.properties.ownershipDetails || {};
+        const metadata = ownershipMetadata(parcelId, true);
+        if (!metadata) return;
+        const details = metadata.ownershipDetails || {};
         if (Array.isArray(owners)) {
             details.owners = normalizeOwnersForStore(owners);
         }
         if (extras.possessionSheets) {
             details.possessionSheets = extras.possessionSheets;
         }
-        feature.properties.ownershipDetails = details;
+        metadata.ownershipDetails = details;
 
-        if (!feature.properties.ownershipList && Array.isArray(extras.ownershipList)) {
-            feature.properties.ownershipList = extras.ownershipList;
+        if (!metadata.ownershipList && Array.isArray(extras.ownershipList)) {
+            metadata.ownershipList = extras.ownershipList.slice();
         }
-        if (!feature.properties.ownershipType && extras.ownershipType) {
-            feature.properties.ownershipType = extras.ownershipType;
+        if (!metadata.ownershipType && extras.ownershipType) {
+            metadata.ownershipType = extras.ownershipType;
         }
-
-        const store = getParcelStore();
-        if (store && store.byId instanceof Map) {
-            store.byId.set(parcelId.toString(), feature);
-        }
+        parcelOwnershipMetadata.set(parcelId.toString(), metadata);
     }
 
     function clearStoredParcelOwners(parcelId) {
-        const feature = getParcelFeatureFromStore(parcelId);
-        if (feature && feature.properties && feature.properties.ownershipDetails) {
-            delete feature.properties.ownershipDetails.owners;
-        }
+        parcelOwnershipMetadata.delete(String(parcelId || ''));
     }
 
     function clearAllStoredParcelOwners() {
-        const store = getParcelStore();
-        if (store && store.byId instanceof Map) {
-            store.byId.forEach(feature => {
-                if (feature && feature.properties && feature.properties.ownershipDetails) {
-                    delete feature.properties.ownershipDetails.owners;
-                }
-            });
-        }
+        parcelOwnershipMetadata.clear();
     }
 
     const parcelOwnerDataCache = {
@@ -227,8 +198,14 @@
         return typeof global.gameState !== 'undefined' && global.gameState && !!global.gameState.isRunning;
     }
 
+    function supportsParcelOwnership() {
+        if (isGameModeActive()) return true;
+        const config = global.CityConfigManager?.getCurrentCityConfig?.();
+        return config?.parcels?.ownership !== false;
+    }
+
     function shouldUseRealParcelOwners() {
-        if (isGameModeActive()) {
+        if (!supportsParcelOwnership() || isGameModeActive()) {
             return false;
         }
         if (typeof global.getCurrentDataSource !== 'function') {
@@ -240,43 +217,11 @@
             || source === 'api.urbangametheory.xyz';
     }
 
-    function formatPercentValue(value) {
-        if (!Number.isFinite(value)) {
-            return '';
-        }
-        const abs = Math.abs(value);
-        const decimals = abs >= 10 ? 0 : (abs >= 1 ? 1 : 2);
-        const formatted = value.toFixed(decimals);
-        // Remove trailing zeros only after the decimal point, not from whole numbers
-        const cleaned = formatted.includes('.') ? formatted.replace(/\.?0+$/, '') : formatted;
-        return `${cleaned}%`;
-    }
-
-    function formatSharePercent(shareText) {
-        const share = (shareText || '').toString().trim();
-        if (!share) {
-            return '';
-        }
-        if (share.endsWith('%')) {
-            return share;
-        }
-        const parse = typeof global.parseFraction === 'function' ? global.parseFraction : null;
-        if (parse && share.includes('/')) {
-            const fraction = parse(share);
-            if (fraction && Number.isFinite(fraction.numerator) && Number.isFinite(fraction.denominator) && fraction.denominator !== 0) {
-                const pct = (fraction.numerator / fraction.denominator) * 100;
-                if (Number.isFinite(pct)) {
-                    return formatPercentValue(pct);
-                }
-            }
-        }
-        const num = Number(share);
-        if (Number.isFinite(num)) {
-            const pct = num <= 1 ? num * 100 : num;
-            return formatPercentValue(pct);
-        }
-        return share;
-    }
+    // The formatters live in frontend/js/parcels/share-format.js (loaded first) so the panel and
+    // this file cannot drift. Bind to the shared globals; delegation reads them at IIFE-run time,
+    // after that script has run.
+    const formatPercentValue = global.formatPercentValue;
+    const formatSharePercent = global.formatSharePercent;
 
     function normalizeOwnerTypeString(raw = '') {
         const value = raw.toString().trim();
@@ -397,16 +342,14 @@
 
     function mapOwnerRecordsToSlots(parcelId, owners = []) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
-        if (!normalizedId) {
+        if (!normalizedId || !supportsParcelOwnership()) {
             return [];
         }
         const list = Array.isArray(owners) ? owners : [];
         const seen = new Set();
 
         if (!list.length) {
-            const fallback = global.tParcel
-                ? global.tParcel('panel.parcel.owner.single', {}, 'Single owner')
-                : 'Single owner';
+            const fallback = tParcel('panel.parcel.owner.single', {}, 'Single owner');
             return [{
                 key: `parcel:${normalizedId}:owner`,
                 displayName: fallback,
@@ -485,9 +428,11 @@
     }
 
     function buildRealOwnerRowsHtml(owners) {
-        const fallbackLabel = global.tParcel
-            ? global.tParcel('panel.parcel.owner.single', {}, 'Single owner')
-            : 'Single owner';
+        if (!supportsParcelOwnership()) {
+            const unknownOwner = tParcel('common.unknownOwner', {}, 'Unknown owner');
+            return `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
+        }
+        const fallbackLabel = tParcel('panel.parcel.owner.single', {}, 'Single owner');
         const normalizedOwners = Array.isArray(owners) && owners.length > 0
             ? owners
             : [{ name: fallbackLabel, actualShareText: '100%', shareDetail: '', placeholder: true }];
@@ -500,7 +445,7 @@
             const isUnknown = /^unknown owner$/i.test(rawName);
             const name = (isPlaceholder || isUnknown || !rawName)
                 ? fallbackLabel
-                : rawName;
+                : localizeGenericOwnerName(rawName, fallbackLabel);
 
             // Handle both actualShareText and percentageShare (backend format)
             // Always prefer percentageShare if it exists, as it's the authoritative source from backend
@@ -531,14 +476,26 @@
                 : '';
             return `
             <div class="owner-row" style="display: flex; justify-content: space-between; gap: 8px;">
-                <span>${safeName || (global.tParcel ? global.tParcel('common.unknownOwner', {}, 'Unknown owner') : 'Unknown owner')}</span>
+                <span>${safeName || (tParcel('common.unknownOwner', {}, 'Unknown owner'))}</span>
                 ${shareHtml}
             </div>
         `;
         }).join('');
     }
 
+    function localizeGenericOwnerName(rawName, fallbackName) {
+        const helper = global.__reparcellizationUiState?.resolveOwnerLabel;
+        if (typeof helper !== 'function') return rawName;
+        const translate = (key, fallback) => {
+            const value = global.i18n?.t?.(key);
+            return value && value !== key ? value : fallback;
+        };
+        return helper(rawName, fallbackName, translate).displayName;
+    }
+
     async function fetchOwnersFromBackend(parcelId) {
+        const parcelsConfig = global.CityConfigManager?.getCurrentCityConfig?.()?.parcels;
+        if (parcelsConfig?.ownership === false) return [];
         if (typeof global.getBackendBase !== 'function') {
             throw new Error('Backend base helper unavailable for ownership lookup');
         }
@@ -547,29 +504,15 @@
             throw new Error('Backend base is not configured');
         }
 
-        const normalizedCityId = global.getCurrentCityId ? global.getCurrentCityId() : null;
-        let smpForPath = parcelId;
-
-        // For Buenos Aires, strip the "AR-" prefix from parcel IDs
-        // Backend expects SMP format like "002-043-022", not "AR-002-043-022"
-        if (normalizedCityId === 'buenos_aires') {
-            const parcelIdStr = (parcelId || '').toString().trim();
-            if (parcelIdStr.startsWith('AR-')) {
-                smpForPath = parcelIdStr.substring(3);
-            }
+        // One route for every city: the parcel's source decides which ownership adapter answers.
+        const request = global.__parcelOwnershipRequest;
+        const sourceId = request.parcelSourceIdFor(parcelsConfig, parcelId);
+        if (!sourceId) {
+            const error = new Error(`No parcel source is known for ${parcelId}`);
+            error.statusCode = 404;
+            throw error;
         }
-
-        // For Zagreb, use parcelId as-is (don't add or strip HR- prefix)
-        const path = normalizedCityId === 'buenos_aires'
-            ? `/parcel-ba/${encodeURIComponent(smpForPath)}/ownership`
-            : normalizedCityId === 'belgrade'
-                ? `/parcel-bg/${encodeURIComponent(parcelId)}/ownership`
-                : normalizedCityId === 'colorado'
-                    ? `/parcel-co/${encodeURIComponent(parcelId)}/ownership`
-                    : normalizedCityId === 'new_york'
-                        ? `/parcel-nyc/${encodeURIComponent(parcelId)}/ownership`
-                        : `/parcels/${encodeURIComponent(parcelId)}/ownership`;
-        const url = `${backendBase.replace(/\/$/, '')}${path}`;
+        const url = `${backendBase.replace(/\/$/, '')}${request.ownershipRequestPath(sourceId, parcelId)}`;
         const response = await fetch(url, {
             headers: {
                 'Accept': 'application/json'
@@ -582,8 +525,7 @@
             throw error;
         }
 
-        const payload = await response.json();
-        return extractOwnersFromOwnershipPayload(payload);
+        return request.ownersFromOwnershipRecord(await response.json());
     }
 
     function buildOssOwnershipRequestUrls(parcelId) {
@@ -651,7 +593,7 @@
 
     async function getRealParcelOwners(parcelId) {
         const cacheKey = parcelId ? parcelId.toString() : '';
-        if (!cacheKey) {
+        if (!cacheKey || !supportsParcelOwnership()) {
             return [];
         }
 
@@ -660,17 +602,29 @@
             return storedOwners;
         }
 
-        // Synthetic parcel ids (descendants minted by proposal apply, e.g. "HR-X-123#5-2")
-        // cannot be looked up on the backend — the cadastre only knows original parcels.
-        // Their ownership is inherited from the ancestor at apply time and persisted locally;
-        // if we got here without stored owners that means apply did not populate them.
-        // Either way, hitting the backend is guaranteed to 404. Return empty and stay silent.
-        const isSynthetic = typeof global.ProposalManager !== 'undefined'
-            && typeof global.ProposalManager.isSyntheticParcelId === 'function'
-            && global.ProposalManager.isSyntheticParcelId(cacheKey);
-        if (isSynthetic) {
-            setStoredParcelOwners(cacheKey, []);
-            return [];
+        // The live fabric carries explicit cadastral provenance. If this live parcel is a formed
+        // piece, resolve owners through those cadastral ids instead of guessing from its id format
+        // or sending a generated id to the cadastral backend.
+        const liveFeature = global.LiveParcelFabric?.get?.(cacheKey) || null;
+        const cadastreIds = liveFeature && typeof global.LiveParcelFabric?.explicitCadastreIds === 'function'
+            ? global.LiveParcelFabric.explicitCadastreIds(liveFeature)
+            : [];
+        const isFormedLiveParcel = cadastreIds.length > 0
+            && !(cadastreIds.length === 1 && cadastreIds[0] === cacheKey);
+        if (isFormedLiveParcel) {
+            const inherited = [];
+            for (const cadastreId of cadastreIds) {
+                inherited.push(...await getRealParcelOwners(cadastreId));
+            }
+            const seen = new Set();
+            const owners = inherited.filter(owner => {
+                const key = JSON.stringify(owner || {});
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+            setStoredParcelOwners(cacheKey, owners);
+            return owners;
         }
 
         // Check if we've already failed for this parcel (suppress repeated warnings)
@@ -768,15 +722,8 @@
                     address: existing.address || ''
                 }];
             } else {
-                ownersList = [{
-                    name: singleOwnerLabel,
-                    ownership: '1/1',
-                    condoShare: '',
-                    actualShareText: '100%',
-                    shareDetail: '',
-                    condoShareNumber: '',
-                    address: chainAddress || ''
-                }];
+                // The source answered with no owners: that is missing data, not a single owner.
+                ownersList = [];
             }
         }
 
@@ -788,6 +735,9 @@
     async function fetchOwnerDataForParcel(parcelId, options = {}) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
         if (!normalizedId) {
+            return { owners: [], slots: [] };
+        }
+        if (!supportsParcelOwnership()) {
             return { owners: [], slots: [] };
         }
 
@@ -823,7 +773,7 @@
 
     async function ensureParcelOwnerSlots(parcelId, options = {}) {
         const normalizedId = parcelId && parcelId.toString ? parcelId.toString().trim() : '';
-        if (!normalizedId) {
+        if (!normalizedId || !supportsParcelOwnership()) {
             return [];
         }
 
@@ -855,6 +805,20 @@
             return;
         }
 
+        if (!supportsParcelOwnership()) {
+            const unknownOwner = tParcel('common.unknownOwner', {}, 'Unknown owner');
+            target.innerHTML = `<span data-i18n-key="common.unknownOwner">${unknownOwner}</span>`;
+            const countElement = document.getElementById('parcel-owners-count');
+            if (countElement) {
+                countElement.removeAttribute('role');
+                countElement.removeAttribute('aria-label');
+                countElement.textContent = tParcel('common.unknown', {}, 'Unknown');
+            }
+            const typeLabel = document.querySelector('.parcel-ownership-type-label');
+            if (typeLabel) typeLabel.style.display = 'none';
+            return;
+        }
+
         const fallbackHtml = options.fallbackHtml || '';
         const hasSimulatedOwner = !!options.hasSimulatedOwner;
         const requestId = ++parcelOwnerRequestSequence;
@@ -879,8 +843,7 @@
             }
             const types = owners.map(owner => getOwnershipType(owner)).filter(Boolean);
             const uniqueTypes = Array.from(new Set(types));
-            const tParcel = global.tParcel || (() => '');
-            let typeLabel = '';
+                        let typeLabel = '';
             let typeForClass = '';
 
             if (uniqueTypes.length === 1) {
@@ -927,8 +890,16 @@
                     updateOwnersCount(0);
                     return;
                 }
-                target.innerHTML = buildRealOwnerRowsHtml(owners);
-                updateOwnersCount(ownerCount);
+                if (ownerCount === 0) {
+                    // A source with ownership found none for this parcel: say so instead of
+                    // presenting an invented single owner with 100%.
+                    const noData = tParcel('panel.parcel.owner.noData', {}, 'No owner data');
+                    target.innerHTML = `<span data-i18n-key="panel.parcel.owner.noData">${noData}</span>`;
+                    updateOwnersCount(tParcel('common.unknown', {}, 'Unknown'));
+                } else {
+                    target.innerHTML = buildRealOwnerRowsHtml(owners);
+                    updateOwnersCount(ownerCount);
+                }
                 updateOwnershipTypeLabel(owners);
                 if (!suppressOwnerAcceptanceRefresh && typeof global.refreshParcelOwnerAcceptanceUI === 'function') {
                     global.refreshParcelOwnerAcceptanceUI(parcelId);
@@ -953,10 +924,10 @@
                 }
                 const fallbackSection = fallbackHtml
                     ? (hasSimulatedOwner
-                        ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">${global.tParcel ? global.tParcel('panel.parcel.owner.simulated', {}, 'Simulated owner') : 'Simulated owner'}</div>${fallbackHtml}`
+                        ? `<div class="owner-fallback-label" style="margin-top: 6px; font-size: 0.85em; color: #666;">${tParcel('panel.parcel.owner.simulated', {}, 'Simulated owner')}</div>${fallbackHtml}`
                         : `<div style="margin-top: 6px; color: #666;">${fallbackHtml}</div>`)
                     : buildRealOwnerRowsHtml([]);
-                target.innerHTML = `<span class="owner-error" style="color: #c0392b;">${global.tParcel ? global.tParcel('panel.parcel.owner.error', {}, 'Unable to load real owner data.') : 'Unable to load real owner data.'}</span>${fallbackSection}`;
+                target.innerHTML = `<span class="owner-error" style="color: #c0392b;">${tParcel('panel.parcel.owner.error', {}, 'Unable to load real owner data.')}</span>${fallbackSection}`;
                 const fallbackCount = fallbackHtml ? 1 : 0;
                 updateOwnersCount(fallbackCount);
                 updateOwnershipTypeLabel([]);
@@ -975,7 +946,8 @@
                 suppressOwnerAcceptanceRefresh = true;
                 const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
                 if (typeof showParcelInfoPanel === 'function') {
-                    showParcelInfoPanel(activeParcel.layer.feature);
+                    const feature = global.LiveParcelFabric?.get?.(String(activeParcel.id));
+                    if (feature) showParcelInfoPanel(feature);
                 }
             } catch (error) {
                 console.warn('refreshParcelOwnerAcceptanceUI: failed to refresh panel', error);
@@ -994,8 +966,7 @@
     global.getParcelOwnerSlots = getParcelOwnerSlots;
     global.mapOwnerRecordsToSlots = mapOwnerRecordsToSlots;
     global.extractOwnersFromOwnershipPayload = extractOwnersFromOwnershipPayload;
-    global.formatSharePercent = formatSharePercent;
-    global.formatPercentValue = formatPercentValue;
+    // formatSharePercent / formatPercentValue are owned by share-format.js (loaded first).
     global.getOwnershipType = getOwnershipType;
     global.shouldUseRealParcelOwners = shouldUseRealParcelOwners;
 

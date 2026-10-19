@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-313-turbat.json",
+  "cityCode": 313,
+  "queueRank": 3022,
+  "city": "Turbat",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Urdu first-party discovery identified the Balochistan Board of Revenue BLRMIS program and its explicit Kech (Turbat Tehsil only) scope. The documented GIS/public components could not be followed to a usable anonymous viewer/API: the named land portal returned HTTP 500 and Board/government hosts returned Cloudflare challenges. No parcel geometry or native identity was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, direct requests, response outcomes, safe field allowlist, and scope limits are recorded in city-313-turbat.json. No login, CAPTCHA/Cloudflare bypass, credentials, private tokens, TLS bypass, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Balochistan Board of Revenue / BLRMIS",
+      "scope": "Provincial land-record custodian and digitization program with Kech (Turbat Tehsil only) in the documented project scope",
+      "evidence": "https://bor.balochistan.gov.pk/blrmis-project/"
+    },
+    {
+      "name": "Kech district / Turbat Tehsil revenue administration",
+      "scope": "Local administrative context for land records and maps; local procedural evidence is reported through the official government Urdu release",
+      "evidence": "https://dpr.gob.pk/11th-june-2026/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["The WUP point [26.0012892643014, 63.0510083064824] and population 198107 persons are preserved in the city record.", "A 500 response and Cloudflare challenges are service-access failures, not evidence of parcel absence.", "No anonymous ID-plus-geometry response, schema, CRS, or citywide vector coverage was qualified.", "No unsafe land-record fields were requested or retained.", "Packet completion is not source integration/admission."],
+  "uncertainty": ["The BLRMIS GIS/public route may require a different current endpoint or may be protected from this environment.", "Documented program scope does not establish complete Turbat parcel coverage.", "No independent runtime adapter qualification was performed."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

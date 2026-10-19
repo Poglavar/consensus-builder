@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "charleston",
+      "stateCode": "WV",
+      "sourceId": "us-wv-charleston-parcels",
+      "endpoint": "https://services.wvgis.wvu.edu/arcgis/rest/services/Planning_Cadastre/WV_Parcels/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.345000000000006,
+            -81.635,
+            38.347500000000004
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.345000000000006,
+            -81.63250000000001,
+            38.347500000000004
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.345000000000006,
+            -81.63000000000001,
+            38.347500000000004
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.347500000000004,
+            -81.635,
+            38.35
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.347500000000004,
+            -81.63250000000001,
+            38.35
+          ],
+          "count": 84,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.347500000000004,
+            -81.63000000000001,
+            38.35
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.6375,
+            38.35,
+            -81.635,
+            38.352500000000006
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.635,
+            38.35,
+            -81.63250000000001,
+            38.352500000000006
+          ],
+          "count": 78,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63250000000001,
+            38.35,
+            -81.63000000000001,
+            38.352500000000006
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.345000000000006,
+            -81.62750000000001,
+            38.347500000000004
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.345000000000006,
+            -81.625,
+            38.347500000000004
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.345000000000006,
+            -81.6225,
+            38.347500000000004
+          ],
+          "count": 82,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.347500000000004,
+            -81.62750000000001,
+            38.35
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.347500000000004,
+            -81.625,
+            38.35
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.347500000000004,
+            -81.6225,
+            38.35
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.63000000000001,
+            38.35,
+            -81.62750000000001,
+            38.352500000000006
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.62750000000001,
+            38.35,
+            -81.625,
+            38.352500000000006
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -81.625,
+            38.35,
+            -81.6225,
+            38.352500000000006
+          ],
+          "count": 20,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -81.6375,
+          38.345000000000006,
+          -81.635,
+          38.347500000000004
+        ],
+        "forcedPageSize": 3,
+        "count": 8,
+        "returned": 8,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 766,
+      "exactResolved": 766,
+      "nativeIds": [
+        "20110013000100000000",
+        "20110013000500000000",
+        "20110013000800000000"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-wv-charleston-parcels",
+        "parcels": 1,
+        "siteM2": 3944.3
+      },
+      "requests": 34
+    }
+  ]
+}

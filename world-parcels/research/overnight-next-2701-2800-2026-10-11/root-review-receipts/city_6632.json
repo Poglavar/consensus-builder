@@ -1,0 +1,35 @@
+{
+  "taskId": "city:6632",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:06:52Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-6632-qingyang.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/qingyang-service-review.json"
+  ],
+  "identityCheck": {
+    "queueRank": 2784,
+    "cityCode": 6632,
+    "name": "Qingyang",
+    "country": "China",
+    "point": [
+      35.7287912317855,
+      107.641332294718
+    ],
+    "populationPersons": 212914,
+    "matchesImmutableQueueAndRoster": true
+  },
+  "bilingualSearchesRecorded": true,
+  "retainedFullPolygons": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official Qingyang registration/map custody is cited, but no anonymous native parcel ID or full parcel geometry response was verified. Portal/service timeouts and a nonparcel boundary do not establish absence.",
+  "integrationDisposition": "held; no runtime, catalog, registry, or generated coverage/report admission edit"
+}

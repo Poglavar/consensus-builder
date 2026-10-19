@@ -1,0 +1,101 @@
+{
+  "cityCode": 12060,
+  "queueRank": 1727,
+  "name": "Hui'an",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [25.0182775668047, 118.820891191732],
+  "population2025": 332559,
+  "population2025k": 332.559,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hui'an China official cadastral parcel map GIS natural resources property registration Hui'an County",
+        "result": "Search identified the official Hui'an County government portal and official natural-resources/property-registration material, but no public cadastral parcel viewer or anonymous parcel feature endpoint.",
+        "actualResultUrls": [
+          "https://www.huian.gov.cn/",
+          "https://www.huian.gov.cn/zwgk/zdxxgk/jgzn/202012/t20201215_2480587.htm",
+          "https://www.huian.gov.cn/zwgk/ztzl/shfgfggyhyshj/202208/t20220825_2767294.htm"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "惠安县 自然资源局 不动产登记 地籍图 地理信息 公共地图 服务",
+        "result": "The official portal confirms Hui'an Natural Resources Bureau functions and the Hui'an County Real Estate Registration Center; the official registration notice describes electronic registration information, but no anonymous public parcel ID plus geometry service was exposed.",
+        "actualResultUrls": [
+          "https://www.huian.gov.cn/zwgk/zdxxgk/jgzn/202012/t20201215_2480587.htm",
+          "https://www.huian.gov.cn/zwgk/ztzl/shfgfggyhyshj/202208/t20220825_2767294.htm",
+          "https://www.huian.gov.cn/wsbs/ztifw/bmfwdt/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Hui'an County government material identifies the county Natural Resources Bureau and Hui'an County Real Estate Registration Center as responsible for countywide land, house, forest, woodland, sea-area and related real-estate registration, and an official notice documents an electronic registration procedure. This establishes local registry/procedure custody, not an open parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://www.huian.gov.cn/zwgk/zdxxgk/jgzn/202012/t20201215_2480587.htm",
+      "observation": "Official county government institutional-functions page; identifies the Hui'an County Real Estate Registration Center and its countywide real-estate registration responsibilities."
+    },
+    {
+      "url": "https://www.huian.gov.cn/zwgk/ztzl/shfgfggyhyshj/202208/t20220825_2767294.htm",
+      "observation": "Official county government notice describing Hui'an's real-estate-registration one-certificate/one-code service and electronicized map/document information; no public feature service or parcel geometry endpoint is provided."
+    },
+    {
+      "url": "https://www.huian.gov.cn/wsbs/ztifw/bmfwdt/",
+      "observation": "Official convenience-service map page. Current HTML loads Baidu Maps and a static list of public service points; it is not a cadastral parcel viewer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.huian.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP 200; official portal HTML retrieved. No parcel viewer or cadastral service route identified."
+    },
+    {
+      "url": "https://www.huian.gov.cn/zwgk/zdxxgk/jgzn/202012/t20201215_2480587.htm",
+      "method": "GET",
+      "outcome": "HTTP 200; official local custodian page retrieved and inspected. No anonymous parcel geometry route."
+    },
+    {
+      "url": "https://www.huian.gov.cn/zwgk/ztzl/shfgfggyhyshj/202208/t20220825_2767294.htm",
+      "method": "GET",
+      "outcome": "HTTP 200; official registration-procedure page retrieved and inspected. It describes electronic registration information but exposes no safe public parcel feature response."
+    },
+    {
+      "url": "https://www.huian.gov.cn/wsbs/ztifw/bmfwdt/",
+      "method": "GET",
+      "outcome": "HTTP 200; official map page retrieved. Current HTML references Baidu Maps and /comps/map/search.map3.js; the page contains public service-point records only, not cadastral parcels."
+    },
+    {
+      "url": "https://www.huian.gov.cn/comps/map/search.map3.js",
+      "method": "GET",
+      "outcome": "HTTP 200; current map JavaScript inspected. It clones page-supplied point/type/area lists and contains no cadastral layer, parcel feature request, schema or CRS declaration."
+    },
+    {
+      "url": "https://api.map.baidu.com/api?v=3.0&ak=4L6UzXBVZxG1jWopGBxRdq5kdW3L36Du",
+      "method": "GET",
+      "outcome": "HTTP 200; public Baidu Maps SDK loader retrieved as a basemap dependency only. No parcel data request was made."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Hui'an County local real-estate registration and official convenience-map functions.",
+    "verifiedOpenScope": "Local registry/procedure custody and a public service-point map only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss test was used. No parcel geometry or native parcel identity was retained. Registration custody evidence does not qualify a runtime adapter; serial review remains required. Packet completion is not source integration/admission."
+}

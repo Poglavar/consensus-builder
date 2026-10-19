@@ -1,0 +1,3072 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "8337",
+  "cityName": "Sonipat",
+  "sourceId": "in-hr-hsac-sonipat",
+  "candidateSha256": "c22cba143d0119d49e870b61e347f441179c9a80c14a131b2713c1cdbb48a69f",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 64,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 64,
+      "collectedUniqueCount": 64
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 228
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 5,
+      "distinctSingletonObjectIdQueries": 5,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "2a9866ea1e47925731914b94d0e4bebd882e7525855b4aff68eff8b825eadcd1",
+      "featureCount": 64,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32643",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "2a9866ea1e47925731914b94d0e4bebd882e7525855b4aff68eff8b825eadcd1",
+  "featureCount": 64,
+  "sampleIds": [
+    "IN-HR-HSAC-SONIPAT-18//106//03533//0//15",
+    "IN-HR-HSAC-SONIPAT-18//106//03533//8//17",
+    "IN-HR-HSAC-SONIPAT-18//106//03533//9//20"
+  ],
+  "cellSizeDegrees": 0.001,
+  "densityProbe": [
+    {
+      "cellSizeDegrees": 0.001,
+      "footprintBbox": [
+        77.032,
+        28.98,
+        77.037,
+        28.985
+      ],
+      "footprintFeatures": 109,
+      "perIdCost": 1
+    }
+  ],
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        77.033,
+        28.981,
+        77.034,
+        28.982
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//14",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//18",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//17",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//13/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//24",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//23"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        77.034,
+        28.981,
+        77.035,
+        28.982
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//14",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//16",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//20",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//17",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//18",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//15",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//21/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//25",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//24",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//21/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//11"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        77.035,
+        28.981,
+        77.036,
+        28.982
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//19",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//20",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//18",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//21/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//22/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//21/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//12",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//11"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        77.033,
+        28.982,
+        77.034,
+        28.983
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//14",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//13/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//8",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//4",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//6",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//19",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//18",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//13/2"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        77.034,
+        28.982,
+        77.035,
+        28.983
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//10",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//14",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//5/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//4",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//16",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//6",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//19",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//18",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//15",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//11"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        77.035,
+        28.982,
+        77.036,
+        28.983
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//10",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//9/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//26",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//26",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//9/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//12",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//11"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        77.033,
+        28.983,
+        77.034,
+        28.984
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//3",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//24",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//23",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//8",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//4",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//26"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        77.034,
+        28.983,
+        77.035,
+        28.984
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//10",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//25/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//24",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//5/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//5/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//4",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//6",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//19",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//25/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//29",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//26"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        77.035,
+        28.983,
+        77.036,
+        28.984
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//10",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//9/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//16/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//13"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        77.034,
+        28.98,
+        77.035,
+        28.981
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//11//10",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//12//7",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//18",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//12//6",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//11//1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//25",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//24",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//21/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//12//5",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//12//4"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        77.034,
+        28.984,
+        77.035,
+        28.985
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//25/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//24",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//14/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//6",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//25/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//17/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//5//17/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//16"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        77.032,
+        28.982,
+        77.033,
+        28.983
+      ],
+      "complete": true,
+      "featureCount": 14,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//13/3",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//13/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//19",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//11",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//8",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//18",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//10",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//9",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//19",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//26",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//13/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//25",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//20",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//8//12"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        77.036,
+        28.982,
+        77.037,
+        28.983
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//9/1",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//0//26",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//8",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//9/2",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//14",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//13",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//12",
+        "IN-HR-HSAC-SONIPAT-18//106//03533//9//7"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 200,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:47.475Z",
+      "queryHash": "864258e7a1a3c9638f525ac154d32bbf7317b07d86fd8cebb4912169dad56d7b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1752
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:49.237Z",
+      "queryHash": "864258e7a1a3c9638f525ac154d32bbf7317b07d86fd8cebb4912169dad56d7b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 491
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:49.730Z",
+      "queryHash": "4ab48f672cb09b748ad5a484c49f92f6a180173f02ba45b59720a35be64eff52",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 404
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:50.138Z",
+      "queryHash": "864258e7a1a3c9638f525ac154d32bbf7317b07d86fd8cebb4912169dad56d7b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 624
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:50.763Z",
+      "queryHash": "864258e7a1a3c9638f525ac154d32bbf7317b07d86fd8cebb4912169dad56d7b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 520
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:51.286Z",
+      "queryHash": "4ab48f672cb09b748ad5a484c49f92f6a180173f02ba45b59720a35be64eff52",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 399
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:51.687Z",
+      "queryHash": "7eec5b4ed10e40596bec2fcf790fea044973a8d06deee56e348ef1c41bf4cad3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 529
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:52.218Z",
+      "queryHash": "7eec5b4ed10e40596bec2fcf790fea044973a8d06deee56e348ef1c41bf4cad3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 532
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:52.764Z",
+      "queryHash": "6caeb711e8521724af2202d769b1e3a918cb11428b8969359c334e11ac9d09cf",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 451
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:53.219Z",
+      "queryHash": "6caeb711e8521724af2202d769b1e3a918cb11428b8969359c334e11ac9d09cf",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 446
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:53.667Z",
+      "queryHash": "75db1d71bf94df8da490205baf84708bb26c275859acb63ccdf2a1948e358d8c",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 109,
+      "httpStatus": 200,
+      "elapsedMs": 455
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "POST",
+      "startedAt": "2026-10-13T13:23:54.130Z",
+      "queryHash": "2577555fb50e61907bb8d26eb6347b156bad683b34704015b0e845f5de836f39",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 615
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "POST",
+      "startedAt": "2026-10-13T13:23:54.747Z",
+      "queryHash": "2577555fb50e61907bb8d26eb6347b156bad683b34704015b0e845f5de836f39",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 628
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:55.376Z",
+      "queryHash": "8bae8418c3d4ccc072a008c3d914d134e2829a4b230bb109479ee1b27b20c17a",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 80,
+      "httpStatus": 200,
+      "elapsedMs": 479
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:55.861Z",
+      "queryHash": "2cbf3ceb983f9e2b8da89af9d573b8de6104d17157318d210dbaa72f409ef17a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 674
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:56.536Z",
+      "queryHash": "2cbf3ceb983f9e2b8da89af9d573b8de6104d17157318d210dbaa72f409ef17a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 623
+    },
+    {
+      "stage": "density-probe",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:57.162Z",
+      "queryHash": "18efe2f28ed8d446ee0dcde7910ecfa89b4dd7c503133e66a96375653359b6b5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 29,
+      "httpStatus": 200,
+      "elapsedMs": 418
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:57.587Z",
+      "queryHash": "6e4125eef8714ab56204171cf4756917aaf934811d7061f0a0cd67878beeef1d",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 439
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:58.026Z",
+      "queryHash": "6e4125eef8714ab56204171cf4756917aaf934811d7061f0a0cd67878beeef1d",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 392
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:58.418Z",
+      "queryHash": "9119bd5cf50439d0074f64de223a07b8ac02b046061fc43668551660486f1fb6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 406
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:58.827Z",
+      "queryHash": "b5de4df1b598751fb3695a1cff83783b81c39846b28024954763a06363dbda68",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 507
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:59.335Z",
+      "queryHash": "b5de4df1b598751fb3695a1cff83783b81c39846b28024954763a06363dbda68",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 603
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:23:59.939Z",
+      "queryHash": "9119bd5cf50439d0074f64de223a07b8ac02b046061fc43668551660486f1fb6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 437
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:00.378Z",
+      "queryHash": "9fe50dcc8f3780c73f74c3038685d089e197bc498d12ed70dae4c1ee46e24a35",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 471
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:00.850Z",
+      "queryHash": "9fe50dcc8f3780c73f74c3038685d089e197bc498d12ed70dae4c1ee46e24a35",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 438
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:01.289Z",
+      "queryHash": "981f293f9f89ab7e6cddde55c9bb326b49bc2c2bf582838c3b0475e6b859e980",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 444
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:01.736Z",
+      "queryHash": "a27338588387cad0e697a20cad26c4af7ab1e1d9446afd87f4124d0f2ddf056a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 727
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:02.467Z",
+      "queryHash": "a27338588387cad0e697a20cad26c4af7ab1e1d9446afd87f4124d0f2ddf056a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 549
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:03.027Z",
+      "queryHash": "981f293f9f89ab7e6cddde55c9bb326b49bc2c2bf582838c3b0475e6b859e980",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 354
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:03.383Z",
+      "queryHash": "0a62f366fa63e11b75469d5a7d152034efbcdfa382d8460b484ed56e4debba2f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 419
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:03.802Z",
+      "queryHash": "0a62f366fa63e11b75469d5a7d152034efbcdfa382d8460b484ed56e4debba2f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 378
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:04.181Z",
+      "queryHash": "46507cc8226bb52c994f0ed2dc1ab7eff1b6037c31dba8955004a9d80d039523",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 392
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:04.575Z",
+      "queryHash": "831eaa6c660b98337807d888f35a971e95927261eb11638972e064c317ecc1b0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 566
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:05.142Z",
+      "queryHash": "831eaa6c660b98337807d888f35a971e95927261eb11638972e064c317ecc1b0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 566
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:05.709Z",
+      "queryHash": "46507cc8226bb52c994f0ed2dc1ab7eff1b6037c31dba8955004a9d80d039523",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 373
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:06.084Z",
+      "queryHash": "b4f1ed7850becef0ddae7d73da54a0a20fa80a8b8bd49150676f586edf9cd365",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 439
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:06.524Z",
+      "queryHash": "b4f1ed7850becef0ddae7d73da54a0a20fa80a8b8bd49150676f586edf9cd365",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 438
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:06.966Z",
+      "queryHash": "a8af4e9bd6f3e8b9cfeb7fda11909f1990967375100ec51b2362dee76d3c9601",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 532
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:07.499Z",
+      "queryHash": "b2c7b05e10cff6ea4000a7a1757f8eb22e41a749c628848d830aef88f6688a3a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 672
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:08.173Z",
+      "queryHash": "b2c7b05e10cff6ea4000a7a1757f8eb22e41a749c628848d830aef88f6688a3a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 549
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:08.723Z",
+      "queryHash": "a8af4e9bd6f3e8b9cfeb7fda11909f1990967375100ec51b2362dee76d3c9601",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 402
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:09.126Z",
+      "queryHash": "63b080e85d5c4219ec27a3f13b40d68dceec4a39a0db77fa26d60d0aa7e58245",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 460
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:09.587Z",
+      "queryHash": "63b080e85d5c4219ec27a3f13b40d68dceec4a39a0db77fa26d60d0aa7e58245",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 538
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:10.125Z",
+      "queryHash": "81c8273d0e094d1b7fea4a5478da1848c90268cc48660df5e5085c52413973c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 422
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:10.557Z",
+      "queryHash": "370af58b6e555d6c60bb91541fea90657c1fbf403cbf0136cae418ef822da2ae",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 603
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:11.161Z",
+      "queryHash": "370af58b6e555d6c60bb91541fea90657c1fbf403cbf0136cae418ef822da2ae",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 560
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:11.723Z",
+      "queryHash": "81c8273d0e094d1b7fea4a5478da1848c90268cc48660df5e5085c52413973c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 426
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:12.151Z",
+      "queryHash": "2b11701d3c990f38d13d6ed18ba69aaf57fde341a78fbc7b7b2863e9ff3d5ac7",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 425
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:12.576Z",
+      "queryHash": "2b11701d3c990f38d13d6ed18ba69aaf57fde341a78fbc7b7b2863e9ff3d5ac7",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 440
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:13.017Z",
+      "queryHash": "b21276f419d0f1d2a1cfe2d93aa718fe5c6c4e8f8ba3d3bda1f4c4a332b2e9ea",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 391
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:13.409Z",
+      "queryHash": "91dd012dfce50218dd3a26276a9844bd66daaec091c53d4590e8c7846366f37b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 569
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:13.980Z",
+      "queryHash": "91dd012dfce50218dd3a26276a9844bd66daaec091c53d4590e8c7846366f37b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 542
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:14.525Z",
+      "queryHash": "b21276f419d0f1d2a1cfe2d93aa718fe5c6c4e8f8ba3d3bda1f4c4a332b2e9ea",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 411
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:14.936Z",
+      "queryHash": "5f0a84d0ce295ed09b573601cc0c154d7992604eef299d64e481dbb18174e361",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 424
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:15.361Z",
+      "queryHash": "5f0a84d0ce295ed09b573601cc0c154d7992604eef299d64e481dbb18174e361",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 455
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:15.816Z",
+      "queryHash": "0b9322f77d003ddf3abea032de6a50c9ec4ce57096b581f78ad1c2d9b6bec1d7",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:16.205Z",
+      "queryHash": "42626307c3989260ffdadb2d782156b2323a5c452b45bc38b69a879002b015f7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 541
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:16.750Z",
+      "queryHash": "42626307c3989260ffdadb2d782156b2323a5c452b45bc38b69a879002b015f7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 497
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:17.248Z",
+      "queryHash": "0b9322f77d003ddf3abea032de6a50c9ec4ce57096b581f78ad1c2d9b6bec1d7",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 400
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:17.649Z",
+      "queryHash": "fbd8a1cf7dd33243130ce3efdd36ec76badfe954e8537b514a14c11c1f90b734",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 521
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:18.171Z",
+      "queryHash": "fbd8a1cf7dd33243130ce3efdd36ec76badfe954e8537b514a14c11c1f90b734",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 405
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:18.582Z",
+      "queryHash": "68c0d56f8f828dfca51b3b209de78c490695f3f1cecbfbb939f50f5814114996",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 395
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:18.978Z",
+      "queryHash": "847eca9143647752a14871246572bbacfad94b7c41c558aeb30c18339d12ecff",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 589
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:19.567Z",
+      "queryHash": "847eca9143647752a14871246572bbacfad94b7c41c558aeb30c18339d12ecff",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 563
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:20.131Z",
+      "queryHash": "68c0d56f8f828dfca51b3b209de78c490695f3f1cecbfbb939f50f5814114996",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 564
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:20.706Z",
+      "queryHash": "f2f7e7bc842ceef6efd77b6c0c42484511715a37b02b2a4538d1cb2ff1a7d103",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 399
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:21.107Z",
+      "queryHash": "f2f7e7bc842ceef6efd77b6c0c42484511715a37b02b2a4538d1cb2ff1a7d103",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 383
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:21.490Z",
+      "queryHash": "cfec45a6353a82910a3a28876f41403a0f80f6da8ef4acf569cd6a047b1096f2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 396
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:21.887Z",
+      "queryHash": "5674f0092af15550f68a641b4f6420b86aece33925276d5bb1001c39768cc27c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 596
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:22.484Z",
+      "queryHash": "5674f0092af15550f68a641b4f6420b86aece33925276d5bb1001c39768cc27c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 562
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:23.047Z",
+      "queryHash": "cfec45a6353a82910a3a28876f41403a0f80f6da8ef4acf569cd6a047b1096f2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 375
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:23.424Z",
+      "queryHash": "c08fb081f9f8d6a4dcc8a73ffc5782c64dc652a38ab281bff60dc710109a7b9f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 426
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:23.851Z",
+      "queryHash": "c08fb081f9f8d6a4dcc8a73ffc5782c64dc652a38ab281bff60dc710109a7b9f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 405
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:24.260Z",
+      "queryHash": "b45481124af2b9a0debbc969e7d1100c26d4772f5b50e1b465f32920874c0098",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 382
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:24.644Z",
+      "queryHash": "09440c7988461dd0efad46338e50c9b85c592af464eedf55fd30e71f21d9b3cb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 570
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:25.215Z",
+      "queryHash": "09440c7988461dd0efad46338e50c9b85c592af464eedf55fd30e71f21d9b3cb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 535
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:25.752Z",
+      "queryHash": "b45481124af2b9a0debbc969e7d1100c26d4772f5b50e1b465f32920874c0098",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 1216
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:26.981Z",
+      "queryHash": "8ed0871c80dd0136a3f56cd5f196f9314b0d70afb503ae147ef7edadb93930ba",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 446
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:27.428Z",
+      "queryHash": "8ed0871c80dd0136a3f56cd5f196f9314b0d70afb503ae147ef7edadb93930ba",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 372
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:27.800Z",
+      "queryHash": "ed22b7f8e6bd3f79237dd84e31e4084469d066afc5620648e0b3522347024602",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 371
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:28.173Z",
+      "queryHash": "56a12be124b00508e79166acc6eda5ec86c392a51b0a2ea5735e86c778337632",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 523
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:28.699Z",
+      "queryHash": "56a12be124b00508e79166acc6eda5ec86c392a51b0a2ea5735e86c778337632",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 517
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:29.222Z",
+      "queryHash": "ed22b7f8e6bd3f79237dd84e31e4084469d066afc5620648e0b3522347024602",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 459
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:29.685Z",
+      "queryHash": "0b42fe079486b4254bdee4096606bfa83e60da0844c15a63ce7b345cc2c25cb8",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 411
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:30.099Z",
+      "queryHash": "0b42fe079486b4254bdee4096606bfa83e60da0844c15a63ce7b345cc2c25cb8",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:30.485Z",
+      "queryHash": "8fd750a3840ac5f0a23e239a2f34ef91237f31a1b31018d7b2005be04808eabf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 378
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:30.875Z",
+      "queryHash": "1bac8f5c6861edcbda970ed45f9975a6901ee366971b978a352fe472f27bcdeb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 534
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:31.412Z",
+      "queryHash": "1bac8f5c6861edcbda970ed45f9975a6901ee366971b978a352fe472f27bcdeb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 522
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:31.938Z",
+      "queryHash": "8fd750a3840ac5f0a23e239a2f34ef91237f31a1b31018d7b2005be04808eabf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 342
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:32.281Z",
+      "queryHash": "9d7cb272890965abca666759ad5414d19ff99d5ab0779d8678afd81f19f20a74",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 402
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:32.684Z",
+      "queryHash": "9d7cb272890965abca666759ad5414d19ff99d5ab0779d8678afd81f19f20a74",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:33.065Z",
+      "queryHash": "8247b7be2365f18eb1a021816dd48b54c9923a5cf1edff3ab5826dc95ea777f5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 384
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:33.450Z",
+      "queryHash": "fef88638246c78197d98505647866718d22f7c45ef7a2c7edb59a1ec16c34182",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 650
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:34.102Z",
+      "queryHash": "fef88638246c78197d98505647866718d22f7c45ef7a2c7edb59a1ec16c34182",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 547
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:34.650Z",
+      "queryHash": "8247b7be2365f18eb1a021816dd48b54c9923a5cf1edff3ab5826dc95ea777f5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 362
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:35.015Z",
+      "queryHash": "6e4125eef8714ab56204171cf4756917aaf934811d7061f0a0cd67878beeef1d",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 371
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:35.391Z",
+      "queryHash": "6e4125eef8714ab56204171cf4756917aaf934811d7061f0a0cd67878beeef1d",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 390
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:35.784Z",
+      "queryHash": "9119bd5cf50439d0074f64de223a07b8ac02b046061fc43668551660486f1fb6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 351
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:36.137Z",
+      "queryHash": "b5de4df1b598751fb3695a1cff83783b81c39846b28024954763a06363dbda68",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 503
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:36.641Z",
+      "queryHash": "b5de4df1b598751fb3695a1cff83783b81c39846b28024954763a06363dbda68",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 460
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:37.101Z",
+      "queryHash": "9119bd5cf50439d0074f64de223a07b8ac02b046061fc43668551660486f1fb6",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 341
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:37.443Z",
+      "queryHash": "9fe50dcc8f3780c73f74c3038685d089e197bc498d12ed70dae4c1ee46e24a35",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 381
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:37.825Z",
+      "queryHash": "9fe50dcc8f3780c73f74c3038685d089e197bc498d12ed70dae4c1ee46e24a35",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 357
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:38.183Z",
+      "queryHash": "981f293f9f89ab7e6cddde55c9bb326b49bc2c2bf582838c3b0475e6b859e980",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 338
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:38.522Z",
+      "queryHash": "a27338588387cad0e697a20cad26c4af7ab1e1d9446afd87f4124d0f2ddf056a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 559
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:39.082Z",
+      "queryHash": "a27338588387cad0e697a20cad26c4af7ab1e1d9446afd87f4124d0f2ddf056a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 522
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:39.605Z",
+      "queryHash": "981f293f9f89ab7e6cddde55c9bb326b49bc2c2bf582838c3b0475e6b859e980",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 11,
+      "httpStatus": 200,
+      "elapsedMs": 363
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:39.971Z",
+      "queryHash": "0a62f366fa63e11b75469d5a7d152034efbcdfa382d8460b484ed56e4debba2f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 369
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:40.341Z",
+      "queryHash": "0a62f366fa63e11b75469d5a7d152034efbcdfa382d8460b484ed56e4debba2f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 395
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:40.737Z",
+      "queryHash": "46507cc8226bb52c994f0ed2dc1ab7eff1b6037c31dba8955004a9d80d039523",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 342
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:41.080Z",
+      "queryHash": "831eaa6c660b98337807d888f35a971e95927261eb11638972e064c317ecc1b0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 522
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:41.602Z",
+      "queryHash": "831eaa6c660b98337807d888f35a971e95927261eb11638972e064c317ecc1b0",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 481
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:42.085Z",
+      "queryHash": "46507cc8226bb52c994f0ed2dc1ab7eff1b6037c31dba8955004a9d80d039523",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:42.426Z",
+      "queryHash": "b4f1ed7850becef0ddae7d73da54a0a20fa80a8b8bd49150676f586edf9cd365",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 431
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:42.858Z",
+      "queryHash": "b4f1ed7850becef0ddae7d73da54a0a20fa80a8b8bd49150676f586edf9cd365",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:43.224Z",
+      "queryHash": "a8af4e9bd6f3e8b9cfeb7fda11909f1990967375100ec51b2362dee76d3c9601",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 320
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:43.545Z",
+      "queryHash": "b2c7b05e10cff6ea4000a7a1757f8eb22e41a749c628848d830aef88f6688a3a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 497
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:44.043Z",
+      "queryHash": "b2c7b05e10cff6ea4000a7a1757f8eb22e41a749c628848d830aef88f6688a3a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 483
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:44.527Z",
+      "queryHash": "a8af4e9bd6f3e8b9cfeb7fda11909f1990967375100ec51b2362dee76d3c9601",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:44.911Z",
+      "queryHash": "63b080e85d5c4219ec27a3f13b40d68dceec4a39a0db77fa26d60d0aa7e58245",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 417
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:45.329Z",
+      "queryHash": "63b080e85d5c4219ec27a3f13b40d68dceec4a39a0db77fa26d60d0aa7e58245",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 456
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:45.788Z",
+      "queryHash": "81c8273d0e094d1b7fea4a5478da1848c90268cc48660df5e5085c52413973c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 348
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:46.138Z",
+      "queryHash": "370af58b6e555d6c60bb91541fea90657c1fbf403cbf0136cae418ef822da2ae",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 600
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:46.743Z",
+      "queryHash": "370af58b6e555d6c60bb91541fea90657c1fbf403cbf0136cae418ef822da2ae",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 507
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:47.251Z",
+      "queryHash": "81c8273d0e094d1b7fea4a5478da1848c90268cc48660df5e5085c52413973c1",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:47.616Z",
+      "queryHash": "2b11701d3c990f38d13d6ed18ba69aaf57fde341a78fbc7b7b2863e9ff3d5ac7",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:48.003Z",
+      "queryHash": "2b11701d3c990f38d13d6ed18ba69aaf57fde341a78fbc7b7b2863e9ff3d5ac7",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 399
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:48.403Z",
+      "queryHash": "b21276f419d0f1d2a1cfe2d93aa718fe5c6c4e8f8ba3d3bda1f4c4a332b2e9ea",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 363
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:48.768Z",
+      "queryHash": "91dd012dfce50218dd3a26276a9844bd66daaec091c53d4590e8c7846366f37b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 523
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:49.292Z",
+      "queryHash": "91dd012dfce50218dd3a26276a9844bd66daaec091c53d4590e8c7846366f37b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 522
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:49.815Z",
+      "queryHash": "b21276f419d0f1d2a1cfe2d93aa718fe5c6c4e8f8ba3d3bda1f4c4a332b2e9ea",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 7,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:50.166Z",
+      "queryHash": "5f0a84d0ce295ed09b573601cc0c154d7992604eef299d64e481dbb18174e361",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 400
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:50.568Z",
+      "queryHash": "5f0a84d0ce295ed09b573601cc0c154d7992604eef299d64e481dbb18174e361",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 398
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:50.971Z",
+      "queryHash": "0b9322f77d003ddf3abea032de6a50c9ec4ce57096b581f78ad1c2d9b6bec1d7",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 356
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:51.328Z",
+      "queryHash": "42626307c3989260ffdadb2d782156b2323a5c452b45bc38b69a879002b015f7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 515
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:51.845Z",
+      "queryHash": "42626307c3989260ffdadb2d782156b2323a5c452b45bc38b69a879002b015f7",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 515
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:52.361Z",
+      "queryHash": "0b9322f77d003ddf3abea032de6a50c9ec4ce57096b581f78ad1c2d9b6bec1d7",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 367
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:52.729Z",
+      "queryHash": "fbd8a1cf7dd33243130ce3efdd36ec76badfe954e8537b514a14c11c1f90b734",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 369
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:53.100Z",
+      "queryHash": "fbd8a1cf7dd33243130ce3efdd36ec76badfe954e8537b514a14c11c1f90b734",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 401
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:53.503Z",
+      "queryHash": "68c0d56f8f828dfca51b3b209de78c490695f3f1cecbfbb939f50f5814114996",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 367
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:53.871Z",
+      "queryHash": "847eca9143647752a14871246572bbacfad94b7c41c558aeb30c18339d12ecff",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 499
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:54.370Z",
+      "queryHash": "847eca9143647752a14871246572bbacfad94b7c41c558aeb30c18339d12ecff",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 521
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:54.892Z",
+      "queryHash": "68c0d56f8f828dfca51b3b209de78c490695f3f1cecbfbb939f50f5814114996",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 12,
+      "httpStatus": 200,
+      "elapsedMs": 351
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:55.246Z",
+      "queryHash": "f2f7e7bc842ceef6efd77b6c0c42484511715a37b02b2a4538d1cb2ff1a7d103",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 399
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:55.646Z",
+      "queryHash": "f2f7e7bc842ceef6efd77b6c0c42484511715a37b02b2a4538d1cb2ff1a7d103",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 433
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:56.080Z",
+      "queryHash": "cfec45a6353a82910a3a28876f41403a0f80f6da8ef4acf569cd6a047b1096f2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 346
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:56.427Z",
+      "queryHash": "5674f0092af15550f68a641b4f6420b86aece33925276d5bb1001c39768cc27c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 593
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:57.027Z",
+      "queryHash": "5674f0092af15550f68a641b4f6420b86aece33925276d5bb1001c39768cc27c",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 511
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:57.540Z",
+      "queryHash": "cfec45a6353a82910a3a28876f41403a0f80f6da8ef4acf569cd6a047b1096f2",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 6,
+      "httpStatus": 200,
+      "elapsedMs": 353
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:57.895Z",
+      "queryHash": "c08fb081f9f8d6a4dcc8a73ffc5782c64dc652a38ab281bff60dc710109a7b9f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 357
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:58.252Z",
+      "queryHash": "c08fb081f9f8d6a4dcc8a73ffc5782c64dc652a38ab281bff60dc710109a7b9f",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:58.612Z",
+      "queryHash": "b45481124af2b9a0debbc969e7d1100c26d4772f5b50e1b465f32920874c0098",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 366
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:58.986Z",
+      "queryHash": "09440c7988461dd0efad46338e50c9b85c592af464eedf55fd30e71f21d9b3cb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 577
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:24:59.566Z",
+      "queryHash": "09440c7988461dd0efad46338e50c9b85c592af464eedf55fd30e71f21d9b3cb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 532
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:00.100Z",
+      "queryHash": "b45481124af2b9a0debbc969e7d1100c26d4772f5b50e1b465f32920874c0098",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 10,
+      "httpStatus": 200,
+      "elapsedMs": 340
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:00.441Z",
+      "queryHash": "8ed0871c80dd0136a3f56cd5f196f9314b0d70afb503ae147ef7edadb93930ba",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 424
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:00.865Z",
+      "queryHash": "8ed0871c80dd0136a3f56cd5f196f9314b0d70afb503ae147ef7edadb93930ba",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 382
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:01.248Z",
+      "queryHash": "ed22b7f8e6bd3f79237dd84e31e4084469d066afc5620648e0b3522347024602",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:01.615Z",
+      "queryHash": "56a12be124b00508e79166acc6eda5ec86c392a51b0a2ea5735e86c778337632",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 510
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:02.133Z",
+      "queryHash": "56a12be124b00508e79166acc6eda5ec86c392a51b0a2ea5735e86c778337632",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 480
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:02.615Z",
+      "queryHash": "ed22b7f8e6bd3f79237dd84e31e4084469d066afc5620648e0b3522347024602",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 352
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:02.969Z",
+      "queryHash": "0b42fe079486b4254bdee4096606bfa83e60da0844c15a63ce7b345cc2c25cb8",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 367
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:03.337Z",
+      "queryHash": "0b42fe079486b4254bdee4096606bfa83e60da0844c15a63ce7b345cc2c25cb8",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 384
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:03.722Z",
+      "queryHash": "8fd750a3840ac5f0a23e239a2f34ef91237f31a1b31018d7b2005be04808eabf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 340
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:04.063Z",
+      "queryHash": "1bac8f5c6861edcbda970ed45f9975a6901ee366971b978a352fe472f27bcdeb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 514
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:04.579Z",
+      "queryHash": "1bac8f5c6861edcbda970ed45f9975a6901ee366971b978a352fe472f27bcdeb",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 558
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:05.141Z",
+      "queryHash": "8fd750a3840ac5f0a23e239a2f34ef91237f31a1b31018d7b2005be04808eabf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 14,
+      "httpStatus": 200,
+      "elapsedMs": 357
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:05.501Z",
+      "queryHash": "9d7cb272890965abca666759ad5414d19ff99d5ab0779d8678afd81f19f20a74",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 396
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:05.898Z",
+      "queryHash": "9d7cb272890965abca666759ad5414d19ff99d5ab0779d8678afd81f19f20a74",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 401
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:06.305Z",
+      "queryHash": "8247b7be2365f18eb1a021816dd48b54c9923a5cf1edff3ab5826dc95ea777f5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 392
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:06.700Z",
+      "queryHash": "fef88638246c78197d98505647866718d22f7c45ef7a2c7edb59a1ec16c34182",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 501
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:07.203Z",
+      "queryHash": "fef88638246c78197d98505647866718d22f7c45ef7a2c7edb59a1ec16c34182",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 519
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:07.727Z",
+      "queryHash": "8247b7be2365f18eb1a021816dd48b54c9923a5cf1edff3ab5826dc95ea777f5",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 8,
+      "httpStatus": 200,
+      "elapsedMs": 364
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:08.099Z",
+      "queryHash": "dbc3a8366f5c934017c7d75be5474cb4aa14b04c85d19f0624a556fb2121da3a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 588
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:08.689Z",
+      "queryHash": "dbc3a8366f5c934017c7d75be5474cb4aa14b04c85d19f0624a556fb2121da3a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 503
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:09.193Z",
+      "queryHash": "7ebf3a26c8cb10232e694a1aebf7d4c8c04e26483987f6bc0cd7fa2e95cc1f9f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 497
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:09.692Z",
+      "queryHash": "032c7c8ce3497eefbc1bf439d15ddaed93219184651e291ea4c999a478343e82",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1760
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:11.472Z",
+      "queryHash": "032c7c8ce3497eefbc1bf439d15ddaed93219184651e291ea4c999a478343e82",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 496
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:11.969Z",
+      "queryHash": "5242e7b8e541e7491cefb05cd45c7afd8ed8b28531af67dc11ac6153dbc5b468",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 422
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:12.392Z",
+      "queryHash": "a5ea48e177ccd6b5043f9a65814a7322eabded7a17e16dda759b1835d6944e2e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 506
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:12.899Z",
+      "queryHash": "a5ea48e177ccd6b5043f9a65814a7322eabded7a17e16dda759b1835d6944e2e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 482
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:13.382Z",
+      "queryHash": "c018dfee0a36d5edbadc2b1a12e837d49b3140df34a7c522cc523bf06c4c3cbc",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 472
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:13.855Z",
+      "queryHash": "f3df5b58ec61fb94d592eb6e7fd53502b7e4aeacaf30c382c83b205b632382e3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 642
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:14.498Z",
+      "queryHash": "f3df5b58ec61fb94d592eb6e7fd53502b7e4aeacaf30c382c83b205b632382e3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 526
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:15.025Z",
+      "queryHash": "89722e6285fceb180a3a1a0fe468b24f187ac8d89624416830c95eb8eb785148",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 421
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:15.451Z",
+      "queryHash": "f7939d4e70555b8878532e3219d5d3071fcdf79c181d1daddaca20999d9991c3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 589
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:16.041Z",
+      "queryHash": "f7939d4e70555b8878532e3219d5d3071fcdf79c181d1daddaca20999d9991c3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 488
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:16.531Z",
+      "queryHash": "83baced446cc8165a6dd77d1835dc84ec593df3bc572ffede0999a7a6187bcaf",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 355
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:16.891Z",
+      "queryHash": "864258e7a1a3c9638f525ac154d32bbf7317b07d86fd8cebb4912169dad56d7b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 554
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:17.446Z",
+      "queryHash": "864258e7a1a3c9638f525ac154d32bbf7317b07d86fd8cebb4912169dad56d7b",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 498
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:17.946Z",
+      "queryHash": "4ab48f672cb09b748ad5a484c49f92f6a180173f02ba45b59720a35be64eff52",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 3,
+      "httpStatus": 200,
+      "elapsedMs": 341
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:18.301Z",
+      "queryHash": "2967b7393b8cdd6faac95271c6802d8ce6779e4ca6e3cdf874cccff8a6748fa8",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 402
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:18.705Z",
+      "queryHash": "2967b7393b8cdd6faac95271c6802d8ce6779e4ca6e3cdf874cccff8a6748fa8",
+      "safeParamNames": [
+        "geometry",
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 353
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:19.059Z",
+      "queryHash": "075a8f0ac61b27266bb7df10b9fc4abf279455e24a2c71569a3ef300d1acda64",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 356
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:19.417Z",
+      "queryHash": "551ac792d3893ccb8121654e4fdccf706d80226498f0154402af3b14c49b810a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 546
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:19.968Z",
+      "queryHash": "551ac792d3893ccb8121654e4fdccf706d80226498f0154402af3b14c49b810a",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 513
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:20.483Z",
+      "queryHash": "075a8f0ac61b27266bb7df10b9fc4abf279455e24a2c71569a3ef300d1acda64",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 9,
+      "httpStatus": 200,
+      "elapsedMs": 376
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "POST",
+      "startedAt": "2026-10-13T13:25:20.893Z",
+      "queryHash": "d2eb205452b740c14b67a47bd43793a6e3a5c589cc836a53e881eb34bc2187aa",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 801
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "POST",
+      "startedAt": "2026-10-13T13:25:21.694Z",
+      "queryHash": "d2eb205452b740c14b67a47bd43793a6e3a5c589cc836a53e881eb34bc2187aa",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 745
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "hsacggm.in",
+      "method": "GET",
+      "startedAt": "2026-10-13T13:25:22.440Z",
+      "queryHash": "1bc6a5933debcc9be2d7ceb175a3bbb5cee3897e02cb93d8469446c3faa7016e",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 64,
+      "httpStatus": 200,
+      "elapsedMs": 485
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

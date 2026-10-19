@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "GR",
+  "country": "Greece",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "Hellenic Cadastre (Ktimatologio S.A.)",
+  "portalsFound": [
+    {
+      "url": "https://gis.ktimanet.gr/wms/wmsopen/wmsserver.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "observation": "open WMS 1.1.0, single BASEMAP layer; raster only"
+    },
+    {
+      "url": "https://www.ktimatologio.gr/",
+      "observation": "403 Access Denied even with browser UA"
+    },
+    {
+      "url": "https://inspire.ktimatologio.gr/",
+      "observation": "unreachable (502)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.ktimanet.gr/wms/wmsopen/wmsserver.aspx?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "BASEMAP layer, raster",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "text/xml"
+    },
+    {
+      "url": "https://www.ktimatologio.gr/",
+      "method": "Access Denied",
+      "httpStatus": "GET",
+      "contentType": 403,
+      "assessment": "text/html"
+    },
+    {
+      "url": "https://inspire.ktimatologio.gr/",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "tunnel 502"
+    },
+    {
+      "url": "https://geodata.gov.gr/",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "connection reset"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "national cadastre (partial: cadastral survey still ongoing in parts of Greece)",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "Vector INSPIRE parcel service not reached; also see research/athens.json (WMS GetMap raster only).",
+  "nextStep": "Retry Ktimatologio INSPIRE download service; check geodata.gov.gr."
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Volgograd",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "registryFound": true,
+  "registryBasis": "The state budgetary institution of Volgograd Oblast Center for State Cadastral Valuation publishes the official public-cadastral-map notice and directs users to the federal NSDP map. This supports a public cadastral-map route applicable to Volgograd, but no feature schema, safe geometry+ID allowlist, or parcel at the WUP point was verified.",
+  "registryEvidenceUrls": [
+    "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+    "https://volbti.ru/",
+    "https://nspd.gov.ru/map"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5982,
+  "cityId": "wup2025:5982",
+  "centerLatLon": [
+    48.7405648258372,
+    44.5126199833449
+  ],
+  "point": [
+    48.7405648258372,
+    44.5126199833449
+  ],
+  "rank": 829,
+  "queueRank": 829,
+  "population2025": 655020,
+  "population2025k": 655.02,
+  "populationPlausibility2025": "High",
+  "notes": null,
+  "coverageAssessment": {
+    "claimedScope": "The state budgetary institution of Volgograd Oblast Center for State Cadastral Valuation publishes the official public-cadastral-map notice and directs users to the federal NSDP map. This supports a public cadastral-map route applicable to Volgograd, but no feature schema, safe geometry+ID allowlist, or parcel at the WUP point was verified.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with a safe stable identifier was verified; the documented routes are map-level only, application-based or identity-gated as described above.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Russian",
+        "query": "Волгоград официальный публичная кадастровая карта НСПД Росреестр кадастровые сведения",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "The official regional state cadastral-valuation institution says the former public cadastral map has moved to NSDP and is available without authorization or fee. Anonymous access to the map is documented; no safe feature schema or returned parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+          "https://volbti.ru/",
+          "https://nspd.gov.ru/map"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      },
+      {
+        "language": "English",
+        "query": "Volgograd Russia official public cadastral map NSDP Rosreestr parcel geometry",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "Official Volgograd Oblast cadastral-valuation institution material points users to the federal NSDP public map. It does not document a geometry-only API or stable public feature identifier; direct NSDP access from this environment timed out without an HTTP response.",
+        "actualResultUrls": [
+          "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+          "https://volbti.ru/",
+          "https://nspd.gov.ru/map"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+        "observation": "Official GBU VO Center for State Cadastral Valuation notice (2025-02-06) states the public cadastral map moved to federal NSDP and is publicly accessible without registration or fee."
+      },
+      {
+        "url": "https://volbti.ru/",
+        "observation": "Institution homepage identifies it as a state budgetary institution of Volgograd Oblast and links the public cadastral map."
+      },
+      {
+        "url": "https://nspd.gov.ru/map",
+        "observation": "The official NSDP map shell was attempted by anonymous HTTPS GET; the connection timed out before headers/body, so this is not an HTTP status or evidence of service outage."
+      }
+    ]
+  },
+  "source": {
+    "name": "Federal NSDP public cadastral map, linked by the Volgograd Oblast state cadastral-valuation institution. Public map viewing is documented; no public feature-query schema was verified.",
+    "urls": [
+      "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+      "https://volbti.ru/",
+      "https://nspd.gov.ru/map"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "The official map host did not return an HTTP response during the bounded direct inspection. No static feature schema or geometry-only ID allowlist was established, and no parcel query was made.",
+  "scopeLimits": "Bounded review of public first-party sources. No owner, address, tax/account, applicant, identity, or property-specific data was queried or retained. No citywide completeness or legal/survey accuracy is asserted.",
+  "remainingUncertainty": "The NSDP may expose map features in its client, but the geometry/attribute contract, safe stable ID, WUP-point hit and exact city-bound coverage remain unverified.",
+  "resultCategory": "local_official_public_map_documented_no_safe_geometry_schema",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The official map host did not return an HTTP response during the bounded direct inspection. No static feature schema or geometry-only ID allowlist was established, and no parcel query was made."
+  },
+  "rootPrimarySupplement": "Primary indexed state cadastral-valuation center notice dated 6 February 2025 explicitly links the anonymous federal NSDP public map. Native schema and bounded parcel response remain unverified; direct TLS failure is not bypassed.",
+  "rootPrimaryReadback": {
+    "url": "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

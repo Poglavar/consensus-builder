@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 112,
+  "city": "Taiyuan",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/taiyuan.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "太原 不动产 地籍图 宗地 GIS 数据开放 服务"
+  },
+  "results": [
+    {
+      "title": "Taiyuan digital certificate cadastral map process",
+      "url": "https://fdc.rednet.cn/content/646843/67/14295951.html",
+      "kind": "news-about-official-service",
+      "note": "Describes a QR-linked parcel/household map attachment available from an e-certificate; does not establish anonymous bulk vectors."
+    }
+  ],
+  "assessment": "Search found parcel-map access through QR-linked digital certificate attachments, but no publicly downloadable vector service or open exact-ID query.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

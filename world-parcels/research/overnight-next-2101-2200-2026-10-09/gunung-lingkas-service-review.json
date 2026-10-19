@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-8220-gunung-lingkas.json",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 8220,
+  "queueRank": 2139,
+  "attempt": 1,
+  "city": "Gunung Lingkas",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [3.31095570915297, 117.593763237794],
+  "status": "complete",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "summary": "Official English and Indonesian discovery found Tarakan's municipal Peta Bidang Tanah catalog record, its named local land-data producer, and the official Gunung Lingkas administrative listing. The catalog record has no exposed geometry/download and the public ATR/BPN viewer yielded no safe anonymous parcel response, so no sample was retained.",
+  "queryOutcomes": "Both first-party discovery queries are recorded in the city record with actual result URLs. English search found Tarakan municipal land-map and ATR/BPN leads; Indonesian search confirmed the local kelurahan and the municipal Peta Bidang Tanah record.",
+  "requestOutcomes": "Tarakan catalog metadata, catalog API documentation, catalog search, district listing, BHUMI shell, current embedded console, and historical BPS publication were fetched over verified HTTPS. The catalog search returned metadata only; no parcel ID, geometry, CRS, or downloadable file was exposed. No login, CAPTCHA bypass, private token, unsafe field, or TLS-disable exception was used.",
+  "scopeLimits": [
+    "Local registry/custodian evidence is metadata and administrative provenance, not verified open parcel geometry",
+    "No citywide or exact-point parcel inference made",
+    "No GeoJSON sample retained",
+    "National ATR/BPN viewer distinguished from the local Tarakan custodian",
+    "No credentials, CAPTCHA bypass, unsafe fields, or TLS-disable exception used"
+  ],
+  "safeFieldAllowlist": ["native parcel ID", "geometry", "CRS", "source layer/service name", "retrieval timestamp"],
+  "uncertainty": "The municipal map may be a document, restricted layer, or interactive workflow not exposed by the inspected catalog. A missing download and an unusable/empty public viewer route do not prove citywide absence.",
+  "retainedGeojson": null,
+  "runtimeQualification": {"state": "held", "reason": "No independently qualified real Gunung Lingkas adapter or verified public parcel geometry/native-ID response."},
+  "attemptedRoutes": [
+    "https://portal.tarakankota.go.id/data/detil/959",
+    "https://portal.tarakankota.go.id/data/page/api",
+    "https://portal.tarakankota.go.id/api/data",
+    "https://portal.tarakankota.go.id/api/data/cari?txt=Peta%20Bidang%20Tanah",
+    "https://ctt.tarakankota.go.id/daftar-kelurahan",
+    "https://bhumi.atrbpn.go.id/",
+    "https://konsolbhumi.atrbpn.go.id/",
+    "https://web-api.bps.go.id/download.php?f=oce5ebLBtGyNkerQYBEgfDZwNklCNnk3S3hLZFhaaGt0ZHA0Ri8zMFlVN1RFQmYvT2FnNDdHV3NvNFJEVE53c3JobEtkQmc4T0orZTNvV1I2eWxxelNHY2pld3dSbW14UERVclhCanhhQkUrWS93aFo2UC9tVXBlYklPQnF4L0NHQ0lSZjVReDEya3BzRGppUi9JVFd2SnpEWmkrWGhJTlNaYXFXa1lCLzNpK2lNejZMRWdyajRHdjVVd1YrTTE2MmVxQ05Hb2k4QXlUeHNNK1B1dmg3OVMybHRBWksydlEyeU5CMjIzalZDajZwZ3NHZmc0RmZIRWpsYVY3aVZOajE5U1V5SzM5V3RBTCtDcEJETzZKSjJ6anhON0ZFbG9UblJENllBPT0%3D"
+  ]
+}

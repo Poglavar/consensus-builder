@@ -6,6 +6,7 @@
 // the backend config). Prefixed names avoid collisions with the backend's other
 // generic vars (CLIENT_ID, RPC_URL, …).
 export function cantonConfig(env = process.env) {
+  const configuredTimeout = Number(env.CANTON_REQUEST_TIMEOUT_MS || 10_000);
   return {
     ledgerApiUrl: (env.CANTON_LEDGER_API_URL || '').replace(/\/$/, ''),
     tokenUrl: env.CANTON_TOKEN_URL,
@@ -17,6 +18,9 @@ export function cantonConfig(env = process.env) {
     userId: env.CANTON_USER_ID, // Canton ledger user (e.g. "6")
     packageRef: env.CANTON_PACKAGE_REF || '#consensus-builder-daml',
     publicParty: env.CANTON_PUBLIC_PARTY || '', // observer for proposal markers
+    requestTimeoutMs: Number.isFinite(configuredTimeout) && configuredTimeout > 0
+      ? configuredTimeout
+      : 10_000,
   };
 }
 
@@ -37,6 +41,7 @@ export async function getAccessToken(cfg = cantonConfig(), { force = false } = {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body,
+    signal: AbortSignal.timeout(cfg.requestTimeoutMs || 10_000),
   });
   if (!res.ok) throw new Error(`canton token: ${res.status} ${await res.text()}`);
   const j = await res.json();

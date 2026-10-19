@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10835,
+  "cityId": "wup2025:10835",
+  "name": "Harsidhi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.6872456566718,
+    84.7644732569845
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 66,
+  "stateOrUT": "Bihar",
+  "administrativeIdentity": {
+    "district": "पूर्वी चम्पारण",
+    "tehsilOrTaluk": "Harsidhi",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "हरसिद्धि बिहार भूमि सर्वे नक्शा मौजा भू नक्शा",
+        "scope": "WUP 10835 Harsidhi cohort label retained; exact native-script search used to identify Bihar official revenue/cadastral map entry points.",
+        "result": "Search outputs pointed to the shared official Bihar BhuNaksha/Bihar Bhumi entry points; no city-specific parcel polygon or exact WUP revenue village was returned by this search.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://www.biharbhumiseva.in/blogs/search-view-map/",
+          "https://www.biharland.com/generalinfo/view-land-map/",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://biharbhumionline.in/",
+          "https://housing.com/news/hi/bhu-naksha-bihar-hi/",
+          "https://biharbhulekh.co/bhu-naksha-bihar/",
+          "https://emutation.bihar.gov.in/biharbhumidemo/Default",
+          "https://bihaarbhumi.com/",
+          "https://bhulekhjankari.com/bhu-naksha-bihar/",
+          "https://housing.com/news/hi/bhu-naksha-bihar-hi/amp/",
+          "https://biharbhumii.com/",
+          "https://onlinebihar.co.in/bhu-naksha-bihar-download/",
+          "https://rera.bihar.gov.in/All_Document/RERAP2611201700036RERAP2611201700036-2LanddocumentsLocation.pdf",
+          "https://mopid.lumbini.gov.np/media/downloads/Updated_CPP_Rukum_East_Sisagadhi-_Jhumlabang-_Ransi_Road.pdf",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/Committe%20Report%20Filed%20By%20R-3%20%2C%20page_pagenumber.pdf",
+          "https://rera.bihar.gov.in/All_Document/RERAP08212019163856RERAP08212019163856-1LandDeedAgreement.pdf",
+          "https://dlrs.bihar.gov.in/attachments/Letter/247.pdf",
+          "https://betastate.bihar.gov.in/file_2/FileUpload/2025/Apr/09-Apr-2025/28/DyPage/0a7021fb-9f52-4b05-acec-fbc7c90f5c05.pdf",
+          "https://www.reddit.com/r/bihar/comments/1tovakh/%E0%A4%AC%E0%A4%B9%E0%A4%B0_%E0%A4%AE_%E0%A4%9C%E0%A4%AE%E0%A4%A8_%E0%A4%96%E0%A4%B0%E0%A4%A6%E0%A4%A8_%E0%A4%B8_%E0%A4%AA%E0%A4%B9%E0%A4%B2_%E0%A4%B8%E0%A4%B0%E0%A4%AB_%E0%A4%96%E0%A4%A4%E0%A4%96%E0%A4%B8%E0%A4%B0_%E0%A4%A8%E0%A4%B9_bhu_naksha_%E0%A4%AD/",
+          "https://www.reddit.com/r/u_HindiApna/comments/1ewynm3",
+          "https://en.wikipedia.org/wiki/Harsidhi%2C_Bihar",
+          "https://www.reddit.com/r/u_HindiApna/comments/18kvuwd",
+          "https://www.reddit.com/r/u_smartmind123/comments/h0uon9",
+          "https://www.reddit.com/r/u_workervoicein/comments/1hr145a/bihar_jamin_survey_2025_%E0%A4%A8%E0%A4%A4%E0%A4%B6_%E0%A4%B8%E0%A4%B0%E0%A4%95%E0%A4%B0_%E0%A4%AC%E0%A4%95_%E0%A4%AB%E0%A4%9F_%E0%A4%AA%E0%A4%B0_%E0%A4%AB%E0%A4%B0_%E0%A4%AC%E0%A5%9D%E0%A4%AF/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bihar BhuNaksha and Bihar Bhumi",
+        "operator": "Government of Bihar, Directorate of Land Records & Survey / Revenue and Land Reforms Department",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "mapUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "observation": "Shared official state entry points returned by native Hindi searches. Prior selector evidence is recorded in inherited research; this city-specific pass did not verify a target parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=26.6872456566718&lon=84.7644732569845&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Harsidhi, पूर्वी चम्पारण, Bihar, 845438, India",
+        "osmType": "way",
+        "osmId": 1004619311,
+        "address": {
+          "county": "Harsidhi",
+          "state_district": "पूर्वी चम्पारण",
+          "state": "Bihar",
+          "ISO3166-2-lvl4": "IN-BR",
+          "postcode": "845438",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://dlrs.bihar.gov.in/services.html"
+        ],
+        "scope": "Official state URLs observed in Bihar query outputs; shared across the Bihar city batch, not evidence of a city-specific sample."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
+}

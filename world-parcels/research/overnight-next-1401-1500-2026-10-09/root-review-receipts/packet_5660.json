@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:5660",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-5660-dera-ismail-khan.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/dera-ismail-khan-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/root-review-receipts/city_5660.json",
+    "tmp/valhalla-parcel-research/5660/kplr.html",
+    "tmp/valhalla-parcel-research/5660/pda.html",
+    "tmp/valhalla-parcel-research/5660/phases-Hayatabad.json",
+    "tmp/valhalla-parcel-research/5660/phases-Regi-Model-Town.json"
+  ],
+  "checkedAt": "2026-10-10T07:59:13+00:00",
+  "basis": "Rank 1407, code 5660, Pakistan, immutable point and 401839 persons match queue and ranked roster. English and Urdu searches are recorded. First-party portal cache names Dera Ismail Khan; PDA viewer cache is limited to Hayatabad and Regi Model Town. Official provincial land-record custody is supported, but no public native-ID parcel geometry response or independent adapter qualification is evidenced. Hold without inferring citywide absence.",
+  "admissionGates": "No verified safe native-ID full parcel polygon; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission."
+}

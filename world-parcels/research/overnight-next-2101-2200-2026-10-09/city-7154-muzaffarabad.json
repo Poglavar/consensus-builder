@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 7154,
+  "queueRank": 2171,
+  "name": "Muzaffarabad",
+  "aliases": ["muzaffarabad"],
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "capital": true,
+  "point": [34.3645883375898, 73.4708139484832],
+  "population2025": 268448,
+  "population2025k": 268.448,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Muzaffarabad Pakistan official cadastral map parcel land records GIS site:gov.pk OR site:ajk.gov.pk",
+        "result": "First-party discovery found the AJK Planning and Development Department map page and its official Land Use Planning site. The latter links a GIS-based cadastral mapping application for state-owned land and a separate Web GIS database, but no publicly usable parcel schema or geometry was established.",
+        "actualResultUrls": [
+          "https://pndajk.gov.pk/downloads.php?page=maps",
+          "https://lupajk.gov.pk/",
+          "https://ajkppra.gov.pk/uploadfiles/tenderdocuments/1621852153VB3BM%20-%20Board%20of%20revenue.pdf",
+          "https://gisportalajk.maps.arcgis.com/apps/webappviewer/index.html?id=ad91ef47a1884b25b289937917a26325"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "مظفرآباد آزاد کشمیر سرکاری کڈسٹرل نقشہ زمین ریکارڈ GIS",
+        "result": "First-party-oriented Urdu discovery returned AJK government land-record/cadastral references and the AJK Board of Revenue GIS cadastral-mapping tender, but no anonymous Muzaffarabad parcel viewer response, safe native parcel ID, or geometry endpoint.",
+        "actualResultUrls": [
+          "https://ajkppra.gov.pk/uploadfiles/tenderdocuments/1621852153VB3BM%20-%20Board%20of%20revenue.pdf",
+          "https://pndajk.gov.pk/downloads.php?page=maps",
+          "https://lupajk.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryAssessment": "AJK Board of Revenue custody and a GIS cadastral-mapping project in Muzaffarabad are evidenced, but no local public registry service, public parcel procedure, or anonymous parcel response was verified. General agency and project references are not treated as a confirmed city registry endpoint.",
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {
+    "sourceId": "ajk-land-use-planning-state-owned-cadastral-map",
+    "name": "AJK Planning and Development Department / Land Use Planning GIS links",
+    "operator": "Government of Azad Jammu and Kashmir",
+    "scope": "Official AJK land-use planning and a linked GIS-based cadastral mapping application for state-owned land; Muzaffarabad parcel coverage was not verified.",
+    "endpoint": "https://gisportalajk.maps.arcgis.com/apps/webappviewer/index.html?id=ad91ef47a1884b25b289937917a26325",
+    "method": "GET; anonymous ArcGIS REST metadata GET attempted",
+    "responseFormat": "ArcGIS Web App HTML; item metadata request returned an inaccessible-item error",
+    "crs": null,
+    "reuseStatus": "not qualified; no anonymous parcel geometry or stable native parcel identity verified"
+  },
+  "officialSources": [
+    {"url": "https://lupajk.gov.pk/", "observation": "Official Land Use Planning Section site identifies GIS work and links a GIS-based cadastral mapping application for state-owned land plus a separate Web GIS Database AJK login route."},
+    {"url": "https://pndajk.gov.pk/downloads.php?page=maps", "observation": "Official AJK Planning and Development Department map page provides general AJK/Muzaffarabad map downloads, not parcel polygons or a parcel API."},
+    {"url": "https://ajkppra.gov.pk/uploadfiles/tenderdocuments/1621852153VB3BM%20-%20Board%20of%20revenue.pdf", "observation": "AJK Board of Revenue tender in Muzaffarabad describes land measurement and preparation of cadastral maps using GIS technology; it is project/procurement evidence, not a public parcel service."},
+    {"url": "https://gisportalajk.maps.arcgis.com/apps/webappviewer/index.html?id=ad91ef47a1884b25b289937917a26325", "observation": "Official linked ArcGIS Web App URL responded with generic Web App HTML, but its item could not be retrieved anonymously from ArcGIS REST."}
+  ],
+  "requests": [
+    {"url": "https://lupajk.gov.pk/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Official page retrieved; links and descriptive content reviewed. No parcel schema or geometry response."},
+    {"url": "https://pndajk.gov.pk/downloads.php?page=maps", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "outcome": "Official map-download page retrieved; listed maps are regional/general, not parcel data."},
+    {"url": "https://gisportalajk.maps.arcgis.com/apps/webappviewer/index.html?id=ad91ef47a1884b25b289937917a26325", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Web App HTML loaded anonymously; no service URL was exposed in the returned shell."},
+    {"url": "https://gisportalajk.maps.arcgis.com/sharing/rest/content/items/ad91ef47a1884b25b289937917a26325?f=json", "method": "GET", "httpStatus": 400, "contentType": "application/json", "outcome": "ArcGIS REST returned item-does-not-exist-or-is-inaccessible; no token or login was attempted."},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/ad91ef47a1884b25b289937917a26325?f=json", "method": "GET", "httpStatus": 400, "contentType": "application/json", "outcome": "Public ArcGIS REST returned item-does-not-exist-or-is-inaccessible; no token or login was attempted."},
+    {"url": "http://27.54.123.96:81/login.php", "method": "GET", "httpStatus": 200, "contentType": "text/html", "outcome": "Officially linked Web GIS Database route is a login page; access was stopped without credentials or login."},
+    {"url": "https://lupajk.gov.pk/gisdb.php", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "outcome": "Official GIS database information page retrieved; it did not expose anonymous parcel data."},
+    {"url": "https://lupajk.gov.pk/gislab.php", "method": "GET", "httpStatus": 200, "contentType": "text/html; charset=UTF-8", "outcome": "Official GIS Lab information page retrieved; no parcel API or geometry response."},
+    {"url": "https://ajk.gov.pk/ajk-map/", "method": "GET", "httpStatus": 403, "contentType": "text/html", "outcome": "Cloudflare challenge; no challenge defeat or retry bypass used."},
+    {"url": "https://itb.ajk.gov.pk/projects/", "method": "GET", "httpStatus": 403, "contentType": "text/html", "outcome": "Cloudflare challenge; no challenge defeat or retry bypass used."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official AJK planning, GIS, Board of Revenue, and linked ArcGIS resources searched using English and Urdu Muzaffarabad/cadastral terms.",
+    "verifiedOpenScope": "Official GIS cadastral-project reference and general map resources verified; no open Muzaffarabad parcel geometry or stable native parcel ID verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The linked ArcGIS app's underlying item/service configuration, state-owned-land coverage, parcel schema, CRS, native identity field, and exact WUP-point coverage remain unknown. No exact-point hit or miss was obtained.",
+  "nextStep": "Serial reviewer should independently inspect the linked ArcGIS application if its item becomes publicly accessible and qualify only a bounded geometry-plus-safe-ID response; do not use the login-only Web GIS route without authorized credentials.",
+  "runtimeReadiness": "held; no adapter qualification or source admission performed"
+}

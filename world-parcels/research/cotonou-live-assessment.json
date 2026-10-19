@@ -1,0 +1,33 @@
+{
+  "city": "Cotonou, Benin",
+  "countryCode": "BJ",
+  "sourceId": "bj-andf-efoncier-geoserver",
+  "source": "ANDF e-Foncier GeoServer, efb:efb_parcel",
+  "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+  "priorEvidence": {
+    "checkedAt": "2026-09-29",
+    "operation": "WFS 1.0 GetFeature, bbox=2.385,6.383,2.393,6.390,EPSG:4326, maxFeatures=3, GeoJSON",
+    "outcome": "3 closed parcel polygons; nup is a parcel identifier. Separate earlier small query found a feature near Seme-Podji; national completeness is not established."
+  },
+  "freshCheck": {
+    "checkedAtUtc": "2026-10-02T21:45Z",
+    "operation": "Attempted official WFS GetFeature via web fetcher",
+    "outcome": "Fetch tool could not access request URL; this does not establish that source is unavailable. No fresh feature request made."
+  },
+  "reuse": {
+    "status": "hold; public consultation/duplication not equivalent to broad reuse license",
+    "evidence": "ANDF cadastre page https://andf.bj/cadastre/ says cadastral data is available for public consultation and duplication except personal/confidential data; its text describes online/private access subject to conditions and fees. GeoServer AccessConstraints/Fees NONE is a service default, not a license."
+  },
+  "assessment": "Official technical source, but service reuse rights, personal-data implications, version/currentness, and broader coverage are unresolved.",
+  "description": "Current source continuation assessment; prior geometry samples and current direct checks are separate.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false,
+  "directCheck": {
+    "operation": "Bounded official endpoint query and metadata where needed",
+    "outcome": "success",
+    "httpStatus": 200,
+    "detail": "Direct minimal WFS2 query returned3nup keys from1390matches. propertyName=nup deliberately omitted geometry; prior geometry sample remains separately dated.",
+    "responseFile": "cotonou-live-sample.json",
+    "requestUrl": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=efb%3Aefb_parcel&count=3&outputFormat=application%2Fjson&bbox=2.385%2C6.383%2C2.393%2C6.390%2CCRS%3A84&srsName=CRS%3A84&propertyName=nup"
+  }
+}

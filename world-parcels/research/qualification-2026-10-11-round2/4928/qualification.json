@@ -1,0 +1,1230 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "4928",
+  "cityName": "Laveen",
+  "sourceId": "us-az-maricopa-assessor-parcels",
+  "candidateSha256": "644052a2ccc898c94abfc150c3c9398f387135536ac319f41d7fa39beb7ac4aa",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 118,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 118,
+      "collectedUniqueCount": 118
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 330
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "bad06fb0653c2299c0baaf8903e9b2ce81047eeba1d915e5a0e7f00d7467a6e2",
+      "featureCount": 118,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32612",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "bad06fb0653c2299c0baaf8903e9b2ce81047eeba1d915e5a0e7f00d7467a6e2",
+  "featureCount": 118,
+  "sampleIds": [
+    "US-AZ-MARICOPA-10583099",
+    "US-AZ-MARICOPA-10583100",
+    "US-AZ-MARICOPA-10583101"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -112.092,
+        33.386,
+        -112.091,
+        33.387
+      ],
+      "complete": true,
+      "featureCount": 16,
+      "ids": [
+        "US-AZ-MARICOPA-10584003",
+        "US-AZ-MARICOPA-10584215",
+        "US-AZ-MARICOPA-10584216",
+        "US-AZ-MARICOPA-10584217",
+        "US-AZ-MARICOPA-10584218",
+        "US-AZ-MARICOPA-10584219",
+        "US-AZ-MARICOPA-10584220",
+        "US-AZ-MARICOPA-10584224",
+        "US-AZ-MARICOPA-10584225",
+        "US-AZ-MARICOPA-10584226",
+        "US-AZ-MARICOPA-10584227",
+        "US-AZ-MARICOPA-10584228",
+        "US-AZ-MARICOPA-10584229",
+        "US-AZ-MARICOPA-10584241",
+        "US-AZ-MARICOPA-10584242",
+        "US-AZ-MARICOPA-10584243"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -112.091,
+        33.386,
+        -112.09,
+        33.387
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "US-AZ-MARICOPA-10583100",
+        "US-AZ-MARICOPA-10583101",
+        "US-AZ-MARICOPA-10583191",
+        "US-AZ-MARICOPA-10584003",
+        "US-AZ-MARICOPA-10583001B"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -112.09,
+        33.386,
+        -112.089,
+        33.387
+      ],
+      "complete": true,
+      "featureCount": 7,
+      "ids": [
+        "US-AZ-MARICOPA-10583101",
+        "US-AZ-MARICOPA-10583102",
+        "US-AZ-MARICOPA-10583103",
+        "US-AZ-MARICOPA-10583104",
+        "US-AZ-MARICOPA-10583105",
+        "US-AZ-MARICOPA-10583106",
+        "US-AZ-MARICOPA-10583001B"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -112.092,
+        33.387,
+        -112.091,
+        33.388
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "US-AZ-MARICOPA-10584003",
+        "US-AZ-MARICOPA-10584177",
+        "US-AZ-MARICOPA-10584175",
+        "US-AZ-MARICOPA-10584176",
+        "US-AZ-MARICOPA-10584184",
+        "US-AZ-MARICOPA-10584185",
+        "US-AZ-MARICOPA-10584186",
+        "US-AZ-MARICOPA-10584187",
+        "US-AZ-MARICOPA-10584188",
+        "US-AZ-MARICOPA-10584189",
+        "US-AZ-MARICOPA-10584190",
+        "US-AZ-MARICOPA-10584191",
+        "US-AZ-MARICOPA-10584192",
+        "US-AZ-MARICOPA-10584193",
+        "US-AZ-MARICOPA-10584212",
+        "US-AZ-MARICOPA-10584213",
+        "US-AZ-MARICOPA-10584214"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -112.091,
+        33.387,
+        -112.09,
+        33.388
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "US-AZ-MARICOPA-10583166",
+        "US-AZ-MARICOPA-10583167",
+        "US-AZ-MARICOPA-10583096",
+        "US-AZ-MARICOPA-10583097",
+        "US-AZ-MARICOPA-10583098",
+        "US-AZ-MARICOPA-10583099",
+        "US-AZ-MARICOPA-10583100",
+        "US-AZ-MARICOPA-10583101",
+        "US-AZ-MARICOPA-10583190",
+        "US-AZ-MARICOPA-10583191",
+        "US-AZ-MARICOPA-10584003"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -112.09,
+        33.387,
+        -112.089,
+        33.388
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "US-AZ-MARICOPA-10583166",
+        "US-AZ-MARICOPA-10583164",
+        "US-AZ-MARICOPA-10583165",
+        "US-AZ-MARICOPA-10583100",
+        "US-AZ-MARICOPA-10583101",
+        "US-AZ-MARICOPA-10583102",
+        "US-AZ-MARICOPA-10583103",
+        "US-AZ-MARICOPA-10583104",
+        "US-AZ-MARICOPA-10583105",
+        "US-AZ-MARICOPA-10583106",
+        "US-AZ-MARICOPA-10583145",
+        "US-AZ-MARICOPA-10583146",
+        "US-AZ-MARICOPA-10583147",
+        "US-AZ-MARICOPA-10583148",
+        "US-AZ-MARICOPA-10583149",
+        "US-AZ-MARICOPA-10583150",
+        "US-AZ-MARICOPA-10583151",
+        "US-AZ-MARICOPA-10583152",
+        "US-AZ-MARICOPA-10583161",
+        "US-AZ-MARICOPA-10583162",
+        "US-AZ-MARICOPA-10583163",
+        "US-AZ-MARICOPA-10583189"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -112.092,
+        33.388,
+        -112.091,
+        33.389
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "US-AZ-MARICOPA-10584003",
+        "US-AZ-MARICOPA-10584177",
+        "US-AZ-MARICOPA-10584173",
+        "US-AZ-MARICOPA-10584174",
+        "US-AZ-MARICOPA-10584175",
+        "US-AZ-MARICOPA-10584178",
+        "US-AZ-MARICOPA-10584179",
+        "US-AZ-MARICOPA-10584180",
+        "US-AZ-MARICOPA-10584181",
+        "US-AZ-MARICOPA-10584182",
+        "US-AZ-MARICOPA-10584183",
+        "US-AZ-MARICOPA-10584184",
+        "US-AZ-MARICOPA-10584472",
+        "US-AZ-MARICOPA-10584473",
+        "US-AZ-MARICOPA-10584474",
+        "US-AZ-MARICOPA-10584475",
+        "US-AZ-MARICOPA-10584476",
+        "US-AZ-MARICOPA-10584477"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -112.091,
+        33.388,
+        -112.09,
+        33.389
+      ],
+      "complete": true,
+      "featureCount": 11,
+      "ids": [
+        "US-AZ-MARICOPA-10583166",
+        "US-AZ-MARICOPA-10583167",
+        "US-AZ-MARICOPA-10583168",
+        "US-AZ-MARICOPA-10583169",
+        "US-AZ-MARICOPA-10583190",
+        "US-AZ-MARICOPA-10584003",
+        "US-AZ-MARICOPA-10584476",
+        "US-AZ-MARICOPA-10584477",
+        "US-AZ-MARICOPA-10584478",
+        "US-AZ-MARICOPA-10584608",
+        "US-AZ-MARICOPA-10583004C"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -112.09,
+        33.388,
+        -112.089,
+        33.389
+      ],
+      "complete": true,
+      "featureCount": 13,
+      "ids": [
+        "US-AZ-MARICOPA-10583166",
+        "US-AZ-MARICOPA-10583164",
+        "US-AZ-MARICOPA-10583165",
+        "US-AZ-MARICOPA-10583161",
+        "US-AZ-MARICOPA-10583162",
+        "US-AZ-MARICOPA-10583163",
+        "US-AZ-MARICOPA-10583169",
+        "US-AZ-MARICOPA-10583170",
+        "US-AZ-MARICOPA-10583171",
+        "US-AZ-MARICOPA-10583172",
+        "US-AZ-MARICOPA-10583173",
+        "US-AZ-MARICOPA-10583174",
+        "US-AZ-MARICOPA-10583004C"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -112.091,
+        33.385,
+        -112.09,
+        33.386
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "US-AZ-MARICOPA-10584003",
+        "US-AZ-MARICOPA-10583001B"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -112.091,
+        33.389,
+        -112.09,
+        33.39
+      ],
+      "complete": true,
+      "featureCount": 10,
+      "ids": [
+        "US-AZ-MARICOPA-10584477",
+        "US-AZ-MARICOPA-10584478",
+        "US-AZ-MARICOPA-10584479",
+        "US-AZ-MARICOPA-10584480",
+        "US-AZ-MARICOPA-10584481",
+        "US-AZ-MARICOPA-10584517",
+        "US-AZ-MARICOPA-10584518",
+        "US-AZ-MARICOPA-10584607",
+        "US-AZ-MARICOPA-10584608",
+        "US-AZ-MARICOPA-10583004C"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -112.093,
+        33.387,
+        -112.092,
+        33.388
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "US-AZ-MARICOPA-10584175",
+        "US-AZ-MARICOPA-10584193",
+        "US-AZ-MARICOPA-10584194",
+        "US-AZ-MARICOPA-10584195",
+        "US-AZ-MARICOPA-10584196",
+        "US-AZ-MARICOPA-10584197",
+        "US-AZ-MARICOPA-10584198",
+        "US-AZ-MARICOPA-10584207",
+        "US-AZ-MARICOPA-10584208",
+        "US-AZ-MARICOPA-10584209",
+        "US-AZ-MARICOPA-10584210",
+        "US-AZ-MARICOPA-10584211",
+        "US-AZ-MARICOPA-10584212",
+        "US-AZ-MARICOPA-10584213",
+        "US-AZ-MARICOPA-10584314"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -112.089,
+        33.387,
+        -112.088,
+        33.388
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "US-AZ-MARICOPA-10583143",
+        "US-AZ-MARICOPA-10583136",
+        "US-AZ-MARICOPA-10583134",
+        "US-AZ-MARICOPA-10583135",
+        "US-AZ-MARICOPA-10583106",
+        "US-AZ-MARICOPA-10583107",
+        "US-AZ-MARICOPA-10583108",
+        "US-AZ-MARICOPA-10583109",
+        "US-AZ-MARICOPA-10583110",
+        "US-AZ-MARICOPA-10583111",
+        "US-AZ-MARICOPA-10583112",
+        "US-AZ-MARICOPA-10583132",
+        "US-AZ-MARICOPA-10583133",
+        "US-AZ-MARICOPA-10583144",
+        "US-AZ-MARICOPA-10583153",
+        "US-AZ-MARICOPA-10583154",
+        "US-AZ-MARICOPA-10583161",
+        "US-AZ-MARICOPA-10583189"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 43,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:33.034Z",
+      "queryHash": "3eb0bc235a6e9393019e614e24af381207a2cbf537f3f47f47f07892d9ee4fcd",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 651
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:33.695Z",
+      "queryHash": "3eb0bc235a6e9393019e614e24af381207a2cbf537f3f47f47f07892d9ee4fcd",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:33.887Z",
+      "queryHash": "a9934af2cf3b7eb5fe41d8352520ff5f3064c911bb477c1354ae3f3be9640b38",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:34.078Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:34.269Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:34.460Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:34.650Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 193
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:34.845Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:35.038Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:35.232Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:35.425Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 192
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:35.618Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:35.809Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:36.002Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:36.193Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:36.384Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:36.575Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:36.765Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:36.955Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:37.144Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:37.335Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 191
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:37.528Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:37.718Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:37.910Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:38.100Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:38.289Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 190
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:38.480Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:38.671Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:38.861Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:39.053Z",
+      "queryHash": "4bf0614fcafaf0f1e1f4a402096cfdc86fc411d9d0eff69f8a8057dbc7d2d48b",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:39.241Z",
+      "queryHash": "338745dbf03f558e0ded8f8e42c53b99f1af58d5efe975f5f439ae301ae24d82",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:39.429Z",
+      "queryHash": "444b48c2fb5a2fb5f3d01249a5268ac47ea9aa91b394498a5d9518178120834c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:39.617Z",
+      "queryHash": "170f0d903976d4e76a36019d964d124af261607d07d865aa2cd4e7628bad6951",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 187
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:39.804Z",
+      "queryHash": "e94b1328fca5dec10816696a27846d077dcf354efa49ce49af1702fcf084fb82",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:39.994Z",
+      "queryHash": "ea42f29d4e25d8483bdcc0e6957e70c4190f8f39b857c7c598efdc87e00d233c",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:40.182Z",
+      "queryHash": "cd1077287b955b85717281e50e889b344b70d65ec48c175fd69477734825002a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:40.370Z",
+      "queryHash": "0dbd25daaeda4eff8b19c3a62b02ce62345d9d3772cb3b5ebb7d873dab7bdc3e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:40.557Z",
+      "queryHash": "370107a9f62f0bba34009731f3c5ed239e73d608874b134d4e43d1df6f41f2f5",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 186
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:40.744Z",
+      "queryHash": "3663e645660d26622419ab5bf813c2e943ebbe92d73947047f63a6da3de7b41a",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 188
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:40.935Z",
+      "queryHash": "3eb0bc235a6e9393019e614e24af381207a2cbf537f3f47f47f07892d9ee4fcd",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:41.133Z",
+      "queryHash": "37cb784a716b6192b6b84a537de3a39e7cb2fefce32e8c93f27d5f054e356253",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 189
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:41.372Z",
+      "queryHash": "087bce39f31216cc7e413660290b13a466beb3a70c5402889ce67f681a23d07f",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 197
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "gis.mcassessor.maricopa.gov",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:24:41.573Z",
+      "queryHash": "b8051fc071a9d862cc737a48d79b57af7e30c95e46d78a56c3ae0b23202691d5",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 500,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 195
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7086",
+  "wupCityCode": 7086,
+  "name": "Kerman",
+  "country": "Iran",
+  "countryCode": "IR",
+  "rank": 1073,
+  "queueRank": 1073,
+  "point": [
+    30.2812350420449,
+    57.0578212635457
+  ],
+  "centerLatLon": [
+    30.2812350420449,
+    57.0578212635457
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 517216,
+  "population2025k": 517.216,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1069-1076",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The English and Persian searches surfaced a Kerman notaries association and references to provincial registration offices, but no first-party source clearly establishing a city-specific registry/cadastre custodian for Kerman. City custody therefore remains undetermined. No anonymous map or parcel service was verified.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist.",
+  "scopeLimits": "Local registry/cadastre custody and safe public geometry are assessed separately. No complete parcel geometry at the exact WUP point was retained; no citywide or countrywide coverage is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "remainingUncertainty": "Exact WUP point coverage and source completeness remain unverified; no citywide or countrywide completeness claim is made.",
+  "nextStep": "Root review can retain this city-specific custody evidence and pursue a source-native public feature route only if one is identified.",
+  "coverageAssessment": {
+    "claimedScope": "The English and Persian searches surfaced a Kerman notaries association and references to provincial registration offices, but no first-party source clearly establishing a city-specific registry/cadastre custodian for Kerman. City custody therefore remains undetermined. No anonymous map or parcel service was verified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kerman Iran official cadastral map land registry municipality",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "The English search surfaced a notaries association and no first-party city-specific land registry or public cadastral geometry source. City custody remains undetermined.",
+        "actualResultUrls": [
+          "https://kermannotary.ir/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      },
+      {
+        "language": "Persian",
+        "query": "ثبت اسناد املاک کرمان نقشه کاداستر استان کرمان سازمان ثبت",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "جستجوی فارسی نتایج مرتبطی از کانون سردفتران استان کرمان نشان داد، اما منبع رسمی قابل اتکایی که متولی ثبت یا کاداستر مختص شهر کرمان را مشخص کند پیدا نشد. جستجوی داده‌های هندسی عمومی نیز به مسیر امن و ناشناس منجر نشد.",
+        "actualResultUrls": [
+          "https://kermannotary.ir/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      }
+    ]
+  },
+  "source": null,
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

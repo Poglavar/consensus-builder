@@ -1,0 +1,71 @@
+{
+  "name": "Qinhuangdao",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 664,
+  "point": [
+    39.9385657496635,
+    119.59846054912
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qinhuangdao official land registry cadastral map GIS parcel Natural Resources official",
+        "result": "Found city real-estate registration services and a municipal information portal via official government service guidance; its queries are keyed to a property certificate/unit/address and return property details. No property lookup was made.",
+        "method": "Separate English-language search and official government service-guide review."
+      },
+      {
+        "language": "Chinese",
+        "query": "秦皇岛市 自然资源和规划局 不动产登记中心 地籍图 查询 官方",
+        "result": "Official Qinglong County government Q&A refers to Qinhuangdao city bureau portal and registration center. It describes address/title/unit queries and identity-verified owner lookup; the direct city portal did not open in this review.",
+        "method": "Separate Chinese-language search; official government Q&A reviewed, no form or property query submitted."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Qinhuangdao official land registry / map sources",
+        "operator": "Official city, regional or national authority as scoped in the observations",
+        "homeUrl": "https://www.chinaqinglong.gov.cn/single/28/52450.html",
+        "observation": "The official government Q&A identifies Qinhuangdao’s municipal real-estate registration center and directs residents to the municipal bureau registration portal for service guides. Its online information search accepts a certificate number, property-unit number, or address and returns property facts/restriction status; owner queries require identity verification. No search, certificate scan, address, or unit number was supplied. No geometry-only route was verified."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "An official Qinglong Manchu Autonomous County government Q&A specifically names the Qinhuangdao Municipal Natural Resources and Planning Bureau portal and Qinhuangdao Real Estate Registration Center, and describes the city’s registration workflow. This is city-specific institutional evidence, but the city bureau page itself was not retrievable in the bounded review. It does not establish a public geometry route.",
+    "verifiedOpenScope": "No anonymous public geometry-only parcel response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The public registration information service is property-keyed and returns property facts/restriction status; owner queries are identity verified. No anonymous geometry-only schema or safe allowlist was found.",
+  "remainingUncertainty": "Whether the city bureau publishes a separate anonymous geometry-only cadastral layer independent of its property-information lookup.",
+  "nextStep": "If parcel geometry is required, first verify an official public endpoint whose response can be limited to geometry and safe native IDs, then review coverage at the city point.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9796,
+  "cityId": "wup2025:9796",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    39.9385657496635,
+    119.59846054912
+  ],
+  "queueRank": 664,
+  "population2025": 797748,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "An official Qinglong Manchu Autonomous County government Q&A specifically names the Qinhuangdao Municipal Natural Resources and Planning Bureau portal and Qinhuangdao Real Estate Registration Center, and describes the city’s registration workflow. This is city-specific institutional evidence, but the city bureau page itself was not retrievable in the bounded review. It does not establish a public geometry route.",
+  "registryEvidenceUrls": [
+    "https://www.chinaqinglong.gov.cn/single/28/52450.html"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

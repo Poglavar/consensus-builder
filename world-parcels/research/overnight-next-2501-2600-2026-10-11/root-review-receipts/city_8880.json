@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8880",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-8880-karad.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/karad-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:14:35.680811Z",
+  "reason": "Official Maharashtra cadastral-map custody and a Karad map lead are evidenced, but the live viewer timed out without a safe native-ID parcel geometry response. No sample, fresh ID read, paging, 13-cell checks, metric GEOS checks, source binding, or headed Details verification exists. Timeout is not citywide absence."
+}

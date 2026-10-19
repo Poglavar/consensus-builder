@@ -25,7 +25,7 @@
         const storageRef2 = (global.Proposals && global.Proposals.storage) ? global.Proposals.storage : global.proposalStorage;
         if (typeof global.selectAndHighlightProposal === 'function' && storageRef2) {
             const proposal = storageRef2.get ? storageRef2.get(proposalKey) : (storageRef2.getProposal ? storageRef2.getProposal(proposalKey) : null);
-            const parcels = Array.isArray(proposal?.parentParcelIds) ? proposal.parentParcelIds : [];
+            const parcels = Array.isArray(proposal?.cadastreParcelIds) ? proposal.cadastreParcelIds : [];
             if (proposal && parcels.length > 0) {
                 global.selectAndHighlightProposal(proposalKey, parcels[0], true);
             }
@@ -38,16 +38,17 @@
     const uiParcelPanel = (global.Parcels && global.Parcels.uiParcelPanel) ? global.Parcels.uiParcelPanel : (global.ParcelsUIParcelPanel || {});
 
     function scheduleParcelPanelFocus(parcelId) {
-        if (!global.parcelLayer || !parcelId) return;
+        if (!parcelId) return;
         const parcelIdStr = parcelId.toString();
         const focus = () => {
-            const parcel = global.parcelLayer.getLayers().find(layer => {
-                return layer.feature && layer.feature.properties &&
-                    layer.feature.properties.parcelId.toString() === parcelIdStr;
-            });
+            const parcel = global.LiveParcelFabric?.get?.(parcelIdStr)
+                ? global.ParcelPresenter?.getLayer?.(parcelIdStr)
+                : null;
             const showParcelInfoPanel = uiParcelPanel.showParcelInfoPanel || global.showParcelInfoPanel;
             if (parcel && typeof showParcelInfoPanel === 'function') {
-                showParcelInfoPanel(parcel.feature);
+                const parcelId = global.ParcelPresenter?.getIdForLayer?.(parcel);
+                const feature = parcelId ? global.LiveParcelFabric?.get?.(parcelId) : null;
+                if (feature) showParcelInfoPanel(feature);
             }
         };
         // Use rAF to wait for any UI updates instead of arbitrary timeouts.
@@ -110,15 +111,11 @@
      * @param {string} parcelId - The parcel ID
      */
     function showProposalDetails(proposalId, parcelId) {
-        // 1. Close the Parcel Info panel
-        const hideParcelInfoPanel = uiParcelPanel.hideParcelInfoPanel || global.hideParcelInfoPanel;
-        if (typeof hideParcelInfoPanel === 'function') {
-            hideParcelInfoPanel();
-        }
-
-        // 2. Select the proposal and show its details immediately
+        // Keep the Parcel Info panel open: its Proposals list is the switcher — clicking another
+        // entry just points the proposal button box at that proposal (its status badge says
+        // applied/parked/etc.), it does not navigate away from the parcel.
         if (typeof global.selectAndHighlightProposal === 'function') {
-            global.selectAndHighlightProposal(proposalId, parcelId, true);
+            global.selectAndHighlightProposal(proposalId, parcelId, false, true);
         } else if (typeof global.selectProposalFromList === 'function') {
             // Fallback to old function
             global.selectProposalFromList(proposalId, parcelId);
@@ -131,35 +128,27 @@
      * @param {string} tabId - The ID of the tab content to show
      */
     function switchParcelTab(tabButton, tabId) {
-        const fallbackButton = Array.from(document.querySelectorAll('.parcel-tab-btn')).find((button, index) => {
-            if (button.dataset && button.dataset.parcelTabId === tabId) return true;
-            if (tabId === 'info-tab') return index === 0;
-            if (tabId === 'proposals-tab') return index === 1;
-            if (tabId === 'tools-tab') return index === 2;
-            const onclickAttr = button.getAttribute('onclick') || '';
-            return onclickAttr.includes(tabId);
-        }) || null;
-        const activeButton = tabButton || fallbackButton;
+        // Scoped to the parcel panel: the site panel reuses the tab classes with its own state.
+        const panel = document.getElementById('parcel-info-panel');
+        if (!panel) return;
+        const activeButton = tabButton || panel.querySelector(`.parcel-tab-btn[data-parcel-tab-id="${tabId}"]`);
 
         if (!activeButton) {
             return;
         }
 
-        // Remove active class from all tab buttons
-        const tabButtons = document.querySelectorAll('.parcel-tab-btn');
-        tabButtons.forEach(btn => btn.classList.remove('active'));
+        // The selected tab is an ARIA state (cb-tabs, css/primitives.css), never a class.
+        const tabButtons = panel.querySelectorAll('.parcel-tab-btn');
+        tabButtons.forEach(btn => btn.setAttribute('aria-selected', String(btn === activeButton)));
 
-        // Add active class to clicked button
-        activeButton.classList.add('active');
-
-        // Hide all tab contents
-        const tabContents = document.querySelectorAll('.parcel-tab-content');
-        tabContents.forEach(content => content.classList.remove('active'));
+        // Hide all tab contents (the hidden attribute, css/panels.css)
+        const tabContents = panel.querySelectorAll('.parcel-tab-content');
+        tabContents.forEach(content => { content.hidden = true; });
 
         // Show selected tab content
         const selectedTab = document.getElementById(tabId);
         if (selectedTab) {
-            selectedTab.classList.add('active');
+            selectedTab.hidden = false;
         }
 
         if (tabId === 'tools-tab') {

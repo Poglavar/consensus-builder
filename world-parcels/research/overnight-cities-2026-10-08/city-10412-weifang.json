@@ -1,0 +1,97 @@
+{
+  "name": "Weifang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 568,
+  "point": [
+    36.707775630828,
+    119.128901357499
+  ],
+  "population2025": 908584,
+  "populationUnit": "persons",
+  "population2025k": 908.584,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An official Weifang municipal bureau notice describes the city registration system and integrated city real-estate registration workflow. A local registration-center report confirms city service activity. This establishes local registry operations, not anonymous public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.linqu.gov.cn/rdzt/yhyshj/zcwj/djcc/202505/P020250529397138888236.pdf",
+    "https://iapp.wfcmw.cn/share/YS02MzUtNDM4NjAyM13.html"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Weifang China official cadastral parcel map land registry GIS Weifang Natural Resources Bureau",
+        "scope": "Find Weifang city registry and an anonymous public parcel map or feature service.",
+        "result": "Official Weifang policy documents identify the municipal Natural Resources and Planning Bureau and its unified registration system; no city-specific anonymous parcel geometry layer or WUP-point feature response was found. Shandong’s public map platform was reviewed as a provincial candidate, but no Weifang cadastral feature query was verified.",
+        "actualResultUrls": [
+          "https://www.linqu.gov.cn/rdzt/yhyshj/zcwj/djcc/202505/P020250529397138888236.pdf",
+          "https://www.sdmap.gov.cn/",
+          "https://www.sdmap.gov.cn/map.html"
+        ],
+        "executionMethod": "Separate English search, official Weifang bureau policy review, and public provincial-map page inspection; no account, token, or security check was bypassed."
+      },
+      {
+        "language": "Chinese",
+        "query": "潍坊市自然资源和规划局 不动产登记 地籍图 地块 官方",
+        "scope": "查找潍坊市不动产登记和公开宗地地图/矢量服务。",
+        "result": "官方联合通知说明潍坊市区登记系统与房产系统、测绘平台互联，并按申请办理预告登记；市级登记中心服务有官方城市媒体报道。山东省地理信息公共服务平台可作为省级候选，但未从公开页面确认潍坊市区地籍图层或匿名要素接口。",
+        "actualResultUrls": [
+          "https://www.linqu.gov.cn/rdzt/yhyshj/zcwj/djcc/202505/P020250529397138888236.pdf",
+          "https://iapp.wfcmw.cn/share/YS02MzUtNDM4NjAyM13.html",
+          "https://www.sdmap.gov.cn/",
+          "https://www.sdmap.gov.cn/map.html"
+        ],
+        "executionMethod": "中文搜索后检查官方联合通知、城市媒体登记中心报道和省级公共地图门户；未查询权利人或提交身份信息。"
+      },
+      {
+        "language": "Chinese follow-up",
+        "query": "潍坊市不动产登记中心 地籍图查询 潍坊市地图平台 建设用地宗地",
+        "scope": "核实省级地图平台是否提供覆盖潍坊市区的公开宗地几何。",
+        "result": "山东省自然资源厅主办的地图门户提供地图浏览，但页面提示完成安全验证；没有越过验证或提交个人信息。威海市自然资源局说明省级平台可浏览其“城镇地籍”主题，但这不证明潍坊市同层覆盖。因未获得潍坊具体图层或要素响应，未保留几何。",
+        "actualResultUrls": [
+          "https://www.sdmap.gov.cn/map.html",
+          "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html"
+        ],
+        "executionMethod": "独立中文补充搜索并检查省级地图门户和省内自然资源部门的公开指引；没有绕过安全验证。"
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "CN-10412-WEIFANG-REGISTRY",
+    "name": "Weifang Municipal Natural Resources and Planning Bureau / Weifang Real Estate Registration Center",
+    "url": "https://www.linqu.gov.cn/rdzt/yhyshj/zcwj/djcc/202505/P020250529397138888236.pdf",
+    "operator": "Weifang Municipal Natural Resources and Planning Bureau and Weifang Real Estate Registration Center",
+    "serviceType": "Municipal real-estate registration system and cadastral survey workflows; no anonymous parcel feature layer verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "The official joint notice discusses land/real-estate registration and cadastral survey system integration. No parcel ID or public feature response was queried."
+  },
+  "coverageAssessment": {
+    "claimedScope": "An official Weifang municipal bureau notice describes the city registration system and integrated city real-estate registration workflow. A local registration-center report confirms city service activity. This establishes local registry operations, not anonymous public parcel geometry.",
+    "verifiedOpenScope": "Local registry/cadastre service exists, but anonymous full parcel geometry and exact WUP coverage remain unverified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_geometry_not_verified",
+  "technicalBlocker": "The provincial map portal was identified, but its visible page required a security verification and no Weifang cadastral layer/anonymous feature response was obtained. No WUP-point geometry was verified.",
+  "remainingUncertainty": "The provincial map portal was identified, but its visible page required a security verification and no Weifang cadastral layer/anonymous feature response was obtained. No WUP-point geometry was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 10412,
+  "cityId": "wup2025:10412",
+  "centerLatLon": [
+    36.707775630828,
+    119.128901357499
+  ],
+  "queueRank": 568,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-09T01:39:35.583478+00:00",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,121 @@
+{
+  "name": "Panipat",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 757,
+  "point": [
+    29.3909636387373,
+    76.9728162983483
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "पानीपत हरियाणा जमाबंदी भूमि अभिलेख नक्शा भू नक्शा कैडस्ट्रल आधिकारिक",
+        "scope": "Search for city-specific first-party registry/cadastre evidence and a public full-geometry route.",
+        "result": "Panipat district’s official site documents HARIS/HALRIS property-registration and land-record services. India’s DILRMP district report confirms cadastral maps but indicates no maps are currently flagged as geo-referenced/linked to RoR in the listed Panipat tehsils; no anonymous parcel-feature service was verified.",
+        "actualResultUrls": [
+          "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
+          "https://panipat.gov.in/maps-of-panipat/",
+          "https://jamabandi.nic.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/75",
+          "https://haryanait.gov.in/web-halris/"
+        ],
+        "executionMethod": "Separate local-language search and official-source/page review."
+      },
+      {
+        "language": "English",
+        "query": "Panipat Haryana official cadastral map parcel GIS public land registry",
+        "scope": "Cross-check city identity, official registry evidence and anonymous complete polygon access.",
+        "result": "First-party district and Haryana government sources confirm property registration, revenue records and map references. The reviewed map pages do not expose an anonymous full-parcel vector route; no parcel lookup by owner or title was made.",
+        "actualResultUrls": [
+          "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
+          "https://panipat.gov.in/maps-of-panipat/",
+          "https://jamabandi.nic.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/75",
+          "https://haryanait.gov.in/web-halris/"
+        ],
+        "executionMethod": "Separate English-language search and official-source/page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Official city/regional land-administration evidence",
+        "operator": "Official agency named by the cited sources",
+        "homeUrl": "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
+        "observation": "Panipat District Administration documents property registration, mutation and land-record services through Haryana HARIS/HALRIS at tehsil and sub-tehsil level. The official DILRMP table for Panipat reports cadastral-map digitization status by tehsil, with zero entries in the georeferenced/RoR-linked columns at time of the table."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-CITY-8162-OFFICIAL-REGISTRY-REVIEW",
+    "name": "Panipat official registry/cadastre review",
+    "url": "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
+    "operator": "Official local or regional agency documented by cited source.",
+    "serviceType": "Official registry/cadastre service evidence; no verified anonymous full-geometry parcel endpoint.",
+    "layer": "No safe public complete parcel vector layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No public parcel feature response was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "District-level land administration and digitization status only; no evidence of a citywide open parcel layer.",
+    "verifiedOpenScope": "Official registry and/or map service evidence only. No anonymous complete parcel polygons or citywide coverage were verified. WUP point is population-weighted settlement centroid, not a parcel or jurisdiction boundary.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Panipat District Administration documents property registration, mutation and land-record services through Haryana HARIS/HALRIS at tehsil and sub-tehsil level. The official DILRMP table for Panipat reports cadastral-map digitization status by tehsil, with zero entries in the georeferenced/RoR-linked columns at time of the table.",
+  "registryEvidenceUrls": [
+    "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
+    "https://panipat.gov.in/maps-of-panipat/",
+    "https://jamabandi.nic.in/",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/75",
+    "https://haryanait.gov.in/web-halris/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "No public full-geometry map endpoint or parcel-vector response schema was identified. The known HALRIS record lookup uses owner/khewat/khasra criteria, which were not queried.",
+  "remainingUncertainty": "No map layer or public feature route was identified for the exact WUP center. The DILRMP figures are system reporting and may change; they do not prove the absence of paper cadastral maps.",
+  "nextStep": "Continue only if a current official anonymous vector route becomes available; do not query private record search fields.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:45:00Z",
+  "wupCityCode": 8162,
+  "cityId": "wup2025:8162",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    29.3909636387373,
+    76.9728162983483
+  ],
+  "queueRank": 757,
+  "population2025": 710363,
+  "population2025k": 710.363,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "No public full-geometry map endpoint or parcel-vector response schema was identified. The known HALRIS record lookup uses owner/khewat/khasra criteria, which were not queried."
+  },
+  "scopeLimits": [
+    "No parcel-specific, owner, address, title, tax, or person query was made.",
+    "No anonymous complete parcel geometry verified; no geometry sample retained.",
+    "Do not interpret the WUP point as a legal boundary or cadastral parcel."
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://panipat.gov.in/dynamic-integration-of-property-registration-and-land-records-administration/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Dynamic Integration of Property Registration and Land Records Administration | Panipat, Haryana | India    "
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "scope": "Chinese-language primary-source audit of Wuhan, Chongqing, Suzhou and Hangzhou",
+  "method": "Official Chinese sources plus direct read-only portal requests; metadata only, no polygon collections, ownership attributes, credentials or private login. Earlier failures retained in their original files. Documented existence and public query are distinct from verified anonymous viewport geometry.",
+  "termsAreInformational": true,
+  "cities": [
+    {
+      "name": "Wuhan",
+      "nameZh": "武汉",
+      "cadastreExistence": "documented",
+      "publicQuery": "documented_login_visual_query",
+      "anonymousParcelVector": "not_verified",
+      "assessment": "Actual cadastral holdings and visual parcel query are explicitly documented; no anonymous viewport/native-ID polygon response was obtained.",
+      "sources": [
+        {
+          "title": "以多领域应用激发产权数据活力——武汉市产权底板建设的探索与实践",
+          "url": "https://zrzyhgh.wuhan.gov.cn/zwdt/gzdt/202608/t20260821_2837448.shtml",
+          "publicationDate": "2026-08-21",
+          "checkedAt": "2026-10-03",
+          "finding": "Official bureau publication describes an integrated cadastral/property basemap including 120,000 state construction-land parcels, parcel-based survey holdings and a native property-unit-code association. Standardized cross-department services are described; these are not evidence of anonymous APIs.",
+          "evidenceMethod": "official Chinese HTML, reviewed via web reader"
+        },
+        {
+          "title": "不动产登记“一问一答”",
+          "url": "https://zrzyhgh.wuhan.gov.cn/ztzl/yhyshj/yhyshj_bszn/202404/t20240408_2385603.shtml",
+          "publicationDate": "2024-04-08",
+          "checkedAt": "2026-10-03",
+          "finding": "Question six describes logging into Hubei government services, entering Wuhan registration hall, then 我要查 / 地籍图可视化查询 to locate parcels and buildings. No account was used.",
+          "evidenceMethod": "official Chinese HTML, reviewed via web reader"
+        },
+        {
+          "title": "武汉市自然资源和规划局关于“权籍一张图”正式启用的通知",
+          "url": "https://zrzyhgh.wuhan.gov.cn/ztzl/yhyshj/yhyshj_zcsd/202310/t20231018_2282152.shtml",
+          "publicationDate": "2023-10-18 page; activation event 2019-06-13",
+          "checkedAt": "2026-10-03",
+          "finding": "Earlier citywide parcel database and browser query are documented for bureau/government-cloud use. Do not equate internal browser access with a public parcel feed.",
+          "evidenceMethod": "official Chinese HTML, reviewed via web reader"
+        }
+      ],
+      "nextStep": "Reach the current official registration viewer, inspect its public/session access flow and cadastral layer metadata; verify geometry, CRS, permanent native identity and complete viewport paging before an adapter.",
+      "requests": [
+        {
+          "label": "wuhan-onemap",
+          "url": "https://whonemap.zrzyhgh.wuhan.gov.cn/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": null,
+          "error": "<urlopen error timed out>",
+          "elapsedMs": 18599,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        },
+        {
+          "label": "wuhan-registry",
+          "url": "https://www.whrer.com.cn/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": null,
+          "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.whrer.com.cn'. (_ssl.c:1082)>",
+          "elapsedMs": 1834,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        },
+        {
+          "label": "hubei-gov",
+          "url": "https://zwfw.hubei.gov.cn/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": null,
+          "error": "The read operation timed out",
+          "elapsedMs": 20918,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        }
+      ]
+    },
+    {
+      "name": "Chongqing",
+      "nameZh": "重庆",
+      "cadastreExistence": "documented",
+      "publicQuery": "documented_authorized_visual_query_pilot",
+      "anonymousParcelVector": "not_verified",
+      "assessment": "Real cadastral-map visual lookup is documented. The specific 2022 announcement limits the pilot to Liangjiang New Area and rightsholders or authorized natural persons; current expansion and anonymous polygon delivery were not established.",
+      "sources": [
+        {
+          "title": "重庆市规划和自然资源局关于开展不动产登记信息及地籍图可视化查询的公告",
+          "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/zcwj/202205/t20220512_10708940.html",
+          "publicationDate": "2022-05-19 page; signed 2022-04-27",
+          "checkedAt": "2026-10-03",
+          "finding": "Describes electronic-map cadastral queries through 渝快办 by rightsholders or authorized natural persons, initially in Liangjiang New Area. Search-indexed official article supplies text; current web-reader open returned the policy listing.",
+          "evidenceMethod": "official Chinese search-indexed article; open currently returned listing"
+        },
+        {
+          "title": "重庆市不动产登记“一问一答”",
+          "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037887.html",
+          "publicationDate": "2024-03-14",
+          "checkedAt": "2026-10-03",
+          "finding": "Official search-indexed FAQ describes free cadastral-map queries through registration offices or 渝快办 / 不动产综合服务, including a published legacy service entry. Live service URL did not resolve during this check.",
+          "evidenceMethod": "official Chinese search-indexed article; open currently returned FAQ listing"
+        }
+      ],
+      "nextStep": "Resolve the current bureau-linked 渝快办 cadastral entry and its actual identity/session requirements; establish pilot/current geographic scope and whether geometry is a vector response or only a printable map.",
+      "requests": [
+        {
+          "label": "chongqing-service",
+          "url": "http://ykb.cq315house.com/cqwwsq/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": null,
+          "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+          "elapsedMs": 1427,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        },
+        {
+          "label": "chongqing-gov",
+          "url": "https://zwykb.cq.gov.cn/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": null,
+          "error": "<urlopen error timed out>",
+          "elapsedMs": 144806,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets.",
+          "timeoutNote": "Socket timeout did not cap DNS/connection wall time; elapsedMs is actual observed duration."
+        }
+      ]
+    },
+    {
+      "name": "Suzhou",
+      "nameZh": "苏州",
+      "cadastreExistence": "documented",
+      "publicQuery": "documented_app_query_and_real_name_submunicipal_viewer",
+      "anonymousParcelVector": "not_verified",
+      "assessment": "苏易登 online cadastral queries and the Gusu section are documented. Zhangjiagang, a county-level city administered by Suzhou, provides a real-name visual/query/print flow; this does not establish citywide anonymous coverage.",
+      "sources": [
+        {
+          "title": "苏州市自然资源和规划局2022年政府信息公开工作年度报告",
+          "url": "https://www.suzhou.gov.cn/szsrmzf/bmxxgknb/202301/5c74aed1be3545fca978d9b67872aace.shtml",
+          "publicationDate": "2023-01-18",
+          "checkedAt": "2026-10-03",
+          "finding": "Annual report confirms that 苏易登 added online cadastral-map query. Tianditu public basemap services mentioned separately are not cadastral-boundary proof.",
+          "evidenceMethod": "official Chinese HTML, reviewed via web reader"
+        },
+        {
+          "title": "市政府办公室关于表扬2023年度全市政府网站工作先进单位和优秀创新案例的通报",
+          "url": "https://www.suzhou.gov.cn/szsrmzf/zfbgswj/202402/d96691e3160b495290a3b92968042213.shtml",
+          "publicationDate": "2024-02; exact day not extracted",
+          "checkedAt": "2026-10-03",
+          "finding": "Official innovation-case list names 苏易登App-地籍图查询-姑苏区板块, providing a central-city cadastral-query lead.",
+          "evidenceMethod": "official Chinese HTML, reviewed via web reader"
+        },
+        {
+          "title": "利用“线上苏小登”模糊查询不动产基本信息“再升级”",
+          "url": "https://www.zjg.gov.cn/zjg/zffw_zxxx/202410/83a955deb0fc467c80e0ba65c0e57737.shtml",
+          "publicationDate": "2024-10-15",
+          "checkedAt": "2026-10-03",
+          "finding": "Instructions specify Jiangsu government portal, select Zhangjiagang, real-name login, 我要查询 / 地籍图可视化查询; search by location, property-unit number or parcel code and view/print parcel maps. No login was attempted.",
+          "evidenceMethod": "official Chinese HTML, reviewed via web reader"
+        }
+      ],
+      "nextStep": "Inspect the exact catalogue metadata and schema for 常熟市工业大数据平台工业宗地信息, keeping its Changshu scope distinct from central Suzhou. Also resolve the official 苏易登 cadastral viewer for Gusu; establish vector delivery and permanent native keys before viewport streaming.",
+      "requests": [
+        {
+          "label": "suzhou-data",
+          "url": "https://data.suzhou.gov.cn/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": 200,
+          "finalUrl": "https://data.suzhou.gov.cn/",
+          "contentType": "text/html",
+          "bytesRead": 8767,
+          "scripts": [
+            "//szwza.suzhou.gov.cn/dist/aria.js?appid=d236327b732bb79026c213c9582b3af8",
+            "assets/js/chunk-vendors.69cd422f.js",
+            "assets/js/chunk-common.e391e92a.js",
+            "assets/js/index.87b2156a.js"
+          ],
+          "title": [
+            "苏州市公共数据开放平台"
+          ],
+          "elapsedMs": 2855,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        },
+        {
+          "label": "jiangsu-gov",
+          "url": "https://www.jszwfw.gov.cn/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": 200,
+          "finalUrl": "https://www.jszwfw.gov.cn/",
+          "contentType": "text/html; charset=utf-8",
+          "bytesRead": 167151,
+          "scripts": [
+            "/module/jslib/jquery/jquery.js",
+            "/module/jslib/urite/urite.min.js",
+            "/images/11435/jquery-3.5.1.js",
+            "/images/11435/rxbk20240923.js",
+            "/images/11435/jquery.cookie.js",
+            "https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.js",
+            "https://www.jszwfw.gov.cn/script/28/2512240911105923.js",
+            "/script/12/2009091010398361.js",
+            "/script/12/2010230958449574.js",
+            "/script/pagecontrol.js",
+            "/script/web_front.js",
+            "https://www.jszwfw.gov.cn/script/14/2205180959188249.js"
+          ],
+          "title": [
+            "江苏政务服务"
+          ],
+          "elapsedMs": 4535,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        }
+      ],
+      "publicCatalogueInspection": {
+        "scripts": [
+          {
+            "url": "https://data.suzhou.gov.cn/assets/js/chunk-common.e391e92a.js",
+            "exit": 0,
+            "bytes": 2213,
+            "error": "",
+            "paths": []
+          },
+          {
+            "url": "https://data.suzhou.gov.cn/assets/js/index.87b2156a.js",
+            "exit": 0,
+            "bytes": 63443,
+            "error": "",
+            "paths": [
+              "/mainSearch",
+              "/catalog/index",
+              "/search"
+            ]
+          },
+          {
+            "url": "https://data.suzhou.gov.cn/assets/js/chunk-6a1a9880.5bcd1488.js",
+            "exit": 0,
+            "bytes": 5819,
+            "error": ""
+          },
+          {
+            "url": "https://data.suzhou.gov.cn/assets/js/chunk-770e284b.9c10ebcd.js",
+            "exit": 0,
+            "bytes": 50219,
+            "error": ""
+          }
+        ],
+        "searchEndpoint": "https://data.suzhou.gov.cn/dii/catalog/cms/open/getResourcePage",
+        "finding": "Published search code provides POST body resourceName and current/size URL parameters; no parcel-feature service is established by the catalogue search interface itself.",
+        "searchAttempts": [
+          {
+            "url": "https://data.suzhou.gov.cn/dii/catalog/cms/open/getResourcePage?current=1&size=3",
+            "method": "POST",
+            "searchBody": {
+              "resourceCode": "",
+              "openAttribute": "",
+              "resourceName": "地籍",
+              "order": "",
+              "sortColumn": "",
+              "deptId": "",
+              "labelIds": [],
+              "subjectTypeId": "",
+              "industryTypeId": "",
+              "deptTypeId": "",
+              "mountType": ""
+            },
+            "curlExit": 0,
+            "httpStatus": 200,
+            "error": "",
+            "code": 200,
+            "message": "ok",
+            "total": 0,
+            "sampleTitles": [],
+            "returnedRecords": 0
+          },
+          {
+            "url": "https://data.suzhou.gov.cn/dii/catalog/cms/open/getResourcePage?current=1&size=3",
+            "method": "POST",
+            "searchBody": {
+              "resourceCode": "",
+              "openAttribute": "",
+              "resourceName": "宗地",
+              "order": "",
+              "sortColumn": "",
+              "deptId": "",
+              "labelIds": [],
+              "subjectTypeId": "",
+              "industryTypeId": "",
+              "deptTypeId": "",
+              "mountType": ""
+            },
+            "curlExit": 0,
+            "httpStatus": 200,
+            "error": "",
+            "code": 200,
+            "message": "ok",
+            "total": 4,
+            "sampleTitles": [
+              "常熟市工业大数据平台工业宗地信息",
+              "常熟市工业大数据平台工业宗地租赁关系信息",
+              "昆山市年度住宅用地供应计划宗地表"
+            ],
+            "returnedRecords": 3
+          },
+          {
+            "url": "https://data.suzhou.gov.cn/dii/catalog/cms/open/getResourcePage?current=1&size=3",
+            "method": "POST",
+            "searchBody": {
+              "resourceCode": "",
+              "openAttribute": "",
+              "resourceName": "不动产",
+              "order": "",
+              "sortColumn": "",
+              "deptId": "",
+              "labelIds": [],
+              "subjectTypeId": "",
+              "industryTypeId": "",
+              "deptTypeId": "",
+              "mountType": ""
+            },
+            "curlExit": 0,
+            "httpStatus": 200,
+            "error": "",
+            "code": 200,
+            "message": "ok",
+            "total": 6,
+            "sampleTitles": [
+              "吴江区不动产首次登记公告",
+              "苏州市发改委不动产登记收费",
+              "吴江区-不动产首次登记公告"
+            ],
+            "returnedRecords": 3
+          },
+          {
+            "url": "https://data.suzhou.gov.cn/dii/catalog/cms/open/getResourcePage?current=1&size=3",
+            "method": "POST",
+            "searchBody": {
+              "resourceCode": "",
+              "openAttribute": "",
+              "resourceName": "土地",
+              "order": "",
+              "sortColumn": "",
+              "deptId": "",
+              "labelIds": [],
+              "subjectTypeId": "",
+              "industryTypeId": "",
+              "deptTypeId": "",
+              "mountType": ""
+            },
+            "curlExit": 0,
+            "httpStatus": 200,
+            "error": "",
+            "code": 200,
+            "message": "ok",
+            "total": 25,
+            "sampleTitles": [
+              "张家港市经营性用地土地成交结果公示信息",
+              "张家港市工业用地土地出让公告信息",
+              "张家港市经营性用地土地出让公告信息"
+            ],
+            "returnedRecords": 3
+          }
+        ],
+        "assessment": "All four keyword searches returned HTTP/application 200. 地籍 has 0 title matches; 宗地 has 4, 不动产 has 6, 土地 has 25. Only 3 catalogue titles sampled per keyword; industrial-parcel and supply-plan catalogue matches remain candidate records whose geometry/identity/delivery schemas have not been inspected. A bounded keyword search is not proof of absent datasets."
+      }
+    },
+    {
+      "name": "Hangzhou",
+      "nameZh": "杭州",
+      "cadastreExistence": "documented_cadastral_registration_operations",
+      "publicQuery": "current_cadastral_map_entry_not_verified",
+      "anonymousParcelVector": "not_verified",
+      "assessment": "Current official annual report documents cadastral survey/registration data operations and 3D cadastral pilot work. Its full-coverage unified cadastral-database statement appears under future plans, so this audit does not claim that milestone was completed or that an anonymous polygon API exists.",
+      "sources": [
+        {
+          "title": "杭州市不动产登记服务中心（杭州市规划和自然资源档案馆）年度报告",
+          "url": "https://hzbb.hangzhou.gov.cn/col/col1229857599/art/2026/art_a44aca2fe6f24d74bd813645ef837d56.html",
+          "publicationDate": "2026-02-11; reports 2025 operations",
+          "checkedAt": "2026-10-03",
+          "finding": "Completed work includes cadastral-survey review/integration procedures and a 3D cadastral pilot. Section 四、下一步打算 lists construction of the full-coverage unified database as a next step. Official HTML fetched successfully and section context checked.",
+          "evidenceMethod": "official Chinese HTML, direct HTTP 200 and web reader"
+        }
+      ],
+      "unverifiedLead": {
+        "title": "杭州不动产宗地图查询方式",
+        "url": "https://m.hz.bendibao.com/live/84225.shtm",
+        "publicationDate": "2020-04-15",
+        "assessment": "Secondary republication credited to 杭州发布 names WeChat, kiosks and real-name 浙里办 certificate-QR parcel-map lookup. Original municipal publication/current entry not verified; not treated as primary proof."
+      },
+      "nextStep": "Locate the current official 浙里办 / Hangzhou registration cadastral-map entry and original instructions; inspect delivery format, geographic scope and identity requirements. Do not treat future-plan wording as completed coverage.",
+      "requests": [
+        {
+          "label": "hangzhou-bureau",
+          "url": "https://ghzy.hangzhou.gov.cn/",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": null,
+          "error": "<urlopen error _ssl.c:1064: The handshake operation timed out>",
+          "elapsedMs": 18962,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        },
+        {
+          "label": "hangzhou-report",
+          "url": "https://hzbb.hangzhou.gov.cn/col/col1229857599/art/2026/art_a44aca2fe6f24d74bd813645ef837d56.html",
+          "method": "GET",
+          "timeoutSeconds": 18,
+          "httpStatus": 200,
+          "finalUrl": "https://hzbb.hangzhou.gov.cn/col/col1229857599/art/2026/art_a44aca2fe6f24d74bd813645ef837d56.html",
+          "contentType": "text/html; charset=utf-8",
+          "bytesRead": 50487,
+          "scripts": [
+            "/cms_files/default/script/jslib/jquery.js",
+            "/cms_files/default/script/jslib/jquery.cookie.js",
+            "/cms_files/default/script/layui/layui.all.js",
+            "/cms_files/default/script/layui/layer/layer.js",
+            "/script/webglobal.js",
+            "/plugins/libs/require.js",
+            "/plugins/libs/load.js",
+            "/script/webgray.js",
+            "/script/webgray_a44aca2fe6f24d74bd813645ef837d56.js",
+            "/cms_files/jcms1/web3874/site/script/0/2308040917292879.js",
+            "/cms_files/jcms1/web3874/site/script/0/2308040917463804.js",
+            "/cms_files/filemanager/1574914/script/juba/jubascript.js?v=4.5.12.1-ZJSJYH-U35"
+          ],
+          "title": [
+            "杭州市不动产登记服务中心（杭州市规划和自然资源档案馆）年度报告"
+          ],
+          "elapsedMs": 2099,
+          "assessment": "Reachability/access outcome only; not evidence of absent cadastral data or absent datasets."
+        }
+      ]
+    }
+  ]
+}

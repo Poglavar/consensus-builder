@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 2479,
+  "wupCityCode": 2479,
+  "queueRank": 2647,
+  "cityId": "wup2025:2479",
+  "name": "Mongo",
+  "country": "Chad",
+  "countryCode": "TD",
+  "iso2": "TD",
+  "iso3": "TCD",
+  "point": [12.1848936095305, 18.6909978739847],
+  "centerLatLon": [12.1848936095305, 18.6909978739847],
+  "population2025": 223205,
+  "population2025k": 223.205,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "ANATS (Agence Nationale des Titres Sécurisés), Chad national titles agency; no local cadastral service was verified.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mongo Chad cadastral map parcel land registry official",
+        "result": "Search found the official ANATS site and a GeoPDF topographic map reference, but no official Mongo cadastral map, parcel viewer, or public parcel-feature service. The official Chad government portal was also found but did not expose parcel data.",
+        "actualResultUrls": ["https://www.anats.td/", "https://connect.gouv.td/", "https://commons.wikimedia.org/wiki/File:ND_34-13_Mongo,_Chad_(GeoPDF)_-_PCL_Map_Collection_-_nd-34-13-mongo-chad.pdf"]
+      },
+      {
+        "language": "native/local",
+        "query": "Mongo Tchad cadastre parcelle registre foncier site officiel",
+        "result": "French-language search found the official ANATS site, whose current public bundle contains the text reference \"CAU de Mongo Guéra -Guéra\". This identifies a Mongo/Guéra ANATS office reference, but the role is not documented as a cadastral registry or parcel map service and no parcel endpoint or geometry was found.",
+        "actualResultUrls": ["https://www.anats.td/", "https://connect.gouv.td/"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.anats.td/",
+      "operator": "ANATS official national titles agency",
+      "scope": "Chad national secure-titles administration; public site bundle references CAU de Mongo Guéra",
+      "observation": "The site is a JavaScript application. Its current public JavaScript bundle contains the Mongo/Guéra office text, but no cadastral viewer, map service, parcel layer, API endpoint, schema, or downloadable parcel geometry was identified."
+    },
+    {
+      "url": "https://connect.gouv.td/",
+      "operator": "Chad government e-government portal",
+      "scope": "General national government portal",
+      "observation": "The public page did not expose a parcel or cadastral service in the bounded request."
+    },
+    {
+      "url": "https://commons.wikimedia.org/wiki/File:ND_34-13_Mongo,_Chad_(GeoPDF)_-_PCL_Map_Collection_-_nd-34-13-mongo-chad.pdf",
+      "operator": "Wikimedia Commons / PCL Map Collection",
+      "scope": "General 1:250,000 map sheet covering Mongo",
+      "observation": "Relevant map reference only; not a cadastral parcel source and not retained."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.anats.td/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Returned the official JavaScript application shell. No parcel data was present in the HTML."
+    },
+    {
+      "url": "https://www.anats.td/static/js/main.257a64ae.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Followed the current application bundle. Public text included CAU de Mongo Guéra; bounded inspection found no cadastral viewer/API URL or parcel feature request. No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, or unsafe field request was attempted."
+    },
+    {
+      "url": "https://connect.gouv.td/",
+      "method": "GET",
+      "status": "HTTP 200 / no parcel payload observed",
+      "summary": "General government portal shell; no public parcel schema, service URL, or geometry was obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "ANATS national titles-agency lead with a Mongo/Guéra office reference.",
+    "verifiedOpenScope": "Official agency and office-reference metadata only; no cadastral parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Unclear: the ANATS Mongo/Guéra reference is not sufficiently documented as a local cadastral registry, cadastre map, or parcel procedure."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "No geometry retained; no safe native parcel feature was obtained.",
+    "crs": "Not observed.",
+    "identityReadiness": "Not assessed because no parcel feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No parcel attributes were requested; no owner, address, titleholder, contact, tax, account, or personal fields were requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify a real public cadastral service or safe public parcel geometry source, native identity semantics, CRS/axis handling, coverage, and anonymous query behavior before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [12.1848936095305,18.6909978739847] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss, map-extent miss, timeout, login wall, or unusable JavaScript UI is evidence of citywide cadastral absence.",
+    "No parcel geometry, native identity, schema, or CRS response was obtained; no GeoJSON sample was retained.",
+    "Packet completion is research evidence only and is not source integration or admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and composite-key provenance in city/service-review metadata.",
+  "nextStep": "Serial reviewer should inspect any future ANATS or Chad cadastral viewer/API independently and qualify local scope, native ID, CRS, anonymous geometry behavior, and coverage before adapter consideration."
+}

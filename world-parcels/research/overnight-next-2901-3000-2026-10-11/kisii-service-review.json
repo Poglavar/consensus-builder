@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-852-kisii.json",
+  "cityCode": 852,
+  "queueRank": 2983,
+  "name": "Kisii",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "reviewStatus": "complete_research_held",
+  "queryAndRequestSummary": "Separate English and Swahili first-party discovery searches identified the official Kisii County land department, the State Department for Lands Kisii lands office directory, Ardhisasa and the Swahili service charter. Official pages establish local/national custodianship and procedures but expose no anonymous parcel ID+geometry service. The only bounded public feature query found was a non-government WWF Kenya ArcGIS layer whose extent excludes Kisii; its empty response is an extent miss. No GeoJSON sample was created.",
+  "attemptedRoutes": [
+    {"url": "https://kisii.go.ke/departments/lands-physical-planning-housing-and-urban-development/", "method": "GET/search", "outcome": "official local department; land records, registration, survey and mapping functions; no public parcel API"},
+    {"url": "https://www.lands.go.ke/land-registries", "method": "GET/search", "outcome": "official directory lists Kisii lands office and survey/mapping services; no public parcel API"},
+    {"url": "https://ardhisasa.lands.go.ke/", "method": "GET", "outcome": "official land-information portal; JavaScript/config inspected; no anonymous parcel response"},
+    {"url": "https://ardhisasa.lands.go.ke/home/faqs", "method": "GET", "outcome": "official FAQ defines cadastral map and parcel concepts; no anonymous geometry"},
+    {"url": "https://ardhisasa.lands.go.ke/home/terms-and-conditions", "method": "GET", "outcome": "official terms retrieved; no public parcel schema or geometry"},
+    {"url": "https://lands.go.ke/sites/default/files/2025-04/Lands%20Swahili%20Service%20Charter.pdf", "method": "GET/search", "outcome": "official Swahili charter describes RIM/mutation maps and searches; no parcel API"},
+    {"url": "https://ardhisasa-api.lands.go.ke/", "method": "GET", "outcome": "API host referenced by current JS returned HTTP 404 at root; no endpoint guessed"},
+    {"url": "https://wwfke-giscoe.wwfkenya.org/arcgis/rest/services/General/ParcelAreas/MapServer", "method": "GET", "outcome": "public non-government parcel-area metadata: WGS84/4326, extent outside Kisii"},
+    {"url": "https://wwfke-giscoe.wwfkenya.org/arcgis/rest/services/General/ParcelAreas/MapServer/1/query?f=geojson&where=1%3D1&geometry=-0.670990402707098%2C34.7615978139198&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FID%2COID_%2CName%2CArea_Ha%2CArea_Acre&returnGeometry=true", "method": "GET", "outcome": "empty FeatureCollection; extent miss, not evidence of Kisii parcel absence"}
+  ],
+  "scopeLimits": [
+    "The exact WUP point [-0.670990402707098, 34.7615978139198] was preserved in latitude/longitude order and never shifted.",
+    "Local and national custodian evidence does not demonstrate public parcel geometry, complete city coverage, currentness or legal survey status.",
+    "No retained GeoJSON sample exists; no unchanged native geometry from Kisii was available anonymously.",
+    "Ardhisasa authentication/publication limits and the non-government layer's geographic extent are access and coverage limitations, not evidence of citywide parcel absence."
+  ],
+  "nativeFieldMapping": {
+    "canonicalIdentity": null,
+    "alsoObserved": ["WWF Kenya service metadata fields FID, OID_, Name, Area_Ha, Area_Acre; not retained in GeoJSON"],
+    "retainedGeoJSONProperty": null,
+    "compositeKeyProvenance": "No Kisii native parcel identity was observed in a safe anonymous response; no synthetic identity was created."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full native parcel geometry", "geometry CRS", "source service/layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "registryFound": true,
+  "uncertainty": "First-party evidence establishes Kisii County and State Department land/survey custodianship. Public parcel integration is not admitted because Ardhisasa did not provide an anonymous safe ID+geometry response and the only queried public feature layer does not cover Kisii. No credentials, private tokens, CAPTCHA/Cloudflare bypass, TLS exception or unsafe field request was used."
+}

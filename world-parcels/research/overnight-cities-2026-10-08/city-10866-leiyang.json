@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [],
+  "name": "Leiyang",
+  "country": "China",
+  "countryCode": "CN",
+  "registryFound": true,
+  "registryBasis": "Leiyang Natural Resources Bureau official pages document unified real-estate registration and the local natural-resources office’s responsibility for land, surveying and registration. Public registration lookup is restricted to eligible right-holders, interested parties or authorities; no anonymous parcel-polygon service was verified.",
+  "registryEvidenceUrls": [
+    "https://www.leiyang.gov.cn/lyszrzyj/",
+    "https://www.leiyang.gov.cn/lyszrzyj/zwgk/gzjg/jgxx/20250217/i3582564.html",
+    "https://www.leiyang.gov.cn/lyszrzyj/rdzt/bdctydj/20200216/i1334379.html",
+    "https://www.leiyang.gov.cn/xxgk/bmxxgkml/szfgzbm/szrzyj/yhyshj/djcclc/20211122/i2542715.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10866,
+  "cityId": "wup2025:10866",
+  "centerLatLon": [
+    26.4161666322804,
+    112.834648396584
+  ],
+  "point": [
+    26.4161666322804,
+    112.834648396584
+  ],
+  "rank": 819,
+  "queueRank": 819,
+  "population2025": 662696,
+  "population2025k": 662.696,
+  "populationPlausibility2025": "Moderate",
+  "scopeLimits": "No full polygon is retained. Registry or map-service evidence is a research lead only; it does not establish citywide completeness or geometry.",
+  "remainingUncertainty": "No anonymous public full-polygon geometry endpoint or point result was verified. Legal registry activity is documented, but public geometry coverage and legal boundary semantics are unverified.",
+  "nextStep": "If further review is warranted, identify a public city/municipal parcel-map service that supports anonymous full geometry; do not query rights-holder records.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "耒阳 不动产登记 地籍地图 湖南 官方",
+        "result": "Official Leiyang Natural Resources Bureau and registration pages confirm local real-estate registration; no anonymous polygon viewer was found.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.leiyang.gov.cn/lyszrzyj/",
+          "https://www.leiyang.gov.cn/lyszrzyj/zwgk/gzjg/jgxx/20250217/i3582564.html",
+          "https://www.leiyang.gov.cn/lyszrzyj/rdzt/bdctydj/20200216/i1334379.html",
+          "https://www.leiyang.gov.cn/xxgk/bmxxgkml/szfgzbm/szrzyj/yhyshj/djcclc/20211122/i2542715.html"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "耒阳市自然资源局 地籍调查 不动产登记 查询 公示",
+        "result": "Official city bureau pages document registration work and access rules; record lookup is restricted by lawful-interest categories.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.leiyang.gov.cn/lyszrzyj/",
+          "https://www.leiyang.gov.cn/lyszrzyj/zwgk/gzjg/jgxx/20250217/i3582564.html",
+          "https://www.leiyang.gov.cn/lyszrzyj/rdzt/bdctydj/20200216/i1334379.html",
+          "https://www.leiyang.gov.cn/xxgk/bmxxgkml/szfgzbm/szrzyj/yhyshj/djcclc/20211122/i2542715.html"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "English",
+        "query": "Leiyang Hunan cadastral land registration public map official",
+        "result": "Official local natural-resources/registration pages were reviewed; no public full-polygon route was identified.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.leiyang.gov.cn/lyszrzyj/",
+          "https://www.leiyang.gov.cn/lyszrzyj/zwgk/gzjg/jgxx/20250217/i3582564.html",
+          "https://www.leiyang.gov.cn/lyszrzyj/rdzt/bdctydj/20200216/i1334379.html",
+          "https://www.leiyang.gov.cn/xxgk/bmxxgkml/szfgzbm/szrzyj/yhyshj/djcclc/20211122/i2542715.html"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.leiyang.gov.cn/lyszrzyj/",
+        "observation": "Official Leiyang Natural Resources Bureau site shows current registration notices and local department activity."
+      },
+      {
+        "url": "https://www.leiyang.gov.cn/lyszrzyj/zwgk/gzjg/jgxx/20250217/i3582564.html",
+        "observation": "Official bureau profile says the bureau manages land, surveying and real-estate registration for the city."
+      },
+      {
+        "url": "https://www.leiyang.gov.cn/lyszrzyj/rdzt/bdctydj/20200216/i1334379.html",
+        "observation": "Official local policy describes lawful registration-information queries for rights holders, interested parties and government authorities; it is not an anonymous public parcel map."
+      },
+      {
+        "url": "https://www.leiyang.gov.cn/xxgk/bmxxgkml/szfgzbm/szrzyj/yhyshj/djcclc/20211122/i2542715.html",
+        "observation": "Official registration file-management rules identify cadastral/registration materials as retained records."
+      }
+    ]
+  },
+  "source": {
+    "name": "Official city/national cadastral and land-record sources",
+    "urls": [
+      "https://www.leiyang.gov.cn/lyszrzyj/",
+      "https://www.leiyang.gov.cn/lyszrzyj/zwgk/gzjg/jgxx/20250217/i3582564.html",
+      "https://www.leiyang.gov.cn/lyszrzyj/rdzt/bdctydj/20200216/i1334379.html",
+      "https://www.leiyang.gov.cn/xxgk/bmxxgkml/szfgzbm/szrzyj/yhyshj/djcclc/20211122/i2542715.html"
+    ],
+    "operator": "Leiyang Natural Resources Bureau",
+    "url": "https://www.leiyang.gov.cn/lyszrzyj/",
+    "serviceType": "Official land-record, cadastral viewer or parcel-map candidate",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official local registry/map service evidence reviewed; no full geometry response verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Leiyang Natural Resources Bureau official pages document unified real-estate registration and the local natural-resources office’s responsibility for land, surveying and registration. Public registration lookup is restricted to eligible right-holders, interested parties or authorities; no anonymous parcel-polygon service was verified.",
+    "verifiedOpenScope": "No public full-polygon coverage verified at exact WUP point. This is source evidence/candidate status only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No anonymous full-polygon/native-key response was verified at the unchanged WUP locator; the public map/registry lead remains unqualified for runtime."
+  },
+  "resultCategory": "city_registry_activity_no_public_geometry",
+  "geometryEvidence": "No public parcel geometry was verified. The official city registration-information workflow is eligibility-restricted; no owner/property record was queried.",
+  "adapterReady": false,
+  "rootPrimarySupplement": "Primary indexed bureau organization page dated 17 February 2025 explicitly assigns local land administration, surveying and property registration. A separate HTTP412 direct response does not establish absent services.",
+  "rootPrimaryReadback": {
+    "url": "https://www.leiyang.gov.cn/lyszrzyj/",
+    "fetch": "error",
+    "reason": "HTTP Error 412: Precondition Failed"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

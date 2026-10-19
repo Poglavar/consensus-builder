@@ -1,0 +1,184 @@
+{
+  "name": "Sitapur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1183,
+  "point": [
+    27.5635472049459,
+    80.6900013205048
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sitapur official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154",
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/154"
+        ],
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Hindi",
+        "query": "सीतापुर भू नक्शा खसरा भूलेख कैडस्ट्रल मानचित्र",
+        "result": "Official Uttar Pradesh Bhulekh geo-dashboard lists tehsils and digitized cadastral map sheets for Sitapur; official revenue portal describes village plot maps. Exact village-at-point and full geometry were not established.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154",
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/154"
+        ],
+        "method": "Separate Hindi-language discovery followed by first-party source review.",
+        "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154",
+        "operator": "Uttar Pradesh Revenue Department / Board of Revenue",
+        "scope": "Official cadastral map digitization and land-record portals exist for Sitapur district; the map service requires tehsil/village selection. No plot ID or owner lookup was attempted."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/",
+        "operator": "Uttar Pradesh Revenue Department / Board of Revenue",
+        "scope": "Official cadastral map digitization and land-record portals exist for Sitapur district; the map service requires tehsil/village selection. No plot ID or owner lookup was attempted."
+      },
+      {
+        "url": "https://bor.up.nic.in/",
+        "operator": "Uttar Pradesh Revenue Department / Board of Revenue",
+        "scope": "Official cadastral map digitization and land-record portals exist for Sitapur district; the map service requires tehsil/village selection. No plot ID or owner lookup was attempted."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/154",
+        "operator": "Uttar Pradesh Revenue Department / Board of Revenue",
+        "scope": "Official cadastral map digitization and land-record portals exist for Sitapur district; the map service requires tehsil/village selection. No plot ID or owner lookup was attempted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: this exact WUP 2025 code was absent from existing city/service packets and prior-attempt entries; only pending-roster and cohort-ledger rows matched."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Uttar Pradesh Revenue Department / Board of Revenue",
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154",
+    "operator": "Uttar Pradesh Revenue Department / Board of Revenue",
+    "serviceType": "Official registry, map or cadastral source reviewed; no safe source-native full parcel polygon was retained at the exact unchanged WUP point.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry, dataset scope and runtime readiness are assessed separately."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Uttar Pradesh digitization dashboard explicitly identifies Sitapur district, Sitapur tehsil and cadastral map-sheet georeferencing. This is local cadastral custody evidence, not proof of public vector completeness.",
+    "verifiedOpenScope": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+  "remainingUncertainty": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence.",
+  "nextStep": "Continue bounded geographic selector/extent discovery and actual native geometry readback, including nearby city coverage; qualify complete spatial and native-ID semantics before runtime admission.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9595,
+  "cityId": "wup2025:9595",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    27.5635472049459,
+    80.6900013205048
+  ],
+  "population2025k": 469.75,
+  "populationUnit": "persons",
+  "queueRank": 1183,
+  "population2025": 469750,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Uttar Pradesh digitization dashboard explicitly identifies Sitapur district, Sitapur tehsil and cadastral map-sheet georeferencing. This is local cadastral custody evidence, not proof of public vector completeness.",
+  "registryEvidenceUrls": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154&tehsilCode=00804",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154",
+    "https://upbhulekh.gov.in/",
+    "https://bor.up.nic.in/",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/154"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Anonymous source-native full parcel polygons with stable IDs remain unverified within the checked source/selector scope. Empty results at the WUP point are not an eligibility gate and do not establish citywide parcel absence."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T09:39:24.736128+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:39:24.736128+00:00",
+    "decision": "Paired discovery and first-party local custody reviewed; anonymous geometry remains unverified.",
+    "primarySource": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154&tehsilCode=00804",
+    "observation": "The two city-named selectors report hasData=false; the checked selector has a zero extent and its exact-point identify is empty. Other named villages in the tehsil have digitized maps; their coverage is not ruled out.",
+    "nativePolygonEndpoint": "POST /v1/khasramap/plot; frontend reads wkbGeometry and kide; no live verified parcel-ID readback established.",
+    "endpointFollowthrough": "up-bhunaksha-public-api-followthrough.json",
+    "independentChecks": "root-up-api-recheck.json",
+    "uiLoginAndTermsAreNotGeometryGates": true,
+    "wupPointIsNotEligibilityGate": true,
+    "noCitywideAbsenceAsserted": true
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9595,
+      "stage": "city-extent",
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "requestFields": {
+        "gisLevels": "154,00804,137657"
+      },
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 104,
+      "sha256": "8d7b8cc37c936a83da60e84aa899dd6b9df08e21de109cb7609f014d2fc1780d",
+      "checkedAt": "2026-10-09T09:38:25.600235+00:00",
+      "responseType": "dict",
+      "responseKeys": [
+        "xmin",
+        "ymin",
+        "xmax",
+        "ymax",
+        "attribution",
+        "gisCode"
+      ],
+      "extent": {
+        "xmin": 0.0,
+        "ymin": 0.0,
+        "xmax": 0.0,
+        "ymax": 0.0,
+        "gisCode": "15400804137657"
+      }
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=154&tehsilCode=00804",
+      "observation": "The official Uttar Pradesh digitization dashboard explicitly identifies Sitapur district, Sitapur tehsil and cadastral map-sheet georeferencing. This is local cadastral custody evidence, not proof of public vector completeness.",
+      "method": "Root review of indexed primary text and independent anonymous API requests"
+    }
+  ],
+  "integratedAt": "2026-10-09T09:39:24.896674+00:00"
+}

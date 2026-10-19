@@ -1,0 +1,81 @@
+{
+  "cityCode": 11407,
+  "queueRank": 1337,
+  "name": "Giridih",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [24.1787822217264, 86.3067976525148],
+  "population2025": 420525,
+  "population2025k": 420.525,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "The official Giridih district land-records page establishes a local government service context and links to Jharkhand's JharBhoomi land-record route. Official NIC Bhu-Naksha implementation material links Jharkhand's cadastral viewer. Direct anonymous access to the Jharkhand viewer hosts timed out before a current map/API response could be inspected, so local parcel geometry and a usable native identity were not independently evidenced; registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Giridih cadastral map parcel land records official Jharkhand",
+        "result": "Found the official District Giridih land-records page, the official Jharkhand GIS gateway, the official NIC Bhu-Naksha implementation directory, and the official DILRMP district computerization status page. The district page links JharBhoomi; the implementation directory links Jharkhand's Bhu-Naksha viewer.",
+        "actualResultUrls": [
+          "https://giridih.nic.in/service/land-records/",
+          "https://gis.jharkhand.gov.in/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+          "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/20"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "गिरिडीह जिला झारखंड आधिकारिक भू नक्शा भूमि अभिलेख प्लॉट मानचित्र",
+        "result": "Found official Jharkhand/Giridih land-record and Bhu-Naksha service routes in the Hindi-language discovery context. The accessible official pages establish the government service route but did not expose a safe parcel identity, schema, CRS, or parcel geometry.",
+        "actualResultUrls": [
+          "https://giridih.nic.in/service/land-records/",
+          "https://jharbhoomi.jharkhand.gov.in/",
+          "https://jharbhunaksha.jharkhand.gov.in/",
+          "https://jharsewa.jharkhand.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://giridih.nic.in/service/land-records/",
+      "role": "District Giridih, Government of Jharkhand official land-records service page",
+      "observation": "The page loaded over HTTPS and links citizens to the JharBhoomi land-record service; it identifies the District Revenue Office in Giridih. It does not provide parcel-vector geometry or a safe parcel identity in the page response."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "role": "Government/NIC Bhu-Naksha implementation directory",
+      "observation": "The directory loaded and lists Jharkhand with the public viewer route https://jharbhunaksha.jharkhand.gov.in/. It is an implementation directory, not a parcel feature response."
+    },
+    {
+      "url": "https://dilrmp.gov.in/physicalProgressReports/clr/district-level/20",
+      "role": "Department of Land Resources official district computerization report",
+      "observation": "The report lists Giridih district and computerization indicators, including the linked-cadastral-map status fields. It does not expose parcel geometries or a city query endpoint."
+    },
+    {
+      "url": "https://gis.jharkhand.gov.in/",
+      "role": "Jharkhand Space Applications Center official GIS gateway",
+      "observation": "The gateway advertises state and district GIS applications, including district-specific portals. No Giridih parcel layer response was obtained in the bounded direct requests."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous response containing a safe native parcel identifier and full polygon was obtained. The exact WUP point was preserved and not shifted. Viewer connection timeout is not evidence of citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Giridih district official land-record service and Jharkhand Bhu-Naksha/GIS public routes.",
+    "verifiedOpenScope": "Official service existence and viewer linkage were verified; current viewer JavaScript/configuration, API schema, CRS, native identity, exact-point containment, and citywide open parcel coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

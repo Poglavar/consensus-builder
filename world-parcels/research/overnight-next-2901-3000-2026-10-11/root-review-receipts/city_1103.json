@@ -1,0 +1,47 @@
+{
+  "taskId": "city:1103",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-1103-bhuj.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/bhuj-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:40:08Z",
+  "reason": "Official Kachchh district pages identify Bhuj City Survey and its property-card functions, supporting registryFound=true. English and Gujarati searches are recorded. No anonymous native parcel ID plus full polygon was obtained; Gujarat portal timeouts are access uncertainty, not citywide absence.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "observedBoundedPolygonCount": 0,
+  "sourceChecks": [
+    {
+      "url": "https://kachchh.nic.in/superintendent-land-records/",
+      "observation": "Root web read confirms City Survey Superintendent Office, Bhuj, listed as a subordinate land-record office."
+    },
+    {
+      "url": "https://kachchh.nic.in/city-survey/",
+      "observation": "Root web read confirms City Survey Office Bhuj and property-card functions."
+    }
+  ],
+  "identityCheck": {
+    "wup2025ArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueAndPacketMatch": true,
+    "fields": [
+      "cityCode",
+      "rank",
+      "country",
+      "point",
+      "populationPersons"
+    ]
+  },
+  "bilingualSearchesRecorded": true,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "integration": "not_admitted"
+}

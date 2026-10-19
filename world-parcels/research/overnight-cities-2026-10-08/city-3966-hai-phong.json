@@ -1,0 +1,99 @@
+{
+  "name": "Hải Phòng",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "rank": 508,
+  "point": [
+    20.8632897069752,
+    106.674000445232
+  ],
+  "population2025": 1015494,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "This record covers source discovery only. The WUP point is a settlement centroid, not a parcel identity or municipal boundary. No full parcel geometry, owner data, address data, or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Hải Phòng IOC land-information dashboard reports city-wide land information, including attribute and spatial parcel counts, establishing local cadastral/land-information activity. The dashboard reports aggregate statistics rather than parcel features.",
+  "resultCategory": "city_land_information_system_no_public_parcel_geometry_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Hai Phong official cadastral land parcel map GIS land information system",
+        "scope": "Find city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official city land-information dashboard was identified; it presents aggregate city and commune statistics, not parcel vectors. No public parcel feature service was verified.",
+        "actualResultUrls": [
+          "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+          "https://quyhoach.haiphong.gov.vn/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Hải Phòng hệ thống thông tin đất đai bản đồ địa chính thửa đất cổng dữ liệu chính thức",
+        "scope": "Find city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official IOC land-information dashboard shows 894,767 attribute parcels and 548,046 spatial parcels as aggregate measures (updated 2026-10-06); it provides no public parcel geometry response. The planning portal is not evidence of cadastral features.",
+        "actualResultUrls": [
+          "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+          "https://quyhoach.haiphong.gov.vn/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+        "httpStatus": 200,
+        "observation": "Official Hải Phòng IOC land-information dashboard; current page reports city-wide aggregate attribute/spatial parcel counts and commune-level statistics, not downloadable parcel features."
+      },
+      {
+        "url": "https://quyhoach.haiphong.gov.vn/",
+        "httpStatus": 200,
+        "observation": "Official city planning-map portal reviewed as context; layers were not verified as a city cadastral parcel feature service."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+      "apiBase": null,
+      "observedClientRoutes": [],
+      "notes": "The official land-information portal is a statistics dashboard with aggregate measures. No public vector endpoint or schema for individual cadastral parcels was identified."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CITY-VN-3966-CADASTRAL-RESEARCH",
+    "name": "Hải Phòng city-local cadastral/land-information evidence",
+    "url": "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+    "operator": null,
+    "serviceType": "City-local cadastral/land-information evidence; anonymous full parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel feature response was retained; no native parcel identifier was validated."
+  },
+  "wupCityCode": 3966,
+  "cityId": "wup2025:3966",
+  "queueRank": 508,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    20.8632897069752,
+    106.674000445232
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The official IOC land-information dashboard publishes aggregate parcel statistics, not vector features. The separate planning portal was not verified as a cadastral parcel service. No full parcel geometry was retained.",
+  "remainingUncertainty": "Whether a separate public parcel-vector endpoint exists and what its feature schema, spatial coverage and terms allow remain unverified.",
+  "registryEvidenceUrls": [
+    "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+    "https://quyhoach.haiphong.gov.vn/"
+  ],
+  "rootReviewedAt": "2026-10-09T01:06:43.045826+00:00"
+}

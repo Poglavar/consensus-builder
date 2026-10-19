@@ -1,0 +1,84 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "country": "United States of America",
+ "checkedAt": "2026-09-29",
+ "status": "subnational_only",
+ "cadastreAuthority": "No national parcel cadastre. Parcels are held by ~3,000 county assessors/recorders; some states publish statewide layers. Federal BLM publishes the National PLSS CadNSDI (survey township/section/quarter-section grid, not tax/ownership parcels).",
+ "portalsFound": [
+  {
+   "url": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1",
+   "observation": "North Carolina statewide parcel ArcGIS FeatureServer (NC OneMap); anonymous query worked."
+  },
+  {
+   "url": "https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer",
+   "observation": "BLM national PLSS CadNSDI ArcGIS MapServer (federal, nationwide PLSS survey polygons; not property parcels)."
+  },
+  {
+   "url": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7",
+   "observation": "Cook County IL parcels (Socrata), from chicago.json."
+  },
+  {
+   "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer",
+   "observation": "DC tax lots (from washington-dc.json); NYC and Los Angeles also verified in city files."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1/query?geometry=-78.6389,35.7796,-78.6375,35.7806&...&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 parcel polygons, Raleigh NC; owner/mailing fields redacted in saved file"
+  },
+  {
+   "url": "https://gis.blm.gov/arcgis/rest/services/Cadastral/BLM_Natl_PLSS_CadNSDI/MapServer/2/query?geometry=-105.0,39.7,-104.99,39.71&...&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "2 PLSS first-division polygons near Denver CO; survey grid, not property parcels"
+  },
+  {
+   "url": "https://gis.vermont.gov/arcgis/rest/services/EmergencyE911_VCGI/PARCELS_STATEWIDE/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy denied CONNECT (org policy)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "us-nc-onemap-parcels",
+  "requestUrl": "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -78.6389,
+   35.7796,
+   -78.6375,
+   35.7806
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "parno",
+  "responseFile": "US-nc-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "North Carolina (state-level source; not national)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "No national parcel layer; state/county sources only",
+  "regionsVerified": [
+   "North Carolina (statewide layer)",
+   "Cook County IL",
+   "District of Columbia",
+   "New York City",
+   "Los Angeles County (see city files)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Federal BLM PLSS is nationwide but is a survey grid; a national property-parcel cadastre does not exist publicly (commercial aggregators are paid). Licence terms of NC data not reviewed. Owner fields exist in the NC source and were redacted.",
+ "nextStep": "Catalogue statewide parcel services state by state (e.g. via state GIS clearinghouses); review terms."
+}

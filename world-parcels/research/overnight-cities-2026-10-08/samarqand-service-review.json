@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2427-samarqand.json",
+  "purpose": "City-specific registry and public parcel geometry source review for the ranked WUP settlement point.",
+  "scopeLimits": "The national NGIS portal presents terms/offer acceptance, which was not submitted. No city parcel layer or exact-point geometry was verified.",
+  "assessment": "Official local registry office evidence found, but no anonymous city parcel geometry was verified.",
+  "registryAssessment": "The official regional governor portal and State Cadastre Chamber list the Samarqand regional cadastral office at an address in Samarqand city. This establishes a local office serving the region; it does not prove WUP-point vector coverage.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Samarqand official cadastral parcel map land registry GIS cadastre agency Samarqand city",
+      "scope": "Find a city-scope registry office and anonymous parcel geometry service.",
+      "result": "The official State Cadastre Chamber and regional governor pages list the Samarqand regional office at an address in Samarqand city. The national NGIS portal is official and references cadastral lookup, but its visible offer/terms acceptance was not submitted; no anonymous parcel feature layer or city-point geometry was verified.",
+      "actualResultUrls": [
+        "https://samarkand.uz/regional_government/regional_departments",
+        "https://uzdkp.uz/",
+        "https://open.ngis.uz/"
+      ],
+      "executionMethod": "Separate English search, official regional-office listings, and static/public portal inspection without accepting terms or submitting a query."
+    },
+    {
+      "language": "Uzbek",
+      "query": "Samarqand kadastr xarita yer uchastkasi davlat kadastrlari palatasi rasmiy",
+      "scope": "Samarqand shahridagi kadastr idorasi va ochiq yer uchastkasi xaritasini aniqlash.",
+      "result": "Rasmiy viloyat hokimligi va Davlat kadastrlari palatasi sahifalarida Samarqand shahridagi viloyat boshqarmasi ko‘rsatilgan. Milliy NGIS portali topildi, biroq shartlar oynasi qabul qilinmadi; anonim vektor qatlam yoki WUP nuqtasidagi geometriya tasdiqlanmadi.",
+      "actualResultUrls": [
+        "https://samarkand.uz/regional_government/regional_departments",
+        "https://samarkand.uz/uz/opendata/nazorat-idoralar-reestri",
+        "https://uzdkp.uz/",
+        "https://open.ngis.uz/"
+      ],
+      "executionMethod": "O‘zbek tilidagi alohida qidiruv, rasmiy hududiy ro‘yxatlar va shartlarga rozilik bermasdan ochiq portal manbalarini tekshirish."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://samarkand.uz/regional_government/regional_departments",
+      "method": "Official source review",
+      "observation": "Official regional listing identifies Samarqand’s local cadastral office."
+    },
+    {
+      "url": "https://samarkand.uz/uz/opendata/nazorat-idoralar-reestri",
+      "method": "Official source review",
+      "observation": "Official regional listing identifies Samarqand’s local cadastral office."
+    },
+    {
+      "url": "https://uzdkp.uz/",
+      "method": "Official source review",
+      "observation": "Official regional listing identifies Samarqand’s local cadastral office."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "Official source review",
+      "observation": "Official portal is branded as the national geospatial portal; its terms/offer gate was not accepted and no layer request was made."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "searchedOfficialSources": [
+      "https://samarkand.uz/regional_government/regional_departments",
+      "https://samarkand.uz/uz/opendata/nazorat-idoralar-reestri",
+      "https://uzdkp.uz/",
+      "https://open.ngis.uz/"
+    ],
+    "publicViewerOrLayer": "No city-scoped anonymous parcel geometry endpoint confirmed.",
+    "wupPointQuery": "Not performed; no usable public parcel feature layer was identified.",
+    "geometryRetained": false
+  },
+  "geometryDecision": "No full public parcel geometry was verified or retained. Local registry-office evidence is not evidence of anonymous vector coverage.",
+  "rootTechnicalAssessment": "No city-scoped public parcel layer, safe field schema or full geometry response was verified in the national NGIS candidate. The public consent notice is informational and is not an automatic eligibility gate."
+}

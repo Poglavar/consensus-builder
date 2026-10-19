@@ -1,0 +1,53 @@
+{
+ "kind": "country",
+ "key": "ST",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8; Accept-Language: pt-ST,pt;q=0.9,en;q=0.8 (cookie jar kept via curl -b/-c)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gov.st/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/html",
+   "assessment": "redirects to https://gov.st/ which returns a 108-byte 503 page"
+  },
+  {
+   "url": "http://gov.st/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/html",
+   "assessment": "same 503"
+  },
+  {
+   "url": "http://www.gov.st:9001/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.dgrn.gov.st/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (HTTP status 0 / CONNECT 502)"
+  },
+  {
+   "url": "https://www.ine.st/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "statistics institute site; no cadastre content seen"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "Not suspected: server answers but returns 503 (upstream down).",
+ "notes": "Previous 307 to :9001 now a 503 at gov.st; still no cadastre portal identified. Browser headers did not change outcome.",
+ "nextStep": "Retry later; search AfDB/World Bank cadastre project pages for Sao Tome."
+}

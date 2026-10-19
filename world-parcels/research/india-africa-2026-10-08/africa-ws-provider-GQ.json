@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "GQ",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "National/municipal cadastral discovery",
+    "operator": "Unknown",
+    "scope": "Bata only; Spanish search did not surface a queryable parcel feed",
+    "endpoint": null,
+    "geometry": "No parcel service located",
+    "access": "No endpoint queried",
+    "assessment": "Unresolved; no negative countrywide claim."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "French (Latin)",
+      "exactQueries": [
+        "\"Bata\" Guinea Ecuatorial catastro parcelas geoportal SIG",
+        "\"Akakopé\" Togo cadastre parcelles géoportail SIG",
+        "\"Saint-Louis\" Sénégal \"parcelles cadastrales\" cadastre SIG",
+        "\"Dakar\" Sénégal \"parcelles cadastrales\" géoportail cadastre",
+        "\"Abidjan\" \"parcelles cadastrales\" géoportail SIG Côte d'Ivoire cadastre",
+        "\"Ouagadougou\" \"parcelles cadastrales\" géoportail SIG cadastre Burkina Faso",
+        "\"Siguiri\" \"cadastre\" parcelles SIG Guinée portail géographique",
+        "\"Coyah\" \"cadastre\" parcelles SIG Guinée Conakry"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

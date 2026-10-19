@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 2,
+  "cityCode": 5829,
+  "wupCityCode": 5829,
+  "queueRank": 2607,
+  "cityId": "wup2025:5829",
+  "name": "Koriyama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso2": "JP",
+  "iso3": "JPN",
+  "point": [37.3960553759834, 140.36812389778],
+  "centerLatLon": [37.3960553759834, 140.36812389778],
+  "population2025": 225981,
+  "population2025k": 225.981,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": true,
+  "sampleFile": "koriyama-sample.geojson",
+  "sample": {
+    "file": "koriyama-sample.geojson",
+    "featureCount": 3,
+    "nativeIdentity": "featureid",
+    "crs": "undeclared by source response"
+  },
+  "targetGeometryEvidence": "three full polygons from official public viewer layer",
+  "nativeIdReadiness": "observed_featureid; CRS declaration absent",
+  "sourceIds": ["12170901", "12170902", "12170903"],
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Koriyama City official cadastral map parcel GIS parcel Japan",
+        "result": "Found Koriyama City official GIS guidance and its public SonicWeb viewer. The official viewer advertises a 地番参考図 (parcel-number reference map) based on cadastral maps and aerial photography.",
+        "actualResultUrls": ["https://www.city.koriyama.lg.jp/soshiki/22/1161.html", "https://www.sonicweb-asp.jp/koriyama2/"]
+      },
+      {
+        "language": "Japanese",
+        "query": "郡山市 地番参考図 地籍図 GIS 公式 筆界",
+        "result": "郡山市公式GISの地番参考図を確認。公式viewer設定に地番参考図テーマと筆界 feature class 1021(th_18) があり、匿名APIからfeatureidとポリゴンを取得できた。",
+        "actualResultUrls": ["https://www.city.koriyama.lg.jp/soshiki/22/1161.html", "https://www.sonicweb-asp.jp/koriyama2/"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.city.koriyama.lg.jp/soshiki/22/1161.html",
+      "operator": "Koriyama City DX Strategy Division / Koriyama City GIS",
+      "scope": "Koriyama City",
+      "observation": "Official page links the public GIS and lists 地番参考図マップ, current at 2026-01-01; it warns the map is a reference display and not proof of boundaries or rights."
+    },
+    {
+      "url": "https://www.sonicweb-asp.jp/koriyama2/",
+      "operator": "Koriyama City public SonicWeb GIS",
+      "scope": "Koriyama City",
+      "observation": "Viewer configuration identifies theme th_18 地番参考図 and feature class 1021(th_18) 筆界 with displayed fields 字名 and 地番."
+    },
+    {
+      "url": "https://www.city.koriyama.lg.jp/soshiki/113/6753.html",
+      "operator": "Koriyama City Agricultural and Infrastructure Division",
+      "scope": "Koriyama City cadastral survey program",
+      "observation": "Official cadastral-survey page distinguishes cadastral maps/books from Legal Affairs Bureau registry records and documents partial survey progress; this is custodian/procedure evidence, separate from the public reference-map service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.sonicweb-asp.jp/koriyama2/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Fetched official viewer HTML and followed its current map.js configuration. No login or credentials used."
+    },
+    {
+      "url": "https://www.sonicweb-asp.jp/koriyama2/map.js?ver=1.0.601",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Configuration exposed apiUrl https://www.sonicweb-asp.jp/koriyama2/api/, theme th_18, feature class 1021(th_18), and attributes 字名/地番."
+    },
+    {
+      "url": "https://www.sonicweb-asp.jp/koriyama2/api/feature/1021(th_18)/instance?max=3&geom=1",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Bounded anonymous response returned three native featureids (12170901-12170903), centroids, and metadata; the first response included full geometry while two required detail requests."
+    },
+    {
+      "url": "https://www.sonicweb-asp.jp/koriyama2/api/feature/1021(th_18)/instance/{featureid}/detail?geom=1",
+      "method": "GET",
+      "status": "HTTP 200 for 12170902 and 12170903",
+      "summary": "Fetched full polygons for native feature IDs 12170902 and 12170903. Geometry is GeoJSON-like Polygon in decimal coordinate pairs visibly ordered longitude, latitude; the response declares no CRS, so CRS remains unverified."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Koriyama City public 地番参考図 reference-map layer and the city's cadastral-survey/registry custodial context.",
+    "verifiedOpenScope": "Koriyama City viewer layer 1021(th_18), bounded sample only",
+    "countrywideVerified": false,
+    "openGeometryScope": "city viewer layer, not independently established as complete cadastral coverage",
+    "registryExistenceScope": "Koriyama City official GIS and cadastral-survey custodian evidenced; public layer is explicitly a reference map and not a legal boundary proof."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "three full Polygon samples retained; no topology or positional accuracy assessment",
+    "crs": null,
+    "identityReadiness": "native featureid observed; service schema/CRS qualification still required",
+    "safeFieldAllowlist": ["stable native featureid", "geometry", "source typename", "source CRS if declared", "source layer/version", "retrieval timestamp"],
+    "attributesRequested": "Only IDs and geometry were retained; no owner, address, titleholder, contact, tax or account fields requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "The public layer is a city reference map, and its API response does not declare CRS or an authoritative cadastral completeness guarantee; serial qualification is required before adapter admission.",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. The bounded sample is near the viewer's default extent, not an exact-point hit and not evidence of citywide coverage or absence.",
+  "nextStep": "Serial reviewer should independently confirm CRS, native identity stability, coverage semantics, and whether this reference layer is admissible for parcel runtime use.",
+  "identityPolicy": "Retained GeoJSON uses only the official featureid as canonical id; source field names and featureid/typename provenance remain in this metadata.",
+  "notes": "Official viewer explicitly labels this as 地番参考図 (reference map). No raw source attribute sets retained."
+}

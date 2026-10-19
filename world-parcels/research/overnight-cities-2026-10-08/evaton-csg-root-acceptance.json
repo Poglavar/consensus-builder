@@ -1,0 +1,2246 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T02:31:55.261Z",
+  "city": "evaton-csg-root",
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY",
+      "PRCL_TYPE",
+      "LSTATUS",
+      "WSTATUS"
+    ],
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General Erven \u2014 Klipgat sample",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Chief Surveyor-General \u00b7 DFFE hosted Erven \u00b7 adapted",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "cityIds": [
+      "klipgat"
+    ],
+    "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
+    "scope": "201 valid, distinct Chief Surveyor-General Erven references verified in thirteen bounded cells around the unchanged ranked Klipgat WUP locator. The official DFFE-hosted service advertises GeoJSON but rejects that format in actual queries; explicit native Esri JSON queries succeed. A strict reader preserves every straight-ring coordinate and assigns native holes/components without repair; native curve representations and unsupported or ambiguous rings remain unavailable. Complete object-ID manifests, forced three-row paging (42 rows over fourteen pages), all 201 fresh native PRCL_KEY reads, explicit absence, footprint and source binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m\u00b2 or operation errors. The sampled records all have publisher statuses R/C/E; no guessed lifecycle filter is applied. Citywide completeness, legal title, survey accuracy and broader identity uniqueness remain unverified.",
+    "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified.",
+    "maxConcurrentQueries": 2
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        27.85,
+        -26.527,
+        27.851,
+        -26.526
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        27.851,
+        -26.527,
+        27.852,
+        -26.526
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        27.852,
+        -26.527,
+        27.853,
+        -26.526
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        27.85,
+        -26.526,
+        27.851,
+        -26.525
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        27.851,
+        -26.526,
+        27.852,
+        -26.525
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        27.852,
+        -26.526,
+        27.853,
+        -26.525
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        27.85,
+        -26.525,
+        27.851,
+        -26.524
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        27.851,
+        -26.525,
+        27.852,
+        -26.524
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        27.852,
+        -26.525,
+        27.853,
+        -26.524
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        27.851,
+        -26.528,
+        27.852,
+        -26.527
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        27.851,
+        -26.524,
+        27.852,
+        -26.523
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        27.849,
+        -26.526,
+        27.85,
+        -26.525
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        27.853,
+        -26.526,
+        27.854,
+        -26.525
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1513,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        27.85,
+        -26.527,
+        27.851,
+        -26.526
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001027000000",
+          "geometrySha256": "2d8e52d158fd1728241c346c42825fb6be502b52e0518157630ed496ad310d1d"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001029000000",
+          "geometrySha256": "8f53d6064a6188abd0cbb64f6fde82bc146a3d61bed42a2d004099ca126857d8"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001031000000",
+          "geometrySha256": "7497155809a977befa4c7f3b85d56775c8a0652bccf26fd5e0e888acb9d96966"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001025000000",
+          "geometrySha256": "16267da09d36d0ffbdd28dbbfcf266d45a0a3162e008695e8459939ffd8655bf"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001028000000",
+          "geometrySha256": "f3c112578d93648e2c81bb11a61eb1d355ed7b8031d114ce3266fbe15833c7d9"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001030000000",
+          "geometrySha256": "c147c80cff877854926310f2bc9957e190c77aa228e8e2da45f9bda34bd74b30"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 796,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        27.851,
+        -26.527,
+        27.852,
+        -26.526
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001031000000",
+          "geometrySha256": "7497155809a977befa4c7f3b85d56775c8a0652bccf26fd5e0e888acb9d96966"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001105000000",
+          "geometrySha256": "9c190fbb2ae6ce7006608ba95b72132f756574375bcb2a592bfc38206c804ec6"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001108000000",
+          "geometrySha256": "eef8612b716c86573851014c1d4d4583f6eaca39b76295c3987ff65c2de00acb"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001110000000",
+          "geometrySha256": "7845678783f4c348758e4efbf82df3b5298d6e656c373bc28bfe095b895ce81c"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001112000000",
+          "geometrySha256": "22b368620e3d1cdcfeb4bb795faa78a7ed2e76d5354bac16d0cd26289304d345"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001114000000",
+          "geometrySha256": "82f4d1f7fe20bb00cefcd74dadf176fb1eb2a3a8c74ab74f72f274d01740e10c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 794,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        27.852,
+        -26.527,
+        27.853,
+        -26.526
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001108000000",
+          "geometrySha256": "eef8612b716c86573851014c1d4d4583f6eaca39b76295c3987ff65c2de00acb"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001110000000",
+          "geometrySha256": "7845678783f4c348758e4efbf82df3b5298d6e656c373bc28bfe095b895ce81c"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001111000000",
+          "geometrySha256": "0656371e62209879d32db7faf0d0160be10266e17f949664cc14c0161bf924ba"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001112000000",
+          "geometrySha256": "22b368620e3d1cdcfeb4bb795faa78a7ed2e76d5354bac16d0cd26289304d345"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001114000000",
+          "geometrySha256": "82f4d1f7fe20bb00cefcd74dadf176fb1eb2a3a8c74ab74f72f274d01740e10c"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001115000000",
+          "geometrySha256": "3f805cb9282aa77645fc99b8c0ec3f0a249bc3112165ccfb703d95a9a0c7b478"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001109000000",
+          "geometrySha256": "0245cc6e0f22bf23fef5bb01721c43d0d662b55deb4dab3ca45526dea5c097e2"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001113000000",
+          "geometrySha256": "5a3148ac9c68d3ced7b78d35c51a554962f59f81771ee78c5367cb88e4799f13"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 792,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        27.85,
+        -26.526,
+        27.851,
+        -26.525
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001021000000",
+          "geometrySha256": "a62bec09357c03cec57fa4fb973287baae908ae1823d3195841dac7372935045"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001105000000",
+          "geometrySha256": "9c190fbb2ae6ce7006608ba95b72132f756574375bcb2a592bfc38206c804ec6"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001025000000",
+          "geometrySha256": "16267da09d36d0ffbdd28dbbfcf266d45a0a3162e008695e8459939ffd8655bf"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001022000000",
+          "geometrySha256": "fb5f01cb6ccb4c7a2508025d1bce250d6a58d1dd5b846395f204b0ad4ac1547f"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+          "geometrySha256": "3548285dcd6112b9fe65646205b6a79ce81c8b0a96511f03dbd557d2e38f1db3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 805,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        27.851,
+        -26.526,
+        27.852,
+        -26.525
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001105000000",
+          "geometrySha256": "9c190fbb2ae6ce7006608ba95b72132f756574375bcb2a592bfc38206c804ec6"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001108000000",
+          "geometrySha256": "eef8612b716c86573851014c1d4d4583f6eaca39b76295c3987ff65c2de00acb"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001106000000",
+          "geometrySha256": "a4c1bd72f5074d718f4df28dfb3f3038bbae3a74cefd88dc5136a3d8720564e4"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+          "geometrySha256": "3548285dcd6112b9fe65646205b6a79ce81c8b0a96511f03dbd557d2e38f1db3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 813,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        27.852,
+        -26.526,
+        27.853,
+        -26.525
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001107000000",
+          "geometrySha256": "c2d5e27388cb6618d3baff4460fed4bf9887a83827c81bb8c0a2dce5a26b050a"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001108000000",
+          "geometrySha256": "eef8612b716c86573851014c1d4d4583f6eaca39b76295c3987ff65c2de00acb"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001106000000",
+          "geometrySha256": "a4c1bd72f5074d718f4df28dfb3f3038bbae3a74cefd88dc5136a3d8720564e4"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001109000000",
+          "geometrySha256": "0245cc6e0f22bf23fef5bb01721c43d0d662b55deb4dab3ca45526dea5c097e2"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+          "geometrySha256": "3548285dcd6112b9fe65646205b6a79ce81c8b0a96511f03dbd557d2e38f1db3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 823,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        27.85,
+        -26.525,
+        27.851,
+        -26.524
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001017000000",
+          "geometrySha256": "b2997e296e8c6460ca97a9f8c3a2422e80f0c71b9a32cee4ae1375f56667b3e7"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001019000000",
+          "geometrySha256": "e97f930bcd8d1701ce03c5ef8d50ef2a0ea79c494f24cf75d0e0ed552fe0dd43"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001021000000",
+          "geometrySha256": "a62bec09357c03cec57fa4fb973287baae908ae1823d3195841dac7372935045"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001102000000",
+          "geometrySha256": "653420aa4a779fe5ce411e0f58a7c1183508db6686baa771b427033ffdb5c346"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001022000000",
+          "geometrySha256": "fb5f01cb6ccb4c7a2508025d1bce250d6a58d1dd5b846395f204b0ad4ac1547f"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001101000000",
+          "geometrySha256": "5f13b9c709b815d204465639bccc2c6617b6231315329f6f6b49ecd43d0f47e0"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+          "geometrySha256": "3548285dcd6112b9fe65646205b6a79ce81c8b0a96511f03dbd557d2e38f1db3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 867,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        27.851,
+        -26.525,
+        27.852,
+        -26.524
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001102000000",
+          "geometrySha256": "653420aa4a779fe5ce411e0f58a7c1183508db6686baa771b427033ffdb5c346"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001103000000",
+          "geometrySha256": "50c40e333f5b8ddac448324e6a70ffa0def0c07dd5b1ce34a036769926bbc640"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001101000000",
+          "geometrySha256": "5f13b9c709b815d204465639bccc2c6617b6231315329f6f6b49ecd43d0f47e0"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+          "geometrySha256": "3548285dcd6112b9fe65646205b6a79ce81c8b0a96511f03dbd557d2e38f1db3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 791,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        27.852,
+        -26.525,
+        27.853,
+        -26.524
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001103000000",
+          "geometrySha256": "50c40e333f5b8ddac448324e6a70ffa0def0c07dd5b1ce34a036769926bbc640"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001177000000",
+          "geometrySha256": "b592833ea4af6b0d42d041df6391059c7b1aefc302fb9cacf3c95ac217165de6"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001176000000",
+          "geometrySha256": "a599ec1e8640eb3305c7ebebd7bb980c36ff55eda2376fbbf194a25fd9a3e331"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+          "geometrySha256": "3548285dcd6112b9fe65646205b6a79ce81c8b0a96511f03dbd557d2e38f1db3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 798,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        27.851,
+        -26.528,
+        27.852,
+        -26.527
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001031000000",
+          "geometrySha256": "7497155809a977befa4c7f3b85d56775c8a0652bccf26fd5e0e888acb9d96966"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001037000000",
+          "geometrySha256": "9030b4b314d0a098f7bab5f622ff5b2167df1a69db46963b0a0ffba9eced41f3"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001112000000",
+          "geometrySha256": "22b368620e3d1cdcfeb4bb795faa78a7ed2e76d5354bac16d0cd26289304d345"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001114000000",
+          "geometrySha256": "82f4d1f7fe20bb00cefcd74dadf176fb1eb2a3a8c74ab74f72f274d01740e10c"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001116000000",
+          "geometrySha256": "e8dc862b4b4e809bc9edc4f4d8ad7e4246343ebf618a871d4be1a6e1d2ff31d3"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001033000000",
+          "geometrySha256": "12f6dc8244a8259feba9d71f9c33f84a5fef61bd987afb584032da333c5576bc"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001035000000",
+          "geometrySha256": "b015ea816dc1a84b08eec7bac253f84151491616831d76cc0f6497fa8ef5a08a"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001118000000",
+          "geometrySha256": "ee3bc5e5cc5399e90f58a7f24f4b23d068d901f6263a9fc3478aa4d6742c5575"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001120000110",
+          "geometrySha256": "dffea5e7c3e9555d2b1899a3fa14b72b1a2b8d19e05801c9877d2aac3957b4e8"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001120000100",
+          "geometrySha256": "58b1698e6b32c7265fb69bc16f897ac1f7d42007a6b0a3e0fc6901c66ee641d8"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 848,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        27.851,
+        -26.524,
+        27.852,
+        -26.523
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001095000000",
+          "geometrySha256": "855bf292cdea4cf0c19fa3ebfe1363e9e54f39ba0dff927cdf41036e7b4e1cd4"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001097000000",
+          "geometrySha256": "d14e6d6977bacd7bce02728ffe58f22ffe1fbd5509af8ff1625b7f6e9c4c5d01"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001098000000",
+          "geometrySha256": "13fd5ce725f6a5442e764e2d889ed853fd854ffab86d2e738af6309037405653"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001100000000",
+          "geometrySha256": "bba2b2714f9d39a2f049fea8a4552cf865b1545ab7b7bfe295202d24ad53b895"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001103000000",
+          "geometrySha256": "50c40e333f5b8ddac448324e6a70ffa0def0c07dd5b1ce34a036769926bbc640"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001096000000",
+          "geometrySha256": "b3a9916cc24e255d1516a57660e2d1997f6d00db577a332ff97b6620587ae2c4"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001099000000",
+          "geometrySha256": "242b98f020b65e972ccf720aaf144b41072f6c9ca521a37dd7d26f9ffd62742d"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001101000000",
+          "geometrySha256": "5f13b9c709b815d204465639bccc2c6617b6231315329f6f6b49ecd43d0f47e0"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 812,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        27.849,
+        -26.526,
+        27.85,
+        -26.525
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001021000000",
+          "geometrySha256": "a62bec09357c03cec57fa4fb973287baae908ae1823d3195841dac7372935045"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001023000000",
+          "geometrySha256": "6fc5c38dfa5d8d2490649336fbf5a4edc6ee2b7adcf359d61ec5cd2a9f254d35"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001020000000",
+          "geometrySha256": "f8a543886dfef452bd5bf31f86cc67a0da9caf39ea939c86bc25408099b19eaa"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001025000000",
+          "geometrySha256": "16267da09d36d0ffbdd28dbbfcf266d45a0a3162e008695e8459939ffd8655bf"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001024000000",
+          "geometrySha256": "3fc8589d713e26ab60ce5415fdc4d2014dd1224efb1ee7fcc09bb702753537c7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 834,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        27.853,
+        -26.526,
+        27.854,
+        -26.525
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001107000000",
+          "geometrySha256": "c2d5e27388cb6618d3baff4460fed4bf9887a83827c81bb8c0a2dce5a26b050a"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001111000000",
+          "geometrySha256": "0656371e62209879d32db7faf0d0160be10266e17f949664cc14c0161bf924ba"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001180000000",
+          "geometrySha256": "bba29cd694909d816eea7bcaa9d1ef7bb3a35028d1d16f9b449ef4945e8fe4c9"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001182000000",
+          "geometrySha256": "ca52a55664b8d76fa9a62f9de547274b53be8d4cec519e25f298d89b623596a7"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001109000000",
+          "geometrySha256": "0245cc6e0f22bf23fef5bb01721c43d0d662b55deb4dab3ca45526dea5c097e2"
+        },
+        {
+          "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001179000000",
+          "geometrySha256": "7e6259bb6e93e5a0f3870929274e5a24f065e543672914a5b1cb8ccd1fad5599"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1666,
+      "requestIndexes": [
+        39,
+        44
+      ],
+      "count": 10,
+      "geometryPages": 4,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 4837,
+      "requestIndexes": [
+        45,
+        47
+      ],
+      "count": 40,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001017000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001019000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001020000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001021000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001022000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001023000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001024000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001025000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001027000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001028000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001029000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001030000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001031000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001033000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001035000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001037000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001095000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001096000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001097000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001098000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001099000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001100000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001101000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001102000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001103000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001105000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001106000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001107000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001108000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001109000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001110000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001111000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001112000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001113000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001114000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001115000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001116000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001118000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001120000100"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 2260,
+      "requestIndexes": [
+        48,
+        50
+      ],
+      "count": 6,
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001120000110",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001176000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001177000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001179000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001180000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001182000000"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 1645,
+      "requestIndexes": [
+        51,
+        52
+      ],
+      "absentIds": [
+        "ZA-CSG-DFFE-ERVEN-T0IQ0000000000000000000000000"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 841,
+      "requestIndexes": [
+        53,
+        55
+      ],
+      "selectedParcelId": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001110000000",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 848,
+      "requestIndexes": [
+        56,
+        58
+      ],
+      "selectedParcelId": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001110000000",
+      "coverage": "complete",
+      "siteM2": 4126.44,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.85%2C-26.527%2C27.851%2C-26.526&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:55.262Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.85%2C-26.527%2C27.851%2C-26.526&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:56.103Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984210,
+        3984211,
+        3984212,
+        4751626,
+        4790873,
+        4790874
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984210%2C3984211%2C3984212%2C4751626%2C4790873%2C4790874",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:56.377Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2741,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "ed49121cc1650170d2b1eeec2c1389d39b844ee1f1456f25d323d0bba328f228"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "a28180968faf2123c5f7f4c3497cb055d7fae203f14ff6b8f505c779597e0c2a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "49fdf1cba9b7e6731c23ca75bd6d050ecdcf6211b9507ae6e547abe3514d13a6"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c6df6162f3c0376e76eca502cd03003b346e888e285dd347ba11b903cab0da03"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "733c2e5027ccff7fd53f7399505d35c8ef6cc54b254d588c418bf8ab9bdbdced"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e03fbee44de0e23071adedceb258d8f97edc9b1a34e222327a79c286d23223c1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.527%2C27.852%2C-26.526&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:56.777Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.527%2C27.852%2C-26.526&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:57.044Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984212,
+        3984932,
+        3984934,
+        3984935,
+        3984937,
+        3984938
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984212%2C3984932%2C3984934%2C3984935%2C3984937%2C3984938",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:57.306Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2781,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "49fdf1cba9b7e6731c23ca75bd6d050ecdcf6211b9507ae6e547abe3514d13a6"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "0efdd3a84ae4ccb01bc73c7bf81d392b7b10972582c665e92e3b781f1260229a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e76ba6354c6d6eb478a6842ba60028a531ce1c07d1ae10a12f158bc79fbc9350"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "52366133627f102226079e9e572a7534d0877de26e7f974c145965ff5a2ea09e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c68a69d8e5c4135ddf5c502e5d34aa045b7b4c5e51766b0172b2c507dba6b9ce"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c52ebe7e2d81de8abe060a8571115cc3a98afcaddda461807f234785bac68d3c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.852%2C-26.527%2C27.853%2C-26.526&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:57.573Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.852%2C-26.527%2C27.853%2C-26.526&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:57.834Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 110,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984934,
+        3984935,
+        3984936,
+        3984937,
+        3984938,
+        3984939,
+        4790565,
+        4790566
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984934%2C3984935%2C3984936%2C3984937%2C3984938%2C3984939%2C4790565%2C4790566",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:58.100Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3483,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "e76ba6354c6d6eb478a6842ba60028a531ce1c07d1ae10a12f158bc79fbc9350"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "52366133627f102226079e9e572a7534d0877de26e7f974c145965ff5a2ea09e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "aa8c38b8164081ece47f1d4bde765b538e72d4e35201b8dca0a0ca3f90406cf1"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c68a69d8e5c4135ddf5c502e5d34aa045b7b4c5e51766b0172b2c507dba6b9ce"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c52ebe7e2d81de8abe060a8571115cc3a98afcaddda461807f234785bac68d3c"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "9cdbc874cdb0809e3bea27bbd51b259a9bb56070bda606a1caf27117358f0bac"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1619f2341536db181a4927bcf59025f5abd9ce48cebbe953aea08a99eee27321"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "bd0401c3d8767a3290d67600e086e6750537996d2d145e4063e73f915b904402"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.85%2C-26.526%2C27.851%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:58.369Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.85%2C-26.526%2C27.851%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:58.630Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 86,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984207,
+        3984932,
+        4751626,
+        4790871,
+        4790901
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984207%2C3984932%2C4751626%2C4790871%2C4790901",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:58.899Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2517,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "b332250c5763f7a14ebc2f98016926b22a5af3a038758a482695984fedc5723f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "0efdd3a84ae4ccb01bc73c7bf81d392b7b10972582c665e92e3b781f1260229a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c6df6162f3c0376e76eca502cd03003b346e888e285dd347ba11b903cab0da03"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e35046d3dcc75d730df76a2210ae6ab1785507bfb6dfd532e2c536e8da81e68a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e80ec1f852c9df8af342b9a093e3ce1b6f433dd6756bb2092c8f2a9ca2b4bccf"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.526%2C27.852%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:59.163Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.526%2C27.852%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:59.425Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 78,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984932,
+        3984934,
+        4790564,
+        4790901
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984932%2C3984934%2C4790564%2C4790901",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:59.688Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2207,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "0efdd3a84ae4ccb01bc73c7bf81d392b7b10972582c665e92e3b781f1260229a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e76ba6354c6d6eb478a6842ba60028a531ce1c07d1ae10a12f158bc79fbc9350"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "371e1efc0b65d846757cdb67ee25134c62c75e0ef83e53fb7111734d9c0b6afe"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e80ec1f852c9df8af342b9a093e3ce1b6f433dd6756bb2092c8f2a9ca2b4bccf"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.852%2C-26.526%2C27.853%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:31:59.970Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.852%2C-26.526%2C27.853%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:00.238Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 86,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984933,
+        3984934,
+        4790564,
+        4790565,
+        4790901
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984933%2C3984934%2C4790564%2C4790565%2C4790901",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:00.509Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2558,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "fdcf519690606a8e0c46b02ebe5f5846e8884503f52a47f361a4aa79154dfde0"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e76ba6354c6d6eb478a6842ba60028a531ce1c07d1ae10a12f158bc79fbc9350"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "371e1efc0b65d846757cdb67ee25134c62c75e0ef83e53fb7111734d9c0b6afe"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1619f2341536db181a4927bcf59025f5abd9ce48cebbe953aea08a99eee27321"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e80ec1f852c9df8af342b9a093e3ce1b6f433dd6756bb2092c8f2a9ca2b4bccf"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.85%2C-26.525%2C27.851%2C-26.524&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:00.786Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.85%2C-26.525%2C27.851%2C-26.524&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:01.053Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 102,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984139,
+        3984140,
+        3984207,
+        3984930,
+        4790871,
+        4790900,
+        4790901
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984139%2C3984140%2C3984207%2C3984930%2C4790871%2C4790900%2C4790901",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:01.321Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3379,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "9b717ad1725d86f7bbeb753d31589150b9d121f59792debca53072535dc3bc44"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "47b586743d93aab9c57644b125f1109805bf63979aaa5c98fe68b48c9d59b8b4"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "b332250c5763f7a14ebc2f98016926b22a5af3a038758a482695984fedc5723f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "b83d90862b7e8d8d83883e15a30027bac9ee5b3143c54d098b7da15cf6d0801d"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e35046d3dcc75d730df76a2210ae6ab1785507bfb6dfd532e2c536e8da81e68a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "069d12b6fac76f84e71785f7ecc9e3af0516dd38649a44387630c5ecb265dc79"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e80ec1f852c9df8af342b9a093e3ce1b6f433dd6756bb2092c8f2a9ca2b4bccf"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.525%2C27.852%2C-26.524&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:01.610Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.525%2C27.852%2C-26.524&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:01.901Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 78,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984930,
+        3984931,
+        4790900,
+        4790901
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984930%2C3984931%2C4790900%2C4790901",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:02.205Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2331,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "b83d90862b7e8d8d83883e15a30027bac9ee5b3143c54d098b7da15cf6d0801d"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "ba0b32e6df83c8493323673c2610bd885ac506114a0c215935b2bcfb85218c8a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "069d12b6fac76f84e71785f7ecc9e3af0516dd38649a44387630c5ecb265dc79"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e80ec1f852c9df8af342b9a093e3ce1b6f433dd6756bb2092c8f2a9ca2b4bccf"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.852%2C-26.525%2C27.853%2C-26.524&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:02.479Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.852%2C-26.525%2C27.853%2C-26.524&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:02.741Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 78,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984931,
+        3985626,
+        4790589,
+        4790901
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984931%2C3985626%2C4790589%2C4790901",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:03.003Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2413,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "ba0b32e6df83c8493323673c2610bd885ac506114a0c215935b2bcfb85218c8a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "a6d98713c95121f9c8bb546e97238ed9b485ab7fe8a3193c264c9d20aeb13da2"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "2b4a62c4e5287f2245829ff5457580a2952d7819e7df0b9a264426cefc8c0a11"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e80ec1f852c9df8af342b9a093e3ce1b6f433dd6756bb2092c8f2a9ca2b4bccf"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.528%2C27.852%2C-26.527&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:03.272Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 10
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.528%2C27.852%2C-26.527&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:03.542Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 126,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984212,
+        3984216,
+        3984937,
+        3984938,
+        4790567,
+        4790875,
+        4790876,
+        5944378,
+        5944379,
+        5944380
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984212%2C3984216%2C3984937%2C3984938%2C4790567%2C4790875%2C4790876%2C5944378%2C5944379%2C5944380",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:03.804Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4626,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "49fdf1cba9b7e6731c23ca75bd6d050ecdcf6211b9507ae6e547abe3514d13a6"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "7c5dd3c23a2d274d12d569347b6f815738fed34a4f6a017bac874b657f92bc65"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c68a69d8e5c4135ddf5c502e5d34aa045b7b4c5e51766b0172b2c507dba6b9ce"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c52ebe7e2d81de8abe060a8571115cc3a98afcaddda461807f234785bac68d3c"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "f4d2889a9b215c9b271d647b3bb7daa439028c0930b242bb4779d2374666ea3f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "179d289578a8314ea8ef1e72386eb22cffd18840ddfe733c270d8663e80eb298"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "8273322ab45f0c2082c6dc2622e4e4aff1e9f12df50b63a6c2b9c2ecb372f25e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "2b7f9cbfc28b8733281b43472491ee0f3da500cda9ba2ea72a2d6797607ef118"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "d0bc1d0bea7df65894988859e400dc0009d018eda25f984a32cafca658ddb7ee"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "9f094d3121150a3e700ae10dbaa97887b3ba3d98a445e328bd0251fd15c8b28b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.524%2C27.852%2C-26.523&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:04.073Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.524%2C27.852%2C-26.523&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:04.338Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 110,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984926,
+        3984927,
+        3984928,
+        3984929,
+        3984931,
+        4790898,
+        4790899,
+        4790900
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984926%2C3984927%2C3984928%2C3984929%2C3984931%2C4790898%2C4790899%2C4790900",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:04.652Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3567,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "40c8d61dc968575408d25550d58a03f9a405866b549b760f1ef70d2eb12d7df2"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "de1593912532dc99301b8e52839555a169311b92a9e8372e6af49caf61ecc55d"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1505db75289ba9d6b4f2618d237415025101a09e7cb0e372a7ea884f8ad20eec"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "58ac6c14ed7ef48e07a194c220cb2ebe88a4eaa716a145002e0c1ebf56a86634"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "ba0b32e6df83c8493323673c2610bd885ac506114a0c215935b2bcfb85218c8a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "60d8b294d78ceca84f5e657406f12a642cf985e72a9d3130ba085304815ff926"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "0e567efc6b7ebc0fe3c74020949c861304b87c29ad4876c13b0a8ebd3c8dad20"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "069d12b6fac76f84e71785f7ecc9e3af0516dd38649a44387630c5ecb265dc79"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.849%2C-26.526%2C27.85%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:04.924Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.849%2C-26.526%2C27.85%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:05.201Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 86,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984207,
+        3984208,
+        4607786,
+        4751626,
+        4790872
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984207%2C3984208%2C4607786%2C4751626%2C4790872",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:05.467Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2479,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "b332250c5763f7a14ebc2f98016926b22a5af3a038758a482695984fedc5723f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "9024596c1b0ed8755cead9cd5458e46d9a6e2f216a4193af8b71d45e5b88fa64"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "3015b1df66e44a74578ab15a7ab298ebfebf503bef701100cd33ecb959708a4f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c6df6162f3c0376e76eca502cd03003b346e888e285dd347ba11b903cab0da03"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "00347c6b92fef56efe7468aa6ffbdf6af574cf0171ce13302b322f0207281e87"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.853%2C-26.526%2C27.854%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:05.740Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.853%2C-26.526%2C27.854%2C-26.525&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:06.026Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984933,
+        3984936,
+        3985628,
+        3985629,
+        4790565,
+        4790590
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984933%2C3984936%2C3985628%2C3985629%2C4790565%2C4790590",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:06.304Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2864,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "fdcf519690606a8e0c46b02ebe5f5846e8884503f52a47f361a4aa79154dfde0"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "aa8c38b8164081ece47f1d4bde765b538e72d4e35201b8dca0a0ca3f90406cf1"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "311c9814e1503e2c2b9595ed5a5055a90b4cf050f96c0173d90c8284e5e17623"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c53b7c0062ec93cafc72d159a56e55c8098edc39a6adb82c2831d5a627a4cb45"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1619f2341536db181a4927bcf59025f5abd9ce48cebbe953aea08a99eee27321"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "b41b2a511639e3b86254f827d1960bbea363ca40e9e9954b7c4c380594f81fe4"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.528%2C27.852%2C-26.527&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:06.576Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 10
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851%2C-26.528%2C27.852%2C-26.527&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:06.837Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 126,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984212,
+        3984216,
+        3984937,
+        3984938,
+        4790567,
+        4790875,
+        4790876,
+        5944378,
+        5944379,
+        5944380
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984212%2C3984216%2C3984937",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:07.104Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1693,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "49fdf1cba9b7e6731c23ca75bd6d050ecdcf6211b9507ae6e547abe3514d13a6"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "7c5dd3c23a2d274d12d569347b6f815738fed34a4f6a017bac874b657f92bc65"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c68a69d8e5c4135ddf5c502e5d34aa045b7b4c5e51766b0172b2c507dba6b9ce"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984938%2C4790567%2C4790875",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:07.405Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1695,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "c52ebe7e2d81de8abe060a8571115cc3a98afcaddda461807f234785bac68d3c"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "f4d2889a9b215c9b271d647b3bb7daa439028c0930b242bb4779d2374666ea3f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "179d289578a8314ea8ef1e72386eb22cffd18840ddfe733c270d8663e80eb298"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=4790876%2C5944378%2C5944379",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:07.686Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2146,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "8273322ab45f0c2082c6dc2622e4e4aff1e9f12df50b63a6c2b9c2ecb372f25e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "2b7f9cbfc28b8733281b43472491ee0f3da500cda9ba2ea72a2d6797607ef118"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "d0bc1d0bea7df65894988859e400dc0009d018eda25f984a32cafca658ddb7ee"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=5944380",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:07.958Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1036,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "9f094d3121150a3e700ae10dbaa97887b3ba3d98a445e328bd0251fd15c8b28b"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=PRCL_KEY+IN+%28%27G421T0IQ010900001017000000%27%2C%27G421T0IQ010900001019000000%27%2C%27G421T0IQ010900001020000000%27%2C%27G421T0IQ010900001021000000%27%2C%27G421T0IQ010900001022000000%27%2C%27G421T0IQ010900001023000000%27%2C%27G421T0IQ010900001024000000%27%2C%27G421T0IQ010900001025000000%27%2C%27G421T0IQ010900001027000000%27%2C%27G421T0IQ010900001028000000%27%2C%27G421T0IQ010900001029000000%27%2C%27G421T0IQ010900001030000000%27%2C%27G421T0IQ010900001031000000%27%2C%27G421T0IQ010900001033000000%27%2C%27G421T0IQ010900001035000000%27%2C%27G421T0IQ010900001037000000%27%2C%27G421T0IQ010900001095000000%27%2C%27G421T0IQ010900001096000000%27%2C%27G421T0IQ010900001097000000%27%2C%27G421T0IQ010900001098000000%27%2C%27G421T0IQ010900001099000000%27%2C%27G421T0IQ010900001100000000%27%2C%27G421T0IQ010900001101000000%27%2C%27G421T0IQ010900001102000000%27%2C%27G421T0IQ010900001103000000%27%2C%27G421T0IQ010900001104000000%27%2C%27G421T0IQ010900001105000000%27%2C%27G421T0IQ010900001106000000%27%2C%27G421T0IQ010900001107000000%27%2C%27G421T0IQ010900001108000000%27%2C%27G421T0IQ010900001109000000%27%2C%27G421T0IQ010900001110000000%27%2C%27G421T0IQ010900001111000000%27%2C%27G421T0IQ010900001112000000%27%2C%27G421T0IQ010900001113000000%27%2C%27G421T0IQ010900001114000000%27%2C%27G421T0IQ010900001115000000%27%2C%27G421T0IQ010900001116000000%27%2C%27G421T0IQ010900001118000000%27%2C%27G421T0IQ010900001120000100%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:08.246Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=PRCL_KEY+IN+%28%27G421T0IQ010900001017000000%27%2C%27G421T0IQ010900001019000000%27%2C%27G421T0IQ010900001020000000%27%2C%27G421T0IQ010900001021000000%27%2C%27G421T0IQ010900001022000000%27%2C%27G421T0IQ010900001023000000%27%2C%27G421T0IQ010900001024000000%27%2C%27G421T0IQ010900001025000000%27%2C%27G421T0IQ010900001027000000%27%2C%27G421T0IQ010900001028000000%27%2C%27G421T0IQ010900001029000000%27%2C%27G421T0IQ010900001030000000%27%2C%27G421T0IQ010900001031000000%27%2C%27G421T0IQ010900001033000000%27%2C%27G421T0IQ010900001035000000%27%2C%27G421T0IQ010900001037000000%27%2C%27G421T0IQ010900001095000000%27%2C%27G421T0IQ010900001096000000%27%2C%27G421T0IQ010900001097000000%27%2C%27G421T0IQ010900001098000000%27%2C%27G421T0IQ010900001099000000%27%2C%27G421T0IQ010900001100000000%27%2C%27G421T0IQ010900001101000000%27%2C%27G421T0IQ010900001102000000%27%2C%27G421T0IQ010900001103000000%27%2C%27G421T0IQ010900001104000000%27%2C%27G421T0IQ010900001105000000%27%2C%27G421T0IQ010900001106000000%27%2C%27G421T0IQ010900001107000000%27%2C%27G421T0IQ010900001108000000%27%2C%27G421T0IQ010900001109000000%27%2C%27G421T0IQ010900001110000000%27%2C%27G421T0IQ010900001111000000%27%2C%27G421T0IQ010900001112000000%27%2C%27G421T0IQ010900001113000000%27%2C%27G421T0IQ010900001114000000%27%2C%27G421T0IQ010900001115000000%27%2C%27G421T0IQ010900001116000000%27%2C%27G421T0IQ010900001118000000%27%2C%27G421T0IQ010900001120000100%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:10.503Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 366,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        4607786,
+        3984139,
+        3984140,
+        3984207,
+        3984208,
+        3984210,
+        3984211,
+        3984212,
+        3984216,
+        3984926,
+        3984927,
+        3984928,
+        3984929,
+        3984930,
+        3984931,
+        3984932,
+        3984933,
+        3984934,
+        3984935,
+        3984936,
+        3984937,
+        3984938,
+        3984939,
+        4751626,
+        4790564,
+        4790565,
+        4790566,
+        4790567,
+        4790871,
+        4790872,
+        4790873,
+        4790874,
+        4790875,
+        4790876,
+        4790898,
+        4790899,
+        4790900,
+        4790901,
+        5944378,
+        5944380
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=4607786%2C3984139%2C3984140%2C3984207%2C3984208%2C3984210%2C3984211%2C3984212%2C3984216%2C3984926%2C3984927%2C3984928%2C3984929%2C3984930%2C3984931%2C3984932%2C3984933%2C3984934%2C3984935%2C3984936%2C3984937%2C3984938%2C3984939%2C4751626%2C4790564%2C4790565%2C4790566%2C4790567%2C4790871%2C4790872%2C4790873%2C4790874%2C4790875%2C4790876%2C4790898%2C4790899%2C4790900%2C4790901%2C5944378%2C5944380",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:12.802Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 15231,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "9b717ad1725d86f7bbeb753d31589150b9d121f59792debca53072535dc3bc44"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "47b586743d93aab9c57644b125f1109805bf63979aaa5c98fe68b48c9d59b8b4"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "b332250c5763f7a14ebc2f98016926b22a5af3a038758a482695984fedc5723f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "9024596c1b0ed8755cead9cd5458e46d9a6e2f216a4193af8b71d45e5b88fa64"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "ed49121cc1650170d2b1eeec2c1389d39b844ee1f1456f25d323d0bba328f228"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "a28180968faf2123c5f7f4c3497cb055d7fae203f14ff6b8f505c779597e0c2a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "49fdf1cba9b7e6731c23ca75bd6d050ecdcf6211b9507ae6e547abe3514d13a6"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "7c5dd3c23a2d274d12d569347b6f815738fed34a4f6a017bac874b657f92bc65"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "40c8d61dc968575408d25550d58a03f9a405866b549b760f1ef70d2eb12d7df2"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "de1593912532dc99301b8e52839555a169311b92a9e8372e6af49caf61ecc55d"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1505db75289ba9d6b4f2618d237415025101a09e7cb0e372a7ea884f8ad20eec"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "58ac6c14ed7ef48e07a194c220cb2ebe88a4eaa716a145002e0c1ebf56a86634"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "b83d90862b7e8d8d83883e15a30027bac9ee5b3143c54d098b7da15cf6d0801d"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "ba0b32e6df83c8493323673c2610bd885ac506114a0c215935b2bcfb85218c8a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "0efdd3a84ae4ccb01bc73c7bf81d392b7b10972582c665e92e3b781f1260229a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "fdcf519690606a8e0c46b02ebe5f5846e8884503f52a47f361a4aa79154dfde0"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e76ba6354c6d6eb478a6842ba60028a531ce1c07d1ae10a12f158bc79fbc9350"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "52366133627f102226079e9e572a7534d0877de26e7f974c145965ff5a2ea09e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "aa8c38b8164081ece47f1d4bde765b538e72d4e35201b8dca0a0ca3f90406cf1"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c68a69d8e5c4135ddf5c502e5d34aa045b7b4c5e51766b0172b2c507dba6b9ce"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c52ebe7e2d81de8abe060a8571115cc3a98afcaddda461807f234785bac68d3c"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "9cdbc874cdb0809e3bea27bbd51b259a9bb56070bda606a1caf27117358f0bac"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "3015b1df66e44a74578ab15a7ab298ebfebf503bef701100cd33ecb959708a4f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c6df6162f3c0376e76eca502cd03003b346e888e285dd347ba11b903cab0da03"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "371e1efc0b65d846757cdb67ee25134c62c75e0ef83e53fb7111734d9c0b6afe"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1619f2341536db181a4927bcf59025f5abd9ce48cebbe953aea08a99eee27321"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "bd0401c3d8767a3290d67600e086e6750537996d2d145e4063e73f915b904402"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "f4d2889a9b215c9b271d647b3bb7daa439028c0930b242bb4779d2374666ea3f"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e35046d3dcc75d730df76a2210ae6ab1785507bfb6dfd532e2c536e8da81e68a"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "00347c6b92fef56efe7468aa6ffbdf6af574cf0171ce13302b322f0207281e87"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "733c2e5027ccff7fd53f7399505d35c8ef6cc54b254d588c418bf8ab9bdbdced"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e03fbee44de0e23071adedceb258d8f97edc9b1a34e222327a79c286d23223c1"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "179d289578a8314ea8ef1e72386eb22cffd18840ddfe733c270d8663e80eb298"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "8273322ab45f0c2082c6dc2622e4e4aff1e9f12df50b63a6c2b9c2ecb372f25e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "60d8b294d78ceca84f5e657406f12a642cf985e72a9d3130ba085304815ff926"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "0e567efc6b7ebc0fe3c74020949c861304b87c29ad4876c13b0a8ebd3c8dad20"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "069d12b6fac76f84e71785f7ecc9e3af0516dd38649a44387630c5ecb265dc79"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "e80ec1f852c9df8af342b9a093e3ce1b6f433dd6756bb2092c8f2a9ca2b4bccf"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "2b7f9cbfc28b8733281b43472491ee0f3da500cda9ba2ea72a2d6797607ef118"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "9f094d3121150a3e700ae10dbaa97887b3ba3d98a445e328bd0251fd15c8b28b"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=PRCL_KEY+IN+%28%27G421T0IQ010900001120000110%27%2C%27G421T0IQ010900001176000000%27%2C%27G421T0IQ010900001177000000%27%2C%27G421T0IQ010900001179000000%27%2C%27G421T0IQ010900001180000000%27%2C%27G421T0IQ010900001182000000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:13.092Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=PRCL_KEY+IN+%28%27G421T0IQ010900001120000110%27%2C%27G421T0IQ010900001176000000%27%2C%27G421T0IQ010900001177000000%27%2C%27G421T0IQ010900001179000000%27%2C%27G421T0IQ010900001180000000%27%2C%27G421T0IQ010900001182000000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:14.083Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        4790589,
+        4790590,
+        3985626,
+        3985628,
+        3985629,
+        5944379
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=4790589%2C4790590%2C3985626%2C3985628%2C3985629%2C5944379",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:15.080Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3395,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "a6d98713c95121f9c8bb546e97238ed9b485ab7fe8a3193c264c9d20aeb13da2"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "311c9814e1503e2c2b9595ed5a5055a90b4cf050f96c0173d90c8284e5e17623"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c53b7c0062ec93cafc72d159a56e55c8098edc39a6adb82c2831d5a627a4cb45"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "2b4a62c4e5287f2245829ff5457580a2952d7819e7df0b9a264426cefc8c0a11"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "b41b2a511639e3b86254f827d1960bbea363ca40e9e9954b7c4c380594f81fe4"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "d0bc1d0bea7df65894988859e400dc0009d018eda25f984a32cafca658ddb7ee"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=PRCL_KEY+IN+%28%27T0IQ0000000000000000000000000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:15.354Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=PRCL_KEY+IN+%28%27T0IQ0000000000000000000000000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:16.164Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851084560000064%2C-26.526681378999974%2C27.85228416400003%2C-26.526160827999945&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:17.007Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "footprint",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851084560000064%2C-26.526681378999974%2C27.85228416400003%2C-26.526160827999945&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:17.296Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984934,
+        3984935,
+        3984936,
+        3984937,
+        4790565,
+        4790566
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984934%2C3984935%2C3984936%2C3984937%2C4790565%2C4790566",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:17.564Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2783,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "e76ba6354c6d6eb478a6842ba60028a531ce1c07d1ae10a12f158bc79fbc9350"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "52366133627f102226079e9e572a7534d0877de26e7f974c145965ff5a2ea09e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "aa8c38b8164081ece47f1d4bde765b538e72d4e35201b8dca0a0ca3f90406cf1"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c68a69d8e5c4135ddf5c502e5d34aa045b7b4c5e51766b0172b2c507dba6b9ce"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1619f2341536db181a4927bcf59025f5abd9ce48cebbe953aea08a99eee27321"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "bd0401c3d8767a3290d67600e086e6750537996d2d145e4063e73f915b904402"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851084560000064%2C-26.526681378999974%2C27.85228416400003%2C-26.526160827999945&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:17.851Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "source-binding",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.851084560000064%2C-26.526681378999974%2C27.85228416400003%2C-26.526160827999945&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:18.120Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3984934,
+        3984935,
+        3984936,
+        3984937,
+        4790565,
+        4790566
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CPRCL_TYPE%2CLSTATUS%2CWSTATUS&returnGeometry=true&outSR=4326&f=json&returnTrueCurves=true&objectIds=3984934%2C3984935%2C3984936%2C3984937%2C4790565%2C4790566",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:32:18.403Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2783,
+      "features": [
+        {
+          "properties": {},
+          "geometrySha256": "e76ba6354c6d6eb478a6842ba60028a531ce1c07d1ae10a12f158bc79fbc9350"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "52366133627f102226079e9e572a7534d0877de26e7f974c145965ff5a2ea09e"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "aa8c38b8164081ece47f1d4bde765b538e72d4e35201b8dca0a0ca3f90406cf1"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "c68a69d8e5c4135ddf5c502e5d34aa045b7b4c5e51766b0172b2c507dba6b9ce"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "1619f2341536db181a4927bcf59025f5abd9ce48cebbe953aea08a99eee27321"
+        },
+        {
+          "properties": {},
+          "geometrySha256": "bd0401c3d8767a3290d67600e086e6750537996d2d145e4063e73f915b904402"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/evaton-csg-root-quality.json",
+  "uniqueParcels": 46,
+  "requestCount": 59,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T02:32:18.702Z",
+  "qualityStatus": "approved_by_root_bounded_reference_scope",
+  "qualityReviewFile": "research/overnight-cities-2026-10-08/evaton-root-native-edge-review.json"
+}

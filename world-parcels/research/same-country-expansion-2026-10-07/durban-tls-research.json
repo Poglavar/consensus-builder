@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "city": "Durban",
+  "cityId": "wup2025:5227",
+  "queueRank": 153,
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "checkedAt": "2026-10-07",
+  "priorEvidence": [
+    "world-parcels/research/durban.json",
+    "world-parcels/research/candidate-holds-2026-10-03.json",
+    "world-parcels/registry.json source za-giscoe-erven"
+  ],
+  "certificateChain": {
+    "server": "gis.durban.gov.za:443",
+    "observedPresentedChain": "Server presented the leaf certificate only; OpenSSL verify error 21 unable to verify the first certificate.",
+    "leaf": {
+      "subject": "CN=*.durban.gov.za",
+      "issuer": "C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication CA DV R36",
+      "notBefore": "2026-05-21T00:00:00Z",
+      "notAfter": "2026-12-05T23:59:59Z",
+      "sha256Fingerprint": "9B:F8:4F:CA:10:AC:DA:F4:80:E2:A4:41:DE:20:E6:9B:68:9D:A5:F0:4B:F9:99:D9:B7:4E:C7:E2:B3:6D:F3:86",
+      "aiaCaIssuersUrl": "http://crt.sectigo.com/SectigoPublicServerAuthenticationCADVR36.crt"
+    },
+    "intermediate": {
+      "subject": "C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication CA DV R36",
+      "issuer": "C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root R46",
+      "notBefore": "2021-03-22T00:00:00Z",
+      "notAfter": "2036-03-21T23:59:59Z",
+      "sha256Fingerprint": "8C:54:C3:34:B6:6B:A4:E4:26:77:2A:F4:A3:F9:13:6C:19:A1:AE:C7:29:FD:B2:8C:53:5C:07:A5:A4:EF:22:E0",
+      "basicConstraints": "CA:TRUE, pathlen:0",
+      "retrieval": {
+        "url": "http://crt.sectigo.com/SectigoPublicServerAuthenticationCADVR36.crt",
+        "httpStatus": 200,
+        "contentType": "application/pkix-cert",
+        "bytes": 1616,
+        "repositoryPemPath": "backend/parcels/certificates/sectigo-public-server-authentication-ca-dv-r36.pem"
+      }
+    },
+    "trustAnchor": {
+      "subject": "C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication Root R46",
+      "source": "Node.js built-in tls.rootCertificates",
+      "sha256Fingerprint": "7B:B6:47:A6:2A:EE:AC:88:BF:25:7A:A5:22:D0:1F:FE:A3:95:E0:AB:45:C7:3F:93:F6:56:54:EC:38:F2:5A:06",
+      "notAfter": "2046-03-21T23:59:59Z"
+    },
+    "verification": {
+      "ordinaryNodeFetch": "Failed with UNABLE_TO_VERIFY_LEAF_SIGNATURE because the server omitted its issuer intermediate.",
+      "supplementedFetch": "Succeeded using backend/parcels/https-json-fetch.js, which constructs an HTTPS Agent with Node built-in rootCertificates plus the AIA intermediate and rejectUnauthorized:true.",
+      "conclusion": "The server certificate validates to a root already trusted by Node when the published intermediate is supplied. No validation bypass or untrusted root was used.",
+      "chainPath": "Durban leaf -> Sectigo Public Server Authentication CA DV R36 (AIA intermediate) -> Sectigo Public Server Authentication Root R46 (Node built-in trust store)."
+    }
+  },
+  "service": {
+    "sourceIdCandidate": "za-ethekwini-ext-cadastral-parcels",
+    "name": "eThekwini EXT Cadastral — Parcels layer",
+    "operator": "eThekwini Municipality, Corporate GIS",
+    "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+    "queryEndpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17/query",
+    "method": "GET ArcGIS REST query",
+    "format": "ArcGIS GeoJSON (f=geojson); Esri JSON and GeoJSON are declared supported formats.",
+    "geometryType": "esriGeometryPolygon",
+    "nativeSpatialReference": "WG31 / GCS_Hartebeesthoek_1994 custom WKT from service; metre units, Transverse Mercator, central meridian 31°, scale 1, false easting/northing 0.",
+    "metricSridCandidate": 102568,
+    "metricSridBasis": "The service WKT matches ESRI:102568 Hartebeesthoek94 Lo31 (E-N); verify equivalence in the runtime projection library before configuring. The service itself provides outSR=4326.",
+    "maxRecordCount": 1000,
+    "supportedQueryFormats": [
+      "JSON",
+      "geoJSON",
+      "PBF"
+    ],
+    "fieldsObserved": [
+      "OBJECTID (OID)",
+      "PROPKEY (integer)",
+      "PROPERTYID (string)",
+      "GlobalID (GlobalID)",
+      "Shape (geometry)"
+    ],
+    "candidateNativeKey": "GlobalID is the leading durable key candidate by field type; PROPERTYID is the cadastral identifier candidate and PROPKEY an additional native integer. Verify uniqueness, null rates and exact reads before runtime use. OBJECTID is the service row ID, not a demonstrated durable cadastral key.",
+    "appCityId": "durban",
+    "centerLatLon": [
+      -29.6451663770183,
+      30.7347684823797
+    ],
+    "reuseStatus": "Not reviewed in this pass.",
+    "scopeAssessment": "Verified sample is central Durban/eThekwini only. Service extent is broad; this does not establish municipality-wide completeness or national scope."
+  },
+  "boundedSample": {
+    "requestUrl": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17/query?where=1%3D1&geometry=%7B%22xmin%22%3A31.0208%2C%22ymin%22%3A-29.8595%2C%22xmax%22%3A31.0228%2C%22ymax%22%3A-29.8575%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=OBJECTID%2CPROPKEY%2CPROPERTYID%2CGlobalID&returnGeometry=true&resultRecordCount=3&f=geojson",
+    "method": "GET using source-scoped verified HTTPS helper",
+    "httpStatus": 200,
+    "contentType": "application/geo+json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      31.0208,
+      -29.8595,
+      31.0228,
+      -29.8575
+    ],
+    "requestedFields": [
+      "OBJECTID",
+      "PROPKEY",
+      "PROPERTYID",
+      "GlobalID",
+      "geometry"
+    ],
+    "parcelRecordCount": 3,
+    "geometryType": "Polygon",
+    "allRingsClosed": true,
+    "savedGeometry": false,
+    "ownerDataRequestedOrSaved": false,
+    "sampleIds": [
+      {
+        "objectId": 1368,
+        "propKey": 1154975,
+        "propertyId": "N0FU00850001104500002",
+        "globalId": "{3DF20684-29F9-418A-A0DD-19FC523673F8}"
+      },
+      {
+        "objectId": 2035,
+        "propKey": 1154926,
+        "propertyId": "N0FU00850001104700000",
+        "globalId": "{B69DFB5A-7676-491D-8069-4A8561F15194}"
+      },
+      {
+        "objectId": 8457,
+        "propKey": 1154244,
+        "propertyId": "N0FU00850001179600009",
+        "globalId": "{0B69600B-ACF6-408B-B470-D15DC98F00F9}"
+      }
+    ],
+    "numberMatched": null,
+    "assessment": "Verified sample: three closed-ring cadastral parcel polygons with three distinct PROPERTYID, PROPKEY and GlobalID values. No broader uniqueness or exact-ID check performed."
+  },
+  "descriptorForRootReview": {
+    "id": "za-ethekwini-ext-cadastral-parcels",
+    "name": "eThekwini EXT Cadastral — Parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+    "cityIds": [
+      "durban"
+    ],
+    "countryCode": "ZA",
+    "idFieldCandidate": "GlobalID",
+    "alternateIdFieldsToAudit": [
+      "PROPERTYID",
+      "PROPKEY"
+    ],
+    "objectIdField": "OBJECTID",
+    "outFieldsForAcceptance": [
+      "OBJECTID",
+      "PROPKEY",
+      "PROPERTYID",
+      "GlobalID"
+    ],
+    "metricSridCandidate": 102568,
+    "responseSrid": 4326,
+    "caCertificatePathCandidate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+    "runtimeEligibility": "Enabled after coordinator acceptance; source conditions remain informational."
+  },
+  "remainingUncertainty": [
+    "18 viewport cells, forced paging, 1,199 exact native-ID rereads and source binding passed. Citywide completeness and boundary currency are not asserted.",
+    "Source-level currentness, coverage and reuse/attribution terms not reviewed.",
+    "Prior GISCOE-hosted South Africa service had GlobalID exact-read and SG21KEY conflict issues; those blockers belong to a different host and dataset copy and must not be assumed resolved by this municipal service."
+  ],
+  "coordinatorAcceptance": {
+    "durban": {
+      "runtimeStatus": "enabled",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/durban-retry-acceptance.json",
+      "nativeIdField": "GlobalID",
+      "exactNativeIds": 1199,
+      "catalogueSourceId": "za-ethekwini-cadastral-parcels"
+    }
+  }
+}

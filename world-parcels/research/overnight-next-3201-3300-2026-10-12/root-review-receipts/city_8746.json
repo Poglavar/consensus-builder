@@ -1,0 +1,19 @@
+{
+  "taskId": "city:8746",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-8746-pingyao.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pingyao-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T08:23:12Z",
+  "findings": {
+    "identity": "WUP 2025 source gzip SHA-256 matches the handoff. Its 2025 Pop row, rank 3293 roster, pending queue and packet agree on Pingyao, China, point [37.2025754669603,112.174297308095] and 183142 persons.",
+    "searches": "Paired packet and review record English and Chinese executed searches with result URLs. Pingyao and Shanxi first-party requests timed out; the national map site returned HTTP 418. These are access limits, not citywide absence.",
+    "custodyAndGeometry": "No Pingyao-specific first-party cadastral custodian or anonymous native parcel ID plus full polygon response was established. registryFound remains null. No sample polygon is retained, so the three-polygon and safe-attribute limits are met.",
+    "admission": "Held: fresh exact-ID reads, forced pagination, 13 bounded cells, metric GEOS checks, source binding and headed Details verification have no independent evidence. No runtime, catalog or coverage admission was made."
+  }
+}

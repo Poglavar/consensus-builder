@@ -1,0 +1,298 @@
+[
+  {
+    "city": "concord",
+    "metadataUrl": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0?f=pjson",
+    "geometryType": "esriGeometryPolygon",
+    "name": "NH Parcels",
+    "description": "",
+    "copyrightText": "",
+    "serviceItemId": "41356aa9df1042519511f06d8ac6f309",
+    "editingInfo": {},
+    "advancedQueryCapabilities": {
+      "supportsSqlExpression": true,
+      "supportsQueryWithResultType": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsQueryWithCacheHint": false,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsCurrentUserQueries": true,
+      "supportsQueryAttachmentsWithReturnUrl": true,
+      "fullTextSearchCapabilities": {
+        "supportsOperator": true,
+        "supportsSearchOperator": true
+      },
+      "supportsDefaultSR": true,
+      "supportsQueryDateBins": false,
+      "supportsQueryWithLodSR": true,
+      "supportsPaginationOnAggregatedQueries": true,
+      "supportsPagination": true,
+      "supportsMaxRecordCountFactor": true,
+      "fullTextSearchableFields": [],
+      "supportsStatistics": true,
+      "supportsOrderBy": true,
+      "supportsReturningGeometryProperties": true,
+      "supportsFullTextSearch": true,
+      "supportsQueryWithDistance": true,
+      "supportsLod": true,
+      "supportsSpatialAggregationStatistics": false,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryAttachments": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryAttachmentsCountOnly": true,
+      "supportsOrderByOnlyOnLayerFields": false,
+      "supportsOutFieldSqlExpression": true,
+      "supportsTopFeaturesQuery": true,
+      "supportsReturningGeometryEnvelope": true,
+      "supportsDistinct": true,
+      "supportsReturningGeometryCentroid": true,
+      "supportsQueryAnalytic": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true
+    },
+    "maxRecordCount": 2000,
+    "fields": [
+      {
+        "nullable": false,
+        "defaultValue": null,
+        "editable": false,
+        "length": 4,
+        "type": "esriFieldTypeOID",
+        "modelName": "objectid",
+        "domain": null,
+        "name": "objectid",
+        "alias": "OBJECTID"
+      },
+      {
+        "modelName": "nh_gis_id",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "nh_gis_id",
+        "length": 100,
+        "alias": "NH_GIS_ID",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "town",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "town",
+        "length": 25,
+        "alias": "Town",
+        "type": "esriFieldTypeString"
+      }
+    ]
+  },
+  {
+    "city": "trenton",
+    "metadataUrl": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0?f=pjson",
+    "geometryType": "esriGeometryPolygon",
+    "name": "Cad_parcel_mod4",
+    "description": "The statewide composite of parcels (cadastral) data for New Jersey was developed during the Parcels Normalization Project in 2008-2014 by the NJ Office of Information Technology, Office of GIS (NJOGIS). The normalized parcels data are compatible with the New Jersey Department of Treasury MOD-IV system currently used by Tax Assessors and selected attributes from that system have been joined with the parcels in this dataset. This composite of parcels data serves as one of New Jersey's framework GIS datasets. Stewardship and maintenance of the data will continue to be the purview of county and municipal governments, but the statewide composite will be maintained by NJOGIS.This layer is published in Web Mercator (Auxiliary Sphere) (3857) projection. If your ArcGIS Pro project is set to a different coordinate system, you may see odd graphical rendering issues (arcs or spikes) when viewing the data. This is only a display issue\u2014the geometry data itself is not affected. If you need parcels in NJ State Plane (US Foot) datum, please download them directly from here instead of reprojecting in ArcGIS Pro.Parcel attributes were normalized to a standard structure, specified in the NJ GIS Parcel Mapping Standard, to store parcel information and provide a PIN (parcel identification number) field that can be used to match records with suitably-processed property tax data. The PIN also can be constructed from attributes available in the MOD-IV Tax List Search table (see below). This dataset includes a large number of additional attributes from matched MOD-IV records; however, not all MOD-IV records match to a parcel, for reasons explained elsewhere in this metadata record. The statewide property tax table, including all MOD-IV records, is available as a separate download \"MOD-IV Tax List Search Plus Database of New Jersey.\" Parcel boundaries with limited attributes are available for download here. Also available separately are countywide parcels and tables of property ownership and tax information extracted from the NJ Division of Taxation database. Learn more at NJGIN Parcels.The polygons delineated in this dataset do not represent legal boundaries and should not be used to provide a legal determination of land ownership. Parcels are not survey data and should not be used as such. Please note that these parcel datasets are not intended for use as tax maps. They are intended to provide reasonable representations of parcel boundaries for planning and other purposes. Please see Data Quality / Process Steps for details about updates to this composite since its first publication. See Supplemental Information for more details.***NOTE*** For users who incorporate NJOGIS services into web maps and/or web applications, please sign up for the NJ Geospatial Forum discussion listserv for early notification of service changes. Visit https://nj.gov/njgf/about/listserv/ for more information.",
+    "copyrightText": "NJ Office of Information Technology, Office of GIS (NJOGIS); \nAtlantic County; \nBergen County; \nBurlington County; \nCamden County; \nCape May County; \nCumberland County; \nEssex County; \nGloucester County; \nHudson County; \nHunterdon County; \nMercer County; \nMiddlesex County; \nMonmouth County; \nMorris County; \nOcean County; \nPassaic County; \nSalem County; \nSomerset County; \nSussex County; \nUnion County; \nWarren County; \nNewark; \nEast Brunswick; \nNew Brunswick; \nNorth Brunswick; \nPiscataway; \nSouth Brunswick; \nWoodbridge;\nCivil Solutions; \nSpatial Data Logic\n\nProcessing of data from Division of Taxation for use in this dataset was performed by NJOIT, Enterprise Data Services, Data Warehouse.",
+    "serviceItemId": "533599bbfbaa4748bf39faf1375a8a9c",
+    "editingInfo": {
+      "lastEditDate": 1787045558134,
+      "schemaLastEditDate": 1787045558134,
+      "dataLastEditDate": 1787045558134
+    },
+    "advancedQueryCapabilities": {
+      "supportsPagination": true,
+      "supportsPaginationOnAggregatedQueries": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsQueryWithDistance": true,
+      "supportsOutDistance": true,
+      "supportsReturningQueryExtent": true,
+      "supportsStatistics": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsQueryWithResultType": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsCountDistinct": true,
+      "supportsPercentileStatistics": true,
+      "supportsApproxPercentileStatistics": true,
+      "supportsSpatialAggregationStatistics": true,
+      "supportsTrueCurve": true,
+      "supportedSpatialAggregationStatistics": [
+        "EnvelopeAggregate",
+        "CentroidAggregate",
+        "ConvexHullAggregate"
+      ],
+      "supportsLod": true,
+      "supportsQueryWithLodSR": false,
+      "supportedLodTypes": [
+        "geohash"
+      ],
+      "supportsReturningGeometryCentroid": true,
+      "supportsReturningGeometryEnvelope": true,
+      "supportsReturningGeometryProperties": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsCurrentUserQueries": true,
+      "supportsHavingClause": true,
+      "supportsOutFieldSQLExpression": true,
+      "supportsMaxRecordCountFactor": true,
+      "supportsTopFeaturesQuery": true,
+      "supportsDisjointSpatialRel": true,
+      "supportsQueryWithCacheHint": true,
+      "supportedOperationsWithCacheHint": [
+        "query",
+        "queryTopFilter",
+        "queryAnalytics",
+        "queryAttachments",
+        "queryRelated",
+        "queryBins",
+        "queryPivot"
+      ],
+      "supportsQueryAnalytic": true,
+      "supportsQueryPivot": true,
+      "supportsQueryBins": true,
+      "supportsDefaultSR": true,
+      "supportsTranslations": false,
+      "supportsAggIds": true,
+      "supportsQueryWithCollation": true,
+      "supportsISODOW": true,
+      "supportsISOWeek": true,
+      "supportsFullTextSearch": true,
+      "fullTextSearchCapabilities": {
+        "supportsAccentSensitivity": true,
+        "supportsStopWords": true,
+        "supportsSearchOperator": true,
+        "supportsOperator": true
+      }
+    },
+    "maxRecordCount": 2000,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "sqlType": "sqlTypeOther",
+        "nullable": false,
+        "editable": false,
+        "domain": null,
+        "defaultValue": null
+      },
+      {
+        "name": "PAMS_PIN",
+        "type": "esriFieldTypeString",
+        "alias": "PAMS_PIN",
+        "sqlType": "sqlTypeOther",
+        "length": 38,
+        "nullable": true,
+        "editable": true,
+        "domain": null,
+        "defaultValue": null
+      }
+    ]
+  },
+  {
+    "city": "santa_fe",
+    "metadataUrl": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2?f=pjson",
+    "geometryType": "esriGeometryPolygon",
+    "name": "Santa Fe County Parcels",
+    "description": "",
+    "copyrightText": "",
+    "serviceItemId": "892196b040024d9f9c5cf39609123d38",
+    "editingInfo": null,
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": true,
+      "supportsCurrentUserQueries": true
+    },
+    "maxRecordCount": 2000,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "parcel_number",
+        "type": "esriFieldTypeString",
+        "alias": "parcel_number",
+        "length": 30,
+        "domain": null
+      }
+    ]
+  },
+  {
+    "city": "albany",
+    "metadataUrl": "https://nysgeohub.ny.gov/arcgis/rest/services/Parcels/NYS_Tax_Parcels_Public/MapServer/1?f=pjson",
+    "geometryType": "esriGeometryPolygon",
+    "name": "NYS Tax Parcels Public",
+    "description": "Publication Date: May 2026. This polygon layer is updated annually.     This layer contains 2024 parcel data only for NY State counties which gave NYS ITs Geospatatial Services permission to share this data with the public. Work to obtain parcel data from additional counties, as well as permission to share the data, is ongoing. To date, 36 counties have provided the Geospatial Services permission to share their parcel data with the public. Parcel data for counties which do not allow the Geospatial Services to redistribute their data must be obtained directly from those counties. Geospatial Services' goal is to eventually include parcel data for all counties in New York State.     Parcel geometry was incorporated as received from County Real Property Departments. No attempt was made to edge-match parcels along adjacent counties. County attribute values were populated using 2024 Assessment Roll tabular data Geospatial Services obtained from the NYS Department of Tax and Finance\u2019s Office of Real Property Tax Services (ORPTS). Tabular assessment data was joined to the county provided parcel geometry using the SWIS &amp; SBL or SWIS &amp; PRINT KEY unique identifier for each parcel.     Detailed information about assessment attributes can be found in the ORPTS Assessor\u2019s Manuals available here: https://www.tax.ny.gov/research/property/assess/manuals/assersmanual.htm. New York City data comes from NYC MapPluto which can be found here: https://www1.nyc.gov/site/planning/data-maps/open-data/dwn-pluto-mappluto.page.     This layer displays when zoomed in below 1:37,051-scale.     This map service is available to the public.     Geometry accuracy varies by contributing county.     Thanks to the following counties that specifically authorized Geospatial Services to share their GIS tax parcel data with the public: Albany, Cayuga, Chautauqua, Cortland, Erie, Genesee, Greene, Hamilton, Lewis, Livingston, Montgomery, New York City (Bronx, Kings, New York, Queens, Richmond), Oneida, Onondaga, Ontario, Orange, Oswego, Otsego, Putnam, Rensselaer, Rockland, Schuyler, Steuben, St Lawrence, Suffolk, Sullivan, Tioga, Tompkins, Ulster, Warren, Wayne, and Westchester.    The State of New York, acting through the New York State Office of Information Technology Services, makes no representations or warranties, express or implied, with respect to the use of or reliance on the Data provided. The User accepts the Data provided \u201cas is\u201d with no guarantees that it is error free, complete, accurate, current or fit for any particular purpose and assumes all risks associated with its use. The State disclaims any responsibility or legal liability to Users for damages of any kind, relating to the providing of the Data or the use of it. Users should be aware that temporal changes may have occurred since this Data was created. ",
+    "copyrightText": "Contributing counties, NYS Office of Information Technology Services Geospatial Services and NYS Department of Taxation and Finance\u2019s Office of Real Property Tax Services (ORPTS). Primary Contact:  nysgis@its.ny.gov, 518-242-5029.",
+    "serviceItemId": "c7f553baf6734f82a904761c2feea5db",
+    "editingInfo": null,
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": true,
+      "supportsCurrentUserQueries": true
+    },
+    "maxRecordCount": 2000,
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null
+      },
+      {
+        "name": "COUNTY_NAME",
+        "type": "esriFieldTypeString",
+        "alias": "COUNTY_NAME",
+        "length": 50,
+        "domain": null
+      },
+      {
+        "name": "SWIS_SBL_ID",
+        "type": "esriFieldTypeString",
+        "alias": "SWIS_SBL_ID",
+        "length": 50,
+        "domain": null
+      }
+    ]
+  }
+]

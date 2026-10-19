@@ -1,0 +1,93 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:GE:tskhinvali",
+  "name": "Tskhinvali",
+  "country": "Georgia",
+  "countryCode": "GE",
+  "centerLatLon": [
+    42.2257,
+    43.9709
+  ],
+  "capitalRole": "de facto seat of South Ossetia; supplemental disputed-status seat",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Tskhinvali cadastral land parcel map GIS South Ossetia official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://nsdi.gov.ge/en/geoportal",
+        "https://maps.gov.ge/"
+      ]
+    },
+    {
+      "query": "ცხინვალი საკადასტრო რუკა მიწის ნაკვეთები GIS",
+      "language": "Georgian",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://nsdi.gov.ge/en/geoportal",
+        "https://maps.gov.ge/"
+      ]
+    },
+    {
+      "query": "Tskhinvali cadastral map parcels Georgian Ossetian Russian кадастровая карта Цхинвал",
+      "language": "Georgian/Russian",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://nsdi.gov.ge/en/geoportal",
+        "https://maps.gov.ge/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://nsdi.gov.ge/en/geoportal",
+      "observation": "Georgia NSDI geoportal lists a Registered Parcel dataset and cadastral-code/settlement search; whether it returns data in Tskhinvali was not tested."
+    },
+    {
+      "url": "https://napr.gov.ge/en",
+      "observation": "Georgia National Agency of Public Registry provides cadastral/geoinformation services; no Tskhinvali geometry query verified."
+    },
+    {
+      "url": "https://nsdi.gov.ge/en/geoportal",
+      "observation": "Georgia NSDI geoportal loaded over HTTPS. The inspected landing page did not expose a city-specific cadastral parcel service or public parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nsdi.gov.ge/en/geoportal",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://nsdi.gov.ge/en/geoportal; content type text/html; charset=utf-8; 988853 bytes.",
+      "firstPartyScripts": [
+        "https://nsdi.gov.ge/build/assets/app-CrprlAnx.js"
+      ],
+      "relevantOfficialLinks": [
+        "https://nsdi.gov.ge/en/geoportal"
+      ]
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Georgia NSDI/NAPR describe national parcel services, but the inspected evidence does not establish Tskhinvali coverage; de facto local registry or cadastral coverage remains unknown.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "national_registry_candidate_city_scope_unverified",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "Georgia NSDI/NAPR describe national parcel services, but the inspected evidence does not establish Tskhinvali coverage; de facto local registry or cadastral coverage remains unknown.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "City-specific registry coverage is unknown; only national or general city-map/geospatial evidence was located, and no bounded city parcel response was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

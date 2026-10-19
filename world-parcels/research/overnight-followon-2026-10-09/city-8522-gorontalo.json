@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8522",
+  "wupCityCode": 8522,
+  "name": "Gorontalo",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 1082,
+  "queueRank": 1082,
+  "point": [
+    0.560575465810086,
+    123.064022233528
+  ],
+  "centerLatLon": [
+    0.560575465810086,
+    123.064022233528
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 513078,
+  "population2025k": 513.078,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The official Gorontalo City Geoportal identifies itself as a city node in Indonesia’s spatial-data network, administered by Bappeda. Its catalog/service description is general geospatial information; it did not establish local cadastral/title-record custody or expose a parcel layer. National BHUMI/ATR-BPN material is not used to infer city-local custody.",
+  "registryEvidenceUrls": [
+    "https://gorontalokota.ina-sdi.or.id/",
+    "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent.",
+  "scopeLimits": "No full parcel polygon or personal property attributes retained. The exact UN WUP2025 weighted settlement point is a search locator only; it is not a parcel-coverage claim. No complete native parcel polygon was verified; `publicParcelGeometryFound:false` records an unverified result, not proof that no public geometry exists.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "The official Gorontalo City Geoportal identifies itself as a city node in Indonesia’s spatial-data network, administered by Bappeda. Its catalog/service description is general geospatial information; it did not establish local cadastral/title-record custody or expose a parcel layer. National BHUMI/ATR-BPN material is not used to infer city-local custody.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gorontalo City official land registry cadastral map parcel boundaries Geoportal Gorontalo",
+        "scope": "Fresh city-specific registry-custody and anonymous parcel-geometry discovery.",
+        "result": "The city geoportal was reachable, but no city-specific parcel feature layer or local registry custodian was verified. National BHUMI documentation is not substituted for a local source. No full-geometry query was made because no target city parcel layer was identified.",
+        "actualResultUrls": [
+          "https://gorontalokota.ina-sdi.or.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+        ],
+        "executionMethod": "Separately executed web search; first-party sources inspected."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Gorontalo Kota peta bidang tanah pertanahan kadaster peta bidang BHUMI ATR BPN Gorontalo official",
+        "scope": "Independent local-language search for local custody and anonymous full-parcel geometry.",
+        "result": "The city geoportal was reachable, but no city-specific parcel feature layer or local registry custodian was verified. National BHUMI documentation is not substituted for a local source. No full-geometry query was made because no target city parcel layer was identified.",
+        "actualResultUrls": [
+          "https://gorontalokota.ina-sdi.or.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+        ],
+        "executionMethod": "Separately executed native/local-language web search; first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gorontalokota.ina-sdi.or.id/",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 2410,
+        "assessment": "Official city geoportal shell reachable; catalog page did not expose an identified local cadastral feature layer in the inspected content."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://gorontalokota.ina-sdi.or.id/",
+        "observation": "Official Gorontalo City Geoportal node; identifies the city data portal, but no parcel cadastre is confirmed."
+      },
+      {
+        "homeUrl": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "observation": "National ATR/BPN BHUMI public spatial-map documentation; national source ground only, not evidence of local city custody."
+      },
+      {
+        "homeUrl": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+        "observation": "National BHUMI catalog documentation lists land parcel datasets, but not a Gorontalo-city physical sample."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Local Kantor Pertanahan custody details and an anonymous Gorontalo parcel vector endpoint remain unverified.",
+  "nextStep": "Inspect city portal catalog and local BPN public service documentation for a city-bound parcel layer and custody statement.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

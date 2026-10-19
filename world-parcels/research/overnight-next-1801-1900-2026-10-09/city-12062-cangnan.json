@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 12062,
+  "queueRank": 1865,
+  "cityId": "queue:1865",
+  "name": "Cangnan",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [27.5120046876128, 120.404558305874],
+  "centerLatLon": [27.5120046876128, 120.404558305874],
+  "population2025": 308925,
+  "population2025k": 308.925,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cangnan China official cadastral parcel map land registry GIS real estate registration",
+        "result": "First-party discovery identified an official Zhejiang Natural Resources article sourced from the Cangnan Real Estate Registration Service Center. It documents local registration custody and digital registration work, but no public anonymous parcel viewer or ID-plus-geometry service was exposed.",
+        "actualResultUrls": [
+          "https://zrzyt.zj.gov.cn/art/2024/4/7/art_1289955_59027181.html",
+          "https://www.cncn.gov.cn/art/2022/4/22/art_1255449_59034913.html"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "苍南县 不动产登记 地籍图 宗地图 自然资源 官方",
+        "result": "Native-language first-party discovery found an official Zhejiang Natural Resources report naming the Cangnan Real Estate Registration Service Center and an official Cangnan news report describing the county's 不动产智治 platform. These establish local registry/service evidence, not an open parcel feature response.",
+        "actualResultUrls": [
+          "https://zrzyt.zj.gov.cn/art/2024/4/7/art_1289955_59027181.html",
+          "https://www.cncn.gov.cn/art/2022/4/22/art_1255449_59034913.html"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Simplified-Chinese first-party discovery, followed by bounded TLS-verified GET attempts; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe-field request, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyt.zj.gov.cn/art/2024/4/7/art_1289955_59027181.html",
+      "observation": "Official Zhejiang Natural Resources page, with source identified as the Cangnan Real Estate Registration Service Center and Zhejiang Natural Resources registration bureau, describes Cangnan registration operations and digital registration workflows. No public map configuration, parcel layer, schema, CRS, or anonymous geometry response was exposed."
+    },
+    {
+      "url": "https://www.cncn.gov.cn/art/2022/4/22/art_1255449_59034913.html",
+      "observation": "Official Cangnan government news reports the county 不动产智治 platform and authorized property-information query workflows. It does not publish a safe anonymous parcel geometry endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyt.zj.gov.cn/art/2024/4/7/art_1289955_59027181.html",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS/default curl request timed out during DNS resolution after 20 seconds; first-party web discovery/reader had already returned the article content. No viewer/API route was obtained."
+    },
+    {
+      "url": "https://www.cncn.gov.cn/art/2022/4/22/art_1255449_59034913.html",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official county page denied the bounded anonymous request. Search discovery exposed article text, but no public viewer configuration or parcel API was exposed; no bypass was attempted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Cangnan County local real-estate-registration and natural-resources administration, Zhejiang, China.",
+    "verifiedOpenScope": "Local registry/service custody and procedure evidence only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current public viewer/API route, access controls, source layer schema, CRS, stable native parcel identity, update currency, geometry quality, and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made. Packet completion is research evidence only; runtime remains held pending independent serial qualification."
+}

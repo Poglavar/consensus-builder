@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Jamnagar",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Government of Gujarat materials identify two Jamnagar City Survey Offices (Jamnagar-1 and Jamnagar-2) and the district’s land-records service. Jamnagar Municipal Corporation publishes a city map/GIS page, but its FAQ describes utility layers rather than parcel polygons and its property assessment services are account-oriented. The local city-survey registry is verified; no safe anonymous geometry route is.",
+  "registryEvidenceUrls": [
+    "https://jamnagar.nic.in/service/land-records/",
+    "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf",
+    "https://mcjamnagar.com/",
+    "https://mcjamnagar.com/faq.aspx",
+    "https://www.mcjamnagar.com/faqguj.aspx",
+    "https://revenuedepartment.gujarat.gov.in/iora-service"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2647,
+  "cityId": "wup2025:2647",
+  "centerLatLon": [
+    22.4639071637253,
+    70.0615818736102
+  ],
+  "rank": 795,
+  "queueRank": 795,
+  "population2025": 680589,
+  "population2025k": 680.589,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No public anonymous parcel feature layer with a verified safe geometry-and-ID schema was found. JMC’s public map description covers civic utility layers, and assessment lookup would involve account-specific information; neither was queried for parcel data.",
+  "scopeLimits": "Local city-survey registry evidence is clear, but the exact parcel layer/API, schema, point coverage and citywide completeness remain unverified.",
+  "remainingUncertainty": "Local city-survey registry evidence is clear, but the exact parcel layer/API, schema, point coverage and citywide completeness remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jamnagar Gujarat official city survey office cadastral map property card GIS",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "Official Jamnagar district and Gujarat Revenue sources establish land-record/property-card services. A Gujarat government scanning tender names Jamnagar-1 and Jamnagar-2 City Survey Offices. JMC publishes a city map and GIS application; its FAQ describes public-utility layers, while property-tax assessment is account-oriented. No parcel geometry schema was verified.",
+        "actualResultUrls": [
+          "https://jamnagar.nic.in/service/land-records/",
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf",
+          "https://mcjamnagar.com/",
+          "https://mcjamnagar.com/faq.aspx"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      },
+      {
+        "language": "Gujarati",
+        "query": "જામનગર શહેર સર્વે કચેરી જમીન રેકોર્ડ મિલકત કાર્ડ GIS નકશો",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "જામનગર જિલ્લા સત્તાવાર land-records પાનું રેકોર્ડ ઓફ રાઈટ્સ સેવા દર્શાવે છે; ગુજરાત સરકારના દસ્તાવેજમાં Jamnagar-1 અને Jamnagar-2 City Survey Offices સૂચિબદ્ધ છે. JMC FAQ શહેરના નકશા માટેના નકશા સાધનો અને જાહેર utility layers સમજાવે છે; મિલકત કર શોધ વ્યક્તિગત assessment સંદર્ભિત છે. કોઈ parcel geometry/schema query કરવામાં આવી નથી.",
+        "actualResultUrls": [
+          "https://jamnagar.nic.in/service/land-records/",
+          "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf",
+          "https://www.mcjamnagar.com/faqguj.aspx"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://jamnagar.nic.in/service/land-records/",
+        "observation": "Official district portal describes land records, cadastral survey basis and online record-of-rights/mutation services in Jamnagar district."
+      },
+      {
+        "url": "https://gil.gujarat.gov.in/tendercms/TenderDocs/2015219155312878.pdf",
+        "observation": "Government of Gujarat Informatics procurement document lists Jamnagar-1 and Jamnagar-2 City Survey Offices."
+      },
+      {
+        "url": "https://mcjamnagar.com/faq.aspx",
+        "observation": "Official JMC FAQ references city-survey documents for municipal planning processes and a city map; no downloadable parcel feature schema is documented."
+      },
+      {
+        "url": "https://www.mcjamnagar.com/faqguj.aspx",
+        "observation": "Official Gujarati FAQ describes map tools and public utility layers; it does not describe full parcel geometry. Tax services request assessment identifiers and were not queried."
+      }
+    ],
+    "metadataReviewFile": "jamnagar-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-2647-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Local city-survey registry evidence is clear, but the exact parcel layer/API, schema, point coverage and citywide completeness remain unverified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel features were received; registry evidence and map/service descriptions are not parcel coverage claims."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No complete public parcel polygon was verified under a schema that returns only geometry and safe identifiers.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "point": [
+    22.4639071637253,
+    70.0615818736102
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://jamnagar.nic.in/service/land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Land Records | District Jamnagar, Government of Gujarat | India    "
+  },
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

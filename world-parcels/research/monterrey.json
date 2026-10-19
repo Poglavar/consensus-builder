@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:116",
+  "queueRank": 116,
+  "name": "Monterrey",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "centerLatLon": [
+    25.7141114579572,
+    -100.288026130133
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://sig.nl.gob.mx/",
+      "observation": "Nuevo Leon state technology/GIS site (HTTP 200); no parcel service or catalog link found in the page."
+    },
+    {
+      "url": "https://www.monterrey.gob.mx/",
+      "observation": "Municipality of Monterrey site (HTTP 200); no open parcel layer found."
+    },
+    {
+      "url": "https://www.inegi.org.mx/temas/catastro/",
+      "observation": "INEGI cadastre theme page; national geostatistical products are blocks, not cadastral parcels (per Guadalajara/Mexico City notes)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sig.nl.gob.mx/arcgis/rest/services",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "no ArcGIS REST directory at this path"
+    },
+    {
+      "url": "https://catastro.nl.gob.mx/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "host unreachable from this client"
+    },
+    {
+      "url": "https://mapas.monterrey.gob.mx",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "host unreachable"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=predios%20monterrey",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results; ArcGIS Online/Hub searches for Nuevo Leon catastro found no parcel layer"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Nuevo Leon state cadastre (Instituto Registral y Catastral) not found online as open data",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Several state/municipal hosts were unreachable, so the negative is weak. The Nuevo Leon cadastre likely has a viewer that this pass did not find.",
+  "nextStep": "Find the Instituto Registral y Catastral de Nuevo Leon map viewer and check its network calls for an anonymous ArcGIS/WMS/WFS parcel layer; also municipal Monterrey/San Pedro sources."
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11424",
+  "cityCode": 11424,
+  "wupCityCode": 11424,
+  "name": "Taizhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1538,
+  "queueRank": 1538,
+  "point": [32.4835458969483, 119.923670465704],
+  "centerLatLon": [32.4835458969483, 119.923670465704],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 371055,
+  "population2025k": 371.055,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An official Taizhou municipal government announcement identifies the Taizhou Real Estate Registration Center as responsible for municipal urban real-estate registration, including construction-land, homestead, building, collective-land and forest-right registration. This establishes local registry custody, not anonymous parcel-geometry availability.",
+  "registryEvidenceUrls": [
+    "https://www.taizhou.gov.cn/zfxxgk/fdzdgknr/zcwj/qtwj/szfwj/art/2015/art_060e4c78bccd47a787b788dc4542c7e0.html",
+    "https://www.jszwfw.gov.cn/col/col172885/",
+    "https://tz.jszwfw.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current official Taizhou government-service site and Jiangsu integrated real-estate-registration landing page were reachable and linked Taizhou services, but the inspected public HTML/navigation exposed no current anonymous parcel-map JavaScript configuration, service endpoint, schema, CRS, or safe ID-plus-complete-polygon response. No credentials, CAPTCHA bypass, certificate exception or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_service_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The municipal government announcement assigns Taizhou Real Estate Registration Center responsibility for multiple classes of city-area real-estate registration; current provincial and municipal portals advertise online public-service navigation.",
+    "verifiedOpenScope": "Local registry custodian and current government-service routes verified; current parcel layer, schema, CRS, native identity and anonymous geometry response were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Taizhou Jiangsu China official cadastral parcel map GIS land registration public service",
+        "scope": "Identify the local registry custodian and an official public cadastral or geospatial map route.",
+        "result": "Search found the official Taizhou municipal registration announcement, the official Jiangsu real-estate-registration landing page, and the current Taizhou government-service portal. No current anonymous parcel feature endpoint or safe polygon response was identified.",
+        "actualResultUrls": [
+          "https://www.taizhou.gov.cn/zfxxgk/fdzdgknr/zcwj/qtwj/szfwj/art/2015/art_060e4c78bccd47a787b788dc4542c7e0.html",
+          "https://www.jszwfw.gov.cn/col/col172885/",
+          "https://tz.jszwfw.gov.cn/"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "泰州市 官方 不动产登记 地籍图 GIS 宗地 地图 自然资源",
+        "scope": "Independent Chinese-language discovery for a local official registry or cadastral-map route.",
+        "result": "Chinese-language search found the official Taizhou municipal announcement naming the Taizhou Real Estate Registration Center, the Jiangsu registration landing page, and the Taizhou government-service portal. Publicly exposed pages did not provide a current anonymous parcel schema or geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.taizhou.gov.cn/zfxxgk/fdzdgknr/zcwj/qtwj/szfwj/art/2015/art_060e4c78bccd47a787b788dc4542c7e0.html",
+          "https://www.jszwfw.gov.cn/col/col172885/",
+          "https://tz.jszwfw.gov.cn/"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The absence of an exposed parcel endpoint is an access/discovery limitation only and does not support citywide absence. Current viewer configuration, service URL, parcel schema, CRS, stable native identity, safe field availability, polygon availability and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Taizhou/Jiangsu cadastral or public geospatial service. Do not enable runtime from this packet alone."
+}

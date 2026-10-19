@@ -1,0 +1,36 @@
+{
+  "taskId": "city:8816",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8816-biu.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/biu-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T17:39:54Z",
+  "identity": {
+    "cityCode": 8816,
+    "queueRank": 2677,
+    "country": "Nigeria",
+    "point": [
+      10.6138838266667,
+      12.1878908378812
+    ],
+    "populationPersons": 220703
+  },
+  "bilingualSearchLanguages": [
+    "English",
+    "Hausa"
+  ],
+  "retainedFullPolygonCount": 0,
+  "reviewReason": "BOGIS first-party site supports state land-administration custodianship, but no anonymous Biu parcel feature response or native ID is evidenced. Route 404 is not citywide absence.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced paging and complete manifests",
+    "13 aligned bounded cells",
+    "independent metric GEOS validity, duplicates and overlap checks",
+    "full-parcel proposal source binding",
+    "headed Details-panel verification"
+  ],
+  "runtimeAdmission": false
+}

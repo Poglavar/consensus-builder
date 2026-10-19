@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8143-selong.json",
+  "purpose": "Document local registry evidence, language-specific searches and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official ATR/BPN site for Kantor Pertanahan Kabupaten Lombok Timur identifies the office at Jl. MT Haryono No. 03, Kelurahan Selong, Kecamatan Selong. This is the local national land-office custodian seated in Selong; the source does not establish a public parcel-geometry feed or citywide coverage. No public vector parcel layer or safe bounded geometry route verified.",
+  "registryAssessment": "The official ATR/BPN site for Kantor Pertanahan Kabupaten Lombok Timur identifies the office at Jl. MT Haryono No. 03, Kelurahan Selong, Kecamatan Selong. This is the local national land-office custodian seated in Selong; the source does not establish a public parcel-geometry feed or citywide coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kab-lomboktimur.atrbpn.go.id/",
+      "observation": "Official ATR/BPN district land-office site identifies Kantor Pertanahan Kabupaten Lombok Timur at an address in Selong."
+    },
+    {
+      "url": "https://kab-lomboktimur.atrbpn.go.id/berita/peringati-hari-agraria-dan-tata-ruang-hantaru-ke-65-tahun-2025-kantah-lotim-raih-dua-penghargaan-tingkat-provinsi",
+      "observation": "Official local-office publication confirms the institution; no parcel geometry endpoint is linked."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Selong Lombok Indonesia official land office cadastral parcel map ATR BPN geoportal",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Official ATR/BPN identifies the Lombok Timur land office in Selong. No anonymous parcel vector service or city-specific geometry endpoint was found in the reviewed sources.",
+      "actualResultUrls": [
+        "https://kab-lomboktimur.atrbpn.go.id/",
+        "https://kab-lomboktimur.atrbpn.go.id/berita/peringati-hari-agraria-dan-tata-ruang-hantaru-ke-65-tahun-2025-kantah-lotim-raih-dua-penghargaan-tingkat-provinsi"
+      ],
+      "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+    },
+    {
+      "language": "Indonesian",
+      "query": "site:atrbpn.go.id Selong Kantor Pertanahan Lombok Timur bidang tanah peta",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Indonesian-language search confirmed the local Kantor Pertanahan’s address in Kelurahan Selong. No parcel identifier or personal record was queried.",
+      "actualResultUrls": [
+        "https://kab-lomboktimur.atrbpn.go.id/",
+        "https://kab-lomboktimur.atrbpn.go.id/berita/peringati-hari-agraria-dan-tata-ruang-hantaru-ke-65-tahun-2025-kantah-lotim-raih-dua-penghargaan-tingkat-provinsi"
+      ],
+      "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "decision": "No public vector parcel layer or safe bounded geometry route verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP locator and reviewed city-specific official sources only.",
+    "limits": "No citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://kab-lomboktimur.atrbpn.go.id/",
+      "method": "Official website/service metadata review",
+      "result": "Official ATR/BPN district land-office site identifies Kantor Pertanahan Kabupaten Lombok Timur at an address in Selong."
+    },
+    {
+      "url": "https://kab-lomboktimur.atrbpn.go.id/berita/peringati-hari-agraria-dan-tata-ruang-hantaru-ke-65-tahun-2025-kantah-lotim-raih-dua-penghargaan-tingkat-provinsi",
+      "method": "Official website/service metadata review",
+      "result": "Official local-office publication confirms the institution; no parcel geometry endpoint is linked."
+    }
+  ],
+  "sourceCandidate": null,
+  "privacyReview": {
+    "ownerAddressTaxOrAccountValuesRequested": false,
+    "propertyDetailsSubmitted": false,
+    "credentialsOrTokensRetained": false
+  },
+  "sampleGeometryFile": null
+}

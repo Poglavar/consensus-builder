@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9124-baoding.json",
+  "purpose": "Document city-scope registry and public parcel-geometry source review for the exact WUP ranked settlement point; retain only safe geometry evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Only municipal registry/department evidence is established. No public city parcel layer, exact WUP point geometry, or map extent was verified.",
+  "registryAssessment": "Baoding municipal government identifies the city Natural Resources and Planning Bureau and real-estate registration center. The retrieved official result does not expose a public parcel geometry source, and the direct page open timed out; no exact WUP point coverage was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.baoding.gov.cn/zwgknr-1762-395207.html",
+      "observation": "Official Baoding city government page identifies the Municipal Natural Resources and Planning Bureau and municipal real-estate registration center. Direct page open timed out during review; no GIS service is linked/verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "保定市不动产登记中心 地籍图 查询 官方 保定市自然资源和规划局",
+      "scope": "Find city registration and cadastral/map sources.",
+      "result": "Official Baoding government search results identify the Municipal Natural Resources and Planning Bureau and city real-estate registration center; no public parcel geometry endpoint was found.",
+      "actualResultUrls": [
+        "https://www.baoding.gov.cn/zwgknr-1762-395207.html"
+      ],
+      "executionMethod": "Separate Chinese-language search; official government result reviewed (direct page open timed out)."
+    },
+    {
+      "language": "English",
+      "query": "Baoding cadastral map city land parcel registry official GIS natural resources bureau",
+      "scope": "Search for public city parcel GIS and registry evidence.",
+      "result": "No anonymous city parcel geometry or official map service was found; municipal registry and natural-resources roles were corroborated by the official government page result.",
+      "actualResultUrls": [
+        "https://www.baoding.gov.cn/zwgknr-1762-395207.html"
+      ],
+      "executionMethod": "Separate English-language search followed by official city-site review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.baoding.gov.cn/zwgknr-1762-395207.html",
+      "method": "Official government page open",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Search/indexed government result identifies municipal natural-resources and real-estate registration roles. Direct page open timed out; no GIS metadata or geometry was obtained."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner/address/property detail or personal lookup requested.",
+  "runtimeAssessment": "held_no_public_geometry"
+}

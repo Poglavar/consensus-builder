@@ -1,0 +1,40 @@
+{
+  "cityCode": 1529,
+  "queueRank": 2409,
+  "name": "Pokhariya",
+  "country": "Nepal",
+  "countryCode": "NP",
+  "point": [27.0544856098853, 84.7451093928861],
+  "population2025": 242966,
+  "population2025k": 242.966,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pokhariya Nepal cadastral parcel map official land records survey department GIS",
+        "result": "Official results identified the Department of Land Management and Archive's Land Administration Office Pokhariya page and the Survey Department's MeroKitta official land-map service. No anonymous Pokhariya parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.dolma.gov.np/office/Pokhariya",
+          "https://merokitta.dos.gov.np/application/main",
+          "https://dos.gov.np/services-list/"
+        ]
+      },
+      {
+        "language": "Nepali/native",
+        "query": "पोखरिया नेपाल जग्गा नापी नक्सा कित्ता आधिकारिक",
+        "result": "आधिकारिक नतिजाले पोखरियास्थित भूमि प्रशासन कार्यालय र नापी विभागको मेरो कित्ता सेवा देखायो। मेरो कित्तामा नक्सा प्रिन्ट तथा प्लट रजिस्टर सेवा छन्, तर सेवाका लागि जग्गाधनी प्रमाणपुर्जा, नागरिकता र OTP आवश्यक देखियो; सार्वजनिक अज्ञात पार्सल ज्यामिति API प्रमाणित भएन।",
+        "actualResultUrls": [
+          "https://www.dolma.gov.np/office/Pokhariya",
+          "https://merokitta.dos.gov.np/",
+          "https://dos.gov.np/?page=1"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "An official local land-administration custodian was evidenced for Pokhariya, Parsa. The official Survey Department service is an application workflow rather than an anonymously queryable parcel layer. No geometry was retained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "pokhariya-service-review.json"
+}

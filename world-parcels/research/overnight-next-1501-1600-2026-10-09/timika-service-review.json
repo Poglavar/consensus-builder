@@ -1,0 +1,61 @@
+{
+  "cityRecord": "city-8642-timika.json",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "purpose": "Document first-party registry/map discovery, current viewer configuration, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Mimika Regency evidence establishes Kantor Pertanahan Kabupaten Mimika as the local registry custodian for Timika/Mimika. BHUMI is the national ATR/BPN public map viewer. No anonymous safe ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "Local registry custody is supported by official Mimika Regency reporting and an official court document identifying the Kantor Pertanahan Kabupaten Mimika office in Timika. This is distinct from national ATR/BPN documentation and does not prove citywide open geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://diskominfo.mimikakab.go.id/berita/bupati-mimika-hadiri-rapat-koordinasi-gugus-tugas-reforma-agraria-tahun-2026",
+      "observation": "Official Mimika Regency page reports a meeting at Kantor Pertanahan Kabupaten Mimika and names its ATR/BPN leadership."
+    },
+    {
+      "url": "https://jdih.mimikakab.go.id/common/dokumen/2024ptun33.g..2023.ptun.jpr.pdf",
+      "observation": "Official Mimika legal-document host contains a court record identifying the Kantor Pertanahan Kabupaten Mimika address as Jl. Cenderawasih SP 2, Timika."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "Official BHUMI documentation describes the ATR/BPN interactive spatial map and its ATLAS integration."
+    }
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://bhumi.atrbpn.go.id/peta",
+    "observedLayer": "umum:Persil",
+    "observedRelativeServiceUrl": "/bhumigs/umum",
+    "observedVendor": "Geoserver",
+    "observedLayerDescription": "The current client bundle labels this as registered land parcels / Bidang Tanah.",
+    "observedInternalEndpoint": "/expapi/getPersil",
+    "authenticationObservation": "The current client bundle only calls getPersil with a token and contains a login flow. No login or credential use was attempted.",
+    "schemaAndCrs": "Not verified from a successful feature or capabilities response.",
+    "nativeFieldNames": "Not retained; no successful feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://bhumi.atrbpn.go.id/", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 HTML; official BHUMI landing application loaded."},
+    {"url": "https://bhumi.atrbpn.go.id/peta", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 HTML; current JavaScript/configuration inspected and `umum:Persil`, `/bhumigs/umum`, and `/expapi/getPersil` identified."},
+    {"url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 HTML; no capabilities or parcel schema returned."},
+    {"url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 HTML; no capabilities or parcel schema returned."},
+    {"url": "https://bhumi.atrbpn.go.id/expapi/getPersil", "method": "GET", "normalTlsVerification": true, "result": "HTTP 404 plain HTML (`Cannot GET /expapi/getPersil`); no parcel response. The client source indicates POST plus token, but no authenticated request was made."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No WUP-point parcel query submitted because the public service route and safe anonymous request shape were not verified."},
+  "coverageAssessment": {
+    "claimedScope": "Kantor Pertanahan Kabupaten Mimika is the local registry custodian; BHUMI is a national ATR/BPN public land-map viewer.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "remainingUncertainty": "A 404 on guessed direct service paths and an unauthenticated endpoint response are access/route findings only, not evidence of cadastral absence. CRS, schema, native identity, parcel coverage and citywide completeness remain unverified.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

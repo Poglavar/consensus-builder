@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6002",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-6002-bule-hora.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/bule-hora-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:57:15Z",
+  "reason": "The immutable WUP identity matches rank 2185, Ethiopia, point [5.63755617915242,38.2376910811427], and 267051 persons. English and Amharic searches with URLs are recorded. National e-Land material does not establish a Bule Hora local custodian or parcel layer, so registryFound remains null. The Ethio-NSDI TLS failure is an access limit, not citywide absence. No native-ID geometry or sample, fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification exists; no admission.",
+  "firstPartyPagesChecked": [
+    "https://eland.addiscadaster.gov.et/"
+  ]
+}

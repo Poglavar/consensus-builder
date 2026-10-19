@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3039-escondido.json",
+  "cityCode": 3039,
+  "purpose": "Document first-party discovery, current public GIS service review, bounded anonymous access, safe-field handling, and uncertainty.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of Escondido exposes an official ArcGIS parcel FeatureServer/MapServer. Its public metadata identifies polygon geometry, APN semantics, CRS 102646, and GeoJSON support. Anonymous metadata, safe-field, exact-point, bounded-envelope, and three-object-ID geometry requests were executed. The exact WUP point and nearby envelope returned no features; the object-ID request returned three polygons, retained with only one canonical native identity per feature.",
+  "registryAssessment": "registryFound=true is supported by the City of Escondido's official local GIS parcel layer and public parcel lookup context. This is local public GIS/cadastre evidence, not a claim that every parcel is current or complete.",
+  "safeFieldAllowlist": ["APN", "OBJECTID", "ASSETSTATUS", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "site:escondido.gov GIS parcel map Escondido official parcel data API",
+      "outcome": "Found official City Planning/Maps pages and the City GIS parcel FeatureServer/MapServer.",
+      "actualResultUrls": ["https://www.escondido.gov/237/Planning", "https://www.escondido.gov/969/Maps", "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0"]
+    },
+    {
+      "language": "English (United States local usage)",
+      "query": "Escondido mapa parcelas GIS oficial",
+      "outcome": "No distinct Spanish-language official service was found; the English City GIS service was used as the official local source.",
+      "actualResultUrls": ["https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0", "https://www.escondido.gov/237/Planning"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://www.escondido.gov/237/Planning","method":"GET","httpStatus":200,"result":"Official planning page loaded; public parcel/property-information context confirmed."},
+    {"url":"https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0","method":"GET","httpStatus":200,"result":"Official layer metadata loaded; polygon geometry, CRS 102646, public Query, GeoJSON support, APN/OBJECTID fields, and source description recorded."},
+    {"url":"https://gis.escondido.gov/server/rest/services/Data/Parcels/MapServer/0","method":"GET","httpStatus":200,"result":"Official MapServer layer metadata independently confirmed the parcel layer and APN semantics."},
+    {"url":"https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0/query","method":"GET","parameters":"f=geojson; geometry point -117.195352456462,33.1691791253299; inSR=4326; intersects; outFields=OBJECTID,APN,ASSETSTATUS; outSR=4326","httpStatus":200,"result":"Zero features at the exact WUP point. This is an exact-point miss only; point was preserved and not shifted."},
+    {"url":"https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0/query","method":"GET","parameters":"f=geojson; envelope -117.205,33.16,-117.185,33.18; inSR=4326; intersects; outFields=OBJECTID,APN,ASSETSTATUS; outSR=4326; resultRecordCount=3","httpStatus":200,"result":"Zero features in the bounded envelope request; not treated as evidence of citywide absence."},
+    {"url":"https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0/query","method":"GET","parameters":"f=geojson; objectIds=1,2,3; outFields=OBJECTID,APN,ASSETSTATUS; returnGeometry=true; outSR=4326","httpStatus":200,"result":"Three full polygon features returned; retained as safe samples after reducing properties to canonical id values."}
+  ],
+  "geometryEvidence": {"sampleFile":"escondido-parcel-samples.geojson","sampleCount":3,"nativeIdentityField":"APN","serviceObjectField":"OBJECTID","requestedFields":["OBJECTID","APN","ASSETSTATUS","geometry"],"retainedProperties":["id"]},
+  "geometryDecision": {"verified":true,"sourceId":"https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0","nativeIdField":"APN","sampleCount":3,"sampleFile":"escondido-parcel-samples.geojson","exactWupPointTest":"Zero exact-point features; this does not establish citywide absence and no coordinate shift was made."},
+  "remainingUncertainty": "The attempt did not independently validate complete current citywide coverage, parcel currency, or an exact-point parcel at the supplied WUP coordinate. The service contains proposed, retired, and stacked parcels; APN semantics vary for proposed parcels.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

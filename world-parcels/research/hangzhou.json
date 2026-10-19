@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:45",
+  "queueRank": 45,
+  "name": "Hangzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    30.2812755535444,
+    120.251210061553
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://data.hangzhou.gov.cn/",
+      "observation": "Hangzhou municipal public data platform; unreachable from this client."
+    },
+    {
+      "url": "https://data.zjzwfw.gov.cn/",
+      "observation": "Zhejiang provincial public data platform (HTTP 200 landing page); no parcel dataset verified."
+    },
+    {
+      "url": "https://hangzhou.tianditu.gov.cn/",
+      "observation": "Tianditu Hangzhou portal; unreachable."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.hangzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    },
+    {
+      "url": "https://data.zjzwfw.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "SPA landing page only"
+    },
+    {
+      "url": "https://zrzyhgh.hangzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502)"
+    },
+    {
+      "url": "https://hangzhou.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal natural-resources / real-estate registration data; access model unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Cadastral (不动产/地籍) polygon data is held by municipal natural-resources bureaus and is generally viewer- or credential-only; no anonymous bounded polygon endpoint was found. Nothing here implies China-wide coverage. Many .gov.cn hosts were unreachable from this client (connection reset / proxy 502), so the result is not proof of absence.",
+  "nextStep": "Retry from a network able to reach .gov.cn portals; inspect the city's open-data catalog for land-parcel layers and the Tianditu city portal for a documented parcel service."
+}

@@ -1,0 +1,155 @@
+{
+  "name": "Bunia",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "rank": 941,
+  "point": [
+    1.55594937683848,
+    30.2464406620107
+  ],
+  "population2025": 582792,
+  "population2025k": 582.792,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The DRC Ministry of Land Affairs maintains an official list of cadastral/land districts and names Bunia under Ituri. The national public-service catalog explains that local Circonscriptions foncières handle registration, cadastral surveying, boundary work and registry consultation. Formal search requires applicant identity, supporting documents and property identifiers; this is local registry evidence, not anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4642",
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Whether additional safe anonymous parcel-geometry services or broader source coverage exist; no citywide coverage is claimed.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CD-7531-bunia-source-review",
+    "name": "Bunia official cadastral/land registry source",
+    "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "operator": "Democratic Republic of the Congo",
+    "serviceType": "Official registry/map service evidence; no anonymous parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No safe feature query performed; native parcel key not verified.",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "The Ministry’s current official district list names Bunia in Ituri; the national public-service catalog describes the local land/cadastre district’s registration and survey remit. Searches for registry records require an identity-backed request and property references. No public geometry service was found."
+  },
+  "wupCityCode": 7531,
+  "cityId": "wup2025:7531",
+  "queueRank": 941,
+  "centerLatLon": [
+    1.55594937683848,
+    30.2464406620107
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Reviewed official Ministry district directory and government service descriptions/forms. No request was submitted because the registry form is identity/property keyed. No anonymous service schema or geometry was located.",
+  "coverageAssessment": {
+    "claimedScope": "The DRC Ministry of Land Affairs maintains an official list of cadastral/land districts and names Bunia under Ituri. The national public-service catalog explains that local Circonscriptions foncières handle registration, cadastral surveying, boundary work and registry consultation. Formal search requires applicant identity, supporting documents and property identifiers; this is local registry evidence, not anonymous parcel geometry.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bunia DRC official cadastre land registry cadastral parcels Ituri land affairs ministry",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "The Ministry’s current official district list names Bunia in Ituri; the national public-service catalog describes the local land/cadastre district’s registration and survey remit. Searches for registry records require an identity-backed request and property references. No public geometry service was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4642",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      },
+      {
+        "language": "French",
+        "query": "Bunia cadastre foncier registre terrain Circonscription foncière Bunia Ituri",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "The Ministry’s current official district list names Bunia in Ituri; the national public-service catalog describes the local land/cadastre district’s registration and survey remit. Searches for registry records require an identity-backed request and property references. No public geometry service was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4642",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "observation": "Official DRC Ministry of Land Affairs list of local cadastral districts names Bunia under Ituri."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4642",
+        "observation": "Government public-service catalog describes land acquisition, registration, boundary survey and cadastral sketch through local Circonscriptions foncières."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "observation": "Official public-service description of registry consultation; requires an application to the Conservateur or cadastre division."
+      },
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+        "observation": "Official Ministry search-request form requires user identity and property references; reviewed without submitting."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Ministry district directory and government service descriptions/forms. No request was submitted because the registry form is identity/property keyed. No anonymous service schema or geometry was located."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4642",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Ministry district directory and government service descriptions/forms. No request was submitted because the registry form is identity/property keyed. No anonymous service schema or geometry was located."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Ministry district directory and government service descriptions/forms. No request was submitted because the registry form is identity/property keyed. No anonymous service schema or geometry was located."
+      },
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+        "method": "Official public source or service review",
+        "result": "Reviewed official Ministry district directory and government service descriptions/forms. No request was submitted because the registry form is identity/property keyed. No anonymous service schema or geometry was located."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Reviewed official Ministry district directory and government service descriptions/forms. No request was submitted because the registry form is identity/property keyed. No anonymous service schema or geometry was located."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Circonscriptions foncières et cadastrales en RDC - Ministère des Affaires Foncières"
+  },
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

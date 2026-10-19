@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?><ServiceExceptionReport version="1.3.0" xmlns="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ogc https://inspire.landregistry.gov.uk/inspire/schemas/wms/1.3.0/exceptions_1_3_0.xsd">   <ServiceException code="LayerNotQueryable" locator="QUERY_LAYERS">
+      Either no layer was queryable, or no layers were specified using QUERY_LAYERS
+</ServiceException></ServiceExceptionReport>

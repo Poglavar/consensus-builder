@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10580-beihai.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city-level public-service portal is identified as managed by the Beihai Natural Resources Bureau and Real Estate Registration Center. Site is a local registration service; no public parcel-vector schema or anonymous geometry-only route was verified in this review. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.bhsbdcdjzx.com/",
+      "observation": "Official city-level public-service portal is identified as managed by the Beihai Natural Resources Bureau and Real Estate Registration Center. Site is a local registration service; no public parcel-vector schema or anonymous geometry-only route was verified in this review."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Beihai China official cadastral parcel map land registry GIS natural resources bureau"
+    },
+    {
+      "language": "Chinese",
+      "query": "北海市 不动产登记中心 地籍图查询 宗地 官方 北海自然资源"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

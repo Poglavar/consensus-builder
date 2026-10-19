@@ -1,0 +1,174 @@
+{
+  "name": "Antalya",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "rank": 402,
+  "point": [
+    36.9242537787877,
+    30.721869594165
+  ],
+  "population2025": 1273822,
+  "population2025k": 1273.822,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_point_containment_quality",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "WUP point is stored [latitude,longitude]; adapter takes [longitude,latitude]. Corrected WUP query returned a complete Polygon. TKGM supports point identify/exact ID, not area enumeration. One wider local probe returned a polygon failing point containment. Three safe geometries retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 4508,
+  "cityId": "wup2025:4508",
+  "queueRank": 402,
+  "centerLatLon": [
+    36.9242537787877,
+    30.721869594165
+  ],
+  "registryFound": true,
+  "registryBasis": "Official TKGM documents public parcel/coordinate lookup and its current service returned a full polygon at the Antalya WUP point. Result identifies Kepez/Sütçüler; only safe parcel IDs and geometry retained. Municipal E-İmar is planning, not treated as cadastral geometry.",
+  "resultCategory": "verified_public_point_query_full_polygon_partial_city_probe_quality_issue",
+  "technicalBlocker": "Existing TKGM adapter is point/exact-ID only and cannot enumerate a bounded area. In a 13-point sample one nonempty response returned a polygon that did not contain its requested point; adapter rejected it. Root review required before runtime use.",
+  "remainingUncertainty": "Citywide coverage and behavior away from tested points; whether the inconsistent response is transient/systematic; legal/current survey status beyond these lookups.",
+  "nextStep": "Root review; do not enable runtime until provider containment integrity is resolved or a bounded-area source passes qualification.",
+  "sourceIds": [
+    "tr-tkgm-parselsorgu-api"
+  ],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Antalya Türkiye official cadastral parcel GIS public query polygon service municipal",
+        "result": "Official TKGM documents parcel/map/coordinate lookup. Corrected WUP point returned a polygon and exact ID re-read matched. Antalya E-İmar supports planning parcel/address searches but is not accepted as cadastral vector geometry.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+          "https://kbs.antalya.bel.tr/imardurumu/index.aspx",
+          "https://www.antalya.bel.tr/sikca-sorulan-sorular"
+        ],
+        "executionMethod": "English search and direct anonymous point/exact-ID GET through existing adapter; safe identity and geometry only."
+      },
+      {
+        "language": "Turkish",
+        "query": "Antalya resmi Parsel Sorgu kadastro harita Antalya Belediyesi imar planı parsel",
+        "result": "TKGM is official national cadastre query. Municipality documents E-İmar map/block/parcel planning workflow. Local point sample has containment integrity issue and no area query.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://kbs.antalya.bel.tr/imardurumu/index.aspx",
+          "https://www.antalya.bel.tr/sikca-sorulan-sorular"
+        ],
+        "executionMethod": "Turkish search and direct anonymous GET; no personal fields requested."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "TKGM documents public parcel map/coordinate lookup, parcel area/coordinate information and says owner name/ID are not used for query."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/projeler/tamamlanan-projeler/megsis",
+        "observation": "TKGM describes MEGSIS national cadastral map/coordinate/parcel geometry and public map query."
+      },
+      {
+        "url": "https://kbs.antalya.bel.tr/imardurumu/index.aspx",
+        "observation": "Municipal E-İmar offers address/block/parcel/map selection for zoning status; not counted as cadastral geometry."
+      },
+      {
+        "url": "https://www.antalya.bel.tr/sikca-sorulan-sorular",
+        "observation": "Municipal FAQ links to E-İmar/planning applications."
+      }
+    ],
+    "candidateSources": [
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{latitude}/{longitude}",
+        "type": "official national point identify",
+        "assessment": "Correctly ordered WGS84 point and exact-ID returned full polygons. One point response among wider probes failed containment; area query unavailable."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Correct WUP point [lon=30.721869594165,lat=36.9242537787877] returned a Polygon. Thirteen local point probes included six unique positive IDs, explicit empty results and one returned polygon rejected for failing point containment. Three exact-ID reads matched returned IDs; a synthetic absent parcel ID returned verified absence. Polygon area query explicitly unsupported (status 422).",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 3,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false,
+      "sampleFile": "city-4508-antalya-samples.geojson"
+    },
+    "geometryQuality": {
+      "library": "Shapely 2.2.0 / GEOS",
+      "metricCrs": "EPSG:32636",
+      "retainedFeatures": 3,
+      "validNonemptyCount": 3,
+      "duplicatePairs": 0,
+      "pairwiseOverlapAreasM2": [
+        0,
+        0,
+        0
+      ],
+      "areaM2": [
+        586.9771,
+        540.002,
+        1238.7443
+      ],
+      "limitations": "Three retained local examples only; point adapter does not support area-footprint queries."
+    }
+  },
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 3,
+    "bounded": true,
+    "pointLocated": true,
+    "note": "WUP point returned parcel TR-TKGM-136130-11018-16; exact-ID and structured synthetic absence passed. Wider 13-point probe had one containment error. No area enumeration; three retained polygons are valid, nonduplicate and non-overlapping."
+  },
+  "source": {
+    "id": "tr-tkgm-parselsorgu-api",
+    "adapter": "tkgm-point",
+    "operator": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)",
+    "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+    "geometryType": "GeoJSON Polygon",
+    "coordinateReferenceSystem": "EPSG:4326 WGS84",
+    "nativeIdFields": [
+      "mahalleId",
+      "adaNo",
+      "parselNo"
+    ],
+    "idPrefix": "TR-TKGM-",
+    "outFields": [
+      "mahalleId",
+      "adaNo",
+      "parselNo"
+    ],
+    "fullPolygonQueryVerified": true,
+    "exactIdReadVerified": true,
+    "absenceVerified": true,
+    "areaQuerySupported": false,
+    "personalAttributesRequested": false,
+    "sampleFile": "city-4508-antalya-samples.geojson",
+    "scope": "WUP point and nearby point probes only; one provider response failed containment, and no area enumeration is supported."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Point-identified cadastral polygons only.",
+    "verifiedOpenScope": "Polygon at WUP point plus six unique identifiers across successful nearby probes; exact-ID and absence verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_point_containment_quality",
+    "reason": "Existing TKGM adapter is point/exact-ID only and cannot enumerate a bounded area. In a 13-point sample one nonempty response returned a polygon that did not contain its requested point; adapter rejected it. Root review required before runtime use.",
+    "sampleScope": "Six positive unique identifiers in thirteen local point probes; three stored polygons and exact reads; one point-containment failure. Area enumeration is unsupported.",
+    "globalProviderDisabled": false
+  },
+  "rootExactAndAbsenceReview": {
+    "exactCount": 3,
+    "absentIds": [
+      "TR-TKGM-136130-11018-999999"
+    ],
+    "areaQueryStatus": 422,
+    "reviewedAt": "2026-10-08T23:47:22.454503+00:00"
+  },
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

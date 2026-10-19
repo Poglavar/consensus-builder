@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:154",
+  "queueRank": 154,
+  "name": "Maputo",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "centerLatLon": [
+    -25.890514039018,
+    32.5554921959491
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.cenacarta.com/",
+      "observation": "Reachable (HTTP 200) but a commercial/unrelated site (Cena Carta); not an official Mozambican cadastre portal; no parcel endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.cenacarta.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "not an official cadastre source; no parcel list"
+    },
+    {
+      "url": "https://www.dinat.gov.mz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS certificate name mismatch for www.dinat.gov.mz; not retried insecurely"
+    },
+    {
+      "url": "https://www.mta.gov.mz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://geoportal.gov.mz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 (host unreachable)"
+    },
+    {
+      "url": "https://www.dnt.gov.mz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 (host unreachable)"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Maputo cadastro parcelas type:Feature Service",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Mozambican land-authority hosts were unreachable or failed TLS from this network, so absence of an open parcel service is not established. Maputo municipality's own cadastre/SIG (CMM) was not located.",
+  "nextStep": "Retry ministry (MTA/DINAT) and Conselho Municipal de Maputo GIS hosts from another network path; look for a documented feature service and test a bounded Maputo polygon query."
+}

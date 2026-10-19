@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [],
+  "name": "Mianyang",
+  "country": "China",
+  "countryCode": "CN",
+  "registryFound": true,
+  "registryBasis": "Sichuan Government Service records identify the Mianyang Real Estate Registration Center as the responsible city service provider for registration-information queries and other real-estate registration services. An official Mianyang government service-center article says its registration-information kiosk handles personal/family property records, not anonymous parcel geometry. No city public full-polygon service was verified.",
+  "registryEvidenceUrls": [
+    "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+    "https://mysjkq.sczwfw.gov.cn/attach/0/bc40c81ccef84b3a8ffe604fe5fa6661.pdf",
+    "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=510700000000&deptCode=11510600008413045D&itemCode=511A0161600000-510700000000-000-008413045-1-00&taskType=1",
+    "https://www.mianyang.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6887,
+  "cityId": "wup2025:6887",
+  "centerLatLon": [
+    31.4717712715588,
+    104.731979428559
+  ],
+  "point": [
+    31.4717712715588,
+    104.731979428559
+  ],
+  "rank": 849,
+  "queueRank": 849,
+  "population2025": 636781,
+  "population2025k": 636.781,
+  "populationPlausibility2025": "High",
+  "scopeLimits": "No full polygon retained. City-specific registry or map evidence is informational and does not establish citywide completeness.",
+  "remainingUncertainty": "Local registration activity is confirmed; no anonymous public city parcel-vector route, safe geometry schema, or WUP-point result was found. The official service-center search is personal/family information and was not used.",
+  "nextStep": "If further review is requested, seek an official city cadastral map service that permits public full polygon and safe parcel-key retrieval; do not use personal/family record lookup.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "绵阳市自然资源和规划局 地籍 调查 不动产登记",
+        "result": "Official Mianyang service records identify the local registration center; no anonymous parcel-vector service was identified.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+          "https://mysjkq.sczwfw.gov.cn/attach/0/bc40c81ccef84b3a8ffe604fe5fa6661.pdf",
+          "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=510700000000&deptCode=11510600008413045D&itemCode=511A0161600000-510700000000-000-008413045-1-00&taskType=1",
+          "https://www.mianyang.gov.cn/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "绵阳市不动产登记中心 政务服务 官方",
+        "result": "Official city service-center listing confirms registration-information query services for personal/family records, not public vector geometry.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+          "https://mysjkq.sczwfw.gov.cn/attach/0/bc40c81ccef84b3a8ffe604fe5fa6661.pdf",
+          "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=510700000000&deptCode=11510600008413045D&itemCode=511A0161600000-510700000000-000-008413045-1-00&taskType=1",
+          "https://www.mianyang.gov.cn/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "English",
+        "query": "Mianyang cadastral map land registration official city",
+        "result": "Official Sichuan/Mianyang government service records confirm local registry activity; no public polygon endpoint was found.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+          "https://mysjkq.sczwfw.gov.cn/attach/0/bc40c81ccef84b3a8ffe604fe5fa6661.pdf",
+          "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=510700000000&deptCode=11510600008413045D&itemCode=511A0161600000-510700000000-000-008413045-1-00&taskType=1",
+          "https://www.mianyang.gov.cn/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+        "observation": "Official Mianyang Government Service Network article lists an “immovable-property registration information” self-service machine for personal/family property information; no public cadastral polygons."
+      },
+      {
+        "url": "https://mysjkq.sczwfw.gov.cn/attach/0/bc40c81ccef84b3a8ffe604fe5fa6661.pdf",
+        "observation": "Official Sichuan Government Service document lists Mianyang Real Estate Registration Center services, including registration-material inquiry."
+      },
+      {
+        "url": "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=510700000000&deptCode=11510600008413045D&itemCode=511A0161600000-510700000000-000-008413045-1-00&taskType=1",
+        "observation": "Official Sichuan service portal city-specific Mianyang service record; reviewed for government service context only."
+      },
+      {
+        "url": "https://www.mianyang.gov.cn/",
+        "observation": "Official Mianyang portal hostname attempted; local DNS lookup failed before an HTTP response, so no provider-status conclusion is drawn."
+      }
+    ]
+  },
+  "source": {
+    "name": "Mianyang real-estate registration center service evidence",
+    "urls": [
+      "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+      "https://mysjkq.sczwfw.gov.cn/attach/0/bc40c81ccef84b3a8ffe604fe5fa6661.pdf",
+      "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=510700000000&deptCode=11510600008413045D&itemCode=511A0161600000-510700000000-000-008413045-1-00&taskType=1",
+      "https://www.mianyang.gov.cn/"
+    ],
+    "operator": "Mianyang Real Estate Registration Center / Sichuan Government Service Network",
+    "url": "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+    "serviceType": "Official land-registration service or public map candidate; vector geometry unverified",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official local registry/map workflow reviewed; no full geometry response verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sichuan Government Service records identify the Mianyang Real Estate Registration Center as the responsible city service provider for registration-information queries and other real-estate registration services. An official Mianyang government service-center article says its registration-information kiosk handles personal/family property records, not anonymous parcel geometry. No city public full-polygon service was verified.",
+    "verifiedOpenScope": "No public full-polygon coverage verified at the exact WUP locator. This record documents source evidence/candidate status only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No public full-polygon/native-key response was verified at the unchanged WUP locator; the official registry or map lead remains unqualified for runtime."
+  },
+  "resultCategory": "official_city_registry_activity_no_public_geometry",
+  "geometryEvidence": "No public full-polygon geometry was verified. Only official city registration activity and a personal/family record query service were found; no property-specific query was made.",
+  "adapterReady": false,
+  "rootPrimaryReadback": {
+    "url": "https://mys.sczwfw.gov.cn/art/2019/9/4/art_16244_39688.html",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

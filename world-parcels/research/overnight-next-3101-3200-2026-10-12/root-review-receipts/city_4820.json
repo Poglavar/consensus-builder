@@ -1,0 +1,22 @@
+{
+  "taskId": "city:4820",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-4820-tokushima.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/tokushima-service-review.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/tokushima-sample.geojson",
+    "tmp/valhalla-parcel-research/tokushima/dataset.html",
+    "tmp/valhalla-parcel-research/tokushima/chiban.zip",
+    "tmp/valhalla-parcel-research/tokushima/all/11新町.shp"
+  ],
+  "checkedAt": "2026-10-12T05:08:01Z",
+  "finding": "Original 2025 UN row, ranked roster, queue and packet agree on code 4820, rank 3195, Japan, point [34.0705067874314,134.54514721733], and 188589 persons. English and Japanese executed searches are recorded. The first-party cached reference-map page and ZIP expose SHAPE polygons. The 11新町 layer has 2229 EPSG:2446 polygons; one source record matches AZACD=14300 and TIBAN=3-3. The retained sample has exactly one valid full Polygon, only safe property id=14300-3-3, and covers the WUP point. The publisher disclaims legal boundary/rights accuracy. One sample is not citywide coverage or runtime qualification. Fresh adapter reads, forced paging, 13 bounded cells, independent metric overlap and operation checks, source binding, and headed Details verification remain unevidenced.",
+  "firstPartyUrlsChecked": ["https://opendata.pref.tokushima.lg.jp/dataset/5190.html"],
+  "samplePolygonCount": 1,
+  "runtimeAdmitted": false,
+  "missingAdmissionGates": ["fresh adapter native-ID reads", "forced paging", "13 bounded cells", "independent metric GEOS overlap and operation checks", "source binding", "headed details-panel verification"]
+}

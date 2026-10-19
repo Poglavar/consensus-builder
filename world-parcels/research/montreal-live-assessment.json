@@ -1,0 +1,66 @@
+{
+  "asOf": "2026-10-03",
+  "city": "Montreal",
+  "province": "Quebec",
+  "candidate": {
+    "status": "queryable_candidate_with_reuse_and_key_limits",
+    "adapter": "arcgis",
+    "endpoint": "https://services3.arcgis.com/0lL78GhXbg1Po7WO/arcgis/rest/services/cadastre_bd_allegee/FeatureServer/0",
+    "itemId": "07cfbd0ce7dc4d8ab53e7566b7055a55",
+    "itemOwner": "dgti_geo",
+    "layer": "GO01_Polygones_Lots",
+    "scope": "Quebec-wide generalized polygons and lot numbers from the renovated cadastre registry; not a Montreal-specific layer.",
+    "semanticIdCandidate": "NO_LOT",
+    "semanticIdType": "string",
+    "objectIdField": "OBJECTID",
+    "globalIdField": "GlobalID",
+    "keyAssessment": "Quebec's official cadastre guidance says a lot number identifies each property, so NO_LOT is the meaningful public key. However, the layer's NO_LOT index is non-unique and the feed includes complementary-plan numbers; global uniqueness and a gateway-safe key are not proven. Do not substitute OBJECTID or GlobalID as user-facing parcel IDs.",
+    "sourceSemantics": "Officially described as an extract from the MRNF cadastre database, refreshed every two months. A polygon may be a lot or complementary plan; it is indicative only, not a legal boundary. The service warns coordinates have no legal value and directs users to Infolot / a bornage plan for authoritative limits.",
+    "terms": "Item credits © Gouvernement du Québec but provides no explicit open-data license. Données Québec FAQ says the Infolot cadastral register is not currently available as open data. Public queryability is not a grant to reproduce or persist geometries; obtain written reuse permission or a specific applicable license before integration.",
+    "serviceCapabilities": {
+      "query": true,
+      "geojson": true,
+      "maxRecordCount": 2000,
+      "objectIdIndexUnique": true,
+      "globalIdIndexUnique": true,
+      "noLotIndexUnique": false
+    },
+    "boundedProbe": {
+      "crs": "EPSG:4326",
+      "bbox": [
+        -73.57,
+        45.503,
+        -73.568,
+        45.5045
+      ],
+      "count": 26,
+      "returnIdsOnlyCount": 26,
+      "firstPage": {
+        "requested": 3,
+        "returned": 3,
+        "exceededTransferLimit": true,
+        "sampleLotNumbers": [
+          "1 340 551",
+          "1 340 552",
+          "1 340 555"
+        ]
+      },
+      "exactNativeLookup": {
+        "where": "NO_LOT = '1 340 551'",
+        "returned": 1,
+        "geometry": "Polygon",
+        "samplePath": "montreal-live-response.json"
+      },
+      "additionalValidation": "A no-geometry page of 5 returned 5 non-null distinct NO_LOT values (including PC-15368 and PC-12972). returnDistinctValues across all 26 and resultOffset=5 page requests timed out; completeness, offset pagination and uniqueness across the bbox remain unverified. A 3-feature geometry request also timed out."
+    },
+    "integrationRecommendation": "Do not add as a general reusable source yet. The live endpoint and native NO_LOT lookup work, but geometry reuse rights are unclear and globally unique stable IDs are not established. If permission is obtained, use a bounded adapter with count/ID caps and verify uniqueness or a documented stable composite key first.",
+    "sources": [
+      "https://www.arcgis.com/home/item.html?id=07cfbd0ce7dc4d8ab53e7566b7055a55",
+      "https://www.quebec.ca/habitation-territoire/information-fonciere/cadastre/consulter-cadastre",
+      "https://www.donneesquebec.ca/foire-aux-questions/"
+    ]
+  },
+  "description": "Current Quebec cadastre integration assessment, including unsuccessful paging attempts; Montreal runtime remains disabled.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false
+}

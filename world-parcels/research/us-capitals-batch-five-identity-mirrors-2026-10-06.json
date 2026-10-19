@@ -1,0 +1,617 @@
+[
+  {
+    "endpoint": "https://services6.arcgis.com/wv9mHoqblhTsnqdG/arcgis/rest/services/Providence_Parcels_Tree_Canopy_Change_2011_2018_v1/FeatureServer/0?f=pjson",
+    "status": 200,
+    "metadata": {
+      "name": "Providence_Parcels_Tree_Canopy_Change_2011_2018_v1",
+      "description": "",
+      "snippet": null,
+      "copyrightText": "",
+      "extent": {
+        "xmin": -7956301.85750337,
+        "ymin": 5126946.327933662,
+        "xmax": -7945596.539386191,
+        "ymax": 5140308.339256282,
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        }
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID",
+          "actualType": "int",
+          "alias": "FID",
+          "sqlType": "sqlTypeInteger",
+          "nullable": false,
+          "editable": false,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "CAMA_LINK",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "CAMA_LINK",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TC_ID",
+          "type": "esriFieldTypeInteger",
+          "actualType": "int",
+          "alias": "TC_ID",
+          "sqlType": "sqlTypeInteger",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TOTL_ASSMT",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "TOTL_ASSMT",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "LAND_ASSMT",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "LAND_ASSMT",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "BLDG_ASSMT",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "BLDG_ASSMT",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TAX_YEAR",
+          "type": "esriFieldTypeInteger",
+          "actualType": "int",
+          "alias": "TAX_YEAR",
+          "sqlType": "sqlTypeInteger",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "AREA_AC",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "AREA_AC",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "AREA_SF",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "AREA_SF",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "USE_DESC",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "USE_DESC",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger",
+          "actualType": "int",
+          "alias": "OBJECTID",
+          "sqlType": "sqlTypeInteger",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TC_ID_1",
+          "type": "esriFieldTypeInteger",
+          "actualType": "int",
+          "alias": "TC_ID_1",
+          "sqlType": "sqlTypeInteger",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "LandArea",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "LandArea",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Gain",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Gain",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Loss",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Loss",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "No_Change",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "No_Change",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TreeCanopy",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "TreeCanopy",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TreeCano_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "TreeCano_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Change_Are",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Change_Are",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Change_Per",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Change_Per",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TreeCano_2",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "TreeCano_2",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TreeCano_3",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "TreeCano_3",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Change_P_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Change_P_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "FID_",
+          "type": "esriFieldTypeInteger",
+          "actualType": "int",
+          "alias": "FID_",
+          "sqlType": "sqlTypeInteger",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "LOT",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "LOT",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 10,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Shape_Leng",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Shape_Leng",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Shape_Area",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Shape_Area",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "PROPID",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "PROPID",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "PLAT",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "PLAT",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "UNIT",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "UNIT",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "PARCEL_ADD",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "Parcel Address",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "OWNERNAME",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "OWNERNAME",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "OWNER_ADD",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "OWNER_ADD",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "OWNER_CITY",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "OWNER_CITY",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "OWNERSTATE",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "OWNERSTATE",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "OWNER_ZIP",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "OWNER_ZIP",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TOTL_ASS_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "TOTL_ASS_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "LAND_ASS_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "LAND_ASS_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "BLDG_ASS_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "BLDG_ASS_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "TAX_YEAR_1",
+          "type": "esriFieldTypeInteger",
+          "actualType": "int",
+          "alias": "TAX_YEAR_1",
+          "sqlType": "sqlTypeInteger",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "AREA_AC_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "AREA_AC_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "AREA_SF_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "AREA_SF_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "CAMA_LINK_",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "CAMA_LINK_",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "USE_DESC_1",
+          "type": "esriFieldTypeString",
+          "actualType": "nvarchar",
+          "alias": "USE_DESC_1",
+          "sqlType": "sqlTypeNVarchar",
+          "length": 254,
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Shape_Le_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Shape_Le_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Shape_Ar_1",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Shape_Ar_1",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": true,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Shape__Area",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Shape__Area",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": false,
+          "domain": null,
+          "defaultValue": null
+        },
+        {
+          "name": "Shape__Length",
+          "type": "esriFieldTypeDouble",
+          "actualType": "float",
+          "alias": "Shape__Length",
+          "sqlType": "sqlTypeFloat",
+          "nullable": true,
+          "editable": false,
+          "domain": null,
+          "defaultValue": null
+        }
+      ],
+      "orgId": null,
+      "owner": null,
+      "modified": null,
+      "error": null
+    }
+  },
+  {
+    "endpoint": "https://www.arcgis.com/sharing/rest/content/items/bab934a85fe94f1d885dcaa6b3f16229?f=json",
+    "status": 200,
+    "metadata": {
+      "name": null,
+      "description": null,
+      "snippet": "Providence Parcels_Tree Canopy Change 2011_2018_v1",
+      "copyrightText": null,
+      "extent": [
+        [
+          -71.47267563663817,
+          41.772396803056
+        ],
+        [
+          -71.37650812777792,
+          41.86185457489331
+        ]
+      ],
+      "fields": null,
+      "orgId": "wv9mHoqblhTsnqdG",
+      "owner": "PVDGIS_Intern",
+      "modified": 1739464481000,
+      "error": null
+    }
+  },
+  {
+    "endpoint": "https://services.arcgis.com/SOVgyYCFVBkOrKDZ/arcgis/rest/services/Frankfort_Parcels_Public_View/FeatureServer/0?f=pjson",
+    "status": 200,
+    "metadata": {
+      "name": null,
+      "description": null,
+      "snippet": null,
+      "copyrightText": null,
+      "extent": null,
+      "fields": null,
+      "orgId": null,
+      "owner": null,
+      "modified": null,
+      "error": {
+        "code": 400,
+        "message": "",
+        "details": [
+          "The requested layer (layerId: 0) was not found."
+        ]
+      }
+    }
+  }
+]

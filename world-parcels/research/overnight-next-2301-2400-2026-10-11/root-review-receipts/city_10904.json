@@ -1,0 +1,20 @@
+{
+  "taskId": "city:10904",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-10904-leizhou.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/leizhou-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:55:27Z",
+  "reason": "Official Leizhou Natural Resources Bureau registration notice supports local custody; the direct TLS attempt failed before HTTP. No anonymous native parcel ID plus full polygon, viewer configuration, CRS, or live adapter qualification is evidenced.",
+  "gates": {
+    "queueIdentity": "matched WUP roster and pending queue, including population converted from thousands to persons",
+    "bilingualSearches": "two executed-language query records with actual result URLs in packet",
+    "fullPolygonSamples": 0,
+    "liveAdapterQualification": "missing fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details-panel verification"
+  },
+  "custody": "true for institutional record custody only; public geometry and coverage remain unresolved"
+}

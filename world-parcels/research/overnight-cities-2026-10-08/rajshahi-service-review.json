@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2510-rajshahi.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The WUP locator is a settlement centroid, not a parcel identity. DLRS officially offers survey-map search with division/district/survey/upazila/mouza/sheet/dag selection and lists Rajshahi within the Rajshahi zonal office jurisdiction. The interface includes khatiyan and owner-name sections; no plot-specific lookup or geometry request was made. Public anonymous full polygon schema, CRS and exact-point coverage remain unverified. No sample retained and no owner/address or identity data queried.",
+  "registryAssessment": "Bangladesh DLRS provides an official map-search portal for survey plots and records, with division, district, survey, upazila/thana, mouza, sheet, and dag selectors. Its Rajshahi Zonal Settlement Office page lists Rajshahi among the districts under that office. This establishes local cadastral-record/lookup infrastructure, but the interface also surfaces khatiyan/owner fields and no anonymous full-polygon schema was verified, so no plot-specific request was made.",
+  "officialPrimarySources": [
+    {
+      "url": "https://settlement.gov.bd/Home/",
+      "observation": "Official DLRS/Ministry of Land online land-record and survey-management portal; identifies Rajshahi as a zone and provides map-display services."
+    },
+    {
+      "url": "https://settlement.gov.bd/map/mapsearch",
+      "observation": "Official map-search UI provides division/district/survey/upazila-or-thana/mouza/sheet/dag selectors and land/khatiyan information sections. No user/property-specific query made."
+    },
+    {
+      "url": "https://dlrs.gov.bd/pages/static-pages/6922e094933eb65569e27ad1",
+      "observation": "Official DLRS Rajshahi Zonal Settlement Office page lists Rajshahi among districts under that zonal office."
+    },
+    {
+      "url": "https://dlrs.gov.bd/",
+      "observation": "Official Department of Land Records and Surveys site describes current map and survey-record services, including online map ordering."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Rajshahi Bangladesh official land records cadastral map DLRS mouza map land office",
+      "result": "Official DLRS sources identify the Rajshahi zonal office and map-search system. The system exposes district/mouza/plot selectors, but the safe polygon schema and point coverage were not verified.",
+      "urls": [
+        "https://settlement.gov.bd/Home/",
+        "https://settlement.gov.bd/map/mapsearch",
+        "https://dlrs.gov.bd/pages/static-pages/6922e094933eb65569e27ad1",
+        "https://dlrs.gov.bd/"
+      ],
+      "scope": "Find official city-local registry/cadastre evidence and inspect public geometry-only routes without personal/property-specific queries."
+    },
+    {
+      "language": "Bengali",
+      "query": "রাজশাহী সরকারি ভূমি রেকর্ড জরিপ অধিদপ্তর মৌজা নকশা দাগের ম্যাপ",
+      "result": "সরকারি DLRS পোর্টালে রাজশাহী জোনাল সেটেলমেন্ট অফিস এবং মৌজা/দাগভিত্তিক ম্যাপ অনুসন্ধান সেবা পাওয়া গেছে। পূর্ণ জিওরেফারেন্সড পার্সেল জ্যামিতির নিরাপদ স্কিমা যাচাই করা হয়নি; কোনো নির্দিষ্ট জমি অনুসন্ধান করা হয়নি।",
+      "urls": [
+        "https://settlement.gov.bd/Home/",
+        "https://settlement.gov.bd/map/mapsearch",
+        "https://dlrs.gov.bd/pages/static-pages/6922e094933eb65569e27ad1",
+        "https://dlrs.gov.bd/"
+      ],
+      "scope": "Find official city-local registry/cadastre evidence and inspect public geometry-only routes without personal/property-specific queries."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "privacy": "No parcel-specific lookup or geometry request was made; no owner/address/identity attributes, credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

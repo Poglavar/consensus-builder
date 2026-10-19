@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5388-portsmouth.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 2,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 2,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "HM Land Registry’s official INSPIRE Index Polygons download supplies a Portsmouth City Council local-authority ZIP. The GML contains 65,055 features; at the unchanged WUP point one full source polygon (INSPIREID 30222163) covers the point. The layer represents indicative extents/positions of registered freehold properties, not a complete legal cadastre. In a bounded 400 m × 400 m EPSG:27700 window, 112 complete geometries were valid and 29 pairs had positive-area overlaps above 0.01 m² (largest 194.723 m²); the WUP-covering feature itself overlaps another index polygon by 0.469 m². This is positive source geometry with a native-topology runtime hold, not evidence of no coverage. No owner/address data were queried or retained; native overlaps block enabling a non-overlapping runtime parcel model.",
+  "registryAssessment": "HMLR offers a named Portsmouth local-authority INSPIRE Index Polygons file. It contains one complete polygon at the exact WUP point, limited to indicative registered freehold property extents/positions. The local 400 m native geometry audit found overlaps, so runtime is held.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.portsmouth.gov.uk/services/development-and-planning/local-authority-searches-and-local-land-charges",
+      "operator": "Portsmouth City Council",
+      "observation": "City confirms that from 28 April 2022 statutory local land charge searches are only available through HMLR; city no longer provides that public service. CON29 enquiries remain an application workflow."
+    },
+    {
+      "url": "https://www.portsmouth.gov.uk/services/council-and-democracy/privacy-notices/local-land-charges-register-privacy-notice",
+      "operator": "Portsmouth City Council",
+      "observation": "Privacy notice says HMLR serves the migrated register using information supplied by the council; city local role is limited to update/source-data custody for local charges, not cadastral parcel boundary publication."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/llc/download",
+      "operator": "HM Land Registry",
+      "observation": "Official index includes Portsmouth Local Land Charges dataset; statutory charge extent is not legal parcel cadastre geometry."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "operator": "HM Land Registry",
+      "observation": "Official dataset page lists a local-authority download for Portsmouth City Council, describes indicative position/extent of registered freehold property and provides dataset under OGL."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Portsmouth_City_Council.zip",
+      "operator": "HM Land Registry",
+      "observation": "Portsmouth ZIP downloaded through the official public link. GML EPSG:27700 yielded one full polygon covering the exact WUP point, INSPIREID 30222163."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Portsmouth England official council local land charges cadastral GIS parcels map",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://www.portsmouth.gov.uk/services/development-and-planning/local-authority-searches-and-local-land-charges",
+        "https://www.portsmouth.gov.uk/services/council-and-democracy/privacy-notices/local-land-charges-register-privacy-notice",
+        "https://use-land-property-data.service.gov.uk/datasets/llc/download"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "English (local working language)",
+      "query": "Portsmouth City Council local land charges Land Registry statutory search official map parcels",
+      "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+      "method": "Separate follow-up English-language search; English is the local official language.",
+      "actualResultUrls": [
+        "https://www.portsmouth.gov.uk/services/development-and-planning/local-authority-searches-and-local-land-charges"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "gb-hmlr-inspire-index-portsmouth",
+    "sampleCount": 2,
+    "sampleFile": "portsmouth-parcel-samples-native.json",
+    "nativeId": "30222163",
+    "nativeIdField": "INSPIREID",
+    "exactWupPointTest": "One full EPSG:27700 source polygon covers the unchanged WUP point. Its full geometry has a positive-area 0.4688 m² overlap with another source polygon.",
+    "requestEvidence": [
+      {
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "method": "anonymous official landing-page GET followed by linked Portsmouth ZIP download using the standard page session/redirect flow; no login/account",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytesRead": 226937,
+        "assessment": "Official landing page lists a direct `Portsmouth_City_Council.zip` download link; response page published the current dataset."
+      },
+      {
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Portsmouth_City_Council.zip",
+        "method": "anonymous GET of linked Portsmouth City Council ZIP; standard redirects; no login/account",
+        "httpStatus": 200,
+        "contentType": "application/force-download",
+        "bytesRead": 7826754,
+        "assessment": "Official public download completed. The final object-store URL’s temporary signature was not retained. ZIP contains an INSPIRE GML dataset; geometry inspected only after download."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "HM Land Registry’s official INSPIRE Index Polygons download supplies a Portsmouth City Council local-authority ZIP. The GML contains 65,055 features; at the unchanged WUP point one full source polygon (INSPIREID 30222163) covers the point. The layer represents indicative extents/positions of registered freehold properties, not a complete legal cadastre. In a bounded 400 m × 400 m EPSG:27700 window, 112 complete geometries were valid and 29 pairs had positive-area overlaps above 0.01 m² (largest 194.723 m²); the WUP-covering feature itself overlaps another index polygon by 0.469 m². This is positive source geometry with a native-topology runtime hold, not evidence of no coverage.",
+    "verifiedOpenScope": "One exact WUP index polygon; dataset extent is limited to registered freehold properties, and local native topology contains overlaps. No citywide completeness asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://www.portsmouth.gov.uk/services/development-and-planning/local-authority-searches-and-local-land-charges",
+      "result": "HTTP 200 text/html; charset=utf-8; 42226 response bytes. Direct official-source GET; response supports only the page/application description recorded in the source review."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "anonymous official landing-page GET followed by linked Portsmouth ZIP download using the standard page session/redirect flow; no login/account",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 226937,
+      "assessment": "Official landing page lists a direct `Portsmouth_City_Council.zip` download link; response page published the current dataset."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Portsmouth_City_Council.zip",
+      "method": "anonymous GET of linked Portsmouth City Council ZIP; standard redirects; no login/account",
+      "httpStatus": 200,
+      "contentType": "application/force-download",
+      "bytesRead": 7826754,
+      "assessment": "Official public download completed. The final object-store URL’s temporary signature was not retained. ZIP contains an INSPIRE GML dataset; geometry inspected only after download."
+    }
+  ],
+  "remainingUncertainty": "Portsmouth City Council supplies and updates its local land-charge data, now served by HM Land Registry. This is limited local charge-register custody, not cadastral parcel boundary custody; no parcel geometry route was verified. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "runtimeAssessment": {
+    "status": "held_native_geometry_conflicts",
+    "reason": "Official indicative registered-freehold index polygons are public and the WUP locator is covered. Independent native EPSG:27700 audit of112 full polygons confirms29 overlap pairs (>0.01m²), including the point-covering polygon. These source extents cannot be admitted as exclusive ground parcels without altering the source or representing overlap explicitly."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:22:58.977081+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:22:58.977081+00:00",
+    "decision": "Public geometry verified; runtime held for source-native overlapping index extents. This is runtime-model incompatibility, not an invalid-source or missing-data finding.",
+    "candidateSourceId": "gb-hmlr-inspire-index-portsmouth",
+    "qualityFile": "portsmouth-root-quality.json",
+    "sourceZipBytes": 7826754,
+    "sourceZipSha256": "9bfc15dd1188a8d04ba005a94021c8df7224317b733233f9bb3587518915f512",
+    "sourceRevisionTimestamp": "2026-10-04T03:01:14.283Z",
+    "boundedFeatureCount": 112,
+    "positiveAreaOverlapPairs": 29,
+    "geometryChangedOrRepaired": false
+  }
+}

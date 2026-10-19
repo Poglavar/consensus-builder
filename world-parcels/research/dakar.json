@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:120",
+  "queueRank": 120,
+  "name": "Dakar",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "centerLatLon": [
+    14.7439034455783,
+    -17.3893643705506
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "http://www.georepertoire.gouv.sn/catalog/search/resource/details.page?uuid=%7BF8264ED8-8268-4F69-8BAB-64F0BC72E453%7D",
+      "observation": "Geo-Senegal georepertoire catalogue record 'Donnees vectorielles du plan cadastral de Dakar' (seen in search results); the catalogue host returned 503 so access terms/service link were not read."
+    },
+    {
+      "url": "https://www.dgid.sn/service/cadastre/",
+      "observation": "DGID (tax and land directorate) cadastre service page; certified plan extracts are ordered per parcel (paid), NICAD identifier."
+    },
+    {
+      "url": "https://www.geosenegal.gouv.sn/georepertoire.html",
+      "observation": "Geo Senegal portal (HTTP 200) listing catalogue categories; only mining/petroleum cadastre visible."
+    },
+    {
+      "url": "https://senegal.africageoportal.com/",
+      "observation": "Senegal GeoPortal (Esri Hub, HTTP 200); no cadastral parcel layer found in searches."
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://www.georepertoire.gouv.sn/catalog/search/resource/details.page?uuid=%7BF8264ED8-8268-4F69-8BAB-64F0BC72E453%7D",
+      "method": "GET",
+      "httpStatus": 503,
+      "contentType": "text/plain",
+      "assessment": "upstream connect error, tried twice"
+    },
+    {
+      "url": "https://www.georepertoire.gouv.sn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/datasets?q=parcelles%20Dakar",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no Dakar parcel layers; only communes/households"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Dakar cadastral plan vector data catalogued in national georepertoire; access model unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The catalogued Dakar cadastral vector dataset may be download-on-request; host was down so nothing verified.",
+  "nextStep": "Retry georepertoire.gouv.sn; read the record's access/download links and test any WFS/WMS."
+}

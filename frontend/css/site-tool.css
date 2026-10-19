@@ -1,0 +1,553 @@
+/* ========== Site tool and ground menu ==========
+   The site panel (js/site-drawing.js): drawing a proposal's site, its binding preview (bound
+   parcels, small intrusions, open ground hatched, coverage) and the build palette on the site.
+   The ground menu reuses the parcel menu's styles (css/parcel-menu.css); only its emphasis is here. */
+
+:root {
+    --site-outline: #111827;
+    --site-bound: #2563eb;
+    --site-warn: #d97706;
+    --site-touched: #9ca3af;
+    --site-open: #059669;
+    --site-plot: #7c3aed;
+    --site-building: #be185d;
+    --site-street: #0f766e;
+}
+
+/* The ground menu's first action (Draw a site here) is the main one. */
+.ground-menu .parcel-menu__action[data-command="ground.drawSite"] {
+    color: var(--cb-primary-hover);
+    font-weight: 600;
+}
+
+.ground-menu .parcel-menu__action[data-command="ground.drawSite"] i {
+    color: var(--cb-primary);
+}
+
+/* ---- map layers (pane siteToolPane) ---- */
+.site-tool-pane {
+    z-index: var(--cb-z-map-pane-site);
+}
+
+body.site-tool-drawing .leaflet-container {
+    cursor: crosshair;
+}
+
+.site-outline {
+    stroke: var(--site-outline);
+    stroke-width: 2.5px;
+    fill: var(--site-outline);
+    fill-opacity: 0.04;
+}
+
+.site-outline--drawing {
+    stroke-dasharray: 6 4;
+}
+
+.site-drawing-line {
+    stroke: var(--site-outline);
+    stroke-width: 2px;
+    stroke-dasharray: 6 4;
+    fill: none;
+}
+
+.site-drawing-vertex {
+    stroke: var(--site-outline);
+    stroke-width: 2px;
+    fill: var(--cb-surface);
+    fill-opacity: 1;
+}
+
+.site-drawing-vertex--first {
+    fill: var(--site-bound);
+}
+
+.site-snap-marker {
+    stroke: var(--site-bound);
+    stroke-width: 2px;
+    fill: var(--site-bound);
+    fill-opacity: 0.35;
+}
+
+/* Snapped to an existing building's outline rather than a parcel's. */
+.site-snap-marker--building {
+    stroke: var(--site-building);
+    fill: var(--site-building);
+}
+
+/* What the snap marker landed on ("Building corner", "Parcel edge"): a small label beside it. */
+.leaflet-tooltip.site-snap-label {
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--site-bound);
+    border-color: var(--site-bound);
+    box-shadow: none;
+}
+
+.leaflet-tooltip.site-snap-label--building {
+    color: var(--site-building);
+    border-color: var(--site-building);
+}
+
+.site-binding-parcel {
+    stroke-width: 2px;
+    fill-opacity: 0.08;
+}
+
+.site-binding-parcel--bound {
+    stroke: var(--site-bound);
+    fill: var(--site-bound);
+}
+
+.site-binding-parcel--small {
+    stroke: var(--site-warn);
+    fill: var(--site-warn);
+    fill-opacity: 0.18;
+    stroke-dasharray: 5 3;
+}
+
+.site-binding-parcel--touched {
+    stroke: var(--site-touched);
+    fill: var(--site-touched);
+    stroke-dasharray: 2 4;
+}
+
+/* Open ground: hatched through the SVG pattern site-drawing.js puts in the pane's renderer. */
+.site-open-ground {
+    stroke: var(--site-open);
+    stroke-width: 1px;
+    fill: url(#site-open-ground-hatch);
+    fill-opacity: 1;
+}
+
+.site-open-ground-hatch-line {
+    stroke: var(--site-open);
+    stroke-width: 2px;
+    stroke-opacity: 0.6;
+}
+
+.site-plot {
+    stroke: var(--site-plot);
+    stroke-width: 1.5px;
+    fill: var(--site-plot);
+    fill-opacity: 0.06;
+}
+
+.site-frontage-edge {
+    stroke: var(--site-plot);
+    stroke-width: 10px;
+    stroke-opacity: 0.15;
+    cursor: pointer;
+}
+
+.site-frontage-edge:hover {
+    stroke-opacity: 0.35;
+}
+
+.site-frontage-edge--chosen {
+    stroke-width: 6px;
+    stroke-opacity: 0.85;
+}
+
+/* ---- the site panel ----
+   The site card. On a wide screen it is the upper slot of the right dock, the dock's width
+   (.right-dock-panel), over the lower slot the site's proposal panel opens in: the two stay open
+   together and the map on the left is free for the outline. On a phone it is the bottom sheet.
+   Its size is FIXED: what it shows changes as the outline does (the bound parcels, the flagged
+   reaches, the server's answer), and a card that grew with it ended up over the outline being
+   edited. Between its header row and its actions the body scrolls, the parcel list last under a
+   header that keeps the count in view; the minimize button folds the card to its header row. A docked editor on the --cb-z-editor rung; its buttons
+   are the .btn roles (css/primitives.css: Finish / Propose here is the one primary) and its close
+   a close-circle-btn. */
+:root {
+    /* The right dock's two slots while a site is drawn: the card above, the proposal panel below. */
+    --site-dock-slot: calc((100% - var(--map-shell-top-clearance) - var(--map-shell-bottom-clearance) - var(--right-dock-gap)) / 2);
+    /* The header row a folded card or proposal panel keeps. */
+    --site-row-height: 52px;
+}
+
+.site-panel {
+    position: absolute;
+    top: var(--map-shell-top-clearance);
+    right: var(--right-dock-gap);
+    z-index: var(--cb-z-editor);
+    display: flex;
+    flex-direction: column;
+    height: var(--site-dock-slot);
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text);
+    font-size: var(--cb-text-md);
+}
+
+.site-panel[hidden] {
+    display: none;
+}
+
+/* A 2D editor: it stands down in the 3D view, like the others (css/map-shell.css). */
+body.three-mode-active .site-panel {
+    display: none;
+}
+
+.site-panel.is-minimized {
+    height: var(--site-row-height);
+}
+
+.site-panel.is-minimized :is(.site-panel__body, .site-panel__actions) {
+    display: none;
+}
+
+.site-panel__head {
+    display: flex;
+    flex: 0 0 var(--site-row-height);
+    align-items: center;
+    gap: var(--cb-space-2);
+    box-sizing: border-box;
+    padding: 0 var(--cb-space-2) 0 var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.site-panel.is-minimized .site-panel__head {
+    border-bottom: 0;
+}
+
+.site-panel__head > .close-circle-btn {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+}
+
+.site-panel__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 var(--cb-space-3) var(--cb-space-2);
+}
+
+.site-panel__title {
+    flex: 1;
+    margin: 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.site-panel__area {
+    color: var(--cb-text-muted);
+    font-size: 12px;
+}
+
+.site-panel__hint,
+.site-panel__note,
+.site-panel__status {
+    margin: 6px 0;
+    color: var(--cb-text-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Which basis the plots' frontage stands on: a street (named), or the longest edge as a fallback. */
+.site-panel__frontage--street {
+    color: var(--site-street);
+    font-weight: 600;
+}
+
+.site-panel__frontage--longest {
+    color: var(--cb-warning-soft-ink);
+}
+
+.site-panel__error {
+    margin: 6px 0;
+    color: var(--cb-danger);
+    font-weight: 600;
+}
+
+.site-panel__coverage {
+    margin: 6px 0;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+    font-weight: 600;
+}
+
+.site-panel__coverage--partial,
+.site-panel__coverage--none {
+    background: var(--cb-success-soft);
+    color: var(--cb-success-soft-ink);
+}
+
+.site-panel__coverage--unknown {
+    background: var(--cb-surface-2);
+    color: var(--cb-text);
+}
+
+/* The bound parcels, last in the card's body (and in the proposal panel's Info tab): the list
+   scrolls with it, and its header stays at the top with the count while the rows pass under it. */
+.site-panel__parcels {
+    margin: 6px 0 0;
+}
+
+.site-panel__parcels-title {
+    position: sticky;
+    top: 0;
+    margin: 0;
+    padding: 6px 0 4px;
+    background: var(--cb-glass-sheet);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.site-panel__parcel-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+}
+
+.site-panel__parcel {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+.site-panel__parcel:last-child {
+    border-bottom: 0;
+}
+
+.site-panel__parcel-id {
+    min-width: 0;
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-sm);
+    overflow-wrap: anywhere;
+}
+
+.site-panel__parcel-area {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    white-space: nowrap;
+}
+
+.site-panel__parcels-empty {
+    margin: 6px 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: 1.4;
+}
+
+.site-panel__warning {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--cb-line);
+    border-left: 3px solid var(--site-warn);
+    background: var(--cb-warning-soft);
+}
+
+.site-panel__warning--touched {
+    border-left-color: var(--site-touched);
+    background: var(--cb-surface-2);
+}
+
+.site-panel__warning-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* "3 proposals already on these parcels · Show": opens the site's Proposals tab. */
+.site-panel__existing {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    margin: 6px 0;
+    color: var(--cb-text);
+    font-size: 12px;
+}
+
+.site-panel__actions {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+}
+
+/* A disabled palette tool (a .cb-tile, greyed by css/primitives.css) says why. */
+.parcel-build-disabled-reason {
+    grid-column: 1 / -1;
+    margin: 2px 0 6px;
+    color: var(--cb-text-muted);
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* The create dialog's tolerance row (js/proposals/dialog-create.js). */
+.proposal-tolerance-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.proposal-tolerance-row input {
+    width: 72px;
+    text-align: center;
+}
+
+.proposal-tolerance-help {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--cb-text-muted);
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.proposal-site-summary {
+    margin: 0 0 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--cb-success-soft);
+    color: var(--cb-success-soft-ink);
+    font-size: 13px;
+}
+
+/* ---- phones: the bottom sheet, right of the view buttons ----
+   The top half of the screen stays map, so the outline can be edited: the card and the site's
+   proposal panel share the bottom half, one of them folded to its header row (js/site-drawing.js
+   folds the other when one is opened). The sheet's top edge is the same in every state. */
+@media (max-width: 767.98px) {
+    :root {
+        --site-sheet-height: min(45dvh, 26rem);
+        --site-safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .site-panel {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: calc(var(--site-sheet-height) + var(--site-safe-bottom));
+        padding-bottom: var(--site-safe-bottom);
+        border-radius: var(--cb-radius-xl) var(--cb-radius-xl) 0 0;
+    }
+
+    .site-panel.is-minimized {
+        height: calc(var(--site-row-height) + var(--site-safe-bottom));
+    }
+
+    body.site-proposing .site-panel {
+        bottom: calc(var(--site-row-height) + var(--site-safe-bottom));
+        height: calc(var(--site-sheet-height) - var(--site-row-height));
+        padding-bottom: 0;
+    }
+
+    body.site-proposing .site-panel.is-minimized {
+        bottom: calc(var(--site-sheet-height) - var(--site-row-height) + var(--site-safe-bottom));
+        height: var(--site-row-height);
+    }
+}
+
+/* ---- the site's proposal panel: the parcel panel's twin (js/site-drawing.js) ----
+   It uses the parcel panel's markup and the shared dock, header, tab and body classes; only what
+   #parcel-info-panel sets by ID is repeated here, plus where it docks while the site sheet is open. */
+#site-info-panel {
+    position: absolute;
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: var(--cb-z-panel);
+}
+
+#site-info-panel.visible {
+    display: flex;
+    flex-direction: column;
+}
+
+#site-info-panel .panel-header {
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: var(--cb-radius-lg) var(--cb-radius-lg) 0 0;
+}
+
+/* The tabs are the shared .cb-tabs strip, which scrolls sideways; in the panel's flex column it
+   keeps its height rather than being squeezed by the body. */
+#site-info-panel .parcel-tabs {
+    flex-shrink: 0;
+    padding: 0 var(--cb-space-2);
+}
+
+#site-info-panel .panel-header h3 {
+    display: inline-flex;
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: baseline;
+    gap: 8px;
+    line-height: 1.2;
+}
+
+#site-info-panel.is-minimized {
+    height: auto;
+}
+
+#site-info-panel.is-minimized .parcel-tabs,
+#site-info-panel.is-minimized .panel-body {
+    display: none;
+}
+
+#site-info-panel .panel-header > button {
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+}
+
+.site-info-panel__area {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    font-weight: normal;
+}
+
+@media (min-width: 768px) {
+    /* The lower slot of the right dock, under the site card: the same size, both open together. */
+    #site-info-panel {
+        right: var(--right-dock-gap);
+        bottom: var(--map-shell-bottom-clearance);
+        height: var(--site-dock-slot);
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Phones: the lower part of the site's half of the screen, under the card's row, or folded to
+       its own row under the card. It does not take the dock sheet's drag handle: the two fold in
+       turn instead, so the map above keeps its half. */
+    body.site-tool-active #site-info-panel.info-panel.right-dock-panel {
+        --info-panel-mobile-inset: var(--map-mode-strip);
+        bottom: 0;
+        height: calc(var(--site-sheet-height) - var(--site-row-height) + var(--site-safe-bottom));
+        max-height: none;
+        padding-bottom: var(--site-safe-bottom);
+        border-radius: 0;
+    }
+
+    body.site-tool-active #site-info-panel.info-panel.right-dock-panel.is-minimized {
+        height: calc(var(--site-row-height) + var(--site-safe-bottom));
+    }
+
+    body.site-tool-active #site-info-panel .mobile-dock-sheet-handle {
+        display: none;
+    }
+}

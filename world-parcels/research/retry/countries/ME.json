@@ -1,0 +1,87 @@
+{
+ "kind": "country",
+ "key": "ME",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: sr-ME,sr;q=0.9,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://ekatastar.me/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "redirects to eKatastar login page /ekatastar-web/action/elogin"
+  },
+  {
+   "url": "https://www.ekatastar.me/ekatastar-web/action/login",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "login form with Google reCAPTCHA; page JS calls only getObavestenja (notices) and opstine list; no embedded public token or public-map endpoint"
+  },
+  {
+   "url": "https://www.ekatastar.me/ekatastar-web/action/javniPristup",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "guessed public-access path, 404"
+  },
+  {
+   "url": "https://katastar.gov.me/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.katastar.gov.me/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://geoportal.katastar.me/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://gis.katastar.me/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "503 from parked host (ww38.*)"
+  },
+  {
+   "url": "https://katastar.me/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "503 parked host"
+  },
+  {
+   "url": "https://geoportal.co.me/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/html",
+   "assessment": "503"
+  },
+  {
+   "url": "https://data.gov.me/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "open-data portal, no cadastre link found"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "eKatastar (Real Estate Administration) is behind a login with reCAPTCHA; no anonymous parcel endpoint found. Not bypassed. katastar.gov.me main site remained unreachable, so a separate public viewer on it is not ruled out.",
+ "nextStep": "Check whether katastar.gov.me hosts a free public parcel viewer; confirm registration terms for eKatastar."
+}

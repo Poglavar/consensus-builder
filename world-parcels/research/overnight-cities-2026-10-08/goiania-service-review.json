@@ -1,0 +1,374 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4862-goiania.json",
+  "purpose": "Bounded public ICAD API contract follow-through. Research only; no runtime adapter, global registry, or city configuration changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 1,
+    "maxFullPolygonsRetainedAcrossCityReview": 1,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "operatorAndVendor": {
+    "officialMunicipalEntry": {
+      "url": "https://www.goiania.go.gov.br/sing_servicos/geoprocessamento/",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "sha256": "f09f80a7eba2af20e4b990860dbcffa74d77692c3884ec92d81c82769d7c19f2",
+      "pageTitle": "Geoprocessamento - Mapa Geo 360° Goiânia",
+      "officialServiceOwner": "Prefeitura de Goiânia, Secretaria Municipal de Planejamento e Urbanismo Estratégico (SEPLAN)",
+      "linkedViewer": "https://portal-goiania.geo360.com.br/"
+    },
+    "vendorEvidence": {
+      "url": "https://www.topocart.com.br/geo360",
+      "statement": "Topocart presents GEO360 as its GIS platform."
+    },
+    "cityContractEvidence": {
+      "url": "https://www.goiania.go.gov.br/amma/wp-content/uploads/sites/22/2026/03/Relatorio_de_atividades_mes_Janeiro_2026.pdf",
+      "statement": "Official municipal activity report for January 2026 records a meeting of inspectors for the Topocart Geo 360 contract."
+    },
+    "deploymentAttribution": "Official service ownership is SEPLAN; Topocart is the evidenced GEO360 product vendor. The deployment API is hosted at apis-goiania.geo360.com.br; no separate subcontractor was established."
+  },
+  "viewerAndBootstrap": {
+    "viewerShell": {
+      "url": "https://portal-goiania.geo360.com.br/icad/map/-49.29338,-16.71996,18/list",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 2539,
+      "sha256": "6e76f0f88d3fb7aaeaf5d18ed500712bc217f56e634e2d3ec3ef1dba09487636"
+    },
+    "mainBundle": {
+      "url": "https://portal-goiania.geo360.com.br/main.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "bytes": 1054233,
+      "sha256": "fddf626da0dbb1a51e4fed9e3cb0f2150afadd06dfb1e58970d6a7f628125643",
+      "configApiRoot": "https://apis-goiania.geo360.com.br/plataforma/",
+      "sourceMethods": {
+        "getIntersectedGeoms": "GET geometrias/intersect-geom with ids and wkt query params; no request body",
+        "getGeometryById": "GET geometrias/{id}; no property-selection argument",
+        "getGeoJSONwithValues": "GET ouv/camadas/{id}/geometrias; no pagination arguments; its only found caller is commented out",
+        "getTest": "Hardcoded test URL on api2.webgeo.io for unrelated layer 3402; not the active Goiânia map request."
+      }
+    },
+    "publicReaderBootstrap": {
+      "url": "https://apis-goiania.geo360.com.br/plataforma/ouv/?q=leitor_goiania%40vm2info.com",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "responseBytes": 73,
+      "responseKeys": [
+        "authToken",
+        "tnToken"
+      ],
+      "browserFlowEvidence": "Bundle method getPublicToken(subdomain) constructs the public-reader query and sends no-token header. Token values are omitted and were held only in memory for read-only public requests."
+    }
+  },
+  "layer": {
+    "catalogRequest": {
+      "url": "https://apis-goiania.geo360.com.br/plataforma/camadas?showIcad=true&publicoIcad=true&noForms=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "responseBytes": 638948,
+      "responseSha256": "8e674e3230421ea00b93e4d6d0faeb0e9833252ee5e28154a75412c269d654f5",
+      "layerCount": 196
+    },
+    "selectedLayer": {
+      "id": 23548,
+      "name": "Lote",
+      "representation": "lote",
+      "geometryType": "POLYGON",
+      "publicoIcad": true,
+      "publicoOuv": true,
+      "project": 3404,
+      "extentSrid": 3857
+    },
+    "scope": "City-linked municipal layer has registered Lote polygon activity; this does not establish complete citywide feature enumeration."
+  },
+  "activeViewerProtocol": {
+    "lookup": {
+      "urlPattern": "https://apis-goiania.geo360.com.br/plataforma/geometrias/intersect-geom?ids=23548&wkt={URL-encoded-WKT}",
+      "method": "GET",
+      "body": null,
+      "requestParameters": {
+        "ids": "layer ID list, here 23548",
+        "wkt": "WKT geometry with SRID=4326 in the tested requests"
+      },
+      "responseShape": {
+        "23548": [
+          "geometry ID"
+        ]
+      },
+      "featureGeometryIncluded": false,
+      "countOrNextCursorIncluded": false
+    },
+    "predicateEvidence": "The viewer names this method getIntersectedGeoms and calls intersect-geom. The response is a layer-keyed ID array; it provides no clipped polygon. Full shape is read separately by geometry ID.",
+    "sampleGeometryIdRead": {
+      "url": "https://apis-goiania.geo360.com.br/plataforma/geometrias/47189959",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "responseBytes": 25394,
+      "responseSha256": "8671040fa5a311ab3267813bd19ddc99df976b3e86db8274421de41423b8313e",
+      "responseKeysObserved": [
+        "arquivos",
+        "audCriadoData",
+        "audUsuarioCriou",
+        "geomText",
+        "id",
+        "projeto",
+        "projetoCamada",
+        "seq"
+      ],
+      "geometryId": 47189959,
+      "geometryType": "POLYGON",
+      "uniqueVertices": 4,
+      "ringCoordinateCount": 5,
+      "geomTextSha256": "f67b947120a35b30330375240cd5d04b3118b295d18260442377daa654a3140e",
+      "geometryWkt": "POLYGON ((-49.293449628137736 -16.719925197063716, -49.29346236233939 -16.720055285888677, -49.29330955191954 -16.7200051474979, -49.29332653085508 -16.719870993360473, -49.293449628137736 -16.719925197063716))"
+    },
+    "fieldSelectionTest": {
+      "url": "https://apis-goiania.geo360.com.br/plataforma/geometrias/47189959?fields=id%2CgeomText",
+      "httpStatus": 200,
+      "responseBytes": 25394,
+      "responseSha256": "2ffe345ac446963d286bafc9d98cc4a846a77b47383b48c65fac251620e413c5",
+      "result": "fields query does not reduce the root response keys. Local allowlist is required. Only id and geomText are retained here; all other fields, including creator/audit/document containers, are dropped."
+    },
+    "safeAllowlist": [
+      "id",
+      "geomText"
+    ],
+    "unclippedGeometryEvidence": "The exact full WKT hash f67b947120a35b30330375240cd5d04b3118b295d18260442377daa654a3140e is unchanged in 4 m, ~25 m, ~200 m, and ~1 km bbox-query results. Its coordinates extend beyond the 4 m bbox. The response is vector POLYGON text, not a raster or a bbox-clipped shape."
+  },
+  "candidateBboxListProtocol": {
+    "urlPattern": "https://apis-goiania.geo360.com.br/plataforma/geometrias/camada/23548?bbox=minLon,minLat,maxLon,maxLat",
+    "method": "GET",
+    "evidenceCaveat": "This route returned vectors in bounded direct probes. The live viewer uses intersect-geom for its active map protocol; this list route is a candidate extraction path, not yet accepted as a complete runtime contract.",
+    "responseShape": "JSON array of records including id, geomText, and seq; only id and geomText were retained. Empty bboxes return HTTP 400 JSON error Geometria não encontrada!, not an empty array.",
+    "bboxFootprintComparisons": [
+      {
+        "name": "tiny_4m",
+        "bbox": [
+          -49.2934,
+          -16.71998,
+          -49.29336,
+          -16.71994
+        ],
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "responseBytes": 291,
+        "responseSha256": "a4ae6c338dc281cd38b955fee61ac7966549efd2d0bf1425ca18398412e1cfee",
+        "featureCount": 1,
+        "ids": [
+          47189959
+        ],
+        "geomTextSha256": "f67b947120a35b30330375240cd5d04b3118b295d18260442377daa654a3140e"
+      },
+      {
+        "name": "cell_25m",
+        "bbox": [
+          -49.293495,
+          -16.720075,
+          -49.293265,
+          -16.719845
+        ],
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "responseBytes": 291,
+        "responseSha256": "a4ae6c338dc281cd38b955fee61ac7966549efd2d0bf1425ca18398412e1cfee",
+        "featureCount": 1,
+        "ids": [
+          47189959
+        ],
+        "geomTextSha256": "f67b947120a35b30330375240cd5d04b3118b295d18260442377daa654a3140e"
+      },
+      {
+        "name": "bbox_200m",
+        "bbox": [
+          -49.294,
+          -16.721,
+          -49.292,
+          -16.719
+        ],
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "responseBytes": 291,
+        "responseSha256": "a4ae6c338dc281cd38b955fee61ac7966549efd2d0bf1425ca18398412e1cfee",
+        "featureCount": 1,
+        "ids": [
+          47189959
+        ],
+        "geomTextSha256": "f67b947120a35b30330375240cd5d04b3118b295d18260442377daa654a3140e"
+      },
+      {
+        "name": "bbox_1km",
+        "bbox": [
+          -49.298,
+          -16.724,
+          -49.289,
+          -16.716
+        ],
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "responseBytes": 291,
+        "responseSha256": "a4ae6c338dc281cd38b955fee61ac7966549efd2d0bf1425ca18398412e1cfee",
+        "featureCount": 1,
+        "ids": [
+          47189959
+        ],
+        "geomTextSha256": "f67b947120a35b30330375240cd5d04b3118b295d18260442377daa654a3140e"
+      }
+    ],
+    "pagingProbe": {
+      "queryVariants": [
+        "no paging params",
+        "limit=1",
+        "page=1&page_size=1"
+      ],
+      "result": "Each tested bbox had one match; all variants returned the same 291-byte response. No total, count, limit, page, offset, cursor, next-link, or manifest field appeared. Because the tested box had one feature, these probes cannot establish whether paging params are ignored or whether larger results are truncated."
+    },
+    "alternateListEndpoint": {
+      "url": "https://apis-goiania.geo360.com.br/plataforma/ouv/camadas/23548/geometrias",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "responseBytes": 42,
+      "responseSha256": "ad37fe6278e0c7caf3b77c1c5068a56e18a6c87b78ed5a840ee22a0f961ea7a8",
+      "responseShape": {
+        "type": "FeatureCollection",
+        "features": []
+      },
+      "pagingProbe": "Adding page=1&page_size=1 or limit=1&offset=0 produced the same 42-byte zero-feature body; no paging metadata. The bundle helper has no paging arguments and its found caller is commented out; this is not evidence that layer 23548 contains no ICAD features."
+    }
+  },
+  "adjacentCells": [
+    {
+      "name": "sample_center",
+      "bboxLonLat": [
+        -49.293495,
+        -16.720075,
+        -49.293265,
+        -16.719845
+      ],
+      "intersectStatus": 200,
+      "intersectIds": [
+        47189959
+      ],
+      "bboxListStatus": 200,
+      "bboxListCount": 1,
+      "bboxListIds": [
+        47189959
+      ],
+      "bboxListSha256": "a4ae6c338dc281cd38b955fee61ac7966549efd2d0bf1425ca18398412e1cfee"
+    },
+    {
+      "name": "east_adjacent",
+      "bboxLonLat": [
+        -49.293265,
+        -16.720075,
+        -49.293035,
+        -16.719845
+      ],
+      "intersectStatus": 200,
+      "intersectIds": [],
+      "bboxListStatus": 400,
+      "bboxListError": "Geometria não encontrada!"
+    },
+    {
+      "name": "north_adjacent",
+      "bboxLonLat": [
+        -49.293495,
+        -16.719845,
+        -49.293265,
+        -16.719615
+      ],
+      "intersectStatus": 200,
+      "intersectIds": [],
+      "bboxListStatus": 400,
+      "bboxListError": "Geometria não encontrada!"
+    },
+    {
+      "name": "west_adjacent",
+      "bboxLonLat": [
+        -49.293725,
+        -16.720075,
+        -49.293495,
+        -16.719845
+      ],
+      "intersectStatus": 200,
+      "intersectIds": [],
+      "bboxListStatus": 400,
+      "bboxListError": "Geometria não encontrada!"
+    },
+    {
+      "name": "south_adjacent",
+      "bboxLonLat": [
+        -49.293495,
+        -16.720305,
+        -49.293265,
+        -16.720075
+      ],
+      "intersectStatus": 200,
+      "intersectIds": [],
+      "bboxListStatus": 400,
+      "bboxListError": "Geometria não encontrada!"
+    }
+  ],
+  "confirmedEmptyLocators": [
+    {
+      "name": "WUP_point",
+      "locationLonLat": [
+        -49.2865080463885,
+        -16.7044742060347
+      ],
+      "url": "https://apis-goiania.geo360.com.br/plataforma/geometrias/intersect-geom?ids=23548&wkt=SRID%3D4326%3BPOINT%28-49.2865080463885+-16.7044742060347%29",
+      "httpStatus": 200,
+      "responseShape": {
+        "23548": []
+      }
+    },
+    {
+      "name": "WUP_bbox_plus_minus_0.002deg",
+      "bbox": [
+        -49.288508,
+        -16.706474,
+        -49.284508,
+        -16.702474
+      ],
+      "httpStatus": 200,
+      "responseShape": {
+        "23548": []
+      },
+      "candidateBboxListStatus": 400
+    },
+    {
+      "name": "east_north_west_south_adjacent_sample_cells",
+      "httpStatus": 200,
+      "responseShape": {
+        "23548": []
+      }
+    }
+  ],
+  "completenessAssessment": {
+    "citywideFeatureCount": null,
+    "completeIdManifestAvailable": false,
+    "totalOrPagingMetadataObserved": false,
+    "truncationBehaviorVerified": false,
+    "runtimeQualification": "Pending. The bounded requests prove that full polygons can be obtained for returned IDs, not that all matching IDs in a query or all city parcels are returned. Do not claim completeness based on these probes."
+  },
+  "licensingAndLegalStatus": {
+    "classification": "Informational uncertainty; not an approval gate in this review.",
+    "detail": "Municipal mapping activity and platform presence are confirmed. No separate legal opinion or reuse license was established by the bounded protocol checks."
+  },
+  "runtimeBlocker": "The API exposes usable point/intersection, geometry-ID, and bounded bbox-list reads, but the list route has no observed total or complete-manifest/paging contract and the active intersection route emits only IDs without completeness metadata. Full-city/viewport completeness and truncation behavior remain unqualified.",
+  "requestDigests": {
+    "municipal_entry_sha256": "f09f80a7eba2af20e4b990860dbcffa74d77692c3884ec92d81c82769d7c19f2",
+    "viewer_shell_sha256": "6e76f0f88d3fb7aaeaf5d18ed500712bc217f56e634e2d3ec3ef1dba09487636",
+    "main_js_sha256": "fddf626da0dbb1a51e4fed9e3cb0f2150afadd06dfb1e58970d6a7f628125643",
+    "layer_catalog_sha256": "8e674e3230421ea00b93e4d6d0faeb0e9833252ee5e28154a75412c269d654f5",
+    "sample_geometry_wkt_sha256": "f67b947120a35b30330375240cd5d04b3118b295d18260442377daa654a3140e"
+  }
+}

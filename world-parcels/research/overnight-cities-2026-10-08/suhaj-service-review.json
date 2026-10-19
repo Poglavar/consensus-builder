@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "eg-suhaj-esa-and-governorate-property-gis-review",
+  "purpose": "Service review for WUP2025 rank 461 Suhaj (city code 7228); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Egyptian Survey Authority and Sohag Governorate / Sohag City local administration",
+  "sourceUrl": "https://www.esa.gov.eg/services.aspx",
+  "registryFound": true,
+  "registryBasis": "Official Egyptian Survey Authority material documents a cooperation protocol with Sohag Governorate to inventory and digitize government-owned lands using GIS; this is a government-asset inventory, not evidence of a public or comprehensive private-parcel cadastre. The Authority’s digital-map service is request-based: applicants specify area/scale/layers/projection, review and pay a quote. No anonymous polygon route was verified.",
+  "officialSources": [
+    {
+      "url": "https://www.esa.gov.eg/images.aspx?FileID=83",
+      "observation": "Direct anonymous ESA page states that the Authority and Sohag Governorate agreed on a GIS program to inventory/digitize state-owned land assets and deter encroachment; this is not a public private-parcel feature service. Direct anonymous GET returned HTTP 200 (17,815 bytes)."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "observation": "Egyptian Survey Authority services include digital-map products and surveying services."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "observation": "ESA digital maps are requested by letter with location, scale, selected layers and projection, then inspected, quoted, paid for and delivered."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "observation": "ESA directorates map is an office locator, not a cadastral feature service."
+    },
+    {
+      "url": "https://sohag.gov.eg/",
+      "observation": "Direct anonymous HTTPS request timed out without status; no authenticated route was attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sohag Egypt official cadastral map land registry city GIS parcels survey authority",
+      "scope": "Find city-local registry evidence and anonymous parcel polygon access.",
+      "result": "Official ESA sources document GIS inventory of governorate-owned land and request-based digital-map production. No city parcel feature endpoint was found; ESA’s public map is a directorate locator.",
+      "urls": [
+        "https://www.esa.gov.eg/images.aspx?FileID=83",
+        "https://www.esa.gov.eg/services.aspx",
+        "https://www.esa.gov.eg/testmap.aspx"
+      ]
+    },
+    {
+      "language": "Arabic",
+      "query": "سوهاج خريطة قطع الأراضي السجل العقاري المساحة خرائط رقمية GIS رسمي",
+      "scope": "البحث عن سجل محلي لقطع الأراضي ومسار مجهول الهوية لإتاحة حدود القطع كاملة.",
+      "result": "تظهر المصادر الرسمية تعاون هيئة المساحة ومحافظة سوهاج لحصر أملاك الدولة بنظم GIS، لكن خرائط الهيئة الرقمية تُطلب بخطاب وتكلفة، ولم يظهر مسار عام لبيانات مضلعات القطع.",
+      "urls": [
+        "https://www.esa.gov.eg/images.aspx?FileID=83",
+        "https://www.esa.gov.eg/services.aspx",
+        "https://sohag.gov.eg/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxAccountOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "No public anonymous parcel-geometry service or schema was found. ESA’s digital maps are delivered through a written request, review and payment workflow; its interactive map page lists directorates, not cadastral parcels. Direct GET of the official Sohag site timed out without an HTTP response. No personal, title, or parcel query was submitted."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 19316,
+      "observation": "ESA services page lists paper/digital/historical maps and other services; no free cadastral download is linked."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 22939,
+      "observation": "Digital map service describes a written request specifying area, scale, requested layers and projection, map inspection, cost estimate, payment, and delivery."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 26047,
+      "observation": "Interactive map page is a directorate locator; no parcel or cadastral layer is advertised."
+    },
+    {
+      "url": "https://www.esa.gov.eg/images.aspx?FileID=83",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "ESA-published item documents a protocol with Sohag Governorate for a GIS database inventory and digitization of government-owned lands; no feature data or parcel attributes were exposed."
+    },
+    {
+      "url": "https://sohag.gov.eg/",
+      "method": "GET",
+      "status": "not_obtained_timeout",
+      "httpStatusObtained": false,
+      "observation": "Direct anonymous HTTPS GET timed out before an HTTP response; no retry or TLS bypass was attempted."
+    },
+    {
+      "url": "https://sohag.gov.eg/%D8%AA%D9%81%D8%A7%D8%B5%D9%8A%D9%84%20%D8%A3%D8%AE%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D8%B5%D8%AD%D9%81.aspx?ID=12947",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "Official governorate site search index includes a notice about proposed plots in New Sohag City; it does not provide a feature layer and concerns the planned new city, not the WUP center."
+    }
+  ],
+  "technicalBlocker": "No public anonymous parcel-geometry service or schema was found. ESA’s digital maps are delivered through a written request, review and payment workflow; its interactive map page lists directorates, not cadastral parcels. Direct GET of the official Sohag site timed out without an HTTP response. No personal, title, or parcel query was submitted.",
+  "sampleDisposition": "No parcel polygons or feature attributes retained.",
+  "remainingUncertainty": "Evidence concerns Sohag Governorate government-land GIS inventory and a national survey authority’s map-production service. The 2017 report states work across governorate cities and villages; it does not establish current complete coverage of the WUP city center or ordinary privately held parcels. The searched governorate portal timed out on a direct HTTPS GET before an HTTP response."
+}

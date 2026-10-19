@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4316-hanover.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of Hanover documents ALKIS parcel boundaries in its official city map. The state LGLN catalog describes an official no-auth cadastral WFS with Hannover coverage; GetCapabilities and DescribeFeatureType succeeded and exposed parcel geometry and native cadastral identifiers. Three bounded feature requests (exact point, small bbox, XML POST) received generic HTTP 400 gateway rejections. No feature or geometry sample was returned.",
+  "registryAssessment": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hannover.de/Service/Presse-Medien/Landeshauptstadt-Hannover/Stadtkarte-1-1000-SKH1000",
+      "observation": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway."
+    },
+    {
+      "url": "https://numis.niedersachsen.de/trefferanzeige?docuuid=d5b05158-fd60-4749-9913-4d4afa85986b",
+      "observation": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway."
+    },
+    {
+      "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+      "observation": "The City of Hanover identifies its official city map as incorporating ALKIS parcel boundaries. The Lower Saxony official catalog publishes an unauthenticated INSPIRE WFS for cadastral parcels and describes Hannover coverage; capability and schema are accessible, but bounded feature requests were rejected by the service gateway."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hanover Germany official ALKIS cadastral parcel WFS open data",
+      "result": "Official City of Hanover map documents ALKIS parcel boundaries; Lower Saxony catalog identifies no-auth WFS coverage and parcel schema.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    },
+    {
+      "language": "German",
+      "query": "Hannover ALKIS Flurstücke INSPIRE WFS LGLN Kataster öffentlich",
+      "result": "Die Stadt Hannover nennt ALKIS-Flurstücksgrenzen in der Stadtkarte; der LGLN-Katalog weist einen öffentlichen WFS mit Hannover-Abdeckung aus. Begrenzte GetFeature-Abfragen wurden vom Gateway abgewiesen.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact WUP settlement point and reviewed official sources only.",
+    "limits": "Whether the official WFS gateway will accept a supported bounded request format and return geometry at the exact WUP point remains unresolved; no query was broadened."
+  },
+  "attempts": [
+    {
+      "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+      "method": "GET WFS 2.0 GetCapabilities",
+      "result": "HTTP 200; official capabilities list `cp:CadastralParcel`, supported CRS including EPSG:4326."
+    },
+    {
+      "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?SERVICE=WFS&VERSION=2.0.0&REQUEST=DescribeFeatureType&TYPENAMES=cp%3ACadastralParcel",
+      "method": "GET WFS DescribeFeatureType",
+      "result": "HTTP 200; schema includes `geometry`, `nationalCadastralReference`, `inspireId`, and other non-owner fields."
+    },
+    {
+      "url": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=cp%3ACadastralParcel&BBOX=9.7540%2C52.3779%2C9.7542%2C52.3781%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A%3ACRS84",
+      "method": "GET bounded WFS BBOX query",
+      "result": "HTTP 400 generic “Zurückgewiesene Anfrage”; no feature data returned. Separate exact-point Intersects GET and bounded XML POST also returned HTTP 400. No broader query attempted."
+    }
+  ],
+  "remainingUncertainty": "Whether the official WFS gateway will accept a supported bounded request format and return geometry at the exact WUP point remains unresolved; no query was broadened.",
+  "viewerAndServiceTrace": {
+    "viewerUrl": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp?REQUEST=GetCapabilities&SERVICE=WFS",
+    "apiBase": "https://www.inspire.niedersachsen.de/doorman/noauth/alkis-dls-cp",
+    "observedClientRoutes": [],
+    "notes": "GetCapabilities and DescribeFeatureType succeeded. Point, BBOX and XML POST GetFeature requests were bounded and returned HTTP 400; no feature data was returned."
+  }
+}

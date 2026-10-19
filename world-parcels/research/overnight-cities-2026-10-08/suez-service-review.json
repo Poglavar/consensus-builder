@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7267-suez.json",
+  "purpose": "Document local registry evidence, language-specific searches and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Egyptian Survey Authority is the official mapping agency, and government-published notices identify the Suez Survey Directorate and city-specific map/field work in Suez. ESA’s official topographic map guide includes Suez Governorate. These establish a local survey/cadastral-map custodian, not an anonymous parcel vector endpoint or proof of a local private-title registry. No public anonymous parcel-vector endpoint or geometry-only feature response identified. ESA’s published digital-map purchase workflow requires a location, scale, layers and quotation/payment.",
+  "registryAssessment": "The Egyptian Survey Authority is the official mapping agency, and government-published notices identify the Suez Survey Directorate and city-specific map/field work in Suez. ESA’s official topographic map guide includes Suez Governorate. These establish a local survey/cadastral-map custodian, not an anonymous parcel vector endpoint or proof of a local private-title registry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Egyptian Survey Authority describes its official surveying and cadastral-map role."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "observation": "ESA public page lists Survey Directorates by governorate."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "observation": "Official topographic map guide includes Suez Governorate and city map sheets."
+    },
+    {
+      "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/106063/WQ178_20250813_9321.pdf?isAllowed=y&sequence=2",
+      "observation": "Officially published government gazette notice names the Suez Survey Directorate and map/field display locations for a Suez project; no owner values were extracted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Suez Egypt official cadastral survey maps local registry parcels GIS Egyptian Survey Authority",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Official ESA sources describe its national map and survey remit and publish a topographic-map index for Suez; official gazette material names the local Suez Survey Directorate. Digital map products are request-based; no public parcel feature service was identified.",
+      "actualResultUrls": [
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/testmap.aspx",
+        "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "https://mediadr.sis.gov.eg/bitstream/handle/123456789/106063/WQ178_20250813_9321.pdf?isAllowed=y&sequence=2"
+      ],
+      "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+    },
+    {
+      "language": "Arabic",
+      "query": "السويس مديرية المساحة خريطة مساحية قطع الأراضي الهيئة المصرية العامة للمساحة الرسمية",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Arabic-language search confirmed Suez-specific surveying/map records and the local Survey Directorate. No personal compensation or property record values were queried.",
+      "actualResultUrls": [
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/testmap.aspx",
+        "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "https://mediadr.sis.gov.eg/bitstream/handle/123456789/106063/WQ178_20250813_9321.pdf?isAllowed=y&sequence=2"
+      ],
+      "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "decision": "No public anonymous parcel-vector endpoint or geometry-only feature response identified. ESA’s published digital-map purchase workflow requires a location, scale, layers and quotation/payment."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP locator and reviewed city-specific official sources only.",
+    "limits": "No citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "Official website/service metadata review",
+      "result": "Egyptian Survey Authority describes its official surveying and cadastral-map role."
+    },
+    {
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "method": "Official website/service metadata review",
+      "result": "ESA public page lists Survey Directorates by governorate."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "method": "Official website/service metadata review",
+      "result": "Official topographic map guide includes Suez Governorate and city map sheets."
+    },
+    {
+      "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/106063/WQ178_20250813_9321.pdf?isAllowed=y&sequence=2",
+      "method": "Official website/service metadata review",
+      "result": "Officially published government gazette notice names the Suez Survey Directorate and map/field display locations for a Suez project; no owner values were extracted."
+    }
+  ],
+  "sourceCandidate": null,
+  "privacyReview": {
+    "ownerAddressTaxOrAccountValuesRequested": false,
+    "propertyDetailsSubmitted": false,
+    "credentialsOrTokensRetained": false
+  },
+  "sampleGeometryFile": null
+}

@@ -1,0 +1,121 @@
+{
+  "checkedAt": "2026-10-06",
+  "attempts": [
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/eNOC/NOC_Data/FeatureServer?f=json",
+      "httpStatus": 200,
+      "layers": [
+        {
+          "id": 0,
+          "name": "NOCExcavationRouteCenterLine",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 1,
+          "name": "NOCExcavationRoute",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 2,
+          "name": "NOCAsphaltCuttingCenterLine",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 3,
+          "name": "NOCAsphaltCutting",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 4,
+          "name": "NOCThrustBoringCenterLine",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 5,
+          "name": "NOCThrustBoring",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "tables": [
+        {
+          "id": 6,
+          "name": "NOC Master Data"
+        },
+        {
+          "id": 7,
+          "name": "NOC Entities"
+        },
+        {
+          "id": 8,
+          "name": "NOC Entities Comments"
+        },
+        {
+          "id": 9,
+          "name": "NOC INFO"
+        },
+        {
+          "id": 10,
+          "name": "NOC_SERVICES"
+        }
+      ]
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/eNOC/NOC_Data/MapServer?f=json",
+      "httpStatus": 200,
+      "layers": [
+        {
+          "id": 0,
+          "name": "NOCExcavationRouteCenterLine",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 1,
+          "name": "NOCExcavationRoute",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 2,
+          "name": "NOCAsphaltCuttingCenterLine",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 3,
+          "name": "NOCAsphaltCutting",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 4,
+          "name": "NOCThrustBoringCenterLine",
+          "geometryType": "esriGeometryPolyline"
+        },
+        {
+          "id": 5,
+          "name": "NOCThrustBoring",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "tables": [
+        {
+          "id": 6,
+          "name": "NOC Master Data"
+        },
+        {
+          "id": 7,
+          "name": "NOC Entities"
+        },
+        {
+          "id": 8,
+          "name": "NOC Entities Comments"
+        },
+        {
+          "id": 9,
+          "name": "NOC INFO"
+        },
+        {
+          "id": 10,
+          "name": "NOC_SERVICES"
+        }
+      ]
+    }
+  ]
+}

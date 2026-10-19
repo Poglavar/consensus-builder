@@ -1,0 +1,150 @@
+/* Photorealistic base layer (Google Photorealistic 3D Tiles via 3d-tiles-renderer).
+   The real-world mesh streams INTO the Three.js #three-container scene when "realistic
+   context" is toggled on inside 3D mode — there is no second canvas. This file styles the
+   aerial-view toggle slot and the small in-container status/streaming indicators. */
+
+/* Walk-through picks points on the abstract Three.js ground; not supported on the
+   photoreal mesh yet. */
+body.realistic-mode-active #mode-walk-toggle {
+    display: none !important;
+}
+
+/* Realistic (real-world) button — slot 4 of the left-edge mode strip, always visible. The slot
+   ladder, and the rule that a button is hidden rather than moved, live at the top of map.css. */
+#mode-realistic-toggle.map-mode-tile {
+    top: var(--map-mode-slot-4);
+}
+
+#mode-realistic-toggle.map-mode-tile:disabled {
+    opacity: 0.7;
+    cursor: progress;
+}
+
+/* The ?fps debug readout (photoreal-mode.js); loading state and failures go through the status
+   line and the notices (ephemerals.md). */
+#map-container .photoreal-status {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--map-shell-top-clearance) + var(--map-shell-gap));
+    transform: translateX(-50%);
+    z-index: calc(var(--cb-z-map-chrome) + 1);
+    display: none;
+    width: max-content;
+    max-width: min(420px, calc(100% - 112px));
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(20, 22, 28, 0.86);
+    color: #fff;
+    font: var(--cb-weight-medium) var(--cb-text-base)/var(--cb-leading) var(--cb-font-sans);
+    overflow-wrap: anywhere;
+    text-align: center;
+    pointer-events: none;
+}
+
+@keyframes photoreal-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Loading cover for a URL-driven rw entry — hides the abstract 3D while Google tiles stream, so
+   the view goes 2D -> loading -> composed rw. z-index sits below the controls panel / mode buttons
+   (z-index 10), so the 2D button still escapes. Removed at the composed reveal. */
+#three-container .photoreal-cover {
+    position: absolute;
+    inset: 0;
+    z-index: var(--cb-z-local-4);
+    background: #87ceeb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    pointer-events: none;
+}
+#three-container .photoreal-cover-spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: photoreal-spin 0.8s linear infinite;
+}
+#three-container .photoreal-cover-text {
+    max-width: 80%;
+    color: #fff;
+    font: 600 14px/1.35 system-ui, sans-serif;
+    text-align: center;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* The one-off "how do I tilt this" hint shares the map feedback stack with the live status toast.
+   Constrain it to the stack width so long translations wrap and normal flow keeps both readable. */
+.map-feedback-stack .three-view-hint {
+    width: max-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(20, 22, 28, 0.86);
+    color: #fff;
+    font: 500 13px/1.3 system-ui, sans-serif;
+    text-align: center;
+    pointer-events: none;
+    animation: three-view-hint-in 220ms ease-out;
+}
+
+/* A URL-driven photoreal load covers the scene and places its own streaming message at the
+   centre. Keep the delayed camera hint out of that message while the cover is present. */
+#map-container:has(.photoreal-cover) .three-view-hint {
+    display: none;
+}
+
+@keyframes three-view-hint-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Google Photorealistic 3D Tiles attribution (Map Tiles API policy): the Google logo plus the
+   per-tile data copyrights, bottom-right just above the Leaflet attribution line (the lower-left
+   holds the mode buttons and the status line; the 2D scale bar is hidden here). Text wraps rather than truncates — every
+   credit must stay readable. */
+#three-container .photoreal-attribution {
+    position: absolute;
+    right: 4px;
+    bottom: calc(var(--map-visible-bottom) + var(--cb-space-1));
+    z-index: var(--cb-z-local-6);
+    display: none;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 6px;
+    max-width: min(560px, calc(100% - 12px));
+    pointer-events: none;
+}
+#three-container .photoreal-attribution.visible {
+    display: flex;
+}
+#three-container .photoreal-attribution-logo {
+    flex: 0 0 auto;
+    width: 66px;
+    height: 26px;
+    color: #fff;
+    font: 700 14px/26px system-ui, sans-serif; /* alt-text fallback if the logo can't load */
+}
+#three-container .photoreal-attribution-text {
+    min-width: 0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font: 500 10px/1.3 system-ui, sans-serif;
+    overflow-wrap: anywhere;
+}
+#three-container .photoreal-attribution-text:empty {
+    display: none;
+}
+
+/* Model-mode frame-time readout (`?fps=1`), a status badge like the photo one above it. */
+#three-container .three-perf-readout {
+    display: block;
+    top: 8px;
+}

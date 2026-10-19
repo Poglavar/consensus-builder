@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "EG",
+  "name": "Egypt",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/EG.json"
+ },
+ {
+  "kind": "country",
+  "key": "EH",
+  "name": "Western Sahara",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/EH.json"
+ },
+ {
+  "kind": "country",
+  "key": "ER",
+  "name": "Eritrea",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/ER.json"
+ },
+ {
+  "kind": "country",
+  "key": "ET",
+  "name": "Ethiopia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/ET.json"
+ },
+ {
+  "kind": "country",
+  "key": "FJ",
+  "name": "Fiji",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/FJ.json"
+ },
+ {
+  "kind": "country",
+  "key": "GA",
+  "name": "Gabon",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/GA.json"
+ },
+ {
+  "kind": "country",
+  "key": "GB",
+  "name": "United Kingdom",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/GB.json"
+ },
+ {
+  "kind": "country",
+  "key": "GE",
+  "name": "Georgia",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/GE.json"
+ }
+]

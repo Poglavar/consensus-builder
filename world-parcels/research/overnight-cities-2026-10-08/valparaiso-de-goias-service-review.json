@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5937-valparaiso-de-goias.json",
+  "purpose": "Document local registry evidence, language-specific searches and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipality’s official administrative directory identifies a Diretoria de Arrecadação, Cadastro Imobiliário e IPTU, a city-level property-tax cadastre custodian. This verifies a municipal fiscal parcel/property-record function, not a land-title registry or a public geometry service. No public geometry-only vector endpoint or parcel geometry response verified. The city’s fiscal lookup is identifier/CAPTCHA-based and was not queried.",
+  "registryAssessment": "The municipality’s official administrative directory identifies a Diretoria de Arrecadação, Cadastro Imobiliário e IPTU, a city-level property-tax cadastre custodian. This verifies a municipal fiscal parcel/property-record function, not a land-title registry or a public geometry service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://valparaisodegoias.go.gov.br/secretaria/secretaria-de-financas-e-planejamento/superintendencia-de-receita-tributaria/diretoria-de-arrecadacao-cadastro-imobiliario-e-iptu/",
+      "observation": "Official city organization page identifies the property-tax cadastral directorate."
+    },
+    {
+      "url": "https://nfe.valparaisodegoias.go.gov.br/Certidao_Inscricao_Index.aspx?Origem=Menu",
+      "observation": "Municipal certificate portal has a Cadastro Imobiliário/municipal-registration field and CAPTCHA; no submission was made."
+    },
+    {
+      "url": "https://goias.gov.br/imb/geoservicos/",
+      "observation": "Goiás state geoservices index describes WMS/WFS publication but no Valparaíso city parcel layer was identified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Valparaíso de Goiás official cadastro imobiliário municipal parcel GIS map feature service",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Official municipal sources identify the city property-tax cadastre office and a certificate lookup requiring a cadastral identifier and CAPTCHA. The state geoservices directory does not establish a city parcel-feature layer.",
+      "actualResultUrls": [
+        "https://valparaisodegoias.go.gov.br/secretaria/secretaria-de-financas-e-planejamento/superintendencia-de-receita-tributaria/diretoria-de-arrecadacao-cadastro-imobiliario-e-iptu/",
+        "https://nfe.valparaisodegoias.go.gov.br/Certidao_Inscricao_Index.aspx?Origem=Menu",
+        "https://goias.gov.br/imb/geoservicos/"
+      ],
+      "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:valparaisodegoias.go.gov.br cadastro imobiliário mapa geoprocessamento parcelas",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Portuguese-language search identified the municipal Diretoria de Arrecadação, Cadastro Imobiliário e IPTU. The lookup form was inspected but no identifier or CAPTCHA was entered.",
+      "actualResultUrls": [
+        "https://valparaisodegoias.go.gov.br/secretaria/secretaria-de-financas-e-planejamento/superintendencia-de-receita-tributaria/diretoria-de-arrecadacao-cadastro-imobiliario-e-iptu/",
+        "https://nfe.valparaisodegoias.go.gov.br/Certidao_Inscricao_Index.aspx?Origem=Menu",
+        "https://goias.gov.br/imb/geoservicos/"
+      ],
+      "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "decision": "No public geometry-only vector endpoint or parcel geometry response verified. The city’s fiscal lookup is identifier/CAPTCHA-based and was not queried."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP locator and reviewed city-specific official sources only.",
+    "limits": "No citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://valparaisodegoias.go.gov.br/secretaria/secretaria-de-financas-e-planejamento/superintendencia-de-receita-tributaria/diretoria-de-arrecadacao-cadastro-imobiliario-e-iptu/",
+      "method": "Official website/service metadata review",
+      "result": "Official city organization page identifies the property-tax cadastral directorate."
+    },
+    {
+      "url": "https://nfe.valparaisodegoias.go.gov.br/Certidao_Inscricao_Index.aspx?Origem=Menu",
+      "method": "Official website/service metadata review",
+      "result": "Municipal certificate portal has a Cadastro Imobiliário/municipal-registration field and CAPTCHA; no submission was made."
+    },
+    {
+      "url": "https://goias.gov.br/imb/geoservicos/",
+      "method": "Official website/service metadata review",
+      "result": "Goiás state geoservices index describes WMS/WFS publication but no Valparaíso city parcel layer was identified."
+    }
+  ],
+  "sourceCandidate": null,
+  "privacyReview": {
+    "ownerAddressTaxOrAccountValuesRequested": false,
+    "propertyDetailsSubmitted": false,
+    "credentialsOrTokensRetained": false
+  },
+  "sampleGeometryFile": null
+}

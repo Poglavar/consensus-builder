@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-531-ghent.json",
+  "cityCode": 531,
+  "queueRank": 2549,
+  "name": "Ghent",
+  "country": "Belgium",
+  "countryCode": "BE",
+  "reviewStatus": "held",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "attempt": 1,
+  "point": [51.054687121172, 3.73169926424364],
+  "requestSummary": "Official Stad Gent/CadGIS guidance and Digitaal Vlaanderen Adpf WFS were discovered. ArcGIS CadGIS metadata was readable and its exact-point query returned zero features. The public Adpf WFS returned three nearby Ghent parcel polygons in GML, with direct CAPAKEY identities; output-format GeoJSON requests failed with HTTP 400, so only a minimal manually normalized sample was retained.",
+  "safeFieldAllowlist": ["native parcel identity", "geometry", "CRS", "source layer/service", "feature count", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "certificate/title"],
+  "requests": "See city-531-ghent.json requestsAndEndpointChecks for every executed request and status.",
+  "schemaAndCrs": "Adpf:Adpf2026 returns MultiSurface parcel geometry. Dataset metadata declares Belge 1972 / Belgian Lambert 72 (EPSG:31370); the successful WFS request explicitly requested EPSG:4326 and the retained GeoJSON uses longitude/latitude coordinates.",
+  "sampleGeoJson": "ghent-parcels-sample.geojson",
+  "scopeLimits": ["Three-feature bounded probe only", "No exact-point hit claimed", "Zero exact-point response is not citywide absence", "No countrywide coverage", "No adapter admission or runtime integration"],
+  "uncertainty": "The source is public and geometry-bearing, but this attempt does not establish complete Ghent coverage, exact WUP-point containment, or production adapter readiness.",
+  "completionSummary": "Research attempts accurately recorded; packet complete as a held research record, with three safe parcel polygons retained and runtime qualification deferred."
+}

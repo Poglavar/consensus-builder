@@ -1,0 +1,26 @@
+{
+  "cityRecord": "city-1999-jerez.json",
+  "cityCode": 1999,
+  "queueRank": 3233,
+  "city": "Jerez",
+  "country": "Spain",
+  "countryCode": "ES",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and Spanish discovery evidenced Ayuntamiento de Jerez municipal cartography and Dirección General del Catastro national cadastral services. Municipal map HTML was retrieved, but it is a map-sheet/grid presentation. Bounded anonymous Catastro requests returned HTTP 400 HTML or connection reset, so no safe parcel ID or polygon was retained.",
+  "queryAndRequestOutcomes": "All executed queries, routes, statuses, endpoint leads, and scratch evidence paths are recorded in city-1999-jerez.json.",
+  "custodians": [
+    {"name": "Ayuntamiento de Jerez de la Frontera", "scope": "Local municipal cartography and map products", "evidence": "https://www.jerez.es/cartografia-de-la-ciudad"},
+    {"name": "Dirección General del Catastro", "scope": "National cadastral cartography and INSPIRE parcel services", "evidence": "https://www.catastro.hacienda.gob.es/webinspire/"}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier if source-proven", "full parcel polygon geometry", "source CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift.", "HTTP error/connection reset/map extent is not evidence of citywide parcel absence.", "No unsafe fields were requested or retained.", "Packet completion is not source integration/admission."],
+  "uncertainty": ["No live parcel schema, native ID, or geometry response.", "No citywide coverage qualification.", "Independent serial reviewer must qualify any adapter."],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["A WMS/API error is not evidence that Jerez lacks cadastral parcels.", "The municipal map-sheet grid is not a parcel sample.", "Research packet completion is not runtime qualification."]
+}

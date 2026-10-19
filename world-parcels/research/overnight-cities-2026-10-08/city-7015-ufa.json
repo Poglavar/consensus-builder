@@ -1,0 +1,114 @@
+{
+  "name": "Ufa",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 589,
+  "point": [
+    54.7562737490895,
+    56.0164424199411
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Russian",
+        "query": "Ufa официальный публичная кадастровая карта земельные участки городская администрация геопортал Росреестр",
+        "result": "Официальный портал Управления земельных и имущественных отношений администрации Уфы публикует услуги по схемам земельных участков на кадастровом плане и материалы комплексных кадастровых работ. Росреестр сообщает, что публичная кадастровая карта находится на НСПД и доступна без входа. Векторный endpoint с безопасной проекцией полей не найден; границы и ID не запрашивались.",
+        "urls": [
+          "https://t.me/s/rosreestr_news/2517",
+          "https://uzio-ufa.ru/index.php",
+          "https://uzio-ufa.ru/funktsii-upravleniya/53-uslugi-upravleniya/573-utverzhdenie-skhem-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoj-karte-sootvetstvuyushchej-territorii-v-gorodskom-okruge-gorod-ufa-respubliki-bashkortostan",
+          "https://gorodufa.ru/about/info/news/27082026-izveshchenie-o-provedenii-zasedaniya-soglasitelnoy-komissii/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Ufa Russia official cadastral public map city land registry parcels",
+        "result": "Ufa’s official land and property administration publishes city-specific land and cadastral procedures. Rosreestr confirms that its public cadastral map moved to NSPD and is available without authorization. No anonymous full-polygon service with a safe property projection was verified.",
+        "urls": [
+          "https://t.me/s/rosreestr_news/2517",
+          "https://uzio-ufa.ru/index.php",
+          "https://uzio-ufa.ru/funktsii-upravleniya/53-uslugi-upravleniya/573-utverzhdenie-skhem-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoj-karte-sootvetstvuyushchej-territorii-v-gorodskom-okruge-gorod-ufa-respubliki-bashkortostan",
+          "https://gorodufa.ru/about/info/news/27082026-izveshchenie-o-provedenii-zasedaniya-soglasitelnoy-komissii/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://t.me/s/rosreestr_news/2517",
+        "observation": "Rosreestr states that the Public Cadastral Map is on NSPD and available without authorization or payment."
+      },
+      {
+        "url": "https://uzio-ufa.ru/index.php",
+        "observation": "Official Ufa land/property administration publishes city land procedures, cadastral works and land schemes."
+      },
+      {
+        "url": "https://uzio-ufa.ru/funktsii-upravleniya/53-uslugi-upravleniya/573-utverzhdenie-skhem-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoj-karte-sootvetstvuyushchej-territorii-v-gorodskom-okruge-gorod-ufa-respubliki-bashkortostan",
+        "observation": "Official municipal procedure concerns preparation/approval of Ufa land-plot schemes on cadastral plans/maps."
+      },
+      {
+        "url": "https://gorodufa.ru/about/info/news/27082026-izveshchenie-o-provedenii-zasedaniya-soglasitelnoy-komissii/",
+        "observation": "Official city notice documents current comprehensive cadastral work in Ufa."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No public, anonymous full-polygon response with privacy-safe selected attributes was retrieved or retained."
+  },
+  "source": {
+    "id": "city-RU-7015-overnight-research",
+    "name": "Ufa city cadastral source review",
+    "operator": "Russian Federal Service for State Registration, Cadastre and Cartography (Rosreestr), Bashkortostan and Ufa land-management authorities",
+    "url": "https://nspd.gov.ru/map",
+    "format": "Official public cadastral map/registry and municipal land records; no safe full-vector API verified",
+    "access": "Public source and layer-metadata review only; no account login, owner search, address search, cadastral-key search, or feature identify query used.",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official national public cadastral map applies to parcels within Ufa; city sources confirm land/cadastral administration.",
+    "verifiedOpenScope": "Public registry/map activity is confirmed, but anonymous privacy-safe full polygon retrieval is not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The national EGRN public cadastral map is delivered through NSPD; Ufa’s official Administration land and property office handles city land schemes and cadastral work. No public feature service with a privacy-safe geometry/ID schema was established.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_registry_or_public_cadastre_documented_no_verified_safe_vector",
+  "technicalBlocker": "The NSPD public map is officially documented as anonymous, but no safe vector feature schema was verified. Direct shell attempts to load the map timed out in this environment; that is not evidence of origin failure.",
+  "remainingUncertainty": "Whether a documented anonymous feature route can return full geometry with only safe native parcel identifiers is unresolved; the WUP point is not matched to any parcel.",
+  "nextStep": "If further research is warranted, use a documented public feature service only after confirming a property-safe field projection; never use identify/cédula/search functions that expose owner, address or tax data.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7015,
+  "cityId": "wup2025:7015",
+  "queueRank": 589,
+  "population2025": 880583,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    54.7562737490895,
+    56.0164424199411
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No owner/address/property value or account data retained; no parcel-level lookup or geometry was performed.",
+  "registryEvidenceUrls": [
+    "https://t.me/s/rosreestr_news/2517",
+    "https://uzio-ufa.ru/index.php",
+    "https://uzio-ufa.ru/funktsii-upravleniya/53-uslugi-upravleniya/573-utverzhdenie-skhem-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoj-karte-sootvetstvuyushchej-territorii-v-gorodskom-okruge-gorod-ufa-respubliki-bashkortostan",
+    "https://gorodufa.ru/about/info/news/27082026-izveshchenie-o-provedenii-zasedaniya-soglasitelnoy-komissii/"
+  ],
+  "rootReviewedAt": "2026-10-09T01:48:28.723986+00:00"
+}

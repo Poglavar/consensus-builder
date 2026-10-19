@@ -1,0 +1,11 @@
+{
+  "taskId": "city:10251",
+  "decision": "held",
+  "checkedAt": "2026-10-11T13:23:25Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-10251-tanda.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/tanda-service-review.json"
+  ],
+  "review": "Rank 2498 Tanda identity, exact WUP point, India, and 234610 persons agree with the queue and official 2025 WUP row. English and Hindi query records include result URLs. The retained official BhuNaksha level-3 response was inspected: village code 217117 (टांडा खास) is marked hasData=false, which is not a citywide absence finding. No safe native parcel ID plus full polygon, geometry CRS, live adapter qualification, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification is evidenced. No sample is retained. Registry service presence remains distinct from runtime admission."
+}

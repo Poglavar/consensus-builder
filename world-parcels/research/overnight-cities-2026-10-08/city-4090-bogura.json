@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [],
+  "name": "Bogura",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "registryFound": true,
+  "registryBasis": "Bogura district’s official Record Room page states that certified land records and maps are supplied locally. The national DLRS Settlement portal and Ministry of Land map portal provide map/mouza/plot-oriented workflows; the Settlement portal explicitly limits its displayed khatians to ongoing survey mouzas and draft stages. No public full-polygon schema or WUP-point feature was verified.",
+  "registryEvidenceUrls": [
+    "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+    "https://settlement.gov.bd/",
+    "https://map.land.gov.bd/",
+    "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian%29",
+    "https://dlrs.portal.gov.bd/pages/static-pages/6922dcc6933eb65569e11fd2"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4090,
+  "cityId": "wup2025:4090",
+  "centerLatLon": [
+    24.8480834189884,
+    89.3694005799753
+  ],
+  "point": [
+    24.8480834189884,
+    89.3694005799753
+  ],
+  "rank": 823,
+  "queueRank": 823,
+  "population2025": 661378,
+  "population2025k": 661.378,
+  "populationPlausibility2025": "High",
+  "scopeLimits": "No full polygon is retained. Registry or map-service evidence is a research lead only; it does not establish citywide completeness or geometry.",
+  "remainingUncertainty": "The national map portal describes digitized and georeferenced mouza sheets and exposes division/district/upazila/mouza/sheet/plot selectors, but the inspected page does not establish that cadastral polygon vectors are publicly downloadable. City locator-to-mouza mapping remains unresolved.",
+  "nextStep": "If pursued, inspect only a bounded public map result for the relevant Bogura Sadar mouza and determine whether the response is a full parcel polygon or only a rendered sheet/zoning layer.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Bengali",
+        "query": "বগুড়া মৌজা ম্যাপ ভূমি জরিপ official DLRS",
+        "result": "Official Bogura Record Room and national DLRS/Ministry of Land map pages confirm land-map services; no vector polygon sample was verified.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+          "https://settlement.gov.bd/",
+          "https://map.land.gov.bd/",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian%29",
+          "https://dlrs.portal.gov.bd/pages/static-pages/6922dcc6933eb65569e11fd2"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "Bengali",
+        "query": "বগুড়া শহর ভূমি জরিপ মৌজা ম্যাপ সরকারি DLRS",
+        "result": "Official map portals show district/mouza/sheet/plot navigation; exact city point and feature geometry remain unverified.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+          "https://settlement.gov.bd/",
+          "https://map.land.gov.bd/",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian%29",
+          "https://dlrs.portal.gov.bd/pages/static-pages/6922dcc6933eb65569e11fd2"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      },
+      {
+        "language": "English",
+        "query": "Bogura district land records map cadastral official Bangladesh",
+        "result": "Official District Record Room and DLRS sources document maps and land-record services; no public full-polygon schema was exposed.",
+        "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+          "https://settlement.gov.bd/",
+          "https://map.land.gov.bd/",
+          "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian%29",
+          "https://dlrs.portal.gov.bd/pages/static-pages/6922dcc6933eb65569e11fd2"
+        ],
+        "executionMethod": "English and local-language web search; official source pages and public service metadata inspected without owner/address/account inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+        "observation": "Official Bogura district Record Room page lists certified land-record copies and maps."
+      },
+      {
+        "url": "https://settlement.gov.bd/",
+        "observation": "Official DLRS portal identifies the Land Records and Surveys Department and links map-display and mouza-search workflows; it states displayed khatians are draft/ongoing-survey only."
+      },
+      {
+        "url": "https://map.land.gov.bd/",
+        "observation": "Official Ministry of Land map portal describes digitization/georeferencing of mouza map sheets and selectors for district, upazila, mouza, sheet and plot."
+      },
+      {
+        "url": "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian%29",
+        "observation": "Official DLRS Digital BRS page embeds map/khatian workflow."
+      },
+      {
+        "url": "https://dlrs.portal.gov.bd/pages/static-pages/6922dcc6933eb65569e11fd2",
+        "observation": "Official DLRS guidance says final mouza maps may be collected through settlement office publication camps; this is not a vector API."
+      }
+    ]
+  },
+  "source": {
+    "name": "Official city/national cadastral and land-record sources",
+    "urls": [
+      "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+      "https://settlement.gov.bd/",
+      "https://map.land.gov.bd/",
+      "https://dlrs.gov.bd/site/page/359236ae-4c8a-49e0-b2ab-1e9b13994908/Digital-BRS-%28Search-Map/-Khatian%29",
+      "https://dlrs.portal.gov.bd/pages/static-pages/6922dcc6933eb65569e11fd2"
+    ],
+    "operator": "Department of Land Records and Surveys / Ministry of Land Bangladesh",
+    "url": "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+    "serviceType": "Official land-record, cadastral viewer or parcel-map candidate",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official local registry/map service evidence reviewed; no full geometry response verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bogura district’s official Record Room page states that certified land records and maps are supplied locally. The national DLRS Settlement portal and Ministry of Land map portal provide map/mouza/plot-oriented workflows; the Settlement portal explicitly limits its displayed khatians to ongoing survey mouzas and draft stages. No public full-polygon schema or WUP-point feature was verified.",
+    "verifiedOpenScope": "No public full-polygon coverage verified at exact WUP point. This is source evidence/candidate status only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No anonymous full-polygon/native-key response was verified at the unchanged WUP locator; the public map/registry lead remains unqualified for runtime."
+  },
+  "resultCategory": "official_land_survey_map_candidate_no_geometry",
+  "geometryEvidence": "No full parcel geometry was retained. Official map and record-room workflows establish a candidate only; rendered map availability does not establish vector geometry or point coverage.",
+  "adapterReady": false,
+  "rootPrimarySupplement": "Primary district officer directory identifies a local Record Room branch; the worker reviewed the district record/map service page. Root direct TLS failure and web readback timeout are preserved separately; no full polygon or source schema is verified.",
+  "rootPrimaryReadback": {
+    "url": "https://www.bogra.gov.bd/en/site/dcoffice_section/CRKB-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1%E0%A6%B0%E0%A7%81%E0%A6%AE-%E0%A6%B6%E0%A6%BE%E0%A6%96%E0%A6%BE",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

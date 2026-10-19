@@ -1,0 +1,133 @@
+{
+  "name": "Deoria",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 930,
+  "point": [
+    26.4986876647138,
+    83.782867690573
+  ],
+  "population2025": 586987,
+  "population2025k": 586.987,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "State map-digitization indicators describe district/revenue-village progress but do not identify the WUP point’s village or prove the point is covered. No public full-polygon response was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The district collectorate page documents a Revenue Record Keeper maintaining land records and identifies the local district revenue structure; Deoria Sadar is an official tehsil.",
+  "resultCategory": "local_revenue_records_found_geometry_unverified",
+  "technicalBlocker": "No point-to-village resolution or safe anonymous parcel feature schema/response was verified.",
+  "remainingUncertainty": "Exact revenue-village identity and map digitization at the WUP locator remain unknown; statewide digitization percentages are not city-point coverage.",
+  "nextStep": "Root review the local registry/map evidence; request an official public schema or coverage statement if city-point parcel geometry is needed, without using account-gated or property-specific searches.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Deoria Uttar Pradesh official land records cadastral map BhuNaksha Deoria Sadar",
+        "result": "District administration identifies Deoria Sadar revenue offices and record-keeping; statewide map-digitization dashboard indicates progress but not exact-point parcel coverage.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      },
+      {
+        "language": "Hindi",
+        "query": "देवरिया सदर तहसील भू अभिलेख खसरा खतौनी नक्शा आधिकारिक",
+        "result": "Official district pages describe revenue-record offices and Deoria Sadar; no safe anonymous vector schema or point result was verified.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://deoria.nic.in/collectrate/",
+        "observation": "Official district collectorate page states the Revenue Record Keeper maintains land-record files including Khasra/Khatauni and that copies are requested through a records process."
+      },
+      {
+        "url": "https://deoria.nic.in/contact-details/",
+        "observation": "Official district contact page lists the SDM and Tehsildar for Deoria Sadar."
+      },
+      {
+        "url": "https://deoria.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+        "observation": "Official Hindi district page names Deoria Sadar among the district tehsils."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "observation": "Uttar Pradesh public cadastral-map portal landing page; this review did not resolve the WUP point to a revenue village or verify anonymous feature schema/response."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed public district pages and map portal landing page only; no login or owner/plot/identity query.",
+      "geometryStatus": "No anonymous full polygon response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Reviewed public district pages and map portal landing page only; no login or owner/plot/identity query.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 930,
+  "wupCityCode": 10549,
+  "cityId": "wup2025:10549",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    26.4986876647138,
+    83.782867690573
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "in-deoria-public-registry-review",
+    "name": "Government of Uttar Pradesh / Deoria District Administration",
+    "operator": "Government of Uttar Pradesh / Deoria District Administration",
+    "url": "https://upbhunaksha.gov.in/home/",
+    "serviceType": "State cadastral map portal landing page; schema and point coverage not verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "State map-digitization indicators describe district/revenue-village progress but do not identify the WUP point’s village or prove the point is covered. No public full-polygon response was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "State map-digitization indicators describe district/revenue-village progress but do not identify the WUP point’s village or prove the point is covered. No public full-polygon response was verified.",
+    "verifiedOpenScope": "No anonymous full-polygon response returned in this review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://deoria.nic.in/collectrate/",
+    "https://deoria.nic.in/contact-details/",
+    "https://deoria.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+    "https://upbhunaksha.gov.in/home/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No point-to-village resolution or safe anonymous parcel feature schema/response was verified."
+  },
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootPrimaryReadback": {
+    "url": "https://deoria.nic.in/collectrate/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Collectorate | District Deoria, Government Of Uttar Pradesh | India    "
+  },
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

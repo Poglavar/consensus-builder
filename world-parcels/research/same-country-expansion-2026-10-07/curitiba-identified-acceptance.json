@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "curitiba",
+      "sourceId": "br-curitiba-ippuc-lote-cadastral",
+      "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.277499999999996,
+            -25.4325,
+            -49.275,
+            -25.43
+          ],
+          "count": 153,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.275,
+            -25.4325,
+            -49.2725,
+            -25.43
+          ],
+          "count": 108,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2725,
+            -25.4325,
+            -49.269999999999996,
+            -25.43
+          ],
+          "count": 123,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.277499999999996,
+            -25.43,
+            -49.275,
+            -25.4275
+          ],
+          "count": 135,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.275,
+            -25.43,
+            -49.2725,
+            -25.4275
+          ],
+          "count": 115,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2725,
+            -25.43,
+            -49.269999999999996,
+            -25.4275
+          ],
+          "count": 100,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.277499999999996,
+            -25.4275,
+            -49.275,
+            -25.425
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.275,
+            -25.4275,
+            -49.2725,
+            -25.425
+          ],
+          "count": 116,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2725,
+            -25.4275,
+            -49.269999999999996,
+            -25.425
+          ],
+          "count": 127,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.269999999999996,
+            -25.4325,
+            -49.2675,
+            -25.43
+          ],
+          "count": 114,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2675,
+            -25.4325,
+            -49.265,
+            -25.43
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.265,
+            -25.4325,
+            -49.262499999999996,
+            -25.43
+          ],
+          "count": 128,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.269999999999996,
+            -25.43,
+            -49.2675,
+            -25.4275
+          ],
+          "count": 127,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2675,
+            -25.43,
+            -49.265,
+            -25.4275
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.265,
+            -25.43,
+            -49.262499999999996,
+            -25.4275
+          ],
+          "count": 110,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.269999999999996,
+            -25.4275,
+            -49.2675,
+            -25.425
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.2675,
+            -25.4275,
+            -49.265,
+            -25.425
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -49.265,
+            -25.4275,
+            -49.262499999999996,
+            -25.425
+          ],
+          "count": 56,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -49.2675,
+          -25.4275,
+          -49.265,
+          -25.425
+        ],
+        "forcedPageSize": 3,
+        "count": 35,
+        "returned": 35,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 1568,
+      "exactResolved": 1568,
+      "nativeIds": [
+        "11091024",
+        "11105004",
+        "11090026"
+      ],
+      "footprintCount": 6,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:br-curitiba-ippuc-lote-cadastral",
+        "parcels": 1,
+        "siteM2": 108.29
+      },
+      "requests": 146
+    }
+  ]
+}

@@ -1,88 +1,10 @@
+import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
+
 const MAX_LIMIT = 5000;
 
 const SRID_WGS84 = 4326;
 const SRID_DATASET = 32634; // Table geometry is MultiPolygon, 32634
-const CITY_NAME = 'Belgrade';
 const COMPOSITE_ID_SEPARATOR = '-';
-
-function gcd(a, b) {
-    if (!Number.isFinite(a) || !Number.isFinite(b)) {
-        return 1;
-    }
-    return b === 0 ? Math.abs(a) : gcd(b, a % b);
-}
-
-function convertPercentToFraction(percentValue) {
-    if (!Number.isFinite(percentValue)) {
-        return null;
-    }
-    const percentString = percentValue.toString();
-    const decimalPart = percentString.includes('.') ? percentString.split('.')[1] : '';
-    const scale = Math.pow(10, decimalPart.length);
-    const numerator = Math.round(percentValue * scale);
-    const denominator = 100 * scale;
-    if (!Number.isFinite(numerator) || !Number.isFinite(denominator) || denominator === 0) {
-        return null;
-    }
-    const divisor = gcd(numerator, denominator) || 1;
-    return `${numerator / divisor}/${denominator / divisor}`;
-}
-
-function buildPossessorsFromPropertyHorizontal(propertyHorizontal) {
-    const units = Array.isArray(propertyHorizontal?.phs) ? propertyHorizontal.phs : [];
-    if (!units.length) {
-        return [{
-            name: 'Unknown owner',
-            ownership: '1/1',
-            condominiumShareOwnership: '100%',
-            condominiumShareNumber: '',
-            address: ''
-        }];
-    }
-    return units.map((unit, index) => {
-        const depto = (unit?.dpto ?? '').toString().trim();
-        const piso = (unit?.piso ?? '').toString().trim();
-        const porcentualRaw = Number(unit?.porcentual);
-        const fraction = convertPercentToFraction(porcentualRaw) || '1/1';
-        const hasPercent = Number.isFinite(porcentualRaw);
-        const sharePercentText = hasPercent ? `${porcentualRaw}%` : '100%';
-        const possessor = {
-            name: depto ? `dpto ${depto}` : `Unit ${index + 1}`,
-            ownership: fraction,
-            condominiumShareOwnership: sharePercentText || '',
-            condominiumShareNumber: unit?.pdahorizontal ? String(unit.pdahorizontal) : ''
-        };
-        if (piso) {
-            possessor.address = `Piso ${piso}`;
-        }
-        return possessor;
-    });
-}
-
-function buildOwnershipPayloadFromRow(row, smp) {
-    const informationBasic = row.information_basic || {};
-    const propertyHorizontal = row.property_horizontal || {};
-    const possessors = buildPossessorsFromPropertyHorizontal(propertyHorizontal);
-    const possessionSheets = [{
-        possessionSheetId: propertyHorizontal?.pdahorizontal ?? null,
-        possessionSheetNumber: propertyHorizontal?.pdahorizontal ?? null,
-        cadMunicipalityName: CITY_NAME,
-        possessors
-    }];
-    return {
-        smp,
-        section: informationBasic?.seccion ?? null,
-        block: informationBasic?.manzana ?? null,
-        parcel: informationBasic?.parcela ?? null,
-        possessionSheets,
-        informationBasic: row.information_basic,
-        informationTechnical: row.information_technical,
-        propertyHorizontal: row.property_horizontal,
-        doors: row.doors,
-        dateAdded: row.date_added,
-        dateUpdated: row.date_updated
-    };
-}
 
 function parseLimit(rawValue) {
     if (!rawValue) {
@@ -152,25 +74,6 @@ function buildFeature(row) {
     };
 }
 
-async function fetchOwnershipForParcelId(pool, parcelId) {
-    const parsed = parseParcelId(parcelId);
-    if (!parsed) return null;
-    const { cadmunCode, parcelNum } = parsed;
-    const sql = `
-        SELECT cadmun_code, parcel_num, cadmun_name_cyr, cadmun_name_lat, city_name_cyr, city_name_lat, parcel_status_code, parcel_status_name_cyr, parcel_status_name_lat, COALESCE(area, ST_Area(geom)) AS area, source_parcel_id, raw_feature
-        FROM parcel_bg
-        WHERE cadmun_code = $1 AND parcel_num = $2
-        LIMIT 1
-    `;
-    const { rows } = await pool.query(sql, [cadmunCode, parcelNum]);
-    if (!rows.length) {
-        return null;
-    }
-    const row = rows[0];
-    const compositeId = buildCompositeParcelId(cadmunCode, parcelNum);
-    return buildOwnershipPayloadFromRow(row, compositeId);
-}
-
 function parseParcelId(raw) {
     const value = (raw || '').toString().trim();
     if (!value) return null;
@@ -198,6 +101,10 @@ export function setupParcelBgRoute(app, pool) {
             return res.status(400).json({
                 error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in WGS84.'
             });
+        }
+        // Callers ask per 500 m grid cell; a bbox the size of a city (or the world) is not the app.
+        if (bbox && wgs84BboxAreaKm2(bbox.minLon, bbox.minLat, bbox.maxLon, bbox.maxLat) > MAX_CELL_BBOX_KM2) {
+            return res.status(400).json({ error: `bbox too large (max ${MAX_CELL_BBOX_KM2} km²).` });
         }
 
         const parcelIdValue = parcelIdParam || smp;
@@ -273,13 +180,20 @@ export function setupParcelBgRoute(app, pool) {
             sql += ' ORDER BY cadmun_code, parcel_num';
         }
 
-        if (limit && queryType !== 'parcel') {
-            params.push(limit);
+        // Always bounded: without ?limit this used to return every matching row (a world bbox or
+        // a bare filter returned the whole table, raw features included). One extra row tells us
+        // whether the answer was cut short.
+        // Key lookups (queryType 'parcel') name their rows and stay unlimited.
+        const effectiveLimit = queryType === 'parcel' ? Infinity : (limit || MAX_LIMIT);
+        if (queryType !== 'parcel') {
+            params.push(effectiveLimit + 1);
             sql += ` LIMIT $${params.length}`;
         }
 
         try {
-            const { rows } = await pool.query(sql, params);
+            const { rows: fetched } = await pool.query(sql, params);
+            const truncated = fetched.length > effectiveLimit;
+            const rows = truncated ? fetched.slice(0, effectiveLimit) : fetched;
             if (!rows.length) {
                 return res.status(404).json({ error: 'No parcels found for the provided filters.' });
             }
@@ -296,6 +210,7 @@ export function setupParcelBgRoute(app, pool) {
                     bbox: hasBbox ? `${bbox.minLon},${bbox.minLat},${bbox.maxLon},${bbox.maxLat}` : undefined,
                     limit: limit || undefined
                 },
+                truncated,
                 features
             });
         } catch (error) {
@@ -303,29 +218,4 @@ export function setupParcelBgRoute(app, pool) {
             res.status(500).json({ error: 'Failed to fetch Belgrade parcels.' });
         }
     });
-
-    app.get('/parcel-bg/:parcelId/ownership', async (req, res) => {
-        const parcelId = (req.params.parcelId || '').trim();
-        if (!parcelId) {
-            return res.status(400).json({ error: 'parcelId is required.' });
-        }
-        const parsed = parseParcelId(parcelId);
-        if (!parsed) {
-            return res.status(400).json({
-                error: 'Invalid parcelId format. Expected SR-<cadmun_code>-<parcel_num> or <cadmun_code>-<parcel_num>.'
-            });
-        }
-        try {
-            const ownership = await fetchOwnershipForParcelId(pool, parcelId);
-            if (!ownership) {
-                return res.status(404).json({ error: 'Ownership data not found for the requested parcelId.' });
-            }
-            res.json(ownership);
-        } catch (error) {
-            console.error(`Error in /parcel-bg/${parcelId}/ownership:`, error);
-            res.status(500).json({ error: 'Failed to fetch Belgrade ownership data.' });
-        }
-    });
 }
-
-

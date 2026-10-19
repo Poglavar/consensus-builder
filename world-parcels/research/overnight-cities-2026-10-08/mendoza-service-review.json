@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-09",
+  "rootDecision": "held_geometry_quality",
+  "scope": "Guaymallén municipal parcels in the Mendoza population settlement. The exact WUP locator returned empty in Capital, Godoy Cruz and Guaymallén layers; nearby Guaymallén polygons were verified. Nine aligned 0.001° cells plus four cardinal extension cells produced 363 distinct full parcels. Three nearby full polygons are retained; the bounded union stayed temporary. All 363 legal nomenclatu strings refreshed exactly, native EPSG:3857 count/object-ID manifests agreed, forced three-row batches completed 47 rows over 16 pages, and a selected polygon passed actual footprint binding. GEOS EPSG:32719 found all 363 valid and distinct, with 18 positive-area intersections, eight above 0.01 m². No citywide or countrywide completeness is asserted.",
+  "assessment": "The public Guaymallén parcel layer passed bounded retrieval, paging, all 363 fresh native-ID geometry reads, explicit valid-format absence, full footprint lookup and actual proposal binding. Independent GEOS found eight overlaps above 0.01 m², including 268.254 m² and 133.021 m²; their source meaning remains unresolved. Runtime is held without geometry repair or selective deletion.",
+  "acceptanceFile": "mendoza-guaymallen-root-acceptance.json",
+  "qualityFile": "mendoza-guaymallen-root-quality.json"
+}

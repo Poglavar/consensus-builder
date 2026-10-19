@@ -1,0 +1,127 @@
+{
+  "name": "Cooch Behar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1144,
+  "point": [
+    26.3337508382903,
+    89.4556707418829
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cooch Behar India official land records cadastral map district land reforms",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+        "actualResultUrls": [
+          "https://coochbehar.gov.in/land-land-reforms/",
+          "https://banglarbhumi.gov.in/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "কোচবিহার ভূমি ও ভূমি সংস্কার দপ্তর মৌজা ম্যাপ সরকারি",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "The Bengali query did not return a Cooch Behar-specific first-party land-record page; the English search found the district Land & Land Reforms service page.",
+        "actualResultUrls": [],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://coochbehar.gov.in/land-land-reforms/",
+        "operator": "Cooch Behar District Government, Land & Land Reforms",
+        "observation": "Official district service page describes local L&LR office services including mouza and plot maps through BanglarBhumi."
+      },
+      {
+        "url": "https://banglarbhumi.gov.in/",
+        "operator": "Government of West Bengal",
+        "observation": "Official state record portal uses citizen-service login/record workflow; no login, CAPTCHA or plot selection attempted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://coochbehar.gov.in/land-land-reforms/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 140488,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://coochbehar.gov.in/land-land-reforms/",
+    "url": "https://coochbehar.gov.in/land-land-reforms/",
+    "operator": "Cooch Behar District Government, Land & Land Reforms",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry was retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limitations in registryBasis, freshResearch and service review."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The district L&LR office administers mouza/plot-map services for Cooch Behar. The public route points to the state portal, where geometry was not anonymously returned; no record selector was used.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness.",
+  "remainingUncertainty": "The district L&LR office administers mouza/plot-map services for Cooch Behar. The public route points to the state portal, where geometry was not anonymously returned; no record selector was used. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11763,
+  "cityId": "wup2025:11763",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    26.3337508382903,
+    89.4556707418829
+  ],
+  "population2025k": 484.313,
+  "populationUnit": "persons",
+  "queueRank": 1144,
+  "population2025": 484313,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The district L&LR office administers mouza/plot-map services for Cooch Behar. The public route points to the state portal, where geometry was not anonymously returned; no record selector was used.",
+  "registryEvidenceUrls": [
+    "https://coochbehar.gov.in/land-land-reforms/",
+    "https://banglarbhumi.gov.in/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The district L&LR office administers mouza/plot-map services for Cooch Behar. The public route points to the state portal, where geometry was not anonymously returned; no record selector was used.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

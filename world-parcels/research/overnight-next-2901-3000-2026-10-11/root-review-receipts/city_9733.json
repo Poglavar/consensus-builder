@@ -1,0 +1,51 @@
+{
+  "taskId": "city:9733",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-9733-perinthalmanna.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/perinthalmanna-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:20:37Z",
+  "queueIdentity": {
+    "cityCode": 9733,
+    "rank": 2945,
+    "name": "Perinthalmanna",
+    "country": "India",
+    "point": [
+      10.9732337359403,
+      76.218993016869
+    ],
+    "population2025Persons": 202201,
+    "verifiedAgainst": "original UN WUP 2025 bulk CSV row, cohort ranked roster and immutable pending queue"
+  },
+  "registryFound": true,
+  "bilingualSearchesReviewed": true,
+  "retainedFullPolygonCount": 0,
+  "reason": "English and Malayalam executed search records cite actual result URLs. Independently opened first-party Kerala Revenue, Information Kerala Mission, and Ente Bhoomi pages: the local Village Office exposes Village Land Information with CAPTCHA; IKM names Perinthalmanna Municipality in completed premises mapping; Ente Bhoomi describes land-parcel maps and login-based services. These ground registry custody, not an anonymous full-polygon feed. No native parcel response or safe ID was obtained; CAPTCHA, TLS/502, 403 and timeout conditions do not establish cadastral absence.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeDecision": "held; no registry, source catalog, city config or generated coverage admission change",
+  "independentFirstPartyChecks": [
+    {
+      "url": "https://landrevenue.kerala.gov.in/core/Office_websites/indexor.php?nm=489Perintalmannavillageoffice",
+      "observation": "Government of Kerala Revenue Department Perintalmanna Village Office page contains Village Land Information form and CAPTCHA."
+    },
+    {
+      "url": "https://ikm.gov.in/index.php/en/gis-team",
+      "observation": "Information Kerala Mission GIS Team page names premises mapping completed at Perinthalmanna Municipality and describes cadastral map work."
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/home",
+      "observation": "Kerala government ILIMS portal describes land parcel maps and login-based land services; no anonymous feature API is evidenced."
+    }
+  ]
+}

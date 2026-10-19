@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Omsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Omsk City’s official land-relations pages state that the city’s Property Relations Department manages land within Omsk and publishes city cadastral-work services. The city directs users to the Rosreestr public cadastral map to view parcel boundaries by cadastral number. The map route is identifier-driven; no parcel was searched.",
+  "registryEvidenceUrls": [
+    "https://www.admomsk.ru/web/guest/progress/city-property/land",
+    "https://admomsk.ru/web/guest/progress/city-property/land/register",
+    "https://www.admomsk.ru/web/guest/progress/invest/sites",
+    "https://www.admomsk.ru/web/guest/government/divisions/32/about"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7462,
+  "cityId": "wup2025:7462",
+  "centerLatLon": [
+    54.9838341202561,
+    73.3598446301569
+  ],
+  "rank": 530,
+  "queueRank": 530,
+  "population2025": 975485,
+  "population2025k": 975.485,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The city’s documented public map workflow is cadastral-number-driven; no anonymous geometry-only feature endpoint or schema was verified. A bounded web open of the current NSPD map timed out, with no HTTP status. No cadastral identifier or property record was queried.",
+  "scopeLimits": "City-specific basis is Omsk’s own land-management/cadastral-work department and its stated use of the state cadastral map for plots in Omsk. This does not establish a public vector response or complete city coverage.",
+  "remainingUncertainty": "Current public-map implementation and geometry service remain unverified; the map may only expose visual map content and keyed lookups. No property geometry or identifiers were retained.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Omsk Russia official city land cadastre property relations cadastral map parcels",
+        "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+        "result": "Official Omsk pages document the city’s property-relations department, cadastral-work services and city land-management scope. City guidance points to the Rosreestr public map for parcel boundaries using a cadastral number. The current map route was not directly inspectable; no identifier was used and no feature geometry/schema was obtained.",
+        "actualResultUrls": [
+          "https://www.admomsk.ru/web/guest/progress/city-property/land",
+          "https://admomsk.ru/web/guest/progress/city-property/land/register",
+          "https://www.admomsk.ru/web/guest/progress/invest/sites",
+          "https://www.admomsk.ru/web/guest/government/divisions/32/about"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Омск официальный земельные отношения кадастровые работы публичная кадастровая карта Росреестр",
+        "scope": "Find local-language city-specific registry/cadastre basis and safe anonymous polygon routes.",
+        "result": "Официальный портал города Омска подтверждает управление земельными отношениями в границах города и услуги кадастровых работ. Для просмотра границ участка администрация отсылает к публичной кадастровой карте по кадастровому номеру. Анонимный геометрический интерфейс не подтверждён; кадастровый номер не вводился.",
+        "actualResultUrls": [
+          "https://www.admomsk.ru/web/guest/progress/city-property/land",
+          "https://admomsk.ru/web/guest/progress/city-property/land/register",
+          "https://www.admomsk.ru/web/guest/progress/invest/sites",
+          "https://www.admomsk.ru/web/guest/government/divisions/32/about"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.admomsk.ru/web/guest/progress/city-property/land",
+        "observation": "Omsk City’s official land-relations pages state that the city’s Property Relations Department manages land within Omsk and publishes city cadastral-work services. The city directs users to the Rosreestr public cadastral map to view parcel boundaries by cadastral number. The map route is identifier-driven; no parcel was searched."
+      },
+      {
+        "url": "https://admomsk.ru/web/guest/progress/city-property/land/register",
+        "observation": "Omsk City’s official land-relations pages state that the city’s Property Relations Department manages land within Omsk and publishes city cadastral-work services. The city directs users to the Rosreestr public cadastral map to view parcel boundaries by cadastral number. The map route is identifier-driven; no parcel was searched."
+      },
+      {
+        "url": "https://www.admomsk.ru/web/guest/progress/invest/sites",
+        "observation": "Omsk City’s official land-relations pages state that the city’s Property Relations Department manages land within Omsk and publishes city cadastral-work services. The city directs users to the Rosreestr public cadastral map to view parcel boundaries by cadastral number. The map route is identifier-driven; no parcel was searched."
+      },
+      {
+        "url": "https://www.admomsk.ru/web/guest/government/divisions/32/about",
+        "observation": "Omsk City’s official land-relations pages state that the city’s Property Relations Department manages land within Omsk and publishes city cadastral-work services. The city directs users to the Rosreestr public cadastral map to view parcel boundaries by cadastral number. The map route is identifier-driven; no parcel was searched."
+      }
+    ],
+    "metadataReviewFile": "omsk-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-7462-omsk-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "ru-omsk-city-registry",
+    "name": "Omsk local registry/cadastre route review",
+    "operator": "Omsk City Property Relations Department / Rosreestr",
+    "url": "https://www.admomsk.ru/web/guest/progress/city-property/land",
+    "scope": "City-specific basis is Omsk’s own land-management/cadastral-work department and its stated use of the state cadastral map for plots in Omsk. This does not establish a public vector response or complete city coverage.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City-specific basis is Omsk’s own land-management/cadastral-work department and its stated use of the state cadastral map for plots in Omsk. This does not establish a public vector response or complete city coverage.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide parcel coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T01:19:13.626142+00:00",
+  "sourceIds": [],
+  "point": [
+    54.9838341202561,
+    73.3598446301569
+  ]
+}

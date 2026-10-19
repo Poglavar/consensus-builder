@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:554",
+  "queueRank": 126,
+  "wupCityCode": 554,
+  "name": "Brazzaville",
+  "country": "Congo",
+  "countryCode": "CG",
+  "centerLatLon": [
+    -4.24419486632791,
+    15.2626288363336
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 126,
+  "growthRank": null,
+  "population2025": 3656322,
+  "annualGrowthPct2015To2025": 3.365984,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    "research/brazzaville.json"
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": null,
+  "freshCityLocalSearch": {
+    "languageScript": "French (Latin script)",
+    "exactQueries": [
+      "Brazzaville République du Congo cadastre parcelles SIG géoportail foncier"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://documents1.worldbank.org/curated/en/822171468767675305/pdf/multi-page.pdf"
+    ],
+    "summary": "Search produced a historical World Bank document describing Congo cadastral records/regime, but no current Brazzaville feature service or viewer endpoint."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": false,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "Search found only historical cadastral-regime material, not an anonymous queryable Brazzaville parcel endpoint.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Locate a current Republic of Congo or Brazzaville municipal GIS endpoint and test a bounded city query.",
+  "requests": [],
+  "resultCategory": "no_new_verified_target_sample",
+  "evidenceType": "new_or_retry_city_specific_discovery",
+  "targetEndpointProbePerformed": false
+}

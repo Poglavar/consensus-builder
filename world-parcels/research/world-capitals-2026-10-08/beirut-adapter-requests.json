@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Safe adapter-operation trace reconstructed from the persisted qualification summary. Per-page wire URLs/statuses were not captured in the original run; cell-level completion, request counts, OID sets and hashes are retained as recorded.",
+  "city": "beirut",
+  "sourceId": "asia-beirut-research",
+  "endpoint": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/Cadastral_new/FeatureServer/0/query",
+  "metaStatus": 200,
+  "pageSizeForced": 3,
+  "transportOidField": "OBJECTID",
+  "requestedFields": [
+    "OBJECTID"
+  ],
+  "operations": [
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-01",
+      "bbox": [
+        35.501999999999995,
+        33.9,
+        35.504,
+        33.902
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "beirut:802",
+          "hash": "ba762b0847ae519c6dc4dd9b39c83a567963af18f577f9095bab2f2357a5f14e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "beirut:807",
+          "hash": "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-02",
+      "bbox": [
+        35.504,
+        33.9,
+        35.506,
+        33.902
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:807",
+          "hash": "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-03",
+      "bbox": [
+        35.506,
+        33.9,
+        35.507999999999996,
+        33.902
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:807",
+          "hash": "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-04",
+      "bbox": [
+        35.501999999999995,
+        33.902,
+        35.504,
+        33.904
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "beirut:802",
+          "hash": "ba762b0847ae519c6dc4dd9b39c83a567963af18f577f9095bab2f2357a5f14e",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "beirut:807",
+          "hash": "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-05",
+      "bbox": [
+        35.504,
+        33.902,
+        35.506,
+        33.904
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "beirut:807",
+          "hash": "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-06",
+      "bbox": [
+        35.506,
+        33.902,
+        35.507999999999996,
+        33.904
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        },
+        {
+          "id": "beirut:807",
+          "hash": "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-07",
+      "bbox": [
+        35.501999999999995,
+        33.904,
+        35.504,
+        33.906
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-08",
+      "bbox": [
+        35.504,
+        33.904,
+        35.506,
+        33.906
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-09",
+      "bbox": [
+        35.506,
+        33.904,
+        35.507999999999996,
+        33.906
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-10",
+      "bbox": [
+        35.504,
+        33.898,
+        35.506,
+        33.9
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:807",
+          "hash": "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-11",
+      "bbox": [
+        35.504,
+        33.906,
+        35.506,
+        33.908
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-12",
+      "bbox": [
+        35.5,
+        33.902,
+        35.501999999999995,
+        33.904
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "queryBounds",
+      "cell": "viewport-13",
+      "bbox": [
+        35.507999999999996,
+        33.902,
+        35.51,
+        33.904
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "adapterRequestCount": null,
+      "elapsedMs": null,
+      "conflictCount": null,
+      "safeIdsAndGeometryHashes": [
+        {
+          "id": "beirut:780",
+          "hash": "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "geometryType": "Polygon",
+          "valid": true
+        }
+      ]
+    },
+    {
+      "operation": "forcedPageSize3",
+      "result": {
+        "bbox": [
+          35.49440953381524,
+          33.89361416020072,
+          35.51440953381523,
+          33.913614160200716
+        ],
+        "complete": true,
+        "count": 9,
+        "geometryPagesAtPageSize3": 3,
+        "allFeaturesHaveHashes": true,
+        "ids": [
+          "beirut:793",
+          "beirut:802",
+          "beirut:819",
+          "beirut:780",
+          "beirut:826",
+          "beirut:829",
+          "beirut:807",
+          "beirut:821",
+          "beirut:823"
+        ],
+        "hashes": [
+          "7aae6af4f214c0e3964494e05e7c64510b1ada1915823cc83ff40086680c33d0",
+          "ba762b0847ae519c6dc4dd9b39c83a567963af18f577f9095bab2f2357a5f14e",
+          "bf1664f368df3a2c0d7d505b2a9cf736c4e353692233368733e9c8d35e75899c",
+          "71ceb7ed514b0826543ed49053bf13ee8ff654fcc34805addfa0dc277e45274f",
+          "1c6d9762c4bec71357db232022340c71fd55559e41d7210a471a8941b6bab825",
+          "5888ff48313827fa711900bb895d6134c985a09c822e8b712a0662544e176e61",
+          "0bccb28b2662d38ec4ff97535d50d7ddee2d91b11c68dfd39fafd5fd286f6c86",
+          "a0e3d3fc9aefc5dca642547e768aacf6cd41756e98b8a63acac492ca31dbb195",
+          "c203d646aa6c7e22d10010f7e5d1431e1d32a118d624d82582f710e9461139f7"
+        ],
+        "freshIdHashReread": {
+          "complete": true,
+          "queried": 9,
+          "returned": 9,
+          "allPresent": true,
+          "allHashesMatch": true,
+          "absentIds": []
+        }
+      }
+    },
+    {
+      "operation": "freshExactIdHashRereads",
+      "result": {
+        "complete": true,
+        "queried": 3,
+        "returned": 3,
+        "allPresent": true,
+        "allHashesMatch": true,
+        "absentIds": []
+      }
+    },
+    {
+      "operation": "explicitAbsence",
+      "result": {
+        "complete": true,
+        "featureCount": 0,
+        "absentIds": [
+          "beirut:9876543210"
+        ]
+      }
+    },
+    {
+      "operation": "footprintRead",
+      "result": {
+        "complete": true,
+        "featureCount": 3,
+        "allIntersect": true
+      }
+    },
+    {
+      "operation": "computeSourceBinding",
+      "result": {
+        "computed": true,
+        "binding": {
+          "parcels": [
+            {
+              "parcelId": "beirut:780",
+              "overlapM2": 620476.716,
+              "intrusionM": 415.282
+            }
+          ],
+          "touched": [],
+          "toleranceM": 0,
+          "coverage": "complete",
+          "unsurveyedM2": 0,
+          "siteM2": 620476.72,
+          "source": "server:asia-beirut-research",
+          "unknownM2": 0,
+          "computedAt": "2026-10-08T18:20:37.441Z"
+        }
+      }
+    }
+  ]
+}

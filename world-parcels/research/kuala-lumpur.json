@@ -1,0 +1,107 @@
+{
+  "cityId": "queue:41",
+  "queueRank": 41,
+  "name": "Kuala Lumpur",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "centerLatLon": [
+    3.1003,
+    101.6335
+  ],
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "my-selangor-jps-lot-kadaster-petaling",
+    "requestUrl": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7/query?where=1%3D1&geometry=101.62%2C3.09%2C101.65%2C3.11&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CNo_Lot%2CNama_Daerah%2CNama_Mukim%2CKeluasan_Ekar%2CKod_Mukim&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      101.62,
+      3.09,
+      101.65,
+      3.11
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "No_Lot (with Kod_Mukim/Nama_Mukim); OBJECTID",
+    "responseFile": "kuala-lumpur-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; maxRecordCount 2000"
+  },
+  "source": {
+    "sourceId": "my-selangor-jps-lot-kadaster-petaling",
+    "name": "Lot_Kadaster_MIL1 FeatureServer layer 7 (LOT_DAERAH_PETALING), JPS Selangor GIS",
+    "operator": "Jabatan Pengairan dan Saliran (Drainage and Irrigation Dept) Selangor",
+    "scope": "Selangor state cadastral lots by district (9 district layers); Petaling district layer has 63,603 features. Covers the Selangor part of the Kuala Lumpur agglomeration, NOT the Kuala Lumpur Federal Territory",
+    "endpoint": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7",
+    "method": "GET ArcGIS query",
+    "responseFormat": "Esri JSON",
+    "crs": "native EPSG:3857 (wkid 102100); EPSG:4326 via outSR",
+    "reuseStatus": "Unknown; no licence stated on service; some attributes (applicant/developer names) are personal or commercial data and were excluded from the saved reply"
+  },
+  "portalsFound": [
+    {
+      "url": "https://jpsselgis.selangor.gov.my/gis/rest/services",
+      "observation": "Public ArcGIS Server 10.61 of the Selangor drainage department with Lot_Kadaster_MIL1 and Lot folder services."
+    },
+    {
+      "url": "https://www.mygeoportal.gov.my/",
+      "observation": "National geospatial portal (MaCGDI); reachable, no anonymous parcel service found."
+    },
+    {
+      "url": "https://www.jupem.gov.my/",
+      "observation": "JUPEM, the federal survey authority (e-Kadaster); connection failed from this environment."
+    },
+    {
+      "url": "https://www.data.gov.my/",
+      "observation": "National open data portal; no cadastral polygon dataset located."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "9 district lot layers"
+    },
+    {
+      "url": "https://.../FeatureServer/7/query bbox 101.6325,3.0995,101.6345,3.1010",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "0 features (too small box)"
+    },
+    {
+      "url": "https://.../FeatureServer/7/query bbox 101.68,3.13,101.72,3.17 count (also layers 1 and 4)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "count 0 on layers 1, 4 and 7: Kuala Lumpur Federal Territory not covered"
+    },
+    {
+      "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/7/query?where=1%3D1&geometry=101.62%2C3.09%2C101.65%2C3.11&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CNo_Lot%2CNama_Daerah%2CNama_Mukim%2CKeluasan_Ekar%2CKod_Mukim&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "3 lot polygons in Mukim Damansara, Petaling; verified"
+    },
+    {
+      "url": "https://www.jupem.gov.my/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Selangor state lots (drainage department copy)",
+    "verifiedOpenScope": "three lots in Petaling district, Selangor, at the queue centre point; KL Federal Territory bbox returned none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The source is a drainage-agency working layer, not the JUPEM authoritative cadastre, so vintage, legal status and reuse terms are unknown. Kuala Lumpur Federal Territory itself has no verified source (JUPEM/DBKL). Sample lots showed Keluasan_Ekar 0.",
+  "nextStep": "Find a source for the Federal Territory (JUPEM e-Kadaster, DBKL, MyGeoportal); check licence; review layer completeness.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-09-29"
+}

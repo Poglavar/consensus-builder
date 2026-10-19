@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "mx-aguascalientes-cadastre-services",
+  "purpose": "Service review for WUP2025 rank 611 Aguascalientes (city code 4184); city-bound registry evidence and safe anonymous parcel-geometry route.",
+  "primaryPublisher": "Aguascalientes municipal government; Instituto Registral y Catastral del Estado",
+  "sourceUrl": "https://ags.gob.mx/",
+  "registryFound": true,
+  "registryBasis": "The Aguascalientes municipal government exposes its Catastro/Predial system, and the official state Instituto Registral y Catastral identifies its online cadastral service. The official VisorAGS page shows a Predios layer and property-information flow. These establish local/state cadastral service presence, but no safe anonymous geometry-only endpoint/schema was verified.",
+  "officialSources": [
+    {
+      "url": "https://ags.gob.mx/",
+      "observation": "Official Aguascalientes municipal government portal; links municipal services including Catastro/Predial."
+    },
+    {
+      "url": "https://ags.gob.mx/servicios/pisabit/loginCatastro.asp",
+      "observation": "Municipal Catastro/Predial login entry. Login flow was not used."
+    },
+    {
+      "url": "https://eservicios2.aguascalientes.gob.mx/IRC/ManifestacionEnLinea/index",
+      "observation": "Official state Instituto Registral y Catastral cadastral-service page; requests property key and applicant documentation for a procedure. No form was submitted."
+    },
+    {
+      "url": "https://visor.aguascalientes.gob.mx/visorags/vdi",
+      "observation": "Official VisorAGS page lists a Predios layer and address/property-information controls. No address search, parcel selection or property-detail action was used; no geometry schema was exposed in the public page text."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Aguascalientes Mexico official cadastral parcel map GIS municipal registry",
+      "scope": "Find city-specific cadastral service evidence and public geometry-only endpoints.",
+      "result": "Official municipal and state portals establish cadastral services; the official VisorAGS viewer lists Predios and address/property information controls. Its public text does not reveal a geometry-only endpoint or safe vector schema. No address, cadastral key or parcel detail was submitted.",
+      "actualResultUrls": [
+        "https://ags.gob.mx/",
+        "https://ags.gob.mx/servicios/pisabit/loginCatastro.asp",
+        "https://eservicios2.aguascalientes.gob.mx/IRC/ManifestacionEnLinea/index",
+        "https://visor.aguascalientes.gob.mx/visorags/vdi"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    },
+    {
+      "language": "Spanish",
+      "query": "catastro predios mapa visor Aguascalientes municipio padrón catastral oficial",
+      "scope": "Confirmar el servicio catastral municipal y buscar un servicio público que permita obtener solo geometría.",
+      "result": "El Ayuntamiento publica su sistema Catastro/Predial; el Instituto Registral y Catastral estatal describe una plataforma oficial que solicita clave catastral para trámites; VisorAGS muestra la capa Predios y controles de búsqueda/detalle. No se envió dirección, clave ni consulta de predio y no se confirmó una capa vectorial de solo geometría.",
+      "actualResultUrls": [
+        "https://ags.gob.mx/",
+        "https://ags.gob.mx/servicios/pisabit/loginCatastro.asp",
+        "https://eservicios2.aguascalientes.gob.mx/IRC/ManifestacionEnLinea/index",
+        "https://visor.aguascalientes.gob.mx/visorags/vdi"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "paymentSubmitted": false,
+    "routeInspectionStatus": "reviewed_no_safe_public_geometry_route_verified",
+    "reason": "The public viewer is property-oriented and its reviewed page reveals no geometry-only schema; catastral-key and property-detail flows were left unused.",
+    "candidateLayer": null,
+    "candidateSchema": null,
+    "targetGeometryRequest": null
+  },
+  "requestEvidence": [
+    {
+      "method": "public search and page review",
+      "observation": "Institutional and interface information only; no parcel, address, owner, tax-account or identity lookup was submitted. No HTTP feature-response status or feature count is asserted."
+    }
+  ],
+  "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-4184-aguascalientes-route-inspection.json"
+}

@@ -1,0 +1,20 @@
+{
+    "cleanUrls": false,
+    "directoryListing": false,
+    "rewrites": [
+        { "source": "/", "destination": "/index.html" },
+        { "source": "/proposals/**", "destination": "/index.html" },
+        { "source": "/plans/**", "destination": "/index.html" },
+        { "source": "/proposal/**", "destination": "/index.html" },
+        { "source": "/parcel/**", "destination": "/index.html" },
+        { "source": "/bets/**", "destination": "/index.html" }
+    ],
+    "headers": [
+        {
+            "source": "**",
+            "headers": [
+                { "key": "Cache-Control", "value": "no-store, must-revalidate" }
+            ]
+        }
+    ]
+}

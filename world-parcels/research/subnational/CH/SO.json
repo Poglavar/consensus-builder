@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "regionCode": "SO",
+ "regionName": "Solothurn",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "ch-geodienste-av0",
+  "name": "Amtliche Vermessung (open AV) via geodienste.ch WFS",
+  "operator": "Cantons and Confederation (geodienste.ch)",
+  "scope": "open-AV cantons (FILTER_ALLOWED_CANTONS), incl. SO",
+  "endpoint": "https://geodienste.ch/db/av_0/deu",
+  "method": "GET WFS 2.0.0 GetFeature",
+  "responseFormat": "GML 3.2 (text/xml)",
+  "crs": "EPSG:2056",
+  "reuseStatus": "Open AV data per services.json ('Freie Nutzung'/attribution varies by canton); licence text not independently read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ch-geodienste-av0",
+  "requestUrl": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&PROPERTYNAME=ms:msGeometry,ms:EGRIS_EGRID,ms:Nummer,ms:NBIdent,ms:Kanton&BBOX=2607000,1228500,2607150,1228650,urn:ogc:def:crs:EPSG::2056",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml",
+  "spatialTestAreaLonLat": "LV95 150 m box at E2607000 N1228500 (Solothurn)",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/ms:RESF",
+  "geometryType": "gml:Polygon",
+  "closedRings": true,
+  "idField": "ms:EGRIS_EGRID / ms:Nummer + ms:NBIdent",
+  "responseFile": "subnational/CH/SO-parcel-response.json",
+  "pagination": "WFS 2.0 STARTINDEX/COUNT",
+  "idsSample": [
+   "CH153532700652",
+   "CH440632701826",
+   "CH740632708947"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "SO is in the FILTER_ALLOWED_CANTONS list of the open av_0 service and services.json lists it as open AV data; all returned features carry Kanton=SO. Only the capital was sampled.",
+ "subregionsVerified": [
+  "Solothurn"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "Per-canton AV publication status"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&PROPERTYNAME=ms:msGeometry,ms:EGRIS_EGRID,ms:Nummer,ms:NBIdent,ms:Kanton&BBOX=2607000,1228500,2607150,1228650,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 RESF polygons, Kanton SO"
+  }
+ ],
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/xml,application/xml,*/*;q=0.8; Accept-Language: de-CH,de;q=0.9; Referer https://geodienste.ch/; cookie jar",
+ "reuseStatus": "see source.reuseStatus",
+ "remainingUncertainty": "One capital-area sample; completeness of the canton not measured. No owner data requested or saved.",
+ "nextStep": "None required; optionally sample a second municipality."
+}

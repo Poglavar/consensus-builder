@@ -1,99 +1,211 @@
+import { Browser, BrowserContext, Page } from '@playwright/test';
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
+import { openCity, openParcel, createSpace, proposalState, showProposal, chooseTermsForShare, PARCEL_ID } from '../helpers/runtime';
+import { sampleParcels } from '../helpers/mocks/parcel-data';
+import { mockAllApiRoutes } from '../helpers/mocks/api-routes';
+import { attachSharedProposalServer, createSharedProposalServer } from '../helpers/mocks/shared-server';
+
+async function personalizeProfile(page: Page, name: string): Promise<void> {
+  await page.locator('#username-display').click();
+  await expect(page.locator('#welcome-modal')).toBeVisible();
+  await page.locator('#username-input').fill(name);
+  await page.locator('#welcome-submit-btn').click();
+  await expect(page.locator('#welcome-modal')).toBeHidden();
+  await expect(page.locator('#username-text')).toHaveText(name);
+  await expect.poll(() => page.evaluate(() => {
+    const w = window as any;
+    return w.GuestPolicy.check('share', { isGuest: w.getCurrentUserAgent?.()?.isGuest }).allowed;
+  })).toBe(true);
+}
+
+async function receivingDevice(
+  browser: Browser,
+  shareUrl: string,
+  server: ReturnType<typeof createSharedProposalServer>,
+  baseURL: string | undefined
+): Promise<{ context: BrowserContext; page: Page; errors: string[] }> {
+  const context = await browser.newContext({ baseURL });
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem('cb_current_city', 'new_york');
+      localStorage.setItem('cb_site_intro_seen_v1', '1');
+    } catch (_) { /* opaque origin */ }
+  });
+  const page = await context.newPage();
+  await mockAllApiRoutes(page);
+  await attachSharedProposalServer(page, server);
+  const errors: string[] = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto(shareUrl, { waitUntil: 'domcontentloaded' });
+  await waitForMapReady(page);
+  return { context, page, errors };
+}
+
+async function expectAppliedOnFabric(page: Page, proposalId: string): Promise<void> {
+  await expect.poll(async () => {
+    const state = await proposalState(page, proposalId);
+    return !!state?.applied;
+  }, { timeout: 60_000 }).toBe(true);
+  await expect.poll(() => page.evaluate((id) => {
+    const w = window as any;
+    const proposal = w.getProposalByIdOrHash(id);
+    const fabric = w.LiveParcelFabric;
+    if (!proposal || !fabric?.producedBy || !fabric?.featureId || !w.ParcelPresenter?.getLayer) return false;
+    const produced = fabric.producedBy(String(proposal.proposalId));
+    return produced.length > 0 && produced.some((feature: any) => {
+      const featureId = fabric.featureId(feature);
+      return !!featureId && !!w.ParcelPresenter.getLayer(String(featureId));
+    });
+  }, proposalId), { timeout: 30_000 }).toBe(true);
+}
 
 test.describe('Proposal sharing @core', () => {
-  test('sharing utility functions are available', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+  test('individual share UI publishes an applied proposal that imports and replays on another device', async ({ mockApi: sender, browser, baseURL }) => {
+    // Two devices, and a quick drawing passes through the create dialog before it is shared.
+    test.setTimeout(90_000);
+    const server = createSharedProposalServer();
+    await attachSharedProposalServer(sender, server);
+    await openCity(sender);
+    await personalizeProfile(sender, 'Share author');
+    const proposalId = await createSpace(sender, 'park');
+    const beforeShare = await proposalState(sender, proposalId);
+    expect(beforeShare.applied).toBe(true);
 
-    const sharingFns = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasShareApplied: typeof w.shareAppliedProposals === 'function',
-        hasUploadProposal: typeof w.uploadProposalToServer === 'function',
-        hasBuildUploadReady: typeof w.buildUploadReadyProposal === 'function',
-        hasResolveBackendBase: typeof w.resolveBackendBaseUrl === 'function',
-        hasResolveFrontendBase: typeof w.resolveFrontendBaseUrl === 'function',
-        hasBuildCityQuery: typeof w.buildCityQueryParam === 'function',
-        hasDecodeShared: typeof w.decodeSharedPayload === 'function',
-        hasBase64Encode: typeof w.base64UrlEncodeBytes === 'function',
-        hasBase64Decode: typeof w.base64UrlDecodeToBytes === 'function',
-        hasEscapeHtml: typeof w.escapeHtml === 'function',
-      };
-    });
+    await showProposal(sender, proposalId);
+    await sender.locator('.btn-share-proposal').click();
+    // A quick drawing has no terms yet: Share asks for them, appends them to the drawing itself
+    // and shares it; nothing is re-created.
+    const savedId = await chooseTermsForShare(sender, 'community-vote');
+    expect(savedId).toBe(proposalId);
+    expect(await sender.evaluate(() => (window as any).proposalStorage.getAllProposals().length)).toBe(1);
+    const downloadPromise = sender.waitForEvent('download');
+    await sender.locator('.share-modal-overlay').getByRole('button', { name: 'Download', exact: true }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(/^proposal-.*\.json$/);
+    await sender.locator('.share-modal-overlay').getByRole('button', { name: 'Upload', exact: true }).click();
+    const shareLink = sender.locator('.share-modal-overlay .share-modal-link').first();
+    await expect(shareLink).toHaveValue(/\/proposals\/\d+\?/);
+    const shareUrl = await shareLink.inputValue();
+    expect(server.records.size).toBe(1);
+    const publishedRecord = server.records.values().next().value;
+    if (!publishedRecord) throw new Error('The publish API did not persist a proposal record.');
+    expect(publishedRecord).toMatchObject({ goal: 'park', kind: 'community-vote', offer: null, voteExpiryDays: 365 });
+    expect(String(publishedRecord.proposalId)).toMatch(/^c2-/);
+    expect(publishedRecord.proposalId).not.toBe(proposalId);
+    expect(publishedRecord).not.toHaveProperty('applied');
+    const publishedProposalId = String(publishedRecord.proposalId);
 
-    const hasSome = Object.values(sharingFns).some(v => v === true);
-    // Sharing module depends on scripts that may not fully load in static-serve
-    test.skip(!hasSome, 'Sharing module not loaded in static-serve mode');
-    // Check whichever functions did load
-    const coreLoaded = sharingFns.hasResolveBackendBase || sharingFns.hasEscapeHtml || sharingFns.hasShareApplied;
-    expect(coreLoaded).toBe(true);
-  });
-
-  test('base64 encode/decode round-trips correctly', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const roundTrip = await page.evaluate(() => {
-      const w = window as any;
-      if (typeof w.base64UrlEncodeBytes !== 'function' || typeof w.base64UrlDecodeToBytes !== 'function') {
-        return { skip: true };
-      }
-      const original = new Uint8Array([72, 101, 108, 108, 111]); // "Hello"
-      const encoded = w.base64UrlEncodeBytes(original);
-      const decoded = w.base64UrlDecodeToBytes(encoded);
-      return {
-        skip: false,
-        encodedIsString: typeof encoded === 'string',
-        decodedLength: decoded.length,
-        matches: Array.from(decoded).every((b: number, i: number) => b === original[i]),
-      };
-    });
-
-    if (!roundTrip.skip) {
-      expect(roundTrip.encodedIsString).toBe(true);
-      expect(roundTrip.decodedLength).toBe(5);
-      expect(roundTrip.matches).toBe(true);
+    const receiver = await receivingDevice(browser, shareUrl, server, baseURL);
+    try {
+      await expectAppliedOnFabric(receiver.page, publishedProposalId);
+      const state = await proposalState(receiver.page, publishedProposalId);
+      expect(state.applied).toBe(true);
+      await receiver.page.reload({ waitUntil: 'domcontentloaded' });
+      await waitForMapReady(receiver.page);
+      await expectAppliedOnFabric(receiver.page, publishedProposalId);
+      const afterReload = await receiver.page.evaluate((id) => {
+        const w = window as any;
+        return w.proposalStorage.getAllProposals().filter((p: any) => p.proposalId === id && p.applied).length;
+      }, publishedProposalId);
+      expect(afterReload).toBe(1);
+      expect(receiver.errors).toEqual([]);
+      expect(server.requests.some(request => request.path.endsWith('/proposals/batch'))).toBe(true);
+    } finally {
+      await receiver.context.close();
     }
   });
 
-  test('escapeHtml sanitizes dangerous characters', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+  test('whole applied plan UI publishes selected members and a fresh device applies the plan once', async ({ mockApi: sender, browser, baseURL }) => {
+    // Two devices, and a quick drawing passes through the create dialog before it is shared.
+    test.setTimeout(90_000);
+    const server = createSharedProposalServer();
+    await attachSharedProposalServer(sender, server);
+    await openCity(sender);
+    await personalizeProfile(sender, 'Plan author');
+    const proposalId = await createSpace(sender, 'park');
+    const secondParcelId = sampleParcels.features[1].properties.parcelId;
+    await sender.evaluate(async (id) => {
+      await (window as any).CadastralParcelRepository.ensureIds([id]);
+    }, secondParcelId);
+    await expect.poll(() => sender.evaluate(id => !!(window as any).ParcelPresenter.getLayer(id), secondParcelId)).toBe(true);
+    await openParcel(sender, 'proposals', secondParcelId);
+    await sender.locator('.parcel-build-btn--square').click();
+    await expect.poll(() => sender.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .some((proposal: any) => proposal.structureProposal?.kind === 'square' && proposal.applied))).toBe(true);
+    const secondProposalId = await sender.evaluate(() => (window as any).proposalStorage.getAllProposals()
+      .find((proposal: any) => proposal.structureProposal?.kind === 'square' && proposal.applied).proposalId);
 
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      if (typeof w.escapeHtml !== 'function') return { skip: true };
-      return {
-        skip: false,
-        escaped: w.escapeHtml('<script>alert("xss")</script>'),
-      };
-    });
+    await sender.locator('#proposals-button').click();
+    await expect(sender.locator('#proposals-sheet')).toBeVisible();
+    // plan-wide actions sit in the sheet's collapsed "Plan actions" section
+    await sender.locator('#proposal-list-actions > summary').click();
+    await expect(sender.locator('#proposal-list-actions')).toHaveAttribute('open', '');
+    await expect(sender.locator('#shareAppliedProposalsButton')).toBeEnabled();
+    await sender.locator('#shareAppliedProposalsButton').click();
+    // Who decides is asked once for the whole plan; community vote is preselected.
+    const planKind = sender.locator('.share-plan-panel input[name="sharePlanKind"]');
+    await expect(planKind.and(sender.locator('[value="community-vote"]'))).toBeChecked();
+    await planKind.and(sender.locator('[value="owner-vote"]')).locator('..').click();
+    // The local proposal key in the row metadata is replaced by the canonical c2 identity when
+    // the first publish binds it. Goal labels remain stable across that identity rewrite.
+    const row = sender.locator('.share-plan-row').filter({ hasText: /·\s*park/i });
+    await expect(row).toBeVisible();
+    const secondRow = sender.locator('.share-plan-row').filter({ hasText: /·\s*square/i });
+    await expect(secondRow).toBeVisible();
+    await row.getByRole('button', { name: 'Upload', exact: true }).click();
+    await expect(row.locator('span').filter({ hasText: 'Uploaded' })).toBeVisible();
+    await secondRow.getByRole('button', { name: 'Upload', exact: true }).click();
+    await expect(secondRow.locator('span').filter({ hasText: 'Uploaded' })).toBeVisible();
+    const planLink = sender.locator('.share-plan-panel .share-modal-link');
+    await expect(planLink).toHaveValue(new RegExp(`/proposals/\\d+,\\d+\\?.*city=zg`));
+    const shareUrl = await planLink.inputValue();
+    expect(server.records.size).toBe(2);
+    const publishedByGoal = new Map<string, string>([...server.records.values()]
+      .map(record => [String(record.goal), String(record.proposalId)] as [string, string]));
+    const publishedParkId = publishedByGoal.get('park');
+    const publishedSquareId = publishedByGoal.get('square');
+    for (const record of server.records.values()) {
+      expect(record).toMatchObject({ kind: 'owner-vote', offer: null, voteExpiryDays: 365 });
+    }
+    expect(publishedParkId).toMatch(/^c2-/);
+    expect(publishedSquareId).toMatch(/^c2-/);
 
-    if (!result.skip) {
-      expect(result.escaped).not.toContain('<script>');
-      expect(result.escaped).toContain('&lt;');
+    const receiver = await receivingDevice(browser, shareUrl, server, baseURL);
+    try {
+      await expectAppliedOnFabric(receiver.page, publishedParkId!);
+      await expectAppliedOnFabric(receiver.page, publishedSquareId!);
+      await receiver.page.reload({ waitUntil: 'domcontentloaded' });
+      await waitForMapReady(receiver.page);
+      await expectAppliedOnFabric(receiver.page, publishedParkId!);
+      await expectAppliedOnFabric(receiver.page, publishedSquareId!);
+      const appliedCopies = await receiver.page.evaluate(ids => ids.map(id => (window as any).proposalStorage.getAllProposals()
+        .filter((proposal: any) => proposal.proposalId === id && proposal.applied).length), [publishedParkId, publishedSquareId]);
+      expect(appliedCopies).toEqual([1, 1]);
+      expect(receiver.errors).toEqual([]);
+      expect(server.requests.filter(request => request.path.endsWith('/proposals/batch'))).toHaveLength(2);
+    } finally {
+      await receiver.context.close();
     }
   });
 
-  test('backend base URL resolves to a valid URL', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
+  test('invalid and missing share links show recoverable errors', async ({ browser, baseURL }) => {
+    const server = createSharedProposalServer();
+    const invalid = await receivingDevice(browser, '/?city=zg&proposalShare=not-valid-base64!!!', server, baseURL);
+    try {
+      await expect(invalid.page.locator('.share-modal-overlay')).toContainText(/Invalid Share Link/i);
+      expect(invalid.errors).toEqual([]);
+    } finally {
+      await invalid.context.close();
+    }
 
-    const baseUrl = await page.evaluate(() => {
-      const w = window as any;
-      if (typeof w.resolveBackendBaseUrl === 'function') {
-        return w.resolveBackendBaseUrl();
-      }
-      if (typeof w.getBackendBase === 'function') {
-        return w.getBackendBase();
-      }
-      return null;
-    });
-
-    expect(baseUrl).not.toBeNull();
-    if (baseUrl) {
-      expect(baseUrl).toMatch(/^https?:\/\//);
+    const missing = await receivingDevice(browser, '/proposals/7999?city=zg', server, baseURL);
+    try {
+      await expect(missing.page.locator('.share-modal-overlay')).toContainText(/not found on server/i, { timeout: 30_000 });
+      expect(missing.errors).toEqual([]);
+      expect(server.requests.some(request => request.path.endsWith('/proposals/batch'))).toBe(true);
+    } finally {
+      await missing.context.close();
     }
   });
 });

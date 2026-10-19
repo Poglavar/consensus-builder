@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5656-port-sudan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried.",
+  "registryAssessment": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "observation": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried."
+    },
+    {
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "observation": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Port Sudan Sudan official cadastral land registry cadastre municipality",
+      "result": "The Judiciary describes the national land-registration system and branches in Sudanese states, and the National Information Center advertises national WMS/WFS maps. The inspected official pages do not establish Port Sudan-specific custody or a city layer.",
+      "method": "Separate English-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    },
+    {
+      "language": "Arabic",
+      "query": "بورتسودان وزارة التخطيط العمراني الأراضي المساحة كادستر خرائط",
+      "result": "تصف بوابة السودان المكانية خدمات وطنية WMS/WFS، لكن الصفحة لا تحدد مكتب تسجيل أو طبقة قطع أراضٍ خاصة ببورتسودان. لم يتم العثور على مصدر أولي يربط الحفظ العقاري محلياً بالمدينة، ولذلك تبقى هذه النقطة غير محسومة.",
+      "method": "Separate local-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe exact-point public polygon was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried.",
+    "verifiedOpenScope": "No public anonymous point-level parcel polygon verified at the exact WUP locator. No citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "requests": [],
+  "portals": [
+    {
+      "homeUrl": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "observation": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried."
+    },
+    {
+      "homeUrl": "https://nic.gov.sd/public/projectDetails/3",
+      "observation": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried."
+    }
+  ]
+}

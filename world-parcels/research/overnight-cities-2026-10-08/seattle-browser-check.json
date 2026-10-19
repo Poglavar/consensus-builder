@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:03:58.471371+00:00",
+  "city": "Seattle",
+  "appCityId": "seattle",
+  "sourceId": "us-wa-king-county-parcel-boundary",
+  "url": "http://localhost:5638/?city=seattle&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed",
+  "loadedParcelCount": 215,
+  "interaction": "Real pointer move/down/up at x=600,y=409, then Details menu click.",
+  "selectedParcelId": "US-WA-KC-7974200250",
+  "pointContainedByObservedParcel": true,
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceWarningObserved": false,
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "releaseState": "local_uncommitted_undeployed"
+}

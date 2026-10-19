@@ -1,0 +1,396 @@
+/* ========== Map search box ==========
+   The omnibox top-left with the city chip (js/ui/map-search.js), mounted in #map-search-slot
+   (css/map-shell.css places the slot). Compact — city chip + magnifier — until focused. Desktop then
+   unfolds into a 44px pill with the results dropping below it; phones (≤767px) take the full width
+   along the top with the results as a full-height sheet under it. */
+
+:root {
+    --map-search-height: 44px;
+    --map-search-width: 380px;
+    /* Width of the compact phone box (chip + magnifier); the user bubble keeps clear of it
+       (css/map-shell.css, phones). */
+    --map-search-compact-width: 120px;
+}
+
+/* An open result list paints over the mode strip and the docked panels; an expanded phone box
+   over everything in the shell. */
+.map-shell-slot--search:has(.map-search.is-open) {
+    z-index: var(--cb-z-open-menu);
+}
+
+body.map-search-expanded .map-shell-slot--search {
+    z-index: var(--cb-z-search-expanded);
+}
+
+/* The search moves the 2D map, which the model/photo views cover. */
+body.three-mode-active .map-shell-slot--search {
+    display: none;
+}
+
+body.app-loading .map-search {
+    pointer-events: none;
+}
+
+.map-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min(var(--map-search-width), calc(100vw - 360px));
+    min-width: 280px;
+    height: var(--map-search-height);
+    box-sizing: border-box;
+    padding: 0 4px;
+    border: 1px solid var(--cb-line-glass);
+    border-radius: calc(var(--map-search-height) / 2);
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-sm);
+    font-size: 14px;
+}
+
+.map-search:focus-within {
+    border-color: var(--cb-primary);
+}
+
+.map-search__chip {
+    display: inline-flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: 6px;
+    max-width: 140px;
+    height: 34px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 17px;
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.map-search__chip:hover {
+    background: var(--cb-primary-soft);
+}
+
+.map-search__chip-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.map-search__chip-label--short {
+    display: none;
+}
+
+.map-search__field {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-width: 0;
+    height: 100%;
+}
+
+.map-search__icon-button,
+.map-search__clear,
+.map-search__back {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: 18px;
+    background: transparent;
+    color: var(--cb-text-muted);
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.map-search__icon-button:hover,
+.map-search__clear:hover,
+.map-search__back:hover {
+    background: var(--cb-surface-2);
+}
+
+.map-search__chip:focus-visible,
+.map-search__icon-button:focus-visible,
+.map-search__clear:focus-visible,
+.map-search__back:focus-visible {
+    outline: 2px solid var(--cb-primary);
+    outline-offset: 1px;
+}
+
+.map-search__clear[hidden],
+.map-search__back {
+    display: none;
+}
+
+/* Two classes: the base `input[type="text"]` look (css/primitives.css) outranks one class, and its
+   border and padding pushed the field into the pill's rounded end. The pill draws the frame here. */
+.map-search .map-search__input,
+.map-search .map-search__input:focus-visible {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    padding: 0 4px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--cb-text-strong);
+    font: inherit;
+    font-size: 15px;
+    outline: none;
+}
+
+/* Folded until used, at every width: the city chip and the magnifier. Focusing the field (the
+   magnifier, `/`, the chip's city list) unfolds it; a press elsewhere folds it again
+   (js/ui/map-search.js). */
+.map-search:not(.is-expanded) {
+    width: auto;
+    min-width: 0;
+}
+
+.map-search:not(.is-expanded) .map-search__input,
+.map-search:not(.is-expanded) .map-search__clear {
+    display: none;
+}
+
+.map-search:not(.is-expanded) .map-search__field {
+    flex: 0 0 auto;
+}
+
+/* ---- Results ---- */
+.map-search__results {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: max(100%, var(--map-search-width));
+    max-width: calc(100vw - 2 * var(--map-shell-edge));
+    max-height: calc(100vh - var(--map-search-height) - 40px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 4px 0;
+    border: 1px solid var(--cb-line-glass);
+    border-radius: 12px;
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-md);
+}
+
+.map-search__results[hidden] {
+    display: none;
+}
+
+.map-search__group + .map-search__group {
+    border-top: 1px solid var(--cb-line);
+}
+
+.map-search__group-title {
+    padding: 8px 14px 2px;
+    color: var(--cb-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.map-search__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 14px;
+    cursor: pointer;
+}
+
+.map-search__item[aria-selected="true"] {
+    background: var(--cb-primary-soft);
+}
+
+.map-search__item[aria-disabled="true"] {
+    cursor: default;
+}
+
+.map-search__item-icon {
+    flex: 0 0 18px;
+    margin-top: 2px;
+    color: var(--cb-text-muted);
+    text-align: center;
+}
+
+.map-search__item.is-current .map-search__item-icon {
+    color: var(--cb-primary);
+}
+
+.map-search__item-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.map-search__item-label {
+    color: var(--cb-text-strong);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.map-search__item.is-current .map-search__item-label {
+    font-weight: 600;
+}
+
+.map-search__item--info .map-search__item-label {
+    color: var(--cb-text);
+    font-size: 13px;
+}
+
+.map-search__item-sub {
+    margin-top: 1px;
+    color: var(--cb-text-muted);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.map-search__item-note {
+    margin-top: 3px;
+    font-size: 12px;
+}
+
+.map-search__item-note--pending {
+    color: var(--cb-primary);
+}
+
+.map-search__item-note--error {
+    color: var(--cb-danger);
+}
+
+.map-search__item-note--info {
+    color: var(--cb-text);
+}
+
+.map-search__status {
+    padding: 6px 14px 8px 42px;
+    color: var(--cb-text-muted);
+    font-size: 13px;
+}
+
+.map-search__status--error {
+    color: var(--cb-danger);
+}
+
+.map-search__footer {
+    padding: 0 14px 6px 42px;
+    color: var(--cb-text-faint);
+    font-size: 11px;
+}
+
+.map-search__shortcut {
+    flex: 0 0 auto;
+    align-self: center;
+    padding: 1px 6px;
+    border: 1px solid var(--cb-line-strong);
+    border-radius: 4px;
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+    font-family: inherit;
+    font-size: 11px;
+}
+
+.map-search__item--hint .map-search__item-label {
+    color: var(--cb-text-muted);
+}
+
+/* ---- Phones ---- */
+@media (max-width: 767.98px) {
+    .map-search {
+        width: auto;
+        min-width: 0;
+        max-width: var(--map-search-compact-width);
+    }
+
+    /* Room for the chip's globe icon beside the city name. */
+    :root {
+        --map-search-compact-width: 140px;
+    }
+
+    .map-search__chip {
+        max-width: 96px;
+        padding: 0 10px;
+    }
+
+    /* Exploring: compass + the place name ("Explore · Tokyo" truncated to "Explor…" before). */
+    body.explore-city {
+        --map-search-compact-width: 150px;
+    }
+
+    .map-search__chip.is-explore {
+        max-width: 106px;
+        padding: 0 8px;
+    }
+
+    .map-search__chip.is-explore .map-search__chip-label {
+        display: none;
+    }
+
+    .map-search__chip.is-explore .map-search__chip-label--short {
+        display: inline;
+    }
+
+    /* Expanded: the whole top edge, results as a full-height sheet under it. Map chrome, not an
+       overlay: a 56px bar pinned to the top (the overlay audit reads its top/left/right as full). */
+    .map-search.is-expanded {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        max-width: none;
+        height: 56px;
+        padding: 0 6px;
+        border-width: 0 0 1px;
+        border-radius: 0;
+        background: var(--cb-surface);
+        box-shadow: var(--cb-shadow-sm);
+    }
+
+    .map-search.is-expanded .map-search__back {
+        display: inline-flex;
+    }
+
+    .map-search.is-expanded .map-search__chip,
+    .map-search.is-expanded .map-search__icon-button {
+        display: none;
+    }
+
+    .map-search.is-expanded .map-search__input {
+        font-size: 16px; /* no zoom-on-focus in iOS Safari */
+    }
+
+    .map-search.is-expanded .map-search__results {
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        max-width: none;
+        max-height: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .map-search__item {
+        padding: 10px 16px;
+    }
+}
+
+/* Explore's compass label shares the narrow top row with the account button; a city chip drops
+   its globe icon to keep the name readable. */
+@media (max-width: 359.98px) {
+    :root { --map-search-compact-width: 120px; }
+    body.explore-city { --map-search-compact-width: 120px; }
+    .map-search__chip,
+    .map-search__chip.is-explore { max-width: 76px; }
+    .map-search__chip:not(.is-explore) .fas { display: none; }
+}

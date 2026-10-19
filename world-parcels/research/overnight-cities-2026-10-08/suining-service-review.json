@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7988-suining.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "An official Suining government service document identifies real-estate registration-record inquiry under municipal/county natural-resources administration. The evidence is dated 2018, so current service availability is unverified. The city site timed out during inspection; no public parcel layer, schema or geometry route was verified.",
+  "registryAssessment": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+      "observation": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified."
+    },
+    {
+      "url": "https://sns.sczwfw.gov.cn/",
+      "observation": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified."
+    },
+    {
+      "url": "https://www.suining.gov.cn/",
+      "observation": "An official Suining government-service document lists real-estate registration-record inquiry through the municipal natural-resources/land authority at city/county level. Current availability and public vector access could not be verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Suining China official cadastral parcel map natural resources land registry GIS",
+      "result": "Official municipal service documentation identifies real-estate registration-record inquiry; the city homepage and likely city map routes timed out. No parcel geometry schema was verified.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "遂宁 不动产登记资料查询 地籍图 地块 GIS 官方",
+      "result": "市级政府服务文件列出不动产登记资料查询服务；遂宁政府站点连接超时，未验证公开地籍图或矢量服务。",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact WUP settlement point and reviewed official sources only.",
+    "limits": "The 2018 service listing may be stale; current service availability, local GIS publication and whether the WUP locator lies within any public parcel layer remain unverified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.suining.gov.cn/",
+      "method": "GET official city homepage",
+      "result": "Connection timed out; no page or map-service route could be inspected."
+    },
+    {
+      "url": "https://sns.sczwfw.gov.cn/picture/old/3832477384190078976.pdf",
+      "method": "GET official government service document",
+      "result": "2018 government service document enumerates municipal/county real-estate registration-record inquiry. Document establishes a registry service, not an anonymous parcel map."
+    }
+  ],
+  "remainingUncertainty": "The 2018 service listing may be stale; current service availability, local GIS publication and whether the WUP locator lies within any public parcel layer remain unverified."
+}

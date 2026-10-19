@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5248-toluca.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The SIGTOL official landing page was opened and its linked viewer URL was identified as http://187.174.218.139/mdm-client. Ordinary public GET to that linked viewer returned connection refused. Landing page describes interactive geographic mapping but not cadastral parcels, and no viewer JS or map service metadata was obtained. No geometry query was made. Whether SIGTOL has a parcel/cadastral layer or only thematic planning layers, and whether the exact point lies in a publicly viewable cadastral layer.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www2.toluca.gob.mx/",
+      "observation": "Official Ayuntamiento site links the municipal SIGTOL platform and property-tax portal."
+    },
+    {
+      "url": "https://sigtol.gob.mx/",
+      "observation": "Official SIGTOL landing page describes interactive maps and geographic data for Toluca and links to the Ayuntamiento."
+    },
+    {
+      "url": "https://www2.toluca.gob.mx/wp-content/uploads/2023/06/tol-pdf-MP_TM-2023.pdf",
+      "observation": "Official municipal Catastro process manual; describes cadastral register and municipal-territory records."
+    },
+    {
+      "url": "https://www2.toluca.gob.mx/transparenciatoluca/",
+      "observation": "Official municipal transparency page lists the Coordinación de Catastro and its cadastral-register, cadastral-plan, boundary-verification, and Geographic and Cadastral Information System procedures."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://sigtol.gob.mx/",
+      "method": "GET",
+      "result": "HTTP 200; official landing page describes interactive geographic maps and links to Ayuntamiento."
+    },
+    {
+      "url": "http://187.174.218.139/mdm-client",
+      "method": "GET",
+      "result": "Connection refused; linked public viewer unavailable; no query made."
+    }
+  ]
+}

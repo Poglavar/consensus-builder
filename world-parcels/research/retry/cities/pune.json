@@ -1,0 +1,98 @@
+{
+ "kind": "city",
+ "key": "pune",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "verified_sample_partial_coverage",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-IN,en;q=0.9,hi;q=0.8",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "in-mh-bhunaksha",
+  "requestUrl": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getPlotInfo",
+  "method": "POST form (state=27&giscode=UCM2515000000000000000005&plotno=1&srs=EPSG:4326)",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "Bhamburda village, CTSO 1 Pune, Pune city (about 18.53N 73.83E)",
+  "parcelRecordCount": 3,
+  "recordListPath": "the_geom (one MULTIPOLYGON WKT per plot; 3 calls)",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "plotid / plotno",
+  "responseFile": "research/retry/cities/pune-parcel-response.json",
+  "pagination": "none; plot-by-plot lookups by survey number"
+ },
+ "source": {
+  "sourceId": "in-mh-bhunaksha",
+  "name": "Maharashtra Bhu-Naksha (Mahabhunakasha)",
+  "operator": "Maharashtra Land Records (Mahabhumi) / NIC",
+  "scope": "Maharashtra village and city survey maps; Pune only Bhamburda sampled",
+  "endpoint": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getPlotInfo",
+  "method": "anonymous POST",
+  "responseFormat": "JSON with WKT",
+  "crs": "projected metres (UTM 43N presumed)",
+  "reuseStatus": "not read"
+ },
+ "requests": [
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "previously unreachable; now 302 chain (sets cookie) -> /27/index.jsp -> index.html viewer"
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "OpenLayers viewer; inspected georef.js: rest/Administration, rest/Levels, rest/VillageMapService, rest/MapInfo/getPlotInfo, ../WMS (image), ../gisproxy/MapServer with an embedded public token (value not saved; not needed for my calls)"
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/Administration/ActiveStateList",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "POST; Maharashtra (27) active"
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/VillageMapService/ListsAfterLevelGeoref (state=27, level=2, codes=U,25,)",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "POST; Pune district (25) talukas incl. CTSO 1 Pune (15); level 3 lists village Bhamburda etc."
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/VillageMapService/kidelistFromGisCodeMH (logedLevels=UCM2515000000000000000005)",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "POST; survey/plot number list for village"
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getPlotInfo (state=27, giscode=UCM2515000000000000000005, plotno=1|10|11)",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "POST; each reply has the_geom = MULTIPOLYGON WKT (closed) plus plotid, area, gisinfo; owner info empty"
+  },
+  {
+   "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/html",
+   "assessment": "error page for my parameters; not needed"
+  },
+  {
+   "url": "https://gis.pmc.gov.in/ ; https://pmc.gov.in/ ; https://opendata.pune.gov.in/ ; https://bhunaksha.maharashtra.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "host reachable this time; earlier failures were intermittent",
+ "notes": "New versus previous: the Maharashtra Bhu-Naksha host (unreachable before) now answers, and viewer inspection (georef.js) exposed its REST API. getPlotInfo returns one plot polygon per call (WKT, UTM-like metres, ~EPSG:32643 assumed, not confirmed; reported area field looks implausible for plot 1 so treat attributes cautiously). Sampled 3 plots of village Bhamburda in CTSO 1 Pune (Pune city, urban city-survey map). Access is anonymous but plot-by-plot per village, not a bbox query; map rendering is WMS image. Coverage claimed by the viewer is Maharashtra village/city survey maps, only one village sampled. Terms not read. No credentials used.",
+ "nextStep": "Determine CRS, test other Pune villages/talukas for coverage, read the Bhu-Naksha usage terms."
+}

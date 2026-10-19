@@ -1,18 +1,18 @@
---------------------
-MANUAL TESTING FLOWS
---------------------
+Remaining test work
+===================
 
-crate proposal
-  - road
-  - track
-  - lake
-  - square
-  - park
-  - reparellization
-  - buildings
-  - single building
+- Add opt-in live wallet/RPC coverage for one real signed devnet transaction lifecycle. Current
+  browser wallet providers and RPC responses are mocked; headed UI tests do not prove real signing,
+  RPC availability, or on-chain completion. Keep live tests explicitly gated and low-value.
+- Extend live production API smoke coverage beyond the existing read-only parcel bbox check. The
+  fixture-backed UI suite verifies client behavior with deterministic data, not production dataset
+  completeness or parity across every endpoint.
+- Keep the feature index current when command IDs or workflows change:
+    cd e2e && npm run check:features
+  The index maps 99 commands to 47 spec files; it is a coverage map, not proof of behavior without
+  a passing headed test.
+- Revisit the six skipped tests and either document the unavailable dependency or
+  restore executable coverage when the prerequisite is available.
 
-- apply / unapply / reload browser
-
-- share proposal
-- load shared proposal
+Current regression results and rerun commands are in TEST.md. The headed browser run should remain
+serial because tests share a local app/server and browser state.

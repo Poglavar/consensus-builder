@@ -1,0 +1,75 @@
+{
+  "checkedAt": "2026-10-09T06:54:06.673268+00:00",
+  "status": "passed",
+  "surface": "Dedicated headed Chrome, actual frontend and real source gateway; disposable preview contains no proposal database.",
+  "session": "followon-ui-0649",
+  "urlBase": "http://127.0.0.1:5640/",
+  "checks": [
+    {
+      "city": "joinville",
+      "loadedParcels": 328,
+      "pointer": [
+        600,
+        409
+      ],
+      "nativeDetailsId": "BR-JOINVILLE-IQ-13-20-25-19-469",
+      "pageErrors": []
+    },
+    {
+      "city": "utrecht",
+      "loadedParcels": 309,
+      "pointer": [
+        642,
+        542
+      ],
+      "nativeDetailsId": "NL-BRK-26211021070000",
+      "pageErrors": [],
+      "visualInspection": "Parcel boundaries, selected polygon and matching details heading inspected in screenshot."
+    },
+    {
+      "city": "bukit_mertajam",
+      "loadedParcels": 29,
+      "pointer": [
+        600,
+        409
+      ],
+      "nativeDetailsId": "MY-PENANG-0701060003760",
+      "pageErrors": []
+    },
+    {
+      "city": "juiz_de_fora",
+      "loadedParcels": 322,
+      "pointer": [
+        600,
+        409
+      ],
+      "nativeDetailsId": "BR-JF-SISURB-LT104196",
+      "pageErrors": []
+    },
+    {
+      "city": "malaga",
+      "loadedParcels": 208,
+      "pointer": [
+        600,
+        409
+      ],
+      "nativeDetailsId": "ES-MALAGA-PARCELA-4196772",
+      "pageErrors": []
+    },
+    {
+      "city": "bakersfield",
+      "loadedParcels": 211,
+      "pointer": [
+        600,
+        409
+      ],
+      "nativeDetailsId": "US-BAKERSFIELD-APN-14734302",
+      "pageErrors": [],
+      "visualInspection": "Parcel boundaries, selected polygon and matching native APN details inspected in screenshot."
+    }
+  ],
+  "finishedAt": "2026-10-09T06:57:03.799512+00:00",
+  "ownedBrowserClosed": true,
+  "browserCloseEvidence": "agent-browser close returned Browser closed; an unrelated sibling session was preserved.",
+  "scope": "Six newly enabled follow-on entries verified here; Leipzig was verified earlier in its separate durable browser record. These checks exercise rendering, pointer selection and native details, not proposal persistence."
+}

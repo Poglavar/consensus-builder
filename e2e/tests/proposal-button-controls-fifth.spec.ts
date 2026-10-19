@@ -1,0 +1,146 @@
+// Cover recipient consent, typology choices and the two shared-link error dismiss controls.
+import { test, expect } from '../helpers/fixtures';
+import { waitForMapReady } from '../helpers/app';
+import { createSpace, openCity, PARCEL_GEOMETRY, PARCEL_ID } from '../helpers/runtime';
+import { sampleParcels } from '../helpers/mocks/parcel-data';
+
+const BLOCK_PARCEL_IDS = ['HR-335754-1234', 'HR-335754-1235'];
+
+async function installBlockGround(page: import('@playwright/test').Page): Promise<void> {
+  const features = structuredClone(sampleParcels.features.slice(0, 2));
+  features[1].geometry.coordinates[0].forEach(point => { if (point[0] === 15.9826) point[0] = 15.9825; });
+  await page.route('**/parcels**', route => {
+    const url = new URL(route.request().url());
+    if (route.request().method() !== 'GET' || !/\/parcels(?:\/parcelIds)?$/.test(url.pathname)) return route.continue();
+    const requested = url.searchParams.get('ids')?.split(',');
+    return route.fulfill({ json: { type: 'FeatureCollection', features: features.filter(feature => !requested || requested.includes(feature.properties.parcelId)) } });
+  });
+}
+
+async function openFreshProposalFromBlock(page: import('@playwright/test').Page): Promise<void> {
+  await installBlockGround(page);
+  await openCity(page);
+  await page.evaluate(async ids => { await (window as any).CadastralParcelRepository.ensureIds(ids); }, BLOCK_PARCEL_IDS);
+  await page.locator('#username-display').click();
+  await expect(page.locator('#welcome-modal')).toBeVisible();
+  await page.locator('#username-input').fill('Urban-rule control tester');
+  await page.locator('#welcome-submit-btn').click();
+
+  // Use the real block inspector's Create proposal button, which opens an unrestricted fresh
+  // proposal form. Forking an existing Park opens a replacement form and correctly locks its
+  // land-use radio buttons, so it cannot exercise the three typology choices.
+  const center = await page.evaluate(id => {
+    const layer = (window as any).ParcelPresenter.getLayer(id);
+    const point = layer.getBounds().getCenter();
+    (window as any).map.panTo(point, { animate: false });
+    return { lat: point.lat, lng: point.lng };
+  }, BLOCK_PARCEL_IDS[1]);
+  const screen = await page.evaluate(({ lat, lng }) => {
+    const point = (window as any).map.latLngToContainerPoint([lat, lng]);
+    const rect = (window as any).map.getContainer().getBoundingClientRect();
+    return { x: rect.left + point.x, y: rect.top + point.y };
+  }, center);
+  await page.mouse.click(screen.x, screen.y);
+  await expect(page.locator('#parcel-menu')).toBeVisible();
+  await page.locator('#parcel-menu').getByRole('menuitem', { name: 'Details', exact: true }).click();
+  await expect(page.locator('#parcel-info-panel')).toBeVisible();
+  await page.locator('#layers-button').click();
+  const tools = page.locator('#layers-sheet details.layer-actions:has(> summary[data-i18n-key="mapShell.reorg.blockData"])');
+  if (!(await tools.evaluate((element: HTMLDetailsElement) => element.open))) await tools.locator('> summary').click();
+  await tools.locator('[onclick="animateFloodfillFromSelected()"]').click();
+  await expect.poll(() => page.evaluate(() => (window as any).multiParcelSelection.selectedParcels.size)).toBeGreaterThan(1);
+  await tools.locator('[onclick="countBlocks()"]')
+    .click();
+  await expect.poll(() => page.evaluate(() => (window as any).blockStorage.blocks.size)).toBeGreaterThan(0);
+  await page.locator('#showBlockListButton').click();
+  await page.locator('#blocks-content .block-item').first().click();
+  await page.locator('#layers-sheet [data-sheet-close]').click();
+  await expect(page.locator('#block-info-panel')).toBeVisible();
+  await page.locator('#block-proposals-tab-button').click();
+  await page.locator('#block-proposals-content').getByRole('button', { name: 'Create proposal', exact: true }).click();
+  await expect(page.locator('.create-proposal-modal:visible')).toBeVisible();
+}
+
+async function establishLocalProfile(page: import('@playwright/test').Page): Promise<void> {
+  await page.locator('#username-display').click();
+  await expect(page.locator('#welcome-modal')).toBeVisible();
+  await page.locator('#username-input').fill('Proposal fifth-pass tester');
+  await page.locator('#welcome-submit-btn').click();
+  await expect(page.locator('#welcome-modal')).toBeHidden();
+}
+
+async function openDetailsFromLocalProposalList(page: import('@playwright/test').Page, proposalId: string): Promise<void> {
+  await page.locator('#proposals-button').click();
+  const row = page.locator(`#proposals-sheet .proposal-list-item[data-proposal-id="${proposalId}"]`);
+  await expect(row).toBeVisible();
+  await row.locator('.proposal-list-details-btn').click();
+  await expect(page.locator('#proposal-details-panel')).toBeVisible();
+}
+
+test.describe('proposal button controls fifth pass @features', () => {
+  test('the named recipient Accept action records consent and refreshes the proposal details', async ({ mockApi: page }) => {
+    await openCity(page);
+    await establishLocalProfile(page);
+    const proposalId = await page.evaluate(({ parcelId, geometry }) => (window as any).proposalStorage.addProposal({
+      proposalId: 'recipient-consent-button',
+      title: 'Specific recipient ownership transfer',
+      goal: 'ownership-transfer-from-me',
+      lifecycleStatus: 'Active',
+      ownershipTransferProposal: {
+        direction: 'from-me',
+        recipient: 'third-party',
+        recipientScope: 'specific',
+        recipientAddress: 'City of Zagreb',
+        status: 'open',
+      },
+      cadastreParcelIds: [parcelId],
+      geometry,
+    }), { parcelId: PARCEL_ID, geometry: PARCEL_GEOMETRY });
+
+    await page.evaluate(() => (window as any).i18n.setLanguage('en'));
+    await openDetailsFromLocalProposalList(page, proposalId);
+    const panel = page.locator('#proposal-details-panel');
+    const expand = panel.getByRole('button', { name: 'Expand', exact: true });
+    if (await expand.isVisible()) await expand.click();
+
+    const recipient = page.locator('#proposal-details-content .owner-acceptance-recipient');
+    await page.locator('#proposal-details-content details[data-proposal-section="land"] > summary').click();
+    await expect(recipient).toContainText('City of Zagreb');
+    const accept = recipient.getByRole('button', { name: 'Accept', exact: true });
+    await expect(accept).toBeVisible();
+    await accept.click();
+
+    await expect.poll(() => page.evaluate(id =>
+      (window as any).proposalStorage.getProposal(id)?.recipientConsented === true, proposalId
+    )).toBe(true);
+    await expect(recipient).toContainText('Accepted');
+    await expect(recipient.getByRole('button', { name: 'Accept', exact: true })).toHaveCount(0);
+  });
+
+  test('urban-rule typology shows the three real block, row, and parcel-based choices', async ({ mockApi: page }) => {
+    await openFreshProposalFromBlock(page);
+    const dialog = page.locator('.create-proposal-modal:visible');
+    const group = dialog.locator('#proposalTypologyGroup');
+    await expect(group).toBeHidden();
+    await dialog.locator('.proposal-radio:has(input[name="proposalLandUse"][value="urban-rule"])').click();
+    await expect(group).toBeVisible();
+
+    for (const typology of ['block', 'row', 'parcelBased']) {
+      const option = group.locator(`.proposal-typology-button[data-proposal-typology="${typology}"]`);
+      await expect(option).toBeVisible();
+      await option.click();
+      await expect(option).toHaveAttribute('aria-pressed', 'true');
+      await expect(group.locator('.proposal-typology-button[aria-pressed="true"]')).toHaveCount(1);
+      await expect.poll(() => page.evaluate(() => (window as any).proposalFacets?.landUse)).toBe('urban-rule');
+    }
+  });
+
+  for (const target of ['.share-modal .close-circle-btn', '.share-modal .cb-dialog__footer button']) test(`shared-link error ${target} dismisses an invalid link notice`, async ({ mockApi: page }) => {
+    await page.goto('/?city=zg&proposalShare=not-valid-base64!!!', { waitUntil: 'domcontentloaded' });
+    await waitForMapReady(page);
+    const modal = page.locator('.share-modal-overlay');
+    await expect(modal).toContainText(/Invalid share link/i);
+    await modal.locator(target).click();
+    await expect(modal).toBeHidden();
+  });
+});

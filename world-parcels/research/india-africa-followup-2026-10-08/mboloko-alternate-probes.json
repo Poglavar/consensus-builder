@@ -1,0 +1,972 @@
+{
+  "checkedAt": "2026-10-07T22:46:25.884Z",
+  "bbox": [
+    27.843765,
+    -25.467237,
+    27.845765,
+    -25.465237
+  ],
+  "requests": [
+    {
+      "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query?f=geojson&where=1%3D1&geometry=27.843765%2C-25.467237%2C27.845765%2C-25.465237&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outFields=OID%2CUniqueID%2CSG_CODE%2CPARCEL_NO%2CPORTION%2CPropSrc%2CMINREG_FRMNM%2CMAJ_REGION&resultRecordCount=3",
+      "httpStatus": 200,
+      "elapsedMs": 7778,
+      "payload": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "id": 1526645,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    27.844109845000048,
+                    -25.467072625999947
+                  ],
+                  [
+                    27.844290390000026,
+                    -25.46715104799995
+                  ],
+                  [
+                    27.844375049000064,
+                    -25.466987702999972
+                  ],
+                  [
+                    27.844220876000065,
+                    -25.466962760999934
+                  ],
+                  [
+                    27.844150480000053,
+                    -25.466995536999946
+                  ],
+                  [
+                    27.844109845000048,
+                    -25.467072625999947
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "OID": 1526645,
+              "UniqueID": "E1526645",
+              "SG_CODE": "T0JQ00540000073200000",
+              "PARCEL_NO": 732,
+              "PORTION": 0,
+              "PropSrc": "Erven",
+              "MINREG_FRMNM": "LETHLABILE-C",
+              "MAJ_REGION": "JQ"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 1526708,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    27.84452922400004,
+                    -25.467012644999954
+                  ],
+                  [
+                    27.844375049000064,
+                    -25.466987702999972
+                  ],
+                  [
+                    27.844290390000026,
+                    -25.46715104799995
+                  ],
+                  [
+                    27.84446860500003,
+                    -25.467228431999956
+                  ],
+                  [
+                    27.844556711000052,
+                    -25.467061273999946
+                  ],
+                  [
+                    27.84452922400004,
+                    -25.467012644999954
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "OID": 1526708,
+              "UniqueID": "E1526708",
+              "SG_CODE": "T0JQ00540000073300000",
+              "PARCEL_NO": 733,
+              "PORTION": 0,
+              "PropSrc": "Erven",
+              "MINREG_FRMNM": "LETHLABILE-C",
+              "MAJ_REGION": "JQ"
+            }
+          },
+          {
+            "type": "Feature",
+            "id": 1526709,
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [
+                    27.84446860500003,
+                    -25.467228431999956
+                  ],
+                  [
+                    27.844290390000026,
+                    -25.46715104799995
+                  ],
+                  [
+                    27.84422689400003,
+                    -25.46727355799993
+                  ],
+                  [
+                    27.844404231000055,
+                    -25.467350563999958
+                  ],
+                  [
+                    27.84446860500003,
+                    -25.467228431999956
+                  ]
+                ]
+              ]
+            },
+            "properties": {
+              "OID": 1526709,
+              "UniqueID": "E1526709",
+              "SG_CODE": "T0JQ00540000073400000",
+              "PARCEL_NO": 734,
+              "PORTION": 0,
+              "PropSrc": "Erven",
+              "MINREG_FRMNM": "LETHLABILE-C",
+              "MAJ_REGION": "JQ"
+            }
+          }
+        ],
+        "exceededTransferLimit": true,
+        "properties": {
+          "exceededTransferLimit": true
+        }
+      }
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46?f=pjson",
+      "httpStatus": 200,
+      "elapsedMs": 1049,
+      "payload": {
+        "currentVersion": 11.5,
+        "cimVersion": "3.5.0",
+        "id": 46,
+        "name": "Erf",
+        "type": "Feature Layer",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "sourceSpatialReference": {
+          "wkid": 4148,
+          "latestWkid": 4148,
+          "vcsWkid": 115700,
+          "latestVcsWkid": 115700,
+          "xyTolerance": 8.983152841195215e-9,
+          "zTolerance": 0.001,
+          "mTolerance": 0.001,
+          "falseX": -400,
+          "falseY": -400,
+          "xyUnits": 999999999.9999999,
+          "falseZ": 0,
+          "zUnits": 1,
+          "falseM": -100000,
+          "mUnits": 10000
+        },
+        "spatialReference": {
+          "wkid": 4148,
+          "latestWkid": 4148,
+          "xyTolerance": 8.983152841195215e-9,
+          "zTolerance": 0.001,
+          "mTolerance": 0.001,
+          "falseX": -400,
+          "falseY": -400,
+          "xyUnits": 999999999.9999999,
+          "falseZ": -100000,
+          "zUnits": 10000,
+          "falseM": -100000,
+          "mUnits": 10000
+        },
+        "sourceHeightModelInfo": {
+          "heightModel": "ellipsoidal",
+          "vertCRS": "WGS_1984",
+          "heightUnit": "meter"
+        },
+        "copyrightText": "",
+        "parentLayer": {
+          "id": 45,
+          "name": "North West"
+        },
+        "subLayers": [],
+        "minScale": 0,
+        "maxScale": 0,
+        "referenceScale": 0,
+        "drawingInfo": {
+          "renderer": {
+            "type": "simple",
+            "symbol": {
+              "type": "esriSFS",
+              "style": "esriSFSSolid",
+              "color": [
+                252,
+                199,
+                244,
+                0
+              ],
+              "outline": {
+                "type": "esriSLS",
+                "style": "esriSLSSolid",
+                "color": [
+                  230,
+                  152,
+                  0,
+                  255
+                ],
+                "width": 1
+              }
+            }
+          },
+          "scaleSymbols": true,
+          "transparency": 0,
+          "labelingInfo": null
+        },
+        "defaultVisibility": true,
+        "extent": {
+          "xmin": 23.699342798000032,
+          "ymin": -28.053132836999964,
+          "xmax": 28.287561306000043,
+          "ymax": -25.034668589999967,
+          "spatialReference": {
+            "wkid": 4148,
+            "latestWkid": 4148,
+            "xyTolerance": 8.983152841195215e-9,
+            "zTolerance": 0.001,
+            "mTolerance": 0.001,
+            "falseX": -400,
+            "falseY": -400,
+            "xyUnits": 999999999.9999999,
+            "falseZ": -100000,
+            "zUnits": 10000,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        },
+        "hasAttachments": false,
+        "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+        "displayField": "SS_NAME",
+        "typeIdField": null,
+        "subtypeFieldName": null,
+        "subtypeField": null,
+        "defaultSubtypeCode": null,
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "GID",
+            "type": "esriFieldTypeInteger",
+            "alias": "GID",
+            "domain": null
+          },
+          {
+            "name": "PRCL_KEY",
+            "type": "esriFieldTypeString",
+            "alias": "PRCL_KEY",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "PRCL_TYPE",
+            "type": "esriFieldTypeString",
+            "alias": "PRCL_TYPE",
+            "length": 10,
+            "domain": null
+          },
+          {
+            "name": "LSTATUS",
+            "type": "esriFieldTypeString",
+            "alias": "LSTATUS",
+            "length": 1,
+            "domain": null
+          },
+          {
+            "name": "WSTATUS",
+            "type": "esriFieldTypeString",
+            "alias": "WSTATUS",
+            "length": 1,
+            "domain": null
+          },
+          {
+            "name": "GEOM_AREA",
+            "type": "esriFieldTypeDouble",
+            "alias": "GEOM_AREA",
+            "domain": null
+          },
+          {
+            "name": "COMMENTS",
+            "type": "esriFieldTypeString",
+            "alias": "COMMENTS",
+            "length": 120,
+            "domain": null
+          },
+          {
+            "name": "TAG_X",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_X",
+            "domain": null
+          },
+          {
+            "name": "TAG_Y",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_Y",
+            "domain": null
+          },
+          {
+            "name": "TAG_VALUE",
+            "type": "esriFieldTypeString",
+            "alias": "TAG_VALUE",
+            "length": 40,
+            "domain": null
+          },
+          {
+            "name": "TAG_SIZE",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_SIZE",
+            "domain": null
+          },
+          {
+            "name": "TAG_ANGLE",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_ANGLE",
+            "domain": null
+          },
+          {
+            "name": "TAG_JUST",
+            "type": "esriFieldTypeString",
+            "alias": "TAG_JUST",
+            "length": 2,
+            "domain": null
+          },
+          {
+            "name": "ID",
+            "type": "esriFieldTypeString",
+            "alias": "ID",
+            "length": 60,
+            "domain": null
+          },
+          {
+            "name": "DATE_STAMP",
+            "type": "esriFieldTypeDate",
+            "alias": "DATE_STAMP",
+            "length": 8,
+            "domain": null
+          },
+          {
+            "name": "PROVINCE",
+            "type": "esriFieldTypeString",
+            "alias": "PROVINCE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MAJ_REGION",
+            "type": "esriFieldTypeString",
+            "alias": "MAJ_REGION",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MAJ_CODE",
+            "type": "esriFieldTypeString",
+            "alias": "MAJ_CODE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MIN_REGION",
+            "type": "esriFieldTypeString",
+            "alias": "MIN_REGION",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MIN_CODE",
+            "type": "esriFieldTypeString",
+            "alias": "MIN_CODE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "PARCEL_NO",
+            "type": "esriFieldTypeInteger",
+            "alias": "PARCEL_NO",
+            "domain": null
+          },
+          {
+            "name": "PORTION",
+            "type": "esriFieldTypeInteger",
+            "alias": "PORTION",
+            "domain": null
+          },
+          {
+            "name": "SS_NAME",
+            "type": "esriFieldTypeString",
+            "alias": "SS_NAME",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "DSG_NO",
+            "type": "esriFieldTypeString",
+            "alias": "DSG_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SR_NO",
+            "type": "esriFieldTypeString",
+            "alias": "SR_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SS_NO",
+            "type": "esriFieldTypeString",
+            "alias": "SS_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "Shape",
+            "type": "esriFieldTypeGeometry",
+            "alias": "Shape",
+            "domain": null
+          },
+          {
+            "name": "Shape.STArea()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STArea()",
+            "domain": null
+          },
+          {
+            "name": "Shape.STLength()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STLength()",
+            "domain": null
+          }
+        ],
+        "geometryField": {
+          "name": "Shape",
+          "type": "esriFieldTypeGeometry",
+          "alias": "Shape"
+        },
+        "indexes": [
+          {
+            "name": "R23_pk",
+            "fields": "OBJECTID",
+            "isAscending": true,
+            "isUnique": true,
+            "description": ""
+          },
+          {
+            "name": "S12_idx",
+            "fields": "Shape",
+            "isAscending": true,
+            "isUnique": true,
+            "description": ""
+          }
+        ],
+        "subtypes": [],
+        "relationships": [],
+        "canModifyLayer": true,
+        "canScaleSymbols": false,
+        "hasLabels": false,
+        "capabilities": "Map,Query,Data",
+        "maxRecordCount": 2000,
+        "maxSelectionCount": 2000,
+        "supportsStatistics": true,
+        "supportsExceedsLimitStatistics": true,
+        "supportsAdvancedQueries": true,
+        "hasM": true,
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "isDataVersioned": false,
+        "ownershipBasedAccessControlForFeatures": {
+          "allowOthersToQuery": true
+        },
+        "useStandardizedQueries": true,
+        "supportedSpatialRelationships": [
+          "esriSpatialRelIntersects",
+          "esriSpatialRelContains",
+          "esriSpatialRelCrosses",
+          "esriSpatialRelEnvelopeIntersects",
+          "esriSpatialRelIndexIntersects",
+          "esriSpatialRelOverlaps",
+          "esriSpatialRelTouches",
+          "esriSpatialRelWithin",
+          "esriSpatialRelRelation"
+        ],
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": true,
+          "supportsCurrentUserQueries": true
+        },
+        "supportsDatumTransformation": true,
+        "advancedQueryAnalyticCapabilities": {
+          "supportsLinearRegression": true,
+          "supportsAsync": false,
+          "supportsPercentileAnalytic": true
+        },
+        "dateFieldsTimeReference": null,
+        "preferredTimeReference": null,
+        "datesInUnknownTimezone": false,
+        "hasGeometryProperties": true,
+        "geometryProperties": {
+          "shapeAreaFieldName": "Shape.STArea()",
+          "shapeLengthFieldName": "Shape.STLength()",
+          "units": "esriDecimalDegrees",
+          "mapUnits": {
+            "uwkid": 9102
+          }
+        },
+        "hasMetadata": true,
+        "isDataArchived": false,
+        "archivingInfo": {
+          "supportsQueryWithHistoricMoment": false,
+          "startArchivingMoment": -1
+        },
+        "supportsCoordinatesQuantization": true,
+        "supportsDynamicLegends": true,
+        "serviceItemId": "c509041106f5489a844908d93e957743"
+      }
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/48?f=pjson",
+      "httpStatus": 200,
+      "elapsedMs": 1047,
+      "payload": {
+        "currentVersion": 11.5,
+        "cimVersion": "3.5.0",
+        "id": 48,
+        "name": "Farm Portion",
+        "type": "Feature Layer",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "sourceSpatialReference": {
+          "wkid": 4148,
+          "latestWkid": 4148,
+          "vcsWkid": 115700,
+          "latestVcsWkid": 115700,
+          "xyTolerance": 8.983152841195215e-9,
+          "zTolerance": 0.001,
+          "mTolerance": 0.001,
+          "falseX": -400,
+          "falseY": -400,
+          "xyUnits": 999999999.9999999,
+          "falseZ": 0,
+          "zUnits": 1,
+          "falseM": -100000,
+          "mUnits": 10000
+        },
+        "spatialReference": {
+          "wkid": 4148,
+          "latestWkid": 4148,
+          "xyTolerance": 8.983152841195215e-9,
+          "zTolerance": 0.001,
+          "mTolerance": 0.001,
+          "falseX": -400,
+          "falseY": -400,
+          "xyUnits": 999999999.9999999,
+          "falseZ": -100000,
+          "zUnits": 10000,
+          "falseM": -100000,
+          "mUnits": 10000
+        },
+        "sourceHeightModelInfo": {
+          "heightModel": "ellipsoidal",
+          "vertCRS": "WGS_1984",
+          "heightUnit": "meter"
+        },
+        "copyrightText": "",
+        "parentLayer": {
+          "id": 45,
+          "name": "North West"
+        },
+        "subLayers": [],
+        "minScale": 0,
+        "maxScale": 0,
+        "referenceScale": 0,
+        "drawingInfo": {
+          "renderer": {
+            "type": "simple",
+            "symbol": {
+              "type": "esriSFS",
+              "style": "esriSFSSolid",
+              "color": [
+                237,
+                199,
+                252,
+                0
+              ],
+              "outline": {
+                "type": "esriSLS",
+                "style": "esriSLSSolid",
+                "color": [
+                  230,
+                  0,
+                  169,
+                  255
+                ],
+                "width": 1
+              }
+            }
+          },
+          "scaleSymbols": true,
+          "transparency": 0,
+          "labelingInfo": null
+        },
+        "defaultVisibility": true,
+        "extent": {
+          "xmin": 22.629003492000038,
+          "ymin": -28.11308920999994,
+          "xmax": 28.29834501700003,
+          "ymax": -24.636722806999956,
+          "spatialReference": {
+            "wkid": 4148,
+            "latestWkid": 4148,
+            "xyTolerance": 8.983152841195215e-9,
+            "zTolerance": 0.001,
+            "mTolerance": 0.001,
+            "falseX": -400,
+            "falseY": -400,
+            "xyUnits": 999999999.9999999,
+            "falseZ": -100000,
+            "zUnits": 10000,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        },
+        "hasAttachments": false,
+        "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+        "displayField": "SS_NAME",
+        "typeIdField": null,
+        "subtypeFieldName": null,
+        "subtypeField": null,
+        "defaultSubtypeCode": null,
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "GID",
+            "type": "esriFieldTypeInteger",
+            "alias": "GID",
+            "domain": null
+          },
+          {
+            "name": "PRCL_KEY",
+            "type": "esriFieldTypeString",
+            "alias": "PRCL_KEY",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "PRCL_TYPE",
+            "type": "esriFieldTypeString",
+            "alias": "PRCL_TYPE",
+            "length": 10,
+            "domain": null
+          },
+          {
+            "name": "LSTATUS",
+            "type": "esriFieldTypeString",
+            "alias": "LSTATUS",
+            "length": 1,
+            "domain": null
+          },
+          {
+            "name": "WSTATUS",
+            "type": "esriFieldTypeString",
+            "alias": "WSTATUS",
+            "length": 1,
+            "domain": null
+          },
+          {
+            "name": "GEOM_AREA",
+            "type": "esriFieldTypeDouble",
+            "alias": "GEOM_AREA",
+            "domain": null
+          },
+          {
+            "name": "COMMENTS",
+            "type": "esriFieldTypeString",
+            "alias": "COMMENTS",
+            "length": 120,
+            "domain": null
+          },
+          {
+            "name": "TAG_X",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_X",
+            "domain": null
+          },
+          {
+            "name": "TAG_Y",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_Y",
+            "domain": null
+          },
+          {
+            "name": "TAG_VALUE",
+            "type": "esriFieldTypeString",
+            "alias": "TAG_VALUE",
+            "length": 40,
+            "domain": null
+          },
+          {
+            "name": "TAG_SIZE",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_SIZE",
+            "domain": null
+          },
+          {
+            "name": "TAG_ANGLE",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_ANGLE",
+            "domain": null
+          },
+          {
+            "name": "TAG_JUST",
+            "type": "esriFieldTypeString",
+            "alias": "TAG_JUST",
+            "length": 2,
+            "domain": null
+          },
+          {
+            "name": "ID",
+            "type": "esriFieldTypeString",
+            "alias": "ID",
+            "length": 60,
+            "domain": null
+          },
+          {
+            "name": "DATE_STAMP",
+            "type": "esriFieldTypeDate",
+            "alias": "DATE_STAMP",
+            "length": 8,
+            "domain": null
+          },
+          {
+            "name": "PROVINCE",
+            "type": "esriFieldTypeString",
+            "alias": "PROVINCE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MAJ_REGION",
+            "type": "esriFieldTypeString",
+            "alias": "MAJ_REGION",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MAJ_CODE",
+            "type": "esriFieldTypeString",
+            "alias": "MAJ_CODE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "PARCEL_NO",
+            "type": "esriFieldTypeInteger",
+            "alias": "PARCEL_NO",
+            "domain": null
+          },
+          {
+            "name": "PORTION",
+            "type": "esriFieldTypeInteger",
+            "alias": "PORTION",
+            "domain": null
+          },
+          {
+            "name": "SS_NAME",
+            "type": "esriFieldTypeString",
+            "alias": "SS_NAME",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "DSG_NO",
+            "type": "esriFieldTypeString",
+            "alias": "DSG_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SR_NO",
+            "type": "esriFieldTypeString",
+            "alias": "SR_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SS_NO",
+            "type": "esriFieldTypeString",
+            "alias": "SS_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "Shape",
+            "type": "esriFieldTypeGeometry",
+            "alias": "Shape",
+            "domain": null
+          },
+          {
+            "name": "Shape.STArea()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STArea()",
+            "domain": null
+          },
+          {
+            "name": "Shape.STLength()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STLength()",
+            "domain": null
+          }
+        ],
+        "geometryField": {
+          "name": "Shape",
+          "type": "esriFieldTypeGeometry",
+          "alias": "Shape"
+        },
+        "indexes": [
+          {
+            "name": "R24_pk",
+            "fields": "OBJECTID",
+            "isAscending": true,
+            "isUnique": true,
+            "description": ""
+          },
+          {
+            "name": "S13_idx",
+            "fields": "Shape",
+            "isAscending": true,
+            "isUnique": true,
+            "description": ""
+          }
+        ],
+        "subtypes": [],
+        "relationships": [],
+        "canModifyLayer": true,
+        "canScaleSymbols": false,
+        "hasLabels": false,
+        "capabilities": "Map,Query,Data",
+        "maxRecordCount": 2000,
+        "maxSelectionCount": 2000,
+        "supportsStatistics": true,
+        "supportsExceedsLimitStatistics": true,
+        "supportsAdvancedQueries": true,
+        "hasM": true,
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "isDataVersioned": false,
+        "ownershipBasedAccessControlForFeatures": {
+          "allowOthersToQuery": true
+        },
+        "useStandardizedQueries": true,
+        "supportedSpatialRelationships": [
+          "esriSpatialRelIntersects",
+          "esriSpatialRelContains",
+          "esriSpatialRelCrosses",
+          "esriSpatialRelEnvelopeIntersects",
+          "esriSpatialRelIndexIntersects",
+          "esriSpatialRelOverlaps",
+          "esriSpatialRelTouches",
+          "esriSpatialRelWithin",
+          "esriSpatialRelRelation"
+        ],
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": true,
+          "supportsCurrentUserQueries": true
+        },
+        "supportsDatumTransformation": true,
+        "advancedQueryAnalyticCapabilities": {
+          "supportsLinearRegression": true,
+          "supportsAsync": false,
+          "supportsPercentileAnalytic": true
+        },
+        "dateFieldsTimeReference": null,
+        "preferredTimeReference": null,
+        "datesInUnknownTimezone": false,
+        "hasGeometryProperties": true,
+        "geometryProperties": {
+          "shapeAreaFieldName": "Shape.STArea()",
+          "shapeLengthFieldName": "Shape.STLength()",
+          "units": "esriDecimalDegrees",
+          "mapUnits": {
+            "uwkid": 9102
+          }
+        },
+        "hasMetadata": true,
+        "isDataArchived": false,
+        "archivingInfo": {
+          "supportsQueryWithHistoricMoment": false,
+          "startArchivingMoment": -1
+        },
+        "supportsCoordinatesQuantization": true,
+        "supportsDynamicLegends": true,
+        "serviceItemId": "c509041106f5489a844908d93e957743"
+      }
+    }
+  ]
+}

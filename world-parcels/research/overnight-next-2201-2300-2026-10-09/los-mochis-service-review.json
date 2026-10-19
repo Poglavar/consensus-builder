@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-1726-los-mochis.json",
+  "cityCode": 1726,
+  "queueRank": 2236,
+  "name": "Los Mochis",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "pointLatLon": [25.7883906983734, -108.9973637302],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://ices.gob.mx/","httpStatus":200,"outcome":"Official Instituto Catastral del Estado de Sinaloa site identifies the state cadastral custodian and links its Territorial Viewer."},
+    {"method":"SEARCH","url":"https://vte.sinaloa.gob.mx","httpStatus":200,"outcome":"Official state Territorial Viewer loaded. Current JavaScript configuration identified API https://vte.sinaloa.gob.mx/api and GeoServer host geoservervte.sinaloa.gob.mx."},
+    {"method":"GET","url":"https://geoservervte.sinaloa.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities","httpStatus":200,"outcome":"Anonymous WFS capabilities returned public feature types, including ices:PredioAhome, with native default CRS EPSG:6367 and WGS84 coverage envelope."},
+    {"method":"GET","url":"https://geoservervte.sinaloa.gob.mx/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=ices:PredioAhome","httpStatus":200,"outcome":"Schema returned Predio, Edificio, Unidad, Clave, Clave Catastral, Folio Real, CURT, and other fields plus geom. Only Predio and geom were requested; unsafe fields were not requested."},
+    {"method":"GET","url":"https://geoservervte.sinaloa.gob.mx/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ices:PredioAhome&outputFormat=application/json&count=3&propertyName=Predio,geom&bbox=-109.002,25.784,-108.993,25.793,EPSG:4326","httpStatus":200,"outcome":"Bounded anonymous response returned three polygon features near the immutable WUP point. Native Predio values were 00007, 00031, and 00018; geometry was returned in service-native EPSG:6367 despite the request envelope."},
+    {"method":"GET","url":"https://vte.sinaloa.gob.mx/api/catastro/predio/coords/-108.9973637302/25.7883906983734","httpStatus":401,"outcome":"Viewer coordinate lookup is bearer-authenticated; no login or credential attempt was made. This is a login wall, not absence evidence."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://vte.sinaloa.gob.mx; bundled configuration names GeoServer host geoservervte.sinaloa.gob.mx and API https://vte.sinaloa.gob.mx/api.",
+    "geometryCrs": "WFS PredioAhome declares native EPSG:6367; retained sample preserves unchanged coordinates and declares urn:ogc:def:crs:EPSG::6367.",
+    "nativeIdentity": "Predio is the exposed native parcel identity field and is the sole retained GeoJSON identity. GeoServer feature FID was observed but not retained.",
+    "sourceFieldMapping": {"Predio":"canonical native parcel identity", "geom":"polygon geometry", "Clave Catastral":"observed but not requested or retained", "Folio Real":"observed but not requested or retained"},
+    "compositeKeyProvenance": "No composite key used; Predio alone was exposed by the official PredioAhome layer.",
+    "boundedAnonymousResponse": {"requestScope":"Envelope -109.002,25.784,-108.993,25.793 around the immutable WUP point; count=3; propertyName=Predio,geom", "featureCount":3, "nativeIdentities":["00007","00031","00018"]}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID (Predio)", "polygon geometry", "source service URL", "native CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "Folio Real", "Clave Catastral"],
+  "sampleGeoJSON": "los-mochis-sample.geojson",
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness":"held", "reason":"A real first-party local/state cadastral WFS and safe anonymous ID-plus-geometry response were evidenced, but runtime/admission remains held pending independent serial review."},
+  "scopeLimits": ["The exact WUP point was preserved and not shifted.", "The bounded envelope returned three nearby polygons, but this does not establish citywide completeness or current cadastral coverage.", "The viewer's coordinate endpoint required bearer authentication; no credentials were used.", "Only three full parcel polygons are retained, each with exactly one canonical native identity in properties.", "Native EPSG:6367 geometry is retained unchanged; no coordinate transformation was applied.", "National/state agency pages and the official state viewer are custodian evidence; the GeoServer PredioAhome layer is the evidenced public parcel service.", "This packet is not source integration or admission; runtimeReadiness remains held."],
+  "uncertainty": "The public WFS is first-party and returned parcel polygons near the city point, but the relationship between the published Predio field and the authenticated viewer's operational cadastral records, update cadence, and full city extent was not independently verified. Additional native attributes were intentionally excluded."
+}

@@ -1,0 +1,117 @@
+{
+  "name": "Liverpool",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "rank": 418,
+  "point": [
+    53.420357967565,
+    -2.92868261834036
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Liverpool HM Land Registry INSPIRE index polygons local authority open download full geometry",
+        "scope": "Verify city-specific official registered-parcel data and whether full polygons are publicly downloadable.",
+        "result": "HMLR’s current INSPIRE Index Polygons dataset lists Liverpool City Council as a local-authority download. The official dataset is indicative freehold registered-property footprint data and carries INSPIRE identifiers, not title extent/legal evidence. The WMS layer is map-only and GetFeatureInfo returns LayerNotQueryable. The direct download route redirected to a Cloudflare challenge; no challenge bypass was attempted and no geometry was extracted.",
+        "actualResultUrls": [
+          "https://use-land-property-data.service.gov.uk/datasets/inspire",
+          "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+          "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      },
+      {
+        "language": "English",
+        "query": "Liverpool City Council cadastral parcel map open data INSPIRE HMLR polygons",
+        "scope": "Cross-check official local-authority availability and queryable geometry routes.",
+        "result": "Official HMLR metadata identifies Liverpool in the monthly local-authority file distribution. Public WMS advertises INSPIRE parcel layer but marks it non-queryable, so it yields rendered maps rather than complete features.",
+        "actualResultUrls": [
+          "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+          "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "HM Land Registry INSPIRE index polygons",
+        "operator": "HM Land Registry",
+        "homeUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+        "observation": "Official current dataset supports local-authority downloads including Liverpool. Data is indicative registered freehold property footprints; it does not identify owners or establish legal title extent."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "Official WMS capabilities advertise inspire:CP.CadastralParcel; layer queryable=\"0\"."
+      },
+      {
+        "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=inspire%3ACP.CadastralParcel&QUERY_LAYERS=inspire%3ACP.CadastralParcel&CRS=CRS%3A84&BBOX=-2.9291826%2C53.4198579%2C-2.9281826%2C53.4208579&WIDTH=101&HEIGHT=101&I=50&J=50&INFO_FORMAT=application%2Fvnd.ogc.gml&FEATURE_COUNT=3",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/vnd.ogc.se_xml",
+        "observation": "Service exception: LayerNotQueryable at Liverpool WUP location; no feature/polygon returned."
+      },
+      {
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "method": "GET",
+        "httpStatus": 302,
+        "contentType": "text/html",
+        "observation": "Redirects to Cloudflare challenge in this client; no attempt to bypass challenge or retrieve restricted tokens."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "GB-HMLR-INSPIRE-LIVERPOOL",
+    "name": "HM Land Registry INSPIRE Index Polygons",
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+    "operator": "HM Land Registry",
+    "serviceType": "Local-authority GML download; WMS map service available. Download client was redirected to Cloudflare challenge; WMS identify is disabled.",
+    "layer": "Liverpool City Council local-authority partition; WMS inspire:CP.CadastralParcel",
+    "geometryType": "Polygon dataset by official description; no geometry obtained for this city in this run.",
+    "outputCrs": "WMS advertises CRS:84 and EPSG:27700; downloaded geometry not checked.",
+    "nativeIdField": "INSPIRE identifier (dataset metadata)",
+    "nativeIdEvidence": "HMLR documentation states INSPIRE IDs identify polygons; no Liverpool feature response obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official HMLR dataset offers local-authority partitions, including Liverpool; it covers freehold registered-property footprints, not all land or legal title extents.",
+    "verifiedOpenScope": "Dataset city availability confirmed. No full Liverpool feature geometry retrieved; official WMS layer is non-queryable.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_city_partition_full_geometry_unavailable",
+  "technicalBlocker": "The official Liverpool partition is offered through HMLR’s download route, which redirected this client to a Cloudflare challenge; the separate public WMS disables GetFeatureInfo. No bypass attempted.",
+  "remainingUncertainty": "Whether a standard unchallenged browser session can download the Liverpool partition and whether files remain directly accessible outside the challenged route.",
+  "nextStep": "Use the ordinary official HMLR download flow if it is accessible without bypassing the challenge; then validate city-specific full polygons and the dataset’s indicative/freehold scope before runtime consideration.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:35:00Z",
+  "wupCityCode": 2236,
+  "cityId": "wup2025:2236",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    53.420357967565,
+    -2.92868261834036
+  ],
+  "queueRank": 418,
+  "population2025": 1227470,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "City-specific dataset is confirmed but no polygon was retrieved; WMS is non-queryable and download route challenged."
+  },
+  "registryBasis": "Official HMLR dataset lists Liverpool local-authority partition of INSPIRE registered freehold-property footprint polygons."
+}

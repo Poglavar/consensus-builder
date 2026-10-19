@@ -1,0 +1,542 @@
+// proposals/storage.js — extracted from proposals.js (behavior-preserving relocation).
+
+function resolveProposalResourceUrl(url) {
+    const value = typeof url === 'string' ? url.trim() : '';
+    if (!value) return '';
+    if (/^(https?:|data:|blob:)/i.test(value)) return value;
+    if (value.startsWith('ipfs://')) {
+        const ipfsPath = value.slice('ipfs://'.length).replace(/^ipfs\//i, '');
+        return ipfsPath ? `https://ipfs.io/ipfs/${ipfsPath}` : '';
+    }
+    if (value.startsWith('walrus://')) {
+        const blobId = value.slice('walrus://'.length).replace(/^\/+/, '');
+        return blobId ? `${walrusAggregatorBase()}/v1/blobs/${blobId}` : '';
+    }
+    if (typeof window === 'undefined' || !window.location) return value;
+    try {
+        if (value.startsWith('//')) {
+            return `${window.location.protocol}${value}`;
+        }
+        if (value.startsWith('/')) {
+            return new URL(value, window.location.origin).toString();
+        }
+        return new URL(value, window.location.href).toString();
+    } catch (_) {
+        return value;
+    }
+}
+
+// Imported providers' parcel-id spaces. Executable providers declare their prefix in city config,
+// so adding or changing a source does not require changing proposal storage. Croatia's cities
+// share one national dataset; Buenos Aires also accepts its original bare SMP identifiers.
+const CITY_PARCEL_ID_PREFIXES = {
+    zagreb: 'HR-',
+    split: 'HR-',
+    sibenik: 'HR-',
+    belgrade: 'SR-',
+    ljubljana: 'SI-',
+    buenos_aires: 'AR-',
+    colorado: 'US-CO-',
+    new_york: 'US-NY-'
+};
+
+function isInCity(parcelId, cityId) {
+    if (!parcelId) return false;
+    const id = parcelId.toString().trim();
+    if (!id) return false;
+    const upper = id.toUpperCase();
+    const city = (cityId || '').toString().toLowerCase();
+
+    if (city === 'buenos_aires') {
+        // Buenos Aires ids predate the prefixed form and still occur bare.
+        const baPattern = /^\d{3}-\d{3}-[0-9A-Z]+$/;
+        return upper.startsWith('AR-') || baPattern.test(upper);
+    }
+
+    const configuredPrefix = typeof CityConfigManager !== 'undefined'
+        ? CityConfigManager.getCityConfig?.(city)?.parcels?.idPrefix : null;
+    const prefix = configuredPrefix || CITY_PARCEL_ID_PREFIXES[city];
+    if (prefix) return upper.startsWith(prefix.toString().toUpperCase());
+
+    // Unknown city: refuse the parcel rather than silently letting cross-city
+    // ids through. Reaching this point means an unconfigured city or missing source metadata.
+    return false;
+}
+
+// A minted proposal found on chain joins this city's store only when its parcels are this city's
+// (projections.md §10 M8): one contract serves every city and the chain record names no city, so the
+// syncs used to file every city's minted proposals into whichever city ran them. A record without
+// parcels cannot be placed, and stays with the city it was published in.
+function chainProposalBelongsHere(parcelIds) {
+    const manager = (typeof window !== 'undefined' && window.CityConfigManager) || null;
+    const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
+    const ids = (Array.isArray(parcelIds) ? parcelIds : []).map(id => String(id || '').trim()).filter(Boolean);
+    return !!city && ids.length > 0 && ids.every(id => isInCity(id, city));
+}
+
+function normalizeLensEntries(entries) {
+    const sanitized = [];
+    if (!Array.isArray(entries)) return sanitized;
+    const seen = new Set();
+    entries.forEach(item => {
+        const address = typeof item === 'string'
+            ? item
+            : (item && (item.address || item.key || item.addr || item.value || item.wallet));
+        const name = item && typeof item === 'object'
+            ? (item.name || item.label || item.title || '')
+            : '';
+        const normalizedAddress = address ? String(address).trim() : '';
+        const normalizedName = name ? String(name).trim() : '';
+        // Lens keys can be case-sensitive (for example Solana public keys).
+        const key = normalizedAddress;
+        if (!normalizedAddress && !normalizedName) {
+            return;
+        }
+        if (normalizedAddress) {
+            if (seen.has(key)) {
+                return;
+            }
+            seen.add(key);
+        }
+        sanitized.push({ address: normalizedAddress, name: normalizedName });
+    });
+    return sanitized;
+}
+
+function getProposalLensEntries(proposal, options = {}) {
+    const preferFallback = options.fallbackToGlobal === true;
+    if (!proposal || typeof proposal !== 'object') return [];
+    const candidates = [
+        proposal.lens,
+        proposal.lensEntries,
+        proposal.lensAddresses,
+        proposal.trustedLens
+    ];
+    for (const candidate of candidates) {
+        const normalized = normalizeLensEntries(candidate);
+        if (normalized.length) return normalized;
+    }
+    if (preferFallback && typeof getLensEntries === 'function') {
+        return normalizeLensEntries(getLensEntries());
+    }
+    return [];
+}
+
+function getOwnerSlotsForParcel(parcelId) {
+    const tProposalUI = getProposalI18nHelper();
+    if (typeof getParcelOwnerSlots === 'function') {
+        try {
+            const slots = getParcelOwnerSlots(parcelId);
+            if (Array.isArray(slots) && slots.length > 0) {
+                return slots;
+            }
+        } catch (error) {
+            console.warn('getOwnerSlotsForParcel: failed to read slots from parcels module', error);
+        }
+    }
+    const normalizedParcelId = parcelId ? parcelId.toString() : 'parcel';
+    return [{
+        key: `parcel:${normalizedParcelId}:owner`,
+        displayName: tProposalUI('panel.parcel.owner.single', 'Single owner'),
+        shareText: '1',
+        shareDetail: '',
+        type: 'unknown',
+        agentId: null,
+        placeholder: true
+    }];
+}
+
+function getProposalI18nHelper() {
+    const api = (typeof window !== 'undefined') ? window.i18n : null;
+    const format = (template, values = {}) => {
+        if (!template) return '';
+        return String(template).replace(/\{\{\s*(\w+)\s*\}\}|\{(\w+)\}/g, (match, k1, k2) => {
+            const k = k1 || k2;
+            return Object.prototype.hasOwnProperty.call(values, k) ? values[k] : match;
+        });
+    };
+    return (key, fallback, params = {}) => {
+        if (api && typeof api.t === 'function') {
+            const translated = api.t(key, params);
+            if (translated && translated !== key) {
+                return translated;
+            }
+        }
+        return format(fallback, params);
+    };
+}
+
+// The current profile as GuestPolicy reads it: an unknown or guest agent is a guest.
+function currentProfileIsGuest() {
+    const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
+    return agent ? agent.isGuest === true : true;
+}
+
+// The name gate for acts that leave the device (GuestPolicy 'name': publish, share, mint). Returns
+// null when allowed, or the explanation (truthy) when the act is BLOCKED: the guest is then shown
+// the profile dialog and the explanation. Acts that stay
+// on the device have no gate at all; ownership acts go through requireOwnerOfferProof (create.js).
+function guestPolicyBlocks(action) {
+    const policy = window.GuestPolicy;
+    if (!policy) throw new Error('guest-policy.js is not loaded');
+    if (policy.requires(action) !== 'name') {
+        throw new Error(`guestPolicyBlocks handles name-gated acts only, not "${action}"`);
+    }
+    const verdict = policy.check(action, { isGuest: currentProfileIsGuest() });
+    if (verdict.allowed) return null;
+    const t = getProposalI18nHelper();
+    const messages = {
+        publish: ['ephemeral.messages.name_to_publish', 'Choose a profile name to publish: published proposals carry their author. Everything kept on this device works without one.'],
+        share: ['ephemeral.messages.name_to_share', 'Choose a profile name to share: a share link carries its author. Everything kept on this device works without one.'],
+        mint: ['ephemeral.messages.name_to_mint', 'Choose a profile name to put this proposal on-chain: the record carries its author.'],
+        joinList: ['ephemeral.messages.name_to_join_list', 'Choose a profile name to join a public list.']
+    };
+    const [key, fallback] = messages[action];
+    console.info(`[${new Date().toISOString()}] [GuestPolicy] ${action} needs a profile name`);
+    if (typeof showWelcomeModal === 'function') showWelcomeModal();
+    const message = t(key, fallback);
+    if (typeof showEphemeralMessage === 'function') showEphemeralMessage(message, 6000);
+    return message;
+}
+
+// The author a record carries when it leaves the device (publish, share link, mint): the current
+// profile's name for this profile's own never-published record (GuestPolicy.outgoingAuthor). Such a
+// record is a draft that never left the device, so the local copy is updated too (the list then
+// shows the name it was published under). Published or minted records are never touched.
+// -> the same record object, its author restamped when it is this profile's draft.
+function stampCurrentAuthor(proposal) {
+    const policy = window.GuestPolicy;
+    if (!policy) throw new Error('guest-policy.js is not loaded');
+    if (!proposal || typeof proposal !== 'object') return proposal;
+    const agent = (typeof getCurrentUserAgent === 'function') ? getCurrentUserAgent() : null;
+    const immutable = typeof isProposalImmutable === 'function' ? isProposalImmutable(proposal) : !!proposal.serverProposalId;
+    const verdict = policy.outgoingAuthor(proposal, agent, { immutable });
+    if (!verdict.restamped) return proposal;
+    console.info(`[${new Date().toISOString()}] [GuestPolicy] record ${proposal.proposalId || '?'} leaves the device as "${verdict.author}" (was "${proposal.author || ''}")`);
+    const stored = (typeof proposalStorage !== 'undefined' && proposal.proposalId && typeof proposalStorage.getProposal === 'function')
+        ? proposalStorage.getProposal(proposal.proposalId) : null;
+    if (stored && String(stored.authorAgentId || '') === String(proposal.authorAgentId || '')) {
+        proposalStorage.setProposalAuthor(stored.proposalId, verdict.author);
+    }
+    proposal.author = verdict.author;
+    return proposal;
+}
+
+function hashStringDeterministic(str, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed;
+    let h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0; i < str.length; i++) {
+        const ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    const combined = 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    return combined.toString(36);
+}
+
+function getProposalKey(proposal) {
+    if (!proposal) return null;
+    if (proposal.proposalId !== undefined && proposal.proposalId !== null) {
+        return String(proposal.proposalId);
+    }
+    if (proposal.proposalId) {
+        return String(proposal.proposalId);
+    }
+    return null;
+}
+
+function getProposalByIdOrHash(idOrHash) {
+    if (typeof proposalStorage === 'undefined') return null;
+    const resolved = resolveProposalIdKey(idOrHash);
+    return resolved ? proposalStorage.getProposal(resolved) : null;
+}
+
+function getFirstSelectableParcel(proposal) {
+    const anchors = Array.isArray(proposal?.cadastreParcelIds)
+        ? proposal.cadastreParcelIds.map(String)
+        : [];
+    if (!anchors.length) return null;
+    const layer = window.ParcelPresenter?.resolveLiveLayers?.(anchors, { includeCorridors: true })?.[0] || null;
+    return layer ? window.ParcelPresenter?.getIdForLayer?.(layer) : anchors[0];
+}
+
+function refreshProposalData() {
+    // This function updates proposal-related data without touching the visual layers
+    // It's called during game turns when there are active highlights to avoid flicker
+
+    // Update proposal counts and status if needed
+    if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+
+    // Only refresh proposal info if the modal is currently open
+    if (window.currentlyHighlightedProposal && window.selectedParcelInProposal) {
+        // Check if the proposal details panel is actually visible
+        const proposalPanel = document.getElementById('parcel-info-panel');
+        const isProposalModalOpen = proposalPanel &&
+            proposalPanel.classList.contains('visible') &&
+            proposalPanel.querySelector('h3')?.textContent === 'Proposal Details';
+
+        if (isProposalModalOpen) {
+            const updatedProposal = proposalStorage.getProposal(window.currentlyHighlightedProposal.proposalId);
+            if (updatedProposal) {
+                // Update the proposal info only if modal is open
+                showProposalInfo(updatedProposal, window.selectedParcelInProposal);
+            }
+        }
+    }
+}
+
+async function loadAddressesJson() {
+    if (addressesJsonCache) return addressesJsonCache;
+    if (addressesJsonPromise) return addressesJsonPromise;
+    addressesJsonPromise = (async () => {
+        try {
+            const resp = await fetch('/contracts/addresses.json');
+            if (resp && resp.ok) {
+                const data = await resp.json();
+                addressesJsonCache = data || {};
+                return addressesJsonCache;
+            }
+        } catch (error) {
+            console.warn('Failed to load addresses.json', error);
+        }
+        addressesJsonCache = {};
+        return addressesJsonCache;
+    })();
+    return addressesJsonPromise;
+}
+
+function deleteProposal(proposalId) {
+    const t = getProposalI18nHelper();
+    try {
+        const proposal = proposalStorage.getProposal(proposalId);
+        if (!proposal) {
+            updateStatus(t('status.messages.error_proposal_not_found', 'Error: Proposal not found'));
+            return;
+        }
+
+        const goalKey = resolveProposalGoalKey(proposal, null);
+        const managedByProposalManager = (
+            goalKey === 'road-track'
+            || goalKey === 'buildings'
+            || goalKey === 'single'
+            || goalKey === 'row'
+            || goalKey === 'parcelBased'
+            || goalKey === 'park'
+            || goalKey === 'square'
+            || goalKey === 'lake'
+            || goalKey === 'reparcellization'
+            || goalKey === 'decide-later'
+            || !!proposal.roadProposal
+            || !!proposal.buildingProposal
+            || !!proposal.structureProposal
+            || !!proposal.reparcellization
+            || !!proposal.decideLaterProposal
+        );
+        if (managedByProposalManager && typeof ProposalManager !== 'undefined' && ProposalManager.deleteProposal) {
+            ProposalManager.deleteProposal(proposalId);
+            return;
+        }
+
+        // Remove the proposal from storage
+        proposalStorage.removeProposal(proposalId);
+
+        // Clear any proposal highlights if this was the currently highlighted proposal
+        if (window.currentlyHighlightedProposal && window.currentlyHighlightedProposal.proposalId === proposalId) {
+            clearProposalHighlights();
+        }
+
+        // Update the proposal layer to remove visual representation
+        updateProposalLayer();
+
+        // Update the proposal list if it's open
+        updateProposalList();
+
+        // Update the show proposals button count
+        updateShowProposalsButton();
+
+        // Hide proposal info panel if it's showing the deleted proposal
+        const parcelInfoPanel = document.getElementById('parcel-info-panel');
+        if (parcelInfoPanel && parcelInfoPanel.classList.contains('visible')) {
+            const panelTitle = document.querySelector('#parcel-info-panel h3');
+            if (panelTitle && panelTitle.textContent === 'Proposal Details') {
+                hideParcelInfoPanel();
+            }
+        }
+
+        updateStatus(t('status.messages.proposal_deleted', 'Proposal "{{title}}" deleted', { title: proposal.title }));
+
+    } catch (error) {
+        console.error('Error deleting proposal:', error);
+        updateStatus(t('status.messages.error_deleting_proposal_please_try_again', 'Error deleting proposal. Please try again.'));
+    }
+}
+
+async function clearLocalProposalData() {
+    try {
+        // Get count of proposals before clearing
+        const proposalCount = proposalStorage.getAllProposals().length;
+
+        // Records, generated parcels, restored cadastral ground, ownership and presentation are one
+        // authoritative change. A raw storage clear strands live output with no record that can ever
+        // unapply it.
+        if (typeof ProposalManager === 'undefined' || typeof ProposalManager.clearAllProposals !== 'function') {
+            throw new Error('Proposal mutation manager is unavailable.');
+        }
+        const cleared = await ProposalManager.clearAllProposals();
+        if (!cleared || cleared.ok !== true) {
+            throw new Error('The proposal set could not be removed safely.');
+        }
+
+        // Clear any proposal highlights
+        clearProposalHighlights();
+
+        // Hide and clear the proposal layer
+        if (proposalLayer) {
+            map.removeLayer(proposalLayer);
+            proposalLayer = null;
+        }
+
+        // Uncheck the show proposals checkbox
+        const showProposalsCheckbox = document.getElementById('showProposalsCheckbox');
+        if (showProposalsCheckbox) {
+            showProposalsCheckbox.checked = false;
+        }
+
+        // Hide any open proposal info panel
+        const parcelInfoPanel = document.getElementById('parcel-info-panel');
+        if (parcelInfoPanel && parcelInfoPanel.classList.contains('visible')) {
+            const panelTitle = document.querySelector('#parcel-info-panel h3');
+            if (panelTitle && panelTitle.textContent === 'Proposal Details') {
+                if (typeof hideParcelInfoPanel === 'function') {
+                    hideParcelInfoPanel();
+                } else {
+                    // Fallback manual hiding
+                    parcelInfoPanel.classList.remove('visible');
+                    ['info-content', 'propose-content', 'proposals-content'].forEach(id => {
+                        const content = document.getElementById(id);
+                        if (content) content.innerHTML = '';
+                    });
+                }
+            }
+        }
+
+        // Close proposal list modal if open
+        closeProposalList();
+
+        // Update status
+        updateStatus(`Cleared ${proposalCount} proposal${proposalCount !== 1 ? 's' : ''} from local storage`);
+
+        // Update the show proposals button count
+        updateShowProposalsButton();
+
+    } catch (error) {
+        console.error('Error clearing proposal data:', error);
+        const t = getProposalI18nHelper();
+        updateStatus(t('status.messages.error_clearing_proposal_data_please_try_again', 'Error clearing proposal data. Please try again.'));
+    }
+}
+
+function initialiseProposalStorage() {
+    proposalStorage.load();
+    // Update the button count after loading proposals
+    if (typeof updateShowProposalsButton === 'function') {
+        updateShowProposalsButton();
+    }
+    offerBlockedWorkRecovery();
+}
+
+// Work made in a read-only tab is parked rather than dropped (see proposals/data.js). Offer it back
+// once, here, where the user can see the map it belongs to. Asked rather than merged silently: by
+// the time you reload you have often redrawn the thing already, and a proposal reappearing on its
+// own is its own kind of surprise. Declining keeps the parked copy — only restoring clears it, so
+// saying "not now" can never be the thing that finally loses the work.
+async function offerBlockedWorkRecovery() {
+    try {
+        if (typeof proposalStorage.readRecovery !== 'function') return;
+        const parked = proposalStorage.readRecovery();
+        if (!parked) return;
+
+        const count = parked.proposals.length;
+        const when = parked.savedAt ? CbFormat.formatDateTime(parked.savedAt, { missing: 'earlier' }) : 'earlier';
+        const message = (typeof window.i18n?.t === 'function'
+            && window.i18n.t('proposals.recovery.offer') !== 'proposals.recovery.offer')
+            ? window.i18n.t('proposals.recovery.offer', { count, when })
+            : `${count} proposal${count !== 1 ? 's' : ''} you made ${when} could not be saved, because the app was`
+              + ` open in another tab at the time.\n\nRestore ${count !== 1 ? 'them' : 'it'} now?`;
+
+        const confirmFn = window.showStyledConfirm;
+        if (typeof confirmFn !== 'function') return;
+        const proceed = await confirmFn(message, { okText: 'Restore', cancelText: 'Not now' });
+        if (!proceed) return;
+
+        const restored = proposalStorage.restoreRecovery();
+        if (typeof updateShowProposalsButton === 'function') updateShowProposalsButton();
+        if (typeof updateStatus === 'function') {
+            updateStatus(`Restored ${restored} proposal${restored !== 1 ? 's' : ''} that could not be saved earlier`);
+        }
+        if (typeof refreshProposalsLayer === 'function') refreshProposalsLayer();
+    } catch (error) {
+        console.error('[proposalStorage] recovery offer failed', error);
+    }
+}
+
+function savePlanPayloadAsJson(payload) {
+    try {
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const ts = new Date().toISOString().replace(/[:.]/g, '-');
+        a.download = `consensus-plan-${ts}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        console.error('Failed to save plan JSON', e);
+        try {
+            const tShare = getShareI18nHelper();
+            const message = tShare('saveJsonError', 'Failed to save JSON.');
+            const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
+            if (typeof alertFn === 'function') {
+                alertFn(message);
+            }
+        } catch (_) {
+            const alertFn = (typeof window !== 'undefined' && typeof window.showStyledAlert === 'function') ? window.showStyledAlert : window.alert;
+            if (typeof alertFn === 'function') {
+                alertFn('Failed to save JSON.');
+            }
+        }
+    }
+}
+
+function getStoredApplyFailureInfo(proposalId) {
+    try {
+        if (typeof ProposalManager === 'undefined' || !ProposalManager || !proposalId) return null;
+        if (typeof ProposalManager.getLastApplyFailureInfo === 'function') {
+            const info = ProposalManager.getLastApplyFailureInfo(proposalId);
+            if (info && info.message) {
+                return {
+                    message: String(info.message),
+                    code: info.code ? String(info.code) : null,
+                    missingIds: ensureArrayOfStrings(info.missingIds || []),
+                    at: info.at || null
+                };
+            }
+        }
+        if (typeof ProposalManager.getLastApplyFailure === 'function') {
+            const message = ProposalManager.getLastApplyFailure(proposalId);
+            if (message) {
+                return {
+                    message: String(message),
+                    code: null,
+                    missingIds: [],
+                    at: null
+                };
+            }
+        }
+    } catch (_) { }
+    return null;
+}

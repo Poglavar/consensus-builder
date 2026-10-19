@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BZ",
+  "country": "Belize",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Ministry of Natural Resources - Lands and Surveys Department / Land Registry (Landfolio system)",
+  "portalsFound": [
+    {
+      "url": "https://naturalresources.gov.bz/index.php/surveys-and-mappings-section/",
+      "observation": "Ministry page; TLS certificate chain failed from this client"
+    },
+    {
+      "url": "https://www.lands.gov.bz/",
+      "observation": "proxy CONNECT 502"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lands.gov.bz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502"
+    },
+    {
+      "url": "https://naturalresources.gov.bz/index.php/surveys-and-mappings-section/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "SSL certificate verification failed (not disabled)"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Land Registry interactive map reported by secondary sources",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "No parcel endpoint reached.",
+  "nextStep": "Retry from another network; look for Land Registry interactive map service."
+}

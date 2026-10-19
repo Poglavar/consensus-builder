@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3549-lille.json",
+  "purpose": "Read-only official city registry and bounded public parcel geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "maxFullPolygonsRetainedAcrossCityReview": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateTokensRetained": false
+  },
+  "assessment": "Official IGN Cadastre API returned three complete MultiPolygon parcels filtered by Lille commune code 59350 (60,843 matched). A separate WUP-point intersection query returned zero. The city-code sample proves Lille-scoped geometry, not point match or complete coverage.",
+  "officialEvidence": [
+    {
+      "url": "https://www.lille.fr/Open-data",
+      "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+    },
+    {
+      "url": "https://www.lillemetropole.fr/melmap",
+      "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre",
+      "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+      "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+    }
+  ],
+  "serviceTrace": {
+    "service": "https://apicarto.ign.fr/api/cadastre",
+    "layer": "parcelle",
+    "geometryType": "MultiPolygon",
+    "nativeCrs": "EPSG:4326",
+    "cityFilter": "code_insee=59350 (Lille); source_ign=PCI",
+    "cityCodeQuery": {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=59350&source_ign=PCI&_limit=3",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "limit": 3,
+      "numberMatched": 60843,
+      "numberReturned": 3
+    },
+    "wupPointQuery": {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=59350&source_ign=PCI&geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B3.10526733091648%2C50.6588228758037%5D%7D&_limit=3",
+      "httpStatus": 200,
+      "numberMatched": 0,
+      "numberReturned": 0
+    },
+    "schemaSafeFields": [
+      "idu",
+      "code_insee",
+      "nom_com",
+      "section",
+      "numero",
+      "geometry"
+    ],
+    "retainedFields": [
+      "idu",
+      "code_insee",
+      "nom_com",
+      "section",
+      "numero",
+      "geometry"
+    ],
+    "retainedIdentifiers": [
+      "59350000DR0010",
+      "59350000MT0014",
+      "59350000NZ0150"
+    ],
+    "sampleFile": "samples/lille-ign-cadastre-code59350.geojson",
+    "sampleSha256": "58d3808cd2eb1b34a5e57ba136729309cdbf03fb99c6c42ab0d817765d4b7bf8",
+    "fullPolygonsRetained": 3
+  },
+  "completenessAssessment": {
+    "citywideFeatureCount": 60843,
+    "completeIdManifestAvailable": false,
+    "totalOrPagingMetadataObserved": false,
+    "runtimeQualification": "A city-filtered matched count is visible; only three of 60,843 features were retrieved, and pagination/truncation behavior is unqualified."
+  },
+  "runtimeBlocker": null,
+  "rootRuntimeReview": {
+    "status": "approved_by_root",
+    "reason": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "checkedAt": "2026-10-09T01:44:14.177181+00:00",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/lille-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/lille-ign-root-quality.json"
+  }
+}

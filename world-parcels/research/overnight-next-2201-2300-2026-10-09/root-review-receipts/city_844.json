@@ -1,0 +1,17 @@
+{
+  "taskId": "city:844",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-844-netanya.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/netanya-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/netanya-parcel-sample.geojson",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_844-layer-metadata.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_844-exact-point.geojson"
+  ],
+  "checkedAt": "2026-10-11T02:43:34Z",
+  "reason": "WUP roster, queue and packet agree on code 844, rank 2262, Israel, point [32.3143145554001, 34.8598375549541], and 257714 persons. English and Hebrew searches are recorded. The original cached ArcGIS polygon response has native PARCEL_ID 566567 and unchanged geometry matching the one retained safe-ID sample; cached layer metadata identifies PARCEL_ID, polygon geometry and EPSG:2039. Official national cadastre custody is evidenced, but the municipal page currently resolves to a homepage and does not independently confirm its claimed GIS details. One point hit proves no citywide coverage. Fresh exact-ID reads, forced paging, 13 bounded cells, full metric GEOS duplicate/overlap/operation checks, source binding and headed Details verification remain unevidenced.",
+  "registryFound": true,
+  "admission": "held; no runtime/catalog/report change"
+}

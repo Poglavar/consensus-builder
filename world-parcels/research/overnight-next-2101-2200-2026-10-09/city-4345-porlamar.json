@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4345",
+  "cityCode": 4345,
+  "queueRank": 2192,
+  "name": "Porlamar",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso2": "VE",
+  "iso3": "VEN",
+  "rank": 2192,
+  "point": [10.9695843946551, -63.8594882782306],
+  "centerLatLon": [10.9695843946551, -63.8594882782306],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 265905,
+  "population2025k": 265.905,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-2101-2200-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Municipio Santiago Mariño SIGAT portal publishes municipal urban-property tax/cadastral procedures and links to an official contributor application. This evidences a local municipal registry/procedure, not open parcel geometry access.",
+  "registryEvidenceUrls": [
+    "https://porlamar.sigat.net/",
+    "https://porlamar.sigat.net/documentos/ordenanzas/reforma_de_la_ordenanza_de_impuesto_sobre_inmuebles_urbanos_del_municipio_santiago_marino.pdf",
+    "https://porlamar.sigat.net/documentos/volantes/como_registrar_tu_inmuebles_en_porlamar.pdf",
+    "https://contribuyentes.sigat.net/?alcaldia=313"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current public contributor application's JavaScript identifies the municipal cadastral lookup as GET /api/v1/contribuyente/alcaldias/{alcaldia}/catastro?cod=... and indicates contributor/authenticated workflows. A bounded anonymous request to https://contribuyentes.sigat.net/api/v1/contribuyente/alcaldias/313/catastro?cod= returned HTTP 403 with 'No tiene acceso al recurso solicitado.' No anonymous ID-plus-geometry response, parcel schema/CRS, or safe parcel layer was verified. No credentials, tokens, CAPTCHA bypass, owner/address/contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "local_cadastre_evidenced_no_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "First-party discovery for Porlamar / Municipio Santiago Mariño, Nueva Esparta, including the municipal SIGAT portal, its published urban-property materials, and the linked contributor application.",
+    "verifiedOpenScope": "Local municipal cadastral/tax procedure and authenticated lookup route evidenced; no open parcel layer or anonymous parcel geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Porlamar Venezuela cadastral map parcel official GIS registry municipality",
+        "result": "Search identified the official Gobierno del Estado Nueva Esparta portal and, as the direct municipal first-party result, the Municipio Mariño SIGAT portal. The official SIGAT materials evidence urban-property and inmueble procedures; no public parcel viewer or anonymous parcel geometry endpoint was found in search results.",
+        "actualResultUrls": [
+          "https://porlamar.sigat.net/",
+          "https://gebne.org.ve/entes-adscritos"
+        ],
+        "executionMethod": "Separate English web search followed by first-party URL review."
+      },
+      {
+        "language": "Spanish",
+        "query": "Porlamar Venezuela catastro mapa parcelas visor geográfico oficial Alcaldía Mariño Nueva Esparta",
+        "result": "The official Municipio Santiago Mariño SIGAT portal was found. Its public shell links to urban-property ordinances and guides for registering/declarating inmuebles. The linked contributor application exposes a cadastral lookup route in current JavaScript, but the bounded anonymous request was denied with HTTP 403 and no geometry was returned.",
+        "actualResultUrls": [
+          "https://porlamar.sigat.net/",
+          "https://porlamar.sigat.net/documentos/ordenanzas/reforma_de_la_ordenanza_de_impuesto_sobre_inmuebles_urbanos_del_municipio_santiago_marino.pdf",
+          "https://porlamar.sigat.net/documentos/volantes/como_registrar_tu_inmuebles_en_porlamar.pdf",
+          "https://contribuyentes.sigat.net/?alcaldia=313"
+        ],
+        "executionMethod": "Separate Spanish-language web search followed by first-party URL, JavaScript, and bounded anonymous request review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "nextStep": "Serial reviewer may independently qualify a municipal adapter only if a safe anonymous native ID-plus-geometry response is identified. Do not enable runtime from this packet alone."
+}

@@ -1,0 +1,87 @@
+{
+  "name": "Turin",
+  "country": "Italy",
+  "countryCode": "IT",
+  "rank": 447,
+  "point": [
+    45.0659758665918,
+    7.64679680623837
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Italian",
+        "query": "site:comune.torino.it catasto Torino particelle catastali Geoportale WFS download shapefile",
+        "scope": "Identify the municipal cadastral office, city parcel datasets, and whether full public vector geometry can be accessed anonymously.",
+        "result": "The City’s Catasto office issues cadastral surveys and planimetric extracts and maintains access to the Agenzia delle Entrate cadastral database. The official Geoportale lists municipal cadastral layers. RNDT metadata describes the built-parcel dataset as city-owned vector polygons updated quarterly; its linked public service is WMS, and the associated shapefile is labeled “accesso riservato” in the European Data Portal listing. No anonymous full polygon was retrieved or verified.",
+        "actualResultUrls": [
+          "https://www.comune.torino.it/amministrazione/ufficio-servizi-catastali",
+          "https://www.comune.torino.it/schede-informative/geoportale-della-citta-sistema-informativo-territoriale",
+          "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=c_l219%3A6865be70-53b4-443c-8e09-d7af016cd527",
+          "https://data.europa.eu/data/datasets/c_l219-6865be70-53b4-443c-8e09-d7af016cd527?locale=it"
+        ],
+        "executionMethod": "Official City of Turin and RNDT metadata inspection; access format cross-check in EU data catalogue."
+      },
+      {
+        "language": "English",
+        "query": "Turin official cadastral parcels open data WFS geometry municipal land registry",
+        "scope": "Cross-check the public map/download format and distinguish image-only access from full geometry.",
+        "result": "The City’s Geoportal supports consultation/download of city geodata, and its registry lists thematic urban/cadastral information. The city-owned parcel dataset metadata exposes a WMS endpoint for map display; no public WFS or anonymous vector download for ordinary parcels was verified. Separate metropolitan public-property cadastral data was excluded because it is limited to publicly held properties, not general city parcels.",
+        "actualResultUrls": [
+          "https://www.comune.torino.it/schede-informative/geoportale-della-citta-sistema-informativo-territoriale",
+          "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=c_l219%3A6865be70-53b4-443c-8e09-d7af016cd527",
+          "https://www.geoportale.piemonte.it/geonetwork/serv/api/records/cmto%3A341b794a-4d2a-49df-ae5a-202aa7892d71"
+        ],
+        "executionMethod": "Official city/region catalogue searches and metadata inspection."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IT-TORINO-CATASTO-PARCELLE",
+    "name": "Città di Torino Geoportale — Catasto Terreni 1:1000, Particelle fabbricati",
+    "url": "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=c_l219%3A6865be70-53b4-443c-8e09-d7af016cd527",
+    "operator": "Città di Torino",
+    "serviceType": "Municipal cadastral-record office and city parcel-layer catalogue. Public metadata provides WMS map display; listed shapefile access is restricted. No anonymous full-polygon endpoint was verified.",
+    "layer": "Catasto Terreni 1:1000 - Particelle fabbricati (metadata describes built parcel/building polygons)",
+    "geometryType": null,
+    "outputCrs": "Monte Mario Italy Zone 1 (EPSG:3003) in metadata",
+    "nativeIdField": null,
+    "nativeIdEvidence": "No full feature record was returned; no parcel identifier schema was observed."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City metadata describes a vector dataset of built parcels/buildings across Turin. The online service linked by the municipal dataset metadata is a WMS, which provides rendered map images; the shapefile is listed as restricted in the European Data Portal distribution record. A public anonymous full-polygon response was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "local_cadastral_records_map_only_no_public_full_geometry",
+  "technicalBlocker": "The City provides cadastral records and a public map-view layer, but no anonymous full-polygon endpoint was verified. The cadastral parcel shapefile distribution is labeled accesso riservato; no restricted resource was accessed.",
+  "remainingUncertainty": "Whether an authenticated or separately licensed city dataset provides full parcel polygons, and whether other cadastral vector layers are publicly downloadable. No WUP-point polygon was verified.",
+  "nextStep": null,
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 61,
+  "cityId": "wup2025:61",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    45.0659758665918,
+    7.64679680623837
+  ],
+  "queueRank": 447,
+  "population2025": 1150975,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "registryBasis": "The official City of Turin Catasto office issues cadastral census and planimetric extracts, reports anomalies to the national land agency, and manages municipal access to the national cadastral database. This proves local cadastral administration, distinct from anonymous public parcel-vector access.",
+  "registryEvidenceUrls": [
+    "https://www.comune.torino.it/amministrazione/ufficio-servizi-catastali",
+    "https://www.comune.torino.it/schede-informative/geoportale-della-citta-sistema-informativo-territoriale"
+  ],
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00",
+  "sourceIds": []
+}

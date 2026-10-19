@@ -1,0 +1,84 @@
+{
+  "cityRecord": "city-9091-shivpuri.json",
+  "cityCode": 9091,
+  "queueRank": 2264,
+  "city": "Shivpuri",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "service": {
+    "name": "Shivpuri GIS and Madhya Pradesh land-record/map services",
+    "operator": "District Administration Shivpuri, Government of Madhya Pradesh; state land-record services under Madhya Pradesh Revenue administration",
+    "viewer": "https://shivpurigis.mp.gov.in/",
+    "localCustodianEvidence": "The official Shivpuri district administration GIS page says the platform is used by the Government of India and Government of Madhya Pradesh and provides district spatial information; the page is content-owned by District Administration. The district home page links Land Records to the Madhya Pradesh government land-record service.",
+    "scope": "The Shivpuri GIS description covers roads, water, sewer, land use, government assets and other infrastructure for district planning. It does not establish a public cadastral parcel feature service or citywide parcel inventory. The state eService catalogue describes procedures for certified Khasra, B-1/Khatauni and map copies, but those are record services rather than an inspected parcel API."
+  },
+  "attempts": [
+    {
+      "request": "Web discovery: English query 'Shivpuri Madhya Pradesh official Bhu Naksha cadastral map land records'",
+      "outcome": "First-party results identified Shivpuri district GIS, district land-record link, MP Bhulekh, DILRMP Shivpuri status, and Bhu-Naksha documentation.",
+      "evidence": "https://shivpuri.nic.in/en/shivpuri-gis/; https://shivpuri.nic.in/en/; https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/423"
+    },
+    {
+      "request": "Web discovery: Hindi query 'शिवपुरी मध्य प्रदेश भू नक्शा आधिकारिक खसरा नक्शा'",
+      "outcome": "First-party Hindi MP eService results describe certified Khasra, B-1/Khatauni, current map, and record-room copy procedures; no parcel API response.",
+      "evidence": "https://services.mp.gov.in/eservice/eServices?srvs=19; https://shivpuri.nic.in/"
+    },
+    {
+      "request": "GET https://mpbhulekh.gov.in/",
+      "outcome": "Timed out after 20 seconds in the anonymous request environment; no response body or schema inspected.",
+      "evidence": "TLS verification remained enabled; no retry with verification disabled."
+    },
+    {
+      "request": "GET https://shivpurigis.mp.gov.in/",
+      "outcome": "Official district page linked the platform, but direct public fetch was inaccessible in the web inspection tool; no JavaScript/config/API route or parcel response was obtained.",
+      "evidence": "https://shivpuri.nic.in/en/shivpuri-gis/"
+    },
+    {
+      "request": "GET https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/423",
+      "outcome": "Web discovery identified the official Shivpuri district map-digitization/geo-reference/ULPIN status route. Direct curl failed certificate verification in this environment; no certificate exception was authorized or used.",
+      "evidence": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/423"
+    },
+    {
+      "request": "GET https://bhunaksha.nic.in/bhunaksha/userhome.jsp",
+      "outcome": "First-party documentation/search evidence identifies Bhu-Naksha as a cadastral map-management system intended for authorized state officials; no anonymous Shivpuri parcel response was obtained.",
+      "evidence": "https://bhunaksha.nic.in/bhunaksha/userhome.jsp"
+    }
+  ],
+  "schemaAndCrs": {
+    "nativeFieldsObserved": [],
+    "fieldMapping": "No safe parcel feature schema or native parcel identity was returned by the bounded anonymous attempts.",
+    "crs": "No parcel geometry or CRS response was obtained.",
+    "compositeKeyProvenance": "None retained; no synthetic identity was created."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if independently verified",
+    "geometry",
+    "source URL",
+    "viewer/service administrative codes",
+    "native CRS metadata",
+    "request outcome"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax",
+    "account",
+    "personal",
+    "registration or deed details"
+  ],
+  "sample": {
+    "retained": false,
+    "reason": "No safe native parcel identity plus unchanged full parcel polygon was returned by a bounded anonymous route; no GeoJSON sample was created."
+  },
+  "runtimeReadiness": "held",
+  "uncertainty": [
+    "The exact WUP point is preserved as [latitude, longitude] and was not shifted to force a map or parcel hit.",
+    "The local GIS evidence is a district planning/infrastructure platform description, not proof of citywide cadastral parcel coverage.",
+    "A timeout, TLS verification failure, inaccessible UI, or zero exact-point result is not evidence of citywide absence.",
+    "This packet records source qualification attempts only and does not admit or integrate a runtime adapter."
+  ]
+}

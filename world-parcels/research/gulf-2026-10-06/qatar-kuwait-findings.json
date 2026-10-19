@@ -1,0 +1,124 @@
+{
+  "checkedAt": "2026-10-06",
+  "executedSearches": [
+    "قطر الدوحة قطع الأراضي حدود القسائم GIS وزارة البلدية",
+    "Qatar Doha cadastral parcels GIS MapServer",
+    "الكويت القسائم الهيئة العامة للمعلومات المدنية الكويت فايندر وزارة المالية GIS",
+    "Kuwait cadastral parcels GIS Kuwait Finder ArcGIS",
+    "site:gisqatar.org.qa PIN CDST_KEY CadastrePlot",
+    "site:paci.gov.kw \"MapServer\" parcels",
+    "site:kmun.gov.kw GIS القسائم خريطة",
+    "Qatar cadastre PIN property identification number CGIS",
+    "site:gis.pai.gov.kw القسائم MapServer",
+    "site:paci.gov.kw ArcGIS Kuwait Finder map",
+    "الكويت بلدية الكويت نظم المعلومات الجغرافية خرائط القسائم تحميل WFS",
+    "Kuwait parcels shapefile GIS Ministry municipality ArcGIS REST",
+    "قطر بيانات قطع الأراضي WFS DXF تحميل GIS",
+    "Qatar cadastre parcel shapefile download WFS",
+    "الكويت القسائم shapefile DXF WFS تحميل",
+    "site:arcgis.com \"Kuwait\" \"parcel\" \"PACI\""
+  ],
+  "QA": {
+    "candidate": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0",
+    "nativeKey": "PIN",
+    "scope": "National official survey source: 254410 records, 254337 current ENDDATE=NULL polygons, 73 ended; no null PINs. Distinct current PIN count=254337 matches current rows. National complete land coverage not inferred from count/extent.",
+    "currentGroundEvidence": "Explicit ENDDATE IS NULL filter excludes 73 ended survey records. Official layer title approved cadastral land boundaries; separate archive source.",
+    "provenance": [
+      {
+        "url": "https://geoportal.gisqatar.org.qa/printpin/",
+        "evidence": "Official bilingual PIN print viewer uses CadastrePlots (plural) layer 0 and queries PIN; singular CadastrePlot title approved and live metadata verified."
+      },
+      {
+        "url": "https://moj.gov.qa/en/news/ministry-justice-launches-upgraded-version-sak-application-0",
+        "evidence": "Ministry of Justice says PIN on title deed locates property in GIS."
+      },
+      {
+        "url": "https://play.google.com/store/apps/details?id=com.cgis.almurshidv2",
+        "evidence": "Official Centre for GIS Ministry of Municipality Al Murshid locates land parcels by PIN."
+      }
+    ],
+    "terms": "Not used as blocker; copyright field blank.",
+    "adapterAcceptance": "Current-only plural endpoint PASSED 18 cells, 316 unique current PINs and exact resolves, forced page size3 count5=returned5, footprint1, complete source binding1 parcel; 27 requests.",
+    "proposedDescriptor": {
+      "city": "Doha",
+      "center": [
+        25.2854,
+        51.531
+      ],
+      "descriptor": {
+        "id": "qa-cgis-approved-cadastre",
+        "type": "arcgis",
+        "countryCode": "QA",
+        "endpoint": "https://services.gisqatar.org.qa/server/rest/services/Vector/CadastrePlots/MapServer/0",
+        "idField": "PIN",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "qa-cgis:",
+        "idType": "integer",
+        "outFields": [
+          "OBJECTID",
+          "PIN",
+          "CDST_KEY",
+          "ENDDATE",
+          "GFCODE"
+        ],
+        "pageSize": 2000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "attributeNull": [
+          "ENDDATE"
+        ]
+      }
+    },
+    "acceptanceEvidence": "qatar-kuwait-current-acceptance.json",
+    "nativeIds": [
+      "4290013",
+      "4380001",
+      "4060021"
+    ],
+    "nationalUniquenessEvidence": "qatar-kuwait-key-uniqueness.json",
+    "failedAttempts": "Singular source forced paging repeated/missing OID; singular manifest invalid/duplicate IDs; plural countDistinct statistic400 replaced by distinct count query. All recorded."
+  },
+  "KW": {
+    "candidate": "https://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1",
+    "scope": "Indexed official Municipality polygon layer sourced from KM Survey DGN files; all parcels service name supports national intent but extent/lifecycle/native-key uniqueness unverified live. PACINo display field, GISNo and GlobalID candidates.",
+    "evidenceUrl": "https://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/layers",
+    "status": "temporarily_unavailable",
+    "additionalFailures": [
+      {
+        "url": "https://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1?f=json",
+        "origin": "laptop direct curl",
+        "status": null,
+        "error": "curl 56 connection reset by peer"
+      },
+      {
+        "url": "https://gismaps.baladia.gov.kw/arcgis/rest/services/KM/KM_Dynamic_All_Parcels/MapServer/1?f=pjson",
+        "origin": "web open",
+        "status": null,
+        "error": "URL inaccessible"
+      }
+    ],
+    "otherSources": "PAI means Public Authority for Industry, likely industrial plots. MOF official GIS description covers state property and expropriation, not proof full cadastre. Kuwait GeoHub is a secondary source index; official status not established.",
+    "viewer": "https://giss.baladia.gov.kw/kmeguide/",
+    "viewerStatus": "Connection reset via authorized laptop direct network; discovered from GeoHub source link.",
+    "additionalObservations": [
+      {
+        "url": "https://gis.csb.gov.kw/ar/",
+        "status": 200,
+        "origin": "laptop direct curl",
+        "assessment": "Official Census2011 Leaflet viewer, data-main /static/js/main-built; statistical context not cadastral evidence."
+      },
+      {
+        "url": "https://kuwait-geohub.org/",
+        "status": 200,
+        "origin": "laptop direct curl",
+        "assessment": "Links official Municipality viewer giss.baladia.gov.kw/kmeguide; secondary source index."
+      }
+    ]
+  },
+  "noGeometryRetained": true,
+  "noOwnerDataRequested": true,
+  "catalogResults": {
+    "KW": "ArcGIS catalog q=Kuwait parcel:0 results, not proof absence.",
+    "QA": "ArcGIS catalog q=Qatar parcel:8 contractor/demo/urban items; official portal source found separately."
+  }
+}

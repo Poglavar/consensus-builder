@@ -1,0 +1,99 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "key": "ZM",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-ZM,en;q=0.9; cookie jar (curl -c/-b) kept",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "zm-lusaka-mtendere-agol",
+  "requestUrl": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0/query?where=1%3D1&resultRecordCount=2&outFields=Id,PCNumber&outSR=4326&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "Mtendere East, Lusaka (~28.32E, -15.366S)",
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "FID",
+  "responseFile": "research/retry/countries/ZM-parcel-response.json",
+  "pagination": "resultOffset",
+  "regionSampled": "Lusaka (Mtendere East) only; unofficial third-party layer, attributes empty in sample"
+ },
+ "source": {
+  "sourceId": "zm-lusaka-mtendere-agol",
+  "name": "Lusaka parcels creation",
+  "operator": "ArcGIS Online owner eodoi_medeem (unofficial, not MLNR)",
+  "scope": "subnational (28 polygons, one Lusaka neighbourhood)",
+  "endpoint": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0",
+  "method": "GET query",
+  "responseFormat": "esri JSON",
+  "crs": "3857 native, 4326 requested",
+  "reuseStatus": "not read"
+ },
+ "requests": [
+  {
+   "url": "https://www.mlnr.gov.zm/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed/502 via proxy"
+  },
+  {
+   "url": "https://zilmis.gov.zm/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.zambia.gov.zm/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.sg.gov.zm",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://data.gov.zm/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://ministry-of-lands-and-natural-resources-southernafrica.hub.arcgis.com/pages/nsdi",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "NSDI hub page reachable; Hub search API for 'parcel'/'cadastre' returned no items"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=parcels%20zambia&f=json&num=10",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only Lusaka layer plus unrelated; 'Land Ownership' (cwt_project) is a world-cities layer, not parcels"
+  },
+  {
+   "url": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0/query?where=1%3D1&resultRecordCount=2&outFields=Id,PCNumber&outSR=4326&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 polygon features, open without token"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": ".gov.zm hosts fail at proxy CONNECT/reset while arcgis.com hosts work; likely host-side or network block, unconfirmed.",
+ "notes": "New versus previous: Lusaka layer re-queried and returned polygons (open, no token), but it is unofficial and subnational so no national claim. No national service found.",
+ "nextStep": "Retry MLNR/ZILMIS from another network; confirm whether Lusaka layer is an official pilot."
+}

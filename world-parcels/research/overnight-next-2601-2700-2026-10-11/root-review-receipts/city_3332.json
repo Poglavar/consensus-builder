@@ -1,0 +1,42 @@
+{
+  "taskId": "city:3332",
+  "decision": "held",
+  "checkedAt": "2026-10-11T17:08:48Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-3332-beni-mellal.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/beni-mellal-service-review.json"
+  ],
+  "sourceUrlsReviewed": [
+    "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage"
+  ],
+  "queueIdentity": {
+    "cityCode": 3332,
+    "rank": 2655,
+    "country": "Morocco",
+    "pointLatLon": [
+      32.338376282794,
+      -6.35801579784794
+    ],
+    "population2025Persons": 222621,
+    "verifiedAgainst": "ranked queue and SHA-256-verified UN WUP 2025 bulk source"
+  },
+  "registryFound": true,
+  "bilingualSearchesRecorded": true,
+  "retainedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "ANCFCC first-party directory identifies a Beni Mellal Cadastre office. The current cadastral-plan page is an application form requesting personal/title details and verification, not an anonymous native-ID parcel polygon service; the worker earlier observed maintenance HTML. No adapter qualification or headed details-panel evidence exists.",
+  "absenceConclusion": null,
+  "runtimeAdmitted": false
+}

@@ -1,0 +1,144 @@
+{
+  "name": "Benguela",
+  "country": "Angola",
+  "countryCode": "AO",
+  "rank": 926,
+  "point": [
+    -12.6060328680501,
+    13.4055949628764
+  ],
+  "population2025": 589289,
+  "population2025k": 589.289,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map.",
+  "registryEvidenceUrls": [
+    "https://www.igca.gov.ao/contactos",
+    "https://siac.gov.ao/servicos-administrativos-publicos/",
+    "https://siac.gov.ao/subunidades/",
+    "https://benguela.gov.ao/web/mapa-de-angola"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Anonymous public parcel geometry and exact WUP-point coverage were not verified.",
+  "scopeLimits": "Research covers the exact unchanged WUP locator and reviewed official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "AO-1055-benguela-source-review",
+    "name": "Angola IGCA Benguela office / SIAC land-registration services",
+    "url": "https://www.igca.gov.ao/contactos",
+    "operator": "Angola",
+    "serviceType": "Local cadastral-office and property-registry service; no anonymous parcel geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response or native parcel ID schema verified."
+  },
+  "wupCityCode": 1055,
+  "cityId": "wup2025:1055",
+  "queueRank": 926,
+  "centerLatLon": [
+    -12.6060328680501,
+    13.4055949628764
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map.",
+    "verifiedOpenScope": "No anonymous public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Benguela Angola official land cadastre parcel registry map government property survey",
+        "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service.",
+        "result": "Official Angolan sources list the IGCA cadastral office in Benguela and SIAC’s real-estate registration services. The province map page describes administrative boundaries only; no public parcel-layer service, schema or anonymous geometry query was found. No registry account or property lookup was used.",
+        "actualResultUrls": [
+          "https://www.igca.gov.ao/contactos",
+          "https://siac.gov.ao/servicos-administrativos-publicos/",
+          "https://siac.gov.ao/subunidades/",
+          "https://benguela.gov.ao/web/mapa-de-angola"
+        ],
+        "executionMethod": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Benguela cadastro predial mapa parcelas registo predial serviço oficial",
+        "scope": "Find first-party local-language evidence for the same local registry/map question.",
+        "result": "Official Angolan sources list the IGCA cadastral office in Benguela and SIAC’s real-estate registration services. The province map page describes administrative boundaries only; no public parcel-layer service, schema or anonymous geometry query was found. No registry account or property lookup was used.",
+        "actualResultUrls": [
+          "https://www.igca.gov.ao/contactos",
+          "https://siac.gov.ao/servicos-administrativos-publicos/",
+          "https://siac.gov.ao/subunidades/",
+          "https://benguela.gov.ao/web/mapa-de-angola"
+        ],
+        "executionMethod": "Separate native-language search and official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.igca.gov.ao/contactos",
+        "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+      },
+      {
+        "url": "https://siac.gov.ao/servicos-administrativos-publicos/",
+        "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+      },
+      {
+        "url": "https://siac.gov.ao/subunidades/",
+        "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+      },
+      {
+        "url": "https://benguela.gov.ao/web/mapa-de-angola",
+        "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://www.igca.gov.ao/contactos",
+        "method": "Official cadastral agency office directory review",
+        "result": "Lists an IGCA office in Benguela; no public map-service endpoint listed."
+      },
+      {
+        "url": "https://siac.gov.ao/servicos-administrativos-publicos/",
+        "method": "Official service catalogue review",
+        "result": "Lists property-register services for real estate and mortgages; no vector geometry interface."
+      },
+      {
+        "url": "https://benguela.gov.ao/web/mapa-de-angola",
+        "method": "Official province map page review",
+        "result": "Shows administrative division mapping, not parcel geometry."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.igca.gov.ao/contactos",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.igca.gov.ao'. (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

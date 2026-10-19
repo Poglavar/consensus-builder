@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8979-moradabad.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Anonymous viewer selectors resolved state 09, district Moradabad 135, tehsil 00719, village 220922 (कस्वा मुरादाबाद, hasData=true). Official getVVVVExtentGeoref for this selected village returned EPSG:32644 bounds x=282238.4922..285220.2884, y=3190220.2012..3193135.5627. The WUP point transformed to EPSG:32644 is approximately [281247.06,3191939.71], about 991 m west of that village extent. Control village 220927 (छावनी, hasData=false) returned a zero extent. This does not resolve neighboring-village coverage. Viewer getPlotAtXY returns an unfiltered interactive parcel info object with no safe allowlist; it was not called. WMS is raster rendering, not verified full-vector geometry. Which revenue village or urban parcel service covers the WUP locator; whether an anonymous geometry-only endpoint is available for that exact area.",
+  "officialPrimarySources": [
+    {
+      "url": "https://moradabad.nic.in/service/land-records/",
+      "observation": "Official Moradabad district land-records service linking the state land-record system and identifying Moradabad city/tehsil context."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+      "observation": "Official UP BhuNaksha viewer shell; selectors and viewer client reviewed; initial page defaults to Agra."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=135",
+      "observation": "Official Moradabad district dashboard with tehsil-level scanned/georeferenced village-map counts; aggregate only."
+    },
+    {
+      "url": "https://bor.up.nic.in/",
+      "observation": "Official UP Board of Revenue context for land records/maps."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "GET anonymous viewer selector metadata",
+      "result": "HTTP 200; state/district/tehsil/village hierarchy available."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST anonymous viewer selectors for district 135, tehsil 00719, village 220922",
+      "result": "HTTP 200; Kasba Moradabad selector confirmed hasData=true."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST selected village extent",
+      "result": "HTTP 200; EPSG:32644 extent returned; WUP point lies approximately 991m west of this extent."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "method": "not called",
+      "result": "Viewer code indicates an interactive response containing unfiltered parcel information; no safe field allowlist, so the potentially sensitive endpoint was not queried."
+    }
+  ]
+}

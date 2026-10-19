@@ -1,0 +1,59 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "VT",
+ "regionName": "Vermont",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-vt-parcels",
+  "name": "Vermont Center for Geographic Information (VCGI) Statewide Property Parcel Mapping Program; ArcGIS Online feature service",
+  "operator": "Vermont Center for Geographic Information (VCGI) Statewide Property Parcel Mapping Program; ArcGIS Online feature service",
+  "scope": "statewide layer",
+  "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST query (f=geojson)",
+  "crs": "EPSG:32145 (requested outSR 4326)",
+  "reuseStatus": "Copyright: Vermont municipalities. No licence text read; the layer also carries owner and address fields which were NOT requested."
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: application/json; Accept-Language: en-US,en;q=0.9; cookie jar (curl -b/-c); outbound via agent proxy, TLS verified",
+ "verifiedParcelResponse": {
+  "sourceId": "us-vt-parcels",
+  "requestUrl": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json / geo+json",
+  "spatialTestAreaLonLat": "bbox ~0.0024 deg (about 200 m) around each sample point, inSR=4326",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "SPAN",
+  "responseFile": "research/subnational/US/VT-parcel-response.json",
+  "pagination": "resultRecordCount=3; server maxRecordCount 100000 or 2000/1000",
+  "regionSampled": "Montpelier (Washington County)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer description: standardized parcel data with joined Grand List data for Vermont municipalities (VCGI Statewide Property Parcel Mapping Program). Copyright text: Vermont municipalities. A second sample near Burlington returned polygons with null SPAN/TNAME (possibly unattributed or non-parcel polygons), so only Montpelier is a clean ID sample.",
+ "subregionsVerified": [
+  "Montpelier"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+   "observation": "anonymous ArcGIS REST layer; found via ArcGIS Online sharing search / known state service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=SPAN,TNAME&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 polygon(s), Montpelier (Washington County)"
+  }
+ ],
+ "reuseStatus": "Copyright: Vermont municipalities. No licence text read; the layer also carries owner and address fields which were NOT requested.",
+ "remainingUncertainty": "Municipal coverage varies (not every town is mapped); Burlington-area test returned null IDs. Earlier attempt on gis.vermont.gov MapServer was denied by the proxy (org policy) and was not retried there.",
+ "nextStep": "Read vcgi.vermont.gov parcel-program page for licence and list of mapped towns."
+}

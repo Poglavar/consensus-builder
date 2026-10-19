@@ -1,0 +1,45 @@
+{
+ "kind": "country",
+ "key": "MR",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: fr-MR,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.finances.gov.mr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry homepage; no cadastre/domaines link in hrefs"
+  },
+  {
+   "url": "https://www.cadastre.gov.mr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 (host not reachable)"
+  },
+  {
+   "url": "https://www.domaines.gov.mr/ , mef.gov.mr, sig.gov.mr, mauritanie.gov.mr, gouvernement.gov.mr, mhurse.gov.mr",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "all connect failures"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=mauritanie cadastre parcelles",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no Mauritanian parcel items"
+  }
+ ],
+ "geoBlockSuspected": "true (proxy 502 for .gov.mr hosts other than finances/presidence; may be DNS or network-level)",
+ "notes": "No change. Full browser headers did not alter results; same hosts unreachable, ministry homepage has no cadastre link, ArcGIS Online has nothing.",
+ "nextStep": "Search for the Mauritanian land information system by other names (ANADER, Agence de Promotion des Investissements / Direction des Domaines); retry from another network."
+}

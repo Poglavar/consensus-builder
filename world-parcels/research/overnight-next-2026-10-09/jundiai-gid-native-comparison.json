@@ -1,0 +1,61 @@
+{
+  "request": {
+    "url": "https://geo.jundiai.sp.gov.br/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=GeoJundiai%3Alotes_jund&srsName=EPSG%3A31983&outputFormat=application%2Fjson&count=3&startIndex=0&propertyName=gid%2Cgeom&sortBy=gid&cql_filter=gid+IN+%2846298%2C106314%2C106317%29",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "bytes": 2327,
+    "sha256": "4ac475ece572d2e590f96d3a3de5c134d08b08788d5e457b03937047b150d031",
+    "numberMatched": 3,
+    "numberReturned": 3,
+    "propertyFields": [
+      "gid"
+    ],
+    "responseCrs": "urn:ogc:def:crs:EPSG::31983",
+    "credentialsOrTokensSent": false
+  },
+  "projection": {
+    "sourceCrs": "EPSG:31983",
+    "targetCrs": "EPSG:4326 (canonical adapter coordinates CRS:84 lon,lat)",
+    "proj4Definition": "+proj=utm +zone=23 +south +ellps=GRS80 +units=m +no_defs",
+    "operation": "Transform every native vertex with proj4, preserve coordinate order and ring structure; compare against canonical full polygon for same gid."
+  },
+  "features": [
+    {
+      "gid": 46298,
+      "type": "MultiPolygon",
+      "nativeSha256": "eeed2c833ff87cbc658a83d700c177e5cd323a246ff76776e0b765947bbd3897",
+      "nativePositionCount": 5,
+      "canonicalPositionCount": 5,
+      "comparison": {
+        "sameCoordinateStructure": true,
+        "coordinateCount": 5,
+        "maxAbsWgs84CoordinateDifference": 4.854147306332379e-9
+      }
+    },
+    {
+      "gid": 106314,
+      "type": "MultiPolygon",
+      "nativeSha256": "2e3983b0e621f394c55cf6d790529a6645eeeccf4df78d1b1741744e5dc92e0d",
+      "nativePositionCount": 7,
+      "canonicalPositionCount": 7,
+      "comparison": {
+        "sameCoordinateStructure": true,
+        "coordinateCount": 7,
+        "maxAbsWgs84CoordinateDifference": 4.562242139627415e-9
+      }
+    },
+    {
+      "gid": 106317,
+      "type": "MultiPolygon",
+      "nativeSha256": "bbe9eed5cfbbff7a9f2ce48cca920760562b123fc012a3a08cd59db008acb69f",
+      "nativePositionCount": 24,
+      "canonicalPositionCount": 24,
+      "comparison": {
+        "sameCoordinateStructure": true,
+        "coordinateCount": 24,
+        "maxAbsWgs84CoordinateDifference": 4.894445737591013e-9
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-4079-sinnuris.json",
+  "cityCode": 4079,
+  "queueRank": 2489,
+  "name": "Sinnuris",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "point": [29.4169701753478, 30.8619741843524],
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "reviewOutcome": "National ESA map/cadastre custody and Fayoum/Sinnuris map-product evidence are recorded, but no anonymous public cadastral parcel-vector service or safe ID-plus-full-polygon response was verified. Runtime readiness remains held.",
+  "routes": [
+    {"method": "GET", "url": "https://www.esa.gov.eg/services.aspx", "httpStatus": 200, "outcome": "Official ESA service index; map and survey services listed, no parcel API."},
+    {"method": "GET", "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx", "httpStatus": 200, "outcome": "Official digital-map form; requested GIS/CAD products require formal request, specification, quotation and payment; no public vector endpoint."},
+    {"method": "GET", "url": "https://www.esa.gov.eg/paper_maps_search.aspx", "httpStatus": 200, "outcome": "Official paper-map catalogue form; no parcel feature service."},
+    {"method": "GET", "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf", "httpStatus": 200, "outcome": "Official Fayoum guide names مركز سنورس and map scales including 1:5000 city and 1:2500 village products; not machine-readable parcel geometry."},
+    {"method": "SEARCH", "url": "https://www.fayoum.gov.eg/", "httpStatus": "search results only", "outcome": "Fayoum/Sinnuris local references found, but no bounded public cadastral viewer or parcel API qualified."}
+  ],
+  "schemaAndCrs": {"api": null, "viewer": "legacy ASP.NET map forms; no public cadastral viewer config", "nativeIdField": null, "geometryCrs": null, "geometryResponse": null},
+  "safeFieldAllowlist": ["stable native parcel identifier", "full polygon geometry", "CRS/coordinate metadata", "public source metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "uncertainty": "A national official map custodian and a Fayoum/Sinnuris map index are evidenced, but no local registry custodian, current public parcel API, schema, CRS, stable native identity, or citywide vector coverage was evidenced. No absence claim is made from the unavailable public vector route.",
+  "completionSummary": {"cityCode": 4079, "researchPacketComplete": true, "parcelGeometryVerified": false, "sampleRetained": false, "registryFound": null, "runtimeReadiness": "held"}
+}

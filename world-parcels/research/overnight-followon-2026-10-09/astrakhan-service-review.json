@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6791-astrakhan.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local Rosreestr coverage is evidenced, but no anonymous full native polygon response was established for the exact Astrakhan WUP point.",
+  "registryAssessment": "The Astrakhan municipal portal publishes notices from the regional Rosreestr office, and official Rosreestr regional information describes public cadastral-map and registration services for Astrakhan Oblast. These establish the local registry authority, but no anonymous geometry-only feature contract was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://astrgorod.ru/podrazdeleniya/upravlenie-rosreestra-po-astrahanskoy-oblasti-informiruet-0",
+      "observation": "Municipal Astrakhan portal carries an official Regional Rosreestr information page. It references the public cadastral map but does not expose a safe geometry-only vector query."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "National Spatial Data System public-map candidate; no anonymous public feature schema and geometry-only route qualified in this review."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Astrakhan official cadastral land registry property Rosreestr public map",
+      "resultUrls": [
+        "https://astrgorod.ru/podrazdeleniya/upravlenie-rosreestra-po-astrahanskoy-oblasti-informiruet-0",
+        "https://rosreestr.gov.ru/",
+        "https://nspd.gov.ru/"
+      ]
+    },
+    {
+      "language": "Russian",
+      "query": "Астрахань официальный Росреестр кадастровая карта управление Росреестра Астраханской области",
+      "resultUrls": [
+        "https://astrgorod.ru/podrazdeleniya/upravlenie-rosreestra-po-astrahanskoy-oblasti-informiruet-0",
+        "https://rosreestr.gov.ru/",
+        "https://nspd.gov.ru/"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Official local Rosreestr coverage is evidenced, but no anonymous full native polygon response was established for the exact Astrakhan WUP point.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Astrakhan municipal portal publishes notices from the regional Rosreestr office, and official Rosreestr regional information describes public cadastral-map and registration services for Astrakhan Oblast. These establish the local registry authority, but no anonymous geometry-only feature contract was verified.",
+    "verifiedOpenScope": "Official local Rosreestr coverage is evidenced, but no anonymous full native polygon response was established for the exact Astrakhan WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Official local Rosreestr coverage is evidenced, but no anonymous full native polygon response was established for the exact Astrakhan WUP point."
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-muzaffarnagar-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Uttar Pradesh Bhulekh / Muzaffarnagar District Administration / Sadar Tehsil land-record administration",
+  "sourceUrl": "https://muzaffarnagar.nic.in/service/land-records/",
+  "registryFound": true,
+  "registryBasis": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage.",
+  "officialSources": [
+    {
+      "url": "https://muzaffarnagar.nic.in/service/land-records/",
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    },
+    {
+      "url": "https://muzaffarnagar.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    },
+    {
+      "url": "https://muzaffarnagar.nic.in/tehsil/",
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Muzaffarnagar Sadar official land records Bhulekh cadastral parcel map",
+      "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage. No anonymous geometry schema or feature response was retained.",
+      "actualResultUrls": [
+        "https://muzaffarnagar.nic.in/service/land-records/",
+        "https://muzaffarnagar.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+        "https://muzaffarnagar.nic.in/tehsil/",
+        "https://upbhunaksha.gov.in/Public/LayarPublic.aspx"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "मुजफ्फरनगर भूमि रिकॉर्ड सदर तहसील भूलेख नक्शा खसरा सरकारी",
+      "scope": "Find native-language city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage. No property-specific query was submitted and no anonymous geometry schema was verified.",
+      "actualResultUrls": [
+        "https://muzaffarnagar.nic.in/service/land-records/",
+        "https://muzaffarnagar.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+        "https://muzaffarnagar.nic.in/tehsil/",
+        "https://upbhunaksha.gov.in/Public/LayarPublic.aspx"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_registry_verified_no_public_geometry_contract",
+    "reason": "The local sources establish tehsil/revenue records, but no city-specific anonymous full-polygon endpoint or safe feature schema was verified. No parcel identifier or owner lookup was submitted; the population-weighted point is not an administrative boundary.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://muzaffarnagar.nic.in/service/land-records/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    },
+    {
+      "url": "https://muzaffarnagar.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    },
+    {
+      "url": "https://muzaffarnagar.nic.in/tehsil/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Muzaffarnagar District Administration links to the Uttar Pradesh Bhulekh land-record portal, and its official Tehsil page names Sadar as a district tehsil and describes tehsil offices as the executive agency for land records. This establishes a local revenue-record path, but not city-boundary-wide open vector coverage."
+    }
+  ],
+  "technicalBlocker": "The local sources establish tehsil/revenue records, but no city-specific anonymous full-polygon endpoint or safe feature schema was verified. No parcel identifier or owner lookup was submitted; the population-weighted point is not an administrative boundary.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether a separate anonymous vector feature schema or full-polygon route exists; citywide coverage and settlement-point parcel relation."
+}

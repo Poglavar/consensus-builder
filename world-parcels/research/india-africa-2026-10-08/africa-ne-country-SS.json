@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "SS",
+  "country": "South Sudan",
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "accessModel": "unknown",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Arabic and English",
+      "exactQuery": "جنوب السودان أراضي مسح كادستر سجل الأراضي GIS land parcels",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://services9.arcgis.com/9wmL9ZWBCsfLqwTM/ArcGIS/rest/services/Soudan_Sud/FeatureServer/0",
+        "https://services6.arcgis.com/nEMEkLg8rZV7Ijyb/ArcGIS/rest/services/SudanMap/FeatureServer/0",
+        "https://services3.arcgis.com/iuNbZYJOrAYBrPyC/ArcGIS/rest/services/2013_SS_PKO_Buffers_Updated_WFL1/FeatureServer/2",
+        "https://www.arcgis.com/home/item.html?id=0ef1e38d0c1444a28f9e6b63a9006a5b",
+        "https://data.humdata.org/dataset/cod-ps-ssd\">COD-PS</a>.</p><p",
+        "https://cod.unocha.org/\">COD",
+        "https://www.arcgis.com/home/search.html?q=tags%3A%22South+Sudan%22",
+        "https://services5.arcgis.com/QYf5PkPqzJKVzrmF/ArcGIS/rest/services/Sudan%20Admin2%2020200831/FeatureServer/2"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://mlhud.gov.ss/",
+      "observation": "Ministry host unreachable in previous country pass."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=South%20Sudan%20parcels%20cadastre",
+      "observation": "Catalog discovery was not a public official parcel source."
+    }
+  ],
+  "requests": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Ask South Sudan land authorities or municipal offices about public cadastral map services; verify bounded parcel polygons and stable IDs before assigning city coverage."
+}

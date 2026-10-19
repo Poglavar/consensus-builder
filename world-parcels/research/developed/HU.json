@@ -1,0 +1,128 @@
+{
+ "country": "Hungary",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Lechner Tudaskozpont (state real-estate cadastre base-map database, DAT) for map data; land offices (Kormanyhivatal) via Takarnet / e-Ingatlan for the legal register",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: hu-HU,hu;q=0.9,en;q=0.8; cookie jar on; Referer = viewer/portal origin",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "geoBlockSuspected": true,
+ "inspireRecordUrl": "http://inspire.lechnerkozpont.hu/geonetwork/srv/api/records/adc31900-5237-4ee3-ba73-f40b169266fa/formatters/xml (ATOM), 2d1c17e0-4e0a-4884-9e1f-f31ee44913f0 (view), 278bb777-aaac-4678-bd91-d4032c7e8a8c (dataset); all describe the 'Mesterszallas sampling area' only",
+ "portalsFound": [
+  {
+   "url": "https://lechnerkozpont.hu/oldal/allami-ingatlan-nyilvantartasi-alapterkepi-adatbazis",
+   "observation": "Official dataset page (HTTP 200). Under Act XLVI of 2012 (Fttv.) s.5(8) Lechner supplies the state cadastral map database for non-official purposes only, refreshed every 3 months, SOLD as full simplified-DAT content or skeleton map (parcel boundary + helyrajzi szam), formats ESRI Shape / DXF, price per hectare (e.g. built-up 0-5 ha 24,000 HUF; rural 0-300 ha 620 HUF/ha). Offers WMS."
+  },
+  {
+   "url": "https://lechnerkozpont.hu/oldal/geodeziai-wms-es-wmts-szolgaltatas",
+   "observation": "WMS/WMTS/WFS delivered under an individual service contract; users get credentials from a signed data sheet and see the service catalogue at map.fomi.hu after login"
+  },
+  {
+   "url": "https://map.fomi.hu/",
+   "observation": "200: 'Lechner TK hitelesites' info page for contracted customers with a BELEPES (login) button; not entered"
+  },
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geoserver/wfs",
+   "observation": "Open INSPIRE WFS; CP:CP.CadastralParcels has numberMatched=1774 (pilot area around Mesterszallas, EOV x 752964-760282), 0 features in Budapest (650000,238000,652000,240000) and Debrecen (838000,258000,840000,260000) boxes (EPSG:23700). Other layers: administrative units, buildings, orthophoto footprints, geographical names; no other CP"
+  },
+  {
+   "url": "https://www.foldhivatal.hu/",
+   "observation": "200, stale Joomla news site, no map service"
+  },
+  {
+   "url": "https://e-ingatlan.gov.hu/ ; https://www.takarnet.hu/ ; https://www.ingatlan.gov.hu/ ; https://data.gov.hu/ ; https://mapsonline.hu/ ; https://geoportal.gov.hu/",
+   "observation": "no connection from this network (HTTP 000), viewer JS not inspectable"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "CP feature type: CP:CP.CadastralParcels only"
+  },
+  {
+   "url": "...wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP:CP.CadastralParcels&resultType=hits",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html (GML)",
+   "assessment": "numberMatched=1774"
+  },
+  {
+   "url": "...&resultType=hits&bbox=650000,238000,652000,240000,urn:ogc:def:crs:EPSG::23700",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html (GML)",
+   "assessment": "numberMatched=0 (Budapest)"
+  },
+  {
+   "url": "...&resultType=hits&bbox=838000,258000,840000,260000,urn:ogc:def:crs:EPSG::23700",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html (GML)",
+   "assessment": "numberMatched=0 (Debrecen)"
+  },
+  {
+   "url": "...&count=1&startIndex=1770",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html (GML)",
+   "assessment": "1 polygon, Mesterszallas pilot"
+  },
+  {
+   "url": "https://lechnerkozpont.hu/oldal/allami-ingatlan-nyilvantartasi-alapterkepi-adatbazis",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "paid product terms read"
+  },
+  {
+   "url": "https://map.fomi.hu/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "contract-customer login page"
+  },
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geonetwork/srv/eng/q?any=cadastral&_content_type=json",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "text/html",
+   "assessment": "Service not found (route wrong; CSW result from previous pass stands)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "hu-lechner-inspire-cp-pilot",
+  "requestUrl": "https://inspire.lechnerkozpont.hu/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP:CP.CadastralParcels&count=1&startIndex=1770",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/html; charset=UTF-8 (WFS 2.0 GML)",
+  "spatialTestAreaLonLat": "Mesterszallas pilot only",
+  "parcelRecordCount": 1,
+  "recordListPath": "wfs:member",
+  "geometryType": "gml:MultiSurface",
+  "closedRings": true,
+  "idField": "gml:id / nationalCadastralReference",
+  "responseFile": "HU-parcel-response.json",
+  "pagination": "count/startIndex",
+  "regionSampled": "Mesterszallas pilot area only (not national)"
+ },
+ "regionsSampled": [
+  "Mesterszallas pilot (only)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Nationwide state cadastral base map exists (DAT) but is sold, not open; the open INSPIRE WFS is a 1,774-parcel pilot",
+  "regionsVerified": [
+   "Mesterszallas pilot only"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "paid",
+ "remainingUncertainty": "Only the pilot is open. Online WMS/WFS is contract-only (map.fomi.hu). Consumer viewers (e-Ingatlan, Takarnet, fentrol.hu) did not connect, so their layer/URLs were not read; a public viewer may show parcels without giving open data access. Licence of the pilot WFS not read.",
+ "nextStep": "Treat Hungary as paid/contract. Ask Lechner about the service contract terms, or try e-Ingatlan/Takarnet viewers from a Hungary-reachable network.",
+ "schemaVersion": 1,
+ "countryCode": "HU",
+ "checkedAt": "2026-09-30",
+ "status": "national_cadastre_credentialed_or_paid"
+}

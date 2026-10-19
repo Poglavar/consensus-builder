@@ -1,0 +1,156 @@
+{
+  "name": "Yuhu",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1203,
+  "point": [
+    27.8946741429977,
+    112.9032256862
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xiangtan Yuhu District official cadastral parcel map land registry GIS",
+        "result": "Separate English-language discovery followed by review of first-party Hunan natural-resources, provincial land-record service, and Tianditu pages. Public parcel geometry remains unverified.",
+        "actualResultUrls": [
+          "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+          "https://hunan.tianditu.gov.cn/subApp/resources/index.html",
+          "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+          "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=D1AADA869D497666E053671515AC6CD5&areacode=430321999000"
+        ],
+        "scope": "Identify official property-record custody and any anonymous public native parcel-geometry service at the exact unchanged WUP point."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "湘潭 雨湖区 不动产登记 地籍图 自然资源局 天地图",
+        "result": "Chinese-language discovery found official city and provincial sources describing the property registration center, certificate-linked cadastral map access, official Tianditu Hunan map/resource channels, and land-market exhibition. No anonymous full cadastral parcel geometry endpoint was documented in reviewed public materials.",
+        "actualResultUrls": [
+          "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+          "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+          "https://hunan.tianditu.gov.cn/subApp/resources/index.html",
+          "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html",
+          "https://gxpt.zrzyt.hunan.gov.cn/tdcsgzbgb"
+        ],
+        "method": "Independent Simplified-Chinese-language search followed by first-party Hunan government and Natural Resources Department source review.",
+        "scope": "Identify official local or provincial cadastral custody and anonymous public parcel geometry; do not submit personal, title-certificate, property-unit, owner, address, or applicant data."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+        "operator": "Hunan Provincial Department of Natural Resources; Xiangtan Municipal Natural Resources and Planning Bureau",
+        "scope": "Official report says Xiangtan rolled out certificate QR codes through which a certificate holder can obtain the specific real-property cadastral map/house plan and rights-related information. This is certificate-bound access, not an anonymous bulk map endpoint."
+      },
+      {
+        "url": "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=D1AADA869D497666E053671515AC6CD5&areacode=430321999000",
+        "operator": "Hunan Provincial Government Service Portal; Xiangtan County Natural Resources Bureau service entry",
+        "scope": "The service is for applying to inspect real-property registration files. This indicates an application/records route, not open parcel geometry."
+      },
+      {
+        "url": "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+        "operator": "Hunan Provincial Platform for Common Geospatial Information Services",
+        "scope": "Official public geospatial platform provides Hunan-wide map and city/county sub-sites; Yuhu appears in its Xiangtan link list."
+      },
+      {
+        "url": "https://hunan.tianditu.gov.cn/subApp/resources/index.html",
+        "operator": "Hunan Provincial Platform for Common Geospatial Information Services",
+        "scope": "Published service-resource page lists time-series imagery WMTS/REST and thematic services for schools, hospitals, scenic spots, administrative villages and epidemic stations; parcel cadastral features are not in the listed resources."
+      },
+      {
+        "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html",
+        "operator": "Hunan Provincial Department of Natural Resources / Xiangtan Municipal Natural Resources and Planning Bureau",
+        "scope": "The official report describes a public land-resource marketplace for selected state, collective, industrial, commercial and residential land products offered for development or transaction. It is not described as a comprehensive private cadastral parcel fabric."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://hunan.tianditu.gov.cn/XIANGTAN/YUHU/",
+        "method": "GET; anonymous public map page; escalated network retry",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "UND_ERR_CONNECT_TIMEOUT during HTTPS connection to hunan.tianditu.gov.cn:443",
+        "assessment": "The provider could not return this city map page in the current network pass; the timeout gives no information on underlying parcel availability."
+      },
+      {
+        "url": "https://gxpt.zrzyt.hunan.gov.cn/tdcsgzbgb",
+        "method": "GET via official Natural Resources Department link",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "error": "Web retrieval timed out before response",
+        "assessment": "The land-market app was not evaluated beyond the official published description; no conclusion about its live data access is made."
+      }
+    ],
+    "historicalContext": [
+      "Preflight audit on 2026-10-09: WUP 2025 City_Code 10624 had no prior city source packet or attempt record in the current cohort."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Hunan Provincial Tianditu and Xiangtan municipal natural-resource/real-property registry channels",
+    "url": "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+    "operator": "Hunan Provincial Department of Natural Resources; Xiangtan Municipal Natural Resources and Planning Bureau; Xiangtan Real Estate Registration Center",
+    "serviceType": "Official public geospatial map/resource portal and official property registration service materials reviewed; no anonymous source-native full parcel polygon endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "The public geospatial-resource list contains general/topical map services; the described cadastral map access is tied to a property certificate QR code. No credential, title certificate, property number, account, or person-specific query was attempted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Xiangtan/Hunan property-registration and public geospatial channels, including Hunan Tianditu city/county portal and documented public land-market channel.",
+    "verifiedOpenScope": "No anonymous full source-native parcel polygon or stable parcel ID was verified. No geometry query at the exact WUP coordinate was submitted; this pass makes no point-level or citywide absence claim.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Anonymous cadastral geometry was not verified. The public property-registration descriptions are application- or certificate-linked, while the public Tianditu resource inventory lists only general/thematic data services. The Yuhu city map page timed out during an escalated anonymous request.",
+  "remainingUncertainty": "Whether a separate public cadastral feature API exists for Xiangtan/Yuhu remains unknown. The Tianditu Yuhu page and land-market app were not reachable in this network pass. The property-registration center’s certificate QR feature is not an anonymous bulk-geometry source. Citywide coverage and exact-point parcel coverage remain untested.",
+  "nextStep": "Continue bounded official GIS-service configuration/metadata discovery for Xiangtan/Yuhu public cadastral layers; inspect any documented anonymous full-polygon endpoint and native ID semantics before attempting spatial readback.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10624,
+  "cityId": "wup2025:10624",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    27.8946741429977,
+    112.9032256862
+  ],
+  "population2025k": 462.605,
+  "populationUnit": "persons",
+  "queueRank": 1203,
+  "population2025": 462605,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Xiangtan Real Estate Registration Center reports certificate-linked access to the specific cadastral map/house plan; official provincial services expose formal registration-file query routes. These establish property-registration custody, not public anonymous parcel downloads.",
+  "registryEvidenceUrls": [
+    "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202310/t20231008_31619536.html",
+    "https://zwfw-new.hunan.gov.cn/onething/service/serviceguideck.jsp?approve_id=D1AADA869D497666E053671515AC6CD5&areacode=430321999000",
+    "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+    "https://hunan.tianditu.gov.cn/subApp/resources/index.html",
+    "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202402/t20240208_32848464.html"
+  ],
+  "runtimeAssessment": {
+    "status": "unknown_no_verified_public_geometry",
+    "reason": "No anonymous full parcel geometry was verified or queried at the WUP point. Public map/registration route access was partly unavailable or certificate/application-bound; no absence conclusion follows."
+  },
+  "cohort": "overnight-next-1201-1300",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

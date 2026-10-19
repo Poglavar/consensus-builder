@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 1,
+  "city": "Jakarta",
+  "countryCode": "ID",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/jakarta.json",
+  "query": {
+    "language": "Indonesian",
+    "script": "Latin",
+    "text": "Jakarta bidang tanah kadaster peta persil data geospasial batas bidang tanah WFS data terbuka"
+  },
+  "results": [
+    {
+      "title": "Data Pertanahan Jakarta Barat (ArcGIS item)",
+      "url": "https://www.arcgis.com/home/item.html?id=e74a030627c84448a92da811b0ce1303",
+      "kind": "unverified-district-lead",
+      "note": "ArcGIS item title indicates land data for West Jakarta; publisher authority, actual layer, public query and IDs not established."
+    },
+    {
+      "title": "Geoportal IKN",
+      "url": "https://geoportal.ikn.go.id/",
+      "kind": "official-national-spatial-portal",
+      "note": "OGC WFS vector downloads for the new capital IKN; not Jakarta coverage."
+    }
+  ],
+  "assessment": "Search found a district-specific ArcGIS land-data item, but not a verified Jakarta parcel feature layer. The national IKN WFS portal concerns the new capital and does not establish Jakarta coverage.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

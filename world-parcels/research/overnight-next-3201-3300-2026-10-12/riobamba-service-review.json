@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-2298-riobamba.json",
+  "cityCode": 2298,
+  "queueRank": 3252,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "summary": "Official local municipal cadastral responsibility and a public municipal-attributed ArcGIS parcel layer were evidenced. Three bounded safe-ID polygons were retained; runtime admission remains held.",
+  "custodian": "GAD Municipal del Cantón Riobamba, Dirección de Gestión de Ordenamiento Territorial / Avalúos y Catastros is the local cadastral custodian. Registro de la Propiedad is a separate legal-property registry.",
+  "requests": "English and Spanish first-party discovery, official municipal pages, ArcGIS layer metadata, exact-point urban-view query, bounded layer-25 geometry query, and safe-field inspection were completed. No credentials, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS disable was used.",
+  "schemaAndCrs": {"parcelSchema": "predios_p Polygon FeatureServer layer 25", "nativeIdFields": ["FID"], "geometryCrs": "EPSG:3857 source; retained GeoJSON output EPSG:4326", "fieldMapping": {"FID": "stable native source object identifier"}, "compositeKeyProvenance": null},
+  "geometry": {"verified": true, "sampleCount": 3, "sampleFile": "riobamba-sample.geojson", "retainedFeatureProperties": {"id": "string(FID)"}},
+  "safeFieldAllowlist": ["stable native parcel identifier FID", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Retained geometry is only a bounded three-feature sample.", "Zero exact-point hit, urban-view no-geometry response, and any map extent miss are not citywide absence evidence.", "No raw source attributes or unsafe legal/property information were retained.", "Packet completion is not source integration/admission."],
+  "runtimeReadiness": "held_independent_adapter_review",
+  "admissionDecision": "held",
+  "uncertainty": ["Citywide completeness, rural coverage, source freshness, and stable identity semantics beyond FID were not independently established.", "The current urban layer's geometry response was unusable in the tested request; the broader layer 25 returned usable geometry."]
+}

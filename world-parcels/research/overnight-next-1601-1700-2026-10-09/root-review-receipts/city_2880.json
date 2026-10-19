@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2880",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-2880-ngaound-r.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ngaound-r-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:12:23+00:00",
+  "reason": "Official cadastral custody is supported, while the municipal viewer lists thematic layers and denied direct requests; no safe native parcel ID or full polygon was obtained.",
+  "firstPartyUrlChecked": "https://www.mindcaf.gov.cm/fr/organisation/",
+  "admissionGates": "No verified safe native-ID full polygon; fresh ID reads, forced paging, 13 cells, metric GEOS checks, source binding and headed Details remain unverified."
+}

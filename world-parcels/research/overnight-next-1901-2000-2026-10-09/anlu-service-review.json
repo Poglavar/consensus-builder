@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-10246-anlu.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10246,
+  "queueRank": 1979,
+  "city": "Anlu",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Hubei sources establish Anlu local natural-resources and real-estate-registration custody and describe visual cadastral-map queries plus digitized graphical data. Bounded public discovery found no anonymous safe parcel identity plus full polygon geometry service, so no GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text, outcomes and actual result URLs are recorded in city-10246-anlu.json.",
+  "requestOutcomes": "The official Hubei portal was retrieved with HTTP 200 and inspected. Hubei Tian地图 and the Anlu municipal homepage timed out after bounded GET attempts. No public viewer JavaScript/configuration, parcel schema, CRS or geometry response was obtained.",
+  "attemptedRoutes": [
+    {"route": "Hubei Natural Resources Department Anlu registration report", "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202512/t20251209_5830295.shtml", "outcome": "Official indexed report confirms Anlu registration-center custody, visual cadastral-map queries and digitized land/building graphical data; no public parcel endpoint."},
+    {"route": "Hubei Natural Resources Department Anlu service report", "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202512/t20251217_5836213.shtml", "outcome": "Official indexed report confirms local bureau/registration work and cadastral-map query reform; no anonymous vector response."},
+    {"route": "Hubei Natural Resources Department portal", "url": "https://zrzyt.hubei.gov.cn/", "outcome": "HTTP 200; general public service catalogue inspected, but no Anlu parcel viewer or public feature route identified."},
+    {"route": "Hubei Tian地图 portal", "url": "https://hubei.tianditu.gov.cn/", "outcome": "20-second GET timeout; not interpreted as absence of cadastral coverage."},
+    {"route": "Anlu municipal homepage", "url": "https://www.anlu.gov.cn/", "outcome": "20-second GET timeout; not interpreted as absence of cadastral coverage."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [31.2597084593851, 113.688593936366] was preserved; no exact-point hit/miss inference was made.",
+    "Local registry custody and reports of internal digitized graphical data do not establish an open vector parcel service or citywide public coverage.",
+    "No stable native parcel identity plus full polygon geometry was retrieved or retained; native field mapping and CRS remain unverified.",
+    "Timeouts and absence of an identified public viewer/API are not evidence of cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable city-bounded public geometry response reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Anlu local official registry and natural-resources sources.", "verifiedOpenScope": "Local custodian and service-capability evidence only; no open parcel geometry scope.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current public parcel viewer/API availability, parcel identity semantics, geometry delivery, CRS, city-boundary relationship and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness.",
+  "retainedSample": null
+}

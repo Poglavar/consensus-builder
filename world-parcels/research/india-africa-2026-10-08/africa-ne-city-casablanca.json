@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:2076",
+  "queueRank": 94,
+  "wupCityCode": 2076,
+  "name": "Casablanca",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "centerLatLon": [
+    33.5818411354042,
+    -7.54260580529481
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 94,
+  "growthRank": null,
+  "population2025": 4457471,
+  "annualGrowthPct2015To2025": 0.960716,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/casablanca.json",
+      "status": "temporarily_unavailable"
+    },
+    {
+      "path": "research/retry/cities/casablanca.json",
+      "status": null
+    }
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-MA.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic and French",
+    "exactQuery": "الدار البيضاء المغرب المسح العقاري خريطة القطع parcelles cadastre",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.ancfcc.gov.ma/ProduitsCartographieAr/",
+      "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+      "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+      "https://ancfcc.gov.ma/Home/",
+      "https://sidimoumen.casablancacity.ma/ar/casa-maps",
+      "https://www.africabizinfo.com/ar-MA/%D8%A7%D9%84%D9%88%D9%83%D8%A7%D9%84%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9-%D9%84%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9-%D9%88%D8%A7%D9%84%D9%85%D8%B3%D8%AD_6O-0688-900208",
+      "https://www.casablancacity.ma/ar/casa-maps"
+    ],
+    "summary": "Arabic/French search surfaced ANCFCC cadastral-plan order workflow; not an open parcel service.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCartographieAr/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciersAr/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ancfcc.gov.ma/Home/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://sidimoumen.casablancacity.ma/ar/casa-maps",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.africabizinfo.com/ar-MA/%D8%A7%D9%84%D9%88%D9%83%D8%A7%D9%84%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9-%D9%84%D9%84%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A9-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A%D8%A9-%D9%88%D8%A7%D9%84%D9%85%D8%B3%D8%AD_6O-0688-900208",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.casablancacity.ma/ar/casa-maps",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Casablanca\" Morocco (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Casablanca%22+Morocco+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No open parcel polygons for Casablanca were verified. ANCFCC plan requests are tied to identity/title details and payment, so the service does not provide a public city-wide feed.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check whether ANCFCC or Casablanca’s municipality publishes a public vector layer or bounded parcel extract; treat identity-gated cadastral plans as records access, not an open feed.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Casablanca%22+Morocco+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

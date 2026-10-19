@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-5457-deesa.json",
+  "cityCode": 5457,
+  "queueRank": 3143,
+  "serviceReview": "Government of Gujarat and Banaskantha District pages evidence Deesa City/Rural Mamlatdar land-record custody and E-Dhara/AnyRoR service leads. Bounded anonymous requests to AnyRoR and the Revenue Department timed out; the State GIS portal failed default TLS verification. No safe parcel ID-plus-geometry response was exposed and no GeoJSON sample is present.",
+  "registryFound": true,
+  "registryCustodian": "Government of Gujarat, Banaskantha District Mamlatdar Office Deesa City and Deesa Rural",
+  "sourceLead": "https://banaskantha.nic.in/taluka/",
+  "requestOutcomes": [
+    {"method":"GET","url":"https://anyror.gujarat.gov.in/","outcome":"Anonymous request timed out after 15 seconds; no credentials used."},
+    {"method":"GET","url":"https://revenuedepartment.gujarat.gov.in/","outcome":"Anonymous request timed out after 15 seconds."},
+    {"method":"GET","url":"https://stategisportal.nic.in/stategisportal/Home/Map/24","outcome":"Default TLS certificate-chain verification failed; no exception was used. No JS/config/schema/CRS or bounded ID+geometry response was retained."},
+    {"method":"SEARCH","url":"https://banaskantha.nic.in/taluka/","outcome":"First-party district page confirms Deesa City/Rural offices and says Mamlatdar is custodian of taluka land records."},
+    {"method":"SEARCH","url":"https://banaskantha.nic.in/gu/divisions/%E0%AA%AE%E0%AA%BE%E0%AA%AE%E0%AA%B2%E0%AA%A4%E0%AA%A6%E0%AA%BE%E0%AA%B0-%E0%AA%93%E0%AA%AB%E0%AA%BF%E0%AA%B8/","outcome":"First-party Gujarati result confirms Deesa City/Rural Mamlatdar listings."}
+  ],
+  "scopeAndLimits": ["Local registry custody is evidenced, but citywide parcel completeness is not proven.", "No exact-point hit or miss was inferred; the WUP point was not shifted.", "No source-specific raw attributes, unsafe personal/title fields, credentials, private tokens, CAPTCHA bypass, or login were used.", "No CRS, native parcel ID field, schema, anonymous bounded response, or parcel geometry was verified.", "Runtime readiness remains held pending independent serial adapter qualification; this packet is not source integration/admission."],
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata", "retrieval date"],
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "Local Deesa custodianship and official service leads are clear, but current anonymous parcel-vector behavior, schema, CRS, native identity semantics, and coverage remain unresolved."
+}

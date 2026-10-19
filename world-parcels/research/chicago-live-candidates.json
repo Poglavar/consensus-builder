@@ -1,0 +1,32 @@
+{
+  "description": "Bounded current-source follow-up for Chicago; candidates remain research-only because live queries could not be verified.",
+  "cityId": "chicago",
+  "checkedAt": "2026-10-02",
+  "savedSource": "research/chicago.json",
+  "savedSourceVintage": "2021",
+  "status": "not_enabled",
+  "candidates": [
+    {
+      "endpoint": "https://gis12.cookcountyil.gov/arcgis/rest/services/CookViewer3Dynamic/MapServer/2025",
+      "name": "Parcel 2025",
+      "identityCandidates": [
+        "PIN10",
+        "OBJECTID"
+      ],
+      "nativeSrid": 3435
+    },
+    {
+      "endpoint": "https://gis.cookcountyil.gov/traditional/rest/services/cookviewer3DynamicLabels/MapServer/0",
+      "name": "Parcels Current",
+      "identityCandidates": [
+        "GlobalID",
+        "PARID",
+        "PIN10",
+        "PIN14"
+      ]
+    }
+  ],
+  "liveChecks": "Both official hosts timed out during direct requests; no complete bbox or exact-ID query was established.",
+  "licenceStatus": "No source-specific reuse terms established for these candidates; metadata and unrelated procurement terms are insufficient to enable them.",
+  "scopeUrl": "https://www.cookcountyil.gov/agency/geographic-information-systems-gis"
+}

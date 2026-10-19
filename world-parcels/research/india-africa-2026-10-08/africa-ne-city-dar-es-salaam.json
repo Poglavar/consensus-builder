@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3566",
+  "queueRank": 42,
+  "wupCityCode": 3566,
+  "name": "Dar es Salaam",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "centerLatLon": [
+    -6.83352843774764,
+    39.2241417477354
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 42,
+  "growthRank": null,
+  "population2025": 7795114,
+  "annualGrowthPct2015To2025": 4.029294,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/dar-es-salaam.json",
+      "status": "temporarily_unavailable"
+    },
+    {
+      "path": "research/retry/cities/dar-es-salaam.json",
+      "status": null
+    }
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-TZ.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Swahili",
+    "exactQuery": "Dar es Salaam Tanzania viwanja ramani ya ardhi vipande cadastral GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+      "https://avenix.co.tz/projects",
+      "https://www.scribd.com/document/619554482/Land-Values-in-Tanzania",
+      "https://www.lands.go.tz/uploads/documents/sw-1693121278-1456588499-MRADI%20WA%20KUPIMA%20VIWANJA%2020_000%20JIJINI%20DAR%20ES%20SALAAM.pdf",
+      "https://www.pmo.go.tz/uploads/documents/sw-1665036750-Ilani%20ya%20Uchaguzi%20ya%20Chama%20cha%20Mapinduzi%202020%20-%202025.pdf",
+      "https://play.google.com/store/apps/details?hl=en&id=tz.go.lands.ilmis_mobile",
+      "https://avenix.co.tz/",
+      "https://avenix.co.tz/services/land-survey"
+    ],
+    "summary": "Swahili searches surfaced e-Ardhi and Ministry surveying services; requests use accounts and some paid steps, no public feature endpoint.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://avenix.co.tz/projects",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.scribd.com/document/619554482/Land-Values-in-Tanzania",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.lands.go.tz/uploads/documents/sw-1693121278-1456588499-MRADI%20WA%20KUPIMA%20VIWANJA%2020_000%20JIJINI%20DAR%20ES%20SALAAM.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.pmo.go.tz/uploads/documents/sw-1665036750-Ilani%20ya%20Uchaguzi%20ya%20Chama%20cha%20Mapinduzi%202020%20-%202025.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://play.google.com/store/apps/details?hl=en&id=tz.go.lands.ilmis_mobile",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://avenix.co.tz/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://avenix.co.tz/services/land-survey",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Dar es Salaam\" United Republic of Tanzania (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Dar+es+Salaam%22+United+Republic+of+Tanzania+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Dar es Salaam parcel polygons or stable IDs were verified; e-Ardhi is an account-oriented land-service workflow, not evidence of a public city feature endpoint.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Dar es Salaam land office or e-Ardhi operator for an open map/API or anonymous bounded parcel extract and verify IDs.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Dar+es+Salaam%22+United+Republic+of+Tanzania+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

@@ -1,0 +1,109 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "nouakchott",
+  "cityId": "capital:MR:nouakchott",
+  "name": "Nouakchott",
+  "country": "Mauritania",
+  "code": "MR",
+  "centerLatLon": [
+    18.0735,
+    -15.9582
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Nouakchott municipal area and three wilayas; Ministry of Domains, State Property and Land Reform and Directorate General of Domains/Registration administer the national cadastre.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://ami.mr/fr/archives/295092",
+    "https://www.ami.mr/archives/259480",
+    "https://ami.mr/fr/archives/287772",
+    "https://habitat.gov.mr/_fr/"
+  ],
+  "registryBasis": "May 2026 official news reports a 12–14 month Nouakchott property census to create a digital database and urban maps with unique parcel IDs; January 2026 official news describes national cadastre digitization reform and AQAAR. This is direct city-specific registry activity, not an open dataset.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "citywide_cadastre_in_progress_no_open_geometry",
+  "findings": "Directly opened official AMI reporting confirms a citywide built-property census launched in Nouakchott on 12 May 2026, intended to create a digital database and urban maps. It describes 12–14 months of field collection and unique parcel IDs; completion and publication are not yet verified. An alternate archived URL timed out without an HTTP response, so the direct current French page is the controlling evidence. No finished public parcel-vector API was identified.",
+  "englishQueries": [
+    "Nouakchott Mauritania public cadastral parcel GIS map API official"
+  ],
+  "localLanguageQueries": [
+    "Nouakchott Mauritania cadastre parcellaire SIG foncier parcelles ministère habitat cadastre",
+    "نواكشوط موريتانيا السجل العقاري القطع الأرضية المخطط العقاري GIS قطع الأراضي"
+  ],
+  "searches": [
+    {
+      "query": "Nouakchott Mauritania public cadastral parcel GIS map API official",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Nouakchott Mauritania cadastre parcellaire SIG foncier parcelles ministère habitat cadastre",
+      "language": "French and Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "نواكشوط موريتانيا السجل العقاري القطع الأرضية المخطط العقاري GIS قطع الأراضي",
+      "language": "French and Arabic",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Digital parcel database and urban maps are being produced; no anonymous point-query endpoint identified.",
+  "nextStep": "Recheck after the announced 12–14 month citywide census concludes or ask the Ministry whether sanitized parcel geometries are publicly released.",
+  "coverageAssessment": {
+    "claimedScope": "Nouakchott citywide property census and modernized cadastre",
+    "verifiedOpenScope": "City-specific data creation confirmed, release and geometry not confirmed",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "French and Arabic",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://ami.mr/fr/archives/295092",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Official AMI page content returned; HTTP status not exposed.",
+      "observed": "12 May 2026 launch of Nouakchott built-property census; field collection and urban-map production planned to continue 12–14 months; digital database and unique parcel identifiers are objectives, not a published vector release."
+    },
+    {
+      "url": "https://www.ami.mr/archives/259480",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Timed out in web tool; no HTTP status or response returned."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "MR",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Nouakchott Mauritania public cadastral parcel GIS map API official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Nouakchott Mauritania cadastre parcellaire SIG foncier parcelles ministère habitat cadastre",
+      "language": "French and Arabic",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "نواكشوط موريتانيا السجل العقاري القطع الأرضية المخطط العقاري GIS قطع الأراضي",
+      "language": "French and Arabic",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

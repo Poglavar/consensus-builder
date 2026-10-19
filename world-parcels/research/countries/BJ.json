@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BJ",
+  "country": "Benin",
+  "checkedAt": "2026-09-29",
+  "status": "national_cadastre_viewer_only",
+  "cadastreAuthority": "Agence Nationale du Domaine et du Foncier (ANDF)",
+  "portalsFound": [
+    {
+      "url": "https://cadastre.andf.bj/",
+      "observation": "'Cadastre National du Benin - ANDF' web app reachable; only static shell/assets seen, no open parcel API identified"
+    },
+    {
+      "url": "https://www.andf.bj/",
+      "observation": "Agency site"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cadastre.andf.bj/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "app shell"
+    },
+    {
+      "url": "https://geoportal.andf.bj/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502"
+    },
+    {
+      "url": "https://www.andf.bj/cartographie/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "WordPress page, no service"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National land cadastre (ANDF), rollout ongoing",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Whether cadastre.andf.bj offers public parcel search or requires login is not determined.",
+  "nextStep": "Inspect cadastre.andf.bj in a browser for API calls."
+}

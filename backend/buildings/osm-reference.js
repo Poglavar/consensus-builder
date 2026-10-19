@@ -1,0 +1,415 @@
+// OSM buildings reference layer. A purely visual third survey for the "Which buildings to show?"
+// chooser: the community-mapped footprints that back the OSM/MapTiler basemap, so they overlay the
+// tiles the user sees with zero drift (unlike GDI photogrammetry or DGU cadastre). Reference only —
+// never cut, tunnelled or demolished against; it feeds nothing but the map.
+//
+// Live via Overpass (no DB, no ingestion), proxied here so we can cache and keep the endpoint/config
+// server-side. Global by construction: works for every city, including the ones with no bespoke
+// building source at all.
+//
+// The cache is keyed by a fixed GRID CELL, never by the viewport. Keying on the viewport looked like
+// a cache and was not one: the frontend refetches on every moveend, and a pan of a few metres minted
+// a new key every time, so all but the first request went to Overpass. Public Overpass answered that
+// with 429 and 504 (each surfacing as a 502 here), and the reference layer simply stopped drawing.
+// Snapped cells mean panning inside a cell is free, and a pan across one costs a single fetch.
+
+const DEFAULT_OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+// Buildings do not move; the only reason to expire at all is to pick up mapping edits eventually.
+const CACHE_TTL_MS = 60 * 60 * 1000;
+const CACHE_MAX_ENTRIES = 400;
+// ~0.005 deg is ~550 m north-south, ~390 m east-west at Zagreb's latitude: a zoom-17..19 viewport
+// covers one to four of them, so a session spent working one street re-uses the same cells.
+const OSM_CELL_DEG = 0.005;
+// After Overpass throttles us, stop asking for a while. Hammering a rate limiter is how a slow
+// layer becomes a dead one.
+const THROTTLE_COOLOFF_MS = 60 * 1000;
+const FEATURE_CAP = 8000;          // above the densest zoom-17..19 viewport; only binds pathologically
+const MAX_SPAN_DEG = 0.06;         // ~6.6 km — a safety valve; the frontend zoom-gates to small boxes
+const FETCH_TIMEOUT_MS = 25000;
+
+// A paid endpoint that refuses us (a bad key, a Referer it does not accept, the month's credits
+// spent) stays refused for a while, so we stop asking and use the next endpoint.
+const REFUSED_COOLOFF_MS = 15 * 60 * 1000;
+// Tracestrack checks the Referer against the one set in its dashboard; the public servers ignore it.
+const OVERPASS_REFERER = 'https://urbangametheory.xyz/';
+
+// Shared by every Overpass source here, per endpoint: Overpass throttles per client, not per query,
+// so a 429 for buildings must also quiet the streets source. A mirror someone plugged in has its own
+// clock, so the public server throttling us never silences it.
+const throttledUntil = new Map();
+const throttleEndsAt = endpoint => throttledUntil.get(endpoint) || 0;
+
+// The endpoints our own requests try, in order: the paid Tracestrack instance when its key is set
+// (TRACESTRACK_API_KEY, a secret, so it lives only in .env), then the public server. A user's mirror
+// (options.overpassUrl) is the only endpoint for its own requests.
+function endpointChain(options) {
+    if (options.overpassUrl) return [options.overpassUrl];
+    const chain = [];
+    const key = process.env.TRACESTRACK_API_KEY;
+    if (key && /^[A-Za-z0-9]{16,128}$/.test(key)) chain.push(`https://api.tracestrack.com/overpass/${key}/interpreter`);
+    chain.push(process.env.OVERPASS_URL || DEFAULT_OVERPASS_URL);
+    return chain;
+}
+// When the whole chain is cooling, the earliest moment one of its endpoints may be asked again.
+function chainCoolingUntil(chain) {
+    const ends = chain.map(throttleEndsAt);
+    return ends.every(end => end > cacheNow()) ? Math.min(...ends) : 0;
+}
+// For logs: the host only. Tracestrack's key is part of its URL path and must never be printed.
+function hostOf(endpoint) {
+    try { return new URL(endpoint).hostname; } catch (_) { return 'overpass'; }
+}
+
+function cacheNow() { return Date.now(); }
+
+// The fixed grid cells covering a bbox — the unit everything is fetched and cached in. Pure, so the
+// snapping (which is what makes the cache work at all) is testable without the network.
+function osmCellsForBbox(bbox, cellDeg = OSM_CELL_DEG) {
+    const [w, s, e, n] = bbox;
+    const size = Number(cellDeg) > 0 ? Number(cellDeg) : OSM_CELL_DEG;
+    const snap = value => Math.floor(value / size) * size;
+    const round = value => Math.round(value * 1e6) / 1e6; // keys must be exact, not float noise
+    const cells = [];
+    for (let x = snap(w); x < e; x += size) {
+        for (let y = snap(s); y < n; y += size) {
+            cells.push({
+                key: `${round(x)},${round(y)}`,
+                bbox: [round(x), round(y), round(x + size), round(y + size)]
+            });
+        }
+    }
+    return cells;
+}
+
+// One OSM element's tags → a metre height when the mapper recorded one, else null. `height` is
+// metres directly; `building:levels` is storeys (~3 m each). Reference only, so a missing height is
+// fine — nothing extrudes it; we pass it through for anyone who wants it.
+function osmHeightMeters(tags) {
+    if (!tags) return null;
+    const h = parseFloat(tags.height);
+    if (Number.isFinite(h) && h > 0) return h;
+    const levels = parseFloat(tags['building:levels']);
+    if (Number.isFinite(levels) && levels > 0) return levels * 3;
+    return null;
+}
+
+function positiveNumber(value) {
+    const n = parseFloat(value);
+    return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+// [w, s, e, n] of a Polygon/MultiPolygon feature, from its coordinates.
+function featureBbox(feature) {
+    let w = Infinity, s = Infinity, e = -Infinity, n = -Infinity;
+    const visit = coords => {
+        if (typeof coords[0] === 'number') {
+            if (coords[0] < w) w = coords[0];
+            if (coords[0] > e) e = coords[0];
+            if (coords[1] < s) s = coords[1];
+            if (coords[1] > n) n = coords[1];
+            return;
+        }
+        for (const child of coords) visit(child);
+    };
+    if (feature && feature.geometry) visit(feature.geometry.coordinates);
+    return [w, s, e, n];
+}
+
+// A ring of Overpass {lat,lon} points → a closed GeoJSON linear ring [[lon,lat],...]. Returns null
+// for a degenerate ring (fewer than 3 distinct points).
+function ringFromGeometry(geometry) {
+    if (!Array.isArray(geometry) || geometry.length < 3) return null;
+    const ring = [];
+    for (const p of geometry) {
+        if (!p || !Number.isFinite(p.lon) || !Number.isFinite(p.lat)) continue;
+        ring.push([p.lon, p.lat]);
+    }
+    if (ring.length < 3) return null;
+    const first = ring[0];
+    const last = ring[ring.length - 1];
+    if (first[0] !== last[0] || first[1] !== last[1]) ring.push([first[0], first[1]]);
+    return ring;
+}
+
+// Overpass `out geom;` elements → a GeoJSON FeatureCollection of building footprints. Pure and
+// side-effect-free so it is unit-testable without the network. Ways become Polygons; multipolygon
+// relations become MultiPolygons from their OUTER rings (inner courtyards are ignored — acceptable
+// for a visual reference overlay). Caps the feature count and reports whether it truncated.
+function overpassElementsToGeoJSON(elements, cap = FEATURE_CAP) {
+    const features = [];
+    let truncated = false;
+    for (const el of (Array.isArray(elements) ? elements : [])) {
+        if (!el || !el.tags || el.tags.building === undefined) continue;
+        if (features.length >= cap) { truncated = true; break; }
+
+        let geometry = null;
+        if (el.type === 'way') {
+            const ring = ringFromGeometry(el.geometry);
+            if (ring) geometry = { type: 'Polygon', coordinates: [ring] };
+        } else if (el.type === 'relation') {
+            const polygons = [];
+            for (const member of (el.members || [])) {
+                if (!member || member.type !== 'way' || member.role === 'inner') continue;
+                const ring = ringFromGeometry(member.geometry);
+                if (ring) polygons.push([ring]);
+            }
+            if (polygons.length) geometry = { type: 'MultiPolygon', coordinates: polygons };
+        }
+        if (!geometry) continue;
+
+        features.push({
+            type: 'Feature',
+            id: `${el.type[0]}${el.id}`,               // e.g. 'w123456' / 'r7890' — the OSM element id
+            geometry,
+            properties: {
+                osm_id: `${el.type[0]}${el.id}`,
+                height_m: osmHeightMeters(el.tags),
+                // The raw facts behind height_m, kept apart so the 3D provider can tell a measured
+                // height from a storey count from nothing at all (building-heights.js).
+                measured_height_m: positiveNumber(el.tags.height),
+                levels: positiveNumber(el.tags['building:levels']),
+                building: el.tags.building || null,
+                name: el.tags.name || null
+            }
+        });
+    }
+    return { type: 'FeatureCollection', features, truncated };
+}
+
+// The Overpass QL for every building (ways + multipolygon relations) inside a WGS84 box. Overpass
+// bbox order is (south,west,north,east).
+function buildOverpassQuery(bbox) {
+    const [w, s, e, n] = bbox;
+    const box = `(${s},${w},${n},${e})`;
+    return `[out:json][timeout:25];(way["building"]${box};relation["building"]["type"="multipolygon"]${box};);out geom;`;
+}
+
+/**
+ * One Overpass-backed source served cell by cell: its own cache and in-flight guard, the shared
+ * throttle. `buildQuery(cellBbox)` is the Overpass QL for one cell; `convert(elements, cap)` turns
+ * its `out geom` elements into { features, truncated }. Returns `fetchBbox(bbox, options)`, which
+ * fetches a WGS84 bbox [minLon, minLat, maxLon, maxLat] and returns a FeatureCollection with
+ * `truncated` (a cell hit the cap) and `partial` (some cell could not be fetched). It throws (with
+ * .status and .retryAfter) only when nothing at all could be served.
+ */
+function createOverpassCellSource({ label, buildQuery, convert, featureCap = FEATURE_CAP }) {
+    // In-memory cache, one entry per grid cell. Bounded to avoid unbounded growth.
+    const cache = new Map();
+    // One in-flight request per cell: a viewport spanning four cells, fired twice by two moveend
+    // events, must be four Overpass calls and not eight.
+    const inFlight = new Map();
+
+    // One Overpass request to ONE endpoint → { features, truncated }. Throws with .status on failure,
+    // after starting that endpoint's cool-off when it throttled, refused or did not answer.
+    async function queryEndpoint(overpassUrl, bbox, options, cap) {
+        const own = !options.overpassUrl;
+        // A user's mirror goes through the public-URL guard (options.fetchImpl); ours do not need it.
+        const fetchImpl = options.fetchImpl || fetch;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+        const started = cacheNow();
+        let json;
+        try {
+            let resp;
+            try {
+                resp = await fetchImpl(overpassUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        // OSM's Overpass usage policy REQUIRES a descriptive User-Agent; requests without
+                        // one are rejected with HTTP 406. Node's fetch sends none, so set it explicitly.
+                        'User-Agent': 'consensus-builder/1.0 (+https://urbangametheory.xyz)',
+                        ...(own ? { Referer: OVERPASS_REFERER } : {})
+                    },
+                    body: `data=${encodeURIComponent(buildQuery(bbox))}`,
+                    signal: controller.signal
+                });
+            } catch (err) {
+                // No answer at all (timeout, network): asking again at once would only wait again.
+                throttledUntil.set(overpassUrl, cacheNow() + THROTTLE_COOLOFF_MS);
+                throw err;
+            }
+            if (!resp.ok) {
+                // 429 (too many requests) and 504 (the query queue timed out) both mean the same
+                // thing to us: back off. 401/402/403 is a paid endpoint refusing the key, the Referer
+                // or a spent month. Anything else is a genuine upstream failure.
+                const throttled = resp.status === 429 || resp.status === 504;
+                const refused = [401, 402, 403].includes(resp.status);
+                if (throttled) throttledUntil.set(overpassUrl, cacheNow() + THROTTLE_COOLOFF_MS);
+                if (refused) throttledUntil.set(overpassUrl, cacheNow() + REFUSED_COOLOFF_MS);
+                const err = new Error(`Overpass HTTP ${resp.status} from ${hostOf(overpassUrl)} (${label}): ${(await resp.text()).slice(0, 200)}`);
+                err.status = throttled ? 503 : 502;
+                if (refused) console.error(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} refused us (HTTP ${resp.status}); not asking it again for ${REFUSED_COOLOFF_MS / 60000} min`);
+                throw err;
+            }
+            json = await resp.json();
+        } finally {
+            clearTimeout(timer);
+        }
+        const fc = convert(json && json.elements, cap, json);
+        if (own) console.log(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(overpassUrl)} answered in ${cacheNow() - started} ms (${fc.features.length} features)`);
+        return fc;
+    }
+
+    // One Overpass request for a WGS84 bbox, trying the endpoint chain in order and skipping any
+    // that is cooling off. Throws the last failure when none answered.
+    async function queryOverpass(bbox, options, cap) {
+        let failure = null;
+        for (const endpoint of endpointChain(options)) {
+            if (throttleEndsAt(endpoint) > cacheNow()) continue;
+            try {
+                return await queryEndpoint(endpoint, bbox, options, cap);
+            } catch (err) {
+                failure = err;
+                console.warn(`[${new Date().toISOString()}] [osm ${label}] ${hostOf(endpoint)} failed (${err.status || err.name}): ${String(err.message).split(':')[0]}`);
+            }
+        }
+        const err = failure || new Error('Every Overpass endpoint is backing off');
+        err.status = err.status || 503;
+        throw err;
+    }
+
+    function remember(key, fc) {
+        if (cache.size >= CACHE_MAX_ENTRIES) cache.clear();
+        cache.set(key, { at: cacheNow(), fc });
+    }
+
+    // Several missing cells in ONE request over their union, split back into the per-cell cache. A
+    // 3D scene's 300 m radius spans about six cells; asked one by one, a cold load took 30 s and
+    // the public server refused part of it. Each cell keeps every feature that overlaps it, exactly
+    // what a per-cell query returns, so later pans reuse the cells as before.
+    async function fetchCells(cells, options) {
+        const union = [
+            Math.min(...cells.map(c => c.bbox[0])), Math.min(...cells.map(c => c.bbox[1])),
+            Math.max(...cells.map(c => c.bbox[2])), Math.max(...cells.map(c => c.bbox[3]))
+        ];
+        const request = queryOverpass(union, options, featureCap * cells.length).then(fc => {
+            const boxes = fc.features.map(featureBbox);
+            for (const cell of cells) {
+                const [w, s, e, n] = cell.bbox;
+                const features = fc.features.filter((_, i) => {
+                    const [fw, fs, fe, fn] = boxes[i];
+                    return !(fe < w || fw > e || fn < s || fs > n);
+                });
+                remember(cell.key, { type: 'FeatureCollection', features, truncated: fc.truncated === true });
+            }
+            return fc;
+        });
+        for (const cell of cells) inFlight.set(cell.key, request);
+        try {
+            await request;
+        } finally {
+            for (const cell of cells) inFlight.delete(cell.key);
+        }
+    }
+
+    // Fetch ONE grid cell from Overpass, with the in-flight guard. Throws with .status on failure.
+    async function fetchCell(cell, options) {
+        const cached = cache.get(cell.key);
+        if (cached && (cached.at + CACHE_TTL_MS) > cacheNow()) return cached.fc;
+        if (inFlight.has(cell.key)) {
+            await inFlight.get(cell.key);
+            const settled = cache.get(cell.key);
+            if (settled) return settled.fc;
+        }
+
+        const request = queryOverpass(cell.bbox, options, featureCap).then(fc => {
+            remember(cell.key, fc);
+            return fc;
+        });
+
+        inFlight.set(cell.key, request);
+        try {
+            return await request;
+        } finally {
+            inFlight.delete(cell.key);
+        }
+    }
+
+    return async function fetchBbox(bbox, options = {}) {
+        const [w, s, e, n] = bbox;
+        if (![w, s, e, n].every(Number.isFinite)) {
+            const err = new Error('Invalid bbox');
+            err.status = 400;
+            throw err;
+        }
+        if ((e - w) > MAX_SPAN_DEG || (n - s) > MAX_SPAN_DEG || e <= w || n <= s) {
+            const err = new Error(`bbox too large or malformed for the OSM ${label} source`);
+            err.status = 400;
+            throw err;
+        }
+
+        // Cache entries are per source: what a user's mirror answered must never be served to anyone
+        // reading the default. Our own endpoints serve the same data, so they share one scope.
+        const chain = endpointChain(options);
+        const scope = options.overpassUrl || 'default';
+        const cells = osmCellsForBbox(bbox, options.cellDeg).map(cell => ({ ...cell, key: `${scope}|${cell.key}` }));
+        const cooling = chainCoolingUntil(chain) > cacheNow();
+        const features = [];
+        const seen = new Set();
+        let truncated = false;
+        let partial = false;
+        let failure = null;
+
+        const isFresh = cell => {
+            const cached = cache.get(cell.key);
+            return cached && (cached.at + CACHE_TTL_MS) > cacheNow();
+        };
+        const missing = cells.filter(cell => !isFresh(cell) && !inFlight.has(cell.key));
+        // Cells whose combined request just failed. They are not retried one by one: a server that
+        // timed out or throttled the union will do the same per cell, and against a dead mirror the
+        // retries kept the person waiting minutes (six cells × the timeout) before hearing anything.
+        const failedTogether = new Set();
+        if (!cooling && missing.length > 1) {
+            try {
+                await fetchCells(missing, options);
+            } catch (err) {
+                failure = err;
+                for (const cell of missing) failedTogether.add(cell.key);
+                console.warn(`[${new Date().toISOString()}] [osm ${label}] one request for ${missing.length} cells failed (${err.status || err.name}): ${err.message}`);
+            }
+        }
+
+        for (const cell of cells) {
+            const cached = cache.get(cell.key);
+            const fresh = cached && (cached.at + CACHE_TTL_MS) > cacheNow();
+            // While cooling off, serve what is already held and ask Overpass for nothing.
+            if (!fresh && (cooling || failedTogether.has(cell.key))) { partial = true; continue; }
+            let fc = fresh ? cached.fc : null;
+            if (!fc) {
+                try {
+                    fc = await fetchCell(cell, options);
+                } catch (err) {
+                    failure = err;
+                    partial = true;
+                    continue;
+                }
+            }
+            if (fc.truncated) truncated = true;
+            // A feature on a cell boundary comes back in both cells.
+            for (const feature of fc.features) {
+                if (seen.has(feature.id)) continue;
+                seen.add(feature.id);
+                features.push(feature);
+            }
+        }
+
+        if (!features.length && (failure || cooling)) {
+            const err = failure || new Error('Overpass is rate-limiting us; backing off');
+            err.status = err.status || 503;
+            const until = chainCoolingUntil(chain);
+            if (until > cacheNow()) err.retryAfter = Math.ceil((until - cacheNow()) / 1000);
+            throw err;
+        }
+        return { type: 'FeatureCollection', features, truncated, partial };
+    };
+}
+
+// Fetch building footprints inside a WGS84 bbox [minLon, minLat, maxLon, maxLat], cell by cell.
+const fetchOsmBuildings = createOverpassCellSource({
+    label: 'buildings',
+    buildQuery: buildOverpassQuery,
+    convert: overpassElementsToGeoJSON
+});
+
+export { overpassElementsToGeoJSON, buildOverpassQuery, osmHeightMeters, osmCellsForBbox, fetchOsmBuildings, createOverpassCellSource };

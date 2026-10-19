@@ -1,0 +1,60 @@
+{
+ "kind": "country",
+ "key": "SK",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: sk-SK,sk;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://zbgisws.skgeodesy.sk/inspire_cadastralparcels_wfs/service.svc/get?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://zbgis.skgeodesy.sk/mapka/sk/kataster",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://kataster.skgeodesy.sk/eskn/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://www.skgeodesy.sk/sk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html;charset=utf-8",
+   "assessment": "UGKK homepage; links kataster.skgeodesy.sk, katasterportal.skgeodesy.sk, kataster.vugk.sk, zbgis.skgeodesy.sk, zbgis.skgeodesy.sk/rts/sk"
+  },
+  {
+   "url": "https://zbgis.skgeodesy.sk/ | https://zbgis.skgeodesy.sk/rts/sk | https://kataster.skgeodesy.sk/ | https://katasterportal.skgeodesy.sk | https://kataster.vugk.sk | https://zbgisws.skgeodesy.sk/ | https://www.geoportal.sk/ | https://inspire.skgeodesy.sk/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://data.slovensko.sk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "524-byte shell, CKAN API path returned the same HTML; no dataset list"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "only the subdomains zbgis/kataster/zbgisws/geoportal fail while www.skgeodesy.sk answers 200 from this same network; suggests IP/geo filtering or proxy policy",
+ "notes": "Viewer inspection impossible: every viewer/service subdomain fails at connect while the www host answers, so the block is host-specific. Correct viewer/service hostnames now confirmed from the UGKK homepage.",
+ "nextStep": "Retry from an EU/Slovak network; inspect zbgis.skgeodesy.sk JS for the real WFS/REST URL, then GetFeature count=3 in a small bbox."
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 11,
+  "city": "Karachi",
+  "countryCode": "PK",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/karachi.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Arabic",
+    "text": "کراچی کڈسٹرل پارسل GIS کھاتہ سروے پلاٹ نقشہ زمین ڈیٹا"
+  },
+  "results": [
+    {
+      "title": "Sindh CLICK Karachi property survey",
+      "url": "https://click.gos.pk/kps",
+      "kind": "official-city-survey",
+      "note": "Says GIS/MIS survey covers residential, commercial and industrial properties; public parcel geometry/export and stable parcel IDs not shown."
+    },
+    {
+      "title": "Sindh Board of Revenue Sindh Zameen property cards",
+      "url": "https://www.sindhzameen.gos.pk/RuledCard.aspx",
+      "kind": "official-records-viewer",
+      "note": "Provides property-card lookup for 20 Sindh cities, explicitly excluding Karachi."
+    }
+  ],
+  "assessment": "Official sources describe Karachi’s GIS property survey and Sindh’s records portals, but neither result verifies public citywide parcel polygons or a stable-ID feature endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "durban",
+      "sourceId": "za-ethekwini-cadastral-parcels",
+      "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0175,
+            -29.8625,
+            31.02,
+            -29.86
+          ],
+          "count": 105,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.02,
+            -29.8625,
+            31.0225,
+            -29.86
+          ],
+          "count": 121,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0225,
+            -29.8625,
+            31.025,
+            -29.86
+          ],
+          "count": 101,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0175,
+            -29.86,
+            31.02,
+            -29.857499999999998
+          ],
+          "count": 151,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.02,
+            -29.86,
+            31.0225,
+            -29.857499999999998
+          ],
+          "count": 137,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0225,
+            -29.86,
+            31.025,
+            -29.857499999999998
+          ],
+          "count": 116,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0175,
+            -29.857499999999998,
+            31.02,
+            -29.855
+          ],
+          "count": 102,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.02,
+            -29.857499999999998,
+            31.0225,
+            -29.855
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0225,
+            -29.857499999999998,
+            31.025,
+            -29.855
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.025,
+            -29.8625,
+            31.0275,
+            -29.86
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0275,
+            -29.8625,
+            31.03,
+            -29.86
+          ],
+          "count": 62,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.03,
+            -29.8625,
+            31.0325,
+            -29.86
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.025,
+            -29.86,
+            31.0275,
+            -29.857499999999998
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0275,
+            -29.86,
+            31.03,
+            -29.857499999999998
+          ],
+          "count": 104,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.03,
+            -29.86,
+            31.0325,
+            -29.857499999999998
+          ],
+          "count": 91,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.025,
+            -29.857499999999998,
+            31.0275,
+            -29.855
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0275,
+            -29.857499999999998,
+            31.03,
+            -29.855
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.03,
+            -29.857499999999998,
+            31.0325,
+            -29.855
+          ],
+          "count": 74,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          31.025,
+          -29.857499999999998,
+          31.0275,
+          -29.855
+        ],
+        "forcedPageSize": 3,
+        "count": 18,
+        "returned": 18,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 1199,
+      "exactResolved": 1199,
+      "nativeIds": [
+        "{DDF16384-7E2F-40AD-8947-3451CE572BD4}",
+        "{4FB475B0-047C-44F5-A7AB-A4B5C5A335E0}",
+        "{592B422D-ABB4-43AC-9B8A-BD29B746D672}"
+      ],
+      "footprintCount": 7,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:za-ethekwini-cadastral-parcels",
+        "parcels": 1,
+        "siteM2": 391.86
+      },
+      "requests": 211
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11993",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-11993-hojai.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/hojai-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-11993-hojai-sample.geojson",
+    "tmp/valhalla-parcel-research/11993/parcel-1.json",
+    "tmp/valhalla-parcel-research/11993/parcel-2.json",
+    "tmp/valhalla-parcel-research/11993/parcel-3.json"
+  ],
+  "checkedAt": "2026-10-11T16:13:09Z",
+  "reason": "Queue identity and English/Assamese search records match. Three safe native-ID MultiPolygons match original first-party parcel_info responses after EPSG:32646-to-4326 conversion. This only proves Hojai Town No. 1 bounded discovery. Fresh adapter exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS overlap/operation checks, source binding, and headed Details verification are not evidenced; hold without runtime admission.",
+  "custodyFinding": "true in the packet, supported by the first-party Assam parcel responses; no citywide completeness claim",
+  "retainedFullPolygons": 3,
+  "runtimeAdmitted": false
+}

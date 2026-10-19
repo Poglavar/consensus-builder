@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:159",
+  "queueRank": 159,
+  "name": "Gujranwala",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "centerLatLon": [
+    32.159839336667,
+    74.1830024916886
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://punjab-zameen.gov.pk/",
+      "observation": "Punjab Land Records Authority (PLRA) portal; React single-page app for land records (fard/mutation). No documented open parcel polygon API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://punjab-zameen.gov.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA shell only"
+    },
+    {
+      "url": "https://punjab-zameen.gov.pk/api/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "returns same SPA shell; no API"
+    },
+    {
+      "url": "https://plra.punjab.gov.pk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://lrmis.punjab.gov.pk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://gis.punjab.gov.pk/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://opendata.punjab.gov.pk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://pgis.punjab.gov.pk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Punjab province land records (PLRA)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Several Punjab government hosts were unreachable from this network, so a GIS service is not ruled out; the PLRA app likely uses backend calls not documented as open.",
+  "nextStep": "Retry Punjab GIS/PLRA hosts; inspect PLRA's public map ('Geo-referenced Khasra') for a documented endpoint and terms; test a bounded Gujranwala query."
+}

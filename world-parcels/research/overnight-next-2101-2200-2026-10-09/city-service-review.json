@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_service_review",
+  "checkedAt": "2026-10-10",
+  "cityCode": 7192,
+  "queueRank": 2103,
+  "cityRecord": "city-7192-city.json",
+  "city": "جیرفت",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "wupPoint": [28.6771649742164, 57.7446086306505],
+  "status": "held",
+  "registryFound": true,
+  "registryBasis": "Local Jiroft Registry of Deeds and Properties office activity and cadastral/title procedures are evidenced by Persian reporting and local office references. This distinguishes local registry custody from general national cadastral policy; neither establishes an open parcel-vector API.",
+  "assessment": "Attempt 1 found local registry/procedure evidence but no independently verified anonymous public parcel geometry. The national portals were either policy/procedure material or unavailable by DNS from this environment. Runtime remains held.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointHitTest": false
+  },
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata", "HTTP status/content type"],
+  "searchQueries": [
+    {"language": "English", "query": "Jiroft Iran official cadastral parcel map GIS land registry", "outcome": "National cadastral/land-management context and local registry reporting found; no public Jiroft parcel geometry route.", "actualResultUrls": ["https://nezamat.ir/post-44174/", "https://www.tasnimnews.ir/fa/news/1392/11/24/282347/%D8%B5%D8%AF%D9%88%D8%B1-1062-%D9%81%D9%82%D8%B1%D9%87-%D8%B3%D9%86%D8%AF-%D9%85%D8%A7%D9%84%DA%A9%DB%8C%D8%AA-%D8%B4%D8%AE%D8%B5%DB%8C-%D8%AF%D8%B1-%D8%AC%DB%8C%D8%B1%D9%81%D8%AA"]},
+    {"language": "Persian", "query": "جیرُفت کاداستر نقشه قطعات زمین سامانه رسمی ثبت اسناد GIS", "outcome": "Local registry and cadastral procedure evidence found; no anonymous safe ID-plus-geometry response or public service schema.", "actualResultUrls": ["https://www.tasnimnews.ir/fa/news/1392/11/24/282347/%D8%B5%D8%AF%D9%88%D8%B1-1062-%D9%81%D9%82%D8%B1%D9%87-%D8%B3%D9%86%D8%AF-%D9%85%D8%A7%D9%84%DA%A9%DB%8C%D8%AA-%D8%B4%D8%AE%D8%B5%DB%8C-%D8%AF%D8%B1-%D8%AC%DB%8C%D8%B1%D9%81%D8%AA", "https://notary496.blogfa.com/post/748", "https://nezamat.ir/post-44174/"]}
+  ],
+  "requestOutcomes": [
+    {"url": "https://www.ssaa.ir/", "method": "GET; anonymous; TLS verification enabled", "outcome": "DNS resolution failed; no inference of national source absence."},
+    {"url": "https://shamim.ssaa.ir/", "method": "GET; anonymous; TLS verification enabled", "outcome": "Not reached after bounded DNS failure; no login, credentials, or TLS bypass."}
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "crs": null, "exactWupPointTest": "Not performed against a verified cadastral endpoint; exact point preserved and not shifted."},
+  "coverageAssessment": {"claimedScope": "Jiroft local registry/procedure evidence and Iranian national cadastral-service discovery.", "verifiedOpenScope": "Local registry custody only; no anonymous parcel geometry.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "qualification": {"verifiedParcelGeometry": false, "verifiedNativeIdentity": false, "runtimeReadiness": "held"},
+  "uncertainty": "A provincial/local GIS service may exist outside the discovered public routes or require controlled access. Missing endpoints, DNS failure, and lack of exact-point testing do not establish citywide absence.",
+  "conclusion": "No adapter qualification or GeoJSON sample is justified on attempt 1 of 3; packet is complete as a held research result."
+}

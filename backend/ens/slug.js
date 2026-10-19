@@ -7,8 +7,10 @@
 // Per-city id prefixes, mirroring the formats produced by the backend parcel
 // routes / mint scripts. Order matters: US-NY-/US-CO- are checked before bare
 // patterns. Buenos Aires uses a bare SMP (e.g. 001-005-027A) with no prefix.
+// Croatia's ids (HR-<ko>-<number>) come from one countrywide cadastre and name
+// no city (Zagreb, Split and Šibenik share it): their city is where the parcel
+// lies (routes/ens.js, jurisdiction.js), not a prefix.
 const CITIES = [
-    { cityId: 'zagreb', cityCode: 'zg', test: (id) => id.startsWith('HR-') },
     { cityId: 'new_york', cityCode: 'ny', test: (id) => id.startsWith('US-NY-') },
     { cityId: 'colorado', cityCode: 'co', test: (id) => id.startsWith('US-CO-') },
     { cityId: 'ljubljana', cityCode: 'lj', test: (id) => id.startsWith('SI-') },
@@ -18,7 +20,6 @@ const CITIES = [
 
 // Human-readable city names, keyed by cityId — used in ENS `description` records.
 const CITY_NAMES = {
-    zagreb: 'Zagreb',
     new_york: 'New York',
     colorado: 'Colorado',
     ljubljana: 'Ljubljana',

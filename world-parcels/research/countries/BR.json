@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BR",
+  "country": "Brazil",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "Serviço Florestal Brasileiro - SICAR / Cadastro Ambiental Rural (CAR), national rural property perimeters (self-declared); INCRA SIGEF (certified rural parcels); urban lots are municipal",
+  "portalsFound": [
+    {
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+      "observation": "SICAR GeoServer; WFS GetFeature works for per-state layers sicar:sicar_imoveis_<uf>; GetCapabilities lists no feature types"
+    },
+    {
+      "url": "https://acervofundiario.incra.gov.br/",
+      "observation": "INCRA Acervo Fundiario/SIGEF; connection reset from this client (retry)"
+    },
+    {
+      "url": "https://consultapublica.car.gov.br/publico/imoveis/index",
+      "observation": "CAR public consultation; redirect loop from this client"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&count=2&outputFormat=application/json&bbox=-47.80,-15.97,-47.79,-15.96,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "2 MultiPolygon rural properties, Brasilia DF"
+    },
+    {
+      "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sp&count=2&outputFormat=application/json&bbox=-46.74,-21.86,-46.73,-21.85,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "2 rural properties, Aguas da Prata SP"
+    },
+    {
+      "url": "https://acervofundiario.incra.gov.br/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://sigef.incra.gov.br/api/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "br-sicar-car-imoveis",
+    "requestUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_df&count=2&outputFormat=application/json&bbox=-47.80,-15.97,-47.79,-15.96,EPSG:4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -47.8,
+      -15.97,
+      -47.79,
+      -15.96
+    ],
+    "parcelRecordCount": 2,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "cod_imovel",
+    "responseFile": null,
+    "pagination": "WFS startIndex/count",
+    "regionSampled": "Distrito Federal and Sao Paulo (per-state layers, same schema)"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rural properties (CAR self-declared perimeters) nationwide, one layer per state; excludes urban lots",
+    "regionsVerified": [
+      "DF",
+      "SP"
+    ],
+    "nationwideVerified": true
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "CAR polygons are self-declared environmental registrations, not the legal cadastre; INCRA SIGEF certified parcels not reached. Urban lot cadastre is municipal (e.g. Belo Horizonte blocked in city research). Licence not read.",
+  "nextStep": "Retry INCRA acervofundiario/SIGEF WFS; state SP/MG etc. layer list."
+}

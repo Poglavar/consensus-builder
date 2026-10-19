@@ -1,0 +1,24 @@
+{
+  "taskId": "city:12035",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-12035-jorhat.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/jorhat-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:47:41Z",
+  "reason": "WUP rank 2556, code 12035, India, point [26.7506392479825,94.197392094367], and 229980 persons match the immutable queue and ranked roster. English and Assamese queries with result URLs and outcomes are recorded in the paired packet. The saved original anonymous proxy responses are three 401 Unauthorized errors; no native parcel ID or polygon was obtained. This access wall cannot establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed details-panel verification are not evidenced.",
+  "geometryReview": {
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

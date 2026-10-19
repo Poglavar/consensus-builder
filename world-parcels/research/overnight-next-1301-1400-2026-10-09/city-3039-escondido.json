@@ -1,0 +1,81 @@
+{
+  "cityCode": 3039,
+  "queueRank": 1356,
+  "name": "Escondido",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso3": "USA",
+  "point": [33.1691791253299, -117.195352456462],
+  "population2025": 415167,
+  "population2025k": 415.167,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The City of Escondido's official GIS parcel layer is a local public parcel registry/map service. It is derived from San Diego County assessor parcels and also contains proposed and retired parcels; the layer is keyed to APN except for proposed placeholder APNs.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:escondido.gov GIS parcel map Escondido official parcel data API",
+        "result": "Found the City of Escondido official Planning/Maps pages and the City's official GIS ArcGIS parcel layer and REST service.",
+        "actualResultUrls": [
+          "https://www.escondido.gov/237/Planning",
+          "https://www.escondido.gov/969/Maps",
+          "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "English (United States local usage)",
+        "query": "Escondido mapa parcelas GIS oficial",
+        "result": "The local-language-style discovery query did not identify a distinct Spanish-language official parcel service; the official English City GIS parcel service was the authoritative result for this US locality.",
+        "actualResultUrls": [
+          "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+          "https://www.escondido.gov/237/Planning"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.escondido.gov/237/Planning",
+      "role": "City of Escondido official Planning page",
+      "observation": "HTTP 200; provides public zoning/property-information context and a parcel lookup link."
+    },
+    {
+      "url": "https://gis.escondido.gov/server/rest/services/Data/Parcels/FeatureServer/0",
+      "role": "City of Escondido official ArcGIS parcel FeatureServer layer",
+      "observation": "HTTP 200; polygon layer named Parcels, supports Query and GeoJSON, max record count 2000, CRS 102646, safe identity fields include OBJECTID and APN. The description states the data is derived from San Diego County assessor parcels and includes proposed/retired parcels and stacked parcels."
+    },
+    {
+      "url": "https://gis.escondido.gov/server/rest/services/Data/Parcels/MapServer/0",
+      "role": "City of Escondido official ArcGIS parcel MapServer layer metadata",
+      "observation": "HTTP 200; confirms polygon geometry, APN display/native parcel key semantics, source description, and public query operations."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sampleCount": 3,
+    "sampleFile": "escondido-parcel-samples.geojson",
+    "reason": "A bounded anonymous query by objectIds=1,2,3 returned three full polygon geometries as GeoJSON with safe native parcel identities. The exact WUP point query returned zero features, and a bounded 0.02-degree envelope around the point also returned zero; neither is treated as evidence of citywide absence or used to shift the point."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Escondido official GIS parcel layer.",
+    "verifiedOpenScope": "Public layer metadata and anonymous ID+geometry responses were verified. The service description covers the City layer, but this attempt did not independently prove complete current citywide parcel coverage or exact-point containment.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "sourceSchema": {
+    "nativeIdentity": "APN, with OBJECTID as service object identifier; proposed parcels may use temporary placeholder APNs.",
+    "nativeFieldsObserved": ["OBJECTID", "APN", "ASSETSTATUS", "ESC_FULLADDR", "ESC_OWNNAME", "ESC_OWNADDR", "shape"],
+    "safeFieldsRequested": ["OBJECTID", "APN", "ASSETSTATUS", "geometry"],
+    "unsafeFieldsNotRequested": ["ESC_FULLADDR", "ESC_OWNNAME", "ESC_OWNADDR", "legal description", "assessed values"],
+    "crs": "ESRI 102646 / NAD83 California VI feet; retained sample coordinates were requested in EPSG:4326 GeoJSON.",
+    "compositeKeyProvenance": null
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

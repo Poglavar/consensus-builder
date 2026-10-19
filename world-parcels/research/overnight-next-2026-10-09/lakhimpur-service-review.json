@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9571-lakhimpur.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official district and state routes confirm land-record access; UP’s dashboard shows digitized cadastral-map and georeferencing work for villages in the district. These pages do not supply a safe anonymous full-polygon response at the unchanged settlement point.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kheri.nic.in/service/land-record/",
+      "observation": "Official district administration Land Record page links the state UP Bhulekh portal."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "Official Uttar Pradesh Bhulekh portal provides land records; records are accessed by administrative area and plot identifiers."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=153&tehsilCode=00801",
+      "observation": "Official UP government dashboard reports digitization/georeferencing and Bhunaksha linkage by revenue village for Lakhimpur Kheri; this is an implementation-status report, not a safe geometry response at the WUP centroid."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Lakhimpur Kheri official land records cadastral maps tehsil Bhulekh parcel map",
+      "resultUrls": [
+        "https://kheri.nic.in/service/land-record/",
+        "https://kheri.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+        "https://upbhulekh.gov.in/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=153&tehsilCode=00801"
+      ],
+      "result": "The English search returned the official UP cadastral-map digitization dashboard and Lakhimpur Kheri district land-record entry. The dashboard reports village/map digitization and Bhunaksha linkage but not a feature response.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Hindi",
+      "query": "लखीमपुर खीरी आधिकारिक भूलेख भू नक्शा तहसील राजस्व भूमि अभिलेख",
+      "resultUrls": [
+        "https://kheri.nic.in/service/land-record/",
+        "https://kheri.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+        "https://upbhulekh.gov.in/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=153&tehsilCode=00801"
+      ],
+      "result": "The Hindi search surfaced the official district Land Records page and state Bhulekh portal, confirming record access. No safe geometry-only endpoint or exact point response was verified.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official district and state routes confirm land-record access; UP’s dashboard shows digitized cadastral-map and georeferencing work for villages in the district. These pages do not supply a safe anonymous full-polygon response at the unchanged settlement point.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://kheri.nic.in/service/land-record/",
+      "result": "Official district administration Land Record page links the state UP Bhulekh portal."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "result": "Official Uttar Pradesh Bhulekh portal provides land records; records are accessed by administrative area and plot identifiers."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=153&tehsilCode=00801",
+      "result": "Official UP government dashboard reports digitization/georeferencing and Bhunaksha linkage by revenue village for Lakhimpur Kheri; this is an implementation-status report, not a safe geometry response at the WUP centroid."
+    }
+  ],
+  "remainingUncertainty": "The public portal may render cadastral sheets or require plot/village selection; no schema or exact-point geometry response was verified. No owner-oriented lookup was attempted.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9571,
+      "url": "https://kheri.nic.in/service/land-record/",
+      "checkedAt": "2026-10-09T07:10:45.298014+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://kheri.nic.in/service/land-record/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 121475,
+      "sha256": "969c4ab143ece1d69b09e33622a7abe277543a2ebd93b7e11029876a9279877f",
+      "complete": true
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Official district and state routes confirm land-record access; UP’s dashboard shows digitized cadastral-map and georeferencing work for villages in the district. These pages do not supply a safe anonymous full-polygon response at the unchanged settlement point.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "cityCode": 3528,
+  "queueRank": 1387,
+  "name": "Hat Yai",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "iso3": "THA",
+  "point": [7.00808972990678, 100.473261275137],
+  "population2025": 407059,
+  "population2025k": 407.059,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The official Department of Lands Songkhla Provincial Land Office identifies the Hat Yai branch and its Hat Yai district responsibility; the Ministry/Department of Lands LandsPublic viewer is an official public map channel. This establishes a real local cadastral custodian and public map service, but not open cadastral parcel-vector integration for this packet.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hat Yai Thailand official cadastral parcel map GIS land records Department of Lands",
+        "result": "Found the official Department of Lands LandsPublic viewer, the Department of Lands home page linking LandsMaps and land-record services, and the official Songkhla Provincial Land Office pages. The current viewer JavaScript exposed a public point-query route and GeoServer WFS/WMS routes. No safe cadastral parcel polygon/native parcel identity was returned.",
+        "actualResultUrls": [
+          "https://portal.dol.go.th/landspublic/",
+          "https://www.dol.go.th/home/",
+          "https://www.dol.go.th/songkhla/",
+          "https://www.dol.go.th/songkhla/contact/"
+        ]
+      },
+      {
+        "language": "Thai",
+        "query": "หาดใหญ่ แผนที่โฉนดที่ดิน ระบบสารสนเทศภูมิศาสตร์ กรมที่ดิน",
+        "result": "พบ LandsPublic ของกรมที่ดินและเว็บไซต์สำนักงานที่ดินจังหวัดสงขลา ซึ่งระบุสำนักงานที่ดินจังหวัดสงขลา สาขาหาดใหญ่และบริการค้นหารูปแปลง/สืบค้น น.ส.ล. การค้นพบภาษาไทยไม่ได้เปิดเผยชุดข้อมูลพัสดุที่ดินแบบไม่ระบุตัวตนที่สามารถเก็บเป็นรูปหลายเหลี่ยมได้",
+        "actualResultUrls": [
+          "https://portal.dol.go.th/landspublic/",
+          "https://www.dol.go.th/songkhla/home/",
+          "https://www.dol.go.th/songkhla/contact/",
+          "https://www.dol.go.th/songkhla/parcel/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://portal.dol.go.th/landspublic/",
+      "role": "Department of Lands official LandsPublic viewer",
+      "observation": "Current public viewer fetched successfully. Its current JavaScript declares the point query https://portal.dol.go.th/api/nsldata/search-by-point?lat={lat}&lng={lng}, GeoServer WMS/WFS routes, and public-land layer DOLNSL; the viewer is not evidence that cadastral parcels are openly downloadable."
+    },
+    {
+      "url": "https://portal.dol.go.th/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "role": "Official Department of Lands GeoServer WFS capabilities",
+      "observation": "Anonymous capabilities returned HTTP 200 and EPSG:4326 feature types province, amphoe, tambol, DOL_Bound, and DOLNSL (public land). No cadastral parcel feature type was listed."
+    },
+    {
+      "url": "https://www.dol.go.th/songkhla/contact/",
+      "role": "Songkhla Provincial Land Office official contact/custodian page",
+      "observation": "Identifies the Songkhla Provincial Land Office and its official contact details. Search results and the official provincial site identify the Hat Yai branch."
+    },
+    {
+      "url": "https://www.dol.go.th/songkhla/home/",
+      "role": "Songkhla Provincial Land Office official home page",
+      "observation": "Lists official services including parcel-shape search and public-land (NSL) lookup and identifies Hat Yai in the responsibility search context."
+    },
+    {
+      "url": "https://www.dol.go.th/media/716929789247754240/migration/2025/10/uzcU4HVeNxt86n3ykWoKd09s.PDF",
+      "role": "Official Ministry of Interior / Department of Lands notice",
+      "observation": "Official notice states that Songkhla Provincial Land Office Hat Yai Branch has Hat Yai district in its operating responsibility for deed issuance, surveying, registration, and related real-property matters."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native cadastral parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and was not shifted; a point-query no-data response and a zero-result public-land query do not establish citywide cadastral absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Department of Lands LandsPublic viewer/configuration, official GeoServer WMS/WFS capabilities, exact WUP point request, bounded public-land WFS request, and Songkhla/Hat Yai land-office custodian pages.",
+    "verifiedOpenScope": "Official service and local custodian provenance were verified. The exposed WFS is limited to administrative/public-land layers; cadastral parcel schema, native parcel identity, parcel CRS/geometry, exact-point containment, and citywide coverage were not verified.",
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "safe parcel/native ID only if publicly returned and non-personal",
+    "geometry",
+    "CRS or coordinate-system metadata",
+    "non-personal layer/schema metadata",
+    "administrative hierarchy codes and names"
+  ],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

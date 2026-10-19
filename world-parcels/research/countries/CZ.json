@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CZ",
+  "country": "Czechia",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "Czech Office for Surveying, Mapping and Cadastre (CUZK); parcels published via RUIAN",
+  "portalsFound": [
+    {
+      "url": "https://ags.cuzk.cz/arcgis/rest/services/RUIAN/MapServer",
+      "observation": "Official CUZK ArcGIS Server v11.5; layer 5 'Parcela' (parcel polygons, native/output EPSG:4326, cadastral number, area, land type, katastralni uzemi code); also layers for cadastral area (7), municipality (12) and buildings (3)."
+    },
+    {
+      "url": "https://services.cuzk.cz/wfs/inspire-cp-wfs.asp",
+      "observation": "INSPIRE Cadastral Parcels WFS 2.0.0 capabilities public: cp:CadastralParcel, cp:CadastralBoundary, cp:CadastralZoning (GetFeature not tried)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ags.cuzk.cz/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "service list incl. RUIAN MapServer"
+    },
+    {
+      "url": "https://services.cuzk.cz/wfs/inspire-cp-wfs.asp?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "INSPIRE CP WFS capabilities"
+    },
+    {
+      "url": "https://ags.cuzk.cz/arcgis/rest/services/RUIAN/MapServer/5/query?geometry={xmin:14.4180,ymin:50.0870,xmax:14.4195,ymax:50.0885}&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "3 parcel polygons, Prague"
+    },
+    {
+      "url": "https://ags.cuzk.cz/arcgis/rest/services/RUIAN/MapServer/5/query?geometry={xmin:16.6070,ymin:49.1950,xmax:16.6085,ymax:49.1965}&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "3 parcel polygons, Brno"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "cz-cuzk-ruian-parcela",
+    "requestUrl": "https://ags.cuzk.cz/arcgis/rest/services/RUIAN/MapServer/5/query?geometry=%7B%22xmin%22%3A14.4180%2C%22ymin%22%3A50.0870%2C%22xmax%22%3A14.4195%2C%22ymax%22%3A50.0885%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=*&returnGeometry=true&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      14.418,
+      50.087,
+      14.4195,
+      50.0885
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "id (also cisloparcely, katastralniuzemi)",
+    "responseFile": "CZ-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount / resultOffset",
+    "regionSampled": "Prague (also Brno, 49.1950-49.1965N 16.6070-16.6085E: 3 polygons, same schema)"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Whole Czechia (RUIAN / ISKN parcels)",
+    "regionsVerified": [
+      "Prague",
+      "Brno"
+    ],
+    "nationwideVerified": true
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Licence not read (CUZK RUIAN data is generally published as open data but terms not verified here). Service is a map service, so rate limits/maxRecordCount not checked. RUIAN parcel geometry excludes some ISKN attributes such as owners.",
+  "nextStep": "Read CUZK licence; consider INSPIRE CP WFS or RUIAN VFR downloads for bulk."
+}

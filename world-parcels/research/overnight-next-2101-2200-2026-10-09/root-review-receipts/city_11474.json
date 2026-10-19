@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11474",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-11474-jincheng-town.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/jincheng-town-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:57:15Z",
+  "reason": "The immutable WUP identity matches rank 2184, China, point [31.7480898304929,119.582781989868], and 267066 persons. English and Chinese searches with URLs are recorded. The official Jincheng Town service page and Jintan district bureau duties support local record custody (registryFound true), but no anonymous native-ID polygon response or sample was obtained. The provincial registration viewer routes through authentication; this is not citywide absence. Fresh adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are missing; no admission.",
+  "firstPartyPagesChecked": [
+    "https://jtqjcz.jszwfw.gov.cn/index.html",
+    "https://www.jintan.gov.cn/html/czjt/2025/OACLAQAK_0212/29527.html"
+  ]
+}

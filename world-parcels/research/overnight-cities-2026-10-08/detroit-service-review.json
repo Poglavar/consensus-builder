@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8032-detroit.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The city-published Office of the Assessor layer yielded one Polygon at the exact WUP point. The bounded request selected only object_id, parcel_number and geometry. No other property data was requested, accessed, or retained. The result supports sample-level geometry availability only; runtime and citywide coverage remain unassessed.",
+  "registryAssessment": "The City of Detroit Open Data Portal publishes an Office of the Assessor parcel layer. Its polygon schema provides safe keys object_id and parcel_number. A bounded exact WUP-point query returned one polygon using only those two fields plus geometry; no owner, address or assessment values were requested or retained.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Detroit official open data parcel polygon GIS parcel ID City of Detroit feature service",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "The City Open Data Portal and Office of the Assessor service identify a Polygon parcel layer. A bounded exact WUP-point query requested only object_id, parcel_number and geometry and returned one full Polygon. No other attributes were requested or retained.",
+      "actualResultUrls": [
+        "https://data.detroitmi.gov/maps/detroitmi::parcels-2",
+        "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Parcels_Current/FeatureServer/0"
+      ],
+      "executionMethod": "Official layer metadata inspected first; then one anonymous exact-point GET limited to EPSG:4326 geometry, object_id and parcel_number, max 3 features. No private/assessment fields requested or read."
+    },
+    {
+      "language": "Spanish",
+      "query": "Detroit datos abiertos mapa parcelas polígono GIS parcel_id oficial ciudad",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "The City’s Spanish-language GIS department page links to its open data/GIS resources. The official assessor endpoint is the same source published in the English-language search; no personal property lookup was made.",
+      "actualResultUrls": [
+        "https://detroitmi.gov/es/departments/departamento-de-planificacion-y-desarrollo/urban-research-and-outreach",
+        "https://data.detroitmi.gov/maps/detroitmi::parcels-2"
+      ],
+      "executionMethod": "Separate Spanish-language and English-language source discovery; review limited to official city pages and schema-safe geometry request. No owner/address/assessment values requested or retained."
+    }
+  ],
+  "geometryEvidence": {
+    "samplePath": "samples/detroit-parcels-wup8032.geojson",
+    "featureCount": 1,
+    "queryPoint": [
+      42.418131146732,
+      -83.1544751389422
+    ],
+    "queryCrs": "EPSG:4326",
+    "geometryType": "Polygon",
+    "sourceKeyFields": [
+      "object_id",
+      "parcel_number"
+    ],
+    "geometrySha256": "3dc7d1f2ac762868322826bd061085db42223c26cdcf666dfb49b6844a20d592",
+    "privacyPolicy": "Only object_id, parcel_number and geometry requested and retained; no owner, address, taxpayer, assessment, sale or other parcel values.",
+    "independentTopologyCheck": {
+      "library": "GEOS 3.14.1 via geosop",
+      "valid": true,
+      "check": "isValid on the complete returned Polygon; true"
+    }
+  },
+  "privacy": "Only safe key fields object_id and parcel_number and geometry were requested and retained. No owner, address, taxpayer, assessment, sale or other property values were requested or retained.",
+  "runtimeAssessment": "root_approved_actual_runtime_contract",
+  "rootRuntimeReview": {
+    "checkedAt": "2026-10-09T02:22:02.841232+00:00",
+    "decision": "approved_by_root",
+    "reason": "200 valid distinct Detroit Office of the Assessor current parcel polygons verified in thirteen local 0.001-degree cells around the unchanged WUP locator. Complete viewports, ten forced three-row pages, all 200 fresh native parcel_number reads, valid synthetic absence, footprint and source binding passed in 32 public requests. Native parcel numbers retain their dots, hyphens and combined-lot suffixes exactly; object_id is transport paging identity only. Only these two schema-verified safe identifiers and full geometry are queried or retained. Independent metric EPSG:32617 GEOS found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact WUP point lies in source geometry. Wider municipal completeness, title, survey accuracy and long-term key continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/detroit-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/detroit-root-quality.json"
+  },
+  "technicalBlocker": null
+}

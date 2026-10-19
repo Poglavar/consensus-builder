@@ -1,0 +1,25 @@
+{
+  "taskId": "city:7991",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-7991-petr-polis.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/petr-polis-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T19:57:51Z",
+  "city": "Petrópolis",
+  "queueRank": 2780,
+  "populationPersons": 213191,
+  "identityCheck": "Exact WUP 2025 City_Code, rank, Brazil, centroid and persons conversion match the verified source gzip, ranked roster and immutable pending queue.",
+  "searchCheck": "English and Brazilian Portuguese executed searches are recorded in the paired city and service-review files.",
+  "custodyCheck": "The packet’s registryFound true is supported only for municipal GIS/map custody through Prefeitura and SigWeb. A cadastral parcel registry or public parcel geometry service was not established; do not infer parcel-record custody from the map project alone.",
+  "sourceCheck": "Official SigWeb project metadata indicates EPSG:31983, but the direct viewer timed out and indexed route returned 404. No parcel schema, native ID or anonymous polygon response was obtained; this is not evidence of citywide absence.",
+  "sampleCheck": "No GeoJSON sample retained; zero full polygons.",
+  "admissionBlockers": [
+    "No independently verified parcel layer and fresh native-ID/geometry read",
+    "No adapter, forced paging, thirteen cells, full metric checks, source binding or headed Details verification"
+  ],
+  "disposition": "Held; municipal GIS discovery is insufficient for parcel runtime/catalog/report admission."
+}

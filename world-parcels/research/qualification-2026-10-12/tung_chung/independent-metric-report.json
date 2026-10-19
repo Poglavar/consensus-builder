@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "0e4f0689671043b3fc77a3c5c899539f6c4667045c60e86186f99f5ae9637155",
+  "sourceCrs": "EPSG:4326",
+  "metricCrs": "EPSG:32649",
+  "method": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "featureCount": 2,
+  "validFeatureCount": 2,
+  "perFeature": [
+    {
+      "id": "744500007",
+      "geometrySha256": "a5e692c57350154668d05db00d7e7a85532c7ba9747b760e47767e5d0303d944",
+      "boundsMetric": {
+        "minX": 803185.4309433635,
+        "minY": 2467351.9595821397,
+        "maxX": 803351.3236237613,
+        "maxY": 2467683.6297670635,
+        "widthM": 165.89268039783929,
+        "heightM": 331.67018492380157,
+        "aspectRatio": 1.9993057205923686
+      },
+      "areaM2": 24835.27432044633,
+      "invalidReasons": []
+    },
+    {
+      "id": "744500040",
+      "geometrySha256": "f3a9acc6a840097fdd79f4dabe3a36f0984beaeb406181f18f69775c55f4bdc2",
+      "boundsMetric": {
+        "minX": 803053.6892743169,
+        "minY": 2467403.911848279,
+        "maxX": 803480.4923012664,
+        "maxY": 2467820.570534727,
+        "widthM": 426.80302694952115,
+        "heightM": 416.6586864478886,
+        "aspectRatio": 1.0243468835082148
+      },
+      "areaM2": 82097.3996592151,
+      "invalidReasons": []
+    }
+  ],
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicateIdCount": 0,
+  "duplicateIds": [],
+  "conflictingSameIdGeometryCount": 0,
+  "conflictingSameIdGeometry": [],
+  "exactGeometryDuplicateCount": 0,
+  "exactGeometryDuplicates": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 0,
+  "totalMaterialOverlapM2": 0,
+  "maxMaterialOverlapM2": 0.0,
+  "maxOverlapFractionOfSmaller": 0.0,
+  "overlaps": [],
+  "subthresholdPositiveIntersectionPairCount": 0,
+  "subthresholdPositiveIntersectionTotalM2": 0,
+  "subthresholdPositiveIntersections": [],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "geometryPass": true
+}

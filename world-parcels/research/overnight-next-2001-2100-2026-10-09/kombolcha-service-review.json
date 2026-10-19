@@ -1,0 +1,60 @@
+{
+  "cityRecord": "city-7229-kombolcha.json",
+  "cityCode": 7229,
+  "queueRank": 2012,
+  "name": "Kombolcha",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "point": [11.0840423975748, 39.7263876964214],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "requests": [
+    {
+      "method": "GET/search",
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "outcome": "200 HTML; official federal Land and Cadastre CEO page describes national urban land registration/information responsibilities but exposes no Kombolcha parcel layer, service URL, schema, CRS, or parcel IDs."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+      "outcome": "200 HTML; official Ministry of Justice page identifies Urban Cadastral Survey Directive No. 735/2013, in Amharic. Directive evidence only; no parcel geometry or API response."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://amhara.gov.et/web/",
+      "outcome": "200/search-visible official Amhara regional portal; Kombolcha is mentioned in a regional-government announcement, but no public cadastral viewer, parcel layer, schema, CRS, or parcel IDs were exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/",
+      "outcome": "200 HTML shell; official e-Land viewer. Public HTML references bundled runtime/main JavaScript, Google Maps placeholder configuration, and an assets/contacts list for Addis Ababa and selected participating cities; Kombolcha is not listed."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js",
+      "outcome": "200 JavaScript bundle inspected. Configuration/service strings include authenticated corporate, document, e-services and lookup workflows; no anonymous Kombolcha parcel map/API route or bounded safe ID+geometry response was identified. No login, credential, CAPTCHA bypass, or private token was attempted."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://amhara.gov.et/",
+      "outcome": "Official Amhara portal result; general regional services include land/housing context, but no Kombolcha parcel service or geometry endpoint was exposed."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not available",
+    "details": "No public Kombolcha parcel response was obtained, so native field schema, CRS, geometry encoding, and stable parcel identity could not be verified."
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "scopeLimits": [
+    "Federal and regional institutional pages establish authority or planning context, not parcel coverage.",
+    "The e-Land viewer is Addis/selected-city scoped in the inspected public configuration; Kombolcha was not evidenced as a configured city.",
+    "No exact-point parcel query was issued because no public Kombolcha parcel endpoint was discovered.",
+    "No map extent miss, timeout, login wall, or unusable UI is treated as citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, transaction, or other unsafe fields were requested or retained."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "High: a cadastral source may exist in a Kombolcha city office, Amhara regional system, or restricted/non-indexed service not exposed by the public web. Independent serial review is required before any adapter or source admission."
+}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:157",
+  "queueRank": 157,
+  "name": "Guayaquil",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "centerLatLon": [
+    -2.16603065668041,
+    -79.9099340154392
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "ec-guayaquil-rural-predios-agol-thirdparty",
+    "requestUrl": "https://services3.arcgis.com/PYyU96woLS4j2PN8/arcgis/rest/services/Catastro_rural_y_nivel_de_inundacion_Guayaquil/FeatureServer/43/query?where=1%3D1&geometry=-79.780%2C-3.022%2C-79.770%2C-3.015&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2Crct%2CIdPredial%2CDestino%2CArea%2CNivelinundacion&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -79.78,
+      -3.022,
+      -79.77,
+      -3.015
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "rct / IdPredial (OBJECTID)",
+    "responseFile": "guayaquil-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount; maxRecordCount 2000"
+  },
+  "source": {
+    "sourceId": "ec-guayaquil-rural-predios-agol-thirdparty",
+    "name": "Catastro rural y nivel de inundacion Guayaquil (ArcGIS Online feature layer)",
+    "operator": "ArcGIS Online user 'ejimenez_gobiernoslocales' (publisher identity and authority unconfirmed; not verified as GAD/Municipio de Guayaquil)",
+    "scope": "Rural predios of Guayaquil canton only (2097 features; layer id 43); zero features in the urban core bbox",
+    "endpoint": "https://services3.arcgis.com/PYyU96woLS4j2PN8/arcgis/rest/services/Catastro_rural_y_nivel_de_inundacion_Guayaquil/FeatureServer/43",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+    "crs": "native EPSG:32717; outSR=4326 requested",
+    "reuseStatus": "unknown; item is public but no licence/terms found; unofficial. Boundary-neighbour text fields (Linderos) deliberately not saved"
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.guayaquil.gob.ec/",
+      "observation": "Municipal site reachable (redirect); /catastro/ and /mapa-interactivo/ returned 404; no parcel service found."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Guayaquil predios catastro",
+      "observation": "Found the third-party rural cadastre layer above and a point-only 'Predios Urbanos 2023' layer that actually belongs to Sibate, Colombia (rejected)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.guayaquil.gob.ec/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://sigtierras.agricultura.gob.ec/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://www.geoportaligm.gob.ec/portal/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "timeout 40s"
+    },
+    {
+      "url": "https://services3.arcgis.com/PYyU96woLS4j2PN8/arcgis/rest/services/Catastro_rural_y_nivel_de_inundacion_Guayaquil/FeatureServer/43/query?returnCountOnly=true (urban bbox -79.95,-2.25,-79.85,-2.15)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "count 0 in the urban core"
+    },
+    {
+      "url": "https://services3.arcgis.com/PYyU96woLS4j2PN8/arcgis/rest/services/Catastro_rural_y_nivel_de_inundacion_Guayaquil/FeatureServer/43/query?where=1%3D1&geometry=-79.780%2C-3.022%2C-79.770%2C-3.015&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2Crct%2CIdPredial%2CDestino%2CArea%2CNivelinundacion&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "3 polygon records, closed rings; VERIFIED (partial, rural, unofficial)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "rural predios with flood level, Guayaquil canton",
+    "verifiedOpenScope": "3 rural parcels about 95 km south-east of the city centre; no urban parcels",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Not an official or urban cadastre; publisher authority and licence unconfirmed. Official municipal (Guayaquil) urban cadastre and SIGTIERRAS/national services were unreachable, not disproved.",
+  "nextStep": "Locate the municipality's official urban catastro geoservice; confirm the publisher and terms of the AGOL layer before any use."
+}

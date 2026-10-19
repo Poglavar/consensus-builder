@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:190",
+  "queueRank": 190,
+  "name": "Tel Aviv",
+  "country": "Israel",
+  "countryCode": "IL",
+  "centerLatLon": [
+    32.0678497892024,
+    34.8222350010982
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
+    "requestUrl": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query?where=1%3D1&geometry=34.7800,32.0840,34.7815,32.0853&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=oid_chelka,ms_gush,ms_chelka,ms_gush_vechelka,ms_shetach,ms_shetach_rashum,sw_baalut,k_input_source,tr_idkun_acharon&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      34.78,
+      32.084,
+      34.7815,
+      32.0853
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "oid_chelka (also ms_gush_vechelka, block+parcel number)",
+    "responseFile": "tel-aviv-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000; returnCountOnly for the test box returned 54"
+  },
+  "source": {
+    "sourceId": "il-tel-aviv-yafo-iview2-chalkot",
+    "name": "Tel Aviv-Yafo Municipality GIS (IView2 MapServer), layer 524 'Chalkot' (parcels)",
+    "operator": "Tel Aviv-Yafo Municipality",
+    "scope": "Tel Aviv-Yafo municipal area; layer extent about 12 x 14 km in ITM",
+    "endpoint": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "Esri JSON",
+    "crs": "native EPSG:2039 (Israeli TM Grid); outSR=4326 returned WGS84",
+    "reuseStatus": "unknown; no licence text or copyright statement in the layer metadata (copyrightText empty); terms of the municipal GIS not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services",
+      "observation": "Municipal ArcGIS Server, anonymous. IView2 service exposes layers 524 parcels (chalkot), 525 blocks (gushim), 837 detailed land-use plots and a group 1002 'parcels and land-use'."
+    },
+    {
+      "url": "https://opendata.tel-aviv.gov.il/",
+      "observation": "Municipal open-data portal (React app shell, 200)."
+    },
+    {
+      "url": "https://data.gov.il/api/3/action/package_search?q=parcels&rows=8",
+      "observation": "National open data catalogue searched; one Survey-of-Israel-type 'shape' dataset came up, not inspected in detail."
+    },
+    {
+      "url": "https://www.govmap.gov.il/",
+      "observation": "Official national GovMap viewer (200); parcel search by block/parcel; no open query endpoint tested."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "service list"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "layer list; not counted"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "layer description: polygon, Query capability, maxRecordCount 2000, EPSG:2039"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query (bbox 34.8215,32.0672,34.8230,32.0685 at the UN centre point)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "count 0: the UN centre point lies east of the municipal boundary (Ramat Gan/Bnei Brak side), outside this source"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query?where=1%3D1&geometry=34.7800,32.0840,34.7815,32.0853&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=oid_chelka,ms_gush,ms_chelka,ms_gush_vechelka,ms_shetach,ms_shetach_rashum,sw_baalut,k_input_source,tr_idkun_acharon&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "verified: 3 closed polygons with gush/chelka numbers in central Tel Aviv"
+    },
+    {
+      "url": "https://gisn.tel-aviv.gov.il/arcgis/rest/services/IView2/MapServer/524/query (bbox 34.79,32.05,34.85,32.10, returnCountOnly)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "count 9357 within a ~5x5 km box"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Tel Aviv-Yafo municipality parcels; the UN urban agglomeration (Gush Dan) also covers Ramat Gan, Bnei Brak, Givatayim, Holon, Bat Yam etc., which this source does not",
+    "verifiedOpenScope": "three parcels in a ~130 m box in central Tel Aviv",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Municipal source only; the UN centre coordinate falls outside it. Licence and permitted reuse of the municipal layer are unknown, and the layer is possibly a display copy of Survey of Israel data. Israel-wide parcels (Survey of Israel / GovMap) not verified.",
+  "nextStep": "Read municipal GIS terms; find and test a national Survey of Israel / GovMap parcel service for the rest of Gush Dan."
+}

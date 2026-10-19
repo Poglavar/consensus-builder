@@ -1,0 +1,12 @@
+{
+  "taskId": "city:7457",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-7457-praia-grande.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/praia-grande-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:25:34Z",
+  "reason": "Municipal mapping and fiscal custody are supported, but the current GeoPG route is authentication gated; no anonymous native parcel ID or polygon was obtained. A login wall and DNS timeout do not establish parcel absence."
+}

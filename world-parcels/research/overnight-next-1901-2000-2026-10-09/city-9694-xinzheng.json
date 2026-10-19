@@ -1,0 +1,102 @@
+{
+  "cityCode": 9694,
+  "queueRank": 1989,
+  "name": "Xinzheng",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [34.3941707137711, 113.740847231705],
+  "population2025": 291958,
+  "population2025k": 291.958,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinzheng China official cadastral parcel map GIS natural resources real estate registration public map API",
+        "result": "First-party discovery found the official Xinzheng Natural Resources and Planning Bureau, the local real-estate registration center, official registration procedures and the bureau's public-information site. No public anonymous parcel feature viewer or safe parcel-ID-plus-polygon endpoint was found.",
+        "actualResultUrls": [
+          "https://public.xinzheng.gov.cn/D1603Y/2031136.jhtml",
+          "https://public.xinzheng.gov.cn/D49Y/2047923.jhtml",
+          "https://xz.jiceng.zhengzhou.gov.cn/030001/7083407.jhtml",
+          "https://public.xinzheng.gov.cn/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "新郑市 自然资源和规划局 不动产登记 地籍图 地图 服务 官方",
+        "result": "官方中文结果确认新郑市自然资源和规划局负责统一确权登记、权籍调查、不动产测绘、登记资料管理和地理信息公共服务；2016年公告确认新郑市不动产登记中心承办全市不动产登记。未发现匿名公开宗地编号加完整面几何服务。",
+        "actualResultUrls": [
+          "https://public.xinzheng.gov.cn/D1603Y/2031136.jhtml",
+          "https://public.xinzheng.gov.cn/D49Y/2047923.jhtml",
+          "https://public.xinzheng.gov.cn/01CA/2203113.jhtml",
+          "https://xz.jiceng.zhengzhou.gov.cn/030001/7083407.jhtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Xinzheng Natural Resources and Planning Bureau material identifies the bureau as responsible for unified natural-resource and real-estate registration, cadastral investigation, real-estate surveying, registration-data management and geographic-information public-service management. An official 2016 notice identifies the Xinzheng Real Estate Registration Center as the local registration custodian. This establishes local registry custody, not an open parcel geometry API.",
+  "officialSources": [
+    {
+      "url": "https://public.xinzheng.gov.cn/D1603Y/2031136.jhtml",
+      "observation": "Official bureau institutional-functions page; lists unified registration, cadastral investigation, real-estate surveying, registration-data management and geographic-information public-service responsibilities."
+    },
+    {
+      "url": "https://public.xinzheng.gov.cn/D49Y/2047923.jhtml",
+      "observation": "Official 2016 unified-registration notice; identifies the Xinzheng Real Estate Registration Center and states that land, house and forest registration is handled through the unified local registration system."
+    },
+    {
+      "url": "https://public.xinzheng.gov.cn/01CA/2203113.jhtml",
+      "observation": "Official bureau sub-office page; confirms citywide natural-resource survey/monitoring, cadastral and surveying-related information management, and geospatial-public-service duties."
+    },
+    {
+      "url": "https://xz.jiceng.zhengzhou.gov.cn/030001/7083407.jhtml",
+      "observation": "Official government directory entry with the bureau's local office identity and contact details; no public parcel service link."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://public.xinzheng.gov.cn/",
+      "method": "GET",
+      "outcome": "HTTP response body retrieved; current public-information HTML and JavaScript inspected. Site exposes search/navigation scripts but no cadastral viewer, map configuration, parcel layer or public feature endpoint. A separate HEAD request returned 403; this was treated as a transport behavior, not source absence."
+    },
+    {
+      "url": "https://public.xinzheng.gov.cn/D1603Y/2031136.jhtml",
+      "method": "GET/search inspection",
+      "outcome": "Official indexed page inspected; local bureau cadastral, registration and GIS-public-service responsibilities confirmed. No anonymous parcel ID-plus-geometry response, schema or CRS exposed."
+    },
+    {
+      "url": "https://public.xinzheng.gov.cn/D49Y/2047923.jhtml",
+      "method": "GET/search inspection",
+      "outcome": "Official unified-registration notice inspected; local registration-center custody and registration scope confirmed. It documents procedures and legal service scope, not an open parcel geometry service."
+    },
+    {
+      "url": "https://public.xinzheng.gov.cn/01CA/2203113.jhtml",
+      "method": "GET/search inspection",
+      "outcome": "Official natural-resources survey/monitoring page inspected; confirms geospatial and survey responsibilities. No public viewer/API, safe parcel response, native field schema or CRS published."
+    },
+    {
+      "url": "https://xz.jiceng.zhengzhou.gov.cn/030001/7083407.jhtml",
+      "method": "GET/search inspection",
+      "outcome": "Official local-government directory entry inspected; confirms the local bureau identity and office scope. No parcel geometry route found."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {
+    "claimedScope": "Xinzheng city local natural-resources and real-estate-registration custody and related official public information.",
+    "verifiedOpenScope": "Local registry custody and registration/survey responsibilities only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss test was used. No parcel geometry or native parcel identity was retrieved or retained. No timeout, login wall, map extent miss or unavailable UI was treated as evidence of citywide absence. Packet completion is not source integration/admission; serial reviewer qualification remains required."
+}

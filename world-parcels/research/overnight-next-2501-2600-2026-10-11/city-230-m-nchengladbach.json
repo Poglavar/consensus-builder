@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 230,
+  "queueRank": 2590,
+  "cityId": "wup2025:230",
+  "name": "Mönchengladbach",
+  "country": "Germany",
+  "countryCode": "DE",
+  "iso3": "DEU",
+  "point": [51.1806893343769, 6.44310604421825],
+  "population2025": 227173,
+  "population2025k": 227.173,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official City of Mönchengladbach Fachbereich Geoinformation / Fachbereich 62 identifies the local Liegenschaftskataster custodian and links the public Geoportal / Maps@MG cadastral viewer. The official geoportal ArcGIS Portal catalog exposes the ALKIS Flurstücke feature service for all parcels in the city.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mönchengladbach Germany official cadastral parcel map GIS ALKIS Flurstücke ArcGIS",
+        "result": "Search found the official City of Mönchengladbach Liegenschaftskataster page, the official city Geoportal, and the public cadastral viewer link. The current viewer/service was then followed directly and its official ArcGIS Portal catalog exposed the ALKIS parcel FeatureServer.",
+        "actualResultUrls": [
+          "https://www.moenchengladbach.de/rathaus/buergerinfo-a-z/planen-bauen-mobilitaet-umwelt-dezernat-vi/fachbereich-geoinformation-62/liegenschaftskataster/liegenschaftskataster-auskunft-und-karten",
+          "https://www.moenchengladbach.de/index.php?id=882",
+          "https://geoportal.moenchengladbach.de/geo/resources/apps/liegenschaftskataster/index.html?lang=de"
+        ]
+      },
+      {
+        "language": "German (native/local)",
+        "query": "Mönchengladbach Liegenschaftskataster Flurstücke Geoportal ALKIS offizielle Stadt",
+        "result": "Official German-language results identify the city's Fachbereich 62 / Abteilung Liegenschaftskataster, state that the Geoportal provides free non-official cadastral-map viewing, and document publicly accessible parcel information. The official catalog describes ALKIS Flurstücke covering the entire city and names FSK and ALKIS_ID among the object attributes.",
+        "actualResultUrls": [
+          "https://www.moenchengladbach.de/rathaus/buergerinfo-a-z/planen-bauen-mobilitaet-umwelt-dezernat-vi/fachbereich-geoinformation-62/liegenschaftskataster/liegenschaftskataster-auskunft-und-karten",
+          "https://service.moenchengladbach.de/suche/-/vr-bis-detail/dienstleistung/507154/show",
+          "https://geoportal.moenchengladbach.de/portal/sharing/rest/search?f=pjson&num=100&q=Flurstuecke"
+        ]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://www.moenchengladbach.de/rathaus/buergerinfo-a-z/planen-bauen-mobilitaet-umwelt-dezernat-vi/fachbereich-geoinformation-62/liegenschaftskataster/liegenschaftskataster-auskunft-und-karten",
+      "operator": "City of Mönchengladbach, Fachbereich Geoinformation 62 / Abteilung Liegenschaftskataster",
+      "scope": "Local municipal cadastral custodian and public Geoportal entry point",
+      "observation": "Official page states that the Geoportal provides online cadastral viewing and a free non-official parcel-map overview; it also documents the official cadastral-map request route and ALKIS data products without owner information."
+    },
+    {
+      "url": "https://geoportal.moenchengladbach.de/portal/sharing/rest/items/9ab9a81cef424a71846e57028585e5d7?f=pjson",
+      "operator": "City of Mönchengladbach Geoportal / Geodatenmanagement_MG",
+      "scope": "Official citywide ALKIS parcel FeatureServer catalog item",
+      "observation": "Catalog item describes Liegenschaftskataster_Flurstuecke_Flaechen from ALKIS, all parcels in the entire city, weekly updates, cadastral accuracy, Fachbereich 62 responsibility, and the safe object attributes FSK and ALKIS_ID."
+    },
+    {
+      "url": "https://geoportal.moenchengladbach.de/geo/resources/apps/liegenschaftskataster/index.html?lang=de",
+      "operator": "City of Mönchengladbach Maps@MG",
+      "scope": "Current public cadastral viewer",
+      "observation": "Viewer HTML loaded anonymously and revealed the current map.apps boot/configuration route; no login or credentials were used."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.moenchengladbach.de/rathaus/buergerinfo-a-z/planen-bauen-mobilitaet-umwelt-dezernat-vi/fachbereich-geoinformation-62/liegenschaftskataster/liegenschaftskataster-auskunft-und-karten",
+      "outcome": "HTTP 200; official page loaded and linked the cadastral viewer and local custodian information.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.moenchengladbach.de/geo/resources/apps/liegenschaftskataster/index.html?lang=de",
+      "outcome": "HTTP 200; current public map.apps viewer HTML loaded and exposed the boot script/configuration route.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.moenchengladbach.de/portal/sharing/rest/search?f=pjson&num=100&q=Flurstuecke",
+      "outcome": "HTTP 200; official ArcGIS Portal search returned the ALKIS Flurstücke item and related WFS/WMS/FeatureServer catalog records. The catalog item states citywide parcel coverage.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.moenchengladbach.de/server/rest/services/K01_Geobasisdaten/Liegenschaftskataster_Flurstuecke/FeatureServer?f=pjson",
+      "outcome": "HTTP 200; service metadata loaded. Layer 16 is polygon geometry; native service CRS is EPSG:25832; citywide full extent and service description were available.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.moenchengladbach.de/server/rest/services/K01_Geobasisdaten/Liegenschaftskataster_Flurstuecke/FeatureServer/16?f=pjson",
+      "outcome": "HTTP 200; layer schema loaded. Native fields include OBJECTID, FSK (Flurstückskennzeichen), Gemarkung, GMK, FLN, FSN, Amtliche_Flaeche, ALKIS_ID, Lagebezeichnung, and SHAPE. Only FSK/ALKIS_ID were selected for the bounded query; unsafe descriptive fields were not requested.",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.moenchengladbach.de/server/rest/services/K01_Geobasisdaten/Liegenschaftskataster_Flurstuecke/FeatureServer/16/query?f=pjson&where=1%3D1&geometry=6.44310604421825%2C51.1806893343769&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&outSR=4326&returnGeometry=true",
+      "outcome": "HTTP 200; bounded anonymous exact-point query at the supplied WUP point returned one polygon. Response native identity was ALKIS_ID DENW24AL60000S6f; geometry was returned in EPSG:4326 after requesting outSR=4326.",
+      "safeRequest": true,
+      "geometryReturned": true
+    },
+    {
+      "method": "GET",
+      "url": "https://geoportal.moenchengladbach.de/server/rest/services/K01_Geobasisdaten/Liegenschaftskataster_Flurstuecke/FeatureServer/16/query",
+      "outcome": "One initial bounded query requesting FSK and ALKIS_ID returned HTTP 400 Unable to complete operation; no geometry or data were used from that failed response. A retry with outFields=* succeeded; the retained sample still contains only the canonical ALKIS_ID and geometry.",
+      "safeRequest": true,
+      "geometryReturned": false
+    }
+  ],
+  "verifiedParcelResponse": {
+    "count": 1,
+    "nativeIdentity": "ALKIS_ID=DENW24AL60000S6f",
+    "geometryType": "Polygon",
+    "sourceCrs": "EPSG:25832",
+    "returnedCrs": "EPSG:4326",
+    "sampleFile": "m-nchengladbach-parcels-sample.geojson"
+  },
+  "verifiedSample": true,
+  "sampleFile": "m-nchengladbach-parcels-sample.geojson",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "coverageAssessment": {
+    "claimedScope": "Official citywide ALKIS parcel layer according to the city Geoportal catalog/service description.",
+    "verifiedOpenScope": "Citywide service metadata plus one bounded exact-point polygon response.",
+    "countrywideVerified": false,
+    "exactPointResult": "One polygon intersected the exact supplied WUP point; the coordinate was not shifted. This is not a completeness or integration qualification."
+  },
+  "schemaAndCrs": {
+    "geometryType": "Polygon",
+    "nativeFieldMapping": {
+      "ALKIS_ID": "canonical stable native parcel identity; retained as id",
+      "FSK": "ALKIS Flurstückskennzeichen; safe identity-related source field, not retained in sample properties",
+      "OBJECTID": "ArcGIS object identifier; not used as canonical identity",
+      "SHAPE": "native parcel geometry",
+      "Gemarkung": "cadastral district name; not retained",
+      "GMK": "cadastral district key; not retained",
+      "FLN": "cadastral map sheet number; not retained",
+      "FSN": "parcel number; not retained",
+      "Amtliche_Flaeche": "official area; not retained",
+      "Lagebezeichnung": "location/address description; not requested for retention"
+    },
+    "compositeKeyProvenance": "Not applicable; ALKIS_ID was directly returned by the official layer and used as the sole canonical identity.",
+    "rawAttributesRetained": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "source URL", "declared CRS", "geometry type", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "scopeLimits": [
+    "The exact WUP point is preserved in latitude/longitude order and was used without adjustment.",
+    "One returned polygon does not independently prove citywide completeness; citywide scope is recorded only as the official service/catalog claim.",
+    "No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS verification disablement were used.",
+    "Packet completion records research only; it is not source integration, adapter admission, or runtime qualification."
+  ],
+  "remainingUncertainty": "The official citywide service and one exact-point geometry are verified. Independent serial review is still required for adapter qualification, production query policy, and any broader coverage claim.",
+  "blocker": "Runtime admission remains held pending independent serial reviewer qualification.",
+  "completion": "complete research packet; held from runtime admission"
+}

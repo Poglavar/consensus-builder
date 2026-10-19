@@ -1,0 +1,43 @@
+{
+  "cityCode": 10191,
+  "queueRank": 2443,
+  "name": "Rajapalayam",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [9.44850087810631, 77.5687641508353],
+  "population2025": 240280,
+  "population2025k": 240.28,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rajapalayam Tamil Nadu official cadastral map land records parcel viewer GIS land survey",
+        "result": "Official results identified Tamil Nadu Government land-record e-Services, TN-GLMS, the Tamil Nadu Department of Survey and Settlement TamilNilam service, and the official Rajapalayam Local Planning Area portal. The Rajapalayam portal identifies the District Town and Country Planning, Virudhunagar District, and provides local land-use maps; its master-plan material states that survey-number maps from the Survey and Land Records Department were used for the cadastral framework. No safe anonymous parcel feature response was retained.",
+        "actualResultUrls": [
+          "https://eservices.tn.gov.in/",
+          "https://tnglms.in/",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://rajapalayamlpa.com/",
+          "https://rajapalayamlpa.com/wp-content/uploads/2023/08/230719_Volume_1_lowres.pdf"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "ராஜபாளையம் நில அளவை வரைபடம் நிலப் பதிவுகள் அரசு தமிழ்நாடு GIS",
+        "result": "அதிகாரப்பூர்வ தமிழ்நாடு அரசு முடிவுகள் Tamil Nadu Land Records e-Services, TNGLMS, TamilNilam மற்றும் ராஜபாளையம் உள்ளூர் திட்டப்பகுதி இணையதளத்தை காட்டின. TamilNilam/Survey and Settlement சேவை நிலப் பதிவுகள், FMB வரைபடங்கள் மற்றும் survey/sub-division வழிசெலுத்தலை வழங்குவதாக அதிகாரப்பூர்வ விளக்கம் கூறுகிறது; இந்த முயற்சியில் பாதுகாப்பான அநாமதேய parcel feature பதில் பெறப்படவில்லை.",
+        "actualResultUrls": [
+          "https://eservices.tn.gov.in/",
+          "https://tnglms.in/",
+          "https://tamilnilam.tn.gov.in/citizen",
+          "https://rajapalayamlpa.com/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "Tamil Nadu's first-party land-record services and Survey and Settlement/TamilNilam are evidenced, and the official Rajapalayam LPA portal provides local planning maps backed by Survey and Land Records Department cadastral framework material. Live e-Services and TamilNilam requests timed out during this attempt; no anonymous parcel feature schema, native parcel identity, CRS response, or full parcel polygon was obtained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "rajapalayam-service-review.json"
+}

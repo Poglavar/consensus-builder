@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-09T06:00:16.709739+00:00",
+  "decision": "held_native_geometry_conflicts",
+  "basis": "335 full native parcels passed bounded querying and fresh-ID equality, but independent GEOS audit found58 positive-area overlapping pairs totaling88.80118m². The largest overlap is3.27782m²,1.2611%of the smaller parcel, with rectangle width0.26894m. These material conflicting boundaries are preserved without repair or selective exclusion; runtime remains held.",
+  "featureCount": 335,
+  "positiveAreaOverlapPairs": 58,
+  "sumPairwiseOverlapM2": 88.80117779906321,
+  "largestOverlaps": [
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002288000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038680000000"
+      ],
+      "overlapM2": 3.2778158577292156,
+      "fractionOfSmaller": 0.01261130424516744,
+      "minimumRectangleWidthM": 0.26894028943082354
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002287000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038681000000"
+      ],
+      "overlapM2": 3.19792135992963,
+      "fractionOfSmaller": 0.012315102661242729,
+      "minimumRectangleWidthM": 0.2675767863871433
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002283000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038684000000"
+      ],
+      "overlapM2": 3.0802034570756436,
+      "fractionOfSmaller": 0.011850808938919778,
+      "minimumRectangleWidthM": 0.25417611317633043
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002282000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038685000000"
+      ],
+      "overlapM2": 3.041923114542464,
+      "fractionOfSmaller": 0.011704659584992401,
+      "minimumRectangleWidthM": 0.24998690753246344
+    },
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600002277000000",
+        "ZA-CSG-DFFE-ERVEN-GEKUT0IR077600038689000000"
+      ],
+      "overlapM2": 2.831524646757563,
+      "fractionOfSmaller": 0.010894716631072835,
+      "minimumRectangleWidthM": 0.23339461382938417
+    }
+  ],
+  "geometryChangedOrRepaired": false,
+  "acceptanceFile": "research/overnight-followon-2026-10-09/masetjhaba-view-csg-root-acceptance.json",
+  "qualityFile": "research/overnight-followon-2026-10-09/masetjhaba-view-csg-root-quality.json",
+  "wideReviewFile": "research/overnight-followon-2026-10-09/masetjhaba-view-csg-root-wide-review.json"
+}

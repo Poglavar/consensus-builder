@@ -1,0 +1,103 @@
+{
+  "cityCode": 7422,
+  "queueRank": 2765,
+  "name": "Rutshuru",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "point": [-1.16335328238114, 29.4385616796921],
+  "population2025": 214158,
+  "population2025k": 214.158,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rutshuru cadastral parcel map Democratic Republic of the Congo official land registry",
+        "result": "Search identified the BIC RDC cadastral platform and an official Ministry of Land Affairs directory listing Rutshuru as a Nord-Kivu land/cadastral circumscription. No anonymous parcel polygon was obtained.",
+        "actualResultUrls": ["https://bic.cd/", "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Rutshuru cadastre parcellaire service officiel RDC carte foncière",
+        "result": "The official Ministry directory lists Rutshuru under Nord-Kivu; the Royal Museum of Central Africa catalogue records an IGC Rutshuru cadastral sheet, but it is a JPEG map-sheet metadata record rather than a parcel-feature API.",
+        "actualResultUrls": ["https://affairesfoncieres.gouv.cd/secretariat/circonscriptions", "https://geocatalogue.africamuseum.be/geonetwork/srv/api/records/CD-IGC-GOMA20"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and French discovery plus bounded anonymous BIC viewer/API inspection",
+  "sourceReview": "The Ministry of Land Affairs first-party directory identifies Rutshuru as a Nord-Kivu land/cadastral circumscription. BIC (Bureau d'Informations Cadastrales) presents a cadastral platform serving Nord-Kivu and exposes a public JavaScript configuration using Supabase RPCs. The older IGC catalogue record identifies a Rutshuru cadastral sheet at 1:2500 in EPSG:3327, but does not expose parcel features. No source integration or runtime admission is asserted.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "httpStatus": 200,
+      "outcome": "Official directory loaded and lists Rutshuru under Nord-Kivu. This is local custodial directory evidence, not a parcel geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/",
+      "httpStatus": 200,
+      "outcome": "Public BIC homepage loaded. It states cadastral information is available for Nord-Kivu and Sud-Kivu, but the page did not itself expose parcel features."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/assets/index-BrUTiL_J.js",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript/configuration inspected. It exposed the public Supabase project and the search_parcels_public RPC contract; no credentials, private token, login, CAPTCHA, or TLS bypass was used."
+    },
+    {
+      "method": "POST",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/rpc/search_parcels_public",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous safe search with p_query=Rutshuru, p_mode=parcel, p_limit=10, p_test_mode=false returned an empty JSON array. This is a zero search-result observation only, not evidence of citywide absence or an exact-point miss."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/functions/v1/home-bic-counts",
+      "httpStatus": 200,
+      "outcome": "Public aggregate endpoint returned parcels_count=1, services_count=3, disputes_count=0, with no district breakdown. Aggregate counts are not parcel identity or geometry evidence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://geocatalogue.africamuseum.be/geonetwork/srv/api/records/CD-IGC-GOMA20",
+      "httpStatus": 200,
+      "outcome": "Catalogue metadata identifies 'Cadastre feuille n°1 de Rutshuru', owner Institut Géographique du Congo, scale 1:2500, EPSG:3327, JPEG distribution, and cadastral/building themes. No downloadable parcel feature service or native parcel IDs were exposed; no geometry was retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "BIC current JS exposes Supabase RPC search_parcels_public and a Mapbox tile proxy, but no safe anonymous parcel feature response was obtained.",
+    "geometryCrs": "EPSG:3327 is documented for the historical IGC Rutshuru map-sheet metadata; BIC parcel-layer CRS was not observed.",
+    "nativeIdentity": "Not observed in a returned parcel feature; no synthetic identity was created.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "WUP point [-1.16335328238114, 29.4385616796921] was preserved in latitude/longitude order; no coordinate shift or geometry query was used.",
+      "featureCount": 0,
+      "geometryFeatureCount": 0,
+      "result": "Public Rutshuru text search returned no parcel rows; exact-point city coverage remains untested and unverified."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "A local Rutshuru cadastral circumscription and BIC public cadastral platform are evidenced, but no safe anonymous parcel geometry, schema, or source-proven native parcel identity was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [-1.16335328238114, 29.4385616796921] was preserved and not shifted.",
+    "The empty Rutshuru search, historical map-sheet limitations, and aggregate count were not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "Citywide coverage, update cadence, BIC parcel CRS, and stable parcel-identity semantics remain unverified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Rutshuru's official local cadastral custodian is evidenced by the Ministry directory, and a public BIC platform claims Nord-Kivu coverage. The bounded public RPC returned no Rutshuru parcel rows and exposed no geometry schema; the IGC catalogue is historical map-sheet metadata. Runtime/admission remains held."
+}

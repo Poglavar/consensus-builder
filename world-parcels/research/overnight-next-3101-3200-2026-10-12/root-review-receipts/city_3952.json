@@ -1,0 +1,20 @@
+{
+  "taskId": "city:3952",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-3952-abu-gharaq.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/abu-gharaq-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T04:34:13Z",
+  "finding": "WUP code 3952, rank 3169, Iraq, point [32.5243763777297,44.3428015327453], 189692 persons match the SHA-256-verified 2025 UN source, roster, queue and packet. English and Arabic executed searches are recorded. Iraq Ministry of Justice first-party pages establish Abu Gharaq real-estate-registration custody, including an opened local office; they do not publish open parcel vectors. Ur Portal service access did not produce a safe anonymous native-ID full polygon; sample count 0. A portal block is not citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap and operation checks, source binding and headed Details verification are absent; runtime held.",
+  "firstPartyUrlsChecked": [
+    "https://moj.gov.iq/tashkelat.7/",
+    "https://moj.gov.iq/view.7984/"
+  ],
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

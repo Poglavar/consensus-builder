@@ -1,0 +1,185 @@
+{
+  "checkedAt": "2026-10-08",
+  "networkContext": "direct HTTPS via exec_command with require_escalated; TLS verification enabled; this is the network-accessible result (prior sandbox DNS failure retained in city JSON)",
+  "serviceUrl": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer",
+  "layer": {
+    "id": 2,
+    "name": "lagosplanPolygon",
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": "EPSG:3857",
+    "outSpatialReference": "EPSG:4326",
+    "maxRecordCount": 2000,
+    "fields": [
+      "OBJECTID (transport OID)",
+      "PLN",
+      "LOTAINF",
+      "LOTAAC",
+      "LOTASF",
+      "LOTDES",
+      "UP"
+    ],
+    "serviceDescription": "empty",
+    "copyrightText": "empty",
+    "serviceFullExtentWgs84Approx": [
+      -3.8078691458686826,
+      -0.909577321010637,
+      11.506172536648448,
+      14.640299727970893
+    ],
+    "advertisedExtent": {
+      "bboxEPSG3857": [
+        -423890.05432551936,
+        -101257.93746219893,
+        1280861.267759254,
+        1647780.5277271501
+      ],
+      "approxBboxWgs84": [
+        -3.8078691458686826,
+        -0.9095773210106315,
+        11.506172536648446,
+        14.640299727970907
+      ],
+      "maxRecordCount": 2000,
+      "querySupportsPagination": true
+    }
+  },
+  "countRequest": {
+    "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer/2/query?where=1%3D1&geometry=3.30928078517139%2C6.56744874683968%2C3.31128078517139%2C6.56944874683968&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=OBJECTID%2CPLN%2CLOTAINF%2CLOTAAC%2CLOTASF%2CLOTDES%2CUP&returnGeometry=false&resultRecordCount=3&f=geojson&returnCountOnly=true",
+    "httpStatus": 200,
+    "bboxWgs84": [
+      3.30928078517139,
+      6.56744874683968,
+      3.31128078517139,
+      6.56944874683968
+    ],
+    "count": 2
+  },
+  "featureRequest": {
+    "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer/2/query?where=1%3D1&geometry=3.30928078517139%2C6.56744874683968%2C3.31128078517139%2C6.56944874683968&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=OBJECTID%2CPLN%2CLOTAINF%2CLOTAAC%2CLOTASF%2CLOTDES%2CUP&returnGeometry=true&resultRecordCount=3&f=geojson",
+    "httpStatus": 200,
+    "responseType": "application/json; charset=utf-8",
+    "count": 2,
+    "requestedLimit": 3,
+    "returnedCRS": "EPSG:4326"
+  },
+  "sanitizedFeatures": [
+    {
+      "transportObjectId": 86987,
+      "nativeLotFields": {
+        "PLN": null,
+        "LOTAINF": null,
+        "LOTAAC": null,
+        "LOTASF": null,
+        "LOTDES": null,
+        "UP": null
+      },
+      "geometryType": "Polygon",
+      "vertexCount": 93,
+      "bboxWgs84": [
+        3.30339046736606,
+        6.5420348594318,
+        3.34064357584061,
+        6.60412636493868
+      ],
+      "geometrySha256": "aaeaa211154f76e276e3d79a9c4e90f2c85bac9f2fcfeb99329549e348e2679e",
+      "firstFiveCoordinates": [
+        [
+          3.3249955232398,
+          6.55351072014076
+        ],
+        [
+          3.32322842304974,
+          6.55249192891552
+        ],
+        [
+          3.32197077105992,
+          6.55176684436025
+        ],
+        [
+          3.31768369951936,
+          6.54929514334598
+        ],
+        [
+          3.31768196044205,
+          6.54741141383204
+        ]
+      ]
+    },
+    {
+      "transportObjectId": 86993,
+      "nativeLotFields": {
+        "PLN": null,
+        "LOTAINF": null,
+        "LOTAAC": null,
+        "LOTASF": null,
+        "LOTDES": null,
+        "UP": null
+      },
+      "geometryType": "Polygon",
+      "vertexCount": 93,
+      "bboxWgs84": [
+        3.30339046736606,
+        6.5420348594318,
+        3.34064357584061,
+        6.60412636493868
+      ],
+      "geometrySha256": "aaeaa211154f76e276e3d79a9c4e90f2c85bac9f2fcfeb99329549e348e2679e",
+      "firstFiveCoordinates": [
+        [
+          3.3249955232398,
+          6.55351072014076
+        ],
+        [
+          3.32322842304974,
+          6.55249192891552
+        ],
+        [
+          3.32197077105992,
+          6.55176684436025
+        ],
+        [
+          3.31768369951936,
+          6.54929514334598
+        ],
+        [
+          3.31768196044205,
+          6.54741141383204
+        ]
+      ]
+    }
+  ],
+  "interpretation": "Two polygon rows intersect the bounded cell. Every native-looking lot/plan field requested is null in both. Their geometries are identical by SHA-256 and cover a large multi-kilometer outline, not separate parcel boundaries. The OBJECTID values are ArcGIS transport row keys only. This query verifies public polygon geometry at the target, but not parcel geometry, cadastral semantics or stable native identity. An expanded bounded check of approximately 0.02° in each direction around the target (about a 4.4 km square) counted zero features where any of the six plausible lot/plan fields is non-null. The layer advertises a very large extent (roughly −3.81°..11.51° longitude, −0.91°..14.64° latitude, Web Mercator) and maxRecordCount 2000; the local result does not establish citywide coverage or absence.",
+  "expandedLocalNonblankFieldCheck": {
+    "networkContext": "direct HTTPS via exec_command require_escalated; TLS verification enabled",
+    "bboxWgs84": [
+      3.29028078517139,
+      6.54844874683968,
+      3.33028078517139,
+      6.58844874683968
+    ],
+    "centerWgs84": [
+      3.31028078517139,
+      6.56844874683968
+    ],
+    "bboxHalfWidthDegrees": 0.02,
+    "where": "PLN IS NOT NULL OR LOTAINF IS NOT NULL OR LOTAAC IS NOT NULL OR LOTASF IS NOT NULL OR LOTDES IS NOT NULL OR UP IS NOT NULL",
+    "countOnlyUrl": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer/2/query?where=PLN+IS+NOT+NULL+OR+LOTAINF+IS+NOT+NULL+OR+LOTAAC+IS+NOT+NULL+OR+LOTASF+IS+NOT+NULL+OR+LOTDES+IS+NOT+NULL+OR+UP+IS+NOT+NULL&geometry=3.29028078517139%2C6.54844874683968%2C3.33028078517139%2C6.58844874683968&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=OBJECTID%2CPLN%2CLOTAINF%2CLOTAAC%2CLOTASF%2CLOTDES%2CUP&returnGeometry=false&resultRecordCount=3&f=geojson&returnCountOnly=true",
+    "sampleUrl": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer/2/query?where=PLN+IS+NOT+NULL+OR+LOTAINF+IS+NOT+NULL+OR+LOTAAC+IS+NOT+NULL+OR+LOTASF+IS+NOT+NULL+OR+LOTDES+IS+NOT+NULL+OR+UP+IS+NOT+NULL&geometry=3.29028078517139%2C6.54844874683968%2C3.33028078517139%2C6.58844874683968&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=OBJECTID%2CPLN%2CLOTAINF%2CLOTAAC%2CLOTASF%2CLOTDES%2CUP&returnGeometry=true&resultRecordCount=3&f=geojson",
+    "countHttpStatus": 200,
+    "count": 0,
+    "sampleHttpStatus": 200,
+    "returnedFeatures": 0,
+    "resultRecordCountCap": 3,
+    "maxRecordCount": 2000,
+    "outFields": [
+      "OBJECTID",
+      "PLN",
+      "LOTAINF",
+      "LOTAAC",
+      "LOTASF",
+      "LOTDES",
+      "UP"
+    ],
+    "interpretation": "Within this limited ~4.4 km square around the WUP coordinate, the OR-of-IS-NOT-NULL filter returned zero polygon rows; there are therefore no candidates with any one of the six plausible lot/plan attributes populated in this query. This is not a claim of citywide absence. The unfiltered exact-target check returned two duplicate large polygons with those six fields all null."
+  }
+}

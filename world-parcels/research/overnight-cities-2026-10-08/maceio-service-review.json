@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8494-maceio.json",
+  "purpose": "Document local registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Inspected the official interactive viewer and its publicly linked loader/search scripts. The integration endpoint accepts parcel inscription or sector/quadra and its response includes address-related fields without a documented field-selection parameter. No property key, address or broad geometry request was submitted.",
+  "registryAssessment": "The city’s public service says users can search urban municipal tax registration from a map, and IPLAM describes the municipal technical cadastre. IPLAM states editable cadastral cartography (including Shapefile/DWG) is restricted to institutional partner agencies.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.online.maceio.al.gov.br/6/ver_servico/21/unidade/buscar%2Binscri%C3%A7ao%2Bimobiliaria/",
+      "observation": "City service documentation advertises map-based urban registration lookup; IPLAM maintains the technical cadastre. Official disclosure rules restrict editable cadastral map files to institutional partner agencies."
+    },
+    {
+      "url": "https://www.iplam.maceio.al.gov.br/servicos/servicos",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    },
+    {
+      "url": "https://semecmaceio.com/maceio-geo/home/23/",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Portuguese",
+      "query": "Maceió cadastro imobiliário mapa de lotes prefeitura geoportal",
+      "result": "Found the official map-based urban tax-inscription lookup and Maceió Geo viewer.",
+      "method": "Separate Portuguese-language discovery search."
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:maceio.al.gov.br cadastro técnico municipal geoprocessamento mapa lotes imóvel",
+      "result": "Found IPLAM service information on the municipal technical cadastre and limited access to editable cadastral cartography.",
+      "method": "Separate targeted Portuguese-language search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.online.maceio.al.gov.br/6/ver_servico/21/unidade/buscar%2Binscri%C3%A7ao%2Bimobiliaria/",
+      "method": "Public official page/service review; no property-specific query",
+      "observation": "Inspected the official interactive viewer and its publicly linked loader/search scripts. The integration endpoint accepts parcel inscription or sector/quadra and its response includes address-related fields without a documented field-selection parameter. No property key, address or broad geometry request was submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner or address attributes were requested or retained; no credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,73 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "SD",
+ "regionName": "South Dakota",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-sd-minnehaha-county-parcels",
+  "name": "Minnehaha County Parcels (Sioux Falls); also Pennington County Parcels (Rapid City)",
+  "operator": "Minnehaha County GIS; Pennington County",
+  "scope": "county-level only (2 counties)",
+  "endpoint": "https://gis.minnehahacounty.gov/minnemap/rest/services/Parcels/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:4326 via outSR (Minnehaha native SD South ft)",
+  "reuseStatus": "not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-sd-minnehaha-county-parcels",
+  "requestUrl": "https://gis.minnehahacounty.gov/minnemap/rest/services/Parcels/MapServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "TAG",
+  "responseFile": "SD-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide South Dakota parcel layer found (searches surfaced county services only).",
+ "subregionsVerified": [
+  "Minnehaha County",
+  "Pennington County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services.arcgis.com/7CRlmWNEbeCqEJ6a/ArcGIS/rest/services/South%20Dakota/FeatureServer",
+   "observation": "search hit, not a parcel layer verified"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.minnehahacounty.gov/minnemap/rest/services/Parcels/MapServer/0/query bbox Sioux Falls",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features"
+  },
+  {
+   "url": "https://gis.minnehahacounty.gov/minnemap/rest/services/Parcels/MapServer/0/query?where=1=1&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons, TAG only"
+  },
+  {
+   "url": "https://services1.arcgis.com/AhXvNWFdL7hH4TjJ/ArcGIS/rest/services/PenningtonParcels/FeatureServer/0/query",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons; PIN/TaxID only"
+  }
+ ],
+ "reuseStatus": "Not read.",
+ "remainingUncertainty": "Statewide layer not found; SD state GIS/BIT not fully searched. Minnehaha bbox query returned 0 (attribute query used); Pennington layer carries grantee/grantor fields (not saved).",
+ "nextStep": "Search SD Bureau of Information and Technology / SD GIS hub for a statewide compile."
+}

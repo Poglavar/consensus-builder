@@ -1,0 +1,157 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:CR:san-jose",
+  "name": "San Jose",
+  "country": "Costa Rica",
+  "countryCode": "CR",
+  "centerLatLon": [
+    9.933333333333334,
+    -84.083333
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "San Jose Costa Rica official municipal catastro GIS parcel map datos abiertos",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+        "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer"
+      ]
+    },
+    {
+      "query": "San José Costa Rica Municipalidad catastro predios geoservicios mapa catastral",
+      "language": "Spanish",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+        "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+      "observation": "Municipal department page describes the city cadastral and geographic information function."
+    },
+    {
+      "url": "https://www.msj.go.cr/cant/Paginas/sec_info_geografica.aspx",
+      "observation": "Municipal information page identifies its geographic information section."
+    },
+    {
+      "url": "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer",
+      "observation": "Official municipality MapServer exposes layer 2 Predios with Polygon geometry metadata; bounded query could not be fetched from this environment."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer/2/query",
+      "method": "GET",
+      "params": {
+        "geometry": "-84.092,9.93,-84.09,9.932",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "outSR": 4326,
+        "where": "1=1",
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Timed out from the local request environment (HTTP 000); no claim about remote service availability."
+    },
+    {
+      "url": "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer/2/query",
+      "method": "GET",
+      "params": {
+        "geometry": "-84.092,9.93,-84.09,9.932",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "outSR": 4326,
+        "where": "1=1",
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Retried bounded request through the approved unrestricted public transport; it still timed out after 25 seconds (HTTP 000). This is local request evidence only, not a remote outage or empty result."
+    },
+    {
+      "url": "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer/2/query",
+      "method": "GET",
+      "params": {
+        "geometry": "-84.092,9.93,-84.09,9.932",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "outSR": 4326,
+        "where": "1=1",
+        "outFields": "OBJECTID",
+        "returnGeometry": true,
+        "resultRecordCount": 3,
+        "f": "geojson"
+      },
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Retried via approved public transport; timed out after 25 seconds (HTTP 000). No claim about remote service availability."
+    },
+    {
+      "url": "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official municipal cadastral/geographic department page opened via search reference; it describes city cadastral and GIS responsibilities."
+    },
+    {
+      "url": "https://www.msj.go.cr/cant/Paginas/sec_info_geografica.aspx",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official municipal geographic-information page opened via search reference."
+    },
+    {
+      "url": "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official MapServer metadata opened; layer 2 Predios is Polygon geometry. Feature query timed out locally."
+    }
+  ],
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Municipal cadastral pages and the official San José MapServer identify layer 2 Predios as polygon geometry. Bounded calls timed out locally; no remote outage is inferred.",
+    "urls": [
+      "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+      "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_or_map_evidence_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "Municipal cadastral pages and the official San José MapServer identify layer 2 Predios as polygon geometry. Bounded calls timed out locally; no remote outage is inferred."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "Municipal cadastral pages and the official San José MapServer identify layer 2 Predios as polygon geometry. Bounded calls timed out locally; no remote outage is inferred.",
+  "registryEvidenceUrls": [
+    "https://www.msj.go.cr/cant/Paginas/depto_info_catastr_geograf.aspx",
+    "https://mapas.msj.go.cr/server/rest/services/SIG_CATASTRO/SIG_SER_CATASTRO/MapServer"
+  ],
+  "sourceIds": []
+}

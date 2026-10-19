@@ -1,0 +1,33 @@
+{
+  "city": "Amman, Jordan",
+  "countryCode": "JO",
+  "sourceId": "jo-dls-cassini-mapserver",
+  "source": "Department of Lands and Survey DLS_Cassini MapServer layer 3 (Parcels)",
+  "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+  "priorEvidence": {
+    "checkedAt": "2026-09-30",
+    "operation": "bounded ArcGIS REST envelope query 35.9590,31.9830,35.9620,31.9860; outSR=4326; resultRecordCount=3",
+    "outcome": "3 polygon parcels in Amman. Separate country retry on earlier date found 3 in Irbid and zero in an Aqaba test box; not a country-completeness proof."
+  },
+  "freshCheck": {
+    "checkedAtUtc": "2026-10-02T21:45Z",
+    "operation": "GET layer metadata ?f=pjson",
+    "outcome": "Web fetch tool could not access the URL; this tool failure is not evidence that the service is offline. No fresh feature query made."
+  },
+  "reuse": {
+    "status": "hold; terms not read",
+    "evidence": "Official DLS viewer https://maps.dls.gov.jo/dlsweb uses a captcha iframe; no applicable license text located in reviewed material."
+  },
+  "assessment": "Bounded samples show useful polygons and pagination support, but reuse terms are unresolved and the official service was not freshly verified through the available fetcher.",
+  "description": "Current source continuation assessment; prior geometry samples and current direct checks are separate.",
+  "checkedAt": "2026-10-03",
+  "runtimeEnabled": false,
+  "directCheck": {
+    "operation": "Bounded official endpoint query and metadata where needed",
+    "outcome": "success",
+    "httpStatus": 200,
+    "detail": "Direct bounded GeoJSON query returned3polygons with PARCEL_ID, DLS_KEY, VILL_CODE,HOD_CODE and transfer-limit flag. This is an incomplete sample, not complete paging/identity validation.",
+    "responseFile": "amman-live-sample.json",
+    "requestUrl": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?where=1%3D1&geometry=35.9590%2C31.9830%2C35.9620%2C31.9860&outFields=PARCEL_ID%2CDLS_KEY%2CVILL_CODE%2CHOD_CODE&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson"
+  }
+}

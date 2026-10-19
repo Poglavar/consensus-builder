@@ -1,0 +1,22 @@
+{
+  "taskId": "city:7128",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7128-khanpur.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/khanpur-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_7128-root-live-check.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/khanpur-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T19:53:40.722323Z",
+  "reason": "Khanpur: fresh official bounded query returned three native-ID polygons identical to the safe retained sample; exact WUP point returned zero and bounded response exceeded transfer limit. Full paging, thirteen cells, metric checks, binding, and headed Details remain unverified.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

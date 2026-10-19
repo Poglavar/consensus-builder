@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8697-malegaon.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "An official government organization chart identifies the Malegaon land-record office, and the state department documents city-survey/property-card and e-map functions. The BhuNaksha viewer presents parcel-number/plot-info workflows; no plot was selected and no property record was queried.",
+  "registryAssessment": "Maharashtra’s official RTI organization chart lists the District Superintendent of Land Records, Nashik No. 2 at Malegaon. The state Land Records Department describes the city-survey/property-card and map functions, and the official Malegaon Municipal Corporation site identifies the local planning authority. Together these establish a local land-record office/function; they do not establish a safe public geometry endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rtionline.maharashtra.gov.in/organizationChart.php",
+      "observation": "Maharashtra’s official RTI organization chart lists the District Superintendent of Land Records, Nashik No. 2 at Malegaon. The state Land Records Department describes the city-survey/property-card and map functions, and the official Malegaon Municipal Corporation site identifies the local planning authority. Together these establish a local land-record office/function; they do not establish a safe public geometry endpoint."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "observation": "Maharashtra’s official RTI organization chart lists the District Superintendent of Land Records, Nashik No. 2 at Malegaon. The state Land Records Department describes the city-survey/property-card and map functions, and the official Malegaon Municipal Corporation site identifies the local planning authority. Together these establish a local land-record office/function; they do not establish a safe public geometry endpoint."
+    },
+    {
+      "url": "https://www.bhumiabhilekh.maharashtra.gov.in/Pages/AboutUsDetail?pageId=59",
+      "observation": "Maharashtra’s official RTI organization chart lists the District Superintendent of Land Records, Nashik No. 2 at Malegaon. The state Land Records Department describes the city-survey/property-card and map functions, and the official Malegaon Municipal Corporation site identifies the local planning authority. Together these establish a local land-record office/function; they do not establish a safe public geometry endpoint."
+    },
+    {
+      "url": "https://malegaoncorporation.org/mmc/all-department",
+      "observation": "Maharashtra’s official RTI organization chart lists the District Superintendent of Land Records, Nashik No. 2 at Malegaon. The state Land Records Department describes the city-survey/property-card and map functions, and the official Malegaon Municipal Corporation site identifies the local planning authority. Together these establish a local land-record office/function; they do not establish a safe public geometry endpoint."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Maharashtra’s official RTI organization chart lists the District Superintendent of Land Records, Nashik No. 2 at Malegaon. The state Land Records Department describes the city-survey/property-card and map functions, and the official Malegaon Municipal Corporation site identifies the local planning authority. Together these establish a local land-record office/function; they do not establish a safe public geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Malegaon Maharashtra official city survey land records cadastral map GIS",
+      "result": "Official Maharashtra organization chart lists the Malegaon land-record office; no safe public feature schema verified.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Marathi",
+      "query": "मालेगाव नगर भूमापन भूमी अभिलेख भू नकाशा अधिकृत",
+      "result": "State department describes city-survey/property-card and e-map services; the plot-info viewer was not queried.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra’s official RTI organization chart lists the District Superintendent of Land Records, Nashik No. 2 at Malegaon. The state Land Records Department describes the city-survey/property-card and map functions, and the official Malegaon Municipal Corporation site identifies the local planning authority. Together these establish a local land-record office/function; they do not establish a safe public geometry endpoint.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "The map’s anonymous response schema and Malegaon feature coverage remain unverified."
+}

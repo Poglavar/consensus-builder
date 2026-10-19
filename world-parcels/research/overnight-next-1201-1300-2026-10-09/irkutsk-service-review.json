@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7744-irkutsk.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Review official cadastral-map and regional GISOGD channels for Irkutsk and qualify bounded anonymous parcel evidence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": [52.2725093828849, 104.300484423056]
+  },
+  "assessment": "Official discovery identified Rosreestr/NSPD national cadastral references and the Irkutsk regional GISOGD portal, but no anonymous parcel feature response with a safe native ID and geometry was obtained.",
+  "registryAssessment": "National Rosreestr is the cadastral custodian. Regional GISOGD documentation is evidence of a planning-information portal, not proof of a local cadastral register or parcel API. registryFound therefore remains null.",
+  "coverageAssessment": {
+    "claimedScope": "First-party English and Russian discovery plus bounded anonymous GET reachability checks.",
+    "verifiedOpenScope": "No parcel features, schema, CRS, or native IDs verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "operator": "National Spatial Data System / public cadastral map reference",
+      "scope": "National cadastral-map route; bounded request timed out."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "operator": "Rosreestr",
+      "scope": "National cadastral custodian; bounded request timed out."
+    },
+    {
+      "url": "https://geoportal.irkobl.ru/agate_usolesibirgo/map",
+      "operator": "Irkutsk Region GISOGD geoportal",
+      "scope": "Regional planning-information map; TLS verification failed before configuration inspection."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Irkutsk official cadastral parcel map public viewer Rosreestr cadastral map",
+      "result": "Found official national cadastral references and the Irkutsk regional GISOGD portal.",
+      "actualResultUrls": [
+        "https://nspd.gov.ru/map?thematic=PKK",
+        "https://rosreestr.gov.ru/",
+        "https://geoportal.irkobl.ru/agate_usolesibirgo/map"
+      ]
+    },
+    {
+      "language": "Russian",
+      "query": "Иркутск публичная кадастровая карта Росреестр официальный карта земельных участков",
+      "result": "Found the same national references plus regional GISOGD documentation and official city cadastral-work references; no parcel API response.",
+      "actualResultUrls": [
+        "https://nspd.gov.ru/map?thematic=PKK",
+        "https://rosreestr.gov.ru/",
+        "https://geoportal.irkobl.ru/doc/usages/GISOGD.portal/help.portal_start.html",
+        "https://admirk.ru/city/interaktivnye-karty/"
+      ]
+    }
+  ],
+  "attempts": [
+    "GET nspd.gov.ru: bounded timeout; no bypass attempted.",
+    "GET NSPD public map route: bounded timeout; no bypass attempted.",
+    "GET rosreestr.gov.ru: bounded timeout; no bypass attempted.",
+    "GET Irkutsk regional GISOGD map: TLS certificate verification failure; TLS was not disabled and no exception was authorized.",
+    "First-party GISOGD documentation was read through search results; it describes a planning-information map/document portal but does not expose a verified parcel endpoint.",
+    "Safe allowlist would have been limited to public native IDs and geometry; no response was retained, and no owner, address, contact, titleholder, personal, tax/account, or credential fields were requested or retained.",
+    "No citywide or countrywide completeness claim; runtime remains held for serial review."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "responseCrs": null,
+    "sampleCrs": null,
+    "exactWupPointTest": "No parcel query reached a geometry response. The immutable WUP point was preserved; no coordinate shift was used."
+  },
+  "nextStep": "Root/serial review may retry the official NSPD/Rosreestr routes from a reachable network and inspect the regional portal configuration, then independently qualify any adapter behavior before admission.",
+  "remainingUncertainty": "Timeouts and TLS failure are route/network limitations, not evidence of citywide absence or lack of cadastral coverage.",
+  "researchAttempt": 1,
+  "rootReview": null,
+  "rootReviewedAt": null,
+  "sampleRetention": {
+    "retainedFeatureProperties": [],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false
+  }
+}

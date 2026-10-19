@@ -1,0 +1,98 @@
+[
+ {
+  "kind": "city",
+  "key": "hyderabad-pakistan",
+  "rank": 174,
+  "name": "Hyderabad",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "lat": 25.37691,
+  "lon": 68.35441,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/hyderabad-pakistan.json"
+ },
+ {
+  "kind": "city",
+  "key": "guatemala-city",
+  "rank": 175,
+  "name": "Ciudad de Guatemala (Guatemala City)",
+  "country": "Guatemala",
+  "iso2": "GT",
+  "lat": 14.59835,
+  "lon": -90.54461,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/guatemala-city.json"
+ },
+ {
+  "kind": "city",
+  "key": "dalian",
+  "rank": 178,
+  "name": "Dalian",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 38.93791,
+  "lon": 121.55937,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/dalian.json"
+ },
+ {
+  "kind": "city",
+  "key": "coyah-conakry",
+  "rank": 182,
+  "name": "Coyah (Conacry)",
+  "country": "Guinea",
+  "iso2": "GN",
+  "lat": 9.6483,
+  "lon": -13.56498,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/coyah-conakry.json"
+ },
+ {
+  "kind": "city",
+  "key": "guiyang",
+  "rank": 185,
+  "name": "Guiyang",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 26.58779,
+  "lon": 106.70212,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/guiyang.json"
+ },
+ {
+  "kind": "city",
+  "key": "changzhou",
+  "rank": 189,
+  "name": "Changzhou",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 31.76965,
+  "lon": 119.96065,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/changzhou.json"
+ },
+ {
+  "kind": "city",
+  "key": "kyiv",
+  "rank": 192,
+  "name": "Kyiv (Kiev)",
+  "country": "Ukraine",
+  "iso2": "UA",
+  "lat": 50.44919,
+  "lon": 30.5196,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/kyiv.json"
+ },
+ {
+  "kind": "city",
+  "key": "caracas",
+  "rank": 195,
+  "name": "Caracas",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "iso2": "VE",
+  "lat": 10.47973,
+  "lon": -66.88908,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/caracas.json"
+ }
+]

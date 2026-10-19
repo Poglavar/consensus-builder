@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2087",
+  "wupCityCode": 2087,
+  "name": "Utrecht",
+  "country": "Netherlands",
+  "countryCode": "NL",
+  "rank": 1066,
+  "queueRank": 1066,
+  "point": [
+    52.0840427734495,
+    5.08101362175478
+  ],
+  "centerLatLon": [
+    52.0840427734495,
+    5.08101362175478
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 519200,
+  "population2025k": 519.2,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The national Kadaster holds the cadastral parcel dataset used in Utrecht, and the municipality publishes its geodata portal. The official open PDOK OGC API returned three polygons in a 0.0002° point-centered envelope; none contains the unchanged WUP point. The nearest returned polygon is about 3.56 m away and is retained as nearby evidence only.",
+  "registryEvidenceUrls": [
+    "https://utrecht.webgis.nl/nl/workspace/utrecht/portal",
+    "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+    "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "nl-pdok-brk-kadastrale-kaart"
+  ],
+  "adapterReady": true,
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "scopeLimits": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "The national Kadaster holds the cadastral parcel dataset used in Utrecht, and the municipality publishes its geodata portal. The official open PDOK OGC API returned three polygons in a 0.0002° point-centered envelope; none contains the unchanged WUP point. The nearest returned polygon is about 3.56 m away and is retained as nearby evidence only.",
+    "verifiedOpenScope": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/utrecht-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/utrecht-root-quality.json",
+    "qualityReviewFile": "research/overnight-followon-2026-10-09/utrecht-root-quality-review.json"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Utrecht Netherlands official cadastral parcel map Kadaster PDOK public WFS OGC API",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found official source evidence and a publicly queryable geometry route; bounded result is documented separately.",
+        "actualResultUrls": [
+          "https://utrecht.webgis.nl/nl/workspace/utrecht/portal",
+          "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+          "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      },
+      {
+        "language": "Dutch",
+        "query": "Utrecht kadastrale kaart perceel gemeente Utrecht Kadaster PDOK openbare kaart WFS",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found official source evidence and a publicly queryable geometry route; bounded result is documented separately.",
+        "actualResultUrls": [
+          "https://utrecht.webgis.nl/nl/workspace/utrecht/portal",
+          "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+          "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      }
+    ],
+    "officialSources": [
+      {
+        "title": "Gemeente Utrecht geodata portal",
+        "url": "https://utrecht.webgis.nl/nl/workspace/utrecht/portal",
+        "observation": "The municipal geodata portal describes itself as the catalog of geographic information published by Gemeente Utrecht."
+      },
+      {
+        "title": "Kadaster cadastral map official documentation",
+        "url": "https://www.kadaster.nl/zakelijk/producten/eigendom/kadastrale-kaart",
+        "observation": "Kadaster identifies parcel boundaries/numbers and direct open PDOK viewer, web services, downloads and OGC API."
+      },
+      {
+        "title": "PDOK/Kadaster OGC API collection",
+        "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+        "observation": "Public collection used for bounded point-centered query; full geometry, no owner/address attributes requested in retained sample."
+      }
+    ],
+    "viewerAndServiceTrace": "Bounded OGC API query returned three full GeoJSON MultiPolygons. Point-in-ring test found no point-containing feature. Nearest polygon `26211032670000` (kadastrale parcel id) is approximately 3.56 m from the WUP point; only parcel identifier components and unchanged geometry are retained.\\nRequest URL: https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&limit=3&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&bbox=5.08091362175478%2C52.0839427734495%2C5.08111362175478%2C52.0841427734495&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&filter=%28status_historie_code%20%3D%20%27G%27%29&filter-lang=cql2-text\\nResult: HTTP 200; 3 GeoJSON polygons; none contains locator; nearest sample about 3.56 m away.",
+    "attemptedGeometry": "bounded envelope query returned three full polygons; no exact point containment; nearest feature retained Request URL: https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&limit=3&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&bbox=5.08091362175478%2C52.0839427734495%2C5.08111362175478%2C52.0841427734495&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&filter=%28status_historie_code%20%3D%20%27G%27%29&filter-lang=cql2-text Result: HTTP 200; 3 GeoJSON polygons; none contains locator; nearest sample about 3.56 m away.",
+    "sensitiveFieldsRequested": false,
+    "credentialsUsed": false
+  },
+  "remainingUncertainty": "Qualified bounded source-reference geometry only; whole-city completeness, legal title, survey accuracy, currentness and future revision identity continuity remain unverified.",
+  "nextStep": "Manual browser verification after catalog integration.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sampleFile": "city-2087-utrecht-samples.geojson",
+  "rootReviewedAt": "2026-10-09T06:05:23.845931+00:00",
+  "rootReviewNote": "Root independently reviewed bounded real-adapter acceptance and all grid/footprint native geometry topology; all fresh native-ID rereads match. Approved.",
+  "source": {
+    "sourceId": "nl-pdok-brk-kadastrale-kaart",
+    "name": "Netherlands Kadaster / PDOK cadastral map",
+    "operator": "Kadaster / PDOK",
+    "endpoint": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items",
+    "scope": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry."
+  },
+  "appCityId": "utrecht",
+  "runtimeQualification": {
+    "sourceId": "nl-pdok-brk-kadastrale-kaart",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/utrecht-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/utrecht-root-quality.json"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "cityCode": 9549,
+  "queueRank": 2211,
+  "name": "Hosapete",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [15.2692732108993, 76.3882884313364],
+  "population2025": 263965,
+  "population2025k": 263.965,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "India Karnataka official cadastral parcel map Hosapete Vijayanagara land records GIS Bhoomi",
+        "result": "First-party discovery identified Karnataka Revenue Department's Bhoomi land-records portal, the Vijayanagara district Bhoomi service page, and the national Department of Land Resources land-records service directory. The public evidence describes land records and revenue-map procedures, but no safe anonymous Hosapete parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://vijayanagara.nic.in/en/service/land-records-bhoomi-en/",
+          "https://www.landrecords.karnataka.gov.in/service2/RTC.aspx",
+          "https://stategisportal.nic.in/stategisportal/Home/Map/29",
+          "https://dolr.gov.in/en/citizen-centric-services/"
+        ]
+      },
+      {
+        "language": "Kannada",
+        "query": "ಕರ್ನಾಟಕ ಹೊಸಪೇಟೆ ವಿಜಯನಗರ ಅಧಿಕೃತ ಭೂ ದಾಖಲೆ ನಕ್ಷೆ ಸರ್ವೆ ನಂಬರ್ ಭೂಮಿ",
+        "result": "Kannada-language discovery returned the official Vijayanagara district site and its Bhoomi/land-records route, confirming the Karnataka land-records service and local district context. No public anonymous parcel geometry response or current service schema was exposed by the route.",
+        "actualResultUrls": [
+          "https://vijayanagara.nic.in/",
+          "https://vijayanagara.nic.in/en/service/land-records-bhoomi-en/",
+          "https://yadgir.nic.in/service/%E0%B2%AD%E0%B3%82-%E0%B2%A6%E0%B2%BE%E0%B2%96%E0%B2%B2%E0%B3%86%E0%B2%97%E0%B2%B3%E0%B3%81/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Official Karnataka Revenue/Bhoomi and Vijayanagara district land-record routes were evidenced, including a Hosapete district-office reference, but anonymous parcel geometry, native parcel identity, schema, CRS, and coverage were not qualified in this attempt. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

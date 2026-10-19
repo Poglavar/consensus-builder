@@ -1,0 +1,57 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "VN",
+ "country": "Viet Nam",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Agriculture and Environment (former MONRE) - national land database; provincial land registration offices",
+ "portalsFound": [
+  {
+   "url": "https://dvc.monre.gov.vn/",
+   "observation": "Answered 401 (auth required)."
+  },
+  {
+   "url": "https://quyhoach.hanoi.vn/",
+   "observation": "Hanoi planning viewer, bot-check page only (see hanoi.json)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://tnmt.gov.vn/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://dvc.monre.gov.vn/",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "text/plain; charset=utf-8",
+   "assessment": "unauthorised"
+  },
+  {
+   "url": "https://bando.monre.gov.vn/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://csdl.monre.gov.vn/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National land database under construction (per public statements, unverified here); provincial viewers only",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Hosts unreachable or auth-walled; no open parcel endpoint confirmed.",
+ "nextStep": "Inspect provincial viewers' network calls; check national land-database access terms."
+}

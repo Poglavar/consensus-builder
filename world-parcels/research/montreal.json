@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:187",
+  "queueRank": 187,
+  "name": "Montreal",
+  "country": "Canada",
+  "countryCode": "CA",
+  "centerLatLon": [
+    45.5363747662468,
+    -73.6660077343496
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://donnees.montreal.ca/dataset/unites-evaluation-fonciere",
+      "observation": "Ville de Montreal open data (CC-BY 4.0 per CKAN): 'Unites d'evaluation fonciere', a polygon layer of property units for the agglomeration. The publisher states it has no legal value and must not be confused with the cadastral subdivision. Offered only as bulk CSV (76 MB), GeoJSON zip (176 MB) and Shapefile zip (145 MB); the CSV datastore has attributes but no geometry."
+    },
+    {
+      "url": "https://servicescarto.mern.gouv.qc.ca/pes/rest/services/Territoire",
+      "observation": "Quebec MRNF ArcGIS Server folder: WMS-oriented services; Droits_fonciers_WMS holds Crown land rights points/surfaces, not the cadastre of lots. No Cadastre du Quebec parcel query service found."
+    },
+    {
+      "url": "https://www.donneesquebec.ca/recherche/",
+      "observation": "Donnees Quebec CKAN searched for cadastre/lots; only unrelated or small municipal line datasets found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://donnees.montreal.ca/api/3/action/package_show?id=unites-evaluation-fonciere",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "resource list: CSV, GeoJSON zip, SHP zip; bulk only"
+    },
+    {
+      "url": "https://donnees.montreal.ca/api/3/action/datastore_search?resource_id=2b9dfc3d-91d3-48de-b32c-a2a6d9417079&limit=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "records returned but attributes only (no geometry, no polygon)"
+    },
+    {
+      "url": "https://donnees.montreal.ca/dataset/4ad6baea-4d2c-460f-a8bf-5d000db498f7/resource/866a3dbc-8b59-48ff-866d-f2f9d3bbee9d/download/uniteevaluationfonciere.geojson.zip",
+      "method": "GET",
+      "httpStatus": 302,
+      "contentType": null,
+      "assessment": "HEAD only: redirect to a 176 MB signed bulk zip; not downloaded (no bounded query)"
+    },
+    {
+      "url": "https://servicescarto.mern.gouv.qc.ca/pes/rest/services/Territoire/Droits_fonciers_WMS/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "service description; Crown land rights, not lot cadastre; not counted"
+    },
+    {
+      "url": "https://www.donneesquebec.ca/recherche/api/3/action/package_search?q=cadastre+du+quebec&rows=8",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no Cadastre du Quebec parcel service found"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre+montreal+Feature+Service",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only unrelated historical hydrography layers"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Montreal agglomeration property units (bulk file); Quebec-wide Cadastre du Quebec not found as an open bounded service",
+    "verifiedOpenScope": "none (no bounded polygon response obtained)",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "A CC-BY polygon bulk dataset exists for the Montreal agglomeration but was not downloaded (176 MB, outside the bounded-query rule) and is explicitly non-legal. The official Cadastre du Quebec (MRNF, via Infolot / Registre foncier) is not confirmed open or queryable. Not proof of absence.",
+  "nextStep": "If bulk import is acceptable, fetch the GeoJSON zip once to a tile/index outside this probe and verify polygons; otherwise look for Quebec MRNF cadastre WFS/ArcGIS access (e.g. IGO/geoegl.msp.gouv.qc.ca)."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3163",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3163-santa-fe.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/santa-fe-service-review.json",
+    "tmp/valhalla-parcel-research/santa-fe/wms-capabilities.xml",
+    "tmp/valhalla-parcel-research/santa-fe/featureinfo.json",
+    "tmp/valhalla-parcel-research/santa-fe/featureinfo.headers"
+  ],
+  "checkedAt": "2026-10-10T09:48:01.136766Z",
+  "reviewNote": "SCIT custody confirmed. Original WMS capabilities mark both parcel layers queryable=0; original FeatureInfo response is LayerNotQueryable. Official Santa Fe open-data catalogue advertises a La Capital cadastral shapefile, a candidate for later safe-ID and polygon verification, but no contents were qualified here. All adapter, cell, metric, binding, and headed UI gates remain unverified."
+}

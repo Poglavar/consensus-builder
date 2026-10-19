@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:9524",
+  "queueRank": 15,
+  "growthCohort": "top20-2015-2025",
+  "name": "Dajindian",
+  "countryCode": "CN",
+  "centerLatLon": [
+    34.3730765718093,
+    113.024002574101
+  ],
+  "checkedAt": "2026-10-07",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://public.dengfeng.gov.cn/D49Y/6909395.jhtml",
+      "observation": "Official Dengfeng government notice from the real-estate registration centre about rural-house registration in Wangshang Village, Dajindian Town; proves registration activity, not open polygons."
+    },
+    {
+      "url": "https://www.dengfeng.gov.cn/xzqh.jhtml",
+      "observation": "Official Dengfeng administrative divisions list 大金店镇 among the city towns."
+    },
+    {
+      "url": "https://www.dengfeng.gov.cn/",
+      "observation": "Official city government portal; no anonymous parcel vector found from the reviewed indexed results."
+    },
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/",
+      "observation": "Official Zhengzhou Natural Resources and Planning Bureau homepage links 天地图·郑州 to https://henan.tianditu.gov.cn/."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/",
+      "observation": "Official Henan public map portal returned HTTP 200 from a Chrome-like direct GET and was opened in the public web reader. It presents vector map, satellite imagery, terrain, developer WEB service/API and data API; not parcel cadastral vectors."
+    },
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/tzgg/8042625.jhtml",
+      "observation": "Official Zhengzhou bureau notice says land-use entities can sign in with real-name provincial government accounts and download vector data / parcel maps (宗地图) using land-transfer contract or allocation decision numbers. This is authenticated, transaction-specific access, not an anonymous public parcel feed."
+    },
+    {
+      "url": "https://public.dengfeng.gov.cn/D49Y/1941579.jhtml",
+      "observation": "Official Dajindian township master-plan notice publishes land-use and urban planning maps as linked JPG image attachments and states detailed content is available from the Dengfeng planning bureau; images are planning maps, not cadastral parcel polygons."
+    },
+    {
+      "url": "https://public.dengfeng.gov.cn/attachment/《登封市大金店镇国土空间总体规划（2021-2035 年）》（征求意见稿）.pdf",
+      "observation": "Official Dengfeng government has a 2021–2035 Dajindian territorial spatial plan consultation PDF; indexed as PDF planning material, not parcel geometry."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://public.dengfeng.gov.cn/D49Y/6909395.jhtml",
+      "observation": "Official Dengfeng government notice from the real-estate registration centre about rural-house registration in Wangshang Village, Dajindian Town; proves registration activity, not open polygons."
+    },
+    {
+      "url": "https://www.dengfeng.gov.cn/xzqh.jhtml",
+      "observation": "Official Dengfeng administrative divisions list 大金店镇 among the city towns."
+    },
+    {
+      "url": "https://www.dengfeng.gov.cn/",
+      "observation": "Official city government portal; no anonymous parcel vector found from the reviewed indexed results."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/",
+      "observation": "Official public provincial mapping portal; official Zhengzhou bureau links it as 天地图·郑州. HTTP 200 HTML presents vector base map, satellite imagery, terrain and map APIs; not a parcel service."
+    },
+    {
+      "url": "https://public.dengfeng.gov.cn/D49Y/1941579.jhtml",
+      "observation": "Official Dajindian township planning page with JPG map attachments (town/city planning, land use, transport), not cadastral parcels."
+    },
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/tzgg/8042625.jhtml",
+      "observation": "Official Zhengzhou policy describes real-name, contract-number-specific download of vector parcel maps."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official bureau homepage; links 天地图·郑州 to https://henan.tianditu.gov.cn/."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official provincial map portal returned HTTP 200. Public web view shows vector basemap, satellite imagery, terrain and developer map/WEB/data APIs; no cadastral parcel layer surfaced."
+    },
+    {
+      "url": "https://public.dengfeng.gov.cn/D49Y/1941579.jhtml",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "Official Dajindian master-plan page opened; lists township land-use plan and urban land-use plan attachments as maps."
+    },
+    {
+      "url": "https://public.dengfeng.gov.cn/u/cms/publicdf/202005/03222717fjjl.jpg",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "image/jpeg",
+      "responseBytes": 438159,
+      "assessment": "Official planning-map image attachment (JPG), not parcel-level cadastral geometry."
+    },
+    {
+      "url": "https://zrzyhghj.zhengzhou.gov.cn/tzgg/8042625.jhtml",
+      "method": "GET via public search result",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "assessment": "Official bureau notice describes authenticated download of vector data and parcel map when supplied land-transfer contract or allocation decision number; current user-specific data not requested."
+    }
+  ],
+  "searchQueries": [
+    {
+      "text": "登封市 大金店镇 不动产登记 地籍图 宗地 查询",
+      "language": "Chinese (Simplified)",
+      "script": "Chinese",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.dengfeng.gov.cn/"
+      ]
+    },
+    {
+      "text": "大金店镇 不动产登记中心 地籍图 登封",
+      "language": "Chinese (Simplified)",
+      "script": "Chinese",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://public.dengfeng.gov.cn/D49Y/6909395.jhtml"
+      ]
+    },
+    {
+      "text": "Dajindian Dengfeng cadastral parcel map natural resources bureau",
+      "language": "English",
+      "script": "Latin",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://www.dengfeng.gov.cn/"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "No city-specific open parcel scope verified in this research pass. Country-level evidence is not attributed to this urban centre.",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false,
+    "finding": "Coordinates resolve to 大金店镇 (Dajindian Town), Dengfeng City, Zhengzhou, Henan. Official Dengfeng registry notices document rural-house real-estate registration in Dajindian; the municipal government lists the town administratively. No anonymous parcel polygon response with stable native identity was verified. Follow-up verified that the official Zhengzhou Natural Resources and Planning Bureau links its public TianDiTu portal; Henan TianDiTu responds with public vector basemaps, imagery, terrain and developer APIs. Dengfeng publishes township planning maps as JPG attachments. Zhengzhou also documents a real-name, contract-number-specific parcel-map/vector download workflow. None of these sources provides verified anonymous target-area parcel polygons with a stable parcel ID."
+  },
+  "nextStep": "Treat Henan TianDiTu as a basemap/API aid only. The strongest parcel-map source is Zhengzhou’s authenticated transaction-specific download workflow; public planning attachments are raster JPGs and not suitable parcel geometry. No login was attempted. Revisit only if an official anonymous cadastral layer/catalogue is found.",
+  "registryBasis": "Official Dajindian registration notices and a Zhengzhou transaction-specific vector-map download workflow identified. Anonymous target geometry unverified.",
+  "registryEvidenceUrls": [
+    "https://public.dengfeng.gov.cn/D49Y/6909395.jhtml",
+    "https://www.dengfeng.gov.cn/xzqh.jhtml",
+    "https://www.dengfeng.gov.cn/",
+    "https://henan.tianditu.gov.cn/",
+    "https://public.dengfeng.gov.cn/D49Y/1941579.jhtml",
+    "https://zrzyhghj.zhengzhou.gov.cn/tzgg/8042625.jhtml",
+    "https://zrzyhghj.zhengzhou.gov.cn/",
+    "https://public.dengfeng.gov.cn/attachment/《登封市大金店镇国土空间总体规划（2021-2035 年）》（征求意见稿）.pdf"
+  ]
+}

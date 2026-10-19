@@ -1,0 +1,116 @@
+{
+  "cityCode": 1614,
+  "queueRank": 2322,
+  "name": "Kyzylorda",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "point": [44.8347720260579, 65.5156028832316],
+  "population2025": 250557,
+  "population2025k": 250.557,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kyzylorda Kazakhstan official cadastral map parcel viewer GIS",
+        "result": "Official Kyzylorda regional administration material identifies the regional GIS portal at https://orda.geoportal.kz and describes open and closed contours plus public land-related services. No bounded anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.gov.kz/memleket/entities/kyzylorda/press/article/details/71630",
+          "https://orda.geoportal.kz"
+        ]
+      },
+      {
+        "language": "Russian/Kazakh (native/local)",
+        "query": "Кызылорда кадастровая карта официальный публичная карта земельный кадастр / Қызылорда кадастр картасы ресми жер кадастры карта",
+        "result": "Official Russian and Kazakh Kyzylorda administration pages repeat that the regional GIS open contour is available to the public and list land services. They do not expose a safe anonymous parcel ID-plus-geometry response in the bounded inspection.",
+        "actualResultUrls": [
+          "https://www.gov.kz/memleket/entities/kyzylorda/press/article/details/71630?lang=kk",
+          "https://egov.kz/cms/ru/articles/free_lands",
+          "https://orda.geoportal.kz"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Russian/Kazakh discovery plus bounded official viewer/API inspection",
+  "sourceReview": "The Kyzylorda regional administration identifies a regional geoinformation system at orda.geoportal.kz with public open-contour access and land-related services. This is local/regional registry and map-service evidence. The portal returned an empty anonymous HTTPS response during bounded inspection. Kazakhstan's national map.gov.kz exposed a GeoNode/GeoServer configuration and WFS capabilities, but no Kyzylorda cadastral parcel layer or safe parcel feature response was identified.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.gov.kz/memleket/entities/kyzylorda/press/article/details/71630",
+      "httpStatus": 200,
+      "outcome": "Official Kyzylorda regional administration page loaded. It states that the regional GIS has open and closed contours and names orda.geoportal.kz as the portal, with land-related public services. No feature schema or parcel geometry was embedded."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.gov.kz/memleket/entities/kyzylorda/press/article/details/71630?lang=kk",
+      "httpStatus": 200,
+      "outcome": "Official Kazakh-language version loaded and corroborated the regional GIS/open-contour and land-service statements. No anonymous parcel geometry response was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://orda.geoportal.kz",
+      "httpStatus": null,
+      "outcome": "Anonymous HTTPS request returned an empty reply within the bounded request. This is an unavailable/unusable route observation only and was not treated as a zero-hit or citywide absence. No login, CAPTCHA, credential, or TLS bypass was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.gov.kz/",
+      "httpStatus": 200,
+      "outcome": "National map portal homepage loaded. Current JavaScript/configuration exposed EPSG:3857 default map CRS, GeoNode API endpoints, and a public GeoServer base URL. This is national general map infrastructure, not local Kyzylorda registry evidence by itself."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.gov.kz/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "httpStatus": 200,
+      "outcome": "Public WFS capabilities loaded. Bounded layer-name inspection found no clearly named Kyzylorda cadastral parcel layer; no parcel feature request was made and no geometry or native parcel identity was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://map.gov.kz/geoserver/wms?service=WMS&request=GetCapabilities",
+      "httpStatus": 200,
+      "outcome": "Public WMS capabilities loaded. Bounded text inspection found general map layers but no clearly identified Kyzylorda cadastral parcel service. No geometry was retained."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://egov.kz/cms/ru/articles/free_lands",
+      "httpStatus": 200,
+      "outcome": "Official e-government page lists Kyzylorda administration links for free-land information. It provides procedure/navigation context, not anonymous parcel geometry or a current parcel API."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "orda.geoportal.kz did not return an inspectable anonymous page/configuration; map.gov.kz exposed a national GeoNode configuration.",
+    "geometryCrs": "Not observed for a Kyzylorda parcel layer; map.gov.kz default map CRS is EPSG:3857 only.",
+    "nativeIdentity": "Not observed; no parcel feature response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [44.8347720260579, 65.5156028832316] was preserved for qualification; no coordinate shift or exact-point parcel query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No public Kyzylorda parcel feature route was exposed in the bounded inspection; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local/regional GIS and land-service evidence exists, but no public anonymous Kyzylorda parcel geometry, schema/CRS, or source-proven native parcel identity was qualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point [44.8347720260579, 65.5156028832316] was preserved and not shifted.",
+    "No zero exact-point hit, map extent, timeout, empty reply, or unusable UI was treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, local service CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Kyzylorda regional GIS custodianship and public land-service availability are evidenced by official administration sources. Current anonymous parcel feature access, schema, CRS, stable native identity semantics, and citywide coverage remain unverified. Runtime/admission remains held."
+}

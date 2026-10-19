@@ -1,0 +1,22 @@
+{
+  "taskId": "city:1032",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-1032-san-p-dro.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/san-p-dro-service-review.json",
+    "tmp/valhalla-parcel-research/1032/map.json",
+    "tmp/valhalla-parcel-research/1032/filters.json",
+    "tmp/valhalla-parcel-research/1032/afor.html"
+  ],
+  "checkedAt": "2026-10-10T20:12:35.591316Z",
+  "findings": "Immutable WUP identity and English/French search records match the queue. First-party SIGFU urban parcel search and DGI San Pedro land district support registryFound=true. Original AFOR bounded map response is an empty FeatureCollection; its filters omit San-Pedro in that rural dataset. This is not citywide absence. No San-Pedro native ID or polygon was read.",
+  "admissionGates": "No independently qualified live adapter: fresh native-ID reads, forced paging, thirteen bounded cells, metric full-polygon GEOS checks, source binding, and headed Details verification are all missing.",
+  "sourceUrls": [
+    "https://www.sigfu.gouv.ci/parcelles",
+    "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/CIRCONSCRIPTIONS_FONCIERES_241031_160555.pdf",
+    "https://api.geoportail.afor.ci/parcels/map?bbox=-6.6712,4.7513,-6.6512,4.7713&limit=3&detail=full"
+  ]
+}

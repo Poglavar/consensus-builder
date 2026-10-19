@@ -1,0 +1,114 @@
+{
+  "name": "Bukavu",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "rank": 550,
+  "point": [
+    -2.51039213081703,
+    28.8481651925078
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bukavu official land registry cadastral survey office map land parcels South Kivu DR Congo",
+        "result": "The DRC Ministry of Land Affairs lists Bukavu I and Bukavu II as cadastral land districts in South Kivu. The provincial government describes its ministry’s cadastral and land-title remit. Searches did not find a public parcel map or safe vector API.",
+        "urls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://sudkivu.gouv.cd/ministere-infrastructures.html",
+          "https://sudkivu.gouv.cd/territoire-bukavu.html"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Bukavu cadastre foncier circonscription foncière Bukavu I Bukavu II parcelles carte Sud-Kivu",
+        "result": "Le Ministère national des Affaires foncières liste les circonscriptions cadastrales de Bukavu I et II. Le gouvernement provincial du Sud-Kivu indique que son ministère gère le cadastre et les titres fonciers. Aucun géoportail de parcelles ni schéma vectoriel public n’a été trouvé.",
+        "urls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://sudkivu.gouv.cd/ministere-infrastructures.html",
+          "https://sudkivu.gouv.cd/territoire-bukavu.html"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "httpStatus": 200,
+        "observation": "The DRC Ministry of Land Affairs lists Bukavu I and Bukavu II within South Kivu among its updated administrative/cadastral land districts."
+      },
+      {
+        "url": "https://sudkivu.gouv.cd/ministere-infrastructures.html",
+        "httpStatus": 200,
+        "observation": "South Kivu provincial government states that its Ministry of Infrastructure, Urbanism and Land Affairs manages provincial cadastre and land titles. The listed ministry seat is Uvira, so current Bukavu operations are not established by this source."
+      },
+      {
+        "url": "https://sudkivu.gouv.cd/territoire-bukavu.html",
+        "observation": "Provincial government identifies Bukavu as a city in South Kivu and lists its five communes; this binds the Bukavu-named land districts to the target city context."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/5177",
+        "httpStatus": 200,
+        "observation": "The DRC public-service catalogue describes commune-level parcel numbering based on a property title/occupation document and parcel plan/sketch. This is a generic national service description, not proof of a currently available Bukavu endpoint."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No parcel feature response or full polygon was retrieved."
+  },
+  "source": {
+    "id": "city-CD-7082-overnight-research",
+    "name": "Bukavu city-local parcel source review",
+    "operator": null,
+    "url": null,
+    "format": "Public geometry not schema-verified",
+    "access": "Public source discovery only; no account login or feature query used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The DRC Ministry of Land Affairs’ administrative list places two cadastral land districts, Bukavu I and Bukavu II, under South Kivu. The South Kivu provincial government identifies its land-affairs ministry as responsible for provincial cadastre and land titles. This is city-named local-registry evidence; no public cadastral map or geometry endpoint was found.",
+    "verifiedOpenScope": "No public Bukavu parcel viewer, map download, or vector service was identified. Registry directories establish city-named cadastral units but do not expose geometry or their operational coverage boundary.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The DRC Ministry of Land Affairs’ administrative list places two cadastral land districts, Bukavu I and Bukavu II, under South Kivu. The South Kivu provincial government identifies its land-affairs ministry as responsible for provincial cadastre and land titles. This is city-named local-registry evidence; no public cadastral map or geometry endpoint was found.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_land_registry_no_public_geometry_source",
+  "technicalBlocker": "No public Bukavu parcel viewer, map download, or vector service was identified. Registry directories establish city-named cadastral units but do not expose geometry or their operational coverage boundary.",
+  "remainingUncertainty": "Whether the Bukavu I/II cadastral units currently operate locally, their precise city coverage, and whether any anonymous map/vector service exists. The provincial ministry page places its seat in Uvira; no assumption about Bukavu service status is made.",
+  "nextStep": "If first-party Bukavu office contact/service pages become available, confirm operational coverage and whether they publish an anonymous geometry-only service.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7082,
+  "cityId": "wup2025:7082",
+  "queueRank": 550,
+  "population2025": 948948,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    -2.51039213081703,
+    28.8481651925078
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, account credentials, tokens or feature responses were retained.",
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://sudkivu.gouv.cd/ministere-infrastructures.html",
+    "https://sudkivu.gouv.cd/territoire-bukavu.html"
+  ],
+  "rootReviewedAt": "2026-10-09T01:29:32.105621+00:00"
+}

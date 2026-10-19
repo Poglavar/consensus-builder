@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-10-07T22:05:54.243435Z",
+  "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1?f=json",
+  "layerId": 1,
+  "name": "Erven",
+  "type": "Feature Layer",
+  "geometryType": "esriGeometryPolygon",
+  "maxRecordCount": 1000,
+  "supportedQueryFormats": "JSON, geoJSON, PBF",
+  "capabilities": "Map,Query,Data",
+  "supportsAdvancedQueries": true,
+  "fields": {
+    "OBJECTID": {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeOID"
+    },
+    "SG21KEY": {
+      "name": "SG21KEY",
+      "type": "esriFieldTypeString",
+      "length": 21
+    },
+    "SGSUBKEY": {
+      "name": "SGSUBKEY",
+      "type": "esriFieldTypeString",
+      "length": 16
+    },
+    "GlobalID": {
+      "name": "GlobalID",
+      "type": "esriFieldTypeGlobalID",
+      "length": 38
+    },
+    "ParcelGuid": {
+      "name": "ParcelGuid",
+      "type": "esriFieldTypeGUID",
+      "length": 38
+    }
+  },
+  "notes": "Only identifier/transport/geometry schema is retained; unrelated field schema and all owner or contact data are excluded."
+}

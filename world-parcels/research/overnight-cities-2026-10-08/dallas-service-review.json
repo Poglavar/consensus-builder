@@ -1,0 +1,871 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:38:20.954982+00:00",
+  "sourceId": "us-tx-dallas-taxparcels",
+  "scope": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified.",
+  "primarySourceUrls": [
+    "https://www.dallascounty.org/departments/pubworks/GIS.php",
+    "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0"
+  ],
+  "safeOutFields": [
+    "OBJECTID",
+    "COUNTY",
+    "GIS_ACCT",
+    "APPRAISALYEAR"
+  ],
+  "nativeIdentity": "GIS_ACCT (provider-advertised display/account field), preserved as string without stripping leading zeros. OBJECTID used only for pagination.",
+  "identityAudit": {
+    "initialCompositeRejectedRecords": {
+      "OBJECTID": 179428,
+      "COUNTY": "",
+      "GIS_ACCT": "00000429310000000",
+      "APPRAISALYEAR": 0
+    },
+    "decision": "Use actual advertised GIS_ACCT key; preserve blank county metadata, with no guessed county and no selective record exclusion. Reject any missing/repeated conflicting GIS_ACCT encountered."
+  },
+  "sampleFieldValues": {
+    "countyCounts": {
+      "DALLAS COUNTY": 112,
+      "": 3
+    },
+    "appraisalYearCounts": {
+      "2026": 112,
+      "0": 3
+    }
+  },
+  "geometryQuality": {
+    "schemaVersion": 1,
+    "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+    "library": "Shapely 2.2.0",
+    "metricCrs": "EPSG:32614",
+    "featureCount": 115,
+    "validNonemptyCount": 115,
+    "invalidFeatures": [],
+    "exactDuplicateGeometryPairs": [],
+    "positiveAreaOverlapPairsAbove0_01M2": [],
+    "sumPairwiseOverlapM2": 0,
+    "operationErrors": [],
+    "areaM2": {
+      "min": 621.5108170413727,
+      "median": 875.120884106751,
+      "max": 33866.045790584496
+    },
+    "features": [
+      {
+        "id": "US-TX-DALLAS-00000792553000000",
+        "areaM2": 16570.088879390416,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-008124000C0200000",
+        "areaM2": 29287.940841629075,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429343000000",
+        "areaM2": 755.3990608109808,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429346000000",
+        "areaM2": 744.4344774065844,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792808000000",
+        "areaM2": 33866.045790584496,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429325000000",
+        "areaM2": 777.3928674345461,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429328000000",
+        "areaM2": 861.70076796105,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429331000000",
+        "areaM2": 882.3445002030412,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429334000000",
+        "areaM2": 751.2880113219436,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428497000000",
+        "areaM2": 1132.3907676811693,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429337000000",
+        "areaM2": 745.0631752642005,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429340000000",
+        "areaM2": 720.6902339719514,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429247000000",
+        "areaM2": 1082.591005497338,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429322000000",
+        "areaM2": 796.1982745799597,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428605000000",
+        "areaM2": 894.37645457421,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428608000000",
+        "areaM2": 1041.7778032532174,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428602000000",
+        "areaM2": 1375.198571051422,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428491000000",
+        "areaM2": 1165.4393099030692,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428494000000",
+        "areaM2": 973.4572118085845,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428485000000",
+        "areaM2": 923.1968521668082,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428482000000",
+        "areaM2": 882.4196173110627,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428488000000",
+        "areaM2": 1017.5021532123038,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428500000000",
+        "areaM2": 914.8916088833009,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428479000000",
+        "areaM2": 889.5025014728299,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428503000000",
+        "areaM2": 890.9557381478129,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428506000000",
+        "areaM2": 919.3913205756534,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429244000000",
+        "areaM2": 825.0256420878728,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-008124000C0190000",
+        "areaM2": 12090.670772694244,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792589000000",
+        "areaM2": 907.1067797751181,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792637000000",
+        "areaM2": 960.7870024843135,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792592000000",
+        "areaM2": 906.5076729210829,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792595000000",
+        "areaM2": 895.7348397243229,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792598000000",
+        "areaM2": 993.0946503625266,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792634000000",
+        "areaM2": 838.9215679961093,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792583000000",
+        "areaM2": 815.2948142270949,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792586000000",
+        "areaM2": 831.1324853798412,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-005705000T0000A00",
+        "areaM2": 2141.0460741028473,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429310000000",
+        "areaM2": 859.9599641700943,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429313000000",
+        "areaM2": 885.2527519277171,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429316000000",
+        "areaM2": 893.8311800129087,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429319000000",
+        "areaM2": 878.8798989941625,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429304000000",
+        "areaM2": 790.2512081322276,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429307000000",
+        "areaM2": 902.4652322022239,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428590000000",
+        "areaM2": 759.1434819054867,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428587000000",
+        "areaM2": 944.1894557136292,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428593000000",
+        "areaM2": 806.2877523685951,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428581000000",
+        "areaM2": 889.8159106979574,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428596000000",
+        "areaM2": 817.1457238391379,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428584000000",
+        "areaM2": 852.9553493265171,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428599000000",
+        "areaM2": 1001.6368467297307,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792745000000",
+        "areaM2": 1063.2372789614712,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792649000000",
+        "areaM2": 825.1051933266269,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792646000000",
+        "areaM2": 843.352453065982,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792643000000",
+        "areaM2": 1067.7894393097438,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792625000000",
+        "areaM2": 822.2819889887921,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792628000000",
+        "areaM2": 821.4155775249733,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792640000000",
+        "areaM2": 1331.4127405882114,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792631000000",
+        "areaM2": 862.3782950656034,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-0081240C000180100",
+        "areaM2": 621.5108170413727,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792610000000",
+        "areaM2": 828.116985105936,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792652000000",
+        "areaM2": 808.0158927294763,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792613000000",
+        "areaM2": 820.4499707008151,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792616000000",
+        "areaM2": 807.0577272677004,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792619000000",
+        "areaM2": 818.1441083009621,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792571000000",
+        "areaM2": 871.867438960695,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792622000000",
+        "areaM2": 815.8139269894309,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792574000000",
+        "areaM2": 835.3460088710858,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792577000000",
+        "areaM2": 824.0004431539451,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792580000000",
+        "areaM2": 838.4400948264516,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792562000000",
+        "areaM2": 905.187879846156,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792565000000",
+        "areaM2": 891.6023397353417,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792568000000",
+        "areaM2": 888.9679591256194,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429292000000",
+        "areaM2": 806.6542538899721,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429295000000",
+        "areaM2": 813.530880372553,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429298000000",
+        "areaM2": 800.7165574799233,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429301000000",
+        "areaM2": 813.6842460968944,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428701000000",
+        "areaM2": 966.3483744614027,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429253000000",
+        "areaM2": 762.9563106025075,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429241000000",
+        "areaM2": 1081.9471564291403,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429256000000",
+        "areaM2": 767.0477145561429,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429250000000",
+        "areaM2": 753.6443295124038,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429259000000",
+        "areaM2": 719.9780483957879,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429283000000",
+        "areaM2": 843.6864123228863,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429262000000",
+        "areaM2": 901.3836228018002,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429280000000",
+        "areaM2": 853.4459074393276,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429286000000",
+        "areaM2": 789.8642285845021,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429277000000",
+        "areaM2": 856.8010138187348,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429220000000",
+        "areaM2": 805.5870104379288,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429274000000",
+        "areaM2": 849.4760051400607,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429223000000",
+        "areaM2": 792.7048047969369,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000429271000000",
+        "areaM2": 854.8052429842518,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000793390000000",
+        "areaM2": 919.2202330992445,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792766000000",
+        "areaM2": 886.0921039830084,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792763000000",
+        "areaM2": 887.7524979407309,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792760000000",
+        "areaM2": 875.120884106751,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792667000000",
+        "areaM2": 821.2141901896889,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792757000000",
+        "areaM2": 894.0547702399073,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792670000000",
+        "areaM2": 940.2757923148024,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792664000000",
+        "areaM2": 834.6800764524303,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792754000000",
+        "areaM2": 853.8513703640301,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792661000000",
+        "areaM2": 821.620027583955,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792658000000",
+        "areaM2": 819.8074458414173,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792607000000",
+        "areaM2": 827.5722249194978,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000792655000000",
+        "areaM2": 813.2563712929632,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428686000000",
+        "areaM2": 921.6058508517895,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428683000000",
+        "areaM2": 941.6798706183755,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428707000000",
+        "areaM2": 896.460920391224,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428710000000",
+        "areaM2": 922.8641505472784,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428704000000",
+        "areaM2": 877.7647202274741,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428713000000",
+        "areaM2": 908.9197618163549,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428716000000",
+        "areaM2": 916.4766465808088,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428578000000",
+        "areaM2": 918.5465444345693,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428575000000",
+        "areaM2": 892.0800008569624,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428572000000",
+        "areaM2": 891.8096021981302,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      },
+      {
+        "id": "US-TX-DALLAS-00000428569000000",
+        "areaM2": 906.6294340138579,
+        "valid": true,
+        "empty": false,
+        "parts": 1
+      }
+    ]
+  },
+  "qualification": {
+    "allTestsPassed": true,
+    "uniqueParcels": 115,
+    "gridCellCount": 13,
+    "freshExactIdCount": 115
+  },
+  "acceptanceFile": "dallas-taxparcels-acceptance.json",
+  "qualityFile": "dallas-taxparcels-quality.json",
+  "sampleFile": "dallas-taxparcels-adapter-sample.geojson",
+  "rootDecision": "approved_for_bounded_local_runtime"
+}

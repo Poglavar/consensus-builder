@@ -1,0 +1,19 @@
+{
+  "taskId": "city:2777",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-2777-lashkar-gah.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/lashkar-gah-service-review.json",
+    "tmp/valhalla-parcel-research/2777/pms.html",
+    "tmp/valhalla-parcel-research/2777/pms.headers",
+    "tmp/valhalla-parcel-research/2777/pms-main.js"
+  ],
+  "checkedAt": "2026-10-12T04:53:32Z",
+  "finding": "Queue, ranked roster, and SHA-256-verified UN 2025 row agree: Lashkar Gah, Afghanistan, rank 3183, point [31.5875236725305,64.3627107337945], 188936 persons. English and Dari/Pashto executed searches are recorded. First-party Ministry of Justice PMS HTML/JS cache confirms property-registration system, geolocation guard, and authentication gate; local Helmand land-administration lead does not prove a city-specific registry, so registryFound remains null. Reported anonymous setup route returned 403 outside Afghanistan. No native-ID/full-polygon response or sample; no fresh ID reads, forced paging, 13 cells, GEOS checks, source binding, or headed Details verification. Zero retained polygons; blocked access is not citywide absence. Held without runtime admission.",
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

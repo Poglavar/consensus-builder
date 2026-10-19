@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-6933-wonosobo.json",
+  "cityCode": 6933,
+  "queueRank": 1959,
+  "city": "Wonosobo",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "BIG Satu Peta Jawa Tengah sublayer 25, with ATR/BPN BHUMI/ATLAS as the national official counterpart",
+  "serviceUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/25",
+  "scope": "Public provincial land-ownership layer; broader Wonosobo-regency boxes contain records, but no tested Wonosobo-city feature was returned.",
+  "schemaAndCrs": "EPSG:4326 polygon layer. Public fields are objectid, kecamatan, kelurahan, tipehak, nib, shape; only nib and geometry are safe for a retained parcel sample.",
+  "nativeIdentity": "nib is the preferred native parcel identity if a feature is independently retrieved; objectid is only a service OID and no synthetic identity was created.",
+  "fieldMapping": {
+    "nib": "Native Nomor Identifikasi Bidang; not retrieved for Wonosobo city.",
+    "geometry": "Polygon shape in EPSG:4326.",
+    "objectid": "Service object identifier, not retained as canonical identity."
+  },
+  "requestOutcome": "BIG service directory and layer metadata succeeded. Wonosobo-city bounded query and kecamatan='Wonosobo' count query returned zero; wider/regency count queries returned records. BHUMI landing/map succeeded, but the anonymous published-layer JSON response was not usable for parcel features.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no Wonosobo-city safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeDataPolicy": "Owner, titleholder, address, contact, tax/account, legal-description, rights-detail, tipehak, and other source attributes were not retained.",
+  "officialCustodyEvidence": "BIG Satu Peta and ATR/BPN BHUMI/ATLAS are official national/provincial geospatial sources. A distinct public Kantor Pertanahan Kabupaten Wonosobo parcel API was not located.",
+  "limits": [
+    "The WUP point was preserved exactly and was not shifted to force a hit.",
+    "A zero city query is not evidence of citywide parcel absence.",
+    "Broader layer records do not prove Wonosobo-city coverage.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review must confirm current BIG coverage around the urban area, BHUMI anonymous feature access, native NIB stability, and adapter safety before admission."
+}

@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NP",
+ "country": "Nepal",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Department of Land Management and Archive (DoLMA) and Survey Department (kitta/cadastral maps)",
+ "portalsFound": [
+  {
+   "url": "https://nationalgeoportal.gov.np/",
+   "observation": "National Geoportal (GeoNode) loads; its WFS lists 87 layers, none parcel/cadastral (only landcover)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://dolrm.gov.np/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.dolma.gov.np",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://kitta.dolrm.gov.np/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.dos.gov.np/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://nationalgeoportal.gov.np/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "WFS 2.0.0 capabilities, 87 feature types, no parcel layer"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Nepal%20cadastral&f=json&num=10",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Digital cadastral maps partially completed by Survey Department; not nationally published",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "DoLMA/Survey hosts unreachable; the national geoportal shows no parcels. See research/kathmandu.json.",
+ "nextStep": "Retry dolrm/dos hosts; check for kitta-number lookup service."
+}

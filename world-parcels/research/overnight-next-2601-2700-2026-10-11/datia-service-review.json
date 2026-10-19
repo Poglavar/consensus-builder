@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-9257-datia.json",
+  "cityCode": 9257,
+  "queueRank": 2634,
+  "attempt": 1,
+  "serviceReview": {
+    "discovery": [
+      {"route": "https://datia.nic.in/en/datia-gis/", "type": "official district GIS discovery page", "outcome": "HTTP 200; page describes Datia GIS as a Government of India/Government of Madhya Pradesh spatial platform and links https://datiagis.mp.gov.in."},
+      {"route": "https://datia.nic.in/en/service/land-records/", "type": "official district land-record service page", "outcome": "HTTP 200; page identifies online Madhya Pradesh land-record/map services for Datia and links the official service context; no parcel API URL was exposed in the page HTML."},
+      {"route": "https://datiagis.mp.gov.in", "type": "official local GIS portal", "outcome": "Anonymous HTTPS connection timed out within the bounded request window; no JavaScript/configuration or API endpoint was inspected."},
+      {"route": "https://mpbhulekh.gov.in", "type": "official Madhya Pradesh land-record portal", "outcome": "Referenced by the official district land-record page and Hindi discovery; no anonymous parcel geometry request was executed after the local GIS portal timeout."},
+      {"route": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/422", "type": "official national status/reporting page", "outcome": "Search result identifies Datia district modernization status fields including digitization, geo-referencing, parcel totals and ULPIN status; it is status evidence, not parcel geometry."}
+    ],
+    "viewerAndApiInspection": {
+      "configurationSource": "https://datia.nic.in/en/datia-gis/",
+      "observedService": null,
+      "schemaRequest": null,
+      "exactPointRequest": {"method": "GET", "url": "https://datiagis.mp.gov.in", "parameters": {"point": "78.4589364584895,25.6638898884333"}, "outcome": "Not completed because the portal connection timed out before a public map/API route could be discovered; no exact-point hit or miss is claimed."},
+      "boundedRequest": null,
+      "requestNotes": ["No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe owner/address/titleholder fields were used.", "One direct portal request timed out; no global TLS verification disable was used for the retained evidence." ]
+    },
+    "safeFieldAllowlist": ["native parcel identifier if later evidenced", "geometry"],
+    "retainedSamples": 0,
+    "sampleIdentity": null,
+    "scopeLimits": [
+      "The official pages establish local Datia GIS and land-record custodians but do not expose a parcel schema in the inspected HTML.",
+      "The Datia GIS portal timeout is an availability/discovery limitation, not evidence of citywide cadastral absence.",
+      "No exact-point query was completed, so the WUP point was not shifted and no point-level parcel conclusion is made.",
+      "National DILRMP status reporting is general agency evidence and was not treated as a local parcel service.",
+      "No raw source-specific attribute sets or parcel geometry are retained."
+    ],
+    "uncertainty": "A public parcel map/API may be available behind the Datia GIS portal's unobserved JavaScript/configuration or through Madhya Pradesh Bhulekh workflows. A later attempt should inspect the current portal without bypassing access controls, then qualify CRS, native identity, safe fields and bounded geometry independently."
+  },
+  "runtimeReadiness": "held"
+}

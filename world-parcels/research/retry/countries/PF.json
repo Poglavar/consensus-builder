@@ -1,0 +1,105 @@
+{
+  "kind": "country",
+  "key": "PF",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "no_online_cadastre_found",
+  "newStatus": "national_online_cadastre_verified_sample",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-FR,fr;q=0.9",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": true,
+  "verifiedParcelResponse": {
+    "sourceId": "tefenua-wms-cadastre",
+    "requestUrl": "https://www.tefenua.gov.pf/api/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=TEFENUA:CADASTRE&query_layers=TEFENUA:CADASTRE&srs=EPSG:4326&bbox=-149.5590,-17.5340,-149.5580,-17.5330&width=256&height=256&x=128&y=128&info_format=application/json&feature_count=3",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": "bbox -149.5590,-17.5340,-149.5580,-17.5330 (Papeete, Tahiti); also Moorea and Bora Bora points",
+    "parcelRecordCount": 1,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "properties.id / properties.label (section+number, e.g. CE1)",
+    "responseFile": "research/retry/countries/PF-parcel-response.json",
+    "pagination": "none (point query; feature_count param accepted)",
+    "regionSampled": "Tahiti (Papeete), Moorea-Maiao, Bora Bora (all Archipel de la Societe)"
+  },
+  "source": {
+    "sourceId": "tefenua-wms-cadastre",
+    "name": "Te Fenua geoportal, layer TEFENUA:CADASTRE (std_cadastre_parcelle) via /api/wms GetFeatureInfo",
+    "operator": "Service de l'Informatique de la Polynesie francaise (Cellule SIG); data: Direction des Affaires Foncieres, Service du Cadastre",
+    "scope": "French Polynesia territorial cadastre (three Society Islands sampled; other archipelagos not sampled)",
+    "endpoint": "https://www.tefenua.gov.pf/api/wms",
+    "method": "GET WMS GetFeatureInfo, info_format=application/json (anonymous)",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:4326",
+    "reuseStatus": "not read; layer text says data are not updated in real time and refers to https://www.otia.gov.pf/ for up-to-date info. Dataset page: tefenua.data.gov.pf (licence not checked)"
+  },
+  "requests": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={Point}&_limit=2",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "valid but empty FeatureCollection with browser headers (same as before; PCI does not cover PF)"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "Te Fenua SPA viewer; /assets/index-*.js inspected: calls /api/contexts/default, /api/wmts, /api/wms"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "direct GeoServer WFS is unauthorized"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/api/layers?page=0&limit=10",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "layer admin API needs login"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/api/contexts/default",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "public default context lists layer 'Limites cadastrales' = TEFENUA:CADASTRE (private:false) served as WMTS raster"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/api/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=TEFENUA:CADASTRE&count=3&outputFormat=application/json",
+      "method": "GET",
+      "httpStatus": 401,
+      "contentType": "application/json",
+      "assessment": "WFS proxy needs login"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/api/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=TEFENUA:CADASTRE&query_layers=TEFENUA:CADASTRE&srs=EPSG:4326&bbox=-149.5590,-17.5340,-149.5580,-17.5330&width=256&height=256&x=128&y=128&info_format=application/json&feature_count=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "1 MultiPolygon parcel 'CE1 (PAPEETE)'; attributes section, number, surface, commune, island; no owner data"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/api/wms?...GetFeatureInfo bbox -149.8300,-17.5390,-149.8290,-17.5380",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Parcel MO1 (MOOREA-MAIAO), MultiPolygon"
+    },
+    {
+      "url": "https://www.tefenua.gov.pf/api/wms?...GetFeatureInfo bbox -151.7450,-16.5010,-151.7440,-16.5000",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Parcel NI37 (BORA BORA), MultiPolygon"
+    }
+  ],
+  "geoBlockSuspected": false,
+  "notes": "New versus previous: only the French national API had been tried. The territorial Te Fenua viewer exposes the parcel layer; raster WMTS is public and anonymous WMS GetFeatureInfo returns parcel polygons as GeoJSON one parcel per point (no bulk WFS without login). Bare curl gave same result as browser headers for tefenua. coverageAssessment: three islands of one archipelago sampled from same source; nationwideVerified not asserted because Tuamotu/Marquises/Australes/Gambier not sampled.",
+  "nextStep": "Sample an outer archipelago (e.g. Rangiroa, Nuku Hiva); read licence at tefenua.data.gov.pf; check whether a bulk download of the cadastre dataset is offered there."
+}

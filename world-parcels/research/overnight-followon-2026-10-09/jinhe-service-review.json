@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11796-jinhe.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Jiexi County sources identify the county Natural Resources Bureau and Real Estate Registration Center as local land-registration custodians. The WUP locator is associated with Jinhe/Kinhua town in Jiexi County, but an authoritative town-boundary overlay was not verified. No anonymous parcel-vector endpoint or safe feature response at the unchanged point was found.",
+  "registryAssessment": "First-party sources establish a local registry/cadastre custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.jiexi.gov.cn/zfxxgkmlfg/jysjxxzrzyj/gzdt/ywgg/content/post_841694.html",
+      "observation": "County government source documents local land/parcel administration by the Jiexi Natural Resources Bureau."
+    },
+    {
+      "url": "https://jxlzw.jiexi.gov.cn/article?article=9b1f2254-b273-4560-9581-639b1b2c3e15",
+      "observation": "County-government-linked source names the Real Estate Registration Center and local registration activity."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jinhe China official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+      "result": "Official Jiexi County sources identify the county Natural Resources Bureau and Real Estate Registration Center as local land-registration custodians. The WUP locator is associated with Jinhe/Kinhua town in Jiexi County, but an authoritative town-boundary overlay was not verified. No anonymous parcel-vector endpoint or safe feature response at the unchanged point was found.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+      "actualResultUrls": [
+        "https://www.jiexi.gov.cn/zfxxgkmlfg/jysjxxzrzyj/gzdt/ywgg/content/post_841694.html",
+        "https://jxlzw.jiexi.gov.cn/article?article=9b1f2254-b273-4560-9581-639b1b2c3e15"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "揭西县 金和镇 不动产登记中心 地籍图 地块 官方",
+      "result": "Official Jiexi County sources identify the county Natural Resources Bureau and Real Estate Registration Center as local land-registration custodians. The WUP locator is associated with Jinhe/Kinhua town in Jiexi County, but an authoritative town-boundary overlay was not verified. No anonymous parcel-vector endpoint or safe feature response at the unchanged point was found.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+      "actualResultUrls": [
+        "https://www.jiexi.gov.cn/zfxxgkmlfg/jysjxxzrzyj/gzdt/ywgg/content/post_841694.html",
+        "https://jxlzw.jiexi.gov.cn/article?article=9b1f2254-b273-4560-9581-639b1b2c3e15"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official Jiexi County sources identify the county Natural Resources Bureau and Real Estate Registration Center as local land-registration custodians. The WUP locator is associated with Jinhe/Kinhua town in Jiexi County, but an authoritative town-boundary overlay was not verified. No anonymous parcel-vector endpoint or safe feature response at the unchanged point was found.",
+    "verifiedOpenScope": "Official Jiexi County sources identify the county Natural Resources Bureau and Real Estate Registration Center as local land-registration custodians. The WUP locator is associated with Jinhe/Kinhua town in Jiexi County, but an authoritative town-boundary overlay was not verified. No anonymous parcel-vector endpoint or safe feature response at the unchanged point was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.jiexi.gov.cn/zfxxgkmlfg/jysjxxzrzyj/gzdt/ywgg/content/post_841694.html",
+      "result": "County government source documents local land/parcel administration by the Jiexi Natural Resources Bureau."
+    },
+    {
+      "url": "https://jxlzw.jiexi.gov.cn/article?article=9b1f2254-b273-4560-9581-639b1b2c3e15",
+      "result": "County-government-linked source names the Real Estate Registration Center and local registration activity."
+    }
+  ],
+  "remainingUncertainty": "The county-level custodian is identified, but exact town-boundary containment and parcel geometry coverage at the WUP locator remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry"
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "city:2652",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-2652-padang-sidempuan.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/padang-sidempuan-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:17:50Z",
+  "reason": "Local Padangsidimpuan/BPN registry custody is supported by the official municipal source. BHUMI advertises a parcel layer, but no safe anonymous native-ID and full-polygon response was obtained; failed direct WMS/WFS routes and tokenized flow do not establish absence.",
+  "registryCustody": "true",
+  "identityCheck": "Immutable WUP 2025 source row, ranked roster, pending queue, city packet and paired review agree on code, rank, country, latitude/longitude point and population persons.",
+  "searchCheck": "Executed English and local-language searches with result URLs were inspected in the paired evidence.",
+  "sampleCheck": "Zero retained parcel polygons; no unsafe source attributes or synthetic parcel IDs retained. Three-full-polygon cap satisfied.",
+  "admissionCheck": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details-panel proof. Runtime admission remains held."
+}

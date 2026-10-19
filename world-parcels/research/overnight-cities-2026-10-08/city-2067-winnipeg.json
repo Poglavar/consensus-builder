@@ -1,0 +1,153 @@
+{
+  "name": "Winnipeg",
+  "country": "Canada",
+  "countryCode": "CA",
+  "rank": 796,
+  "point": [
+    49.8912776896545,
+    -97.1447622935792
+  ],
+  "population2025": 679037,
+  "population2025k": 679.037,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The City of Winnipeg publishes an official “Assessment Parcels” dataset maintained by Assessment and Taxation. Its public property map separately labels current assessment parcels (with roll numbers) and survey-parcel lines, and warns the map is reference-only rather than a land survey. The bounded open-data response verified two complete assessment-parcel MultiPolygons within 100 m of the WUP point using only native GISID plus geometry. This verifies the assessment-parcel GIS layer only; it does not establish legal survey or title identity.",
+  "registryEvidenceUrls": [
+    "https://www.winnipeg.ca/maps",
+    "https://legacy.winnipeg.ca/ppd/Mapping/PropertyMap/",
+    "https://data.winnipeg.ca/",
+    "https://data.winnipeg.ca/api/views/d4mq-wa44.json",
+    "https://data.winnipeg.ca/resource/d4mq-wa44.geojson"
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "32 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 32 fresh native-ID reads, explicit absence, footprint and source binding passed in 60 requests. Independent metric EPSG:32614 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native GISID identifies public assessment ground footprints, distinct from property roll/account identifiers and certified survey/title parcels. Counted Socrata paging verifies publication revision before and after each read; identical rows for one GISID are collapsed only when complete geometry is identical. Only GISID, transport row ID, row revision and geometry are requested. The exact point returned no feature; two saved nearby samples match fresh full geometry unchanged. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Citywide completeness, legal title, currentness, survey accuracy and long-term native GIS identity continuity remain unverified.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect additional first-party metadata and use only bounded geometry requests with a safe native GIS key.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Winnipeg official municipal cadastral parcel map property parcel GIS City of Winnipeg open data",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry.",
+        "actualResultUrls": [
+          "https://www.winnipeg.ca/maps",
+          "https://legacy.winnipeg.ca/ppd/Mapping/PropertyMap/",
+          "https://data.winnipeg.ca/",
+          "https://data.winnipeg.ca/api/views/d4mq-wa44.json",
+          "https://data.winnipeg.ca/resource/d4mq-wa44.geojson"
+        ],
+        "executionMethod": "Separate language search; official government portal/service review; no property-specific lookup."
+      },
+      {
+        "language": "French",
+        "query": "Winnipeg parcelles cadastrales carte propriétés données ouvertes Ville de Winnipeg",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry.",
+        "actualResultUrls": [
+          "https://www.winnipeg.ca/maps",
+          "https://legacy.winnipeg.ca/ppd/Mapping/PropertyMap/",
+          "https://data.winnipeg.ca/",
+          "https://data.winnipeg.ca/api/views/d4mq-wa44.json",
+          "https://data.winnipeg.ca/resource/d4mq-wa44.geojson"
+        ],
+        "executionMethod": "Separate language search; official government portal/service review; no property-specific lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "CA-WINNIPEG-ASSESSMENT-PARCELS",
+    "name": "Winnipeg public assessment parcel footprints",
+    "url": "https://data.winnipeg.ca/resource/d4mq-wa44.json",
+    "operator": "City of Winnipeg Assessment and Taxation Department",
+    "serviceType": "Official municipal assessment-parcel GeoJSON dataset; two bounded nearby full MultiPolygon records returned with the safe GISID field only.",
+    "layer": "Socrata dataset d4mq-wa44 / Assessment Parcels",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "OGC CRS84 GeoJSON; coordinates longitude,latitude",
+    "nativeIdField": "gisid",
+    "requestedAttributes": [
+      "gisid",
+      ":id",
+      ":updated_at"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "32 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 32 fresh native-ID reads, explicit absence, footprint and source binding passed in 60 requests. Independent metric EPSG:32614 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native GISID identifies public assessment ground footprints, distinct from property roll/account identifiers and certified survey/title parcels. Counted Socrata paging verifies publication revision before and after each read; identical rows for one GISID are collapsed only when complete geometry is identical. Only GISID, transport row ID, row revision and geometry are requested. The exact point returned no feature; two saved nearby samples match fresh full geometry unchanged. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified."
+  },
+  "wupCityCode": 2067,
+  "cityId": "wup2025:2067",
+  "queueRank": 796,
+  "sourceIds": [
+    "ca-winnipeg-assessment-gisid"
+  ],
+  "centerLatLon": [
+    49.8912776896545,
+    -97.1447622935792
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The City of Winnipeg publishes an official “Assessment Parcels” dataset maintained by Assessment and Taxation. Its public property map separately labels current assessment parcels (with roll numbers) and survey-parcel lines, and warns the map is reference-only rather than a land survey. The bounded open-data response verified two complete assessment-parcel MultiPolygons within 100 m of the WUP point using only native GISID plus geometry. This verifies the assessment-parcel GIS layer only; it does not establish legal survey or title identity.",
+    "verifiedOpenScope": "32 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 32 fresh native-ID reads, explicit absence, footprint and source binding passed in 60 requests. Independent metric EPSG:32614 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native GISID identifies public assessment ground footprints, distinct from property roll/account identifiers and certified survey/title parcels. Counted Socrata paging verifies publication revision before and after each read; identical rows for one GISID are collapsed only when complete geometry is identical. Only GISID, transport row ID, row revision and geometry are requested. The exact point returned no feature; two saved nearby samples match fresh full geometry unchanged. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "32 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 32 fresh native-ID reads, explicit absence, footprint and source binding passed in 60 requests. Independent metric EPSG:32614 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native GISID identifies public assessment ground footprints, distinct from property roll/account identifiers and certified survey/title parcels. Counted Socrata paging verifies publication revision before and after each read; identical rows for one GISID are collapsed only when complete geometry is identical. Only GISID, transport row ID, row revision and geometry are requested. The exact point returned no feature; two saved nearby samples match fresh full geometry unchanged. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/winnipeg-assessment-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/winnipeg-assessment-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/winnipeg-root-quality-review.json"
+  },
+  "verifiedParcelResponse": {
+    "source": "City of Winnipeg Assessment Parcels",
+    "datasetId": "d4mq-wa44",
+    "queryPoint": [
+      49.8912776896545,
+      -97.1447622935792
+    ],
+    "queryMethod": "within_circle(geometry, latitude, longitude, 100)",
+    "radiusMeters": 100,
+    "safeFieldsRequested": [
+      "gisid",
+      "geometry"
+    ],
+    "excludedSchemaFields": [
+      "roll_number",
+      "street_number",
+      "unit_number",
+      "street_name",
+      "full_address",
+      "assessment_value*",
+      "detail_url"
+    ],
+    "httpStatus": 200,
+    "featureCount": 2,
+    "sampleFile": "samples/city-2067-winnipeg-assessment-parcels.geojson",
+    "geometrySha256": "fa5b4cf50e5b0283982782c5fec276ac2aa00dd4c475db088d15e407d18b377c",
+    "retainedProperties": [
+      "gisid"
+    ],
+    "exactPointQueryFeatureCount": 0,
+    "scopeNote": "Assessment parcel polygons only; City separately distinguishes survey parcel lines."
+  },
+  "sampleFile": "samples/city-2067-winnipeg-assessment-parcels.geojson",
+  "appCityId": "winnipeg",
+  "runtimeQualification": {
+    "sourceId": "ca-winnipeg-assessment-gisid",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/winnipeg-assessment-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/winnipeg-assessment-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T03:36:55.915467+00:00"
+}

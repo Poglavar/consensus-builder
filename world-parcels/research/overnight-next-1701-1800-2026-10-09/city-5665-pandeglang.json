@@ -1,0 +1,130 @@
+{
+  "cityCode": 5665,
+  "queueRank": 1770,
+  "city": "Pandeglang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [-6.31355115684856, 106.097731937787],
+  "population2025": 324139,
+  "population2025k": 324.139,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pandeglang Indonesia official cadastral parcel map land registry GIS ATR/BPN",
+        "result": "First-party discovery identified ATR/BPN BHUMI/ATLAS as the national public geospatial portal and the official Kantor Pertanahan Kabupaten Pandeglang site. No public anonymous Pandeglang parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://atlas.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://kab-pandeglang.atrbpn.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Pandeglang peta bidang tanah pertanahan resmi ATR BPN",
+        "result": "The Indonesian-language discovery query identified the same official ATR/BPN land-spatial portal and the local Pandeglang land-office site; it did not identify a separate public anonymous parcel vector service.",
+        "actualResultUrls": [
+          "https://atlas.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/",
+          "https://kab-pandeglang.atrbpn.go.id/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Kantor Pertanahan Kabupaten Pandeglang, Kementerian ATR/BPN",
+  "registryEvidence": {
+    "officialPages": [
+      "https://kab-pandeglang.atrbpn.go.id/",
+      "https://atlas.atrbpn.go.id/",
+      "https://bhumi.atrbpn.go.id/bantuan/peta"
+    ],
+    "custodySummary": "The official Pandeglang ATR/BPN host is the local land-office route, while ATR/BPN BHUMI/ATLAS documents and exposes the ministry's public geospatial portal. This establishes local and national cadastral custody, not open parcel geometry availability."
+  },
+  "sourceReview": {
+    "service": "ATR/BPN BHUMI/ATLAS public geospatial portal and Kantor Pertanahan Kabupaten Pandeglang",
+    "baseUrls": [
+      "https://atlas.atrbpn.go.id/",
+      "https://bhumi.atrbpn.go.id/",
+      "https://kab-pandeglang.atrbpn.go.id/"
+    ],
+    "officialAssetsInspected": [
+      "https://atlas.atrbpn.go.id/",
+      "https://bhumi.atrbpn.go.id/",
+      "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "https://kab-pandeglang.atrbpn.go.id/"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no parcel geometry response",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service and layer metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://atlas.atrbpn.go.id/",
+      "outcome": "200; current ATLAS public catalog shell readable and current JavaScript/configuration inspected. The page listed general datasets, but no Pandeglang parcel layer was exposed in the anonymous shell."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/",
+      "outcome": "200; public BHUMI landing shell readable. No anonymous parcel geometry response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "outcome": "200; official help page confirms the interactive map is integrated with ATLAS. It describes map layers and coordinates but did not provide a safe anonymous parcel feature response."
+    },
+    {
+      "method": "GET",
+      "url": "https://atlas.atrbpn.go.id/api/bhumi/settings",
+      "outcome": "200 JSON; returned public portal branding/settings only, not parcel schema, CRS, native identity or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://atlas.atrbpn.go.id/api/v2/resources?format=json&page_size=1000",
+      "outcome": "404; guessed GeoNode-style catalog route is not a current public ATLAS route. No parcel response."
+    },
+    {
+      "method": "GET",
+      "url": "https://kab-pandeglang.atrbpn.go.id/",
+      "outcome": "200; official local land-office site readable. No anonymous parcel map/API or safe parcel geometry endpoint was identified in the public page."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel geometry response; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "ATR/BPN national land-spatial portal plus the official Pandeglang local land office",
+    "verifiedOpenScope": "Public portal shells, help text and local office custody only",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [-6.31355115684856, 106.097731937787] was preserved; it was not shifted and no exact-point parcel hit/miss test was inferred.",
+    "A map extent miss, unavailable endpoint, 404 route or unusable anonymous viewer is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample was retained.",
+    "Packet completion records executed research only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current anonymous parcel route, parcel schema, CRS, stable native identity and citywide coverage remain unresolved."
+}

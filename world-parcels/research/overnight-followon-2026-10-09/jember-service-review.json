@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7926-jember.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Jember Land Office custody and official open spatial-map context are evidenced. The local geoportal page fetch failed (521), and no safe, city-bound parcel feature response was verified.",
+  "registryAssessment": "Jember Regency government reports city/regency PTSL land-registration work with the Jember Land Office; the official ATR/BPN BHUMI map documentation describes its open spatial-information map and integration with the ministry ATLAS geoportal. No city-bound anonymous parcel vector query restricted to safe ID+geometry was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.jemberkab.go.id/bupati-jember-dorong-camat-dan-kades-sukseskan-target-ptsl-2024/",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://ppid.jemberkab.go.id/index.php/berita/program-pendaftaran-tanah-sistematis-lengkap-ptsl-ta-2021",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://www.lapor.go.id/instansi/kantor-pertanahan-kabupaten-jember",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "Official ATR/BPN BHUMI map documentation says the interactive spatial-information map integrates with the ministry ATLAS geospatial platform; page does not establish a Jember-specific geometry-only feature response."
+    },
+    {
+      "url": "https://geoportal.jemberkab.go.id/main/",
+      "observation": "Official Jember Regency geospatial portal states it publishes spatial data from local production/data units; direct page fetch returned 521 and its public cadastral layer/schema could not be inspected."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jember regency official land registration cadastral parcel map ATR BPN",
+      "resultUrls": [
+        "https://www.jemberkab.go.id/bupati-jember-dorong-camat-dan-kades-sukseskan-target-ptsl-2024/",
+        "https://ppid.jemberkab.go.id/index.php/berita/program-pendaftaran-tanah-sistematis-lengkap-ptsl-ta-2021",
+        "https://www.lapor.go.id/instansi/kantor-pertanahan-kabupaten-jember",
+        "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "https://geoportal.jemberkab.go.id/main/"
+      ]
+    },
+    {
+      "language": "Indonesian",
+      "query": "Kabupaten Jember pendaftaran tanah kantor pertanahan peta bidang tanah BHUMI ATR BPN",
+      "resultUrls": [
+        "https://www.jemberkab.go.id/bupati-jember-dorong-camat-dan-kades-sukseskan-target-ptsl-2024/",
+        "https://ppid.jemberkab.go.id/index.php/berita/program-pendaftaran-tanah-sistematis-lengkap-ptsl-ta-2021",
+        "https://www.lapor.go.id/instansi/kantor-pertanahan-kabupaten-jember",
+        "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "https://geoportal.jemberkab.go.id/main/"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Jember Land Office custody and official open spatial-map context are evidenced. The local geoportal page fetch failed (521), and no safe, city-bound parcel feature response was verified.",
+    "requestEvidence": [
+      {
+        "url": "https://geoportal.jemberkab.go.id/main/",
+        "method": "GET via web page open",
+        "httpStatus": null,
+        "assessment": "web fetch returned 521; no attempt to bypass or infer the contents."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Jember Regency government reports city/regency PTSL land-registration work with the Jember Land Office; the official ATR/BPN BHUMI map documentation describes its open spatial-information map and integration with the ministry ATLAS geoportal. No city-bound anonymous parcel vector query restricted to safe ID+geometry was verified.",
+    "verifiedOpenScope": "Jember Land Office custody and official open spatial-map context are evidenced. The local geoportal page fetch failed (521), and no safe, city-bound parcel feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://geoportal.jemberkab.go.id/main/",
+      "method": "GET via web page open",
+      "httpStatus": null,
+      "assessment": "web fetch returned 521; no attempt to bypass or infer the contents."
+    }
+  ],
+  "remainingUncertainty": "Jember Land Office custody and official open spatial-map context are evidenced. The local geoportal page fetch failed (521), and no safe, city-bound parcel feature response was verified."
+}

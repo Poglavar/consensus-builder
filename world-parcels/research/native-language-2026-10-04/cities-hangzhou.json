@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 45,
+  "city": "Hangzhou",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/hangzhou.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "杭州 不动产宗地 地籍 数据 GIS 地块 开放数据 服务"
+  },
+  "results": [
+    {
+      "title": "Zhejiang open data portal",
+      "url": "https://data.zjzwfw.gov.cn/dopServer/",
+      "kind": "official-provincial-open-data",
+      "note": "General provincial catalog; query result did not identify a parcel dataset."
+    },
+    {
+      "title": "Hangzhou 3D real-scene geospatial program",
+      "url": "https://www.csgpc.org/detail/20186.html",
+      "kind": "industry-association-report",
+      "note": "Reports city GIS and vector land-use management; not parcel endpoint evidence."
+    }
+  ],
+  "assessment": "Search surfaced broad city/provincial geospatial programs but no public parcel feature dataset or query endpoint with stable IDs.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

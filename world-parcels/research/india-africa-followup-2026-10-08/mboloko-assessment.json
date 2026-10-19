@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:4033",
+  "name": "Mboloko",
+  "appCityId": "mboloko",
+  "sourceId": "za-cgs-northwest-erven",
+  "status": "verified_bounded_live_adapter",
+  "registryFound": true,
+  "verifiedSample": true,
+  "operator": "Council for Geoscience, South Africa; cadastral mirror of Chief Surveyor-General data",
+  "endpoint": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
+  "nativeIdentity": {
+    "field": "PRCL_KEY",
+    "role": "Publisher cadastral parcel key (CSG 26-digit-key field), preserved literally. Transport OBJECTID is not identity.",
+    "referenceField": "ID (CSG 21-digit code/LPI field)",
+    "semanticsEvidence": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/layers",
+    "semanticsAccessNote": "Official REST schema text indexed by web search identifies PRCL_KEY and ID aliases. Direct current host resolution fails; mirror fields and observed values were verified directly."
+  },
+  "scope": {
+    "layer": "North West province Erven, layer 46",
+    "includedLegalStatuses": [
+      "R",
+      "S"
+    ],
+    "includedWorkStatuses": [
+      " ",
+      "C"
+    ],
+    "statusInterpretation": "Surveyed/approved or registered cadastral records. Blank work status is accepted as the published mirror state, not asserted current registration. Proposed, withdrawn and historic codes are outside the explicit allowlist.",
+    "statusInterpretationSource": "https://cartographymaster.eu/wp-content/theses/2025_Bineshtarigh_Thesis.pdf",
+    "statusSourceType": "Primary cadastral study, Appendix C, citing CSG spatial-data metadata; used for status meaning, not as the current data provider.",
+    "appEntryLatLon": [
+      -25.4662366387406,
+      27.8447650141456
+    ],
+    "sampledParcelCount": 588,
+    "sampledRecordDateStamp": "2017-10-13",
+    "sampledStatusCounts": {
+      "LSTATUS=S;WSTATUS=single space;PRCL_TYPE=E": 588
+    },
+    "datasetUpdateYear": null,
+    "coverageLimitation": "Bounded Mboloko entry area; full provincial/city completeness unestablished. Holdings and farm portions are separate source layers.",
+    "dateCaveat": "DATE_STAMP belongs to source records; fetch/metadata modification dates are not substituted for cadastral currency."
+  },
+  "liveAcceptance": {
+    "viewportCells": 9,
+    "uniqueNativeIdentities": 588,
+    "allExactGeometriesMatch": true,
+    "forcedPageSize": 3,
+    "explicitAbsence": true,
+    "footprint": true,
+    "sourceBinding": "complete",
+    "requestDeadlinesChanged": false,
+    "geometryImported": false
+  },
+  "runtimeProfile": {
+    "sixFreshConcurrentCells": "passed",
+    "maximumElapsedMs": 1692,
+    "earlierTransient": "One count request in the first concurrency profile took 14.191 seconds, making that full cell 15.286 seconds. The failed profile is retained. All six fresh nearby cells subsequently completed within 1.692 seconds.",
+    "browserVerification": "passed: 588 initial parcels / 9 cells, 701 retained / 12 cells after pan; pointer selection opened parcel action menu; no settled source warning or page error"
+  },
+  "priorSourceOutcome": "The original GISCOE mirror remains held independently. No source identity is silently remapped: this provider has its own ZA-CGS-NW- prefix.",
+  "evidenceFiles": [
+    "research/india-africa-followup-2026-10-08/mboloko-cgs-scoped.json",
+    "research/india-africa-followup-2026-10-08/mboloko-cgs-initial.json",
+    "research/india-africa-followup-2026-10-08/mboloko-cgs-status-inventory.json",
+    "research/india-africa-followup-2026-10-08/mboloko-runtime-probes.json",
+    "research/india-africa-followup-2026-10-08/mboloko-runtime-metadata.json",
+    "research/india-africa-followup-2026-10-08/mboloko-csg-host-retry.json",
+    "research/india-africa-followup-2026-10-08/mboloko-request-profile-final.json",
+    "research/india-africa-followup-2026-10-08/mboloko-request-profile-expanded.json",
+    "research/india-africa-followup-2026-10-08/browser-check.json"
+  ],
+  "termsAreInformational": true
+}

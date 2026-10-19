@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:148",
+  "queueRank": 148,
+  "name": "El Djazaïr (Algiers)",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "centerLatLon": [
+    36.7381965172536,
+    3.08705221152983
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+      "observation": "Finance-ministry geoportal 'Fadaeldjazair' reported (search result) to offer cadastral parcel search; host unreachable from this client."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://fadaeldjazair.mf.gov.dz/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://www.asal.dz/",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": "text/html",
+      "assessment": "server error"
+    },
+    {
+      "url": "https://data.gov.dz/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official hosts unreachable; whether the geoportal serves parcel polygons anonymously is unknown (it may be a search/viewer only).",
+  "nextStep": "Retry fadaeldjazair.mf.gov.dz from another network and test for an anonymous WMS/WFS parcel layer."
+}

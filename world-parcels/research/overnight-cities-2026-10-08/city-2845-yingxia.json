@@ -1,0 +1,113 @@
+{
+  "name": "Yingxia",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 744,
+  "point": [
+    41.7697815714771,
+    86.141355019098
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "英下乡 英阿瓦提 自然资源局 不动产登记 地籍图 官方",
+        "scope": "Local-language/official-source search for exact city land registry, cadastral service, and anonymous full parcel geometry.",
+        "result": "Search results surfaced multiple similarly named Xinjiang settlements and a non-primary gazetteer locality near the WUP point; no first-party page securely reconciled the WUP name, city-scale population, and responsible land office.",
+        "actualResultUrls": [
+          "https://zrzyt.xinjiang.gov.cn/",
+          "https://www.xinjiang.gov.cn/"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      },
+      {
+        "language": "English",
+        "query": "Yingxia Xinjiang China official land registry cadastre public parcel map",
+        "scope": "Cross-check exact WUP candidate identity and official public parcel-vector access.",
+        "result": "The WUP identity remains unresolved among local transliterations and similarly named settlements. No city-specific official registry or anonymous parcel geometry route could be safely attached.",
+        "actualResultUrls": [
+          "https://zrzyt.xinjiang.gov.cn/",
+          "https://www.xinjiang.gov.cn/"
+        ],
+        "executionMethod": "Separate public search and first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Official sources reviewed",
+        "operator": "See source URLs and observations in the service-review artifact.",
+        "homeUrl": "https://zrzyt.xinjiang.gov.cn/",
+        "observation": "WUP identity and local administrative hierarchy remain unresolved. Search hits for similarly named places cannot be safely joined to this low-plausibility WUP city row."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-CITY-2845-OFFICIAL-REGISTRY-REVIEW",
+    "name": "Yingxia official service review",
+    "url": "https://zrzyt.xinjiang.gov.cn/",
+    "operator": "Official local/national government agency as cited in the service review.",
+    "serviceType": "Official registry or land-administration service review; no verified anonymous parcel-geometry service.",
+    "layer": "No cadastral parcel vector layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel feature response was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Identity-resolution only; no office, registry, or map was attributed to the candidate based on a toponym-only match.",
+    "verifiedOpenScope": "Official institutional or service evidence reviewed; no complete anonymous full parcel polygons or citywide coverage claim. The WUP point is a population-weighted centroid, not a legal boundary or proof of parcel coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "No primary source was found that securely ties the WUP locality “Yingxia” and its low-plausibility 2025 population row to a specific local administrative unit or land-registration office. A search result for the toponym at a nearby coordinate is non-primary and is not used to attach a registry office.",
+  "registryEvidenceUrls": [
+    "https://zrzyt.xinjiang.gov.cn/",
+    "https://www.xinjiang.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "identity_review_no_public_geometry",
+  "technicalBlocker": "No primary municipal/local government source reconciled the WUP locality and point to an administrative unit; no anonymous public parcel schema was verified.",
+  "remainingUncertainty": "The WUP romanized “Yingxia” may correspond to a township/locality near Korla, but that attribution is not confirmed from an official source.",
+  "nextStep": "Resolve the romanized WUP locality against an official local gazetteer or county/township government source before attaching any registry or map service.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:10:00Z",
+  "wupCityCode": 2845,
+  "cityId": "wup2025:2845",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    41.7697815714771,
+    86.141355019098
+  ],
+  "queueRank": 744,
+  "population2025": 719432,
+  "population2025k": 719.432,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "No primary municipal/local government source reconciled the WUP locality and point to an administrative unit; no anonymous public parcel schema was verified."
+  },
+  "scopeLimits": [
+    "No parcel/owner/address or person query was made.",
+    "No full parcel geometry was verified; no sample retained.",
+    "Do not treat WUP centroid as a cadastral parcel or legal boundary."
+  ],
+  "rootRegistryDecisionNote": "Local registry presence is unestablished; candidate or generic pages do not prove absence.",
+  "rootPrimaryReadback": {
+    "url": "https://zrzyt.xinjiang.gov.cn/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "\r\n      新疆维吾尔自治区自然资源厅\r\n    "
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

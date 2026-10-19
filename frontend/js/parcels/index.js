@@ -6,7 +6,6 @@
     const uiMap = global.ParcelsUIMap || {};
     const uiClaim = global.ParcelsUIClaim || {};
     const uiVisibility = global.ParcelsUIVisibility || {};
-    const uiProposalCompare = global.ParcelsUIProposalCompare || {};
     const uiAdParcels = global.ParcelsAdParcels || {};
     const ownershipUi = global.ParcelsOwnershipUi || {};
     const utils = global.ParcelsUtils || {};
@@ -56,10 +55,6 @@
             createProposalFromSelectedParcels: global.createProposalFromSelectedParcels,
             renderParcelProposalActions: global.renderParcelProposalActions
         },
-        uiProposalCompare: {
-            showProposalCompareModal: from(uiProposalCompare.showProposalCompareModal, global.showProposalCompareModal),
-            hideProposalCompareModal: from(uiProposalCompare.hideProposalCompareModal, global.hideProposalCompareModal)
-        },
         adParcels: uiAdParcels,
         uiSelection,
         uiParcelPanel,
@@ -76,23 +71,12 @@
             getGridKey: global.getGridKey,
             getRequiredGridCells: global.getRequiredGridCells,
             computeGridKeysForBounds: global.computeGridKeysForBounds,
-            indexParcelLayer: global.indexParcelLayer,
-            unindexParcelLayer: global.unindexParcelLayer,
-            clearParcelLayerIndex: global.clearParcelLayerIndex,
-            resolveParcelLayerById: global.resolveParcelLayerById,
-            removeParcelLayerById: global.removeParcelLayerById,
             ensureParcelLayerInitialized: global.ensureParcelLayerInitialized,
             addParcelLayerToMapIfAppropriate: global.addParcelLayerToMapIfAppropriate
         },
+        ground: global.CadastralParcelRepository,
         fetch: {
             fetchParcelData: global.fetchParcelData,
-            fetchSingleParcelById: global.fetchSingleParcelById,
-            fetchParcelsByIds: global.fetchParcelsByIds,
-            fetchParcelFeaturesByIds: global.fetchParcelFeaturesByIds,
-            requestParcelBatchForCurrentCity: global.requestParcelBatchForCurrentCity,
-            requestParcelBatchFromOss: global.requestParcelBatchFromOss,
-            requestParcelBatchFromParcelBa: global.requestParcelBatchFromParcelBa,
-            ingestParcelFeatures: global.ingestParcelFeatures,
             refreshParcelDataWithBusyState: global.refreshParcelDataWithBusyState
         },
         blocks: {
@@ -150,4 +134,3 @@
 
     global.Parcels = facade;
 })(typeof window !== 'undefined' ? window : globalThis);
-

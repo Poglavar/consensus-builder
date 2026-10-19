@@ -1,0 +1,118 @@
+{
+  "name": "Aligarh",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 283,
+  "point": [
+    27.8945737933649,
+    78.0769237138612
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "Aligarh Uttar Pradesh official public cadastral parcel map BhuNaksha Aligarh district भूमि नक्शा अलीगढ़ खसरा भू नक्शा",
+        "scope": "Find the official district/state cadastral map and public full-geometry endpoint.",
+        "result": "Official UP BhuNaksha map portal opened. The Aligarh district land-record service directs users to the UP Bhulekh service and concerned Tehsil Revenue office; the state cadastral digitization dashboard lists Aligarh tehsils and linked/georeferenced map-sheet counts. No full polygon response was retrieved.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/home/",
+          "https://aligarh.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=143"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      },
+      {
+        "language": "Hindi",
+        "query": "site:aligarh.nic.in जमीन अभिलेख भू नक्शा खतौनी अलीगढ़ राजस्व मानचित्र",
+        "scope": "Verify local registry routing from the Aligarh district administration.",
+        "result": "The district’s official land-records page names the concerned Tehsil Revenue office in Aligarh and links the official state record portal.",
+        "actualResultUrls": [
+          "https://aligarh.nic.in/service/land-record/"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      },
+      {
+        "language": "English",
+        "query": "Aligarh Uttar Pradesh official public cadastral parcel map BhuNaksha Aligarh district",
+        "scope": "Cross-check the official public portal and local land-record service.",
+        "result": "Official BhuNaksha and the Aligarh district land-record service are confirmed; no public full-vector API was verified.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/home/",
+          "https://aligarh.nic.in/service/land-record/"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      }
+    ],
+    "portals": [
+      {
+        "name": "BhuNaksha Uttar Pradesh",
+        "operator": "Government of Uttar Pradesh land records / cadastral mapping",
+        "homeUrl": "https://upbhunaksha.gov.in/home/",
+        "observation": "Public Angular map shell loaded with map/plot search interface. Inspected first-party bundles; no stable public full-feature polygon response was captured. The separate digitization dashboard reports district 143 (Aligarh) tehsil/map-sheet progress; those are administrative status counts, not vector geometry."
+      },
+      {
+        "name": "District Aligarh Land Record service",
+        "operator": "District Administration Aligarh, Government of Uttar Pradesh",
+        "homeUrl": "https://aligarh.nic.in/service/land-record/",
+        "observation": "Official page links to UP Bhulekh and directs users to the concerned Aligarh Tehsil Revenue office."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "observation": "Public BhuNaksha shell, title Bhunaksha, 153,705-byte HTML; no parcel feature query was made."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/scripts-BZQBXHEN.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Public Angular script returned 2.16 MB. It includes map and WMS/WFS references, but no verified full-geometry endpoint or successful city-scoped polygon payload was identified."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=143",
+        "method": "GET via web index",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official dashboard reports Aligarh district, including tehsils Koil, Atrauli, Gabhana, Iglas, Khair and map digitization/georeference progress. Does not itself provide parcel polygons."
+      }
+    ],
+    "observedCandidate": "Official BhuNaksha public map UI and Aligarh-linked district data exist; complete parcel geometry remains unverified."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "UP cadastral mapping portal with district-specific Aligarh records and official local tehsil land-record routing.",
+    "verifiedOpenScope": "Official map shell and local land-record presence are verified, but no full parcel feature response, specific village sheet or city-centroid coverage is verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "registry_evidence_no_public_geometry",
+  "technicalBlocker": "The public map shell and bundle were inspected, but no anonymous full-polygon feature endpoint/payload could be established; map/WMS references alone do not qualify.",
+  "remainingUncertainty": "Whether the city point lies within a georeferenced revenue village sheet available in the public viewer and whether a public full-vector route exists; district dashboard counts do not prove city-core coverage.",
+  "nextStep": "Use the map’s district/tehsil/village selector to establish the named town sheet, then inspect only a documented anonymous geometry route and verify one full polygon before considering adapter work.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8935,
+  "cityId": "wup2025:8935",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    27.8945737933649,
+    78.0769237138612
+  ],
+  "queueRank": 283,
+  "population2025": 1729663,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Aligarh district land-record page routes users to the state land-record service and concerned local Tehsil Revenue office; state digitization dashboard includes Aligarh records.",
+  "rootReviewedAt": "2026-10-08T22:06:54.103695+00:00"
+}

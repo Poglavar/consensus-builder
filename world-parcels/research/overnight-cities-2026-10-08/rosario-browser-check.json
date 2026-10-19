@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-09T00:33:33.309Z",
+  "city": "rosario",
+  "detailsArea": "N/A (source publishes no retained area attribute)",
+  "detailsIdMatchesSelection": true,
+  "label": "72795",
+  "loadedParcels": 1094,
+  "mapBounds": "-60.67813396453858,-32.94908950344825,-60.67491531372071,-32.947248340587976",
+  "parcelMenuArea": "94.8 m²",
+  "pointerClick": {
+    "pointBasis": "unchanged WUP locator inside verified source polygon",
+    "x": 600,
+    "y": 409
+  },
+  "selectedParcelId": "AR-ROS-S9-MSLINK-72795",
+  "sourceId": "ar-rosario-section9-parcel",
+  "sourceUnavailableWarnings": [],
+  "visibleCenterCount": 299,
+  "result": "passed_manual_headed_app_check",
+  "uncaughtPageErrors": 0,
+  "browserClosed": true
+}

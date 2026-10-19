@@ -1,0 +1,136 @@
+{
+  "cityCode": 940,
+  "queueRank": 3094,
+  "name": "Kinzao",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-5.49619436442556, 13.2945487027001],
+  "population2025": 193973,
+  "population2025k": 193.973,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kinzao Democratic Republic of the Congo cadastral map parcel official",
+        "result": "First-party discovery found the Democratic Republic of the Congo Ministry of Land Affairs and its published list of land-registration districts, including Seke-Banza in Kongo-Central. The BIC cadastral portal was also found, but its landing page states service availability for North-Kivu and South-Kivu only. No Kinzao parcel viewer or public ID-plus-geometry service was identified.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://bic.cd/"
+        ]
+      },
+      {
+        "language": "French (local/official)",
+        "query": "Kinzao République démocratique du Congo cadastre parcelle carte officielle",
+        "result": "Les sources officielles du Ministère des Affaires Foncières recensent la circonscription foncière de Seke-Banza dans la province du Kongo-Central et publient une procédure de demande de recherche foncière. La plateforme BIC annonce un cadastre numérique, mais sa page publique indique une disponibilité pour le Nord-Kivu et le Sud-Kivu. Aucun service public anonyme renvoyant un identifiant parcellaire sûr et une géométrie pour Kinzao n'a été qualifié.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://bic.cd/"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "https://bic.cd/"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Ministère des Affaires Foncières — Circonscription foncière de Seke-Banza",
+    "scope": "Official national land-affairs ministry directory identifies Seke-Banza as a Kongo-Central land-registration district. The directory is district-level evidence, not Kinzao parcel coverage or a local parcel API.",
+    "evidence": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions"
+  },
+  "localCustodianContext": {
+    "name": "Chef de Division du Cadastre / Conservateur des Titres Immobiliers for the applicable Seke-Banza district",
+    "scope": "The ministry's official request workflow names the cadastral division chief and land-title registrar as the custodians for formal land-record searches; no request was submitted because it requires identity and supporting documents.",
+    "evidence": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  },
+  "service": {
+    "name": "BIC — Bureau d'Informations Cadastrales public portal; Ministry land-affairs request workflow",
+    "viewerUrl": "https://bic.cd/",
+    "baseUrl": "https://vqrcggcqgnkanngqhcga.supabase.co/",
+    "viewerConfiguration": "The BIC HTML loaded a current JavaScript bundle. The bundle exposed a public Supabase project and home-bic-counts function, but no usable anonymous parcel map route was exposed in the inspected bundle. The portal landing text advertises cadastral data and says the service is available for North-Kivu and South-Kivu, not Kongo-Central.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://bic.cd/",
+      "status": 200,
+      "outcome": "Anonymous landing page loaded over verified TLS. The page referenced /assets/index-BrUTiL_J.js; no parcel geometry was present in the HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://bic.cd/assets/index-BrUTiL_J.js",
+      "status": 200,
+      "outcome": "Current JavaScript/configuration bundle downloaded and inspected. It exposed the public Supabase project URL and a home-bic-counts function, but no qualified public parcel feature endpoint or CRS."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/functions/v1/home-bic-counts",
+      "status": 200,
+      "outcome": "Returned aggregate counts {parcels_count:1, services_count:3, disputes_count:0}; this is not a parcel feature response and has no city, parcel ID, or geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/parcels?select=id,geom&limit=1",
+      "status": 404,
+      "outcome": "Supabase PostgREST returned PGRST205: public.parcels was not found in the schema cache. No parcel schema, native ID, geometry, or CRS was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/administrative_units?select=*&limit=1",
+      "status": 404,
+      "outcome": "Supabase PostgREST returned PGRST205: public.administrative_units was not found in the schema cache. No administrative or parcel geometry response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "status": 200,
+      "outcome": "Official ministry directory loaded and listed Seke-Banza among 11 Kongo-Central land-registration districts. This establishes a district custodian context, not citywide Kinzao parcel coverage."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "status": 200,
+      "outcome": "Official request workflow loaded. It requires requester identity, documents, and a formal land search; no form submission or protected record lookup was attempted."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/kinzao/ (BIC HTML/JavaScript and unchanged bounded public JSON responses)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-5.49619436442556, 13.2945487027001] was preserved in latitude/longitude order and was not shifted.",
+    "The Seke-Banza directory entry is a district-level registry-custodian signal; it does not prove a Kinzao map layer, parcel coverage, or exact-point hit.",
+    "The BIC aggregate response, missing public tables, and Kivu-only landing-page scope are qualification/access outcomes, not evidence of citywide parcel absence.",
+    "No exact-point query was issued because no usable public parcel endpoint was found; this is not evidence of a point miss.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The ministry may maintain non-public or document-based cadastral records for Seke-Banza that are unavailable through an anonymous map/API route.",
+    "BIC may have parcel data outside the public landing-page coverage or behind an authenticated workflow; no login or protected route was attempted.",
+    "No native parcel identity, schema, CRS, or geometry was qualified.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

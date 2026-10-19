@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-10493-pudukkottai.json",
+  "cityCode": 10493,
+  "queueRank": 3002,
+  "city": "Pudukkottai",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Tamil first-party discovery identified the Pudukkottai District Survey and Land Records office and Tamil Nadu land-records service routes. Official district evidence says Pudukkottai taluk FMBs are online on a pilot basis and Pudukkottai town land records are computerized, but all bounded direct portal requests from this host timed out. No parcel geometry or native parcel identity was retained; runtime remains held.",
+  "queryAndRequestOutcomes": "All executed discovery queries, official URLs, direct GET routes, timeout outcomes, scope limits, and uncertainty are recorded in city-10493-pudukkottai.json. No browser login, CAPTCHA/Cloudflare bypass, credential use, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Government of Tamil Nadu, Department of Survey and Land Records / Pudukkottai District Survey Office",
+      "scope": "Local district survey, FMB, town-land-records, and land-record service custodian",
+      "evidence": "https://pudukkottai.nic.in/survey-and-land-records/"
+    },
+    {
+      "name": "Tamil Nadu e-Services / TamilNilam / TNGIS",
+      "scope": "State-level public land-record and GIS presentation routes; no usable anonymous parcel response obtained",
+      "evidence": "https://pudukkottai.nic.in/service/e-services-anytime-anywhere-land/"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "canonical native parcel identifier if later evidenced",
+    "parcel geometry",
+    "source CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [10.3791538127751, 78.817841343075] was preserved in latitude/longitude order and was not shifted.",
+    "Portal timeouts and an unusable anonymous route are not evidence of citywide parcel absence.",
+    "Official district statements about computerized FMB/town records do not prove that open parcel geometry can be fetched anonymously.",
+    "No native parcel ID, geometry, schema, CRS, or sample GeoJSON is available from this attempt.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, or certificate fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The current e-Services and TNGIS JavaScript/API configuration could not be inspected because direct GET requests timed out.",
+    "No independent runtime adapter qualification was performed.",
+    "The official local service evidence is stronger than general national land-modernization prose, but its public map/API availability remains unverified from this host."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

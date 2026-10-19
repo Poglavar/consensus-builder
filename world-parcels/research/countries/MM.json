@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MM",
+ "country": "Myanmar",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Settlement and Land Records Department (SLRD/DALMS), Ministry of Agriculture, Livestock and Irrigation",
+ "portalsFound": [
+  {
+   "url": "https://gis2.onemapmyanmar.info/",
+   "observation": "Open Map Myanmar hosts ArcGIS layers (protected areas, fishing, mineral licences); no parcel layer found in AGOL search."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.dalr.gov.mm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.dalms.gov.mm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://landrecords.gov.mm/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.moali.gov.mm",
+   "method": "GET",
+   "httpStatus": 522,
+   "contentType": null,
+   "assessment": "origin timeout (Cloudflare 522)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Myanmar%20cadastre&f=json&num=10",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "5 hits: mineral licences, oil/gas blocks, fishing; no land parcels"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Village-tract/kwin cadastral maps held by SLRD; reported incomplete and largely non-public",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official hosts unreachable; national cadastre reported incomplete/non-public but not confirmed by a reply.",
+ "nextStep": "Retry SLRD hosts; check Open Development Myanmar for released cadastral maps."
+}

@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AD",
+ "country": "Andorra",
+ "checkedAt": "2026-09-30",
+ "status": "no_online_cadastre_found",
+ "previousStatus": "not_probed",
+ "newStatus": "no_online_cadastre_found",
+ "cadastreAuthority": "Comuns (seven parishes) keep the cadastre; national geodata by Area de Cartografia / IDE Andorra (Govern d'Andorra)",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://www.cartografia.ad/serveis-ogc",
+   "observation": "Lists ~60 WMS services on www.ideandorra.ad/Serveis/<name>/wms plus WMTS; a few WFS (cartogeneral, edificabilitat, carrerer, cesi) exposing parish limits, zoning and points of interest, not parcels"
+  },
+  {
+   "url": "https://www.ideandorra.ad/geoportal/index.jsp",
+   "observation": "Government map viewer (IDE Andorra)"
+  },
+  {
+   "url": "https://www.ideandorra.ad/Serveis/wmscarto5000_2012/wms",
+   "observation": "WMS-only topographic 1:5000 map with layers PL12_PAU01_parcella_urbanitzada / PL_PAU01_parcela_urban (urbanised plots drawn as map layer; image only, no WFS, not a cadastre)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.cartografia.ad/serveis-ogc",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "service list read"
+  },
+  {
+   "url": "https://www.ideandorra.ad/Serveis/wms_cartogeneral/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "feature types: roads, rivers, parish limits, places; no parcels"
+  },
+  {
+   "url": "https://www.ideandorra.ad/Serveis/wms_edificabilitat/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "building-zoning layers per parish, not cadastral parcels"
+  },
+  {
+   "url": "all ~60 https://www.ideandorra.ad/Serveis/*/wms GetCapabilities grepped for parcel/cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "only wms_cadastresonor (noise), allaus (avalanche), topo urban-plot raster layers"
+  },
+  {
+   "url": "http://www.ideandorra.ad/Cataleg/srv/eng/csw",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "catalogue CSW timed out (temporarily unavailable)"
+  },
+  {
+   "url": "https://www.iede.ad/, https://sigma.ad/, https://www.cadastre.ad/, https://geoportal.govern.ad/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 or certificate name mismatch; guessed hosts, not real services"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "no open cadastral parcel service found; Andorra is not an EU/INSPIRE member",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "regionsSampled": [],
+ "accessModel": "unknown",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; cookie jar used; Accept-Language ca-AD; Referer https://www.ideandorra.ad/geoportal/index.jsp",
+ "remainingUncertainty": "Cadastre is per-comu and may exist behind comu portals or in-person; the catalogue CSW timed out so a parcel dataset listed only there cannot be excluded.",
+ "nextStep": "Retry the ideandorra.ad Cataleg CSW when available; check individual comu portals (e.g. Andorra la Vella) for a cadastral viewer."
+}

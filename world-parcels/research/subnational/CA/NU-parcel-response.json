@@ -1,0 +1,141 @@
+{
+ "objectIdFieldName": "OBJECTID",
+ "uniqueIdField": {
+  "name": "OBJECTID",
+  "isSystemMaintained": true
+ },
+ "globalIdFieldName": "GlobalID",
+ "geometryProperties": {
+  "shapeAreaFieldName": "Shape__Area",
+  "shapeLengthFieldName": "Shape__Length",
+  "units": "esriMeters"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 4326,
+  "latestWkid": 4326
+ },
+ "fields": [
+  {
+   "name": "PIN",
+   "type": "esriFieldTypeInteger",
+   "alias": "Parcel Identification Number",
+   "sqlType": "sqlTypeOther",
+   "domain": null,
+   "defaultValue": null,
+   "description": "{\"value\":\"Unique parcel identifier assigned to the Canada Lands parcel.\",\"fieldValueType\":\"uniqueIdentifier\"}"
+  }
+ ],
+ "exceededTransferLimit": true,
+ "features": [
+  {
+   "attributes": {
+    "PIN": 9525124
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -68.5160428508269,
+       63.7552061415226
+      ],
+      [
+       -68.5159461767726,
+       63.7551641725227
+      ],
+      [
+       -68.5160869338302,
+       63.7551006045132
+      ],
+      [
+       -68.5161608858717,
+       63.7551327095131
+      ],
+      [
+       -68.5161739398771,
+       63.7551268135123
+      ],
+      [
+       -68.516213014899,
+       63.7551437765122
+      ],
+      [
+       -68.5160967998514,
+       63.75519600552
+      ],
+      [
+       -68.5160807368424,
+       63.75518903152
+      ],
+      [
+       -68.5160428508269,
+       63.7552061415226
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "PIN": 9516283
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -68.5172549015429,
+       63.7501131341012
+      ],
+      [
+       -68.517441416627,
+       63.750074107092
+      ],
+      [
+       -68.5174924906601,
+       63.7501219800938
+      ],
+      [
+       -68.517305973576,
+       63.750161007103
+      ],
+      [
+       -68.5172549015429,
+       63.7501131341012
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "PIN": 9516284
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -68.5171560614878,
+       63.7500723761014
+      ],
+      [
+       -68.5173427615719,
+       63.7500333110922
+      ],
+      [
+       -68.5173936626049,
+       63.7500810220941
+      ],
+      [
+       -68.5172069625208,
+       63.7501200881033
+      ],
+      [
+       -68.5171560614878,
+       63.7500723761014
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

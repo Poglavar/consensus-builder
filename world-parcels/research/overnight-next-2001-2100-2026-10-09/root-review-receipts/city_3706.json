@@ -1,0 +1,40 @@
+{
+  "taskId": "city:3706",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-3706-iwo.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/iwo-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:50:41Z",
+  "identity": {
+    "cityCode": 3706,
+    "rank": 2095,
+    "country": "Nigeria",
+    "point": [
+      7.63812099599515,
+      4.18460167750736
+    ],
+    "populationPersons": 277101,
+    "queueAndRosterMatch": true
+  },
+  "searches": {
+    "englishAndLocalQueriesRecorded": true,
+    "actualResultUrlsRecorded": true
+  },
+  "sample": {
+    "retainedFullPolygonCount": 0,
+    "safeIdAttributesOnly": null
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "Osun State survey office and its linked Land Parcel Information System are first-party evidenced. The linked system timed out in the packet; no anonymous native-ID polygon response or independent adapter qualification exists. Timeout is unresolved access, not citywide absence."
+}

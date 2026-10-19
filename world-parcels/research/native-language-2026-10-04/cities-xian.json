@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 77,
+  "city": "Xi'an",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/xian.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "西安 地籍图 宗地 不动产 GIS 数据开放 服务"
+  },
+  "results": [
+    {
+      "title": "Xi’an cadastral map query instructions",
+      "url": "https://zygh.xa.gov.cn/ztzl/yhyshj/bsrk/bdcdj/bszn/djtcxbszn/1774698618606374913.html",
+      "kind": "official-service",
+      "note": "Queries by unit code/address, but require government portal login and QR verification; no open bulk vector API identified."
+    }
+  ],
+  "assessment": "Search found parcel ID and cadastral-map lookup functionality for verified government users. It did not establish anonymous vector access or an open stable-ID query service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

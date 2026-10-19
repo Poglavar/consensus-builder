@@ -1,0 +1,2122 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "FL",
+ "checkedAt": "2026-10-12",
+ "priorEvidence": "research/subnational/US/FL.json",
+ "uncoveredUnCities": 18,
+ "uncoveredUnCitySample": [
+  {
+   "cityCode": "7159",
+   "name": "Tampa",
+   "lat": 28.0030986140797,
+   "lon": -82.4702888424246
+  },
+  {
+   "cityCode": "7107",
+   "name": "Sarasota",
+   "lat": 27.3213005254979,
+   "lon": -82.5086315166656
+  },
+  {
+   "cityCode": "7093",
+   "name": "Bradenton",
+   "lat": 27.461361061327,
+   "lon": -82.582711212242
+  },
+  {
+   "cityCode": "7120",
+   "name": "Bayonet Point",
+   "lat": 28.2700137222575,
+   "lon": -82.7070769589785
+  },
+  {
+   "cityCode": "7146",
+   "name": "The Reserve of Old Tampa Bay",
+   "lat": 28.012133885569,
+   "lon": -82.5779470776082
+  },
+  {
+   "cityCode": "7540",
+   "name": "Saint Johns Park",
+   "lat": 30.2820297974115,
+   "lon": -81.7388077386963
+  },
+  {
+   "cityCode": "7573",
+   "name": "Holiday Hill",
+   "lat": 30.3432082180442,
+   "lon": -81.5857638197135
+  },
+  {
+   "cityCode": "7528",
+   "name": "Port Saint Lucie",
+   "lat": 27.2987598439619,
+   "lon": -80.357237726397
+  },
+  {
+   "cityCode": "7133",
+   "name": "Cape Coral",
+   "lat": 26.5926795515462,
+   "lon": -81.9592470127465
+  },
+  {
+   "cityCode": "7562",
+   "name": "Daytona Beach",
+   "lat": 29.2219918953314,
+   "lon": -81.0381979821228
+  }
+ ],
+ "access": "Anonymous HTTPS GET/POST to the public ArcGIS REST query endpoint, at most one request per second per host, no token or cookie. Only object-ID, native-ID and county/town scope fields were ever requested; no owner, address, sale, account or taxpayer fields.",
+ "helperScripts": "tmp/adapter-staging/us-statewide-a/scripts/ (state-cities.py, polite.mjs, meta.mjs, uniqueness.mjs, statewide-repeats.mjs, coverage.mjs, blank-breakdown.mjs, dup-ids.mjs, repeat-geometry.mjs, distinct-area-repeats.mjs, parts-overlap.mjs, verify.mjs, verify-parts.mjs, dense-cell.mjs, descriptors.mjs)",
+ "status": "ready",
+ "sourceId": "us-fl-dor-statewide-cadastral",
+ "layer": {
+  "endpoint": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+  "layerName": "CADASTRAL_DOR",
+  "type": "Feature Layer",
+  "geometryType": "esriGeometryPolygon",
+  "objectIdField": "OBJECTID",
+  "globalIdField": null,
+  "maxRecordCount": 2000,
+  "capabilities": "Query,Extract",
+  "supportsPagination": true,
+  "supportsStatistics": true,
+  "supportsHavingClause": true,
+  "nativeSpatialReference": 6439,
+  "dataLastEditDate": "2026-09-30",
+  "fieldCount": 122,
+  "fieldNames": [
+   "OBJECTID",
+   "PARCELNO",
+   "OID_",
+   "CO_NO",
+   "PARCEL_ID",
+   "FILE_T",
+   "ASMNT_YR",
+   "BAS_STRT",
+   "ATV_STRT",
+   "GRP_NO",
+   "DOR_UC",
+   "PA_UC",
+   "SPASS_CD",
+   "JV",
+   "JV_CHNG",
+   "JV_CHNG_CD",
+   "AV_SD",
+   "AV_NSD",
+   "TV_SD",
+   "TV_NSD",
+   "JV_HMSTD",
+   "AV_HMSTD",
+   "JV_NON_HMS",
+   "AV_NON_HMS",
+   "JV_RESD_NO",
+   "AV_RESD_NO",
+   "JV_CLASS_U",
+   "AV_CLASS_U",
+   "JV_H2O_REC",
+   "AV_H2O_REC",
+   "JV_CONSRV_",
+   "AV_CONSRV_",
+   "JV_HIST_CO",
+   "AV_HIST_CO",
+   "JV_HIST_SI",
+   "AV_HIST_SI",
+   "JV_WRKNG_W",
+   "AV_WRKNG_W",
+   "NCONST_VAL",
+   "DEL_VAL",
+   "PAR_SPLT",
+   "DISTR_CD",
+   "DISTR_YR",
+   "LND_VAL",
+   "LND_UNTS_C",
+   "NO_LND_UNT",
+   "LND_SQFOOT",
+   "DT_LAST_IN",
+   "IMP_QUAL",
+   "CONST_CLAS",
+   "EFF_YR_BLT",
+   "ACT_YR_BLT",
+   "TOT_LVG_AR",
+   "NO_BULDNG",
+   "NO_RES_UNT",
+   "SPEC_FEAT_",
+   "M_PAR_SAL1",
+   "QUAL_CD1",
+   "VI_CD1",
+   "SALE_PRC1",
+   "SALE_YR1",
+   "SALE_MO1",
+   "OR_BOOK1",
+   "OR_PAGE1",
+   "CLERK_NO1",
+   "S_CHNG_CD1",
+   "M_PAR_SAL2",
+   "QUAL_CD2",
+   "VI_CD2",
+   "SALE_PRC2",
+   "SALE_YR2",
+   "SALE_MO2",
+   "OR_BOOK2",
+   "OR_PAGE2",
+   "CLERK_NO2",
+   "S_CHNG_CD2",
+   "OWN_NAME",
+   "OWN_ADDR1",
+   "OWN_ADDR2",
+   "OWN_CITY",
+   "OWN_STATE",
+   "OWN_ZIPCD",
+   "OWN_STATE_",
+   "FIDU_NAME",
+   "FIDU_ADDR1",
+   "FIDU_ADDR2",
+   "FIDU_CITY",
+   "FIDU_STATE",
+   "FIDU_ZIPCD",
+   "FIDU_CD",
+   "S_LEGAL",
+   "APP_STAT",
+   "CO_APP_STA",
+   "MKT_AR",
+   "NBRHD_CD",
+   "PUBLIC_LND",
+   "TAX_AUTH_C",
+   "TWN",
+   "RNG",
+   "SEC",
+   "CENSUS_BK",
+   "PHY_ADDR1",
+   "PHY_ADDR2",
+   "PHY_CITY",
+   "PHY_ZIPCD",
+   "ALT_KEY",
+   "ASS_TRNSFR",
+   "PREV_HMSTD",
+   "ASS_DIF_TR",
+   "CONO_PRV_H",
+   "PARCEL_ID_",
+   "YR_VAL_TRN",
+   "SEQ_NO",
+   "RS_ID",
+   "MP_ID",
+   "STATE_PAR_",
+   "SPC_CIR_CD",
+   "SPC_CIR_YR",
+   "SPC_CIR_TX",
+   "BATCHING_ID",
+   "Shape__Area",
+   "Shape__Length"
+  ],
+  "description": "The polygon data set represents the information gathered from the legal description on deeds, lot layout of recorded plats, declaration of condominium documents, recorded and unrecorded surveys. This information is continually updated. The dataset extends countywide",
+  "copyrightText": "Alachua County Property Appraiser"
+ },
+ "recordCount": 10950718,
+ "coverage": {
+  "countyNumbersPresent": 67,
+  "of": 67,
+  "missingCounties": [],
+  "note": "All 67 DOR county numbers (11-77) present plus CO_NO 0 for unjoined polygons. Service description: each county omits confidential records subject to redaction under Chapter 119, Florida Statutes, so redacted parcels can be absent."
+ },
+ "identity": {
+  "idFields": [
+   "CO_NO",
+   "PARCEL_ID"
+  ],
+  "parcelNumberField": "PARCEL_ID",
+  "why": "CO_NO + PARCEL_ID is the DOR tax-roll key; PARCEL_ID formats are county-specific. PARCELNO (polygon parcel number) equals PARCEL_ID on joined rows but has no county number on unjoined rows (CO_NO 0), so it cannot be made statewide-unique. STATE_PAR_, ALT_KEY and OID_ repeat exactly like PARCEL_ID. No GlobalID exists.",
+  "blankCounts": {
+   "1=1": 10950718,
+   "PARCEL_ID IS NULL": 0,
+   "PARCEL_ID = ' '": 97244,
+   "PARCEL_ID = ''": 97244,
+   "CO_NO = 0": 97244,
+   "CO_NO IS NULL": 0,
+   "PARCELNO IS NULL": 0,
+   "PARCELNO = ' '": 2432,
+   "PARCELNO = ''": 2432
+  },
+  "misc": {
+   "CO_NO = 0 AND PARCEL_ID = ' '": 97244,
+   "CO_NO <> 0 AND PARCEL_ID = ' '": 0
+  },
+  "exclusion": "attributeExclusions CO_NO [0] and PARCEL_ID [' '] (the same 97,244 unjoined rows)."
+ },
+ "uniqueness": {
+  "bboxChecks": [
+   {
+    "state": "FL",
+    "label": "tampa",
+    "endpoint": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+    "bbox": [
+     -82.4753,
+     27.9981,
+     -82.4653,
+     28.0081
+    ],
+    "rows": 748,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 748,
+    "fields": {
+     "PARCEL_ID": {
+      "distinctValues": 716,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "1828353GU000000001050A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001010A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001750A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001731A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001140A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "1828364FT000000000460A"
+       ],
+       [
+        "1828353GN000014000020A"
+       ],
+       [
+        "1828353GN000014000010A"
+       ],
+       [
+        "1828353H3000003000080A"
+       ],
+       [
+        "1828353H3000004000010A"
+       ]
+      ]
+     },
+     "PARCELNO": {
+      "distinctValues": 722,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "1828353GU000000001050A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001010A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001750A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001731A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1828353GU000000001140A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "1828364FT000000000460A"
+       ],
+       [
+        "1828353GN000014000020A"
+       ],
+       [
+        "1828353GN000014000010A"
+       ],
+       [
+        "1828353H3000003000080A"
+       ],
+       [
+        "1828353H3000004000010A"
+       ]
+      ]
+     },
+     "STATE_PAR_": {
+      "distinctValues": 716,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "C39-000-393-2646-7"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "C39-000-393-2643-4"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "C39-000-393-2673-1"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "C39-000-393-2672-3"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "C39-000-393-2653-3"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "C39-000-393-5402-2"
+       ],
+       [
+        "C39-000-393-2048-6"
+       ],
+       [
+        "C39-000-393-2047-8"
+       ],
+       [
+        "C39-000-393-3314-1"
+       ],
+       [
+        "C39-000-393-3318-2"
+       ]
+      ]
+     },
+     "ALT_KEY": {
+      "distinctValues": 716,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "1041340000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1041300000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1042090000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1042080000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "1041410000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "1640510000"
+       ],
+       [
+        "1035180000"
+       ],
+       [
+        "1035150000"
+       ],
+       [
+        "1048040000"
+       ],
+       [
+        "1048080000"
+       ]
+      ]
+     },
+     "OID_": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 24,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "118721"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "118718"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "118746"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "118745"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "118728"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "121511"
+       ],
+       [
+        "118106"
+       ],
+       [
+        "118105"
+       ],
+       [
+        "119401"
+       ],
+       [
+        "119405"
+       ]
+      ]
+     },
+     "CO_NO+PARCEL_ID": {
+      "distinctValues": 716,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "39",
+         "1828353GU000000001050A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001010A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001750A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001731A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001140A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "39",
+        "1828364FT000000000460A"
+       ],
+       [
+        "39",
+        "1828353GN000014000020A"
+       ],
+       [
+        "39",
+        "1828353GN000014000010A"
+       ],
+       [
+        "39",
+        "1828353H3000003000080A"
+       ],
+       [
+        "39",
+        "1828353H3000004000010A"
+       ]
+      ]
+     },
+     "CO_NO+PARCELNO": {
+      "distinctValues": 722,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "39",
+         "1828353GU000000001050A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001010A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001750A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001731A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1828353GU000000001140A"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "39",
+        "1828364FT000000000460A"
+       ],
+       [
+        "39",
+        "1828353GN000014000020A"
+       ],
+       [
+        "39",
+        "1828353GN000014000010A"
+       ],
+       [
+        "39",
+        "1828353H3000003000080A"
+       ],
+       [
+        "39",
+        "1828353H3000004000010A"
+       ]
+      ]
+     },
+     "CO_NO+STATE_PAR_": {
+      "distinctValues": 716,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "39",
+         "C39-000-393-2646-7"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "C39-000-393-2643-4"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "C39-000-393-2673-1"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "C39-000-393-2672-3"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "C39-000-393-2653-3"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "39",
+        "C39-000-393-5402-2"
+       ],
+       [
+        "39",
+        "C39-000-393-2048-6"
+       ],
+       [
+        "39",
+        "C39-000-393-2047-8"
+       ],
+       [
+        "39",
+        "C39-000-393-3314-1"
+       ],
+       [
+        "39",
+        "C39-000-393-3318-2"
+       ]
+      ]
+     },
+     "CO_NO+ALT_KEY": {
+      "distinctValues": 716,
+      "blankRows": 6,
+      "valuesRepeatedWithDistinctGeometry": 23,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "39",
+         "1041340000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1041300000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1042090000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1042080000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "1041410000"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "39",
+        "1640510000"
+       ],
+       [
+        "39",
+        "1035180000"
+       ],
+       [
+        "39",
+        "1035150000"
+       ],
+       [
+        "39",
+        "1048040000"
+       ],
+       [
+        "39",
+        "1048080000"
+       ]
+      ]
+     },
+     "CO_NO+OID_": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 24,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [
+       {
+        "value": [
+         "39",
+         "118721"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "118718"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "118746"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "118745"
+        ],
+        "rows": 2,
+        "geoms": 2
+       },
+       {
+        "value": [
+         "39",
+         "118728"
+        ],
+        "rows": 2,
+        "geoms": 2
+       }
+      ],
+      "sampleValues": [
+       [
+        "39",
+        "121511"
+       ],
+       [
+        "39",
+        "118106"
+       ],
+       [
+        "39",
+        "118105"
+       ],
+       [
+        "39",
+        "119401"
+       ],
+       [
+        "39",
+        "119405"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "CO_NO": [
+      39,
+      0
+     ]
+    }
+   },
+   {
+    "state": "FL",
+    "label": "sarasota",
+    "endpoint": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0",
+    "bbox": [
+     -82.5136,
+     27.3163,
+     -82.5036,
+     27.3263
+    ],
+    "rows": 717,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon",
+     "MultiPolygon"
+    ],
+    "distinctGeometries": 712,
+    "fields": {
+     "PARCEL_ID": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "0055121001"
+        ],
+        [
+         "0055121003"
+        ],
+        [
+         "0055121004"
+        ],
+        [
+         "0055121005"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "0055121001"
+       ],
+       [
+        "0055121003"
+       ],
+       [
+        "0055121004"
+       ],
+       [
+        "0055121005"
+       ],
+       [
+        "0055121002"
+       ]
+      ]
+     },
+     "PARCELNO": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "0055121001"
+        ],
+        [
+         "0055121003"
+        ],
+        [
+         "0055121004"
+        ],
+        [
+         "0055121005"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "0055121001"
+       ],
+       [
+        "0055121003"
+       ],
+       [
+        "0055121004"
+       ],
+       [
+        "0055121005"
+       ],
+       [
+        "0055121002"
+       ]
+      ]
+     },
+     "STATE_PAR_": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "C68-000-863-0201-5"
+        ],
+        [
+         "C68-000-863-0203-1"
+        ],
+        [
+         "C68-000-863-0204-9"
+        ],
+        [
+         "C68-000-863-0205-6"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "C68-000-863-0201-5"
+       ],
+       [
+        "C68-000-863-0203-1"
+       ],
+       [
+        "C68-000-863-0204-9"
+       ],
+       [
+        "C68-000-863-0205-6"
+       ],
+       [
+        "C68-000-863-0202-3"
+       ]
+      ]
+     },
+     "CO_NO+PARCEL_ID": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "68",
+         "0055121001"
+        ],
+        [
+         "68",
+         "0055121003"
+        ],
+        [
+         "68",
+         "0055121004"
+        ],
+        [
+         "68",
+         "0055121005"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "68",
+        "0055121001"
+       ],
+       [
+        "68",
+        "0055121003"
+       ],
+       [
+        "68",
+        "0055121004"
+       ],
+       [
+        "68",
+        "0055121005"
+       ],
+       [
+        "68",
+        "0055121002"
+       ]
+      ]
+     },
+     "CO_NO+PARCELNO": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "68",
+         "0055121001"
+        ],
+        [
+         "68",
+         "0055121003"
+        ],
+        [
+         "68",
+         "0055121004"
+        ],
+        [
+         "68",
+         "0055121005"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "68",
+        "0055121001"
+       ],
+       [
+        "68",
+        "0055121003"
+       ],
+       [
+        "68",
+        "0055121004"
+       ],
+       [
+        "68",
+        "0055121005"
+       ],
+       [
+        "68",
+        "0055121002"
+       ]
+      ]
+     },
+     "CO_NO+STATE_PAR_": {
+      "distinctValues": 717,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "68",
+         "C68-000-863-0201-5"
+        ],
+        [
+         "68",
+         "C68-000-863-0203-1"
+        ],
+        [
+         "68",
+         "C68-000-863-0204-9"
+        ],
+        [
+         "68",
+         "C68-000-863-0205-6"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "68",
+        "C68-000-863-0201-5"
+       ],
+       [
+        "68",
+        "C68-000-863-0203-1"
+       ],
+       [
+        "68",
+        "C68-000-863-0204-9"
+       ],
+       [
+        "68",
+        "C68-000-863-0205-6"
+       ],
+       [
+        "68",
+        "C68-000-863-0202-3"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "CO_NO": [
+      68
+     ]
+    }
+   }
+  ],
+  "statewideSampleChecks": [
+   {
+    "state": "FL",
+    "label": "tampa",
+    "field": "PARCELNO",
+    "sampled": 80,
+    "localRowsSampled": 83,
+    "statewideRows": 84,
+    "valuesWithRowsOutsideBbox": 1,
+    "examples": [
+     {
+      "value": "1828363H5000004000020A",
+      "localRows": 1,
+      "statewideRows": 2,
+      "scopes": [
+       39
+      ]
+     }
+    ]
+   },
+   {
+    "state": "FL",
+    "label": "tampa",
+    "field": "PARCEL_ID",
+    "sampled": 80,
+    "localRowsSampled": 84,
+    "statewideRows": 85,
+    "valuesWithRowsOutsideBbox": 1,
+    "examples": [
+     {
+      "value": "1828363H5000004000010A",
+      "localRows": 1,
+      "statewideRows": 2,
+      "scopes": [
+       39
+      ]
+     }
+    ]
+   }
+  ],
+  "withinCountyRepeatedIdRows": [
+   {
+    "scope": "CO_NO = 39",
+    "scopeRows": 536349,
+    "repeatedValues": 2000,
+    "repeatedRows": 9344,
+    "truncatedAt2000": true,
+    "top": [
+     {
+      "n": 86,
+      "PARCEL_ID": "1927179SI000000C00000U"
+     },
+     {
+      "n": 83,
+      "PARCEL_ID": "1830169YS000000COMMONA"
+     },
+     {
+      "n": 48,
+      "PARCEL_ID": "182924HRV000000000060A"
+     },
+     {
+      "n": 46,
+      "PARCEL_ID": "183210LMR000000000040U"
+     },
+     {
+      "n": 46,
+      "PARCEL_ID": "193022ARV000000000030U"
+     }
+    ]
+   },
+   {
+    "scope": "CO_NO = 68",
+    "scopeRows": 307173,
+    "repeatedValues": {
+     "code": 400,
+     "message": "",
+     "details": [
+      "Unable to perform query. Please check your parameters."
+     ]
+    },
+    "repeatedRows": null,
+    "truncatedAt2000": false
+   }
+  ],
+  "repeatedIdGeometrySamples": [
+   {
+    "value": "1927179SI000000C00000U",
+    "rows": 86,
+    "distinctGeometries": 86,
+    "pairsChecked": 3000,
+    "overlappingDistinctPairs": 11,
+    "maxPairOverlapM2": 0.79,
+    "distinctAreasM2": [
+     66,
+     154,
+     19917,
+     66,
+     402,
+     117,
+     96,
+     96
+    ]
+   },
+   {
+    "value": "1830169YS000000COMMONA",
+    "rows": 83,
+    "distinctGeometries": 83,
+    "pairsChecked": 3000,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     836,
+     654,
+     595,
+     982,
+     694,
+     716,
+     573,
+     643
+    ]
+   },
+   {
+    "value": "182924HRV000000000060A",
+    "rows": 48,
+    "distinctGeometries": 48,
+    "pairsChecked": 1128,
+    "overlappingDistinctPairs": 1,
+    "maxPairOverlapM2": 0.005,
+    "distinctAreasM2": [
+     1111,
+     2554,
+     1757,
+     30285,
+     27673,
+     11733,
+     21717,
+     42752
+    ]
+   },
+   {
+    "value": "183210LMR000000000040U",
+    "rows": 46,
+    "distinctGeometries": 46,
+    "pairsChecked": 1035,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     1973,
+     22647,
+     6010,
+     74796,
+     35816,
+     11116,
+     12505,
+     62594
+    ]
+   },
+   {
+    "value": "18281713Q000000A00000U",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     1274,
+     776
+    ]
+   },
+   {
+    "value": "182817ZZZ000000898400U",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     61843,
+     67609
+    ]
+   },
+   {
+    "value": "18281813W000001000480U",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     841,
+     16202
+    ]
+   },
+   {
+    "value": "1828205TA000000A00000U",
+    "rows": 2,
+    "distinctGeometries": 2,
+    "pairsChecked": 1,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     8686,
+     2217
+    ]
+   }
+  ],
+  "tampaPartOverlap": [
+   {
+    "value": "1828353GU000000001050A",
+    "parts": 2,
+    "partAreasM2": [
+     230,
+     1165
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001010A",
+    "parts": 2,
+    "partAreasM2": [
+     2235,
+     158
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001750A",
+    "parts": 2,
+    "partAreasM2": [
+     530,
+     1038
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001731A",
+    "parts": 2,
+    "partAreasM2": [
+     478,
+     1365
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001140A",
+    "parts": 2,
+    "partAreasM2": [
+     154,
+     1293
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001150A",
+    "parts": 2,
+    "partAreasM2": [
+     168,
+     1242
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001160A",
+    "parts": 2,
+    "partAreasM2": [
+     427,
+     2052
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001810A",
+    "parts": 2,
+    "partAreasM2": [
+     715,
+     180
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001170A",
+    "parts": 2,
+    "partAreasM2": [
+     593,
+     2054
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001770A",
+    "parts": 2,
+    "partAreasM2": [
+     891,
+     557
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001190A",
+    "parts": 2,
+    "partAreasM2": [
+     816,
+     1681
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001060A",
+    "parts": 2,
+    "partAreasM2": [
+     1792,
+     261
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001200A",
+    "parts": 2,
+    "partAreasM2": [
+     850,
+     1746
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001240A",
+    "parts": 2,
+    "partAreasM2": [
+     685,
+     2248
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001580A",
+    "parts": 2,
+    "partAreasM2": [
+     401,
+     1868
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001320A",
+    "parts": 2,
+    "partAreasM2": [
+     403,
+     1453
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001321A",
+    "parts": 2,
+    "partAreasM2": [
+     479,
+     1940
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001290A",
+    "parts": 2,
+    "partAreasM2": [
+     1231,
+     286
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001300A",
+    "parts": 2,
+    "partAreasM2": [
+     1703,
+     266
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001340A",
+    "parts": 2,
+    "partAreasM2": [
+     3233,
+     1454
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000001370A",
+    "parts": 2,
+    "partAreasM2": [
+     5827,
+     593
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "1828353GU000000000644A",
+    "parts": 2,
+    "partAreasM2": [
+     215,
+     362
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 0
+   },
+   {
+    "value": "182924HRV000000000060A",
+    "parts": 5,
+    "partAreasM2": [
+     40854,
+     25960,
+     16135,
+     22926,
+     49547
+    ],
+    "maxPairOverlapM2": 0,
+    "intersectingPairs": 4
+   }
+  ],
+  "idsWithDifferingShapeArea": "HAVING query rejected by this service (HTTP 200 body error 400); not available.",
+  "result": "PARCEL_ID repeats with distinct geometry (23 values in the Tampa bbox, 2,000+ in Hillsborough); parts are mostly disjoint but some overlap slightly (max 0.79 m2 in Hillsborough 1927179SI000000C00000U, 86 rows). nativeGeometryMode parts without disjointParts. The one statewide-sample repeat outside the Tampa bbox was in the same county (a multi-part parcel)."
+ },
+ "liveVerification": [
+  {
+   "cityCode": "7159",
+   "name": "Tampa",
+   "unPoint": [
+    -82.4702888424246,
+    28.0030986140797
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -82.470789,
+      28.002599,
+      -82.469789,
+      28.003599
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 6,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "sourceRows": 6,
+     "ms": 21221,
+     "ids": [
+      "US-FL-STATEWIDE-39~1828354EK000011000110A",
+      "US-FL-STATEWIDE-39~1828354EK000011000150A",
+      "US-FL-STATEWIDE-39~1828354EK000011000160A",
+      "US-FL-STATEWIDE-39~1828354EK000008000092A",
+      "US-FL-STATEWIDE-39~1828354EK000011000120A",
+      "US-FL-STATEWIDE-39~1828354EK000011000130A"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.470789%2C28.002599%2C-82.469789%2C28.003599&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 5856
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.470789%2C28.002599%2C-82.469789%2C28.003599&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 2487
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3817250%2C3825780%2C3825781%2C3895298%2C3898166%2C3898167",
+       "status": 200,
+       "ms": 1652
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000110A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000150A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000160A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000008000092A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000120A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000130A%27%29%29&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 3533
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000110A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000150A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000160A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000008000092A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000120A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000130A%27%29%29&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 6066
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3817250%2C3825780%2C3825781%2C3895298%2C3898166%2C3898167",
+       "status": 200,
+       "ms": 1595
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-FL-STATEWIDE-39~1828354EK000011000110A",
+     "US-FL-STATEWIDE-39~1828354EK000008000092A",
+     "US-FL-STATEWIDE-39~1828354EK000011000130A"
+    ],
+    "returnedIds": [
+     "US-FL-STATEWIDE-39~1828354EK000011000110A",
+     "US-FL-STATEWIDE-39~1828354EK000008000092A",
+     "US-FL-STATEWIDE-39~1828354EK000011000130A"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-FL-STATEWIDE-39~1828354EK000011000110A",
+      "sourceParcelId": "39~1828354EK000011000110A",
+      "parcelNumber": "1828354EK000011000110A",
+      "geometryType": "Polygon",
+      "boundsHash": "fc7a437cdb309504fb8d25113730ee93f8b006445c01e44cca35fc8e86b07ac9",
+      "idsHash": "fc7a437cdb309504fb8d25113730ee93f8b006445c01e44cca35fc8e86b07ac9",
+      "identical": true,
+      "sourcePartCount": 1
+     },
+     {
+      "id": "US-FL-STATEWIDE-39~1828354EK000008000092A",
+      "sourceParcelId": "39~1828354EK000008000092A",
+      "parcelNumber": "1828354EK000008000092A",
+      "geometryType": "Polygon",
+      "boundsHash": "b62bd339c7dddf71f378eb3a13729e0240c81ad6448b16166c8348f397bb59cc",
+      "idsHash": "b62bd339c7dddf71f378eb3a13729e0240c81ad6448b16166c8348f397bb59cc",
+      "identical": true,
+      "sourcePartCount": 1
+     },
+     {
+      "id": "US-FL-STATEWIDE-39~1828354EK000011000130A",
+      "sourceParcelId": "39~1828354EK000011000130A",
+      "parcelNumber": "1828354EK000011000130A",
+      "geometryType": "Polygon",
+      "boundsHash": "ccccaabba153c88671865a89898e305040e891fcfd2d463ef3696aced4b34987",
+      "idsHash": "ccccaabba153c88671865a89898e305040e891fcfd2d463ef3696aced4b34987",
+      "identical": true,
+      "sourcePartCount": 1
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000110A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000008000092A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000130A%27%29%29&f=json&returnCountOnly=true",
+      "status": 200,
+      "ms": 2308
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000110A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000008000092A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000130A%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200,
+      "ms": 1707
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3817250%2C3895298%2C3898167",
+      "status": 200,
+      "ms": 1898
+     }
+    ],
+    "ms": 5920
+   }
+  },
+  {
+   "cityCode": "7107",
+   "name": "Sarasota",
+   "unPoint": [
+    -82.5086315166656,
+    27.3213005254979
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -82.509132,
+      27.320801,
+      -82.508132,
+      27.321801
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 2,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "sourceRows": 2,
+     "ms": 17750,
+     "ids": [
+      "US-FL-STATEWIDE-68~0055030021",
+      "US-FL-STATEWIDE-68~0055030001"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.509132%2C27.320801%2C-82.508132%2C27.321801&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 5776
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.509132%2C27.320801%2C-82.508132%2C27.321801&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 4011
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=9694011%2C9723408",
+       "status": 200,
+       "ms": 1660
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030021%27%29+OR+%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030001%27%29%29&f=json&returnCountOnly=true",
+       "status": 200,
+       "ms": 3044
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030021%27%29+OR+%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030001%27%29%29&f=json&returnIdsOnly=true",
+       "status": 200,
+       "ms": 1662
+      },
+      {
+       "method": "GET",
+       "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=9694011%2C9723408",
+       "status": 200,
+       "ms": 1591
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-FL-STATEWIDE-68~0055030021",
+     "US-FL-STATEWIDE-68~0055030001"
+    ],
+    "returnedIds": [
+     "US-FL-STATEWIDE-68~0055030021",
+     "US-FL-STATEWIDE-68~0055030001"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-FL-STATEWIDE-68~0055030021",
+      "sourceParcelId": "68~0055030021",
+      "parcelNumber": "0055030021",
+      "geometryType": "Polygon",
+      "boundsHash": "8aac1312c60f45f82b0efa0144d350cb20e8776aa3c5a18f9289eea5347e8332",
+      "idsHash": "8aac1312c60f45f82b0efa0144d350cb20e8776aa3c5a18f9289eea5347e8332",
+      "identical": true,
+      "sourcePartCount": 1
+     },
+     {
+      "id": "US-FL-STATEWIDE-68~0055030001",
+      "sourceParcelId": "68~0055030001",
+      "parcelNumber": "0055030001",
+      "geometryType": "Polygon",
+      "boundsHash": "50bcbc2393d7e18a8c85cbea64b20e803a79c1b87afaf853e45b5d29c9bfe8e6",
+      "idsHash": "50bcbc2393d7e18a8c85cbea64b20e803a79c1b87afaf853e45b5d29c9bfe8e6",
+      "identical": true,
+      "sourcePartCount": 1
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030021%27%29+OR+%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030001%27%29%29&f=json&returnCountOnly=true",
+      "status": 200,
+      "ms": 1197
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030021%27%29+OR+%28CO_NO+%3D+68+AND+PARCEL_ID+%3D+%270055030001%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200,
+      "ms": 1292
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=9694011%2C9723408",
+      "status": 200,
+      "ms": 1295
+     }
+    ],
+    "ms": 3794
+   }
+  }
+ ],
+ "partsVerification": [
+  {
+   "id": "US-FL-STATEWIDE-39~1828353GU000000001050A",
+   "idsQuery": {
+    "absentIds": [],
+    "sourceRows": 2,
+    "geometryType": "MultiPolygon",
+    "sourcePartCount": 2,
+    "hash": "43f608469b1737f635d3853c93133ad5d39530ad90deee65bba0480f4fab304d",
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001050A%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001050A%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3744529%2C3744762",
+      "status": 200
+     }
+    ]
+   },
+   "boundsQuery": {
+    "bbox": [
+     -82.4739092,
+     28.0031733,
+     -82.4729092,
+     28.0041733
+    ],
+    "features": 9,
+    "sourceRows": 61,
+    "found": true,
+    "hash": "43f608469b1737f635d3853c93133ad5d39530ad90deee65bba0480f4fab304d",
+    "sourcePartCount": 2,
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.4739092%2C28.0031733%2C-82.4729092%2C28.0041733&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.4739092%2C28.0031733%2C-82.4729092%2C28.0041733&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3744529%2C3744615%2C3744733%2C3744740%2C3744762%2C3744763%2C3744828%2C3825773%2C3825775%2C3825776%2C3825777%2C3825778%2C3825779%2C3851784%2C3851785",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001050A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001010A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001040A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001810A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001770A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001060A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000231A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27182835ZZZ000005421600A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27182924HRV000000000060A%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001050A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001010A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001040A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001810A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001770A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828353GU000000001060A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271828354EK000011000231A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27182835ZZZ000005421600A%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27182924HRV000000000060A%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3507289%2C3655071%2C3729263%2C3744529%2C3744615%2C3744733%2C3744740%2C3744762%2C3744763%2C3744828%2C3824366%2C3824435%2C3824850%2C3824874%2C3824988%2C3825269%2C3825492%2C3825563%2C3825565%2C3825566%2C3825567%2C3825568%2C3825569%2C3825570%2C3825571%2C3825738%2C3825743%2C3825748%2C3825759%2C3825773%2C3825775%2C3825776%2C3825777%2C3825778%2C3825779%2C3826523%2C3831250%2C3833449%2C3835327%2C3835328%2C3835329%2C3835330%2C3851783%2C3851784%2C3851785%2C3851786%2C3851787%2C3862855%2C3904993%2C3904995%2C3905508%2C3905509%2C3905510%2C3905511%2C3905512%2C3905513%2C3905514%2C3905515%2C3905516%2C3918657%2C3953658",
+      "status": 200
+     }
+    ]
+   },
+   "identical": true
+  },
+  {
+   "id": "US-FL-STATEWIDE-39~1927179SI000000C00000U",
+   "idsQuery": {
+    "absentIds": [],
+    "sourceRows": 86,
+    "geometryType": "Polygon",
+    "sourcePartCount": 86,
+    "hash": "0249d63813ffeb6b75895427b82f3346001c7624bf14da305d06517522010661",
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000000C00000U%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000000C00000U%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3686088%2C3686554%2C3686633%2C3687614%2C3687917%2C3688257%2C3688356%2C3688363%2C3688432%2C3688434%2C3688504%2C3688590%2C3689022%2C3689080%2C3689138%2C3689168%2C3690439%2C3822042%2C3822043%2C3822044%2C3822045%2C3822046%2C3822047%2C3822048%2C3822049%2C3822050%2C3822051%2C3822052%2C3826379%2C3826540%2C3826541%2C3826542%2C3826543%2C3826544%2C3826545%2C3826546%2C3826547%2C3826548%2C3826549%2C3826550%2C3826551%2C3826552%2C3826553%2C3826554%2C3826555%2C3826556%2C3826557%2C3826558%2C3826559%2C3826560%2C3826561%2C3826562%2C3826563%2C3826564%2C3826565%2C3826566%2C3826567%2C3826568%2C3826569%2C3826570%2C3826571%2C3826572%2C3826573%2C3826574%2C3826575%2C3826576%2C3826577%2C3826578%2C3826579%2C3826580%2C3826581%2C3826582%2C3826583%2C3826584%2C3826585%2C3826586%2C3826594%2C3826606%2C3826607%2C3826608%2C3882799%2C3882808%2C3882810%2C3882811%2C3882812%2C3882815",
+      "status": 200
+     }
+    ]
+   },
+   "boundsQuery": {
+    "bbox": [
+     -82.4309298,
+     28.1273501,
+     -82.4299298,
+     28.1283501
+    ],
+    "features": 9,
+    "sourceRows": 94,
+    "found": true,
+    "hash": "0249d63813ffeb6b75895427b82f3346001c7624bf14da305d06517522010661",
+    "sourcePartCount": 86,
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.4309298%2C28.1273501%2C-82.4299298%2C28.1283501&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&geometry=-82.4309298%2C28.1273501%2C-82.4299298%2C28.1283501&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3686193%2C3686264%2C3686444%2C3686699%2C3686911%2C3686982%2C3711309%2C3713919%2C3882799",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27192720ZZZ000001203600U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927201BR000000000030U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927201BR000000000040U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927171AX000000000210U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000022000220U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000022000230U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27192720ZZZ000001203900U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27192720ZZZ000001203601U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000000C00000U%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=%28CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27%29+AND+%28%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27192720ZZZ000001203600U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927201BR000000000030U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927201BR000000000040U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927171AX000000000210U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000022000220U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000022000230U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27192720ZZZ000001203900U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%27192720ZZZ000001203601U%27%29+OR+%28CO_NO+%3D+39+AND+PARCEL_ID+%3D+%271927179SI000000C00000U%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "method": "GET",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=CO_NO+%3C%3E+0+AND+PARCEL_ID+%3C%3E+%27+%27&outFields=OBJECTID%2CCO_NO%2CPARCEL_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=3686088%2C3686193%2C3686264%2C3686444%2C3686554%2C3686633%2C3686699%2C3686911%2C3686982%2C3687614%2C3687917%2C3688257%2C3688356%2C3688363%2C3688432%2C3688434%2C3688504%2C3688590%2C3689022%2C3689080%2C3689138%2C3689168%2C3690439%2C3711309%2C3713919%2C3822042%2C3822043%2C3822044%2C3822045%2C3822046%2C3822047%2C3822048%2C3822049%2C3822050%2C3822051%2C3822052%2C3826379%2C3826540%2C3826541%2C3826542%2C3826543%2C3826544%2C3826545%2C3826546%2C3826547%2C3826548%2C3826549%2C3826550%2C3826551%2C3826552%2C3826553%2C3826554%2C3826555%2C3826556%2C3826557%2C3826558%2C3826559%2C3826560%2C3826561%2C3826562%2C3826563%2C3826564%2C3826565%2C3826566%2C3826567%2C3826568%2C3826569%2C3826570%2C3826571%2C3826572%2C3826573%2C3826574%2C3826575%2C3826576%2C3826577%2C3826578%2C3826579%2C3826580%2C3826581%2C3826582%2C3826583%2C3826584%2C3826585%2C3826586%2C3826594%2C3826606%2C3826607%2C3826608%2C3882799%2C3882808%2C3882810%2C3882811%2C3882812%2C3882815",
+      "status": 200
+     }
+    ]
+   },
+   "identical": true
+  }
+ ],
+ "denseCellTiming": "A 0.003 degree Tampa cell returned 64 parcels from 116 rows in 16.3 s over 6 requests (slowest 3.4 s). The 0.001 degree verification cells took 18-21 s; single requests up to 6 s.",
+ "caveats": [
+  "PARCEL_ID is county-scoped, so identity is the reversible composite CO_NO~PARCEL_ID.",
+  "Many roll parcels are stored as several polygon rows (e.g. 86 rows for one Hillsborough condominium parcel); all components are fetched and unioned. Some components overlap slightly (largest observed 0.79 m2), so overlap is not rejected for this provider.",
+  "The layer carries owner, address and sale columns; only CO_NO, PARCEL_ID and OBJECTID are requested.",
+  "Statewide envelope queries are slow (about 11 s for a 0.01 degree box, 18 s for 46 object IDs); small cells are required."
+ ]
+}

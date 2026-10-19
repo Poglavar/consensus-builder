@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9913,
+  "cityId": "wup2025:9913",
+  "name": "Hyderabad",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    17.4138906547212,
+    78.475689046214
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 119,
+  "stateOrUT": "Telangana",
+  "administrativeIdentity": {
+    "district": "Hyderabad",
+    "tehsilOrTaluk": "Himayatnagar mandal (geographic lead only)",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead only; no official revenue-village confirmation. WUP cohort label retained."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "temporarily_unavailable"
+    ],
+    "previousEvidenceFiles": [
+      "research/hyderabad.json",
+      "research/retry/cities/hyderabad.json"
+    ],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/hyderabad.json",
+        "checkedAt": "2026-09-29",
+        "status": "temporarily_unavailable",
+        "scope": "unknown",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://dharani.telangana.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "curl (35) connection reset; retry needed"
+          },
+          {
+            "method": "GET",
+            "url": "https://data.telangana.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset"
+          },
+          {
+            "method": "GET",
+            "url": "https://tsgis.telangana.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.ghmc.gov.in/",
+            "httpStatus": 403,
+            "contentType": "text/html; charset=UTF-8",
+            "assessment": "WAF rejection"
+          },
+          {
+            "method": "GET",
+            "url": "https://tgrac.telangana.gov.in/",
+            "httpStatus": 200,
+            "contentType": null,
+            "assessment": "landing page only"
+          }
+        ],
+        "conclusion": "Key Telangana hosts reset or blocked connections, likely geo/WAF filtering, so this is an access failure, not evidence that no source exists. Indian state portals typically expose viewers, not open APIs.",
+        "nextStep": "Retry from another network path; look for Telangana Bhu-Naksha / Dharani cadastral maps and GHMC GIS with a bounded polygon query."
+      },
+      {
+        "path": "research/retry/cities/hyderabad.json",
+        "checkedAt": "2026-09-30",
+        "status": "temporarily_unavailable",
+        "scope": null,
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://dharani.telangana.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "curl 000 connection reset; http:// variant returned proxy 503 text 'upstream connect error ... connection timeout'"
+          },
+          {
+            "method": "GET",
+            "url": "https://data.telangana.gov.in/ ; https://tsgis.telangana.gov.in/ ; https://bhunaksha.telangana.gov.in/ ; https://gis.ghmc.gov.in/ ; https://hmda.gov.in/ ; https://landrecords.gov.in/ ; https://bhoomi.telangana.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "no HTTP response (curl 000: connection reset/tunnel failure through the agent proxy)"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.ghmc.gov.in/",
+            "httpStatus": 403,
+            "contentType": "text/html; charset=UTF-8",
+            "assessment": "WAF rejection still present with full browser headers"
+          },
+          {
+            "method": "GET",
+            "url": "https://tgrac.telangana.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "landing page (200 on some attempts, reset on others); links to webgis.php (404), tracgis.telangana.gov.in (DNS fail); page lists only jpg cadastral map samples"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.nic.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "NIC Bhu-Naksha product page for authorised officials; no Telangana public instance link found"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search?q=Hyderabad+cadastral+parcels+type%3AFeature+Service",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "no relevant results"
+          }
+        ],
+        "conclusion": "Unchanged: Telangana hosts still reset or 403. No polygon service found or tested.",
+        "nextStep": "Retry Dharani/Telangana GIS hosts later or from an India-region network."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Telugu",
+        "query": "హైదరాబాద్ రెవెన్యూ గ్రామ భూమి మ్యాప్ సర్వే నంబర్ తెలంగాణ భూభారతి",
+        "scope": "WUP 9913 Hyderabad cohort label retained; search for official Telangana parcel/map entry point.",
+        "result": "Actual native-script query surfaced the official state land-record entry point listed below; it did not return a city-specific parcel feature.",
+        "checkedAt": "2026-10-08",
+        "script": "Telugu",
+        "actualResultUrls": [
+          "https://bhubharatitelangana.com/check-land-by-survey-number/",
+          "https://bhulandrecords.in/",
+          "https://play.google.com/store/apps/details?hl=te&id=app.landgrid.ts",
+          "https://www.bhubharatiportal.com/",
+          "https://wanaparthy.telangana.gov.in/te/%E0%B0%B8%E0%B0%B0%E0%B1%8D%E0%B0%B5%E0%B1%87-%E0%B0%AE%E0%B0%B0%E0%B0%BF%E0%B0%AF%E0%B1%81-%E0%B0%AD%E0%B1%82%E0%B0%AE%E0%B0%BF-%E0%B0%B0%E0%B0%BF%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B1%8D%E0%B0%A1/",
+          "https://www.egovtschemes.com/village-maps-with-survey-numbers-in-telangana/",
+          "https://play.google.com/store/apps/details?hl=te&id=com.naabhoomi.app",
+          "https://vidhaatha.com/vidhaatha-special/dharani-portal-village-revenue-maps-missing-bhu-bharati-web-portal-122103",
+          "https://tgmdc.telangana.gov.in/Documents/PATTALAND_AGREEMENTS_NEW/45%20Sompalli%20203%2010%201_20230705_011722.pdf",
+          "https://www.reddit.com/r/hyderabadrealestate/comments/1vt9r73/built_a_thing_to_search_telangana_agricultural/",
+          "https://tg.verified.realestate/tool/land-details-search",
+          "https://www.igrstelangana.com/",
+          "https://bhubharati.org/",
+          "https://thelandrecords.in/telangana-land-records-with-survey-numbers-online/",
+          "https://www.reddit.com/r/hyderabad/comments/1vt9tzl/built_a_thing_to_search_telangana_agricultural/",
+          "https://environmentclearance.nic.in/writereaddata/online/EC/1510202270856971AdditionalDocument.pdf",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/24721_3.pdf",
+          "https://epaper.vishalabharati.com/media/2026-04/reivce.pdf",
+          "https://img.staticmb.com/mbimages/reradoc/2024/08/25/5420837download_2_4.pdf",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/EA%203%20of%202023%20in%20OA%2092%20of%202020%20Report%20by%20R2_0.pdf",
+          "https://www.reddit.com/r/Ni_Bondha/comments/t0zq4q",
+          "https://www.reddit.com/r/u_Suvarnabhoomiplots1/comments/lk81n9",
+          "https://www.reddit.com/r/Visakhapatnam/comments/1wc7etm/need_help_locating_a_property/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "TGRAC public WebGIS directory",
+        "operator": "Telangana Remote Sensing Applications Centre, Government of Telangana",
+        "homeUrl": "https://www.tgrac.telangana.gov.in/trac/webgis.php",
+        "observation": "Official page describes survey-of-lands GIS and links BhuNaksha; REST service directory exposes public Bhunaksha_Cadastral and Bhunaksha_query MapServers."
+      },
+      {
+        "name": "Bhu Bharati Telangana public GIS",
+        "operator": "Government of Telangana",
+        "homeUrl": "https://bhubharati.telangana.gov.in/gis/",
+        "observation": "Public viewer shell and district/mandal/village/survey-number selectors; no city-specific parcel geometry demonstrated by this viewer."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://www.tgrac.telangana.gov.in/trac/webgis.php",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official TGRAC WebGIS page reachable; survey-of-lands service family includes Bhunaksha."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer?f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "Public REST metadata exposes Full Cadastral, ULB cadastral and administrative query layers."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0/query?geometry=78.475689046214%2C17.4138906547212&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Parcel_num%2CV_Name%2CM_Name%2CD_Name%2CDMV_Code&returnGeometry=true&outSR=4326&f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "Returned one very large polygon with V_Name and M_Name both GHMC, blank Parcel_num, D_Name Hyderabad and remark “to be checked”. Its extent spans [78.381988259,17.293129518,78.556315685,17.484305856]; it is an aggregate municipal feature, not a parcel."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/1/query?geometry=78.475689046214%2C17.4138906547212&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "ULB cadastral layer point query returned 0 features."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/7/query?geometry=78.475689046214%2C17.4138906547212&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "Cadastral query layer point query returned 0 features."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": "Public feature service tested at exact WUP point; result was an aggregate administrative geometry, not a parcel",
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Public TGRAC endpoint at the WUP coordinate returns one aggregate GHMC polygon, with blank Parcel_num and a “to be checked” remark; the ULB cadastral and cadastral point queries return zero features.",
+  "remainingUncertainty": "Whether another Hyderabad-specific public survey endpoint or the Bhu Bharati viewer can resolve the target revenue village and parcel is unknown; this test does not establish citywide absence.",
+  "nextStep": "Resolve the WUP center with an official Hyderabad urban survey locator or survey-number layer, then test a bounded parcel query; current result is not a parcel candidate.",
+  "workstream": "india",
+  "kind": "city_parcel_source_research",
+  "queueCohorts": [
+    "largest200"
+  ],
+  "queuePriorAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-9913.json",
+    "resultCategory": "no_verified_sample_candidate_citywide",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+    "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier."
+  }
+}

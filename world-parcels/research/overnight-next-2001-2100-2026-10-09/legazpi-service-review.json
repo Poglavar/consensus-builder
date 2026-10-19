@@ -1,0 +1,96 @@
+{
+  "cityRecord": "city-4785-legazpi.json",
+  "schemaVersion": "1.0",
+  "cityCode": 4785,
+  "queueRank": 2099,
+  "city": "Legazpi",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Philippine and local Legazpi sources evidence cadastral-map/tax-map custody and procedures. The current Geoportal Philippines lot-plotter was inspected and its bounded public requests returned location/tie-point metadata but no parcel polygon feature response, schema, CRS, or stable native parcel identity. No GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Filipino/Tagalog discovery queries, outcomes, and actual URLs are recorded in city-4785-legazpi.json.",
+  "requestOutcomes": [
+    {
+      "request": "GET https://geoportal.gov.ph/gpapps/lotplotter",
+      "outcome": "HTTP 200 HTML. Official viewer code exposed the lot-plotter UI, module scripts, Geoportal layer endpoints, and a server-side slider CAPTCHA component. It did not expose a parcel feature layer or anonymous parcel download URL. No CAPTCHA interaction or bypass was attempted."
+    },
+    {
+      "request": "GET https://geoportal.gov.ph/lp/getlocations",
+      "outcome": "HTTP 200 JSON. Returned the province list, including ALBAY; this is location metadata only."
+    },
+    {
+      "request": "GET https://geoportal.gov.ph/lp/getMunicipality/ALBAY",
+      "outcome": "HTTP 200 JSON. Returned municipality labels including LEGAZPI and LEGASPI; this is location metadata only."
+    },
+    {
+      "request": "GET https://geoportal.gov.ph/lp/gettp/ALBAY/LEGAZPI",
+      "outcome": "HTTP 200 JSON. Returned tie-point references and numeric tie-point IDs for Legazpi. These are survey-control metadata, not parcel polygons or parcel identities."
+    },
+    {
+      "request": "GET https://geoportal.gov.ph/lp/gettp/ALBAY/LEGASPI",
+      "outcome": "HTTP 200 JSON. Returned additional tie-point references, including Legaspi Cadastre references. No parcel geometry was returned."
+    },
+    {
+      "request": "GET https://geoportal.gov.ph/layers/getsectors",
+      "outcome": "HTTP 200 JSON. Returned Geoportal sector/category metadata only; no parcel feature response."
+    },
+    {
+      "request": "GET https://geoportal.gov.ph/webapi/api/getlayerdetails/Cadastral",
+      "outcome": "HTTP 200 JSON with success=false and no layer found. This is evidence that the guessed generic layer name was not present, not evidence of cadastral absence."
+    },
+    {
+      "request": "GET https://geoportal.gov.ph/layerf/Cadastral/extent",
+      "outcome": "HTTP 500 JSON reporting a missing database relation for the guessed generic layer. No further layer-name guessing or unsafe fields were requested."
+    },
+    {
+      "request": "GET https://www.foi.gov.ph/agencies/lra/cadastral-map-of-legazpi-city/ and GET https://www.foi.gov.ph/agencies/denrlmb/cadastral-map-of-legazpi-city-denrlmb-793756411219/",
+      "outcome": "Official FOI pages were found in discovery. The LRA response directs the requester to DENR for a cadastral map; the DENR-LMB record documents a completed response with an attachment, but no parcel vector endpoint or safe geometry response was available for this research pass."
+    },
+    {
+      "request": "GET https://legazpi.gov.ph/city-assessors-office-2/ and GET https://www.betterlegazpi.org/service-details/casso-services",
+      "outcome": "Official/local city information identifies the City Assessor's Office and tax-map viewing/real-property record procedures. No anonymous parcel geometry service was documented."
+    }
+  ],
+  "scopeLimits": [
+    "The exact WUP point [13.1496163977733, 123.733536495319] was preserved in latitude/longitude order and was not shifted.",
+    "The official Geoportal requests were bounded and browser-like headers plus a cookie jar and viewer Referer were used; no credentials, private tokens, CAPTCHA bypass, or TLS exception was used.",
+    "Location and tie-point responses do not prove parcel-vector availability, completeness, citywide coverage, or exact-point parcel intersection.",
+    "The official FOI and city assessor evidence establishes local custody/procedure but not an open machine-readable parcel API.",
+    "No owner, address, contact, titleholder, personal, tax/account, or unsafe registration fields were requested or retained.",
+    "Packet completion is research bookkeeping only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed because no verified public parcel feature service was found."
+  },
+  "coverageAssessment": {
+    "claimedScope": "DENR/LMB cadastral-map custody for Legazpi and Legazpi City Assessor tax-map/real-property records; Geoportal Philippines public GIS platform.",
+    "verifiedOpenScope": "Public location/tie-point metadata and map application shell only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The current Geoportal cadastral layer name, service endpoint, schema, CRS, native parcel identity, access conditions, and coverage remain unresolved. The FOI attachment and any non-public DENR/LMB records were not treated as machine-readable geometry. No claim is made about parcel absence, legal title, ownership, completeness, or currency.",
+  "retainedSample": null
+}

@@ -1,0 +1,134 @@
+{
+  "cityCode": 9175,
+  "queueRank": 1486,
+  "name": "Badaun",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [28.0325388264251, 79.1297591351741],
+  "population2025": 382686,
+  "population2025k": 382.686,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Badaun Uttar Pradesh official cadastral map land records parcel GIS BhuNaksha",
+        "result": "First-party Uttar Pradesh BhuNaksha, UP Bhulekh, Budaun district administration, and the official cadastral-map digitization dashboard were found. The dashboard reports Badaun district and Badaun tehsil cadastral villages/maps linked to Bhunaksha, while the current public BhuNaksha application is login-gated.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/login/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=149",
+          "https://budaun.nic.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "बदायूं उत्तर प्रदेश आधिकारिक भू नक्शा भूमि अभिलेख नक्शा",
+        "result": "Hindi first-party discovery confirmed the Budaun district administration land-records route and UP Bhulekh/BhuNaksha. The official application lists बदायूँ as district code 149; no anonymous parcel geometry or safe native parcel identity was exposed.",
+        "actualResultUrls": [
+          "https://budaun.nic.in/hi/",
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/login/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "BhuNaksha Uttar Pradesh",
+        "operator": "Government of Uttar Pradesh / Revenue Council and NIC",
+        "homeUrl": "https://upbhunaksha.gov.in/login/",
+        "observation": "Current Angular application was fetched over HTTPS. Its public login page lists District बदायूँ (code 149), but requests for plot/map data are not available anonymously without login; no credentials or CAPTCHA interaction was attempted."
+      },
+      {
+        "name": "UP Bhulekh cadastral digitization dashboard",
+        "operator": "Government of Uttar Pradesh",
+        "homeUrl": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=149",
+        "observation": "Official public dashboard reports Badaun tehsil with 387 linked villages, 483 linked mapsheets, and 375 geo-referenced villages; this is registry/digitization coverage evidence, not an open parcel-vector endpoint."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://upbhunaksha.gov.in/login/",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "Current public application HTML and JavaScript fetched; login form and CAPTCHA were present. No login was attempted."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "Anonymous metadata returned [District, Tehsil, Village]."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/mapLevelCount",
+        "method": "GET",
+        "httpStatus": 200,
+        "result": "Anonymous response returned 0; this did not establish absence of Badaun coverage."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST",
+        "httpStatus": 200,
+        "result": "Safe administrative metadata returned district code 149 बदायूँ and tehsil choices including 00782 बदायूँ. No parcel fields or geometry requested."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST",
+        "httpStatus": 500,
+        "result": "Village-level anonymous request for code 00782 returned a 403 from the upstream internal API; no retry with credentials or bypass was attempted."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 500,
+        "result": "Anonymous Badaun tehsil extent request returned upstream 403; no geometry or CRS response was obtained."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=149",
+    "https://upbhunaksha.gov.in/login/",
+    "https://budaun.nic.in/"
+  ],
+  "registryBasis": "UP Bhulekh and BhuNaksha are first-party Uttar Pradesh land-record/cadastral services, and the official dashboard explicitly reports Badaun district/tehsil digitization and linkage to Bhunaksha. This establishes relevant registry custody but not an open parcel-vector integration.",
+  "source": {
+    "sourceId": "IN-9175-BADAUN-UP-BHUNAKSHA-REVIEW",
+    "name": "Uttar Pradesh official Bhulekh and BhuNaksha cadastral services",
+    "url": "https://upbhunaksha.gov.in/login/",
+    "operator": "Government of Uttar Pradesh / Revenue Council and NIC",
+    "serviceType": "Public cadastral viewer reviewed; anonymous parcel geometry and stable native identity not verified.",
+    "layer": "Parcel",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh public BhuNaksha/land-record system with Badaun district and tehsil administrative entries; official dashboard reports linked and geo-referenced Badaun cadastral coverage.",
+    "verifiedOpenScope": "Anonymous application metadata, Badaun district/tehsil enumeration, and official dashboard coverage counts only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_cadastral_registry_geometry_unverified",
+  "technicalBlocker": "The current public BhuNaksha application exposes a login/CAPTCHA wall. Anonymous village-level and map-extent requests reached upstream 403 responses, so no safe parcel geometry, CRS, or native parcel identity was verified.",
+  "safeFieldAllowlist": ["id", "geometry", "CRS", "source layer/service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The authenticated or UI-mediated BhuNaksha workflow may expose parcel maps or report images for Badaun. No exact-point hit or map extent miss is interpreted as citywide absence.",
+  "nextStep": "Hold runtime integration. A later researcher may inspect a documented anonymous public BhuNaksha route if the service changes, confirming safe schema, CRS, stable native identity, and geometry before retaining a sample.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [28.0325388264251, 79.1297591351741],
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

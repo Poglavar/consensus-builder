@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-11462-jiangyan.json",
+  "cityCode": 11462,
+  "queueRank": 2518,
+  "city": "Jiangyan",
+  "country": "China",
+  "countryCode": "CN",
+  "wupPoint": [32.5059501151603, 120.153584959365],
+  "researchDate": "2026-10-11",
+  "outcome": "official local registration service evidenced; no qualifying anonymous parcel geometry response",
+  "registryFound": true,
+  "custodian": {
+    "name": "Jiangyan District government service platform / Jiangyan District real-estate registration service",
+    "scope": "Integrated real-estate transaction, tax and registration service for Jiangyan District; cadastral spatial coverage not verified",
+    "evidenceUrl": "https://tzjy.jszwfw.gov.cn/col/col165835/index.html"
+  },
+  "queryOutcomes": "Separate English and Chinese discovery queries were executed and recorded in the city record. They found official Jiangyan and Jiangsu registration-service pages and the current configuration route for 姜堰区, but no open parcel viewer/API.",
+  "requestOutcomes": "Five official GET routes were checked. The landing page and local service pages returned HTTP 200; the live configuration returned HTTP 200 and listed Jiangyan District; the configured route returned an HTTP 200 login wall. No login, credentials, CAPTCHA bypass, unsafe fields, private token, or TLS exception was used. No parcel request was made because no qualifying anonymous endpoint was found.",
+  "attemptedRoutes": [
+    "https://www.jiangyan.gov.cn/bsfw/index.html",
+    "https://tzjy.jszwfw.gov.cn/col/col165835/index.html",
+    "https://www.jszwfw.gov.cn/bdczt/bdcindex.html",
+    "https://www.jszwfw.gov.cn/bdczt/json.js",
+    "https://www.jszwfw.gov.cn/jsjis/front/login.do?uuid=hUNXsKOjBXxJ"
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel geometry", "geometry CRS", "source service URL", "retrieval timestamp"],
+  "retainedSamples": [],
+  "scopeLimits": [
+    "No exact-point or bbox parcel query was performed; the login wall and absence of a discovered anonymous endpoint are not evidence of citywide parcel absence.",
+    "The official service pages evidence a local registration service, not public cadastral geometry access.",
+    "No native field schema, geometry CRS, parcel identity, composite-key mapping or parcel geometry was observed."
+  ],
+  "uncertainty": "The current public configuration was inspected and its Jiangyan route is a login wall. A different officially documented public spatial service may exist outside the pages reached in this attempt. The exact WUP coordinate was not shifted to force a hit.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "completion": "complete packet; held from runtime admission"
+}

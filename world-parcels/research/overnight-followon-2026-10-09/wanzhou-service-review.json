@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9080-wanzhou.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Chongqing’s official bureau states that registered-property and cadastral-map records can be queried online through YukuaiBan or service halls under defined access conditions. An earlier official visual-map pilot was limited to Liangjiang New Area, not Wanzhou. The Wanzhou government portal links the general government service platform; no point-based public parcel geometry service for Wanzhou was exposed. No address, title, rights-holder, or owner query was made.",
+  "registryAssessment": "Chongqing land-registration services apply at municipal level, and Wanzhou has a district government-service entry; the explicitly documented visual map pilot was Liangjiang only. No Wanzhou point/bbox parcel coverage is claimed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/",
+      "observation": "Chongqing’s official bureau states that registered-property and cadastral-map records can be queried online through YukuaiBan or service halls under defined access conditions. An earlier official visual-map pilot was limited to Liangjiang New Area, not Wanzhou. The Wanzhou government portal links the general government service platform; no point-based public parcel geometry service for Wanzhou was exposed. No address, title, rights-holder, or owner query was made."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037880.html",
+      "observation": "Chongqing’s official bureau states that registered-property and cadastral-map records can be queried online through YukuaiBan or service halls under defined access conditions. An earlier official visual-map pilot was limited to Liangjiang New Area, not Wanzhou. The Wanzhou government portal links the general government service platform; no point-based public parcel geometry service for Wanzhou was exposed. No address, title, rights-holder, or owner query was made."
+    },
+    {
+      "url": "https://www.wz.gov.cn/",
+      "observation": "Chongqing’s official bureau states that registered-property and cadastral-map records can be queried online through YukuaiBan or service halls under defined access conditions. An earlier official visual-map pilot was limited to Liangjiang New Area, not Wanzhou. The Wanzhou government portal links the general government service platform; no point-based public parcel geometry service for Wanzhou was exposed. No address, title, rights-holder, or owner query was made."
+    },
+    {
+      "url": "https://zwykb.cq.gov.cn/qxzz/wzq/?regncode=500101128",
+      "observation": "Chongqing’s official bureau states that registered-property and cadastral-map records can be queried online through YukuaiBan or service halls under defined access conditions. An earlier official visual-map pilot was limited to Liangjiang New Area, not Wanzhou. The Wanzhou government portal links the general government service platform; no point-based public parcel geometry service for Wanzhou was exposed. No address, title, rights-holder, or owner query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Wanzhou Chongqing China official cadastral parcel map real estate registration GIS",
+      "result": "Chongqing’s official bureau states that registered-property and cadastral-map records can be queried online through YukuaiBan or service halls under defined access conditions. An earlier official visual-map pilot was limited to Liangjiang New Area, not Wanzhou. The Wanzhou government portal links the general government service platform; no point-based public parcel geometry service for Wanzhou was exposed. No address, title, rights-holder, or owner query was made.",
+      "method": "Separate English-language web search followed by first-party page review.",
+      "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "重庆 万州 不动产登记 地籍图 信息 查询 官方 万州区",
+      "result": "Chongqing’s official bureau states that registered-property and cadastral-map records can be queried online through YukuaiBan or service halls under defined access conditions. An earlier official visual-map pilot was limited to Liangjiang New Area, not Wanzhou. The Wanzhou government portal links the general government service platform; no point-based public parcel geometry service for Wanzhou was exposed. No address, title, rights-holder, or owner query was made.",
+      "method": "Separate local-language web search followed by first-party page review.",
+      "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Chongqing land-registration services apply at municipal level, and Wanzhou has a district government-service entry; the explicitly documented visual map pilot was Liangjiang only. No Wanzhou point/bbox parcel coverage is claimed.",
+    "verifiedOpenScope": "No public anonymous WUP-point parcel response or citywide parcel coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/zczxwdk_378544/wdzt/ywyd/202403/t20240314_13037880.html",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://www.wz.gov.cn/",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://zwykb.cq.gov.cn/qxzz/wzq/?regncode=500101128",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    }
+  ],
+  "remainingUncertainty": "The WUP point parcel presence and service coverage in Wanzhou remain unverified; citywide Chongqing registration descriptions do not establish anonymous Wanzhou polygons."
+}

@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9793,
+  "cityId": "wup2025:9793",
+  "name": "Nagpur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    21.1403108339582,
+    79.0798475250127
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 152,
+  "stateOrUT": "Maharashtra",
+  "administrativeIdentity": {
+    "district": "नागपुर जिला",
+    "tehsilOrTaluk": "Nagpur Urban Taluka",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/nagpur.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/nagpur.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Maharashtra village cadastral maps via viewer",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "after redirects: JS redirect to viewer page"
+          },
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "viewer page only"
+          },
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/27/rest/MapInfo/getVillageMapInfo",
+            "httpStatus": 404,
+            "contentType": "text/html",
+            "assessment": "guessed API path does not exist"
+          },
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/27/rest/VillageMapService/ListsVillages?state=27&level=1&codes=",
+            "httpStatus": 404,
+            "contentType": "text/html",
+            "assessment": "guessed API path does not exist"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.nmcnagpur.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+          },
+          {
+            "method": "GET",
+            "url": "https://mrsac.maharashtra.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+          },
+          {
+            "method": "GET",
+            "url": "https://hub.arcgis.com/api/v3/search?q=nagpur+parcel",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "no parcel datasets"
+          }
+        ],
+        "conclusion": "Bhu-Naksha may have undocumented map-server endpoints behind the viewer; NMC and MRSAC hosts were unreachable. State scope would not imply India-wide coverage.",
+        "nextStep": "Inspect the viewer's network calls for a WMS/WFS backing service and test a bounded Nagpur village query; retry NMC/MRSAC."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Marathi",
+        "query": "नागपूर सातबारा जमीन नकाशा भूलेख महाराष्ट्र भूमी अभिलेख",
+        "scope": "WUP 9793 Nagpur cohort label retained; actual query searched Maharashtra urban land records/maps.",
+        "result": "Search surfaced official Maharashtra land-records entry points. The official Mumbai Suburban District services page was opened and describes state urban property cards and digitized property maps; city-specific village/plot geometry was not tested for this WUP center.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Home/Index",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/PropertyCardDownload",
+          "https://bhumiabhilekh.maharashtra.gov.in/EODB",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/View712",
+          "https://uatbhumiabhilekh.mahabhumi.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Home/Resources",
+          "https://mumbaisuburban.gov.in/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://sic.maharashtra.gov.in/site/Downloads/CauseList/22-07-2025%20Notice%20and%20Board.pdf",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS",
+          "https://bhumiabhilekh.maharashtra.gov.in/?q=art+7.12",
+          "https://marathidiary.com/maharashtra-revenue-department-new-website/",
+          "https://www.acbmaharashtra.gov.in/storage/fir/1dGrgac1BMth6o0qJPEAEAqoCuPs8GvEAYTXL7M0.pdf",
+          "https://cdnbbsr.s3waas.gov.in/s324e27b869b66e9e62724bd7725d5d9c1/uploads/2025/09/202509241504691083.pdf",
+          "https://environmentclearance.nic.in/writereaddata/Online/TOR/17_Aug_2021_00005867063737172AA.pdf",
+          "https://charudattasawant.com/wp-content/uploads/2020/12/2.-e0a4b6e0a587e0a4a4e0a49ce0a4aee0a4bfe0a4a8e0a580e0a49ae0a580-e0a4aee0a58be0a49ce0a4a3e0a580-e0a4ace0a4bfe0a4a8e0a4b6e0a587e0a4a4e0a580-na-e0a4b5e0a4bee0a4aae0a4b0-e0a5a8-e0a4b0e0a580-.pdf",
+          "https://des2.mahaonline.gov.in/files/publication/dsa/2023-24/DSA_Nagpur_2023-24.pdf"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Maharashtra Bhumi Abhilekh urban property map",
+        "operator": "Government of Maharashtra, Land Records Department",
+        "homeUrl": "https://www.bhumiabhilekh.maharashtra.gov.in/",
+        "mapUrl": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "observation": "Mumbai Suburban District official services page states urban records are served through property cards and BhuNaksha digitized maps joined to city survey/gat numbers. This is a shared state-service pointer; it does not prove target-city coverage."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=21.1403108339582&lon=79.0798475250127&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Dhantoli, Nagpur, Nagpur Urban Taluka, नागपुर जिला, Maharashtra, 411010, India",
+        "osmType": "way",
+        "osmId": 27238955,
+        "address": {
+          "suburb": "Dhantoli",
+          "city": "Nagpur",
+          "county": "Nagpur Urban Taluka",
+          "state_district": "नागपुर जिला",
+          "state": "Maharashtra",
+          "ISO3166-2-lvl4": "IN-MH",
+          "postcode": "411010",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://mumbaisuburban.gov.in/सेवा-2/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official district page in Marathi links the state map and explains urban property cards and maps linked to city survey/gat numbers."
+      },
+      {
+        "method": "GET",
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "httpStatus": 0,
+        "contentType": "",
+        "assessment": "Web open reported redirect loop; map endpoint itself was not inspected."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+}

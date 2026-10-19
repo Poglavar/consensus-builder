@@ -1,0 +1,397 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded Bursa acceptance for the existing TKGM point adapter. Confirms point-level full polygons and exact-ID stability only; no viewport or citywide completeness claim.",
+  "checkedAt": "2026-10-08T21:08:09Z",
+  "city": "Bursa",
+  "descriptor": {
+    "id": "tr-tkgm-parselsorgu-api",
+    "adapter": "tkgm-point",
+    "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+    "cityIds": [
+      "istanbul"
+    ],
+    "scope": "Point + exact ID; no area enumeration"
+  },
+  "adapterFactory": "backend/parcels/sources.js createParcelSource(descriptor)",
+  "requestSetup": {
+    "fetchTransport": "Node fetch injected into existing adapter with browser-like User-Agent, Turkish Accept-Language and official viewer Referer",
+    "authorization": "No credentials, cookies, bearer token, owner/address/personal fields, or CAPTCHA."
+  },
+  "pointProbeCount": 13,
+  "polygonHitCount": 9,
+  "noHitCount": 4,
+  "errorCount": 0,
+  "points": [
+    {
+      "name": "WUP_locator",
+      "lat": 40.2050411327084,
+      "lon": 29.0470015858534,
+      "outcome": "no_hit",
+      "httpStatus": 404
+    },
+    {
+      "name": "selected_central_locator",
+      "lat": 40.195,
+      "lon": 29.06,
+      "outcome": "no_hit",
+      "httpStatus": 404
+    },
+    {
+      "name": "grid_01",
+      "lat": 40.18,
+      "lon": 29.06,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-166822-5389-16",
+      "nativeId": "166822-5389-16",
+      "geometryType": "Polygon",
+      "geometrySha256": "098cf09b9e8533cf4100f0f0a822ea74296120f0d182659ef6a0bcf8edb4e088",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 14,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    },
+    {
+      "name": "grid_02",
+      "lat": 40.19,
+      "lon": 29.04,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-166782-5495-20",
+      "nativeId": "166782-5495-20",
+      "geometryType": "Polygon",
+      "geometrySha256": "d3cdc95ebe0a44fd25f0d6a7d0513de9e655abb0193d2c6d686786656ea874c0",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 26,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    },
+    {
+      "name": "grid_03",
+      "lat": 40.2,
+      "lon": 29.03,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-124909-4161-17",
+      "nativeId": "124909-4161-17",
+      "geometryType": "Polygon",
+      "geometrySha256": "94ddf98e36e89a42e2a91634b60b7250864e5d62306779c567f21faeb9933066",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 14,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    },
+    {
+      "name": "grid_04",
+      "lat": 40.21,
+      "lon": 29.05,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-134235-1549-13",
+      "nativeId": "134235-1549-13",
+      "geometryType": "Polygon",
+      "geometrySha256": "8aa9ceea114cbce3e6af364854c121eabd05f3f9a513a56a8526413d2bb09a79",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 5,
+      "pointCovered": true,
+      "pointRelation": "boundary"
+    },
+    {
+      "name": "grid_05",
+      "lat": 40.22,
+      "lon": 29.06,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-154570-962-26",
+      "nativeId": "154570-962-26",
+      "geometryType": "Polygon",
+      "geometrySha256": "5aa1457b9dd9f716186b6c0426f2dbe897f1689e3ca7e2f7e3c66cf99796fb69",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 37,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    },
+    {
+      "name": "grid_06",
+      "lat": 40.2,
+      "lon": 29.07,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-136528-1137-20",
+      "nativeId": "136528-1137-20",
+      "geometryType": "Polygon",
+      "geometrySha256": "c8ec8a0b752c81953535a25e7bf762a6e54f9c101e4e0f44f437acdf0584d516",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 7,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    },
+    {
+      "name": "grid_07",
+      "lat": 40.19,
+      "lon": 29.08,
+      "outcome": "no_hit",
+      "httpStatus": 404
+    },
+    {
+      "name": "grid_08",
+      "lat": 40.18,
+      "lon": 29.04,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-166827-101-1",
+      "nativeId": "166827-101-1",
+      "geometryType": "Polygon",
+      "geometrySha256": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45",
+      "closedRings": true,
+      "ringCount": 70,
+      "coordinateCount": 1441,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    },
+    {
+      "name": "grid_09",
+      "lat": 40.21,
+      "lon": 29.08,
+      "outcome": "no_hit",
+      "httpStatus": 404
+    },
+    {
+      "name": "grid_10",
+      "lat": 40.22,
+      "lon": 29.04,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-154713-3313-16",
+      "nativeId": "154713-3313-16",
+      "geometryType": "Polygon",
+      "geometrySha256": "4c2a78f29340c777e484bdc7af7af92a044c4042a09c1136f5b686701d1ab1f8",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 57,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    },
+    {
+      "name": "grid_11",
+      "lat": 40.2,
+      "lon": 29.09,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "TR-TKGM-133927-4053-18",
+      "nativeId": "133927-4053-18",
+      "geometryType": "Polygon",
+      "geometrySha256": "d81886c2ad20e8f7610da4a4febc1de387968c4a6cedb2b0b3dba51509c4342f",
+      "closedRings": true,
+      "ringCount": 1,
+      "coordinateCount": 18,
+      "pointCovered": true,
+      "pointRelation": "interior"
+    }
+  ],
+  "uniqueNativeIdCount": 9,
+  "exactIdResult": {
+    "requestedIdCount": 9,
+    "successfulRequestCount": 9,
+    "returnedCount": 9,
+    "allGeometryHashesMatchPointHits": true,
+    "features": [
+      {
+        "id": "TR-TKGM-124909-4161-17",
+        "nativeId": "124909-4161-17",
+        "geometrySha256": "94ddf98e36e89a42e2a91634b60b7250864e5d62306779c567f21faeb9933066"
+      },
+      {
+        "id": "TR-TKGM-133927-4053-18",
+        "nativeId": "133927-4053-18",
+        "geometrySha256": "d81886c2ad20e8f7610da4a4febc1de387968c4a6cedb2b0b3dba51509c4342f"
+      },
+      {
+        "id": "TR-TKGM-134235-1549-13",
+        "nativeId": "134235-1549-13",
+        "geometrySha256": "8aa9ceea114cbce3e6af364854c121eabd05f3f9a513a56a8526413d2bb09a79"
+      },
+      {
+        "id": "TR-TKGM-136528-1137-20",
+        "nativeId": "136528-1137-20",
+        "geometrySha256": "c8ec8a0b752c81953535a25e7bf762a6e54f9c101e4e0f44f437acdf0584d516"
+      },
+      {
+        "id": "TR-TKGM-154570-962-26",
+        "nativeId": "154570-962-26",
+        "geometrySha256": "5aa1457b9dd9f716186b6c0426f2dbe897f1689e3ca7e2f7e3c66cf99796fb69"
+      },
+      {
+        "id": "TR-TKGM-154713-3313-16",
+        "nativeId": "154713-3313-16",
+        "geometrySha256": "4c2a78f29340c777e484bdc7af7af92a044c4042a09c1136f5b686701d1ab1f8"
+      },
+      {
+        "id": "TR-TKGM-166782-5495-20",
+        "nativeId": "166782-5495-20",
+        "geometrySha256": "d3cdc95ebe0a44fd25f0d6a7d0513de9e655abb0193d2c6d686786656ea874c0"
+      },
+      {
+        "id": "TR-TKGM-166822-5389-16",
+        "nativeId": "166822-5389-16",
+        "geometrySha256": "098cf09b9e8533cf4100f0f0a822ea74296120f0d182659ef6a0bcf8edb4e088"
+      },
+      {
+        "id": "TR-TKGM-166827-101-1",
+        "nativeId": "166827-101-1",
+        "geometrySha256": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45"
+      }
+    ],
+    "failure": null
+  },
+  "structuredAbsent": {
+    "type": "FeatureCollection",
+    "features": [],
+    "complete": true,
+    "queryType": "ids",
+    "sourceId": "tr-tkgm-parselsorgu-api",
+    "returnsWGS84": true,
+    "absentIds": [
+      "TR-TKGM-166822-999999-999999"
+    ]
+  },
+  "unsupportedAreaChecks": [
+    {
+      "method": "queryBounds",
+      "status": 422,
+      "code": "parcel-source-area-unsupported"
+    },
+    {
+      "method": "queryGeometry",
+      "status": 422,
+      "code": "parcel-source-area-unsupported"
+    }
+  ],
+  "unsupportedAreaCallsMadeNetworkRequest": false,
+  "networkRequestCount": 23,
+  "requests": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2050411327084/29.0470015858534",
+      "status": 404,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.195/29.06",
+      "status": 404,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.18/29.06",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.19/29.04",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2/29.03",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.21/29.05",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.22/29.06",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2/29.07",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.19/29.08",
+      "status": 404,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.18/29.04",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.21/29.08",
+      "status": 404,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.22/29.04",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2/29.09",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/124909/4161/17",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/133927/4053/18",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/134235/1549/13",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/136528/1137/20",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/154570/962/26",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/154713/3313/16",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/166782/5495/20",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/166822/5389/16",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/166827/101/1",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/166822/999999/999999",
+      "status": 404,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ],
+  "temporaryGeometryFile": "/private/tmp/overnight-cities-2026-10-08/bursa-wgs84.geojson",
+  "geometryRetention": "Temporary full features are outside the repository; repository retains at most the three previously selected safe sample polygons."
+}

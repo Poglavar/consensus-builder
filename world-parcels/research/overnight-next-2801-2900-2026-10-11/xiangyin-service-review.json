@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-10520-xiangyin.json",
+  "cityCode": 10520,
+  "queueRank": 2900,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Xiangyin County Natural Resources Bureau and Xiangyin County Real Estate Registration Center are evidenced by official Xiangyin government pages; this is local custodian/procedure evidence, not open parcel-service evidence.",
+  "publicMapLead": "Hunan provincial real-estate-registration one-window platform and Tianditu were checked as public-map/service leads; no anonymous Xiangyin parcel-vector endpoint was qualified.",
+  "queryOutcomes": "Separate English and Chinese discovery queries were performed and recorded in the city record. Official local pages establish cadastral/registration responsibilities and an authenticated certificate-number inquiry workflow. No safe public parcel ID-plus-geometry service was found.",
+  "requestOutcomes": "Xiangyin official pages returned 200. The Hunan portal request timed out after 12 seconds. Tianditu returned HTTP 418. No TLS verification disablement, login, credential, private token, CAPTCHA/Cloudflare bypass, or unsafe field request was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [28.6825214009469, 112.883890481222] was preserved and not moved to force a hit.", "No exact-point hit or miss was inferred.", "No parcel polygon or raw source-specific attribute set is retained.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Independent serial review is required before adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No anonymous public parcel ID-plus-geometry response, schema, CRS, native identity semantics, or citywide open coverage was qualified."},
+  "uncertainty": "The Xiangyin local custodian and registration workflow are evidenced by official government pages, while the public service routes inspected did not expose safe parcel geometry. This is not evidence of citywide absence."
+}

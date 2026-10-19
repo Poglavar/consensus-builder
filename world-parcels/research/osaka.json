@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1853909",
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "jp-moj-geospatial-2026",
+    "requestUrl": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "binary/octet-stream",
+    "contentLengthBytes": 2051653,
+    "spatialTestAreaLonLat": [135.49, 34.66, 135.55, 34.7],
+    "parcelRecordCount": 2487,
+    "recordListPath": "features",
+    "geometryType": "GeoJSON Polygon",
+    "crs": "OGC:CRS84",
+    "firstParcelCoordinateLonLat": [135.532507321, 34.677750586],
+    "closedRingsInSavedPreview": true,
+    "responseFile": "osaka-chuo-2026-response-preview.json",
+    "responseFileNote": "Privacy-safe first-three-feature preview with only parcel ID, ward code, and lot number; complete 2 MB reply was inspected in a temporary file."
+  },
+  "portalsFound": [
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128", "observation": "Geospatial Information Center catalog lists Osaka Chuo ward 2022–2026 converted GeoJSON and SHP releases under CC BY. The 2026 resource points to the tested object-storage URL."},
+    {"url": "https://front.geospatial.jp/moj-chizu-xml-readme/moj-chizu-shp-download/", "observation": "Publisher says conversion includes only sheets carrying public coordinates and may include CRS errors. Its Osaka municipality list is not every ward; publication is not proof of complete Osaka or Japan coverage."},
+    {"url": "https://www.digital.go.jp/news/4b7250a3-3fcf-4b83-8d52-4bb131e1ba9d", "observation": "Japan Digital Agency describes MOJ registry-map XML as open data and provides a converter to GeoJSON."}
+  ],
+  "requests": [
+    {"url": "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-27128", "method": "GET", "httpStatus": 200, "catalogSuccess": true, "resourcesInclude2026GeoJSON": true},
+    {"url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/27/aigid-moj-27128/27128_%E5%A4%A7%E9%98%AA%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%996%E7%B3%BB_%E7%AD%86R_2026.geojson", "method": "HEAD", "httpStatus": 200, "contentLengthBytes": 2051653}
+  ],
+  "coverageAssessment": {"claimedScope": "MOJ releases across Japanese municipalities; this converted object is Osaka Chuo ward and public-coordinate features only", "verifiedOpenScope": "2,487 polygons in Osaka Chuo ward, first three checked near city center", "countrywideVerified": false},
+  "remainingUncertainty": "Conversion is known to omit sheets without public coordinates and may misplace some geometries. The tested ward sample does not prove complete Osaka coverage, much less Japan-wide cadastral coverage.",
+  "nextStep": "Enumerate all Osaka ward packages, test a second ward, validate source CRS and geographic bounds, and model per-ward gaps before runtime loading."
+}

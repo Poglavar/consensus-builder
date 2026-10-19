@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-2973-thanh-ho.json",
+  "cityCode": 2973,
+  "queueRank": 2145,
+  "city": "Thanh Hoá",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localOrScopedEvidence": "The official Thanh Hóa provincial public-service portal is reachable, and the official national service record identifies the provincial land-data procedure and Thanh Hóa receiving unit. This is local/provincial registry-custodian evidence, not merely general national agency prose.",
+    "generalAgencyEvidence": "Official Thanh Hóa reporting states that the province is building and cleaning a land database and cadastral-map records, but those reports do not expose a public parcel feature service."
+  },
+  "discovery": {
+    "englishQuery": "Thanh Hoa Vietnam official cadastral parcel map land database GIS",
+    "nativeQuery": "Thanh Hóa bản đồ địa chính thửa đất cổng thông tin chính thức",
+    "urls": [
+      "https://thanhhoa.gov.vn/",
+      "https://dichvucong.thanhhoa.gov.vn/",
+      "https://dichvucong.gov.vn/p/home/dvc-thu-tuc-hanh-chinh-chi-tiet.html?ma_thu_tuc=216878",
+      "https://conganthanhhoa.gov.vn/de-an-06/thanh-hoa-xay-dung-co-so-du-lieu-dat-dai-nen-tang-quan-trong-cho-phat-trien-ben-vung.html",
+      "https://vbpl.vn/thanhhoa/Pages/ivbpq-toanvan.aspx?ItemID=188002"
+    ]
+  },
+  "requests": [
+    {"method":"GET","url":"https://thanhhoa.gov.vn/","outcome":"HTTP 200; official provincial portal loaded. Land-related links and the provincial public-service portal were visible; no parcel map/API endpoint was exposed in the inspected HTML."},
+    {"method":"GET","url":"https://dichvucong.thanhhoa.gov.vn/","outcome":"HTTP 200; official provincial e-service portal loaded. No anonymous parcel geometry endpoint was exposed in the inspected landing page."},
+    {"method":"GET","url":"https://dichvucong.gov.vn/p/home/dvc-thu-tuc-hanh-chinh-chi-tiet.html?ma_thu_tuc=216878","outcome":"Search result identified the official national service record for provincial land-data provision naming Thanh Hóa's receiving unit and online address; direct curl later timed out, so this is search evidence, not a separately parsed live response."},
+    {"method":"GET","url":"https://thanhhoacity.gov.vn/vn/Pages/home.aspx","outcome":"DNS resolution failed; route unchecked. This failure is not evidence of registry absence."},
+    {"method":"GET","url":"https://thongtin.diagioi.gov.vn/trangchu.aspx","outcome":"Connection/DNS timeout; administrative-boundary system route unchecked and not treated as parcel evidence."},
+    {"method":"SEARCH","url":"https://cali.gdla.gov.vn/TrangChu.aspx","outcome":"Official national land-data center result identified VILIS land-information functionality, but no Thanh Hóa anonymous parcel viewer or feature service was found."},
+    {"method":"SEARCH","url":"https://dt-authen.mplis.gov.vn/","outcome":"Result is an authenticated/restricted national LIS portal. No login attempted; no private or credentialed route used."}
+  ],
+  "responseEvidence": {
+    "geometry": "No bounded anonymous parcel ID+geometry response was obtained. No CRS, parcel schema, native identity, or source-specific field mapping can be claimed.",
+    "nativeFieldsObserved": [],
+    "safeFieldAllowlist": ["stable native parcel identity if later obtained from an official public response", "geometry", "source URL", "CRS and request provenance"],
+    "unsafeFieldsExcluded": ["owner names", "addresses", "contact details", "titleholder information", "tax/account data", "khatian or certificate contents", "personal identifiers"]
+  },
+  "sample": {
+    "retained": false,
+    "reason": "No sample GeoJSON retained: no public parcel polygon response was obtained. A zero exact-point hit, unavailable viewer, timeout, or login wall would not establish citywide absence.",
+    "exactPointHit": "not tested against parcel polygons; no coordinate shift performed"
+  },
+  "scopeLimits": [
+    "Registry existence is evidenced at provincial level; city-specific parcel coverage is unverified.",
+    "The official procedure may require a formal data request, fee, or non-anonymous access; no such request was submitted.",
+    "The national VNLIS/VILIS references establish systems and administration, not an open geometry API.",
+    "No credentials, private tokens, login, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS certificate exception was used.",
+    "This packet is research evidence only and is not source integration or adapter admission."
+  ],
+  "runtimeReadiness": "held-pending-independent-serial-reviewer",
+  "uncertainty": "Thanh Hóa clearly has provincial land-data/cadastral administration and a public procedure for obtaining land data, but the checked public routes did not expose an anonymous map/API with safe parcel IDs and geometries. Coverage, service schema, CRS, and exact-point availability remain unknown."
+}

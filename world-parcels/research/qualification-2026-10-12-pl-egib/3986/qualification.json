@@ -1,0 +1,1446 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "3986",
+  "cityName": "Łomża",
+  "sourceId": "pl-gugik-egib-wfs",
+  "candidateSha256": "a14758a5e760f0c9c5871a2fcf2936708adc4dc72a69e039d208d0a92de5b893",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 100,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 100,
+      "collectedUniqueCount": 100
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 308
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 5,
+      "distinctFeatureQueries": 5,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "6f7235606c3b1ee24e5934eb8f800f061e4fa1ec6959289e70f3c030f776b6ff",
+      "featureCount": 100,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32634",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "6f7235606c3b1ee24e5934eb8f800f061e4fa1ec6959289e70f3c030f776b6ff",
+  "featureCount": 100,
+  "sampleIds": [
+    "PL-EGIB-206201_1.0002.22893/17"
+  ],
+  "cellSizeDegrees": 0.001,
+  "densityProbe": [
+    {
+      "cellSizeDegrees": 0.001,
+      "footprintBbox": [
+        22.062,
+        53.169,
+        22.067,
+        53.174
+      ],
+      "footprintFeatures": 146,
+      "perIdCost": 1
+    }
+  ],
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        22.063,
+        53.17,
+        22.064,
+        53.171
+      ],
+      "complete": true,
+      "featureCount": 8,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/17",
+        "PL-EGIB-206201_1.0002.22893/18",
+        "PL-EGIB-206201_1.0002.22893/31",
+        "PL-EGIB-206201_1.0002.22893/32",
+        "PL-EGIB-206201_1.0002.22893/36",
+        "PL-EGIB-206201_1.0002.22898/4",
+        "PL-EGIB-206201_1.0002.22900/5",
+        "PL-EGIB-206201_1.0002.22900/6"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        22.064,
+        53.17,
+        22.065,
+        53.171
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/17",
+        "PL-EGIB-206201_1.0002.22893/18",
+        "PL-EGIB-206201_1.0002.22893/31",
+        "PL-EGIB-206201_1.0002.22893/32",
+        "PL-EGIB-206201_1.0002.22898/15",
+        "PL-EGIB-206201_1.0002.22898/16",
+        "PL-EGIB-206201_1.0002.22898/4",
+        "PL-EGIB-206201_1.0002.22898/6",
+        "PL-EGIB-206201_1.0002.22898/8",
+        "PL-EGIB-206201_1.0002.22898/9",
+        "PL-EGIB-206201_1.0002.22900/6",
+        "PL-EGIB-206201_1.0002.23776"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        22.065,
+        53.17,
+        22.066,
+        53.171
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "PL-EGIB-206201_1.0001.10428/28",
+        "PL-EGIB-206201_1.0001.11206",
+        "PL-EGIB-206201_1.0001.11207",
+        "PL-EGIB-206201_1.0001.11208",
+        "PL-EGIB-206201_1.0001.11212/3",
+        "PL-EGIB-206201_1.0002.22898/15",
+        "PL-EGIB-206201_1.0002.22898/16",
+        "PL-EGIB-206201_1.0002.22898/17",
+        "PL-EGIB-206201_1.0002.22898/3",
+        "PL-EGIB-206201_1.0002.22898/4",
+        "PL-EGIB-206201_1.0002.22898/6",
+        "PL-EGIB-206201_1.0002.22898/7",
+        "PL-EGIB-206201_1.0002.22898/8",
+        "PL-EGIB-206201_1.0002.22899/5",
+        "PL-EGIB-206201_1.0002.23776"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        22.063,
+        53.171,
+        22.064,
+        53.172
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/17",
+        "PL-EGIB-206201_1.0002.22893/36"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        22.064,
+        53.171,
+        22.065,
+        53.172
+      ],
+      "complete": true,
+      "featureCount": 5,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/17",
+        "PL-EGIB-206201_1.0002.22893/36",
+        "PL-EGIB-206201_1.0002.22893/43",
+        "PL-EGIB-206201_1.0002.22898/12",
+        "PL-EGIB-206201_1.0002.23776"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        22.065,
+        53.171,
+        22.066,
+        53.172
+      ],
+      "complete": true,
+      "featureCount": 19,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/17",
+        "PL-EGIB-206201_1.0002.22893/42",
+        "PL-EGIB-206201_1.0002.22893/43",
+        "PL-EGIB-206201_1.0002.22894/48",
+        "PL-EGIB-206201_1.0002.22895/1",
+        "PL-EGIB-206201_1.0002.22895/2",
+        "PL-EGIB-206201_1.0002.22896/1",
+        "PL-EGIB-206201_1.0002.22897",
+        "PL-EGIB-206201_1.0002.22898/1",
+        "PL-EGIB-206201_1.0002.22898/12",
+        "PL-EGIB-206201_1.0002.22898/13",
+        "PL-EGIB-206201_1.0002.22898/14",
+        "PL-EGIB-206201_1.0002.22898/15",
+        "PL-EGIB-206201_1.0002.22898/7",
+        "PL-EGIB-206201_1.0002.22899/4",
+        "PL-EGIB-206201_1.0002.22899/5",
+        "PL-EGIB-206201_1.0002.22899/7",
+        "PL-EGIB-206201_1.0002.22899/8",
+        "PL-EGIB-206201_1.0002.23776"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        22.063,
+        53.172,
+        22.064,
+        53.173
+      ],
+      "complete": true,
+      "featureCount": 4,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/36",
+        "PL-EGIB-206201_1.0002.22893/47",
+        "PL-EGIB-206201_1.0002.22893/48",
+        "PL-EGIB-206201_1.0002.22893/50"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        22.064,
+        53.172,
+        22.065,
+        53.173
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/36",
+        "PL-EGIB-206201_1.0002.22893/41",
+        "PL-EGIB-206201_1.0002.22893/42",
+        "PL-EGIB-206201_1.0002.22893/43",
+        "PL-EGIB-206201_1.0002.22893/50",
+        "PL-EGIB-206201_1.0002.22893/51"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        22.065,
+        53.172,
+        22.066,
+        53.173
+      ],
+      "complete": true,
+      "featureCount": 12,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/1",
+        "PL-EGIB-206201_1.0002.22893/16",
+        "PL-EGIB-206201_1.0002.22893/41",
+        "PL-EGIB-206201_1.0002.22893/42",
+        "PL-EGIB-206201_1.0002.22893/43",
+        "PL-EGIB-206201_1.0002.22893/51",
+        "PL-EGIB-206201_1.0002.22894/44",
+        "PL-EGIB-206201_1.0002.22894/47",
+        "PL-EGIB-206201_1.0002.22894/48",
+        "PL-EGIB-206201_1.0002.22895/1",
+        "PL-EGIB-206201_1.0002.22895/2",
+        "PL-EGIB-206201_1.0002.22896/1"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        22.064,
+        53.169,
+        22.065,
+        53.17
+      ],
+      "complete": true,
+      "featureCount": 15,
+      "ids": [
+        "PL-EGIB-206201_1.0001.10428/28",
+        "PL-EGIB-206201_1.0001.10504/1",
+        "PL-EGIB-206201_1.0001.10504/2",
+        "PL-EGIB-206201_1.0001.12125",
+        "PL-EGIB-206201_1.0001.12126",
+        "PL-EGIB-206201_1.0001.12127",
+        "PL-EGIB-206201_1.0001.12128",
+        "PL-EGIB-206201_1.0002.22898/4",
+        "PL-EGIB-206201_1.0002.22900/2",
+        "PL-EGIB-206201_1.0002.22900/3",
+        "PL-EGIB-206201_1.0002.22900/5",
+        "PL-EGIB-206201_1.0002.22900/6",
+        "PL-EGIB-206201_1.0002.22900/7",
+        "PL-EGIB-206201_1.0002.22900/8",
+        "PL-EGIB-206201_1.0002.22901/1"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        22.064,
+        53.173,
+        22.065,
+        53.174
+      ],
+      "complete": true,
+      "featureCount": 3,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/48",
+        "PL-EGIB-206201_1.0002.22893/50",
+        "PL-EGIB-206201_1.0002.22893/51"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        22.062,
+        53.171,
+        22.063,
+        53.172
+      ],
+      "complete": true,
+      "featureCount": 6,
+      "ids": [
+        "PL-EGIB-206201_1.0002.22893/26",
+        "PL-EGIB-206201_1.0002.22893/28",
+        "PL-EGIB-206201_1.0002.22893/36",
+        "PL-EGIB-206201_1.0002.22893/44",
+        "PL-EGIB-206201_1.0002.22893/45",
+        "PL-EGIB-206201_1.0002.22893/47"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        22.066,
+        53.171,
+        22.067,
+        53.172
+      ],
+      "complete": true,
+      "featureCount": 47,
+      "ids": [
+        "PL-EGIB-206201_1.0001.10428/10",
+        "PL-EGIB-206201_1.0001.10428/28",
+        "PL-EGIB-206201_1.0001.10428/29",
+        "PL-EGIB-206201_1.0001.10428/30",
+        "PL-EGIB-206201_1.0001.10428/31",
+        "PL-EGIB-206201_1.0001.10428/32",
+        "PL-EGIB-206201_1.0001.10428/33",
+        "PL-EGIB-206201_1.0001.10428/7",
+        "PL-EGIB-206201_1.0001.10428/8",
+        "PL-EGIB-206201_1.0001.10428/9",
+        "PL-EGIB-206201_1.0001.11199",
+        "PL-EGIB-206201_1.0001.11200",
+        "PL-EGIB-206201_1.0001.11201",
+        "PL-EGIB-206201_1.0001.12572/2",
+        "PL-EGIB-206201_1.0002.22894/26",
+        "PL-EGIB-206201_1.0002.22894/27",
+        "PL-EGIB-206201_1.0002.22894/28",
+        "PL-EGIB-206201_1.0002.22894/29",
+        "PL-EGIB-206201_1.0002.22894/3",
+        "PL-EGIB-206201_1.0002.22894/30",
+        "PL-EGIB-206201_1.0002.22894/31",
+        "PL-EGIB-206201_1.0002.22894/32",
+        "PL-EGIB-206201_1.0002.22894/33",
+        "PL-EGIB-206201_1.0002.22894/34",
+        "PL-EGIB-206201_1.0002.22894/35",
+        "PL-EGIB-206201_1.0002.22894/36",
+        "PL-EGIB-206201_1.0002.22894/37",
+        "PL-EGIB-206201_1.0002.22894/38",
+        "PL-EGIB-206201_1.0002.22894/39",
+        "PL-EGIB-206201_1.0002.22894/4",
+        "PL-EGIB-206201_1.0002.22894/40",
+        "PL-EGIB-206201_1.0002.22894/42",
+        "PL-EGIB-206201_1.0002.22894/48",
+        "PL-EGIB-206201_1.0002.22894/5",
+        "PL-EGIB-206201_1.0002.22894/6",
+        "PL-EGIB-206201_1.0002.22894/7",
+        "PL-EGIB-206201_1.0002.22894/8",
+        "PL-EGIB-206201_1.0002.22894/9",
+        "PL-EGIB-206201_1.0002.22896/1",
+        "PL-EGIB-206201_1.0002.22896/2",
+        "PL-EGIB-206201_1.0002.22898/1",
+        "PL-EGIB-206201_1.0002.22899/2",
+        "PL-EGIB-206201_1.0002.22899/3",
+        "PL-EGIB-206201_1.0002.22899/4",
+        "PL-EGIB-206201_1.0002.22899/5",
+        "PL-EGIB-206201_1.0002.22899/7",
+        "PL-EGIB-206201_1.0002.22899/8"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 57,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:41.774Z",
+      "queryHash": "ea8aa06ffec72c6239956fa0053a10e432b22a32b85719dbb12de25222ef76ba",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1898
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:43.691Z",
+      "queryHash": "ea8aa06ffec72c6239956fa0053a10e432b22a32b85719dbb12de25222ef76ba",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1299
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:44.993Z",
+      "queryHash": "06f61fe18f4db79c524f37814433aa3dc69cb9e73f26a77f754538a4bb1c2b04",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1402
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:46.397Z",
+      "queryHash": "9896e2bbdf22fb99cb79689495f5d880f68b3500fbbfb117ed884da5fde07c53",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 765
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:47.163Z",
+      "queryHash": "9896e2bbdf22fb99cb79689495f5d880f68b3500fbbfb117ed884da5fde07c53",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1035
+    },
+    {
+      "stage": "density-probe",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:48.203Z",
+      "queryHash": "bf16a24b6a1aef388e6e807fde0eaf537b0a5534d10337dc873d85c4f4be22a4",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2310
+    },
+    {
+      "stage": "density-probe",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:50.563Z",
+      "queryHash": "5da0ec09494b4175e84fc88c31b7528f52c3035fba5a368fcf730f7d9795139a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1439
+    },
+    {
+      "stage": "density-probe",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:52.004Z",
+      "queryHash": "08d3c417b07d8d393eb7766e7d0a66907248fb912bca1ad6e48aa704e2c26655",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 79,
+      "offsetParam": "startIndex",
+      "offset": 100,
+      "httpStatus": 200,
+      "elapsedMs": 1278
+    },
+    {
+      "stage": "density-probe",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:53.306Z",
+      "queryHash": "5da0ec09494b4175e84fc88c31b7528f52c3035fba5a368fcf730f7d9795139a",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1719
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:55.043Z",
+      "queryHash": "b815710a7803e30e932a99c92d506b4b786d6bfbf081f4d528a8be50c9dbd9c4",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2107
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:57.158Z",
+      "queryHash": "ca29d771a225943275421eb24da5be2685241059fc2b4cc93c0c46a206cf30e3",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1722
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:20:58.886Z",
+      "queryHash": "81af3ca469b765f1a7d57fbfb9e47d83789321c8765234df2f68f87325a12a47",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1376
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:00.274Z",
+      "queryHash": "de370ada1bdc3fca35027bf2b1f4ab05aacd5cd03615dbe387b9729dc3e52c76",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1638
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:01.914Z",
+      "queryHash": "e0bd96b5ded051586114f1978d81a967e65ae25a2fc9e2143cd0e823f1c5936a",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1840
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:03.758Z",
+      "queryHash": "9b5cfe09223367138de6c443df70e90ff4a6879b7d1644d3a8e7e821c573d5b1",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1910
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:05.677Z",
+      "queryHash": "17718f543e44c3034bd6618daeb289deee3388505fa5e9eeea5e690875b32383",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1880
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:07.565Z",
+      "queryHash": "dd4b0548c7c8f1b89b61f5056db7103947d47362b38b5950a6176c3589ed19eb",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2073
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:09.641Z",
+      "queryHash": "ef219212ec667258f210f62f6131b1bd354177b738bdd7d4e61c9093bd8ac154",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1788
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:11.432Z",
+      "queryHash": "4cf9d5761529494af68e2afbd3664ec0f47ef0f1a77fcbfb8d4892359c7eb1e1",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1916
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:13.353Z",
+      "queryHash": "34c4079e93e22dd1c2a3f9d0a8edccbadeda32a2825ea014f1a1308e4a4cd012",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2620
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:15.975Z",
+      "queryHash": "48b406debf415c26bd870d6c324e94af0f700f3a45c15c9a3d142e8a989a9e64",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2037
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:18.015Z",
+      "queryHash": "b2eb59416690ee7e7c5a0b6d4d9946127fa8ae8152bde063611ea9ad897f70ed",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 998
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:19.025Z",
+      "queryHash": "b815710a7803e30e932a99c92d506b4b786d6bfbf081f4d528a8be50c9dbd9c4",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1490
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:20.519Z",
+      "queryHash": "ca29d771a225943275421eb24da5be2685241059fc2b4cc93c0c46a206cf30e3",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1636
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:22.158Z",
+      "queryHash": "81af3ca469b765f1a7d57fbfb9e47d83789321c8765234df2f68f87325a12a47",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1467
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:23.630Z",
+      "queryHash": "de370ada1bdc3fca35027bf2b1f4ab05aacd5cd03615dbe387b9729dc3e52c76",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1696
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:25.328Z",
+      "queryHash": "e0bd96b5ded051586114f1978d81a967e65ae25a2fc9e2143cd0e823f1c5936a",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2271
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:27.602Z",
+      "queryHash": "9b5cfe09223367138de6c443df70e90ff4a6879b7d1644d3a8e7e821c573d5b1",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1070
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:28.676Z",
+      "queryHash": "17718f543e44c3034bd6618daeb289deee3388505fa5e9eeea5e690875b32383",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1325
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:30.004Z",
+      "queryHash": "dd4b0548c7c8f1b89b61f5056db7103947d47362b38b5950a6176c3589ed19eb",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2283
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:32.289Z",
+      "queryHash": "ef219212ec667258f210f62f6131b1bd354177b738bdd7d4e61c9093bd8ac154",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1569
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:33.863Z",
+      "queryHash": "4cf9d5761529494af68e2afbd3664ec0f47ef0f1a77fcbfb8d4892359c7eb1e1",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 923
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:34.791Z",
+      "queryHash": "34c4079e93e22dd1c2a3f9d0a8edccbadeda32a2825ea014f1a1308e4a4cd012",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1580
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:36.374Z",
+      "queryHash": "48b406debf415c26bd870d6c324e94af0f700f3a45c15c9a3d142e8a989a9e64",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1930
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:38.307Z",
+      "queryHash": "b2eb59416690ee7e7c5a0b6d4d9946127fa8ae8152bde063611ea9ad897f70ed",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2012
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:40.329Z",
+      "queryHash": "372d5cf121eeb1245ffc1156ed85e7611d0b8e5ae14fb6f40b4d4499dbeef73e",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1782
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:42.113Z",
+      "queryHash": "ac62aae615cd15f2e9f8a08c9563f3fb5ae0254c72f04a24c5b3cfe84c6df521",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1314
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:43.428Z",
+      "queryHash": "7e24a49729197e1306867e18b9aee6b5e1a5814677d1416bc4150bf090ddd844",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1397
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:44.827Z",
+      "queryHash": "865d832571f0d35dbc9f91a4f035bcaf7786b4ee22cd01efe66f57042cab2ae0",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 2,
+      "httpStatus": 200,
+      "elapsedMs": 1216
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:46.045Z",
+      "queryHash": "50d9446184bdac9d97d1f24ca172d91f284cef8828a51c993bf14bb04076cadf",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 3,
+      "httpStatus": 200,
+      "elapsedMs": 1630
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:47.677Z",
+      "queryHash": "b963d3b623480c7d1dbe7b1dba89dc269ab7c96ba46e9386369aa66f9d816f16",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 1,
+      "offsetParam": "startIndex",
+      "offset": 4,
+      "httpStatus": 200,
+      "elapsedMs": 1966
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:49.644Z",
+      "queryHash": "ac62aae615cd15f2e9f8a08c9563f3fb5ae0254c72f04a24c5b3cfe84c6df521",
+      "safeParamNames": [
+        "filter"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1788
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:51.435Z",
+      "queryHash": "ea8aa06ffec72c6239956fa0053a10e432b22a32b85719dbb12de25222ef76ba",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1407
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:52.845Z",
+      "queryHash": "59cb17d113584bd3dec3deb8cec937b62ecd694ff77dc7f1e01906152604f06d",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1924
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:54.826Z",
+      "queryHash": "4f74310a241e6a6b3dd4e4d082f257c760b4cff7c3d7b1972355b7684e05e362",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 2109
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:56.937Z",
+      "queryHash": "2ecb7b55bca46227c8402c13c0a70113b49ddcf692997c7c610aee7ee1e9b64d",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1223
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:58.161Z",
+      "queryHash": "ef9aeaa10349bdb90160171394de80211dcdccbc1962a0fb264c533a40337041",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1334
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:21:59.499Z",
+      "queryHash": "afb410dc19925b8ab076f5a5cf88788c0a2e5ba14d6ee960f2d8c15911b83bcf",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1590
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:01.091Z",
+      "queryHash": "43df0ce28c7b36cdce04ebf11297a9ff986eb6258f7e81ba6d49b2efe3b1555f",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1879
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:02.974Z",
+      "queryHash": "45d3a099669c5b249828abe05a97460ffb4eb6c882286730353946300d0c8593",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1650
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:04.625Z",
+      "queryHash": "0055a555dc1dc5fc2a4e218e9099edec93704249239713f4f9cb9b0eb7896a3d",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1570
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:06.196Z",
+      "queryHash": "354997de3181a6e2d752d57ea01faa242e536ae8ea789aa796f1d879303c7917",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1926
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:08.125Z",
+      "queryHash": "22f78dec8a74e0cae728e7007b36b220c547d6b0048335609c35d9814fbea6ce",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1371
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:09.498Z",
+      "queryHash": "adc321aae2a9c484fee5ba5f43d68bbea2cfe0a6cd0329e3e63e88e6f9b5dc3a",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1366
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:10.867Z",
+      "queryHash": "1df0a0e18d8df0a8487e4470f660936d803bb2c62bf4b32a5c686132ea4f3a1d",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1688
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:12.558Z",
+      "queryHash": "16c3e5b9248b6ec3b7c7309f063564bf3f8a8781fdee3aa44840ff582a74fd8a",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1713
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "mapy.geoportal.gov.pl",
+      "method": "GET",
+      "startedAt": "2026-10-12T18:22:14.273Z",
+      "queryHash": "09acbeff49064f91b70b1c7867336945ec0fed874803242f53d4d2957c209d76",
+      "safeParamNames": [
+        "count",
+        "filter",
+        "startIndex"
+      ],
+      "pageLimitParam": "count",
+      "pageLimit": 100,
+      "offsetParam": "startIndex",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1566
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

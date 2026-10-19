@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9976-siping.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint.",
+  "registryAssessment": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.jl.gov.cn/szfzt/gzlfz/gzdt/202510/t20251022_3506094.html",
+      "operator": "Jilin Provincial Government",
+      "observation": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "四平市 不动产登记 地籍图 不动产登记中心 自然资源局 官方 地图",
+      "result": "Search results did not establish Siping-specific cadastral custody or a local official public parcel map.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": []
+    },
+    {
+      "language": "English",
+      "query": "Siping City China official cadastral map parcel real estate registration public GIS",
+      "result": "Search results did not establish Siping-specific cadastral custody or a local official public parcel map.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": []
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel polygon or citywide coverage verified; local custodial responsibility has the scope recorded in registryBasis.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Jilin provincial government describes Siping Natural Resources Bureau and city real-estate registration services, including joint mortgage/registration workflows. This establishes local registration responsibility, not an anonymous parcel geometry endpoint.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

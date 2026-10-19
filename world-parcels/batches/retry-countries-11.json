@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "MR",
+  "name": "Mauritania",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MR.json"
+ },
+ {
+  "kind": "country",
+  "key": "MT",
+  "name": "Malta",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MT.json"
+ },
+ {
+  "kind": "country",
+  "key": "MU",
+  "name": "Mauritius",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MU.json"
+ },
+ {
+  "kind": "country",
+  "key": "MV",
+  "name": "Maldives",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MV.json"
+ },
+ {
+  "kind": "country",
+  "key": "MW",
+  "name": "Malawi",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MW.json"
+ },
+ {
+  "kind": "country",
+  "key": "MX",
+  "name": "Mexico",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MX.json"
+ },
+ {
+  "kind": "country",
+  "key": "MY",
+  "name": "Malaysia",
+  "previousStatus": "national_cadastre_credentialed_or_paid",
+  "evidenceFile": "research/countries/MY.json"
+ },
+ {
+  "kind": "country",
+  "key": "MZ",
+  "name": "Mozambique",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/MZ.json"
+ }
+]

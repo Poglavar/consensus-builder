@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "KG",
+ "country": "Kyrgyzstan",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "State Registration Service under the Cabinet of Ministers (Gosregister); cadastre agency 'Gosregistr' / Kyrgyz ZKI system",
+ "portalsFound": [
+  {
+   "url": "https://gis.kg/",
+   "observation": "Reachable but a private geology consultancy, not a cadastre."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.gosreg.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://cadastre.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://srs.gov.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://aisgzk.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://gis.kg/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "unrelated private company site"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No official host reachable; existence of an online parcel service unknown.",
+ "nextStep": "Try official State Registration Service and geoportal hosts from another network."
+}

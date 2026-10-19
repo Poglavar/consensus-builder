@@ -1,0 +1,148 @@
+{
+  "name": "Adama",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "rank": 937,
+  "point": [
+    8.54130493885564,
+    39.2731731762384
+  ],
+  "population2025": 584854,
+  "population2025k": 584.854,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Adama City Administration’s official eLand identifies the Land Office and states digital land services for registration, transfer and information access. The city’s eService lists cadastral-map preparation, digital registration/mapping and parcel split/merge services. INSA reports a 2026 Adama Land Digital Transformation and Digital Address project designed with security-by-design. These sources establish a city land registry and digital workflows, but no anonymous public parcel-geometry endpoint.",
+  "registryEvidenceUrls": [
+    "https://eland.adamacity.gov.et/",
+    "https://eservice.adamacity.gov.et/gada/welcome",
+    "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today."
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Whether additional safe anonymous parcel-geometry services or broader source coverage exist; no citywide coverage is claimed.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "ET-7000-adama-source-review",
+    "name": "Adama official cadastral/land registry source",
+    "url": "https://eland.adamacity.gov.et/",
+    "operator": "Ethiopia",
+    "serviceType": "Official registry/map service evidence; no anonymous parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No safe feature query performed; native parcel key not verified.",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "Official Adama City Administration pages identify the Land Office and list cadastral mapping, registration and parcel-management services. INSA documents a citywide land digitization project with security-by-design. No public safe vector service/schema was exposed; no authenticated land lookup was attempted."
+  },
+  "wupCityCode": 7000,
+  "cityId": "wup2025:7000",
+  "queueRank": 937,
+  "centerLatLon": [
+    8.54130493885564,
+    39.2731731762384
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint.",
+  "coverageAssessment": {
+    "claimedScope": "Adama City Administration’s official eLand identifies the Land Office and states digital land services for registration, transfer and information access. The city’s eService lists cadastral-map preparation, digital registration/mapping and parcel split/merge services. INSA reports a 2026 Adama Land Digital Transformation and Digital Address project designed with security-by-design. These sources establish a city land registry and digital workflows, but no anonymous public parcel-geometry endpoint.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Adama Ethiopia official land registry cadastral GIS parcel map city land office",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Official Adama City Administration pages identify the Land Office and list cadastral mapping, registration and parcel-management services. INSA documents a citywide land digitization project with security-by-design. No public safe vector service/schema was exposed; no authenticated land lookup was attempted.",
+        "actualResultUrls": [
+          "https://eland.adamacity.gov.et/",
+          "https://eservice.adamacity.gov.et/gada/welcome",
+          "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today."
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      },
+      {
+        "language": "Amharic",
+        "query": "Adama Adaamaa ኦሮሚያ የመሬት ምዝገባ ካዳስተር ካርታ ከተማ መሬት ጽ/ቤት",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Official Adama City Administration pages identify the Land Office and list cadastral mapping, registration and parcel-management services. INSA documents a citywide land digitization project with security-by-design. No public safe vector service/schema was exposed; no authenticated land lookup was attempted.",
+        "actualResultUrls": [
+          "https://eland.adamacity.gov.et/",
+          "https://eservice.adamacity.gov.et/gada/welcome",
+          "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today."
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://eland.adamacity.gov.et/",
+        "observation": "Official Adama eLand page identifies the city Land Office and digital land registration, transfer and information services."
+      },
+      {
+        "url": "https://eservice.adamacity.gov.et/gada/welcome",
+        "observation": "Official Adama City eService lists surveying and cadastral map preparation, digital registration/mapping and parcel split/merge service workflows."
+      },
+      {
+        "url": "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today.",
+        "observation": "INSA report of 10 June 2026 describes the Adama Land Digital Transformation and Digital Address project and states security-by-design for land/citizen information."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://eland.adamacity.gov.et/",
+        "method": "Official public source or service review",
+        "result": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint."
+      },
+      {
+        "url": "https://eservice.adamacity.gov.et/gada/welcome",
+        "method": "Official public source or service review",
+        "result": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint."
+      },
+      {
+        "url": "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today.",
+        "method": "Official public source or service review",
+        "result": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://eland.adamacity.gov.et/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "e-Land"
+  },
+  "rootPrimarySupplement": {
+    "url": "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today.",
+    "fetch": 200
+  },
+  "rootSourceDateNote": "INSA official announcement is dated 10 June 2026 and directly describes Adama land administration and cadastral-data digital transformation; it does not supply a public vector schema.",
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

@@ -1,0 +1,60 @@
+{
+  "cityRecord": "city-8277-rochester.json",
+  "cityCode": 8277,
+  "queueRank": 2383,
+  "reviewStatus": "complete",
+  "officialLocalCustodian": {
+    "name": "City of Rochester, New York",
+    "evidence": "The City GIS and Property Information pages identify the municipal Property Information Application; the live ArcGIS service exposes the Tax Parcel layer.",
+    "urls": [
+      "https://www.cityofrochester.gov/departments/department-information-technology-it/geographic-information-system-gis-maps",
+      "https://www.cityofrochester.gov/departments/environmental-services-des/maps-and-surveys-office",
+      "https://maps.cityofrochester.gov/arcgis/rest/services/INFOR/INFOR_Property_Services/MapServer/1"
+    ]
+  },
+  "attempts": [
+    {
+      "route": "https://maps.cityofrochester.gov/",
+      "outcome": "HTTP 200 redirect stub to legacy /propinfo; no service configuration in the stub."
+    },
+    {
+      "route": "App_PropertyInformation/App_Tax_Parcel_Viewer/FeatureServer/0",
+      "outcome": "HTTP 200 JSON error / HTTP 404 on query: service path reported MapServer not found; not used as evidence of absence."
+    },
+    {
+      "route": "https://maps.cityofrochester.gov/arcgis/rest/services/INFOR/INFOR_Property_Services/MapServer/1",
+      "outcome": "HTTP 200 layer metadata; polygon layer, public query capability, native WKID 102100/latest 3857, max record count 200000."
+    },
+    {
+      "route": "INFOR_Property_Services/MapServer/1/query exact WUP point",
+      "outcome": "HTTP 200 GeoJSON; one intersecting polygon returned for geometry point [-77.605941944212, 43.1641694579466] with safe PARCELID 10664000010380020000."
+    },
+    {
+      "route": "INFOR_Property_Services/MapServer/1/query bounded envelope",
+      "outcome": "HTTP 200 GeoJSON; three polygons returned from envelope [-77.615,43.155,-77.595,43.175], retained as bounded sample."
+    }
+  ],
+  "schemaAndIdentity": {
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "EPSG:3857 / ArcGIS WKID 102100 (latest WKID 3857)",
+    "nativeIdentity": "PARCELID",
+    "compositeKeyProvenance": "No composite key used; PARCELID was present as a stable-looking native string identity in the public layer.",
+    "observedNativeFields": ["OBJECTID", "PARCELID", "PRINTKEY", "RPS_Parcel_Key", "STREET_NUM", "STREET_NAME", "SITEADDRESS", "CITY"],
+    "safeFieldAllowlist": ["PARCELID", "geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "sales/deed details"]
+  },
+  "sample": {
+    "file": "rochester-parcel-sample.geojson",
+    "featureCount": 3,
+    "ids": ["59500800000000000000", "59501600000000000000", "59502200000000000000"],
+    "propertiesPolicy": "Each retained feature contains exactly one canonical native identity property: id. Source field names are documented here only."
+  },
+  "scopeLimitsAndUncertainty": [
+    "The service is evidenced for City of Rochester tax parcels; this packet does not establish countywide coverage.",
+    "The exact WUP point hit and bounded sample demonstrate service availability, not completeness, legal survey accuracy, or parcel admission readiness.",
+    "The public City site warns that displayed tax-parcel geography and data are not guaranteed accurate.",
+    "No login, credentials, private tokens, CAPTCHA bypass, or unsafe owner/contact fields were used.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_adapter_qualification"
+}

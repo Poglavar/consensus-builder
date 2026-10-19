@@ -1,0 +1,46 @@
+{
+ "kind": "city",
+ "key": "kuwait-city",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-KW,ar;q=0.9,en;q=0.7; cookie jar (curl -b/-c) used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://gis.pai.gov.kw/arcgis/rest/services/Basemap/Public_PAI_Kuwait/MapServer/1?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Incapsula bot-challenge page with full headers and cookie jar; not bypassed"
+  },
+  {
+   "url": "https://gis.pai.gov.kw/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Incapsula challenge"
+  },
+  {
+   "url": "https://www.paci.gov.kw/, https://kuwaitportal.paci.gov.kw/, https://www.data.gov.kw/, https://baladia.gov.kw/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy (CONNECT 502 or reset by peer); no HTTP response"
+  },
+  {
+   "url": "https://www.moj.gov.kw/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Ministry of Justice site loads; no parcel service link tested"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Incapsula challenge on the GIS host; PACI hosts reset. See research/retry/countries/KW.json (PAI is the Public Authority for Industry, layer likely industrial plots).",
+ "notes": "No change versus country retry KW.",
+ "nextStep": "Test from a Kuwait/regional network or real browser passing Incapsula."
+}

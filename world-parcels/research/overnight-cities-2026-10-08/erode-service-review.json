@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10121-erode.json",
+  "purpose": "Read-only official local registry/map-service discovery; no property or owner lookup.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateTokensRetained": false
+  },
+  "assessment": "Erode District Administration publishes Erode-town urban survey correlation records and identifies a local Survey and Land Records office; state services offer urban TSLR extracts. No anonymous public full-polygon geometry endpoint or safe feature schema was verified.",
+  "officialEvidence": [
+    {
+      "url": "https://erode.nic.in/service/e-services-anywhere-anytime-land-records/",
+      "observation": "Erode District Administration publishes Erode-town urban survey correlation records and identifies a local Survey and Land Records office; state services offer urban TSLR extracts."
+    },
+    {
+      "url": "https://erode.nic.in/survey-and-land-records/",
+      "observation": "District page publishes urban Tamil Nilam correlation details for Erode town."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+      "observation": "Government service details specify town, block, ward, survey number and subdivision for urban TSLR lookup."
+    }
+  ],
+  "serviceTrace": {
+    "officialServiceUrl": "https://clip.tn.gov.in/clip/index.html",
+    "serviceFormat": "Official Patta/FMB/Chitta/TSLR attribute-selected extracts and urban Tamil Nilam correlation PDFs; no public vector schema verified",
+    "observation": "No parcel-level query was made because a public full-polygon schema/route was not established. The official routes use documented local record/document workflows."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No public full-polygon API or safe geometry schema was verified; no property-specific identifiers were submitted."
+  },
+  "runtimeBlocker": "No anonymous public vector/full-polygon endpoint was verified; attribute/document flows require user-specific survey/property information."
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:29:03.814786+00:00",
+  "city": "Valencia",
+  "appCityId": "valenciaspain",
+  "sourceId": "es-dgc-inspire-cp-wfs",
+  "url": "http://localhost:5638/?city=valenciaspain&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed",
+  "loadedParcelCount": 295,
+  "interaction": "Real pointer move/down/up at x=521,y=385, then Details menu click.",
+  "selectedParcelId": "ES-DGC-4324003YJ2742C",
+  "pointContainedByObservedParcel": true,
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceWarningObserved": false,
+  "browserClosed": true,
+  "releaseState": "local_uncommitted_undeployed",
+  "initialFailures": [
+    {
+      "loadedParcelCount": 0,
+      "message": "Source temporarily unavailable."
+    },
+    {
+      "loadedParcelCount": 19,
+      "message": "Partial load with source warning after first retry."
+    }
+  ],
+  "transportFollowthrough": {
+    "parallelProbe": {
+      "simultaneousCalls": 6,
+      "successes": 2,
+      "connectionResetErrors": 4,
+      "causeCode": "ECONNRESET"
+    },
+    "sameRequestsWithOneSlot": {
+      "simultaneousCallsSubmitted": 6,
+      "providerActiveQueries": 1,
+      "successes": 6,
+      "errors": 0,
+      "featureCounts": [
+        12,
+        19,
+        12,
+        11,
+        12,
+        5
+      ]
+    },
+    "runtimeFix": "Existing shared per-provider query limiter configured maxConcurrentQueries=1; all runtime methods share the slot. Fresh browser loaded 295 parcels without source warning."
+  }
+}

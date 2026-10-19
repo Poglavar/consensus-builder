@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "JM",
+ "country": "Jamaica",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_viewer_only",
+ "cadastreAuthority": "National Land Agency (NLA) - national cadastre/parcel fabric (Aumentum registry + ArcGIS PDMS)",
+ "portalsFound": [
+  {
+   "url": "https://elandjamaica.nla.gov.jm/elandjamaica/interactivemap.aspx",
+   "observation": "eLandJamaica interactive map page loads (HTTP 200); public viewer over the national parcel layer."
+  },
+  {
+   "url": "https://elandjamaica.nla.gov.jm/arcgis/rest/services?f=json",
+   "observation": "403 Access Denied: REST directory not open to public."
+  },
+  {
+   "url": "https://www.nla.gov.jm/",
+   "observation": "NLA site loads; data.gov.jm NLA group unreachable (000)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://elandjamaica.nla.gov.jm/elandjamaica/interactivemap.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer HTML"
+  },
+  {
+   "url": "https://elandjamaica.nla.gov.jm/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "access denied"
+  },
+  {
+   "url": "https://gis.nla.gov.jm/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://data.gov.jm/group/national-land-agency",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Parcel data for all Jamaican parishes displayed in viewer (per NLA articles found by search)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "viewer-only",
+ "remainingUncertainty": "No open query endpoint reached; NLA sells digital parcel data (not verified from a price page); open-data portal not reached.",
+ "nextStep": "Retry data.gov.jm; inspect viewer network calls for a query endpoint."
+}

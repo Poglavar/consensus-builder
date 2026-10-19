@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Russia",
+  "countryCode": "RU",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not a municipal boundary or official parcel identity. A single point hit or an unsuccessful point-centered geometry request cannot establish citywide coverage. No personal owner, address, tax, account, or applicant data was requested or retained; no authentication, CAPTCHA, credentials, or token was used.",
+  "wupCityCode": 6468,
+  "queueRank": 543,
+  "name": "Samara",
+  "centerLatLon": [
+    53.2181138611012,
+    50.2063547608523
+  ],
+  "population2025": 955599,
+  "population2025k": 955.599,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Multifunctional Centre of Samara City District lists state cadastral registration and real-estate rights registration, municipal land-use and parcel-plan services, and access to the regional urban-development information system. This establishes local access to registry and land administration services, not public parcel-vector coverage.",
+  "registryEvidenceUrls": [
+    "https://mfc-samara.ru/services/uslugi_yuridicheskim_licam/nedvizhimost/"
+  ],
+  "resultCategory": "city_local_registry_evidence_no_verified_public_geometry",
+  "technicalBlocker": "City-local official pages confirm registry-related services but the inspected public service directory does not expose a schema-bearing public parcel geometry endpoint. No geometry request was made against property-specific, account, or authenticated services.",
+  "remainingUncertainty": "Whether another public Samara city/region map service exposes anonymous parcel vectors, along with actual coverage, update vintage and reusable terms.",
+  "nextStep": "Root review of the city-specific evidence and route limits; keep runtime disabled until source terms, coverage, identity stability and geometry quality are qualified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Samara Russia official city cadastral register land parcel map Rosreestr Samara",
+        "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+        "result": "Official Samara City District MFC lists cadastral registration and land-property services; the public page is a service directory, not a geometry service.",
+        "actualResultUrls": [
+          "https://mfc-samara.ru/services/uslugi_yuridicheskim_licam/nedvizhimost/"
+        ],
+        "executionMethod": "Web search followed by primary-page or public metadata inspection."
+      },
+      {
+        "language": "Russian",
+        "query": "Самара официальный сайт городской округ земельный участок кадастровый учет карта Росреестр",
+        "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+        "result": "The official local services directory identifies city land/property registration workflows. No public feature-service contract or geometry response for Samara was established.",
+        "actualResultUrls": [
+          "https://mfc-samara.ru/services/uslugi_yuridicheskim_licam/nedvizhimost/",
+          "https://www.samara.ru/"
+        ],
+        "executionMethod": "Web search followed by primary-page or public metadata inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://mfc-samara.ru/services/uslugi_yuridicheskim_licam/nedvizhimost/",
+        "method": "GET",
+        "observation": "Official MFC for Samara City District lists cadastral registration, registration of property rights, municipal land-plot services, and urban-development information system access; it does not expose a public parcel feature route.",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 23563
+      },
+      {
+        "url": "https://www.samara.ru/",
+        "method": "official-source inspection",
+        "observation": "Official Samara city portal was searched for public cadastral map/parcel feature routes; no city geometry endpoint was verified."
+      },
+      {
+        "url": "https://nspd.gov.ru/",
+        "method": "official-source inspection",
+        "observation": "National spatial-data platform was identified in official regional context but no Samara-specific anonymous parcel-feature route was tested or verified."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://mfc-samara.ru/services/uslugi_yuridicheskim_licam/nedvizhimost/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 23563,
+        "observation": "Anonymous official Samara City District MFC services page loaded. It lists registry/land-administration services but no public parcel map or vector geometry route."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "The official Multifunctional Centre of Samara City District lists state cadastral registration and real-estate rights registration, municipal land-use and parcel-plan services, and access to the regional urban-development information system. This establishes local access to registry and land administration services, not public parcel-vector coverage.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    }
+  },
+  "cityId": "wup2025:6468",
+  "point": [
+    53.2181138611012,
+    50.2063547608523
+  ],
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "registryEvidence": {
+    "registryFound": true,
+    "registryBasis": "The official Multifunctional Centre of Samara City District lists state cadastral registration and real-estate rights registration, municipal land-use and parcel-plan services, and access to the regional urban-development information system. This establishes local access to registry and land administration services, not public parcel-vector coverage.",
+    "officialSourceUrls": [
+      "https://mfc-samara.ru/services/uslugi_yuridicheskim_licam/nedvizhimost/"
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T01:29:32.105621+00:00"
+}

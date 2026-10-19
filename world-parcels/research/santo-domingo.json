@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:92",
+  "queueRank": 92,
+  "name": "Santo Domingo",
+  "country": "Dominican Republic",
+  "countryCode": "DO",
+  "centerLatLon": [
+    18.4861476703714,
+    -69.9218906890503
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "do-ri-atlas-geoserver",
+    "requestUrl": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas:ParcelasHistoricas&outputFormat=application/json&maxFeatures=3&bbox=-69.9235,18.4850,-69.9205,18.4875,EPSG:4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "spatialTestAreaLonLat": [
+      -69.9235,
+      18.485,
+      -69.9205,
+      18.4875
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "PARCELA (with PROVINCIA/MUNICIPIO/DC); Aprobados layer uses Posicional",
+    "responseFile": "santo-domingo-parcel-response.json",
+    "pagination": "WFS 1.0.0 maxFeatures; no page cursor tested. The Aprobados layer also returned 1 approved-survey polygon (Posicional id, Expediente, Area) for the same bbox."
+  },
+  "source": {
+    "sourceId": "do-ri-atlas-geoserver",
+    "name": "Atlas Registro Inmobiliario GeoServer (ParcelasHistoricas, Aprobados)",
+    "operator": "Jurisdiccion Inmobiliaria / Registro Inmobiliario, Dominican Republic",
+    "scope": "Distrito Nacional and other provinces; extent per layer not fully checked",
+    "endpoint": "https://atlas.ri.gob.do/geoserver/wfs",
+    "method": "GET (OGC WFS 1.0.0)",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:32619 (UTM 19N) in output",
+    "reuseStatus": "licence not read; no access restriction seen for anonymous GET"
+  },
+  "portalsFound": [
+    {
+      "url": "https://servicios.ri.gob.do/ConsultaParcelario",
+      "observation": "Public 'Consulta Parcelario Catastral' viewer; its script loads WMS/WFS layers from the atlas.ri.gob.do GeoServer."
+    },
+    {
+      "url": "https://geoportal-catastronacional.hub.arcgis.com/",
+      "observation": "DGCN national cadastre geoportal (ArcGIS Hub); the org's parcel-like feature services (e.g. PARCELA_GEOLOCALIZADOR, PREDIOS_OBSERVATORIO) returned 'Token Required'."
+    },
+    {
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "observation": "Capabilities list Aprobados, ParcelasHistoricas, ResultantesSicyp:AprobadosAnterior2017, Anulados, Municipios, Provincias."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://servicios.ri.gob.do/ConsultaParcelario",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "viewer page; source of the GeoServer endpoint"
+    },
+    {
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "6 feature types, no auth"
+    },
+    {
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=ParcelasHistoricas:ParcelasHistoricas&outputFormat=application/json&maxFeatures=3&bbox=-69.9235,18.4850,-69.9205,18.4875,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "3 MultiPolygon parcels ('parcelas historicas', Distrito Nacional)",
+      "parcelRecordCount": 3
+    },
+    {
+      "url": "https://atlas.ri.gob.do/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=Aprobados:Aprobados&outputFormat=application/json&maxFeatures=3&bbox=-69.9235,18.4850,-69.9205,18.4875,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "1 approved-survey polygon",
+      "parcelRecordCount": 1
+    },
+    {
+      "url": "https://services1.arcgis.com/RBcs9PFR3B9GivQ1/arcgis/rest/services/PARCELA_GEOLOCALIZADOR/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "JSON error 499 Token Required (DGCN hosted layer)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Registro Inmobiliario parcel/survey layers; historical parcels plus approved surveys",
+    "verifiedOpenScope": "3 historical parcels and 1 approved survey polygon in central Santo Domingo (Distrito Nacional)",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "ParcelasHistoricas is a historical parcel layer (some large legacy parcels) and Aprobados holds recent approved surveys; neither is proven to be a complete current cadastre. Coverage outside Distrito Nacional, licence and update frequency unverified. Municipio spelling varies in the data.",
+  "nextStep": "Test a bbox in Santo Domingo province outside the Distrito Nacional and other provinces; assess completeness and layer semantics with the Registro Inmobiliario; adapter must handle EPSG:32619."
+}

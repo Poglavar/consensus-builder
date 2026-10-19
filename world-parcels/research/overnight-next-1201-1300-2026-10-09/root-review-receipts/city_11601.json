@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11601",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-11601-raiganj.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/raiganj-service-review.json",
+    "tmp/valhalla-parcel-research/11601/district.html",
+    "tmp/valhalla-parcel-research/11601/dllro.html"
+  ],
+  "checkedAt": "2026-10-09T10:53:35Z",
+  "identity": "Queue code 11601, rank 1221, India/IN, point [25.6229296944296,88.137637673296], and 456239 persons exactly match the packet.",
+  "searchReview": "English and Bengali searches and result URLs are recorded. The Bengali actualResultUrls string in the city packet contains malformed percent encoding, although the correctly encoded portal URL also appears in its portals and requests arrays; this does not establish vector access.",
+  "sourceReview": "The cached official Uttar Dinajpur land-record page refers plot inquiries to Banglarbhumi, and the cached District Land and Land Reforms Office page identifies its Raiganj office and mouza-map application. Local cadastral-service custody supports registryFound=true. An independent anonymous Banglarbhumi GET on 2026-10-09 timed out after 10 seconds with zero response bytes. Availability and public geometry remain unresolved, not absent.",
+  "admissionReview": "Zero full sample polygons; no safe native-ID polygon read, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime admission or shared-state change."
+}

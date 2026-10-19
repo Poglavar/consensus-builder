@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3455-kryvyi-rih.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, direct anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official city Geoportal is a general vector-map shell with zero datasets reported; no city cadastral registry custodian was established. National cadastral custody is outside the supported city-local scope.",
+  "registryAssessment": "No city-level legal land/cadastral custodian was established by this research; listed mapping/service sources have the limited scope stated.",
+  "officialPrimarySources": [
+    {
+      "url": "https://geo.kr.gov.ua/",
+      "operator": "Kryvyi Rih municipal Geoportal",
+      "observation": "Official city Geoportal is a public map shell; its homepage reported zero datasets and zero thematic maps when reviewed. It is not evidence of legal cadastral parcel custody."
+    },
+    {
+      "url": "https://kr.gov.ua/",
+      "operator": "Kryvyi Rih City Council",
+      "observation": "Official city site describes the city geoportal as a periodically updated vector map with thematic data, but no cadastral layer was identified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kryvyi Rih Ukraine official cadastral parcels geoportal municipal GIS",
+      "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+      "method": "Separate English-language search followed by official-source review.",
+      "actualResultUrls": [
+        "https://geo.kr.gov.ua/",
+        "https://kr.gov.ua/"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    },
+    {
+      "language": "Ukrainian",
+      "query": "Кривий Ріг кадастрова карта геопортал земельний кадастр офіційний",
+      "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://geo.kr.gov.ua/"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://geo.kr.gov.ua/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 28550,
+        "assessment": "Official city Geoportal shell."
+      },
+      {
+        "url": "https://kr.gov.ua/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 403,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 5208,
+        "assessment": "Official city home was blocked by the access edge; no map response used."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official city Geoportal is a general vector-map shell with zero datasets reported; no city cadastral registry custodian was established. National cadastral custody is outside the supported city-local scope.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "HTTP 200 text/html; 28550 response bytes. Official city Geoportal shell.",
+    "HTTP 403 text/html; charset=UTF-8; 5208 response bytes. Official city home was blocked by the access edge; no map response used."
+  ],
+  "remainingUncertainty": "The official city Geoportal is a general vector-map shell with zero datasets reported; no city cadastral registry custodian was established. National cadastral custody is outside the supported city-local scope. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Official city geoportal loads but reports no map datasets/thematic maps; no parcel layer or geometry schema was verified."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "cityCode": 7095,
+  "queueRank": 3138,
+  "name": "Kaura-Namoda",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "point": [12.5906629714161, 6.5871537427419],
+  "population2025": 191305,
+  "population2025k": 191.305,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kaura Namoda cadastral map parcel land registry official Nigeria Zamfara",
+        "result": "First-party discovery found Zamfara State Geographic Information Service (ZAGIS), the state land/geographic information service, and Zamfara Government land-administration material. The official ZAGIS portal advertises digital cadastral management and secure property registration; the state progress report says the land/property enumeration exercise was to continue in Kaura Namoda town. No public parcel layer or anonymous feature endpoint was exposed by discovery.",
+        "actualResultUrls": [
+          "https://zagis.org/",
+          "https://portal.zagis.org/login",
+          "https://zamfara.gov.ng/wp-content/uploads/2024/07/Zamfara-State-2023-BERAP-Progress-Report-1.pdf",
+          "https://zamfara.gov.ng/elementor-337/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Kaura Namoda cadastral map parcel land registry official Hausa Najeriya Kaura Namoda taswirar fili rajistar ƙasa",
+        "result": "Hausa-oriented discovery did not return a first-party Hausa parcel viewer or downloadable parcel dataset. English-language official Zamfara/ZAGIS land-administration pages were the relevant first-party results; no geometry or safe native parcel identity was obtained.",
+        "actualResultUrls": [
+          "https://zagis.org/",
+          "https://zamfara.gov.ng/elementor-337/",
+          "https://molga.zamfara.gov.ng/downloads/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Zamfara State Geographic Information Service (ZAGIS), with the Zamfara State Directorate of Lands & Survey / Ministry of Housing & Urban Development",
+    "scope": "State land administration, digital cadastral management, property registration, and geospatial information service; Kaura-Namoda town is named as a target/continuation location in the state reform report.",
+    "evidenceUrls": [
+      "https://zagis.org/",
+      "https://portal.zagis.org/login",
+      "https://zamfara.gov.ng/wp-content/uploads/2024/07/Zamfara-State-2023-BERAP-Progress-Report-1.pdf"
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "route": "GET https://zagis.org/",
+      "outcome": "HTTP 200 informational first-party ZAGIS page; identifies land registration/property management and links to the portal, but exposes no parcel schema, map service, CRS, native ID, or geometry endpoint."
+    },
+    {
+      "route": "GET https://portal.zagis.org/login",
+      "outcome": "HTTP 200 authentication page. HTML form posts to /login and the page states authorized personnel access; no login, credentials, token, CAPTCHA bypass, or private route was attempted."
+    },
+    {
+      "route": "GET https://zamgis.com.ng/index.php",
+      "outcome": "HTTP 200 legacy ZAGIS information site. It describes a secure digital land registry and land transactions, but its e-services resolve to login/application pages and no public parcel map/API or geometry was exposed."
+    },
+    {
+      "route": "GET https://zamgis.com.ng/apps/index.php",
+      "outcome": "HTTP 200 authentication page with form action login.php; no credentials or authenticated service access attempted."
+    },
+    {
+      "route": "GET https://molga.zamfara.gov.ng/downloads/",
+      "outcome": "HTTP 200 official ministry downloads index listing Land Use Application Forms and Land Administration resources; no parcel geometry or public map API was exposed."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if source-proven",
+    "full parcel polygon geometry",
+    "source/requested CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "geometrySamples": [],
+  "scopeLimits": [
+    "The exact WUP point [12.5906629714161, 6.5871537427419] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit or miss was inferred: the public routes did not provide an anonymous parcel query or map response.",
+    "ZAGIS/state reform evidence establishes a local/state cadastral custodian and a Kaura-Namoda land-enumeration target, not citywide parcel coverage.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "No sample GeoJSON is retained because no safe native parcel identity and unchanged full polygon were observed.",
+    "Packet completion records research attempts only; it is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The current public ZAGIS parcel schema, CRS, native identity semantics, geometry endpoint, and anonymous coverage remain unverified behind authentication-gated portals.",
+    "The Kaura-Namoda town enumeration statement is dated state reform evidence and does not prove that a public parcel layer is currently available.",
+    "Independent serial review is required before any adapter or runtime qualification."
+  ],
+  "qualification": {
+    "verifiedSample": false,
+    "parcelGeometryVerified": false,
+    "runtimeReadiness": "held",
+    "reason": "A first-party state cadastral custodian and Kaura-Namoda land-administration evidence were verified, but no anonymous safe parcel ID-plus-geometry response was available during this attempt."
+  }
+}

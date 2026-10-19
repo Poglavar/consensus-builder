@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "MIC",
+ "regionName": "Michoacán",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9 (cookie jar on; viewer-origin Referer where the viewer was fetched)",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://irycem.michoacan.gob.mx/",
+   "observation": "IRYCEM (Instituto Registral y Catastral) 200; page links a cartography viewer at http://mapa.catastro.michoacan.gob.mx:8080/"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://irycem.michoacan.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "links to mapa.catastro.michoacan.gob.mx:8080"
+  },
+  {
+   "url": "http://mapa.catastro.michoacan.gob.mx:8080/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "host does not resolve"
+  },
+  {
+   "url": "https://catastro.michoacan.gob.mx/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios Michoacan / catastro Michoacan / catastro Morelia",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no Mexican parcel layers"
+  }
+ ],
+ "reuseStatus": "not assessed",
+ "remainingUncertainty": "Official viewer hostname does not resolve from here; may be down or blocked. Reused from research/countries/MX.json and research/retry/countries/MX.json: RAN (phina/sig.ran.gob.mx) Akamai 403, INEGI has no parcel service; no national layer.",
+ "nextStep": "Retry mapa.catastro.michoacan.gob.mx:8080 later or from Mexican egress and inspect its network calls."
+}

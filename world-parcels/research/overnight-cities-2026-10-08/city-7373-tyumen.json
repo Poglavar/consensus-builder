@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Tyumen",
+  "nativeName": "Тюмень",
+  "country": "Russia",
+  "countryCode": "RU",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified.",
+  "registryEvidenceUrls": [
+    "https://uslugi.admtyumen.ru/",
+    "https://rosreestr.gov.ru/",
+    "https://nspd.gov.ru/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleGeometryFile": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7373,
+  "cityId": "wup2025:7373",
+  "centerLatLon": [
+    57.1582188823795,
+    65.5523109613655
+  ],
+  "rank": 904,
+  "queueRank": 904,
+  "population2025": 602535,
+  "population2025k": 602.535,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No safe geometry-only service endpoint and ID schema verified. Public cadastral map UI was not queried for an address or parcel.",
+  "scopeLimits": "Official regional service portal and federal registry map are public informational sources. No anonymous geometry-only public feature route or safe parcel schema was verified; no map search was submitted.",
+  "remainingUncertainty": "City-office/service scope and parcel-layer coverage at the WUP point remain unknown.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tyumen Russia official land registry cadastral parcel map GIS",
+        "result": "Official Tyumen regional services and Rosreestr sources establish registry/mapping context; no safe feature endpoint found.",
+        "method": "English-language search followed by official-source review.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      },
+      {
+        "language": "Russian",
+        "query": "Тюмень Росреестр кадастровая карта публичная официальный сайт земельные участки",
+        "result": "Официальный портал услуг Тюменской области и Росреестр подтверждают регистрационный и картографический контекст; безопасный сервис геометрии не найден.",
+        "method": "Local-language search followed by official-source review. Separate English and local-language searches plus official-source review; no owner, address, title, tax, account, applicant, or personal fields were queried.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://uslugi.admtyumen.ru/",
+        "observation": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified."
+      },
+      {
+        "url": "https://rosreestr.gov.ru/",
+        "observation": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified."
+      },
+      {
+        "url": "https://nspd.gov.ru/",
+        "observation": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified."
+      }
+    ],
+    "metadataReviewFile": "tyumen-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-7373-tyumen-route-inspection.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified.",
+    "verifiedOpenScope": "No public parcel geometry or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "enabled": false,
+    "reason": "Root qualification remains separate; local sample/endpoint evidence alone does not authorize runtime configuration.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://uslugi.admtyumen.ru/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Портал услуг Тюменской области"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00",
+  "point": [
+    57.1582188823795,
+    65.5523109613655
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "cityCode": 2253,
+  "queueRank": 3210,
+  "name": "Ploiești",
+  "country": "Romania",
+  "countryCode": "RO",
+  "iso2": "RO",
+  "iso3": "ROU",
+  "locId": 642,
+  "capital": false,
+  "point": [44.939739029389, 26.0238060859835],
+  "population2025": 188227,
+  "population2025k": 188.227,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {"queries": [
+    {"language":"English","query":"Ploiesti Romania official cadastral parcel map GIS ANCPI geoportal","result":"First-party discovery identified ANCPI's official Imobile viewer, Geoportal INIS/INSPIRE, and ANCPI REST catalog. The official parcel-layer metadata advertises polygon parcels, anonymous query support, EPSG:4258, and id_namespace, but the live bounded request timed out.","actualResultUrls":["https://geoportal.ancpi.ro/imobile.html","https://geoportal.gov.ro/","https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1","https://geoportal.ancpi.ro/arcgis/rest/services/ANCPI"]},
+    {"language":"Romanian","query":"Ploiești România cadastru hartă parcele ANCPI geoportal oficial","result":"Romanian first-party discovery confirmed Primăria Municipiului Ploiești's Cadastru service, systematic cadastral-registration notices, and official municipal documents identifying OCPI Prahova / Biroul de Cadastru și Publicitate Imobiliară Ploiești. Municipal documents reference Geoportal ANCPI maps and parcel numbers but publish no safe anonymous parcel-vector API.","actualResultUrls":["https://ploiesti.ro/administratie/directia-generala-de-dezvoltare-urbana/serviciul-cadastru-si-verificare-documentatii-tehnice/","https://ploiesti.ro/stiri/incep-lucrarile-de-cadastru-sistematic-in-sectoarele-cadastrale-nr-14-si-18-din-municipiul-ploiesti/","https://ploiesti.ro/wp-content/uploads/hcl-pdf/HCL-2025-472-A.pdf","https://geoportal.ancpi.ro/imobile.html"]}
+  ]},
+  "registryFound": true,
+  "registryEvidence": {"custodian":"Agenția Națională de Cadastru și Publicitate Imobiliară (ANCPI), through OCPI Prahova / Biroul de Cadastru și Publicitate Imobiliară Ploiești; Primăria Ploiești Cadastru is a local counterpart.","scope":"National cadastral and land-registration database and public visualization services, with local Ploiești systematic-registration and cadastral-administration evidence.","evidenceUrls":["https://geoportal.ancpi.ro/imobile.html","https://geoportal.gov.ro/","https://ploiesti.ro/administratie/directia-generala-de-dezvoltare-urbana/serviciul-cadastru-si-verificare-documentatii-tehnice/","https://ploiesti.ro/stiri/incep-lucrarile-de-cadastru-sistematic-in-sectoarele-cadastrale-nr-14-si-18-din-municipiul-ploiesti/","https://ploiesti.ro/wp-content/uploads/hcl-pdf/HCL-2025-472-A.pdf"],"scopeNote":"ANCPI is the national registry/map custodian; OCPI Prahova and the municipal Cadastru service are local/regional counterparts. Registry evidence does not qualify a runtime adapter."},
+  "parcelDiscovery":{"geometryFound":false,"sampleFiles":[],"source":"ANCPI Geoportal INIS/INSPIRE Cadastral Parcel layer and ANCPI Imobile viewer","nativeIdField":"id_namespace (metadata only)","crs":"EPSG:4258 (metadata only)","boundedResponse":null,"fieldMapping":{},"compositeKeyProvenance":null,"note":"Official metadata advertises polygon geometry and GeoJSON query support, but the bounded query timed out. No polygon or native identity is retained."},
+  "requestOutcomes":[
+    {"method":"GET","url":"https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=pjson","outcome":"Timed out after 30 seconds; no response body retained."},
+    {"method":"GET","url":"https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query?where=1%3D1&outFields=id_namespace&returnGeometry=true&f=geojson&resultRecordCount=3","outcome":"No bounded response obtained after service timeout; zero-hit inference not made."},
+    {"method":"GET","url":"https://geoportal.ancpi.ro/hosted_services/rest/services/INIS/INIS_Viewer/MapServer","outcome":"First-party service URL identified; direct host resolution was unavailable in the execution environment."},
+    {"method":"GET","url":"https://geoportal.ancpi.ro/imobile.html","outcome":"Official viewer identified; it documents ANCPI parcel/building visualization and UAT/land-book/location lookup, but no safe feature response was extracted."},
+    {"method":"GET","url":"https://ploiesti.ro/administratie/directia-generala-de-dezvoltare-urbana/serviciul-cadastru-si-verificare-documentatii-tehnice/","outcome":"Official municipal Cadastru page supports local administrative role; no parcel API exposed."}
+  ],
+  "schemaAndCrs":{"parcelSchema":"Cadastral Parcel polygon layer advertised by official metadata","geometryCrs":"EPSG:4258","nativeIdentity":"id_namespace (metadata only)","sourceFieldMapping":{},"compositeKeyProvenance":null,"boundedAnonymousResponse":{"featureCount":0,"result":"No parcel response obtained; zero is not an absence finding."}},
+  "safeFieldAllowlist":["stable native parcel identifier only if source-proven","full parcel polygon geometry","geometry CRS","public service/layer metadata","retrieval date"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","personal data","tax/account","certificate/title"],
+  "geometryDecision":{"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":null,"exactWupPointTest":"No usable response; exact WUP point [44.939739029389, 26.0238060859835] preserved in latitude/longitude order and not shifted."},
+  "coverageAssessment":{"claimedScope":"ANCPI national cadastral registry/map services with OCPI Prahova/Ploiești local evidence","verifiedOpenScope":"Official custodians and parcel-layer metadata evidenced; live anonymous geometry and citywide completeness not verified","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "runtimeReadiness":"held_no_verified_public_geometry",
+  "serialReviewerQualification":"not qualified; independent serial review still required",
+  "scopeLimits":["Exact WUP point was preserved; no coordinate shift was made.","Timeout, unavailable service, map miss, login wall, or unusable UI is not evidence of citywide absence.","No native feature identity was independently observed and no polygon sample is retained.","No unsafe fields were requested or retained.","This packet is research only, not source integration or runtime admission."],
+  "uncertainty":"ANCPI and OCPI Prahova/Ploiești are evidenced as relevant custodians. Current availability, feature identity semantics, citywide completeness, update behavior, and anonymous geometry delivery remain unresolved."
+}

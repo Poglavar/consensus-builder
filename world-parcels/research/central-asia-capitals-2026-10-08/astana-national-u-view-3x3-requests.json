@@ -1,0 +1,1730 @@
+{
+  "date": "2026-10-08",
+  "source": "National Public Cadastral Map / EGKN WFS 2.0.0",
+  "viewer": "https://map.gov4c.kz/egkn/",
+  "layer": "egkn:u_view (viewer `lands` layer)",
+  "districtId": 254,
+  "district": "Есиль (21-320)",
+  "districtSrs": 32642,
+  "requiredViewparams": "district_id:254",
+  "queryCrs": "EPSG:32642",
+  "outputGeoJSONCrs": "EPSG:4326 (transformed locally with cs2cs)",
+  "requestedProperties": [
+    "gid",
+    "kad_nomer",
+    "geom"
+  ],
+  "omittedProperties": [
+    "address_ru",
+    "address_kz",
+    "owner/personal fields"
+  ],
+  "sortBy": "gid (ascending observed; `gid+A` is rejected as an illegal property name)",
+  "countPerRequest": 3,
+  "startIndexBehavior": "startIndex increases by returned feature count; every cell paged to an empty terminal page; totalFeatures/numberMatched matched row totals.",
+  "totalRequests": 74,
+  "allHttp200": true,
+  "totalRowsReturned": 190,
+  "uniqueFeatures": 154,
+  "duplicateRowsAcrossAdjacentCells": 36,
+  "duplicateConsistency": "All repeated gids across cells had the same kad_nomer and identical geometry; no within-cell duplicate IDs.",
+  "uniqueGidCount": 154,
+  "uniqueKadNomerCount": 154,
+  "noMissingKadNomer": true,
+  "cellSummaries": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "featureRows": 21,
+      "uniqueKeys": 21,
+      "terminalEmptyPage": true,
+      "pages": 8,
+      "totalFeaturesReported": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "featureRows": 21,
+      "uniqueKeys": 21,
+      "terminalEmptyPage": true,
+      "pages": 8,
+      "totalFeaturesReported": 21
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "featureRows": 23,
+      "uniqueKeys": 23,
+      "terminalEmptyPage": true,
+      "pages": 9,
+      "totalFeaturesReported": 23
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "featureRows": 27,
+      "uniqueKeys": 27,
+      "terminalEmptyPage": true,
+      "pages": 10,
+      "totalFeaturesReported": 27
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "featureRows": 21,
+      "uniqueKeys": 21,
+      "terminalEmptyPage": true,
+      "pages": 8,
+      "totalFeaturesReported": 21
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "featureRows": 24,
+      "uniqueKeys": 24,
+      "terminalEmptyPage": true,
+      "pages": 9,
+      "totalFeaturesReported": 24
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "featureRows": 20,
+      "uniqueKeys": 20,
+      "terminalEmptyPage": true,
+      "pages": 8,
+      "totalFeaturesReported": 20
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "featureRows": 17,
+      "uniqueKeys": 17,
+      "terminalEmptyPage": true,
+      "pages": 7,
+      "totalFeaturesReported": 17
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "featureRows": 16,
+      "uniqueKeys": 16,
+      "terminalEmptyPage": true,
+      "pages": 7,
+      "totalFeaturesReported": 16
+    }
+  ],
+  "pageRequests": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2198",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2242",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2169",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 3051",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2981",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2556",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 18,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1966",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "startIndex": 21,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12945,
+        71.42915,
+        51.131949999999996
+      ],
+      "bbox32642": "669782.892,5667020.544,669966.965,5667304.280,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669782.892,5667020.544,669966.965,5667304.280,EPSG:32642&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1902",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2037",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2814",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2332",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2141",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1974",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 18,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1989",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "startIndex": 21,
+      "bboxWgs84": [
+        71.42915,
+        51.12945,
+        71.43165,
+        51.131949999999996
+      ],
+      "bbox32642": "669957.784,5667026.317,670141.867,5667310.060,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669957.784,5667026.317,670141.867,5667310.060,EPSG:32642&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2117",
+      "count": 3,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2386",
+      "count": 3,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2057",
+      "count": 3,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2272",
+      "count": 3,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2198",
+      "count": 3,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2012",
+      "count": 3,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 18,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1950",
+      "count": 3,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 21,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1421",
+      "count": 2,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "startIndex": 23,
+      "bboxWgs84": [
+        71.43165,
+        51.12945,
+        71.43415,
+        51.131949999999996
+      ],
+      "bbox32642": "670132.677,5667032.097,670316.769,5667315.845,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670132.677,5667032.097,670316.769,5667315.845,EPSG:32642&startIndex=23",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 23,
+      "numberMatched": 23
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1853",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2051",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2435",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2091",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2031",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1991",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 18,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1946",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 21,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2014",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 24,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=24",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2019",
+      "count": 3,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "startIndex": 27,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12695,
+        71.42915,
+        51.12945
+      ],
+      "bbox32642": "669792.063,5666742.581,669976.146,5667026.317,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669792.063,5666742.581,669976.146,5667026.317,EPSG:32642&startIndex=27",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 27,
+      "numberMatched": 27
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1874",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 3217",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2438",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 3188",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2005",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1990",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 18,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1988",
+      "count": 3,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "startIndex": 21,
+      "bboxWgs84": [
+        71.42915,
+        51.12695,
+        71.43165,
+        51.12945
+      ],
+      "bbox32642": "669966.965,5666748.355,670151.057,5667032.097,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669966.965,5666748.355,670151.057,5667032.097,EPSG:32642&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 21,
+      "numberMatched": 21
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2466",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 4878",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2164",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2306",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2010",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2067",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 18,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2013",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 21,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2146",
+      "count": 3,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "startIndex": 24,
+      "bboxWgs84": [
+        71.43165,
+        51.12695,
+        71.43415,
+        51.12945
+      ],
+      "bbox32642": "670141.867,5666754.134,670325.969,5667037.883,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670141.867,5666754.134,670325.969,5667037.883,EPSG:32642&startIndex=24",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 24,
+      "numberMatched": 24
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1606",
+      "count": 3,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2431",
+      "count": 3,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2007",
+      "count": 3,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2485",
+      "count": 3,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2008",
+      "count": 3,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2000",
+      "count": 3,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 18,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1299",
+      "count": 2,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "startIndex": 20,
+      "bboxWgs84": [
+        71.42665000000001,
+        51.12445,
+        71.42915,
+        51.12695
+      ],
+      "bbox32642": "669801.234,5666464.618,669985.326,5666748.355,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669801.234,5666464.618,669985.326,5666748.355,EPSG:32642&startIndex=20",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 20,
+      "numberMatched": 20
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669976.146,5666470.392,670160.247,5666754.134,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1713",
+      "count": 3,
+      "totalFeatures": 17,
+      "numberMatched": 17
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669976.146,5666470.392,670160.247,5666754.134,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2272",
+      "count": 3,
+      "totalFeatures": 17,
+      "numberMatched": 17
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669976.146,5666470.392,670160.247,5666754.134,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2007",
+      "count": 3,
+      "totalFeatures": 17,
+      "numberMatched": 17
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669976.146,5666470.392,670160.247,5666754.134,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2085",
+      "count": 3,
+      "totalFeatures": 17,
+      "numberMatched": 17
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669976.146,5666470.392,670160.247,5666754.134,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2115",
+      "count": 3,
+      "totalFeatures": 17,
+      "numberMatched": 17
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669976.146,5666470.392,670160.247,5666754.134,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1266",
+      "count": 2,
+      "totalFeatures": 17,
+      "numberMatched": 17
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "startIndex": 17,
+      "bboxWgs84": [
+        71.42915,
+        51.12445,
+        71.43165,
+        51.12695
+      ],
+      "bbox32642": "669976.146,5666470.392,670160.247,5666754.134,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=669976.146,5666470.392,670160.247,5666754.134,EPSG:32642&startIndex=17",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 17,
+      "numberMatched": 17
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "startIndex": 0,
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670151.057,5666476.172,670335.168,5666759.920,EPSG:32642&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1713",
+      "count": 3,
+      "totalFeatures": 16,
+      "numberMatched": 16
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "startIndex": 3,
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670151.057,5666476.172,670335.168,5666759.920,EPSG:32642&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 4309",
+      "count": 3,
+      "totalFeatures": 16,
+      "numberMatched": 16
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "startIndex": 6,
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670151.057,5666476.172,670335.168,5666759.920,EPSG:32642&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2195",
+      "count": 3,
+      "totalFeatures": 16,
+      "numberMatched": 16
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "startIndex": 9,
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670151.057,5666476.172,670335.168,5666759.920,EPSG:32642&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 1970",
+      "count": 3,
+      "totalFeatures": 16,
+      "numberMatched": 16
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "startIndex": 12,
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670151.057,5666476.172,670335.168,5666759.920,EPSG:32642&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 2657",
+      "count": 3,
+      "totalFeatures": 16,
+      "numberMatched": 16
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "startIndex": 15,
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670151.057,5666476.172,670335.168,5666759.920,EPSG:32642&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 952",
+      "count": 1,
+      "totalFeatures": 16,
+      "numberMatched": 16
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "startIndex": 16,
+      "bboxWgs84": [
+        71.43165,
+        51.12445,
+        71.43415,
+        51.12695
+      ],
+      "bbox32642": "670151.057,5666476.172,670335.168,5666759.920,EPSG:32642",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&sortBy=gid&bbox=670151.057,5666476.172,670335.168,5666759.920,EPSG:32642&startIndex=16",
+      "http": "HTTP 200 type application/json;charset=utf-8 bytes 559",
+      "count": 0,
+      "totalFeatures": 16,
+      "numberMatched": 16
+    }
+  ],
+  "geometryOutput": "WFS source output was EPSG:32642; geometry reprojected for output from the coordinates returned by the source. No address/owner values are stored.",
+  "geometryHashBasis": "SHA-256 of canonical JSON of source EPSG:32642 geometry; hash may change if source geometry changes.",
+  "targetCenterMatches": [
+    "21320072529"
+  ],
+  "topologyCheck": {
+    "engine": "GEOS 3.14.1",
+    "featureCount": 154,
+    "geometryTypes": {
+      "MultiPolygon": 154
+    },
+    "closedRings": 158,
+    "ringCount": 158,
+    "validCount": 154,
+    "invalidFeatures": [],
+    "intersectingPairsIncludingBoundary": 19,
+    "positiveAreaOverlapPairs": [
+      {
+        "leftGid": 5212040,
+        "rightGid": 5957462,
+        "leftKadNomer": "21320072741",
+        "rightKadNomer": "213200721292",
+        "intersectionAreaSquareMetres": 0.4509978853920984,
+        "leftAreaSquareMetres": 17750.872300006886,
+        "rightAreaSquareMetres": 606.346650037727,
+        "leftMinOrientedBboxWidthMetres": 115.95188171344007,
+        "leftMinOrientedBboxLengthMetres": 154.46370399414107,
+        "rightMinOrientedBboxWidthMetres": 6.162093692792957,
+        "rightMinOrientedBboxLengthMetres": 98.48095607425621,
+        "intersectionMinOrientedBboxWidthMetres": 0.009818113047379593,
+        "intersectionMinOrientedBboxLengthMetres": 98.47980605193648,
+        "intersectionPercentOfLeftParcel": 0.0025407082974278593,
+        "intersectionPercentOfRightParcel": 0.07437954598479883,
+        "intersectionPercentOfSmallerParcel": 0.07437954598479883,
+        "intersectionPercentOfLargerParcel": 0.0025407082974278593
+      },
+      {
+        "leftGid": 5215275,
+        "rightGid": 7013950,
+        "leftKadNomer": "213200721019",
+        "rightKadNomer": "21320072566",
+        "intersectionAreaSquareMetres": 0.0006796264747065961,
+        "leftAreaSquareMetres": 42.518449998408045,
+        "rightAreaSquareMetres": 4530.343050005615,
+        "leftMinOrientedBboxWidthMetres": 3.4205262751156704,
+        "leftMinOrientedBboxLengthMetres": 13.730679269232027,
+        "rightMinOrientedBboxWidthMetres": 52.39636077338373,
+        "rightMinOrientedBboxLengthMetres": 105.11994648203148,
+        "intersectionMinOrientedBboxWidthMetres": 0.4975467948006029,
+        "intersectionMinOrientedBboxLengthMetres": 6.100570330650111,
+        "intersectionPercentOfLeftParcel": 0.0015984272115564945,
+        "intersectionPercentOfRightParcel": 1.5001655883559497e-05,
+        "intersectionPercentOfSmallerParcel": 0.0015984272115564945,
+        "intersectionPercentOfLargerParcel": 1.5001655883559497e-05
+      },
+      {
+        "leftGid": 6223894,
+        "rightGid": 7013950,
+        "leftKadNomer": "21320072849",
+        "rightKadNomer": "21320072566",
+        "intersectionAreaSquareMetres": 0.006834494011212827,
+        "leftAreaSquareMetres": 2347.051999999083,
+        "rightAreaSquareMetres": 4530.343050005615,
+        "leftMinOrientedBboxWidthMetres": 53.87599136402406,
+        "leftMinOrientedBboxLengthMetres": 122.9361600727234,
+        "rightMinOrientedBboxWidthMetres": 52.39636077338373,
+        "rightMinOrientedBboxLengthMetres": 105.11994648203148,
+        "intersectionMinOrientedBboxWidthMetres": 36.054083302482056,
+        "intersectionMinOrientedBboxLengthMetres": 100.46047971716834,
+        "intersectionPercentOfLeftParcel": 0.00029119482700917993,
+        "intersectionPercentOfRightParcel": 0.00015086040804800327,
+        "intersectionPercentOfSmallerParcel": 0.00029119482700917993,
+        "intersectionPercentOfLargerParcel": 0.00015086040804800327
+      },
+      {
+        "leftGid": 5214110,
+        "rightGid": 7707378,
+        "leftKadNomer": "21320072737",
+        "rightKadNomer": "21320072619",
+        "intersectionAreaSquareMetres": 0.3819051526016266,
+        "leftAreaSquareMetres": 7672.550699974914,
+        "rightAreaSquareMetres": 8188.70880003173,
+        "leftMinOrientedBboxWidthMetres": 62.25059762472326,
+        "leftMinOrientedBboxLengthMetres": 126.40923821787798,
+        "rightMinOrientedBboxWidthMetres": 90.00742469097551,
+        "rightMinOrientedBboxLengthMetres": 90.98993574955483,
+        "intersectionMinOrientedBboxWidthMetres": 0.012097761608188935,
+        "intersectionMinOrientedBboxLengthMetres": 90.98384746774259,
+        "intersectionPercentOfLeftParcel": 0.004977551371578103,
+        "intersectionPercentOfRightParcel": 0.004663801851155665,
+        "intersectionPercentOfSmallerParcel": 0.004977551371578103,
+        "intersectionPercentOfLargerParcel": 0.004663801851155665
+      },
+      {
+        "leftGid": 5956393,
+        "rightGid": 7129392,
+        "leftKadNomer": "213200721286",
+        "rightKadNomer": "21320072538",
+        "intersectionAreaSquareMetres": 1.363417188195062e-05,
+        "leftAreaSquareMetres": 1930.7915499900596,
+        "rightAreaSquareMetres": 6697.852999990881,
+        "leftMinOrientedBboxWidthMetres": 10.23619441336369,
+        "leftMinOrientedBboxLengthMetres": 208.19108058190236,
+        "rightMinOrientedBboxWidthMetres": 32.39653580610031,
+        "rightMinOrientedBboxLengthMetres": 209.17669215964764,
+        "intersectionMinOrientedBboxWidthMetres": 0.0014650367875972126,
+        "intersectionMinOrientedBboxLengthMetres": 0.5727147595444468,
+        "intersectionPercentOfLeftParcel": 7.061441656931227e-07,
+        "intersectionPercentOfRightParcel": 2.0356033316898987e-07,
+        "intersectionPercentOfSmallerParcel": 7.061441656931227e-07,
+        "intersectionPercentOfLargerParcel": 2.0356033316898987e-07
+      }
+    ],
+    "centerPointUtm": [
+      670059.008796046,
+      5666890.225130632
+    ],
+    "featuresContainingCenter": [
+      "21320072529"
+    ],
+    "overlapMetricMethod": "GEOS 3.14.1 on EPSG:32642 geometries; intersection area in m²; minimum-area rotated rectangle side lengths for each intersection and each parent parcel; percentages are intersection area divided by each parent parcel area.",
+    "overlapAssessment": "The two largest intersections are boundary slivers: 0.450998 m², minimum rotated envelope 0.009818 × 98.479806 m, 0.074380% of its smaller parcel; and 0.381905 m², envelope 0.012098 × 90.983847 m, 0.004978% of its smaller parcel. The remaining three intersections are each at most 0.006835 m². Accepted as explicit source-precision cases with unchanged geometry; no global topology tolerance or repair is introduced.",
+    "metricReview": "Relative percentages were recalculated from the same recorded EPSG:32642 intersection and parent areas; values from an earlier geographic-plane assessment are superseded."
+  }
+}

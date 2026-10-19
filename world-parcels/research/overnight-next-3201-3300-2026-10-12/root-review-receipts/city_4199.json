@@ -1,0 +1,24 @@
+{
+  "taskId": "city:4199",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-4199-rzesz-w.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/rzesz-w-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/rzesz-w-parcels-sample.geojson",
+    "tmp/valhalla-parcel-research/rzeszow/capabilities.xml",
+    "tmp/valhalla-parcel-research/rzeszow/dzialki-schema.xml",
+    "tmp/valhalla-parcel-research/rzeszow/bounded.xml",
+    "tmp/valhalla-parcel-research/rzeszow/bounded-correct-axis.xml"
+  ],
+  "checkedAt": "2026-10-12T05:46:45Z",
+  "findings": {
+    "identity": "WUP 2025 source SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, code 4199, rank 3218, Poland, point [50.0320723876861,22.0039593163143], and 187574 persons agree with roster, queue, and packet.",
+    "searches": "Packet records English and Polish queries; cached first-party municipal WFS capabilities, schema, and bounded response substantiate the service lead. No separate original search-result trace is retained.",
+    "custody": "registryFound true is supported by the municipal ewns:dzialki WFS and the packet municipal Geodesy Department reference; this is local source custody, not complete citywide coverage.",
+    "geometry": "Original cached WFS response numberReturned=3 and numberMatched=unknown; three source ID_DZIALKI values and full GML exterior rings match the retained GeoJSON exactly after EPSG:4326 lat/lon axis swap. Sample has only properties.id and geometry. Three distinct polygons are GEOS-valid in EPSG:2180, with zero pairwise interior overlap.",
+    "admission": "Held. Bounded sample is positive discovery only. No independent fresh exact native-ID read, complete forced paging, 13 bounded cells, full qualification/operation checks, source binding, or headed Details-panel verification; numberMatched unknown and axis-order handling need adapter proof."
+  }
+}

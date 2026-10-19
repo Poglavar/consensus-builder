@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10954-xiashan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Zhanjiang registry-center page lists a service window at Xiashan District Administrative Service Center. General public map materials found were not parcel-feature schema. No form or parcel search was submitted.",
+  "registryAssessment": "The Zhanjiang Natural Resources Bureau’s official service page lists Zhanjiang Real Estate Registration Center service windows in Xiashan District Administrative Service Center. This is a city-level registry service physically serving the WUP Xiashan district identity; it does not establish public parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.zhanjiang.gov.cn/zjsfw/bmdh/zrzyj/yhyshj/bdcdjzt/bsrk/content/post_1581305.html",
+      "observation": "The Zhanjiang Natural Resources Bureau’s official service page lists Zhanjiang Real Estate Registration Center service windows in Xiashan District Administrative Service Center. This is a city-level registry service physically serving the WUP Xiashan district identity; it does not establish public parcel geometry."
+    },
+    {
+      "url": "https://www.zhanjiang.gov.cn/nr/gkmlpt/content/2/2127/post_2127745.html",
+      "observation": "The Zhanjiang Natural Resources Bureau’s official service page lists Zhanjiang Real Estate Registration Center service windows in Xiashan District Administrative Service Center. This is a city-level registry service physically serving the WUP Xiashan district identity; it does not establish public parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Xiashan Zhanjiang China official land registry cadastral parcel map GIS",
+      "result": "Official city registry page identifies a service window in Xiashan; no public parcel vector schema found.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "湛江市 霞山区 不动产登记中心 地籍图 GIS 官方",
+      "result": "The Zhanjiang Natural Resources Bureau page lists registration-center service windows in Xiashan; map materials reviewed were not parcel feature data.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Zhanjiang Natural Resources Bureau’s official service page lists Zhanjiang Real Estate Registration Center service windows in Xiashan District Administrative Service Center. This is a city-level registry service physically serving the WUP Xiashan district identity; it does not establish public parcel geometry.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "The existence, extent, and schema of any separate Xiashan parcel GIS remain unknown."
+}

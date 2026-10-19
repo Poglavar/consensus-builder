@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "name": "Isfahan",
+  "country": "Iran",
+  "countryCode": "IR",
+  "rank": 272,
+  "point": [
+    32.6691663193083,
+    51.6485280694658
+  ],
+  "population2025k": 1844.409,
+  "queueRank": 272,
+  "population2025": 1844409,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 5884,
+  "cityId": "wup2025:5884",
+  "centerLatLon": [
+    32.6691663193083,
+    51.6485280694658
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Persian",
+        "query": "سامانه نقشه کاداستر املاک شهرداری اصفهان نقشه قطعات پلاک ثبتی رسمی",
+        "scope": "Find city-specific official cadastral and municipal parcel map services.",
+        "result": "Search found a city-planning and revenue portal reference (`esup.isfahan.ir`) and descriptions of an Isfahan municipal electronic urbanization system that displays building-parcel boundaries in the city map. The description was in a non-government publication, not a primary municipal source, so it is not sufficient to mark the city registry as confirmed. No official city cadastral feature API was found.",
+        "actualResultUrls": [
+          "https://esup.isfahan.ir/",
+          "https://www.esfahanertebat.ir/news/%D8%B1%D8%A7%D9%87-%D8%A7%D9%86%D8%AF%D8%A7%D8%B2%DB%8C-%D8%B3%DB%8C%D8%B3%D8%AA%D9%85-%D8%B4%D9%87%D8%B1%D8%B3%D8%A7%D8%B2%DB%8C-%D8%A7%D9%84%DA%A9%D8%AA%D8%B1%D9%88%D9%86%DB%8C%DA%A9-%D8%AF%D8%B1/"
+        ],
+        "executionMethod": "Persian-language search and attempted direct open of the municipal portal; non-primary publication results were treated only as leads."
+      },
+      {
+        "language": "English",
+        "query": "Isfahan Iran official public cadastral map parcel viewer GIS land registration map",
+        "scope": "Cross-check English-language official discovery and avoid confusing thematic GIS with land registry.",
+        "result": "No authoritative city parcel registry/vector service was found. Search surfaced Esfahan feature services containing thematic point data and older non-primary descriptions of the municipal city-planning portal; neither demonstrates cadastral parcel geometry. Direct page-open fetch to the municipal portal timed out before an HTTP response.",
+        "actualResultUrls": [
+          "https://esup.isfahan.ir/"
+        ],
+        "executionMethod": "English search, inspection of returned service descriptions, and direct portal open attempt; the fetcher returned a timeout without HTTP response."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Isfahan electronic urbanization and revenue portal (unverified route)",
+        "operator": "Reported as Isfahan Municipality; official domain was not directly reachable in this review",
+        "homeUrl": "https://esup.isfahan.ir/",
+        "observation": "Search results from a non-primary publication describe city planning maps and building parcels, but the official site could not be opened and no official service/data layer could be independently verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://esup.isfahan.ir/",
+        "method": "GET",
+        "observation": "Direct web page-open returned a fetch timeout before an HTTP response; this does not establish service downtime."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IR-ISF-UNVERIFIED-ESUP",
+    "name": "Isfahan municipal urbanization portal lead (unverified)",
+    "url": "https://esup.isfahan.ir/",
+    "operator": "Unverified; reported as Isfahan Municipality by a non-primary publication",
+    "serviceType": "Potential municipal planning/revenue service; no city cadastral feature route independently confirmed.",
+    "layer": null,
+    "geometryType": "No full geometry response observed.",
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No authoritative city parcel source or identifier field was directly verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "A city electronic urbanization system is reported in secondary material to show parcel boundaries, but no municipal source was verified.",
+    "verifiedOpenScope": "No official Isfahan parcel registry or public vector geometry was verified; thematic GIS/point services are excluded.",
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "No primary city-specific evidence sufficient to confirm a public or operational parcel registry was verified. The municipal portal reference remains a lead only.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "resultCategory": "city_registry_unverified",
+  "technicalBlocker": "Official municipal portal direct fetch timed out; secondary descriptions cannot establish its current service or parcel layer.",
+  "remainingUncertainty": "Whether `esup.isfahan.ir` remains current and municipality-operated; whether it contains cadastral rather than planning-only property outlines; geometry format/access and exact city coverage.",
+  "nextStep": "Verify the portal link from an official Isfahan municipality page, then inspect its current public map bundle and layer endpoints before setting registryFound true.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T21:46:22.040221+00:00"
+}

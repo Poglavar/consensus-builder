@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-08T05:36:21.487208+00:00",
+  "status": "complete",
+  "scope": "Ten additional unresolved India/Africa targets, plus a separately tracked Nairobi geometry-identity reassessment requested by the user.",
+  "baseQueue": "world-parcels/queue-india-africa.json",
+  "priorIndex": "research/india-africa-next10-2026-10-08/index.json",
+  "selectionMethod": "Next five unresolved Indian and five unresolved African cities by saved largest-city rank, excluding configured cities and cities covered by the preceding two direct follow-up batches.",
+  "cityCount": 10,
+  "indiaCount": 5,
+  "africaCount": 5,
+  "extraReassessment": {
+    "cityId": "wup2025:2033",
+    "name": "Nairobi",
+    "countedInTen": false,
+    "purpose": "Assess public outline quality and use deterministic geometry-derived application IDs where appropriate; do not label them as registry IDs.",
+    "status": "completed_with_geometry_derived_identity_acceptance",
+    "evidenceFiles": [
+      "research/india-africa-batch3-2026-10-08/nairobi-quality-audit.json",
+      "research/india-africa-batch3-2026-10-08/nairobi-acceptance.json"
+    ],
+    "identityKind": "geometry-sha256-v1"
+  },
+  "cities": [
+    {
+      "cityId": "wup2025:11821",
+      "wupCityCode": 11821,
+      "name": "Kolkata",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        22.5859710859864,
+        88.3536574635294
+      ],
+      "largestRank": 9,
+      "growthRank": null,
+      "population2025": 22549738,
+      "annualGrowthPct2015To2025": 0.572688,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/kolkata.json",
+        "research/india-africa-2026-10-08/india-city-11821.json"
+      ],
+      "workstream": "india",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-11821.json",
+        "resultCategory": "no_verified_sample_candidate_citywide",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+        "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry."
+      },
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "verifiedSample": false,
+      "registryFound": false,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-11821.json"
+    },
+    {
+      "cityId": "wup2025:7945",
+      "wupCityCode": 7945,
+      "name": "Mumbai",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        19.12248075999,
+        72.8833426320986
+      ],
+      "largestRank": 12,
+      "growthRank": null,
+      "population2025": 20203056,
+      "annualGrowthPct2015To2025": 0.969251,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/mumbai.json",
+        "research/india-africa-2026-10-08/india-city-7945.json"
+      ],
+      "workstream": "india",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-7945.json",
+        "resultCategory": "no_verified_sample_candidate_citywide",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+        "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+      },
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "verifiedSample": false,
+      "registryFound": false,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-7945.json"
+    },
+    {
+      "cityId": "wup2025:7233",
+      "wupCityCode": 7233,
+      "name": "Surat",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        21.1776194957192,
+        72.7789187685758
+      ],
+      "largestRank": 53,
+      "growthRank": null,
+      "population2025": 6908925,
+      "annualGrowthPct2015To2025": 2.055327,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/surat.json",
+        "research/india-africa-2026-10-08/india-city-7233.json"
+      ],
+      "workstream": "india",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-7233.json",
+        "resultCategory": "no_verified_open_endpoint_after_attempts",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
+        "nextStep": "Reach AnyRoR through a functioning official browser route, resolve the WUP coordinate to the official village/survey hierarchy, and test whether a public response yields parcel polygon geometry and a stable survey ID."
+      },
+      "resultCategory": "verified_sample_partial_coverage",
+      "verifiedSample": true,
+      "registryFound": true,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-7233.json",
+      "acceptanceFile": "research/india-africa-batch3-2026-10-08/surat-acceptance.json"
+    },
+    {
+      "cityId": "wup2025:9717",
+      "wupCityCode": 9717,
+      "name": "Lucknow",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.8615244724503,
+        80.9654352206033
+      ],
+      "largestRank": 82,
+      "growthRank": null,
+      "population2025": 5052444,
+      "annualGrowthPct2015To2025": 0.899203,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/lucknow.json",
+        "research/india-africa-2026-10-08/india-city-9717.json"
+      ],
+      "workstream": "india",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-9717.json",
+        "resultCategory": "no_verified_sample_candidate_citywide",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+        "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+      },
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "verifiedSample": false,
+      "registryFound": false,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-9717.json"
+    },
+    {
+      "cityId": "wup2025:9603",
+      "wupCityCode": 9603,
+      "name": "Kanpur",
+      "country": "India",
+      "countryCode": "IN",
+      "region": "India",
+      "centerLatLon": [
+        26.460949782044,
+        80.3406195423691
+      ],
+      "largestRank": 97,
+      "growthRank": null,
+      "population2025": 4329973,
+      "annualGrowthPct2015To2025": -0.127565,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/kanpur.json",
+        "research/india-africa-2026-10-08/india-city-9603.json"
+      ],
+      "workstream": "india",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/india-city-9603.json",
+        "resultCategory": "no_verified_sample_candidate_citywide",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+        "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+      },
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "verifiedSample": false,
+      "registryFound": false,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-9603.json"
+    },
+    {
+      "cityId": "wup2025:4435",
+      "wupCityCode": 4435,
+      "name": "Al-Qahirah (Cairo)",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        30.0646095252452,
+        31.2607144569505
+      ],
+      "largestRank": 7,
+      "growthRank": null,
+      "population2025": 25566102,
+      "annualGrowthPct2015To2025": 1.708485,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/cairo.json",
+        "research/india-africa-2026-10-08/africa-ne-city-al-qahirah-cairo.json"
+      ],
+      "workstream": "africa_north_east",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-al-qahirah-cairo.json",
+        "resultCategory": "public_service_no_geometry",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "The public city-specific search found no verified parcel polygons for Al-Qahirah (Cairo); ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+        "nextStep": "Check ESA or the Al-Qahirah (Cairo) local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre."
+      },
+      "resultCategory": "public_service_no_geometry",
+      "verifiedSample": false,
+      "registryFound": null,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-4435.json"
+    },
+    {
+      "cityId": "wup2025:1854",
+      "wupCityCode": 1854,
+      "name": "Kinshasa",
+      "country": "Democratic Republic of the Congo",
+      "countryCode": "CD",
+      "region": "Africa",
+      "centerLatLon": [
+        -4.38339103982329,
+        15.3261049737162
+      ],
+      "largestRank": 30,
+      "growthRank": null,
+      "population2025": 10943641,
+      "annualGrowthPct2015To2025": 3.182582,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/kinshasa.json",
+        "research/india-africa-2026-10-08/africa-ws-city-1854.json"
+      ],
+      "workstream": "africa_west",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-1854.json",
+        "resultCategory": "no_new_verified_target_sample",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+        "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only."
+      },
+      "resultCategory": "no_verified_public_parcel_endpoint",
+      "verifiedSample": false,
+      "registryFound": null,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-1854.json"
+    },
+    {
+      "cityId": "wup2025:275",
+      "wupCityCode": 275,
+      "name": "Alexandria",
+      "country": "Egypt",
+      "countryCode": "EG",
+      "region": "Africa",
+      "centerLatLon": [
+        31.1933695758061,
+        29.9517660943627
+      ],
+      "largestRank": 48,
+      "growthRank": null,
+      "population2025": 7266957,
+      "annualGrowthPct2015To2025": 2.018881,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/alexandria.json",
+        "research/india-africa-2026-10-08/africa-ne-city-alexandria.json"
+      ],
+      "workstream": "africa_north_east",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-alexandria.json",
+        "resultCategory": "public_service_no_geometry",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "The public city-specific search found no verified parcel polygons for Alexandria; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+        "nextStep": "Check ESA or the Alexandria local registry for a public vector endpoint or bounded parcel extract; distinguish NUCA offered lots from the city-wide cadastre."
+      },
+      "resultCategory": "official_mapping_product_no_open_endpoint",
+      "verifiedSample": false,
+      "registryFound": null,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-275.json"
+    },
+    {
+      "cityId": "wup2025:4325",
+      "wupCityCode": 4325,
+      "name": "Al-Kharṭūm (Khartoum)",
+      "country": "Sudan",
+      "countryCode": "SD",
+      "region": "Africa",
+      "centerLatLon": [
+        15.6335384772136,
+        32.4952458979726
+      ],
+      "largestRank": 56,
+      "growthRank": null,
+      "population2025": 6809355,
+      "annualGrowthPct2015To2025": 1.438109,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/khartoum.json",
+        "research/india-africa-2026-10-08/africa-ne-city-al-khar-m-khartoum.json"
+      ],
+      "workstream": "africa_north_east",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-al-khar-m-khartoum.json",
+        "resultCategory": "promising_unavailable",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No Al-Kharṭūm (Khartoum) parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+        "nextStep": "Retry the official Sudan Spatial Portal when reachable and test a small Al-Kharṭūm (Khartoum) extent; check whether a public parcel layer is exposed without partner authentication."
+      },
+      "resultCategory": "promising_official_portal_temporarily_unavailable",
+      "verifiedSample": false,
+      "registryFound": null,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-4325.json"
+    },
+    {
+      "cityId": "wup2025:6353",
+      "wupCityCode": 6353,
+      "name": "Ādīs Ᾱbeba (Addis Ababa)",
+      "country": "Ethiopia",
+      "countryCode": "ET",
+      "region": "Africa",
+      "centerLatLon": [
+        9.00714292574818,
+        38.7489828471342
+      ],
+      "largestRank": 59,
+      "growthRank": null,
+      "population2025": 6705705,
+      "annualGrowthPct2015To2025": 3.818874,
+      "cohorts": [
+        "largest200"
+      ],
+      "status": "completed",
+      "priorEvidenceFiles": [
+        "research/addis-ababa.json",
+        "research/retry/cities/addis-ababa.json",
+        "research/india-africa-2026-10-08/africa-ne-city-d-s-beba-addis-ababa.json"
+      ],
+      "workstream": "africa_north_east",
+      "priorAssessment": {
+        "checkedAt": "2026-10-08",
+        "cohort": "india-africa",
+        "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-d-s-beba-addis-ababa.json",
+        "resultCategory": "public_service_no_geometry",
+        "freshVerifiedSample": false,
+        "technicalBlocker": "No anonymous Ādīs Ᾱbeba (Addis Ababa) parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+        "nextStep": "Ask the Ethiopian land-system operator or Ādīs Ᾱbeba (Addis Ababa) city office whether a public parcel layer or anonymous bounded extract exists, then test geometry and IDs."
+      },
+      "resultCategory": "official_cadastre_account_or_service_access_no_geometry",
+      "verifiedSample": false,
+      "registryFound": null,
+      "finalEvidenceFile": "research/india-africa-batch3-2026-10-08/city-6353.json"
+    }
+  ],
+  "completedAt": "2026-10-08"
+}

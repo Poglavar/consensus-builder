@@ -1,0 +1,89 @@
+{
+  "cityRecord": "city-4196-erin-osun.json",
+  "schemaVersion": "1.0",
+  "cityCode": 4196,
+  "queueRank": 1737,
+  "city": "Erin-osun",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Osun first-party pages evidence a local Ministry of Lands and Physical Planning and Office of the Surveyor General with land-registry, cadastral and geospatial responsibilities. The official helpful-links page identifies an Osun Land Parcel Information System, but its host timed out by DNS; the related lands host failed TLS validation; and the accessible CofO site is document verification, not an anonymous parcel geometry service. No GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Yoruba discovery queries, exact text, outcomes and actual result URLs are recorded in city-4196-erin-osun.json.",
+  "requestOutcomes": "Official Osun custodian pages, helpful-links page and CofO landing page were checked. The linked parcel-system host timed out; lands.osunstate.gov.ng failed certificate validation and was not accessed with verification disabled; the CofO page exposed no safe anonymous parcel geometry route.",
+  "attemptedRoutes": [
+    {
+      "route": "Osun Ministry of Lands and Physical Planning",
+      "url": "https://www.osunstate.gov.ng/ministries/ministry-of-lands-and-physical-planning/",
+      "outcome": "Local custodian remit evidenced; no public parcel geometry endpoint in page evidence."
+    },
+    {
+      "route": "Osun Office of the Surveyor General",
+      "url": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+      "outcome": "Cadastral, survey and geospatial remit evidenced; no public parcel geometry endpoint in page evidence."
+    },
+    {
+      "route": "Osun official helpful-links parcel-system entry",
+      "url": "https://www.osunstate.gov.ng/directory/links/",
+      "outcome": "Officially labels https://www.ocofofasttrack.osun.gov.ng/ as Osun Land Parcel Information System."
+    },
+    {
+      "route": "Osun Land Parcel Information System host",
+      "url": "https://www.ocofofasttrack.osun.gov.ng/",
+      "outcome": "DNS resolution timeout after 20 seconds; no viewer JavaScript, service configuration, schema, CRS, native ID or geometry response."
+    },
+    {
+      "route": "Osun lands host",
+      "url": "https://lands.osunstate.gov.ng/",
+      "outcome": "TLS certificate expired; no certificate exception used."
+    },
+    {
+      "route": "Osun CofO verification",
+      "url": "https://www.cofo.onegov.os.gov.ng/",
+      "outcome": "200 public landing page; document-number/date verification only, with no anonymous parcel geometry response."
+    }
+  ],
+  "scopeLimits": [
+    "Exact WUP point [7.84072868541807, 4.49292376995695] was preserved; no exact-point hit/miss inference was made.",
+    "No city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Local registry/survey custody evidence is not proof of an open vector parcel API.",
+    "A timeout, TLS failure, inaccessible viewer or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public geometry query reached; no hit/miss inference.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Osun State land registry/survey custodians and an officially linked parcel-system host.",
+    "verifiedOpenScope": "Custodian and service-link evidence only; no open parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current public parcel viewer/API behavior, safe native identity, schema, CRS, anonymous access and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness.",
+  "retainedSample": null
+}

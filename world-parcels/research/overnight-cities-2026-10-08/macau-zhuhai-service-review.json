@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11460-macau-zhuhai.json",
+  "purpose": "Read-only Macao boundary and cadastral viewer review plus Zhuhai local registry-service discovery; point scope limited to ranked WUP locator; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "maxFullPolygonsRetainedAcrossCityReview": 3,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The ranked compound locator is north of the official Macao SAR limit and outside Macao. The official Macao DSCC Cad_lote/0 public polygon layer returned one parcel (safe OBJECTID 389) at a nearby Macao urban reference, [22.1940052, 113.5442146]. The repository adapter passed the full 13-cell qualification and follow-up checks in temporary QA files. The official Zhuhai registry center’s linked “以图查房” map route redirects to Guangdong government identity authentication, so Zhuhai-side geometry at the ranked locator remains unverified. No full geometry is stored in this report. The three stored sample polygons are the maximum retained for this compound-city review. Independent Shapely/GEOS validation in EPSG:32649 found all 28 QA polygons valid and nonempty, with no exact duplicates, positive-area overlaps above 0.01 m², or topology-operation errors.",
+  "qaTemporaryEvidence": {
+    "gridCells": 13,
+    "uniqueParcels": 28,
+    "requests": 21,
+    "allAdapterTestsPassed": true,
+    "independentGEOS": {
+      "library": "Shapely 2.2.0",
+      "metricCrs": "EPSG:32649",
+      "validNonemptyCount": 28,
+      "invalidCount": 0,
+      "duplicatePairs": 0,
+      "overlapPairsAbove0_01M2": 0,
+      "operationErrors": 0
+    },
+    "repositorySampleFile": "macau-dscc-adapter-sample.geojson",
+    "repositorySampleFeatureCount": 3,
+    "completeQAgeometryCopiedToRepository": false
+  },
+  "finalNamespace": "mo-dscc-cad-lote / MO-DSCC-CAD-",
+  "finalAcceptanceFile": "macau-dscc-acceptance.json",
+  "finalQualityFile": "macau-dscc-quality.json",
+  "finalIndependentGEOSLibrary": "Shapely 2.1.2",
+  "originalCandidateEvidence": [
+    "macau-fatima-acceptance.json",
+    "macau-fatima-quality.json",
+    "macau-initial-sample-retention.json"
+  ],
+  "namespaceNote": "Initial parish label was unverified; final source-scoped qualification claims no parish membership. The original candidate full sample is retained outside the repository."
+}

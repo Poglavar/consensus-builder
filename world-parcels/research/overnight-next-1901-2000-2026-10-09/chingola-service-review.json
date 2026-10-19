@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-1183-chingola.json",
+  "cityCode": 1183,
+  "queueRank": 1976,
+  "city": "Chingola",
+  "country": "Zambia",
+  "countryCode": "ZM",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Zambia Ministry of Lands / official NSDI Vector CadasterNew MapServer (Lots from ZILMIS), with Chingola City Council estate/deeds-register custody evidence",
+  "serviceUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+  "scope": "Official national polygon service was queried anonymously in a bounded Chingola-area envelope. Chingola City Council first-party pages separately evidence local land-application, plot-allocation, and deeds-register duties.",
+  "schemaAndCrs": "Layer 0 Lots is esriGeometryPolygon with source CRS EPSG:32735; GeoJSON was requested in EPSG:4326. Native fields included SDE.Lots.OBJECTID, UPID, PID, SRREF, survey and land-use fields.",
+  "nativeIdentity": "SDE.Lots.OBJECTID, the ArcGIS native object identifier returned as feature id. UPID was blank in the queried bounded response, so no synthetic or composite identity was used.",
+  "fieldMapping": {
+    "safe native fields observed": ["SDE.Lots.OBJECTID", "SDE.Lots.UPID", "SDE.Lots.PID", "SDE.Lots.SRREF", "SDE.Lots.SURVEY_ARE", "SDE.Lots.SURVEY_UNI", "SDE.Lots.SURVEY_DAT", "SDE.Lots.LANDUSE", "SDE.Lots.OBJ_ID", "SDE.Lots.LANDTYPE", "SHAPE"],
+    "retained feature properties": "id only, native OBJECTID string; no source attribute set.",
+    "composite-key provenance": "None."
+  },
+  "requestOutcome": "The layer metadata and schema GETs returned 200. The exact WUP-point intersects query returned 200 with zero features. A 10 km UTM envelope query centered on the exact transformed point returned many polygons and exceededTransferLimit=true; three complete polygons were retained after reducing properties to native id only.",
+  "attemptedRoutes": [
+    {"method": "GET", "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer", "outcome": "200; service metadata describes national Zambia cadaster/customary lots."},
+    {"method": "GET", "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson", "outcome": "200; Lots polygon schema and EPSG:32735 observed."},
+    {"method": "GET", "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query (exact point; inSR=32735, outSR=4326)", "outcome": "200; zero features at exact WUP point."},
+    {"method": "GET", "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query (10 km envelope; inSR=32735, outSR=4326)", "outcome": "200; many polygons, exceededTransferLimit=true; first three retained."},
+    {"method": "GET", "url": "https://www.chingolacouncil.gov.zm/?page_id=770", "outcome": "First-party page confirms estate management processes land applications and maintains deeds register."},
+    {"method": "GET", "url": "https://www.chingolacouncil.gov.zm/?page_id=792", "outcome": "First-party services page lists plot allocation/town planning and land distribution/plots."}
+  ],
+  "officialCustodyEvidence": "Chingola City Council is the city/local land-administration custodian evidenced by its own departments and services pages. The national MapServer is a separate official geometry custodian/service and is not presented as council ownership.",
+  "retainedSample": "chingola-sample.geojson",
+  "retainedProperties": "No raw source-specific attributes retained; each feature has only properties.id and full geometry.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No unsafe owner, address, contact, titleholder, tax/account, or personal/property-record fields were requested or retained. No login, credential, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+  "limits": [
+    "Zero exact-point hit is not evidence of citywide absence.",
+    "Envelope response exceeded transfer limit; the sample is bounded and intentionally limited to three polygons.",
+    "No municipal boundary intersection or nationwide completeness audit was performed.",
+    "Packet completion does not mean source integration/admission; runtime remains held until serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "The public service is strong geometry evidence, but citywide coverage, native OBJECTID persistence semantics, and adapter behavior remain independently unqualified."
+}

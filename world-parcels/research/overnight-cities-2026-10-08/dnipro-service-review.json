@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3763-dnipro.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Ukrainian national NSDI documentation describes parcel search and WFS service concepts, but the live portal is login-restricted and no anonymous safe geometry schema or feature response was obtained. No login or property lookup was attempted.",
+  "registryAssessment": "Dnipro’s official land office public-information page links to national cadastral-map services and identifies the Dnipro territorial land office. The national NSDI documentation describes parcel/cadastral-number search, but the live portal currently redirects to login and states public access is restricted from 2022-02-24 until martial law ends. Local registry pathway is supported; current anonymous geometry is not.",
+  "searchQueries": [
+    {
+      "language": "Ukrainian",
+      "query": "Дніпро офіційна кадастрова карта земельна ділянка геопортал кадастр Держгеокадастр",
+      "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+      "result": "Separate Ukrainian and English searches found the official Dnipro land-office page and national NSDI parcel-search/API documentation. The live NSDI portal currently redirects to login and reports public access restrictions; no anonymous geometry response was retrieved.",
+      "actualResultUrls": [
+        "https://www.dzadnipro.gov.ua/ru/public-information/3-services.html",
+        "https://nsdi.gov.ua/",
+        "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+        "https://nsdi.gov.ua/docs/portal/2karta/4map_search.html",
+        "https://nsdi.gov.ua/docs/api/v2/gis.html"
+      ],
+      "executionMethod": "Separate Ukrainian and English searches and official page/API documentation review; live portal status checked without authentication or property lookup."
+    },
+    {
+      "language": "English",
+      "query": "Dnipro Ukraine official cadastral parcel map GIS public land cadastre",
+      "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+      "result": "Separate Ukrainian and English searches found the official Dnipro land-office page and national NSDI parcel-search/API documentation. The live NSDI portal currently redirects to login and reports public access restrictions; no anonymous geometry response was retrieved.",
+      "actualResultUrls": [
+        "https://www.dzadnipro.gov.ua/ru/public-information/3-services.html",
+        "https://nsdi.gov.ua/",
+        "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+        "https://nsdi.gov.ua/docs/portal/2karta/4map_search.html",
+        "https://nsdi.gov.ua/docs/api/v2/gis.html"
+      ],
+      "executionMethod": "Separate Ukrainian and English searches and official page/API documentation review; live portal status checked without authentication or property lookup."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, taxpayer, account, applicant, title, or other personal/property values were queried or retained. No credentials or token values were used.",
+  "runtimeAssessment": "not_assessed"
+}

@@ -1,0 +1,135 @@
+{
+  "name": "Farrukhabad",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 874,
+  "point": [
+    27.3794412402676,
+    79.5971026977612
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "फर्रुखाबाद भू नक्शा जमीन नक्शा तहसील आधिकारिक खसरा नक्शा उत्तर प्रदेश",
+        "scope": "Find city/district official land records and current cadastral map viewer.",
+        "result": "Official Farrukhabad district land-records pages link to Uttar Pradesh Bhulekh and identify Tehsil offices Farrukhabad Sadar, Amritpur and Kaimganj. Official UP BhuNaksha selectors list district 159 and three tehsils; no parcel polygon response was requested or retained.",
+        "urls": [
+          "https://farrukhabad.nic.in/service/record-of-right-land-khatauni/",
+          "https://farrukhabad.nic.in/hi/service/%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80-%E0%A4%9C%E0%A4%AE%E0%A5%80%E0%A4%A8-%E0%A4%95%E0%A5%87-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://upbhunaksha.gov.in/home/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Farrukhabad district land records official BhuNaksha map Farrukhabad city Uttar Pradesh",
+        "scope": "Confirm official district-to-state record route and geo-referenced map status.",
+        "result": "The official district service routes to UP Bhulekh; the Uttar Pradesh public digitization dashboard has Farrukhabad district/tehsil village map linking and georeference status. The interactive map shell defaults to Agra; no Agra or Farrukhabad parcel geometry was reused as a city sample.",
+        "urls": [
+          "https://farrukhabad.nic.in/service/land-records/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=159",
+          "https://upbhunaksha.gov.in/home/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://farrukhabad.nic.in/service/record-of-right-land-khatauni/",
+        "observation": "Official district Record of Right page links UP Bhulekh and identifies local tehsil offices."
+      },
+      {
+        "url": "https://farrukhabad.nic.in/hi/service/%E0%A4%96%E0%A4%A4%E0%A5%8C%E0%A4%A8%E0%A5%80-%E0%A4%9C%E0%A4%AE%E0%A5%80%E0%A4%A8-%E0%A4%95%E0%A5%87-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+        "observation": "Hindi district land-record page links to the same state service and local offices."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "observation": "Current public map shell includes District, Tehsil, Village and Plot No controls; initial page defaults to Agra."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=159",
+        "observation": "Official district digitization dashboard has Farrukhabad cadastral map sheets/village linking and georeference status."
+      }
+    ],
+    "serviceChecks": [
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "method": "GET public viewer shell",
+        "status": 200,
+        "observation": "Viewer rendered; default selectors point to Agra, not target city."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+        "method": "GET public client source",
+        "status": 200,
+        "observation": "Static client code identifies level selector POST, village-based map extent, plot-at-coordinate route and WMS plot display."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST level=2,codes=159 (district selector only)",
+        "status": 200,
+        "observation": "Returned three administrative tehsils; no parcel or owner data requested."
+      }
+    ],
+    "geometryDecision": "No full city-bound parcel polygon retained.",
+    "serviceReviewFile": "farrukhabad-service-review.json"
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "in-up-farrukhabad-bhunaksha",
+    "name": "Uttar Pradesh BhuNaksha public cadastral-map viewer, Farrukhabad district selectors",
+    "url": "https://upbhunaksha.gov.in/home/",
+    "operator": "Uttar Pradesh Revenue Council / district revenue administration",
+    "serviceType": "Public map viewer with administrative selectors and map display; full parcel geometry was not obtained.",
+    "safeIdRoute": "The public viewer client uses MapInfo/getPlotAtXY after village selection and displays selected plots through WMS; plot-info record route was not called.",
+    "geometryType": null,
+    "coordinateCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Farrukhabad district revenue-map coverage with Sadar, Amritpur and Kaimganj tehsils.",
+    "verifiedOpenScope": "Public selector request at district code 159 returned three tehsils (Amritpur 00831, Kaimganj 00830, Farrukhabad 00832); district dashboard documents cadastral-map digitization. No point-to-village mapping or full polygon was retrieved for the WUP city locator.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_service_no_public_full_geometry_sample",
+  "technicalBlocker": "The viewer exposes map selection and WMS display; no anonymous full-polygon response was verified. The current viewer page defaults to Agra, so its displayed default map cannot be attributed to Farrukhabad.",
+  "remainingUncertainty": "Exact WUP point revenue village and whether that urban locality is represented in an accessible village map; legal cadastral keys and full geometries were not queried.",
+  "nextStep": "If continuing, resolve the point to an official Farrukhabad Sadar village and use only a documented full-geometry endpoint with safe parcel ID selection.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9349,
+  "cityId": "wup2025:9349",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    27.3794412402676,
+    79.5971026977612
+  ],
+  "queueRank": 874,
+  "population2025": 615831,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Farrukhabad district administration directs land-right records to UP Bhulekh and lists the district tehsil offices. UP BhuNaksha’s public selector confirms district 159 and city-name tehsil code 00832; the state dashboard records map-digitization status. This establishes local record/map services, not an exact city polygon sample.",
+  "registryEvidenceUrls": [
+    "https://farrukhabad.nic.in/service/land-records/",
+    "https://farrukhabad.nic.in/service/record-of-right-land-khatauni/",
+    "https://upbhunaksha.gov.in/home/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=159"
+  ],
+  "verifiedParcelResponse": null,
+  "runtimeAssessment": {
+    "status": "not_assessed_no_public_full_geometry",
+    "reason": "Source discovery only; parent owns runtime qualification. No application/backend/catalog/global configuration was changed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://farrukhabad.nic.in/service/land-records/",
+    "fetch": "error",
+    "reason": "HTTP Error 404: Not Found"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

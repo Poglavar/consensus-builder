@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-3457-kursk.json",
+  "cityCode": 3457,
+  "queueRank": 1997,
+  "city": "Kursk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Kursk regional cadastral-valuation institution and official Kursk government cadastral/public-map references; federal public-map successor NSPD",
+  "serviceUrl": "https://nspd.gov.ru/",
+  "secondaryServiceUrl": "https://xn--80aalwda4bbgdho.xn--p1ai/",
+  "scope": "Official Kursk/Kursk-region discovery and bounded anonymous public-map connectivity checks only; citywide parcel completeness and adapter suitability were not verified.",
+  "configurationEvidence": "The official Kursk site root was requested, but the returned body was an anti-automation image rather than a discoverable map viewer. No current official municipal JavaScript/configuration exposing a parcel service was identified in the bounded search.",
+  "schemaAndCrs": "No parcel feature schema, native parcel identity, vector geometry, or CRS was exposed. No source-specific attributes were requested or retained.",
+  "nativeIdentity": "Not observed; no synthetic identity used.",
+  "fieldMapping": {
+    "id": "Not available because no native parcel feature response returned.",
+    "geometry": "Not available because no native parcel feature response returned.",
+    "sourceAttributes": "No source attributes requested or retained."
+  },
+  "requestAttempts": [
+    {
+      "method": "GET",
+      "url": "https://kursk.ru/",
+      "outcome": "HTTP response retrieved, but body was an anti-automation image/challenge and did not expose a map viewer or parcel API. No challenge was bypassed."
+    },
+    {
+      "method": "GET",
+      "url": "https://nspd.gov.ru/",
+      "outcome": "Timed out after 20 seconds from the anonymous request environment; not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://xn--80aalwda4bbgdho.xn--p1ai/",
+      "outcome": "Search-discovered regional cadastral-valuation institution page; it provides official regional service/custodian context but no verified parcel geometry endpoint was followed."
+    },
+    {
+      "method": "GET",
+      "url": "https://kursk.ru/upload/iblock/6ad/dtjbaoqvvgv2x077o6vhtnul97a0bptg/Akt-GIKE-Kursk-Pavlunovskogo-10_ot-01-dek-24g.pdf",
+      "outcome": "Official Kursk-hosted document confirms use of a cadastral map and cites a Kursk parcel identifier in document context; it is not a live parcel API and no polygon was extracted or retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://adm2.rkursk.ru/region/control/documents/document-99646/",
+      "outcome": "Official Kursk-region government page returned cadastral-valuation/public-information context; no safe parcel geometry response."
+    }
+  ],
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained; no unchanged native safe-ID-plus-geometry response was returned.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "Owner, address, contact, titleholder, tax/account, legal-description, and ownership/rights fields were not requested or retained.",
+  "officialCustodyEvidence": "The official Kursk government domain hosts cadastral-map material and the official regional institution publishes cadastral valuation services from a Kursk address. These distinguish local/regional custodial and procedural evidence from general federal agency prose; however, no parcel API custody or adapter contract was verified.",
+  "limits": [
+    "The exact WUP point [51.7381907570659, 36.1824765248315] was preserved and was not shifted to force a hit.",
+    "No exact-point parcel hit, parcel polygon, native parcel identity, vector schema, or CRS was obtained.",
+    "The official Kursk root anti-automation response and NSPD timeout are service/access outcomes, not evidence of citywide parcel absence.",
+    "Search results and official documents establish cadastral context but do not substitute for a live parcel feature response.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+    "No raw source-specific attribute set was retained.",
+    "RuntimeReadiness remains held pending independent serial review and a real safe parcel response."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A local/regional cadastral custodian and official cadastral-map context are evidenced, but current parcel-level integration is unverified because the official city route returned an anti-automation image, NSPD timed out, and no safe native parcel geometry endpoint was exposed."
+}

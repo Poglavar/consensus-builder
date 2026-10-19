@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10722",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-10722-jiaozhou.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/jiaozhou-service-review.json",
+    "tmp/valhalla-parcel-research/10722/map.js",
+    "tmp/valhalla-parcel-research/runs/20261009T103854-cb714e2d/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T10:43:04.111647Z",
+  "reason": "First-party government service record names Jiaozhou registration custodians; official Shandong public map cache exposes general map and user-plot routes, with no verified anonymous cadastral ID plus full polygon response. No fresh adapter qualification; exact-point and citywide parcel presence remain unresolved.",
+  "primarySourceUrl": "https://qdzwfw.sd.gov.cn/jz/icity/proinfo/index3?code=181463c6-1c02-4799-9e1b-c9f0dbdab8bc"
+}

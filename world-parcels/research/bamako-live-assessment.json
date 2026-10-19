@@ -1,0 +1,80 @@
+{
+  "city": "Bamako, Mali",
+  "countryCode": "ML",
+  "model": "gpt-6-luna (low)",
+  "checkedAtUtc": "2026-10-03T06:12:23Z-06:12:55Z",
+  "source": {
+    "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+    "publisher": "SPRDF / NINACAD",
+    "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+    "layer": "sifMali:parcelle",
+    "protocol": "OGC WFS 1.1.0; GeoJSON supported and used. GML advertised in the earlier registry record, not re-tested today.",
+    "nativeCrs": "EPSG:4326; bounded response returned EPSG:4326 coordinates."
+  },
+  "freshRequests": [
+    {
+      "purpose": "bounded geometry/page 1, maxFeatures=3, sortBy=ninacad, startIndex=0",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&maxFeatures=3&outputFormat=application%2Fjson&srsName=EPSG%3A4326&sortBy=ninacad&startIndex=0&bbox=-8.0430%2C12.6755%2C-8.0415%2C12.6775%2CEPSG%3A4326",
+      "httpStatus": 200,
+      "responseTimestamp": "2026-10-03T06:12:23.898Z",
+      "counts": {
+        "totalFeatures": 74,
+        "numberMatched": 74,
+        "numberReturned": 3
+      },
+      "result": "3 Polygon features. First exact property ID ninacad=00103010001 (string); feature ID parcelle.4022706; WGS84 geometry."
+    },
+    {
+      "purpose": "same bbox/page 2",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&maxFeatures=3&outputFormat=application%2Fjson&srsName=EPSG%3A4326&sortBy=ninacad&startIndex=3&bbox=-8.0430%2C12.6755%2C-8.0415%2C12.6775%2CEPSG%3A4326",
+      "httpStatus": 200,
+      "responseTimestamp": "2026-10-03T06:12:53.903Z",
+      "counts": {
+        "totalFeatures": 74,
+        "numberMatched": 74,
+        "numberReturned": 3
+      },
+      "result": "3 additional feature IDs/ninacad values, no overlap with page 1. Count consistent. Only 6 of 74 rows paged; full query enumeration not attempted."
+    },
+    {
+      "purpose": "exact native ID lookup, CQL_FILTER ninacad='00103010001'",
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali%3Aparcelle&maxFeatures=2&outputFormat=application%2Fjson&srsName=EPSG%3A4326&CQL_FILTER=ninacad%3D%2700103010001%27",
+      "httpStatus": 200,
+      "responseTimestamp": "2026-10-03T06:12:54.525Z",
+      "counts": {
+        "totalFeatures": 1,
+        "numberMatched": 1,
+        "numberReturned": 1
+      },
+      "result": "Returns the same parcel ID parcelle.4022706 and closed Polygon geometry. Confirms exact string lookup and one match."
+    }
+  ],
+  "identityAssessment": "ninacad is the best exposed parcel key: zero-padded string; exact filter returned one row and the returned canonical key matches. It is described in the NINACAD portal as the parcel's unique cadastral identifier. GeoServer feature IDs are separate service row IDs. Long-term change/version semantics were not documented in the material reviewed.",
+  "priorEvidence": {
+    "checkedAt": "2026-09-29",
+    "note": "Earlier bounded request returned 3 polygons and count 74 in the same test area; earlier centroid boxes returned 0. Today's calls independently reconfirm geometry, counts and exact identity."
+  },
+  "rights": {
+    "status": "NO-GO pending written reuse terms/permission",
+    "primarySourcesReviewed": [
+      {
+        "url": "https://ninacad.sprdf.ml/",
+        "observation": "Official portal displays © SPDRF; no open-data license, terms of reuse, or terms link found on the landing page."
+      },
+      {
+        "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "observation": "Prior live capabilities request showed anonymous WFS access and GeoJSON, but service reachability/format is not a reuse license."
+      },
+      {
+        "url": "https://www.dndc.gouv.ml/",
+        "observation": "Official domains reviewed; this agency page timed out in the earlier check. No explicit reuse terms located."
+      }
+    ],
+    "conclusion": "Anonymous access and a public parcel search do not grant redistribution rights. Do not enable for client-side/runtime reuse absent an explicit license or permission."
+  },
+  "coverageAndCaveats": "Test box near Bamako Commune III returns 74 matches; the earlier centroid bbox returned zero, so this does not prove complete Bamako or national coverage.",
+  "recommendation": "Technically strong bounded WFS candidate with exact string identity and count-backed paging, but keep disabled until SPRDF publishes or confirms reuse rights.",
+  "description": "Fresh bounded source, identity and reuse assessment; source remains disabled.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "ml-sprdf-ninacad-parcelle-wfs"
+}

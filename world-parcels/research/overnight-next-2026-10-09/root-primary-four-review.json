@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:46:31.498552+00:00",
+  "reviewedCodes": [
+    4390,
+    7148,
+    8914,
+    11710
+  ],
+  "reviewedCount": 4,
+  "newPublicGeometryFindings": 0,
+  "primaryNetworkEvidence": "root-primary-four-recheck.json",
+  "custodyCitationCorrections": [
+    "Bijie specific office claim replaced with prefecture registration statistics",
+    "Meizhou custody based on municipal duties, not cross-city guidance"
+  ],
+  "scope": "Completed investigations reviewed; no additional fresh city counted."
+}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9580",
+  "wupCityCode": 9580,
+  "name": "Chengtougu",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1020,
+  "queueRank": 1020,
+  "point": [
+    39.1262615677138,
+    117.705418474092
+  ],
+  "centerLatLon": [
+    39.1262615677138,
+    117.705418474092
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 541451,
+  "population2025k": 541.451,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Tianjin and Sino-Singapore Eco-City have official real-estate registration rules, but the fresh English/Chinese searches and exact-name follow-ups do not resolve the WUP Chengtougu settlement to a city-specific registry service or cadastral footprint. The locator and low-plausibility WUP population remain unchanged. No regional source coverage or neighboring jurisdiction is transferred.",
+  "registryEvidenceUrls": [
+    "https://www.eco-city.gov.cn/zwgg/47441.jhtml",
+    "https://www.tj.gov.cn/zwgk/szfgb/xqk/2010/14/bmgfxwj/202512/t20251231_7212805.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_wup_identity_unresolved",
+  "technicalBlocker": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist.",
+  "scopeLimits": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "resultCategory": "city_specific_registry_unestablished",
+  "coverageAssessment": {
+    "claimedScope": "Tianjin and Sino-Singapore Eco-City have official real-estate registration rules, but the fresh English/Chinese searches and exact-name follow-ups do not resolve the WUP Chengtougu settlement to a city-specific registry service or cadastral footprint. The locator and low-plausibility WUP population remain unchanged. No regional source coverage or neighboring jurisdiction is transferred.",
+    "verifiedOpenScope": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chengtougu Tianjin official real estate registration cadastral parcels",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "Tianjin and Sino-Singapore Eco-City have official real-estate registration rules, but the fresh English/Chinese searches and exact-name follow-ups do not resolve the WUP Chengtougu settlement to a city-specific registry service or cadastral footprint. The locator and low-plausibility WUP population remain unchanged. No regional source coverage or neighboring jurisdiction is transferred.",
+        "actualResultUrls": [
+          "https://www.eco-city.gov.cn/zwgg/47441.jhtml",
+          "https://www.tj.gov.cn/zwgk/szfgb/xqk/2010/14/bmgfxwj/202512/t20251231_7212805.html"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Chinese",
+        "query": "城头沽 滨海新区 不动产 登记 中心 地籍图",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "Tianjin and Sino-Singapore Eco-City have official real-estate registration rules, but the fresh English/Chinese searches and exact-name follow-ups do not resolve the WUP Chengtougu settlement to a city-specific registry service or cadastral footprint. The locator and low-plausibility WUP population remain unchanged. No regional source coverage or neighboring jurisdiction is transferred.",
+        "actualResultUrls": [
+          "https://www.eco-city.gov.cn/zwgg/47441.jhtml",
+          "https://www.tj.gov.cn/zwgk/szfgb/xqk/2010/14/bmgfxwj/202512/t20251231_7212805.html"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:18.935244+00:00",
+        "url": "https://www.eco-city.gov.cn/zwgg/47441.jhtml",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1082)>"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://www.eco-city.gov.cn/zwgg/47441.jhtml",
+        "observation": "Tianjin and Sino-Singapore Eco-City have official real-estate registration rules, but the fresh English/Chinese searches and exact-name follow-ups do not resolve the WUP Chengtougu settlement to a city-specific registry service or cadastral footprint. The locator and low-plausibility WUP population remain unchanged. No regional source coverage or neighboring jurisdiction is transferred."
+      },
+      {
+        "homeUrl": "https://www.tj.gov.cn/zwgk/szfgb/xqk/2010/14/bmgfxwj/202512/t20251231_7212805.html",
+        "observation": "Tianjin and Sino-Singapore Eco-City have official real-estate registration rules, but the fresh English/Chinese searches and exact-name follow-ups do not resolve the WUP Chengtougu settlement to a city-specific registry service or cadastral footprint. The locator and low-plausibility WUP population remain unchanged. No regional source coverage or neighboring jurisdiction is transferred."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "Tianjin and Sino-Singapore Eco-City have official real-estate registration rules, but the fresh English/Chinese searches and exact-name follow-ups do not resolve the WUP Chengtougu settlement to a city-specific registry service or cadastral footprint. The locator and low-plausibility WUP population remain unchanged. No regional source coverage or neighboring jurisdiction is transferred. No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00"
+}

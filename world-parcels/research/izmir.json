@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:188",
+  "queueRank": 188,
+  "name": "Izmir",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "centerLatLon": [
+    38.4159048253719,
+    27.1428417001797
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "tr-tkgm-cbsapi-parsel",
+    "requestUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4180/27.1450 (plus https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4150/27.1400 and https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4120/27.1450)",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      27.14,
+      38.412,
+      27.145,
+      38.418
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "(each reply is one Feature; the saved file collects three)",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "ozet (mahalle-ada/parsel) with mahalleId, adaNo, parselNo",
+    "responseFile": "izmir-parcel-response.json",
+    "pagination": "none; the endpoint is a point-in-parcel lookup returning one Feature per lat/lon request, not a bbox list; a parcel listing needs per-mahalle ada/parsel calls, not tested"
+  },
+  "source": {
+    "sourceId": "tr-tkgm-cbsapi-parsel",
+    "name": "TKGM (Tapu ve Kadastro Genel Mudurlugu) cadastre parcel lookup API used by the Parsel Sorgu viewer",
+    "operator": "Tapu ve Kadastro Genel Mudurlugu (General Directorate of Land Registry and Cadastre)",
+    "scope": "Turkey nationwide viewer service; only Izmir (Konak) sampled here",
+    "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/{lat}/{lon}",
+    "method": "GET",
+    "responseFormat": "GeoJSON Feature",
+    "crs": "WGS84 lon/lat (coordinates inspected as lon,lat)",
+    "reuseStatus": "unknown; the endpoint is the viewer's backend and no public API terms or rate limits were read; property attributes only, no owner fields seen"
+  },
+  "portalsFound": [
+    {
+      "url": "https://parselsorgu.tkgm.gov.tr/",
+      "observation": "Official TKGM Parsel Sorgu viewer (see istanbul record); its backend cbsapi.tkgm.gov.tr answered anonymous requests."
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/idariYapi/ilListe",
+      "observation": "Anonymous administrative-boundary list endpoint (province polygons)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4159/27.1428",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "no parcel at the exact UN centre point (Parsel Bulunamadi)"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/idariYapi/ilListe",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "province boundary polygons only, not parcels"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4180/27.1450",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "parcelRecordCount": 1,
+      "assessment": "one closed Polygon parcel Feature (Konak, Izmir) with ada/parsel number, area, nitelik"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4150/27.1400",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "parcelRecordCount": 1,
+      "assessment": "one closed Polygon parcel Feature (Konak, Izmir) with ada/parsel number, area, nitelik"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4120/27.1450",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "parcelRecordCount": 1,
+      "assessment": "one closed Polygon parcel Feature (Konak, Izmir) with ada/parsel number, area, nitelik"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4170/27.1350",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "application/json",
+      "assessment": "no parcel at point"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3/api/parsel/38.4250/27.1300",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "application/json",
+      "assessment": "no parcel at point"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "TKGM parcel lookup for all of Turkey",
+    "verifiedOpenScope": "three parcels in central Izmir (Konak district) via point lookups",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Undocumented viewer API: no terms, quota or stability guarantee read; a point lookup returns one parcel, so a viewport list would need many calls or a different route. Coverage in other provinces was not tested in this record (the Istanbul record did not test this API). Whether use beyond the viewer is permitted is unconfirmed.",
+  "nextStep": "Read TKGM terms for the API; probe a second province (for example Istanbul or Ankara) with the same endpoint; work out a bounded way to list parcels in a viewport, or a licensed/WFS TKGM service."
+}

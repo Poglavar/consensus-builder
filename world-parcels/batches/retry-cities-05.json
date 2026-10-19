@@ -1,0 +1,98 @@
+[
+ {
+  "kind": "city",
+  "key": "jinan",
+  "rank": 137,
+  "name": "Jinan",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 36.66138,
+  "lon": 117.01846,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/jinan.json"
+ },
+ {
+  "kind": "city",
+  "key": "changsha",
+  "rank": 138,
+  "name": "Changsha",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 28.19235,
+  "lon": 112.98904,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/changsha.json"
+ },
+ {
+  "kind": "city",
+  "key": "changchun",
+  "rank": 140,
+  "name": "Changchun",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 43.87566,
+  "lon": 125.30142,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/changchun.json"
+ },
+ {
+  "kind": "city",
+  "key": "nanchang",
+  "rank": 142,
+  "name": "Nanchang",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 28.67958,
+  "lon": 115.89641,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/nanchang.json"
+ },
+ {
+  "kind": "city",
+  "key": "nanning",
+  "rank": 143,
+  "name": "Nanning",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 22.82542,
+  "lon": 108.31205,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/nanning.json"
+ },
+ {
+  "kind": "city",
+  "key": "quanzhou",
+  "rank": 144,
+  "name": "Quanzhou",
+  "country": "China",
+  "iso2": "CN",
+  "lat": 24.84913,
+  "lon": 118.54494,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/quanzhou.json"
+ },
+ {
+  "kind": "city",
+  "key": "busan",
+  "rank": 146,
+  "name": "Busan",
+  "country": "Republic of Korea",
+  "iso2": "KR",
+  "lat": 35.15977,
+  "lon": 129.05896,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/busan.json"
+ },
+ {
+  "kind": "city",
+  "key": "el-djazair-algiers",
+  "rank": 148,
+  "name": "El Djazaïr (Algiers)",
+  "country": "Algeria",
+  "iso2": "DZ",
+  "lat": 36.7382,
+  "lon": 3.08705,
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/el-djazair-algiers.json"
+ }
+]

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:304",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-304-fomboni.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/fomboni-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T12:54:04Z",
+  "reason": "WUP queue/ranked roster and packet agree on Fomboni, Comoros, code 304, rank 2478, point [-12.2875705957458,43.7459836687972], and 236750 persons. English and French executed searches are recorded. The official ministry page independently confirms a national land-title digitization service, while the linked platform was unavailable; Fomboni-specific custody remains unresolved (registryFound null). There is no safe native ID, full polygon, or independent live adapter qualification including paging, 13 cells, metric GEOS, binding, and headed Details. Service unavailability is not citywide absence; held."
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1701668",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://www.geoportal.gov.ph/", "observation": "National Geoportal lists an LMB Parcel data layer; its extent and availability in Manila are unverified."},
+    {"url": "https://geoportal.gov.ph/gpresources/GP_DataInventory.pdf", "observation": "Official inventory marks LMB Parcel data as conditional downloading, not an unrestricted national parcel export."},
+    {"url": "https://lmb.gov.ph/", "observation": "Land Management Bureau is the cadastral authority; no public parcel polygon API verified."}
+  ],
+  "requests": [
+    {"url": "https://geoserver.geoportal.gov.ph/geoserver/ows?service=WFS&request=GetCapabilities", "method": "GET", "httpStatus": 401, "contentType": "text/html;charset=iso-8859-1", "parcelRecordCount": null, "observation": "Public WFS capabilities request requires authorization."}
+  ],
+  "coverageAssessment": {"claimedScope": "one national-portal LMB layer; geographic extent unknown", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The LMB layer might include Manila and other regions, but no public vector request, extent, or reuse permission was verified.",
+  "nextStep": "Inspect Geoportal layer metadata and LMB access conditions; test a bounded Manila request if an open vector endpoint becomes available."
+}

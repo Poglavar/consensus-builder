@@ -1,0 +1,122 @@
+<!doctype html>
+<!-- Standalone devnet transaction explorer for the "Agents functionality for UGT" system: every
+     transaction the agents, the x402 gate and the proposal market sign, with block-explorer links,
+     amounts and who-is-who labels. Not linked from the main UI; the owner opens it directly.
+     Add ?sample=1 to render frontend/data/tx-explorer-sample.json instead of calling the API. -->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Transactions (devnet) · Consensus Builder</title>
+    <link rel="icon" href="favicon.ico" />
+    <link rel="stylesheet" href="css/tokens.css?v=2" />
+    <link rel="stylesheet" href="css/primitives.css?v=2" />
+    <link rel="stylesheet" href="css/page-chrome.css?v=1" />
+    <link rel="stylesheet" href="vendor/fontawesome-6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/tx-explorer.css?v=2" />
+    <meta name="description" content="Every devnet transaction the Urban Game Theory agent pipeline signs: payer, program, instruction and amounts." />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="https://urbangametheory.xyz/tx-explorer.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Consensus Builder" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="Transactions (devnet) · Consensus Builder" />
+    <meta property="og:description" content="Every devnet transaction the Urban Game Theory agent pipeline signs: payer, program, instruction and amounts." />
+    <meta property="og:url" content="https://urbangametheory.xyz/tx-explorer.html" />
+    <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@UrbanGameTheory" />
+    <meta name="twitter:title" content="Transactions (devnet) · Consensus Builder" />
+    <meta name="twitter:description" content="Every devnet transaction the Urban Game Theory agent pipeline signs: payer, program, instruction and amounts." />
+    <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta name="twitter:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities.">
+</head>
+
+<body class="cb-page tx-body">
+    <header class="cb-page-header">
+        <span class="cb-page-header__brand"><img class="cb-page-header__logo" src="images/consensus-builder-logo.png" alt="" width="28" height="28"><span>Consensus Builder</span></span>
+        <div class="cb-page-header__title"><h1>Transactions (devnet)</h1></div>
+        <a class="cb-link cb-back-link" href="/"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Back to the map</a>
+    </header>
+    <main id="tx-explorer" class="tx-wrap">
+
+        <div id="tx-header" class="tx-header">
+            <div class="tx-header-titles">
+                <p class="tx-sub">Every devnet transaction the agent pipeline signs: who paid whom, which program,
+                    which instruction.</p>
+                <p id="tx-fetched-at" class="tx-fetched"></p>
+            </div>
+            <div class="tx-header-controls">
+                <button id="tx-refresh" type="button" class="btn">Refresh</button>
+                <label class="tx-control tx-control-check" for="tx-auto">
+                    <input id="tx-auto" type="checkbox" />
+                    <span>Auto-refresh (30 s)</span>
+                </label>
+                <label class="tx-control" for="tx-limit">
+                    <span>Limit</span>
+                    <select id="tx-limit">
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <p id="tx-banner" class="tx-banner" role="alert" hidden></p>
+
+        <section id="tx-legend" class="tx-legend" aria-labelledby="tx-legend-title">
+            <h2 id="tx-legend-title" class="tx-section-title">Who is who</h2>
+            <div id="tx-legend-body" class="tx-legend-body"></div>
+        </section>
+
+        <section id="tx-filters" class="tx-filters" aria-label="Filters">
+            <div class="tx-filter-row">
+                <label class="tx-control tx-control-grow" for="tx-search">
+                    <span class="tx-visually-hidden">Filter</span>
+                    <input id="tx-search" type="search" autocomplete="off"
+                        placeholder="Filter by signature, label, summary, program, action or address" />
+                </label>
+                <button id="tx-filter-clear" type="button" class="btn">Clear filters</button>
+            </div>
+            <div class="tx-chip-row">
+                <span id="tx-programs-label" class="tx-chip-legend">Programs</span>
+                <div id="tx-program-chips" class="cb-segmented tx-chips" role="group" aria-labelledby="tx-programs-label"></div>
+            </div>
+            <div class="tx-chip-row">
+                <span id="tx-actions-label" class="tx-chip-legend">Actions</span>
+                <div id="tx-action-chips" class="cb-segmented tx-chips" role="group" aria-labelledby="tx-actions-label"></div>
+            </div>
+        </section>
+
+        <p id="tx-count" class="tx-count"></p>
+
+        <table id="tx-table" class="tx-table">
+            <thead>
+                <tr>
+                    <th scope="col">Time</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">What happened</th>
+                    <th scope="col">Program / action</th>
+                    <th scope="col">Amounts</th>
+                    <th scope="col">Fee payer</th>
+                    <th scope="col">Fee (SOL)</th>
+                    <th scope="col">Signature</th>
+                </tr>
+            </thead>
+            <tbody id="tx-tbody"></tbody>
+        </table>
+
+        <p id="tx-empty" class="tx-empty" hidden></p>
+
+    </main>
+
+    <script src="js/tx-explorer.js?v=3" defer></script>
+</body>
+
+</html>

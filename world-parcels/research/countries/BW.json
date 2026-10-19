@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BW",
+  "country": "Botswana",
+  "checkedAt": "2026-09-29",
+  "status": "no_online_cadastre_found",
+  "cadastreAuthority": "Department of Surveys and Mapping (DSM); Land Boards (tribal land); Deeds Registry. Title by deeds registration supported by survey diagrams, not a parcel-map cadastre.",
+  "portalsFound": [
+    {
+      "url": "https://www.gov.bw/land-management/maps-and-geospatial-data",
+      "observation": "Government page on maps and geospatial data; no parcel service seen"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.gov.bw/land-management/maps-and-geospatial-data",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "informational page, no service endpoint"
+    },
+    {
+      "url": "https://www.gov.bw/lands",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "informational"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "none online",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Limited attempts; a Land Board or DSM geoportal may exist (paid/credentialed).",
+  "nextStep": "Search for DSM geoportal / Land Information System."
+}

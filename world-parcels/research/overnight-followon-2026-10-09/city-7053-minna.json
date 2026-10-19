@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7053",
+  "wupCityCode": 7053,
+  "name": "Minna",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 1076,
+  "queueRank": 1076,
+  "point": [
+    9.61348102264253,
+    6.53894200471416
+  ],
+  "centerLatLon": [
+    9.61348102264253,
+    6.53894200471416
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 516451,
+  "population2025k": 516.451,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1069-1076",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used.",
+  "registryEvidenceUrls": [
+    "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+    "https://nspc.nigerstate.gov.ng/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist.",
+  "scopeLimits": "Local registry/cadastre custody and safe public geometry are assessed separately. No complete parcel geometry at the exact WUP point was retained; no citywide or countrywide coverage is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "remainingUncertainty": "Exact WUP point coverage and source completeness remain unverified; no citywide or countrywide completeness claim is made.",
+  "nextStep": "Root review can retain this city-specific custody evidence and pursue a source-native public feature route only if one is identified.",
+  "coverageAssessment": {
+    "claimedScope": "Niger State Government’s NIGIS property-registration guideline identifies a customer-service centre in Minna and describes the state property-registration process; the Niger State Planning Commission also identifies geo-mapping and modern land administration as state functions in Minna. These sources establish local/state service custody, but no safe anonymous parcel geometry route was verified. No application, payment, or map-download workflow was used.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Minna Niger State land registry GIS cadastral map official land records",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "Niger State’s official NIGIS registration guideline names a Minna customer-service centre; the State Planning Commission identifies geo-mapping/modern land administration as an activity. No anonymous safe polygon endpoint was identified.",
+        "actualResultUrls": [
+          "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+          "https://nspc.nigerstate.gov.ng/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      },
+      {
+        "language": "Hausa",
+        "query": "rijistar filaye Minna Niger State land records GIS cadastral map official",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "Binciken Hausa bai nuna wani sabis na taswirar filaye na jama’a mai bada iyakar fili da ID ba. Ana samun shaidar rajistar filaye ta Minna daga takardar jagorar gwamnati ta NIGIS da bayanin hukumar shirin jihar, amma ba a gwada wata hanyar sauke taswira ko tsarin biyan kuɗi ba.",
+        "actualResultUrls": [
+          "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+          "https://nspc.nigerstate.gov.ng/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      }
+    ]
+  },
+  "source": null,
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

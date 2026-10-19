@@ -1,0 +1,604 @@
+[
+  {
+    "endpoint": "https://www.arcgis.com/sharing/rest/content/items/9d1b6ec66e814403939048280889070e/data?f=json",
+    "status": 200,
+    "metadata": {
+      "webmap": "bf4615bdf14442a9bdfe9603e4e42313",
+      "operationalLayers": []
+    }
+  },
+  {
+    "endpoint": "https://www.arcgis.com/sharing/rest/content/items/9e16012d36f2433eaa30a329a2286acd/data?f=json",
+    "status": 200,
+    "metadata": {
+      "webmap": null,
+      "operationalLayers": [
+        {
+          "id": "192d4b39ab4-layer-4",
+          "title": "Future Land Use",
+          "url": "https://services8.arcgis.com/w80AF4RGP2gXMxLM/arcgis/rest/services/FLU_10_2024/FeatureServer/20",
+          "itemId": "10908ee0010241c7b06ecc32d209d46c",
+          "layerType": "ArcGISFeatureLayer"
+        },
+        {
+          "id": "198e1e9b923-layer-3",
+          "title": "Future Land Use",
+          "url": "https://services8.arcgis.com/w80AF4RGP2gXMxLM/arcgis/rest/services/Future_Land_Use/FeatureServer/20",
+          "itemId": "242ab7774aa6457a9e1ad067a170c211",
+          "layerType": "ArcGISFeatureLayer"
+        }
+      ]
+    }
+  },
+  {
+    "endpoint": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/8?f=pjson",
+    "status": 200,
+    "metadata": {
+      "name": "City of Columbia Parcel",
+      "description": "",
+      "copyrightText": "GIS Division, Richland County, Lexington County",
+      "fields": [
+        {
+          "nullable": false,
+          "defaultValue": null,
+          "editable": false,
+          "length": 4,
+          "type": "esriFieldTypeOID",
+          "modelName": "objectid",
+          "domain": null,
+          "name": "objectid",
+          "alias": "OBJECTID"
+        },
+        {
+          "modelName": "GISRevisionDate",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "precision": 1,
+          "name": "gisrevisiondate",
+          "length": 29,
+          "alias": "GISRevisionDate",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "modelName": "FacilityID",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "facilityid",
+          "length": 30,
+          "alias": "FacilityID",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "LegacyID",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "legacyid",
+          "length": 30,
+          "alias": "LegacyID",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Comment",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "comment",
+          "length": 255,
+          "alias": "Comment",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Location",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "location",
+          "length": 100,
+          "alias": "Location",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "TMS",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "tms",
+          "length": 30,
+          "alias": "TMS",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "URL",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "url",
+          "length": 255,
+          "alias": "URL",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "FacIDIndex",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "facidindex",
+          "alias": "FacIDIndex",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "modelName": "LastGISEditor",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "lastgiseditor",
+          "length": 15,
+          "alias": "LastGISEditor",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "RCTMSJoin",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "rctmsjoin",
+          "length": 30,
+          "alias": "RCTMSJoin",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "CreateWho",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "createwho",
+          "length": 50,
+          "alias": "CreateWho",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "CreateDate",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "precision": 1,
+          "name": "createdate",
+          "length": 29,
+          "alias": "CreateDate",
+          "type": "esriFieldTypeDate"
+        },
+        {
+          "modelName": "County",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "county",
+          "length": 20,
+          "alias": "County",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "GIS_X",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "gis_x",
+          "alias": "GIS_X",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "modelName": "GIS_Y",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "gis_y",
+          "alias": "GIS_Y",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "modelName": "ObjectTemp",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "objecttemp",
+          "length": 10,
+          "alias": "ObjectTemp",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Subdivision",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": "NULL",
+          "domain": null,
+          "name": "subdivision",
+          "length": 100,
+          "alias": "Subdivision",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "UID",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": 1,
+          "domain": null,
+          "name": "uid",
+          "alias": "UID",
+          "type": "esriFieldTypeSmallInteger"
+        },
+        {
+          "modelName": "Loc",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "loc",
+          "length": 50,
+          "alias": "Loc",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Owner",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "owner",
+          "length": 200,
+          "alias": "Owner",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Address1",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "address1",
+          "length": 200,
+          "alias": "Address1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Address2",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "address2",
+          "length": 50,
+          "alias": "Address2",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Address3",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "address3",
+          "length": 50,
+          "alias": "Address3",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "City",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "city",
+          "length": 25,
+          "alias": "City",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "St",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "st",
+          "length": 20,
+          "alias": "ST",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Zip",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "zip",
+          "length": 5,
+          "alias": "Zip",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "TaxDist",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "taxdist",
+          "length": 10,
+          "alias": "TaxDist",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "Disclaimer",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "disclaimer",
+          "length": 200,
+          "alias": "Disclaimer",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "CensusTract",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "censustract",
+          "length": 20,
+          "alias": "CensusTract",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "CensuGEOID",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "censugeoid",
+          "length": 15,
+          "alias": "CensuGEOID",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "CityLimit",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": {
+            "splitPolicy": "esriSPTDefaultValue",
+            "name": "YesNo_54",
+            "description": "A yes/no indicator",
+            "type": "codedValue",
+            "codedValues": [
+              {
+                "code": "Y",
+                "name": "Yes"
+              },
+              {
+                "code": "N",
+                "name": "No"
+              }
+            ],
+            "mergePolicy": "esriMPTDefaultValue"
+          },
+          "name": "citylimit",
+          "length": 10,
+          "alias": "City Limit",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "ZoningDistrict",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": "0",
+          "domain": {
+            "splitPolicy": "esriSPTDefaultValue",
+            "name": "ZoningDistrict",
+            "description": "New Zoning District",
+            "type": "codedValue",
+            "codedValues": [
+              {
+                "code": "CAC",
+                "name": "CAC: Community Activity Center/Corridor"
+              },
+              {
+                "code": "DAC",
+                "name": "DAC: Downtown Activity Center/Corridor"
+              },
+              {
+                "code": "EC",
+                "name": "EC:  Employment Campus District"
+              },
+              {
+                "code": "GC",
+                "name": "GC:  General Commercial District"
+              },
+              {
+                "code": "HI",
+                "name": "HI:  Heavy Industrial District"
+              },
+              {
+                "code": "INS-FJ",
+                "name": "INS-FJ:  Institutional - Fort Jackson District"
+              },
+              {
+                "code": "INS-GEN",
+                "name": "INS-GEN:  Institutional - General District"
+              },
+              {
+                "code": "INS-T/U",
+                "name": "INS-T/U:  Institutional - Transportation/Utilities District"
+              },
+              {
+                "code": "INS-U/M",
+                "name": "INS-U/M:  Institutional - University/Medical District"
+              },
+              {
+                "code": "INS-ZOO",
+                "name": "INS-ZOO:  Institutional - Riverbanks Zoo and Gardens District"
+              },
+              {
+                "code": "LI",
+                "name": "LI:  Light Industrial District"
+              },
+              {
+                "code": "LL-R",
+                "name": "LL-R:  Large Lot - Reserve District"
+              },
+              {
+                "code": "MC",
+                "name": "MC:  Mixed Commercial District"
+              },
+              {
+                "code": "MU-1",
+                "name": "MU-1: Mixed-Use"
+              },
+              {
+                "code": "MU-2",
+                "name": "MU-2: Mixed-Use"
+              },
+              {
+                "code": "NAC",
+                "name": "NAC: Neighborhood Center/Corridor"
+              },
+              {
+                "code": "O-I",
+                "name": "O-I:  Office and Institutional District"
+              },
+              {
+                "code": "PD",
+                "name": "PD:  Planned Development"
+              },
+              {
+                "code": "RAC",
+                "name": "RAC: Regional Activity Center/Corridor"
+              },
+              {
+                "code": "RD-MV",
+                "name": "RD-MV:  Residential Two-Family - Mill Village District"
+              },
+              {
+                "code": "RD",
+                "name": "RD:  Residential Two-Family District"
+              },
+              {
+                "code": "RM-1",
+                "name": "RM-1: Residential Mixed"
+              },
+              {
+                "code": "RM-2",
+                "name": "RM-2: Residential Mixed"
+              },
+              {
+                "code": "RSF-1",
+                "name": "RSF-1:  Residential Single Family - Large Lot District"
+              },
+              {
+                "code": "RSF-2",
+                "name": "RSF-2:  Residential Single Family - Medium Lot District"
+              },
+              {
+                "code": "RSF-3",
+                "name": "RSF-3:  Residential Single Family - Small Lot District"
+              },
+              {
+                "code": "T/C",
+                "name": "T/C:  Transitional/Conservation District"
+              },
+              {
+                "code": "0",
+                "name": "Unassigned"
+              }
+            ],
+            "mergePolicy": "esriMPTDefaultValue"
+          },
+          "name": "zoningdistrict",
+          "length": 50,
+          "alias": "Zoning District",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "ZoningTemp",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "zoningtemp",
+          "length": 50,
+          "alias": "Old Zoning",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "modelName": "ZoningCommnets",
+          "nullable": true,
+          "editable": true,
+          "defaultValue": null,
+          "domain": null,
+          "name": "zoningcommnets",
+          "length": 255,
+          "alias": "Zoning Description",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "virtual": true,
+          "nullable": true,
+          "editable": false,
+          "defaultValue": null,
+          "domain": null,
+          "name": "SHAPE__Length",
+          "alias": "SHAPE__Length",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "virtual": true,
+          "nullable": true,
+          "editable": false,
+          "defaultValue": null,
+          "domain": null,
+          "name": "SHAPE__Area",
+          "alias": "SHAPE__Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ],
+      "extent": {
+        "ymin": 4023250.1614999995,
+        "xmin": -9024693.9784,
+        "ymax": 4043880.902999997,
+        "xmax": -8998988.0647,
+        "spatialReference": {
+          "falseM": -100000,
+          "xyTolerance": 0.001,
+          "mUnits": 10000,
+          "zUnits": 10000,
+          "latestWkid": 3857,
+          "zTolerance": 0.001,
+          "wkid": 102100,
+          "xyUnits": 10000,
+          "mTolerance": 0.001,
+          "falseX": -20037700,
+          "falseY": -30241100,
+          "falseZ": -100000
+        }
+      },
+      "type": "Feature Layer"
+    }
+  }
+]

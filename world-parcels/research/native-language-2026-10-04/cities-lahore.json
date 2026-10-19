@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 17,
+  "city": "Lahore",
+  "countryCode": "PK",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/lahore.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Arabic",
+    "text": "لاہور زمین کیڈسٹرل پارسل نقشہ GIS پلاٹ سروے سرکاری ڈیٹا"
+  },
+  "results": [
+    {
+      "title": "Punjab GIS Maps ArcGIS REST catalog",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+      "kind": "official-provincial-gis",
+      "note": "REST directory includes Lahore and Punjab folders; layers and public exact parcel query were not established."
+    },
+    {
+      "title": "Punjab Land Records cadastral map viewer",
+      "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+      "kind": "official-state-viewer",
+      "note": "Village-wise cadastral map selection is available; not an open bulk city vector endpoint."
+    }
+  ],
+  "assessment": "Urdu-language search found official GIS services with a Lahore folder and a village-based cadastral map viewer. The specific Lahore layer, public access and exact-ID query remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

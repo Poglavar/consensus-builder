@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-weighted settlement locator, not a municipal boundary. A point hit does not establish citywide coverage. No personal owner, address, tax, account or applicant data was requested or retained; no authentication or account credential was used.",
+  "wupCityCode": 11834,
+  "queueRank": 695,
+  "name": "Yiwu",
+  "centerLatLon": [
+    29.3069095603744,
+    120.067611890217
+  ],
+  "population2025": 766253,
+  "population2025k": 766.253,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Yiwu has a concrete city registration center and active cadastral mapping administration. The city’s documented personal-file service is rights-holder restricted; no safe anonymous full-polygon city service was verified.",
+  "registryEvidenceUrls": [
+    "https://zjjcmspublicnew.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/cms_files/jcms1/web3549/site/attach/0/f127888d9ff14f74938ecd5624cf8d6e.pdf?fileName=f127888d9ff14f74938ecd5624cf8d6e.pdf",
+    "https://www.yw.gov.cn/art/2024/12/20/art_1229142865_1816464.html",
+    "https://www.yw.gov.cn/art/2025/4/17/art_1229667834_59525858.html",
+    "https://www.yw.gov.cn/art/2022/2/17/art_1229138433_24207.html"
+  ],
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "Official services confirm cadastral mapping and registration administration, but the available personal-property query requires the right holder or identity/authorization. No anonymous public feature layer, complete polygon response or safe attribute schema was identified.",
+  "remainingUncertainty": "Whether the city publishes a separate public geospatial layer for urban cadastral parcels; whether mapping activity covers the WUP point and urban districts.",
+  "nextStep": "Seek a public open-data or GIS service description from the city bureau; require an explicit full-polygon query contract and safe fields before any map feature query.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "义乌市 自然资源和不动产登记中心 地籍图 不动产登记 公共地图",
+        "scope": "Confirm the city registration authority and discover any anonymous cadastral polygon service.",
+        "result": "Yiwu’s official 2025 Natural Resources and Real Estate Registration Center budget describes the city-owned center responsible for registration of land, buildings, forest and rural contracted land, management of its registration-information platform and cadastral survey/mapping-result filings. City materials say personal registration files can be queried online only by the rights holder or at the service counter with identification. A 2025 city Natural Resources procurement notice covers cadastral data and map compilation, including supplementary rural homestead/collective construction land data; no anonymous urban parcel feature endpoint was found.",
+        "actualResultUrls": [
+          "https://zjjcmspublicnew.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/cms_files/jcms1/web3549/site/attach/0/f127888d9ff14f74938ecd5624cf8d6e.pdf?fileName=f127888d9ff14f74938ecd5624cf8d6e.pdf",
+          "https://www.yw.gov.cn/art/2024/12/20/art_1229142865_1816464.html",
+          "https://www.yw.gov.cn/art/2025/4/17/art_1229667834_59525858.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Yiwu China official land registration cadastral map property map portal",
+        "scope": "Cross-check city-level registry authority and anonymous geometry availability.",
+        "result": "No separate English-language public parcel vector portal was found. First-party city sources confirm a functioning local registration center and identity-gated own-property lookup, but not anonymous general parcel geometry.",
+        "actualResultUrls": [
+          "https://www.yw.gov.cn/art/2022/2/17/art_1229138433_24207.html",
+          "https://www.yw.gov.cn/art/2024/12/20/art_1229142865_1816464.html"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zjjcmspublicnew.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/cms_files/jcms1/web3549/site/attach/0/f127888d9ff14f74938ecd5624cf8d6e.pdf?fileName=f127888d9ff14f74938ecd5624cf8d6e.pdf",
+        "observation": "Official 2025 Yiwu Natural Resources and Real Estate Registration Center budget: city center handles registration of land, housing, forests and rural contracted land; maintains registration-information platform and files cadastral survey/mapping results."
+      },
+      {
+        "url": "https://www.yw.gov.cn/art/2024/12/20/art_1229142865_1816464.html",
+        "observation": "Official city government Q&A says the Zhejiang registration platform allows the rights holder to check their own registration information online; non-right-holders must use the service archive desk with identity documents and authorization. No property lookup was attempted."
+      },
+      {
+        "url": "https://www.yw.gov.cn/art/2025/4/17/art_1229667834_59525858.html",
+        "observation": "Official city Natural Resources and Planning Bureau 2025 procurement notice includes a project for completing Yiwu rural homestead and collective construction-land cadastral data and compiling cadastral maps; it is a specific land-parcel mapping program, not an anonymous vector service."
+      },
+      {
+        "url": "https://www.yw.gov.cn/art/2022/2/17/art_1229138433_24207.html",
+        "observation": "Official Yiwu Natural Resources and Planning Bureau role includes city land/resource administration, cadastral registration duties, survey/geospatial output oversight and management of public geospatial services."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://www.yw.gov.cn/art/2024/12/20/art_1229142865_1816464.html",
+        "method": "GET official city service Q&A",
+        "result": "Confirms online query is for rights-holder’s own records; other users must show identity/authorization at service counter. No record lookup submitted."
+      },
+      {
+        "url": "https://www.yw.gov.cn/art/2025/4/17/art_1229667834_59525858.html",
+        "method": "GET official bureau procurement notice",
+        "result": "Confirms cadastral data/map-production activity for a specified rural land program, not public parcel serving."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Yiwu has a concrete city registration center and active cadastral mapping administration. The city’s documented personal-file service is rights-holder restricted; no safe anonymous full-polygon city service was verified.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    }
+  },
+  "cityId": "wup2025:11834",
+  "point": [
+    29.3069095603744,
+    120.067611890217
+  ],
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "cn-yiwu-official-parcel-source",
+    "name": "Yiwu Natural Resources and Real Estate Registration Center",
+    "operator": "Yiwu Municipal Natural Resources and Planning Bureau",
+    "url": "https://www.yw.gov.cn/col/col1229123254/index.html",
+    "responseFormat": "No anonymous full-polygon response verified.",
+    "nativeIdFields": null,
+    "scope": "Official services confirm cadastral mapping and registration administration, but the available personal-property query requires the right holder or identity/authorization. No anonymous public feature layer, complete polygon response or safe attribute schema was identified."
+  },
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "Official services confirm cadastral mapping and registration administration, but the available personal-property query requires the right holder or identity/authorization. No anonymous public feature layer, complete polygon response or safe attribute schema was identified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/yiwu-service-review.json"
+  },
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00"
+}

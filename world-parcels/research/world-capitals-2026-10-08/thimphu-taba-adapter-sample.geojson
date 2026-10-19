@@ -1,0 +1,185 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "bt-thimphu-taba:61",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              89.6421568615851,
+              27.514393511213374
+            ],
+            [
+              89.6420225474639,
+              27.514424738657137
+            ],
+            [
+              89.64185996962557,
+              27.514470208322155
+            ],
+            [
+              89.64177478049012,
+              27.514224994054814
+            ],
+            [
+              89.64206249132701,
+              27.51414279669794
+            ],
+            [
+              89.64210496138683,
+              27.51425172361999
+            ],
+            [
+              89.64215337773754,
+              27.514374137179473
+            ],
+            [
+              89.6421568615851,
+              27.514393511213374
+            ]
+          ]
+        ],
+        "crs": null
+      },
+      "properties": {
+        "parcelId": "bt-thimphu-taba:61",
+        "id": "bt-thimphu-taba:61",
+        "sourceId": "bt-thimphu-taba-plots",
+        "sourceParcelId": "61",
+        "parcelNumber": "61",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "fid": 61
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "bt-thimphu-taba:145",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              89.6408033099484,
+              27.514730769839094
+            ],
+            [
+              89.64074643501444,
+              27.51461565532777
+            ],
+            [
+              89.64068956120693,
+              27.514500541697494
+            ],
+            [
+              89.64095412307289,
+              27.514383980381233
+            ],
+            [
+              89.6410021764073,
+              27.51446756579224
+            ],
+            [
+              89.64103830897832,
+              27.514535192679094
+            ],
+            [
+              89.64104093418175,
+              27.5145758165571
+            ],
+            [
+              89.64101846658939,
+              27.51460669269369
+            ],
+            [
+              89.64093348290298,
+              27.51466811597701
+            ],
+            [
+              89.6408033099484,
+              27.514730769839094
+            ]
+          ]
+        ],
+        "crs": null
+      },
+      "properties": {
+        "parcelId": "bt-thimphu-taba:145",
+        "id": "bt-thimphu-taba:145",
+        "sourceId": "bt-thimphu-taba-plots",
+        "sourceParcelId": "145",
+        "parcelNumber": "145",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "fid": 145
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "bt-thimphu-taba:179",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              89.64189487833998,
+              27.51458524508382
+            ],
+            [
+              89.64185996962557,
+              27.514470208322155
+            ],
+            [
+              89.6420225474639,
+              27.514424738657137
+            ],
+            [
+              89.64207353764182,
+              27.514683495858257
+            ],
+            [
+              89.64194575280969,
+              27.514700558465304
+            ],
+            [
+              89.64192519779101,
+              27.514691613991417
+            ],
+            [
+              89.64191385200793,
+              27.51466931301328
+            ],
+            [
+              89.641903367862,
+              27.514628792550333
+            ],
+            [
+              89.64189487833998,
+              27.51458524508382
+            ]
+          ]
+        ],
+        "crs": null
+      },
+      "properties": {
+        "parcelId": "bt-thimphu-taba:179",
+        "id": "bt-thimphu-taba:179",
+        "sourceId": "bt-thimphu-taba-plots",
+        "sourceParcelId": "179",
+        "parcelNumber": "179",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "fid": 179
+        }
+      }
+    }
+  ]
+}

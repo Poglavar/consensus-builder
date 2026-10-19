@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "method": "Read-only exact-ID query for the two 80-key batches rejected by geometry-integrity checks; geometry inspected in memory only; no IDs, geometries or personal data persisted.",
+  "endpoint": "https://datacatalog.cookcountyil.gov/resource/77tz-riq7.json",
+  "selectedFields": [
+    "pin10",
+    "parceltype",
+    ":id",
+    "the_geom"
+  ],
+  "results": [
+    {
+      "batch": 8,
+      "requestedIds": 80,
+      "httpStatus": 200,
+      "responseRows": 86,
+      "distinctPIN10": 80,
+      "geometryConflictingPIN10": 6,
+      "conflictParcelTypeGroups": {
+        "1": 6
+      },
+      "baseparcelRows": 80,
+      "geometryConflictingBaseparcelPIN10": 6,
+      "allParceltypeGroups": {
+        "1": 80
+      }
+    },
+    {
+      "batch": 11,
+      "requestedIds": 80,
+      "httpStatus": 200,
+      "responseRows": 81,
+      "distinctPIN10": 80,
+      "geometryConflictingPIN10": 1,
+      "conflictParcelTypeGroups": {
+        "1": 1
+      },
+      "baseparcelRows": 75,
+      "geometryConflictingBaseparcelPIN10": 1,
+      "allParceltypeGroups": {
+        "1": 75,
+        "3": 5
+      }
+    }
+  ],
+  "conclusion": "Every detected geometry-conflicting PIN10 group is parceltype 1 (Baseparcel). Filtering to the published baseparcel type does not resolve the conflicts."
+}

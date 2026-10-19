@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1866",
+  "queueRank": 85,
+  "wupCityCode": 1866,
+  "name": "Kampala",
+  "country": "Uganda",
+  "countryCode": "UG",
+  "centerLatLon": [
+    0.321224889410938,
+    32.5794981900445
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 85,
+  "growthRank": null,
+  "population2025": 4880943,
+  "annualGrowthPct2015To2025": 3.384883,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/kampala.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-UG.json",
+  "nativeLanguageSearch": {
+    "languageScript": "English and Swahili",
+    "exactQuery": "Kampala Uganda viwanja vya ardhi ramani ya cadastral parcels GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+      "https://kcca.go.ug/gis",
+      "https://maps.nbrb.go.ug/",
+      "https://kcca.go.ug/open-gov",
+      "https://www.kcca.go.ug/faqs-gis",
+      "https://www.kcca.go.ug/surveys-and-mapping",
+      "https://mlhud.go.ug/ugnlis/",
+      "https://mlhud.go.ug/documents/"
+    ],
+    "summary": "Swahili searches surfaced official NLIS/KCCA GIS; parcel search is by plot details and public WFS did not include parcel geometry.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://camcamv.kcca.go.ug/GisWebApp/gis/home",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://kcca.go.ug/gis",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://maps.nbrb.go.ug/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://kcca.go.ug/open-gov",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.kcca.go.ug/faqs-gis",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.kcca.go.ug/surveys-and-mapping",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mlhud.go.ug/ugnlis/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mlhud.go.ug/documents/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Kampala\" Uganda (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Kampala%22+Uganda+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Kampala parcel feature layer or stable parcel IDs were verified. NLIS supports parcel lookup by identifiers, while KCCA’s public GIS evidence does not establish city-wide open parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Kampala survey office or NLIS operator for an anonymous parcel layer or bounded extract; confirm it covers this city rather than administrative/utility layers.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Kampala%22+Uganda+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

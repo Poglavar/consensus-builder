@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-4078-vladimir.json",
+  "cityCode": 4078,
+  "queueRank": 2314,
+  "name": "Vladimir",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "pointLatLon": [56.1392240442076, 40.3986843003042],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://vladimir-city.ru/urban/system/rules/","outcome":"Official Vladimir city administration page opened; current land-use and zoning materials include Vladimir cadastral parcel references, supporting local planning/cadastral context but not a parcel API."},
+    {"method":"SEARCH","url":"https://www.vladimir-city.ru/urban/relations/","outcome":"Official city land-relations page identified municipal land administration and directs users to the Rosreestr public cadastral map for checking established parcel boundaries; no geometry endpoint exposed in the indexed result."},
+    {"method":"SEARCH","url":"https://www.vladimir-city.ru/news/main/1179098/","outcome":"Official city notice opened; it identifies the Vladimir regional Rosreestr/Rosкадастр branch and says public real-estate information is available through the public cadastral-map service and Rosкадастр/Rosreestr channels."},
+    {"method":"SEARCH","url":"https://nspd.gov.ru/map","outcome":"Current official federal public cadastral-map route identified by first-party/official references, but the viewer was not retrievable in this workspace."},
+    {"method":"GET","url":"https://pkk.nspd.gov.ru/","outcome":"Direct ordinary GET failed at DNS resolution from this workspace; no login, credentials, CAPTCHA bypass, or TLS weakening was attempted."},
+    {"method":"OPEN","url":"https://nspd.gov.ru/","outcome":"Public web fetch returned an internal inaccessible response; no HTML, JavaScript/configuration, schema, CRS, or parcel feature response was available."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Not retrieved; current NSPD viewer unavailable to this workspace.",
+    "responseSchema": "No parcel response obtained.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "No native parcel identity response obtained; no synthetic identity created.",
+    "sourceFieldMapping": {"safeCandidateFields": ["stable native parcel ID if later qualified", "polygon geometry if later exposed"]},
+    "boundedAnonymousResponse": {"requestScope":"Official NSPD viewer route and Vladimir local cadastral references; exact WUP point [56.1392240442076,40.3986843003042] preserved.","featureCount":0,"geometryFeatureCount":0,"responseObtained":false}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later qualified", "full unchanged polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRetained": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "officialCustodyEvidence": "The official Vladimir city administration is the local procedural/planning custodian for municipal land and cadastral-plan matters. Rosreestr/Rosкадастр and NSPD are the federal cadastral/public-map custodians. This establishes registry context, not a qualified parcel adapter.",
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official local and federal cadastral routes are evidenced, but current viewer/API configuration, schema, CRS, native identity semantics, and bounded parcel geometry remain unverified."},
+  "scopeLimits": ["The exact WUP point was preserved and not shifted.","No exact-point hit or parcel geometry was used as an absence claim.","No citywide parcel count or coverage claim was made.","No raw source-specific attribute set was retained.","No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.","No GeoJSON sample is retained because no safe native ID-plus-geometry response was obtained.","Timeout, DNS failure, or unavailable UI is an access limitation, not evidence of citywide cadastral absence."],
+  "uncertainty": "Local Vladimir land/cadastral procedure and federal Rosreestr/NSPD custody are evidenced, but public parcel geometry, current API route, CRS, update cadence, stable identity rules, and adapter/runtime behavior remain unverified from this environment."
+}

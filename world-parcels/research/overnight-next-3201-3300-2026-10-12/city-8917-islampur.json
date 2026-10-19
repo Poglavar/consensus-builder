@@ -1,0 +1,122 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 8917,
+  "queueRank": 3261,
+  "name": "Islampur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [17.0542146548791, 74.2646018541214],
+  "population2025": 184756,
+  "population2025k": 184.756,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Islampur Maharashtra official cadastral map parcel land records portal Maharashtra Bhulekh BhuNaksha",
+        "result": "First-party discovery found Maharashtra Bhumi Abhilekh/Mahabhumi land-record services and the official BhuNaksha map viewer. Sangli district’s official land-record pages identify district and Walwa taluka custodians; the Sangli district map identifies Islampur as a Walwa-area town.",
+        "actualResultUrls": [
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=15",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://sangli.nic.in/en/map-of-district/"
+        ]
+      },
+      {
+        "language": "Marathi (native/local-language discovery)",
+        "query": "इस्लामपूर महाराष्ट्र अधिकृत भू नकाशा सातबारा जमीन नोंद",
+        "result": "Marathi first-party discovery found the Maharashtra Bhumi Abhilekh service catalogue, which lists Bhu Naksha, village/city survey maps and land-record services, and the Sangli district land-record page. The Sangli contact page names the Walwa Deputy Superintendent Land Records office at Islampur (Ishwarpur). No parcel feature response was exposed by discovery.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=15",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Official Maharashtra Bhumi Abhilekh contact and Sangli district pages identify the Sangli District Superintendent Land Records office and the Walwa Deputy Superintendent Land Records office located at Islampur (Ishwarpur). The official Maharashtra service catalogue and Mahabhunakasha portal identify the state cadastral/map service. This evidences a city/local administrative custodian and official cadastral service lead, but not an open parcel API response.",
+  "officialSources": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+      "observation": "Official Sangli land-record contact page; lists Sangli district office and Walwa Deputy Superintendent Land Records office at Islampur/Ishwarpur with public office contact details. Contact details were not requested or retained as parcel fields."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=15",
+      "observation": "Official Sangli district land-record page; describes district cadastral administration and GIS-based e-Mojni map workflow."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "observation": "Official Maharashtra land-record portal; identifies Mahabhunakasha as maps with land records."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Official Maharashtra BhuNaksha viewer; public UI exposes plot-number search and plot-info concepts, but no safe anonymous parcel response was obtained in this attempt."
+    },
+    {
+      "url": "https://sangli.nic.in/en/map-of-district/",
+      "observation": "Official Sangli district map page; provides taluka maps including Walwa, the taluka associated with Islampur."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": "Maharashtra Bhumi Abhilekh / Mahabhumi / Mahabhunakasha; Sangli district and Walwa land-record offices",
+  "sourceIds": [],
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "outcome": "First-party discovery page was reachable through indexed official content and identifies Mahabhunakasha and Maharashtra land-record services. No parcel feature schema or geometry response was present in the inspected content."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "outcome": "First-party service catalogue was reachable through indexed official content; lists Bhu Naksha, e-map/village/city survey maps, 7/12 and property-card services. No anonymous parcel feature response was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+      "outcome": "Official Sangli custodian page was identified and inspected through first-party indexed content; Walwa Deputy Superintendent Land Records is listed at Islampur/Ishwarpur. No parcel geometry was returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=15",
+      "outcome": "Official Sangli district land-record page was identified and inspected; it describes GIS-based measurement/map workflows and district scope, but no public parcel feature response was returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "outcome": "Direct TLS-default curl retrieval timed out after 30 seconds before HTML/JavaScript could be obtained. No login, retry with credentials, TLS exception, CAPTCHA/Cloudflare bypass, or unsafe field request was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://sangli.nic.in/en/map-of-district/",
+      "outcome": "Official Sangli district map page was found; it lists a Walwa taluka map and supports administrative context only, not parcel-level geometry."
+    }
+  ],
+  "schemaAndCrs": {
+    "observedService": "Maharashtra official Mahabhunakasha/BhuNaksha public viewer",
+    "geometryType": null,
+    "crs": null,
+    "nativeIdentityCandidates": [],
+    "qualification": "Not qualified: the viewer's public indexed description mentions plot-number search, but this attempt did not retrieve current JavaScript/configuration or an anonymous ID-plus-geometry response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sangli district and Walwa taluka land-record administration, with Maharashtra-wide Mahabhumi/Mahabhunakasha services.",
+    "verifiedOpenScope": "A local Walwa/Islampur custodian and official state map service were evidenced; citywide parcel coverage, parcel schema, native identity, CRS and geometry remain unverified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry only when safely returned", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The BhuNaksha viewer may expose parcel polygons after interactive administrative and plot selection, but its current configuration and API route could not be inspected because the direct host timed out. The exact WUP point was preserved and was not used as an absence test. No raw source-specific attributes were retained, and no GeoJSON sample was written because no safe native parcel identity and full polygon were observed. No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested. This packet is research evidence only and is not source integration or admission.",
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

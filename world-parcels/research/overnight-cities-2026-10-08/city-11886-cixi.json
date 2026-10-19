@@ -1,0 +1,133 @@
+{
+  "name": "Cixi",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 234,
+  "point": [
+    30.1340488171631,
+    121.205053694225
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Simplified Chinese",
+        "query": "慈溪市 不动产登记 查询 地籍图 地块 宁波市 慈溪",
+        "scope": "Locate the official Cixi registry office and public parcel map.",
+        "result": "Search results did not establish a current Cixi-specific official page exposing a public cadastral geometry service. Secondary pages were excluded.",
+        "actualResultUrls": "https://www.cixi.gov.cn/",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "site:gov.cn 慈溪 不动产登记中心 登记资料查询 地籍图 地号 办事指南",
+        "scope": "Find a primary city-specific real-estate registration procedure.",
+        "result": "No city-local primary procedure or anonymous parcel geometry endpoint was verified in the searched official results.",
+        "actualResultUrls": "https://www.cixi.gov.cn/",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "site:qf.ningbo.gov.cn/cx/ 不动产登记信息查询",
+        "scope": "Check the Cixi e-government service portal for registration/map services.",
+        "result": "A Ningbo government service listing describes real-estate registration record queries generally; it does not establish a Cixi parcel map/vector service.",
+        "actualResultUrls": "https://qf.ningbo.gov.cn/cx",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "site:cixi.gov.cn 慈溪 农村房地一体 不动产登记 权籍调查",
+        "scope": "Find city-specific primary evidence of cadastral survey and property registration.",
+        "result": "Official Cixi government bulletin documents its countywide rural integrated house/land cadastral survey, cadastral investigation database, and registration-certificate workflow, with a 2018–2019 implementation schedule. This establishes city-specific registration activity historically, but not current anonymous parcel geometry.",
+        "actualResultUrls": [
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3462/site/attach/0/bf754ff9892a4c73b1f14e7af5067976.pdf"
+        ],
+        "executionMethod": "Web search and read of official Cixi government bulletin PDF (慈溪政务 总第254期)."
+      },
+      {
+        "language": "English",
+        "query": "Cixi China official property registration cadastral survey land parcels municipal government",
+        "scope": "Cross-check English discovery for city-specific official registry or public parcel map.",
+        "result": "No English-indexed city-specific parcel service surfaced. Cixi-specific registry evidence is in the official Chinese-language municipal bulletin recorded above; it describes historical registration activity, not current geometry access.",
+        "actualResultUrls": [
+          "https://www.cixi.gov.cn/",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3462/site/attach/0/bf754ff9892a4c73b1f14e7af5067976.pdf"
+        ],
+        "executionMethod": "Web search; English query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Cixi municipal government portal",
+        "operator": "Cixi Municipal People’s Government",
+        "homeUrl": "https://www.cixi.gov.cn/",
+        "observation": "Direct request timed out; search did not identify a city-specific primary cadastral map or registration procedure that provides public geometry."
+      },
+      {
+        "name": "Ningbo government services portal, Cixi entry",
+        "operator": "Ningbo Municipal Government service portal",
+        "homeUrl": "https://qf.ningbo.gov.cn/cx",
+        "observation": "General real-estate registration/query service information was located, but it does not document a Cixi-specific parcel vector endpoint or anonymous full geometry."
+      },
+      {
+        "name": "Cixi government bulletin: rural integrated house-land survey and registration",
+        "operator": "Cixi Municipal People’s Government (official Cixi government publication hosted in the Cixi government web content system)",
+        "homeUrl": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3462/site/attach/0/bf754ff9892a4c73b1f14e7af5067976.pdf",
+        "observation": "The official bulletin describes parcel-rights survey, establishment of a real-property registration unit and cadastral investigation database, and applications for registration certificates. Its schedule is historical (2018–2019); it does not expose public geometry or demonstrate a current public vector service."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.cixi.gov.cn/",
+        "method": "GET",
+        "httpStatus": null,
+        "observation": "Direct read-only request timed out; no account or authenticated flow attempted."
+      },
+      {
+        "url": "https://qf.ningbo.gov.cn/cx",
+        "method": "Web search/open",
+        "httpStatus": null,
+        "observation": "Official portal content indicates general government service navigation; no parcel geometry response inspected."
+      },
+      {
+        "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3462/site/attach/0/bf754ff9892a4c73b1f14e7af5067976.pdf",
+        "method": "GET via indexed official Cixi government document",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Official Cixi bulletin describes integrated rural cadastral investigations and real-property registration implementation; historical 2018–2019 plan, no public geometry."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "No official cadastral boundary or parcel vector scope was established for Cixi.",
+    "verifiedOpenScope": "No verified public parcel geometry or city-specific registration service was found.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The municipal portal timed out. Historical city-specific registry evidence establishes registration activity, but neither it nor current official portal listings provide anonymous full-polygon parcel data.",
+  "remainingUncertainty": "Whether a current Cixi natural-resources or cadastral portal exposes parcel geometry remains unresolved; historical registry evidence does not establish current service availability.",
+  "nextStep": "Locate the current city natural-resources/registration service portal and inspect documented public map or feature endpoints; retain historical evidence separately from present public API qualification.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11886,
+  "cityId": "wup2025:11886",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.1340488171631,
+    121.205053694225
+  ],
+  "queueRank": 234,
+  "population2025": 2177489,
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Cixi government bulletin documents a city-specific rural cadastral survey, property-unit investigation database and registration-certificate workflow (historical 2018–2019). Current registry access and public parcel-geometry availability remain unverified.",
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-08T21:25:23.474999+00:00"
+}

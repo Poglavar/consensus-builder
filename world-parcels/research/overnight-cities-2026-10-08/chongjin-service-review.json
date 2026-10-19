@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4711-chongjin.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No first-party Chŏngjin or North Hamgyong land-registry office, local cadastral viewer, or parcel service was identified in the English- and Korean-language searches. General material about land administration elsewhere in the DPRK is not evidence for this city; registry presence and public geometry remain unresolved. No verifiable first-party local registry/map source or public parcel schema was found. No anonymous geometry query was possible without a primary endpoint.",
+  "registryAssessment": "No first-party Chŏngjin or North Hamgyong land-registry office, local cadastral viewer, or parcel service was identified in the English- and Korean-language searches. General material about land administration elsewhere in the DPRK is not evidence for this city; registry presence and public geometry remain unresolved.",
+  "officialPrimarySources": [],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "official Chongjin North Hamgyong land registry cadastral office land registration DPRK",
+      "result": "Searches did not locate relevant first-party local records. Search results describing DPRK geography and general land administration were not treated as city registry evidence.",
+      "method": "Separate English-language search and official source review."
+    },
+    {
+      "language": "Korean",
+      "query": "청진시 토지 등록 지적도 토지관리소 공식",
+      "result": "Searches did not locate relevant first-party local records. Search results describing DPRK geography and general land administration were not treated as city registry evidence.",
+      "method": "Separate local-language search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no safe anonymous parcel polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "No first-party Chŏngjin or North Hamgyong land-registry office, local cadastral viewer, or parcel service was identified in the English- and Korean-language searches. General material about land administration elsewhere in the DPRK is not evidence for this city; registry presence and public geometry remain unresolved.",
+    "verifiedOpenScope": "Searches did not locate relevant first-party local records. Search results describing DPRK geography and general land administration were not treated as city registry evidence.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether Chŏngjin has a city-level registry or public parcel mapping service could not be established from accessible first-party sources.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "No verifiable first-party local registry/map source or public parcel schema was found. No anonymous geometry query was possible without a primary endpoint."
+}

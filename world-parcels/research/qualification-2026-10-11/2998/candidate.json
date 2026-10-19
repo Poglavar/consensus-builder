@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "2998",
+    "name": "Wiesbaden",
+    "point": [
+      8.24497585586087,
+      50.0324160875229
+    ]
+  },
+  "descriptor": {
+    "id": "hessen-alkis-vereinfacht-wfs",
+    "adapter": "gml-wfs",
+    "name": "Hessen simplified ALKIS cadastral parcels",
+    "endpoint": "https://www.gds.hessen.de/wfs2/aaa-suite/cgi-bin/alkis/vereinf/wfs",
+    "version": "2.0.0",
+    "featureType": "ave:Flurstueck",
+    "idField": "oid",
+    "geometryField": "geometrie",
+    "responseCrs": "EPSG:25832",
+    "idPrefix": "DE-HE-",
+    "idType": "string",
+    "parcelNumberField": "oid",
+    "outFields": [
+      "oid"
+    ],
+    "countryCode": "DE",
+    "cityIds": [
+      "wiesbaden"
+    ],
+    "metricSrid": 32632,
+    "maxBboxKm2": 1,
+    "pageSize": 50,
+    "maxFeatures": 300,
+    "maxResponseBytes": 1048576,
+    "maxTotalResponseBytes": 8388608,
+    "timeoutMs": 12000,
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "operator": "Hessisches Landesamt für Bodenmanagement und Geoinformation",
+    "scope": "State ALKIS cadastral parcels; frozen bounded Wiesbaden samples. Citywide completeness is unverified."
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Official Hessen WFS GetCapabilities identifies WFS HE ALKIS Vereinfacht and states: Das Liegenschaftskataster wird in elektronischer Form im Amtlichen Liegenschaftskatasterinformationssystem (ALKIS) geführt. The service lists cadastral Flurstücke and exposes ave:Flurstueck. See evidence/official-service-inspection.json.",
+      "The frozen city packet identifies the Hessian state cadastral authority and reports Wiesbaden municipality attributes in the bounded ave:Flurstueck response near the unchanged WUP locator. Its safe native oid sample polygons DEHE062000013CfcFL and DEHE062000013CfdFL are retained in the frozen sample input, whose expected SHA-256 is verified. This establishes bounded Wiesbaden parcel evidence, without a citywide coverage claim."
+    ]
+  },
+  "sourceCandidateSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+  "qualificationRecordedSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+  "sourceCandidatePath": "qualification-seeds/cities/2998/attempt-01/candidate.json",
+  "originalSeedSha256": "aa5dcad6fc393da68888d217090299090339f2d412787fb408174294d3fc6841",
+  "originalSeedPath": "tmp/parcel-qualification/cities/2998/attempt-01/candidate.json"
+}

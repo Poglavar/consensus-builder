@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bonn",
+  "country": "Germany",
+  "countryCode": "DE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The City of Bonn states that its Liegenschaftskataster covers the entire municipal area and that parcel/building records are maintained in ALKIS. The official NRW INSPIRE-WFS catalog identifies the state download service for ALKIS cadastral parcels; official NRW metadata describes AX_Flurstueck as multipolygon data. Service identity and CRS are documented, but no actual point-bounded geometry response was fetched in this environment, so no sample or runtime-ready claim is made.",
+  "registryEvidenceUrls": [
+    "https://www.bonn.de/themen-entdecken/planen-bauen/liegenschaftskataster.php?loc=de",
+    "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?REQUEST=GetCapabilities&SERVICE=WFS",
+    "https://www.gdi.nrw/system/files/media/document/file/inspire_kommunale-betroffenheit-nrw_2021_v-3-0_0.pdf",
+    "https://www.distributions.informationgrid.eu/trefferanzeige?docuuid=6ee0316c-fff3-4c04-89c1-3aa2b453f95a&q=inspire-cp&service_type=service_type_download"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 1477,
+  "cityId": "wup2025:1477",
+  "centerLatLon": [
+    50.7822226933759,
+    7.09388726064463
+  ],
+  "rank": 708,
+  "queueRank": 708,
+  "population2025": 756044,
+  "population2025k": 756.044,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": null,
+  "scopeLimits": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified.",
+  "priorEvidenceFiles": [],
+  "research": {
+    "rootFollowthrough": {
+      "sampleFile": "bonn-root-samples.geojson",
+      "acceptanceFile": "bonn-nrw-root-acceptance.json",
+      "qualityFile": "bonn-nrw-root-quality.json",
+      "scope": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified."
+    }
+  },
+  "source": {
+    "sourceId": "de-nrw-lika-flurstueck",
+    "name": "Geobasis NRW ALKIS parcels",
+    "operator": "Bezirksregierung Köln / Geobasis NRW",
+    "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+    "nativeIdField": "flstkennz serialized in feature.id",
+    "scope": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified."
+  },
+  "populationPlausibility2025": "High",
+  "point": [
+    50.7822226933759,
+    7.09388726064463
+  ],
+  "rootReviewedAt": "2026-10-09T02:42:10.994727+00:00",
+  "coverageAssessment": {
+    "claimedScope": "Bonn municipal cadastre; bounded verified sample only.",
+    "verifiedOpenScope": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "sourceIds": [
+    "de-nrw-lika-flurstueck"
+  ],
+  "appCityId": "bonn",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/bonn-nrw-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bonn-nrw-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/bonn-root-quality-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "de-nrw-lika-flurstueck",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/bonn-nrw-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bonn-nrw-root-quality.json"
+  }
+}

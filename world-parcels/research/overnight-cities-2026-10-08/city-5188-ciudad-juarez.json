@@ -1,0 +1,185 @@
+{
+  "name": "Ciudad Juárez",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 425,
+  "point": [
+    31.6633818209033,
+    -106.421992448914
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "Ciudad Juárez mapa predios catastro GIS IMIP servicio de polígonos consulta pública",
+        "scope": "Find the city’s official parcel layer and anonymous complete geometry/API route.",
+        "result": "The official IMIP SIGEM confirms city cartography updated at parcel detail and links interactive municipal maps. Its ArcGIS REST directory is public; CartografiaBase FeatureServer layer 3 is Predios, described as “Predios digital, Cd Juárez, Chih,” polygon geometry in EPSG:32613. The queued WUP point returned one full polygon with only OBJECTID and clavetxt requested.",
+        "actualResultUrls": [
+          "https://www.imip.org.mx/sigem/",
+          "https://www.imip.org.mx/imip/node/5",
+          "https://sigimip.org.mx/server/rest/services?f=json",
+          "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      },
+      {
+        "language": "English",
+        "query": "Ciudad Juarez official cadastral parcel map GIS public feature service polygons",
+        "scope": "Cross-check city ownership and public record schema at the queued WUP point.",
+        "result": "The official city-linked ArcGIS service supports JSON/GeoJSON/PBF queries. Full polygon geometry and a stable municipal cadastral text key were retrieved at the WUP point. No owner, address, or personal fields were requested.",
+        "actualResultUrls": [
+          "https://www.imip.org.mx/sigem/",
+          "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      }
+    ],
+    "portals": [
+      {
+        "name": "SIGEM / IMIP municipal map services",
+        "operator": "Instituto Municipal de Investigación y Planeación (IMIP), Municipio de Juárez",
+        "homeUrl": "https://www.imip.org.mx/sigem/",
+        "observation": "Official IMIP describes municipal maps and a cartographic base maintained to parcel detail. Its linked public ArcGIS directory exposes the municipal Predios polygon layer. The separate predial lookup was not queried."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sigimip.org.mx/server/rest/services?f=json",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=UTF-8",
+        "observation": "Public ArcGIS Server 11.5 service directory lists CartografiaBase FeatureServer and MapServer."
+      },
+      {
+        "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/MapServer?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain; charset=UTF-8",
+        "observation": "Map service lists layer 3 Predios with polygon geometry."
+      },
+      {
+        "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain; charset=UTF-8",
+        "observation": "Layer metadata identifies Predios digital, Cd Juárez, Chih; polygon; EPSG:32613; full extent includes city; query formats JSON/GeoJSON/PBF; pagination supported. Only safe ID field clavetxt and transport OBJECTID were requested in feature queries."
+      },
+      {
+        "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&geometry=-106.421992448914%2C31.6633818209033&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=UTF-8",
+        "observation": "Exact WUP point returns count 1."
+      },
+      {
+        "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=1%3D1&objectIds=18702&outFields=OBJECTID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8",
+        "observation": "Full un-clipped polygon at WUP point; returned stable clavetxt 1-184-075-010. No owner/address attributes requested."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?objectIds=18702&outFields=OBJECTID%2CGlobalID%2Cclavetxt&returnGeometry=true&outSR=4326&f=geojson",
+    "httpStatus": 200,
+    "contentType": "application/geo+json; charset=UTF-8",
+    "featureCount": 1,
+    "featureId": "MX-JUA-PREDIO-{4F3D5B33-FD07-4E37-BFB4-34F5E56C65EF}",
+    "geometryType": "Polygon",
+    "coordinateCount": 5,
+    "fullGeometryReturned": true,
+    "clipped": false,
+    "locationBasis": "The exact queued WUP point [31.6633818209033,-106.421992448914] returned this polygon.",
+    "attributePolicy": "Only OBJECTID, GlobalID and clavetxt; no owner/address/tax attributes.",
+    "identityBasis": "Publisher GlobalID; earlier cadastral label is retained as a display label."
+  },
+  "source": {
+    "id": "mx-juarez-predios",
+    "adapter": "arcgis",
+    "name": "IMIP CartografiaBase Predios digital",
+    "operator": "Instituto Municipal de Investigación y Planeación (IMIP), Municipio de Juárez",
+    "endpoint": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3",
+    "layer": "Predios (FeatureServer layer 3)",
+    "geometryType": "esriGeometryPolygon",
+    "coordinateReferenceSystem": "EPSG:32613; full geometry queries returned EPSG:4326 GeoJSON",
+    "idPrefix": "MX-JUA-PREDIO-",
+    "idField": "GlobalID",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "parcelNumberField": "clavetxt",
+    "outFields": [
+      "OBJECTID",
+      "GlobalID",
+      "clavetxt"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "boundsSrid": 32613,
+    "boundsProjection": "+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "directGeometryQueryVerified": true,
+    "personalAttributesRequested": false,
+    "sampleFile": "juarez-predios-samples.geojson",
+    "acceptanceFile": "juarez-globalid-effective-acceptance.json",
+    "qualityFile": "juarez-globalid-root-quality.json",
+    "scope": "203 valid, distinct IMIP municipal Predios geometries verified in thirteen bounded 0.001-degree cells around the unchanged Ciudad Juárez WUP locator, which lies in a returned full polygon. GlobalID is the publisher-declared per-feature identity; OBJECTID is transport identity, and clavetxt remains only a label. The earlier clavetxt-based full-grid exact read matched 23,424 source rows because the label 0 is repeated, so that descriptor is rejected without filtering out such rows. Complete object-ID manifests, forced three-row paging of 31 source features over eleven geometry pages, all 203 fresh GlobalID reads, valid synthetic UUID absence, footprint and binding passed. Independent GEOS in EPSG:32613 found all 203 valid, nonduplicate and no sampled positive-area overlaps above 0.01 m² or operation errors. A malformed non-UUID absence probe correctly returned HTTP 400 and is preserved separately. All source shapes and labels remain unchanged. Citywide completeness, GlobalID continuity after publisher replacement, survey accuracy and legal-title semantics remain unverified.",
+    "identityBasis": "Publisher-declared GlobalID; non-unique clavetxt only labels. OBJECTID transports complete manifests."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal cartographic base is maintained to parcel detail; public Predios layer extent covers the urban municipality.",
+    "verifiedOpenScope": "203 valid, distinct IMIP municipal Predios geometries verified in thirteen bounded 0.001-degree cells around the unchanged Ciudad Juárez WUP locator, which lies in a returned full polygon. GlobalID is the publisher-declared per-feature identity; OBJECTID is transport identity, and clavetxt remains only a label. The earlier clavetxt-based full-grid exact read matched 23,424 source rows because the label 0 is repeated, so that descriptor is rejected without filtering out such rows. Complete object-ID manifests, forced three-row paging of 31 source features over eleven geometry pages, all 203 fresh GlobalID reads, valid synthetic UUID absence, footprint and binding passed. Independent GEOS in EPSG:32613 found all 203 valid, nonduplicate and no sampled positive-area overlaps above 0.01 m² or operation errors. A malformed non-UUID absence probe correctly returned HTTP 400 and is preserved separately. All source shapes and labels remain unchanged. Citywide completeness, GlobalID continuity after publisher replacement, survey accuracy and legal-title semantics remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "GlobalID supplies geometry identity within the published feature layer; clavetxt is not globally unique. Wider coverage, publisher replacement continuity, survey accuracy and legal title semantics remain unverified.",
+  "nextStep": "Inspect the enabled local source in a headed app.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:51:19Z",
+  "wupCityCode": 5188,
+  "cityId": "wup2025:5188",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    31.6633818209033,
+    -106.421992448914
+  ],
+  "queueRank": 425,
+  "population2025": 1212370,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "rootReviewedAt": "2026-10-08T23:56:37.997732+00:00",
+  "sourceIds": [
+    "mx-juarez-predios"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "203 valid, distinct IMIP municipal Predios geometries verified in thirteen bounded 0.001-degree cells around the unchanged Ciudad Juárez WUP locator, which lies in a returned full polygon. GlobalID is the publisher-declared per-feature identity; OBJECTID is transport identity, and clavetxt remains only a label. The earlier clavetxt-based full-grid exact read matched 23,424 source rows because the label 0 is repeated, so that descriptor is rejected without filtering out such rows. Complete object-ID manifests, forced three-row paging of 31 source features over eleven geometry pages, all 203 fresh GlobalID reads, valid synthetic UUID absence, footprint and binding passed. Independent GEOS in EPSG:32613 found all 203 valid, nonduplicate and no sampled positive-area overlaps above 0.01 m² or operation errors. A malformed non-UUID absence probe correctly returned HTTP 400 and is preserved separately. All source shapes and labels remain unchanged. Citywide completeness, GlobalID continuity after publisher replacement, survey accuracy and legal-title semantics remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/juarez-globalid-effective-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/juarez-globalid-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/juarez-service-review.json"
+  },
+  "registryBasis": "Official IMIP municipal mapping service contains a Predios layer described as Ciudad Juárez digital parcels; no legal title/cadastre interpretation is asserted.",
+  "registryEvidenceUrls": [
+    "https://www.imip.org.mx/sigem/",
+    "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3"
+  ],
+  "appCityId": "ciudadjuarez",
+  "scopeLimits": "203 valid, distinct IMIP municipal Predios geometries verified in thirteen bounded 0.001-degree cells around the unchanged Ciudad Juárez WUP locator, which lies in a returned full polygon. GlobalID is the publisher-declared per-feature identity; OBJECTID is transport identity, and clavetxt remains only a label. The earlier clavetxt-based full-grid exact read matched 23,424 source rows because the label 0 is repeated, so that descriptor is rejected without filtering out such rows. Complete object-ID manifests, forced three-row paging of 31 source features over eleven geometry pages, all 203 fresh GlobalID reads, valid synthetic UUID absence, footprint and binding passed. Independent GEOS in EPSG:32613 found all 203 valid, nonduplicate and no sampled positive-area overlaps above 0.01 m² or operation errors. A malformed non-UUID absence probe correctly returned HTTP 400 and is preserved separately. All source shapes and labels remain unchanged. Citywide completeness, GlobalID continuity after publisher replacement, survey accuracy and legal-title semantics remain unverified.",
+  "runtimeQualification": {
+    "sourceId": "mx-juarez-predios",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/juarez-globalid-effective-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/juarez-globalid-root-quality.json"
+  }
+}

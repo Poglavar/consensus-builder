@@ -1,0 +1,206 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5621-provo.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Utah County GIS publishes the parcel map and nightly Tax Parcels based on Recorder parcel linework and Assessor detail. The actual adapter completed a 13-cell read from the county TaxParcels_mobile 4K layer, verified 157 unique safe parcel IDs by fresh rereads, paging, absence, and WUP-point containment. Proposal binding and whole-sample topology fail: 350180500 overlaps target 350180070 by 9.44 m², and the 157-feature sample has 221 positive-area overlap pairs. Do not enable this candidate pending root review; no catalog/runtime descriptor is added.",
+  "registryAssessment": "County GIS is an official public parcel-data custodian, but its parcel map is a scale-specific tax parcel product combining Recorder linework and Assessor detail. Candidate geometry was verified; legal title and feed fitness are not established.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1",
+      "operator": "Utah County GIS, public service hosted by Provo GIS",
+      "observation": "Public polygon feature layer; source metadata says Utah County parcels combine CAMA, assessment and tax data. Only OBJECTID and geometry were requested. Exact WUP point query returned empty FeatureCollection; no other identifier was requested."
+    },
+    {
+      "url": "https://is.utahcounty.gov/gis/maps",
+      "operator": "Utah County Government GIS",
+      "observation": "Official county map catalogue lists Parcel Map and identifies Utah County GIS Division in Provo."
+    },
+    {
+      "url": "https://provo.gov/891/GIS",
+      "operator": "Provo City Government",
+      "observation": "Official city GIS information page returned HTTP 403 through the checked route; public county feature service was independently reachable."
+    },
+    {
+      "url": "https://is.utahcounty.gov/gis",
+      "operator": "Utah County Government GIS Division",
+      "observation": "Official county GIS landing page labels the Parcel Map and describes parcel-boundary mapping; identifies the GIS Division."
+    },
+    {
+      "url": "https://is.utahcounty.gov/gis/downloads",
+      "operator": "Utah County Government GIS Division",
+      "observation": "Official county page says the Tax Parcels combine Recorder parcel linework and Assessor detail and are uploaded nightly."
+    },
+    {
+      "url": "https://maps.utahcounty.gov/arcgis/rest/services/Parcels/TaxParcels_mobile/MapServer/21",
+      "operator": "Utah County Government GIS Division",
+      "observation": "Official County GIS ArcGIS service; layer 21 schema and exact WUP point polygon verified with safe fields only."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Provo Utah official parcel GIS city county assessor parcel map",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1",
+        "https://is.utahcounty.gov/gis/maps",
+        "https://provo.gov/891/GIS"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "English (local working language)",
+      "query": "Provo city Utah County public parcel GIS official parcel layer",
+      "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+      "method": "Separate follow-up English-language search; English is the local official language.",
+      "actualResultUrls": [
+        "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1",
+        "https://is.utahcounty.gov/gis/maps"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "us-ut-utahcounty-taxparcels-mobile-21",
+    "sampleCount": 3,
+    "sampleFile": "provo-parcel-samples-native.json",
+    "nativeId": "350180070",
+    "nativeIdField": "PARCELID",
+    "exactWupPointTest": "The final 4K layer15 grid contains one parcel polygon covering unchanged WUP point; complete adapter check retained it, with OBJECTID 4695463 and PARCELID 350180070.",
+    "requestEvidence": [
+      {
+        "url": "https://is.utahcounty.gov/gis/downloads",
+        "method": "official county GIS data-download page review",
+        "httpStatus": 200,
+        "assessment": "County describes its nightly Tax Parcel source, Recorder parcel linework, Assessor data, GIS Division contact in Provo."
+      },
+      {
+        "url": "https://maps.utahcounty.gov/arcgis/rest/services/Parcels/TaxParcels_mobile/MapServer/21",
+        "method": "anonymous GET layer metadata",
+        "httpStatus": 200,
+        "bytesRead": 5314,
+        "assessment": "Layer 21 metadata: live_parcel_polygon, polygon, map-service WKID 102100/latest 3857; exact queried fields limited to OBJECTID/PARCELID."
+      },
+      {
+        "url": "https://maps.utahcounty.gov/arcgis/rest/services/Parcels/TaxParcels_mobile/MapServer/21/query",
+        "method": "anonymous exact-WUP point query, safe IDs and geometry only",
+        "httpStatus": 200,
+        "returnedFeatureCount": 1,
+        "assessment": "One full polygon, OBJECTID 4695463, PARCELID 350180070; no owner/address/tax/assessment fields requested."
+      },
+      {
+        "url": "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1/query",
+        "method": "anonymous exact point and bounded envelope checks on separate detailed Provo-hosted layer; outFields=OBJECTID only, geometry only/count-only",
+        "httpStatus": 200,
+        "returnedFeatureCount": 0,
+        "assessment": "Exact point and envelopes up to 5 km in the layer native projection returned no features; exact WGS84 point and ±0.005° envelopes also returned zero. Its metadata describes potential redundant condo geometries."
+      }
+    ],
+    "requestEvidenceFile": "provo-runtime-qualification.json",
+    "qualityAuditFile": "provo-runtime-topology-audit.json",
+    "runtimeQualificationOutcome": "Grid, paging, fresh IDs, explicit absence, and point containment passed; proposal binding and topology failed.",
+    "materialBindingConflict": {
+      "otherParcelId": "350180500",
+      "intersectionM2": 9.44,
+      "intrusionM": 0.394
+    }
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Utah County TaxParcels_mobile scale-specific 4K layer; only 13 grid cells around the WUP settlement point and exact footprint were tested.",
+    "verifiedOpenScope": "13 aligned 0.001-degree cells; 157 distinct parcel IDs; all fresh-ID reads complete; one polygon contains the unchanged WUP point. The target footprint query is complete but binds to multiple IDs.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://provo.gov/891/GIS",
+      "result": "HTTP 403 text/html; charset=UTF-8; 5485 response bytes. Direct official-source GET; response supports only the page/application description recorded in the source review."
+    },
+    {
+      "url": "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1",
+      "result": "HTTP 200 text/plain; charset=UTF-8; 23545 response bytes. ArcGIS Feature Layer, esriGeometryPolygon, native WKID 102743/latest WKID 3566"
+    },
+    {
+      "url": "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1/query",
+      "result": "HTTP 200 application/geo+json; charset=UTF-8; 42 response bytes. Exact WUP point query, outFields=OBJECTID and geometry only; zero features"
+    },
+    {
+      "url": "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1/query",
+      "result": "HTTP 200 application/geo+json; charset=UTF-8; 42 response bytes. Empty FeatureCollection at the exact WUP point. No assessment, tax, address or parcel identifiers were requested; no geometry retained."
+    },
+    {
+      "url": "https://is.utahcounty.gov/gis/downloads",
+      "method": "official county GIS data-download page review",
+      "httpStatus": 200,
+      "assessment": "County describes its nightly Tax Parcel source, Recorder parcel linework, Assessor data, GIS Division contact in Provo."
+    },
+    {
+      "url": "https://maps.utahcounty.gov/arcgis/rest/services/Parcels/TaxParcels_mobile/MapServer/21",
+      "method": "anonymous GET layer metadata",
+      "httpStatus": 200,
+      "bytesRead": 5314,
+      "assessment": "Layer 21 metadata: live_parcel_polygon, polygon, map-service WKID 102100/latest 3857; exact queried fields limited to OBJECTID/PARCELID."
+    },
+    {
+      "url": "https://maps.utahcounty.gov/arcgis/rest/services/Parcels/TaxParcels_mobile/MapServer/21/query",
+      "method": "anonymous exact-WUP point query, safe IDs and geometry only",
+      "httpStatus": 200,
+      "returnedFeatureCount": 1,
+      "assessment": "One full polygon, OBJECTID 4695463, PARCELID 350180070; no owner/address/tax/assessment fields requested."
+    },
+    {
+      "url": "https://gispublicweb.provo.gov/ArcGIS/rest/services/Parcel/MapServer/1/query",
+      "method": "anonymous exact point and bounded envelope checks on separate detailed Provo-hosted layer; outFields=OBJECTID only, geometry only/count-only",
+      "httpStatus": 200,
+      "returnedFeatureCount": 0,
+      "assessment": "Exact point and envelopes up to 5 km in the layer native projection returned no features; exact WGS84 point and ±0.005° envelopes also returned zero. Its metadata describes potential redundant condo geometries."
+    }
+  ],
+  "remainingUncertainty": "The county layer contains material overlap topology and creates multiple-parcel proposal binding for the target geometry. COGO layer4 count/OID manifests disagree, while Simple_wgs84 stopped on a transport error. Alternate scales match geometry at the point but were not fully qualified. Citywide completeness, legal/title authority, and whether another layer represents parcels more cleanly remain unresolved.",
+  "nextStep": "Root independently audits the stored qualification and topology summaries. Keep source disabled; resolve overlapping geometries and multiple-ID binding before any runtime proposal use.",
+  "runtimeAssessment": {
+    "status": "held_native_geometry_conflicts",
+    "reason": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "runtimeQualification": {
+    "file": "provo-runtime-qualification.json",
+    "candidateLayer": "https://maps.utahcounty.gov/arcgis/rest/services/Parcels/TaxParcels_mobile/MapServer/15",
+    "passedCoreTests": [
+      "thirteen-aligned-grid-cells",
+      "unchanged-wup-point-containment",
+      "all-native-ids-freshly-read",
+      "explicit-absence",
+      "forced-page-size-3",
+      "complete-target-footprint-query"
+    ],
+    "failedTests": [
+      "source-proposal-binding"
+    ],
+    "topologyAuditFile": "provo-runtime-topology-audit.json",
+    "fullWgs84ScratchCache": "tmp/overnight-cities-2026-10-09/provo-county-tax-parcels-mobile-4k-polygon-runtime-cache.geojson",
+    "fullMetricScratchCache": "tmp/overnight-cities-2026-10-09/provo-runtime-cache-26912.geojson"
+  },
+  "rootReviewedAt": "2026-10-09T07:54:05.936008+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:54:05.936008+00:00",
+    "decision": "Hold runtime admission: independently confirmed full-polygon overlaps and binding conflicts.",
+    "qualityFile": "provo-root-quality.json",
+    "qualificationFile": "provo-runtime-qualification.json",
+    "scope": "The Utah County public 4K assessment-map layer returns full point-containing parcel geometry and passes thirteen-cell count/OID manifests, forced small pages and fresh reads of all 157 native parcel IDs. Its complete polygons overlap: independent root EPSG:26912 GEOS audit records 183 pairs above 0.01 m², 787.125 m² aggregate overlap and no invalidity, duplicates or operation errors. The target-footprint proposal binds three parcels instead of one, including a material 9.44 m² intrusion. COGO completeness and an alternate profile transport failure are preserved separately. These are source-model/topology incompatibilities with exclusive parcel ground, not evidence of unavailable cadastre or absent public geometry."
+  }
+}

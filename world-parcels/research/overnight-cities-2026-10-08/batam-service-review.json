@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4923-batam.json",
+  "purpose": "Read-only city source research and bounded public-service validation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "No geometry query. The city-level ownership layer is a promising local geospatial source but cannot be treated as a safe parcel feed without an inspectable field list and privacy review.",
+  "rootAssessment": "Direct anonymous layer-schema GET timed out before a response, public Geoportal static JavaScript review did not expose a usable geometry-only route, and the national CKAN metadata request returned HTTP 403. Native identity, geometry type and safe output fields could not be verified through an accessible live layer schema; no feature query was made.",
+  "datasetTitleIsNotAccessGate": true
+}

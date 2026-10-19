@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 9981,
+  "wupCityCode": 9981,
+  "queueRank": 1947,
+  "name": "Attingal",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [8.69157795102058, 76.8045470590346],
+  "centerLatLon": [8.69157795102058, 76.8045470590346],
+  "population2025": 297140,
+  "population2025k": 297.14,
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "targetGeometryEvidence": "No parcel geometry was retained. The unchanged WUP point was not shifted; the official Bhu-Naksha host could not be inspected because TLS verification failed, and no point-hit or citywide-absence inference was made.",
+  "nativeIdReadiness": "partial_non_geometry",
+  "registryFound": true,
+  "registryBasis": "Kerala's official Bhu-Naksha/e-maps services evidence a public cadastral parcel-map system, while official Kerala pages identify the Attingal Survey and Land Records (Resurvey) office and an Attingal digital-survey camp office. This is local custodianship/procedure evidence, not source admission or runtime integration.",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Attingal Kerala official cadastral parcel map GIS land records",
+        "result": "Found the official Kerala Bhu-Naksha cadastral mapping page, Kerala Revenue e-maps description, Attingal Municipality site, official Attingal Survey and Land Records office listing, and Kerala Land Use Board LRIS. No usable anonymous Attingal parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+          "https://www.revenue.kerala.gov.in/pages/home.php",
+          "https://cmo.kerala.gov.in/office_display_level_en.php?RTbdb578sjHHsbaQWNmvSdhFFhbzZ=ZGlkPTM1JmRpc3Q9MSZvZmNfaWQ9MTcyNGJlZWItZTk3YS00NmE4LTkxMTYtN2FiYWUxNmY1ZTIxJmZkPVN1cnZleSthbmQrTGFuZCtSZWNvcmRzK0RlcGFydG1lbnQ%3D",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+          "https://attingalmunicipality.lsgkerala.gov.in/"
+        ]
+      },
+      {
+        "language": "Malayalam",
+        "query": "ആറ്റിങ്ങൽ കേരള ഔദ്യോഗിക കഡസ്ട്രൽ പാർസൽ മാപ്പ് ഭൂമിരേഖകൾ GIS",
+        "result": "Malayalam-first-party search identified the official Kerala Ente Bhoomi survey search and the Malayalam Attingal Municipality site; official pages also identify Attingal (ആറ്റിങ്ങല്‍) in the Chirayinkeezhu survey camp-office listing. No usable anonymous parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+          "https://attingalmunicipality.lsgkerala.gov.in/ml",
+          "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+          "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html"
+        ]
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Kerala cadastral/e-maps services and Attingal local survey-custodian references.",
+    "verifiedOpenScope": "Public service descriptions and local office/camp listings were verified; anonymous Attingal parcel geometry, schema, CRS, and citywide coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attemptedRoutes": [
+    {
+      "route": "GET https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "outcome": "TLS certificate verification failed (certificate expired); no certificate exception was used and no login or further request was attempted"
+    },
+    {
+      "route": "GET https://www.revenue.kerala.gov.in/pages/home.php",
+      "outcome": "official page available; describes Kerala e-maps cadastral mapping and single-parcel digital sketch scope, but exposes no parcel response in the inspected page"
+    },
+    {
+      "route": "GET https://lris.kslub.kerala.gov.in/app/",
+      "outcome": "official LRIS 2.0 page available; advertises district/block/local-body land-resources map, not a verified cadastral parcel-vector response"
+    },
+    {
+      "route": "GET https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+      "outcome": "official search page available; requires district/taluk/village/block/survey inputs and CAPTCHA; no automated credentials or CAPTCHA bypass attempted"
+    },
+    {
+      "route": "GET https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+      "outcome": "official page available; lists Attingal (ആറ്റിങ്ങല്‍) under Chirayinkeezhu with an Attingal digital-survey camp office"
+    },
+    {
+      "route": "GET official Kerala CMO Survey and Land Records office listing",
+      "outcome": "official page available; identifies Superintendent Survey and Land Records (Resurvey) Attingal"
+    },
+    {
+      "route": "GET https://attingalmunicipality.lsgkerala.gov.in/ and /ml",
+      "outcome": "official municipal pages available; municipal service context includes property tax and Malayalam local-government content, but no parcel geometry endpoint was identified"
+    }
+  ],
+  "schemaAndCrs": "No parcel response, native field schema, CRS, or geometry was safely observed. Bhu-Naksha page text exposes block/survey/subdivision search concepts only.",
+  "nativeIdentity": "No stable native parcel identity was exposed in an anonymous response. No synthetic identity was created and no sample was retained.",
+  "fieldMapping": {
+    "observedSearchConcepts": ["block number", "survey number", "sub division number"],
+    "mappingNote": "These are UI search concepts from the official Bhu-Naksha page, not an observed parcel response or promoted identity."
+  },
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if independently qualified", "declared CRS", "non-sensitive layer/schema metadata", "non-sensitive administrative survey lookup fields"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, credentials, private token, CAPTCHA bypass, or certificate exception was used.",
+  "sourceIds": [
+    "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+    "https://www.revenue.kerala.gov.in/pages/home.php",
+    "https://lris.kslub.kerala.gov.in/app/",
+    "https://survey.entebhoomi.kerala.gov.in/portal/survey/search",
+    "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+    "https://attingalmunicipality.lsgkerala.gov.in/",
+    "https://cmo.kerala.gov.in/office_display_level_en.php?RTbdb578sjHHsbaQWNmvSdhFFhbzZ=ZGlkPTM1JmRpc3Q9MSZvZmNfaWQ9MTcyNGJlZWItZTk3YS00NmE4LTkxMTYtN2FiYWUxNmY1ZTIxJmZkPVN1cnZleSthbmQrTGFuZCtSZWNvcmRzK0RlcGFydG1lbnQ%3D"
+  ],
+  "runtimeReadiness": "held",
+  "resultCategory": "local_cadastral_registry_and_service_custodian_evidenced_without_public_geometry",
+  "blocker": "The public Bhu-Naksha cadastral viewer could not be inspected because its TLS certificate was expired in the client environment; other official pages provide service and custodian evidence but no anonymous parcel geometry/schema response.",
+  "remainingUncertainty": "A TLS-valid Bhu-Naksha route or an authorized public API may expose parcel geometry and native identifiers. The Attingal municipal property-tax context does not establish cadastral geometry coverage.",
+  "nextStep": "Independent serial reviewer should recheck the official Kerala Bhu-Naksha/Ente Bhoomi routes from a TLS-valid environment and qualify any anonymous geometry response before adapter consideration."
+}

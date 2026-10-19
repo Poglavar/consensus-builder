@@ -1,0 +1,21 @@
+{
+  "taskId": "city:231",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-231-lausanne.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/lausanne-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/lausanne-sample.geojson",
+    "tmp/valhalla-parcel-research/lausanne/cadastre-identify.geojson",
+    "tmp/valhalla-parcel-research/lausanne/query.geojson"
+  ],
+  "checkedAt": "2026-10-10T20:12:35.591316Z",
+  "findings": "Immutable WUP identity and English/French search records match the queue. Vaud cadastral custodian is evidenced. Original CadastralWebMap identify response has two full polygons with EGRID CH698375964586 and CH784783457688; sample rings match original rings exactly and sample attributes contain only those IDs. Both EPSG:2056 polygons are GEOS-valid with 0 square metres pairwise overlap. The vector query artifact reports an error, so identify results do not establish a pageable adapter.",
+  "admissionGates": "Fresh exact-ID reads, forced paging, thirteen bounded cells, complete metric full-polygon audit, source binding, and headed Details verification are missing; the two-polygon sample is bounded discovery only.",
+  "sourceUrls": [
+    "https://www.vd.ch/territoire-et-construction/cadastre-et-geoinformation/guichets-cartographiques/localisation-par-parcelle",
+    "https://api3.geo.admin.ch/rest/services/api/MapServer/identify"
+  ]
+}

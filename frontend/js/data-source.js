@@ -65,7 +65,26 @@
         return stored || fallback;
     }
 
+    // Dev override: when launching a worktree on a custom backend port (see dev.sh at the repo
+    // root), the ?backend=<url> query param — persisted to localStorage — repoints every backend
+    // call. Localhost/file-only so it can never affect production.
+    function getDevBackendOverride() {
+        try {
+            const host = (window.location.hostname || '').toLowerCase();
+            const isLocal = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || window.location.protocol === 'file:';
+            if (!isLocal) return null;
+            const param = new URLSearchParams(window.location.search).get('backend');
+            if (param) {
+                try { localStorage.setItem('cb_dev_backend_base', param); } catch (_) { }
+                return param;
+            }
+            try { return localStorage.getItem('cb_dev_backend_base') || null; } catch (_) { return null; }
+        } catch (_) { return null; }
+    }
+
     function getBackendBase() {
+        const devOverride = getDevBackendOverride();
+        if (devOverride) return devOverride.replace(/\/+$/, '');
         const dataSource = getDataSource();
         if (dataSource === 'localhost') {
             return LOCAL_BASE;
@@ -97,106 +116,38 @@
         const startIndex = isFinite(Number(options.startIndex)) && Number(options.startIndex) > 0
             ? String(Number(options.startIndex))
             : undefined;
-        const cityParcelsConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig()?.parcels : null;
+        const requestedCity = options.city ? String(options.city) : null;
+        const requestedConfig = requestedCity && CityConfigManager
+            ? (CityConfigManager.getAvailableCities?.() || []).find(config => String(config?.id || '') === requestedCity)
+            : null;
+        const cityParcelsConfig = requestedConfig?.parcels
+            || (CityConfigManager ? CityConfigManager.getCurrentCityConfig()?.parcels : null);
 
         // Force backend when on production host to avoid OSS fetches and ExceptionReports
         const forcedBackend = isProdHost();
 
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-ba') {
+        const source = cityParcelsConfig?.source;
+        if (source === 'none') return null;
+        if (source === 'parcel-source') {
+            if (!cityParcelsConfig.sourceId) throw new Error('Parcel source ID is missing.');
+            return { source, sourceId: cityParcelsConfig.sourceId, browserAdapter: true, returnsWGS84: true,
+                completeResponse: true, disablePagination: true };
+        }
+        const importedSources = {
+            'parcel-ba': {}, 'parcel-bg': { disablePagination: true },
+            'parcel-lj': { disablePagination: true }, 'parcel-nyc': {}
+        };
+        if (source && Object.prototype.hasOwnProperty.call(importedSources, source)) {
             const base = getBackendBase().replace(/\/$/, '');
             const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (startIndex !== undefined) {
-                params.set('offset', startIndex);
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-ba${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-ba`;
-            return { url, isOSS: false, source: 'parcel-ba', ownershipBase: ownershipUrl, returnsWGS84: true };
+            if (options.latLonBbox) params.set('bbox', options.latLonBbox);
+            if (options.parcelId || options.parcel_id) params.set('parcel_id', options.parcelId || options.parcel_id);
+            if (startIndex !== undefined) params.set('offset', startIndex);
+            params.set('limit', count);
+            return { url: `${base}/${source}?${params}`, ownershipBase: `${base}/${source}`,
+                isOSS: false, source, returnsWGS84: true, ...importedSources[source] };
         }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-bg') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-bg${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-bg`;
-            return { url, isOSS: false, source: 'parcel-bg', ownershipBase: ownershipUrl, disablePagination: true, returnsWGS84: true };
-        }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-lj') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-lj${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-lj`;
-            return { url, isOSS: false, source: 'parcel-lj', ownershipBase: ownershipUrl, disablePagination: true, returnsWGS84: true };
-        }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-co') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (startIndex !== undefined) {
-                params.set('offset', startIndex);
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-co${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-co`;
-            return { url, isOSS: false, source: 'parcel-co', ownershipBase: ownershipUrl, returnsWGS84: true };
-        }
-
-        if (cityParcelsConfig && cityParcelsConfig.source === 'parcel-nyc') {
-            const base = getBackendBase().replace(/\/$/, '');
-            const params = new URLSearchParams();
-            if (typeof options.latLonBbox === 'string' && options.latLonBbox.trim().length) {
-                params.set('bbox', options.latLonBbox.trim());
-            }
-            if (options.parcelId || options.parcel_id) {
-                params.set('parcel_id', (options.parcelId || options.parcel_id).toString());
-            }
-            if (startIndex !== undefined) {
-                params.set('offset', startIndex);
-            }
-            if (count) {
-                params.set('limit', count);
-            }
-            const query = params.toString();
-            const url = `${base}/parcel-nyc${query ? `?${query}` : ''}`;
-            const ownershipUrl = `${base}/parcel-nyc`;
-            return { url, isOSS: false, source: 'parcel-nyc', ownershipBase: ownershipUrl, returnsWGS84: true };
-        }
+        if (source && source !== 'oss-wfs') throw new Error(`Unsupported parcel source: ${source}`);
 
         const dataSource = forcedBackend ? 'api.urbangametheory.xyz' : getDataSource();
         if (dataSource === 'oss.uredjenazemlja.hr') {
@@ -217,13 +168,14 @@
             return { url: `${OSS_BASE}?${params}`, isOSS: true };
         }
 
-        if (dataSource === 'localhost') {
-            const url = `${LOCAL_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
-            return { url, isOSS: false, returnsWGS84: true };
-        }
-
-        // Fallback / placeholder for api.urbangametheory.xyz (visible but not used yet)
-        const url = `${UGT_BASE}/parcels?bbox=${encodeURIComponent(bbox)}`;
+        // Croatian cities (Zagreb, Split, Šibenik) all land here. getBackendBase() rather than
+        // LOCAL_BASE/UGT_BASE: it already resolves dev override -> localhost -> prod, and it is what
+        // honours a localhost worktree's `?backend=` override. Hardcoding LOCAL_BASE sent every
+        // parcel request to port 3000 no matter which port ./dev.sh had actually started the
+        // backend on, so a worktree loaded zero parcels while every OTHER city source — which all
+        // call getBackendBase() — worked fine. Same bug, same fix, as buildBuildingRequestParams
+        // below; that one was caught earlier and this one was missed.
+        const url = `${getBackendBase()}/parcels?bbox=${encodeURIComponent(bbox)}`;
         return { url, isOSS: false, returnsWGS84: true };
     }
 
@@ -272,38 +224,52 @@
         };
     }
 
-    // Return URL for buildings depending on selected data source
-    function buildBuildingRequestParams(bbox) {
-        const dataSource = getDataSource();
-        const cityConfig = CityConfigManager ? CityConfigManager.getCurrentCityConfig() : null;
-        if (cityConfig && cityConfig.buildings && cityConfig.buildings.source === 'none') {
+    // Return URL for building footprints. `source` picks WHICH SURVEY:
+    //
+    //   'gdi' (default) — the photogrammetric objects, keyed by object_id. This is the WORKING SET:
+    //                     the same features gdi_building_3d meshes, so it is what detection scans
+    //                     and what the 3D view renders.
+    //   'dgu'           — the cadastre (DKP_ZGRADE), keyed by zgrada_id. Reference layer only.
+    //
+    // Both come from OUR backend, on every data source. The OSS WFS is not an option here even in
+    // `oss.uredjenazemlja.hr` mode: it serves DKP_ZGRADE (cadastre) only, and it cannot serve the
+    // GDI objects at all — they exist solely in our database. Routing the working set through a
+    // source that can only ever return the OTHER survey is exactly the bug this all came from.
+    // GDI and DGU are Croatian services: their bbox is the view in HTRS96/TM (EPSG:3765, map-core.js
+    // bboxInCrs), computed only once the request applies — a view on another continent may not
+    // project into 3765 at all (proj4 gives no finite answer near the equator in much of Asia and the
+    // Americas), and computing it first used to stop every city's own provider from loading there.
+    function buildBuildingRequestParams(bounds, source = 'gdi') {
+        // The city whose data applies at the view's centre (location-first.md), not the session's.
+        let cityConfig = null;
+        if (CityConfigManager) {
+            const center = bounds && typeof bounds.getCenter === 'function' ? bounds.getCenter() : null;
+            cityConfig = center && typeof CityConfigManager.getCityConfigAt === 'function'
+                ? CityConfigManager.getCityConfigAt(center.lat, center.lng)
+                : CityConfigManager.getCurrentCityConfig();
+        }
+        const configured = (cityConfig && cityConfig.buildings) ? cityConfig.buildings.source : null;
+        if (configured === 'none') {
             return null;
         }
-        if (dataSource === 'oss.uredjenazemlja.hr') {
-            const token = '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
-            const search = new URLSearchParams({
-                token: token,
-                service: 'WFS',
-                version: '1.0.0',
-                request: 'GetFeature',
-                maxFeatures: '2000',
-                outputFormat: 'json',
-                typeName: 'oss:DKP_ZGRADE',
-                srsName: 'EPSG:3765',
-                bbox: bbox
-            });
-            const url = `${OSS_BASE}?${search.toString()}`;
-            return { url, isOSS: true };
+        // GDI is the ZAGREB survey. Asking for it in a city whose footprints come from somewhere
+        // else returns nothing, every time — and a reload replaying a hundred corridors asks once
+        // per corridor, so Šibenik (Overture) filled its status log with "Loaded 0 buildings" for
+        // a dataset it does not have. Zagreb declares no `buildings` block at all, so an unset
+        // source means the GDI default and still asks.
+        //
+        // DGU is deliberately NOT gated: it is the national building registry, valid in every
+        // Croatian city, and it has its own opt-in toggle.
+        if (source !== 'dgu' && configured && configured !== 'gdi') {
+            return null;
         }
-
-        if (dataSource === 'localhost') {
-            const url = `${LOCAL_BASE}/buildings?bbox=${encodeURIComponent(bbox)}`;
-            return { url, isOSS: false };
-        }
-
-        // api.urbangametheory.xyz
-        const url = `${UGT_BASE}/buildings?bbox=${encodeURIComponent(bbox)}`;
-        return { url, isOSS: false };
+        // Honour the localhost worktree's `?backend=` override just like every other backend
+        // request. Using LOCAL_BASE here silently sent demolition-footprint scans to port 3000
+        // while the same page loaded 3D meshes from its requested backend port.
+        const base = getBackendBase();
+        const bbox = window.bboxInCrs(bounds, 'EPSG:3765');
+        const search = new URLSearchParams({ bbox, source: source === 'dgu' ? 'dgu' : 'gdi' });
+        return { url: `${base}/buildings?${search.toString()}`, isOSS: false };
     }
 
     function initDataSourceUI() {
@@ -322,7 +288,7 @@
             const newValue = select.value;
 
             const warning = 'Changing the data source will CLEAR all locally saved data (parcels, roads, proposals, plans, user settings, etc.).\n\nDo you want to proceed?';
-            const proceed = await window.showStyledConfirm(warning);
+            const proceed = await window.showStyledConfirm(warning, { destructive: true });
 
             if (!proceed) {
                 // Revert dropdown to the last confirmed value and cancel
@@ -335,7 +301,7 @@
 
             try {
                 if (typeof clearLocalParcelData === 'function') {
-                    clearLocalParcelData();
+                    await clearLocalParcelData();
                 }
             } catch (error) {
                 console.warn('Error clearing local parcel data during data source switch', error);
@@ -351,19 +317,37 @@
                 updateStatus(`Data source set to: ${newValue}. Cleared all local data.`);
             }
 
-            try {
-                if (typeof fetchParcelData === 'function') {
-                    fetchParcelData();
-                }
-            } catch (error) {
-                console.warn('Error fetching parcel data after data source switch', error);
+            // fetchParcelData is async: a try/catch here never saw its rejection. The reported
+            // wrapper puts the failure in the status bar and console instead.
+            if (typeof fetchParcelDataReported === 'function') {
+                fetchParcelDataReported(undefined, 'data source switch');
             }
         });
     }
 
     document.addEventListener('DOMContentLoaded', initDataSourceUI);
 
+    // Files the backend stores (proposal thumbnails, uploaded images, models, metadata) are served
+    // at PATHS: the API returns `/uploads/images/<file>` unless a public origin is pinned on the
+    // server. Resolve a path against the backend this page talks to — the `?backend=` override
+    // included — and leave absolute, data:, blob: and ipfs: references alone. Rows used to carry
+    // whichever localhost port the day's backend ran on, and every one of them went dead.
+    function resolveBackendAssetUrl(url) {
+        if (url === undefined || url === null) return null;
+        const value = String(url).trim();
+        if (!value) return null;
+        // A local record may still carry the origin of the dev backend that stored it (a plan
+        // applied before the rows were repaired copied those values into local storage). Only the
+        // path is stable: re-anchor a localhost origin onto the backend this page talks to.
+        const staleLocal = value.match(/^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?(\/(?:uploads|images)\/.*)$/i);
+        if (staleLocal) return `${getBackendBase().replace(/\/+$/, '')}${staleLocal[1]}`;
+        if (/^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(value)) return value;
+        const base = getBackendBase().replace(/\/+$/, '');
+        return `${base}${value.startsWith('/') ? '' : '/'}${value}`;
+    }
+
     // Expose builder to other modules
+    window.resolveBackendAssetUrl = resolveBackendAssetUrl;
     window.buildParcelRequestParams = buildParcelRequestParams;
     window.buildBuildingRequestParams = buildBuildingRequestParams;
     window.buildPlannedRoadRequestParams = buildPlannedRoadRequestParams;
@@ -371,5 +355,3 @@
     window.getBackendBase = getBackendBase;
     window.getCurrentDataSource = getDataSource;
 })();
-
-

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10246",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-10246-anlu.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/anlu-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_10246-root-review.json"
+  ],
+  "checkedAt": "2026-10-10T20:10:45.624126Z"
+}

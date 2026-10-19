@@ -1,0 +1,287 @@
+{
+  "name": "Macau - Zhuhai",
+  "country": "China, Macao SAR",
+  "countryCode": "MO",
+  "rank": 229,
+  "point": [
+    22.2612114526582,
+    113.525423669444
+  ],
+  "population2025": 2203065,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [
+    "macau-fatima-acceptance.json",
+    "macau-fatima-quality.json",
+    "macau-initial-sample-retention.json"
+  ],
+  "scopeLimits": "28 valid, distinct official Cad_lote parcel polygons verified in thirteen local cells around the explicit in-Macao center [22.1940052, 113.5442146]. Complete pages, fresh exact-ID hashes, absence, footprint and source binding pass, with no sampled overlaps above 0.01 m². This covers the Macao side of the Macau–Zhuhai settlement only. The ranked WUP point is outside Macao SAR; Zhuhai and wider municipal coverage remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official DSCC cadastral viewer exposes the public Cad_lote polygon service, and a bounded anonymous query near the Macao urban reference returned a parcel. The repository adapter passed its 13-cell qualification and follow-up checks on that nearby Macao area. Macao’s official boundary excludes the ranked locator; Zhuhai’s official registry homepage links a map-property lookup that redirects to Guangdong identity authentication, so no Zhuhai geometry was verified.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese",
+        "query": "澳门 官方 地籍图 地籍资讯网 地籍信息查询 地块 土地工务局 site:dsscu.gov.mo OR site:gis.gov.mo",
+        "scope": "Find official Macao cadastral information and an online parcel map or service.",
+        "result": "Official DSCC/Cartography and Cadastre sources identify the Rede de Informação Cadastral / 地籍資訊網 at cadastre.gis.gov.mo. The web map is a separate viewer; its downloaded app bundle identifies public basemaps and thematic services, but no parcel geometry endpoint. The cadastral information page routes to jurisdiction-specific lookup/procedure; no public geometry sample was confirmed.",
+        "actualResultUrls": [
+          "https://geomatics.dsscu.gov.mo/zh-hans/services_system.html",
+          "https://cadastre.gis.gov.mo/MGSP_Cad/index.html",
+          "https://webmap.gis.gov.mo/MapGIS/index.html"
+        ],
+        "executionMethod": "Separate Chinese-language search; official Chinese service page and cadastral viewer shell/app bundle reviewed."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Macau cadastro predial mapa oficial Direcção dos Serviços de Cartografia e Cadastro terrenos",
+        "scope": "Cross-check in Portuguese whether cadastral map information and parcel geometry are publicly accessible.",
+        "result": "The official Portuguese service page describes Macao cadastral-plan application through DSCC and requires proof of rights and an in-person procedure. The official Macao boundary is north of the relevant point, so this procedure is not a point-scope result for the WUP locator.",
+        "actualResultUrls": [
+          "https://www.gov.mo/pt/servicos/ps-2232/ps-2232a/",
+          "https://bo.dsaj.gov.mo/bo/i/2015/50/extra/aviso128.asp",
+          "https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1"
+        ],
+        "executionMethod": "Separate Portuguese-language search and official service page review; no gated record was requested."
+      },
+      {
+        "language": "English",
+        "query": "Macau Zhuhai official cadastral parcel map land registry public GIS service Zhuhai Natural Resources Bureau",
+        "scope": "Independently check English-language official sources for the Macau–Zhuhai compound label and locate Zhuhai cadastral/registry services for the ranked point.",
+        "result": "The English-language search returned official Macao DSCC and cadastral-network sources but no English-language official Zhuhai cadastral parcel map. Zhuhai-specific searches and the City Real Estate Registration Center official site identify a comprehensive online property-information query; its public HTML link opens a JavaScript-only page, and no anonymous geometry result at the exact ranked point was verified.",
+        "actualResultUrls": [
+          "https://bdc.zhuhai.gov.cn/",
+          "https://zrzyj.zhuhai.gov.cn/",
+          "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html"
+        ],
+        "executionMethod": "Separate English-language web search followed by official Zhuhai Real Estate Registration Center and Natural Resources Bureau pages and the center’s linked query page."
+      },
+      {
+        "language": "Chinese",
+        "query": "珠海市自然资源局 地籍图 珠海 不动产登记 以图查房 官网 site:zhuhai.gov.cn OR site:zrzyj.zhuhai.gov.cn",
+        "scope": "Find official Zhuhai natural-resource/cadastral map services relevant to the ranked locator.",
+        "result": "The official Zhuhai Natural Resources Bureau site was confirmed. It does not expose a public parcel geometry service in the inspected page. The related Zhuhai Real Estate Registration Center provides an official comprehensive online property-information query link, but its JavaScript-only page did not produce a public parcel response.",
+        "actualResultUrls": [
+          "https://zrzyj.zhuhai.gov.cn/",
+          "https://bdc.zhuhai.gov.cn/"
+        ],
+        "executionMethod": "Separate Chinese-language search and inspection of official Zhuhai municipal sources."
+      },
+      {
+        "language": "Chinese",
+        "query": "珠海市不动产登记中心 官方网站 服务 地籍图 查询",
+        "scope": "Locate the Zhuhai local property registry and any public cadastral-map lookup.",
+        "result": "The official Zhuhai Real Estate Registration Center page links “不动产综合信息查询” (comprehensive real-estate information query) hosted by www.zhbdc.org.cn. The linked page displays a JavaScript-required message in a text-only inspection; no anonymous feature-service or geometry result was verified.",
+        "actualResultUrls": [
+          "https://bdc.zhuhai.gov.cn/",
+          "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html"
+        ],
+        "executionMethod": "Separate Chinese-language search, official homepage link inspection, and linked-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://geomatics.dsscu.gov.mo/zh-hans/services_system.html",
+        "observation": "Official DSCC Chinese-language services page lists the cadastral information network and online map systems."
+      },
+      {
+        "url": "https://cadastre.gis.gov.mo/MGSP_Cad/index.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official 地籍資訊網 landing page. Map hotspots lead to port/main.html pages; the landing HTML has no public ArcGIS parcel API or feature layer."
+      },
+      {
+        "url": "https://webmap.gis.gov.mo/MapGIS/index.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Separate official online-map shell (Chinese/English variants load /MapGIS/js/app.js and chunk-vendors.js)."
+      },
+      {
+        "url": "https://webmap.gis.gov.mo/MapGIS/js/app.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Downloaded active viewer application bundle; discovered thematic mapping services and link back to the cadastral information site, but no cadastral parcel feature service."
+      },
+      {
+        "url": "https://www.gov.mo/pt/servicos/ps-2232/ps-2232a/",
+        "observation": "Official Macao government Portuguese service entry for cadastral plan; states application conditions including proof of rights and personal/in-person procedure."
+      },
+      {
+        "url": "https://bo.dsaj.gov.mo/bo/i/2015/50/extra/aviso128_cn.asp",
+        "observation": "Official Macao Gazette boundary notice defines the administrative boundary in geographic coordinates; its northernmost land boundary point is 22°13′01.33″N."
+      },
+      {
+        "url": "https://yearbook.gcs.gov.mo/yearbook_pdf/2025/myb2025ePA01CH22.pdf",
+        "observation": "Official Macao Yearbook states the territory’s northern limit is 22°13′01.33″N; the ranked WUP locator latitude 22.26121145 is north of that latitude and therefore outside Macao SAR."
+      },
+      {
+        "url": "https://bdc.zhuhai.gov.cn/",
+        "observation": "Official Zhuhai Real Estate Registration Center page identifies the local registry operator and links “不动产综合信息查询” at www.zhbdc.org.cn."
+      },
+      {
+        "url": "https://zrzyj.zhuhai.gov.cn/",
+        "observation": "Official Zhuhai Natural Resources Bureau site reviewed; no public parcel geometry endpoint was exposed in the inspected page."
+      },
+      {
+        "url": "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official Zhuhai registry-center-linked query page displays a JavaScript-required message in text-only inspection; no anonymous geometry response was obtained."
+      },
+      {
+        "url": "https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Active official Portuguese cadastral viewer loads ../js/mgis.js?lang=P and the layer-query scripts. The discovered Cad_lote/MapServer/0 polygon endpoint was queried at the exact ranked point with OBJECTID-only attributes and returned an empty feature array; the point is outside Macao SAR."
+      },
+      {
+        "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?geometry=113.525423669444%2C22.2612114526582&geometryType=esriGeometryPoint&inSR=4326&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Point query against the active official lot polygon layer returned an empty features array. The result is consistent with the ranked point lying outside the Macao SAR boundary; it does not demonstrate that Macao’s lot geometry is generally unavailable."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "cadastreLanding": "https://cadastre.gis.gov.mo/MGSP_Cad/index.html",
+      "activeCadastralViewer": "https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1",
+      "viewerConfigScript": "https://cadastre.gis.gov.mo/MGSP_Cad/js/mgis.js?lang=P",
+      "parcelService": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0",
+      "parcelLayer": "0 (polygon)",
+      "pointQueryResult": "Ranked WUP locator query: HTTP 200 and empty features. Separate nearby Macao urban point [22.1940052,113.5442146]: HTTP 200, one Polygon (OBJECTID 389) from Cad_lote/0, returnGeometry=true, outSR=4326.",
+      "jurisdictionFinding": "The official Macao Yearbook and Notice 128/2015 place Macao’s northern limit at 22°13′01.33″N; ranked point latitude is 22.26121145 and is outside Macao. The empty Macao parcel query at the ranked point is therefore not used to assess Zhuhai geometry.",
+      "zhuhaiLookup": "Official registry-center page links a “以图查房” map-property-search route at https://www.zhbdc.org.cn/zhshim/MapIndex/Main. An ordinary unauthenticated GET redirects to the Guangdong government identity service (client_id gdrz_zhbdcdj). No login or authenticated query was performed.",
+      "adapterQualification": {
+        "gridCells": 13,
+        "uniqueParcels": 28,
+        "requests": 21,
+        "allTestsPassed": true,
+        "details": "Full bounded repository-adapter QA passed in temporary files: complete viewport retrieval, forced page-size-3 pagination with hash equality, fresh-ID reads, explicit absence, footprint query, and complete source binding. Full QA geometry stayed under /tmp; no polygon is stored in the repository report."
+      }
+    },
+    "namespaceReview": {
+      "note": "The initial candidate namespace and filenames used an unverified parish label. No parish membership is claimed. A final fresh run uses source-scoped mo-dscc-cad-lote / MO-DSCC-CAD- identities and the explicit in-Macao validation point; original candidate evidence is retained separately.",
+      "finalAcceptanceFile": "macau-dscc-acceptance.json"
+    }
+  },
+  "verifiedParcelResponse": {
+    "source": "Macao DSCC Cad_lote/0 public polygon layer",
+    "queryPoint": [
+      22.1940052,
+      113.5442146
+    ],
+    "queryCrs": "EPSG:4326",
+    "request": "point query; outFields=OBJECTID; returnGeometry=true; resultRecordCount=3",
+    "httpStatus": 200,
+    "featureCount": 1,
+    "nativeObjectId": 389,
+    "geometryType": "Polygon",
+    "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572",
+    "retainedFullGeometryInCityReport": false,
+    "adapterQualification": {
+      "gridCells": 13,
+      "uniqueParcels": 28,
+      "requests": 21,
+      "allTestsPassed": true,
+      "checks": [
+        "complete bounded viewports",
+        "forced page-size-3 pagination with matching geometry hashes",
+        "fresh exact-ID reads",
+        "explicit absent-ID semantics",
+        "footprint query",
+        "complete source binding"
+      ],
+      "independentTopologyCheck": {
+        "library": "Shapely 2.2.0",
+        "metricCrs": "EPSG:32649",
+        "featureCount": 28,
+        "validNonemptyCount": 28,
+        "invalidFeatureCount": 0,
+        "exactDuplicateGeometryPairCount": 0,
+        "positiveAreaOverlapPairCount": 0,
+        "operationErrorCount": 0,
+        "summary": "All 28 temporary QA polygons are valid and nonempty; no exact duplicates, positive-area overlaps above 0.01 m², or GEOS operation errors."
+      }
+    },
+    "qaGeometryRetention": "Exactly three final source-scoped public polygons are retained in macau-dscc-adapter-sample.geojson; complete audit geometry is outside the repository.",
+    "adapterFormat": "Adapter queried the official ArcGIS Feature Layer with f=geojson; the separate bounded point check used native ArcGIS REST JSON (f=json). No synthetic feature conversion was performed for acceptance or QA."
+  },
+  "source": {
+    "sourceId": "mo-dscc-cad-lote",
+    "name": "Macao DSCC public cadastral information network — Cad_lote parcels",
+    "url": "https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1",
+    "operator": "Direcção dos Serviços de Cartografia e Cadastro (DSCC), Macao SAR",
+    "serviceType": "Official public ArcGIS parcel polygon layer exposed by the active cadastral viewer; bounded sample and repository adapter qualification verified in Macao city area. The ranked compound locator is outside Macao, so this does not establish coverage at the Zhuhai-side locator.",
+    "layer": "Cadastre_Project/Cad_lote/MapServer/0",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:4326 requested and returned",
+    "nativeIdField": "OBJECTID",
+    "nativeIdEvidence": "Official viewer configuration script identifies the Cad_lote MapServer polygon layer; safe OBJECTID 389 returned from the bounded public query near the Macao urban reference.",
+    "id": "mo-dscc-cad-lote",
+    "scope": "28 valid, distinct official Cad_lote parcel polygons verified in thirteen local cells around the explicit in-Macao center [22.1940052, 113.5442146]. Complete pages, fresh exact-ID hashes, absence, footprint and source binding pass, with no sampled overlaps above 0.01 m². This covers the Macao side of the Macau–Zhuhai settlement only. The ranked WUP point is outside Macao SAR; Zhuhai and wider municipal coverage remain unverified."
+  },
+  "adjacentRankedPointLocalService": {
+    "operator": "珠海市不动产登记中心 / Zhuhai Real Estate Registration Center",
+    "url": "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html",
+    "officialEntry": "https://bdc.zhuhai.gov.cn/",
+    "serviceType": "Official registry portal offers a “map property search” link. Its public route redirects to Guangdong government identity authentication (SSO); anonymous parcel geometry not verified.",
+    "redirect": "https://tyrz.gd.gov.cn/pscp/sso/static/?client_id=gdrz_zhbdcdj&redirect_uri=https%3A%2F%2Fwww.zhbdc.org.cn%2Frealnameauth%2FGDOauth%2FGetTokenByCode&response_type=code&scope=all&service=initService"
+  },
+  "alternateUrbanCenter": {
+    "name": "Explicit in-Macao urban source-validation reference",
+    "point": [
+      22.1940052,
+      113.5442146
+    ],
+    "crs": "EPSG:4326",
+    "purpose": "Explicit Macao-side source-validation center near the compound urban area; the ranked WUP locator remains unchanged and lies outside Macao."
+  },
+  "wupCityCode": 11460,
+  "cityId": "wup2025:11460",
+  "adapterReady": true,
+  "technicalBlocker": null,
+  "remainingUncertainty": "The selected WUP compound-city point lies on the Zhuhai side and has no verified anonymous parcel geometry. Macao validation is limited to thirteen nearby cells and is not whole-city completeness or legal survey validation.",
+  "nextStep": "Use the qualified Macao-side source at its explicit validation center; retain the separate identity-authenticated Zhuhai lookup and unverified ranked-point coverage.",
+  "sourceIds": [
+    "mo-dscc-cad-lote"
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "28 valid, distinct official Cad_lote parcel polygons verified in thirteen local cells around the explicit in-Macao center [22.1940052, 113.5442146]. Complete pages, fresh exact-ID hashes, absence, footprint and source binding pass, with no sampled overlaps above 0.01 m². This covers the Macao side of the Macau–Zhuhai settlement only. The ranked WUP point is outside Macao SAR; Zhuhai and wider municipal coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "appCityId": "macau",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "28 valid, distinct official Cad_lote parcel polygons verified in thirteen local cells around the explicit in-Macao center [22.1940052, 113.5442146]. Complete pages, fresh exact-ID hashes, absence, footprint and source binding pass, with no sampled overlaps above 0.01 m². This covers the Macao side of the Macau–Zhuhai settlement only. The ranked WUP point is outside Macao SAR; Zhuhai and wider municipal coverage remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/macau-dscc-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/macau-dscc-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/macau-zhuhai-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "mo-dscc-cad-lote",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/macau-dscc-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/macau-dscc-quality.json"
+  },
+  "queueRank": 229,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    22.2612114526582,
+    113.525423669444
+  ],
+  "rootReviewedAt": "2026-10-08T21:44:23.947164+00:00"
+}

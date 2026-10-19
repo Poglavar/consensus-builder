@@ -1,0 +1,20 @@
+{
+  "taskId": "city:4305",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-4305-zacatecas.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/zacatecas-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:06:21Z",
+  "reason": "State and municipal cadastral custody was confirmed; the GEOEscritorio presents a login wall and static plans do not yield native-ID polygons. No anonymous parcel response was verified.",
+  "admissionGates": {
+    "nativeIdAndFullPolygon": "missing",
+    "freshExactIdReads": "missing",
+    "forcedPaging": "missing",
+    "thirteenBoundedCells": "missing",
+    "metricGeometryChecks": "missing",
+    "sourceBinding": "missing",
+    "headedDetailsPanel": "missing"
+  }
+}

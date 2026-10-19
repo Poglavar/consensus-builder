@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "design-only-root-review-pending",
+  "purpose": "Read-only design review for narrowly allowlisted Finland INSPIRE CP GML WFS reader support. No source, catalog, registry or city configuration was changed and no polygon was added.",
+  "source": {
+    "name": "National Land Survey of Finland INSPIRE Cadastral Parcels WFS 2.0",
+    "capabilitiesEndpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "getFeatureEndpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+    "featureType": "cp:CadastralParcel",
+    "featureNamespace": "http://inspire.ec.europa.eu/schemas/cp/4.0",
+    "baseNamespace": "http://inspire.ec.europa.eu/schemas/base/3.3",
+    "gmlNamespace": "http://www.opengis.net/gml/3.2",
+    "acceptedWfsVersions": [
+      "1.0.0",
+      "1.1.0",
+      "2.0.0"
+    ],
+    "currentCapabilities": {
+      "httpStatus": 200,
+      "responseBytes": 176303,
+      "responseSha256": "ae2ebc69610b5951fc66f620ffc50d0bf7bb4c16b20ca425e98b0a6f5570abcc",
+      "getFeatureMethods": [
+        "GET",
+        "POST"
+      ]
+    },
+    "describeFeatureType": {
+      "httpStatus": 200,
+      "responseBytes": 660,
+      "responseSha256": "4083d4c16cae0ee9dcb693785ba911e79d914213ceed2cb91fa732c9bd566765",
+      "finding": "The WFS wrapper imports the external INSPIRE CP XSD."
+    },
+    "importedCadastralParcelsXsd": {
+      "url": "https://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd",
+      "httpStatus": 200,
+      "responseBytes": 30133,
+      "responseSha256": "49285a50c5c4364d1e505b68dcce4f38443befe8739391a45b1a8c349107a677",
+      "cadastralParcelProperties": {
+        "geometry": "gml:GeometryPropertyType",
+        "inspireId": "base:IdentifierPropertyType",
+        "nationalCadastralReference": "string",
+        "label": "string"
+      }
+    },
+    "importedBaseTypesXsd": {
+      "url": "https://inspire.ec.europa.eu/schemas/base/3.3/BaseTypes.xsd",
+      "identifierFields": {
+        "localId": "string; unique within the INSPIRE namespace",
+        "namespace": "string; identifies the data source",
+        "versionId": "optional version identifier, excluded from the unique ID"
+      }
+    },
+    "nativeCrs": "EPSG:3067",
+    "nativeAxisOrder": "Easting, Northing (E,N); the public Finland CRS table identifies EPSG:3067 as TM35FIN(E,N). The stored first vertex [385349.096, 6672293.508] is Easting then Northing and the fresh ResourceID response reproduces the sample coordinate sequence exactly.",
+    "crsAuthorityReference": "https://www.maanmittauslaitos.fi/kartat-ja-paikkatieto/koordinaatit-ja-paikannus/epsg-koodit-ja-proj-muunnosohjelma",
+    "codeReadiness": "backend/parcels/gml-parcel-reader.js currently has no proj4 definition for EPSG:3067; add a fixed, authority-checked EPSG:3067 definition before enabling coordinate transformation."
+  },
+  "observedFeatureStructure": {
+    "knownComponent": {
+      "gmlId": "FI_CP_CADASTRALPARCEL_158297269",
+      "inspireNamespace": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+      "localId": "158297269",
+      "gmlIdentifier": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297269",
+      "gmlIdentifierCodeSpace": "http://paikkatiedot.fi",
+      "nationalCadastralReference": "09143200010026"
+    },
+    "identityElementPaths": {
+      "serviceId": "gml:id attribute on cp:CadastralParcel",
+      "publicIdentifier": "direct child gml:identifier (GML 3.2)",
+      "localId": "cp:inspireId/base:Identifier/base:localId",
+      "namespace": "cp:inspireId/base:Identifier/base:namespace"
+    },
+    "verifiedIdentityEqualities": [
+      "gml:id === FI_CP_CADASTRALPARCEL_ + localId",
+      "gml:identifier === base:namespace + base:localId",
+      "base:namespace === http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+      "gml:identifier/@codeSpace === http://paikkatiedot.fi"
+    ],
+    "geometry": {
+      "featureProperty": "cp:geometry",
+      "observedStructure": "gml:Polygon / gml:exterior / gml:LinearRing / gml:posList",
+      "observedSrsName": "EPSG:3067",
+      "storedSampleType": "Polygon",
+      "storedSampleRingCount": 1,
+      "storedSampleVertexCount": 34,
+      "readbackMatchesStoredCoordinatesExactly": true
+    },
+    "geometryTypeLimit": "The CadastralParcel XSD declares generic gml:GeometryPropertyType, so the schema does not promise polygon-only responses. The bounded observed component is a Polygon. Keep the allowlist strictly polygonal and fail closed for points, lines, curves, TINs, unsupported GML ring encodings, and any geometry tags outside the existing parser whitelist; do not linearize or repair geometry.",
+    "existingSamples": {
+      "durablePolygonCount": 3,
+      "ids": [
+        "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297269",
+        "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297273",
+        "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/158297274"
+      ],
+      "nationalCadastralReference": "09100499010000 is shared by two distinct sample components; never use it alone as a canonical key or merge rule."
+    }
+  },
+  "testedProtocolEvidence": {
+    "knownResourceIdData": {
+      "method": "GET",
+      "kvpParameter": "RESOURCEID",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "memberCount": 1,
+      "returnedGmlId": "FI_CP_CADASTRALPARCEL_158297269",
+      "polygonPresent": true,
+      "coordinateSequenceMatchesExistingSample": true,
+      "requestOptions": {
+        "count": 1,
+        "startIndex": 0,
+        "srsName": "urn:ogc:def:crs:EPSG::3067",
+        "propertyName": "omitted"
+      }
+    },
+    "knownResourceIdHits": {
+      "method": "GET",
+      "kvpParameter": "RESOURCEID",
+      "resultType": "hits",
+      "httpStatus": 200,
+      "numberMatched": 1,
+      "numberReturned": 0,
+      "memberCount": 0,
+      "responseBytes": 902,
+      "responseSha256": "7671249c8c8faa4bb8b7c26d30a827d31d6c6dcc385fdc00862d8b574fbfe01e"
+    },
+    "syntheticResourceIdData": {
+      "method": "GET",
+      "kvpParameter": "RESOURCEID",
+      "syntheticId": "FI_CP_CADASTRALPARCEL_9999999999999999",
+      "httpStatus": 200,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "memberCount": 0
+    },
+    "syntheticResourceIdHits": {
+      "method": "GET",
+      "kvpParameter": "RESOURCEID",
+      "resultType": "hits",
+      "syntheticId": "FI_CP_CADASTRALPARCEL_9999999999999999",
+      "httpStatus": 200,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "memberCount": 0,
+      "responseBytes": 909,
+      "responseSha256": "e8a6bccf3c1abca0b9be5f01fc226e85e1c7621a2a2c81ee9e72b28982f063a4"
+    },
+    "fesResourceId": {
+      "method": "POST",
+      "filter": "fes:ResourceId/@rid",
+      "knownIdHttpStatus": 200,
+      "knownMemberCount": 1,
+      "syntheticIdHttpStatus": 200,
+      "syntheticMemberCount": 0
+    },
+    "bboxKvpHits": {
+      "method": "GET",
+      "filter": "bbox=385000,6672000,385400,6672300,EPSG:3067",
+      "resultType": "hits",
+      "httpStatus": 200,
+      "numberMatched": 29,
+      "numberReturned": 0,
+      "memberCount": 0,
+      "responseBytes": 915,
+      "responseSha256": "80d15d40372d1243f3fe915ed757f98aba480f5b72c693452bb839d6583e62d9"
+    },
+    "bboxKvpData": {
+      "method": "GET",
+      "filter": "same native BBOX",
+      "requestedCount": 3,
+      "httpStatus": 200,
+      "numberMatched": 29,
+      "numberReturned": 3,
+      "memberCount": 3,
+      "responseBytes": 6604,
+      "retainedSampleFile": "FI-samples.json"
+    },
+    "unsupportedIdentityPropertyFilters": {
+      "paths": [
+        "cp:inspireId/base:localId",
+        "cp:inspireId/base:namespace"
+      ],
+      "httpStatus": 400,
+      "finding": "Server reports nested attribute path not found, for both known and synthetic IDs. Do not use these filters or infer absence from them."
+    },
+    "unsupportedProjection": {
+      "finding": "Schema-correct GET and POST property projection requests fail with HTTP 400. Omit the propertyName parameter; parse only whitelisted identity and polygon geometry fields, discard all other response values in memory."
+    },
+    "storedQuery": {
+      "id": "urn:ogc:def:query:OGC-WFS::GetFeatureById",
+      "finding": "Prior HTTP 404 for known and synthetic IDs is inconclusive; do not use it or infer absence."
+    }
+  },
+  "proposedDescriptor": {
+    "adapter": "gml-wfs",
+    "id": "fi-inspire-cp-wfs",
+    "endpoint": "https://inspire-wfs.maanmittauslaitos.fi/inspire-wfs/cp/wfs",
+    "featureType": "cp:CadastralParcel",
+    "idField": "localId",
+    "geometryField": "geometry",
+    "responseCrs": "EPSG:3067",
+    "idPrefix": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+    "idType": "string",
+    "parcelNumberField": "localId",
+    "outFields": [
+      "localId"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 100,
+    "maxBboxKm2": 0.2,
+    "maxResponseBytes": 2097152,
+    "maxTotalResponseBytes": 8388608,
+    "timeoutMs": 12000,
+    "nativeIdPattern": "^[0-9]+$ (observed component ID pattern; schema type remains string and any widening requires new evidence)"
+  },
+  "allowlistedProfileExtensions": {
+    "schema": {
+      "featureNamespace": "http://inspire.ec.europa.eu/schemas/cp/4.0",
+      "featureName": "CadastralParcel",
+      "identityStrategy": "INSPIRE base Identifier subtree + gml:identifier + gml:id cross-check",
+      "idNamespace": "http://inspire.ec.europa.eu/schemas/base/3.3",
+      "identityParentPath": [
+        "cp:inspireId",
+        "base:Identifier"
+      ],
+      "idField": "localId",
+      "namespaceField": "namespace",
+      "expectedNamespace": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+      "gmlIdentifierField": "gml:identifier",
+      "expectedCodeSpace": "http://paikkatiedot.fi",
+      "canonicalIdPrefix": "http://paikkatiedot.fi/so/1001077/cp/CadastralParcel/",
+      "gmlIdPrefix": "FI_CP_CADASTRALPARCEL_",
+      "geometryField": "geometry",
+      "gmlNamespace": "http://www.opengis.net/gml/3.2",
+      "sourceCrs": "EPSG:3067",
+      "axisOrder": "easting-northing",
+      "acceptedGeometryTags": [
+        "Polygon",
+        "MultiSurface",
+        "surfaceMember",
+        "surfaceMembers",
+        "MultiPolygon",
+        "polygonMember",
+        "Surface",
+        "patches",
+        "PolygonPatch",
+        "exterior",
+        "interior",
+        "LinearRing",
+        "posList"
+      ],
+      "localIdPattern": "^[0-9]+$ (strict observed-profile pattern, not an INSPIRE XSD restriction)"
+    },
+    "wfsProfile": {
+      "resourceIdPrefix": "FI_CP_CADASTRALPARCEL_",
+      "bboxMode": "standard WFS KVP BBOX in EPSG:3067 Easting,Northing order",
+      "propertyName": "omit because projection is rejected",
+      "idQueryMode": "WFS 2 RESOURCEID (KVP GET); FES 2 ResourceId POST was independently demonstrated"
+    },
+    "canonicalOutput": {
+      "featureId": "canonical INSPIRE URI formed as expectedNamespace + localId; must equal gml:identifier text",
+      "properties": {
+        "parcelId": "same canonical INSPIRE URI",
+        "id": "same canonical INSPIRE URI",
+        "sourceParcelId": "localId string used internally to map RESOURCEID and absence results",
+        "sourceProperties": "only localId may be retained; no national reference or unrelated INSPIRE fields"
+      }
+    },
+    "state": "Design only. Existing `canonicalParcelFeature` can generate the URI through descriptor.idPrefix + localId; the current fixed GML parser needs path-aware identity capture and explicit gml:identifier cross-check. No local-code proof of sourceProperty URI encoding is implied."
+  },
+  "minimalImplementationPlan": [
+    {
+      "file": "backend/parcels/gml-parcel-reader.js",
+      "change": "Add one exact FINLAND_CP_GML_SCHEMA to CUSTOM_SCHEMAS. Extend the allowlisted parser path only to capture base:localId/base:namespace under cp:inspireId/base:Identifier, direct gml:identifier text/codeSpace and gml:id; enforce the four identity equalities and output only localId plus parsed geometry. Register an authority-verified EPSG:3067 proj4 definition; axis order is E,N."
+    },
+    {
+      "file": "backend/parcels/gml-wfs-source.js",
+      "change": "Add one exact FI profile. Use internal resourceIdPrefix FI_CP_CADASTRALPARCEL_, canonical descriptor idPrefix as the INSPIRE namespace URI, omit propertyName, and add a bounded KVP BBOX route for queryBounds. Do not use the failing FES nested-ID PropertyIsEqualTo path or unverified FES Intersects path."
+    },
+    {
+      "file": "backend/parcels/source-contract.js",
+      "change": "No change expected: canonicalParcelFeature derives `feature.id` and `parcelId` from descriptor.idPrefix + localId, which yields the gml:identifier URI. Verify this with a contract test; sourceParcelId remains the localId locator component."
+    },
+    {
+      "file": "backend/parcels/source-catalog.json",
+      "change": "Do not edit during this design review. If root approves implementation and subsequent qualification, one Finland city provider record can use the fixed profile; no global country or registry changes are required for the profile code itself."
+    }
+  ],
+  "minimalPlannedTests": [
+    "Validate exact profile and reject descriptor mutations: endpoint, feature QName, response CRS, ID prefix, geometry field or outFields.",
+    "Parse an inline metadata-only fixture matching actual cp:CadastralParcel GML structure; assert localId/namespace/gml:identifier/gml:id cross-checks and canonical output URI.",
+    "Reject missing, duplicate or mismatched localId, namespace, gml:identifier, codeSpace and gml:id; reject IDs outside the observed numeric suffix shape.",
+    "Check EPSG:3067 definition exists, GML EPSG:3067 E,N coordinates transform into valid WGS84 polygon coordinates, and round-trip error is bounded; do not swap axes.",
+    "Accept the observed Polygon and supported polygonal MultiSurface/PolygonPatch forms; reject Point, LineString, Curve/MultiCurve, TIN and unsupported GML pos/coordinates/Ring encodings.",
+    "Mock queryIds for known and synthetic canonical URI IDs: request uppercase RESOURCEID values, enforce hit/data count agreement, cross-check returned gml:id, return URI feature ID, and report absent only for stable successful zero counts.",
+    "Mock queryBounds with BBOX KVP: assert EPSG:3067 E,N order, no propertyName parameter, stable hits before/after, correct startIndex/count paging, and polygon clipping in WGS84.",
+    "Verify parser and canonical output never retain nationalCadastralReference, label, address/holder/owner or any other unconfigured property despite unprojected server responses."
+  ],
+  "qualificationGapsBeforeRuntimeProfile": {
+    "status": "not runtime-qualified",
+    "items": [
+      "Actual hit counts for known and synthetic ResourceIDs and the bounded Helsinki BBOX are supported.",
+      "The pre-hit/data-page/post-hit sequence has not been run end-to-end against this adapter; test it before relying on exact absence or count stability.",
+      "BBOX startIndex offset page (for example startIndex=3) and post-query count stability have not been verified live.",
+      "FES Intersects was not demonstrated for cp:geometry; use the proven BBOX KVP route, then validate the complete 13-cell runtime sample separately.",
+      "The XSD geometry property is generic GeometryPropertyType; only polygonal encodings are in scope, and no citywide unsupported-geometry prevalence is known.",
+      "No geometry has been retained beyond the existing three Finland sample polygons.",
+      "The observed numeric localId pattern is sample evidence, while the INSPIRE schema declares localId as string; retain a fail-closed profile pattern until wider ID-shape evidence is collected."
+    ]
+  },
+  "sourceReferences": [
+    {
+      "title": "Maanmittauslaitos EPSG codes and PROJ transformations",
+      "url": "https://www.maanmittauslaitos.fi/kartat-ja-paikkatieto/koordinaatit-ja-paikannus/epsg-koodit-ja-proj-muunnosohjelma",
+      "supports": "EPSG:3067 is TM35FIN(E,N), axis order E,N; EPSG:5048 is the distinct N,E variant."
+    },
+    {
+      "title": "INSPIRE CP 4.0 CadastralParcels schema",
+      "url": "https://inspire.ec.europa.eu/schemas/cp/4.0/CadastralParcels.xsd",
+      "supports": "CadastralParcel geometry is gml:GeometryPropertyType; inspireId is base:IdentifierPropertyType."
+    },
+    {
+      "title": "INSPIRE Base Types 3.3 schema",
+      "url": "https://inspire.ec.europa.eu/schemas/base/3.3/BaseTypes.xsd",
+      "supports": "base:Identifier includes string localId, namespace and optional versionId."
+    }
+  ]
+}

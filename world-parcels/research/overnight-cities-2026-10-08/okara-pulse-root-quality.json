@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32643",
+  "featureCount": 15,
+  "validNonemptyCount": 15,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 158.8071966877932,
+    "median": 7131.18526655095,
+    "max": 290366.4481589185
+  },
+  "features": [
+    {
+      "id": "PK-PULSE-OKARA-10854687",
+      "areaM2": 36926.929362677845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854691",
+      "areaM2": 4862.880258062195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10855059",
+      "areaM2": 5190.449413150106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10855060",
+      "areaM2": 158.8071966877932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854940",
+      "areaM2": 69419.04224115719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854942",
+      "areaM2": 3828.852635067688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10855066",
+      "areaM2": 3106.3754903406257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854679",
+      "areaM2": 7131.18526655095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854987",
+      "areaM2": 290366.4481589185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10855069",
+      "areaM2": 3584.447048860926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854652",
+      "areaM2": 61178.533898204696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854700",
+      "areaM2": 2896.239493928387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854701",
+      "areaM2": 224722.64049191892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854922",
+      "areaM2": 58300.34010542953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-OKARA-10854951",
+      "areaM2": 8735.897072204345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

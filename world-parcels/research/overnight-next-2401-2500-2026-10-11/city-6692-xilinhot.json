@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 6692,
+  "wupCityCode": 6692,
+  "cityId": "wup2025:6692",
+  "name": "Xilinhot",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [43.9364409165245, 116.065867557069],
+  "centerLatLon": [43.9364409165245, 116.065867557069],
+  "queueRank": 2455,
+  "population2025": 238715,
+  "population2025k": 238.715,
+  "populationUnit": "persons",
+  "year": 2025,
+  "cohorts": ["overnight-next-2401-2500-2026-10-11"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xilinhot cadastral parcel map official Inner Mongolia land registration GIS",
+        "result": "Search located the official Xilingol League Natural Resources Bureau site and official Xilinhot government material describing a cadastral-map visualization connection, but no public parcel API or downloadable parcel geometry was exposed in the search results.",
+        "actualResultUrls": [
+          "https://zrzyj.xlgl.gov.cn/",
+          "https://www.xilinhaote.gov.cn/xilinhaote/zwgk/zfxxgkzl/fdzdgknr/zcfg/zfwj18/2024112211305618799/index.html"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "锡林浩特 不动产登记 地籍图 官方",
+        "result": "Official city and league government results identify Xilinhot’s real-estate registration service center and the Xilingol League Natural Resources Bureau as the relevant custodians; official policy text says the cadastral-map visualization system is to connect to the registration system and the autonomous-region visualization function. No anonymous parcel feature response was found.",
+        "actualResultUrls": [
+          "https://www.xilinhaote.gov.cn/xilinhaote/xwzx/xsyw/2024092710244757039/index.html",
+          "https://www.xilinhaote.gov.cn/xilinhaote/zwgk/zfxxgkzl/fdzdgknr/zcfg/zfwj18/2024112211305618799/index.html",
+          "https://zrzyj.xlgl.gov.cn/"
+        ]
+      }
+    ],
+    "summary": "Separate English and native-language first-party discovery was completed. The official sources establish the local/league cadastral and registration service context, but do not provide a usable anonymous parcel geometry endpoint in this attempt."
+  },
+  "registryFound": true,
+  "registryBasis": "The Xilingol League Natural Resources Bureau is the relevant league-level natural-resources custodian and its official site advertises an online real-estate service hall. Official Xilinhot government policy identifies the Xilinhot Natural Resources Bureau and registration service center and states that cadastral-map visualization is being connected with the registration system and autonomous-region visualization service.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://zrzyj.xlgl.gov.cn/",
+      "operator": "锡林郭勒盟自然资源局 / Xilingol League Natural Resources Bureau",
+      "scope": "League-level natural-resources and real-estate-registration service custodian",
+      "observation": "Official site search result lists an online real-estate service hall, but direct GET from this environment returned HTTP 403 before HTML/JavaScript/configuration could be inspected."
+    },
+    {
+      "url": "https://www.xilinhaote.gov.cn/xilinhaote/zwgk/zfxxgkzl/fdzdgknr/zcfg/zfwj18/2024112211305618799/index.html",
+      "operator": "锡林浩特市人民政府 / Xilinhot Municipal People’s Government",
+      "scope": "Local city policy and responsible department evidence",
+      "observation": "Official policy assigns the work to the Natural Resources Bureau and describes cadastral-map visualization integration with the registration system and autonomous-region service."
+    },
+    {
+      "url": "https://www.xilinhaote.gov.cn/xilinhaote/xwzx/xsyw/2024092710244757039/index.html",
+      "operator": "锡林浩特市不动产登记服务中心 / Xilinhot Real Estate Registration Service Center",
+      "scope": "Local registration service",
+      "observation": "Official city report confirms the local registration service center and its public-facing registration platform operations; it is not a parcel geometry feed."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://zrzyj.xlgl.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 403",
+      "summary": "Official league natural-resources homepage was reachable only as a forbidden response from this environment; no viewer HTML, JavaScript, configuration, schema, CRS, or endpoint could be safely inspected."
+    },
+    {
+      "url": "https://www.xilinhaote.gov.cn/xilinhaote/zwgk/zfxxgkzl/fdzdgknr/zcfg/zfwj18/2024112211305618799/index.html",
+      "method": "GET via first-party search/open",
+      "status": "HTTP 200/search-indexed official page",
+      "summary": "Read official policy text describing cadastral-map visualization integration; no parcel geometry or safe parcel identifier returned."
+    },
+    {
+      "url": "https://www.xilinhaote.gov.cn/xilinhaote/xwzx/xsyw/2024092710244757039/index.html",
+      "method": "GET via first-party search/open",
+      "status": "HTTP 200/search-indexed official page",
+      "summary": "Read official report about Xilinhot registration service center; no parcel geometry or safe parcel identifier returned."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Xilinhot municipal real-estate registration and cadastral-map visualization under the Xilingol League / Inner Mongolia natural-resources service structure.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_evidenced_geometry_unavailable",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "retrieval timestamp"],
+  "identityPolicy": "Retain a native cadastral parcel identity only if returned by the official service and shown to be stable; do not use synthetic row numbers or retain owner, address, titleholder, contact, tax, account, or other unsafe fields.",
+  "remainingUncertainty": "The official local/league service is evidenced, but anonymous viewer/API access, schema, CRS, city extent, and parcel geometry could not be verified. The exact-point result is therefore untested and must not be interpreted as citywide absence.",
+  "nextStep": "Retry the official league service when its public homepage and viewer are accessible; follow its current JavaScript/configuration, inspect CRS and schema, then request a bounded Xilinhot city-area ID-plus-geometry response using only safe fields. Keep runtime held until independently qualified.",
+  "notes": "Attempt 1 of 3. No GeoJSON sample retained because no full native parcel polygon and stable native parcel identity were verified."
+}

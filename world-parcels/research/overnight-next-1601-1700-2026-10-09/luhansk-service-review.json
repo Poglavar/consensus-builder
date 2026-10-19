@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-4943-luhansk.json",
+  "cityCode": 4943,
+  "queueRank": 1612,
+  "city": "Luhansk",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The official Luhansk regional GeoCadastre office and Ukrainian public cadastral-map route were evidenced. The map endpoint timed out and no anonymous parcel ID plus geometry response was verified. This is not evidence of citywide cadastral absence.",
+  "queryOutcomes": "English and Ukrainian first-party discovery queries, exact text, outcomes, and actual URLs are recorded in city-4943-luhansk.json.",
+  "requestOutcomes": "Official regional office, national agency guidance, State Land Cadastre enterprise, and e-services pages returned HTTP 200. The official public-map root and cadastral-map route timed out; no viewer JavaScript/configuration, API route, schema, CRS, parcel ID, or geometry was observed. No login, CAPTCHA bypass, private token, or unsafe-field request was attempted.",
+  "attemptedRoutes": [
+    "https://map.land.gov.ua/",
+    "https://map.land.gov.ua/kadastrova-karta",
+    "http://map.land.gov.ua/kadastrova-karta",
+    "https://dzk.gov.ua/",
+    "https://luhanska.land.gov.ua/info/elektronni-posluhy-derzhheokadastru/",
+    "https://e.land.gov.ua/services"
+  ],
+  "scopeLimits": [
+    "No city boundary or complete Luhansk coverage was established.",
+    "No exact-point hit or miss was requested or used as an absence claim.",
+    "No parcel geometry or source-specific attribute set was retained.",
+    "The Luhansk regional office is treated as local/regional custodian evidence; national agency prose alone is not treated as an open local adapter.",
+    "The public-map timeout and documented access restrictions may be environmental or policy-related and do not establish cadastral absence."
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. If a future anonymous response is found, retain only one stable native parcel identity in GeoJSON properties and document native field mapping/composite-key provenance here.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The custodian and official public-map route are evidenced, but current viewer/API access, city scope, schema, CRS, parcel identity, and geometry remain unknown. The packet is research-complete only; it is not source integration or runtime admission.",
+  "retainedSample": null
+}

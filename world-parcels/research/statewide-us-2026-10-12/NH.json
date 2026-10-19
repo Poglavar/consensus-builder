@@ -1,0 +1,744 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NH",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "new",
+ "descriptorId": "us-nh-granit-parcel-mosaic",
+ "idPrefix": "US-NH-STATEWIDE-",
+ "endpoint": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "8511",
+   "name": "Manchester",
+   "lat": 42.9856355554368,
+   "lon": -71.457888414659,
+   "pop2025k": 65.881,
+   "rank": 9409
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1",
+   "layerName": "Parcels",
+   "layerType": "Feature Layer",
+   "recordCount": 617124,
+   "maxRecordCount": 2000,
+   "currentVersion": 11.4,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 3437,
+   "descriptionExcerpt": null,
+   "copyrightText": null,
+   "publishedFields": [
+    "OBJECTID",
+    "Shape",
+    "ParcelOID",
+    "NH_GIS_ID",
+    "OID_1",
+    "PID",
+    "TownID",
+    "Town",
+    "U_ID",
+    "DisplayId",
+    "CountyId",
+    "SLU",
+    "SLUC",
+    "SLUM",
+    "StreetAddress",
+    "LocalNBC",
+    "NBC",
+    "Name",
+    "Shape_Length",
+    "Shape_Area"
+   ]
+  },
+  {
+   "url": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+   "layerName": "NH Parcels",
+   "layerType": "Feature Layer",
+   "recordCount": 611864,
+   "maxRecordCount": 2000,
+   "currentVersion": 11.5,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 3857,
+   "descriptionExcerpt": null,
+   "copyrightText": null,
+   "publishedFields": [
+    "objectid",
+    "parceloid",
+    "nh_gis_id",
+    "town",
+    "u_id",
+    "displayid",
+    "countyid",
+    "isstateowned",
+    "globalid",
+    "SHAPE__Length",
+    "SHAPE__Area"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "NH_GIS_ID is the statewide key (6-digit county/town code + \"-\" + local parcel ID; every non-blank value matches ______-%). Unique in Manchester; ParcelOID is a compiler row ID.",
+  "fields": [
+   "NH_GIS_ID"
+  ]
+ },
+ "statewideChecks": [
+  {
+   "state": "NH",
+   "endpoint": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1",
+   "checkedAt": "2026-10-12T10:57:11.249Z",
+   "results": {
+    "nullId": {
+     "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+IS+NULL+OR+NH_GIS_ID+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+     "count": 204
+    },
+    "towns": {
+     "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=1%3D1&outFields=TownID&returnDistinctValues=true&returnGeometry=false&orderByFields=TownID&f=json",
+     "values": [
+      "4001",
+      "4002",
+      "4003",
+      "4004",
+      "4005",
+      "4006",
+      "4007",
+      "4008",
+      "4009",
+      "4010",
+      "4011",
+      "4012",
+      "4013",
+      "4014",
+      "4015",
+      "4016",
+      "4017",
+      "4018",
+      "4019",
+      "4020",
+      "4021",
+      "4022",
+      "4023",
+      "4024",
+      "4025",
+      "4026",
+      "4027",
+      "4028",
+      "4029",
+      "4030",
+      "4031",
+      "4032",
+      "4033",
+      "4034",
+      "4035",
+      "4036",
+      "4037",
+      "4038",
+      "4039",
+      "4040",
+      "4041",
+      "4042",
+      "4043",
+      "4044",
+      "4045",
+      "4046",
+      "4047",
+      "4048",
+      "4049",
+      "4050",
+      "4051",
+      "4052",
+      "4053",
+      "4054",
+      "4055",
+      "4057",
+      "4058",
+      "4059",
+      "4060",
+      "4061",
+      "4062",
+      "4063",
+      "4064",
+      "4065",
+      "4066",
+      "4067",
+      "4068",
+      "4069",
+      "4070",
+      "4071",
+      "4072",
+      "4073",
+      "4074",
+      "4075",
+      "4076",
+      "4077",
+      "4078",
+      "4079",
+      "4080",
+      "4081",
+      "4082",
+      "4083",
+      "4084",
+      "4085",
+      "4086",
+      "4087",
+      "4088",
+      "4089",
+      "4090",
+      "4091",
+      "4092",
+      "4093",
+      "4094",
+      "4095",
+      "4096",
+      "4097",
+      "4098",
+      "4099",
+      "4100",
+      "4101",
+      "4102",
+      "4103",
+      "4104",
+      "4105",
+      "4106",
+      "4107",
+      "4108",
+      "4109",
+      "4110",
+      "4111",
+      "4112",
+      "4113",
+      "4114",
+      "4115",
+      "4116",
+      "4117",
+      "4118",
+      "4119",
+      "4120",
+      "4121",
+      "4122",
+      "4123",
+      "4124",
+      "4125",
+      "4126",
+      "4127",
+      "4128",
+      "4129",
+      "4130",
+      "4131",
+      "4132",
+      "4133",
+      "4134",
+      "4135",
+      "4136",
+      "4137",
+      "4138",
+      "4139",
+      "4140",
+      "4141",
+      "4142",
+      "4143",
+      "4144",
+      "4145",
+      "4146",
+      "4147",
+      "4148",
+      "4149",
+      "4150",
+      "4151",
+      "4152",
+      "4153",
+      "4154",
+      "4155",
+      "4156",
+      "4157",
+      "4158",
+      "4159",
+      "4160",
+      "4161",
+      "4162",
+      "4163",
+      "4164",
+      "4165",
+      "4166",
+      "4167",
+      "4168",
+      "4169",
+      "4170",
+      "4171",
+      "4172",
+      "4173",
+      "4174",
+      "4175",
+      "4176",
+      "4177",
+      "4178",
+      "4179",
+      "4180",
+      "4181",
+      "4182",
+      "4183",
+      "4184",
+      "4185",
+      "4186",
+      "4187",
+      "4188",
+      "4189",
+      "4190",
+      "4191",
+      "4192",
+      "4193",
+      "4194",
+      "4195",
+      "4196",
+      "4197",
+      "4198",
+      "4199",
+      "4200",
+      "4201",
+      "4202",
+      "4203",
+      "4204",
+      "4205",
+      "4206",
+      "4207",
+      "4208",
+      "4209",
+      "4210",
+      "4211",
+      "4212",
+      "4213",
+      "4214",
+      "4215",
+      "4216",
+      "4217",
+      "4218",
+      "4219",
+      "4220",
+      "4221",
+      "4222",
+      "4223",
+      "4224",
+      "4225",
+      "4226",
+      "4227",
+      "4228",
+      "4229",
+      "4230",
+      "4231",
+      "4232",
+      "4233",
+      "4234",
+      "4235",
+      "4248",
+      "4300"
+     ]
+    }
+   }
+  }
+ ],
+ "patternChecks": {
+  "NH": [
+   {
+    "where": "NH_GIS_ID IS NOT NULL AND NH_GIS_ID NOT IN ('',' ') AND NH_GIS_ID NOT LIKE '______-%'",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+IS+NOT+NULL+AND+NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+NOT+LIKE+%27______-%25%27&returnCountOnly=true&f=json",
+    "count": 0
+   },
+   {
+    "where": "NH_GIS_ID LIKE '% ' OR NH_GIS_ID LIKE ' %'",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+LIKE+%27%25+%27+OR+NH_GIS_ID+LIKE+%27+%25%27&returnCountOnly=true&f=json",
+    "count": 1171
+   }
+  ]
+ },
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:53:38.319Z",
+   "fieldsRequested": [
+    "OBJECTID",
+    "NH_GIS_ID",
+    "ParcelOID",
+    "PID",
+    "TownID",
+    "U_ID"
+   ],
+   "cities": [
+    {
+     "city": "Manchester",
+     "cityCode": "8511",
+     "bbox": [
+      -71.462888,
+      42.980636,
+      -71.452888,
+      42.990636
+     ],
+     "count": 683,
+     "rowsRead": 683,
+     "keys": {
+      "NH_GIS_ID": {
+       "blanks": 0,
+       "distinct": 683,
+       "repeatedValues": 0
+      },
+      "ParcelOID": {
+       "blanks": 0,
+       "distinct": 683,
+       "repeatedValues": 0
+      },
+      "TownID+PID": {
+       "blanks": 0,
+       "distinct": 683,
+       "repeatedValues": 0
+      },
+      "U_ID": {
+       "blanks": 6,
+       "distinct": 677,
+       "repeatedValues": 0
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:53:39.197Z",
+     "method": "GET",
+     "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=1%3D1&geometry=-71.462888%2C42.980636%2C-71.452888%2C42.990636&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:39.698Z",
+     "method": "GET",
+     "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=1%3D1&geometry=-71.462888%2C42.980636%2C-71.452888%2C42.990636&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CNH_GIS_ID%2CParcelOID%2CPID%2CTownID%2CU_ID&returnGeometry=false&orderByFields=OBJECTID&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [],
+ "liveVerification": {
+  "descriptorId": "us-nh-granit-parcel-mosaic",
+  "verifiedAt": "2026-10-12T11:07:02.914Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Manchester",
+    "cityCode": "8511",
+    "unPoint": [
+     42.9856355554368,
+     -71.457888414659
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -71.458388,
+       42.985136,
+       -71.457388,
+       42.986136
+      ],
+      "features": 16
+     }
+    ],
+    "bbox": [
+     -71.458388,
+     42.985136,
+     -71.457388,
+     42.986136
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "featureCount": 16
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-NH-STATEWIDE-064134-54-39",
+      "nativeId": "064134-54-39",
+      "type": "Polygon",
+      "geometrySha256": "27cbf8abdb3967d5feff026eeb47c02ed99c1c3274e888507aba593b1d5a9882",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-54-40",
+      "nativeId": "064134-54-40",
+      "type": "Polygon",
+      "geometrySha256": "a6aa4619e7a017aecee59eaf38866a73dd000f283340707c5286fdfc86751c73",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-54-41",
+      "nativeId": "064134-54-41",
+      "type": "Polygon",
+      "geometrySha256": "7bcb8df01d6d0d70bf9a33cc91a6745b104aa6d8f1e0f2d8b6aacbd139943bfa",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-54-44",
+      "nativeId": "064134-54-44",
+      "type": "Polygon",
+      "geometrySha256": "bd0733c5fcecb98b5c61376b2b3a8ce7773d70ff1e63c9c1ebc11db0779a0b67",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-54-45",
+      "nativeId": "064134-54-45",
+      "type": "Polygon",
+      "geometrySha256": "31c3ff9c13a3d3221396c1ac2050191acf8a83f67ff2ddc69abc4af7d566d2bd",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-11",
+      "nativeId": "064134-68-11",
+      "type": "Polygon",
+      "geometrySha256": "bc27a337886295bf11a236f26aa98261a96b3e6d2c969655de79d390eb3879a4",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-1",
+      "nativeId": "064134-68-1",
+      "type": "Polygon",
+      "geometrySha256": "dbd8b6a04abc5c63d3e2d79c3927655914004816e52f6af4dcea4cb65a811381",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-40",
+      "nativeId": "064134-68-40",
+      "type": "Polygon",
+      "geometrySha256": "b407dc5b21ba944a98f6d50f60805fcbde2b20ec152790d24a76d5b573d8bf63",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-54-42",
+      "nativeId": "064134-54-42",
+      "type": "Polygon",
+      "geometrySha256": "3ca628d165b183170a7cf369a1441ac6d45f411a5c5badd023cb3b4f809986da",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-4:4A",
+      "nativeId": "064134-68-4:4A",
+      "type": "Polygon",
+      "geometrySha256": "2cf851d70512e49ba68e2e5aac47867af6664bb663e795508e0728322f6e92f8",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-3",
+      "nativeId": "064134-68-3",
+      "type": "Polygon",
+      "geometrySha256": "c9af769b462538d5b5338fc006ca68dca1deaf310d0c003f7e4b7dd58154190e",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-2",
+      "nativeId": "064134-68-2",
+      "type": "Polygon",
+      "geometrySha256": "0aecb1033c0030e87704d74e3438fcf88df11d94cecbcc0423407826fcc22a94",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-1A",
+      "nativeId": "064134-68-1A",
+      "type": "Polygon",
+      "geometrySha256": "f12c9030cb09ddc0151e0ef2e304b1b805f3085bf6fd60c6b40e68fe81f7f3f7",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-41A",
+      "nativeId": "064134-68-41A",
+      "type": "Polygon",
+      "geometrySha256": "cf57351b1adabd67755d310e7ed6ea37170493064919dc1cae3b53ae3586deb2",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-39",
+      "nativeId": "064134-68-39",
+      "type": "Polygon",
+      "geometrySha256": "2cb7f8143a8a16e6876c68b54f71f4447b758488913171b622faed194fa78229",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-NH-STATEWIDE-064134-68-38",
+      "nativeId": "064134-68-38",
+      "type": "Polygon",
+      "geometrySha256": "ff08d0c845a9ed1eebfa6b096d106170e0c71e254ee13e8695e3b903c125a1dd",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-NH-STATEWIDE-064134-54-39",
+      "US-NH-STATEWIDE-064134-54-40",
+      "US-NH-STATEWIDE-064134-54-41"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "features": [
+      {
+       "id": "US-NH-STATEWIDE-064134-54-39",
+       "geometrySha256": "27cbf8abdb3967d5feff026eeb47c02ed99c1c3274e888507aba593b1d5a9882"
+      },
+      {
+       "id": "US-NH-STATEWIDE-064134-54-40",
+       "geometrySha256": "a6aa4619e7a017aecee59eaf38866a73dd000f283340707c5286fdfc86751c73"
+      },
+      {
+       "id": "US-NH-STATEWIDE-064134-54-41",
+       "geometrySha256": "7bcb8df01d6d0d70bf9a33cc91a6745b104aa6d8f1e0f2d8b6aacbd139943bfa"
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:07:04.870Z",
+      "method": "GET",
+      "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&geometry=-71.458388%2C42.985136%2C-71.457388%2C42.986136&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:05.055Z",
+      "method": "GET",
+      "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&geometry=-71.458388%2C42.985136%2C-71.457388%2C42.986136&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:06.828Z",
+      "method": "GET",
+      "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&outFields=OBJECTID%2CNH_GIS_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=398511%2C398512%2C398513%2C398514%2C398515%2C401109%2C401110%2C401331%2C404852%2C406665%2C406666%2C406667%2C406669%2C406907%2C419845%2C419865",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:08.959Z",
+      "method": "GET",
+      "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=%28NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL%29+AND+%28NH_GIS_ID+IN+%28%27064134-54-39%27%2C%27064134-54-40%27%2C%27064134-54-41%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:09.530Z",
+      "method": "GET",
+      "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=%28NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL%29+AND+%28NH_GIS_ID+IN+%28%27064134-54-39%27%2C%27064134-54-40%27%2C%27064134-54-41%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:07:10.280Z",
+      "method": "GET",
+      "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&outFields=OBJECTID%2CNH_GIS_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=398511%2C398512%2C398513",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [],
+ "idBatchCheck": {
+  "file": "batch-ids.json",
+  "id": "us-nh-granit-parcel-mosaic",
+  "city": "Manchester",
+  "result": {
+   "bbox": [
+    -71.459388,
+    42.984136,
+    -71.456388,
+    42.987136
+   ],
+   "boundsFeatures": 106,
+   "idsRequested": 80,
+   "returned": 80,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 4640
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:14:32.514Z",
+    "method": "GET",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&geometry=-71.459388%2C42.984136%2C-71.456388%2C42.987136&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 2360
+   },
+   {
+    "ts": "2026-10-12T11:14:32.759Z",
+    "method": "GET",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&geometry=-71.459388%2C42.984136%2C-71.456388%2C42.987136&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 234
+   },
+   {
+    "ts": "2026-10-12T11:14:33.984Z",
+    "method": "GET",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&outFields=OBJECTID%2CNH_GIS_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=398510%2C398511%2C398512%2C398513%2C398514%2C398515%2C398516%2C398517%2C398518%2C399047%2C400166%2C401029%2C401074%2C401107%2C401108%2C401109%2C401110%2C401111%2…",
+    "status": 200,
+    "ms": 358
+   },
+   {
+    "ts": "2026-10-12T11:14:37.235Z",
+    "method": "POST",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query",
+    "bodyBytes": 1815,
+    "status": 200,
+    "ms": 2506
+   },
+   {
+    "ts": "2026-10-12T11:14:38.108Z",
+    "method": "POST",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query",
+    "bodyBytes": 1813,
+    "status": 200,
+    "ms": 870
+   },
+   {
+    "ts": "2026-10-12T11:14:38.630Z",
+    "method": "GET",
+    "url": "https://nhgeodata.unh.edu/nhgeodata/rest/services/CAD/ParcelMosaic/MapServer/1/query?where=NH_GIS_ID+NOT+IN+%28%27%27%2C%27+%27%29+AND+NH_GIS_ID+IS+NOT+NULL&outFields=OBJECTID%2CNH_GIS_ID&returnGeometry=true&outSR=4326&f=geojson&objectIds=398510%2C398511%2C398512%2C398513%2C398514%2C398515%2C398516%2C398517%2C398518%2C399047%2C400166%2C401029%2C401074%2C401107%2C401108%2C401109%2C401110%2C401111%2…",
+    "status": 200,
+    "ms": 292
+   }
+  ]
+ },
+ "coverageCaveats": [
+  "Mosaic: towns without parcel polygons are represented only by linework in another layer and are not covered here (236 town IDs observed with polygons on 2026-10-12).",
+  "Rows with null or blank NH_GIS_ID (204 statewide) are excluded; 1,171 values carry leading or trailing spaces and are kept verbatim.",
+  "The same NH parcel data is also published by NHDES (catalogue entry us-nh-concord-parcels, Concord only) under a different namespace.",
+  "Layer also publishes street address and a name field, which are not requested."
+ ]
+}

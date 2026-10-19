@@ -1,0 +1,1050 @@
+{
+  "address": "3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg",
+  "metadata": {
+    "name": "proposal_nft",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Urban Game Theory Proposal NFT - Solana"
+  },
+  "instructions": [
+    {
+      "name": "accept_with_attestations",
+      "docs": [
+        "Record one attested owner's yes for one parcel. `ownership` is a lens member's",
+        "ParcelOwnership-v1 SAS attestation naming `owner`; `owner` signs this transaction. A parcel",
+        "completes when every owner the member recognises (`ownerCount`) has a record; the proposal",
+        "executes when every parcel is complete. A second acceptance by the same owner fails at the",
+        "`record` init (account already in use)."
+      ],
+      "discriminator": [
+        89,
+        240,
+        102,
+        93,
+        168,
+        200,
+        164,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "parcel"
+        },
+        {
+          "name": "ownership",
+          "docs": [
+            "membership and payload are checked in the handler."
+          ]
+        },
+        {
+          "name": "ownership_credential",
+          "docs": [
+            "authority are checked in the handler."
+          ]
+        },
+        {
+          "name": "tally",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  115,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "arg",
+                "path": "parcel_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "arg",
+                "path": "parcel_id"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "docs": [
+            "The attested owner saying yes; must equal the ownership payload's `owner`."
+          ],
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Pays rent for the tally and the record; may be the owner."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "parcel_id",
+          "type": "string"
+        },
+        {
+          "name": "payout",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "cancel_and_refund",
+      "docs": [
+        "Cancel an active proposal and return locked SOL to its creator."
+      ],
+      "discriminator": [
+        86,
+        34,
+        75,
+        82,
+        239,
+        186,
+        2,
+        228
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "proposal"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "contribute_funds",
+      "docs": [
+        "Contribute SOL to a proposal"
+      ],
+      "discriminator": [
+        101,
+        128,
+        24,
+        12,
+        191,
+        112,
+        108,
+        73
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "contributor",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "distribute_funds",
+      "docs": [
+        "Distribute the locked SOL of an Executed proposal over its acceptance records: each",
+        "accepted parcel gets an equal share, split equally between that parcel's records. A",
+        "record's share goes to its `payout`; a record without one pays the proposal owner.",
+        "Remaining accounts, per accepted parcel in `accepted_parcels` order: the parcel's tally,",
+        "then `tally.accepted` pairs of (acceptance record, recipient). Rounding dust goes to the",
+        "first recipient of the first parcel. A proposal Executed by verdict with no accepted parcel",
+        "has no records: the whole balance returns to the proposal owner, passed as the only",
+        "remaining account."
+      ],
+      "discriminator": [
+        124,
+        82,
+        187,
+        45,
+        224,
+        209,
+        31,
+        156
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "docs": [
+            "Remaining accounts carry, per accepted parcel, its tally and (record, recipient) pairs."
+          ],
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize",
+      "docs": [
+        "Initialize the proposal counter (one-time, program authority)"
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "proposal_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "mint_and_fund",
+      "docs": [
+        "Create and fund a proposal"
+      ],
+      "discriminator": [
+        255,
+        122,
+        242,
+        119,
+        64,
+        81,
+        64,
+        208
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal_counter.count",
+                "account": "ProposalCounter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal_counter",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116,
+                  101,
+                  114
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "parcel_ids",
+          "type": {
+            "vec": "string"
+          }
+        },
+        {
+          "name": "is_conditional",
+          "type": "bool"
+        },
+        {
+          "name": "image_uri",
+          "type": "string"
+        },
+        {
+          "name": "sol_amount",
+          "type": "u64"
+        },
+        {
+          "name": "lens",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "verdict_may_execute",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "reclaim_expired_funds",
+      "docs": [
+        "Return the locked SOL of an Expired proposal to its creator (cancel_and_refund stays",
+        "Active-only, so this is the only exit for funds on an expired proposal)."
+      ],
+      "discriminator": [
+        178,
+        97,
+        244,
+        181,
+        163,
+        193,
+        217,
+        246
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "proposal"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "settle_with_verdict",
+      "docs": [
+        "Settle an Active proposal from a lens member's ProposalVerdict-v1 attestation: `expired`",
+        "sets Expired; `executed` sets Executed only for proposals minted with",
+        "`verdict_may_execute` (a verdict cannot skip per-parcel consent otherwise)."
+      ],
+      "discriminator": [
+        167,
+        16,
+        204,
+        105,
+        225,
+        93,
+        188,
+        202
+      ],
+      "accounts": [
+        {
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "verdict"
+        },
+        {
+          "name": "verdict_credential"
+        },
+        {
+          "name": "verdict_record",
+          "docs": [
+            "Permanent evidence of the settlement. `init`, so replaying the same attestation fails with",
+            "\"already in use\" before the handler runs."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  100,
+                  105,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "account",
+                "path": "verdict"
+              }
+            ]
+          }
+        },
+        {
+          "name": "submitter",
+          "docs": [
+            "Pays rent for the verdict record."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AcceptanceRecord",
+      "discriminator": [
+        8,
+        191,
+        82,
+        210,
+        167,
+        58,
+        12,
+        34
+      ]
+    },
+    {
+      "name": "ConsentTally",
+      "discriminator": [
+        200,
+        21,
+        66,
+        56,
+        62,
+        148,
+        43,
+        226
+      ]
+    },
+    {
+      "name": "Proposal",
+      "discriminator": [
+        26,
+        94,
+        189,
+        187,
+        116,
+        136,
+        53,
+        33
+      ]
+    },
+    {
+      "name": "ProposalCounter",
+      "discriminator": [
+        110,
+        92,
+        147,
+        182,
+        142,
+        28,
+        182,
+        5
+      ]
+    },
+    {
+      "name": "VerdictRecord",
+      "discriminator": [
+        5,
+        210,
+        137,
+        12,
+        43,
+        13,
+        62,
+        182
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "VerdictSettled",
+      "discriminator": [
+        22,
+        37,
+        95,
+        129,
+        233,
+        148,
+        146,
+        49
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NoParcels",
+      "msg": "Must include at least one parcel"
+    },
+    {
+      "code": 6001,
+      "name": "NoLens",
+      "msg": "Must include at least one lens"
+    },
+    {
+      "code": 6002,
+      "name": "ParcelNotInProposal",
+      "msg": "Parcel not in proposal"
+    },
+    {
+      "code": 6003,
+      "name": "AlreadyAccepted",
+      "msg": "Parcel already accepted"
+    },
+    {
+      "code": 6004,
+      "name": "AcceptanceClosed",
+      "msg": "Acceptance not possible"
+    },
+    {
+      "code": 6005,
+      "name": "NotConditional",
+      "msg": "Not conditional"
+    },
+    {
+      "code": 6006,
+      "name": "NotActive",
+      "msg": "Proposal not active"
+    },
+    {
+      "code": 6007,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6008,
+      "name": "UnauthorizedParcelOwner",
+      "msg": "Signer does not own the parcel"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidParcelAccount",
+      "msg": "Invalid parcel account"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidParcelProgram",
+      "msg": "Invalid parcel program"
+    },
+    {
+      "code": 6011,
+      "name": "AcceptanceNotFound",
+      "msg": "Acceptance not found"
+    },
+    {
+      "code": 6012,
+      "name": "NotExecuted",
+      "msg": "Proposal is not executed"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidDistributionAccounts",
+      "msg": "Invalid distribution accounts"
+    },
+    {
+      "code": 6014,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6015,
+      "name": "InsufficientEscrowBalance",
+      "msg": "Insufficient escrow balance"
+    },
+    {
+      "code": 6016,
+      "name": "MemberNotInLens",
+      "msg": "The attestation issuer is not in this proposal's lens"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidAttestation",
+      "msg": "The account is not a valid SAS attestation or credential"
+    },
+    {
+      "code": 6018,
+      "name": "AttestationExpired",
+      "msg": "The attestation has expired"
+    },
+    {
+      "code": 6019,
+      "name": "WrongCredential",
+      "msg": "The attestation was issued under a different credential"
+    },
+    {
+      "code": 6020,
+      "name": "CredentialAuthorityMismatch",
+      "msg": "The credential's authority did not sign the attestation"
+    },
+    {
+      "code": 6021,
+      "name": "WrongSchema",
+      "msg": "The attestation is not under the expected lens schema"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidAttestationPayload",
+      "msg": "The attestation payload does not match its schema"
+    },
+    {
+      "code": 6023,
+      "name": "WrongParcel",
+      "msg": "The ownership attestation is about a different parcel"
+    },
+    {
+      "code": 6024,
+      "name": "InvalidOwnerCount",
+      "msg": "The ownership attestation's ownerCount must be at least 1"
+    },
+    {
+      "code": 6025,
+      "name": "OwnerMismatch",
+      "msg": "The signer is not the attested owner"
+    },
+    {
+      "code": 6026,
+      "name": "AttestationFromFuture",
+      "msg": "The attestation's source time is in the future"
+    },
+    {
+      "code": 6027,
+      "name": "OwnerCountMismatch",
+      "msg": "The attestation's ownerCount differs from the parcel's tally"
+    },
+    {
+      "code": 6028,
+      "name": "TallyMemberMismatch",
+      "msg": "Another lens member already opened this parcel's tally"
+    },
+    {
+      "code": 6029,
+      "name": "WrongProposal",
+      "msg": "The verdict is about a different proposal"
+    },
+    {
+      "code": 6030,
+      "name": "InvalidVerdict",
+      "msg": "The verdict must be executed or expired"
+    },
+    {
+      "code": 6031,
+      "name": "VerdictCannotSkipConsent",
+      "msg": "An executed verdict cannot skip per-parcel consent"
+    },
+    {
+      "code": 6032,
+      "name": "NotExpired",
+      "msg": "Proposal is not expired"
+    }
+  ],
+  "types": [
+    {
+      "name": "AcceptanceRecord",
+      "docs": [
+        "One attested owner's yes: PDA [\"acceptance\", proposal, parcel_id, owner]. Keeps the ownership",
+        "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
+        "account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "parcel_id",
+            "type": "string"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "ownership_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "ownership_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "payout",
+            "type": "pubkey"
+          },
+          {
+            "name": "accepted_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConsentTally",
+      "docs": [
+        "One lens member's view of one parcel's owner set within one proposal:",
+        "PDA [\"consent\", proposal, parcel_id]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "parcel_id",
+            "type": "string"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "required",
+            "type": "u8"
+          },
+          {
+            "name": "accepted",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Proposal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "parcel_ids",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "is_conditional",
+            "type": "bool"
+          },
+          {
+            "name": "image_uri",
+            "type": "string"
+          },
+          {
+            "name": "acceptance_possible",
+            "type": "bool"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "ProposalStatus"
+              }
+            }
+          },
+          {
+            "name": "sol_balance",
+            "type": "u64"
+          },
+          {
+            "name": "token_balance",
+            "type": "u64"
+          },
+          {
+            "name": "acceptance_count",
+            "type": "u64"
+          },
+          {
+            "name": "accepted_parcels",
+            "type": {
+              "vec": "string"
+            }
+          },
+          {
+            "name": "lens",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "verdict_may_execute",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalCounter",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "count",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Executed"
+          },
+          {
+            "name": "Cancelled"
+          },
+          {
+            "name": "Expired"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerdictRecord",
+      "docs": [
+        "One settled verdict: PDA [\"verdict\", proposal, verdict_attestation]. Keeps the verdict",
+        "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
+        "account (and the transaction logs that carry `VerdictSettled`). `verdict` is the status it set:",
+        "1 Executed, 3 Expired."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verdict",
+            "type": "u8"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerdictSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          }
+        ]
+      }
+    }
+  ]
+}

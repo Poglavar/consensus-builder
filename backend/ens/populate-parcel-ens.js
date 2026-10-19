@@ -9,11 +9,10 @@
 // Run against the LOCAL database only (host localhost:5432 may tunnel to prod):
 //   docker compose exec backend node ens/populate-parcel-ens.js --city=ny --dry-run --limit=20
 import dotenv from 'dotenv';
-import pkg from 'pg';
+import { createPool } from '../db/connection.cjs';
 import { parcelToSlug, parcelIdToCity } from './slug.js';
 
 dotenv.config({ quiet: true });
-const { Pool } = pkg;
 
 // Per-city sources. parcelId formats mirror the backend parcel routes / mint
 // scripts. Add a city by adding an entry here (countQuery, pageQuery ordered &
@@ -87,13 +86,7 @@ async function main() {
     const startOffset = Number(args.offset) || 0;
     const dryRun = Boolean(args['dry-run']);
 
-    const pool = new Pool({
-        host: process.env.PGHOST,
-        port: Number(process.env.PGPORT),
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE,
-    });
+    const pool = createPool();
 
     try {
         const { rows: countRows } = await pool.query(source.countQuery);

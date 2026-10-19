@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1381-poznan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Poznań EGiB WFS returned complete bounded parcel geometries through the actual fixed backend profile. The saved WUP point lies in a verified parcel, and the proposal footprint binds completely to that parcel.",
+  "registryAssessment": "Poznań city EGiB parcel layer confirmed by official city WFS capabilities; citywide coverage and currency are not proven beyond service description.",
+  "officialPrimarySources": [
+    {
+      "url": "https://geopoz.poznan.pl/",
+      "operator": "GEOPOZ, Poznań geodesy and cadastre office",
+      "observation": "Official municipal geodesy/cadastre office and portal operator."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib",
+      "operator": "GEOPOZ WFS for EGiB",
+      "observation": "Official city WFS service title “Poznań serwis wfs dla EGiB”; capabilities document explicitly says data for city of Poznań; layer ms:dzialki."
+    },
+    {
+      "url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+      "operator": "Head Office of Geodesy and Cartography (Poland)",
+      "observation": "National EGiB description says local powiat/city-with-powiat-rights maintains cadastral register."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Polish",
+      "query": "Poznań mapa ewidencyjna działki geoportal EGiB miejski official WFS",
+      "result": "Poznań city EGiB parcel layer confirmed by official city WFS capabilities; citywide coverage and currency are not proven beyond service description.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://geopoz.poznan.pl/",
+        "https://portal.geopoz.poznan.pl/wmsegib",
+        "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Poznan Poland official cadastral parcel map EGiB city geoportal WFS",
+      "result": "Poznań city EGiB parcel layer confirmed by official city WFS capabilities; citywide coverage and currency are not proven beyond service description.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://geopoz.poznan.pl/",
+        "https://portal.geopoz.poznan.pl/wmsegib",
+        "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+      ]
+    }
+  ],
+  "geometryDecision": "Three complete full parcel polygons retained in the city-owned GeoJSON sample, including the parcel covering the saved WUP point. The actual 13-cell run returned 93 rows and 51 unique IDs; fresh exact-ID reads matched all 51 geometries. The point-containing parcel was verified, as was complete footprint-to-parcel binding. All 51 runtime polygons passed GEOS validity, positive area, ring closure, and pairwise overlap checks. No owner, address, KW, or other sensitive fields were requested or retained.",
+  "coverageAssessment": {
+    "claimedScope": "Official Poznań city EGiB parcel layer; only bounded tested cells and target footprint have been verified.",
+    "verifiedOpenScope": "Thirteen 0.001° cells around the UN WUP 2025 point and exact fresh reads of the 51 unique returned native IDs; the point-containing polygon and complete proposal-footprint binding were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://geopoz.poznan.pl/",
+      "result": "Anonymous read-only GET returned HTTP 200 (text/html; charset=UTF-8), 26299 bytes read; title: Zarząd Geodezji i Katastru Miejskiego GEOPOZ. SHA-256 of bytes read: e71b5caa494e42dc2a3cbc8ec751b1997108b1e62b55dca3982f580a0b343141. No cookies, credentials, or property-specific parameters were sent."
+    },
+    {
+      "url": "https://geopoz.poznan.pl/",
+      "result": "Official municipal geodesy/cadastre office and portal operator."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib",
+      "result": "Official city WFS service title “Poznań serwis wfs dla EGiB”; capabilities document explicitly says data for city of Poznań; layer ms:dzialki."
+    },
+    {
+      "url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+      "result": "National EGiB description says local powiat/city-with-powiat-rights maintains cadastral register."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetCapabilities",
+      "result": "Capabilities title identifies Poznań EGiB WFS, layer ms:dzialki, default CRS EPSG:2177."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=ms%3Adzialki",
+      "result": "Schema exposes MSGEOMETRY and ID_DZIALKI plus sensitive/record-linked fields; only ID_DZIALKI and geometry requested in sample query."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&outputFormat=application%2Fjson",
+      "result": "OGC exception: JSON output format unsupported; retried default GML output."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&bbox=5808311.14%2C6426074.35%2C5808351.14%2C6426114.35%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&count=3&propertyName=ID_DZIALKI%2CMSGEOMETRY",
+      "result": "40 m bbox returned numberReturned=0."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib",
+      "result": "Actual backend fixed GML WFS profile completed 73 anonymous requests: 45 bounded-grid and target-footprint requests, 5 forced-page-size-3 requests, and 23 independent fresh-ID requests. All HTTP 200. Grid: 13 cells, row counts 8,7,8,8,8,15,3,1,9,2,2,13,9; 93 total response rows and 51 distinct IDs. Complete fresh exact-ID reads returned all 51 geometries matching original hashes. A deliberately absent ID PL-POZNAN-999999999999 was confirmed absent. See poznan-runtime-candidate-evidence.json for per-request count/hash/ID ledger and geometry QA."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib",
+      "result": "The unchanged WUP point [52.4033374848812,16.9139953760299] is covered by parcel 306401_1.0051.AR_44.27/14. A target proposal footprint query returned 13 intersecting candidates, and computeSourceBinding reported complete coverage by one parcel with overlap 2194.582 m² against a 2194.58 m² site. A previous 40 m query had invalid EPSG:2177 axis order and its zero result was discarded."
+    },
+    {
+      "url": "backend/parcels/gml-wfs-source.js and backend/parcels/gml-parcel-reader.js",
+      "result": "Added a closed Poznań profile with a strict feature namespace/type/ID/geometry/CRS schema, EPSG:2177 axis conversion, safe-field projection, and no unsupported sortBy parameter. Focused source/reader tests pass; see parent review for repository-wide validation."
+    }
+  ],
+  "remainingUncertainty": "The WUP centroid is a demographic locator, not a city boundary; testing does not prove full municipal or national coverage. The endpoint response confirms geometry and identifiers, not legal title, source licensing, completeness, or future availability.",
+  "geometryEvidence": {
+    "file": "poznan-parcel-samples.geojson",
+    "featureCount": 3,
+    "verifiedIds": [
+      "306401_1.0051.AR_44.27/14",
+      "306401_1.0051.AR_44.16",
+      "306401_1.0051.AR_44.22/4"
+    ],
+    "geometryQA": "3 tracked polygons are complete full feature geometries selected from the runtime cache. All 51 unique runtime polygons were transformed with the official EPSG:2180 / Poland CS92 projection and GEOS-checked: valid, positive area, closed rings, no positive-area overlap above 1e-7 m², and no equal-geometry pairs.",
+    "wupPointContainingId": "306401_1.0051.AR_44.27/14",
+    "fullRuntimeAudit": "poznan-runtime-candidate-evidence.json"
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness."
+  },
+  "rootReviewedAt": "2026-10-09T07:19:42.539920+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:19:42.539920+00:00",
+    "decision": "Approved bounded local runtime admission after real adapter qualification and independent complete-polygon audit.",
+    "evidenceFile": "poznan-root-acceptance.json",
+    "qualityFile": "poznan-root-quality.json",
+    "scope": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness."
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "name": "Yancheng",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 470,
+  "point": [
+    33.3756733349348,
+    120.140689633909
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "盐城市不动产登记中心 地籍图 盐城市地理信息公共服务平台 地块",
+        "scope": "Identify municipal land registry and public GIS data scope, including parcel-vector availability.",
+        "result": "City government identifies the municipal registration center and natural-resources bureau’s cadastral-rights and registration duties. The 2026 public mapping release offers topographic, imagery, terrain, 3D and Tianditu services, but does not list cadastral lot polygons.",
+        "urls": [
+          "https://www.yancheng.gov.cn/col/col32159/index.html",
+          "https://www.yancheng.gov.cn/art/2026/5/26/art_34238_4427348.html",
+          "https://yc.jszwfw.gov.cn/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Yancheng China official city cadastral parcel map land registration GIS public data",
+        "scope": "Cross-check the municipal public map platform and registration service in English-indexed sources.",
+        "result": "Official city sources confirm an updated geographic-information public platform and municipal property registration. No English-accessible source or inspected service exposed anonymous full parcel vectors; public map products are described as base geography and addresses/POIs.",
+        "urls": [
+          "https://www.yancheng.gov.cn/art/2026/5/26/art_34238_4427348.html",
+          "https://www.yancheng.gov.cn/col/col32159/index.html",
+          "https://yc.jszwfw.gov.cn/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Yancheng Natural Resources and Planning Bureau / Municipal Real Estate Registration Center",
+        "operator": "Yancheng Municipal Natural Resources and Planning Bureau",
+        "homeUrl": "https://www.yancheng.gov.cn/col/col32159/index.html",
+        "observation": "City agency duties include natural-resource and property-right registration, cadastral investigation, real-estate surveying, and a municipal real-estate registration center."
+      },
+      {
+        "name": "Yancheng Geographic Information Public Service Platform / Tianditu Yancheng",
+        "operator": "Yancheng Municipal Natural Resources and Planning Bureau / municipal geospatial information center",
+        "homeUrl": "https://www.yancheng.gov.cn/art/2026/5/26/art_34238_4427348.html",
+        "observation": "City announced updated public mapping products available online; documented layers include base topographic data, orthophotography, elevation models, 3D city content, vector/imagery basemaps, addresses and POIs, not cadastral lots."
+      },
+      {
+        "name": "Yancheng municipal e-government registration services",
+        "operator": "Jiangsu Provincial Government Service Data Bureau / Yancheng service center",
+        "homeUrl": "https://yc.jszwfw.gov.cn/",
+        "observation": "Official city service portal provides Yancheng real-estate registration applications; no property-specific application was made."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.yancheng.gov.cn/col/col32159/index.html",
+        "method": "GET",
+        "observation": "Official city organization page identifies municipal registration and cadastral survey responsibilities and the city registration center."
+      },
+      {
+        "url": "https://www.yancheng.gov.cn/art/2026/5/26/art_34238_4427348.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official 2026 mapping release details public base-data categories and online access route; it does not list lot/parcel vectors."
+      },
+      {
+        "url": "https://yc.jszwfw.gov.cn/",
+        "method": "GET",
+        "observation": "Official city e-government service portal lists city real-estate registration; account or record lookup was not attempted."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "CN-JS-YANCHENG-CITY-REGISTRY-GIS",
+    "name": "Yancheng Natural Resources and Planning Bureau / geographic-information public platform",
+    "url": "https://www.yancheng.gov.cn/col/col32159/index.html",
+    "operator": "Yancheng Municipal Natural Resources and Planning Bureau and municipal Real Estate Registration Center",
+    "serviceType": "City registry/cadastral administration and public base-mapping platform; no anonymous general parcel vector endpoint verified.",
+    "geometryType": "No cadastral parcel vector schema verified.",
+    "nativeIdField": "Not inspected.",
+    "nativeIdEvidence": "No parcel geometry service was queried."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-owned sources confirm cadastral and real-estate-registration responsibilities plus an updated public base-map service. Published open map content is base geography and addresses/POIs rather than parcel lots.",
+    "verifiedOpenScope": "City-owned sources confirm cadastral and real-estate-registration responsibilities plus an updated public base-map service. Published open map content is base geography and addresses/POIs rather than parcel lots.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "city_registry_no_anonymous_geometry",
+  "technicalBlocker": "The public platform’s documented online layers are basic mapping and 3D products, not cadastral lots. No public full-polygon service was located.",
+  "remainingUncertainty": "Whether a separate municipal or district public cadastral service exists beyond the inspected geographic platform and city service portal.",
+  "nextStep": "Seek only a city-published anonymous parcel-vector endpoint with server-side geometry and ID-only selection; avoid e-government record/application workflows.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11314,
+  "cityId": "wup2025:11314",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    33.3756733349348,
+    120.140689633909
+  ],
+  "queueRank": 470,
+  "population2025": 1093432,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official city agency responsibilities include property-right registration, cadastral surveys and a municipal Real Estate Registration Center; 2026 mapping products are public base layers.",
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00",
+  "registryEvidenceUrls": [
+    "https://www.yancheng.gov.cn/col/col32159/index.html",
+    "https://www.yancheng.gov.cn/art/2026/5/26/art_34238_4427348.html",
+    "https://yc.jszwfw.gov.cn/"
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "description": "Five-city live integration continuation; aggregate metadata only. Original positive-probe cohort accounting excludes newly verified Dortmund.",
+  "addedCities": [
+    {
+      "cityId": "tokyo",
+      "name": "Tokyo",
+      "sourceId": "jp-moj-geospatial-2026",
+      "evidenceFile": "research/tokyo-2026-live.json",
+      "originalCohort": true
+    },
+    {
+      "cityId": "nagoya",
+      "name": "Nagoya",
+      "sourceId": "jp-moj-geospatial-2026",
+      "evidenceFile": "research/nagoya-2026-live.json",
+      "originalCohort": true
+    },
+    {
+      "cityId": "montreal",
+      "name": "Montreal",
+      "sourceId": "ca-qc-cadastre-bd-allegee",
+      "evidenceFile": "research/montreal-live-2026-10-03.json",
+      "originalCohort": true
+    },
+    {
+      "cityId": "cotonou",
+      "name": "Cotonou",
+      "sourceId": "bj-andf-efoncier-geoserver",
+      "evidenceFile": "research/cotonou-live.json",
+      "originalCohort": true
+    },
+    {
+      "cityId": "dortmund",
+      "name": "Dortmund",
+      "sourceId": "de-nrw-lika-flurstueck",
+      "evidenceFile": "research/dortmund-live-2026-10-03.json",
+      "originalCohort": false
+    }
+  ],
+  "counts": {
+    "originalPositiveCityProbes": 61,
+    "previousIntegratedInOriginalCohort": 22,
+    "addedThisBatch": 5,
+    "addedInOriginalCohort": 4,
+    "integratedInOriginalCohort": 26,
+    "remainingOriginalPositiveCityProbes": 35,
+    "configuredAppCities": 38,
+    "configuredCountriesAndTerritories": 22,
+    "executableProviders": 24,
+    "providerCityMemberships": 30
+  },
+  "integratedOriginalCohort": [
+    {
+      "probeCityId": "geonames:3448439",
+      "name": "São Paulo",
+      "appCityId": "sao_paulo"
+    },
+    {
+      "probeCityId": "geonames:3435910",
+      "name": "Buenos Aires",
+      "appCityId": "buenos_aires"
+    },
+    {
+      "probeCityId": "geonames:5128581",
+      "name": "New York City",
+      "appCityId": "new_york"
+    },
+    {
+      "probeCityId": "geonames:1853909",
+      "name": "Osaka",
+      "appCityId": "osaka"
+    },
+    {
+      "probeCityId": "geonames:5368361",
+      "name": "Los Angeles",
+      "appCityId": "los_angeles"
+    },
+    {
+      "probeCityId": "geonames:2240449",
+      "name": "Luanda",
+      "appCityId": "luanda"
+    },
+    {
+      "probeCityId": "geonames:3688689",
+      "name": "Bogotá",
+      "appCityId": "bogota"
+    },
+    {
+      "probeCityId": "geonames:3936456",
+      "name": "Lima",
+      "appCityId": "lima"
+    },
+    {
+      "probeCityId": "wup2025:2994",
+      "name": "Paris",
+      "appCityId": "paris"
+    },
+    {
+      "probeCityId": "wup2025:2925",
+      "name": "Toronto",
+      "appCityId": "toronto"
+    },
+    {
+      "probeCityId": "wup2025:11566",
+      "name": "Tamar (Hong Kong)",
+      "appCityId": "hong_kong"
+    },
+    {
+      "probeCityId": "wup2025:413",
+      "name": "Cape Town",
+      "appCityId": "cape_town"
+    },
+    {
+      "probeCityId": "wup2025:374",
+      "name": "Bamako",
+      "appCityId": "bamako"
+    },
+    {
+      "probeCityId": "wup2025:2139",
+      "name": "Sydney",
+      "appCityId": "sydney"
+    },
+    {
+      "probeCityId": "wup2025:1634",
+      "name": "Melbourne",
+      "appCityId": "melbourne"
+    },
+    {
+      "probeCityId": "wup2025:1498",
+      "name": "Lusaka",
+      "appCityId": "lusaka"
+    },
+    {
+      "probeCityId": "wup2025:8123",
+      "name": "Washington, D.C.",
+      "appCityId": "washington_dc"
+    },
+    {
+      "probeCityId": "wup2025:1233",
+      "name": "San Francisco",
+      "appCityId": "san_francisco"
+    },
+    {
+      "probeCityId": "wup2025:7289",
+      "name": "Miami",
+      "appCityId": "miami"
+    },
+    {
+      "probeCityId": "wup2025:675",
+      "name": "Essen",
+      "appCityId": "essen"
+    },
+    {
+      "probeCityId": "wup2025:3979",
+      "name": "Birmingham",
+      "appCityId": "birmingham"
+    },
+    {
+      "probeCityId": "geonames:3186886",
+      "name": "Zagreb",
+      "appCityId": "zagreb"
+    },
+    {
+      "probeCityId": "geonames:1850147",
+      "name": "Tokyo",
+      "appCityId": "tokyo"
+    },
+    {
+      "probeCityId": "wup2025:5245",
+      "name": "Nagoya",
+      "appCityId": "nagoya"
+    },
+    {
+      "probeCityId": "wup2025:3645",
+      "name": "Montreal",
+      "appCityId": "montreal"
+    },
+    {
+      "probeCityId": "wup2025:1752",
+      "name": "Cotonou",
+      "appCityId": "cotonou"
+    }
+  ],
+  "scope": "Tokyo Chiyoda and Nagoya Chikusa public-coordinate sheets only; Montreal indicative Quebec cadastre; Cotonou sampled official Benin parcel coverage; Dortmund official NRW cadastral provider. Routing radii do not establish complete city or country coverage.",
+  "persistence": "No parcel database imports or polygon collections committed; live memory caches only.",
+  "failureEvidenceFiles": [
+    "research/nagoya-2026-source-attempts.json",
+    "research/batch-six-root-source-attempts.json",
+    "research/singapore-live-2026-10-03.json",
+    "research/chicago-live-hold-2026-10-03.json",
+    "research/recife-seqimovel-live-hold-2026-10-03.json"
+  ],
+  "validation": {
+    "headlessChecksPassed": 1633,
+    "databaseDependentChecksSkipped": 4,
+    "broadSelectedFiles": 54,
+    "note": "A stale Tokyo source-only assertion was corrected and its 31-check suite reran; final shared-provider and Socrata changes receive focused verification.",
+    "manualBrowserFlows": [
+      "rendered parcel boundaries",
+      "viewport streaming",
+      "pan and cached return",
+      "exact IDs",
+      "footprint lookup",
+      "proposal binding",
+      "global-map live-city cards",
+      "Japanese shared-source deep links",
+      "source information notice"
+    ],
+    "databaseImports": 0,
+    "finalSubsetChecksPassed": 199,
+    "finalSubsetFiles": 13
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3022",
+  "cityCode": 3022,
+  "wupCityCode": 3022,
+  "name": "Beledweyne",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "iso2": "SO",
+  "iso3": "SOM",
+  "rank": 1992,
+  "queueRank": 1992,
+  "point": [4.73963475153868, 45.2058867327533],
+  "centerLatLon": [4.73963475153868, 45.2058867327533],
+  "pointBasis": "UN WUP2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 291630,
+  "population2025k": 291.63,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1901-2000-2026-10-09",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "No city/local registry, cadastral map, or public parcel procedure for Beledweyne was evidenced. The official municipality site was reachable but did not expose a parcel service. Somalia MPWR describes national cadastral registration and planned cadastral-system work, without a Beledweyne layer or local custodian.",
+  "registryEvidenceUrls": [
+    "https://beledweyne.hs.so/",
+    "https://mpwr.gov.so/services/",
+    "https://mpwr.gov.so/wp-content/uploads/2025/06/NTP.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No bounded anonymous response containing safe parcel polygon geometry and a stable native parcel identity was obtained. Runtime readiness remains held for serial review.",
+  "scopeLimits": "The exact WUP point was not shifted. Public first-party pages and the SWALIM GeoNode dataset catalog were inspected; no parcel layer or parcel feature response was qualified. Any map extent miss, unavailable endpoint, or non-cadastral dataset is not evidence of citywide absence.",
+  "resultCategory": "no_local_registry_or_public_parcel_geometry_evidenced",
+  "coverageAssessment": {
+    "claimedScope": "Beledweyne municipality and relevant Somalia national land/cadastral administration leads.",
+    "verifiedOpenScope": "No city-specific parcel coverage verified. SWALIM catalog returned environmental, flood, settlement, and land-cover datasets; none was a cadastral parcel layer.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No safe native parcel identity/geometry was verified; packet completion is not source integration or admission."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Beledweyne Somalia cadastral parcel map land registry official",
+        "scope": "Fresh first-party discovery of a Beledweyne registry, cadastral map, or anonymous parcel API.",
+        "result": "No Beledweyne-specific first-party parcel map/API was returned. The official Beledweyne municipality site, Somalia MPWR services page, and MPWR national-plan cadastral-system material were returned; these did not expose parcel geometry or a city-specific endpoint.",
+        "actualResultUrls": [
+          "https://beledweyne.hs.so/",
+          "https://mpwr.gov.so/services/",
+          "https://mpwr.gov.so/wp-content/uploads/2025/06/NTP.pdf"
+        ],
+        "executionMethod": "Fresh web search followed by direct review of returned first-party pages."
+      },
+      {
+        "language": "Somali",
+        "query": "Beledweyne Soomaaliya diiwaanka dhulka khariidad cadastral",
+        "scope": "Separate Somali-language discovery for local registry custody, land registration, map, and public parcel geometry.",
+        "result": "No Beledweyne-specific Somali-language first-party parcel map/API was returned. A Somali-language Maysara land-registry page states its system is still being built and not yet in a government agency; it is not evidence of a Beledweyne public registry. Official municipality and government GIS/disaster pages concerned civic information and flood/GIS work, not parcel records.",
+        "actualResultUrls": [
+          "https://beledweyne.hs.so/",
+          "https://www.maysaragroup.com/so/holdings/land-registry",
+          "https://sodma.gov.so/departments/"
+        ],
+        "executionMethod": "Executed as a separate fresh Somali-language web search; no login, CAPTCHA/Cloudflare bypass, unsafe-data request, or TLS exception was used."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://beledweyne.hs.so/",
+        "outcome": "200; official municipality homepage returned. Site content identifies municipal services and contact information but no public cadastral/parcel map or API was found."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://beledweyne.hs.so/robots.txt",
+        "outcome": "200; robots file returned and linked the WordPress sitemap. Sitemap/page review did not expose a parcel or land-registry service."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://mpwr.gov.so/services/",
+        "outcome": "403 Cloudflare challenge. The challenge was not bypassed. Search-indexed official content describes national cadastral registration as a service, but no city-specific endpoint was obtained."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://mpwr.gov.so/wp-content/uploads/2025/06/NTP.pdf",
+        "outcome": "Official national-plan document returned through search indexing; it describes a 2025–2029 cadastral-system/land-zoning initiative, not an operating public parcel API for Beledweyne."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://spatial.faoswalim.org/api/v2/",
+        "outcome": "200; public GeoNode API index returned."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://spatial.faoswalim.org/api/v2/datasets?page=1..35&page_size=10",
+        "outcome": "200 responses; catalog inspected for Beledweyne, parcel, cadastre, land-registry, urban, and settlement terms. Matching records were environmental/flood/settlement/land-cover datasets, not cadastral parcel features. No parcel geometry request was made from those non-cadastral datasets."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://www.maysaragroup.com/so/holdings/land-registry",
+        "outcome": "200; Somali-language private project page says the land-registry system is being built and has not yet been placed with a government agency. Not treated as official custody or public parcel coverage."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://beledweyne.hs.so/",
+        "observation": "Official municipality website; no public cadastral or parcel service evidenced."
+      },
+      {
+        "homeUrl": "https://mpwr.gov.so/",
+        "observation": "Official national Ministry lead; public material describes cadastral registration and future system development, but no anonymous Beledweyne parcel layer was available in this attempt."
+      },
+      {
+        "homeUrl": "https://spatial.faoswalim.org/",
+        "observation": "Official/FAO Somalia geospatial catalog; accessible datasets reviewed were not cadastral parcel coverage."
+      }
+    ]
+  },
+  "nativeIdentity": null,
+  "schemaAndCrs": "No parcel feature response was obtained; native parcel schema, identity field, geometry encoding, and CRS remain unqualified. The Beledweyne RAP map search result describes WGS 1984/Transverse Mercator for a planning map, not a cadastral parcel layer.",
+  "fieldMapping": {
+    "safe native fields observed": [],
+    "retained feature properties": "None; no sample GeoJSON retained.",
+    "composite-key provenance": "None."
+  },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, personal, title, ownership-history, mortgage, or other unsafe fields were requested or retained. No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS exception was used.",
+  "limits": [
+    "No coordinate was shifted to force a parcel hit.",
+    "A missing service, map extent miss, Cloudflare challenge, or non-cadastral catalog result is not evidence of citywide absence.",
+    "National MPWR cadastral-service prose does not prove Beledweyne local custody or public parcel coverage.",
+    "No sample GeoJSON is included because no full parcel polygon plus native identity was verified.",
+    "Packet completion does not mean source integration/admission; runtime remains held pending independent serial qualification."
+  ],
+  "uncertainty": "Beledweyne's precise local registry custodian, any non-indexed public map, and parcel geometry/API availability remain unresolved. This is a documented research completion with held runtime readiness, not a negative cadastral determination."
+}

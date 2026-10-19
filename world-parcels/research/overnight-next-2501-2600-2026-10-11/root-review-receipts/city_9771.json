@@ -1,0 +1,16 @@
+{
+  "taskId": "city:9771",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-9771-adoni.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/adoni-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:20:39Z",
+  "reason": "WUP rank 2580, India, unchanged [15.6251074576977, 77.277908039408], 227758 persons. English and Telugu executed searches are recorded. The official Kurnool Mandal page independently confirms Adoni 1/2 and Survey, Settlement and Land Records duties. The state Bhunaksha viewer timed out; no parcel schema, CRS, safe native ID, or geometry was returned. No safe native-ID polygon response or durable sample; independent fresh reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are not evidenced. The access limits do not establish citywide absence.",
+  "firstPartyUrlsReviewed": [
+    "https://kurnool.ap.gov.in/mandal/",
+    "https://bhunaksha.ap.gov.in/"
+  ]
+}

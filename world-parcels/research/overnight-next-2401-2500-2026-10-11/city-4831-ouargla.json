@@ -1,0 +1,96 @@
+{
+  "cityCode": 4831,
+  "queueRank": 2449,
+  "name": "Ouargla",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "iso3": "DZA",
+  "point": [31.9462184540671, 5.33708363718061],
+  "population2025": 239221,
+  "population2025k": 239.221,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ouargla Algeria official cadastral map parcel cadastre site:gov.dz",
+        "result": "Found official Algerian geospatial viewer InfoGéolAlgérie/ASGA, official National Urban Land Agency material, and official National Cadastre Agency regional-service evidence; no Ouargla parcel-feature API was established.",
+        "actualResultUrls": [
+          "https://bndg.asga.dz/bndg/CARTO50NV_P/Default_BNDG.aspx",
+          "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+          "https://www.anfu.dz/",
+          "https://a.dgdn.dz/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ورقلة الجزائر خريطة عقارية مسح الأراضي السجل العقاري الموقع الرسمي",
+        "result": "Found official Algerian Ministry of Finance/DGI cadastral-tax material and official national land-property digital-service announcements; these are general or procedural and do not expose a safe public Ouargla parcel geometry route.",
+        "actualResultUrls": [
+          "https://www.mfdgi.gov.dz/particuliers/taxe-fonciere-sur-les-proprietes-baties-et-non-baties-ar",
+          "https://mfdgi.gov.dz/plan-site-dgi-ar",
+          "https://news.radioalgerie.dz/ar/node/56816"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Algeria's official national cadastral custodian is evidenced by the National Cadastre Agency domain (a.dgdn.dz) and its official cadastral-service material. Ouargla is also represented in official national geospatial coverage at ASGA/InfoGéolAlgérie. This establishes national/official custody and a public map service, not a qualified Ouargla parcel adapter.",
+  "routesAttempted": [
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "GET anonymous; TLS verified by web discovery, direct curl timed out after 20 seconds",
+      "outcome": "Official InfoGéolAlgérie 1:200,000 map viewer is indexed and describes layers including Wilaya and Communes. Direct current HTML/configuration retrieval timed out; no service URL, schema, CRS, parcel ID, or geometry response was obtained."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO50NV_P/Default_BNDG.aspx",
+      "method": "GET via first-party indexed discovery",
+      "outcome": "Official 1:50,000 cartography viewer is evidenced, with raster/map/relief layers; no cadastral parcel feature layer or safe parcel response was identified."
+    },
+    {
+      "url": "https://a.dgdn.dz/",
+      "method": "GET via first-party discovery",
+      "outcome": "Official National Cadastre Agency service domain evidenced by regional agency pages and cadastral-document/procedure material; no public Ouargla parcel geometry endpoint was identified."
+    },
+    {
+      "url": "https://www.anfu.dz/",
+      "method": "GET via first-party discovery",
+      "outcome": "Official National Urban Land Agency page describes land inventory and GIS missions, but is not a public parcel-feature service and yielded no safe Ouargla parcel response."
+    },
+    {
+      "url": "https://www.mfdgi.gov.dz/particuliers/taxe-fonciere-sur-les-proprietes-baties-et-non-baties-ar",
+      "method": "GET via first-party discovery",
+      "outcome": "Official Ministry of Finance/DGI Arabic material concerns property tax procedures and unsafe ownership/tax context was not queried; no parcel geometry or public cadastral API was exposed."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfiguration": null,
+    "nativeIdentity": null,
+    "geometryType": null,
+    "geometryCrs": null,
+    "boundedAnonymousResponse": false
+  },
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": [
+    "stable native public parcel identity if independently verified",
+    "full parcel polygon geometry",
+    "source service URL",
+    "source CRS",
+    "layer/schema metadata",
+    "retrieval timestamp"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "runtimeReadiness": "held_serial_review",
+  "integrationDecision": "not_integrated",
+  "uncertainty": "The official national custodian and general geospatial viewer are evidenced, but anonymous parcel-layer availability, current viewer configuration, schema, CRS, stable native identity, city coverage, and reuse terms remain unresolved. The timeout and lack of a parcel response do not establish citywide absence; the exact WUP point was preserved and not shifted."
+}

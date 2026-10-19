@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:83",
+  "queueRank": 83,
+  "name": "Chattogram",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "centerLatLon": [
+    22.3728677361523,
+    91.8103998549196
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "bd-dlrs-bds-sheets",
+    "requestUrl": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+    "method": "POST",
+    "requestForm": "rsnum=201901&comcod=4111&unitcod=040107008&sheetno=001",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "spatialTestAreaLonLat": [
+      91.8298,
+      22.2072,
+      91.8342,
+      22.2102
+    ],
+    "parcelRecordCount": 292,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "Dag_No (plot number; FID/Id are sheet-local)",
+    "responseFile": "chattogram-sheet-001-response.json",
+    "pagination": "none; one whole mouza sheet per request (first 3 of 292 features saved)"
+  },
+  "source": {
+    "sourceId": "bd-dlrs-bds-sheets",
+    "name": "DLRS Bangladesh Digital Survey sheet GeoJSON",
+    "operator": "Department of Land Record and Survey, Bangladesh",
+    "scope": "Survey sheets where BDS is published",
+    "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+    "method": "POST form",
+    "responseFormat": "GeoJSON FeatureCollection",
+    "crs": "EPSG:4326",
+    "reuseStatus": "not established"
+  },
+  "portalsFound": [
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "observation": "DLRS (Department of Land Record and Survey) settlement portal; same endpoint family as verified for Dhaka."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "DLRS mouza-map purchase portal; distinct from the sheet JSON endpoint (see Dhaka research)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "POST",
+      "form": "",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "division list; Chattogram division unitcod 040000000"
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "POST",
+      "form": "divid=040000000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Chattogram district unitcod 040100000 comcod 4111"
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "POST",
+      "form": "districtid=040100000&comcod=4111",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "only survey 201901 (Bangladesh Digital Survey)"
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "form": "comcod=4111&rsno1=201901&districtid=040100000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "only Anwara and Banshkhali upazilas have BDS sheets in this district; the city thanas are not listed"
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetMouzaListBySurveyMap",
+      "method": "POST",
+      "form": "comcod=4111&rsnum=201901&unitcod=040107000",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "16 mouza sheets in Anwara"
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "method": "POST",
+      "form": "rsnum=201901&comcod=4111&unitcod=040107008&sheetno=001",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 292,
+      "assessment": "292 Polygon features returned (Gobadia (Bandar) mouza, Anwara); saved first 3"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh Digital Survey (BDS) sheets, published per mouza; in Chattogram district only Anwara and Banshkhali upazilas listed",
+    "verifiedOpenScope": "one sheet (292 polygons) of Gobadia (Bandar) mouza, Anwara, about 18 km south of the listed Chattogram centre across the Karnaphuli river",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Sample is in Anwara upazila, adjacent to but outside Chattogram city proper; no city-area sheet was listed under the BDS survey. Other DLRS surveys (CS/SA/RS) were not exposed for this district by the survey list. Reuse terms not established (see Dhaka record).",
+  "nextStep": "Check whether city thanas (Kotwali, Panchlaish, etc.) appear under a different comcod/survey; confirm terms of use for the DLRS sheet endpoint."
+}

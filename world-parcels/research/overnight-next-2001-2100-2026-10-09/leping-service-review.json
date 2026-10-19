@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-11414-leping.json",
+  "cityCode": 11414,
+  "queueRank": 2015,
+  "city": "Leping",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T20:57:00Z",
+  "discovery": {
+    "english": "Official Leping government pages identify the Natural Resources and Planning Bureau and real-estate registration functions; no public anonymous parcel viewer/API was established.",
+    "native": "中文官方检索确认乐平市自然资源和规划局、自然资源确权登记股及不动产登记中心服务事项；未确认可匿名返回乐平宗地稳定ID和几何的公开接口。"
+  },
+  "custodian": {
+    "name": "乐平市自然资源和规划局 / 乐平市不动产交易登记中心",
+    "role": "Local natural-resources and real-estate registration custodian/service center described by official government sources",
+    "evidenceUrls": [
+      "https://www.lps.gov.cn/zfxxgk/zzjg/zfbm/zrzyhghj/",
+      "https://www.lps.gov.cn/zfxxgk/jczwgkbzhgfh/eslglyzwgk/zrzy/t1075926.shtml",
+      "https://www.lps.gov.cn/zfxxgk/zfxxgkml/fdzdgknr_15921/xzglyfw/qdgl/t1074891.shtml"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "Official Leping government portal", "url": "https://www.lps.gov.cn/", "result": "HTTP 200; current HTML/navigation inspected; no cadastral map/API link or parcel schema."},
+    {"route": "Official Leping Natural Resources and Planning Bureau page", "url": "https://www.lps.gov.cn/zfxxgk/zzjg/zfbm/zrzyhghj/", "result": "HTTP 200; local custodian, unified registration, cadastral survey, real-estate surveying and geospatial-information responsibilities documented; no geometry service."},
+    {"route": "Official Leping natural-resources disclosure catalogue", "url": "https://www.lps.gov.cn/zfxxgk/jczwgkbzhgfh/eslglyzwgk/zrzy/t1075926.shtml", "result": "HTTP 200; registration materials, procedures and disclosure categories documented; no anonymous parcel map/API."},
+    {"route": "Official Leping one-chain public-service list", "url": "https://www.lps.gov.cn/zfxxgk/zfxxgkml/fdzdgknr_15921/xzglyfw/qdgl/t1074891.shtml", "result": "HTTP 200; real-estate registration center and property-information query responsibilities identified; no public geometry endpoint."},
+    {"route": "National Tianditu map portal", "url": "https://www.tianditu.gov.cn/", "result": "HTTP 418 anonymous access failure; no viewer configuration, schema, CRS or geometry. Access limitation, not absence evidence."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["safe stable native parcel identity if publicly returned", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID-plus-geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [28.9666652679406, 117.135034004849] was preserved and was not shifted to force a parcel hit.",
+    "No exact-point hit, map-extent miss, timeout, login wall or unusable UI was used as evidence of citywide absence.",
+    "Authentication, CAPTCHA, private tokens and protected owner/property queries were not attempted.",
+    "National/general-agency map access failure was not promoted to a Leping geometry source.",
+    "Registry existence is locally evidenced, but source integration/admission remains unqualified."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Public endpoint, schema, CRS, safe native identity field and citywide coverage remain unknown."
+  }
+}

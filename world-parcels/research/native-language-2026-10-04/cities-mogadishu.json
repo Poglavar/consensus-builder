@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 95,
+  "city": "Muqdisho (Mogadishu)",
+  "countryCode": "SO",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/mogadishu.json",
+  "query": {
+    "language": "Somali",
+    "script": "Latin",
+    "text": "Muqdisho xogta dhulka cadastre parcels GIS xog furan xuduudaha dhulalka"
+  },
+  "assessment": "Somali-language screening found no verifiable Mogadishu parcel feature source. The surfaced Somaliland boundary portal is neither in the city nor cadastral and is excluded; no source-absence claim is made.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,92 @@
+{
+  "cityCode": 1679,
+  "queueRank": 2509,
+  "name": "Chernivtsi",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso3": "UKR",
+  "point": [48.2838600298589, 25.9409671955555],
+  "population2025": 234032,
+  "population2025k": 234.032,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chernivtsi official cadastral map parcel GIS Ukraine land registry",
+        "result": "First-party discovery found the official Chernivtsi municipal geoportal, whose help page describes its spatial-data map and says land-parcel information is sourced from Ukraine's Public Cadastral Map, and the official regional StateGeoCadastre site.",
+        "actualResultUrls": [
+          "https://map.city.cv.ua/dopomoga",
+          "https://chernivetska.land.gov.ua/",
+          "https://map.land.gov.ua/"
+        ]
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Чернівці офіційна кадастрова карта геопортал земельний кадастр міська рада",
+        "result": "First-party discovery found the official municipal geoportal and its Міський земельний кадастр page, plus the official Chernivtsi regional StateGeoCadastre page. The municipal portal is operational, but its public catalog exposed municipal land/lease/auction datasets rather than a verified general parcel polygon service.",
+        "actualResultUrls": [
+          "https://map.city.cv.ua/zemelni-kadastr",
+          "https://map.city.cv.ua/",
+          "https://chernivetska.land.gov.ua/icat/kadastr-i-reiestratsiia/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Chernivtsi City Council municipal geoportal at map.city.cv.ua; its current page identifies the site as the city's official geoportal and exposes a Міський земельний кадастр section.",
+    "nationalOrRegionalContext": "The official regional StateGeoCadastre office and Ukraine Public Cadastral Map are the national/regional cadastral context. The municipal help page says parcel information is sourced from the Public Cadastral Map; this research did not qualify that national viewer as an anonymous polygon API.",
+    "registryBasis": "A local official map/land-cadastre portal and its public GIS layer catalog were fetched. This evidences a local custodian and public GIS service, not a general parcel adapter or citywide cadastral extract.",
+    "registryFoundReason": "The official municipal geoportal is live and has a dedicated municipal land-cadastre section with public GIS layers; no general parcel polygon layer was verified at the preserved point."
+  },
+  "schemaAndCrs": {
+    "serviceUrl": "https://map.city.cv.ua/api-user/gis-layer-list",
+    "endpoint": "Municipal geoportal JSON layer catalog; point-info route is /api-user/gis-format",
+    "responseType": "JSON layer catalog",
+    "geometryType": "Not qualified for a general parcel layer",
+    "geometryCrs": "Not declared in the fetched layer-catalog response; no parcel geometry was retained.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": {
+      "id": "municipal GIS layer identifier, not a parcel identity",
+      "table_name": "municipal dataset/table reference, not retained as parcel data",
+      "service_type": "municipal service representation"
+    },
+    "compositeKeyProvenance": "Not applicable; no native parcel feature was returned.",
+    "schemaEvidence": "The public catalog returned 82 GIS layer definitions. Relevant entries included lease contracts (cadastr_portal.orenda_docs, vtile, count 4715), sold auction parcels (data_parcel.land_auction_sold, geojson, count 0), and planned auction parcels (data_parcel.land_auction_prepare, geojson, count 0). These are thematic municipal datasets, not a verified general cadastral parcel layer."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "The exact preserved WUP point [48.2838600298589, 25.9409671955555] was used without shifting. The public point-info request against the lease layer returned HTTP 400 'object not found'; this is not evidence of citywide absence.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Chernivtsi municipal geoportal and its public GIS layer catalog.",
+    "verifiedOpenScope": "Portal HTML/configuration and an anonymous layer-catalog response; no general parcel polygon response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if independently verified", "full parcel polygon geometry if independently verified", "source service URL", "declared CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude ordering were preserved; no coordinate shift was used.",
+    "The portal layer catalog is not proof of citywide cadastral coverage, and a zero-count auction layer is not evidence of parcel absence.",
+    "No raw source-specific attribute set or unsafe field was retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The official municipal geoportal and land-cadastre section are verified, but no anonymous general cadastral parcel polygon and native parcel identity were obtained. The national Public Cadastral Map remains a separate service requiring independent current API qualification."
+}

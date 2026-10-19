@@ -1,0 +1,78 @@
+{
+  "cityRecord": "city-2674-gij-n.json",
+  "cityCode": 2674,
+  "queueRank": 2286,
+  "city": "Gijón",
+  "country": "Spain",
+  "countryCode": "ES",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "custodian": {
+    "name": "Dirección General del Catastro, Ministerio de Hacienda",
+    "isLocalCustodian": false,
+    "localContext": "Ayuntamiento de Gijón urbanism portal was separately discovered; the retained parcel source is the national cadastral authority's municipality-specific INSPIRE dataset."
+  },
+  "discovery": {
+    "englishQuery": "Gijon official cadastral map parcel viewer API Catastro Gijon Ayuntamiento",
+    "nativeQuery": "Gijon catastro visor parcelas mapa API oficial",
+    "urls": [
+      "https://www.catastro.hacienda.gob.es/webinspire/index_eng.html",
+      "https://www.catastro.hacienda.gob.es/webinspire/",
+      "https://cuida.gijon.es/es/directorio/urbanismo",
+      "https://www.sedecatastro.gob.es/"
+    ]
+  },
+  "requests": [
+    {
+      "route": "Official WFS GetCapabilities",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetCapabilities",
+      "outcome": "HTTP 400 HTML error from the public endpoint; no schema or features returned."
+    },
+    {
+      "route": "Official WFS bounded BBOX query",
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&request=getfeature&STOREDQUERY_ID=GetCPByBBOX&srsname=EPSG::4326&bbox=-5.675,43.530,-5.673,43.532",
+      "outcome": "HTTP 400 HTML error; treated as endpoint/request failure, not absence."
+    },
+    {
+      "route": "Official WMS GetCapabilities",
+      "url": "https://ovc.catastro.meh.es/cartografia/INSPIRE/spadgcwms.aspx?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0",
+      "outcome": "HTTP 400 HTML error; no map schema returned."
+    },
+    {
+      "route": "Official municipality ATOM index",
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/52/ES.SDGC.CP.atom_52.xml",
+      "outcome": "Successful XML response; identified municipality 52024-GIJON and its current municipality download."
+    },
+    {
+      "route": "Official Gijón municipality parcel download",
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/52/52024-GIJON/A.ES.SDGC.CP.52024.zip",
+      "outcome": "Successful 16 MiB ZIP; cadastralparcel GML reports 43,927 matched / 43,927 returned and source CRS EPSG:25830."
+    },
+    {
+      "route": "Bounded local extraction around exact WUP point",
+      "outcome": "Spatially bounded source-coordinate window around [43.5312901045394, -5.67394902085189] yielded 3 parcel polygons; transformed to EPSG:4326 and reduced properties to native IDs only."
+    }
+  ],
+  "schema": {
+    "sourceFeatureType": "cp:CadastralParcel",
+    "nativeFieldsObserved": ["gml:id", "cp:areaValue", "cp:beginLifespanVersion", "cp:geometry", "cp:inspireId/localId", "cp:nationalCadastralReference", "cp:referencePoint"],
+    "safeFieldAllowlist": ["nationalCadastralReference", "inspireId.localId", "geometry"],
+    "retainedIdentityRule": "GeoJSON properties contain exactly {id: <nationalCadastralReference>}; source field mapping is retained here, not in GeoJSON.",
+    "unsafeFieldsExcluded": ["owner", "titleholder", "address", "contact", "tax", "valuation", "protected data"]
+  },
+  "sample": {
+    "file": "gijon-parcel-sample.geojson",
+    "count": 3,
+    "ids": ["2936301TP8233N", "2938009TP8223N", "3026601TP8232N"],
+    "sourceCrs": "EPSG:25830",
+    "outputCrs": "CRS84 / EPSG:4326",
+    "provenance": "Selected from the official 52024-GIJON municipality GML using a bounded source-coordinate window; no synthetic row IDs."
+  },
+  "scopeLimits": [
+    "The sample is not a citywide export and does not establish parcel coverage at every point.",
+    "Exact-point hit behavior was not used as an absence test.",
+    "Official WFS/WMS service endpoints returned HTTP 400 during this attempt, so the successful evidence path was the official municipality ATOM download.",
+    "Runtime readiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "Current municipality ZIP metadata and geometry were usable; endpoint error semantics, update cadence beyond the recorded timestamp, and adapter operational integration remain unverified."
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS topology audit of bounded adapter-returned provider rows projected into a local metric CRS; no geometry repair. Counts describe the tested viewport only.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32636",
+  "featureCount": 6,
+  "validNonemptyCount": 6,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryGroups": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "positiveAreaOverlapPairCountAbove0_01M2": 0,
+  "areaM2": {
+    "min": 5581.555772122461,
+    "median": 18052.592312925026,
+    "max": 237777.7427323204
+  },
+  "features": [
+    {
+      "id": "IL-EAST-JERUSALEM-ROW-786512",
+      "areaM2": 237777.7427323204,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-EAST-JERUSALEM-ROW-786513",
+      "areaM2": 15234.345606162658,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-EAST-JERUSALEM-ROW-786514",
+      "areaM2": 5581.555772122461,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-EAST-JERUSALEM-ROW-786737",
+      "areaM2": 20870.839019687395,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-EAST-JERUSALEM-ROW-786740",
+      "areaM2": 111292.54944752484,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    },
+    {
+      "id": "IL-EAST-JERUSALEM-ROW-786738",
+      "areaM2": 13032.44243905439,
+      "valid": true,
+      "empty": false,
+      "geometryType": "MultiPolygon",
+      "parts": 1
+    }
+  ]
+}

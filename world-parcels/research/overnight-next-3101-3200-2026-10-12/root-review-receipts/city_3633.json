@@ -1,0 +1,24 @@
+{
+  "taskId": "city:3633",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-3633-pyay.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pyay-service-review.json",
+    "tmp/valhalla-parcel-research/3633/slrd.html",
+    "tmp/valhalla-parcel-research/3633/pyay-landuse.html"
+  ],
+  "checkedAt": "2026-10-12T04:30:30.422Z",
+  "finding": "Pyay, Myanmar, WUP rank 3165, point [18.8191525989087,95.236771752403], 189886 persons matches the immutable ranked roster and pending queue. English and Burmese searches with result URLs were executed. The saved SLRD response is a Cloudflare challenge, while the saved first-party Pyay Land Use Division HTML is an office page without a parcel-vector response. National record custody is supported, but anonymous Pyay geometry, stable native ID, schema and CRS remain unverified; the access wall is not citywide absence.",
+  "geometrySamplesRetained": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

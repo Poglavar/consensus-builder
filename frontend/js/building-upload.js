@@ -1,16 +1,12 @@
 // Building upload modal: lets a proposer upload a glTF 2.0 (.glb/.gltf) building model,
 // preview it in a three.js scene, and turn its footprint + height into a single-building
-// proposal (via window.createSingleBuildingFromUpload). The mesh is shown for review here;
-// the proposal itself stores the standard footprint box that flows through the building pipeline.
+// placement (via window.createSingleBuildingFromUpload). Review the asset here, then place
+// its editable footprint on the main map; the saved model reference supplies its 3D mesh.
 
 (function () {
-    const THREE_VERSION = '0.147.0';
-    const CDN = (path) => `https://cdn.jsdelivr.net/npm/three@${THREE_VERSION}/${path}`;
-
     let modalEl = null;
     let onConfirmCb = null;
     let currentContext = null;
-    let threeLoadPromise = null;
 
     // Preview scene state
     const preview = {
@@ -32,44 +28,29 @@
     function t(key, fallback, params = {}) {
         const api = (typeof window !== 'undefined' && window.i18n) ? window.i18n : null;
         if (api && typeof api.t === 'function') {
-            try { return api.t(key, params); } catch (_) { /* fall through */ }
+            try { const translated = api.t(key, params); if (translated !== key) return translated; } catch (_) { /* fall through */ }
         }
         return String(fallback).replace(/\{\{\s*(\w+)\s*\}\}/g, (m, k) =>
             Object.prototype.hasOwnProperty.call(params, k) ? params[k] : m);
     }
 
-    function loadScript(src) {
-        return new Promise((resolve) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.head.appendChild(script);
-        });
-    }
-
-    // Ensure THREE core, OrbitControls and GLTFLoader are present (matches the rest of the app's CDN pattern).
+    // THREE (incl. OrbitControls + GLTFLoader) comes from index.html's ESM bootstrap — never
+    // script-load a second copy here, an old UMD build would clobber the r184 global.
     async function ensureThree() {
-        if (typeof THREE === 'undefined') {
-            if (!threeLoadPromise) threeLoadPromise = loadScript(CDN('build/three.min.js'));
-            await threeLoadPromise;
+        if (typeof window.THREE === 'undefined' && typeof window.whenThreeReady === 'function') {
+            await window.whenThreeReady();
         }
-        if (typeof THREE === 'undefined') return false;
-        if (typeof THREE.OrbitControls === 'undefined') {
-            await loadScript(CDN('examples/js/controls/OrbitControls.js'));
-        }
-        if (typeof THREE.GLTFLoader === 'undefined') {
-            await loadScript(CDN('examples/js/loaders/GLTFLoader.js'));
-        }
-        return typeof THREE !== 'undefined' && typeof THREE.GLTFLoader !== 'undefined';
+        const ok = typeof window.THREE !== 'undefined' && typeof window.THREE.GLTFLoader !== 'undefined';
+        if (!ok) console.warn('[building-upload] THREE bootstrap missing — 3D preview unavailable');
+        return ok;
     }
 
     function setStatus(text, isError = false) {
         const el = modalEl && modalEl.querySelector('#building-upload-status');
         if (!el) return;
         el.textContent = text || '';
-        el.style.color = isError ? '#b91c1c' : '#4b5563';
+        if (isError) el.dataset.tone = 'error';
+        else delete el.dataset.tone;
     }
 
     function setConfirmEnabled(enabled) {
@@ -91,29 +72,28 @@
 
         const modal = document.createElement('div');
         modal.id = 'building-upload-modal';
-        modal.style.cssText = 'position:fixed; inset:0; width:100%; height:100%; background:rgba(0,0,0,0.5);'
-            + ' z-index:12070; display:flex; align-items:center; justify-content:center;';
+        // The standard dialog (.cb-dialog, primitives.css); its contents are styled in css/modals.css.
+        modal.className = 'cb-dialog-overlay';
 
         modal.innerHTML = `
-            <div id="building-upload-container" style="background:#fff; border-radius:12px; width:min(560px, 94vw);
-                max-height:92vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,0.3);">
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid #eee;">
-                    <h2 style="margin:0; font-size:18px;">${text.title}</h2>
+            <div id="building-upload-container" class="cb-dialog cb-dialog--md building-upload-dialog" role="dialog" aria-modal="true" aria-labelledby="building-upload-title">
+                <div class="cb-dialog__header">
+                    <h2 id="building-upload-title" class="cb-dialog__title">${text.title}</h2>
                     <button id="building-upload-close" type="button" class="close-circle-btn close-circle-btn--lg" aria-label="${text.closeLabel}">×</button>
                 </div>
-                <div style="padding:16px 18px; overflow:auto;">
-                    <label style="display:inline-flex; align-items:center; gap:10px; cursor:pointer; margin-bottom:10px;">
-                        <span class="btn btn-light" style="padding:8px 14px;">${text.chooseFile}</span>
-                        <input id="building-upload-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" style="display:none;">
+                <div class="cb-dialog__body">
+                    <label class="building-upload-file">
+                        <span class="btn">${text.chooseFile}</span>
+                        <input id="building-upload-file" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" hidden>
                     </label>
-                    <p style="font-size:12px; color:#6b7280; margin:0 0 12px;">${text.hint}</p>
-                    <div style="font-size:12px; font-weight:600; color:#374151; margin-bottom:6px;">${text.previewLabel}</div>
-                    <div id="building-upload-3d" style="width:100%; height:300px; background:#eef2f7; border-radius:8px; overflow:hidden;"></div>
-                    <div id="building-upload-status" style="font-size:13px; color:#4b5563; margin-top:10px; min-height:18px;">${text.noFile}</div>
+                    <p class="building-upload-hint">${text.hint}</p>
+                    <div class="cb-kicker">${text.previewLabel}</div>
+                    <div id="building-upload-3d" class="building-upload-preview"></div>
+                    <div id="building-upload-status" class="building-upload-status" role="status" aria-live="polite">${text.noFile}</div>
                 </div>
-                <div style="display:flex; gap:10px; justify-content:flex-end; padding:12px 18px; border-top:1px solid #eee;">
-                    <button id="building-upload-cancel" type="button" class="btn btn-light">${text.cancel}</button>
-                    <button id="building-upload-confirm" type="button" class="btn btn-proposal" disabled>${text.confirm}</button>
+                <div class="cb-dialog__footer">
+                    <button id="building-upload-cancel" type="button" class="btn">${text.cancel}</button>
+                    <button id="building-upload-confirm" type="button" class="btn btn-primary" disabled>${text.confirm}</button>
                 </div>
             </div>
         `;
@@ -123,7 +103,7 @@
 
         modal.querySelector('#building-upload-close').addEventListener('click', close);
         modal.querySelector('#building-upload-cancel').addEventListener('click', close);
-        modal.querySelector('#building-upload-confirm').addEventListener('click', confirm);
+        modal.querySelector('#building-upload-confirm').addEventListener('click', confirmUpload);
         modal.querySelector('#building-upload-file').addEventListener('change', onFileChosen);
         modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
 
@@ -146,8 +126,9 @@
         renderer.setSize(w, h);
         preview.container.appendChild(renderer.domElement);
 
-        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-        const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+        // ×π: three r155+ dropped the implicit π factor legacy lighting applied.
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7 * Math.PI));
+        const dir = new THREE.DirectionalLight(0xffffff, 0.8 * Math.PI);
         dir.position.set(40, 60, 25);
         scene.add(dir);
         scene.add(new THREE.GridHelper(120, 24, 0xbac4d0, 0xd5dce5));
@@ -313,7 +294,8 @@
         return json.modelUrl;
     }
 
-    async function confirm() {
+    // Named so it does not shadow the browser's own confirm().
+    async function confirmUpload() {
         if (!loadedDims || !currentContext || !loadedFile) return;
         if (typeof window.createSingleBuildingFromUpload !== 'function') {
             setStatus('Single building pipeline is unavailable.', true);
@@ -335,17 +317,16 @@
 
         const created = window.createSingleBuildingFromUpload({
             blockName: currentContext.blockName,
-            parcels: currentContext.parcels,
+            parcelIds: currentContext.parcelIds,
             width: loadedDims.width,
             length: loadedDims.length,
             height: loadedDims.height,
             modelName: loadedName,
-            modelUrl
+            modelUrl,
+            onConfirm: onConfirmCb
         });
         if (!created) { setConfirmEnabled(true); return; } // single-building.js surfaces its own status
-        const cb = onConfirmCb;
         close();
-        if (typeof cb === 'function') cb();
     }
 
     function disposeScene() {
@@ -374,7 +355,7 @@
         loadedFile = null;
     }
 
-    // context: { parcels: <leaflet layers[]>, blockName: string }
+    // context: { parcelIds: string[], blockName: string }
     function open(context, options = {}) {
         if (modalEl) close();
         currentContext = context || {};

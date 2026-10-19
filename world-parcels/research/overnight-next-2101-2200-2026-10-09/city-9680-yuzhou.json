@@ -1,0 +1,111 @@
+{
+  "cityCode": 9680,
+  "queueRank": 2194,
+  "name": "Yuzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [34.1642778393362, 113.472822554567],
+  "population2025": 265782,
+  "population2025k": 265.782,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yuzhou China official cadastral parcel map GIS land registry Natural Resources Bureau",
+        "result": "First-party discovery located the official Yuzhou government Natural Resources and Planning Bureau page. It describes citywide natural-resource and real-estate registration/cadastral responsibilities, but no public parcel feature service, viewer, or downloadable polygon dataset was found.",
+        "actualResultUrls": [
+          "https://www.yuzhou.gov.cn/yqlj/017001/20201019/675121fb-d32c-4f66-b7d5-d617a1234ff3.html",
+          "https://www.yuzhou.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "禹州市 不动产登记 地籍图 宗地 GIS 自然资源和规划局 官方",
+        "result": "First-party discovery found the Yuzhou Natural Resources and Planning Bureau duties page, a Yuzhou land-use auction notice, and a Yuzhou public-service procedure page. These evidence local cadastral/registration administration and public land parcel identifiers or survey-map paperwork, but no anonymous parcel geometry API or bounded polygon response.",
+        "actualResultUrls": [
+          "https://www.yuzhou.gov.cn/yqlj/017001/20201019/675121fb-d32c-4f66-b7d5-d617a1234ff3.html",
+          "https://www.yuzhou.gov.cn/jczwgkbzhgfhml/031001/031001032/031001032006/031001032006002/20251204/e2b89bb5-1571-458e-a60c-e737659a107b.html",
+          "https://www.yuzhou.gov.cn/jczwgkbzhgfhml/031001/031001032/031001032003/031001032003001/20230828/c2610036-4ecd-4cb5-8dbc-d56203167b80.html"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.yuzhou.gov.cn/yqlj/017001/20201019/675121fb-d32c-4f66-b7d5-d617a1234ff3.html",
+      "publisher": "Yuzhou Municipal Government / Yuzhou Natural Resources and Planning Bureau",
+      "observation": "The official organization page assigns the bureau citywide unified natural-resource and real-estate registration, cadastral investigation, cadastral surveying/dispute handling, registration-result application, and management of a unified registration information platform. This is local custodian evidence, not open parcel geometry."
+    },
+    {
+      "url": "https://www.yuzhou.gov.cn/jczwgkbzhgfhml/031001/031001032/031001032006/031001032006002/20251204/e2b89bb5-1571-458e-a60c-e737659a107b.html",
+      "publisher": "Yuzhou Municipal Government",
+      "observation": "Official 2025 land-use auction notice names the Yuzhou Natural Resources and Planning Bureau as the grantor and lists public land parcel numbers and locations. It points to the Henan online land-rights trading system, not a cadastral polygon service."
+    },
+    {
+      "url": "https://www.yuzhou.gov.cn/jczwgkbzhgfhml/031001/031001032/031001032003/031001032003001/20230828/c2610036-4ecd-4cb5-8dbc-d56203167b80.html",
+      "publisher": "Yuzhou Municipal Government",
+      "observation": "Official procedure page refers to cadastral survey reports and survey boundary maps and gives the Yuzhou government-service real-estate counter. It does not expose a public map/API or safe anonymous parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-11T01:08:03Z",
+      "method": "GET via curl with normal TLS verification",
+      "url": "https://www.yuzhou.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official homepage loaded. Inspected HTML links and scripts; no cadastral parcel viewer, feature service, WMS/WMTS, ArcGIS endpoint, or parcel geometry API was exposed."
+    },
+    {
+      "checkedAt": "2026-10-11T01:08:05Z",
+      "method": "GET via curl with normal TLS verification",
+      "url": "https://td.hnsggzyjy.henan.gov.cn/",
+      "httpStatus": 403,
+      "outcome": "Henan online land-rights trading host returned HTTP 403. This is an access failure and auction-system route, not evidence of cadastral absence; no credentials, bypass, or retry against protected routes was attempted."
+    },
+    {
+      "checkedAt": "2026-10-11",
+      "method": "GET via official web-search result and page inspection",
+      "url": "https://www.yuzhou.gov.cn/yqlj/017001/20201019/675121fb-d32c-4f66-b7d5-d617a1234ff3.html",
+      "httpStatus": 200,
+      "outcome": "Local bureau organization/duties page loaded; custodian responsibilities verified, but no public parcel viewer/API, schema, CRS, or anonymous ID+geometry response."
+    },
+    {
+      "checkedAt": "2026-10-11",
+      "method": "GET via official web-search result and page inspection",
+      "url": "https://www.yuzhou.gov.cn/jczwgkbzhgfhml/031001/031001032/031001032006/031001032006002/20251204/e2b89bb5-1571-458e-a60c-e737659a107b.html",
+      "httpStatus": 200,
+      "outcome": "Official land auction notice loaded; public parcel numbers/locations and land-trading route observed, but no polygon geometry or cadastral API."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Local Yuzhou Natural Resources and Planning Bureau cadastral and unified real-estate registration responsibilities are explicitly documented by the official municipal government. This does not establish open geometry access.",
+  "registryEvidenceUrls": [
+    "https://www.yuzhou.gov.cn/yqlj/017001/20201019/675121fb-d32c-4f66-b7d5-d617a1234ff3.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_custodian_evidenced_no_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Yuzhou municipal natural-resources, cadastral-survey, and unified real-estate-registration administration as described by official municipal materials.",
+    "verifiedOpenScope": "No city-bounded anonymous parcel polygon response or public cadastral feature service was verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only", "geometry", "source URL", "CRS and request provenance"],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No safe anonymous official parcel ID+geometry response was obtained; this research packet does not qualify runtime admission."
+  },
+  "remainingUncertainty": "The local custodian and cadastral workflow are evidenced, but the public parcel viewer/API, schema, CRS, city coverage, and anonymous geometry access remain unknown. The Henan land-trading host returned 403, and the municipal homepage exposed no parcel service configuration. No exact-point parcel test was performed; no coordinate was shifted.",
+  "researchGroup": "asia",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

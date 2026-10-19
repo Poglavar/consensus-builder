@@ -1,858 +1,819 @@
-(function (global) {
+// Network transport for CadastralParcelRepository. No cache and no Leaflet operations live here.
+(function attachCadastralTransport(global) {
     'use strict';
 
-    const DIRECT_PARCEL_FETCH_BATCH_SIZE = 40;
-    const BACKEND_PARCEL_IDS_CHUNK_SIZE = 40;
-    const DIRECT_PARCEL_BACKEND_CHUNK_SIZE = 40; // used for BA-specific smp batching
-    const OSS_PARCEL_WFS_BASE_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
-    const OSS_PUBLIC_ACCESS_TOKEN = global.OSS_PUBLIC_ACCESS_TOKEN || '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
+    const ID_BATCH_SIZE = 40;
+    const OSS_URL = 'https://oss.uredjenazemlja.hr/OssWebServices/wfs';
+    const OSS_TOKEN = global.OSS_PUBLIC_ACCESS_TOKEN || '7effb6395af73ee111123d3d1317471357a1f012d4df977d3ab05ebdc184a46e';
 
-    const cityConfigManager = global.CityConfigManager || null;
-    const parcelFetchConfig = global.ParcelFetchConfig || null;
-
-    // Provide a resilient fetchWithRetry helper if one has not been registered yet.
-    if (typeof global.fetchWithRetry !== 'function') {
+    if (global.ParcelSourceHealth) {
+        global.fetchWithRetry = global.ParcelSourceHealth.createRequester({ fetchImpl: (...args) => (global.fetch || fetch)(...args) });
+    } else if (typeof global.fetchWithRetry !== 'function') {
         global.fetchWithRetry = async function fetchWithRetry(url, options = {}, retries = 3, delay = 1000) {
-            let lastError;
-            for (let attempt = 0; attempt < retries; attempt++) {
+            let failure = null;
+            for (let attempt = 0; attempt < retries; attempt += 1) {
                 try {
                     const response = await fetch(url, options);
-                    if (response && response.ok) {
-                        return response;
-                    }
-                    if (response && response.status >= 400 && response.status < 500) {
-                        lastError = new Error(`Failed to fetch parcel data with client error: ${response.status}`);
-                        break;
-                    }
-                    lastError = new Error(`Server error: ${response ? response.status : 'unknown status'}`);
+                    if (response.ok || response.status === 404) return response;
+                    failure = new Error(`Parcel request failed: HTTP ${response.status}`);
+                    failure.status = response.status;
+                    if (response.status >= 400 && response.status < 500) break;
                 } catch (error) {
-                    lastError = error;
+                    failure = error;
                 }
-                if (attempt < retries - 1) {
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                }
+                if (attempt + 1 < retries) await new Promise(resolve => setTimeout(resolve, delay));
             }
-            throw lastError;
+            throw failure || new Error('Parcel request failed.');
         };
     }
 
-    function chunkArray(values, size) {
-        if (!Array.isArray(values) || !Number.isFinite(size) || size <= 0) {
-            return [];
-        }
-        const chunks = [];
-        for (let i = 0; i < values.length; i += size) {
-            chunks.push(values.slice(i, i + size));
-        }
-        return chunks;
+    function chunks(values, size = ID_BATCH_SIZE) {
+        const result = [];
+        for (let i = 0; i < values.length; i += size) result.push(values.slice(i, i + size));
+        return result;
     }
 
-    function datasetToLatLng(easting, northing) {
-        if (cityConfigManager && typeof cityConfigManager.datasetToLatLng === 'function') {
-            try {
-                const result = cityConfigManager.datasetToLatLng(easting, northing);
-                if (Array.isArray(result) && result.length >= 2 && Number.isFinite(result[0]) && Number.isFinite(result[1])) {
-                    return result;
-                }
-            } catch (_) { /* ignore */ }
-        }
-        if (typeof global.htrs96ToWGS84 === 'function') {
-            return global.htrs96ToWGS84(easting, northing);
-        }
-        return [northing, easting];
-    }
-
-    function getFetchPadding() {
-        if (parcelFetchConfig && typeof parcelFetchConfig.getPadding === 'function') {
-            return parcelFetchConfig.getPadding();
-        }
-        return Number((typeof global !== 'undefined' && global.PARCEL_FETCH_LATLNG_PADDING !== undefined)
-            ? global.PARCEL_FETCH_LATLNG_PADDING
-            : 0.12);
-    }
-
-    const normalizeFeatureParcelId = global.normalizeFeatureParcelId || function (feature) {
-        if (!feature || typeof feature !== 'object') return null;
-        if (typeof global.ensureParcelId === 'function') {
-            return global.ensureParcelId(feature);
-        }
-        const props = feature.properties || {};
-        const id = props.parcelId;
-        if (id !== undefined && id !== null) {
-            props.parcelId = String(id);
-            feature.properties = props;
-            return props.parcelId;
-        }
-        return null;
-    };
-
-    function getFetchGridRadius() {
-        if (parcelFetchConfig && typeof parcelFetchConfig.getGridRadius === 'function') {
-            return parcelFetchConfig.getGridRadius();
-        }
-        return Number((typeof global !== 'undefined' && global.PARCEL_FETCH_GRID_RADIUS !== undefined)
-            ? global.PARCEL_FETCH_GRID_RADIUS
-            : 0);
-    }
-
-    async function fetchParcelData(customBounds) {
-        global._fetchParcelDataInProgress = true;
-        if (global.skipParcelFetchUntilProposalLoaded && !customBounds) {
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Waiting for proposal to load before fetching parcels…');
-            }
-            global._fetchParcelDataInProgress = false;
-            return;
-        }
-        if (global.ParcelsState && global.ParcelsState.setIsFetchingParcels) {
-            global.ParcelsState.setIsFetchingParcels(true);
-        }
-        if (typeof global.updateStatus === 'function') {
-            global.updateStatus('Fetching data...');
-        }
-
-        const cache = global.parcelCache || (global.ParcelsState && global.ParcelsState.getParcelCache && global.ParcelsState.getParcelCache());
-
+    function backendBase() {
         try {
-            const viewBounds = customBounds || global.map?.getBounds();
-            if (!viewBounds) {
-                if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Unable to determine map bounds for parcel fetch.');
-                }
-                return;
-            }
-
-            const latLngPadding = (!customBounds && typeof viewBounds.pad === 'function')
-                ? getFetchPadding()
-                : 0;
-            const boundsForCells = (!customBounds && typeof viewBounds.pad === 'function' && latLngPadding > 0)
-                ? viewBounds.pad(latLngPadding)
-                : viewBounds;
-            const gridRadius = getFetchGridRadius();
-            const requiredCells = global.getRequiredGridCells ? global.getRequiredGridCells(boundsForCells, gridRadius) : new Set();
-
-            // Find missing cells
-            const missingCells = [];
-            for (const cell of requiredCells) {
-                if (!cache?.grid?.has(cell)) {
-                    missingCells.push(cell);
-                }
-            }
-
-            if (missingCells.length === 0) {
-                if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Parcels up to date.');
-                }
-                return;
-            }
-
-            const totalCells = missingCells.length;
-            let completedCells = 0;
-            let totalFeaturesIngested = 0;
-
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(`Fetching data for ${totalCells} new grid cells (0/${totalCells})...`);
-            }
-
-            // Fetch and ingest each cell as it completes (streaming approach)
-            const fetchPromises = missingCells.map(async (cell) => {
-                const [gridEasting, gridNorthing] = cell.split(',').map(Number);
-                const swEasting = gridEasting * cache.gridSize;
-                const swNorthing = gridNorthing * cache.gridSize;
-                const neEasting = (gridEasting + 1) * cache.gridSize;
-                const neNorthing = (gridNorthing + 1) * cache.gridSize;
-                const bbox = `${swEasting},${swNorthing},${neEasting},${neNorthing}`;
-                const swLatLng = datasetToLatLng(swEasting, swNorthing);
-                const neLatLng = datasetToLatLng(neEasting, neNorthing);
-                const latLonBbox = (function () {
-                    const latValues = [swLatLng[0], neLatLng[0]].filter(Number.isFinite);
-                    const lonValues = [swLatLng[1], neLatLng[1]].filter(Number.isFinite);
-                    if (latValues.length < 2 || lonValues.length < 2) return null;
-                    const minLat = Math.min(latValues[0], latValues[1]);
-                    const maxLat = Math.max(latValues[0], latValues[1]);
-                    const minLon = Math.min(lonValues[0], lonValues[1]);
-                    const maxLon = Math.max(lonValues[0], lonValues[1]);
-                    return `${minLon},${minLat},${maxLon},${maxLat}`;
-                })();
-
-                const builder = (typeof global.buildParcelRequestParams === 'function') ? global.buildParcelRequestParams : null;
-                let allFeatures = [];
-                let startIndex = 0;
-                const count = 2000;
-                let more = true;
-                let requestInfo = null;
-
-                while (more) {
-                    const req = builder ? builder(bbox, { count, startIndex, latLonBbox }) : null;
-                    requestInfo = req; // Store for later use
-                    const useParcelBa = req && req.source === 'parcel-ba';
-                    const useParcelBg = req && req.source === 'parcel-bg';
-                    const useParcelCo = req && req.source === 'parcel-co';
-                    const useParcelNyc = req && req.source === 'parcel-nyc';
-                    const disablePagination = req && req.disablePagination;
-                    const url = req ? req.url : (function () {
-                        const baseUrl = OSS_PARCEL_WFS_BASE_URL;
-                        return `${baseUrl}?${new URLSearchParams({
-                            token: OSS_PUBLIC_ACCESS_TOKEN,
-                            service: 'WFS',
-                            version: '2.0.0',
-                            request: 'GetFeature',
-                            outputFormat: 'json',
-                            typeName: 'oss:DKP_CESTICE',
-                            srsName: 'EPSG:3765',
-                            bbox: bbox,
-                            count: String(count),
-                            startIndex: String(startIndex)
-                        }).toString()}`;
-                    })();
-
-                    let data;
-                    if (useParcelBa || useParcelBg || useParcelCo || useParcelNyc) {
-                        const response = await fetch(url);
-                        if (response.status === 404) {
-                            data = { features: [], numberReturned: 0 };
-                            more = false;
-                        } else {
-                            if (!response.ok) {
-                                throw new Error(`Failed fetch ${response.status}`);
-                            }
-                            data = await response.json();
-                        }
-                    } else {
-                        const response = await global.fetchWithRetry(url);
-                        data = await response.json();
-                    }
-
-                    const features = Array.isArray(data.features) ? data.features : [];
-                    allFeatures = allFeatures.concat(features);
-                    const numberReturned = Number(data.numberReturned || features.length);
-                    const numberMatched = Number(data.numberMatched);
-
-                    if (useParcelBg || disablePagination) {
-                        more = false;
-                    } else if (Number.isFinite(numberMatched) && numberMatched > 0) {
-                        more = startIndex + numberReturned < numberMatched && numberReturned > 0;
-                    } else {
-                        more = numberReturned === count && numberReturned > 0;
-                    }
-                    startIndex += numberReturned;
-                }
-
-                // Cache the cell data
-                cache.grid.set(cell, { type: 'FeatureCollection', features: allFeatures });
-
-                // Ingest immediately - no waiting for other cells
-                if (allFeatures.length > 0) {
-                    // Determine if we should skip conversion (backend returns WGS84)
-                    const skipConversion = requestInfo && requestInfo.returnsWGS84 === true;
-                    if (!skipConversion && typeof console !== 'undefined' && console.log) {
-                        console.log('Parcel fetch: converting to WGS84 for cell', cell);
-                    }
-                    await ingestParcelFeatures(allFeatures, { skipConversion, replaceExisting: false });
-                    totalFeaturesIngested += allFeatures.length;
-                }
-
-                completedCells++;
-                if (typeof global.updateStatus === 'function') {
-                    global.updateStatus(`Fetching data for ${totalCells} new grid cells (${completedCells}/${totalCells})...`);
-                }
-            });
-
-            // Wait for all fetches to complete
-            const results = await Promise.allSettled(fetchPromises);
-            results
-                .filter(r => r.status === 'rejected')
-                .forEach(r => console.error('Failed to fetch parcel grid cell:', r.reason));
-
-            if (typeof global.updateStatus === 'function') {
-                global.updateStatus(`Loaded ${totalFeaturesIngested} parcels from ${completedCells} cells.`);
-            }
-
-            // Force a redraw regardless of size change (Leaflet invalidateSize recalculates and repaints even at same size)
-            if (typeof map !== 'undefined' && map && map.invalidateSize && map._loaded) {
-                requestAnimationFrame(() => {
-                    try { map.invalidateSize(); } catch (_) { }
-                });
-                setTimeout(() => {
-                    try { map.invalidateSize(); } catch (_) { }
-                }, 80);
-            }
-
-            // Nudge layout the same way a tiny window resize would, to fix grey map tiles without refetching
-            if (typeof global.dispatchEvent === 'function' && typeof Event !== 'undefined' && map && map._loaded) {
-                const resizeEvent = new Event('resize');
-                requestAnimationFrame(() => {
-                    try { global.dispatchEvent(resizeEvent); } catch (_) { }
-                });
-                setTimeout(() => {
-                    try { global.dispatchEvent(resizeEvent); } catch (_) { }
-                }, 120);
-            }
-        } finally {
-            global._fetchParcelDataInProgress = false;
-            if (global.ParcelsState && global.ParcelsState.setIsFetchingParcels) {
-                global.ParcelsState.setIsFetchingParcels(false);
-            }
-        }
+            const value = typeof global.getBackendBase === 'function' ? global.getBackendBase() : null;
+            if (value) return String(value).replace(/\/$/, '');
+        } catch (_) { }
+        return 'https://api.urbangametheory.xyz';
     }
 
-    function resolveParcelLayerById(parcelId) {
-        if (typeof global.resolveParcelLayerById === 'function' && global.resolveParcelLayerById !== resolveParcelLayerById) {
-            return global.resolveParcelLayerById(parcelId);
-        }
-        return null;
-    }
-
-    async function fetchSingleParcelById(parcelId, options = {}) {
-        const normalizedId = parcelId !== undefined && parcelId !== null ? parcelId.toString() : null;
-        if (!normalizedId) return null;
-
-        const forceRefresh = options.forceRefresh === true;
-        const existing = global.resolveParcelLayerById ? global.resolveParcelLayerById(normalizedId) : null;
-        if (existing && !forceRefresh) {
-            return existing;
-        }
-        if (forceRefresh && existing && typeof global.removeParcelLayerById === 'function') {
-            global.removeParcelLayerById(normalizedId);
-        }
-
-        global.setParcelMergeInProgressState(true);
+    function currentCity() {
         try {
-            const rawFeatures = await fetchParcelFeaturesByIds([normalizedId]);
-            if (!rawFeatures.length) {
-                throw new Error(`Parcel ${normalizedId} could not be fetched from the upstream data source.`);
-            }
-            await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
-            return global.resolveParcelLayerById ? global.resolveParcelLayerById(normalizedId) : null;
-        } finally {
-            global.setParcelMergeInProgressState(false);
-        }
-    }
-
-    async function fetchParcelsByIds(parcelIds, options = {}) {
-        if (!Array.isArray(parcelIds) || parcelIds.length === 0) {
-            return [];
-        }
-        const normalizedIds = parcelIds
-            .map(value => value !== undefined && value !== null ? value.toString() : null)
-            .filter(Boolean);
-        if (!normalizedIds.length) {
-            return [];
-        }
-
-        const forceRefresh = options.forceRefresh === true;
-        const missing = [];
-        normalizedIds.forEach(id => {
-            const existing = global.resolveParcelLayerById ? global.resolveParcelLayerById(id) : null;
-            if (!existing || forceRefresh) {
-                if (forceRefresh && existing && typeof global.removeParcelLayerById === 'function') {
-                    global.removeParcelLayerById(id);
-                }
-                if (!missing.includes(id)) {
-                    missing.push(id);
-                }
-            }
-        });
-
-        if (missing.length) {
-            global.setParcelMergeInProgressState(true);
-            try {
-                const rawFeatures = await fetchParcelFeaturesByIds(missing, {
-                    onProgress: (current, total) => {
-                        if (options && typeof options.onProgress === 'function') {
-                            options.onProgress(current, total);
-                        }
-                    }
-                });
-                if (rawFeatures.length) {
-                    await ingestParcelFeatures(rawFeatures, { replaceExisting: true });
-                }
-            } finally {
-                global.setParcelMergeInProgressState(false);
-            }
-        }
-
-        return normalizedIds.map(id => global.resolveParcelLayerById ? global.resolveParcelLayerById(id) : null).filter(Boolean);
-    }
-
-    async function fetchParcelFeaturesByIds(parcelIds, options = {}) {
-        const normalizedIds = Array.from(new Set(
-            (Array.isArray(parcelIds) ? parcelIds : [])
-                .map(value => value !== undefined && value !== null ? value.toString() : null)
-                .filter(Boolean)
-        ));
-        if (!normalizedIds.length) {
-            return [];
-        }
-
-        const batches = [];
-        for (let i = 0; i < normalizedIds.length; i += DIRECT_PARCEL_FETCH_BATCH_SIZE) {
-            batches.push(normalizedIds.slice(i, i + DIRECT_PARCEL_FETCH_BATCH_SIZE));
-        }
-
-        const collected = [];
-        let processedCount = 0;
-        const totalCount = normalizedIds.length;
-
-        for (const batch of batches) {
-            const features = await requestParcelBatchForCurrentCity(batch);
-            collected.push(...features);
-
-            processedCount += batch.length;
-            if (options && typeof options.onProgress === 'function') {
-                options.onProgress(processedCount, totalCount);
-            }
-        }
-
-        const deduped = [];
-        const seen = new Set();
-        collected.forEach(feature => {
-            const id = normalizeFeatureParcelId(feature);
-            if (!id) {
-                return;
-            }
-            const key = id;
-            if (seen.has(key)) {
-                return;
-            }
-            seen.add(key);
-            deduped.push(feature);
-        });
-        return deduped;
-    }
-
-    function isProdHost() {
-        try {
-            const host = (global.location && global.location.hostname) ? global.location.hostname.toLowerCase() : '';
-            return /urbangametheory\.xyz$/.test(host);
+            return String(typeof global.getCurrentCityId === 'function'
+                ? global.getCurrentCityId()
+                : global.CityConfigManager?.getCurrentCityId?.() || '');
         } catch (_) {
-            return false;
+            return '';
         }
     }
 
-    async function requestParcelBatchForCurrentCity(ids) {
-        const dataSource = typeof global.getCurrentDataSource === 'function' ? global.getCurrentDataSource() : null;
-        const currentCityId = (typeof global.getCurrentCityId === 'function') ? global.getCurrentCityId() : null;
-
-        // City-specific routes first
-        if (currentCityId === 'buenos_aires') {
-            return requestParcelBatchFromParcelBa(ids);
-        }
-
-        if (currentCityId === 'colorado') {
-            return requestParcelBatchFromParcelCo(ids);
-        }
-
-        if (currentCityId === 'ljubljana') {
-            return requestParcelBatchFromParcelLj(ids);
-        }
-
-        if (currentCityId === 'new_york') {
-            return requestParcelBatchFromParcelNyc(ids);
-        }
-
-        // Force backend on production hosts or when data source is backend/localhost
-        const forceBackend = isProdHost() || dataSource === 'api.urbangametheory.xyz' || dataSource === 'localhost';
-        if (forceBackend) {
-            return requestParcelBatchFromBackend(ids);
-        }
-
-        // Fallback to OSS only when explicitly selected
-        if (dataSource === 'oss.uredjenazemlja.hr') {
-            return requestParcelBatchFromOss(ids);
-        }
-
-        // Default to backend
-        return requestParcelBatchFromBackend(ids);
+    function currentSource() {
+        try { return String(global.getCurrentDataSource?.() || ''); } catch (_) { return ''; }
     }
 
-    async function requestParcelBatchFromOss(ids) {
-        if (!Array.isArray(ids) || ids.length === 0) {
-            return [];
+    // The explore city (city-config `parcels.source: 'none'`) has no cadastre: every fetch path
+    // answers "nothing here" instead of asking a parcel service about a place it does not cover.
+    function cityHasParcels(city) {
+        const config = cityConfig(city || currentCity());
+        if (config) return !!config.parcels?.source && config.parcels.source !== 'none';
+        const manager = global.CityConfigManager;
+        return !manager || typeof manager.hasParcelData !== 'function' || manager.hasParcelData();
+    }
+
+    // A session-level ground source the visitor chose when the register could not be loaded (a
+    // register link of their own). It stands in for the network for that city
+    // and nothing else: see parcels/ground-fallback.js.
+    function groundOverride(city) {
+        try {
+            const fallback = global.ParcelGroundFallback;
+            return fallback && typeof fallback.activeSource === 'function' ? fallback.activeSource(city) : null;
+        } catch (_) {
+            return null;
         }
-        const filterXml = buildParcelFilterXml(ids);
+    }
+
+    // Settings → Information names the source behind the parcels in view: the last one that answered.
+    function noteSourceInView(city, override = null, detail = null) {
+        try {
+            const tracker = global.ParcelSourceInView;
+            if (!tracker) return;
+            if (override) {
+                const described = typeof override.describe === 'function' ? override.describe() : null;
+                let host = null;
+                try { host = described?.url ? new URL(described.url).hostname : null; } catch (_) { /* An unreadable URL keeps the kind. */ }
+                tracker.record(city, { source: 'ground-' + (described?.kind || 'fallback') }, host ? { host } : null);
+            } else tracker.record(city, cityConfig(city)?.parcels, detail);
+        } catch (_) { /* Naming the source must never fail a parcel read. */ }
+    }
+
+    // A city whose config says there is no register on record. Distinct from a failed request on
+    // purpose: the fallback screen must never call an outage "no register", or the reverse.
+    function noRegisterError(city) {
+        const settings = cityConfig(city)?.parcels || null;
+        const strategy = String(settings?.strategy || '').toLowerCase();
+        const source = String(settings?.source || '').toLowerCase();
+        if (strategy !== 'none' && source !== 'none') return null;
+        const error = new Error(`No parcel register is on record for ${city}.`);
+        error.code = 'no-register';
+        return error;
+    }
+
+    function cityConfig(city) {
+        try {
+            const manager = global.CityConfigManager;
+            const configured = manager?.getCityConfig?.(city);
+            if (configured) return configured;
+            const configs = manager?.getAvailableCities?.() || [];
+            return configs.find(config => String(config?.id || '') === String(city || '')) || null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function roadConfig(city) {
+        const config = cityConfig(city);
+        if (config) return config.curatedRoads || null;
+        try {
+            return String(city || '') === currentCity()
+                ? global.CityConfigManager?.getCuratedRoadsConfig?.() || null
+                : null;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function normalizeFeatureId(feature) {
+        const props = feature && feature.properties || {};
+        let value = props.parcelId ?? props.parcel_id ?? props.PARCEL_ID ?? props.id;
+        if ((value === undefined || value === null || value === '')
+            && props.maticni_broj_ko !== undefined && props.broj_cestice !== undefined) {
+            value = `HR-${props.maticni_broj_ko}-${props.broj_cestice}`;
+        }
+        if (value === undefined || value === null || String(value).trim() === '') return '';
+        props.parcelId = String(value).trim();
+        props.id = props.parcelId;
+        feature.properties = props;
+        return props.parcelId;
+    }
+
+    function escapeXmlValue(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;');
+    }
+
+    function buildParcelFilterXml(ids) {
+        const clauses = Array.from(ids || []).map(String).filter(Boolean)
+            .map(id => `<PropertyIsEqualTo><PropertyName>parcel_id</PropertyName><Literal>${escapeXmlValue(id)}</Literal></PropertyIsEqualTo>`);
+        if (!clauses.length) return '';
+        return clauses.length === 1
+            ? `<Filter>${clauses[0]}</Filter>`
+            : `<Filter><Or>${clauses.join('')}</Or></Filter>`;
+    }
+
+    async function responseJson(url, options = {}, requestOptions = {}) {
+        const response = await global.fetchWithRetry(url, options, requestOptions.retries || 3, requestOptions.delay || 600);
+        if (response.status === 404 && requestOptions.notFoundIsEmpty === true) return { __absent: true, features: [] };
+        if (!response.ok) {
+            const error = new Error(`Parcel request failed: HTTP ${response.status}`);
+            error.status = response.status;
+            throw error;
+        }
+        try {
+            return await response.json();
+        } catch (error) {
+            // A new error, not a rewritten one: a body read that fails mid-stream throws a
+            // DOMException, whose message is read-only, and assigning to it threw a TypeError that
+            // hid the real reason. The name (AbortError, SyntaxError, …) carries over for the
+            // failure classifiers (parcels/source-health.js).
+            const wrapped = new Error(`Parcel response could not be read as JSON: ${error?.message || error}`, { cause: error });
+            if (error?.name) wrapped.name = error.name;
+            throw wrapped;
+        }
+    }
+
+    async function requestBackendIds(ids) {
+        const features = [];
+        for (const batch of chunks(ids)) {
+            const url = `${backendBase()}/parcels/parcelIds?${new URLSearchParams({ ids: batch.join(',') })}`;
+            const payload = await responseJson(url, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+            if (!Array.isArray(payload.features)) throw new Error('Backend parcelIds response has no features array.');
+            features.push(...payload.features);
+        }
+        return features;
+    }
+
+    // Croatian cities ('oss-wfs') read parcels from our server's copy of the DGU register; when our
+    // server cannot answer, the browser reads DGU's public WFS itself (parcels/dgu-live.js), so the
+    // map works with our server down. Ownership comes only from our server and is absent then.
+    let dguLiveReader = null;
+    let dguLiveAnnounced = false;
+    function readsDguRegister(city) {
+        return cityConfig(city || currentCity())?.parcels?.source === 'oss-wfs';
+    }
+
+    function dguLive() {
+        if (dguLiveReader) return dguLiveReader;
+        const api = global.DguLiveCadastre;
+        if (!api || typeof global.convertGeoJSON !== 'function' || !global.proj4 || !global.turf) {
+            throw new Error('The direct DGU cadastre reader is unavailable.');
+        }
+        const toDataset = (lon, lat) => global.proj4('EPSG:4326', 'EPSG:3765', [lon, lat]);
+        dguLiveReader = api.createDguLive({
+            requestJson: url => responseJson(url, { headers: { Accept: 'application/json' } }),
+            toWgs84: collection => global.convertGeoJSON(collection, { sourceSrid: 'EPSG:3765' }),
+            // The corners of a WGS84 box, padded 2 m: a TM grid bends meridians by far less over a footprint.
+            toDatasetBox: ([w, s, e, n]) => {
+                const corners = [toDataset(w, s), toDataset(e, s), toDataset(e, n), toDataset(w, n)];
+                const xs = corners.map(c => c[0]), ys = corners.map(c => c[1]);
+                return [Math.min(...xs) - 2, Math.min(...ys) - 2, Math.max(...xs) + 2, Math.max(...ys) + 2].join(',');
+            },
+            turf: global.turf
+        });
+        return dguLiveReader;
+    }
+
+    // Runs `fromServer`; when our server fails, answers from DGU with `fromDgu` instead. A DGU
+    // failure as well rethrows the server's error, which is what the visitor's fallback screen describes.
+    async function serverOrDgu(city, what, fromServer, fromDgu, signal) {
+        try {
+            return await fromServer();
+        } catch (error) {
+            const api = global.DguLiveCadastre;
+            if (!city || !readsDguRegister(city) || !api || !api.shouldFallBack(error, signal)) throw error;
+            console.warn(`[${new Date().toISOString()}] [ParcelFetch] our server failed ${what} (${error && error.message}); reading DGU directly`);
+            try {
+                const answer = await fromDgu();
+                noteSourceInView(city, null, { liveHost: api.HOST });
+                if (!dguLiveAnnounced) {
+                    dguLiveAnnounced = true;
+                    global.updateStatus?.(statusText('parcels_read_from_dgu',
+                        'This site\'s server is not answering: parcels are read directly from the state cadastre (DGU), without ownership.'));
+                }
+                return answer;
+            } catch (dguError) {
+                console.error(`[${new Date().toISOString()}] [ParcelFetch] DGU failed ${what} too: ${dguError && dguError.message}`);
+                throw error;
+            }
+        }
+    }
+
+    async function requestOneByOne(ids, route, parameter) {
+        const results = await Promise.all(ids.map(async id => {
+            const url = `${backendBase()}/${route}?${new URLSearchParams({ [parameter]: id })}`;
+            const payload = await responseJson(url, { headers: { Accept: 'application/json' } }, { notFoundIsEmpty: true });
+            if (payload.__absent) return [];
+            if (!Array.isArray(payload.features)) throw new Error(`${route} response has no features array.`);
+            return payload.features;
+        }));
+        return results.flat();
+    }
+
+    async function requestOssIds(ids) {
         const params = new URLSearchParams({
+            token: OSS_TOKEN,
             service: 'WFS',
             version: '2.0.0',
             request: 'GetFeature',
             outputFormat: 'json',
             typeName: 'oss:DKP_CESTICE',
-            srsName: 'EPSG:3765'
+            srsName: 'EPSG:3765',
+            FILTER: buildParcelFilterXml(ids)
         });
-        if (OSS_PUBLIC_ACCESS_TOKEN) {
-            params.set('token', OSS_PUBLIC_ACCESS_TOKEN);
+        const payload = await responseJson(`${OSS_URL}?${params}`, { headers: { Accept: 'application/json' } });
+        if (!Array.isArray(payload.features)) throw new Error('OSS parcel response has no features array.');
+        return payload.features;
+    }
+
+    async function fetchByIds(parcelIds, options = {}) {
+        const ids = Array.from(new Set(Array.from(parcelIds || []).map(String).filter(Boolean)));
+        const city = String(options.city || currentCity());
+        const override = groundOverride(city);
+        if (!ids.length || (!override && !cityHasParcels(city))) return { status: 'ready', complete: true, features: [], absentIds: ids, returnsWGS84: true };
+        const source = currentSource();
+        const provider = cityConfig(city)?.parcels;
+        let features;
+        let returnsWGS84 = true;
+        let sourceSrid = null;
+        const importedIdParameters = { 'parcel-ba': 'smp', 'parcel-bg': 'parcel_id', 'parcel-lj': 'parcel_id', 'parcel-nyc': 'parcel_id' };
+        if (override) {
+            const answer = await override.fetchByIds(ids);
+            features = Array.isArray(answer?.features) ? answer.features : [];
+            returnsWGS84 = answer?.returnsWGS84 !== false;
+            sourceSrid = answer?.sourceSrid || (returnsWGS84 ? 'EPSG:4326' : null);
+        } else if (provider?.source === 'parcel-source') {
+            features = [];
+            // Slow providers use smaller browser requests as well as smaller upstream batches,
+            // so one exact-ID call can finish within the unchanged request deadline.
+            const batchSize = provider.idBatchSize ?? ID_BATCH_SIZE;
+            if (!Number.isSafeInteger(batchSize) || batchSize < 1 || batchSize > ID_BATCH_SIZE) {
+                throw new Error('Invalid parcel source ID batch size.');
+            }
+            // An ID saved under a source the city used before loads from that source: the longest
+            // matching prefix, the current source's included, picks it.
+            const sources = [{ sourceId: provider.sourceId, idPrefix: provider.idPrefix || '' }, ...(provider.historicalSources || [])];
+            const sourceFor = id => sources.filter(row => id.startsWith(row.idPrefix))
+                .sort((a, b) => b.idPrefix.length - a.idPrefix.length)[0]?.sourceId || provider.sourceId;
+            const groups = new Map();
+            ids.forEach(id => { const sourceId = sourceFor(id); if (!groups.has(sourceId)) groups.set(sourceId, []); groups.get(sourceId).push(id); });
+            for (const [sourceId, batch] of [...groups].flatMap(([sourceId, group]) => chunks(group, batchSize).map(part => [sourceId, part]))) {
+                if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+                const payload = await global.BrowserParcelSources.queryIds(sourceId, batch, { city });
+                if (payload.complete !== true || !Array.isArray(payload.features) || !Array.isArray(payload.absentIds)) {
+                    throw new Error('Parcel source returned an incomplete ID response.');
+                }
+                const accounted = new Set([...payload.features.map(normalizeFeatureId), ...payload.absentIds]);
+                if (batch.some(id => !accounted.has(id))) throw new Error('Parcel source omitted requested IDs.');
+                features.push(...payload.features);
+            }
+        } else if (importedIdParameters[provider?.source]) {
+            features = await requestOneByOne(ids, provider.source, importedIdParameters[provider.source]);
+        } else if (source === 'oss.uredjenazemlja.hr') {
+            features = await requestOssIds(ids);
+            returnsWGS84 = false;
+            sourceSrid = 'EPSG:3765';
+        } else {
+            const viaDgu = { value: false };
+            features = await serverOrDgu(city, `for ${ids.length} parcel ids`, () => requestBackendIds(ids),
+                async () => { viaDgu.value = true; return dguLive().fetchIds(ids); }, options.signal);
+            if (viaDgu.value) {
+                returnsWGS84 = true;
+                sourceSrid = 'EPSG:4326';
+            }
         }
-        if (filterXml) {
-            params.set('FILTER', filterXml);
+
+        const byId = new Map();
+        features.forEach(feature => {
+            const id = normalizeFeatureId(feature);
+            if (id && !byId.has(id)) byId.set(id, feature);
+        });
+        const absentIds = ids.filter(id => !byId.has(id));
+        options.onProgress?.({ done: ids.length, total: ids.length });
+        return {
+            status: 'ready',
+            complete: true,
+            features: Array.from(byId.values()),
+            absentIds,
+            returnsWGS84,
+            sourceSrid: sourceSrid || (returnsWGS84 ? 'EPSG:4326' : null)
+        };
+    }
+
+    async function fetchPoint(point, options = {}) {
+        const city = String(options.city || currentCity());
+        const provider = cityConfig(city)?.parcels;
+        if (provider?.strategy !== 'point' || provider.source !== 'parcel-source') throw new Error('Parcel point lookup is unavailable.');
+        if (!Array.isArray(point) || point.length !== 2 || !point.every(Number.isFinite)
+            || Math.abs(point[0]) > 180 || Math.abs(point[1]) > 90) throw new Error('Invalid parcel lookup point.');
+        if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+        const payload = await global.BrowserParcelSources.queryPoint(provider.sourceId, point, { city });
+        if (payload.complete !== true || payload.queryType !== 'point' || payload.sourceId !== provider.sourceId || !Array.isArray(payload.features)) {
+            throw new Error('Parcel source returned an incomplete point response.');
         }
-        const url = `${OSS_PARCEL_WFS_BASE_URL}?${params.toString()}`;
-        const response = await global.fetchWithRetry(url, { headers: { 'Accept': 'application/json' } }, 2, 800);
-        if (!response || !response.ok) {
-            console.warn('requestParcelBatchFromOss: non-200 response', response && response.status);
-            return [];
+        noteSourceInView(city);
+        return { status: 'ready', complete: true, queryType: 'point', features: payload.features, absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
+    }
+
+    function datasetToLatLng(easting, northing, city) {
+        const manager = global.CityConfigManager;
+        if (manager && typeof manager.datasetToLatLng === 'function') {
+            const result = manager.datasetToLatLng(easting, northing, city);
+            if (Array.isArray(result) && result.length >= 2 && result.every(Number.isFinite)) return result;
         }
-        const contentType = response.headers ? response.headers.get('content-type') : null;
+        if (typeof global.datasetToWgs84 === 'function') {
+            const result = global.datasetToWgs84(easting, northing);
+            if (Array.isArray(result) && result.length >= 2 && result.every(Number.isFinite)) return result;
+        }
+        throw new Error('Dataset-to-WGS84 conversion is unavailable.');
+    }
+
+    // A grid cell's dataset bbox string and its WGS84 [west, south, east, north] box.
+    function cellBoxes(cell, gridSize, city) {
+        if (!(gridSize > 0)) throw new Error('Parcel grid size is unavailable.');
+        const [gridE, gridN] = String(cell).split(',').map(Number);
+        if (![gridE, gridN].every(Number.isFinite)) throw new Error(`Invalid parcel grid key: ${cell}`);
+        const swE = gridE * gridSize;
+        const swN = gridN * gridSize;
+        const neE = (gridE + 1) * gridSize;
+        const neN = (gridN + 1) * gridSize;
+        const sw = datasetToLatLng(swE, swN, city);
+        const ne = datasetToLatLng(neE, neN, city);
+        return { bbox: `${swE},${swN},${neE},${neN}`,
+            latLon: [Math.min(sw[1], ne[1]), Math.min(sw[0], ne[0]), Math.max(sw[1], ne[1]), Math.max(sw[0], ne[0])] };
+    }
+
+    async function fetchCell(cell, context = {}) {
+        const { bbox, latLon } = cellBoxes(cell, Number(context.gridSize), context.city);
+        const latLonBbox = latLon.join(',');
+        const override = groundOverride(context.city);
+        if (override) {
+            const answer = await override.fetchCell({ cell: String(cell), bbox, latLonBbox, city: context.city });
+            const features = Array.isArray(answer?.features) ? answer.features : [];
+            noteSourceInView(context.city || currentCity(), override);
+            const returnsWGS84 = answer?.returnsWGS84 !== false;
+            return { features, returnsWGS84, sourceSrid: answer?.sourceSrid || (returnsWGS84 ? 'EPSG:4326' : null) };
+        }
+        const absent = noRegisterError(context.city);
+        if (absent) throw absent;
+        const provider = cityConfig(context.city || currentCity())?.parcels;
+        if (provider?.source === 'parcel-source') {
+            if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+            const payload = await global.BrowserParcelSources.queryBounds(provider.sourceId, latLonBbox.split(',').map(Number), {
+                city: context.city, ...(context.signal ? { signal: context.signal } : {}),
+                ...(typeof context.onProgress === 'function' ? { onProgress: context.onProgress } : {})
+            });
+            if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
+            noteSourceInView(context.city || currentCity());
+            return { features: payload.features, returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326' };
+        }
+        if (readsDguRegister(context.city)) {
+            let fromDgu = false;
+            const answer = await serverOrDgu(context.city || currentCity(), `for cell ${cell}`,
+                () => fetchCellPages(cell, bbox, latLonBbox, context),
+                async () => { fromDgu = true; return { features: await dguLive().fetchBbox(bbox), returnsWGS84: true, sourceSrid: 'EPSG:4326' }; },
+                context.signal);
+            if (!fromDgu) noteSourceInView(context.city || currentCity());
+            return answer;
+        }
+        const answer = await fetchCellPages(cell, bbox, latLonBbox, context);
+        noteSourceInView(context.city || currentCity());
+        return answer;
+    }
+
+    // A cell's parcels from the city's configured source, page by page.
+    async function fetchCellPages(cell, bbox, latLonBbox, context) {
+        const builder = context.builder;
+        const count = 2000;
+        let startIndex = 0;
+        let more = true;
+        let returnsWGS84 = false;
+        let pageMode = null;
+        let sourceSrid = null;
+        const features = [];
+        while (more) {
+            const request = builder ? builder(bbox, { count, startIndex, latLonBbox, city: context.city }) : null;
+            if (builder && !request) throw new Error('Parcel source is unavailable for this city.');
+            const pageReturnsWGS84 = request ? request.returnsWGS84 === true : false;
+            returnsWGS84 = pageReturnsWGS84;
+            const pageSrid = request?.sourceSrid || (returnsWGS84 ? 'EPSG:4326' : (request?.isOSS || !request ? 'EPSG:3765' : null));
+            if (startIndex > 0 && (sourceSrid !== pageSrid || pageMode !== pageReturnsWGS84)) {
+                throw new Error('Parcel bounds response mixed source coordinate systems.');
+            }
+            pageMode = pageReturnsWGS84;
+            sourceSrid = pageSrid;
+            const url = request ? request.url : `${OSS_URL}?${new URLSearchParams({
+                token: OSS_TOKEN,
+                service: 'WFS',
+                version: '2.0.0',
+                request: 'GetFeature',
+                outputFormat: 'json',
+                typeName: 'oss:DKP_CESTICE',
+                srsName: 'EPSG:3765',
+                bbox,
+                count: String(count),
+                startIndex: String(startIndex)
+            })}`;
+            const payload = await responseJson(url, {}, { notFoundIsEmpty: request?.source !== 'parcel-source' });
+            if (request?.completeResponse && (payload.complete !== true || !Array.isArray(payload.features))) {
+                throw new Error('Parcel source returned an incomplete viewport response.');
+            }
+            const page = Array.isArray(payload.features) ? payload.features : [];
+            features.push(...page);
+            const returned = Number(payload.numberReturned ?? page.length);
+            const matched = Number(payload.numberMatched);
+            if (request?.disablePagination || request?.source === 'parcel-bg' || payload.__absent) more = false;
+            else if (Number.isFinite(matched) && matched >= 0) more = returned > 0 && startIndex + returned < matched;
+            else more = returned === count && returned > 0;
+            startIndex += returned;
+        }
+        return { features, returnsWGS84, sourceSrid };
+    }
+
+    // Sources whose per-query cost is shared overlap context are queried in blocks of cells. HMLR
+    // re-read and re-resolved about 50 context parcels per 0.001-degree cell to publish about 8; a
+    // measured Oxford view took 9.3 s per cell and 1.6 s in 5x5 blocks, with identical cells.
+    // GUGiK's collective EGiB WFS answers in about 3 s whatever the size: a 3x3 block of Polish
+    // city-centre cells (75-153 parcels) came back in one 3-4 s page (2026-10-12), where nine cells
+    // took nine such requests.
+    // Other sources stay per cell: their per-query limits have not been measured for larger areas.
+    // HSAC Haryana answers each query in about 1.1 s however small; per-cell reads queued a
+    // 160-cell view for over a minute (2026-10-14), so its district layers read 4x4 blocks.
+    const CELL_BLOCK_SIDE_BY_SOURCE = Object.freeze({ 'gb-hmlr-browser-v1': 5, 'pl-gugik-egib-wfs': 3 });
+    const CELL_BLOCK_SIDE_BY_SOURCE_FAMILY = Object.freeze([[/^in-hr-hsac-[a-z_]+-outlines$/, 4]]);
+
+    function cellBlockSide(options = {}) {
+        const provider = cityConfig(String(options.city || currentCity()))?.parcels;
+        if (provider?.source !== 'parcel-source' || groundOverride(String(options.city || currentCity()))) return 1;
+        return CELL_BLOCK_SIDE_BY_SOURCE[provider.sourceId]
+            || CELL_BLOCK_SIDE_BY_SOURCE_FAMILY.find(([pattern]) => pattern.test(provider.sourceId))?.[1] || 1;
+    }
+
+    function geometryBox(geometry) {
+        const box = [Infinity, Infinity, -Infinity, -Infinity];
+        const visit = value => {
+            if (typeof value?.[0] === 'number') {
+                box[0] = Math.min(box[0], value[0]); box[1] = Math.min(box[1], value[1]);
+                box[2] = Math.max(box[2], value[0]); box[3] = Math.max(box[3], value[1]);
+            } else if (Array.isArray(value)) value.forEach(visit);
+        };
+        visit(geometry?.coordinates);
+        return box;
+    }
+
+    // One source query for several grid cells, answered per cell. Each cell lists the parcels whose
+    // extent overlaps it: a superset of what a per-cell query returns, so no cell misses a parcel.
+    async function fetchCellBlock(_bounds, options = {}) {
+        const city = String(options.city || currentCity());
+        const keys = Array.from(new Set(Array.from(options.keys || []).map(String).filter(Boolean)));
+        if (!keys.length) throw new Error('A cell block needs repository grid keys.');
+        const provider = cityConfig(city)?.parcels;
+        if (provider?.source !== 'parcel-source') throw new Error('Cell blocks are only available for browser parcel sources.');
+        if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+        const gridSize = Number(provider.gridSize ?? global.ParcelsState?.getParcelGridSize?.()
+            ?? global.CityConfigManager?.getParcelGridSize?.() ?? global.PARCELS_GRID_SIZE);
+        const cells = keys.map(key => ({ key, box: cellBoxes(key, gridSize, city).latLon }));
+        const union = cells.reduce((all, { box }) => [Math.min(all[0], box[0]), Math.min(all[1], box[1]),
+            Math.max(all[2], box[2]), Math.max(all[3], box[3])], [Infinity, Infinity, -Infinity, -Infinity]);
+        const payload = await global.BrowserParcelSources.queryBounds(provider.sourceId, union, {
+            city, ...(options.signal ? { signal: options.signal } : {}),
+            ...(typeof options.onProgress === 'function' ? { onProgress: options.onProgress } : {})
+        });
+        if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete viewport response.');
+        noteSourceInView(city);
+        const boxes = payload.features.map(feature => geometryBox(feature.geometry));
+        const meets = (a, b) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+        return { cells: cells.map(({ key, box }) => ({ key, result: { status: 'ready', returnsWGS84: true,
+            sourceSrid: payload.sourceSrid || 'EPSG:4326', absentIds: [],
+            features: payload.features.filter((_, index) => meets(boxes[index], box)) } })) };
+    }
+
+    async function fetchBounds(_bounds, options = {}) {
+        const city = String(options.city || currentCity());
+        if (!cityHasParcels(city) && !groundOverride(city)) return { status: 'ready', features: [], absentIds: [], returnsWGS84: true };
+        const keys = Array.from(new Set(Array.from(options.keys || []).map(String).filter(Boolean)));
+        if (!keys.length) throw new Error('Cadastral bounds transport requires repository grid keys.');
+        if (!groundOverride(city)) {
+            const absent = noRegisterError(city);
+            if (absent) throw absent;
+        }
+        const gridSize = Number(cityConfig(city)?.parcels?.gridSize
+            ?? global.ParcelsState?.getParcelGridSize?.()
+            ?? global.CityConfigManager?.getParcelGridSize?.()
+            ?? global.PARCELS_GRID_SIZE);
+        const builder = typeof global.buildParcelRequestParams === 'function' ? global.buildParcelRequestParams : null;
+        const context = Object.freeze({ city, gridSize, builder, onProgress: options.onProgress, signal: options.signal });
+        const results = [];
+        let done = 0;
+        for (const batch of chunks(keys, 6)) {
+            options.signal?.throwIfAborted();
+            const part = await Promise.all(batch.map(cell => fetchCell(cell, context)));
+            results.push(...part);
+            done += batch.length;
+            options.onProgress?.({ done, total: keys.length });
+        }
+        const modes = new Set(results.map(result => result.returnsWGS84));
+        if (modes.size > 1) throw new Error('Parcel bounds response mixed coordinate systems.');
+        const sourceSrids = new Set(results.map(result => result.sourceSrid || null));
+        if (sourceSrids.size > 1) throw new Error('Parcel bounds response mixed source coordinate systems.');
+        const byId = new Map();
+        results.flatMap(result => result.features).forEach(feature => {
+            const id = normalizeFeatureId(feature);
+            if (id && !byId.has(id)) byId.set(id, feature);
+        });
+        return {
+            status: 'ready',
+            features: Array.from(byId.values()),
+            absentIds: [],
+            returnsWGS84: modes.has(true),
+            sourceSrid: sourceSrids.values().next().value || null
+        };
+    }
+
+    async function fetchUnderGeometry(geometry, options = {}) {
+        const geom = geometry && geometry.type === 'Feature' ? geometry.geometry : geometry;
+        if (!geom || !geom.type) throw new Error('Cadastral footprint geometry is missing.');
+        const parcelsOnly = options.parcelsOnly === true;
+        const provider = cityConfig(options.city || currentCity())?.parcels;
+        if (provider?.source === 'parcel-source') {
+            if (options.srid !== undefined && options.srid !== 4326) throw new Error('Browser parcel geometry must use WGS84.');
+            if (!global.BrowserParcelSources) throw new Error('Browser parcel adapters are unavailable.');
+            const payload = await global.BrowserParcelSources.queryGeometry(provider.sourceId, geom, { city: options.city || currentCity() });
+            if (payload.complete !== true || !Array.isArray(payload.features)) throw new Error('Parcel source returned an incomplete footprint response.');
+            return { status: 'ready', features: payload.features, absentIds: [], returnsWGS84: true, sourceSrid: payload.sourceSrid || 'EPSG:4326',
+                coverage: null, count: payload.features.length, queryMs: null };
+        }
+        const path = '/parcels/under';
+        const city = String(options.city || currentCity());
+        const wgs84 = !options.srid || options.srid === 4326;
+        const payload = await serverOrDgu(wgs84 ? city : null, 'for a footprint', () => responseJson(`${backendBase()}${path}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ geometry: geom, srid: options.srid || 4326, ...(parcelsOnly ? { parcelsOnly: true } : {}) })
+        }), async () => {
+            const answer = await dguLive().fetchUnder(geom, { parcelsOnly });
+            return { features: answer.features, coverage: answer.coverage, count: answer.features.length, sourceSrid: 'EPSG:4326' };
+        }, options.signal);
+        if (!Array.isArray(payload.features)) throw new Error('/parcels/under response has no features array.');
+        return {
+            status: 'ready',
+            features: payload.features,
+            absentIds: [],
+            returnsWGS84: true,
+            sourceSrid: payload.sourceSrid || 'EPSG:4326',
+            coverage: payload.coverage === undefined || payload.coverage === null ? null : Number(payload.coverage),
+            count: Number(payload.count) || payload.features.length,
+            queryMs: Number(payload.queryMs) || null
+        };
+    }
+
+    function boundsArray(bounds) {
+        if (Array.isArray(bounds) && bounds.length >= 4) return bounds.slice(0, 4).map(Number);
+        if (!bounds || typeof bounds.getWest !== 'function') return null;
+        return [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()].map(Number);
+    }
+
+    function supportsRoadIds(options = {}) {
+        const city = String(options.city || currentCity());
+        return Boolean(roadConfig(city)?.url);
+    }
+
+    async function fetchRoadIds(bounds, options = {}) {
+        const city = String(options.city || currentCity());
+        const config = roadConfig(city);
+        const bboxValues = boundsArray(bounds);
+        if (!config?.url || !bboxValues || bboxValues.some(value => !Number.isFinite(value))) {
+            return { status: 'unsupported', ids: [] };
+        }
+        const bbox = bboxValues.join(',');
+        const payload = await responseJson(`${backendBase()}${config.url}?bbox=${encodeURIComponent(bbox)}`, {
+            headers: { Accept: 'application/json' },
+            cache: 'no-store'
+        });
+        if (!Array.isArray(payload.ids)) throw new Error('Road classification response has no ids array.');
+        const ids = payload.ids.map(id => String(id ?? '').trim()).filter(Boolean);
+        options.onProgress?.({ done: ids.length, total: ids.length });
+        return { status: 'ready', ids: Array.from(new Set(ids)) };
+    }
+
+    // A status line through i18n (the status toast is always visible), English when the key is missing.
+    function statusText(key, fallback, params) {
+        const fullKey = `status.messages.${key}`;
+        const text = global.i18n?.t?.(fullKey, params);
+        return text && text !== fullKey ? text : fallback;
+    }
+
+    // The newest whole-view fetch supersedes the previous one. Cells only the older view wanted
+    // are cancelled, including their archive downloads; cells both views want keep loading.
+    let currentViewFetch = null;
+
+    async function fetchParcelData(customBounds) {
+        if (cityConfig(currentCity())?.parcels?.strategy === 'point' && !groundOverride(currentCity())) {
+            global.PointParcelMap?.sync?.();
+            global.updateStatus?.(statusText('tap_parcel_to_load', 'Tap a parcel to load its boundary. Area-wide parcel loading is unavailable.'));
+            return null;
+        }
+        if (!cityHasParcels() && !groundOverride(currentCity())) {
+            global.ParcelGroundFallback?.onGroundUnavailable?.({
+                error: noRegisterError(currentCity()),
+                bounds: customBounds || global.map?.getBounds(),
+                city: currentCity()
+            });
+            return null;
+        }
+        if (global.skipParcelFetchUntilProposalLoaded && !customBounds) {
+            global.updateStatus?.(statusText('waiting_for_proposal_before_parcels', 'Waiting for proposal to load before fetching parcels…'));
+            return null;
+        }
+        const repository = global.CadastralParcelRepository;
+        if (!repository || typeof repository.ensureBounds !== 'function') throw new Error('Cadastral parcel repository is unavailable.');
+        const viewBounds = customBounds || global.map?.getBounds();
+        if (!viewBounds) throw new Error('Unable to determine map bounds for parcel fetch.');
+        const padding = !customBounds && typeof viewBounds.pad === 'function'
+            ? Number(global.ParcelFetchConfig?.getPadding?.() ?? global.PARCEL_FETCH_LATLNG_PADDING ?? 0.12)
+            : 0;
+        const requestedBounds = padding > 0 ? viewBounds.pad(padding) : viewBounds;
+        const view = new AbortController();
+        const superseded = currentViewFetch;
+        currentViewFetch = view;
+        global._fetchParcelDataInProgress = true;
+        global.ParcelsState?.setIsFetchingParcels?.(true);
+        global.updateStatus?.(statusText('checking_cadastral_ground', 'Checking cadastral ground…'));
+        let lastProgressText;
         try {
-            const payload = await response.json();
-            const features = Array.isArray(payload?.features) ? payload.features : [];
-            return features;
-        } catch (err) {
-            // OSS may return XML ExceptionReport when auth/rate issues happen; avoid killing caller.
-            const snippet = await response.text().catch(() => '') || '';
-            console.warn('requestParcelBatchFromOss: failed to parse JSON payload', err, snippet.slice(0, 200));
-            return [];
-        }
-    }
-
-    async function requestParcelBatchFromLocalhost(ids) {
-        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
-        if (!normalizedIds.length) {
-            return [];
-        }
-        const backendBase = (function () {
-            try {
-                if (typeof global.getBackendBase === 'function') {
-                    const base = global.getBackendBase();
-                    if (base && typeof base === 'string') {
-                        return base.replace(/\/$/, '');
+            // ensureBounds joins in-flight cells before its first await, so the older view is
+            // cancelled only after this one has claimed the cells they share.
+            const pending = repository.ensureBounds(requestedBounds, {
+                signal: view.signal,
+                onProgress: detail => {
+                    if (currentViewFetch !== view) return;
+                    const message = global.ParcelSourceProgress?.format(detail, {
+                        language: global.i18n?.getLanguage?.() || 'en',
+                        translate: (key, params) => global.i18n?.t?.(key, params)
+                    });
+                    if (message) {
+                        if (message !== lastProgressText) global.updateStatus?.(message, { transient: true });
+                        lastProgressText = message;
+                    } else if (detail && detail.total) {
+                        const done = detail.done || 0;
+                        global.updateStatus?.(statusText('loading_cadastral_ground', `Loading cadastral ground ${done}/${detail.total}…`, { done, total: detail.total }));
+                        lastProgressText = null;
                     }
                 }
-            } catch (_) { }
-            return 'http://localhost:3000';
-        })();
-
-        const aggregated = [];
-        const hrLikeIds = normalizedIds.filter(id => /^HR-\d+-/.test(id));
-        const fetchOptions = { headers: { 'Accept': 'application/json' }, cache: 'no-cache' };
-        for (const chunk of chunkArray(hrLikeIds, BACKEND_PARCEL_IDS_CHUNK_SIZE)) {
-            const search = new URLSearchParams({ ids: chunk.join(',') });
-            const url = `${backendBase}/parcels/parcelIds?${search.toString()}`;
+            });
+            superseded?.abort();
+            const result = await pending;
+            if (view.signal.aborted) return result;
+            const count = result.features.length;
+            const source = groundOverride(currentCity());
+            // The last cell came from DGU directly (our server down): the completion line says so,
+            // since it replaces the notice serverOrDgu showed.
+            const inView = global.ParcelSourceInView?.latest?.();
+            const viaDgu = !source && inView?.cityId === currentCity() && !!inView?.detail?.liveHost;
+            global.updateStatus?.(result.cached
+                ? statusText('cadastral_ground_already_loaded', 'Cadastral ground already loaded.')
+                : (source
+                    ? statusText('loaded_parcels_from_source', `Loaded ${count} parcels from ${source.label || source.kind}.`, { count, source: source.label || source.kind })
+                    : statusText('loaded_cadastral_parcels', `Loaded ${count} cadastral parcels.`, { count })
+                        + (viaDgu ? ` ${statusText('parcels_read_from_dgu', 'This site\'s server is not answering: parcels are read directly from the state cadastre (DGU), without ownership.')}` : '')));
+            global.ParcelSourceSettings?.clearFailure?.(global);
+            return result;
+        } catch (error) {
+            if (view.signal.aborted) return null;
+            // The visitor sees the register attempted first; only when that fails are they offered
+            // a way on (retry, their own link, satellite boundary recognition, a Schelling plan). The error still
+            // propagates: callers decide what a failed viewport fetch means for them.
             try {
-                const response = await fetch(url, fetchOptions);
-                const isNotModified = response.status === 304;
-                if (!response.ok && !isNotModified) {
-                    console.warn(`parcelIds request failed (localhost): ${response.status}`);
-                    continue;
-                }
-
-                let payload;
-                try {
-                    payload = await response.json();
-                } catch (error) {
-                    if (isNotModified) {
-                        // 304 without a body happens when cache revalidates; force a fresh fetch once.
-                        try {
-                            const retryResponse = await fetch(url, { ...fetchOptions, cache: 'no-store' });
-                            if (!retryResponse.ok) {
-                                console.warn(`parcelIds retry failed (localhost): ${retryResponse.status}`);
-                                continue;
-                            }
-                            payload = await retryResponse.json();
-                        } catch (retryError) {
-                            console.warn('parcelIds retry error (localhost)', retryError);
-                            continue;
-                        }
-                    } else {
-                        console.warn('parcelIds response parse error (localhost)', error);
-                        continue;
-                    }
-                }
-
-                if (Array.isArray(payload?.features)) {
-                    aggregated.push(...payload.features);
-                }
-            } catch (error) {
-                console.warn('parcelIds request error (localhost)', error);
+                global.ParcelGroundFallback?.onGroundUnavailable?.({
+                    error,
+                    bounds: requestedBounds,
+                    city: currentCity(),
+                    message: parcelFailureMessage(error)
+                });
+            } catch (offerError) {
+                console.error('[fetchParcelData] could not offer ground fallback', offerError);
+            }
+            throw error;
+        } finally {
+            if (currentViewFetch === view) {
+                currentViewFetch = null;
+                global._fetchParcelDataInProgress = false;
+                global.ParcelsState?.setIsFetchingParcels?.(false);
             }
         }
-
-        return aggregated;
     }
 
-    async function requestParcelBatchFromBackend(ids) {
-        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
-        if (!normalizedIds.length) {
-            return [];
-        }
-        const backendBase = (function () {
-            try {
-                if (typeof global.getBackendBase === 'function') {
-                    const base = global.getBackendBase();
-                    if (base && typeof base === 'string') {
-                        return base.replace(/\/$/, '');
-                    }
-                }
-            } catch (_) { }
-            return 'https://api.urbangametheory.xyz';
-        })();
-
-        const aggregated = [];
-        const hrLikeIds = normalizedIds.filter(id => /^HR-\d+-/.test(id));
-        const fetchOptions = { headers: { 'Accept': 'application/json' }, cache: 'no-cache' };
-
-        for (const chunk of chunkArray(hrLikeIds, BACKEND_PARCEL_IDS_CHUNK_SIZE)) {
-            const search = new URLSearchParams({ ids: chunk.join(',') });
-            const url = `${backendBase}/parcels/parcelIds?${search.toString()}`;
-            try {
-                const response = await fetch(url, fetchOptions);
-                const isNotModified = response.status === 304;
-                if (!response.ok && !isNotModified) {
-                    console.warn(`backend parcelIds request failed: ${response.status}`);
-                    continue;
-                }
-
-                let payload;
-                try {
-                    payload = await response.json();
-                } catch (error) {
-                    if (isNotModified) {
-                        // 304 without a body happens when cache revalidates; force a fresh fetch once.
-                        try {
-                            const retryResponse = await fetch(url, { ...fetchOptions, cache: 'no-store' });
-                            if (!retryResponse.ok) {
-                                console.warn(`backend parcelIds retry failed: ${retryResponse.status}`);
-                                continue;
-                            }
-                            payload = await retryResponse.json();
-                        } catch (retryError) {
-                            console.warn('backend parcelIds retry error', retryError);
-                            continue;
-                        }
-                    } else {
-                        console.warn('backend parcelIds response parse error', error);
-                        continue;
-                    }
-                }
-
-                if (Array.isArray(payload?.features)) {
-                    aggregated.push(...payload.features);
-                }
-            } catch (error) {
-                console.warn('backend parcelIds request error', error);
-            }
-        }
-
-        return aggregated;
+    // What the person still has when a fetch fails: every parcel held in the live fabric, and how
+    // many of those lie in the current view. Null when the fabric or the map is not up yet.
+    function loadedParcelCounts() {
+        const fabric = global.LiveParcelFabric;
+        const bounds = global.map && typeof global.map.getBounds === 'function' ? global.map.getBounds() : null;
+        if (!fabric || typeof fabric.countBounds !== 'function' || !bounds) return null;
+        // Count with the same corridor predicate as queryBounds, without cloning every geometry.
+        return { inMemory: fabric.countBounds([-180, -90, 180, 90]), inView: fabric.countBounds(bounds) };
     }
 
-    async function requestParcelBatchFromParcelBa(ids) {
-        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
-        if (!normalizedIds.length) {
-            return [];
-        }
-        const backendBase = (function () {
-            try {
-                if (typeof global.getBackendBase === 'function') {
-                    const base = global.getBackendBase();
-                    if (base && typeof base === 'string') {
-                        return base.replace(/\/$/, '');
-                    }
-                }
-            } catch (_) { }
-            return 'http://localhost:3000';
-        })();
-
-        const aggregated = [];
-        for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
-            const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
-            await Promise.all(chunk.map(async (smp) => {
-                const search = new URLSearchParams({ smp });
-                const url = `${backendBase}/parcel-ba?${search.toString()}`;
-                try {
-                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                    if (response.status === 404) return;
-                    if (!response.ok) {
-                        console.warn(`parcel-ba request failed for ${smp}: ${response.status}`);
-                        return;
-                    }
-                    const payload = await response.json();
-                    if (Array.isArray(payload?.features)) {
-                        aggregated.push(...payload.features);
-                    }
-                } catch (error) {
-                    console.warn(`parcel-ba request error for ${smp}`, error);
-                }
-            }));
-        }
-
-        return aggregated;
+    // A failed ground fetch must be visible, never an unhandled rejection. Callers that do not
+    // await the fetch (boot, visibility toggles, data-source switch) go through
+    // fetchParcelDataReported, which reports and resolves null; awaiting callers may reuse the
+    // reporter in their own catch.
+    function parcelFailureMessage(error) {
+        const message = error && error.message ? error.message : String(error || 'unknown error');
+        return global.ParcelSourceHealth?.describeFailure?.(error, {
+            offline: global.navigator?.onLine === false, translate: global.i18n?.t?.bind(global.i18n),
+            loaded: loadedParcelCounts()
+        }) || `Cadastral ground failed to load: ${message}`;
     }
 
-    async function requestParcelBatchFromParcelCo(ids) {
-        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
-        if (!normalizedIds.length) {
-            return [];
-        }
-        const backendBase = (function () {
-            try {
-                if (typeof global.getBackendBase === 'function') {
-                    const base = global.getBackendBase();
-                    if (base && typeof base === 'string') {
-                        return base.replace(/\/$/, '');
-                    }
-                }
-            } catch (_) { }
-            return 'http://localhost:3000';
-        })();
-
-        const aggregated = [];
-        for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
-            const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
-            await Promise.all(chunk.map(async (parcelId) => {
-                const search = new URLSearchParams({ parcel_id: parcelId });
-                const url = `${backendBase}/parcel-co?${search.toString()}`;
-                try {
-                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                    if (response.status === 404) return;
-                    if (!response.ok) {
-                        console.warn(`parcel-co request failed for ${parcelId}: ${response.status}`);
-                        return;
-                    }
-                    const payload = await response.json();
-                    if (Array.isArray(payload?.features)) {
-                        aggregated.push(...payload.features);
-                    }
-                } catch (error) {
-                    console.warn(`parcel-co request error for ${parcelId}`, error);
-                }
-            }));
-        }
-
-        return aggregated;
+    function reportParcelFetchFailure(error, source) {
+        const message = error && error.message ? error.message : String(error || 'unknown error');
+        console.error(`[${new Date().toISOString()}] [ParcelFetch] cadastral ground failed to load (${source || 'unknown caller'}): ${message}`, error);
+        const userMessage = parcelFailureMessage(error);
+        // The banner says it (ephemerals.md); the status log keeps the line without the status line repeating it.
+        global.updateStatus?.(userMessage, { floating: false });
+        global.ParcelSourceSettings?.reportFailure?.(global, userMessage);
     }
 
-    async function requestParcelBatchFromParcelLj(ids) {
-        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
-        if (!normalizedIds.length) {
-            return [];
-        }
-        const backendBase = (function () {
-            try {
-                if (typeof global.getBackendBase === 'function') {
-                    const base = global.getBackendBase();
-                    if (base && typeof base === 'string') {
-                        return base.replace(/\/$/, '');
-                    }
-                }
-            } catch (_) { }
-            return 'http://localhost:3000';
-        })();
-
-        const aggregated = [];
-        for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
-            const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
-            await Promise.all(chunk.map(async (parcelId) => {
-                const search = new URLSearchParams({ parcel_id: parcelId });
-                const url = `${backendBase}/parcel-lj?${search.toString()}`;
-                try {
-                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                    if (response.status === 404) return;
-                    if (!response.ok) {
-                        console.warn(`parcel-lj request failed for ${parcelId}: ${response.status}`);
-                        return;
-                    }
-                    const payload = await response.json();
-                    if (Array.isArray(payload?.features)) {
-                        aggregated.push(...payload.features);
-                    }
-                } catch (error) {
-                    console.warn(`parcel-lj request error for ${parcelId}`, error);
-                }
-            }));
-        }
-
-        return aggregated;
+    function fetchParcelDataReported(customBounds, source) {
+        return Promise.resolve()
+            .then(() => fetchParcelData(customBounds))
+            .catch(error => {
+                reportParcelFetchFailure(error, source);
+                return null;
+            });
     }
-
-    async function requestParcelBatchFromParcelNyc(ids) {
-        const normalizedIds = Array.isArray(ids) ? ids.map(value => value !== undefined && value !== null ? value.toString() : null).filter(Boolean) : [];
-        if (!normalizedIds.length) {
-            return [];
-        }
-        const backendBase = (function () {
-            try {
-                if (typeof global.getBackendBase === 'function') {
-                    const base = global.getBackendBase();
-                    if (base && typeof base === 'string') {
-                        return base.replace(/\/$/, '');
-                    }
-                }
-            } catch (_) { }
-            return 'http://localhost:3000';
-        })();
-
-        const aggregated = [];
-        for (let start = 0; start < normalizedIds.length; start += DIRECT_PARCEL_BACKEND_CHUNK_SIZE) {
-            const chunk = normalizedIds.slice(start, start + DIRECT_PARCEL_BACKEND_CHUNK_SIZE);
-            await Promise.all(chunk.map(async (parcelId) => {
-                const search = new URLSearchParams({ parcel_id: parcelId });
-                const url = `${backendBase}/parcel-nyc?${search.toString()}`;
-                try {
-                    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                    if (response.status === 404) return;
-                    if (!response.ok) {
-                        console.warn(`parcel-nyc request failed for ${parcelId}: ${response.status}`);
-                        return;
-                    }
-                    const payload = await response.json();
-                    if (Array.isArray(payload?.features)) {
-                        aggregated.push(...payload.features);
-                    }
-                } catch (error) {
-                    console.warn(`parcel-nyc request error for ${parcelId}`, error);
-                }
-            }));
-        }
-
-        return aggregated;
-    }
-
-    function buildParcelFilterXml(ids) {
-        const clauses = (Array.isArray(ids) ? ids : [])
-            .map(value => (value !== undefined && value !== null ? String(value).trim() : ''))
-            .filter(Boolean)
-            .map(id => `<PropertyIsEqualTo><PropertyName>parcel_id</PropertyName><Literal>${escapeXmlValue(id)}</Literal></PropertyIsEqualTo>`);
-        if (!clauses.length) return '';
-        if (clauses.length === 1) {
-            return `<Filter>${clauses[0]}</Filter>`;
-        }
-        return `<Filter><Or>${clauses.join('')}</Or></Filter>`;
-    }
-
-    function escapeXmlValue(value) {
-        return value
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\"/g, '&quot;')
-            .replace(/'/g, '&apos;');
-    }
-
-    const ingestParcelFeatures = global.ingestParcelFeatures || function () {
-        throw new Error('ingestParcelFeatures is not available');
-    };
 
     async function refreshParcelDataWithBusyState(customBounds) {
-        const button = document.getElementById('refreshParcelDataButton');
-        const task = () => fetchParcelData(customBounds);
-        if (button && typeof global.runWithButtonBusyState === 'function') {
-            return global.runWithButtonBusyState(button, 'Refreshing...', task);
-        }
-        return task();
+        const button = typeof document !== 'undefined' ? document.getElementById('refreshParcelDataButton') : null;
+        // An explicit refresh is the visitor asking again, so a fallback screen they closed earlier
+        // may be shown again if the register still fails.
+        try { global.ParcelGroundFallback?.resetDismissal?.(currentCity()); } catch (_) { }
+        const task = () => fetchParcelDataReported(customBounds, 'parcel refresh button');
+        return button && typeof global.runWithButtonBusyState === 'function'
+            ? global.runWithButtonBusyState(button, { key: 'common.busy.refreshing', fallback: 'Refreshing...' }, task)
+            : task();
     }
 
     global.fetchParcelData = fetchParcelData;
-    global.fetchSingleParcelById = fetchSingleParcelById;
-    global.fetchParcelsByIds = fetchParcelsByIds;
-    global.fetchParcelFeaturesByIds = fetchParcelFeaturesByIds;
-    global.requestParcelBatchForCurrentCity = requestParcelBatchForCurrentCity;
-    global.requestParcelBatchFromOss = requestParcelBatchFromOss;
-    global.requestParcelBatchFromLocalhost = requestParcelBatchFromLocalhost;
-    global.requestParcelBatchFromParcelBa = requestParcelBatchFromParcelBa;
-    global.requestParcelBatchFromParcelCo = requestParcelBatchFromParcelCo;
-    global.requestParcelBatchFromParcelLj = requestParcelBatchFromParcelLj;
+    global.fetchParcelDataReported = fetchParcelDataReported;
+    global.reportParcelFetchFailure = reportParcelFetchFailure;
+    global.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
     global.buildParcelFilterXml = buildParcelFilterXml;
     global.escapeXmlValue = escapeXmlValue;
-    global.ingestParcelFeatures = ingestParcelFeatures;
-    global.refreshParcelDataWithBusyState = refreshParcelDataWithBusyState;
+    global.__cadastralGroundTransport = Object.freeze({
+        fetchByIds,
+        fetchPoint,
+        fetchBounds,
+        cellBlockSide,
+        fetchCellBlock,
+        fetchUnderGeometry,
+        supportsRoadIds,
+        fetchRoadIds
+    });
 })(typeof window !== 'undefined' ? window : globalThis);

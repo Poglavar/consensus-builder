@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32632",
+  "featureCount": 7,
+  "validNonemptyCount": 7,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 504.7193305465252,
+    "median": 14668.872980094127,
+    "max": 710287.2009588737
+  },
+  "features": [
+    {
+      "id": "DE-NRW-05327700500316______",
+      "areaM2": 710287.2009588737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05327700500304______",
+      "areaM2": 3574.75674653667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05327700500306______",
+      "areaM2": 40051.367625192106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05327700500296______",
+      "areaM2": 8188.903287342213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05327700500305______",
+      "areaM2": 504.7193305465252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05327901300042______",
+      "areaM2": 168460.51594474306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05327901300043______",
+      "areaM2": 14668.872980094127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

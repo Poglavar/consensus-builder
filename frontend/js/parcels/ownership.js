@@ -79,6 +79,7 @@
     }
 
     async function fetchOwnershipDetails(parcelId, options = {}) {
+        if (global.CityConfigManager?.getCurrentCityConfig?.()?.parcels?.ownership === false) return null;
         const normalizedParcelId = global.normalizeParcelIdValue ? global.normalizeParcelIdValue(parcelId) : parcelId;
         if (!normalizedParcelId) throw new Error('Invalid parcelId');
         const bypassCache = options.bypassCache || false;
@@ -143,6 +144,43 @@
         ownershipRequestsInProgress.clear();
     }
 
+    // Which parcel source issued this parcel id, from the city's parcels config. A database-backed
+    // city names its provider in `source` (oss-wfs, parcel-ba, ...); a catalog-backed city
+    // (`source: 'parcel-source'`) names `sourceId`, and an id saved under a source the city used
+    // before belongs to that source: the longest matching idPrefix wins, as in fetch.js.
+    function parcelSourceIdFor(parcelsConfig, parcelId) {
+        if (!parcelsConfig || !parcelsConfig.source || parcelsConfig.source === 'none') return null;
+        if (parcelsConfig.source !== 'parcel-source') return parcelsConfig.source;
+        const id = String(parcelId || '');
+        const candidates = [{ sourceId: parcelsConfig.sourceId, idPrefix: parcelsConfig.idPrefix || '' }, ...(parcelsConfig.historicalSources || [])]
+            .filter(row => row.sourceId && id.startsWith(row.idPrefix || ''))
+            .sort((a, b) => (b.idPrefix || '').length - (a.idPrefix || '').length);
+        return candidates[0]?.sourceId || null;
+    }
+
+    // The one ownership route (backend/routes/parcel-ownership.js); a parcel id may hold slashes.
+    function ownershipRequestPath(sourceId, parcelId) {
+        return `/parcel-ownership/${encodeURIComponent(sourceId)}/${encodeURIComponent(parcelId)}`;
+    }
+
+    // parcel-ownership/1 record -> the owner rows the parcel panel stores and renders.
+    function ownersFromOwnershipRecord(record) {
+        if (record?.contract !== 'parcel-ownership/1' || !Array.isArray(record.owners)) {
+            throw new Error('Ownership response is not a parcel-ownership/1 record');
+        }
+        return record.owners.map((owner, index) => ({
+            name: owner.name,
+            ownerLabel: owner.name,
+            ownership: owner.shareText || '',
+            actualShareText: owner.shareText || '',
+            percentageShare: Number.isFinite(owner.sharePercent) ? owner.sharePercent : undefined,
+            ownerType: owner.ownerType,
+            shareDetail: '',
+            index
+        }));
+    }
+
+    global.__parcelOwnershipRequest = Object.freeze({ parcelSourceIdFor, ownershipRequestPath, ownersFromOwnershipRecord });
     global.parseFraction = parseFraction;
     global.simplifyFraction = simplifyFraction;
     global.formatFraction = formatFraction;
@@ -155,4 +193,3 @@
     global.ownershipCache = ownershipCache;
     global.ownershipErrors = ownershipErrors;
 })(typeof window !== 'undefined' ? window : globalThis);
-

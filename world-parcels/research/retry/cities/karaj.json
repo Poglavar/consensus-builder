@@ -1,0 +1,38 @@
+{
+ "kind": "city",
+ "key": "karaj",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fa-IR,fa;q=0.9,en;q=0.5 (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://karaj.ir ; https://www.karaj.ir/ ; https://map.karaj.ir/ ; https://gis.karaj.ir/ ; https://alborz.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer"
+  },
+  {
+   "url": "http://karaj.ir ; http://www.karaj.ir",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "upstream connect timeout at proxy"
+  },
+  {
+   "url": "https://www.ssaa.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT tunnel 502"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "All .ir hosts fail at connect level from this network; consistent with egress restriction, unproven. See countries/IR.json.",
+ "nextStep": "Retry from a network able to reach .ir; check Karaj municipality GIS and SSAA."
+}

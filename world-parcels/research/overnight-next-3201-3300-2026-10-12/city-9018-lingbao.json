@@ -1,0 +1,100 @@
+{
+  "cityCode": 9018,
+  "queueRank": 3270,
+  "name": "Lingbao",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [34.5275604320905, 110.890323877026],
+  "population2025": 184380,
+  "population2025k": 184.38,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lingbao China official cadastral parcel map natural resources land registration GIS",
+        "result": "First-party results identified the Lingbao Municipal Natural Resources and Planning Bureau, a local government land-registration procedure listing, and a 2025 procurement document for Lingbao cadastral-data database construction. No public anonymous parcel-vector viewer or ID-plus-geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.lingbao.gov.cn/16032/0000/subIndex-1.html",
+          "https://www.lingbao.gov.cn/16213/0000/zhengfuxinxi-1.html",
+          "https://pdsyx.zfcg.henan.gov.cn/cmsweb81e27e/nas/webfile2024/sanmenxia/rootfiles/2025/12/01/46ba789d5244435cae9b6dc86270d3d4.pdf"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "灵宝市 不动产登记 地籍图 土地 官方 自然资源和规划局",
+        "result": "First-party Chinese results identified 灵宝市自然资源和规划局, the local government catalogue entry for 不动产查询, and a procurement document describing cadastral database and cadastral-map compilation. The material establishes local custody and a procedure/data-management lead, but not an anonymous parcel geometry API or downloadable safe parcel features.",
+        "actualResultUrls": [
+          "https://www.lingbao.gov.cn/16032/0000/subIndex-1.html",
+          "https://www.lingbao.gov.cn/16213/0000/zhengfuxinxi-1.html",
+          "https://pdsyx.zfcg.henan.gov.cn/cmsweb81e27e/nas/webfile2024/sanmenxia/rootfiles/2025/12/01/46ba789d5244435cae9b6dc86270d3d4.pdf",
+          "https://www.lingbao.gov.cn/backend/ueditor/jsp/upload/files/lb_data/2023/0905/20230905031834834.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "灵宝市自然资源和规划局 (Lingbao Municipal Natural Resources and Planning Bureau)",
+    "locality": "Lingbao, Henan, China",
+    "evidenceUrls": [
+      "https://www.lingbao.gov.cn/16032/0000/subIndex-1.html",
+      "https://www.lingbao.gov.cn/16213/0000/zhengfuxinxi-1.html"
+    ],
+    "scopeNote": "The first-party Lingbao government site identifies the local bureau and lists a local 不动产查询 procedure. A separate official procurement document describes Lingbao cadastral-database construction and cadastral-map compilation. This evidences local registry/cadastre custody and a procedure/data-management lead, not open citywide parcel-vector access."
+  },
+  "officialSources": [
+    {
+      "url": "https://www.lingbao.gov.cn/16032/0000/subIndex-1.html",
+      "observation": "First-party Lingbao government department page for 灵宝市自然资源和规划局; current notices and land-management materials identify the local bureau."
+    },
+    {
+      "url": "https://www.lingbao.gov.cn/16213/0000/zhengfuxinxi-1.html",
+      "observation": "First-party government information page lists 不动产查询 among the bureau's public procedures; no linked anonymous parcel map/API was exposed in the inspected page."
+    },
+    {
+      "url": "https://pdsyx.zfcg.henan.gov.cn/cmsweb81e27e/nas/webfile2024/sanmenxia/rootfiles/2025/12/01/46ba789d5244435cae9b6dc86270d3d4.pdf",
+      "observation": "Official procurement PDF titled 灵宝市自然资源和规划局灵宝市地籍数据; describes cadastral-data database management, integration, quality checks, cadastral-map compilation, and real-property unit-code management. It is procurement/specification evidence, not an open parcel feature service."
+    },
+    {
+      "url": "https://www.lingbao.gov.cn/backend/ueditor/jsp/upload/files/lb_data/2023/0905/20230905031834834.pdf",
+      "observation": "First-party Lingbao government transparency catalogue; records local natural-resources and real-property-registration information disclosure/procedure channels, with some land information handled by public request or service center."
+    }
+  ],
+  "requestOutcomes": [
+    {"method": "SEARCH", "url": "https://www.lingbao.gov.cn/16032/0000/subIndex-1.html", "outcome": "First-party English discovery located the local Natural Resources and Planning Bureau page; no parcel viewer or API link was exposed by the result."},
+    {"method": "SEARCH", "url": "https://www.lingbao.gov.cn/16213/0000/zhengfuxinxi-1.html", "outcome": "First-party Chinese discovery located the local government procedure catalogue containing 不动产查询; no anonymous parcel feature endpoint was exposed."},
+    {"method": "GET", "url": "https://www.lingbao.gov.cn/16032/0000/subIndex-1.html", "httpStatus": 200, "outcome": "TLS-verified HTML retrieved. Current page content identifies the local bureau and land-management notices; no JavaScript map configuration or parcel schema was present."},
+    {"method": "GET", "url": "https://www.lingbao.gov.cn/16213/0000/zhengfuxinxi-1.html", "httpStatus": 200, "outcome": "TLS-verified HTML retrieved. The page lists 不动产查询 among local procedures; no public map/API route or parcel geometry was returned."},
+    {"method": "GET", "url": "https://www.lingbao.gov.cn/backend/ueditor/jsp/upload/files/lb_data/2023/0905/20230905031834834.pdf", "httpStatus": 200, "outcome": "TLS-verified official PDF retrieved and inspected for disclosure scope; it describes local information/procedure channels but contains no retained parcel polygon or safe native parcel ID."},
+    {"method": "GET", "url": "https://pdsyx.zfcg.henan.gov.cn/cmsweb81e27e/nas/webfile2024/sanmenxia/rootfiles/2025/12/01/46ba789d5244435cae9b6dc86270d3d4.pdf", "httpStatus": 403, "outcome": "Official procurement-host request denied with HTTP 403. Search-indexed first-party content was used only to record the procurement's cadastral-database scope; no geometry or attributes were obtained."},
+    {"method": "VIEWER_DISCOVERY", "url": "https://www.lingbao.gov.cn/16213/0000/zhengfuxinxi-1.html", "outcome": "No current public map viewer, JavaScript configuration, service URL, schema, CRS, or anonymous ID-plus-geometry route was exposed from the inspected local procedure page. No login, credential, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope": "Exact WUP point [34.5275604320905, 110.890323877026] was preserved; no parcel query or coordinate shift was used.", "featureCount": null, "result": "No public anonymous parcel ID-plus-geometry response was obtained."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable anonymous parcel-vector response; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope": "Local Lingbao registry/cadastre custody and procedure were evidenced.", "verifiedOpenScope": "Local official procedure and cadastral-data procurement scope were verified, but public parcel geometry, schema, CRS, native identity semantics, and open coverage were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "integration": "not_admitted",
+  "scopeLimits": ["Exact WUP point was preserved and not shifted to force a hit.", "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.", "No parcel polygon or source-specific raw attribute set is retained.", "No citywide polygon completeness, current anonymous API, CRS, native identity semantics, or update cadence was verified.", "This packet records research only and is not source integration or runtime admission."],
+  "uncertainty": "Local registry/cadastre custody is evidenced by first-party Lingbao government pages and a cadastral-data procurement specification, but no current anonymous parcel-vector service was discoverable or callable. The exact point was not tested against a parcel endpoint, so no hit/miss conclusion is made."
+}

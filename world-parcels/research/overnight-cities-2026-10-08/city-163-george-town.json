@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "143 valid distinct JUPEM Penang cadastral-reference lots verified in thirteen bounded 0.001-degree cells around the unchanged George Town metropolitan WUP locator. The Forestry government GIS host supplies native UPI identity and FID transport IDs; variable-length native UPI strings are preserved without padding, truncation or substitution. Complete object-ID manifests, forced three-row geometry pages (56 parcels over 19 pages), all 143 fresh native-ID reads, explicit absence, footprint and source binding passed in 80 requests. Independent metric EPSG:32647 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The missing TLS intermediate is supplied from the official GlobalSign CA with certificate and hostname verification enabled for every runtime request; no runtime verification bypass is used. The publisher credits JUPEM 2020 and declares source CRS as ArcGIS WKID 102062; explicit EPSG:4326 output is retained unchanged. This is bounded metropolitan reference geometry, without claims of George Town municipal-only or citywide completeness, legal title, currentness, survey accuracy or long-term key continuity.",
+  "wupCityCode": 163,
+  "queueRank": 697,
+  "name": "George Town",
+  "centerLatLon": [
+    5.37296693960077,
+    100.295715284095
+  ],
+  "population2025": 765884,
+  "population2025k": 765.884,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Penang Timur Laut District and Land Office identifies a local land-registration unit in George Town. The government Forestry-hosted JUPEM Penang cadastral layer returns intact public parcels at the unchanged metropolitan locator. This establishes local land registry and bounded nearby cadastral geometry, without municipal-only or citywide coverage claims.",
+  "registryEvidenceUrls": [
+    "https://pegis.penang.gov.my/",
+    "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/layers",
+    "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+    "https://pgland.penang.gov.my/contact",
+    "https://www.jupem.gov.my/"
+  ],
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Completeness and coverage beyond the one point; whether the source layer is current throughout the district; reuse license/terms and native UPI stability.",
+  "nextStep": "Retain point/native-id lookup as a candidate only; root should review bounded coverage and validity, and obtain the official reuse terms before runtime enablement.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Malay",
+        "query": "Penang GeoHub lot kadaster Pulau Pinang peta parcel George Town lot UPI",
+        "scope": "Confirm Penang/George Town local land registry and inspect anonymous cadastral polygon geometry at WUP point.",
+        "result": "Penang GeoHub is a public state geospatial platform; its public ArcGIS cadastral lot services expose Polygon Feature Layers with query support and safe parcel keys. Official GIS metadata credits JUPEM and identifies Penang cadastral lots. A bounded exact point query at the supplied George Town coordinate returned one full Polygon in requested EPSG:4326 with only MUKIM, PA, LOT, UPI and KELUASAN fields. The separate official Timur Laut District and Land Office provides local land registration services in KOMTAR, George Town.",
+        "actualResultUrls": [
+          "https://pegis.penang.gov.my/",
+          "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/layers",
+          "https://pegis.penang.gov.my/arcgis/rest/services/PEGIS/PgLot/MapServer",
+          "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+          "https://pgland.penang.gov.my/contact"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "George Town Penang official cadastral lot GIS polygon GeoHub JUPEM land office Timur Laut",
+        "scope": "Verify city identity, local registration authority, and full polygon response contract.",
+        "result": "Penang GeoHub states it offers public geospatial applications and open data; the official Penang layer metadata identifies cadastral lot polygons and query operations. The exact WUP point intersects one complete lot polygon. The layer’s source CRS is EPSG:102062; the request explicitly declared the input point as EPSG:4326 and requested EPSG:4326 output.",
+        "actualResultUrls": [
+          "https://pegis.penang.gov.my/",
+          "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/layers",
+          "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+          "https://pgland.penang.gov.my/contact"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://pegis.penang.gov.my/",
+        "observation": "Official Penang GeoHub describes public geospatial applications and open geospatial data; it gives its state geospatial-management contact in George Town."
+      },
+      {
+        "url": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/layers",
+        "observation": "Official PEGIS ArcGIS metadata exposes a `Maklumat Lot` Polygon Feature Layer with JSON/GeoJSON/PBF query formats, pagination, and parcel-key fields (lot, UPI, area, administrative locality)."
+      },
+      {
+        "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+        "observation": "Official Malaysian forestry GIS lists Penang `Lot Kadaster` as a polygon feature layer, credits JUPEM 2020 and exposes MUKIM, PA, LOT, UPI and KELUASAN fields; source spatial reference is EPSG:102062."
+      },
+      {
+        "url": "https://pgland.penang.gov.my/contact",
+        "observation": "Official Penang PgLAND land-administration portal lists the Timur Laut District and Land Office, including a land-registration unit, at KOMTAR, 10000 Pulau Pinang (George Town)."
+      },
+      {
+        "url": "https://www.jupem.gov.my/",
+        "observation": "Official Department of Survey and Mapping Malaysia lists MyLot as an online land-lot location and boundary application and eKadaster as its cadastral information service."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+        "method": "GET ArcGIS layer metadata via official indexed service description",
+        "result": "Layer 45 is a Polygon feature layer, source EPSG:102062, credited JUPEM 2020, with public query operations."
+      },
+      {
+        "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.295715284095%2C5.37296693960077&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=MUKIM%2CPA%2CLOT%2CUPI%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson",
+        "method": "GET exact WUP point intersection; only safe allowlisted attributes returned; one request",
+        "result": "HTTP 200 application/geo+json, FeatureCollection with one complete Polygon; 5 ring positions, closed. Point is inside feature. Response properties: MUKIM 01, PA PA42785, LOT 10579, UPI 07040100010579, KELUASAN 623.852. No owner, address or account fields were requested."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "George Town identity is tied to the exact Penang WUP point [5.37296693960077, 100.295715284095]. An official public Penang cadastral Polygon layer returned one full, closed parcel at that point using explicit EPSG:4326 input/output and safe native parcel-key fields.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": true
+    }
+  },
+  "cityId": "wup2025:163",
+  "point": [
+    5.37296693960077,
+    100.295715284095
+  ],
+  "sourceIds": [
+    "my-penang-forestry-cadastral-lots"
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "my-penang-pegis-cadastral-lots",
+    "requestUrl": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.295715284095%2C5.37296693960077&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=MUKIM%2CPA%2CLOT%2CUPI%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/geo+json;charset=UTF-8",
+    "spatialTestPointLonLat": [
+      100.295715284095,
+      5.37296693960077
+    ],
+    "featureCount": 1,
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "coordinateCount": 8,
+    "idField": "synthetic MY-PENANG-<UPI>",
+    "responseFile": "george-town-163-point-sample.geojson",
+    "pagination": "Point lookup returned one feature; citywide/area enumeration not verified.",
+    "attributePolicy": "Requested only MUKIM, PA, LOT, UPI, KELUASAN; owner, address and account fields omitted.",
+    "sourceSpatialReference": 102062,
+    "inputSpatialReference": 4326,
+    "outputSpatialReference": 4326
+  },
+  "source": {
+    "sourceId": "my-penang-forestry-cadastral-lots",
+    "name": "JUPEM Penang cadastral lots (Forestry GIS host)",
+    "operator": "Department of Survey and Mapping Malaysia (JUPEM); Department of Forestry GIS service host",
+    "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+    "scope": "143 valid distinct JUPEM Penang cadastral-reference lots verified in thirteen bounded 0.001-degree cells around the unchanged George Town metropolitan WUP locator. The Forestry government GIS host supplies native UPI identity and FID transport IDs; variable-length native UPI strings are preserved without padding, truncation or substitution. Complete object-ID manifests, forced three-row geometry pages (56 parcels over 19 pages), all 143 fresh native-ID reads, explicit absence, footprint and source binding passed in 80 requests. Independent metric EPSG:32647 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The missing TLS intermediate is supplied from the official GlobalSign CA with certificate and hostname verification enabled for every runtime request; no runtime verification bypass is used. The publisher credits JUPEM 2020 and declares source CRS as ArcGIS WKID 102062; explicit EPSG:4326 output is retained unchanged. This is bounded metropolitan reference geometry, without claims of George Town municipal-only or citywide completeness, legal title, currentness, survey accuracy or long-term key continuity.",
+    "nativeIdField": "UPI"
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "143 valid distinct JUPEM Penang cadastral-reference lots verified in thirteen bounded 0.001-degree cells around the unchanged George Town metropolitan WUP locator. The Forestry government GIS host supplies native UPI identity and FID transport IDs; variable-length native UPI strings are preserved without padding, truncation or substitution. Complete object-ID manifests, forced three-row geometry pages (56 parcels over 19 pages), all 143 fresh native-ID reads, explicit absence, footprint and source binding passed in 80 requests. Independent metric EPSG:32647 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The missing TLS intermediate is supplied from the official GlobalSign CA with certificate and hostname verification enabled for every runtime request; no runtime verification bypass is used. The publisher credits JUPEM 2020 and declares source CRS as ArcGIS WKID 102062; explicit EPSG:4326 output is retained unchanged. This is bounded metropolitan reference geometry, without claims of George Town municipal-only or citywide completeness, legal title, currentness, survey accuracy or long-term key continuity.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/georgetown-forestry-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/georgetown-forestry-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/georgetown-root-quality-tls-review.json"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "143 valid distinct JUPEM Penang cadastral-reference lots verified in thirteen bounded 0.001-degree cells around the unchanged George Town metropolitan WUP locator. The Forestry government GIS host supplies native UPI identity and FID transport IDs; variable-length native UPI strings are preserved without padding, truncation or substitution. Complete object-ID manifests, forced three-row geometry pages (56 parcels over 19 pages), all 143 fresh native-ID reads, explicit absence, footprint and source binding passed in 80 requests. Independent metric EPSG:32647 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The missing TLS intermediate is supplied from the official GlobalSign CA with certificate and hostname verification enabled for every runtime request; no runtime verification bypass is used. The publisher credits JUPEM 2020 and declares source CRS as ArcGIS WKID 102062; explicit EPSG:4326 output is retained unchanged. This is bounded metropolitan reference geometry, without claims of George Town municipal-only or citywide completeness, legal title, currentness, survey accuracy or long-term key continuity.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "appCityId": "georgetown",
+  "runtimeQualification": {
+    "sourceId": "my-penang-forestry-cadastral-lots",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/georgetown-forestry-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/georgetown-forestry-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T02:43:18.796513+00:00"
+}

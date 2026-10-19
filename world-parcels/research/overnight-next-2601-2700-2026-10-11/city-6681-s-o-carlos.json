@@ -1,0 +1,124 @@
+{
+  "cityCode": 6681,
+  "queueRank": 2643,
+  "city": "São Carlos",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-22.0204242905165, -47.8945951696924],
+  "population2025": 223452,
+  "population2025k": 223.452,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "São Carlos Brazil official cadastral parcel map geoportal cadastro imobiliário prefeitura",
+        "result": "First-party discovery identified the official São Carlos/SP municipal website, its municipal cadastral services, and the SIGA municipal geographic-information system at geo.saocarlos.sp.gov.br. The official search result for municipal services identifies Cadastro Imobiliário services; no anonymous parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://www.saocarlos.sp.gov.br/index.php/servicos-de-a-a-z-sim-online.html",
+          "https://geo.saocarlos.sp.gov.br/",
+          "https://geo.saocarlos.sp.gov.br/data/manual_siga.pdf"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "São Carlos mapa cadastral parcelas cadastro imobiliário geoprocessamento prefeitura",
+        "result": "First-party Portuguese discovery identified the municipal Cadastro Imobiliário service and the municipal SIGA geoprocessing system. The official municipal organization page assigns management of physical-territorial, land and geographic-information bases to the city administration, but the public SIGA host was not retrievable during this attempt.",
+        "actualResultUrls": [
+          "https://saocarlos.sp.gov.br/files/Carta%20de%20Servi%C3%A7os%202025%20-%20Ouvidoria.pdf",
+          "https://www.saocarlos.sp.gov.br/index.php/secretarias-municipais/179132-secretaria-municipal-de-gestao-da-cidade-e-infraestrutura.html",
+          "https://geo.saocarlos.sp.gov.br/data/manual_siga.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Prefeitura Municipal de São Carlos, São Paulo; municipal Cadastro Imobiliário under the municipal finance services, with SIGA maintained by the city’s urban-management/planning departments.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://saocarlos.sp.gov.br/files/Carta%20de%20Servi%C3%A7os%202025%20-%20Ouvidoria.pdf",
+    "municipalCadastreUrl": "https://www.saocarlos.sp.gov.br/index.php/servicos-de-a-a-z-sim-online.html",
+    "publicMapServiceUrl": "https://geo.saocarlos.sp.gov.br/",
+    "evidence": "Official municipal discovery results identify Cadastro Imobiliário services and the SIGA geographic-information system. The municipal organization page describes management of land, physical-territorial and geographic-information bases. No property-owner or unsafe cadastral details were requested."
+  },
+  "sourceReview": {
+    "service": "São Carlos municipal SIGA geographic-information system and municipal Cadastro Imobiliário services.",
+    "baseUrls": [
+      "https://geo.saocarlos.sp.gov.br/",
+      "https://geo.saocarlos.sp.gov.br/data/manual_siga.pdf",
+      "https://www.saocarlos.sp.gov.br/index.php/servicos-de-a-a-z-sim-online.html",
+      "https://www.saocarlos.sp.gov.br/index.php/secretarias-municipais/179132-secretaria-municipal-de-gestao-da-cidade-e-infraestrutura.html"
+    ],
+    "officialAssetsInspected": [
+      "Official municipal service search result for Cadastro Imobiliário",
+      "Official municipal organizational page describing SIGA and land/geographic data responsibilities",
+      "Official SIGA manual search result describing address and map search behavior"
+    ],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": "unverified; no service response was obtained"
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET/search",
+      "url": "https://www.saocarlos.sp.gov.br/index.php/servicos-de-a-a-z-sim-online.html",
+      "outcome": "First-party search result retrieved; identifies municipal SIM services including Cadastro Imobiliário-related services. Direct page fetch through the research environment returned 502; no parcel geometry or schema."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://saocarlos.sp.gov.br/files/Carta%20de%20Servi%C3%A7os%202025%20-%20Ouvidoria.pdf",
+      "outcome": "First-party search result retrieved; identifies Cadastro Imobiliário procedures and municipal contact/service location. Direct PDF fetch returned 502; no unsafe lookup attempted."
+    },
+    {
+      "method": "GET/search",
+      "url": "https://www.saocarlos.sp.gov.br/index.php/secretarias-municipais/179132-secretaria-municipal-de-gestao-da-cidade-e-infraestrutura.html",
+      "outcome": "First-party search result retrieved; states that municipal departments manage land/physical-territorial databases and SIGA. Direct page fetch returned 502."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.saocarlos.sp.gov.br/",
+      "outcome": "Official SIGA host identified by first-party search, but direct TLS/DNS request timed out after 20 seconds and web fetch returned 502; no HTML, JavaScript, configuration, service endpoint, schema or geometry was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.saocarlos.sp.gov.br/data/manual_siga.pdf",
+      "outcome": "First-party search result describes the SIGA manual and public address/map search behavior; direct fetch returned 502. No parcel layer or native identity was obtained."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://geo.saocarlos.sp.gov.br/",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed against a usable public parcel layer; exact WUP point [-22.0204242905165, -47.8945951696924] was preserved and not shifted.",
+    "requestEvidence": ["official SIGA host identified", "direct host request timed out", "web fetch returned 502", "no feature response or schema obtained"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "São Carlos municipal SIGA and Cadastro Imobiliário functions.",
+    "verifiedOpenScope": "Municipal custodian and public SIGA identity only; no anonymous parcel layer, schema, CRS or feature geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "public service, layer and coverage metadata"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [-22.0204242905165, -47.8945951696924] was preserved in latitude/longitude order; no coordinate was shifted.",
+    "A timeout, 502, login wall, map extent miss or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, registration, personal or other unsafe fields were requested or retained.",
+    "No native field names, composite identity, CRS or parcel geometry were retained because no anonymous feature response was obtained.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The municipal cadastral custodian and SIGA system are evidenced by official sources, but anonymous service availability, parcel layer identity, schema, CRS, geometry, currentness and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "consensus-builder.reconstruction-plan.v1",
+  "project": "selska-drniska",
+  "title": "Selska–Drniška – rekonstrukcija izvedenog stanja",
+  "status": "no-safe-surface-circulation",
+  "reason": "No OSM surface component passed the geometry and building-overlap gates.",
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "planSlug": "pionir-selska-drniska",
+  "planTitle": "Selska–Drniška – rekonstrukcija izvedenog stanja – zgrade",
+  "localPath": "/proposals/pionir-selska-drniska?city=zagreb",
+  "building": {
+    "proposalId": "pionir-selska-drniska-observed",
+    "file": "proposal.geojson"
+  },
+  "circulation": []
+}

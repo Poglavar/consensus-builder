@@ -1,0 +1,113 @@
+{
+  "name": "Ballia",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 953,
+  "point": [
+    25.7655122176398,
+    84.1730693956169
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ballia official cadastral map land records Uttar Pradesh BhuNaksha public GIS district",
+        "scope": "Find a local custodian, public parcel-map entry point, and safe geometry interface.",
+        "result": "UP land-record mapping is available by district, tehsil and revenue village. Official Ballia dashboard reports georeferenced map-sheet/village coverage across tehsils, but is aggregate coverage and does not establish a vector parcel endpoint at this locator. The viewer’s plot lookup is identifier/map-click oriented; only raster map output was verified in this review.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/upbhunaksha/"
+        ],
+        "executionMethod": "Separate English-language web search; official public source review."
+      },
+      {
+        "language": "Hindi",
+        "query": "बलिया भू नक्शा खसरा नक्शा भूमि अभिलेख आधिकारिक उत्तर प्रदेश",
+        "scope": "Find first-party city/local-language registry, cadastral mapping and parcel-service evidence.",
+        "result": "UP land-record mapping is available by district, tehsil and revenue village. Official Ballia dashboard reports georeferenced map-sheet/village coverage across tehsils, but is aggregate coverage and does not establish a vector parcel endpoint at this locator. The viewer’s plot lookup is identifier/map-click oriented; only raster map output was verified in this review.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/upbhunaksha/"
+        ],
+        "executionMethod": "Separate Hindi-language web search and first-party portal review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Government of Uttar Pradesh Bhulekh / BhuNaksha and Ballia district administration",
+        "operator": "Government of Uttar Pradesh / Board of Revenue",
+        "homeUrl": "https://upbhunaksha.gov.in/upbhunaksha/",
+        "observation": "UP land-record mapping is available by district, tehsil and revenue village. Official Ballia dashboard reports georeferenced map-sheet/village coverage across tehsils, but is aggregate coverage and does not establish a vector parcel endpoint at this locator. The viewer’s plot lookup is identifier/map-click oriented; only raster map output was verified in this review."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-10781-LOCAL-PARCEL-RESEARCH",
+    "name": "Government of Uttar Pradesh Bhulekh / BhuNaksha and Ballia district administration",
+    "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+    "operator": "Government of Uttar Pradesh / Board of Revenue",
+    "serviceType": "Official local registry/cadastre evidence reviewed; no anonymous geometry-only feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "District-level land-record/cadastral mapping and local administration are established; point-specific village coverage and downloadable full parcel geometry are not.",
+    "verifiedOpenScope": "UP land-record mapping is available by district, tehsil and revenue village. Official Ballia dashboard reports georeferenced map-sheet/village coverage across tehsils, but is aggregate coverage and does not establish a vector parcel endpoint at this locator. The viewer’s plot lookup is identifier/map-click oriented; only raster map output was verified in this review.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-vector parcel response was verified. Viewer click/plot APIs may return parcel/record details; no such request was made.",
+  "remainingUncertainty": "Exact WUP settlement versus Ballia revenue-village map extent is unknown.",
+  "nextStep": "Revisit only if a public source publishes a schema with safe stable identifiers and an anonymous geometry-only query; keep any future sample bounded and field-allowlisted.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10781,
+  "cityId": "wup2025:10781",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.7655122176398,
+    84.1730693956169
+  ],
+  "population2025k": 576.284,
+  "populationUnit": "persons",
+  "queueRank": 953,
+  "population2025": 576284,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "UP land-record mapping is available by district, tehsil and revenue village. Official Ballia dashboard reports georeferenced map-sheet/village coverage across tehsils, but is aggregate coverage and does not establish a vector parcel endpoint at this locator. The viewer’s plot lookup is identifier/map-click oriented; only raster map output was verified in this review.",
+  "registryEvidenceUrls": [
+    "https://upbhunaksha.gov.in/upbhunaksha/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=149",
+    "https://ballia.nic.in/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-vector parcel response was verified. Viewer click/plot APIs may return parcel/record details; no such request was made."
+  },
+  "rootPrimarySupplement": {
+    "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=149",
+    "fetch": 200,
+    "contentType": "text/html;charset=UTF-8",
+    "title": "Digitization of Cadastral Maps and Geo Referencing | Public Report"
+  },
+  "rootRegistryScopeNote": "Ballia district administration explicitly links Land Records; the UP district digitization dashboard provides local revenue-district context. These establish a local land-record pathway without resolving the revenue village at the population centroid.",
+  "rootPrimaryReadback": {
+    "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Bhunaksha"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

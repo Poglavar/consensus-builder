@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7648-krasnoyarsk.json",
+  "purpose": "Document local registry evidence, language-specific searches and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Krasnoyarsk City’s Department of Municipal Property and Land Relations officially maintains municipal land/property information systems and commissions cadastral work on city land; the city also identifies Roskadastr’s Krasnoyarsk Krai branch as an EGRN source. This establishes local municipal and regional custodians, but not an anonymous city parcel-vector feed. No public city parcel vector schema or geometry response verified; the national NSPD public cadastral map was not treated as city-specific vector evidence.",
+  "registryAssessment": "Krasnoyarsk City’s Department of Municipal Property and Land Relations officially maintains municipal land/property information systems and commissions cadastral work on city land; the city also identifies Roskadastr’s Krasnoyarsk Krai branch as an EGRN source. This establishes local municipal and regional custodians, but not an anonymous city parcel-vector feed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.admkrsk.ru/administration/structure/munpropertydep/Pages/funk.aspx",
+      "observation": "Official city department functions include cadastral work and maintaining city land/property accounting databases and municipal-property register."
+    },
+    {
+      "url": "https://www.admkrsk.ru/administration/structure/infotelecomupr/Pages/isinfo.aspx?RecordID=463",
+      "observation": "City IT inventory identifies a Unified Municipal Cadastre information system with real-estate and land-plot accounting data."
+    },
+    {
+      "url": "https://www.admkrsk.ru/citytoday/property/Pages/PPK_Roskadastr.aspx",
+      "observation": "City page describes the Krasnoyarsk Krai Roskadastr branch as providing EGRN and land-management records."
+    },
+    {
+      "url": "https://start-egis.krskcit.ru/",
+      "observation": "Krasnoyarsk Krai geospatial portal provides thematic map layers, but no city parcel-feature schema was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Krasnoyarsk official cadastral map land registry public GIS city land parcels",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Official municipal and Roskadastr sources identify city land/property administration and the regional EGRN provider. The public NSPD map is national; no city-specific feature schema or safe parcel geometry endpoint was established.",
+      "actualResultUrls": [
+        "https://www.admkrsk.ru/administration/structure/munpropertydep/Pages/funk.aspx",
+        "https://www.admkrsk.ru/administration/structure/infotelecomupr/Pages/isinfo.aspx?RecordID=463",
+        "https://www.admkrsk.ru/citytoday/property/Pages/PPK_Roskadastr.aspx",
+        "https://start-egis.krskcit.ru/"
+      ],
+      "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+    },
+    {
+      "language": "Russian",
+      "query": "site:admkrsk.ru кадастровый учет кадастровая карта Красноярск земельные участки город",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Russian-language city sources confirm the municipal land-property department’s cadastral and GIS responsibilities and a municipal land-accounting information system. No parcel features were queried.",
+      "actualResultUrls": [
+        "https://www.admkrsk.ru/administration/structure/munpropertydep/Pages/funk.aspx",
+        "https://www.admkrsk.ru/administration/structure/infotelecomupr/Pages/isinfo.aspx?RecordID=463",
+        "https://www.admkrsk.ru/citytoday/property/Pages/PPK_Roskadastr.aspx",
+        "https://start-egis.krskcit.ru/"
+      ],
+      "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "decision": "No public city parcel vector schema or geometry response verified; the national NSPD public cadastral map was not treated as city-specific vector evidence."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP locator and reviewed city-specific official sources only.",
+    "limits": "No citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.admkrsk.ru/administration/structure/munpropertydep/Pages/funk.aspx",
+      "method": "Official website/service metadata review",
+      "result": "Official city department functions include cadastral work and maintaining city land/property accounting databases and municipal-property register."
+    },
+    {
+      "url": "https://www.admkrsk.ru/administration/structure/infotelecomupr/Pages/isinfo.aspx?RecordID=463",
+      "method": "Official website/service metadata review",
+      "result": "City IT inventory identifies a Unified Municipal Cadastre information system with real-estate and land-plot accounting data."
+    },
+    {
+      "url": "https://www.admkrsk.ru/citytoday/property/Pages/PPK_Roskadastr.aspx",
+      "method": "Official website/service metadata review",
+      "result": "City page describes the Krasnoyarsk Krai Roskadastr branch as providing EGRN and land-management records."
+    },
+    {
+      "url": "https://start-egis.krskcit.ru/",
+      "method": "Official website/service metadata review",
+      "result": "Krasnoyarsk Krai geospatial portal provides thematic map layers, but no city parcel-feature schema was verified."
+    }
+  ],
+  "sourceCandidate": null,
+  "privacyReview": {
+    "ownerAddressTaxOrAccountValuesRequested": false,
+    "propertyDetailsSubmitted": false,
+    "credentialsOrTokensRetained": false
+  },
+  "sampleGeometryFile": null
+}

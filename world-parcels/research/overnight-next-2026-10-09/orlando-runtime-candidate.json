@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "city": "Orlando",
+  "countryCode": "US",
+  "wupCityCode": 7432,
+  "cityId": "wup2025:7432",
+  "rank": 1165,
+  "status": "qualified_pending_root_review",
+  "runtimeEnabled": false,
+  "adapterReady": false,
+  "source": {
+    "sourceId": "orlando-ocpa-arcgis",
+    "historicalQualificationSourceId": "US-ORANGE-COUNTY-OCPA-PARCELS",
+    "name": "Orange County Property Appraiser parcel Feature Layer",
+    "operator": "Orange County Property Appraiser",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+    "officialPortal": "https://ocpaweb.ocpafl.org/?act=home",
+    "geometryType": "Polygon",
+    "nativeCrs": "EPSG:2236 (ArcGIS WKID 102658/latestWkid 2236)",
+    "responseCrs": "EPSG:4326",
+    "nativeParcelIdField": "PARCEL",
+    "objectIdField": "OBJECTID",
+    "scope": "Orange County assessment parcel polygons; not a legal-title extract."
+  },
+  "qualificationDescriptor": {
+    "adapter": "arcgis",
+    "id": "orlando-ocpa-arcgis",
+    "name": "Orlando OCPA bounded parcel qualification",
+    "endpoint": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+    "idField": "PARCEL",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPrefix": "US-ORANGE-COUNTY-PARCEL-",
+    "outFields": [
+      "OBJECTID",
+      "PARCEL"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 25,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 25,
+    "boundsSrid": 2236,
+    "boundsProjection": "+proj=tmerc +lat_0=24.3333333333333 +lon_0=-81 +k=0.999941177 +x_0=200000.0001016 +y_0=0 +datum=NAD83 +units=us-ft +no_defs +type=crs",
+    "responseCrs": "EPSG:4326",
+    "metricSrid": 26917,
+    "countryCode": "US",
+    "cityIds": [
+      "wup2025:7432"
+    ],
+    "note": "Descriptor fields follow the successfully exercised backend adapter; root review is required before any catalog or runtime admission."
+  },
+  "evidence": {
+    "qualification": "orlando-runtime-qualification.json",
+    "quality": "orlando-runtime-quality.json",
+    "excludedProbeSummary": "orlando-runtime-excluded-probes.json",
+    "sampleFile": "orlando-parcel-samples.geojson",
+    "fullPolygonCount": 3,
+    "sampleParcelIds": [
+      {
+        "OBJECTID": 167862,
+        "PARCEL": "302216051000349"
+      },
+      {
+        "OBJECTID": 166712,
+        "PARCEL": "302217052500193"
+      },
+      {
+        "OBJECTID": 166926,
+        "PARCEL": "302217052300128"
+      }
+    ]
+  },
+  "disposition": "Pending root review. No catalog, registry, production runtime or city configuration was changed by this qualification."
+}

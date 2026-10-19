@@ -1,0 +1,235 @@
+{
+  "checkedAt": "2026-10-07T22:05:54.243435Z",
+  "purpose": "GISCOE candidate native-ID/completeness acceptance audit for Johannesburg-region city targets.",
+  "source": {
+    "id": "za-giscoe-erven",
+    "service": "GISCOE South Africa Cadastre MapServer layer 1",
+    "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+    "layerName": "Erven",
+    "layerId": 1,
+    "nativeField": "SG21KEY",
+    "nativeIdType": "string",
+    "nativeIdPrefix": "ZA-GISCOE-",
+    "transportObjectIdField": "OBJECTID",
+    "transportObjectIdsNotCanonical": true,
+    "queryFields": [
+      "OBJECTID",
+      "SG21KEY",
+      "SGSUBKEY",
+      "ParcelGuid",
+      "GlobalID"
+    ],
+    "providerFields": {
+      "OBJECTID": {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID"
+      },
+      "SG21KEY": {
+        "name": "SG21KEY",
+        "type": "esriFieldTypeString",
+        "length": 21
+      },
+      "SGSUBKEY": {
+        "name": "SGSUBKEY",
+        "type": "esriFieldTypeString",
+        "length": 16
+      },
+      "GlobalID": {
+        "name": "GlobalID",
+        "type": "esriFieldTypeGlobalID",
+        "length": 38
+      },
+      "ParcelGuid": {
+        "name": "ParcelGuid",
+        "type": "esriFieldTypeGUID",
+        "length": 38
+      }
+    },
+    "limits": {
+      "maxRecordCount": 1000,
+      "geometryType": "esriGeometryPolygon",
+      "supportsQuery": true,
+      "supportedQueryFormats": "JSON, geoJSON, PBF"
+    }
+  },
+  "runtimeDescriptorProfiles": {
+    "objectIdsProfile": {
+      "id": "za-giscoe-erven",
+      "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+      "idField": "SG21KEY",
+      "idType": "string",
+      "idPrefix": "ZA-GISCOE-",
+      "idPattern": "^T0[A-Z0-9]+$",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "SG21KEY",
+        "SGSUBKEY",
+        "ParcelGuid",
+        "GlobalID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 20,
+      "idBatchSize": 10,
+      "status": "Not presently accepted for runtime: exact-ID object-ID/count manifests succeeded in batches but repeated one-query/15s provider timeout at Cosmo offset 200, and native identity conflict at Mboloko offset100. Size-3 retry also timed out at Cosmo offset200 and Mboloko offset30. A single-ID adapter read succeeded but took 24.5s end-to-end, exceeding the 15s gateway budget. Keep this profile held until a reliable smaller/faster exact-native profile is proven."
+    },
+    "offsetProfile": {
+      "id": "za-giscoe-erven",
+      "idField": "SG21KEY",
+      "idType": "string",
+      "idPrefix": "ZA-GISCOE-",
+      "idsQueryMode": "offset",
+      "boundsQueryMode": "object-ids",
+      "pageSize": 25,
+      "idBatchSize": 3,
+      "status": "Diagnostic only: for 3 IDs, one complete offset-paged adapter read returned exact matching geometries in 11.273s Cosmo City and 10.999s Mboloko; no transfer limit, 3 features, 0 absent. This profile is not full target validation; it lacks exact object-ID manifest and is incompatible with nativeGeometryMode=parts per adapter descriptor validation."
+    }
+  },
+  "cities": [
+    {
+      "city": "Cosmo City",
+      "wupCityCode": 3990,
+      "gridCells": 9,
+      "gridCellsComplete": 9,
+      "gridCount": 619,
+      "gridManifestAndGeometryComplete": true,
+      "observedFeatures": 532,
+      "uniqueObservedSG21KEYs": 532,
+      "repeatedObservedSG21KEYs": 0,
+      "defaultNativeExact": {
+        "verifiedObservedIds": 200,
+        "expectedObservedIds": 532,
+        "complete": false,
+        "absentIds": [],
+        "geometryMismatches": [],
+        "failedRequests": [
+          {
+            "batchStart": 200,
+            "ids": [
+              "T0IQ07240000904300000",
+              "T0IQ07240000906400000",
+              "T0IQ07240000906300000",
+              "T0IQ07240000906200000",
+              "T0IQ07240000906100000",
+              "T0IQ07240000905100000",
+              "T0IQ07240000905000000",
+              "T0IQ07240000904900000",
+              "T0IQ07240000904800000",
+              "T0IQ07240000904700000"
+            ],
+            "message": "Parcel provider timed out."
+          },
+          {
+            "batchStart": 200,
+            "ids": [
+              "T0IQ07240000904300000",
+              "T0IQ07240000906400000",
+              "T0IQ07240000906300000"
+            ],
+            "message": "Parcel provider timed out."
+          }
+        ]
+      }
+    },
+    {
+      "city": "Ennerdale",
+      "wupCityCode": 3809,
+      "gridCells": 9,
+      "gridCellsComplete": 9,
+      "gridCount": 263,
+      "gridManifestAndGeometryComplete": true,
+      "observedFeatures": 210,
+      "uniqueObservedSG21KEYs": 147,
+      "repeatedObservedSG21KEYs": 63,
+      "defaultNativeExact": null
+    },
+    {
+      "city": "Mboloko",
+      "wupCityCode": 4033,
+      "gridCells": 9,
+      "gridCellsComplete": 9,
+      "gridCount": 403,
+      "gridManifestAndGeometryComplete": true,
+      "observedFeatures": 330,
+      "uniqueObservedSG21KEYs": 330,
+      "repeatedObservedSG21KEYs": 0,
+      "defaultNativeExact": {
+        "verifiedObservedIds": 100,
+        "expectedObservedIds": 330,
+        "complete": false,
+        "absentIds": [],
+        "geometryMismatches": [],
+        "failedRequests": [
+          {
+            "batchStart": 100,
+            "ids": [
+              "T0JQ00540000072800000",
+              "T0JQ00540000072200000",
+              "T0JQ00540000056900000",
+              "T0JQ00540000072900000",
+              "T0JQ00540000057000000",
+              "T0JQ00540000072100000",
+              "T0JQ00540000029900000",
+              "T0JQ00540000101700000",
+              "T0JQ00000000024200029",
+              "T0JQ00540000051400000"
+            ],
+            "message": "Parcel provider returned conflicting geometry for one parcel ID."
+          }
+        ]
+      }
+    }
+  ],
+  "duplicateNativeIdentityFindings": [
+    {
+      "nativeId": "T0JQ00000000024200029",
+      "sameSG21KEY": true,
+      "sameSGSUBKEY": true,
+      "ParcelGuidBothNull": true,
+      "globalIdsDistinct": true,
+      "geometryIntersects": false,
+      "intersectionAreaM2": 0,
+      "sourcePartCount": 2,
+      "partsAdapterElapsedMs": 22719,
+      "partsAdapterComplete": true,
+      "partsModeRuntimeBudget": "22.719s one-key exact read; over the 15s app gateway budget",
+      "canonicalIdentityConclusion": "Part assembly is geometrically valid for this sampled key, but does not resolve all-target completeness or runtime budget."
+    }
+  ],
+  "otherCandidateFields": {
+    "ParcelGuid": "Cosmo 2 populated of 532; Mboloko 0 of 330; Ennerdale duplicated across same repeated SG21KEY pair. Exact ID query returned one Cosmo row for sampled populated value and two Ennerdale rows for repeated value; not suitable for all-city identity.",
+    "GlobalID": "Unique per sampled source row, but exact lookups returned 0 for tested IDs; not accepted as native key.",
+    "SGSUBKEY": "Unique across sampled Cosmo records; unique=143/210 Ennerdale with same-repeat pattern; unique across local Mboloko sample but duplicated globally in audited exact batch. Use as match field only in configured parts grouping, never canonical ID by itself."
+  },
+  "safeConflictEvidence": {
+    "mboExactBatchCount": 11,
+    "mboExactOIDManifestCount": 11,
+    "allGeometryRowsFetched": 11,
+    "duplicateGroups": [
+      {
+        "nativeId": "T0JQ00000000024200029",
+        "sameSG21KEY": true,
+        "sameSGSUBKEY": true,
+        "ParcelGuidBothNull": true,
+        "globalIdsDistinct": true,
+        "geometryIntersects": false,
+        "intersectionAreaM2": 0,
+        "sourcePartCount": 2,
+        "partsAdapterElapsedMs": 22719,
+        "partsAdapterComplete": true,
+        "partsModeRuntimeBudget": "22.719s one-key exact read; over the 15s app gateway budget",
+        "canonicalIdentityConclusion": "Part assembly is geometrically valid for this sampled key, but does not resolve all-target completeness or runtime budget."
+      }
+    ]
+  },
+  "files": [
+    "giscoe-layer-metadata.json",
+    "giscoe-grid-manifests.json",
+    "giscoe-native-geometry-hashes.json",
+    "giscoe-acceptance.json",
+    "giscoe-mboloko-duplicate-parts.json",
+    "giscoe-small-native-geometry-samples.json"
+  ],
+  "conclusion": "GISCOE remains on technical hold for these targets. Ennerdale has overlapping repeated SG21KEYs. Mboloko\u2019s audited duplicate is disjoint and the adapter\u2019s parts mode assembled that one group with matching SG21KEY/SGSUBKEY, but all-target completeness timed out and one exact parts read took 22.719s, beyond the 15s app gateway budget. Cosmo exact native-ID validation is incomplete after repeated provider timeouts. Offset mode passed only 3-key diagnostics; it is not full native-ID acceptance and cannot be used with the parts descriptor."
+}

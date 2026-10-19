@@ -1,0 +1,14 @@
+{
+  "taskId": "city:847",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-847-tripoli.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/tripoli-service-review.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T08:24:32.979956Z",
+  "reason": "Official Lebanese LRC distribution identifies Tripoli registry and survey custody. The reported ArcGIS hit is a cadastral zone, not an individual parcel; no parcel polygon or native parcel ID is verified. Fresh reads, paging, 13 cells, metric GEOS checks, binding and headed Details remain unproved.",
+  "independentlyCheckedCustodyUrl": "https://www.lrc.gov.lb/ar/node/44",
+  "sourceAdmission": "not_admitted"
+}

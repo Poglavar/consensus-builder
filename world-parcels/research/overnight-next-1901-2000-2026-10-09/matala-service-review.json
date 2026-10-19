@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-2819-matala.json",
+  "cityCode": 2819,
+  "queueRank": 1977,
+  "city": "Matala",
+  "country": "Angola",
+  "countryCode": "AO",
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "provider": "IGCA is the evidenced national cadastre authority; MAT lists Matala service points, but no city-specific open cadastral provider was verified",
+  "serviceUrl": "https://inscrevaja.minfin.gov.ao/",
+  "discoveryUrls": ["https://www.igca.gov.ao/home", "https://www.igca.gov.ao/detalhes-noticias/16", "https://inscrevaja.minfin.gov.ao/", "https://mat.gov.ao/web/pontos-atendimentos", "https://mtti.gov.ao/ao/galerias/registo-predial/"],
+  "attemptedRoutes": [
+    {"route":"GET https://www.igca.gov.ao/home and /detalhes-noticias/16","outcome":"official content found through first-party search; direct TLS retrieval had a certificate-hostname mismatch and was not bypassed; no public parcel API exposed"},
+    {"route":"GET https://inscrevaja.minfin.gov.ao/","outcome":"succeeded with HTTP 200; current public JavaScript/configuration inspected; application routes are authenticated or otherwise not a safe anonymous parcel feature service"},
+    {"route":"GET https://mat.gov.ao/web/pontos-atendimentos","outcome":"succeeded with HTTP 200; three Matala service entries and map embeds found; no cadastral schema or parcel geometry"},
+    {"route":"GET https://mtti.gov.ao/ao/galerias/registo-predial/","outcome":"timeout/unusable in public fetch; no endpoint or geometry returned"},
+    {"route":"Matala exact-point query","outcome":"not run; no public parcel endpoint was identified, so no point-hit or absence claim was made"}
+  ],
+  "scope": "Public first-party discovery and bounded inspection of official Angola cadastre/programme, property-registration, and MAT service-point sources. No citywide or countrywide parcel geometry coverage was verified.",
+  "schemaAndCrs": "Unavailable; no anonymous parcel feature response was obtained.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if later exposed"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, personal, tax/account, legal-description, or ownership fields were requested or retained. No login, credentials, private token, CAPTCHA bypass, or TLS verification disablement was used.",
+  "officialCustodyEvidence": "IGCA official material identifies the national cadastral authority and a 2025 cadastral pilot. MAT's official page lists Matala service points, but does not name a local cadastral custodian or expose a parcel service. General national agency evidence is not treated as city-specific registry evidence.",
+  "limits": ["No anonymous parcel geometry or schema was available.", "No exact-point query was possible and no absence inference was made.", "The three MAT Matala entries contain incomplete/placeholder-like contact and location fields.", "National pilot evidence does not prove Matala coverage.", "RuntimeReadiness remains held pending independent serial review."],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A non-public or authenticated cadastral service may exist and may cover Matala; independent review is required to establish a safe public endpoint, native identity, CRS, and coverage."
+}

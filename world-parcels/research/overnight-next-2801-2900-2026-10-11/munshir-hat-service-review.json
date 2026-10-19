@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-7169-munshir-hat.json",
+  "cityCode": 7169,
+  "queueRank": 2852,
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "serviceReviewStatus": "complete_research_only",
+  "registryFound": true,
+  "registryCustodian": "Department of Land Records and Surveys, Ministry of Land, Government of Bangladesh; locally observed reference is Bhola district / Burhanuddin upazila, but the tested anonymous parcel route did not expose that locality.",
+  "publicMapLead": "Bangladesh DLRS Online Land Records and Survey Management map viewer, https://settlement.gov.bd/Map/MapSearch",
+  "queryOutcomes": "Separate English and Bengali discovery queries were performed. First-party DLRS and Ministry of Land map services were found, and official Bangladesh pages located Munshir Hat in Burhanuddin, Bhola.",
+  "requestOutcomes": "The current DLRS JavaScript/configuration was inspected. Division and district enumeration succeeded; Bhola regular survey thana requests returned empty arrays, and the Bhola Diara route returned only Kanchanpur/Tazumuddin. The public tile catalog returned 200 but no usable Munshir Hat parcel layer. No login, credentials, CAPTCHA/Cloudflare bypass, private token, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "geometryType": null, "fieldMapping": null, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point [22.7842250844935, 90.8534040728251] was preserved and not moved.", "No exact-point parcel hit or city/locality polygon was obtained.", "Empty or incomplete viewer enumeration does not establish citywide absence.", "Official registry/service presence does not qualify runtime integration.", "No raw source-specific attribute set or retained sample GeoJSON is included.", "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.", "Independent serial review is required before any adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "A first-party cadastral/map service was verified, but no safe native parcel identity or geometry was returned for Munshir Hat during this bounded anonymous attempt."},
+  "uncertainty": "The relationship between the WUP locality point and the public viewer's survey/mouza catalog, the availability of Burhanuddin data, municipal/local boundary correspondence, update cadence, and stable parcel identity semantics remain unverified."
+}

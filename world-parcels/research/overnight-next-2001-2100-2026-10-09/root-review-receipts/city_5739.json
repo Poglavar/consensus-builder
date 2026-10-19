@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5739",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-5739-kaesong.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/kaesong-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T21:32:40Z",
+  "reason": "Queue identity matches rank 2043, DPRK, [37.9742038364886, 126.557762621636], 285008 persons; English and Korean searches are recorded and no polygon is retained. The inspected K-GeoP route is South Korean and inapplicable; the DPRK general-information route does not establish a Kaesong cadastral custodian. registryFound:null remains unresolved, not false absence. No public native-ID polygon response or adapter qualification gates are evidenced; held.",
+  "firstPartyUrlsChecked": [
+    "https://www.kgeop.go.kr/",
+    "https://www.naenara.com.kp/"
+  ],
+  "admissionGatesVerified": false
+}

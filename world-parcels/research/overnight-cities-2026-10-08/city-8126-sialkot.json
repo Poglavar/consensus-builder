@@ -1,0 +1,102 @@
+{
+  "name": "Sialkot",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 263,
+  "point": [
+    32.4967133296181,
+    74.5245532069344
+  ],
+  "population2025": 1907978,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-weighted locator, not a parcel identity. A Sialkot-named PULSE layer is a credible local source, but the service returned only a token requirement. City extent coverage, current parcel distribution, fields, geometry and exact point match remain unverified. PULSE itself says its indicative lines are not legal boundaries.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Punjab PULSE interactive viewer lists a Cadastral Maps > Sialkot layer. Its map service exposes a Sialkot-named sublayer, but anonymous service metadata and bounded identify/query attempts return ArcGIS HTTP 499 Token Required. The local Revenue Department Sialkot portal is also an official city/district revenue office. This identifies a city-specific map source, but does not establish exact WUP-point coverage or parcel geometry.",
+  "resultCategory": "official_local_cadastral_layer_token_required_geometry_not_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sialkot official cadastral parcel map GIS land records Punjab Pakistan government",
+        "result": "Official PULSE viewer advertises Cadastral Maps > Sialkot. Its client trace identifies the Punjab_Cdastral_Maps MapServer, sublayer 32 titled Sialkot. An anonymous metadata and bounded point query returned ArcGIS HTTP 499 Token Required; no parcel features or IDs were returned.",
+        "urls": [
+          "https://lis.pulse.gop.pk/",
+          "https://gismaps.pulse.gop.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/32"
+        ],
+        "method": "Separate English web search, official viewer review, and bounded anonymous ArcGIS REST metadata/identify attempts."
+      },
+      {
+        "language": "Urdu",
+        "query": "سیالکوٹ سرکاری کڈسٹرل نقشہ پلاٹ پنجاب لینڈ ریکارڈ GIS",
+        "result": "Search results identified the official district Revenue Department and PULSE mapping portal. The PULSE layer is explicitly named for Sialkot, but the public service request requires a token; no geometry was obtained.",
+        "urls": [
+          "https://sialkot.punjab.gov.pk/Revenue_Department_Sialkot",
+          "https://lis.pulse.gop.pk/"
+        ],
+        "method": "Separate Urdu-language web search and official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://lis.pulse.gop.pk/",
+        "observation": "Official PULSE public map UI lists Cadastral Maps and Sialkot. It warns that displayed indicative lines are not legal boundaries."
+      },
+      {
+        "url": "https://gismaps.pulse.gop.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/32",
+        "method": "GET (viewer-traced ArcGIS REST sublayer metadata and bounded point query)",
+        "httpStatus": 499,
+        "observation": "ArcGIS response reported Token Required; no feature or fields were returned."
+      },
+      {
+        "url": "https://sialkot.punjab.gov.pk/Revenue_Department_Sialkot",
+        "observation": "Official district Revenue Department page; local revenue-office source, not evidence of public parcel geometry."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "url": "https://lis.pulse.gop.pk/",
+      "clientTrace": "The viewer lists Cadastral Maps > Sialkot and references VendorMaps/Punjab_Cdastral_Maps/MapServer sublayer 32 with title/location Sialkot. Anonymous metadata and point query return 499 Token Required. No auth flow or token was attempted.",
+      "routes": [
+        "ArcGIS MapServer sublayer 32 metadata",
+        "ArcGIS MapServer query/identify (bounded point test; token required)"
+      ]
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "The WUP point is a population-weighted locator, not a parcel identity. A Sialkot-named PULSE layer is a credible local source, but the service returned only a token requirement. City extent coverage, current parcel distribution, fields, geometry and exact point match remain unverified. PULSE itself says its indicative lines are not legal boundaries."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "PK-PB-SIALKOT-PULSE-CADASTRAL",
+    "name": "PULSE Cadastral Maps, Sialkot sublayer",
+    "url": "https://lis.pulse.gop.pk/",
+    "operator": "Punjab Urban Land Systems Enhancement (PULSE), Government of Punjab; Revenue Department Sialkot",
+    "serviceType": "Official interactive cadastral-map viewer; Sialkot map sublayer is identified, but anonymous ArcGIS layer access returned HTTP 499 Token Required.",
+    "layer": "VendorMaps/Punjab_Cdastral_Maps/MapServer sublayer 32, titled Sialkot (viewer trace); parcel query unavailable anonymously",
+    "geometryType": "Polygon layer advertised; no feature geometry returned",
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "The protected service did not return its fields or any feature; no parcel identifier was observed."
+  },
+  "wupCityCode": 8126,
+  "cityId": "wup2025:8126",
+  "queueRank": 263,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    32.4967133296181,
+    74.5245532069344
+  ],
+  "rootReviewedAt": "2026-10-08T21:46:22.040221+00:00",
+  "sourceIds": []
+}

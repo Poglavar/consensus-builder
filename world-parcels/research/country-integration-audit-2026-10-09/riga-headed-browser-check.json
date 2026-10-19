@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:42:45.763449+00:00",
+  "city": "riga",
+  "appCityId": "riga",
+  "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+  "initialCenterBasis": "Unchanged WUP2025 settlement locator; observed Leaflet center differs only by screen-pixel precision.",
+  "configuredCenterLatLon": [
+    56.9551247864813,
+    24.1200225203638
+  ],
+  "zoom": 19,
+  "loadedParcelCount": 169,
+  "targetId": "LV-VZD-01000210029",
+  "pointerPosition": [
+    570,
+    416
+  ],
+  "interaction": "Actual mouse move/down/up, menu Details click, rendered heading with matching native parcel ID",
+  "detailsHeadingVerified": true,
+  "basemapVisualInspection": "Screenshot shows loaded OSM streets/buildings throughout viewport behind native parcel outlines and selected fill.",
+  "uncaughtPageErrors": [],
+  "geometryChangedOrRepaired": false,
+  "screenshot": "tmp/overnight-cities-2026-10-09/riga-parcel-details.png",
+  "browserSession": "baltic-ui",
+  "browserClosed": true,
+  "readOnlyPreview": true,
+  "productionDeployment": false,
+  "initialPreviewRoutingFailure": {
+    "description": "Initial preview URL omitted backend override and used the separate default localhost:3000 API. No local source UI success was claimed from that run.",
+    "correction": "Navigated with backend override targeting the owned port5640 gateway; 169 real public parcels rendered."
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Kashan, Iran; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 5609,
+  "queueRank": 2708,
+  "name": "Kashan",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [33.9825665407198, 51.4323242939136],
+  "population2025": 218559,
+  "population2025k": 218.559,
+  "populationUnit": "persons",
+  "aliases": ["kashan"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kashan Iran official cadastral parcel map GIS cadastre land registry",
+        "result": "Found a Kashan-local electronic building-plan mapping system and national Iranian cadastral-service references, but no public Kashan-bounded parcel polygon API or downloadable safe parcel sample was verified.",
+        "actualResultUrls": [
+          "https://kashannezam.ir/e-map-system-launch",
+          "https://kashannezam.ir/",
+          "https://cadastre.ssaa.ir/",
+          "https://shamim.ssaa.ir/"
+        ]
+      },
+      {
+        "language": "Persian",
+        "query": "کاشان نقشه کاداستر GIS قطعه زمین ثبت اسناد املاک شهرداری",
+        "result": "The first-party/local result documents Kashan’s electronic map system for building-permit plans, developed with Kashan Municipality, and says access requires a user account; it does not expose a public cadastral parcel layer. National cadastral references describe restricted surveying/cadastre systems, not an anonymous city polygon endpoint.",
+        "actualResultUrls": [
+          "https://kashannezam.ir/e-map-system-launch",
+          "https://kashannezam.ir/",
+          "https://my.ssaa.ir/",
+          "https://cadastre.ssaa.ir/"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://kashannezam.ir/e-map-system-launch",
+      "observation": "The Kashan branch of Iran’s Construction Engineering Organization says, in cooperation with Kashan Municipality, it designed and launched an electronic system for registering and approving building-permit plans. It describes an integrated archive containing plan, area, property-location and related records for engineers, the organization and the municipality, and says engineers must obtain a username and password in person. This evidences a local map/procedure custodian, not a public cadastral parcel-geometry service."
+    },
+    {
+      "url": "https://kashannezam.ir/",
+      "observation": "The first-party Kashan engineering-organization page links engineer and owner entry points at sana.kashannezam.ir for the electronic map system and identifies the Kashan branch. The linked service was not anonymously retrievable during this attempt."
+    },
+    {
+      "url": "https://cadastre.ssaa.ir/",
+      "observation": "National cadastral portal candidate identified by discovery; no anonymous public parcel API was established."
+    },
+    {
+      "url": "https://shamim.ssaa.ir/",
+      "observation": "National cadastral positioning/surveying service candidate identified by discovery; no anonymous public parcel polygon service was established."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sana.kashannezam.ir/",
+      "method": "GET anonymous service probe",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Timed out after 10 seconds from the research environment. No login was attempted and no response/schema/geometry was retained."
+    },
+    {
+      "url": "https://www.kashan.ir/",
+      "method": "GET first-party municipal site probe",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Timed out after 20 seconds from the research environment. This is an access failure, not evidence of municipal or cadastral absence."
+    },
+    {
+      "url": "https://cadastre.ssaa.ir/",
+      "method": "GET anonymous national cadastral portal probe",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Timed out after 8 seconds. No credentials, login, CAPTCHA bypass or private token was used."
+    },
+    {
+      "url": "https://shamim.ssaa.ir/",
+      "method": "GET anonymous national surveying/cadastral service probe",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Timed out after 8 seconds. No credentials, login, CAPTCHA bypass or private token was used."
+    },
+    {
+      "url": "https://my.ssaa.ir/",
+      "method": "GET anonymous national registration portal probe",
+      "httpStatus": 0,
+      "contentType": null,
+      "outcome": "Timed out after 8 seconds. No login was attempted."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A Kashan-local first-party map/procedure custodian is evidenced by the Kashan engineering-organization page describing its electronic building-plan map system operated with Kashan Municipality. This is not evidence of a public cadastral parcel geometry endpoint or open registry data.",
+  "registryEvidenceUrls": ["https://kashannezam.ir/e-map-system-launch", "https://kashannezam.ir/"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Kashan-local electronic building-plan map procedure and national Iranian cadastral service references.",
+    "verifiedOpenScope": "No anonymous Kashan-bounded parcel polygon response, schema, CRS, or stable safe native parcel identity was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "asia",
+  "remainingUncertainty": "The local electronic map service and national cadastral systems may contain location or parcel data, but anonymous endpoint discovery was blocked by timeouts and the local system is documented as authenticated building-plan workflow. No exact-point hit or access failure is treated as citywide absence; the WUP point was preserved exactly without shifting it."
+}

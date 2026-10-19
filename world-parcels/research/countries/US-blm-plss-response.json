@@ -1,0 +1,206 @@
+{
+ "displayFieldName": "PLSSID",
+ "fieldAliases": {
+  "OBJECTID": "OBJECTID",
+  "PLSSID": "Township Identifier",
+  "FRSTDIVID": "First Division Identifier",
+  "FRSTDIVTYP": "First Division Type Code",
+  "FRSTDIVTXT": "First Division Type Text",
+  "FRSTDIVNO": "First Division Number",
+  "FRSTDIVDUP": "First Division Duplicate",
+  "FRSTDIVLAB": "First Division Label",
+  "SURVTYP": "PLSS Special Survey Type Code",
+  "SURVTYPTXT": "Survey Type Text",
+  "SOURCEDATE": "Source Doc Date",
+  "SOURCEREF": "Source Doc Link or Reference",
+  "Shape.STArea()": "Shape.STArea()",
+  "Shape.STLength()": "Shape.STLength()"
+ },
+ "geometryType": "esriGeometryPolygon",
+ "spatialReference": {
+  "wkid": 102100,
+  "latestWkid": 3857
+ },
+ "fields": [
+  {
+   "name": "OBJECTID",
+   "type": "esriFieldTypeOID",
+   "alias": "OBJECTID"
+  },
+  {
+   "name": "PLSSID",
+   "type": "esriFieldTypeString",
+   "alias": "Township Identifier",
+   "length": 50
+  },
+  {
+   "name": "FRSTDIVID",
+   "type": "esriFieldTypeString",
+   "alias": "First Division Identifier",
+   "length": 50
+  },
+  {
+   "name": "FRSTDIVTYP",
+   "type": "esriFieldTypeString",
+   "alias": "First Division Type Code",
+   "length": 2
+  },
+  {
+   "name": "FRSTDIVTXT",
+   "type": "esriFieldTypeString",
+   "alias": "First Division Type Text",
+   "length": 50
+  },
+  {
+   "name": "FRSTDIVNO",
+   "type": "esriFieldTypeString",
+   "alias": "First Division Number",
+   "length": 10
+  },
+  {
+   "name": "FRSTDIVDUP",
+   "type": "esriFieldTypeString",
+   "alias": "First Division Duplicate",
+   "length": 1
+  },
+  {
+   "name": "FRSTDIVLAB",
+   "type": "esriFieldTypeString",
+   "alias": "First Division Label",
+   "length": 20
+  },
+  {
+   "name": "SURVTYP",
+   "type": "esriFieldTypeString",
+   "alias": "PLSS Special Survey Type Code",
+   "length": 2
+  },
+  {
+   "name": "SURVTYPTXT",
+   "type": "esriFieldTypeString",
+   "alias": "Survey Type Text",
+   "length": 50
+  },
+  {
+   "name": "SOURCEDATE",
+   "type": "esriFieldTypeDate",
+   "alias": "Source Doc Date",
+   "length": 8
+  },
+  {
+   "name": "SOURCEREF",
+   "type": "esriFieldTypeString",
+   "alias": "Source Doc Link or Reference",
+   "length": 100
+  },
+  {
+   "name": "Shape.STArea()",
+   "type": "esriFieldTypeDouble",
+   "alias": "Shape.STArea()"
+  },
+  {
+   "name": "Shape.STLength()",
+   "type": "esriFieldTypeDouble",
+   "alias": "Shape.STLength()"
+  }
+ ],
+ "features": [
+  {
+   "attributes": {
+    "OBJECTID": 1879450,
+    "PLSSID": "CO060040S0680W0",
+    "FRSTDIVID": "CO060040S0680W0SN160",
+    "FRSTDIVTYP": "SN",
+    "FRSTDIVTXT": "Section",
+    "FRSTDIVNO": "16",
+    "FRSTDIVDUP": "0",
+    "FRSTDIVLAB": "16",
+    "SURVTYP": null,
+    "SURVTYPTXT": null,
+    "SOURCEDATE": null,
+    "SOURCEREF": null,
+    "Shape.STArea()": 4399737.461839415,
+    "Shape.STLength()": 8390.22773054624
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -11690294.9401,
+       4823011.652900003
+      ],
+      [
+       -11690295.4505,
+       4823538.104800001
+      ],
+      [
+       -11690295.957899999,
+       4824064.584200002
+      ],
+      [
+       -11689771.230999999,
+       4824063.963299997
+      ],
+      [
+       -11689246.5007,
+       4824063.343000002
+      ],
+      [
+       -11688722.1261,
+       4824062.686499998
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "attributes": {
+    "OBJECTID": 1879459,
+    "PLSSID": "CO060040S0680W0",
+    "FRSTDIVID": "CO060040S0680W0SN150",
+    "FRSTDIVTYP": "SN",
+    "FRSTDIVTXT": "Section",
+    "FRSTDIVNO": "15",
+    "FRSTDIVDUP": "0",
+    "FRSTDIVLAB": "15",
+    "SURVTYP": null,
+    "SURVTYPTXT": null,
+    "SOURCEDATE": null,
+    "SOURCEREF": null,
+    "Shape.STArea()": 4378129.84533883,
+    "Shape.STLength()": 8364.29432849143
+   },
+   "geometry": {
+    "rings": [
+     [
+      [
+       -11688194.2564,
+       4823013.1774
+      ],
+      [
+       -11688196.000500001,
+       4823537.590999998
+      ],
+      [
+       -11688197.744800001,
+       4824062.032499999
+      ],
+      [
+       -11687681.0286,
+       4824060.494999997
+      ],
+      [
+       -11687164.3121,
+       4824058.9575999975
+      ],
+      [
+       -11686636.0459,
+       4824054.100100003
+      ]
+     ]
+    ]
+   }
+  }
+ ],
+ "_note": "Raw ArcGIS reply (BLM National PLSS CadNSDI, First Division layer near Denver); rings truncated."
+}

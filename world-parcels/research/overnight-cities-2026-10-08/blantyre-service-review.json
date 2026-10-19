@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-851-blantyre.json",
+  "purpose": "City-specific official registry and public parcel geometry source review for the ranked WUP point.",
+  "scopeLimits": "The city GIS/database is described as available for planning but no public parcel endpoint, anonymous schema, or geometry response was found. The national LIMS parcel view is account-gated and was not accessed; exact WUP-point coverage is unverified.",
+  "assessment": "Official city/local registry or cadastral-office evidence was found, but no anonymous full parcel geometry was verified.",
+  "registryAssessment": "Blantyre City Council survey/GIS material documents cadastral and topographic map creation and a citywide geodatabase used for public and private planning. The Ministry of Lands LIMS is a separate national parcel account system; access to current parcel data requires account registration and verification. No anonymous city parcel geometry was verified.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Blantyre Malawi official cadastral parcel map land registry parcels GIS Blantyre City Council",
+      "scope": "Find official city-specific cadastral/registry sources and a public parcel feature endpoint.",
+      "result": "Blantyre City Council material describes cadastral and topographic survey work and a whole-city GIS geodatabase for planning. The Ministry of Lands LIMS account service can show parcels to registered users after account registration and document verification. No anonymous feature endpoint or exact-point polygon response was found.",
+      "actualResultUrls": [
+        "https://www.mitc.mw/images/downloads/land-administration/Doing-Business-In-Malawi-BT-City-Council.pdf",
+        "https://www.bccmw.com/planning.html",
+        "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60"
+      ],
+      "executionMethod": "Separate English search followed by official city-council, ministry, and LIMS page review; no account registration or login attempted."
+    },
+    {
+      "language": "Chichewa",
+      "query": "Blantyre City Council malo mapu a chigawo cadastre registration land Malawi Chichewa",
+      "scope": "Kufufuza mapu a malo ndi ntchito za kaundula wa malo ku Blantyre kuchokera ku magwero aboma.",
+      "result": "Kusaka m’Chichewa sikunapeze cholozera cha boma cha mapu a malire a minda. Zolemba za BCC mu Chingerezi zafotokoza ntchito ya cadastral survey ndi geodatabase ya mzinda wonse, koma palibe njira ya anonymous vector yomwe inatsimikizidwa.",
+      "actualResultUrls": [
+        "https://www.mitc.mw/images/downloads/land-administration/Doing-Business-In-Malawi-BT-City-Council.pdf",
+        "https://www.bccmw.com/planning.html"
+      ],
+      "executionMethod": "Kusaka kosiyana m’Chichewa ndi kuwunika masamba a bungwe la mzinda ndi Unduna wa Malo; palibe akaunti kapena malowedwe omwe anayesedwa."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.mitc.mw/images/downloads/land-administration/Doing-Business-In-Malawi-BT-City-Council.pdf",
+      "method": "Official source review",
+      "observation": "Official city/local cadastre and survey services are described; the source does not expose an anonymous parcel query endpoint."
+    },
+    {
+      "url": "https://www.bccmw.com/planning.html",
+      "method": "Official source review",
+      "observation": "Official city/local cadastre and survey services are described; the source does not expose an anonymous parcel query endpoint."
+    },
+    {
+      "url": "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60",
+      "method": "Official source review",
+      "observation": "Official city/local cadastre and survey services are described; the source does not expose an anonymous parcel query endpoint."
+    },
+    {
+      "url": "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=b4ee5d9b-c6da-412f-a78a-2db607d7fa1c",
+      "method": "Official source review",
+      "observation": "Official city/local cadastre and survey services are described; the source does not expose an anonymous parcel query endpoint."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "localSources": [
+      "https://www.mitc.mw/images/downloads/land-administration/Doing-Business-In-Malawi-BT-City-Council.pdf",
+      "https://www.bccmw.com/planning.html",
+      "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60",
+      "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=b4ee5d9b-c6da-412f-a78a-2db607d7fa1c"
+    ],
+    "publicViewerOrLayer": "No city-scoped anonymous parcel feature endpoint confirmed.",
+    "pointQuery": "Not performed: no safe anonymous feature endpoint was identified.",
+    "geometryRetained": false,
+    "nationalLims": "https://lims.lands.gov.mw/site/CustomHtml.aspx?PageID=d7f3f61d-4689-4280-a59a-b865f002dd60",
+    "limitation": "LIMS page describes parcel viewing through registered accounts; account registration requires submitted information and ministry verification. No account or login was used."
+  },
+  "geometryDecision": "No anonymous full parcel geometry was verified or retained. Official registry/cadastral-office evidence does not itself establish public vector coverage."
+}

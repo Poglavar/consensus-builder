@@ -1,0 +1,225 @@
+{
+  "name": "Palma de Mallorca",
+  "country": "Spain",
+  "countryCode": "ES",
+  "rank": 1173,
+  "point": [
+    39.5730201363164,
+    2.65959892235363
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Palma de Mallorca official parcel map cadastral GIS city Mallorca land cadastre English",
+        "result": "Official DGC INSPIRE public WFS metadata and bounded parcel requests were reviewed. Full local polygon geometry is verified, but no returned polygon covers the exact unchanged WUP point.",
+        "actualResultUrls": [
+          "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+          "https://www.catastro.hacienda.gob.es/ayuda/ayuda_bi.htm",
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Spanish",
+        "query": "Palma de Mallorca mapa parcelas catastro GIS oficial parcelario sede electrónica catastro Mallorca",
+        "result": "Official DGC INSPIRE service supports public WFS parcel polygons. A bounded 13-cell search returned 231 unique full native polygons; exact WUP point is not covered by any returned polygon.",
+        "actualResultUrls": [
+          "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+          "https://www.catastro.hacienda.gob.es/ayuda/ayuda_bi.htm",
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html"
+        ],
+        "method": "Separate Spanish-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+        "operator": "Spanish Directorate General for Cadastre",
+        "scope": "Official national cadastre service; competent for Palma jurisdiction, with public WMS/WFS and INSPIRE parcel services."
+      },
+      {
+        "url": "https://www.catastro.hacienda.gob.es/ayuda/ayuda_bi.htm",
+        "operator": "Spanish Cadastre help",
+        "scope": "Official service guidance."
+      },
+      {
+        "url": "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+        "operator": "Spanish Cadastre INSPIRE services",
+        "scope": "Official WMS/WFS and ATOM service documentation; exact point query attempts failed to return parcel features."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+        "operator": "Dirección General del Catastro",
+        "scope": "Official INSPIRE CadastralParcel WFS. Bounded anonymous requests in EPSG:25831 returned local parcel geometries and native identifiers; no exact WUP-point parcel coverage."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx",
+        "method": "Anonymous WMS GetCapabilities",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "bytesRead": 28799,
+        "assessment": "Official layer metadata retrieved; queryable parcel layer is advertised."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/Cartografia/WFS/ServidorWFS.aspx",
+        "method": "Anonymous WFS GetCapabilities",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "bytesRead": 14510,
+        "assessment": "Official feature service metadata retrieved."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx",
+        "method": "WMS 1.3.0 GetFeatureInfo, exact WUP point; WMS 1.1.1 retry; WFS 2.0 exact-point GetFeature",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "bytesRead": 468,
+        "assessment": "First WMS response: HTTP 200, 468 bytes, XML ServiceException InvalidFormat (del=0, mun=0, and format/bbox parameters); SHA-256 9bd18b108aa4a5ce4ff495f04523c4268b0a2ef2886cba0561e62222e2670f64. Subsequent WMS 1.1.1 and WFS 2.0 attempts reset connection. No geometry retained."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/Cartografia/WMS/ServidorWMS.aspx",
+        "method": "Anonymous WMS GetCapabilities",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "bytesRead": 28799,
+        "assessment": "Official metadata advertises queryable cadastral parcel layers."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/Cartografia/WFS/ServidorWFS.aspx",
+        "method": "Anonymous WFS GetCapabilities",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "bytesRead": 14510,
+        "assessment": "Official feature-service metadata retrieved; the separate INSPIRE CadastralParcel WFS then supplied full local geometry."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25831&bbox=470720.1116536952%2C4380368.054747554%2C470806.42097786564%2C4380479.362231599&propertyName=CP%3AnationalCadastralReference%2CCP%3Ageometry",
+        "method": "Anonymous WFS GetFeature, first WUP-centred bounded cell, safe ID and geometry only",
+        "httpStatus": 200,
+        "contentType": "text/xml; charset=utf-8",
+        "bytesRead": 70273,
+        "assessment": "Returned 29 polygons in complete cell 00. The 13-cell run returned 302 total cell features, 231 unique IDs, and no polygon covered the WUP point."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel",
+        "method": "Fresh adapter exact-ID reads for the 231 IDs found in bounded cells, sequential batches of 80/80/71",
+        "httpStatus": 200,
+        "returnedFeatureCount": 231,
+        "assessment": "All 231 IDs were returned as complete geometry by a fresh adapter instance; each response URL, size and SHA-256 is recorded in exact-id-progress.json."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel&REFCAT=0805601DD7800Z&SRSNAME=EPSG%3A%3A25830",
+        "method": "One provider-level explicit-missing-reference retry for a syntactically valid test ID",
+        "httpStatus": 200,
+        "contentType": "text/xml; charset=utf-8",
+        "bytesRead": 333,
+        "assessment": "HTTP 200 provider missing-parcel response parsed as a complete zero-feature absence for ES-DGC-0805601DD7800Z; no real WUP-linked ID was classified absent."
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+        "method": "One additional fresh adapter absence retry for ES-DGC-0805601DD7800Z",
+        "httpStatus": null,
+        "assessment": "Adapter returned parcel-source-unavailable before an HTTP response; preserved separately and not treated as absence."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1173 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+    "httpStatus": 200,
+    "contentType": "text/xml; charset=utf-8",
+    "featureCount": 29,
+    "verifiedFeatureIds": [
+      "0805604DD7800F",
+      "0806504DD7800F",
+      "0805603DD7800F"
+    ],
+    "nativeIdField": "nationalCadastralReference",
+    "sampleFile": "palma-de-mallorca-inspire-native-samples.json",
+    "requestFilter": "13 sequential anonymous bounded WFS GetFeature viewport requests around unchanged WUP point; first-cell bbox is EPSG:25831 [2.6590989223536297, 39.5725201363164, 2.66009892235363, 39.573520136316404]; typeNames=CP:CadastralParcel; propertyName=CP:nationalCadastralReference,CP:geometry. 302 total cell returns, 231 unique native IDs; no owner, address, tax, account or applicant fields requested.",
+    "requestUrlExample": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP%3ACadastralParcel&srsName=EPSG%3A%3A25831&bbox=470720.1116536952%2C4380368.054747554%2C470806.42097786564%2C4380479.362231599&propertyName=CP%3AnationalCadastralReference%2CCP%3Ageometry",
+    "geometryVerification": "The unchanged WUP point [39.5730201363164, 2.65959892235363] is inside the requested viewport, but native GEOS found no covering parcel in any of the 13 complete cells. The three nearest source-native parcels are 0805604DD7800F (8.246 m), 0806504DD7800F (11.602 m), and 0805603DD7800F (12.181 m). Nearby public parcel geometry is verified; this is not an exact-point parcel hit."
+  },
+  "source": {
+    "sourceId": "es-dgc-inspire-cp-wfs",
+    "name": "Spanish Directorate General for Cadastre INSPIRE Cadastral Parcels WFS",
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+    "operator": "Dirección General del Catastro (Spanish national cadastre; official service queried over Palma)",
+    "serviceType": "Public official INSPIRE WFS feature service. Bounded CP:CadastralParcel polygon geometry and safe native identifiers were returned around the unchanged WUP point.",
+    "layer": "CP:CadastralParcel",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:25831 native in WUP-centred viewport; exact-ID adapter reads use EPSG::25830 and canonical WGS84 output",
+    "nativeIdField": "nationalCadastralReference",
+    "nativeIdEvidence": "Official WFS layer schema and 231 complete exact-ID responses expose the cadastral reference; all requests selected the safe native ID and geometry only.",
+    "attributesRequested": [
+      "nationalCadastralReference",
+      "geometry"
+    ],
+    "sampleCount": 3,
+    "sampleFile": "palma-de-mallorca-inspire-native-samples.json",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "bounded_nearby_public_polygons_verified_wup_point_uncovered",
+    "operatorNote": "Only 3 nearest full native polygons are retained. WUP point coverage, citywide completeness, runtime binding, and descriptor enablement are separate decisions; the current descriptor does not list Palma and no catalogue/runtime changes were made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Spanish DGC INSPIRE public cadastral parcel layer returned complete local geometry around the unchanged Palma WUP point in 13 bounded viewport queries; this verifies local service access only.",
+    "verifiedOpenScope": "All 13 bounded cells were complete (302 returns; 231 unique IDs) and all 231 IDs were freshly read by a new sequential adapter instance. Native GEOS found 231 valid polygons and no WUP-point coverage; the nearest is 8.246 m away. Only 3 nearest full polygons are retained.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "geometryVerified": true,
+    "wupPointCovered": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "technicalBlocker": "Existing-adapter explicit absence remains unverified; tiny native coordinate overlaps and cross-CRS exact-read precision require runtime review.",
+  "remainingUncertainty": "The WUP locator may lie in a genuine unmapped gap or outside the parcel boundary due to locator granularity. No citywide completeness is established. Cross-CRS exact reads match the same 231 IDs and ordered vertices but reprojection produces up to 10.18 mm vertex displacement and 1.122 m² maximum symmetric-difference area; source native geometry remains authoritative for the retained samples.",
+  "nextStep": "Keep runtime disabled for this WUP locator. Root may review a separate local reference point if exact parcel-ground coverage is needed; do not move or replace the canonical point in this packet.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5191,
+  "cityId": "wup2025:5191",
+  "runtimeReadiness": "held_protocol_and_native_precision_review",
+  "adapterReady": false,
+  "centerLatLon": [
+    39.5730201363164,
+    2.65959892235363
+  ],
+  "population2025k": 473.499,
+  "populationUnit": "persons",
+  "queueRank": 1173,
+  "population2025": 473499,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [],
+  "registryBasis": "Official Spanish DGC INSPIRE CadastralParcel service returned local parcel polygons and identifiers over Palma; this supports city-jurisdictional cadastral custody and nearby geometry, not citywide completeness or exact WUP-point coverage.",
+  "registryEvidenceUrls": [
+    "https://www.catastro.hacienda.gob.es/es-ES/sede.html",
+    "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+    "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+  ],
+  "runtimeAssessment": {
+    "status": "held_protocol_and_native_precision_review",
+    "reason": "Official DGC INSPIRE WFS returned 231 unique nearby Palma polygons from 13 complete WUP-centered cells, with all 231 fresh exact-ID reads. WUP point uncovered; nearest parcel is 8.246 m away, which is not city absence or an admission gate. Root GEOS EPSG:25831 audit found all polygons valid, no duplicates or operation errors, and two small positive overlaps totaling 0.02895 m² above the current 0.01 m² threshold. Exact reads use EPSG:25830 and differ after reprojection by up to 10.18 mm. Existing-adapter explicit absence is still unverified because both attempts reset before HTTP; the provider-level separate no-match response is not adapter proof. Hold runtime admission pending protocol and precision review; public geometry is verified."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T08:16:47.193300+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T08:16:47.193297+00:00",
+    "decision": "Public geometry verified; hold runtime pending existing-adapter absence and native precision review.",
+    "evidenceFile": "palma-root-quality-review.json",
+    "scope": "Official DGC INSPIRE WFS returned 231 unique nearby Palma polygons from 13 complete WUP-centered cells, with all 231 fresh exact-ID reads. WUP point uncovered; nearest parcel is 8.246 m away, which is not city absence or an admission gate. Root GEOS EPSG:25831 audit found all polygons valid, no duplicates or operation errors, and two small positive overlaps totaling 0.02895 m² above the current 0.01 m² threshold. Exact reads use EPSG:25830 and differ after reprojection by up to 10.18 mm. Existing-adapter explicit absence is still unverified because both attempts reset before HTTP; the provider-level separate no-match response is not adapter proof. Hold runtime admission pending protocol and precision review; public geometry is verified."
+  },
+  "integratedAt": "2026-10-09T08:16:47.360726+00:00"
+}

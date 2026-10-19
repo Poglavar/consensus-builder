@@ -21,19 +21,6 @@ function buildParcelInfoLateralJoin(parcelAlias = 'p') {
     `;
 }
 
-// Single-parcel ownership lookup from parcel_info.
-function buildParcelInfoOwnershipQuery() {
-    return `
-        SELECT details
-        FROM parcel_info
-        WHERE maticni_broj_ko = $1
-        AND broj_cestice = $2
-        AND details IS NOT NULL
-        ORDER BY version DESC
-        LIMIT 1
-    `;
-}
-
 // Batch ownership lookup from parcel_info for multiple parcels.
 export function buildOwnershipDetailBatchQuery() {
     return `
@@ -50,82 +37,17 @@ export function buildOwnershipDetailBatchQuery() {
     `;
 }
 
-const GOVERNMENT_OWNERSHIP_KEYWORDS_RAW = [
-    'AUTOBUSNI KOLODVOR',
-    'BOLNICA',
-    'CISTOCA',
-    'ČISTOĆA',
-    'DIOKI',
-    'DOM ZDRAVLJA',
-    'DRUSTVENO VLASNISTVO',
-    'DRUŠTVENO VLASNIŠTVO',
-    'ELEKTROPRIVREDA',
-    'GRAD ZAGREB',
-    'GRAD KAŠTELA',
-    'GRAD TROGIR',
-    'GRADSKA PLINARA',
-    'HEP D.D.',
-    'HOLDING',
-    'HRVATSKA RADIOTELEVIZIJA',
-    'HRVATSKE VODE',
-    'HRVATSKI OPERATOR',
-    'INA MAZIVA',
-    'INA-INDUSTRIJA NAFTE',
-    'INA - INDUSTRIJA NAFTE',
-    'INA, D.D.',
-    'INFRASTRUKTURA',
-    'JADRANSKI NAFTOVOD',
-    'JAVNA',
-    'JAVNO',
-    'KLINIKA',
-    'MINISTARSTVO',
-    'OSNOVNA SKOLA',
-    'OSNOVNA ŠKOLA',
-    'REPUBLIKA HRVATSKA',
-    'STUDENTSKI CENTAR',
-    'STUDENTSKI DOM',
-    'SREDNJA ŠKOLA',
-    'SUME',
-    'ŠUME',
-    'SVEUCILISTE',
-    'SVEUČILIŠTE',
-    'TEHNICKA SKOLA',
-    'TEHNIČKA ŠKOLA',
-    'TVORNICA ZELJEZNICKIH VOZILA GREDELJ',
-    'TVORNICA ŽELJEZNIČKIH VOZILA GREDELJ',
-    'TZV GREDELJ',
-    'TŽV GREDELJ',
-    'VELESAJAM',
-    'VODOOPSKRBA',
-    'VODOPRIVREDA ZAGREB',
-    'ZAGREBACKI ELEKTRICNI',
-    'ZAGREBAČKI ELEKTRIČNI',
-    'ZELJEZNICE',
-    'ŽELJEZNICE',
-    'ZRINJEVAC KOMUNALNA',
-    'ZUPANIJA',
-    'ŽUPANIJA'
-];
-
-const INSTITUTION_OWNERSHIP_KEYWORDS_RAW = [
-    'KAPTOL',
-    'CRKVA',
-    'UDRUGA',
-    'ASOCIJACIJA',
-    'SAVEZ',
-    'NADBISKUPIJA',
-    'BISKUPIJA',
-    'ŽUPA'
-];
-
-const COMPANY_OWNERSHIP_MARKERS_RAW = [
-    'D.D.',
-    'D.D',
-    'D.O.O.',
-    'D.O.O',
-    'J.D.O.O.',
-    'J.D.O.O'
-];
+import { createRequire } from 'node:module';
+import { wgs84BboxAreaKm2 } from '../utils/helpers.js';
+const require = createRequire(import.meta.url);
+// The owner classifier and its keyword lists live in the frontend module, and the backend loads
+// THAT copy so the two cannot drift — they had (GRAD TROGIR read 'government' via the API and
+// 'private individual' in the browser). Same createRequire-a-classic-frontend-script pattern as
+// backend/buildings/carve.js.
+const {
+    classifyOwnershipLabel,
+    isCityOwnedLabel
+} = require('../../frontend/js/parcels/ownership-type.js');
 
 const FRACTION_REGEX = /^\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)\s*$/;
 
@@ -303,103 +225,16 @@ function normalizeShareDistribution(rawOwners) {
     return working;
 }
 
-function normalizeOwnerLabel(value) {
-    return sanitizeOwnershipString(value)
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toUpperCase()
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function normalizeOwnerLabelLoose(value) {
-    return normalizeOwnerLabel(value)
-        .replace(/[^A-Z0-9]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function createNormalizedKeywordList(values = []) {
-    return Object.freeze(values.map(normalizeOwnerLabelLoose).filter(Boolean));
-}
-
-function includesAnyKeyword(label, keywords) {
-    if (!label) return false;
-    return keywords.some(keyword => label.includes(keyword));
-}
-
-const CITY_OWNERSHIP_MAPPERS = Object.freeze({
-    zagreb: Object.freeze({
-        exact: createNormalizedKeywordList([
-            'GRAD ZAGREB'
-        ]),
-        contains: createNormalizedKeywordList([
-            'GRAD ZAGREB',
-            'GRADA ZAGREBA',
-            'U VLASNISTVU GRADA ZAGREBA',
-            'U NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
-            'VLASNISTVU GRADA ZAGREBA',
-            'NEOTUDIVOM VLASNISTVU GRADA ZAGREBA',
-            'TRG STJEPANA RADICA 1 ZAGREB',
-            'OIB 61817894937'
-        ]),
-        regexes: Object.freeze([
-            /\bGRAD(?:A)? ZAGREB(?:A)?\b/
-        ])
-    })
-});
-
-const GOVERNMENT_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(GOVERNMENT_OWNERSHIP_KEYWORDS_RAW);
-const INSTITUTION_OWNERSHIP_KEYWORDS = createNormalizedKeywordList(INSTITUTION_OWNERSHIP_KEYWORDS_RAW);
-const COMPANY_OWNERSHIP_MARKERS = createNormalizedKeywordList(COMPANY_OWNERSHIP_MARKERS_RAW);
-
-function getCityOwnershipMapper(options = {}) {
-    const cityKey = normalizeOwnerLabelLoose(options?.city || 'zagreb').toLowerCase();
-    return CITY_OWNERSHIP_MAPPERS[cityKey] || CITY_OWNERSHIP_MAPPERS.zagreb;
-}
-
-function isCityOwnedNormalizedLabel(normalizedLabel, options = {}) {
-    if (!normalizedLabel) {
-        return false;
-    }
-
-    const mapper = getCityOwnershipMapper(options);
-    if (mapper.exact.includes(normalizedLabel)) {
-        return true;
-    }
-    if (mapper.contains.some(keyword => normalizedLabel.includes(keyword))) {
-        return true;
-    }
-    return mapper.regexes.some(regex => regex.test(normalizedLabel));
-}
-
+// The classifier itself, its keyword lists and the city mapper now live in
+// frontend/js/parcels/ownership-type.js (imported above). These two thin wrappers keep the names
+// the rest of this file and its exports use.
 export function isCityOwnedOwnerLabel(ownerLabel, options = {}) {
-    return isCityOwnedNormalizedLabel(normalizeOwnerLabelLoose(ownerLabel), options);
-}
-
-function classifyOwnershipType(ownerLabel, options = {}) {
-    const normalizedLabel = normalizeOwnerLabelLoose(ownerLabel);
-    if (!normalizedLabel) {
-        return 'private individual';
-    }
-    if (isCityOwnedNormalizedLabel(normalizedLabel, options)) {
-        return options?.preserveCity === true ? 'city' : 'government';
-    }
-    if (includesAnyKeyword(normalizedLabel, GOVERNMENT_OWNERSHIP_KEYWORDS)) {
-        return 'government';
-    }
-    if (includesAnyKeyword(normalizedLabel, INSTITUTION_OWNERSHIP_KEYWORDS)) {
-        return 'institution';
-    }
-    if (includesAnyKeyword(normalizedLabel, COMPANY_OWNERSHIP_MARKERS)) {
-        return 'company';
-    }
-    return 'private individual';
+    return isCityOwnedLabel(ownerLabel, options);
 }
 
 function computeOwnershipTypeFromLabels(ownerLabels) {
     const types = (ownerLabels || [])
-        .map(label => classifyOwnershipType(label))
+        .map(label => classifyOwnershipLabel(label))
         .filter(Boolean);
 
     if (!types.length) {
@@ -550,15 +385,6 @@ export function pickOwnershipFields(payload, fallbackParcelId) {
     return base;
 }
 
-function extractParcelKey(row) {
-    const maticni = Number(row?.maticni_broj_ko);
-    const broj = row?.broj_cestice;
-    if (!Number.isFinite(maticni) || !broj) {
-        return null;
-    }
-    return { maticni_broj_ko: maticni, broj_cestice: String(broj) };
-}
-
 function buildParcelSelectQuery({
     whereClause = '',
     includeMunicipality = false,
@@ -578,7 +404,10 @@ function buildParcelSelectQuery({
             p.MATICNI_BROJ_KO,
             'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
             ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
-            ST_Area(p.geom) AS calculated_area${municipalitySelect},
+            -- Geodesic, not projected: the browser measures with turf on the WGS84 ellipsoid, so a
+            -- projected area here would disagree with it by ~0.02–0.25% and every comparison
+            -- between the two would report a difference that is only the measurement.
+            ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area${municipalitySelect},
             pdx.details AS ownership_details
         FROM parcel p${municipalityJoin}
         ${ownershipJoin}
@@ -588,81 +417,6 @@ function buildParcelSelectQuery({
         ${orderByClause}
         ${limitClause}
     `;
-}
-
-async function fetchParcelOwnership(pool, parcelId) {
-    const parcelKeyResult = await pool.query(`
-        SELECT maticni_broj_ko, broj_cestice
-        FROM parcel
-        WHERE cestica_id = $1
-        AND current = true
-        LIMIT 1
-    `, [parcelId]);
-
-    const parcelKey = extractParcelKey(parcelKeyResult.rows?.[0]);
-    if (!parcelKey) {
-        const missingError = new Error('Ownership data not found for the requested parcel.');
-        missingError.statusCode = 404;
-        throw missingError;
-    }
-
-    let payloadRow = null;
-
-    try {
-        const result = await pool.query(buildParcelInfoOwnershipQuery(), [parcelKey.maticni_broj_ko, parcelKey.broj_cestice]);
-        if (result.rows.length) {
-            payloadRow = result.rows[0];
-        }
-    } catch (error) {
-        if (error && error.code === '42P01') {
-            const configError = new Error('Ownership table is not configured in the current database.');
-            configError.statusCode = 503;
-            configError.cause = error;
-            throw configError;
-        }
-        const wrapped = new Error('Failed to read cached ownership for parcel');
-        wrapped.cause = error;
-        throw wrapped;
-    }
-
-    if (!payloadRow) {
-        const notFoundError = new Error('Ownership data not found for the requested parcel.');
-        notFoundError.statusCode = 404;
-        throw notFoundError;
-    }
-
-    let payload = payloadRow?.details;
-    if (!payload) {
-        const missingError = new Error('Ownership record exists but has no details payload.');
-        missingError.statusCode = 404;
-        throw missingError;
-    }
-
-    if (typeof payload === 'string') {
-        try {
-            payload = JSON.parse(payload);
-        } catch (err) {
-            const parseError = new Error('Cached ownership payload is not valid JSON.');
-            parseError.cause = err;
-            parseError.statusCode = 500;
-            throw parseError;
-        }
-    }
-
-    if (!payload || typeof payload !== 'object') {
-        const invalidError = new Error('Cached ownership payload is missing structured data.');
-        invalidError.statusCode = 500;
-        throw invalidError;
-    }
-
-    const ownership = pickOwnershipFields(payload, parcelId);
-    const summary = buildOwnershipSummary(payload);
-    if (summary) {
-        ownership.ownershipList = summary.ownershipList;
-        ownership.ownershipType = summary.ownershipType;
-    }
-
-    return ownership;
 }
 
 async function resolveParcelIdToCesticaId(pool, parcelId) {
@@ -780,7 +534,287 @@ function parseParcelLookupToken(rawParcelId) {
         : null;
 }
 
+// Vertices per piece when a footprint is cut up for the spatial index. A GIST index prefilters on
+// BOUNDING BOXES, so one long diagonal geometry defeats it completely: the 17 km imported track
+// occupies 9.35 ha inside a 56.6 km² box, and asking for it whole made the index offer 37,164
+// candidate parcels — 20.2 seconds to return the 661 that actually touch it. Cut into 10 pieces,
+// each with a tight box, the same query answers in 0.32 s. 32 is PostGIS's own suggested order of
+// magnitude and was measured, not guessed.
+const FOOTPRINT_SUBDIVIDE_VERTICES = 32;
+// A geometry that touches more ground than this is a mistake, not a proposal. Refused loudly rather
+// than served slowly, because the client would have to ingest every one of them.
+const MAX_PARCELS_UNDER = 5000;
+// Input bounds for /parcels/under, checked BEFORE any SQL. ST_MakeValid and ST_Subdivide run on the
+// raw input ahead of the parcel-count cap, so an oversized body (up to the 15 MB JSON limit) used to
+// cost the database its full price before anything could refuse it. A replay batches ~20 footprints
+// (corridors included) into one MultiPolygon, so the vertex cap is generous; the extent cap is
+// several cities wide. Only the two projections the app actually sends are accepted.
+export const MAX_UNDER_VERTICES = 200000;
+export const MAX_UNDER_EXTENT_KM2 = 2500;
+const PARCELS_UNDER_SRIDS = new Set([4326, 3765]);
+
+// Returns an error message, or null when the footprint is safe to hand to PostGIS.
+export function checkUnderFootprint(geometry, srid) {
+    if (!PARCELS_UNDER_SRIDS.has(srid)) {
+        return `Unsupported srid ${srid}; expected one of ${[...PARCELS_UNDER_SRIDS].join(', ')}.`;
+    }
+    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+    if (!Array.isArray(polygons) || !polygons.length) return 'Geometry has no coordinates.';
+    let vertices = 0;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const rings of polygons) {
+        if (!Array.isArray(rings) || !rings.length) return 'Geometry has an empty polygon.';
+        for (const ring of rings) {
+            if (!Array.isArray(ring) || ring.length < 4) return 'Every ring needs at least 4 positions.';
+            vertices += ring.length;
+            if (vertices > MAX_UNDER_VERTICES) {
+                return `Geometry has more than ${MAX_UNDER_VERTICES} vertices; split the request.`;
+            }
+            for (const position of ring) {
+                const x = Array.isArray(position) ? position[0] : undefined;
+                const y = Array.isArray(position) ? position[1] : undefined;
+                if (typeof x !== 'number' || !Number.isFinite(x) || typeof y !== 'number' || !Number.isFinite(y)) {
+                    return 'Geometry coordinates must be finite numbers.';
+                }
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
+            }
+        }
+    }
+    if (srid === 4326 && (minX < -180 || maxX > 180 || minY < -90 || maxY > 90)) {
+        return 'WGS84 coordinates out of range.';
+    }
+    const extentKm2 = srid === 4326
+        ? wgs84BboxAreaKm2(minX, minY, maxX, maxY)
+        : ((maxX - minX) * (maxY - minY)) / 1e6;
+    if (extentKm2 > MAX_UNDER_EXTENT_KM2) {
+        return `Geometry extent ${Math.round(extentKm2)} km² exceeds ${MAX_UNDER_EXTENT_KM2} km²; split the request.`;
+    }
+    return null;
+}
+
 export function setupParcelsRoute(app, pool) {
+    // POST /parcels/under  { geometry: <GeoJSON Polygon|MultiPolygon>, srid?: 4326, parcelsOnly?: bool }
+    //
+    // The parcels a footprint actually covers, and how much of that footprint they account for.
+    // Everything else here answers "what is near this point / in this box / at these ids"; nothing
+    // answered "what is under this shape", and its absence is why the client used to approximate a
+    // footprint by its bounding box and drown in the difference.
+    //
+    // Coverage comes back with the parcels because it is the same question: a caller that has to
+    // compute it separately, over whatever it happens to have loaded, gets a different answer than
+    // the database would give — and then has to decide which to believe.
+    //
+    // `parcelsOnly: true` answers only "which parcels" and skips the take/coverage arithmetic.
+    // That arithmetic — two exact ST_Intersection passes per parcel against the raw input — was
+    // measured as the bulk of a replay's ground load (28.9 s of SQL for 15 requests), computing
+    // numbers the replay never reads. Worse: the replay batches ~20 unrelated footprints into one
+    // MultiPolygon, so `taken_m2`/`coverage` would describe the union of strangers — expensive AND
+    // meaningless. The lean answer has no `taken_m2` to filter on, so unlike the full mode it also
+    // returns parcels that merely share an edge with the footprint; for ground-loading a small
+    // superset is harmless (the client's own derivation decides what is actually taken).
+    app.post('/parcels/under', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const geometry = body.geometry && body.geometry.type === 'Feature' ? body.geometry.geometry : body.geometry;
+            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
+                return res.status(400).json({ error: 'Missing required body field geometry (GeoJSON Polygon or MultiPolygon).' });
+            }
+            if (!['Polygon', 'MultiPolygon'].includes(geometry.type)) {
+                return res.status(400).json({ error: `Unsupported geometry type ${geometry.type}; expected Polygon or MultiPolygon.` });
+            }
+            const srid = body.srid === undefined || body.srid === null ? 4326 : Number(body.srid);
+            const parcelsOnly = body.parcelsOnly === true;
+            const footprintError = checkUnderFootprint(geometry, srid);
+            if (footprintError) {
+                return res.status(400).json({ error: footprintError });
+            }
+
+            // ST_MakeValid because an authored footprint is not guaranteed to be OGC-valid, and an
+            // invalid geometry makes ST_Subdivide throw rather than return fewer parcels.
+            const sql = `
+                WITH input AS (
+                    SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
+                ),
+                parts AS (
+                    SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
+                ),
+                hit AS (
+                    SELECT DISTINCT p.cestica_id
+                    FROM parcel p, parts
+                    WHERE p.current = true
+                      AND p.geom && parts.part
+                      AND ST_Intersects(p.geom, parts.part)
+                ),
+                rows AS (
+                    SELECT
+                        p.cestica_id,
+                        p.broj_cestice,
+                        p.maticni_broj_ko,
+                        'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcelid,
+                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                        ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
+                        ST_Area(ST_Transform(ST_Intersection(ST_MakeValid(p.geom), i.g), 4326)::geography) AS taken_m2,
+                        pd.details AS ownership_details
+                    FROM parcel p
+                    JOIN hit ON hit.cestica_id = p.cestica_id
+                    CROSS JOIN input i
+                    LEFT JOIN LATERAL (
+                        SELECT pi.details
+                        FROM parcel_info pi
+                        WHERE pi.maticni_broj_ko = p.maticni_broj_ko
+                          AND pi.broj_cestice = p.broj_cestice
+                          AND pi.details IS NOT NULL
+                        ORDER BY pi.version DESC
+                        LIMIT 1
+                    ) pd ON TRUE
+                )
+                SELECT
+                    -- Abutting is not covering. ST_Intersects counts a shared edge, which takes no
+                    -- area and makes no parent — on the 17 km corridor that was 12 parcels the
+                    -- client would have loaded and then discarded. 0.25 m² is the same measured-noise
+                    -- floor the client's own overlap rules use, so the two agree on what is touched.
+                    (SELECT COALESCE(json_agg(r), '[]'::json) FROM rows r WHERE r.taken_m2 > 0.25) AS rows,
+                    (SELECT ST_Area(ST_Transform(g, 4326)::geography) FROM input) AS footprint_m2,
+                    (SELECT COALESCE(ST_Area(ST_Union(ST_Intersection(ST_MakeValid(p.geom), i.g))) / NULLIF(max(ST_Area(i.g)), 0), 0)
+                       FROM parcel p JOIN hit ON hit.cestica_id = p.cestica_id, input i) AS coverage
+            `;
+
+            const started = Date.now();
+
+            // COUNT FIRST. The refusal below used to come after the query above had already built
+            // every parcel's GeoJSON, its ownership and the coverage aggregate — so an over-cap ask
+            // cost the full price and then threw all of it away: measured at 17.2 s for a
+            // 59,311-parcel box before answering 413. The count is the same index scan without any
+            // of that (~2 ms on the same box), so a request that cannot be served is refused
+            // immediately, and the caller can split and retry while it still means something.
+            const countSql = `
+                WITH input AS (
+                    SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
+                ),
+                parts AS (
+                    SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
+                )
+                SELECT count(*) AS parcels FROM (
+                    SELECT DISTINCT p.cestica_id
+                    FROM parcel p, parts
+                    WHERE p.current = true
+                      AND p.geom && parts.part
+                      AND ST_Intersects(p.geom, parts.part)
+                ) hit
+            `;
+            const counted = Number((await pool.query(countSql, [JSON.stringify(geometry), srid])).rows[0]?.parcels || 0);
+            if (counted > MAX_PARCELS_UNDER) {
+                return res.status(413).json({
+                    error: `The geometry covers ${counted} parcels, over the ${MAX_PARCELS_UNDER} limit.`,
+                    count: counted
+                });
+            }
+
+            if (parcelsOnly) {
+                // The same hit-test as the full mode, then plain rows: no per-parcel intersection,
+                // no coverage union, no footprint area — and no `coverage`/`footprintM2` in the
+                // response, so a caller cannot mistake "not asked" for "zero".
+                const parcelsOnlySql = `
+                    WITH input AS (
+                        SELECT ST_MakeValid(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON($1::text), $2::int), 3765)) AS g
+                    ),
+                    parts AS (
+                        SELECT ST_Subdivide(g, ${FOOTPRINT_SUBDIVIDE_VERTICES}) AS part FROM input
+                    ),
+                    hit AS (
+                        SELECT DISTINCT p.cestica_id
+                        FROM parcel p, parts
+                        WHERE p.current = true
+                          AND p.geom && parts.part
+                          AND ST_Intersects(p.geom, parts.part)
+                    )
+                    SELECT
+                        p.cestica_id,
+                        p.broj_cestice,
+                        p.maticni_broj_ko,
+                        'HR-' || p.maticni_broj_ko || '-' || p.broj_cestice AS parcelid,
+                        ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
+                        ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
+                        pd.details AS ownership_details
+                    FROM parcel p
+                    JOIN hit ON hit.cestica_id = p.cestica_id
+                    LEFT JOIN LATERAL (
+                        SELECT pi.details
+                        FROM parcel_info pi
+                        WHERE pi.maticni_broj_ko = p.maticni_broj_ko
+                          AND pi.broj_cestice = p.broj_cestice
+                          AND pi.details IS NOT NULL
+                        ORDER BY pi.version DESC
+                        LIMIT 1
+                    ) pd ON TRUE
+                `;
+                const leanResult = await pool.query(parcelsOnlySql, [JSON.stringify(geometry), srid]);
+                const leanFeatures = leanResult.rows.map(r => ({
+                    type: 'Feature',
+                    geometry: r.geometry,
+                    properties: {
+                        CESTICA_ID: r.cestica_id,
+                        BROJ_CESTICE: r.broj_cestice,
+                        MATICNI_BROJ_KO: r.maticni_broj_ko,
+                        parcelId: r.parcelid,
+                        calculated_area: r.calculated_area,
+                        ...extractOwnershipPropsFromRow({ ownership_details: r.ownership_details })
+                    }
+                }));
+                return res.json({
+                    type: 'FeatureCollection',
+                    features: leanFeatures,
+                    count: leanFeatures.length,
+                    queryMs: Date.now() - started
+                });
+            }
+
+            const result = await pool.query(sql, [JSON.stringify(geometry), srid]);
+            const row = result.rows[0] || {};
+            const rows = Array.isArray(row.rows) ? row.rows : [];
+
+            // Coverage is computed in SQL as a ratio of two projected areas, where the projection's
+            // scale distortion cancels. The footprint's own size leaves as an absolute number, so it
+            // is measured on the ellipsoid — see area-measurement-authority.test.js for why the two
+            // rulers must not be mixed. Parcels tessellate, so coverage cannot exceed 1; clamp noise.
+            const footprintM2 = Number(row.footprint_m2) || 0;
+            const coverage = Math.max(0, Math.min(1, Number(row.coverage) || 0));
+
+            const features = rows.map(r => ({
+                type: 'Feature',
+                geometry: r.geometry,
+                properties: {
+                    CESTICA_ID: r.cestica_id,
+                    BROJ_CESTICE: r.broj_cestice,
+                    MATICNI_BROJ_KO: r.maticni_broj_ko,
+                    parcelId: r.parcelid,
+                    calculated_area: r.calculated_area,
+                    taken_m2: r.taken_m2,
+                    ...extractOwnershipPropsFromRow({ ownership_details: r.ownership_details })
+                }
+            }));
+
+            return res.json({
+                type: 'FeatureCollection',
+                features,
+                count: features.length,
+                coverage,
+                footprintM2,
+                queryMs: Date.now() - started
+            });
+        } catch (error) {
+            // A malformed GeoJSON body is the caller's fault and must not read as a server fault.
+            const badInput = /GeoJSON|geometry|parse|invalid/i.test(String(error && error.message));
+            console.error('Error in POST /parcels/under:', error);
+            return res.status(badInput ? 400 : 500).json({
+                error: badInput ? `Could not read the geometry: ${error.message}` : 'Internal server error'
+            });
+        }
+    });
+
     // GET /parcels/parcelIds?ids=HR-313467-860/1,HR-313475-329
     // Batch fetch by parcelId strings. Returns GeoJSON FeatureCollection.
     app.get('/parcels/parcelIds', async (req, res) => {
@@ -816,7 +850,7 @@ export function setupParcelsRoute(app, pool) {
                     p.MATICNI_BROJ_KO,
                     'HR-' || p.MATICNI_BROJ_KO || '-' || p.BROJ_CESTICE AS parcelId,
                     ST_AsGeoJSON(ST_Transform(p.geom, 4326))::json AS geometry,
-                    ST_Area(p.geom) AS calculated_area,
+                    ST_Area(ST_Transform(p.geom, 4326)::geography) AS calculated_area,
                     pd.details AS ownership_details
                 FROM parcel p
                 LEFT JOIN LATERAL (
@@ -1058,21 +1092,21 @@ export function setupParcelsRoute(app, pool) {
             });
         }
 
-        const numericParcelId = await resolveParcelIdToCesticaId(pool, parcelId);
-        if (!numericParcelId) {
-            return res.status(404).json({ error: 'Parcel not found.' });
-        }
-
-        const targetExists = await pool.query(
-            'SELECT 1 FROM parcel WHERE cestica_id = $1 AND current = true LIMIT 1',
-            [numericParcelId]
-        );
-
-        if (!targetExists.rows.length) {
-            return res.status(404).json({ error: 'Parcel not found.' });
-        }
-
         try {
+            const numericParcelId = await resolveParcelIdToCesticaId(pool, parcelId);
+            if (!numericParcelId) {
+                return res.status(404).json({ error: 'Parcel not found.' });
+            }
+
+            const targetExists = await pool.query(
+                'SELECT 1 FROM parcel WHERE cestica_id = $1 AND current = true LIMIT 1',
+                [numericParcelId]
+            );
+
+            if (!targetExists.rows.length) {
+                return res.status(404).json({ error: 'Parcel not found.' });
+            }
+
             const neighbourSql = `
                 WITH target AS (
                     SELECT geom
@@ -1111,108 +1145,6 @@ export function setupParcelsRoute(app, pool) {
         } catch (err) {
             console.error('Error in /parcels/:parcelId/neighbours:', err);
             return res.status(500).json({ error: 'Internal server error' });
-        }
-    });
-
-    // Use regex to allow slashes in parcelId (e.g. HR-335649-456/1)
-    app.get(/^\/parcels\/(.+)\/ownership$/, async (req, res) => {
-        const parcelId = (req.params[0] || '').trim();
-        if (!parcelId) {
-            return res.status(400).json({ error: 'parcelId is required in the path.' });
-        }
-
-        if (!isValidParcelPathId(parcelId)) {
-            return res.status(400).json({
-                error: 'Invalid parcelId path parameter. Expected a numeric cestica_id or HR-<maticni_broj_ko>-<broj_cestice>.'
-            });
-        }
-
-        let numericParcelId = null;
-        let normalizedParcelId = parcelId;
-
-        // Strip parcel part suffix (e.g., "/2", "/1") if present
-        normalizedParcelId = normalizedParcelId.replace(/\/\d+$/, '');
-
-        // Remove all HR- prefixes (handle cases like HR-HR-330779-1213)
-        normalizedParcelId = normalizedParcelId.replace(/^(HR-)+/i, '');
-
-        // Check if parcelId is a numeric cestica_id
-        if (/^[0-9]+$/.test(normalizedParcelId)) {
-            const numeric = Number(normalizedParcelId);
-            if (Number.isFinite(numeric) && numeric > 0) {
-                numericParcelId = numeric;
-            }
-        } else {
-            // Try to parse <maticni_broj_ko>-<broj_cestice> format (HR- prefix already removed)
-            const parts = normalizedParcelId.split('-');
-            if (parts.length === 2) {
-                const cadMunRaw = parts[0].trim();
-                const parcelNumber = parts[1].trim();
-
-                if (cadMunRaw && parcelNumber) {
-                    const cadMun = Number(cadMunRaw);
-                    if (Number.isFinite(cadMun)) {
-                        // Query to get cestica_id from broj_cestice and maticni_broj_ko
-                        try {
-                            const lookupSql = `
-                                SELECT cestica_id
-                                FROM parcel
-                                WHERE broj_cestice = $1
-                                AND maticni_broj_ko = $2
-                                AND current = true
-                                LIMIT 1
-                            `;
-                            const { rows } = await pool.query(lookupSql, [parcelNumber, cadMun]);
-                            if (rows.length && rows[0].cestica_id) {
-                                numericParcelId = rows[0].cestica_id;
-                            }
-                        } catch (lookupError) {
-                            console.warn(`Failed to lookup cestica_id for ${parcelId}:`, lookupError);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (!numericParcelId) {
-            return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
-        }
-
-        try {
-            const ownership = await fetchParcelOwnership(pool, numericParcelId);
-            res.json(ownership);
-        } catch (error) {
-            // Handle PostgreSQL numeric value out of range error (22003) as 404
-            if (error?.cause?.code === '22003') {
-                return res.status(404).json({ error: 'Ownership data not found for the requested parcel.' });
-            }
-
-            const upstreamStatus = error?.statusCode;
-            const statusCode = upstreamStatus === 404
-                ? 404
-                : upstreamStatus === 400
-                    ? 400
-                    : upstreamStatus === 504
-                        ? 504
-                        : upstreamStatus
-                            ? 502
-                            : (error?.name === 'AbortError' ? 504 : 500);
-
-            const message = statusCode === 404
-                ? 'Ownership data not found for the requested parcel.'
-                : statusCode === 400
-                    ? 'Upstream data source rejected the request.'
-                    : statusCode === 504
-                        ? 'Ownership data request timed out.'
-                        : 'Failed to retrieve parcel ownership information.';
-
-            // Only log as error if it's not a 404 (404 is expected for parcels without ownership data)
-            if (statusCode === 404) {
-                // Don't log 404s - they're expected for some parcels
-            } else {
-                console.error(`Error in /parcels/${parcelId}/ownership:`, error);
-            }
-            res.status(statusCode).json({ error: message });
         }
     });
 }

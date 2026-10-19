@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_integration_audit",
+  "cityId": "wup2025:3336",
+  "queueRank": 71,
+  "city": "Accra",
+  "countryCode": "GH",
+  "checkedAt": "2026-10-08",
+  "priorEvidence": [
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-city-3336.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-provider-GH.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-provider-GH-prefix-sample.json"
+  ],
+  "result": "technical_hold_app_pid_component_semantics",
+  "source": {
+    "sourceId": "gh-ama-public-property-app",
+    "viewerUrl": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+    "dataEndpointPreviouslyDiscoveredInViewerJs": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+    "viewerPageTitle": "ACCRA METRO",
+    "visibleBranding": [
+      "AMA",
+      "ACCRA METRO"
+    ],
+    "hostAndDisplayedCredits": [
+      "gis.berryict.com",
+      "Cutting Edge Technologies / eazygis.com",
+      "OpenStreetMap"
+    ],
+    "publisherAuthority": "Unconfirmed. The app is on Berry ICT's host and uses AMA/Accra Metro labels. A targeted search for an official AMA link to this app returned no discoverable cross-link; this is not proof that none exists.",
+    "publishedScope": "Accra Metro app scope, narrower than the WUP 2025 Accra city target unless independently established.",
+    "sourceProvenanceReferences": [
+      {
+        "url": "https://berryict.com/wp-content/uploads/2023/03/Property-Rate-Consultations-Findings.pdf",
+        "observation": "Berry ICT's report describes an AMA revaluation exercise using available AMA spatial data in 2018; it is vendor-authored background and does not establish the current app's authority, schema or coverage."
+      },
+      {
+        "url": "https://berryict.com/enterprise-gis-architecture/",
+        "observation": "Berry ICT describes property-identification applications as part of its enterprise-GIS work; this supports vendor context, not the current app's official status."
+      },
+      {
+        "url": "https://ama.gov.gh/",
+        "observation": "Targeted site search for a Berry ICT app cross-link did not surface one. No direct AMA-origin link was verified."
+      }
+    ]
+  },
+  "viewerAudit": {
+    "headers": "Interacted through the public viewer in Chrome; the public page and its controls were visible. Earlier source discovery and the original API request are documented in priorEvidence.",
+    "visibleParcelSearchControls": [
+      "Find Parcel Code (input txtFindParcelCode)",
+      "Find ValNo (input txtFindParcelValNo)",
+      "Find Old ValNo (input txtFindParcelValNoOld)",
+      "Find Owner (input txtFindParcelOwner)",
+      "Filter by pucode",
+      "Filter by zcode"
+    ],
+    "visibleRecordLabels": [
+      "PID",
+      "Code"
+    ],
+    "staticLayerLoad": "Ordinary viewer JavaScript calls refreshParcel() at startup with POST data {tbl:'parcel', flds:'*'} and no filter. Its refresh button also calls that function. The only ordinary filters found are use-code and zone-code lists; refreshParcelAfterFilter() still reads the parcel table, optionally with pu_code IN (...) or zcode IN (...). There is no bbox/viewport predicate or pagination in this path. Map moveend/zoomend only update displayed center/zoom text.",
+    "exactLookupImplementation": "The ordinary viewer's findParcelCode() calls returnLayerByAttribute('parcel','parcelcode',val); returnLayerByAttribute builds parcelcode='<input>' and POSTs it to load_data.php. The endpoint accepted the same predicate with a field selector limited to parcelid,parcelcode.",
+    "paginationOrResultLimit": "No pagination or record-limit control or request parameter was found in the ordinary parcel read path.",
+    "directPidSearch": "No direct PID search control was found; exact lookup uses the Parcel Code field. The filtered API query nevertheless returned the displayed PID (parcelid) and geometry.",
+    "ownerAddressHandling": "Owner and address fields were present in the page response/UI but are intentionally omitted from this evidence file and any sample payload."
+  },
+  "knownIdRechecks": [
+    {
+      "lookupField": "Find Parcel Code",
+      "submittedNativeCandidate": "20KG021",
+      "returnedPid": "AMAKG23285",
+      "matchesPriorSamplePair": true,
+      "visualGeometryOutcome": "The viewer selected/highlighted a polygon and centered the map on it."
+    },
+    {
+      "lookupField": "Find Parcel Code",
+      "submittedNativeCandidate": "18KG013",
+      "returnedPid": "AMAKG22905",
+      "matchesPriorSamplePair": true,
+      "visualGeometryOutcome": "The viewer selected/highlighted a polygon and centered the map on it."
+    },
+    {
+      "lookupField": "Find Parcel Code",
+      "submittedNativeCandidate": "20KG013",
+      "returnedPid": "AMAKG22910",
+      "matchesPriorSamplePair": true,
+      "visualGeometryOutcome": "The viewer selected/highlighted a polygon and centered the map on it."
+    }
+  ],
+  "identifierAssessment": {
+    "observedApplicationFields": [
+      "parcelid (shown in viewer as PID)",
+      "parcelcode (shown in viewer as Code)"
+    ],
+    "publisherAppIdentityScope": "The viewer code uses parcelid as its displayed PID and parcelcode as its displayed Code/Address Code. This supports calling parcelid the publisher app PID; it does not claim a statutory cadastral ID, which is not required for app-PID-scoped integration.",
+    "genericId": "Excluded; prior sample evidence says it is a row ID.",
+    "readBehavior": "Three fresh exact Parcel Code searches each returned the same PID/code pair as the earlier capped sample and highlighted a polygon.",
+    "fullLayerCounts": {
+      "featureCount": 12586,
+      "parcelidUniqueValues": 12582,
+      "duplicateParcelidRowsBeyondUnique": 4,
+      "parcelcodeUniqueValues": 12566,
+      "duplicateParcelcodeRowsBeyondUnique": 20,
+      "duplicateParcelIdsWithDifferentGeometry": [
+        "AMAAW67819",
+        "AMAKB25637",
+        "AMAPO35919A",
+        "AMAUT34220"
+      ],
+      "duplicatePidGroupsObservedWithSameCode": true,
+      "duplicatePidGroupsObservedWithDifferentGeometry": true,
+      "exactDuplicateCodeRead": {
+        "parcelcode": "19AW054",
+        "featuresReturned": 2,
+        "bothParcelids": "AMAAW67819",
+        "geometriesDiffer": true
+      }
+    },
+    "durableMeaning": "The UI/code establishes parcelid as the publisher app's PID and each of three known exact code reads returned the matching PID. The app uses one-to-many PID/code-to-geometry rows for four PIDs in its current layer; all four repeated PID groups keep the same parcelcode, but their geometries are different and have no positive-area overlap. This supports possible disjoint property-footprint components, but the app does not say whether they should be combined as one property. parcelcode is not unique: the exact 2KB009 lookup returned three features under two PIDs. Treat parcelid as an app PID, not a legal cadastral identifier; preserve one-to-many components only after the publisher's intended grouping is confirmed."
+  },
+  "viewportAndCompleteness": {
+    "observedMapCenterLatLon": [
+      5.53199,
+      -0.22548
+    ],
+    "observedZoom": 19,
+    "displayedScale": "100 ft",
+    "viewportOutcome": "No bbox/viewport read exists in the ordinary viewer code; refreshParcel loads the whole parcel layer and map events do not re-query. A small-viewport completeness read is therefore unavailable through the documented viewer path.",
+    "wup2025TargetCenterLatLon": [
+      5.60366263373368,
+      -0.210576368296996
+    ],
+    "targetCoverage": "The complete current parcel layer extent ends about 470 m south of the WUP target center; the target center is outside this source layer. This establishes a scope gap for this layer, not absence of other Accra sources.",
+    "endpointRead": "A new normal unfiltered parcel-table POST with tbl=parcel and flds=parcelid,parcelcode returned a complete GeoJSON FeatureCollection of 12,586 MultiPolygon features in 3,580,950 bytes (below the 25 MiB and 50,000-feature caps). All features had geometry and nonempty parcelid/parcelcode. The full payload was analyzed in memory only; only three sanitized exact-read samples were saved. Earlier broad flds=* Range probe was separately capped at 32 KiB and ignored Range.",
+    "pagination": "Not applicable to the normal static full-layer load; the finite returned response completed below caps. No paging API was found.",
+    "fullLayerExtentLonLat": [
+      -0.25521,
+      5.52345,
+      -0.2015,
+      5.59943
+    ],
+    "wupCenterOutsideFullLayerExtent": true,
+    "northGapToWupCenterApproxMeters": 470,
+    "scopeDeclarationIfLaterIntegrated": "The finite current source layer may be described only as the published Accra Metro app extent; it does not include the WUP 2025 center and must not be described as complete WUP Accra coverage.",
+    "featurePrivacy": "No owner/address values are saved in this evidence or the retained geometry sample."
+  },
+  "adapterAssessment": {
+    "usableNow": false,
+    "reason": "A safe finite snapshot and three known exact ID/code geometry reads are verified. All four repeated app-PID groups return multiple geometries with the same PID and code but zero positive-area pairwise overlap; two pairs only touch at boundaries. This is consistent with disjoint components, not evidence that they represent one intended property. The normal lookup callback takes only the first match. The exact code 2KB009 also returns a different PID, so parcelcode cannot serve as identity. A snapshot-based adapter could be built over a custom POST wrapper and local grouping, but the app's intended PID-to-geometry semantics need confirmation first.",
+    "safeCandidateConfiguration": null,
+    "acceptanceRequirements": [
+      "Provider clarification or other evidence that each repeated parcelid/parcelcode group represents one app property with multiple disjoint footprints, or a repeatable aggregation rule validated against the app's own parcel model.",
+      "Use parcelid only as the publisher app PID in the declared Accra Metro app scope; do not present it as a statutory cadastral ID, and do not substitute generic row id or parcelcode."
+    ],
+    "finiteSnapshotReadProfile": {
+      "method": "POST",
+      "endpoint": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "formFields": {
+        "tbl": "parcel",
+        "flds": "parcelid,parcelcode"
+      },
+      "maxBytes": 26214400,
+      "maxFeatures": 50000,
+      "observedBytes": 3580950,
+      "observedFeatures": 12586,
+      "candidateIdentity": "parcelid (pending duplicate/component semantics)",
+      "scope": "Published Accra Metro app layer only; extent excludes WUP 2025 center."
+    },
+    "informationalMetadata": "The host/branding and vendor context are recorded above. Reuse terms were not verified; under LIVE-SOURCES.md, terms/licences are informational, not an integration gate.",
+    "nextStep": "Do not add an adapter from the current evidence. Confirm that repeated parcelid/code geometries are intended parts of one app property. If confirmed, a finite-snapshot adapter can group all rows by app PID, retain every disjoint footprint component, support local bbox/ID reads, and declare the published layer extent."
+  },
+  "requestsAndActions": [
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+      "method": "GET through public browser viewer",
+      "assessment": "Page loaded as ACCRA METRO. Parcel tab exposed code, valuation-number, owner and use/zone filter controls. A fresh exact code lookup succeeded for each of the three prior sample pairs."
+    },
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "POST, form fields tbl=parcel&flds=parcelid,parcelcode&where=parcelcode%3D%2720KG021%27 (and the same ordinary predicate for 18KG013 and 20KG013)",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8 (body parsed as GeoJSON FeatureCollection)",
+      "responseBytes": [
+        310,
+        293,
+        310
+      ],
+      "featureCountPerExactCode": 1,
+      "assessment": "Each response contained one MultiPolygon feature with only parcelid and parcelcode properties; the ID/code pair matched the prior sample. Raw sanitized geometry and these two fields only are in accra-3336-exact-read-samples.json."
+    },
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "POST, form fields tbl=parcel&flds=parcelid,parcelcode&where=parcelcode%3D%2719AW054%27",
+      "httpStatus": 200,
+      "responseBytes": 638,
+      "featureCount": 2,
+      "assessment": "The exact ordinary parcelcode predicate returned two different MultiPolygon geometries with the same parcelid AMAAW67819 and parcelcode 19AW054. This confirms the ambiguity is present in a normal exact read, not only a snapshot count."
+    },
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "Four POSTs using the normal exact parcelcode filter; tbl=parcel, flds=parcelid,parcelcode, where=parcelcode='<code>'",
+      "httpStatus": 200,
+      "responseBytes": {
+        "19AW054": 638,
+        "2KB009": 1311,
+        "10PO031": 638,
+        "19UT012": 523
+      },
+      "featureCounts": {
+        "19AW054": 2,
+        "2KB009": 3,
+        "10PO031": 2,
+        "19UT012": 2
+      },
+      "assessment": "Nine sanitized feature records returned across the four exact-code queries. All are MultiPolygons. The 2KB009 lookup returns AMAKB25537 plus two AMAKB25637 rows; the other three codes return two features for one PID each. Pairwise Turf overlap, bboxes and geometry SHA-256 values are in accra-3336-duplicate-overlap.json; only IDs, codes and geometries are saved in accra-3336-duplicate-group-samples.json."
+    },
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+      "method": "POST, form fields tbl=parcel&flds=parcelid,parcelcode (the viewer's normal unfiltered refreshParcel table read, with a narrower field selector)",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8 (body parsed as GeoJSON FeatureCollection)",
+      "responseBytes": 3580950,
+      "featureCount": 12586,
+      "responseCaps": {
+        "maxBytes": 26214400,
+        "maxFeatures": 50000
+      },
+      "assessment": "Complete response parsed below both caps; 12,586 MultiPolygon features, no missing geometry or candidate IDs, 12,582 unique parcelid and 12,566 unique parcelcode. Extent is recorded in viewportAndCompleteness. Full payload was not persisted."
+    },
+    {
+      "url": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+      "method": "viewer Refresh Screen action at map center 5.53199,-0.22548, zoom 19",
+      "assessment": "Action clears transient map overlays; it does not query parcel features or establish viewport completeness."
+    },
+    {
+      "url": "https://www.google.com/search?q=site%3Aama.gov.gh+%22gis.berryict.com%22+OR+%22propertyidentification%22",
+      "method": "Search",
+      "assessment": "No official AMA cross-link was returned in this targeted search."
+    }
+  ],
+  "sources": [
+    "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
+    "https://gis.berryict.com/gis/gis/ama/general_php_scripts/load_data.php",
+    "https://berryict.com/wp-content/uploads/2023/03/Property-Rate-Consultations-Findings.pdf",
+    "https://berryict.com/enterprise-gis-architecture/",
+    "https://ama.gov.gh/"
+  ],
+  "coordinatorReview": {
+    "checkedAt": "2026-10-08",
+    "status": "enabled_as_partial_publisher_app_pid_groups",
+    "evidenceFile": "research/india-africa-integration-2026-10-08/accra-3336-acceptance.json",
+    "basis": "The app exposes PID as its native record identity. Complete disjoint geometry for all rows of that PID is retained with matching parcelcode. The adapter promises publisher app-PID footprints, not statutory cadastral lots; official authority and legal meaning remain unconfirmed and are disclosed. All four repeated PID groups and two independent complete snapshots passed. Earlier worker caution is retained as evidence, superseded for this explicitly narrower app-identity scope."
+  }
+}

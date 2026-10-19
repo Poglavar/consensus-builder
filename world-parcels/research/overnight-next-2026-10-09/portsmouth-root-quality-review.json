@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-09T07:22:58.977081+00:00",
+  "decision": "Public geometry verified; runtime held for source-native overlapping index extents. This is runtime-model incompatibility, not an invalid-source or missing-data finding.",
+  "candidateSourceId": "gb-hmlr-inspire-index-portsmouth",
+  "qualityFile": "portsmouth-root-quality.json",
+  "sourceZipBytes": 7826754,
+  "sourceZipSha256": "9bfc15dd1188a8d04ba005a94021c8df7224317b733233f9bb3587518915f512",
+  "sourceRevisionTimestamp": "2026-10-04T03:01:14.283Z",
+  "boundedFeatureCount": 112,
+  "positiveAreaOverlapPairs": 29,
+  "geometryChangedOrRepaired": false
+}

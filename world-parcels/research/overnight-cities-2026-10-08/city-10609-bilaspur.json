@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bilaspur",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The supplied WUP point (22.0785316 N, 82.1514564 E) is the Bilaspur, Chhattisgarh settlement locus, matching Bilaspur District Administration’s own Bilaspur land-record pages, rather than the separate Bilaspur in Himachal Pradesh. The district page places its Land Record Office in the Bilaspur Collectorate and links Bhu-Naksha. Chhattisgarh’s Revenue Department identifies Bilaspur among ten urban areas whose aerial revenue survey was completed and whose new 1:500-scale urban records were described as being prepared. This supports local records and city-specific urban survey work, but the public polygon/schema and WUP-point village remain unverified.",
+  "registryEvidenceUrls": [
+    "https://bilaspur.gov.in/en/service/bhuiyan/",
+    "https://bilaspur.gov.in/en/service/bhunaksha/",
+    "https://revenue.cg.nic.in/clr.aspx",
+    "https://bilaspur.gov.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B6%E0%A4%BE/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10609,
+  "cityId": "wup2025:10609",
+  "centerLatLon": [
+    22.0785316005289,
+    82.151456438509
+  ],
+  "point": [
+    22.0785316005289,
+    82.151456438509
+  ],
+  "rank": 661,
+  "queueRank": 661,
+  "population2025": 799772,
+  "population2025k": 799.772,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The public Bhu-Naksha viewer uses district/tehsil/revenue-circle/village and plot selection; the WUP point has not been resolved to its revenue village and no safe anonymous vector schema has been verified. Urban e-Dharti evidence describes survey/record preparation, not a public feature endpoint. No plot number or owner/property lookup was submitted.",
+  "scopeLimits": "Official public-page/document discovery only. No owner, address, tax, personal-identity, credential, account, CPF, or property-identifier lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Exact revenue-village and urban-survey coverage at the WUP coordinate; whether a public geometry-only service exists for that unit. The identity disambiguation is Bilaspur, Chhattisgarh, not Bilaspur, Himachal Pradesh.",
+  "nextStep": "Resolve the point to the correct revenue village via an official administrative boundary source, then inspect only documented geometry-only outputs and safe fields.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bilaspur Chhattisgarh city land records cadastral map Bhu-Naksha urban survey official",
+        "result": "The Chhattisgarh Bilaspur district’s official pages identify its Collectorate Land Record Office and Bhu-Naksha map service. The state revenue page explicitly names Bilaspur in the urban survey program. The WUP point is in this Bilaspur settlement context; it is not matched to a specific revenue village or parcel.",
+        "urls": [
+          "https://bilaspur.gov.in/en/service/bhuiyan/",
+          "https://bilaspur.gov.in/en/service/bhunaksha/",
+          "https://revenue.cg.nic.in/clr.aspx"
+        ],
+        "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by first-party page/document review; no identity, ownership, address or property-specific query submitted."
+      },
+      {
+        "language": "Hindi",
+        "query": "बिलासपुर छत्तीसगढ़ भू नक्शा शहरी राजस्व अभिलेख भुइयां आधिकारिक",
+        "result": "Hindi-language official sources describe Bilaspur’s Bhu-Naksha Khasra-map service and Chhattisgarh’s city-specific urban revenue survey program. No WUP-point village or anonymous geometry-only response schema was verified.",
+        "urls": [
+          "https://bilaspur.gov.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B6%E0%A4%BE/",
+          "https://revenue.cg.nic.in/"
+        ],
+        "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by first-party page/document review; no identity, ownership, address or property-specific query submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bilaspur.gov.in/en/service/bhuiyan/",
+        "observation": "Bilaspur, Chhattisgarh District Administration describes Bhuiyan land-record viewing services and locates the Land Record Office in the Bilaspur Collectorate."
+      },
+      {
+        "url": "https://bilaspur.gov.in/en/service/bhunaksha/",
+        "observation": "The local district administration describes Bhu-Naksha as a tool to view a Khasra map copy, links to the state viewer, and locates the Bilaspur Land Record Office in the Collectorate."
+      },
+      {
+        "url": "https://revenue.cg.nic.in/clr.aspx",
+        "observation": "The Chhattisgarh Revenue Department names Bilaspur among ten urban areas with completed aerial survey and says preparation of new 1:500-scale urban revenue records was in progress. The page also describes cadastral-map scale conversion/georeferencing work as in progress; it does not establish an anonymous public polygon layer."
+      },
+      {
+        "url": "https://bilaspur.gov.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%A8%E0%A4%95%E0%A5%8D%E0%A4%B6%E0%A4%BE/",
+        "observation": "Hindi-language Bilaspur District page describes Khasra map copies through Bhu-Naksha and gives the Bilaspur Collectorate land-record office."
+      }
+    ],
+    "metadataReviewFile": "bilaspur-service-review.json"
+  },
+  "source": {
+    "sourceId": "in-bilaspur-registry-review",
+    "name": "Bilaspur local registry/cadastre route review",
+    "operator": "Bilaspur District Administration and Chhattisgarh Revenue & Disaster Management Department",
+    "url": "https://bilaspur.gov.in/en/service/bhunaksha/",
+    "scope": "The supplied WUP point (22.0785316 N, 82.1514564 E) is the Bilaspur, Chhattisgarh settlement locus, matching Bilaspur District Administration’s own Bilaspur land-record pages, rather than the separate Bilaspur in Himachal Pradesh. The district page places its Land Record Office in the Bilaspur Collectorate and links Bhu-Naksha. Chhattisgarh’s Revenue Department identifies Bilaspur among ten urban areas whose aerial revenue survey was completed and whose new 1:500-scale urban records were described as being prepared. This supports local records and city-specific urban survey work, but the public polygon/schema and WUP-point village remain unverified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The supplied WUP point (22.0785316 N, 82.1514564 E) is the Bilaspur, Chhattisgarh settlement locus, matching Bilaspur District Administration’s own Bilaspur land-record pages, rather than the separate Bilaspur in Himachal Pradesh. The district page places its Land Record Office in the Bilaspur Collectorate and links Bhu-Naksha. Chhattisgarh’s Revenue Department identifies Bilaspur among ten urban areas whose aerial revenue survey was completed and whose new 1:500-scale urban records were described as being prepared. This supports local records and city-specific urban survey work, but the public polygon/schema and WUP-point village remain unverified.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "identityNote": "Bilaspur is disambiguated as Bilaspur, Chhattisgarh by the supplied WUP coordinate and the matching Chhattisgarh district source. No evidence for Bilaspur, Himachal Pradesh is used.",
+  "priorAttemptState": "pending",
+  "priorAttemptEvidence": [],
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": []
+}

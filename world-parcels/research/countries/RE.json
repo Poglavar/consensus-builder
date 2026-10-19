@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RE",
+  "country": "Réunion",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "France: IGN / DGFiP Cadastre (Plan cadastral informatise) via IGN API Carto; covers overseas department Réunion as part of the French national cadastre (see countries/FR.json)",
+  "portalsFound": [
+    {
+      "url": "https://apicarto.ign.fr/api/doc/cadastre",
+      "observation": "IGN API Carto cadastre module; open, no key"
+    },
+    {
+      "url": "https://cadastre.data.gouv.fr/",
+      "observation": "Etalab open cadastre downloads (from FR evidence, not re-fetched)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B55.4481%2C-20.8823%5D%7D&_limit=2",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "1+ MultiPolygon parcels near Saint-Denis, Réunion"
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B55.2900%2C-21.0100%5D%7D&_limit=2",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "MultiPolygon parcel in southwest Réunion (Saint-Louis/Etang-Sale area), distinct region"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+    "requestUrl": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B55.4481%2C-20.8823%5D%7D&_limit=2",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      55.4481,
+      -20.8823,
+      55.4481,
+      -20.8823
+    ],
+    "parcelRecordCount": 1,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "idu",
+    "responseFile": "research/countries/RE-parcel-response.json",
+    "pagination": "_limit/_start",
+    "regionSampled": "Saint-Denis, Réunion (second point in southwest Réunion also returned a parcel)"
+  },
+  "coverageAssessment": {
+    "claimedScope": "French national cadastre incl. overseas departments; Réunion is covered",
+    "regionsVerified": [
+      "Saint-Denis (north)",
+      "southwest Réunion"
+    ],
+    "nationwideVerified": true
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Sampled within Réunion only; the same source/schema was verified in metropolitan France and Guyane (FR.json, GF.json). Licence (Etalab open licence) not re-read here.",
+  "nextStep": "None required; reuse FR source with Réunion INSEE department 974."
+}

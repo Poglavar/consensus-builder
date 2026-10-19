@@ -1,0 +1,390 @@
+{
+  "schemaVersion": 1,
+  "country": "Colombia",
+  "countryCode": "CO",
+  "checkedAt": "2026-10-07",
+  "purpose": "Live parcel integration follow-up for the original top-200 cohort cities Medellín and Cali. Prior evidence is retained; this is a new dated pass, not a registry change.",
+  "cohortManifest": [
+    {
+      "cityId": "wup2025:2525",
+      "queueRank": 139,
+      "name": "Medellín",
+      "priorFile": "world-parcels/research/medellin.json",
+      "priorStatus": "verified_sample_city_scope",
+      "liveStatus": "held",
+      "liveEvidence": "world-parcels/research/medellin-live-assessment.json"
+    },
+    {
+      "cityId": "wup2025:899",
+      "queueRank": 184,
+      "name": "Cali",
+      "priorFile": "world-parcels/research/cali.json",
+      "priorStatus": "verified_sample_city_scope",
+      "liveStatus": "held",
+      "liveEvidence": "world-parcels/research/cali-live.json"
+    }
+  ],
+  "searchMethod": {
+    "language": "Spanish",
+    "script": "Latin",
+    "searchDate": "2026-10-07",
+    "webSearchTool": "web__run",
+    "queries": [
+      {
+        "city": "Medellín",
+        "query": "site:medellin.gov.co catastro lotes Medellín servicio geográfico GeoMedellín",
+        "results": [
+          {
+            "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer",
+            "finding": "Current official ArcGIS service; citywide cadastral scale description and layer Lote (1)."
+          },
+          {
+            "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer/1",
+            "finding": "Indexed layer metadata: polygon, EPSG:9377, cbml and numero_predial_nacional fields."
+          }
+        ]
+      },
+      {
+        "city": "Medellín",
+        "query": "\"lotes catastrales\" Medellín GeoMedellín ArcGIS",
+        "results": [
+          {
+            "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer",
+            "finding": "Official service says urban scale 1:2,000 and rural scale 1:5,000."
+          }
+        ]
+      },
+      {
+        "city": "Medellín",
+        "query": "\"predios\" \"GeoMedellín\" catastro servicio REST",
+        "results": [
+          {
+            "url": "https://www.medellin.gov.co/es/departamento-administrativo-de-planeacion/instrumentos-informacion-geografica-del-distrito-de-medellin/geomedellin/",
+            "finding": "Official GeoMedellín page describes geovisor, spatial open-data downloads and geoservices."
+          },
+          {
+            "url": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro",
+            "finding": "Official current folder lists Base_Catastral, ConsultaOperadorCatastral_geo, ConsultaOperadorCatastral, HistoricoCatastral and ide_catastro services."
+          }
+        ]
+      },
+      {
+        "city": "Medellín",
+        "query": "site:medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro \"lote\"",
+        "results": [
+          {
+            "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer/1",
+            "finding": "Indexed Lote layer is polygon and declares cbml, numero_predial_nacional and query/pagination metadata."
+          }
+        ]
+      },
+      {
+        "city": "Medellín",
+        "query": "\"VC_Catastro\" Medellín \"MapServer\"",
+        "results": [
+          {
+            "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer",
+            "finding": "Current official municipal cadastral service."
+          }
+        ]
+      },
+      {
+        "city": "Medellín",
+        "query": "site:medellin.gov.co \"lotes\" \"Catálogo geográfico\" Medellín descargable",
+        "results": [
+          {
+            "url": "https://www.medellin.gov.co/es/departamento-administrativo-de-planeacion/instrumentos-informacion-geografica-del-distrito-de-medellin/",
+            "finding": "Official page says the Catálogo geográfico lists spatial datasets, purpose and producers."
+          }
+        ]
+      },
+      {
+        "city": "Cali",
+        "query": "Cali Colombia \"catastro\" parcelas ArcGIS FeatureServer IDESC predios",
+        "results": [
+          {
+            "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/MapServer/0/iteminfo",
+            "finding": "CVC ArcGIS item-info attributes urban parcels to Alcaldía de Santiago de Cali, says consulted from city geoportal 2024-01-20 and explicitly states CC BY 4.0."
+          },
+          {
+            "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/FeatureServer/1",
+            "finding": "Companion layer 1 is Manzana Urbana Cali; it is not parcel geometry."
+          },
+          {
+            "url": "https://www.cali.gov.co/hacienda/publicaciones/147969/geoportal-catastral/",
+            "finding": "Official Cali page confirms public layers terrenos, manzanas and construcciones and WMS/WFS services."
+          }
+        ]
+      },
+      {
+        "city": "Cali",
+        "query": "site:cali.gov.co \"terrenos\" catastro WFS IDESC ArcGIS",
+        "results": [
+          {
+            "url": "https://www.cali.gov.co/hacienda/publicaciones/147969/geoportal-catastral/",
+            "finding": "Official municipal geoportal description and legacy ArcGIS WMS/WFS links."
+          },
+          {
+            "url": "https://www.cali.gov.co/hacienda/publicaciones/147098/conoce-mas-de-la-cartografia-catastral-de-cali-a-traves-del-geoportal/",
+            "finding": "Official city article describes the municipal cadastral geoportal and its terrain, block and building layers."
+          }
+        ]
+      },
+      {
+        "city": "Cali",
+        "query": "\"cat_bas_terrenos\" \"GlobalID\" OR \"OBJECTID\" Cali",
+        "results": [
+          {
+            "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/MapServer/0/iteminfo",
+            "finding": "Indexed item confirms an ArcGIS mirror and CC BY 4.0, but does not disclose native field schema or bounded features."
+          }
+        ]
+      },
+      {
+        "city": "Cali",
+        "query": "site:geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali \"Terreno\"",
+        "results": [
+          {
+            "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/MapServer/0/iteminfo",
+            "finding": "Item title TERRENOS URBANOS MUNICIPIO DE CALI; item says source consultation date 2024-01-20."
+          }
+        ]
+      },
+      {
+        "city": "Cali",
+        "query": "\"TERRENOS URBANOS MUNICIPIO DE CALI\" \"fields\"",
+        "results": [
+          {
+            "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/MapServer/0/iteminfo",
+            "finding": "Item-info confirms dataset identity, attribution and CC BY 4.0; no field list."
+          }
+        ]
+      }
+    ]
+  },
+  "requestProfile": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "accept": "application/geo+json, application/json, text/plain, */*",
+    "acceptLanguage": "es-CO,es;q=0.9,en;q=0.8",
+    "referer": "https://www.medellin.gov.co/mapas/",
+    "cookies": "Python requests.Session cookie jar used; no authentication or token supplied",
+    "tlsVerification": "enabled",
+    "timeoutSeconds": 40,
+    "networkNote": "Direct CLI request needed escalated network access. DNS failure on geo.cvc.gov.co is local network limitation, not evidence the CVC service is absent. Medellín returned an explicit HTTP 500 block page, not an empty parcel result.",
+    "nodeFetchRetryHeaders": {
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+      "accept": "application/json, text/plain, */*",
+      "acceptLanguage": "es-CO,es;q=0.9,en;q=0.8",
+      "medellinReferer": "https://www.medellin.gov.co/mapas/",
+      "cvcReferer": "https://www.geo.cvc.gov.co/",
+      "cookieJar": "None available to Node fetch; prior Python requests.Session attempt kept an in-memory jar."
+    }
+  },
+  "cities": [
+    {
+      "city": "Medellín",
+      "cityId": "wup2025:2525",
+      "queueRank": 139,
+      "previousFiles": [
+        "world-parcels/research/medellin.json",
+        "world-parcels/research/medellin-live-assessment.json"
+      ],
+      "previousIntegrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "operation": "metadata-f-json",
+          "outcome": "malformed-response",
+          "endpoint": "https://www.medellin.gov.co/servidormapas/rest/services/ServiciosCatastro/ConsultaOperadorCatastral/MapServer/7"
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "operation": "metadata-and-bounded-geojson",
+          "outcome": "http-error",
+          "httpStatus": 500,
+          "detail": "HTML error; alternate official metadata candidates also failed."
+        }
+      ],
+      "newFinding": {
+        "status": "promising_source_metadata_found_but_no_verified_sample",
+        "endpoint": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer/1/query",
+        "sourceName": "Alcaldía de Medellín mapas_nacionales/VC_Catastro, layer 1 Lote",
+        "sourceIdCandidate": "co-medellin-catastro-vc-lote",
+        "operator": "Alcaldía de Medellín, Secretaría de Gestión y Control Territorial / Subsecretaría de Catastro",
+        "claimedScope": "Municipality of Medellín; official service description says urban 1:2,000 and rural 1:5,000.",
+        "metadata": "Official current service index reports full extent [4699268,2239766,4726581,2263174] in EPSG:9377, polygon feature layer, maxRecordCount 5000, GeoJSON support and query pagination. Layer fields include cbml (string 11), numero_predial_nacional (string 30), and objectid (OID). Service item id c5851fd3a0b442b49a996eaa9eacaf0a.",
+        "identifierCandidate": "cbml; corroborate with numero_predial_nacional where present. cbml is the documented primary key in the previously verified layer 7 and is exposed as CODIGO_LOTE in the new layer. Check non-nullness, uniqueness and exact reads on this layer before registration.",
+        "appCityId": "wup2025:2525",
+        "centerLatLon": [
+          6.24850335443391,
+          -75.5793509793547
+        ],
+        "metricSrid": 9377,
+        "responseFormat": "Esri JSON or GeoJSON, as declared by the official metadata.",
+        "reuseStatus": "Unresolved for this exact layer. Metadata credits Subsecretaría de Catastro; no reuse terms were read.",
+        "coverageAssessment": "Metadata claims the municipality and includes urban/rural lot coverage; no current sample or completeness audit was verified from this network.",
+        "nextStep": "Retry through a permitted network/browser path that can read the official service; query a tiny area and request only objectid, cbml, numero_predial_nacional and geometry, then test paging and exact reads. Read this layer's reuse conditions."
+      },
+      "requests": [
+        {
+          "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer/1?f=pjson",
+          "method": "GET",
+          "httpStatus": 500,
+          "contentType": "text/html",
+          "assessment": "WAF block page (attack id 20000018), not metadata JSON. Browser tab also showed 'The URL you requested has been blocked'."
+        },
+        {
+          "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer/1/query?where=1%3D1&geometry=%7B%22xmin%22%3A4699900%2C%22ymin%22%3A2254800%2C%22xmax%22%3A4700100%2C%22ymax%22%3A2255000%2C%22spatialReference%22%3A%7B%22wkid%22%3A9377%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=9377&outSR=4326&outFields=objectid%2Ccbml%2Cnumero_predial_nacional&returnGeometry=true&resultRecordCount=3&f=geojson",
+          "method": "GET",
+          "httpStatus": 500,
+          "contentType": "text/html",
+          "spatialTestAreaNative": [
+            4699900,
+            2254800,
+            4700100,
+            2255000
+          ],
+          "assessment": "WAF block HTML (38,726 bytes); no feature JSON returned. Tiny 200m bbox, limit 3; requested only objectid, cbml, numero_predial_nacional plus geometry. No geometry or owner data saved."
+        },
+        {
+          "url": "https://www.medellin.gov.co/servidormapas/rest/services/mapas_nacionales/VC_Catastro/MapServer/1?f=pjson",
+          "method": "GET (native Node fetch retry)",
+          "httpStatus": 500,
+          "contentType": "text/html",
+          "headers": "Chrome-like User-Agent; Accept: application/json, text/plain, */*; Accept-Language: es-CO,es;q=0.9,en;q=0.8; Referer: https://www.medellin.gov.co/mapas/",
+          "assessment": "Second direct attempt also returned WAF JSON block page with attack_ID 20000018; no metadata JSON. Headers did not change the result."
+        }
+      ],
+      "verifiedParcelResponse": null,
+      "remainingRisks": [
+        "No live polygon sample because the official host blocks direct and browser requests from this network.",
+        "Layer identity is a strong official metadata lead, but currentness, completeness, paging and exact lookup are unverified.",
+        "No licence/reuse terms read for this exact layer.",
+        "The new source is separate from the prior verified ConsultaOperadorCatastral/7; old polygons do not substitute for a sample from this candidate."
+      ]
+    },
+    {
+      "city": "Cali",
+      "cityId": "wup2025:899",
+      "queueRank": 184,
+      "previousFiles": [
+        "world-parcels/research/cali.json",
+        "world-parcels/research/cali-live-assessment.json",
+        "world-parcels/research/cali-live.json"
+      ],
+      "previousIntegrationAttempts": [
+        {
+          "checkedAt": "2026-10-03",
+          "operation": "complete-bounded-and-exact-ID adapter check",
+          "outcome": "success",
+          "detail": "118 canonical polygons over 3 bbox pages; all 118 NPNs reread exactly with matching geometry."
+        },
+        {
+          "checkedAt": "2026-10-03",
+          "operation": "normal viewport cells and exact NPN/id_predio conflict investigation",
+          "outcome": "conflicting-native-ids",
+          "detail": "Two NPNs each yield two distinct geometries on exact lookup; id_predio repeats per conflicting pair; WFS FIDs are transport row identifiers."
+        }
+      ],
+      "existingWfsAssessment": {
+        "sourceId": "co-cali-idesc-cat-bas-terrenos",
+        "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+        "featureType": "catastro:cat_bas_terrenos",
+        "appCityId": "cali",
+        "centerLatLon": [
+          3.43291280476524,
+          -76.5206016723112
+        ],
+        "metricSrid": 32618,
+        "nativeIdField": "npn (30-digit string)",
+        "viewportAudit": {
+          "rows": 3314,
+          "uniqueNpn": 2959,
+          "uniqueIdPredio": 2959,
+          "uniqueGeoServerFid": 2961
+        },
+        "conflictingNativeIds": [
+          "760010100101500160001901010029",
+          "760010100110900070021000000000"
+        ],
+        "conflictsEach": {
+          "exactLookupReturns": 2,
+          "distinctGeometries": 2,
+          "id_predio": "also returns 2 for each conflict; it does not disambiguate"
+        },
+        "disjointGeometryInterpretation": "Not established. A parts-capable geometry path could resolve this only if the two records are intended parts of one cadastral entity and preserve the entity's full footprint. Current evidence proves repeated keys and distinct polygons only.",
+        "providerNativeKey": "No alternate durable native field proven. GeoServer FIDs differ but are transport row IDs, not established cadastral identity."
+      },
+      "alternateArcgisLead": {
+        "status": "metadata_lead_no_sample",
+        "provider": "Corporación Autónoma Regional del Valle del Cauca (CVC) GeoCVC ArcGIS REST mirror; item-info attributes source data to Alcaldía de Santiago de Cali.",
+        "endpointCandidate": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/FeatureServer/0/query",
+        "layerCandidate": "Layer 0, item title TERRENOS URBANOS MUNICIPIO DE CALI (inferred from item-info URL /0, not directly verified as feature-layer metadata). Companion layer 1 is Manzana Urbana Cali.",
+        "nativeKeyCandidatesToInspect": [
+          "CODIGO, if layer 0 schema carries it (not shown in available metadata)",
+          "NPN/national cadastral code",
+          "ArcGIS objectid_1 or OBJECTID, only if the publisher confirms row stability and entity semantics"
+        ],
+        "dataRecency": "Item-info states source consultation date 2024-01-20; this historical mirror may lag current IDESC WFS.",
+        "license": "Item-info explicitly says CC BY 4.0, allowing commercial reuse with attribution. This applies to the CVC item only and does not clear the separate IDESC WFS.",
+        "publisherStatement": "Official Cali geoportal page describes public cadastral layers terrenos, manzanas and construcciones and publishes WMS/WFS GIS links.",
+        "appCityId": "cali",
+        "centerLatLon": [
+          3.43291280476524,
+          -76.5206016723112
+        ],
+        "metricSrid": 3857,
+        "responseFormat": "ArcGIS REST JSON/GeoJSON expected by service family; verify on layer 0.",
+        "nextStep": "Fetch layer 0 metadata and run a <=3 bounded query requesting only declared native cadastral identifier, objectid and geometry. Compare both known conflicting NPNs and exact lookup cardinality; assess OID stability across refresh before keying/aggregation."
+      },
+      "requests": [
+        {
+          "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/FeatureServer/layers?f=pjson",
+          "method": "GET",
+          "httpStatus": null,
+          "assessment": "DNS resolution failed from this network after the read-only request; no response."
+        },
+        {
+          "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/FeatureServer/0",
+          "method": "GET",
+          "tool": "web__run open",
+          "httpStatus": 502,
+          "assessment": "Web retrieval returned 502; layer 0 schema and parcel sample remain unverified."
+        },
+        {
+          "url": "https://geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/FeatureServer/0?f=pjson",
+          "method": "GET (native Node fetch)",
+          "httpStatus": null,
+          "assessment": "DNS ENOTFOUND geo.cvc.gov.co; no response obtained."
+        },
+        {
+          "url": "https://www.geo.cvc.gov.co/arcgis/rest/services/TERRITORIAL_ADMINISTRATIVA/Catastro_Alcaldia_Cali/FeatureServer/0?f=pjson",
+          "method": "GET (native Node fetch retry on indexed alternate hostname)",
+          "httpStatus": null,
+          "assessment": "DNS ENOTFOUND www.geo.cvc.gov.co; no response obtained."
+        }
+      ],
+      "verifiedParcelResponse": null,
+      "remainingRisks": [
+        "CVC item is a 2024 copy and layer 0 schema/key are unverified.",
+        "CC BY 4.0 evidence applies to this CVC item only, not automatically the IDESC WFS.",
+        "Existing conflict evidence does not distinguish separate parcels, duplicate rows or disjoint parts.",
+        "WFS parts support is not yet implemented; ArcGIS parts support alone cannot resolve identity unless source semantics confirm aggregation."
+      ]
+    }
+  ],
+  "promisingSources": [
+    {
+      "priority": 1,
+      "city": "Medellín",
+      "source": "Official VC_Catastro layer Lote (1)",
+      "reason": "Current official indexed layer metadata has parcel polygon semantics and cadastral identifiers; small sample blocked by the city WAF from this network."
+    },
+    {
+      "priority": 2,
+      "city": "Cali",
+      "source": "CVC GeoCVC Catastro_Alcaldia_Cali layer 0 mirror",
+      "reason": "Official item-info attributes data to Cali and explicitly states CC BY 4.0; possible alternate source/key, but no bounded query or native-key validation yet."
+    }
+  ],
+  "registryChangesMade": false
+}

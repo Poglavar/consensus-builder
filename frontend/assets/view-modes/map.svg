@@ -1,0 +1,14 @@
+<!-- Decorative street-map thumbnail for the 2D view button; no real location or source data. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#e7e8da"/>
+  <path d="M0 0h45l-8 37L0 30zM9 81l35 7-4 40H0zM92 8l36 4v41l-38-9z" fill="#b8cc9e"/>
+  <path d="M121-10c-32 23-9 52-33 71s-7 49-33 78" fill="none" stroke="#8dbbc9" stroke-width="17"/>
+  <g fill="#d2cfbe">
+    <path d="M49 6l19 4-5 24-19-4zM12 49l21 4-4 18-21-4zM44 56l26 6-4 18-26-6zM74 98l23 4-4 22-24-5zM108 60l20 4v23l-25-4z"/>
+  </g>
+  <defs>
+    <path id="streets" d="M-8 36l147 31M-8 78l137 29M42-8L13 139M80-8L51 139"/>
+  </defs>
+  <use href="#streets" fill="none" stroke="#cac9b9" stroke-width="12"/>
+  <use href="#streets" fill="none" stroke="#fffdf3" stroke-width="8"/>
+</svg>

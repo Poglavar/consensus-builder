@@ -1,0 +1,575 @@
+{
+  "type": "FeatureCollection",
+  "name": "Selska–Drniška – DGU izvedeni kontekst",
+  "context": {
+    "schema": "consensus-builder.reconstruction-context.v1",
+    "capturedAt": "2026-08-13T00:00:00.000Z",
+    "geometryBasis": "current DGU cadastral geometry, deduplicated by geom_hash",
+    "caveat": "Terase i stubište ostaju kontekst; samo tri zgrade ulaze u prijedlog."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-339270-5652/1",
+        "cestica_id": 41279125,
+        "maticni_broj_ko": 339270,
+        "broj_cestice": "5652/1",
+        "areaM2": 1855.9364000011446,
+        "source": "DGU katastar, aktualna čestica",
+        "context:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.94410387,
+                45.792772792
+              ],
+              [
+                15.944100224,
+                45.792816145
+              ],
+              [
+                15.94409044,
+                45.792933431
+              ],
+              [
+                15.944090146,
+                45.792937118
+              ],
+              [
+                15.944082247,
+                45.793032909
+              ],
+              [
+                15.944081813,
+                45.793037765
+              ],
+              [
+                15.944068648,
+                45.793197595
+              ],
+              [
+                15.944061982,
+                45.793234095
+              ],
+              [
+                15.943814564,
+                45.793176023
+              ],
+              [
+                15.943833747,
+                45.793019102
+              ],
+              [
+                15.943838559,
+                45.792936254
+              ],
+              [
+                15.943840735,
+                45.792898473
+              ],
+              [
+                15.943847807,
+                45.792808258
+              ],
+              [
+                15.943850874,
+                45.792771471
+              ],
+              [
+                15.943863736,
+                45.792629275
+              ],
+              [
+                15.943866492,
+                45.792585019
+              ],
+              [
+                15.943867997,
+                45.792562981
+              ],
+              [
+                15.943872607,
+                45.792435772
+              ],
+              [
+                15.943876341,
+                45.792396559
+              ],
+              [
+                15.943887265,
+                45.792332816
+              ],
+              [
+                15.943888112,
+                45.792325262
+              ],
+              [
+                15.94400895,
+                45.792332329
+              ],
+              [
+                15.944008339,
+                45.792367958
+              ],
+              [
+                15.94400745,
+                45.792379741
+              ],
+              [
+                15.944133327,
+                45.792384582
+              ],
+              [
+                15.944124299,
+                45.792503402
+              ],
+              [
+                15.944123853,
+                45.792509518
+              ],
+              [
+                15.944111587,
+                45.792669353
+              ],
+              [
+                15.944111428,
+                45.792672501
+              ],
+              [
+                15.944106109,
+                45.79274167
+              ],
+              [
+                15.944104172,
+                45.792768295
+              ],
+              [
+                15.94410387,
+                45.792772792
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "context:role": "principal-building",
+        "dguBuildingId": 14430817,
+        "dguBuildingNumber": "36945",
+        "dguBuildingType": "KUĆA",
+        "footprintAreaM2": 232.4368499987156,
+        "dguGeometryHash": "acd7b3ff9e93cf629f04ad7679553ebf",
+        "dguSourceDuplicateCount": 2,
+        "dguDateAdded": "2026-04-09T07:29:50.476Z",
+        "parcelOverlapRatio": 1,
+        "centroidNorthing": 5072733.7740199985,
+        "gdiObjectId": 320725,
+        "gdiHeightM": 23.3319,
+        "gdiSurveyYear": 2008,
+        "gdiMatchOverlapRatio": 0.9893483410373083,
+        "overtureId": "bd27bac4-f114-475a-81a4-e3dac6e3cf72",
+        "osmId": "w294382755",
+        "osmDeclaredHeightM": 25,
+        "osmDeclaredFloors": null,
+        "osmClass": "apartments",
+        "osmDguOverlapRatio": 0.9600231486226761,
+        "source": "DGU katastar; GDI/OSM podudaranja gdje su dostupna"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.944068648,
+                45.793197595
+              ],
+              [
+                15.94390111,
+                45.793191111
+              ],
+              [
+                15.943913891,
+                45.793031189
+              ],
+              [
+                15.944081813,
+                45.793037765
+              ],
+              [
+                15.944068648,
+                45.793197595
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "context:role": "principal-building",
+        "dguBuildingId": 14430818,
+        "dguBuildingNumber": "36946",
+        "dguBuildingType": "KUĆA",
+        "footprintAreaM2": 231.9678500060557,
+        "dguGeometryHash": "8b5998b7ac8f21155d9b3ab33640c07d",
+        "dguSourceDuplicateCount": 2,
+        "dguDateAdded": "2026-04-09T07:29:50.476Z",
+        "parcelOverlapRatio": 0.9999999999999999,
+        "centroidNorthing": 5072704.420245008,
+        "gdiObjectId": 320726,
+        "gdiHeightM": 23.6608,
+        "gdiSurveyYear": 2008,
+        "gdiMatchOverlapRatio": 0.992088048936174,
+        "overtureId": "bd9024a8-5427-4a0b-a0fa-836ae1be4ebe",
+        "osmId": "w294382753",
+        "osmDeclaredHeightM": 25,
+        "osmDeclaredFloors": null,
+        "osmClass": "apartments",
+        "osmDguOverlapRatio": 0.9999999999999999,
+        "source": "DGU katastar; GDI/OSM podudaranja gdje su dostupna"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.944098294,
+                45.792816135
+              ],
+              [
+                15.94409044,
+                45.792933431
+              ],
+              [
+                15.943922131,
+                45.792926943
+              ],
+              [
+                15.943930808,
+                45.79281757
+              ],
+              [
+                15.943934912,
+                45.792767021
+              ],
+              [
+                15.944102318,
+                45.792773684
+              ],
+              [
+                15.944098294,
+                45.792816135
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "context:role": "supporting-structure",
+        "dguBuildingId": 14430666,
+        "dguBuildingNumber": "37268",
+        "dguBuildingType": "TERASA",
+        "footprintAreaM2": 933.8146499986582,
+        "dguGeometryHash": "58468d4b87d9d30fe516f4a19b248134",
+        "dguSourceDuplicateCount": 2,
+        "dguDateAdded": "2026-04-09T07:29:50.476Z",
+        "parcelOverlapRatio": 1.0000000000000004,
+        "centroidNorthing": 5072687.716198391,
+        "gdiObjectId": 320726,
+        "gdiHeightM": 23.6608,
+        "gdiSurveyYear": 2008,
+        "gdiMatchOverlapRatio": 0.009828656988361335,
+        "overtureId": "4acb12f4-e300-43f6-a89d-79622c499321",
+        "osmId": "w294382754",
+        "osmDeclaredHeightM": 25,
+        "osmDeclaredFloors": null,
+        "osmClass": "apartments",
+        "osmDguOverlapRatio": 0.01891976736748118,
+        "source": "DGU katastar; GDI/OSM podudaranja gdje su dostupna"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.944111428,
+                45.792672501
+              ],
+              [
+                15.944106109,
+                45.79274167
+              ],
+              [
+                15.944102318,
+                45.792773684
+              ],
+              [
+                15.943934912,
+                45.792767021
+              ],
+              [
+                15.943930808,
+                45.79281757
+              ],
+              [
+                15.943922131,
+                45.792926943
+              ],
+              [
+                15.94409044,
+                45.792933431
+              ],
+              [
+                15.944090146,
+                45.792937118
+              ],
+              [
+                15.944082247,
+                45.793032909
+              ],
+              [
+                15.944081813,
+                45.793037765
+              ],
+              [
+                15.943913891,
+                45.793031189
+              ],
+              [
+                15.943835843,
+                45.7930282
+              ],
+              [
+                15.943851824,
+                45.792818175
+              ],
+              [
+                15.943885431,
+                45.792374918
+              ],
+              [
+                15.943912433,
+                45.792375949
+              ],
+              [
+                15.943927733,
+                45.792376564
+              ],
+              [
+                15.94400745,
+                45.792379741
+              ],
+              [
+                15.944133327,
+                45.792384582
+              ],
+              [
+                15.944124299,
+                45.792503402
+              ],
+              [
+                15.944123853,
+                45.792509518
+              ],
+              [
+                15.943955674,
+                45.792502941
+              ],
+              [
+                15.943943151,
+                45.792662864
+              ],
+              [
+                15.944111587,
+                45.792669353
+              ],
+              [
+                15.944111428,
+                45.792672501
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "context:role": "principal-building",
+        "dguBuildingId": 14430819,
+        "dguBuildingNumber": "36947",
+        "dguBuildingType": "KUĆA",
+        "footprintAreaM2": 233.20814999892,
+        "dguGeometryHash": "897d1ad002cddc685cc213cf1658dbb0",
+        "dguSourceDuplicateCount": 2,
+        "dguDateAdded": "2026-04-09T07:29:50.476Z",
+        "parcelOverlapRatio": 0.9999999999999999,
+        "centroidNorthing": 5072675.049672064,
+        "gdiObjectId": 320727,
+        "gdiHeightM": 23.7478,
+        "gdiSurveyYear": 2008,
+        "gdiMatchOverlapRatio": 0.988745406318158,
+        "overtureId": "4acb12f4-e300-43f6-a89d-79622c499321",
+        "osmId": "w294382754",
+        "osmDeclaredHeightM": 25,
+        "osmDeclaredFloors": null,
+        "osmClass": "apartments",
+        "osmDguOverlapRatio": 0.9983655201801012,
+        "source": "DGU katastar; GDI/OSM podudaranja gdje su dostupna"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.943943151,
+                45.792662864
+              ],
+              [
+                15.943955674,
+                45.792502941
+              ],
+              [
+                15.944123853,
+                45.792509518
+              ],
+              [
+                15.944111587,
+                45.792669353
+              ],
+              [
+                15.943943151,
+                45.792662864
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "context:role": "supporting-structure",
+        "dguBuildingId": 14430455,
+        "dguBuildingNumber": "37381",
+        "dguBuildingType": "STEPENIŠTE",
+        "footprintAreaM2": 8.073000001758802,
+        "dguGeometryHash": "2490e5be02e6680abd808a6747b5d458",
+        "dguSourceDuplicateCount": 2,
+        "dguDateAdded": "2026-04-09T07:29:50.476Z",
+        "parcelOverlapRatio": 1.0000000000000002,
+        "centroidNorthing": 5072651.31556629,
+        "gdiObjectId": null,
+        "gdiHeightM": null,
+        "gdiSurveyYear": null,
+        "gdiMatchOverlapRatio": null,
+        "overtureId": null,
+        "osmId": null,
+        "osmDeclaredHeightM": null,
+        "osmDeclaredFloors": null,
+        "osmClass": null,
+        "osmDguOverlapRatio": null,
+        "source": "DGU katastar; GDI/OSM podudaranja gdje su dostupna"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.943928749,
+                45.792364961
+              ],
+              [
+                15.944008339,
+                45.792367958
+              ],
+              [
+                15.94400745,
+                45.792379741
+              ],
+              [
+                15.943927733,
+                45.792376564
+              ],
+              [
+                15.943928749,
+                45.792364961
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "context:role": "supporting-structure",
+        "dguBuildingId": 14430824,
+        "dguBuildingNumber": "37270",
+        "dguBuildingType": "TERASA",
+        "footprintAreaM2": 1.5578999998942251,
+        "dguGeometryHash": "46b66110cbf13d030eea24b964daebeb",
+        "dguSourceDuplicateCount": 2,
+        "dguDateAdded": "2026-04-09T07:29:50.476Z",
+        "parcelOverlapRatio": 1.0000000000000002,
+        "centroidNorthing": 5072651.130627126,
+        "gdiObjectId": null,
+        "gdiHeightM": null,
+        "gdiSurveyYear": null,
+        "gdiMatchOverlapRatio": null,
+        "overtureId": null,
+        "osmId": null,
+        "osmDeclaredHeightM": null,
+        "osmDeclaredFloors": null,
+        "osmClass": null,
+        "osmDguOverlapRatio": null,
+        "source": "DGU katastar; GDI/OSM podudaranja gdje su dostupna"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.943912433,
+                45.792375949
+              ],
+              [
+                15.943913192,
+                45.792364256
+              ],
+              [
+                15.943928749,
+                45.792364961
+              ],
+              [
+                15.943927733,
+                45.792376564
+              ],
+              [
+                15.943912433,
+                45.792375949
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

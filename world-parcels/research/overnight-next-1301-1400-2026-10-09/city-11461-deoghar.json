@@ -1,0 +1,75 @@
+{
+  "cityCode": 11461,
+  "queueRank": 1320,
+  "name": "Deoghar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [24.4946438388827, 86.6979613009286],
+  "population2025": 423674,
+  "population2025k": 423.674,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "The official District Deoghar land-records page establishes a local government service context and links to Jharkhand's Jharbhoomi portal. The national Bhu-Naksha implementation directory links Jharkhand's cadastral viewer. The anonymous viewers could not be reached within bounded direct requests, so a local registry/cadastral geometry endpoint was not independently evidenced and registryFound remains null.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Deoghar Jharkhand official cadastral parcel map Bhu Naksha Jharbhoomi",
+        "result": "Found the official District Deoghar land-records page, which describes Register-II and Khata/Khesra access and links to Jharbhoomi; found the official national Bhu-Naksha implementation directory linking Jharkhand's viewer.",
+        "actualResultUrls": [
+          "https://deoghar.nic.in/service/land-records/",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+          "https://jharbhoomi.jharkhand.gov.in/",
+          "https://jharbhunaksha.jharkhand.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "देवघर झारखंड आधिकारिक भू नक्शा खसरा प्लॉट मानचित्र",
+        "result": "Found the official Hindi District Deoghar map page and the official Deoghar land-records service in English/Hindi site context. The page is a district map landing page, not a parcel-vector response; it points to government service navigation but does not expose native parcel geometry.",
+        "actualResultUrls": [
+          "https://deoghar.nic.in/hi/%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/",
+          "https://deoghar.nic.in/service/land-records/",
+          "https://jharbhoomi.jharkhand.gov.in/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://deoghar.nic.in/service/land-records/",
+      "role": "District Deoghar, Government of Jharkhand official land-records service page",
+      "observation": "Search/open evidence states that the service provides Register-II, Khata & Khesra, and online mutation-status access, and links to https://jharbhoomi.jharkhand.gov.in/. This is local custodian evidence but not a parcel geometry response."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "role": "Government/NIC Bhu-Naksha implementation directory",
+      "observation": "The current directory lists Jharkhand and links to https://jharbhunaksha.jharkhand.gov.in/. It establishes the official public viewer route but does not provide Deoghar parcel features in the directory response."
+    },
+    {
+      "url": "https://deoghar.nic.in/hi/%E0%A4%AE%E0%A4%BE%E0%A4%A8%E0%A4%9A%E0%A4%BF%E0%A4%A4%E0%A5%8D%E0%A4%B0/",
+      "role": "District Deoghar official Hindi map page",
+      "observation": "The Hindi page is an official district map landing page and identifies district-administration ownership of the content; it contains no safe parcel ID, parcel geometry, cadastral schema, or CRS response."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No bounded anonymous response containing a safe native parcel identifier and full polygon was obtained. The WUP point was preserved exactly and was not shifted. Viewer timeout is not evidence of citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Deoghar district land-record service and Jharkhand Bhu-Naksha public viewer route.",
+    "verifiedOpenScope": "Official service existence and viewer linkage were verified; current viewer JavaScript/configuration, API schema, CRS, native identity, exact-point containment, and citywide open parcel coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

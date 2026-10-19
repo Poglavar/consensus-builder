@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Odesa",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Odesa City Council’s Department of Architecture and Urban Planning hosts an official urban-planning cadastre portal and identifies its municipal urban-cadastre service. The portal explicitly says its urban-cadastre maps are blocked for public viewing for security reasons during martial law. This is city-specific planning-cadastre evidence, not confirmation of a public land-parcel register or runtime geometry route.",
+  "registryEvidenceUrls": [
+    "https://ombk.omr.gov.ua/",
+    "https://omr.gov.ua/ru/city/departments/uag/",
+    "https://uma.od.gov.ua/geoportal-mistobudivnogo-kadastru/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2693,
+  "cityId": "wup2025:2693",
+  "centerLatLon": [
+    46.4472079389802,
+    30.7231803197218
+  ],
+  "rank": 575,
+  "queueRank": 575,
+  "population2025": 899157,
+  "population2025k": 899.157,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The city’s own portal blocks urban-cadastre maps for security reasons during martial law; no public anonymous feature schema or geometry route is available from the inspected pages. National parcel search is not Odesa-specific and was not used. Runtime remains disabled.",
+  "scopeLimits": "Local evidence establishes a municipal urban-planning cadastre only. It does not establish a legal parcel registry or public parcel geometry. No owner/address/cadastral-number query was submitted.",
+  "remainingUncertainty": "Local evidence establishes a municipal urban-planning cadastre only. It does not establish a legal parcel registry or public parcel geometry. No owner/address/cadastral-number query was submitted.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Odesa city council official urban planning cadastre map public GIS parcel map",
+        "scope": "Find exact-city cadastral/map sources and inspect only safe public route metadata.",
+        "result": "Odesa City Council’s official planning-cadastre portal identifies the city architecture/planning department and says its maps are blocked for public viewing for security reasons. The Odesa regional geoportal gives the same martial-law public-viewing restriction. The national StateGeoCadastre link is not treated as an Odesa-specific runtime route; no parcel search was made.",
+        "actualResultUrls": [
+          "https://ombk.omr.gov.ua/",
+          "https://omr.gov.ua/ru/city/departments/uag/",
+          "https://uma.od.gov.ua/geoportal-mistobudivnogo-kadastru/"
+        ]
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Одеса міська рада містобудівний кадастр карти публічний перегляд земельні ділянки геопортал",
+        "scope": "Перевірити офіційні міські кадастрові карти та безпечний публічний доступ без пошуку за кадастровим номером.",
+        "result": "Офіційний портал Департаменту архітектури та містобудування Одеської міської ради прямо повідомляє, що карти містобудівного кадастру заблоковані з міркувань безпеки. Національна кадастрова карта в меню є посиланням, але її пошук за номером ділянки не використовувався; публічну міську геометрію не отримано.",
+        "actualResultUrls": [
+          "https://ombk.omr.gov.ua/",
+          "https://omr.gov.ua/ru/city/departments/uag/",
+          "https://uma.od.gov.ua/geoportal-mistobudivnogo-kadastru/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ombk.omr.gov.ua/",
+        "observation": "Official Odesa City Council architecture/planning department portal says its urban-cadastre maps are blocked for public viewing for security reasons and identifies its municipal urban-planning cadastre service."
+      },
+      {
+        "url": "https://omr.gov.ua/ru/city/departments/uag/",
+        "observation": "Official municipal department page referenced by the portal; supports local office identity."
+      },
+      {
+        "url": "https://uma.od.gov.ua/geoportal-mistobudivnogo-kadastru/",
+        "observation": "Official regional urban-planning geoportal states that public viewing of its data is temporarily unavailable during martial law; it covers regional planning, not a verified city parcel layer."
+      }
+    ],
+    "metadataReviewFile": "odesa-service-review.json"
+  },
+  "source": {
+    "sourceId": "ua-odesa-official-land-source",
+    "name": "Odesa official land/cadastral source review",
+    "operator": "https://ombk.omr.gov.ua/",
+    "url": "https://ombk.omr.gov.ua/",
+    "scope": "Local evidence establishes a municipal urban-planning cadastre only. It does not establish a legal parcel registry or public parcel geometry. No owner/address/cadastral-number query was submitted.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature identifier was requested or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local evidence establishes a municipal urban-planning cadastre only. It does not establish a legal parcel registry or public parcel geometry. No owner/address/cadastral-number query was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    46.4472079389802,
+    30.7231803197218
+  ],
+  "rootReviewedAt": "2026-10-09T01:39:35.583478+00:00"
+}

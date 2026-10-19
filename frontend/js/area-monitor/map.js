@@ -87,10 +87,7 @@
         if (typeof styleFn !== 'function') return;
 
         parcelLayer.eachLayer(layer => {
-            const feature = layer?.feature;
-            if (!feature) return;
-
-            const parcelId = global.getParcelId ? global.getParcelId(feature) : (feature.properties?.parcelId || feature.properties?.id);
+            const parcelId = global.ParcelPresenter?.getIdForLayer?.(layer);
             if (!parcelId || typeof layer.setStyle !== 'function') return;
 
             layer.setStyle(styleFn(String(parcelId), layer));

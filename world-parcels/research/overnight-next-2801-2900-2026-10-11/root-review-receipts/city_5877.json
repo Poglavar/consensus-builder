@@ -1,0 +1,15 @@
+{
+  "taskId": "city:5877",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-5877-walton-on-thames.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/walton-on-thames-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:26:11Z",
+  "identityCheck": "Ranked roster, pending queue and packet agree: rank 2898, WUP code 5877, Walton-on-Thames, United Kingdom (GBR), point [51.3495544556983, -0.503262754300618], 205663 persons.",
+  "researchCheck": "Two executed English searches cover English and the local language, with first-party source URLs. HM Land Registry WMS capabilities and the bounded raster map show parcel-like outlines, but the saved WFS responses say Service WFS is disabled and GetFeatureInfo says LayerNotQueryable. Raster labels are not source-proven native IDs. No full polygon sample was retained.",
+  "custodyDecision": "Retain registryFound true for the HM Land Registry national custodian; this does not establish an open Walton parcel-vector service or complete city coverage.",
+  "reason": "No fresh native-ID plus full-polygon read, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. Runtime admission remains held."
+}

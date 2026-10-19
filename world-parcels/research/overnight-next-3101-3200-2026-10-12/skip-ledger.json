@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 3106,
+      "cityCode": 3285,
+      "name": "Arnhem",
+      "country": "Netherlands",
+      "iso2": "NL",
+      "pop2025k": 193.393,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3285/city-3285-provider-3285.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3285/provider-3285-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 3152,
+      "cityCode": 11785,
+      "name": "Tarkeshwar",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 190.547,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/india-city-11785.json",
+          "cityId": "wup2025:11785",
+          "cityName": "Tarkeshwar",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 3158,
+      "cityCode": 549,
+      "name": "Split",
+      "country": "Croatia",
+      "iso2": "HR",
+      "pop2025k": 190.315,
+      "plausibility": "High",
+      "possiblePriorMatches": [
+        {
+          "kind": "runtime-city-config-with-parcel-source",
+          "source": "frontend/js/city-config.js",
+          "cityId": "split",
+          "label": "Split, Croatia",
+          "identityConfidence": "review-required"
+        }
+      ],
+      "resolvedPriorMatches": [
+        "split"
+      ],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "decisionFile": "root-identity-decision-overlay.json",
+        "reviewedAt": "2026-10-12T02:59:36.186Z"
+      },
+      "evidence": [
+        {
+          "kind": "first-party-Split-query",
+          "evidenceFile": "world-parcels/research/overnight-next-3101-3200-2026-10-12/root-identity-549-first-party-evidence.json",
+          "identityConfidence": "high"
+        }
+      ]
+    },
+    {
+      "rank": 3185,
+      "cityCode": 3704,
+      "name": "Clermont-Ferrand",
+      "country": "France",
+      "iso2": "FR",
+      "pop2025k": 188.912,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3704/city-3704-provider-3704.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3704/provider-3704-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 3186,
+      "cityCode": 2682,
+      "name": "Amersfoort",
+      "country": "Netherlands",
+      "iso2": "NL",
+      "pop2025k": 188.879,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2682/city-2682-provider-2682.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2682/provider-2682-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

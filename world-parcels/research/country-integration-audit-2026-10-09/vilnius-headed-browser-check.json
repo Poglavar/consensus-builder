@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:45:57.826260+00:00",
+  "city": "vilnius",
+  "appCityId": "vilnius",
+  "sourceId": "lt-inspire-cp-wfs",
+  "configuredCenterLatLon": [
+    54.695435447302,
+    25.2704077979851
+  ],
+  "observedCenterLatLon": [
+    54.69543593842932,
+    25.270408093929294
+  ],
+  "centerPrecisionNote": "Leaflet screen-pixel rounding only; WUP configured center unchanged.",
+  "zoom": 19,
+  "loadedParcelCount": 24,
+  "targetId": "LT-INSP-CADASTRAL-440051231650",
+  "pointerPosition": [
+    600,
+    409
+  ],
+  "interaction": "Actual mouse move/down/up at the WUP point inside the full native parcel, then menu Details click.",
+  "detailsHeadingVerified": true,
+  "basemapVisualInspection": "Screenshot shows loaded OSM river and streets beneath the selected native park/land parcel.",
+  "uncaughtPageErrors": [],
+  "screenshot": "tmp/overnight-cities-2026-10-09/vilnius-parcel-details.png",
+  "geometryChangedOrRepaired": false,
+  "browserSession": "baltic-ui",
+  "browserClosed": true,
+  "readOnlyPreview": true,
+  "productionDeployment": false
+}

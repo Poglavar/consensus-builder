@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-11126-yunfu.json",
+  "cityCode": 11126,
+  "queueRank": 2700,
+  "name": "Yunfu",
+  "country": "China",
+  "countryCode": "CN",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "summary": "Official Yunfu Natural Resources sources evidence a local real-estate registration custodian and a citywide map-based property inquiry service. The service requires identity verification and no anonymous parcel ID-plus-geometry response was obtained. No sample was retained.",
+  "queryOutcomes": [
+    {"language":"English","query":"Yunfu China official cadastral parcel map real estate registration natural resources GIS","outcome":"Official Yunfu Natural Resources notice and registration channel found; no anonymous cadastral feature service verified."},
+    {"language":"Chinese","query":"云浮市 不动产登记 地籍图 地图 服务 官方","outcome":"官方公告确认“以图查房”地图查询及身份验证要求；未找到可匿名访问的宗地几何接口。"}
+  ],
+  "requestOutcomes": [
+    {"request":"GET official Yunfu map-inquiry notice","outcome":"HTTP 200; confirms map browsing and identity-verified property inquiry, with privacy protections; no parcel API or geometry."},
+    {"request":"GET official Yunfu real-estate-registration channel","outcome":"HTTP 200; official local service channel; no anonymous parcel schema or endpoint exposed."},
+    {"request":"GET Guangdong government real-estate-registration portal","outcome":"Anonymous request timed out with no response; no credentials, CAPTCHA bypass, or private route attempted."}
+  ],
+  "schemaCrs": {"status":"not qualified","reason":"No parcel feature response was obtained; native field schema, CRS, stable native identity, pagination, and geometry encoding could not be verified."},
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS only when explicitly returned", "source layer/year", "retrieval timestamp"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sampleFiles": [],
+  "scopeLimits": [
+    "Exact WUP point [22.9329430199513, 112.037362109571] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit, map-extent result, or citywide absence claim is made.",
+    "No unsafe personal, ownership, address, contact, title, tax, or account fields were requested or retained.",
+    "The local registry custodian is evidenced, but no public parcel integration endpoint is qualified.",
+    "No GeoJSON was retained because no safe native parcel ID plus full polygon was obtained.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "Identity-gated or otherwise undiscoverable official routes may contain cadastral geometry. The checked anonymous route limitations do not establish citywide absence.",
+  "serialReviewRecommendation": "Hold and independently recheck a specifically identified official anonymous endpoint if one becomes available."
+}

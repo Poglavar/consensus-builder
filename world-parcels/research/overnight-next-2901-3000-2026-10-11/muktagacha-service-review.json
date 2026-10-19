@@ -1,0 +1,21 @@
+{
+  "cityRecord": "city-5948-muktagacha.json",
+  "cityCode": 5948,
+  "queueRank": 2927,
+  "reviewStatus": "held",
+  "reviewedAt": "2026-10-11",
+  "attempt": 1,
+  "service": "Bangladesh DLRS Settlement MapSearch / official Mouza-map services",
+  "requestSummary": "Official pages and current MapSearch JavaScript were inspected. Anonymous POST enumeration reached Mymensingh division, district and RS survey metadata, then returned an empty upazila response. No parcel ID+geometry response was available for Muktagacha.",
+  "scopeLimits": [
+    "Local Muktagacha land-office procedures evidence registry custodianship, not citywide open parcel coverage.",
+    "A zero/empty bounded response is not evidence of cadastral absence.",
+    "No retained GeoJSON sample is included because no safe native ID and full parcel geometry were observed.",
+    "No adapter qualification or source admission is made."
+  ],
+  "safeFieldAllowlist": ["canonical native parcel identity", "full parcel geometry", "geometry CRS", "reproduction-safe administrative source codes"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "title"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "The current public route may expose only selected survey areas or may require a different survey/upazila coverage path. Follow-up should inspect official viewer changes or local source documentation; do not infer absence from the empty response.",
+  "packetCompletion": "complete_for_attempt_1"
+}

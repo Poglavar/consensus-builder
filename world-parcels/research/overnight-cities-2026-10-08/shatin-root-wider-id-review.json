@@ -1,0 +1,24 @@
+{
+  "result": {
+    "passed": true,
+    "count": 1,
+    "absentIds": []
+  },
+  "requests": [
+    {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=LotID+IN+%281800240769%29&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "httpStatus": 200,
+      "safeFeatures": [
+        {
+          "properties": {
+            "OBJECTID": 160649,
+            "LotID": 1800240769,
+            "LotCSUID": "732000348"
+          },
+          "geometryType": "MultiPolygon"
+        }
+      ]
+    }
+  ]
+}

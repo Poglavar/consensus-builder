@@ -1,0 +1,44 @@
+{
+  "cityCode": 2827,
+  "queueRank": 1971,
+  "city": "Oryol",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso3": "RUS",
+  "point": [52.9696027243269, 36.0804404333876],
+  "population2025": 294739,
+  "population2025k": 294.739,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oryol official cadastral map public parcel map Rosreestr Oryol",
+        "result": "Discovery found the official Oryol city administration website and its cadastral/planning pages. The city site publishes local cadastral-plan and complex-cadastral-work materials; the current federal public cadastral-map route was identified as NSPD. No safe anonymous parcel feature response was found in the bounded checks.",
+        "actualResultUrls": [
+          "https://www.orel-adm.ru/ru/activity/karty-plany/",
+          "https://www.orel-adm.ru/ru/activity/kompleksnye-kadastrovye-raboty-/",
+          "https://nspd.gov.ru/map?thematic=PKK"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Орел официальный кадастровая карта публичная карта земельных участков Росреестр",
+        "result": "Поиск обнаружил официальный сайт администрации города Орла с разделами «Карты-планы» и «Комплексные кадастровые работы», где опубликованы материалы по кадастровым кварталам города Орла. Федеральный публичный кадастровый маршрут NSPD был проверен отдельно. Безопасный анонимный ответ с идентификатором и геометрией участка не получен.",
+        "actualResultUrls": [
+          "https://www.orel-adm.ru/ru/activity/karty-plany/",
+          "https://www.orel-adm.ru/ru/activity/kompleksnye-kadastrovye-raboty-/",
+          "https://www.orel-adm.ru/ru/activity/arkhiv-/",
+          "https://nspd.gov.ru/map?thematic=PKK"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Oryol city-administration domain publishes local cadastral-plan and complex-cadastral-work materials, including Oryol cadastral-quarter references and maps/plans. This establishes local municipal cadastral/planning evidence, but not a verified public parcel API or adapter contract.",
+  "serviceReview": "oryol-service-review.json",
+  "runtimeReadiness": "held_no_verified_public_geometry"
+}

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bazhong City",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Bazhou District government identifies the Bazhong Municipal Real Estate Registration Center’s Bazhou Branch (巴州分中心), and the point is in the Bazhong urban core represented by Bazhou District. This is local administrative registry evidence. No anonymous full-polygon layer/schema is documented in the reviewed sources.",
+  "registryEvidenceUrls": [
+    "https://bzqzf.gov.cn/jczwgk/gkly/zrzyly/qqdj/bdcdj/11787654.html",
+    "https://bzqzf.gov.cn/public/6600143/11686229.html",
+    "https://bzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=540694ca759e419584b8e72a092606ea.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8212,
+  "cityId": "wup2025:8212",
+  "centerLatLon": [
+    31.858915088868,
+    106.783114130158
+  ],
+  "rank": 804,
+  "queueRank": 804,
+  "population2025": 675756,
+  "population2025k": 675.756,
+  "populationPlausibility2025": "Low",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Local registration service is verified, but no public anonymous parcel-geometry service or safe feature schema was found. No registration record, personal notice, or parcel lookup was accessed.",
+  "scopeLimits": "No public feature route, geometry schema, exact WUP-point parcel presence, or citywide completeness has been verified.",
+  "remainingUncertainty": "No public feature route, geometry schema, exact WUP-point parcel presence, or citywide completeness has been verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bazhong City China official real estate registration center cadastral GIS public parcel map",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "Search found local Bazhou/Bazhong public administration and service pages confirming real-estate registration service, but no public parcel feature route or safe schema. No parcel query was sent.",
+        "actualResultUrls": [
+          "https://bzqzf.gov.cn/",
+          "https://bzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=540694ca759e419584b8e72a092606ea.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "巴中市 巴州区 不动产登记中心 巴州分中心 地籍图 GIS 官方",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "巴州区政府信息公开页面将巴中市不动产登记中心巴州分中心列入当地自然资源确权登记服务；本地政务服务清单含不动产登记事项。检索未发现可匿名读取、仅返回几何和稳定编号的公开地块服务；未查询地块。",
+        "actualResultUrls": [
+          "https://bzqzf.gov.cn/jczwgk/gkly/zrzyly/qqdj/bdcdj/11787654.html",
+          "https://bzqzf.gov.cn/public/6600143/11686229.html",
+          "https://bzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=540694ca759e419584b8e72a092606ea.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bzqzf.gov.cn/jczwgk/gkly/zrzyly/qqdj/bdcdj/11787654.html",
+        "observation": "Official Bazhou District natural-resources registry disclosure identifies the Bazhong Municipal Real Estate Registration Center, Bazhou Branch. No record contents or personal notice fields were used."
+      },
+      {
+        "url": "https://bzqzf.gov.cn/public/6600143/11686229.html",
+        "observation": "Official Bazhou District government program describes local land-right registration duties involving the district real-estate registration center."
+      },
+      {
+        "url": "https://bzs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=540694ca759e419584b8e72a092606ea.pdf",
+        "observation": "Official Bazhong Government Service Center inventory includes municipal natural-resources and real-estate registration services; no public GIS feature schema."
+      }
+    ],
+    "metadataReviewFile": "bazhong-city-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-8212-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "No public feature route, geometry schema, exact WUP-point parcel presence, or citywide completeness has been verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel feature was verified; local registry evidence is not a parcel-coverage claim."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-ID schema was established.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "point": [
+    31.858915088868,
+    106.783114130158
+  ],
+  "sampleFeatureCount": 0,
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://bzqzf.gov.cn/jczwgk/gkly/zrzyly/qqdj/bdcdj/11787654.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "巴中市不动产登记中心巴州分中心关于集中办理《不动产权证书》的告知书_巴中市巴州区人民政府"
+  },
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

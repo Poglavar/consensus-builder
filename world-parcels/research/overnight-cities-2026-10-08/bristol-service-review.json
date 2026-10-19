@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3110-bristol.json",
+  "purpose": "Read-only local registry and public parcel geometry source discovery; parent owns any runtime qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No complete Bristol vector response obtained: WMS layer is non-queryable; HMLR download web route returned a redirect-loop/challenge to this client. No attempt was made to bypass it.",
+  "registryAssessment": "HM Land Registry’s official INSPIRE data includes a Bristol local-authority freehold index file; this is a title-index map. Bristol’s separate public INSPIRE catalogue covers thematic council layers rather than an identified universal cadastral fabric.",
+  "searchQueries": [
+    {
+      "language": "English (local official language)",
+      "query": "Bristol City Council cadastral parcel boundaries land registry INSPIRE index polygons official",
+      "scope": "Identify Bristol-specific public land parcel/registry mapping and distinguish legal parcel extents from title-index polygons.",
+      "result": "HM Land Registry publishes INSPIRE Index Polygons as a freehold registered-property index with a download file per local authority, including Bristol. Its documentation cautions the file is not a legal boundary dataset; polygons on LA borders may occur in both files. Bristol City Council’s public INSPIRE map service lists thematic layers, including council asset land ownership, but no general cadastral parcel fabric.",
+      "actualResultUrls": [
+        "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+        "https://www.data.gov.uk/dataset/81b1dab8-badd-4906-b785-47e27d2491de/bristol-city-council-inspire-wms1",
+        "https://maps.bristol.gov.uk/metadata/INSPIRE/"
+      ],
+      "executionMethod": "Separate language-specific web search and first-party source/service review; no property-specific record lookup."
+    },
+    {
+      "language": "English",
+      "query": "Bristol official land registry index polygon download local authority HMLR WFS WMS queryable boundary semantics",
+      "scope": "Trace official local-authority download and WMS feature access.",
+      "result": "The official HMLR download page route redirected in the web tool; no Bristol GML was retrieved. The official INSPIRE WMS advertises the cadastral parcel map as non-queryable, so it provides map imagery, not a full polygon response. HMLR records are registered-freehold index polygons, not legally authoritative boundaries.",
+      "actualResultUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire",
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities"
+      ],
+      "executionMethod": "Separate language-specific web search and first-party source/service review; no property-specific record lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "observation": "Official NDL dataset page, published by HM Land Registry, updated 8 July 2026, OGL. Description: freehold registered property locations, per-local-authority files, duplicate boundary polygons possible."
+    },
+    {
+      "url": "https://www.data.gov.uk/dataset/81b1dab8-badd-4906-b785-47e27d2491de/bristol-city-council-inspire-wms1",
+      "observation": "Bristol City Council INSPIRE WMS catalogue entry, map service."
+    },
+    {
+      "url": "https://maps.bristol.gov.uk/metadata/INSPIRE/",
+      "observation": "Bristol Council INSPIRE catalogue lists council asset land ownership and thematic layers; no general city cadastral layer is listed."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "Open official HMLR local-authority download page",
+      "status": null,
+      "observation": "web client reported redirect-loop; no file downloaded. This does not establish source unavailability."
+    },
+    {
+      "url": "https://inspire.landregistry.gov.uk/inspire/ows?service=WMS&request=GetCapabilities",
+      "method": "GET official WMS capabilities reviewed in prior bounded source check",
+      "status": 200,
+      "observation": "CP.CadastralParcel WMS layer was queryable=0; GetFeatureInfo cannot return vector geometry."
+    },
+    {
+      "url": "https://maps2.bristol.gov.uk/server2/rest/services/ext/INSPIRE/MapServer?f=pjson",
+      "method": "GET Bristol City Council map service metadata",
+      "status": 200,
+      "observation": "19 thematic layers include Asset Register and Land Ownership; no general cadastral parcel layer."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, title number, registry record, credentials or token values requested or retained.",
+  "runtimeAssessment": "Not qualified; no full polygon response.",
+  "technicalBlocker": "No complete Bristol vector response obtained: WMS layer is non-queryable; HMLR download web route returned a redirect-loop/challenge to this client. No attempt was made to bypass it.",
+  "remainingUncertainty": "Whether a normal browser session can retrieve a Bristol local-authority GML file without challenge and whether individual index polygons are suitable for the project’s parcel contract; title-index limitations and duplicated boundary polygons must remain separate.",
+  "nextStep": "Parent may assess the normal HMLR download workflow; do not infer legal holds/boundaries from index polygons."
+}

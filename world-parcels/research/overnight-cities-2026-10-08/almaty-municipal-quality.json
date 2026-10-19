@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32643",
+  "featureCount": 0,
+  "validNonemptyCount": 0,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0,
+    "median": null,
+    "max": 0
+  },
+  "features": [],
+  "assessmentStatus": "not-assessable-no-geometry-from-adapter",
+  "assessmentLimitation": "The requested GEOS/Shapely audit ran on the adapter metric output, which contains zero features because the live ArcGIS layer does not support the GeoJSON format required by the existing adapter. Zero invalid/overlap counts below are empty-input counters, not evidence of valid topology.",
+  "sourceGeometryAuditPerformed": false,
+  "upstreamFormatMismatch": "FeatureServer/10 supports JSON, AMF; both FeatureServer and MapServer query with f=geojson returned HTTP 400 Output format not supported."
+}

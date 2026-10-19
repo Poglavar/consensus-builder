@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1118,
+  "population2025k": 495.4,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "Moderate",
+  "verifiedParcelResponse": null,
+  "source": {
+    "name": "Mayor of Osh municipal property office",
+    "url": "https://umsosh.kg/ru/",
+    "operator": "Mayor of Osh municipal property office",
+    "serviceType": "official service/map evidence; vector access not verified",
+    "layer": "not verified",
+    "geometryType": "not verified",
+    "nativeIdField": null
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:870",
+  "wupCityCode": 870,
+  "name": "Osh",
+  "country": "Kyrgyzstan",
+  "countryCode": "KG",
+  "centerLatLon": [
+    40.5260441990085,
+    72.807912074273
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "public_service_no_geometry",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Russian",
+      "exactQuery": "Osh Kyrgyz official кадастр земельные участки GIS карта Государственный кадастр недвижимость Ош",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://umsosh.kg/ru/",
+        "https://umsosh.kg/map/",
+        "https://www.cadastre.kg/svc-portal/map/main.do"
+      ],
+      "summary": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Osh Kyrgyzstan official cadastral map parcel registry GIS city land registration",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://umsosh.kg/ru/",
+        "https://umsosh.kg/map/",
+        "https://www.cadastre.kg/svc-portal/map/main.do"
+      ],
+      "summary": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://umsosh.kg/ru/",
+      "operator": "Mayor of Osh municipal property office",
+      "observation": "Official office administers municipal land/property records; this scope covers municipal assets rather than all private cadastral parcels."
+    },
+    {
+      "url": "https://umsosh.kg/map/",
+      "operator": "Mayor of Osh municipal property map",
+      "observation": "Public map reports 666 municipal-asset/lease objects; not evidence of full private parcel coverage."
+    },
+    {
+      "url": "https://www.cadastre.kg/svc-portal/map/main.do",
+      "operator": "Kyrgyz Republic Cadastre portal",
+      "observation": "Public cadastral map lead with parcel boundaries, but page includes person/name/PIN workflows. No such query was submitted and no geometry schema was inspected."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://umsosh.kg/ru/",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://umsosh.kg/ru/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 106905,
+      "sha256OfReadBytes": "5ffe4a49dfff32d28f44be9902398b9a064a270c5a431936517aae689aa9e2aa",
+      "title": "УМС г. Ош",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://umsosh.kg/ru/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official office administers municipal land/property records; this scope covers municipal assets rather than all private cadastral parcels."
+    },
+    {
+      "url": "https://umsosh.kg/map/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Public map reports 666 municipal-asset/lease objects; not evidence of full private parcel coverage."
+    },
+    {
+      "url": "https://www.cadastre.kg/svc-portal/map/main.do",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Public cadastral map lead with parcel boundaries, but page includes person/name/PIN workflows. No such query was submitted and no geometry schema was inspected."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "No anonymous safe feature-layer/schema verified. The national map exposes personal identity search fields; avoid them. Municipal map records are limited to municipal objects.",
+  "remainingUncertainty": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+  "nextStep": "No anonymous safe feature-layer/schema verified. The national map exposes personal identity search fields; avoid them. Municipal map records are limited to municipal objects.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 495400,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+  "registryEvidenceUrls": [
+    "https://umsosh.kg/ru/",
+    "https://umsosh.kg/map/",
+    "https://www.cadastre.kg/svc-portal/map/main.do"
+  ],
+  "technicalBlocker": "No anonymous safe feature-layer/schema verified. The national map exposes personal identity search fields; avoid them. Municipal map records are limited to municipal objects.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe feature-layer/schema verified. The national map exposes personal identity search fields; avoid them. Municipal map records are limited to municipal objects."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

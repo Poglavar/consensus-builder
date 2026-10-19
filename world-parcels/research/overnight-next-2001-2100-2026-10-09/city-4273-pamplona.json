@@ -1,0 +1,59 @@
+{
+  "cityCode": 4273,
+  "queueRank": 2023,
+  "name": "Pamplona",
+  "country": "Spain",
+  "countryCode": "ES",
+  "iso3": "ESP",
+  "point": [42.8175145798326, -1.64665178979721],
+  "population2025": 288215,
+  "population2025k": 288.215,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T21:10:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pamplona Spain official cadastral parcel map GIS API catastro Navarra ayuntamiento",
+        "result": "Official Navarra IDENA documentation identifies INSPIRE cadastral-parcel WMS/WFS services and the official Pamplona GeoPamplona WMS/WFS routes; official city pages identify Catastro as a GeoPamplona thematic layer and provide geographic downloads.",
+        "actualResultUrls": [
+          "https://www.navarra.es/es/web/geoportal/idena/servicios",
+          "https://www.pamplona.es/la-ciudad/geopamplona/mapastematicos",
+          "https://www.pamplona.es/la-ciudad/geopamplona/descargas",
+          "https://inspire.navarra.es/services/CP/wfs"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Pamplona catastro parcela mapa oficial visor GIS",
+        "result": "Official Spanish-language Navarra and Pamplona sources confirm cadastral parcel identification, GeoPamplona access, and public INSPIRE parcel services. The IDENA CP WFS was then queried anonymously with a bounded Pamplona-area bbox.",
+        "actualResultUrls": [
+          "https://geoportal.navarra.es/es/inspire",
+          "https://geoportal.navarra.es/es/idena/descargar",
+          "https://www.pamplona.es/eu/node/15524",
+          "https://inspire.navarra.es/services/CP/wfs"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Government of Navarra IDENA documentation identifies the cadastral-parcel service and official Pamplona GeoPamplona WFS/WMS routes; the bounded public response was obtained from the Navarra INSPIRE cadastral-parcel service, not treated as proof of a separate municipal custodian.",
+  "registryEvidenceUrls": [
+    "https://www.navarra.es/es/web/geoportal/idena/servicios",
+    "https://www.pamplona.es/la-ciudad/geopamplona/mapastematicos",
+    "https://inspire.navarra.es/services/CP/wfs"
+  ],
+  "source": "https://inspire.navarra.es/services/CP/wfs",
+  "sourceIds": ["ES.RRTN.CP.016220413", "ES.RRTN.CP.016220899", "ES.RRTN.CP.016220944"],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sampleFile": "pamplona-sample.geojson",
+  "verifiedParcelResponse": {"format": "application/json", "layer": "CP:CadastralParcel", "crs": "EPSG:4326", "returned": 3},
+  "safeFieldAllowlist": ["stable native cadastral parcel identifier", "parcel polygon geometry", "source service metadata", "CRS and response-format metadata"],
+  "unsafeFieldsNotRequested": ["owner or right-holder names", "addresses or contact details", "title or certificate details", "tax, account, identity, or application fields"],
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. Packet completion is not source integration or admission.",
+  "resultCategory": "public_geometry_verified_local_registry_evidenced",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. The bounded query returned nearby parcels but does not establish citywide completeness, municipal-boundary coverage, or adapter qualification. Native source attributes were inspected only for field mapping and are not retained in the sample."
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-shiyan-municipal-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only route without querying personal/property attributes.",
+  "primaryPublisher": "Shiyan Real Estate Registration Center",
+  "sourceUrl": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+  "registryFound": true,
+  "registryBasis": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint.",
+  "officialSources": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+      "observation": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719549.shtml",
+      "observation": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint."
+    },
+    {
+      "url": "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm",
+      "observation": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shiyan China official real estate registration center cadastral parcel map public",
+      "scope": "Find city-specific registry/cartography basis and safe anonymous geometry routes.",
+      "result": "Official Hubei and Shiyan registration-center publications document the city Real Estate Registration Center and service locations in urban districts. The publicized parcel-map access is certificate-QR, app, kiosk or registration service; no anonymous vector layer/schema was found. No certificate or property data was accessed.",
+      "actualResultUrls": [
+        "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+        "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719549.shtml",
+        "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "十堰市 不动产登记中心 宗地图 不动产登记 公开地图",
+      "scope": "Find local-language city-specific registry/cartography basis and safe anonymous geometry routes.",
+      "result": "湖北省自然资源厅及十堰市不动产登记中心公开信息确认十堰市区的不动产登记机构和服务网点。“一证一码”宗地图/分户图通过权证二维码、政务App或自助机查询，未发现匿名公开矢量图层或几何接口；未使用任何权证或房产标识。",
+      "actualResultUrls": [
+        "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+        "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719549.shtml",
+        "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "No anonymous geometry-only route was identified. The documented map retrieval depends on a certificate QR, an app or a staffed/self-service query, so no lookup was performed.",
+    "nativeIdsUsed": "No safe parcel feature identifier read; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+      "method": "GET (official publication)",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "Hubei Natural Resources Department describes Shiyan’s city registration center and city-local service operations."
+    },
+    {
+      "url": "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm",
+      "method": "GET (publication attributed to Shiyan Real Estate Registration Center)",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "Lists city and district registration outlets and online service route. Transaction/lookup endpoints not opened."
+    },
+    {
+      "url": "https://www.syiptv.com/article/show/164035",
+      "method": "GET (article sourced to Shiyan Natural Resources and Planning Bureau)",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "Describes parcel-map/house-plan retrieval via QR on a real-estate certificate, app or kiosk; no QR/property identifier used."
+    }
+  ],
+  "technicalBlocker": "No anonymous geometry-only route was identified. The documented map retrieval depends on a certificate QR, an app or a staffed/self-service query, so no lookup was performed.",
+  "sampleDisposition": "No parcel geometry or attributes retained.",
+  "remainingUncertainty": "No public geometry/schema route was verified. Service channels may provide parcel sketches only for certificate-linked or applicant-authorized cases."
+}

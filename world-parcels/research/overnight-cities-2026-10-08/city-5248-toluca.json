@@ -1,0 +1,105 @@
+{
+  "name": "Toluca",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 335,
+  "point": [
+    19.2890968271045,
+    -99.6265552780563
+  ],
+  "population2025": 1505035,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local/state property or cadastral services were identified, but no point-specific public parcel polygon was verified. No full geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Toluca’s official municipal transparency/process records identify the municipal Catastro unit and cadastral register, parcel boundary/cadastral-plan certification, and geographic cadastral information systems. The municipality’s current official site links SIGTOL, a public interactive geographic-information platform, but does not identify a parcel-cadastre layer.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "The public viewer linked by SIGTOL refused a normal anonymous connection; no parcel layer/service could be verified. The official landing page’s thematic-map description alone does not establish public parcel geometry.",
+  "remainingUncertainty": "Whether SIGTOL has a parcel/cadastral layer or only thematic planning layers, and whether the exact point lies in a publicly viewable cadastral layer.",
+  "nextStep": "Retry only if the official SIGTOL viewer is available; inspect its published layer metadata and query only a bounded ID-plus-geometry response if a cadastral layer exists.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Toluca official cadastral parcel map geoportal predial Ayuntamiento Toluca SIGTOL",
+        "result": "The Ayuntamiento’s official site links SIGTOL, which advertises interactive geographic maps and data for Toluca. Official municipal service records describe cadastral registration and parcel boundary/cadastral-plan certification. The SIGTOL landing page does not specify a parcel layer; its linked viewer endpoint refused the anonymous connection.",
+        "method": "Separate English web search followed by official public-page and viewer review."
+      },
+      {
+        "language": "Spanish",
+        "query": "Toluca catastro mapa predial SIGTOL parcelario oficial ayuntamiento predios",
+        "result": "El Ayuntamiento de Toluca identifica trámites de Catastro, registro catastral y certificación de límites/plano del predio. El portal SIGTOL municipal ofrece mapas interactivos, pero su página pública no identifica una capa de parcelas y el visor enlazado no aceptó la conexión anónima.",
+        "method": "Separate native-language web search and official public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www2.toluca.gob.mx/",
+        "observation": "Official Ayuntamiento site links the municipal SIGTOL platform and property-tax portal."
+      },
+      {
+        "url": "https://sigtol.gob.mx/",
+        "observation": "Official SIGTOL landing page describes interactive maps and geographic data for Toluca and links to the Ayuntamiento."
+      },
+      {
+        "url": "https://www2.toluca.gob.mx/wp-content/uploads/2023/06/tol-pdf-MP_TM-2023.pdf",
+        "observation": "Official municipal Catastro process manual; describes cadastral register and municipal-territory records."
+      },
+      {
+        "url": "https://www2.toluca.gob.mx/transparenciatoluca/",
+        "observation": "Official municipal transparency page lists the Coordinación de Catastro and its cadastral-register, cadastral-plan, boundary-verification, and Geographic and Cadastral Information System procedures."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The SIGTOL official landing page was opened and its linked viewer URL was identified as http://187.174.218.139/mdm-client. Ordinary public GET to that linked viewer returned connection refused. Landing page describes interactive geographic mapping but not cadastral parcels, and no viewer JS or map service metadata was obtained. No geometry query was made.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no feature query",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://www2.toluca.gob.mx/",
+    "https://sigtol.gob.mx/",
+    "https://www2.toluca.gob.mx/wp-content/uploads/2023/06/tol-pdf-MP_TM-2023.pdf",
+    "https://www2.toluca.gob.mx/transparenciatoluca/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Toluca’s official municipal transparency/process records identify the municipal Catastro unit and cadastral register, parcel boundary/cadastral-plan certification, and geographic cadastral information systems. The municipality’s current official site links SIGTOL, a public interactive geographic-information platform, but does not identify a parcel-cadastre layer.",
+    "verifiedOpenScope": "The public viewer linked by SIGTOL refused a normal anonymous connection; no parcel layer/service could be verified. The official landing page’s thematic-map description alone does not establish public parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Toluca local cadastral/land-record evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://www2.toluca.gob.mx/",
+    "scope": "Toluca’s official municipal transparency/process records identify the municipal Catastro unit and cadastral register, parcel boundary/cadastral-plan certification, and geographic cadastral information systems. The municipality’s current official site links SIGTOL, a public interactive geographic-information platform, but does not identify a parcel-cadastre layer."
+  },
+  "wupCityCode": 5248,
+  "cityId": "wup2025:5248",
+  "queueRank": 335,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    19.2890968271045,
+    -99.6265552780563
+  ],
+  "rootReviewedAt": "2026-10-08T22:39:59.726347+00:00"
+}

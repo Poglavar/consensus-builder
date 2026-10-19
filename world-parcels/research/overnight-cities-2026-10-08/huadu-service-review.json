@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-huadu-registry-map-review",
+  "purpose": "City-specific registry/map source review and bounded safe route inspection for the WUP ranked settlement point (Huadu).",
+  "primaryPublisher": "Guangzhou Municipal Planning and Natural Resources Bureau, Huadu Branch",
+  "sourceUrl": "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyjhdqfj/content/post_10462942.html",
+  "registryFound": true,
+  "registryBasis": "The Huadu branch of the Guangzhou Planning and Natural Resources Bureau publishes city-specific real-estate registration service information, and Huadu’s public disclosure catalog lists registration and cadastral-information procedures. This establishes a city-specific registration institution, not an anonymous parcel-vector service.",
+  "officialSources": [
+    {
+      "url": "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyjhdqfj/content/post_10462942.html",
+      "observation": "Official Huadu branch report describes its district real-estate registration service and interdepartmental registration workflow."
+    },
+    {
+      "url": "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyj/content/mpost_8671953.html",
+      "observation": "Official Huadu natural-resources disclosure catalog includes real-estate registration and cadastral-information procedure categories."
+    },
+    {
+      "url": "https://guangdong.tianditu.gov.cn/guangzhou/",
+      "observation": "Official Guangzhou Tianditu portal lists general map APIs and a cadastral-enquiry application; API/service use requires developer authorization. No cadastral enquiry was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Huadu Guangzhou official real estate registration cadastral map public GIS parcel",
+      "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+      "result": "The Huadu branch of the Guangzhou Planning and Natural Resources Bureau publishes city-specific real-estate registration service information, and Huadu’s public disclosure catalog lists registration and cadastral-information procedures. This establishes a city-specific registration institution, not an anonymous parcel-vector service. Official Huadu disclosure pages document registration services and cadastral information procedures. The Guangzhou Tianditu page links cadastral enquiry and map APIs; its public page warns that API/service calls require developer authorization. No cadastral enquiry, developer sign-in, or parcel-specific request was made. No anonymous feature schema found."
+    },
+    {
+      "language": "Chinese",
+      "query": "花都区 不动产登记 地籍图 公开 地图 服务 广州市 规划和自然资源局",
+      "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+      "result": "The Huadu branch of the Guangzhou Planning and Natural Resources Bureau publishes city-specific real-estate registration service information, and Huadu’s public disclosure catalog lists registration and cadastral-information procedures. This establishes a city-specific registration institution, not an anonymous parcel-vector service. Official Huadu disclosure pages document registration services and cadastral information procedures. The Guangzhou Tianditu page links cadastral enquiry and map APIs; its public page warns that API/service calls require developer authorization. No cadastral enquiry, developer sign-in, or parcel-specific request was made. No anonymous feature schema found."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyjhdqfj/content/post_10462942.html",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html (web-rendered official page)",
+      "bytes": null,
+      "observation": "Read official district-branch service description; no form or property lookup."
+    },
+    {
+      "url": "https://www.huadu.gov.cn/zfxxgkml/gzsghhzrzyj/content/mpost_8671953.html",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html (web-rendered official page)",
+      "bytes": null,
+      "observation": "Read public disclosure catalog; no parcel request."
+    }
+  ],
+  "routeInspectionSummary": "Official Huadu disclosure pages document registration services and cadastral information procedures. The Guangzhou Tianditu page links cadastral enquiry and map APIs; its public page warns that API/service calls require developer authorization. No cadastral enquiry, developer sign-in, or parcel-specific request was made. No anonymous feature schema found.",
+  "geometrySampleCount": 0,
+  "geometryRetained": false,
+  "nativeIdField": null,
+  "attributesRequested": [],
+  "runtimeEnabled": false
+}

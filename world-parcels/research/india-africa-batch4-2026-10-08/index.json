@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "kind": "india_africa_detailed_batch",
+  "batch": 4,
+  "checkedAt": "2026-10-08",
+  "completedAt": "2026-10-08T14:34:27.980970+00:00",
+  "status": "complete",
+  "queueFile": "research/india-africa-batch4-2026-10-08/queue.json",
+  "cityCount": 10,
+  "indiaCount": 5,
+  "africaCount": 5,
+  "verifiedSampleCount": 0,
+  "newAppEntries": [],
+  "configuredAppEntryCount": 114,
+  "executableProviderCount": 101,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "tlsPolicy": "Certificate validation is the default; source-specific exceptions are authorized when needed. An expired certificate alone is not a terminal blocker.",
+  "summary": "Ten documented city investigations; no additional usable public parcel geometry qualified for runtime. Registry presence, raster viewing, candidate shapes and live vector access are recorded separately.",
+  "cities": [
+    {
+      "cityId": "wup2025:8064",
+      "wupCityCode": 8064,
+      "name": "Jaipur",
+      "countryCode": "IN",
+      "region": "India",
+      "resultCategory": "official_urban_parcel_services_temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-8064.json",
+        "research/india-africa-batch4-2026-10-08/jaipur-urban-gis-diagnostic.json"
+      ],
+      "blocker": "Advertised official parcel services are currently unreachable from both checked networks. Certificate bypass cannot cure a pre-TLS TCP timeout.",
+      "nextStep": "Retry the exact public parcel services when reachable, following the portal’s ordinary anonymous bootstrap if required, then request only geometry and parcel identifiers in a small Jaipur bbox. Confirm location, polygon quality and fresh identity resolution before enabling a provider."
+    },
+    {
+      "cityId": "wup2025:10447",
+      "wupCityCode": 10447,
+      "name": "Varanasi",
+      "countryCode": "IN",
+      "region": "India",
+      "resultCategory": "public_cadastral_raster_and_hit_test_no_open_vector_geometry",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-10447.json",
+        "research/india-africa-batch4-2026-10-08/india-varanasi-10447-map-sample.json"
+      ],
+      "blocker": "Nearby public hit-test results provide parcel codes and bounding boxes only. The full-shape endpoint and GeoJSON layer endpoint return 401; the WMS evidence is a raster.",
+      "nextStep": "Use a separately documented public vector route if one becomes available; validate full boundaries, geographic placement and fresh native-ID or source-scoped geometry-reference reads. Preserve the nearby public raster as viewing evidence only."
+    },
+    {
+      "cityId": "wup2025:8886",
+      "wupCityCode": 8886,
+      "name": "Indore",
+      "countryCode": "IN",
+      "region": "India",
+      "resultCategory": "official_gis_unavailable_and_public_demo_not_georeferenced",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-8886.json",
+        "research/india-africa-batch4-2026-10-08/indore-municipal-diagnostic.json",
+        "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+      ],
+      "blocker": "The official municipal GIS times out before TLS from two networks. Public commercial demo shapes are rotated and shifted into an undocumented private frame, so they are not verified georeferenced parcel geometry.",
+      "nextStep": "Recheck the official municipal WebGIS when reachable, or obtain the publisher’s documented georeferenced public layout feed. The demonstration-coordinate shapes are not a runtime substitute."
+    },
+    {
+      "cityId": "wup2025:9793",
+      "wupCityCode": 9793,
+      "name": "Nagpur",
+      "countryCode": "IN",
+      "region": "India",
+      "resultCategory": "official_city_survey_viewer_temporarily_unavailable",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-9793.json",
+        "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+      ],
+      "blocker": "Maharashtra BhuNaksha viewer timed out on direct requests. Official NMC map PDF is a static survey-boundary/number map rather than machine-readable parcel geometry. DILRMP Nagpur Urban tehsil code 0 does not support assuming rural digitization covers urban CTS records.",
+      "nextStep": "Retry the documented Maharashtra viewer after service recovery, then verify geographically scoped Nagpur city-survey parcel geometry. The secondary-network timeout is already recorded; the rural Jamtha report does not establish urban coverage."
+    },
+    {
+      "cityId": "wup2025:8120",
+      "wupCityCode": 8120,
+      "name": "Kalyan-Dombivli",
+      "countryCode": "IN",
+      "region": "India",
+      "resultCategory": "official_city_survey_service_provider_failure",
+      "status": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-8120.json",
+        "research/india-africa-batch4-2026-10-08/india-secondary-network-checks.json"
+      ],
+      "blocker": "The KDMC public ArcGIS layer endpoint returns an HTTP 200 HTML Web Adaptor error saying no server machines are accessible, reproduced on a second network. The WUP locator may fall in Ulhasnagar, so eventual KDMC geometry also needs explicit coverage qualification.",
+      "nextStep": "Retry the exact city-survey/property services after provider recovery; request geometry and nonpersonal identifiers, validate municipal coverage, and label any accepted partial Kalyan-Dombivli coverage explicitly."
+    },
+    {
+      "cityId": "wup2025:7330",
+      "wupCityCode": 7330,
+      "name": "Onitsha",
+      "countryCode": "NG",
+      "region": "Africa",
+      "resultCategory": "official_cadastre_online_services_no_geometry",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-7330.json"
+      ],
+      "blocker": "No anonymous Onitsha parcel polygons. Official services expose land records, but the linked printout concerns owner/history data and was not queried.",
+      "nextStep": "If an anonymous geometry source is found, verify a bounded Onitsha bbox with a count-only request, then read only ID+geometry for a small sample; do not use paid owner/history register workflows."
+    },
+    {
+      "cityId": "wup2025:2324",
+      "wupCityCode": 2324,
+      "name": "Yaoundé",
+      "countryCode": "CM",
+      "region": "Africa",
+      "resultCategory": "third_party_urban_model_microcluster_rejected_for_coverage_scale_and_provenance",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-2324.json"
+      ],
+      "blocker": "No credible anonymous parcel geometry; third-party Urban model contains a 32-shape sub-100m² microcluster, not usable city coverage.",
+      "nextStep": "Find a credible public MINDCAF/CUY or other documented city parcel source, then validate geographic placement, parcel scale and fresh native-ID or geometry-reference reads. The retained Urban microcluster does not qualify."
+    },
+    {
+      "cityId": "wup2025:1866",
+      "wupCityCode": 1866,
+      "name": "Kampala",
+      "countryCode": "UG",
+      "region": "Africa",
+      "resultCategory": "no_verified_open_endpoint_after_attempts",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-1866.json"
+      ],
+      "blocker": "The official KCCA GIS confirms city cadastre information exists, but the actual anonymous app layer configuration lists only Boundary, Divisions, Buildings, Parishes and Villages (no CAD layer), while its anonymous WFS advertises no parcel-named layer and the bounded generic polygon query returned zero features.",
+      "nextStep": "Ask KCCA GIS or MoLHUD whether a public WFS/ArcGIS layer or a small geometry-only parcel extract is available, and test that source with the saved point before integration."
+    },
+    {
+      "cityId": "wup2025:8435",
+      "wupCityCode": 8435,
+      "name": "Kano",
+      "countryCode": "NG",
+      "region": "Africa",
+      "resultCategory": "official_registry_and_public_catalog_limited_no_geometry",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-8435.json"
+      ],
+      "blocker": "No anonymous parcel geometry was verified. The tested KANGIS Buildings FeatureServer root returned ArcGIS JSON error 499 Token Required; this finding applies only to that endpoint. The ministry land host linked by KANGIS was inaccessible (Cloudflare 403); other services were not established as token-gated.",
+      "nextStep": "Find a documented public KANGIS parcel service or geometry-only extract, then validate a bounded Kano-area sample and fresh native-ID or source-scoped geometry-reference lookups."
+    },
+    {
+      "cityId": "wup2025:2076",
+      "wupCityCode": 2076,
+      "name": "Casablanca",
+      "countryCode": "MA",
+      "region": "Africa",
+      "resultCategory": "no_verified_open_endpoint_after_attempts",
+      "status": "no_verified_open_endpoint_after_attempts",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch4-2026-10-08/city-2076.json"
+      ],
+      "blocker": "ANCFCC exposes products and a title-specific request workflow rather than an anonymous city-wide geometry endpoint; the AUC geoportal requires account/security-code access, its Open Data page lists no vector dataset, and Casa Maps is a city-district/POI map. The public Eaux et Forêts parcel layer is forest inventory outside the target point.",
+      "nextStep": "Ask ANCFCC/AUC for an anonymous WFS, public parcel layer, or bounded geometry-only extract around the WUP point; validate its CRS, parcel semantics, coverage, native IDs or source-scoped geometry hashes before integration."
+    }
+  ],
+  "deploymentStatus": "This batch is local only, uncommitted and undeployed.",
+  "validationFile": "research/india-africa-batch4-2026-10-08/final-verification.json"
+}

@@ -1,0 +1,127 @@
+{
+  "cityCode": 3508,
+  "queueRank": 3179,
+  "name": "Sumy",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso3": "UKR",
+  "locId": 804,
+  "capital": false,
+  "point": [50.9125624857734, 34.7966600064341],
+  "population2025": 189130,
+  "population2025k": 189.13,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sumy Ukraine official cadastral parcel map GIS land registry viewer",
+        "result": "First-party discovery identified the Sumy Oblast Main Department of the StateGeoCadastre as the regional cadastral custodian, Sumy city administrative-service information about land-registration services, the National Geoportal documentation describing the public cadastral map, and the state urban-planning geoportal. No safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://sumska.land.gov.ua/info/derzhavna-reiestratsiia-ta-kadastr/",
+          "https://land.gov.ua/sumska-oblast/",
+          "https://cnap.gov.ua/node/2034",
+          "https://nsdi.gov.ua/docs/portal/1start/"
+        ]
+      },
+      {
+        "language": "Ukrainian (local)",
+        "query": "Суми офіційна кадастрова карта земельний кадастр геопортал",
+        "result": "Ukrainian first-party discovery identified the Sumy Oblast StateGeoCadastre cadastral page, Sumy city CNAP land-registration service, the public cadastral-map reference, and National Geoportal cadastral-map documentation. The current National Geoportal map route redirected to login and the legacy public cadastral-map host timed out; no parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://sumska.land.gov.ua/info/derzhavna-reiestratsiia-ta-kadastr/",
+          "https://cnap.gov.ua/node/269",
+          "https://sumska.land.gov.ua/info/administratyvni-posluhy/",
+          "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Main Department of the StateGeoCadastre in Sumy Oblast, with Sumy city CNAP as a local administrative-service access point",
+    "scope": "The regional official page documents the State Land Cadastre and cadastral registration context; Sumy city CNAP documents land-parcel registration and cadastral extract services. This evidences a local/regional registry custodian route, not an open anonymous citywide parcel API.",
+    "evidenceUrls": [
+      "https://sumska.land.gov.ua/info/derzhavna-reiestratsiia-ta-kadastr/",
+      "https://land.gov.ua/sumska-oblast/",
+      "https://cnap.gov.ua/node/2034"
+    ],
+    "scopeNote": "The Sumy city CNAP is recorded as a local service route; the Sumy Oblast StateGeoCadastre office is the regional state cadastral custodian. General national documentation is not treated as local proof by itself."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Sumy Oblast StateGeoCadastre / Ukrainian National Geoportal and public cadastral-map routes",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://sumska.land.gov.ua/info/derzhavna-reiestratsiia-ta-kadastr/",
+        "outcome": "HTTP 200 HTML received; official page describes the State Land Cadastre and cadastral registration, but exposes no anonymous parcel feature endpoint or geometry response."
+      },
+      {
+        "method": "GET",
+        "url": "https://land.gov.ua/sumska-oblast/",
+        "outcome": "HTTP 200 HTML received; official regional custodian/contact page identified the Sumy Oblast StateGeoCadastre office, but no parcel schema or feature service was exposed."
+      },
+      {
+        "method": "GET",
+        "url": "https://cnap.gov.ua/node/2034",
+        "outcome": "HTTP 200 first-party page received; Sumy city CNAP service page documents state land-parcel registration and cadastral extracts, but does not provide a public parcel geometry API."
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/",
+        "outcome": "HTTP 302 to /login with JSON headers; no anonymous map feature response was requested beyond the public landing route."
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/map",
+        "outcome": "HTTP 200 login page HTML received after the map route redirected to authentication; current JavaScript/configuration showed no usable anonymous parcel feature endpoint. No login or credential use attempted."
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+        "outcome": "HTTP 200 official documentation received; it describes cadastral-map and parcel search by cadastral number, but does not expose a safe anonymous bounded geometry API."
+      },
+      {
+        "method": "GET",
+        "url": "https://map.land.gov.ua/kadastrova-karta",
+        "outcome": "Connection timed out after 10 seconds; no HTML, JavaScript, configuration, schema, CRS, or parcel response inspected."
+      },
+      {
+        "method": "GET",
+        "url": "https://newmap.land.gov.ua/",
+        "outcome": "DNS resolution failed; no request body or service metadata obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://kadastr.gov.ua/",
+        "outcome": "HTTP 200 HTML received; current state urban-planning geoportal landing page was inspected, but no anonymous parcel feature endpoint was exposed in the bounded inspection."
+      },
+      {
+        "method": "GET",
+        "url": "https://e.land.gov.ua/",
+        "outcome": "HTTP 200 HTML received; page references the public cadastral map and electronic services, but no anonymous parcel ID-plus-geometry response was obtained and no login or unsafe request was attempted."
+      }
+    ],
+    "note": "The exact WUP point was preserved and was not shifted or used as an absence test. No parcel ID, geometry, schema, CRS, or bounded anonymous parcel-feature response was obtained."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The official local/regional pages establish cadastral responsibility and service routes, but not an open anonymous citywide geometry endpoint.",
+    "The National Geoportal map route currently redirects to authentication; no credentials or private tokens were used.",
+    "The legacy public cadastral-map route timed out and the alternate host did not resolve; these are access/visibility limits, not evidence of citywide parcel absence.",
+    "No exact-point hit or map extent conclusion was used as evidence of absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

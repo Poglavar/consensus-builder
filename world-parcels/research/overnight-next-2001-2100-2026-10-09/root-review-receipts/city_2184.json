@@ -1,0 +1,14 @@
+{
+  "taskId": "city:2184",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-2184-modiin-maccabim-reut.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/modiin-maccabim-reut-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_2184-root-review.json",
+    "tmp/valhalla-parcel-research/modiin/layer.json",
+    "tmp/valhalla-parcel-research/modiin/query.geojson"
+  ],
+  "checkedAt": "2026-10-10T21:28:43Z"
+}

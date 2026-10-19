@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-7322-golmorti.json",
+  "cityCode": 7322,
+  "queueRank": 3193,
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "service": "No verified Golmorti-local public cadastral service; national Iranian registration/cadastre references only",
+  "queryAndRequestOutcome": "Separate English and Persian discovery queries were executed. Search results did not establish a Golmorti-local map/API. Bounded requests to official national registration domains timed out or returned no usable response. No parcel geometry or native parcel identity was observed.",
+  "scopeLimits": [
+    "National agency references are not evidence of a local Golmorti registry or citywide parcel layer",
+    "Official-domain timeout and unusable response are not evidence of cadastral absence",
+    "No exact-point hit test or coordinate shift was used",
+    "No citywide completeness, local administrative boundary, schema, CRS, or adapter readiness was established"
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "safe public-service reproduction metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "registryFound remains null because no local registry, cadastral viewer, or public parcel-level procedure was independently verified",
+    "No sample GeoJSON is retained because no full safe parcel polygon was observed",
+    "The official sites may be network-restricted or require interactive access, but no credentials, private tokens, CAPTCHA bypass, or TLS exception was used",
+    "No unsafe landholder, address, contact, titleholder, personal, tax, account, or title fields were requested or retained"
+  ]
+}

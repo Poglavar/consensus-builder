@@ -1,0 +1,26 @@
+{
+  "taskId": "city:11862",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-11862-xixi.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/xixi-service-review.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "tmp/valhalla-parcel-research/xixi-config.js",
+    "tmp/valhalla-parcel-research/xixi-hosted.json",
+    "tmp/valhalla-parcel-research/xixi-tianditu.headers"
+  ],
+  "checkedAt": "2026-10-12T06:39:17.805427Z",
+  "reason": "Xixi: English and Chinese queries are recorded. The saved official Guangdong configuration points to general mapping and the hosted service response is error 499 Token Required; no safe native parcel ID plus full polygon response, source binding, or independent adapter and headed Details qualification exists. Registry custody remains unresolved (null); token requirement is not citywide absence.",
+  "admissionGates": {
+    "nativeIdAndFullPolygon": false,
+    "freshExactIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAction": "none"
+}

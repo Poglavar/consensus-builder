@@ -1,0 +1,105 @@
+{
+  "name": "Qiqihar",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 580,
+  "point": [
+    47.3463038833301,
+    123.969629803192
+  ],
+  "population2025": 892744,
+  "populationUnit": "persons",
+  "population2025k": 892.744,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Qiqihar Government Service Network lists local Natural Resources Bureau services including real-estate registration-record inquiries. Heilongjiang provincial-government reporting confirms a Qiqihar Real Estate Registration Center and online registration workflows. No anonymous parcel GIS was verified.",
+  "registryEvidenceUrls": [
+    "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+    "https://www.hlj.gov.cn/hlj/c107858/202212/c00_31506389.shtml",
+    "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31727335.shtml"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "url": null,
+    "httpStatus": null,
+    "contentType": null,
+    "featureType": null,
+    "nativeCrs": null,
+    "responseCount": 0,
+    "responseNumberMatched": "not queried",
+    "requestLimit": 0,
+    "requestFilter": "No public anonymous feature query was made or verified.",
+    "requestedFields": [],
+    "safeFieldsRetained": [],
+    "featureIds": [],
+    "nativeParcelIdentifier": null,
+    "wupPointContained": false,
+    "sampleGeometryFile": null,
+    "sampleSha256": null,
+    "limitations": "No public parcel geometry or native parcel ID was retrieved."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "齐齐哈尔市 不动产登记中心 地籍图 地块 查询 官方 自然资源局",
+        "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+        "result": "The WUP point is a settlement locator, not a parcel identity. Published local services are registration/document workflows; no anonymous full-polygon feature endpoint or exact-point response was verified.",
+        "actualResultUrls": [
+          "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+          "https://www.hlj.gov.cn/hlj/c107858/202212/c00_31506389.shtml",
+          "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31727335.shtml"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review."
+      },
+      {
+        "language": "English",
+        "query": "Qiqihar China official cadastral parcel map real estate registration land registry GIS natural resources bureau",
+        "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+        "result": "The WUP point is a settlement locator, not a parcel identity. Published local services are registration/document workflows; no anonymous full-polygon feature endpoint or exact-point response was verified.",
+        "actualResultUrls": [
+          "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+          "https://www.hlj.gov.cn/hlj/c107858/202212/c00_31506389.shtml",
+          "https://zrzyt.hlj.gov.cn/zrzyt/c112207/202404/c00_31727335.shtml"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review."
+      }
+    ]
+  },
+  "scopeLimits": "The WUP point is a settlement locator, not a parcel identity. Published local services are registration/document workflows; no anonymous full-polygon feature endpoint or exact-point response was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "CN-8695-LOCAL-CADASTRE-REGISTRY",
+    "name": "Qiqihar Natural Resources Bureau / Real Estate Registration Center services",
+    "url": "https://qqhr.zwfw.hlj.gov.cn/zczx/tzgg/art/2023/art_9d8896b4196c4befb3519117a2361f99.html",
+    "operator": "Qiqihar Natural Resources Bureau / Heilongjiang government",
+    "serviceType": "Official local registration/cadastre records or services; no anonymous parcel feature route verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel feature response or safe parcel identifier was retrieved."
+  },
+  "wupCityCode": 8695,
+  "cityId": "wup2025:8695",
+  "queueRank": 580,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The WUP point is a settlement locator, not a parcel identity. Published local services are registration/document workflows; no anonymous full-polygon feature endpoint or exact-point response was verified.",
+  "remainingUncertainty": "Whether an anonymous city-bound vector service exists; none was verified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No exact-point parcel geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    47.3463038833301,
+    123.969629803192
+  ],
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00"
+}

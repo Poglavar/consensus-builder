@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2157-seville.json",
+  "purpose": "Document official city parcel-source evidence, bounded anonymous geometry route review, and remaining coverage/runtime limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A 200 m by 200 m projected bbox around the exact Seville WUP centroid returned 104 full CP features; only three were retained. A 20 m by 20 m bbox around the WUP point returned no records. No citywide completeness or point-intersection is claimed.",
+  "registryAssessment": "The Spanish Directorate General for Cadastre publishes the INSPIRE Cadastral Parcel dataset and public WFS/ATOM services. The live WFS advertises the CadastralParcel feature and returned full geometry in Seville at the city locator’s nearby window.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+      "observation": "DG Catastro describes INSPIRE CP, official WFS and per-municipality ATOM parcel downloads."
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf",
+      "observation": "Official WFS documentation describes BBOX GetFeature requests, CP feature type, and service query behavior."
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/webinspire/documentos/Licencia_en.pdf",
+      "observation": "Official INSPIRE use licence; attribution/transform and reuse conditions must be followed for downstream use."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Spanish",
+      "query": "site:catastro.hacienda.gob.es Sevilla cartografía catastral parcelas INSPIRE WFS provincia Sevilla",
+      "result": "Official DG Catastro describes INSPIRE CP WFS and publishes the active service; direct metadata and bounded GetFeature response verified full CP geometry.",
+      "method": "Separate Spanish-language discovery, official service-documentation review, then bounded WFS request."
+    },
+    {
+      "language": "English",
+      "query": "Catastro Spain Seville parcel WFS GetParcelByBBox cadastral polygons official",
+      "result": "Official WFS documentation confirms BBOX GetFeature and parcel geometry; direct live metadata and a projected Seville bbox returned full geometry.",
+      "method": "Separate English-language discovery and official schema/API inspection."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&request=GetCapabilities",
+      "method": "GET WFS 2.0 GetCapabilities",
+      "httpStatus": 200,
+      "observation": "Official service advertised INSPIRE cadastral parcel feature type cp:CadastralParcel."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "method": "GET WFS GetFeature with 20 m x 20 m EPSG:25830 bbox centered at WUP locator",
+      "httpStatus": 200,
+      "observation": "No records returned for this small locator window."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "method": "GET WFS GetFeature with 200 m x 200 m EPSG:25830 bbox centered at WUP locator; COUNT=3",
+      "httpStatus": 200,
+      "observation": "104 full CP polygons were returned despite requested count=3; only three complete safe geometries were retained. The schema returned area, parcel reference, timestamps/labels and geometry, with no owner/address fields."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-2157-seville-samples.geojson",
+    "featureCount": 3,
+    "attributes": [
+      "nativeParcelReference",
+      "areaM2"
+    ],
+    "geometryType": "MultiPolygon/Polygon",
+    "crs": "EPSG:4326",
+    "exactLocatorFeature": false,
+    "sourceGeometryComplete": true
+  },
+  "privacy": "No owner, personal title, or address data was requested or retained. Native parcel identifiers and polygon geometry are retained only where the official public schema supports them.",
+  "runtimeAssessment": "not_enabled",
+  "qualification": {
+    "boundedSamples": 3,
+    "adapterQualified": false,
+    "note": "No adapter protocol qualification or shared runtime integration was performed."
+  }
+}

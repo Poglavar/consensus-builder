@@ -1,0 +1,132 @@
+{
+  "name": "Kuching",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "rank": 931,
+  "point": [
+    1.53302926026603,
+    110.345967345962
+  ],
+  "population2025": 586880,
+  "population2025k": 586.88,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "DBKU GISKU public layer descriptions omit cadastral parcels. eLASIS cadastral maps/title searches use account/SarawakPass workflows and map products are paid; no anonymous geometry schema or feature response was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Sarawak Land and Survey Department and its eLASIS services are based in Kuching and provide land registry and cadastral-map products. This establishes local registry activity, not open vector access.",
+  "resultCategory": "local_land_registry_found_account_or_paid_map_no_anonymous_geometry",
+  "technicalBlocker": "Public GISKU lists no cadastral parcel layer; eLASIS map access/products require account/SarawakPass and purchase.",
+  "remainingUncertainty": "Whether any separate public read-only cadastral API exists and its city/point coverage remain unknown.",
+  "nextStep": "Root review the local registry/map evidence; request an official public schema or coverage statement if city-point parcel geometry is needed, without using account-gated or property-specific searches.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kuching Sarawak official cadastral map land survey eLASIS GIS parcel",
+        "result": "Official Sarawak Land and Survey materials list cadastral-map products and title-search services; product workflow requires SarawakPass/account and maps are purchased.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      },
+      {
+        "language": "Malay",
+        "query": "peta kadaster Kuching eLASIS Jabatan Tanah dan Survei GISKU",
+        "result": "Official DBKU GISKU lists administrative boundary, zoning, roads, waterways and municipal facilities, but not cadastral parcels; no anonymous parcel vector layer found.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://dbku.sarawak.gov.my/page-0-431-433-GISKU.html",
+        "observation": "Official Kuching North City Commission GISKU description lists administrative boundary, tourism, zoning, roads, waterways, commercial and public-service layers; cadastral parcel boundaries are not listed."
+      },
+      {
+        "url": "https://elasis.sarawak.gov.my/",
+        "observation": "Official Sarawak eLASIS portal provides land/cadastral products; the reviewed access path requires SarawakPass/account and cadastral map products are sold."
+      },
+      {
+        "url": "https://landsurvey.sarawak.gov.my/",
+        "observation": "Official Sarawak Land and Survey Department portal; the department’s eLASIS materials describe cadastral map and title-search services, not anonymous downloadable full-polygon features."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed public GISKU layer listing and official eLASIS access/product descriptions only; did not create an account, pay, query property records or retain tokens.",
+      "geometryStatus": "No anonymous full polygon response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Reviewed public GISKU layer listing and official eLASIS access/product descriptions only; did not create an account, pay, query property records or retain tokens.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 931,
+  "wupCityCode": 3035,
+  "cityId": "wup2025:3035",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    1.53302926026603,
+    110.345967345962
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "my-kuching-public-registry-review",
+    "name": "Sarawak Land and Survey Department / Kuching North City Commission",
+    "operator": "Sarawak Land and Survey Department / Kuching North City Commission",
+    "url": "https://elasis.sarawak.gov.my/",
+    "serviceType": "Account-based land information and paid cadastral-map product portal; separate municipal public GISKU.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "DBKU GISKU public layer descriptions omit cadastral parcels. eLASIS cadastral maps/title searches use account/SarawakPass workflows and map products are paid; no anonymous geometry schema or feature response was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "DBKU GISKU public layer descriptions omit cadastral parcels. eLASIS cadastral maps/title searches use account/SarawakPass workflows and map products are paid; no anonymous geometry schema or feature response was verified.",
+    "verifiedOpenScope": "No anonymous full-polygon response returned in this review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://dbku.sarawak.gov.my/page-0-431-433-GISKU.html",
+    "https://elasis.sarawak.gov.my/",
+    "https://landsurvey.sarawak.gov.my/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Public GISKU lists no cadastral parcel layer; eLASIS map access/products require account/SarawakPass and purchase."
+  },
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootPrimaryReadback": {
+    "url": "https://dbku.sarawak.gov.my/page-0-431-433-GISKU.html",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "The Official Website of the Commission Of The City Of Kuching North"
+  },
+  "rootPrimarySupplement": {
+    "url": "https://landsurvey.sarawak.gov.my/",
+    "fetch": 200
+  },
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

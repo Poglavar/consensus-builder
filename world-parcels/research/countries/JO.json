@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "JO",
+ "country": "Jordan",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Department of Lands and Survey (DLS)",
+ "portalsFound": [
+  {
+   "url": "https://www.dls.gov.jo/",
+   "observation": "302 redirect; earlier research/amman.json: site loads, no public parcel service on landing page."
+  },
+  {
+   "url": "https://opendata.gov.jo/",
+   "observation": "Portal loads; CKAN search for 'parcel' returned HTTP 400."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.dls.gov.jo/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect"
+  },
+  {
+   "url": "https://opendata.gov.jo/api/3/action/package_search?q=parcel&rows=3",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "application/json",
+   "assessment": "bad request"
+  },
+  {
+   "url": "https://landsurvey.gov.jo/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://eservices.dls.gov.jo/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "(earlier) http://www.ammancitygis.gov.jo/ArcGIS/rest/services",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "",
+   "assessment": "upstream timeout, per amman.json"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "none verified; GAM (Amman municipality) GIS is subnational",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Primary hosts timed out or unreachable; DLS e-services and GAM ArcGIS REST unverified.",
+ "nextStep": "Retry GAM ArcGIS REST and DLS e-services later."
+}

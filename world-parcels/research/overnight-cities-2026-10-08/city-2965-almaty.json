@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T20:24:40Z",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_quality_review",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Three national-feed native MultiPolygon samples from Almaty districts 244,246,251 are retained. Follow-up adapter and topology audits cover 81 national-feed and 82 municipal-feed parcels in thirteen local cells. These bounded reads do not establish citywide completeness or legal boundary accuracy. The WUP settlement point is a locator, not a municipal boundary. Requests selected only parcel references, geometry and non-personal lifecycle metadata; no owner or address records are retained.",
+  "wupCityCode": 2965,
+  "queueRank": 208,
+  "name": "Almaty",
+  "centerLatLon": [
+    43.2612968331175,
+    76.909491597618
+  ],
+  "population2025": 2367611,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Almaty City Administration land-relations page names “Земельно-кадастровая карта города Алматы” and links directly to the Almaty map application. An official ministry project page describes the subsystem as city-wide (Almaty), with local-budget funding and 2012–2018 deployment. The linked map page opened publicly during this review. This confirms an official city-specific public land-cadastral map; the parcel samples below come from the separate national EGKN service.",
+  "citySpecificRegistryFound": true,
+  "citySpecificRegistryUrl": "https://mapalmaty.kz/uzo/",
+  "cityId": "wup2025:2965",
+  "source": {
+    "sourceId": "KZ-NATIONAL-PKK-U-VIEW",
+    "name": "Kazakhstan National Public Cadastral Map (PKK/EGKN), land layer u_view",
+    "url": "https://map.gov4c.kz/egkn/",
+    "operator": "Public national cadastral map / EGKN; the official Government for Citizens site identifies map.gov4c.kz as the Public Cadastral Map.",
+    "serviceType": "Public WFS 2.0.0 GetFeature, district selection through viewer district_id viewparam",
+    "layer": "egkn:u_view (the current viewer uses it as its lands WMS layer and snapping/vector layer)",
+    "geometryType": "MultiPolygon for all three returned features",
+    "outputCrs": "EPSG:32643 (the live Almaty city district list supplies srs=32643)",
+    "nativeIdField": "kad_nomer",
+    "nativeIdEvidence": "The live u_view schema exposes gid (xsd:long), district_id (xsd:int), kad_nomer (xsd:string), and geom. The sample responses return only gid and kad_nomer attributes plus geometry. Global permanence semantics for gid or kad_nomer were not independently documented; no ID-permanence criterion is used to qualify the source."
+  },
+  "verifiedParcelResponse": {
+    "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=egkn%3Au_view&outputFormat=application%2Fjson&srsName=EPSG%3A32643&propertyName=gid%2Ckad_nomer%2Cgeom&count=1&bbox=654970.16%2C4791592.23%2C654990.16%2C4791612.23%2CEPSG%3A32643&viewparams=district_id%3A244",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "featureCount": 1,
+    "totalFeaturesInViewport": 4,
+    "verifiedFeatureIds": [
+      "20311024010"
+    ],
+    "nativeIdField": "kad_nomer",
+    "sourceGid": 7236597,
+    "responseSha256": "e85bcbf244ad7f032b295572e3deb7cd99aa0678960455dc79b3ef739a9c065c",
+    "requestTraceSha256": "f2edfd383d0ff49c32474eaedcbf735c7576243c515a3c7b25d9da53c0bd68c6",
+    "evidenceFile": "world-parcels/research/overnight-cities-2026-10-08/almaty-national-u-view-samples.geojson",
+    "qaRawFile": "/tmp/overnight-cities-2026-10-08/almaty-u_view-3-samples-raw.json",
+    "rawResponseFile": "/tmp/overnight-cities-2026-10-08/almaty-district-244-response.json",
+    "requestFilter": "WFS 2.0.0 GetFeature on egkn:u_view; viewparams district_id:244; 20 m EPSG:32643 bbox centered on the exact WUP target after coordinate conversion; propertyName gid,kad_nomer,geom; count=1; no credentials or cookies."
+  },
+  "verifiedSampleCount": 3,
+  "sampleDistrictIds": [
+    244,
+    246,
+    251
+  ],
+  "sampleDistrictCodes": [
+    "20-311",
+    "20-313",
+    "20-322"
+  ],
+  "sampleGeometryCrs": "EPSG:32643",
+  "sampleGeometryFile": "world-parcels/research/overnight-cities-2026-10-08/almaty-national-u-view-samples.geojson",
+  "sampleGeometrySha256": "28b8ead1f2a3cbee99a4de228a23436d87e04b78e91081c9082d2c46385e7dd2",
+  "sampleGeometryQa": [
+    {
+      "districtId": 244,
+      "type": "MultiPolygon",
+      "parts": 1,
+      "rings": 1,
+      "vertices": 37,
+      "closedRings": 1,
+      "bbox": [
+        654890.6488,
+        4791289.6077,
+        655087.4961,
+        4791613.9219
+      ],
+      "viewportCenterInsideFeature": false,
+      "distanceToNearestBoundaryMeters": 0.122
+    },
+    {
+      "districtId": 246,
+      "type": "MultiPolygon",
+      "parts": 1,
+      "rings": 13,
+      "vertices": 357,
+      "closedRings": 13,
+      "bbox": [
+        655177.0244,
+        4776165.1371,
+        659877.1654,
+        4780956.093
+      ],
+      "viewportCenterInsideFeature": true,
+      "distanceToNearestBoundaryMeters": 1133.031
+    },
+    {
+      "districtId": 251,
+      "type": "MultiPolygon",
+      "parts": 1,
+      "rings": 1,
+      "vertices": 33,
+      "closedRings": 1,
+      "bbox": [
+        649108.0513,
+        4782233.2771,
+        649428.6995,
+        4782533.9819
+      ],
+      "viewportCenterInsideFeature": true,
+      "distanceToNearestBoundaryMeters": 64.966
+    }
+  ],
+  "nationalPkkInvestigation": {
+    "date": "2026-10-08",
+    "viewerUrl": "https://map.gov4c.kz/egkn/",
+    "restUrl": "https://map.gov4c.kz/egkn/rest",
+    "wfsUrl": "https://map.gov4c.kz/geoserver/wfs",
+    "noCookiesOrCredentials": true,
+    "districtList": {
+      "regionCode": "20",
+      "regionNameKz": "Алматы (20)",
+      "districtCount": 8,
+      "allSrs": [
+        32643
+      ],
+      "ids": [
+        244,
+        245,
+        246,
+        247,
+        248,
+        249,
+        250,
+        251
+      ],
+      "languageUrls": [
+        "https://map.gov4c.kz/egkn/rest/map/districts?lang=en",
+        "https://map.gov4c.kz/egkn/rest/map/districts?lang=ru",
+        "https://map.gov4c.kz/egkn/rest/map/districts?lang=kz"
+      ],
+      "responseFiles": [
+        "/tmp/overnight-cities-2026-10-08/almaty-current-districts.json",
+        "/tmp/overnight-cities-2026-10-08/almaty-current-districts-ru.json",
+        "/tmp/overnight-cities-2026-10-08/almaty-current-districts-kz.json"
+      ]
+    },
+    "districtRecords": [
+      {
+        "id": 244,
+        "code": "311",
+        "nameRu": "Алмалинский (20-311)",
+        "nameKz": "Алмалы (20-311)",
+        "srs": 32643
+      },
+      {
+        "id": 245,
+        "code": "312",
+        "nameRu": "Ауезовский (20-312)",
+        "nameKz": "Ауэзовский (20-312)",
+        "srs": 32643
+      },
+      {
+        "id": 246,
+        "code": "313",
+        "nameRu": "Бостандыкский (20-313)",
+        "nameKz": "Бостандық (20-313)",
+        "srs": 32643
+      },
+      {
+        "id": 247,
+        "code": "314",
+        "nameRu": "Жетысуский (20-314)",
+        "nameKz": "Жетісу (20-314)",
+        "srs": 32643
+      },
+      {
+        "id": 248,
+        "code": "315",
+        "nameRu": "Медеуский (20-315)",
+        "nameKz": "Медеу (20-315)",
+        "srs": 32643
+      },
+      {
+        "id": 249,
+        "code": "317",
+        "nameRu": "Турксибский (20-317)",
+        "nameKz": "Турксіб (20-317)",
+        "srs": 32643
+      },
+      {
+        "id": 250,
+        "code": "321",
+        "nameRu": "Алатауский (20-321)",
+        "nameKz": "Алатау (20-321)",
+        "srs": 32643
+      },
+      {
+        "id": 251,
+        "code": "322",
+        "nameRu": "Наурызбайский (20-322)",
+        "nameKz": "Наурызбай (20-322)",
+        "srs": 32643
+      }
+    ],
+    "viewerBundle": {
+      "url": "https://map.gov4c.kz/egkn/static/js/main.0cc1dbdc.chunk.js",
+      "status": 200,
+      "responseBytes": 1830872,
+      "sha256": "a72549f68ace533598a3075adab5b35decaed178e249dacdaa4827c4433146c1",
+      "localFile": "/tmp/overnight-cities-2026-10-08/map-gov4c-egkn-main.js",
+      "physicalLine": 1,
+      "relevantOffsets": [
+        12130,
+        12450,
+        1455480,
+        1455536,
+        1513051
+      ],
+      "finding": "The bundle loads /map/districts?lang=...; for selected district n it requests egkn:u_view via its WFS helper in EPSG:n.srs with viewparams district_id:n.id, and the standard lands WMS is also egkn:u_view."
+    },
+    "wfsCapabilities": {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "httpStatus": 200,
+      "responseBytes": 629535,
+      "sha256": "4def32dbcc2fb0bb8a37ff249523ece005fac045e809a0e8bc99e35716072418",
+      "localFile": "/tmp/overnight-cities-2026-10-08/almaty-egkn-wfs-capabilities.xml",
+      "finding": "Capabilities list egkn:u_view (default CRS EPSG:404000) and egkn:districts (default CRS EPSG:3857); u_view requests in district-native EPSG:32643 succeed."
+    },
+    "uViewSchema": {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=egkn%3Au_view",
+      "httpStatus": 200,
+      "responseBytes": 5942,
+      "sha256": "9b218ef466f116e0c896e2429e9d7dcf1c9f6fb5a87903c98684203c51ec709b",
+      "localFile": "/tmp/overnight-cities-2026-10-08/almaty-egkn-uview-schema.xml",
+      "safeFieldsUsed": [
+        "gid",
+        "kad_nomer",
+        "geom"
+      ],
+      "observedTypes": {
+        "gid": "xsd:long",
+        "district_id": "xsd:int",
+        "kad_nomer": "xsd:string",
+        "geom": "gml:GeometryPropertyType"
+      }
+    },
+    "sampleRequests": [
+      {
+        "districtId": 244,
+        "districtCode": "311",
+        "viewportBasis": "near_wup_city_center",
+        "bbox": "654970.16,4791592.23,654990.16,4791612.23,EPSG:32643",
+        "httpStatus": 200,
+        "totalFeatures": 4,
+        "numberReturned": 1,
+        "responseBytes": 1403,
+        "responseSha256": "e85bcbf244ad7f032b295572e3deb7cd99aa0678960455dc79b3ef739a9c065c",
+        "requestTraceSha256": "f2edfd383d0ff49c32474eaedcbf735c7576243c515a3c7b25d9da53c0bd68c6",
+        "rawResponseFile": "/tmp/overnight-cities-2026-10-08/almaty-district-244-response.json",
+        "kad_nomer": "20311024010"
+      },
+      {
+        "districtId": 246,
+        "districtCode": "313",
+        "viewportBasis": "official_district_polygon_bbox_center",
+        "bbox": "656934.46,4777979.74,656954.46,4777999.74,EPSG:32643",
+        "httpStatus": 200,
+        "totalFeatures": 1,
+        "numberReturned": 1,
+        "responseBytes": 9984,
+        "responseSha256": "ecc32fc5d6bee8dd8d70fa1776280210d432bef38796242aae96e02fa01c24e6",
+        "requestTraceSha256": "c1b0c02f00105d641bd676561b262b98cdd9396d2623d011e5c1bd21e917ee15",
+        "rawResponseFile": "/tmp/overnight-cities-2026-10-08/almaty-district-246-response.json",
+        "kad_nomer": "20313062033"
+      },
+      {
+        "districtId": 251,
+        "districtCode": "322",
+        "viewportBasis": "official_district_polygon_bbox_center",
+        "bbox": "649304.48,4782379.87,649324.48,4782399.87,EPSG:32643",
+        "httpStatus": 200,
+        "totalFeatures": 1,
+        "numberReturned": 1,
+        "responseBytes": 1288,
+        "responseSha256": "f58e99d6920e3beb683825375a70e64468e8eb905f923d12874c34c21ddd2075",
+        "requestTraceSha256": "6d4e4991be5b330fffe7bb2db5e848f7a6deb310f913d3da5b4536d5f2db7002",
+        "rawResponseFile": "/tmp/overnight-cities-2026-10-08/almaty-district-251-response.json",
+        "kad_nomer": "20322023199"
+      }
+    ],
+    "rawQaFile": "/tmp/overnight-cities-2026-10-08/almaty-u_view-3-samples-raw.json",
+    "rawResponseFiles": [
+      "/tmp/overnight-cities-2026-10-08/almaty-district-244-response.json",
+      "/tmp/overnight-cities-2026-10-08/almaty-district-246-response.json",
+      "/tmp/overnight-cities-2026-10-08/almaty-district-251-response.json"
+    ],
+    "districtBoundaryQaFile": "/tmp/overnight-cities-2026-10-08/almaty-district-boundaries-epsg32643.geojson"
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "site:gov.kz Almaty municipal public land registry cadastre parcel map",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Russian",
+        "query": "site:gov.kz/memleket/entities/almaty \"земельный кадастр\" карта Алматы",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Kazakh",
+        "query": "site:gov.kz/memleket/entities/almaty \"жер кадастры\" Алматы карта",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Russian",
+        "query": "site:gov.kz \"Единый государственный кадастр недвижимости\" Алматы публичная кадастровая карта",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.gov.kz/memleket/entities/almaty-zher/activities/10963?lang=ru",
+        "observation": "Official Almaty land-relations page labels a service “Land-cadastral map of Almaty” and directly links to mapalmaty.kz/uzo. The link opened to a live map UI."
+      },
+      {
+        "url": "https://mapalmaty.kz/uzo/",
+        "observation": "The official city-linked viewer resolves to pg_uzo FeatureServer layer10 U006 cadastral polygons. Fresh safe JSON native reads and complete OID manifests returned82 parcels; the material national overlaps persist in this municipal layer."
+      },
+      {
+        "url": "https://www.gov.kz/memleket/entities/maidd/press/article/details/26980",
+        "observation": "Official government project page names the Almaty land-cadastral map subsystem, says its scope is the city, and gives local-budget funding and 2012–2018 deployment period."
+      },
+      {
+        "url": "https://gov4c.kz/top-questions/land-cadastre/",
+        "observation": "Official Government for Citizens FAQ calls map.gov4c.kz the Public Cadastral Map of the Unified State Real Estate Cadastre (EGKN) and directs users there."
+      },
+      {
+        "url": "https://map.gov4c.kz/egkn/",
+        "observation": "Current public national cadastral-map viewer page, linked from the official Government for Citizens FAQ."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/",
+        "httpStatus": 302,
+        "redirect": "https://map.gov4c.kz/egkn/"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/egkn/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "responseBytes": 3363,
+        "sha256": "081c7cddd354c6e1cee8fb220b5b2d9442f2a25e386519408f4df892700d747b",
+        "localFile": "/tmp/overnight-cities-2026-10-08/map-gov4c-egkn.html"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/egkn/static/js/main.0cc1dbdc.chunk.js",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "responseBytes": 1830872,
+        "sha256": "a72549f68ace533598a3075adab5b35decaed178e249dacdaa4827c4433146c1",
+        "physicalLine": 1,
+        "relevantByteOffsets": [
+          12130,
+          12450,
+          1455480,
+          1455536,
+          1513051
+        ],
+        "observation": "The bundle loads /map/districts?lang=...; for selected district n it requests egkn:u_view via its WFS helper in EPSG:n.srs with viewparams district_id:n.id, and the standard lands WMS is also egkn:u_view.",
+        "localFile": "/tmp/overnight-cities-2026-10-08/map-gov4c-egkn-main.js"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/egkn/rest/map/districts?lang=en",
+        "httpStatus": 200,
+        "responseBytes": 73642,
+        "sha256": "90278e42e40e8eded6e482be8ea5c88492a034460e77fa369c51ca1358a95839",
+        "localFile": "/tmp/overnight-cities-2026-10-08/almaty-current-districts.json"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/egkn/rest/map/districts?lang=ru",
+        "httpStatus": 200,
+        "responseBytes": 75488,
+        "sha256": "76616f84f7483bca162cccaf1e1e9e7e4b386930c4e55daffbfafb4a141bd100",
+        "localFile": "/tmp/overnight-cities-2026-10-08/almaty-current-districts-ru.json"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/egkn/rest/map/districts?lang=kz",
+        "httpStatus": 200,
+        "responseBytes": 74808,
+        "sha256": "634068881fc7474e8f7465805020f2d147e8b375d2f8a6cfafb3aef7ef002865",
+        "localFile": "/tmp/overnight-cities-2026-10-08/almaty-current-districts-kz.json"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+        "httpStatus": 200,
+        "responseBytes": 629535,
+        "sha256": "4def32dbcc2fb0bb8a37ff249523ece005fac045e809a0e8bc99e35716072418",
+        "observation": "Public WFS capabilities show egkn:u_view and egkn:districts."
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=egkn%3Au_view",
+        "httpStatus": 200,
+        "responseBytes": 5942,
+        "sha256": "9b218ef466f116e0c896e2429e9d7dcf1c9f6fb5a87903c98684203c51ec709b",
+        "observation": "Schema includes gid, district_id, kad_nomer and geom; requests below ask only gid,kad_nomer,geom."
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=egkn%3Au_view&outputFormat=application%2Fjson&srsName=EPSG%3A32643&propertyName=gid%2Ckad_nomer%2Cgeom&count=1&bbox=654970.16%2C4791592.23%2C654990.16%2C4791612.23%2CEPSG%3A32643&viewparams=district_id%3A244",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=utf-8",
+        "responseBytes": 1403,
+        "totalFeatures": 4,
+        "numberReturned": 1,
+        "responseSha256": "e85bcbf244ad7f032b295572e3deb7cd99aa0678960455dc79b3ef739a9c065c",
+        "requestTraceSha256": "f2edfd383d0ff49c32474eaedcbf735c7576243c515a3c7b25d9da53c0bd68c6",
+        "rawResponseFile": "/tmp/overnight-cities-2026-10-08/almaty-district-244-response.json"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=egkn%3Au_view&outputFormat=application%2Fjson&srsName=EPSG%3A32643&propertyName=gid%2Ckad_nomer%2Cgeom&count=1&bbox=656934.46%2C4777979.74%2C656954.46%2C4777999.74%2CEPSG%3A32643&viewparams=district_id%3A246",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=utf-8",
+        "responseBytes": 9984,
+        "totalFeatures": 1,
+        "numberReturned": 1,
+        "responseSha256": "ecc32fc5d6bee8dd8d70fa1776280210d432bef38796242aae96e02fa01c24e6",
+        "requestTraceSha256": "c1b0c02f00105d641bd676561b262b98cdd9396d2623d011e5c1bd21e917ee15",
+        "rawResponseFile": "/tmp/overnight-cities-2026-10-08/almaty-district-246-response.json"
+      },
+      {
+        "method": "GET",
+        "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=egkn%3Au_view&outputFormat=application%2Fjson&srsName=EPSG%3A32643&propertyName=gid%2Ckad_nomer%2Cgeom&count=1&bbox=649304.48%2C4782379.87%2C649324.48%2C4782399.87%2CEPSG%3A32643&viewparams=district_id%3A251",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=utf-8",
+        "responseBytes": 1288,
+        "totalFeatures": 1,
+        "numberReturned": 1,
+        "responseSha256": "f58e99d6920e3beb683825375a70e64468e8eb905f923d12874c34c21ddd2075",
+        "requestTraceSha256": "6d4e4991be5b330fffe7bb2db5e848f7a6deb310f913d3da5b4536d5f2db7002",
+        "rawResponseFile": "/tmp/overnight-cities-2026-10-08/almaty-district-251-response.json"
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": [
+        "one intersecting 20 m viewport near the WUP target in district 244",
+        "one 20 m viewport centered inside district 246",
+        "one 20 m viewport centered inside district 251"
+      ],
+      "sampledDistrictIds": [
+        244,
+        246,
+        251
+      ],
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": true
+    },
+    "blocker": "The national feed passes complete retrieval and exact-ID tests, but material overlaps are confirmed in fresh native EPSG:32643 coordinates. The official municipal alternate retains all six large overlap pairs (up to 56.30 m² and 7.82% of a smaller parcel), so it does not resolve the hold. Nullable lifecycle fields do not establish a safe active-only filter. No repair or unsupported row exclusion was applied.",
+    "remainingUncertainty": "No documented lifecycle exclusion resolves the sampled material overlaps. The municipal alternate publishes legacy Esri JSON/AMF, which the current runtime adapter does not support; its native topology audit confirms the same issue independently of format conversion."
+  },
+  "runtimeQualification": {
+    "acceptanceFile": "research/overnight-cities-2026-10-08/almaty-almaly-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/almaty-almaly-quality.json",
+    "sourceId": "kz-almaty-pkk-almaly",
+    "status": "held_quality_review",
+    "reason": "The national feed passes complete retrieval and exact-ID tests, but material overlaps are confirmed in fresh native EPSG:32643 coordinates. The official municipal alternate retains all six large overlap pairs (up to 56.30 m² and 7.82% of a smaller parcel), so it does not resolve the hold. Nullable lifecycle fields do not establish a safe active-only filter. No repair or unsupported row exclusion was applied.",
+    "nativeOverlapEvidence": "research/overnight-cities-2026-10-08/almaty-native-overlap-review.json",
+    "municipalEvidence": "research/overnight-cities-2026-10-08/almaty-municipal-native-quality.json"
+  },
+  "runtimeAssessment": {
+    "acceptanceFile": "research/overnight-cities-2026-10-08/almaty-almaly-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/almaty-almaly-quality.json",
+    "sourceId": "kz-almaty-pkk-almaly",
+    "status": "held_quality_review",
+    "reason": "The national feed passes complete retrieval and exact-ID tests, but material overlaps are confirmed in fresh native EPSG:32643 coordinates. The official municipal alternate retains all six large overlap pairs (up to 56.30 m² and 7.82% of a smaller parcel), so it does not resolve the hold. Nullable lifecycle fields do not establish a safe active-only filter. No repair or unsupported row exclusion was applied.",
+    "nativeOverlapEvidence": "research/overnight-cities-2026-10-08/almaty-native-overlap-review.json",
+    "municipalEvidence": "research/overnight-cities-2026-10-08/almaty-municipal-native-quality.json"
+  },
+  "sourceIds": [
+    "kz-almaty-pkk-almaly"
+  ],
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "Bounded local city-district samples; municipal and national cadastral map providers confirmed.",
+    "verifiedOpenScope": "Three national-feed native MultiPolygon samples from Almaty districts 244,246,251 are retained. Follow-up adapter and topology audits cover 81 national-feed and 82 municipal-feed parcels in thirteen local cells. These bounded reads do not establish citywide completeness or legal boundary accuracy. The WUP settlement point is a locator, not a municipal boundary. Requests selected only parcel references, geometry and non-personal lifecycle metadata; no owner or address records are retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T21:01:32.920862+00:00",
+  "point": [
+    43.2612968331175,
+    76.909491597618
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3197",
+  "queueRank": 95,
+  "wupCityCode": 3197,
+  "name": "Muqdisho (Mogadishu)",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "centerLatLon": [
+    2.05393262544166,
+    45.3313716202418
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 95,
+  "growthRank": null,
+  "population2025": 4399430,
+  "annualGrowthPct2015To2025": 6.708061,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/mogadishu.json",
+      "status": "no_verified_open_endpoint_after_attempts"
+    }
+  ],
+  "priorStatuses": [
+    "no_verified_open_endpoint_after_attempts"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-SO.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Somali and Arabic",
+    "exactQuery": "Muqdisho Soomaaliya xogta dhulka khariidad cadastral parcels",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.adal.so/civil-code",
+      "https://mof.gov.so/fiscal/EXPexplorerso.html",
+      "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+      "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202026.pdf",
+      "https://www.maysaragroup.com/so/holdings/land-registry",
+      "https://mof.gov.so/fiscal/indexso.html",
+      "https://faoswalim.org/resources/river_atlas/River_Atlas_Documents/atlas/River_Atlas_Som_Part1_land.pdf",
+      "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1525"
+    ],
+    "summary": "Somali-language search found administrative boundary data and a Berbera registration-service lead; neither is a parcel polygon feed.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.adal.so/civil-code",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mof.gov.so/fiscal/EXPexplorerso.html",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202025%20versio%20la%20ansixiyey--.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.mof.gov.so/sites/default/files/Publications/Xeerka%20Miisaaniyadda%202026.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.maysaragroup.com/so/holdings/land-registry",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mof.gov.so/fiscal/indexso.html",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://faoswalim.org/resources/river_atlas/River_Atlas_Documents/atlas/River_Atlas_Som_Part1_land.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://microdata.nbs.gov.so/index.php/catalog/59/variable/V1525",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Muqdisho\" Somalia (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Muqdisho%22+Somalia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous parcel polygon feed for Muqdisho (Mogadishu) was verified. The returned sources are discovery leads; administrative GIS and online registration pages do not establish a target-city parcel fabric.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Muqdisho (Mogadishu) municipality’s land office for a public map/API or an anonymous bounded extract; for Somaliland cities, keep Somaliland registry evidence separate from Somalia sources.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Muqdisho%22+Somalia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

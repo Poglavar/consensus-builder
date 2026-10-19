@@ -1,0 +1,62 @@
+{
+  "cityCode": 7979,
+  "queueRank": 1681,
+  "name": "Wazirabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "point": [32.4355546089934, 74.1248485345839],
+  "population2025": 340058,
+  "population2025k": 340.058,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wazirabad Pakistan official cadastral parcel map GIS land records Gujranwala district",
+        "result": "First-party discovery found Punjab's official PULSE cadastral program, its public PULSE viewer, the Punjab Land Records Authority, and the Wazirabad planning page. The viewer source identifies a Wazirabad cadastral Feature Layer (layer 35).",
+        "actualResultUrls": ["https://www.pulse.gop.pk/", "https://lis.pulse.gop.pk/", "https://www.punjab-zameen.gov.pk/", "https://pmu-lgcdd.gop.pk/wazirabad/"]
+      },
+      {
+        "language": "Urdu",
+        "query": "وزیرآباد پاکستان سرکاری نقشہ اراضی کادستر اراضی ریکارڈ",
+        "result": "First-party/native-language discovery surfaced Punjab land-record services and the PLRA Urdu-facing login/service routes, plus the official PULSE cadastral map. No separate Wazirabad local Urdu parcel API was identified; the public PULSE viewer was used for the bounded parcel request.",
+        "actualResultUrls": ["https://www.punjab-zameen.gov.pk/", "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2F", "https://lis.pulse.gop.pk/", "https://pmu-lgcdd.gop.pk/wazirabad/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Official Punjab Urban Land Systems Enhancement viewer. Its current page states that complete parcel details require login, offers a public-user path, and disclaims indicative property lines as non-legal boundaries."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35", "observation": "Current public ArcGIS Feature Layer named Wazirabad; polygon geometry; layer metadata reports source CRS Web Mercator Auxiliary Sphere (WKID 102100/3857), query capability, and native OBJECTID field."},
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Official Punjab Land Records Authority service portal and land-record custodian."},
+    {"url": "https://pmu-lgcdd.gop.pk/wazirabad/", "observation": "Official Punjab Local Government and Community Development planning page for District Wazirabad and MC Wazirabad; planning source, not the parcel custodian."}
+  ],
+  "requests": [
+    {"url": "https://lis.pulse.gop.pk/", "method": "GET; anonymous", "httpStatus": 200, "outcome": "Current viewer HTML loaded. JavaScript configuration exposed /api/gis/token, the ArcGIS cadastral service, and Wazirabad layer id 35."},
+    {"url": "https://lis.pulse.gop.pk/api/gis/token", "method": "GET; anonymous public viewer session route", "httpStatus": 200, "outcome": "Returned a short-lived site-issued ArcGIS session token. Token value was not retained in packet metadata or GeoJSON."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35?f=pjson", "method": "GET; without token then with the viewer-issued public session token", "httpStatus": 200, "outcome": "Without token returned ArcGIS 499 Token Required; with the public viewer token returned layer metadata. No login, credential, private token, CAPTCHA/Cloudflare bypass, or TLS exception was used."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/35/query", "method": "GET; safe bounded point-intersection query with outFields=OBJECTID, returnGeometry=true, outSR=4326", "httpStatus": 200, "outcome": "Exact WUP point [32.4355546089934, 74.1248485345839] was sent as longitude,latitude in the ArcGIS geometry parameter. One polygon feature was returned with OBJECTID 6911537. Full native geometry was retained in the companion sample GeoJSON."}
+  ],
+  "registryFound": true,
+  "registryBasis": "Punjab Land Records Authority/PULSE is an official Punjab cadastral and land-record channel, and the current public service exposes a Wazirabad-specific cadastral Feature Layer. This evidences an official regional/local parcel map route, but not legal title or a separate municipal registry API.",
+  "safeFieldAllowlist": ["stable native parcel identifier (OBJECTID)", "full parcel polygon geometry", "geometry CRS", "public layer/service metadata"],
+  "nativeFieldMapping": {"nativeIdField": "OBJECTID", "geometryField": "Shape", "observedSourceFieldsNotRetained": ["District", "Dist_ID", "Tehsil", "Tehsil_ID", "QH", "QH_ID", "PC", "PC_ID", "Mouza", "Mouza_ID", "Khasra_ID", "Khewat_ID", "Shape.STArea()", "Shape.STLength()"], "note": "Only OBJECTID was requested from the feature response; the remaining field names come from layer metadata and no source attribute values were retained."},
+  "compositeKeyProvenance": null,
+  "crs": "Source layer metadata: Web Mercator Auxiliary Sphere, WKID 102100/latestWKID 3857. Retained sample query requested output WKID 4326 and returned longitude/latitude coordinates.",
+  "geometryQuality": "One valid polygon response intersecting the exact WUP point; no citywide topology or completeness assessment performed.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceCandidate": "pulse-punjab-cadastral-wazirabad-layer-35",
+  "verifiedParcelResponse": {"nativeId": "6911537", "featureCount": 1, "sampleFile": "wazirabad-parcel-sample.geojson", "geojsonFile": "wazirabad-parcel-sample.geojson"},
+  "sourceIds": ["6911537"],
+  "coverageAssessment": {"claimedScope": "Wazirabad cadastral layer in Punjab PULSE ArcGIS service.", "verifiedOpenScope": "The service metadata and one exact-point feature response were verified; citywide completeness and legal-boundary status were not.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": ["Exact WUP point was preserved and not shifted.", "One exact-point hit does not establish citywide coverage or parcel completeness.", "PULSE viewer warns that digital map lines are indicative and not legal boundaries; no title, owner, address, contact, tax/account, or personal fields were requested or retained.", "Only one polygon is retained; no raw source-specific attribute set is retained.", "Packet completion is not source integration/admission; runtime remains held pending serial review."],
+  "uncertainty": "The public viewer requires a site-issued session token for ArcGIS access and distinguishes login-only complete parcel details from public map access. Stable OBJECTID was observed as the native OID field, but legal cadastral status, update date, citywide completeness, and relationship to registry records remain unresolved.",
+  "retainedSample": {"file": "wazirabad-parcel-sample.geojson", "featureCount": 1, "properties": {"id": "<stable-native-OBJECTID>"}}
+}

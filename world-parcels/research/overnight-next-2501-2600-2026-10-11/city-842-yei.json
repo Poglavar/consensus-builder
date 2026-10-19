@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:842",
+  "wupCityCode": 842,
+  "name": "Yei",
+  "country": "South Sudan",
+  "countryCode": "SS",
+  "iso3": "SSD",
+  "locId": 728,
+  "rank": 2578,
+  "queueRank": 2578,
+  "point": [4.09329009855676, 30.6754594440881],
+  "centerLatLon": [4.09329009855676, 30.6754594440881],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 228087,
+  "population2025k": 228.087,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-2501-2600-2026-10-11",
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "South Sudan law and national project material evidence a national/state/county land-administration framework, and Yei-specific material documents customary land governance in Yei River County. No Yei local registry office, public cadastral map, or anonymous parcel endpoint was verified; registryFound remains null.",
+  "registryEvidenceUrls": [
+    "https://mofaic.gov.ss/wp-content/uploads/2023/03/Land-Act-2009.pdf",
+    "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007224-Final-Full-ESIA-Report-SOUTH-SUDAN_18-July-2024.pdf",
+    "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007226-Uganda-SouthSudan-FINALFULLRAP-Report-July-10-1.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_review",
+  "technicalBlocker": "No official public Yei cadastral viewer or anonymous ID-and-complete-polygon response was found after separate English and Arabic discovery and first-party inspection. This is an access/discovery finding, not evidence of citywide parcel absence.",
+  "scopeLimits": "No parcel polygons or source-specific attribute sets retained. Search and document evidence establishes land-governance context only; it does not establish parcel coverage, completeness, legal title, ownership, or survey accuracy.",
+  "resultCategory": "registry_context_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "National/state/county land-administration roles and Yei River customary land governance are documented by South Sudan government and related governance sources.",
+    "verifiedOpenScope": "No public anonymous WUP-point parcel response or citywide parcel coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No verified public parcel service with safe native IDs and complete polygon geometry was found; independent serial qualification is required before any runtime enablement."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yei South Sudan official land registry cadastral map parcel GIS site:gov.ss OR site:land.gov.ss",
+        "result": "No official Yei parcel viewer or public parcel API surfaced. Results included South Sudan’s Land Act and national/state land-governance material, but not a Yei geometry service.",
+        "actualResultUrls": [
+          "https://mofaic.gov.ss/wp-content/uploads/2023/03/Land-Act-2009.pdf",
+          "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007224-Final-Full-ESIA-Report-SOUTH-SUDAN_18-July-2024.pdf",
+          "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007226-Uganda-SouthSudan-FINALFULLRAP-Report-July-10-1.pdf"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "يي جنوب السودان سجل الأراضي كادستر خريطة قطع الأراضي رسمي",
+        "result": "No South Sudan/Yei first-party cadastral viewer or safe anonymous parcel endpoint surfaced. Arabic results were predominantly for Sudan rather than South Sudan; they were not treated as Yei evidence. The URLs below are first-party South Sudan corroborating sources already reviewed in this investigation, not qualifying Arabic-specific parcel results.",
+        "actualResultUrls": [
+          "https://mofaic.gov.ss/wp-content/uploads/2023/03/Land-Act-2009.pdf",
+          "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007224-Final-Full-ESIA-Report-SOUTH-SUDAN_18-July-2024.pdf",
+          "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007226-Uganda-SouthSudan-FINALFULLRAP-Report-July-10-1.pdf"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://mofaic.gov.ss/wp-content/uploads/2023/03/Land-Act-2009.pdf",
+        "method": "GET",
+        "result": "Search index exposed the official Land Act text, including decentralized land registries and registration offices. Direct curl failed TLS verification because the host certificate was expired; no certificate bypass was used.",
+        "normalTlsVerification": true,
+        "httpStatus": 0,
+        "transportError": "curl error 60: certificate has expired"
+      },
+      {
+        "url": "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007224-Final-Full-ESIA-Report-SOUTH-SUDAN_18-July-2024.pdf",
+        "method": "GET",
+        "result": "Official PDF fetched successfully; bounded review identified Yei River customary land-governance passages, but no parcel service or safe parcel geometry.",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "bytesRead": 80427772
+      },
+      {
+        "url": "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007226-Uganda-SouthSudan-FINALFULLRAP-Report-July-10-1.pdf",
+        "method": "GET",
+        "result": "Official PDF fetched successfully; indexed consultation material reports that a parcel registry exists while a cadastre-based land-information system was still under development, with national and Central Equatoria land ministries identified. No anonymous geometry route was exposed.",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "bytesRead": 5145390
+      }
+    ],
+    "portals": [],
+    "historicalContext": [
+      {
+        "url": "https://land.igad.int/index.php/countries/40-countries/south-sudan/41-south-sudan-profile?showall=1",
+        "observation": "Governance profile describes national and decentralized registries, county land authorities, council cadastral responsibilities, and limited public access to land-register information. It is contextual and not a current Yei service endpoint."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry"],
+  "remainingUncertainty": "Exact registry custody at the WUP point, parcel presence, public map availability, geometry CRS/schema, and citywide completeness remain unverified. No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested or retained.",
+  "nextStep": "Serial reviewer should independently qualify any discovered provider before adapter consideration; keep runtime held.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  }
+}

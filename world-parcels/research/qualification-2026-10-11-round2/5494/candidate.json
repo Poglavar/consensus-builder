@@ -1,0 +1,71 @@
+{
+  "descriptor": {
+    "id": "us-id-ada-boise-parcels",
+    "name": "Idaho Geospatial Office — Boise",
+    "adapter": "arcgis",
+    "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+    "idField": "PARCEL_ID",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[A-Za-z0-9-]+$",
+    "idPrefix": "US-ID-ADA-",
+    "outFields": [
+      "PARCEL_ID",
+      "OBJECTID",
+      "County"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32611,
+    "countryCode": "US",
+    "stateCode": "ID",
+    "cityIds": [
+      "boise",
+      "5494"
+    ],
+    "operator": "Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County",
+    "scope": "County-submitted Idaho parcels, limited to Ada County at Boise; partial snapshot, no statewide completeness claim. Each canonical identity is the complete native parcel-code geometry group within the fixed town/county scope.",
+    "attribution": "Idaho Geospatial Office / The Idaho Map; parcel submissions stewarded by Ada County. Adapted to WGS84.",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "attributeFilters": {
+      "County": "Ada"
+    },
+    "catalogueUrl": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+    "nativeGeometryMode": "parts",
+    "partsCoordinatePrecision": 9,
+    "maxConcurrentQueries": 2,
+    "caveats": [
+      "The publisher can map one native parcel code to multiple same-vintage polygons. All components are fetched and dissolved; this group is not a claim that each component is a separate legal lot."
+    ],
+    "evidenceFile": "research/us-capitals-batch-two-live-2026-10-06.json",
+    "licenceNote": "Source conditions are informational; users choose their source and intended use."
+  },
+  "city": {
+    "code": "5494",
+    "name": "Meridian",
+    "point": [
+      -116.409780592603,
+      43.6297298219097
+    ]
+  },
+  "sampleIds": [
+    "US-ID-ADA-R5672650270",
+    "US-ID-ADA-R5672650275",
+    "US-ID-ADA-R5672650280"
+  ],
+  "absentId": "US-ID-ADA-Z9999999999",
+  "metricEpsg": "EPSG:32611",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Idaho Geospatial Office — Boise",
+      "Executable parcel providers with cityIds for shared-provider city entries; research-only sources remain in registry.json until verified.; Idaho Geospatial Office — Boise; County-submitted Idaho parcels, limited to Ada County at Boise; partial snapshot, no statewide completeness claim. Each canonical identity is the complete native parcel-code geometry group within the fixed town/county scope.; Second configured US capital batch: complete live viewport, paging, exact-native and binding acceptance. No imported geometry or ownership payloads."
+    ]
+  },
+  "cellSizeDegrees": 0.001,
+  "sourceCandidateSha256": "0ceed28202b1b28bfe9b3a4fa427684f08c188c11b4de82d8a802a7551eef648",
+  "qualificationRecordedSha256": "da169e4a39ff816662f5178932e90338d4f3985c1dfa2dbe64b9219a83de6a21",
+  "sourceCandidatePath": "tmp/parcel-qualification/cities/5494/attempt-01/candidate.json"
+}

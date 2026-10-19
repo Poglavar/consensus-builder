@@ -1,0 +1,225 @@
+{
+  "checkedAt": "2026-10-08T23:50:48.529Z",
+  "descriptor": {
+    "id": "br-vitoria-lotes",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+    "idPrefix": "BR-VIX-LOTE-",
+    "idFields": [
+      "codGeo",
+      "codLote"
+    ],
+    "idFieldTypes": {
+      "codGeo": "string",
+      "codLote": "integer"
+    },
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "codGeo",
+      "codLote",
+      "codGeoPoligono"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "boundsSrid": 31984,
+    "boundsProjection": "+proj=utm +zone=24 +south +ellps=GRS80 +units=m +no_defs",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "cells": [
+    [
+      -40.315,
+      -20.314,
+      -40.314,
+      -20.313
+    ],
+    [
+      -40.315,
+      -20.315,
+      -40.314,
+      -20.314
+    ],
+    [
+      -40.314,
+      -20.316,
+      -40.313,
+      -20.315
+    ],
+    [
+      -40.313,
+      -20.316,
+      -40.312,
+      -20.315
+    ],
+    [
+      -40.312,
+      -20.316,
+      -40.311,
+      -20.315
+    ],
+    [
+      -40.314,
+      -20.314,
+      -40.313,
+      -20.313
+    ]
+  ],
+  "runs": [
+    {
+      "name": "parallel-six",
+      "results": [
+        {
+          "bbox": [
+            -40.315,
+            -20.314,
+            -40.314,
+            -20.313
+          ],
+          "passed": true,
+          "count": 28,
+          "complete": true,
+          "elapsedMs": 3149
+        },
+        {
+          "bbox": [
+            -40.315,
+            -20.315,
+            -40.314,
+            -20.314
+          ],
+          "passed": true,
+          "count": 24,
+          "complete": true,
+          "elapsedMs": 2814
+        },
+        {
+          "bbox": [
+            -40.314,
+            -20.316,
+            -40.313,
+            -20.315
+          ],
+          "passed": true,
+          "count": 18,
+          "complete": true,
+          "elapsedMs": 2769
+        },
+        {
+          "bbox": [
+            -40.313,
+            -20.316,
+            -40.312,
+            -20.315
+          ],
+          "passed": true,
+          "count": 6,
+          "complete": true,
+          "elapsedMs": 3332
+        },
+        {
+          "bbox": [
+            -40.312,
+            -20.316,
+            -40.311,
+            -20.315
+          ],
+          "passed": true,
+          "count": 19,
+          "complete": true,
+          "elapsedMs": 2856
+        },
+        {
+          "bbox": [
+            -40.314,
+            -20.314,
+            -40.313,
+            -20.313
+          ],
+          "passed": true,
+          "count": 35,
+          "complete": true,
+          "elapsedMs": 3076
+        }
+      ]
+    },
+    {
+      "name": "limit-two",
+      "results": [
+        {
+          "bbox": [
+            -40.315,
+            -20.314,
+            -40.314,
+            -20.313
+          ],
+          "passed": true,
+          "count": 28,
+          "complete": true,
+          "elapsedMs": 1049
+        },
+        {
+          "bbox": [
+            -40.315,
+            -20.315,
+            -40.314,
+            -20.314
+          ],
+          "passed": true,
+          "count": 24,
+          "complete": true,
+          "elapsedMs": 1324
+        },
+        {
+          "bbox": [
+            -40.314,
+            -20.316,
+            -40.313,
+            -20.315
+          ],
+          "passed": true,
+          "count": 18,
+          "complete": true,
+          "elapsedMs": 2984
+        },
+        {
+          "bbox": [
+            -40.313,
+            -20.316,
+            -40.312,
+            -20.315
+          ],
+          "passed": true,
+          "count": 6,
+          "complete": true,
+          "elapsedMs": 2381
+        },
+        {
+          "bbox": [
+            -40.312,
+            -20.316,
+            -40.311,
+            -20.315
+          ],
+          "passed": true,
+          "count": 19,
+          "complete": true,
+          "elapsedMs": 3675
+        },
+        {
+          "bbox": [
+            -40.314,
+            -20.314,
+            -40.313,
+            -20.313
+          ],
+          "passed": true,
+          "count": 35,
+          "complete": true,
+          "elapsedMs": 4281
+        }
+      ]
+    }
+  ]
+}

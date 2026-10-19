@@ -1,0 +1,117 @@
+{
+  "name": "Ikorodu",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 565,
+  "point": [
+    6.63539317972099,
+    3.52892390080053
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ikorodu Lagos official cadastral map land registry parcel map Lagos State surveyor general Ikorodu",
+        "result": "Official Lagos State sources identify the Surveyor-General’s record-copy, verification, survey-consent and charting services, plus Lagos State land information portal. The portal is statewide and its published descriptions do not verify Ikorodu parcel completeness or an anonymous feature route. Separate Lagos State Building Control Authority pages list Ikorodu Central/North/West and related local districts; these are building-control offices, not title-cadastre evidence.",
+        "urls": [
+          "https://landonline.lagosstate.gov.ng/",
+          "https://lagossurveyor.ebs-rcm.com/",
+          "https://lasbca.lagosstate.gov.ng/district-offices/",
+          "https://lasbca.lagosstate.gov.ng/ikorodu-division/"
+        ]
+      },
+      {
+        "language": "Yoruba",
+        "query": "ilẹ̀ Ikorodu maapu ilẹ̀ ìforúkọsílẹ̀ ilẹ̀ Lagos survey official",
+        "result": "Àwọn orísun ìjọba Lagos tí a rí jẹ́ ti gbogbo ìpínlẹ̀, wọ́n sì ń darukọ ìwádìí àti ìforúkọsílẹ̀ ilẹ̀ ṣùgbọ́n wọn kò fi hàn pé àkọsílẹ̀ cadastral Ikorodu tàbí àwòrán parcel gbogbo ènìyàn wà lórí ayélujára. LASBCA ní àwọn ọ́fíìsì ìṣàkóso ìkọ́lé ní Ikorodu, ṣùgbọ́n ìyẹn kì í ṣe ẹ̀rí àkọsílẹ̀ ilẹ̀ akọle.",
+        "urls": [
+          "https://landonline.lagosstate.gov.ng/",
+          "https://lagossurveyor.ebs-rcm.com/",
+          "https://lasbca.lagosstate.gov.ng/district-offices/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://landonline.lagosstate.gov.ng/",
+        "observation": "Existing official Lagos State land-administration portal is statewide and has been described as offering property search by address/property number/parcel ID with GIS map; its public shell did not expose a documented anonymous parcel feature list. This does not independently establish Ikorodu coverage."
+      },
+      {
+        "url": "https://lagossurveyor.ebs-rcm.com/",
+        "observation": "Official Lagos State Surveyor-General portal advertises land-information record copies, verification, survey consent and charting transactions. No anonymous downloadable parcel layer is documented."
+      },
+      {
+        "url": "https://lasbca.lagosstate.gov.ng/district-offices/",
+        "observation": "Official Lagos State Building Control Authority lists Ikorodu Central, North, West, Ijede, Imota and Igbogbo/Baiyeku districts with local offices. These are building-control functions, not land-title/cadastre proof."
+      },
+      {
+        "url": "https://lasbca.lagosstate.gov.ng/ikorodu-division/",
+        "observation": "Official LASBCA Ikorodu Division is a local building-regulation service; it does not publish parcel registry or cadastral feature data."
+      },
+      {
+        "url": "https://ossgdeposit.lagosstate.gov.ng/survey/check.php",
+        "observation": "Official state Surveyor-General certificate-validation form requires a survey-plan number; no number was supplied or queried."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No parcel feature response or full polygon was retrieved."
+  },
+  "source": {
+    "id": "city-NG-2318-overnight-research",
+    "name": "Ikorodu city-local registry and map source review",
+    "operator": null,
+    "url": "https://landonline.lagosstate.gov.ng/",
+    "format": "Statewide land-administration transaction portals; no Ikorodu-specific parcel service or public feature schema verified",
+    "access": "Public source review only; no plan number, address, property number, account or property lookup was used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The public sources found support Lagos State-wide land-administration services and Ikorodu building-control districts only. Ikorodu cadastral record coverage and public parcel geometry are unconfirmed.",
+    "verifiedOpenScope": "No city-local parcel vector scope has been verified. Building-control division offices and statewide title/search transactions are not evidence that a public Ikorodu parcel layer exists.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "null: the official state land portal/Surveyor-General offer land-record services generally, but available public sources do not explicitly tie a parcel registry dataset or map to Ikorodu. The Ikorodu-specific LASBCA offices regulate building work, not title records.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_registry_and_public_vector_unconfirmed",
+  "technicalBlocker": "No first-party Ikorodu-specific cadastral layer or anonymous feature contract was identified; a statewide land portal does not establish city-local geometry coverage.",
+  "remainingUncertainty": "Whether Lagos State land information and cadastral datasets include Ikorodu in the same way as other districts, and whether any public geometry can be safely queried, remains unverified.",
+  "nextStep": "Find an official Lagos State source explicitly documenting Ikorodu cadastral/title-map data and a public geometry schema before changing registry status or sampling parcels.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2318,
+  "cityId": "wup2025:2318",
+  "queueRank": 565,
+  "population2025": 916166,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    6.63539317972099,
+    3.52892390080053
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, account credentials, tokens or feature responses were retained.",
+  "registryEvidenceUrls": [
+    "https://landonline.lagosstate.gov.ng/",
+    "https://lagossurveyor.ebs-rcm.com/",
+    "https://lasbca.lagosstate.gov.ng/district-offices/",
+    "https://lasbca.lagosstate.gov.ng/ikorodu-division/"
+  ],
+  "rootReviewedAt": "2026-10-09T01:33:52.627254+00:00"
+}

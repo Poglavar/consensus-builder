@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7210-jepara.json",
+  "purpose": "Document city-scope registry/cadastre evidence, identity resolution, and bounded safe-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Local registry/land-registration work is confirmed, but no anonymous safe parcel geometry response and usable feature schema were verified.",
+  "registryAssessment": "The official BPS statistical metadata record identifies Kantor Pertanahan Kabupaten Jepara as the 2025 PTSL activity organizer and provides its office contact; Jepara’s official JDIH also names the Kantor Pertanahan in local land-administration responsibilities. A locally branded BPN page describes an applicant-based plot-mapping workflow, but its legacy TIARRA article points to a Bandar Lampung host, so that endpoint is not treated as a verified Jepara public service. No anonymous vector layer or safe geometry response was found.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.bpnkabjepara.com/",
+      "observation": "A Jepara land-office page identifies Kantor Pertanahan Jepara and describes a local TIARRA plot-mapping service for applications that requires account creation, supporting documents, and submission. Jepara’s official JDIH records also name the Kantor Pertanahan Kabupaten Jepara in local land administration. This establishes a local registry/mapping workflow, not anonymous open geometry."
+    },
+    {
+      "url": "https://www.bpnkabjepara.com/ploting-bandar-lampung-rapi-tiarra/",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    },
+    {
+      "url": "https://jdih.jepara.go.id/inventarisasi-hukum/download/eyJpdiI6IjlSUzFVMjdsNEVGZ1lET3FxSDRSOHc9PSIsInZhbHVlIjoidlNJU1l0THNlcHNidldLV2xxUmFZQT09IiwibWFjIjoiYzM0MGMwYzdmOTVjZTg3YWUwYTAxODU0MDI1NzFhODRiMDRjNjQyYmNkMjc2NDExNDNhZmZmYTI2NjQxMzNiOCIsInRhZyI6IiJ9",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    },
+    {
+      "url": "https://sirusa.web.bps.go.id/metadata/kegiatan/e6ead4b0-b7fc-40d6-5ab5-fba0dfae4aea",
+      "observation": "BPS metadata identifies Kantor Pertanahan Kabupaten Jepara as the organizer of 2025 PTSL cadastral registration activity and lists its office details."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Indonesian",
+      "query": "Kantor Pertanahan Kabupaten Jepara peta bidang tanah pendaftaran tanah TIARRA resmi",
+      "result": "Sumber lokal resmi menyebut Kantor Pertanahan Kabupaten Jepara dan layanan ploting bidang tanah TIARRA berbasis permohonan. Alurnya memerlukan akun dan dokumen pendukung; tidak ditemukan skema fitur parcel anonim atau respons geometri publik.",
+      "actualResultUrls": [
+        "https://www.bpnkabjepara.com/",
+        "https://www.bpnkabjepara.com/ploting-bandar-lampung-rapi-tiarra/",
+        "https://jdih.jepara.go.id/inventarisasi-hukum/download/eyJpdiI6IjlSUzFVMjdsNEVGZ1lET3FxSDRSOHc9PSIsInZhbHVlIjoidlNJU1l0THNlcHNidldLV2xxUmFZQT09IiwibWFjIjoiYzM0MGMwYzdmOTVjZTg3YWUwYTAxODU0MDI1NzFhODRiMDRjNjQyYmNkMjc2NDExNDNhZmZmYTI2NjQxMzNiOCIsInRhZyI6IiJ9",
+        "https://sirusa.web.bps.go.id/metadata/kegiatan/e6ead4b0-b7fc-40d6-5ab5-fba0dfae4aea"
+      ],
+      "method": "Separate English and Indonesian discovery followed by local land-office page and Jepara JDIH review. No login, application, or parcel lookup."
+    },
+    {
+      "language": "English",
+      "query": "Jepara Indonesia official land office cadastral parcel map land registry GIS",
+      "result": "Official local materials identify the Jepara Land Office and its applicant-based TIARRA plot-mapping workflow. The workflow requires account creation and document submission; no anonymous parcel feature schema or geometry response was verified.",
+      "actualResultUrls": [
+        "https://www.bpnkabjepara.com/",
+        "https://www.bpnkabjepara.com/ploting-bandar-lampung-rapi-tiarra/",
+        "https://jdih.jepara.go.id/inventarisasi-hukum/download/eyJpdiI6IjlSUzFVMjdsNEVGZ1lET3FxSDRSOHc9PSIsInZhbHVlIjoidlNJU1l0THNlcHNidldLV2xxUmFZQT09IiwibWFjIjoiYzM0MGMwYzdmOTVjZTg3YWUwYTAxODU0MDI1NzFhODRiMDRjNjQyYmNkMjc2NDExNDNhZmZmYTI2NjQxMzNiOCIsInRhZyI6IiJ9",
+        "https://sirusa.web.bps.go.id/metadata/kegiatan/e6ead4b0-b7fc-40d6-5ab5-fba0dfae4aea"
+      ],
+      "method": "Separate English and Indonesian discovery followed by local land-office page and Jepara JDIH review. No login, application, or parcel lookup."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "Local registry/land-registration work is confirmed, but no anonymous safe parcel geometry response and usable feature schema were verified. The legacy TIARRA article’s Bandar Lampung host reference was treated as a mismatch, not a live Jepara endpoint."
+  },
+  "privacy": "No owner, address, applicant, taxpayer, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "Local registry/land-registration work is confirmed, but no anonymous safe parcel geometry response and usable feature schema were verified."
+  }
+}

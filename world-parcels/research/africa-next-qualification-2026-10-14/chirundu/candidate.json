@@ -1,0 +1,158 @@
+{
+  "descriptor": {
+    "id": "zm-nsdi-zilmis-lots",
+    "name": "Zambia NSDI ZILMIS lot polygons",
+    "adapter": "arcgis",
+    "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "idField": "SDE.Lots.OBJECTID",
+    "idType": "integer",
+    "idPrefix": "ZM-NSDI-LOT-",
+    "objectIdField": "SDE.Lots.OBJECTID",
+    "outFields": [
+      "SDE.Lots.OBJECTID",
+      "SDE.Lots.UPID"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "ZM",
+    "metricSrid": 32735,
+    "cityIds": [
+      "kitwe",
+      "mansa",
+      "kabwe",
+      "livingstone",
+      "kafue",
+      "mumbwa",
+      "mongu",
+      "luanshya"
+    ],
+    "maxConcurrentQueries": 6,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "boundsSrid": 32735,
+    "boundsProjection": "+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs",
+    "parcelNumberField": "SDE.Lots.UPID",
+    "operator": "Government of Zambia National Spatial Data Infrastructure / ZILMIS",
+    "scope": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified. Additional enabled city entries have separate bounded qualification evidence; wider coverage remains unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
+    "attribution": "Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted",
+    "catalogueUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+    "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded.",
+    "metricSridByCity": {
+      "kitwe": 32735,
+      "mansa": 32735,
+      "kabwe": 32735,
+      "livingstone": 32735,
+      "kafue": 32735,
+      "mumbwa": 32735,
+      "mongu": 32734,
+      "luanshya": 32735
+    },
+    "additionalCityEvidence": {
+      "mansa": "research/qualification-2026-10-11-round2/2412/qualification.json",
+      "kabwe": "research/qualification-2026-10-11-round2/1945/qualification.json",
+      "livingstone": "research/qualification-2026-10-11-round2/429/qualification.json",
+      "kafue": "research/qualification-2026-10-11-round2/1396/qualification.json",
+      "mumbwa": "research/qualification-2026-10-11-round2/838/qualification.json"
+    },
+    "cityScopes": {
+      "mansa": "10 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+      "kabwe": "16 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+      "livingstone": "109 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+      "kafue": "4 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+      "mumbwa": "62 unchanged native parcel polygons passed all eight qualification gates in bounded cells around the UN/WUP locator. Fresh independent metric audit (EPSG:32735) found zero invalid polygons, identity conflicts, duplicate geometry, material overlaps, or operation errors. Citywide completeness, legal title, survey accuracy, and currentness are not established.",
+      "mongu": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Mongu. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established.",
+      "luanshya": "Bounded qualification around the UN DESA WUP 2025 settlement locator for Luanshya. Passing all eight gates and independent geometry audit supports local parcel integration only; citywide completeness, legal title, survey accuracy and currentness are not established."
+    },
+    "qualificationEvidence": [
+      {
+        "cityCode": "2412",
+        "appCityId": "mansa",
+        "candidateSha256": "5be5573645fec735361be7319b153bcd34d56dde6e559b3996268957bd72221a",
+        "qualificationSha256": "e89618271507d964fcc962d315bdcea69f3e149c0d1fdc2b8ad369360861aa56",
+        "fullSafeSha256": "18c2609a2d6744b14022a836a10bf397d8e3c91c59b8f6bd981e9cf4b0737584",
+        "metricReportSha256": "550693f50c6756be92e2dca4b04cbdbfa791bec255fe6bb0d19728631968a805",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/2412/qualification.json"
+      },
+      {
+        "cityCode": "1945",
+        "appCityId": "kabwe",
+        "candidateSha256": "d51b71ed94647a90483f98a4e8d4c9464f137e51e369c12b844bc51c31209162",
+        "qualificationSha256": "82a987f1c95cd1b6a9e6665477bc389f54b48f764fca7c2d5e4306d110cec926",
+        "fullSafeSha256": "5a8c9508400e35b6893d51f2f8430d0a7cb1f20f0f5b641d0b60a4f31e9ca00f",
+        "metricReportSha256": "0a4ec557c534c1487da0dbcd52bbd32f397b59d64cb08083a2be8f1a93d2140c",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/1945/qualification.json"
+      },
+      {
+        "cityCode": "429",
+        "appCityId": "livingstone",
+        "candidateSha256": "77b3280986bdc959d24d271287b4807217a993bcc66236f829616c88085d66b5",
+        "qualificationSha256": "4eb5b3df71b6c5541ccee88a317d7a4ab6a44bf4c8eb004bc71553b557dd5360",
+        "fullSafeSha256": "f20fd5be340822d78d8ca30e6cfa5fe44a8bd66fbcd6bb10277d901eab2007ef",
+        "metricReportSha256": "0ff75c43fbc9b16da9226864e3bf340e16f0fba9864b818e2b9bd23f727defc3",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/429/qualification.json"
+      },
+      {
+        "cityCode": "1396",
+        "appCityId": "kafue",
+        "candidateSha256": "da8808366852b83f8b12f7be066d506ea0d7e0843ef8d084d792478873379279",
+        "qualificationSha256": "c97707595912db504c2cc1393866d99ba9481f324b2ad374c3ffa055e3a8f201",
+        "fullSafeSha256": "f4a32599cb710cd060b1b00560510b421292e6bd7d84cac716435c8b27fb1336",
+        "metricReportSha256": "ac16f872e7eb9ed10286fa6f1b1d9fa9b7eb26b4c5045c0fa4d2f2acb56bb658",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/1396/qualification.json"
+      },
+      {
+        "cityCode": "838",
+        "appCityId": "mumbwa",
+        "candidateSha256": "75db7a6e41b61cafb3942a0c964349279f3047721437594131b28cb359e6aa56",
+        "qualificationSha256": "382f3c2112ad05ca1d48de1eef7b3e5619562938e3715e9cf113bad7c70ebd27",
+        "fullSafeSha256": "d346b2e236695b28aa92070554e4f1da6d2cab625d0b46197ec2b0293f405907",
+        "metricReportSha256": "b7959482970f7ae29a53029572e2a476257ae79fc4995c7d1b6a3c67a27cc073",
+        "evidenceFile": "world-parcels/research/qualification-2026-10-11-round2/838/qualification.json"
+      },
+      {
+        "cityCode": "104",
+        "appCityId": "mongu",
+        "candidateSha256": "6cc6136e4dbc0eba8dee8b1b7bc9443a7aaa7d227ce575fa99950d77bebc7f94",
+        "qualificationSha256": "ec5d75f34041f4fdb9ca244f275d96b0a002a4966689e6227629fcf2291881df",
+        "metricSrid": 32734,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-12/mongu/qualification.json"
+      },
+      {
+        "cityCode": "2025",
+        "appCityId": "luanshya",
+        "candidateSha256": "a4bb2766b85d3f2e0e5c19d0d32b37a6e5fe7c7c72a72fc2ea246e6f42cdf9f2",
+        "qualificationSha256": "0639cad898b450c4b96361618d2dd200f3afe7186f6a36117047e4347ae0faed",
+        "metricSrid": 32735,
+        "evidenceFile": "world-parcels/research/qualification-2026-10-12/luanshya/qualification.json"
+      }
+    ],
+    "defaultForCity": true
+  },
+  "city": {
+    "code": "2260",
+    "name": "Chirundu",
+    "point": [
+      28.8443119973995,
+      -16.0278010235141
+    ]
+  },
+  "sampleIds": [
+    "ZM-NSDI-LOT-42423",
+    "ZM-NSDI-LOT-42873",
+    "ZM-NSDI-LOT-47576",
+    "ZM-NSDI-LOT-47577"
+  ],
+  "absentId": "ZM-NSDI-LOT-2147483647",
+  "metricEpsg": 32735,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Official CadasterNew item metadata describes the service as Zambia national cadaster data and customary lots (saved in prior bounded evidence at tmp/qualification-valhalla/q1012catchup/state/cities/2260/attempt-03/evidence/official-purpose-metadata.json).",
+      "Official MapServer layer 0 metadata identifies the Lots polygon layer and SDE.Lots.OBJECTID as its OID; official service metadata declares spatialReference WKID 32735 (saved files: official-layer-metadata.json and official-service-metadata.json in the prior Chirundu evidence directory).",
+      "The current catalog descriptor zm-nsdi-zilmis-lots points to this same first-party MapServer layer and declares SDE.Lots.OBJECTID as the integer source identity with EPSG:32735 metric and bounds CRS. Four nearby native IDs from the prior Chirundu bounded sample are reused only as read targets; this new run re-reads all IDs and geometry."
+    ]
+  }
+}

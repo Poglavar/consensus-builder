@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3976-maringa.json",
+  "purpose": "Endpoint-first followthrough using official municipal guidance and bounded anonymous endpoint tests; unchanged WUP 2025 point.",
+  "unchangedWupPointLatLon": [
+    -23.4200314948645,
+    -51.9182787611961
+  ],
+  "officialSources": [
+    {
+      "url": "https://transparencia.maringa.pr.gov.br/portaltransparencia/1/publicacoes",
+      "scope": "Municipal Transparency Portal page lists Geoprocessamento > Perguntas e Respostas > Instruções, Registro de Imóveis > Lotes com Registro de Imóveis, and map services. The portal is a JavaScript application."
+    },
+    {
+      "url": "https://maringa.oxy.elotech.com.br/portaltransparencia-api/api/files/arquivo/145041",
+      "scope": "Official municipal 2019 FAQ/tutorial. Lines 15-20 say address search highlights a lot; lines 105-113 say the separate Registro de Imóveis app supports Zona/Quadra/Lote lookup and map-layer display."
+    }
+  ],
+  "endpointDiscoveryLead": {
+    "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13",
+    "layerLabel": "SIGMARINGA/CONSULTAS/MapServer/13 (Zona Quadra e Lote)",
+    "discoveredVia": "https://github.com/AndreZanco88/Plugin_Geomaringa",
+    "discoverySourceType": "nonofficial QGIS plugin; endpoint only a lead, not primary proof",
+    "note": "Community client code lists ArcGIS FeatureServer-compatible municipal host URLs and labels layer 13 Zona Quadra e Lote. The official municipal tutorial confirms the public map workflow but does not link this exact REST layer."
+  },
+  "anonymousAttempts": [
+    {
+      "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13?f=pjson",
+      "method": "GET",
+      "result": "ConnectTimeout",
+      "timeoutSeconds": 18,
+      "responseBytes": null,
+      "returnedSchema": false
+    },
+    {
+      "url": "https://geoproc.maringa.pr.gov.br/arcgis/rest/services/SIGMARINGA/CONSULTAS/MapServer/13/query",
+      "method": "GET",
+      "result": "ConnectTimeout",
+      "timeoutSeconds": 15,
+      "requestFilter": "Envelope around unchanged WUP point, lon [-51.9187787611961,-51.9177787611961], lat [-23.4205314948645,-23.4195314948645], 0.001 degrees per side; outFields=OBJECTID; returnGeometry=true; resultRecordCount=3.",
+      "responseBytes": null,
+      "returnedFeatures": null,
+      "returnedGeometry": false
+    }
+  ],
+  "safeScope": [
+    "No credentials or tokens sent.",
+    "No owner, address, tax, account, or applicant fields requested or retained.",
+    "No sample geometry retained.",
+    "Timeout does not establish parcel absence.",
+    "No legal/title terms were used as a geometry-availability gate.",
+    "No runtime integration or global/root review changes were made."
+  ],
+  "result": "Public municipal lot-map workflow is documented, but the candidate REST endpoint was unavailable to this client; schema, source-native ID, exact-point hit and bounded polygon geometry remain unverified."
+}

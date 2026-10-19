@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7574",
+  "wupCityCode": 7574,
+  "name": "Sao Jose dos Campos",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 1031,
+  "queueRank": 1031,
+  "point": [
+    -23.2139060772218,
+    -45.8928886226638
+  ],
+  "centerLatLon": [
+    -23.2139060772218,
+    -45.8928886226638
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 536073,
+  "population2025k": 536.073,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "São José dos Campos’ official municipal geoprocessing service links its GeoSanja municipal geographic database and registered-lot maps. The city describes GeoSanja as a municipal spatial-data portal with map and download services. These sources establish city-specific municipal map/cadastral activity, but this review did not verify an anonymous full-polygon feature response for the WUP point.",
+  "registryEvidenceUrls": [
+    "https://www.sjc.sp.gov.br/servicos/urbanismo-e-sustentabilidade/planejamento-urbano/inteligencia-territorial-e-geoprocessamento/",
+    "https://servicos.sjc.sp.gov.br/mapas_de_loteamentos/",
+    "https://geosanja.sjc.sp.gov.br/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Official GeoSanja landing shell points to geo.sjc.sp.gov.br, whose normal-TLS request returned403. No safe native parcel schema or full geometry response was obtained from that portal.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "official_geodata_and_lot_maps_no_full_parcel_vector_verified",
+  "coverageAssessment": {
+    "claimedScope": "São José dos Campos’ official municipal geoprocessing service links its GeoSanja municipal geographic database and registered-lot maps. The city describes GeoSanja as a municipal spatial-data portal with map and download services. These sources establish city-specific municipal map/cadastral activity, but this review did not verify an anonymous full-polygon feature response for the WUP point.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Official GeoSanja landing shell points to geo.sjc.sp.gov.br, whose normal-TLS request returned403. No safe native parcel schema or full geometry response was obtained from that portal."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "São José dos Campos official cadastral property map Geosanja municipal geodatabase",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "Official municipal sources document GeoSanja and maps of approved/registered subdivisions; no anonymous ID-plus-complete-parcel-polygon query was verified.",
+        "actualResultUrls": [
+          "https://www.sjc.sp.gov.br/servicos/urbanismo-e-sustentabilidade/planejamento-urbano/inteligencia-territorial-e-geoprocessamento/",
+          "https://www.sjc.sp.gov.br/noticias/2019/outubro/22/portal-geosanja-permite-acesso-a-banco-de-dados-geograficos/",
+          "https://servicos.sjc.sp.gov.br/mapas_de_loteamentos/",
+          "https://geosanja.sjc.sp.gov.br/"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Portuguese",
+        "query": "São José dos Campos cadastro imobiliário lotes Geosanja prefeitura mapa parcelas",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "A prefeitura identifica o GeoSanja como banco de dados geográficos municipal e publica mapas de loteamentos aprovados e registrados. Não foi verificada uma resposta anônima com identificador e polígono completo de lote no ponto WUP.",
+        "actualResultUrls": [
+          "https://www.sjc.sp.gov.br/servicos/urbanismo-e-sustentabilidade/planejamento-urbano/inteligencia-territorial-e-geoprocessamento/",
+          "https://www.sjc.sp.gov.br/noticias/2019/outubro/22/portal-geosanja-permite-acesso-a-banco-de-dados-geograficos/",
+          "https://servicos.sjc.sp.gov.br/mapas_de_loteamentos/",
+          "https://geosanja.sjc.sp.gov.br/"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://geosanja.sjc.sp.gov.br/",
+        "httpStatus": 200,
+        "bytes": 144,
+        "observation": "Official landing page redirects through HTML meta refresh to https://geo.sjc.sp.gov.br/."
+      },
+      {
+        "method": "GET",
+        "url": "https://geo.sjc.sp.gov.br/",
+        "httpStatus": 403,
+        "bytes": 239,
+        "observation": "Actual normal-TLS server response forbidden, no map schema or feature content exposed. This is session transport evidence, not permanent absence."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://geosanja.sjc.sp.gov.br/",
+        "observation": "First-party municipal portal identified, but no safe anonymous full-polygon point query was verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "A citywide point query against parcel boundaries and a safe source-native feature identifier/geometry response were not verified; published maps include zoning, plans and registered subdivisions.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. São José dos Campos’ official municipal geoprocessing service links its GeoSanja municipal geographic database and registered-lot maps. The city describes GeoSanja as a municipal spatial-data portal with map and download services. These sources establish city-specific municipal map/cadastral activity, but this review did not verify an anonymous full-polygon feature response for the WUP point."
+}

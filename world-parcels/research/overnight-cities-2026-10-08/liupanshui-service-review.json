@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8900-liupanshui.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Liupanshui’s municipal real-property registry and land registration services are confirmed by city and provincial-government materials, but no anonymous public parcel-geometry service was identified. No property-owner, address or account lookup was submitted. No full geometry sample was retained.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.gzlps.gov.cn/bmxxgk/zfxxgk/fdzdgknr/czxx_5805298/bmczysjsgjf_5805300/202303/P020230331380101766052.pdf",
+      "observation": "Official Liupanshui Natural Resources Bureau 2023 budget performance document explicitly names the city bureau’s Real Estate Registration Center, registration-certificate issuance and “Internet + real-estate registration” service work."
+    },
+    {
+      "url": "https://zfgb.gzlps.gov.cn/zfgb/2023ndsq/202311/W020240321360215967201.pdf",
+      "observation": "Liupanshui Municipal Government Gazette describes registration services, including city/county centralized service halls and first registration of land parcels; this evidences local registry workflow, not public GIS geometry."
+    },
+    {
+      "url": "https://zrzyj.gzlps.gov.cn/gzdt/tzgg/202011/t20201126_65388997.html",
+      "observation": "Official city Natural Resources Bureau procured a city basic surveying and mapping plan, providing evidence of municipal mapping administration but not a cadastral parcel feed."
+    },
+    {
+      "url": "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/tjsj/202408/P020240806399707155474.pdf",
+      "observation": "Official Guizhou natural-resources statistics include city-level Liupanshui property registration certificate and mortgage activity; corroborates ongoing city registration operations."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://zrzyj.gzlps.gov.cn/",
+      "method": "GET official bureau portal / indexed official materials",
+      "result": "Official materials identify city registration and general survey/mapping programs. No public parcel layer or vector endpoint exposed in reviewed pages."
+    },
+    {
+      "url": "https://zfgb.gzlps.gov.cn/zfgb/2023ndsq/202311/W020240321360215967201.pdf",
+      "method": "GET municipal government gazette",
+      "result": "Describes land registration service hall procedures; not a public parcel-query system."
+    }
+  ],
+  "registryBasis": "Liupanshui’s municipal real-property registry and land registration services are confirmed by city and provincial-government materials, but no anonymous public parcel-geometry service was identified.",
+  "geometryDisposition": "No full geometry sample: reviewed sources did not establish a safe anonymous city parcel geometry response."
+}

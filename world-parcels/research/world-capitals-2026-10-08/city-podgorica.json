@@ -1,0 +1,155 @@
+{
+  "cityId": "capital:ME:podgorica",
+  "name": "Podgorica",
+  "country": "Montenegro",
+  "countryCode": "ME",
+  "centerLatLon": [
+    42.43333333333333,
+    19.266667
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "Podgorica Cetinje cadastral parcel map geoportal",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Podgorica Cetinje katastarske parcele geoportal katastar",
+      "language": "Montenegrin",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://wis.gov.me/geoportal",
+      "observation": "Government water GIS client links the public uzv:parcele_v cadastral layer."
+    },
+    {
+      "url": "https://geoportal.co.me/geoportal/geoportal.html",
+      "observation": "National cadastral geoportal redirects to the land administration viewer at webmap.uzn.me."
+    }
+  ],
+  "requests": [
+    {
+      "name": "montenegro-live-viewer",
+      "url": "https://geoportal.co.me/Geoportal01/",
+      "checkedAt": "2026-10-08T18:04:18.623Z",
+      "bytes": 270276,
+      "contentType": "text/html; charset=utf-8",
+      "redirect": "https://webmap.uzn.me/geoportal01/",
+      "httpStatus": 200
+    },
+    {
+      "name": "montenegro-map",
+      "url": "https://wis.gov.me/assets/map-6ec196ece53426a91d6afb5a3919cb20.js",
+      "checkedAt": "2026-10-08T18:01:01.829Z",
+      "bytes": 7068,
+      "contentType": "text/javascript;charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "name": "montenegro-parcel-schema",
+      "url": "https://wis.gov.me/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=uzv%3Aparcele_v",
+      "checkedAt": "2026-10-08T18:04:16.669Z",
+      "bytes": 2365,
+      "contentType": "application/gml+xml; version=3.2",
+      "httpStatus": 200
+    },
+    {
+      "name": "montenegro-public-layers",
+      "url": "https://wis.gov.me/assets/modules/layers-switch-public-3b6f94e381cc631ea18fe92123592e9d.js",
+      "checkedAt": "2026-10-08T18:01:01.904Z",
+      "bytes": 33552,
+      "contentType": "text/javascript;charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "name": "montenegro-viewer",
+      "url": "https://geoportal.co.me/geoportal/geoportal.html",
+      "checkedAt": "2026-10-08T17:58:13.208Z",
+      "bytes": 15602,
+      "elapsedMs": 821,
+      "contentType": "text/html",
+      "httpStatus": 200
+    },
+    {
+      "name": "montenegro-water",
+      "url": "https://wis.gov.me/geoportal",
+      "checkedAt": "2026-10-08T17:58:13.074Z",
+      "bytes": 312010,
+      "elapsedMs": 686,
+      "contentType": "text/html;charset=UTF-8",
+      "httpStatus": 200
+    },
+    {
+      "url": "https://wis.gov.me/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=uzv%3Aparcele_v&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=19.261%2C42.439%2C19.265%2C42.443%2CEPSG%3A4326&count=3&propertyName=geom%2Cid%2Cko%2Cbr_parcele%2Cnaziv_ko%2Cnaziv_po",
+      "method": "GET",
+      "params": {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": "uzv:parcele_v",
+        "outputFormat": "application/json",
+        "srsName": "EPSG:4326",
+        "bbox": "19.261,42.439,19.265,42.443,EPSG:4326",
+        "count": "3",
+        "propertyName": "geom,id,ko,br_parcele,naziv_ko,naziv_po"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:05:18.039Z",
+      "contentType": "application/json;charset=UTF-8",
+      "outcome": "Three nonpersonal Polygon/MultiPolygon features retained in podgorica-safe-sample.json"
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Public government parcel WFS returned three MultiPolygon features with cadastral district names PODGORICA II/III.",
+  "registryEvidenceUrls": [
+    "https://wis.gov.me/geoportal",
+    "https://geoportal.co.me/geoportal/geoportal.html"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "me-water-cadastral-parcels"
+  ],
+  "sourceCandidate": {
+    "url": "https://wis.gov.me/geoserver/wfs",
+    "publisher": "Montenegro Water Administration public GIS",
+    "safeSampleFile": "podgorica-adapter-sample.geojson"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Government-published cadastral mirror; bounded central Podgorica verified, countrywide completeness not inferred.",
+    "verifiedOpenScope": "Government-published cadastral mirror; bounded central Podgorica verified, countrywide completeness not inferred.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "id is a published integer row key; ko and br_parcele carry cadastral district/parcel references. Dataset vintage is not established by the public schema.",
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "MultiPolygon"
+    ],
+    "responseFile": "research/world-capitals-2026-10-08/podgorica-adapter-sample.geojson",
+    "runtimeSampleParcelCount": 408,
+    "initialSampleMetadataFile": "research/world-capitals-2026-10-08/podgorica-safe-sample.json"
+  },
+  "acceptanceFile": "research/world-capitals-2026-10-08/podgorica-acceptance.json",
+  "geometryQualityFile": "research/world-capitals-2026-10-08/podgorica-quality.json",
+  "runtimeQualified": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Two sampled source polygons self-intersect and material overlaps persist. Cetinje qualifies separately on the same provider; its qualification does not clear Podgorica.",
+    "evidenceFile": "research/world-capitals-2026-10-08/podgorica-quality.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/podgorica-adapter-sample.geojson"
+}

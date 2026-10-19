@@ -1,0 +1,81 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ML",
+ "country": "Mali",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Secretariat Permanent de la Reforme Domaniale et Fonciere (SPRDF) - NINACAD portal; Direction Generale des Domaines et du Cadastre (DNDC)",
+ "portalsFound": [
+  {
+   "url": "https://ninacad.sprdf.ml/",
+   "observation": "NINACAD national cadastral ID portal; backed by geodata.sprdf.ml GeoServer (from Bamako evidence, research/bamako.json)."
+  },
+  {
+   "url": "https://www.dndc.gouv.ml/",
+   "observation": "DNDC, statutory land/cadastre directorate (from Bamako evidence)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali:parcelle&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-6.27,13.43,-6.25,13.45,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels near Segou (~240 km from Bamako); verified"
+  },
+  {
+   "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali:parcelle&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-7.5,12.5,-6.5,13.0,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels in Koulikoro region, coarse 1x0.5 deg box, count 3"
+  },
+  {
+   "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali:parcelle&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-8.0,12.2,-7.9,12.3,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels south-west of Bamako"
+  },
+  {
+   "url": "(reused) research/bamako.json: bbox -8.0430,12.6755,-8.0415,12.6775",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 Bamako Commune III polygons, numberMatched 74"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+  "requestUrl": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali:parcelle&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-6.27,13.43,-6.25,13.45,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -6.27,
+   13.43,
+   -6.25,
+   13.45
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "ninacad / uoid",
+  "responseFile": "ML-parcel-response.json",
+  "pagination": "WFS maxFeatures/startIndex",
+  "regionSampled": "Segou (plus Bamako from bamako.json)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "National NINACAD cadastral identifier programme; layer extent lon -9.46..-6.05, lat 12.03..13.72 (south-west Mali only)",
+  "regionsVerified": [
+   "Bamako District",
+   "Segou",
+   "Koulikoro region (coarse box)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "nationwideVerified follows the two-region rule but the layer extent excludes Sikasso, Mopti, Timbuktu, Gao, Kidal; real coverage is regional and patchy (empty at Bamako supplied centroid). Licence/reuse terms not read.",
+ "nextStep": "Probe Sikasso/Mopti for extent, read SPRDF terms."
+}

@@ -1,0 +1,19 @@
+{
+  "queryEndpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+  "queryScope": "-71.541,43.205,-71.533,43.212",
+  "sourceRows": 244,
+  "uniqueNhGisIds": 240,
+  "duplicateGroups": 1,
+  "exceededTransferLimit": false,
+  "identitySemanticsSamples": [
+    [
+      {
+        "u_id": null,
+        "parceloid": 19376890,
+        "nh_gis_id": "07046-0",
+        "displayid": null
+      }
+    ]
+  ],
+  "assessment": "Observed ambiguous/nonunique native key 07046-0 occurs across five disjoint source rows with null U_ID and DisplayId. Publisher documentation reviewed does not establish its parcel semantics. Explicitly exclude this key from identified-parcel scope; do not invent IDs or merge unrelated geometry."
+}

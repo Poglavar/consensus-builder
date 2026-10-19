@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-4252-dezful.json",
+  "cityCode": 4252,
+  "queueRank": 2565,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "service": "No verified public Dezful cadastral parcel service",
+  "officialEvidence": [
+    {"url": "https://www.dezful.ir/", "observation": "Official Dezful municipal portal loaded over HTTPS. Its current slide-show configuration labels a city-map tile (نقشه شهر) but gives it an empty Link value; no parcel layer, API URL, schema, or downloadable geometry was exposed."},
+    {"url": "https://ssaa.ir/", "observation": "Official national registration/cadastre custodian domain identified, but the site did not return an inspectable anonymous response during this attempt."},
+    {"url": "https://shamim.ssaa.ir/", "observation": "Official registration surveying service host was attempted; no anonymous parcel geometry or public schema was obtained. No login was attempted."},
+    {"url": "https://nezamat.ir/%D8%A7%D9%8A%D9%8A%D9%86-%D9%86%D8%A7%D9%85%D9%87-%D8%A7%D8%AC%D8%B1%D8%A7%D9%8A%D9%8A-%D8%AA%D8%A8%D8%B5%D8%B1%D9%87-3-%D9%85%D8%A7%D8%AF%D9%87-10-%D9%82%D8%A7%D9%86%D9%88%D9%86-%D8%A7%D9%84/", "observation": "Published Iranian regulatory text describes cadastral/map obligations and systems, but it is national legal/procedural evidence, not a Dezful-local public service endpoint."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.dezful.ir/", "method": "GET", "status": "HTTP 200", "observation": "HTML loaded; source inspected for map/GIS/API links. The city-map item had no target URL and no parcel service configuration was found."},
+    {"url": "https://ssaa.ir/", "method": "GET", "status": "timeout after 20 seconds", "observation": "Official national host was not usable for anonymous JavaScript/configuration inspection; this is not evidence of citywide absence."},
+    {"url": "https://shamim.ssaa.ir/", "method": "GET", "status": "timeout during bounded request", "observation": "No anonymous response suitable for schema or geometry inspection was obtained; no credentials or bypass was used."},
+    {"url": "https://map.ir/", "method": "GET", "status": "not completed after bounded route checks", "observation": "General map-domain route was considered during discovery but not accepted as a first-party Dezful cadastral source without a verified official parcel layer."}
+  ],
+  "sourceFieldMapping": null,
+  "sample": {"file": null, "featureCount": 0, "nativeIds": [], "propertiesPolicy": "No sample retained."},
+  "coverageAssessment": {"claimedScope": "Official Dezful municipal portal and national Iranian cadastral custodian references.", "verifiedOpenScope": null, "countrywideVerified": false},
+  "uncertainty": [
+    "No city-local registry/cadastre service, public parcel API, schema/CRS response, safe native parcel identity, or parcel geometry was verified.",
+    "The exact WUP point [32.3795667733115, 48.4076867873345] was preserved and not shifted.",
+    "Municipal city-map labeling and national legal/procedural references cannot qualify as cadastral parcel geometry.",
+    "The national custodian was evidenced, but no public Dezful route or anonymous response was established.",
+    "Packet completion is research only; runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No safe anonymous Dezful parcel geometry endpoint was found after bounded first-party English and Persian discovery, direct public GET checks, and official portal source inspection."
+}

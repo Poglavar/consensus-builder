@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {"id": "Eskisaray-208/2"},
+      "geometry": {"type": "Polygon", "coordinates": [[[38.26682,37.76083],[38.26774,37.76086],[38.2677,37.76097],[38.26723,37.76142],[38.26665,37.76127],[38.26682,37.76083]]]}
+    }
+  ]
+}

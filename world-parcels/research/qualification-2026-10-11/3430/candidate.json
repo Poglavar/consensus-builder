@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "3430",
+    "name": "Riverside",
+    "point": [
+      -117.443821994716,
+      33.9351928344791
+    ]
+  },
+  "descriptor": {
+    "id": "us.ca.riverside-city-parcels",
+    "name": "City of Riverside cadastral parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86",
+    "idPrefix": "us-ca-riverside-city:",
+    "idField": "ParcelFabric_Parcels.OBJECTID",
+    "objectIdField": "ParcelFabric_Parcels.OBJECTID",
+    "idType": "integer",
+    "outFields": [
+      "ParcelFabric_Parcels.OBJECTID"
+    ],
+    "cityIds": [
+      "3430"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "queryFormat": "geojson",
+    "pageSize": 80,
+    "idBatchSize": 80,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "capabilities": {
+      "areaEnumeration": true,
+      "supportsPagination": false
+    },
+    "metricSridByCity": {
+      "3430": 32611
+    }
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer: official City of Riverside cadastral public viewer, city scope stated by serviceDescription; packet and service review identify local cadastral/map custody.",
+      "https://mapriverside.riversideca.gov/server/rest/services/Cadastral/Cadastral_Public/MapServer/86: first-party Parcel polygon layer in the cadastral service, City of Riverside copyright, ParcelFabric_Parcels native geometry/object identity and assessor parcel number schema confirm cadastral purpose; service review identifies the retained exact-point sample as native object 44648."
+    ]
+  },
+  "sourceCandidateSha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+  "qualificationRecordedSha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+  "sourceCandidatePath": "qualification/evidence/cities/3430/candidate.json",
+  "originalSeedSha256": "f8e48bc51d24421be35eb749c2d9c3a56e6738237929cf69a5c482833522497d",
+  "originalSeedPath": "qualification/evidence/cities/3430/candidate.json"
+}

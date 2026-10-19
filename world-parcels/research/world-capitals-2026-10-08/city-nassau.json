@@ -1,0 +1,97 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:BS:nassau",
+  "name": "Nassau",
+  "country": "Bahamas",
+  "countryCode": "BS",
+  "centerLatLon": [
+    25.083333333333332,
+    -77.35
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Nassau Bahamas official land registry cadastral parcel map GIS open data",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://rgd-civreg.bahamas.gov.bs/",
+        "https://www.bahamas.gov.bs/"
+      ]
+    },
+    {
+      "query": "Nassau Bahamas cadastre GIS parcel map government Bahamas official land parcels",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://rgd-civreg.bahamas.gov.bs/",
+        "https://www.bahamas.gov.bs/"
+      ]
+    },
+    {
+      "query": "Nassau Bahamas official cadastral parcel map GIS land parcels government",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://rgd-civreg.bahamas.gov.bs/",
+        "https://www.bahamas.gov.bs/"
+      ]
+    },
+    {
+      "query": "Nassau Bahamas BNGIS parcel cadastre online map official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://rgd-civreg.bahamas.gov.bs/",
+        "https://www.bahamas.gov.bs/"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://rgd-civreg.bahamas.gov.bs/",
+      "observation": "Official registry presents parcel/instrument search form; no city parcel geometry service established. A national cadastral coverage claim is not established."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://rgd-civreg.bahamas.gov.bs/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official Registrar General Department portal opened; it is an index and exposes registry search, but no city parcel geometry service was established."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The national Registrar General portal provides a registry search, but the evidence does not establish Nassau-specific registry coverage or parcel geometry.",
+    "urls": [
+      "https://rgd-civreg.bahamas.gov.bs/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The national Registrar General portal provides a registry search, but the evidence does not establish Nassau-specific registry coverage or parcel geometry."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The national Registrar General portal provides a registry search, but the evidence does not establish Nassau-specific registry coverage or parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://rgd-civreg.bahamas.gov.bs/"
+  ],
+  "sourceIds": []
+}

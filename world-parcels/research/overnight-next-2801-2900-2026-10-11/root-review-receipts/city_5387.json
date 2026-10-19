@@ -1,0 +1,31 @@
+{
+  "taskId": "city:5387",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-5387-mar-lia.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/mar-lia-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T213258-75b43e26/stdout.jsonl",
+    "tmp/valhalla-parcel-research/marilia/portal.html",
+    "tmp/valhalla-parcel-research/marilia/lista.html",
+    "tmp/valhalla-parcel-research/marilia/_app-7ae356232f2f493b.js",
+    "tmp/valhalla-parcel-research/marilia/post-empty.json"
+  ],
+  "checkedAt": "2026-10-11T21:39:02Z",
+  "reason": "The municipal portal supports cadastro imobiliario custody, but the property-search POST returned reCAPTCHA invalido. No native parcel ID, polygon, schema, or CRS was read. The claimed English discovery query is absent from the worker search transcript; only Portuguese queries are recorded. The access wall does not establish citywide absence.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": false,
+  "bilingualSearchNote": "Portuguese queries are recorded; the packet's claimed English query is not in the executed-search transcript.",
+  "durableSamplePolygonCount": 0,
+  "registryCustodyAssessment": "institutional/service lead evidenced; citywide public parcel geometry unverified",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

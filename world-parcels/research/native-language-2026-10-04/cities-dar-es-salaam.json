@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 42,
+  "city": "Dar es Salaam",
+  "countryCode": "TZ",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/dar-es-salaam.json",
+  "query": {
+    "language": "Swahili",
+    "script": "Latin",
+    "text": "Dar es Salaam ramani ya viwanja ardhi GIS data wazi mipaka viwanja"
+  },
+  "results": [
+    {
+      "title": "Tanzania e-Ardhi land rent portal",
+      "url": "https://www.lands.go.tz/landrent/",
+      "kind": "official-land-service",
+      "note": "Provides land-rent access; no open parcel geometries verified."
+    },
+    {
+      "title": "Ramani Huria open mapping data",
+      "url": "https://ramanihuria.org/en/data-3/",
+      "kind": "community-open-data",
+      "note": "Offers OpenStreetMap data for mapped wards, not cadastral parcels."
+    }
+  ],
+  "assessment": "Swahili-language search surfaced official land-rent access and community OSM downloads, but no cadastral parcel vector service or stable parcel identifiers.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

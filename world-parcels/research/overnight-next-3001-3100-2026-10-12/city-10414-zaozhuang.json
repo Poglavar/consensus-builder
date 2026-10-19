@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-12",
+  "wupCityCode": 10414,
+  "queueRank": 3051,
+  "name": "Zaozhuang",
+  "country": "China",
+  "countryCode": "CN",
+  "cityId": "wup2025:10414",
+  "point": [34.7922126249268, 117.264970587743],
+  "population2025": 196109,
+  "population2025k": 196.109,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zaozhuang China official cadastral map parcel land registry GIS Natural Resources Bureau",
+        "result": "First-party discovery identified the Zaozhuang municipal government, the Zaozhuang Natural Resources and Planning Bureau, and the Zaozhuang government-services department hall. The official bureau site links real-estate registration notices and a government-services entry, but no public anonymous parcel feature service was identified.",
+        "actualResultUrls": [
+          "http://www.zaozhuang.gov.cn/",
+          "http://szrzyhghj.zaozhuang.gov.cn/",
+          "http://zzzwfw.sd.gov.cn/zz/department/departmentHall/departmentHallInfo?id=ZZ370400GT"
+        ]
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "枣庄市 不动产登记 地籍图 地图 服务 官方 自然资源局",
+        "result": "First-party discovery confirmed 枣庄市自然资源和规划局 as the local institutional custodian and found the bureau's 不动产登记 section with current registration-publicity notices. The Shandong government-services department hall provides a public service listing, but the inspected anonymous pages exposed no safe parcel ID plus geometry response or public cadastral API.",
+        "actualResultUrls": [
+          "http://szrzyhghj.zaozhuang.gov.cn/",
+          "http://szrzyhghj.zaozhuang.gov.cn/bdcgg/",
+          "http://zzzwfw.sd.gov.cn/zz/department/departmentHall/departmentHallInfo?id=ZZ370400GT"
+        ]
+      }
+    ],
+    "officialLeads": [
+      {
+        "url": "http://szrzyhghj.zaozhuang.gov.cn/",
+        "operator": "Zaozhuang Municipal Natural Resources and Planning Bureau",
+        "evidence": "Official municipal bureau home page; navigation identifies 不动产登记 and publishes registration notices."
+      },
+      {
+        "url": "http://zzzwfw.sd.gov.cn/zz/department/departmentHall/departmentHallInfo?id=ZZ370400GT",
+        "operator": "Shandong Government Services Network, Zaozhuang Natural Resources department hall",
+        "evidence": "Official department hall for the city's natural-resources bureau with service-navigation markup; the inspected page is a procedural/service entry, not an open parcel geometry layer."
+      },
+      {
+        "url": "http://www.zaozhuang.gov.cn/",
+        "operator": "Zaozhuang Municipal People's Government",
+        "evidence": "Official city portal links the municipal natural-resources bureau and the Zaozhuang government-services network."
+      }
+    ]
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.zaozhuang.gov.cn/",
+      "method": "GET via public web discovery; TLS-verified curl",
+      "status": "HTTP 000; certificate hostname mismatch",
+      "summary": "The HTTPS endpoint was not used further because TLS verification failed; no certificate exception was authorized."
+    },
+    {
+      "url": "http://www.zaozhuang.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official city portal loaded and exposed links to the municipal natural-resources bureau and government-services network."
+    },
+    {
+      "url": "http://szrzyhghj.zaozhuang.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official bureau home loaded. Its HTML exposed the 不动产登记 navigation and registration-publicity section, but no parcel viewer JavaScript, service URL, layer schema, CRS, or anonymous geometry endpoint."
+    },
+    {
+      "url": "http://zzzwfw.sd.gov.cn/zz/department/departmentHall/departmentHallInfo?id=ZZ370400GT",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official department-hall page loaded. It exposed service-page JavaScript and procedural navigation only; no safe parcel ID plus geometry response was obtained and no form was submitted."
+    },
+    {
+      "url": "http://bdcdj.zrzyhghj.zaozhuang.gov.cn/",
+      "method": "GET",
+      "status": "DNS resolution failed",
+      "summary": "A guessed cadastral subdomain was not resolved; this is not evidence of cadastral absence."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Zaozhuang municipal natural-resources and real-estate-registration custody and public service procedures.",
+    "verifiedOpenScope": "Local institutional custody and registration-publicity/service pages only; no open parcel geometry coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_verified_open_parcel_geometry",
+  "sourceFields": null,
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "verifiedSample": false,
+  "sourceIds": [],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [34.7922126249268, 117.264970587743] was preserved; no exact-point hit/miss inference was made.",
+    "Official custody and registration-publicity notices do not establish an anonymous parcel API or citywide open coverage.",
+    "No parcel polygon, stable native parcel identity, source schema, or CRS was retrieved or retained.",
+    "A certificate error, DNS failure, inaccessible viewer, map extent miss, timeout, login wall, or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current parcel viewer/API route, if any, layer schema, CRS, stable native parcel identity, citywide coverage, and anonymous runtime accessibility remain unresolved. No claim is made about parcel absence, legal title, ownership, or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

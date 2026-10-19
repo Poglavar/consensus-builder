@@ -1,0 +1,99 @@
+{
+  "cityRecord": "city-5067-sunderland.json",
+  "cityCode": 5067,
+  "queueRank": 3295,
+  "city": "Sunderland",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "reviewStatus": "held",
+  "reviewOutcome": "Official Sunderland council mapping and ownership pages and HM Land Registry INSPIRE cadastral source were identified. No anonymous ID-plus-geometry parcel response was verified, so no sample GeoJSON was retained. The packet is complete as discovery evidence and held from runtime qualification.",
+  "queryAndRequestOutcomes": {
+    "headers": {
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/131.0 Safari/537.36",
+      "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 (HTML) or text/xml,application/xml;q=0.9,*/*;q=0.8 (service requests)",
+      "acceptLanguage": "en-GB,en;q=0.9"
+    },
+    "attempts": [
+      {
+        "url": "https://www.sunderland.gov.uk/article/15997/Interactive-Maps?ccp=true",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official council page lists planning, brownfield, SHLAA and greenspace interactive maps; no cadastral parcel layer or public parcel API was exposed in the inspected HTML."
+      },
+      {
+        "url": "https://www.sunderland.gov.uk/article/12669/Ownership-Queries?ccp=true",
+        "method": "GET/search result",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official council guidance says its maps cover council-owned land only and directs private-boundary questions to HM Land Registry; this is a custodian/scope statement, not parcel geometry."
+      },
+      {
+        "url": "https://arcgis.sunderland.gov.uk/arcgis/rest/services?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Official Sunderland ArcGIS REST root responded and exposed council map-service folders. Inspected folders were empty or contained base/planning services; no parcel/cadastral service was identified."
+      },
+      {
+        "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&REQUEST=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "assessment": "Verified public WMS capabilities advertising inspire:CP.CadastralParcel and EPSG:27700/3035/900913/CRS:84. The parcel layer is non-queryable."
+      },
+      {
+        "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WFS&REQUEST=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "assessment": "Response was an OWS ServiceUnavailable exception stating WFS is disabled; no parcel records returned."
+      },
+      {
+        "url": "https://inspire.landregistry.gov.uk/inspire/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetFeatureInfo&LAYERS=inspire:CP.CadastralParcel&QUERY_LAYERS=inspire:CP.CadastralParcel&CRS=CRS:84&BBOX=-1.4075,54.9013,-1.4043,54.9033&WIDTH=10&HEIGHT=10&I=5&J=5&INFO_FORMAT=application/vnd.ogc.gml&FEATURE_COUNT=3",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "assessment": "Bounded anonymous probe around the exact WUP point returned LayerNotQueryable/no parcel feature. This is a service limitation and not evidence of citywide absence."
+      },
+      {
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "method": "GET",
+        "httpStatus": "302 redirect loop",
+        "contentType": "text/html",
+        "assessment": "Official download catalogue advertises Sunderland City Council as a GML local-authority file. Anonymous request redirected to the same route under Cloudflare; no file downloaded and no challenge bypass attempted."
+      },
+      {
+        "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+        "method": "GET/search result",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official National Data Library metadata confirms HM Land Registry publisher, Open Government Licence, local-authority splits, and INSPIRE download/WMS links; metadata only, no parcel geometry retained."
+      }
+    ]
+  },
+  "cityOrLocalCustodian": "HM Land Registry is the evidenced cadastral custodian. Sunderland City Council is evidenced as a local mapping publisher/consumer, but its own ownership guidance limits its maps to council-owned land and no separate public cadastral parcel API was exposed.",
+  "schemaAndCrs": {
+    "serviceSchema": "WMS 1.3.0 capabilities XML",
+    "parcelLayer": "inspire:CP.CadastralParcel",
+    "advertisedCrs": ["EPSG:27700", "EPSG:3035", "EPSG:900913", "CRS:84"],
+    "nativeFieldMapping": "Not observed because WFS is disabled and WMS layer is non-queryable.",
+    "nativeIdentity": "Official HM Land Registry documentation describes a Land Registry-INSPIRE ID, but no record was returned in this attempt."
+  },
+  "safeFieldAllowlist": ["stable native Land Registry-INSPIRE ID when returned", "parcel geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"],
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "No citywide completeness claim.",
+    "No exact-point or map-extent absence inference.",
+    "The WUP point is preserved exactly as [54.9022790588835, -1.40594484606918] in latitude/longitude order.",
+    "The official council interactive maps and ArcGIS REST root establish local GIS evidence but not a verified cadastral parcel-record response.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+    "No parcel owner, address, titleholder, personal, tax/account, certificate, or contact fields were requested or retained.",
+    "No parcel sample GeoJSON was retained because no safe native ID-plus-geometry response was verified.",
+    "No registry/catalog/runtime city config, global report, queue/identity ledger, or another city’s files were changed."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "The Sunderland local-authority GML download may provide bounded parcel polygons if the ordinary public route becomes accessible. The current WMS/WFS limitations and download redirect loop are access/service limitations, not evidence of cadastral absence.",
+  "integrationDisposition": "Research packet only; no source integration or admission."
+}

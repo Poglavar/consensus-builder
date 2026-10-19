@@ -1,0 +1,41 @@
+{
+  "cityCode": 4448,
+  "queueRank": 2490,
+  "name": "Linxia",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.59703891698, 103.204231229815],
+  "population2025": 235932,
+  "population2025k": 235.932,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Linxia China official cadastral parcel map GIS natural resources bureau real estate registration",
+        "result": "First-party discovery identified the official Linxia City Natural Resources Bureau information page and the Gansu Tianditu public portal. No anonymous city-bounded parcel-vector service, safe parcel identity response, or downloadable parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://www.lxs.gov.cn/lxs/zwgk/zjdbmxx/bm/lxszrzyj/index.html",
+          "https://linxia.gov.cn/lxz/zwgk/bmxxgkpt/lxzzrzyj/fdzdgknr/ghjhjydxx/index.html",
+          "https://gansu.tianditu.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "临夏市 官方 不动产登记 地籍 地图 宗地 自然资源局",
+        "result": "一方来源确认临夏市自然资源局及临夏州自然资源局政府信息公开页面，并发现甘肃省天地图门户；未验证到无需登录即可返回临夏市安全宗地身份和完整几何的公开接口。",
+        "actualResultUrls": [
+          "https://www.lxs.gov.cn/lxs/zwgk/zjdbmxx/bm/lxszrzyj/index.html",
+          "https://linxia.gov.cn/lxz/zwgk/bmxxgkpt/lxzzrzyj/fdzdgknr/bzdtfw/index.html",
+          "https://gansu.tianditu.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Official local and prefectural natural-resources custodianship is evidenced, but no anonymous parcel geometry, schema, CRS, or stable native parcel identity was obtained. This packet records research completion only and is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "resultCategory": "local_registry_custodian_evidenced_no_anonymous_geometry",
+  "sampleGeoJSON": null
+}

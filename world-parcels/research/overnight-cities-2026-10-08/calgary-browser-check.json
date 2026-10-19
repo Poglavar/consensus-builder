@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T00:11:00Z",
+  "appCityId": "calgary",
+  "sourceId": "ca-calgary-assessment-parcel",
+  "firstAttempt": {
+    "loadedParcels": 0,
+    "parcelApiStatus": 404,
+    "uncaughtPageErrors": 0,
+    "previewDiagnosis": "The prior owned gateway process survived the run-job stop, retaining the previous catalogue. Replacement process could not bind to occupied port5640.",
+    "correction": "Identified the owned preview.mjs process and stopped that specific PID, then restarted gateway. Correct /parcel-sources catalogue contains132providers and Calgary. No app or provider code changed."
+  },
+  "freshAttempt": {
+    "loadedParcels": 263,
+    "visibleParcels": 54,
+    "selectedId": "CA-CALGARY-CPID-590152446",
+    "verification": "Normal parcel layer click then Details button",
+    "uncaughtPageErrors": 0,
+    "detailsIdMatchesSelection": true
+  },
+  "browserClosed": true
+}

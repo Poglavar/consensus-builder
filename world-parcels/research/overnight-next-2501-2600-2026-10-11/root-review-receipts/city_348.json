@@ -1,0 +1,48 @@
+{
+  "taskId": "city:348",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-348-portoviejo.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/portoviejo-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:04:01Z",
+  "identityCheck": {
+    "rank": 2569,
+    "cityCode": 348,
+    "country": "Ecuador",
+    "pointLatLon": [
+      -1.05364692596998,
+      -80.464647231378
+    ],
+    "populationPersons": 228823,
+    "matchedRankedRosterAndPendingQueue": true
+  },
+  "searchCheck": {
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "queriesRecordedWithResultUrls": true
+  },
+  "firstPartyCheck": {
+    "url": "https://online.portoviejo.gob.ec/Manuales/archivos/Paso_a_paso_geoportal.pdf",
+    "finding": "Municipal guide documents lookup by clave predial and a Límite – Predios layer; app configuration was inaccessible and no feature response is retained."
+  },
+  "geometryCheck": {
+    "retainedFullPolygonCount": 0,
+    "nativeParcelIdVerified": false,
+    "safeParcelAttributesVerified": false
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Municipal guide documents lookup by clave predial and a Límite – Predios layer; app configuration was inaccessible and no feature response is retained. No live adapter qualification evidence for fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details-panel verification. The access limits do not establish citywide parcel absence."
+}

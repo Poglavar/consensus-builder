@@ -1,11 +1,11 @@
+// parcels/ui/locate.js — parcel layer toggles, the local parcel-data wipe, and locateParcelById (find a
+// parcel by cadastral id and select it), which the map search box uses for parcel-id results.
 (function (global) {
     'use strict';
 
     const Parcels = global.Parcels || {};
     const uiVisibility = Parcels.uiVisibility || {};
     const uiLabels = Parcels.uiLabels || {};
-    const fetchApi = Parcels.fetch || {};
-    const selectionApi = Parcels.selection || {};
     const uiParcelPanel = Parcels.uiParcelPanel || global.ParcelsUIParcelPanel || {};
 
     const resolveParcelId = (feature) => {
@@ -34,10 +34,8 @@
         const keysToDelete = [];
         for (let i = 0; i < PersistentStorage.length; i++) {
             const key = PersistentStorage.key(i);
-            if (key === 'cadastre_blocks') {
-                continue;
-            }
-            if (key.startsWith('parcel_') ||
+            if (key === 'cadastre_blocks' ||
+                key.startsWith('parcel_') ||
                 key.startsWith('road_') ||
                 key.includes('_geometry') ||
                 key.includes('_properties') ||
@@ -48,38 +46,16 @@
                 count++;
             }
         }
-        keysToDelete.forEach(key => {
-            PersistentStorage.removeItem(key);
-        });
-
-        PersistentStorage.removeItem('modified_parcels');
-
         // Final message shown after clearing
         const clearedMessage = `Cleared ${count} parcel-related items from local storage`;
 
-        if (global.parcelLayer) {
-            global.parcelLayer.clearLayers();
+        if (!global.ProposalManager || typeof global.ProposalManager.releaseCadastralGround !== 'function') {
+            throw new Error('ParcelMutation is unavailable for clearing cadastral ground.');
         }
-        if (typeof global.clearParcelLayerIndex === 'function') {
-            global.clearParcelLayerIndex();
-        }
-        if (global.parcelCache && global.parcelCache.grid) {
-            global.parcelCache.grid.clear();
-        }
-        if (typeof global.ParcelsState?.bumpParcelCoverageVersion === 'function') {
-            global.ParcelsState.bumpParcelCoverageVersion();
-        }
-        try {
-            if (typeof global.dispatchEvent === 'function') {
-                global.dispatchEvent(new CustomEvent('parcelCoverageUpdated', {
-                    detail: {
-                        version: global.parcelCoverageVersion,
-                        source: 'clear',
-                        timestamp: Date.now()
-                    }
-                }));
-            }
-        } catch (_) { }
+        await global.ProposalManager.releaseCadastralGround('local parcel data reset', {
+            storageKeys: keysToDelete
+        });
+        if (typeof blockStorage !== 'undefined' && typeof blockStorage.clear === 'function') blockStorage.clear();
         const clearLabels = uiLabels.clearParcelNumberLabels || global.clearParcelNumberLabels;
         if (typeof clearLabels === 'function') {
             clearLabels();
@@ -118,165 +94,61 @@
         }
     }
 
-    // Parcel locating functionality
-    // Assumes parcelLayer and selectParcel are globally available
-    document.addEventListener('DOMContentLoaded', function () {
-        const locateInput = document.getElementById('locateParcelInput');
-        const locateButton = document.getElementById('locateParcelButton');
-        const locateError = document.getElementById('locateParcelError');
+    // Find a parcel by its cadastral id and select it (which centres the map on it). The search
+    // box (js/ui/map-search.js) calls this for parcel-id results. Resolves to
+    // { ok: true, parcelId } or { ok: false, reason: 'empty' | 'notLoaded' | 'notFound', message }.
+    // `deps` defaults to the page globals; backend/test/parcel-locate.test.js passes fakes.
+    async function locateParcelById(rawValue, deps = global) {
+        const value = String(rawValue == null ? '' : rawValue).trim();
+        if (!value) return { ok: false, reason: 'empty', message: '' };
+        const parcels = deps.Parcels || {};
+        const labels = parcels.uiLabels || {};
+        const selection = parcels.selection || {};
 
-        if (!locateInput || !locateButton || !locateError) {
-            // UI elements not present
-            return;
+        // Parcel ids are what the person is looking for, so show them.
+        const doc = deps.document;
+        const showParcelNumbersCheckbox = doc && typeof doc.getElementById === 'function'
+            ? doc.getElementById('showParcelNumbers')
+            : null;
+        if (showParcelNumbersCheckbox && !showParcelNumbersCheckbox.checked) {
+            showParcelNumbersCheckbox.checked = true;
+            const toggleParcelNumbers = labels.toggleParcelNumbers || deps.toggleParcelNumbers;
+            if (typeof toggleParcelNumbers === 'function') toggleParcelNumbers();
         }
 
-        async function locateParcel() {
-            const value = locateInput.value.trim();
-            locateError.textContent = '';
-            if (!value) return;
-
-            // Ensure the 'Show parcel ids' checkbox is checked
-            const showParcelNumbersCheckbox = document.getElementById('showParcelNumbers');
-            if (showParcelNumbersCheckbox && !showParcelNumbersCheckbox.checked) {
-                showParcelNumbersCheckbox.checked = true;
-                const toggleParcelNumbers = uiLabels.toggleParcelNumbers || global.toggleParcelNumbers;
-                if (typeof toggleParcelNumbers === 'function') {
-                    toggleParcelNumbers();
-                }
-            }
-
-            if (typeof global.parcelLayer === 'undefined' || !global.parcelLayer) {
-                locateError.textContent = t('locateDataNotLoaded', 'Parcel data not loaded');
-                return;
-            }
-
-            const selectParcel = selectionApi.selectParcel || global.selectParcel;
-
-            // 1) Already loaded in the layer — select and centre on it directly.
-            const foundLayer = global.parcelLayer.getLayers().find(layer => {
-                const parcelId = resolveParcelId(layer.feature);
-                return parcelId && parcelId === value;
-            });
-            if (foundLayer) {
-                const parcelId = resolveParcelId(foundLayer.feature);
-                if (typeof selectParcel === 'function' && parcelId) {
-                    selectParcel(parcelId);
-                }
-                return;
-            }
-
-            // 2) Not in memory — fetch it from the backend by id, ingest it, then
-            //    select it. selectParcel centres the map (fitBounds), and that move
-            //    fires the map's moveend handler which loads the surrounding cell.
-            const fetchSingle = fetchApi.fetchSingleParcelById || global.fetchSingleParcelById;
-            if (typeof fetchSingle !== 'function') {
-                locateError.textContent = t('locateNotFound', 'Parcel not found');
-                return;
-            }
-
-            locateError.textContent = t('locateSearching', 'Searching…');
-            locateButton.disabled = true;
-            try {
-                const layer = await fetchSingle(value);
-                const foundId = layer && layer.feature ? (resolveParcelId(layer.feature) || value) : null;
-                if (foundId && typeof selectParcel === 'function') {
-                    selectParcel(foundId);
-                    locateError.textContent = '';
-                } else {
-                    locateError.textContent = t('locateNotFound', 'Parcel not found');
-                }
-            } catch (error) {
-                console.info('[locate] backend lookup failed for', value, error && error.message);
-                locateError.textContent = t('locateNotFound', 'Parcel not found');
-            } finally {
-                locateButton.disabled = false;
-            }
+        if (!deps.LiveParcelFabric || !deps.ParcelPresenter) {
+            return { ok: false, reason: 'notLoaded', message: t('locateDataNotLoaded', 'Parcel data not loaded') };
         }
 
-        locateButton.addEventListener('click', locateParcel);
-        locateInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                locateParcel();
-            }
-        });
-    });
-
-    // Add road checkbox event listener
-    const roadCheckbox = document.getElementById('roadCheckbox');
-    if (roadCheckbox) {
-        roadCheckbox.addEventListener('change', function (e) {
-            if (global.currentParcel) {
-                const wasRoad = global.currentParcel.isRoad;
-                const nextRoadValue = e.target.checked;
-                global.currentParcel.isRoad = nextRoadValue;
-                global.currentParcel.isCorridor = nextRoadValue;
-                if (global.currentParcel.layer && global.currentParcel.layer.feature && global.currentParcel.layer.feature.properties) {
-                    global.currentParcel.layer.feature.properties.isRoad = nextRoadValue;
-                    global.currentParcel.layer.feature.properties.isCorridor = nextRoadValue;
-                }
-
-                // Check if this parcel is part of multi-selection
-                const isMultiSelected = typeof global.multiParcelSelection !== 'undefined' &&
-                    global.multiParcelSelection.isActive &&
-                    global.multiParcelSelection.selectedParcels.has(global.currentParcel.id.toString());
-
-                // Only update appearance if not part of multi-selection
-                if (!isMultiSelected) {
-                    global.currentParcel.layer.setStyle(global.getParcelBaseStyle(global.currentParcel.id, { isRoad: nextRoadValue }));
-                }
-                // If it's multi-selected, keep the multi-selection highlighting
-
-                // Store the road status via centralized helper
-                if (nextRoadValue) {
-                    if (typeof global.addRoadParcel === 'function') global.addRoadParcel(global.currentParcel.id);
-                } else {
-                    if (typeof global.removeRoadParcel === 'function') global.removeRoadParcel(global.currentParcel.id);
-                    // Clean related metadata
-                    PersistentStorage.removeItem(`parcel_${global.currentParcel.id}_roadName`);
-                    PersistentStorage.removeItem(`parcel_${global.currentParcel.id}_roadId`);
-                    PersistentStorage.removeItem(`parcel_${global.currentParcel.id}_roadConfidence`);
-                }
-
-                // Persist corridor flag for future sessions
-                if (typeof global.writePersistedParcelRecord === 'function') {
-                    global.writePersistedParcelRecord(global.currentParcel.id, record => {
-                        record.properties = record.properties || {};
-                        record.properties.isRoad = nextRoadValue;
-                        record.properties.isCorridor = nextRoadValue;
-                    });
-                }
-
-                // Update TOTAL_SPENT based on the parcel's market price
-                const area = global.currentParcel.layer.feature.properties.calculatedArea || 0;
-                const parcelPrice = area * (typeof global.SQM_AVG_PRICE !== 'undefined' ? global.SQM_AVG_PRICE : 0);
-
-                if (nextRoadValue && !wasRoad) {
-                    // Parcel was marked as road - add to total
-                    if (typeof global.TOTAL_SPENT !== 'undefined') global.TOTAL_SPENT += parcelPrice;
-                } else if (!nextRoadValue && wasRoad) {
-                    // Parcel was unmarked as road - subtract from total
-                    if (typeof global.TOTAL_SPENT !== 'undefined') global.TOTAL_SPENT -= parcelPrice;
-                }
-
-                // Update the display
-                if (typeof global.updateTotalSpentDisplay === 'function') {
-                    global.updateTotalSpentDisplay();
-                }
-
-                try {
-                    global.dispatchEvent(new CustomEvent('parcelRoadStatusChanged', {
-                        detail: {
-                            parcelId: global.currentParcel.id,
-                            isRoad: nextRoadValue,
-                            isCorridor: nextRoadValue
-                        }
-                    }));
-                } catch (_) { }
-            }
-        });
+        // Declare the id to the ground service. It decides whether this is a registry hit, an
+        // in-flight join, a known absence, or a server load; locating only resolves the resulting
+        // layer. selectParcel centres the map and loads the surrounding viewport.
+        const ground = deps.CadastralParcelRepository;
+        if (!ground || typeof ground.ensureIds !== 'function') {
+            return { ok: false, reason: 'notFound', message: t('locateNotFound', 'Parcel not found') };
+        }
+        const selectParcel = selection.selectParcel || deps.selectParcel;
+        try {
+            await ground.ensureIds([value]);
+        } catch (error) {
+            console.info(`[${new Date().toISOString()}] [locate] lookup failed for`, value, error && error.message);
+            return { ok: false, reason: 'notFound', message: t('locateNotFound', 'Parcel not found') };
+        }
+        const layer = deps.LiveParcelFabric.get(value) ? deps.ParcelPresenter.getLayer(value) : null;
+        const foundId = layer ? ((deps.ParcelPresenter.getIdForLayer && deps.ParcelPresenter.getIdForLayer(layer)) || value) : null;
+        if (!foundId || typeof selectParcel !== 'function') {
+            return { ok: false, reason: 'notFound', message: t('locateNotFound', 'Parcel not found') };
+        }
+        selectParcel(foundId);
+        return { ok: true, parcelId: foundId };
     }
 
     global.clearLocalParcelData = clearLocalParcelData;
     global.handleParcelLayerChange = handleParcelLayerChange;
-})(typeof window !== 'undefined' ? window : globalThis);
+    global.locateParcelById = locateParcelById;
 
+    // Node: export the locator for its unit test. The browser path above is unchanged.
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = { locateParcelById };
+    }
+})(typeof window !== 'undefined' ? window : globalThis);

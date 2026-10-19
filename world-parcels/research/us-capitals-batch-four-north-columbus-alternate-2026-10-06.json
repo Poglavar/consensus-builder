@@ -1,0 +1,473 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/FeatureServer/0",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "name": "Tax Parcel",
+  "fields": [
+    {
+      "name": "OBJECTID",
+      "type": "esriFieldTypeOID"
+    },
+    {
+      "name": "PARCELID",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "LOWPARCELID",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "BUILDING",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "UNIT",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "STATEDAREA",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "ACRES",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "LGLSTARTDT",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CVTTXCD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CVTTXDSCRP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "SCHLTXCD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "SCHLDSCRP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "NBHDCD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "AUDMAP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "AUDRTG",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CLASSCD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CLASSDSCRP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "SITEADDRESS",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "ZIPCD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PRPRTYDSCRP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PRPRTYDSCRP2",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PRPRTYDSCRP3",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CNVYNAME",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "OWNERNME1",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "OWNERNME2",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "OWNERNME3",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "MAILNME1",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "MAILNME2",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "SALEDATE",
+      "type": "esriFieldTypeDate"
+    },
+    {
+      "name": "SALEPRICE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PSTLNME1",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PSTLNME2",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PSTLADDRES",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PSTLCITYSTZIP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CAUV",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "OWNEROCCUPIED",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "HOMSTD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "RENTAL",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "FLOOD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PCLASS",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "USECD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PCLASSDSCRP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "FLOORCOUNT",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "RESFLRAREA_AG",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "RESFLRAREA_BG",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "RESFLRAREA",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "RESYRBLT",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "RESYRBLTEFF",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "RESSTRTYP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CLASSMOD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "NOCARDS",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "ATTIC",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "BASEMENT",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "ROOMS",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "BATHS",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "HBATHS",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "BEDRMS",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "FIREPLC",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "AIRCOND",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "WALL",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "COND",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "GRADE",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "HEIGHT",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "BLDTYP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "BLDGAREA",
+      "type": "esriFieldTypeInteger"
+    },
+    {
+      "name": "STRCLASS",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PROPTYP",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "LNDVALUEBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "BLDVALUEBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "TOTVALUEBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "CAUVLNDBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "TIFLUC",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "LNDVALUETIF",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "BLDVALUETIF",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "TOTVALUETIF",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "EXPLUC",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "LNDVALUEEXP",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "BLDVALUEEXP",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "TOTVALUEEXP",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_CLASSCD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PR_LNDVALUEBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_BLDVALUEBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_TOTVALUEBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_CAUVLNDBASE",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_TIFLUC",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PR_LNDVALUETIF",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_BLDVALUETIF",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_TOTVALUETIF",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_EXPLUC",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PR_LNDVALUEEXP",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_BLDVALUEEXP",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PR_TOTVALUEEXP",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "CNTTXBLVAL",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PRVTXBLVAL",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "ASSDVALYRCG",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "ASSDPCNTCG",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "TXBLVALYRCHG",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "TXBLPCNTCHG",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "PRVWNTTXOD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "PRVSMRTXOD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "TOTPRVTXTOD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CNTWNTTXOD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "CNTSMRTXOD",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "TOTCNTTXOD",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "TXODYRCHG",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "TXODPCNTCHG",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "WATERSERV",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "SEWERSERV",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "X_COORD",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "Y_COORD",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "LASTUPDATE",
+      "type": "esriFieldTypeDate"
+    },
+    {
+      "name": "VALID",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "Shape__Area",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "Shape__Length",
+      "type": "esriFieldTypeDouble"
+    },
+    {
+      "name": "LEASE",
+      "type": "esriFieldTypeString"
+    },
+    {
+      "name": "GUID",
+      "type": "esriFieldTypeGUID"
+    }
+  ]
+}

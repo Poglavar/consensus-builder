@@ -1,0 +1,29 @@
+{
+  "taskId": "city:4161",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-4161-diepsloot.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/diepsloot-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/root-review-receipts/source-evidence/city_4161-root-review.json"
+  ],
+  "checkedAt": "2026-10-12T01:38:34.216834Z",
+  "city": "Diepsloot",
+  "queueRank": 3044,
+  "registryFound": true,
+  "identityCheck": "Matches pending queue, ranked roster, and verified original WUP 2025 bulk CSV row; population converted from thousands to persons.",
+  "searchCheck": "English and local-language executed queries with actual result URLs recorded in the paired packet.",
+  "polygonCheck": "Zero retained polygons; no parcel ID or geometry response accepted.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "First-party layer schemas are available, but the Planning_Cadastre point query timed out, the CSG point response is empty, and the bounded CSG window returned an error. No safe parcel geometry or independent runtime qualification is evidenced; these observations do not prove citywide absence.",
+  "scopeLimit": "Research completion is not runtime admission; no citywide coverage or absence inferred."
+}

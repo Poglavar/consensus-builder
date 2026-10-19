@@ -1,0 +1,25 @@
+{
+  "taskId": "city:11319",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-11319-alauli.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/alauli-service-review.json",
+    "tmp/valhalla-parcel-research/11319/alauli-surveys.json"
+  ],
+  "checkedAt": "2026-10-11T22:51:02Z",
+  "reason": "WUP 2025 archive, rank, country, point and 204361 persons agree with the immutable queue and packet. English and Hindi searches with result URLs are recorded. Official Bihar BhuNaksha hierarchy and saved Alauli survey/map/sheet response support a local registry route; reported bounded plot lookup exposed no polygon. Reported WMS 500 and ScalarDatahandler 401 are route/access limits, not citywide absence. No full polygon, qualified safe parcel identity, or independent adapter qualification exists.",
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "observedBoundedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

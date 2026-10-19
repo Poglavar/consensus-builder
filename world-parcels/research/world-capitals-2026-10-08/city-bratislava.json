@@ -1,0 +1,199 @@
+{
+  "cityId": "capital:SK:bratislava",
+  "name": "Bratislava",
+  "country": "Slovakia",
+  "countryCode": "SK",
+  "centerLatLon": [
+    48.15,
+    17.116667
+  ],
+  "capitalRole": "primary",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08T18:16:02.689645+00:00",
+  "executedQueries": [
+    {
+      "query": "Bratislava cadastral parcels WFS public download",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Bratislava kataster parcely WFS otvorené údaje",
+      "language": "Slovak",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer",
+      "observation": "City ArcGIS service exposes the C-register parcel layer."
+    },
+    {
+      "url": "https://bratislava.sk/en/mesto-bratislava/transparentne-mesto/majetok-mesta/nehnutelny-majetok",
+      "observation": "Municipal property information links the geographic land/property context."
+    }
+  ],
+  "requests": [
+    {
+      "name": "bratislava-combined",
+      "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer?f=json",
+      "checkedAt": "2026-10-08T17:58:12.382Z",
+      "bytes": 4154,
+      "elapsedMs": 723,
+      "contentType": "application/json; charset=UTF-8",
+      "layers": [
+        {
+          "id": 0,
+          "name": "parcela E",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 5000,
+          "maxScale": 0,
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        },
+        {
+          "id": 1,
+          "name": "parcela C",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 5000,
+          "maxScale": 0,
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "httpStatus": 200
+    },
+    {
+      "name": "bratislava-layer",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1?f=json",
+      "checkedAt": "2026-10-08T18:01:01.137Z",
+      "bytes": 13564,
+      "contentType": "application/json; charset=UTF-8",
+      "geometryType": "esriGeometryPolygon",
+      "httpStatus": 200
+    },
+    {
+      "name": "bratislava-service",
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer?f=json",
+      "checkedAt": "2026-10-08T17:58:12.380Z",
+      "bytes": 2562,
+      "elapsedMs": 722,
+      "contentType": "application/json; charset=UTF-8",
+      "layers": [
+        {
+          "id": 1,
+          "name": "Parcely registra C",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 10000,
+          "maxScale": 0,
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon",
+          "supportsDynamicLegends": true
+        }
+      ],
+      "httpStatus": 200
+    },
+    {
+      "url": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1/query?where=1%3D1&geometry=17.108%2C48.143%2C17.11%2C48.145&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cfind_pc%2Cku%2Ccpa_text%2Ccpa%2Cpec%2Cdrp%2Cump&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+      "method": "GET",
+      "params": {
+        "where": "1=1",
+        "geometry": "17.108,48.143,17.11,48.145",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "objectid,find_pc,ku,cpa_text,cpa,pec,drp,ump",
+        "returnGeometry": "true",
+        "outSR": "4326",
+        "resultRecordCount": "3",
+        "f": "geojson"
+      },
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:01:43.357Z",
+      "contentType": "application/geo+json; charset=UTF-8",
+      "outcome": "Three nonpersonal Polygon/MultiPolygon features retained in bratislava-safe-sample.json"
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "C-register cadastral polygons with cadastral district and parcel numbers returned in central Bratislava.",
+  "registryEvidenceUrls": [
+    "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer",
+    "https://bratislava.sk/en/mesto-bratislava/transparentne-mesto/majetok-mesta/nehnutelny-majetok"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "sk-bratislava-register-c"
+  ],
+  "sourceCandidate": {
+    "url": "https://geoportal.bratislava.sk/hsite/rest/services/up/Kataster_UPN/FeatureServer/1",
+    "publisher": "City of Bratislava geoportal",
+    "safeSampleFile": "bratislava-safe-sample.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "C-register parcel layer only; E-register polygons are a separate potentially overlapping layer.",
+    "verifiedOpenScope": "C-register parcel layer only; E-register polygons are a separate potentially overlapping layer.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Native find_pc and ku/cpa_text references need duplicate and exact lookup checks; no owner/title-deed fields requested.",
+  "runtimeReadiness": "held_quality_review",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "retainedSampleCount": 3,
+    "geometryTypes": [
+      "Polygon"
+    ],
+    "responseFile": "research/world-capitals-2026-10-08/bratislava-safe-sample.json",
+    "sourceGeometryDiagnosis": {
+      "summary": "The self-intersection is already present in the source-coordinate geometry and persists after reprojection on both services. The two service versions are slightly different at coordinates, but both encode the same invalidity. This is a source-geometry quality issue, not introduced by outSR=4326.",
+      "diagnosticRawResponses": "/tmp/world-capitals-2026-10-08/source-geometry-diagnostics.json",
+      "queryEndpoint": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1",
+      "details": {
+        "service": "https://geoportal.bratislava.sk/hSite/rest/services/up/Parcely_registra_C/MapServer/1",
+        "exactTarget": {
+          "objectid": 205125,
+          "ku": "Staré Mesto",
+          "cpa_text": "61/1",
+          "pec": 439,
+          "drp": 13,
+          "ump": 1
+        },
+        "comparison": "Fresh exact reads from MapServer/1 (current diagnostic source) and FeatureServer/1 (accepted alternative); both return the same OID/ref and 57 vertices in each native/outSR4326/GeoJSON variant.",
+        "oldMapServer": {
+          "nativeWKID": 102100,
+          "valid": false,
+          "reason": "Ring Self-intersection",
+          "nativeAreaM2": 4032.381695,
+          "out4326TransformedBackAreaM2": 4032.381695,
+          "invalidityPersistsAfterTransform": true
+        },
+        "acceptedFeatureServer": {
+          "nativeWKID": 102100,
+          "valid": false,
+          "reason": "Ring Self-intersection",
+          "nativeAreaM2": 4032.381699,
+          "out4326TransformedBackAreaM2": 4032.381699,
+          "invalidityPersistsAfterTransform": true
+        },
+        "finding": "The self-intersection is already present in the source-coordinate geometry and persists after reprojection on both services. The two service versions are slightly different at coordinates, but both encode the same invalidity. This is a source-geometry quality issue, not introduced by outSR=4326."
+      }
+    }
+  },
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "C-register parcel Staré Mesto 61/1 self-intersects in native coordinates on both municipal services. Original MapServer counts are also inconsistent; the alternate FeatureServer passes protocol but retains the invalid shape.",
+    "evidenceFile": "research/world-capitals-2026-10-08/bratislava-acceptance.json"
+  },
+  "researchGroup": "europe",
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/bratislava-safe-sample.json"
+}

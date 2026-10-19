@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 82,
+  "city": "Lucknow",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/lucknow.json",
+  "query": {
+    "language": "Hindi",
+    "script": "Devanagari",
+    "text": "लखनऊ भू नक्शा खसरा नक्शा राजस्व विभाग उत्तर प्रदेश सरकारी"
+  },
+  "results": [
+    {
+      "title": "राजस्व परिषद् उत्तर प्रदेश",
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "kind": "official-state-land-records",
+      "note": "Revenue Council lists village map and plot-boundary viewing services; city-specific coverage and vector API not verified."
+    },
+    {
+      "title": "भूलेख उत्तर प्रदेश",
+      "url": "https://upbhulekh.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "State portal describes land records and map links, but provides no evidence in this search for an anonymous machine-readable parcel endpoint."
+    }
+  ],
+  "assessment": "Official Uttar Pradesh land-record services include village maps and plot boundary views; no Lucknow-specific public vector contract was identified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:9717",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Hindi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "लखनऊ भू नक्शा खसरा नक्शा राजस्व विभाग उत्तर प्रदेश सरकारी",
+    "englishQuery": "Lucknow land map, khasra map and Uttar Pradesh Revenue Department",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

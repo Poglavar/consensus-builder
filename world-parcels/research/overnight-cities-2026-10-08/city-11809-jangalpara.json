@@ -1,0 +1,150 @@
+{
+  "name": "Jangalpara",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 906,
+  "point": [
+    22.6559824193104,
+    88.1254586425108
+  ],
+  "population2025": 600501,
+  "population2025k": 600.501,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "The official Hooghly health directory identifies Jangalpara as a local place and West Bengal publishes land-record services. A separate primary DILRMP report verifies historical 2018 records for Jangipara tehsil. The different spelling and unbound settlement footprint do not independently establish a Jangalpara-specific registry custodian. Presence remains unestablished, not absent.",
+  "registryEvidenceUrls": [
+    "https://hooghly.gov.in/health-helpline/",
+    "https://banglarbhumi.gov.in/",
+    "https://banglarbhumi.gov.in/BanglarBhumi/Forms",
+    "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/village-level/2388"
+  ],
+  "resultCategory": "state_land_records_locality_evidenced_no_anonymous_geometry_verified",
+  "scopeLimits": "Research uses official public sources and preserves the exact unchanged WUP locator. No owner, address, account, tax, personal-property, credential or token data requested or retained. No citywide completeness asserted.",
+  "remainingUncertainty": "The WUP locator is a population-weighted settlement point, not a mouza/plot identity; exact local mouza and map-sheet coverage were not matched. No anonymous geometry was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jangalpara Hooghly West Bengal official cadastral plot map land records GIS",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry.",
+        "result": "Official Hooghly source identifies a Jangalpara PHC; West Bengal Banglarbhumi lists plot, RoR, plot-map and mouza-map services but gates citizen services behind login. No public parcel-vector API found.",
+        "actualResultUrls": [
+          "https://hooghly.gov.in/health-helpline/",
+          "https://banglarbhumi.gov.in/",
+          "https://banglarbhumi.gov.in/BanglarBhumi/Forms",
+          "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3"
+        ],
+        "executionMethod": "English-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      },
+      {
+        "language": "Bengali",
+        "query": "জঙ্গলপাড়া হুগলি জমির মানচিত্র ভূমি রেকর্ড সরকার পশ্চিমবঙ্গ",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry in a local language.",
+        "result": "হুগলি জেলার সরকারি স্বাস্থ্য-তালিকায় জঙ্গলপাড়া PHC আছে। পশ্চিমবঙ্গের সরকারি Banglarbhumi-তে প্লট ও মৌজা মানচিত্রের পরিষেবা আছে, তবে নাগরিক মানচিত্র অনুরোধে লগইন লাগে; কোনো উন্মুক্ত parcel-vector API শনাক্ত হয়নি।",
+        "actualResultUrls": [
+          "https://hooghly.gov.in/health-helpline/",
+          "https://banglarbhumi.gov.in/",
+          "https://banglarbhumi.gov.in/BanglarBhumi/Forms",
+          "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://hooghly.gov.in/health-helpline/",
+        "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+      },
+      {
+        "url": "https://banglarbhumi.gov.in/",
+        "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+      },
+      {
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/Forms",
+        "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+      },
+      {
+        "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+        "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://banglarbhumi.gov.in/",
+        "method": "GET official West Bengal land-record portal",
+        "result": "Lists RS-LR plot information, plot-map and mouza-map requests, with “Please Login” for citizen services; no account or property lookup attempted."
+      },
+      {
+        "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+        "method": "GET official West Bengal UDMA service procedure",
+        "result": "Requires OTP-based citizen registration, district, block/BLLRO office, mouza and plot/khatian for Know Your Property. Stopped before any account, plot or property input."
+      },
+      {
+        "url": "https://hooghly.gov.in/health-helpline/",
+        "method": "GET official Hooghly district health directory",
+        "result": "Lists Jangalpara PHC, supporting locality binding; not a cadastral source."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-11809-jangalpara-cadastre-review",
+    "name": "West Bengal Land & Land Reforms Department Banglarbhumi / Hooghly locality",
+    "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+    "operator": "India",
+    "serviceType": "Official plot and mouza-map request/record system; map copies are request services and Know Your Property viewing requires OTP registration.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native feature identity and geometry at the WUP point were not verified."
+  },
+  "wupCityCode": 11809,
+  "cityId": "wup2025:11809",
+  "queueRank": 906,
+  "centerLatLon": [
+    22.6559824193104,
+    88.1254586425108
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research packet only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified.",
+    "verifiedOpenScope": "No parcel geometry verified at the exact WUP settlement point.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "discoveryRegistryAssessment": {
+    "registryFound": true,
+    "registryBasis": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+  },
+  "rootRegistryDecisionNote": "No name/locator substitution was made. National/state record pathways and a PHC name alone do not establish an exact local custodian.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research packet only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://hooghly.gov.in/health-helpline/",
+    "fetch": "error",
+    "reason": "HTTP Error 503: Service Temporarily Unavailable"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

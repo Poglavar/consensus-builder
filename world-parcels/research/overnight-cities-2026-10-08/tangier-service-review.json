@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3888-tangier.json",
+  "purpose": "Document first-party city-specific registry evidence and bounded anonymous parcel geometry/schema review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted.",
+  "registryAssessment": "ANCFCC’s official office directory lists cadastral and land-conservation offices in Tanger and Tanger Bani Makada; this is direct city-specific registration/survey service evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "observation": "ANCFCC’s official office directory lists both Conservation Foncière and Cadastre offices in Tanger and Tanger Bani Makada."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "observation": "Official online cadastral-plan request form is indexed with a title-number field; page reader returned 403. No title number was used."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/cadastre/",
+      "observation": "ANCFCC describes its statutory role in land registration, cadastre and cartography."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+      "observation": "Official Arabic product page defines cadastral plans and map sheets for registered and pending registered properties, but exposes no anonymous map API."
+    },
+    {
+      "url": "https://aut.gov.ma/services/",
+      "observation": "Agence Urbaine de Tanger describes its urban-planning geoportal as displaying Tangier wilaya boundaries, document study areas and planning-document progress; this is not cadastral geometry."
+    },
+    {
+      "url": "https://aut.gov.ma/pa/",
+      "observation": "Official published planning documents include Tangier arrondissement plans and planning boundaries; no parcel-vector schema is offered."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tangier official cadastral map parcels Morocco ANCFCC cadastre Tanger urban agency GIS",
+      "result": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    },
+    {
+      "language": "Arabic",
+      "query": "طنجة خريطة عقارية المسح العقاري المحافظة العقارية طنجة الأنكفك",
+      "result": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://aut.gov.ma/services/",
+      "method": "GET official local geoportal/service description",
+      "httpStatus": 200,
+      "observation": "The geoportal’s documented layers are urban-planning documents and their study/boundary status; it does not claim title-cadastre polygons."
+    },
+    {
+      "url": "https://aut.gov.ma/pa/",
+      "method": "GET official planning-document index",
+      "httpStatus": 200,
+      "observation": "Published plans cover Tanger urban planning areas; they are planning documents, not parcel boundaries."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "method": "GET official cadastral-plan request page",
+      "httpStatus": 403,
+      "observation": "Page reader was denied; indexed public form description indicates a title-number field. No form submitted or private parcel queried."
+    },
+    {
+      "url": "https://portail.aut.gov.ma/",
+      "method": "GET official AUT client portal",
+      "httpStatus": 200,
+      "observation": "Portal landing page is a client/login shell; no anonymous parcel geometry endpoint was visible."
+    }
+  ],
+  "geometryEvidence": null,
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

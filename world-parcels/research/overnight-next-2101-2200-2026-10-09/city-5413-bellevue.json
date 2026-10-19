@@ -1,0 +1,89 @@
+{
+  "cityCode": 5413,
+  "queueRank": 2176,
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [47.6694577413674, -122.166399898028],
+  "population2025": 267696,
+  "population2025k": 267.696,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bellevue Washington official parcel map GIS assessor property map",
+        "result": "Found City of Bellevue GIS/Open Data pages, the Bellevue Map Viewer, and King County's official parcel viewer and assessor map references. The City GIS page says property-boundary data is available through the Bellevue Open Data Portal and Map Viewer.",
+        "actualResultUrls": [
+          "https://bellevuewa.gov/city-government/departments/ITD/maps-gis/gis-data",
+          "https://data.bellevuewa.gov/",
+          "https://kingcounty.gov/en/dept/kcit/data-information-services/gis-center/maps-apps/parcel-viewer"
+        ]
+      },
+      {
+        "language": "English (local/native language)",
+        "query": "Bellevue Washington official cadastral parcel data GIS",
+        "result": "The United States local/native-language variant is English. It found the City of Bellevue public ArcGIS parcel service and official City GIS documentation; no separate non-English cadastral custodian was evidenced.",
+        "actualResultUrls": [
+          "https://bellevuewa.gov/city-government/departments/ITD/maps-gis/gis-data",
+          "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer/2",
+          "https://www.arcgis.com/sharing/rest/search?q=orgid%3AEYzEZbDhXZjURPbP%20(parcel%20OR%20property%20OR%20boundary)&f=json"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "name": "City of Bellevue Enterprise Property Parcels ArcGIS MapServer",
+    "custodian": "City of Bellevue, Washington",
+    "role": "Local municipal GIS parcel-map custodian; King County is the county assessment/map authority referenced by the City's public GIS pages.",
+    "serviceUrl": "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer",
+    "layerUrl": "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer/2",
+    "layerName": "Parcels",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "EPSG:3857 (service metadata WKID 102100; latestWkid 3857)",
+    "nativeIdentity": "OBJECTID (OID); ParcelAFN is an additional source parcel identifier",
+    "safeFieldAllowlist": ["OBJECTID", "ParcelAFN", "Shape"],
+    "unsafeFieldsNotRequested": ["COBParcelAddress", "TaxpayerAddress", "KCSiteAddress", "TaxPayerMailCity", "TaxPayerMailState", "TaxPayerMailZipcode", "AppraisedImprovementsValue", "AppraisedLandValue", "AppraisedTotalValue"]
+  },
+  "attempts": [
+    {
+      "route": "City of Bellevue GIS/Open Data documentation and portal",
+      "outcome": "Succeeded; official City GIS documentation identified the Bellevue Open Data Portal and Bellevue Map Viewer as public sources for property-boundary data.",
+      "urls": ["https://bellevuewa.gov/city-government/departments/ITD/maps-gis/gis-data", "https://data.bellevuewa.gov/", "https://cobgis.maps.arcgis.com/"]
+    },
+    {
+      "route": "Official ArcGIS Online organization search",
+      "outcome": "Succeeded; organization search identified the Bellevue Enterprise Property Parcels service and layer.",
+      "url": "https://www.arcgis.com/sharing/rest/search?q=orgid%3AEYzEZbDhXZjURPbP%20(parcel%20OR%20property%20OR%20boundary)&f=json"
+    },
+    {
+      "route": "ArcGIS REST layer metadata GET with f=pjson",
+      "outcome": "Succeeded; polygon layer, schema, service extent, query capability, and native WKID 102100/latestWkid 3857 were observed. The layer contains address, taxpayer, valuation, and other unsafe fields; these were not requested or retained.",
+      "url": "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer/2?f=pjson"
+    },
+    {
+      "route": "Anonymous exact-point intersects query at the immutable WUP point, inSR=4326, outFields=OBJECTID,ParcelAFN, returnGeometry=true, outSR=4326, f=geojson",
+      "outcome": "Succeeded with zero features. This is an exact-point miss only and is not evidence of citywide absence; the coordinate was not shifted.",
+      "url": "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer/2/query"
+    },
+    {
+      "route": "Anonymous bounded envelope query around central Bellevue, inSR=4326, outFields=OBJECTID,ParcelAFN, returnGeometry=true, outSR=4326, resultRecordCount=3, f=geojson",
+      "outcome": "Succeeded; three full parcel polygons were returned in a temporary ignored response cache. No sample GeoJSON was retained because sampling is optional and source-specific attributes were not needed in the packet.",
+      "url": "https://gis-web.bellevuewa.gov/gisext/rest/services/Enterprise/Property/MapServer/2/query"
+    }
+  ],
+  "qualification": {
+    "citywideCoverage": "The official service metadata extent and municipal GIS documentation support a Bellevue parcel layer, but this audit did not download or independently validate the complete citywide dataset or city-boundary clipping.",
+    "identityProvenance": "OBJECTID is the service's native OID and ParcelAFN is a source parcel identifier; no synthetic row number was used. No identity was copied into retained GeoJSON because no sample was retained.",
+    "geometryProvenance": "The bounded response was requested from the official Bellevue service with outSR=4326 and full polygon geometry; raw response remains only under ignored tmp/valhalla-parcel-research/.",
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": [
+      "The exact WUP point returned zero parcel features; this may reflect a road, water, boundary, or point-on-edge location and does not establish citywide absence.",
+      "The service schema includes fields that could expose address, taxpayer, and valuation information; those fields were explicitly excluded.",
+      "No adapter integration, source admission, login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe owner/address/title/tax request was used.",
+      "Packet completion records research outcomes only and does not constitute source integration or admission."
+    ]
+  }
+}

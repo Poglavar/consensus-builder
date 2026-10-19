@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 96,
+  "city": "Harbin",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/harbin.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "哈尔滨 地籍宗地 不动产 GIS 数据开放 服务 矢量"
+  },
+  "results": [],
+  "assessment": "Bounded Chinese-language screening did not return an authoritative open parcel feature service or vector dataset for Harbin. This does not assert that no source exists.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

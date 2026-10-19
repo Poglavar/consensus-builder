@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11442",
+  "cityCode": 11442,
+  "wupCityCode": 11442,
+  "name": "Xuancheng",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "rank": 1545,
+  "queueRank": 1545,
+  "point": [30.9435765547259, 118.752260734183],
+  "centerLatLon": [30.9435765547259, 118.752260734183],
+  "pointBasis": "Exact WUP2025 point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 369529,
+  "population2025k": 369.529,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Xuancheng Natural Resources and Planning Bureau identifies the municipal Real Estate Registration Center as responsible for unified registration of land, housing, forest land and contracted land within the city district, and for maintaining the basic real-estate information platform. This establishes local registry custody, not anonymous parcel-vector availability.",
+  "registryEvidenceUrls": [
+    "https://zrzyghj.xuancheng.gov.cn/News/show/1061899.html",
+    "https://zrzyghj.xuancheng.gov.cn/News/show/1679350.html",
+    "https://gxs.xuancheng.gov.cn/News/show/1506144.html"
+  ],
+  "verifiedSample": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official bureau pages and the official Tianditu announcement were reachable anonymously, but the inspected HTML exposed no current map JavaScript/configuration, public parcel feature service, schema, CRS, stable native parcel identity, or safe ID-plus-complete-polygon response. The national Tianditu host returned HTTP 418 and the Xuancheng-linked public page did not expose a service URL. No credentials, CAPTCHA/Cloudflare bypass, certificate exception, private token or unsafe property query was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_service_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Official Xuancheng registry-custodian pages, official Tianditu announcement, official bureau site HTML, and bounded anonymous public map-host requests reviewed.",
+    "verifiedOpenScope": "Local registry custody and a public natural-resource map platform are evidenced; parcel geometry, native identity, CRS and schema are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xuancheng China official cadastral parcel map GIS land registration natural resources bureau",
+        "result": "First-party results identified the Xuancheng Natural Resources and Planning Bureau, the municipal Real Estate Registration Center, and the official notice describing Xuancheng Tianditu natural-resource thematic layers. No anonymous parcel feature endpoint or safe polygon response was identified.",
+        "actualResultUrls": [
+          "https://zrzyghj.xuancheng.gov.cn/News/show/1061899.html",
+          "https://zrzyghj.xuancheng.gov.cn/News/show/1679350.html",
+          "https://gxs.xuancheng.gov.cn/News/show/1506144.html"
+        ],
+        "executionMethod": "Separate English web search followed by first-party page inspection."
+      },
+      {
+        "language": "native/local",
+        "query": "宣城 官方 不动产登记 地籍图 宗地 地图 自然资源局",
+        "result": "中文检索到宣城市自然资源和规划局、宣城市不动产登记中心及宣城天地图自然资源专题公告；公开页面未提供可验证的匿名宗地要素接口、字段模式、坐标参考系或安全宗地几何响应。",
+        "actualResultUrls": [
+          "https://zrzyghj.xuancheng.gov.cn/News/show/1061899.html",
+          "https://zrzyghj.xuancheng.gov.cn/News/show/1679350.html",
+          "https://zrzyghj.xuancheng.gov.cn/News/show/1415518.html"
+        ],
+        "executionMethod": "Separate Chinese-language web search followed by first-party page inspection."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "No safe anonymous parcel polygon or native parcel ID was returned. The bounded inspection does not prove cadastral absence or citywide noncoverage; current viewer network configuration, parcel schema, CRS, stable identity, safe field availability and geometry availability remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a current official Xuancheng/AH Tianditu or cadastral public network flow. Do not enable runtime from this packet alone."
+}

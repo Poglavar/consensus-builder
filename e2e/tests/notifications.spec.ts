@@ -6,27 +6,15 @@ import { waitForMapReady } from '../helpers/app';
  */
 
 test.describe('Notification and alert system @features', () => {
-  test('showStyledAlert function exists', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        exists: typeof w.showStyledAlert === 'function',
-      };
-    });
-
-    test.skip(!result.exists, 'showStyledAlert not loaded');
-    expect(result.exists).toBe(true);
-  });
+  // Two existence checks (`typeof showStyledAlert`, `typeof updateStatus`) were dropped from this
+  // file — both functions are called for real by the tests that remain.
 
   test('showStyledAlert creates overlay and dialog', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
     const hasFunction = await page.evaluate(() => typeof (window as any).showStyledAlert === 'function');
-    test.skip(!hasFunction, 'showStyledAlert not loaded');
+
 
     // Fire the alert — it returns a promise (resolved when user confirms)
     await page.evaluate(() => {
@@ -37,9 +25,9 @@ test.describe('Notification and alert system @features', () => {
     await page.waitForTimeout(500);
 
     const dialog = await page.evaluate(() => {
-      const overlay = document.querySelector('.cb-confirm-overlay');
-      const dialogEl = document.querySelector('.cb-confirm-dialog');
-      const message = document.querySelector('.cb-confirm-message');
+      const overlay = document.querySelector('.cb-dialog-overlay--confirm');
+      const dialogEl = document.querySelector('.cb-dialog-overlay--confirm .cb-dialog');
+      const message = document.querySelector('.cb-dialog-overlay--confirm .cb-dialog__body');
       return {
         hasOverlay: !!overlay,
         hasDialog: !!dialogEl,
@@ -58,7 +46,7 @@ test.describe('Notification and alert system @features', () => {
     await waitForMapReady(page);
 
     const hasFunction = await page.evaluate(() => typeof (window as any).showStyledAlert === 'function');
-    test.skip(!hasFunction, 'showStyledAlert not loaded');
+
 
     await page.evaluate(() => {
       (window as any).showStyledAlert('Dismissable alert');
@@ -67,59 +55,42 @@ test.describe('Notification and alert system @features', () => {
 
     // Find and click the confirm/OK button inside the dialog
     await page.evaluate(() => {
-      const btn = document.querySelector('.cb-confirm-dialog button') ||
-        document.querySelector('.cb-confirm-overlay button');
+      const btn = document.querySelector('.cb-dialog-overlay--confirm .cb-dialog button') ||
+        document.querySelector('.cb-dialog-overlay--confirm button');
       if (btn) (btn as HTMLElement).click();
     });
     await page.waitForTimeout(500);
 
     const afterDismiss = await page.evaluate(() => {
-      const overlay = document.querySelector('.cb-confirm-overlay');
+      const overlay = document.querySelector('.cb-dialog-overlay--confirm');
       return { overlayGone: !overlay };
     });
 
     expect(afterDismiss.overlayGone).toBe(true);
   });
 
-  test('updateStatus function exists for status bar updates', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      return {
-        hasUpdateStatus: typeof w.updateStatus === 'function',
-      };
-    });
-
-    // updateStatus is used across modules for status bar messages
-    expect(result.hasUpdateStatus).toBe(true);
-  });
-
   test('updateStatus sets status message in DOM', async ({ mockApi: page }) => {
     await page.goto('/');
     await waitForMapReady(page);
 
-    const hasFunction = await page.evaluate(() => typeof (window as any).updateStatus === 'function');
-    test.skip(!hasFunction, 'updateStatus not loaded');
-
     const result = await page.evaluate(() => {
       const w = window as any;
+
       w.updateStatus('E2E test status message');
       // Find status element — typically #status or .status-bar
       const statusEl = document.getElementById('status') ||
         document.querySelector('.status-bar') ||
         document.querySelector('[data-status]');
       return {
+        skip: false,
         statusText: statusEl?.textContent ?? '',
         found: !!statusEl,
       };
     });
 
-    if (result.found) {
-      expect(result.statusText).toContain('E2E test status message');
-    }
-    // If no status element found, at least verify the function didn't throw
-    expect(true).toBe(true);
+    // The message must actually reach the status bar. (This used to end in `expect(true).toBe(true)`,
+    // so a missing status element passed silently.)
+    expect(result.found).toBe(true);
+    expect(result.statusText).toContain('E2E test status message');
   });
 });

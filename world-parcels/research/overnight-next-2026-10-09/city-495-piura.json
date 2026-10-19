@@ -1,0 +1,216 @@
+{
+  "name": "Piura",
+  "country": "Peru",
+  "countryCode": "PE",
+  "rank": 1177,
+  "point": [
+    -5.19036024947437,
+    -80.6384430749245
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Piura Peru official cadastral parcel land map municipal cadastre GIS English",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/satpiura/institucional",
+          "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Spanish",
+        "query": "Piura catastro predial mapa parcelas servicio oficial municipal GIS Piura Perú",
+        "result": "Official local property tax agency and national geospatial map source found; no parcel layer verified.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/satpiura/institucional",
+          "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7"
+        ],
+        "method": "Separate Spanish-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.gob.pe/institucion/satpiura/institucional",
+        "operator": "Piura Municipal Tax Administration Service (SATP)",
+        "scope": "Official government page describes SATP as a decentralized agency of the Provincial Municipality of Piura; this supports local property-tax administration, not legal cadastral boundaries."
+      },
+      {
+        "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7",
+        "operator": "Peru National Spatial Data Infrastructure (IDEP)",
+        "scope": "Official national map layer; service timed out and its content was not verified as city parcels."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7",
+        "method": "Anonymous ArcGIS service metadata",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "Connection timed out; service content could not be confirmed as parcel geometry."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1177 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.gob.pe/institucion/satpiura/institucional",
+    "url": "https://www.gob.pe/institucion/satpiura/institucional",
+    "operator": "Piura Municipal Tax Administration Service (SATP)",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Provincial Municipality of Piura reports a municipal urban-cadastre survey project covering Piura, Castilla, Veintiseis de Octubre and Catacaos. This establishes limited local cadastral project responsibility; the earlier property-tax-agency evidence alone did not. Anonymous native parcel geometry remains unverified.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 495,
+  "cityId": "wup2025:495",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -5.19036024947437,
+    -80.6384430749245
+  ],
+  "population2025k": 471.521,
+  "populationUnit": "persons",
+  "queueRank": 1177,
+  "population2025": 471521,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Provincial Municipality of Piura reports a municipal urban-cadastre survey project covering Piura, Castilla, Veintiseis de Octubre and Catacaos. This establishes limited local cadastral project responsibility; the earlier property-tax-agency evidence alone did not. Anonymous native parcel geometry remains unverified.",
+  "registryEvidenceUrls": [
+    "https://www.gob.pe/institucion/munipiura/noticias/946801-regidora-teresa-calva-participo-en-lanzamiento-del-proyecto-de-levantamiento-de-catastro-urbano-de-piura",
+    "https://www.gob.pe/institucion/satpiura/institucional",
+    "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "priorCustodyAssessment": {
+    "registryFound": true,
+    "registryBasis": "The local SATP is a municipal decentralized property-tax agency, but a legal cadastral geometry custodian or public parcel vector layer was not confirmed.",
+    "registryEvidenceUrls": [
+      "https://www.gob.pe/institucion/satpiura/institucional",
+      "https://www.idep.gob.pe/geoportal/rest/services/DATOS_GEOESPACIALES/PROYECCIONES_25K/MapServer/7"
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 495,
+      "url": "https://www.gob.pe/institucion/munipiura/noticias/946801-regidora-teresa-calva-participo-en-lanzamiento-del-proyecto-de-levantamiento-de-catastro-urbano-de-piura",
+      "checkedAt": "2026-10-09T08:59:11.861936+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://www.gob.pe/institucion/munipiura/noticias/946801-regidora-teresa-calva-participo-en-lanzamiento-del-proyecto-de-levantamiento-de-catastro-urbano-de-piura",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 32753,
+      "sha256": "a643fa23616352de890ff6f56c977e3df932b1c30c5d2793bc633141e102e852",
+      "complete": true,
+      "termPresence": {
+        "不动产": false,
+        "地籍": false,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": false,
+        "登记": false,
+        "catastro": true,
+        "Piura": true,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "The Provincial Municipality of Piura reports a municipal urban-cadastre survey project covering Piura, Castilla, Veintiseis de Octubre and Catacaos. This establishes limited local cadastral project responsibility; the earlier property-tax-agency evidence alone did not. Anonymous native parcel geometry remains unverified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.gob.pe/institucion/munipiura/noticias/946801-regidora-teresa-calva-participo-en-lanzamiento-del-proyecto-de-levantamiento-de-catastro-urbano-de-piura",
+      "observation": "The Provincial Municipality of Piura reports a municipal urban-cadastre survey project covering Piura, Castilla, Veintiseis de Octubre and Catacaos. This establishes limited local cadastral project responsibility; the earlier property-tax-agency evidence alone did not. Anonymous native parcel geometry remains unverified.",
+      "method": "Root primary-page review plus scoped direct network checks"
+    }
+  ],
+  "rootEndpointFollowthrough": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "advertisedSource": "https://www.idep.gob.pe/wms/wms_cofopri.html",
+    "advertisedLayers": [
+      "Catastro_PCDPI urban lots",
+      "FORMALIZACION_PSAD56 lots"
+    ],
+    "scope": "Official IGN advertises national WMS lots. This does not establish anonymous native vectors or Piura coverage.",
+    "requests": [
+      {
+        "url": "https://geoportal.cofopri.gob.pe/cofopri/rest/services/Cofopri/Catastro_PCDPI/MapServer?f=pjson",
+        "httpStatus": null,
+        "bytesRead": 0,
+        "outcome": "curl28 connection timeout after15seconds",
+        "executionContext": "require_escalated public network"
+      },
+      {
+        "url": "https://geoportal.cofopri.gob.pe/cofopri/rest/services?f=pjson",
+        "httpStatus": null,
+        "bytesRead": 0,
+        "outcome": "curl28 connection timeout after15seconds",
+        "executionContext": "require_escalated public network"
+      },
+      {
+        "url": "http://geoportal.cofopri.gob.pe/cofopri/rest/services?f=pjson",
+        "httpStatus": null,
+        "bytesRead": 0,
+        "outcome": "curl28 connection timeout after15seconds",
+        "executionContext": "require_escalated public network"
+      }
+    ]
+  },
+  "integratedAt": "2026-10-09T09:09:44.889046+00:00"
+}

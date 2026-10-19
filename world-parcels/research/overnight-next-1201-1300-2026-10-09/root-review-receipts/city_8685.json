@@ -1,0 +1,15 @@
+{
+  "taskId": "city:8685",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8685-guang-an.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/guang-an-service-review.json",
+    "tmp/valhalla-parcel-research/8685/guangan.html",
+    "tmp/valhalla-parcel-research/8685/guangan.headers"
+  ],
+  "checkedAt": "2026-10-09T12:59:24.946551Z",
+  "reason": "The first-party municipal notice establishes cadastral-survey and land-verification custody; the original public map cache is an administrative service-point map with no parcel layer. No anonymous polygon/native ID or adapter qualification exists; timeouts and gated registration access do not establish absence.",
+  "runtimeAdmission": "held; no registry/catalog/city-config or coverage change"
+}

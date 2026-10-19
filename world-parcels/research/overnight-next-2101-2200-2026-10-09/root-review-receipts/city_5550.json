@@ -1,0 +1,33 @@
+{
+  "taskId": "city:5550",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-5550-el-oued.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/el-oued-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:15:32Z",
+  "queueIdentity": {
+    "rank": 2197,
+    "cityCode": 5550,
+    "name": "El Oued",
+    "country": "Algeria",
+    "point": [
+      33.3557054388029,
+      6.86819414136003
+    ],
+    "population2025Persons": 265408
+  },
+  "review": {
+    "englishAndNativeSearchesRecorded": true,
+    "nativeLanguage": "Arabic (native/local)",
+    "retainedFullPolygonCount": 0,
+    "safeNativeParcelIdAndGeometryResponse": false,
+    "registryFound": null,
+    "custodyBasis": "National cadastral authority context only; an El Oued-local procedure and anonymous geometry remain unresolved, so registryFound stays null.",
+    "adapterQualification": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification is evidenced. No parcel response exists from which to compute acceptance metrics.",
+    "absenceClaim": "No citywide parcel absence inferred from unavailable service, timeout, or lack of point result.",
+    "runtimeAdmitted": false
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "cityRecord": "city-5461-metro.json",
+  "cityCode": 5461,
+  "queueRank": 3004,
+  "city": "Metro",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "English and Indonesian first-party discovery identified the local Kantor Pertanahan Kota Metro and the official BHUMI ATR/BPN map. The live BHUMI catalog exposed the Bidang Tanah / umum:Persil configuration and safe display fields, but direct anonymous WMS/WFS capability routes returned the site's 404 HTML and the current client shows token-gated parcel retrieval. No parcel geometry or native identity was retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, URLs, configuration inspection, direct requests, response outcomes, field allowlist, and scope limits are recorded in city-5461-metro.json. No browser login, CAPTCHA/Cloudflare bypass, credentials, private tokens, or unsafe-field request occurred.",
+  "custodians": [
+    {
+      "name": "Kantor Pertanahan Kota Metro, ATR/BPN",
+      "scope": "Local city land-office custodian for registration, measurement, rights, and land information services",
+      "evidence": "https://kot-metro.atrbpn.go.id/"
+    },
+    {
+      "name": "BHUMI ATR/BPN",
+      "scope": "Official national public interactive map and layer catalog; its current catalog includes the Bidang Tanah layer",
+      "evidence": "https://bhumi.atrbpn.go.id/peta"
+    },
+    {
+      "name": "Bappeda Kota Metro / Tanah Harapan",
+      "scope": "Municipal thematic WebGIS checked as a local alternative; no cadastral layer evidenced in the public configuration",
+      "evidence": "https://tanahharapan.metrokota.go.id/peta"
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {
+      "configuredLayer": "umum:Persil",
+      "configuredVendor": "Geoserver",
+      "configuredRoute": "/bhumigs/umum",
+      "safeAllowlist": ["canonical native parcel identifier if later evidenced", "parcel geometry", "source CRS", "public service metadata", "retrieval date"],
+      "configuredDisplayFieldsNotRetained": ["penggunaan", "tipehak", "luas", "nib", "akurasibidang"]
+    },
+    "compositeKeyProvenance": null
+  },
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "canonical native parcel identifier if later evidenced",
+    "parcel geometry",
+    "source CRS",
+    "public service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The exact WUP point [-5.1149642064481, 105.316057554457] was preserved and not shifted.",
+    "A 404 HTML response from the configured service route and token-gated retrieval are not evidence of citywide parcel absence.",
+    "The official local custodian and public layer catalog do not by themselves prove anonymous citywide parcel geometry access.",
+    "No native parcel ID, geometry, schema, CRS, or sample GeoJSON is available from this attempt.",
+    "No unsafe owner, address/contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "uncertainty": [
+    "The current public viewer may obtain parcel data through a protected or different backend route than the configured map-service URL; this was not pursued with login or credentials.",
+    "Tanah Harapan's public layer list was inspected as thematic context only and did not qualify as a cadastral source.",
+    "No independent runtime adapter qualification was performed."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

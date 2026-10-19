@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3445",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-3445-ijebu-igbo.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ijebu-igbo-service-review.json"
+  ],
+  "reason": "Ogun State map and land-service pointers are documented; the OGPRS access failure and other HTML pages yielded no local parcel response or polygon. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed details-panel verification are not independently evidenced. No citywide absence is inferred.",
+  "checkedAt": "2026-10-11T00:25:59.037Z"
+}

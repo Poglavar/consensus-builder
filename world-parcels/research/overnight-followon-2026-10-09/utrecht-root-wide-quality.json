@@ -1,0 +1,1504 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32631",
+  "featureCount": 212,
+  "validNonemptyCount": 212,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.36439726309385434,
+    "median": 140.35647692083643,
+    "max": 225708.64807899817
+  },
+  "features": [
+    {
+      "id": "NL-BRK-26210862770000",
+      "areaM2": 2887.696790174792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211021070000",
+      "areaM2": 361.47995849351025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211032670000",
+      "areaM2": 67126.02874015024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26240118670000",
+      "areaM2": 225708.64807899817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210676970000",
+      "areaM2": 1118.4362679732785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210677070000",
+      "areaM2": 2563.163921671341,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210919370000",
+      "areaM2": 9951.417659228362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211021370000",
+      "areaM2": 8.422495352124304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211021570000",
+      "areaM2": 9.078179860679196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211032870000",
+      "areaM2": 5596.280736009324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033070000",
+      "areaM2": 67.16988071187527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033170000",
+      "areaM2": 4.833495064258827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033270000",
+      "areaM2": 0.36439726309385434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033370000",
+      "areaM2": 3.178899277253791,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033470000",
+      "areaM2": 65.81036863188972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033570000",
+      "areaM2": 11.34631487340298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033670000",
+      "areaM2": 1.8124434173993023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211033770000",
+      "areaM2": 87.75981432712169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210919470000",
+      "areaM2": 162.30194607070564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210919570000",
+      "areaM2": 568.6133345441663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211009970000",
+      "areaM2": 2807.006400133355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211010270000",
+      "areaM2": 25103.505282035596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210666470000",
+      "areaM2": 145.8571107667019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210666570000",
+      "areaM2": 143.65976822844812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210666670000",
+      "areaM2": 130.3801546473388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210666770000",
+      "areaM2": 269.70900714134126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210672470000",
+      "areaM2": 184.5263407900367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210672570000",
+      "areaM2": 221.79566348674595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210677870000",
+      "areaM2": 2525.3999490535075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210699770000",
+      "areaM2": 1109.1980822022015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211020870000",
+      "areaM2": 9.98172630481705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211020970000",
+      "areaM2": 9.94748090009756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211032770000",
+      "areaM2": 86.37934165507001,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211032970000",
+      "areaM2": 12.34053359696135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665170000",
+      "areaM2": 247.75481836452366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665270000",
+      "areaM2": 126.94858031152441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665370000",
+      "areaM2": 125.65033279115852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665470000",
+      "areaM2": 124.93066980045427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665570000",
+      "areaM2": 126.91745700721245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665670000",
+      "areaM2": 126.29628575353064,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665770000",
+      "areaM2": 123.84065647241952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665870000",
+      "areaM2": 127.38748974217452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210665970000",
+      "areaM2": 124.6370253244456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210666070000",
+      "areaM2": 126.81414134690984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210666170000",
+      "areaM2": 131.75741577063212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210676170000",
+      "areaM2": 123.87570000067483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210676270000",
+      "areaM2": 124.91027787610136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210676370000",
+      "areaM2": 131.7105267551981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210676470000",
+      "areaM2": 125.03632164318643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210678470000",
+      "areaM2": 208.9205934438054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210678570000",
+      "areaM2": 126.63353516542324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210678670000",
+      "areaM2": 121.96310930033965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210678770000",
+      "areaM2": 125.57476997677287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210678870000",
+      "areaM2": 126.240197163336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210678970000",
+      "areaM2": 129.4059393305759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210679070000",
+      "areaM2": 120.87893449809033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210679170000",
+      "areaM2": 38.30011672106848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211018070000",
+      "areaM2": 26.04854793302235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210698170000",
+      "areaM2": 215.06775568262952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210698370000",
+      "areaM2": 1485.8279410052867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210699870000",
+      "areaM2": 544.17665721598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210725970000",
+      "areaM2": 1999.1438950115644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210728770000",
+      "areaM2": 197.29390098333087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210728870000",
+      "areaM2": 132.40409492941922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210728970000",
+      "areaM2": 129.41439013296974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210729070000",
+      "areaM2": 154.040773090274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210729170000",
+      "areaM2": 162.63422682075227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210736670000",
+      "areaM2": 241.73319180197473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210879270000",
+      "areaM2": 5.180666685020423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210879370000",
+      "areaM2": 102.86485112342939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210693670000",
+      "areaM2": 177.17320250468578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210693770000",
+      "areaM2": 142.76148519435185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210693870000",
+      "areaM2": 135.3246902081757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210693970000",
+      "areaM2": 145.2129008784603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694070000",
+      "areaM2": 139.77751899746542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694170000",
+      "areaM2": 142.21014703098598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694270000",
+      "areaM2": 141.19157421485573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694370000",
+      "areaM2": 142.5190863403926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694470000",
+      "areaM2": 140.2549576601676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694570000",
+      "areaM2": 146.79510602211897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694670000",
+      "areaM2": 138.37412941899277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210694770000",
+      "areaM2": 183.1115703223729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210699670000",
+      "areaM2": 1260.379807335046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210703770000",
+      "areaM2": 122.3888056280258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210703870000",
+      "areaM2": 123.21357298846272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210703970000",
+      "areaM2": 127.5641948476074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704070000",
+      "areaM2": 133.72165301633822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704170000",
+      "areaM2": 132.3390673650487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704270000",
+      "areaM2": 134.7812931787299,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704370000",
+      "areaM2": 135.2309774845452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704470000",
+      "areaM2": 133.80295269006407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704570000",
+      "areaM2": 207.48258061082214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704670000",
+      "areaM2": 210.29635544842503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704770000",
+      "areaM2": 135.660158978064,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704870000",
+      "areaM2": 134.6426852348114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210704970000",
+      "areaM2": 132.20090252554468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210705070000",
+      "areaM2": 135.9417679831398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210705170000",
+      "areaM2": 127.56869836841852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210705270000",
+      "areaM2": 124.08961784367484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210705370000",
+      "areaM2": 122.67776160607474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210705470000",
+      "areaM2": 170.90531257101813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210712370000",
+      "areaM2": 201.893293485137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210712470000",
+      "areaM2": 141.70498855444578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210712570000",
+      "areaM2": 148.44947202554127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210712670000",
+      "areaM2": 146.65090244524697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210715370000",
+      "areaM2": 173.7669438474482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210715470000",
+      "areaM2": 131.99804522168952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210715570000",
+      "areaM2": 128.74581387883774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210715670000",
+      "areaM2": 131.0394962192933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210717770000",
+      "areaM2": 224.37085894202164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210725570000",
+      "areaM2": 153.12057666211604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210697370000",
+      "areaM2": 143.42431308037712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210697470000",
+      "areaM2": 141.36579139678196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210697570000",
+      "areaM2": 136.88355387049705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210697670000",
+      "areaM2": 139.6070659550717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210697770000",
+      "areaM2": 138.91769415697118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210697870000",
+      "areaM2": 140.64345588663082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210697970000",
+      "areaM2": 135.60097408190242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210698070000",
+      "areaM2": 137.71639004373097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210698570000",
+      "areaM2": 2051.4488701341666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210701670000",
+      "areaM2": 138.28388946006035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210701770000",
+      "areaM2": 199.7239869337004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210701870000",
+      "areaM2": 198.14977978251235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210701970000",
+      "areaM2": 146.87246221538342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210702070000",
+      "areaM2": 139.0089242714426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210702170000",
+      "areaM2": 140.1125710351616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210702270000",
+      "areaM2": 143.0360031540569,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210717870000",
+      "areaM2": 142.70885201311435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210717970000",
+      "areaM2": 141.7552836474746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718070000",
+      "areaM2": 141.7266934219111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718170000",
+      "areaM2": 228.28409501411977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718270000",
+      "areaM2": 227.05447204722057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718370000",
+      "areaM2": 143.26828384297707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718470000",
+      "areaM2": 139.37701387533437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718570000",
+      "areaM2": 143.69144569579987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718670000",
+      "areaM2": 220.24198299558893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718770000",
+      "areaM2": 152.41014425438254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718870000",
+      "areaM2": 127.94278486385436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210718970000",
+      "areaM2": 120.12521257889202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210719070000",
+      "areaM2": 131.20178904485363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210725670000",
+      "areaM2": 149.4502359902732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210725770000",
+      "areaM2": 139.9747262587248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210725870000",
+      "areaM2": 175.77353319294224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210863870000",
+      "areaM2": 459.84123261183623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210863970000",
+      "areaM2": 382.6491027025089,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210864070000",
+      "areaM2": 446.41678867940595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210880470000",
+      "areaM2": 225.30291001769052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210880570000",
+      "areaM2": 170.5143756040147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-28530169670000",
+      "areaM2": 376.86645697368135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-28530169770000",
+      "areaM2": 1721.5761310465598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-28540123070000",
+      "areaM2": 209522.85682918754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210675370000",
+      "areaM2": 138.84859905775488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210675470000",
+      "areaM2": 134.4700007540785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210675570000",
+      "areaM2": 138.72531603807698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210675670000",
+      "areaM2": 143.5137095302909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210675770000",
+      "areaM2": 129.14512189207846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210677370000",
+      "areaM2": 140.33381555847154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210677470000",
+      "areaM2": 139.55926535465426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210677570000",
+      "areaM2": 137.33316020972825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210677670000",
+      "areaM2": 140.3791382832013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210682370000",
+      "areaM2": 45.563280880081706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210682470000",
+      "areaM2": 149.74270797277484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210682670000",
+      "areaM2": 163.42402696990456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210682770000",
+      "areaM2": 210.42464509209805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210682870000",
+      "areaM2": 142.5827557860046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210682970000",
+      "areaM2": 135.7613326804074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210684770000",
+      "areaM2": 180.7736938213758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210684870000",
+      "areaM2": 144.29486747292077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210684970000",
+      "areaM2": 145.5471623256328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685070000",
+      "areaM2": 150.6674348292705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685170000",
+      "areaM2": 143.61363274060287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685270000",
+      "areaM2": 142.1684365632289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685370000",
+      "areaM2": 143.86969086817135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685470000",
+      "areaM2": 144.34225792489576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685570000",
+      "areaM2": 148.50091609045427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685670000",
+      "areaM2": 141.77361159170025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210685770000",
+      "areaM2": 143.13303573918512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210699470000",
+      "areaM2": 2020.039614309438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210699570000",
+      "areaM2": 1095.8560101442388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210703670000",
+      "areaM2": 174.31190151318148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706170000",
+      "areaM2": 140.02195336563048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706270000",
+      "areaM2": 26.049749658302076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706370000",
+      "areaM2": 132.09192497476766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706470000",
+      "areaM2": 128.24974585718135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706570000",
+      "areaM2": 133.81163033531737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706670000",
+      "areaM2": 132.93918303746685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706770000",
+      "areaM2": 130.6525233058304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706870000",
+      "areaM2": 129.09193276071198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210706970000",
+      "areaM2": 131.71884828968194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707070000",
+      "areaM2": 135.9006775936847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707170000",
+      "areaM2": 25.6035427360908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707270000",
+      "areaM2": 213.0927183147847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707370000",
+      "areaM2": 141.30250602684094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707470000",
+      "areaM2": 142.8509130956719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707570000",
+      "areaM2": 140.59122492641922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707670000",
+      "areaM2": 143.02317979232913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707770000",
+      "areaM2": 141.43204870642438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707870000",
+      "areaM2": 138.60982955408602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210707970000",
+      "areaM2": 144.19172085025698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210708070000",
+      "areaM2": 142.74290323060185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210708170000",
+      "areaM2": 140.50465439004043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210708270000",
+      "areaM2": 144.0883915915878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26210708370000",
+      "areaM2": 149.574752182701,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211005970000",
+      "areaM2": 132.80387291324163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211006170000",
+      "areaM2": 132.8263091091791,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211006270000",
+      "areaM2": 136.0701362439779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211006370000",
+      "areaM2": 132.61323020024255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211006470000",
+      "areaM2": 132.29760296281793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211006570000",
+      "areaM2": 132.59650675332944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211006970000",
+      "areaM2": 132.72887330678196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211007170000",
+      "areaM2": 133.35859707444584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "NL-BRK-26211007270000",
+      "areaM2": 133.04805533449695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

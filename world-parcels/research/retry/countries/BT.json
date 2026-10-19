@@ -1,0 +1,38 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BT",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-BT,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://web.nlcs.gov.bt/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "timeout after 40 s with 0 bytes, repeated (was 200 in the previous run)"
+  },
+  {
+   "url": "https://www.nlcs.gov.bt/ , https://nlcs.gov.bt/ , https://www.nlcs.gov.bt/?page_id=203 , https://www.dlgi.gov.bt/ , https://gis.nlcs.gov.bt/ , https://www.moha.gov.bt/ , https://www.bhutan.gov.bt/ , https://www.dop.gov.bt/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "all timeouts/unreachable"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Bhutan cadastre OR parcels&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only ICIMOD/topographic/landscape items; no parcel data"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "No Bhutan government host answered from this network (timeouts), so the portal could not be inspected; the earlier credentialed/paid assessment is untested, not refuted. Possible regional filtering.",
+ "nextStep": "Retry later or from another network; inspect web.nlcs.gov.bt JS for map service calls."
+}

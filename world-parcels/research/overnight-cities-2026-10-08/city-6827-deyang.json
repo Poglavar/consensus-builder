@@ -1,0 +1,123 @@
+{
+  "name": "Deyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 767,
+  "point": [
+    31.1360968150223,
+    104.386205170166
+  ],
+  "population2025": 700386,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Bounded city-source review only. No citywide completeness is claimed. At most three complete public parcel polygons are retained. No owner or address fields and no credentials or token values are retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The city registration center publishes active real-property registration services and explicitly documents a citywide public cadastral-map visualization viewer. This confirms a Deyang registry source; it does not establish a public vector download or the exact footprint of the WUP locator.",
+  "resultCategory": "official_city_registry_and_public_viewer_geometry_contract_unverified",
+  "technicalBlocker": "The official guide links an anonymous public cadastral map, but its client/service schema and full polygon response were not inspectable in this run. A local shell request timed out and the browser fetch did not access the map shell; that is inconclusive about origin availability. The guide also directs personal property-detail lookups through an identity-authenticated WeChat route, which was not used.",
+  "remainingUncertainty": "Whether the current viewer exposes complete parcel polygons through a public API and what reuse terms apply. The WUP point has not been tested against a returned parcel feature.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "德阳市 地籍图 可视化 公开查询 宗地代码 官方 不动产登记中心",
+        "scope": "Find an official local parcel registry and inspect whether an anonymous full-polygon schema is available.",
+        "result": "Official Deyang Real Estate Registration Center guide confirms a citywide public cadastral visualization viewer and says users can search by parcel code or location or click a map parcel. Geometry/API schema was not verified.",
+        "actualResultUrls": [
+          "https://dybdcdj.cn/fwzn/2949.html",
+          "https://bdczxmap.dysmt.cn/web/map"
+        ],
+        "executionMethod": "Separate Chinese-language discovery and official-source inspection."
+      },
+      {
+        "language": "English",
+        "query": "Deyang China official cadastral parcel map public map parcel code cadastral geometry",
+        "scope": "Cross-check local source and public geometry endpoint.",
+        "result": "The official city registration-center guide was the relevant primary source; no separate public vector schema was identified.",
+        "actualResultUrls": [
+          "https://dybdcdj.cn/fwzn/2949.html"
+        ],
+        "executionMethod": "Separate English-language discovery followed by official-source inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://dybdcdj.cn/fwzn/2949.html",
+        "httpStatus": 200,
+        "observation": "Official 2023 guide says the city registration center built a public cadastral-map visualization; the viewer supports searching all-city parcels by parcel code/location and clicking parcels to view basic information. Detailed property lookup is routed through identity-authenticated WeChat."
+      },
+      {
+        "url": "https://dybdcdj.cn/sbjgzdt/4911.html",
+        "observation": "Official 2026 city project notice concerning creation/integration of Deyang urban cadastral mapping; supports current cadastral activity but does not publish parcel geometry."
+      },
+      {
+        "url": "https://dybdcdj.cn/sbjgzdt/4965.html",
+        "observation": "Official 2026 award notice for the urban cadastral-map project; confirms current municipal mapping work, not an anonymous vector interface."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://bdczxmap.dysmt.cn/web/map",
+      "apiBase": null,
+      "observedClientRoutes": [],
+      "notes": "The official guide links this public viewer. Direct network access timed out locally and the browser fetch did not load the map shell, so live status, schema, and full geometry remain unverified. No personal-detail route was accessed; the guide says detailed property records require identity authentication."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "cn-deyang-public-cadastral-map",
+    "name": "Deyang Real Estate Registration Center public cadastral map visualization",
+    "url": "https://dybdcdj.cn/fwzn/2949.html",
+    "operator": "Deyang Real Estate Registration Center (德阳市不动产登记中心)",
+    "serviceType": "Official guide documents an anonymous citywide cadastral-map visualization viewer that supports searching by parcel code or location and clicking a map parcel to display basic information. The full-polygon response contract, API schema, and reuse terms were not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "The guide says the public viewer accepts a parcel code as a search field; no safe feature schema or returned native ID was inspected.",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "personalAttributesRequested": false,
+    "scope": "City-specific registry/viewer evidence only. No parcel feature was returned or retained; citywide geometric coverage is not verified."
+  },
+  "wupCityCode": 6827,
+  "cityId": "wup2025:6827",
+  "queueRank": 767,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    31.1360968150223,
+    104.386205170166
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "City-specific registry source is confirmed, but a safe anonymous full-polygon response was not verified; no adapter or runtime integration was qualified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official city registry/cadastre evidence only; no anonymous full-polygon response verified.",
+    "verifiedOpenScope": "City-specific registry/viewer evidence only. No parcel feature was returned or retained; citywide geometric coverage is not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://dybdcdj.cn/fwzn/2949.html",
+    "https://dybdcdj.cn/sbjgzdt/4911.html",
+    "https://dybdcdj.cn/sbjgzdt/4965.html"
+  ],
+  "rootPrimarySupplement": "Primary indexed registration-center guide dated 2023-11-16 confirms a public cadastral viewer and separates it from authenticated property-detail lookup; vector schema remains unverified.",
+  "rootPrimaryReadback": {
+    "url": "https://dybdcdj.cn/fwzn/2949.html",
+    "fetch": "error",
+    "reason": "Remote end closed connection without response"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:163",
+  "queueRank": 163,
+  "name": "Cebu City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "centerLatLon": [
+    10.3088316940635,
+    123.902842289759
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "observation": "National Philippine Geoportal (NAMRIA) reachable; HTML app, no parcel layer found via REST path."
+    },
+    {
+      "url": "https://www.lra.gov.ph/",
+      "observation": "Land Registration Authority site reachable; registry/titling services, no open parcel polygon API."
+    },
+    {
+      "url": "https://data.gov.ph/",
+      "observation": "Open Data Philippines portal reachable; API path returned the Angular app shell rather than CKAN JSON."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cebucity.gov.ph/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS local-issuer certificate error; not retried insecurely"
+    },
+    {
+      "url": "https://www.lra.gov.ph/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "agency home page"
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "app shell"
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "no ArcGIS REST at this path"
+    },
+    {
+      "url": "https://data.gov.ph/index/public/api/3/action/package_search?q=parcel&rows=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "SPA HTML, not JSON"
+    },
+    {
+      "url": "https://gis.cebucity.gov.ph/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://gisweb.denr.gov.ph/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy 502 host unreachable"
+    },
+    {
+      "url": "https://denr.gov.ph/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "Cloudflare challenge"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Cebu City parcel lot boundary type:Feature Service",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The Cebu City government site failed TLS validation and the DENR/city GIS hosts were unreachable or challenged, so a city or DENR lot layer is not ruled out. No national open cadastral parcel dataset was identified.",
+  "nextStep": "Retry Cebu City GIS/assessor and DENR LMB services from another network; check the geoportal's layer catalogue for cadastral lots."
+}

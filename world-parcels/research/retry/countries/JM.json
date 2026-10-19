@@ -1,0 +1,105 @@
+{
+ "kind": "country",
+ "key": "JM",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-JM,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "jm-nla-eland-parcels",
+  "requestUrl": "https://gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16/query?f=json&where=1%3D1&geometry=-76.7920,17.9960,-76.7900,17.9980&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": "-76.7920,17.9960,-76.7900,17.9980 (also St James and Trelawny bboxes)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "LV_NUMBER (also OBJECTID, DSS_ID)",
+  "responseFile": "research/retry/countries/JM-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount, maxRecordCount 2000",
+  "regionSampled": "St Andrew/Kingston; St James; Trelawny (three parishes)"
+ },
+ "source": {
+  "sourceId": "jm-nla-eland-parcels",
+  "name": "eLandJamaica Parcels (ElandjamaicaAug162024 MapServer layer 16)",
+  "operator": "National Land Agency, Jamaica",
+  "scope": "national parcel layer used by the official eLand viewer; sampled in 3 parishes",
+  "endpoint": "https://gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16",
+  "method": "ArcGIS REST MapServer query (f=json)",
+  "responseFormat": "Esri JSON",
+  "crs": "native wkid 102095/3448; outSR=4326 accepted",
+  "reuseStatus": "not verified - licence/terms not read; anonymous access, no token required"
+ },
+ "requests": [
+  {
+   "url": "https://elandjamaica.nla.gov.jm/elandjamaica/interactivemap.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "official eLand viewer (ArcGIS JS 4.23); inspected HTML and elandScripts/d_features.js, elandmapfunctions.js"
+  },
+  {
+   "url": "https://elandjamaica.nla.gov.jm/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "still 403 with browser headers; this was a wrong host guess, real service is gisportal.nla.gov.jm"
+  },
+  {
+   "url": "https://gis.nla.gov.jm/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failure (unchanged)"
+  },
+  {
+   "url": "https://data.gov.jm/group/national-land-agency",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failure (unchanged)"
+  },
+  {
+   "url": "https://gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16?f=json (parent MapServer)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "ArcGIS Server 11.2 MapServer, no token; layer 16 = Parcels (polygon), maxRecordCount 2000, minScale 18000"
+  },
+  {
+   "url": "https://gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer metadata: fields LV_NUMBER, VOL_FOL, SIZE_SQMT, PARISH, DSS_ID etc.; native CRS wkid 102095/3448 (JAD2001)"
+  },
+  {
+   "url": "https://gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16/query?f=json&where=1%3D1&geometry=-76.7920,17.9960,-76.7900,17.9980&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcel polygons, Kingston 5 / St Andrew, closed rings"
+  },
+  {
+   "url": "https://gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16/query?f=json&where=1%3D1&geometry=-77.9200,18.4700,-77.9180,18.4720&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 features, St James (Montego Bay); 2 returned blank attributes (unattributed polygons) - only 1 fully attributed"
+  },
+  {
+   "url": "https://gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16/query?f=json&where=1%3D1&geometry=-77.4980,18.4000,-77.4960,18.4020&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 parcel polygon, Trelawny"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previously viewer-only because the guessed /arcgis/rest host returned 403. The viewer's d_features.js points its Parcels FeatureLayer at gisportal.nla.gov.jm/nlagis/rest/services/ElandjamaicaAug162024/MapServer/16, which answers anonymous queries. Two+ geographically distinct parishes sampled from same service/schema, so nationwideVerified is asserted for sampled schema only; full parish completeness (e.g. layer minScale 18000, some blank-attribute polygons) not assessed. Owner names are not in the layer fields; DSS_ID/VOL_FOL link to registry titles.",
+ "nextStep": "Read NLA terms of use for reuse; check parish completeness and pagination (max 2000/req); consider inclusion in registry."
+}

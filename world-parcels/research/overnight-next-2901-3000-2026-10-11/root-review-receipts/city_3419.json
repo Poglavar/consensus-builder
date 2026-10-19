@@ -1,0 +1,42 @@
+{
+  "taskId": "city:3419",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:29:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-3419-jiuquan.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/jiuquan-service-review.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/jiuquan/mapinit.js"
+  ],
+  "reason": "The official map script exposes cached base-map routes without an evidenced parcel query service or native ID response; REST timeouts do not prove absence.",
+  "identityCheck": {
+    "queueRank": 2998,
+    "name": "Jiuquan",
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      39.7421157206995,
+      98.5431385018488
+    ],
+    "populationPersons": 199602,
+    "matchedQueueRosterAndOriginalWupCsv": true
+  },
+  "researchCheck": {
+    "englishAndLocalQueryRecordsPresent": true,
+    "independentSearchExecutionLogPresent": false,
+    "retainedFullPolygons": 0,
+    "safeNativeParcelIdVerified": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "custodyDecision": null,
+  "scopeNote": "Research completion does not mean integration or admission. Failed access, query errors and timeouts do not establish citywide absence."
+}

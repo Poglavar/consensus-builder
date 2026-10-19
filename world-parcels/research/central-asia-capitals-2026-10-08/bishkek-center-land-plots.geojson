@@ -1,0 +1,86 @@
+{
+  "type": "FeatureCollection",
+  "crs": "EPSG:4326",
+  "sourceRequest": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,NAZNACHENI,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+  "httpStatus": 200,
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                74.56935021,
+                42.87469689
+              ],
+              [
+                74.5693697,
+                42.87487869
+              ],
+              [
+                74.57003305,
+                42.87483943
+              ],
+              [
+                74.57000465,
+                42.87465789
+              ],
+              [
+                74.56935021,
+                42.87469689
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "PROPCODE": "1-01-02-0011-0889",
+        "DOMCODE": "20",
+        "NAZNACHENI": "земельный участок"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                74.56997702,
+                42.87448128
+              ],
+              [
+                74.56994024,
+                42.87448376
+              ],
+              [
+                74.56933014,
+                42.87450966
+              ],
+              [
+                74.56935021,
+                42.87469689
+              ],
+              [
+                74.57000465,
+                42.87465789
+              ],
+              [
+                74.56997702,
+                42.87448128
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "PROPCODE": "1-01-02-0011-0890",
+        "DOMCODE": "20",
+        "NAZNACHENI": "земельный участок"
+      }
+    }
+  ]
+}

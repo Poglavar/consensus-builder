@@ -1,0 +1,74 @@
+{
+ "kind": "city",
+ "key": "kollam",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-IN,en;q=0.9; cookie jar (curl -c/-b)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://erekha.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://ilrms.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://webgis.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://dilrmp.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://bhunaksha.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://svamitva.nic.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "https://bhuvan.nrsc.gov.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "ISRO Bhuvan front page reachable; not a parcel service, none identified"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Kerala cadastral OR survey type:Feature Service",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only census/admin/LSG boundary layers; no parcels"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "official hosts fail at proxy CONNECT/reset while other sites of the same country load; unproven",
+ "notes": "No IN country retry file exists. Kerala land-record hosts still 502/reset; no new source.",
+ "nextStep": "Retry Kerala land-record/Bhunaksha hosts from an India-region network."
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:184",
+  "queueRank": 184,
+  "name": "Cali",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "centerLatLon": [
+    3.43291280476524,
+    -76.5206016723112
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "co-cali-idesc-cat-bas-terrenos",
+    "requestUrl": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro:cat_bas_terrenos&count=3&outputFormat=application/json&bbox=3.4325,-76.5225,3.4335,-76.5210,urn:ogc:def:crs:EPSG::4326&srsName=EPSG:4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -76.5225,
+      3.4325,
+      -76.521,
+      3.4335
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "id_predio (also npn, the 30-digit national predial number)",
+    "responseFile": "cali-parcel-response.json",
+    "pagination": "WFS 2.0 count=3; numberMatched=118 in the test box; use startIndex for paging"
+  },
+  "source": {
+    "sourceId": "co-cali-idesc-cat-bas-terrenos",
+    "name": "IDESC Cali GeoServer, layer catastro:cat_bas_terrenos (cadastral land parcels)",
+    "operator": "Alcaldia de Santiago de Cali (IDESC / Infraestructura de Datos Espaciales de Santiago de Cali)",
+    "scope": "Santiago de Cali municipality",
+    "endpoint": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows",
+    "method": "GET WFS 2.0.0 GetFeature",
+    "responseFormat": "GeoJSON (application/json)",
+    "crs": "EPSG:4326 (srsName requested)",
+    "reuseStatus": "WFS capabilities state Fees NONE and AccessConstraints NONE; the datos.cali.gov.co CKAN entries for other IDESC layers list cc-by / cc-by-sa. The licence of this specific layer was not confirmed."
+  },
+  "portalsFound": [
+    {
+      "url": "https://ws-idesc.cali.gov.co/geoserver/ows?service=WFS&request=GetCapabilities",
+      "observation": "Official Cali IDESC GeoServer WFS capabilities (200, ~500 KB) list catastro:cat_bas_terrenos, cat_bas_manzanas and cat_bas_construcciones."
+    },
+    {
+      "url": "https://datos.cali.gov.co/",
+      "observation": "Cali open-data CKAN; catalogues IDESC WMS/WFS layers with cc-by / cc-by-sa licences. Predio dataset there is tabular."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://datos.cali.gov.co/api/3/action/package_search?q=predios&rows=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "CKAN catalogue search; found IDESC GeoServer WFS links"
+    },
+    {
+      "url": "https://ws-idesc.cali.gov.co/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "xml",
+      "assessment": "capabilities only; not counted as verification"
+    },
+    {
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro:cat_bas_terrenos&count=3&outputFormat=application/json&bbox=3.4325,-76.5225,3.4335,-76.5210,urn:ogc:def:crs:EPSG::4326&srsName=EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "parcelRecordCount": 3,
+      "assessment": "verified: 3 closed MultiPolygon terrenos with predial IDs near the UN centre point (numberMatched 118)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Santiago de Cali cadastral base (terrenos, manzanas, construcciones)",
+    "verifiedOpenScope": "three parcels in a ~150 m bounding box in central Cali",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Only one small sample; completeness across the municipality, layer licence and update policy unconfirmed. Records include property address and use attributes (no owner names seen; not stored beyond the 3-feature sample). Neighbouring municipalities (Yumbo, Jamundi) are separate authorities.",
+  "nextStep": "Confirm licence for the catastro workspace, test WFS paging and CORS, and test a second area of Cali."
+}

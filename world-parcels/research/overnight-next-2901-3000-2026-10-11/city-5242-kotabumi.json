@@ -1,0 +1,48 @@
+{
+  "cityCode": 5242,
+  "queueRank": 2980,
+  "name": "Kotabumi",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-4.83622979828432, 104.893129712807],
+  "population2025": 200811,
+  "population2025k": 200.811,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "registryFound": true,
+  "registry": {
+    "custodian": "Kantor Pertanahan Kabupaten Lampung Utara, Kementerian ATR/BPN",
+    "scopeEvidence": "Official local office page places the office at Jl. Alamsyah RPN No.93, Kelp. Tujuh, Kecamatan Kotabumi Selatan, Kabupaten Lampung Utara, Lampung 34511 and describes land-service activity.",
+    "url": "https://kab-lampungutara.atrbpn.go.id/berita/kantor-pertanahan-lampung-utara-gelar-upacara-peringatan-hut-ke-81-republik-indonesia"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kotabumi cadastral map parcel official Indonesia ATR BPN",
+        "result": "Found official ATR/BPN BHUMI help and ATLAS portal pages. ATLAS describes public geospatial resources and land-map attributes, but the anonymous catalog response inspected contained seven non-cadastral resources and no Kotabumi parcel layer.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/peta", "https://atlas.atrbpn.go.id/", "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kotabumi peta bidang tanah kadaster resmi ATR BPN",
+        "result": "Found the official Kantor Pertanahan Kabupaten Lampung Utara site, which identifies the local land office and Kotabumi address. No public anonymous parcel download or safe parcel geometry endpoint was exposed by the inspected official pages.",
+        "actualResultUrls": ["https://kab-lampungutara.atrbpn.go.id/berita/kantor-pertanahan-lampung-utara-gelar-upacara-peringatan-hut-ke-81-republik-indonesia", "https://kab-lampungutara.atrbpn.go.id/berita/kantor-pertanahan-lampung-utara-hadiri-rapat-verifikasi-site-plan-pembangunan-perumahan-baru"]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "officialViewer": "BHUMI ATR/BPN embeds the current public console at https://konsolbhumi.atrbpn.go.id; ATLAS is the current portal catalog at https://atlas.atrbpn.go.id.",
+    "catalogResponse": "GET /geonode/api/v2/resources?format=json&page_size=1000 returned HTTP 200 with seven resources: office locations, disaster, health accessibility, outer islands, two waqf layers, and partial rice fields. None is a Kotabumi cadastral parcel layer.",
+    "capabilitiesAttempt": "GET https://atlas.atrbpn.go.id/geoserver/ows?service=WMS&request=GetCapabilities returned HTTP 403 Forbidden. Equivalent BHUMI host request also returned HTTP 403. No retry or bypass was attempted.",
+    "parcelResponse": "No bounded anonymous ID+geometry parcel response was available from the inspected public routes; therefore no GeoJSON sample is retained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "feature count/status"],
+    "excludedFields": ["owner", "address", "contact", "titleholder", "tax", "account", "certificate details", "personal data"],
+    "uncertainty": "A zero exact-point hit or public map/catalog miss is not evidence of citywide cadastral absence. The 403 capability response and absence of a public safe parcel response may reflect access policy, layer publication, or extent restrictions. No login, credential, CAPTCHA/Cloudflare bypass, or TLS exception was used."
+  },
+  "runtimeReadiness": "held",
+  "adapterQualification": null,
+  "sampleGeoJSON": null
+}

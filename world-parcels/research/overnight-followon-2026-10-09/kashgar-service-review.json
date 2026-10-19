@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-150-kashgar.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official prefecture government sources describe local real-estate registration information lookup with map/location-based access and identify the prefecture natural-resources bureau plus county/city implementation. The described property lookup is controlled. No anonymous public geometry-only route was established and no property-specific search was submitted.",
+  "registryAssessment": "Official Kashgar Prefecture government material describes local real-estate registration and map-based information services, with responsibilities assigned to prefecture/county-level natural-resources offices. The parcel lookup is controlled; this supports local registry custody but not anonymous geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.kashi.gov.cn/ksdqxzgs/c116466/202303/8953043dc7384faf95b7997496e105e0.shtml",
+      "observation": "Official prefecture government sources describe local real-estate registration information lookup with map/location-based access and identify the prefecture natural-resources bureau plus county/city implementation. The described property lookup is controlled. No anonymous public geometry-only route was established and no property-specific search was submitted."
+    },
+    {
+      "url": "https://www.kashi.gov.cn/ksdqxzgs/c108111/202305/0545142b7b914d829ba37a6138c352e6/files/77.%E5%96%80%E4%BB%80%E5%9C%B0%E5%8C%BA%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%B1%802023%E5%B9%B4%E9%83%A8%E9%97%A8%E9%A2%84%E7%AE%97%E5%85%AC%E5%BC%80%E6%8A%A5%E5%91%8A.pdf",
+      "observation": "Official prefecture government sources describe local real-estate registration information lookup with map/location-based access and identify the prefecture natural-resources bureau plus county/city implementation. The described property lookup is controlled. No anonymous public geometry-only route was established and no property-specific search was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kashgar Xinjiang official cadastral land registry parcel map natural resources bureau",
+      "result": "Official prefecture government sources describe local real-estate registration information lookup with map/location-based access and identify the prefecture natural-resources bureau plus county/city implementation. The described property lookup is controlled. No anonymous public geometry-only route was established and no property-specific search was submitted.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://www.kashi.gov.cn/ksdqxzgs/c116466/202303/8953043dc7384faf95b7997496e105e0.shtml",
+        "https://www.kashi.gov.cn/ksdqxzgs/c108111/202305/0545142b7b914d829ba37a6138c352e6/files/77.%E5%96%80%E4%BB%80%E5%9C%B0%E5%8C%BA%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%B1%802023%E5%B9%B4%E9%83%A8%E9%97%A8%E9%A2%84%E7%AE%97%E5%85%AC%E5%BC%80%E6%8A%A5%E5%91%8A.pdf"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "喀什市 不动产登记 地籍图 自然资源局",
+      "result": "Official prefecture government sources describe local real-estate registration information lookup with map/location-based access and identify the prefecture natural-resources bureau plus county/city implementation. The described property lookup is controlled. No anonymous public geometry-only route was established and no property-specific search was submitted.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://www.kashi.gov.cn/ksdqxzgs/c116466/202303/8953043dc7384faf95b7997496e105e0.shtml",
+        "https://www.kashi.gov.cn/ksdqxzgs/c108111/202305/0545142b7b914d829ba37a6138c352e6/files/77.%E5%96%80%E4%BB%80%E5%9C%B0%E5%8C%BA%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%B1%802023%E5%B9%B4%E9%83%A8%E9%97%A8%E9%A2%84%E7%AE%97%E5%85%AC%E5%BC%80%E6%8A%A5%E5%91%8A.pdf"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained: no safe anonymous geometry-only route was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official Kashgar Prefecture government material describes local real-estate registration and map-based information services, with responsibilities assigned to prefecture/county-level natural-resources offices. The parcel lookup is controlled; this supports local registry custody but not anonymous geometry.",
+    "verifiedOpenScope": "Official prefecture government sources describe local real-estate registration information lookup with map/location-based access and identify the prefecture natural-resources bureau plus county/city implementation. The described property lookup is controlled. No anonymous public geometry-only route was established and no property-specific search was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.kashi.gov.cn/ksdqxzgs/c116466/202303/8953043dc7384faf95b7997496e105e0.shtml",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    },
+    {
+      "url": "https://www.kashi.gov.cn/ksdqxzgs/c108111/202305/0545142b7b914d829ba37a6138c352e6/files/77.%E5%96%80%E4%BB%80%E5%9C%B0%E5%8C%BA%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%B1%802023%E5%B9%B4%E9%83%A8%E9%97%A8%E9%A2%84%E7%AE%97%E5%85%AC%E5%BC%80%E6%8A%A5%E5%91%8A.pdf",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and adapter/runtime suitability remain unqualified; local registry evidence does not establish full public geometry availability.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No geometry request made; reviewed official HTML/search evidence only."
+  },
+  "runtimeAssessment": "Not enabled; root may perform full adapter qualification."
+}

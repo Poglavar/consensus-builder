@@ -1,0 +1,1280 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:25830",
+  "featureCount": 180,
+  "validNonemptyCount": 180,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 124.28814999898199,
+    "median": 353.41725001176235,
+    "max": 8745.078300116566
+  },
+  "features": [
+    {
+      "id": "ES-DGC-4323004YJ2742C",
+      "areaM2": 952.2051000095415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323005YJ2742C",
+      "areaM2": 304.8353500112347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323006YJ2742C",
+      "areaM2": 387.39275000639634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323008YJ2742C",
+      "areaM2": 149.5856499993126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323009YJ2742C",
+      "areaM2": 124.28814999898199,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323010YJ2742C",
+      "areaM2": 199.51274999182928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323011YJ2742C",
+      "areaM2": 285.0346999938253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323012YJ2742C",
+      "areaM2": 563.8543000123731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323013YJ2742C",
+      "areaM2": 285.4510000061492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323014YJ2742C",
+      "areaM2": 145.02655000683356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323015YJ2742C",
+      "areaM2": 142.5326500085178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323016YJ2742C",
+      "areaM2": 145.43195000855664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323018YJ2742C",
+      "areaM2": 143.93314999075085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323019YJ2742C",
+      "areaM2": 238.68834999970525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323802YJ2742C",
+      "areaM2": 1519.4136499782217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323803YJ2742C",
+      "areaM2": 620.8713000205101,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323804YJ2742C",
+      "areaM2": 230.05504997851273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323805YJ2742C",
+      "areaM2": 213.9550999965083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323806YJ2742C",
+      "areaM2": 210.91309997825124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323807YJ2742C",
+      "areaM2": 211.58135001200606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323808YJ2742C",
+      "areaM2": 213.70215001228465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323809YJ2742C",
+      "areaM2": 375.7054999908774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323810YJ2742C",
+      "areaM2": 1091.503849996454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323811YJ2742C",
+      "areaM2": 222.97125001269916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323812YJ2742C",
+      "areaM2": 137.36089999953484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323813YJ2742C",
+      "areaM2": 158.41329998596643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323814YJ2742C",
+      "areaM2": 163.21380000432086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323815YJ2742C",
+      "areaM2": 156.79465000469202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323816YJ2742C",
+      "areaM2": 161.1650499964308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323817YJ2742C",
+      "areaM2": 293.5388000147883,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323818YJ2742C",
+      "areaM2": 241.21475001074987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323819YJ2742C",
+      "areaM2": 242.61700000856263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323820YJ2742C",
+      "areaM2": 310.11925000036183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323821YJ2742C",
+      "areaM2": 307.73959997945775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324007YJ2742C",
+      "areaM2": 407.7581000117363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324008YJ2742C",
+      "areaM2": 399.0230500000622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324009YJ2742C",
+      "areaM2": 400.2277999932037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324010YJ2742C",
+      "areaM2": 463.65345001208277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324006YJ2742C",
+      "areaM2": 1061.3463500025107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423001YJ2742C",
+      "areaM2": 316.6066499955566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423002YJ2742C",
+      "areaM2": 311.63445000164336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423003YJ2742C",
+      "areaM2": 254.34815000114386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423004YJ2742C",
+      "areaM2": 1380.471050009903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423005YJ2742C",
+      "areaM2": 252.35660000642042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423006YJ2742C",
+      "areaM2": 254.41959998929485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423007YJ2742C",
+      "areaM2": 299.5033499962187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423008YJ2742C",
+      "areaM2": 178.30385000570107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423009YJ2742C",
+      "areaM2": 195.20945000247977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423010YJ2742C",
+      "areaM2": 453.2957999996725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4423012YJ2742C",
+      "areaM2": 1183.8162499817793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4522410YJ2742D",
+      "areaM2": 234.55280001262872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4522411YJ2742D",
+      "areaM2": 154.5020499837068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4522412YJ2742D",
+      "areaM2": 2009.590849974279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523902YJ2742D",
+      "areaM2": 487.6665499898218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523907YJ2742D",
+      "areaM2": 2406.5539000442373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523908YJ2742D",
+      "areaM2": 500.28349999643024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523909YJ2742D",
+      "areaM2": 486.1446999769702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523910YJ2742D",
+      "areaM2": 300.20970001078825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523911YJ2742D",
+      "areaM2": 760.1927499650537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523912YJ2742C",
+      "areaM2": 757.6158000105266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523913YJ2742C",
+      "areaM2": 246.65685000311404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523914YJ2742C",
+      "areaM2": 445.04165001294785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523915YJ2742D",
+      "areaM2": 504.87525001952093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523916YJ2742D",
+      "areaM2": 504.2915499976868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523917YJ2742D",
+      "areaM2": 434.4180000023042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523918YJ2742D",
+      "areaM2": 1110.1793499684695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324001YJ2742C",
+      "areaM2": 688.4006499914628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324002YJ2742C",
+      "areaM2": 471.1614000006411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324003YJ2742C",
+      "areaM2": 452.3812500094989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324004YJ2742C",
+      "areaM2": 1063.0762499897012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324005YJ2742C",
+      "areaM2": 469.42864999043985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324011YJ2742C",
+      "areaM2": 245.5159500065705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324012YJ2742C",
+      "areaM2": 250.49105000339082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324013YJ2742C",
+      "areaM2": 253.44275000024786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324014YJ2742C",
+      "areaM2": 249.22964999805873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324015YJ2742C",
+      "areaM2": 245.0140000081955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324016YJ2742C",
+      "areaM2": 1165.8402500154618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324017YJ2742C",
+      "areaM2": 528.211199985413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324018YJ2742C",
+      "areaM2": 803.9227499934301,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324019YJ2742C",
+      "areaM2": 524.1316000002178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4324020YJ2742C",
+      "areaM2": 1468.1662500134842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4325002YJ2742E",
+      "areaM2": 916.3470999979129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4325008YJ2742E",
+      "areaM2": 2256.580499975904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425614YJ2742C",
+      "areaM2": 727.8762000225489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425615YJ2742C",
+      "areaM2": 481.0202499833042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425616YJ2742C",
+      "areaM2": 504.9489999992391,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425617YJ2742C",
+      "areaM2": 503.84944999508923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425618YJ2742C",
+      "areaM2": 510.74604998588836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425619YJ2742E",
+      "areaM2": 697.3880500021221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425620YJ2742E",
+      "areaM2": 620.7634000220502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425621YJ2742C",
+      "areaM2": 1257.008450014661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425622YJ2742C",
+      "areaM2": 1534.4356999657905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425605YJ2742E",
+      "areaM2": 380.2101000066848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425606YJ2742E",
+      "areaM2": 403.4415500020705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425607YJ2742C",
+      "areaM2": 836.1091999788033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425608YJ2742D",
+      "areaM2": 444.80625000287546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425609YJ2742D",
+      "areaM2": 491.17715000157386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425610YJ2742D",
+      "areaM2": 260.1211499959107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425611YJ2742D",
+      "areaM2": 503.851149984321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425612YJ2742C",
+      "areaM2": 456.18274999826116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425613YJ2742C",
+      "areaM2": 444.9289499999917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4523901YJ2742D",
+      "areaM2": 234.73130000618232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525418YJ2742D",
+      "areaM2": 266.38355001608363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525419YJ2742D",
+      "areaM2": 181.0582499964368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525420YJ2742F",
+      "areaM2": 396.6154000242413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4226501YJ2742E",
+      "areaM2": 564.522499991036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4226502YJ2742E",
+      "areaM2": 143.99955001452312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425104YJ2742E",
+      "areaM2": 679.5894999889402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4426807YJ2742E",
+      "areaM2": 3828.5564499784846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425101YJ2742E",
+      "areaM2": 736.8100499809213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425102YJ2742E",
+      "areaM2": 1068.8945500184757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425103YJ2742E",
+      "areaM2": 1047.069400001149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425601YJ2742E",
+      "areaM2": 1220.0805999868026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425602YJ2742E",
+      "areaM2": 220.8056500052329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425603YJ2742E",
+      "areaM2": 312.2260499902504,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4425604YJ2742E",
+      "areaM2": 277.947199984862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525421YJ2742F",
+      "areaM2": 883.6474499876118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525422YJ2742F",
+      "areaM2": 441.05284998502793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525423YJ2742F",
+      "areaM2": 209.53135000178366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525424YJ2742F",
+      "areaM2": 382.1534000113411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525425YJ2742F",
+      "areaM2": 522.3775499950227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525426YJ2742F",
+      "areaM2": 241.2448499931266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525427YJ2742F",
+      "areaM2": 284.2873500119782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525428YJ2742F",
+      "areaM2": 275.323850004587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525701YJ2742F",
+      "areaM2": 1084.6460000123795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525702YJ2742E",
+      "areaM2": 521.3797000269019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4322001YJ2742A",
+      "areaM2": 618.1914999946122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4322002YJ2742A",
+      "areaM2": 144.75680000512853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4322003YJ2742A",
+      "areaM2": 293.05975000118525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4322004YJ2742A",
+      "areaM2": 246.0972500129251,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422002YJ2742A",
+      "areaM2": 219.78314999209604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422003YJ2742A",
+      "areaM2": 192.5262000034452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422004YJ2742A",
+      "areaM2": 207.8971499836814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422005YJ2742A",
+      "areaM2": 225.3125000176101,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422006YJ2742A",
+      "areaM2": 245.44845000830458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422007YJ2742A",
+      "areaM2": 537.3370499822674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422008YJ2742A",
+      "areaM2": 419.98355000291235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422009YJ2742A",
+      "areaM2": 341.448200000655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422010YJ2742C",
+      "areaM2": 669.2324499651036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422011YJ2742A",
+      "areaM2": 325.7273000103326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422012YJ2742A",
+      "areaM2": 322.1783000234226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422013YJ2742A",
+      "areaM2": 384.60920000120745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422014YJ2742A",
+      "areaM2": 377.9814499830444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422015YJ2742A",
+      "areaM2": 382.1126500028926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4422016YJ2742A",
+      "areaM2": 379.98199999763654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4522016YJ2742A",
+      "areaM2": 388.5292999745119,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4522017YJ2742A",
+      "areaM2": 593.4214000069246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4426806YJ2742E",
+      "areaM2": 4616.039349969496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4426815YJ2742E",
+      "areaM2": 497.33024998915516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4426816YJ2742E",
+      "areaM2": 495.170749999637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4427801YJ2742G",
+      "areaM2": 5746.470249982984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4124004YJ2742C",
+      "areaM2": 8745.078300116566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4124811YJ2742C",
+      "areaM2": 594.7812499932031,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4124812YJ2742C",
+      "areaM2": 293.98869999504126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4225004YJ2742C",
+      "areaM2": 335.60954998955094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4225005YJ2742C",
+      "areaM2": 312.1087999887282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4225006YJ2742C",
+      "areaM2": 216.77095000910543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4323801YJ2742C",
+      "areaM2": 364.35119999670417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525411YJ2742F",
+      "areaM2": 665.6542999896267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525412YJ2742F",
+      "areaM2": 222.93380000564682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525413YJ2742F",
+      "areaM2": 406.76780001150814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525414YJ2742D",
+      "areaM2": 315.59339999545796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525415YJ2742D",
+      "areaM2": 311.1101999958298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525416YJ2742D",
+      "areaM2": 209.7298000093519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525417YJ2742D",
+      "areaM2": 205.6838499940956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525433YJ2742F",
+      "areaM2": 239.28045000435654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4525434YJ2742F",
+      "areaM2": 340.6350999822294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624701YJ2742D",
+      "areaM2": 224.6698000177023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624702YJ2742D",
+      "areaM2": 179.08039998992558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624703YJ2742D",
+      "areaM2": 288.47715001564086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624704YJ2742D",
+      "areaM2": 350.4612000055663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624705YJ2742D",
+      "areaM2": 295.87074999124866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624706YJ2742D",
+      "areaM2": 268.0336499923892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624707YJ2742D",
+      "areaM2": 339.2775000162382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624715YJ2742D",
+      "areaM2": 356.37330001795846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624716YJ2742D",
+      "areaM2": 223.7811999998084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624717YJ2742D",
+      "areaM2": 258.78860000160915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624718YJ2742D",
+      "areaM2": 319.8545999781004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624916YJ2742D",
+      "areaM2": 221.6804999929887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-4624917YJ2742D",
+      "areaM2": 222.7505999931582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

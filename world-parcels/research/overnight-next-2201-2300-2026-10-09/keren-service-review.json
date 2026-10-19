@@ -1,0 +1,91 @@
+{
+  "cityRecord": "city-595-keren.json",
+  "cityCode": 595,
+  "queueRank": 2276,
+  "name": "Keren",
+  "country": "Eritrea",
+  "countryCode": "ER",
+  "pointLatLon": [15.7796354773856, 38.4540906498508],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+      "outcome": "Official Eritrean Ministry of Information report states that the Ministry of Land, Water and Environment opened a cadastre office in Keren on 2012-07-19. It describes land-plot-based information, residential registration, master-plan/survey prerequisites, and Keren Municipal Administration facilitation. This evidences a local cadastre custodian, not a public parcel API."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://shabait.com/2021/04/28/mapping-and-information-center-works-on-development-projects/",
+      "outcome": "Official Ministry of Information report identifies Eritrea's Mapping and Information Center and its land-survey role for development projects. It is a general national mapping route and was not treated as a Keren parcel registry or local public viewer."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.erinewspapers.com/hadas-eritrea/haddas_eritra_14052026.pdf",
+      "outcome": "Tigrinya-language search result contained cadastral terminology and court notices referring to cadastral records, but no public Keren parcel viewer, schema, CRS, or geometry endpoint. It was retained as contextual discovery only, not as a first-party service integration."
+    },
+    {
+      "method": "GET",
+      "url": "https://shabait.com/2012/07/19/ministry-opens-cadastre-office-in-keren-city/",
+      "outcome": "TLS-verified HTTPS GET returned HTTP 200 HTML. The page was an article shell/content page; no viewer configuration, map service URL, parcel schema, CRS, or geometry response was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://shabait.com/wp-json/wp/v2/posts/13006",
+      "outcome": "TLS-verified HTTPS GET returned HTTP 200 JSON for the same official article. It exposed publication metadata and article content only; no parcel data or service configuration was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://shabait.com/",
+      "outcome": "TLS-verified HTTPS GET returned HTTP 200 official Ministry of Information site HTML. No cadastral viewer or public parcel API was linked or exposed in the inspected shell."
+    },
+    {
+      "method": "BOUNDED_ANONYMOUS_PARCEL_REQUEST",
+      "url": null,
+      "outcome": "Not executed because first-party discovery exposed no public map/API endpoint to query safely. No login, credential, CAPTCHA/Cloudflare bypass, or unsafe field request was attempted."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "No safe anonymous parcel geometry endpoint was exposed after first-party discovery and public-shell inspection.",
+      "featureCount": null
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if later exposed anonymously",
+    "polygon geometry if later exposed anonymously",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "A local Keren cadastre office and municipal facilitation are evidenced, but no safe anonymous parcel schema, native identity, CRS, or geometry response was exposed. Adapter qualification remains a separate serial review."
+  },
+  "scopeLimits": [
+    "The exact WUP point [15.7796354773856, 38.4540906498508] was preserved in latitude/longitude order; no coordinate shift or parcel-hit forcing was attempted.",
+    "No exact-point query was possible because no public parcel endpoint was exposed. This is not evidence of citywide parcel absence.",
+    "The 2012 official Keren cadastre-office report establishes a local registry/cadastre custodian but does not establish current digital coverage, public access, field schema, CRS, native identity, or update cadence.",
+    "No GeoJSON sample is retained because no safe anonymous native ID-plus-geometry response was available.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.",
+    "Search result pages, request headers, and page captures are scratch evidence under ignored tmp/valhalla-parcel-research/keren/."
+  ],
+  "uncertainty": "Keren has an officially reported cadastre office under Eritrea's Ministry of Land, Water and Environment, with municipal registration facilitation and survey/master-plan conditions. Current public digital parcel coverage, viewer/API availability, schema, CRS, native identity, licensing, and runtime adapter behavior remain unverified because accessible first-party routes exposed only official prose/content APIs and no parcel service. No citywide absence inference is made."
+}

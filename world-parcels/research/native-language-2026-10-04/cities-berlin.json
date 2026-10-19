@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 132,
+  "city": "Berlin",
+  "countryCode": "DE",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/berlin.json",
+  "query": {
+    "language": "German",
+    "script": "Latin",
+    "text": "Berlin Flurstücke ALKIS offene Geodaten WFS Geoportal parcel service"
+  },
+  "results": [
+    {
+      "title": "Berlin ALKIS cadastral parcel WMS dataset",
+      "url": "https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wms-ee32991f",
+      "kind": "official-open-data",
+      "note": "Official Berlin catalog lists ALKIS parcel dataset."
+    },
+    {
+      "title": "Berlin official cadastral information system",
+      "url": "https://www.berlin.de/sen/stadt/stadtdaten/geoinformation/liegenschaftskataster/",
+      "kind": "official",
+      "note": "States graphical cadastral data are served via Geoportal WMS and WFS."
+    },
+    {
+      "title": "Berlin ALKIS open WFS metadata",
+      "url": "https://www.govdata.de/suche/daten/alkis-berlin",
+      "kind": "government-open-data-catalog",
+      "note": "Indexes the ALKIS parcel download service (WFS)."
+    }
+  ],
+  "assessment": "Excellent citywide official source lead: Berlin ALKIS parcel boundaries are listed in open-data catalogs, with official WFS/WMS service support. Need inspect current WFS endpoint/schema and test exact IDs; prior temporary status remains unchanged.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists.",
+  "subsequentResolution": {
+    "sourceId": "de-be-alkis-flurstuecke-wfs",
+    "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
+    "note": "Discovery result and historical starting status are preserved; actual verified source and registry reconciliation are recorded separately."
+  }
+}

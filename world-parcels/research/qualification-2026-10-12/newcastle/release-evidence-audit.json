@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "4536",
+  "cityName": "Newcastle upon Tyne",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/4536/attempt-2/evidence/full-safe.geojson",
+    "sha256": "97a7718c43b940406c8ad99f144b9d67442299803ebad791f15ee8ac2e4d56aa",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 215
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "6ef9f0c705adf011a9913b9becf1cf9333531fb4e2e14e0b35a57a44cdec90df",
+    "geometryPass": true,
+    "featureCount": 215,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

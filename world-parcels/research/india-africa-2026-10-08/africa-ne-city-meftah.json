@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3846",
+  "queueRank": 19,
+  "wupCityCode": 3846,
+  "name": "Meftah",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "centerLatLon": [
+    36.6354855393707,
+    3.2360931732742
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 19,
+  "population2025": 118483,
+  "annualGrowthPct2015To2025": 8.583561,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [
+    {
+      "path": "research/growth-top20-2026-10-07/city-3846.json",
+      "status": "temporarily_unavailable"
+    }
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-DZ.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Arabic and French",
+    "exactQuery": "مفتاح البليدة الجزائر cadastre parcelles الأراضي المسح العقاري",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+      "https://www.dcwblida.dz/index.php?Itemid=54&id=122&option=com_content&view=article",
+      "https://cour-blida.mjustice.dz/%D9%82%D8%A7%D8%A6%D9%85%D8%A9_%D8%A7%D9%84%D8%AE%D8%A8%D8%B1%D8%A7%D8%A1_%D8%A7%D9%84%D9%85%D8%B9%D8%AA%D9%85%D8%AF%D9%8A%D9%86?page=3",
+      "https://www.ouedkniss.com/terrain-vente-blida-meftah-algerie-d49762319",
+      "https://publications.univ-blida2.dz/lire.php?f=pdf213.pdf",
+      "https://www.ouedkniss.dz/terrain-vente-blida-meftah-algerie-d51156676",
+      "https://mapcarta.com/fr/W451724988",
+      "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/"
+    ],
+    "summary": "Official geoportal/document-extract leads found but host is unavailable; no parcel polygons verified.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.dcwblida.dz/index.php?Itemid=54&id=122&option=com_content&view=article",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://cour-blida.mjustice.dz/%D9%82%D8%A7%D8%A6%D9%85%D8%A9_%D8%A7%D9%84%D8%AE%D8%A8%D8%B1%D8%A7%D8%A1_%D8%A7%D9%84%D9%85%D8%B9%D8%AA%D9%85%D8%AF%D9%8A%D9%86?page=3",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ouedkniss.com/terrain-vente-blida-meftah-algerie-d49762319",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://publications.univ-blida2.dz/lire.php?f=pdf213.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ouedkniss.dz/terrain-vente-blida-meftah-algerie-d51156676",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://mapcarta.com/fr/W451724988",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://khadamatdz.com/services/talab-mustakhraj-mokhattat/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Meftah\" Algeria (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Meftah%22+Algeria+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The public city-specific search found no verified parcel polygons for Meftah; Algeria’s Fadaeldjazair/DGDN portal was previously unavailable, so no target map layer or stable parcel ID was validated.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Retry Fadaeldjazair/DGDN from a working route; if its viewer loads, inspect layer names and test a small Meftah extent for parcel polygons and IDs.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Meftah%22+Algeria+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

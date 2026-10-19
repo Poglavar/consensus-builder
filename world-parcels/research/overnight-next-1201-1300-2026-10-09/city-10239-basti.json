@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:10239",
+  "wupCityCode": 10239,
+  "queueRank": 1236,
+  "rank": 1236,
+  "name": "Basti",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.8009241721327, 82.7436691752189],
+  "centerLatLon": [26.8009241721327, 82.7436691752189],
+  "pointBasis": "Immutable WUP 2025 coordinate, copied without adjustment.",
+  "population2025": 450449,
+  "population2025k": 450.449,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "registryFound": true,
+  "registryBasis": "The official Basti district site directs citizens to UP Bhulekh, and the official Uttar Pradesh BhuNaksha service exposes Basti district revenue-village map levels. This establishes local/state revenue service custody, not citywide parcel coverage.",
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held_pending_serial_review_no_verified_anonymous_geometry",
+  "blocker": "The official BhuNaksha public map shell and level/map endpoints were reachable anonymously, but the plot geometry endpoint returned Missing or invalid Authorization header. A bounded plot-number lookup returned safe plot metadata only; no full geometry was retained. The exact WUP point returned an empty object in the tested village context and is not evidence of citywide absence.",
+  "source": {
+    "sourceId": null,
+    "name": "Government of Uttar Pradesh Bhulekh/BhuNaksha",
+    "url": "https://upbhunaksha.gov.in/home/",
+    "operator": "Board of Revenue, Government of Uttar Pradesh; NIC",
+    "serviceType": "Official public cadastral-map viewer and land-record service",
+    "layer": "BhuNaksha revenue hierarchy: District, Tehsil, Village; map extent and plot lookup services",
+    "geometryType": "Polygon endpoint advertises WKB geometry, but anonymous geometry response was not authorized",
+    "nativeIdField": "id (returned by plot-number lookup; stable identity not independently qualified)",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "not_verified",
+    "outputCrs": "EPSG:32644 for tested Basti village map extent",
+    "nativeIdEvidence": "Anonymous MapInfo/getPlotByPlotNo returned id and kide for plot numbers 1, 2, and 10; the geometry route v1/khasramap/plot required Authorization.",
+    "attributesRequested": ["safe parcel id", "plot number", "geometry", "map extent", "CRS"],
+    "sampleCount": 0,
+    "sampleFile": null
+  },
+  "sampleFile": null,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Basti district and Uttar Pradesh BhuNaksha public service; one bounded Basti tehsil/village hierarchy and map extent were inspected.",
+    "verifiedOpenScope": "Public hierarchy and map extent verified for tested village 181394 (अइलहा); anonymous full parcel geometry not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "remainingUncertainty": "Whether anonymous parcel geometry is available through another current public route, whether the BhuNaksha authorization requirement is session-specific, and whether the urban WUP point corresponds to a mapped revenue village remain unresolved.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Basti Uttar Pradesh official cadastral map parcel map Bhulekh BhuNaksha",
+        "result": "Search identified the official Basti district administration site, official Uttar Pradesh BhuNaksha viewer, and UP Board of Revenue service page. First-party pages were then inspected.",
+        "actualResultUrls": ["https://basti.nic.in/", "https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/"]
+      },
+      {
+        "language": "Hindi",
+        "query": "बस्ती उत्तर प्रदेश आधिकारिक भू नक्शा खसरा नक्शा",
+        "result": "Hindi search identified the official Hindi Basti district page and the same UP Bhulekh/BhuNaksha services; no separate city parcel API was found in search results.",
+        "actualResultUrls": ["https://basti.nic.in/hi/", "https://upbhunaksha.gov.in/home/", "https://bor.up.nic.in/"]
+      }
+    ],
+    "portals": [
+      {"url": "https://basti.nic.in/", "operator": "District Administration Basti, Government of Uttar Pradesh", "scope": "Official district site; its services include Online Khatauni and the district map context."},
+      {"url": "https://upbhunaksha.gov.in/home/", "operator": "Board of Revenue, Government of Uttar Pradesh / NIC", "scope": "Official public BhuNaksha viewer with District, Tehsil, Village hierarchy and plot search."},
+      {"url": "https://upbhulekh.gov.in/", "operator": "Government of Uttar Pradesh / NIC", "scope": "Official land-record/Khatauni service linked by the Basti district site."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/getStateName", "operator": "Government of Uttar Pradesh / NIC", "scope": "Current viewer API configuration confirmed state name Uttar Pradesh."}
+    ],
+    "requests": [
+      {"url": "https://upbhunaksha.gov.in/home/", "method": "GET; anonymous public read", "httpStatus": 200, "contentType": "text/html", "assessment": "Current Angular viewer loaded and exposed API configuration; no login used."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "method": "POST; anonymous; form parameters level=1,2,3", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned official Hindi district/tehsil/village hierarchy. Basti district code 185, Basti tehsil code 00939, tested village 181394 अइलहा."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "method": "POST; anonymous; gisLevels=185,00939,181394", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned map extent and CRS EPSG:32644 for the tested village."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY", "method": "POST; anonymous; exact WUP point unchanged", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned {} for the tested village context; not treated as citywide absence."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo", "method": "POST; anonymous; plot numbers 1, 2, 10", "httpStatus": 200, "contentType": "application/json", "assessment": "Returned safe plot metadata including id, kide, and bounding-box values; no full geometry."},
+      {"url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot", "method": "GET; anonymous; safe id from plot 1", "httpStatus": 401, "contentType": "application/json", "assessment": "Returned Missing or invalid Authorization header; no token or credential was requested or used."}
+    ]
+  },
+  "checkedAt": "2026-10-09",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "sourceIds": [],
+  "adapterReady": false,
+  "nextStep": "Serial reviewer may determine whether a public session/bootstrap route can qualify the geometry endpoint; do not enable runtime or infer absence from the exact-point empty response."
+}

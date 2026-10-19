@@ -1,0 +1,4487 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T18:48:46.109Z",
+  "city": "beirut-plots",
+  "descriptor": {
+    "id": "lb-bbed-beirut-parcels",
+    "name": "Beirut Urban Lab municipal parcel basemap",
+    "adapter": "arcgis",
+    "endpoint": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1",
+    "idField": "PID",
+    "idType": "string",
+    "idPrefix": "LB-BBED-",
+    "objectIdField": "OBJECTID_1",
+    "outFields": [
+      "OBJECTID_1",
+      "PID",
+      "GlobalID"
+    ],
+    "parcelNumberField": "PID",
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        35.499,
+        33.895,
+        35.5,
+        33.896
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        35.5,
+        33.895,
+        35.501,
+        33.896
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        35.501,
+        33.895,
+        35.502,
+        33.896
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        35.499,
+        33.896,
+        35.5,
+        33.897
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        35.5,
+        33.896,
+        35.501,
+        33.897
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        35.501,
+        33.896,
+        35.502,
+        33.897
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        35.499,
+        33.897,
+        35.5,
+        33.898
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        35.5,
+        33.897,
+        35.501,
+        33.898
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        35.501,
+        33.897,
+        35.502,
+        33.898
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        35.5,
+        33.894,
+        35.501,
+        33.895
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        35.5,
+        33.898,
+        35.501,
+        33.899
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        35.498,
+        33.896,
+        35.499,
+        33.897
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        35.502,
+        33.896,
+        35.503,
+        33.897
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1316,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        35.499,
+        33.895,
+        35.5,
+        33.896
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_15",
+          "geometrySha256": "595b306c2811454db5f9d0f85e48e5dc315c163523ee8d790e9e05b036705a4d"
+        },
+        {
+          "id": "LB-BBED-Zo_939",
+          "geometrySha256": "526dd143358239311eb20533b2d55b0d01c99c10a7951f9cacff8cb53d7f1490"
+        },
+        {
+          "id": "LB-BBED-Zo_1019",
+          "geometrySha256": "be059c44c63c5fa5f7a5eb946d04d6ddda41a41f495efe227309bd61593cc241"
+        },
+        {
+          "id": "LB-BBED-Zo_1138",
+          "geometrySha256": "92edeeb9ae78752e425cbaa50fa8c8d370208688dee3d3f9af770c5ce113bb20"
+        },
+        {
+          "id": "LB-BBED-Zo_1141",
+          "geometrySha256": "8d808b0a5c00ecab6a08aaa24a44e388dd39a5416a12cb0bd6d792f702ebe27c"
+        },
+        {
+          "id": "LB-BBED-Zo_1139",
+          "geometrySha256": "a538ede3679cbb1031b760de891ce0ccf9a3a167bc61ba3f8b0c9e25284e282e"
+        },
+        {
+          "id": "LB-BBED-Zo_1137",
+          "geometrySha256": "06d0eaed897d1b447ab8cb3a4448769df3b03983479aaad91fe7ea059f4803f2"
+        },
+        {
+          "id": "LB-BBED-Zo_68",
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "id": "LB-BBED-Zo_74",
+          "geometrySha256": "c7feb00cfcad833ce0e58014489ad3ff1295a73277e31c75ccd593ab888e0e72"
+        },
+        {
+          "id": "LB-BBED-Zo_73",
+          "geometrySha256": "31dd10d8ab1108e23bf31486f4beec26fa8f785c8ef406cfe38b0e9bea7aefc7"
+        },
+        {
+          "id": "LB-BBED-Zo_908",
+          "geometrySha256": "02e59f7edb3268d0c6e5d05f75c653ebfa257164ae8b3be5839222ca3af78aa0"
+        },
+        {
+          "id": "LB-BBED-Zo_83",
+          "geometrySha256": "d0837d21cf3ac82529397aa4f8ca0d2d948d496c0b4655a715f046c09ff71c62"
+        },
+        {
+          "id": "LB-BBED-Zo_89",
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "id": "LB-BBED-Zo_26",
+          "geometrySha256": "29aa0bc5e00dbc5eba1e11384168a8f8daab75b461b0a2aee5dac55fc2cbbd5e"
+        },
+        {
+          "id": "LB-BBED-Zo_1128",
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "id": "LB-BBED-Zo_1158",
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1059,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        35.5,
+        33.895,
+        35.501,
+        33.896
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_978",
+          "geometrySha256": "85452988ab4822800d9d2ac8ff7d93e90564d084827512e59a908e4329d058f3"
+        },
+        {
+          "id": "LB-BBED-Zo_9",
+          "geometrySha256": "90ae64defecb9a7cdae730206e6689da7f825b9b50c7d431417f37ed7049de7f"
+        },
+        {
+          "id": "LB-BBED-Zo_11",
+          "geometrySha256": "85db2fafb1753539fedc757b3db6b6dafcdc38d1e806273cb462249beb9bf48f"
+        },
+        {
+          "id": "LB-BBED-Zo_1136",
+          "geometrySha256": "ee840428c7a8889a27182a32e60c2282a9c62a426a583704e28f586ba845147d"
+        },
+        {
+          "id": "LB-BBED-Zo_1138",
+          "geometrySha256": "92edeeb9ae78752e425cbaa50fa8c8d370208688dee3d3f9af770c5ce113bb20"
+        },
+        {
+          "id": "LB-BBED-Zo_89",
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "id": "LB-BBED-Zo_3",
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 1138,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        35.501,
+        33.895,
+        35.502,
+        33.896
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_1036",
+          "geometrySha256": "beaa0eb442ce4e27671add4ba2fd2c2ce2a9e14c8c4d3634a28f36616f60a8f6"
+        },
+        {
+          "id": "LB-BBED-Zo_9",
+          "geometrySha256": "90ae64defecb9a7cdae730206e6689da7f825b9b50c7d431417f37ed7049de7f"
+        },
+        {
+          "id": "LB-BBED-Zo_108",
+          "geometrySha256": "81ecfde2178dc649bbe43cd0ef6b9369e448fb164678eef31ebc825ac07bd95b"
+        },
+        {
+          "id": "LB-BBED-Zo_1134",
+          "geometrySha256": "fcfed0bc115829813b214979e5240b71a4b881fe4ad2148c9d1995ecf7a19200"
+        },
+        {
+          "id": "LB-BBED-Zo_1132",
+          "geometrySha256": "9c2af5c68b98b16161a449c59a1fd296a63f7a358858f970579d5d4ec1c10597"
+        },
+        {
+          "id": "LB-BBED-Po_7",
+          "geometrySha256": "4f2d29e92a6a6ddf8c2d0600b0b552a049548c6a6e123d4c8bf26a1271bd3891"
+        },
+        {
+          "id": "LB-BBED-Zo_4",
+          "geometrySha256": "fb3d929afdc5520eb64ef5f47c6f359de4b7d1e92bf6590045c7fcb9d70053e6"
+        },
+        {
+          "id": "LB-BBED-Zo_3",
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 1055,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        35.499,
+        33.896,
+        35.5,
+        33.897
+      ],
+      "complete": true,
+      "count": 22,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_68",
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "id": "LB-BBED-Zo_89",
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "id": "LB-BBED-Mi_1133",
+          "geometrySha256": "95b5c7fac4213f7b874cb3aba893557158cc9eaa54791789ef985378299b4b03"
+        },
+        {
+          "id": "LB-BBED-Mi_800",
+          "geometrySha256": "342193389b0ed3ed73c3f0ee855fd3c28d58fd3739cd3eefe4818797367c11b5"
+        },
+        {
+          "id": "LB-BBED-Zo_1128",
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "id": "LB-BBED-Zo_101",
+          "geometrySha256": "55b545dd04fa78eea41ebe55378b2f118bca197b728a9ba3430117b9bd4df59f"
+        },
+        {
+          "id": "LB-BBED-Zo_1158",
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        },
+        {
+          "id": "LB-BBED-Mi_1114",
+          "geometrySha256": "a797f06f39cc66eab39e0a7235f7061f246a1b655052924259f6843118a41f53"
+        },
+        {
+          "id": "LB-BBED-Mi_1136",
+          "geometrySha256": "077aef3741e40c6e6e453e32c1d60c962dccab17d6013756b488dd6f5d87a41b"
+        },
+        {
+          "id": "LB-BBED-Mi_1135",
+          "geometrySha256": "c4ac6c865d9885513a3f7292d528f759d96831fb7e8261ee5bc4fee0d90a2d1a"
+        },
+        {
+          "id": "LB-BBED-Mi_808",
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "id": "LB-BBED-Mi_1209",
+          "geometrySha256": "189788051a7895af22fb1eb9446cd5e954ff4a9b9d14d48596f93867c8071a5f"
+        },
+        {
+          "id": "LB-BBED-Mi_812",
+          "geometrySha256": "0c16a8e93dc86cd5bba32d76db26e12e97574627e1d41fee5395fb5250cf8492"
+        },
+        {
+          "id": "LB-BBED-Mi_1134",
+          "geometrySha256": "b9f5fdd2d25587b123476b3cbc2a062e5a8a4a63108ef26f91b7f67bf9c7591c"
+        },
+        {
+          "id": "LB-BBED-Mi_816",
+          "geometrySha256": "c1c659c39e89a3e2f7eed7bcafef16e06c2c249d05af283e132644e30372de1b"
+        },
+        {
+          "id": "LB-BBED-Mi_1210",
+          "geometrySha256": "c79a0dbd2ddb6a83a6115c2f67039a6fb5f8b723a70c69a424bbc894495f780a"
+        },
+        {
+          "id": "LB-BBED-Mi_1372",
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        },
+        {
+          "id": "LB-BBED-Mi_1371",
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        },
+        {
+          "id": "LB-BBED-Zo_77",
+          "geometrySha256": "f4347f98d6b61c57f332d048574bf24a4a0307ebabe25283b05cbb917867d65a"
+        },
+        {
+          "id": "LB-BBED-Mi_1370",
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        },
+        {
+          "id": "LB-BBED-Mi_1374",
+          "geometrySha256": "a3c4598d586fd9470d8eb4db7bc3abda5096c0aa64aa75a837b9f0b8c970dcf0"
+        },
+        {
+          "id": "LB-BBED-Mi_1373",
+          "geometrySha256": "7230046595df17493cc3835e3b9c79e689dc8f10e02427d197b7565aec0721b1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 814,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        35.5,
+        33.896,
+        35.501,
+        33.897
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_89",
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "id": "LB-BBED-Zo_3",
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "id": "LB-BBED-Zo_1158",
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        },
+        {
+          "id": "LB-BBED-Zo_1131",
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        },
+        {
+          "id": "LB-BBED-Zo_77",
+          "geometrySha256": "f4347f98d6b61c57f332d048574bf24a4a0307ebabe25283b05cbb917867d65a"
+        },
+        {
+          "id": "LB-BBED-Mi_831",
+          "geometrySha256": "255409ccc841f1adc1d76c03f156c3557d789be1b6669b9aa82d59f6def3847c"
+        },
+        {
+          "id": "LB-BBED-Mi_1370",
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1030,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        35.501,
+        33.896,
+        35.502,
+        33.897
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_3",
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "id": "LB-BBED-Zo_1131",
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 844,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        35.499,
+        33.897,
+        35.5,
+        33.898
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "LB-BBED-Mi_1114",
+          "geometrySha256": "a797f06f39cc66eab39e0a7235f7061f246a1b655052924259f6843118a41f53"
+        },
+        {
+          "id": "LB-BBED-Mi_808",
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "id": "LB-BBED-Mi_1209",
+          "geometrySha256": "189788051a7895af22fb1eb9446cd5e954ff4a9b9d14d48596f93867c8071a5f"
+        },
+        {
+          "id": "LB-BBED-Mi_812",
+          "geometrySha256": "0c16a8e93dc86cd5bba32d76db26e12e97574627e1d41fee5395fb5250cf8492"
+        },
+        {
+          "id": "LB-BBED-Mi_1210",
+          "geometrySha256": "c79a0dbd2ddb6a83a6115c2f67039a6fb5f8b723a70c69a424bbc894495f780a"
+        },
+        {
+          "id": "LB-BBED-Mi_1371",
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        },
+        {
+          "id": "LB-BBED-Mi_1392",
+          "geometrySha256": "e667b3527e95700351050ab6859a09aa24f6fc99dfd0af47753a50e5e413b52c"
+        },
+        {
+          "id": "LB-BBED-Mi_831",
+          "geometrySha256": "255409ccc841f1adc1d76c03f156c3557d789be1b6669b9aa82d59f6def3847c"
+        },
+        {
+          "id": "LB-BBED-Mi_1237",
+          "geometrySha256": "780fd7e40d411ec4b0b5b62d0f10eb7a1d9b5cb410d9e2e9b71e9244a4e2d723"
+        },
+        {
+          "id": "LB-BBED-Mi_1370",
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        },
+        {
+          "id": "LB-BBED-Mi_1374",
+          "geometrySha256": "a3c4598d586fd9470d8eb4db7bc3abda5096c0aa64aa75a837b9f0b8c970dcf0"
+        },
+        {
+          "id": "LB-BBED-Mi_1373",
+          "geometrySha256": "7230046595df17493cc3835e3b9c79e689dc8f10e02427d197b7565aec0721b1"
+        },
+        {
+          "id": "LB-BBED-Mi_1379",
+          "geometrySha256": "ef7f895d76954ad275dea194b4c70c42a4c96bcad5ee88e74074ebecf9a89756"
+        },
+        {
+          "id": "LB-BBED-Mi_1380",
+          "geometrySha256": "d6d40ce3536807abd38a10482b19dd4432a5aeaadd436c4ae82bc29d83552c4f"
+        },
+        {
+          "id": "LB-BBED-Mi_1412",
+          "geometrySha256": "34a99bba67f5da0f219258b3e2c58aa0e7c0ca7f84a1f7316b9c5dcd8a7a3b6e"
+        },
+        {
+          "id": "LB-BBED-Mi_28",
+          "geometrySha256": "eec7db4eb419d3ba6848f29b74c0ea7dc573251da16a79b59c31455e9c953ad8"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 841,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        35.5,
+        33.897,
+        35.501,
+        33.898
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_1131",
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        },
+        {
+          "id": "LB-BBED-Mi_911",
+          "geometrySha256": "b34463c60cdb4ee26f77846119a8310f7f8dfc2d86bb1543ec2c2c9d6464aac0"
+        },
+        {
+          "id": "LB-BBED-Mi_834",
+          "geometrySha256": "418535af5cd935bceb34f2a096b9079bb59b92011c46a8dbabce9184e4715f1b"
+        },
+        {
+          "id": "LB-BBED-Mi_831",
+          "geometrySha256": "255409ccc841f1adc1d76c03f156c3557d789be1b6669b9aa82d59f6def3847c"
+        },
+        {
+          "id": "LB-BBED-Mi_1370",
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        },
+        {
+          "id": "LB-BBED-Mi_1430",
+          "geometrySha256": "5ad5baaaf374a7d23d7a7b22804fa4ded4332f8f4d7cc307532c07d6c6288aee"
+        },
+        {
+          "id": "LB-BBED-Mi_1410",
+          "geometrySha256": "2cb1320dd0d16cb22cf8f30db28f5a4431eccdc190cd36034a9f1eccbc4ee7b0"
+        },
+        {
+          "id": "LB-BBED-Mi_1412",
+          "geometrySha256": "34a99bba67f5da0f219258b3e2c58aa0e7c0ca7f84a1f7316b9c5dcd8a7a3b6e"
+        },
+        {
+          "id": "LB-BBED-Mi_1437",
+          "geometrySha256": "733662ca0d7a7c8e2fa19349a40a53734637530aaa9bf1fbc63fba931190a29c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1054,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        35.501,
+        33.897,
+        35.502,
+        33.898
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_3",
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "id": "LB-BBED-Zo_1131",
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        },
+        {
+          "id": "LB-BBED-Zo_1",
+          "geometrySha256": "f6821ce5016bfbcf14ceab2ea2a491186dfe8e1190665c1025f0132631a58b91"
+        },
+        {
+          "id": "LB-BBED-Mi_834",
+          "geometrySha256": "418535af5cd935bceb34f2a096b9079bb59b92011c46a8dbabce9184e4715f1b"
+        },
+        {
+          "id": "LB-BBED-Mi_855",
+          "geometrySha256": "8cc3b2f831cceeed3cc49952ab1cc36b53c6e6f41e544a3d2d8e3f923f5afc86"
+        },
+        {
+          "id": "LB-BBED-Mi_859",
+          "geometrySha256": "48209b31f9839c1069b506cb78f919c42fc30e44e8f44f51cf288ed705e8c316"
+        },
+        {
+          "id": "LB-BBED-Mi_1375",
+          "geometrySha256": "69820cc735470d174f8102fc2cff737cecf07e0a280b7478fab7d6cfe9d05b81"
+        },
+        {
+          "id": "LB-BBED-Mi_1430",
+          "geometrySha256": "5ad5baaaf374a7d23d7a7b22804fa4ded4332f8f4d7cc307532c07d6c6288aee"
+        },
+        {
+          "id": "LB-BBED-Mi_1410",
+          "geometrySha256": "2cb1320dd0d16cb22cf8f30db28f5a4431eccdc190cd36034a9f1eccbc4ee7b0"
+        },
+        {
+          "id": "LB-BBED-Mi_1437",
+          "geometrySha256": "733662ca0d7a7c8e2fa19349a40a53734637530aaa9bf1fbc63fba931190a29c"
+        },
+        {
+          "id": "LB-BBED-Zo_2",
+          "geometrySha256": "e0d1dbda7a9896025e69fd90e453ff91ba40b6c1f38a130409544889dbfca817"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 782,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        35.5,
+        33.894,
+        35.501,
+        33.895
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_122",
+          "geometrySha256": "d339f4bd70d675dfbf0b0fb4a3a7970ba2de7bdc9271196b8fdf233dd8e4c8df"
+        },
+        {
+          "id": "LB-BBED-Zo_24",
+          "geometrySha256": "ddb300b971a9d118bb09daa8b490d8689fce54818ff34eb7fd917f52e7ea5c14"
+        },
+        {
+          "id": "LB-BBED-Zo_115",
+          "geometrySha256": "1cd519175cd04943938c132a9e7accf5a5c93bab701aface7a48d3d74274decc"
+        },
+        {
+          "id": "LB-BBED-Zo_978",
+          "geometrySha256": "85452988ab4822800d9d2ac8ff7d93e90564d084827512e59a908e4329d058f3"
+        },
+        {
+          "id": "LB-BBED-Zo_11",
+          "geometrySha256": "85db2fafb1753539fedc757b3db6b6dafcdc38d1e806273cb462249beb9bf48f"
+        },
+        {
+          "id": "LB-BBED-Zo_1132",
+          "geometrySha256": "9c2af5c68b98b16161a449c59a1fd296a63f7a358858f970579d5d4ec1c10597"
+        },
+        {
+          "id": "LB-BBED-Zo_1136",
+          "geometrySha256": "ee840428c7a8889a27182a32e60c2282a9c62a426a583704e28f586ba845147d"
+        },
+        {
+          "id": "LB-BBED-Zo_1138",
+          "geometrySha256": "92edeeb9ae78752e425cbaa50fa8c8d370208688dee3d3f9af770c5ce113bb20"
+        },
+        {
+          "id": "LB-BBED-Zo_1137",
+          "geometrySha256": "06d0eaed897d1b447ab8cb3a4448769df3b03983479aaad91fe7ea059f4803f2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 909,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        35.5,
+        33.898,
+        35.501,
+        33.899
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "LB-BBED-Mi_911",
+          "geometrySha256": "b34463c60cdb4ee26f77846119a8310f7f8dfc2d86bb1543ec2c2c9d6464aac0"
+        },
+        {
+          "id": "LB-BBED-Mi_1380",
+          "geometrySha256": "d6d40ce3536807abd38a10482b19dd4432a5aeaadd436c4ae82bc29d83552c4f"
+        },
+        {
+          "id": "LB-BBED-Mi_1381",
+          "geometrySha256": "89728499b1dc9191e01354a19e42968ba21d20cd0b3b00e1bd01167e8a12c527"
+        },
+        {
+          "id": "LB-BBED-Mi_1410",
+          "geometrySha256": "2cb1320dd0d16cb22cf8f30db28f5a4431eccdc190cd36034a9f1eccbc4ee7b0"
+        },
+        {
+          "id": "LB-BBED-Mi_1412",
+          "geometrySha256": "34a99bba67f5da0f219258b3e2c58aa0e7c0ca7f84a1f7316b9c5dcd8a7a3b6e"
+        },
+        {
+          "id": "LB-BBED-Mi_2",
+          "geometrySha256": "ed1aac30b1d2aa798af83e6e3ca390b5df5e12d349d822c832e1335f65c36120"
+        },
+        {
+          "id": "LB-BBED-Mi_928",
+          "geometrySha256": "e191e6e8e0cf97cae666a487cf273a2efa0f3661591a9a473c5d6e4b64b9a585"
+        },
+        {
+          "id": "LB-BBED-Mi_1383",
+          "geometrySha256": "e913d52d238af9442a9551fe4b94760adab3225f2f364fb21ac4b66ae6a52f06"
+        },
+        {
+          "id": "LB-BBED-Mi_1363",
+          "geometrySha256": "e812e0768869c0f35ca3763a959367cce4294326f4c014e03236cf09d3471c9b"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 945,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        35.498,
+        33.896,
+        35.499,
+        33.897
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "LB-BBED-Zo_68",
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "id": "LB-BBED-Zo_62",
+          "geometrySha256": "9703afdf246f9f8d611af58748fbe55435453ab5ac8135282dd94b9ee66be03d"
+        },
+        {
+          "id": "LB-BBED-Mi_731",
+          "geometrySha256": "86123b116bae9906d1b5448079728613890863302c94e7027cb4077d5d6f6538"
+        },
+        {
+          "id": "LB-BBED-Mi_800",
+          "geometrySha256": "342193389b0ed3ed73c3f0ee855fd3c28d58fd3739cd3eefe4818797367c11b5"
+        },
+        {
+          "id": "LB-BBED-Mi_802",
+          "geometrySha256": "c5be0cc64f282b7b174d57bea9510ca6b266764d313da9396889ca378e168f93"
+        },
+        {
+          "id": "LB-BBED-Mi_803",
+          "geometrySha256": "dd87c7351e910c2836e0bf87e9b891cf3086e88f51ca3d03663f995ca2ee1205"
+        },
+        {
+          "id": "LB-BBED-Mi_856",
+          "geometrySha256": "b853b5f2419f9abed3ad94e791971901b12e05fab367d6871408151a5c0ad3c3"
+        },
+        {
+          "id": "LB-BBED-Mi_1423",
+          "geometrySha256": "cb97ae4038dbaa250bba2b7223c37bcade6e7eb110c2c28570b125cec4371490"
+        },
+        {
+          "id": "LB-BBED-Zo_1128",
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "id": "LB-BBED-Mi_990",
+          "geometrySha256": "a70da9fc8f95db964b1248d67c9946edb3ffb20240f96c1a33f444c0915928e1"
+        },
+        {
+          "id": "LB-BBED-Mi_808",
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "id": "LB-BBED-Mi_797",
+          "geometrySha256": "619a37edaa05dc9297e1f9ba20ab381a17c21c1517192520db1a56f0b1e3edf7"
+        },
+        {
+          "id": "LB-BBED-Mi_799",
+          "geometrySha256": "b67f241c2dd0ef6808835d42166ba0e72b37ea42215be6baf1a1409baf56994b"
+        },
+        {
+          "id": "LB-BBED-Mi_795",
+          "geometrySha256": "08e639a4526afcf9b6b019edf5afbb0fb936a5efb199dacb1d211f689c15f092"
+        },
+        {
+          "id": "LB-BBED-Mi_794",
+          "geometrySha256": "e8e90c58e7da3c5f2993fd5016d302173967cf488b16bb6be301522b25826b44"
+        },
+        {
+          "id": "LB-BBED-Mi_183",
+          "geometrySha256": "6db6defda2247b3161aa5cf69e9de930f410ba09ce05cd1e1a84075fe73e681c"
+        },
+        {
+          "id": "LB-BBED-Mi_1372",
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        },
+        {
+          "id": "LB-BBED-Mi_1371",
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 911,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        35.502,
+        33.896,
+        35.503,
+        33.897
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "LB-BBED-Po_773",
+          "geometrySha256": "ae408490c8d784f521d8c0d26d37b320bdc797007d69e55bb62284684a0b7c72"
+        },
+        {
+          "id": "LB-BBED-Po_1378",
+          "geometrySha256": "7fbc5c0cbdab0cdc46c45003dd874d9b6abc0228810f1ab67b949f31cc5e3a05"
+        },
+        {
+          "id": "LB-BBED-Po_1406",
+          "geometrySha256": "185d2310dc4f5c284864476bf6be507522b36f541479fddec8a4cba349afc384"
+        },
+        {
+          "id": "LB-BBED-Po_790",
+          "geometrySha256": "031ac48e24e97bcc1422bf45c3e7bf94b17e6eaca1229b3ba9fa5c448553f8c9"
+        },
+        {
+          "id": "LB-BBED-Zo_3",
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "id": "LB-BBED-Po_1360",
+          "geometrySha256": "0bd9b41ef9a20ef6c831cb14cae8d85c3bdb6cac0f55554c51a3fe268ce3bac7"
+        },
+        {
+          "id": "LB-BBED-Po_1454",
+          "geometrySha256": "b1769701ba6f68b3b1de4fb5cec97cf25d1c724e540adf9a8eb1dc5e85395650"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 3014,
+      "requestIndexes": [
+        39,
+        48
+      ],
+      "count": 22,
+      "geometryPages": 8,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 1793,
+      "requestIndexes": [
+        49,
+        51
+      ],
+      "count": 40,
+      "ids": [
+        "LB-BBED-Mi_1114",
+        "LB-BBED-Mi_1133",
+        "LB-BBED-Mi_1134",
+        "LB-BBED-Mi_1135",
+        "LB-BBED-Mi_1136",
+        "LB-BBED-Mi_1209",
+        "LB-BBED-Mi_1210",
+        "LB-BBED-Mi_1237",
+        "LB-BBED-Mi_1363",
+        "LB-BBED-Mi_1370",
+        "LB-BBED-Mi_1371",
+        "LB-BBED-Mi_1372",
+        "LB-BBED-Mi_1373",
+        "LB-BBED-Mi_1374",
+        "LB-BBED-Mi_1375",
+        "LB-BBED-Mi_1379",
+        "LB-BBED-Mi_1380",
+        "LB-BBED-Mi_1381",
+        "LB-BBED-Mi_1383",
+        "LB-BBED-Mi_1392",
+        "LB-BBED-Mi_1410",
+        "LB-BBED-Mi_1412",
+        "LB-BBED-Mi_1423",
+        "LB-BBED-Mi_1430",
+        "LB-BBED-Mi_1437",
+        "LB-BBED-Mi_183",
+        "LB-BBED-Mi_2",
+        "LB-BBED-Mi_28",
+        "LB-BBED-Mi_731",
+        "LB-BBED-Mi_794",
+        "LB-BBED-Mi_795",
+        "LB-BBED-Mi_797",
+        "LB-BBED-Mi_799",
+        "LB-BBED-Mi_800",
+        "LB-BBED-Mi_802",
+        "LB-BBED-Mi_803",
+        "LB-BBED-Mi_808",
+        "LB-BBED-Mi_812",
+        "LB-BBED-Mi_816",
+        "LB-BBED-Mi_831"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 1030,
+      "requestIndexes": [
+        52,
+        54
+      ],
+      "count": 40,
+      "ids": [
+        "LB-BBED-Mi_834",
+        "LB-BBED-Mi_855",
+        "LB-BBED-Mi_856",
+        "LB-BBED-Mi_859",
+        "LB-BBED-Mi_911",
+        "LB-BBED-Mi_928",
+        "LB-BBED-Mi_990",
+        "LB-BBED-Po_1360",
+        "LB-BBED-Po_1378",
+        "LB-BBED-Po_1406",
+        "LB-BBED-Po_1454",
+        "LB-BBED-Po_7",
+        "LB-BBED-Po_773",
+        "LB-BBED-Po_790",
+        "LB-BBED-Zo_1",
+        "LB-BBED-Zo_101",
+        "LB-BBED-Zo_1019",
+        "LB-BBED-Zo_1036",
+        "LB-BBED-Zo_108",
+        "LB-BBED-Zo_11",
+        "LB-BBED-Zo_1128",
+        "LB-BBED-Zo_1131",
+        "LB-BBED-Zo_1132",
+        "LB-BBED-Zo_1134",
+        "LB-BBED-Zo_1136",
+        "LB-BBED-Zo_1137",
+        "LB-BBED-Zo_1138",
+        "LB-BBED-Zo_1139",
+        "LB-BBED-Zo_1141",
+        "LB-BBED-Zo_115",
+        "LB-BBED-Zo_1158",
+        "LB-BBED-Zo_122",
+        "LB-BBED-Zo_15",
+        "LB-BBED-Zo_2",
+        "LB-BBED-Zo_24",
+        "LB-BBED-Zo_26",
+        "LB-BBED-Zo_3",
+        "LB-BBED-Zo_4",
+        "LB-BBED-Zo_62",
+        "LB-BBED-Zo_68"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 1004,
+      "requestIndexes": [
+        55,
+        57
+      ],
+      "count": 9,
+      "ids": [
+        "LB-BBED-Zo_73",
+        "LB-BBED-Zo_74",
+        "LB-BBED-Zo_77",
+        "LB-BBED-Zo_83",
+        "LB-BBED-Zo_89",
+        "LB-BBED-Zo_9",
+        "LB-BBED-Zo_908",
+        "LB-BBED-Zo_939",
+        "LB-BBED-Zo_978"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 642,
+      "requestIndexes": [
+        58,
+        59
+      ],
+      "absentIds": [
+        "LB-BBED-ZZ_999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 726,
+      "requestIndexes": [
+        60,
+        62
+      ],
+      "selectedParcelId": "LB-BBED-Mi_799",
+      "count": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 1001,
+      "requestIndexes": [
+        63,
+        65
+      ],
+      "selectedParcelId": "LB-BBED-Mi_799",
+      "coverage": "complete",
+      "siteM2": 662.36,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.895%2C35.5%2C33.896&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:46.111Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "count": 16
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.895%2C35.5%2C33.896&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:46.682Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 202,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        17579,
+        17576,
+        16963,
+        16975,
+        16964,
+        18115,
+        18118,
+        17577,
+        16976,
+        16962,
+        17580,
+        16973,
+        17575,
+        17592,
+        16974,
+        17578
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=17579%2C17576%2C16963%2C16975%2C16964%2C18115%2C18118%2C17577%2C16976%2C16962%2C17580%2C16973%2C17575%2C17592%2C16974%2C17578",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:46.963Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 27168,
+      "features": [
+        {
+          "transportId": 16962,
+          "properties": {
+            "OBJECTID_1": 16962,
+            "PID": "Zo_15",
+            "GlobalID": "dbc9d9f4-0848-4511-aec2-691804b95d1a"
+          },
+          "geometrySha256": "595b306c2811454db5f9d0f85e48e5dc315c163523ee8d790e9e05b036705a4d"
+        },
+        {
+          "transportId": 16963,
+          "properties": {
+            "OBJECTID_1": 16963,
+            "PID": "Zo_939",
+            "GlobalID": "c4959238-1e6b-4eae-9a7e-0f1b8b759597"
+          },
+          "geometrySha256": "526dd143358239311eb20533b2d55b0d01c99c10a7951f9cacff8cb53d7f1490"
+        },
+        {
+          "transportId": 16964,
+          "properties": {
+            "OBJECTID_1": 16964,
+            "PID": "Zo_1019",
+            "GlobalID": "efbab910-af8f-4ea8-9ad2-6fd7c1eec369"
+          },
+          "geometrySha256": "be059c44c63c5fa5f7a5eb946d04d6ddda41a41f495efe227309bd61593cc241"
+        },
+        {
+          "transportId": 16973,
+          "properties": {
+            "OBJECTID_1": 16973,
+            "PID": "Zo_1138",
+            "GlobalID": "f16dc7c4-3270-4f38-908e-e54e7b902ca9"
+          },
+          "geometrySha256": "92edeeb9ae78752e425cbaa50fa8c8d370208688dee3d3f9af770c5ce113bb20"
+        },
+        {
+          "transportId": 16974,
+          "properties": {
+            "OBJECTID_1": 16974,
+            "PID": "Zo_1141",
+            "GlobalID": "a6f296d2-c152-401c-8345-ab5f1b926af7"
+          },
+          "geometrySha256": "8d808b0a5c00ecab6a08aaa24a44e388dd39a5416a12cb0bd6d792f702ebe27c"
+        },
+        {
+          "transportId": 16975,
+          "properties": {
+            "OBJECTID_1": 16975,
+            "PID": "Zo_1139",
+            "GlobalID": "f23bd504-9f61-4640-abf9-a1f5a45babc9"
+          },
+          "geometrySha256": "a538ede3679cbb1031b760de891ce0ccf9a3a167bc61ba3f8b0c9e25284e282e"
+        },
+        {
+          "transportId": 16976,
+          "properties": {
+            "OBJECTID_1": 16976,
+            "PID": "Zo_1137",
+            "GlobalID": "59abbbc2-429c-436c-bd7c-2ff1fec28a28"
+          },
+          "geometrySha256": "06d0eaed897d1b447ab8cb3a4448769df3b03983479aaad91fe7ea059f4803f2"
+        },
+        {
+          "transportId": 17575,
+          "properties": {
+            "OBJECTID_1": 17575,
+            "PID": "Zo_68",
+            "GlobalID": "ca928536-568f-440c-ad1e-21ae9036157d"
+          },
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "transportId": 17576,
+          "properties": {
+            "OBJECTID_1": 17576,
+            "PID": "Zo_74",
+            "GlobalID": "7da1ccdb-344e-48c0-8e6e-b5e7fcd6189e"
+          },
+          "geometrySha256": "c7feb00cfcad833ce0e58014489ad3ff1295a73277e31c75ccd593ab888e0e72"
+        },
+        {
+          "transportId": 17577,
+          "properties": {
+            "OBJECTID_1": 17577,
+            "PID": "Zo_73",
+            "GlobalID": "beb5b877-8a36-47c8-a247-7e80bc4af576"
+          },
+          "geometrySha256": "31dd10d8ab1108e23bf31486f4beec26fa8f785c8ef406cfe38b0e9bea7aefc7"
+        },
+        {
+          "transportId": 17578,
+          "properties": {
+            "OBJECTID_1": 17578,
+            "PID": "Zo_908",
+            "GlobalID": "205db0e0-f721-4b7d-bbab-250376442d73"
+          },
+          "geometrySha256": "02e59f7edb3268d0c6e5d05f75c653ebfa257164ae8b3be5839222ca3af78aa0"
+        },
+        {
+          "transportId": 17579,
+          "properties": {
+            "OBJECTID_1": 17579,
+            "PID": "Zo_83",
+            "GlobalID": "6c601e4b-6451-4b9d-8ec1-5620baaa285d"
+          },
+          "geometrySha256": "d0837d21cf3ac82529397aa4f8ca0d2d948d496c0b4655a715f046c09ff71c62"
+        },
+        {
+          "transportId": 17580,
+          "properties": {
+            "OBJECTID_1": 17580,
+            "PID": "Zo_89",
+            "GlobalID": "c8b992ca-590b-47f3-a0ef-3f64911b1827"
+          },
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "transportId": 17592,
+          "properties": {
+            "OBJECTID_1": 17592,
+            "PID": "Zo_26",
+            "GlobalID": "878b9fd3-1427-42af-8a1b-3f5e270f3005"
+          },
+          "geometrySha256": "29aa0bc5e00dbc5eba1e11384168a8f8daab75b461b0a2aee5dac55fc2cbbd5e"
+        },
+        {
+          "transportId": 18115,
+          "properties": {
+            "OBJECTID_1": 18115,
+            "PID": "Zo_1128",
+            "GlobalID": "223ee580-5b3b-4513-b2ec-6b1cdd249fb3"
+          },
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "transportId": 18118,
+          "properties": {
+            "OBJECTID_1": 18118,
+            "PID": "Zo_1158",
+            "GlobalID": "ee8a7456-0b81-4286-adcc-a2e6ddd91010"
+          },
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.895%2C35.501%2C33.896&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:47.427Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 7
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.895%2C35.501%2C33.896&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:47.857Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 148,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        16972,
+        16967,
+        17580,
+        16973,
+        16965,
+        18116,
+        16968
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=16972%2C16967%2C17580%2C16973%2C16965%2C18116%2C16968",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:48.206Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 13633,
+      "features": [
+        {
+          "transportId": 16965,
+          "properties": {
+            "OBJECTID_1": 16965,
+            "PID": "Zo_978",
+            "GlobalID": "ea2622ce-138c-47b5-a81e-be0216402f42"
+          },
+          "geometrySha256": "85452988ab4822800d9d2ac8ff7d93e90564d084827512e59a908e4329d058f3"
+        },
+        {
+          "transportId": 16967,
+          "properties": {
+            "OBJECTID_1": 16967,
+            "PID": "Zo_9",
+            "GlobalID": "83f74531-c867-4049-a4d2-05cbd94e62ad"
+          },
+          "geometrySha256": "90ae64defecb9a7cdae730206e6689da7f825b9b50c7d431417f37ed7049de7f"
+        },
+        {
+          "transportId": 16968,
+          "properties": {
+            "OBJECTID_1": 16968,
+            "PID": "Zo_11",
+            "GlobalID": "6f756874-e7a9-41f5-a9de-6ec8a21b5d60"
+          },
+          "geometrySha256": "85db2fafb1753539fedc757b3db6b6dafcdc38d1e806273cb462249beb9bf48f"
+        },
+        {
+          "transportId": 16972,
+          "properties": {
+            "OBJECTID_1": 16972,
+            "PID": "Zo_1136",
+            "GlobalID": "4cc48952-d037-4746-ab10-700d75da17c3"
+          },
+          "geometrySha256": "ee840428c7a8889a27182a32e60c2282a9c62a426a583704e28f586ba845147d"
+        },
+        {
+          "transportId": 16973,
+          "properties": {
+            "OBJECTID_1": 16973,
+            "PID": "Zo_1138",
+            "GlobalID": "f16dc7c4-3270-4f38-908e-e54e7b902ca9"
+          },
+          "geometrySha256": "92edeeb9ae78752e425cbaa50fa8c8d370208688dee3d3f9af770c5ce113bb20"
+        },
+        {
+          "transportId": 17580,
+          "properties": {
+            "OBJECTID_1": 17580,
+            "PID": "Zo_89",
+            "GlobalID": "c8b992ca-590b-47f3-a0ef-3f64911b1827"
+          },
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "transportId": 18116,
+          "properties": {
+            "OBJECTID_1": 18116,
+            "PID": "Zo_3",
+            "GlobalID": "8b7966c7-058b-4bec-a4bb-505914a1da6b"
+          },
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.501%2C33.895%2C35.502%2C33.896&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:48.488Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 8
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.501%2C33.895%2C35.502%2C33.896&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:49.025Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 154,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        16966,
+        16969,
+        17419,
+        16970,
+        17574,
+        16967,
+        18116,
+        16971
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=16966%2C16969%2C17419%2C16970%2C17574%2C16967%2C18116%2C16971",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:49.311Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 21120,
+      "features": [
+        {
+          "transportId": 16966,
+          "properties": {
+            "OBJECTID_1": 16966,
+            "PID": "Zo_1036",
+            "GlobalID": "80ee1dbf-388c-42b3-b1d2-b78c0698d7d5"
+          },
+          "geometrySha256": "beaa0eb442ce4e27671add4ba2fd2c2ce2a9e14c8c4d3634a28f36616f60a8f6"
+        },
+        {
+          "transportId": 16967,
+          "properties": {
+            "OBJECTID_1": 16967,
+            "PID": "Zo_9",
+            "GlobalID": "83f74531-c867-4049-a4d2-05cbd94e62ad"
+          },
+          "geometrySha256": "90ae64defecb9a7cdae730206e6689da7f825b9b50c7d431417f37ed7049de7f"
+        },
+        {
+          "transportId": 16969,
+          "properties": {
+            "OBJECTID_1": 16969,
+            "PID": "Zo_108",
+            "GlobalID": "8b861fa4-73c0-44f8-908a-6b373f87f950"
+          },
+          "geometrySha256": "81ecfde2178dc649bbe43cd0ef6b9369e448fb164678eef31ebc825ac07bd95b"
+        },
+        {
+          "transportId": 16970,
+          "properties": {
+            "OBJECTID_1": 16970,
+            "PID": "Zo_1134",
+            "GlobalID": "5933b24a-e349-41a8-87fd-782f040ee633"
+          },
+          "geometrySha256": "fcfed0bc115829813b214979e5240b71a4b881fe4ad2148c9d1995ecf7a19200"
+        },
+        {
+          "transportId": 16971,
+          "properties": {
+            "OBJECTID_1": 16971,
+            "PID": "Zo_1132",
+            "GlobalID": "34d413d4-b668-4115-bc5b-811d0375b4ab"
+          },
+          "geometrySha256": "9c2af5c68b98b16161a449c59a1fd296a63f7a358858f970579d5d4ec1c10597"
+        },
+        {
+          "transportId": 17419,
+          "properties": {
+            "OBJECTID_1": 17419,
+            "PID": "Po_7",
+            "GlobalID": "b77c7db4-eb72-487c-9324-f9f3ff3dd9d9"
+          },
+          "geometrySha256": "4f2d29e92a6a6ddf8c2d0600b0b552a049548c6a6e123d4c8bf26a1271bd3891"
+        },
+        {
+          "transportId": 17574,
+          "properties": {
+            "OBJECTID_1": 17574,
+            "PID": "Zo_4",
+            "GlobalID": "12e94f39-d4a2-4cf6-9641-9a6bfd99b539"
+          },
+          "geometrySha256": "fb3d929afdc5520eb64ef5f47c6f359de4b7d1e92bf6590045c7fcb9d70053e6"
+        },
+        {
+          "transportId": 18116,
+          "properties": {
+            "OBJECTID_1": 18116,
+            "PID": "Zo_3",
+            "GlobalID": "8b7966c7-058b-4bec-a4bb-505914a1da6b"
+          },
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.896%2C35.5%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:49.626Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "count": 22
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.896%2C35.5%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:50.082Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 238,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18383,
+        18369,
+        18380,
+        18117,
+        17908,
+        18375,
+        18115,
+        18384,
+        18372,
+        18833,
+        18118,
+        18373,
+        18831,
+        17580,
+        18668,
+        18370,
+        17575,
+        18832,
+        18371,
+        18382,
+        18374,
+        17910
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18383%2C18369%2C18380%2C18117%2C17908%2C18375%2C18115%2C18384%2C18372%2C18833%2C18118%2C18373%2C18831%2C17580%2C18668%2C18370%2C17575%2C18832%2C18371%2C18382%2C18374%2C17910",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:50.389Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 30604,
+      "features": [
+        {
+          "transportId": 17575,
+          "properties": {
+            "OBJECTID_1": 17575,
+            "PID": "Zo_68",
+            "GlobalID": "ca928536-568f-440c-ad1e-21ae9036157d"
+          },
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "transportId": 17580,
+          "properties": {
+            "OBJECTID_1": 17580,
+            "PID": "Zo_89",
+            "GlobalID": "c8b992ca-590b-47f3-a0ef-3f64911b1827"
+          },
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "transportId": 17908,
+          "properties": {
+            "OBJECTID_1": 17908,
+            "PID": "Mi_1133",
+            "GlobalID": "f0e12f15-1180-419b-bea2-16a7cc4dae3b"
+          },
+          "geometrySha256": "95b5c7fac4213f7b874cb3aba893557158cc9eaa54791789ef985378299b4b03"
+        },
+        {
+          "transportId": 17910,
+          "properties": {
+            "OBJECTID_1": 17910,
+            "PID": "Mi_800",
+            "GlobalID": "bc8f36b8-56c1-4997-8028-8eccd4977a84"
+          },
+          "geometrySha256": "342193389b0ed3ed73c3f0ee855fd3c28d58fd3739cd3eefe4818797367c11b5"
+        },
+        {
+          "transportId": 18115,
+          "properties": {
+            "OBJECTID_1": 18115,
+            "PID": "Zo_1128",
+            "GlobalID": "223ee580-5b3b-4513-b2ec-6b1cdd249fb3"
+          },
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "transportId": 18117,
+          "properties": {
+            "OBJECTID_1": 18117,
+            "PID": "Zo_101",
+            "GlobalID": "e57dd28e-b759-42e7-900c-117bbbe371d2"
+          },
+          "geometrySha256": "55b545dd04fa78eea41ebe55378b2f118bca197b728a9ba3430117b9bd4df59f"
+        },
+        {
+          "transportId": 18118,
+          "properties": {
+            "OBJECTID_1": 18118,
+            "PID": "Zo_1158",
+            "GlobalID": "ee8a7456-0b81-4286-adcc-a2e6ddd91010"
+          },
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        },
+        {
+          "transportId": 18369,
+          "properties": {
+            "OBJECTID_1": 18369,
+            "PID": "Mi_1114",
+            "GlobalID": "9fd283e2-e791-400c-9a68-1081e840b4e2"
+          },
+          "geometrySha256": "a797f06f39cc66eab39e0a7235f7061f246a1b655052924259f6843118a41f53"
+        },
+        {
+          "transportId": 18370,
+          "properties": {
+            "OBJECTID_1": 18370,
+            "PID": "Mi_1136",
+            "GlobalID": "55e76988-9bc8-41bb-9670-989b1c33c45f"
+          },
+          "geometrySha256": "077aef3741e40c6e6e453e32c1d60c962dccab17d6013756b488dd6f5d87a41b"
+        },
+        {
+          "transportId": 18371,
+          "properties": {
+            "OBJECTID_1": 18371,
+            "PID": "Mi_1135",
+            "GlobalID": "5b65964e-1cdf-47f2-a53c-2cb70c6f87c1"
+          },
+          "geometrySha256": "c4ac6c865d9885513a3f7292d528f759d96831fb7e8261ee5bc4fee0d90a2d1a"
+        },
+        {
+          "transportId": 18372,
+          "properties": {
+            "OBJECTID_1": 18372,
+            "PID": "Mi_808",
+            "GlobalID": "2be78368-569b-4039-8026-7c147d5c6028"
+          },
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "transportId": 18373,
+          "properties": {
+            "OBJECTID_1": 18373,
+            "PID": "Mi_1209",
+            "GlobalID": "ed90ce0a-ed6e-421f-966a-a4129faa5606"
+          },
+          "geometrySha256": "189788051a7895af22fb1eb9446cd5e954ff4a9b9d14d48596f93867c8071a5f"
+        },
+        {
+          "transportId": 18374,
+          "properties": {
+            "OBJECTID_1": 18374,
+            "PID": "Mi_812",
+            "GlobalID": "b94eace0-56cd-4104-973f-3f4587be71f1"
+          },
+          "geometrySha256": "0c16a8e93dc86cd5bba32d76db26e12e97574627e1d41fee5395fb5250cf8492"
+        },
+        {
+          "transportId": 18375,
+          "properties": {
+            "OBJECTID_1": 18375,
+            "PID": "Mi_1134",
+            "GlobalID": "eed10e94-d887-41ff-a518-b675d536df25"
+          },
+          "geometrySha256": "b9f5fdd2d25587b123476b3cbc2a062e5a8a4a63108ef26f91b7f67bf9c7591c"
+        },
+        {
+          "transportId": 18380,
+          "properties": {
+            "OBJECTID_1": 18380,
+            "PID": "Mi_816",
+            "GlobalID": "b5999dfe-5f8b-457e-8009-c6249f4c48f6"
+          },
+          "geometrySha256": "c1c659c39e89a3e2f7eed7bcafef16e06c2c249d05af283e132644e30372de1b"
+        },
+        {
+          "transportId": 18382,
+          "properties": {
+            "OBJECTID_1": 18382,
+            "PID": "Mi_1210",
+            "GlobalID": "fb8ebfeb-2395-4f1a-aebc-ad6d0bb97722"
+          },
+          "geometrySha256": "c79a0dbd2ddb6a83a6115c2f67039a6fb5f8b723a70c69a424bbc894495f780a"
+        },
+        {
+          "transportId": 18383,
+          "properties": {
+            "OBJECTID_1": 18383,
+            "PID": "Mi_1372",
+            "GlobalID": "1b87970f-758c-4004-998b-b822b2a9a1de"
+          },
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        },
+        {
+          "transportId": 18384,
+          "properties": {
+            "OBJECTID_1": 18384,
+            "PID": "Mi_1371",
+            "GlobalID": "0a6b6ac4-38b8-457b-a6a5-c03dd9edbc24"
+          },
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        },
+        {
+          "transportId": 18668,
+          "properties": {
+            "OBJECTID_1": 18668,
+            "PID": "Zo_77",
+            "GlobalID": "81f99655-b0e9-4037-b12c-0b6429cc35cf"
+          },
+          "geometrySha256": "f4347f98d6b61c57f332d048574bf24a4a0307ebabe25283b05cbb917867d65a"
+        },
+        {
+          "transportId": 18831,
+          "properties": {
+            "OBJECTID_1": 18831,
+            "PID": "Mi_1370",
+            "GlobalID": "2051abc4-0053-4c03-9ec0-b8b5e58d1e08"
+          },
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        },
+        {
+          "transportId": 18832,
+          "properties": {
+            "OBJECTID_1": 18832,
+            "PID": "Mi_1374",
+            "GlobalID": "a22be98b-4959-4ea7-8311-6d2fac041ba4"
+          },
+          "geometrySha256": "a3c4598d586fd9470d8eb4db7bc3abda5096c0aa64aa75a837b9f0b8c970dcf0"
+        },
+        {
+          "transportId": 18833,
+          "properties": {
+            "OBJECTID_1": 18833,
+            "PID": "Mi_1373",
+            "GlobalID": "f14f4a1f-482d-401d-87dc-510c4e1ca711"
+          },
+          "geometrySha256": "7230046595df17493cc3835e3b9c79e689dc8f10e02427d197b7565aec0721b1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.896%2C35.501%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:50.681Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 7
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.896%2C35.501%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:50.923Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 148,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18827,
+        18118,
+        18831,
+        17580,
+        18668,
+        18116,
+        18666
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18827%2C18118%2C18831%2C17580%2C18668%2C18116%2C18666",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:51.214Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 15847,
+      "features": [
+        {
+          "transportId": 17580,
+          "properties": {
+            "OBJECTID_1": 17580,
+            "PID": "Zo_89",
+            "GlobalID": "c8b992ca-590b-47f3-a0ef-3f64911b1827"
+          },
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "transportId": 18116,
+          "properties": {
+            "OBJECTID_1": 18116,
+            "PID": "Zo_3",
+            "GlobalID": "8b7966c7-058b-4bec-a4bb-505914a1da6b"
+          },
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "transportId": 18118,
+          "properties": {
+            "OBJECTID_1": 18118,
+            "PID": "Zo_1158",
+            "GlobalID": "ee8a7456-0b81-4286-adcc-a2e6ddd91010"
+          },
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        },
+        {
+          "transportId": 18666,
+          "properties": {
+            "OBJECTID_1": 18666,
+            "PID": "Zo_1131",
+            "GlobalID": "727b9f72-a400-4298-b52e-cfdfab686f78"
+          },
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        },
+        {
+          "transportId": 18668,
+          "properties": {
+            "OBJECTID_1": 18668,
+            "PID": "Zo_77",
+            "GlobalID": "81f99655-b0e9-4037-b12c-0b6429cc35cf"
+          },
+          "geometrySha256": "f4347f98d6b61c57f332d048574bf24a4a0307ebabe25283b05cbb917867d65a"
+        },
+        {
+          "transportId": 18827,
+          "properties": {
+            "OBJECTID_1": 18827,
+            "PID": "Mi_831",
+            "GlobalID": "2f4f05b2-cf68-4943-a868-e140682ec0d0"
+          },
+          "geometrySha256": "255409ccc841f1adc1d76c03f156c3557d789be1b6669b9aa82d59f6def3847c"
+        },
+        {
+          "transportId": 18831,
+          "properties": {
+            "OBJECTID_1": 18831,
+            "PID": "Mi_1370",
+            "GlobalID": "2051abc4-0053-4c03-9ec0-b8b5e58d1e08"
+          },
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.501%2C33.896%2C35.502%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:51.496Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 2
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.501%2C33.896%2C35.502%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:51.795Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 118,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18116,
+        18666
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18116%2C18666",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:52.091Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5954,
+      "features": [
+        {
+          "transportId": 18116,
+          "properties": {
+            "OBJECTID_1": 18116,
+            "PID": "Zo_3",
+            "GlobalID": "8b7966c7-058b-4bec-a4bb-505914a1da6b"
+          },
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "transportId": 18666,
+          "properties": {
+            "OBJECTID_1": 18666,
+            "PID": "Zo_1131",
+            "GlobalID": "727b9f72-a400-4298-b52e-cfdfab686f78"
+          },
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.897%2C35.5%2C33.898&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:52.530Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "count": 16
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.897%2C35.5%2C33.898&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:52.809Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 202,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18369,
+        18827,
+        18841,
+        18835,
+        18830,
+        18384,
+        18372,
+        18833,
+        18373,
+        18834,
+        18831,
+        18832,
+        18820,
+        18840,
+        18382,
+        18374
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18369%2C18827%2C18841%2C18835%2C18830%2C18384%2C18372%2C18833%2C18373%2C18834%2C18831%2C18832%2C18820%2C18840%2C18382%2C18374",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:53.126Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 30734,
+      "features": [
+        {
+          "transportId": 18369,
+          "properties": {
+            "OBJECTID_1": 18369,
+            "PID": "Mi_1114",
+            "GlobalID": "9fd283e2-e791-400c-9a68-1081e840b4e2"
+          },
+          "geometrySha256": "a797f06f39cc66eab39e0a7235f7061f246a1b655052924259f6843118a41f53"
+        },
+        {
+          "transportId": 18372,
+          "properties": {
+            "OBJECTID_1": 18372,
+            "PID": "Mi_808",
+            "GlobalID": "2be78368-569b-4039-8026-7c147d5c6028"
+          },
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "transportId": 18373,
+          "properties": {
+            "OBJECTID_1": 18373,
+            "PID": "Mi_1209",
+            "GlobalID": "ed90ce0a-ed6e-421f-966a-a4129faa5606"
+          },
+          "geometrySha256": "189788051a7895af22fb1eb9446cd5e954ff4a9b9d14d48596f93867c8071a5f"
+        },
+        {
+          "transportId": 18374,
+          "properties": {
+            "OBJECTID_1": 18374,
+            "PID": "Mi_812",
+            "GlobalID": "b94eace0-56cd-4104-973f-3f4587be71f1"
+          },
+          "geometrySha256": "0c16a8e93dc86cd5bba32d76db26e12e97574627e1d41fee5395fb5250cf8492"
+        },
+        {
+          "transportId": 18382,
+          "properties": {
+            "OBJECTID_1": 18382,
+            "PID": "Mi_1210",
+            "GlobalID": "fb8ebfeb-2395-4f1a-aebc-ad6d0bb97722"
+          },
+          "geometrySha256": "c79a0dbd2ddb6a83a6115c2f67039a6fb5f8b723a70c69a424bbc894495f780a"
+        },
+        {
+          "transportId": 18384,
+          "properties": {
+            "OBJECTID_1": 18384,
+            "PID": "Mi_1371",
+            "GlobalID": "0a6b6ac4-38b8-457b-a6a5-c03dd9edbc24"
+          },
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        },
+        {
+          "transportId": 18820,
+          "properties": {
+            "OBJECTID_1": 18820,
+            "PID": "Mi_1392",
+            "GlobalID": "fdc2a504-ce63-41e4-9504-490fba217565"
+          },
+          "geometrySha256": "e667b3527e95700351050ab6859a09aa24f6fc99dfd0af47753a50e5e413b52c"
+        },
+        {
+          "transportId": 18827,
+          "properties": {
+            "OBJECTID_1": 18827,
+            "PID": "Mi_831",
+            "GlobalID": "2f4f05b2-cf68-4943-a868-e140682ec0d0"
+          },
+          "geometrySha256": "255409ccc841f1adc1d76c03f156c3557d789be1b6669b9aa82d59f6def3847c"
+        },
+        {
+          "transportId": 18830,
+          "properties": {
+            "OBJECTID_1": 18830,
+            "PID": "Mi_1237",
+            "GlobalID": "245b9177-848f-4ef2-b294-83526e8b1503"
+          },
+          "geometrySha256": "780fd7e40d411ec4b0b5b62d0f10eb7a1d9b5cb410d9e2e9b71e9244a4e2d723"
+        },
+        {
+          "transportId": 18831,
+          "properties": {
+            "OBJECTID_1": 18831,
+            "PID": "Mi_1370",
+            "GlobalID": "2051abc4-0053-4c03-9ec0-b8b5e58d1e08"
+          },
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        },
+        {
+          "transportId": 18832,
+          "properties": {
+            "OBJECTID_1": 18832,
+            "PID": "Mi_1374",
+            "GlobalID": "a22be98b-4959-4ea7-8311-6d2fac041ba4"
+          },
+          "geometrySha256": "a3c4598d586fd9470d8eb4db7bc3abda5096c0aa64aa75a837b9f0b8c970dcf0"
+        },
+        {
+          "transportId": 18833,
+          "properties": {
+            "OBJECTID_1": 18833,
+            "PID": "Mi_1373",
+            "GlobalID": "f14f4a1f-482d-401d-87dc-510c4e1ca711"
+          },
+          "geometrySha256": "7230046595df17493cc3835e3b9c79e689dc8f10e02427d197b7565aec0721b1"
+        },
+        {
+          "transportId": 18834,
+          "properties": {
+            "OBJECTID_1": 18834,
+            "PID": "Mi_1379",
+            "GlobalID": "626e6960-692b-4580-b742-8f748e4ab6b5"
+          },
+          "geometrySha256": "ef7f895d76954ad275dea194b4c70c42a4c96bcad5ee88e74074ebecf9a89756"
+        },
+        {
+          "transportId": 18835,
+          "properties": {
+            "OBJECTID_1": 18835,
+            "PID": "Mi_1380",
+            "GlobalID": "d1d11897-9725-477d-b639-932f13449b33"
+          },
+          "geometrySha256": "d6d40ce3536807abd38a10482b19dd4432a5aeaadd436c4ae82bc29d83552c4f"
+        },
+        {
+          "transportId": 18840,
+          "properties": {
+            "OBJECTID_1": 18840,
+            "PID": "Mi_1412",
+            "GlobalID": "aef5e683-43ea-4b51-99b0-4e144a1ec952"
+          },
+          "geometrySha256": "34a99bba67f5da0f219258b3e2c58aa0e7c0ca7f84a1f7316b9c5dcd8a7a3b6e"
+        },
+        {
+          "transportId": 18841,
+          "properties": {
+            "OBJECTID_1": 18841,
+            "PID": "Mi_28",
+            "GlobalID": "73040fab-3a3d-477a-8ec4-4f7c55d2bf3b"
+          },
+          "geometrySha256": "eec7db4eb419d3ba6848f29b74c0ea7dc573251da16a79b59c31455e9c953ad8"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.897%2C35.501%2C33.898&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:53.375Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 9
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.897%2C35.501%2C33.898&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:53.673Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 160,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18838,
+        18827,
+        18842,
+        18839,
+        18831,
+        18825,
+        18826,
+        18840,
+        18666
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18838%2C18827%2C18842%2C18839%2C18831%2C18825%2C18826%2C18840%2C18666",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:53.932Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14859,
+      "features": [
+        {
+          "transportId": 18666,
+          "properties": {
+            "OBJECTID_1": 18666,
+            "PID": "Zo_1131",
+            "GlobalID": "727b9f72-a400-4298-b52e-cfdfab686f78"
+          },
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        },
+        {
+          "transportId": 18825,
+          "properties": {
+            "OBJECTID_1": 18825,
+            "PID": "Mi_911",
+            "GlobalID": "b38a183c-de14-4969-84fd-eab25de9d1dd"
+          },
+          "geometrySha256": "b34463c60cdb4ee26f77846119a8310f7f8dfc2d86bb1543ec2c2c9d6464aac0"
+        },
+        {
+          "transportId": 18826,
+          "properties": {
+            "OBJECTID_1": 18826,
+            "PID": "Mi_834",
+            "GlobalID": "0f5ce919-0885-4632-b631-5f8fd5e5cbf3"
+          },
+          "geometrySha256": "418535af5cd935bceb34f2a096b9079bb59b92011c46a8dbabce9184e4715f1b"
+        },
+        {
+          "transportId": 18827,
+          "properties": {
+            "OBJECTID_1": 18827,
+            "PID": "Mi_831",
+            "GlobalID": "2f4f05b2-cf68-4943-a868-e140682ec0d0"
+          },
+          "geometrySha256": "255409ccc841f1adc1d76c03f156c3557d789be1b6669b9aa82d59f6def3847c"
+        },
+        {
+          "transportId": 18831,
+          "properties": {
+            "OBJECTID_1": 18831,
+            "PID": "Mi_1370",
+            "GlobalID": "2051abc4-0053-4c03-9ec0-b8b5e58d1e08"
+          },
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        },
+        {
+          "transportId": 18838,
+          "properties": {
+            "OBJECTID_1": 18838,
+            "PID": "Mi_1430",
+            "GlobalID": "47c2a7ad-4d02-4edf-8c96-30c1683c50c9"
+          },
+          "geometrySha256": "5ad5baaaf374a7d23d7a7b22804fa4ded4332f8f4d7cc307532c07d6c6288aee"
+        },
+        {
+          "transportId": 18839,
+          "properties": {
+            "OBJECTID_1": 18839,
+            "PID": "Mi_1410",
+            "GlobalID": "70303721-7f65-4c8c-a858-c539035dbcca"
+          },
+          "geometrySha256": "2cb1320dd0d16cb22cf8f30db28f5a4431eccdc190cd36034a9f1eccbc4ee7b0"
+        },
+        {
+          "transportId": 18840,
+          "properties": {
+            "OBJECTID_1": 18840,
+            "PID": "Mi_1412",
+            "GlobalID": "aef5e683-43ea-4b51-99b0-4e144a1ec952"
+          },
+          "geometrySha256": "34a99bba67f5da0f219258b3e2c58aa0e7c0ca7f84a1f7316b9c5dcd8a7a3b6e"
+        },
+        {
+          "transportId": 18842,
+          "properties": {
+            "OBJECTID_1": 18842,
+            "PID": "Mi_1437",
+            "GlobalID": "1c6a6e38-a9d0-4654-b138-a03d2a6a382f"
+          },
+          "geometrySha256": "733662ca0d7a7c8e2fa19349a40a53734637530aaa9bf1fbc63fba931190a29c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.501%2C33.897%2C35.502%2C33.898&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:54.217Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "count": 11
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.501%2C33.897%2C35.502%2C33.898&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:54.667Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 172,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18838,
+        19182,
+        18667,
+        18842,
+        18839,
+        18828,
+        18837,
+        18116,
+        18826,
+        18829,
+        18666
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18838%2C19182%2C18667%2C18842%2C18839%2C18828%2C18837%2C18116%2C18826%2C18829%2C18666",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:54.962Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 18417,
+      "features": [
+        {
+          "transportId": 18116,
+          "properties": {
+            "OBJECTID_1": 18116,
+            "PID": "Zo_3",
+            "GlobalID": "8b7966c7-058b-4bec-a4bb-505914a1da6b"
+          },
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "transportId": 18666,
+          "properties": {
+            "OBJECTID_1": 18666,
+            "PID": "Zo_1131",
+            "GlobalID": "727b9f72-a400-4298-b52e-cfdfab686f78"
+          },
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        },
+        {
+          "transportId": 18667,
+          "properties": {
+            "OBJECTID_1": 18667,
+            "PID": "Zo_1",
+            "GlobalID": "a7149eb1-9ffb-4267-a24c-f178b5944a64"
+          },
+          "geometrySha256": "f6821ce5016bfbcf14ceab2ea2a491186dfe8e1190665c1025f0132631a58b91"
+        },
+        {
+          "transportId": 18826,
+          "properties": {
+            "OBJECTID_1": 18826,
+            "PID": "Mi_834",
+            "GlobalID": "0f5ce919-0885-4632-b631-5f8fd5e5cbf3"
+          },
+          "geometrySha256": "418535af5cd935bceb34f2a096b9079bb59b92011c46a8dbabce9184e4715f1b"
+        },
+        {
+          "transportId": 18828,
+          "properties": {
+            "OBJECTID_1": 18828,
+            "PID": "Mi_855",
+            "GlobalID": "ffaef50c-60a9-4a2f-b8be-d31ad85ed9ad"
+          },
+          "geometrySha256": "8cc3b2f831cceeed3cc49952ab1cc36b53c6e6f41e544a3d2d8e3f923f5afc86"
+        },
+        {
+          "transportId": 18829,
+          "properties": {
+            "OBJECTID_1": 18829,
+            "PID": "Mi_859",
+            "GlobalID": "33a9675f-5ca1-4e86-8ffa-fead32590341"
+          },
+          "geometrySha256": "48209b31f9839c1069b506cb78f919c42fc30e44e8f44f51cf288ed705e8c316"
+        },
+        {
+          "transportId": 18837,
+          "properties": {
+            "OBJECTID_1": 18837,
+            "PID": "Mi_1375",
+            "GlobalID": "3e0484ec-6f8e-47a1-a922-5e0970ea8b05"
+          },
+          "geometrySha256": "69820cc735470d174f8102fc2cff737cecf07e0a280b7478fab7d6cfe9d05b81"
+        },
+        {
+          "transportId": 18838,
+          "properties": {
+            "OBJECTID_1": 18838,
+            "PID": "Mi_1430",
+            "GlobalID": "47c2a7ad-4d02-4edf-8c96-30c1683c50c9"
+          },
+          "geometrySha256": "5ad5baaaf374a7d23d7a7b22804fa4ded4332f8f4d7cc307532c07d6c6288aee"
+        },
+        {
+          "transportId": 18839,
+          "properties": {
+            "OBJECTID_1": 18839,
+            "PID": "Mi_1410",
+            "GlobalID": "70303721-7f65-4c8c-a858-c539035dbcca"
+          },
+          "geometrySha256": "2cb1320dd0d16cb22cf8f30db28f5a4431eccdc190cd36034a9f1eccbc4ee7b0"
+        },
+        {
+          "transportId": 18842,
+          "properties": {
+            "OBJECTID_1": 18842,
+            "PID": "Mi_1437",
+            "GlobalID": "1c6a6e38-a9d0-4654-b138-a03d2a6a382f"
+          },
+          "geometrySha256": "733662ca0d7a7c8e2fa19349a40a53734637530aaa9bf1fbc63fba931190a29c"
+        },
+        {
+          "transportId": 19182,
+          "properties": {
+            "OBJECTID_1": 19182,
+            "PID": "Zo_2",
+            "GlobalID": "367ac2bd-bb70-4d2b-a03d-9fbcb7a0d2e4"
+          },
+          "geometrySha256": "e0d1dbda7a9896025e69fd90e453ff91ba40b6c1f38a130409544889dbfca817"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.894%2C35.501%2C33.895&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:55.272Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 9
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.894%2C35.501%2C33.895&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:55.564Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 160,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        16382,
+        16972,
+        16380,
+        16383,
+        16976,
+        16973,
+        16965,
+        16968,
+        16971
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=16382%2C16972%2C16380%2C16383%2C16976%2C16973%2C16965%2C16968%2C16971",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:55.803Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 17949,
+      "features": [
+        {
+          "transportId": 16380,
+          "properties": {
+            "OBJECTID_1": 16380,
+            "PID": "Zo_122",
+            "GlobalID": "32ec604e-8972-475b-8dd2-c3e5f5b4e3d8"
+          },
+          "geometrySha256": "d339f4bd70d675dfbf0b0fb4a3a7970ba2de7bdc9271196b8fdf233dd8e4c8df"
+        },
+        {
+          "transportId": 16382,
+          "properties": {
+            "OBJECTID_1": 16382,
+            "PID": "Zo_24",
+            "GlobalID": "522d6913-7fcf-4ba8-9172-e2a08adc3a2b"
+          },
+          "geometrySha256": "ddb300b971a9d118bb09daa8b490d8689fce54818ff34eb7fd917f52e7ea5c14"
+        },
+        {
+          "transportId": 16383,
+          "properties": {
+            "OBJECTID_1": 16383,
+            "PID": "Zo_115",
+            "GlobalID": "7bde263e-0334-45e0-8a62-48a844deea83"
+          },
+          "geometrySha256": "1cd519175cd04943938c132a9e7accf5a5c93bab701aface7a48d3d74274decc"
+        },
+        {
+          "transportId": 16965,
+          "properties": {
+            "OBJECTID_1": 16965,
+            "PID": "Zo_978",
+            "GlobalID": "ea2622ce-138c-47b5-a81e-be0216402f42"
+          },
+          "geometrySha256": "85452988ab4822800d9d2ac8ff7d93e90564d084827512e59a908e4329d058f3"
+        },
+        {
+          "transportId": 16968,
+          "properties": {
+            "OBJECTID_1": 16968,
+            "PID": "Zo_11",
+            "GlobalID": "6f756874-e7a9-41f5-a9de-6ec8a21b5d60"
+          },
+          "geometrySha256": "85db2fafb1753539fedc757b3db6b6dafcdc38d1e806273cb462249beb9bf48f"
+        },
+        {
+          "transportId": 16971,
+          "properties": {
+            "OBJECTID_1": 16971,
+            "PID": "Zo_1132",
+            "GlobalID": "34d413d4-b668-4115-bc5b-811d0375b4ab"
+          },
+          "geometrySha256": "9c2af5c68b98b16161a449c59a1fd296a63f7a358858f970579d5d4ec1c10597"
+        },
+        {
+          "transportId": 16972,
+          "properties": {
+            "OBJECTID_1": 16972,
+            "PID": "Zo_1136",
+            "GlobalID": "4cc48952-d037-4746-ab10-700d75da17c3"
+          },
+          "geometrySha256": "ee840428c7a8889a27182a32e60c2282a9c62a426a583704e28f586ba845147d"
+        },
+        {
+          "transportId": 16973,
+          "properties": {
+            "OBJECTID_1": 16973,
+            "PID": "Zo_1138",
+            "GlobalID": "f16dc7c4-3270-4f38-908e-e54e7b902ca9"
+          },
+          "geometrySha256": "92edeeb9ae78752e425cbaa50fa8c8d370208688dee3d3f9af770c5ce113bb20"
+        },
+        {
+          "transportId": 16976,
+          "properties": {
+            "OBJECTID_1": 16976,
+            "PID": "Zo_1137",
+            "GlobalID": "59abbbc2-429c-436c-bd7c-2ff1fec28a28"
+          },
+          "geometrySha256": "06d0eaed897d1b447ab8cb3a4448769df3b03983479aaad91fe7ea059f4803f2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.898%2C35.501%2C33.899&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:56.057Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 9
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.5%2C33.898%2C35.501%2C33.899&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:56.402Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 160,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18835,
+        19340,
+        18836,
+        18839,
+        19295,
+        19879,
+        18825,
+        18840,
+        19341
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18835%2C19340%2C18836%2C18839%2C19295%2C19879%2C18825%2C18840%2C19341",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:56.672Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 27851,
+      "features": [
+        {
+          "transportId": 18825,
+          "properties": {
+            "OBJECTID_1": 18825,
+            "PID": "Mi_911",
+            "GlobalID": "b38a183c-de14-4969-84fd-eab25de9d1dd"
+          },
+          "geometrySha256": "b34463c60cdb4ee26f77846119a8310f7f8dfc2d86bb1543ec2c2c9d6464aac0"
+        },
+        {
+          "transportId": 18835,
+          "properties": {
+            "OBJECTID_1": 18835,
+            "PID": "Mi_1380",
+            "GlobalID": "d1d11897-9725-477d-b639-932f13449b33"
+          },
+          "geometrySha256": "d6d40ce3536807abd38a10482b19dd4432a5aeaadd436c4ae82bc29d83552c4f"
+        },
+        {
+          "transportId": 18836,
+          "properties": {
+            "OBJECTID_1": 18836,
+            "PID": "Mi_1381",
+            "GlobalID": "72618a19-e939-454e-8ff9-368cade9dcc6"
+          },
+          "geometrySha256": "89728499b1dc9191e01354a19e42968ba21d20cd0b3b00e1bd01167e8a12c527"
+        },
+        {
+          "transportId": 18839,
+          "properties": {
+            "OBJECTID_1": 18839,
+            "PID": "Mi_1410",
+            "GlobalID": "70303721-7f65-4c8c-a858-c539035dbcca"
+          },
+          "geometrySha256": "2cb1320dd0d16cb22cf8f30db28f5a4431eccdc190cd36034a9f1eccbc4ee7b0"
+        },
+        {
+          "transportId": 18840,
+          "properties": {
+            "OBJECTID_1": 18840,
+            "PID": "Mi_1412",
+            "GlobalID": "aef5e683-43ea-4b51-99b0-4e144a1ec952"
+          },
+          "geometrySha256": "34a99bba67f5da0f219258b3e2c58aa0e7c0ca7f84a1f7316b9c5dcd8a7a3b6e"
+        },
+        {
+          "transportId": 19295,
+          "properties": {
+            "OBJECTID_1": 19295,
+            "PID": "Mi_2",
+            "GlobalID": "e2d9563b-5a83-47dc-a8f1-2f46a3192dcc"
+          },
+          "geometrySha256": "ed1aac30b1d2aa798af83e6e3ca390b5df5e12d349d822c832e1335f65c36120"
+        },
+        {
+          "transportId": 19340,
+          "properties": {
+            "OBJECTID_1": 19340,
+            "PID": "Mi_928",
+            "GlobalID": "d0cfc6e8-17cb-4dba-9631-f6460c6c25e8"
+          },
+          "geometrySha256": "e191e6e8e0cf97cae666a487cf273a2efa0f3661591a9a473c5d6e4b64b9a585"
+        },
+        {
+          "transportId": 19341,
+          "properties": {
+            "OBJECTID_1": 19341,
+            "PID": "Mi_1383",
+            "GlobalID": "1f1bbe84-a53b-4971-8f4a-b713f94a2e3b"
+          },
+          "geometrySha256": "e913d52d238af9442a9551fe4b94760adab3225f2f364fb21ac4b66ae6a52f06"
+        },
+        {
+          "transportId": 19879,
+          "properties": {
+            "OBJECTID_1": 19879,
+            "PID": "Mi_1363",
+            "GlobalID": "74e9df72-b671-4f3c-949a-0b1a239dd555"
+          },
+          "geometrySha256": "e812e0768869c0f35ca3763a959367cce4294326f4c014e03236cf09d3471c9b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.498%2C33.896%2C35.499%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:56.967Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "count": 18
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.498%2C33.896%2C35.499%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:57.208Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 214,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18377,
+        18360,
+        18383,
+        17911,
+        18381,
+        17903,
+        18378,
+        18115,
+        18384,
+        17582,
+        18372,
+        17914,
+        18379,
+        18376,
+        17912,
+        17575,
+        17913,
+        17910
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18377%2C18360%2C18383%2C17911%2C18381%2C17903%2C18378%2C18115%2C18384%2C17582%2C18372%2C17914%2C18379%2C18376%2C17912%2C17575%2C17913%2C17910",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:57.602Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 22814,
+      "features": [
+        {
+          "transportId": 17575,
+          "properties": {
+            "OBJECTID_1": 17575,
+            "PID": "Zo_68",
+            "GlobalID": "ca928536-568f-440c-ad1e-21ae9036157d"
+          },
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "transportId": 17582,
+          "properties": {
+            "OBJECTID_1": 17582,
+            "PID": "Zo_62",
+            "GlobalID": "ed13c8ed-8f16-4bf8-ae30-13c9e6bf5213"
+          },
+          "geometrySha256": "9703afdf246f9f8d611af58748fbe55435453ab5ac8135282dd94b9ee66be03d"
+        },
+        {
+          "transportId": 17903,
+          "properties": {
+            "OBJECTID_1": 17903,
+            "PID": "Mi_731",
+            "GlobalID": "588c63da-6840-4361-9009-1d7103c2ce01"
+          },
+          "geometrySha256": "86123b116bae9906d1b5448079728613890863302c94e7027cb4077d5d6f6538"
+        },
+        {
+          "transportId": 17910,
+          "properties": {
+            "OBJECTID_1": 17910,
+            "PID": "Mi_800",
+            "GlobalID": "bc8f36b8-56c1-4997-8028-8eccd4977a84"
+          },
+          "geometrySha256": "342193389b0ed3ed73c3f0ee855fd3c28d58fd3739cd3eefe4818797367c11b5"
+        },
+        {
+          "transportId": 17911,
+          "properties": {
+            "OBJECTID_1": 17911,
+            "PID": "Mi_802",
+            "GlobalID": "53078c45-6ad0-4193-89ee-118bad36c8c9"
+          },
+          "geometrySha256": "c5be0cc64f282b7b174d57bea9510ca6b266764d313da9396889ca378e168f93"
+        },
+        {
+          "transportId": 17912,
+          "properties": {
+            "OBJECTID_1": 17912,
+            "PID": "Mi_803",
+            "GlobalID": "d3809d8b-3d49-4c06-87eb-84092d797e8b"
+          },
+          "geometrySha256": "dd87c7351e910c2836e0bf87e9b891cf3086e88f51ca3d03663f995ca2ee1205"
+        },
+        {
+          "transportId": 17913,
+          "properties": {
+            "OBJECTID_1": 17913,
+            "PID": "Mi_856",
+            "GlobalID": "ce415ced-a249-447e-bcf2-df8e1fb54fc6"
+          },
+          "geometrySha256": "b853b5f2419f9abed3ad94e791971901b12e05fab367d6871408151a5c0ad3c3"
+        },
+        {
+          "transportId": 17914,
+          "properties": {
+            "OBJECTID_1": 17914,
+            "PID": "Mi_1423",
+            "GlobalID": "e15758da-e17d-482b-864b-375a2f9159b9"
+          },
+          "geometrySha256": "cb97ae4038dbaa250bba2b7223c37bcade6e7eb110c2c28570b125cec4371490"
+        },
+        {
+          "transportId": 18115,
+          "properties": {
+            "OBJECTID_1": 18115,
+            "PID": "Zo_1128",
+            "GlobalID": "223ee580-5b3b-4513-b2ec-6b1cdd249fb3"
+          },
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "transportId": 18360,
+          "properties": {
+            "OBJECTID_1": 18360,
+            "PID": "Mi_990",
+            "GlobalID": "837da121-6b47-40ab-b5d0-90a0be1e6f7e"
+          },
+          "geometrySha256": "a70da9fc8f95db964b1248d67c9946edb3ffb20240f96c1a33f444c0915928e1"
+        },
+        {
+          "transportId": 18372,
+          "properties": {
+            "OBJECTID_1": 18372,
+            "PID": "Mi_808",
+            "GlobalID": "2be78368-569b-4039-8026-7c147d5c6028"
+          },
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "transportId": 18376,
+          "properties": {
+            "OBJECTID_1": 18376,
+            "PID": "Mi_797",
+            "GlobalID": "aa59be7e-bdc8-4744-a215-4dff98dab869"
+          },
+          "geometrySha256": "619a37edaa05dc9297e1f9ba20ab381a17c21c1517192520db1a56f0b1e3edf7"
+        },
+        {
+          "transportId": 18377,
+          "properties": {
+            "OBJECTID_1": 18377,
+            "PID": "Mi_799",
+            "GlobalID": "797d9efa-3e59-4b19-abd0-deca5424297d"
+          },
+          "geometrySha256": "b67f241c2dd0ef6808835d42166ba0e72b37ea42215be6baf1a1409baf56994b"
+        },
+        {
+          "transportId": 18378,
+          "properties": {
+            "OBJECTID_1": 18378,
+            "PID": "Mi_795",
+            "GlobalID": "0bc19038-b350-4a7c-9e6e-d65a95d88faf"
+          },
+          "geometrySha256": "08e639a4526afcf9b6b019edf5afbb0fb936a5efb199dacb1d211f689c15f092"
+        },
+        {
+          "transportId": 18379,
+          "properties": {
+            "OBJECTID_1": 18379,
+            "PID": "Mi_794",
+            "GlobalID": "95c69eb3-2017-4f65-a120-0823134e5a53"
+          },
+          "geometrySha256": "e8e90c58e7da3c5f2993fd5016d302173967cf488b16bb6be301522b25826b44"
+        },
+        {
+          "transportId": 18381,
+          "properties": {
+            "OBJECTID_1": 18381,
+            "PID": "Mi_183",
+            "GlobalID": "8788022e-fa6e-42fa-ae19-bdd1bf033401"
+          },
+          "geometrySha256": "6db6defda2247b3161aa5cf69e9de930f410ba09ce05cd1e1a84075fe73e681c"
+        },
+        {
+          "transportId": 18383,
+          "properties": {
+            "OBJECTID_1": 18383,
+            "PID": "Mi_1372",
+            "GlobalID": "1b87970f-758c-4004-998b-b822b2a9a1de"
+          },
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        },
+        {
+          "transportId": 18384,
+          "properties": {
+            "OBJECTID_1": 18384,
+            "PID": "Mi_1371",
+            "GlobalID": "0a6b6ac4-38b8-457b-a6a5-c03dd9edbc24"
+          },
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.502%2C33.896%2C35.503%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:57.914Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 7
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.502%2C33.896%2C35.503%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:58.197Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 148,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        17925,
+        17926,
+        18410,
+        17414,
+        18116,
+        17924,
+        18883
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=17925%2C17926%2C18410%2C17414%2C18116%2C17924%2C18883",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:58.599Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11923,
+      "features": [
+        {
+          "transportId": 17414,
+          "properties": {
+            "OBJECTID_1": 17414,
+            "PID": "Po_773",
+            "GlobalID": "db0acf63-b012-400f-87ed-32889b765fb7"
+          },
+          "geometrySha256": "ae408490c8d784f521d8c0d26d37b320bdc797007d69e55bb62284684a0b7c72"
+        },
+        {
+          "transportId": 17924,
+          "properties": {
+            "OBJECTID_1": 17924,
+            "PID": "Po_1378",
+            "GlobalID": "e5daf5fd-6759-475b-a3b9-9446912d65fe"
+          },
+          "geometrySha256": "7fbc5c0cbdab0cdc46c45003dd874d9b6abc0228810f1ab67b949f31cc5e3a05"
+        },
+        {
+          "transportId": 17925,
+          "properties": {
+            "OBJECTID_1": 17925,
+            "PID": "Po_1406",
+            "GlobalID": "ee64c899-4efe-4d2f-883d-f31068c9861e"
+          },
+          "geometrySha256": "185d2310dc4f5c284864476bf6be507522b36f541479fddec8a4cba349afc384"
+        },
+        {
+          "transportId": 17926,
+          "properties": {
+            "OBJECTID_1": 17926,
+            "PID": "Po_790",
+            "GlobalID": "e2f178fa-d2ff-4758-9e35-a145c510017d"
+          },
+          "geometrySha256": "031ac48e24e97bcc1422bf45c3e7bf94b17e6eaca1229b3ba9fa5c448553f8c9"
+        },
+        {
+          "transportId": 18116,
+          "properties": {
+            "OBJECTID_1": 18116,
+            "PID": "Zo_3",
+            "GlobalID": "8b7966c7-058b-4bec-a4bb-505914a1da6b"
+          },
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "transportId": 18410,
+          "properties": {
+            "OBJECTID_1": 18410,
+            "PID": "Po_1360",
+            "GlobalID": "b1d6a6b8-1655-4fd9-9dee-2430fa7a569b"
+          },
+          "geometrySha256": "0bd9b41ef9a20ef6c831cb14cae8d85c3bdb6cac0f55554c51a3fe268ce3bac7"
+        },
+        {
+          "transportId": 18883,
+          "properties": {
+            "OBJECTID_1": 18883,
+            "PID": "Po_1454",
+            "GlobalID": "9d8237ed-db10-4a80-8f8f-11ad6c89d456"
+          },
+          "geometrySha256": "b1769701ba6f68b3b1de4fb5cec97cf25d1c724e540adf9a8eb1dc5e85395650"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.896%2C35.5%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:58.827Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 70,
+      "count": 22
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.499%2C33.896%2C35.5%2C33.897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:59.074Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 238,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18383,
+        18369,
+        18380,
+        18117,
+        17908,
+        18375,
+        18115,
+        18384,
+        18372,
+        18833,
+        18118,
+        18373,
+        18831,
+        17580,
+        18668,
+        18370,
+        17575,
+        18832,
+        18371,
+        18382,
+        18374,
+        17910
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18383%2C18369%2C18380",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:59.384Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2635,
+      "features": [
+        {
+          "transportId": 18369,
+          "properties": {
+            "OBJECTID_1": 18369,
+            "PID": "Mi_1114",
+            "GlobalID": "9fd283e2-e791-400c-9a68-1081e840b4e2"
+          },
+          "geometrySha256": "a797f06f39cc66eab39e0a7235f7061f246a1b655052924259f6843118a41f53"
+        },
+        {
+          "transportId": 18380,
+          "properties": {
+            "OBJECTID_1": 18380,
+            "PID": "Mi_816",
+            "GlobalID": "b5999dfe-5f8b-457e-8009-c6249f4c48f6"
+          },
+          "geometrySha256": "c1c659c39e89a3e2f7eed7bcafef16e06c2c249d05af283e132644e30372de1b"
+        },
+        {
+          "transportId": 18383,
+          "properties": {
+            "OBJECTID_1": 18383,
+            "PID": "Mi_1372",
+            "GlobalID": "1b87970f-758c-4004-998b-b822b2a9a1de"
+          },
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18117%2C17908%2C18375",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:59.618Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1773,
+      "features": [
+        {
+          "transportId": 17908,
+          "properties": {
+            "OBJECTID_1": 17908,
+            "PID": "Mi_1133",
+            "GlobalID": "f0e12f15-1180-419b-bea2-16a7cc4dae3b"
+          },
+          "geometrySha256": "95b5c7fac4213f7b874cb3aba893557158cc9eaa54791789ef985378299b4b03"
+        },
+        {
+          "transportId": 18117,
+          "properties": {
+            "OBJECTID_1": 18117,
+            "PID": "Zo_101",
+            "GlobalID": "e57dd28e-b759-42e7-900c-117bbbe371d2"
+          },
+          "geometrySha256": "55b545dd04fa78eea41ebe55378b2f118bca197b728a9ba3430117b9bd4df59f"
+        },
+        {
+          "transportId": 18375,
+          "properties": {
+            "OBJECTID_1": 18375,
+            "PID": "Mi_1134",
+            "GlobalID": "eed10e94-d887-41ff-a518-b675d536df25"
+          },
+          "geometrySha256": "b9f5fdd2d25587b123476b3cbc2a062e5a8a4a63108ef26f91b7f67bf9c7591c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18115%2C18384%2C18372",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:48:59.846Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 7991,
+      "features": [
+        {
+          "transportId": 18115,
+          "properties": {
+            "OBJECTID_1": 18115,
+            "PID": "Zo_1128",
+            "GlobalID": "223ee580-5b3b-4513-b2ec-6b1cdd249fb3"
+          },
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "transportId": 18372,
+          "properties": {
+            "OBJECTID_1": 18372,
+            "PID": "Mi_808",
+            "GlobalID": "2be78368-569b-4039-8026-7c147d5c6028"
+          },
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "transportId": 18384,
+          "properties": {
+            "OBJECTID_1": 18384,
+            "PID": "Mi_1371",
+            "GlobalID": "0a6b6ac4-38b8-457b-a6a5-c03dd9edbc24"
+          },
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18833%2C18118%2C18373",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:00.267Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 6027,
+      "features": [
+        {
+          "transportId": 18118,
+          "properties": {
+            "OBJECTID_1": 18118,
+            "PID": "Zo_1158",
+            "GlobalID": "ee8a7456-0b81-4286-adcc-a2e6ddd91010"
+          },
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        },
+        {
+          "transportId": 18373,
+          "properties": {
+            "OBJECTID_1": 18373,
+            "PID": "Mi_1209",
+            "GlobalID": "ed90ce0a-ed6e-421f-966a-a4129faa5606"
+          },
+          "geometrySha256": "189788051a7895af22fb1eb9446cd5e954ff4a9b9d14d48596f93867c8071a5f"
+        },
+        {
+          "transportId": 18833,
+          "properties": {
+            "OBJECTID_1": 18833,
+            "PID": "Mi_1373",
+            "GlobalID": "f14f4a1f-482d-401d-87dc-510c4e1ca711"
+          },
+          "geometrySha256": "7230046595df17493cc3835e3b9c79e689dc8f10e02427d197b7565aec0721b1"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18831%2C17580%2C18668",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:00.732Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5953,
+      "features": [
+        {
+          "transportId": 17580,
+          "properties": {
+            "OBJECTID_1": 17580,
+            "PID": "Zo_89",
+            "GlobalID": "c8b992ca-590b-47f3-a0ef-3f64911b1827"
+          },
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "transportId": 18668,
+          "properties": {
+            "OBJECTID_1": 18668,
+            "PID": "Zo_77",
+            "GlobalID": "81f99655-b0e9-4037-b12c-0b6429cc35cf"
+          },
+          "geometrySha256": "f4347f98d6b61c57f332d048574bf24a4a0307ebabe25283b05cbb917867d65a"
+        },
+        {
+          "transportId": 18831,
+          "properties": {
+            "OBJECTID_1": 18831,
+            "PID": "Mi_1370",
+            "GlobalID": "2051abc4-0053-4c03-9ec0-b8b5e58d1e08"
+          },
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18370%2C17575%2C18832",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:00.988Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3527,
+      "features": [
+        {
+          "transportId": 17575,
+          "properties": {
+            "OBJECTID_1": 17575,
+            "PID": "Zo_68",
+            "GlobalID": "ca928536-568f-440c-ad1e-21ae9036157d"
+          },
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "transportId": 18370,
+          "properties": {
+            "OBJECTID_1": 18370,
+            "PID": "Mi_1136",
+            "GlobalID": "55e76988-9bc8-41bb-9670-989b1c33c45f"
+          },
+          "geometrySha256": "077aef3741e40c6e6e453e32c1d60c962dccab17d6013756b488dd6f5d87a41b"
+        },
+        {
+          "transportId": 18832,
+          "properties": {
+            "OBJECTID_1": 18832,
+            "PID": "Mi_1374",
+            "GlobalID": "a22be98b-4959-4ea7-8311-6d2fac041ba4"
+          },
+          "geometrySha256": "a3c4598d586fd9470d8eb4db7bc3abda5096c0aa64aa75a837b9f0b8c970dcf0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18371%2C18382%2C18374",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:01.272Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2314,
+      "features": [
+        {
+          "transportId": 18371,
+          "properties": {
+            "OBJECTID_1": 18371,
+            "PID": "Mi_1135",
+            "GlobalID": "5b65964e-1cdf-47f2-a53c-2cb70c6f87c1"
+          },
+          "geometrySha256": "c4ac6c865d9885513a3f7292d528f759d96831fb7e8261ee5bc4fee0d90a2d1a"
+        },
+        {
+          "transportId": 18374,
+          "properties": {
+            "OBJECTID_1": 18374,
+            "PID": "Mi_812",
+            "GlobalID": "b94eace0-56cd-4104-973f-3f4587be71f1"
+          },
+          "geometrySha256": "0c16a8e93dc86cd5bba32d76db26e12e97574627e1d41fee5395fb5250cf8492"
+        },
+        {
+          "transportId": 18382,
+          "properties": {
+            "OBJECTID_1": 18382,
+            "PID": "Mi_1210",
+            "GlobalID": "fb8ebfeb-2395-4f1a-aebc-ad6d0bb97722"
+          },
+          "geometrySha256": "c79a0dbd2ddb6a83a6115c2f67039a6fb5f8b723a70c69a424bbc894495f780a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=17910",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:01.612Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1063,
+      "features": [
+        {
+          "transportId": 17910,
+          "properties": {
+            "OBJECTID_1": 17910,
+            "PID": "Mi_800",
+            "GlobalID": "bc8f36b8-56c1-4997-8028-8eccd4977a84"
+          },
+          "geometrySha256": "342193389b0ed3ed73c3f0ee855fd3c28d58fd3739cd3eefe4818797367c11b5"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27Mi_1114%27%2C%27Mi_1133%27%2C%27Mi_1134%27%2C%27Mi_1135%27%2C%27Mi_1136%27%2C%27Mi_1209%27%2C%27Mi_1210%27%2C%27Mi_1237%27%2C%27Mi_1363%27%2C%27Mi_1370%27%2C%27Mi_1371%27%2C%27Mi_1372%27%2C%27Mi_1373%27%2C%27Mi_1374%27%2C%27Mi_1375%27%2C%27Mi_1379%27%2C%27Mi_1380%27%2C%27Mi_1381%27%2C%27Mi_1383%27%2C%27Mi_1392%27%2C%27Mi_1410%27%2C%27Mi_1412%27%2C%27Mi_1423%27%2C%27Mi_1430%27%2C%27Mi_1437%27%2C%27Mi_183%27%2C%27Mi_2%27%2C%27Mi_28%27%2C%27Mi_731%27%2C%27Mi_794%27%2C%27Mi_795%27%2C%27Mi_797%27%2C%27Mi_799%27%2C%27Mi_800%27%2C%27Mi_802%27%2C%27Mi_803%27%2C%27Mi_808%27%2C%27Mi_812%27%2C%27Mi_816%27%2C%27Mi_831%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:01.843Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 72,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27Mi_1114%27%2C%27Mi_1133%27%2C%27Mi_1134%27%2C%27Mi_1135%27%2C%27Mi_1136%27%2C%27Mi_1209%27%2C%27Mi_1210%27%2C%27Mi_1237%27%2C%27Mi_1363%27%2C%27Mi_1370%27%2C%27Mi_1371%27%2C%27Mi_1372%27%2C%27Mi_1373%27%2C%27Mi_1374%27%2C%27Mi_1375%27%2C%27Mi_1379%27%2C%27Mi_1380%27%2C%27Mi_1381%27%2C%27Mi_1383%27%2C%27Mi_1392%27%2C%27Mi_1410%27%2C%27Mi_1412%27%2C%27Mi_1423%27%2C%27Mi_1430%27%2C%27Mi_1437%27%2C%27Mi_183%27%2C%27Mi_2%27%2C%27Mi_28%27%2C%27Mi_731%27%2C%27Mi_794%27%2C%27Mi_795%27%2C%27Mi_797%27%2C%27Mi_799%27%2C%27Mi_800%27%2C%27Mi_802%27%2C%27Mi_803%27%2C%27Mi_808%27%2C%27Mi_812%27%2C%27Mi_816%27%2C%27Mi_831%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:02.531Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 348,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        17903,
+        17908,
+        17910,
+        17911,
+        17912,
+        17914,
+        18369,
+        18370,
+        18371,
+        18372,
+        18373,
+        18374,
+        18375,
+        18376,
+        18377,
+        18378,
+        18379,
+        18380,
+        18381,
+        18382,
+        18383,
+        18384,
+        18820,
+        18827,
+        18830,
+        18831,
+        18832,
+        18833,
+        18834,
+        18835,
+        18836,
+        18837,
+        18838,
+        18839,
+        18840,
+        18841,
+        18842,
+        19295,
+        19341,
+        19879
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=17903%2C17908%2C17910%2C17911%2C17912%2C17914%2C18369%2C18370%2C18371%2C18372%2C18373%2C18374%2C18375%2C18376%2C18377%2C18378%2C18379%2C18380%2C18381%2C18382%2C18383%2C18384%2C18820%2C18827%2C18830%2C18831%2C18832%2C18833%2C18834%2C18835%2C18836%2C18837%2C18838%2C18839%2C18840%2C18841%2C18842%2C19295%2C19341%2C19879",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:03.053Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69023,
+      "features": [
+        {
+          "transportId": 17903,
+          "properties": {
+            "OBJECTID_1": 17903,
+            "PID": "Mi_731",
+            "GlobalID": "588c63da-6840-4361-9009-1d7103c2ce01"
+          },
+          "geometrySha256": "86123b116bae9906d1b5448079728613890863302c94e7027cb4077d5d6f6538"
+        },
+        {
+          "transportId": 17908,
+          "properties": {
+            "OBJECTID_1": 17908,
+            "PID": "Mi_1133",
+            "GlobalID": "f0e12f15-1180-419b-bea2-16a7cc4dae3b"
+          },
+          "geometrySha256": "95b5c7fac4213f7b874cb3aba893557158cc9eaa54791789ef985378299b4b03"
+        },
+        {
+          "transportId": 17910,
+          "properties": {
+            "OBJECTID_1": 17910,
+            "PID": "Mi_800",
+            "GlobalID": "bc8f36b8-56c1-4997-8028-8eccd4977a84"
+          },
+          "geometrySha256": "342193389b0ed3ed73c3f0ee855fd3c28d58fd3739cd3eefe4818797367c11b5"
+        },
+        {
+          "transportId": 17911,
+          "properties": {
+            "OBJECTID_1": 17911,
+            "PID": "Mi_802",
+            "GlobalID": "53078c45-6ad0-4193-89ee-118bad36c8c9"
+          },
+          "geometrySha256": "c5be0cc64f282b7b174d57bea9510ca6b266764d313da9396889ca378e168f93"
+        },
+        {
+          "transportId": 17912,
+          "properties": {
+            "OBJECTID_1": 17912,
+            "PID": "Mi_803",
+            "GlobalID": "d3809d8b-3d49-4c06-87eb-84092d797e8b"
+          },
+          "geometrySha256": "dd87c7351e910c2836e0bf87e9b891cf3086e88f51ca3d03663f995ca2ee1205"
+        },
+        {
+          "transportId": 17914,
+          "properties": {
+            "OBJECTID_1": 17914,
+            "PID": "Mi_1423",
+            "GlobalID": "e15758da-e17d-482b-864b-375a2f9159b9"
+          },
+          "geometrySha256": "cb97ae4038dbaa250bba2b7223c37bcade6e7eb110c2c28570b125cec4371490"
+        },
+        {
+          "transportId": 18369,
+          "properties": {
+            "OBJECTID_1": 18369,
+            "PID": "Mi_1114",
+            "GlobalID": "9fd283e2-e791-400c-9a68-1081e840b4e2"
+          },
+          "geometrySha256": "a797f06f39cc66eab39e0a7235f7061f246a1b655052924259f6843118a41f53"
+        },
+        {
+          "transportId": 18370,
+          "properties": {
+            "OBJECTID_1": 18370,
+            "PID": "Mi_1136",
+            "GlobalID": "55e76988-9bc8-41bb-9670-989b1c33c45f"
+          },
+          "geometrySha256": "077aef3741e40c6e6e453e32c1d60c962dccab17d6013756b488dd6f5d87a41b"
+        },
+        {
+          "transportId": 18371,
+          "properties": {
+            "OBJECTID_1": 18371,
+            "PID": "Mi_1135",
+            "GlobalID": "5b65964e-1cdf-47f2-a53c-2cb70c6f87c1"
+          },
+          "geometrySha256": "c4ac6c865d9885513a3f7292d528f759d96831fb7e8261ee5bc4fee0d90a2d1a"
+        },
+        {
+          "transportId": 18372,
+          "properties": {
+            "OBJECTID_1": 18372,
+            "PID": "Mi_808",
+            "GlobalID": "2be78368-569b-4039-8026-7c147d5c6028"
+          },
+          "geometrySha256": "56939c6b37cb072250db563b4d915718a8224b5ecf1637352b15d22d05596e81"
+        },
+        {
+          "transportId": 18373,
+          "properties": {
+            "OBJECTID_1": 18373,
+            "PID": "Mi_1209",
+            "GlobalID": "ed90ce0a-ed6e-421f-966a-a4129faa5606"
+          },
+          "geometrySha256": "189788051a7895af22fb1eb9446cd5e954ff4a9b9d14d48596f93867c8071a5f"
+        },
+        {
+          "transportId": 18374,
+          "properties": {
+            "OBJECTID_1": 18374,
+            "PID": "Mi_812",
+            "GlobalID": "b94eace0-56cd-4104-973f-3f4587be71f1"
+          },
+          "geometrySha256": "0c16a8e93dc86cd5bba32d76db26e12e97574627e1d41fee5395fb5250cf8492"
+        },
+        {
+          "transportId": 18375,
+          "properties": {
+            "OBJECTID_1": 18375,
+            "PID": "Mi_1134",
+            "GlobalID": "eed10e94-d887-41ff-a518-b675d536df25"
+          },
+          "geometrySha256": "b9f5fdd2d25587b123476b3cbc2a062e5a8a4a63108ef26f91b7f67bf9c7591c"
+        },
+        {
+          "transportId": 18376,
+          "properties": {
+            "OBJECTID_1": 18376,
+            "PID": "Mi_797",
+            "GlobalID": "aa59be7e-bdc8-4744-a215-4dff98dab869"
+          },
+          "geometrySha256": "619a37edaa05dc9297e1f9ba20ab381a17c21c1517192520db1a56f0b1e3edf7"
+        },
+        {
+          "transportId": 18377,
+          "properties": {
+            "OBJECTID_1": 18377,
+            "PID": "Mi_799",
+            "GlobalID": "797d9efa-3e59-4b19-abd0-deca5424297d"
+          },
+          "geometrySha256": "b67f241c2dd0ef6808835d42166ba0e72b37ea42215be6baf1a1409baf56994b"
+        },
+        {
+          "transportId": 18378,
+          "properties": {
+            "OBJECTID_1": 18378,
+            "PID": "Mi_795",
+            "GlobalID": "0bc19038-b350-4a7c-9e6e-d65a95d88faf"
+          },
+          "geometrySha256": "08e639a4526afcf9b6b019edf5afbb0fb936a5efb199dacb1d211f689c15f092"
+        },
+        {
+          "transportId": 18379,
+          "properties": {
+            "OBJECTID_1": 18379,
+            "PID": "Mi_794",
+            "GlobalID": "95c69eb3-2017-4f65-a120-0823134e5a53"
+          },
+          "geometrySha256": "e8e90c58e7da3c5f2993fd5016d302173967cf488b16bb6be301522b25826b44"
+        },
+        {
+          "transportId": 18380,
+          "properties": {
+            "OBJECTID_1": 18380,
+            "PID": "Mi_816",
+            "GlobalID": "b5999dfe-5f8b-457e-8009-c6249f4c48f6"
+          },
+          "geometrySha256": "c1c659c39e89a3e2f7eed7bcafef16e06c2c249d05af283e132644e30372de1b"
+        },
+        {
+          "transportId": 18381,
+          "properties": {
+            "OBJECTID_1": 18381,
+            "PID": "Mi_183",
+            "GlobalID": "8788022e-fa6e-42fa-ae19-bdd1bf033401"
+          },
+          "geometrySha256": "6db6defda2247b3161aa5cf69e9de930f410ba09ce05cd1e1a84075fe73e681c"
+        },
+        {
+          "transportId": 18382,
+          "properties": {
+            "OBJECTID_1": 18382,
+            "PID": "Mi_1210",
+            "GlobalID": "fb8ebfeb-2395-4f1a-aebc-ad6d0bb97722"
+          },
+          "geometrySha256": "c79a0dbd2ddb6a83a6115c2f67039a6fb5f8b723a70c69a424bbc894495f780a"
+        },
+        {
+          "transportId": 18383,
+          "properties": {
+            "OBJECTID_1": 18383,
+            "PID": "Mi_1372",
+            "GlobalID": "1b87970f-758c-4004-998b-b822b2a9a1de"
+          },
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        },
+        {
+          "transportId": 18384,
+          "properties": {
+            "OBJECTID_1": 18384,
+            "PID": "Mi_1371",
+            "GlobalID": "0a6b6ac4-38b8-457b-a6a5-c03dd9edbc24"
+          },
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        },
+        {
+          "transportId": 18820,
+          "properties": {
+            "OBJECTID_1": 18820,
+            "PID": "Mi_1392",
+            "GlobalID": "fdc2a504-ce63-41e4-9504-490fba217565"
+          },
+          "geometrySha256": "e667b3527e95700351050ab6859a09aa24f6fc99dfd0af47753a50e5e413b52c"
+        },
+        {
+          "transportId": 18827,
+          "properties": {
+            "OBJECTID_1": 18827,
+            "PID": "Mi_831",
+            "GlobalID": "2f4f05b2-cf68-4943-a868-e140682ec0d0"
+          },
+          "geometrySha256": "255409ccc841f1adc1d76c03f156c3557d789be1b6669b9aa82d59f6def3847c"
+        },
+        {
+          "transportId": 18830,
+          "properties": {
+            "OBJECTID_1": 18830,
+            "PID": "Mi_1237",
+            "GlobalID": "245b9177-848f-4ef2-b294-83526e8b1503"
+          },
+          "geometrySha256": "780fd7e40d411ec4b0b5b62d0f10eb7a1d9b5cb410d9e2e9b71e9244a4e2d723"
+        },
+        {
+          "transportId": 18831,
+          "properties": {
+            "OBJECTID_1": 18831,
+            "PID": "Mi_1370",
+            "GlobalID": "2051abc4-0053-4c03-9ec0-b8b5e58d1e08"
+          },
+          "geometrySha256": "96e97f2c9feb9b9591ff3dfab60d7245d6ff395a5e372f634f6cb35ae90968cb"
+        },
+        {
+          "transportId": 18832,
+          "properties": {
+            "OBJECTID_1": 18832,
+            "PID": "Mi_1374",
+            "GlobalID": "a22be98b-4959-4ea7-8311-6d2fac041ba4"
+          },
+          "geometrySha256": "a3c4598d586fd9470d8eb4db7bc3abda5096c0aa64aa75a837b9f0b8c970dcf0"
+        },
+        {
+          "transportId": 18833,
+          "properties": {
+            "OBJECTID_1": 18833,
+            "PID": "Mi_1373",
+            "GlobalID": "f14f4a1f-482d-401d-87dc-510c4e1ca711"
+          },
+          "geometrySha256": "7230046595df17493cc3835e3b9c79e689dc8f10e02427d197b7565aec0721b1"
+        },
+        {
+          "transportId": 18834,
+          "properties": {
+            "OBJECTID_1": 18834,
+            "PID": "Mi_1379",
+            "GlobalID": "626e6960-692b-4580-b742-8f748e4ab6b5"
+          },
+          "geometrySha256": "ef7f895d76954ad275dea194b4c70c42a4c96bcad5ee88e74074ebecf9a89756"
+        },
+        {
+          "transportId": 18835,
+          "properties": {
+            "OBJECTID_1": 18835,
+            "PID": "Mi_1380",
+            "GlobalID": "d1d11897-9725-477d-b639-932f13449b33"
+          },
+          "geometrySha256": "d6d40ce3536807abd38a10482b19dd4432a5aeaadd436c4ae82bc29d83552c4f"
+        },
+        {
+          "transportId": 18836,
+          "properties": {
+            "OBJECTID_1": 18836,
+            "PID": "Mi_1381",
+            "GlobalID": "72618a19-e939-454e-8ff9-368cade9dcc6"
+          },
+          "geometrySha256": "89728499b1dc9191e01354a19e42968ba21d20cd0b3b00e1bd01167e8a12c527"
+        },
+        {
+          "transportId": 18837,
+          "properties": {
+            "OBJECTID_1": 18837,
+            "PID": "Mi_1375",
+            "GlobalID": "3e0484ec-6f8e-47a1-a922-5e0970ea8b05"
+          },
+          "geometrySha256": "69820cc735470d174f8102fc2cff737cecf07e0a280b7478fab7d6cfe9d05b81"
+        },
+        {
+          "transportId": 18838,
+          "properties": {
+            "OBJECTID_1": 18838,
+            "PID": "Mi_1430",
+            "GlobalID": "47c2a7ad-4d02-4edf-8c96-30c1683c50c9"
+          },
+          "geometrySha256": "5ad5baaaf374a7d23d7a7b22804fa4ded4332f8f4d7cc307532c07d6c6288aee"
+        },
+        {
+          "transportId": 18839,
+          "properties": {
+            "OBJECTID_1": 18839,
+            "PID": "Mi_1410",
+            "GlobalID": "70303721-7f65-4c8c-a858-c539035dbcca"
+          },
+          "geometrySha256": "2cb1320dd0d16cb22cf8f30db28f5a4431eccdc190cd36034a9f1eccbc4ee7b0"
+        },
+        {
+          "transportId": 18840,
+          "properties": {
+            "OBJECTID_1": 18840,
+            "PID": "Mi_1412",
+            "GlobalID": "aef5e683-43ea-4b51-99b0-4e144a1ec952"
+          },
+          "geometrySha256": "34a99bba67f5da0f219258b3e2c58aa0e7c0ca7f84a1f7316b9c5dcd8a7a3b6e"
+        },
+        {
+          "transportId": 18841,
+          "properties": {
+            "OBJECTID_1": 18841,
+            "PID": "Mi_28",
+            "GlobalID": "73040fab-3a3d-477a-8ec4-4f7c55d2bf3b"
+          },
+          "geometrySha256": "eec7db4eb419d3ba6848f29b74c0ea7dc573251da16a79b59c31455e9c953ad8"
+        },
+        {
+          "transportId": 18842,
+          "properties": {
+            "OBJECTID_1": 18842,
+            "PID": "Mi_1437",
+            "GlobalID": "1c6a6e38-a9d0-4654-b138-a03d2a6a382f"
+          },
+          "geometrySha256": "733662ca0d7a7c8e2fa19349a40a53734637530aaa9bf1fbc63fba931190a29c"
+        },
+        {
+          "transportId": 19295,
+          "properties": {
+            "OBJECTID_1": 19295,
+            "PID": "Mi_2",
+            "GlobalID": "e2d9563b-5a83-47dc-a8f1-2f46a3192dcc"
+          },
+          "geometrySha256": "ed1aac30b1d2aa798af83e6e3ca390b5df5e12d349d822c832e1335f65c36120"
+        },
+        {
+          "transportId": 19341,
+          "properties": {
+            "OBJECTID_1": 19341,
+            "PID": "Mi_1383",
+            "GlobalID": "1f1bbe84-a53b-4971-8f4a-b713f94a2e3b"
+          },
+          "geometrySha256": "e913d52d238af9442a9551fe4b94760adab3225f2f364fb21ac4b66ae6a52f06"
+        },
+        {
+          "transportId": 19879,
+          "properties": {
+            "OBJECTID_1": 19879,
+            "PID": "Mi_1363",
+            "GlobalID": "74e9df72-b671-4f3c-949a-0b1a239dd555"
+          },
+          "geometrySha256": "e812e0768869c0f35ca3763a959367cce4294326f4c014e03236cf09d3471c9b"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27Mi_834%27%2C%27Mi_855%27%2C%27Mi_856%27%2C%27Mi_859%27%2C%27Mi_911%27%2C%27Mi_928%27%2C%27Mi_990%27%2C%27Po_1360%27%2C%27Po_1378%27%2C%27Po_1406%27%2C%27Po_1454%27%2C%27Po_7%27%2C%27Po_773%27%2C%27Po_790%27%2C%27Zo_1%27%2C%27Zo_101%27%2C%27Zo_1019%27%2C%27Zo_1036%27%2C%27Zo_108%27%2C%27Zo_11%27%2C%27Zo_1128%27%2C%27Zo_1131%27%2C%27Zo_1132%27%2C%27Zo_1134%27%2C%27Zo_1136%27%2C%27Zo_1137%27%2C%27Zo_1138%27%2C%27Zo_1139%27%2C%27Zo_1141%27%2C%27Zo_115%27%2C%27Zo_1158%27%2C%27Zo_122%27%2C%27Zo_15%27%2C%27Zo_2%27%2C%27Zo_24%27%2C%27Zo_26%27%2C%27Zo_3%27%2C%27Zo_4%27%2C%27Zo_62%27%2C%27Zo_68%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:03.637Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 72,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27Mi_834%27%2C%27Mi_855%27%2C%27Mi_856%27%2C%27Mi_859%27%2C%27Mi_911%27%2C%27Mi_928%27%2C%27Mi_990%27%2C%27Po_1360%27%2C%27Po_1378%27%2C%27Po_1406%27%2C%27Po_1454%27%2C%27Po_7%27%2C%27Po_773%27%2C%27Po_790%27%2C%27Zo_1%27%2C%27Zo_101%27%2C%27Zo_1019%27%2C%27Zo_1036%27%2C%27Zo_108%27%2C%27Zo_11%27%2C%27Zo_1128%27%2C%27Zo_1131%27%2C%27Zo_1132%27%2C%27Zo_1134%27%2C%27Zo_1136%27%2C%27Zo_1137%27%2C%27Zo_1138%27%2C%27Zo_1139%27%2C%27Zo_1141%27%2C%27Zo_115%27%2C%27Zo_1158%27%2C%27Zo_122%27%2C%27Zo_15%27%2C%27Zo_2%27%2C%27Zo_24%27%2C%27Zo_26%27%2C%27Zo_3%27%2C%27Zo_4%27%2C%27Zo_62%27%2C%27Zo_68%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:03.908Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 348,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        16380,
+        16382,
+        16383,
+        16962,
+        16964,
+        16966,
+        16968,
+        16969,
+        16970,
+        16971,
+        16972,
+        16973,
+        16974,
+        16975,
+        16976,
+        17414,
+        17419,
+        17574,
+        17575,
+        17582,
+        17592,
+        17913,
+        17924,
+        17925,
+        17926,
+        18115,
+        18116,
+        18117,
+        18118,
+        18360,
+        18410,
+        18666,
+        18667,
+        18825,
+        18826,
+        18828,
+        18829,
+        18883,
+        19182,
+        19340
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=16380%2C16382%2C16383%2C16962%2C16964%2C16966%2C16968%2C16969%2C16970%2C16971%2C16972%2C16973%2C16974%2C16975%2C16976%2C17414%2C17419%2C17574%2C17575%2C17582%2C17592%2C17913%2C17924%2C17925%2C17926%2C18115%2C18116%2C18117%2C18118%2C18360%2C18410%2C18666%2C18667%2C18825%2C18826%2C18828%2C18829%2C18883%2C19182%2C19340",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:04.236Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 67998,
+      "features": [
+        {
+          "transportId": 16380,
+          "properties": {
+            "OBJECTID_1": 16380,
+            "PID": "Zo_122",
+            "GlobalID": "32ec604e-8972-475b-8dd2-c3e5f5b4e3d8"
+          },
+          "geometrySha256": "d339f4bd70d675dfbf0b0fb4a3a7970ba2de7bdc9271196b8fdf233dd8e4c8df"
+        },
+        {
+          "transportId": 16382,
+          "properties": {
+            "OBJECTID_1": 16382,
+            "PID": "Zo_24",
+            "GlobalID": "522d6913-7fcf-4ba8-9172-e2a08adc3a2b"
+          },
+          "geometrySha256": "ddb300b971a9d118bb09daa8b490d8689fce54818ff34eb7fd917f52e7ea5c14"
+        },
+        {
+          "transportId": 16383,
+          "properties": {
+            "OBJECTID_1": 16383,
+            "PID": "Zo_115",
+            "GlobalID": "7bde263e-0334-45e0-8a62-48a844deea83"
+          },
+          "geometrySha256": "1cd519175cd04943938c132a9e7accf5a5c93bab701aface7a48d3d74274decc"
+        },
+        {
+          "transportId": 16962,
+          "properties": {
+            "OBJECTID_1": 16962,
+            "PID": "Zo_15",
+            "GlobalID": "dbc9d9f4-0848-4511-aec2-691804b95d1a"
+          },
+          "geometrySha256": "595b306c2811454db5f9d0f85e48e5dc315c163523ee8d790e9e05b036705a4d"
+        },
+        {
+          "transportId": 16964,
+          "properties": {
+            "OBJECTID_1": 16964,
+            "PID": "Zo_1019",
+            "GlobalID": "efbab910-af8f-4ea8-9ad2-6fd7c1eec369"
+          },
+          "geometrySha256": "be059c44c63c5fa5f7a5eb946d04d6ddda41a41f495efe227309bd61593cc241"
+        },
+        {
+          "transportId": 16966,
+          "properties": {
+            "OBJECTID_1": 16966,
+            "PID": "Zo_1036",
+            "GlobalID": "80ee1dbf-388c-42b3-b1d2-b78c0698d7d5"
+          },
+          "geometrySha256": "beaa0eb442ce4e27671add4ba2fd2c2ce2a9e14c8c4d3634a28f36616f60a8f6"
+        },
+        {
+          "transportId": 16968,
+          "properties": {
+            "OBJECTID_1": 16968,
+            "PID": "Zo_11",
+            "GlobalID": "6f756874-e7a9-41f5-a9de-6ec8a21b5d60"
+          },
+          "geometrySha256": "85db2fafb1753539fedc757b3db6b6dafcdc38d1e806273cb462249beb9bf48f"
+        },
+        {
+          "transportId": 16969,
+          "properties": {
+            "OBJECTID_1": 16969,
+            "PID": "Zo_108",
+            "GlobalID": "8b861fa4-73c0-44f8-908a-6b373f87f950"
+          },
+          "geometrySha256": "81ecfde2178dc649bbe43cd0ef6b9369e448fb164678eef31ebc825ac07bd95b"
+        },
+        {
+          "transportId": 16970,
+          "properties": {
+            "OBJECTID_1": 16970,
+            "PID": "Zo_1134",
+            "GlobalID": "5933b24a-e349-41a8-87fd-782f040ee633"
+          },
+          "geometrySha256": "fcfed0bc115829813b214979e5240b71a4b881fe4ad2148c9d1995ecf7a19200"
+        },
+        {
+          "transportId": 16971,
+          "properties": {
+            "OBJECTID_1": 16971,
+            "PID": "Zo_1132",
+            "GlobalID": "34d413d4-b668-4115-bc5b-811d0375b4ab"
+          },
+          "geometrySha256": "9c2af5c68b98b16161a449c59a1fd296a63f7a358858f970579d5d4ec1c10597"
+        },
+        {
+          "transportId": 16972,
+          "properties": {
+            "OBJECTID_1": 16972,
+            "PID": "Zo_1136",
+            "GlobalID": "4cc48952-d037-4746-ab10-700d75da17c3"
+          },
+          "geometrySha256": "ee840428c7a8889a27182a32e60c2282a9c62a426a583704e28f586ba845147d"
+        },
+        {
+          "transportId": 16973,
+          "properties": {
+            "OBJECTID_1": 16973,
+            "PID": "Zo_1138",
+            "GlobalID": "f16dc7c4-3270-4f38-908e-e54e7b902ca9"
+          },
+          "geometrySha256": "92edeeb9ae78752e425cbaa50fa8c8d370208688dee3d3f9af770c5ce113bb20"
+        },
+        {
+          "transportId": 16974,
+          "properties": {
+            "OBJECTID_1": 16974,
+            "PID": "Zo_1141",
+            "GlobalID": "a6f296d2-c152-401c-8345-ab5f1b926af7"
+          },
+          "geometrySha256": "8d808b0a5c00ecab6a08aaa24a44e388dd39a5416a12cb0bd6d792f702ebe27c"
+        },
+        {
+          "transportId": 16975,
+          "properties": {
+            "OBJECTID_1": 16975,
+            "PID": "Zo_1139",
+            "GlobalID": "f23bd504-9f61-4640-abf9-a1f5a45babc9"
+          },
+          "geometrySha256": "a538ede3679cbb1031b760de891ce0ccf9a3a167bc61ba3f8b0c9e25284e282e"
+        },
+        {
+          "transportId": 16976,
+          "properties": {
+            "OBJECTID_1": 16976,
+            "PID": "Zo_1137",
+            "GlobalID": "59abbbc2-429c-436c-bd7c-2ff1fec28a28"
+          },
+          "geometrySha256": "06d0eaed897d1b447ab8cb3a4448769df3b03983479aaad91fe7ea059f4803f2"
+        },
+        {
+          "transportId": 17414,
+          "properties": {
+            "OBJECTID_1": 17414,
+            "PID": "Po_773",
+            "GlobalID": "db0acf63-b012-400f-87ed-32889b765fb7"
+          },
+          "geometrySha256": "ae408490c8d784f521d8c0d26d37b320bdc797007d69e55bb62284684a0b7c72"
+        },
+        {
+          "transportId": 17419,
+          "properties": {
+            "OBJECTID_1": 17419,
+            "PID": "Po_7",
+            "GlobalID": "b77c7db4-eb72-487c-9324-f9f3ff3dd9d9"
+          },
+          "geometrySha256": "4f2d29e92a6a6ddf8c2d0600b0b552a049548c6a6e123d4c8bf26a1271bd3891"
+        },
+        {
+          "transportId": 17574,
+          "properties": {
+            "OBJECTID_1": 17574,
+            "PID": "Zo_4",
+            "GlobalID": "12e94f39-d4a2-4cf6-9641-9a6bfd99b539"
+          },
+          "geometrySha256": "fb3d929afdc5520eb64ef5f47c6f359de4b7d1e92bf6590045c7fcb9d70053e6"
+        },
+        {
+          "transportId": 17575,
+          "properties": {
+            "OBJECTID_1": 17575,
+            "PID": "Zo_68",
+            "GlobalID": "ca928536-568f-440c-ad1e-21ae9036157d"
+          },
+          "geometrySha256": "da1efa3a6dae2691a680596bde9b7c58518030c174beba4c85642a871fe511b6"
+        },
+        {
+          "transportId": 17582,
+          "properties": {
+            "OBJECTID_1": 17582,
+            "PID": "Zo_62",
+            "GlobalID": "ed13c8ed-8f16-4bf8-ae30-13c9e6bf5213"
+          },
+          "geometrySha256": "9703afdf246f9f8d611af58748fbe55435453ab5ac8135282dd94b9ee66be03d"
+        },
+        {
+          "transportId": 17592,
+          "properties": {
+            "OBJECTID_1": 17592,
+            "PID": "Zo_26",
+            "GlobalID": "878b9fd3-1427-42af-8a1b-3f5e270f3005"
+          },
+          "geometrySha256": "29aa0bc5e00dbc5eba1e11384168a8f8daab75b461b0a2aee5dac55fc2cbbd5e"
+        },
+        {
+          "transportId": 17913,
+          "properties": {
+            "OBJECTID_1": 17913,
+            "PID": "Mi_856",
+            "GlobalID": "ce415ced-a249-447e-bcf2-df8e1fb54fc6"
+          },
+          "geometrySha256": "b853b5f2419f9abed3ad94e791971901b12e05fab367d6871408151a5c0ad3c3"
+        },
+        {
+          "transportId": 17924,
+          "properties": {
+            "OBJECTID_1": 17924,
+            "PID": "Po_1378",
+            "GlobalID": "e5daf5fd-6759-475b-a3b9-9446912d65fe"
+          },
+          "geometrySha256": "7fbc5c0cbdab0cdc46c45003dd874d9b6abc0228810f1ab67b949f31cc5e3a05"
+        },
+        {
+          "transportId": 17925,
+          "properties": {
+            "OBJECTID_1": 17925,
+            "PID": "Po_1406",
+            "GlobalID": "ee64c899-4efe-4d2f-883d-f31068c9861e"
+          },
+          "geometrySha256": "185d2310dc4f5c284864476bf6be507522b36f541479fddec8a4cba349afc384"
+        },
+        {
+          "transportId": 17926,
+          "properties": {
+            "OBJECTID_1": 17926,
+            "PID": "Po_790",
+            "GlobalID": "e2f178fa-d2ff-4758-9e35-a145c510017d"
+          },
+          "geometrySha256": "031ac48e24e97bcc1422bf45c3e7bf94b17e6eaca1229b3ba9fa5c448553f8c9"
+        },
+        {
+          "transportId": 18115,
+          "properties": {
+            "OBJECTID_1": 18115,
+            "PID": "Zo_1128",
+            "GlobalID": "223ee580-5b3b-4513-b2ec-6b1cdd249fb3"
+          },
+          "geometrySha256": "8a1fc5b10e1efcb8453e31d9d02f6f9d94919df5e7314feead6ba7d6945a71eb"
+        },
+        {
+          "transportId": 18116,
+          "properties": {
+            "OBJECTID_1": 18116,
+            "PID": "Zo_3",
+            "GlobalID": "8b7966c7-058b-4bec-a4bb-505914a1da6b"
+          },
+          "geometrySha256": "4f5bfbc6d2982638770817cf989cbd886ef39dacf7ed311f828e8a75329b78b4"
+        },
+        {
+          "transportId": 18117,
+          "properties": {
+            "OBJECTID_1": 18117,
+            "PID": "Zo_101",
+            "GlobalID": "e57dd28e-b759-42e7-900c-117bbbe371d2"
+          },
+          "geometrySha256": "55b545dd04fa78eea41ebe55378b2f118bca197b728a9ba3430117b9bd4df59f"
+        },
+        {
+          "transportId": 18118,
+          "properties": {
+            "OBJECTID_1": 18118,
+            "PID": "Zo_1158",
+            "GlobalID": "ee8a7456-0b81-4286-adcc-a2e6ddd91010"
+          },
+          "geometrySha256": "fe443439bfcd939e6ba7ff4b9024ac49d36a666f664fbe44f965c9ad11e4e3f4"
+        },
+        {
+          "transportId": 18360,
+          "properties": {
+            "OBJECTID_1": 18360,
+            "PID": "Mi_990",
+            "GlobalID": "837da121-6b47-40ab-b5d0-90a0be1e6f7e"
+          },
+          "geometrySha256": "a70da9fc8f95db964b1248d67c9946edb3ffb20240f96c1a33f444c0915928e1"
+        },
+        {
+          "transportId": 18410,
+          "properties": {
+            "OBJECTID_1": 18410,
+            "PID": "Po_1360",
+            "GlobalID": "b1d6a6b8-1655-4fd9-9dee-2430fa7a569b"
+          },
+          "geometrySha256": "0bd9b41ef9a20ef6c831cb14cae8d85c3bdb6cac0f55554c51a3fe268ce3bac7"
+        },
+        {
+          "transportId": 18666,
+          "properties": {
+            "OBJECTID_1": 18666,
+            "PID": "Zo_1131",
+            "GlobalID": "727b9f72-a400-4298-b52e-cfdfab686f78"
+          },
+          "geometrySha256": "85103dc36d517a0d1276ba4dba5dd63de94f82622b93f16f5033c3a4639c54f1"
+        },
+        {
+          "transportId": 18667,
+          "properties": {
+            "OBJECTID_1": 18667,
+            "PID": "Zo_1",
+            "GlobalID": "a7149eb1-9ffb-4267-a24c-f178b5944a64"
+          },
+          "geometrySha256": "f6821ce5016bfbcf14ceab2ea2a491186dfe8e1190665c1025f0132631a58b91"
+        },
+        {
+          "transportId": 18825,
+          "properties": {
+            "OBJECTID_1": 18825,
+            "PID": "Mi_911",
+            "GlobalID": "b38a183c-de14-4969-84fd-eab25de9d1dd"
+          },
+          "geometrySha256": "b34463c60cdb4ee26f77846119a8310f7f8dfc2d86bb1543ec2c2c9d6464aac0"
+        },
+        {
+          "transportId": 18826,
+          "properties": {
+            "OBJECTID_1": 18826,
+            "PID": "Mi_834",
+            "GlobalID": "0f5ce919-0885-4632-b631-5f8fd5e5cbf3"
+          },
+          "geometrySha256": "418535af5cd935bceb34f2a096b9079bb59b92011c46a8dbabce9184e4715f1b"
+        },
+        {
+          "transportId": 18828,
+          "properties": {
+            "OBJECTID_1": 18828,
+            "PID": "Mi_855",
+            "GlobalID": "ffaef50c-60a9-4a2f-b8be-d31ad85ed9ad"
+          },
+          "geometrySha256": "8cc3b2f831cceeed3cc49952ab1cc36b53c6e6f41e544a3d2d8e3f923f5afc86"
+        },
+        {
+          "transportId": 18829,
+          "properties": {
+            "OBJECTID_1": 18829,
+            "PID": "Mi_859",
+            "GlobalID": "33a9675f-5ca1-4e86-8ffa-fead32590341"
+          },
+          "geometrySha256": "48209b31f9839c1069b506cb78f919c42fc30e44e8f44f51cf288ed705e8c316"
+        },
+        {
+          "transportId": 18883,
+          "properties": {
+            "OBJECTID_1": 18883,
+            "PID": "Po_1454",
+            "GlobalID": "9d8237ed-db10-4a80-8f8f-11ad6c89d456"
+          },
+          "geometrySha256": "b1769701ba6f68b3b1de4fb5cec97cf25d1c724e540adf9a8eb1dc5e85395650"
+        },
+        {
+          "transportId": 19182,
+          "properties": {
+            "OBJECTID_1": 19182,
+            "PID": "Zo_2",
+            "GlobalID": "367ac2bd-bb70-4d2b-a03d-9fbcb7a0d2e4"
+          },
+          "geometrySha256": "e0d1dbda7a9896025e69fd90e453ff91ba40b6c1f38a130409544889dbfca817"
+        },
+        {
+          "transportId": 19340,
+          "properties": {
+            "OBJECTID_1": 19340,
+            "PID": "Mi_928",
+            "GlobalID": "d0cfc6e8-17cb-4dba-9631-f6460c6c25e8"
+          },
+          "geometrySha256": "e191e6e8e0cf97cae666a487cf273a2efa0f3661591a9a473c5d6e4b64b9a585"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27Zo_73%27%2C%27Zo_74%27%2C%27Zo_77%27%2C%27Zo_83%27%2C%27Zo_89%27%2C%27Zo_9%27%2C%27Zo_908%27%2C%27Zo_939%27%2C%27Zo_978%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:04.668Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 71,
+      "count": 9
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27Zo_73%27%2C%27Zo_74%27%2C%27Zo_77%27%2C%27Zo_83%27%2C%27Zo_89%27%2C%27Zo_9%27%2C%27Zo_908%27%2C%27Zo_939%27%2C%27Zo_978%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:05.131Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 162,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        16963,
+        16965,
+        16967,
+        17576,
+        17577,
+        17578,
+        17579,
+        17580,
+        18668
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=16963%2C16965%2C16967%2C17576%2C17577%2C17578%2C17579%2C17580%2C18668",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:05.442Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11127,
+      "features": [
+        {
+          "transportId": 16963,
+          "properties": {
+            "OBJECTID_1": 16963,
+            "PID": "Zo_939",
+            "GlobalID": "c4959238-1e6b-4eae-9a7e-0f1b8b759597"
+          },
+          "geometrySha256": "526dd143358239311eb20533b2d55b0d01c99c10a7951f9cacff8cb53d7f1490"
+        },
+        {
+          "transportId": 16965,
+          "properties": {
+            "OBJECTID_1": 16965,
+            "PID": "Zo_978",
+            "GlobalID": "ea2622ce-138c-47b5-a81e-be0216402f42"
+          },
+          "geometrySha256": "85452988ab4822800d9d2ac8ff7d93e90564d084827512e59a908e4329d058f3"
+        },
+        {
+          "transportId": 16967,
+          "properties": {
+            "OBJECTID_1": 16967,
+            "PID": "Zo_9",
+            "GlobalID": "83f74531-c867-4049-a4d2-05cbd94e62ad"
+          },
+          "geometrySha256": "90ae64defecb9a7cdae730206e6689da7f825b9b50c7d431417f37ed7049de7f"
+        },
+        {
+          "transportId": 17576,
+          "properties": {
+            "OBJECTID_1": 17576,
+            "PID": "Zo_74",
+            "GlobalID": "7da1ccdb-344e-48c0-8e6e-b5e7fcd6189e"
+          },
+          "geometrySha256": "c7feb00cfcad833ce0e58014489ad3ff1295a73277e31c75ccd593ab888e0e72"
+        },
+        {
+          "transportId": 17577,
+          "properties": {
+            "OBJECTID_1": 17577,
+            "PID": "Zo_73",
+            "GlobalID": "beb5b877-8a36-47c8-a247-7e80bc4af576"
+          },
+          "geometrySha256": "31dd10d8ab1108e23bf31486f4beec26fa8f785c8ef406cfe38b0e9bea7aefc7"
+        },
+        {
+          "transportId": 17578,
+          "properties": {
+            "OBJECTID_1": 17578,
+            "PID": "Zo_908",
+            "GlobalID": "205db0e0-f721-4b7d-bbab-250376442d73"
+          },
+          "geometrySha256": "02e59f7edb3268d0c6e5d05f75c653ebfa257164ae8b3be5839222ca3af78aa0"
+        },
+        {
+          "transportId": 17579,
+          "properties": {
+            "OBJECTID_1": 17579,
+            "PID": "Zo_83",
+            "GlobalID": "6c601e4b-6451-4b9d-8ec1-5620baaa285d"
+          },
+          "geometrySha256": "d0837d21cf3ac82529397aa4f8ca0d2d948d496c0b4655a715f046c09ff71c62"
+        },
+        {
+          "transportId": 17580,
+          "properties": {
+            "OBJECTID_1": 17580,
+            "PID": "Zo_89",
+            "GlobalID": "c8b992ca-590b-47f3-a0ef-3f64911b1827"
+          },
+          "geometrySha256": "2680af860b6161b1e21027150c245f8a0e7562d7ddeb0feaa8a540048b787d47"
+        },
+        {
+          "transportId": 18668,
+          "properties": {
+            "OBJECTID_1": 18668,
+            "PID": "Zo_77",
+            "GlobalID": "81f99655-b0e9-4037-b12c-0b6429cc35cf"
+          },
+          "geometrySha256": "f4347f98d6b61c57f332d048574bf24a4a0307ebabe25283b05cbb917867d65a"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27ZZ_999999999%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:05.674Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 71,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=PID+IN+%28%27ZZ_999999999%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:05.922Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 109,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.4985037256027%2C33.8966791428261%2C35.498858011476%2C33.8971065848897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:06.319Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 4
+    },
+    {
+      "test": "footprint",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.4985037256027%2C33.8966791428261%2C35.498858011476%2C33.8971065848897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:06.554Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 130,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18377,
+        18383,
+        18381,
+        18384
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18377%2C18383%2C18381%2C18384",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:06.807Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 6982,
+      "features": [
+        {
+          "transportId": 18377,
+          "properties": {
+            "OBJECTID_1": 18377,
+            "PID": "Mi_799",
+            "GlobalID": "797d9efa-3e59-4b19-abd0-deca5424297d"
+          },
+          "geometrySha256": "b67f241c2dd0ef6808835d42166ba0e72b37ea42215be6baf1a1409baf56994b"
+        },
+        {
+          "transportId": 18381,
+          "properties": {
+            "OBJECTID_1": 18381,
+            "PID": "Mi_183",
+            "GlobalID": "8788022e-fa6e-42fa-ae19-bdd1bf033401"
+          },
+          "geometrySha256": "6db6defda2247b3161aa5cf69e9de930f410ba09ce05cd1e1a84075fe73e681c"
+        },
+        {
+          "transportId": 18383,
+          "properties": {
+            "OBJECTID_1": 18383,
+            "PID": "Mi_1372",
+            "GlobalID": "1b87970f-758c-4004-998b-b822b2a9a1de"
+          },
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        },
+        {
+          "transportId": 18384,
+          "properties": {
+            "OBJECTID_1": 18384,
+            "PID": "Mi_1371",
+            "GlobalID": "0a6b6ac4-38b8-457b-a6a5-c03dd9edbc24"
+          },
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.4985037256027%2C33.8966791428261%2C35.498858011476%2C33.8971065848897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:07.052Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "count": 4
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&geometry=35.4985037256027%2C33.8966791428261%2C35.498858011476%2C33.8971065848897&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:07.467Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 130,
+      "objectIdFieldName": "OBJECTID_1",
+      "objectIds": [
+        18377,
+        18383,
+        18381,
+        18384
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services3.arcgis.com/tuNLpt6Wfhd22qmO/ArcGIS/rest/services/forDameg/FeatureServer/1/query?where=1%3D1&outFields=OBJECTID_1%2CPID%2CGlobalID&returnGeometry=true&outSR=4326&f=geojson&objectIds=18377%2C18383%2C18381%2C18384",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:49:07.934Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 6982,
+      "features": [
+        {
+          "transportId": 18377,
+          "properties": {
+            "OBJECTID_1": 18377,
+            "PID": "Mi_799",
+            "GlobalID": "797d9efa-3e59-4b19-abd0-deca5424297d"
+          },
+          "geometrySha256": "b67f241c2dd0ef6808835d42166ba0e72b37ea42215be6baf1a1409baf56994b"
+        },
+        {
+          "transportId": 18381,
+          "properties": {
+            "OBJECTID_1": 18381,
+            "PID": "Mi_183",
+            "GlobalID": "8788022e-fa6e-42fa-ae19-bdd1bf033401"
+          },
+          "geometrySha256": "6db6defda2247b3161aa5cf69e9de930f410ba09ce05cd1e1a84075fe73e681c"
+        },
+        {
+          "transportId": 18383,
+          "properties": {
+            "OBJECTID_1": 18383,
+            "PID": "Mi_1372",
+            "GlobalID": "1b87970f-758c-4004-998b-b822b2a9a1de"
+          },
+          "geometrySha256": "29b4d1e354ea728bb516d62c0502e988cdf2f11713196ed0b38a5f4bd068f1db"
+        },
+        {
+          "transportId": 18384,
+          "properties": {
+            "OBJECTID_1": 18384,
+            "PID": "Mi_1371",
+            "GlobalID": "0a6b6ac4-38b8-457b-a6a5-c03dd9edbc24"
+          },
+          "geometrySha256": "bf7c3a4435f95e618577d62d2bb085c866139a94979ed9b749d3cd515cbbc234"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/world-capitals-2026-10-08/beirut-plots-quality.json",
+  "uniqueParcels": 89,
+  "requestCount": 66,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T18:49:08.065Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

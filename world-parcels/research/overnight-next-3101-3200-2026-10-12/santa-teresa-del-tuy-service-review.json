@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-3973-santa-teresa-del-tuy.json",
+  "cityCode": 3973,
+  "queueRank": 3115,
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "service": "Municipio Independencia municipal Catastro / IGVSB national authority",
+  "queryAndRequestOutcome": "English and Spanish first-party discovery was completed. The current IGVSB homepage was retrieved and inspected; the historical IGVSB viewer hostname and a likely municipal hostname did not resolve. Public evidence identifies the local municipal Catastro office and cadastral program, but no anonymous public parcel API, schema/CRS response, safe native parcel identity, or full parcel polygon was obtained.",
+  "scopeLimits": [
+    "Local municipal-program evidence is not proof of an open data endpoint or complete city coverage",
+    "National IGVSB institutional authority is distinct from the local municipal parcel custodian",
+    "DNS failure or missing viewer is not evidence of citywide parcel absence",
+    "The exact WUP point was preserved and not shifted or treated as a definitive parcel-hit test",
+    "No countrywide coverage or runtime adapter readiness was established"
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "full parcel geometry",
+    "geometry CRS",
+    "public-service reproduction metadata"
+  ],
+  "retainedSamples": [],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "No GeoJSON sample is retained because no full parcel polygon was observed.",
+    "No unsafe landholder, title, address, contact, personal, tax, or account fields were requested.",
+    "The packet records executed research attempts only and requires independent serial adapter review before runtime use."
+  ]
+}

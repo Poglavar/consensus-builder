@@ -1,0 +1,99 @@
+{
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-FR,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "nc-dittt-plan-parcellaire-mapserver",
+  "requestUrl": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer/identify?geometry=446300,214550&geometryType=esriGeometryPoint&sr=3163&layers=all&tolerance=3&mapExtent=446000,214300,446600,214800&imageDisplay=600,500,96&returnGeometry=true&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "Noumea point approx 166.44E,-22.27S (EPSG:3163 446300,214550); Kone point 164.86E,-20.99S tolerance 30px",
+  "parcelRecordCount": "1 (Noumea) + 9 (Kone; 2 saved)",
+  "recordListPath": "results[]",
+  "geometryType": "esriGeometryPolygon (rings, closed)",
+  "closedRings": true,
+  "idField": "nic (Numero d'inventaire cadastral)",
+  "responseFile": "research/retry/countries/NC-parcel-response.json",
+  "pagination": "none used (identify)",
+  "regionSampled": "Noumea and Kone (two communes, same service)"
+ },
+ "source": {
+  "sourceId": "nc-dittt-plan-parcellaire-mapserver",
+  "name": "Plan parcellaire informatise (layer 0 Cadastre)",
+  "operator": "Gouvernement de la Nouvelle-Caledonie, DITTT",
+  "scope": "territory-wide cadastre (all communes per service description)",
+  "endpoint": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer",
+  "method": "ArcGIS REST MapServer /identify",
+  "responseFormat": "esri JSON",
+  "crs": "EPSG:3163 native; identify accepts sr=4326",
+  "reuseStatus": "licence not read"
+ },
+ "requests": [
+  {
+   "url": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer/0/query?...&returnGeometry=true&f=geojson (Noumea bbox, count 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 features, attributes only, geometry null (same as previous pass; f=json, pjson, outSR=3163/4326, POST variants also withhold geometry)"
+  },
+  {
+   "url": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer/identify?...sr=3163 (Noumea point)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 parcel with attributes AND polygon rings (5 vertices, closed) - geometry is NOT withheld here"
+  },
+  {
+   "url": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer/identify?...sr=4326 (Kone point, tolerance 30)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "9 KONE parcels with polygon rings (e.g. 157 and 29 vertices, closed)"
+  },
+  {
+   "url": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "esriGeometryPolygon layer, capabilities Query,Map,Data, maxRecordCount 1000"
+  },
+  {
+   "url": "https://services1.arcgis.com/TZcrgU6CIbqWt9Qv/arcgis/rest/services/Sections_cadastrales/FeatureServer/0/query?...&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "cadastral SECTION polygons (fields nom_de_la_section, code_rivoli) - not parcels, but open with geometry"
+  },
+  {
+   "url": "https://services1.arcgis.com/TZcrgU6CIbqWt9Qv/arcgis/rest/services/cadastre_centroide/FeatureServer/0/query?...&f=geojson",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "parcel CENTROID points with nic/lot/commune/section; not polygons"
+  },
+  {
+   "url": "https://carto.gouv.nc/public/rest/services/plan_parcellaire_informatise/MapServer/WFSServer?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "text/html",
+   "assessment": "no WFS on this service"
+  },
+  {
+   "url": "https://carto.gouv.nc/public/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "13 root services + folders; parcel data only in plan_parcellaire_informatise"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "none; host answered 200 from this network",
+ "notes": "NEW: previous pass concluded polygons were withheld because /query returns no geometry. The MapServer /identify operation on the same layer DOES return closed polygon rings plus attributes (no owner data in attributes: nic, lot, surf_cad, commune, section, lotissement, typologie). Sampled two communes (Noumea, Kone) on the same service, so nationwideVerified true for this territory-wide source. Open AGOL Sections_cadastrales (polygons) and cadastre_centroide (points) also exist. Bulk polygon export via /query stays blocked, so identify is per-point only. Licence not read.",
+ "nextStep": "Read the carto.gouv.nc / georep.nc licence and any identify rate limits; check whether ExportMap/tile or a bulk download is offered before relying on point identify for coverage.",
+ "kind": "country",
+ "key": "NC",
+ "checkedAt": "2026-09-30"
+}

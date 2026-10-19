@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4362-voronezh.json",
+  "purpose": "Read-only official city registry and public map service review; no property lookup.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateTokensRetained": false
+  },
+  "assessment": "Voronezh’s regional state cadastral valuation institution points to Rosreestr/NSPD for public cadastral information; city planning and land authorities publish parcel-related planning materials. The national map is accessible anonymously, but no safe public full-vector feature schema or geometry export was verified.",
+  "officialEvidence": [
+    {
+      "url": "https://www.volbti.ru/publichnaya-kadastrovaya-karta/",
+      "observation": "Voronezh regional state cadastral valuation institution directs users to Rosreestr’s Public Cadastral Map."
+    },
+    {
+      "url": "https://uizo.voronezh-city.ru/",
+      "observation": "Official city land/property management department."
+    },
+    {
+      "url": "https://uga.voronezh-city.ru/documents/pravila-zemlepolzovaniya-i-zastroyki-territorii-gorodskogo-okruga-gorod-voronezh/",
+      "observation": "Official city planning and zoning records."
+    },
+    {
+      "url": "https://uga.voronezh-city.ru/images/img/uga/PPT/2026_47.pdf",
+      "observation": "Official Voronezh planning/mapping materials include parcel boundary data, but are not a public parcel-vector service."
+    },
+    {
+      "url": "https://t.me/s/rosreestr_news/2517",
+      "observation": "Rosreestr confirms the public map is on NSPD and available without authorization or payment."
+    }
+  ],
+  "serviceTrace": {
+    "mapUrl": "https://nspd.gov.ru/map",
+    "observation": "The official NSPD map could not be loaded from this environment during a public shell check. The timeout is local access evidence only, not provider downtime; no map API or parcel lookup was attempted.",
+    "metadataOnlyRequests": []
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "Only official national map documentation and city/region land records were reviewed. No safe public vector endpoint/schema was established; no parcel lookup was made."
+  },
+  "runtimeBlocker": "The official NSPD map could not be loaded from this environment during a public shell check. The timeout is local access evidence only, not provider downtime; no map API or parcel lookup was attempted."
+}

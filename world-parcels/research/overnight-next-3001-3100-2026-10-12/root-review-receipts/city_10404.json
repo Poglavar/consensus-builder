@@ -1,0 +1,28 @@
+{
+  "taskId": "city:10404",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-10404-jianshan.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/jianshan-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "checkedAt": "2026-10-12T02:34:03.416485Z",
+  "city": "Jianshan",
+  "queueRank": 3083,
+  "registryFound": true,
+  "identityCheck": "Packet, paired review, pending queue, ranked roster, and original WUP 2025 source row agree on code, rank, country, exact point and population 195003 persons; original bulk SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114.",
+  "searchCheck": "English and native-language executed queries with actual result URLs are recorded in the city packet.",
+  "polygonCheck": "Zero retained full polygons and zero retained parcel ID attributes; within the three-polygon maximum.",
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "Official Shuangyashan registration and natural-resources pages support institutional custody, but no anonymous native parcel ID or full polygon was returned. A registration-site timeout and map-site anti-automation response do not prove absence.",
+  "scopeLimit": "Custody and viewer/configuration evidence do not establish citywide parcel-vector coverage. No runtime, catalog, or coverage-report admission."
+}

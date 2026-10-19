@@ -1,0 +1,134 @@
+{
+  "cityCode": 114,
+  "queueRank": 1677,
+  "name": "Kigoma",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "iso3": "TZA",
+  "locId": 834,
+  "point": [-4.88342756153032, 29.6523006847059],
+  "population2025": 340483,
+  "population2025k": 340.483,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kigoma Tanzania official cadastral parcel map GIS land registry",
+        "result": "First-party discovery identified the Ministry of Lands e-Ardhi system, its public map/service application, and an official Ministry report stating that e-Ardhi implementation in Kigoma uploaded and approved 4,851 plots. No anonymous Kigoma parcel feature was established from discovery alone.",
+        "actualResultUrls": [
+          "https://eardhi.lands.go.tz/",
+          "https://lands.go.tz/news/e-ardhi-yafanya-kazi-viwanja-4-851-vyapandishwa-na-kuhidihinishwa-tabora-na-kigoma",
+          "https://lands.go.tz/"
+        ]
+      },
+      {
+        "language": "Swahili",
+        "query": "Kigoma Tanzania ramani kadastre viwanja mfumo taarifa ardhi serikali",
+        "result": "Utafutaji wa vyanzo vya serikali kwa Kiswahili ulipata mfumo rasmi wa e-Ardhi na taarifa ya Wizara kuhusu viwanja 4,851 vya Tabora na Kigoma vilivyopandishwa na kuhidhinishwa. Hakuna jibu la wazi la kiwanja chenye kitambulisho na jiometri lililopatikana bila mipaka ya uthibitisho.",
+        "actualResultUrls": [
+          "https://eardhi.lands.go.tz/",
+          "https://lands.go.tz/news/e-ardhi-yafanya-kazi-viwanja-4-851-vyapandishwa-na-kuhidihinishwa-tabora-na-kigoma",
+          "https://www.kigoma.go.tz/kigoma"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "observation": "Official Ministry of Lands e-Ardhi application. The current JavaScript configuration exposed the public GeoServer base https://eardhi.lands.go.tz/map/geoserver/taspro and a map/service workflow; no login or private token was used."
+    },
+    {
+      "url": "https://lands.go.tz/news/e-ardhi-yafanya-kazi-viwanja-4-851-vyapandishwa-na-kuhidihinishwa-tabora-na-kigoma",
+      "observation": "Official Ministry news page reports e-Ardhi implementation in Kigoma and Tabora, including 4,851 plots uploaded and approved. It is evidence of ministry/local service activity, not proof of complete city coverage or open parcel geometry."
+    },
+    {
+      "url": "https://www.kigoma.go.tz/kigoma",
+      "observation": "Official Kigoma regional government page; used as local administrative context. It did not expose a parcel feature service in this bounded attempt."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://eardhi.lands.go.tz/",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Viewer shell loaded. Current JavaScript was inspected and exposed SERVER_URL https://eardhi.lands.go.tz/gw and GEOSERVER_API https://eardhi.lands.go.tz/map/geoserver/taspro."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/wms?service=WMS&request=GetCapabilities",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "WMS capabilities returned 322,380 bytes. It established the public map service and layer catalogue; no parcel geometry was retained from WMS."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "WFS 2.0 capabilities returned 134,321 bytes and listed taspro:spatial_units plus other survey/town-plan layers."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=taspro:spatial_units",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Schema returned. taspro:spatial_units is a polygon-like parcel/spatial-unit layer with native long id, native string uid, and gml MultiSurface geom; many additional source fields were observed but not retained."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=taspro:spatial_units&outputFormat=application/json&srsName=EPSG:4326&cql_filter=INTERSECTS(geom,POINT(29.6523006847059%20-4.88342756153032))&propertyName=id,uid,geom&count=1",
+      "method": "GET; anonymous; bounded exact-point query; request coordinates in longitude/latitude order",
+      "httpStatus": 200,
+      "outcome": "GeoJSON response was usable but returned zero features. This exact-point zero result is not treated as citywide absence and no sample was retained."
+    },
+    {
+      "url": "https://eardhi.lands.go.tz/map/geoserver/taspro/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=taspro:spatial_units&outputFormat=application/json&srsName=EPSG:4326&bbox=29.6423006847059,-4.89342756153032,29.6623006847059,-4.87342756153032,EPSG:4326&propertyName=id,uid&count=3",
+      "method": "GET; anonymous; bounded approximately 20 m box; TLS verification enabled",
+      "httpStatus": null,
+      "outcome": "Timed out after 30 seconds with no response. No retry with credentials, private token, TLS disablement, or unsafe fields was attempted. Timeout is not evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://lands.go.tz/news/e-ardhi-yafanya-kazi-viwanja-4-851-vyapandishwa-na-kuhidihinishwa-tabora-na-kigoma",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": "TLS hostname verification failure",
+      "outcome": "The published official URL could not be fetched by local curl because the certificate did not match lands.go.tz. No certificate exception was used; search-indexed first-party content was recorded separately."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Ministry of Lands e-Ardhi and Ministry reporting establish Tanzania's land-service/cadastral custodian and documented Kigoma plot-service activity. The public GeoServer exposes a spatial-unit layer, but city-bounded coverage and a successful Kigoma parcel feature response were not verified.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "candidateNativeIdFields": ["id", "uid"],
+    "geometryField": "geom",
+    "sourceLayer": "taspro:spatial_units",
+    "note": "Schema metadata only; no feature row was retained. Do not treat internal response order as identity."
+  },
+  "compositeKeyProvenance": null,
+  "crs": "WFS schema/service queried with srsName=EPSG:4326; source native CRS was not independently established from a feature response.",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "eardhi-tanzania-geoserver-taspro-spatial-units",
+  "verifiedParcelResponse": "Exact-point GeoJSON response was valid but empty; broader bounded query timed out.",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Tanzania Ministry of Lands e-Ardhi public land-service/map infrastructure and Kigoma plot-service activity.",
+    "verifiedOpenScope": "Public WMS/WFS catalogue and spatial_units schema; Kigoma citywide parcel coverage, stable feature identity in a returned row, and usable polygon geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [-4.88342756153032, 29.6523006847059] was preserved and not shifted; the WFS request used longitude/latitude order internally.",
+    "The exact-point zero result and bounded-query timeout are not evidence of citywide cadastral absence.",
+    "Official ministry reporting of 4,851 Kigoma/Tabora plots does not establish Kigoma city boundaries or complete coverage.",
+    "No owner, address, contact, titleholder, personal, tax/account, legal-title or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, synthetic identity, or GeoJSON sample was retained.",
+    "Packet completion is research evidence only, not source integration or adapter admission; runtime remains held pending serial review."
+  ],
+  "uncertainty": "The public e-Ardhi service is real and its current configuration exposes a WFS schema, but anonymous feature retrieval is slow/partial at this location. Kigoma-specific layer coverage, native identity semantics, source CRS, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

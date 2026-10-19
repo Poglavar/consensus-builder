@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "status": "active",
+  "startedAt": "2026-10-08T19:48:53Z",
+  "updatedAt": "2026-10-09T05:24:11.605908+00:00",
+  "totalRankedCities": 1000,
+  "priorAttemptedCities": 305,
+  "initialEligibleCities": 695,
+  "newCityEvidenceFiles": 695,
+  "rootReviewedCities": 695,
+  "awaitingReviewOrFollowthrough": [],
+  "enabledLocallyThisRun": 49,
+  "pendingUnattemptedCities": 0,
+  "nextUnattemptedCities": [],
+  "liveReleaseCommit": "0943514f304208e77d855f3d4413712bc2eff6e4",
+  "researchReleaseState": "release_checkpoint_prepared",
+  "note": "Attempt files count actual research including unsuccessful results and pending followthrough. Root-reviewed outcomes and local runtime acceptance are separate stages. Work continues until explicitly stopped.",
+  "geometryVerifiedThisRun": 81,
+  "identityReviewsPending": 0
+}

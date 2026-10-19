@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8077-okara.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Punjab PULSE Cadastral Maps layer 25 (Okara) returns one complete polygon at the exact WUP locator. OBJECTID 10854687 is an esriFieldTypeOID transport identity; metadata reports objectIdField/globalIdField null. Khasra_ID and Mouza_ID are both zero. Geometry is therefore verified while legal parcel identity/runtime qualification remain separate and unresolved.",
+  "registryAssessment": "Official Punjab Land Records and Punjab PULSE provide village-based cadastral map services. The exact WUP feature response establishes public polygon geometry in the Okara layer; it does not establish a valid cadastral parcel identifier or legal boundary.",
+  "officialPrimarySources": [
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "observation": "Official Punjab Land Records cadastral map page offers district/tehsil/village selectors."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab PULSE map lists cadastral-map layers and cautions that mapped lines are indicative, not legal boundaries."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=pjson",
+      "observation": "Okara polygon layer metadata returned HTTP 200; fields were reviewed and unsafe owner/account-type fields excluded from queries."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query",
+      "observation": "Exact WUP query returned HTTP 200 polygon response; safe IDs Khasra_ID and Mouza_ID were both zero, so it does not verify a valid parcel. A 200m nearby query restricted to Khasra_ID > 0 returned no features."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Urdu/Punjabi",
+      "query": "اوکاڑہ پنجاب سرکاری کھیوٹ خسرہ موضع کیڈسٹرل نقشہ زمین ریکارڈ PULSE",
+      "result": "سرکاری پنجاب لینڈ ریکارڈز میں ضلع/تحصیل/موضع کے مطابق کیڈسٹرل نقشے ہیں، اور PULSE کے اوکاڑہ Feature Layer نے WUP مقام پر ایک مکمل polygon واپس کیا (OBJECTID 10854687؛ Khasra_ID=0؛ Mouza_ID=0)۔ OBJECTID کو سروس transport ID کے طور پر محفوظ کیا گیا ہے؛ قانونی پارسل شناخت اور runtime qualification الگ اور غیر مصدقہ ہیں۔ PULSE حدود کو قانونی حد کے بجائے indicative بتاتا ہے۔",
+      "urls": [
+        "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+        "https://lis.pulse.gop.pk/",
+        "https://www.punjab-zameen.gov.pk/",
+        "https://okara.punjab.gov.pk/administration",
+        "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=pjson",
+        "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query"
+      ],
+      "scope": "Verify city-local registry/cadastre evidence and inspect safe anonymous geometry routes."
+    },
+    {
+      "language": "English",
+      "query": "Okara Punjab official cadastral parcel map PULSE Punjab Land Records public GIS",
+      "result": "Official Punjab Land Records provides village-wise cadastral maps with District/Tehsil/Village selectors. The official Punjab PULSE Okara polygon layer returned one complete full polygon at the exact WUP point (OBJECTID 10854687; Khasra_ID=0; Mouza_ID=0). The service OBJECTID is preserved as a transport identifier, while legal parcel identity and runtime qualification remain unverified; PULSE labels lines indicative/non-legal.",
+      "urls": [
+        "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+        "https://lis.pulse.gop.pk/",
+        "https://www.punjab-zameen.gov.pk/",
+        "https://okara.punjab.gov.pk/administration",
+        "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=pjson",
+        "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query"
+      ],
+      "scope": "Cross-check source identity, service availability, and public full geometry at the WUP point."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "method": "GET official public source page",
+      "result": "Official Punjab Land Records cadastral map page offers district/tehsil/village selectors; this page documents access workflow but does not expose vector geometry schema."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET official public map shell",
+      "result": "Official Punjab PULSE map offers Cadastral Maps and lists Okara. The viewer states mapped lines are indicative/non-legal; this is recorded as boundary-status qualification, not as a denial of geometry."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/api/gis/token",
+      "method": "GET anonymous public viewer bootstrap; token value kept in memory only and not logged or retained",
+      "result": "HTTP 200 application/json; the public viewer issued a transient query token. No account authentication or user credentials were used; token value was neither printed nor saved."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=json",
+      "method": "GET layer metadata using public viewer token",
+      "result": "HTTP 200 application/json. Layer 25 name Okara, type Feature Layer, geometryType esriGeometryPolygon, source WKID 102100/latestWkid 3857, capabilities Map/Query/Data, maxRecordCount 2000. Fields include OBJECTID esriFieldTypeOID, Khasra_ID integer, Mouza_ID integer, and Khewat_ID integer (not queried/retained). objectIdField and globalIdField are null. OBJECTID is retained only as a service transport identifier."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query",
+      "method": "GET bounded exact WUP point; requested only OBJECTID,Khasra_ID,Mouza_ID plus full geometry, output EPSG:4326",
+      "result": "HTTP 200 application/json; one full Polygon feature returned, OBJECTID=10854687, Khasra_ID=0, Mouza_ID=0; one ring, 41 vertices, bounds [73.45086260126932,30.806345318462927,73.45373906699616,30.808859679044183]. OBJECTID is a server-issued OID, not asserted as a legal/native parcel key. Full geometry retained separately."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query",
+      "method": "GET nearby 200 m bounded envelope with where Khasra_ID > 0; requested only safe parcel ID field, no geometry",
+      "result": "HTTP 200; zero features returned. This does not negate the exact-point polygon response; it leaves nearby legally identified parcel coverage unresolved."
+    }
+  ],
+  "geometryEvidence": {
+    "status": "verified_exact_point_full_polygon",
+    "source": "Official Punjab PULSE Cadastral Maps ArcGIS Feature Layer 25: Okara",
+    "sourceUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:3857",
+    "outputCrs": "EPSG:4326",
+    "queryPoint": [
+      30.8083288852812,
+      73.4521453260116
+    ],
+    "queryFeatureCount": 1,
+    "fullPolygonResponse": true,
+    "ringCount": 1,
+    "outerVertexCount": 41,
+    "bounds4326": [
+      73.45086260126932,
+      30.806345318462927,
+      73.45373906699616,
+      30.808859679044183
+    ],
+    "transportIdentity": {
+      "field": "OBJECTID",
+      "type": "esriFieldTypeOID",
+      "value": 10854687,
+      "stableIdMetadata": "objectIdField is null; do not treat as legal/native parcel key"
+    },
+    "legalParcelFields": {
+      "Khasra_ID": 0,
+      "Mouza_ID": 0
+    },
+    "sampleFile": "city-8077-okara-samples.geojson",
+    "sampleFeatureCount": 1,
+    "fieldsRequested": [
+      "OBJECTID",
+      "Khasra_ID",
+      "Mouza_ID",
+      "geometry"
+    ],
+    "fieldsNotRequested": [
+      "Khewat_ID",
+      "owner",
+      "address",
+      "account or taxpayer information"
+    ]
+  },
+  "privacy": "No owner/address/account-like fields were requested or retained. Khewat_ID was excluded. Public token was used only in memory and not printed or saved.",
+  "runtimeAssessment": {
+    "status": "not_ready_native_parcel_identity_unqualified",
+    "reason": "A complete full polygon is verified at the WUP locator. OBJECTID 10854687 is available as a service transport value, while objectIdField/globalIdField metadata are null and Khasra_ID/Mouza_ID are zero. Stability and legal parcel correspondence are unqualified. The viewer disclaimer concerns legal boundary status and does not negate geometry retrieval."
+  },
+  "geometryDisposition": "One complete full polygon retained because official layer metadata confirmed an Okara polygon Feature Layer and the exact WUP query returned a full 41-vertex ring. Preserve OBJECTID 10854687 only as the raw service OID; do not promote it to a native legal parcel key. Khasra_ID and Mouza_ID remain their returned zero values. Runtime identity qualification remains unresolved."
+}

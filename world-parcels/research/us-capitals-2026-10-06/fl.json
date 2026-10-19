@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "FL",
+  "state": "Florida",
+  "capital": "Tallahassee",
+  "centerLatLon": [
+    30.4383,
+    -84.2807
+  ],
+  "query": {
+    "language": "English",
+    "text": "Florida official Tallahassee GIS parcels Leon County parcels"
+  },
+  "references": [
+    {
+      "url": "https://cms.leoncountyfl.gov/Government/Departments/Information-and-Technology/Tallahassee-Leon-County-GIS",
+      "observation": "Official interlocal GIS program page identifies City, County, and Property Appraiser partners."
+    },
+    {
+      "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0?f=pjson",
+      "observation": "Leon County parcel polygon service metadata; TAXID field, parcels provided by the Property Appraiser."
+    },
+    {
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0?f=pjson",
+      "observation": "Previously reviewed Florida statewide cadastral layer; county samples were verified, but capital bbox timed out."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Florida%20official%20Tallahassee%20GIS%20parcels%20Leon%20County%20parcels",
+      "observation": "English search for official Tallahassee/Leon County parcel data."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "assessment": "Polygon parcel layer metadata returned; TAXID is native text parcel-key candidate; metadata has OID field OBJECTID_1."
+    },
+    {
+      "url": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0/query?where=1%3D1&geometry=-84.28135%2C30.4378125%2C-84.28005%2C30.4387875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=TAXID&returnGeometry=true&outSR=4326&resultRecordCount=4&f=json",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": null,
+      "assessment": "Direct capital bbox request forbidden, including browser headers and official GIS Referer; no challenge bypass attempted."
+    },
+    {
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query?where=1%3D1&geometry=-84.28135%2C30.4378125%2C-84.28005%2C30.4387875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Capital bbox read timed out after 20 seconds; statewide layer remains a lead, not a negative."
+    }
+  ],
+  "source": {
+    "endpoint": "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParNALPublic_D_WM/MapServer/0",
+    "adapter": "arcgis",
+    "name": "TLC Overlay Property Parcels (PARNAL public layer)",
+    "operator": "Tallahassee-Leon County GIS and Leon County Property Appraiser",
+    "idField": "TAXID",
+    "objectIdField": "OBJECTID_1",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Native tax ID is text, length 13; values not sampled.",
+    "outFields": [
+      "TAXID"
+    ],
+    "parcelNumberField": "TAXID",
+    "metricSrid": 3857,
+    "proposedIdPrefix": "us-fl-leon"
+  },
+  "verification": {
+    "bbox": [
+      -84.28135,
+      30.4378125,
+      -84.28005,
+      30.4387875
+    ],
+    "count": null,
+    "nativeIDs": [],
+    "exactCount": null,
+    "geometryvalid": null,
+    "capitallocation": null
+  },
+  "geometryFound": null,
+  "runtimeReadiness": "blocked",
+  "status": "temporarily_unavailable",
+  "limitations": "Parcel polygons are clearly described in official metadata, but this turn could not obtain a capital feature because the official Leon County endpoint returned 403 and the state layer timed out. No claim that Tallahassee lacks parcel data.",
+  "priorResearchFile": "research/subnational/US/FL.json"
+}

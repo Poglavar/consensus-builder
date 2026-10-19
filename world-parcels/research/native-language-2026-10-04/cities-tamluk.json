@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 173,
+  "city": "Tamluk",
+  "countryCode": "IN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/tamluk.json",
+  "query": {
+    "language": "Bengali",
+    "script": "Bengali",
+    "text": "তমলুক জমির নকশা মৌজা খতিয়ান ভূমি ও ভূমি সংস্কার পশ্চিমবঙ্গ সরকারি"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Bengali",
+    "queryScript": "Bengali",
+    "nativeQuery": "তমলুক জমির নকশা মৌজা খতিয়ান ভূমি ও ভূমি সংস্কার পশ্চিমবঙ্গ সরকারি",
+    "englishQuery": "Tamluk land map, mouza map and West Bengal Land and Land Reforms",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Banglarbhumi",
+      "url": "https://www.banglabhumigov.net/",
+      "kind": "West Bengal land-records portal",
+      "note": "Search result identifies state Land & Land Reforms functions but does not establish Tamluk cadastral coverage or service contract."
+    },
+    {
+      "title": "West Bengal Registration property search",
+      "url": "https://wbregistration.gov.in/index/Search_By_Property_new.aspx",
+      "kind": "official-state-registration-service",
+      "note": "Mouza-wise transacted-property search is available; transaction records are distinct from cadastral parcel geometries."
+    }
+  ],
+  "assessment": "Search found land-record and deed lookup portals but did not prove an open cadastral feature source for Tamluk. Historical temporary-unavailable status remains.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:11755",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

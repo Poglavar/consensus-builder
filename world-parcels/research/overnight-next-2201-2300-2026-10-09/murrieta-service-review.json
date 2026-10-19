@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-3692-murrieta.json",
+  "cityCode": 3692,
+  "queueRank": 2268,
+  "name": "Murrieta",
+  "country": "United States of America",
+  "countryCode": "US",
+  "pointLatLon": [33.5360803187946, -117.149890103166],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH/GET","url":"https://www.murrietaca.gov/246/Geographic-Information-Systems","httpStatus":200,"outcome":"Official City of Murrieta GIS page found; it advertises public interactive mapping and PDF map resources. It is a discovery/city GIS lead, not a verified parcel API response."},
+    {"method":"SEARCH/GET","url":"https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40","httpStatus":200,"outcome":"First-party Riverside County Assessor/RCIT PARCELS feature layer found. Metadata identifies polygon taxable parcels, APN as the parcel number, native WKID 102646/2230, and weekday daily updates."},
+    {"method":"GET","url":"https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40?f=pjson","httpStatus":200,"outcome":"Anonymous layer schema and CRS returned. Fields were inspected; only APN and geometry were used for bounded parcel requests."},
+    {"method":"GET","url":"https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40/query","httpStatus":200,"outcome":"Exact immutable WUP point query used geometry point [-117.149890103166,33.5360803187946] in EPSG:4326, esriGeometryPoint, esriSpatialRelIntersects, outFields=APN, returnGeometry=true, outSR=4326. It returned one polygon, APN 920090005."},
+    {"method":"GET","url":"https://gis.countyofriverside.us/arcgis_mapping/rest/services/OpenData/Assessor/MapServer/40/query","httpStatus":200,"outcome":"Bounded nearby envelope query used [-117.1510,33.5355,-117.1488,33.5367] in EPSG:4326, esriGeometryEnvelope, outFields=APN, returnGeometry=true, outSR=4326, resultRecordCount=3. It returned three polygons: APNs 920090004, 920090005, and 920090013."}
+  ],
+  "schemaAndCrs": {"geometryType":"esriGeometryPolygon","nativeSpatialReference":"WKID 102646 / latest WKID 2230","requestedOutputSpatialReference":"EPSG:4326","nativeIdentity":"APN","compositeKeyProvenance":"No composite key; APN is the native identifier exposed by the layer."},
+  "safeFieldAllowlist": ["APN", "polygon geometry", "service URL", "CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A real first-party regional parcel API returned safe anonymous native IDs and polygon geometry, but adapter/runtime admission remains held pending independent serial review."},
+  "scopeLimits": ["Exact-point success is not citywide coverage evidence.","The service represents taxable parcels and may not represent every legal, recorded, condominium, or non-taxable boundary workflow.","The City of Murrieta GIS page and County Assessor service were distinguished; no separate municipal cadastral API was confirmed.","Full unchanged query responses are retained only in ignored tmp/valhalla-parcel-research/3692/.","No unsafe fields were requested or retained."],
+  "uncertainty": "The public first-party layer is queryable and returned valid polygon geometry at the immutable point, but citywide completeness, publication lineage beyond the service description, and legal authority relative to recorder/title systems were not independently verified."
+}

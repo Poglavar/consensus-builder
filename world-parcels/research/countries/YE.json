@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "YE",
+ "country": "Yemen",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Land Survey and Registration Authority (Yemen); split administrations",
+ "portalsFound": [
+  {
+   "url": "https://www.lrcyemen.org/",
+   "observation": "Unreachable (also in sanaa.json)."
+  },
+  {
+   "url": "https://data.humdata.org/",
+   "observation": "HDX search for Yemen parcels/cadastre returned 0 datasets."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.lrcyemen.org/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://data.humdata.org/api/3/action/package_search?q=yemen+parcels+cadastre&rows=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "count 0"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "No online cadastre found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official sites unreachable, conflict context; absence not proven.",
+ "nextStep": "Retry official sites; check UN-Habitat/HLP datasets."
+}

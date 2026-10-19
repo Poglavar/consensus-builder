@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 89,
+  "city": "Kano",
+  "countryCode": "NG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kano.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Kano Nigeria cadastral parcel GIS data land registry geospatial open data"
+  },
+  "results": [
+    {
+      "title": "Kano State Geographic Information System (KANGIS)",
+      "url": "https://kangis.gov.ng/index.html",
+      "kind": "official-state-agency",
+      "note": "KANGIS is custodian of Kano geospatial data and supports computerized land registration, thematic maps and requested geospatial data; free anonymous parcel access not shown."
+    },
+    {
+      "title": "KANGIS Systematic Land Titling and Registration",
+      "url": "https://www.kangis.gov.ng/sltr.html",
+      "kind": "official-state-program",
+      "note": "Records individual plot survey/demarcation in designated areas; not a public feature API."
+    }
+  ],
+  "assessment": "Strong official lead: KANGIS maintains statewide geospatial/land records and systematic parcel registration. No anonymous open parcel dataset or feature query endpoint was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

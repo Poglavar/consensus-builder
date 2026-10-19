@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<!-- Parkovi, trgovi i jezera: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: how-to-use-park-square.html. -->
+<html lang="hr">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Parkovi, trgovi i jezera · Consensus Builder
+  </title>
+  <meta content="Prvo stvori površinu, zatim na karti rasporedi stabla, staze, vodu i opremu. Isti dizajn pregledaj u 3D-u." name="description"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+  <link rel="canonical" href="https://urbangametheory.xyz/kako-koristiti-park-trg.html" />
+  <link rel="alternate" hreflang="en" href="https://urbangametheory.xyz/how-to-use-park-square.html" />
+  <link rel="alternate" hreflang="hr" href="https://urbangametheory.xyz/kako-koristiti-park-trg.html" />
+  <link rel="alternate" hreflang="x-default" href="https://urbangametheory.xyz/how-to-use-park-square.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Consensus Builder" />
+  <meta property="og:locale" content="hr_HR" />
+  <meta property="og:title" content="Parkovi, trgovi i jezera · Consensus Builder" />
+  <meta property="og:description" content="Prvo stvori površinu, zatim na karti rasporedi stabla, staze, vodu i opremu. Isti dizajn pregledaj u 3D-u." />
+  <meta property="og:url" content="https://urbangametheory.xyz/kako-koristiti-park-trg.html" />
+  <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Globus Consensus Buildera s prikazom dostupnosti katastarskih podataka po državama i gradovima." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@UrbanGameTheory" />
+  <meta name="twitter:title" content="Parkovi, trgovi i jezera · Consensus Builder" />
+  <meta name="twitter:description" content="Prvo stvori površinu, zatim na karti rasporedi stabla, staze, vodu i opremu. Isti dizajn pregledaj u 3D-u." />
+  <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta name="twitter:image:alt" content="Globus Consensus Buildera s prikazom dostupnosti katastarskih podataka po državama i gradovima.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Parkovi, trgovi i jezera","description":"Prvo stvori površinu, zatim na karti rasporedi stabla, staze, vodu i opremu. Isti dizajn pregledaj u 3D-u.","inLanguage":"hr","url":"https://urbangametheory.xyz/kako-koristiti-park-trg.html","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","isPartOf":{"@type":"WebSite","name":"Consensus Builder","url":"https://urbangametheory.xyz/"},"publisher":{"@type":"Organization","name":"Urban Game Theory","url":"https://urbangametheory.xyz/"}}</script>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Parkovi, trgovi i jezera
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=hr">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Natrag na kartu
+   </a>
+   <nav aria-label="Jezik" class="cb-page-header__lang cb-segmented">
+    <a aria-current="page" class="cb-segmented__option" href="kako-koristiti-park-trg.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a class="cb-segmented__option" href="how-to-use-park-square.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Navigacija vodiča" class="sidebar">
+   <div class="sidebar-links">
+    <a class="btn btn-quiet" href="kako-koristiti.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     Kako koristiti
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-zgrade.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Zgrade
+    </a>
+    <a aria-current="page" class="btn btn-quiet" href="kako-koristiti-park-trg.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parkovi, trgovi i jezera
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-reparcelacija.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Reparcelacija
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-cesta.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Ceste i pruge
+    </a>
+    <a class="btn btn-quiet" href="kako-koristiti-prikazi.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Prikazi i usporedbe
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     Na ovoj stranici
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#start">
+      Početak
+     </a>
+     <a class="btn btn-quiet" href="#park">
+      Park
+     </a>
+     <a class="btn btn-quiet" href="#square">
+      Trg
+     </a>
+     <a class="btn btn-quiet" href="#lake">
+      Jezero
+     </a>
+     <a class="btn btn-quiet" href="#save">
+      Spremi i pregledaj
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro">
+     <span class="eyebrow">
+      Uči kroz rad
+     </span>
+     <h2>
+      Napravi prostor za javni život
+     </h2>
+     <p>
+      Prvo stvori površinu, zatim na karti rasporedi stabla, staze, vodu i opremu. Isti dizajn pregledaj u 3D-u.
+     </p>
+    </div>
+    <section class="guide-section" id="start">
+     <h2>
+      Stvori prostor i otvori uređivač
+     </h2>
+     <p>
+      Odaberi čestice ili lokaciju, otvori
+      <span class="ui-label">
+       Prijedlozi
+      </span>
+      i odaberi
+      <span class="ui-label">
+       Park
+      </span>
+      ,
+      <span class="ui-label">
+       Trg
+      </span>
+      ili
+      <span class="ui-label">
+       Jezero
+      </span>
+      iz palete. Alat stvara površinu jednim klikom. Klikni nastali objekt pa
+      <span class="ui-label">
+       Uredi geometriju
+      </span>
+      za postavljanje ili izmjenu opreme.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      Uređivač opreme radi izravno na karti. Svaki predmet mora biti unutar isprekidane granice; povuci ga za premještanje. Izmjene geometrije prenose dizajn u novu verziju umjesto mijenjanja podijeljenog izvora.
+     </div>
+    </section>
+    <section class="guide-section" id="park">
+     <h2>
+      Park: stabla, staze i jezerca
+     </h2>
+     <figure class="howto-video" id="watch-park">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:37
+       </span>
+      </div>
+      <video aria-describedby="caption-park" aria-label="Napravi park" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-02-park-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-02-park-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-02-park-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-park">
+       <strong>
+        Napravi park.
+       </strong>
+       Postavi stabla, staze i jezerca pa pregledaj rezultat u 3D-u.
+       <a class="cb-link" href="videos/howto/consensus-builder-02-park-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Odaberi Stablo, Klupu, Cvjetnjak ili Jezerce pa klikni unutar parka. Cvjetnjaci i jezerca zauzimaju kružnu površinu koja mora cijela stati unutar granice. Približi kartu za manje i preciznije postavljanje.
+     </p>
+     <p>
+      Za
+      <span class="ui-label">
+       Pješačku stazu
+      </span>
+      klikni točke pa
+      <span class="ui-label">
+       Završi stazu
+      </span>
+      ili pritisni
+      <span class="ui-label">
+       Enter
+      </span>
+      . Povuci stazu za premještanje. Odaberi
+      <span class="ui-label">
+       Ukloni
+      </span>
+      pa klikni predmet za brisanje.
+     </p>
+    </section>
+    <section class="guide-section" id="square">
+     <h2>
+      Trg: fontane i oprema
+     </h2>
+     <figure class="howto-video" id="watch-square">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Pogledaj tijek rada
+       </span>
+       <span class="video-duration">
+        0:33
+       </span>
+      </div>
+      <video aria-describedby="caption-square" aria-label="Napravi trg" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-03-square-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-03-square-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-03-square-review.mp4">
+        Otvori video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-square">
+       <strong>
+        Napravi trg.
+       </strong>
+       Dodaj fontanu i rasporedi opremu na karti.
+       <a class="cb-link" href="videos/howto/consensus-builder-03-square-review.mp4">
+        Otvori video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Opremi trg Fontanom, Stablom, Klupom, Stolom i Kipom. Odaberi vrstu pa klikni unutar obrisa. Premjesti postojeće predmete povlačenjem ili ih ukloni alatom Ukloni. Video prikazuje dodavanje fontane i provjeru trga u 3D-u.
+     </p>
+    </section>
+    <section class="guide-section" id="lake">
+     <h2>
+      Jezero: vodena površina
+     </h2>
+     <p>
+      Jezero stvara vodenu površinu preko povezanih odabranih čestica. Razlikuje se od malog jezerca koje je dio opreme parka. Pregledaj vodu zajedno s okolnim zgradama u 3D-u.
+     </p>
+    </section>
+    <section class="guide-section" id="save">
+     <h2>
+      Spremi i pregledaj
+     </h2>
+     <p>
+      <span class="ui-label">
+       Spremi dizajn
+      </span>
+      potvrđuje raspored opreme;
+      <span class="ui-label">
+       Odustani
+      </span>
+      odbacuje izmjene iz te sesije uređivanja. Prebaci se u 3D za provjeru položaja.
+      <span class="ui-label">
+       Planirano
+      </span>
+      u kontrolama prikaza uključuje javnu površinu i opremu;
+      <span class="ui-label">
+       Stabla
+      </span>
+      i
+      <span class="ui-label">
+       Voda
+      </span>
+      upravljaju njihovom vidljivošću.
+     </p>
+     <p>
+      <a class="cb-link" href="kako-koristiti-prikazi.html">
+       Provjeri prikaz i usporedi prije / poslije →
+      </a>
+     </p>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="kako-koristiti.html">
+      Sve upute
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=hr">
+      Isprobaj na karti
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Plan razvoja
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
+</html>

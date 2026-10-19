@@ -1,0 +1,58 @@
+[
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "A",
+  "regionName": "Salta",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ },
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "J",
+  "regionName": "San Juan",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ },
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "D",
+  "regionName": "San Luis",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ },
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "Z",
+  "regionName": "Santa Cruz",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ },
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "S",
+  "regionName": "Santa Fe",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ },
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "G",
+  "regionName": "Santiago del Estero",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ },
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "V",
+  "regionName": "Tierra del Fuego",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ },
+ {
+  "iso2": "AR",
+  "country": "Argentina",
+  "regionCode": "T",
+  "regionName": "Tucumán",
+  "hints": "Argentina's cadastre is provincial (Ley 26.209). Salta's open ArcGIS FeatureServer parcels are verified; CABA's WFS (catalogo_og_130:parcelas) is verified. Look for each province's Dirección de Catastro geoportal or IDE (IDERA lists provincial nodes: e.g. IDE Santa Fe, IDECOR Córdoba, Mendoza ATM/IDE, Buenos Aires ARBA 'Carto ARBA' / IDE PBA, Neuquén, Río Negro, Chubut, Entre Ríos ATER, Tucumán). Try WFS/ArcGIS bounded queries in the capital city of each province."
+ }
+]

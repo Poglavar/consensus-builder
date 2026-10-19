@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "4796",
+  "cityName": "Nice",
+  "sourceId": "nice-cotedazur-cadastre-arcgis",
+  "candidateSha256": "eae063d82ce4a3e7fcd9aa345e1d20125845d3420d549b73ad4175ecbeadae1d",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 107,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 107,
+      "collectedUniqueCount": 107
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 354
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "forcedComplete": true,
+      "pagingRequests": 10,
+      "observedPageLimits": [
+        1
+      ],
+      "singleIdRequests": 0,
+      "usesOffsetPaging": true,
+      "distinctOffsets": 2,
+      "pagedEvidence": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "ad5b19f86b2863ac056f420782d533d1a29a75c063e956b0dc6cdc9e59cd3818",
+      "featureCount": 107,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32632",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "ad5b19f86b2863ac056f420782d533d1a29a75c063e956b0dc6cdc9e59cd3818",
+  "featureCount": 107,
+  "sampleIds": [
+    "FR-NCA-CADASTRE-060088   MT0022"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 43,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        7.232,
+        43.697,
+        7.233,
+        43.698
+      ],
+      "complete": true,
+      "featureCount": 12
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        7.233,
+        43.697,
+        7.234,
+        43.698
+      ],
+      "complete": true,
+      "featureCount": 9
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        7.234,
+        43.697,
+        7.235,
+        43.698
+      ],
+      "complete": true,
+      "featureCount": 8
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        7.232,
+        43.698,
+        7.233,
+        43.699
+      ],
+      "complete": true,
+      "featureCount": 7
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        7.233,
+        43.698,
+        7.234,
+        43.699
+      ],
+      "complete": true,
+      "featureCount": 10
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        7.234,
+        43.698,
+        7.235,
+        43.699
+      ],
+      "complete": true,
+      "featureCount": 13
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        7.232,
+        43.699,
+        7.233,
+        43.7
+      ],
+      "complete": true,
+      "featureCount": 8
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        7.233,
+        43.699,
+        7.234,
+        43.7
+      ],
+      "complete": true,
+      "featureCount": 13
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        7.234,
+        43.699,
+        7.235,
+        43.7
+      ],
+      "complete": true,
+      "featureCount": 44
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        7.233,
+        43.696,
+        7.234,
+        43.697
+      ],
+      "complete": true,
+      "featureCount": 12
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        7.233,
+        43.7,
+        7.234,
+        43.701
+      ],
+      "complete": true,
+      "featureCount": 18
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        7.231,
+        43.698,
+        7.232,
+        43.699
+      ],
+      "complete": true,
+      "featureCount": 9
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        7.235,
+        43.698,
+        7.236,
+        43.699
+      ],
+      "complete": true,
+      "featureCount": 14
+    }
+  ]
+}

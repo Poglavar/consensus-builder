@@ -1,0 +1,65 @@
+{
+  "taskId": "city:7564",
+  "decision": "held",
+  "checkedAt": "2026-10-10T20:49:35Z",
+  "identity": {
+    "cityCode": 7564,
+    "rank": 2007,
+    "name": "Okrika",
+    "country": "Nigeria",
+    "countryCode": "NG",
+    "point": [
+      4.75019979377667,
+      7.09828670405982
+    ],
+    "populationPersons": 289429,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "packetQueueRosterMatch": true
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Kirike/Igbo-oriented local-language search"
+    ],
+    "queriesAndResultUrlsRecorded": true,
+    "independentSearchResponseCacheAvailable": false
+  },
+  "firstPartyCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/okrika/sgriv.html",
+      "sha256": "c91aa339c549872e488d61fe5d28b99fdb004911f6de0faf0e08324f2bde2399",
+      "bytes": 19213
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/okrika/sgriv.headers",
+      "sha256": "52328271d2487e71188d1f154560e6c6c2911757f90b8237fd6ab213bd609e42",
+      "bytes": 1874
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/okrika/rivers.headers",
+      "sha256": "8be45964e8336a47b7aeec5515587b94377ac86837e0968b2d413cb0145bec5f",
+      "bytes": 2172
+    }
+  ],
+  "firstPartyAssessment": "SGRIV original HTML names the Office of the Surveyor General, Rivers State and links to register/login. Original Rivers response headers show HTTP 403 and a Cloudflare challenge. No original parcel ID/geometry response is saved.",
+  "custody": {
+    "registryFound": true,
+    "basis": "Original first-party cache grounds the office, map hierarchy or cadastral program identified above."
+  },
+  "geometry": {
+    "retainedFullPolygonCount": 0,
+    "acceptedNativeIdPlusPolygonResponses": 0,
+    "citywideAbsenceEstablished": false,
+    "publicGeometryStatus": "unresolved; no verified polygon response in this bounded attempt"
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "No independently evidenced anonymous full-polygon parcel adapter or complete admission-gate proof. Retain the city as held; no runtime, catalog, or generated-coverage admission."
+}

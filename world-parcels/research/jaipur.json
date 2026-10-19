@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:110",
+  "queueRank": 110,
+  "name": "Jaipur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.9128723533915,
+    75.7865606043523
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/",
+      "observation": "Rajasthan Bhu-Naksha (NIC) cadastral map viewer by village; public viewer, no documented open feature API."
+    },
+    {
+      "url": "https://jaipurmc.org/",
+      "observation": "Jaipur Nagar Nigam homepage; no GIS parcel dataset found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "viewer landing page (2.9 KB); later retries gave no response"
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/bhunaksha/08/index.html",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html;charset=ISO-8859-1",
+      "assessment": "guessed path does not exist"
+    },
+    {
+      "url": "https://bhunaksha.rajasthan.gov.in/bhunaksha/08/ScalarDatahandler?OP=5&state=08",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html;charset=ISO-8859-1",
+      "assessment": "guessed path does not exist"
+    },
+    {
+      "url": "https://bhunaksha.nic.in/",
+      "method": "GET",
+      "httpStatus": 302,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "redirect only"
+    },
+    {
+      "url": "https://jaipurmc.org/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "municipal homepage"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=jaipur%20cadastral",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "only unofficial student/survey maps"
+    },
+    {
+      "url": "https://apnakhata.raj.nic.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    },
+    {
+      "url": "https://landrecords.rajasthan.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan state Bhu-Naksha (viewer; urban coverage unknown)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Bhu-Naksha is mostly rural revenue-village plots; urban Jaipur coverage, an anonymous bbox query, and reuse terms are unverified. Some hosts were intermittently unreachable.",
+  "nextStep": "Inspect the viewer's network calls for a village-plot geometry endpoint and test one village; check Jaipur Development Authority GIS."
+}

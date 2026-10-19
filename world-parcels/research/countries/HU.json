@@ -1,0 +1,92 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "HU",
+ "country": "Hungary",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Lechner Tudásközpont (Lechner Knowledge Centre) for the state real-estate cadastre base map (Állami Ingatlan-nyilvántartási Alapadatbázis / DAT); legal register run by Land Offices (Kormányhivatal), viewer via e-Ingatlan-nyilvántartás / Takarnet",
+ "portalsFound": [
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geoserver/wfs",
+   "observation": "Open INSPIRE GeoServer WFS 2.0 with CP:CP.CadastralParcels (EPSG:23700, GML); many other INSPIRE themes"
+  },
+  {
+   "url": "https://gis.lechnerkozpont.hu/",
+   "observation": "Lechner GIS landing page"
+  },
+  {
+   "url": "https://lechnerkozpont.hu/oldal/allami-ingatlan-nyilvantartasi-alapterkepi-adatbazis",
+   "observation": "identifier namespace referenced in parcel features (dataset page)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "capabilities lists CP:CP.CadastralParcels"
+  },
+  {
+   "url": "WFS GetFeature CP.CadastralParcels bbox 19.040,47.497,19.043,47.499 (Budapest)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "numberReturned=0"
+  },
+  {
+   "url": "WFS GetFeature CP.CadastralParcels bbox 21.625,47.530,21.628,47.532 (Debrecen)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "numberReturned=0"
+  },
+  {
+   "url": "WFS GetFeature CP.CadastralParcels count=2 no bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "2 polygons, administrativeunit Mesterszallas"
+  },
+  {
+   "url": "WFS GetFeature bbox=754900,183100,755100,183200 urn:ogc:def:crs:EPSG::23700 count=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "numberReturned=3 polygons"
+  },
+  {
+   "url": "WFS resultType=hits",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "numberMatched=1774 only: layer is a small subset, not a nationwide cadastre"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "hu-lechner-inspire-cp",
+  "requestUrl": "https://inspire.lechnerkozpont.hu/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP:CP.CadastralParcels&count=3&bbox=754900,183100,755100,183200,urn:ogc:def:crs:EPSG::23700",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/html; charset=UTF-8 (body is WFS 2.0 GML)",
+  "spatialTestAreaLonLat": "EPSG:23700 bbox 754900,183100,755100,183200 (Mesterszallas area, SE Hungary)",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/CP:CP.CadastralParcels",
+  "geometryType": "gml:MultiSurface (Polygon)",
+  "closedRings": true,
+  "idField": "CP:inspireid / nationalcadastralreference",
+  "responseFile": "HU-parcel-response.xml",
+  "pagination": "WFS count/startIndex",
+  "regionSampled": "Mesterszallas (Bekes/Csongrad area)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE Cadastral Parcels download service by the state; live layer holds only 1,774 features with labels like \"015\" (appears to be a small partial dataset/block-level, not the full ~parcel register)",
+  "regionsVerified": [
+   "Mesterszallas area only"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Budapest and Debrecen boxes returned zero features. Layer is clearly not a complete national parcel set; full property register (Takarnet/e-ingatlan, MapsOnline) is credentialed/paid and was not reachable (mapsonline.hu, data.gov.hu connection failures). Licence not read.",
+ "nextStep": "Check other CP dataset namespaces on the same GeoServer (e.g. per-county workspaces), and Lechner ATOM download feeds; verify licence."
+}

@@ -1,0 +1,41 @@
+{
+  "taskId": "city:9806",
+  "decision": "held",
+  "checkedAt": "2026-10-12T00:29:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-9806-jishou.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/jishou-service-review.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "reason": "No Jishou parcel feature response or native ID was obtained; municipal HTTP 503 is an access limit, not absence.",
+  "identityCheck": {
+    "queueRank": 2997,
+    "name": "Jishou",
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      28.3050060185547,
+      109.72954361902
+    ],
+    "populationPersons": 199728,
+    "matchedQueueRosterAndOriginalWupCsv": true
+  },
+  "researchCheck": {
+    "englishAndLocalQueryRecordsPresent": true,
+    "independentSearchExecutionLogPresent": false,
+    "retainedFullPolygons": 0,
+    "safeNativeParcelIdVerified": false
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "custodyDecision": null,
+  "scopeNote": "Research completion does not mean integration or admission. Failed access, query errors and timeouts do not establish citywide absence."
+}

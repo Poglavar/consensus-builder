@@ -1,0 +1,41 @@
+{
+  "taskId": "city:3457",
+  "decision": "held",
+  "checkedAt": "2026-10-10T20:31:18.838420Z",
+  "queueIdentity": {
+    "cityCode": 3457,
+    "rank": 1997,
+    "country": "Russian Federation",
+    "point": [
+      51.7381907570659,
+      36.1824765248315
+    ],
+    "population2025Persons": 291098,
+    "matchedRankedRosterAndPendingQueue": true
+  },
+  "researchChecks": {
+    "englishAndNativeSearchActionsObservedInWorkerLog": true,
+    "workerLog": "tmp/valhalla-parcel-research/runs/20261010T202647-32c98367/stdout.jsonl",
+    "samplePolygonCount": 0,
+    "safeNativeCityParcelIdVerified": false
+  },
+  "sourceEvidence": [
+    {
+      "url": "https://adm2.rkursk.ru/region/control/documents/document-99646/",
+      "observation": "Official regional government source identifies the Kursk cadastral valuation institution and cadastral procedure, supporting custody context."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "Public-map route timed out in worker check; no safe parcel feature response is evidenced."
+    }
+  ],
+  "holdReason": "Kursk root returned anti-automation content and NSPD timed out. No native parcel ID, unchanged geometry, or independent live adapter gates are evidenced; access failures are not absence.",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

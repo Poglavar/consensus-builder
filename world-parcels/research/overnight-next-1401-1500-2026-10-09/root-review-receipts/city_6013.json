@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6013",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6013-colorado-springs.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/colorado-springs-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/colorado-springs-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/colorado-springs/state-point.geojson"
+  ],
+  "checkedAt": "2026-10-09T16:49:37.370547Z",
+  "reason": "One exact-point El Paso parcel with safe native parcel_id is evidenced. Original raw response and retained geometry match, but GEOS finds a ring self-intersection; forced paging, thirteen bounded cells, binding, and headed Details verification are missing. The two recorded searches are both English. Hold runtime admission."
+}

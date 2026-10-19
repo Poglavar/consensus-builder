@@ -1,0 +1,118 @@
+{
+  "cityCode": 7685,
+  "queueRank": 3065,
+  "name": "Divinópolis",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-20.1459851966289, -44.8878275844122],
+  "population2025": 195665,
+  "population2025k": 195.665,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Divinopolis MG official cadastral parcel map prefeitura cadastro imobiliario geospatial portal",
+        "result": "First-party discovery identified the Prefeitura de Divinópolis Geoportal/DiviGeo as the municipal territorial-management IDE, with cadastral cartographic archive, geoservices, downloads, and an interactive map. The municipal news page documents an urban geoprocessing survey with 111,317 georeferenced lots. No anonymous parcel feature response was qualified.",
+        "actualResultUrls": [
+          "https://geo.divinopolis.mg.gov.br/geoportal/",
+          "https://www.divinopolis.mg.gov.br/portal/noticias/0/3/10618/prefeitura-realiza-modernizacao-atualizacao-cadastral-e-territorial-atraves-do-geoprocessamento"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil; local/native)",
+        "query": "Divinópolis MG mapa de lotes cadastro imobiliário oficial geoprocessamento parcela",
+        "result": "Portuguese first-party discovery confirmed the municipal Geoportal and the municipal Cadastro Imobiliário/Secretaria Municipal de Fazenda as local custodians. The official portal exposes a cadastral map download and tutorials including coordinate-based property consultation, but the current map configuration endpoint requires GeoWise authentication. No safe anonymous ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://geo.divinopolis.mg.gov.br/geoportal/",
+          "https://www.divinopolis.mg.gov.br/portal/noticias/0/3/24683/",
+          "https://servicos.prefeituradivinopolis.com.br/govdigital/Microsservicos"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://geo.divinopolis.mg.gov.br/geoportal/",
+      "https://www.divinopolis.mg.gov.br/portal/noticias/0/3/10618/prefeitura-realiza-modernizacao-atualizacao-cadastral-e-territorial-atraves-do-geoprocessamento",
+      "https://www.divinopolis.mg.gov.br/portal/noticias/0/3/24683/",
+      "https://servicos.prefeituradivinopolis.com.br/govdigital/Microsservicos"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Prefeitura de Divinópolis — Cadastro Imobiliário / Geoportal (DiviGeo)",
+    "scope": "Municipal cadastral and territorial-management custodian; official municipal reporting describes georeferenced urban lots and the Geoportal exposes cadastral cartography and geoservice/download entry points.",
+    "evidence": "https://www.divinopolis.mg.gov.br/portal/noticias/0/3/10618/prefeitura-realiza-modernizacao-atualizacao-cadastral-e-territorial-atraves-do-geoprocessamento"
+  },
+  "service": {
+    "name": "Divinópolis Geoportal / DiviGeo municipal IDE",
+    "viewerUrl": "https://geo.divinopolis.mg.gov.br/geoportal/",
+    "baseUrl": "https://geo.divinopolis.mg.gov.br/",
+    "viewerConfiguration": "The current public React bundle was inspected. It calls https://geo.divinopolis.mg.gov.br/api/geoportal/downloads and geowise/mapa/get_map_by_target?target=geoportal; the latter is used to populate the interactive map and to derive WMS/WFS download URLs from server-provided layer metadata. Layer names, parcel schema, native identity field, and CRS were not exposed without the authenticated map response.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://geo.divinopolis.mg.gov.br/geoportal/",
+      "status": 200,
+      "outcome": "Anonymous Geoportal HTML loaded. It is a JavaScript application and exposed the current bundle paths for inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.divinopolis.mg.gov.br/geoportal/static/js/main.83df430b.chunk.js",
+      "status": 200,
+      "outcome": "Current viewer JavaScript loaded. It identified the public downloads endpoint and the GeoWise map-configuration request, including client logic that would build WFS/WMS download URLs from server-provided layer metadata."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.divinopolis.mg.gov.br/api/geoportal/downloads",
+      "status": 200,
+      "outcome": "Anonymous JSON response returned municipal downloads, including a cadastral map PDF and tutorials for coordinate-based property consultation. No parcel vector features, stable parcel IDs, or geometry were returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.divinopolis.mg.gov.br/geowise/mapa/get_map_by_target?target=geoportal",
+      "status": 401,
+      "outcome": "Anonymous request redirected to /geowise/login; no map layer metadata, WFS/WMS source, schema, CRS, or feature response obtained. No login, credentials, private token, or bypass was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.divinopolis.mg.gov.br/geowise/login",
+      "status": 200,
+      "outcome": "Login wall rendered. Research stopped at the public boundary; no authentication was attempted."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/7685/ (unchanged viewer HTML/JavaScript and public JSON responses; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-20.1459851966289, -44.8878275844122] was preserved in latitude/longitude order and was not shifted.",
+    "Municipal official evidence supports citywide cadastral coverage context, including 111,317 georeferenced urban lots, but does not itself provide a retained parcel feature.",
+    "The exact-point parcel query was not executed because the public map configuration was behind a login wall; this is not evidence of a point miss or citywide absence.",
+    "Parcel schema, native identity field, geometry CRS, and bounded anonymous ID-plus-geometry response remain unqualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The GeoWise map endpoint may expose municipal WMS/WFS layers after authentication, but those source URLs and layer names could not be verified anonymously.",
+    "The cadastral map PDF listed by the public downloads endpoint is cartographic evidence, not a safe parcel-ID-plus-geometry vector response.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

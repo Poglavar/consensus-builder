@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-4737-mollasani.json",
+  "cityCode": 4737,
+  "queueRank": 2225,
+  "name": "Mollasani",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "pointLatLon": [31.585947863932, 48.8857274491511],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method": "SEARCH", "url": "https://en.wikipedia.org/wiki/Mollasani", "httpStatus": 200, "outcome": "English discovery identified Mollasani as a city in Bavi County, Khuzestan; identity/location evidence only, not cadastral-service evidence."},
+    {"method": "SEARCH", "url": "https://nezamat.ir/post-44174/", "httpStatus": 200, "outcome": "Persian publication describes the national Single Window for Land Management and participating agencies; general national-agency prose, not a Mollasani registry endpoint."},
+    {"method": "SEARCH", "url": "https://amagestate.com/wiki/kateb-guide/", "httpStatus": 200, "outcome": "Persian guide describes the national Kateb real-estate/cadastre workflow and request context; no anonymous parcel API or geometry."},
+    {"method": "SEARCH", "url": "https://amagestate.com/legal/cadastral-map-changes-organization/", "httpStatus": 200, "outcome": "Persian cadastral regulation attributes cadastral-map administration to the Organization for Registration of Deeds and Properties; no local service route."},
+    {"method": "SEARCH", "url": "https://amagestate.com/legal/cadastral-mapping-executive-regulation/", "httpStatus": 200, "outcome": "Persian regulation explains cadastral mapping and registration-unit workflows; no public parcel response."},
+    {"method": "GET", "url": "https://my.ssaa.ir/", "httpStatus": 0, "outcome": "Browser-header request timed out after 20 seconds from the research host; no viewer HTML, JavaScript, configuration, or service route obtained."},
+    {"method": "GET", "url": "https://shamim.ssaa.ir/", "httpStatus": 0, "outcome": "Browser-header request timed out while probing the official registration/cadastre host; no viewer HTML, JavaScript, configuration, or service route obtained."},
+    {"method": "GET", "url": "https://kateb.ir/", "httpStatus": 0, "outcome": "Official Kateb host was inaccessible/timeout from the research environment; no public viewer/API response obtained."},
+    {"method": "GET", "url": "https://ssaa.ir/", "httpStatus": 0, "outcome": "Official Organization for Registration of Deeds and Properties host timed out from the research environment; no service route obtained."},
+    {"method": "GET", "url": "https://lands.moi.ir/", "httpStatus": 0, "outcome": "Candidate Ministry of Interior land-management host failed DNS resolution; no request was sent."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "boundedAnonymousResponse": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No local public cadastral service and no bounded anonymous parcel ID+geometry response were verified."},
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted; no exact-point parcel hit was obtained.",
+    "Timeouts, DNS failure, unavailable UI, and absence of search hits are not evidence of citywide cadastral absence.",
+    "National Iranian registry/cadastre references describe general custodianship and workflows only; they do not establish a local Mollasani registry custodian or open service.",
+    "No parcel polygon is retained because no safe native identity and unchanged geometry were returned anonymously.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or other personal fields were requested or retained."
+  ],
+  "uncertainty": "Iranian public cadastral coverage for Mollasani remains unresolved. This packet records executed discovery and request attempts only; completion is not source integration or admission."
+}

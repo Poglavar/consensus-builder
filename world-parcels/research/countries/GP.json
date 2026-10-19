@@ -1,0 +1,73 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GP",
+ "country": "Guadeloupe",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Direction générale des Finances publiques (DGFiP) cadastre, published by IGN via API Carto (module Cadastre, Etalab PCI Vecteur); Guadeloupe is an overseas department covered by the French national system",
+ "portalsFound": [
+  {
+   "url": "https://apicarto.ign.fr/api/doc/cadastre",
+   "observation": "IGN API Carto cadastre module, open, keyless GeoJSON parcelle endpoint"
+  },
+  {
+   "url": "https://www.geoportail.gouv.fr/",
+   "observation": "Geoportail viewer loads (200)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={Point -61.55,16.24}&_limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 MultiPolygon parcelle, commune Baie-Mahault (Pointe-a-Pitre area)"
+  },
+  {
+   "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={Point -61.7295,15.9985}&_limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "1 MultiPolygon parcelle, commune Basse-Terre (Basse-Terre island)"
+  },
+  {
+   "url": "https://www.geoportail.gouv.fr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "fr-ign-apicarto-cadastre",
+  "requestUrl": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-61.55%2C16.24%5D%7D&_limit=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -61.55,
+   16.24,
+   -61.55,
+   16.24
+  ],
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "idu (e.g. 97103000AL0353)",
+  "responseFile": "GP-parcel-response.json (two point queries, one per island, 2 features)",
+  "pagination": "_start/_limit query params",
+  "regionSampled": "Baie-Mahault (Grande-Terre side) and Basse-Terre communes"
+ },
+ "coverageAssessment": {
+  "claimedScope": "National French cadastre (PCI vector) incl. overseas departments; Guadeloupe communes are served",
+  "regionsVerified": [
+   "Baie-Mahault (Guadeloupe)",
+   "Basse-Terre (Guadeloupe)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Only two point queries; completeness of all communes (Marie-Galante, Saintes, etc.), rate limits and licence (Etalab open licence expected, not read here) unchecked. Same French source likely also applies to France proper.",
+ "nextStep": "Confirm licence on data.gouv.fr (Cadastre Etalab); consider bulk PCI download per commune for department 971."
+}

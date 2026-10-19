@@ -1,0 +1,50 @@
+{
+  "cityRecord": "city-1168-brno.json",
+  "cityCode": 1168,
+  "queueRank": 1847,
+  "city": "Brno",
+  "country": "Czechia",
+  "countryCode": "CZ",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "The official City of Brno GIS ArcGIS parcel layer returned one safe native parcel ID plus polygon for the exact preserved WUP point. The packet is complete as research evidence, but runtime remains held pending independent serial qualification and citywide coverage review.",
+  "queryOutcomes": "Separate English and Czech first-party discovery queries are recorded in city-1168-brno.json. They identified the City of Brno GIS cadastral parcel service and ČÚZK official cadastral open-data/service documentation.",
+  "requestOutcomes": "TLS-verified anonymous GET requests loaded the official Brno ArcGIS service metadata, layer 5 metadata, and an exact-point GeoJSON query. The service reported native EPSG:5514/102067 and polygon layer fields including par_id and geom. The exact-point query returned one feature with par_id 1417958702; output geometry was requested in EPSG:4326. No login, credential, private token, CAPTCHA/Cloudflare bypass, unsafe field query, or TLS disablement was used.",
+  "scopeLimits": [
+    "The exact WUP point [49.203210413959, 16.6097275929996] was preserved in latitude/longitude order and was not shifted.",
+    "One exact-point hit is not a citywide parcel inventory and does not prove complete Brno coverage or update currency.",
+    "The layer's native projected CRS is EPSG:5514/102067; the retained sample is the service's EPSG:4326 output.",
+    "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.",
+    "A timeout, login wall, map extent miss, or unusable UI would not be evidence of citywide cadastral absence; none was used as absence evidence.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": ["par_id", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": {"par_id": "stable native parcel identifier", "geom": "native polygon geometry"},
+  "compositeKeyProvenance": null,
+  "crs": "Native EPSG:5514 (WKID 102067); retained query output EPSG:4326",
+  "geometryQuality": "One valid Polygon returned by the official ArcGIS query and retained unchanged in returned EPSG:4326 coordinates.",
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "brno-city-gis-katastr-g-parcely",
+    "sampleCount": 1,
+    "sampleFile": "brno-parcel-sample.geojson",
+    "nativeId": "1417958702",
+    "nativeIdField": "par_id",
+    "exactWupPointTest": "One polygon intersected the exact preserved WUP point.",
+    "requestEvidence": ["city-1168-brno.json requests[2]"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "City of Brno GIS cadastral parcel layer.",
+    "verifiedOpenScope": "One exact-point public feature response plus official layer metadata; broader citywide completeness unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The public service route, schema, CRS, native identifier, and one geometry response are verified. Complete city coverage, update schedule, legal status, rate limits, and production adapter behavior remain unresolved.",
+  "retainedSample": {"file": "brno-parcel-sample.geojson", "featureCount": 1, "propertiesPolicy": "Exactly one canonical native identity: id=1417958702."}
+}

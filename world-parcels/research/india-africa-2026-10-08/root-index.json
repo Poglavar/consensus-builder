@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "cities": [
+    {
+      "cityId": "wup2025:8364",
+      "wupCityCode": 8364,
+      "name": "New Delhi",
+      "countryCode": "IN",
+      "newEvidencePath": "root-city-8364.json",
+      "resultCategory": "revalidated_previous_sample",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": "The earlier full-snapshot audit found repeated propertyid, unique_propert_id and paired identifiers with conflicting geometry. The fresh three-feature prefix confirms availability but does not resolve that native-identity failure.",
+      "nextStep": "Establish a publisher-supported durable property identity or a separately identified subset before designing complete snapshot, viewport and exact-ID retrieval."
+    },
+    {
+      "cityId": "wup2025:3664",
+      "wupCityCode": 3664,
+      "name": "Johannesburg",
+      "countryCode": "ZA",
+      "newEvidencePath": "root-city-3664.json",
+      "resultCategory": "revalidated_previous_sample_and_official_alternative",
+      "parcelStatus": "verified_sample_partial_coverage",
+      "registryFound": true,
+      "verifiedSample": true,
+      "blocker": "Complete geometry viewport retrieval, repeated app-cell behavior and duplicate native-ID semantics remain unverified. Small three-record reads succeeded; this does not erase the earlier larger-response timeout or duplicated-SG_ID evidence elsewhere.",
+      "nextStep": "Run complete bounded viewport/native-ID acceptance in the intended app scope; use small ID batches and explicitly audit any repeated native IDs before configuring Johannesburg."
+    },
+    {
+      "cityId": "wup2025:8616",
+      "wupCityCode": 8616,
+      "name": "Pune",
+      "countryCode": "IN",
+      "newEvidencePath": "root-city-8616.json",
+      "resultCategory": "previous_sample_temporarily_unavailable",
+      "parcelStatus": "temporarily_unavailable",
+      "registryFound": true,
+      "verifiedSample": false,
+      "blocker": "Previously sampled plot endpoint is currently unreachable. Historical WKT source CRS and complete viewport retrieval remain unconfirmed. Municipal linked map also unavailable.",
+      "nextStep": "Retry the documented official public viewer when reachable; establish its declared CRS, target revenue-village identity and complete bounded geometry/native-ID reads. Retain the historical three-plot sample separately from current availability."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10762-huangshi.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official app link timed out in the web fetch; the 2022 city government notice says users query property belonging to themselves and authenticate. No login, identity verification, personal record query, or parcel geometry request was made.",
+  "registryAssessment": "Official Huangshi government and Natural Resources Bureau sources identify the municipal real-estate registration center and a visual land-record/cadastral-map service. The service description requires identity verification and is tied to registered-property queries; no anonymous public parcel-vector endpoint was verified.",
+  "searchQueries": [
+    {
+      "language": "Chinese",
+      "query": "黄石市 不动产登记 地籍图 查询可视化系统 官方 地块",
+      "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+      "result": "Official city government sources describe the city registry’s visual map service and authentication; the linked service request timed out. No anonymous geometry layer was verified.",
+      "actualResultUrls": [
+        "https://www.huangshi.gov.cn/xwdt/hsyw/202204/t20220412_895423.html",
+        "https://zwfw.hubei.gov.cn/webview/yslb/bdcdj/bdcdj_hs.html"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+    },
+    {
+      "language": "English",
+      "query": "Huangshi China official cadastral parcel map real estate registry GIS",
+      "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+      "result": "Official bureau site confirms the municipal registry center; the city’s described visual cadastral service is identity-authenticated. No public anonymous polygon service found.",
+      "actualResultUrls": [
+        "https://zrzy.huangshi.gov.cn/",
+        "https://zwfw.hubei.gov.cn/webview/yslb/bdcdj/bdcdj_hs.html"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel polygon was retained; no owner/address or private fields were requested or saved.",
+  "runtimeAssessment": "not_assessed"
+}

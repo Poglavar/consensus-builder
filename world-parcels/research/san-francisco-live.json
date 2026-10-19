@@ -1,0 +1,137 @@
+{
+  "asOf": "2026-10-02",
+  "dataset": {
+    "id": "acdm-wktn",
+    "title": "Parcels – Active and Retired",
+    "publisher": "City and County of San Francisco (DataSF)",
+    "officialPage": "https://data.sfgov.org/d/acdm-wktn",
+    "metadataApi": "https://data.sfgov.org/api/views/acdm-wktn.json",
+    "license": {
+      "name": "Open Data Commons Public Domain Dedication and License (PDDL) v1.0",
+      "url": "http://opendatacommons.org/licenses/pddl/1.0/",
+      "attributionMetadata": "City and County of San Francisco"
+    },
+    "descriptionSemantics": "Recorded parcel geography, both active and retired, with record/map add/drop/alter dates; source includes geography created since basemap inception in 1995 with exceptions. The field descriptions define the public-works mapped subset and condo grouping semantics.",
+    "latestRowsUpdatedAtUtc": "2026-10-02T17:24:35Z",
+    "filteredRowsDataLoadedAt": "2026-10-02T10:23:46.776",
+    "filteredRowsDataAsOf": "2026-10-02T04:00:00.000"
+  },
+  "query": {
+    "endpoint": "https://data.sfgov.org/resource/acdm-wktn.json",
+    "where": "active = true AND pw_recorded_map = true",
+    "dataMinimization": "Only aggregate counts and blklot/mapblklot IDs, active/pw_recorded_map flags and geometry were requested. No owner or street/address values were queried."
+  },
+  "semantics": {
+    "blklot": "Official description: unique Assessor Parcel Number, combination of Block Number and Lot Number. It uniquely identifies an assessor record, not necessarily a distinct 2D ground footprint.",
+    "mapblklot": "Official description: for condominium lots that share the same 2D space, the lowest APN in the set. Strong canonical 2D-ground group key; multiple source rows can share it.",
+    "pw_recorded_map": "Official description: record is part of the current Public Works basemap dataset based on recorded map information. This flag does NOT remove condominium rows that share geometry.",
+    "active": "Use active=true to exclude retired parcels; the field itself has no metadata description."
+  },
+  "stats": {
+    "rows": 225822,
+    "blklotNonNull": 225822,
+    "blklotDistinct": 225822,
+    "mapblklotNonNull": 225822,
+    "mapblklotDistinctGroups": 154461,
+    "rowsWithBlklotEqualMapblklot": 154460,
+    "rowsWithBlklotDifferentFromMapblklot": 71362,
+    "distinctMapblklotWithNoEqualBlklotRowInFilteredSubset": 1
+  },
+  "sampleChecks": {
+    "proofPwRecordedMapDoesNotExcludeCondoDuplicates": {
+      "mapblklot": "0306026",
+      "groupCount": 2393,
+      "sampleRows": [
+        {
+          "blklot": "0306026",
+          "mapblklot": "0306026",
+          "active": true,
+          "pw_recorded_map": true
+        },
+        {
+          "blklot": "0306058",
+          "mapblklot": "0306026",
+          "active": true,
+          "pw_recorded_map": true
+        },
+        {
+          "blklot": "0306059",
+          "mapblklot": "0306026",
+          "active": true,
+          "pw_recorded_map": true
+        }
+      ],
+      "sampleGeometry": "The three returned rows had identical MultiPolygon coordinates."
+    },
+    "mapblklotWithoutMatchingBlklotRowInSubset": {
+      "mapblklot": "2630064",
+      "groupCount": 1,
+      "row": {
+        "blklot": "2630065",
+        "mapblklot": "2630064",
+        "active": true,
+        "pw_recorded_map": true
+      },
+      "implication": "A strict blklot=mapblklot filter removes one distinct mapblklot group in the active recorded-map subset; do not use it alone to form the complete deduplicated ground set."
+    }
+  },
+  "recommendation": "Use mapblklot as the documented 2D ground key, validate each returned geometry and collapse identical coincident rows. Retain groups without an active lowest-APN record. Stable blklot rows, counted paging and matching publication revisions are required.",
+  "sourceLinks": [
+    "https://data.sfgov.org/d/acdm-wktn",
+    "https://data.sfgov.org/api/views/acdm-wktn.json",
+    "https://opendatacommons.org/licenses/pddl/1-0/"
+  ],
+  "description": "Verified current SF ground footprints, condominium grouping and rejected identity paths.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "us-ca-sf-datasf-active-parcels",
+  "endpoint": "https://data.sf.gov/resource/acdm-wktn.json",
+  "adapterVerification": {
+    "bbox": [
+      -122.4075,
+      37.7905,
+      -122.4055,
+      37.792
+    ],
+    "forcedPageSize": 25,
+    "bboxRequests": 5,
+    "canonicalParcelCount": 48,
+    "roundTripCount": 48,
+    "absentIds": [],
+    "missingLowestAPNGroup2630064Resolved": true,
+    "geometryConflictPolicy": "Every returned row is checked; differing geometry under one mapblklot fails the whole read. No global equality claim.",
+    "observedDataLoadedAt": [
+      "2026-10-01T11:29:23.524"
+    ],
+    "sourceDateInterpretation": "Preserve the actual sampled row timestamps. Metadata and separately timed live queries can refer to different publication revisions."
+  },
+  "browserVerification": {
+    "checkedAt": "2026-10-03",
+    "cityId": "san_francisco",
+    "initialRenderedParcels": 685,
+    "retainedAfterPan": 802,
+    "returnUsedCachedCells": true,
+    "footprintComplete": true,
+    "footprintParcelCount": 2,
+    "bindingCoverage": "complete",
+    "actualGlobeButtonOpenedCity": true,
+    "uncaughtErrors": []
+  },
+  "failedAttempts": [
+    {
+      "operation": "Duplicate blklot aggregate",
+      "outcome": "timeout",
+      "timeoutSeconds": 15,
+      "detail": "Global grouped duplicate query timed out; separate non-null/distinct aggregate counts succeeded."
+    },
+    {
+      "operation": "Public Works flag as unique ground key",
+      "outcome": "identity-conflict",
+      "detail": "225822 filtered assessment rows span154461 documented mapblklot groups; no claim that blklot uniquely identifies ground."
+    },
+    {
+      "operation": "blklot=mapblklot representative filter",
+      "outcome": "incomplete-ground",
+      "detail": "Drops documented group2630064 whose active assessment row is2630065; rejected."
+    }
+  ]
+}

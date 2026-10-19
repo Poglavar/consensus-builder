@@ -1,0 +1,144 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "sabirna-ulica",
+    "kind": "SP",
+    "width_m": 19.0,
+    "length_m": 546.5
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [16.0091642, 45.7857289],
+     [16.0104704, 45.7859064],
+     [16.0117491, 45.7860024],
+     [16.0122932, 45.7859729],
+     [16.013031, 45.7861242],
+     [16.0138234, 45.7865089],
+     [16.0143727, 45.7867054],
+     [16.0149304, 45.7869368],
+     [16.0152712, 45.7871633],
+     [16.0151698, 45.7873453],
+     [16.0150382, 45.7873486]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "pjesacka-sjever",
+    "kind": "IS-2",
+    "width_m": 9.0,
+    "length_m": 128.8
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      16.0132306,
+      45.7877481
+     ],
+     [
+      16.0128979,
+      45.7871679
+     ],
+     [
+      16.0135101,
+      45.7868497
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "kolno-pjesacka-istok",
+    "kind": "IS-1",
+    "width_m": 18.0,
+    "length_m": 45.1
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      16.0135101,
+      45.7868497
+     ],
+     [
+      16.0138234,
+      45.7865089
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "pjesacka-jug",
+    "kind": "IS-2",
+    "width_m": 9.0,
+    "length_m": 77.4
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      16.0118368,
+      45.7866949
+     ],
+     [
+      16.0117491,
+      45.7860024
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "kolno-pjesacka-zapad",
+    "kind": "IS-1",
+    "width_m": 18.0,
+    "length_m": 43.5
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      16.0108847,
+      45.7867732
+     ],
+     [
+      16.0104319,
+      45.7870031
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "name": "kolno-pjesacka-sjeveroistok",
+    "kind": "IS-1",
+    "width_m": 18.0,
+    "length_m": 15.5
+   },
+   "geometry": {
+    "type": "LineString",
+    "coordinates": [
+     [
+      16.0151315,
+      45.7872091
+     ],
+     [
+      16.0151698,
+      45.7873453
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 12,
+  "city": "Mumbai",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/mumbai.json",
+  "query": {
+    "language": "Marathi",
+    "script": "Devanagari",
+    "text": "मुंबई भू-नकाशा मालमत्ता पत्रक GIS भूखंड नकाशा डेटा"
+  },
+  "results": [
+    {
+      "title": "Maharashtra Bhumi Abhilekh land records",
+      "url": "https://www.bhumiabhilekh.maharashtra.gov.in/",
+      "kind": "official-state-portal",
+      "note": "Offers property cards and land-record services; mentions GIS integration of available maps but no city parcel endpoint identified."
+    },
+    {
+      "title": "MahaBhumi land records portal",
+      "url": "https://mahabhumi.gov.in/",
+      "kind": "official-state-portal",
+      "note": "Provides property-card and digital map downloads as paid services; no anonymous query layer identified."
+    }
+  ],
+  "assessment": "Marathi-language search found official land-record/property-card and map services, including paid map downloads. Public bulk parcel geometry and stable exact-ID query were not verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

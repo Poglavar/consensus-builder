@@ -1,0 +1,105 @@
+{
+  "cityCode": 4015,
+  "queueRank": 2058,
+  "name": "Chía",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "point": [4.87517981020063, -74.050002621291],
+  "population2025": 282679,
+  "population2025k": 282.679,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["chia"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chía Colombia official cadastral parcel map GIS catastro viewer API",
+        "result": "Discovery found the official IGAC Colombia en Mapas cadastral viewer, an official IGAC ArcGIS MapServer named for Chía, and a CAR integrated cadastral MapServer covering the regional jurisdiction. The Chía-specific endpoint was not reachable from this environment during bounded retrieval, so no parcel response was verified.",
+        "actualResultUrls": [
+          "https://www.colombiaenmapas.gov.co/",
+          "https://www.colombiaenmapas.gov.co/?b=igac&servicio=12405&t=2303&u=0",
+          "https://sigi.igac.gov.co/dip/rest/services/clusigidpi_observatorio_snrGeoInteresChia_2015_2024/MapServer",
+          "https://sig.car.gov.co/arcgis/rest/services/visor/Predial_Integrado/MapServer"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Chía Colombia catastro mapa predial visor geográfico oficial IGAC gestor catastral",
+        "result": "La búsqueda en fuentes oficiales de la Alcaldía de Chía confirmó que el IGAC es el gestor catastral de Chía y que el municipio realizó la actualización catastral multipropósito. Las fuentes describen custodia y procedimiento, pero no entregaron una respuesta anónima verificable con identificador predial seguro y geometría completa.",
+        "actualResultUrls": [
+          "https://chia-cundinamarca.gov.co/web/2025/03/nuevo-anuncio-del-igac-suspende-la-entrega-de-la-base-catastral-total-y-actualizada-de-chia/",
+          "https://chia-cundinamarca.gov.co/web/2024/08/se-cumplio-la-primera-de-las-10-socializaciones-sectoriales-de-la-actualizacion-catastral/",
+          "https://chia-cundinamarca.gov.co/web/2024/08/alcaldia-de-chia-revelo-que-mas-de-16.000-predios-no-pagan-impuestos-realizaran-actualizacion-catastral/",
+          "https://chia-cundinamarca.gov.co/2025/ACUERDOS/2025/ACUERDO%20234%20DE%202025%20PUBLICAR.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Instituto Geográfico Agustín Codazzi (IGAC), acting as cadastral manager for Chía, with Alcaldía Municipal de Chía as local administrative custodian/contact point.",
+    "basis": "The official Alcaldía de Chía notice states that IGAC is the gestor catastral for Chía and that the municipality was awaiting the official updated cadastral base. Official municipal publications also document the multipurpose cadastral update process.",
+    "urls": [
+      "https://chia-cundinamarca.gov.co/web/2025/03/nuevo-anuncio-del-igac-suspende-la-entrega-de-la-base-catastral-total-y-actualizada-de-chia/",
+      "https://chia-cundinamarca.gov.co/web/2024/08/se-cumplio-la-primera-de-las-10-socializaciones-sectoriales-de-la-actualizacion-catastral/"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.colombiaenmapas.gov.co/?b=igac&servicio=12405&t=2303&u=0",
+      "observation": "Official IGAC Colombia en Mapas cadastral viewer advertises cadastral consultation by parcel number, territorial entity, address, or area.",
+      "scope": "National viewer; source coverage and access for this exact city were not independently verified in a parcel response."
+    },
+    {
+      "url": "https://sigi.igac.gov.co/dip/rest/services/clusigidpi_observatorio_snrGeoInteresChia_2015_2024/MapServer",
+      "observation": "Official IGAC ArcGIS service metadata surfaced in discovery as a MapServer titled Chía, with spatial reference EPSG:9377 and GeoJSON among supported query formats at the service level.",
+      "scope": "Chía-specific IGAC service; layer schema and feature response were not retrieved because the host timed out."
+    },
+    {
+      "url": "https://sig.car.gov.co/arcgis/rest/services/visor/Predial_Integrado/MapServer",
+      "observation": "Official CAR ArcGIS service describes integrated official IGAC cadastral information for the CAR jurisdiction and advertises JSON/GeoJSON query formats.",
+      "scope": "Regional CAR jurisdiction; Chía layer membership and safe parcel fields were not verified."
+    },
+    {
+      "url": "https://chia-cundinamarca.gov.co/web/2025/03/nuevo-anuncio-del-igac-suspende-la-entrega-de-la-base-catastral-total-y-actualizada-de-chia/",
+      "observation": "Official Alcaldía notice identifies IGAC as Chía’s cadastral manager and discusses delivery of the updated cadastral base.",
+      "scope": "Municipal custody/procedure; not an open parcel dataset."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://sigi.igac.gov.co/dip/rest/services/clusigidpi_observatorio_snrGeoInteresChia_2015_2024/MapServer/0?f=pjson",
+      "method": "GET",
+      "outcome": "Bounded anonymous schema request timed out after 10 seconds at TLS connection; no response body or geometry was received. Not treated as citywide absence."
+    },
+    {
+      "url": "https://sig.car.gov.co/arcgis/rest/services/visor/Predial_Integrado/MapServer/6?f=pjson",
+      "method": "GET",
+      "outcome": "Request was stopped by local TLS certificate verification failure before an HTTP response; TLS verification was not disabled and no certificate exception was authorized. No further request was made."
+    },
+    {
+      "url": "https://www.colombiaenmapas.gov.co/?b=igac&servicio=12405&t=2303&u=0",
+      "method": "GET/search discovery",
+      "outcome": "Official viewer page was discoverable and described cadastral consultation, but no anonymous parcel ID plus full geometry response was obtained through the bounded request path."
+    }
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleFile": null,
+  "source": "IGAC Colombia en Mapas and official IGAC/CAR ArcGIS service discovery, corroborated by Alcaldía de Chía publications",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Chía municipal cadastral coverage is managed by IGAC; regional CAR service claims integrated IGAC cadastral information.",
+    "verifiedOpenScope": "No bounded anonymous response containing a safe native parcel identifier and complete polygon geometry was verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal identifiers", "encumbrances"],
+  "runtimeReadiness": "held_serial_qualification_required",
+  "resultCategory": "municipal_custodian_and_official_services_geometry_not_verified",
+  "remainingUncertainty": "A local administrative custodian and first-party cadastral services are evidenced, but public parcel layer schema, stable native identity, CRS at feature level, citywide coverage, and anonymous geometry access remain unverified. Exact-point absence, map extent, timeout, and TLS failure are not evidence of citywide absence.",
+  "researchFile": "research/overnight-next-2001-2100-2026-10-09/city-4015-ch-a.json"
+}

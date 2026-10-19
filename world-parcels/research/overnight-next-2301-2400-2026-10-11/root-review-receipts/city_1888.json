@@ -1,0 +1,21 @@
+{
+  "taskId": "city:1888",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-1888-saidpur.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/saidpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:40:17Z",
+  "identityCheck": "Original WUP 2025 compressed CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, ranked roster, pending queue, packet and review agree: Saidpur, code 1888, rank 2373, BD/BGD, point [25.7795882685436, 88.898897730327], population 245655 persons.",
+  "searchCheck": "Paired files record English and local-language searches with actual first-party URLs; original web_search execution confirmed in tmp/valhalla-parcel-research/runs/20261011T103703-9c0f2480/stdout.jsonl.",
+  "custodyAndSourceCheck": "National land-map page explicitly lists Saidpur; saved anonymous survey and thana responses are empty, and no native ID plus polygon was obtained. Empty selection is not citywide absence.",
+  "firstPartyUrlChecked": "https://map.land.gov.bd/",
+  "sampleAndAdmissionCheck": "No retained full parcel polygon with source-proven safe native parcel ID. Fresh exact-ID reads, forced paging and complete manifests, 13 bounded cells, independent metric GEOS validity/duplicates/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced; runtime remains held.",
+  "retainedFullPolygonCount": 0,
+  "runtimeAdmission": false,
+  "identityCollisionCheck": "Existing registry Saidpur is India WUP code 10501, not Bangladesh code 1888."
+}

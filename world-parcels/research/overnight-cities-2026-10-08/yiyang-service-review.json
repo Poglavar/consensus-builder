@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10362-yiyang.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Yiyang municipal government information identifies the Yiyang Municipal Real Estate Registration Center as responsible for city-level land, housing, forest and wetland registration, cadastral-rights investigation/results, and legally provided registration-information queries. Its official dedicated site publishes registration-service guidance and states the service system is still under development. This directly establishes the Yiyang city registry, not a public parcel-geometry endpoint. The official Yiyang registration-center website is a service/notice portal and explicitly shows the service system as under development. Hunan/Yiyang information-query services require applicant identity and purpose, and the site’s registration-information lookup is a personal/rights-holder workflow. No form was submitted, no notice values were read, and no public map/feature layer schema or geometry-only route was verified.",
+  "registryAssessment": "Yiyang municipal government information identifies the Yiyang Municipal Real Estate Registration Center as responsible for city-level land, housing, forest and wetland registration, cadastral-rights investigation/results, and legally provided registration-information queries. Its official dedicated site publishes registration-service guidance and states the service system is still under development. This directly establishes the Yiyang city registry, not a public parcel-geometry endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.yiyang.gov.cn/yiyang/36457/36466/36483/content_346880.html",
+      "observation": "Official Yiyang city government page lists the Yiyang Municipal Real Estate Registration Center and its city-scope registration, cadastral-rights investigation/results, and query responsibilities."
+    },
+    {
+      "url": "https://www.yiyang.gov.cn/yiyang/36457/36466/36483/content_346790.html",
+      "observation": "Official Yiyang Natural Resources and Planning Bureau description identifies the bureau’s municipal duties over unified property registration, cadastral survey, and geographic-information services."
+    },
+    {
+      "url": "https://www.yiyangbdc.com/",
+      "observation": "Official dedicated Yiyang registration-center portal; public HTML exposes service guides, notices and help pages, and shows the service system is under development."
+    },
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/NFWUohllSyC2fCCMNHNmog/index.html",
+      "observation": "Hunan public-service portal links a Yiyang property query that requires an identity number; not opened or submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yiyang Hunan official property registration center cadastral land registry",
+      "result": "English-language search did not establish an independent geometry service; Yiyang’s official municipal portal and dedicated center site establish the local registry and its legal information-query role.",
+      "method": "Separate official-source-focused search; no person/property lookup."
+    },
+    {
+      "language": "Chinese",
+      "query": "益阳市 不动产登记中心 地籍图 查询 官方",
+      "result": "The city government identifies the local registration center and cadastral survey/result-management duties; the dedicated center site describes registration services, while public query workflows require applicant context. No parcel geometry schema was verified.",
+      "method": "Separate official-source-focused search; no person/property lookup."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.yiyang.gov.cn/yiyang/36457/36466/36483/content_346880.html",
+      "check": "public informational HTML / documentation review",
+      "result": "Official Yiyang city government page lists the Yiyang Municipal Real Estate Registration Center and its city-scope registration, cadastral-rights investigation/results, and query responsibilities."
+    },
+    {
+      "url": "https://www.yiyang.gov.cn/yiyang/36457/36466/36483/content_346790.html",
+      "check": "public informational HTML / documentation review",
+      "result": "Official Yiyang Natural Resources and Planning Bureau description identifies the bureau’s municipal duties over unified property registration, cadastral survey, and geographic-information services."
+    },
+    {
+      "url": "https://www.yiyangbdc.com/",
+      "check": "public informational HTML / documentation review",
+      "result": "Official dedicated Yiyang registration-center portal; public HTML exposes service guides, notices and help pages, and shows the service system is under development."
+    },
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/NFWUohllSyC2fCCMNHNmog/index.html",
+      "check": "public informational HTML / documentation review",
+      "result": "Hunan public-service portal links a Yiyang property query that requires an identity number; not opened or submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The official Yiyang registration-center website is a service/notice portal and explicitly shows the service system as under development. Hunan/Yiyang information-query services require applicant identity and purpose, and the site’s registration-information lookup is a personal/rights-holder workflow. No form was submitted, no notice values were read, and no public map/feature layer schema or geometry-only route was verified."
+  },
+  "privacy": "No parcel, owner, address, tax-account, title or personal lookup was made. No geometry or private attributes were retained.",
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-stable-ID response schema was established."
+  }
+}

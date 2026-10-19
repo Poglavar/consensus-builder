@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 9881,
+  "queueRank": 2309,
+  "name": "Mahbubnagar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [16.7471681915632, 78.0030069641073],
+  "population2025": 252285,
+  "population2025k": 252.285,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mahbubnagar Telangana official cadastral parcel map GIS land records portal",
+        "result": "Found the official Telangana TGRAC Land Information System ArcGIS REST service and the official Mahabubnagar district land-records page. The TGRAC service has a public Mahabubnagar village cadastral-unit layer, but no Mahabubnagar land-parcel polygon sublayer.",
+        "actualResultUrls": [
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem/MapServer",
+          "https://mahabubnagar.telangana.gov.in/home1-en/",
+          "https://mahabubnagar.telangana.gov.in/%E0%B0%B8%E0%B0%B0%E0%B1%8D%E0%B0%B5%E0%B1%87-%E0%B0%AE%E0%B0%B0%E0%B0%BF%E0%B0%AF%E0%B1%81-%E0%B0%AD%E0%B1%82%E0%B0%AE%E0%B0%BF-%E0%B0%B0%E0%B0%BF%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B1%8D%E0%B0%A1-2/"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "మహబూబ్ నగర్ తెలంగాణ భూ పటం కాడాస్ట్రల్ మ్యాప్ అధికారిక పోర్టల్",
+        "result": "Search surfaced the official Telangana Bhu Bharati GIS viewer and Mahabubnagar district survey/land-records page. The Bhu Bharati GIS page timed out during the bounded anonymous fetch; no login or credentials were attempted.",
+        "actualResultUrls": [
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://mahabubnagar.telangana.gov.in/%E0%B0%B8%E0%B0%B0%E0%B1%8D%E0%B0%B5%E0%B1%87-%E0%B0%AE%E0%B0%B0%E0%B0%BF%E0%B0%AF%E0%B1%81-%E0%B0%AD%E0%B1%82%E0%B0%AE%E0%B0%BF-%E0%B0%B0%E0%B0%BF%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B1%8D%E0%B0%A1-2/"
+        ]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "district": "Mahabubnagar",
+    "identityEvidence": "Official TGRAC layer metadata and bounded query attributes use District=Mahabubnagar; this is a district GIS identity, not a confirmation that the WUP point lies inside a returned parcel."
+  },
+  "coverageAssessment": {
+    "claimedScope": "TGRAC Land Information System service covers Telangana cadastral reference layers and a Mahabubnagar village-cadastral-unit layer.",
+    "verifiedOpenScope": "Public polygon layer metadata and bounded queries were verified; no Mahabubnagar parcel-polygon sublayer was exposed in the service directory.",
+    "countrywideVerified": false,
+    "exactPointHit": false,
+    "exactPointHitInterpretation": "The exact WUP point query returned zero features; this is only a bounded map hit-test result and is not evidence of citywide parcel absence."
+  },
+  "resultCategory": "official_cadastral_reference_layer_no_verified_parcel_polygon",
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "technicalBlocker": "The public TGRAC service exposes Mahabubnagar village cadastral-unit polygons, not a Mahabubnagar land-parcel polygon layer. The Bhu Bharati GIS viewer fetch timed out.",
+  "remainingUncertainty": "No safe native parcel identity plus full parcel polygon was verified near the WUP point. Nearby returned records are cadastral-unit records and were not retained as parcel samples.",
+  "nextStep": "A serial reviewer may inspect the current Bhu Bharati viewer or another first-party Telangana parcel endpoint independently; runtime admission remains held."
+}

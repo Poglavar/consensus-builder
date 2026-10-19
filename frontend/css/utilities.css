@@ -23,220 +23,14 @@
     margin: 0;
     font-weight: 600;
     font-size: 14px;
-    color: #1a73e8;
+    color: var(--cb-primary);
 }
 
 .road-segment-item__meta,
 .road-segment-item__details {
     margin: 4px 0 0;
     font-size: 12px;
-    color: #5f6368;
-}
-
-.cb-confirm-buttons .btn {
-    width: 100%;
-}
-
-.dev-badge {
-    display: none;
-    height: 20px;
-    min-height: 20px;
-    /* hidden by default, shown in development */
-    background: #f59e0b;
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 700;
-    align-self: flex-start;
-    cursor: default;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.debug-badge {
-    display: none;
-    height: 20px;
-    background: #dc3545;
-    color: #fff;
-    border: none;
-    border-radius: 3px;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 700;
-    align-self: flex-start;
-    cursor: default;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.version-badge {
-    display: none;
-    height: 20px;
-    min-height: 20px;
-    background: #374151;
-    color: #f9fafb;
-    border: none;
-    border-radius: 3px;
-    padding: 2px 8px;
-    font-size: 11px;
-    font-weight: 700;
-    align-self: flex-start;
-    cursor: default;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.btn {
-    padding: 6px 12px;
-    margin: 3px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    box-sizing: border-box;
-    /* Include padding and border in width calculations */
-    max-width: 100%;
-    /* Prevent buttons from exceeding container width */
-}
-
-.btn:hover {
-    background-color: #0069d9;
-}
-
-.btn-action {
-    background-color: #007bff;
-    width: 100%;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-}
-
-.btn-success {
-    background-color: #28a745;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-}
-
-.btn-warning {
-    background-color: #ffc107;
-    color: #212529;
-}
-
-.btn-warning:hover {
-    background-color: #e0a800;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    width: 100%;
-    display: none;
-    /* Hidden by default */
-}
-
-#wipeLocalDataButton {
-    display: inline-block;
-}
-
-.btn-danger:hover {
-    background-color: #bd2130;
-}
-
-/* Show danger buttons when debug mode is enabled */
-body.debug-mode .btn-danger {
-    display: inline-block;
-}
-
-.debug-only-control {
-    display: none;
-}
-
-body.env-development .debug-only-control,
-body.debug-mode .debug-only-control {
-    display: block;
-}
-
-.debug-only-control .btn,
-.debug-only-control button {
-    width: 100%;
-}
-
-.btn-info {
-    background-color: #17a2b8;
-    width: 100%;
-}
-
-.btn-info:hover {
-    background-color: #138496;
-}
-
-.btn-share-proposals {
-    width: 100%;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    background-image: linear-gradient(135deg, #b8b438, #3024dd);
-    box-shadow: 0 8px 18px rgba(221, 36, 118, 0.35);
-    transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-    border-radius: 999px;
-}
-
-.btn-share-proposals:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(221, 36, 118, 0.45);
-    opacity: 0.92;
-}
-
-.btn-share-proposals:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 14px rgba(221, 36, 118, 0.35);
-}
-
-.btn-detect-existing-roads {
-    width: 100%;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    background-image: linear-gradient(135deg, #f4d03f, #3fb26b);
-    color: #1f2a16;
-    box-shadow: 0 8px 18px rgba(63, 178, 107, 0.35);
-    border-radius: 999px;
-    transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-}
-
-.btn-detect-existing-roads:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(63, 178, 107, 0.45);
-    opacity: 0.95;
-}
-
-.btn-detect-existing-roads:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 14px rgba(63, 178, 107, 0.35);
-}
-
-@media (max-width: 640px) {
-    .btn-detect-existing-roads {
-        padding: 9px 14px;
-        font-size: 13px;
-        line-height: 1.2;
-    }
-
-    .btn-detect-existing-roads span {
-        line-height: 1.2;
-    }
-}
-
-.btn.disabled,
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+    color: var(--cb-text-muted);
 }
 
 .checkbox-group {
@@ -248,7 +42,7 @@ body.debug-mode .debug-only-control {
     margin-bottom: 3px;
     display: flex;
     align-items: center;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .checkbox-group label:last-child {
@@ -259,6 +53,18 @@ body.debug-mode .debug-only-control {
     margin-right: 8px;
 }
 
+/* The colour a checked ownership type paints on the map, shown on its own row — the list is the
+   legend. Colour and border come from ownership-highlight.js, which owns the palette. */
+.ownership-legend-swatch {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    margin-right: 6px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    background-color: transparent;
+}
+
 .info-subsection {
     margin-bottom: 15px;
 }
@@ -266,29 +72,48 @@ body.debug-mode .debug-only-control {
 .info-subsection h4 {
     margin-top: 0;
     margin-bottom: 8px;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .info-subsection p {
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    color: #6c757d;
+    color: var(--cb-text-muted);
 }
 
 .status-bar {
     padding: 8px 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--cb-surface-2);
+    border-top: 1px solid var(--cb-line);
     font-size: 14px;
-    color: #495057;
+    color: var(--cb-text);
     flex-shrink: 0;
     cursor: pointer;
     position: relative;
 }
 
+/* Exactly two rows, always. Every time a message wrapped to a second line it resized whatever
+   held the bar (the sidebar once, the Activity sheet now), and the next short message dropped it
+   back — the panel twitched on nearly every status update, which on a busy reload is several times
+   a second. Reserving the taller of the two heights costs one line of empty space and buys a
+   panel that holds still.
+
+   Clamped as well as reserved: without the clamp a three-line message would simply move the flip
+   up a row rather than remove it. The full text is never lost — the log strip and the pop-out
+   dialog both keep it. */
+.status-bar > #status {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    line-height: 1.35;
+    min-height: 2.7em;
+}
+
 .status-bar:hover {
-    background-color: #e9ecef;
+    background-color: var(--cb-surface-3);
 }
 
 .status-bar.expanded {
@@ -300,24 +125,89 @@ body.debug-mode .debug-only-control {
     animation: highlight-status 1.5s ease-out;
 }
 
+/* A spinner that persists while work does. A status LINE is superseded within a second on a busy
+   reload, so by the time you look there is nothing left saying the app is still working. */
+.status-activity-spinner {
+    display: none;
+    flex: 0 0 auto;
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    border: 2px solid rgba(51, 65, 85, 0.25);
+    border-top-color: #334155;
+    border-radius: 50%;
+    animation: status-activity-spin 0.7s linear infinite;
+}
+
+.status-activity-spinner.is-active {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes status-activity-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Reduced motion: keep the mark, drop the rotation — it is a state indicator, not decoration. */
+@media (prefers-reduced-motion: reduce) {
+    .status-activity-spinner {
+        animation: none;
+        border-top-color: transparent;
+        background: #334155;
+    }
+}
+
+/* Copy all and Open log: anchored to the expanded log's top-right corner, so they sit over the panel
+   rather than in the collapsed bar, where they would be buttons for something that is not on screen.
+   A row rather than two absolutely-positioned buttons, so a longer translation of one cannot land on
+   top of the other. */
+.status-log-actions {
+    position: absolute;
+    bottom: 100%;
+    right: 8px;
+    margin-bottom: 6px;
+    z-index: calc(var(--cb-z-map-raised) + 1);
+    display: flex;
+    gap: 6px;
+}
+
+.status-bar:not(.expanded) .status-log-actions {
+    display: none;
+}
+
+/* The whole log, popped out (index.html #status-log-modal, js/ui-helpers.js openStatusLogDialog):
+   a cb-dialog--lg on the shared chrome whose body IS the list, so it scrolls, selects and copies
+   as one. The line count sits in the header beside the title. */
+.status-log-modal-count {
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
+}
+
+.status-log-modal-list {
+    user-select: text;
+    overflow-x: auto;
+}
+
+/* The log exists to be read and copied out of. */
 .status-log-expanded {
+    user-select: text;
     position: absolute;
     bottom: 100%;
     left: 0;
     right: 0;
-    background-color: #ffffff;
-    border: 1px solid #dee2e6;
+    background-color: var(--cb-surface);
+    border: 1px solid var(--cb-line);
     border-bottom: none;
     border-radius: 4px 4px 0 0;
     max-height: 300px;
     overflow-y: auto;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1100;
+    z-index: var(--cb-z-map-raised);
 }
 
 .status-log-entry {
     padding: 6px 12px;
-    border-bottom: 1px solid #f1f3f4;
+    border-bottom: 1px solid var(--cb-line);
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -330,12 +220,12 @@ body.debug-mode .debug-only-control {
 }
 
 .status-log-entry:hover {
-    background-color: #f8f9fa;
+    background-color: var(--cb-surface-2);
 }
 
 .status-log-entry.current-status {
-    background-color: #e3f2fd;
-    border-left: 3px solid #2196f3;
+    background-color: var(--cb-primary-soft);
+    border-left: 3px solid var(--cb-primary);
     padding-left: 9px;
 }
 
@@ -344,7 +234,7 @@ body.debug-mode .debug-only-control {
 }
 
 .status-log-time {
-    color: #6c757d;
+    color: var(--cb-text-muted);
     font-size: 12px;
     margin-right: 8px;
     flex-shrink: 0;
@@ -352,14 +242,38 @@ body.debug-mode .debug-only-control {
 }
 
 .status-log-message {
-    color: #495057;
+    color: var(--cb-text);
     flex-grow: 1;
     word-break: break-word;
 }
 
+/* A line that knows its proposal is a <button>, so it needs the browser's button chrome stripped
+   back to the surrounding text before it can look like part of the log. It keeps a focus ring — it
+   is reachable by keyboard and must show where the keyboard is. */
+button.status-log-message {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+}
+
+.status-log-message.is-linked {
+    color: var(--cb-primary-hover);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.status-log-message.is-linked:hover {
+    text-decoration-style: solid;
+}
+
 @keyframes highlight-status {
     0% {
-        background-color: #f8f9fa;
+        background-color: var(--cb-surface-2);
         /* Original color */
     }
 
@@ -371,68 +285,69 @@ body.debug-mode .debug-only-control {
     }
 
     100% {
-        background-color: #f8f9fa;
+        background-color: var(--cb-surface-2);
         /* Back to original */
     }
 }
 
-/* Floating status message (visible when sidebar is closed AND debug mode is enabled) */
-.floating-status {
+/* Map feedback is one normal-flow stack above the bottom navigation dock. The view-angle hint
+   and status toast share its width and spacing, so wrapped messages cannot overlap each other. */
+.map-feedback-stack {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 8px 15px;
-    font-size: 14px;
-    color: #495057;
-    z-index: 1000;
+    left: var(--map-shell-centre, 50%);
+    bottom: var(--map-shell-bottom-clearance);
+    transform: translateX(-50%);
+    z-index: var(--cb-z-map-chrome);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--cb-space-2);
+    width: max-content;
+    max-width: min(520px, calc(100% - 112px));
     pointer-events: none;
-    /* Transparent background - text only */
-    background: transparent;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8), 
-                 0 0 4px rgba(255, 255, 255, 0.6),
-                 1px 1px 2px rgba(0, 0, 0, 0.3);
-    /* Ensure text is readable over map */
-    max-width: calc(100vw - 40px);
-    word-wrap: break-word;
-    /* Hidden by default - only shown when sidebar is collapsed AND debug mode is enabled */
+}
+
+#map-feedback-stack:has(#floating-status-text:empty):not(:has(.three-view-hint)) {
     display: none;
 }
 
-/* When sidebar is closed AND debug mode is enabled, show floating status */
-body.debug-mode #sidebar.collapsed ~ #map-container .floating-status,
-body.debug-mode.sidebar-collapsed #map-container .floating-status {
-    display: block;
-    left: 10px;
-    bottom: 10px;
+/* The selection tray occupies the toast's usual row, so raise the whole stack above it. */
+body:has(#selection-tray) .map-feedback-stack {
+    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-button-size) + var(--map-shell-gap));
 }
 
-/* Mobile adjustments */
-@media (max-width: 768px) {
-    .floating-status {
-        font-size: 13px;
-        padding: 6px 12px;
-        max-width: calc(100vw - 20px);
-    }
-    
-    body.debug-mode #sidebar.collapsed ~ #map-container .floating-status,
-    body.debug-mode.sidebar-collapsed #map-container .floating-status {
-        left: 10px;
-        bottom: 10px;
-    }
+/* Status line (ephemerals.md): what the app is doing now, replaced never stacked, gone when idle.
+   Its visual treatment is .cb-toast--status (css/primitives.css); Activity holds the full log. */
+.floating-status {
+    position: static;
+    transform: none;
+    max-width: 100%;
+    pointer-events: none;
+}
+
+.floating-status:has(#floating-status-text:empty) {
+    display: none;
+}
+
+/* Quiet for a while and nothing running: the line fades away until the next word. */
+.floating-status.is-idle {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s;
 }
 
 .share-proposal-container {
     padding: 15px;
     text-align: center;
-    border-top: 1px solid #dee2e6;
+    border-top: 1px solid var(--cb-line);
     flex-shrink: 0;
 }
 
 .total-spent-container {
     display: flex;
     padding: 10px 15px;
-    background-color: #f8f9fa;
-    border-top: 1px solid #dee2e6;
+    background-color: var(--cb-surface-2);
+    border-top: 1px solid var(--cb-line);
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
@@ -440,12 +355,12 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .total-spent-label {
     font-weight: 600;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .total-spent-value {
     font-weight: 700;
-    color: #28a745;
+    color: var(--cb-success);
     /* Success/Money green color */
 }
 
@@ -457,21 +372,21 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .progress-bar {
     height: 8px;
-    background-color: #e9ecef;
+    background-color: var(--cb-surface-3);
     border-radius: 4px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     width: 0%;
     transition: width 0.3s;
 }
 
 .progress-text {
     font-size: 12px;
-    color: #6c757d;
+    color: var(--cb-text-muted);
     margin-top: 5px;
 }
 
@@ -515,6 +430,10 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     border-radius: 8px;
     padding: 8px;
     box-sizing: border-box;
+    /* Every box is two label lines tall whether its label wraps or not: the values change with
+       each point drawn, and a box that grew for a wrapped label and shrank back made the whole
+       grid jump (2026-10-16). */
+    min-height: calc(2 * 1.3em + 18px);
     word-break: break-word;
     display: flex;
     flex-direction: row;
@@ -523,11 +442,19 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     gap: 8px;
 }
 
+/* A metric with nothing to report (open ground on a purely cadastral road) is left out. */
+.road-metrics-grid .metric-group[hidden] {
+    display: none;
+}
+
+/* The label yields first when the box gets tight (it wraps); the value never shrinks, so a
+   number like "243.006 m²" is never cut in half. */
 .road-metrics-grid .metric-group > .metric-label {
     font-weight: 600;
     line-height: 1.3;
     margin-bottom: 0;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 .road-metrics-grid .metric-group > .metric-value {
@@ -548,373 +475,92 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     font-weight: 500;
 }
 
+/* ---- The create-proposal dialog's choices (proposals/dialog-create.js) ----
+   Land use, Parcels, Ownership, the recipient scope and the acquisition are native radios in
+   cb-segmented rows (the label is the pill; .proposal-radio is the hook core.js reads a choice's
+   label from); the hidden main type and transfer direction are cb-segmented buttons; the Urban Rule
+   typology is a cb-tiles grid. The selected look is the primitive's (:checked, aria-pressed). */
 
-.proposal-tool-grid .proposal-tool-button {
-    border: 2px solid transparent;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+/* Land use / Parcels / Ownership read as separate clusters, each under its cb-kicker. */
+.proposal-goal-section + .proposal-goal-section {
+    margin-top: var(--cb-space-3);
 }
 
-.proposal-tool-grid .proposal-tool-button.selected {
-    box-shadow: 0 0 0 2px #0f5132 inset, 0 0 8px rgba(15, 81, 50, 0.4);
-    background: linear-gradient(135deg, #1a874d, #0d6e3d);
-    border: 2px solid #0f5132;
-    color: #fff;
-    transform: translateY(-1px);
+/* A radio the dialog has locked (a preset goal, a derived acquisition) reads as inert. */
+.proposal-radio:has(input:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-.proposal-tool-hint {
-    margin-top: 6px;
-    font-size: 0.85em;
-    color: #4a4a4a;
+/* A locked facet is shown as a quiet static line, not a row of dead/disabled pills. */
+.proposal-facet-static {
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+    padding: var(--cb-space-1) 0;
 }
+.proposal-facet-static .lock-ico { margin-right: var(--cb-space-2); opacity: .7; }
 
-/* Consistent styling for both Proposal Type and Proposal Goal sections */
-.form-group:has(.proposal-type-group) {
-    margin-bottom: 16px;
-}
-
-.form-group:has(.proposal-type-group) label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
-}
-
-.proposal-type-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    width: 100%;
-}
-
-.proposal-type-button {
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    color: #333;
-    cursor: pointer;
+/* Inset sub-panel: things that "open" from a choice (geometry Edit/Upload, the Urban
+   Rule typology) sit visibly subordinate to it — indented, recessed, left accent. */
+.proposal-inset {
+    margin: 8px 0 4px 14px;
     padding: 10px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-    margin: 0;
+    background: var(--cb-surface-2);
+    border-left: 3px solid var(--cb-line-strong);
+    border-radius: 0 8px 8px 0;
 }
 
-.proposal-type-button:hover:not(:disabled) {
-    background-color: #e9ecef;
-    border-color: #999;
+/* The geometry status and its Edit / Upload actions (rendered by proposals/geometry.js). A preset
+   geometry locks the row: buttons a later re-render puts there take no clicks either. */
+.proposal-geometry-status {
+    margin-bottom: var(--cb-space-2);
+    font-size: var(--cb-text-sm);
+    color: var(--cb-text-muted);
 }
 
-.reparcel-alg-button {
-    width: 100%;
-    min-width: 0;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    color: #333;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
+.proposal-geometry-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
 }
 
-.reparcel-alg-button:hover:not(:disabled) {
-    background-color: #e9ecef;
-    border-color: #999;
-}
-
-.reparcel-alg-button:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-.reparcel-alg-button.selected {
-    border-color: #0f5132;
-    background-color: #e6f4ea;
-    color: #0f5132;
-    font-weight: 600;
-}
-
-.reparcel-alg-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.proposal-type-button:active:not(:disabled) {
-    transform: translateY(1px);
-}
-
-.proposal-type-button.selected {
-    border-color: #0f5132;
-    background-color: #e6f4ea;
-    color: #0f5132;
-    font-weight: 600;
-}
-
-.proposal-type-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.proposal-geometry-button {
-    background: linear-gradient(135deg, #0f62fe, #0d53d6);
-    border-color: #0d53d6;
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-.proposal-geometry-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, #0d53d6, #0b45b0);
-    border-color: #0b45b0;
-    color: #fff;
-}
-
-.proposal-geometry-button.selected {
-    background: #0b45b0;
-    border-color: #0a3f9f;
-    color: #fff;
-}
-
-.proposal-geometry-button:disabled {
-    background: #e5e7eb;
-    border-color: #d1d5db;
-    color: #6b7280;
-    box-shadow: none;
-    opacity: 1;
-}
-
-.proposal-secondary-locked .proposal-type-button,
-.proposal-selection-static {
-    opacity: 0.55;
-    cursor: not-allowed !important;
+.proposal-geometry-buttons[data-locked="true"] {
     pointer-events: none;
 }
 
-.proposal-type-hint {
-    margin-top: 4px;
-    font-size: 0.8em;
-    color: #666;
+/* The third-party address field under its Anyone / Specific choice (base input look). */
+.proposal-recipient-input {
+    margin: var(--cb-space-2) 0 0 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Divides the proposal "intent" controls (Land use / Parcels / Ownership / …) from
+   the details below (Name, Description, Offer, Options). */
+.proposal-section-divider {
+    border: 0;
+    border-top: 1px solid var(--cb-line);
+    margin: 18px 0;
 }
 
 /* Block item styling */
 .block-item {
     padding: 8px 10px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
 }
 
 .block-item:hover {
-    background-color: #f5f5f5;
+    background-color: var(--cb-surface-2);
 }
 
 .block-item.active {
-    background-color: #e3f2fd;
+    background-color: var(--cb-primary-soft);
 }
 
-.road-checkbox {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0px;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-/* Hide road checkbox when roadTools feature is disabled */
-.road-checkbox[data-feature-hidden="true"],
-#parcel-info-panel .road-checkbox[data-feature-hidden="true"],
-#tools-tab .road-checkbox[data-feature-hidden="true"] {
-    display: none;
-}
-
-.road-checkbox input {
-    margin-right: 8px;
-}
-
-/* Base class for all parcel info buttons */
-.parcel-info-btn {
-    font-size: 0.9em;
-    padding: 2px 8px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 5px;
-}
-
-.parcel-info-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.parcel-builder-button {
-    background: linear-gradient(135deg, #ffd76a 0%, #ff9f1c 100%);
-    color: #3b2c03;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    box-shadow: none;
-    border: 1px solid #c26c0a;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
-}
-
-.parcel-builder-button:hover {
-    filter: brightness(1.05);
-    box-shadow: none;
-}
-
-.parcel-builder-button:active {
-    transform: translateY(2px);
-    box-shadow: none;
-}
-
-.claim-button {
-    position: relative;
-    background: linear-gradient(120deg, #5b2be0 0%, #9d4edd 30%, #ffd700 50%, #9d4edd 70%, #5b2be0 100%);
-    background-size: 250% 250%;
-    animation: claimSparkle 3.2s linear infinite;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.45px;
-    padding: 10px 20px;
-    font-size: 13px;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    box-shadow: 0 12px 26px rgba(93, 45, 211, 0.45), inset 0 0 14px rgba(255, 255, 255, 0.35);
-    color: #fff;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-    overflow: hidden;
-    border-radius: 6px;
-}
-
-.claim-button::after {
-    content: "";
-    position: absolute;
-    top: -140%;
-    left: -40%;
-    width: 60%;
-    height: 320%;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 45%, rgba(255, 255, 255, 0) 100%);
-    transform: rotate(25deg);
-    animation: claimGlint 4s ease-in-out infinite;
-    pointer-events: none;
-}
-
-.claim-button:hover {
-    filter: brightness(1.08);
-    box-shadow: 0 14px 30px rgba(93, 45, 211, 0.55), inset 0 0 16px rgba(255, 255, 255, 0.4);
-}
-
-.claim-button:active {
-    transform: translateY(2px);
-    box-shadow: 0 8px 20px rgba(93, 45, 211, 0.45), inset 0 0 12px rgba(255, 255, 255, 0.3);
-}
-
-.claim-button:disabled,
-.claim-button.disabled {
-    background: linear-gradient(120deg, #bfc3cc 0%, #c7ccd6 50%, #bfc3cc 100%);
-    background-size: 100% 100%;
-    animation: none;
-    color: #6b7280;
-    border: 1px solid #d1d5db;
-    box-shadow: none;
-    text-shadow: none;
-    cursor: not-allowed;
-    filter: none;
-}
-
-.claim-button:disabled::after,
-.claim-button.disabled::after {
-    display: none;
-    animation: none;
-}
-
-.claim-button:disabled:hover,
-.claim-button.disabled:hover,
-.claim-button:disabled:active,
-.claim-button.disabled:active {
-    filter: none;
-    transform: none;
-    box-shadow: none;
-}
-
-@keyframes claimSparkle {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-@keyframes claimGlint {
-    0% {
-        transform: translateX(-140%) rotate(25deg);
-        opacity: 0;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    50% {
-        transform: translateX(240%) rotate(25deg);
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(240%) rotate(25deg);
-    }
-}
-
-.parcel-builder-icon {
-    width: 20px;
-    height: 20px;
-    display: block;
-}
-
-.parcel-builder-label {
-    line-height: 1;
-}
-
-/* Individual button colors */
-.visualize-button {
-    background-color: #4CAF50;
-}
-
-.neighbors-button {
-    background-color: #2196F3;
-}
-
-.neighbors-button.active {
-    background-color: #f44336;
-}
-
-.vertices-button {
-    background-color: #9C27B0;
-}
-
-.vertices-button.active {
-    background-color: #f44336;
-}
-
-.measure-road-button {
-    background-color: #933513;
-}
+/* The parcel panel's Tools tab buttons are plain btn buttons now (index.html, css/panels.css). */
 
 .vertex-marker {
     fill: #9C27B0;
@@ -930,11 +576,9 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     r: 6;
 }
 
-
-
 .metric-label {
     font-weight: 600;
-    color: #495057;
+    color: var(--cb-text);
     margin-bottom: 3px;
 }
 
@@ -944,7 +588,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 }
 
 .metric-value {
-    color: #212529;
+    color: var(--cb-text-strong);
     font-weight: 500;
 }
 
@@ -952,7 +596,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     display: inline-block;
     width: 14px;
     height: 14px;
-    border: 2px solid #cbd5e1;
+    border: 2px solid var(--cb-line-strong);
     border-top-color: #3b82f6;
     border-radius: 50%;
     animation: metric-spin 0.8s linear infinite;
@@ -967,12 +611,12 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .proposal-info .metric-label {
     font-weight: 600;
-    color: #6c757d;
+    color: var(--cb-text-muted);
 }
 
 .proposal-info .metric-value {
     font-weight: 600;
-    color: #212529;
+    color: var(--cb-text-strong);
 }
 
 /* New coordinates control */
@@ -995,10 +639,10 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     right: 30px;
     max-height: 70vh;
     overflow-y: auto;
-    background: white;
+    background: var(--cb-surface);
     border-radius: 8px;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
-    z-index: 2000;
+    z-index: var(--cb-z-floating-list);
     /* Width intentionally not set to allow flexible sizing */
 }
 
@@ -1014,22 +658,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     font-size: 1.1em;
 }
 
-#blocks-list-container .blocks-list-close {
-    background: none;
-    border: none;
-    font-size: 1.4em;
-    cursor: pointer;
-    color: #666;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-
-#blocks-list-container .blocks-list-close:hover {
-    background-color: #f5f5f5;
-    color: #333;
-}
-
 #blocks-content {
     padding: 8px 12px 12px 12px;
 }
@@ -1043,7 +671,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 }
 
 #animation-progress {
-    background-color: white;
+    background-color: var(--cb-surface);
     padding: 10px 20px;
     border-radius: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -1055,32 +683,13 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 #animation-step {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
-    color: #333;
+    color: var(--cb-text);
     min-width: 300px;
 }
 
 #animation-buttons {
     display: flex;
     gap: 5px;
-}
-
-.animation-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.animation-button:hover {
-    background-color: #0069d9;
-}
-
-.animation-button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
 }
 
 /* Animation Elements */
@@ -1126,18 +735,10 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     stroke-dasharray: 10, 5;
 }
 
-.visualize-button:hover {
-    background-color: #0056b3;
-}
-
-.visualize-button:active {
-    background-color: #004085;
-}
-
 .progress-container {
     display: none;
     margin-top: 10px;
-    background: #fff;
+    background: var(--cb-surface);
     padding: 10px;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1146,14 +747,14 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 .progress-bar {
     width: 100%;
     height: 20px;
-    background-color: #f0f0f0;
+    background-color: var(--cb-surface-3);
     border-radius: 10px;
     overflow: hidden;
 }
 
 .progress-fill {
     height: 100%;
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     width: 0%;
     transition: width 0.3s ease;
 }
@@ -1161,7 +762,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 .progress-text {
     margin-top: 5px;
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
 }
 
 .button-group {
@@ -1172,7 +773,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .button-group button {
     padding: 5px 10px;
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     color: white;
     border: none;
     border-radius: 4px;
@@ -1181,7 +782,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 }
 
 .button-group button:hover {
-    background-color: #0056b3;
+    background-color: var(--cb-primary-hover);
 }
 
 .button-group button:active {
@@ -1197,8 +798,8 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 }
 
 .block-rectangle {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
     border-radius: 4px;
     padding: 8px 12px;
     cursor: pointer;
@@ -1206,17 +807,17 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     min-width: 60px;
     text-align: center;
     font-size: 14px;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .block-rectangle:hover {
-    background-color: #e9ecef;
-    border-color: #ced4da;
+    background-color: var(--cb-surface-3);
+    border-color: var(--cb-line-strong);
 }
 
 .block-rectangle.active {
-    background-color: #007bff;
-    border-color: #0056b3;
+    background-color: var(--cb-primary);
+    border-color: var(--cb-primary-hover);
     color: white;
 }
 
@@ -1224,13 +825,13 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--cb-glass);
     border-radius: 4px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     padding: 15px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--cb-font-sans);
     font-size: 14px;
-    z-index: 1000;
+    z-index: var(--cb-z-map-chrome);
     max-height: 80vh;
     overflow-y: auto;
     min-width: 200px;
@@ -1239,9 +840,9 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 .blocks-list h3 {
     margin: 0 0 10px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
     font-size: 16px;
-    color: #333;
+    color: var(--cb-text);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1266,16 +867,16 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 }
 
 .block-item:hover {
-    background-color: #f8f9fa;
+    background-color: var(--cb-surface-2);
 }
 
 .block-item.active {
-    background-color: #007bff;
+    background-color: var(--cb-primary);
     color: white;
 }
 
 .block-count {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 12px;
 }
 
@@ -1283,48 +884,10 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     color: rgba(255, 255, 255, 0.8);
 }
 
-#blockify-buttons .btn {
-    flex: 1 1 auto;
-    width: 100%;
-}
-
-.blockify-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.blockify-button:hover {
-    background-color: #0069d9;
-}
-
-.blockify-button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-}
-
-/* Blockify Sidebar Styles */
-#blockify-sidebar {
-    width: 300px;
-    background-color: #f8f9fa;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-#blockify-sidebar h3 {
-    margin: 0 0 15px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #dee2e6;
-    font-size: 16px;
-    color: #333;
-}
-
+/* Blockify Sidebar Styles
+   The parameter rows every editor sidebar shares (Urban Rule, Row houses, Detached houses,
+   Freeform). The sidebar box itself and its section labels are in modals.css; the selects take
+   their look from the base form controls in primitives.css. */
 .parameter-group {
     margin-bottom: 20px;
 }
@@ -1332,33 +895,21 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 .parameter-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
-    color: #495057;
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text);
 }
 
 .parameter-group select {
     width: 100%;
-    padding: 6px 8px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    background-color: #f8f9fa;
-    font-size: 14px;
-    color: #495057;
     margin-bottom: 8px;
-}
-
-.parameter-group select:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    background-color: #e9ecef;
 }
 
 .algorithm-description {
     padding: 10px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    font-size: 13px;
-    color: #495057;
+    background: var(--cb-surface-2);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
     margin-bottom: 15px;
     font-style: italic;
 }
@@ -1372,7 +923,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     display: flex;
     align-items: center;
     font-weight: 500;
-    color: #495057;
+    color: var(--cb-text);
     cursor: pointer;
 }
 
@@ -1383,17 +934,17 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 .parameter-hint {
     margin-top: 5px;
     font-size: 12px;
-    color: #6c757d;
+    color: var(--cb-text-muted);
     font-style: italic;
 }
 
 .parameter-info {
     margin-top: 20px;
     padding: 15px;
-    background-color: #e9ecef;
-    border-radius: 4px;
-    font-size: 13px;
-    color: #495057;
+    background: var(--cb-surface-2);
+    border-radius: var(--cb-radius-sm);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
     line-height: 1.5;
 }
 
@@ -1403,85 +954,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .parameter-info p:last-child {
     margin-bottom: 0;
-}
-
-.btn.active-black-border,
-.parcel-info-btn.active-black-border {
-    background-color: #0056b3;
-    /* Slightly darker base */
-    box-shadow: inset 2px 2px 5px #003366,
-        /* Deeper, darker top-left shadow */
-        inset -2px -2px 4px #007fff;
-    /* Stronger, lighter bottom-right highlight */
-    border: none;
-    /* Ensures no border */
-    transform: translateY(1px);
-    /* Slight downward shift */
-    /* color: white; */
-}
-
-.btn-proposal {
-    background-color: #ffd700 !important;
-    /* Gold background */
-    color: #000 !important;
-    /* Black text */
-    border: 2px solid #000 !important;
-    /* Black border */
-    font-weight: bold;
-    width: 100%;
-    height: 44px;
-}
-
-.btn-proposal:hover {
-    background-color: #ffed4e !important;
-    /* Lighter gold on hover */
-    border-color: #333 !important;
-}
-
-.btn-proposal:disabled {
-    background-color: #f0f0f0 !important;
-    color: #999 !important;
-    border-color: #ccc !important;
-}
-
-.btn-accept-proposal {
-    background-color: #28a745 !important;
-    /* Green background */
-    color: white !important;
-    border: 1px solid #28a745 !important;
-    font-weight: 600;
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 14px;
-}
-
-.btn-accept-proposal:hover:not(:disabled) {
-    background-color: #218838 !important;
-    border-color: #1e7e34 !important;
-}
-
-.btn-accept-proposal:disabled {
-    background-color: #f8f9fa !important;
-    color: #6c757d !important;
-    border-color: #dee2e6 !important;
-    cursor: not-allowed;
-    opacity: 0.65;
-}
-
-.btn-reject-proposal {
-    background-color: #dc3545 !important;
-    /* Red background */
-    color: white !important;
-    border: 1px solid #dc3545 !important;
-    font-weight: 600;
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 14px;
-}
-
-.btn-reject-proposal:hover:not(:disabled) {
-    background-color: #c82333 !important;
-    border-color: #bd2130 !important;
 }
 
 .proposal-actions {
@@ -1499,7 +971,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 .acceptance-label {
     font-size: 13px;
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
     margin-bottom: 0;
     white-space: nowrap;
 }
@@ -1533,7 +1005,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 }
 
 .acceptance-circle.accepted {
-    background-color: #28a745;
+    background-color: var(--cb-success);
     border-color: #1e7e34;
 }
 
@@ -1548,7 +1020,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .acceptance-summary {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
     font-style: italic;
 }
 
@@ -1579,17 +1051,6 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     margin-top: 6px;
 }
 
-.proposal-modal-footer .btn {
-    flex: 1 1 50%;
-    max-width: 50%;
-    margin: 0;
-}
-
-.proposal-modal-footer .btn-proposal {
-    flex: 1 1 100%;
-    max-width: 100%;
-}
-
 .form-group {
     margin-bottom: 15px;
 }
@@ -1598,21 +1059,21 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 /* Proposal Options Section */
 .proposal-options-section {
-    background: #f8f9fa;
+    background: var(--cb-surface-2);
     padding: 12px;
     border-radius: 6px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--cb-line);
 }
 
 .proposal-options-section>label {
     margin-bottom: 10px;
     font-size: 0.95em;
-    color: #495057;
+    color: var(--cb-text);
 }
 
 .proposal-option-row {
@@ -1629,20 +1090,20 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .proposal-option-row input[type="text"] {
     padding: 6px 10px;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--cb-line-strong);
     border-radius: 4px;
     font-size: 14px;
     font-family: monospace;
 }
 
 .proposal-option-row input[type="text"]:disabled {
-    background-color: #e9ecef;
-    color: #6c757d;
+    background-color: var(--cb-surface-3);
+    color: var(--cb-text-muted);
 }
 
 .proposal-option-row input[type="text"]:not(:disabled) {
-    background-color: #fff;
-    color: #212529;
+    background-color: var(--cb-surface);
+    color: var(--cb-text-strong);
 }
 
 .proposal-author-row {
@@ -1666,15 +1127,28 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid #007bff;
+    border: 2px solid var(--cb-primary);
     object-fit: cover;
     display: none;
 }
 
-.btn.active {
-    background-color: #28a745 !important;
-    color: white !important;
-    border-color: #28a745 !important;
+/* Author name shown as plain text next to the avatar (no input box / label). Keyed on the element
+   too, so it outranks the base input rules in css/primitives.css (input[type="text"], loaded first). */
+input.proposal-author-name {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--cb-text);
+}
+.proposal-author-name:disabled {
+    color: var(--cb-text);
+    opacity: 1;
+    -webkit-text-fill-color: var(--cb-text); /* Safari otherwise greys out disabled inputs */
+    cursor: default;
 }
 
 .proposal-summary .summary-stats {
@@ -1687,7 +1161,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .proposal-summary .parcel-list h4 {
     margin: 10px 0 8px 0;
-    color: #333;
+    color: var(--cb-text);
     font-size: 14px;
 }
 
@@ -1705,26 +1179,12 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .proposal-parcel-item .parcel-number {
     font-weight: 600;
-    color: #333;
+    color: var(--cb-text);
 }
 
 .proposal-parcel-item .parcel-area {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 12px;
-}
-
-.welcome-modal .btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.welcome-modal .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
 .turn-progress {
@@ -1733,7 +1193,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .turn-progress-label {
     font-size: 12px;
-    color: #666;
+    color: var(--cb-text-muted);
     margin-bottom: 4px;
 }
 
@@ -1755,77 +1215,39 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 
 .turn-progress-time {
     font-size: 11px;
-    color: #666;
+    color: var(--cb-text-muted);
     text-align: center;
 }
 
-/* Ephemeral Messages */
+/* Notices (ephemerals.md): an outcome, one pill at a time (js/ui/notice-queue.js), top centre
+   under the top row of controls, above anything the notice may answer. The look is .cb-toast
+   (css/primitives.css); only the entrance and exit live here. */
 #ephemeral-message-container {
     position: absolute;
-    /* Relative to map-container */
-    top: 20px;
+    top: calc(var(--map-shell-top-clearance) + var(--cb-banner-stack-height, 0px));
     left: 50%;
     transform: translateX(-50%);
-    z-index: 14000;
-    /* Above modals (modals are 13000) */
+    z-index: var(--cb-z-toast);
     display: flex;
     flex-direction: column;
     align-items: center;
     pointer-events: none;
-    /* Allow clicks to pass through the container itself */
 }
 
 .ephemeral-message {
-    background: rgba(29, 113, 184, 0.95);
-    /* Bluish background */
-    color: #ffffff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 14px;
-    padding: 10px 18px;
-    border-radius: 20px;
-    /* Pill shape */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
     opacity: 0;
-    transform: translateY(-20px);
-    max-height: 0;
-    margin: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    overflow: hidden;
-    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease;
-    pointer-events: all;
-    /* Re-enable pointer events for the message itself */
-    white-space: nowrap;
+    transform: translateY(-12px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: auto;
 }
 
 .ephemeral-message.visible {
     opacity: 1;
     transform: translateY(0);
-    max-height: 50px;
-    /* Should be enough for one line of text */
-    margin: 0 0 10px 0;
-    /* Creates space between stacked messages */
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
 
 .takeover-buttons .btn {
     flex: 1;
-}
-
-/* Logout modal styles */
-.logout-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.logout-options .btn {
-    width: 100%;
-    text-align: center;
 }
 
 /* Username display with avatar */
@@ -1833,26 +1255,26 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #ddd;
-    border-radius: 24px;
+    background: var(--cb-glass);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-pill);
     padding: 8px 15px 8px 12px;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-text);
+    box-shadow: var(--cb-shadow-sm);
+    z-index: var(--cb-z-map-chrome);
     cursor: pointer;
     transition: all 0.3s;
     max-width: 260px;
 }
 
 .username-display:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--cb-surface);
+    box-shadow: var(--cb-shadow-md);
     transform: translateY(-1px);
 }
 
@@ -1861,11 +1283,11 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     height: 24px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cb-line);
 }
 
 .username-display i.fas {
-    color: #666;
+    color: var(--cb-text-muted);
     font-size: 16px;
 }
 
@@ -1876,11 +1298,11 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
 }
 
 .wallet-status-icon.connected {
-    color: #198754;
+    color: var(--cb-success);
 }
 
 .wallet-status-icon.disconnected {
-    color: #dc3545;
+    color: var(--cb-danger);
 }
 
 .username-display span {
@@ -1889,122 +1311,33 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     text-overflow: ellipsis;
 }
 
-/* Notification badge for username display */
+/* Notification badge for username display: the count of unseen proposals on the user's parcels
+   (a cb-badge cb-badge--count), pinned to the bubble's corner (it is the bubble's last child, so it
+   paints over the rest). */
 .notification-badge {
     position: absolute;
     top: -8px;
     right: -8px;
-    background: #dc3545;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 10;
 }
 
-.parcel-proposals-list .btn-sm {
-    font-size: 11px;
-    padding: 2px 6px;
-    margin-right: 4px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.parcel-proposals-list .btn-sm:last-child {
-    margin-right: 0;
-}
-
-.parcel-proposals-list .btn-sm:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.parcel-proposals-list .btn-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.parcel-proposals-list .btn-success:hover:not(:disabled) {
-    background-color: #218838;
-}
-
-.parcel-proposals-list .btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.parcel-proposals-list .btn-danger:hover:not(:disabled) {
-    background-color: #c82333;
-}
-
-.parcel-proposals-list .btn-info {
-    background-color: #17a2b8;
-    color: white;
-}
-
-.parcel-proposals-list .btn-info:hover {
-    background-color: #138496;
-}
-
-.version-modal .btn {
-    padding: 10px 18px;
-    background: #2563eb;
-    color: #ffffff;
-    border-radius: 6px;
-    font-weight: 600;
-}
-
-.version-modal .btn:hover {
-    background: #1d4ed8;
-}
-
-@media (max-width: 600px) {
-    .version-modal {
-        padding: 12px;
-    }
-
-    .version-modal-content {
-        width: 100%;
-        max-height: 90vh;
-    }
-
-    .version-modal-header,
-    .version-modal-body,
-    .version-modal-footer {
-        padding-left: 18px;
-        padding-right: 18px;
-    }
-}
-
-/* Proposal Details Panel */
+/* Proposal Details Panel. Width comes from .right-dock-panel (css/panels.css) — it used to carry
+   `width: 400px !important` purely to out-shout the mobile `.info-panel { width: 100% !important }`
+   bottom-sheet rule below. The shared class agrees with that rule instead of fighting it: it resolves
+   to 100% inside the same breakpoint, so neither declaration needs !important any more. */
 #proposal-details-panel {
     position: fixed;
-    top: 10px !important;
     right: 10px;
-    bottom: 10px;
-    width: 400px !important;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(3px);
-    border: 1px solid #ccc;
+    bottom: var(--map-shell-bottom-clearance);
+    border: 1px solid var(--cb-line-strong);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 12000 !important;
-    /* Ensure panel sits above sidebar/toggles */
+    /* One step above the parcel panel it shares the dock with, under the sheets: panels no longer
+       step aside when a sheet opens, so a card at dialog level covered the sheet's own buttons. */
+    z-index: calc(var(--cb-z-panel) + 20);
     display: none;
     overflow-x: hidden;
     overflow-y: auto;
     box-sizing: border-box;
-    height: calc(100dvh - 20px);
-    max-height: calc(100dvh - 20px);
 }
 
 #proposal-details-panel.visible {
@@ -2012,217 +1345,78 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     flex-direction: column;
 }
 
+/* Desktop details share the map dock. Phones use the full viewport in proposal-details.css. */
 @media (min-width: 768px) {
-    /* Desktop proposal details size - nearly full screen height */
     #proposal-details-panel {
-        bottom: 10px !important;
-        top: 10px !important;
-        height: calc(100dvh - 20px) !important;
-        max-height: calc(100dvh - 20px) !important;
-        min-height: calc(100dvh - 20px) !important;
+        top: var(--map-shell-top-clearance);
+        bottom: var(--right-dock-bottom);
+        height: calc(100dvh - var(--map-shell-top-clearance) - var(--right-dock-bottom));
+        max-height: calc(100dvh - var(--map-shell-top-clearance) - var(--right-dock-bottom));
+        min-height: calc(100dvh - var(--map-shell-top-clearance) - var(--right-dock-bottom));
         overflow-y: auto;
     }
-    
-    #proposal-details-panel.visible {
-        display: flex;
-        flex-direction: column;
-        bottom: 10px !important;
-        top: 10px !important;
-        height: calc(100dvh - 20px) !important;
-        max-height: calc(100dvh - 20px) !important;
-        min-height: calc(100dvh - 20px) !important;
-    }
-}
-
-#proposal-details-panel .btn-share-proposal {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    font-weight: 600;
-}
-
-/* Road drawing controls layout */
-@media (min-width: 768px) {
-    #road-drawing-controls {
-        display: block;
-    }
-
-    #road-drawing-controls > div {
-        display: flex;
-        gap: 8px;
-    }
-
-    #road-drawing-controls > div .btn {
-        flex: 1;
-        width: auto;
-    }
-}
-
-/* Unified close button */
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .agents-stats-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close) {
-    appearance: none;
-    border: 1px solid #d4d7dd;
-    background: rgba(255, 255, 255, 0.92);
-    color: #1f2937;
-    width: auto;
-    height: 34px;
-    min-width: 34px;
-    min-height: 34px;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
-}
-
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .agents-stats-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close):hover {
-    background-color: #f3f4f6;
-    color: #0f172a;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-}
-
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .agents-stats-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close):active {
-    transform: scale(0.97);
-}
-
-:is(.close-circle-btn,
-    .close-button,
-    .proposal-modal-close,
-    .proposal-list-modal-close,
-    .proposal-info-modal-close,
-    .share-modal-close,
-    .lens-close-btn,
-    .reparcel-close-btn,
-    .wallet-modal-close,
-    .version-modal-close,
-    .agent-dialog-modal-close,
-    .game-log-modal-close,
-    .agents-stats-modal-close,
-    .descendants-close,
-    #blockify-close,
-    #single-building-close):focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
-}
-
-.close-circle-btn--lg {
-    width: 42px;
-    height: 42px;
-    font-size: 20px;
 }
 
 /* Mobile panel as bottom sheet */
-@media (max-width: 768px) {
-    .info-panel {
-        left: 0 !important;
+@media (max-width: 767.98px) {
+    .info-panel:not(#proposal-details-panel) {
+        left: var(--info-panel-mobile-inset, 0) !important;
         right: 0 !important;
         top: auto !important;
-        bottom: 0;
-        width: 100% !important;
-        /* Use 100% instead of 100vw to avoid overflow */
-        max-width: 100% !important;
-        max-height: 85vh;
+        /* Above the bottom bar (Proposals · Tools · Activity), so the bar stays reachable while a
+           parcel or proposal sheet is open. */
+        bottom: var(--map-shell-bottom-clearance);
+        /* Mobile policy: a panel takes at most half the screen; content beyond that scrolls
+           inside, or the user collapses the panel to its header strip. */
+        max-height: 50vh;
         border-radius: 12px 12px 0 0;
         box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
         box-sizing: border-box;
-        /* Include padding in width calculation */
-    }
-    
-    /* Proposal details panel should maintain desktop styling on larger mobile screens */
-    #proposal-details-panel {
-        width: 400px !important;
-        max-width: calc(100vw - 20px) !important;
-        right: 10px !important;
-        left: auto !important;
-        top: 10px !important;
-        bottom: 10px !important;
-        max-height: calc(100dvh - 20px) !important;
     }
 
+    /* Docked sheets run edge to edge by default. An active editor can reserve the view strip
+       through --info-panel-mobile-inset without fighting these shared positioning rules. */
+    .info-panel.right-dock-panel:not(#proposal-details-panel) {
+        left: var(--info-panel-mobile-inset, 0) !important;
+        border-radius: 12px;
+    }
+
+    /* Legacy full-bleed width for the info panels that are NOT part of the right dock. The dock's
+       four panels take their width from .right-dock-panel alone — if this rule still matched them,
+       its !important would silently win over --right-dock-width and the shared token would be a lie. */
+    .info-panel:not(.right-dock-panel) {
+        /* 100% instead of 100vw so the padding cannot push the panel into horizontal overflow. */
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
     .info-panel .close-button {
         top: 12px;
         right: 12px;
     }
 }
 
-/* Ensure proposal details panel maintains correct width on desktop */
-@media (min-width: 769px) {
-    #proposal-details-panel {
-        width: 400px !important;
-        max-width: 400px !important;
-    }
-}
-
 #proposal-details-panel.is-minimized,
 #proposal-details-panel.visible.is-minimized {
-    bottom: auto !important;
     height: auto !important;
     max-height: none !important;
     min-height: 0 !important;
     overflow: hidden;
 }
 
-@media (max-width: 768px) {
-    /* Panel header and body structure */
-    .btn,
-    .parcel-info-btn,
-    .parcel-tab-btn,
-    .tab-btn {
-        min-height: 40px;
-        padding: 12px 16px;
+/* Desktop only: the panel is pinned top AND bottom there, so a collapsed one lets go of the bottom
+   and shrinks to its header at the top. On phones it is a bottom sheet with no top — releasing the
+   bottom as well left it with neither, and it jumped to the top edge over the menu button and the
+   Guest pill. */
+@media (min-width: 768px) {
+    #proposal-details-panel.is-minimized,
+    #proposal-details-panel.visible.is-minimized {
+        bottom: auto !important;
     }
+}
+
+@media (max-width: 767.98px) {
+    /* Panel header and body structure */
 
     .btn-group {
         flex-direction: column;
@@ -2239,34 +1433,9 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         gap: 8px;
     }
 
-    /* Keep road/track actions on one row inside proposal tab */
-    .parcel-road-actions {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 8px;
-    }
-
-    .parcel-road-actions .btn {
-        width: auto;
-        flex: 1 1 0;
-    }
-
-
     /* Control groups more compact */
     .control-group {
         padding: 12px 0;
-    }
-
-    /* Remove vertical padding from all divs in parcel section on mobile */
-    .accordion-section[data-section="parcels"] .accordion-content {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
-    .accordion-section[data-section="parcels"] .accordion-content > div,
-    .accordion-section[data-section="parcels"] .accordion-content div {
-        padding-top: 0;
-        padding-bottom: 0;
     }
 
     .control-group-title {
@@ -2299,52 +1468,18 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
         font-weight: 600;
     }
 
-
     /* Touch feedback for interactive elements */
-    .btn:active,
-    .close-button:active,
-    .parcel-tab-btn:active,
     .btn,
     .close-button,
-    .parcel-tab-btn,
-    .tab-btn {
+    .cb-tab {
         touch-action: manipulation;
     }
 
-    /* Ephemeral messages mobile responsiveness */
+    /* Notices span the phone minus the gutters (the .cb-toast cap already allows for them). */
     #ephemeral-message-container {
-        left: 15px;
-        right: 15px;
+        left: var(--cb-space-4);
+        right: var(--cb-space-4);
         transform: none;
-        width: auto;
-        max-width: calc(100vw - 30px);
-    }
-
-    .ephemeral-message {
-        white-space: normal;
-        /* Allow text wrapping */
-        word-wrap: break-word;
-        word-break: break-word;
-        max-width: 100%;
-        text-align: center;
-        font-size: 13px;
-        padding: 10px 14px;
-        /* Reduce padding for tighter appearance */
-        line-height: 1.3;
-        /* Tighter line spacing */
-        border-radius: 16px;
-        /* Slightly less rounded for mobile */
-    }
-
-    .ephemeral-message.visible {
-        max-height: 80px;
-        /* Limit maximum height to prevent excessive thickness */
-        min-height: auto;
-        /* Remove minimum height override */
-        padding-top: 10px;
-        /* Override desktop transition padding */
-        padding-bottom: 10px;
-        /* Override desktop transition padding */
     }
 }
 
@@ -2354,7 +1489,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     justify-content: space-between;
     align-items: center;
     padding: 8px 4px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--cb-line);
 }
 
 .proposal-manager-item span {
@@ -2415,7 +1550,7 @@ body.debug-mode.sidebar-collapsed #map-container .floating-status {
     width: 18px;
     left: 3px;
     bottom: 3px;
-    background-color: white;
+    background-color: var(--cb-surface);
     -webkit-transition: .4s;
     transition: .4s;
 }
@@ -2443,19 +1578,21 @@ input:checked+.slider:before {
     border-radius: 50%;
 }
 
-/* Memory monitor overlay */
+/* Memory monitor overlay (a developer readout, js/memory-monitor.js): a glass card on the tokens,
+   its fold toggle a btn btn-quiet btn-sm btn-icon. */
 .memory-monitor-panel {
     position: fixed;
     top: 16px;
     right: 16px;
     width: 260px;
-    background: rgba(16, 22, 34, 0.92);
-    color: #f4f6fc;
-    border-radius: 10px;
-    box-shadow: 0 10px 24px rgba(9, 13, 20, 0.35);
+    background: var(--cb-glass);
+    color: var(--cb-text);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-md);
     font-size: 12px;
     line-height: 1.4;
-    z-index: 1400;
+    z-index: var(--cb-z-dev-overlay);
     backdrop-filter: blur(4px);
     pointer-events: auto;
 }
@@ -2466,7 +1603,7 @@ input:checked+.slider:before {
     gap: 8px;
     justify-content: space-between;
     padding: 10px 12px 8px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--cb-line);
     font-weight: 600;
     letter-spacing: 0.01em;
 }
@@ -2479,26 +1616,7 @@ input:checked+.slider:before {
     flex: 1 1 auto;
     text-align: right;
     font-weight: 500;
-    color: rgba(244, 246, 252, 0.75);
-}
-
-.memory-monitor-toggle {
-    flex: 0 0 auto;
-    border: none;
-    background: rgba(255, 255, 255, 0.1);
-    color: #f4f6fc;
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.memory-monitor-toggle:hover {
-    background: rgba(255, 255, 255, 0.18);
+    color: var(--cb-text-muted);
 }
 
 .memory-monitor-body {
@@ -2513,7 +1631,7 @@ input:checked+.slider:before {
 }
 
 .memory-monitor-row span:first-child {
-    color: rgba(244, 246, 252, 0.75);
+    color: var(--cb-text-muted);
 }
 
 .memory-monitor-row:last-child {
@@ -2522,7 +1640,7 @@ input:checked+.slider:before {
 
 .memory-monitor-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--cb-line);
     margin: 8px 0;
 }
 
@@ -2530,50 +1648,25 @@ input:checked+.slider:before {
     display: none;
 }
 
-/* Parcel block detect button sizing */
-.parcel-block-detect-btn {
-    margin: 0;
-    padding: 0 8px;
-    height: 22px;
-    line-height: 22px;
-    font-size: 12px;
-    box-sizing: border-box;
-}
-
-/* ENS name line — compact (parcel panel + minted proposal cards): the "ENS"
-   chip links to the ENS app, the name value is click-to-copy. Value
-   ellipsis-truncates so the long name never overflows tight panels. */
+/* ENS name line — compact (parcel panel + minted proposal cards): the "ENS" badge (cb-badge)
+   links out to the ENS app, the name (a quiet cb-link) copies it. The name ellipsis-truncates so a
+   long one never overflows tight panels; the badge never shrinks. */
 .ens-name-line {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--cb-space-2);
     margin-top: 6px;
-    font-size: 11px;
-    color: #64748b;
-    cursor: pointer;
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
     min-width: 0;
     max-width: 100%;
 }
-.ens-name-line:hover { color: #334155; }
 .ens-name-chip {
     flex: 0 0 auto;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #fff;
-    background: #6366f1;
-    border-radius: 4px;
-    padding: 1px 4px;
     text-decoration: none;
-    cursor: pointer;
-    white-space: nowrap;
 }
-.ens-name-chip:hover { background: #4f46e5; }
-.ens-name-chip:visited { color: #fff; }
 .ens-name-value {
     flex: 1 1 auto;
-    min-width: 0;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -2584,4 +1677,24 @@ input:checked+.slider:before {
     display: inline-flex;
     max-width: 100%;
     vertical-align: middle;
+}
+
+/* Pinpoint's live coordinate readout. Its own chip rather than the status bar: the status bar
+   appends to the log, and a mousemove handler would fill it with thousands of lines. */
+.pinpoint-readout {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    /* One row above the status toast (which sits one row above the bottom buttons): at a fixed
+       56px the two overlapped, and the toast is where Pinpoint writes its hint and result. */
+    bottom: calc(var(--map-shell-bottom) + 2 * (var(--map-shell-button-size) + var(--map-shell-gap)));
+    z-index: var(--cb-z-popover);
+    padding: 5px 12px;
+    font-family: var(--cb-font-mono);
+    font-size: var(--cb-text-md);
+    color: var(--cb-inverse-ink);
+    background: var(--cb-inverse);
+    border-radius: var(--cb-radius-sm);
+    pointer-events: none;
+    white-space: nowrap;
 }

@@ -1,0 +1,13 @@
+{
+  "taskId": "city:944",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:42:41Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-944-ko-ice.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ko-ice-service-review.json"
+  ],
+  "review": "WUP 2025 archive SHA-256 matched provenance. Rank 2724, code 944, Slovakia, point [48.7182343856836,21.2550572326794], and 216740 persons match the archive, immutable roster, queue, and packet. English and Slovak searches are recorded with source URLs. The first-party VUGK page publishes the C-register WFS; an independent bounded live WFS read returned polygon features with inspireId.localId and nationalCadastralReference. This confirms positive source discovery, not complete coverage or adapter admission. No durable sample was retained; fresh exact-ID reads, stable manifest and forced paging, 13 bounded cells, independent metric GEOS validity/overlap checks, source binding, full-parcel proposal operation, and headed Details verification are missing. Held without admission or acceptance metrics."
+}

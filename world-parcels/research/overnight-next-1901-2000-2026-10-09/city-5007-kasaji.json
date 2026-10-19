@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:5007",
+  "cityCode": 5007,
+  "wupCityCode": 5007,
+  "name": "Kasaji",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso2": "CD",
+  "iso3": "COD",
+  "rank": 1985,
+  "queueRank": 1985,
+  "point": [-10.3801447565842, 23.4493878380714],
+  "centerLatLon": [-10.3801447565842, 23.4493878380714],
+  "pointBasis": "UN WUP2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 292523,
+  "population2025k": 292.523,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1901-2000-2026-10-09",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Ministry of Land Affairs circonscriptions page lists Dilolo as a Lualaba land-registry/cadastral circonscription. Kasaji is reported as a locality in Dilolo territory; no Kasaji-specific public map or parcel endpoint was identified.",
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://fr.wikipedia.org/wiki/Kasaji"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No bounded anonymous response containing safe parcel polygon geometry and a stable native parcel identity was obtained. Runtime readiness remains held for serial review.",
+  "scopeLimits": "The exact WUP point and a small surrounding latitude/longitude envelope were queried on the public BIC table route; an empty response is not evidence of citywide absence. The official Ministry registry listing establishes Dilolo-area custody but does not expose parcel geometry.",
+  "resultCategory": "official_registry_custody_without_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Dilolo land registry/cadastral circonscription listed by the DRC Ministry of Land Affairs; BIC presents a DRC cadastral platform with a public cadastral-map route.",
+    "verifiedOpenScope": "No parcel polygon coverage verified. BIC's current cadastral map route and JavaScript were inspected; the route is protected by authentication, while its public cadastral_parcels_public REST query returned an empty bounded result.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No safe native parcel identity/geometry was verified; packet completion is not source integration or admission."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kasaji Democratic Republic of the Congo cadastre parcel map official",
+        "scope": "Fresh first-party discovery of a Kasaji/Dilolo registry, cadastral map, or anonymous parcel API.",
+        "result": "No Kasaji-specific first-party parcel map/API was returned. The DRC Ministry of Land Affairs official circonscriptions page was returned and lists Dilolo under Lualaba; BIC was returned as a DRC cadastral platform.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://bic.cd/"
+        ],
+        "executionMethod": "Fresh web search followed by direct review of the returned first-party pages."
+      },
+      {
+        "language": "French",
+        "query": "Kasaji RDC cadastre parcelles carte officielle Dilolo",
+        "scope": "Separate native-language discovery for local registry custody and public parcel geometry.",
+        "result": "No Kasaji-specific French first-party parcel map/API was returned. The official Ministry page lists the Dilolo land/cadastral circonscription; BIC's French-language platform was inspected but its cadastral map is authentication-gated.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://bic.cd/"
+        ],
+        "executionMethod": "Executed as a separate fresh French-language web search; no login, CAPTCHA/Cloudflare bypass, or unsafe-data request was used."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "outcome": "200; official Ministry page returned 143 circonscriptions and lists Lualaba/Dilolo. No Kasaji-specific endpoint or parcel geometry was exposed."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://bic.cd/",
+        "outcome": "200; BIC landing page returned. Current JavaScript exposes /cadastral-map as an authenticated route and a public cadastral_parcels_public lookup path."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://bic.cd/assets/CadastralMap-CVNYyCaG.js",
+        "outcome": "200; current route code inspected. Public lookup requests only safe parcel/map fields, but the interactive cadastral map route is protected by authentication."
+      },
+      {
+        "checkedAt": "2026-10-10",
+        "method": "GET",
+        "url": "https://vqrcggcqgnkanngqhcga.supabase.co/rest/v1/cadastral_parcels_public?select=id,parcel_number,gps_coordinates,parcel_sides,area_sqm,province,ville,commune,quartier,latitude,longitude,is_subdivided&latitude=gte.-10.39&latitude=lte.-10.37&longitude=gte.23.44&longitude=lte.46",
+        "outcome": "200; empty JSON array. This is a bounded public-table miss around the exact WUP point, not a citywide absence finding. No geometry or native identity was retained."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "observation": "Official national Ministry registry/cadastre directory; Dilolo is the relevant listed Lualaba circonscription."
+      },
+      {
+        "homeUrl": "https://bic.cd/",
+        "observation": "BIC public cadastral platform; current map route is authentication-gated, and only a bounded anonymous public lookup was attempted."
+      }
+    ]
+  },
+  "nativeIdentity": null,
+  "schemaAndCrs": "No parcel feature response was obtained; source CRS and feature schema could not be qualified. BIC's JavaScript names safe lookup fields including id, parcel_number, gps_coordinates, parcel_sides, area_sqm, latitude, and longitude, but no record was retained.",
+  "fieldMapping": {
+    "safe native fields observed": ["id", "parcel_number", "gps_coordinates", "parcel_sides", "area_sqm", "province", "ville", "commune", "quartier", "latitude", "longitude", "is_subdivided"],
+    "retained feature properties": "None; no GeoJSON sample retained.",
+    "composite-key provenance": "None."
+  },
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeDataPolicy": "No owner, address, contact, titleholder, tax/account, personal, title, ownership-history, mortgage, or other unsafe fields were requested or retained. The inspected JavaScript's broader schema references were not queried.",
+  "limits": [
+    "No coordinate was shifted to force a parcel hit.",
+    "The bounded empty public-table response is not evidence of citywide absence.",
+    "The Ministry directory proves Dilolo registry/cadastral administration, not Kasaji parcel coverage.",
+    "No sample GeoJSON is included because no safe full parcel polygon and native identity were verified.",
+    "Packet completion does not mean source integration/admission; runtime remains held pending independent serial qualification."
+  ],
+  "uncertainty": "Kasaji's precise local registry service boundary, public parcel availability, and any authoritative geometry/API endpoint remain unresolved. The result is a documented research completion with held runtime readiness, not a negative cadastral determination."
+}

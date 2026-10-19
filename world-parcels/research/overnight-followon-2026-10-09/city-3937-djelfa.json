@@ -1,0 +1,115 @@
+{
+  "name": "Djelfa",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "rank": 1016,
+  "point": [
+    34.6691602258486,
+    3.25772463048469
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Djelfa Algeria official cadastral land registry parcel map public GIS",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "Algerian Official Gazette lists Conservation Foncière de Djelfa and assigns it the wilaya seat, establishing local registry custodian. Current Wilayah Djelfa portal lists no digital services; no public parcel-vector endpoint found. No point-specific record requested.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "Arabic",
+        "query": "الجلفة المحافظة العقارية مسح الأراضي السجل العقاري خريطة مساحية رسمي",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "Algerian Official Gazette lists Conservation Foncière de Djelfa and assigns it the wilaya seat, establishing local registry custodian. Current Wilayah Djelfa portal lists no digital services; no public parcel-vector endpoint found. No point-specific record requested.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Conservation Foncière de Djelfa (official land-registry jurisdiction)",
+        "operator": "Algerian Ministry of Finance / local Conservation Foncière",
+        "homeUrl": "https://www.joradp.dz/FTP/jo-francais/1992/F1992021.PDF",
+        "observation": "Algerian Official Gazette lists Conservation Foncière de Djelfa and assigns it the wilaya seat, establishing local registry custodian. Current Wilayah Djelfa portal lists no digital services; no public parcel-vector endpoint found. No point-specific record requested."
+      }
+    ],
+    "requests": [
+      {
+        "observation": "Reviewed Gazette jurisdiction table and current wilaya homepage. No current parcel query."
+      },
+      {
+        "checkedAt": "2026-10-09T05:42:11.336252+00:00",
+        "url": "https://www.joradp.dz/FTP/jo-francais/1992/F1992021.PDF",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "finalUrl": "https://www.joradp.dz/FTP/jo-francais/1992/F1992021.PDF",
+        "bytesRead": 1719883,
+        "boundedReadIncomplete": false,
+        "sha256": "da6a0814ff0a662341268e506e4fff0184dedfccc31fa91a00a5d33d483059c3"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "DZ-3937-LOCAL-CADASTRE-REVIEW",
+    "name": "Conservation Foncière de Djelfa (official land-registry jurisdiction)",
+    "url": "https://www.joradp.dz/FTP/jo-francais/1992/F1992021.PDF",
+    "operator": "Algerian Ministry of Finance / local Conservation Foncière",
+    "serviceType": "Official local registry/cadastre reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Reviewed Gazette jurisdiction table and current wilaya homepage. No current parcel query.",
+    "verifiedOpenScope": "Algerian Official Gazette lists Conservation Foncière de Djelfa and assigns it the wilaya seat, establishing local registry custodian. Current Wilayah Djelfa portal lists no digital services; no public parcel-vector endpoint found. No point-specific record requested.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-polygon response exposed; no owner/address lookup made.",
+  "remainingUncertainty": "Parcel presence at WUP point and any public feature endpoint remain unverified.",
+  "nextStep": "If official source later exposes a documented feature service, inspect schema and make a bounded full-geometry query.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3937,
+  "cityId": "wup2025:3937",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    34.6691602258486,
+    3.25772463048469
+  ],
+  "population2025k": 542.414,
+  "populationUnit": "persons",
+  "queueRank": 1016,
+  "population2025": 542414,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Algerian Official Gazette jurisdiction table explicitly lists Conservation Foncière de Djelfa at the wilaya seat. This is historical local registry custody evidence; the current wilaya portal and fresh searches do not verify an anonymous native parcel geometry service. Gazette age is informational, not a technical exclusion.",
+  "registryEvidenceUrls": [
+    "https://www.joradp.dz/FTP/jo-francais/1992/F1992021.PDF",
+    "https://wilaya-djelfa.dz/fr/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-polygon response exposed; no owner/address lookup made."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootPreviousRegistryBasis": "Reviewed Gazette jurisdiction table and current wilaya homepage. No current parcel query.",
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The Algerian Official Gazette jurisdiction table explicitly lists Conservation Foncière de Djelfa at the wilaya seat. This is historical local registry custody evidence; the current wilaya portal and fresh searches do not verify an anonymous native parcel geometry service. Gazette age is informational, not a technical exclusion."
+}

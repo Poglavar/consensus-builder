@@ -1,0 +1,167 @@
+"""Discovery decisions and the evidence needed before spending time on an adapter.
+
+A rejected search means no actionable source was found in the recorded search. It
+does not assert that the city has no cadastre. Access failures remain separate.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+from collections import Counter
+from pathlib import Path
+from urllib.parse import urlparse
+
+DECISIONS = {"candidate", "blocked", "rejected", "already-supported"}
+REVIEWED_STATUSES = {"reviewed", "reviewed-held", *("reviewed-" + value for value in DECISIONS)}
+SEARCH_LEVELS = {"municipal", "regional", "national", "web"}
+# Admission updates these shared application references. They provide current app
+# context, not immutable first-party evidence for a source-discovery decision.
+APP_CONTEXT_FILES = {
+    "backend/parcels/source-catalog.json", "frontend/js/city-config.js", "world-parcels/registry.json",
+    "world-parcels/report/city-demographics.json", "frontend/data/parcel-coverage-report.json",
+    "frontend/data/world-coverage.json", "frontend/i18n/en.json", "frontend/i18n/es.json",
+    "frontend/i18n/hr.json", "frontend/i18n/sr.json",
+}
+
+
+def https_url(value):
+    return isinstance(value, str) and urlparse(value).scheme in {"https", "http"} and bool(urlparse(value).netloc)
+
+
+def evidence_urls(value):
+    return isinstance(value, list) and bool(value) and all(https_url(url) for url in value)
+
+
+def evidence_file(root: Path, value: str) -> Path:
+    path = Path(value)
+    if path.is_absolute():
+        raise ValueError("discovery evidence paths must be repository relative")
+    target = (root / path).resolve()
+    target.relative_to(root.resolve())
+    if not target.is_file():
+        raise ValueError("discovery evidence file is missing")
+    return target
+
+
+def supported_binding_errors(root: Path, receipt: dict, bindings: list[dict], city_code: str) -> list[str]:
+    """Check live source bindings against the app's canonical WUP demographic mapping."""
+    catalog = json.loads((root / "backend/parcels/source-catalog.json").read_text())
+    source = next((row for row in catalog["sources"] if row["id"] == receipt["source"]["sourceId"]), None)
+    if source is None or source.get("endpoint") != receipt["source"]["endpoint"]:
+        return ["already-supported source ID and endpoint must match the current catalog"]
+    demographics = json.loads((root / "world-parcels/report/city-demographics.json").read_text())
+    mapped_ids = {app_id for row in demographics["cities"] if str(row.get("wupCityCode")) == city_code
+                  for app_id in row.get("appCityIds", [])}
+    for app_id in receipt["appCityIds"]:
+        binding = next((row for row in bindings if row["id"] == app_id), None)
+        if (binding is None or binding.get("sourceId") != source["id"] or app_id not in source.get("cityIds", [])
+                or (binding.get("wupCityCode") is not None and str(binding["wupCityCode"]) != city_code)
+                or (str(binding.get("wupCityCode")) != city_code and app_id not in mapped_ids)):
+            return ["already-supported must match the current config, catalog and canonical WUP-to-app identity mapping"]
+    return []
+
+
+def validate_receipt(root: Path, receipt: dict) -> list[str]:
+    """Validate the handoff contract, without guessing a verdict from prose/keywords."""
+    errors = []
+    decision = receipt.get("decision")
+    if receipt.get("schemaVersion") != 2 or decision not in DECISIONS:
+        return ["a version 2 discovery decision is required"]
+    if not str(receipt.get("reason", "")).strip():
+        errors.append("a substantive discovery reason is required")
+    searches = receipt.get("searchCoverage")
+    if not isinstance(searches, dict) or set(searches) != SEARCH_LEVELS:
+        errors.append("municipal, regional, national and web search coverage must be recorded")
+    else:
+        for level, row in searches.items():
+            if not isinstance(row, dict) or row.get("status") not in {"checked", "not-applicable"} or not str(row.get("reason", "")).strip():
+                errors.append(f"{level} search assessment is incomplete")
+            elif row["status"] == "checked" and not (isinstance(row.get("evidenceUrls"), list) and any(https_url(u) for u in row["evidenceUrls"])):
+                errors.append(f"{level} search requires actual evidence URLs")
+            elif row["status"] == "not-applicable" and level != "regional":
+                errors.append(f"{level} search cannot be omitted")
+    source = receipt.get("source")
+    if decision in {"candidate", "blocked", "already-supported"}:
+        if not isinstance(source, dict) or not https_url(source.get("endpoint")) or not str(source.get("sourceId", "")).strip():
+            errors.append("a concrete source ID and endpoint are required")
+    if decision == "rejected":
+        if not str(receipt.get("rejectionReason", "")).strip():
+            errors.append("a rejected search needs its specific rejection reason")
+        if receipt.get("nextAction") not in (None, ""):
+            errors.append("rejected searches must not silently remain in the qualification queue")
+    if decision == "blocked":
+        if not str(receipt.get("blocker", "")).strip() or not str(receipt.get("nextAction", "")).strip():
+            errors.append("blocked sources need a specific blocker and a concrete retry action")
+    if decision == "already-supported" and not (isinstance(receipt.get("appCityIds"), list) and receipt["appCityIds"] and all(isinstance(value, str) and value for value in receipt["appCityIds"])):
+        errors.append("already-supported requires existing app city bindings")
+    if decision == "candidate":
+        if not isinstance(source, dict) or source.get("purpose") != "cadastral-parcels" or not evidence_urls(source.get("purposeEvidenceUrls")):
+            errors.append("candidate requires evidenced cadastral parcel semantics")
+        if not str(receipt.get("nextAction", "")).strip():
+            errors.append("candidate requires a concrete adapter/qualification action")
+        coverage = receipt.get("coverage")
+        if not isinstance(coverage, dict):
+            errors.append("candidate requires coverage evidence")
+        else:
+            if coverage.get("scope") not in {"citywide", "substantial-city", "partial-city", "bounded-sample"} or not str(coverage.get("basis", "")).strip() or not evidence_urls(coverage.get("evidenceUrls")):
+                errors.append("candidate requires an honest parcel-coverage scope, basis and evidence")
+            probes = coverage.get("probes")
+            if not isinstance(probes, list) or not 1 <= len(probes) <= 20:
+                errors.append("candidate requires one to twenty bounded city probes")
+            else:
+                positives, identities = [], set()
+                for probe in probes:
+                    if not isinstance(probe, dict):
+                        errors.append("coverage probe must be an object")
+                        continue
+                    box = probe.get("bbox")
+                    if (not isinstance(box, list) or len(box) != 4 or
+                            not all(isinstance(n, (float, int)) and not isinstance(n, bool) and math.isfinite(n) for n in box) or
+                            not (-180 <= box[0] < box[2] <= 180 and -90 <= box[1] < box[3] <= 90)):
+                        errors.append("coverage probe requires a valid WGS84 bbox")
+                        continue
+                    count = probe.get("featureCount")
+                    if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+                        errors.append("coverage probe requires an observed feature count")
+                    elif count > 0:
+                        ids = probe.get("sampleIds")
+                        if (probe.get("geometryType") not in {"Polygon", "MultiPolygon"} or not isinstance(ids, list) or not ids
+                                or not all(type(value) in (str, int) and str(value).strip() for value in ids)):
+                            errors.append("positive probes need parcel polygons and safe sample IDs")
+                        else:
+                            positives.append(box)
+                            identities.update(str(i) for i in probe["sampleIds"])
+                    try:
+                        path = evidence_file(root, probe.get("evidenceFile", ""))
+                        if probe.get("evidenceFile") not in receipt.get("evidenceFiles", []):
+                            errors.append("coverage probe must be included in receipt evidenceFiles")
+                        if hashlib.sha256(path.read_bytes()).hexdigest() != probe.get("evidenceSha256"):
+                            errors.append("coverage probe evidence hash differs")
+                    except (OSError, ValueError, TypeError):
+                        errors.append("coverage probe evidence is missing or unsafe")
+                if not positives or not identities:
+                    errors.append("candidate requires at least one positive probe with safe parcel IDs")
+                distribution_basis = str(coverage.get("distributionBasis", "")).strip()
+                if not distribution_basis:
+                    errors.append("coverage must explain the observed probe locations and scope limits")
+                if not isinstance(coverage.get("distributedAcrossCity"), bool):
+                    errors.append("coverage must state whether the probes span the city")
+                if coverage.get("scope") in {"citywide", "substantial-city"} and coverage.get("distributedAcrossCity") is not True:
+                    errors.append("citywide coverage claims require an evidenced citywide probe distribution")
+    return errors
+
+
+def counts(state: dict) -> dict:
+    cities = list(state.get("cities", {}).values())
+    disposition = Counter(row.get("discoveryDecision", "unclassified") for row in cities
+                          if row.get("status") in REVIEWED_STATUSES)
+    stages = Counter(row.get("qualification", {}).get("status", "pending") for row in cities
+                     if row.get("discoveryDecision") == "candidate")
+    return {"reviewed": sum(disposition.values()),
+            "candidate": disposition["candidate"], "blocked": disposition["blocked"],
+            "rejected": disposition["rejected"], "alreadySupported": disposition["already-supported"],
+            "unclassified": disposition["unclassified"], "qualification": dict(stages),
+            "pendingResearch": sum(row.get("status") == "pending" for row in cities),
+            "researchRunning": sum(row.get("status") == "running" for row in cities),
+            "failed": sum(row.get("status") == "failed-skipped" for row in cities)}

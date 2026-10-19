@@ -1,0 +1,119 @@
+{
+  "name": "Mingora",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 498,
+  "point": [
+    34.7742526737045,
+    72.3449463437873
+  ],
+  "population2025": 1024813,
+  "population2025k": 1024.813,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Provincial registry digitization is underway in Swat, but exact Mingora point coverage and public parcel geometry remain unverified. The eFard record-search workflow requests personal identifiers; no record search, login or credentials were used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Official evidence establishes Swat regional land-record computerization and places Mingora in Swat, but neither the regional statistics nor the inspected service-centre list proves a Mingora-local registry, cadastral map or office. City-specific registry presence remains unestablished.",
+  "resultCategory": "local_registry_found_no_public_geometry_verified",
+  "technicalBlocker": "Reviewed the public KP revenue digitization page and eFard entry point. No anonymous vector layer or safe feature query was exposed. The eFard property search requests registered owner name, father’s name and CNIC; did not submit a record lookup.",
+  "remainingUncertainty": "Nine of 202 Swat mauzas were still manual-pending in the published progress report; the WUP point’s mauza is not assigned here. No public polygon, map layer schema or municipal boundary coverage was verified.",
+  "nextStep": "Root review; obtain a non-sensitive point-to-mauza coverage confirmation and public map endpoint before geometry integration.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Pashto/Urdu",
+        "query": "سوات مینگورہ لینڈ ریکارڈ نقشہ زمین پٹواری GIS official",
+        "result": "Found KP Board of Revenue Swat computerization information and the official eFard platform; no anonymous parcel geometry endpoint found.",
+        "method": "Separate local-language discovery search."
+      },
+      {
+        "language": "English",
+        "query": "Mingora Swat Land Record KPLR public map GIS cadastral official",
+        "result": "Official sources describe Swat land-record digitization, but do not show exact Mingora point/mauza coverage or anonymous feature geometry.",
+        "method": "Separate English discovery search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "observation": "KP Board of Revenue reports an operational land-record program in Swat; the official Swat district site identifies Mingora as an urban area. This is a local registry pathway, not proof the WUP point is digitally mapped."
+      },
+      {
+        "url": "https://efard.kplr.gkp.pk/",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      },
+      {
+        "url": "https://swat.kp.gov.pk/",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed the public KP revenue digitization page and eFard entry point. No anonymous vector layer or safe feature query was exposed. The eFard property search requests registered owner name, father’s name and CNIC; did not submit a record lookup.",
+      "geometryStatus": "No safe anonymous polygon feature response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "No public safe geometry request completed",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 498,
+  "wupCityCode": 5560,
+  "cityId": "wup2025:5560",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    34.7742526737045,
+    72.3449463437873
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "id": "pk-kp-swat-clrmis",
+    "name": "KP Land Record / CLRMIS (eFard)",
+    "operator": "Board of Revenue, Government of Khyber Pakhtunkhwa",
+    "url": "https://efard.kplr.gkp.pk/",
+    "serviceType": "Provincial land-record platform; public entry describes record lookup requiring registered owner details; anonymous parcel feature geometry not verified.",
+    "geomType": null,
+    "crs": null,
+    "idFields": [],
+    "verified": false,
+    "scope": "Swat district digitization status only; exact Mingora point/mauza coverage unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa Board of Revenue reports Swat Phase-II land-record computerization, with 193 of 202 mauzas operational and nine still manual-pending. Mingora is an urban area in Swat; the regional statistics do not identify the WUP point’s mauza or establish its digitization status.",
+    "verifiedOpenScope": "No public anonymous parcel geometry verified at the exact point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "https://efard.kplr.gkp.pk/",
+    "https://swat.kp.gov.pk/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No safe anonymous geometry and exact point coverage verified."
+  },
+  "rootReview": {
+    "registryDecision": "city_local_presence_unestablished",
+    "reason": "Official evidence establishes Swat regional land-record computerization and places Mingora in Swat, but neither the regional statistics nor the inspected service-centre list proves a Mingora-local registry, cadastral map or office. City-specific registry presence remains unestablished."
+  },
+  "rootReviewedAt": "2026-10-09T01:02:36.862973+00:00"
+}

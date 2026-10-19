@@ -1,0 +1,79 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "AZ",
+ "regionName": "Arizona",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-az-maricopa-assessor-parcels",
+  "name": "Maricopa County Assessor Parcels",
+  "operator": "Maricopa County Assessor's Office",
+  "scope": "Maricopa County, AZ (Phoenix area)",
+  "endpoint": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS MapServer query)",
+  "crs": "EPSG:4326 (outSR requested)",
+  "reuseStatus": "copyright text: Maricopa County Assessor's Office; terms not read"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-az-maricopa-assessor-parcels",
+  "requestUrl": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,APN&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -112.0748,
+   33.4478,
+   -112.0732,
+   33.449
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "APN",
+  "responseFile": "AZ-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Maricopa County, AZ (Phoenix; Mesa/Tempe area)"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide layer found. Maricopa County Assessor publishes a county-wide dynamic parcel service; ASU mapgeohub hosts yearly Maricopa copies.",
+ "subregionsVerified": [
+  "Maricopa County, AZ (Phoenix; Mesa/Tempe area)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0",
+   "observation": "Maricopa Assessor parcels, owner/mail fields present but not requested"
+  },
+  {
+   "url": "https://gis.maricopa.gov/arcgis/rest/services/GIO",
+   "observation": "County GIO folder lists no parcel layer"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Arizona+statewide+parcels",
+   "observation": "No statewide parcel service returned; Yavapai and Maricopa layers only"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0/query?...outFields=OBJECTID,APN&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons Phoenix"
+  },
+  {
+   "url": "https://gis.mcassessor.maricopa.gov/arcgis/rest/services/Parcels/MapServer/0/query?...second bbox (Tempe area)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygons"
+  }
+ ],
+ "reuseStatus": "Owner and mailing fields exist; only OBJECTID and APN requested.",
+ "remainingUncertainty": "Statewide absence based on catalogue search only. Other counties (Pima, Yavapai) not sampled.",
+ "nextStep": "Check Arizona State Land Dept / AZGeo for a statewide compilation; else add Pima."
+}

@@ -1,0 +1,307 @@
+{
+  "css": {
+    "css/activity-feed.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/actor-explorer.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/ai-scene.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/area-monitor-list.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/base.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/bets-sheet.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/canton-mode.css": {
+      "colourLiterals": 3,
+      "zIndexLiterals": 0,
+      "important": 3
+    },
+    "css/canton.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/command-palette.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/corridor-editor.css": {
+      "colourLiterals": 7,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/corridor-render.css": {
+      "colourLiterals": 4,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/floor-plan-archive.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/game.css": {
+      "colourLiterals": 7,
+      "zIndexLiterals": 0,
+      "important": 6
+    },
+    "css/grain-score.css": {
+      "colourLiterals": 53,
+      "zIndexLiterals": 0,
+      "important": 1
+    },
+    "css/ground-fallback.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/hackathon-deck.css": {
+      "colourLiterals": 65,
+      "zIndexLiterals": 10,
+      "important": 7
+    },
+    "css/hackathon-demo.css": {
+      "colourLiterals": 44,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/howto.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 2,
+      "important": 0
+    },
+    "css/layout.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 6
+    },
+    "css/lens-console.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/map-credits.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/map-search.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/map-shell.css": {
+      "colourLiterals": 4,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/map.css": {
+      "colourLiterals": 18,
+      "zIndexLiterals": 0,
+      "important": 18
+    },
+    "css/modals.css": {
+      "colourLiterals": 52,
+      "zIndexLiterals": 0,
+      "important": 6
+    },
+    "css/page-chrome.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/panels.css": {
+      "colourLiterals": 19,
+      "zIndexLiterals": 0,
+      "important": 2
+    },
+    "css/parcel-coverage-report.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/parcel-menu.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/parcel-sources.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/photoreal-mode.css": {
+      "colourLiterals": 12,
+      "zIndexLiterals": 0,
+      "important": 1
+    },
+    "css/pitch-variants.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/primitives.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/proposal-approval.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/proposal-details.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/proposal-editor.css": {
+      "colourLiterals": 3,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/proposals.css": {
+      "colourLiterals": 108,
+      "zIndexLiterals": 0,
+      "important": 6
+    },
+    "css/road-analysis.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/roadmap.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/selection-tray.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/site-tool.css": {
+      "colourLiterals": 8,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/station-geometry-editor.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/structure-geometry-editor.css": {
+      "colourLiterals": 5,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/tokens.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/tx-explorer.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/urban-blocks-playground.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/urban-blocks.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/urban-planning.css": {
+      "colourLiterals": 0,
+      "zIndexLiterals": 0,
+      "important": 0
+    },
+    "css/utilities.css": {
+      "colourLiterals": 44,
+      "zIndexLiterals": 0,
+      "important": 10
+    },
+    "css/world.css": {
+      "colourLiterals": 48,
+      "zIndexLiterals": 0,
+      "important": 0
+    }
+  },
+  "conflicts": [
+    "#road-analysis-panel | css/panels.css > css/road-analysis.css | width",
+    ".map-shell-slot--tray | css/map-shell.css > css/selection-tray.css | bottom",
+    ".parcel-item | css/panels.css > css/game.css | transition",
+    ".parcel-item | css/panels.css > css/modals.css | border-radius",
+    ".proposal-item | css/modals.css > css/proposals.css | border-radius",
+    ".proposal-item | css/modals.css > css/proposals.css | padding",
+    ".proposal-item | css/panels.css > css/game.css | transition",
+    ".proposal-item | css/panels.css > css/modals.css | border-radius",
+    ".proposal-item | css/panels.css > css/proposals.css | margin-bottom",
+    ".proposal-item | css/panels.css > css/proposals.css | padding",
+    ".proposal-item | css/panels.css > css/proposals.css | transition",
+    ".proposal-item | css/proposals.css > css/game.css | margin-bottom",
+    ".proposal-item | css/proposals.css > css/game.css | padding",
+    ".proposal-item | css/proposals.css > css/game.css | transition",
+    ".proposal-parcel-item .parcel-number | css/proposals.css > css/utilities.css | font-weight",
+    ".proposal-parcel-item | css/proposals.css > css/utilities.css | border-bottom",
+    ".proposal-parcel-item | css/proposals.css > css/utilities.css | padding",
+    "body | css/base.css > css/layout.css | width"
+  ],
+  "i18n": {
+    "titleCaseLabels": 32,
+    "caseConflicts": 72,
+    "threeDots": 0,
+    "duplicateGroups": 348
+  },
+  "js": {
+    "js/blockchain-sync.js": 2,
+    "js/building-blocks.js": 1,
+    "js/corridor-editor.js": 2,
+    "js/data-source.js": 1,
+    "js/legacy-road-centerlines.js": 1,
+    "js/map-core.js": 4,
+    "js/measurement-tool.js": 5,
+    "js/parcel-based.js": 2,
+    "js/parcels/blocks.js": 5,
+    "js/parcels/ui/claim.js": 2,
+    "js/parcels/ui/locate.js": 1,
+    "js/parcels/ui/visibility.js": 1,
+    "js/proposals/apply/parcels.js": 2,
+    "js/proposals/apply/structures.js": 1,
+    "js/proposals/core.js": 4,
+    "js/proposals/create.js": 19,
+    "js/proposals/dialog-create.js": 1,
+    "js/proposals/geometry.js": 2,
+    "js/proposals/list-ui.js": 4,
+    "js/proposals/urban-rules.js": 2,
+    "js/road-detection.js": 22,
+    "js/road-drawing.js": 4,
+    "js/row-house.js": 2,
+    "js/structures.js": 1,
+    "js/user-management.js": 3
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1785-nakuru.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official national registry directory lists Nakuru Land Registry at Ardhi House, Moi Road, with land registration, adjudication, administration, valuation, survey and mapping services. Nakuru County describes a developing Land Information Management System, but no anonymous public cadastral feature layer/schema was found. Ardhisasa is an account-based land-service portal; no sign-in or record search was attempted. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.lands.go.ke/land-registries",
+      "observation": "The official national registry directory lists Nakuru Land Registry at Ardhi House, Moi Road, with land registration, adjudication, administration, valuation, survey and mapping services. Nakuru County describes a developing Land Information Management System, but no anonymous public cadastral feature layer/schema was found. Ardhisasa is an account-based land-service portal; no sign-in or record search was attempted."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Nakuru Kenya official land registry cadastral parcel map GIS county land information management system"
+    },
+    {
+      "language": "Swahili",
+      "query": "Nakuru usajili ardhi ramani ya vipande ramani ya ardhi huduma Kaunti ya Nakuru"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

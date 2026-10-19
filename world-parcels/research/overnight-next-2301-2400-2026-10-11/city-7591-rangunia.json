@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 7591,
+  "queueRank": 2321,
+  "name": "Rangunia",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso2": "BD",
+  "iso3": "BGD",
+  "point": [22.471193491792, 92.0733049444583],
+  "population2025": 250564,
+  "population2025k": 250.564,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rangunia Bangladesh official cadastral parcel map GIS land records portal",
+        "result": "Found the official Department of Land Records and Surveys settlement map viewer, official map-purchase portal, and the official Rangunia Upazila Land Office portal. The current viewer exposes public map hierarchy/API routes, but the bounded Chattogram BDS lookup did not expose Rangunia or parcel geometry.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://map.settlement.gov.bd/", "https://acl.rangunia.chittagong.gov.bd/pages/officers"]
+      },
+      {
+        "language": "Bengali",
+        "query": "রাঙ্গুনিয়া বাংলাদেশ সরকারি ক্যাডাস্ট্রাল মানচিত্র ভূমি রেকর্ড জিআইএস পোর্টাল",
+        "result": "Search surfaced the official DLRS settlement/map portal, the official Rangunia Upazila Land Office, and Chattogram district government land-office evidence. These establish official local/procedural custody; no safe open Rangunia parcel feature response was found in this attempt.",
+        "actualResultUrls": ["https://settlement.gov.bd/Map/MapSearch", "https://acl.rangunia.chittagong.gov.bd/pages/officers", "https://chittagong.gov.bd/views/employee-list?designationId=8", "https://map.land.gov.bd/"]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "division": "Chattogram",
+    "district": "Chattogram",
+    "upazilaLead": "Rangunia",
+    "identityEvidence": "The official Rangunia Upazila Land Office portal identifies the local land office and Assistant Commissioner (Land). Chattogram district’s official employee listing also names the Rangunia Upazila Land Office. This is local-custodian evidence, not parcel coverage evidence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS settlement/map services provide public survey, mouza and plot-map workflows where coverage is exposed; the Rangunia local portal provides land-office custody/procedure evidence.",
+    "verifiedOpenScope": "The public viewer HTML and current MapSearch.js were inspected. The Chattogram hierarchy returned district code 040100000 and a BDS survey (rsnum 201901). The bounded BDS upazila lookup returned only Anowara and Banshkhali rows; Rangunia was not exposed, so no mouza, sheet, parcel ID or parcel geometry request could be qualified.",
+    "countrywideVerified": false,
+    "exactPointHit": false,
+    "exactPointHitInterpretation": "No exact-point parcel query was available through the exposed hierarchy. The missing Rangunia option and absence of parcel geometry are service/data-scope limitations only, not evidence of citywide parcel absence."
+  },
+  "resultCategory": "official_local_registry_and_map_workflow_no_verified_parcel_polygon",
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "technicalBlocker": "The viewer exposed division/district/survey and upazila lookup routes, but the anonymous BDS upazila response did not include Rangunia. No safe parcel sheet could be selected and no native parcel identity plus polygon was verified.",
+  "remainingUncertainty": "The public viewer may depend on additional survey coverage, server-side context, or a different administrative/survey route. No parcel schema or CRS for a parcel feature was observed. No owner, address, titleholder, tax, account, contact, or personal fields were requested.",
+  "nextStep": "A serial reviewer may inspect the current viewer and any newly exposed Rangunia sheet route independently; runtime admission remains held."
+}

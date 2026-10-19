@@ -1,0 +1,71 @@
+{
+  "name": "Chelyabinsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 666,
+  "point": [
+    55.1571366366824,
+    61.3929049058552
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chelyabinsk official cadastral map GIS land registry parcel public Rosreestr",
+        "result": "Found official Rosreestr Chelyabinsk regional-office information and the federal NSPD Public Cadastral Map reference. The regional claim is recorded as oblast-wide, not city-exclusive; no parcel was selected or searched.",
+        "method": "Separate English-language search followed by official Rosreestr/NSPD references review."
+      },
+      {
+        "language": "Russian",
+        "query": "Челябинск официальный кадастровая карта земельные участки Росреестр НСПД",
+        "result": "Official Rosreestr regional-office material describes regional cadastral/registration services and points users to NSPD’s public map. Search/selection can expose cadastral object details; no object query or feature request was made.",
+        "method": "Separate Russian-language search; official Rosreestr regional-office material reviewed, no property query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Chelyabinsk official land registry / map sources",
+        "operator": "Official city, regional or national authority as scoped in the observations",
+        "homeUrl": "https://nspd.gov.ru/",
+        "observation": "The official Chelyabinsk city-administration FAQ directs city residents to the Rosreestr regional office located in Chelyabinsk for registration matters. The office has oblast-wide jurisdiction; its city address establishes city-local service access but not a municipal-only registry or point coverage."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "The official Chelyabinsk city-administration FAQ directs city residents to the Rosreestr regional office located in Chelyabinsk for registration matters. The office has oblast-wide jurisdiction; its city address establishes city-local service access but not a municipal-only registry or point coverage.",
+    "verifiedOpenScope": "No anonymous public geometry-only parcel response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The federal cadastral map is an interactive property-object service; no public endpoint with a verified geometry+safe-ID allowlist was found, and no parcel query was made.",
+  "remainingUncertainty": "Whether NSPD exposes an anonymous geometry-only service endpoint independent of cadastral identifiers and object-detail attributes.",
+  "nextStep": "If parcel geometry is required, first verify an official public endpoint whose response can be limited to geometry and safe native IDs, then review coverage at the city point.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7269,
+  "cityId": "wup2025:7269",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    55.1571366366824,
+    61.3929049058552
+  ],
+  "queueRank": 666,
+  "population2025": 794411,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Chelyabinsk city-administration FAQ directs city residents to the Rosreestr regional office located in Chelyabinsk for registration matters. The office has oblast-wide jurisdiction; its city address establishes city-local service access but not a municipal-only registry or point coverage.",
+  "registryEvidenceUrls": [
+    "https://q.priemnaya.cheladmin.ru/cheladmin-faq/tag/oformlenie-zemli"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

@@ -1,0 +1,604 @@
+{
+  "schemaVersion": 1,
+  "kind": "india_africa_followup_outcome_summary",
+  "checkedAt": "2026-10-08",
+  "plannedDirectTargetCount": 19,
+  "conditionalBiharTargetCount": 20,
+  "outcomeCount": 39,
+  "scopeNote": "Direct outcomes distinguish target-specific geometry checks, shared provider metadata/route checks, and held acceptance decisions. The 20 conditional Bihar cities were not queried individually. These results do not establish national or citywide absence unless explicitly stated.",
+  "directOutcomeCounts": {
+    "bihar_fresh_point_checks_no_geometry": 3,
+    "abidjan_viewer_api_502": 1,
+    "mansa_verified_sample_identity_hold": 1,
+    "angola_centers_outside_candidate_extent_no_new_feature_query": 8,
+    "new_delhi_snapshot_runtime_identity_hold": 1,
+    "mboloko_locally_enabled_verified": 1,
+    "kerala_cohort_village_entries_enabled": 1,
+    "kerala_distinct_local_entry_enabled_wup_crosswalk_unresolved": 1,
+    "kerala_runtime_availability_hold": 2
+  },
+  "directPlannedTargets": [
+    {
+      "cityId": "wup2025:9587",
+      "name": "Kozhikode",
+      "workstream": "kerala",
+      "followupMode": "complete_bounded_village_adapter_acceptance",
+      "status": "verified_geometry_runtime_availability_hold",
+      "summary": "The native geometry audit passed 280 parcel IDs across nine cells, but the ordinary 25-cell browser view timed out in two consecutive loads. It retained only 15 then 23 complete cells and displayed the normal unavailable-source warning. Some same-cell retries passed; reliable expanded viewport loading remains unverified. No timeout or failure handling is weakened.",
+      "technicalDecision": "Keep as verified research source without an app entry pending reliable expanded viewport loading.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9587.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9587-click-sample.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9587-bounded-export.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-bounded-export-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-city-association.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+      ],
+      "cohortCityConfigured": false
+    },
+    {
+      "cityId": "wup2025:9765",
+      "name": "Kochi",
+      "workstream": "kerala",
+      "followupMode": "complete_bounded_village_adapter_acceptance",
+      "status": "village_scoped_live_integration_enabled",
+      "summary": "Published Thiruvankulam cadastral village (070211), limited to bounded source queries. Village lies in Thrippunithura Municipality and the historical Kochi urban agglomeration; Kochi Corporation and WUP-point coverage are not claimed.",
+      "technicalDecision": "Enable the village-qualified entry with the tested bounded profile and native parcel identity.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9765.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9765-click-sample.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9765-bounded-export.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-bounded-export-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-city-association.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/browser-check.json"
+      ],
+      "appCityId": "kochi",
+      "cohortCityConfigured": true
+    },
+    {
+      "cityId": "wup2025:9847",
+      "name": "Kollam",
+      "workstream": "kerala",
+      "followupMode": "complete_bounded_village_adapter_acceptance",
+      "status": "related_village_enabled_wup_crosswalk_unresolved",
+      "summary": "Published Iravipuram cadastral village (020301), limited to bounded source queries. Iravipuram, Kollam Corporation. Kept separate from the WUP Kollam entry because its saved point is about 54 km away and the settlement crosswalk is unresolved.",
+      "technicalDecision": "Enable the distinct Iravipuram entry; keep WUP Kollam unconfigured pending a reliable settlement crosswalk.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9847.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9847-click-sample.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-9847-bounded-export.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-bounded-export-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-city-association.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/browser-check.json"
+      ],
+      "appCityId": "iravipuram",
+      "cohortCityConfigured": false
+    },
+    {
+      "cityId": "wup2025:10013",
+      "name": "Thiruvananthapuram",
+      "workstream": "kerala",
+      "followupMode": "complete_bounded_village_adapter_acceptance",
+      "status": "verified_geometry_runtime_availability_hold",
+      "summary": "The native geometry audit passed 456 parcel IDs across nine cells, but the ordinary browser checks failed twice: the first view loaded 25 cells and then retained only 27 of 30 after panning; a fresh load after cooldown retained only 12 of 25 cells. Both displayed the unavailable-source warning. Keep the village research-only pending reliable expanded viewport loading under unchanged deadlines.",
+      "technicalDecision": "Keep as verified research source without an app entry pending reliable expanded viewport loading.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-10013.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-10013-click-sample.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-10013-bounded-export.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-bounded-export-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-city-association.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+      ],
+      "cohortCityConfigured": false
+    },
+    {
+      "cityId": "wup2025:10737",
+      "name": "Darauli",
+      "workstream": "bihar",
+      "followupMode": "fresh_city_specific_point_check_no_geometry",
+      "status": "no_verified_sample_candidate_citywide",
+      "summary": "At the WUP point, the viewer's first identify request without a selected GIS code returned HTTP 204, which is not a parcel-absence result. A further identify against namesake Darauli (157) sheet 01 returned no plot, and the point falls outside the listed extents for sheets 01–04. In the inspected BhuNaksha click/report/highlight flow, no complete bounded parcel-geometry route was verified.",
+      "technicalDecision": "No parcel source or adapter justified from this check; resolve the target to its official revenue village and revisit if a bounded vector endpoint appears. Do not infer Bihar-wide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-city-10737-darauli.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11027",
+      "name": "Hajipur",
+      "workstream": "bihar",
+      "followupMode": "fresh_city_specific_point_check_no_geometry",
+      "status": "no_verified_sample_candidate_citywide",
+      "summary": "At the target point, the direct identify request without a selected GIS code returned HTTP 204; this does not establish parcel absence. In the inspected BhuNaksha click/report/highlight flow, no complete bounded parcel-geometry route was verified.",
+      "technicalDecision": "No parcel source or adapter justified from this check; resolve the target to its official revenue village and revisit if a bounded vector endpoint appears. Do not infer Bihar-wide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-city-11027-hajipur.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11039",
+      "name": "Patna",
+      "workstream": "bihar",
+      "followupMode": "fresh_city_specific_point_check_no_geometry",
+      "status": "no_verified_sample_candidate_citywide",
+      "summary": "At the target point, the direct identify request without a selected GIS code returned HTTP 204; this does not establish parcel absence. In the inspected BhuNaksha click/report/highlight flow, no complete bounded parcel-geometry route was verified.",
+      "technicalDecision": "No parcel source or adapter justified from this check; resolve the target to its official revenue village and revisit if a bounded vector endpoint appears. Do not infer Bihar-wide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-city-11039-patna.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:3439",
+      "name": "Abidjan",
+      "workstream": "africa_services",
+      "followupMode": "city_viewer_api_route_check_no_geometry",
+      "status": "temporarily_unavailable",
+      "summary": "SIGFU public viewer’s generated locality GET was reproduced with the viewer cookie/referer flow and returned HTTP 502; no parcel geometry was retrieved.",
+      "technicalDecision": "Hold for API recovery or a documented bounded lot request; no bulk all-lots request or guessed DTO was used.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-3439.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-CI-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:2412",
+      "name": "Mansa",
+      "workstream": "africa_services",
+      "followupMode": "fresh_bounded_geometry_wider_native_identity_hold",
+      "status": "verified_sample_runtime_identity_hold",
+      "registryFound": true,
+      "verifiedSample": true,
+      "summary": "Nine center-relative cells returned 86 unique UPIDs and exact geometry matches, but the wider aligned app-cell audit found two distinct plots sharing MAN/350 with different survey references.",
+      "technicalDecision": "Hold runtime identity. Do not use OBJECTID, choose a survey year, or invent a compound/multipart identity; require a publisher-documented identity/lifecycle rule and repeat aligned-cell acceptance.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/mansa-assessment.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-2412.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-ZM.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-mansa-9grid.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-mansa-native-exact.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-2412-parcel-response.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mansa-duplicate-audit.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mansa-duplicate-references.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mansa-corrected.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:4201",
+      "name": "Luau",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-4201.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:3898",
+      "name": "Luena",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-3898.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:3610",
+      "name": "Malanje",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-3610.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:546",
+      "name": "Cabinda",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-546.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:2250",
+      "name": "M'banza Congo",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-2250.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:686",
+      "name": "Soyo",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-686.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:1169",
+      "name": "Lubango",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-1169.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:3711",
+      "name": "Cuito",
+      "workstream": "africa_services",
+      "followupMode": "shared_provider_metadata_extent_check_no_target_feature_query",
+      "status": "candidate_layer_extent_excludes_target_center",
+      "summary": "The shared Luanda AGT layer metadata was fetched on the ordinary host network. This WUP center falls outside its advertised extent; prior timeout attempts are inherited, and no follow-up target parcel query was sent.",
+      "technicalDecision": "Do not use this candidate to verify the target center. Search for a relevant local/provincial source and confirm its extent before any bounded query. Center exclusion does not imply citywide absence.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-city-3711.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/africa-ws-provider-AO-followup.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:8364",
+      "name": "New Delhi",
+      "workstream": "root",
+      "followupMode": "fresh_snapshot_geometry_audit_runtime_access_hold",
+      "status": "verified_snapshot_runtime_access_hold",
+      "registryFound": true,
+      "verifiedSample": true,
+      "summary": "A fresh public e-Dharti snapshot had 25,999 features and 25,768 propertyid groups; all 224 repeated-key groups were disjoint and matched unique_propert_id, with no measured overlap. Production connectivity and publisher-facing identity semantics remain unresolved.",
+      "technicalDecision": "Hold integration until the official source/mirror is reachable and viewer-native unique_propert_id semantics plus all repeated identity components are verified.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/delhi-component-audit.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/delhi-runtime-access.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:4033",
+      "name": "Mboloko",
+      "workstream": "root",
+      "followupMode": "fresh_bounded_geometry_live_adapter_verified",
+      "status": "verified_bounded_live_adapter",
+      "registryFound": true,
+      "verifiedSample": true,
+      "summary": "Council for Geoscience cadastral mirror returned a bounded, complete live sample and passed local adapter acceptance. GISCOE remains held independently; this is not a countrywide coverage claim.",
+      "technicalDecision": "Locally enable the distinct ZA-CGS-NW source profile; preserve its own identity prefix and bounded scope.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-cgs-scoped.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-cgs-initial.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-cgs-status-inventory.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-runtime-probes.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-runtime-metadata.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-csg-host-retry.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-request-profile-final.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/mboloko-request-profile-expanded.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/browser-check.json"
+      ]
+    }
+  ],
+  "conditionalBiharTargets": [
+    {
+      "cityId": "wup2025:10791",
+      "name": "Raghunathpur",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10829",
+      "name": "Areraj",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10835",
+      "name": "Harsidhi",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10893",
+      "name": "Kalyanpur",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10911",
+      "name": "Masrakh",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10927",
+      "name": "Dhaka",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10933",
+      "name": "Chakia",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10957",
+      "name": "Bairgania",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:10969",
+      "name": "Chirand",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11029",
+      "name": "Naubatpur",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11109",
+      "name": "Khirz Sarai",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11117",
+      "name": "Ekangar Sarai",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11201",
+      "name": "Muriya",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11285",
+      "name": "Nawada",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11305",
+      "name": "Bakhri",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11337",
+      "name": "Bhaptiyahi",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11347",
+      "name": "Gamharia",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11415",
+      "name": "Asarganj",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11447",
+      "name": "Amarpur",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:11511",
+      "name": "Semapur",
+      "workstream": "bihar_conditional",
+      "followupMode": "conditional_unqueried",
+      "status": "not_queried_conditional",
+      "summary": "Not queried individually: this city was in the conditional expansion pool. The inspected shared BhuNaksha click/report/highlight flow did not establish a complete bounded parcel-geometry route.",
+      "technicalDecision": "Keep unqueried, not a no-data finding. Resume only if a bounded official vector route becomes available and the target can be resolved to its revenue village.",
+      "evidenceFiles": [
+        "world-parcels/research/india-africa-followup-2026-10-08/queue.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-index.json",
+        "world-parcels/research/india-africa-followup-2026-10-08/bihar-family-viewer.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BY",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: ru-BY,ru;q=0.9; Referer: https://map.nca.by/ (required)",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "nca-pkk-geoserver",
+  "requestUrl": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&maxFeatures=3&outputFormat=application%2Fjson&bbox=27.55,53.89,27.56,53.90,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "27.55,53.89,27.56,53.90 (Minsk); 23.68,52.09,23.69,52.10 (Brest)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon (EPSG:4326)",
+  "closedRings": true,
+  "idField": "cad_num (18-digit cadastral number) / object_id",
+  "responseFile": "research/retry/countries/BY-parcel-response.json",
+  "pagination": "WFS 1.0 maxFeatures/bbox",
+  "regionSampled": "Minsk (3 parcels) and Brest (2 parcels), same layer"
+ },
+ "source": {
+  "sourceId": "nca-pkk-geoserver",
+  "name": "Public Cadastral Map (PKK) parcel layer pcm:294b19b9-...",
+  "operator": "National Cadastral Agency (NCA)",
+  "scope": "land parcels; viewer reports counts with/without geometry; boundaries labelled reference-only",
+  "endpoint": "https://map.nca.by/geoserver/pcm/ows",
+  "method": "WFS GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "not read; see https://map.nca.by/legal-info"
+ },
+ "requests": [
+  {
+   "url": "https://map.nca.by/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Vue SPA; app.*.js references /geoserver/pcm/ows and layer ids"
+  },
+  {
+   "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "nginx 403"
+  },
+  {
+   "url": "https://map.nca.by/geoserver/pcm/ows?...typeName=pcm:95852a25-...&maxFeatures=3 (no Referer)",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 without Referer; connection reset with minimal headers"
+  },
+  {
+   "url": "same with Referer https://map.nca.by/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons but valuation-zone layer (func_code/date_vl), not parcels"
+  },
+  {
+   "url": "https://map.nca.by/geoserver/pcm/ows?...typeName=pcm:294b19b9-...&bbox=Minsk",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcel polygons: cad_num, address, purpose, area; no owner data (org_name is the surveying organisation). First request in a series often reset, retry succeeded."
+  },
+  {
+   "url": "same bbox Brest",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 parcel polygons"
+  },
+  {
+   "url": "https://map.nca.by/api/layers/list",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json",
+   "assessment": "authorization required; not pursued"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previous record: SPA shell only, GetCapabilities returned HTML. New: viewer JS reveals /geoserver/pcm/ows and parcel layer id 294b19b9-.... The server needs a viewer-like Referer (403 otherwise) so headers changed the result. No token. Completeness (parcels without geometry) not assessed.",
+ "nextStep": "Read /legal-info terms; sample a rural oblast; check geometry counts."
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5785-takasaki-maebashi.json",
+  "purpose": "Document first-party Takasaki parcel-map discovery, public request outcomes, schema/CRS, and bounded exact-point geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A first-party local public parcel source was verified. Takasaki City publishes a citywide parcel-number polygon Shapefile and links it from its official open-data and cadastral-map pages. The dataset is reference-only and not a legal boundary/survey source. A bounded exact-point test found native FUDEID 299414.",
+  "registryAssessment": "Local registry/map custody is evidenced by Takasaki City's Asset Tax Division publication and city map service. This is source evidence only; it is not runtime integration or admission.",
+  "safeFieldAllowlist": ["FUDEID-derived stable public parcel geometry identifier", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "nativeSchema": {
+    "polygonLayer": "筆ポリゴン_地番図.shp",
+    "fieldNames": ["FUDEID"],
+    "fieldMapping": {"FUDEID": "図形管理番号（筆） / parcel geometry management number"},
+    "compositeKeyProvenance": null,
+    "sourceFeatureCount": 577988,
+    "sourceCrs": "JGD2011 / Japan Plane Rectangular CS IX (EPSG:6677)",
+    "retainedIdentity": "FUDEID:299414"
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Takasaki City Japan official cadastral map parcel GIS public map",
+      "result": "Official Takasaki City cadastral/open-data/map pages found; citywide parcel-polygon Shapefile and schema specification verified.",
+      "resultUrls": ["https://www.city.takasaki.gunma.jp/page/5424.html", "https://www.city.takasaki.gunma.jp/page/3130.html", "https://www.city.takasaki.gunma.jp/page/5423.html", "https://www.sonicweb-asp.jp/takasaki2/"]
+    },
+    {
+      "language": "Japanese",
+      "query": "高崎市 地籍図 公開 GIS 公式",
+      "result": "高崎市公式の地籍図・地番図、オープンデータ、まっぷdeたかさき地番図を確認。筆ポリゴンの仕様書でCRSとFUDEIDを確認。",
+      "resultUrls": ["https://www.city.takasaki.gunma.jp/page/5424.html", "https://www.city.takasaki.gunma.jp/page/3130.html", "https://www.city.takasaki.gunma.jp/page/5423.html", "https://www.sonicweb-asp.jp/takasaki2/map?theme=th_66"]
+    }
+  ],
+  "officialPrimarySources": [
+    {"url": "https://www.city.takasaki.gunma.jp/page/3130.html", "observation": "Official catalogue lists the citywide parcel-number Shapefile, polygon download, responsible Asset Tax Division, and reference-only limitations."},
+    {"url": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip", "observation": "Anonymous GET; ZIP integrity tested successfully; contains the four Shapefile components for 筆ポリゴン_地番図."},
+    {"url": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42707.pdf", "observation": "Official specification: Takasaki City extent, JGD2011 Japan Zone 9, polygon layer, FUDEID field."},
+    {"url": "https://www.sonicweb-asp.jp/takasaki2/map?theme=th_66", "observation": "Anonymous GET; current viewer route for 地番図 loaded. No credentials, private token, CAPTCHA bypass, or unsafe field request used."}
+  ],
+  "attempts": [
+    {"url": "https://www.city.takasaki.gunma.jp/page/5424.html", "method": "GET; anonymous; TLS verification enabled", "result": "Official cadastral-map page loaded and linked open-data/map routes."},
+    {"url": "https://www.city.takasaki.gunma.jp/page/3130.html", "method": "GET; anonymous; TLS verification enabled", "result": "Official open-data catalogue loaded; parcel polygon download and limitations recorded."},
+    {"url": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42714.zip", "method": "GET; anonymous; TLS verification enabled", "result": "HTTP 200 ZIP; downloaded to ignored scratch cache and validated without retaining the raw archive in the cohort."},
+    {"url": "https://www.city.takasaki.gunma.jp/uploaded/attachment/42707.pdf", "method": "GET; anonymous; TLS verification enabled", "result": "Official schema/CRS specification read."},
+    {"url": "https://www.sonicweb-asp.jp/takasaki2/", "method": "GET; anonymous; TLS verification enabled", "result": "Viewer home loaded."},
+    {"url": "https://www.sonicweb-asp.jp/takasaki2/map?theme=th_66", "method": "GET; anonymous; TLS verification enabled", "result": "地番図 viewer route loaded; current HTML/config and map.js inspected."},
+    {"url": "https://www.sonicweb-asp.jp/takasaki2/map.js?ver=1.0.266", "method": "GET; anonymous; TLS verification enabled", "result": "Current viewer configuration exposed API base and 地番図 theme; no unsafe request was made to the API."}
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "FUDEID:299414",
+    "sampleCount": 1,
+    "sampleFile": "takasaki-maebashi-parcel-sample.geojson",
+    "exactWupPointTest": "Point-in-polygon true for the immutable WUP point; source coordinates were transformed from EPSG:6677 to WGS84 for testing and retention.",
+    "requestEvidence": ["Official ZIP downloaded and integrity-checked", "OGR source inspection: 577,988 Polygon features and FUDEID field", "53-feature bounded spatial window around transformed point", "Point-in-polygon hit on FUDEID 299414"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Takasaki City parcel-number polygon map published by the city.",
+    "verifiedOpenScope": "Citywide source extent/schema and one exact-point parcel hit verified; legal boundary accuracy and complete parcel admission are not asserted.",
+    "citywideVerified": true,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "remainingUncertainty": "The city's own notices say the parcel-number map is reference-only, may differ from measured boundaries, and cannot be used as application evidence. Viewer API parcel-query semantics were not needed for the published Shapefile verification and were not extended into unsafe or undocumented requests. Runtime adapter qualification remains held."
+}

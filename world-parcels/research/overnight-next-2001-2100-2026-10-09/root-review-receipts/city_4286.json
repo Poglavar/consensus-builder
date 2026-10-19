@@ -1,0 +1,36 @@
+{
+  "taskId": "city:4286",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-4286-lipetsk.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/lipetsk-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:08:32Z",
+  "identity": {
+    "cityCode": 4286,
+    "queueRank": 2067,
+    "name": "Lipetsk",
+    "country": "Russian Federation",
+    "pointLatLon": [
+      52.6055047775065,
+      39.5630595988047
+    ],
+    "population2025Persons": 281568
+  },
+  "reason": "English and Russian executed-search records are present. The official city cadastral-plan procedure is an administrative lead; the packet URL could not be fetched directly and the official NSPD map timed out. A first-party indexed Lipetsk page appears under a skhemy transliteration while the packet uses shemy; this does not supply a native-ID polygon response. No citywide absence is inferred.",
+  "firstPartyUrlsChecked": [
+    "https://lipetskcity.ru/service/nedvizhimoe-imushchestvo-i-zemelnye-otnosheniya/poluchenie-skhemy-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoy-karte-soot/",
+    "https://nspd.gov.ru/map"
+  ],
+  "admissionGatesVerified": false,
+  "missingGates": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

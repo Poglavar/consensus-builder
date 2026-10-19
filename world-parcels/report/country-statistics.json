@@ -1,0 +1,3354 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-07",
+  "sources": [
+    {
+      "id": "unsd_m49_roster",
+      "title": "UN Statistics Division, Standard country or area codes for statistical use (M49), Overview",
+      "url": "https://unstats.un.org/unsd/methodology/m49/overview/",
+      "accessed": "2026-10-07",
+      "fields": [
+        "Country or Area",
+        "M49 Code",
+        "ISO-alpha2 Code",
+        "ISO-alpha3 Code"
+      ],
+      "scope": "248 rows in current English overview; the 249th ISO 3166-1 code is Taiwan (code TW; statistical numeric code 158), which UNSD says is available for strictly statistical purposes though not shown in the live M49 overview."
+    },
+    {
+      "id": "ghsl_wup_country_stats_2025",
+      "title": "GHS-WUP-COUNTRY-STATS R2025A, GHS-WUP country statistics by Degree of Urbanisation classes, multitemporal (1950-2100)",
+      "url": "https://human-settlement.emergency.copernicus.eu/ghs_wup_country_stats_r2025a.php",
+      "downloadUrl": "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/GHSL/GHS_WUP_COUNTRY_STATS_GLOBE_R2025A/V1-0/GHS_WUP_COUNTRY_STATS_GLOBE_R2025A_V1_0.zip",
+      "citation": "Schiavina et al. (2025), European Commission Joint Research Centre, doi:10.2905/ee52f334-aaee-4b9e-aa00-d38ecf6c11a9",
+      "version": "R2025A V1.0",
+      "dataLastUpdate": "2025-09-15",
+      "downloaded": "2026-10-07",
+      "sheet": "Country_STATS_L1",
+      "sourceFields": [
+        "UNLocID",
+        "UNLocName",
+        "Year",
+        "DEGURBA",
+        "AREA_km2",
+        "POP",
+        "BU_km2"
+      ],
+      "sourceUnits": {
+        "AREA_km2": "square kilometres",
+        "POP": "persons",
+        "BU_km2": "square kilometres"
+      }
+    },
+    {
+      "id": "un_wup2025_f01_check",
+      "title": "UN DESA Population Division, World Urbanization Prospects 2025, F01 Degree of Urbanization Population by category",
+      "url": "https://population.un.org/wup/downloads?tab=Countries+and+Aggregates",
+      "downloadUrl": "https://population.un.org/wup/assets/Download/Countries%20and%20Aggregates/WUP2025-F01-Degree-of-Urbanization_Pop_by_category.xlsx",
+      "use": "Independent check of world population total only; F01 Total tab gives 2025 mid-year population in thousands."
+    }
+  ],
+  "scope": {
+    "iso3166_1_alpha2_rows": 249,
+    "current_m49_overview_rows": 248,
+    "kosovo_extra_rows": 1,
+    "deFactoTerritoryRows": 5,
+    "totalRows": 255,
+    "deFactoTerritoryCodes": [
+      "XNC",
+      "XSL",
+      "XAB",
+      "XOS",
+      "XTR"
+    ],
+    "deFactoOverlapParents": {
+      "XNC": "CY",
+      "XSL": "SO",
+      "XAB": "GE",
+      "XOS": "GE",
+      "XTR": "MD"
+    }
+  },
+  "methodology": {
+    "year": 2025,
+    "population": "POP is summed across mutually exclusive L1 UC, UCL and RUR classes for each UNLocID. The 237-area sum differs from the rounded UN WUP2025 F01 World total by 6 persons (published precision).",
+    "landArea": "landAreaKm2 is the sum of AREA_km2 over L1 UC, UCL and RUR classes. It is area assigned to Degree-of-Urbanisation classes, including open/unbuilt land inside those classes; it is not total legal/geographic national land area. Water and land outside the classified extent may be absent, so do not call the result total world land area or derive a world-land percentage from it.",
+    "builtUpArea": "builtUpAreaKm2 is the sum of BU_km2 over the same classes. GHSL built-up surface counts roofed structures for any human use, including homes and non-residential buildings; it is not occupied housing area or total inhabited land, and it omits open/rural land without mapped structures.",
+    "aggregation": "The 237 JRC rows are source country/area units. The world fields sum only those 237 rows, once per UNLocID. The five de facto rows have null stats and are excluded from all sums. The 248 current M49 rows plus Taiwan and Kosovo form the 250-row code-based roster; missing JRC stats stay null rather than being filled from a neighboring parent.",
+    "missingness": "No 2025 JRC row means stats:null. M49 name/code rows remain present for roster completeness. Five additional de facto territories are scope-only and intentionally have null stats; each overlaps a listed parent jurisdiction."
+  },
+  "counts": {
+    "m49RosterRows": 248,
+    "jrc2025CountryAreaUnits": 237,
+    "jrc2025L1Rows": 711,
+    "coreCodeRows": 250,
+    "coreRowsWithStats": 237,
+    "coreRowsMissingStats": 13,
+    "deFactoRowsNullAndExcluded": 5,
+    "repoCountryQueueRows": 194,
+    "repoQueueCodesUnmapped": [],
+    "worldPopulationCrosscheck": {
+      "jrcSumPersons": 8231613070,
+      "unWupF01WorldThousands": 8231613.076,
+      "unWupF01WorldPersons": 8231613076,
+      "differencePersons": -6,
+      "within10Persons": true
+    }
+  },
+  "countries": [
+    {
+      "code": "AD",
+      "name": "Andorra",
+      "iso3": "AND",
+      "m49": 20,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 473.0,
+        "builtUpAreaKm2": 2.639,
+        "population": 82905
+      }
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "iso3": "ARE",
+      "m49": 784,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 73697.0,
+        "builtUpAreaKm2": 769.761,
+        "population": 11346000
+      }
+    },
+    {
+      "code": "AF",
+      "name": "Afghanistan",
+      "iso3": "AFG",
+      "m49": 4,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 643418.0,
+        "builtUpAreaKm2": 765.363,
+        "population": 43844112
+      }
+    },
+    {
+      "code": "AG",
+      "name": "Antigua and Barbuda",
+      "iso3": "ATG",
+      "m49": 28,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 596.0,
+        "builtUpAreaKm2": 15.241,
+        "population": 94208
+      }
+    },
+    {
+      "code": "AI",
+      "name": "Anguilla",
+      "iso3": "AIA",
+      "m49": 660,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 155.0,
+        "builtUpAreaKm2": 4.82,
+        "population": 14728
+      }
+    },
+    {
+      "code": "AL",
+      "name": "Albania",
+      "iso3": "ALB",
+      "m49": 8,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 28840.0,
+        "builtUpAreaKm2": 244.035,
+        "population": 2771507
+      }
+    },
+    {
+      "code": "AM",
+      "name": "Armenia",
+      "iso3": "ARM",
+      "m49": 51,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 28632.0,
+        "builtUpAreaKm2": 237.863,
+        "population": 2952365
+      }
+    },
+    {
+      "code": "AO",
+      "name": "Angola",
+      "iso3": "AGO",
+      "m49": 24,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1255917.0,
+        "builtUpAreaKm2": 1556.024,
+        "population": 39040038
+      }
+    },
+    {
+      "code": "AQ",
+      "name": "Antarctica",
+      "iso3": "ATA",
+      "m49": 10,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "AR",
+      "name": "Argentina",
+      "iso3": "ARG",
+      "m49": 32,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2777867.0,
+        "builtUpAreaKm2": 4290.469,
+        "population": 45851378
+      }
+    },
+    {
+      "code": "AS",
+      "name": "American Samoa",
+      "iso3": "ASM",
+      "m49": 16,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 322.0,
+        "builtUpAreaKm2": 4.692,
+        "population": 46028
+      }
+    },
+    {
+      "code": "AT",
+      "name": "Austria",
+      "iso3": "AUT",
+      "m49": 40,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 83827.0,
+        "builtUpAreaKm2": 1259.579,
+        "population": 9113574
+      }
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "iso3": "AUS",
+      "m49": 36,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 7752448.0,
+        "builtUpAreaKm2": 5470.618,
+        "population": 26974026
+      }
+    },
+    {
+      "code": "AW",
+      "name": "Aruba",
+      "iso3": "ABW",
+      "m49": 533,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 232.0,
+        "builtUpAreaKm2": 23.557,
+        "population": 108147
+      }
+    },
+    {
+      "code": "AX",
+      "name": "Åland Islands",
+      "iso3": "ALA",
+      "m49": 248,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "AZ",
+      "name": "Azerbaijan",
+      "iso3": "AZE",
+      "m49": 31,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 86324.0,
+        "builtUpAreaKm2": 914.15,
+        "population": 10397713
+      }
+    },
+    {
+      "code": "BA",
+      "name": "Bosnia and Herzegovina",
+      "iso3": "BIH",
+      "m49": 70,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 51221.0,
+        "builtUpAreaKm2": 369.436,
+        "population": 3140095
+      }
+    },
+    {
+      "code": "BB",
+      "name": "Barbados",
+      "iso3": "BRB",
+      "m49": 52,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 503.0,
+        "builtUpAreaKm2": 41.469,
+        "population": 282624
+      }
+    },
+    {
+      "code": "BD",
+      "name": "Bangladesh",
+      "iso3": "BGD",
+      "m49": 50,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 142873.0,
+        "builtUpAreaKm2": 3239.217,
+        "population": 175686899
+      }
+    },
+    {
+      "code": "BE",
+      "name": "Belgium",
+      "iso3": "BEL",
+      "m49": 56,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 30706.0,
+        "builtUpAreaKm2": 1709.067,
+        "population": 11758603
+      }
+    },
+    {
+      "code": "BF",
+      "name": "Burkina Faso",
+      "iso3": "BFA",
+      "m49": 854,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 274946.0,
+        "builtUpAreaKm2": 1431.981,
+        "population": 24074580
+      }
+    },
+    {
+      "code": "BG",
+      "name": "Bulgaria",
+      "iso3": "BGR",
+      "m49": 100,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 111273.0,
+        "builtUpAreaKm2": 917.996,
+        "population": 6714559
+      }
+    },
+    {
+      "code": "BH",
+      "name": "Bahrain",
+      "iso3": "BHR",
+      "m49": 48,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1117.0,
+        "builtUpAreaKm2": 94.47,
+        "population": 1643332
+      }
+    },
+    {
+      "code": "BI",
+      "name": "Burundi",
+      "iso3": "BDI",
+      "m49": 108,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 25354.0,
+        "builtUpAreaKm2": 502.733,
+        "population": 14390003
+      }
+    },
+    {
+      "code": "BJ",
+      "name": "Benin",
+      "iso3": "BEN",
+      "m49": 204,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 115919.0,
+        "builtUpAreaKm2": 846.665,
+        "population": 14814459
+      }
+    },
+    {
+      "code": "BL",
+      "name": "Saint Barthélemy",
+      "iso3": "BLM",
+      "m49": 652,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 63.0,
+        "builtUpAreaKm2": 1.36,
+        "population": 11414
+      }
+    },
+    {
+      "code": "BM",
+      "name": "Bermuda",
+      "iso3": "BMU",
+      "m49": 60,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 147.0,
+        "builtUpAreaKm2": 8.441,
+        "population": 64554
+      }
+    },
+    {
+      "code": "BN",
+      "name": "Brunei Darussalam",
+      "iso3": "BRN",
+      "m49": 96,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 6096.0,
+        "builtUpAreaKm2": 58.915,
+        "population": 466330
+      }
+    },
+    {
+      "code": "BO",
+      "name": "Bolivia (Plurinational State of)",
+      "iso3": "BOL",
+      "m49": 68,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1084115.0,
+        "builtUpAreaKm2": 811.04,
+        "population": 12581842
+      }
+    },
+    {
+      "code": "BQ",
+      "name": "Bonaire, Sint Eustatius and Saba",
+      "iso3": "BES",
+      "m49": 535,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 453.0,
+        "builtUpAreaKm2": 5.546,
+        "population": 31338
+      }
+    },
+    {
+      "code": "BR",
+      "name": "Brazil",
+      "iso3": "BRA",
+      "m49": 76,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 8518408.0,
+        "builtUpAreaKm2": 17225.333,
+        "population": 212812405
+      }
+    },
+    {
+      "code": "BS",
+      "name": "Bahamas",
+      "iso3": "BHS",
+      "m49": 44,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 18456.0,
+        "builtUpAreaKm2": 49.72,
+        "population": 403032
+      }
+    },
+    {
+      "code": "BT",
+      "name": "Bhutan",
+      "iso3": "BTN",
+      "m49": 64,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 38860.0,
+        "builtUpAreaKm2": 35.719,
+        "population": 796681
+      }
+    },
+    {
+      "code": "BV",
+      "name": "Bouvet Island",
+      "iso3": "BVT",
+      "m49": 74,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "BW",
+      "name": "Botswana",
+      "iso3": "BWA",
+      "m49": 72,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 579831.0,
+        "builtUpAreaKm2": 505.17,
+        "population": 2562122
+      }
+    },
+    {
+      "code": "BY",
+      "name": "Belarus",
+      "iso3": "BLR",
+      "m49": 112,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 206991.0,
+        "builtUpAreaKm2": 1326.108,
+        "population": 8997603
+      }
+    },
+    {
+      "code": "BZ",
+      "name": "Belize",
+      "iso3": "BLZ",
+      "m49": 84,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 23324.0,
+        "builtUpAreaKm2": 55.672,
+        "population": 422924
+      }
+    },
+    {
+      "code": "CA",
+      "name": "Canada",
+      "iso3": "CAN",
+      "m49": 124,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 9850157.0,
+        "builtUpAreaKm2": 5619.176,
+        "population": 40126723
+      }
+    },
+    {
+      "code": "CC",
+      "name": "Cocos (Keeling) Islands",
+      "iso3": "CCK",
+      "m49": 166,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "CD",
+      "name": "Democratic Republic of the Congo",
+      "iso3": "COD",
+      "m49": 180,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2319702.0,
+        "builtUpAreaKm2": 3416.248,
+        "population": 112832473
+      }
+    },
+    {
+      "code": "CF",
+      "name": "Central African Republic",
+      "iso3": "CAF",
+      "m49": 140,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 623941.0,
+        "builtUpAreaKm2": 242.825,
+        "population": 5513282
+      }
+    },
+    {
+      "code": "CG",
+      "name": "Congo",
+      "iso3": "COG",
+      "m49": 178,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 344598.0,
+        "builtUpAreaKm2": 284.567,
+        "population": 6484437
+      }
+    },
+    {
+      "code": "CH",
+      "name": "Switzerland",
+      "iso3": "CHE",
+      "m49": 756,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 40595.0,
+        "builtUpAreaKm2": 882.617,
+        "population": 8967407
+      }
+    },
+    {
+      "code": "CI",
+      "name": "Côte d’Ivoire",
+      "iso3": "CIV",
+      "m49": 384,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 323356.0,
+        "builtUpAreaKm2": 1486.345,
+        "population": 32711546
+      }
+    },
+    {
+      "code": "CK",
+      "name": "Cook Islands",
+      "iso3": "COK",
+      "m49": 184,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 723.0,
+        "builtUpAreaKm2": 1.664,
+        "population": 13263
+      }
+    },
+    {
+      "code": "CL",
+      "name": "Chile",
+      "iso3": "CHL",
+      "m49": 152,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 791445.0,
+        "builtUpAreaKm2": 1474.569,
+        "population": 19859921
+      }
+    },
+    {
+      "code": "CM",
+      "name": "Cameroon",
+      "iso3": "CMR",
+      "m49": 120,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 467930.0,
+        "builtUpAreaKm2": 1429.686,
+        "population": 29879337
+      }
+    },
+    {
+      "code": "CN",
+      "name": "China",
+      "iso3": "CHN",
+      "m49": 156,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 9382562.0,
+        "builtUpAreaKm2": 88646.129,
+        "population": 1416096094
+      }
+    },
+    {
+      "code": "CO",
+      "name": "Colombia",
+      "iso3": "COL",
+      "m49": 170,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1146719.0,
+        "builtUpAreaKm2": 1848.785,
+        "population": 53425636
+      }
+    },
+    {
+      "code": "CR",
+      "name": "Costa Rica",
+      "iso3": "CRI",
+      "m49": 188,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 52571.0,
+        "builtUpAreaKm2": 404.183,
+        "population": 5152950
+      }
+    },
+    {
+      "code": "CU",
+      "name": "Cuba",
+      "iso3": "CUB",
+      "m49": 192,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 117789.0,
+        "builtUpAreaKm2": 449.894,
+        "population": 10937203
+      }
+    },
+    {
+      "code": "CV",
+      "name": "Cabo Verde",
+      "iso3": "CPV",
+      "m49": 132,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 4863.0,
+        "builtUpAreaKm2": 26.657,
+        "population": 527325
+      }
+    },
+    {
+      "code": "CW",
+      "name": "Curaçao",
+      "iso3": "CUW",
+      "m49": 531,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 540.0,
+        "builtUpAreaKm2": 35.523,
+        "population": 185487
+      }
+    },
+    {
+      "code": "CX",
+      "name": "Christmas Island",
+      "iso3": "CXR",
+      "m49": 162,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "CY",
+      "name": "Cyprus",
+      "iso3": "CYP",
+      "m49": 196,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 9434.0,
+        "builtUpAreaKm2": 160.821,
+        "population": 1370754
+      }
+    },
+    {
+      "code": "CZ",
+      "name": "Czechia",
+      "iso3": "CZE",
+      "m49": 203,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 78694.0,
+        "builtUpAreaKm2": 1546.279,
+        "population": 10609240
+      }
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "iso3": "DEU",
+      "m49": 276,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 358755.0,
+        "builtUpAreaKm2": 10719.698,
+        "population": 84075075
+      }
+    },
+    {
+      "code": "DJ",
+      "name": "Djibouti",
+      "iso3": "DJI",
+      "m49": 262,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 21997.0,
+        "builtUpAreaKm2": 25.318,
+        "population": 1184076
+      }
+    },
+    {
+      "code": "DK",
+      "name": "Denmark",
+      "iso3": "DNK",
+      "m49": 208,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 46832.0,
+        "builtUpAreaKm2": 928.547,
+        "population": 6002507
+      }
+    },
+    {
+      "code": "DM",
+      "name": "Dominica",
+      "iso3": "DMA",
+      "m49": 212,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 855.0,
+        "builtUpAreaKm2": 5.747,
+        "population": 65872
+      }
+    },
+    {
+      "code": "DO",
+      "name": "Dominican Republic",
+      "iso3": "DOM",
+      "m49": 214,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 49088.0,
+        "builtUpAreaKm2": 568.666,
+        "population": 11520487
+      }
+    },
+    {
+      "code": "DZ",
+      "name": "Algeria",
+      "iso3": "DZA",
+      "m49": 12,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2317520.0,
+        "builtUpAreaKm2": 2579.697,
+        "population": 47435312
+      }
+    },
+    {
+      "code": "EC",
+      "name": "Ecuador",
+      "iso3": "ECU",
+      "m49": 218,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 259920.0,
+        "builtUpAreaKm2": 1055.485,
+        "population": 18289896
+      }
+    },
+    {
+      "code": "EE",
+      "name": "Estonia",
+      "iso3": "EST",
+      "m49": 233,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 45362.0,
+        "builtUpAreaKm2": 211.866,
+        "population": 1344232
+      }
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "iso3": "EGY",
+      "m49": 818,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 986232.0,
+        "builtUpAreaKm2": 3715.058,
+        "population": 118365995
+      }
+    },
+    {
+      "code": "EH",
+      "name": "Western Sahara",
+      "iso3": "ESH",
+      "m49": 732,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 270658.0,
+        "builtUpAreaKm2": 23.879,
+        "population": 600904
+      }
+    },
+    {
+      "code": "ER",
+      "name": "Eritrea",
+      "iso3": "ERI",
+      "m49": 232,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 123724.0,
+        "builtUpAreaKm2": 127.299,
+        "population": 3607003
+      }
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "iso3": "ESP",
+      "m49": 724,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 510563.0,
+        "builtUpAreaKm2": 5077.423,
+        "population": 47889958
+      }
+    },
+    {
+      "code": "ET",
+      "name": "Ethiopia",
+      "iso3": "ETH",
+      "m49": 231,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1130776.0,
+        "builtUpAreaKm2": 3150.546,
+        "population": 135472051
+      }
+    },
+    {
+      "code": "FI",
+      "name": "Finland",
+      "iso3": "FIN",
+      "m49": 246,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 346272.0,
+        "builtUpAreaKm2": 648.317,
+        "population": 5623330
+      }
+    },
+    {
+      "code": "FJ",
+      "name": "Fiji",
+      "iso3": "FJI",
+      "m49": 242,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 20610.0,
+        "builtUpAreaKm2": 92.661,
+        "population": 933154
+      }
+    },
+    {
+      "code": "FK",
+      "name": "Falkland Islands (Malvinas)",
+      "iso3": "FLK",
+      "m49": 238,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 15343.0,
+        "builtUpAreaKm2": 0.397,
+        "population": 3469
+      }
+    },
+    {
+      "code": "FM",
+      "name": "Micronesia (Federated States of)",
+      "iso3": "FSM",
+      "m49": 583,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1788.0,
+        "builtUpAreaKm2": 6.109,
+        "population": 113683
+      }
+    },
+    {
+      "code": "FO",
+      "name": "Faroe Islands",
+      "iso3": "FRO",
+      "m49": 234,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1970.0,
+        "builtUpAreaKm2": 0.15,
+        "population": 56002
+      }
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "iso3": "FRA",
+      "m49": 250,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 552422.0,
+        "builtUpAreaKm2": 10735.7,
+        "population": 66650804
+      }
+    },
+    {
+      "code": "GA",
+      "name": "Gabon",
+      "iso3": "GAB",
+      "m49": 266,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 264963.0,
+        "builtUpAreaKm2": 167.126,
+        "population": 2593130
+      }
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom of Great Britain and Northern Ireland",
+      "iso3": "GBR",
+      "m49": 826,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 253964.0,
+        "builtUpAreaKm2": 6352.815,
+        "population": 69551332
+      }
+    },
+    {
+      "code": "GD",
+      "name": "Grenada",
+      "iso3": "GRD",
+      "m49": 308,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 510.0,
+        "builtUpAreaKm2": 10.529,
+        "population": 117304
+      }
+    },
+    {
+      "code": "GE",
+      "name": "Georgia",
+      "iso3": "GEO",
+      "m49": 268,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 69860.0,
+        "builtUpAreaKm2": 513.742,
+        "population": 3806671
+      }
+    },
+    {
+      "code": "GF",
+      "name": "French Guiana",
+      "iso3": "GUF",
+      "m49": 254,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 84436.0,
+        "builtUpAreaKm2": 25.961,
+        "population": 313665
+      }
+    },
+    {
+      "code": "GG",
+      "name": "Guernsey",
+      "iso3": "GGY",
+      "m49": 831,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 162.0,
+        "builtUpAreaKm2": 6.266,
+        "population": 64477
+      }
+    },
+    {
+      "code": "GH",
+      "name": "Ghana",
+      "iso3": "GHA",
+      "m49": 288,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 237182.0,
+        "builtUpAreaKm2": 2177.87,
+        "population": 35064273
+      }
+    },
+    {
+      "code": "GI",
+      "name": "Gibraltar",
+      "iso3": "GIB",
+      "m49": 292,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 20.0,
+        "builtUpAreaKm2": 1.659,
+        "population": 40126
+      }
+    },
+    {
+      "code": "GL",
+      "name": "Greenland",
+      "iso3": "GRL",
+      "m49": 304,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2196763.0,
+        "builtUpAreaKm2": 2.941,
+        "population": 55744
+      }
+    },
+    {
+      "code": "GM",
+      "name": "Gambia",
+      "iso3": "GMB",
+      "m49": 270,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 11143.0,
+        "builtUpAreaKm2": 133.048,
+        "population": 2822093
+      }
+    },
+    {
+      "code": "GN",
+      "name": "Guinea",
+      "iso3": "GIN",
+      "m49": 324,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 247094.0,
+        "builtUpAreaKm2": 757.71,
+        "population": 15099727
+      }
+    },
+    {
+      "code": "GP",
+      "name": "Guadeloupe",
+      "iso3": "GLP",
+      "m49": 312,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1951.0,
+        "builtUpAreaKm2": 68.184,
+        "population": 373791
+      }
+    },
+    {
+      "code": "GQ",
+      "name": "Equatorial Guinea",
+      "iso3": "GNQ",
+      "m49": 226,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 27593.0,
+        "builtUpAreaKm2": 70.169,
+        "population": 1938431
+      }
+    },
+    {
+      "code": "GR",
+      "name": "Greece",
+      "iso3": "GRC",
+      "m49": 300,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 140707.0,
+        "builtUpAreaKm2": 1239.981,
+        "population": 9938844
+      }
+    },
+    {
+      "code": "GS",
+      "name": "South Georgia and the South Sandwich Islands",
+      "iso3": "SGS",
+      "m49": 239,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "GT",
+      "name": "Guatemala",
+      "iso3": "GTM",
+      "m49": 320,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 109101.0,
+        "builtUpAreaKm2": 1055.383,
+        "population": 18687881
+      }
+    },
+    {
+      "code": "GU",
+      "name": "Guam",
+      "iso3": "GUM",
+      "m49": 316,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 661.0,
+        "builtUpAreaKm2": 18.293,
+        "population": 168998
+      }
+    },
+    {
+      "code": "GW",
+      "name": "Guinea-Bissau",
+      "iso3": "GNB",
+      "m49": 624,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 35558.0,
+        "builtUpAreaKm2": 112.823,
+        "population": 2249515
+      }
+    },
+    {
+      "code": "GY",
+      "name": "Guyana",
+      "iso3": "GUY",
+      "m49": 328,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 213408.0,
+        "builtUpAreaKm2": 65.502,
+        "population": 835986
+      }
+    },
+    {
+      "code": "HK",
+      "name": "China, Hong Kong Special Administrative Region",
+      "iso3": "HKG",
+      "m49": 344,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1618.0,
+        "builtUpAreaKm2": 94.911,
+        "population": 7396076
+      }
+    },
+    {
+      "code": "HM",
+      "name": "Heard Island and McDonald Islands",
+      "iso3": "HMD",
+      "m49": 334,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "HN",
+      "name": "Honduras",
+      "iso3": "HND",
+      "m49": 340,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 113273.0,
+        "builtUpAreaKm2": 643.456,
+        "population": 11005850
+      }
+    },
+    {
+      "code": "HR",
+      "name": "Croatia",
+      "iso3": "HRV",
+      "m49": 191,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 59543.0,
+        "builtUpAreaKm2": 532.67,
+        "population": 3848160
+      }
+    },
+    {
+      "code": "HT",
+      "name": "Haiti",
+      "iso3": "HTI",
+      "m49": 332,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 28109.0,
+        "builtUpAreaKm2": 343.121,
+        "population": 11906096
+      }
+    },
+    {
+      "code": "HU",
+      "name": "Hungary",
+      "iso3": "HUN",
+      "m49": 348,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 92507.0,
+        "builtUpAreaKm2": 1372.172,
+        "population": 9632287
+      }
+    },
+    {
+      "code": "ID",
+      "name": "Indonesia",
+      "iso3": "IDN",
+      "m49": 360,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1952633.0,
+        "builtUpAreaKm2": 11892.197,
+        "population": 285721235
+      }
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "iso3": "IRL",
+      "m49": 372,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 72969.0,
+        "builtUpAreaKm2": 806.16,
+        "population": 5308039
+      }
+    },
+    {
+      "code": "IL",
+      "name": "Israel",
+      "iso3": "ISR",
+      "m49": 376,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 20710.0,
+        "builtUpAreaKm2": 536.851,
+        "population": 9517180
+      }
+    },
+    {
+      "code": "IM",
+      "name": "Isle of Man",
+      "iso3": "IMN",
+      "m49": 833,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 665.0,
+        "builtUpAreaKm2": 7.397,
+        "population": 84118
+      }
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "iso3": "IND",
+      "m49": 356,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 3153919.0,
+        "builtUpAreaKm2": 44537.315,
+        "population": 1463865524
+      }
+    },
+    {
+      "code": "IO",
+      "name": "British Indian Ocean Territory",
+      "iso3": "IOT",
+      "m49": 86,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "IQ",
+      "name": "Iraq",
+      "iso3": "IRQ",
+      "m49": 368,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 435900.0,
+        "builtUpAreaKm2": 1871.365,
+        "population": 47020774
+      }
+    },
+    {
+      "code": "IR",
+      "name": "Iran (Islamic Republic of)",
+      "iso3": "IRN",
+      "m49": 364,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1627982.0,
+        "builtUpAreaKm2": 4824.018,
+        "population": 92417681
+      }
+    },
+    {
+      "code": "IS",
+      "name": "Iceland",
+      "iso3": "ISL",
+      "m49": 352,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 106323.0,
+        "builtUpAreaKm2": 38.808,
+        "population": 398266
+      }
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "iso3": "ITA",
+      "m49": 380,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 305083.0,
+        "builtUpAreaKm2": 7726.251,
+        "population": 59146260
+      }
+    },
+    {
+      "code": "JE",
+      "name": "Jersey",
+      "iso3": "JEY",
+      "m49": 832,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 181.0,
+        "builtUpAreaKm2": 7.824,
+        "population": 103988
+      }
+    },
+    {
+      "code": "JM",
+      "name": "Jamaica",
+      "iso3": "JAM",
+      "m49": 388,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 11513.0,
+        "builtUpAreaKm2": 237.69,
+        "population": 2837077
+      }
+    },
+    {
+      "code": "JO",
+      "name": "Jordan",
+      "iso3": "JOR",
+      "m49": 400,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 89144.0,
+        "builtUpAreaKm2": 387.906,
+        "population": 11520684
+      }
+    },
+    {
+      "code": "JP",
+      "name": "Japan",
+      "iso3": "JPN",
+      "m49": 392,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 390231.0,
+        "builtUpAreaKm2": 13401.024,
+        "population": 123103479
+      }
+    },
+    {
+      "code": "KE",
+      "name": "Kenya",
+      "iso3": "KEN",
+      "m49": 404,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 577220.0,
+        "builtUpAreaKm2": 3468.68,
+        "population": 57532492
+      }
+    },
+    {
+      "code": "KG",
+      "name": "Kyrgyzstan",
+      "iso3": "KGZ",
+      "m49": 417,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 192060.0,
+        "builtUpAreaKm2": 741.568,
+        "population": 7295034
+      }
+    },
+    {
+      "code": "KH",
+      "name": "Cambodia",
+      "iso3": "KHM",
+      "m49": 116,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 180722.0,
+        "builtUpAreaKm2": 920.106,
+        "population": 17847981
+      }
+    },
+    {
+      "code": "KI",
+      "name": "Kiribati",
+      "iso3": "KIR",
+      "m49": 296,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2354.0,
+        "builtUpAreaKm2": 1.755,
+        "population": 136489
+      }
+    },
+    {
+      "code": "KM",
+      "name": "Comoros",
+      "iso3": "COM",
+      "m49": 174,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1956.0,
+        "builtUpAreaKm2": 30.759,
+        "population": 882848
+      }
+    },
+    {
+      "code": "KN",
+      "name": "Saint Kitts and Nevis",
+      "iso3": "KNA",
+      "m49": 659,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 340.0,
+        "builtUpAreaKm2": 8.723,
+        "population": 46922
+      }
+    },
+    {
+      "code": "KP",
+      "name": "Democratic People's Republic of Korea",
+      "iso3": "PRK",
+      "m49": 408,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 124894.0,
+        "builtUpAreaKm2": 462.26,
+        "population": 26571036
+      }
+    },
+    {
+      "code": "KR",
+      "name": "Republic of Korea",
+      "iso3": "KOR",
+      "m49": 410,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 107977.0,
+        "builtUpAreaKm2": 3875.763,
+        "population": 51667030
+      }
+    },
+    {
+      "code": "KW",
+      "name": "Kuwait",
+      "iso3": "KWT",
+      "m49": 414,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 17853.0,
+        "builtUpAreaKm2": 256.979,
+        "population": 5026078
+      }
+    },
+    {
+      "code": "KY",
+      "name": "Cayman Islands",
+      "iso3": "CYM",
+      "m49": 136,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 397.0,
+        "builtUpAreaKm2": 10.967,
+        "population": 75844
+      }
+    },
+    {
+      "code": "KZ",
+      "name": "Kazakhstan",
+      "iso3": "KAZ",
+      "m49": 398,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2689231.0,
+        "builtUpAreaKm2": 2519.76,
+        "population": 20843754
+      }
+    },
+    {
+      "code": "LA",
+      "name": "Lao People's Democratic Republic",
+      "iso3": "LAO",
+      "m49": 418,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 231324.0,
+        "builtUpAreaKm2": 390.79,
+        "population": 7873046
+      }
+    },
+    {
+      "code": "LB",
+      "name": "Lebanon",
+      "iso3": "LBN",
+      "m49": 422,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 10418.0,
+        "builtUpAreaKm2": 322.199,
+        "population": 5849420
+      }
+    },
+    {
+      "code": "LC",
+      "name": "Saint Lucia",
+      "iso3": "LCA",
+      "m49": 662,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 706.0,
+        "builtUpAreaKm2": 16.995,
+        "population": 180149
+      }
+    },
+    {
+      "code": "LI",
+      "name": "Liechtenstein",
+      "iso3": "LIE",
+      "m49": 438,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 159.0,
+        "builtUpAreaKm2": 5.928,
+        "population": 40128
+      }
+    },
+    {
+      "code": "LK",
+      "name": "Sri Lanka",
+      "iso3": "LKA",
+      "m49": 144,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 67837.0,
+        "builtUpAreaKm2": 1097.686,
+        "population": 23229470
+      }
+    },
+    {
+      "code": "LR",
+      "name": "Liberia",
+      "iso3": "LBR",
+      "m49": 430,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 96929.0,
+        "builtUpAreaKm2": 237.152,
+        "population": 5731206
+      }
+    },
+    {
+      "code": "LS",
+      "name": "Lesotho",
+      "iso3": "LSO",
+      "m49": 426,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 30739.0,
+        "builtUpAreaKm2": 228.433,
+        "population": 2363325
+      }
+    },
+    {
+      "code": "LT",
+      "name": "Lithuania",
+      "iso3": "LTU",
+      "m49": 440,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 64827.0,
+        "builtUpAreaKm2": 503.273,
+        "population": 2830145
+      }
+    },
+    {
+      "code": "LU",
+      "name": "Luxembourg",
+      "iso3": "LUX",
+      "m49": 442,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2609.0,
+        "builtUpAreaKm2": 81.247,
+        "population": 680454
+      }
+    },
+    {
+      "code": "LV",
+      "name": "Latvia",
+      "iso3": "LVA",
+      "m49": 428,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 64686.0,
+        "builtUpAreaKm2": 272.673,
+        "population": 1853559
+      }
+    },
+    {
+      "code": "LY",
+      "name": "Libya",
+      "iso3": "LBY",
+      "m49": 434,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1624158.0,
+        "builtUpAreaKm2": 1072.199,
+        "population": 7458554
+      }
+    },
+    {
+      "code": "MA",
+      "name": "Morocco",
+      "iso3": "MAR",
+      "m49": 504,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 416370.0,
+        "builtUpAreaKm2": 1012.222,
+        "population": 38430770
+      }
+    },
+    {
+      "code": "MC",
+      "name": "Monaco",
+      "iso3": "MCO",
+      "m49": 492,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 6.0,
+        "builtUpAreaKm2": 0.862,
+        "population": 38341
+      }
+    },
+    {
+      "code": "MD",
+      "name": "Republic of Moldova",
+      "iso3": "MDA",
+      "m49": 498,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 33834.0,
+        "builtUpAreaKm2": 496.247,
+        "population": 2996105
+      }
+    },
+    {
+      "code": "ME",
+      "name": "Montenegro",
+      "iso3": "MNE",
+      "m49": 499,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 13900.0,
+        "builtUpAreaKm2": 45.598,
+        "population": 632729
+      }
+    },
+    {
+      "code": "MF",
+      "name": "Saint Martin (French Part)",
+      "iso3": "MAF",
+      "m49": 663,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 81.0,
+        "builtUpAreaKm2": 3.162,
+        "population": 24940
+      }
+    },
+    {
+      "code": "MG",
+      "name": "Madagascar",
+      "iso3": "MDG",
+      "m49": 450,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 599159.0,
+        "builtUpAreaKm2": 985.651,
+        "population": 32740678
+      }
+    },
+    {
+      "code": "MH",
+      "name": "Marshall Islands",
+      "iso3": "MHL",
+      "m49": 584,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2065.0,
+        "builtUpAreaKm2": 2.462,
+        "population": 36282
+      }
+    },
+    {
+      "code": "MK",
+      "name": "North Macedonia",
+      "iso3": "MKD",
+      "m49": 807,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 25079.0,
+        "builtUpAreaKm2": 183.184,
+        "population": 1813791
+      }
+    },
+    {
+      "code": "ML",
+      "name": "Mali",
+      "iso3": "MLI",
+      "m49": 466,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1261347.0,
+        "builtUpAreaKm2": 1224.461,
+        "population": 25198822
+      }
+    },
+    {
+      "code": "MM",
+      "name": "Myanmar",
+      "iso3": "MMR",
+      "m49": 104,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 679366.0,
+        "builtUpAreaKm2": 1432.862,
+        "population": 54850648
+      }
+    },
+    {
+      "code": "MN",
+      "name": "Mongolia",
+      "iso3": "MNG",
+      "m49": 496,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1553958.0,
+        "builtUpAreaKm2": 182.488,
+        "population": 3517100
+      }
+    },
+    {
+      "code": "MO",
+      "name": "China, Macao Special Administrative Region",
+      "iso3": "MAC",
+      "m49": 446,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 84.0,
+        "builtUpAreaKm2": 7.824,
+        "population": 722007
+      }
+    },
+    {
+      "code": "MP",
+      "name": "Northern Mariana Islands",
+      "iso3": "MNP",
+      "m49": 580,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 716.0,
+        "builtUpAreaKm2": 4.908,
+        "population": 43540
+      }
+    },
+    {
+      "code": "MQ",
+      "name": "Martinique",
+      "iso3": "MTQ",
+      "m49": 474,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1322.0,
+        "builtUpAreaKm2": 41.14,
+        "population": 340439
+      }
+    },
+    {
+      "code": "MR",
+      "name": "Mauritania",
+      "iso3": "MRT",
+      "m49": 478,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1042321.0,
+        "builtUpAreaKm2": 268.516,
+        "population": 5315065
+      }
+    },
+    {
+      "code": "MS",
+      "name": "Montserrat",
+      "iso3": "MSR",
+      "m49": 500,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 135.0,
+        "builtUpAreaKm2": 0.867,
+        "population": 4360
+      }
+    },
+    {
+      "code": "MT",
+      "name": "Malta",
+      "iso3": "MLT",
+      "m49": 470,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 420.0,
+        "builtUpAreaKm2": 39.825,
+        "population": 545405
+      }
+    },
+    {
+      "code": "MU",
+      "name": "Mauritius",
+      "iso3": "MUS",
+      "m49": 480,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2672.0,
+        "builtUpAreaKm2": 79.511,
+        "population": 1268279
+      }
+    },
+    {
+      "code": "MV",
+      "name": "Maldives",
+      "iso3": "MDV",
+      "m49": 462,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2306.0,
+        "builtUpAreaKm2": 7.955,
+        "population": 529676
+      }
+    },
+    {
+      "code": "MW",
+      "name": "Malawi",
+      "iso3": "MWI",
+      "m49": 454,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 96366.0,
+        "builtUpAreaKm2": 1261.083,
+        "population": 22216119
+      }
+    },
+    {
+      "code": "MX",
+      "name": "Mexico",
+      "iso3": "MEX",
+      "m49": 484,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1970326.0,
+        "builtUpAreaKm2": 10754.57,
+        "population": 131946900
+      }
+    },
+    {
+      "code": "MY",
+      "name": "Malaysia",
+      "iso3": "MYS",
+      "m49": 458,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 336724.0,
+        "builtUpAreaKm2": 2390.474,
+        "population": 35977838
+      }
+    },
+    {
+      "code": "MZ",
+      "name": "Mozambique",
+      "iso3": "MOZ",
+      "m49": 508,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 786048.0,
+        "builtUpAreaKm2": 2251.884,
+        "population": 35631653
+      }
+    },
+    {
+      "code": "NA",
+      "name": "Namibia",
+      "iso3": "NAM",
+      "m49": 516,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 828734.0,
+        "builtUpAreaKm2": 338.644,
+        "population": 3092816
+      }
+    },
+    {
+      "code": "NC",
+      "name": "New Caledonia",
+      "iso3": "NCL",
+      "m49": 540,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 20899.0,
+        "builtUpAreaKm2": 45.796,
+        "population": 295333
+      }
+    },
+    {
+      "code": "NE",
+      "name": "Niger",
+      "iso3": "NER",
+      "m49": 562,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1188837.0,
+        "builtUpAreaKm2": 890.882,
+        "population": 27917831
+      }
+    },
+    {
+      "code": "NF",
+      "name": "Norfolk Island",
+      "iso3": "NFK",
+      "m49": 574,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "NG",
+      "name": "Nigeria",
+      "iso3": "NGA",
+      "m49": 566,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 915477.0,
+        "builtUpAreaKm2": 9556.896,
+        "population": 237527782
+      }
+    },
+    {
+      "code": "NI",
+      "name": "Nicaragua",
+      "iso3": "NIC",
+      "m49": 558,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 121868.0,
+        "builtUpAreaKm2": 342.959,
+        "population": 7007502
+      }
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands (Kingdom of the)",
+      "iso3": "NLD",
+      "m49": 528,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 36457.0,
+        "builtUpAreaKm2": 2229.448,
+        "population": 18346819
+      }
+    },
+    {
+      "code": "NO",
+      "name": "Norway",
+      "iso3": "NOR",
+      "m49": 578,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 415777.0,
+        "builtUpAreaKm2": 489.674,
+        "population": 5623071
+      }
+    },
+    {
+      "code": "NP",
+      "name": "Nepal",
+      "iso3": "NPL",
+      "m49": 524,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 148199.0,
+        "builtUpAreaKm2": 1242.553,
+        "population": 29618118
+      }
+    },
+    {
+      "code": "NR",
+      "name": "Naoero",
+      "iso3": "NRU",
+      "m49": 520,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 34.0,
+        "builtUpAreaKm2": 0.876,
+        "population": 12026
+      }
+    },
+    {
+      "code": "NU",
+      "name": "Niue",
+      "iso3": "NIU",
+      "m49": 570,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 309.0,
+        "builtUpAreaKm2": 0.044,
+        "population": 1820
+      }
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand",
+      "iso3": "NZL",
+      "m49": 554,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 278440.0,
+        "builtUpAreaKm2": 1003.793,
+        "population": 5251899
+      }
+    },
+    {
+      "code": "OM",
+      "name": "Oman",
+      "iso3": "OMN",
+      "m49": 512,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 311630.0,
+        "builtUpAreaKm2": 503.422,
+        "population": 5494691
+      }
+    },
+    {
+      "code": "PA",
+      "name": "Panama",
+      "iso3": "PAN",
+      "m49": 591,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 78500.0,
+        "builtUpAreaKm2": 328.649,
+        "population": 4571189
+      }
+    },
+    {
+      "code": "PE",
+      "name": "Peru",
+      "iso3": "PER",
+      "m49": 604,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1297515.0,
+        "builtUpAreaKm2": 1680.16,
+        "population": 34576665
+      }
+    },
+    {
+      "code": "PF",
+      "name": "French Polynesia",
+      "iso3": "PYF",
+      "m49": 258,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 9052.0,
+        "builtUpAreaKm2": 19.48,
+        "population": 282465
+      }
+    },
+    {
+      "code": "PG",
+      "name": "Papua New Guinea",
+      "iso3": "PNG",
+      "m49": 598,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 477237.0,
+        "builtUpAreaKm2": 233.601,
+        "population": 10762817
+      }
+    },
+    {
+      "code": "PH",
+      "name": "Philippines",
+      "iso3": "PHL",
+      "m49": 608,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 315404.0,
+        "builtUpAreaKm2": 2897.571,
+        "population": 116786963
+      }
+    },
+    {
+      "code": "PK",
+      "name": "Pakistan",
+      "iso3": "PAK",
+      "m49": 586,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 873062.0,
+        "builtUpAreaKm2": 7400.54,
+        "population": 255219555
+      }
+    },
+    {
+      "code": "PL",
+      "name": "Poland",
+      "iso3": "POL",
+      "m49": 616,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 311738.0,
+        "builtUpAreaKm2": 4918.386,
+        "population": 38140910
+      }
+    },
+    {
+      "code": "PM",
+      "name": "Saint Pierre and Miquelon",
+      "iso3": "SPM",
+      "m49": 666,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 341.0,
+        "builtUpAreaKm2": 0.392,
+        "population": 5574
+      }
+    },
+    {
+      "code": "PN",
+      "name": "Pitcairn",
+      "iso3": "PCN",
+      "m49": 612,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "PR",
+      "name": "Puerto Rico",
+      "iso3": "PRI",
+      "m49": 630,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 9627.0,
+        "builtUpAreaKm2": 469.383,
+        "population": 3235290
+      }
+    },
+    {
+      "code": "PS",
+      "name": "State of Palestine",
+      "iso3": "PSE",
+      "m49": 275,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 6046.0,
+        "builtUpAreaKm2": 256.924,
+        "population": 5589623
+      }
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "iso3": "PRT",
+      "m49": 620,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 93440.0,
+        "builtUpAreaKm2": 1478.048,
+        "population": 10411833
+      }
+    },
+    {
+      "code": "PW",
+      "name": "Palau",
+      "iso3": "PLW",
+      "m49": 585,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 828.0,
+        "builtUpAreaKm2": 1.364,
+        "population": 17662
+      }
+    },
+    {
+      "code": "PY",
+      "name": "Paraguay",
+      "iso3": "PRY",
+      "m49": 600,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 399847.0,
+        "builtUpAreaKm2": 624.174,
+        "population": 7013078
+      }
+    },
+    {
+      "code": "QA",
+      "name": "Qatar",
+      "iso3": "QAT",
+      "m49": 634,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 12202.0,
+        "builtUpAreaKm2": 255.789,
+        "population": 3115889
+      }
+    },
+    {
+      "code": "RE",
+      "name": "Réunion",
+      "iso3": "REU",
+      "m49": 638,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 2654.0,
+        "builtUpAreaKm2": 108.861,
+        "population": 882405
+      }
+    },
+    {
+      "code": "RO",
+      "name": "Romania",
+      "iso3": "ROU",
+      "m49": 642,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 237902.0,
+        "builtUpAreaKm2": 2370.822,
+        "population": 18908650
+      }
+    },
+    {
+      "code": "RS",
+      "name": "Serbia",
+      "iso3": "SRB",
+      "m49": 688,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 77768.0,
+        "builtUpAreaKm2": 833.281,
+        "population": 6689039
+      }
+    },
+    {
+      "code": "RU",
+      "name": "Russian Federation",
+      "iso3": "RUS",
+      "m49": 643,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 16845966.0,
+        "builtUpAreaKm2": 13680.31,
+        "population": 143997393
+      }
+    },
+    {
+      "code": "RW",
+      "name": "Rwanda",
+      "iso3": "RWA",
+      "m49": 646,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 24613.0,
+        "builtUpAreaKm2": 769.801,
+        "population": 14569340
+      }
+    },
+    {
+      "code": "SA",
+      "name": "Saudi Arabia",
+      "iso3": "SAU",
+      "m49": 682,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1937738.0,
+        "builtUpAreaKm2": 3169.916,
+        "population": 34566328
+      }
+    },
+    {
+      "code": "SB",
+      "name": "Solomon Islands",
+      "iso3": "SLB",
+      "m49": 90,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 33807.0,
+        "builtUpAreaKm2": 32.121,
+        "population": 838646
+      }
+    },
+    {
+      "code": "SC",
+      "name": "Seychelles",
+      "iso3": "SYC",
+      "m49": 690,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 973.0,
+        "builtUpAreaKm2": 6.376,
+        "population": 132778
+      }
+    },
+    {
+      "code": "SD",
+      "name": "Sudan",
+      "iso3": "SDN",
+      "m49": 729,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1872108.0,
+        "builtUpAreaKm2": 1934.875,
+        "population": 51662148
+      }
+    },
+    {
+      "code": "SE",
+      "name": "Sweden",
+      "iso3": "SWE",
+      "m49": 752,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 451247.0,
+        "builtUpAreaKm2": 1102.063,
+        "population": 10656633
+      }
+    },
+    {
+      "code": "SG",
+      "name": "Singapore",
+      "iso3": "SGP",
+      "m49": 702,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 960.0,
+        "builtUpAreaKm2": 142.835,
+        "population": 5870750
+      }
+    },
+    {
+      "code": "SH",
+      "name": "Saint Helena",
+      "iso3": "SHN",
+      "m49": 654,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 555.0,
+        "builtUpAreaKm2": 0.602,
+        "population": 5196
+      }
+    },
+    {
+      "code": "SI",
+      "name": "Slovenia",
+      "iso3": "SVN",
+      "m49": 705,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 20309.0,
+        "builtUpAreaKm2": 280.359,
+        "population": 2117072
+      }
+    },
+    {
+      "code": "SJ",
+      "name": "Svalbard and Jan Mayen Islands",
+      "iso3": "SJM",
+      "m49": 744,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "SK",
+      "name": "Slovakia",
+      "iso3": "SVK",
+      "m49": 703,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 48995.0,
+        "builtUpAreaKm2": 734.36,
+        "population": 5474881
+      }
+    },
+    {
+      "code": "SL",
+      "name": "Sierra Leone",
+      "iso3": "SLE",
+      "m49": 694,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 73644.0,
+        "builtUpAreaKm2": 269.78,
+        "population": 8819794
+      }
+    },
+    {
+      "code": "SM",
+      "name": "San Marino",
+      "iso3": "SMR",
+      "m49": 674,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 76.0,
+        "builtUpAreaKm2": 5.225,
+        "population": 33573
+      }
+    },
+    {
+      "code": "SN",
+      "name": "Senegal",
+      "iso3": "SEN",
+      "m49": 686,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 197839.0,
+        "builtUpAreaKm2": 826.439,
+        "population": 18931967
+      }
+    },
+    {
+      "code": "SO",
+      "name": "Somalia",
+      "iso3": "SOM",
+      "m49": 706,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 639221.0,
+        "builtUpAreaKm2": 306.545,
+        "population": 19654739
+      }
+    },
+    {
+      "code": "SR",
+      "name": "Suriname",
+      "iso3": "SUR",
+      "m49": 740,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 145819.0,
+        "builtUpAreaKm2": 77.418,
+        "population": 639850
+      }
+    },
+    {
+      "code": "SS",
+      "name": "South Sudan",
+      "iso3": "SSD",
+      "m49": 728,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 636969.0,
+        "builtUpAreaKm2": 233.179,
+        "population": 12188788
+      }
+    },
+    {
+      "code": "ST",
+      "name": "Sao Tome and Principe",
+      "iso3": "STP",
+      "m49": 678,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1163.0,
+        "builtUpAreaKm2": 9.341,
+        "population": 240254
+      }
+    },
+    {
+      "code": "SV",
+      "name": "El Salvador",
+      "iso3": "SLV",
+      "m49": 222,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 21071.0,
+        "builtUpAreaKm2": 376.074,
+        "population": 6365503
+      }
+    },
+    {
+      "code": "SX",
+      "name": "Sint Maarten (Dutch part)",
+      "iso3": "SXM",
+      "m49": 534,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 59.0,
+        "builtUpAreaKm2": 4.743,
+        "population": 43923
+      }
+    },
+    {
+      "code": "SY",
+      "name": "Syrian Arab Republic",
+      "iso3": "SYR",
+      "m49": 760,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 187624.0,
+        "builtUpAreaKm2": 1160.08,
+        "population": 25620426
+      }
+    },
+    {
+      "code": "SZ",
+      "name": "Eswatini",
+      "iso3": "SWZ",
+      "m49": 748,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 17477.0,
+        "builtUpAreaKm2": 168.482,
+        "population": 1256174
+      }
+    },
+    {
+      "code": "TC",
+      "name": "Turks and Caicos Islands",
+      "iso3": "TCA",
+      "m49": 796,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 980.0,
+        "builtUpAreaKm2": 6.131,
+        "population": 46855
+      }
+    },
+    {
+      "code": "TD",
+      "name": "Chad",
+      "iso3": "TCD",
+      "m49": 148,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1275979.0,
+        "builtUpAreaKm2": 684.143,
+        "population": 21003705
+      }
+    },
+    {
+      "code": "TF",
+      "name": "French Southern Territories",
+      "iso3": "ATF",
+      "m49": 260,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "TG",
+      "name": "Togo",
+      "iso3": "TGO",
+      "m49": 768,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 57031.0,
+        "builtUpAreaKm2": 539.459,
+        "population": 9721608
+      }
+    },
+    {
+      "code": "TH",
+      "name": "Thailand",
+      "iso3": "THA",
+      "m49": 764,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 520849.0,
+        "builtUpAreaKm2": 7075.187,
+        "population": 71619863
+      }
+    },
+    {
+      "code": "TJ",
+      "name": "Tajikistan",
+      "iso3": "TJK",
+      "m49": 762,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 140909.0,
+        "builtUpAreaKm2": 814.056,
+        "population": 10786734
+      }
+    },
+    {
+      "code": "TK",
+      "name": "Tokelau",
+      "iso3": "TKL",
+      "m49": 772,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 174.0,
+        "builtUpAreaKm2": 0.066,
+        "population": 2608
+      }
+    },
+    {
+      "code": "TL",
+      "name": "Timor-Leste",
+      "iso3": "TLS",
+      "m49": 626,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 15471.0,
+        "builtUpAreaKm2": 58.153,
+        "population": 1418518
+      }
+    },
+    {
+      "code": "TM",
+      "name": "Turkmenistan",
+      "iso3": "TKM",
+      "m49": 795,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 469877.0,
+        "builtUpAreaKm2": 823.802,
+        "population": 7618847
+      }
+    },
+    {
+      "code": "TN",
+      "name": "Tunisia",
+      "iso3": "TUN",
+      "m49": 788,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 156584.0,
+        "builtUpAreaKm2": 1222.608,
+        "population": 12348573
+      }
+    },
+    {
+      "code": "TO",
+      "name": "Tonga",
+      "iso3": "TON",
+      "m49": 776,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1403.0,
+        "builtUpAreaKm2": 8.822,
+        "population": 103742
+      }
+    },
+    {
+      "code": "TR",
+      "name": "Türkiye",
+      "iso3": "TUR",
+      "m49": 792,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 779761.0,
+        "builtUpAreaKm2": 4031.642,
+        "population": 87685426
+      }
+    },
+    {
+      "code": "TT",
+      "name": "Trinidad and Tobago",
+      "iso3": "TTO",
+      "m49": 780,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 5594.0,
+        "builtUpAreaKm2": 177.664,
+        "population": 1511155
+      }
+    },
+    {
+      "code": "TV",
+      "name": "Tuvalu",
+      "iso3": "TUV",
+      "m49": 798,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 205.0,
+        "builtUpAreaKm2": 0.808,
+        "population": 9492
+      }
+    },
+    {
+      "code": "TW",
+      "name": "Taiwan Province of China",
+      "iso3": "TWN",
+      "m49": 158,
+      "kind": "iso3166_m49_statistical_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 37467.0,
+        "builtUpAreaKm2": 1432.961,
+        "population": 23112793
+      }
+    },
+    {
+      "code": "TZ",
+      "name": "United Republic of Tanzania",
+      "iso3": "TZA",
+      "m49": 834,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 896242.0,
+        "builtUpAreaKm2": 4722.015,
+        "population": 70545865
+      }
+    },
+    {
+      "code": "UA",
+      "name": "Ukraine",
+      "iso3": "UKR",
+      "m49": 804,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 595453.0,
+        "builtUpAreaKm2": 4504.013,
+        "population": 38980377
+      }
+    },
+    {
+      "code": "UG",
+      "name": "Uganda",
+      "iso3": "UGA",
+      "m49": 800,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 210179.0,
+        "builtUpAreaKm2": 3034.411,
+        "population": 51384894
+      }
+    },
+    {
+      "code": "UM",
+      "name": "United States Minor Outlying Islands",
+      "iso3": "UMI",
+      "m49": 581,
+      "kind": "m49_country_or_area",
+      "stats": null,
+      "missingReason": "No 2025 country-area row in GHS-WUP-COUNTRY-STATS."
+    },
+    {
+      "code": "US",
+      "name": "United States of America",
+      "iso3": "USA",
+      "m49": 840,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 9369018.0,
+        "builtUpAreaKm2": 64908.23,
+        "population": 347275807
+      }
+    },
+    {
+      "code": "UY",
+      "name": "Uruguay",
+      "iso3": "URY",
+      "m49": 858,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 177063.0,
+        "builtUpAreaKm2": 401.197,
+        "population": 3384688
+      }
+    },
+    {
+      "code": "UZ",
+      "name": "Uzbekistan",
+      "iso3": "UZB",
+      "m49": 860,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 442886.0,
+        "builtUpAreaKm2": 4098.485,
+        "population": 37053428
+      }
+    },
+    {
+      "code": "VA",
+      "name": "Holy See",
+      "iso3": "VAT",
+      "m49": 336,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1.0,
+        "builtUpAreaKm2": 0.18,
+        "population": 501
+      }
+    },
+    {
+      "code": "VC",
+      "name": "Saint Vincent and the Grenadines",
+      "iso3": "VCT",
+      "m49": 670,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 567.0,
+        "builtUpAreaKm2": 10.479,
+        "population": 99924
+      }
+    },
+    {
+      "code": "VE",
+      "name": "Venezuela (Bolivarian Republic of)",
+      "iso3": "VEN",
+      "m49": 862,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 918721.0,
+        "builtUpAreaKm2": 1665.62,
+        "population": 28516896
+      }
+    },
+    {
+      "code": "VG",
+      "name": "British Virgin Islands",
+      "iso3": "VGB",
+      "m49": 92,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 368.0,
+        "builtUpAreaKm2": 4.795,
+        "population": 39732
+      }
+    },
+    {
+      "code": "VI",
+      "name": "United States Virgin Islands",
+      "iso3": "VIR",
+      "m49": 850,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 570.0,
+        "builtUpAreaKm2": 25.117,
+        "population": 84138
+      }
+    },
+    {
+      "code": "VN",
+      "name": "Viet Nam",
+      "iso3": "VNM",
+      "m49": 704,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 333696.0,
+        "builtUpAreaKm2": 5643.034,
+        "population": 101598527
+      }
+    },
+    {
+      "code": "VU",
+      "name": "Vanuatu",
+      "iso3": "VUT",
+      "m49": 548,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 14314.0,
+        "builtUpAreaKm2": 16.238,
+        "population": 335169
+      }
+    },
+    {
+      "code": "WF",
+      "name": "Wallis and Futuna Islands",
+      "iso3": "WLF",
+      "m49": 876,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 240.0,
+        "builtUpAreaKm2": 1.693,
+        "population": 11194
+      }
+    },
+    {
+      "code": "WS",
+      "name": "Samoa",
+      "iso3": "WSM",
+      "m49": 882,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 3148.0,
+        "builtUpAreaKm2": 17.136,
+        "population": 219306
+      }
+    },
+    {
+      "code": "XAB",
+      "name": "Abkhazia",
+      "iso3": null,
+      "m49": null,
+      "kind": "de_facto_territory",
+      "overlapsParent": "GE",
+      "stats": null,
+      "missingReason": "No separate UN M49/WUP country-area statistic; non-additive row retained for scope only."
+    },
+    {
+      "code": "XK",
+      "name": "Kosovo (under UNSC res. 1244)",
+      "iso3": "XKX",
+      "m49": 412,
+      "kind": "un_statistical_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 10680.0,
+        "builtUpAreaKm2": 107.971,
+        "population": 1674125
+      }
+    },
+    {
+      "code": "XNC",
+      "name": "Northern Cyprus",
+      "iso3": null,
+      "m49": null,
+      "kind": "de_facto_territory",
+      "overlapsParent": "CY",
+      "stats": null,
+      "missingReason": "No separate UN M49/WUP country-area statistic; non-additive row retained for scope only."
+    },
+    {
+      "code": "XOS",
+      "name": "South Ossetia",
+      "iso3": null,
+      "m49": null,
+      "kind": "de_facto_territory",
+      "overlapsParent": "GE",
+      "stats": null,
+      "missingReason": "No separate UN M49/WUP country-area statistic; non-additive row retained for scope only."
+    },
+    {
+      "code": "XSL",
+      "name": "Somaliland",
+      "iso3": null,
+      "m49": null,
+      "kind": "de_facto_territory",
+      "overlapsParent": "SO",
+      "stats": null,
+      "missingReason": "No separate UN M49/WUP country-area statistic; non-additive row retained for scope only."
+    },
+    {
+      "code": "XTR",
+      "name": "Transnistria",
+      "iso3": null,
+      "m49": null,
+      "kind": "de_facto_territory",
+      "overlapsParent": "MD",
+      "stats": null,
+      "missingReason": "No separate UN M49/WUP country-area statistic; non-additive row retained for scope only."
+    },
+    {
+      "code": "YE",
+      "name": "Yemen",
+      "iso3": "YEM",
+      "m49": 887,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 457679.0,
+        "builtUpAreaKm2": 356.116,
+        "population": 41773878
+      }
+    },
+    {
+      "code": "YT",
+      "name": "Mayotte",
+      "iso3": "MYT",
+      "m49": 175,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 536.0,
+        "builtUpAreaKm2": 11.885,
+        "population": 337011
+      }
+    },
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "iso3": "ZAF",
+      "m49": 710,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 1225871.0,
+        "builtUpAreaKm2": 6861.991,
+        "population": 64747320
+      }
+    },
+    {
+      "code": "ZM",
+      "name": "Zambia",
+      "iso3": "ZMB",
+      "m49": 894,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 746446.0,
+        "builtUpAreaKm2": 1577.937,
+        "population": 21913874
+      }
+    },
+    {
+      "code": "ZW",
+      "name": "Zimbabwe",
+      "iso3": "ZWE",
+      "m49": 716,
+      "kind": "m49_country_or_area",
+      "stats": {
+        "year": 2025,
+        "landAreaKm2": 390742.0,
+        "builtUpAreaKm2": 1477.888,
+        "population": 16950795
+      }
+    }
+  ],
+  "world": {
+    "landAreaKm2": 134735851.0,
+    "builtUpAreaKm2": 515803.461,
+    "population": 8231613070
+  },
+  "purpose": "Country and territory roster and non-overlapping 2025 statistical denominators for the parcel-registry report."
+}

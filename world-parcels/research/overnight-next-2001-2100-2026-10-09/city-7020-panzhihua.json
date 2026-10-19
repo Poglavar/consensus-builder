@@ -1,0 +1,46 @@
+{
+  "cityCode": 7020,
+  "queueRank": 2051,
+  "name": "Panzhihua",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [26.5772619247194, 101.727451733487],
+  "population2025": 283351,
+  "population2025k": 283.351,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Panzhihua cadastral parcel map official GIS land registry",
+        "result": "Search found an official Panzhihua municipal service-catalog PDF identifying the Municipal Natural Resources and Planning Bureau as responsible for real-estate registration-material queries, public geographic-information platform services, public-interest map services, and surveying-results catalogs. No public anonymous parcel feature-service URL or bounded ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://pzhs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=65504f19bf774caaae998a58d641f199.pdf",
+          "https://www.panzhihua.gov.cn/zfxxgk1/fdzdgknr/zdmsxx/yjdt/ssqk/10289837.shtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "攀枝花 地籍图 宗地 GIS 官方 自然资源 不动产登记",
+        "result": "中文官方结果确认攀枝花市自然资源和规划局承担不动产登记资料查询、地理信息公共服务平台、公益性地图服务和测绘成果目录服务。检索未确认公开匿名宗地要素服务或可返回安全宗地标识加几何的接口；未请求权利人、地址或其他受限登记字段。",
+        "actualResultUrls": [
+          "https://pzhs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=65504f19bf774caaae998a58d641f199.pdf",
+          "https://dnr.sc.gov.cn/scdnr/scszdt/2025/7/15/805e9ad1e6e94e8389930b6c41446ff1.shtml",
+          "https://www.panzhihua.gov.cn/zfxxgk1/fdzdgknr/zdmsxx/yjdt/ssqk/10289837.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Panzhihua municipal service catalog assigns the Municipal Natural Resources and Planning Bureau the services '不动产登记资料查询' (real-estate registration-material query), '地理信息公共服务平台服务', '公益性地图服务', and '测绘成果目录服务'. This is local custodian evidence, not evidence of a public parcel geometry endpoint.",
+  "sourceUrls": [
+    "https://pzhs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=65504f19bf774caaae998a58d641f199.pdf",
+    "https://dnr.sc.gov.cn/scdnr/scszdt/2025/7/15/805e9ad1e6e94e8389930b6c41446ff1.shtml",
+    "https://www.panzhihua.gov.cn/zfxxgk1/fdzdgknr/zdmsxx/yjdt/ssqk/10289837.shtml"
+  ],
+  "parcelService": null,
+  "geometrySample": null,
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter"
+}

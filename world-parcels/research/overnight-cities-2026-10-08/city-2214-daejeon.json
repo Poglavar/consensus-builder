@@ -1,0 +1,110 @@
+{
+  "name": "Daejeon",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "rank": 331,
+  "point": [
+    36.3461964380978,
+    127.39195575042
+  ],
+  "population2025": 1517299,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local/state property or cadastral services were identified, but no point-specific public parcel polygon was verified. No full geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Daejeon Metropolitan City operates an official spatial-information portal with dedicated real-estate and cadastral-information search. The portal describes real-estate information as linked to cadastral maps and provides lot-related information.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "The viewer’s published WFS route returned HTTP 404 to ordinary anonymous direct requests, including GetCapabilities and a bounded one-feature query. No WUP point-specific parcel result could be verified.",
+  "remainingUncertainty": "Whether the portal’s internal O2Map WFS route is available only through viewer-side routing or a separate service host, and whether a parcel covers the WUP point. No citywide coverage test was made.",
+  "nextStep": "If the official viewer route becomes available through ordinary anonymous access, query a small bounded extent and allowlist only a parcel identifier and geometry.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Daejeon official cadastral parcel map land records GIS parcel service",
+        "result": "The official Daejeon Spatial Information Portal identifies cadastral-information search and real-estate services connected to cadastral maps. Published JavaScript identifies an LSMD_CONT_LDREG WFS feature type and uses a PNU filter for a one-feature parcel map; the configured public route returned HTTP 404 when called directly.",
+        "method": "Separate English web search followed by official public-page and viewer review."
+      },
+      {
+        "language": "Korean",
+        "query": "대전광역시 지적도 지적정보 부동산정보 지도서비스 공간정보포털 지번 검색",
+        "result": "대전광역시 공간정보포털은 부동산정보와 지적정보검색 메뉴를 제공하고, 지적도 관련 토지 정보를 지도에서 확인한다고 안내합니다. 공개 JavaScript에는 LSMD_CONT_LDREG WFS와 PNU 조건을 사용하는 필지 조회가 나타나지만, 설정된 WFS 경로를 직접 호출한 결과 404였습니다.",
+        "method": "Separate native-language web search and official public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gis.daejeon.go.kr/",
+        "observation": "Official Daejeon Metropolitan City Spatial Information Portal; exposes dedicated real-estate and cadastral-information search."
+      },
+      {
+        "url": "https://gis.daejeon.go.kr/introMapService.do",
+        "observation": "Official service description: location/address search and parcel-related real-estate information connected to cadastral maps."
+      },
+      {
+        "url": "https://gis.daejeon.go.kr/ispmap.do?menu_cde=menu008",
+        "observation": "Official cadastral-information search viewer page and published scripts."
+      },
+      {
+        "url": "https://gis.daejeon.go.kr/js/web/isp/layout/realMapService.js",
+        "observation": "Official viewer JavaScript uses the LSMD_CONT_LDREG WFS feature type and filters by PNU for a one-feature cadastral parcel response."
+      },
+      {
+        "url": "https://gis.daejeon.go.kr/lib/o2map/config/o2Config.js",
+        "observation": "Official viewer config defines relative WFS route `o2map/services/wfs`."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Fetched official cadastral-info viewer and its static JavaScript/config. The code requests WFS 1.1.0 GETFEATURE for layer LSMD_CONT_LDREG, with one feature and CQL PNU equality; its output is read as GeoJSON geometry. The configured public route https://gis.daejeon.go.kr/o2map/services/wfs returned HTTP 404 for both GetCapabilities and a one-feature bounded locator query. No PNU was used and no geometry was retained.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "not completed: published direct route returned HTTP 404",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://gis.daejeon.go.kr/",
+    "https://gis.daejeon.go.kr/introMapService.do",
+    "https://gis.daejeon.go.kr/ispmap.do?menu_cde=menu008",
+    "https://gis.daejeon.go.kr/js/web/isp/layout/realMapService.js",
+    "https://gis.daejeon.go.kr/lib/o2map/config/o2Config.js"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Daejeon Metropolitan City operates an official spatial-information portal with dedicated real-estate and cadastral-information search. The portal describes real-estate information as linked to cadastral maps and provides lot-related information.",
+    "verifiedOpenScope": "The viewer’s published WFS route returned HTTP 404 to ordinary anonymous direct requests, including GetCapabilities and a bounded one-feature query. No WUP point-specific parcel result could be verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Daejeon local cadastral/land-record evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://gis.daejeon.go.kr/",
+    "scope": "Daejeon Metropolitan City operates an official spatial-information portal with dedicated real-estate and cadastral-information search. The portal describes real-estate information as linked to cadastral maps and provides lot-related information."
+  },
+  "wupCityCode": 2214,
+  "cityId": "wup2025:2214",
+  "queueRank": 331,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    36.3461964380978,
+    127.39195575042
+  ],
+  "rootReviewedAt": "2026-10-08T22:39:59.726347+00:00"
+}

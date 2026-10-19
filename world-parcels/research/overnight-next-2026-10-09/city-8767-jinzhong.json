@@ -1,0 +1,184 @@
+{
+  "name": "Jinzhong",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1169,
+  "point": [
+    37.6887939356622,
+    112.736514077553
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jinzhong official cadastral parcel map GIS land registration 晋中 地籍图 土地管理 官网",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+          "https://sxjz.gov.cn/"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Chinese",
+        "query": "晋中市 官方 地籍图 不动产登记 土地宗地图 GIS 晋中市自然资源局",
+        "result": "No first-party city-level parcel source found; official municipal domain timed out.",
+        "actualResultUrls": [
+          "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+          "https://sxjz.gov.cn/"
+        ],
+        "method": "Separate Chinese-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+        "operator": "Shanxi Provincial Department of Natural Resources",
+        "scope": "Official provincial land/natural-resource service and regional bureau source; city-local cadastral geometry endpoint not found."
+      },
+      {
+        "url": "https://sxjz.gov.cn/",
+        "operator": "Jinzhong Municipal Government",
+        "scope": "Official city site did not respond in the direct request; local custodian details remain uncertain."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sxjz.gov.cn/",
+        "method": "Official city government source check",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "Network request timed out; no geometry query was made."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1169 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+    "url": "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+    "operator": "Shanxi Provincial Department of Natural Resources",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "A government-hosted 2026-06-28 report explicitly identifies Jinzhong city real-estate registration and transaction service center. The publishing municipality is Jincheng, while the reported service is Jinzhong. Its panoramic registration hall is not a parcel map.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8767,
+  "cityId": "wup2025:8767",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    37.6887939356622,
+    112.736514077553
+  ],
+  "population2025k": 473.959,
+  "populationUnit": "persons",
+  "queueRank": 1169,
+  "population2025": 473959,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "A government-hosted 2026-06-28 report explicitly identifies Jinzhong city real-estate registration and transaction service center. The publishing municipality is Jincheng, while the reported service is Jinzhong. Its panoramic registration hall is not a parcel map.",
+  "registryEvidenceUrls": [
+    "https://www.jcgov.gov.cn/dtxx/sxyw/202606/t20260628_2364923.shtml",
+    "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+    "https://sxjz.gov.cn/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "priorCustodyAssessment": {
+    "registryFound": null,
+    "registryBasis": "Only provincial natural-resource context and an unavailable city government endpoint were found; Jinzhong-local cadastral custody is not established.",
+    "registryEvidenceUrls": [
+      "https://zrzyt.shanxi.gov.cn/zwgk/bzdt/gsdt1/",
+      "https://sxjz.gov.cn/"
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 8767,
+      "url": "https://www.jcgov.gov.cn/dtxx/sxyw/202606/t20260628_2364923.shtml",
+      "checkedAt": "2026-10-09T08:59:10.021066+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://www.jcgov.gov.cn/dtxx/sxyw/202606/t20260628_2364923.shtml",
+      "contentType": "text/html",
+      "bytesRead": 37050,
+      "sha256": "082b3d4cdd94061c460c8768c8c9ac5b758453a0d584a3e0263a8fd03ed1f52c",
+      "complete": true,
+      "termPresence": {
+        "不动产": true,
+        "地籍": false,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": true,
+        "登记": true,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "A government-hosted 2026-06-28 report explicitly identifies Jinzhong city real-estate registration and transaction service center. The publishing municipality is Jincheng, while the reported service is Jinzhong. Its panoramic registration hall is not a parcel map.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.jcgov.gov.cn/dtxx/sxyw/202606/t20260628_2364923.shtml",
+      "observation": "A government-hosted 2026-06-28 report explicitly identifies Jinzhong city real-estate registration and transaction service center. The publishing municipality is Jincheng, while the reported service is Jinzhong. Its panoramic registration hall is not a parcel map.",
+      "method": "Root primary-page review plus scoped direct network checks"
+    }
+  ],
+  "integratedAt": "2026-10-09T09:09:44.889046+00:00"
+}

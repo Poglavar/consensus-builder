@@ -1,0 +1,38 @@
+{
+  "cityCode": 10926,
+  "queueRank": 2681,
+  "name": "Sihong County",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [33.4644300861662, 118.203916259986],
+  "population2025": 220620,
+  "population2025k": 220.62,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sihong County Jiangsu official cadastral map parcel public map land registry",
+        "result": "Official Jiangsu government service portal and Jiangsu public-resource land-auction notices naming Sihong County Natural Resources and Planning Bureau were found. No public Sihong parcel viewer/API was identified.",
+        "actualResultUrls": [
+          "https://sqsh.jszwfw.gov.cn/",
+          "https://jsggzy.jszwfw.gov.cn/jyxx/003013/003013001/20260826/11951419.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "泗洪县 不动产登记 地图 查询 官方",
+        "result": "The official Sihong government service portal lists the county and its Natural Resources and Planning Bureau, while official Jiangsu notices provide land-transaction information. No public cadastral parcel map or anonymous geometry API was found.",
+        "actualResultUrls": [
+          "https://sqsh.jszwfw.gov.cn/",
+          "https://www.jszwfw.gov.cn/",
+          "https://jsggzy.jszwfw.gov.cn/jyxx/003013/003013001/20260204/10390263.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "runtimeReadiness": "held"
+}

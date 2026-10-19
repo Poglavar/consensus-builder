@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Complete bounded, exact identity, footprint and binding acceptance through the existing adapter; no imported parcels.",
+  "checkedAt": "2026-10-07T21:53:11.525Z",
+  "researchCityId": "wup2025:3809",
+  "sourceId": "za-joburg-registered-stands",
+  "descriptor": {
+    "id": "za-joburg-registered-stands",
+    "name": "Johannesburg registered cadastral stands",
+    "adapter": "arcgis",
+    "cityIds": [
+      "ennerdale"
+    ],
+    "countryCode": "ZA",
+    "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+    "idField": "SG_ID",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "ZA-JOBURG-",
+    "outFields": [
+      "OBJECTID",
+      "SG_ID",
+      "PROPERTY_ID",
+      "STAND_NO",
+      "STATUS_DESC",
+      "LAND_TYPE_NAME"
+    ],
+    "attributeNotNull": [
+      "SG_ID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "nativeGeometryMode": "parts",
+    "disjointParts": true,
+    "partsCoordinatePrecision": 9,
+    "partMatchFields": [
+      "PROPERTY_ID",
+      "STAND_NO",
+      "STATUS_DESC"
+    ],
+    "pageSize": 10,
+    "maxFeatures": 1500,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 2,
+    "metricSrid": 32735,
+    "idBatchSize": 10,
+    "parcelNumberField": "STAND_NO"
+  },
+  "center": [
+    -26.4062859886009,
+    27.8459423386999
+  ],
+  "grid": 0.0025,
+  "tests": [],
+  "requests": [
+    {
+      "checkedAt": "2026-10-07T21:53:11.530Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.845%2C-26.4075%2C27.8475%2C-26.405&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 1496
+    },
+    {
+      "checkedAt": "2026-10-07T21:53:13.028Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.845%2C-26.4075%2C27.8475%2C-26.405&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 102,
+      "elapsedMs": 394
+    },
+    {
+      "checkedAt": "2026-10-07T21:53:13.424Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=754137%2C754156%2C754230%2C754232%2C754233%2C754266%2C755693%2C757567",
+      "method": "GET",
+      "operation": "geometry",
+      "error": "The operation was aborted due to timeout",
+      "elapsedMs": 15171
+    }
+  ],
+  "privacy": "Only request parameters, native parcel identifiers, counts and geometry hashes saved in repository. Geometry stays in temporary acceptance cache; no owners requested.",
+  "result": "failed",
+  "failure": {
+    "message": "Parcel provider timed out.",
+    "code": "parcel-source-unavailable",
+    "status": 504
+  }
+}

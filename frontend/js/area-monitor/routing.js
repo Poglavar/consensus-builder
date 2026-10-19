@@ -64,11 +64,8 @@
 
         const monitorCityLabel = getCityLabel(monitorCityId);
         const currentCityLabel = getCityLabel(currentCityId);
-        const confirmFn = typeof global.showStyledConfirm === 'function'
-            ? global.showStyledConfirm
-            : global.confirm;
         const message = `This area monitor was created for ${monitorCityLabel}, but the current city is ${currentCityLabel}.\n\nSwitch to ${monitorCityLabel} and load the monitor?`;
-        const proceed = await confirmFn(message, {
+        const proceed = await global.CbDialog.confirm(message, {
             okText: 'Switch city',
             cancelText: 'Cancel'
         });
@@ -93,19 +90,11 @@
         return false;
     }
 
+    // Show the watched-area controls in Activity. Not on phones, where the
+    // bottom sheet would cover the monitored area this route just brought into view.
     function expandAreaMonitorSection() {
-        const sidebar = document.getElementById('sidebar');
-        // Don't open a closed sidebar (e.g. on mobile)
-        if (!sidebar || sidebar.classList.contains('collapsed')) return;
-        const section = document.querySelector('.accordion-section[data-section="areaMonitor"]');
-        if (!section) return;
-        const content = section.querySelector('.accordion-content');
-        if (content && !content.classList.contains('active')) {
-            const header = section.querySelector('.accordion-header');
-            if (header && typeof toggleButtonAccordion === 'function') {
-                toggleButtonAccordion(header);
-            }
-        }
+        if (global.innerWidth < 768 || !global.MapShell) return;
+        global.MapShell.revealSection('areaMonitor');
     }
 
     async function loadMonitor(monitorId, options = {}) {
@@ -187,17 +176,18 @@
     function handleRouteOnLoad() {
         const monitorId = parseMonitorRoute();
         if (monitorId) {
-            // Delay to let map and parcels initialize
-            setTimeout(() => loadMonitor(monitorId, { fitBounds: true }), 1500);
+            // loadMonitor only needs the booted map (its overlay fetches its own geometries), so
+            // wait for app boot rather than a fixed 1.5 s after `load`.
+            loadMonitor(monitorId, { fitBounds: true });
         }
     }
 
-    // Listen for areaMonitorCreated to load the new monitor
+    // Listen for areaMonitorCreated to load the new monitor. The creator pushes the monitor URL
+    // before dispatching, so there is nothing to wait for.
     global.addEventListener('areaMonitorCreated', (e) => {
         const monitor = e.detail;
         if (monitor && monitor.id) {
-            // Small delay for URL to update
-            setTimeout(() => loadMonitor(monitor.id, { fitBounds: true }), 300);
+            loadMonitor(monitor.id, { fitBounds: true });
         }
     });
 
@@ -212,11 +202,11 @@
         }
     });
 
-    // Init on page load
-    if (document.readyState === 'complete') {
-        handleRouteOnLoad();
+    // Init once the app has booted (all scripts loaded + map core initialised; map-core.js).
+    if (typeof global.whenAppBooted === 'function') {
+        global.whenAppBooted().then(handleRouteOnLoad);
     } else {
-        global.addEventListener('load', handleRouteOnLoad);
+        console.error(`[${new Date().toISOString()}] [area-monitor] whenAppBooted is missing (map-core.js not loaded); monitor route not handled.`);
     }
 
     // Public API

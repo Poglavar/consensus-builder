@@ -1,0 +1,13 @@
+{
+  "taskId": "city:8537",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-8537-ratlam.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ratlam-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:48:01.136766Z",
+  "reviewNote": "Ratlam district first-party page confirms local land-record service custody, including spatial records and Naksha. No first-party safe native-ID/full-polygon response or qualification artifact exists. Timeouts and unavailable viewer remain unresolved, not evidence of citywide absence; all admission gates remain unverified."
+}

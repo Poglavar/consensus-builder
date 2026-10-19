@@ -1,0 +1,104 @@
+{
+  "name": "Caleta Sanitaria",
+  "country": "Peru",
+  "countryCode": "PE",
+  "rank": 957,
+  "point": [
+    -12.097652825932,
+    -77.2015266232657
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Caleta Sanitaria Callao official cadastral map municipal parcel plan sectors Cercado del Callao",
+        "scope": "Find a local custodian, public parcel-map entry point, and safe geometry interface.",
+        "result": "The municipality publishes static cadastral plans for Cercado del Callao and announced cadastral polygons/holder reports only for cadastral sectors 06 and 07. WUP label point is not confirmed to lie in those sectors or even on a parcel-covered mainland area; the municipal source is therefore not treated as proven coverage for this locator. Static PDFs are not a feature service.",
+        "actualResultUrls": [
+          "https://www.municallao.gob.pe/portal-anterior/index.php/planos"
+        ],
+        "executionMethod": "Separate English-language web search; official public source review."
+      },
+      {
+        "language": "Spanish",
+        "query": "Caleta Sanitaria Callao plano catastral catastro municipal plano catastral oficial",
+        "scope": "Find first-party city/local-language registry, cadastral mapping and parcel-service evidence.",
+        "result": "The municipality publishes static cadastral plans for Cercado del Callao and announced cadastral polygons/holder reports only for cadastral sectors 06 and 07. WUP label point is not confirmed to lie in those sectors or even on a parcel-covered mainland area; the municipal source is therefore not treated as proven coverage for this locator. Static PDFs are not a feature service.",
+        "actualResultUrls": [
+          "https://www.municallao.gob.pe/portal-anterior/index.php/planos"
+        ],
+        "executionMethod": "Separate Spanish-language web search and first-party portal review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Municipalidad Provincial del Callao cadastral plans",
+        "operator": "Municipalidad Provincial del Callao, urban development and cadastre division",
+        "homeUrl": "https://www.municallao.gob.pe/portal-anterior/index.php/planos",
+        "observation": "The municipality publishes static cadastral plans for Cercado del Callao and announced cadastral polygons/holder reports only for cadastral sectors 06 and 07. WUP label point is not confirmed to lie in those sectors or even on a parcel-covered mainland area; the municipal source is therefore not treated as proven coverage for this locator. Static PDFs are not a feature service."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "PE-1904-LOCAL-PARCEL-RESEARCH",
+    "name": "Municipalidad Provincial del Callao cadastral plans",
+    "url": "https://www.municallao.gob.pe/portal-anterior/index.php/planos",
+    "operator": "Municipalidad Provincial del Callao, urban development and cadastre division",
+    "serviceType": "Official local registry/cadastre evidence reviewed; no anonymous geometry-only feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal cadastre exists for specified Callao sectors, but city-specific source coverage for this settlement locator is unclear.",
+    "verifiedOpenScope": "The municipality publishes static cadastral plans for Cercado del Callao and announced cadastral polygons/holder reports only for cadastral sectors 06 and 07. WUP label point is not confirmed to lie in those sectors or even on a parcel-covered mainland area; the municipal source is therefore not treated as proven coverage for this locator. Static PDFs are not a feature service.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_scope_unconfirmed",
+  "technicalBlocker": "Only static map PDFs and sector-specific publication were found; no public geometry service/schema.",
+  "remainingUncertainty": "The locality/point may be outside the published Cercado sectors; no boundary test was completed.",
+  "nextStep": "Revisit only if a public source publishes a schema with safe stable identifiers and an anonymous geometry-only query; keep any future sample bounded and field-allowlisted.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 1904,
+  "cityId": "wup2025:1904",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -12.097652825932,
+    -77.2015266232657
+  ],
+  "population2025k": 572.154,
+  "populationUnit": "persons",
+  "queueRank": 957,
+  "population2025": 572154,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "City-specific registry evidence is documented in the discovery record.",
+  "registryEvidenceUrls": [
+    "https://www.municallao.gob.pe/portal-anterior/index.php/planos"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Only static map PDFs and sector-specific publication were found; no public geometry service/schema."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.municallao.gob.pe/portal-anterior/index.php/planos",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Municipalidad Provincial del Callao - MPC - Plataforma del Estado Peruano"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

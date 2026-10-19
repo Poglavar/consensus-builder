@@ -1,0 +1,70 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 4697,
+  "queueRank": 2300,
+  "name": "Rabak",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "iso3": "SDN",
+  "point": [13.1874807019092, 32.7444507506874],
+  "population2025": 253166,
+  "population2025k": 253.166,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rabak Sudan official cadastral parcel map land registry GIS",
+        "result": "Search found official Sudan Judiciary land-registration administration, the official Aqari real-estate registration platform, and NIC’s official Sudan Spatial Portal project page. No search result established a Rabak parcel feature endpoint or public parcel geometry.",
+        "actualResultUrls": ["https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "https://aqari.nctr.sd/ar", "https://nic.gov.sd/public/projectDetails/3"]
+      },
+      {
+        "language": "Arabic",
+        "query": "ربك السودان خريطة قطع الأراضي السجل العقاري المساحة GIS رسمي",
+        "result": "البحث العربي وجد إدارة تسجيلات الأراضي التابعة للسلطة القضائية ومنصة عقاري وصفحة بوابة السودان المكانية الرسمية؛ لم يثبت استجابة عامة لقطع أراضٍ في ربك أو خدمة هندسية عامة.",
+        "actualResultUrls": ["https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "https://aqari.nctr.sd/ar", "https://nic.gov.sd/public/projectDetails/3"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "Official Sudan Judiciary material identifies the Land Registrations administration as the cadastral/land-registration custodian, with the General Registrar and branch offices in all states. It describes land settlement, opening registers, cadastral sketches/maps, and registration offices. This is a national official custodian and procedure source; it does not prove a Rabak-specific public parcel endpoint.",
+    "localityEvidence": "No first-party Rabak or White Nile local registry office page, map layer, or parcel response was found. Rabak locality coverage is therefore unverified.",
+    "urls": ["https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "https://aqari.nctr.sd/ar", "https://nic.gov.sd/public/projectDetails/3"]
+  },
+  "officialSources": [
+    {"url":"https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A", "observation":"Sudan Judiciary page states the Land Registrations administration has a central General Registrar and branch offices in all states; explains settlement, register opening, cadastral sketches/maps, and registration offices. No public parcel service is exposed."},
+    {"url":"https://aqari.nctr.sd/ar", "observation":"Official Aqari platform describes a national Judiciary-linked electronic land/real-estate registration service and services for record review, certificates, and subdivision. Public landing page exposes no anonymous map, parcel geometry, schema, or safe parcel-ID query."},
+    {"url":"https://nic.gov.sd/public/projectDetails/3", "observation":"Official National Information Center project page describes Sudan Spatial Portal as a WMS/WFS-capable national spatial viewer and links to https://www.geoportal.gov.sd/. The linked host could not be resolved in the bounded request."}
+  ],
+  "routes": [
+    {"method":"SEARCH","url":"https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A","outcome":"Official Judiciary land-registration custodian and procedures found; no Rabak parcel geometry or public query endpoint."},
+    {"method":"SEARCH","url":"https://aqari.nctr.sd/ar","outcome":"Official Aqari registration platform found; landing page contains service descriptions only and no anonymous parcel ID-plus-geometry response."},
+    {"method":"SEARCH","url":"https://nic.gov.sd/public/projectDetails/3","outcome":"Official NIC page found; describes national WMS/WFS spatial portal and links to geoportal.gov.sd."},
+    {"method":"GET","url":"https://www.geoportal.gov.sd/","outcome":"TLS-verified bounded GET attempted; DNS resolution timed out after 20 seconds. No retry with altered TLS, credentials, or bypass was attempted."},
+    {"method":"INSPECTION","url":"https://aqari.nctr.sd/ar","outcome":"Public HTML inspection via official page found no map configuration, WMS/WFS URL, parcel schema, CRS, or safe anonymous parcel query."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "boundedAnonymousResponse": {"requestScope":"Official public-page inspection and one bounded geoportal host request; no safe anonymous parcel ID-plus-geometry endpoint was exposed.","featureCount":null,"geometryRetained":false}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed anonymously", "polygon geometry if later exposed anonymously", "official source service URL", "source CRS or requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data", "identity documents"],
+  "sampleGeoJSON": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "resultCategory": "national_registry_custodian_found_no_public_rabak_parcel_geometry_verified",
+  "coverageAssessment": {"claimedScope":"Official Sudan Judiciary land-registration administration, Aqari platform, and NIC-described Sudan Spatial Portal.","verifiedOpenScope":"No Rabak-bounded cadastral parcel feature response, native identity, schema, CRS, or polygon was retrieved.","countrywideVerified":false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The official sources establish Sudan’s land-registration custodian and a claimed national spatial portal, but current Rabak coverage, public anonymous access, schema, CRS, stable native identity, geometry licensing, update cadence, and adapter behavior remain unverified. A DNS timeout or no exact-point response would not establish citywide absence.",
+  "registryFoundNote": "true reflects official evidence of the national cadastral/land-registration custodian; it is not evidence of a Rabak-specific integrated parcel source."
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7568-bahawalpur.json",
+  "purpose": "Document first-party local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official district records confirm local land-record and deed-maintenance administration. PULSE’s public GIS page lists Bahawalpur cadastral-map layers and says complete parcel details require login. Its indicative-only boundary disclaimer describes the layer’s intended legal use and does not alone disqualify intact reference polygons. The technical blocker is that this review verified no anonymous full polygon response, native parcel key or safe schema. No feature query or login was performed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bahawalpur.punjab.gov.pk/administration_bahawalpur",
+      "observation": "Official Bahawalpur district administration lists maintenance of periodical revenue/land records, land deed registration and maintenance, and inspections of tehsil, sub-registrar and patwari records."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab PULSE public GIS includes Bahawalpur under Cadastral Maps. The viewer’s indicative-line disclaimer describes legal use; complete parcel details separately require login. No anonymous geometry endpoint/schema was verified here."
+    },
+    {
+      "url": "https://pulse.gop.pk/",
+      "observation": "Official PULSE project describes parcel mapping and parcel maps linked to Punjab land records; current procurement and map-public-display notices include the Bahawalpur division."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority portal describes digitized land-record services and Arazi Record Centres; record transactions are distinct from public map geometry."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET official public viewer page",
+      "result": "PULSE’s public GIS page lists a Bahawalpur cadastral-map category and separately marks complete parcel details as requiring login. Its statement that mapped lines are indicative rather than legal boundaries describes intended use; that disclaimer alone does not disqualify intact public polygons as reference geometry. No anonymous full-polygon response, native parcel key, or safe output schema was verified in this review. No map feature query or login was performed. The actual technical hold is unverified public geometry/schema, not the informational disclaimer or gated detailed property records."
+    },
+    {
+      "url": "https://bahawalpur.punjab.gov.pk/administration_bahawalpur",
+      "method": "GET official district revenue-administration page",
+      "result": "Confirms local land records and deed-maintenance functions."
+    }
+  ],
+  "registryBasis": "Official district records confirm local land-record and deed-maintenance administration, while PULSE publicly lists Bahawalpur cadastral maps. The viewer describes mapped lines as indicative rather than legal and separately login-gates complete parcel details; neither fact alone rules out public reference polygons. This review did not verify an anonymous full-polygon response, native parcel key or safe schema, and made no feature query.",
+  "geometryDisposition": "No full geometry sample: the public layer’s anonymous geometry response/schema and native key have not been verified. The informational boundary disclaimer and login gate for detailed attributes are not treated as geometry disqualifiers."
+}

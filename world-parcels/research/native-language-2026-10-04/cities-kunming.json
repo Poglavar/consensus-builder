@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 151,
+  "city": "Kunming",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kunming.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "昆明 不动产 地籍图 宗地 GIS 开放数据 查询"
+  },
+  "results": [
+    {
+      "title": "Kunming cadastral registration center information services",
+      "url": "https://dnr.yn.gov.cn/html/2018/zhoushidongtai_1211/23306.html",
+      "kind": "official-service",
+      "note": "Describes registration, certificate verification and status services; no parcel vector endpoint."
+    },
+    {
+      "title": "Kunming land supply parcel coordinate remediation",
+      "url": "https://dnr.yn.gov.cn/html/2019/zhoushidongtai_1030/26697.html",
+      "kind": "official-project",
+      "note": "Historical work to vectorize parcel coordinate records for supply parcels; does not establish a public city cadastral feed."
+    }
+  ],
+  "assessment": "Search found official land-record and land-supply parcel data projects but no open citywide cadastral layer or exact-ID query service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

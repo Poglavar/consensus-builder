@@ -1,0 +1,54 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "NT",
+ "regionName": "Northern Territory",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "NTLIS metadata (via search results, not fetched) says the NT DCDB covers the whole NT but online access to digital data is limited to NT Government; a digital data agreement may be required.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.ntlis.nt.gov.au/",
+   "observation": "HTTP 403 Cloudflare \"Just a moment\" challenge; not bypassed. Same for /geoserver/ows WFS capabilities."
+  },
+  {
+   "url": "https://gis-d.nt.gov.au/arcgis/rest/services",
+   "observation": "Public ArcGIS root reachable (200). NR_Maps_WMS MapServer has 241 layers, none cadastral/parcel by name; folders Administrative_Boundaries etc. return Token Required; Hosted/DLGHCD folders hold no parcel layer by name."
+  },
+  {
+   "url": "https://data.nt.gov.au/api/3/action/package_search?q=cadastre",
+   "observation": "NT open data CKAN reachable; cadastre search returned no parcel dataset."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.ntlis.nt.gov.au/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge, not bypassed"
+  },
+  {
+   "url": "https://gis-d.nt.gov.au/arcgis/rest/services/NR_Maps_WMS/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service description only; no parcel layer"
+  },
+  {
+   "url": "https://gis-d.nt.gov.au/arcgis/rest/services/Administrative_Boundaries?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 499 Token Required"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "ILISMaps / NT Atlas viewer and any NTLIS WMS/WFS sit behind the Cloudflare challenge from this network, so a viewer-embedded service could not be inspected; may be viewer_only in a real browser.",
+ "nextStep": "Retry from a network the challenge admits, or request NT DCDB via the Dept of Lands (digital data agreement)."
+}

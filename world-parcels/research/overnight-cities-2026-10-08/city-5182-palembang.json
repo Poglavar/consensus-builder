@@ -1,0 +1,144 @@
+{
+  "name": "Palembang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 237,
+  "point": [
+    -2.97496077763095,
+    104.755038988977
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Indonesian",
+        "query": "Palembang peta bidang tanah BHUMI bidang tanah Palembang kantor pertanahan resmi",
+        "scope": "Find official Palembang cadastral parcel viewer and anonymous vector query.",
+        "result": "The official Palembang municipal geoportal publishes nine public metadata records and an OGC WFS catalog. Current WFS capabilities list public thematic layers (investment, pipes, strategic areas, health facilities, heritage, and others), but no bidang tanah/persil/cadastral layer. ATR/BPN BHUMI is the national public geospatial viewer; its published catalog/docs describe parcel datasets but do not establish an anonymously queryable Palembang parcel feature in the evidence reviewed. A city-specific official ATR/BPN notice confirms a weekend land-service information desk that provides requirements, procedures, costs, consultation and status information, but it does not identify a public parcel-record or map service. The national BHUMI viewer code advertises a `Bidang Tanah` layer, but a bounded Palembang WUP-point test got a WMS layer error; the viewer proxy returned HTTP 401 without authorization. No city-specific full geometry was obtained.",
+        "actualResultUrls": [
+          "https://geoportal.palembang.go.id/main/peta",
+          "https://geoportal.palembang.go.id/api/record/publik",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://kot-palembang.atrbpn.go.id/berita/tak-sempat-datang-di-hari-kerja-kantor-pertanahan-kota-palembang-tetap-melayani-di-akhir-pekan"
+        ],
+        "executionMethod": "Bahasa Indonesia search; read-only inspection of official city geoportal metadata, WFS capabilities, and ATR/BPN BHUMI documentation."
+      },
+      {
+        "language": "English",
+        "query": "Palembang official open cadastral land parcel map city geoportal parcel boundaries",
+        "scope": "Cross-check English documentation for city cadastral features or a parcel download.",
+        "result": "Official Palembang geoportal is active and exposes a WFS endpoint, but its advertised feature types are thematic municipal datasets rather than cadastral parcels. The official ATR/BPN land office and BHUMI platform establish land administration and public mapping services, not a confirmed city-specific full-geometry endpoint. The primary city land-office page provides service-information/contact assistance, not an actual cadastral registration workflow or parcel map.",
+        "actualResultUrls": [
+          "https://geoportal.palembang.go.id/main/peta",
+          "https://geoportal.palembang.go.id/geoserver/palapa/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+          "https://kot-palembang.atrbpn.go.id/",
+          "https://kot-palembang.atrbpn.go.id/berita/tak-sempat-datang-di-hari-kerja-kantor-pertanahan-kota-palembang-tetap-melayani-di-akhir-pekan"
+        ],
+        "executionMethod": "English search and direct read-only inspection of official geoportal WFS GetCapabilities."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Geoportal Kota Palembang",
+        "operator": "Pemerintah Kota Palembang",
+        "homeUrl": "https://geoportal.palembang.go.id/main/peta",
+        "observation": "Public map metadata and WFS are live. The WFS GetCapabilities catalog contains thematic city layers; no parcel/cadastre feature type appears."
+      },
+      {
+        "name": "BHUMI ATR/BPN",
+        "operator": "Kementerian Agraria dan Tata Ruang / Badan Pertanahan Nasional",
+        "homeUrl": "https://bhumi.atrbpn.go.id/peta",
+        "observation": "Official public mapping platform documents land-parcel datasets at national catalog level, but a Palembang-specific public feature layer and geometry response were not verified."
+      },
+      {
+        "name": "Kantor Pertanahan Kota Palembang (ATR/BPN)",
+        "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency, Palembang City Office",
+        "homeUrl": "https://kot-palembang.atrbpn.go.id/berita/tak-sempat-datang-di-hari-kerja-kantor-pertanahan-kota-palembang-tetap-melayani-di-akhir-pekan",
+        "observation": "Official notice dated 19 July 2026 says its weekend desk provides information about land-service requirements, procedures, costs, consultation and service status. It does not specify a parcel-map viewer or cadastral data procedure."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geoportal.palembang.go.id/api/record/publik",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Returns nine public metadata records; none identify cadastral parcels or land registry geometry."
+      },
+      {
+        "url": "https://geoportal.palembang.go.id/geoserver/palapa/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "WFS capabilities lists 12 feature types: social conflict, investment, water utility pipes, strategic areas, creative-industry/health/sports/heritage themes. No parcel/cadastral type is listed."
+      },
+      {
+        "url": "https://kot-palembang.atrbpn.go.id/berita/tak-sempat-datang-di-hari-kerja-kantor-pertanahan-kota-palembang-tetap-melayani-di-akhir-pekan",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city BPN SPA shell returned HTTP 200. The city-published notice says the desk supplies general land-service requirements/procedure/cost/status information; it does not document a parcel-map or public parcel-registration workflow."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/expapi/bhumigs/umum/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&INFO_FORMAT=application%2Fjson&LAYERS=umum%3APersil&QUERY_LAYERS=umum%3APersil&SRS=EPSG%3A4326&BBOX=104.753038988977%2C-2.97696077763095%2C104.757038988977%2C-2.97296077763095&WIDTH=512&HEIGHT=512&X=256&Y=256&FEATURE_COUNT=5",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "image/png",
+        "observation": "Followed the actual BHUMI viewer layer name/service route with a small WUP-centered GetFeatureInfo request. Service returned a WMS ServiceException image stating layer `umum:Persil` does not exist on that route; no parcel feature returned. This does not prove citywide absence."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/expapi/getPersil",
+        "method": "POST",
+        "httpStatus": 401,
+        "contentType": "application/json",
+        "observation": "Exact viewer feature-info proxy route tested using WUP-centred pixel/bbox parameters and the published `umum:Persil` layer; anonymous response was `{\"statusCode\":401,\"error\":\"Unauthorized\"}`. No token or property data retained."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "ID-SUMSEL-PALEMBANG-GEOPORTAL",
+    "name": "Geoportal Kota Palembang public thematic WFS catalog",
+    "url": "https://geoportal.palembang.go.id/geoserver/palapa/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+    "operator": "Pemerintah Kota Palembang",
+    "serviceType": "Public OGC WFS catalog with city thematic datasets; no cadastral/parcel feature type listed.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "WFS GetCapabilities listed 12 thematic types but no parcel layer; no land feature identifiers returned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public Palembang geoportal thematic datasets and national land-administration maps.",
+    "verifiedOpenScope": "Palembang municipal WFS is live but its public feature-type catalog excludes cadastral parcels. The official local BPN notice establishes a general land-service information desk, not parcel data. A bounded national BHUMI viewer query at the city WUP point returned a layer error and its feature-info proxy returned 401; no geometry was returned.",
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The municipal public WFS catalog has no cadastral feature type. BHUMI viewer’s bounded Palembang query returned a layer error and its feature-info proxy returned 401 anonymously. The local BPN notice describes general service consultation, not an anonymous parcel feature route.",
+  "remainingUncertainty": "Whether a specific Palembang land-registration service can provide an official parcel map or data export through the city BPN office, and whether another viewer allows public full geometry.",
+  "nextStep": "Ask the Palembang land office for the specific parcel-map/registration route or data service and test a documented anonymous endpoint before marking cadastral data available.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5182,
+  "cityId": "wup2025:5182",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -2.97496077763095,
+    104.755038988977
+  ],
+  "population2025k": 2132.576,
+  "queueRank": 237,
+  "population2025": 2132576,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The city BPN office’s official weekend-service notice offers information on land-service requirements/procedures and status, but does not document a specific parcel-registration or cadastral-map procedure. The city Geoportal WFS catalog contains no parcel layer; therefore city-specific cadastral availability remains unconfirmed.",
+  "rootReviewedAt": "2026-10-08T21:25:23.474999+00:00"
+}

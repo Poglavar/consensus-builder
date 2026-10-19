@@ -1,0 +1,69 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:TV:funafuti",
+  "name": "Funafuti",
+  "country": "Tuvalu",
+  "countryCode": "TV",
+  "centerLatLon": [
+    -8.516667,
+    179.216667
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/TV.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/TV.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Tuvalu land and survey department parcel cadastral GIS Funafuti official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "TUVLIS Tuvalu Land Information System map portal GIS viewer",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Tuvaluan fenua cadastral survey map Funafuti",
+      "language": "Tuvaluan-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://finance.gov.tv/wp-content/uploads/2022/05/Te-Kakeega-III_TuvaluNationalStrategyForSustainableDevelopment_2016to2020.pdf",
+      "observation": "Official strategy documents TUVLIS with cadastral data; official technical presentation says the TUVLIS server is department-only on government network, and public data is shared through restricted arrangements. No open portal/query endpoint found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ggim.un.org/meetings/2018-International_Workshop_Tonga/documents/Session_5.3-Faatasi_Malologa.pdf",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "application/pdf",
+      "outcome": "Official Tuvalu geospatial presentation states TUVLIS is on a standalone government-network server accessible to the Lands & Survey Department; no public parcel API."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-funafuti.json"
+}

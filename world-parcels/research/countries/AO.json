@@ -1,0 +1,42 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AO",
+ "country": "Angola",
+ "checkedAt": "2026-09-29",
+ "status": "no_online_cadastre_found",
+ "cadastreAuthority": "Instituto Geografico e Cadastral de Angola (IGCA), MINOPUH",
+ "portalsFound": [
+  {
+   "url": "https://www.igca.gov.ao/",
+   "observation": "IGCA site reachable (200); no geoportal/parcel map link found on the homepage."
+  },
+  {
+   "url": "https://www.esri.com/en-us/lg/industry/government/stories/angola-modernizes-land-administration-gis-cadastre-management",
+   "observation": "Esri story: national cadastre system deployed at IGCA provincial offices; internal, no public parcel service described."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.igca.gov.ao/",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "homepage only; no open parcel endpoint located",
+   "contentType": "text/html"
+  },
+  {
+   "url": "https://www.ang.gov.ao/",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "unreachable (guessed host)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Internal national cadastre system; no public service identified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only homepage and web search checked; a public geoportal could exist under a different host.",
+ "nextStep": "Search for IGCA/SIGT geoportal and any ArcGIS/WFS endpoints."
+}

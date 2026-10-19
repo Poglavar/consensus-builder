@@ -1,0 +1,15 @@
+{
+  "numTotalTests": 64,
+  "numPassedTests": 64,
+  "numFailedTests": 0,
+  "success": true,
+  "checkedAt": "2026-10-09",
+  "scope": "150-city intermediate catalog before deterministic wider Baltimore hold",
+  "testFiles": [
+    "csv-geojson-parcel-reader.test.js",
+    "geojson-snapshot-components.test.js",
+    "geojson-snapshot-parcel-adapter.test.js",
+    "japan-shared-snapshot-sources.test.js",
+    "parcel-coverage-report.test.js"
+  ]
+}

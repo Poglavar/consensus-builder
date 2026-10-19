@@ -1,0 +1,120 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:FJ:suva",
+  "name": "Suva",
+  "country": "Fiji",
+  "countryCode": "FJ",
+  "centerLatLon": [
+    -18.133333,
+    178.416667
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/FJ.json",
+    "research/retry/countries/FJ.json (national portal/retry, no Suva city sample)."
+  ],
+  "priorEvidenceAssessment": "research/countries/FJ.json; research/retry/countries/FJ.json (national portal/retry, no Suva city sample).",
+  "executedQueries": [
+    {
+      "query": "Suva Fiji parcels cadastral official GIS portal land registry viewer",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Fiji \"Vanua View\" cadastral map Vanua View Online parcel portal",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Suva Fiji vanua qele map cadastral veiqaravi ni qele",
+      "language": "Fijian-language attempt",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"Vanua View Online\" Fiji land parcel portal Suva",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Suva Fiji vanua qele map cadastral veiqaravi ni qele",
+      "language": "Fijian-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://cadastral.lands.gov.fj/",
+      "observation": "Official Approved Survey Plan portal is indexed with folder and file browsing pages, but direct local requests timed out; no city survey-plan result was retrieved."
+    },
+    {
+      "url": "https://vanuagis.lands.gov.fj/vanuaviewonline/",
+      "observation": "Resolved from the public VanuaView short-link displayed on a professional post. Government portal URL was requested directly but timed out; its domain resolved in web-search references as the Ministry of Lands and Mineral Resources VanuaView Online platform for land parcel information."
+    },
+    {
+      "url": "https://services3.arcgis.com/UYCjD74OfK5zL9b8/arcgis/rest/services/Freehold_lot/FeatureServer/0",
+      "observation": "Previously discovered public ArcGIS extract contains one Freehold_lot polygon. Bounded Suva-area query returned zero features; this one-feature extract is not complete Suva or national cadastre."
+    },
+    {
+      "url": "https://services1.arcgis.com/O1Rm75XW8zZczaHP/arcgis/rest/services/State_Land_Vacant/FeatureServer/0",
+      "observation": "Previously discovered public ArcGIS extract contains only 12 state-land features. Bounded Suva-area query returned zero features; this extract does not establish absence of cadastral parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://vanuagis.lands.gov.fj/vanuaviewonline/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Direct public request timed out after 12 seconds; no HTTP response."
+    },
+    {
+      "url": "https://cadastral.lands.gov.fj/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Direct public request timed out; no HTTP response."
+    },
+    {
+      "url": "https://cadastral.lands.gov.fj/index.php?action=search",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Direct public request timed out; no HTTP response. Search-engine indexed page describes folder/file search, but no local Suva query result was obtained."
+    },
+    {
+      "url": "https://services3.arcgis.com/UYCjD74OfK5zL9b8/arcgis/rest/services/Freehold_lot/FeatureServer/0/query?f=json&where=1%3D1&geometry=178.40%2C-18.20%2C178.60%2C-18.05&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Bounded Suva query against the previously discovered one-feature Freehold_lot extract returned 0 features; fragment coverage only."
+    },
+    {
+      "url": "https://services1.arcgis.com/O1Rm75XW8zZczaHP/arcgis/rest/services/State_Land_Vacant/FeatureServer/0/query?f=json&where=1%3D1&geometry=178.40%2C-18.20%2C178.60%2C-18.05&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=%2A&returnGeometry=true&outSR=4326&resultRecordCount=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Bounded Suva query against the 12-feature State_Land_Vacant extract returned 0 features; this is not comprehensive cadastral coverage."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Official VanuaView Online and Approved Survey Plan portals identify a capital-applicable national cadastre/service, but both direct endpoints timed out from this network. The public ArcGIS fragments were queried on a bounded Suva extent and returned zero for their limited contents only; the Suva parcel result remains unknown.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": null,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_city_applicable_cadastre_portals_present_city_geometry_unavailable",
+  "coverageAssessment": {
+    "claimedScope": "VanuaView Online is described as Fiji land parcel information; approved-plan portal exists, but no full direct service response was captured.",
+    "verifiedOpenScope": "Two small public ArcGIS extracts only; Suva query returned zero in each, not evidence of parcel absence.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-suva.json"
+}

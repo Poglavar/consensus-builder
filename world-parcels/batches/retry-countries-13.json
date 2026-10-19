@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "PF",
+  "name": "French Polynesia",
+  "previousStatus": "no_online_cadastre_found",
+  "evidenceFile": "research/countries/PF.json"
+ },
+ {
+  "kind": "country",
+  "key": "PG",
+  "name": "Papua New Guinea",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/PG.json"
+ },
+ {
+  "kind": "country",
+  "key": "PH",
+  "name": "Philippines",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/PH.json"
+ },
+ {
+  "kind": "country",
+  "key": "PS",
+  "name": "State of Palestine",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/PS.json"
+ },
+ {
+  "kind": "country",
+  "key": "QA",
+  "name": "Qatar",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/QA.json"
+ },
+ {
+  "kind": "country",
+  "key": "RO",
+  "name": "Romania",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/RO.json"
+ },
+ {
+  "kind": "country",
+  "key": "RS",
+  "name": "Serbia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/RS.json"
+ },
+ {
+  "kind": "country",
+  "key": "RU",
+  "name": "Russian Federation",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/RU.json"
+ }
+]

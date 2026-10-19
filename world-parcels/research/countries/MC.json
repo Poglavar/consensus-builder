@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MC",
+ "country": "Monaco",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Direction de la Prospective, de l'Urbanisme et de la Mobilite (Cadastre / UrbaMonaco); Monaco Geoportail",
+ "portalsFound": [
+  {
+   "url": "https://urbamonaco.gouv.mc/",
+   "observation": "UrbaMonaco portal loads (HTTP 200); no parcel API identified"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoportail.gouv.mc/",
+   "method": "GET",
+   "httpStatus": 301,
+   "contentType": "",
+   "assessment": "redirects to urbamonaco.gouv.mc"
+  },
+  {
+   "url": "https://urbamonaco.gouv.mc/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal HTML (254 KB), no service endpoint found"
+  },
+  {
+   "url": "https://urbamonaco.gouv.mc/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 on a later request"
+  },
+  {
+   "url": "https://www.cadastre.gouv.mc/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect rejected by proxy"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established from this client",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "City-state; portal exposes maps but no open parcel endpoint was found; one 403 seen.",
+ "nextStep": "Inspect UrbaMonaco JS for map service URLs; check data.gouv.mc."
+}

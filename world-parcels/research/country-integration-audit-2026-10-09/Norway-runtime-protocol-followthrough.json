@@ -1,0 +1,443 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:11:34.409502+00:00",
+  "wup": {
+    "lon": 10.7778967030176,
+    "lat": 59.9203877624395,
+    "cityCode": 931,
+    "year": 2025,
+    "basis": "official WUP2025 PWCent"
+  },
+  "sourceId": "no-teig-gml-wfs",
+  "complete": false,
+  "status": "public_geometry_verified_exact_resourceid_limit_under_followthrough",
+  "spatialCellsPassed": 13,
+  "uniqueSpatialNativeIds": 15,
+  "exactIdReadbackSummary": {
+    "candidateIds": 15,
+    "verifiedUniqueIds": 14,
+    "unverifiedIds": [
+      "6248894437"
+    ],
+    "verifiedReadbackIds": [
+      "290202394",
+      "290207729",
+      "291481678",
+      "291481724",
+      "291482836",
+      "291483116",
+      "291483161",
+      "291483215",
+      "291486407",
+      "291489528",
+      "291489536",
+      "291492327",
+      "291605834",
+      "597040899"
+    ],
+    "verifiedKnownIdMisses": [],
+    "unverifiedReason": "The source query for this ID returned HTTP 500 in a single-ID attempt and within the second internally split batch; therefore it is not treated as absent.",
+    "allVerifiedReadsHadOneActualMemberAndOneUniqueFeature": true,
+    "allVerifiedGeometryHashesMatchSpatial": true
+  },
+  "normalBatches": [
+    {
+      "label": "normal-batch-all-known-plus-synthetic",
+      "pageSize": 50,
+      "submittedNativeIds": [
+        "290202394",
+        "290207729",
+        "291481678",
+        "291481724",
+        "291482836",
+        "291483116",
+        "291483161",
+        "291483215",
+        "291486407",
+        "291489528",
+        "291489536",
+        "291492327",
+        "291605834",
+        "597040899",
+        "6248894437",
+        "999999999"
+      ],
+      "complete": false,
+      "error": "Parcel provider is unavailable (HTTP 500).",
+      "hitCounts": [
+        8,
+        8,
+        null
+      ],
+      "rawMemberCount": 8,
+      "pageUniqueFeatureCount": 8,
+      "duplicateNativeCount": 0,
+      "adapterNumberMatched": null,
+      "adapterDuplicateNativeCount": null,
+      "returnedIds": [],
+      "absentIds": [],
+      "hashMatchesSpatial": true,
+      "knownButReportedAbsent": [],
+      "requestRange": [
+        122,
+        126
+      ]
+    },
+    {
+      "label": "normal-batch-chunk-1-plus-synthetic",
+      "pageSize": 50,
+      "submittedNativeIds": [
+        "290202394",
+        "290207729",
+        "291481678",
+        "291481724",
+        "291482836",
+        "291483116",
+        "291483161",
+        "999999999"
+      ],
+      "complete": true,
+      "error": null,
+      "hitCounts": [
+        7,
+        7
+      ],
+      "rawMemberCount": 7,
+      "pageUniqueFeatureCount": 7,
+      "duplicateNativeCount": 0,
+      "adapterNumberMatched": 7,
+      "adapterDuplicateNativeCount": 0,
+      "returnedIds": [
+        "290202394",
+        "290207729",
+        "291481678",
+        "291481724",
+        "291482836",
+        "291483116",
+        "291483161"
+      ],
+      "absentIds": [
+        "NO-TEIG-999999999"
+      ],
+      "hashMatchesSpatial": true,
+      "knownButReportedAbsent": [],
+      "requestRange": [
+        126,
+        129
+      ]
+    },
+    {
+      "label": "normal-batch-chunk-2-plus-synthetic",
+      "pageSize": 50,
+      "submittedNativeIds": [
+        "291483215",
+        "291486407",
+        "291489528",
+        "291489536",
+        "291492327",
+        "291605834",
+        "597040899",
+        "999999999"
+      ],
+      "complete": true,
+      "error": null,
+      "hitCounts": [
+        7,
+        7
+      ],
+      "rawMemberCount": 7,
+      "pageUniqueFeatureCount": 7,
+      "duplicateNativeCount": 0,
+      "adapterNumberMatched": 7,
+      "adapterDuplicateNativeCount": 0,
+      "returnedIds": [
+        "291486407",
+        "291483215",
+        "291489528",
+        "291489536",
+        "291492327",
+        "291605834",
+        "597040899"
+      ],
+      "absentIds": [
+        "NO-TEIG-999999999"
+      ],
+      "hashMatchesSpatial": true,
+      "knownButReportedAbsent": [],
+      "requestRange": [
+        129,
+        132
+      ]
+    }
+  ],
+  "fullGeometrySha256ById": {
+    "290202394": "b68648869987a0a4857484e21818a8e5c07c8acbf627e4bacf30b744722c1942",
+    "290207729": "0fc55a7bcccf5758f8bc4d33a603fb8ed3238cfd8cfb936bfda699693550e18b",
+    "291481678": "4be87a1e4bbf8d8655170e50e6ef7446117006ac6e6d7ce798899e48da3f4837",
+    "291481724": "bfd2382083a64b90fba4790847e8c4dcf7464ce1995d74fd409109bc9b6b3f47",
+    "291482836": "6013ae7c85b13696b91d50c7fabd7b370c5ecfc9a2d8e15f0a34daf7a2065d72",
+    "291483116": "71878fb82d0df50231d1026b7e909f7b5f7cce5ec5deeb659b6d7cb23906a38f",
+    "291483161": "d1b2fd6488789b0260cf4ab6cbeb6f52c3a53497e77e42845da6d319b8015110",
+    "291483215": "6671c7170be1d34427aaf3606c99e153be08b0ae93ad6a5b2a63a81d513010fa",
+    "291486407": "047df92462545f22acfe42168d1801a2feae3ec2167af636fc18e596efde5e7a",
+    "291489528": "8a3a405e2d436909f119d4b2007cf384dd9bce2cac6e9e93a5a3021dc3885eb1",
+    "291489536": "21d81488dede472e40074b90bd6ecf5d718fac829a9303b228f4658159fe583c",
+    "291492327": "605a91706730df6bd2c14658b8d0a522633d7903659bdb6bda3f2e87b950cf93",
+    "291605834": "c57e6be7cf8d4997a6c0e4404025f7c6db0264680499e15407d988f80dcfc0a8",
+    "597040899": "76067ab58f6d1c9924bd3d69a21050b92ba445a76217dc1849867e8386d73531",
+    "6248894437": "5071e1bdb834a1ce67444976089043ed82bc06c5ce4d8fb745d2924dafee3e05"
+  },
+  "binding": {
+    "sourceId": "server:no-teig-gml-wfs",
+    "coverage": "complete",
+    "targetParcelIds": [
+      "NO-TEIG-291486407"
+    ],
+    "targetParcelCount": 1,
+    "siteM2": 142439.46,
+    "touchedCount": 0
+  },
+  "diagnosis": {
+    "startedAt": "2026-10-09T09:09:37.758Z",
+    "endpoint": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig",
+    "knownSpatialId": "NO-TEIG-6248894437",
+    "bbox": [
+      10.775661327539549,
+      59.92254815661154,
+      10.777183709452718,
+      59.92264716106803
+    ],
+    "configuredProjection": "app:identTeig/app:teigId,app:område",
+    "retention": "Raw bodies were zeroed after bounded ID/geometry parsing; no owner/address values persisted. Only request semantics, HTTP/error metadata, IDs, counts and geometry hashes retained.",
+    "records": [
+      {
+        "stage": "exact-resourceid",
+        "semantics": {
+          "kind": "hits",
+          "count": null,
+          "startIndex": null,
+          "resourceId": "teig.6248894437",
+          "projection": "app:identTeig/app:teigId,app:område",
+          "filterPresent": false
+        },
+        "httpStatus": 500,
+        "contentType": "application/xml;charset=UTF-8",
+        "bodyBytes": 507,
+        "bodySha256": "57291cc45d3abb4635a84d5a81c69889dbc24e45db5d736287151e4e07149622",
+        "exceptionCode": "NoApplicableCode",
+        "exceptionClass": "ows-exception-report",
+        "exceptionTextRedacted": "Error performing query by id filter (relational mode): For input string: \"<native-id>\"",
+        "parseError": "Parcel GML must be a FeatureCollection."
+      },
+      {
+        "stage": "bbox-around-full-geometry",
+        "semantics": {
+          "kind": "hits",
+          "count": null,
+          "startIndex": null,
+          "resourceId": null,
+          "projection": "app:identTeig/app:teigId,app:område",
+          "filterPresent": true
+        },
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.2.1;charset=UTF-8",
+        "bodyBytes": 349,
+        "bodySha256": "d881fc08713ddf327cd18f4dec778842794c7da04e855c7c74e141852542652c",
+        "exceptionCode": null,
+        "exceptionClass": null,
+        "exceptionTextRedacted": null,
+        "declaredNumberMatched": 6,
+        "numberMatchedUnknown": false,
+        "declaredNumberReturned": 0,
+        "actualMemberCount": 0,
+        "uniqueFeatureCount": 0,
+        "duplicateNativeCount": 0,
+        "numberReturnedNormalized": false,
+        "nativeIds": [],
+        "geometrySha256ByNativeId": {}
+      },
+      {
+        "stage": "bbox-around-full-geometry",
+        "semantics": {
+          "kind": "bbox-data",
+          "count": "6",
+          "startIndex": "0",
+          "resourceId": null,
+          "projection": "app:identTeig/app:teigId,app:område",
+          "filterPresent": true
+        },
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.2.1;charset=UTF-8",
+        "bodyBytes": 17260,
+        "bodySha256": "3508be149e60fc686bab3d584a36fb477f429846c05191100536b53b6dfeace7",
+        "exceptionCode": null,
+        "exceptionClass": null,
+        "exceptionTextRedacted": null,
+        "declaredNumberMatched": null,
+        "numberMatchedUnknown": true,
+        "declaredNumberReturned": 0,
+        "actualMemberCount": 6,
+        "uniqueFeatureCount": 6,
+        "duplicateNativeCount": 0,
+        "numberReturnedNormalized": true,
+        "nativeIds": [
+          "291492327",
+          "291483161",
+          "6248894437",
+          "291481724",
+          "291483116",
+          "291482861"
+        ],
+        "geometrySha256ByNativeId": {
+          "291481724": "bfd2382083a64b90fba4790847e8c4dcf7464ce1995d74fd409109bc9b6b3f47",
+          "291482861": "4a1925c940ad89a34777960325efef912b5aa0c17c423bdb551c3967899338f9",
+          "291483116": "71878fb82d0df50231d1026b7e909f7b5f7cce5ec5deeb659b6d7cb23906a38f",
+          "291483161": "d1b2fd6488789b0260cf4ab6cbeb6f52c3a53497e77e42845da6d319b8015110",
+          "291492327": "605a91706730df6bd2c14658b8d0a522633d7903659bdb6bda3f2e87b950cf93",
+          "6248894437": "5071e1bdb834a1ce67444976089043ed82bc06c5ce4d8fb745d2924dafee3e05"
+        }
+      },
+      {
+        "stage": "bbox-around-full-geometry",
+        "semantics": {
+          "kind": "hits",
+          "count": null,
+          "startIndex": null,
+          "resourceId": null,
+          "projection": "app:identTeig/app:teigId,app:område",
+          "filterPresent": true
+        },
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.2.1;charset=UTF-8",
+        "bodyBytes": 349,
+        "bodySha256": "52e2d6600cfee7461978419775680627734ba0e99bc88d4c9f66bed8cad49d1a",
+        "exceptionCode": null,
+        "exceptionClass": null,
+        "exceptionTextRedacted": null,
+        "declaredNumberMatched": 6,
+        "numberMatchedUnknown": false,
+        "declaredNumberReturned": 0,
+        "actualMemberCount": 0,
+        "uniqueFeatureCount": 0,
+        "duplicateNativeCount": 0,
+        "numberReturnedNormalized": false,
+        "nativeIds": [],
+        "geometrySha256ByNativeId": {}
+      }
+    ],
+    "exactResourceId": {
+      "ok": false,
+      "error": "Parcel provider is unavailable (HTTP 500)."
+    },
+    "bboxComparison": {
+      "ok": true,
+      "complete": true,
+      "numberMatched": 6,
+      "returnedCount": 6,
+      "duplicateNativeCount": 0,
+      "returnedIds": [
+        "291492327",
+        "291483161",
+        "6248894437",
+        "291481724",
+        "291483116",
+        "291482861"
+      ],
+      "targetReturned": true,
+      "targetGeometryHashMatches": true
+    },
+    "finishedAt": "2026-10-09T09:09:39.050Z"
+  },
+  "interpretation": "The large native ID exists and its complete geometry hashes match spatially. ResourceID lookup returned HTTP500. Integer conversion overflow is an inference from the reported input-string exception, not a server-stated diagnosis. A nested native attribute equality filter is under investigation.",
+  "cacheFile": "tmp/no-teig-qualification-2026-10-09/full-cache.geojson",
+  "geometryChangedOrRepaired": false,
+  "additionalDurablePolygonsRetained": 0,
+  "nestedAttributeFilterFollowthrough": {
+    "checkedAt": "2026-10-09T09:17:16.500612+00:00",
+    "getControl": {
+      "testedLiteral": "291486407",
+      "knownSourceIdVerifiedByPriorExactResourceIdAndBbox": true,
+      "preHitsHttpStatus": 504,
+      "preHitsDeclaredCount": null,
+      "dataHttpStatus": 200,
+      "dataActualMembers": 0,
+      "dataUniqueMembers": 0,
+      "dataDeclaredMatched": null,
+      "postHitsHttpStatus": 504,
+      "postHitsDeclaredCount": null,
+      "conclusion": "The nested equality GET path did not provide a usable exact count: both hits calls returned 504 and the intervening data call returned an empty/unmatched-count response despite this known ID being proven spatially present. Stop before more GET literal retries."
+    },
+    "valueReference": "app:identTeig/app:teigId",
+    "capabilities": {
+      "httpStatus": 200,
+      "contentType": "text/xml;charset=UTF-8",
+      "bodyBytes": 32246,
+      "bodySha256": "7f21559857679ce9c25980be9822445cd59c7d3b4ca5f76cd128a6b6ecf2a8a1",
+      "getFeatureMethods": [
+        {
+          "method": "GET",
+          "href": "http://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?"
+        },
+        {
+          "method": "POST",
+          "href": "http://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?"
+        }
+      ],
+      "outputFormats": [],
+      "getFeatureOutputFormats": [
+        "text/xml; subtype=gml/3.2.1",
+        "application/gml+xml; version=3.2"
+      ],
+      "outputFormatsParserNote": "GetFeature methods were parsed from the Operation. Output formats are copied from the separately parsed same-endpoint capabilities diagnostic; the scoped outputFormats regex in this runner did not match their schema location."
+    },
+    "postObservation": {
+      "startedAt": "2026-10-09T09:13:50.865Z",
+      "endpoint": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig",
+      "transport": "POST (GetFeature endpoint advertised in capabilities)",
+      "ids": [
+        "291486407",
+        "6248894437",
+        "999999999999"
+      ],
+      "filter": {
+        "valueReference": "app:identTeig/app:teigId",
+        "operator": "PropertyIsEqualTo",
+        "combination": "fes:Or across the three native literals"
+      },
+      "propertyName": "app:identTeig/app:teigId,app:område",
+      "retention": "Only metadata, request semantics, native IDs, counts and geometry hashes retained. Raw buffers zeroed; no owner/address values persisted.",
+      "responses": [
+        {
+          "phase": "hits",
+          "httpStatus": 504,
+          "contentType": "text/html;charset=utf-8",
+          "bodyBytes": 764,
+          "bodySha256": "5bf70e04137ce6a2d3e120fa499fd1bcb51ad3d69dc267353f585a5e32b5e051",
+          "exceptionCode": null,
+          "exceptionClass": null,
+          "exceptionTextRedacted": null,
+          "declaredNumberMatched": null,
+          "declaredNumberReturned": null,
+          "actualMemberCount": null,
+          "uniqueFeatureCount": null,
+          "duplicateNativeCount": null,
+          "nativeIds": [],
+          "geometrySha256ByNativeId": {},
+          "parseError": "Malformed parcel GML."
+        }
+      ],
+      "updatedAt": "2026-10-09T09:14:21.159Z",
+      "pre": {
+        "status": 504,
+        "numberMatched": null,
+        "exceptionCode": null,
+        "error": null
+      },
+      "stoppedAfterPreGate": true,
+      "gateReason": "Expected two known matches from the three-ID OR (small ID and large ID); synthetic ID should be absent.",
+      "finishedAt": "2026-10-09T09:14:21.159Z",
+      "conclusion": "Capabilities advertises POST. The same nested FES equality OR for the two known IDs and one synthetic literal returned HTTP 504 on pre-hits, with no complete count; data/post phases were correctly skipped. POST did not rescue the nested predicate."
+    },
+    "decision": "No usable exact equality alternative established. Known-ID GET pre/post hits HTTP504, data zero without matched count; advertised POST OR hits also HTTP504. These failures are not absence. Current ResourceID profile remains unqualified for runtime."
+  }
+}

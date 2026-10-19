@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "WY",
+  "state": "Wyoming",
+  "capital": "Cheyenne",
+  "centerLatLon": [
+    41.14,
+    -104.8202
+  ],
+  "query": {
+    "language": "English",
+    "text": "Wyoming parcel data Cheyenne Laramie County GIS parcels official assessor map"
+  },
+  "references": [
+    {
+      "url": "https://maps.laramiecounty.com/",
+      "observation": "Official source found by the recorded English web query."
+    },
+    {
+      "url": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2",
+      "observation": "Official parcel layer endpoint tested with an ID-and-geometry-only spatial sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2?f=pjson",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "ArcGIS layer metadata retrieved; schema inspected without requesting personal parcel fields."
+    },
+    {
+      "url": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2/query?f=geojson&where=1%3D1&geometry=-104.8213%2C41.1389%2C-104.8191%2C41.1411&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=statepidn&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Tiny capital-centered bbox; requested only statepidn and geometry; count=2, geometry valid=True, null IDs=0, duplicate IDs=False."
+    },
+    {
+      "url": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2/query?f=geojson&where=statepidn%3D%2714663124300100%27&outFields=statepidn&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Exact ID round trip for 14663124300100: exact count 1, geometry valid=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2",
+    "adapter": "arcgis",
+    "name": "Laramie County Assessor Parcels",
+    "operator": "Laramie County GIS / Assessor",
+    "scope": "Laramie County only",
+    "idField": "statepidn",
+    "objectIdField": "objectid",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "statepidn"
+    ],
+    "parcelNumberField": "statepidn",
+    "metricSrid": 3736,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -104.8213,
+      41.1389,
+      -104.8191,
+      41.1411
+    ],
+    "count": 2,
+    "nativeIDs": [
+      "14663124300100",
+      "14663125500100"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "This verifies a small parcel sample at the capital only; completeness across the city/county is untested."
+}

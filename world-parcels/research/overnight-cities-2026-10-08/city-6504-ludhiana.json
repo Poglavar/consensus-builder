@@ -1,0 +1,122 @@
+{
+  "name": "Ludhiana",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 224,
+  "point": [
+    30.8996315260166,
+    75.8820730071076
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Punjabi",
+        "query": "ਲੁਧਿਆਣਾ ਭੂ ਨਕਸ਼ਾ ਜਮਾਬੰਦੀ ਪਲਾਟ ਨੰਬਰ ਕੈਡਸਟ੍ਰਲ ਨਕਸ਼ਾ",
+        "scope": "Find official Punjabi-language parcel maps and verify Ludhiana tehsil coverage.",
+        "result": "Punjab BhuNaksha and Punjab Land Records publish bilingual/Punjabi parcel-map interfaces. Public selector calls confirm Ludhiana district and city tehsils. The viewer provides village-map WMS and identifies parcels by map click. A selected mapped village test returned plot number 10//12 and a plot bounding box, but no polygon coordinates. The selected village is outside the WUP city-center point, which was not resolved to an available village.",
+        "actualResultUrls": [
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx/AccessibilityOptions.aspx",
+          "https://ludhiana.nic.in/pa/"
+        ],
+        "executionMethod": "Punjabi-language search and requests to official public selector, extent and coordinate-to-plot endpoints."
+      },
+      {
+        "language": "English",
+        "query": "Ludhiana official village cadastral map Punjab BhuNaksha parcel geometry",
+        "scope": "Verify current digital-map operation and city coverage evidence.",
+        "result": "Government BhuNaksha identifies the Punjab viewer and district hierarchy; India DILRMP reports Ludhiana district cadastral digitization status. Viewer bundle uses getPlotAtXY and ScalarDatahandler OP=4 then a WMS selection overlay. A selected mapped-village query yielded plot ID and bbox metadata only, not a full polygon.",
+        "actualResultUrls": [
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/41",
+          "https://mcludhiana.gov.in/PDF/Draft_Cadastral-%20ludhiana.pdf"
+        ],
+        "executionMethod": "English-language search, official DILRMP source, city map, and live public viewer endpoint inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Punjab BhuNaksha digital cadastral map viewer",
+        "operator": "Punjab Land Records Society / Government of Punjab",
+        "homeUrl": "https://gisbhunaksha.punjab.gov.in/",
+        "observation": "Official viewer is active and Ludhiana district/urban tehsils are selectable. WMS delivers rendered maps; plot lookup exists but no complete parcel geometry response was verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gisbhunaksha.punjab.gov.in/rest/Levels/ListsAfterLevel",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Punjab state 03, Ludhiana district 11, tehsil 131, Kanungo 009, Patwar 070, village 33441 (Mangli Kadar) available and map-backed."
+      },
+      {
+        "url": "https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Selected village returns GIS code 1113100907033441 and extent x=591306.4454..592568.2307, y=3426096.9518..3427440.5449; service disclaimer says data is provisional and for viewing only."
+      },
+      {
+        "url": "https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getPlotAtXY",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Point inside selected village returns plot ID dpv_rp7QSbi6JEgEtR8b3A and plotNo 10//12."
+      },
+      {
+        "url": "https://gisbhunaksha.punjab.gov.in/ScalarDatahandler?OP=4&state=03&levels=11%2C131%2C009%2C070%2C33441%2C&x=591937.3&y=3426768.7",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "observation": "Coordinate-to-plot returns has_data=Y, plot ID, village GIS code, bbox x=591892.0641..591954.0909 and y=3426763.1712..3426820.1688, plus Map Report link; response contains no polygon coordinates."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-6504-PUBLIC-CADASTRE",
+    "name": "Punjab BhuNaksha digital cadastral map viewer",
+    "url": "https://gisbhunaksha.punjab.gov.in/",
+    "operator": "Punjab Land Records Society / Government of Punjab",
+    "serviceType": "Public selector + plot-coordinate lookup returning plot ID and bounding box; WMS plot overlay is rendered imagery; complete polygon not returned.",
+    "layer": "VILLAGE_MAP (WMS rendered map; plot feature layer not verified)",
+    "geometryType": "Raster/map image (parcel polygons not retrieved)",
+    "outputCrs": null,
+    "nativeIdField": "Village GIS code and plot number",
+    "nativeIdEvidence": "Public selector returned village GIS code 1113100907033441 for one mapped Ludhiana East village. For a point inside that village, getPlotAtXY returned plot id dpv_rp7QSbi6JEgEtR8b3A and plotNo 10//12; ScalarDatahandler OP=4 returned the same plot id, native village GIS code, and bbox only, with a WMS Map Report link. WUP city point did not fall in that selected village extent."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official viewer is active and Ludhiana district/urban tehsils are selectable. WMS delivers rendered maps; plot lookup exists but no complete parcel geometry response was verified.",
+    "verifiedOpenScope": "Selected mapped village in Ludhiana East tehsil returns parcel ID/number and bbox via public query; this sample lies outside the WUP city-center point and does not establish city-center coverage. No full polygon was returned.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_cadastral_viewer_geometry_not_verified",
+  "technicalBlocker": "Viewer’s official point query identifies a parcel and returns bbox/metadata only; the map shape is drawn using WMS. WUP point is outside the selected village extent and was not resolved to a city-centered mapped village.",
+  "remainingUncertainty": "Whether central municipal Ludhiana is mapped under a selectable village/tehsil and whether the WMS-rendered plot can be fetched as full vector geometry.",
+  "nextStep": "Resolve WUP coordinates to a selectable central-city village and test the coordinate-to-plot workflow; only proceed if a full feature geometry endpoint is found.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6504,
+  "cityId": "wup2025:6504",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.8996315260166,
+    75.8820730071076
+  ],
+  "population2025k": 2245.106,
+  "populationUnit": "persons",
+  "queueRank": 224,
+  "population2025": 2245106,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "sourceIds": [],
+  "registryBasis": "City-specific registry evidence is documented in the discovery record."
+}

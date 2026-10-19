@@ -1,0 +1,85 @@
+{
+  "name": "Fuyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 626,
+  "point": [
+    32.893547722873,
+    115.823161424229
+  ],
+  "population2025": 839236,
+  "populationUnit": "persons",
+  "population2025k": 839.236,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "City-specific registry presence remains unestablished. The Fuyang Natural Resources and Planning Bureau is identified as the source for a city registration-center notice describing a rights-holder visual-search service for real-estate registration and cadastral maps. The described system was deployed on the government extranet and its portal required login; no public anonymous parcel-geometry endpoint was established.",
+  "registryEvidenceUrls": [],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "阜阳市 不动产登记中心 地籍图 查询 天地图 阜阳 自然资源和规划局",
+        "scope": "Locate Fuyang-specific registration/cadastre services and determine whether any safe anonymous parcel geometry service is public.",
+        "result": "The city registration center is described in a bulletin attributed to Fuyang Natural Resources and Planning Bureau. It says its visual-search map is on the government extranet and requires logging in; the official bureau site returned HTTP 403 and no anonymous parcel layer was found.",
+        "actualResultUrls": [
+          "https://www.sohu.com/a/556907007_121106991",
+          "http://zrgh.fy.gov.cn/",
+          "https://www.webmap.cn/store.do?method=store&storeId=1070"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+      },
+      {
+        "language": "English",
+        "query": "Fuyang Anhui China official cadastral parcel map land registry GIS",
+        "scope": "Locate Fuyang-specific registration/cadastre services and determine whether any safe anonymous parcel geometry service is public.",
+        "result": "The English search found no independent public parcel feature service; the locally described registration visual-search service is rights-holder oriented and hosted on the government extranet.",
+        "actualResultUrls": [
+          "https://www.sohu.com/a/556907007_121106991",
+          "http://zrgh.fy.gov.cn/"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+      }
+    ]
+  },
+  "scopeLimits": "The service description is from a republished bulletin attributed to the Fuyang Natural Resources and Planning Bureau; the referenced endpoint is government-extranet hosted. The city bureau website returned HTTP 403 through the available browser fetch. No public anonymous geometry query was attempted against the private-network endpoint; exact locator coverage and service schema remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "CN-FY-REAL-ESTATE-REGISTRY-MAP",
+    "name": "Fuyang real-estate registration visual-search service (reported by Fuyang Natural Resources and Planning Bureau)",
+    "url": "http://60.172.12.10:8090/homeNav/#/specialtools/CKQSP",
+    "operator": "Fuyang Real Estate Registration Center / Fuyang Natural Resources and Planning Bureau",
+    "serviceType": "Rights-holder visual-search service described as government-extranet hosted; login required",
+    "layer": "Cadastral map / property information (reported, no anonymous public feature layer confirmed)",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown"
+  },
+  "wupCityCode": 10440,
+  "cityId": "wup2025:10440",
+  "queueRank": 626,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The service description is from a republished bulletin attributed to the Fuyang Natural Resources and Planning Bureau; the referenced endpoint is government-extranet hosted. The city bureau website returned HTTP 403 through the available browser fetch. No public anonymous geometry query was attempted against the private-network endpoint; exact locator coverage and service schema remain unverified.",
+  "remainingUncertainty": "Whether the WUP locator falls within a public parcel service’s queryable coverage and whether any candidate service supports safe stable identifiers and repeatable bounded geometry retrieval.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous parcel polygon was retained for this city.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    32.893547722873,
+    115.823161424229
+  ],
+  "rootRegistryReview": {
+    "decision": "local_registry_unestablished",
+    "reason": "No verified first-party city-specific institutional evidence; attributed republication or regional reporting is preserved as discovery evidence only. Registry absence is not established."
+  },
+  "rootReviewedAt": "2026-10-09T02:09:36.300766+00:00"
+}

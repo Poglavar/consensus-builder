@@ -1,0 +1,24 @@
+{
+  "cityRecord": "city-3612-g-lc-k.json",
+  "cityCode": 3612,
+  "queueRank": 2873,
+  "city": "Gölcük",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "reviewedAt": "2026-10-11",
+  "attempt": 2,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and Turkish discovery identified TKGM Parsel Sorgu and the local Gölcük Tapu Müdürlüğü. The current public API returned a safe exact-point parcel response and one retained polygon sample.",
+  "queryAndRequestOutcomes": "All executed discovery and HTTP routes, statuses, schema observations, CRS, and scope limits are recorded in city-3612-g-lc-k.json.",
+  "custodians": [
+    {"name": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)", "scope": "national public parcel viewer/API", "evidence": "official viewer, current JavaScript configuration, and successful public API response"},
+    {"name": "Gölcük Tapu Müdürlüğü", "scope": "local registry office for Gölcük/Kocaeli", "evidence": "official TKGM and Gölcük Kaymakamlığı pages"}
+  ],
+  "safeFieldAllowlist": ["canonical native parcel identifier", "full parcel geometry", "source CRS", "service metadata", "non-personal administrative parcel labels"],
+  "geometrySamples": ["g-lc-k-parcel-sample.geojson"],
+  "uncertainty": ["One exact-point hit is not citywide coverage", "All-neighborhood completeness was not verified", "No serial adapter qualification performed", "Runtime readiness remains held"],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "doNotInfer": ["An exact-point hit does not prove citywide completeness", "Packet completion is not source integration or admission", "The retained identity is a public composite parcel key, not an owner or titleholder identity"]
+}

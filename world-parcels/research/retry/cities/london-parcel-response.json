@@ -1,0 +1,111 @@
+{
+ "note": "First 3 of 140 HMLR INSPIRE index polygons intersecting a 300 m box around Charing Cross, from City_of_Westminster.zip GML (anonymous download, OGL v3 stated on page). Ring truncated to 5 vertices.",
+ "numberMatched": 140,
+ "features": [
+  {
+   "properties": {
+    "INSPIREID": "48212726",
+    "LABEL": "48212726",
+    "NATIONALCADASTRALREFERENCE": "48212726",
+    "VALIDFROM": "2010-10-29T14:29:30.821Z",
+    "BEGINLIFESPANVERSION": "2010-10-29T14:29:30.821Z"
+   },
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 30,
+   "exteriorRingFirst5": [
+    [
+     530206.75,
+     180364.2
+    ],
+    [
+     530206.4,
+     180363.6
+    ],
+    [
+     530206.15,
+     180362.95
+    ],
+    [
+     530206.05,
+     180362.25
+    ],
+    [
+     530205.95,
+     180361.7
+    ]
+   ]
+  },
+  {
+   "properties": {
+    "INSPIREID": "48207314",
+    "LABEL": "48207314",
+    "NATIONALCADASTRALREFERENCE": "48207314",
+    "VALIDFROM": "2010-10-29T11:38:37.532Z",
+    "BEGINLIFESPANVERSION": "2010-10-29T11:38:37.532Z"
+   },
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 62,
+   "exteriorRingFirst5": [
+    [
+     530158.51,
+     180408.228
+    ],
+    [
+     530142.71,
+     180423.413
+    ],
+    [
+     530130.603,
+     180434.699
+    ],
+    [
+     530126.499,
+     180438.598
+    ],
+    [
+     530123.421,
+     180441.266
+    ]
+   ]
+  },
+  {
+   "properties": {
+    "INSPIREID": "55890117",
+    "LABEL": "55890117",
+    "NATIONALCADASTRALREFERENCE": "55890117",
+    "VALIDFROM": "2013-10-20T23:00:00Z",
+    "BEGINLIFESPANVERSION": "2013-10-21T10:04:46.171Z"
+   },
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 65,
+   "exteriorRingFirst5": [
+    [
+     530110.965,
+     180441.407
+    ],
+    [
+     530105.65,
+     180436.0
+    ],
+    [
+     530101.55,
+     180431.65
+    ],
+    [
+     530097.08,
+     180426.75
+    ],
+    [
+     530096.27,
+     180425.93
+    ]
+   ]
+  }
+ ]
+}

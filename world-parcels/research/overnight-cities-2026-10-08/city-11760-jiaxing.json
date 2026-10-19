@@ -1,0 +1,110 @@
+{
+  "name": "Jiaxing",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 714,
+  "point": [
+    30.7649339556487,
+    120.759019712366
+  ],
+  "population2025k": 751.156,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "UN WUP 2025 population-weighted settlement centroid is a locator, not an official city boundary or parcel identity. No owner, address, tax or account fields were requested or copied; no authenticated access or credentials were used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Jiaxing Natural Resources and Planning Bureau material identifies the Municipal Real Estate Registration Service Center as responsible for city-level real-estate title registration, cadastral/ownership surveys, real-estate surveying, dispute adjustment, results application and cadastral/housing survey review and databases. Official city planning material describes public queries for natural conditions, mortgage/seizure restrictions, cadastral maps and parcel maps; no anonymous vector layer/schema or full feature was verified.",
+  "resultCategory": "official_city_land_registry_and_cadastral_map_viewing_no_public_vector_verified",
+  "technicalBlocker": "No anonymous vector schema or feature geometry was verified.",
+  "remainingUncertainty": "Whether the public map viewer exposes anonymous vector geometry or only rendered/query-on-demand maps; exact layer schema and coverage remain unverified.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jiaxing China official cadastral parcel map GIS land registry public map",
+        "result": "Official city bureau materials identify the city registration center and public cadastral/parcel map queries; no anonymous machine-readable polygon service was found.",
+        "method": "Separate language-specific search and official-source review"
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "嘉兴市 自然资源和规划局 不动产登记 地籍图 宗地图 公开查询 官方",
+        "result": "市级不动产登记服务中心负责登记及地籍调查/测绘审核；官方规划材料称可公开查询地籍图、宗地图等，但未发现匿名矢量接口或字段模式。",
+        "method": "Separate language-specific search and official-source review"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyhghj.jiaxing.gov.cn/module/download/downfile.jsp?classid=0&filename=41bb5dda35bb4ec3b43b2bbb9673a902.pdf",
+        "observation": "Official city natural-resources bureau material describes the municipal real-estate registration service center and its city-level registration, cadastral survey and survey-review duties."
+      },
+      {
+        "url": "https://fzggw.jiaxing.gov.cn/module/download/downfile.jsp?classid=0&filename=99ea2571f29b48a9ad64fdcebefe0621.pdf",
+        "observation": "Official planning material describes public online and onsite/self-service access to natural-condition, restriction, cadastral-map and parcel-map queries; it does not establish an anonymous vector feature API."
+      },
+      {
+        "url": "https://www.nanhu.gov.cn/art/2025/3/28/art_1229299402_166894.html",
+        "observation": "Official Nanhu district bureau page identifies the local branch and cadastre-related responsibilities."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "The public-facing municipal map/document workflows and local registry are documented by official sources, but the research did not verify anonymous parcel-vector schema or retrieve geometry. No parcel feature query was made.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "Official public map/document workflows are documented, but no anonymous vector feature endpoint was verified.",
+    "remainingUncertainty": "Whether the public map viewer exposes anonymous vector geometry or only rendered/query-on-demand maps; exact layer schema and coverage remain unverified."
+  },
+  "cityId": "wup2025:11760",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "queueRank": 714,
+  "wupCityCode": 11760,
+  "centerLatLon": [
+    30.7649339556487,
+    120.759019712366
+  ],
+  "population2025": 751156,
+  "adapterReady": false,
+  "source": {
+    "name": "Jiaxing official cadastral registry/map evidence",
+    "operator": "Jiaxing Municipal Natural Resources and Planning Bureau / Real Estate Registration Service Center",
+    "url": "https://www.nanhu.gov.cn/art/2025/3/28/art_1229299402_166894.html",
+    "serviceType": "Official Jiaxing Natural Resources and Planning Bureau material identifies the Municipal Real Estate Registration Service Center as responsible for city-level real-estate title registration, cadastral/ownership surveys, real-estate surveying, dispute adjustment, results application and cadastral/housing survey review and databases. Official city planning material describes public queries for natural conditions, mortgage/seizure restrictions, cadastral maps and parcel maps; no anonymous vector layer/schema or full feature was verified.",
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeIdEvidence": "Official Jiaxing Natural Resources and Planning Bureau material identifies the Municipal Real Estate Registration Service Center as responsible for city-level real-estate title registration, cadastral/ownership surveys, real-estate surveying, dispute adjustment, results application and cadastral/housing survey review and databases. Official city planning material describes public queries for natural conditions, mortgage/seizure restrictions, cadastral maps and parcel maps; no anonymous vector layer/schema or full feature was verified.",
+    "scope": "The public-facing municipal map/document workflows and local registry are documented by official sources, but the research did not verify anonymous parcel-vector schema or retrieve geometry. No parcel feature query was made."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The public-facing municipal map/document workflows and local registry are documented by official sources, but the research did not verify anonymous parcel-vector schema or retrieve geometry. No parcel feature query was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://zrzyhghj.jiaxing.gov.cn/module/download/downfile.jsp?classid=0&filename=41bb5dda35bb4ec3b43b2bbb9673a902.pdf",
+    "https://fzggw.jiaxing.gov.cn/module/download/downfile.jsp?classid=0&filename=99ea2571f29b48a9ad64fdcebefe0621.pdf",
+    "https://www.nanhu.gov.cn/art/2025/3/28/art_1229299402_166894.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous vector schema or feature geometry was verified."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://zrzyhghj.jiaxing.gov.cn/module/download/downfile.jsp?classid=0&filename=41bb5dda35bb4ec3b43b2bbb9673a902.pdf",
+    "fetch": "error",
+    "reason": "<urlopen error _ssl.c:1064: The handshake operation timed out>"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

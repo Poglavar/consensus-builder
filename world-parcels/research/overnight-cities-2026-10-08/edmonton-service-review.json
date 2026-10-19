@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1546-edmonton.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City-hosted Title Parcels layer provides a plausible public polygon-source candidate, but the bounded safe-field query returned 403, so no feature geometry or exact locator coverage is verified. The City states polygon parcel open-data products were retired in 2021; the existence of this viewer sublayer alone does not establish redistribution rights.",
+  "registryAssessment": "Municipal-boundary title/cadastral mapping is identified by the City as maintained/distributed through ADP and AltaLIS. The City-hosted public viewer has Title Parcels and Legal Parcels sublayers; this does not establish an unrestricted downloadable geometry license.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.edmonton.ca/sites/default/files/public-files/assets/ParcelMappingNotice.pdf?cb=1635810792",
+      "observation": "The City states that ADP and AltaLIS maintain/distribute cadastral and title mapping for parcels within Edmonton municipal boundaries."
+    },
+    {
+      "url": "https://data.edmonton.ca/stories/s/City-of-Edmonton-Parcel-Mapping-Change/9zth-y5hq/",
+      "observation": "City notice says polygon parcel open-data datasets were retired from its catalog in 2021; replacement open-data layers are centroids only."
+    },
+    {
+      "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/1?f=pjson",
+      "observation": "Current ArcGIS child layer metadata identifies Title Parcels as a polygon layer, native OBJECTID, EPSG:3776 source reference, EPSG:3857 metadata extent, and JSON/GeoJSON query formats. Schema includes address and other descriptive fields; only OBJECTID and geometry were selected in the attempted safe query."
+    },
+    {
+      "url": "https://maps.edmonton.ca/map.aspx",
+      "observation": "Official public SLIM map provides legal-description, zoning, and assessment lookup tools; the city-hosted Property Lines group includes Title Parcels and Legal Parcels sublayers."
+    },
+    {
+      "url": "https://www.edmonton.ca/business_economy/maps-and-aerial-products",
+      "observation": "City describes distribution of mapping products through its open-data portal, Map Desk, and Alberta Data Partnerships."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Edmonton cadastral parcels official map City Edmonton lots land titles parcel lines Canada official",
+      "result": "Found the official City SLIM map, public Property Lines ArcGIS layer metadata, provincial parcel-distribution notice, and parcel-mapping change notice.",
+      "method": "Separate English-language discovery search; official City and ArcGIS review."
+    },
+    {
+      "language": "French",
+      "query": "carte cadastrale parcelles Edmonton Alberta official cadastre immobilier City of Edmonton",
+      "result": "Search surfaced the official City mapping and cadastral distribution material; no French-language parcel-data endpoint was found.",
+      "method": "Separate French-language discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/1?f=pjson",
+      "method": "ArcGIS REST metadata, web reader",
+      "httpStatus": 200,
+      "observation": "Polygon layer Title Parcels; native OBJECTID. Full schema inspected; safe fields restricted to OBJECTID plus geometry."
+    },
+    {
+      "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/1/query",
+      "method": "Anonymous bounded point query at WUP locator; outFields=OBJECTID, returnGeometry=true, outSR=4326, resultRecordCount=3",
+      "httpStatus": 403,
+      "observation": "HTTP 403 on standard GET; no features retained."
+    },
+    {
+      "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/1/query",
+      "method": "Same bounded safe-field query using standard ArcGIS form POST",
+      "httpStatus": 403,
+      "observation": "HTTP 403; no alternative access path or authorization challenge bypass attempted."
+    },
+    {
+      "url": "https://gis.edmonton.ca/site1/rest/services/VertiGIS/ZoningMap/FeatureServer/2?f=pjson",
+      "method": "ArcGIS REST metadata for sibling Legal Parcels layer",
+      "httpStatus": 403,
+      "observation": "Metadata inaccessible; no schema inferred."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "Layer metadata includes BESTADDRESS, neighbourhood, community league, ward, park-district, and legal-label fields. Requests were allowlisted to OBJECTID and geometry only; no features returned and no sensitive attributes retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

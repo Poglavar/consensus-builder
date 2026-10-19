@@ -7,9 +7,51 @@ node_modules
 uploads
 frontend/.deploy-build-counter
 blockchain/solana/.anchor
-e2e/playwright-report/
+e2e/playwright-report*/
 e2e/test-results/
 test-results/
+blockchain/solana/.prospective-external-market.private.json
 
-# generated test coverage report
+# wrangler local cache (account id, build artifacts) — tooling state, not source
+.wrangler/
+
+# runtime logs of the backend jobs (PM2 and the agent runner write here)
+backend/logs/
 backend/coverage/
+backend/.venv-floor-plans/
+scripts/__pycache__/
+backend/scripts/__pycache__/
+backend/test/__pycache__/
+__pycache__/
+
+# Stray screenshots in the repo root (debug captures belong in a scratch directory)
+/*.png
+.env
+frontend/carto-config.js
+frontend/rpc-config.js
+
+# Generated audiobook assets are local deliverables, not repository source.
+/data/metrocoalescence-chapter-*.mp3
+/data/Metrocoalescense-SinglePages.pdf
+
+# Raw source HTML, images, PDFs and migration reports are local files, outside Git.
+/data/floor-plan-downloads/
+/data/floor-plan-agencies/raw/
+/data/floor-plan-agencies/downloads/
+/data/floor-plan-agencies/**/*.pdf
+/data/floor-plan-agencies/**/*.png
+/data/floor-plan-agencies/**/*.jpg
+/data/floor-plan-agencies/**/*.jpeg
+/data/floor-plan-agencies/**/*.webp
+/data/floor-plan-agencies/**/*.html
+/rekonstrukcije/avenue-v/raw/
+/rekonstrukcije/avenue-v/downloads/
+/rekonstrukcije/avenue-v/**/*.pdf
+/rekonstrukcije/avenue-v/**/*.png
+/rekonstrukcije/avenue-v/**/*.jpg
+/rekonstrukcije/avenue-v/**/*.jpeg
+/rekonstrukcije/avenue-v/**/*.webp
+/rekonstrukcije/avenue-v/**/*.html
+
+# Raw guide-video renders (the packaged clips live in frontend/videos/howto); too large for git.
+data/video/

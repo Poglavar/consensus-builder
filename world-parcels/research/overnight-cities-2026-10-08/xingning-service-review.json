@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11662-xingning.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Xingning’s official Natural Resources Bureau identifies the local registration-center function. Public notices were excluded from review because they display personal/property details. No anonymous safe vector schema or geometry route was verified.",
+  "registryAssessment": "The official Xingning Natural Resources Bureau materials identify a municipal Real Estate Registration Center and assign it registration-related legal and administrative duties. This is city-level institutional evidence; individual registration notices and their personal/property details were not used.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.xingning.gov.cn/zfjg/xnszrzyj/flfg/content/post_2906468.html",
+      "observation": "The official Xingning Natural Resources Bureau materials identify a municipal Real Estate Registration Center and assign it registration-related legal and administrative duties. This is city-level institutional evidence; individual registration notices and their personal/property details were not used."
+    },
+    {
+      "url": "https://www.xingning.gov.cn/zfjg/xnszrzyj/",
+      "observation": "The official Xingning Natural Resources Bureau materials identify a municipal Real Estate Registration Center and assign it registration-related legal and administrative duties. This is city-level institutional evidence; individual registration notices and their personal/property details were not used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Xingning Guangdong official real estate registration center cadastral map GIS",
+      "result": "Official Xingning Natural Resources Bureau sources confirm the local registration center; no public geometry schema found.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "兴宁市自然资源局 不动产登记中心 地籍图 GIS 官方",
+      "result": "Official bureau materials identify local registration functions; person/property notices were excluded, with no record values used.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "The official Xingning Natural Resources Bureau materials identify a municipal Real Estate Registration Center and assign it registration-related legal and administrative duties. This is city-level institutional evidence; individual registration notices and their personal/property details were not used.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Any separate public parcel map’s endpoint, field allowlist, and coverage remain unknown."
+}

@@ -1,0 +1,90 @@
+{
+  "cityCode": 8753,
+  "queueRank": 1496,
+  "name": "KUNDULUN",
+  "aliases": ["kundulun"],
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "countryIso3": "NGA",
+  "locId": 566,
+  "capital": false,
+  "point": [10.2825633635709, 11.166111601033],
+  "pointOrder": "longitude,latitude",
+  "population2025": 380118,
+  "population2025k": 380.118,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "plausibility": "Low",
+  "status": "complete",
+  "registryFound": true,
+  "registryScope": "Bauchi State BAGIS/Ministry of Land & Survey is evidenced as the relevant state-level land administration custodian; no parcel record for Kundulun was retrieved.",
+  "freshResearch": {
+    "researchedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kundulun Nigeria cadastral parcel map land registry official",
+        "result": "No Kundulun-specific first-party parcel record or public parcel API was found. Discovery identified the Bauchi State Geographic Information Service (BAGIS), the Bauchi State Ministry of Land & Survey, and the federal Office of the Surveyor-General of the Federation (OSGOF).",
+        "actualResultUrls": [
+          "https://sites.google.com/view/bagisbauchistategovng/home",
+          "https://www.bauchistate.gov.ng/sdm_categories/bagis-reports/",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      },
+      {
+        "language": "native/local (Hausa)",
+        "query": "Kundulun Najeriya taswirar filaye rajistar ƙasa",
+        "result": "No first-party Hausa result for Kundulun or a public parcel endpoint was found. The search did not establish city-specific cadastral coverage.",
+        "actualResultUrls": [
+          "https://sites.google.com/view/bagisbauchistategovng/home",
+          "https://osgof.gov.ng/cadastral-legal-surveys/"
+        ]
+      }
+    ],
+    "officialCustodianEvidence": [
+      {
+        "agency": "Bauchi Geographic Information Service (BAGIS), Bauchi State Ministry of Land & Survey",
+        "url": "https://sites.google.com/view/bagisbauchistategovng/home",
+        "scope": "State land registration, allocation, mapping, and land-record administration; general custodian evidence, not a parcel response."
+      },
+      {
+        "agency": "Office of the Surveyor-General of the Federation (OSGOF)",
+        "url": "https://osgof.gov.ng/cadastral-legal-surveys/",
+        "scope": "Federal cadastral/legal survey and cadastral GIS responsibilities; general agency evidence, not a Kundulun parcel response."
+      }
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://survey.engis.en.gov.ng/maps/",
+      "method": "GET",
+      "outcome": "200 public viewer HTML inspected; viewer identifies itself as Enugu State Land Registry and exposes /api/layouts-visible/.",
+      "scope": "Not the likely Bauchi custodian; retained only as a tested public Nigerian cadastral viewer route."
+    },
+    {
+      "url": "https://survey.engis.en.gov.ng/api/layouts-visible/?in_bbox=10.27,11.15,10.30,11.18&limit=60",
+      "method": "GET",
+      "outcome": "200 JSON FeatureCollection with zero features.",
+      "interpretation": "Scope-mismatched empty response; not evidence of citywide absence and no geometry retained."
+    },
+    {
+      "url": "https://baugis.vercel.app/public-maps",
+      "method": "GET",
+      "outcome": "200 public page reached, but no bounded parcel feature/API response or stable native parcel identity was exposed in the inspected page assets.",
+      "scope": "Not treated as first-party source integration; BAGIS custodian evidence is instead recorded from the Bauchi government-linked pages."
+    }
+  ],
+  "schema": {
+    "geometry": "No safe native parcel geometry available.",
+    "crs": "No parcel response, so source CRS unavailable.",
+    "safeFields": ["stable native parcel ID", "geometry"],
+    "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account"]
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": [
+    "Exact WUP point preserved without shifting; coordinates are stored in the required longitude,latitude array order.",
+    "No sample GeoJSON is included because no safe native parcel ID plus unchanged native geometry was obtained.",
+    "Packet completion records attempted research only and is not source integration or runtime admission."
+  ]
+}

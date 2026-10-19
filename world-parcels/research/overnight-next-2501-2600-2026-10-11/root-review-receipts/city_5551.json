@@ -1,0 +1,27 @@
+{
+  "taskId": "city:5551",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-5551-chemnitz.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/chemnitz-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/chemnitz-parcels-sample.geojson",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_5551-first-party-point-response.json"
+  ],
+  "checkedAt": "2026-10-11T14:52:09.499620+00:00",
+  "reason": "The immutable WUP rank 2559 identity, Germany, point and 229476 persons match the packet. English and German searches identify first-party city metadata and the parcel service. A fresh safe-field official ArcGIS point response returned the same full polygon and native FLURST_ID CZ-2225/20 as the one-feature sample. The discovery is held: no independently evidenced exact-ID read, forced paging, 13 bounded cells, metric GEOS/overlap checks, runtime source binding, or headed Details-panel check. One point hit does not establish citywide coverage.",
+  "geometryReview": {
+    "fullPolygonsRetained": 1,
+    "safeNativeIdVerified": true
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

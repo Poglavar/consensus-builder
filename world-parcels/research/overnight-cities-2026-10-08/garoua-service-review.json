@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2753-garoua.json",
+  "purpose": "Document city-local registry evidence and schema-first anonymous public geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Cameroon’s MINDCAF administers land, cadastre and land-affairs services. Its public organization/procedure materials define regional and departmental cadastral responsibilities; the Cameroon government eRegulations procedure directory specifically lists the Délégation départementale des domaines, du cadastre et des affaires foncières at Centre administratif, Garoua and the Bénoué departmental cadastre bureau. The public listing confirms a local registry/cadastre custodian, but no public parcel geometry service or schema was identified. MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found.",
+  "registryAssessment": "Cameroon’s MINDCAF administers land, cadastre and land-affairs services. Its public organization/procedure materials define regional and departmental cadastral responsibilities; the Cameroon government eRegulations procedure directory specifically lists the Délégation départementale des domaines, du cadastre et des affaires foncières at Centre administratif, Garoua and the Bénoué departmental cadastre bureau. The public listing confirms a local registry/cadastre custodian, but no public parcel geometry service or schema was identified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mindcaf.gov.cm/fr/organisation/",
+      "observation": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found."
+    },
+    {
+      "url": "https://garoua.eregulations.org/procedure/60/53/step/243?l=en",
+      "observation": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found."
+    },
+    {
+      "url": "https://www.minhdu.gov.cm/le-ministere/structures-deconcentrees/",
+      "observation": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found."
+    },
+    {
+      "url": "https://mindcaf.gov.cm/fr/publications/312/",
+      "observation": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found."
+    },
+    {
+      "url": "https://mindcaf.gov.cm/media/filer_public/5a/23/5a234f08-0ccc-4b44-9887-d314c27dd70b/annuaire_statistique_2023.pdf",
+      "observation": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Garoua Cameroon official land registry cadastre cadastral map government land office",
+      "result": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "French",
+      "query": "Garoua cadastre terrain cadastre foncier bureau domaines Cameroun officiel",
+      "result": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found.",
+      "method": "Separate language-specific search and official source/service review."
+    }
+  ],
+  "geometryDecision": "No geometry retained; no anonymous schema-safe public parcel feature endpoint was identified.",
+  "coverageAssessment": {
+    "claimedScope": "Cameroon’s MINDCAF administers land, cadastre and land-affairs services. Its public organization/procedure materials define regional and departmental cadastral responsibilities; the Cameroon government eRegulations procedure directory specifically lists the Délégation départementale des domaines, du cadastre et des affaires foncières at Centre administratif, Garoua and the Bénoué departmental cadastre bureau. The public listing confirms a local registry/cadastre custodian, but no public parcel geometry service or schema was identified.",
+    "verifiedOpenScope": "MINDCAF official material defines departmental cadastral duties; the public Garoua procedure directory lists the Bénoué departmental cadastre bureau and MINDCAF delegation in Garoua. The ministry’s official page also documents title issuance involving Garoua. No city-specific public parcel viewer, vector schema or anonymous feature endpoint was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://mindcaf.gov.cm/fr/organisation/",
+      "outcome": "Official registry/map evidence review only; no individual property query or feature service call.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://garoua.eregulations.org/procedure/60/53/step/243?l=en",
+      "outcome": "Official registry/map evidence review only; no individual property query or feature service call.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.minhdu.gov.cm/le-ministere/structures-deconcentrees/",
+      "outcome": "Official registry/map evidence review only; no individual property query or feature service call.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://mindcaf.gov.cm/fr/publications/312/",
+      "outcome": "Official registry/map evidence review only; no individual property query or feature service call.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://mindcaf.gov.cm/media/filer_public/5a/23/5a234f08-0ccc-4b44-9887-d314c27dd70b/annuaire_statistique_2023.pdf",
+      "outcome": "Official registry/map evidence review only; no individual property query or feature service call.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether Garoua/Bénoué cadastral geometry has an anonymous public service or shareable download remains unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime adapter/contract test was performed."
+  },
+  "technicalBlocker": "No anonymous public parcel geometry service or feature schema was identified. The ministry’s separate “Carte cadastrale” is the mining cadastre, not ordinary land parcels, and was excluded."
+}

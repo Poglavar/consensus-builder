@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 11298,
+  "queueRank": 1642,
+  "name": "Gaoyou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [32.7787962682882, 119.441669606469],
+  "population2025": 348058,
+  "population2025k": 348.058,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {"queries": [
+    {"language": "English", "query": "Gaoyou China official cadastral parcel map land registry GIS natural resources bureau", "result": "Official Gaoyou government-service sources were found, including a local property-registration procedure naming the Gaoyou Natural Resources and Planning Department. No anonymous parcel feature endpoint or safe parcel-ID-plus-geometry response was identified.", "actualResultUrls": ["https://yzgy.jszwfw.gov.cn/", "https://yzgy.jszwfw.gov.cn/jszwfw/bscx/itemlist/briefbszn.do?iddept_ql_inf=1132108401442699304000715001018&iddept_yw_inf=113210840144269930400071500101801&ql_kind=07&type=2&webId=60"]},
+    {"language": "Chinese", "query": "高邮市 不动产登记 地籍图 宗地图 自然资源和规划局 官方", "result": "Chinese first-party discovery found the official Gaoyou government-service portal and its public service iframe. The accessible material documents local registration custody and procedure, but exposes no anonymous parcel polygon API, stable parcel identity, schema or CRS.", "actualResultUrls": ["https://yzgy.jszwfw.gov.cn/", "https://yzsgy.jszwfw.gov.cn:20443/epoint-web-zwdt-gy/epointzwmhwz/gyzwdtsy/index", "https://yzgy.jszwfw.gov.cn/jszwfw/bscx/itemlist/briefbszn.do?iddept_ql_inf=1132108401442699304000715001018&iddept_yw_inf=113210840144269930400071500101801&ql_kind=07&type=2&webId=60"]}
+  ]},
+  "officialSources": [
+    {"url": "https://yzgy.jszwfw.gov.cn/", "observation": "Official Gaoyou government-service portal loaded and embeds the local public-service site."},
+    {"url": "https://yzgy.jszwfw.gov.cn/jszwfw/bscx/itemlist/briefbszn.do?iddept_ql_inf=1132108401442699304000715001018&iddept_yw_inf=113210840144269930400071500101801&ql_kind=07&type=2&webId=60", "observation": "Official service page identifies Gaoyou Natural Resources and Planning Department as implementing body for a property-registration service and gives the local registration-window address. It is a procedure page, not an open cadastral map/API."},
+    {"url": "https://yzsgy.jszwfw.gov.cn:20443/epoint-web-zwdt-gy/epointzwmhwz/gyzwdtsy/index", "observation": "Official embedded service page exposes public-service navigation; no parcel layer or feature-service configuration was present in fetched HTML."}
+  ],
+  "requests": [
+    {"url": "https://yzgy.jszwfw.gov.cn/", "method": "GET", "httpStatus": 200, "outcome": "Portal fetched; navigation/iframe only, no parcel API or map schema exposed."},
+    {"url": "https://yzsgy.jszwfw.gov.cn:20443/epoint-web-zwdt-gy/epointzwmhwz/gyzwdtsy/index", "method": "GET", "httpStatus": 200, "outcome": "Embedded service page fetched; no anonymous parcel geometry route exposed."},
+    {"url": "https://yzgy.jszwfw.gov.cn/jszwfw/bscx/itemlist/briefbszn.do?iddept_ql_inf=1132108401442699304000715001018&iddept_yw_inf=113210840144269930400071500101801&ql_kind=07&type=2&webId=60", "method": "GET", "httpStatus": 200, "outcome": "Procedure page fetched. Inline JavaScript specifies need_login=1 for online handling; no login, credentials, private token or CAPTCHA bypass attempted."},
+    {"url": "https://yzsgy.jszwfw.gov.cn:20443/epoint-web-zwdt-gy/epointzwdt/pages/onlinedeclaration_js/onlinedeclaration", "method": "GET", "httpStatus": 200, "outcome": "Anonymous online-declaration shell returned, but no parcel ID-plus-geometry response was provided."}
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Gaoyou service material names the Gaoyou Natural Resources and Planning Department as implementing authority and identifies a local registration window. This establishes local institutional custody/procedure, not an open parcel geometry service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {"claimedScope": "Gaoyou municipal property-registration services.", "verifiedOpenScope": "Local institutional custody and public procedure only; anonymous parcel geometry and citywide open coverage were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "excludedFields": ["owner or titleholder names", "addresses and contact data", "tax/account/registration details beyond a safe native parcel ID", "credentials and private tokens"],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current viewer/API route, anonymous access behavior, parcel schema, CRS, stable native parcel identity and exact-point coverage remain unknown. The exact WUP point was preserved and was not shifted or used to infer presence/absence.",
+  "retainedSample": null
+}

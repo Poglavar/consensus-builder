@@ -1,0 +1,1597 @@
+{
+  "schemaVersion": "1.0",
+  "city": "Dublin",
+  "wupCityCode": 377,
+  "rank": 453,
+  "population": 1142650,
+  "pointLatLon": [
+    53.330243126706,
+    -6.27332800239088
+  ],
+  "checkedAt": "2026-10-09T08:00:44.321Z",
+  "source": {
+    "sourceId": "ie-tailte-hvd-freehold",
+    "operator": "Tailte Éireann",
+    "dataset": "Cadastral Parcels Freehold (High Value Dataset)",
+    "endpoint": "https://services-eu1.arcgis.com/FH5XCsx8rYXqnjF5/arcgis/rest/services/Cadastral_Parcels_Freehold/FeatureServer/12",
+    "layer": 12,
+    "accessModel": "public anonymous read",
+    "nativeCrs": "EPSG:2157",
+    "responseCrs": "EPSG:4326",
+    "nativeParcelIdField": "SP_ID",
+    "objectIdField": "OBJECTID",
+    "fieldType": "esriFieldTypeBigInteger",
+    "requestedAttributes": [
+      "OBJECTID",
+      "SP_ID"
+    ],
+    "geometryRequested": true,
+    "freeholdOnly": true,
+    "caveat": "Freehold-indexed source; may overlap or include registered estates, so exclusivity and ground compatibility require separate source-model review.",
+    "schemaEvidenceFile": "dublin-source-metadata.json",
+    "requestedAttributesOnly": [
+      "OBJECTID",
+      "SP_ID"
+    ],
+    "sourceModelCompatibility": {
+      "status": "not-established",
+      "decision": "hold catalog/enablement pending source-model review",
+      "reason": "This HVD layer is freehold-indexed; leasehold parcels are a separate layer, and the publication does not establish exclusive ground coverage or legal boundary certainty."
+    }
+  },
+  "method": {
+    "adapter": "unchanged repository createArcgisParcelSource",
+    "pageSizeForced": 1,
+    "maxFeatures": 10000,
+    "gridStepDegrees": 0.001,
+    "gridOffsets": [
+      [
+        -1,
+        -1
+      ],
+      [
+        0,
+        -1
+      ],
+      [
+        1,
+        -1
+      ],
+      [
+        -1,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        -1,
+        1
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        -2
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        -2,
+        0
+      ],
+      [
+        2,
+        0
+      ]
+    ],
+    "cells": [
+      {
+        "index": 0,
+        "dx": -1,
+        "dy": -1,
+        "bbox": [
+          -6.275,
+          53.329,
+          -6.274,
+          53.33
+        ],
+        "complete": true,
+        "featureCount": 7,
+        "uniqueObjectIds": 7,
+        "parcelIds": [
+          "1736185",
+          "3668318",
+          "4973920",
+          "5300364",
+          "5353115",
+          "5874078",
+          "5954756"
+        ],
+        "objectIds": [
+          779763,
+          1233179,
+          1394650,
+          1509109,
+          1602454,
+          2696706,
+          2880404
+        ]
+      },
+      {
+        "index": 1,
+        "dx": 0,
+        "dy": -1,
+        "bbox": [
+          -6.274,
+          53.329,
+          -6.273,
+          53.33
+        ],
+        "complete": true,
+        "featureCount": 9,
+        "uniqueObjectIds": 9,
+        "parcelIds": [
+          "1736186",
+          "1736187",
+          "1876908",
+          "1876909",
+          "1876910",
+          "2527300",
+          "4828269",
+          "5727122",
+          "6006277"
+        ],
+        "objectIds": [
+          699911,
+          844393,
+          1143165,
+          1951618,
+          1951619,
+          2144513,
+          2337505,
+          2736378,
+          3083220
+        ]
+      },
+      {
+        "index": 2,
+        "dx": 1,
+        "dy": -1,
+        "bbox": [
+          -6.273,
+          53.329,
+          -6.272,
+          53.33
+        ],
+        "complete": true,
+        "featureCount": 4,
+        "uniqueObjectIds": 4,
+        "parcelIds": [
+          "2527300",
+          "5096979",
+          "5208206",
+          "5564615"
+        ],
+        "objectIds": [
+          1143165,
+          1411165,
+          1716847,
+          2881061
+        ]
+      },
+      {
+        "index": 3,
+        "dx": -1,
+        "dy": 0,
+        "bbox": [
+          -6.275,
+          53.33,
+          -6.274,
+          53.331
+        ],
+        "complete": true,
+        "featureCount": 6,
+        "uniqueObjectIds": 6,
+        "parcelIds": [
+          "5004077",
+          "5251651",
+          "5251685",
+          "5467501",
+          "5579511",
+          "6207373"
+        ],
+        "objectIds": [
+          1441330,
+          1721947,
+          1928696,
+          2106757,
+          2687671,
+          3048764
+        ]
+      },
+      {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          -6.274,
+          53.33,
+          -6.273,
+          53.331
+        ],
+        "complete": true,
+        "featureCount": 3,
+        "uniqueObjectIds": 3,
+        "parcelIds": [
+          "1736465",
+          "4828269",
+          "5004077"
+        ],
+        "objectIds": [
+          2530037,
+          2736378,
+          3048764
+        ]
+      },
+      {
+        "index": 5,
+        "dx": 1,
+        "dy": 0,
+        "bbox": [
+          -6.273,
+          53.33,
+          -6.272,
+          53.331
+        ],
+        "complete": true,
+        "featureCount": 16,
+        "uniqueObjectIds": 16,
+        "parcelIds": [
+          "1736465",
+          "4895115",
+          "4996649",
+          "5038880",
+          "5096203",
+          "5096979",
+          "5256759",
+          "5306523",
+          "5330995",
+          "5397586",
+          "5423131",
+          "5534808",
+          "5564615",
+          "5575684",
+          "5633765",
+          "5665799"
+        ],
+        "objectIds": [
+          1347176,
+          1359573,
+          1359650,
+          1390951,
+          1416396,
+          1461783,
+          1609898,
+          1716847,
+          1913420,
+          1918793,
+          1918996,
+          2105514,
+          2530037,
+          2539236,
+          2738381,
+          2881061
+        ]
+      },
+      {
+        "index": 6,
+        "dx": -1,
+        "dy": 1,
+        "bbox": [
+          -6.275,
+          53.331,
+          -6.274,
+          53.332
+        ],
+        "complete": true,
+        "featureCount": 5,
+        "uniqueObjectIds": 5,
+        "parcelIds": [
+          "5207083",
+          "5501776",
+          "5503889",
+          "5550558",
+          "6207373"
+        ],
+        "objectIds": [
+          1439604,
+          1446798,
+          1928696,
+          2328938,
+          3079907
+        ]
+      },
+      {
+        "index": 7,
+        "dx": 0,
+        "dy": 1,
+        "bbox": [
+          -6.274,
+          53.331,
+          -6.273,
+          53.332
+        ],
+        "complete": true,
+        "featureCount": 2,
+        "uniqueObjectIds": 2,
+        "parcelIds": [
+          "1736465",
+          "1876621"
+        ],
+        "objectIds": [
+          1951620,
+          2530037
+        ]
+      },
+      {
+        "index": 8,
+        "dx": 1,
+        "dy": 1,
+        "bbox": [
+          -6.273,
+          53.331,
+          -6.272,
+          53.332
+        ],
+        "complete": true,
+        "featureCount": 16,
+        "uniqueObjectIds": 16,
+        "parcelIds": [
+          "1736465",
+          "1736466",
+          "1876618",
+          "1876619",
+          "1876620",
+          "4895115",
+          "4912740",
+          "5007032",
+          "5210093",
+          "5256759",
+          "5306523",
+          "5417174",
+          "5421468",
+          "5491220",
+          "5575684",
+          "5765498"
+        ],
+        "objectIds": [
+          844281,
+          844282,
+          1344307,
+          1347176,
+          1390951,
+          1415007,
+          1416396,
+          1425051,
+          1427281,
+          1441182,
+          1923835,
+          2144523,
+          2530037,
+          2530050,
+          2682841,
+          2738381
+        ]
+      },
+      {
+        "index": 9,
+        "dx": 0,
+        "dy": -2,
+        "bbox": [
+          -6.274,
+          53.328,
+          -6.273,
+          53.329
+        ],
+        "complete": true,
+        "featureCount": 5,
+        "uniqueObjectIds": 5,
+        "parcelIds": [
+          "2527300",
+          "5727122",
+          "5727123",
+          "6006277",
+          "6006278"
+        ],
+        "objectIds": [
+          699911,
+          700192,
+          1143165,
+          2503946,
+          3083220
+        ]
+      },
+      {
+        "index": 10,
+        "dx": 0,
+        "dy": 2,
+        "bbox": [
+          -6.274,
+          53.332,
+          -6.273,
+          53.333
+        ],
+        "complete": true,
+        "featureCount": 17,
+        "uniqueObjectIds": 17,
+        "parcelIds": [
+          "1736460",
+          "1876609",
+          "1876621",
+          "2560889",
+          "4243011",
+          "4858430",
+          "5107035",
+          "5165001",
+          "5182516",
+          "5190361",
+          "5225426",
+          "5269901",
+          "5271909",
+          "5384316",
+          "5534529",
+          "5599158",
+          "5732424"
+        ],
+        "objectIds": [
+          844277,
+          1128815,
+          1391359,
+          1400287,
+          1407943,
+          1463720,
+          1565601,
+          1718939,
+          1721464,
+          1775101,
+          1951620,
+          2159625,
+          2289970,
+          2305411,
+          2310671,
+          2493735,
+          2916272
+        ]
+      },
+      {
+        "index": 11,
+        "dx": -2,
+        "dy": 0,
+        "bbox": [
+          -6.276,
+          53.33,
+          -6.275,
+          53.331
+        ],
+        "complete": true,
+        "featureCount": 34,
+        "uniqueObjectIds": 34,
+        "parcelIds": [
+          "1737205",
+          "1737206",
+          "1737207",
+          "1737208",
+          "1737209",
+          "1737210",
+          "1737211",
+          "1737212",
+          "1737213",
+          "1737216",
+          "1875618",
+          "1875619",
+          "1875620",
+          "1875621",
+          "1875622",
+          "1875623",
+          "1875624",
+          "1875625",
+          "1875626",
+          "1875627",
+          "1875628",
+          "1875632",
+          "1875635",
+          "1875637",
+          "2371140",
+          "2371142",
+          "2559145",
+          "5251651",
+          "5251685",
+          "5433868",
+          "5433873",
+          "5467501",
+          "5579511",
+          "6207373"
+        ],
+        "objectIds": [
+          778528,
+          778529,
+          778530,
+          838236,
+          838237,
+          838238,
+          838239,
+          838240,
+          838241,
+          838242,
+          838560,
+          1089941,
+          1090126,
+          1432882,
+          1441330,
+          1565598,
+          1721947,
+          1928696,
+          1951467,
+          1951610,
+          1996855,
+          2106757,
+          2144350,
+          2144503,
+          2144515,
+          2337479,
+          2337480,
+          2530028,
+          2687671,
+          2723076,
+          2916107,
+          2916109,
+          2916261,
+          3064663
+        ]
+      },
+      {
+        "index": 12,
+        "dx": 2,
+        "dy": 0,
+        "bbox": [
+          -6.272,
+          53.33,
+          -6.271,
+          53.331
+        ],
+        "complete": true,
+        "featureCount": 18,
+        "uniqueObjectIds": 18,
+        "parcelIds": [
+          "1736926",
+          "1875936",
+          "1875940",
+          "4996649",
+          "5038880",
+          "5096203",
+          "5208206",
+          "5236741",
+          "5256759",
+          "5296439",
+          "5299402",
+          "5397586",
+          "5560925",
+          "5573768",
+          "5665799",
+          "5754355",
+          "5788942",
+          "6019186"
+        ],
+        "objectIds": [
+          779993,
+          843976,
+          843978,
+          1359573,
+          1359650,
+          1390240,
+          1390951,
+          1411165,
+          1412663,
+          1457956,
+          1473721,
+          1479241,
+          1479860,
+          1527453,
+          1918793,
+          1918996,
+          2105514,
+          2880209
+        ]
+      }
+    ],
+    "preflightCountsAndOids": [
+      {
+        "count": 7,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          779763,
+          1233179,
+          1394650,
+          1509109,
+          1602454,
+          2696706,
+          2880404
+        ]
+      },
+      {
+        "count": 9,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          699911,
+          844393,
+          1143165,
+          1951618,
+          1951619,
+          2144513,
+          2337505,
+          2736378,
+          3083220
+        ]
+      },
+      {
+        "count": 4,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1143165,
+          1411165,
+          1716847,
+          2881061
+        ]
+      },
+      {
+        "count": 6,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1441330,
+          1721947,
+          1928696,
+          2106757,
+          2687671,
+          3048764
+        ]
+      },
+      {
+        "count": 3,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          2530037,
+          2736378,
+          3048764
+        ]
+      },
+      {
+        "count": 16,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1347176,
+          1359573,
+          1359650,
+          1390951,
+          1416396,
+          1461783,
+          1609898,
+          1716847,
+          1913420,
+          1918793,
+          1918996,
+          2105514,
+          2530037,
+          2539236,
+          2738381,
+          2881061
+        ]
+      },
+      {
+        "count": 5,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1439604,
+          1446798,
+          1928696,
+          2328938,
+          3079907
+        ]
+      },
+      {
+        "count": 2,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1951620,
+          2530037
+        ]
+      },
+      {
+        "count": 16,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          844281,
+          844282,
+          1344307,
+          1347176,
+          1390951,
+          1415007,
+          1416396,
+          1425051,
+          1427281,
+          1441182,
+          1923835,
+          2144523,
+          2530037,
+          2530050,
+          2682841,
+          2738381
+        ]
+      },
+      {
+        "count": 5,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          699911,
+          700192,
+          1143165,
+          2503946,
+          3083220
+        ]
+      },
+      {
+        "count": 17,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          844277,
+          1128815,
+          1391359,
+          1400287,
+          1407943,
+          1463720,
+          1565601,
+          1718939,
+          1721464,
+          1775101,
+          1951620,
+          2159625,
+          2289970,
+          2305411,
+          2310671,
+          2493735,
+          2916272
+        ]
+      },
+      {
+        "count": 34,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          778528,
+          778529,
+          778530,
+          838236,
+          838237,
+          838238,
+          838239,
+          838240,
+          838241,
+          838242,
+          838560,
+          1089941,
+          1090126,
+          1432882,
+          1441330,
+          1565598,
+          1721947,
+          1928696,
+          1951467,
+          1951610,
+          1996855,
+          2106757,
+          2144350,
+          2144503,
+          2144515,
+          2337479,
+          2337480,
+          2530028,
+          2687671,
+          2723076,
+          2916107,
+          2916109,
+          2916261,
+          3064663
+        ]
+      },
+      {
+        "count": 18,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          779993,
+          843976,
+          843978,
+          1359573,
+          1359650,
+          1390240,
+          1390951,
+          1411165,
+          1412663,
+          1457956,
+          1473721,
+          1479241,
+          1479860,
+          1527453,
+          1918793,
+          1918996,
+          2105514,
+          2880209
+        ]
+      }
+    ],
+    "postflightCountsAndOids": [
+      {
+        "count": 7,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          779763,
+          1233179,
+          1394650,
+          1509109,
+          1602454,
+          2696706,
+          2880404
+        ]
+      },
+      {
+        "count": 9,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          699911,
+          844393,
+          1143165,
+          1951618,
+          1951619,
+          2144513,
+          2337505,
+          2736378,
+          3083220
+        ]
+      },
+      {
+        "count": 4,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1143165,
+          1411165,
+          1716847,
+          2881061
+        ]
+      },
+      {
+        "count": 6,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1441330,
+          1721947,
+          1928696,
+          2106757,
+          2687671,
+          3048764
+        ]
+      },
+      {
+        "count": 3,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          2530037,
+          2736378,
+          3048764
+        ]
+      },
+      {
+        "count": 16,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1347176,
+          1359573,
+          1359650,
+          1390951,
+          1416396,
+          1461783,
+          1609898,
+          1716847,
+          1913420,
+          1918793,
+          1918996,
+          2105514,
+          2530037,
+          2539236,
+          2738381,
+          2881061
+        ]
+      },
+      {
+        "count": 5,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1439604,
+          1446798,
+          1928696,
+          2328938,
+          3079907
+        ]
+      },
+      {
+        "count": 2,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          1951620,
+          2530037
+        ]
+      },
+      {
+        "count": 16,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          844281,
+          844282,
+          1344307,
+          1347176,
+          1390951,
+          1415007,
+          1416396,
+          1425051,
+          1427281,
+          1441182,
+          1923835,
+          2144523,
+          2530037,
+          2530050,
+          2682841,
+          2738381
+        ]
+      },
+      {
+        "count": 5,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          699911,
+          700192,
+          1143165,
+          2503946,
+          3083220
+        ]
+      },
+      {
+        "count": 17,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          844277,
+          1128815,
+          1391359,
+          1400287,
+          1407943,
+          1463720,
+          1565601,
+          1718939,
+          1721464,
+          1775101,
+          1951620,
+          2159625,
+          2289970,
+          2305411,
+          2310671,
+          2493735,
+          2916272
+        ]
+      },
+      {
+        "count": 34,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          778528,
+          778529,
+          778530,
+          838236,
+          838237,
+          838238,
+          838239,
+          838240,
+          838241,
+          838242,
+          838560,
+          1089941,
+          1090126,
+          1432882,
+          1441330,
+          1565598,
+          1721947,
+          1928696,
+          1951467,
+          1951610,
+          1996855,
+          2106757,
+          2144350,
+          2144503,
+          2144515,
+          2337479,
+          2337480,
+          2530028,
+          2687671,
+          2723076,
+          2916107,
+          2916109,
+          2916261,
+          3064663
+        ]
+      },
+      {
+        "count": 18,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          779993,
+          843976,
+          843978,
+          1359573,
+          1359650,
+          1390240,
+          1390951,
+          1411165,
+          1412663,
+          1457956,
+          1473721,
+          1479241,
+          1479860,
+          1527453,
+          1918793,
+          1918996,
+          2105514,
+          2880209
+        ]
+      }
+    ],
+    "requestedSourceFields": [
+      "OBJECTID",
+      "SP_ID"
+    ],
+    "uniqueParcelCount": 113,
+    "uniqueObjectIdCount": 113,
+    "allFullGeometryRetainedUnmodified": true,
+    "viewportComplete": true,
+    "freshNativeIdReads": {
+      "count": 113,
+      "present": 113,
+      "absent": 0,
+      "allGeometryAndObjectIdsMatch": true,
+      "instances": "one new adapter per exact read",
+      "hashesSha256": [
+        {
+          "id": "IE-SP-1736185",
+          "sha256": "fd2aff9d46d77d6defea083d03ceb1d4a150b3edbfe15da348830f538fe0260b"
+        },
+        {
+          "id": "IE-SP-1736186",
+          "sha256": "93831f6c6910b599712eb76991761b27d3ed466ce7752ea1102dd2de1d1a991c"
+        },
+        {
+          "id": "IE-SP-1736187",
+          "sha256": "18409076b88c96103611399b9f7bfe22598a807abe204ca6542ec7c6483d60a1"
+        },
+        {
+          "id": "IE-SP-1736460",
+          "sha256": "2558ce50c04ecbf7973763dd57b8a9b44670a86eaae47bdc9144742cf5a28068"
+        },
+        {
+          "id": "IE-SP-1736465",
+          "sha256": "5ad965a169882bc7c0ddc089c01595f424a17b051e7e7b8b96d248dd78c5154d"
+        },
+        {
+          "id": "IE-SP-1736466",
+          "sha256": "84046cc75c2a1f128f7f3d3fab1955a1746177918d08d63aaf5f659b712b5604"
+        },
+        {
+          "id": "IE-SP-1736926",
+          "sha256": "a3a0934a853b2129e5342369129edb351deecdd3fd28e03b00a04afa8ba6391e"
+        },
+        {
+          "id": "IE-SP-1737205",
+          "sha256": "d241b1a34feebac84e16c32b3e9e010f300cddc3d9e72e7e547da98ab7a88d11"
+        },
+        {
+          "id": "IE-SP-1737206",
+          "sha256": "a4b83e71b20d6aa536118a1002f5aa32e4950d2fcc8895bbbce6eacd039a811e"
+        },
+        {
+          "id": "IE-SP-1737207",
+          "sha256": "5431e86f8b440d0055671cbfe9179b1aa1d2e06e3840aa7b8f8f9b310a68f8cb"
+        },
+        {
+          "id": "IE-SP-1737208",
+          "sha256": "822fb1c46317a018fbdf2de0f777d035460fb08bf2fdc72cc14bbdeb14579c2f"
+        },
+        {
+          "id": "IE-SP-1737209",
+          "sha256": "93cf555008c753984be55b7907472393f832e635c29ef27a86163b042e555e77"
+        },
+        {
+          "id": "IE-SP-1737210",
+          "sha256": "5ea7f7f8b393ab542eb3290a42ef72b7c4313527e44b198e358759cdf6bc872c"
+        },
+        {
+          "id": "IE-SP-1737211",
+          "sha256": "d6e81f823ee1f8bcff14c0c25bfadb3bf59c0d92935c091b9e2b6234c7ce0944"
+        },
+        {
+          "id": "IE-SP-1737212",
+          "sha256": "e4c539c7e5fa368bf79fe66780ec5bcea0ef6ec00490e0fdf0628a687ebcc3b9"
+        },
+        {
+          "id": "IE-SP-1737213",
+          "sha256": "07a8d416fac0390fe108838aee26541ab5fbb105bf7fc3ae6eea6219d114c194"
+        },
+        {
+          "id": "IE-SP-1737216",
+          "sha256": "21b11a34f855d816fe7f9b101bb7b06f4a17295dbd87d2d12fcc6060c8b8ac55"
+        },
+        {
+          "id": "IE-SP-1875618",
+          "sha256": "66f8170a4fe3a09dd43cff08cf2cf439a92c2d70d88109823c903230bd8131ae"
+        },
+        {
+          "id": "IE-SP-1875619",
+          "sha256": "22febd66959be6c34bd13325d9f741d5f6ff4fc98b5c2fa1370bcccaacdc1887"
+        },
+        {
+          "id": "IE-SP-1875620",
+          "sha256": "dd96a7d00704d6a118fbf1c3f84d296ad42661ac00c29d410bb3f9b6bd8a8378"
+        },
+        {
+          "id": "IE-SP-1875621",
+          "sha256": "c3865538873f580b96515cc92d01747953e4d1229fdc935cb60406639e612c49"
+        },
+        {
+          "id": "IE-SP-1875622",
+          "sha256": "a69034500976ea552b78c147d8d0342ee1d74cfc410016ac8efc131a43b14c02"
+        },
+        {
+          "id": "IE-SP-1875623",
+          "sha256": "387920dde51ecc20280fb46d9e72b3a7f0f89f41272712bd2d634986d0882d79"
+        },
+        {
+          "id": "IE-SP-1875624",
+          "sha256": "2fad8e1f73fe94b9fd39a83e0fcc781aa4495fec98c9d62ec5456198ee5432c5"
+        },
+        {
+          "id": "IE-SP-1875625",
+          "sha256": "8b12d4a9f21de2dab7e645e2de2887064906b508a6c9ff0c7714968443bd695c"
+        },
+        {
+          "id": "IE-SP-1875626",
+          "sha256": "50442ebeaceda35f8017235da55a0fab88ac22558381efcaefef0a3b7ff1c3ff"
+        },
+        {
+          "id": "IE-SP-1875627",
+          "sha256": "9365fd674fcc5476a4d424347b8c811c524f83a0296f118df9ccb873d07f17ac"
+        },
+        {
+          "id": "IE-SP-1875628",
+          "sha256": "39bd8749f3cae547a29be24507b70d555e7eac2e9dabd8342e3ac4ec8f8bdbe0"
+        },
+        {
+          "id": "IE-SP-1875632",
+          "sha256": "364eb8787bd1db6cd045daebca68b25b160503a1a84f8ee4ab5a9b8835393fe5"
+        },
+        {
+          "id": "IE-SP-1875635",
+          "sha256": "21ce8c34d5790838220d984c4ef3cc9bcc900c282af7e4311c301d54c521da0c"
+        },
+        {
+          "id": "IE-SP-1875637",
+          "sha256": "004a9cb86bc0fee717099a2d2280a74c937a655821a0aad13dcc1ffa707d69dd"
+        },
+        {
+          "id": "IE-SP-1875936",
+          "sha256": "a84608e9a41a6dc5fe199eaecc63b5ca5988b3933b32f7da8e1d14b5c721fa7a"
+        },
+        {
+          "id": "IE-SP-1875940",
+          "sha256": "a7232c60be42bcc1604f55abe161fde257456867835b7d7b4a347e98e9911575"
+        },
+        {
+          "id": "IE-SP-1876609",
+          "sha256": "8f87b5fd096362dc9393c963f8c70a5a12abdadaac23e0a87cec0b82691c393c"
+        },
+        {
+          "id": "IE-SP-1876618",
+          "sha256": "da26d1635f2f415b09d01a2f237db6302e401fa4ccb08cc8c89d2fa4f21c0bab"
+        },
+        {
+          "id": "IE-SP-1876619",
+          "sha256": "aa85960d10f028641e902bae70fa29dfe1a3641d1aae926d59c75c633e76a8cc"
+        },
+        {
+          "id": "IE-SP-1876620",
+          "sha256": "74e7e3a198c37309c0c79e4b6dcc554ffcb18a39c225a13c56168710c2c0c5c5"
+        },
+        {
+          "id": "IE-SP-1876621",
+          "sha256": "d3dc1e5f8db1986683556658cdad5225676a78bd4aeaf142abd8633c983c14d2"
+        },
+        {
+          "id": "IE-SP-1876908",
+          "sha256": "fdaf434adf930089c8ac94b2421739fff70e8bcdd5b7791d83786d00a4eba38a"
+        },
+        {
+          "id": "IE-SP-1876909",
+          "sha256": "de0e9e77caafaa41883ca67577cc61b11f436faf4e4cf7aa5439ed4858eb42e0"
+        },
+        {
+          "id": "IE-SP-1876910",
+          "sha256": "9ef8a2faf2a328a27dc59f36079817bcd05c93b1b7953be8dc52737bf917a6ad"
+        },
+        {
+          "id": "IE-SP-2371140",
+          "sha256": "a74ab84790aef6392a6fe3b29c63aa85ddedcea742b323228b916fc3cf2987f0"
+        },
+        {
+          "id": "IE-SP-2371142",
+          "sha256": "ffe08b2408ef5bf7f986b37d722cbd5d0e4f01dc46cdeca9017d9e3df084ea35"
+        },
+        {
+          "id": "IE-SP-2527300",
+          "sha256": "db6930ef9888ec69df75ea7a75dcd4e0f889dd9d5db02c98e36bc0a3f67975ce"
+        },
+        {
+          "id": "IE-SP-2559145",
+          "sha256": "40a2e6cc1ebc4b07dcdd2ec883a17c9987c2af31d2970584006cba3389b52c43"
+        },
+        {
+          "id": "IE-SP-2560889",
+          "sha256": "c158f19cd937b53a0ba4aa49bfd0a47ab13e35e1e7a71820ab36f3b9e1938e38"
+        },
+        {
+          "id": "IE-SP-3668318",
+          "sha256": "82936d121111f14f65acdcf766efec6b58caea7a41574bc5f06be95ed367ad4c"
+        },
+        {
+          "id": "IE-SP-4243011",
+          "sha256": "9324be4b4cae9c45aead75eb1bdb68386242680b372f0795fb350b72ab87f6e4"
+        },
+        {
+          "id": "IE-SP-4828269",
+          "sha256": "0364b93032e8cf07f148efabe87de0664f2c1b6fd87acd6c42c9b49cd8be0dcc"
+        },
+        {
+          "id": "IE-SP-4858430",
+          "sha256": "1994fcd1ff4bca045b77194bd9bb1ec71cdd8ed3f9020c3e76660f4c75ef2da3"
+        },
+        {
+          "id": "IE-SP-4895115",
+          "sha256": "66e765478396876ee6799a184c9587d4d40056595aae65b25eed3cd46ce3e192"
+        },
+        {
+          "id": "IE-SP-4912740",
+          "sha256": "6558006975ab5b4f1a596b77997461f1bc6324603222e287ce3b4de63d4252fa"
+        },
+        {
+          "id": "IE-SP-4973920",
+          "sha256": "b6bc725b7b6261aff9169c5d059aea6bb64e3754b926417df7b8c303364a95a6"
+        },
+        {
+          "id": "IE-SP-4996649",
+          "sha256": "d9d3b6753055df2a6fd32fee9d554dee0301445bcca186d701549337e3044c61"
+        },
+        {
+          "id": "IE-SP-5004077",
+          "sha256": "534c1f181f601ae767c350c244ce3fae7a8383cbd33d732ca191fa7afd43cc44"
+        },
+        {
+          "id": "IE-SP-5007032",
+          "sha256": "18fb5f171f1dff594f33f738a9c5f5b28c707c7a3617e2378af9806e94d510c3"
+        },
+        {
+          "id": "IE-SP-5038880",
+          "sha256": "0728df905f1745b38414200f15ac79223156d6e0bcb78e18b079eea27cff0079"
+        },
+        {
+          "id": "IE-SP-5096203",
+          "sha256": "8fdc6c497a53e04db28fe33d8c6f4b917fe55aaad0fb31a3c63a975c9dcb474b"
+        },
+        {
+          "id": "IE-SP-5096979",
+          "sha256": "6d6bb182039e20e9f652aeff9f6e764f99783f87542795e990eee3c87cd6e182"
+        },
+        {
+          "id": "IE-SP-5107035",
+          "sha256": "ba9dbfbb428ef76377f9104fb642d84672a686763288c09c23bf0efe378aa4de"
+        },
+        {
+          "id": "IE-SP-5165001",
+          "sha256": "7763563e3aaf95a48d9d26e5303fa684bc3ada67bd22697b38db96e5d12a31be"
+        },
+        {
+          "id": "IE-SP-5182516",
+          "sha256": "316fd5830ec772c8e0ace9b8d9029af9cbc9d6f46d1edf723db5d90e611b151e"
+        },
+        {
+          "id": "IE-SP-5190361",
+          "sha256": "6a1eda2f4fc3ac376c74c97a43959ecc6a718546186b19dd62785a7fa9666b56"
+        },
+        {
+          "id": "IE-SP-5207083",
+          "sha256": "2714de89d2749ae6601923577df055a16c219fbf9d109e6e69c98ee3e9934954"
+        },
+        {
+          "id": "IE-SP-5208206",
+          "sha256": "6d4e5c32592bed12b988034b089ceba9b94fa969fa6f673f1a320c42a2e9bc73"
+        },
+        {
+          "id": "IE-SP-5210093",
+          "sha256": "21323b1ce1c063abf01f83f6b7844c38a53a9e262b6de64c9f0e2fa3b322ece2"
+        },
+        {
+          "id": "IE-SP-5225426",
+          "sha256": "dadcd4396e9bad8b30338f061081ddd76aa83c199f772aa799fcc65e5d7c880f"
+        },
+        {
+          "id": "IE-SP-5236741",
+          "sha256": "7dad7e77b2d4f7d3840961493b0a507d6b1102f6df34d9f15af4099b3d73ca6c"
+        },
+        {
+          "id": "IE-SP-5251651",
+          "sha256": "56a64156ad81a2ab1a95e0fe6d0ca12452ca9198a9d4c89dcb978d303a7b32f8"
+        },
+        {
+          "id": "IE-SP-5251685",
+          "sha256": "6cc2bb7b606fed3558db0b5a1be331bc100a18dab0bc75638653fa5158f3561e"
+        },
+        {
+          "id": "IE-SP-5256759",
+          "sha256": "414f92bc659c7d82af8d5bee280aba691aebb38075b29733f5b10c9125565ab0"
+        },
+        {
+          "id": "IE-SP-5269901",
+          "sha256": "1a8cfc35b300b04c24712b96bcfaeaa915d455651719eb8f1008aff3550d8a9b"
+        },
+        {
+          "id": "IE-SP-5271909",
+          "sha256": "b040eb9792f14ae1578003547fa46b58444ad74d32df021d55353608e6ec3b21"
+        },
+        {
+          "id": "IE-SP-5296439",
+          "sha256": "a02491c5f2b997f91a3cd73315ffa3a13640e3424c2b57113915ae13b03e55b0"
+        },
+        {
+          "id": "IE-SP-5299402",
+          "sha256": "ef1e732bf597e76d6182775c663d202e5e4826c043ed9f7965b0fceef9ed0aa1"
+        },
+        {
+          "id": "IE-SP-5300364",
+          "sha256": "6415a9ad3249d25ab05dbf2ad2c473858f2ca605ed8492284da31e1c60885769"
+        },
+        {
+          "id": "IE-SP-5306523",
+          "sha256": "2aca657f812ea71e00dd6208d81558473b9701c3e64370c7c832e422ced250c0"
+        },
+        {
+          "id": "IE-SP-5330995",
+          "sha256": "d4208a5ca81f5600ac7b1f7528d935932ceba0b87a62ed2e2d3c293547d721e0"
+        },
+        {
+          "id": "IE-SP-5353115",
+          "sha256": "fe80f88f17e83f8e9a5dd95f4151700f0b84a191c1b015874afb97e7fe83398e"
+        },
+        {
+          "id": "IE-SP-5384316",
+          "sha256": "8b760b840563de4da75da167c180861a30a8264cd0dd930261fccb62877f8913"
+        },
+        {
+          "id": "IE-SP-5397586",
+          "sha256": "29035296a6d4c6bfee0630ff757986f4d9e711f8c92545fadf6a2034827cac9a"
+        },
+        {
+          "id": "IE-SP-5417174",
+          "sha256": "ccb9036799026c9895b0937e523e87fac793fa101e330d02f409a107254f97ff"
+        },
+        {
+          "id": "IE-SP-5421468",
+          "sha256": "907823d3a1f71ac7affa49cb2415d1c3be9c3532179d7a7e58d7cdc6b123c6a8"
+        },
+        {
+          "id": "IE-SP-5423131",
+          "sha256": "8c474e90075dc8ca6f4fc2e0aaea52191eba8f5d57019ff13a4fb5aec15fde3f"
+        },
+        {
+          "id": "IE-SP-5433868",
+          "sha256": "63d782c05f524dd05b92774f0c839ca2d9538a81062192db29092c48dfb19a8f"
+        },
+        {
+          "id": "IE-SP-5433873",
+          "sha256": "5127266d02ec79b20142b64ffb076b73710cd906e46ec4c264ba335166d4e677"
+        },
+        {
+          "id": "IE-SP-5467501",
+          "sha256": "5c00e7499ee1a941989ceeb59e01380fa09832498c9e411d4de0deb2ea0135b1"
+        },
+        {
+          "id": "IE-SP-5491220",
+          "sha256": "5a2e677476ffc4274576bf5ca5bc89a2e97ab14006036c50b96d68b196acf5e4"
+        },
+        {
+          "id": "IE-SP-5501776",
+          "sha256": "9047f0e7078ec064df7557baedf4df5049323d99bda9c3d117922fc2db12a4ce"
+        },
+        {
+          "id": "IE-SP-5503889",
+          "sha256": "9d77c0d552bf4a5220588f067303b33315bafe4a304bf812cc1df8678ca72347"
+        },
+        {
+          "id": "IE-SP-5534529",
+          "sha256": "f529e7d0e399365f50c5e0351559cc86b418bebe7276397d5af25ea2665a897c"
+        },
+        {
+          "id": "IE-SP-5534808",
+          "sha256": "f9e27c1c156e5909f60d2801ca591449735e6a3f3b22599d932c4fe1b1465d39"
+        },
+        {
+          "id": "IE-SP-5550558",
+          "sha256": "9b4107c8f9426d8481f3b1e1817cf63392f14744413483f429fc884a51996e44"
+        },
+        {
+          "id": "IE-SP-5560925",
+          "sha256": "2844afeac44305913d326190dbde7b729c7ee65e7d5e74bd8a49bca317593038"
+        },
+        {
+          "id": "IE-SP-5564615",
+          "sha256": "bc51e9982545ea6109154ec8cdfa72e21e5700e5371b4b713fe3fd6cb43333c2"
+        },
+        {
+          "id": "IE-SP-5573768",
+          "sha256": "cd933333dacbe104898ad6b2bb740b96320f9f7195715efc16eae11fee1ad51b"
+        },
+        {
+          "id": "IE-SP-5575684",
+          "sha256": "77b4863a9ec305b0689651d585df84c5647bac2775e8496b3f168439a3931c43"
+        },
+        {
+          "id": "IE-SP-5579511",
+          "sha256": "425def60d96b7bef4b58faa686349193a4337a4e0403f8501d07d1216db697bf"
+        },
+        {
+          "id": "IE-SP-5599158",
+          "sha256": "62584c51e1ebf3bdc470a636556ae63e91a334e6676678a08ff370a53614aded"
+        },
+        {
+          "id": "IE-SP-5633765",
+          "sha256": "fce8752a231ca4b71edb91daa4c145430422758c3f11e356316b6be1f1b82a97"
+        },
+        {
+          "id": "IE-SP-5665799",
+          "sha256": "56a9856e591c99200839171ab79b76701248212d5d382ca8ef560ca58cbfd624"
+        },
+        {
+          "id": "IE-SP-5727122",
+          "sha256": "b37391e2ad8e2032add770b0bca4f1ac9ee981cbfc2a4901eaef7fa11362311f"
+        },
+        {
+          "id": "IE-SP-5727123",
+          "sha256": "3f2e86137e48bf4efbef865d6b78ca6c013c30232ec4182f0cde658b841bd08e"
+        },
+        {
+          "id": "IE-SP-5732424",
+          "sha256": "f25b61445931d7f36401393c1d4d044e61971a1a27be29edd1eca98e3704cc95"
+        },
+        {
+          "id": "IE-SP-5754355",
+          "sha256": "0919329fe3c831103187ccb1ba6dba037a1aa8eadd1817c0c53732eb68b81f52"
+        },
+        {
+          "id": "IE-SP-5765498",
+          "sha256": "6e92a0b912003069471c7bba9a6528f11c2c825b618f9f595ceb9c80ec1946bc"
+        },
+        {
+          "id": "IE-SP-5788942",
+          "sha256": "fca9977896c3db6d5b44d69f8ef1e0518ef1e72c723dcd5110a3b70fc3c165fa"
+        },
+        {
+          "id": "IE-SP-5874078",
+          "sha256": "2f8141674947ce9d86ba76c44a1617b91b9c1e84ff43b449750ab8c9f62cd79a"
+        },
+        {
+          "id": "IE-SP-5954756",
+          "sha256": "9ac354b5f1813cf593405657146ae0030fcc77310505cb0d38d757d3e9df112f"
+        },
+        {
+          "id": "IE-SP-6006277",
+          "sha256": "c31447fa16118d6593ccd526719e5d5103906a51ae5f9efb2bad3d0f34eba248"
+        },
+        {
+          "id": "IE-SP-6006278",
+          "sha256": "6a7008444925758f3611a3c4b143cf13b5c2ddbe1c02593dd33dd89479331159"
+        },
+        {
+          "id": "IE-SP-6019186",
+          "sha256": "f49cbabcf80e77859017a648123426103fd70b9c4ec39e3dd6a47665ea602d82"
+        },
+        {
+          "id": "IE-SP-6207373",
+          "sha256": "7df5611dd1a487ac2fe5454a202f7a6571b8dd534f2590d6fe064e7a8bcb6767"
+        }
+      ]
+    },
+    "nativeShapedExplicitAbsence": {
+      "id": "IE-SP-7207373",
+      "complete": true,
+      "featureCount": 0,
+      "absentIds": [
+        "IE-SP-7207373"
+      ]
+    },
+    "exactWupContainment": {
+      "contains": false,
+      "parcelIds": [],
+      "objectIds": [],
+      "cityAbsenceClaim": false,
+      "interpretation": "The fixed city point is outside returned freehold polygons; this may be a roadway or a source-index gap and is not evidence that Dublin has no parcel data."
+    },
+    "sourceBinding": {
+      "siteParcelIds": [
+        "IE-SP-4828269"
+      ],
+      "coverage": "complete",
+      "siteM2": 1,
+      "unsurveyedM2": 0,
+      "unknownM2": 0,
+      "toleranceM": 0,
+      "parcelCount": 1,
+      "parcelEntries": [
+        {
+          "parcelId": "IE-SP-4828269",
+          "overlapM2": 0.998,
+          "intrusionM": 1.0208
+        }
+      ]
+    },
+    "geometryPath": "raw full source-safe geometry kept only in ignored temporary storage; not embedded here",
+    "geometrySha256": "8a8a4fe94357dcd55518045d5351bac761fc9b5d7071ee87dd41ad230ef1cc27",
+    "geometryBytes": 78026,
+    "totals": {
+      "features": 113,
+      "sourceRows": 113,
+      "cellCount": 13
+    },
+    "nearestReturnedParcel": {
+      "parcelId": "IE-SP-4828269",
+      "objectId": "2736378",
+      "distanceFromWupCenterM": 31.026772202,
+      "nearestPointEpsg2157": [
+        714988.06700243,
+        732480.708899507
+      ],
+      "sourcePolygonAreaM2": 217.651313907,
+      "interiorPointEpsg2157": [
+        714984.925554348,
+        732466.115399514
+      ],
+      "boundaryClearanceM": 3.748566622,
+      "bindingSquareHalfWidthM": 0.5,
+      "selectionPurpose": "footprint and one-parcel source-binding qualification only; WUP city center unchanged",
+      "exactWupPointContained": false
+    },
+    "footprintFile": "dublin-nearest-footprint.geojson",
+    "footprintGeometryReturnedExactly": true,
+    "cellGridContainsUnchangedWupPoint": true
+  }
+}

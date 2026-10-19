@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Zinder",
+  "country": "Niger",
+  "countryCode": "NE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Niger’s Directorate General of Taxes announced the opening of a Conservation Foncière et des Hypothèques office in Zinder. The notice assigns it the Zinder region, including Diffa, and charges it with issuing rural and urban land titles, recording ownership transfers and mortgages, and expertise for boundary marking/delimitation. This directly covers property in Zinder; it does not establish a public digital parcel map.",
+  "registryEvidenceUrls": [
+    "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+    "https://www.impots.gouv.ne/media/telech/CGI%202013%20MAJ%20LF%20%202022.pdf",
+    "https://www.gouv.ne/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2940,
+  "cityId": "wup2025:2940",
+  "centerLatLon": [
+    13.8101980970219,
+    8.9857793351423
+  ],
+  "rank": 722,
+  "queueRank": 722,
+  "population2025": 740218,
+  "population2025k": 740.218,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made.",
+  "scopeLimits": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made.",
+  "remainingUncertainty": "Whether the Zinder office or city administration publishes a georeferenced parcel service is unverified. Regional-office jurisdiction establishes registry reach, not completeness or digital coverage at the WUP point.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Zinder Niger official land registry cadastral office land titles map",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "A local Zinder-region property registry office and its title/transfer/mortgage/boundary workflow are confirmed. No public parcel map or geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+          "https://www.impots.gouv.ne/media/telech/CGI%202013%20MAJ%20LF%20%202022.pdf",
+          "https://www.gouv.ne/"
+        ],
+        "executionMethod": "Separate English and local-language searches, followed by official-source review and limited anonymous public-shell inspection where available."
+      },
+      {
+        "language": "French",
+        "query": "Zinder Niger bureau conservation foncière cadastre titres fonciers mairie registre officiel",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "A local Zinder-region property registry office and its title/transfer/mortgage/boundary workflow are confirmed. No public parcel map or geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+          "https://www.impots.gouv.ne/media/telech/CGI%202013%20MAJ%20LF%20%202022.pdf",
+          "https://www.gouv.ne/"
+        ],
+        "executionMethod": "Separate English and local-language searches, followed by official-source review and limited anonymous public-shell inspection where available."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+        "observation": "Niger’s Directorate General of Taxes announced the opening of a Conservation Foncière et des Hypothèques office in Zinder. The notice assigns it the Zinder region, including Diffa, and charges it with issuing rural and urban land titles, recording ownership transfers and mortgages, and expertise for boundary marking/delimitation. This directly covers property in Zinder; it does not establish a public digital parcel map."
+      },
+      {
+        "url": "https://www.impots.gouv.ne/media/telech/CGI%202013%20MAJ%20LF%20%202022.pdf",
+        "observation": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made."
+      },
+      {
+        "url": "https://www.gouv.ne/",
+        "observation": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made."
+      }
+    ],
+    "metadataReviewFile": "zinder-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made."
+  },
+  "coverageAssessment": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The Ministry of Finance/DGI notice describes a regional registry office physically established in Zinder and covering real property in communes of Zinder and Diffa regions. The official online material found describes registry functions, not a public GIS endpoint. No personal or parcel query was made."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://www.dgi.gouv.ne/index.php/communiques-de-presse/657-communique-relatif-a-l-ouverture-de-bureaux-de-la-conservation-fonciere-et-des-hypotheques-a-maradi-tahoua-et-zinder",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.dgi.gouv.ne'. (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    13.8101980970219,
+    8.9857793351423
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

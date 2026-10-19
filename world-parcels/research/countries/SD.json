@@ -1,0 +1,28 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SD",
+ "checkedAt": "2026-09-29",
+ "country": "Sudan",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Survey Authority / Ministry of Justice land registration (Sudan Survey Department)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.ssa.gov.sd/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "None found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Authority host unreachable; city-level Khartoum pass found nothing; ongoing conflict may affect services. Not proof of absence.",
+ "nextStep": "Retry later; look for Khartoum State land registry GIS."
+}

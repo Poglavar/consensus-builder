@@ -1,0 +1,791 @@
+{
+ "schemaVersion": 1,
+ "basis": "Polish cities served by GUGiK's ULDK point lookup (plus Częstochowa and Bełchatów, held on ULDK) re-qualified on GUGiK's collective EGiB WFS, an area service, on 2026-10-12",
+ "pointOrder": "latitude-longitude",
+ "counts": {
+  "held": 1,
+  "qualified": 51
+ },
+ "cities": [
+  {
+   "cityCode": 71,
+   "cityName": "Szczecin",
+   "countryCode": "PL",
+   "point": [
+    53.4353064484097,
+    14.5350485616163
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (151 parcels, 64 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:12:01.450542+00:00"
+  },
+  {
+   "cityCode": 241,
+   "cityName": "Stargard",
+   "countryCode": "PL",
+   "point": [
+    53.3382279105169,
+    15.030564201468
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (138 parcels, 67 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:46:21.499259+00:00"
+  },
+  {
+   "cityCode": 399,
+   "cityName": "Gorzów Wielkopolski",
+   "countryCode": "PL",
+   "point": [
+    52.7429409230698,
+    15.2389393766615
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (38 parcels, 46 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:23:06.454419+00:00"
+  },
+  {
+   "cityCode": 544,
+   "cityName": "Zielona Góra",
+   "countryCode": "PL",
+   "point": [
+    51.9373160500613,
+    15.5023625952977
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (89 parcels, 63 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T19:01:09.874374+00:00"
+  },
+  {
+   "cityCode": 685,
+   "cityName": "Koszalin",
+   "countryCode": "PL",
+   "point": [
+    54.19411056018,
+    16.1902100834576
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (32 parcels, 45 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:35:52.863790+00:00"
+  },
+  {
+   "cityCode": 816,
+   "cityName": "Lubin",
+   "countryCode": "PL",
+   "point": [
+    51.3979869466992,
+    16.1963940635763
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (133 parcels, 62 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:37:25.983463+00:00"
+  },
+  {
+   "cityCode": 937,
+   "cityName": "Legnica",
+   "countryCode": "PL",
+   "point": [
+    51.2058512284457,
+    16.1741221611038
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (112 parcels, 59 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:38:09.702309+00:00"
+  },
+  {
+   "cityCode": 1053,
+   "cityName": "Słupsk",
+   "countryCode": "PL",
+   "point": [
+    54.4636975832782,
+    17.0213199178476
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (119 parcels, 60 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:14:41.662076+00:00"
+  },
+  {
+   "cityCode": 1167,
+   "cityName": "Pila",
+   "countryCode": "PL",
+   "point": [
+    53.1513682979439,
+    16.7464328052244
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (100 parcels, 57 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:17:20.935614+00:00"
+  },
+  {
+   "cityCode": 1275,
+   "cityName": "Leszno",
+   "countryCode": "PL",
+   "point": [
+    51.8427843893659,
+    16.5773027600746
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (72 parcels, 60 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:20:16.954092+00:00"
+  },
+  {
+   "cityCode": 1580,
+   "cityName": "Wrocław",
+   "countryCode": "PL",
+   "point": [
+    51.1052197969447,
+    17.0226844994164
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (106 parcels, 58 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:43:49.237108+00:00"
+  },
+  {
+   "cityCode": 1673,
+   "cityName": "Gniezno",
+   "countryCode": "PL",
+   "point": [
+    52.5344430787909,
+    17.6064312677703
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (76 parcels, 54 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:24:47.054276+00:00"
+  },
+  {
+   "cityCode": 1763,
+   "cityName": "Wejherowo",
+   "countryCode": "PL",
+   "point": [
+    54.6054036640665,
+    18.2391802227089
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (56 parcels, 53 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:28:05.020669+00:00"
+  },
+  {
+   "cityCode": 1935,
+   "cityName": "Gdynia",
+   "countryCode": "PL",
+   "point": [
+    54.5322041862711,
+    18.5076341710355
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (33 parcels, 49 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:31:09.438100+00:00"
+  },
+  {
+   "cityCode": 2014,
+   "cityName": "Ostrów Wielkopolski",
+   "countryCode": "PL",
+   "point": [
+    51.6497384459528,
+    17.8138050881419
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (79 parcels, 61 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:56:48.323326+00:00"
+  },
+  {
+   "cityCode": 2172,
+   "cityName": "Inowrocław",
+   "countryCode": "PL",
+   "point": [
+    52.7902336993022,
+    18.2590588435053
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (47 parcels, 52 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:35:51.115226+00:00"
+  },
+  {
+   "cityCode": 2249,
+   "cityName": "Kalisz",
+   "countryCode": "PL",
+   "point": [
+    51.7549404064184,
+    18.0833173060179
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (87 parcels, 63 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:38:46.302680+00:00"
+  },
+  {
+   "cityCode": 2325,
+   "cityName": "Tczew",
+   "countryCode": "PL",
+   "point": [
+    54.0908371715605,
+    18.7843364944908
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (149 parcels, 64 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:41:41.268135+00:00"
+  },
+  {
+   "cityCode": 2401,
+   "cityName": "Opole",
+   "countryCode": "PL",
+   "point": [
+    50.6681692860732,
+    17.9404125955347
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (191 parcels, 69 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:44:18.297644+00:00"
+  },
+  {
+   "cityCode": 2476,
+   "cityName": "Toruń",
+   "countryCode": "PL",
+   "point": [
+    53.0245852712266,
+    18.6212481126872
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (88 parcels, 60 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:47:48.502789+00:00"
+  },
+  {
+   "cityCode": 2549,
+   "cityName": "Grudziądz",
+   "countryCode": "PL",
+   "point": [
+    53.4788249167263,
+    18.7571110836073
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (51 parcels, 54 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:48:58.427308+00:00"
+  },
+  {
+   "cityCode": 2620,
+   "cityName": "Elbląg",
+   "countryCode": "PL",
+   "point": [
+    54.1668551128978,
+    19.4103120545885
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (33 parcels, 51 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:50:08.430855+00:00"
+  },
+  {
+   "cityCode": 2687,
+   "cityName": "Włocławek",
+   "countryCode": "PL",
+   "point": [
+    52.6505942526297,
+    19.0626658622382
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (131 parcels, 65 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:52:38.552965+00:00"
+  },
+  {
+   "cityCode": 2754,
+   "cityName": "Rybnik",
+   "countryCode": "PL",
+   "point": [
+    50.099180479429,
+    18.5383788655106
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (25 parcels, 51 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:54:08.038479+00:00"
+  },
+  {
+   "cityCode": 2818,
+   "cityName": "Jastrzębie-Zdrój",
+   "countryCode": "PL",
+   "point": [
+    49.9518257086113,
+    18.5908434066578
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (83 parcels, 55 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:55:32.782042+00:00"
+  },
+  {
+   "cityCode": 2881,
+   "cityName": "Gliwice",
+   "countryCode": "PL",
+   "point": [
+    50.2974825733379,
+    18.6726701509765
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (51 parcels, 53 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:56:58.549620+00:00"
+  },
+  {
+   "cityCode": 3002,
+   "cityName": "Częstochowa",
+   "countryCode": "PL",
+   "point": [
+    50.8076252950718,
+    19.1134120802074
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (133 parcels, 61 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T17:59:31.382910+00:00"
+  },
+  {
+   "cityCode": 3061,
+   "cityName": "Pabianice",
+   "countryCode": "PL",
+   "point": [
+    51.6609967628735,
+    19.3534282663508
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (59 parcels, 54 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:01:26.115404+00:00"
+  },
+  {
+   "cityCode": 3178,
+   "cityName": "Tychy",
+   "countryCode": "PL",
+   "point": [
+    50.1188429468754,
+    18.987175031002
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (78 parcels, 54 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:02:58.274011+00:00"
+  },
+  {
+   "cityCode": 3289,
+   "cityName": "Płock",
+   "countryCode": "PL",
+   "point": [
+    52.5430998887522,
+    19.7195485490596
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (97 parcels, 58 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:04:33.292617+00:00"
+  },
+  {
+   "cityCode": 3344,
+   "cityName": "Bełchatów",
+   "countryCode": "PL",
+   "point": [
+    51.3600738693611,
+    19.3733696862117
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (118 parcels, 60 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:05:46.753318+00:00"
+  },
+  {
+   "cityCode": 3397,
+   "cityName": "Bielsko-Biała",
+   "countryCode": "PL",
+   "point": [
+    49.8178778643515,
+    19.0423255904236
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (58 parcels, 56 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:07:23.887929+00:00"
+  },
+  {
+   "cityCode": 3449,
+   "cityName": "Piotrków Trybunalski",
+   "countryCode": "PL",
+   "point": [
+    51.4086733870137,
+    19.6836162711193
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (28 parcels, 52 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T19:11:37.866108+00:00"
+  },
+  {
+   "cityCode": 3502,
+   "cityName": "Olsztyn",
+   "countryCode": "PL",
+   "point": [
+    53.7665732876546,
+    20.4978271160328
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (42 parcels, 47 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:10:30.185201+00:00"
+  },
+  {
+   "cityCode": 3555,
+   "cityName": "Tomaszów Mazowiecki",
+   "countryCode": "PL",
+   "point": [
+    51.5340194073462,
+    20.0135606379077
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (111 parcels, 58 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:11:52.496885+00:00"
+  },
+  {
+   "cityCode": 3660,
+   "cityName": "Warszawa (Warsaw)",
+   "countryCode": "PL",
+   "point": [
+    52.2229170530915,
+    21.0008161096485
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (34 parcels, 46 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:13:08.457596+00:00"
+  },
+  {
+   "cityCode": 3710,
+   "cityName": "Legionowo",
+   "countryCode": "PL",
+   "point": [
+    52.4039665953965,
+    20.9252703477092
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (64 parcels, 58 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:14:53.158200+00:00"
+  },
+  {
+   "cityCode": 3758,
+   "cityName": "Kielce",
+   "countryCode": "PL",
+   "point": [
+    50.8750758566059,
+    20.6275441266407
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (64 parcels, 59 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:48:53.923025+00:00"
+  },
+  {
+   "cityCode": 3805,
+   "cityName": "Wołomin",
+   "countryCode": "PL",
+   "point": [
+    52.342697415251,
+    21.2337346051155
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "held",
+   "summary": "Failed gates on GUGiK's collective EGiB WFS: metric; failures {\"metric\": {\"errorType\": \"Error\", \"code\": \"metric-report-failed\"}}. Source parcels 143412_4.0027.142/3 and 143412_4.0027.145 overlap by 0.70 m2 (the gate allows none above 0.01 m2).",
+   "finishedAt": "2026-10-12T18:50:50.740609+00:00"
+  },
+  {
+   "cityCode": 3851,
+   "cityName": "Radom",
+   "countryCode": "PL",
+   "point": [
+    51.3964628828514,
+    21.1526507651136
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (127 parcels, 63 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T19:14:09.004565+00:00"
+  },
+  {
+   "cityCode": 3897,
+   "cityName": "Nowy Sącz",
+   "countryCode": "PL",
+   "point": [
+    49.6140452924349,
+    20.6998999214814
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (56 parcels, 57 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:19:38.865136+00:00"
+  },
+  {
+   "cityCode": 3942,
+   "cityName": "Tarnów",
+   "countryCode": "PL",
+   "point": [
+    50.0164917071665,
+    20.9877709077343
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (34 parcels, 51 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:20:39.088913+00:00"
+  },
+  {
+   "cityCode": 3986,
+   "cityName": "Łomża",
+   "countryCode": "PL",
+   "point": [
+    53.1714002876591,
+    22.0646901929271
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (100 parcels, 57 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:22:16.302584+00:00"
+  },
+  {
+   "cityCode": 4029,
+   "cityName": "Elk",
+   "countryCode": "PL",
+   "point": [
+    53.8234849792281,
+    22.3576680534356
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (151 parcels, 64 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:24:10.631207+00:00"
+  },
+  {
+   "cityCode": 4072,
+   "cityName": "Siedlce",
+   "countryCode": "PL",
+   "point": [
+    52.1656867656902,
+    22.2767061227765
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (76 parcels, 61 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:25:01.397037+00:00"
+  },
+  {
+   "cityCode": 4115,
+   "cityName": "Suwałki",
+   "countryCode": "PL",
+   "point": [
+    54.1043061997561,
+    22.9331027875897
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (109 parcels, 59 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:25:59.461841+00:00"
+  },
+  {
+   "cityCode": 4157,
+   "cityName": "Stalowa Wola",
+   "countryCode": "PL",
+   "point": [
+    50.5664297325734,
+    22.0568167437462
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (90 parcels, 56 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:27:24.568552+00:00"
+  },
+  {
+   "cityCode": 4199,
+   "cityName": "Rzeszów",
+   "countryCode": "PL",
+   "point": [
+    50.0320723876861,
+    22.0039593163143
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (67 parcels, 56 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:54:13.795886+00:00"
+  },
+  {
+   "cityCode": 4280,
+   "cityName": "Lublin",
+   "countryCode": "PL",
+   "point": [
+    51.2411675205158,
+    22.5517979898529
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (112 parcels, 58 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:29:58.806024+00:00"
+  },
+  {
+   "cityCode": 4318,
+   "cityName": "Przemyśl",
+   "countryCode": "PL",
+   "point": [
+    49.7865703940357,
+    22.7720844417991
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (81 parcels, 58 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:31:16.764754+00:00"
+  },
+  {
+   "cityCode": 4356,
+   "cityName": "Zamość",
+   "countryCode": "PL",
+   "point": [
+    50.7217702281141,
+    23.2609637553334
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (91 parcels, 56 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:32:21.234530+00:00"
+  },
+  {
+   "cityCode": 4394,
+   "cityName": "Chełm",
+   "countryCode": "PL",
+   "point": [
+    51.1343001957731,
+    23.4775917479072
+   ],
+   "sourceIds": [
+    "pl-gugik-egib-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "All eight gates passed on GUGiK's collective EGiB WFS (83 parcels, 56 requests); independent metric audit passed.",
+   "finishedAt": "2026-10-12T18:33:33.281279+00:00"
+  }
+ ]
+}

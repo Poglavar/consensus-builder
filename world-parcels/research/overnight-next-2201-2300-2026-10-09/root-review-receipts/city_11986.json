@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11986",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-11986-fu-an.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/fu-an-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:19:23.054738Z",
+  "reason": "Fu'an: English and Chinese search attempts and local registration-center custody are documented. No native parcel ID, unchanged polygon, schema, or qualified anonymous source response exists. The public-geometry false flag describes this attempt only, not citywide absence. No live adapter or headed Details verification.",
+  "admission": "held; no runtime, catalog, registry, or report admission change"
+}

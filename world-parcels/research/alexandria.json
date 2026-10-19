@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:48",
+  "queueRank": 48,
+  "name": "Alexandria",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    31.1933695758061,
+    29.9517660943627
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.esa.gov.eg/",
+      "observation": "Egyptian Survey Authority official site (Arabic); describes surveying and cadastral work; no anonymous parcel service found."
+    },
+    {
+      "url": "https://geoportal.mwri.gov.eg/portal",
+      "observation": "Ministry of Water Resources GeoPortal (Esri Portal); sharing search for 'parcels' returned zero items."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.esa.gov.eg/benya.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Authority page only"
+    },
+    {
+      "url": "https://alexandria.gov.eg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Connection reset / proxy tunnel failure from this client; not evidence of absence"
+    },
+    {
+      "url": "https://geoportal.mwri.gov.eg/portal/sharing/rest/search?q=parcels&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Alexandria%20Egypt%20parcels%20cadastral&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    },
+    {
+      "url": "https://egyptopendata.gov.eg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "Proxy tunnel failure (502); unverified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Egyptian Survey Authority cadastre; public access not established",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No open parcel polygon endpoint found; the ESA cadastral database may exist but is not anonymously queryable as far as tested. See cairo.json.",
+  "nextStep": "Look for ESA/Alexandria Governorate GIS services or the Ministry of Housing (NUCA/GOPP) open layers."
+}

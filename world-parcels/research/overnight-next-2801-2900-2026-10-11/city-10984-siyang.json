@@ -1,0 +1,100 @@
+{
+  "cityCode": 10984,
+  "queueRank": 2841,
+  "name": "Siyang",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [33.7157182408341, 118.697138369806],
+  "population2025": 209495,
+  "population2025k": 209.495,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Siyang China official cadastral parcel map GIS natural resources planning bureau real estate registration",
+        "result": "Discovery identified an official Chinese government service guide for Siyang County's宅基地/house first registration. It names the Siyang County Natural Resources and Planning Bureau as the county-level implementing authority and lists cadastral survey form, parcel map, house plan, and boundary-point coordinates as application materials. No public anonymous parcel-vector viewer or API was found.",
+        "actualResultUrls": ["https://gjzwfw.www.gov.cn/fwmh/item/v3/item_113213230143232657400071500100602.do"]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "泗阳县 不动产登记 地籍图 自然资源和规划局 官方 地图",
+        "result": "中文 discovery found the same official national-government service guide for 泗阳县自然资源和规划局. It evidences a local registration custodian and cadastral-document workflow, but not an anonymous map/API, parcel geometry, native parcel identity, or citywide open coverage. Domain-restricted searches for official Siyang/Jiangsu cadastral map pages returned no additional result.",
+        "actualResultUrls": ["https://gjzwfw.www.gov.cn/fwmh/item/v3/item_113213230143232657400071500100602.do", "https://zrzy.jiangsu.gov.cn/"]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Siyang County Natural Resources and Planning Bureau (泗阳县自然资源和规划局), identified as the county-level implementing authority in the official government service guide.",
+    "publicMapLead": "Jiangsu Natural Resources Department portal was inspected as a regional lead; no Siyang parcel-vector endpoint was exposed in the bounded anonymous inspection.",
+    "registryEvidence": "Official service-procedure evidence only; it does not establish an open cadastral map service.",
+    "registryEvidenceUrls": ["https://gjzwfw.www.gov.cn/fwmh/item/v3/item_113213230143232657400071500100602.do"]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://gjzwfw.www.gov.cn/fwmh/item/v3/item_113213230143232657400071500100602.do",
+      "httpStatus": 200,
+      "outcome": "Official guide names 泗阳县自然资源和规划局, gives its county-level role, and lists cadastral survey/map and boundary-coordinate materials. It exposes no anonymous parcel geometry, native ID, service schema, or CRS."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://zrzy.jiangsu.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Jiangsu Natural Resources Department portal loaded over anonymous HTTPS. No Siyang cadastral parcel-vector route or safe ID-plus-geometry response was identified in the bounded inspection."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.siyang.gov.cn/",
+      "httpStatus": null,
+      "outcome": "TLS certificate hostname mismatch prevented a verified HTTPS request. No certificate exception was used because none was pre-authorized; no absence inference was made."
+    },
+    {
+      "method": "GET",
+      "url": "http://www.siyang.gov.cn/",
+      "httpStatus": 493,
+      "outcome": "HTTP request returned 493 and no usable public cadastral content. No login, bypass, or TLS downgrade was attempted beyond the explicit HTTP URL."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tianditu.gov.cn/",
+      "httpStatus": 418,
+      "outcome": "Anonymous request returned 418 with no usable Siyang parcel service, schema, CRS, or geometry. No token, login, CAPTCHA/Cloudflare bypass, or unsafe field request was attempted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.google.com/search?q=site%3Asiyang.gov.cn+%E6%B3%97%E9%98%B3%E5%8E%BF%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80+%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0",
+      "httpStatus": null,
+      "outcome": "Domain-restricted official-site search returned no result; this was treated as discovery limitation, not evidence of citywide absence."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [33.7157182408341, 118.697138369806] preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No public Siyang parcel-vector route or safe ID-plus-geometry response was identified."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope": "Siyang county registration custodian and Jiangsu/national public-service leads.", "verifiedOpenScope": "Local custodian and registration workflow evidenced; no anonymous open parcel-vector coverage verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": ["The exact WUP point was preserved and not shifted to force a parcel hit.", "A zero exact-point hit, map extent miss, login wall, TLS failure, HTTP error, or unusable UI was not treated as citywide cadastral absence.", "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.", "This packet records research only and is not source integration or runtime admission."],
+  "uncertainty": "Official government guidance establishes Siyang's local natural-resources registration authority and cadastral-document workflow, but no public anonymous parcel geometry, schema, CRS, stable parcel identity, or citywide coverage was qualified. Runtime readiness remains held."
+}

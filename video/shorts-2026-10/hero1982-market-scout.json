@@ -1,0 +1,69 @@
+{
+  "id": "hero1982-market-scout",
+  "title": "hero1982: The Information Edge",
+  "format": "9:16",
+  "targetSeconds": [
+    90,
+    120
+  ],
+  "disclosure": "Illustrative devnet walkthrough. Election and council-document scenarios are hypothetical. No investment returns are guaranteed.",
+  "voice": {
+    "id": "iP95p4xoKVk53GoZ742B",
+    "name": "Chris - Charming, Down-to-Earth (stock voice)",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.55,
+      "similarity_boost": 0.78,
+      "style": 0.15,
+      "speed": 1.0
+    }
+  },
+  "padSeconds": 0.55,
+  "scenes": [
+    {
+      "id": "planet",
+      "visual": "Actual UGT planet or global map view. Start wide, then move toward a city; do not add fake proposal markers.",
+      "narration": "Hero nineteen eighty-two is an AI bot. His job is to find opportunities for his owner. He crawls the web, looking for information the market has missed."
+    },
+    {
+      "id": "proposal-list",
+      "visual": "Actual proposal list and a real proposal card. Keep title, lifecycle, and parcel count legible; do not substitute invented proposal data.",
+      "narration": "His hunting ground is Urban Game Theory: proposals to build, buy, and transform real places. Each proposal has its own YES and NO betting pool."
+    },
+    {
+      "id": "three-d",
+      "visual": "Actual 3D parcel/block view of the proposed apartment block. Center the selected parcels and include enough surrounding street context to orient the viewer.",
+      "narration": "He opens a proposed apartment block and inspects its site, design, and location. Then he reads planning documents, budgets, and the conditions needed for execution."
+    },
+    {
+      "id": "election-signal",
+      "visual": "Use the supplied code-drawn concept clip labeled 'ILLUSTRATIVE SCENARIO'. It depicts only a generic council-delay scenario and a research-to-NO decision flow; it is not a source or real council document, and it does not claim any specific proposal is delayed. Do not add a fake source or news card.",
+      "narration": "In our example, most of the stake backs YES. But a newly published council document signals a major delay. The pool still reflects yesterday's optimism."
+    },
+    {
+      "id": "due-diligence",
+      "visual": "Actual proposal panel showing its resolution lens/evidence and available owner-consent, funds, pledges, or donation information. Show only data the app actually displays.",
+      "narration": "Before acting, Hero checks the resolving lens, the deadline, funding, and owner consent. A press release is a lead. He wants evidence tied to this exact proposal."
+    },
+    {
+      "id": "pool-choice",
+      "visual": "Actual proposal market with YES/NO pools. Keep pool amounts readable; any payout estimate must be clearly a calculation, not a guaranteed return or probability.",
+      "narration": "He estimates the chance of NO, then calculates the potential payout from both pools, including his own stake. He bets only when that expected return is worth the risk."
+    },
+    {
+      "id": "stake-risk",
+      "visual": "Actual market stake form or an already existing devnet position. No new wallet transaction is required for capture; do not show a fabricated confirmation.",
+      "narration": "Hero takes a small NO position. If the project is cancelled or recorded expired, NO wins. Winners share the pool in proportion to their stakes. If it executes, his bet loses."
+    },
+    {
+      "id": "separate-markets",
+      "visual": "Show the actual proposal market and its current pool information while the narration explains research and risk. Do not imply arbitrage, a shared contract, or guaranteed returns.",
+      "narration": "This is an information edge, not guaranteed arbitrage. Later bets change the payout, and money stays locked until resolution. He limits each position and passes when the evidence is weak."
+    },
+    {
+      "id": "globe-close",
+      "visual": "Return to the actual UGT globe or global map and pull back to a broad view. No fabricated data layers.",
+      "narration": "Then he moves on: another neighbourhood, another proposal, another overlooked signal. The city is changing. Hero nineteen eighty-two is watching. Urban Game Theory. Research the world. Back your prediction."
+    }
+  ]
+}

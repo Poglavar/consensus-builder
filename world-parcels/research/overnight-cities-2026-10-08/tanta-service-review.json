@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "eg-tanta-real-estate-registration-and-survey-services",
+  "purpose": "Service review for WUP2025 rank 504 Tanta (city code 3298); city-bound registry evidence and safe anonymous parcel-geometry route.",
+  "primaryPublisher": "Egyptian Ministry of Justice Real Estate Publicity and Notarization Authority; Egyptian Survey Authority",
+  "sourceUrl": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+  "registryFound": true,
+  "registryBasis": "An Egyptian Ministry of Justice public directory booklet hosted by the Ministry of Finance lists the Tanta Real Estate Publicity office and Tanta registration mission (مأمورية شهر طنطا); the Egyptian Survey Authority map catalogue includes a Tanta topographic sheet. These establish local registry/survey institutions, but no public cadastral parcel-vector source was verified.",
+  "officialSources": [
+    {
+      "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+      "observation": "Government directory booklet lists Tanta real-estate publicity office and Tanta registration mission in Western Governorate."
+    },
+    {
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "observation": "Official ESA topographic map catalogue/index includes Tanta sheet 88/60, a topographic product rather than a parcel map."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official Egyptian Survey Authority site, the national survey/mapping body; used for institutional context only."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tanta Egypt official cadastral land registry parcel map GIS",
+      "scope": "Find Tanta-specific property-registration and survey sources, and any anonymous geometry-only public route.",
+      "result": "Official Egyptian materials list a Tanta property-registration office and an ESA topographic map sheet for Tanta. The inspected materials are directory/map catalogue content rather than parcel geometry; no open parcel-vector schema or route was identified.",
+      "actualResultUrls": [
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "https://www.esa.gov.eg/main.aspx"
+      ],
+      "executionMethod": "Local-language and English-language web search with official-source review; no private lookup."
+    },
+    {
+      "language": "Arabic",
+      "query": "طنطا مصلحة المساحة الغربية مكتب مساحة طنطا خريطة عقارية سجل عيني",
+      "scope": "البحث عن مكتب التسجيل العقاري والمساحة المحلي في طنطا ومسار هندسة قطع عام وآمن.",
+      "result": "تظهر وثيقة حكومية مصرية مأمورية شهر طنطا ومكتب الشهر العقاري بطنطا، كما يتضمن دليل الهيئة المصرية العامة للمساحة خريطة طبوغرافية باسم طنطا. لا تحتوي المصادر التي تمت مراجعتها على طبقة قطع عقارية متجهة أو مخطط API؛ لم يتم إرسال أي طلب متعلق بعقار أو مالك.",
+      "actualResultUrls": [
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "https://www.esa.gov.eg/main.aspx"
+      ],
+      "executionMethod": "Local-language and English-language web search with official-source review; no private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "paymentSubmitted": false,
+    "routeInspectionStatus": "reviewed_no_safe_public_geometry_route_verified",
+    "reason": "The reviewed official sources establish local registry and survey offices and a Tanta topographic sheet, but no public anonymous parcel-vector endpoint or geometry-only schema was identified. No applicant or property lookup was attempted.",
+    "candidateLayer": null,
+    "candidateSchema": null,
+    "targetGeometryRequest": null
+  },
+  "requestEvidence": [
+    {
+      "method": "public web search and official-page review",
+      "observation": "Recorded public institutional and map-product information only. Search-result presence is not treated as a parcel response. No undocumented endpoint was queried and no HTTP status or feature count is asserted."
+    }
+  ],
+  "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-3298-tanta-route-inspection.json"
+}

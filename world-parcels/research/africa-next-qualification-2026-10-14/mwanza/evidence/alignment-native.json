@@ -1,0 +1,112 @@
+{
+  "type": "NativeParcelSamples",
+  "sourceGmlFile": "known-uids-default-gml32.xml",
+  "sourceGmlSha256": "f65429d84d2809453c4b8fd8f73d1884d0c2b5fe0f2c5c3e9cdbdad045b78313",
+  "representation": "Full unchanged geometry decoded from publisher-default GML 3.2; ordinates preserved in declared north,east order. Canonical IDs bind by uid to the existing adapter cache.",
+  "features": [
+    {
+      "id": "TZ-EARDHI-TP-8a12e581-b2e7-4991-9e7a-7ba499b85b03",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.53526126,
+                32.92943563
+              ],
+              [
+                -2.53520185,
+                32.92940235
+              ],
+              [
+                -2.5351381,
+                32.92940638
+              ],
+              [
+                -2.53506782,
+                32.92954496
+              ],
+              [
+                -2.53512223,
+                32.92958253
+              ],
+              [
+                -2.53524918,
+                32.92959604
+              ],
+              [
+                -2.53526126,
+                32.92943563
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "TZ-EARDHI-TP-9b00e0d0-8234-485a-a5a0-f290d6e4c3de",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.5353071,
+                32.92980802
+              ],
+              [
+                -2.5354143,
+                32.92972377
+              ],
+              [
+                -2.53539692,
+                32.92960355
+              ],
+              [
+                -2.53524918,
+                32.92959604
+              ],
+              [
+                -2.5353071,
+                32.92980802
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "id": "TZ-EARDHI-TP-e67fface-04e1-48a8-bcb5-03f14d3d4417",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -2.53535726,
+                32.92993715
+              ],
+              [
+                -2.53548761,
+                32.92987554
+              ],
+              [
+                -2.5354143,
+                32.92972377
+              ],
+              [
+                -2.5353071,
+                32.92980802
+              ],
+              [
+                -2.53535726,
+                32.92993715
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

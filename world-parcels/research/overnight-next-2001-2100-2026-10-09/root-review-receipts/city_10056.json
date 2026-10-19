@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10056",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-10056-suizhou.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/suizhou-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/root-review-receipts/source-evidence/city_10056-root-review.json",
+    "tmp/valhalla-parcel-research/suizhou/viewer.html",
+    "tmp/valhalla-parcel-research/suizhou/tianditu-http.headers",
+    "tmp/valhalla-parcel-research/suizhou/tianditu-http.html"
+  ],
+  "checkedAt": "2026-10-10T22:04:26Z",
+  "reason": "Local registration custody is supported by the Hubei report. The saved viewer body is access-restricted and the Tianditu HTTP response is 403. No parcel feature response was obtained."
+}

@@ -1,0 +1,988 @@
+// Purpose: persist immutable-source proposal edits as recoverable, versioned local drafts.
+(function attachProposalDraftStore(global) {
+    'use strict';
+
+    const PROPOSAL_DRAFT_SCHEMA_VERSION = 2;
+    const PROPOSAL_DRAFT_STORAGE_KEY = 'consensus-builder.proposal-drafts.v2';
+    const DEFAULT_HISTORY_LIMIT = 100;
+    const DEFAULT_PERSISTED_HISTORY_LIMIT = 12;
+    const DEFAULT_COALESCE_MS = 800;
+    const VALID_DRAFT_STATES = new Set(['editing', 'review', 'publishing', 'error']);
+
+    const publishTerms = () => global.ProposalPublishTerms || require('./proposals/publish-terms.js');
+
+    function cloneDraftValue(value) {
+        if (value === undefined || value === null) return value;
+        try {
+            return JSON.parse(JSON.stringify(value));
+        } catch (_) {
+            return value;
+        }
+    }
+
+    function authoredProposalBoundary() {
+        if (global.__formationDepth && typeof global.__formationDepth.stripDerivedRecordData === 'function') {
+            return global.__formationDepth;
+        }
+        if (typeof require === 'function') {
+            const authored = global.ProposalAuthoredRecord || require('./proposals/authored-record.js');
+            if (!global.ProposalAuthoredRecord) global.ProposalAuthoredRecord = authored;
+            return require('./proposals/formation-depth.js');
+        }
+        throw new Error('Cannot build proposal: the authored-record boundary is unavailable.');
+    }
+
+    function siteDraftApi() {
+        if (global.__siteDraft) return global.__siteDraft;
+        if (typeof require === 'function') return require('./proposals/site-draft.js');
+        throw new Error('Cannot validate a draft: proposals/site-draft.js is not loaded.');
+    }
+
+    function isPlainObject(value) {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+        const prototype = Object.getPrototypeOf(value);
+        return prototype === Object.prototype || prototype === null;
+    }
+
+    function mergeDraftValues(base, patch) {
+        if (!isPlainObject(base) || !isPlainObject(patch)) return cloneDraftValue(patch);
+        const result = cloneDraftValue(base) || {};
+        Object.keys(patch).forEach(key => {
+            const next = patch[key];
+            if (next === undefined) return;
+            result[key] = isPlainObject(result[key]) && isPlainObject(next)
+                ? mergeDraftValues(result[key], next)
+                : cloneDraftValue(next);
+        });
+        return result;
+    }
+
+    function stableDraftJson(value) {
+        if (Array.isArray(value)) return `[${value.map(stableDraftJson).join(',')}]`;
+        if (isPlainObject(value)) {
+            return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableDraftJson(value[key])}`).join(',')}}`;
+        }
+        return JSON.stringify(value);
+    }
+
+    function valuesEqual(a, b) {
+        if (a === b) return true;
+        try { return stableDraftJson(a) === stableDraftJson(b); } catch (_) { return false; }
+    }
+
+    function isoNow(now) {
+        const value = typeof now === 'function' ? now() : new Date();
+        const date = value instanceof Date ? value : new Date(value);
+        return Number.isFinite(date.getTime()) ? date.toISOString() : new Date().toISOString();
+    }
+
+    function timestampMs(value) {
+        const parsed = new Date(value || 0).getTime();
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function defaultDraftId() {
+        try {
+            if (global.crypto && typeof global.crypto.randomUUID === 'function') {
+                return `draft-${global.crypto.randomUUID()}`;
+            }
+        } catch (_) { }
+        return `draft-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function currentDraftCityId() {
+        try {
+            if (global.CityConfigManager && typeof global.CityConfigManager.getCurrentCityId === 'function') {
+                return global.CityConfigManager.getCurrentCityId() || null;
+            }
+        } catch (_) { }
+        return null;
+    }
+
+    function normalizeDraftCityId(rawCityId) {
+        if (rawCityId === undefined || rawCityId === null || !String(rawCityId).trim()) return null;
+        const value = String(rawCityId).trim();
+        const normalized = value.toLowerCase();
+        try {
+            const manager = global.CityConfigManager;
+            const cities = typeof manager?.getAvailableCities === 'function' ? manager.getAvailableCities() : [];
+            const exact = cities.find(city => String(city?.id || '').toLowerCase() === normalized);
+            if (exact?.id) return String(exact.id);
+            if (typeof manager?.getCityCodeForCityId === 'function') {
+                const alias = cities.find(city => String(manager.getCityCodeForCityId(city?.id) || '').toLowerCase() === normalized);
+                if (alias?.id) return String(alias.id);
+            }
+        } catch (_) { }
+        return value;
+    }
+
+    function normalizeGoalKey(rawGoal) {
+        if (rawGoal === undefined || rawGoal === null) return '';
+        const raw = String(rawGoal).trim();
+        if (!raw) return '';
+        try {
+            if (typeof global.normalizeProposalGoalKey === 'function') {
+                const normalized = global.normalizeProposalGoalKey(raw);
+                if (normalized) return normalized;
+            }
+        } catch (_) { }
+        const compact = raw.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
+        if (compact === 'road' || compact === 'track' || compact === 'road-track') return 'road-track';
+        if (compact === 'single-building' || compact === 'building(s)') return 'single';
+        if (compact === 'parcelbased' || compact === 'parcel-based') return 'parcelBased';
+        if (compact === 'ownership-transfer-to-me' || compact === 'ownership-transfer-from-me') return 'ownership-transfer';
+        return compact;
+    }
+
+    function proposalGoal(proposal) {
+        if (!proposal || typeof proposal !== 'object') return '';
+        try {
+            if (typeof global.resolveProposalGoalKey === 'function') {
+                const resolved = global.resolveProposalGoalKey(proposal, null);
+                if (resolved) return resolved;
+            }
+        } catch (_) { }
+        if (proposal.roadProposal) return 'road-track';
+        if (proposal.reparcellization) return 'reparcellization';
+        if (proposal.buildingProposal || proposal.buildingGeometry) {
+            const typology = proposal.typologyType || proposal.buildingProposal?.typologyType;
+            return normalizeGoalKey(typology || proposal.goal || 'buildings');
+        }
+        if (proposal.structureProposal?.kind) return normalizeGoalKey(proposal.structureProposal.kind);
+        return normalizeGoalKey(proposal.goal || proposal.proposalType || proposal.primaryType || proposal.type || '');
+    }
+
+    function proposalIdentity(proposal) {
+        if (!proposal || typeof proposal !== 'object') return null;
+        try {
+            if (typeof global.getProposalKey === 'function') {
+                const key = global.getProposalKey(proposal);
+                if (key !== undefined && key !== null && String(key)) return String(key);
+            }
+        } catch (_) { }
+        const candidates = [
+            proposal.proposalId,
+            proposal.proposal_id,
+            proposal.chainProposalId,
+            proposal.hash,
+            proposal.id,
+            proposal.onchain && proposal.onchain.proposalId
+        ];
+        const found = candidates.find(value => value !== undefined && value !== null && String(value));
+        return found === undefined ? null : String(found);
+    }
+
+    function proposalFields(proposal) {
+        const cadastreParcelIds = Array.isArray(proposal?.cadastreParcelIds)
+            ? proposal.cadastreParcelIds.map(String)
+            : [];
+        return {
+            name: proposal?.title || proposal?.name || proposal?.proposalName || '',
+            description: proposal?.description || '',
+            // Draft selection is transient editor state. Keep the immutable authored declaration
+            // separately so an untouched edit does not need the live map to rediscover it.
+            selectedParcelIds: cadastreParcelIds.slice(),
+            cadastreParcelIds: cadastreParcelIds.slice(),
+            // The authored site and its intrusion tolerance (PARCEL-OPTIONAL.md); null for
+            // records whose site is their footprint.
+            site: cloneDraftValue(proposal?.site || null),
+            toleranceM: Number.isFinite(Number(proposal?.toleranceM)) ? Number(proposal.toleranceM) : 0,
+            ownership: cloneDraftValue(proposal?.ownership || proposal?.proposalFacets?.ownership || proposal?.facets?.ownership || null),
+            recipientScope: proposal?.recipientScope || proposal?.proposalFacets?.recipientScope || proposal?.facets?.recipientScope || null,
+            recipientAddress: proposal?.recipientAddress || proposal?.proposalFacets?.recipientAddress || proposal?.facets?.recipientAddress || null,
+            // Who decides carries over from the source (proposal-kinds.md); null when never chosen.
+            kind: publishTerms().chosenKind(proposal, { isPublished: record => global.isPublishedProposalRecord?.(record) === true }),
+            voteExpiryDays: Number(proposal?.voteExpiryDays) > 0 ? Number(proposal.voteExpiryDays) : null,
+            offer: Number.isFinite(Number(proposal?.offer)) ? Number(proposal.offer) : 0,
+            offerCurrency: proposal?.offerCurrency || proposal?.budgetCurrency || 'USDT',
+            acquisitionMode: proposal?.acquisitionMode || null,
+            boundaryAdjustment: proposal?.boundaryAdjustment || null,
+            isConditional: proposal?.isConditional === true,
+            expiresAt: proposal?.expiresAt || null,
+            decayEnabled: proposal?.decayEnabled === true,
+            decayPercent: Number.isFinite(Number(proposal?.decayPercent)) ? Number(proposal.decayPercent) : 0,
+            decayDurationMs: Number.isFinite(Number(proposal?.decayDurationMs)) ? Number(proposal.decayDurationMs) : 0,
+            depositEnabled: proposal?.depositEnabled === true,
+            depositPercent: Number.isFinite(Number(proposal?.depositPercent)) ? Number(proposal.depositPercent) : 0,
+            facets: cloneDraftValue(proposal?.proposalFacets || proposal?.facets || null),
+            approvalConfig: cloneDraftValue(proposal?.approvalConfig || null),
+            lens: cloneDraftValue(Array.isArray(proposal?.lens) ? proposal.lens : [])
+        };
+    }
+
+    function basePayloadFromProposal(proposal, goal) {
+        if (goal === 'road-track') {
+            const definition = proposal?.roadProposal?.definition || null;
+            if (!definition) return { kind: proposal?.primaryType === 'Track' ? 'track' : 'road', definition: null };
+            return {
+                kind: global.corridorIsTrack(definition) || proposal?.primaryType === 'Track' ? 'track' : 'road',
+                definition: cloneDraftValue(definition)
+            };
+        }
+        if (goal === 'reparcellization') {
+            return { plan: cloneDraftValue(proposal?.reparcellization || null) };
+        }
+        if (['buildings', 'row', 'parcelBased', 'single'].includes(goal)) {
+            const buildingProposal = proposal?.buildingProposal || {};
+            const buildings = Array.isArray(buildingProposal.buildings) && buildingProposal.buildings.length
+                ? buildingProposal.buildings
+                : (Array.isArray(proposal?.geometry?.buildings) ? proposal.geometry.buildings : []);
+            return {
+                typology: proposal?.typologyType || buildingProposal.typologyType || goal,
+                context: {
+                    parcelIds: cloneDraftValue(proposal?.cadastreParcelIds || []),
+                    blockName: buildingProposal.blockName || null,
+                    parameters: cloneDraftValue(buildingProposal.parameters || {}),
+                    buildingFeature: cloneDraftValue(buildingProposal.buildingFeature || buildings[0] || null),
+                    buildings: cloneDraftValue(buildings),
+                    blockMassing: cloneDraftValue(proposal?.geometry?.blockMassing || null),
+                    ineligibleParcels: cloneDraftValue(buildingProposal.ineligibleParcels || [])
+                }
+            };
+        }
+        return {
+            geometry: cloneDraftValue(proposal?.geometry || proposal?.structureProposal?.geometry || null),
+            proposalFacets: cloneDraftValue(proposal?.proposalFacets || proposal?.facets || null)
+        };
+    }
+
+    function previewFromPayload(payload, goal) {
+        if (!payload) return null;
+        if (goal === 'road-track') {
+            return cloneDraftValue(payload.definition?.polygon || null);
+        }
+        if (goal === 'reparcellization') {
+            return cloneDraftValue(payload.plan?.polygons || null);
+        }
+        if (['buildings', 'row', 'parcelBased', 'single'].includes(goal)) {
+            const context = payload.context || {};
+            return cloneDraftValue(context.buildings?.length ? context.buildings : (context.buildingFeature ? [context.buildingFeature] : null));
+        }
+        return cloneDraftValue(payload.geometry || null);
+    }
+
+    function normalizeIssue(issue, severity) {
+        if (typeof issue === 'string') {
+            return { code: 'validation', message: issue, severity };
+        }
+        const value = issue && typeof issue === 'object' ? issue : {};
+        return {
+            code: value.code || 'validation',
+            message: value.message || value.code || 'Draft validation issue',
+            severity: value.severity || severity,
+            path: value.path || null,
+            mapTarget: cloneDraftValue(value.mapTarget || null)
+        };
+    }
+
+    function normalizeValidation(result) {
+        if (result === true || result === undefined || result === null) {
+            return { valid: true, errors: [], warnings: [], checkedAt: null };
+        }
+        if (result === false) {
+            return { valid: false, errors: [normalizeIssue('Draft is invalid.', 'error')], warnings: [], checkedAt: null };
+        }
+        const errors = Array.isArray(result.errors) ? result.errors.map(issue => normalizeIssue(issue, 'error')) : [];
+        const warnings = Array.isArray(result.warnings) ? result.warnings.map(issue => normalizeIssue(issue, 'warning')) : [];
+        return {
+            valid: result.valid !== false && errors.length === 0,
+            errors,
+            warnings,
+            checkedAt: result.checkedAt || null
+        };
+    }
+
+    function editableSnapshot(draft) {
+        return {
+            goal: draft.goal || '',
+            proposalType: draft.proposalType || null,
+            adapterKey: draft.adapterKey || draft.goal || null,
+            fields: cloneDraftValue(draft.fields || {}),
+            editorPayload: cloneDraftValue(draft.editorPayload || {}),
+            previewGeometry: cloneDraftValue(draft.previewGeometry || null)
+        };
+    }
+
+    function restoreEditableSnapshot(draft, snapshot) {
+        draft.goal = normalizeGoalKey(snapshot?.goal || draft.goal || '');
+        draft.proposalType = snapshot?.proposalType || draft.proposalType || draft.goal || null;
+        draft.adapterKey = snapshot?.adapterKey || draft.adapterKey || draft.goal || null;
+        draft.fields = cloneDraftValue(snapshot?.fields || {});
+        draft.editorPayload = cloneDraftValue(snapshot?.editorPayload || {});
+        draft.previewGeometry = cloneDraftValue(snapshot?.previewGeometry || null);
+    }
+
+    function normalizeHistory(history) {
+        return {
+            past: Array.isArray(history?.past) ? cloneDraftValue(history.past) : [],
+            future: Array.isArray(history?.future) ? cloneDraftValue(history.future) : []
+        };
+    }
+
+    function normalizeDraftRecord(raw, now) {
+        if (!raw || typeof raw !== 'object') return null;
+        const id = raw.id || raw.draftId;
+        if (!id) return null;
+        const createdAt = raw.createdAt || isoNow(now);
+        const updatedAt = raw.updatedAt || createdAt;
+        const goal = normalizeGoalKey(raw.goal || raw.proposalGoal || raw.type || '');
+        return {
+            schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION,
+            id: String(id),
+            cityId: normalizeDraftCityId(raw.cityId),
+            goal,
+            proposalType: raw.proposalType || raw.type || goal || null,
+            adapterKey: raw.adapterKey || goal || null,
+            createdAt,
+            updatedAt,
+            sourceProposalId: raw.sourceProposalId === undefined || raw.sourceProposalId === null ? null : String(raw.sourceProposalId),
+            sourceSnapshot: cloneDraftValue(raw.sourceSnapshot || null),
+            fields: cloneDraftValue(raw.fields || {}),
+            editorPayload: cloneDraftValue(raw.editorPayload || raw.payload || {}),
+            previewGeometry: cloneDraftValue(raw.previewGeometry || null),
+            dirty: raw.dirty !== false,
+            validation: normalizeValidation(raw.validation),
+            revision: Number.isFinite(Number(raw.revision)) ? Number(raw.revision) : 0,
+            history: normalizeHistory(raw.history),
+            state: VALID_DRAFT_STATES.has(raw.state) ? raw.state : 'editing',
+            publish: cloneDraftValue(raw.publish || null),
+            incompatibilityReason: raw.incompatibilityReason || null
+        };
+    }
+
+    function normalizeStoredEnvelope(raw, now) {
+        const sourceDrafts = Array.isArray(raw)
+            ? raw
+            : (Array.isArray(raw?.drafts) ? raw.drafts : []);
+        const drafts = sourceDrafts.map(item => normalizeDraftRecord(item, now)).filter(Boolean);
+        const ids = new Set();
+        const uniqueDrafts = drafts.filter(draft => {
+            if (ids.has(draft.id)) return false;
+            ids.add(draft.id);
+            return true;
+        });
+        return {
+            schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION,
+            drafts: uniqueDrafts,
+            activeDraftId: raw?.activeDraftId && ids.has(String(raw.activeDraftId)) ? String(raw.activeDraftId) : null,
+            publishReceipts: Array.isArray(raw?.publishReceipts) ? cloneDraftValue(raw.publishReceipts).slice(-50) : []
+        };
+    }
+
+    // Undo can retain many geometry snapshots during the live editing session, but persisting all
+    // 100 copies of a large block quickly exhausts localStorage. Produce a storage-only copy with
+    // bounded history; the in-memory envelope (and therefore the current session's undo stack) is
+    // deliberately untouched.
+    function envelopeWithHistoryLimit(source, limit) {
+        const output = cloneDraftValue(source) || {};
+        const keep = Math.max(0, Number(limit) || 0);
+        (Array.isArray(output.drafts) ? output.drafts : []).forEach(draft => {
+            if (!draft || !draft.history) return;
+            draft.history.past = Array.isArray(draft.history.past)
+                ? (keep > 0 ? draft.history.past.slice(-keep) : [])
+                : [];
+            draft.history.future = Array.isArray(draft.history.future)
+                ? (keep > 0 ? draft.history.future.slice(-keep) : [])
+                : [];
+        });
+        return output;
+    }
+
+    function createProposalDraftStore(options = {}) {
+        const storage = options.storage || global.localStorage || null;
+        const storageKey = options.storageKey || PROPOSAL_DRAFT_STORAGE_KEY;
+        const now = options.now || (() => new Date());
+        const idFactory = options.idFactory || defaultDraftId;
+        const historyLimit = Number.isFinite(Number(options.historyLimit)) ? Math.max(1, Number(options.historyLimit)) : DEFAULT_HISTORY_LIMIT;
+        const persistedHistoryLimit = Number.isFinite(Number(options.persistedHistoryLimit))
+            ? Math.max(0, Number(options.persistedHistoryLimit))
+            : DEFAULT_PERSISTED_HISTORY_LIMIT;
+        const coalesceMs = Number.isFinite(Number(options.coalesceMs)) ? Math.max(0, Number(options.coalesceMs)) : DEFAULT_COALESCE_MS;
+        const subscribers = new Set();
+        let envelope = normalizeStoredEnvelope(null, now);
+        const persistenceTiers = [null]; // null = full in-memory history
+        if (persistedHistoryLimit < historyLimit) persistenceTiers.push(persistedHistoryLimit);
+        if (persistenceTiers[persistenceTiers.length - 1] !== 0) persistenceTiers.push(0);
+        let persistenceTier = 0;
+        let persistenceWarningShown = false;
+
+        function readStoredEnvelope() {
+            if (!storage || typeof storage.getItem !== 'function') return normalizeStoredEnvelope(null, now);
+            const stored = storage.getItem(storageKey);
+            if (!stored) return normalizeStoredEnvelope(null, now);
+            try {
+                const parsed = JSON.parse(stored);
+                if (!parsed || parsed.schemaVersion !== PROPOSAL_DRAFT_SCHEMA_VERSION || !Array.isArray(parsed.drafts)) {
+                    throw new Error(`Unsupported proposal draft schema; expected ${PROPOSAL_DRAFT_SCHEMA_VERSION}.`);
+                }
+                return normalizeStoredEnvelope(parsed, now);
+            } catch (error) {
+                try { storage.removeItem?.(storageKey); } catch (_) { }
+                console.warn('[ProposalDraftStore] Discarding invalid draft storage', error);
+                return normalizeStoredEnvelope(null, now);
+            }
+        }
+
+        function persist() {
+            envelope.schemaVersion = PROPOSAL_DRAFT_SCHEMA_VERSION;
+            if (storage && typeof storage.setItem === 'function') {
+                // After a full wipe (nothing in memory, key already gone) the unload-time flush must
+                // not resurrect the storage key. A normal "last draft deleted" still writes, because
+                // the key exists and the deletion has to be recorded.
+                const isEmpty = !envelope.drafts.length && !envelope.activeDraftId
+                    && !envelope.publishReceipts.length;
+                if (isEmpty && typeof storage.getItem === 'function' && storage.getItem(storageKey) === null) {
+                    return true;
+                }
+                // First try the complete undo stack. If the browser quota refuses it, retain full
+                // history in memory but retry with a bounded persisted stack, then current state
+                // only. Remember the smallest successful tier so every slider move does not repeat
+                // the same QuotaExceededError. The live draft itself is never discarded.
+                let lastError = null;
+                for (let tier = persistenceTier; tier < persistenceTiers.length; tier += 1) {
+                    const limit = persistenceTiers[tier];
+                    const persistedEnvelope = limit === null
+                        ? envelope
+                        : envelopeWithHistoryLimit(envelope, limit);
+                    try {
+                        storage.setItem(storageKey, JSON.stringify(persistedEnvelope));
+                        persistenceTier = tier;
+                        persistenceWarningShown = false;
+                        return true;
+                    } catch (error) {
+                        lastError = error;
+                    }
+                }
+                if (!persistenceWarningShown) {
+                    persistenceWarningShown = true;
+                    console.warn('[ProposalDraftStore] Could not persist drafts (storage full or unavailable) — keeping them in memory only', lastError);
+                }
+                return false;
+            }
+            return true;
+        }
+
+        // Erase every draft, receipt, and stored byte of this store — used by "wipe ALL local data".
+        // Empties the in-memory envelope too, so unload-time flushes cannot re-persist wiped drafts.
+        function wipeAll() {
+            envelope = normalizeStoredEnvelope(null, now);
+            try {
+                if (storage && typeof storage.removeItem === 'function') {
+                    storage.removeItem(storageKey);
+                }
+            } catch (_) { }
+            notify('wipe', null);
+            return true;
+        }
+
+        function notify(type, draftId) {
+            const detail = { type, draftId: draftId || null, drafts: listDrafts(), activeDraftId: envelope.activeDraftId };
+            subscribers.forEach(listener => {
+                try { listener(detail); } catch (_) { }
+            });
+            try {
+                if (global.document && typeof global.CustomEvent === 'function') {
+                    global.document.dispatchEvent(new global.CustomEvent('proposal-drafts-changed', { detail }));
+                }
+            } catch (_) { }
+        }
+
+        function internalDraft(id) {
+            const key = id === undefined || id === null ? null : String(id);
+            return key ? envelope.drafts.find(draft => draft.id === key) || null : null;
+        }
+
+        function activeInternalDraft() {
+            return internalDraft(envelope.activeDraftId);
+        }
+
+        function resolveAdapter(draftOrGoal) {
+            const draft = typeof draftOrGoal === 'object' ? draftOrGoal : null;
+            const goal = draft ? (draft.adapterKey || draft.goal) : draftOrGoal;
+            const registry = options.adapterRegistry || global.proposalEditorAdapterRegistry || global.proposalEditorAdapters;
+            if (!registry) return null;
+            try {
+                if (typeof registry.get === 'function') return registry.get(goal, draft) || null;
+                if (typeof registry.getAdapter === 'function') return registry.getAdapter(goal, draft) || null;
+                return registry[goal] || null;
+            } catch (_) {
+                return null;
+            }
+        }
+
+        function initialize() {
+            envelope = readStoredEnvelope();
+        }
+
+        function listDrafts(filters = {}) {
+            let drafts = envelope.drafts;
+            if (filters.cityId !== undefined && filters.cityId !== null) {
+                const cityId = normalizeDraftCityId(filters.cityId);
+                drafts = drafts.filter(draft => String(draft.cityId || '') === String(cityId || ''));
+            }
+            if (filters.sourceProposalId !== undefined && filters.sourceProposalId !== null) {
+                drafts = drafts.filter(draft => String(draft.sourceProposalId || '') === String(filters.sourceProposalId));
+            }
+            if (filters.goal) drafts = drafts.filter(draft => draft.goal === normalizeGoalKey(filters.goal));
+            if (filters.state) drafts = drafts.filter(draft => draft.state === filters.state);
+            return drafts.slice().sort((a, b) => timestampMs(b.updatedAt) - timestampMs(a.updatedAt)).map(cloneDraftValue);
+        }
+
+        function getDraft(id) {
+            return cloneDraftValue(internalDraft(id));
+        }
+
+        function getActiveDraft() {
+            return cloneDraftValue(activeInternalDraft());
+        }
+
+        function findDraftForSource(sourceProposalId, cityId) {
+            if (sourceProposalId === undefined || sourceProposalId === null) return null;
+            const sourceKey = String(sourceProposalId);
+            const normalizedCityId = normalizeDraftCityId(cityId);
+            const matches = envelope.drafts.filter(draft => draft.sourceProposalId === sourceKey
+                && (cityId === undefined || cityId === null || String(draft.cityId || '') === String(normalizedCityId || '')));
+            matches.sort((a, b) => timestampMs(b.updatedAt) - timestampMs(a.updatedAt));
+            return cloneDraftValue(matches[0] || null);
+        }
+
+        function createDraft(input = {}) {
+            const createdAt = isoNow(now);
+            const goal = normalizeGoalKey(input.goal || input.proposalGoal || input.proposalType || input.type || '');
+            let id = String(input.id || input.draftId || idFactory());
+            while (internalDraft(id)) id = String(idFactory());
+            const draft = normalizeDraftRecord({
+                id,
+                cityId: input.cityId !== undefined ? input.cityId : currentDraftCityId(),
+                goal,
+                proposalType: input.proposalType || input.type || goal,
+                adapterKey: input.adapterKey || goal,
+                createdAt,
+                updatedAt: createdAt,
+                sourceProposalId: input.sourceProposalId || null,
+                sourceSnapshot: cloneDraftValue(input.sourceSnapshot || null),
+                fields: cloneDraftValue(input.fields || {}),
+                editorPayload: cloneDraftValue(input.editorPayload || input.payload || {}),
+                previewGeometry: cloneDraftValue(input.previewGeometry || null),
+                dirty: input.dirty !== false,
+                validation: input.validation,
+                revision: Number(input.revision) || 0,
+                history: input.history,
+                state: input.state || 'editing',
+                publish: input.publish || null,
+                incompatibilityReason: input.incompatibilityReason || null
+            }, now);
+            envelope.drafts.push(draft);
+            if (input.activate !== false) envelope.activeDraftId = draft.id;
+            persist();
+            notify('create', draft.id);
+            return cloneDraftValue(draft);
+        }
+
+        function createDraftFromProposal(proposal, createOptions = {}) {
+            if (!proposal || typeof proposal !== 'object') throw new TypeError('A source proposal is required.');
+            const sourceProposalId = createOptions.sourceProposalId || proposalIdentity(proposal);
+            if (!sourceProposalId) throw new Error('The source proposal has no stable ID.');
+            const cityId = normalizeDraftCityId(createOptions.cityId !== undefined ? createOptions.cityId : (proposal.city || currentDraftCityId()));
+            const existing = findDraftForSource(sourceProposalId, cityId);
+            if (existing && createOptions.forceNew !== true) {
+                resumeDraft(existing.id);
+                return getDraft(existing.id);
+            }
+
+            const goal = normalizeGoalKey(createOptions.goal || proposalGoal(proposal));
+            const adapter = resolveAdapter(goal);
+            let adapterDraft = null;
+            if (adapter && typeof adapter.draftFromProposal === 'function') {
+                adapterDraft = adapter.draftFromProposal(cloneDraftValue(proposal), createOptions) || null;
+            }
+            const editorPayload = adapterDraft?.editorPayload || adapterDraft?.payload || basePayloadFromProposal(proposal, goal);
+            const fields = mergeDraftValues(proposalFields(proposal), adapterDraft?.fields || {});
+            const previewGeometry = adapterDraft?.previewGeometry !== undefined
+                ? adapterDraft.previewGeometry
+                : previewFromPayload(editorPayload, goal);
+            const compatibility = adapter && typeof adapter.canEdit === 'function'
+                ? adapter.canEdit(proposal)
+                : true;
+            const editable = compatibility === true || compatibility?.editable === true;
+            const incompatibilityReason = editable
+                ? null
+                : (typeof compatibility === 'string' ? compatibility : compatibility?.reason || 'This proposal is not editable.');
+
+            const draft = createDraft({
+                cityId,
+                goal,
+                proposalType: adapterDraft?.proposalType || proposal.primaryType || proposal.type || goal,
+                adapterKey: adapterDraft?.adapterKey || adapter?.key || goal,
+                sourceProposalId,
+                sourceSnapshot: cloneDraftValue(proposal),
+                fields,
+                editorPayload,
+                previewGeometry,
+                incompatibilityReason,
+                dirty: false,
+                activate: createOptions.activate !== false
+            });
+            return validateDraft(draft.id);
+        }
+
+        function updateDraft(id, patchOrUpdater, updateOptions = {}) {
+            const draft = internalDraft(id);
+            if (!draft) return null;
+            const before = editableSnapshot(draft);
+            const sourceSnapshot = cloneDraftValue(draft.sourceSnapshot);
+            const sourceProposalId = draft.sourceProposalId;
+            const draftId = draft.id;
+            let next = cloneDraftValue(draft);
+            if (typeof patchOrUpdater === 'function') {
+                const returned = patchOrUpdater(next);
+                if (returned && typeof returned === 'object') next = returned;
+            } else if (patchOrUpdater && typeof patchOrUpdater === 'object') {
+                next = updateOptions.replace === true
+                    ? mergeDraftValues(draft, patchOrUpdater)
+                    : mergeDraftValues(next, patchOrUpdater);
+            }
+            next.id = draftId;
+            next.sourceProposalId = sourceProposalId;
+            next.sourceSnapshot = sourceSnapshot;
+            const after = editableSnapshot(next);
+            const meaningfulChange = !valuesEqual(before, after);
+            if (!meaningfulChange && updateOptions.force !== true) return cloneDraftValue(draft);
+
+            next.history = normalizeHistory(draft.history);
+            if (meaningfulChange && updateOptions.recordHistory !== false) {
+                const group = updateOptions.coalesceKey || null;
+                const previous = next.history.past[next.history.past.length - 1];
+                const elapsed = previous ? timestampMs(isoNow(now)) - timestampMs(previous.at) : Infinity;
+                const coalesced = !!(group && previous && previous.coalesceKey === group && elapsed >= 0 && elapsed <= coalesceMs);
+                if (!coalesced) {
+                    next.history.past.push({ snapshot: before, at: isoNow(now), coalesceKey: group });
+                    if (next.history.past.length > historyLimit) next.history.past.splice(0, next.history.past.length - historyLimit);
+                }
+                next.history.future = [];
+            }
+            next.updatedAt = isoNow(now);
+            next.revision = Number(draft.revision || 0) + 1;
+            if (updateOptions.dirty !== false && meaningfulChange) next.dirty = true;
+            if (updateOptions.state && VALID_DRAFT_STATES.has(updateOptions.state)) next.state = updateOptions.state;
+            const normalized = normalizeDraftRecord(next, now);
+            const index = envelope.drafts.findIndex(item => item.id === draftId);
+            envelope.drafts[index] = normalized;
+            persist();
+            if (updateOptions.validate === true) validateDraft(draftId);
+            else notify('update', draftId);
+            return getDraft(draftId);
+        }
+
+        function deleteDraft(id) {
+            const key = String(id || '');
+            const index = envelope.drafts.findIndex(draft => draft.id === key);
+            if (index === -1) return false;
+            envelope.drafts.splice(index, 1);
+            if (envelope.activeDraftId === key) envelope.activeDraftId = null;
+            persist();
+            notify('delete', key);
+            return true;
+        }
+
+        function resumeDraft(id) {
+            const draft = internalDraft(id);
+            if (!draft) return null;
+            envelope.activeDraftId = draft.id;
+            draft.updatedAt = isoNow(now);
+            persist();
+            notify('resume', draft.id);
+            return cloneDraftValue(draft);
+        }
+
+        function clearActiveDraft() {
+            const previous = envelope.activeDraftId;
+            envelope.activeDraftId = null;
+            persist();
+            notify('deactivate', previous);
+            return previous;
+        }
+
+        function undoDraft(id) {
+            const draft = internalDraft(id);
+            if (!draft || !draft.history?.past?.length) return cloneDraftValue(draft);
+            const entry = draft.history.past.pop();
+            draft.history.future.push({ snapshot: editableSnapshot(draft), at: isoNow(now), coalesceKey: entry.coalesceKey || null });
+            restoreEditableSnapshot(draft, entry.snapshot);
+            draft.updatedAt = isoNow(now);
+            draft.revision += 1;
+            draft.dirty = true;
+            draft.state = 'editing';
+            persist();
+            notify('undo', draft.id);
+            return validateDraft(draft.id, { persist: true, notify: false });
+        }
+
+        function redoDraft(id) {
+            const draft = internalDraft(id);
+            if (!draft || !draft.history?.future?.length) return cloneDraftValue(draft);
+            const entry = draft.history.future.pop();
+            draft.history.past.push({ snapshot: editableSnapshot(draft), at: isoNow(now), coalesceKey: entry.coalesceKey || null });
+            restoreEditableSnapshot(draft, entry.snapshot);
+            draft.updatedAt = isoNow(now);
+            draft.revision += 1;
+            draft.dirty = true;
+            draft.state = 'editing';
+            persist();
+            notify('redo', draft.id);
+            return validateDraft(draft.id, { persist: true, notify: false });
+        }
+
+        function validateDraft(id, validateOptions = {}) {
+            const draft = internalDraft(id);
+            if (!draft) return null;
+            const adapter = resolveAdapter(draft);
+            let result = null;
+            try {
+                if (typeof validateOptions.validator === 'function') result = validateOptions.validator(cloneDraftValue(draft));
+                else if (adapter && typeof adapter.validate === 'function') result = adapter.validate(cloneDraftValue(draft));
+                else {
+                    const errors = [];
+                    if (!draft.goal) errors.push({ code: 'missing-goal', message: 'Choose a proposal type.', path: 'goal' });
+                    if (!draft.fields?.name?.trim()) errors.push({ code: 'missing-name', message: 'Add a proposal name.', path: 'fields.name' });
+                    // A parcel act needs parcels; a material proposal needs a site, parcels or its
+                    // own design geometry (proposals/site-draft.js).
+                    const groundIssue = siteDraftApi().draftGroundIssue(draft);
+                    if (groundIssue) errors.push(groundIssue);
+                    result = { valid: errors.length === 0, errors, warnings: [] };
+                }
+            } catch (error) {
+                result = { valid: false, errors: [{ code: 'validator-error', message: error?.message || 'Draft validation failed.' }], warnings: [] };
+            }
+            draft.validation = normalizeValidation(result);
+            draft.validation.checkedAt = isoNow(now);
+            if (validateOptions.persist !== false) persist();
+            if (validateOptions.notify !== false) notify('validate', draft.id);
+            return cloneDraftValue(draft);
+        }
+
+        function buildProposalFromDraft(id, buildOptions = {}) {
+            const draft = internalDraft(id);
+            if (!draft) return null;
+            const validated = validateDraft(id, { notify: false });
+            if (!validated.validation.valid && buildOptions.allowInvalid !== true) {
+                const error = new Error('Draft validation failed.');
+                error.validation = validated.validation;
+                throw error;
+            }
+            const adapter = resolveAdapter(draft);
+            let proposal = null;
+            if (adapter && typeof adapter.serializeProposal === 'function') {
+                proposal = adapter.serializeProposal(cloneDraftValue(draft), buildOptions);
+            }
+            if (!proposal) {
+                proposal = mergeDraftValues(draft.sourceSnapshot || {}, draft.fields || {});
+                proposal.goal = draft.goal;
+                const selected = cloneDraftValue(draft.fields?.selectedParcelIds || []);
+                const authored = Array.isArray(draft.sourceSnapshot?.cadastreParcelIds)
+                    ? [...new Set(draft.sourceSnapshot.cadastreParcelIds.map(String).filter(Boolean))]
+                    : [];
+                const selectionUnchanged = authored.length === selected.length
+                    && selected.every(id => authored.includes(String(id)));
+                if (authored.length && selectionUnchanged) {
+                    proposal.cadastreParcelIds = authored;
+                } else if (!selected.length) {
+                    // A site without parcels: the declaration is the binding, computed at publish.
+                    proposal.cadastreParcelIds = [];
+                } else {
+                    const fabric = global.LiveParcelFabric;
+                    if (!fabric || typeof fabric.cadastreIdsForParcelIds !== 'function') {
+                        throw new Error('Live parcel fabric is required to author changed proposal ground.');
+                    }
+                    proposal.cadastreParcelIds = fabric.cadastreIdsForParcelIds(selected);
+                }
+                proposal.editorPayload = cloneDraftValue(draft.editorPayload || {});
+            }
+            let output = cloneDraftValue(proposal);
+            delete output.id;
+            delete output.proposalId;
+            delete output.proposal_id;
+            delete output.hash;
+            delete output.chainProposalId;
+            delete output.onchain;
+            delete output.nft;
+            ['acceptedParcelIds', 'ownerAcceptances', 'ownerApprovals', 'ownerApprovalHistory', 'ownershipApprovals']
+                .forEach(key => delete output[key]);
+            // The share/upload link is the numeric serverProposalId. A proposal built from a draft is
+            // a NEW proposal (buildings, structures, reparcellization, station, road design-finalize
+            // all commit through here); it must not inherit the source's server-upload identity, or an
+            // edit would silently reuse the original's /proposals/:id instead of a fresh upload.
+            delete output.serverProposalId;
+            output.sourceProposalId = draft.sourceProposalId || null;
+            output.replacementOfProposalId = draft.sourceProposalId || null;
+            output.proposalDraftId = draft.id;
+            // A draft may temporarily refer to the currently selected live parcel pieces. The
+            // serializer above must project that selection to cadastreParcelIds; this final
+            // boundary then guarantees that no live parent/child aliases or materialized features
+            // escape in the proposal object itself.
+            const boundary = authoredProposalBoundary();
+            output = boundary.stripDerivedRecordData(output);
+            const verdict = typeof boundary.conformanceOf === 'function'
+                ? boundary.conformanceOf(output)
+                : { flat: false, violations: [{ code: 'authored-boundary-unavailable' }] };
+            if (!verdict.flat) {
+                const violation = verdict.violations?.[0];
+                throw new Error(`Cannot build proposal: ${violation?.field || violation?.code || 'cadastral scope is invalid'}.`);
+            }
+            return output;
+        }
+
+        function markPublishing(id, publishOptions = {}) {
+            const draft = internalDraft(id);
+            if (!draft) return null;
+            if (draft.state === 'publishing' && draft.publish?.operationId) return cloneDraftValue(draft);
+            const operationId = publishOptions.operationId || draft.publish?.operationId || `publish-${draft.id}-${draft.revision}`;
+            draft.state = 'publishing';
+            draft.publish = {
+                ...(draft.publish || {}),
+                operationId,
+                startedAt: isoNow(now),
+                attempt: Number(draft.publish?.attempt || 0) + 1,
+                error: null,
+                persistedProposalId: draft.publish?.persistedProposalId || null
+            };
+            draft.updatedAt = isoNow(now);
+            persist();
+            notify('publishing', draft.id);
+            return cloneDraftValue(draft);
+        }
+
+        function markPublishFailed(id, error) {
+            const draft = internalDraft(id);
+            if (!draft) return null;
+            draft.state = 'error';
+            draft.publish = {
+                ...(draft.publish || {}),
+                failedAt: isoNow(now),
+                error: {
+                    message: error?.message || String(error || 'Publishing failed.'),
+                    code: error?.code || null
+                }
+            };
+            draft.updatedAt = isoNow(now);
+            persist();
+            notify('publish-failed', draft.id);
+            return cloneDraftValue(draft);
+        }
+
+        function consumeAfterPublish(id, persistedProposalId) {
+            const draft = internalDraft(id);
+            if (!draft) {
+                return envelope.publishReceipts.find(receipt => receipt.draftId === String(id)) || null;
+            }
+            const receipt = {
+                draftId: draft.id,
+                operationId: draft.publish?.operationId || null,
+                persistedProposalId: persistedProposalId === undefined || persistedProposalId === null ? null : String(persistedProposalId),
+                sourceProposalId: draft.sourceProposalId || null,
+                consumedAt: isoNow(now)
+            };
+            envelope.publishReceipts = envelope.publishReceipts.filter(item => item.draftId !== draft.id);
+            envelope.publishReceipts.push(receipt);
+            if (envelope.publishReceipts.length > 50) envelope.publishReceipts.splice(0, envelope.publishReceipts.length - 50);
+            envelope.drafts = envelope.drafts.filter(item => item.id !== draft.id);
+            if (envelope.activeDraftId === draft.id) envelope.activeDraftId = null;
+            persist();
+            notify('consume', draft.id);
+            return cloneDraftValue(receipt);
+        }
+
+        function getPublishReceipt(id) {
+            return cloneDraftValue(envelope.publishReceipts.find(receipt => receipt.draftId === String(id)) || null);
+        }
+
+        function setDraftState(id, state) {
+            if (!VALID_DRAFT_STATES.has(state)) throw new Error(`Invalid draft state: ${state}`);
+            const draft = internalDraft(id);
+            if (!draft) return null;
+            draft.state = state;
+            draft.updatedAt = isoNow(now);
+            persist();
+            notify('state', draft.id);
+            return cloneDraftValue(draft);
+        }
+
+        function subscribe(listener) {
+            if (typeof listener !== 'function') return () => { };
+            subscribers.add(listener);
+            return () => subscribers.delete(listener);
+        }
+
+        function reload() {
+            envelope = readStoredEnvelope();
+            notify('reload', envelope.activeDraftId);
+            return listDrafts();
+        }
+
+        function inspectEnvelope() {
+            return cloneDraftValue(envelope);
+        }
+
+        initialize();
+
+        return {
+            schemaVersion: PROPOSAL_DRAFT_SCHEMA_VERSION,
+            storageKey,
+            createDraft,
+            createDraftFromProposal,
+            getDraft,
+            getActiveDraft,
+            listDrafts,
+            findDraftForSource,
+            updateDraft,
+            deleteDraft,
+            resumeDraft,
+            clearActiveDraft,
+            undoDraft,
+            redoDraft,
+            validateDraft,
+            buildProposalFromDraft,
+            markPublishing,
+            markPublishFailed,
+            consumeAfterPublish,
+            getPublishReceipt,
+            setDraftState,
+            wipeAll,
+            flush: persist,
+            reload,
+            subscribe,
+            inspectEnvelope
+        };
+    }
+
+    global.PROPOSAL_DRAFT_SCHEMA_VERSION = PROPOSAL_DRAFT_SCHEMA_VERSION;
+    global.PROPOSAL_DRAFT_STORAGE_KEY = PROPOSAL_DRAFT_STORAGE_KEY;
+    global.createProposalDraftStore = createProposalDraftStore;
+    if (!global.proposalDraftStore) global.proposalDraftStore = createProposalDraftStore();
+
+    if (global.addEventListener && global.proposalDraftStore) {
+        const flush = () => {
+            try { global.proposalDraftStore.flush(); } catch (_) { }
+        };
+        global.addEventListener('pagehide', flush);
+        global.addEventListener('beforeunload', flush);
+        global.addEventListener('storage', event => {
+            // key === null means another tab cleared ALL of localStorage (a wipe) — re-read then too,
+            // so this tab's in-memory drafts don't get re-persisted by its own unload flush.
+            if (event && (event.key === PROPOSAL_DRAFT_STORAGE_KEY || event.key === null)) {
+                try { global.proposalDraftStore.reload(); } catch (_) { }
+            }
+        });
+    }
+
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = {
+            PROPOSAL_DRAFT_SCHEMA_VERSION,
+            PROPOSAL_DRAFT_STORAGE_KEY,
+            createProposalDraftStore,
+            cloneDraftValue,
+            normalizeGoalKey,
+            envelopeWithHistoryLimit
+        };
+    }
+})(typeof window !== 'undefined' ? window : globalThis);

@@ -1,0 +1,12 @@
+{
+  "taskId": "city:10950",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-10950-xinyi.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/xinyi-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T22:17:32Z",
+  "reason": "The Xinyi bureau is identified in official procurement material and the Guangdong public viewer was inspected, but local registry custody and an anonymous parcel-vector route remain unverified; registryFound stays null. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification have no independent evidence; this is not a citywide absence finding."
+}

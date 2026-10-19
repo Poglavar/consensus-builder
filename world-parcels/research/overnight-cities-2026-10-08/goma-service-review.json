@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7292-goma.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official DRC material describes formal paid requests to consult cadastral/property registers and local Goma land-office divisions. The service concerns legal property records and is not an anonymous coordinate-to-parcel vector endpoint. No request or personal registry lookup was submitted.",
+  "registryAssessment": "The DRC Ministry of Land Affairs service catalogue describes cadastral and land-register consultation through the local Conservateur des Titres Immobiliers or head of the Cadastre Division. A North-Kivu government report documents separate Goma and Karisimbi-Nyiragongo land-registration districts and local cadastral offices. This confirms local authority, not public anonymous GIS.",
+  "searchQueries": [
+    {
+      "language": "French",
+      "query": "Goma cadastre carte parcellaire registre foncier division du cadastre officiel",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "Official DRC service catalogue describes formal access to cadastral/land registers through the registrar or head of the Cadastre Division. North-Kivu government records local Goma registration districts; no anonymous vector layer was found.",
+      "actualResultUrls": [
+        "https://servicepublic.gouv.cd/service/4671",
+        "https://provincenordkivu.cd/la-ville-de-goma-compte-desormais-scindee-en-deux-circonscriptions-foncieres/"
+      ],
+      "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+    },
+    {
+      "language": "English",
+      "query": "Goma DRC official land registry cadastre parcel map GIS public vector",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "English-language results did not identify a city parcel service. Official national and provincial sources confirm local cadastral/registry offices and a formal paid register-search procedure, not anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://affairesfoncieres.gouv.cd/",
+        "https://servicepublic.gouv.cd/service/4671"
+      ],
+      "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner/address/assessment values or private parcel records were requested, queried, or retained. No parcel polygon was retained.",
+  "runtimeAssessment": "not_assessed"
+}

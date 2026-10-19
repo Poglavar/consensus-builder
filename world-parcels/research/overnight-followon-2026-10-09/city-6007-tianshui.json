@@ -1,0 +1,126 @@
+{
+  "name": "Tianshui",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1085,
+  "point": [
+    34.5837670471685,
+    105.734341301499
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tianshui China official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+        "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+        "result": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+        "executionMethod": "Separate English-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://www.tianshui.gov.cn/zrzy/",
+          "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "天水市 自然资源局 不动产登记 地籍图 土地登记 官方",
+        "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+        "result": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+        "executionMethod": "Separate local-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://www.tianshui.gov.cn/zrzy/",
+          "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Tianshui Municipal Natural Resources Bureau",
+        "operator": "China",
+        "homeUrl": "https://www.tianshui.gov.cn/zrzy/",
+        "observation": "Official municipal bureau site; local administrative custodian."
+      },
+      {
+        "name": "Tianshui land services guide",
+        "operator": "China",
+        "homeUrl": "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm",
+        "observation": "Municipal bureau lists land and real-estate registration service guidance; no public parcel feature endpoint documented."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Tianshui land services guide",
+    "url": "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm",
+    "operator": null,
+    "serviceType": "Official local registry/service reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_public_geometry",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint or response was verified.",
+  "remainingUncertainty": "No public full-parcel geometry service or point-level feature coverage was verified.",
+  "nextStep": "Revisit only if a public safe geometry response or point-specific map evidence becomes available.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6007,
+  "cityId": "wup2025:6007",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    34.5837670471685,
+    105.734341301499
+  ],
+  "population2025k": 511.831,
+  "populationUnit": "persons",
+  "queueRank": 1085,
+  "population2025": 511831,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryEvidenceUrls": [
+    "https://www.tianshui.gov.cn/zrzy/",
+    "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint or response was verified."
+  },
+  "scopeLimits": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+  "sampleFile": null,
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "registryBasis": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-5498-skikda.json",
+  "cityCode": 5498,
+  "queueRank": 2288,
+  "name": "Skikda",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "pointLatLon": [36.8664432257965, 6.92776718028263],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method":"SEARCH","url":"https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx","httpStatus":"timeout","outcome":"Official ASGA InfoGéoAlgérie national cartographic viewer discovered; bounded anonymous GET did not complete within 25 seconds, so current JavaScript/configuration and parcel API could not be inspected."},
+    {"method":"GET","url":"https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx","httpStatus":"timeout","outcome":"Ordinary public request timed out. No login, CAPTCHA, Cloudflare bypass, credentials, private token, or TLS-disable request was used."},
+    {"method":"SEARCH","url":"https://fadaeldjazair.mf.gov.dz/fr/geo_services/","httpStatus":"timeout","outcome":"Official Ministry of Finance Fadaeldjazair geo-services route was discovered as a claimed cadastral/land-information portal; anonymous request timed out."},
+    {"method":"GET","url":"https://fadaeldjazair.mf.gov.dz/fr/geo_services/","httpStatus":"timeout","outcome":"Direct anonymous GET timed out after 15 seconds; no configuration, schema, CRS, or parcel response was obtained."},
+    {"method":"GET","url":"https://www.mf.gov.dz/","httpStatus":"connection_reset","outcome":"Official Ministry of Finance host reset the anonymous connection; no parcel service was exposed."},
+    {"method":"GET","url":"https://www.anfu.dz/","httpStatus":500,"outcome":"Official ANFU host returned HTTP 500; its general agency role does not establish a Skikda parcel API."},
+    {"method":"GET","url":"https://wilayadeskikda-dz.com/annuaires.php","httpStatus":200,"outcome":"Skikda wilaya directory lists Direction du cadastre and Direction de la conservation foncière contacts. This is local custodian lead evidence, not a parcel map/API or proof of open data coverage."},
+    {"method":"SEARCH","url":"https://www.mta.gov.dz/%D9%88%D8%B2%D9%8A%D8%B1%D8%A9-%D8%A7%D9%84%D8%B3%D9%8A%D8%A7%D8%AD%D8%A9-%D9%88%D8%A7%D9%84%D8%B5%D9%86%D8%A7%D8%B9%D8%A9-%D8%A7%D9%84%D8%AA%D9%82%D9%84%D9%8A%D8%AF%D9%8A%D8%A9-%D8%A7%D9%84%D8%B3-38/","httpStatus":200,"outcome":"Official Ministry of Tourism article references updated land-survey plans and technical documents for Skikda-area land management; it is not a parcel service."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "ASGA and Fadaeldjazair routes timed out before configuration or service endpoints could be read.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope":"Official viewer/geoportal discovery and ordinary anonymous GET only","exactPointFeatureCount":null,"nearbyEnvelopeFeatureCount":null,"nativeIdentity":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed", "polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"No usable first-party anonymous safe ID-plus-geometry response or independently qualified adapter endpoint was evidenced."},
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point or envelope parcel query completed; timeout/reset/HTTP 500 outcomes are not evidence of citywide absence or map extent miss.",
+    "The Skikda directory identifies local cadastral and land-conservation offices, but does not prove an open parcel API or complete city coverage.",
+    "No GeoJSON sample is retained because no safe native parcel identity and unchanged geometry were obtained.",
+    "No owner, address, contact, titleholder, tax/account, certificate, or personal fields were requested or retained.",
+    "This packet is not source integration or admission; runtimeReadiness remains held."
+  ],
+  "uncertainty": "The national viewer and finance geoportal may expose additional cadastral services through browser JavaScript/configuration, but bounded anonymous requests timed out or reset. Local service availability, schema, CRS, parcel identity stability, and city coverage remain unverified. registryFound stays null because local custodian directory evidence was found but no verified local public parcel map/API or procedure endpoint was established."
+}

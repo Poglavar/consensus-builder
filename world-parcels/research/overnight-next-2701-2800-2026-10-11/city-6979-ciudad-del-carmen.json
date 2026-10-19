@@ -1,0 +1,117 @@
+{
+  "cityCode": 6979,
+  "name": "Ciudad del Carmen",
+  "country": "Mexico",
+  "iso2": "MX",
+  "iso3": "MEX",
+  "countryCode": "MX",
+  "point": [18.6488208984808, -91.8060260344894],
+  "population2025": 214640,
+  "population2025k": 214.64,
+  "populationUnit": "persons",
+  "rank": 2755,
+  "queueRank": 2755,
+  "wupCityCode": 6979,
+  "cityName": "Ciudad del Carmen",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "discoveryMethod": "first-party-discovery-attempt-1",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ciudad del Carmen Mexico official cadastral parcel map catastro municipal GIS",
+        "result": "Search found the official INFOCAM/IDE Campeche infrastructure, the official Carmen municipal administration regulation describing cadastral responsibilities, and the official Campeche predial portal. No anonymous public parcel viewer/API or downloadable ID+geometry response was exposed by the discovered pages.",
+        "actualResultUrls": [
+          "https://ide.infocam.gob.mx/",
+          "https://www.infocam.gob.mx/informe/",
+          "https://www.carmen.gob.mx/transparencia/web/leyes/municipales/REGLAMENTOS/6_Reglamento_Administracion_publica_municipal.pdf",
+          "https://contribunet.campeche.gob.mx/sit-contribunet/modulos/predial/indexPredial.xhtml?faces-redirect=true"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Ciudad del Carmen Campeche catastro mapa predial oficial",
+        "result": "La búsqueda encontró al INFOCAM como autoridad estatal de información estadística, geográfica y catastral, la IDE Campeche con estándares OGC descritos pero con acceso autenticado, la Dirección municipal de Catastro en el reglamento del Municipio de Carmen y el portal oficial de consulta/pago predial. No se obtuvo un servicio público anónimo de parcelas con identidad y geometría.",
+        "actualResultUrls": [
+          "https://www.infocam.gob.mx/informe/",
+          "https://ide.infocam.gob.mx/",
+          "https://www.carmen.gob.mx/transparencia/web/leyes/municipales/REGLAMENTOS/6_Reglamento_Administracion_publica_municipal.pdf",
+          "https://contribunet.campeche.gob.mx/sit-contribunet/modulos/predial/indexPredial.xhtml?faces-redirect=true"
+        ]
+      }
+    ]
+  },
+  "sourceReview": {
+    "localCustodian": {
+      "name": "Dirección de Catastro del Municipio de Carmen",
+      "evidenceUrl": "https://www.carmen.gob.mx/transparencia/web/leyes/municipales/REGLAMENTOS/6_Reglamento_Administracion_publica_municipal.pdf",
+      "scope": "Municipal cadastral administration, cadastral register maintenance, cadastral cartography, and property cadastral registration under the Carmen municipal administration regulation; no anonymous parcel API was evidenced."
+    },
+    "stateAgency": {
+      "name": "Instituto de Información Estadística, Geográfica y Catastral del Estado de Campeche (INFOCAM)",
+      "evidenceUrl": "https://www.infocam.gob.mx/informe/",
+      "scope": "State geospatial and cadastral information custodian; its IDE Campeche landing page describes an OGC-compatible WFS/WMS/WCS infrastructure, but the current public entry redirects unauthenticated users to login."
+    },
+    "publicPredialService": {
+      "name": "CONTRIBUNET Campeche predial portal",
+      "evidenceUrl": "https://contribunet.campeche.gob.mx/sit-contribunet/modulos/predial/indexPredial.xhtml?faces-redirect=true",
+      "scope": "Municipality selector includes CARMEN and account-based predial lookup/payment; it is not evidenced as a parcel geometry service and no unsafe account or ownership fields were requested."
+    },
+    "safeFieldAllowlist": ["id", "geometry"],
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "sampleFile": null,
+    "scopeLimits": [
+      "No full parcel polygon was retained because no safe native parcel identity plus unchanged native geometry was obtained.",
+      "No exact-point hit, map-extent miss, timeout, login wall, or unusable UI was treated as evidence of citywide absence.",
+      "Owner, address, contact, titleholder, personal, tax/account, and other unsafe fields were not requested.",
+      "The exact WUP point was preserved and not shifted."
+    ]
+  },
+  "attempts": [
+    {
+      "stage": "official-state-custodian-discovery",
+      "method": "GET/search open",
+      "url": "https://www.infocam.gob.mx/informe/",
+      "outcome": "HTTP page available; INFOCAM identifies itself as the state statistics, geography, and cadastre institute and describes cadastral modernization and statewide cadastral information responsibilities. No parcel endpoint was exposed on the page."
+    },
+    {
+      "stage": "official-IDE-entry-and-configuration-inspection",
+      "method": "GET/source inspection",
+      "url": "https://ide.infocam.gob.mx/",
+      "outcome": "HTTP page available; page describes OGC-compatible WFS/WMS/WCS infrastructure, but current entry is a login form. Source inspection found the login POST route lib/funciones_login.php and no public viewer/configuration URL. No login or credential use was attempted."
+    },
+    {
+      "stage": "official-local-cadastre-regulation",
+      "method": "GET/PDF/search open",
+      "url": "https://www.carmen.gob.mx/transparencia/web/leyes/municipales/REGLAMENTOS/6_Reglamento_Administracion_publica_municipal.pdf",
+      "outcome": "Search result identifies the municipal Dirección de Catastro responsibilities for maintaining the cadastral register and municipal cartography. The direct PDF request timed out in this run; the official search result and URL were retained as evidence, without claiming a parcel response."
+    },
+    {
+      "stage": "official-predial-portal",
+      "method": "GET/search open",
+      "url": "https://contribunet.campeche.gob.mx/sit-contribunet/modulos/predial/indexPredial.xhtml?faces-redirect=true",
+      "outcome": "Official search result exposes a CARMEN municipality option and account-based predial lookup/payment. Direct curl was blocked by certificate verification in this environment; no TLS exception was used for qualification and no account or unsafe fields were requested."
+    },
+    {
+      "stage": "legacy-state-carmen-cadastral-system",
+      "method": "GET",
+      "url": "https://carmen.infocam.gob.mx/sgc6",
+      "outcome": "HTTP 503 Service Unavailable. The unavailable legacy route is not evidence of citywide parcel absence and yielded no schema or geometry."
+    },
+    {
+      "stage": "public-map-api-follow-up",
+      "method": "GET/source inspection",
+      "url": "https://ide.infocam.gob.mx/visor/",
+      "outcome": "Unauthenticated request redirected to the IDE login landing page. No bounded anonymous ID+geometry request was possible without credentials or inventing an endpoint."
+    }
+  ],
+  "uncertainty": "A local cadastral custodian, a state cadastral agency, and a municipality-specific predial portal are evidenced, but this attempt did not qualify a public machine-readable parcel source, native parcel identity, CRS/schema, or geometry. The current IDE may require authorized access, and the legacy Carmen system returned 503. This cannot establish citywide coverage or absence.",
+  "runtimeAdmission": "held pending independent serial qualification of a real adapter and public safe ID+geometry service. Packet completion does not mean source integration or admission."
+}

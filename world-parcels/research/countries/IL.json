@@ -1,0 +1,95 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IL",
+ "country": "Israel",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Survey of Israel (Mapi) - national cadastre (gush/helka)",
+ "portalsFound": [
+  {
+   "url": "https://data.gov.il/api/3/action/package_search?q=parcels",
+   "observation": "Dataset 'Parcels (חלקות)' by Survey of Israel (luba@mapi.gov.il): parcel_all.zip, last_parcel.zip, cancel_parcel.dbf.zip; notes say data is indicative, not for boundary reconstruction."
+  },
+  {
+   "url": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+   "observation": "Open GeoServer WFS 1.0.0 with layers opendata:PARCEL_ALL, PARCEL_ALL_ITM (Parcels_ITM), SUB_GUSH_ALL, SUB_GUSH_ALL_ITM."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.gov.il/api/3/action/package_search?q=parcels&rows=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "CKAN dataset with resources"
+  },
+  {
+   "url": "https://data.gov.il/dataset/dff8a168-.../resource/572f5c2a-.../download/last_parcel.zip (HEAD)",
+   "method": "HEAD",
+   "httpStatus": 200,
+   "contentType": "application/zip",
+   "assessment": "127 KB zip containing only DBF attributes (no geometry); not used as evidence"
+  },
+  {
+   "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=1.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "feature types listed"
+  },
+  {
+   "url": "...request=GetFeature&typeName=opendata:PARCEL_ALL&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326 (no bbox)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 MultiPolygon features, northern Israel (Dishon)"
+  },
+  {
+   "url": "...same with bbox=34.7700,32.0600,34.7730,32.0620,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, Tel Aviv-Yafo"
+  },
+  {
+   "url": "...same with bbox=34.7900,31.2500,34.7930,31.2520,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, Beersheba (raw reply not saved)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "il-mapi-opendata-parcel-all",
+  "requestUrl": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=opendata:PARCEL_ALL&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=34.7700,32.0600,34.7730,32.0620,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   34.77,
+   32.06,
+   34.773,
+   32.062
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID (GUSH_NUM + PARCEL)",
+  "responseFile": "IL-parcel-response.json",
+  "pagination": "WFS maxFeatures/startIndex",
+  "regionSampled": "Tel Aviv-Yafo (also Beersheba, Dishon)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "National parcel layer (all gush/helka, incl. 'settled' status field)",
+  "regionsVerified": [
+   "Tel Aviv-Yafo",
+   "Beersheba",
+   "Upper Galilee (Dishon)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence text not read beyond dataset notes (use at user's risk; not legally authoritative for boundaries). Full download parcel_all.zip not tested.",
+ "nextStep": "Read licence; test download of parcel_all.zip by HTTP range; note parcels in unsettled/unregistered areas may be missing."
+}

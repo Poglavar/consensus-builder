@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "id-padang-atrbpn-local-office-geonode-review",
+  "purpose": "Service review for WUP2025 rank 436 Padang (city code 3262); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Kantor Pertanahan Kota Padang (ATR/BPN) and Geoportal Kota Padang",
+  "sourceUrl": "https://geoportal.padang.go.id/",
+  "registryFound": true,
+  "registryBasis": "Padang’s local ATR/BPN Land Office is identified on the official kot-padang.atrbpn.go.id portal. The city Geoportal is a public JIGN/GeoNode service, but its anonymous datasets API currently returns one dataset titled “Peta Area Terdampak Banjir Sumatera,” not a cadastral layer. The BPN public app HTML is only a JavaScript shell; no parcel schema or geometry route was exposed in the inspected HTML/static client.",
+  "officialSources": [
+    {
+      "url": "https://geoportal.padang.go.id/",
+      "observation": "City Geoportal identifies itself as a JIGN data-sharing portal. Direct anonymous GET returned HTTP 200."
+    },
+    {
+      "url": "https://geoportal.padang.go.id/api/v2/datasets/?page=1&page_size=100",
+      "observation": "Anonymous GeoNode datasets API returned HTTP 200 with total=1: “Peta Area Terdampak Banjir Sumatera” (EPSG:4326). It is flood-impact mapping, not cadastral parcel data. Adding q=tanah returned the same listing."
+    },
+    {
+      "url": "https://kot-padang.atrbpn.go.id/",
+      "observation": "Official Padang ATR/BPN local-office app root returned HTTP 200 (6,855 bytes) with a JS application shell. Its two public JS bundles also returned HTTP 200 and exposed no map/cadastral service or geometry schema path."
+    },
+    {
+      "url": "https://satudata.padang.go.id/",
+      "observation": "Official Padang city open-data portal. Search pages for bidang tanah, persil, pertanahan and tanah returned “No datasets found”; this catalog search was not treated as parcel geometry."
+    },
+    {
+      "url": "https://kot-padang.atrbpn.go.id/berita/pelataran-kantor-pertanahan-kota-padang-18-januari-2026",
+      "observation": "Padang ATR/BPN’s indexed local-office news item identifies the Kantor Pertanahan Kota Padang. Direct page GET returned the same JS shell as the office portal; the rendered article is not a geometry source."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Padang Indonesia official cadastral parcel map land office open GIS",
+      "scope": "Find city-local parcel sources and anonymous geometry routes.",
+      "result": "The city Geoportal is a public GeoNode/JIGN catalog, but its current anonymous dataset list contains only a flood-impact dataset. The local ATR/BPN app shell exposes no map/feature route in static client code. No parcel geometry was verified.",
+      "urls": [
+        "https://geoportal.padang.go.id/",
+        "https://kot-padang.atrbpn.go.id/"
+      ]
+    },
+    {
+      "language": "Indonesian",
+      "query": "Peta bidang tanah Kota Padang geoportal resmi persil kadaster ATR BPN",
+      "scope": "Mencari sumber bidang tanah dan rute geometri anonim khusus Kota Padang.",
+      "result": "Portal Geoportal Kota Padang menampilkan satu dataset publik area terdampak banjir, bukan layer bidang tanah. Halaman aplikasi Kantor Pertanahan Kota Padang hanya memberikan shell JavaScript; tidak ditemukan kontrak geometri bidang pada HTML atau bundel klien statis.",
+      "urls": [
+        "https://geoportal.padang.go.id/",
+        "https://kot-padang.atrbpn.go.id/",
+        "https://satudata.padang.go.id/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "The city GeoPortal datasets endpoint returned a single flood-impact dataset, and the public ATR/BPN app returned only its JavaScript shell; static client bundles contained no parcel service or geometry schema route. A similarly named map candidate at atrbpnpadang.com initially displayed an extent around Bangka (lat -3.231 to -2.460, lon 105.664 to 106.957), not Padang, so it was not treated as a city source and its feature file was not fetched."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://geoportal.padang.go.id/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 58668,
+      "observation": "Anonymous city Geoportal landing page."
+    },
+    {
+      "url": "https://geoportal.padang.go.id/api/v2/datasets/?page=1&page_size=100",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 11526,
+      "observation": "Current catalog returned one public dataset, “Peta Area Terdampak Banjir Sumatera” (EPSG:4326), not parcel data."
+    },
+    {
+      "url": "https://geoportal.padang.go.id/api/v2/datasets/?q=tanah&page=1&page_size=100",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 11526,
+      "observation": "Returned the same single flood-impact dataset as unfiltered request; no cadastral entry surfaced."
+    },
+    {
+      "url": "https://kot-padang.atrbpn.go.id/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 6855,
+      "observation": "Official local ATR/BPN app shell; HTML contains no embedded map layer or feature contract."
+    },
+    {
+      "url": "https://kot-padang.atrbpn.go.id/static/js/9.91086518.chunk.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/javascript",
+      "bytes": 373297,
+      "observation": "Public client bundle inspection; no WMS/WFS/GeoJSON parcel service route exposed."
+    },
+    {
+      "url": "https://kot-padang.atrbpn.go.id/static/js/main.19b7118b.chunk.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/javascript",
+      "bytes": 100175,
+      "observation": "Public client bundle inspection; no public cadastral geometry endpoint/schema exposed."
+    },
+    {
+      "url": "https://satudata.padang.go.id/dataset/?q=bidang%20tanah",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 16765,
+      "observation": "Public city dataset search page stated no datasets found for this term."
+    },
+    {
+      "url": "https://atrbpnpadang.com/qgis2/index.html",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 34660,
+      "observation": "Candidate page names Padang land office, but its map fitBounds are lat -3.231..-2.460, lon 105.664..106.957 (Bangka area), not the WUP city. Its linked vector file was not fetched."
+    },
+    {
+      "url": "https://kot-padang.atrbpn.go.id/berita/pelataran-kantor-pertanahan-kota-padang-18-januari-2026",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 6855,
+      "observation": "Padang ATR/BPN indexed local-office news item identifies the local land office; direct GET returned its JS shell and no map data."
+    }
+  ],
+  "technicalBlocker": "The city GeoPortal datasets endpoint returned a single flood-impact dataset, and the public ATR/BPN app returned only its JavaScript shell; static client bundles contained no parcel service or geometry schema route. A similarly named map candidate at atrbpnpadang.com initially displayed an extent around Bangka (lat -3.231 to -2.460, lon 105.664 to 106.957), not Padang, so it was not treated as a city source and its feature file was not fetched.",
+  "sampleDisposition": "No parcel polygons or feature attributes retained.",
+  "remainingUncertainty": "A separate official land-office or internal cadastral service may exist, but no public anonymous feature endpoint, geometry schema, or parcel polygon route was exposed by the inspected public pages."
+}

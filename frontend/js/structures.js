@@ -1,10 +1,9 @@
 // Parks and Squares (structures) management
 
 (function () {
-    // In-memory and persisted storage for parks
-    const STORAGE_KEY = 'cb_parks';
-    const STORAGE_KEY_SQUARES = 'cb_squares';
-    const STORAGE_KEY_LAKES = 'cb_lakes';
+    // Structure features are a presentation cache rebuilt from currently standing proposal
+    // records. Their authored geometry/decorations live on the proposal; this module owns only the
+    // current render-session arrays and layers.
     const DECORATION_VERSION = 2; // bump when changing decoration generation rules
     const LAKE_GRAPHICS_VERSION = 3;
     const LAKE_SHORE_TARGET_RATIO = 0.2;
@@ -14,12 +13,102 @@
     let parksLayer = null;
     let squaresLayer = null;
     let lakesLayer = null;
+    let buildingGroundLayer = null;
     // Dedicated Canvas renderer for dense square textures (faster than SVG)
     let squareTextureRenderer = null;
     const SQUARES_PANE = 'squaresPane';
     const SQUARES_ICON_PANE = 'squaresIconPane';
     const PARKS_PANE = 'parksPane';
     const LAKES_PANE = 'lakesPane';
+
+    // A canonical plan replay creates every park/square/lake in turn. Hold the corresponding
+    // structure-layer presentation until the records exist, then render each affected kind once.
+    // Surveyed buildings are refreshed separately by changed demolition ids only; a local
+    // structure must never rebuild the city-wide footprint layer.
+    //
+    // Hold those presentation refreshes while the derived records are being rebuilt, remember the
+    // kinds that changed, then draw each affected structure layer once and refresh the exact changed
+    // building outcomes once. Record/fabric mutations still happen immediately.
+    let structureLayersRefreshHeld = 0;
+    let structureLayersRefreshFlushing = false;
+    let structureBuildingRefreshMissed = false;
+    const missedStructureLayerRefreshes = new Set();
+
+    function deferStructureLayerRefresh(kind) {
+        if (!structureLayersRefreshHeld) return false;
+        missedStructureLayerRefreshes.add(kind);
+        structureBuildingRefreshMissed = true;
+        return true;
+    }
+
+    function refreshBuildingsAfterStructureChange() {
+        if (structureLayersRefreshHeld || structureLayersRefreshFlushing) {
+            structureBuildingRefreshMissed = true;
+            return;
+        }
+        try {
+            if (typeof window.refreshBuildingOutcomesFromRecords === 'function') {
+                window.refreshBuildingOutcomesFromRecords();
+            }
+        } catch (error) {
+            console.error('[structures] local building demolition refresh failed', error);
+        }
+    }
+
+    async function withStructureLayersRefreshHeld(run) {
+        structureLayersRefreshHeld += 1;
+        try {
+            return await run();
+        } finally {
+            structureLayersRefreshHeld -= 1;
+            if (!structureLayersRefreshHeld) {
+                const pending = Array.from(missedStructureLayerRefreshes);
+                missedStructureLayerRefreshes.clear();
+                structureLayersRefreshFlushing = true;
+                try {
+                    if (pending.includes('parks')) updateParksLayer();
+                    if (pending.includes('squares')) updateSquaresLayer();
+                    if (pending.includes('lakes')) updateLakesLayer();
+                } finally {
+                    structureLayersRefreshFlushing = false;
+                    if (structureBuildingRefreshMissed) {
+                        structureBuildingRefreshMissed = false;
+                        refreshBuildingsAfterStructureChange();
+                    }
+                }
+            }
+        }
+    }
+
+    // Claims model (rethink-proposals.md §13): a structure is the TOP claim on its ground, so its
+    // base fill is clickable and opens the proposal; the parcels beneath stay one tap away via
+    // the details panel's "on parcels" breadcrumb. Decorations stay inert. In cadastre view the
+    // structures are dimmed context, so the click routes nowhere.
+    function bindStructureClaimClick(layer, structureFeature) {
+        try {
+            const pid = structureFeature && structureFeature.properties && structureFeature.properties.proposalId;
+            if (!pid || !layer || typeof layer.on !== 'function') return;
+            layer.on('click', (event) => {
+                if (window.cadastreViewActive === true) return;
+                // An editing mode owns the map: let the click THROUGH untouched. Stopping it here
+                // is what stopped the park editor receiving its own placement clicks — the fill
+                // swallowed the event to select the proposal that was already being edited.
+                if (window.__mapEditLock?.isHeld()) return;
+                try { if (event && event.originalEvent) L.DomEvent.stop(event); } catch (_) { }
+                // The drill resolves the whole stack at the point (something may stand above
+                // this structure) and shows the chain; without it, select the structure itself.
+                let drillHandled = false;
+                try {
+                    if (window.__drillUi && event && event.latlng) {
+                        drillHandled = window.__drillUi.handleSurfaceClick(event.latlng) === true;
+                    }
+                } catch (_) { }
+                if (!drillHandled && typeof window.selectAndHighlightProposal === 'function') {
+                    window.selectAndHighlightProposal(String(pid), null, false, true);
+                }
+            });
+        } catch (_) { /* an unclickable structure is display-only, never an error */ }
+    }
 
     function ensureSquaresPane() {
         if (typeof map === 'undefined' || !map || typeof map.getPane !== 'function') return null;
@@ -92,53 +181,58 @@
         };
     }
 
-    function saveParks() {
-        try {
-            PersistentStorage.setItem(STORAGE_KEY, JSON.stringify(window.parks));
-        } catch (e) { console.warn('Failed to save parks', e); }
-    }
-
-    function loadParks() {
-        try {
-            const raw = PersistentStorage.getItem(STORAGE_KEY);
-            if (!raw) return;
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr)) {
-                window.parks = arr.filter(f => f && f.type === 'Feature' && f.geometry);
-            }
-        } catch (e) { console.warn('Failed to load parks', e); }
-    }
-
-    function saveSquares() {
-        try { PersistentStorage.setItem(STORAGE_KEY_SQUARES, JSON.stringify(window.squares)); } catch (e) { console.warn('Failed to save squares', e); }
-    }
-    function loadSquares() {
-        try {
-            const raw = PersistentStorage.getItem(STORAGE_KEY_SQUARES);
-            if (!raw) return;
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr)) window.squares = arr.filter(f => f && f.type === 'Feature' && f.geometry);
-        } catch (e) { console.warn('Failed to load squares', e); }
-    }
-
-    function saveLakes() {
-        try { PersistentStorage.setItem(STORAGE_KEY_LAKES, JSON.stringify(window.lakes)); } catch (e) { console.warn('Failed to save lakes', e); }
-    }
-    function loadLakes() {
-        try {
-            const raw = PersistentStorage.getItem(STORAGE_KEY_LAKES);
-            if (!raw) return;
-            const arr = JSON.parse(raw);
-            if (Array.isArray(arr)) window.lakes = arr.filter(f => f && f.type === 'Feature' && f.geometry);
-        } catch (e) { console.warn('Failed to load lakes', e); }
-    }
-
     function featureBbox(feature) {
         try { return turf.bbox(feature); } catch (_) { return null; }
     }
 
     function pointInFeature(pt, feature) {
         try { return turf.booleanPointInPolygon(pt, feature); } catch (_) { return false; }
+    }
+
+    // A road/track built through a structure cuts through it: rendering subtracts every applied
+    // corridor footprint at draw time. Stored geometry is never mutated, so the structure stays
+    // ONE proposal (its visible geometry a multipolygon around the corridor) and unapplying or
+    // moving the road heals the park/square/lake automatically.
+    function appliedCorridorCutters() {
+        const cutters = [];
+        try {
+            const storage = window.proposalStorage;
+            if (!storage || typeof storage.getAllProposals !== 'function') return cutters;
+            storage.getAllProposals().forEach(p => {
+                const rp = p && p.roadProposal;
+                const polygon = rp && rp.definition && rp.definition.polygon;
+                if (!polygon || !polygon.type) return;
+                if (!isApplied(p, rp)) return;
+                cutters.push({ type: 'Feature', properties: {}, geometry: polygon });
+            });
+        } catch (_) { }
+        return cutters;
+    }
+
+    // Geometry minus the given corridor cutters; null when nothing visible remains.
+    function subtractCorridorsFromGeometry(geometry, cutters) {
+        if (!geometry || !Array.isArray(cutters) || !cutters.length || typeof turf === 'undefined') return geometry;
+        let current = { type: 'Feature', properties: {}, geometry };
+        for (const cutter of cutters) {
+            try {
+                if (!turf.booleanIntersects(current, cutter)) continue;
+                const diff = turf.difference(current, cutter);
+                if (!diff || !diff.geometry) return null;
+                current = diff;
+            } catch (error) {
+                console.error('[structures] failed to cut structure geometry', error);
+                return null;
+            }
+        }
+        return current.geometry;
+    }
+
+    // Cut clone sharing the original's properties (decorations stay persisted on the original).
+    function cutStructureFeature(feature, cutters) {
+        const geometry = subtractCorridorsFromGeometry(feature && feature.geometry, cutters);
+        if (!geometry) return null;
+        if (geometry === feature.geometry) return feature;
+        return { type: 'Feature', properties: feature.properties, geometry };
     }
 
     function randomPointsInside(feature, count) {
@@ -169,13 +263,21 @@
 
     function drawParkDecorations(group, parkFeature) {
         if (!parkFeature || !parkFeature.geometry) return;
-        // Ensure deterministic decorations are present and persisted
+        // While the geometry editor is editing THIS structure, it renders the live editable
+        // copy — the static one would duplicate every object underneath it.
+        if (window.structureGeometryEditorEditingProposalId
+            && String(parkFeature?.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) {
+            return;
+        }
+        // Ensure deterministic decorations are present on the proposal-backed feature.
         ensureParkDecorations(parkFeature);
         const decorations = (parkFeature.properties && parkFeature.properties.decorations) ? parkFeature.properties.decorations : null;
         if (!decorations) return;
         const ponds = Array.isArray(decorations.ponds) ? decorations.ponds : [];
+        const flowerbeds = Array.isArray(decorations.flowerbeds) ? decorations.flowerbeds : [];
         const paths = Array.isArray(decorations.paths) ? decorations.paths : [];
         const treePoints = Array.isArray(decorations.trees) ? decorations.trees : [];
+        const benches = Array.isArray(decorations.benches) ? decorations.benches : [];
 
         // Winding paths: two or three dashed polylines across bbox, clipped by keeping only inside points
         // Draw stored paths
@@ -200,9 +302,22 @@
             } catch (_) { }
         });
 
+        flowerbeds.forEach(ringCoords => {
+            try {
+                const latlngs = ringCoords.map(point => [point[1], point[0]]);
+                L.polygon(latlngs, {
+                    color: '#be185d', weight: 1.5, opacity: 0.95,
+                    fillColor: '#f472b6', fillOpacity: 0.82, interactive: false, pane: PARKS_PANE
+                }).addTo(group);
+            } catch (_) { }
+        });
+
         // Sprinkle tree emojis; avoid placing trees in ponds
         try {
-            const trees = treePoints;
+            // Skip trees that fall outside the rendered geometry (e.g. on a road cut through the park)
+            const trees = treePoints.filter(coord => {
+                try { return pointInFeature(turf.point(coord), parkFeature); } catch (_) { return true; }
+            });
             trees.forEach(coord => {
                 const [lng, lat] = coord;
                 // Skip if inside any pond
@@ -213,6 +328,27 @@
                         html: '🌳',
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
+                    }),
+                    pane: PARKS_PANE,
+                    interactive: false
+                }).addTo(group);
+            });
+        } catch (_) { }
+
+        // Benches (placed in the geometry editor): draggable only inside the editor —
+        // here they render as static glyphs, like the trees.
+        try {
+            benches.forEach(bench => {
+                const coord = Array.isArray(bench?.coordinate) ? bench.coordinate : bench;
+                if (!Array.isArray(coord) || coord.length < 2) return;
+                try { if (!pointInFeature(turf.point(coord), parkFeature)) return; } catch (_) { }
+                const [lng, lat] = coord;
+                L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'park-bench-glyph',
+                        html: `<span style="display:inline-block;transform:rotate(${Math.round(Number(bench?.bearing) || 0)}deg);color:#7c4a12;font-size:12px;">▰</span>`,
+                        iconSize: [14, 14],
+                        iconAnchor: [7, 7]
                     }),
                     pane: PARKS_PANE,
                     interactive: false
@@ -230,6 +366,7 @@
                 const dec = props.decorations;
                 // Ensure structure of decorations object
                 dec.ponds = Array.isArray(dec.ponds) ? dec.ponds : [];
+                dec.flowerbeds = Array.isArray(dec.flowerbeds) ? dec.flowerbeds : [];
                 dec.paths = Array.isArray(dec.paths) ? dec.paths : [];
                 dec.trees = Array.isArray(dec.trees) ? dec.trees : [];
 
@@ -368,7 +505,6 @@
 
                     dec.paths = newPaths;
                     dec.version = DECORATION_VERSION;
-                    saveParks();
                 }
                 return; // existing decorations verified/upgraded
             }
@@ -535,8 +671,7 @@
                 }
             }
 
-            props.decorations = { ponds, paths, trees, version: DECORATION_VERSION };
-            saveParks();
+            props.decorations = { ponds, flowerbeds: [], paths, trees, version: DECORATION_VERSION };
         } catch (_) { }
     }
 
@@ -575,6 +710,9 @@
     }
 
     function updateParksLayer() {
+        if (deferStructureLayerRefresh('parks')) return;
+        // Structures demolish buildings by default: any structure change can raze or restore.
+        refreshBuildingsAfterStructureChange();
         if (typeof map === 'undefined') return;
         ensureParksPane();
         const group = ensureParksLayer();
@@ -602,20 +740,24 @@
             try { group.addTo(map); } catch (_) { }
         }
 
+        const parkCutters = appliedCorridorCutters();
         (window.parks || []).forEach(parkFeature => {
             try {
-                // Base grass polygon
-                const base = L.geoJSON(parkFeature, {
+                const renderFeature = cutStructureFeature(parkFeature, parkCutters);
+                if (!renderFeature) return; // fully paved over by applied roads
+                // Base grass polygon — the park's claim surface, clickable (claims model).
+                const base = L.geoJSON(renderFeature, {
                     style: {
                         color: '#0d3b1f', weight: 2, opacity: 1,
                         fillColor: '#1b5e20', fillOpacity: 0.65, pane: PARKS_PANE
                     },
-                    interactive: false,
+                    interactive: true,
                     pane: PARKS_PANE
                 });
+                bindStructureClaimClick(base, renderFeature);
                 base.addTo(group);
                 // Decorations
-                drawParkDecorations(group, parkFeature);
+                drawParkDecorations(group, renderFeature);
             } catch (e) { console.warn('Failed to render a park', e); }
         });
 
@@ -663,6 +805,12 @@
 
     function drawSquareDecorations(group, squareFeature) {
         if (!squareFeature || !squareFeature.geometry) return;
+        // While the geometry editor is editing THIS structure, it renders the live editable
+        // copy — the static one would duplicate every object underneath it.
+        if (window.structureGeometryEditorEditingProposalId
+            && String(squareFeature?.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) {
+            return;
+        }
         // Ensure decorations exist for legacy squares
         try { ensureSquareDecorations(squareFeature); } catch (_) { }
         const dec = squareFeature.properties && squareFeature.properties.decorations;
@@ -670,9 +818,9 @@
         // Subtle cobblestone texture first (under icons)
         drawSquareTexture(group, squareFeature);
 
-        // Fountain at center
-        if (dec.fountain && Array.isArray(dec.fountain)) {
-            const [lng, lat] = dec.fountain;
+        // Fountains (legacy squares store one `fountain`, edited squares store `fountains`).
+        const fountains = Array.isArray(dec.fountains) ? dec.fountains : (Array.isArray(dec.fountain) ? [dec.fountain] : []);
+        fountains.filter(coord => pointInFeature(turf.point(coord), squareFeature)).forEach(([lng, lat]) => {
             L.marker([lat, lng], {
                 icon: L.divIcon({
                     className: 'square-fountain-emoji',
@@ -684,9 +832,37 @@
                 zIndexOffset: 1000,
                 interactive: false
             }).addTo(group);
-        }
-        // Stalls / terraces
-        const stalls = Array.isArray(dec.stalls) ? dec.stalls : [];
+        });
+        (Array.isArray(dec.trees) ? dec.trees : [])
+            .filter(coord => pointInFeature(turf.point(coord), squareFeature))
+            .forEach(([lng, lat]) => {
+                L.marker([lat, lng], {
+                    icon: L.divIcon({ className: 'square-tree-emoji', html: '🌳', iconSize: [20, 20], iconAnchor: [10, 10] }),
+                    pane: SQUARES_ICON_PANE,
+                    zIndexOffset: 1000,
+                    interactive: false
+                }).addTo(group);
+            });
+        (Array.isArray(dec.benches) ? dec.benches : []).forEach(bench => {
+            const coord = Array.isArray(bench) ? bench : (bench && (bench.coordinate || bench.position));
+            if (!Array.isArray(coord) || !pointInFeature(turf.point(coord), squareFeature)) return;
+            const bearing = Number(bench && bench.bearing) || 0;
+            const [lng, lat] = coord;
+            L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: 'square-bench-icon',
+                    html: `<span style="display:block;transform:rotate(${bearing}deg);">▰</span>`,
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 11]
+                }),
+                pane: SQUARES_ICON_PANE,
+                zIndexOffset: 1000,
+                interactive: false
+            }).addTo(group);
+        });
+        // Stalls / terraces (skipped when they fall on a road cut through the square)
+        const stalls = (Array.isArray(dec.stalls) ? dec.stalls : [])
+            .filter(coord => pointInFeature(turf.point(coord), squareFeature));
         stalls.forEach(([lng, lat]) => {
             L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -700,14 +876,65 @@
                 interactive: false
             }).addTo(group);
         });
+        // Statues (one auto-placed per square; more placeable in the geometry editor)
+        (Array.isArray(dec.statues) ? dec.statues : [])
+            .filter(coord => Array.isArray(coord) && pointInFeature(turf.point(coord), squareFeature))
+            .forEach(([lng, lat]) => {
+                L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'square-statue-emoji',
+                        html: '<div style="font-size:20px;line-height:20px;">🗿</div>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    }),
+                    pane: SQUARES_ICON_PANE,
+                    zIndexOffset: 1000,
+                    interactive: false
+                }).addTo(group);
+            });
+    }
+
+    // One statue per square by default: offset from the centre toward a corner, first
+    // candidate inside the polygon wins (fountain owns the centre).
+    function autoStatuePoint(squareFeature) {
+        try {
+            const bbox = featureBbox(squareFeature);
+            if (!bbox) return null;
+            const [minLng, minLat, maxLng, maxLat] = bbox;
+            const cLng = (minLng + maxLng) / 2;
+            const cLat = (minLat + maxLat) / 2;
+            const dLng = (maxLng - minLng) * 0.28;
+            const dLat = (maxLat - minLat) * 0.28;
+            const candidates = [
+                [cLng + dLng, cLat + dLat],
+                [cLng - dLng, cLat - dLat],
+                [cLng + dLng, cLat - dLat],
+                [cLng - dLng, cLat + dLat]
+            ];
+            for (const candidate of candidates) {
+                if (pointInFeature(turf.point(candidate), squareFeature)) return candidate;
+            }
+            const random = randomPointsInside(squareFeature, 5);
+            const randomCoordinate = random && random[0] && random[0].geometry && random[0].geometry.coordinates;
+            return Array.isArray(randomCoordinate) ? randomCoordinate : null;
+        } catch (_) {
+            return null;
+        }
     }
 
     function ensureSquareDecorations(squareFeature) {
         try {
             if (!squareFeature || !squareFeature.geometry) return;
             const props = squareFeature.properties = squareFeature.properties || {};
-            if (props.decorations && typeof props.decorations === 'object') return;
-            // Fountain at centroid; ensure inside polygon by fallback random sampling
+            if (props.decorations && typeof props.decorations === 'object') {
+                // Upgrade: squares predating statues get their one auto-placed statue.
+                if (!Array.isArray(props.decorations.statues)) {
+                    const statue = autoStatuePoint(squareFeature);
+                    props.decorations.statues = statue ? [statue] : [];
+                }
+                return;
+            }
+            // Fountain at centroid; use an interior sample when the centroid is outside.
             let ctr = null;
             try { ctr = turf.centroid(squareFeature); } catch (_) { ctr = null; }
             let fountain = null;
@@ -716,11 +943,6 @@
             } else {
                 const pts = randomPointsInside(squareFeature, 10);
                 fountain = pts && pts[0] && pts[0].geometry && pts[0].geometry.coordinates;
-                if (!Array.isArray(fountain)) {
-                    // fallback to bbox center
-                    const b = featureBbox(squareFeature) || [0, 0, 0, 0];
-                    fountain = [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
-                }
             }
             // A few stalls near periphery but inside
             const stalls = [];
@@ -742,8 +964,8 @@
                 const pt = turf.point([lng, lat]);
                 if (pointInFeature(pt, squareFeature)) stalls.push([lng, lat]);
             }
-            props.decorations = { fountain, stalls, version: 1 };
-            saveSquares();
+            const statue = autoStatuePoint(squareFeature);
+            props.decorations = { fountain, fountains: fountain ? [fountain] : [], trees: [], benches: [], stalls, statues: statue ? [statue] : [], version: 2 };
         } catch (_) { }
     }
 
@@ -754,13 +976,17 @@
         const baseArea = Math.max(0, turf.area(baseFeature) || 0);
         if (!baseArea) return null;
 
-        let bbox = null;
-        try { bbox = featureBbox(baseFeature); } catch (_) { bbox = null; }
-        const [minLng, minLat, maxLng, maxLat] = Array.isArray(bbox) && bbox.length === 4 ? bbox : [0, 0, 0, 0];
+        const bbox = featureBbox(baseFeature);
+        if (!Array.isArray(bbox) || bbox.length !== 4) return null;
+        const [minLng, minLat, maxLng, maxLat] = bbox;
         let widthMeters = 0;
         let heightMeters = 0;
-        try { widthMeters = turf.distance([minLng, minLat], [maxLng, minLat], { units: 'meters' }); } catch (_) { widthMeters = 0; }
-        try { heightMeters = turf.distance([minLng, minLat], [minLng, maxLat], { units: 'meters' }); } catch (_) { heightMeters = 0; }
+        try {
+            widthMeters = turf.distance([minLng, minLat], [maxLng, minLat], { units: 'meters' });
+            heightMeters = turf.distance([minLng, minLat], [minLng, maxLat], { units: 'meters' });
+        } catch (_) {
+            return null;
+        }
         const minDim = Math.max(1, Math.min(Math.max(widthMeters, 0), Math.max(heightMeters, 0)));
         const minWidth = 0.5;
         const maxWidth = Math.max(minWidth, minDim * 0.45);
@@ -786,7 +1012,7 @@
             }
             let shore = null;
             try { shore = turf.difference(baseFeature, water); } catch (_) { shore = null; }
-            if (!shore) shore = baseFeature;
+            if (!shore || !shore.geometry) return null;
             const ratio = Math.max(0, Math.min(1, (baseArea - waterArea) / baseArea));
             const delta = Math.abs(ratio - targetRatio);
             const current = { water, shore, width, ratio, delta };
@@ -822,10 +1048,10 @@
 
     function ensureLakeGraphics(lakeFeature) {
         try {
-            if (!lakeFeature || !lakeFeature.geometry) return;
+            if (!lakeFeature || !lakeFeature.geometry) return false;
             const props = lakeFeature.properties = lakeFeature.properties || {};
             const graphics = props.lakeGraphics;
-            if (graphics && graphics.version === LAKE_GRAPHICS_VERSION && graphics.shore && (graphics.water || graphics.shore)) return;
+            if (graphics && graphics.version === LAKE_GRAPHICS_VERSION && graphics.shore && graphics.water) return true;
 
             const geom = lakeFeature.geometry;
             const polygons = [];
@@ -834,22 +1060,27 @@
             } else if (geom.type === 'MultiPolygon') {
                 geom.coordinates.forEach(rings => polygons.push(turf.polygon(rings)));
             }
-            if (!polygons.length) return;
+            if (!polygons.length) return false;
 
             let merged = polygons[0];
             for (let i = 1; i < polygons.length; i++) {
                 try {
                     const u = turf.union(merged, polygons[i]);
-                    if (u && u.geometry) merged = u;
-                } catch (_) { /* ignore */ }
+                    if (!u || !u.geometry) return false;
+                    merged = u;
+                } catch (_) {
+                    return false;
+                }
             }
-            const base = merged && merged.geometry ? merged : polygons[0];
+            const base = merged && merged.geometry ? merged : null;
+            if (!base) return false;
 
             const zones = computeLakeZones(base, { targetShoreRatio: LAKE_SHORE_TARGET_RATIO });
-            const shore = zones && zones.shore ? zones.shore : base;
-            const water = zones && zones.water ? zones.water : null;
-            const transitionRing = zones && zones.transition ? zones.transition : null;
-            const shoreWidth = zones && zones.width ? zones.width : 6;
+            if (!zones || !zones.shore || !zones.water) return false;
+            const shore = zones.shore;
+            const water = zones.water;
+            const transitionRing = zones.transition;
+            const shoreWidth = zones.width;
 
             const fish = [];
             const fishArea = water && water.geometry ? water : base;
@@ -876,24 +1107,35 @@
                 shoreWidthMeters: shoreWidth,
                 shoreRatio: zones && typeof zones.ratio === 'number' ? zones.ratio : null
             };
-            saveLakes();
-        } catch (_) { }
+        } catch (error) {
+            console.error('[structures] failed to derive lake graphics', error);
+            return false;
+        }
+        return true;
     }
 
-    function drawLakeDecorations(group, lakeFeature) {
+    function drawLakeDecorations(group, lakeFeature, corridorCutters = null) {
         if (!lakeFeature || !lakeFeature.geometry) return;
-        try { ensureLakeGraphics(lakeFeature); } catch (_) { }
+        if (window.structureGeometryEditorEditingProposalId
+            && String(lakeFeature.properties?.proposalId || '') === String(window.structureGeometryEditorEditingProposalId)) return;
+        if (!ensureLakeGraphics(lakeFeature)) return;
         const graphics = lakeFeature.properties && lakeFeature.properties.lakeGraphics;
-        const shoreGeom = graphics && graphics.shore ? graphics.shore : lakeFeature.geometry;
-        const waterGeom = graphics && graphics.water ? graphics.water : null;
-        const transitionGeom = graphics && graphics.transition ? graphics.transition : null;
+        if (!graphics || !graphics.shore || !graphics.water) return;
+        // Applied roads cut through every rendered zone (a causeway across the lake).
+        const cutters = Array.isArray(corridorCutters) ? corridorCutters : [];
+        const shoreGeom = subtractCorridorsFromGeometry(graphics.shore, cutters);
+        const waterGeom = subtractCorridorsFromGeometry(graphics.water, cutters);
+        const transitionGeom = subtractCorridorsFromGeometry(graphics && graphics.transition ? graphics.transition : null, cutters);
 
+        // Shore + water are the lake's claim surface, clickable (claims model).
         if (shoreGeom) {
-            L.geoJSON(shoreGeom, {
+            const shore = L.geoJSON(shoreGeom, {
                 style: { color: '#c48b4a', weight: 2, opacity: 0.9, fillColor: '#f3d7a0', fillOpacity: 0.9, pane: LAKES_PANE },
-                interactive: false,
+                interactive: true,
                 pane: LAKES_PANE
-            }).addTo(group);
+            });
+            bindStructureClaimClick(shore, lakeFeature);
+            shore.addTo(group);
         }
         if (transitionGeom) {
             L.geoJSON(transitionGeom, {
@@ -903,14 +1145,21 @@
             }).addTo(group);
         }
         if (waterGeom) {
-            L.geoJSON(waterGeom, {
+            const water = L.geoJSON(waterGeom, {
                 style: { color: '#1b6fa8', weight: 1.2, opacity: 0.95, fillColor: '#3fa7f5', fillOpacity: 0.88, pane: LAKES_PANE },
-                interactive: false,
+                interactive: true,
                 pane: LAKES_PANE
-            }).addTo(group);
+            });
+            bindStructureClaimClick(water, lakeFeature);
+            water.addTo(group);
         }
 
-        const fishCoords = (graphics && Array.isArray(graphics.fish)) ? graphics.fish : [];
+        const fishHome = waterGeom || shoreGeom;
+        const fishCoords = ((graphics && Array.isArray(graphics.fish)) ? graphics.fish : [])
+            .filter(coord => {
+                if (!fishHome) return false;
+                try { return pointInFeature(turf.point(coord), { type: 'Feature', properties: {}, geometry: fishHome }); } catch (_) { return true; }
+            });
         fishCoords.forEach(([lng, lat]) => {
             L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -926,6 +1175,9 @@
     }
 
     function updateSquaresLayer() {
+        if (deferStructureLayerRefresh('squares')) return;
+        // Structures demolish buildings by default: any structure change can raze or restore.
+        refreshBuildingsAfterStructureChange();
         if (typeof map === 'undefined') return;
         ensureSquaresPane();
         const group = ensureSquaresLayer();
@@ -964,18 +1216,22 @@
             }
         }
 
+        const squareCutters = appliedCorridorCutters();
         (window.squares || []).forEach(squareFeature => {
             try {
-                // Base cobblestone polygon (plain grey fill)
-                const base = L.geoJSON(squareFeature, {
+                const renderFeature = cutStructureFeature(squareFeature, squareCutters);
+                if (!renderFeature) return; // fully paved over by applied roads
+                // Base cobblestone polygon (plain grey fill) — the square's claim surface,
+                // clickable (claims model); the ground stays reachable via the breadcrumb.
+                const base = L.geoJSON(renderFeature, {
                     style: { color: '#666666', weight: 2, opacity: 1, fillColor: '#bdbdbd', fillOpacity: 0.7, pane: SQUARES_PANE },
-                    // Keep squares non-interactive so parcel clicks continue to hit underlying parcels
-                    interactive: false,
+                    interactive: true,
                     pane: SQUARES_PANE
                 });
+                bindStructureClaimClick(base, renderFeature);
                 base.addTo(group);
                 // Decorations
-                drawSquareDecorations(group, squareFeature);
+                drawSquareDecorations(group, renderFeature);
             } catch (e) { console.warn('Failed to render a square', e); }
         });
         try { group.bringToFront && group.bringToFront(); } catch (_) { }
@@ -983,6 +1239,9 @@
     }
 
     function updateLakesLayer() {
+        if (deferStructureLayerRefresh('lakes')) return;
+        // Structures demolish buildings by default: any structure change can raze or restore.
+        refreshBuildingsAfterStructureChange();
         if (typeof map === 'undefined') return;
         ensureLakesPane();
         const group = ensureLakesLayer();
@@ -1010,12 +1269,78 @@
             try { group.addTo(map); } catch (_) { }
         }
 
+        const lakeCutters = appliedCorridorCutters();
         (window.lakes || []).forEach(lakeFeature => {
-            try { drawLakeDecorations(group, lakeFeature); } catch (e) { console.warn('Failed to render a lake', e); }
+            try { drawLakeDecorations(group, lakeFeature, lakeCutters); } catch (e) { console.warn('Failed to render a lake', e); }
         });
 
         try { group.bringToFront && group.bringToFront(); } catch (_) { }
         try { window.dispatchEvent(new Event('lakesUpdated')); } catch (_) { }
+    }
+
+    // A freeform building proposal can pave or green the parcel area around its buildings. That
+    // surround is not a structure — it belongs to the building proposal — but it is the same two
+    // surfaces, so it draws with the square/park styles into its own layer. See building-ground.js.
+    function appliedBuildingGroundSurfaces() {
+        const api = window.BuildingGround;
+        const storage = window.proposalStorage;
+        if (!api || !storage || typeof storage.getAllProposals !== 'function') return [];
+        try {
+            return api.appliedSurfaces(storage.getAllProposals(), isApplied);
+        } catch (error) {
+            console.error('[structures] building ground surfaces could not be collected', error);
+            return [];
+        }
+    }
+
+    function ensureBuildingGroundLayer() {
+        ensureSquaresPane();
+        ensureParksPane();
+        if (buildingGroundLayer && map && map.hasLayer(buildingGroundLayer)) return buildingGroundLayer;
+        if (buildingGroundLayer && map) { try { map.removeLayer(buildingGroundLayer); } catch (_) { } }
+        buildingGroundLayer = L.layerGroup();
+        if (typeof map !== 'undefined' && map) buildingGroundLayer.addTo(map);
+        return buildingGroundLayer;
+    }
+
+    // Signature of what the layer currently shows, so a refresh that changes nothing stays silent.
+    // The event drives a full 3D structure rebuild, and this runs on every proposed-buildings
+    // refresh — broadcasting unconditionally would rebuild the 3D scene for no reason at all.
+    let buildingGroundSignature = null;
+
+    function updateBuildingGroundLayer() {
+        if (typeof map === 'undefined') return;
+        const group = ensureBuildingGroundLayer();
+        try { group.clearLayers(); } catch (_) { }
+
+        const cutters = appliedCorridorCutters();
+        const surfaces = appliedBuildingGroundSurfaces();
+        let signature = '';
+        try { signature = JSON.stringify(surfaces.map(s => [s.proposalId, s.treatment, s.geometry])); } catch (_) { signature = String(surfaces.length); }
+        surfaces.forEach(surface => {
+            try {
+                const geometry = subtractCorridorsFromGeometry(surface.geometry, cutters);
+                if (!geometry) return; // fully paved over by applied roads
+                const paved = surface.treatment === 'paved';
+                const pane = paved ? SQUARES_PANE : PARKS_PANE;
+                const feature = { type: 'Feature', properties: { proposalId: surface.proposalId }, geometry };
+                L.geoJSON(feature, {
+                    style: { ...window.BuildingGround.SURFACE_STYLE_2D[surface.treatment], weight: 2, opacity: 1, pane },
+                    // Ground is an overlay on top of parcels; keep parcel clicks working.
+                    interactive: false,
+                    pane
+                }).addTo(group);
+                if (paved) drawSquareTexture(group, feature);
+            } catch (error) {
+                console.error('[structures] failed to render a building ground surface', surface.proposalId, error);
+            }
+        });
+        // Corridor cuts are re-derived on every call, so the signature covers the stored surfaces
+        // only; a road change already refreshes parks/squares/lakes and this layer alongside them.
+        if (signature !== buildingGroundSignature) {
+            buildingGroundSignature = signature;
+            try { window.dispatchEvent(new Event('buildingGroundsUpdated')); } catch (_) { }
+        }
     }
 
     // Toggle handler wired from checkbox in index.html
@@ -1061,19 +1386,29 @@
                 if (cached && cached.geometry) return cached;
             }
 
-            const features = block.parcels.map(p => p.feature).filter(f => f && f.geometry);
+            const features = typeof liveBlockFeatures === 'function'
+                ? liveBlockFeatures(block)
+                : [];
 
             // 2) Simple sequential union (no shape change intent)
             try {
                 let seq = features[0] || null;
+                let seqFailed = false;
                 for (let i = 1; i < features.length; i++) {
                     try {
                         const merged = turf.union(seq, features[i]);
-                        if (merged && merged.geometry) seq = merged; // keep merging as-is
-                    } catch (_) { /* fall through to robust */ }
+                        if (!merged || !merged.geometry) {
+                            seqFailed = true;
+                            break;
+                        }
+                        seq = merged;
+                    } catch (_) {
+                        seqFailed = true;
+                        break;
+                    }
                 }
-                if (seq && seq.geometry) return seq;
-            } catch (_) { /* try robust next */ }
+                if (!seqFailed && seq && seq.geometry) return seq;
+            } catch (_) { /* try the strict robust union below */ }
 
             // 3) Robust union: clean + tiny-buffer dissolve to heal topology, then unbuffer
             const robust = (() => {
@@ -1088,32 +1423,16 @@
                         try {
                             const fb = turf.buffer(f, epsilon, { units: 'meters', steps: 16 });
                             acc = acc ? (turf.union(acc, fb) || acc) : fb;
-                        } catch (_) { /* skip this piece */ }
+                        } catch (_) { return null; }
                     }
                     if (!acc || !acc.geometry) return null;
                     try {
                         const unbuf = turf.buffer(acc, -epsilon, { units: 'meters', steps: 16 });
-                        if (unbuf && unbuf.geometry) return unbuf;
-                    } catch (_) { }
-                    return acc;
+                        return unbuf && unbuf.geometry ? unbuf : null;
+                    } catch (_) { return null; }
                 } catch (_) { return null; }
             })();
             if (robust && robust.geometry) return robust;
-
-            // 4) Fallback to convex hull of all parcel coordinates so a park always forms
-            try {
-                const fc = turf.featureCollection(features);
-                const hull = turf.convex(fc);
-                if (hull && hull.geometry) return hull;
-            } catch (_) { }
-
-            // 5) Last resort: bbox polygon
-            try {
-                const bb = turf.bbox(turf.featureCollection(features));
-                const box = turf.bboxPolygon(bb);
-                if (box && box.geometry) return box;
-            } catch (_) { }
-
             return null;
         } catch (e) { console.warn('Failed to compute block union', e); return null; }
     }
@@ -1121,77 +1440,32 @@
     function collectBlockParcelIdsAndGeometry(blockName) {
         const parcelIds = [];
         const multiCoords = [];
-        if (typeof parcelLayer !== 'undefined' && parcelLayer) {
-            try {
-                parcelLayer.getLayers().forEach(layer => {
-                    try {
-                        const f = layer && layer.feature;
-                        const props = f && f.properties;
-                        if (!f || !f.geometry || !props) return;
-                        if (props.block !== blockName) return;
-                        const parcelId = typeof ensureParcelId === 'function'
-                            ? ensureParcelId(f)
-                            : (props.parcelId ?? props.parcel_id ?? props.id);
-                        if (!parcelId) return;
-                        try { if (typeof isRoad === 'function' && isRoad(parcelId)) return; } catch (_) { }
-                        parcelIds.push(String(parcelId));
-                        const geom = f.geometry;
-                        if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
-                        else if (geom.type === 'MultiPolygon') geom.coordinates.forEach(rings => multiCoords.push(rings));
-                    } catch (_) { }
-                });
-            } catch (_) { }
-        }
-        if (multiCoords.length === 0) {
-            const block = window.blockStorage?.blocks?.get?.(blockName);
-            if (block && Array.isArray(block.parcels) && block.parcels.length > 0) {
-                for (const layer of block.parcels) {
-                    const geom = layer?.feature?.geometry;
-                    const props = layer?.feature?.properties;
-                    if (!geom || !geom.type || !geom.coordinates || !props) continue;
-                    const parcelId = typeof ensureParcelId === 'function'
-                        ? ensureParcelId({ properties: props })
-                        : (props.parcelId ?? props.parcel_id ?? props.id);
-                    if (!parcelId) continue;
-                    try { if (typeof isRoad === 'function' && isRoad(parcelId)) continue; } catch (_) { }
-                    parcelIds.push(String(parcelId));
-                    if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
-                    else if (geom.type === 'MultiPolygon') for (const rings of geom.coordinates) multiCoords.push(rings);
-                }
-            }
+        const block = window.blockStorage?.blocks?.get?.(blockName);
+        const features = typeof liveBlockFeatures === 'function' ? liveBlockFeatures(block) : [];
+        for (const feature of features) {
+            const geom = feature?.geometry;
+            const props = feature?.properties;
+            if (!geom || !geom.type || !geom.coordinates || !props) continue;
+            const parcelId = typeof ensureParcelId === 'function'
+                ? ensureParcelId(feature)
+                : (props.parcelId ?? props.parcel_id ?? props.id);
+            if (!parcelId) continue;
+            try { if (typeof isRoad === 'function' && isRoad(parcelId)) continue; } catch (_) { }
+            parcelIds.push(String(parcelId));
+            if (geom.type === 'Polygon') multiCoords.push(geom.coordinates);
+            else if (geom.type === 'MultiPolygon') for (const rings of geom.coordinates) multiCoords.push(rings);
         }
         return { parcelIds: Array.from(new Set(parcelIds)), geometry: multiCoords.length ? { type: 'MultiPolygon', coordinates: multiCoords } : null };
     }
 
-    function redirectStructureToCreateProposal(toolKey) {
-        if (typeof showProposalDialog === 'function') {
-            showProposalDialog();
-            setTimeout(() => {
-                try {
-                    if (typeof handleProposalToolButton === 'function') handleProposalToolButton(toolKey);
-                } catch (_) { }
-            }, 0);
-            return;
-        }
-        if (typeof updateStatus === 'function') updateStatus('Use the Create Proposal modal.');
-    }
-
-    function parkOnSelectedBlock() {
-        redirectStructureToCreateProposal('park');
-    }
-
-    function squareOnSelectedBlock() {
-        redirectStructureToCreateProposal('square');
-    }
-
     // Public API
-    window.parkOnSelectedBlock = parkOnSelectedBlock;
     window.updateParksLayer = updateParksLayer;
     window.toggleParksVisibility = toggleParksVisibility;
-    window.squareOnSelectedBlock = squareOnSelectedBlock;
     window.updateSquaresLayer = updateSquaresLayer;
     window.toggleSquaresVisibility = toggleSquaresVisibility;
     window.updateLakesLayer = updateLakesLayer;
+    window.withStructureLayersRefreshHeld = withStructureLayersRefreshHeld;
+    window.updateBuildingGroundLayer = updateBuildingGroundLayer;
     window.ensureLakeGraphics = ensureLakeGraphics;
     window.lakesLayerRef = () => lakesLayer;
     // Expose decoration helpers for ProposalManager
@@ -1199,14 +1473,12 @@
     window.ensureSquareDecorations = ensureSquareDecorations;
 
     function initialiseStructures() {
-        loadParks();
-        loadSquares();
-        loadLakes();
         if (typeof window !== 'undefined') {
             const runUpdates = () => {
                 try { updateParksLayer(); } catch (_) { }
                 try { updateSquaresLayer(); } catch (_) { }
                 try { updateLakesLayer(); } catch (_) { }
+                try { updateBuildingGroundLayer(); } catch (_) { }
             };
             if (document.readyState === 'loading') {
                 window.addEventListener('DOMContentLoaded', runUpdates, { once: true });
@@ -1216,9 +1488,5 @@
         }
     }
 
-    if (typeof PersistentStorage !== 'undefined' && PersistentStorage.ensureReady) {
-        PersistentStorage.ensureReady(initialiseStructures);
-    } else {
-        initialiseStructures();
-    }
+    initialiseStructures();
 })();

@@ -1,0 +1,95 @@
+{
+ "kind": "country",
+ "key": "IQ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ar-IQ,ar;q=0.9,en;q=0.5",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.dgcs.gov.iq/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.baghdad.gov.iq/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Baghdad governorate site loads; no cadastre/GIS link found"
+  },
+  {
+   "url": "https://moj.gov.iq/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Ministry of Justice site loads; Real Estate Registration Directorate section only"
+  },
+  {
+   "url": "https://moj.gov.iq/registration/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "news/activities pages only; no map/parcel e-service link"
+  },
+  {
+   "url": "https://ur.gov.iq/index/org-service/10045",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "national e-services portal (JS-driven); service list empty without login/JS"
+  },
+  {
+   "url": "https://www.mowr.gov.iq/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "tiny page, no survey/cadastre service"
+  },
+  {
+   "url": "https://realestate.moj.gov.iq/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://gis.gov.iq/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://cadastre.krg.org/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://www.mim.gov.iq/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  },
+  {
+   "url": "https://data.gov.iq/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (no HTTP response); unchanged with browser headers"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Several .gov.iq hosts (dgcs, gis, data portal) fail at connection level while others in the same TLD respond; partial network blocking plausible.",
+ "notes": "New: Ministry of Justice site reachable and publishes only news for real-estate registration; no online cadastre viewer on reachable hosts. Survey directorate host still unreachable, so absence not concluded.",
+ "nextStep": "Retry dgcs.gov.iq from another network; check KRG cadastre and Ur portal service catalogue with JS."
+}

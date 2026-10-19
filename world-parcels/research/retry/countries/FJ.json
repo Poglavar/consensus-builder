@@ -1,0 +1,88 @@
+{
+ "kind": "country",
+ "key": "FJ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: en-FJ,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.lands.gov.fj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset / no response with browser headers"
+  },
+  {
+   "url": "http://vanuagis.lands.gov.fj/vanuagis/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "proxy: DNS resolution failed (transient)"
+  },
+  {
+   "url": "https://vanuagis.lands.gov.fj/vanuagis/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://gis.lands.gov.fj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://spc.int/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "application/json",
+   "assessment": "Imunify360 bot-protection; not bypassed"
+  },
+  {
+   "url": "https://pacificdata.org/data/api/3/action/package_search?q=fiji+cadastre&rows=3",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge; not bypassed"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Fiji%20land%20parcels&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "11 items incl. Freehold_lot and State_Land_Vacant feature services"
+  },
+  {
+   "url": "https://services3.arcgis.com/UYCjD74OfK5zL9b8/arcgis/rest/services/Freehold_lot/FeatureServer/0/query (count)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count=1: a single polygon, not a national layer"
+  },
+  {
+   "url": "https://services3.arcgis.com/UYCjD74OfK5zL9b8/arcgis/rest/services/Freehold_lot/FeatureServer/0/query?bbox 178.99,-16.575,179.0,-16.56",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "1 polygon (LOT 12 DP 7080); saved as FJ-parcel-response.json (fragment evidence only)"
+  },
+  {
+   "url": "https://services1.arcgis.com/O1Rm75XW8zZczaHP/arcgis/rest/services/State_Land_Vacant/FeatureServer/0/query?resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/geo+json",
+   "assessment": "3 polygons of 12 total across Viti Levu; user-uploaded extract"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "official Lands hosts reset/DNS-fail; may be network-specific",
+ "notes": "New: public ArcGIS Online services (owners TLTB_GIS and a personal account) hold extracts of Fiji's Computerized Cadaster Mapping System from the Ministry of Lands and Mineral Resources, but only 1 and 12 polygons - fragments, not the cadastre; item licence text says the data is confidential and may not be used or shared without Ministry approval. The metadata names the official viewer http://vanuagis.lands.gov.fj/vanuagis/ (unreachable here). Not counted as a verified national source.",
+ "nextStep": "Retry vanuagis.lands.gov.fj from another network; request Ministry of Lands (Director, Geospatial Information Management) approval for data use."
+}

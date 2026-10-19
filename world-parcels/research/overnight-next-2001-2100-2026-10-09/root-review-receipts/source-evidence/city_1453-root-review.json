@@ -1,0 +1,59 @@
+{
+  "taskId": "city:1453",
+  "checkedAt": "2026-10-10T21:42:20Z",
+  "queueIdentityVerified": {
+    "cityCode": 1453,
+    "rank": 2048,
+    "country": "Venezuela (Bolivarian Republic of)",
+    "point": [
+      10.389270060115,
+      -71.439871918372
+    ],
+    "populationPersons": 283656
+  },
+  "executedSearchLanguages": [
+    "English",
+    "Spanish (local)"
+  ],
+  "originalFirstPartyCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/1453/sigat.html",
+      "sha256": "83974ac4ec00be169af792065a9d120af958e9b9ad73e1bf8e15dce3b67ef77d",
+      "bytes": 50390
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/1453/contrib.html",
+      "sha256": "06837011b25c810698da33bccafe95d676180c6b655289b27478a9e5ef5a0cbb",
+      "bytes": 1153
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/1453/main.js",
+      "sha256": "34e7b68584b660f0d071da7a2a4523ff0a56bcacc30a3c929d4b81c38be9795a",
+      "bytes": 5166892
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/1453/resp-1791668349042806299.txt",
+      "sha256": "b0a8dca4397f33b2b3caf220466004e1b8b622885f8c2d8adfdfe2f4cac0dd67",
+      "bytes": 65
+    }
+  ],
+  "firstPartyUrlsChecked": [
+    "https://cabimas.sigat.net/",
+    "https://cabimas.sigat.net/documentos/ordenanzas/ordenanza_de_inmuebles_urbanos_del_municipio_cabimas.pdf",
+    "https://contribuyentes.sigat.net/api/v1/contribuyente/alcaldias/241/catastro?cod=0"
+  ],
+  "sourceObservation": "The original SIGAT landing page identifies Municipio Cabimas. The first-party ordinance names the Dirección de Catastro Municipal as a responsible cadastral body; SIGAT is the tax portal, not independently proven to own parcel geometry. The saved public cadastral-code lookup responses report access denied.",
+  "fullSamplePolygonCount": 0,
+  "safeNativeParcelIdsRetained": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "decision": "held",
+  "decisionReason": "No public ID-plus-polygon response, source-field mapping or live adapter qualification. HTTP 403 does not establish absence.",
+  "absenceConclusion": null
+}

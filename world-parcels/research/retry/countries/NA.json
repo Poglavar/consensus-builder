@@ -1,0 +1,102 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-NA,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.mlr.gov.na/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://mlr.gov.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.mlrr.gov.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://mlrr.gov.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://nsdi.nsa.org.na/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://namsis.nsa.org.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.sgnamibia.org",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.gov.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://ncr.gov.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://gis.windhoekcc.org.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.windhoekcc.org.na/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Windhoek City Council site loads; no GIS/erf-map link found in HTML"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Namibia erven parcels / Windhoek erf / Namibia farm boundaries cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 relevant hits"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Namibian .gov.na hosts all reset while windhoekcc.org.na answers: plausibly a geo/network filter on government hosts, unconfirmed",
+ "notes": "No change. All Ministry of Land Reform / Surveyor-General / NSDI hosts (and guessed gis.windhoekcc host) reset the connection even with browser headers; Windhoek council main site reachable but exposes no map service. No viewer HTML could be inspected.",
+ "nextStep": "Find the real SG/NSDI viewer URL from a third-party page (search engine, Namibia NSDI docs) since guessed hosts reset; retry from another network.",
+ "kind": "country",
+ "key": "NA",
+ "checkedAt": "2026-09-30"
+}

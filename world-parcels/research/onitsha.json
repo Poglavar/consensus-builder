@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:69",
+  "queueRank": 69,
+  "name": "Onitsha",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [
+    6.17349813029485,
+    6.82053185724296
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.mol.anambrastate.gov.ng/",
+      "observation": "Anambra State Ministry of Lands; ANAMGIS (GIS/Land Information System launched 2022) with online services, account-oriented; site behind bot-check."
+    },
+    {
+      "url": "https://sivandesign.com/anamgis-anambra-state-geographic-information-system/",
+      "observation": "Vendor description of ANAMGIS cadastral module (not an open endpoint)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mol.anambrastate.gov.ng/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "bot-check interstitial only"
+    },
+    {
+      "url": "https://www.anambrastate.gov.ng/",
+      "method": "GET",
+      "httpStatus": 526,
+      "contentType": "",
+      "assessment": ""
+    },
+    {
+      "url": "https://ansgis.an.gov.ng/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Anambra%20parcels%20OR%20Onitsha%20cadastral&f=json&num=8",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Anambra State land information system; no open parcel layer confirmed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Portals were behind interstitials or unreachable; a state layer may exist behind accounts. State scope would not establish Nigeria-wide coverage.",
+  "nextStep": "Retest the ANAMGIS online services host from a browser-capable network."
+}

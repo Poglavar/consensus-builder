@@ -1,0 +1,39 @@
+{
+  "cityCode": 10254,
+  "queueRank": 2493,
+  "name": "Haixing",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [40.3054836112596, 122.133213526113],
+  "population2025": 235153,
+  "population2025k": 235.153,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haixing China cadastral parcel map GIS official natural resources land registration",
+        "result": "Search did not locate an official Haixing anonymous parcel-vector service. It located an official Hebei public-resource announcement naming Haixing County Natural Resources and Planning Bureau as the land custodian for a county land parcel and the Haixing County Public Resources Trading Center as transaction operator.",
+        "actualResultUrls": [
+          "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260319/5466580.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "海兴县 自然资源和规划局 不动产登记 地籍图 GIS 官方",
+        "result": "Search located the official Haixing County government domain and an official county PDF identifying 海兴县自然资源和规划局, plus an official public-resource announcement naming the bureau. No anonymous cadastral map/vector endpoint or safe parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://www.hnhx.gov.cn/",
+          "https://www.hnhx.gov.cn/hxfzzf/rootimages/uploadimg/1693230421100601/1693230421100601.pdf",
+          "https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260319/5466580.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Local natural-resources custody is evidenced, but no city-bounded anonymous parcel geometry or public vector schema was obtained. This packet records research only and is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "resultCategory": "local_registry_custodian_evidenced_no_anonymous_geometry",
+  "sampleGeoJSON": null
+}

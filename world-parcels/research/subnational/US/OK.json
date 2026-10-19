@@ -1,0 +1,77 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "OK",
+ "regionName": "Oklahoma",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/html,*/*;q=0.8; Accept-Language: en-US,en;q=0.9; cookie jar on (curl -c/-b); via pre-configured proxy, TLS verification on",
+ "source": {
+  "sourceId": "us-ok-oklahoma-county-assessor-parcels",
+  "name": "OK County Assessor Parcels (Oklahoma County)",
+  "operator": "Oklahoma County Assessor",
+  "scope": "Oklahoma County only",
+  "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "json",
+  "crs": "EPSG:4326 via outSR",
+  "reuseStatus": "licence text not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-ok-oklahoma-county-assessor-parcels",
+  "requestUrl": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -97.3905,
+   35.4925,
+   -97.3885,
+   35.494
+  ],
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "AcctNum",
+  "responseFile": "OK-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "OGI/OK Maps 'Statewide Parcels-2/1/2026' (compiled by Property Records Preservation LLC from county rolls) is view-only via WMS behind a login form; publisher states no download.",
+ "subregionsVerified": [
+  "Oklahoma County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://ogidev.okmaps.org/OGI/RestDataAccessItem.aspx?UUID=7c55e990-048e-499d-a20c-58fc5b730562",
+   "observation": "Statewide parcels metadata: 'Data is for viewing only or through OGC WMS web service. Data is not available for download.'; login form on page"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1/query?bbox near OKC downtown",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features (bbox missed data)"
+  },
+  {
+   "url": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1/query?geometry=-97.3905,35.4925,-97.3885,35.4940",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 polygons; AcctNum only"
+  },
+  {
+   "url": "https://maps.tulsacounty.org/arcgis/rest/services",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502"
+  }
+ ],
+ "reuseStatus": "Statewide layer is view-only; county layer terms not read.",
+ "remainingUncertainty": "Statewide OGI layer not tested (WMS/login). Only Oklahoma County verified; Tulsa and Cleveland not reached. Layer extent may cover only part of the county.",
+ "nextStep": "Test the OGI WMS GetMap/GetFeatureInfo anonymously; find Tulsa County service."
+}

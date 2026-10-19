@@ -1,0 +1,87 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "country": "Indonesia",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Kementerian ATR/BPN (land registry; BHUMI portal) - open sample republished via Badan Informasi Geospasial (BIG) Satu Peta",
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "ArcGIS MapServer; group layer 10 'Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000' with per-province sublayers (Jawa Barat=21, Jawa Timur=12, NTB=11, ...)"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer (parcel map; no open bulk endpoint identified, see research/jakarta.json)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer list"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21/query (Bandung 107.6145,-6.916,107.617,-6.9135, count 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons Jawa Barat"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/12/query (Surabaya 112.729,-7.275,112.731,-7.2735, count 3)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons Jawa Timur, same schema (objectid,kecamatan,kelurahan,tipehak,nib)"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21/query (box 107.605-107.612,-6.918..-6.912)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "empty features: coverage patchy"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "group layer with province sublayers"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/21/query?where=1%3D1&geometry=107.6145,-6.9160,107.6170,-6.9135&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,kecamatan,kelurahan,tipehak,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   107.6145,
+   -6.916,
+   107.617,
+   -6.9135
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "nib (with kelurahan); objectid is the OID",
+  "responseFile": "ID-parcel-response-jawa-barat.json (also ID-parcel-response-jawa-timur.json)",
+  "pagination": "ArcGIS resultRecordCount / resultOffset",
+  "regionSampled": "Jawa Barat (Bandung) and Jawa Timur (Surabaya)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Hak Milik land-right parcels 1:5000 for a subset (about 15) of provinces on the national Satu Peta portal; sparse, not the full legal cadastre",
+  "regionsVerified": [
+   "Jawa Barat (Bandung)",
+   "Jawa Timur (Surabaya)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Two provinces sampled with same schema, but coverage is patchy (empty box in central Bandung) and limited to some titled parcels; licence/currency unread; other provinces not sampled; BHUMI (full ATR/BPN cadastre) exposes no open API found. Provincial/local: Jakarta Satu, Surabaya and Bandung city portals (see city files).",
+ "nextStep": "Sample remaining province sublayers of layer 10, read BIG/ATR-BPN reuse terms, compare feature counts with BHUMI."
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7613",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7613-blitar.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/blitar-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:26:05Z",
+  "identityReview": "Immutable roster and queue match rank 1260, code 7613, Indonesia/ID/IDN, point [-8.10100602100698, 112.181443093969], and 442219 persons.",
+  "searchReview": "Paired packet and service review record executed English and Indonesian searches with first-party result URLs.",
+  "sourceReview": "The Blitar land office and national BHUMI parcel viewer are documented, but the inspected public shell/proxy gave no usable parcel schema or feature response; the asset GIS is not a cadastral source.",
+  "admissionReview": "Zero full parcel polygons retained, so safe feature ID attributes cannot be demonstrated. No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap checks, source binding, or headed Details-panel verification. Runtime and catalog remain unadmitted; unresolved access is not citywide absence."
+}

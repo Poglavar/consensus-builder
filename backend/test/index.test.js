@@ -463,19 +463,21 @@ describe('createApp', () => {
     });
 
     it('applies the write rate limiter to patch requests', async () => {
+        const writeRateLimit = 3;
         const { app } = createApp({
             env: {
                 USE_CORS_ALLOWLIST: 'false',
                 ALLOWED_ORIGINS: 'https://editor.example'
             },
-            pool: createMockPool()
+            pool: createMockPool(),
+            writeRateLimit
         });
 
         app.patch('/_test/rate-limited', (_req, res) => {
             res.status(200).json({ ok: true });
         });
 
-        for (let attempt = 0; attempt < 50; attempt += 1) {
+        for (let attempt = 0; attempt < writeRateLimit; attempt += 1) {
             const allowed = await request(app)
                 .patch('/_test/rate-limited')
                 .set('Origin', 'https://editor.example')
@@ -521,11 +523,29 @@ describe('createApp', () => {
 
         expect(errorLayer).toBeTruthy();
 
-        errorLayer.handle(new Error('boom'), {}, res, vi.fn());
+        errorLayer.handle(new Error('boom'), { method: 'GET', originalUrl: '/x' }, res, vi.fn());
 
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
-        expect(consoleSpy).toHaveBeenCalledWith('Unhandled error:', expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/^\[.+\] Unhandled error in GET \/x:$/), expect.any(Error));
+    });
+
+    it('keeps an exposed 4xx status from the global error handler without logging it as a crash', async () => {
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+        const { app } = createApp({
+            env: { USE_CORS_ALLOWLIST: 'false' },
+            pool: createMockPool()
+        });
+        const stack = app._router?.stack || [];
+        const errorLayer = [...stack].reverse().find((layer) => typeof layer.handle === 'function' && layer.handle.length === 4);
+        const res = { status: vi.fn().mockReturnThis(), json: vi.fn().mockReturnThis() };
+        const clientError = Object.assign(new Error('bad param'), { status: 400, expose: true });
+
+        errorLayer.handle(clientError, { method: 'GET', originalUrl: '/x' }, res, vi.fn());
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ error: 'bad param' });
+        expect(consoleSpy).not.toHaveBeenCalled();
     });
 
 });
@@ -554,7 +574,36 @@ describe('startServer', () => {
         expect(listenSpy).toHaveBeenCalled();
         expect(listenMock.mock.calls[0][0]).toBe('4567');
         expect(consoleSpy).toHaveBeenCalledWith('Backend listening on port 4567');
-        expect(server).toEqual({ close: expect.any(Function) });
+        expect(server).toEqual(expect.objectContaining({
+            close: expect.any(Function),
+            gracefulShutdown: expect.any(Function)
+        }));
+    });
+
+    it('drains HTTP requests before closing the database pool', async () => {
+        const events = [];
+        const close = vi.fn((callback) => {
+            events.push('server');
+            callback();
+        });
+        const pool = createMockPool();
+        pool.end = vi.fn(async () => events.push('pool'));
+        vi.spyOn(express.application, 'listen').mockImplementation((_port, callback) => {
+            callback();
+            return { close };
+        });
+        vi.spyOn(console, 'log').mockImplementation(() => { });
+
+        const server = startServer({
+            env: { API_PORT: '4567', USE_CORS_ALLOWLIST: 'false' },
+            pool
+        });
+
+        await server.gracefulShutdown();
+
+        expect(close).toHaveBeenCalledOnce();
+        expect(pool.end).toHaveBeenCalledOnce();
+        expect(events).toEqual(['server', 'pool']);
     });
 
     it('defaults the server port to 3000', () => {

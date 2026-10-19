@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3098-bakersfield.json",
+  "acceptanceFile": "bakersfield-native-bounds-requalification-acceptance.json",
+  "qualityFile": "bakersfield-native-bounds-requalification-quality.json",
+  "status": "evidence-prepared-pending-root-review",
+  "scope": "Bakersfield WUP-centered 13-cell sample and separate 1 km EPSG:32611 square only.",
+  "findings": {
+    "gridUniqueParcels": 119,
+    "gridReturnedRows": 170,
+    "cellBoundaryRepeatRows": 51,
+    "squareUniqueParcels": 761,
+    "allGeometryTestsPassed": true,
+    "nativeApn14734302BindsToObjectId127663": true,
+    "explicitAbsentApnConfirmed": true,
+    "wupPointContained": true,
+    "forcedThreeFeaturePagesPassed": true,
+    "freshReadbackIds": 119,
+    "freshReadbackBatches": 2
+  },
+  "quality": {
+    "validPolygons": 761,
+    "invalidPolygons": 0,
+    "emptyPolygons": 0,
+    "exactDuplicateGeometryGroups": 0,
+    "materialOverlapPairsOver0_01m2": 0,
+    "overlayErrors": 0,
+    "crs": "EPSG:32611"
+  },
+  "limits": [
+    "No citywide completeness claim.",
+    "The supplemental 1 km square is separately bounded and audited; its 761 features are not the 13-cell grid result.",
+    "No full geometry sample was added to the repository; complete geometry caches remain in ignored temporary storage.",
+    "The initial 383-request probe was unsuccessful for acceptance and was not retained or audited at that time.",
+    "No runtime/catalog enablement or root review stamp is included."
+  ]
+}

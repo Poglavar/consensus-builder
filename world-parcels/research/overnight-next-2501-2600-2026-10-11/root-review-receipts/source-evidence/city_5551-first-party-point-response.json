@@ -1,0 +1,77 @@
+{
+  "retrievedAt": "2026-10-11T14:51:45.164653+00:00",
+  "sourceUrl": "https://www-11.stadt-chemnitz.de/wss/service/ags-relay/prod-ags/guest/arcgis/rest/services/Themenbaum/Flurstuecke/MapServer/0/query?f=json&where=1%3D1&geometry=352881.52767239755%2C5632667.929563868&geometryType=esriGeometryPoint&inSR=25833&spatialRel=esriSpatialRelIntersects&outFields=FLURST_ID&outSR=4326&returnGeometry=true",
+  "httpStatus": 200,
+  "response": {
+    "displayFieldName": "FLURST_BEZ",
+    "fieldAliases": {
+      "FLURST_ID": "FLURST_ID"
+    },
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "FLURST_ID",
+        "type": "esriFieldTypeString",
+        "alias": "FLURST_ID",
+        "length": 13
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "FLURST_ID": "CZ-2225/20"
+        },
+        "geometry": {
+          "rings": [
+            [
+              [
+                12.910910632182835,
+                50.82709534013982
+              ],
+              [
+                12.911487384163784,
+                50.827228238683915
+              ],
+              [
+                12.911429035746702,
+                50.8273016999398
+              ],
+              [
+                12.911453546313743,
+                50.827307094511276
+              ],
+              [
+                12.911565443571256,
+                50.82711021444178
+              ],
+              [
+                12.911576875419827,
+                50.82711370193079
+              ],
+              [
+                12.911657435018945,
+                50.827011236993386
+              ],
+              [
+                12.91133216809493,
+                50.82686221978619
+              ],
+              [
+                12.911077848855193,
+                50.8268038274237
+              ],
+              [
+                12.910910632182835,
+                50.82709534013982
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

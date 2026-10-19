@@ -1,0 +1,79 @@
+{
+  "cityCode": 2836,
+  "queueRank": 1359,
+  "name": "Sareyn",
+  "aliases": ["sareyn"],
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "point": [38.1505150822643, 48.0736615214238],
+  "population2025": 413772,
+  "population2025k": 413.772,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": null,
+  "registryAssessment": "Iran's national Organization for Registration of Deeds and Properties (SSAA) is evidenced as the cadastral/land-registration custodian, and public references identify an SSAA registration office in Sareyn. The official public systems located (ssaa.ir, my.ssaa.ir and Shamim) did not yield an anonymous city parcel-vector response with a safe native ID and geometry. No official Sareyn municipal cadastral viewer or public parcel API was verified.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sareyn Iran official cadastral parcel map GIS land registry",
+        "result": "Search found references to the Sareyn registration office and national SSAA/Shamim systems, but no official Sareyn parcel viewer or anonymous parcel feature endpoint. The public search results did not expose parcel schema, CRS, safe parcel IDs, or geometry.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://my.ssaa.ir",
+          "https://shamim.ssaa.ir",
+          "https://mapcarta.com/W1287516596",
+          "https://www.samanehha.com/web/327/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B4%D9%85%DB%8C%D9%85.html"
+        ]
+      },
+      {
+        "language": "Persian/local",
+        "query": "سرعین اردبیل نقشه کاداستر قطعه زمین سامانه GIS ثبت اسناد",
+        "result": "نتایج، اداره ثبت اسناد و املاک سرعین و سامانه‌های ملی ثبت اسناد/شمیم را نشان دادند؛ اما نقشه عمومی قطعات یا پاسخ ناشناس شامل شناسه امن و هندسه برای شهر سرعین پیدا نشد. سامانه شمیم برای کاربران مجاز/حساب‌دار توصیف شده است.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://my.ssaa.ir",
+          "https://shamim.ssaa.ir",
+          "https://mapcarta.com/W1287516596",
+          "https://www.tasnimnews.ir/fa/news/1405/04/15/3640594/%D8%B1%D8%A7%D9%87-%D8%A7%D9%86%D8%AF%D8%A7%D8%B2%DB%8C-%D8%B2%DB%8C%D8%B1%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%B3%DB%8C%D9%86%D8%A7%D9%85-%D8%A8%D8%B1%D8%A7%DB%8C-%DB%8C%DA%A9%D9%BE%D8%A7%D8%B1%DA%86%D9%87-%D8%B3%D8%A7%D8%B2%DB%8C-%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D8%A7%D8%AA-%D8%B2%D9%85%DB%8C%D9%86-%D9%88-%D8%A7%D9%85%D9%84%D8%A7%DA%A9"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://ssaa.ir",
+      "role": "Iranian national Organization for Registration of Deeds and Properties",
+      "observation": "National registration/cadastre custodian route identified, but anonymous direct GET timed out and no public parcel layer or feature schema was obtained."
+    },
+    {
+      "url": "https://my.ssaa.ir",
+      "role": "SSAA electronic services portal",
+      "observation": "National property services route identified; anonymous direct GET timed out. No login was attempted."
+    },
+    {
+      "url": "https://shamim.ssaa.ir",
+      "role": "SSAA Shamim cadastral surveying system",
+      "observation": "Public descriptions indicate access is for authorized users/account holders; anonymous direct GET timed out. No credentials or private tokens were used."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was obtained. National service routes timed out or are described as restricted/authenticated, and no current official Sareyn public map/API configuration was exposed. The exact WUP point was preserved and not shifted; no exact-point parcel hit or absence claim was made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "English and Persian discovery for Sareyn/سرعین, national SSAA land-registration/cadastre routes, Shamim surveying route, and the identified local registration-office reference.",
+    "verifiedOpenScope": "National custodian and local registration-office existence are evidenced, but citywide parcel-vector access, native parcel identity, schema, CRS, and exact-point containment remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

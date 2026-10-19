@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:6959",
+  "wupCityCode": 6959,
+  "name": "Mansehra",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 1097,
+  "queueRank": 1097,
+  "point": [
+    34.3382721848232,
+    73.2106974086285
+  ],
+  "centerLatLon": [
+    34.3382721848232,
+    73.2106974086285
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 503920,
+  "population2025k": 503.92,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Khyber Pakhtunkhwa Revenue Department places Mansehra in its district land-record digitization program. The source describes district-level record work, not public parcel geometry; local land-record custody is supported.",
+  "registryEvidenceUrls": [
+    "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "District land-record custody is documented but no safe public vector geometry route was exposed by reviewed sources.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa Revenue Department places Mansehra in its district land-record digitization program. The source describes district-level record work, not public parcel geometry; local land-record custody is supported.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "District land-record custody is documented but no safe public vector geometry route was exposed by reviewed sources."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mansehra Pakistan official land records revenue department cadastral map",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf"
+        ],
+        "executionMethod": "Separate English-language web search and official-source review."
+      },
+      {
+        "language": "Urdu",
+        "query": "مانسہرہ زمین ریکارڈ لینڈ ریکارڈ خیبر پختونخوا سرکاری",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf"
+        ],
+        "executionMethod": "Separate local-language web search and official-source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "observation": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified."
+      },
+      {
+        "name": "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf",
+        "observation": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "source": {
+    "sourceId": "PK-MANSEHRA-REVENUE-LAND-RECORDS",
+    "name": "Mansehra official parcel/registry source",
+    "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "operator": null,
+    "serviceType": "Official local registry custody evidence reviewed; public parcel geometry remains unverified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Khyber Pakhtunkhwa Revenue Department places Mansehra in its district land-record digitization program. The source describes district-level record work, not public parcel geometry; local land-record custody is supported.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

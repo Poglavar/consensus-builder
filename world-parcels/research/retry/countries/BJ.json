@@ -1,0 +1,70 @@
+{
+ "kind": "country",
+ "checkedAt": "2026-09-30",
+ "key": "BJ",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-BJ,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "andf-efb-geoserver",
+  "requestUrl": "https://geoserver.andf.bj/geoserver/efb/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=efb:efb_parcel&count=3&outputFormat=application/json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": "unfiltered first 3 (Zou/Bohicon, UTM31N ~397600,799350); CQL departement_insae_code 12 (Zou), 03 (Atlantique), 07 (Donga) each returned 2 polygons",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon (EPSG:32631)",
+  "closedRings": true,
+  "idField": "nup / spatial_unit_oid_local_id",
+  "responseFile": "research/retry/countries/BJ-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex; totalFeatures 578748",
+  "regionSampled": "Zou (Bohicon), Atlantique (Abomey-Calavi), Donga (Djougou)"
+ },
+ "source": {
+  "sourceId": "andf-efb-geoserver",
+  "name": "ANDF Cadastre National, efb:efb_parcel (also efb_parcel_prod, parcel_zone_declaree)",
+  "operator": "Agence Nationale du Domaine et du Foncier (ANDF)",
+  "scope": "national digital cadastre (Enregistrement Foncier de Base), 578748 parcels; completeness not assessed",
+  "endpoint": "https://geoserver.andf.bj/geoserver/efb/ows (GeoServer WFS 2.0)",
+  "method": "WFS GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:32631",
+  "reuseStatus": "not read; open unauthenticated access observed, licence terms not checked"
+ },
+ "requests": [
+  {
+   "url": "https://cadastre.andf.bj/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Angular viewer; main.*.js environment config gives GEOSERVER_URL=https://geoserver.andf.bj and workspace efb"
+  },
+  {
+   "url": "https://geoserver.andf.bj/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "public GeoServer lists efb:efb_parcel, efb:efb_parcel_prod, efb:parcel_zone_declaree"
+  },
+  {
+   "url": "https://geoserver.andf.bj/geoserver/efb/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=efb:efb_parcel&count=3&outputFormat=application/json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon parcels with NUP, commune, arrondissement, quartier; no owner names (party_exists boolean only). First attempt timed out once; retry succeeded."
+  },
+  {
+   "url": "same with CQL_FILTER departement_insae_code=12/03/07",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 polygons each from Zou, Atlantique, Donga"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previous record: viewer only, geoportal.andf.bj CONNECT 502. New: the viewer JS config points to geoserver.andf.bj (workspace efb); the WFS is open without credentials and returns polygon parcels in three departments. Headers were not the cause; viewer inspection was.",
+ "nextStep": "Read ANDF licence/terms; page a full commune to confirm coverage; efb_parcel_prod vs efb_parcel; b-cadastre.andf.bj:9293 and b-efoncier.andf.bj backends not tested."
+}

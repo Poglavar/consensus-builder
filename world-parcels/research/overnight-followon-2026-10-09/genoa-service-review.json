@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1162-genoa.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Comune di Genova officially publishes Geoservizi WMS/WFS at https://mappe.comune.genova.it/geoserver/ows. An anonymous WFS 2.0 GetCapabilities request returned HTTP 200; cadastral-named entries exposed by that public service are historical cartographic layers (e.g. 1656, 1414, 1810, 1907), not a current parcel-feature layer. The official Geoportale guide marks Particelle catastali as reserved access. The national cadastral dataset listing for Comune di Genova advertises WMS/WFS, but the published municipal portal identifies that modern parcel layer as reserved; no GetFeature request was made against it. No public safe current-parcel geometry response was obtained.",
+  "registryAssessment": "Official Genova sources identify a cadastral parcel map layer in the city geoportal, explicitly mark it reserved, and publish local cadastral-map metadata. This establishes a local cadastral source, not anonymous public geometry access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.comune.genova.it/tutti-gli-argomenti/cartografia/geoservizi",
+      "observation": "Municipal page documents WMS/WFS endpoints; WFS returns feature data and use is tied to competence/planning tasks."
+    },
+    {
+      "url": "https://www.comune.genova.it/sites/default/files/2024-07/GUIDA_GEOPORTALE.pdf",
+      "observation": "Official Geoportale guide labels the current Particelle catastali map layer restricted-access."
+    },
+    {
+      "url": "https://data.europa.eu/data/datasets/age-d_d969_genova?locale=it",
+      "observation": "European data portal lists the Comune di Genova cadastral dataset and WMS/WFS distributions, updated 2025-01-27; does not itself establish public feature access."
+    },
+    {
+      "url": "https://mappe.comune.genova.it/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+      "observation": "Anonymous capabilities metadata returned historical CATASTO layers; no current public parcel feature type identified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Genoa Genova Italia catasto mappe catastali comune geoportale dati catastali official",
+      "result": "Comune di Genova officially publishes Geoservizi WMS/WFS at https://mappe.comune.genova.it/geoserver/ows. An anonymous WFS 2.0 GetCapabilities request returned HTTP 200; cadastral-named entries exposed by that public service are historical cartographic layers (e.g. 1656, 1414, 1810, 1907), not a current parcel-feature layer. The official Geoportale guide marks Particelle catastali as reserved access. The national cadastral dataset listing for Comune di Genova advertises WMS/WFS, but the published municipal portal identifies that modern parcel layer as reserved; no GetFeature request was made against it. No public safe current-parcel geometry response was obtained.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.comune.genova.it/tutti-gli-argomenti/cartografia/geoservizi",
+        "https://www.comune.genova.it/sites/default/files/2024-07/GUIDA_GEOPORTALE.pdf",
+        "https://data.europa.eu/data/datasets/age-d_d969_genova?locale=it",
+        "https://mappe.comune.genova.it/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+      ]
+    },
+    {
+      "language": "Italian",
+      "query": "Genova cartografia catastale particelle Comune di Genova Geoportale dati catastali ufficiale",
+      "result": "Comune di Genova officially publishes Geoservizi WMS/WFS at https://mappe.comune.genova.it/geoserver/ows. An anonymous WFS 2.0 GetCapabilities request returned HTTP 200; cadastral-named entries exposed by that public service are historical cartographic layers (e.g. 1656, 1414, 1810, 1907), not a current parcel-feature layer. The official Geoportale guide marks Particelle catastali as reserved access. The national cadastral dataset listing for Comune di Genova advertises WMS/WFS, but the published municipal portal identifies that modern parcel layer as reserved; no GetFeature request was made against it. No public safe current-parcel geometry response was obtained.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+      "actualResultUrls": [
+        "https://www.comune.genova.it/tutti-gli-argomenti/cartografia/geoservizi",
+        "https://www.comune.genova.it/sites/default/files/2024-07/GUIDA_GEOPORTALE.pdf",
+        "https://data.europa.eu/data/datasets/age-d_d969_genova?locale=it",
+        "https://mappe.comune.genova.it/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no anonymous safe-ID geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official Genova sources identify a cadastral parcel map layer in the city geoportal, explicitly mark it reserved, and publish local cadastral-map metadata. This establishes a local cadastral source, not anonymous public geometry access.",
+    "verifiedOpenScope": "Comune di Genova officially publishes Geoservizi WMS/WFS at https://mappe.comune.genova.it/geoserver/ows. An anonymous WFS 2.0 GetCapabilities request returned HTTP 200; cadastral-named entries exposed by that public service are historical cartographic layers (e.g. 1656, 1414, 1810, 1907), not a current parcel-feature layer. The official Geoportale guide marks Particelle catastali as reserved access. The national cadastral dataset listing for Comune di Genova advertises WMS/WFS, but the published municipal portal identifies that modern parcel layer as reserved; no GetFeature request was made against it. No public safe current-parcel geometry response was obtained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://mappe.comune.genova.it/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+      "result": "Anonymous WFS 2.0 GetCapabilities returned HTTP 200; response inspected for cadastral layer names/titles only."
+    },
+    {
+      "url": "https://www.comune.genova.it/sites/default/files/2024-07/GUIDA_GEOPORTALE.pdf",
+      "result": "Reviewed public guide; it identifies current cadastral parcel layer as reserved. No GetFeature request made."
+    }
+  ],
+  "remainingUncertainty": "Whether reserved cadastral geometries can be obtained under ordinary public access is unknown; they were not queried. Exact WUP-point parcel coverage remains unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification."
+}

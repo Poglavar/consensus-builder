@@ -1,0 +1,148 @@
+/* AI photorealistic render (v1): the 3D-only "AI" mode button and the render dialog.
+   The button is map chrome (map-shell-button) in slot 5 of the left-edge mode strip — the ladder
+   and the rule that a button never changes slot live at the top of map.css. The dialog wears the
+   cb-dialog primitive (css/primitives.css: overlay, card, header, close, footer, phone sheet); the
+   rules here only lay out its inside. */
+
+#mode-ai-toggle.map-shell-button {
+    position: absolute;
+    left: var(--map-mode-stack-left);
+    top: var(--map-mode-slot-5);
+    z-index: var(--cb-z-map-chrome);
+}
+
+/* Model view: the button is there but inert — the AI render is a photograph of the photorealistic
+   scene, so there is nothing for it to work from until photo view is up. Deliberately NOT
+   `pointer-events: none`: that would suppress the native tooltip, which is the whole point of
+   showing a disabled button rather than hiding it. */
+#mode-ai-toggle.map-shell-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+#mode-ai-toggle.map-shell-button[hidden] { display: none; }
+
+.ai-scene-body { display: flex; flex-direction: column; gap: var(--cb-space-4); }
+
+/* Source column: colour screenshot, then a toggle that reveals the grayscale height map below it. */
+.ai-scene-source-img,
+.ai-scene-result-img,
+.ai-scene-height-img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-sm);
+}
+
+/* "Show height map": a quiet small button under the scene image. */
+.ai-scene-height-toggle { margin-top: var(--cb-space-2); }
+.ai-scene-height-toggle[hidden] { display: none; }
+
+.ai-scene-height-img {
+    margin-top: var(--cb-space-2);
+    background: var(--cb-inverse);
+}
+
+.ai-scene-height-img[hidden] { display: none; }
+
+/* Feedback line under the share buttons (link copied / share failed). */
+.ai-scene-share-status {
+    margin-top: var(--cb-space-1);
+    min-height: 16px;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-success-soft-ink);
+}
+.ai-scene-share-status.ai-scene-status--error { color: var(--cb-danger); }
+
+.ai-scene-prompt {
+    display: block;
+    width: 100%;
+}
+
+/* Prompt fixed by the server: read-only, visibly inert so nobody tries to edit it. */
+.ai-scene-prompt--locked {
+    background: var(--cb-surface-2);
+    color: var(--cb-text-muted);
+    cursor: not-allowed;
+}
+
+/* Warning shown with a result, e.g. the submitted prompt was discarded. */
+.ai-scene-warning {
+    margin-top: var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-warning);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+    font-size: var(--cb-text-sm);
+}
+.ai-scene-warning[hidden] { display: none; }
+
+.ai-scene-model {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--cb-space-3);
+}
+
+.ai-scene-model[hidden] { display: none; }
+
+.ai-scene-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-3);
+    margin-top: var(--cb-space-3);
+}
+
+.ai-scene-cost-hint { font-size: var(--cb-text-sm); color: var(--cb-text-faint); }
+
+.ai-scene-status { margin-top: var(--cb-space-2); min-height: 18px; font-size: var(--cb-text-md); color: var(--cb-text-muted); }
+.ai-scene-status--error { color: var(--cb-danger); }
+
+.ai-scene-result-actions { margin-top: var(--cb-space-3); display: flex; flex-wrap: wrap; gap: var(--cb-space-2); }
+.ai-scene-result-actions [hidden] { display: none; }
+
+.ai-scene-session-total { font-weight: var(--cb-weight-semibold); }
+
+/* Inline AI-render card shown to someone who opened a shared ?scene link, over the 3D world. */
+.ai-scene-follow-card {
+    position: fixed;
+    left: var(--cb-space-4);
+    bottom: var(--cb-space-4);
+    z-index: var(--cb-z-popover);
+    width: 300px;
+    max-width: calc(100vw - 2 * var(--cb-space-4));
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-md);
+    overflow: hidden;
+}
+.ai-scene-follow-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-2);
+    padding: var(--cb-space-1) var(--cb-space-1) var(--cb-space-1) var(--cb-space-3);
+    border-bottom: 1px solid var(--cb-line);
+    background: var(--cb-surface-2);
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+.ai-scene-follow-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: zoom-in;
+}
+.ai-scene-follow-card.expanded {
+    width: 640px;
+}
+.ai-scene-follow-card.expanded .ai-scene-follow-img { cursor: zoom-out; }
+.ai-scene-follow-note {
+    padding: var(--cb-space-1) var(--cb-space-3);
+    font-size: var(--cb-text-xs);
+    color: var(--cb-text-muted);
+}

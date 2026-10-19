@@ -1,0 +1,97 @@
+{
+  "cityCode": 10661,
+  "queueRank": 1463,
+  "name": "Tamkuhi Raj",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.6980897031004, 84.2132190637181],
+  "population2025": 389533,
+  "population2025k": 389.533,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tamkuhi Raj Uttar Pradesh official cadastral map land records parcel GIS",
+        "result": "Found the official Kushinagar district site listing Tamkuhi Raj as a tehsil, the official UP Bhulekh land-record portal, the official national Bhu-Naksha description, and the Government of India NAKSHA portal. No safe anonymous Tamkuhi Raj parcel feature response or native parcel identity was verified.",
+        "actualResultUrls": [
+          "https://kushinagar.nic.in/tehsil/",
+          "https://upbhulekh.gov.in/",
+          "https://www.bhunaksha.nic.in/bhunaksha/index.jsp",
+          "https://naksha.dolr.gov.in/NakshaPortal/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "तमकुही राज उत्तर प्रदेश आधिकारिक भूलेख नक्शा खसरा",
+        "result": "Hindi-language discovery found the official Kushinagar district Hindi tehsil page and UP Board of Revenue material describing Bhulekh/Bhu-Naksha services. The district telephone directory identifies the SDM Tamkuhiraj under the Revenue Department. No safe anonymous parcel geometry or native ID was verified.",
+        "actualResultUrls": [
+          "https://kushinagar.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+          "https://kushinagar.nic.in/hi/%E0%A4%8F%E0%A4%B8%E0%A4%9F%E0%A5%80%E0%A4%A1%E0%A5%80-%E0%A4%94%E0%A4%B0-%E0%A4%AA%E0%A4%BF%E0%A4%A8-%E0%A4%95%E0%A5%8B%E0%A4%A1/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "UP Bhulekh / Bhu-Naksha services",
+        "operator": "Board of Revenue, Uttar Pradesh / NIC Uttar Pradesh",
+        "homeUrl": "https://upbhulekh.gov.in/",
+        "observation": "Official portal describes state land records and links parcel-map services; current JavaScript configuration uses public API paths but encrypted request payloads."
+      },
+      {
+        "name": "Kushinagar district revenue administration",
+        "operator": "District Kushinagar, Government of Uttar Pradesh",
+        "homeUrl": "https://kushinagar.nic.in/tehsil/",
+        "observation": "Official district site lists Tamkuhi Raj as a tehsil; the Hindi telephone directory places SDM Tamkuhiraj under the Revenue Department. This establishes local administrative custody, not an open parcel vector endpoint."
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://kushinagar.nic.in/tehsil/",
+    "https://kushinagar.nic.in/hi/%E0%A4%8F%E0%A4%B8%E0%A4%9F%E0%A5%80%E0%A4%A1%E0%A5%80-%E0%A4%94%E0%A4%B0-%E0%A4%AA%E0%A4%BF%E0%A4%A8-%E0%A4%95%E0%A5%8B%E0%A4%A1/",
+    "https://upbhulekh.gov.in/"
+  ],
+  "registryBasis": "The official Kushinagar district administration names Tamkuhi Raj as a tehsil and its Revenue Department directory names an SDM Tamkuhiraj. State Bhulekh/Bhu-Naksha infrastructure is officially documented, but no local public parcel feature service was admitted.",
+  "source": {
+    "sourceId": "IN-10661-TAMKUHI-RAJ-UP-BHULEKH-REVIEW",
+    "name": "Uttar Pradesh official Bhulekh/Bhu-Naksha services",
+    "url": "https://upbhulekh.gov.in/",
+    "operator": "Board of Revenue, Uttar Pradesh / NIC Uttar Pradesh",
+    "serviceType": "Public land-record and cadastral-map portal reviewed; no safe anonymous parcel feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "nativeFieldMapping": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "UP Bhulekh and Bhu-Naksha are state/national cadastral and land-record services; the Kushinagar district site confirms Tamkuhi Raj administrative coverage.",
+    "verifiedOpenScope": "Official portal pages and current JavaScript were inspected. No anonymous geometry-only parcel response, schema, native ID, CRS, or citywide completeness was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_cadastral_service_geometry_unverified",
+  "technicalBlocker": "The current UP Bhulekh JavaScript points to https://upbhulekh.gov.in/PublicBhuApi/api and /PublicBhuApi/bhunaksha, with encrypted request data and no exposed anonymous geometry-only response. Direct bounded GETs to /PublicBhuApi/api/districts_list and /PublicBhuApi/bhunaksha returned HTTP 500 No static resource. No login, credentials, CAPTCHA bypass, or unsafe property lookup was attempted.",
+  "safeFieldAllowlist": ["id", "geometry"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "registration-rights"],
+  "remainingUncertainty": "The public UI may issue encrypted requests or use a separate Bhu-Naksha route that was not safely reproducible from anonymous bounded requests. No exact-point absence or citywide absence inference is made.",
+  "nextStep": "Hold runtime integration. A later reviewer may qualify an anonymous geometry endpoint only after independently confirming schema, CRS, stable native identity, and safe fields.",
+  "runtimeReadiness": "held_unqualified",
+  "adapterReady": false,
+  "centerLatLon": [26.6980897031004, 84.2132190637181],
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact immutable WUP 2025 population-weighted settlement point; not a municipal boundary or parcel-coverage claim.",
+  "sourceIds": [],
+  "cohort": "overnight-next-1401-1500-2026-10-09",
+  "attempt": 1,
+  "priorCheck": {"attemptState": "pending", "attemptEvidence": [], "possiblePriorMatches": []},
+  "schemaVersion": "1.0"
+}

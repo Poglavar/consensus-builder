@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "NM",
+  "state": "New Mexico",
+  "capital": "Santa Fe",
+  "centerLatLon": [
+    35.687,
+    -105.9378
+  ],
+  "query": {
+    "language": "English",
+    "text": "Santa Fe New Mexico official GIS parcels FeatureServer assessor parcel polygons GIS service"
+  },
+  "references": [
+    "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+    "https://www.santafecountynm.gov/growth-management/gis",
+    "https://santafenm.gov/information-technology-telecommunications/gis"
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Live layer metadata reports polygon geometry and native parcel key."
+    },
+    {
+      "url": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2/query?where=1%3D1&geometry=-105.9388%2C35.6860%2C-105.9368%2C35.6880&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=parcel_number&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Capital bbox sample, maximum three records, native key and geometry only."
+    },
+    {
+      "url": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2/query?where=parcel_number%3D%2799308402%27&outFields=parcel_number&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Exact native-key round trip returned one polygon with the requested key."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+    "adapter": "arcgis",
+    "name": "Santa Fe County Parcels",
+    "operator": "Santa Fe County GIS Division",
+    "idField": "parcel_number",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "native county tax parcel number string; preserve exact text",
+    "outFields": "parcel_number",
+    "parcelNumberField": "parcel_number",
+    "metricSrid": 3857
+  },
+  "verification": {
+    "bbox": [
+      -105.9388,
+      35.686,
+      -105.9368,
+      35.688
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "99308402",
+      "10995072",
+      "10866304"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true
+  },
+  "status": "verified_sample_capital_scope"
+}

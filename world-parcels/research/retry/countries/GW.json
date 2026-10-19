@@ -1,0 +1,32 @@
+{
+ "kind": "country",
+ "key": "GW",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: pt-GW,pt;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gw.undp.org",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "not informative with full headers either"
+  },
+  {
+   "url": "https://www.gov.gw/, governo.gw, www.governo.gw, gw.gov, ggb.gw, dgtgb.gw, up.gw, aigbissau.gw, stm.gw, cmb.gw",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "candidate hosts do not connect; UNDP page returns generic 403",
+ "notes": "No web presence for the land/cadastre directorate found; absence is weak evidence.",
+ "nextStep": "Search for World Bank/AfDB land projects in Guinea-Bissau with an SIG component."
+}

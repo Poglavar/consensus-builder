@@ -1,0 +1,89 @@
+{
+  "cityCode": 5577,
+  "queueRank": 2164,
+  "rank": 2164,
+  "name": "Kabinda",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "iso2": "CD",
+  "iso3": "COD",
+  "point": [-6.1383507982268, 24.4842003324521],
+  "population2025": 269115,
+  "population2025k": 269.115,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "kind": "city_parcel_source_research",
+  "schemaVersion": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kabinda Democratic Republic of Congo official cadastral parcel map land registry GIS",
+        "result": "First-party discovery identified the official Ministry of Land Affairs site and its current cadastral/land-circonscription directory. No public parcel map, feature service, downloadable parcel layer, JavaScript map viewer, native parcel schema, or anonymous ID+geometry response was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/secretariat/directions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ]
+      },
+      {
+        "language": "French (local/official language)",
+        "query": "Kabinda RDC cadastre parcelles carte cadastrale site officiel ministère des affaires foncières",
+        "result": "La recherche officielle a confirmé que Kabinda est une circonscription foncière et cadastrale de la province du Lomami. Le site expose une demande administrative de recherche foncière, mais aucune carte publique de parcelles, API de consultation, couche géométrique ou réponse anonyme identifiant+géométrie n'a été trouvée.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://www.affairesfoncieres.gouv.cd/secretariat/directions",
+          "https://www.affairesfoncieres.gouv.cd/ressources/documents/projet-pilote-de-numerisation-du-cadastre"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The first-party Ministry of Land Affairs directory explicitly lists Kabinda under Lomami as a current land and cadastral circonscription. This establishes a local administrative custodian/scope, not public parcel-data availability.",
+  "officialSources": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "publisher": "Ministère des Affaires Foncières de la RDC",
+      "observation": "Public first-party directory reports 143 circonscriptions across 26 provinces and lists Kabinda under Lomami; the page provides no parcel geometry or map/API endpoint."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "publisher": "Ministère des Affaires Foncières de la RDC",
+      "observation": "Public request workflow accepts a province, circonscription, commune/territory, locality and property references, but requires an applicant and supporting documents; it is not an anonymous parcel feature service."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/secretariat/directions",
+      "publisher": "Ministère des Affaires Foncières de la RDC",
+      "observation": "First-party organizational page identifies the Direction du Cadastre Foncier as responsible for inventory and cartography of immovable property; no public service endpoint is exposed."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "publisher": "Ministère des Affaires Foncières de la RDC",
+      "observation": "Official portal describes a pilot for digitizing cadastral archives and provides formal land-service/document routes; it does not expose Kabinda parcel features."
+    }
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "sourceCandidate": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+  "serviceMetadata": {
+    "serviceType": "official first-party cadastral-circonscription directory and administrative request workflow",
+    "nativeFieldsObserved": [],
+    "safeIdentityCandidate": null,
+    "geometryType": null,
+    "crs": null,
+    "supportedQueryFormats": ["HTML directory", "HTML administrative request form"],
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "A local official cadastral custodian is evidenced, but no public anonymous parcel feature response, safe native parcel identity, CRS, or parcel geometry was obtained. Research completion is not source integration, adapter admission, or runtime qualification."
+  },
+  "pointBasis": "Immutable WUP queue point retained exactly in latitude/longitude order; no coordinate adjustment was made to seek a parcel hit."
+}

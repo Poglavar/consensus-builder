@@ -1,0 +1,97 @@
+{
+ "note": "First 3 of 197 features with centroid within ~400 m of Manchester centre (lat 53.49383 lon -2.25537 = E383155 N399711), from HMLR INSPIRE Index Polygons GML (Manchester_City_Council.zip; 120989 features in the authority file). Geometry truncated to 5 vertices.",
+ "numberMatchedInAuthority": 120989,
+ "featuresWithin400m": 197,
+ "features": [
+  {
+   "INSPIREID": "48724105",
+   "NATIONALCADASTRALREFERENCE": "48724105",
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 13,
+   "exteriorRingFirst5": [
+    [
+     383542.741,
+     399681.075
+    ],
+    [
+     383551.456,
+     399663.911
+    ],
+    [
+     383552.333,
+     399664.36
+    ],
+    [
+     383554.77,
+     399659.662
+    ],
+    [
+     383562.608,
+     399663.686
+    ]
+   ]
+  },
+  {
+   "INSPIREID": "48665765",
+   "NATIONALCADASTRALREFERENCE": "48665765",
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 10,
+   "exteriorRingFirst5": [
+    [
+     383525.736,
+     399717.724
+    ],
+    [
+     383525.954,
+     399717.306
+    ],
+    [
+     383532.397,
+     399720.653
+    ],
+    [
+     383539.448,
+     399707.131
+    ],
+    [
+     383578.75,
+     399727.25
+    ]
+   ]
+  },
+  {
+   "INSPIREID": "41959030",
+   "NATIONALCADASTRALREFERENCE": "41959030",
+   "geometryType": "Polygon",
+   "crs": "EPSG:27700",
+   "closedRing": true,
+   "vertexCount": 15,
+   "exteriorRingFirst5": [
+    [
+     383543.2,
+     399325.8
+    ],
+    [
+     383537.25,
+     399336.5
+    ],
+    [
+     383523.25,
+     399328.9
+    ],
+    [
+     383518.0,
+     399326.05
+    ],
+    [
+     383500.0,
+     399315.85
+    ]
+   ]
+  }
+ ]
+}

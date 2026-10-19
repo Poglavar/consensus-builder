@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-11969-borigaon.json",
+  "cityCode": 11969,
+  "queueRank": 2299,
+  "name": "Borigaon",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [26.4310167500445, 92.5406925865649],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://igr.assam.gov.in/sites/default/files/swf_utility_folder/departments/asdma_revenue_uneecopscloud_com_oid_70/menu/document/udalguri_2025_26.pdf","httpStatus":"Discovery result available; official Assam government PDF","outcome":"Lists Borigaon under Udalguri Revenue Circle and identifies the local village/land-record administrative context. No parcel geometry was extracted."},
+    {"method":"GET","url":"https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC","httpStatus":"200","outcome":"Current Dharitree citizen page rendered district selection and included Udalguri with district code 27. The page requires district/circle/village selection and CAPTCHA for record lookup; no login or CAPTCHA attempt was made."},
+    {"method":"GET","url":"https://ilrms.assam.gov.in/dhar/application/views/js/dharitreecore.js","httpStatus":"200","outcome":"Followed the official JavaScript to POST getCirdivJson, getVillCodeJson and searchVillage routes. These are record-navigation routes, not a public parcel-geometry API."},
+    {"method":"POST","url":"https://ilrms.assam.gov.in/dhar/index.php/Welcome/getCirdivJson","httpStatus":"200","outcome":"Anonymous request with district_code=27 returned an empty JSON array. No circle or village identity/geometry response was obtained."},
+    {"method":"GET","url":"https://bhunaksha.assam.gov.in/","httpStatus":"200","outcome":"Official Bhunaksha cadastral mapping viewer loaded and exposed current JavaScript configuration."},
+    {"method":"GET","url":"https://bhunaksha.assam.gov.in/assets/index-qVUqnX9k.js","httpStatus":"200","outcome":"Current viewer configuration exposes backend routes for districts, circles, villages, WMS capabilities, parcel_info, click_info and GeoJSON-like geometry responses. The source uses ASSAM_PARCEL and EPSG:32646 for parcel geometry operations."},
+    {"method":"GET","url":"https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/districts","httpStatus":"200","outcome":"Current public district list returned 24 districts but omitted Udalguri; therefore no supported current village-code route for Borigaon was available from this viewer."},
+    {"method":"POST","url":"https://bhunaksha.assam.gov.in/bhunakshaBackEnd/proxy/authKey","httpStatus":"200","outcome":"Viewer issued a short-lived public session auth token as part of its normal anonymous page flow. It was not retained in the packet and was not used to request unsafe fields."},
+    {"method":"GET","url":"https://bhunaksha.assam.gov.in/api/proxy/districts","httpStatus":"401","outcome":"Initial guessed API prefix rejected the request; the official JavaScript showed the correct backend prefix. No bypass or credential use was attempted."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "Bhunaksha JavaScript identified backend routes proxy/districts, proxy/circles, proxy/villages, proxy/wms/capabilities, proxy/parcel_info and proxy/click_info; no Borigaon response was available.",
+    "geometryCrs": "EPSG:32646 is declared by the viewer for parcel geometry input/output; no parcel geometry response was obtained.",
+    "nativeIdentity": "Not observed; no parcel response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {"requestScope":"Udalguri/Borigaon route discovery only; no parcel query completed","featureCount":0,"nativeIdentity":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official Assam ILRMS/Dharitree and Bhunaksha services are evidenced, and the official Udalguri document provides local custodian evidence for Borigaon, but current anonymous route discovery yielded no safe native parcel ID-plus-geometry response."},
+  "scopeLimits": ["The exact WUP point [26.4310167500445, 92.5406925865649] was preserved and not shifted.", "No exact-point hit or miss was inferred because no exact-point parcel query completed.", "An empty circle response, omitted district from the current Bhunaksha list, and the rejected guessed API prefix are route/coverage limitations, not evidence of citywide absence.", "Udalguri Revenue Circle is the evidenced local custodian context; Assam ILRMS, Dharitree, Bhunaksha and the Directorate of Land Records are state-level systems.", "No GeoJSON sample is retained because no safe native parcel identity and unchanged geometry were obtained.", "No owner, address, contact, titleholder, tax/account, certificate/title or personal fields were requested or retained."],
+  "uncertainty": "The official Assam land-record and cadastral systems are clear, and Borigaon is locally associated with Udalguri Revenue Circle, but anonymous parcel coverage, village-code availability in the current Bhunaksha deployment, schema, native identity, geometry response, update cadence and CRS confirmation for an actual feature remain unverified. Runtime/admission remains held."
+}

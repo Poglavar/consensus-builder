@@ -16,19 +16,32 @@
         if (typeof window.STORAGE_PROVIDER === 'undefined') {
             window.STORAGE_PROVIDER = 'ipfs';
         }
+        // Canton (DAML) chain option. Off: the backend does not register /canton/*, so the canton/*
+        // modules do not load their globals — no requests, no warnings, no Canton network option or
+        // badges. Every consumer already null-checks those globals. Set true (here, or before this
+        // script runs) to bring the whole feature back; the code is kept intact for that.
+        if (typeof window.CANTON_ENABLED === 'undefined') {
+            window.CANTON_ENABLED = false;
+        }
         // Walrus aggregator used to resolve walrus://<blobId> for display. Defaults to public testnet.
         if (typeof window.WALRUS_AGGREGATOR_URL === 'undefined') {
             window.WALRUS_AGGREGATOR_URL = 'https://aggregator.walrus-testnet.walrus.space';
         }
 
-        const getLatestVersionNumber = () => {
+        // The version badge shows the ACTUAL running build, stamped into build-info.js at deploy
+        // (buildId "deploy-N" / buildNumber N). Locally there is no stamp, so it reads "dev".
+        // This is deliberately NOT the hand-maintained changelog head (APP_VERSIONS) — that value
+        // is a release note and goes stale; the badge is meant to identify the code you're running.
+        const getBuildVersionLabel = () => {
             try {
-                const source = Array.isArray(window.APP_VERSIONS) ? window.APP_VERSIONS : [];
-                if (!source.length) return '';
-                const head = source[0] || {};
-                return head.version_number || head.versionNumber || head.version || '';
+                const info = window.__BUILD_INFO || {};
+                const isRealBuild = info.buildId && info.buildId !== 'dev';
+                if (isRealBuild) {
+                    return info.buildNumber ? `build ${info.buildNumber}` : String(info.buildId);
+                }
+                return 'dev';
             } catch (_) {
-                return '';
+                return 'dev';
             }
         };
 
@@ -75,39 +88,41 @@
                 const badge = document.getElementById('dev-badge');
                 const debugBadge = document.getElementById('debug-badge');
                 const versionBadge = document.getElementById('version-badge');
-                const container = badge ? badge.closest('.sidebar-badge-bar') : (debugBadge ? debugBadge.closest('.sidebar-badge-bar') : null);
+                const container = badge ? badge.closest('.settings-badge-bar') : (debugBadge ? debugBadge.closest('.settings-badge-bar') : null);
                 const isDebug = document.body.classList.contains('debug-mode');
 
+                // The badges (cb-badge) and their bar show and hide with the hidden attribute.
                 // If not in debug mode, hide entire bar and exit early
                 if (!isDebug) {
-                    if (badge) badge.style.display = 'none';
-                    if (debugBadge) debugBadge.style.display = 'none';
-                    if (versionBadge) versionBadge.style.display = 'none';
-                    if (container) container.style.display = 'none';
+                    if (badge) badge.hidden = true;
+                    if (debugBadge) debugBadge.hidden = true;
+                    if (versionBadge) versionBadge.hidden = true;
+                    if (container) container.hidden = true;
                     return;
                 }
 
-                const versionNumber = getLatestVersionNumber();
+                const versionLabel = getBuildVersionLabel();
                 if (badge) {
                     // Show dev badge only in real development environment
-                    badge.style.display = isDevelopment ? 'inline-flex' : 'none';
+                    badge.hidden = !isDevelopment;
                 }
                 if (debugBadge) {
-                    debugBadge.style.display = 'inline-flex';
+                    debugBadge.hidden = false;
                 }
                 if (versionBadge) {
-                    if (versionNumber) {
-                        versionBadge.textContent = versionNumber;
-                        versionBadge.style.display = 'inline-flex';
+                    if (versionLabel) {
+                        versionBadge.textContent = versionLabel;
+                        versionBadge.title = versionLabel;
+                        versionBadge.hidden = false;
                     } else {
-                        versionBadge.style.display = 'none';
+                        versionBadge.hidden = true;
                     }
                 }
                 if (container) {
-                    const anyVisible = (badge && badge.style.display !== 'none')
-                        || (debugBadge && debugBadge.style.display !== 'none')
-                        || (versionBadge && versionBadge.style.display !== 'none');
-                    container.style.display = anyVisible ? 'flex' : 'none';
+                    const anyVisible = (badge && !badge.hidden)
+                        || (debugBadge && !debugBadge.hidden)
+                        || (versionBadge && !versionBadge.hidden);
+                    container.hidden = !anyVisible;
                 }
             } catch (_) { }
         }

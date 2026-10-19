@@ -1,0 +1,55 @@
+{
+  "cityRecord": "city-2813-eindhoven.json",
+  "cityCode": 2813,
+  "queueRank": 2014,
+  "city": "Eindhoven",
+  "country": "Netherlands",
+  "countryCode": "NL",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official PDOK/Kadaster discovery found the Kadastrale Kaart OGC API and Perceel collection.",
+    "native": "Dutch PDOK/Kadaster discovery independently found the same first-party Kadastrale Kaart service, documented as public and unauthenticated."
+  },
+  "custodian": {
+    "name": "Kadaster, published through PDOK",
+    "role": "National Dutch cadastral custodian and official parcel-map publisher; no separate Eindhoven municipal cadastral custodian was evidenced.",
+    "evidenceUrls": [
+      "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart",
+      "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=html&lang=nl"
+    ]
+  },
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "url": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart", "result": "Official PDOK page identifies Kadaster Kadastrale Kaart OGC API Features endpoint."},
+    {"route": "Dutch first-party discovery", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1?f=html&lang=nl", "result": "Official Dutch API metadata states parcel-map scope, Kadaster provider, daily update, CC BY 4.0, and no authentication."},
+    {"route": "Perceel collection metadata", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel?f=json", "result": "HTTP 200; collection metadata, national extent, supported CRS, and EPSG:28992 storage CRS."},
+    {"route": "Perceel schema", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/schema?f=json", "result": "HTTP 200; stable UUID id and MultiPolygon geometry schema. Source attribute names were inspected for mapping only and are not retained."},
+    {"route": "Bounded local parcel query", "url": "https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel/items?f=json&bbox=5.4583,51.4431,5.4586,51.4434&limit=3", "result": "HTTP 200; two safe parcel UUIDs and full MultiPolygon geometries returned in GeoJSON. Exact WUP point was preserved and not shifted."}
+  ],
+  "fieldPolicy": {
+    "allowlist": ["stable native OGC feature UUID", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"],
+    "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "area/status/history and other source-specific attributes"]
+  },
+  "geometryReview": {
+    "publicGeometryFound": true,
+    "sampleFile": "eindhoven-sample.geojson",
+    "parcelCount": 2,
+    "identities": ["c153d50f-e31d-52e4-ab48-a23ecdb56b1c", "84bf43ab-d08c-557c-b24f-042c9439d5a9"],
+    "reason": "Official anonymous bounded query returned two nearby full MultiPolygons; retained GeoJSON has exactly one canonical native id property per feature and no raw source attribute set."
+  },
+  "scopeLimits": [
+    "Exact WUP point [51.4432163203009, 5.45844256201511] was preserved in latitude/longitude order in the city record and was not shifted.",
+    "A bounded local response does not establish Eindhoven-wide coverage; no municipal boundary clip or citywide count was performed.",
+    "The Kadastrale Kaart is an indicative boundary reference and is not title, ownership, valuation, or legal-boundary evidence.",
+    "Kadaster/PDOK was distinguished as the national cadastral custodian from general platform documentation; no separate city registry was claimed.",
+    "Packet completion and sample verification do not constitute source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": true,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Official schema, CRS, stable identity, and two local geometries are verified; citywide municipal coverage and adapter qualification remain unverified."
+  }
+}

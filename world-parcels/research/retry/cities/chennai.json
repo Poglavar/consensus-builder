@@ -1,0 +1,52 @@
+{
+ "kind": "city",
+ "key": "chennai",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: en-IN (cookie jar used)",
+ "changedByHeaders": "Retry TN-GIS/eServices from an India-reachable network.",
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://tngis.tn.gov.in/ ; /arcgis/rest/services?f=json ; /geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer"
+  },
+  {
+   "url": "https://eservices.tn.gov.in/eservicesnew/land/chitta_ta.html and /",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://tnreginet.gov.in/ ; https://www.tn.gov.in/ ; https://tnhb.tn.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://tnmaps.tn.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Chennai cadastral OR parcel OR survey",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "680 hits, top results are travel/hub apps; no parcel feature service checked as relevant"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Every tn.gov.in host resets or 502s from this network while central hosts (nic.in, bhuvan, ldo.mohua) answer; suggests state-level network filtering, unproven.",
+ "nextStep": "No change."
+}

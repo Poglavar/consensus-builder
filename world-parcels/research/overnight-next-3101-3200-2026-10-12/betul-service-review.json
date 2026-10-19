@@ -1,0 +1,15 @@
+{
+  "cityRecord": "city-9459-betul.json",
+  "cityCode": 9459,
+  "queueRank": 3192,
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "service": "Government of Madhya Pradesh MP Bhulekh / Betul District Administration",
+  "queryAndRequestOutcome": "English and Hindi first-party discovery completed. The official Betul district Land Records page and MP Bhulekh route were identified, along with the Government of India DILRMP Betul status page. The district page was retrieved, but MP Bhulekh timed out before its current public viewer/API could be inspected; the DILRMP direct fetch failed local TLS certificate validation. No parcel geometry or safe native parcel identity was obtained.",
+  "scopeLimits": ["District/tehsil/village service scope is not equivalent to the WUP municipal boundary", "Timeout or TLS-validation failure is not evidence of citywide absence", "No citywide completeness or adapter readiness was established"],
+  "retainedSamples": [],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "reproduction metadata for the public service"],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": ["No GeoJSON sample is retained because no full parcel polygon was observed", "No unsafe landholder or title-related fields were requested", "The packet records research evidence only and requires independent serial adapter review before any runtime use"]
+}

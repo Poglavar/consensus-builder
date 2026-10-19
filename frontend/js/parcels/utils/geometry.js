@@ -37,9 +37,17 @@
         ? cityConfigManager.datasetToLatLng
         : null;
 
-    function convertDatasetCoordToLatLng(easting, northing) {
+    function convertDatasetCoordToLatLng(easting, northing, sourceSrid = null) {
         if (!Number.isFinite(easting) || !Number.isFinite(northing)) {
             return null;
+        }
+        if (sourceSrid) {
+            const source = normalizeSrid(sourceSrid);
+            if (source === 'EPSG:4326') return [easting, northing];
+            if (!global.proj4 || !global.proj4.defs(source)) throw new Error(`Unsupported declared parcel source CRS: ${source}`);
+            const [lon, lat] = global.proj4(source, 'EPSG:4326', [easting, northing]);
+            if (!Number.isFinite(lon) || !Number.isFinite(lat)) throw new Error(`Parcel coordinate transform failed for declared CRS: ${source}`);
+            return [lon, lat];
         }
         if (datasetToLatLng) {
             try {
@@ -52,11 +60,17 @@
         return null;
     }
 
+    function normalizeSrid(value) {
+        const text = String(value).trim().toUpperCase();
+        return /^\d+$/.test(text) ? `EPSG:${text}` : text;
+    }
+
     function convertGeoJSON(geojson, options) {
         const baseType = geojson && typeof geojson.type === 'string' ? geojson.type : 'FeatureCollection';
         const sourceFeatures = Array.isArray(geojson?.features) ? geojson.features : [];
         const opts = options && typeof options === 'object' ? options : {};
         const sourceSrid = opts.sourceSrid;
+        const explicitSourceSrid = sourceSrid !== undefined && sourceSrid !== null && sourceSrid !== '';
         const suppressHTRSWarning = opts.suppressHTRSWarning === true;
         const assumeHTRS = sourceSrid === 3765 || sourceSrid === 'EPSG:3765' || sourceSrid === 'htrs96';
         let htrsWarningCount = 0;
@@ -64,6 +78,11 @@
             type: baseType,
             features: []
         };
+        const normalizedSourceSrid = explicitSourceSrid ? normalizeSrid(sourceSrid) : null;
+        if (explicitSourceSrid && normalizedSourceSrid !== 'EPSG:4326'
+            && (!global.proj4 || !global.proj4.defs(normalizedSourceSrid))) {
+            throw new Error(`Unsupported declared parcel source CRS: ${normalizedSourceSrid}`);
+        }
 
         sourceFeatures.forEach(originalFeature => {
             if (!originalFeature || typeof originalFeature !== 'object') {
@@ -119,16 +138,17 @@
                     if (!Array.isArray(first) || first.length < 2) return;
                     const coord0 = Math.abs(first[0]);
                     const coord1 = Math.abs(first[1]);
-                    const isDatasetCoord = coord0 > 1000 || coord1 > 1000;
+                    const isDatasetCoord = explicitSourceSrid ? normalizedSourceSrid !== 'EPSG:4326' : coord0 > 1000 || coord1 > 1000;
                     // Simple check: if either coordinate is > 1000, it's dataset coordinates (HTRS96)
                     // Otherwise, if both are within WGS84 bounds, treat as WGS84
                     // NOTE: Backend already transforms to WGS84, so if we see HTRS96 values here,
                     // it means either: 1) backend transformation failed, or 2) data came from OSS WFS (not our backend)
-                    const looksLikeLatLng = coord0 <= 1000 && coord1 <= 1000 &&
-                        (coord0 <= 180 && coord1 <= 90);
+                    const looksLikeLatLng = explicitSourceSrid
+                        ? normalizedSourceSrid === 'EPSG:4326'
+                        : coord0 <= 1000 && coord1 <= 1000 && (coord0 <= 180 && coord1 <= 90);
 
                     // Log if we detect HTRS96 coordinates when we expect WGS84 (backend should have transformed)
-                    if (!looksLikeLatLng && isDatasetCoord && !suppressHTRSWarning && !assumeHTRS && htrsWarningCount < 3) {
+                    if (!looksLikeLatLng && isDatasetCoord && !explicitSourceSrid && !suppressHTRSWarning && !assumeHTRS && htrsWarningCount < 3) {
                         const geomType = geometry.type;
                         console.warn(`[convertGeoJSON] Detected HTRS96 coordinates for ${geomType} parcel ${parcelId} - backend transformation may have failed`, {
                             firstCoordinate: first,
@@ -154,16 +174,16 @@
                             polyCoords[r] = ring.map((coord, idx) => {
                                 if (conversionFailed) return [0, 0]; // Fast-fail if we already know it's bad
 
-                                const convertedCoord = convertDatasetCoordToLatLng(coord[0], coord[1]);
+                                const convertedCoord = convertDatasetCoordToLatLng(coord[0], coord[1], explicitSourceSrid ? normalizedSourceSrid : null);
                                 if (convertedCoord) {
                                     conversionSuccessCount++;
                                     return convertedCoord;
                                 }
 
-                                // Fallback to htrs96ToWGS84
-                                if (typeof global.htrs96ToWGS84 === 'function') {
+                                // Fallback: parcel coords are in the dataset CRS
+                                if (!explicitSourceSrid && typeof global.datasetToWgs84 === 'function') {
                                     try {
-                                        const [lat, lon] = global.htrs96ToWGS84(coord[0], coord[1]);
+                                        const [lat, lon] = global.datasetToWgs84(coord[0], coord[1]);
                                         if (Number.isFinite(lat) && Number.isFinite(lon)) {
                                             conversionSuccessCount++;
                                             return [lon, lat];
@@ -172,7 +192,7 @@
                                 }
 
                                 // If conversion failed, mark as failed and return invalid coord
-                                // The validation in ingestParcelFeatures will catch (0, 0) and skip this parcel
+                                // The cadastral repository validates unusable parcel geometry before publication.
                                 conversionFailed = true;
                                 conversionFailedCount++;
                                 const parcelId = properties?.parcelId;
@@ -198,10 +218,10 @@
                                 } catch (_) { /* ignore and fall back */ }
                             }
                             if (!areaAdded) {
-                                try {
-                                    const htrsCoords = exterior.map(coord => global.wgs84ToHTRS96(coord[1], coord[0]));
-                                    computedArea += calculateArea([htrsCoords]);
-                                } catch (_) { /* ignore */ }
+                                // Without turf: the planar area in a frame on this ring (projections.md §2)
+                                const frame = global.__metricFrame.frameFor(exterior);
+                                const metricCoords = exterior.map(coord => frame.latLngToMetric(coord[1], coord[0]));
+                                computedArea += calculateArea([metricCoords]);
                             }
                         }
                     }
@@ -255,4 +275,3 @@
         yieldToMainThread
     };
 })(typeof window !== 'undefined' ? window : globalThis);
-

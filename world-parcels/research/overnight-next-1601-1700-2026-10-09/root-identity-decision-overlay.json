@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-1601-1700",
+  "recordedAt": "2026-10-10T10:46:00.599550Z",
+  "sourceRoster": "ranked-population.json",
+  "sourceRosterSha256": "be9f7bdc0e757dad210e3a4e416c3635ba8a7cea5d1985b43efa93831c61ce9f",
+  "decisions": [
+    {
+      "wupCityCode": 1027,
+      "rank": 1654,
+      "countryCode": "SL",
+      "name": "Bo",
+      "decision": "different_country",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        7.9551092048514,
+        -11.7358330659544
+      ],
+      "population2025Persons": 345988,
+      "priorCountryCode": "BO",
+      "priorCountryName": "Bolivia (Plurinational State of)",
+      "reason": "The only ambiguous prior match is a country-code filename: BO denotes Bolivia, while the immutable WUP settlement is Bo in Sierra Leone (SL). The retained first-party GeoServer response has Bolivian rural features in Beni/Tarija, far from the WUP Bo point. The Bolivia country packet is not a Bo city investigation. Keep the WUP identity unchanged and queue Bo for its own research; no parcel discovery or absence is inferred for Bo.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+          "observation": "WUP 2025 rank 1654, City_Code 1027, Bo, Sierra Leone/SL, 2025 point [7.9551092048514,-11.7358330659544] and Pop 345.988 thousand; checked against the original official CSV.gz with SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114."
+        },
+        {
+          "path": "world-parcels/research/retry/countries/BO.json",
+          "observation": "Country retry identifies key BO and a Bolivia ministry GeoServer source, with the retained response file named BO-parcel-response.json."
+        },
+        {
+          "path": "world-parcels/research/retry/countries/BO-parcel-response.json",
+          "observation": "Original first-party GeoServer FeatureCollection has two rural titled-property features; the first is tagged dep=Beni, prov=Marban, mun=San Andrés and geometry longitudes are around -63, not Sierra Leone."
+        },
+        {
+          "path": "world-parcels/research/countries/SL.json",
+          "observation": "Separate Sierra Leone country investigation recorded temporary ministry-site unavailability; it neither identifies a prior Bo city attempt nor establishes parcel absence."
+        }
+      ],
+      "checkedAt": "2026-10-10T10:46:00.599550Z"
+    }
+  ],
+  "immutableRosterNote": "The ranked WUP roster is unchanged. This overlay resolves the false prior-file match in the effective pending queue and identity-review ledgers; city research and admission remain separate."
+}

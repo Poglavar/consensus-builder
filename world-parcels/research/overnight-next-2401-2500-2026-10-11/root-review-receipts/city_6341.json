@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6341",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-6341-phan-rang-th-p-ch-m.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/phan-rang-th-p-ch-m-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:03:37Z",
+  "reason": "WUP rank 2438, Viet Nam, exact point and 240480 persons match the immutable roster. English and Vietnamese query text, outcomes, and URLs are recorded. Public national viewer configuration and region endpoints did not yield a native-ID parcel polygon; authenticated routes required login and the local portal DNS failed. Registry custody remains unresolved (null), not absent. No retained polygon or independently qualified adapter; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are missing."
+}

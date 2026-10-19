@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 9841,
+  "queueRank": 3299,
+  "name": "Bendaravadi",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [12.3645761680682, 76.9111611706644],
+  "population2025": 182740,
+  "population2025k": 182.74,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bendaravadi Karnataka cadastral parcel map official land records GIS Mysuru",
+        "result": "First-party discovery identified Karnataka Government land-record services, Mysuru district's official RTC page, the Department of Land Resources map-digitization status page for Mysuru, and the Karnataka State GIS/LRI portals. A search result also surfaced Bendaravadi in an official Karnataka agriculture certification PDF, but did not expose parcel geometry or establish that the WUP city point is that locality.",
+        "actualResultUrls": [
+          "https://mysore.nic.in/en/service/rtc/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/583",
+          "https://stategisportal.nic.in/stategisportal/Home/Map/29",
+          "https://sujala3lri.karnataka.gov.in/",
+          "https://kssoca.karnataka.gov.in/storage/pdf-files/2025/NPOP.pdf"
+        ]
+      },
+      {
+        "language": "Kannada (local)",
+        "query": "ಬೇಂದ್ರವಾಡಿ ಕರ್ನಾಟಕ ಭೂ ದಾಖಲೆ ನಕ್ಷೆ ಅಧಿಕೃತ ಮೈಸೂರು",
+        "result": "Kannada-language discovery identified the official Karnataka LRI GIS portal and its survey-number/LRI-card workflow, including public PDF, KML, and shapefile download claims. No anonymous parcel ID-plus-geometry response or Bendaravadi-specific cadastral layer was exposed.",
+        "actualResultUrls": [
+          "https://sujala3lri.karnataka.gov.in/",
+          "https://www.sujala3lri.karnataka.gov.in/Dashboard/Index",
+          "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Karnataka Revenue Department / Bhoomi land-record services; Mysuru district administration as the local public service presentation",
+    "locality": "Bendaravadi WUP record; district/taluk locality was not independently confirmed from the public response",
+    "evidenceUrls": [
+      "https://mysore.nic.in/en/service/rtc/",
+      "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/583",
+      "https://sujala3lri.karnataka.gov.in/"
+    ],
+    "scopeNote": "Official sources evidence Karnataka land-record, cadastral-map and survey-number procedures and Mysuru district's RTC service, but not an open Bendaravadi-specific parcel layer. The Bendaravadi mention found in an official Karnataka PDF refers to Chamarajanagar and was not conflated with the preserved WUP point."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Karnataka Bhoomi/Revenue Maps and Karnataka Government LRI GIS portals",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {
+      "canonicalId": "No parcel response observed",
+      "safeGeometry": "No parcel response observed",
+      "otherDocumentedFields": ["district", "taluk", "hobli", "village", "survey number", "wscode"]
+    },
+    "compositeKeyProvenance": "The LRI API documentation exposes village, wscode, district, taluk and hobli as survey lookup inputs, but no parcel response was obtained and no identity was synthesized."
+  },
+  "officialSources": [
+    {"url": "https://mysore.nic.in/en/service/rtc/", "observation": "Official Mysuru district page directs users to Karnataka's land-record service for online RTC/Pahani records and identifies the Revenue Department at the DC Office."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/583", "observation": "Official Department of Land Resources page provides Mysuru district cadastral-map digitization/georeferencing status fields, but no parcel geometry response."},
+    {"url": "https://sujala3lri.karnataka.gov.in/", "observation": "Official Karnataka LRI portal advertises survey-number LRI cards, interactive GIS and public PDF/KML/shapefile downloads; it did not yield a Bendaravadi parcel feature in this attempt."},
+    {"url": "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli", "observation": "Official API documentation exposes survey-number lookup parameters, but not a returned parcel geometry or safe native identity."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://landrecords.karnataka.gov.in/", "outcome": "Anonymous HTTPS request timed out after 12 seconds; no credentials, login, CAPTCHA or bypass was used."},
+    {"method": "GET", "url": "https://landrecords.karnataka.gov.in/service0/", "outcome": "Anonymous HTTPS request timed out after 12 seconds; no service schema or parcel response was obtained."},
+    {"method": "GET", "url": "https://landrecords.karnataka.gov.in/service3/", "outcome": "Anonymous HTTPS request timed out after 25 seconds; no current JavaScript/configuration or revenue-map response was obtained."},
+    {"method": "GET", "url": "https://sujala3lri.karnataka.gov.in/", "outcome": "First-party Kannada/English portal was discoverable through search; no bounded parcel ID-plus-geometry request was executed because the public response did not expose a confirmed parcel endpoint for this locality."},
+    {"method": "GET", "url": "https://mobservice.sujala3lri.karnataka.gov.in/Help/Api/GET-api-GetDSSSurveyNumber_village_wscode_district_taluk_hobli", "outcome": "API help route was identified by first-party discovery; no request with guessed locality or survey parameters was sent, and no identity or geometry was invented."},
+    {"method": "POST", "url": "Karnataka land-record parcel/API route", "body": "Not sent: no confirmed public route, schema, CRS, or bounded anonymous ID-plus-geometry endpoint was established.", "outcome": "Not attempted; no parcel absence inference made."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Karnataka's official land-record and LRI services cover textual land records, survey-number workflows and cadastral-map/LRI GIS functions; Mysuru district publishes an RTC service route.",
+    "verifiedOpenScope": "Cadastral custodianship and procedures were evidenced, but no anonymous parcel geometry, native parcel identity, CRS, or citywide map extent was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The WUP point was preserved exactly in latitude/longitude order and was not shifted or used as an absence test.",
+    "Bendaravadi locality/district alignment remains uncertain: an official Karnataka search result places a Bendaravadi Village in Chamarajanagar, while the WUP point is queued under the supplied city record near Mysuru.",
+    "Timeouts and lack of an exposed public endpoint are not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; independent serial runtime qualification remains required."
+  ],
+  "nextStep": "A later attempt may inspect the live Karnataka Bhoomi/Revenue Maps and LRI configuration when reachable, confirm the locality's administrative chain, and seek a bounded safe native-ID-plus-geometry response without treating timeout or exact-point non-response as absence."
+}

@@ -1,0 +1,175 @@
+{
+ "schemaVersion": 1,
+ "basis": "Eleven previously complete African qualifications recovered from a manifest defect; all nine gates and independent metric/alignment checks reverified offline. Admission remains separate.",
+ "pointOrder": "latitude-longitude",
+ "counts": {
+  "qualified": 11
+ },
+ "cities": [
+  {
+   "cityCode": 1363,
+   "cityName": "Sikasso",
+   "countryCode": "ML",
+   "point": [
+    11.3136054897523,
+    -5.66973498556137
+   ],
+   "sourceIds": [
+    "ml-sprdf-ninacad-parcelle-wfs"
+   ],
+   "outcome": "qualified",
+   "summary": "The existing Mali WFS adapter passed all nine schema-v2 checks for Sikasso. The saved qualifier exited 0; eight bounded-sample polygons passed geometry and alignment checks. [DGDC confirms NINACAD’s cadastral parcel purpose](https://dndc.gouv.ml/cadastre/). Citywide completeness, currentness, and geometry reuse terms remain unresolved; this result does not admit the source to runtime.",
+   "finishedAt": "2026-10-18T20:11:37+00:00"
+  },
+  {
+   "cityCode": 1498,
+   "cityName": "Lusaka",
+   "countryCode": "ZM",
+   "point": [
+    -15.3980630064894,
+    28.2909138320442
+   ],
+   "sourceIds": [
+    "zm-mlnr-nsdi-zilmis-cadasternew"
+   ],
+   "outcome": "qualified",
+   "summary": "The existing production ArcGIS adapter qualified the first-party CadasterNew Lots source without code changes. All nine live gates passed; independent metric and alignment recomputations matched. Five polygons were verified in bounded samples. Citywide completeness and reuse terms remain unverified.",
+   "finishedAt": "2026-10-18T20:11:38+00:00"
+  },
+  {
+   "cityCode": 2020,
+   "cityName": "Gqeberha",
+   "countryCode": "ZA",
+   "point": [
+    -33.8853793668229,
+    25.5502896875663
+   ],
+   "sourceIds": [
+    "za-csg-property-viewer-erven"
+   ],
+   "outcome": "qualified",
+   "summary": "Implemented geometry-scoped IDs and complete exact rereads for the first-party CSG Erven source. The final live qualifier passed all nine schema-v2 gates on 44 unchanged polygons; independent metric and alignment recomputations matched. Focused tests and a browser bundle check passed. This bounded result does not establish citywide completeness or resolve the prior broader-area overlaps, current-…",
+   "finishedAt": "2026-10-18T20:11:39+00:00"
+  },
+  {
+   "cityCode": 2317,
+   "cityName": "Parakou",
+   "countryCode": "BJ",
+   "point": [
+    9.3503067221846,
+    2.62184184014862
+   ],
+   "sourceIds": [
+    "bj-andf-efoncier-geoserver"
+   ],
+   "outcome": "qualified",
+   "summary": "The first-party [ANDF cadastre](https://andf.bj/cadastre/) identifies a cadastral parcel source, and [ANDF’s e-Foncier notice](https://andf.bj/formalisation-fonciere-12-communes-desormais-integrees-a-la-plateforme-e-foncier-benin-des-janvier-2025/) includes Parakou. After fixing the adapter’s CRS:84 response-name check, the saved qualifier passed all nine gates on 105 features; independent metric…",
+   "finishedAt": "2026-10-18T20:11:39+00:00"
+  },
+  {
+   "cityCode": 2606,
+   "cityName": "Divo",
+   "countryCode": "CI",
+   "point": [
+    5.83156567218637,
+    -5.36038273330132
+   ],
+   "sourceIds": [
+    "ci-divo-ecommunes-parcellaire"
+   ],
+   "outcome": "qualified",
+   "summary": "The first-party [Divo E-Commune](https://divo.ecommunes.ci/Accueil) cadastral parcel layer passed all nine live qualification gates and independent metric and CRS rechecks. The adapter retains only safe IDs and full geometry. The 41 qualified polygons cover bounded cells; citywide completeness and reuse terms remain unverified.",
+   "finishedAt": "2026-10-18T20:11:40+00:00"
+  },
+  {
+   "cityCode": 2954,
+   "cityName": "Dodoma",
+   "countryCode": "TZ",
+   "point": [
+    -6.16336934279916,
+    35.7436551366206
+   ],
+   "sourceIds": [
+    "tz-mlhhds-eardhi-taspro-spatial-units36"
+   ],
+   "outcome": "qualified",
+   "summary": "Dodoma’s MLHHSD e-Ardhi cadastral source passed all nine saved qualification checks: 8 polygons, 39 requests, and matching independent metric and alignment rechecks. The WFS adapter now supports a bounded 40-second timeout; focused tests pass. The [Ministry notice](https://www.lands.go.tz/uploads/notices/sw1758881264-26%209%202025%20TAARIFA%20KWA%20UMMA%20MFUMO%20WA%20e-Ardhi-2.pdf) confirms surv…",
+   "finishedAt": "2026-10-18T20:11:41+00:00"
+  },
+  {
+   "cityCode": 4161,
+   "cityName": "Diepsloot",
+   "countryCode": "ZA",
+   "point": [
+    -25.9317614563184,
+    28.0108704187243
+   ],
+   "sourceIds": [
+    "za-csggis-erven"
+   ],
+   "outcome": "qualified",
+   "summary": "The first-party CSG Erven layer passed all nine saved qualification checks on 69 unchanged polygons. Independent metric and alignment recomputation passed. The bounded sample does not establish citywide completeness, current legal title, or redistribution permission.",
+   "finishedAt": "2026-10-18T20:11:42+00:00"
+  },
+  {
+   "cityCode": 4244,
+   "cityName": "Pretoria",
+   "countryCode": "ZA",
+   "point": [
+    -25.7439959804342,
+    28.2516559266623
+   ],
+   "sourceIds": [
+    "za-csg-national-erven"
+   ],
+   "outcome": "qualified",
+   "summary": "The official CSG Erven cadastral layer passed all nine saved qualification checks using the existing production ArcGIS adapter; no adapter changes were needed. The qualifier returned 15 parcels, and separate complete reads in four dispersed urban windows returned 25 distinct parcels. Independent metric and CRS recomputations passed. This establishes technical behavior in bounded samples, not city…",
+   "finishedAt": "2026-10-18T20:11:43+00:00"
+  },
+  {
+   "cityCode": 4836,
+   "cityName": "eMalahleni",
+   "countryCode": "ZA",
+   "point": [
+    -25.8893325235088,
+    29.2170617320474
+   ],
+   "sourceIds": [
+    "za-csg-dffe-erven"
+   ],
+   "outcome": "qualified",
+   "summary": "The existing production ArcGIS adapter qualified the CSG Erven source for eMalahleni. All nine checks passed across 93 requests; independent metric and alignment recomputation confirmed 13 full, safe polygons. The 13 WUP-centered cells returned zero rows, so this establishes bounded technical qualification, not citywide completeness. Currentness and redistribution terms remain unverified.",
+   "finishedAt": "2026-10-18T20:11:43+00:00"
+  },
+  {
+   "cityCode": 4940,
+   "cityName": "Middelburg",
+   "countryCode": "ZA",
+   "point": [
+    -25.7630669966059,
+    29.4394487589585
+   ],
+   "sourceIds": [
+    "za-csg-dffe-erven"
+   ],
+   "outcome": "qualified",
+   "summary": "The existing DFFE ArcGIS adapter passed all nine schema-v2 gates for Middelburg. First-party CSG metadata confirms the Erven cadastral parcel purpose. The qualifier returned 39 distinct polygons from bounded cells; independent metric and EPSG:4148 alignment recomputations matched the saved reports. This does not establish citywide completeness, current legal title, or redistribution permission.",
+   "finishedAt": "2026-10-18T20:11:44+00:00"
+  },
+  {
+   "cityCode": 5368,
+   "cityName": "Kanyamazane",
+   "countryCode": "ZA",
+   "point": [
+    -25.3932903572785,
+    31.1640581037001
+   ],
+   "sourceIds": [
+    "za-csg-dffe-erven"
+   ],
+   "outcome": "qualified",
+   "summary": "The existing production ArcGIS adapter qualified the CSG Erven source for Kanyamazane. All nine schema-v2 checks passed; independent metric and alignment reruns matched, and 140 focused adapter tests passed. The 13 cells around the displaced WUP point were empty. Separate bounded probes establish parcel coverage within the mapped settlement, not citywide completeness. Reuse permission remains unv…",
+   "finishedAt": "2026-10-18T20:11:45+00:00"
+  }
+ ]
+}

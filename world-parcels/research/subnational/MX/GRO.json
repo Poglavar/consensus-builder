@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "GRO",
+ "regionName": "Guerrero",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9 (cookie jar on; viewer-origin Referer where the viewer was fetched)",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.guerrero.gob.mx/catastro",
+   "observation": "200 state catastro page; predial lookup by cadastral key, no map/viewer link found"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.guerrero.gob.mx/catastro",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal page without parcel viewer"
+  },
+  {
+   "url": "https://catastro.guerrero.gob.mx/, sig.guerrero.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset / unresolved"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=predios Guerrero / catastro Acapulco",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only Colombian results"
+  }
+ ],
+ "reuseStatus": "not assessed",
+ "remainingUncertainty": "Weak negative: municipal catastros (Acapulco, Chilpancingo) not checked for viewers; state cadastre is municipal by law. Reused from research/countries/MX.json and research/retry/countries/MX.json: RAN (phina/sig.ran.gob.mx) Akamai 403, INEGI has no parcel service; no national layer.",
+ "nextStep": "Check Acapulco and Chilpancingo municipal viewers."
+}

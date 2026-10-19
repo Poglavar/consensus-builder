@@ -1,0 +1,20 @@
+{
+  "taskId": "city:6839",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-6839-sadiqabad.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sadiqabad-service-review.json",
+    "tmp/valhalla-parcel-research/6839/sadiqabad-base-map.pdf"
+  ],
+  "checkedAt": "2026-10-09T11:01:23.764931Z",
+  "reason": "Held: exact WUP identity and English/Urdu searches checked. Official municipal PDF has a Parcel Boundary legend and district revenue page lists local record centers, grounding registry/map context. The live anonymous bounded ArcGIS parcel query returned code 499 Token Required, with no native-ID polygon. Fresh ID reads, paging, 13 cells, metric GEOS checks, source binding and headed Details verification are missing. Token gating is not citywide absence.",
+  "firstPartyUrlsChecked": [
+    "https://mcsadiqabad.lgpunjab.org.pk/map/",
+    "https://mcsadiqabad.lgpunjab.org.pk/wp-content/uploads/2023/02/Base-Map_Sadaiqabad_22-Jan-2026.pdf",
+    "https://rykhan.punjab.gov.pk/Revenue_department",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&resultRecordCount=1&f=pjson"
+  ]
+}

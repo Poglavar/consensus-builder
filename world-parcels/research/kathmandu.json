@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:150",
+  "queueRank": 150,
+  "name": "Kathmandu",
+  "country": "Nepal",
+  "countryCode": "NP",
+  "centerLatLon": [
+    27.6995856600217,
+    85.334390105517
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://nepal-nga.opendata.arcgis.com/",
+      "observation": "Nepal ArcGIS Hub; no parcel layers found."
+    },
+    {
+      "url": "https://opendatanepal.com/",
+      "observation": "Open Data Nepal reachable; administrative boundaries, not cadastral parcels."
+    },
+    {
+      "url": "https://www.gyanpark.com.np/2022/05/where-and-how-to-find-gis-data-shape-file-of-nepal.html",
+      "observation": "Secondary source (search snippet): digital cadastral data at the Survey Department is released only on request/permission and per-parcel fee; not verified from an official page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://hub.arcgis.com/api/v3/search?q=parcel%20nepal",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only boundaries, literacy, hazards; no parcels"
+    },
+    {
+      "url": "https://hub.arcgis.com/api/v3/search?q=kathmandu%20parcel",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only hospital/apartment points"
+    },
+    {
+      "url": "https://nepal-nga.opendata.arcgis.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "hub app shell"
+    },
+    {
+      "url": "https://dolma.gov.np/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://dos.gov.np/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://kathmandu.gov.np/",
+      "method": "GET",
+      "httpStatus": 307,
+      "contentType": null,
+      "assessment": "redirect only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "national cadastre held by Survey Department/DoLMA, not openly served",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official survey/land hosts unreachable from this client; access model appears request-based but is unconfirmed.",
+  "nextStep": "Retry Survey Department and DoLMA hosts; check Kathmandu Metropolitan City GIS for an open lot layer."
+}

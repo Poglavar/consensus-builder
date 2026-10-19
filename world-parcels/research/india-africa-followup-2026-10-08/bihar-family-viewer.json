@@ -1,0 +1,319 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "sourceId": "bihar-bhunaksha",
+  "countryCode": "IN",
+  "state": "Bihar",
+  "status": "source_level_no_open_vector_geometry_endpoint_verified",
+  "operator": "Directorate of Land Records & Survey, Government of Bihar; public BhuNaksha viewer (NIC-developed per prior evidence)",
+  "officialPortals": [
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "observation": "Returned as an official result to the batch of three exact Hindi searches; page identifies भू-नक्शा as Bihar revenue-map viewing portal."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Official statewide BhuNaksha landing viewer; anonymous GET returned HTTP 200 HTML."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "State 10 (Bihar) viewer; anonymous GET returned HTTP 200 HTML with browser headers and persistent cookies."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.js",
+      "observation": "Current state-specific viewer client JavaScript; HTTP 200 text/javascript, 43,159 bytes."
+    }
+  ],
+  "searchQueries": [
+    {
+      "query": "पटना मानचित्र भू नक्शा भू अभिलेख राजस्व गांव नक्शा बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "हाजीपुर भू नक्शा बिहार गांव खेसरा नक्शा राजस्व",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "दरौली सीवान भू नक्शा राजस्व गांव खेसरा मानचित्र बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    }
+  ],
+  "headersUsed": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "acceptLanguage": "hi-IN,hi;q=0.9,en-IN;q=0.8,en;q=0.7",
+    "origin": "https://bhunaksha.bihar.gov.in",
+    "referer": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "cookieSession": "Persisted normal anonymous browser session; cookie names/values not saved."
+  },
+  "clientInspection": {
+    "httpStatus": 200,
+    "contentType": "text/javascript",
+    "clientRoutesObserved": [
+      "rest/Levels/count",
+      "rest/Levels/ListsAfterLevel",
+      "rest/Levels/levelsFromGiscode",
+      "rest/MapInfo/getVVVVExtentGeoref",
+      "rest/MapInfo/getPlotAtXY",
+      "rest/MapInfo/getPointsfromPNIU",
+      "rest/MapInfo/getGisCode",
+      "rest/Layers/getLayers",
+      "rest/Settings/settingsForCodes",
+      "ScalarDatahandler OP=2/4/5",
+      "WMS"
+    ],
+    "geometrySearch": "Current client contained no GetFeature, GeoJSON, WFS, polygon, or coordinate-geometry transport. Actual click flow calls getPlotAtXY, ScalarDatahandler OP=4, and WMS PLOT_LIST / SAME_OWNER_PLOT_LIST image layers. OP=4 plotInfoLinks points to a per-plot Plot Report page.",
+    "actualClickFlow": "showPlotDetails(coordinates) posts state/giscode/x/y to rest/MapInfo/getPlotAtXY; the success handler requests PLOT_LIST and SAME_OWNER_PLOT_LIST WMS images; in parallel it calls ScalarDatahandler OP=4 with state, selectedLevels(), x and y, then doSelectPlot updates the image layers and displays report links."
+  },
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "form": {
+        "state": "10"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "7 selector levels."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "0",
+        "codes": "",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "38 Bihar district entries."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "formShape": {
+        "state": "10",
+        "gisLevels": "<district>,<subdivision>,<circle>,<village>,CS,06,<sheet>,",
+        "srs": "0"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "Exact viewer-selected cadastral sheet extent in EPSG:32645 plus viewer GIS code."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "formShape": {
+        "state": "10",
+        "giscode": "<viewer-selected GIS code>",
+        "x": "EPSG:32645 easting",
+        "y": "EPSG:32645 northing"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "Selected-sheet point click returns opaque ID, plot/kide number, and attributes_json; the sampled attributes_json was null. It is point identification, not feature enumeration."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+      "method": "GET",
+      "queryShape": {
+        "OP": "4",
+        "state": "10",
+        "levels": "<full selected hierarchy>",
+        "x": "EPSG:32645 easting",
+        "y": "EPSG:32645 northing"
+      },
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bodyBytes": 462,
+      "result": "The body parsed as JSON despite HTML content type. Safe fields included has_data, ID, plotNo, GIS code, info/link fields, and xmin/ymin/xmax/ymax; no polygon/WKT/coordinate/ring fields. Raw body and personal attributes were discarded."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+      "method": "GET",
+      "queryShape": {
+        "OP": "5",
+        "state": "10",
+        "levels": "16,01,01,0046,CS,06,01,",
+        "plotno": "1506"
+      },
+      "httpStatus": 401,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "Public plot-number selection handler returned 401; no login or bypass attempted."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS",
+      "method": "GET",
+      "queryShape": {
+        "SERVICE": "WMS",
+        "REQUEST": "GetCapabilities",
+        "VERSION": "1.1.1",
+        "state": "10",
+        "gis_code": "CS16010100461570601"
+      },
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bodyBytes": 562,
+      "assessment": "Image response, not WMS capabilities XML."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS",
+      "method": "GET",
+      "queryShape": {
+        "SERVICE": "WMS",
+        "VERSION": "1.1.1",
+        "REQUEST": "GetMap",
+        "LAYERS": "VILLAGE_MAP",
+        "STYLES": "VILLAGE_MAP",
+        "SRS": "EPSG:32645",
+        "BBOX": "212366.71219875166,2886409.1401322647,215463.17966433006,2888863.503121295",
+        "WIDTH": "256",
+        "HEIGHT": "256",
+        "FORMAT": "image/png",
+        "TRANSPARENT": "true",
+        "state": "10",
+        "gis_code": "CS16010100461570601",
+        "overlay_codes": ""
+      },
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bodyBytes": 5437,
+      "assessment": "Bounded selected village-sheet render; raster image, not parcel feature geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS",
+      "method": "GET",
+      "queryShape": {
+        "SERVICE": "WMS",
+        "VERSION": "1.1.1",
+        "REQUEST": "GetFeatureInfo",
+        "LAYERS": "VILLAGE_MAP",
+        "QUERY_LAYERS": "VILLAGE_MAP",
+        "INFO_FORMAT": "application/json",
+        "FEATURE_COUNT": "1",
+        "X": "64",
+        "Y": "191",
+        "SRS": "EPSG:32645",
+        "BBOX": "212366.71219875166,2886409.1401322647,215463.17966433006,2888863.503121295",
+        "WIDTH": "256",
+        "HEIGHT": "256",
+        "FORMAT": "image/png",
+        "TRANSPARENT": "true",
+        "state": "10",
+        "gis_code": "CS16010100461570601",
+        "overlay_codes": ""
+      },
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bodyBytes": 5437,
+      "assessment": "Single-pixel feature-info request returned a raster PNG instead of JSON/HTML/GML feature data."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS",
+      "method": "GET",
+      "queryShape": {
+        "VERSION": "1.3.0",
+        "REQUEST": "GetFeatureInfo",
+        "LAYERS": "PLOT_LIST",
+        "QUERY_LAYERS": "PLOT_LIST",
+        "INFO_FORMAT": "application/json",
+        "FEATURE_COUNT": "1",
+        "I": "64",
+        "J": "191",
+        "CRS": "EPSG:32645",
+        "BBOX": "212366.71219875166,2886409.1401322647,215463.17966433006,2888863.503121295",
+        "WIDTH": "256",
+        "HEIGHT": "256",
+        "FORMAT": "image/png",
+        "state": "10",
+        "gis_code": "CS16010100461570601",
+        "plot_id": "0sJER7H2RTKuyqV9nFbJfQ",
+        "STYLES": "PLOT_SELECTION"
+      },
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bodyBytes": 358,
+      "assessment": "Byte-identical to the same bounded GetMap image; no feature attributes or geometry."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/plotReportPDF.jsp",
+      "method": "GET",
+      "queryShape": null,
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bodyBytes": 2568,
+      "assessment": "Exact link returned by OP=4 was an HTML page titled Plot Report, not a PDF; response had no SVG/canvas/image/path elements or coordinate/geometry markers. Query values omitted.",
+      "query": {
+        "state": "10",
+        "giscode": "CS16010100461570601",
+        "plotno": "1506",
+        "sameowner": "false",
+        "derivedLayers": "-1",
+        "selectedLayers": "-1",
+        "scale": "0"
+      }
+    }
+  ],
+  "sampleOnly": {
+    "scope": "One selected parcel sample on a Darauli(157) sheet; not a WUP target point.",
+    "selectedVillage": "Darauli(157), village code 0046; CS Map sheet 01; state 10; GIS code CS16010100461570601.",
+    "clickResponse": {
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "bytes": 68,
+      "safeKeys": [
+        "id",
+        "kide",
+        "attributes_json"
+      ],
+      "id": "0sJER7H2RTKuyqV9nFbJfQ",
+      "plotNumber": "1506",
+      "attributes_json": "null"
+    },
+    "op4Response": {
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 462,
+      "parsedAs": "JSON",
+      "safeFields": {
+        "has_data": "Y",
+        "ID": "0sJER7H2RTKuyqV9nFbJfQ",
+        "plotNo": "1506",
+        "bboxEPSG32645": [
+          213136.16248706373,
+          2886997.740605208,
+          213222.01519499876,
+          2887193.046091306
+        ]
+      },
+      "geometryFieldsPresent": false
+    },
+    "highlightImage": {
+      "layer": "PLOT_LIST",
+      "style": "PLOT_SELECTION",
+      "httpStatus": 200,
+      "contentType": "image/png",
+      "bytes": 358
+    },
+    "personalData": "No raw click, OP=4, report, WMS, or owner-linked response was saved."
+  },
+  "sourceConclusion": "BhuNaksha exposes rasterized cadastral map imagery, map-sheet EPSG:32645 extents, and selected-sheet single-plot click identification by opaque ID/plot number. Its current viewer client and the followed anonymous click→OP=4→highlight→Plot Report flow do not expose a complete bounded polygon feature query or machine-readable parcel boundary. A feature source/adapter cannot be justified from these responses.",
+  "scopeLimit": "This is a shared Bihar source-family blocker for this viewer only. It is not a city-specific geometry investigation for all 23 Bihar targets, does not establish that Bihar has no parcel data, and does not rule out other official urban/regional services or a future download route.",
+  "reuseTerms": "Not assessed; terms are informational only.",
+  "nextStep": "Revisit if Bihar publishes anonymous vector parcel geometry or a bounded official download with stable village+plot IDs and completeness semantics; separately resolve each target WUP point to its official revenue village."
+}

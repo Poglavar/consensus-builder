@@ -1,0 +1,117 @@
+{
+  "cityId": "capital:MD:tiraspol",
+  "name": "Tiraspol",
+  "country": "Moldova",
+  "countryCode": "MD",
+  "centerLatLon": [
+    46.8403,
+    29.6433
+  ],
+  "capitalRole": "de facto seat of Transnistria; supplemental disputed-status seat",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific cadastral and public parcel geometry investigation; registry evidence, retrieved geometry and runtime qualification are assessed separately.",
+  "checkedAt": "2026-10-08",
+  "executedQueries": [
+    {
+      "query": "Tiraspol cadastral land registry parcel map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Тирасполь кадастровая карта земельные участки геопортал",
+      "language": "Russian",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:kadastr.gospmr.org Тирасполь земельные",
+      "language": "Russian",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:government.gospmr.org Тирасполь кадастр геоинформационной",
+      "language": "Russian",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:idapmr.com Тирасполь земельный участок",
+      "language": "Russian",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://kadastr.gospmr.org/",
+      "observation": "Indexed public landing page describes land-cadastre GIS, but current direct reads timed out."
+    },
+    {
+      "url": "https://government.gospmr.org/gosudarstvennyj-zemelnyj-kadastr-tekushhaya-rabota-i-perspektivy/",
+      "observation": "Official report specifically names Tiraspol boundary work within the land-cadastre program; it does not prove parcel-level city coverage."
+    },
+    {
+      "url": "https://idapmr.com/ploshadki/",
+      "observation": "Public agency listings identify several land plots in Tiraspol, without a public cadastral feature API."
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-08T18:12:17.911Z",
+      "method": "GET",
+      "url": "https://idapmr.com/ploshadki/",
+      "httpStatus": 200,
+      "finalUrl": "https://idapmr.com/ploshadki/",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 44983
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:40.780Z",
+      "method": "GET",
+      "url": "https://government.gospmr.org/gosudarstvennyj-zemelnyj-kadastr-tekushhaya-rabota-i-perspektivy/",
+      "error": "fetch failed",
+      "cause": "UND_ERR_CONNECT_TIMEOUT",
+      "httpStatus": null
+    },
+    {
+      "checkedAt": "2026-10-08T18:10:40.779Z",
+      "method": "GET",
+      "url": "https://kadastr.gospmr.org/",
+      "error": "fetch failed",
+      "cause": "UND_ERR_CONNECT_TIMEOUT",
+      "httpStatus": null
+    },
+    {
+      "name": "tiraspol-viewer",
+      "url": "https://kadastr.gospmr.org/",
+      "checkedAt": "2026-10-08T18:04:18.625Z",
+      "error": "fetch failed",
+      "cause": "UND_ERR_CONNECT_TIMEOUT",
+      "httpStatus": null
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Regional cadastral GIS and Tiraspol land-plot listings exist, but no city parcel-registration extract or cadastral vector sample was verified.",
+  "registryEvidenceUrls": [
+    "https://kadastr.gospmr.org/",
+    "https://government.gospmr.org/gosudarstvennyj-zemelnyj-kadastr-tekushhaya-rabota-i-perspektivy/",
+    "https://idapmr.com/ploshadki/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "sourceCandidate": {
+    "url": "https://kadastr.gospmr.org/",
+    "publisher": "De facto Transnistrian authorities",
+    "safeSampleFile": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Supplementary de facto seat; no political recognition claim. City-specific parcel registry scope remains unverified.",
+    "verifiedOpenScope": "No city-specific public cadastral polygon response verified.",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Cadastral GIS landing page and official news endpoint timed out over unrestricted network; investment listings are not a cadastral polygon service.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "resultCategory": "city_registry_and_geometry_unverified",
+  "status": "complete",
+  "researchGroup": "europe"
+}

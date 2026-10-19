@@ -1,0 +1,57 @@
+{
+  "cityCode": 11040,
+  "queueRank": 1422,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [18.2755426659138, 109.501834925323],
+  "population2025": 398270,
+  "population2025k": 398.27,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sanya China official cadastral parcel map land registry GIS",
+        "result": "Search discovery was noisy and did not establish an open parcel endpoint. Direct first-party review located the Sanya Natural Resources and Planning Bureau site and its public geospatial-platform link.",
+        "actualResultUrls": [
+          "https://www.google.com/search?q=Sanya+China+official+cadastral+parcel+map+land+registry+GIS",
+          "https://www.bing.com/search?q=Sanya+China+official+cadastral+parcel+map+land+registry+GIS",
+          "https://zgj.sanya.gov.cn",
+          "https://hainan.tianditu.gov.cn/sanya/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "三亚市 自然资源和规划局 地籍 地图 官方",
+        "result": "The official Sanya government search returned a cadastral-map information notice from the Sanya Real Estate Registration Center and linked the Sanya Natural Resources and Planning Bureau. The notice says cadastral-map information can be queried with authorization from the property owner; no anonymous parcel geometry service was exposed.",
+        "actualResultUrls": [
+          "https://www.baidu.com/s?wd=%E4%B8%89%E4%BA%9A%E5%B8%82+%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80+%E5%9C%B0%E7%B1%8D+%E5%9C%B0%E5%9B%BE+%E5%AE%98%E6%96%B9",
+          "https://www.bing.com/search?q=%E4%B8%89%E4%BA%9A%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%92%8C%E8%A7%84%E5%88%92%E5%B1%80+%E5%9C%B0%E7%B1%8D",
+          "https://search.sanya.gov.cn/s?siteCode=4602000035&column=%E5%85%A8%E7%AB%99&searchWord=%E5%9C%B0%E7%B1%8D",
+          "https://zgj.sanya.gov.cn/zgjsite/bdcgs/newxxgklist.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "三亚市自然资源和规划局 (Sanya Municipal Bureau of Natural Resources and Planning)",
+    "localOffice": "三亚市不动产登记中心 (Sanya Real Estate Registration Center)",
+    "localOfficeEvidenceUrl": "https://search.sanya.gov.cn/s?siteCode=4602000035&column=%E5%85%A8%E7%AB%99&searchWord=%E5%9C%B0%E7%B1%8D",
+    "sourceScope": "Municipal natural-resources/planning and real-estate-registration administration; the official site has dedicated cadastral-map information and real-estate-registration sections.",
+    "geometryAccess": "The official notice describes cadastral-map (宗地图) lookup with property-owner authorization. No anonymous public feature-service endpoint was verified; no credentials or authorization were used."
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a public parcel feature service. The public geospatial-platform route timed out; this is not evidence of citywide absence.",
+    "crs": null
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A local municipal registry custodian and cadastral-map procedure were verified, but no anonymous safe-ID geometry response, schema/CRS, or independently qualified adapter was found.",
+    "adapterAdmission": false
+  }
+}

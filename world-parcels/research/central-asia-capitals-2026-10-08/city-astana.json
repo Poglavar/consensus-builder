@@ -1,0 +1,407 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "verifiedParcelResponse": {
+    "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&bbox=670049.009,5666880.225,670069.009,5666900.225,EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "featureCount": 1,
+    "verifiedFeatureIds": [
+      "21320072529"
+    ],
+    "nativeIdField": "kad_nomer",
+    "virtualGeometryId": "KZ:astana:egkn-u-view:sha256:16dc5f1d351a453f13da42e68fc1dcbfe0910104b25dbd340428faca80b72a49",
+    "evidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-center.geojson",
+    "requestFilter": "WFS 2.0.0 GetFeature on egkn:u_view; viewparams district_id:254; 20 m EPSG:32642 bbox; propertyname gid,kad_nomer,geom; count=3; no auth/cookies."
+  },
+  "source": {
+    "sourceId": "KZ-NATIONAL-PKK-U-VIEW",
+    "name": "Kazakhstan National Public Cadastral Map (PKK/EGKN), land layer u_view",
+    "url": "https://map.gov4c.kz/egkn/",
+    "operator": "Public national cadastral map / EGKN; official gov.kz links identify the public national map.",
+    "serviceType": "Public WFS 2.0.0 GetFeature with viewer district_id viewparam",
+    "layer": "egkn:u_view (viewer JavaScript calls this snapping layer for land geometry; layer display name in viewer is “lands”)",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "EPSG:32642 for selected Astana district",
+    "nativeIdField": "kad_nomer",
+    "nativeIdEvidence": "DescribeFeatureType exposes kad_nomer. An exact OGC PropertyIsEqualTo filter for kad_nomer=21320072529 in district 254 returned exactly one feature. GeoServer feature.id changed across repeated queries; use kad_nomer or geometry hash, not generated feature.id. Global permanence semantics not independently documented."
+  },
+  "registryFound": null,
+  "verifiedSample": true,
+  "targetGeometryEvidence": "The native-CRS 20 m target-centered national WFS query returned a valid closed 1,955.54 m² MultiPolygon containing the selected point, with native cadastral number 21320072529. A 3×3 neighborhood grid returned 154 unique parcels (190 cell rows); all 154 polygons are valid and all rings closed. Five explicit positive-area overlap pairs were assessed in EPSG:32642: 0.0000136–0.450998 m², with a maximum of 0.074380% of the smaller parcel, using the same projected intersection and parent areas. The two largest are highly elongated slivers (minimum rotated envelope 0.009818×98.479806 m and 0.012098×90.983847 m). Only the target parcel contains the center. City coverage and adapter acceptance remain pending.",
+  "nativeIdReadiness": "candidate_verified_public_code",
+  "cityId": "capital:KZ:astana",
+  "name": "Astana",
+  "country": "Kazakhstan",
+  "countryCode": "KZ",
+  "centerLatLon": [
+    51.1282,
+    71.4304
+  ],
+  "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary.",
+  "resultCategory": "qualified_pending_acceptance",
+  "priorEvidence": [],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Kazakh",
+      "exactQuery": "site:gov.kz Астана жер кадастры карта жер учаскелері кадастр GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.gov.kz/memleket/entities/astana-saulet/press/news/details/324850?lang=ru",
+        "https://gis.esaulet.kz/portal/apps/experiencebuilder/experience/?id=b9f6d12fcdc644f6944a96d5c42b915f"
+      ],
+      "summary": "Search surfaced the official Astana geoportal and a city information page describing its public map, including land allocations/plots with cadastral numbers and intended purpose. The mapped feature layer found in the viewer did not expose a cadastral-number field; the bounded sample polygons were each about 0.996 m² and did not contain the chosen center."
+    },
+    {
+      "languageScript": "Russian",
+      "exactQuery": "Астана публичная кадастровая карта Казахстан карта земельных участков кадастр геопортал официальный WFS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://gis.esaulet.kz/portal/apps/experiencebuilder/experience/?id=b9f6d12fcdc644f6944a96d5c42b915f",
+        "https://www.gov.kz/memleket/entities/astana-saulet/press/news/details/324850?lang=ru"
+      ],
+      "summary": "Same official city GIS lead; no separate national public cadastral polygon endpoint verified in this query."
+    },
+    {
+      "languageScript": "Kazakh",
+      "exactQuery": "site:gov.kz Астана Қазақстан астанасы ресми",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.gov.kz/article/19305?lang=kk"
+      ],
+      "summary": "Official Kazakh government article identifies Astana as the capital of Kazakhstan."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.gov.kz/article/19305?lang=kk",
+      "operator": "Government of Kazakhstan",
+      "observation": "Kazakh-language government article identifies Astana city as Kazakhstan’s capital."
+    },
+    {
+      "url": "https://www.gov.kz/memleket/entities/astana-saulet/press/news/details/324850?lang=ru",
+      "operator": "Astana city architecture and planning authority",
+      "observation": "Official city information describes the public Geoportal ArcGIS map as showing land plots/allocations with cadastral numbers and purpose, alongside planning information. This is a portal-level claim; layer 18 metadata retrieved in this pass has no cadastral-number attribute."
+    },
+    {
+      "url": "https://gis.esaulet.kz/portal/apps/experiencebuilder/experience/?id=b9f6d12fcdc644f6944a96d5c42b915f",
+      "operator": "Astana public Geoportal ArcGIS Experience Builder",
+      "observation": "Public viewer HTTP 200; item data links WebMap c1d82fa0909d4fdfb6e5149bbc3bca2b and operational layer 18 “Земельные отводы” (Land allocations). Layer 18 is polygon geometry, spatial reference is local Astana projection; query supports GeoJSON conversion in WGS84."
+    },
+    {
+      "url": "https://gis.esaulet.kz/server/rest/services/Sloi_geoportala_otkrytiy_kontur_0702/MapServer/18?f=pjson",
+      "operator": "Astana official Geoportal ArcGIS service",
+      "observation": "Layer metadata lists OBJECTID, NAME, ADDRESS, SHAPE_Length, SHAPE_Area, LAND_AREA (“Площадь отвода”), NAME_ZHK and REGION; it does not expose a cadastral number field. Personal names/address values were not requested."
+    },
+    {
+      "url": "https://map.gov4c.kz/egkn/rest/map/districts?lang=ru",
+      "operator": "National PKK public district selector",
+      "observation": "Public REST selector HTTP 200 lists region 21 (Astana) and six districts, with district id and the correct output srs; selected point’s matching WFS district is id 254, Есиль, EPSG:32642."
+    },
+    {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "operator": "National PKK GeoServer WFS",
+      "observation": "The viewer’s JS uses egkn:u_view for land snapping and sends district_id viewparams; no unfiltered query is equivalent to the viewer’s request."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://gis.esaulet.kz/portal/apps/experiencebuilder/experience/?id=b9f6d12fcdc644f6944a96d5c42b915f",
+      "method": "GET, public viewer with browser headers",
+      "httpStatus": 200,
+      "assessment": "Ordinary public viewer loaded without authentication."
+    },
+    {
+      "url": "https://gis.esaulet.kz/portal/sharing/rest/content/items/b9f6d12fcdc644f6944a96d5c42b915f/data?f=pjson",
+      "method": "GET, item webmap configuration",
+      "httpStatus": 200,
+      "assessment": "Webmap references the city feature layer service and operational layers."
+    },
+    {
+      "url": "https://gis.esaulet.kz/server/rest/services/Sloi_geoportala_otkrytiy_kontur_0702/MapServer/18?f=pjson",
+      "method": "GET, ArcGIS layer metadata",
+      "httpStatus": 200,
+      "assessment": "Feature Layer, polygon, layer name Земельные отводы, local projection, public query support, maxRecordCount 10000."
+    },
+    {
+      "url": "https://gis.esaulet.kz/server/rest/services/Sloi_geoportala_otkrytiy_kontur_0702/MapServer/18/query?where=1%3D1&geometry=71.4294%2C51.1272%2C71.4314%2C51.1292&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=LAND_AREA%2CREGION&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "method": "GET, ArcGIS query, browser headers and public viewer session cookie only",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "requestFilter": "1=1 intersecting 0.002° bbox [71.4294,51.1272,71.4314,51.1292], resultRecordCount 3, outFields LAND_AREA and REGION only, returnGeometry=true, in/out SR 4326",
+      "featureCount": 3,
+      "assessment": "All 3 polygons have closed 5-position rings, LAND_AREA=0,0001 and REGION=Есиль; independently calculated spherical areas are ~0.996 m² each. None contains the chosen point [71.4304,51.1282]. Response says exceededTransferLimit=true, so this is a bounded sample, not a complete box count. Their scale/attributes do not establish plausibly parcel-sized cadastral geometry."
+    },
+    {
+      "url": "https://gis.esaulet.kz/server/rest/services/Sloi_geoportala_otkrytiy_kontur_0702/MapServer/17/query?where=1%3D1&geometry=71.4294%2C51.1272%2C71.4314%2C51.1292&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PLOSH_ZEM&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "method": "GET, bounded alternative development-plot layer query, browser headers",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "assessment": "No features returned in the same small center box. The field used was the documented area field PLOSH_ZEM; the first attempt with an invalid field was discarded."
+    },
+    {
+      "url": "https://map.gov4c.kz/egkn/rest/map/districts?lang=ru",
+      "method": "GET, public district selector, no credentials",
+      "httpStatus": 200,
+      "assessment": "Region 21 “г. Астана” lists six district IDs; district 254 is Есиль, EPSG:32642."
+    },
+    {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=egkn%3Au_view",
+      "method": "GET, WFS DescribeFeatureType, no cookies",
+      "httpStatus": 200,
+      "assessment": "Schema contains native cadastral number field kad_nomer and geometry; addresses/owners not requested."
+    },
+    {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&bbox=670049.009,5666880.225,670069.009,5666900.225,EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254",
+      "method": "GET, viewer-protocol WFS GetFeature with district_id viewparam, no cookies/credentials",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "featureCount": 1,
+      "assessment": "One parcel-like polygon at the selected point; safe fields gid and kad_nomer; valid closed geometry about 1,955.54 m²; exact identity code 21320072529."
+    },
+    {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&filter=%3Cfes:Filter+xmlns:fes%3D%22http:%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes:PropertyIsEqualTo%3E%3Cfes:ValueReference%3Ekad_nomer%3C%2Ffes:ValueReference%3E%3Cfes:Literal%3E21320072529%3C%2Ffes:Literal%3E%3C%2Ffes:PropertyIsEqualTo%3E%3C%2Ffes:Filter%3E",
+      "method": "GET, exact public OGC equality lookup by kad_nomer, no cookies",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "assessment": "Exact cadastral number filter returned exactly one feature in selected district."
+    },
+    {
+      "url": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3-requests.json",
+      "method": "Bounded 3x3 neighborhood WFS query manifest; exact 74 request URLs recorded",
+      "httpStatus": 200,
+      "featureCount": 154,
+      "assessment": "190 rows/154 unique parcels across nine cells; all requests HTTP200, all cells reached empty terminal pages, sorted by gid; GEOS and duplicate checks recorded in manifest."
+    },
+    {
+      "url": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3.geojson",
+      "method": "Sanitized WGS84 output from source EPSG:32642 geometry; only gid, kad_nomer and geometry hash properties retained",
+      "httpStatus": 200,
+      "featureCount": 154,
+      "assessment": "No owner/address fields; geometry provenance and source request URLs are in manifest."
+    }
+  ],
+  "coverageAssessment": "A verified parcel sample exists at the chosen Astana point and within the sampled 3×3 neighborhood only. The national map has a district-scoped native-CRS WFS layer; this bounded sample does not establish complete citywide delivery. Qualified pending root/adapter acceptance.",
+  "blocker": "Pending independent adapter acceptance. The sample contains five pairwise positive-area overlap slivers; all exact pairs, intersection areas, minimum oriented-envelope width/lengths, parent parcel areas, and relative percentages are recorded in astana-national-u-view-3x3-requests.json. Do not apply a global geometry repair or tolerance; assess these specific pairs. Citywide completeness and kad_nomer permanence/global uniqueness are unverified.",
+  "remainingUncertainty": "Whether small overlaps are source precision/geometry artifacts; permanence/global uniqueness of `kad_nomer`; and citywide boundary/coverage/completeness outside the sampled cells.",
+  "nextStep": "Run and pass the root adapter acceptance for district_id=254, native EPSG:32642, stable kad_nomer lookup, bounded pagination and explicit absence; retain the five pair-specific overlap metrics in QA.",
+  "nationalPkkInvestigation": {
+    "date": "2026-10-08",
+    "viewerUrl": "https://map.gov4c.kz/egkn/",
+    "restUrl": "https://map.gov4c.kz/egkn/rest",
+    "wfsUrl": "https://map.gov4c.kz/geoserver/wfs",
+    "noCookiesOrCredentials": true,
+    "headers": [
+      "User-Agent: Mozilla/5.0",
+      "Accept: application/json",
+      "Referer: https://map.gov4c.kz/egkn/"
+    ],
+    "districtList": {
+      "url": "https://map.gov4c.kz/egkn/rest/map/districts?lang=ru",
+      "httpStatus": 200,
+      "assessment": "Returned region 21 г. Астана and six district records with id/name/srs; selected point belongs to returned Есиль district candidate id=254 after the WFS district-view query."
+    },
+    "districtsOnline": {
+      "url": "https://map.gov4c.kz/egkn/rest/map/districts/online?lang=ru&service=false",
+      "httpStatus": 200,
+      "assessment": "Returned no child district objects under region 21; the ordinary district selector endpoint above provided the six official public IDs."
+    },
+    "districtRecords": [
+      {
+        "id": 252,
+        "regionCode": "21",
+        "code": "318",
+        "rn_code": "107193",
+        "kato": "711110000",
+        "nameRu": "Алматы (21-318)",
+        "nameKz": "Алматы (21-318)",
+        "nameEn": "Алматы (21-318)",
+        "srs": 32642,
+        "ate_code": "107193"
+      },
+      {
+        "id": 253,
+        "regionCode": "21",
+        "code": "319",
+        "rn_code": "107989",
+        "kato": "711310000",
+        "nameRu": "Сарыарка (21-319)",
+        "nameKz": "Сарыарқа (21-319)",
+        "nameEn": "Сарыарка (21-319)",
+        "srs": 32642,
+        "ate_code": "107989"
+      },
+      {
+        "id": 254,
+        "regionCode": "21",
+        "code": "320",
+        "rn_code": "108584",
+        "kato": "711210000",
+        "nameRu": "Есиль (21-320)",
+        "nameKz": "Есіл (21-320)",
+        "nameEn": "Есиль (21-320)",
+        "srs": 32642,
+        "ate_code": "108584"
+      },
+      {
+        "id": 264,
+        "regionCode": "21",
+        "code": "324",
+        "rn_code": "251449",
+        "kato": "711410000",
+        "nameRu": "Байконыр (21-324)",
+        "nameKz": "Байқоңыр (21-324)",
+        "nameEn": "Байконыр (21-324)",
+        "srs": 32642,
+        "ate_code": "251449"
+      },
+      {
+        "id": 271,
+        "regionCode": "21",
+        "code": "335",
+        "rn_code": "252205",
+        "kato": "711510000",
+        "nameRu": "Нұра (21-335)",
+        "nameKz": "Нұра (21-335)",
+        "nameEn": "Нұра (21-335)",
+        "srs": 32642,
+        "ate_code": "252205"
+      },
+      {
+        "id": 431,
+        "regionCode": "21",
+        "code": "342",
+        "rn_code": "252235",
+        "kato": "711610000",
+        "nameRu": "Сарайшық (21-342)",
+        "nameKz": "Сарайшық (21-342)",
+        "nameEn": "Сарайшық (21-342)",
+        "srs": 32642,
+        "ate_code": "252235"
+      }
+    ],
+    "districtBboxQueries": {
+      "bbox": "669959.009,5666790.225,670159.009,5666990.225,EPSG:32642",
+      "maxFeatureCount": 3,
+      "queries": [
+        {
+          "districtId": 252,
+          "districtName": "Алматы (21-318)",
+          "srs": 32642,
+          "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:252",
+          "httpStatus": 200,
+          "totalFeaturesReported": 0,
+          "featuresReturned": 0
+        },
+        {
+          "districtId": 253,
+          "districtName": "Сарыарка (21-319)",
+          "srs": 32642,
+          "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:253",
+          "httpStatus": 200,
+          "totalFeaturesReported": 0,
+          "featuresReturned": 0
+        },
+        {
+          "districtId": 254,
+          "districtName": "Есиль (21-320)",
+          "srs": 32642,
+          "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:254",
+          "httpStatus": 200,
+          "totalFeaturesReported": 19,
+          "featuresReturned": 3
+        },
+        {
+          "districtId": 264,
+          "districtName": "Байконыр (21-324)",
+          "srs": 32642,
+          "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:264",
+          "httpStatus": 200,
+          "totalFeaturesReported": 0,
+          "featuresReturned": 0
+        },
+        {
+          "districtId": 271,
+          "districtName": "Нұра (21-335)",
+          "srs": 32642,
+          "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:271",
+          "httpStatus": 200,
+          "totalFeaturesReported": 0,
+          "featuresReturned": 0
+        },
+        {
+          "districtId": 431,
+          "districtName": "Сарайшық (21-342)",
+          "srs": 32642,
+          "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=geom&count=3&bbox=669959.009,5666790.225,670159.009,5666990.225,EPSG:32642&viewparams=district_id:431",
+          "httpStatus": 200,
+          "totalFeaturesReported": 0,
+          "featuresReturned": 0
+        }
+      ],
+      "assessment": "Only district id 254 returned candidates (server reported totalFeatures=19 but this request capped sample to 3); other five returned 0."
+    },
+    "targetPointTransform": {
+      "inputWgs84LonLat": [
+        71.4304,
+        51.1282
+      ],
+      "cs2csCommand": "cs2cs -f %.9f EPSG:4326 EPSG:32642; input ordered latitude,longitude to honor source axis order",
+      "outputUtmEastingNorthing": [
+        670059.008796046,
+        5666890.225130632
+      ]
+    },
+    "targetCenterQuery": {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&bbox=670049.009,5666880.225,670069.009,5666900.225,EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "totalFeaturesReported": 1,
+      "featuresReturned": 1,
+      "sourceFieldsRequested": [
+        "gid",
+        "kad_nomer",
+        "geom"
+      ],
+      "sourceFieldsOmitted": [
+        "address_ru",
+        "address_kz",
+        "owner/personal fields"
+      ],
+      "sampleCode": "21320072529",
+      "gid": 5884914,
+      "featureIdBehavior": "GeoServer feature.id changed on repeat, while gid and kad_nomer were unchanged; use kad_nomer (or geometry hash), not GeoServer feature.id.",
+      "geometryType": "MultiPolygon",
+      "sourceCrs": "EPSG:32642",
+      "closedRings": true,
+      "geosValid": true,
+      "geosValidityReason": "Valid Geometry",
+      "planarAreaSquareMetres": 1955.539888316002,
+      "containsChosenTargetPoint": true,
+      "geometryHash": "sha256:16dc5f1d351a453f13da42e68fc1dcbfe0910104b25dbd340428faca80b72a49",
+      "wgs84EvidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-center.geojson",
+      "sourceCrsEvidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/astana-national-u-view-center-source-utm.geojson"
+    },
+    "exactIdLookup": {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn:u_view&outputFormat=application%2Fjson&srsname=EPSG:32642&propertyname=gid,kad_nomer,geom&count=3&viewparams=district_id:254&filter=%3Cfes:Filter+xmlns:fes%3D%22http:%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes:PropertyIsEqualTo%3E%3Cfes:ValueReference%3Ekad_nomer%3C%2Ffes:ValueReference%3E%3Cfes:Literal%3E21320072529%3C%2Ffes:Literal%3E%3C%2Ffes:PropertyIsEqualTo%3E%3C%2Ffes:Filter%3E",
+      "httpStatus": 200,
+      "totalFeaturesReported": 1,
+      "featureCount": 1,
+      "match": "kad_nomer=21320072529; gid=5884914"
+    },
+    "schemaRequest": {
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName=egkn%3Au_view",
+      "httpStatus": 200,
+      "assessment": "u_view fields include gid, district_id, kad_nomer, rka, address_ru, address_kz and others; only gid,kad_nomer,geom requested. Addresses/owners not queried."
+    },
+    "supersededRuViewProbes": {
+      "layer": "egkn:ru_view",
+      "assessment": "Five HTTP200/zero-feature bbox variants lacked viewer district_id and used a non-selected layer. Treat as inconclusive and do not use as a no-coverage signal. Correct public map snapping layer is egkn:u_view with district_id viewparam."
+    }
+  },
+  "targetScopeNote": "Chosen map point is a task point, not an official city boundary/municipality; no citywide completeness claim is made."
+}

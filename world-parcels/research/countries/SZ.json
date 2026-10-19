@@ -1,0 +1,41 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SZ",
+ "country": "Eswatini",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "unknown (Ministry of Natural Resources and Energy / Surveyor-General's office; Swazi Nation Land is largely untitled)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.gov.sz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.eswatini.gov.sz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.deeds.gov.sz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "All hosts unreachable; no evidence either way.",
+ "nextStep": "Retry later; check Surveyor-General/deeds registry portals."
+}

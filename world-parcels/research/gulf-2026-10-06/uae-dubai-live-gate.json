@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "dubai",
+      "sourceId": "ae-dubai-dda-public-plots",
+      "endpoint": "https://gis.dda.gov.ae/server/rest/services/DIS/MAIN_MAP/MapServer/13",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1525,
+            25.092499999999998,
+            55.155,
+            25.095
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.155,
+            25.092499999999998,
+            55.1575,
+            25.095
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1575,
+            25.092499999999998,
+            55.160000000000004,
+            25.095
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1525,
+            25.095,
+            55.155,
+            25.0975
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.155,
+            25.095,
+            55.1575,
+            25.0975
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1575,
+            25.095,
+            55.160000000000004,
+            25.0975
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1525,
+            25.0975,
+            55.155,
+            25.099999999999998
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.155,
+            25.0975,
+            55.1575,
+            25.099999999999998
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1575,
+            25.0975,
+            55.160000000000004,
+            25.099999999999998
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.160000000000004,
+            25.092499999999998,
+            55.1625,
+            25.095
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1625,
+            25.092499999999998,
+            55.165,
+            25.095
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.165,
+            25.092499999999998,
+            55.167500000000004,
+            25.095
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.160000000000004,
+            25.095,
+            55.1625,
+            25.0975
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1625,
+            25.095,
+            55.165,
+            25.0975
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.165,
+            25.095,
+            55.167500000000004,
+            25.0975
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.160000000000004,
+            25.0975,
+            55.1625,
+            25.099999999999998
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.1625,
+            25.0975,
+            55.165,
+            25.099999999999998
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            55.165,
+            25.0975,
+            55.167500000000004,
+            25.099999999999998
+          ],
+          "count": 10,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          55.1525,
+          25.095,
+          55.155,
+          25.0975
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 63,
+      "exactResolved": 63,
+      "nativeIds": [
+        "3820709",
+        "3820713",
+        "3820712"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:ae-dubai-dda-public-plots",
+        "parcels": 1,
+        "siteM2": 1839.99
+      },
+      "requests": 25
+    }
+  ]
+}

@@ -1,0 +1,973 @@
+{
+  "checkedAt": "2026-10-08T21:08:09Z",
+  "scope": "Read-only official TKGM point and exact-ID follow-through at 13 explicitly chosen Bursa-area locations. WUP and selected central locator are reported separately. No citywide coverage is inferred.",
+  "officialSources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "Official TKGM public parcel query documentation; national public point-based lookup and parcel information service."
+    },
+    {
+      "url": "https://kentrehberi.bursa.bel.tr/",
+      "observation": "Bursa Metropolitan Municipality GIS guide includes parcel/address search, orthophoto and terrain. It was not used to source returned polygons; municipal disclaimer is informational."
+    }
+  ],
+  "runtimeAdapter": {
+    "file": "backend/parcels/tkgm-point-source.js",
+    "descriptorId": "tr-tkgm-parselsorgu-api",
+    "api": "GET https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{latitude}/{longitude}",
+    "requestCoordinates": "Adapter input [longitude, latitude]; URL path sends latitude then longitude.",
+    "semantics": "One point identify returns one full GeoJSON Polygon or no-hit. queryIds performs exact native ID lookups. queryBounds/queryGeometry reject with 422 before fetch."
+  },
+  "probeDesign": {
+    "wupLocator": [
+      40.2050411327084,
+      29.0470015858534
+    ],
+    "selectedCentralLocator": [
+      40.195,
+      29.06
+    ],
+    "grid": [
+      {
+        "name": "grid_01",
+        "lat": 40.18,
+        "lon": 29.06
+      },
+      {
+        "name": "grid_02",
+        "lat": 40.19,
+        "lon": 29.04
+      },
+      {
+        "name": "grid_03",
+        "lat": 40.2,
+        "lon": 29.03
+      },
+      {
+        "name": "grid_04",
+        "lat": 40.21,
+        "lon": 29.05
+      },
+      {
+        "name": "grid_05",
+        "lat": 40.22,
+        "lon": 29.06
+      },
+      {
+        "name": "grid_06",
+        "lat": 40.2,
+        "lon": 29.07
+      },
+      {
+        "name": "grid_07",
+        "lat": 40.19,
+        "lon": 29.08
+      },
+      {
+        "name": "grid_08",
+        "lat": 40.18,
+        "lon": 29.04
+      },
+      {
+        "name": "grid_09",
+        "lat": 40.21,
+        "lon": 29.08
+      },
+      {
+        "name": "grid_10",
+        "lat": 40.22,
+        "lon": 29.04
+      },
+      {
+        "name": "grid_11",
+        "lat": 40.2,
+        "lon": 29.09
+      }
+    ],
+    "gridPointCount": 11,
+    "interpretation": "Explicit point probes, not an official city centroid, city boundary, or systematic parcel enumeration."
+  },
+  "results": [
+    {
+      "name": "grid_01",
+      "lat": 40.18,
+      "lon": 29.06,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "166822-5389-16",
+      "geometryType": "Polygon",
+      "geometrySha256": "098cf09b9e8533cf4100f0f0a822ea74296120f0d182659ef6a0bcf8edb4e088",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "vertexCount": 14
+    },
+    {
+      "name": "grid_02",
+      "lat": 40.19,
+      "lon": 29.04,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "166782-5495-20",
+      "geometryType": "Polygon",
+      "geometrySha256": "d3cdc95ebe0a44fd25f0d6a7d0513de9e655abb0193d2c6d686786656ea874c0",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "vertexCount": 26
+    },
+    {
+      "name": "grid_03",
+      "lat": 40.2,
+      "lon": 29.03,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "124909-4161-17",
+      "geometryType": "Polygon",
+      "geometrySha256": "94ddf98e36e89a42e2a91634b60b7250864e5d62306779c567f21faeb9933066",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "vertexCount": 14
+    },
+    {
+      "name": "grid_04",
+      "lat": 40.21,
+      "lon": 29.05,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "134235-1549-13",
+      "geometryType": "Polygon",
+      "geometrySha256": "8aa9ceea114cbce3e6af364854c121eabd05f3f9a513a56a8526413d2bb09a79",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "boundary_vertex",
+      "vertexCount": 5
+    },
+    {
+      "name": "grid_05",
+      "lat": 40.22,
+      "lon": 29.06,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "154570-962-26",
+      "geometryType": "Polygon",
+      "geometrySha256": "5aa1457b9dd9f716186b6c0426f2dbe897f1689e3ca7e2f7e3c66cf99796fb69",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "vertexCount": 37
+    },
+    {
+      "name": "grid_06",
+      "lat": 40.2,
+      "lon": 29.07,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "136528-1137-20",
+      "geometryType": "Polygon",
+      "geometrySha256": "c8ec8a0b752c81953535a25e7bf762a6e54f9c101e4e0f44f437acdf0584d516",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "vertexCount": 7
+    },
+    {
+      "name": "grid_07",
+      "lat": 40.19,
+      "lon": 29.08,
+      "outcome": "adapter-error",
+      "httpStatus": 502,
+      "code": "parcel-source-unavailable",
+      "message": "Parcel provider is unavailable (HTTP 404)."
+    },
+    {
+      "name": "grid_08",
+      "lat": 40.18,
+      "lon": 29.04,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "166827-101-1",
+      "geometryType": "Polygon",
+      "geometrySha256": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "vertexCount": 1441
+    },
+    {
+      "name": "grid_09",
+      "lat": 40.21,
+      "lon": 29.08,
+      "outcome": "adapter-error",
+      "httpStatus": 502,
+      "code": "parcel-source-unavailable",
+      "message": "Parcel provider is unavailable (HTTP 404)."
+    },
+    {
+      "name": "grid_10",
+      "lat": 40.22,
+      "lon": 29.04,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "id": "154713-3313-16",
+      "geometryType": "Polygon",
+      "geometrySha256": "4c2a78f29340c777e484bdc7af7af92a044c4042a09c1136f5b686701d1ab1f8",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "vertexCount": 57
+    },
+    {
+      "name": "grid_11",
+      "lat": 40.2,
+      "lon": 29.09,
+      "outcome": "polygon",
+      "httpStatus": 200,
+      "code": "parcel-source-unavailable",
+      "message": "TKGM parcel provider is unavailable.",
+      "id": "133927-4053-18",
+      "geometryType": "Polygon",
+      "geometrySha256": "d81886c2ad20e8f7610da4a4febc1de387968c4a6cedb2b0b3dba51509c4342f",
+      "closedRings": true,
+      "pointCovered": true,
+      "pointRelation": "covered",
+      "retryAfterInitialAdapterError": true,
+      "initialAttempt": {
+        "outcome": "adapter-error",
+        "code": "parcel-source-unavailable",
+        "message": "TKGM parcel provider is unavailable."
+      }
+    },
+    {
+      "name": "selected_central_locator",
+      "lat": 40.195,
+      "lon": 29.06,
+      "outcome": "adapter-error",
+      "httpStatus": 502,
+      "code": "parcel-source-unavailable",
+      "message": "TKGM parcel provider is unavailable."
+    },
+    {
+      "name": "WUP_locator",
+      "lat": 40.2050411327084,
+      "lon": 29.0470015858534,
+      "outcome": "adapter-error",
+      "httpStatus": 502,
+      "code": "parcel-source-unavailable",
+      "message": "Parcel provider is unavailable (HTTP 404)."
+    }
+  ],
+  "exactId": {
+    "requested": 9,
+    "returned": 9,
+    "features": [
+      {
+        "id": "166822-5389-16",
+        "geometrySha256": "098cf09b9e8533cf4100f0f0a822ea74296120f0d182659ef6a0bcf8edb4e088"
+      },
+      {
+        "id": "166782-5495-20",
+        "geometrySha256": "d3cdc95ebe0a44fd25f0d6a7d0513de9e655abb0193d2c6d686786656ea874c0"
+      },
+      {
+        "id": "124909-4161-17",
+        "geometrySha256": "94ddf98e36e89a42e2a91634b60b7250864e5d62306779c567f21faeb9933066"
+      },
+      {
+        "id": "134235-1549-13",
+        "geometrySha256": "8aa9ceea114cbce3e6af364854c121eabd05f3f9a513a56a8526413d2bb09a79"
+      },
+      {
+        "id": "154570-962-26",
+        "geometrySha256": "5aa1457b9dd9f716186b6c0426f2dbe897f1689e3ca7e2f7e3c66cf99796fb69"
+      },
+      {
+        "id": "136528-1137-20",
+        "geometrySha256": "c8ec8a0b752c81953535a25e7bf762a6e54f9c101e4e0f44f437acdf0584d516"
+      },
+      {
+        "id": "166827-101-1",
+        "geometrySha256": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45"
+      },
+      {
+        "id": "154713-3313-16",
+        "geometrySha256": "4c2a78f29340c777e484bdc7af7af92a044c4042a09c1136f5b686701d1ab1f8"
+      },
+      {
+        "id": "133927-4053-18",
+        "geometrySha256": "d81886c2ad20e8f7610da4a4febc1de387968c4a6cedb2b0b3dba51509c4342f"
+      }
+    ],
+    "geometryComparisons": [
+      {
+        "id": "124909-4161-17",
+        "pointHash": "94ddf98e36e89a42e2a91634b60b7250864e5d62306779c567f21faeb9933066",
+        "idHash": "94ddf98e36e89a42e2a91634b60b7250864e5d62306779c567f21faeb9933066",
+        "identical": true
+      },
+      {
+        "id": "133927-4053-18",
+        "pointHash": "d81886c2ad20e8f7610da4a4febc1de387968c4a6cedb2b0b3dba51509c4342f",
+        "idHash": "d81886c2ad20e8f7610da4a4febc1de387968c4a6cedb2b0b3dba51509c4342f",
+        "identical": true
+      },
+      {
+        "id": "134235-1549-13",
+        "pointHash": "8aa9ceea114cbce3e6af364854c121eabd05f3f9a513a56a8526413d2bb09a79",
+        "idHash": "8aa9ceea114cbce3e6af364854c121eabd05f3f9a513a56a8526413d2bb09a79",
+        "identical": true
+      },
+      {
+        "id": "136528-1137-20",
+        "pointHash": "c8ec8a0b752c81953535a25e7bf762a6e54f9c101e4e0f44f437acdf0584d516",
+        "idHash": "c8ec8a0b752c81953535a25e7bf762a6e54f9c101e4e0f44f437acdf0584d516",
+        "identical": true
+      },
+      {
+        "id": "154570-962-26",
+        "pointHash": "5aa1457b9dd9f716186b6c0426f2dbe897f1689e3ca7e2f7e3c66cf99796fb69",
+        "idHash": "5aa1457b9dd9f716186b6c0426f2dbe897f1689e3ca7e2f7e3c66cf99796fb69",
+        "identical": true
+      },
+      {
+        "id": "154713-3313-16",
+        "pointHash": "4c2a78f29340c777e484bdc7af7af92a044c4042a09c1136f5b686701d1ab1f8",
+        "idHash": "4c2a78f29340c777e484bdc7af7af92a044c4042a09c1136f5b686701d1ab1f8",
+        "identical": true
+      },
+      {
+        "id": "166782-5495-20",
+        "pointHash": "d3cdc95ebe0a44fd25f0d6a7d0513de9e655abb0193d2c6d686786656ea874c0",
+        "idHash": "d3cdc95ebe0a44fd25f0d6a7d0513de9e655abb0193d2c6d686786656ea874c0",
+        "identical": true
+      },
+      {
+        "id": "166822-5389-16",
+        "pointHash": "098cf09b9e8533cf4100f0f0a822ea74296120f0d182659ef6a0bcf8edb4e088",
+        "idHash": "098cf09b9e8533cf4100f0f0a822ea74296120f0d182659ef6a0bcf8edb4e088",
+        "identical": true
+      },
+      {
+        "id": "166827-101-1",
+        "pointHash": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45",
+        "idHash": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45",
+        "identical": true
+      }
+    ],
+    "structuredAbsentId": {
+      "requestedId": "TR-TKGM-166822-999999-999999",
+      "returned": 0,
+      "absentIds": [
+        "TR-TKGM-166822-999999-999999"
+      ]
+    },
+    "individualSequentialCalls": "Nine individual queryIds calls succeeded; every returned geometry SHA-256 hash exactly matched the corresponding point-query feature.",
+    "priorBatchAttempt": {
+      "queryIdsRequested": 8,
+      "outcome": "transient failure"
+    }
+  },
+  "unsupportedAreaAssertions": {
+    "results": {
+      "queryBounds": {
+        "status": 422,
+        "code": "parcel-source-area-unsupported"
+      },
+      "queryGeometry": {
+        "status": 422,
+        "code": "parcel-source-area-unsupported"
+      }
+    },
+    "networkRequestsDuringAssertions": 0
+  },
+  "sampleFeatures": [
+    {
+      "point": {
+        "lat": 40.18,
+        "lon": 29.06
+      },
+      "feature": {
+        "type": "Feature",
+        "id": "TR-TKGM-166822-5389-16",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                29.06001,
+                40.18005
+              ],
+              [
+                29.06001,
+                40.18006
+              ],
+              [
+                29.06,
+                40.18006
+              ],
+              [
+                29.06,
+                40.18005
+              ],
+              [
+                29.06,
+                40.18005
+              ],
+              [
+                29.05992,
+                40.18002
+              ],
+              [
+                29.05993,
+                40.18
+              ],
+              [
+                29.05995,
+                40.17997
+              ],
+              [
+                29.05996,
+                40.17995
+              ],
+              [
+                29.05998,
+                40.1799
+              ],
+              [
+                29.05998,
+                40.17988
+              ],
+              [
+                29.06006,
+                40.17989
+              ],
+              [
+                29.06005,
+                40.17996
+              ],
+              [
+                29.06001,
+                40.18005
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "parcelId": "TR-TKGM-166822-5389-16",
+          "id": "TR-TKGM-166822-5389-16",
+          "sourceId": "tr-tkgm-parselsorgu-api",
+          "sourceParcelId": "166822-5389-16",
+          "parcelNumber": "16",
+          "cadMunicipalityName": null,
+          "ownershipType": "unknown",
+          "sourceProperties": {
+            "mahalleId": "166822",
+            "adaNo": "5389",
+            "parselNo": "16"
+          }
+        }
+      }
+    },
+    {
+      "point": {
+        "lat": 40.19,
+        "lon": 29.04
+      },
+      "feature": {
+        "type": "Feature",
+        "id": "TR-TKGM-166782-5495-20",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                29.04034,
+                40.18994
+              ],
+              [
+                29.04024,
+                40.18997
+              ],
+              [
+                29.04023,
+                40.18997
+              ],
+              [
+                29.04013,
+                40.18999
+              ],
+              [
+                29.0401,
+                40.19
+              ],
+              [
+                29.04004,
+                40.19004
+              ],
+              [
+                29.03997,
+                40.19007
+              ],
+              [
+                29.03996,
+                40.19008
+              ],
+              [
+                29.03993,
+                40.1901
+              ],
+              [
+                29.03991,
+                40.19009
+              ],
+              [
+                29.03988,
+                40.19007
+              ],
+              [
+                29.03984,
+                40.19004
+              ],
+              [
+                29.03979,
+                40.19003
+              ],
+              [
+                29.03978,
+                40.18994
+              ],
+              [
+                29.03985,
+                40.1899
+              ],
+              [
+                29.03978,
+                40.18982
+              ],
+              [
+                29.03973,
+                40.18978
+              ],
+              [
+                29.03973,
+                40.18977
+              ],
+              [
+                29.04002,
+                40.18963
+              ],
+              [
+                29.04005,
+                40.18965
+              ],
+              [
+                29.04015,
+                40.18972
+              ],
+              [
+                29.04024,
+                40.18978
+              ],
+              [
+                29.0403,
+                40.18983
+              ],
+              [
+                29.04032,
+                40.18984
+              ],
+              [
+                29.0404,
+                40.1899
+              ],
+              [
+                29.04034,
+                40.18994
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "parcelId": "TR-TKGM-166782-5495-20",
+          "id": "TR-TKGM-166782-5495-20",
+          "sourceId": "tr-tkgm-parselsorgu-api",
+          "sourceParcelId": "166782-5495-20",
+          "parcelNumber": "20",
+          "cadMunicipalityName": null,
+          "ownershipType": "unknown",
+          "sourceProperties": {
+            "mahalleId": "166782",
+            "adaNo": "5495",
+            "parselNo": "20"
+          }
+        }
+      }
+    },
+    {
+      "point": {
+        "lat": 40.2,
+        "lon": 29.03
+      },
+      "feature": {
+        "type": "Feature",
+        "id": "TR-TKGM-124909-4161-17",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                29.0302,
+                40.20019
+              ],
+              [
+                29.03013,
+                40.20016
+              ],
+              [
+                29.03004,
+                40.20015
+              ],
+              [
+                29.03006,
+                40.20021
+              ],
+              [
+                29.02983,
+                40.2003
+              ],
+              [
+                29.0298,
+                40.2002
+              ],
+              [
+                29.0298,
+                40.20016
+              ],
+              [
+                29.02984,
+                40.19994
+              ],
+              [
+                29.02999,
+                40.19995
+              ],
+              [
+                29.03012,
+                40.19994
+              ],
+              [
+                29.03015,
+                40.19992
+              ],
+              [
+                29.03023,
+                40.20017
+              ],
+              [
+                29.03025,
+                40.20023
+              ],
+              [
+                29.0302,
+                40.20019
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "parcelId": "TR-TKGM-124909-4161-17",
+          "id": "TR-TKGM-124909-4161-17",
+          "sourceId": "tr-tkgm-parselsorgu-api",
+          "sourceParcelId": "124909-4161-17",
+          "parcelNumber": "17",
+          "cadMunicipalityName": null,
+          "ownershipType": "unknown",
+          "sourceProperties": {
+            "mahalleId": "124909",
+            "adaNo": "4161",
+            "parselNo": "17"
+          }
+        }
+      }
+    }
+  ],
+  "geometryLimit": "Exactly three full point-query polygon features are retained here; counts and hashes only for remaining hits. No duplicate full geometries in city/acceptance files.",
+  "coverage": {
+    "samplePointHits": 9,
+    "pointNoHits": 4,
+    "adapterErrors": 0,
+    "wupPointHit": false,
+    "selectedCentralLocatorHit": false,
+    "citywideCompleteness": false,
+    "countrywideCompleteness": false,
+    "parcelTotal": null,
+    "prePatchAdapterErrors": 4,
+    "postPatchAdapterErrors": 0
+  },
+  "adapterPointNoHitCaveat": "Resolved by root’s narrow decimal-comma echo patch. The four exact-point 404s now return complete empty feature collections; no citywide absence is inferred.",
+  "provider404Examples": [
+    {
+      "name": "grid_07",
+      "pointLatLon": [
+        40.19,
+        29.08
+      ],
+      "upstreamHttpStatus": 404,
+      "providerMessage": "Parsel Bulunamadı: Enlem = 40,19 - Boylam=29,08 ",
+      "adapterResult": {
+        "complete": true,
+        "queryType": "point",
+        "featureCount": 0,
+        "pointLonLat": [
+          29.08,
+          40.19
+        ]
+      }
+    },
+    {
+      "name": "grid_09",
+      "pointLatLon": [
+        40.21,
+        29.08
+      ],
+      "upstreamHttpStatus": 404,
+      "providerMessage": "Parsel Bulunamadı: Enlem = 40,21 - Boylam=29,08 ",
+      "adapterResult": {
+        "complete": true,
+        "queryType": "point",
+        "featureCount": 0,
+        "pointLonLat": [
+          29.08,
+          40.21
+        ]
+      }
+    },
+    {
+      "name": "selected_central_locator",
+      "pointLatLon": [
+        40.195,
+        29.06
+      ],
+      "upstreamHttpStatus": 404,
+      "providerMessage": "Parsel Bulunamadı: Enlem = 40,195 - Boylam=29,06 ",
+      "adapterResult": {
+        "complete": true,
+        "queryType": "point",
+        "featureCount": 0,
+        "pointLonLat": [
+          29.06,
+          40.195
+        ]
+      }
+    },
+    {
+      "name": "WUP_locator",
+      "pointLatLon": [
+        40.2050411327084,
+        29.0470015858534
+      ],
+      "upstreamHttpStatus": 404,
+      "providerMessage": "Parsel Bulunamadı: Enlem = 40,2050411327084 - Boylam=29,0470015858534 ",
+      "adapterResult": {
+        "complete": true,
+        "queryType": "point",
+        "featureCount": 0,
+        "pointLonLat": [
+          29.0470015858534,
+          40.2050411327084
+        ]
+      }
+    }
+  ],
+  "acceptanceStatus": "partial_geometry_verified_citywide_unqualified_quality_issue_present",
+  "independentGeometryAudit": {
+    "library": "Shapely 2.2.0",
+    "metricCrs": {
+      "type": "name",
+      "properties": {
+        "name": "EPSG:32635"
+      }
+    },
+    "featureCount": 9,
+    "validNonemptyCount": 8,
+    "invalidFeatures": [
+      {
+        "id": "TR-TKGM-166827-101-1",
+        "reason": "Ring Self-intersection[671747.59105167 4445553.18266901]",
+        "empty": false
+      }
+    ],
+    "exactDuplicateGeometryPairs": [],
+    "positiveAreaOverlapPairsAbove0_01M2": [],
+    "sumPairwiseOverlapM2": 0,
+    "operationErrors": [],
+    "areaM2": {
+      "min": 102.08630805224739,
+      "median": 1587.0432574574897,
+      "max": 10435175.649466494
+    },
+    "repairApplied": false,
+    "tempMetricFile": "/private/tmp/overnight-cities-2026-10-08/bursa-metric.geojson",
+    "tempWgs84File": "/private/tmp/overnight-cities-2026-10-08/bursa-wgs84.geojson",
+    "fullPolygonGeometriesRetainedInRepository": 3
+  },
+  "noHitRerunAfterAdapterPatch": {
+    "checkedAt": "2026-10-08T21:08:09Z",
+    "results": [
+      {
+        "name": "WUP_locator",
+        "pointLatLon": [
+          40.2050411327084,
+          29.0470015858534
+        ],
+        "upstreamHttpStatus": 404,
+        "adapterResult": {
+          "complete": true,
+          "queryType": "point",
+          "featureCount": 0,
+          "pointLonLat": [
+            29.0470015858534,
+            40.2050411327084
+          ]
+        }
+      },
+      {
+        "name": "selected_central_locator",
+        "pointLatLon": [
+          40.195,
+          29.06
+        ],
+        "upstreamHttpStatus": 404,
+        "adapterResult": {
+          "complete": true,
+          "queryType": "point",
+          "featureCount": 0,
+          "pointLonLat": [
+            29.06,
+            40.195
+          ]
+        }
+      },
+      {
+        "name": "grid_07",
+        "pointLatLon": [
+          40.19,
+          29.08
+        ],
+        "upstreamHttpStatus": 404,
+        "adapterResult": {
+          "complete": true,
+          "queryType": "point",
+          "featureCount": 0,
+          "pointLonLat": [
+            29.08,
+            40.19
+          ]
+        }
+      },
+      {
+        "name": "grid_09",
+        "pointLatLon": [
+          40.21,
+          29.08
+        ],
+        "upstreamHttpStatus": 404,
+        "adapterResult": {
+          "complete": true,
+          "queryType": "point",
+          "featureCount": 0,
+          "pointLonLat": [
+            29.08,
+            40.21
+          ]
+        }
+      }
+    ],
+    "summary": "4/4 provider HTTP 404 point no-hits returned complete empty point-query results after strict decimal-comma normalization."
+  },
+  "invalidNativeGeometryCheck": {
+    "id": "TR-TKGM-166827-101-1",
+    "requestUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/166827/101/1",
+    "httpStatus": 200,
+    "nativeCrs": "EPSG:4326",
+    "geometryType": "Polygon",
+    "coordinateCount": 1441,
+    "ringsClosed": true,
+    "geometrySha256": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45",
+    "canonicalSortedKeyHash": "9975c5f1e4e2b813e66dd4cae72a5264abfb6bfab5c348ccbae0ac20a732ab6e",
+    "nativeGEOSValid": false,
+    "nativeGEOSReason": "Ring Self-intersection[29.01618 40.14278]",
+    "metricCrs": "EPSG:32635",
+    "metricGEOSValid": false,
+    "metricGEOSReason": "Ring Self-intersection[671747.59105167 4445553.18266901]",
+    "metricAreaM2": 10435175.649466494,
+    "repairApplied": false,
+    "tempGeometryFile": "/private/tmp/overnight-cities-2026-10-08/bursa-invalid-native.geojson",
+    "onlyTemporaryNativeGeometry": true
+  },
+  "municipalViewerAlternative": {
+    "url": "https://kentrehberi.bursa.bel.tr/",
+    "homepageGet": {
+      "httpStatus": 200,
+      "bytes": 49459,
+      "scriptCount": 19
+    },
+    "firstPartyBundlesInspected": [
+      {
+        "url": "https://kentrehberi.bursa.bel.tr/js/config.js",
+        "httpStatus": 200,
+        "bytes": 2281
+      },
+      {
+        "url": "https://kentrehberi.bursa.bel.tr/js/api.js",
+        "httpStatus": 200,
+        "bytes": 2703
+      },
+      {
+        "url": "https://kentrehberi.bursa.bel.tr/js/poi.js",
+        "httpStatus": 200,
+        "bytes": 3458
+      },
+      {
+        "url": "https://kentrehberi.bursa.bel.tr/js/main_scripts.js",
+        "httpStatus": 200,
+        "bytes": 111409
+      }
+    ],
+    "finding": "Static public-bundle review found Leaflet and WMS/GetFeatureInfo flows, but no discoverable parcel FeatureServer, MapServer, WFS, or full GeoJSON query endpoint. The bundle is partly obfuscated; this limited static inspection does not prove no endpoint exists. No feature query or property lookup was attempted.",
+    "alternativeFullVectorSourceFound": false
+  },
+  "geometryQualityAudit": {
+    "library": "Shapely 2.2.0",
+    "metricCrs": "EPSG:32635",
+    "featureCount": 9,
+    "validNonemptyCount": 8,
+    "invalidFeatures": [
+      {
+        "id": "TR-TKGM-166827-101-1",
+        "nativeAndMetricReason": "Ring Self-intersection",
+        "nativeCoordinates": "[29.01618 40.14278]",
+        "metricCoordinates": "[671747.59105167 4445553.18266901]",
+        "geometrySha256": "477c545bcb62c0b8771152604c1950294cef059f044f19de1ba6c8e298384c45",
+        "directNativeHttpStatus": 200,
+        "nativeSourceUrl": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/166827/101/1"
+      }
+    ],
+    "duplicates": 0,
+    "positiveAreaOverlapsAbove0_01m2": 0,
+    "repairApplied": false,
+    "fullMetricSampleFile": "/private/tmp/overnight-cities-2026-10-08/bursa-metric.geojson",
+    "auditFile": "bursa-quality.json"
+  },
+  "finalPointOutcomes": {
+    "uniqueProbeLocations": 13,
+    "fullPolygonHits": 9,
+    "upstreamPoint404NoHits": 4,
+    "adapterErrorsAfterPatch": 0,
+    "note": "Nine complete point-identified polygon responses passed adapter point-in-polygon validation; one returned point is on a polygon boundary. Exact-ID responses match hashes for all nine. One of nine geometries self-intersects. The WUP locator and selected center are no-hits; no area or citywide claim is made."
+  },
+  "fullAdapterAcceptanceFile": "bursa-acceptance.json",
+  "acceptanceRunCheckedAt": "2026-10-08T21:08:09Z",
+  "acceptanceRequestCount": 23
+}

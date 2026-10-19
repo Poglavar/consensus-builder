@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 11714,
+  "queueRank": 1617,
+  "name": "Haifeng",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [22.9725523857673, 115.33303319767],
+  "population2025": 353473,
+  "population2025k": 353.473,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Haifeng China official cadastral map parcel land registry GIS natural resources bureau",
+        "result": "First-party discovery identified official Shanwei Natural Resources Bureau material naming Haifeng County Natural Resources Bureau and describing Haifeng property-registration and cadastral-survey work. No public anonymous parcel feature service or geometry download was identified.",
+        "actualResultUrls": [
+          "https://www.shanwei.gov.cn/swgtj/zwgk/0800/0801/content/post_1046115.html",
+          "https://www.shanwei.gov.cn/swgtj/ztzl/djcc/index_2.html",
+          "https://www.shanwei.gov.cn/shanwei/zwgk/jcxx/zwdt/rdgz/content/post_1058684.html",
+          "https://ysqgk.gd.gov.cn/660299/choice"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "海丰县 不动产登记 地籍图 宗地图 自然资源局 官方",
+        "result": "中文 first-party discovery confirmed the Haifeng County Natural Resources Bureau, Haifeng County property-registration center, and official Guangdong information-request portal. The official material documents registration, cadastral-survey intake, and procedures, but does not expose an anonymous parcel-ID-plus-geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.shanwei.gov.cn/swgtj/zwgk/0800/0801/content/post_1046115.html",
+          "https://www.shanwei.gov.cn/swgtj/zwgk/0800/0801/content/post_1049855.html",
+          "https://www.shanwei.gov.cn/swgtj/ztzl/djcc/index_2.html",
+          "https://ysqgk.gd.gov.cn/660299/choice"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.shanwei.gov.cn/swgtj/zwgk/0800/0801/content/post_1046115.html",
+      "observation": "Official Shanwei Natural Resources Bureau report states that Haifeng County Natural Resources Bureau implemented property-registration workflows using cadastral-survey results and identifies the Haifeng registration context. It is institutional/procedure evidence, not an open parcel API."
+    },
+    {
+      "url": "https://www.shanwei.gov.cn/swgtj/zwgk/0800/0801/content/post_1049855.html",
+      "observation": "Official report says Haifeng County Natural Resources Bureau loads cadastral-survey/property-measurement results into the registration system. No public geometry endpoint is published."
+    },
+    {
+      "url": "https://www.shanwei.gov.cn/swgtj/ztzl/djcc/index_2.html",
+      "observation": "Official Shanwei Natural Resources Bureau registration-property reform index identifies cadastral-investigation and property-registration work, including Haifeng-related items; it does not provide anonymous parcel geometry."
+    },
+    {
+      "url": "https://ysqgk.gd.gov.cn/660299/choice",
+      "observation": "Official Guangdong information-request portal is scoped to Haifeng County government information. It is a request channel, not a public parcel viewer or API."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.shanwei.gov.cn/swgtj/zwgk/0800/0801/content/post_1046115.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official page fetched successfully; content confirmed Haifeng cadastral-survey/property-registration custody. No map configuration, schema, CRS, or anonymous parcel response was present."
+    },
+    {
+      "url": "https://www.shanwei.gov.cn/swgtj/ztzl/djcc/index_2.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official registration-property reform index fetched successfully; it exposed official procedure/report links, not a parcel feature service."
+    },
+    {
+      "url": "https://ysqgk.gd.gov.cn/660299/choice",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Haifeng information-request portal fetched successfully. No anonymous parcel geometry or safe native parcel ID was requested or retrieved."
+    },
+    {
+      "url": "https://www.gdzwfw.gov.cn/portal/guide/11441521007095073K4442114017000",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Guangdong service page fetched successfully, but no bounded anonymous parcel geometry response or public viewer API was exposed."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Shanwei Natural Resources Bureau material explicitly identifies Haifeng County Natural Resources Bureau and the Haifeng property-registration center/cadastral-survey workflow. This evidences a local registry custodian and procedure, not public source integration or admission.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Haifeng County property-registration and cadastral-survey system administered through the Haifeng County Natural Resources Bureau and related Shanwei services.",
+    "verifiedOpenScope": "Local custody and procedure were verified; no anonymous city-bounded parcel ID-plus-geometry response, schema, CRS, or downloadable sample was retrieved.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. No GeoJSON sample is retained.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current Haifeng viewer configuration, anonymous access behavior, map/API endpoint, parcel schema, CRS, stable native parcel identity, and exact-point coverage remain unknown. The exact WUP point was preserved and was not shifted or used to infer presence or absence.",
+  "retainedSample": null
+}

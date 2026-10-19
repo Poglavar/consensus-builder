@@ -1,0 +1,85 @@
+{
+  "cityRecord": "city-11520-ningguo.json",
+  "cityCode": 11520,
+  "queueRank": 1700,
+  "city": "Ningguo",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {
+    "english": "Official Ningguo government pages were found for the local natural-resources/registration custodian and registration-service workflow. No public anonymous parcel viewer/API was discovered.",
+    "native": "Chinese official search found local notices and policy describing cadastral-map/deed-record access through 皖事通, the registration-center archive, and the local electronic-government system. These are permissioned or procedural routes, not verified anonymous geometry services."
+  },
+  "custodian": {
+    "name": "宁国市自然资源和规划局 / 宁国市不动产登记中心",
+    "role": "Local natural-resources and real-estate registration/cadastral custodian",
+    "evidenceUrls": [
+      "https://www.ningguo.gov.cn/InKnowledgeBase/show/3473.html",
+      "https://www.ningguo.gov.cn/OpennessContent/show/2929642.html",
+      "https://www.ningguo.gov.cn/Yhyshj/show/751.html"
+    ]
+  },
+  "attemptedRoutes": [
+    {
+      "route": "Ningguo official government knowledge-base reply",
+      "url": "https://www.ningguo.gov.cn/InKnowledgeBase/show/3473.html",
+      "result": "HTTP 200; procedure evidence only; no geometry/API"
+    },
+    {
+      "route": "Ningguo official real-estate registration progress guide",
+      "url": "https://www.ningguo.gov.cn/OpennessContent/show/2929642.html",
+      "result": "HTTP 200; authenticated Anhui government-service workflow; no anonymous parcel endpoint"
+    },
+    {
+      "route": "Ningguo official one-code land-management policy",
+      "url": "https://www.ningguo.gov.cn/Yhyshj/show/751.html",
+      "result": "HTTP 200; local parcel identifier and internal-system evidence; no public geometry"
+    },
+    {
+      "route": "Ningguo official service listing",
+      "url": "https://www.ningguo.gov.cn/Service/show/4028e69e901628f901903974f3a71a6b/486ea0fc3d5b4b839e16eeb5a9f69757.html",
+      "result": "HTTP 200; local registration counter and legal query boundary; no public geometry"
+    },
+    {
+      "route": "National Tianditu portal",
+      "url": "https://www.tianditu.gov.cn/",
+      "result": "HTTP 418; unavailable in this anonymous request; not treated as absence evidence"
+    }
+  ],
+  "fieldPolicy": {
+    "allowlist": [
+      "safe stable native parcel identity if publicly returned",
+      "parcel polygon geometry",
+      "source field names and mapping in metadata only",
+      "CRS/format and request metadata"
+    ],
+    "notRequested": [
+      "owner/right-holder",
+      "address/contact",
+      "titleholder/certificate",
+      "tax/account/identity/application data"
+    ]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "reason": "No bounded anonymous ID+geometry response was available from the official routes inspected; no polygon is retained."
+  },
+  "scopeLimits": [
+    "Exact WUP point was preserved and was not shifted to force a hit.",
+    "No exact-point hit or map-extent test was used as citywide absence evidence.",
+    "Authentication, CAPTCHA, private tokens, and protected owner/property queries were not attempted.",
+    "No national/general-agency prose was promoted to a Ningguo geometry source.",
+    "Registry existence is evidenced locally, but source integration/admission remains unqualified."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Public endpoint, schema, CRS, safe native identity field, and citywide coverage remain unknown."
+  }
+}

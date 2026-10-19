@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:8364",
+  "name": "New Delhi",
+  "sourceId": "in-ldo-edharti-geojson",
+  "status": "verified_snapshot_runtime_access_hold",
+  "registryFound": true,
+  "verifiedSample": true,
+  "assessment": "A fresh complete public e-Dharti snapshot contains 25,999 features. Grouping by propertyid yields 25,768 keys; all 224 repeated-key groups are disjoint and have matching unique_propert_id, with no measured overlap. This refines the older conflicting-geometry assessment: repeated rows are not by themselves invalid if complete components are assembled. Integration still lacks verified publisher-facing identity semantics and production connectivity.",
+  "runtimeReadiness": "technical-hold",
+  "technicalBlockers": [
+    "The production backend host could not connect to the L&DO publisher in repeated bounded checks (UND_ERR_CONNECT_TIMEOUT); no payload obtained.",
+    "The current viewer searches old_propert_id and unique_propert_id; the internal propertyid grouping is not yet established as the durable publisher-facing property identity. Repeated unique_propert_id groups have not been completely audited.",
+    "The current source is a JavaScript-wrapped snapshot rather than a direct bounded JSON geometry service. No adapter change is retained while reachability remains unresolved."
+  ],
+  "nextStep": "Confirm a reachable official source or mirror and the viewer-native unique_propert_id semantics, then audit every component of that identity before adapter integration.",
+  "evidenceFiles": [
+    "research/india-africa-followup-2026-10-08/delhi-component-audit.json",
+    "research/india-africa-followup-2026-10-08/delhi-runtime-access.json"
+  ],
+  "termsAreInformational": true
+}

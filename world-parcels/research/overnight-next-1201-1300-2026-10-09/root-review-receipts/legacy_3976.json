@@ -1,0 +1,11 @@
+{
+  "taskId": "legacy:3976",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-3976-maringa.json",
+    "world-parcels/research/overnight-next-2026-10-09/maringa-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:25:41.209624Z",
+  "reason": "Municipal lot-map workflow is documented, but candidate layer metadata and bounded query timed out; native ID, geometry, qualification and headed Details verification are absent."
+}

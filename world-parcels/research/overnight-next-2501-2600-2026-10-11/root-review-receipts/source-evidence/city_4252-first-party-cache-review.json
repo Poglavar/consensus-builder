@@ -1,0 +1,11 @@
+{
+  "taskId": "city:4252",
+  "cacheFile": "tmp/valhalla-parcel-research/dezful/municipal.html",
+  "cacheSha256": "119e2dbbadef203047a56b9c1f12cd9ca2529d0f1801414ec38811cdf049bceb",
+  "firstPartyUrl": "https://www.dezful.ir/",
+  "observation": {
+    "cityMapTileTitle": "نقشه شهر",
+    "cityMapTileLink": ""
+  },
+  "limits": "Municipal HTML does not itself provide a parcel feature or prove absence across Dezful."
+}

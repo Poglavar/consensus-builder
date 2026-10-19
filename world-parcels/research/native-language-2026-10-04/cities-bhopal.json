@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 199,
+  "city": "Bhopal",
+  "countryCode": "IN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/bhopal.json",
+  "query": {
+    "language": "Hindi",
+    "script": "Devanagari",
+    "text": "भोपाल भू नक्शा खसरा भूमि अभिलेख मध्य प्रदेश सरकारी भूलेख"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Hindi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "भोपाल भू नक्शा खसरा भूमि अभिलेख मध्य प्रदेश सरकारी भूलेख",
+    "englishQuery": "Bhopal land map, khasra and Madhya Pradesh government land records",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "MP Bhulekh",
+      "url": "https://mpbhulekh.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "Official state land-record portal is identified as the authority for khasra, khatauni, and map records; anonymous vector endpoint and Bhopal layer coverage were not verified."
+    },
+    {
+      "title": "Madhya Pradesh land-record digitization report",
+      "url": "https://mpbhawan.gov.in/Portals/0/Website/Book%20%20Date%2019-11-24.pdf",
+      "kind": "official-state-report",
+      "note": "Government report describes digitization of map sheets in all 55 districts and web-based citizen services; this does not establish open Bhopal feature export."
+    }
+  ],
+  "assessment": "Government source confirms statewide digital map infrastructure, but no anonymous Bhopal parcel-vector service contract was established. Historical temporary-unavailable status remains.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:9213",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

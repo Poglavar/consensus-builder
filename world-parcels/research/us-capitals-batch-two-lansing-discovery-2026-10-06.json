@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Michigan lead corrections, worker access observations and public metadata lead; no parcel geometry or owner attributes retained.",
+  "sources": [
+    {
+      "stateCode": "MI",
+      "endpoint": "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0",
+      "status": "wrong-city-source-rejected",
+      "assessment": "The previous sample transformed to Kansas coordinates. Worker inspected ArcGIS item provenance and identified Lansing, Kansas, not the Michigan capital. Remove this as a Michigan data lead; retain earlier failed investigation.",
+      "references": [
+        "https://services9.arcgis.com/1bWTvtvBCBaErVYC/arcgis/rest/services/Lansing_Parcels_08182026/FeatureServer/0",
+        "https://www.michigan.gov/dtmb/services/maps/mgf-data-hub/boundaries-and-mgf/tax-parcels"
+      ]
+    },
+    {
+      "stateCode": "MI",
+      "endpoint": "https://app.fetchgis.com/geoservices/fgis/ingParcels/FeatureServer/0",
+      "status": "temporarily_unavailable",
+      "assessment": "Worker inspected the state-listed Ingham county viewer configuration: native PARCELNUM with OBJECTID transport. FetchGIS proxy connections reset; its backing ArcGIS service required a token (499). No Michigan capital geometry acceptance obtained. Public viewer access flow remains an adapter investigation.",
+      "references": [
+        "https://www.michigan.gov/dtmb/services/maps/mgf-data-hub/boundaries-and-mgf/tax-parcels"
+      ]
+    },
+    {
+      "stateCode": "MI",
+      "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+      "status": "metadata-observed",
+      "assessment": "Public web retrieval observed esriGeometryPolygon, PARCELNUM string, OBJECTID transport and native EPSG:2253. Layer is named Parcels - 2025; publisher provenance, capital sample, exact native identity and live acceptance are not yet checked. This is a new lead for the next batch.",
+      "serviceItemId": "03a35351f22e4962a33569eb1c3eace7",
+      "fields": [
+        {
+          "name": "PARCELNUM",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeOID"
+        }
+      ],
+      "references": [
+        "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1?f=pjson"
+      ]
+    }
+  ]
+}

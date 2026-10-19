@@ -1,0 +1,50 @@
+/* Station-specific controls within the shared map editor. */
+.station-editor-body {
+    display: grid;
+    gap: 14px;
+    padding: var(--cb-space-2) 0;
+}
+
+.station-editor-body p {
+    margin: 0;
+}
+
+.station-editor-field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.station-editor-bearing {
+    grid-template-columns: minmax(0, 1fr) 88px;
+}
+
+.station-editor-field input[type='range'] {
+    width: 100%;
+}
+
+/* The number fields take their look from the base form controls (css/primitives.css). */
+.station-editor-field input[type='number'] {
+    width: 70px;
+}
+
+.station-editor-input-with-unit {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    color: var(--cb-text-muted);
+    font-weight: 600;
+}
+
+
+.station-editor-bearing > span:first-child { grid-column: 1 / -1; }
+
+.station-editor-footprint { cursor: grab; }
+.station-editor-footprint:active { cursor: grabbing; }
+
+@media (max-width: 639.98px) {
+    .on-map-editor__footer [data-station-editor-action] { min-height: 40px; }
+}

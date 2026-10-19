@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "MLK",
+ "regionName": "Melaka",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.arcgis.com/apps/mapviewer/index.html?webmap=d6e07c56a7e540fb87e26ee733beab50",
+   "observation": "public 'Lot Finder Melaka' webmap; layers 'Lot Kadaster 2012/2013/2016' at mygdispatial.melaka.gov.my:6443/arcgis/rest/services/AGENSI/JUPEM_2019/FeatureServer/0-2 (found via webmap JSON)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/content/items/d6e07c56a7e540fb87e26ee733beab50/data?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "webmap JSON names the lot FeatureServer layers"
+  },
+  {
+   "url": "https://mygdispatial.melaka.gov.my:6443/arcgis/rest/services/AGENSI/JUPEM_2019/FeatureServer/0/query?resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset by peer (repeated)"
+  },
+  {
+   "url": "https://mygdispatial.melaka.gov.my/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "TLS: certificate has expired; not bypassed"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "Candidate service is an old JUPEM_2019 snapshot (vintage layers 2012-2016), reachability from this network blocked; scope of layers unknown.",
+ "nextStep": "Retry from another network; then query layers 0-2 with bounded bbox, ID and geometry fields only."
+}

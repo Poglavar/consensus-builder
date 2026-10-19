@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-3607-padua.json",
+  "cityCode": 3607,
+  "queueRank": 2966,
+  "name": "Padua",
+  "country": "Italy",
+  "countryCode": "IT",
+  "packetStatus": "complete",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "queryOutcomes": "See city-3607-padua.json freshResearch. Separate English and Italian first-party discovery was completed and actual result URLs are recorded.",
+  "requestOutcomes": "See city-3607-padua.json sourceReview.attempts. All executed routes, format failure, successful capabilities response, bounded GML response, schema/CRS, and scope limits are recorded there.",
+  "serviceScope": "Comune di Padova is the evidenced local urbanistic/cadastral-services custodian; Agenzia delle Entrate is the evidenced national parcel geometry service and is not a municipal custodian.",
+  "boundedSample": {"file":"city-3607-padua-sample.geojson","featureCount":3,"propertiesRule":"Exactly one canonical native identity: id=INSPIREID_LOCALID.","nativeIds":["IT.AGE.PLA.G224_009000.10","IT.AGE.PLA.G224_009000.410","IT.AGE.PLA.G224_009000.9"]},
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source CRS", "bounded response metadata"],
+  "uncertainty": ["No citywide completeness claim; only a bounded three-parcel probe was retained.","No direct municipal parcel feature endpoint was validated from the public page text.","Runtime/admission remains held pending independent serial reviewer qualification."],
+  "completionSummary": {"packetComplete":true,"registryFound":true,"cityPointParcelSample":true,"runtimeReadiness":"held","nextAttemptNeeded":false}
+}

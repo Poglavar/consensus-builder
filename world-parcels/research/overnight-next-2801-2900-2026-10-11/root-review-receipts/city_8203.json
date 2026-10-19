@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8203",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-8203-depalpur.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/depalpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T21:17:28Z",
+  "identityCheck": "Exact city code, rank, country, WUP point, and 2025 population in persons match ranked-population.json, pending-queue.json, and the SHA-256 verified first-party WUP 2025 bulk CSV (e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114).",
+  "researchCheck": "Packet records executed English and local-language searches with result URLs; paired review records source route outcomes. No full polygon sample is retained (0 of at most 3), and no safe native parcel identifier with geometry is verified.",
+  "registryFound": null,
+  "reason": "The official provincial PLRA and GIS hosts are discovery evidence, but the local Depalpur registry scope remains unresolved. The public service-directory probe and authenticated housing-society endpoint did not yield safe native parcel IDs or unchanged parcel polygons. The token wall and empty site search do not prove citywide absence. Independent live adapter qualification is absent: fresh exact native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details-panel verification. Runtime/catalog/report admission remains held."
+}

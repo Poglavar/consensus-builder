@@ -1,0 +1,95 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "JP",
+ "country": "Japan",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Ministry of Justice (registry-office maps, 法務省登記所備付地図) via G-space Information Center; Esri Japan hosts a derivative FeatureServer",
+ "portalsFound": [
+  {
+   "url": "https://www.moj.go.jp/MINJI/minji05_00494.html",
+   "observation": "MOJ page on open publication of registry map data through the G-spatial Information Center (HTTP 200)."
+  },
+  {
+   "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer",
+   "observation": "Esri Japan hosted MOJ polygons; description says Tokyo and Aichi (public coordinate system); layer 5 merges Tokyo, Aichi, Fukuoka."
+  },
+  {
+   "url": "https://front.geospatial.jp/moj-chizu-xml-download/",
+   "observation": "Official nationwide download site; connection reset via proxy (temporarily unavailable, not tested)."
+  },
+  {
+   "url": "https://www.digital.go.jp/",
+   "observation": "Not queried; Chiban (地番) cadastre by municipalities also published as fudepolygon (not tested)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service metadata"
+  },
+  {
+   "url": "touki/FeatureServer/5/query bbox 139.6917,35.6895,139.6927,35.6903 (Tokyo Met. Govt area)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "empty features (no registry map there)"
+  },
+  {
+   "url": "touki/FeatureServer/5/query bbox 139.68755,35.70349,139.68775,35.70400 (Shinjuku), resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon lots, CityCode 13104"
+  },
+  {
+   "url": "https://www.moj.go.jp/MINJI/minji05_00494.html",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "open-data page"
+  },
+  {
+   "url": "https://front.geospatial.jp/moj-chizu-xml-download/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection reset"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "jp-moj-esri-touki-2023",
+  "requestUrl": "https://services.arcgis.com/wlVTGRSYTzAbjjiC/ArcGIS/rest/services/touki/FeatureServer/5/query?where=1=1&geometry=139.68755,35.70349,139.68775,35.70400&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,LotNumber,CityCode,CityName&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   139.68755,
+   35.70349,
+   139.68775,
+   35.704
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID / LotNumber",
+  "responseFile": "JP-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Tokyo (Shinjuku); Aichi/Nagoya sampled earlier in research/nagoya.json"
+ },
+ "coverageAssessment": {
+  "claimedScope": "MOJ registry maps nationwide (official download in XML/G-XML); the open query endpoint verified is a 3-prefecture hosted derivative",
+  "regionsVerified": [
+   "Tokyo 23 wards",
+   "Aichi (Nagoya, from research/nagoya.json)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Verified endpoint is an unofficial Esri Japan derivative covering only Tokyo/Aichi/Fukuoka; official nationwide MOJ download not reached; registry maps do not cover all land (e.g. mountain/unsurveyed areas); derivative licence not reviewed.",
+ "nextStep": "Retry front.geospatial.jp; test an official MOJ zip by HTTP range for a prefecture outside Tokyo/Aichi/Fukuoka."
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 7,
+  "city": "Al-Qahirah (Cairo)",
+  "countryCode": "EG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/al-qahirah-cairo.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "القاهرة بيانات مفتوحة كادستر قطع الأراضي خريطة GIS الجهاز المركزي للتعمير"
+  },
+  "results": [
+    {
+      "title": "Cairo Governorate geographic maps",
+      "url": "https://www.cairo.gov.eg/ar/maps/pages/geography_maps.aspx",
+      "kind": "official"
+    },
+    {
+      "title": "Egyptian Survey Authority",
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "kind": "official"
+    },
+    {
+      "title": "Cairo FeatureServer",
+      "url": "https://services.arcgis.com/lqRTrQp2HrfnJt8U/ArcGIS/rest/services/Cairo/FeatureServer",
+      "kind": "candidate-nonparcel",
+      "note": "Search result lists buildings, roads, railways, waterways, land use; no parcel layer."
+    }
+  ],
+  "assessment": "The Arabic search surfaced Cairo Governorate's geographic-maps page and the Egyptian Survey Authority. It did not surface a downloadable city parcel vector or machine-readable parcel query endpoint. The search is discovery only; endpoint/access/identity remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

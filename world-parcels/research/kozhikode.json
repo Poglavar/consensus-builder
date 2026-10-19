@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:66",
+  "queueRank": 66,
+  "name": "Kozhikode",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    11.2059147426276,
+    75.8583486485998
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "observation": "Ente Bhoomi, Kerala ILIMS citizen portal (Survey and Land Records Department) with a map page as part of the Digital Resurvey; the HTML exposes no documented open parcel API."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/home/",
+      "observation": "Kerala Survey and Land Records Department site."
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/",
+      "observation": "Resurvey portal referenced from Ente Bhoomi; connection reset from proxy."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://entebhoomi.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "portal home; no parcel data"
+    },
+    {
+      "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "38 KB server-rendered page; viewer shell with no discoverable feature-service URL"
+    },
+    {
+      "url": "https://survey.entebhoomi.kerala.gov.in/portal/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 35: connection reset by peer; treated as unreachable, not a permanent negative"
+    },
+    {
+      "url": "https://relis.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://kgis.kerala.gov.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Kerala digital resurvey being notified village by village; Kozhikode coverage not confirmed",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The map viewer probably calls a backend that was not discovered (JS-driven); several state hosts were unreachable. Coverage and reuse terms unknown.",
+  "nextStep": "Inspect the viewer's network calls from a browser; look for Kerala resurvey open datasets; Kozhikode corporation villages."
+}

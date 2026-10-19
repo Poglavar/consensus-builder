@@ -1,0 +1,159 @@
+[
+  {
+    "url": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0?f=pjson",
+    "title": null,
+    "description": "",
+    "snippet": null,
+    "licenseInfo": null,
+    "accessInformation": null,
+    "fields": [
+      {
+        "nullable": false,
+        "defaultValue": null,
+        "editable": false,
+        "length": 4,
+        "type": "esriFieldTypeOID",
+        "modelName": "objectid",
+        "domain": null,
+        "name": "objectid",
+        "alias": "OBJECTID"
+      },
+      {
+        "modelName": "parceloid",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "parceloid",
+        "alias": "ParcelOID",
+        "type": "esriFieldTypeInteger"
+      },
+      {
+        "modelName": "nh_gis_id",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "nh_gis_id",
+        "length": 100,
+        "alias": "NH_GIS_ID",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "town",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "town",
+        "length": 25,
+        "alias": "Town",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "u_id",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "u_id",
+        "length": 30,
+        "alias": "U_ID",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "displayid",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "displayid",
+        "length": 200,
+        "alias": "DisplayId",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "countyid",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "countyid",
+        "length": 2,
+        "alias": "CountyId",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "modelName": "isstateowned",
+        "nullable": true,
+        "editable": true,
+        "defaultValue": null,
+        "domain": null,
+        "name": "isstateowned",
+        "alias": "IsStateOwned",
+        "type": "esriFieldTypeSmallInteger"
+      },
+      {
+        "nullable": false,
+        "editable": false,
+        "defaultValue": null,
+        "length": 38,
+        "type": "esriFieldTypeGlobalID",
+        "modelName": "globalid",
+        "domain": null,
+        "name": "globalid",
+        "alias": "GlobalID"
+      },
+      {
+        "virtual": true,
+        "nullable": true,
+        "editable": false,
+        "defaultValue": null,
+        "domain": null,
+        "name": "SHAPE__Length",
+        "alias": "SHAPE__Length",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "virtual": true,
+        "nullable": true,
+        "editable": false,
+        "defaultValue": null,
+        "domain": null,
+        "name": "SHAPE__Area",
+        "alias": "SHAPE__Area",
+        "type": "esriFieldTypeDouble"
+      }
+    ]
+  },
+  {
+    "url": "https://gis.des.nh.gov/portal/sharing/rest/content/items/41356aa9df1042519511f06d8ac6f309?f=json",
+    "title": "NH_Parcels",
+    "description": "",
+    "snippet": "",
+    "licenseInfo": "",
+    "accessInformation": "",
+    "fields": null
+  },
+  {
+    "url": "https://gis.concordnh.gov/arc1061/arcgis/rest/services?f=pjson",
+    "status": "timeout",
+    "timeoutSeconds": 20
+  },
+  {
+    "url": "https://gis.concordnh.gov/arcgis/rest/services?f=pjson",
+    "status": "timeout",
+    "timeoutSeconds": 20
+  },
+  {
+    "url": "https://nhgeodata.unh.edu/hosting/rest/services/Hosted/CAD_ParcelMosaic/FeatureServer/1?f=pjson",
+    "status": "available_metadata",
+    "identityFields": [
+      "nh_gis_id",
+      "u_id",
+      "displayid",
+      "parceloid"
+    ],
+    "assessment": "Same native parcel key family; no alternate acceptance attempted."
+  }
+]

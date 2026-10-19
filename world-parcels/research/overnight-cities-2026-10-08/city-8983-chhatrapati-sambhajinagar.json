@@ -1,0 +1,192 @@
+{
+  "name": "Chhatrapati Sambhajinagar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 317,
+  "point": [
+    19.8768858421537,
+    75.3430733605249
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chhatrapati Sambhajinagar formerly Aurangabad official city cadastral GIS property parcel land records map",
+        "result": "The city Smart City GIS portal states that mapping covered the entire 170 sq km city and that cadastral maps were digitized; the map exposes 100+ layers. The district portal links a property-card service. Maharashtra Gazette notification dated 24 Feb 2023 officially changes the city name from Aurangabad to Chhatrapati Sambhajinagar, supporting this WUP identity. No anonymous full-polygon response was verified.",
+        "urls": [
+          "https://gis.chhsambhajinagarmc.org/ascdlcitygis/",
+          "https://gis.chhsambhajinagarmc.org/ascdlcitygis/map/all",
+          "https://chhatrapatisambhajinagar.maharashtra.gov.in/service/मालमत्ता-पत्रक/",
+          "https://aurangabadmahapalika.org/assets/300/2024/07/mediafiles/sachiv_06_dt__28_02_2024.pdf"
+        ],
+        "method": "Separate English web search and inspection of first-party city GIS, district property-card service, and published Maharashtra Gazette notification."
+      },
+      {
+        "language": "Marathi",
+        "query": "छत्रपती संभाजीनगर भूमी अभिलेख सिटी सर्व्हे नकाशा मालमत्ता GIS महानगरपालिका अधिकृत",
+        "result": "छत्रपती संभाजीनगर स्मार्ट सिटीच्या अधिकृत GIS संकेतस्थळावर शहराचे १७० चौ.कि.मी. क्षेत्र नकाशित केल्याचे आणि विविध कॅडस्ट्रल नकाशे डिजिटाइज केल्याचे नमूद आहे. जिल्हा प्रशासनाचे मालमत्ता पत्रक सेवा पृष्ठही उपलब्ध आहे. मात्र सार्वजनिक अज्ञात वापरकर्त्यासाठी पूर्ण पार्सल-वेक्टर प्रतिसाद किंवा API पडताळાયો નથી.",
+        "urls": [
+          "https://gis.chhsambhajinagarmc.org/ascdlcitygis/",
+          "https://gis.chhsambhajinagarmc.org/ascdlcitygis/map/all",
+          "https://chhatrapatisambhajinagar.maharashtra.gov.in/service/मालमत्ता-पत्रक/",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=24"
+        ],
+        "method": "Separate Marathi-language search and inspection of local government GIS/land-record pages."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Chhatrapati Sambhajinagar Smart City GIS",
+        "operator": "Chhatrapati Sambhajinagar Smart City Development Corporation Limited (jointly owned by Government of Maharashtra and municipal corporation)",
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/",
+        "observation": "City Smart GIS overview documents digitized cadastral maps, but its live public layer list exposes no cadastral/parcel layer. Its WMS exposes survey-boundary styling layers but not parcel features; the configured separate survey portal returns HTTP 401 anonymously."
+      },
+      {
+        "name": "District Chhatrapati Sambhajinagar property-card service",
+        "operator": "District Administration, Government of Maharashtra",
+        "url": "https://chhatrapatisambhajinagar.maharashtra.gov.in/service/मालमत्ता-पत्रक/",
+        "observation": "Official district page links citizens to the property-card service. This is a record service, not evidence of open parcel-vector download."
+      },
+      {
+        "name": "Maharashtra Government Gazette name-change notification",
+        "operator": "General Administration Department, Government of Maharashtra",
+        "url": "https://aurangabadmahapalika.org/assets/300/2024/07/mediafiles/sachiv_06_dt__28_02_2024.pdf",
+        "observation": "Published copy of 24 February 2023 Gazette notification directs the city name Aurangabad to be changed to Chhatrapati Sambhajinagar, confirming name continuity."
+      },
+      {
+        "name": "Maharashtra Bhumi Abhilekh district office page",
+        "operator": "Maharashtra Land Records Department",
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR?districtId=24",
+        "observation": "District-specific page identifies the District Superintendent of Land Records, Chhatrapati Sambhajinagar; underlying service is state-operated."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/",
+        "method": "Official web page open",
+        "status": null,
+        "type": "text/html page content",
+        "observation": "Official portal content specifies entire-city mapping and digitized cadastral maps; status code not exposed. No full feature query was run."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/map/all",
+        "method": "Official web page open",
+        "status": null,
+        "type": "text/html page content",
+        "observation": "Public map UI content loaded with layers/queries, but not a parcel feature-service response."
+      },
+      {
+        "url": "https://aurangabadmahapalika.org/assets/300/2024/07/mediafiles/sachiv_06_dt__28_02_2024.pdf",
+        "method": "Official government gazette PDF web inspection",
+        "status": null,
+        "type": "application/pdf page text",
+        "observation": "Notification dated 24 February 2023 confirms city name-change from Aurangabad to Chhatrapati Sambhajinagar."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/map/all",
+        "method": "Chrome browser HTTPS UI inspection",
+        "status": null,
+        "type": "interactive map page",
+        "observation": "The live city map UI loaded with map layers, query, city property/ward tools and 2021–2026 imagery options. It did not expose a cadastral layer in the rendered layer chooser; the overview separately states that cadastral maps were digitized. No geometry request was made."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/geoserver/aurangabad_gis/wms?service=WMS&request=GetCapabilities",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "text/xml",
+        "observation": "WMS GetCapabilities returned 94 named layers, including boundary/utility/building layers but no explicit parcel feature layer. Viewer static config points to this WMS; the related internal getGeoJsonData route is POST and was not invoked. No full geometry response was obtained."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/map/all",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "text/html with embedded public layer metadata",
+        "observation": "The embedded City GIS layer list contains no cadastral/parcel/City Survey Plot layer; its public-layer entries include landmarks and traffic islands. No feature attributes/geometries were requested."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/js/citymap_js/AppData.js",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "application/javascript",
+        "observation": "App configuration declares dataProjection EPSG:32643, display projection EPSG:3857, public WMS URL, and surveyPortalUrl https://gis.chhsambhajinagarmc.org/ascdl_survey."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdl_survey/",
+        "method": "Anonymous HTTPS GET",
+        "status": 401,
+        "type": "text/html",
+        "observation": "The official surveyPortalUrl returns Unauthorized without credentials. No login, account, or credential was attempted."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/js/map/CityMapAjax.js",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "application/javascript",
+        "observation": "Generic GetGeoJSON wrapper POSTs WKT value, tableName, dataType, isTableData, and fid; no safe property allowlist or max-feature parameter is included in the app contract. The GeoJSON route was not called."
+      },
+      {
+        "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/js/map/mapController.js",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "application/javascript",
+        "observation": "Spatial GeoJSON parser sets isTableData=false and fid=0 and expects EPSG:4326 GeoJSON for EPSG:3857 display. Actual endpoint payload CRS is unverified."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No anonymous full parcel polygon response was fetched and independently verified."
+  },
+  "source": {
+    "id": null,
+    "name": "Chhatrapati Sambhajinagar Smart City GIS",
+    "operator": "Chhatrapati Sambhajinagar Smart City Development Corporation Limited (jointly owned by Government of Maharashtra and municipal corporation)",
+    "url": "https://gis.chhsambhajinagarmc.org/ascdlcitygis/",
+    "format": "Public WMS/display layers and credential-protected survey portal; no anonymous parcel-vector route verified.",
+    "access": "Public map UI and WMS metadata are accessible; separate survey portal returns HTTP 401 without credentials. No authentication or property lookup performed.",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official municipal Smart City GIS describes city-wide digitized cadastral maps, and the district administration links a property-card service; the official Gazette confirms that the former Aurangabad city name refers to current Chhatrapati Sambhajinagar.",
+    "verifiedOpenScope": "No anonymous public full-polygon vector endpoint verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The official municipal Smart City GIS describes city-wide digitized cadastral maps, and the district administration links a property-card service; the official Gazette confirms that the former Aurangabad city name refers to current Chhatrapati Sambhajinagar.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_city_cadastral_map_geometry_not_verified",
+  "technicalBlocker": "The anonymous city map page’s embedded layer list does not contain a cadastral parcel/City Survey Plot layer; the public WMS has survey/revenue boundary styling layers but no parcel feature layer. AppData.js points to a separate survey portal at /ascdl_survey, which returns HTTP 401 without credentials. The generic GeoJSON POST accepts WKT and a layer table name but provides no safe field allowlist/result cap; no unauthenticated layer/geometry request was made.",
+  "remainingUncertainty": "Whether the separately protected survey portal offers eligible public parcel geometry, or whether a cadastral layer is selectively added to an authorized map view, remains unknown. No anonymous parcel vector layer, WUP-point parcel, or response CRS was verified. AppData declares EPSG:32643 data and EPSG:3857 map projections; the GeoJSON parser expects EPSG:4326, but the actual payload CRS was not observed.",
+  "nextStep": "Seek an officially documented anonymous parcel-vector route, or an expressly public query contract with a small result cap and safe identifier-plus-geometry field selection. Do not authenticate to /ascdl_survey.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8983,
+  "cityId": "wup2025:8983",
+  "queueRank": 317,
+  "population2025": 1567020,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    19.8768858421537,
+    75.3430733605249
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "aliases": [
+    "Aurangabad"
+  ],
+  "identityNote": "Government of Maharashtra Gazette notification dated 2023-02-24 formally changed the city name Aurangabad to Chhatrapati Sambhajinagar; the rank-317 record is current city-name continuity, not a second city.",
+  "rootReviewedAt": "2026-10-08T22:24:15.611909+00:00"
+}

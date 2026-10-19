@@ -1,0 +1,90 @@
+{
+  "name": "Linfen",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 553,
+  "point": [
+    36.0830026318174,
+    111.517695693526
+  ],
+  "population2025": 945174,
+  "populationUnit": "persons",
+  "population2025k": 945.174,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Linfen Land Resources Bureau’s identified official institutional publishing account describes the city Natural Resources Rights Confirmation and Registration Center and local registration procedures. This is attributable first-party city-office evidence hosted on an external publishing platform; no anonymous parcel map or full geometry is verified.",
+  "registryEvidenceUrls": [
+    "https://m.thepaper.cn/newsDetail_forward_30945429",
+    "https://www.thepaper.cn/newsDetail_forward_22565402"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Linfen official cadastral parcel map land registry GIS natural resources bureau Linfen",
+        "scope": "Find city-specific registry and anonymous parcel-map or feature-service sources.",
+        "result": "Searches found the Linfen Natural Resources Rights Confirmation and Registration Center through a government-affiliated official account carried on The Paper. No public cadastral viewer, parcel feature service, schema, or geometry query was identified.",
+        "actualResultUrls": [
+          "https://www.thepaper.cn/newsDetail_forward_22565402",
+          "https://m.thepaper.cn/newsDetail_forward_30945429"
+        ],
+        "executionMethod": "Separate English web search followed by source and portal inspection."
+      },
+      {
+        "language": "Chinese",
+        "query": "临汾市 不动产登记中心 地籍图 地块 查询 官方 自然资源局",
+        "scope": "Find first-party local registration/cadastre evidence and public map geometry.",
+        "result": "The Linfen Natural Resources Rights Confirmation and Registration Center is specifically named in a local government-affiliated official account for city registration services. No city-government parcel GIS or public vector route was found; third-party procurement listings were not treated as proof of public map coverage.",
+        "actualResultUrls": [
+          "https://m.thepaper.cn/newsDetail_forward_30945429",
+          "https://www.thepaper.cn/newsDetail_forward_22565402"
+        ],
+        "executionMethod": "Separate Chinese-language search and review of the identified official-account posts; no geometry endpoint surfaced."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "CN-8851-LINFEN-REGISTRY",
+    "name": "Linfen Natural Resources Rights Confirmation and Registration Center",
+    "url": "https://m.thepaper.cn/newsDetail_forward_30945429",
+    "operator": "Linfen Natural Resources Rights Confirmation and Registration Center (official account hosted on The Paper)",
+    "serviceType": "City property-registration office and public service workflow; no anonymous parcel feature service verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Official-account posts identify the local registration center and its real-estate registration services. No public parcel ID/geometry response or vector layer was found."
+  },
+  "coverageAssessment": {
+    "claimedScope": "A government-affiliated official Linfen Natural Resources Rights Confirmation and Registration Center account describes city property-registration services and a city registration workflow. This confirms a local register office, not an anonymous map or parcel geometry.",
+    "verifiedOpenScope": "Local registry office evidence exists, but public parcel geometry and exact WUP point coverage remain unverified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_geometry_not_verified",
+  "technicalBlocker": "No city-scoped anonymous parcel GIS or full geometry endpoint was identified. A local registration center exists, but public feature geometry and WUP-point parcel coverage remain unverified.",
+  "remainingUncertainty": "No city-scoped anonymous parcel GIS or full geometry endpoint was identified. A local registration center exists, but public feature geometry and WUP-point parcel coverage remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 8851,
+  "cityId": "wup2025:8851",
+  "centerLatLon": [
+    36.0830026318174,
+    111.517695693526
+  ],
+  "queueRank": 553,
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "sampleGeometryFile": null,
+  "sampleGeometrySha256": null,
+  "rootInstitutionalPublisherCheck": {
+    "url": "https://m.thepaper.cn/newsDetail_forward_30945429",
+    "observation": "Page identifies 临汾市国土资源局官方澎湃号 as the publisher and describes the local registration center; third-party platform news/editorial opinion is not used as the registry basis."
+  },
+  "rootReviewedAt": "2026-10-09T01:31:18.479128+00:00"
+}

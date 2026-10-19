@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6272-oaxaca-de-juarez.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The state Cadastral Institute is a local first-party cadastre custodian with an office in Oaxaca de Juárez. The official public pages describe registry and cadastral services but do not document a safe anonymous parcel-vector route. The separate georeference portal concerns programme records, not cadastral lots.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+      "observation": "Oaxaca State Cadastral Institute (ICEO) identifies its role maintaining the cadastral register and territorial information system; lists cadastral data correction, parcel split/merge, registry intake and copy/print services. The official directory places the institute in Oaxaca de Juárez. No anonymous parcel geometry API or response was documented."
+    },
+    {
+      "url": "https://sgps.oaxaca.gob.mx/geoReference/georeference",
+      "observation": "Official Oaxaca georeference portal supports searching state-funded programmes by dependency, region, district or municipality; it is not a cadastral parcel feature service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Oaxaca de Juárez official cadastral map parcels catastro Oaxaca gobierno del estado",
+      "resultUrls": [
+        "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+        "https://sgps.oaxaca.gob.mx/geoReference/georeference"
+      ],
+      "result": "Search surfaced the Oaxaca State Cadastral Institute as the official local custodian, with a stated cadastral registry and territorial information system. The public state georeference portal is a programme search, not parcel geometry.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Spanish",
+      "query": "Oaxaca de Juárez catastro municipal predial plano catastral sitio oficial",
+      "resultUrls": [
+        "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+        "https://sgps.oaxaca.gob.mx/geoReference/georeference"
+      ],
+      "result": "The Spanish search confirmed the ICEO office in Oaxaca de Juárez and listed cadastral registry tasks; it did not identify an anonymous parcel geometry service.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The state Cadastral Institute is a local first-party cadastre custodian with an office in Oaxaca de Juárez. The official public pages describe registry and cadastral services but do not document a safe anonymous parcel-vector route. The separate georeference portal concerns programme records, not cadastral lots.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+      "result": "Oaxaca State Cadastral Institute (ICEO) identifies its role maintaining the cadastral register and territorial information system; lists cadastral data correction, parcel split/merge, registry intake and copy/print services. The official directory places the institute in Oaxaca de Juárez. No anonymous parcel geometry API or response was documented."
+    },
+    {
+      "url": "https://sgps.oaxaca.gob.mx/geoReference/georeference",
+      "result": "Official Oaxaca georeference portal supports searching state-funded programmes by dependency, region, district or municipality; it is not a cadastral parcel feature service."
+    }
+  ],
+  "remainingUncertainty": "No anonymous geometry-only parcel endpoint, safe output schema, or feature at the unchanged WUP settlement point was verified.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 6272,
+      "url": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+      "checkedAt": "2026-10-09T07:10:43.345518+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The state Cadastral Institute is a local first-party cadastre custodian with an office in Oaxaca de Juárez. The official public pages describe registry and cadastral services but do not document a safe anonymous parcel-vector route. The separate georeference portal concerns programme records, not cadastral lots.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

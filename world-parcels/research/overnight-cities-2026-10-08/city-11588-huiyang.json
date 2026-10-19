@@ -1,0 +1,120 @@
+{
+  "name": "Huiyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 915,
+  "point": [
+    22.7744885526664,
+    114.438004913348
+  ],
+  "population2025": 596451,
+  "population2025k": 596.451,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Huiyang Natural Resources bureau documents cadastral measurement and supplemental cadastral-rights surveys, and Huizhou Natural Resources describes a map-based real-estate query workflow requiring WeChat identity verification. Registry/cadastral functions are evidenced, but the described query is not anonymous.",
+  "registryEvidenceUrls": [
+    "https://www.huiyang.gov.cn/hzhyzrzyj/gkmlpt/content/5/5768/post_5768143.html",
+    "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "No anonymous, field-safe parcel geometry response was verified; exact point and map coverage remain unresolved.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-11588-huiyang-source-review",
+    "name": "Huiyang District Natural Resources Bureau / Huizhou Natural Resources map-based real-estate query",
+    "url": "https://www.huiyang.gov.cn/hzhyzrzyj/gkmlpt/content/5/5768/post_5768143.html",
+    "operator": "China",
+    "serviceType": "Local cadastral-survey and registry evidence; no anonymous geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 11588,
+  "cityId": "wup2025:11588",
+  "queueRank": 915,
+  "centerLatLon": [
+    22.7744885526664,
+    114.438004913348
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel geometry sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "The Huiyang Natural Resources bureau documents cadastral measurement and supplemental cadastral-rights surveys, and Huizhou Natural Resources describes a map-based real-estate query workflow requiring WeChat identity verification. Registry/cadastral functions are evidenced, but the described query is not anonymous.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huiyang Huizhou official cadastral parcel map land registry GIS natural resources",
+        "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint.",
+        "result": "The official local announcement documents cadastral measurement and supplemental rights surveys. The municipal Natural Resources article describes map-based real-estate information lookup but requires WeChat identity verification; no anonymous parcel-geometry path or public schema was identified. No gated query attempted.",
+        "actualResultUrls": [
+          "https://www.huiyang.gov.cn/hzhyzrzyj/gkmlpt/content/5/5768/post_5768143.html",
+          "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html"
+        ],
+        "executionMethod": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested."
+      },
+      {
+        "language": "Chinese",
+        "query": "No feature response returned; native identifier not verified.",
+        "scope": "Find primary local-language evidence for the same registry/map question.",
+        "result": "The official local announcement documents cadastral measurement and supplemental rights surveys. The municipal Natural Resources article describes map-based real-estate information lookup but requires WeChat identity verification; no anonymous parcel-geometry path or public schema was identified. No gated query attempted.",
+        "actualResultUrls": [
+          "https://www.huiyang.gov.cn/hzhyzrzyj/gkmlpt/content/5/5768/post_5768143.html",
+          "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html"
+        ],
+        "executionMethod": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.huiyang.gov.cn/hzhyzrzyj/gkmlpt/content/5/5768/post_5768143.html",
+        "observation": "The Huiyang Natural Resources bureau documents cadastral measurement and supplemental cadastral-rights surveys, and Huizhou Natural Resources describes a map-based real-estate query workflow requiring WeChat identity verification. Registry/cadastral functions are evidenced, but the described query is not anonymous."
+      },
+      {
+        "url": "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+        "observation": "The Huiyang Natural Resources bureau documents cadastral measurement and supplemental cadastral-rights surveys, and Huizhou Natural Resources describes a map-based real-estate query workflow requiring WeChat identity verification. Registry/cadastral functions are evidenced, but the described query is not anonymous."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+        "method": "Official service-description review",
+        "result": "Describes map-based real-estate record search with WeChat identity verification. No account or personal-property search was attempted."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel geometry sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.huiyang.gov.cn/hzhyzrzyj/gkmlpt/content/5/5768/post_5768143.html",
+    "fetch": "error",
+    "reason": "<urlopen error [Errno 54] Connection reset by peer>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

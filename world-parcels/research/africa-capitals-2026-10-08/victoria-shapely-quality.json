@@ -1,0 +1,6684 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent Shapely/GEOS audit of every retained current Victoria parcel geometry, projected using repository proj4 to EPSG:32740. No repair or filtering was applied.",
+  "library": "2.1.2",
+  "geos": "3.13.1",
+  "method": "OGC validity via Shapely; duplicate geometry by normalized WKB; exact intersections for all STRtree bbox candidate pairs, reporting area > 0.01 m\u00b2.",
+  "sourceFile": "victoria-all-metric.geojson (temporary full-geometry input)",
+  "featureCount": 496,
+  "metricCRS": "EPSG:32740",
+  "validity": {
+    "validCount": 496,
+    "invalidCount": 0,
+    "invalidExamples": []
+  },
+  "geometryTypes": {
+    "Polygon": 496
+  },
+  "areaM2": {
+    "min": 4.28258387918582,
+    "p10": 157.98565250485015,
+    "median": 444.9258461554734,
+    "p90": 1254.8884320033985,
+    "max": 57016.285489568945,
+    "below1m2Count": 0,
+    "below25m2Count": 8
+  },
+  "duplicateGeometry": {
+    "normalizedDuplicateGroupCount": 0,
+    "groups": []
+  },
+  "positiveAreaOverlap": {
+    "pairCount": 23,
+    "maximumIntersectionAreaM2": 2245.687396137497,
+    "maximumRatioOfSmallerParcel": 0.9999890202517733,
+    "examples": [
+      {
+        "parcelIds": [
+          "SC-MLH-V20239",
+          "SC-MLH-V21619"
+        ],
+        "intersectionAreaM2": 2245.687396137497,
+        "ratioOfSmallerParcel": 0.9999890202517733
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V20239",
+          "SC-MLH-V21618"
+        ],
+        "intersectionAreaM2": 137.01048235428993,
+        "ratioOfSmallerParcel": 0.9996839368050024
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V5496",
+          "SC-MLH-V5372"
+        ],
+        "intersectionAreaM2": 17.878135894466713,
+        "ratioOfSmallerParcel": 0.022301821635967528
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V6927",
+          "SC-MLH-V3945"
+        ],
+        "intersectionAreaM2": 17.577055129828732,
+        "ratioOfSmallerParcel": 0.012907007336129574
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V6927",
+          "SC-MLH-V17921"
+        ],
+        "intersectionAreaM2": 12.942543491408202,
+        "ratioOfSmallerParcel": 0.01711212015636723
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V1184",
+          "SC-MLH-V3/A"
+        ],
+        "intersectionAreaM2": 12.309897503921169,
+        "ratioOfSmallerParcel": 0.0337832330707816
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V10404",
+          "SC-MLH-V5361"
+        ],
+        "intersectionAreaM2": 10.443050675995446,
+        "ratioOfSmallerParcel": 0.00938031836715235
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V5795",
+          "SC-MLH-V3/A"
+        ],
+        "intersectionAreaM2": 7.216295218516386,
+        "ratioOfSmallerParcel": 0.01980437149838572
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V6927",
+          "SC-MLH-V17920"
+        ],
+        "intersectionAreaM2": 5.471856988498516,
+        "ratioOfSmallerParcel": 0.012478336127440422
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V5529",
+          "SC-MLH-V5372"
+        ],
+        "intersectionAreaM2": 4.700262518531217,
+        "ratioOfSmallerParcel": 0.0028069309662545855
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V6926",
+          "SC-MLH-V1890"
+        ],
+        "intersectionAreaM2": 2.3117945173852092,
+        "ratioOfSmallerParcel": 0.004747508126302508
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V1407",
+          "SC-MLH-V5523"
+        ],
+        "intersectionAreaM2": 2.2587829925064886,
+        "ratioOfSmallerParcel": 0.006309401832685594
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V777",
+          "SC-MLH-V626"
+        ],
+        "intersectionAreaM2": 2.0670160046409762,
+        "ratioOfSmallerParcel": 0.029309697516257394
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V6841",
+          "SC-MLH-V1294"
+        ],
+        "intersectionAreaM2": 1.8197598543351434,
+        "ratioOfSmallerParcel": 0.007041476287615158
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V6141",
+          "SC-MLH-V1743"
+        ],
+        "intersectionAreaM2": 1.6115669959449725,
+        "ratioOfSmallerParcel": 0.004175031190737665
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V3077",
+          "SC-MLH-V4754"
+        ],
+        "intersectionAreaM2": 1.5210737089753579,
+        "ratioOfSmallerParcel": 0.00474189392510007
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V4590",
+          "SC-MLH-V10511"
+        ],
+        "intersectionAreaM2": 1.247714994944192,
+        "ratioOfSmallerParcel": 0.002450862751624795
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V10246",
+          "SC-MLH-V5767"
+        ],
+        "intersectionAreaM2": 0.6873000036573969,
+        "ratioOfSmallerParcel": 0.0009035016989731197
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V5556",
+          "SC-MLH-V3186"
+        ],
+        "intersectionAreaM2": 0.6677489992778507,
+        "ratioOfSmallerParcel": 0.004176411388825095
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V1407",
+          "SC-MLH-V2118"
+        ],
+        "intersectionAreaM2": 0.5802705297413344,
+        "ratioOfSmallerParcel": 0.0016208551046954544
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V1407",
+          "SC-MLH-V4815"
+        ],
+        "intersectionAreaM2": 0.45960100202980847,
+        "ratioOfSmallerParcel": 0.0012837919420020066
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V2590",
+          "SC-MLH-V6840"
+        ],
+        "intersectionAreaM2": 0.20529983617125325,
+        "ratioOfSmallerParcel": 0.001156102998692249
+      },
+      {
+        "parcelIds": [
+          "SC-MLH-V5524",
+          "SC-MLH-V3186"
+        ],
+        "intersectionAreaM2": 0.16197149987941048,
+        "ratioOfSmallerParcel": 0.0008102709158706247
+      }
+    ],
+    "overlayErrorCount": 0,
+    "overlayErrors": [],
+    "allUniqueFeaturePairs": 122760,
+    "bboxCandidatePairs": 1430,
+    "bboxRejectedPairs": 121330,
+    "exactGEOSIntersectionsEvaluated": 1430
+  },
+  "footprint": {
+    "minX": 327739.882999972,
+    "minY": 9488566.718,
+    "maxX": 328638.512999973,
+    "maxY": 9489769.808
+  },
+  "parcelAudit": [
+    {
+      "parcelId": "SC-MLH-V5940",
+      "areaM2": 362.1094100193593,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327971.23299997207,
+        9489130.408,
+        328000.5829999716,
+        9489152.7777
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5711",
+      "areaM2": 358.57706101093527,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327976.22299997264,
+        9489107.188,
+        327999.3529999725,
+        9489134.648
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V529",
+      "areaM2": 719.7465110191084,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327979.11169997207,
+        9488982.0379,
+        328006.352999972,
+        9489011.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5388",
+      "areaM2": 290.07746050811807,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327958.73299997195,
+        9488970.938,
+        327979.25299997197,
+        9488997.078
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5397",
+      "areaM2": 291.2730059985283,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328065.20299997175,
+        9489138.968,
+        328084.48299997224,
+        9489164.368
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5391",
+      "areaM2": 404.4278820095319,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328005.3129999721,
+        9488985.208,
+        328022.73299997323,
+        9489011.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5502",
+      "areaM2": 762.571800263354,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328053.7429999717,
+        9489019.278,
+        328073.8329999718,
+        9489062.103
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10456",
+      "areaM2": 165.7341175051969,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328036.5229999713,
+        9488995.668,
+        328046.9430999719,
+        9489013.478
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10088",
+      "areaM2": 79.4506009923546,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328006.89299997257,
+        9489108.4681,
+        328034.68299997255,
+        9489120.5781
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5548",
+      "areaM2": 205.74869999212672,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328000.5829999716,
+        9489126.698,
+        328018.27299997193,
+        9489147.248
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5715",
+      "areaM2": 249.59845348099077,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328021.5629999724,
+        9488984.368,
+        328032.79299997195,
+        9489012.668
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V22007",
+      "areaM2": 11.820553501256196,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327931.27309997287,
+        9489138.228,
+        327971.23299997207,
+        9489143.7279
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5257",
+      "areaM2": 1053.3774064741972,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327981.5829999719,
+        9489061.6181,
+        328014.87299997226,
+        9489106.348
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5387",
+      "areaM2": 879.249602474145,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328033.23299997253,
+        9489018.098,
+        328056.5029999721,
+        9489060.868
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1750",
+      "areaM2": 389.8883349776605,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327931.27309997287,
+        9489114.748,
+        327956.42299997236,
+        9489140.918
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3530",
+      "areaM2": 322.41898300688644,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328051.772999972,
+        9489136.6081,
+        328070.712999973,
+        9489165.868
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5503",
+      "areaM2": 232.69749648951324,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328074.88299997296,
+        9488994.988,
+        328098.7729999721,
+        9489006.3579
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5557",
+      "areaM2": 68.23330000635136,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328066.15299997194,
+        9489006.498,
+        328074.5929999727,
+        9489015.248
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5384",
+      "areaM2": 1444.3306874964205,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327912.26299997256,
+        9488964.338,
+        327954.313099972,
+        9489006.308
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10843",
+      "areaM2": 154.27794849784834,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327970.7729999719,
+        9489106.228,
+        327985.7029999714,
+        9489132.8882
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5518",
+      "areaM2": 228.47329999769295,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327954.43299997214,
+        9489014.208,
+        327968.87299997173,
+        9489032.198
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4726",
+      "areaM2": 161.94259699420112,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328098.1010999717,
+        9488996.738,
+        328115.1529999724,
+        9489007.258
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1752",
+      "areaM2": 109.06819247677775,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327939.95299997216,
+        9489113.868,
+        327960.0629999722,
+        9489128.688
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V423",
+      "areaM2": 1170.5519649955618,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328046.10299997195,
+        9488962.148,
+        328075.4029999723,
+        9489014.568
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1751",
+      "areaM2": 124.71786700252018,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327940.27299997205,
+        9489102.4679,
+        327954.042999972,
+        9489116.318
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V424",
+      "areaM2": 341.9290105001251,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328010.5529999725,
+        9489145.668,
+        328038.0930999721,
+        9489167.878
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10403",
+      "areaM2": 363.69647050658074,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328033.50299997174,
+        9489050.008,
+        328112.64289997367,
+        9489136.148
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2063",
+      "areaM2": 360.3905995289145,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327966.75299997174,
+        9489072.238,
+        327986.2129999736,
+        9489101.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V22006",
+      "areaM2": 405.17854498982456,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327941.7129999729,
+        9489140.498,
+        327971.23299997207,
+        9489160.3177
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10858",
+      "areaM2": 174.14672050440686,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327961.69309997157,
+        9489104.1681,
+        327978.9029999722,
+        9489119.318
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5851",
+      "areaM2": 159.7707570082608,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327949.89299997245,
+        9489103.438,
+        327964.28299997165,
+        9489119.708
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5398",
+      "areaM2": 367.3303659879823,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327990.1429999727,
+        9489111.928,
+        328013.2929999717,
+        9489142.348
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10404",
+      "areaM2": 6732.7680092668825,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328002.1429999721,
+        9489048.868,
+        328112.0529999726,
+        9489134.168
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5258",
+      "areaM2": 996.6906310493716,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328010.6129999721,
+        9489017.168,
+        328034.68299997255,
+        9489062.048
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5392",
+      "areaM2": 282.94868300280496,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327967.5029999715,
+        9489015.338,
+        327986.9430999722,
+        9489031.228
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10859",
+      "areaM2": 89.09499500347879,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327959.38039997267,
+        9489115.178,
+        327974.68289997283,
+        9489125.398
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3529",
+      "areaM2": 433.7177939832924,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328038.5429999716,
+        9489133.828,
+        328059.572999972,
+        9489173.358
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4998",
+      "areaM2": 124.34825750982131,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327995.61299997114,
+        9489142.348,
+        328010.6929999719,
+        9489156.658
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5385",
+      "areaM2": 157.98565250485015,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327942.4829999724,
+        9488990.018,
+        327955.8129999726,
+        9489006.308
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5394",
+      "areaM2": 186.1000150141639,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328098.04299997166,
+        9489142.468,
+        328112.9629999731,
+        9489157.658
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4886",
+      "areaM2": 1069.2733710364005,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327961.5129999721,
+        9489143.7279,
+        328007.7529999715,
+        9489187.118
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10457",
+      "areaM2": 189.6999025039984,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328037.15299997234,
+        9488974.238,
+        328051.63299997244,
+        9488996.288
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4352",
+      "areaM2": 332.8713410192387,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327962.2729999722,
+        9488981.748,
+        327980.48299997195,
+        9489009.798
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4571",
+      "areaM2": 474.80618603362694,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327941.2135999717,
+        9489048.678,
+        327962.2129999732,
+        9489079.068
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5500",
+      "areaM2": 91.44041250335064,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328009.3629999717,
+        9489118.168,
+        328020.7129999731,
+        9489130.848
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10712",
+      "areaM2": 252.98027649029015,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327951.91299997177,
+        9489126.8176,
+        327975.29349997215,
+        9489143.7279
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5007",
+      "areaM2": 2269.7112934565275,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327951.70289997174,
+        9489015.698,
+        328011.40299997217,
+        9489067.5079
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5361",
+      "areaM2": 1113.293842196714,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328072.88299997244,
+        9489020.148,
+        328113.2430999714,
+        9489050.008
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4570",
+      "areaM2": 356.2413824919416,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327942.2329999723,
+        9489078.958,
+        327961.75349997194,
+        9489099.248
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2062",
+      "areaM2": 437.9973079819003,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327960.94299997244,
+        9489064.758,
+        327986.28289997316,
+        9489099.918
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5499",
+      "areaM2": 729.5311335028339,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328016.17299997277,
+        9489123.828,
+        328051.65299997234,
+        9489169.848
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10860",
+      "areaM2": 87.19692251798928,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327957.18199997256,
+        9489121.3969,
+        327972.7229999724,
+        9489131.428
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V396",
+      "areaM2": 400.0271315000297,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328074.46299997263,
+        9489005.148,
+        328114.7129999728,
+        9489017.178
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5515",
+      "areaM2": 880.4987199877038,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327925.74299997214,
+        9489014.208,
+        327955.75299997174,
+        9489050.298
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5504",
+      "areaM2": 616.449985996838,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328075.0608999716,
+        9488980.638,
+        328115.76299997256,
+        9488997.228
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5395",
+      "areaM2": 241.02562549787697,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328080.9129999719,
+        9489141.418,
+        328098.08299997216,
+        9489159.448
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5365",
+      "areaM2": 554.4499169833271,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328199.8630999725,
+        9489026.328,
+        328216.4429999727,
+        9489063.598
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17446",
+      "areaM2": 773.8993000243361,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328227.9929999721,
+        9489071.578,
+        328247.8029999727,
+        9489119.798
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5501",
+      "areaM2": 929.0723924911385,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328175.11299997196,
+        9489025.1381,
+        328201.4629999727,
+        9489063.1681
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5496",
+      "areaM2": 801.6446452801656,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328244.7129999731,
+        9488981.9879,
+        328307.65299997275,
+        9488996.6579
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10684",
+      "areaM2": 138.83657550755385,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328126.09299997316,
+        9488984.348,
+        328159.3629999721,
+        9488989.8979
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5374",
+      "areaM2": 385.5770145188524,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328158.92409997294,
+        9488991.658,
+        328182.0229999727,
+        9489020.028
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5495",
+      "areaM2": 1423.6344834513968,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328257.5429999721,
+        9488994.3879,
+        328307.412999972,
+        9489025.768
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3915",
+      "areaM2": 756.4433429758816,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328120.3929999724,
+        9488996.698,
+        328158.9429999721,
+        9489018.738
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7910",
+      "areaM2": 306.6877654812504,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328223.6529999727,
+        9488982.548,
+        328237.60299997247,
+        9489022.2281
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17447",
+      "areaM2": 4271.827402082643,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328170.1029999726,
+        9489062.298,
+        328248.1529999727,
+        9489152.528
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5371",
+      "areaM2": 443.4937594916416,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328277.86299997254,
+        9489066.208,
+        328305.10309997253,
+        9489083.398
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7913",
+      "areaM2": 113.36507401443329,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328231.79299997224,
+        9488994.348,
+        328244.7129999731,
+        9489022.778
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10685",
+      "areaM2": 407.69414953614665,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328120.67299997236,
+        9488976.598,
+        328159.4529999725,
+        9488999.138
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3703",
+      "areaM2": 753.6531659841039,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328159.4429999722,
+        9488976.988,
+        328192.3229999722,
+        9489020.5279
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7911",
+      "areaM2": 138.06669100182495,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328231.7229999724,
+        9489004.288,
+        328240.6529999728,
+        9489022.668
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5530",
+      "areaM2": 218.58549247997428,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328158.68299997266,
+        9489000.038,
+        328170.502999972,
+        9489019.438
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5579",
+      "areaM2": 408.71704947726346,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328145.9629999731,
+        9489024.1281,
+        328162.11299997126,
+        9489061.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7928",
+      "areaM2": 4754.710042503037,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328115.7030999727,
+        9489046.408,
+        328175.06299997214,
+        9489151.2879
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3556",
+      "areaM2": 895.2199280001023,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328279.6029999725,
+        9489030.798,
+        328306.3729999723,
+        9489067.148
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3555",
+      "areaM2": 888.6740249999392,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328254.80299997266,
+        9489029.708,
+        328281.1029999724,
+        9489066.208
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5529",
+      "areaM2": 2134.4941690088917,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328196.4430999721,
+        9488958.648,
+        328246.5829999724,
+        9489017.8981
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6083",
+      "areaM2": 2726.428321988117,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328253.3429999724,
+        9489065.298,
+        328305.9129999723,
+        9489130.908
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5364",
+      "areaM2": 277.868322009439,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328140.5029999723,
+        9489023.548,
+        328153.2629999728,
+        9489049.288
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5578",
+      "areaM2": 298.04571750589184,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328215.4829999724,
+        9489027.0681,
+        328235.9728999727,
+        9489044.798
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V11204",
+      "areaM2": 600.9688114819415,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328140.6029999723,
+        9489126.458,
+        328175.5429999719,
+        9489153.548
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5366",
+      "areaM2": 421.51281397725324,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328241.652999972,
+        9488994.3879,
+        328258.42289997183,
+        9489023.268
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V625",
+      "areaM2": 50.41840000261229,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328239.54299997236,
+        9489065.528,
+        328247.8129999733,
+        9489071.918
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5553",
+      "areaM2": 908.772076500791,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328215.3129999715,
+        9489027.858,
+        328249.7429999721,
+        9489064.488
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5363",
+      "areaM2": 521.6441500122365,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328161.05299997283,
+        9489024.588,
+        328175.93299997266,
+        9489062.898
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7932",
+      "areaM2": 227.6434179973431,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328128.6629999719,
+        9489150.448,
+        328165.61299997225,
+        9489161.1779
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7912",
+      "areaM2": 187.62019849581452,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328232.3729999722,
+        9488982.9986,
+        328245.37299997185,
+        9489002.098
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21028",
+      "areaM2": 34817.58033553077,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328098.172999973,
+        9489132.318,
+        328428.77299997286,
+        9489315.418
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1300",
+      "areaM2": 609.7478956653841,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328319.24299997196,
+        9489039.048,
+        328339.25299997226,
+        9489075.948
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V777",
+      "areaM2": 769.7076389792207,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328420.2129999731,
+        9488997.918,
+        328444.836299972,
+        9489031.728
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10243",
+      "areaM2": 801.2405685123107,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328338.89299997257,
+        9489034.228,
+        328382.1829999729,
+        9489055.7779
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1939",
+      "areaM2": 635.5625300084956,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328386.9529999723,
+        9488997.788,
+        328407.59309997305,
+        9489031.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12796",
+      "areaM2": 6.237400002822885,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328371.9529999727,
+        9489132.488,
+        328381.11299997254,
+        9489134.428
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19145",
+      "areaM2": 9527.841173402427,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328316.092999973,
+        9489033.848,
+        328494.3929999726,
+        9489110.118
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5924",
+      "areaM2": 1160.9772816038467,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328314.9029999719,
+        9488969.908,
+        328359.3530999728,
+        9488998.728
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5498",
+      "areaM2": 931.3876329752155,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328344.1929999724,
+        9488997.528,
+        328388.442899973,
+        9489030.078
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1963",
+      "areaM2": 500.755606979191,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328419.59299997333,
+        9488963.078,
+        328462.83299997216,
+        9488997.638
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V405",
+      "areaM2": 461.7743730294054,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328443.39299997274,
+        9488999.658,
+        328461.2129999735,
+        9489029.578
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5497",
+      "areaM2": 177.42368048517542,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328314.68299997284,
+        9488997.018,
+        328333.78299997264,
+        9489007.2381
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V9006",
+      "areaM2": 9054.406143990056,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328438.4279999727,
+        9489150.348,
+        328618.33299997216,
+        9489306.468
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8873",
+      "areaM2": 443.3924665421283,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328377.87299997255,
+        9489148.328,
+        328442.80299997336,
+        9489157.788
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5177",
+      "areaM2": 805.6713049005298,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328355.7429999721,
+        9488970.9456,
+        328397.072899973,
+        9488998.0479
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1962",
+      "areaM2": 620.1903840177513,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328407.59309997305,
+        9488956.938,
+        328440.92299997306,
+        9488997.788
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V560",
+      "areaM2": 709.6679225073485,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328426.44289997255,
+        9488971.178,
+        328462.48299997253,
+        9488998.498
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1885",
+      "areaM2": 161.5475775043431,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328343.1330999727,
+        9489152.018,
+        328369.87299997255,
+        9489164.928
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1961",
+      "areaM2": 260.08930749599864,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328404.3929999729,
+        9488955.888,
+        328417.88299997314,
+        9488997.828
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12809",
+      "areaM2": 5047.026497106299,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328320.00299997214,
+        9489107.818,
+        328611.2228999733,
+        9489142.0179
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5178",
+      "areaM2": 198.5420190953026,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328396.96299997304,
+        9488970.9645,
+        328404.40299997246,
+        9488997.9202
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12795",
+      "areaM2": 961.5081549941348,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328325.07299997244,
+        9489129.218,
+        328377.87299997255,
+        9489167.0781
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V406",
+      "areaM2": 37.668290501383694,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328444.836299972,
+        9488997.338,
+        328461.30299997306,
+        9489000.768
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12793",
+      "areaM2": 603.7822835020515,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328312.75299997185,
+        9489111.498,
+        328353.8729999722,
+        9489142.908
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5926",
+      "areaM2": 1101.8345619532486,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328314.1829999727,
+        9488998.3979,
+        328384.80299997295,
+        9489029.968
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V626",
+      "areaM2": 70.52327999954457,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328417.2329999731,
+        9488997.858,
+        328422.6130999726,
+        9489031.198
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18442",
+      "areaM2": 193.86592093371928,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327979.1629999716,
+        9489297.8681,
+        328001.71299997275,
+        9489317.3681
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17811",
+      "areaM2": 366.19629751654963,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327981.60509997257,
+        9489317.1977,
+        328001.04449997225,
+        9489341.828
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8044",
+      "areaM2": 813.209293249575,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328008.62299997197,
+        9489182.608,
+        328040.80299997225,
+        9489215.038
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5505",
+      "areaM2": 202.9637500004217,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328010.23299997207,
+        9489159.738,
+        328048.2129999727,
+        9489179.498
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2247",
+      "areaM2": 165.7653140082069,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328085.732999972,
+        9489262.658,
+        328099.49289997225,
+        9489279.1476
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1865",
+      "areaM2": 269.9671259865917,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328054.8729999723,
+        9489265.828,
+        328076.58299997135,
+        9489282.368
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6153",
+      "areaM2": 156.94832949049027,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328079.23289997224,
+        9489230.338,
+        328095.37299997173,
+        9489249.188
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2663",
+      "areaM2": 514.4951369370533,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328022.61299997213,
+        9489211.328,
+        328045.32299997204,
+        9489247.7881
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5599",
+      "areaM2": 479.5483609801905,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328087.212999973,
+        9489204.1981,
+        328113.34299997275,
+        9489233.168
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6152",
+      "areaM2": 117.15147899411663,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328066.8528999727,
+        9489250.278,
+        328079.0630999732,
+        9489267.3044
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V621",
+      "areaM2": 70.61130000831274,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327994.6829999727,
+        9489154.768,
+        328007.48299997195,
+        9489164.018
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8166",
+      "areaM2": 735.4036970250445,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328058.7629999728,
+        9489181.988,
+        328102.2829999728,
+        9489213.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4725",
+      "areaM2": 1224.099432461798,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328048.272999972,
+        9489158.338,
+        328101.0330999718,
+        9489202.688
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21071",
+      "areaM2": 210.64094650180832,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328056.7126999716,
+        9489281.678,
+        328073.2130999723,
+        9489296.768
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8165",
+      "areaM2": 934.9522509910985,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328054.71299997286,
+        9489210.268,
+        328088.1929999725,
+        9489261.758
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V740",
+      "areaM2": 356.0299859923571,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328011.2813999726,
+        9489304.738,
+        328036.75299997174,
+        9489335.728
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18441",
+      "areaM2": 213.05476396065885,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327980.5313999716,
+        9489304.578,
+        328000.0429999721,
+        9489317.358
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3343",
+      "areaM2": 346.21864407002676,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328012.8829999723,
+        9489228.8878,
+        328033.31309997255,
+        9489251.838
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17646",
+      "areaM2": 2864.9185680021565,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328101.2629999723,
+        9489290.308,
+        328162.6329999729,
+        9489383.018
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20163",
+      "areaM2": 324.92636952374096,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328011.2813999726,
+        9489316.1863,
+        328033.5629999726,
+        9489345.148
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21077",
+      "areaM2": 1295.0547764819698,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327943.9412999722,
+        9489241.938,
+        327970.40279997163,
+        9489309.008
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V439",
+      "areaM2": 174.7300749944602,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328113.7829999721,
+        9489163.848,
+        328128.7229999727,
+        9489192.268
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4807",
+      "areaM2": 613.0487576163014,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328032.93299997266,
+        9489287.5079,
+        328056.6539999725,
+        9489335.728
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5522",
+      "areaM2": 494.1834204919173,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328077.1029999723,
+        9489312.868,
+        328107.75299997197,
+        9489334.6981
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4808",
+      "areaM2": 289.1890609790672,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328041.0229999721,
+        9489270.9679,
+        328057.90299997246,
+        9489296.138
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21027",
+      "areaM2": 1379.9300314977522,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328099.49289997225,
+        9489203.6982,
+        328134.75299997174,
+        9489264.3581
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20058",
+      "areaM2": 1249.9279481178335,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327961.4029999722,
+        9489297.8681,
+        327984.7229999725,
+        9489379.408
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21078",
+      "areaM2": 2587.2900872126975,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327929.49309997156,
+        9489171.818,
+        327971.8429999723,
+        9489243.9682
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4573",
+      "areaM2": 683.2802454855639,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328033.31309997255,
+        9489242.798,
+        328062.9429999726,
+        9489277.608
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V211",
+      "areaM2": 412.07670828250446,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327970.2229999723,
+        9489198.928,
+        327986.7830999716,
+        9489251.898
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V136",
+      "areaM2": 879.752126990181,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328008.3229999723,
+        9489277.518,
+        328040.7929999718,
+        9489316.1863
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4724",
+      "areaM2": 475.7552000273606,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328040.80299997225,
+        9489210.268,
+        328058.7629999728,
+        9489245.068
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1538",
+      "areaM2": 492.9786420221598,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328074.58289997175,
+        9489295.888,
+        328104.382999973,
+        9489317.898
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2248",
+      "areaM2": 168.6079499991087,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328075.2929999718,
+        9489260.548,
+        328090.04299997154,
+        9489281.178
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2330",
+      "areaM2": 407.1640160311604,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328089.482999972,
+        9489186.783,
+        328120.08299997216,
+        9489211.548
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V881",
+      "areaM2": 327.3063210051017,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328007.36309997225,
+        9489161.348,
+        328029.5629999721,
+        9489182.928
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4693",
+      "areaM2": 481.5160599972385,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327971.45999997185,
+        9489175.998,
+        327994.4529999716,
+        9489208.878
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V22897",
+      "areaM2": 787.9287638896333,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327929.9733999717,
+        9489305.7342,
+        327962.82299997204,
+        9489334.588
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V22008",
+      "areaM2": 522.2121814544196,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327916.3129999724,
+        9489138.228,
+        327965.182099972,
+        9489176.038
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21070",
+      "areaM2": 284.463267440599,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328055.15299997234,
+        9489295.498,
+        328074.20299997163,
+        9489313.748
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4954",
+      "areaM2": 501.4803329930983,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327962.82299997204,
+        9489263.138,
+        327979.1629999716,
+        9489309.008
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V741",
+      "areaM2": 368.6569349442868,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328055.15299997234,
+        9489312.7281,
+        328076.1129999722,
+        9489331.608
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6013",
+      "areaM2": 689.6929095067114,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328013.12299997197,
+        9489247.7881,
+        328039.7929999726,
+        9489280.0681
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2163",
+      "areaM2": 845.1886504893945,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327978.38299997256,
+        9489263.588,
+        328006.88309997227,
+        9489297.918
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1755",
+      "areaM2": 472.47302600523886,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328074.7929999717,
+        9489276.728,
+        328101.2629999723,
+        9489299.728
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8167",
+      "areaM2": 471.76582551367574,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328097.24299997184,
+        9489157.318,
+        328122.84299997333,
+        9489188.948
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4873",
+      "areaM2": 226.76307401547126,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328088.192999972,
+        9489230.028,
+        328108.56299997243,
+        9489255.668
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8045",
+      "areaM2": 508.34933898030624,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328034.2729999727,
+        9489182.558,
+        328060.7529999716,
+        9489211.328
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5701",
+      "areaM2": 136.25929150087936,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328081.3829999727,
+        9489253.2979,
+        328100.5629999726,
+        9489264.3581
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2506",
+      "areaM2": 146.1531434912331,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328070.6229999717,
+        9489244.438,
+        328088.073099972,
+        9489260.188
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5551",
+      "areaM2": 1968.8293695379182,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327967.8129999725,
+        9489188.458,
+        328006.0629999725,
+        9489268.278
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3344",
+      "areaM2": 219.64387800703273,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328012.3329999716,
+        9489212.298,
+        328027.61409997253,
+        9489232.228
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6589",
+      "areaM2": 718.181315276947,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328162.0229999721,
+        9489290.518,
+        328192.6929999726,
+        9489332.148
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6151",
+      "areaM2": 244.2952580069094,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328247.6028999726,
+        9489310.188,
+        328268.7329999732,
+        9489326.068
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5546",
+      "areaM2": 2434.3531599851212,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328216.1329999728,
+        9489305.978,
+        328296.6629999721,
+        9489355.628
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5170",
+      "areaM2": 1041.6612500003585,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328205.4729999729,
+        9489283.758,
+        328253.19299997244,
+        9489313.168
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6927",
+      "areaM2": 1653.9671334538407,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328127.38299997244,
+        9489313.168,
+        328221.3028999722,
+        9489448.3558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12546",
+      "areaM2": 435.74845222856334,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328152.4329999726,
+        9489315.418,
+        328169.7829999726,
+        9489371.4479
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12485",
+      "areaM2": 1079.1262939653766,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328190.5729999727,
+        9489287.488,
+        328216.7918999719,
+        9489343.118
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5585",
+      "areaM2": 1125.2367404946704,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328339.7929999718,
+        9489153.788,
+        328395.3129999727,
+        9489189.098
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5645",
+      "areaM2": 414.53190548013794,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328343.5429999725,
+        9489302.118,
+        328377.74299997184,
+        9489320.678
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18251",
+      "areaM2": 383.3447632614865,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328286.462999973,
+        9489307.68,
+        328307.68259997235,
+        9489334.118
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6731",
+      "areaM2": 638.174836981916,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328426.1929999733,
+        9489298.158,
+        328459.4929999727,
+        9489337.5685
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5643",
+      "areaM2": 397.4808635007458,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328407.712999973,
+        9489294.288,
+        328436.30299997306,
+        9489319.638
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1887",
+      "areaM2": 356.3791499882862,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328383.72299997276,
+        9489155.998,
+        328442.80299997336,
+        9489168.348
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6084",
+      "areaM2": 10881.852984030356,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328351.82299997227,
+        9489160.958,
+        328498.4129999727,
+        9489284.608
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5640",
+      "areaM2": 230.35736950972336,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328417.8429999732,
+        9489290.008,
+        328442.8228999723,
+        9489309.618
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5644",
+      "areaM2": 1141.081243479186,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328373.5308999723,
+        9489294.848,
+        328430.4429999727,
+        9489331.938
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5904",
+      "areaM2": 65.61200000309017,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328346.122999972,
+        9489318.578,
+        328356.0429999725,
+        9489328.508
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8552",
+      "areaM2": 386.2046999901146,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328435.632999973,
+        9489270.008,
+        328467.1329999735,
+        9489295.108
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6361",
+      "areaM2": 703.3011620282738,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328348.2229999726,
+        9489312.188,
+        328380.7129999732,
+        9489347.4779
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18252",
+      "areaM2": 754.3726397244883,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328305.9630999728,
+        9489305.098,
+        328346.122999972,
+        9489331.1254
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6618",
+      "areaM2": 807.8863939879415,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328347.61299997254,
+        9489255.398,
+        328394.35299997294,
+        9489290.108
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6617",
+      "areaM2": 829.6922804742815,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328349.31289997254,
+        9489267.0879,
+        328426.5229999728,
+        9489291.748
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5521",
+      "areaM2": 1151.7898125623922,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327979.892999972,
+        9489363.938,
+        328055.662999972,
+        9489396.048
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V937",
+      "areaM2": 732.8881459744383,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328022.4829999719,
+        9489446.308,
+        328055.3651999724,
+        9489492.748
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1353",
+      "areaM2": 191.8597774980067,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328066.0929999729,
+        9489383.898,
+        328083.975299972,
+        9489405.908
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V783",
+      "areaM2": 417.02065707065145,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328089.4837999721,
+        9489375.118,
+        328113.8829999729,
+        9489406.318
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12307",
+      "areaM2": 219.1889489735412,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327966.63299997256,
+        9489422.3595,
+        327985.3529999725,
+        9489445.188
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6315",
+      "areaM2": 209.94967599535084,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327930.73299997224,
+        9489383.638,
+        327950.27309997194,
+        9489402.818
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6926",
+      "areaM2": 746.1027304336124,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328107.9229999727,
+        9489422.878,
+        328142.6914999723,
+        9489464.648
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2001",
+      "areaM2": 401.91877450622115,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328041.033099972,
+        9489320.218,
+        328055.6147999722,
+        9489349.358
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21024",
+      "areaM2": 80.83738750221315,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328067.1029999723,
+        9489479.5696,
+        328080.0629999717,
+        9489492.4991
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V513",
+      "areaM2": 207.1387389956627,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328086.5129999723,
+        9489328.484,
+        328109.20299997204,
+        9489345.298
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18901",
+      "areaM2": 493.1737800106497,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328111.70669997204,
+        9489375.118,
+        328141.3729999722,
+        9489408.708
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12065",
+      "areaM2": 742.4419610046227,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327982.36139997223,
+        9489333.778,
+        328013.46299997275,
+        9489367.9579
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1888",
+      "areaM2": 451.90867400313317,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328102.88289997226,
+        9489464.648,
+        328136.0129999726,
+        9489487.158
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2117",
+      "areaM2": 252.51451448168854,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327982.382999973,
+        9489471.628,
+        328001.0929999725,
+        9489495.4279
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20162",
+      "areaM2": 146.0057499748901,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328013.8329999716,
+        9489340.368,
+        328031.30299997225,
+        9489356.508
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3/B",
+      "areaM2": 85.83299900026573,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328020.1529999728,
+        9489437.998,
+        328045.1329999728,
+        9489448.048
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V11365",
+      "areaM2": 49.05692138725883,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327938.20289997186,
+        9489396.268,
+        327950.27309997194,
+        9489408.9857
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1407",
+      "areaM2": 358.00271601104197,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328011.3829999728,
+        9489441.6279,
+        328040.40299997246,
+        9489477.058
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V11366",
+      "areaM2": 912.9629430006579,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327941.2952999722,
+        9489379.408,
+        327981.3229999719,
+        9489429.658
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V782",
+      "areaM2": 396.36137800711583,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328076.10289997223,
+        9489377.748,
+        328104.2930999727,
+        9489407.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1184",
+      "areaM2": 528.2054545086862,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328054.03289997217,
+        9489421.7979,
+        328088.30299997254,
+        9489443.398
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6523",
+      "areaM2": 22.801061106694245,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328054.91219997266,
+        9489458.8579,
+        328064.7929999719,
+        9489467.708
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5519",
+      "areaM2": 1635.3072404922718,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327963.2728999723,
+        9489395.288,
+        328059.56299997226,
+        9489417.198
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4815",
+      "areaM2": 359.87889550479366,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328001.0929999725,
+        9489470.468,
+        328026.6029999724,
+        9489498.468
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21714",
+      "areaM2": 1011.6473094901446,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327944.8629999724,
+        9489332.598,
+        327981.3229999719,
+        9489390.3792
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5523",
+      "areaM2": 588.1324506794284,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327975.1729999725,
+        9489447.7271,
+        328018.90299997194,
+        9489467.538
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6446",
+      "areaM2": 72.27530150739024,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328010.89299997245,
+        9489438.788,
+        328026.9629999731,
+        9489449.468
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3325",
+      "areaM2": 381.9899925231156,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327928.0430999716,
+        9489449.508,
+        327950.02299997245,
+        9489472.348
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5552",
+      "areaM2": 363.41780650287785,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328055.24299997254,
+        9489369.978,
+        328079.5229999726,
+        9489396.088
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2118",
+      "areaM2": 442.505565492793,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327977.99309997185,
+        9489462.9781,
+        328019.9729999726,
+        9489485.338
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2002",
+      "areaM2": 148.74641169223688,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328030.7526999725,
+        9489326.7379,
+        328041.3830999723,
+        9489348.498
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5795",
+      "areaM2": 454.91004811467013,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328054.03289997217,
+        9489442.148,
+        328083.7829999724,
+        9489465.1381
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1890",
+      "areaM2": 486.9490385023732,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328093.33299997204,
+        9489441.418,
+        328122.9329999725,
+        9489472.2481
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18362",
+      "areaM2": 9.302959986955262,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328094.68139997247,
+        9489481.551,
+        328109.16329997225,
+        9489487.358
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1354",
+      "areaM2": 679.4596090143784,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328048.88639997237,
+        9489394.128,
+        328090.1029999727,
+        9489425.828
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1408",
+      "areaM2": 149.0098895008202,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328011.3829999728,
+        9489441.6279,
+        328030.3730999726,
+        9489456.128
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18902",
+      "areaM2": 633.6533246319295,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328111.0628999723,
+        9489348.198,
+        328139.6829999727,
+        9489381.358
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5524",
+      "areaM2": 471.76823111454064,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328069.31299997226,
+        9489348.7033,
+        328112.6729999732,
+        9489373.168
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12064",
+      "areaM2": 761.3158169896816,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327979.892999972,
+        9489353.3781,
+        328019.3629999725,
+        9489395.288
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3326",
+      "areaM2": 329.149591505712,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327947.5829999716,
+        9489445.368,
+        327966.71309997264,
+        9489469.198
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3327",
+      "areaM2": 206.79490948329433,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327962.73299997253,
+        9489445.368,
+        327977.99309997185,
+        9489465.438
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3/C",
+      "areaM2": 331.77934999976856,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328024.27299997176,
+        9489414.758,
+        328046.4529999718,
+        9489436.238
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12306",
+      "areaM2": 612.7958580163081,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327933.2929999707,
+        9489416.048,
+        327974.41239997174,
+        9489449.138
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1534",
+      "areaM2": 312.217394500442,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328055.39289997274,
+        9489331.2579,
+        328075.72299997276,
+        9489361.608
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3/E",
+      "areaM2": 451.3709054257928,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327964.09299997264,
+        9489416.208,
+        328009.82309997274,
+        9489435.1479
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21617",
+      "areaM2": 271.3735380213055,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328022.4829999719,
+        9489469.238,
+        328041.07279997214,
+        9489497.9683
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2297",
+      "areaM2": 42.7280835018785,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328080.6430999721,
+        9489435.348,
+        328092.1029999725,
+        9489448.998
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5556",
+      "areaM2": 159.8858295101291,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328095.8329999718,
+        9489364.938,
+        328113.18299997255,
+        9489379.298
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5726",
+      "areaM2": 2104.990218608827,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327950.02299997245,
+        9489462.9781,
+        328003.13299997343,
+        9489542.658
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1215",
+      "areaM2": 458.6560629869498,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328069.8729999723,
+        9489406.318,
+        328104.2930999727,
+        9489435.348
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3186",
+      "areaM2": 199.89795598842937,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328080.7229999725,
+        9489365.398,
+        328100.2829999721,
+        9489383.848
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6524",
+      "areaM2": 629.4633437966382,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328023.1329999733,
+        9489347.858,
+        328055.77299997234,
+        9489372.7281
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18106",
+      "areaM2": 431.1213378249385,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328088.30299997254,
+        9489396.6247,
+        328114.0529999721,
+        9489439.728
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5615",
+      "areaM2": 461.767913608124,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328064.9929999722,
+        9489468.408,
+        328105.67299997294,
+        9489492.278
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18363",
+      "areaM2": 4.28258387918582,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328070.59309997247,
+        9489467.2566,
+        328074.0224999725,
+        9489470.639
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12308",
+      "areaM2": 541.6408505507544,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327974.41239997174,
+        9489422.3595,
+        328015.68299997214,
+        9489448.6079
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3/D",
+      "areaM2": 321.96837249605363,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328008.40629997174,
+        9489415.628,
+        328024.8929999727,
+        9489437.698
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3425",
+      "areaM2": 1293.866289953228,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327928.71299997286,
+        9489469.198,
+        327973.5829999718,
+        9489537.218
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3/A",
+      "areaM2": 364.3789058948221,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328039.6829999727,
+        9489417.288,
+        328055.84299997275,
+        9489451.989
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21616",
+      "areaM2": 45.41719194533157,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328031.7322999728,
+        9489480.2848,
+        328044.47089997237,
+        9489498.378
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18107",
+      "areaM2": 294.0176106056465,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328109.6369999725,
+        9489392.85,
+        328130.79299997224,
+        9489422.638
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21713",
+      "areaM2": 400.09246300916294,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327943.61299997225,
+        9489363.178,
+        327961.11369997193,
+        9489396.268
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18364",
+      "areaM2": 529.7395499753264,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328073.2421999729,
+        9489455.328,
+        328111.9029999723,
+        9489487.2446
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10813",
+      "areaM2": 559.257967501539,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327921.2835999715,
+        9489415.858,
+        327951.6629999719,
+        9489448.2579
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3945",
+      "areaM2": 1361.8226651678317,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328168.89289997285,
+        9489393.808,
+        328223.9228999724,
+        9489441.908
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20239",
+      "areaM2": 2382.6978784931994,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328221.23299997277,
+        9489436.7292,
+        328310.61299997265,
+        9489488.6379
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3462",
+      "areaM2": 586.1788859743009,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328136.0129999726,
+        9489459.378,
+        328175.43299997295,
+        9489486.578
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3463",
+      "areaM2": 635.0409870900455,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328129.7529999721,
+        9489439.478,
+        328163.7529999718,
+        9489476.6081
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3464",
+      "areaM2": 452.58315651103993,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328155.03299997206,
+        9489429.7281,
+        328185.61299997324,
+        9489459.378
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10220",
+      "areaM2": 480.25566851568186,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328125.2229999727,
+        9489357.078,
+        328147.02299997275,
+        9489396.618
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3944",
+      "areaM2": 433.6803759988986,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328199.61299997254,
+        9489465.478,
+        328227.2429999725,
+        9489488.6379
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18759",
+      "areaM2": 585.3743163744105,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328279.8916999721,
+        9489389.7445,
+        328307.772999972,
+        9489426.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V9372",
+      "areaM2": 696.3832759980234,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328185.61299997324,
+        9489440.198,
+        328206.10299997247,
+        9489486.9181
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17554",
+      "areaM2": 338.01325281040664,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328261.50279997254,
+        9489399.2206,
+        328284.55309997255,
+        9489428.2081
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3492",
+      "areaM2": 220.88069248636572,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328122.9329999725,
+        9489458.9681,
+        328142.4729999725,
+        9489486.578
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17920",
+      "areaM2": 438.5085425344214,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328168.03299997235,
+        9489395.4186,
+        328197.4429999726,
+        9489423.788
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17921",
+      "areaM2": 756.3378104607584,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328179.813899973,
+        9489369.828,
+        328217.8529999729,
+        9489408.928
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8667",
+      "areaM2": 666.7825119579077,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328244.04299997195,
+        9489409.1777,
+        328277.11299997236,
+        9489444.308
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20238",
+      "areaM2": 426.21445000577546,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328268.17299997236,
+        9489442.048,
+        328294.0729999726,
+        9489476.028
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3697",
+      "areaM2": 773.3592750657986,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328156.4329999728,
+        9489352.618,
+        328206.9130999724,
+        9489388.448
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19852",
+      "areaM2": 563.205097165737,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328261.9012999725,
+        9489376.228,
+        328287.8671999727,
+        9489407.668
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21733",
+      "areaM2": 355.30917592897947,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328169.2942999727,
+        9489337.818,
+        328194.6828999728,
+        9489360.5989
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6752",
+      "areaM2": 1013.7821455187257,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328221.3028999722,
+        9489393.808,
+        328254.28299997165,
+        9489444.308
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18757",
+      "areaM2": 764.5809555826756,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328277.11299997236,
+        9489417.398,
+        328343.8575999724,
+        9489435.078
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20883",
+      "areaM2": 1190.950932446212,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328274.79309997277,
+        9489352.878,
+        328324.6229999721,
+        9489398.3598
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12484",
+      "areaM2": 710.6145155538754,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328193.4629999732,
+        9489334.1881,
+        328217.8529999729,
+        9489391.418
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8671",
+      "areaM2": 961.2891580349136,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328221.1229999721,
+        9489342.238,
+        328271.352999973,
+        9489393.808
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21504",
+      "areaM2": 379.99088251491264,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328170.3400999719,
+        9489441.908,
+        328195.58299997216,
+        9489486.528
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6438",
+      "areaM2": 658.2887510098612,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328219.9030999725,
+        9489347.688,
+        328249.4129999724,
+        9489388.6079
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3696",
+      "areaM2": 637.5555954969632,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328151.85299997265,
+        9489377.548,
+        328185.2029999725,
+        9489410.658
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V16967",
+      "areaM2": 366.37548102618143,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328155.41299997224,
+        9489345.9785,
+        328183.8436999726,
+        9489383.018
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21619",
+      "areaM2": 2245.7120534904343,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328221.23299997277,
+        9489436.7288,
+        328300.42769997206,
+        9489488.6379
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20237",
+      "areaM2": 631.6252640510638,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328268.7937999724,
+        9489428.2081,
+        328307.9729999731,
+        9489459.758
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21503",
+      "areaM2": 377.1786239945221,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328163.7529999718,
+        9489454.1144,
+        328189.2528999719,
+        9489485.9184
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19853",
+      "areaM2": 961.81120905472,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328221.3028999722,
+        9489377.238,
+        328271.57069997286,
+        9489414.088
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21734",
+      "areaM2": 326.2450194812747,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328167.9829999724,
+        9489322.468,
+        328193.8235999724,
+        9489345.9785
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5797",
+      "areaM2": 445.3007724976084,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328221.23299997277,
+        9489437.778,
+        328247.682999973,
+        9489465.478
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10411",
+      "areaM2": 820.9508435410955,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328261.3530999726,
+        9489334.118,
+        328296.6629999721,
+        9489378.2581
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3702",
+      "areaM2": 472.69533599803987,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328204.23299997236,
+        9489437.778,
+        328223.9228999724,
+        9489465.968
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V947",
+      "areaM2": 16.737990997658432,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328348.2229999726,
+        9489326.398,
+        328356.0429999725,
+        9489331.7581
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21241",
+      "areaM2": 461.18009199391815,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328375.68309997243,
+        9489472.7073,
+        328401.3828999724,
+        9489496.8679
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4497",
+      "areaM2": 202.92846396511658,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328347.41299997235,
+        9489430.2995,
+        328366.4728999733,
+        9489448.638
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2309",
+      "areaM2": 837.4029039187039,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328335.37299997243,
+        9489382.178,
+        328381.47489997244,
+        9489417.398
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20885",
+      "areaM2": 88.73650898910182,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328315.5229999729,
+        9489361.288,
+        328336.39299997257,
+        9489372.988
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6841",
+      "areaM2": 444.9258461554734,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328424.9336999728,
+        9489405.528,
+        328456.64529997285,
+        9489432.5081
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5636",
+      "areaM2": 979.5574815224729,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328429.6629999721,
+        9489334.598,
+        328468.0528999724,
+        9489379.508
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2589",
+      "areaM2": 302.4504201416706,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328398.182999973,
+        9489444.098,
+        328425.4729999729,
+        9489461.658
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6046",
+      "areaM2": 615.4996954881054,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328336.39299997257,
+        9489326.508,
+        328364.0429999719,
+        9489365.1081
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7679",
+      "areaM2": 855.212243596678,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328241.1729999732,
+        9489485.168,
+        328280.8529999729,
+        9489513.318
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5660",
+      "areaM2": 167.9887619746301,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328396.18009997293,
+        9489433.228,
+        328414.4424999729,
+        9489447.758
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6972",
+      "areaM2": 254.69810901118234,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328381.023299972,
+        9489403.358,
+        328406.217899972,
+        9489423.678
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10431",
+      "areaM2": 349.16799849303936,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328350.7729999729,
+        9489475.2489,
+        328376.68299997307,
+        9489492.1881
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V860",
+      "areaM2": 237.4250124936818,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328380.27299997234,
+        9489438.118,
+        328398.182999973,
+        9489458.708
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6732",
+      "areaM2": 524.9553554870764,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328438.5627999734,
+        9489308.368,
+        328471.86299997254,
+        9489342.898
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6979",
+      "areaM2": 93.47423701252686,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328389.87299997266,
+        9489417.388,
+        328407.66299997247,
+        9489434.728
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5055",
+      "areaM2": 1568.6709654720403,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328291.9329999727,
+        9489483.548,
+        328336.2822999724,
+        9489539.8581
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6971",
+      "areaM2": 233.85086100564592,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328380.75299997255,
+        9489413.288,
+        328398.91299997224,
+        9489436.568
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3852",
+      "areaM2": 432.4434894863143,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328321.49289997306,
+        9489478.388,
+        328352.8329999725,
+        9489500.758
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5642",
+      "areaM2": 97.35281600698218,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328370.2029999729,
+        9489331.938,
+        328382.2429999725,
+        9489344.0713
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4929",
+      "areaM2": 283.10900898459676,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328274.84299997333,
+        9489485.168,
+        328295.13299997314,
+        9489510.818
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5639",
+      "areaM2": 169.56809750001875,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328444.8929999728,
+        9489371.708,
+        328462.3530999728,
+        9489391.7079
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20884",
+      "areaM2": 681.5000690348289,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328294.65299997234,
+        9489327.578,
+        328320.7329999724,
+        9489363.278
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5681",
+      "areaM2": 250.4810850019838,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328432.05299997306,
+        9489383.778,
+        328452.9529999726,
+        9489412.328
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V16800",
+      "areaM2": 1743.973487145086,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328405.33299997146,
+        9489434.341,
+        328477.87299997255,
+        9489487.868
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19157",
+      "areaM2": 370.29871182429457,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328359.34349997394,
+        9489400.108,
+        328381.47489997244,
+        9489427.358
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2590",
+      "areaM2": 177.5791918224264,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328419.54309997265,
+        9489434.341,
+        328447.87009997276,
+        9489453.608
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V9424",
+      "areaM2": 473.0831445130134,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328361.1329999728,
+        9489447.308,
+        328382.9229999732,
+        9489476.998
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V9423",
+      "areaM2": 702.1214600052915,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328318.7543999732,
+        9489454.748,
+        328361.8129999727,
+        9489484.208
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5428",
+      "areaM2": 771.5626465259511,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328320.4729999732,
+        9489320.678,
+        328346.122999972,
+        9489365.1081
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5807",
+      "areaM2": 532.0098554924699,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328323.3329999724,
+        9489417.398,
+        328349.08299997204,
+        9489458.498
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19156",
+      "areaM2": 477.535375755532,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328342.64799997234,
+        9489410.2792,
+        328367.13299997296,
+        9489450.568
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4498",
+      "areaM2": 278.1567724300336,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328360.5335999724,
+        9489421.2379,
+        328381.4229999728,
+        9489443.668
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V883",
+      "areaM2": 406.4794610131794,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328358.6429999725,
+        9489342.058,
+        328385.012999973,
+        9489363.3981
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V948",
+      "areaM2": 13.246799996788834,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328344.3029999733,
+        9489320.678,
+        328348.2229999726,
+        9489328.508
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5429",
+      "areaM2": 1108.8397924895826,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328294.0729999726,
+        9489434.698,
+        328333.5629999724,
+        9489483.548
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21618",
+      "areaM2": 137.0538000162096,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328294.61299997225,
+        9489468.8917,
+        328310.61299997265,
+        9489486.2363
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6840",
+      "areaM2": 219.1131314395795,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328427.4135999723,
+        9489419.9072,
+        328458.78059997305,
+        9489438.448
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20882",
+      "areaM2": 617.519724014131,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328302.3819999724,
+        9489365.1081,
+        328336.39299997257,
+        9489400.918
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18758",
+      "areaM2": 689.5261699800382,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328299.83299997245,
+        9489395.698,
+        328343.8575999724,
+        9489418.598
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5663",
+      "areaM2": 1288.432392480482,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328335.37299997243,
+        9489360.478,
+        328385.012999973,
+        9489400.108
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19475",
+      "areaM2": 449.9919354886917,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328395.8928999725,
+        9489469.618,
+        328425.27299997304,
+        9489491.2976
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V9425",
+      "areaM2": 519.3479164850658,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328377.16299997206,
+        9489446.088,
+        328420.4529999724,
+        9489474.338
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1294",
+      "areaM2": 258.43442198844195,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328406.50409997196,
+        9489419.568,
+        328427.5706999726,
+        9489437.248
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5651",
+      "areaM2": 164.05242545515603,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328411.62299997325,
+        9489431.5797,
+        328433.73309997283,
+        9489444.9751
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V776",
+      "areaM2": 237.3081185012637,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328381.0128999732,
+        9489386.228,
+        328397.66299997247,
+        9489413.288
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5372",
+      "areaM2": 1674.5201699074876,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328244.83299997135,
+        9488953.988,
+        328308.10299997276,
+        9488983.148
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5623",
+      "areaM2": 300.1656999931723,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328100.0229999727,
+        9488864.558,
+        328118.59299997275,
+        9488882.498
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5345",
+      "areaM2": 657.052748018687,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328195.6029999724,
+        9488893.418,
+        328224.8929999724,
+        9488917.478
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4676",
+      "areaM2": 400.10495001652305,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328090.41299997224,
+        9488844.358,
+        328120.97299997276,
+        9488863.168
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V482",
+      "areaM2": 23.700834219084367,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328145.782999972,
+        9488918.838,
+        328150.9979999724,
+        9488923.4547
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V622",
+      "areaM2": 181.29090619252705,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328245.11299997265,
+        9488807.2058,
+        328253.4899999724,
+        9488832.401
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5344",
+      "areaM2": 1704.2297694959202,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328224.4028999724,
+        9488894.298,
+        328265.67299997306,
+        9488942.998
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5346",
+      "areaM2": 730.7941500261911,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328150.95309997175,
+        9488850.178,
+        328180.11299997196,
+        9488883.718
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5794",
+      "areaM2": 3200.177393929808,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328179.3529999737,
+        9488833.898,
+        328250.9729999725,
+        9488883.268
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6992",
+      "areaM2": 783.1043345020905,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328085.9129999721,
+        9488930.168,
+        328117.772999972,
+        9488956.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5718",
+      "areaM2": 1401.6720820137034,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328252.62299997185,
+        9488807.4681,
+        328307.8830999731,
+        9488836.858
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5312",
+      "areaM2": 2300.4086217335016,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328123.59299997275,
+        9488891.178,
+        328192.8629999721,
+        9488932.5479
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5514",
+      "areaM2": 119.52644999919012,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328224.7929999727,
+        9488893.988,
+        328235.66299997247,
+        9488905.408
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10246",
+      "areaM2": 760.7069299798238,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328126.2829999721,
+        9488957.568,
+        328159.4429999722,
+        9488985.5881
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4895",
+      "areaM2": 602.8255890019545,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328123.9929999719,
+        9488842.968,
+        328163.5629999725,
+        9488864.088
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1082",
+      "areaM2": 55.25132000061196,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328250.5529999725,
+        9488855.428,
+        328253.10289997293,
+        9488883.328
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3657",
+      "areaM2": 582.9189840062753,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328153.3129999722,
+        9488930.8581,
+        328193.27299997245,
+        9488957.9281
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5767",
+      "areaM2": 881.4328570234987,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328152.6129999723,
+        9488954.558,
+        328193.1429999733,
+        9488980.368
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5494",
+      "areaM2": 589.4648028737715,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328086.63289997197,
+        9488890.778,
+        328118.94299997215,
+        9488911.048
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5367",
+      "areaM2": 993.497342017724,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328196.64299997257,
+        9488935.8281,
+        328247.84299997264,
+        9488960.218
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5347",
+      "areaM2": 403.6483154656086,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328125.0429999721,
+        9488865.998,
+        328151.2429999721,
+        9488883.178
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5408",
+      "areaM2": 867.5756270156731,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328074.4129999719,
+        9488959.538,
+        328116.1329999738,
+        9488981.468
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5348",
+      "areaM2": 408.06071199142843,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328097.71299997286,
+        9488909.5581,
+        328118.6228999725,
+        9488931.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17918",
+      "areaM2": 57016.285489568945,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327960.48299997207,
+        9488566.718,
+        328316.1429999728,
+        9488864.088
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5370",
+      "areaM2": 2319.596262977908,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328250.5428999723,
+        9488838.168,
+        328305.83299997204,
+        9488884.098
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5369",
+      "areaM2": 525.5390110168964,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328195.5529999726,
+        9488913.958,
+        328224.8929999724,
+        9488935.408
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V40",
+      "areaM2": 1543.0558435194648,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328265.38299997256,
+        9488900.168,
+        328302.7429999724,
+        9488943.088
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5319",
+      "areaM2": 670.9846390067503,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328247.0629999728,
+        9488943.338,
+        328307.78299997246,
+        9488957.488
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5368",
+      "areaM2": 352.7638664973392,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328175.34299997275,
+        9488932.168,
+        328193.27299997245,
+        9488955.5781
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2903",
+      "areaM2": 284.0336184981597,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328136.3029999726,
+        9489503.798,
+        328164.3304999722,
+        9489526.238
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3108",
+      "areaM2": 436.9716577879562,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328269.8029999718,
+        9489624.858,
+        328297.0262999722,
+        9489652.178
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19013",
+      "areaM2": 553.2710452296946,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328228.59509997227,
+        9489512.4357,
+        328259.97289997264,
+        9489543.458
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1655",
+      "areaM2": 324.52292397796293,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328158.4153999724,
+        9489554.708,
+        328182.4744999717,
+        9489578.238
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19012",
+      "areaM2": 399.0870750285885,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328251.2726999719,
+        9489508.938,
+        328276.9407999735,
+        9489533.1478
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1652",
+      "areaM2": 541.1592890024981,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328133.2229999724,
+        9489588.798,
+        328171.0729999725,
+        9489616.0281
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4900",
+      "areaM2": 450.18478000843254,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328215.09299997264,
+        9489487.798,
+        328243.9429999725,
+        9489510.058
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3077",
+      "areaM2": 1188.5040997872957,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328191.24309997226,
+        9489569.9079,
+        328238.49189997243,
+        9489614.8215
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7677",
+      "areaM2": 773.6267968001581,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328211.03299997223,
+        9489524.1012,
+        328242.66299997247,
+        9489570.518
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1669",
+      "areaM2": 657.8998833506678,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328156.30299997237,
+        9489523.918,
+        328190.4908999724,
+        9489563.0085
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2904",
+      "areaM2": 309.5848674943748,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328147.4229999725,
+        9489490.123,
+        328171.8129999726,
+        9489516.2958
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1670",
+      "areaM2": 470.0274370069822,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328155.07299997215,
+        9489502.058,
+        328182.11299997225,
+        9489536.5579
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21205",
+      "areaM2": 458.12391049612734,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328109.2930999728,
+        9489507.248,
+        328155.07299997215,
+        9489539.3599
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5790",
+      "areaM2": 328.3023904978723,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328279.57019997295,
+        9489540.108,
+        328298.3829999727,
+        9489563.158
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8187",
+      "areaM2": 577.788728986883,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328133.2229999724,
+        9489615.238,
+        328171.0729999725,
+        9489644.6281
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21146",
+      "areaM2": 342.32375997495717,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328107.421399973,
+        9489505.798,
+        328136.1532999729,
+        9489523.8392
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18570",
+      "areaM2": 1151.1401419497988,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328154.6829999725,
+        9489614.728,
+        328199.6692999727,
+        9489662.1009
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20972",
+      "areaM2": 13644.29994553255,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328035.36299997213,
+        9489616.0281,
+        328249.4729999731,
+        9489769.808
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7181",
+      "areaM2": 494.91449503232803,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328237.7429999722,
+        9489615.7381,
+        328273.4029999727,
+        9489650.9581
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17506",
+      "areaM2": 380.0662813928929,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328094.5586999722,
+        9489575.0881,
+        328119.71299997286,
+        9489603.2177
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5054",
+      "areaM2": 947.1952794963087,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328274.84299997333,
+        9489496.018,
+        328309.0730999721,
+        9489547.388
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18538",
+      "areaM2": 268.8980649908223,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328170.8629999723,
+        9489591.3257,
+        328192.57299997227,
+        9489614.928
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3076",
+      "areaM2": 790.7738904977559,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328211.62309997296,
+        9489557.2881,
+        328248.05289997207,
+        9489598.708
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1078",
+      "areaM2": 267.01635601176855,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328197.3429999724,
+        9489488.628,
+        328216.34299997275,
+        9489504.708
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2569",
+      "areaM2": 806.4350170326752,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328248.05289997207,
+        9489576.1079,
+        328281.6029999729,
+        9489613.538
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21204",
+      "areaM2": 169.42076749686453,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328102.8129999724,
+        9489523.8392,
+        328140.4532999727,
+        9489539.908
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V11597",
+      "areaM2": 360.8223880068696,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328107.7629999723,
+        9489590.4582,
+        328133.2229999724,
+        9489616.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17809",
+      "areaM2": 301.87802663796185,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328107.24069997214,
+        9489491.288,
+        328126.6229999729,
+        9489519.9333
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1667",
+      "areaM2": 441.9149000236118,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328114.7529999717,
+        9489530.738,
+        328136.8829999728,
+        9489566.798
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1671",
+      "areaM2": 432.3541880810149,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328179.462999973,
+        9489500.2013,
+        328207.11299997254,
+        9489528.6175
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2158",
+      "areaM2": 357.50122900592197,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328136.8829999728,
+        9489526.238,
+        328168.01299997274,
+        9489550.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V761",
+      "areaM2": 1705.890120568834,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328180.28299997206,
+        9489510.058,
+        328215.09299997264,
+        9489582.698
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6029",
+      "areaM2": 62.10583799573301,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328206.8529999725,
+        9489503.208,
+        328215.50299997185,
+        9489511.3279
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18569",
+      "areaM2": 818.9730234892721,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328181.56299997226,
+        9489621.1102,
+        328217.15309997194,
+        9489661.058
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V12766",
+      "areaM2": 271.62772391662827,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328102.8129999724,
+        9489486.578,
+        328136.8129999724,
+        9489523.998
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4301",
+      "areaM2": 535.3430118424161,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328213.49449997285,
+        9489501.408,
+        328245.32309997233,
+        9489533.8481
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2570",
+      "areaM2": 469.3796670274946,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328262.4028999726,
+        9489558.018,
+        328282.8528999729,
+        9489597.0281
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1656",
+      "areaM2": 342.97721899252434,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328144.07299997204,
+        9489545.738,
+        328170.3729999723,
+        9489569.7051
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V11598",
+      "areaM2": 471.4266040099983,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328118.87349997216,
+        9489574.008,
+        328143.292999972,
+        9489616.0281
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18571",
+      "areaM2": 1828.3010460575117,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328195.742999972,
+        9489613.538,
+        328254.2929999719,
+        9489667.378
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1657",
+      "areaM2": 545.1035339996057,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328125.4129999719,
+        9489539.908,
+        328150.1929999726,
+        9489583.128
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7182",
+      "areaM2": 169.15065398581962,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328271.66299997247,
+        9489613.948,
+        328303.32299997227,
+        9489625.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V717",
+      "areaM2": 321.46989399816897,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328277.34299997275,
+        9489641.1113,
+        328304.30799997295,
+        9489664.7781
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17810",
+      "areaM2": 275.3968429919336,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328118.4396999717,
+        9489489.278,
+        328137.55299997237,
+        9489509.9981
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3074",
+      "areaM2": 1021.3721364929227,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328232.7029999724,
+        9489541.008,
+        328271.90299997234,
+        9489590.688
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4977",
+      "areaM2": 242.72470001280107,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328136.3029999726,
+        9489490.328,
+        328161.60299997224,
+        9489507.248
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V718",
+      "areaM2": 341.7040720121605,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328266.44299997314,
+        9489650.338,
+        328292.3329999724,
+        9489670.558
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3107",
+      "areaM2": 568.0199000149321,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328252.5529999725,
+        9489629.188,
+        328273.17299997347,
+        9489669.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4860",
+      "areaM2": 228.3098805065116,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328177.532999972,
+        9489488.628,
+        328197.4628999721,
+        9489502.058
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4754",
+      "areaM2": 320.7734573993572,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328231.5030999738,
+        9489590.688,
+        328252.96299997286,
+        9489613.839
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6694",
+      "areaM2": 418.361600984463,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328095.6729999726,
+        9489523.998,
+        328117.1129999722,
+        9489553.1934
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7180",
+      "areaM2": 189.09728548091368,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328251.2629999733,
+        9489613.948,
+        328304.7754999731,
+        9489637.548
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1654",
+      "areaM2": 568.1357492986093,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328163.27319997246,
+        9489572.418,
+        328203.9730999726,
+        9489598.338
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V760",
+      "areaM2": 592.6176720217209,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328135.94289997243,
+        9489563.358,
+        328169.472999973,
+        9489597.978
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3075",
+      "areaM2": 700.8017770179447,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328250.8729999722,
+        9489523.423,
+        328281.042999972,
+        9489566.978
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1658",
+      "areaM2": 786.5184144901422,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328096.7929999721,
+        9489550.248,
+        328130.06289997266,
+        9489588.488
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7183",
+      "areaM2": 165.6866844807611,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328252.50299997174,
+        9489612.018,
+        328307.2929999719,
+        9489619.848
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V18539",
+      "areaM2": 376.71574322310227,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328155.1929999721,
+        9489586.8081,
+        328186.2629999729,
+        9489615.238
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V762",
+      "areaM2": 195.70678750984797,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328162.9579999718,
+        9489489.633,
+        328179.462999973,
+        9489508.258
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V16285",
+      "areaM2": 270.2594509998096,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327844.2428999718,
+        9489248.3379,
+        327863.7055999718,
+        9489271.708
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2028",
+      "areaM2": 341.4825369982316,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327911.3429999717,
+        9489246.358,
+        327929.0829999715,
+        9489268.6581
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2548",
+      "areaM2": 694.3520165047445,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327751.3829999721,
+        9489260.458,
+        327790.05299997237,
+        9489286.638
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2064",
+      "areaM2": 44.40210249343897,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327915.55299997254,
+        9489177.758,
+        327920.43289997254,
+        9489199.658
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1398",
+      "areaM2": 449.73310000167226,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327820.1229999718,
+        9489232.568,
+        327845.57299997204,
+        9489257.018
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V14",
+      "areaM2": 472.01263140898135,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327825.1029999722,
+        9489183.0081,
+        327843.44299997226,
+        9489218.488
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7247",
+      "areaM2": 275.38724251219656,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327767.98299997183,
+        9489300.4881,
+        327793.64299997233,
+        9489317.838
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2059",
+      "areaM2": 294.18395251549714,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327899.6529999722,
+        9489177.778,
+        327918.07299997204,
+        9489203.868
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V792",
+      "areaM2": 187.84790169011777,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327884.85299997247,
+        9489272.5246,
+        327901.16299997165,
+        9489298.358
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2061",
+      "areaM2": 317.6091387444579,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327889.94299997174,
+        9489203.868,
+        327905.9728999725,
+        9489225.6947
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1395",
+      "areaM2": 672.2185645313801,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327802.7129999724,
+        9489257.018,
+        327832.16299997165,
+        9489297.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1891",
+      "areaM2": 391.32735000509274,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327768.9729999718,
+        9489188.578,
+        327793.6729999727,
+        9489210.148
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V16286",
+      "areaM2": 309.7085714895698,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327845.22299997247,
+        9489230.218,
+        327863.8629999717,
+        9489250.648
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V362",
+      "areaM2": 510.8521565206602,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327890.34549997177,
+        9489225.4535,
+        327915.0029999713,
+        9489248.868
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1438",
+      "areaM2": 181.31359372976283,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327813.52299997245,
+        9489204.5284,
+        327826.65629997174,
+        9489222.278
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V364",
+      "areaM2": 322.24610500500944,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327917.2629999726,
+        9489173.588,
+        327934.0429999719,
+        9489199.618
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4584",
+      "areaM2": 694.468679000295,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327787.2629999722,
+        9489294.368,
+        327823.3729999714,
+        9489324.958
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6141",
+      "areaM2": 386.0011871337021,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327855.5529999719,
+        9489158.8479,
+        327878.2369999716,
+        9489186.4079
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2056",
+      "areaM2": 384.2884494945902,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327909.0417999716,
+        9489222.308,
+        327930.712999972,
+        9489246.613
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V22005",
+      "areaM2": 330.68887849099815,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327924.5929999728,
+        9489138.228,
+        327944.56299997214,
+        9489163.188
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4718",
+      "areaM2": 285.6653915008522,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327767.05299997225,
+        9489172.178,
+        327793.6729999727,
+        9489193.5188
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2348",
+      "areaM2": 413.91286947324426,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327767.2729999722,
+        9489310.528,
+        327796.3130999716,
+        9489332.9379
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V17280",
+      "areaM2": 372.77408347709905,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327883.96299997286,
+        9489310.578,
+        327912.9576999724,
+        9489347.688
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2111",
+      "areaM2": 1254.8884320033985,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327761.67299997236,
+        9489131.6179,
+        327797.00299997185,
+        9489181.148
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V20932",
+      "areaM2": 2584.221612009366,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327815.3228999722,
+        9489256.338,
+        327886.9529999718,
+        9489349.978
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2390",
+      "areaM2": 159.05791450410277,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327821.04289997206,
+        9489173.458,
+        327844.2279999719,
+        9489184.8481
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19607",
+      "areaM2": 371.85689999853753,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327826.5629999718,
+        9489135.888,
+        327846.142999972,
+        9489172.588
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8056",
+      "areaM2": 660.8763635058857,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327793.14299997245,
+        9489187.338,
+        327814.6929999722,
+        9489228.9481
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3827",
+      "areaM2": 246.83230336853018,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327841.7107999718,
+        9489178.288,
+        327855.44299997203,
+        9489201.0778
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4157",
+      "areaM2": 712.686668476307,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327781.1630999717,
+        9489269.3576,
+        327815.3228999722,
+        9489300.4881
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8058",
+      "areaM2": 164.99218484186187,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327818.523099971,
+        9489184.2735,
+        327828.91949997115,
+        9489204.8112
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5396",
+      "areaM2": 1609.502274483356,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327853.3029999726,
+        9489182.408,
+        327891.16299997177,
+        9489233.498
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1396",
+      "areaM2": 505.84340051726156,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327820.1229999718,
+        9489250.648,
+        327845.22299997247,
+        9489284.638
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2652",
+      "areaM2": 296.8536145067302,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327781.32309997175,
+        9489249.2079,
+        327805.2138999717,
+        9489271.2579
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4589",
+      "areaM2": 501.23035453856596,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327846.3129999724,
+        9489311.918,
+        327883.96299997286,
+        9489332.628
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V4590",
+      "areaM2": 509.09215300490473,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327846.26299997256,
+        9489296.488,
+        327884.85299997247,
+        9489316.1825
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21076",
+      "areaM2": 1290.6663648482588,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327923.9629999727,
+        9489240.338,
+        327947.6829999725,
+        9489307.1053
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1397",
+      "areaM2": 468.3933534751128,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327796.90299997176,
+        9489235.798,
+        327824.03299997153,
+        9489263.168
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1743",
+      "areaM2": 768.0062519972671,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327870.6329999722,
+        9489157.0281,
+        327916.5828999718,
+        9489184.7181
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8574",
+      "areaM2": 659.6749106015233,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327796.70289997157,
+        9489144.698,
+        327828.9529999719,
+        9489171.538
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2057",
+      "areaM2": 292.7922999829413,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327917.2629999726,
+        9489199.138,
+        327932.29299997166,
+        9489222.428
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2060",
+      "areaM2": 276.04918199698017,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327888.7229999724,
+        9489183.918,
+        327905.82299997204,
+        9489206.048
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10511",
+      "areaM2": 1636.41795099697,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327883.4229999726,
+        9489246.613,
+        327927.58299997146,
+        9489324.798
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5597",
+      "areaM2": 524.1088200229863,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327769.6129999721,
+        9489206.698,
+        327793.42299997207,
+        9489233.448
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1400",
+      "areaM2": 209.35605350217847,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327840.31299997226,
+        9489220.628,
+        327860.6130999718,
+        9489235.328
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1677",
+      "areaM2": 894.1145430135821,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327836.06299997243,
+        9489127.848,
+        327866.432999972,
+        9489184.198
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2058",
+      "areaM2": 316.13264111822633,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327905.82299997204,
+        9489199.618,
+        327920.28299997177,
+        9489225.4941
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V3826",
+      "areaM2": 254.33236281229733,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327840.6529999717,
+        9489200.818,
+        327854.50299997174,
+        9489221.258
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V22896",
+      "areaM2": 460.36107079696524,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327912.4529999717,
+        9489305.1381,
+        327932.7928999724,
+        9489332.2806
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5405",
+      "areaM2": 591.5557330072459,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327863.6129999722,
+        9489227.648,
+        327891.16299997177,
+        9489256.338
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V2314",
+      "areaM2": 147.30032198745874,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327785.0229999721,
+        9489173.288,
+        327800.2729999721,
+        9489187.338
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1745",
+      "areaM2": 457.1082435077615,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327901.33299997204,
+        9489141.538,
+        327926.0129999725,
+        9489169.438
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8057",
+      "areaM2": 251.13979150820413,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327793.69299997226,
+        9489185.0013,
+        327820.48299997183,
+        9489204.9481
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V7248",
+      "areaM2": 346.2647919950969,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327761.4729999724,
+        9489284.178,
+        327787.2629999722,
+        9489304.8181
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1744",
+      "areaM2": 407.4532438284705,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327880.8829999727,
+        9489135.0077,
+        327905.12299997156,
+        9489161.688
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V10512",
+      "areaM2": 494.3754919165789,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327886.9529999718,
+        9489246.9197,
+        327910.03219997225,
+        9489283.1842
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6140",
+      "areaM2": 627.3531330385418,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327860.6826999716,
+        9489130.428,
+        327890.4759999717,
+        9489163.0984
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5596",
+      "areaM2": 1331.2516269544087,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327739.882999972,
+        9489228.9481,
+        327798.713399972,
+        9489265.6979
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V6366",
+      "areaM2": 725.2192535002996,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327863.6129999722,
+        9489248.868,
+        327890.34549997177,
+        9489286.898
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5441",
+      "areaM2": 763.6207924871215,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327793.14299997245,
+        9489213.2513,
+        327841.0762999712,
+        9489242.888
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21622",
+      "areaM2": 79.50787772035844,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327796.66309997137,
+        9489170.9534,
+        327805.61339997186,
+        9489187.088
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V21623",
+      "areaM2": 358.2177005048239,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327800.89379997196,
+        9489169.4464,
+        327831.7629999717,
+        9489186.8553
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V19606",
+      "areaM2": 129.6894354916026,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        327814.3030999716,
+        9489141.648,
+        327832.57299997204,
+        9489172.588
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8092",
+      "areaM2": 765.9908523765687,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328476.16299997224,
+        9489270.878,
+        328511.8429999733,
+        9489310.3163
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8091",
+      "areaM2": 437.11725048304675,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328455.21299997316,
+        9489275.6179,
+        328481.1733999726,
+        9489308.678
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5664",
+      "areaM2": 1650.0458863060303,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328567.51129997324,
+        9489296.258,
+        328638.512999973,
+        9489338.138
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8553",
+      "areaM2": 238.9273000059258,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328452.3329999733,
+        9489260.348,
+        328474.6329999728,
+        9489283.368
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V5633",
+      "areaM2": 268.3798500069348,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328464.0629999725,
+        9489315.928,
+        328486.19299997255,
+        9489340.058
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8787",
+      "areaM2": 674.5392829739444,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328566.75209997303,
+        9489269.918,
+        328627.2929999726,
+        9489314.338
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V9007",
+      "areaM2": 8637.493496523097,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328474.7229999731,
+        9489152.458,
+        328616.5329999728,
+        9489250.758
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V9100",
+      "areaM2": 25.039718995946934,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328476.0930999728,
+        9489307.288,
+        328485.9514999733,
+        9489313.098
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V1074",
+      "areaM2": 1456.4267945306196,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328501.57299997227,
+        9489304.928,
+        328555.8529999731,
+        9489358.398
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V23309",
+      "areaM2": 448.6835351409191,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328482.6729999741,
+        9489301.9258,
+        328512.8129999731,
+        9489333.208
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V826",
+      "areaM2": 909.2653344433786,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328534.8629999728,
+        9489286.438,
+        328577.03299997305,
+        9489329.6981
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V8788",
+      "areaM2": 1611.1121010090537,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328555.232999973,
+        9489259.758,
+        328622.6028999732,
+        9489301.1787
+      ]
+    },
+    {
+      "parcelId": "SC-MLH-V23310",
+      "areaM2": 496.3519290057275,
+      "valid": true,
+      "empty": false,
+      "geometryType": "Polygon",
+      "bounds": [
+        328495.821199973,
+        9489288.298,
+        328527.25299997267,
+        9489320.058
+      ]
+    }
+  ]
+}

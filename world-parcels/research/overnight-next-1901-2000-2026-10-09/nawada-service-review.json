@@ -1,0 +1,43 @@
+{
+  "cityRecord": "city-11209-nawada.json",
+  "cityCode": 11209,
+  "queueRank": 1999,
+  "city": "Nawada",
+  "country": "India",
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_review",
+  "registryFound": true,
+  "sourceCandidate": "bihar-bhunaksha-public-viewer",
+  "summary": "First-party Bihar Bhu-Naksha discovery and anonymous route inspection completed. Nawada hierarchy was resolved through district 36, subdivision 02, circle 09, and urban mauza Nawada urf Gonawa 0753. The current public extent route returned null coordinates and no geometry or stable parcel identity was retained.",
+  "queryOutcomes": [
+    "English first-party discovery found the Nawada Revenue page, Bihar Bhu-Naksha, Bihar land-record reports, and DILRMP map-digitization material.",
+    "Hindi first-party discovery confirmed the same Bihar/Nawada revenue and Bhu-Naksha services.",
+    "Actual query text and result URLs are recorded in city-11209-nawada.json freshResearch.queries."
+  ],
+  "requestOutcomes": [
+    "Official Nawada English and Hindi revenue pages returned HTTP 200.",
+    "Bihar Bhu-Naksha shell returned HTTP 200; current configuration identified public REST and WMS routes.",
+    "Anonymous hierarchy POSTs returned HTTP 200 and exposed Nawada codes and the urban mauza row.",
+    "Anonymous map extent POST returned HTTP 200 with null xmin/ymin/xmax/ymax and a route gisCode.",
+    "Anonymous theme-layer POST returned HTTP 200 with an empty array.",
+    "DILRMP direct GET was not usable because local TLS validation failed; no insecure retry was attempted.",
+    "No login, credential, private token, CAPTCHA/Cloudflare bypass, owner/address/titleholder/contact/tax/account lookup, or unsafe field request was made."
+  ],
+  "scopeLimits": [
+    "One public urban mauza route was inspected; no citywide completeness audit was performed.",
+    "The exact WUP point [24.8896035518647, 85.5407309971938] was not shifted and was not used to infer absence.",
+    "Null extent, empty layers, timeout/login-wall/unusable UI, or TLS failure do not establish citywide absence.",
+    "No raw source-specific attribute set is retained."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeIdentityDecision": "No native parcel identity was returned; no synthetic row number or composite identity was invented.",
+  "retainedGeojson": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Bihar/Nawada cadastral hierarchy and local custodian are evidenced, but public parcel geometry, schema, CRS, stable native identity, exact-point coverage, and citywide completeness remain unverified. Packet completion is not source integration/admission."
+}

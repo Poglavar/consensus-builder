@@ -1,0 +1,58 @@
+{
+  "cityCode": 494,
+  "queueRank": 3172,
+  "country": "Costa Rica",
+  "countryCode": "CR",
+  "iso3": "CRI",
+  "name": "Cartago",
+  "aliases": ["cartago"],
+  "point": [9.85759763823815, -83.9237953785818],
+  "population2025": 189608,
+  "population2025k": 189.608,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Costa Rica official cadastral map parcel viewer Registro Nacional SNIT catastro Cartago",
+        "result": "First-party results identified the Registro Nacional Catastro page and the SIRI public cadastral viewer.",
+        "actualResultUrls": [
+          "https://www.registronacional.go.cr/registro_inmobiliario/catastro/",
+          "https://siri.snitcr.go.cr/siri/mapa"
+        ]
+      },
+      {
+        "language": "Spanish (local/native)",
+        "query": "Costa Rica catastro mapa parcelas Cartago Registro Nacional SNIT",
+        "result": "First-party results identified the Registro Nacional Catastro page, SIRI viewer, and SNIT viewer instructions for cadastral searches.",
+        "actualResultUrls": [
+          "https://www.registronacional.go.cr/registro_inmobiliario/catastro/",
+          "https://siri.snitcr.go.cr/siri/mapa",
+          "https://www.snitcr.go.cr/Visor/visor?k=Y2FwYTo6SUdOX0dVSUFTOjpndWlhX2hvamFzXzUwaw%3D%3D"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Registro Nacional de Costa Rica, Registro Inmobiliario / Catastro Nacional; SIRI is the public Sistema de Información Registro Inmobiliario viewer.",
+    "officialUrls": [
+      "https://www.registronacional.go.cr/registro_inmobiliario/",
+      "https://www.registronacional.go.cr/registro_inmobiliario/catastro/",
+      "https://siri.snitcr.go.cr/siri/mapa"
+    ],
+    "localityEvidence": "The official public viewer exposes province/canton/district navigation and cadastral map/query functions, but this attempt did not establish a Cartago-specific parcel endpoint or returned feature.",
+    "scope": "National cadastral/real-estate registry viewer; Cartago is a supported geographic area in the viewer's national navigation, but citywide parcel coverage was not proved here."
+  },
+  "schemaAndCrs": {
+    "viewerConfiguration": "SIRI HTML declares CRTM05 and WGS84 coordinate workflows; the map extent is national and the viewer requests EPSG:3857 for its internal WFS vector source.",
+    "publicService": "SIRI page exposes https://siri.snitcr.go.cr/geoservicios.php as its WFS information link and /be/wms, /be/wfs, /be/wps backend routes.",
+    "inspectedNamespaces": ["IGN_5", "IGN_25", "IGN_50"],
+    "nativeIdentity": null,
+    "geometry": null
+  },
+  "sample": null,
+  "runtimeReadiness": "held_independent_adapter_review"
+}

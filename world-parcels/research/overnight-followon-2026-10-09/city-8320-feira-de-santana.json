@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8320",
+  "wupCityCode": 8320,
+  "name": "Feira de Santana",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 1049,
+  "queueRank": 1049,
+  "point": [
+    -12.2511235269799,
+    -38.9612452893144
+  ],
+  "centerLatLon": [
+    -12.2511235269799,
+    -38.9612452893144
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 529185,
+  "population2025k": 529.185,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Feira de Santana municipal records describe its Cadastro Imobiliário and the municipal Finance Secretariat exposes a digital cadastral-plans service.",
+  "registryEvidenceUrls": [
+    "https://sefaz.feiradesantana.ba.gov.br/?iptu=1&pg=servicosonline&tipo_inscricao=plantas-digitalizadas",
+    "https://www.feiradesantana.ba.gov.br/seplan/Balan%C3%A7o%20de%20Gest%C3%A3o%202003/BALAN%C3%87O%20DE%20GEST%C3%83O%202003.pdf",
+    "https://www.feiradesantana.ba.gov.br/seplan/balanco_Gestao/balanco_2024/RELAToRIO_GERAL_2024-Parte_1.pdf",
+    "https://diariooficial.feiradesantana.ba.gov.br/atos/executivo/1F5FRSKT090420261735.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Official city sources establish municipal property-cadastre records and a digital-plans service, but no anonymous full-feature geometry route or coordinate query was exposed in the reviewed pages.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Feira de Santana municipal records describe its Cadastro Imobiliário and the municipal Finance Secretariat exposes a digital cadastral-plans service.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Official city sources establish municipal property-cadastre records and a digital-plans service, but no anonymous full-feature geometry route or coordinate query was exposed in the reviewed pages."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese",
+        "query": "Feira de Santana cadastro imobiliário plantas digitalizadas mapa parcelário prefeitura cadastro técnico geoprocessamento",
+        "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry.",
+        "result": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered.",
+        "actualResultUrls": [
+          "https://sefaz.feiradesantana.ba.gov.br/?iptu=1&pg=servicosonline&tipo_inscricao=plantas-digitalizadas",
+          "https://www.feiradesantana.ba.gov.br/seplan/Balan%C3%A7o%20de%20Gest%C3%A3o%202003/BALAN%C3%87O%20DE%20GEST%C3%83O%202003.pdf",
+          "https://www.feiradesantana.ba.gov.br/seplan/balanco_Gestao/balanco_2024/RELAToRIO_GERAL_2024-Parte_1.pdf",
+          "https://diariooficial.feiradesantana.ba.gov.br/atos/executivo/1F5FRSKT090420261735.pdf"
+        ],
+        "executionMethod": "Separate native/local-language web search and first-party source review."
+      },
+      {
+        "language": "English",
+        "query": "Feira de Santana Brazil official municipal property cadastre parcel maps GIS public geometry",
+        "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously.",
+        "result": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered.",
+        "actualResultUrls": [
+          "https://sefaz.feiradesantana.ba.gov.br/?iptu=1&pg=servicosonline&tipo_inscricao=plantas-digitalizadas",
+          "https://www.feiradesantana.ba.gov.br/seplan/Balan%C3%A7o%20de%20Gest%C3%A3o%202003/BALAN%C3%87O%20DE%20GEST%C3%83O%202003.pdf",
+          "https://www.feiradesantana.ba.gov.br/seplan/balanco_Gestao/balanco_2024/RELAToRIO_GERAL_2024-Parte_1.pdf",
+          "https://diariooficial.feiradesantana.ba.gov.br/atos/executivo/1F5FRSKT090420261735.pdf"
+        ],
+        "executionMethod": "Separate English-language web search and first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Feira de Santana Municipal Finance Secretariat cadastral plans portal",
+        "operator": "Secretaria Municipal da Fazenda; Prefeitura Municipal de Feira de Santana",
+        "homeUrl": "https://sefaz.feiradesantana.ba.gov.br/?pg=servicosonline&tipo_inscricao=plantas-digitalizadas",
+        "observation": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sefaz.feiradesantana.ba.gov.br/?iptu=1&pg=servicosonline&tipo_inscricao=plantas-digitalizadas",
+        "result": "Official municipal page for digital plans reviewed. It exposes embedded content but not a documented anonymous vector endpoint; no CPF, taxpayer number, or property identity was submitted."
+      }
+    ],
+    "geometryDecision": "No full polygon retained; no qualifying safe WUP-point sample was returned.",
+    "verifiedFullGeometrySamples": 0
+  },
+  "remainingUncertainty": "Municipal property-cadastre activity is confirmed. Citywide open parcel geometry and WUP-point sample are unverified; orthophotos and development project plans are not treated as cadastral vectors.",
+  "nextStep": "If required, use the official authority’s documented public geometry route or request its published access process; do not submit personal or owner identifiers.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootReviewNote": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

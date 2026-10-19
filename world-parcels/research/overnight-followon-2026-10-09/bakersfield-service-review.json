@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3098-bakersfield.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested.",
+  "registryAssessment": "The first-party City of Bakersfield GIS Cadastre service publishes parcel polygons; Kern County Assessor-Recorder separately documents parcel mapping GIS. Exact WUP-point query returned one polygon with safe Esri OBJECTID only.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+      "observation": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested."
+    },
+    {
+      "url": "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis",
+      "observation": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bakersfield Kern County official parcel map GIS cadastral layer",
+      "result": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+        "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "Bakersfield mapa catastral parcelas GIS oficial ciudad Kern County",
+      "result": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+        "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis"
+      ]
+    }
+  ],
+  "geometryDecision": "One exact WUP-point polygon retained; only OBJECTID and geometry were requested.",
+  "coverageAssessment": {
+    "claimedScope": "The first-party City of Bakersfield GIS Cadastre service publishes parcel polygons; Kern County Assessor-Recorder separately documents parcel mapping GIS. Exact WUP-point query returned one polygon with safe Esri OBJECTID only.",
+    "verifiedOpenScope": "The city’s first-party ArcGIS layer metadata identifies a public Polygon Parcels feature layer and safe OID. An anonymous exact-point spatial-intersection query at the unchanged WUP coordinate, requesting only OBJECTID and geometry, returned one polygon (OBJECTID 127663). A ring test confirms the point lies inside. No tax, account, APN, owner, or address attributes were requested.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    },
+    {
+      "url": "https://www.kerncounty.com/government/departments/assessor-recorder/property/mapping-gis",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and adapter/runtime suitability remain unqualified; local registry evidence does not establish full public geometry availability.",
+  "geometryEvidence": {
+    "sampleFile": "city-3098-bakersfield-samples.geojson",
+    "featureCount": 1,
+    "nativeIdField": "OBJECTID",
+    "nativeId": 127663,
+    "query": "Anonymous exact point-intersection query at unchanged WUP lon/lat; outFields=OBJECTID, returnGeometry=true, outSR=4326. Returned one polygon. Point-in-ring test confirms containment."
+  },
+  "runtimeAssessment": "Not enabled; root may perform full adapter qualification."
+}

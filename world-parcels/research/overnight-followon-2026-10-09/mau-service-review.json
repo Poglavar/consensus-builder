@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10555-mau.json",
+  "purpose": "Document primary local registry/custody evidence and bounded anonymous full-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official district land-record service and district cadastral-map georeferencing are confirmed. The public Bhunaksha shell loaded but opens a default Agra context; it does not verify Mau geometry. No parcel identifiers or full polygons were returned or retained.",
+  "registryAssessment": "Official UP Bhulekh and district Mau sources establish revenue land-record and property-registration services for Mau district, including local tehsil/village cadastral-map georeferencing status. The data service is state-operated with district/tehsil selectors; this supports local service coverage but not anonymous polygon retrieval at the WUP settlement point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=192",
+      "observation": "Official UP Bhulekh georeferencing dashboard for Mau district; lists district tehsils and village/map-sheet progress."
+    },
+    {
+      "url": "https://mau.nic.in/service/%E0%A4%B8%E0%A5%8D%E0%A4%9F%E0%A4%BE%E0%A4%AE%E0%A5%8D%E0%A4%AA-%E0%A4%8F%E0%A4%B5%E0%A4%82-%E0%A4%B0%E0%A4%9C%E0%A4%BF%E0%A4%B8%E0%A5%8D%E0%A4%9F%E0%A5%8D%E0%A4%B0%E0%A5%87%E0%A4%B6%E0%A4%A8/",
+      "observation": "Official Mau district Hindi page describing online stamp and property registration via the Uttar Pradesh registration system."
+    },
+    {
+      "url": "https://bor.up.nic.in/",
+      "observation": "Official Uttar Pradesh Board of Revenue portal links land-record and revenue-village map services."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mau Uttar Pradesh official cadastral parcel map land records Bhu Naksha public GIS",
+      "resultUrls": [
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=192",
+        "https://mau.nic.in/service/%E0%A4%B8%E0%A5%8D%E0%A4%9F%E0%A4%BE%E0%A4%AE%E0%A5%8D%E0%A4%AA-%E0%A4%8F%E0%A0%82-%E0%A4%B0%E0%A4%9C%E0%A4%BF%E0%A4%B8%E0%A5%8D%E0%A4%9F%E0%A5%8D%E0%A4%B0%E0%A5%87%E0%A4%B6%E0%A4%A8/",
+        "https://bor.up.nic.in/",
+        "https://upbhunaksha.gov.in/home/"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "मऊ उत्तर प्रदेश जमीन भू नक्शा खतौनी मऊ सरकारी नक्शा",
+      "resultUrls": [
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=192",
+        "https://mau.nic.in/service/%E0%A4%B8%E0%A5%8D%E0%A4%9F%E0%A4%BE%E0%A4%AE%E0%A5%8D%E0%A4%AA-%E0%A4%8F%E0%A0%82-%E0%A4%B0%E0%A4%9C%E0%A4%BF%E0%A4%B8%E0%A5%8D%E0%A4%9F%E0%A5%8D%E0%A4%B0%E0%A5%87%E0%A4%B6%E0%A4%A8/",
+        "https://bor.up.nic.in/",
+        "https://upbhunaksha.gov.in/home/"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native complete polygon was returned at the WUP point. `publicParcelGeometryFound:false` means unverified in this research, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=192",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "bytesRead": 24051,
+        "assessment": "District-specific map-georeferencing dashboard."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/home/",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 30000,
+        "assessment": "Viewer shell loads at default Agra; no Mau village/plot selection was made, so no Mau geometry was inferred."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official UP Bhulekh and district Mau sources establish revenue land-record and property-registration services for Mau district, including local tehsil/village cadastral-map georeferencing status. The data service is state-operated with district/tehsil selectors; this supports local service coverage but not anonymous polygon retrieval at the WUP settlement point.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Mau town/village selection corresponding to the WUP point, completeness of digitized maps, and safe anonymous full geometry remain unverified.",
+  "nextStep": "Resolve the WUP point to the correct Mau tehsil and revenue village in the official viewer before issuing any parcel-geometry query."
+}

@@ -1,0 +1,16 @@
+{
+  "taskId": "city:2724",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-2724-hakodate.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/hakodate-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/hakodate-parcel-sample.geojson"
+  ],
+  "checkedAt": "2026-10-11T02:03:35.970169Z",
+  "reason": "English and Japanese executed searches are recorded. Original cached 2024 source shapefile has 183316 polygons in EPSG:6679. Native ID H000001917 occurs 25 times; the ID/map/parcel composite matches once, has municipality code 01202, covers the exact WUP point, is valid, and matches the retained polygon exactly after CRS conversion. Fresh native-ID runtime reads, forced paging, 13 bounded cells, metric overlap audit, source binding and headed Details-panel verification are not evidenced.",
+  "registryCustodyAccepted": true,
+  "admission": "held; no runtime/catalog/report change",
+  "sourceCacheSha256": "8c6dcd24f38edb464965cdddbdbba0a87874e95661f02c168457f60bda242baa"
+}

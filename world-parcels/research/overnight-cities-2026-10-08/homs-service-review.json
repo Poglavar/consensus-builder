@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2106-homs.json",
+  "purpose": "City-specific registry and public parcel geometry source review for the ranked WUP settlement point.",
+  "scopeLimits": "No anonymous city parcel map or vector feature service was found; exact WUP-point coverage is unverified.",
+  "assessment": "Official local registry office evidence found, but no anonymous city parcel geometry was verified.",
+  "registryAssessment": "SANA reporting specifically names the Homs Real Estate Affairs Directorate and its property register, survey statements, and cadastral records. This establishes the local registry office, not a public parcel geometry service.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Homs Syria official cadastral parcel map property registry land registry Directorate of Cadastral Affairs Homs",
+      "scope": "Find Homs-specific land registry office and anonymous public parcel maps or geometry services.",
+      "result": "SANA reports the Homs Real Estate Affairs Directorate maintains property-register and survey records and is digitizing its archive. No anonymous city parcel map or vector service was found.",
+      "actualResultUrls": [
+        "https://sana.sy/governorates/homs/2587275/",
+        "https://sana.sy/governorates/homs/2190983/"
+      ],
+      "executionMethod": "Separate English web search followed by official state-news source and public-service route inspection."
+    },
+    {
+      "language": "Arabic",
+      "query": "حمص سوريا خريطة عقارية السجل العقاري مديرية المصالح العقارية حمص رسمي",
+      "scope": "تحديد مديرية السجل العقاري في حمص والبحث عن خريطة عقارية عامة أو خدمة هندسية.",
+      "result": "تؤكد تقارير سانا وجود مديرية المصالح العقارية بحمص وسجل عقاري وبيانات مساحية؛ لم يظهر عارض عام لقطع الأراضي أو خدمة هندسية مجهولة الوصول.",
+      "actualResultUrls": [
+        "https://sana.sy/governorates/homs/2587275/",
+        "https://sana.sy/governorates/homs/2190983/"
+      ],
+      "executionMethod": "بحث عربي مستقل ومراجعة تقارير سانا الرسمية وفحص مسارات الخدمة العامة."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://sana.sy/governorates/homs/2587275/",
+      "method": "Official source review",
+      "observation": "Official source identifies the named local registry office/services."
+    },
+    {
+      "url": "https://sana.sy/governorates/homs/2190983/",
+      "method": "Official source review",
+      "observation": "Official source identifies the named local registry office/services."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "searchedOfficialSources": [
+      "https://sana.sy/governorates/homs/2587275/",
+      "https://sana.sy/governorates/homs/2190983/"
+    ],
+    "publicViewerOrLayer": "No city-scoped anonymous parcel geometry endpoint confirmed.",
+    "wupPointQuery": "Not performed; no usable public parcel feature layer was identified.",
+    "geometryRetained": false
+  },
+  "geometryDecision": "No full public parcel geometry was verified or retained. Local registry-office evidence is not evidence of anonymous vector coverage."
+}

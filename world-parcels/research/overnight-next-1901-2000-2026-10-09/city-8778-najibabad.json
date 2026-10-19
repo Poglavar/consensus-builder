@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityCode": 8778,
+  "queueRank": 1952,
+  "name": "Najibabad",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [29.6092963454053, 78.3356483515359],
+  "population2025": 296669,
+  "population2025k": 296.669,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Najibabad Uttar Pradesh official cadastral parcel map GIS Bijnor land records",
+        "result": "Found the first-party Uttar Pradesh Bhulekh portal, the official Bijnor district portal, the official UP Bhu-Naksha portal, and the UP cadastral digitization report specifically listing Bijnor/Najibabad. The report evidences linked/georeferenced village and mapsheet coverage, but not a city-boundary parcel feature response.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/",
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00712",
+          "https://bijnor.nic.in/"
+        ]
+      },
+      {
+        "language": "Hindi (local/official language)",
+        "query": "नजीबाबाद उत्तर प्रदेश आधिकारिक भू-नक्शा खसरा नक्शा बिजनौर",
+        "result": "Found the official Hindi UP Bhulekh/Bhu-Naksha services and the Najibabad tehsil cadastral digitization report. Hindi search results also confirmed the official service labels for भू-नक्शा/शजरा and गाटा, but no anonymous parcel geometry was returned.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00712",
+          "https://upbhulekh.gov.in/documents/landrecords-bijnor.pdf"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "operator": "Board of Revenue, Government of Uttar Pradesh / NIC Uttar Pradesh",
+      "evidence": "First-party state land-record portal describes UP land records and links to भू-नक्शा, गाटा and related land services. This is state registry/custodian evidence, not merely general national agency prose."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00712",
+      "operator": "Government of Uttar Pradesh cadastral digitization dashboard",
+      "evidence": "The official report identifies district Bijnor, tehsil Najibabad, and lists revenue villages with cadastral digitization flags. Search/indexed report totals show 520 of 520 villages linked to Bhunaksha and 584 of 584 mapsheets linked and georeferenced for Najibabad tehsil."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "operator": "Uttar Pradesh Bhu-Naksha public viewer",
+      "evidence": "Current public viewer is the first-party UP cadastral map route. Its current JavaScript configuration exposes https://upbhunaksha.gov.in/bhunakshaserver and plot/map methods including MapInfo/getPlotAtXY, MapInfo/getPlotByPlotNo, MapInfo/getPlotInfo, and v1/khasramap/plot."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/documents/landrecords-bijnor.pdf",
+      "operator": "Government of Uttar Pradesh / Bijnor land-records administration",
+      "evidence": "Official document records inauguration of the web-based land-record system at Tehsil Najibabad, Bijnor. It supports local administrative custody but does not expose parcel geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET with verified TLS",
+      "status": 200,
+      "summary": "Retrieved current HTML and JavaScript asset references. The state portal was reachable and its CSP/configuration exposed the public Bhunaksha and related endpoints."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET with verified TLS",
+      "status": 200,
+      "summary": "Retrieved the current public Bhu-Naksha viewer shell and JavaScript configuration. No credentials, login, CAPTCHA bypass, or private token was used."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "GET with verified TLS, 20-second bound",
+      "status": "timeout/no response",
+      "summary": "The current viewer-discovered public metadata route did not return within the bound. This is an endpoint/transport limitation, not evidence of absent Najibabad coverage."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET with verified TLS, 20-second bound",
+      "status": "not completed after preceding timeout",
+      "summary": "The bounded route sequence was stopped after the first endpoint timed out; no map query was fabricated and no point-hit/absence inference was made."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=134&tehsilCode=00712",
+      "method": "public indexed report retrieval",
+      "status": "200/indexed",
+      "summary": "Official report was discoverable and returned Najibabad tehsil village/map digitization records. It is aggregate/report evidence, not a parcel feature API response."
+    }
+  ],
+  "sourceIdentity": {
+    "nativeIdField": null,
+    "fallbackOidField": null,
+    "compositeKey": null,
+    "fieldMapping": {
+      "geometry": "Not available: no anonymous parcel feature response was returned.",
+      "native identity": "Not available: no parcel feature schema or safe native ID was returned. Village codes in the aggregate report were not treated as parcel IDs."
+    },
+    "crs": "Not confirmed from a returned parcel feature response.",
+    "geometryType": "Not confirmed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official UP land-record and Bhu-Naksha systems are state-wide services; the official dashboard specifically reports Najibabad tehsil cadastral-map digitization.",
+    "verifiedOpenScope": "First-party local administrative custody and aggregate Najibabad tehsil digitization status verified. City-specific parcel geometry, exact city boundary coverage, and anonymous feature schema were not verified.",
+    "countrywideVerified": false,
+    "targetPointHit": false,
+    "targetPointHitInterpretation": "No usable exact-point parcel response was obtained. This is an endpoint/availability limitation, not evidence of citywide absence."
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "safeFieldAllowlist": ["native parcel identifier if later exposed", "geometry"],
+  "unsafeFieldsNotRetained": ["owner", "titleholder", "address", "contact", "personal details", "tax", "account", "legal description", "rights/title details"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "resultCategory": "official_local_cadastre_custodian_aggregate_coverage_geometry_unverified",
+  "remainingUncertainty": "The official sources establish a local Najibabad tehsil cadastral-map program and current Bhu-Naksha viewer routes, but the anonymous map metadata route timed out before a bounded ID+geometry response could be obtained. It remains unknown whether the city point falls in an urban map unit served by the viewer or which native parcel field/CRS would be returned.",
+  "nextStep": "Serial reviewer should independently retry the current Bhu-Naksha viewer/API, select the Bijnor/Najibabad hierarchy, and qualify a safe native parcel ID, CRS, geometry response, and city coverage before adapter admission."
+}

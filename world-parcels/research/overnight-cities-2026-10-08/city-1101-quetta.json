@@ -1,0 +1,126 @@
+{
+  "name": "Quetta",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 497,
+  "point": [
+    30.1781556040132,
+    66.9935299290239
+  ],
+  "population2025": 1025211,
+  "population2025k": 1025.211,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Quetta has city-based revenue/settlement services, but no trustworthy anonymous parcel-feature response or exact point coverage was verified. A third-party portal’s claims were excluded. No authentication, land lookup or property-specific query was attempted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official provincial budget documents identify a Director Land Records/Settlement Office in Quetta, and official government search results state that Quetta is included in phase-I land-record computerization. The Board of Revenue project page currently renders compromised injected content on direct inspection, so its details are not relied on as trusted evidence.",
+  "resultCategory": "local_registry_found_no_public_geometry_verified",
+  "technicalBlocker": "No bounded geometry request was made because no trusted public feature endpoint/schema could be established. Direct public page review of the Board project endpoint returned compromised injected content; no credentials, tokens, cookies or property-specific data were used.",
+  "remainingUncertainty": "Exact digitized mouza/urban coverage, current phase status, safe public viewer, and parcel polygons at the WUP point are unverified. The Board’s project page should be re-evaluated only after its integrity is confirmed.",
+  "nextStep": "Root review; request a trusted public service endpoint or city coverage statement before any geometry integration.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Urdu",
+        "query": "کوئٹہ بلوچستان زمین ریکارڈ cadastral map official survey land records",
+        "result": "Found provincial Board of Revenue references to land records and settlement services; no safe anonymous geometry endpoint verified.",
+        "method": "Separate Urdu-language discovery search."
+      },
+      {
+        "language": "Urdu",
+        "query": "کوئٹہ بورڈ آف ریونیو زمین ریکارڈ GIS سروے نقشہ عوامی ویب سائٹ",
+        "result": "Search surfaced the Board of Revenue BLRMIS project result and official Balochistan revenue references; a direct project page inspection showed compromised injected content, so only government gateway/budget evidence is used.",
+        "method": "Separate Urdu-language discovery search and official-source review."
+      },
+      {
+        "language": "English",
+        "query": "Quetta official land records GIS map Board of Revenue Balochistan cadastral",
+        "result": "Official government search result says Quetta is one of four phase-I BLRMIS districts; no clean public parcel feature schema/query was established.",
+        "method": "Additional English discovery search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://balochistan.gov.pk/wp-content/uploads/2025/09/DEVELOOPMENT-2025-26.pdf",
+        "observation": "Official 2025–26 provincial budget documents list the Quetta land-record/settlement office; official Board of Revenue search result indicates Quetta phase-I land-record digitization. This supports local registry activity, not anonymous map coverage."
+      },
+      {
+        "url": "https://balochistan.gov.pk/wp-content/uploads/2025/06/PSDP-2025-26.pdf",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      },
+      {
+        "url": "https://bor.balochistan.gov.pk/blrmis-project/",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      },
+      {
+        "url": "https://bor.balochistan.gov.pk/objectives/",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "No bounded geometry request was made because no trusted public feature endpoint/schema could be established. Direct public page review of the Board project endpoint returned compromised injected content; no credentials, tokens, cookies or property-specific data were used.",
+      "geometryStatus": "No safe anonymous polygon feature response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "No public safe geometry request completed",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 497,
+  "wupCityCode": 1101,
+  "cityId": "wup2025:1101",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    30.1781556040132,
+    66.9935299290239
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "id": "pk-balochistan-quetta-revenue-settlement",
+    "name": "Board of Revenue / Land Records and Settlement Office",
+    "operator": "Government of Balochistan Board of Revenue",
+    "url": "https://balochistan.gov.pk/",
+    "serviceType": "Local revenue and land-record/settlement office; anonymous public geometry endpoint not verified.",
+    "geomType": null,
+    "crs": null,
+    "idFields": [],
+    "verified": false,
+    "scope": "City office existence is supported; exact WUP point digital coverage and public parcel geometry are unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official provincial budget documents identify a Director Land Records/Settlement Office in Quetta, and official government search results state that Quetta is included in phase-I land-record computerization. The Board of Revenue project page currently renders compromised injected content on direct inspection, so its details are not relied on as trusted evidence.",
+    "verifiedOpenScope": "No public anonymous parcel geometry verified at the exact point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://balochistan.gov.pk/wp-content/uploads/2025/09/DEVELOOPMENT-2025-26.pdf",
+    "https://balochistan.gov.pk/wp-content/uploads/2025/06/PSDP-2025-26.pdf",
+    "https://bor.balochistan.gov.pk/blrmis-project/",
+    "https://bor.balochistan.gov.pk/objectives/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No safe anonymous geometry and exact point coverage verified."
+  },
+  "rootReviewedAt": "2026-10-09T01:02:36.862973+00:00"
+}

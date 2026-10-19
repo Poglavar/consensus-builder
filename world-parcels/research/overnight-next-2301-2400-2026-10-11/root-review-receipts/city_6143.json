@@ -1,0 +1,20 @@
+{
+  "taskId": "city:6143",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-6143-subang.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/subang-service-review.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-11T10:57:35.464594Z",
+  "reason": "Official Subang planning and road layers were reached, but no anonymous cadastral native-ID polygon response was obtained. The ATLAS route returned 404; this is not citywide absence.",
+  "review": {
+    "city": "Subang",
+    "queueIdentity": "Matched city code, rank, country, WUP point and population persons against immutable ranked roster and pending queue.",
+    "searches": "English and local-language executed searches recorded in paired packet and review.",
+    "retainedFullParcelPolygons": 0,
+    "safeNativeParcelId": "not evidenced",
+    "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap, source binding, and headed details-panel verification are not independently evidenced; runtime admission remains held."
+  }
+}

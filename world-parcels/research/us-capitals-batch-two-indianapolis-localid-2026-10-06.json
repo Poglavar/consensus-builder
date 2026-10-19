@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "indianapolis",
+      "stateCode": "IN",
+      "sourceId": "us-in-marion-indianapolis-parcels",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.765,
+            -86.16,
+            39.7675
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.765,
+            -86.1575,
+            39.7675
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.765,
+            -86.155,
+            39.7675
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.7675,
+            -86.16,
+            39.769999999999996
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.7675,
+            -86.1575,
+            39.769999999999996
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.7675,
+            -86.155,
+            39.769999999999996
+          ],
+          "count": 155,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.769999999999996,
+            -86.16,
+            39.7725
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.769999999999996,
+            -86.1575,
+            39.7725
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.769999999999996,
+            -86.155,
+            39.7725
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.765,
+            -86.1525,
+            39.7675
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.765,
+            -86.14999999999999,
+            39.7675
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.765,
+            -86.1475,
+            39.7675
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.7675,
+            -86.1525,
+            39.769999999999996
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.7675,
+            -86.14999999999999,
+            39.769999999999996
+          ],
+          "count": 114,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.7675,
+            -86.1475,
+            39.769999999999996
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.769999999999996,
+            -86.1525,
+            39.7725
+          ],
+          "count": 83,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.769999999999996,
+            -86.14999999999999,
+            39.7725
+          ],
+          "count": 139,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.769999999999996,
+            -86.1475,
+            39.7725
+          ],
+          "count": 188,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -86.1575,
+          39.769999999999996,
+          -86.155,
+          39.7725
+        ],
+        "forcedPageSize": 3,
+        "count": 11,
+        "returned": 11,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 988,
+      "exactResolved": 988,
+      "nativeIds": [
+        "1050626",
+        "1379517",
+        "1050634"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-in-marion-indianapolis-parcels",
+        "parcels": 1,
+        "siteM2": 3951.01
+      },
+      "requests": 38,
+      "runtimeReadiness": "acceptance-passed-not-configured",
+      "proposedDescriptor": {
+        "id": "us-in-marion-indianapolis-parcels",
+        "name": "IndianaMap Parcel Boundaries of Indiana Current \u2014 Marion County",
+        "adapter": "arcgis",
+        "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+        "idField": "local_id",
+        "idType": "string",
+        "idPattern": "^[0-9]+$",
+        "objectIdField": "objectid",
+        "idPrefix": "US-IN-MARION-",
+        "outFields": [
+          "objectid",
+          "local_id",
+          "county_id",
+          "state_parcel_id"
+        ],
+        "parcelNumberField": "state_parcel_id",
+        "attributeFilters": {
+          "county_id": "49"
+        },
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "countryCode": "US",
+        "stateCode": "IN",
+        "metricSrid": 32616,
+        "cityIds": [
+          "indianapolis"
+        ],
+        "operator": "Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap",
+        "scope": "Marion County parcels from the IndianaMap statewide compilation, fixed to county_id 49; configured for Indianapolis only, no statewide completeness claim.",
+        "catalogueUrl": "https://www.in.gov/gis/geoinsights/posts/data-harvest/",
+        "evidenceFile": "research/us-capitals-batch-two-indianapolis-2026-10-06.json",
+        "attribution": "Indiana Geographic Information Office, IndianaMap Parcel Boundaries of Indiana Current. Adapted to WGS84.",
+        "licenceNote": "Official service publishes parcel geometry and county fields; no named open-data licence was stated in the reviewed service metadata."
+      }
+    }
+  ]
+}

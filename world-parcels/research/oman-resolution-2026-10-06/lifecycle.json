@@ -1,0 +1,447 @@
+{
+  "checkedAt": "2026-10-06",
+  "attempts": [
+    {
+      "operation": "layer",
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6?f=json",
+      "httpStatus": 200,
+      "metadata": {
+        "currentVersion": 11.5,
+        "cimVersion": "3.5.0",
+        "id": 6,
+        "name": "Plots",
+        "type": "Feature Layer",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "sourceSpatialReference": {
+          "wkid": 32640,
+          "latestWkid": 32640,
+          "xyTolerance": 0.001,
+          "zTolerance": 0.001,
+          "mTolerance": 0.001,
+          "falseX": -5120900,
+          "falseY": -9998100,
+          "xyUnits": 10000,
+          "falseZ": 0,
+          "zUnits": 1,
+          "falseM": 0,
+          "mUnits": 1
+        },
+        "spatialReference": {
+          "wkid": 32640,
+          "latestWkid": 32640,
+          "xyTolerance": 0.001,
+          "zTolerance": 2,
+          "mTolerance": 0.001,
+          "falseX": -5120900,
+          "falseY": -9998100,
+          "xyUnits": 239989398.10619283,
+          "falseZ": 0,
+          "zUnits": 1,
+          "falseM": -100000,
+          "mUnits": 10000
+        },
+        "copyrightText": "",
+        "parentLayer": null,
+        "subLayers": [],
+        "minScale": 20000,
+        "maxScale": 0,
+        "referenceScale": 0,
+        "defaultVisibility": true,
+        "extent": {
+          "xmin": -2303893.6382,
+          "ymin": -2401873.6097,
+          "xmax": 1026881.1247,
+          "ymax": 2703638.238,
+          "spatialReference": {
+            "wkid": 32640,
+            "latestWkid": 32640,
+            "xyTolerance": 0.001,
+            "zTolerance": 2,
+            "mTolerance": 0.001,
+            "falseX": -5120900,
+            "falseY": -9998100,
+            "xyUnits": 239989398.10619283,
+            "falseZ": 0,
+            "zUnits": 1,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        },
+        "hasAttachments": false,
+        "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+        "displayField": "PAIN",
+        "typeIdField": null,
+        "subtypeFieldName": null,
+        "subtypeField": null,
+        "defaultSubtypeCode": null,
+        "geometryField": {
+          "name": "SHAPE",
+          "type": "esriFieldTypeGeometry",
+          "alias": "Shape"
+        },
+        "indexes": [
+          {
+            "name": "R821_SDE_ROWID_UK",
+            "fields": "OBJECTID",
+            "isAscending": true,
+            "isUnique": true,
+            "description": ""
+          },
+          {
+            "name": "A724_IX1",
+            "fields": "SHAPE",
+            "isAscending": true,
+            "isUnique": true,
+            "description": ""
+          }
+        ],
+        "subtypes": [],
+        "relationships": [],
+        "canModifyLayer": true,
+        "canScaleSymbols": false,
+        "hasLabels": true,
+        "capabilities": "Map,Query,Data",
+        "maxRecordCount": 1000,
+        "maxSelectionCount": 2000,
+        "supportsStatistics": true,
+        "supportsExceedsLimitStatistics": true,
+        "supportsAdvancedQueries": true,
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "isDataVersioned": false,
+        "ownershipBasedAccessControlForFeatures": {
+          "allowOthersToQuery": true
+        },
+        "useStandardizedQueries": true,
+        "supportedSpatialRelationships": [
+          "esriSpatialRelIntersects",
+          "esriSpatialRelContains",
+          "esriSpatialRelCrosses",
+          "esriSpatialRelEnvelopeIntersects",
+          "esriSpatialRelIndexIntersects",
+          "esriSpatialRelOverlaps",
+          "esriSpatialRelTouches",
+          "esriSpatialRelWithin",
+          "esriSpatialRelRelation"
+        ],
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": false,
+          "supportsCurrentUserQueries": true
+        },
+        "supportsDatumTransformation": true,
+        "dateFieldsTimeReference": null,
+        "preferredTimeReference": null,
+        "datesInUnknownTimezone": false,
+        "hasGeometryProperties": true,
+        "geometryProperties": {
+          "shapeAreaFieldName": "SHAPE.AREA",
+          "shapeLengthFieldName": "SHAPE.LEN",
+          "units": "esriMeters",
+          "mapUnits": {
+            "uwkid": 9001
+          }
+        },
+        "hasMetadata": true,
+        "isDataArchived": false,
+        "archivingInfo": {
+          "supportsQueryWithHistoricMoment": false,
+          "startArchivingMoment": -1
+        },
+        "supportsCoordinatesQuantization": true,
+        "supportsDynamicLegends": true,
+        "serviceItemId": "e65da7f2c74b45a2a7f5c9c0e78227a3"
+      }
+    },
+    {
+      "operation": "service",
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer?f=json",
+      "httpStatus": 200,
+      "metadata": {
+        "currentVersion": 11.5,
+        "cimVersion": "3.5.0",
+        "serviceDescription": "English Website2",
+        "mapName": "English Basemap",
+        "description": "English Website2",
+        "copyrightText": "MM GIS",
+        "supportsDynamicLayers": true,
+        "layers": [
+          {
+            "id": 0,
+            "name": "Services(+1)",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 1999,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPoint",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 1,
+            "name": "Services",
+            "parentLayerId": -1,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 3000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPoint",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 2,
+            "name": "Services(-1)",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 6984,
+            "maxScale": 2000,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPoint",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 3,
+            "name": "Minor Roads",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 10000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolyline",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 4,
+            "name": "Main Roads",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 150800,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolyline",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 5,
+            "name": "Road Edges",
+            "parentLayerId": -1,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 24000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolyline",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 6,
+            "name": "Plots",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 20000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 7,
+            "name": "Housing Areas",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 40001,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 8,
+            "name": "Housing Areas",
+            "parentLayerId": -1,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 200000,
+            "maxScale": 40001,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 9,
+            "name": "Directorates",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 40001,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          }
+        ],
+        "tables": [],
+        "spatialReference": {
+          "wkid": 32640,
+          "latestWkid": 32640,
+          "xyTolerance": 0.001,
+          "zTolerance": 2,
+          "mTolerance": 0.001,
+          "falseX": -5120900,
+          "falseY": -9998100,
+          "xyUnits": 239989398.10619283,
+          "falseZ": 0,
+          "zUnits": 1,
+          "falseM": -100000,
+          "mUnits": 10000
+        },
+        "singleFusedMapCache": false,
+        "initialExtent": {
+          "xmin": 639814.3182222269,
+          "ymin": 2608230.037009836,
+          "xmax": 640000.3936449877,
+          "ymax": 2608387.7924755067,
+          "spatialReference": {
+            "wkid": 32640,
+            "latestWkid": 32640,
+            "xyTolerance": 0.001,
+            "zTolerance": 2,
+            "mTolerance": 0.001,
+            "falseX": -5120900,
+            "falseY": -9998100,
+            "xyUnits": 239989398.10619283,
+            "falseZ": 0,
+            "zUnits": 1,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        },
+        "fullExtent": {
+          "xmin": -2303893.6382,
+          "ymin": -2401873.6097,
+          "xmax": 1026881.1247,
+          "ymax": 2703638.238,
+          "spatialReference": {
+            "wkid": 32640,
+            "latestWkid": 32640,
+            "xyTolerance": 0.001,
+            "zTolerance": 2,
+            "mTolerance": 0.001,
+            "falseX": -5120900,
+            "falseY": -9998100,
+            "xyUnits": 239989398.10619283,
+            "falseZ": 0,
+            "zUnits": 1,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        },
+        "datesInUnknownTimezone": false,
+        "minScale": 0,
+        "maxScale": 0,
+        "units": "esriMeters",
+        "supportedImageFormatTypes": "PNG32,PNG24,PNG,JPG,DIB,TIFF,EMF,PS,PDF,GIF,SVG,SVGZ,BMP",
+        "documentInfo": {
+          "Title": "Untitled.aprx",
+          "Author": "",
+          "Comments": "English Website2",
+          "Subject": "English Website2",
+          "Category": "",
+          "Version": "2.9.0",
+          "AntialiasingMode": "Fast",
+          "TextAntialiasingMode": "Force",
+          "Keywords": "EnglishWebsite_mmm12c,MapServer"
+        },
+        "supportsQueryDomains": true,
+        "capabilities": "Map,Query,Data",
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "hasVersionedData": true,
+        "exportTilesAllowed": false,
+        "referenceScale": 0,
+        "datumTransformations": [
+          {
+            "geoTransforms": [
+              {
+                "wkid": 108001,
+                "latestWkid": 1241,
+                "transformForward": true,
+                "name": "NAD_1927_To_NAD_1983_NADCON"
+              }
+            ]
+          },
+          {
+            "geoTransforms": [
+              {
+                "wkid": 108001,
+                "latestWkid": 1241,
+                "transformForward": false,
+                "name": "NAD_1927_To_NAD_1983_NADCON"
+              }
+            ]
+          }
+        ],
+        "supportsDatumTransformation": true,
+        "floorAwareMapProperties": {
+          "defaultFloorFilterSettings": {
+            "isEnabled": true
+          }
+        },
+        "archivingInfo": {
+          "supportsHistoricMoment": false
+        },
+        "supportsClipping": true,
+        "supportsSpatialFilter": true,
+        "supportsTimeRelation": true,
+        "supportsQueryDataElements": true,
+        "mapUnits": {
+          "uwkid": 9001
+        },
+        "maxSelectionCount": 2000,
+        "maxRecordCount": 1000,
+        "maxImageHeight": 4096,
+        "maxImageWidth": 4096,
+        "supportedExtensions": "KmlServer",
+        "resampling": false,
+        "serviceItemId": "e65da7f2c74b45a2a7f5c9c0e78227a3"
+      }
+    },
+    {
+      "operation": "status distribution",
+      "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=1%3D1&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22row_count%22%7D%5D&groupByFieldsForStatistics=STATUS%2CLANDSTATUS%2CSOURCE_PROJECTION&returnGeometry=false&f=json",
+      "httpStatus": 200,
+      "groups": [
+        {
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "SOURCE_PROJECTION": "32640",
+          "ROW_COUNT": 293860
+        }
+      ]
+    }
+  ]
+}

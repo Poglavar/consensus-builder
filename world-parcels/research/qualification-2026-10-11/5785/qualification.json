@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "5785",
+  "cityName": "Takasaki [Maebashi]",
+  "sourceId": "jp-takasaki-parcel-map",
+  "candidateSha256": "10d256b1756293350367828d4e399af9d73b7a5b25c40eb3a7dde2477d0dcda2",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 474,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 474,
+      "collectedUniqueCount": 474
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 1272
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "pagingRequired": false,
+      "reason": "Complete immutable snapshot loader; pagination is not part of the source protocol."
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "a27f4217ac40334d6a278bab3b7ffcd71eb7b9992d78b6a03c7ed2e2d0745398",
+      "featureCount": 474,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32654",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "a27f4217ac40334d6a278bab3b7ffcd71eb7b9992d78b6a03c7ed2e2d0745398",
+  "featureCount": 474,
+  "sampleIds": [
+    "JP-TAKASAKI-FUDEID-299414"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 8,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        139.037,
+        36.361,
+        139.038,
+        36.362
+      ],
+      "complete": true,
+      "featureCount": 75
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        139.038,
+        36.361,
+        139.039,
+        36.362
+      ],
+      "complete": true,
+      "featureCount": 64
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        139.039,
+        36.361,
+        139.04,
+        36.362
+      ],
+      "complete": true,
+      "featureCount": 66
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        139.037,
+        36.362,
+        139.038,
+        36.363
+      ],
+      "complete": true,
+      "featureCount": 61
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        139.038,
+        36.362,
+        139.039,
+        36.363
+      ],
+      "complete": true,
+      "featureCount": 51
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        139.039,
+        36.362,
+        139.04,
+        36.363
+      ],
+      "complete": true,
+      "featureCount": 55
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        139.037,
+        36.363,
+        139.038,
+        36.364
+      ],
+      "complete": true,
+      "featureCount": 37
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        139.038,
+        36.363,
+        139.039,
+        36.364
+      ],
+      "complete": true,
+      "featureCount": 68
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        139.039,
+        36.363,
+        139.04,
+        36.364
+      ],
+      "complete": true,
+      "featureCount": 40
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        139.038,
+        36.36,
+        139.039,
+        36.361
+      ],
+      "complete": true,
+      "featureCount": 48
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        139.038,
+        36.364,
+        139.039,
+        36.365
+      ],
+      "complete": true,
+      "featureCount": 18
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        139.036,
+        36.362,
+        139.037,
+        36.363
+      ],
+      "complete": true,
+      "featureCount": 25
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        139.04,
+        36.362,
+        139.041,
+        36.363
+      ],
+      "complete": true,
+      "featureCount": 28
+    }
+  ]
+}

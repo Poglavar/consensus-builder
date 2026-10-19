@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-922-oran.json",
+  "purpose": "Document local official registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official sources confirm Oran cadastral document administration and Oran Ville under East. DGDN describes document issuance; BNDG is thematic 1:200,000 mapping. No anonymous parcel vector response/schema verified.",
+  "registryAssessment": "Local cadastral service direction confirmed; public geometry and exact locator jurisdiction remain unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.dgdn.gov.dz/",
+      "observation": "DGDN describes digital cadastral document requests; no anonymous polygon service established."
+    },
+    {
+      "url": "https://www.joradp.dz/FTP/JO-arabe/2021/A2021047.pdf?znjo=47",
+      "observation": "Official Gazette institutional transfer and land-survey/property-conservation duties."
+    },
+    {
+      "url": "https://www.joradp.dz/FTP/JO-arabe/2022/A2022046.pdf",
+      "observation": "Official Gazette organizational jurisdictions identify Oran East and West; official review assigns Oran Ville to East."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "observation": "National 1:200,000 thematic mapping, not parcel vectors."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Arabic",
+      "query": "وهران مديرية مسح الأراضي المحافظة العقارية خريطة قطع أرض خدمات رقمية رسمية",
+      "result": "DGDN and Oran East/West directions found; document-service rollout, no public feature API verified.",
+      "method": "Separate Arabic search and official government/Gazette review."
+    },
+    {
+      "language": "French",
+      "query": "Direction cadastre Oran conservations foncières carte parcellaire service officiel géomatique",
+      "result": "Official Gazette material assigns Oran Ville to East; BNDG is thematic mapping rather than parcel features.",
+      "method": "Separate French search and official DGDN/Gazette review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.dgdn.gov.dz/",
+      "method": "GET official entry-point review",
+      "httpStatus": 200,
+      "observation": "Digital document requests described; no anonymous polygon service identified."
+    },
+    {
+      "url": "https://www.joradp.dz/FTP/JO-arabe/2022/A2022046.pdf",
+      "method": "Gazette review",
+      "httpStatus": 200,
+      "observation": "Official organizational jurisdiction information; no feature layer."
+    },
+    {
+      "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+      "method": "official cartographic entry review",
+      "httpStatus": null,
+      "observation": "Identified as national small-scale thematic mapping, not parcel feature service."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "Only public safe IDs and geometry were retained for Calgary. No owner, address, title, account, or tax attributes were requested; other cities had no geometry retained.",
+  "rootDecision": "pending_root_review",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

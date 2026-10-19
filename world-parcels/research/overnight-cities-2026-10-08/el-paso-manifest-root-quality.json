@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32613",
+  "featureCount": 79,
+  "validNonemptyCount": 79,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 688.1661987632278,
+    "median": 940.700602283233,
+    "max": 516236.9731555516
+  },
+  "features": [
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127722",
+      "areaM2": 878.5325708729171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127752",
+      "areaM2": 862.6172267066022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127910",
+      "areaM2": 871.8194421917597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127912",
+      "areaM2": 878.2640187532485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127941",
+      "areaM2": 861.0189801372532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128113",
+      "areaM2": 867.6373354838652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128139",
+      "areaM2": 867.154379010202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128359",
+      "areaM2": 855.8606427776399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128388",
+      "areaM2": 850.7712743553834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128394",
+      "areaM2": 947.0569042257237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128584",
+      "areaM2": 850.7467890093246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128625",
+      "areaM2": 962.1137604927488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128815",
+      "areaM2": 868.7154548738836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128859",
+      "areaM2": 967.3226742727941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129047",
+      "areaM2": 867.8917560225713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129105",
+      "areaM2": 975.1498298671461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129287",
+      "areaM2": 1006.4020305592151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129327",
+      "areaM2": 964.4308943465294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127725",
+      "areaM2": 889.2513684816972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127746",
+      "areaM2": 964.0712056384482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127944",
+      "areaM2": 954.0740371825494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128137",
+      "areaM2": 967.2838722126293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128203",
+      "areaM2": 892.5178974058665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128480",
+      "areaM2": 997.400168414507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128704",
+      "areaM2": 927.1493353598618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128750",
+      "areaM2": 986.5425322951127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128953",
+      "areaM2": 963.4751161099848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128997",
+      "areaM2": 968.0671764978101,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129181",
+      "areaM2": 955.6356431831493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129238",
+      "areaM2": 1003.4849232487995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127495",
+      "areaM2": 946.4843418827735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127623",
+      "areaM2": 1057.2854218375285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127791",
+      "areaM2": 688.1661987632278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127988",
+      "areaM2": 1000.4701703451551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128023",
+      "areaM2": 973.0142113269507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128252",
+      "areaM2": 880.0142550309401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-128513",
+      "areaM2": 1033.633193817976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-353371",
+      "areaM2": 516236.9731555516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129416",
+      "areaM2": 926.7830604059925,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129556",
+      "areaM2": 1053.755538923762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129658",
+      "areaM2": 915.0195894430997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129935",
+      "areaM2": 940.700602283233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130036",
+      "areaM2": 980.2057269213894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130077",
+      "areaM2": 1070.4228203425005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130181",
+      "areaM2": 934.931746435121,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130336",
+      "areaM2": 1035.5660375522746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130435",
+      "areaM2": 917.2285823596624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130621",
+      "areaM2": 1085.0991858415819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130698",
+      "areaM2": 865.4630018840874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130920",
+      "areaM2": 1060.5377252278672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129502",
+      "areaM2": 1048.4678947612895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129784",
+      "areaM2": 1078.7742905021132,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130994",
+      "areaM2": 957.920999751505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-131176",
+      "areaM2": 960.5320924262185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-131450",
+      "areaM2": 1023.52092168953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-131740",
+      "areaM2": 1008.900167623388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-126463",
+      "areaM2": 859.5686187823948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-126498",
+      "areaM2": 915.0791752387083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-126655",
+      "areaM2": 869.8894040284962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-126700",
+      "areaM2": 877.1718455648768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-126854",
+      "areaM2": 897.0288673732571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-126868",
+      "areaM2": 852.5987187579279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-126892",
+      "areaM2": 863.4416238760131,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127058",
+      "areaM2": 884.0380794453772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127088",
+      "areaM2": 856.317407750025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127280",
+      "areaM2": 886.0597921561655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127284",
+      "areaM2": 1069.514280308411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127310",
+      "areaM2": 884.3981766998431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-127492",
+      "areaM2": 879.2445499762953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129058",
+      "areaM2": 1023.0946265073605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129320",
+      "areaM2": 1036.6398623585553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129563",
+      "areaM2": 908.8530721915517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-129761",
+      "areaM2": 959.2774446602466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130027",
+      "areaM2": 898.9329336845341,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130288",
+      "areaM2": 865.3174036600011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130376",
+      "areaM2": 983.5609446628447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130545",
+      "areaM2": 909.6564197398735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130589",
+      "areaM2": 859.0719419347631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-TX-ELPASO-OBJECTID-130869",
+      "areaM2": 945.5147635780615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

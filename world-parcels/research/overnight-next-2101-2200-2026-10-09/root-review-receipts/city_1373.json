@@ -1,0 +1,79 @@
+{
+  "taskId": "city:1373",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/provider-expansion/cities/1373/city-1373-provider-1373.json",
+    "world-parcels/research/provider-expansion/cities/1373/provider-1373-service-review.json",
+    "world-parcels/research/provider-expansion/cities/1373/provider-1373-parcel-samples.geojson",
+    "world-parcels/research/provider-expansion/completions/1373.json",
+    "world-parcels/research/provider-expansion/providers/0198ab1272a58163c79e4b3c4245b2ba791ee8d7870fe1670aa5be2043943afd.json",
+    "world-parcels/research/provider-expansion/providers/6e642c1b480fc5869ea88ce086d645c42192699dc1d008d9834b286200149f4f.json",
+    "backend/parcels/source-catalog.json",
+    "world-parcels/registry.json",
+    "frontend/js/city-config.js"
+  ],
+  "checkedAt": "2026-10-11T01:13:32Z",
+  "identity": {
+    "cityCode": "1373",
+    "rank": 2198,
+    "country": "Netherlands",
+    "countryCode": "NL",
+    "point": [
+      51.8143926922208,
+      4.67469211847365
+    ],
+    "populationPersons": 265349,
+    "queueMatch": true
+  },
+  "searches": [
+    {
+      "language": "Dutch",
+      "query": "site:pdok.nl kadastrale kaart percelen OGC API identificatie_lokaal_id Dordrecht",
+      "result": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart"
+    },
+    {
+      "language": "English",
+      "query": "site:pdok.nl cadastral map parcels OGC API Dordrecht Netherlands",
+      "result": "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart"
+    }
+  ],
+  "firstPartyVerification": {
+    "source": "Kadaster / PDOK Kadastrale Kaart OGC API, perceel collection",
+    "boundedProbe": {
+      "httpStatus": 200,
+      "bodySha256": "f150d874431493aa15b93a22057882c79b131ce90b719a33e32e5133c9b5b46b",
+      "numberReturned": 23,
+      "featureCount": 23,
+      "nextLinks": 0,
+      "nativeNamespace": "NL.IMKAD.KadastraalObject",
+      "statusCode": "G"
+    },
+    "exactNativeIdRead": {
+      "httpStatus": 200,
+      "bodySha256": "9a87bb3e2c6082302b9e57b2ea4886a79df095fa5a85a3cc8d15068cf4f7c4a1",
+      "numberReturned": 3,
+      "featureCount": 3,
+      "ids": [
+        "15820027070000",
+        "15820131370000",
+        "15820244170000"
+      ],
+      "sampleGeometriesExactMatch": true
+    },
+    "checkedAt": "2026-10-11T01:13:07Z"
+  },
+  "registryFound": true,
+  "samplePolygonCount": 3,
+  "safeSampleAttributes": true,
+  "runtimeAdmitted": false,
+  "missingAdmissionEvidence": [
+    "forced paging",
+    "13 bounded cells",
+    "independent metric GEOS validity, duplicate and positive-area overlap checks",
+    "full-parcel proposal/source binding",
+    "headed pointer and Details-panel verification"
+  ],
+  "reason": "The immutable WUP identity matches rank 2198 and 265,349 persons. Official PDOK source and fresh first-party bounded and exact-ID responses support three full ID-only parcel samples. The provider-expansion packet and review contain only two query summaries, and Dordrecht has no independent city-specific adapter qualification, source binding, or headed Details evidence. Existing Dutch provider qualification for other cities does not qualify Dordrecht. Hold without runtime/catalog/report admission; bounded samples do not establish citywide coverage."
+}

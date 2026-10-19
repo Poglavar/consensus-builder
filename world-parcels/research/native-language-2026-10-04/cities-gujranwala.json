@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 159,
+  "city": "Gujranwala",
+  "countryCode": "PK",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/gujranwala.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Perso-Arabic",
+    "text": "گوجرانوالہ زمین ریکارڈ نقشہ پلاٹ پنجاب کڈسٹرل سرکاری"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Urdu",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "گوجرانوالہ زمین ریکارڈ نقشہ پلاٹ پنجاب کڈسٹرل سرکاری",
+    "englishQuery": "Gujranwala land records, parcel map and Punjab cadastral services",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Punjab Land Records Cadastral Map",
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "kind": "official-provincial-cadastral-viewer",
+      "note": "Government viewer supports village-wise map search by district/tehsil/village; Gujranwala coverage and feature API not verified."
+    },
+    {
+      "title": "PULSE Map QC",
+      "url": "https://d2d.pulse.gop.pk/map-qc.html",
+      "kind": "official-provincial-survey-viewer",
+      "note": "Survey interface exposes district selection and parcel/download controls, with displayed survey/work-status filters; it is not proof of released cadastral coverage or terms for general reuse."
+    }
+  ],
+  "assessment": "Punjab map tools appear relevant, but Gujranwala coverage and an anonymous public vector endpoint are not confirmed.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:8042",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10600-linyi.json",
+  "purpose": "Document city-local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Linyi government documents identify the city Real Estate Registration and Transaction Center and a city-level one-network registration service; municipal policy states registered property and cadastral-map lookup are provided after identity verification. This confirms local registry and map service but not anonymous full-vector access. The official city policy describes cadastral-map visualization for identity-verified users. No anonymous geometry-only endpoint or public vector schema was verified; no identity or login flow was entered.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gtj.linyi.gov.cn/",
+      "observation": "Official Linyi Natural Resources and Planning Bureau homepage provides Tianditu·Linyi map link and city registry center news."
+    },
+    {
+      "url": "https://swj.linyi.gov.cn/info/1224/13709.htm",
+      "observation": "Official Linyi government implementation plan assigns the city Natural Resources and Planning Bureau lead responsibility for property registration and describes cadastral-map visual lookup after user identity verification."
+    },
+    {
+      "url": "https://www.linyi.gov.cn/info/9157/302931.htm",
+      "observation": "Official Linyi Real Estate Registration and Transaction Center notice describes city-level one-network registration services and local service centers."
+    }
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Linyi China official land registry cadastral map parcel query GIS"
+    },
+    {
+      "language": "Chinese",
+      "query": "临沂市 不动产登记 地籍图 可视化 查询 身份验证 官方 天地图·临沂"
+    }
+  ],
+  "attempts": []
+}

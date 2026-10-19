@@ -1,0 +1,13 @@
+{
+  "taskId": "city:5184",
+  "decision": "held",
+  "checkedAt": "2026-10-11T01:07:00Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-5184-haeju.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/haeju-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz"
+  ],
+  "reason": "The official WUP 2025 archive, roster, queue and paired packet agree on Haeju (rank 2190, DPRK, point [38.0416899723817,125.705191026247], 266200 persons). English and Korean searches with result URLs are recorded, but the Naenara first-party requests failed TLS verification; no Haeju cadastral response, native parcel ID or full polygon was obtained. Registry custody remains unresolved (null). No fresh ID reads, forced paging, 13 cells, metric geometry checks, source binding or headed Details verification exists. TLS failure is not citywide absence."
+}

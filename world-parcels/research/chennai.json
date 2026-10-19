@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1264527",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/land/chitta_ta.html",
+      "observation": "Tamil Nadu e-Services land-record page (patta/chitta, FMB, TSLR extract) per search results; direct request failed with a connection reset."
+    },
+    {
+      "url": "https://tngis.tn.gov.in/",
+      "observation": "State TN-GIS portal named in search results as the source of survey-number maps; the root, ArcGIS/Server REST directory paths and a GeoServer WFS capabilities path all failed with connection resets."
+    },
+    {
+      "url": "https://www.chennaicorporation.gov.in/gcc/online-services/",
+      "observation": "Greater Chennai Corporation online-services page loaded (HTTP 200 HTML) but is a services index, not a parcel feed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://tngis.tn.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "connection reset by peer (curl 35) through the agent proxy",
+      "assessment": "unreachable from this environment; not a verdict"
+    },
+    {
+      "url": "https://tngis.tn.gov.in/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "connection reset by peer (curl 35)",
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://tngis.tn.gov.in/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "connection reset by peer (curl 35)",
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://eservices.tn.gov.in/eservicesnew/land/chitta_ta.html",
+      "method": "GET",
+      "httpStatus": null,
+      "error": "connection reset by peer (curl 35)",
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (Chennai/Tamil Nadu parcel/cadastral feature services)",
+      "method": "GET",
+      "httpStatus": 200,
+      "parcelRecordCount": null,
+      "assessment": "no relevant hosted parcel feature service listed"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Chennai is recorded in Town Survey Land Registers (TSLR), per search results; the state portals appear record- and map-lookup oriented",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Every Tamil Nadu government host tried reset the connection, which may reflect geo-restriction or proxy behaviour rather than absence of a service. Whether TN-GIS exposes anonymous bounded polygon queries is unknown. A state source would not imply India-wide coverage; other Indian cities are separate attempts.",
+  "nextStep": "Retry TN-GIS and the eServices map endpoints later or from another network path; look for a documented TN-GIS feature service and test a bounded Chennai polygon query."
+}

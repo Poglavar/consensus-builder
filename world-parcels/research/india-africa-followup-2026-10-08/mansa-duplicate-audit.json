@@ -1,0 +1,243 @@
+{
+  "checkedAt": "2026-10-07T23:00:31.736Z",
+  "sourceId": "zm-nsdi-cadaster-new",
+  "purpose": "Review all rows behind duplicate native UPIDs exposed by the aligned app viewport",
+  "requests": [
+    {
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "httpStatus": 200,
+      "metadata": {
+        "name": "Lots",
+        "description": "",
+        "maxRecordCount": 2000,
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsPagination": false,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": false
+        },
+        "fields": [
+          {
+            "name": "SDE.Lots.OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.UPID",
+            "type": "esriFieldTypeString",
+            "alias": "Plot ID",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.PID",
+            "type": "esriFieldTypeString",
+            "alias": "Map name",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.SRREF",
+            "type": "esriFieldTypeString",
+            "alias": "Survey Reference",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.SURVEY_ARE",
+            "type": "esriFieldTypeDouble",
+            "alias": "Survey Area",
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.SURVEY_UNI",
+            "type": "esriFieldTypeString",
+            "alias": "Survey Unit",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.SURVEY_DAT",
+            "type": "esriFieldTypeDate",
+            "alias": "Survey Date",
+            "length": 8,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.LANDUSE",
+            "type": "esriFieldTypeString",
+            "alias": "Land Use",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.OBJ_ID",
+            "type": "esriFieldTypeInteger",
+            "alias": "Binding ID",
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.LANDTYPE",
+            "type": "esriFieldTypeString",
+            "alias": "LandType",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.SHAPE",
+            "type": "esriFieldTypeGeometry",
+            "alias": "SHAPE",
+            "domain": null
+          },
+          {
+            "name": "SDE.V_LAND_TYPE_USE.OBJECTID",
+            "type": "esriFieldTypeInteger",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "SDE.V_LAND_TYPE_USE.LAND_ID",
+            "type": "esriFieldTypeInteger",
+            "alias": "LAND_ID",
+            "domain": null
+          },
+          {
+            "name": "SDE.V_LAND_TYPE_USE.LAND_TYPE_NAME",
+            "type": "esriFieldTypeString",
+            "alias": "Land Type",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.V_LAND_TYPE_USE.LAND_USE",
+            "type": "esriFieldTypeString",
+            "alias": "Land Use",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SDE.Lots.COUNTRYCODE",
+            "type": "esriFieldTypeString",
+            "alias": "SDE.lots.COUNTRYCODE",
+            "length": 255,
+            "domain": null
+          }
+        ]
+      },
+      "elapsedMs": 1187
+    },
+    {
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=33375%2C33513%2C33600%2C33601%2C33602%2C33603%2C33604%2C33607%2C34579%2C34580%2C34581",
+      "httpStatus": 200,
+      "rowCount": 11,
+      "duplicateGroups": [
+        {
+          "id": "MAN/350",
+          "rows": [
+            {
+              "type": "Feature",
+              "id": 33375,
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [
+                      28.89884339161168,
+                      -11.201985437843529
+                    ],
+                    [
+                      28.899046403631385,
+                      -11.202804960623869
+                    ],
+                    [
+                      28.90022116956946,
+                      -11.202567889638313
+                    ],
+                    [
+                      28.90002395562434,
+                      -11.20174641854069
+                    ],
+                    [
+                      28.89884339161168,
+                      -11.201985437843529
+                    ]
+                  ]
+                ]
+              },
+              "properties": {
+                "SDE.Lots.UPID": "MAN/350",
+                "SDE.Lots.OBJECTID": 33375
+              }
+            },
+            {
+              "type": "Feature",
+              "id": 33607,
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [
+                      28.89313510280552,
+                      -11.207575073246996
+                    ],
+                    [
+                      28.893133953172537,
+                      -11.207572167176423
+                    ],
+                    [
+                      28.892829566789224,
+                      -11.20680781089707
+                    ],
+                    [
+                      28.892826024689374,
+                      -11.206798836553746
+                    ],
+                    [
+                      28.892056335479566,
+                      -11.20711205847601
+                    ],
+                    [
+                      28.892360867988966,
+                      -11.207873908276952
+                    ],
+                    [
+                      28.89313510280552,
+                      -11.207575073246996
+                    ]
+                  ]
+                ]
+              },
+              "properties": {
+                "SDE.Lots.UPID": "MAN/350",
+                "SDE.Lots.OBJECTID": 33607
+              }
+            }
+          ],
+          "comparisons": [
+            {
+              "a": 0,
+              "b": 1,
+              "intersectionAreaM2": 0
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 766
+    }
+  ]
+}

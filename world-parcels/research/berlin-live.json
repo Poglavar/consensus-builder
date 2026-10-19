@@ -1,0 +1,55 @@
+{
+  "description": "Current Berlin ALKIS native identity and complete read verification; historical failed checks remain in the registry.",
+  "checkedAt": "2026-10-03",
+  "sourceId": "de-be-alkis-flurstuecke-wfs",
+  "endpoint": "https://gdi.berlin.de/services/wfs/alkis_flurstuecke",
+  "primarySources": [
+    "https://daten.berlin.de/datensaetze/alkis-berlin-flurstucke-wfs-1bc014d7",
+    "https://gdi.berlin.de/data/alkis/docs/datenformatbeschreibung_alkis_berlin.pdf",
+    "https://www.govdata.de/dl-de/zero-2-0",
+    "https://www.berlin.de/sen/stadt/stadtdaten/geoinformation/liegenschaftskataster/geobasisdaten-online/datenbereitstellung/"
+  ],
+  "identity": {
+    "nativeField": "fsko",
+    "meaning": "Flurstückskennzeichen",
+    "canonicalPrefix": "DE-BE-",
+    "format": "Returned 18-character string including underscore placeholders; preserved exactly",
+    "separateObjectId": "uuid",
+    "separateVersionStart": "beg"
+  },
+  "sourceCurrency": {
+    "updateFrequency": "monthly per official Berlin data provision page",
+    "sampleBeg": "2024-06-06",
+    "interpretation": "Feature version start, not dataset publication date"
+  },
+  "verification": {
+    "bbox": [
+      13.404,
+      52.519,
+      13.406,
+      52.521
+    ],
+    "forcedPageSize": 3,
+    "bboxPages": 6,
+    "parcelCount": 17,
+    "exactPages": 6,
+    "roundTripCount": 17,
+    "absentIds": [],
+    "tlsVerification": "Default Node fetch and curl TLS verification succeeded; no certificate bypass or custom CA needed"
+  },
+  "license": {
+    "name": "Datenlizenz Deutschland – Zero 2.0",
+    "url": "https://www.govdata.de/dl-de/zero-2-0"
+  },
+  "responseFile": "berlin-live-response.json",
+  "browserVerification": {
+    "initialRenderedParcels": 154,
+    "retainedAfterPan": 343,
+    "returnUsedCachedCells": true,
+    "footprintComplete": true,
+    "footprintParcelCount": 6,
+    "bindingCoverage": "complete",
+    "actualGlobeButtonOpenedCity": true,
+    "uncaughtErrors": []
+  }
+}

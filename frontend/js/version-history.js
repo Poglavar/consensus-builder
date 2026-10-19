@@ -85,13 +85,12 @@
         if (isNaN(date.getTime())) {
             return value;
         }
-        return date.toLocaleString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        return CbFormat.formatDateTime(date);
+    }
+
+    function translate(key, fallback) {
+        const value = window.i18n && typeof window.i18n.t === 'function' ? window.i18n.t(key) : null;
+        return value && value !== key ? value : fallback;
     }
 
     function updateModalContent() {
@@ -100,19 +99,18 @@
         numberElement.textContent = `Version ${current.number}`;
         dateElement.textContent = formatDatetime(current.datetime);
         textElement.innerHTML = current.text.replace(/\n/g, '<br>');
-        if (unreadQueue.length === 1) {
-            nextButton.textContent = 'Close';
-        } else if (currentIndex === unreadQueue.length - 1) {
-            nextButton.textContent = 'Close';
-        } else {
-            nextButton.textContent = 'Next';
-        }
+        // The last note closes the dialog; every earlier one moves to the next.
+        nextButton.textContent = currentIndex >= unreadQueue.length - 1
+            ? translate('modal.version.closeLabel', 'Close')
+            : translate('modal.version.nextButton', 'Next');
     }
 
+    // #version-modal is the shared dialog's overlay (index.html); it is shown through [hidden].
     function closeModal() {
         if (modalElement) {
-            modalElement.classList.remove('visible');
-            modalElement.setAttribute('aria-hidden', 'true');
+            modalElement.__unregisterEscape?.();
+            modalElement.__unregisterEscape = null;
+            modalElement.hidden = true;
         }
     }
 
@@ -134,9 +132,14 @@
         if (!modalElement || unreadQueue.length === 0) return;
         currentIndex = 0;
         updateModalContent();
-        modalElement.classList.add('visible');
-        modalElement.setAttribute('aria-hidden', 'false');
-        modalElement.focus({ preventScroll: true });
+        modalElement.hidden = false;
+        modalElement.__unregisterEscape?.();
+        modalElement.__unregisterEscape = window.ModalEscape?.register(modalElement, () => {
+            const current = unreadQueue[currentIndex];
+            if (current) { readSet.add(current.number); persistReadSet(); }
+            closeModal();
+        });
+        modalElement.querySelector('.cb-dialog')?.focus({ preventScroll: true });
     }
 
     function setupModalElements() {
@@ -175,15 +178,8 @@
         });
 
         document.addEventListener('keydown', (event) => {
-            if (!modalElement.classList.contains('visible')) return;
-            if (event.key === 'Escape') {
-                const current = unreadQueue[currentIndex];
-                if (current) {
-                    readSet.add(current.number);
-                    persistReadSet();
-                }
-                closeModal();
-            } else if (event.key === 'Enter' || event.key === ' ') {
+            if (modalElement.hidden) return;
+            if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 advanceModal();
             }

@@ -1,0 +1,58 @@
+[
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "NSW",
+  "regionName": "New South Wales",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ },
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "VIC",
+  "regionName": "Victoria",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ },
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "QLD",
+  "regionName": "Queensland",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ },
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "WA",
+  "regionName": "Western Australia",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ },
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "SA",
+  "regionName": "South Australia",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ },
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "TAS",
+  "regionName": "Tasmania",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ },
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "ACT",
+  "regionName": "Australian Capital Territory",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ },
+ {
+  "iso2": "AU",
+  "country": "Australia",
+  "regionCode": "NT",
+  "regionName": "Northern Territory",
+  "hints": "State spatial agencies: NSW Spatial Services (verified), Vicmap Property (verified), QLD Cadastral data (verified), WA Landgate SLIP, SA (SAPPA / Data SA cadastre), TAS (LIST), ACT (ACTmapi), NT (NT Land Information / ILIS)."
+ }
+]

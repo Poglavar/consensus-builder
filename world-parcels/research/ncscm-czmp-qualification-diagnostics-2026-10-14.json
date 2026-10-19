@@ -1,0 +1,1048 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-14",
+  "kind": "qualification_attempt_diagnostics",
+  "scope": "Diagnostics for retained failed qualification attempts, including transport retries. Final city eligibility is recorded in qualification-outcomes/2026-10-14-india-coastal.json.",
+  "sourceFamily": "NCSCM CZMP survey-plot ArcGIS layers",
+  "metricMethod": "Shapely/GEOS validity, equality and STRtree candidate-pair intersections after pyproj transform; source geometry is never repaired, clipped or unioned.",
+  "cities": [
+    {
+      "wupCityCode": 10741,
+      "city": "Puducherry",
+      "attempt": "attempt-01",
+      "qualificationStatus": "held",
+      "sourceId": "in-py-ncscm-czmp-survey-plots",
+      "sourceEndpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Puducherry/MapServer/5",
+      "candidateSha256": "c5fa7557e170420d4bf6a164360bb89f9f95265950bfdf48b72a886174037c86",
+      "cacheFile": "full-safe.geojson",
+      "cacheSha256": "4e5eedb00462353dd6b129978679a03654f90cd0b86f5fd0fd74dda581e14974",
+      "metricInputSha256": "4e5eedb00462353dd6b129978679a03654f90cd0b86f5fd0fd74dda581e14974",
+      "featureCount": 26,
+      "requestCount": 81,
+      "requestLimit": 300,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "metricCrs": "EPSG:32644",
+      "qualificationFailure": {
+        "metric": {
+          "errorType": "Error",
+          "code": "metric-report-failed"
+        }
+      },
+      "geometryMetrics": {
+        "reportGeometryPass": false,
+        "validFeatureCount": 26,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapThresholdM2": 0.01,
+        "overlapPairCount": 5,
+        "totalMaterialOverlapM2": 0.11128839161678725,
+        "maxMaterialOverlapM2": 0.0364004192803293,
+        "maxOverlapFractionOfSmaller": 3.033474796017567e-05,
+        "subthresholdPositiveIntersectionPairCount": 9,
+        "subthresholdPositiveIntersectionTotalM2": 0.018824354509490188,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "materialOverlapPairs": [
+          {
+            "sourceParcelIds": [
+              "ed55573873f57ba164b7dea7551e7c77a2574b583fefdadaca985f3de2e4a861",
+              "9f2dd7765a675475c5812dbe60d01b4bae0fa7ee4edbda8e3f5528e002b42ad5"
+            ],
+            "featureIndexes": [
+              8,
+              14
+            ],
+            "intersectionAreaM2": 0.0364004192803293
+          },
+          {
+            "sourceParcelIds": [
+              "65c0c9835036a3ab95a7aa0797fe9a09812c12a1aa11323eef625c20d18e417e",
+              "0ae8ee95857f1a1c57b85aad7be623631a31319dfb39b9681183421c88a1e634"
+            ],
+            "featureIndexes": [
+              6,
+              11
+            ],
+            "intersectionAreaM2": 0.03238720798379971
+          },
+          {
+            "sourceParcelIds": [
+              "fdf01da878d6f137d91778199e2f188ec5f8835f2c4a90c31a2a9842fc96c1cb",
+              "0d47a16a716bcf16785860fd979cb8eb7243b3ab62c34e3715bff0749226245f"
+            ],
+            "featureIndexes": [
+              9,
+              10
+            ],
+            "intersectionAreaM2": 0.01723658821387855
+          },
+          {
+            "sourceParcelIds": [
+              "16d8613ec8eb667f5a361b6691bbe61bff5cd9d2d8ca5b9f656bc1add53f5e9e",
+              "15d9805b0c8b205786a8ba5cf72a3039601b6804c300563d63ea79a0c5590101"
+            ],
+            "featureIndexes": [
+              17,
+              18
+            ],
+            "intersectionAreaM2": 0.01440413241292049
+          },
+          {
+            "sourceParcelIds": [
+              "e10039876765733bd286e6336da3a4a2530d20788d694a5cddfa63183d12a001",
+              "1344fae89f1a72e1267a81f6a32778d2e4bc6c1a8df9d2968188a98d2b31ddf8"
+            ],
+            "featureIndexes": [
+              1,
+              2
+            ],
+            "intersectionAreaM2": 0.010860043725859202
+          }
+        ]
+      },
+      "attemptOutcome": "metric_gate_failed"
+    },
+    {
+      "wupCityCode": 9265,
+      "city": "Mangaluru",
+      "attempt": "attempt-01",
+      "qualificationStatus": "held",
+      "sourceId": "in-ka-ncscm-czmp-survey-plots",
+      "sourceEndpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES_2019/CZMP_Karnataka19/MapServer/5",
+      "candidateSha256": "1c733de81b40f18af6599d0aa903adae36b96ee64f645691a721542ed1ad8fc2",
+      "cacheFile": "full-safe.geojson",
+      "cacheSha256": "7d3247d5cf233d50db10a751f80d3e6a8edc51ef2dd355132ebbc99bd7ddb4df",
+      "metricInputSha256": "7d3247d5cf233d50db10a751f80d3e6a8edc51ef2dd355132ebbc99bd7ddb4df",
+      "featureCount": 122,
+      "requestCount": 102,
+      "requestLimit": 300,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "metricCrs": "EPSG:32643",
+      "qualificationFailure": {
+        "metric": {
+          "errorType": "Error",
+          "code": "metric-report-failed"
+        }
+      },
+      "geometryMetrics": {
+        "reportGeometryPass": false,
+        "validFeatureCount": 122,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapThresholdM2": 0.01,
+        "overlapPairCount": 4,
+        "totalMaterialOverlapM2": 164.1760401778849,
+        "maxMaterialOverlapM2": 163.99982030466836,
+        "maxOverlapFractionOfSmaller": 1,
+        "subthresholdPositiveIntersectionPairCount": 2,
+        "subthresholdPositiveIntersectionTotalM2": 0.011293943613907398,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "materialOverlapPairs": [
+          {
+            "sourceParcelIds": [
+              "77a8dd95eda1d0e2a1348d4f8c19f0ece8c8ea39c3827d0fb11d5e523fb516d7",
+              "c33f316c3c618e6ce8ebb2d8d9de59b4216b05eff2f8a20a623200902c3f83fc"
+            ],
+            "featureIndexes": [
+              31,
+              41
+            ],
+            "intersectionAreaM2": 163.99982030466836
+          },
+          {
+            "sourceParcelIds": [
+              "d94714c233f5787449413383600c72c5c54c1d98c38db8366b9e7992d68253ea",
+              "e17854643013c36e0151dc3f7d539cf7ba6fe793a3f3dda31deda8bdd395ddd1"
+            ],
+            "featureIndexes": [
+              114,
+              117
+            ],
+            "intersectionAreaM2": 0.12300110330610892
+          },
+          {
+            "sourceParcelIds": [
+              "231d3325898317ea0d82084ed7a50b0f6473a521a414fff7ad02f2f13946f457",
+              "c75a167d35d918e2741d963410e7a6b6f4463a6225af9855090d895221b9fca8"
+            ],
+            "featureIndexes": [
+              58,
+              68
+            ],
+            "intersectionAreaM2": 0.0272827559306279
+          },
+          {
+            "sourceParcelIds": [
+              "231d3325898317ea0d82084ed7a50b0f6473a521a414fff7ad02f2f13946f457",
+              "3d501219e5fa33e065b8857e14f96a23a95e3a9578ccfb5f4fbc575fa7de8355"
+            ],
+            "featureIndexes": [
+              58,
+              60
+            ],
+            "intersectionAreaM2": 0.025936013979787623
+          }
+        ]
+      },
+      "attemptOutcome": "metric_gate_failed"
+    },
+    {
+      "wupCityCode": 9455,
+      "city": "Kannur",
+      "attempt": "attempt-01",
+      "qualificationStatus": "held",
+      "sourceId": "in-kl-ncscm-czmp-survey-plots",
+      "sourceEndpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+      "candidateSha256": "7950bb5f267b8c938fc57f4c30f1c70cef3a2e9c835cacc4a25bdaae7bd6166f",
+      "cacheFile": "full-safe.geojson",
+      "cacheSha256": "598fba219d933dda8e560bca0b0fc37a04719d4a617e5990c54bff833f736bd4",
+      "metricInputSha256": "598fba219d933dda8e560bca0b0fc37a04719d4a617e5990c54bff833f736bd4",
+      "featureCount": 129,
+      "requestCount": 122,
+      "requestLimit": 300,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "metricCrs": "EPSG:32643",
+      "qualificationFailure": {
+        "metric": {
+          "errorType": "Error",
+          "code": "metric-report-failed"
+        }
+      },
+      "geometryMetrics": {
+        "reportGeometryPass": false,
+        "validFeatureCount": 129,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapThresholdM2": 0.01,
+        "overlapPairCount": 50,
+        "totalMaterialOverlapM2": 1.7619221668729468,
+        "maxMaterialOverlapM2": 0.13530284988566257,
+        "maxOverlapFractionOfSmaller": 0.0008972477677262307,
+        "subthresholdPositiveIntersectionPairCount": 55,
+        "subthresholdPositiveIntersectionTotalM2": 0.17964021514981865,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "materialOverlapPairs": [
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "3528232a9a8b7a3cd12f71c7f090fa63c8836db87eb573ea6e79d4f0f268fc48"
+            ],
+            "featureIndexes": [
+              7,
+              104
+            ],
+            "intersectionAreaM2": 0.13530284988566257
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "ac0d12fec484cf58593cdef8eef2c5cb4335b084789d70e44b5144071e694d69"
+            ],
+            "featureIndexes": [
+              7,
+              70
+            ],
+            "intersectionAreaM2": 0.12675571833328686
+          },
+          {
+            "sourceParcelIds": [
+              "62f65bc5ebd8eeda64363343d98cc7b04f62a7da81488759033b054079bd509a",
+              "63c6273ca1ecee89cc5cdd1f79585da412eef84aad72cf9e4fbcf6bda43ea55b"
+            ],
+            "featureIndexes": [
+              21,
+              51
+            ],
+            "intersectionAreaM2": 0.0854378595500922
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "62f65bc5ebd8eeda64363343d98cc7b04f62a7da81488759033b054079bd509a"
+            ],
+            "featureIndexes": [
+              7,
+              21
+            ],
+            "intersectionAreaM2": 0.0823991550847342
+          },
+          {
+            "sourceParcelIds": [
+              "45c6d02a7926ddefa7930b6a66e60907d0e130de64f8f282085f6cc223d3aec0",
+              "09029983cb5af7694260eb15812b9cf7bbaf5329a52db0660554e75ebe4d7a31"
+            ],
+            "featureIndexes": [
+              37,
+              55
+            ],
+            "intersectionAreaM2": 0.06849286440281754
+          },
+          {
+            "sourceParcelIds": [
+              "2e37ecf017aea955f8f679a0f9492cf402da4a9dec4fe970de8b2d7e40357ee6",
+              "54807c4e7642f5bc32ffebc45d5ceeb6aa6e3a934d698cac9af8435eaca9287c"
+            ],
+            "featureIndexes": [
+              80,
+              87
+            ],
+            "intersectionAreaM2": 0.06084312419397643
+          },
+          {
+            "sourceParcelIds": [
+              "83bf392cc02060803d912952b1fab7731bc913b35ab67c17bd9c4fbba42d7d62",
+              "f8ca6cd48d8f1aaea9427b97fcfd463d7f1da6cd003274614cb6904150fe095a"
+            ],
+            "featureIndexes": [
+              90,
+              111
+            ],
+            "intersectionAreaM2": 0.05991662851273513
+          },
+          {
+            "sourceParcelIds": [
+              "fa15f57994ba5df9d214ccc70f987f3dccec0c73e3a571e7c9632a570523f611",
+              "e2d1df47a20f09f521cf6a06f92f7420330de08e45ab3150748381cd1a7dd6ee"
+            ],
+            "featureIndexes": [
+              86,
+              89
+            ],
+            "intersectionAreaM2": 0.05685514144477587
+          },
+          {
+            "sourceParcelIds": [
+              "a69abde9e9e2cfc25f5104f6666425189123699d691b2e16790bcb5183f8167b",
+              "b3990a76d97d4084b498ddc752126fb47f385dded74fe4170dd4998df86714db"
+            ],
+            "featureIndexes": [
+              18,
+              19
+            ],
+            "intersectionAreaM2": 0.056585855405426766
+          },
+          {
+            "sourceParcelIds": [
+              "fd1490213be44ee8ca9603605ba41ed1c91ba082135feadbe6fc01b21f92c545",
+              "827bfa2ecc0dad3a9574da49c654cab3857b46f59cfed8d73b3ab0fa175a69fc"
+            ],
+            "featureIndexes": [
+              61,
+              79
+            ],
+            "intersectionAreaM2": 0.05343352931094032
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "7c1aa2293c12a11ecc8094bcca6a6c9e102257e0e012e6b8783ed24966a71b43"
+            ],
+            "featureIndexes": [
+              7,
+              103
+            ],
+            "intersectionAreaM2": 0.04707992184247445
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "e2d1df47a20f09f521cf6a06f92f7420330de08e45ab3150748381cd1a7dd6ee"
+            ],
+            "featureIndexes": [
+              7,
+              89
+            ],
+            "intersectionAreaM2": 0.04604474498665678
+          },
+          {
+            "sourceParcelIds": [
+              "fa93eed0aaaaac7d7e85850b7b354cd7f7b7cc44dc85db883e482e9788d7cfab",
+              "2bd43c719a1c1eb88e711a5054dc7bbe5baeac452e5da04bdabcea7b472d8da9"
+            ],
+            "featureIndexes": [
+              75,
+              98
+            ],
+            "intersectionAreaM2": 0.0458448132868968
+          },
+          {
+            "sourceParcelIds": [
+              "62f65bc5ebd8eeda64363343d98cc7b04f62a7da81488759033b054079bd509a",
+              "f248549d91dfb87f9a64524b776a04e7d030fba7181b7cf618337bf617f771dd"
+            ],
+            "featureIndexes": [
+              21,
+              42
+            ],
+            "intersectionAreaM2": 0.0430965584777141
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "c69a71ccdceed5b0988513965f28ca62c81b8f5caf2ffb5c08e4b2b16b1ff490"
+            ],
+            "featureIndexes": [
+              7,
+              8
+            ],
+            "intersectionAreaM2": 0.04261106265941805
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "a69abde9e9e2cfc25f5104f6666425189123699d691b2e16790bcb5183f8167b"
+            ],
+            "featureIndexes": [
+              7,
+              18
+            ],
+            "intersectionAreaM2": 0.03829916227887331
+          },
+          {
+            "sourceParcelIds": [
+              "83bf392cc02060803d912952b1fab7731bc913b35ab67c17bd9c4fbba42d7d62",
+              "27f3c55848b48249161e83fde82210d300dff07176d434007c1207c535fcf7e4"
+            ],
+            "featureIndexes": [
+              90,
+              96
+            ],
+            "intersectionAreaM2": 0.03819414289128144
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "4f454c1ec0b4b69068b13013ad787781af10529b9143bcdcc7fba6554d3bf376"
+            ],
+            "featureIndexes": [
+              7,
+              34
+            ],
+            "intersectionAreaM2": 0.03807362479904647
+          },
+          {
+            "sourceParcelIds": [
+              "93cafdbbafc95bdf7b7cee36620a786f6d33debfbdbb08d624cda0a87449b2f9",
+              "210e04873b2a480510b72e91ed3d81a48e56deeee2a7a5df4623ee83d47d9066"
+            ],
+            "featureIndexes": [
+              109,
+              118
+            ],
+            "intersectionAreaM2": 0.036571129081595724
+          },
+          {
+            "sourceParcelIds": [
+              "2a6cfb57b9c35ea4dc2c95c8ff36ccbf350ce416a14995f3156dc1ee57a5f80b",
+              "af0e32f3901565d0568b281b7d866a00f27b486eb7d0f6f0b5b37f0cda5e74e4"
+            ],
+            "featureIndexes": [
+              72,
+              74
+            ],
+            "intersectionAreaM2": 0.0330308844698024
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "9188e2e7b8a429cf6c7d46acfdf1968134a745cf51dbb28c31f10f988acca256"
+            ],
+            "featureIndexes": [
+              7,
+              57
+            ],
+            "intersectionAreaM2": 0.03061064846225832
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "b30d8bfed7ff6bfb3bffe0dc655f0367d77296bd3212bc16c6e92ca6fac18f8e"
+            ],
+            "featureIndexes": [
+              7,
+              101
+            ],
+            "intersectionAreaM2": 0.029561418261851102
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "cf8c9afd607e61f7c2752ef811823e678d95f359ee80c5618a3ba5853842611c"
+            ],
+            "featureIndexes": [
+              7,
+              54
+            ],
+            "intersectionAreaM2": 0.027162348237119716
+          },
+          {
+            "sourceParcelIds": [
+              "e1769a7b9459989d7dd0c78a8e5e7f60fc1d8f328c4e4be96421553ef37029d4",
+              "b707df2ab627e8bb200162f3a00491dbb5dd84c8da360695aaf9f5bb89a6e75d"
+            ],
+            "featureIndexes": [
+              123,
+              126
+            ],
+            "intersectionAreaM2": 0.026985261924410014
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "ca8860d68e6b357b46734de495e96a91ac038e6b6856af9b44ccbc0578b28e9f"
+            ],
+            "featureIndexes": [
+              7,
+              113
+            ],
+            "intersectionAreaM2": 0.025938031228678327
+          },
+          {
+            "sourceParcelIds": [
+              "20888fe9d88d2133342ada4fb0d83121ef5f40d9556fd17bfb90848b2ef51b86",
+              "988607e32d0d5753cc04f76ff7f2513db3547f6561960ab317129ceae1839ef5"
+            ],
+            "featureIndexes": [
+              49,
+              68
+            ],
+            "intersectionAreaM2": 0.025495649734216377
+          },
+          {
+            "sourceParcelIds": [
+              "83bf392cc02060803d912952b1fab7731bc913b35ab67c17bd9c4fbba42d7d62",
+              "9e09ce7ac7236c554b375a68d98905ed80452fa05809a570631bc64538747a70"
+            ],
+            "featureIndexes": [
+              90,
+              94
+            ],
+            "intersectionAreaM2": 0.024928096550438546
+          },
+          {
+            "sourceParcelIds": [
+              "681714eb19d15045d3293d98a35865853f228b0fb7cdc891d420d068fc2b6b52",
+              "fa93eed0aaaaac7d7e85850b7b354cd7f7b7cc44dc85db883e482e9788d7cfab"
+            ],
+            "featureIndexes": [
+              13,
+              75
+            ],
+            "intersectionAreaM2": 0.024503258247309277
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "405e4c59d364d4780d70c7a04b7798e6cc5968e2bcd6ba4f8477fa641831e880"
+            ],
+            "featureIndexes": [
+              7,
+              27
+            ],
+            "intersectionAreaM2": 0.02401230018872802
+          },
+          {
+            "sourceParcelIds": [
+              "531d58c0d57d304d4003e673be283ea964679e50939d82e29bacab8082071423",
+              "ca8860d68e6b357b46734de495e96a91ac038e6b6856af9b44ccbc0578b28e9f"
+            ],
+            "featureIndexes": [
+              108,
+              113
+            ],
+            "intersectionAreaM2": 0.023370270028014062
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "71ba662d8b4297cab2e2a3bc735697c790ffe437daac63d84298f3d029c44cc1"
+            ],
+            "featureIndexes": [
+              7,
+              36
+            ],
+            "intersectionAreaM2": 0.02319851472362838
+          },
+          {
+            "sourceParcelIds": [
+              "62f65bc5ebd8eeda64363343d98cc7b04f62a7da81488759033b054079bd509a",
+              "a6f8a2f794f851563db19447d7755b138382c2b7538c5405f4111005800fb274"
+            ],
+            "featureIndexes": [
+              21,
+              56
+            ],
+            "intersectionAreaM2": 0.022660604865036765
+          },
+          {
+            "sourceParcelIds": [
+              "cb2e0090100c1d835cc4a0756b7373d8a2915ea43adddec91edd98ae201dae56",
+              "a3ab608532c92c1436dc457a68c159dfce335f34361c821eac4f88b81f70e3d6"
+            ],
+            "featureIndexes": [
+              43,
+              45
+            ],
+            "intersectionAreaM2": 0.022296512379033295
+          },
+          {
+            "sourceParcelIds": [
+              "41e582825a10304215a379eaf5df4c1abcb43b417e19e74a7fedc38d22daee97",
+              "dcbc77e97159706fa25c8e315a81c16fa480bf29de13794cddec22f16264a7c1"
+            ],
+            "featureIndexes": [
+              125,
+              127
+            ],
+            "intersectionAreaM2": 0.020709532398447077
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "e9dd04533c9e277ec0a4e4bcab71167632228c99d19569163a36cb2501a34296"
+            ],
+            "featureIndexes": [
+              7,
+              62
+            ],
+            "intersectionAreaM2": 0.019956408062171582
+          },
+          {
+            "sourceParcelIds": [
+              "a3ab608532c92c1436dc457a68c159dfce335f34361c821eac4f88b81f70e3d6",
+              "db0f58837c596d36c6afdfc2546ef4868ad1242bb6e92304bc7c4ba131f41263"
+            ],
+            "featureIndexes": [
+              45,
+              48
+            ],
+            "intersectionAreaM2": 0.019630789231038892
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "a6f8a2f794f851563db19447d7755b138382c2b7538c5405f4111005800fb274"
+            ],
+            "featureIndexes": [
+              7,
+              56
+            ],
+            "intersectionAreaM2": 0.018532195962138953
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "d5b10c18f19c40c7c82bb40116f9d188fe914136ebe6589ce6ab42015457674f"
+            ],
+            "featureIndexes": [
+              7,
+              59
+            ],
+            "intersectionAreaM2": 0.015335642835153401
+          },
+          {
+            "sourceParcelIds": [
+              "d040f89f6e38ce6fd133784c842fd9fa2aba0be6f20f56a3b0b57908abed4b48",
+              "428c5dc22a26e67ab20d1a855cdb4809390658c47d383d9596be37b18d710605"
+            ],
+            "featureIndexes": [
+              16,
+              30
+            ],
+            "intersectionAreaM2": 0.01406934778379032
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "1de56d1825e9f3e0354206ae4e5116f1675d5552620f7553456cb36bf4e4ae15"
+            ],
+            "featureIndexes": [
+              7,
+              83
+            ],
+            "intersectionAreaM2": 0.013530916159025352
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "8ae649742ed0dc04e20edb76e513a27b59a7a9b0c814a459f0eee0df051b425c"
+            ],
+            "featureIndexes": [
+              7,
+              35
+            ],
+            "intersectionAreaM2": 0.013117375977917956
+          },
+          {
+            "sourceParcelIds": [
+              "45c6d02a7926ddefa7930b6a66e60907d0e130de64f8f282085f6cc223d3aec0",
+              "9ff36e419319e8e746c60c0a06703678f0bfaedc98cee450c47eebebcdd6376b"
+            ],
+            "featureIndexes": [
+              37,
+              53
+            ],
+            "intersectionAreaM2": 0.013091113706598627
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "e6ebf3e2921480dbe628b2e2939fba4059797cb0078a7544fd37c4f7b9635173"
+            ],
+            "featureIndexes": [
+              7,
+              88
+            ],
+            "intersectionAreaM2": 0.011691125712209649
+          },
+          {
+            "sourceParcelIds": [
+              "dd3e77535b9b581d68f8c981d922c4495bc04199c34309caf1511dd42760fe74",
+              "45c6d02a7926ddefa7930b6a66e60907d0e130de64f8f282085f6cc223d3aec0"
+            ],
+            "featureIndexes": [
+              22,
+              37
+            ],
+            "intersectionAreaM2": 0.011472628721354643
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "007700f9b146036d2dbf1d505e57456702a0104f31fd9bc3650d16a55b555020"
+            ],
+            "featureIndexes": [
+              7,
+              28
+            ],
+            "intersectionAreaM2": 0.011472416578997193
+          },
+          {
+            "sourceParcelIds": [
+              "83bf392cc02060803d912952b1fab7731bc913b35ab67c17bd9c4fbba42d7d62",
+              "d67794507a9c6d14b7b4ef3a8d6f4ac9898c57f7be4f81c64c36db0cdbba1200"
+            ],
+            "featureIndexes": [
+              90,
+              112
+            ],
+            "intersectionAreaM2": 0.01112261135014393
+          },
+          {
+            "sourceParcelIds": [
+              "62f65bc5ebd8eeda64363343d98cc7b04f62a7da81488759033b054079bd509a",
+              "4f75dfb44bc57f39eba8c96ed419702d4d39405d37577d4ec5533c864e66859b"
+            ],
+            "featureIndexes": [
+              21,
+              58
+            ],
+            "intersectionAreaM2": 0.011107683749863454
+          },
+          {
+            "sourceParcelIds": [
+              "83bf392cc02060803d912952b1fab7731bc913b35ab67c17bd9c4fbba42d7d62",
+              "2bd43c719a1c1eb88e711a5054dc7bbe5baeac452e5da04bdabcea7b472d8da9"
+            ],
+            "featureIndexes": [
+              90,
+              98
+            ],
+            "intersectionAreaM2": 0.010948098058929687
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "93cafdbbafc95bdf7b7cee36620a786f6d33debfbdbb08d624cda0a87449b2f9"
+            ],
+            "featureIndexes": [
+              7,
+              109
+            ],
+            "intersectionAreaM2": 0.010280968159782479
+          },
+          {
+            "sourceParcelIds": [
+              "507f7ff042071c13b88a59584e65864c5e33f8cbb357d9d32d0ad5d750d175e7",
+              "f816413043a89f11a663900a2733758f1d562f91d41d0eea73ae898f0296866d"
+            ],
+            "featureIndexes": [
+              7,
+              11
+            ],
+            "intersectionAreaM2": 0.010261626696454067
+          }
+        ]
+      },
+      "attemptOutcome": "metric_gate_failed"
+    },
+    {
+      "wupCityCode": 6440,
+      "city": "Bhavnagar",
+      "attempt": "attempt-01",
+      "qualificationStatus": "held",
+      "sourceId": "in-gj-ncscm-czmp-survey-plots",
+      "sourceEndpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+      "candidateSha256": "95cc92bf715ba7b0d5c5720feb02c50848f7511a5e34160a15a7052729a7bfd6",
+      "cacheFile": "full-safe.geojson",
+      "cacheSha256": "90816dd18ed40484723860c2ce4faed4db5f6a1836c5bbde9e6689a1ee7191dc",
+      "metricInputSha256": "90816dd18ed40484723860c2ce4faed4db5f6a1836c5bbde9e6689a1ee7191dc",
+      "featureCount": 23,
+      "requestCount": 85,
+      "requestLimit": 300,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "metricCrs": "EPSG:32643",
+      "qualificationFailure": {
+        "binding": {
+          "errorType": "HttpError",
+          "httpStatus": 400
+        }
+      },
+      "localBboxFailure": {
+        "failedCheck": "binding",
+        "httpStatus": 400,
+        "selectedParcelId": "IN-GJ-CZMP-g1~721466456~217621873~e6f769a8e7a28bd7de985098c54701deb3c7883cd662543e1605c76830c84956",
+        "featureIndex": 2,
+        "bboxWgs84": [
+          72.1466456,
+          21.7429008,
+          72.1620873,
+          21.7846423
+        ],
+        "bboxAreaKm2": 7.368153799593776,
+        "configuredCapKm2": 4,
+        "explanation": "The first selected parcel’s WGS84 bbox exceeds the configured 4 km² cap; this is a local source-contract cap failure, not a metric failure.",
+        "areaMethod": "backend/utils/helpers.js wgs84BboxAreaKm2: width=|Δlon|*111.32*cos(mid-latitude), height=|Δlat|*110.57; area=width*height."
+      },
+      "geometryMetrics": {
+        "reportGeometryPass": true,
+        "overlapThresholdM2": 0.01,
+        "overlapPairCount": 0,
+        "totalMaterialOverlapM2": 0,
+        "materialOverlapPairs": []
+      },
+      "attemptOutcome": "local_bbox_cap_failed"
+    },
+    {
+      "wupCityCode": 9497,
+      "city": "Thalassery",
+      "attempt": "attempt-02",
+      "qualificationStatus": "held",
+      "sourceId": "in-kl-ncscm-czmp-survey-plots",
+      "sourceEndpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Kerala/MapServer/6",
+      "candidateSha256": "399abe80907a5c9940efaab10619ae2a2577d94297de41ef4e681e7d94fd165c",
+      "cacheFile": "full-safe.geojson",
+      "cacheSha256": "02954221f6ea67209a15aabe6725472635fa72e4e61264749781080f21d891af",
+      "metricInputSha256": "02954221f6ea67209a15aabe6725472635fa72e4e61264749781080f21d891af",
+      "featureCount": 26,
+      "requestCount": 83,
+      "requestLimit": 300,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 4,
+      "metricCrs": "EPSG:32643",
+      "qualificationFailure": {
+        "metric": {
+          "errorType": "Error",
+          "code": "metric-report-failed"
+        }
+      },
+      "geometryMetrics": {
+        "reportGeometryPass": false,
+        "validFeatureCount": 26,
+        "invalidCount": 0,
+        "duplicateIdCount": 0,
+        "conflictingSameIdGeometryCount": 0,
+        "exactGeometryDuplicateCount": 0,
+        "overlapThresholdM2": 0.01,
+        "overlapPairCount": 8,
+        "totalMaterialOverlapM2": 10.893279107451566,
+        "maxMaterialOverlapM2": 5.649531426637526,
+        "maxOverlapFractionOfSmaller": 0.00033364707793379273,
+        "subthresholdPositiveIntersectionPairCount": 2,
+        "subthresholdPositiveIntersectionTotalM2": 0.0017317999890285193,
+        "operationErrorCount": 0,
+        "geometryChangedOrRepaired": false,
+        "materialOverlapPairs": [
+          {
+            "sourceParcelIds": [
+              "d0b4b4866c55b7f16a03dc4b6abcb635190f54c6fffd9bad727e1ac093c433ac",
+              "00fc1e99a7c4316b9053a62ffbb35cd2326bd6ae494f3adc708d3edc653e82de"
+            ],
+            "featureIndexes": [
+              8,
+              11
+            ],
+            "intersectionAreaM2": 5.649531426637526
+          },
+          {
+            "sourceParcelIds": [
+              "3420d09577cf2a3f369642bec207a9bdef309f6d9924e0d666e30d30b9e754a0",
+              "a5da9d4182ee7507aaee3db012d802a9361d821cbd0b35617258a2c0bf17fdea"
+            ],
+            "featureIndexes": [
+              20,
+              21
+            ],
+            "intersectionAreaM2": 2.671924406123048
+          },
+          {
+            "sourceParcelIds": [
+              "520df563c12bdeb4d128b5869d41e5858bc6468d0260e2798759950e8594f4dd",
+              "6227b57ccaf7db9c7324dc39ce3c6f1bb245486e5aba68d3df4b028347304034"
+            ],
+            "featureIndexes": [
+              13,
+              19
+            ],
+            "intersectionAreaM2": 1.2102397134575136
+          },
+          {
+            "sourceParcelIds": [
+              "26b16056bf61d27e9e2ceabe849ede74773e5950a0683db4a9aaf31faaba5b7c",
+              "a5da9d4182ee7507aaee3db012d802a9361d821cbd0b35617258a2c0bf17fdea"
+            ],
+            "featureIndexes": [
+              18,
+              21
+            ],
+            "intersectionAreaM2": 0.49565000869846687
+          },
+          {
+            "sourceParcelIds": [
+              "0df48a51b6e71f13a6c5a1eb7581e75c71bf112a4d1612742149c466a3b75297",
+              "b5fd7f85782cbf90d5ba94ae3a58c464871192ab57b96b97599ce0ed94e8bbb2"
+            ],
+            "featureIndexes": [
+              3,
+              4
+            ],
+            "intersectionAreaM2": 0.37175742238414744
+          },
+          {
+            "sourceParcelIds": [
+              "a5da9d4182ee7507aaee3db012d802a9361d821cbd0b35617258a2c0bf17fdea",
+              "18c707e4332e55ea597bcfa6fd8c1e97a7d67d6d47cb17d82dcb415f71b1ed11"
+            ],
+            "featureIndexes": [
+              21,
+              25
+            ],
+            "intersectionAreaM2": 0.24601710685249145
+          },
+          {
+            "sourceParcelIds": [
+              "ac215ea1dbaf62df66d2ba88ea4744f4118adf88181c88b88dccb36e2176ef05",
+              "a5da9d4182ee7507aaee3db012d802a9361d821cbd0b35617258a2c0bf17fdea"
+            ],
+            "featureIndexes": [
+              12,
+              21
+            ],
+            "intersectionAreaM2": 0.18261782461979384
+          },
+          {
+            "sourceParcelIds": [
+              "b5fd7f85782cbf90d5ba94ae3a58c464871192ab57b96b97599ce0ed94e8bbb2",
+              "d0b4b4866c55b7f16a03dc4b6abcb635190f54c6fffd9bad727e1ac093c433ac"
+            ],
+            "featureIndexes": [
+              4,
+              8
+            ],
+            "intersectionAreaM2": 0.06554119867857838
+          }
+        ]
+      },
+      "attemptOutcome": "metric_gate_failed_after_transport_retry"
+    },
+    {
+      "wupCityCode": 2647,
+      "city": "Jamnagar",
+      "attempt": "attempt-02",
+      "qualificationStatus": "held",
+      "sourceId": "in-gj-ncscm-czmp-survey-plots",
+      "sourceEndpoint": "https://gisportal.ncscm.res.in/server/rest/services/CZMP_STATES/CZMP_Gujarat/MapServer/6",
+      "candidateSha256": "f5506051422a04079a5217638d8cb3b60dae3d5db0e8f910cd556db042180614",
+      "cacheFile": "full-safe.geojson",
+      "cacheSha256": "a4f8a6112e22d9d671b377219ca4bbaebfdcc52f556390bb1d1bac608bc30ce3",
+      "metricInputSha256": "a4f8a6112e22d9d671b377219ca4bbaebfdcc52f556390bb1d1bac608bc30ce3",
+      "featureCount": 18,
+      "requestCount": 79,
+      "requestLimit": 300,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 25,
+      "metricCrs": "EPSG:32642",
+      "qualificationFailure": {
+        "binding": {
+          "errorType": "HttpError",
+          "httpStatus": 400
+        }
+      },
+      "localBboxFailure": {
+        "failedCheck": "binding",
+        "httpStatus": 400,
+        "selectedParcelId": "IN-GJ-CZMP-g1~700122441~224602163~e098a4145de0c76f99aed013c5d69e65ae8e8e83c222aacb854640d459609145",
+        "bboxWgs84": [
+          70.0122441,
+          22.4105325,
+          70.0790238,
+          22.470504
+        ],
+        "bboxAreaKm2": 45.561887586019665,
+        "configuredCapKm2": 25,
+        "explanation": "Parcel query area is too large; request viewport cells.",
+        "areaMethod": "backend/utils/helpers.js wgs84BboxAreaKm2"
+      },
+      "geometryMetrics": {
+        "reportGeometryPass": true,
+        "overlapThresholdM2": 0.01,
+        "overlapPairCount": 0,
+        "totalMaterialOverlapM2": 0,
+        "materialOverlapPairs": []
+      },
+      "attemptOutcome": "local_bbox_cap_failed_after_transport_retry"
+    }
+  ],
+  "retryPlan": {
+    "status": "bhavnagar_qualified_after_bbox_cap_change",
+    "bboxCapKm2": 25,
+    "featureLimit": 2000,
+    "featureLimitChanged": false,
+    "note": "Retry cap uses the configured source-contract 25 km² limit; the initial Bhavnagar candidate was configured at 4 km².",
+    "attempt": "attempt-02",
+    "featureCount": 98,
+    "requestCount": 143,
+    "allEightGatesPassed": true,
+    "candidateSha256": "d5e18d80d324b994fa3e4e4ff914fc7c9cae525b363fca994248915e5ff5df52",
+    "cacheSha256": "240e5af39a2ff319c04fc52be5c8177f1be1018f9b82602c0689aaf9094cb0f2",
+    "geometryPass": true,
+    "overlapPairCount": 0
+  },
+  "transportRetryExample": {
+    "city": "Kakinada",
+    "initialOutcome": "held_before_qualification",
+    "classification": "transport_only",
+    "metricDiagnostics": "No metric report existed after attempt-01; attempt-02 passed all eight gates and the independent metric audit.",
+    "finalOutcome": "technical-qualified",
+    "successfulAttempt": "attempt-02",
+    "featureCount": 25,
+    "requestCount": 71
+  },
+  "finalOutcomes": {
+    "qualified": 11,
+    "held": 5,
+    "evidenceFile": "qualification-outcomes/2026-10-14-india-coastal.json"
+  }
+}

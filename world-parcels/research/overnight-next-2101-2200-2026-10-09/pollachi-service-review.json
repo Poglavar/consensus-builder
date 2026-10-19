@@ -1,0 +1,25 @@
+{
+  "cityRecord": "city-9961-pollachi.json",
+  "cityCode": 9961,
+  "queueRank": 2182,
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "service": "Tamil Nadu Government land-record / TamilNilam cadastral map services",
+  "serviceUrl": "https://eservices.tn.gov.in/",
+  "registryFound": true,
+  "publicParcelGeometryFound": false,
+  "requestOutcome": "Official English and Tamil discovery was completed. TNGLMS links loaded, while the official e-services, TamilNilam, and TNGIS routes were unavailable or timed out anonymously; the State GIS route failed TLS validation. No parcel geometry or native parcel identity was invented or retained.",
+  "safeFieldAllowlist": ["stable native parcel identity if publicly exposed", "full parcel polygon geometry if publicly exposed", "geometry CRS/service metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sample": null,
+  "scopeLimits": [
+    "Exact WUP point [10.658330676877, 77.013629141109] was preserved but not used to infer absence.",
+    "No login, captcha bypass, credentials, private tokens, or unsafe land-record fields were used.",
+    "No citywide coverage or current API schema/CRS was verified.",
+    "Municipal planning/ward maps are not cadastral parcel evidence.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "uncertainty": "A serial reviewer should recheck anonymous access to TamilNilam/e-services/TNGIS and any current public Pollachi map configuration before adapter qualification."
+}

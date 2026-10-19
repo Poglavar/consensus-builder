@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 178,
+  "city": "Dalian",
+  "countryCode": "CN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/dalian.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "大连 不动产 地籍图 宗地 GIS 数据开放 矢量服务"
+  },
+  "results": [
+    {
+      "title": "Dalian TianDiTu public geographic platform",
+      "url": "https://liaoning.tianditu.gov.cn/dalian/",
+      "kind": "official-geoportal",
+      "note": "Provides general map services and data APIs; parcel layer not identified."
+    },
+    {
+      "title": "Dalian municipal open-data platform launch",
+      "url": "https://www.fuxin.gov.cn/content/2026/1064616.html",
+      "kind": "official-news",
+      "note": "Reports public data catalog scale and types, not cadastral geometry."
+    }
+  ],
+  "assessment": "Chinese-language search found official base-geodata and open-data platforms but did not identify a cadastral parcel dataset or endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

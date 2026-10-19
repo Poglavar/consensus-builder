@@ -1,0 +1,28 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "SB",
+ "checkedAt": "2026-09-29",
+ "country": "Solomon Islands",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Lands, Housing and Survey (Registrar of Titles / Survey Division)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.mlhs.gov.sb/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed via proxy; host unreachable"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "None found; most land is customary, registered land is a small share",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Only one host was tried and it was unreachable; no search was possible, so this is not proof of absence. Prior expectation is no public online cadastre.",
+ "nextStep": "Retry ministry site; search for any Honiara/Guadalcanal GIS parcel service."
+}

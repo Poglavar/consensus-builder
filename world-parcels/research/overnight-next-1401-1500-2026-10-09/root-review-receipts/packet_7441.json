@@ -1,0 +1,19 @@
+{
+  "taskId": "packet:7441",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-7441-feni.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/feni-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/root-review-receipts/city_7441.json",
+    "tmp/valhalla-parcel-research/feni-7441/main.js",
+    "tmp/valhalla-parcel-research/feni-7441/dists.json",
+    "tmp/valhalla-parcel-research/feni-7441/info.headers",
+    "tmp/valhalla-parcel-research/feni-7441/info.body"
+  ],
+  "checkedAt": "2026-10-10T07:59:13+00:00",
+  "basis": "Rank 1409, code 7441, Bangladesh, immutable point and 401506 persons match queue and ranked roster. English and Bengali searches are recorded. Official DLRS jurisdiction includes Feni. Original viewer JavaScript names the mouza layer, while the bounded GIS request returned HTTP 503 and the administrative district subset omitted Feni. Neither establishes absence; no native-ID parcel geometry response or independent adapter qualification is evidenced.",
+  "admissionGates": "No verified safe native-ID full parcel polygon; fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, and headed Details-panel verification are not evidenced. No runtime admission."
+}

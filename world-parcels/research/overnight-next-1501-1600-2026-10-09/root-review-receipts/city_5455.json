@@ -1,0 +1,16 @@
+{
+  "taskId": "city:5455",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-5455-qarchak.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/qarchak-service-review.json",
+    "tmp/valhalla-parcel-research/qarchak/headers.txt",
+    "tmp/valhalla-parcel-research/qarchak/gharchak.html"
+  ],
+  "checkedAt": "2026-10-10T09:27:52.943495Z",
+  "reason": "Immutable WUP code/rank/country/point/population match the original archive. English and Persian queries are recorded. No polygons or safe native ID were returned; the municipality cache only shows a Google Maps location embed and national cadastral routes timed out. The packet local registryFound=true claim rests on secondary office references, not an independently inspected first-party local custody response, so it is not propagated. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent. No admission or citywide absence claim.",
+  "sourceAdmission": "not_admitted"
+}

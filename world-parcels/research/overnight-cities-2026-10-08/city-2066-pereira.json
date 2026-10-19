@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Pereira",
+  "nativeName": "Pereira",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register.",
+  "registryEvidenceUrls": [
+    "https://www.pereira.gov.co/publicaciones/6700/catastro-multiproposito-reanuda-la-atencion-al-publico/",
+    "https://www.pereira.gov.co/publicaciones/5721/autoridad-catastral-avala-procesos-del-amco/",
+    "https://www.igac.gov.co/index.php/catastro-multiproposito/catastro-multiproposito",
+    "https://www.arcgis.com/home/item.html?id=c32ced1ac5804240b69a835aec82e34c",
+    "https://services3.arcgis.com/Zdpg0E6lri7EggIc/arcgis/rest/services/Terreno_Catastro__AMCO___09052025_/FeatureServer/0"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sampleGeometryFile": "city-2066-pereira-samples.geojson",
+  "runtimeReadiness": "held_native_nested_ground_geometry",
+  "wupCityCode": 2066,
+  "cityId": "wup2025:2066",
+  "centerLatLon": [
+    4.81360908585759,
+    -75.7010941066248
+  ],
+  "rank": 902,
+  "queueRank": 902,
+  "population2025": 602831,
+  "population2025k": 602.831,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "All 917 bounded native cadastral references pass retrieval and geometry validity, but three complete containment overlaps total 455.93 m2 in metric audit. Fresh native EPSG9377 geometry reproduces the conflicts; all four involved rows have null end-of-version values. No documented ground-only exclusion resolves the overlapping terrain units.",
+  "scopeLimits": "Official local publications identify AMCO as cadastral manager; public ArcGIS metadata returned HTTP 200, Polygon, EPSG:9377, safe OBJECTID. Bounded query around the unchanged WUP locator returned HTTP 200 and three polygons, with only OBJECTID requested. Dataset title is Terreno Catastro AMCO; interpretation is physical/ground cadastral geometry only.",
+  "remainingUncertainty": "Citywide completeness, current geometry version, and the relationship between the physical terrain units and legal registered units remain unresolved.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Pereira Colombia official cadastral manager AMCO SIGPER cadastral map terrain geometry",
+        "result": "Official city sources identify AMCO cadastral management; municipal webmap and public feature metadata identify a terrain-cadastre polygon layer.",
+        "method": "English-language search followed by official-source review.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      },
+      {
+        "language": "Spanish",
+        "query": "Pereira catastro multipropósito AMCO gestor catastral mapa SIGPER terreno geográfico oficial",
+        "result": "Las fuentes oficiales municipales identifican a AMCO como gestor catastral; el mapa SIGPER y la capa pública exponen polígonos de terreno, no derechos de propiedad.",
+        "method": "Local-language search followed by official-source review. Separate English and local-language searches plus official-source review; no owner, address, title, tax, account, applicant, or personal fields were queried.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.pereira.gov.co/publicaciones/6700/catastro-multiproposito-reanuda-la-atencion-al-publico/",
+        "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+      },
+      {
+        "url": "https://www.pereira.gov.co/publicaciones/5721/autoridad-catastral-avala-procesos-del-amco/",
+        "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+      },
+      {
+        "url": "https://www.igac.gov.co/index.php/catastro-multiproposito/catastro-multiproposito",
+        "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+      },
+      {
+        "url": "https://www.arcgis.com/home/item.html?id=c32ced1ac5804240b69a835aec82e34c",
+        "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+      },
+      {
+        "url": "https://services3.arcgis.com/Zdpg0E6lri7EggIc/arcgis/rest/services/Terreno_Catastro__AMCO___09052025_/FeatureServer/0",
+        "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+      }
+    ],
+    "metadataReviewFile": "pereira-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-2066-pereira-route-inspection.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register.",
+    "verifiedOpenScope": "One bounded sample only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeAssessment": {
+    "status": "held_native_nested_ground_geometry",
+    "reason": "All 917 bounded native cadastral references pass retrieval and geometry validity, but three complete containment overlaps total 455.93 m2 in metric audit. Fresh native EPSG9377 geometry reproduces the conflicts; all four involved rows have null end-of-version values. No documented ground-only exclusion resolves the overlapping terrain units.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/pereira-amco-npn-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/pereira-amco-npn-root-quality.json"
+  },
+  "sourceIds": [],
+  "sampleFile": "city-2066-pereira-samples.geojson",
+  "rootReviewedAt": "2026-10-09T04:26:41.788097+00:00",
+  "rootInterpretationNote": "Physical cadastral terrain and native numero_predial_nacional string references are supported; title/owner semantics are informational and are not the hold. Original three safe GIS-ID polygons remain unchanged.",
+  "point": [
+    4.81360908585759,
+    -75.7010941066248
+  ]
+}

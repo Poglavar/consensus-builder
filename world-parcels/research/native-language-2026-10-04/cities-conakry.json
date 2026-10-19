@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 182,
+  "city": "Conakry",
+  "countryCode": "GN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/conakry.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Conakry cadastre parcellaire données SIG géoportail données géographiques Guinée"
+  },
+  "results": [
+    {
+      "title": "Guinea cadastral regulation (FAOLEX document)",
+      "url": "https://faolex.fao.org/docs/pdf/gui16265.pdf",
+      "kind": "official-legal-document",
+      "note": "Describes cadastral records/forms, not an open geospatial layer or service."
+    }
+  ],
+  "assessment": "French-language search surfaced legal material referencing cadastral parcel records but no current public geospatial feature service or stable parcel IDs.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

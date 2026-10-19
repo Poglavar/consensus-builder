@@ -1,0 +1,109 @@
+{
+  "name": "Oran",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "rank": 434,
+  "point": [
+    35.6912099704289,
+    -0.610508942475933
+  ],
+  "population2025": 1192410,
+  "population2025k": 1192.41,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Oran cadastral administration is confirmed; the WUP point was not overlaid with a municipal boundary, and no anonymous full-vector route was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official DGDN/Gazette materials confirm cadastral administration and Oran Ville under the East direction; these establish local document/registry administration, not open geometry.",
+  "resultCategory": "local_cadastral_administration_confirmed_no_anonymous_vector_verified",
+  "technicalBlocker": "DGDN offers document request/issuance; national BNDG is general-scale thematic mapping, not a parcel polygon service.",
+  "remainingUncertainty": "A separate local viewer or professional access route may exist; point jurisdiction and public geometry remain unknown.",
+  "nextStep": "Inspect only documented official public routes; do not enter identity-based document or title lookup workflows.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Arabic",
+        "query": "وهران مديرية مسح الأراضي المحافظة العقارية خريطة قطع أرض خدمات رقمية رسمية",
+        "result": "DGDN and Oran East/West directions found; document-service rollout, no public feature API verified.",
+        "method": "Separate Arabic search and official government/Gazette review."
+      },
+      {
+        "language": "French",
+        "query": "Direction cadastre Oran conservations foncières carte parcellaire service officiel géomatique",
+        "result": "Official Gazette material assigns Oran Ville to East; BNDG is thematic mapping rather than parcel features.",
+        "method": "Separate French search and official DGDN/Gazette review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.dgdn.gov.dz/",
+        "observation": "DGDN describes digital cadastral document requests; no anonymous polygon service established."
+      },
+      {
+        "url": "https://www.joradp.dz/FTP/JO-arabe/2021/A2021047.pdf?znjo=47",
+        "observation": "Official Gazette institutional transfer and land-survey/property-conservation duties."
+      },
+      {
+        "url": "https://www.joradp.dz/FTP/JO-arabe/2022/A2022046.pdf",
+        "observation": "Official Gazette organizational jurisdictions identify Oran East and West; official review assigns Oran Ville to East."
+      },
+      {
+        "url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx",
+        "observation": "National 1:200,000 thematic mapping, not parcel vectors."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "DGDN and BNDG official entry points reviewed. DGDN describes digital document request/issuance; BNDG is small-scale thematic mapping. No anonymous parcel vector schema exposed.",
+      "geometryStatus": "not queried; no anonymous parcel-vector schema established",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "not queried; no anonymous parcel-vector schema established",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 434,
+  "wupCityCode": 922,
+  "cityId": "wup2025:922",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    35.6912099704289,
+    -0.610508942475933
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "name": "DGDN cadastral document administration / Oran East direction",
+    "operator": "Direction Générale du Domaine National",
+    "url": "https://www.dgdn.gov.dz/",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://www.dgdn.gov.dz/",
+    "https://www.joradp.dz/FTP/JO-arabe/2021/A2021047.pdf?znjo=47",
+    "https://www.joradp.dz/FTP/JO-arabe/2022/A2022046.pdf",
+    "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx"
+  ],
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00"
+}

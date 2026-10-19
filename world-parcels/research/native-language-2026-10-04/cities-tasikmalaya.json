@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 177,
+  "city": "Tasikmalaya",
+  "countryCode": "ID",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/tasikmalaya.json",
+  "query": {
+    "language": "Indonesian",
+    "script": "Latin",
+    "text": "Tasikmalaya peta bidang tanah kadaster ATR BPN Jawa Barat layanan resmi"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Indonesian",
+    "queryScript": "Latin",
+    "nativeQuery": "Tasikmalaya peta bidang tanah kadaster ATR BPN Jawa Barat layanan resmi",
+    "englishQuery": "Tasikmalaya cadastral parcel map and official land agency services in West Java",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "SK Peta Lahan Sawah upload list",
+      "url": "https://jdih.atrbpn.go.id/peraturan/download/1036/SK%20PETA%20TANAH%20UPLOAD_1.pdf",
+      "kind": "official-national-land-agency-document",
+      "note": "ATR/BPN listing includes Kota Tasikmalaya among mapped administrative areas, but the document concerns protected rice-field mapping, not cadastral boundaries."
+    },
+    {
+      "title": "BHUMI interactive map guide",
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "kind": "official-national-land-map-viewer",
+      "note": "Official portal explains spatial-information dissemination through its geospatial catalog; does not prove cadastral parcel coverage in Tasikmalaya."
+    }
+  ],
+  "assessment": "Official agency mapping references include Tasikmalaya, but the surfaced thematic map is not cadastral; parcel-vector coverage remains unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:6234",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-1111-taiping.json",
+  "schemaVersion": "1.0",
+  "cityCode": 1111,
+  "queueRank": 2656,
+  "city": "Taiping",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Taiping/Larut Matang and Selama land-office custodianship, the PerakGIS state GIS portal, and the national MyGeoportal UPI service were identified. Direct PerakGIS retrieval timed out and no safe parcel ID plus full polygon geometry, current service configuration, or CRS was obtained; no sample GeoJSON is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Malay discovery queries, exact text and actual result URLs are recorded in city-1111-taiping.json.",
+  "requestOutcomes": "First-party indexed official pages were inspected for PerakGIS, MyGeoportal UPI, and the Taiping District and Land Office. A bounded direct GET to the PerakGIS host timed out after 20 seconds. No anonymous parcel feature request was completed and no unsafe fields were requested.",
+  "attemptedRoutes": [
+    {"route": "PerakGIS official portal", "url": "https://mygdispatial.perak.gov.my/", "outcome": "Official indexed page identified state GIS applications including Lot Finder; direct TLS-verified fetch timed out after 20 seconds in the research environment."},
+    {"route": "MyGeoportal Unique Parcel Identifier", "url": "https://www.mygeoportal.gov.my/en/unique-parcel-identifier-upi", "outcome": "Official service description readable; UPI is documented as a standardized parcel-location identifier with textual/spatial results, but no Taiping feature geometry was returned."},
+    {"route": "Taiping District and Land Office contact", "url": "https://ptg.perak.gov.my/portal/en/web/taiping/hubungi-kami", "outcome": "Official local custodian and Taiping address/contact confirmed; no property lookup attempted."},
+    {"route": "Taiping official Malay site map", "url": "https://ptg.perak.gov.my/portal/web/taiping/peta-laman", "outcome": "Official land-administration and public-service sections confirmed; no parcel API or geometry exposed by indexed content."}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [4.85501603331364, 100.727250933951] was preserved; no exact-point hit/miss inference was made.",
+    "Official service descriptions and a named Lot Finder do not establish a usable anonymous parcel vector endpoint or complete Taiping coverage.",
+    "No stable native parcel identity plus full polygon geometry was retrieved; CRS and parcel schema remain unverified.",
+    "A timeout or unavailable UI is not evidence of cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable city-bounded public geometry response reached; no hit/miss inference.", "requestEvidence": ["PerakGIS direct fetch timed out", "no feature geometry or schema returned"]},
+  "coverageAssessment": {"claimedScope": "PerakGIS, MyGeoportal UPI, and Taiping/Larut Matang and Selama land administration.", "verifiedOpenScope": "Official custodians and service descriptions only; no citywide geometry response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current public Lot Finder route, anonymous API behavior, parcel identity semantics, CRS, geometry delivery, city-boundary relationship and completeness remain unresolved.",
+  "retainedSample": null
+}

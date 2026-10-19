@@ -1,0 +1,98 @@
+{
+  "name": "Dazhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 776,
+  "point": [
+    31.2140747711545,
+    107.489133177835
+  ],
+  "population2025": 693707,
+  "population2025k": 693.707,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Dazhou Natural Resources and Planning Bureau’s official 2024 departmental accounts identify the Dazhou Real Estate Registration Center as a subordinate unit. A municipal land-supply procedure also assigns the city cadastral affairs center boundary/area surveys and the land survey/planning team plot boundary maps. These confirm local registration and cadastral functions, not a public vector service or point coverage.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.dazhou.gov.cn/uploadfile/44/Attachment/0f4eeacd18.pdf",
+    "https://zrzyj.dazhou.gov.cn/oldfile/zrzyghj/2021013680/index.php"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No parcel geometry was retained. Citywide/countrywide completeness, title, survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "No city-specific anonymous geometry endpoint with a verified safe field allowlist was identified; no feature query was made.",
+  "remainingUncertainty": "Whether an official Dazhou public map service exposes parcel polygons with safe key-only selection and covers the WUP point remains unknown.",
+  "nextStep": "If a primary official map service can be identified later, inspect its metadata and safe key fields before any bounded geometry-only request.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dazhou official real estate registration center cadastral parcel boundary map GIS public service",
+        "scope": "Find first-party local registry evidence and a public parcel geometry schema; do not submit a parcel lookup.",
+        "result": "Official city sources identify the local registration center and municipal cadastral survey/boundary-map functions. No anonymous public parcel polygon service, safe field schema, or point-specific geometry response was verified.",
+        "actualResultUrls": [
+          "https://zrzyj.dazhou.gov.cn/uploadfile/44/Attachment/0f4eeacd18.pdf",
+          "https://zrzyj.dazhou.gov.cn/oldfile/zrzyghj/2021013680/index.php"
+        ],
+        "executionMethod": "Separate English-language search; official primary-source and public-service review only."
+      },
+      {
+        "language": "Chinese",
+        "query": "达州市 不动产登记中心 地籍 宗地界址图 测绘 地图查询 官方",
+        "scope": "Find first-party local-language registry/cadastre sources and public geometry schema; no individual property lookup.",
+        "result": "Official city sources identify the local registration center and municipal cadastral survey/boundary-map functions. No anonymous public parcel polygon service, safe field schema, or point-specific geometry response was verified.",
+        "actualResultUrls": [
+          "https://zrzyj.dazhou.gov.cn/uploadfile/44/Attachment/0f4eeacd18.pdf",
+          "https://zrzyj.dazhou.gov.cn/oldfile/zrzyghj/2021013680/index.php"
+        ],
+        "executionMethod": "Separate local-language search; official primary-source and public-service review only."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "CN-DAZHOU-REGISTRATION-CADASTRE",
+    "name": "Dazhou Natural Resources and Planning Bureau / Dazhou Real Estate Registration Center",
+    "url": "https://zrzyj.dazhou.gov.cn/uploadfile/44/Attachment/0f4eeacd18.pdf",
+    "operator": "Dazhou Natural Resources and Planning Bureau",
+    "serviceType": "City real-estate registration institution and municipal cadastral survey procedure; no public feature layer verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 8800,
+  "cityId": "wup2025:8800",
+  "queueRank": 776,
+  "sourceIds": [],
+  "centerLatLon": [
+    31.2140747711545,
+    107.489133177835
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official city sources identify the local registration center and municipal cadastral survey/boundary-map functions. No anonymous public parcel polygon service, safe field schema, or point-specific geometry response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "rootPrimarySupplement": "Primary indexed 2024 departmental accounts confirm the local real-estate registration center; direct readback timed out separately.",
+  "rootPrimaryReadback": {
+    "url": "https://zrzyj.dazhou.gov.cn/uploadfile/44/Attachment/0f4eeacd18.pdf",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

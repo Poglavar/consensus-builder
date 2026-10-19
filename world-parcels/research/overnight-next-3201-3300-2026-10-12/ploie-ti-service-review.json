@@ -1,0 +1,23 @@
+{
+  "cityRecord":"city-2253-ploie-ti.json",
+  "cityCode":2253,
+  "queueRank":3210,
+  "city":"Ploiești",
+  "country":"Romania",
+  "countryCode":"RO",
+  "checkedAt":"2026-10-12",
+  "attempt":1,
+  "serviceReviewStatus":"complete_research_only",
+  "registryFound":true,
+  "registryCustodian":"ANCPI through OCPI Prahova / Biroul de Cadastru și Publicitate Imobiliară Ploiești; Primăria Ploiești Cadastru is a local counterpart",
+  "publicMapLead":"https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+  "queryOutcomes":"Separate English and Romanian first-party discovery queries were executed; full queries, outcomes, and URLs are in city-2253-ploie-ti.json.",
+  "requestOutcomes":"The official INSPIRE metadata GET timed out after 30 seconds; ANCPI direct host resolution was unavailable. No anonymous bounded ID-plus-geometry response was obtained. No login, credentials, bypass, unsafe field request, or TLS exception was used.",
+  "schemaAndCrs":{"parcelSchema":"Cadastral Parcel polygon layer advertised by official metadata","nativeIdField":"id_namespace (metadata only)","geometryCrs":"EPSG:4258 (metadata only)","fieldMapping":{},"compositeKeyProvenance":null},
+  "safeFieldAllowlist":["stable native parcel identifier only if source-proven","full parcel polygon geometry","geometry CRS","public source/service metadata","retrieval date"],
+  "scopeLimits":["Exact WUP point [44.939739029389,26.0238060859835] was preserved and not moved.","Timeout/unavailable service is not evidence of citywide absence.","No parcel polygon or source-specific raw attribute set is retained.","Independent serial review is required before adapter/runtime qualification."],
+  "qualification":{"verifiedSample":false,"parcelGeometryVerified":false,"runtimeReadiness":"held","reason":"Relevant custodians and an official parcel-layer metadata lead were evidenced, but no live anonymous public parcel ID-plus-geometry response or citywide open coverage was qualified."},
+  "uncertainty":"The public ANCPI services may be temporarily degraded or migrated; unresolved availability is not proof that Ploiești lacks cadastral parcels.",
+  "admissionDecision":"held",
+  "geometrySamples":[]
+}

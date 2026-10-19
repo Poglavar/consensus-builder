@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8820-ujjain.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Ujjain pages route land-record service to MP Bhulekh and identify Lok Seva Kendra coverage. The public Ujjain GIS service has urban planning and base layers but no cadastral parcel layer. The official land-record portal is a login/record workflow; no property lookup or public parcel geometry was used.",
+  "registryAssessment": "The official Ujjain District land-records page routes to Madhya Pradesh Bhulekh and lists Lok Seva Kendra service locations including Ujjain. The official Hindi route confirms the same. The district GIS page describes infrastructure and land-use layers, while its published map service contains planning/base layers, not cadastral parcel records. Registry access exists through state records, but no public safe parcel geometry was verified at the exact urban locator.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ujjain.nic.in/en/service/land-records/",
+      "observation": "Official Ujjain District page links Madhya Pradesh land-record services to MP Bhulekh and lists Ujjain Lok Seva Kendra."
+    },
+    {
+      "url": "https://ujjain.nic.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%B2%E0%A5%87%E0%A4%96/",
+      "observation": "Official Hindi Ujjain land-record page links to the state Bhulekh service."
+    },
+    {
+      "url": "https://ujjain.nic.in/%E0%A4%89%E0%A4%9C%E0%A5%8D%E0%A4%9C%E0%A5%88%E0%A4%A8-%E0%A4%9C%E0%A5%80%E0%A4%86%E0%A4%88%E0%A4%8F%E0%A4%B8/",
+      "observation": "Official Hindi Ujjain GIS overview lists roads, water, land use and public infrastructure."
+    },
+    {
+      "url": "https://grammanchitragis.nic.in/grammanchitra/rest/services/ULB/AMRUT_Ujjain_Final/MapServer",
+      "observation": "Public official planning map service exposes wards, master-plan and base layers; no cadastral parcel layer in the service catalog."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ujjain official land records cadastral parcel map GIS land registry Madhya Pradesh",
+      "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+      "result": "Official Ujjain pages route land-record service to MP Bhulekh and identify Lok Seva Kendra coverage. The public Ujjain GIS service has urban planning and base layers but no cadastral parcel layer. The official land-record portal is a login/record workflow; no property lookup or public parcel geometry was used.",
+      "actualResultUrls": [
+        "https://ujjain.nic.in/en/service/land-records/",
+        "https://ujjain.nic.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+        "https://ujjain.nic.in/%E0%A4%89%E0%A4%9C%E0%A5%8D%E0%A4%9C%E0%A5%88%E0%A4%A8-%E0%A4%9C%E0%A5%80%E0%A4%86%E0%A4%88%E0%A4%8F%E0%A4%B8/",
+        "https://grammanchitragis.nic.in/grammanchitra/rest/services/ULB/AMRUT_Ujjain_Final/MapServer"
+      ],
+      "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+    },
+    {
+      "language": "Hindi",
+      "query": "उज्जैन भू अभिलेख खसरा नक्शा सरकारी मध्य प्रदेश जमीन रिकॉर्ड GIS",
+      "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+      "result": "Official Ujjain pages route land-record service to MP Bhulekh and identify Lok Seva Kendra coverage. The public Ujjain GIS service has urban planning and base layers but no cadastral parcel layer. The official land-record portal is a login/record workflow; no property lookup or public parcel geometry was used.",
+      "actualResultUrls": [
+        "https://ujjain.nic.in/en/service/land-records/",
+        "https://ujjain.nic.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+        "https://ujjain.nic.in/%E0%A4%89%E0%A4%9C%E0%A5%8D%E0%A4%9C%E0%A5%88%E0%A4%A8-%E0%A4%9C%E0%A5%80%E0%A4%86%E0%A4%88%E0%A4%8F%E0%A4%B8/",
+        "https://grammanchitragis.nic.in/grammanchitra/rest/services/ULB/AMRUT_Ujjain_Final/MapServer"
+      ],
+      "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement point and reviewed official sources only.",
+    "limits": "No complete citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://ujjain.nic.in/en/service/land-records/",
+      "method": "Official public page/service inspection",
+      "result": "Reviewed official district English/Hindi land-record pages and the listed public GIS service metadata. A cadastral/owner search requires the state record workflow; no credentials or property identifiers were submitted."
+    },
+    {
+      "url": "https://ujjain.nic.in/service/%E0%A4%AD%E0%A5%82-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+      "method": "Official public page/service inspection",
+      "result": "Reviewed official district English/Hindi land-record pages and the listed public GIS service metadata. A cadastral/owner search requires the state record workflow; no credentials or property identifiers were submitted."
+    },
+    {
+      "url": "https://ujjain.nic.in/%E0%A4%89%E0%A4%9C%E0%A5%8D%E0%A4%9C%E0%A5%88%E0%A4%A8-%E0%A4%9C%E0%A5%80%E0%A4%86%E0%A4%88%E0%A4%8F%E0%A4%B8/",
+      "method": "Official public page/service inspection",
+      "result": "Reviewed official district English/Hindi land-record pages and the listed public GIS service metadata. A cadastral/owner search requires the state record workflow; no credentials or property identifiers were submitted."
+    },
+    {
+      "url": "https://grammanchitragis.nic.in/grammanchitra/rest/services/ULB/AMRUT_Ujjain_Final/MapServer",
+      "method": "Official public page/service inspection",
+      "result": "Reviewed official district English/Hindi land-record pages and the listed public GIS service metadata. A cadastral/owner search requires the state record workflow; no credentials or property identifiers were submitted."
+    }
+  ],
+  "remainingUncertainty": "No anonymous safe-feature response was verified; broader source availability and exact locator coverage remain unresolved."
+}

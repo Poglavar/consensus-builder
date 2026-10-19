@@ -1,0 +1,138 @@
+{
+  "cityCode": 10073,
+  "queueRank": 1628,
+  "name": "Karimnagar",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [18.4409477121986, 79.1268415140372],
+  "population2025": 351832,
+  "population2025k": 351.832,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Karimnagar Telangana official cadastral parcel map GIS land records Bhoomi BhuNaksha",
+        "result": "First-party results identified the official Karimnagar district Survey & Land Records department, Telangana Bhu Bharati land-records/GIS portal, Telangana TGRAC Web GIS, and a TGRAC ArcGIS layer explicitly named Cadastral Parcels. No usable Karimnagar parcel ID-plus-geometry response was retrieved.",
+        "actualResultUrls": [
+          "https://karimnagar.telangana.gov.in/department/survey-and-land-records/",
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://tgrac.telangana.gov.in/trac/webgis.php",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "కరీంనగర్ తెలంగాణ అధికారిక భూ పటం కడాస్ట్రల్ పార్సెల్ భూ భారతి భూమి రికార్డులు",
+        "result": "The native-language discovery route was attempted against official Telangana land-record and district channels; the public Bhu Bharati GIS route exposed district/division/mandal/village and map parcel-information controls, but no anonymous Karimnagar parcel response with safe native identity and geometry was obtained.",
+        "actualResultUrls": [
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://bhulandrecords.in/",
+          "https://karimnagar.telangana.gov.in/department/survey-and-land-records/",
+          "https://tgrac.telangana.gov.in/trac/webgis.php"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://karimnagar.telangana.gov.in/department/survey-and-land-records/",
+      "observation": "Official Karimnagar district portal lists the district Survey & Land Records department, establishing a local survey/land-record custodian."
+    },
+    {
+      "url": "https://bhubharati.telangana.gov.in/gis/",
+      "observation": "Official Telangana Bhu Bharati GIS page describes map-based parcel information and presents district, division, mandal and village selectors; the current page did not yield a usable anonymous feature response in this attempt."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/trac/webgis.php",
+      "observation": "Official Telangana Remote Sensing Applications Centre Web GIS catalogue lists Bhubharathi and Bhunaksha among Survey of Lands services."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0",
+      "observation": "Official TGRAC ArcGIS REST metadata identifies a polygon Feature Layer named Cadastral Parcels, with a projected Lambert Conformal Conic CRS and fields including OBJECTID, Parcel_num, and administrative labels. The metadata extent and service naming do not by themselves establish Karimnagar citywide coverage."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://karimnagar.telangana.gov.in/department/survey-and-land-records/",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official district page loaded and listed Survey & Land Records; no parcel geometry endpoint was exposed."
+    },
+    {
+      "url": "https://bhubharati.telangana.gov.in/gis/",
+      "method": "GET via first-party web access",
+      "httpStatus": "page found; current fetch returned an internal error",
+      "outcome": "Search/index evidence showed the public GIS controls, but no anonymous parcel ID-plus-geometry response was obtained. No login or private workflow was attempted."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/trac/webgis.php",
+      "method": "GET via first-party web access",
+      "httpStatus": 200,
+      "outcome": "Official TGRAC Web GIS catalogue loaded and listed land-survey services including Bhubharathi and Bhunaksha."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer metadata was inspected. It is a polygon layer named Cadastral Parcels; native identity candidates are OBJECTID and Parcel_num, but no feature row was retrieved."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0/query?f=pjson&where=1%3D1&geometry=79.1268415140372%2C18.4409477121986&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326",
+      "method": "GET",
+      "httpStatus": "inaccessible from bounded public request",
+      "outcome": "The exact WUP point was preserved in longitude/latitude request order for the ArcGIS query, but the query response was inaccessible. No hit/miss inference and no geometry retention were made."
+    },
+    {
+      "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Hydra_Folder/Fourth_Window/MapServer/0?f=pjson",
+      "method": "GET via local curl",
+      "httpStatus": "DNS resolution timeout after 20 seconds",
+      "outcome": "No retry escalation, TLS disablement, authentication, or private-token use."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Karimnagar district Survey & Land Records department and Telangana Bhu Bharati/TGRAC public land-survey channels establish a local/state cadastral custodian. This does not establish an open Karimnagar city-bounded parcel API.",
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": {
+    "candidateNativeIdFields": ["OBJECTID", "Parcel_num"],
+    "geometryField": "Shape",
+    "note": "Candidates observed only in TGRAC layer metadata; no feature row was retrieved, so identity stability and Karimnagar applicability remain unconfirmed."
+  },
+  "compositeKeyProvenance": null,
+  "crs": "TGRAC metadata reports a WGS 1984 Lambert Conformal Conic projected CRS; no Karimnagar feature response was retrieved.",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "tgrac-telangana-cadastral-parcels-layer",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Telangana state land-survey/public GIS channels and the TGRAC Cadastral Parcels layer.",
+    "verifiedOpenScope": "Official cadastral-layer metadata only; Karimnagar city coverage, a safe feature response, stable native identity, and usable geometry were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [18.4409477121986, 79.1268415140372] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit or miss conclusion was drawn because the bounded ArcGIS query was inaccessible.",
+    "The TGRAC layer extent and metadata do not prove Karimnagar citywide cadastral coverage.",
+    "No owner, address, titleholder, contact, personal, tax/account or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set and no synthetic parcel identity were retained.",
+    "Packet completion is not source integration/admission; runtime remains held pending serial review."
+  ],
+  "uncertainty": "The current Bhu Bharati viewer route, request parameters, access policy, Karimnagar village selection, parcel schema, stable native identity, CRS transformation path, and citywide coverage remain unresolved. A timeout or inaccessible query is not evidence of citywide parcel absence.",
+  "retainedSample": null
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:29:03.814786+00:00",
+  "city": "Fort Lauderdale",
+  "appCityId": "fortlauderdale",
+  "sourceId": "us-fl-fort-lauderdale-taxparcels-ground",
+  "url": "http://localhost:5638/?city=fortlauderdale&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed",
+  "loadedParcelCount": 160,
+  "interaction": "Real pointer move/down/up at x=600,y=409, then Details menu click.",
+  "selectedParcelId": "US-FL-FORT-LAUDERDALE-ROW-97983",
+  "pointContainedByObservedParcel": true,
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceWarningObserved": false,
+  "browserClosed": true,
+  "releaseState": "local_uncommitted_undeployed",
+  "initialFailure": {
+    "loadedParcelCount": 0,
+    "message": "Source temporarily unavailable; no parcels loaded.",
+    "cause": "Unestablished; local preview had just been restarted. A subsequent bounded gateway query returned a valid polygon, and an ordinary Retry loaded 160 Parcel rows without a warning. No provider downtime claim."
+  },
+  "observedRecordTypes": [
+    "Parcel"
+  ]
+}

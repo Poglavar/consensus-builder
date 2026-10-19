@@ -1,0 +1,81 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "P",
+ "regionName": "Formosa",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": {
+  "sourceId": "ar-fsa-sit-wfs-produccion",
+  "name": "Formosa/WFS_Produccion MapServer layer 0 PARCELAS_GEORREFERENCIADAS",
+  "operator": "Dirección General de Catastro Territorial, Provincia de Formosa (SIT Catastral v2)",
+  "scope": "Georeferenced parcels only; the layer returned 50 features on an unfiltered query capped by the server and nomenclatures span several departments (rural and urban), but total count and coverage are unknown",
+  "endpoint": "https://sit.formosa.gob.ar/sit.public/proxy.ashx?https://10.10.0.36/arcgis/rest/services/Formosa/WFS_Produccion/MapServer/0",
+  "method": "ArcGIS query via the viewer's own public proxy.ashx (backend is a private-IP ArcGIS 10.0 server)",
+  "responseFormat": "Esri JSON",
+  "crs": "POSGAR 94 Argentina Zone 6 (Transverse Mercator, CM -57); outSR=4326 was ignored",
+  "reuseStatus": "No terms read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ar-fsa-sit-wfs-produccion",
+  "requestUrl": "https://sit.formosa.gob.ar/sit.public/proxy.ashx?https://10.10.0.36/arcgis/rest/services/Formosa/WFS_Produccion/MapServer/0/query?where=1%3D1&outFields=OBJECTID,PAR_NOMENCLATURA,PAR_PARTIDA&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/plain; charset=utf-8",
+  "spatialTestAreaLonLat": null,
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PAR_NOMENCLATURA / PAR_PARTIDA / OBJECTID",
+  "responseFile": "research/subnational/AR/P-parcel-response.json",
+  "pagination": "unknown (server returned 50 records for resultRecordCount=3, so the count param is not honoured)"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No claim found; bounded bbox queries at Formosa city and Clorinda returned zero features from this layer, and the Base_Pub urban parcel layers (4, 6) refuse Query.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://sit.formosa.gob.ar/",
+   "observation": "Next.js SIT Catastral v2; JS config points at WCF services (persona/titular services, not touched) and a public proxy.ashx to a private ArcGIS host"
+  },
+  {
+   "url": "https://idef.formosa.gob.ar/geoportal/servicios",
+   "observation": "IDEF Drupal geoportal; lists WMS nodes; no parcel WFS seen"
+  }
+ ],
+ "requests": [
+  {
+   "url": ".../Formosa?f=json via proxy",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "services Base_Pub, WMS_PAR_PROP, WFS_Produccion..."
+  },
+  {
+   "url": ".../Base_Pub/MapServer/4/query (urban parcels)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "error 400: Query operation not supported"
+  },
+  {
+   "url": ".../WFS_Produccion/MapServer/0/query bbox Formosa city and Clorinda",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "0 features"
+  },
+  {
+   "url": ".../WFS_Produccion/MapServer/0/query no geometry filter",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "50 polygons; first 3 saved"
+  }
+ ],
+ "reuseStatus": "Unknown",
+ "remainingUncertainty": "Access relies on a proxy fronting a private-network server, so it may be unintended or unstable; sample not spatially targeted; coverage tiny or unknown. Urban parcels are viewer-only (WMS_PAR_PROP). Only ID and geometry fields requested; no owner names, addresses or tokens saved.",
+ "nextStep": "Ask DGC for a supported download; test WMS_PAR_PROP GetMap/WMS via idef nodes."
+}

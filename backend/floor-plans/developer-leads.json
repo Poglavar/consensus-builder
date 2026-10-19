@@ -1,0 +1,576 @@
+{
+  "schema": "developer-discovery-leads.v1",
+  "purpose": "Factual company/profile leads only; directory labels do not establish developer status, website identity, rights, or location.",
+  "observedAt": "2026-10-14T07:11:39.086Z",
+  "scope_complete": false,
+  "sources": [
+    "https://www.lankea.com/hr/investitori",
+    "https://www.lankea.com/hr/investitori/page/2"
+  ],
+  "records": [
+    {
+      "name": "Basilica nekretnine (Agencija)",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/basilica-nekretnine-agencija",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "agency-lead"
+    },
+    {
+      "name": "GIP Pionir",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/gip-pionir",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "JG Projekti",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/jg-projekti",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "KSO Gradnja d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/kso-gradnja-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Palace Novogradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/palace-novogradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Samarijanac",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/samarijanac",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Anda gradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/anda-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Armus",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/armus",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Begamont građenje d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/begamont-gradenje",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Domograd d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/domograd-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Fakini",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/fakini",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "GMB Bekavac",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/gmb-bekavac",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "MEŠIĆ com d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/mesic-com",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Modul više",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/modul-vise",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "MTD Nova d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/mtd-nova-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Projekt S d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/projekt-s-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "RELU stanogradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/relu-stanogradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Stanovi Otok",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/stanovi-otok",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "VITER GRUPA",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/viter-grupa",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "295 (Agencija)",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/295",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "agency-lead"
+    },
+    {
+      "name": "AB gradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/ab-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Adaptko",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/adaptko",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Allgheny Financial",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/allgheny-financial",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Ambijent",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/ambijent",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Arhitektonski studio Vučković",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/arhitektonski-studio-vuckovic",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "studio-lead"
+    },
+    {
+      "name": "ARM ONE",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/arm-one",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Auto Prigorje Nekretnine",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/auto-prigorje",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "B Consulting",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/b-consulting",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "baštijaNOVA",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/bastija-nova",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Batana Gradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/batana-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "BETA CITY",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/beta-city",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "BK Consulting",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/solarna-avenija",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Borovje stanovi",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/borovje-stanovi",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Dijačić projekt",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/dijacic-projekt",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "DIS Grupa",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/dis-grupa",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Diverso Domus",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/diverso-domus",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "DOMINVEST DEVELOPMENT D.O.O.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/dominvest-development-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Domizil gradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/domizil-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "EDNA STANOVI",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/edna-stanovi",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Elez d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/elez",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "ELKAZ Gradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/elkaz-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Eurohoteli",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/eurohoteli",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "FARO PROJEKT D.O.O.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/faro-projekt-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Fidus gradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/fidus-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Filipović Projekt",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/filipovic-projekt",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "GALA stan d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/gala-stan",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Geoprojekt",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/geoprojekt",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "GWT",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/gwt",
+      "directory_url": "https://www.lankea.com/hr/investitori",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "JID NEKRETNINE",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/jid-nekretnine",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Kajzer dom",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/kajzer-dom",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "LAS-DOMUS d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/las-domus",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Lider građenje",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/lider-gradenje",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "LUK-MAR CENTAR d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/luk-mar-centar",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Luxur project",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/luxur-project",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Maggdoss d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/maggdoss",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Maricom projekt",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/maricom-projekt",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Markov Real Estate",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/markov-real-estate",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Martinović-Nikolić Nekretnine",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/martinovic-nikolic-nekretnine",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Mativing projekt",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/mativing-projekt",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "MDK Građevinar",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/mdk-gradevinar",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "MEBA LIFE",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/real-estate-developer",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Modica usluge d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/modica-usluge",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Mudrovčić i Partneri",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/mudrovcic-i-partneri",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "NIVOGRADNJA d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/nivogradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "NOVI KVADRAT d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/novi-kvadrat",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "OKI Mont",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/oki-mont",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Profectus Zapad d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/profectus-zapad",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Projekt Dugave d.o.o.",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/projekt-dugave-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Projekt Rujevica",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/real-estate-developer-1",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Projekt Sarajevska (Palemon Nekretnine)",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/projekt-sarajevska-palemon-nekretnine",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "PROJEKT SLOBOŠTINA",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/projekt-slobostina",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Projekt Tkalčićeva",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/projekt-tkalciceva",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Projekt Tri Šenoina",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/projekt-tri-senoina",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Prosco invest",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/prosco-invest",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Prva Zona",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/prva-zona",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "RIVER VISION",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/river-vision",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Severović projekti",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/severovic-projekti",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Smart Nekretnine",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/smart-nekretnine",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "SMB SREBRNJAK d.o.o",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/smb-srebrnjak-d-o-o",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "StanArka",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/stan-arka",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Stanovi Remetinec",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/stanovi-remetinec",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Svetice Residence",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/svetice-residence",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "TARA-LUNA",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/tara-luna",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Temporium gradnja",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/temporium-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "ULTIMA NEKRETNINE",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/ultima-nekretnine",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "VDM nekretnine",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/vdm-nekretnine",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Vidikovac Residence",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/vidikovac-residence",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Vile Botinec",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/vile-botinec",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "VMD Grupa",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/vmd-grupa",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "VRBIK GRADNJA",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/vrbik-gradnja",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Vrljika Nekretnine",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/vrljika-nekretnine",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "West side residence",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/west-side-residence",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Wohnbau",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/wohnbau",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    },
+    {
+      "name": "Žir projekt",
+      "discovery_evidence_url": "https://www.lankea.com/hr/investitori/zir-projekt",
+      "directory_url": "https://www.lankea.com/hr/investitori/page/2",
+      "status": "unverified-developer-lead"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "cityCode": 223,
+  "queueRank": 2408,
+  "name": "Dapaong",
+  "country": "Togo",
+  "countryCode": "TG",
+  "point": [10.8653115109985, 0.202410967618096],
+  "population2025": 242985,
+  "population2025k": 242.985,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dapaong Togo cadastral map land registry parcel official",
+        "result": "Official OTR/DCCFE results identify the national cadastre and a Dapaong regional division. An official Dapaong-related land-registration notice was found, but no public anonymous parcel map/API or safe parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.dadc.gouv.tg/index.php/contacts.html",
+          "https://www.dadc.gouv.tg/index.php",
+          "https://www.otr.tg/index.php/en/cadastre/documents-juridiques/journal-officiel-rt/jort-2023/jo-region-des-savanes-2023/404-01-jo-n-05-quarto-du-24-janvier-2023-rs/file.html"
+        ]
+      },
+      {
+        "language": "French/native",
+        "query": "Togo cadastre Dapaong registre foncier carte parcellaire site officiel",
+        "result": "Les résultats officiels de la DCCFE/OTR identifient la Division Régionale Dapaong et les services cadastraux et fonciers nationaux. Aucun visualiseur parcellaire public anonyme, schéma d'API ou géométrie sûre n'a été identifié.",
+        "actualResultUrls": [
+          "https://www.dadc.gouv.tg/index.php/contacts.html",
+          "https://www.dadc.gouv.tg/index.php/services-dccfe/cadastre/vision-et-missions-du-cadastre.html",
+          "https://otr.tg/index.php/fr/blog/avis-communiques/1342-communique-n-021-2024-otr-cg-ci-dccf-relatif-au-numero-unique-parcellaire-nup.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "The official OTR/DCCFE site provides direct national cadastral/conservation-foncière custody and explicitly lists Division Régionale Dapaong. Public pages expose procedures, notices and contacts, not an anonymous citywide parcel feature service. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "dapaong-service-review.json"
+}

@@ -6,10 +6,9 @@
 
 (function () {
     if (typeof window === 'undefined') return;
-    if (typeof THREE === 'undefined') {
-        console.warn('[ContextBuildings3D] THREE.js not available; skipping init.');
-        return;
-    }
+    // No parse-time THREE usage: window.THREE loads on demand (whenThreeReady),
+    // so availability is checked inside the entry points instead of the old
+    // whole-file bail, which would permanently disable the module.
 
     const DEFAULT_BUFFER_METERS = 100;
     const MAX_BUFFER_METERS = 250;
@@ -145,11 +144,6 @@
         return mesh;
     }
 
-    function getBackendBase() {
-        try { return (typeof window.getBackendBase === 'function') ? window.getBackendBase() : ''; }
-        catch (_) { return ''; }
-    }
-
     // Idempotent loader. Repeated calls with the same coarse query bbox are no-ops.
     // - contextGroup: a THREE.Group already attached to the scene.
     // - opts.geometry: GeoJSON Geometry (EPSG:4326) — typically the proposal's outer shape.
@@ -158,6 +152,7 @@
     // - opts.material: optional THREE.Material override.
     // - opts.force: bypass the bbox cache.
     async function loadInto(contextGroup, opts) {
+        if (typeof THREE === 'undefined') return 0;
         if (!contextGroup || !opts || !opts.geometry || typeof opts.latLngToLocalXY !== 'function') return 0;
         const bufferMeters = Math.max(0, Math.min(MAX_BUFFER_METERS, Number(opts.bufferMeters) || DEFAULT_BUFFER_METERS));
         const key = computeCacheKey(opts.geometry, bufferMeters);
@@ -168,22 +163,22 @@
         // Mark in-flight key now so concurrent calls during a drag don't pile up.
         contextGroup.userData.__contextKey = key;
 
-        let city;
-        try { city = window.CityConfigManager && window.CityConfigManager.getCurrentCityId(); } catch (_) { }
         let payload;
         try {
-            const r = await fetch(`${getBackendBase()}/buildings/near`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ geometry: opts.geometry, buffer_meters: bufferMeters, city })
-            });
-            if (!r.ok) throw new Error(`HTTP ${r.status}`);
-            payload = await r.json();
+            payload = await window.BuildingSourceClient.request('/buildings/near',
+                { geometry: opts.geometry, buffer_meters: bufferMeters });
         } catch (e) {
             console.warn('[ContextBuildings3D] /buildings/near fetch failed:', e);
             // Reset key so a later attempt can retry.
             contextGroup.userData.__contextKey = null;
+            window.reportBuildingsUnavailable?.(null);
             return 0;
+        }
+        // The upstream failed outright: keep what is on screen and say so; a later call retries.
+        if (payload && payload.unavailable) {
+            contextGroup.userData.__contextKey = null;
+            window.reportBuildingsUnavailable?.(payload.retryAfter);
+            return contextGroup.userData.__contextCount || 0;
         }
 
         // Replace previous context only after a successful fetch — a transient error

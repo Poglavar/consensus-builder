@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "br-aracaju-city-cadastre",
+  "purpose": "Review city-local registry/cadastral basis and safe anonymous geometry-only routes.",
+  "primaryPublisher": "https://map.aracaju.se.gov.br/",
+  "sourceUrl": "https://map.aracaju.se.gov.br/",
+  "registryFound": true,
+  "registryBasis": "Aracaju’s official SEMFAZ MapAju publishes fiscal lot polygons. Its public WFS layer `Limites_Municipais:malha_lote` is titled “Malha de Lotes Fiscais” and marked as a 2025 layer in SIRGAS 2000. Schema is geometry, objectid, lot inscription, block, and area; this is a municipal fiscal cadastre, not proof of title registration or citywide legal completeness.",
+  "officialSources": [
+    {
+      "url": "https://map.aracaju.se.gov.br/",
+      "observation": "Aracaju’s official SEMFAZ MapAju publishes fiscal lot polygons. Its public WFS layer `Limites_Municipais:malha_lote` is titled “Malha de Lotes Fiscais” and marked as a 2025 layer in SIRGAS 2000. Schema is geometry, objectid, lot inscription, block, and area; this is a municipal fiscal cadastre, not proof of title registration or citywide legal completeness."
+    },
+    {
+      "url": "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&request=GetCapabilities",
+      "observation": "Official city/state map service route; no private lookup performed."
+    },
+    {
+      "url": "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=Limites_Municipais%3Amalha_lote",
+      "observation": "Official city/state map service route; no private lookup performed."
+    },
+    {
+      "url": "https://geoserver.fazenda.aracaju.se.gov.br/ows",
+      "observation": "Official city/state map service route; no private lookup performed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Aracaju Brazil municipal cadastral lots map WFS official SEMFAZ parcels",
+      "scope": "Find city-local land registry/cadastre source and an anonymous full-polygon geometry route.",
+      "result": "The Aracaju municipal finance secretariat’s public MapAju viewer documents cadastral fiscal lots. The live WFS capability and schema documents expose a bounded full-polygon query with safe parcel/block identifiers and area. A three-feature anonymous query succeeded around the WUP locator; the locator itself is outside those three returned lots.",
+      "actualResultUrls": [
+        "https://map.aracaju.se.gov.br/",
+        "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&request=GetCapabilities",
+        "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=Limites_Municipais%3Amalha_lote",
+        "https://geoserver.fazenda.aracaju.se.gov.br/ows"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "Aracaju mapa de lotes fiscais cadastro imobiliário municipal SEMFAZ WFS",
+      "scope": "Find city-local land registry/cadastre source and an anonymous full-polygon geometry route.",
+      "result": "O portal MapAju da Secretaria Municipal da Fazenda descreve a camada municipal de lotes fiscais. As capacidades e o esquema WFS ativos mostram geometria, inscrição do lote, quadra e área. Uma consulta anônima limitada retornou três polígonos completos; o ponto WUP não está dentro desses três polígonos.",
+      "actualResultUrls": [
+        "https://map.aracaju.se.gov.br/",
+        "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&request=GetCapabilities",
+        "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=Limites_Municipais%3Amalha_lote",
+        "https://geoserver.fazenda.aracaju.se.gov.br/ows"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 3,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "bounded_public_wfs_schema_and_geometry_verified",
+    "reason": "Public WFS geometry is verified, but the layer is a fiscal lot cadastre (not a title register), uses a 2025 “in validation” source marker, and only a bounded sample was checked. Adapter/runtime qualification remains for the parent.",
+    "nativeIdsUsed": "Only the public fiscal-lot inscription, block code and provider feature/object IDs were retained for the bounded sample."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&request=GetCapabilities",
+      "method": "GET WFS GetCapabilities",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "responseBytes": 152977,
+      "observation": "Live public WFS 2.0 capability document; 100 feature types. Target `Limites_Municipais:malha_lote`, title “Malha de Lotes Fiscais”, native CRS EPSG:31984, WGS84 bounding box spans Aracaju; layer keyword identifies 2025 in-validation fiscal lot mesh."
+    },
+    {
+      "url": "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=Limites_Municipais%3Amalha_lote",
+      "method": "GET WFS DescribeFeatureType",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2",
+      "responseBytes": 1407,
+      "observation": "Schema exposes only geom (gml:MultiSurface), objectid, inscricao_lote, quadra, area. No person, owner, address, tax-value or account fields."
+    },
+    {
+      "url": "https://geoserver.fazenda.aracaju.se.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=Limites_Municipais%3Amalha_lote&count=3&srsName=EPSG%3A4326&bbox=710580%2C8792560%2C710680%2C8792660%2CEPSG%3A31984&outputFormat=application%2Fjson&propertyName=geom%2Cobjectid%2Cinscricao_lote%2Cquadra%2Carea",
+      "method": "GET bounded WFS GetFeature; count=3; field allowlist",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "responseBytes": 3730,
+      "matched": 62,
+      "returned": 3,
+      "observation": "Returned three complete MultiPolygon features and only the requested geometry/lot/block/area fields. The 100 m projected bbox is near the WUP point; none of the three returned polygons contains that point. Three unique full geometries retained."
+    }
+  ],
+  "technicalBlocker": "Actual existing WFS adapter qualification failed three of thirteen local viewports and a fresh-ID batch: fiscal lot inscriptions 18010730067 and 18010570308 each identify multiple distinct native rows/geometries. Successful reads cover 365 valid distinct polygons without sampled overlaps, but these cannot establish a faithful complete parcel identity for the conflicting rows. No geometry was repaired, excluded or assigned a substitute canonical key. Native component semantics and a complete component contract remain unqualified; the 2025 in-validation notice is informational.",
+  "sampleDisposition": "Retained three full municipal fiscal-lot polygons with a safe field allowlist.",
+  "remainingUncertainty": "Legal status/vintage of the “in validation” 2025 lot mesh; full municipality coverage and paging/count behavior beyond the bounded sample; WUP point-to-parcel match.",
+  "rootRuntimeReview": {
+    "status": "held_native_identity_conflict",
+    "reason": "Actual existing WFS adapter qualification failed three of thirteen local viewports and a fresh-ID batch: fiscal lot inscriptions 18010730067 and 18010570308 each identify multiple distinct native rows/geometries. Successful reads cover 365 valid distinct polygons without sampled overlaps, but these cannot establish a faithful complete parcel identity for the conflicting rows. No geometry was repaired, excluded or assigned a substitute canonical key. Native component semantics and a complete component contract remain unqualified; the 2025 in-validation notice is informational.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/aracaju-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/aracaju-root-quality.json"
+  }
+}

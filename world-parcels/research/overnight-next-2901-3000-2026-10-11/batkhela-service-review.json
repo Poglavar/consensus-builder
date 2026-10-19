@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-4883-batkhela.json",
+  "cityCode": 4883,
+  "queueRank": 2922,
+  "city": "Batkhela",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "reviewStatus": "complete_research_only",
+  "registryFound": true,
+  "queryAndRequestOutcome": "Separate English and Urdu first-party discovery was completed. Official KP Revenue & Estate / Directorate of Land Records pages establish provincial GIS cadastral and land-record responsibilities, and the official e-stamping service lists a Malakand (Batkhela) service center. No anonymous public parcel vector response with qualified native ID, geometry, schema, CRS, and city relevance was verified.",
+  "routesAttempted": [
+    {"route": "KP Revenue & Estate Directorate of Land Records", "request": "GET https://revenue.kp.gov.pk/dlr-msg/ and GET https://revenue.kp.gov.pk/director-land-record/", "outcome": "The first route returned HTTP 200 HTML and stated that GIS-based cadastral mapping and land-record digitization are being advanced. The second official route was identified but timed out; no parcel request was made."},
+    {"route": "KP SDLR project", "request": "GET https://sdlr.kp.gov.pk/", "outcome": "Official route identified through first-party discovery; web fetch timed out and direct curl could not resolve the host in this environment. No absence inference."},
+    {"route": "KP Land Records digital property-record service", "request": "GET https://efard.kplr.gkp.pk/", "outcome": "Official route identified; web fetch timed out and direct curl could not resolve the host. No ownership, address, titleholder, or other unsafe query was made."},
+    {"route": "KP e-stamping service-center directory", "request": "GET https://estamping.kp.gov.pk/", "outcome": "Official search result listed Malakand (Batkhela), Main Bazar Batkhela. No parcel geometry or public feature service was exposed."}
+  ],
+  "safeFieldAllowlist": ["canonical native parcel ID only if source-proven", "full parcel polygon or multipolygon geometry only", "public source/service URL", "native schema field names and field mapping in metadata only", "source CRS, query extent, response metadata, and retrieval date"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySamples": [],
+  "scopeLimits": [
+    "Exact WUP point [34.6132831645872, 71.9680370159709] was preserved in latitude/longitude order and was not shifted.",
+    "No exact-point hit/miss, map extent miss, timeout, DNS failure, login wall, or unusable UI was treated as evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, registration detail, private token, credential, CAPTCHA/Cloudflare bypass, or TLS-verification exception was used.",
+    "No raw source-specific attribute sets, non-parcel geometry, or synthetic row identity was retained.",
+    "No retained GeoJSON was created because no safe native parcel identity and full parcel geometry were verified.",
+    "Packet completion is research completion only; it is not source integration or runtime admission."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "No anonymous public parcel vector response with qualified native identity, geometry, schema, CRS, and city relevance was obtained; independent serial review remains required."},
+  "runtimeEligible": false,
+  "recommendedDisposition": "Hold for serial reviewer retry against current official KP SDLR/KPLR public routes and any Batkhela/Malakand map endpoint discovered from current JavaScript/configuration."
+}

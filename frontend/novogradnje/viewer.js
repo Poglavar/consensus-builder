@@ -1,0 +1,69 @@
+// Apartment and building-context previews from source-backed models; review status is shown alongside.
+(function (root) {
+    'use strict';
+    const SVG = 'http://www.w3.org/2000/svg';
+    const el = (tag, cls) => { const n = document.createElement(tag); if (cls) n.className = cls; return n; };
+    const svg = (tag, attrs = {}) => { const n = document.createElementNS(SVG, tag); Object.entries(attrs).forEach(([k,v]) => n.setAttribute(k, String(v))); return n; };
+    function planSvg(apartment) {
+        const a = apartment?.architecture;
+        if (!a || !Array.isArray(a.dimensionsM) || a.dimensionsM.length !== 2) return null;
+        const [w,h] = a.dimensionsM, pad = Math.max(w,h)*.04, root = svg('svg', { viewBox:`${-pad} ${-pad} ${w+2*pad} ${h+2*pad}`, role:'img', 'aria-label':'Tlocrt stana' });
+        const path = rings => rings.map(ring => ring.map((p,i)=>`${i?'L':'M'}${Number(p[0])*w} ${Number(p[1])*h}`).join(' ')+' Z').join(' ');
+        for (const rings of a.slabs || []) root.append(svg('path',{d:path(rings),fill:'#e6e2d8','fill-rule':'evenodd'}));
+        for (const rings of a.walls || []) root.append(svg('path',{d:path(rings),fill:'#444b46','fill-rule':'evenodd'}));
+        for (const opening of a.openings || []) if (opening.a && opening.b) root.append(svg('line',{x1:opening.a[0]*w,y1:opening.a[1]*h,x2:opening.b[0]*w,y2:opening.b[1]*h,stroke:opening.kind==='door'?'#d99b34':'#7aa99b','stroke-width':Math.max(w,h)*.009}));
+        return root;
+    }
+    function mountPlan(host, apartment) {
+        host.replaceChildren(); const shape = planSvg(apartment);
+        if (!shape) { host.append(Object.assign(el('p','viewer-copy'),{textContent:'Tlocrt nije dostupan za ovaj stan.'})); return { dispose(){} }; }
+        host.append(shape); return { dispose(){ host.replaceChildren(); } };
+    }
+    function envelopeGroup(THREE, model, apartment) {
+        const api = root.__siteModelGeometry, frame = api?.localFrame(model);
+        if (!frame || !model?.envelope?.footprint) return null;
+        const group = new THREE.Group(); group.userData.cbFloorPlan = true;
+        const footprint = api.storeyPrisms(model);
+        for (const floor of footprint) {
+            const shape = new THREE.Shape(floor.ring.map(p=>new THREE.Vector2(p[0],p[1])));
+            const geometry = new THREE.ExtrudeGeometry(shape,{depth:floor.z1-floor.z0,bevelEnabled:false});
+            geometry.translate(0,0,floor.z0);
+            const material = new THREE.MeshPhongMaterial({color:floor.estimated?0xd8c29f:0xb9c9bd,transparent:true,opacity:.24,side:THREE.DoubleSide,depthWrite:false});
+            group.add(new THREE.Mesh(geometry,material));
+        }
+        const placement = apartment?.placement, best = placement?.best;
+        const floor = Number.isFinite(apartment?.floor) ? (model.envelope.storeys||[]).find(s=>s.level===apartment.floor) : null;
+        const transform=root.NovogradnjeCatalogue.placementTransform(best,apartment?.architecture?.dimensionsM);
+        if (placement?.status === 'placed' && transform && apartment.architecture && floor && Number.isFinite(floor.elevationM)) {
+            const unit = root.__threeFloorPlans.createLocalUnitGroup(THREE,apartment.architecture,root.__buildingFloorPlans);
+            unit.scale.set(transform.scale,transform.scale,1); unit.rotation.z=transform.rotation; unit.position.set(transform.x,transform.y,floor.elevationM);
+            group.add(unit);
+        }
+        return group;
+    }
+    function mountEnvelope(host, model, apartment) {
+        host.replaceChildren();
+        if (!model?.envelope?.footprint || !model?.envelope?.storeys?.length || !root.__floorPlanReviewRenderer) {
+            const p=el('p','viewer-copy');p.textContent='Prikaz zgrade nije dostupan za ovu lokaciju.';host.append(p);return {dispose(){}};
+        }
+        let dispose=null, cancelled=false;
+        root.__floorPlanReviewRenderer.preview(host,THREE=>envelopeGroup(THREE,model,apartment),()=>!cancelled).then(fn=>{if(cancelled)fn?.();else dispose=fn;}).catch(()=>{if(!cancelled){const p=el('p','viewer-copy');p.textContent='3D prikaz zgrade nije dostupan u ovom pregledniku.';host.replaceChildren(p);}});
+        return {dispose(){cancelled=true;dispose?.();host.replaceChildren();}};
+    }
+    function mountApartment(host, apartment) {
+        host.replaceChildren(); const view = el('div','viewer-canvas'); host.append(view);
+        const actions = el('div','viewer-actions'), button=el('button','view-toggle');button.type='button';button.textContent='Prikaži u 3D';actions.append(button);host.append(actions);
+        let current=mountPlan(view,apartment), is3d=false, generation=0;
+        button.addEventListener('click',async()=>{
+            current.dispose(); const token=++generation;
+            view.replaceChildren();is3d=!is3d;button.textContent=is3d?'Prikaži 2D':'Prikaži u 3D';
+            if(!is3d){current=mountPlan(view,apartment);return;}
+            if(!apartment?.architecture){const p=el('p','viewer-copy');p.textContent='3D rekonstrukcija nije dostupna za ovaj stan.';view.append(p);return;}
+            const renderer=root.__floorPlanReviewRenderer, three=root.__threeFloorPlans, plans=root.__buildingFloorPlans;
+            try { const dispose=await renderer.preview(view,THREE=>three.createLocalUnitGroup(THREE,apartment.architecture,plans),()=>token===generation);if(token!==generation){dispose?.();return;}current={dispose(){generation++;dispose?.();}}; }
+            catch { if(token!==generation)return;const p=el('p','viewer-copy');p.textContent='3D prikaz nije dostupan u ovom pregledniku.';view.replaceChildren(p);current={dispose(){}}; }
+        });
+        return {dispose(){generation++;current.dispose();host.replaceChildren();}};
+    }
+    root.NovogradnjeViewer={mountPlan,mountApartment,mountEnvelope};
+})(window);

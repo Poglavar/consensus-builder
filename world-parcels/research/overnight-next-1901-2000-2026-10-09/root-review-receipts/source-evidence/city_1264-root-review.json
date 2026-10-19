@@ -1,0 +1,38 @@
+{
+  "taskId": "city:1264",
+  "decision": "held",
+  "checkedAt": "2026-10-10T20:09:13.367318Z",
+  "immutableIdentity": {
+    "cityCode": 1264,
+    "rank": 1981,
+    "country": "Benin",
+    "point": [
+      7.18054808406116,
+      2.04860846665115
+    ],
+    "populationPersons": 293833,
+    "matchedQueueAndRoster": true
+  },
+  "bilingualQueriesChecked": true,
+  "registryFound": true,
+  "publicParcelGeometryFound": true,
+  "samplePolygonCount": 3,
+  "reviewFindings": {
+    "custody": "ANDF national cadastre is the geometry custodian; official WFS cache returns Bohicon commune/arrondissement context.",
+    "firstPartyUrls": [
+      "https://cadastre.andf.bj/",
+      "https://geoserver.andf.bj/geoserver/efb/ows?service=WFS&version=1.0.0&request=GetCapabilities"
+    ],
+    "geometry": "Three unchanged full Polygon geometries and source composite IDs match the original exact-point WFS cache. EPSG:32631 sample validity passes and pairwise overlap area is zero; this is a bounded sample only.",
+    "adapter": "Existing bj-andf-efoncier-geoserver adapter is configured only for Cotonou and uses nup IDs; Bohicon sample uses spatial_unit_oid_namespace:spatial_unit_oid_local_id. Fresh exact-ID reads, forced paging, 13 cells, full metric operations, source binding, and headed Details verification have not been established for Bohicon."
+  },
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricFullPolygonValidityOverlapOperations": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeDecision": "held; no new admission or citywide absence inference"
+}

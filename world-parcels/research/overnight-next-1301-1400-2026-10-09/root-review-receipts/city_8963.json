@@ -1,0 +1,12 @@
+{
+  "taskId": "city:8963",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-8963-hathras.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/hathras-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T15:13:18.533460Z",
+  "reason": "The District Hathras official land-record page confirms local custody and the viewer cache shows state 09 and District/Tehsil/Village hierarchy; a cached map response says Missing or invalid Authorization header. No safe native parcel ID/full polygon, exact-ID read, pagination, 13 cells, metric GEOS checks, source binding, or headed Details verification. Route failure does not establish citywide absence."
+}

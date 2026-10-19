@@ -1,0 +1,114 @@
+{
+  "cityRecord": "city-904-potos.json",
+  "cityCode": 904,
+  "queueRank": 2395,
+  "name": "Potosí",
+  "country": "Bolivia (Plurinational State of)",
+  "countryCode": "BO",
+  "pointLatLon": [-19.579655269715, -65.7563869642107],
+  "population2025": 243927,
+  "population2025k": 243.927,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {
+      "method": "SEARCH",
+      "url": "https://potosi.bo/direccion-de-catastro-y-desarrollo-urbano/",
+      "httpStatus": "official indexed/readable",
+      "outcome": "Official municipal page identifies the Dirección de Catastro y Desarrollo Urbano and provides the municipal address, telephone numbers, and email. No public parcel API or map configuration was exposed by discovery."
+    },
+    {
+      "method": "GET",
+      "url": "https://potosi.bo/direccion-de-catastro-y-desarrollo-urbano/",
+      "httpStatus": "TLS verification failure",
+      "outcome": "Direct curl rejected the host certificate chain. TLS verification was not disabled and no certificate exception was authorized; no content was treated as retrieved from this request."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://potosi.bo/service/catastro/",
+      "httpStatus": "official readable via discovery",
+      "outcome": "Official municipal Servicio de Catastro page identifies the service, municipal contact details, and a generic GAMP Sistemas link, but contains no parcel feature service, viewer endpoint, schema, or CRS."
+    },
+    {
+      "method": "GET",
+      "url": "https://potosi.bo/service/catastro/",
+      "httpStatus": "TLS verification failure",
+      "outcome": "Direct curl rejected the host certificate chain. No TLS bypass, login, CAPTCHA defeat, or unsafe field request was attempted."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://potosi.bo/secretaria-de-ordenamiento-territorial-urbano/",
+      "httpStatus": "official readable via discovery",
+      "outcome": "Official municipal page states that the Secretaría de Ordenamiento Territorial Urbano contains the Dirección de Catastro y Desarrollo Urbano and Jefatura de Catastro Urbano. This is local-custodian evidence, not parcel geometry evidence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://geobolivia.planificacion.gob.bo/",
+      "httpStatus": "official indexed; viewer request timed out",
+      "outcome": "Official national GeoBolivia portal advertises open territorial data and a geoviewer, but the bounded viewer retrieval timed out. No Potosí parcel layer or native identity was verified."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www10.igmbolivia.gob.bo/?page_id=5047",
+      "httpStatus": "official readable via discovery",
+      "outcome": "Official Instituto Geográfico Militar services page lists urban cadastre and geographic certification services, but no public Potosí parcel download or anonymous geometry endpoint was identified."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.oopp.gob.bo/guias-tecnicas/",
+      "httpStatus": "official readable via discovery",
+      "outcome": "Official national ministry page lists the 2022 Guía nacional de catastro urbano. It is standards/context evidence only and does not expose Potosí parcel features."
+    },
+    {
+      "method": "GET",
+      "url": "https://portalgis.ypfb.gob.bo/arcgisserver/rest/services/publico/padministrativo/MapServer/3?f=pjson",
+      "httpStatus": "empty reply",
+      "outcome": "Bounded anonymous request to an official-looking YPFB ArcGIS administrative municipality layer returned no response. The route is not a verified Potosí parcel service and no geometry was retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No current public Potosí municipal or national cadastral viewer JavaScript/configuration was obtained.",
+    "geometryCrs": "Not observed; no parcel geometry response.",
+    "nativeIdentity": "Not observed; no parcel feature response.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "No bounded parcel request could be formed from a verified public endpoint.",
+      "featureCount": 0,
+      "result": "Unavailable; this is not evidence of citywide absence."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID",
+    "full polygon geometry",
+    "source URL",
+    "source/output CRS",
+    "retrieval date",
+    "reproduction administrative codes"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "tax/account",
+    "certificate/title",
+    "personal data"
+  ],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local municipal registry custody is evidenced, but public parcel endpoint availability, exact-point membership, native identity semantics, citywide completeness, adapter behavior, and geometry CRS remain unqualified."
+  },
+  "scopeLimits": [
+    "Exact WUP point preserved in latitude/longitude order and not shifted.",
+    "A local registry custodian is not evidence of publicly accessible parcel geometry.",
+    "No citywide absence or map-extent inference is made from timeout, TLS failure, or empty reply.",
+    "No unsafe fields were requested or retained.",
+    "No raw source-specific attribute set or GeoJSON sample is retained."
+  ],
+  "uncertainty": "The official municipal custodian and cadastral responsibility are verified through first-party pages and search discovery. Public page retrieval encountered an untrusted certificate chain, GeoBolivia viewer timeout, and an empty reply from an unrelated administrative ArcGIS layer. No safe anonymous parcel ID-plus-geometry response was obtained; runtime readiness remains held pending serial qualification."
+}

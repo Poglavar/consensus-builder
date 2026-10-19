@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2100",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-2100-bal-kesir.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/bal-kesir-service-review.json",
+    "tmp/valhalla-parcel-research/2100/tkgm.headers",
+    "tmp/valhalla-parcel-research/2100/tkgm.html",
+    "tmp/valhalla-parcel-research/2100/constants.js"
+  ],
+  "checkedAt": "2026-10-10T14:22:11Z",
+  "reason": "Official TKGM viewer shell and current API host configuration were inspected; bounded route attempts yielded no parcel feature response. Stable native ID, full polygon, fresh adapter reads, paging, 13 cells, metric GEOS, binding and headed Details are unverified."
+}

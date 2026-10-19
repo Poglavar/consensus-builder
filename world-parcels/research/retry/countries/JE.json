@@ -1,0 +1,98 @@
+{
+ "kind": "country",
+ "key": "JE",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "verified_sample_partial_coverage",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GB,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "je-govje-public-property-sites",
+  "requestUrl": "https://services-eu1.arcgis.com/mUgkK1QjC37PAGmP/arcgis/rest/services/PropertySites_Join_Jun26_view/FeatureServer/0/query?f=json&where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": "none (first 3 records island-wide; St Brelade, St Helier)",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": "rings returned (single ring each); closure not separately checked",
+  "idField": "OBJECTID_1",
+  "responseFile": "research/retry/countries/JE-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "St Brelade, St Helier"
+ },
+ "source": {
+  "sourceId": "je-govje-public-property-sites",
+  "name": "Public land and property sites (PropertySites_Join_Jun26_view)",
+  "operator": "Government of Jersey (ArcGIS Online org govje / owner maps.gov.je)",
+  "scope": "Government-owned/leased sites only (public estate), NOT the general island-wide parcel fabric",
+  "endpoint": "https://services-eu1.arcgis.com/mUgkK1QjC37PAGmP/arcgis/rest/services/PropertySites_Join_Jun26_view/FeatureServer/0",
+  "method": "ArcGIS REST FeatureServer query",
+  "responseFormat": "Esri JSON",
+  "crs": "outSR=4326 accepted",
+  "reuseStatus": "not verified - licence not read"
+ },
+ "requests": [
+  {
+   "url": "https://opendata.gov.je/api/3/action/package_search?q=parcel&rows=3",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/html",
+   "assessment": "first attempt 503; an immediate repeat returned 200 with count 0 (flaky host, no parcel datasets)"
+  },
+  {
+   "url": "https://mapping.gov.je/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer via proxy (unchanged); mapping.gov.je root also resets"
+  },
+  {
+   "url": "https://maps.gov.je/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "IIS 403 Forbidden"
+  },
+  {
+   "url": "https://digimap.gov.je/ and https://www.jerseymaps.je/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=owner:maps.gov.je&f=json&num=50",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "168 public items from Government of Jersey org (basemaps, plan, roads, buildings 3D, public property); no general cadastre layer seen in first 50"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/content/items/8da0e18eb38a4e239f2c3b369cb5f7a6/data?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "web map 'Public land and property' -> layer above"
+  },
+  {
+   "url": "https://services-eu1.arcgis.com/mUgkK1QjC37PAGmP/arcgis/rest/services/PropertySites_Join_Jun26_view/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon layer; fields site_name, Parish, Tenure, Total_Site_Area_sq_m, Department"
+  },
+  {
+   "url": "https://services-eu1.arcgis.com/mUgkK1QjC37PAGmP/arcgis/rest/services/PropertySites_Join_Jun26_view/FeatureServer/0/query (3 records)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features returned"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: found via ArcGIS Online org search, not the previously guessed hosts. Layer covers only government-held sites (~public estate), so it is a partial-coverage sample and must not be read as island-wide parcels. Jersey's general property boundaries (Digimap / Land Registry at Judicial Greffe) still not located; mapping.gov.je unreachable from this network.",
+ "nextStep": "Find Jersey Digimap/Greffe property boundary service (mapping.gov.je unreachable here); scan remaining items of the govje org (only first 50 of 168 listed); confirm licence."
+}

@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 11458,
+  "queueRank": 2520,
+  "name": "Doumen",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [22.2024903865488, 113.296921596555],
+  "population2025": 233015,
+  "population2025k": 233.015,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Doumen China official cadastral parcel map natural resources real estate registration Doumen District",
+        "result": "Search located the official Zhuhai Real Estate Registration Center website and its public information-query landing page. The official site exposes a cadastral-map visual-query route, but the current route redirects to real-name authentication. No anonymous parcel identifier plus geometry response was found.",
+        "actualResultUrls": [
+          "https://bdc.zhuhai.gov.cn/",
+          "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html",
+          "https://www.zhbdc.org.cn/zhshim/MapIndex/Main"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "斗门区 不动产登记 地籍图 地图 自然资源 官方",
+        "result": "官方珠海市不动产登记中心网站 confirms a Doumen branch and links the public comprehensive real-estate information query. The current cadastral-map visual-query route redirects to the real-name authentication flow. No anonymous safe parcel ID, geometry, schema, or CRS response was exposed.",
+        "actualResultUrls": [
+          "https://bdc.zhuhai.gov.cn/",
+          "https://bdc.zhuhai.gov.cn/zwgk/czyjs/content/post_3941423.html",
+          "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html",
+          "https://www.zhbdc.org.cn/zhshim/MapIndex/Main"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Zhuhai Real Estate Registration Center website is the municipal registration custodian and explicitly publishes a Doumen branch service/budget record. Its public landing page links to real-estate information query and its source JavaScript exposes the cadastral-map visual-query route. This evidences a local/regional registration custodian and service route, not open cadastral geometry access.",
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Zhuhai municipal real-estate registration service including Doumen District; public cadastral spatial-service coverage was not verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_custodian_no_anonymous_geometry",
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://bdc.zhuhai.gov.cn/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official Zhuhai Real Estate Registration Center homepage retrieved. It identifies the registration center and links the public comprehensive real-estate information query; the page also identifies the Doumen branch in current notices.",
+      "safeFieldsObserved": ["source service URL", "retrieval timestamp"]
+    },
+    {
+      "url": "https://bdc.zhuhai.gov.cn/zwgk/czyjs/content/post_3941423.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official current budget page for 珠海市不动产登记中心斗门分中心 retrieved. It confirms a Doumen branch under the municipal registration center; no parcel geometry or map API was present.",
+      "safeFieldsObserved": ["source service URL", "retrieval timestamp"]
+    },
+    {
+      "url": "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Public comprehensive real-estate information-query landing page retrieved. Its current JavaScript was inspected; the cadastral-map visual-query link is /zhshim/MapIndex/Main. No parcel data response was returned by the landing page.",
+      "safeFieldsObserved": ["source service URL", "retrieval timestamp"]
+    },
+    {
+      "url": "https://www.zhbdc.org.cn/zhpubquery/js/InfoQuery.d40b9563.js",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Current public JavaScript configuration retrieved. It exposes the cadastral-map visual-query route /zhshim/MapIndex/Main and the public query route; no geometry service URL, schema, field mapping, or CRS was included.",
+      "safeFieldsObserved": ["source service URL", "retrieval timestamp"]
+    },
+    {
+      "url": "https://www.zhbdc.org.cn/zhshim/MapIndex/Main",
+      "method": "GET",
+      "status": "HTTP 302 authentication redirect",
+      "summary": "Official cadastral-map route redirected through SSO and real-name authentication. No login, credentials, CAPTCHA bypass, token acquisition, or follow-on private/authenticated requests were attempted.",
+      "safeFieldsObserved": ["source service URL", "retrieval timestamp"]
+    }
+  ],
+  "attemptedRoutes": [
+    "https://bdc.zhuhai.gov.cn/",
+    "https://bdc.zhuhai.gov.cn/zwgk/czyjs/content/post_3941423.html",
+    "https://www.zhbdc.org.cn/zhpubquery/InfoQuery.html",
+    "https://www.zhbdc.org.cn/zhpubquery/js/InfoQuery.d40b9563.js",
+    "https://www.zhbdc.org.cn/zhshim/MapIndex/Main"
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier",
+    "parcel geometry",
+    "geometry CRS",
+    "source service URL",
+    "retrieval timestamp"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "technicalBlocker": "The official cadastral-map route is behind real-name authentication and no anonymous endpoint returning a safe parcel identifier plus geometry was exposed by the reachable public pages. No parcel request was made.",
+  "remainingUncertainty": "The exact WUP point was not tested against a parcel service because the discovered official map route requires authentication. This is not evidence of citywide parcel absence. The coordinate was retained exactly and not shifted.",
+  "nextStep": "On a later attempt, locate an officially documented anonymous Zhuhai/Doumen cadastral spatial service or obtain an independently qualified adapter path; request only bounded safe ID-plus-geometry data. Keep runtime admission held until independent qualification.",
+  "sampleGeoJSON": null
+}

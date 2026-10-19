@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "description": "Live verification of the explicitly selected, historical Bogotá IDECA/UAECD lot mirror served by CAR.",
+  "cityId": "bogota",
+  "sourceId": "co-bogota-uaecd-lote",
+  "checkedAt": "2026-10-02",
+  "dataVersion": "2021-12",
+  "selection": "User explicitly approved the dated mirror for the prototype after the current UAECD endpoint timed out from the laptop and development server.",
+  "endpoint": "https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9",
+  "originEndpoint": "https://serviciosgis.catastrobogota.gov.co/arcgis/rest/services/catastro/lote/MapServer/0",
+  "metadata": {
+    "requestUrl": "https://sig.car.gov.co/arcgis/rest/services/VISOR/Capas_base/FeatureServer/9?f=json",
+    "httpStatus": 200,
+    "description": "Capa Lote tomada del Mapa de Referencia del IDECA versión 12.21",
+    "copyrightText": "IDECA, UAECD",
+    "nativeSrid": 9377,
+    "outputSrid": 4326,
+    "idField": "LotCodigo",
+    "idType": "string",
+    "idPattern": "^[0-9]{12}$",
+    "objectIdField": "OBJECTID",
+    "maxRecordCount": 2000,
+    "supportsPagination": true,
+    "supportsOrderBy": true
+  },
+  "licence": {
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "catalogueUrl": "https://datosabiertos.bogota.gov.co/dataset/lote",
+    "confirmed": "Official Lote catalog explicitly lists CC BY 4.0; mirror credits IDECA/UAECD."
+  },
+  "verifiedParcelResponse": {
+    "bbox": [
+      -74.0825,
+      4.609,
+      -74.081,
+      4.6105
+    ],
+    "f": "geojson",
+    "outFields": [
+      "OBJECTID",
+      "LotCodigo",
+      "ManzCodigo"
+    ],
+    "outSR": 4326,
+    "pageSize": 3,
+    "responseFile": "bogota-car-2021-response.json",
+    "httpStatus": 200,
+    "parcelCount": 3,
+    "nativeIds": [
+      "006106020001",
+      "006106001009",
+      "006106022011"
+    ],
+    "canonicalPrefix": "CO-BOGOTA-",
+    "pagination": "GeoJSON omits exceededTransferLimit; a full three-feature page was followed by an empty page before publishing complete:true. All three IDs resolved again with safely quoted string literals."
+  },
+  "tls": {
+    "issue": "Mirror sends a chain whose intermediates do not match its GeoTrust EV RSA CA G2 leaf issuer.",
+    "supplement": "backend/parcels/certificates/geotrust-ev-rsa-ca-g2.pem",
+    "certificateSource": "https://cacerts.digicert.com/GeoTrustEVRSACAG2.crt",
+    "sha256": "2D:14:0F:20:B8:A9:6E:2B:4D:2F:1C:C5:AC:A5:E5:A1:E7:DC:56:A7:49:1E:51:09:06:96:0F:38:D2:D2:1A:EF",
+    "validUntil": "2030-07-02",
+    "verification": "Leaf verifies against the normal roots with this intermediate. Transport retains hostname and certificate verification; supplement is scoped to this configured source."
+  },
+  "browserVerification": {
+    "initialLoaded": 1159,
+    "afterPanRetained": 2568,
+    "returnCached": true,
+    "uncachedFootprintRequests": 1,
+    "bindingHttpStatus": 200,
+    "bindingCoverage": "complete",
+    "bindingParcelId": "CO-BOGOTA-006106001009",
+    "sourceDateVisible": "Globe popup and map attribution"
+  },
+  "scope": "Historical urban/rural lot polygons for Bogotá D.C.; a lot may contain multiple properties. This is neither current legal ownership nor nationwide Colombian coverage; neighbouring municipalities require other sources.",
+  "currentSnapshotCandidate": {
+    "date": "2026-08-30",
+    "geojsonZipUrl": "https://datosabiertos.bogota.gov.co/dataset/f615a894-3460-4a86-ae9e-fa6e6bf35e77/resource/1bcd3890-c4f8-4859-ba71-a84667a4ee0f/download/lote.geojson.08.26.zip",
+    "status": "Official catalogue link found; runtime loading not verified or enabled."
+  }
+}

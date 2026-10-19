@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4433-tembisa.json",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.ekurhuleni.gov.za/",
+      "observation": "Official public City GIS portal supports map/data viewing and lists Property Data > Stands."
+    },
+    {
+      "url": "https://gis.ekurhuleni.gov.za/arcgis/rest/services/Ekurhuleni/Ekurhuleni_Propety_Data_Map/MapServer",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "observation": "ArcGIS Server 11.3; layer 1 Stands is polygon geometry with full city extent, GeoJSON query/paging support and maxRecordCount 500000. Safe ID fields used; other attributes not requested."
+    },
+    {
+      "url": "https://www.ekurhuleni.gov.za/geographic-information-systems-gis-division/",
+      "observation": "Municipal GIS Division says it manages spatial property data and maintains municipal cadastre."
+    }
+  ],
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "nativeComponentReview": {
+    "largeStandId": "S850000000000900000",
+    "sourceRows": 8,
+    "metricAreaM2": 1962735.399309826,
+    "matchingReferences": [
+      "TOWNSHIP_CODE",
+      "PROPNO",
+      "PTNO",
+      "SG_CODE"
+    ],
+    "result": "All components retained without repair, clipping or size exclusion."
+  },
+  "rootDecision": "approved_for_bounded_local_runtime",
+  "scope": "231 valid, distinct Ekurhuleni municipal stand references verified in thirteen bounded 0.001-degree cells around the unchanged Tembisa WUP locator. GIS_KEY supplies native identity; every source component is retained and administrative references must agree. Complete object-ID manifests, three-row paging of the 45-row viewport and its full component refresh (fifteen geometry pages each), all 231 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Stand S850000000000900000 retains eight disjoint components totalling about 1.963 km²; matching township/property/portion/SG references support its shared source identity. It is not excluded by size, flattened, clipped or repaired. Coverage, title, survey accuracy and identity beyond this bounded evidence are unverified.",
+  "rootRuntimeDescriptorQualification": {
+    "tests": 23,
+    "requestCount": 144,
+    "uniqueParcels": 231,
+    "allTestsPassed": true,
+    "metricCrs": "EPSG:32735",
+    "gridSizeDegrees": 0.001
+  },
+  "rootMetricAuditFile": "tembisa-parcels-quality.json",
+  "acceptanceFile": "tembisa-parcels-acceptance.json",
+  "browserCheckFile": "tembisa-browser-check.json"
+}

@@ -1,0 +1,123 @@
+{
+  "name": "Thessaloniki",
+  "country": "Greece",
+  "countryCode": "GR",
+  "rank": 716,
+  "point": [
+    40.6343408556323,
+    22.945560253649
+  ],
+  "population2025k": 749.84,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "368 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Thessaloniki WUP settlement locator. Complete bounded paging, forced three-row pages, all 368 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 78 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The municipal KAEK strings include Greek alphabetic characters and are preserved unchanged; declared source CRS is EPSG:2100 and requested output EPSG:4326. The municipal reference layer is distinct from the national legal register. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Hellenic Cadastre announced the Thessaloniki Cadastral Office and local jurisdiction. The official Thessaloniki municipal ArcGIS layer “Γεωτεμάχια Κτηματολογίου - ΚΑΕΚ” is a polygon layer with safe native identifier KAEK and supports GeoJSON queries. An exact ranked-point query returned one full polygon; this establishes a sampled feature only, not citywide completeness or runtime readiness.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Wider municipal completeness, currentness, legal title, survey accuracy and long-term key continuity remain unverified.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Thessaloniki official cadastral parcels map GIS Hellenic Cadastre municipal parcel layer",
+        "result": "Official Hellenic Cadastre sources identify the Thessaloniki office and public cadastral map/information; city map ArcGIS layer exposes KAEK parcel polygons and the exact WUP point query returned one polygon.",
+        "method": "Separate language-specific search and official-source review"
+      },
+      {
+        "language": "Greek",
+        "query": "Θεσσαλονίκη επίσημος χάρτης κτηματολογικά γεωτεμάχια ΚΑΕΚ πολυγωνικά δεδομένα GIS",
+        "result": "Οι επίσημες πηγές επιβεβαιώνουν το Κτηματολογικό Γραφείο Θεσσαλονίκης και τη δημόσια χαρτογραφική πληροφορία. Το δημοτικό επίπεδο ArcGIS επιστρέφει πολύγωνα γεωτεμαχίων με ασφαλές πεδίο ΚΑΕΚ· το σημείο WUP τέμνει ένα πολύγωνο.",
+        "method": "Separate language-specific search and official-source review"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ktimatologio.gr/grafeio-tipou/deltia-tipou/1347",
+        "observation": "Official Hellenic Cadastre announcement says Thessaloniki Cadastral Office began operation 2024-04-01 and lists its jurisdiction."
+      },
+      {
+        "url": "https://www.ktimatologio.gr/pliroforiako-yliko/geoxorika/42",
+        "observation": "Official Hellenic Cadastre INSPIRE information says cadastral boundaries can be publicly viewed/downloaded without registration."
+      },
+      {
+        "url": "https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160",
+        "observation": "Official Thessaloniki city ArcGIS metadata: Polygon Feature Layer, EPSG:2100, extent covers the WUP point; query formats JSON/GeoJSON; safe fields OBJECTID and KAEK plus geometry; no personal fields listed."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "A city-operated polygon layer returned one parcel intersecting the exact ranked WUP point, with the source-native safe parcel key and full geometry. Only one polygon is retained. The point is a population-weighted locator, not a boundary; this sample does not establish completeness, data currency, legal status or runtime contract.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": true
+    },
+    "remainingUncertainty": "The city layer’s maintenance/currentness, exact legal relationship to the national cadastre, full city coverage and native CRS/query contract outside the point response remain to be qualified."
+  },
+  "cityId": "wup2025:567",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [
+    "gr-thessaloniki-municipal-kaek"
+  ],
+  "queueRank": 716,
+  "wupCityCode": 567,
+  "centerLatLon": [
+    40.6343408556323,
+    22.945560253649
+  ],
+  "population2025": 749840,
+  "verifiedSampleFile": "city-567-thessaloniki-samples.geojson",
+  "adapterReady": true,
+  "source": {
+    "name": "Thessaloniki public cadastral parcels (KAEK)",
+    "operator": "Municipality of Thessaloniki GIS",
+    "url": "https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160",
+    "serviceType": "ArcGIS public cadastral polygons",
+    "layer": "Γεωτεμάχια Κτηματολογίου - ΚΑΕΚ (ID 160)",
+    "geometryType": "Polygon",
+    "nativeIdFields": [
+      "KAEK"
+    ],
+    "requestedAttributes": [
+      "OBJECTID",
+      "KAEK"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "nativeIdField": "KAEK",
+    "nativeIdEvidence": "Safe source-native parcel key KAEK observed on exact-point polygon response.",
+    "scope": "368 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Thessaloniki WUP settlement locator. Complete bounded paging, forced three-row pages, all 368 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 78 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The municipal KAEK strings include Greek alphabetic characters and are preserved unchanged; declared source CRS is EPSG:2100 and requested output EPSG:4326. The municipal reference layer is distinct from the national legal register. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "368 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Thessaloniki WUP settlement locator. Complete bounded paging, forced three-row pages, all 368 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 78 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The municipal KAEK strings include Greek alphabetic characters and are preserved unchanged; declared source CRS is EPSG:2100 and requested output EPSG:4326. The municipal reference layer is distinct from the national legal register. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://www.ktimatologio.gr/grafeio-tipou/deltia-tipou/1347",
+    "https://www.ktimatologio.gr/pliroforiako-yliko/geoxorika/42",
+    "https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160"
+  ],
+  "appCityId": "thessaloniki",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "368 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Thessaloniki WUP settlement locator. Complete bounded paging, forced three-row pages, all 368 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 78 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The municipal KAEK strings include Greek alphabetic characters and are preserved unchanged; declared source CRS is EPSG:2100 and requested output EPSG:4326. The municipal reference layer is distinct from the national legal register. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/thessaloniki-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/thessaloniki-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/thessaloniki-root-quality-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "gr-thessaloniki-municipal-kaek",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/thessaloniki-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/thessaloniki-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T03:03:34.580378+00:00"
+}

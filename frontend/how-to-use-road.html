@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<!-- Roads and tracks: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: kako-koristiti-cesta.html. -->
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Roads and tracks · Consensus Builder
+  </title>
+  <meta content="Roads and tracks are corridors drawn on the map. Their lanes determine the width, land take and appearance of the finished proposal." name="description"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+  <link rel="canonical" href="https://urbangametheory.xyz/how-to-use-road.html" />
+  <link rel="alternate" hreflang="en" href="https://urbangametheory.xyz/how-to-use-road.html" />
+  <link rel="alternate" hreflang="hr" href="https://urbangametheory.xyz/kako-koristiti-cesta.html" />
+  <link rel="alternate" hreflang="x-default" href="https://urbangametheory.xyz/how-to-use-road.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Consensus Builder" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="Roads and tracks · Consensus Builder" />
+  <meta property="og:description" content="Roads and tracks are corridors drawn on the map. Their lanes determine the width, land take and appearance of the finished proposal." />
+  <meta property="og:url" content="https://urbangametheory.xyz/how-to-use-road.html" />
+  <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@UrbanGameTheory" />
+  <meta name="twitter:title" content="Roads and tracks · Consensus Builder" />
+  <meta name="twitter:description" content="Roads and tracks are corridors drawn on the map. Their lanes determine the width, land take and appearance of the finished proposal." />
+  <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta name="twitter:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Roads and tracks","description":"Roads and tracks are corridors drawn on the map. Their lanes determine the width, land take and appearance of the finished proposal.","inLanguage":"en","url":"https://urbangametheory.xyz/how-to-use-road.html","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","isPartOf":{"@type":"WebSite","name":"Consensus Builder","url":"https://urbangametheory.xyz/"},"publisher":{"@type":"Organization","name":"Urban Game Theory","url":"https://urbangametheory.xyz/"}}</script>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Roads and tracks
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=en">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Back to the map
+   </a>
+   <nav aria-label="Language" class="cb-page-header__lang cb-segmented">
+    <a class="cb-segmented__option" href="kako-koristiti-cesta.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a aria-current="page" class="cb-segmented__option" href="how-to-use-road.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Guide navigation" class="sidebar">
+   <div class="sidebar-links">
+    <a class="btn btn-quiet" href="how-to-use.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     How to use
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-buildings.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Buildings
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-park-square.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parks, squares and lakes
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-reparcellization.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Land readjustment
+    </a>
+    <a aria-current="page" class="btn btn-quiet" href="how-to-use-road.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Roads and tracks
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-views.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Views and comparisons
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     On this page
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#draw">
+      Drawing and section
+     </a>
+     <a class="btn btn-quiet" href="#tracks">
+      Tracks
+     </a>
+     <a class="btn btn-quiet" href="#edit">
+      Edit a road
+     </a>
+     <a class="btn btn-quiet" href="#designation">
+      Road land
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro">
+     <span class="eyebrow">
+      Learn by doing
+     </span>
+     <h2>
+      Draw the route. Build the profile.
+     </h2>
+     <p>
+      Roads and tracks are corridors drawn on the map. Their lanes determine the width, land take and appearance of the finished proposal.
+     </p>
+    </div>
+    <section class="guide-section" id="draw">
+     <h2>
+      From alignment to road proposal
+     </h2>
+     <figure class="howto-video" id="watch-road">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Watch the workflow
+       </span>
+       <span class="video-duration">
+        0:42
+       </span>
+      </div>
+      <video aria-describedby="caption-road" aria-label="Design a road section" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-07-road-section-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-07-road-section-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-07-road-section-review.mp4">
+        Open the video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-road">
+       <strong>
+        Design a road section.
+       </strong>
+       Draw an alignment, assemble the lanes and review the road in 3D.
+       <a class="cb-link" href="videos/howto/consensus-builder-07-road-section-review.mp4">
+        Open the video
+       </a>
+      </figcaption>
+     </figure>
+     <ol class="steps">
+      <li class="step">
+       <h3>
+        Draw the alignment
+       </h3>
+       <p>
+        Choose
+        <span class="ui-label">
+         Road
+        </span>
+        or
+        <span class="ui-label">
+         Track
+        </span>
+        from the Transport tools, or the open-ground menu where available. Click points along the map. The drawing panel reports length, area, intersected parcels, owners, estimated cost and TEAD (estimated acquisition difficulty).
+       </p>
+       <p>
+        <span class="ui-label">
+         Undo (U)
+        </span>
+        removes the last point.
+        <span class="ui-label">
+         Finish road (F)
+        </span>
+        completes the line;
+        <span class="ui-label">
+         Cancel
+        </span>
+        stops the drawing. Roads need only the corridor strip through a parcel, so review the affected ground rather than assuming the whole parcel is acquired.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Compose the cross-section
+       </h3>
+       <p>
+        Open
+        <span class="ui-label">
+         Edit cross-section
+        </span>
+        . Start from a standard profile, then add traffic lanes, sidewalks, cycle paths, parking, green strips, bus lanes or tracks. Select a lane to edit its properties. New lanes are inserted beside the selection; drag their handles to reorder them.
+       </p>
+       <p>
+        Total width is the sum of the lanes. Edit individual widths or drag a seam between lanes to transfer width while keeping the total fixed. A reset control restores the standard lane width. Parking options include different layouts and planted spaces; green strips can use grass or trees.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Check fit and crossings
+       </h3>
+       <p>
+        Review the warnings about buildings and applied public spaces. A building crossing can require choosing surface demolition or a tunnel. The editor indicates when the profile cannot fit the available corridor; a road cannot exceed 80 m in width. Use
+        <span class="ui-label">
+         Apply to drawing
+        </span>
+        to return to the alignment.
+       </p>
+      </li>
+      <li class="step">
+       <h3>
+        Finish and inspect the proposal
+       </h3>
+       <p>
+        <span class="ui-label">
+         Finish road
+        </span>
+        creates a local proposal and applies it immediately. Click the road to inspect it, use
+        <span class="ui-label">
+         Before / after
+        </span>
+        to check its land take and switch to 3D to review its lanes. If creation fails, the app keeps the drawing for correction.
+       </p>
+      </li>
+     </ol>
+    </section>
+    <section class="guide-section" id="tracks">
+     <h2>
+      Tracks and mixed streets
+     </h2>
+     <p>
+      Roads and tracks use the same corridor editor. Track begins with a rail lane; combine it with sidewalks, greenery or traffic lanes for a mixed street. Choose a track gauge of 1000 mm or 1435 mm. For double track, add a second track lane.
+     </p>
+    </section>
+    <section class="guide-section" id="edit">
+     <h2>
+      Edit the network
+     </h2>
+     <p>
+      Click an applied road to edit its cross-section or map nodes. Drag a node to move it; Alt/Option-click removes a node. Moving a junction moves its connected legs; Alt/Option-click disconnects them. Drawing up to an existing road connects the network. Bulldozing a middle stretch can split it into separate roads.
+     </p>
+     <p>
+      Check
+      <span class="ui-label">
+       Applies to
+      </span>
+      before changing a section: the selected segment and the whole road network are different scopes. Use
+      <span class="ui-label">
+       Fork proposal
+      </span>
+      for an alternative design or different terms. Editing a published road changes your local copy; the published or on-chain version stays unchanged. Share and Unapply are in the same proposal panel.
+     </p>
+    </section>
+    <section class="guide-section" id="designation">
+     <h2>
+      Designate road land
+     </h2>
+     <p>
+      Designate as road land assigns the selected contiguous parcels to road use without drawing an alignment or a lane profile. Use it for the land proposal; use Road or Track when you want to design the corridor itself.
+     </p>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="how-to-use.html">
+      All instructions
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=en">
+      Try it on the map
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Roadmap
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
+</html>

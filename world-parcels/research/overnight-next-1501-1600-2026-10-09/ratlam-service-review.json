@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-8537-ratlam.json",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "purpose": "Document first-party Ratlam/Madhya Pradesh registry discovery, public route attempts, safe-field limits, and uncertainty.",
+  "assessment": "Official Ratlam District Administration evidence establishes local land-record service custody and identifies Ratlam GIS. MP Bhulekh is the state land-record/Naksha route and DILRMP reports Ratlam cadastral-map status. No safe anonymous ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "registryFound=true is supported by the official Ratlam District Administration land-record page, which names the Ratlam Lok Seva Kendra/Tehsildar location and describes district spatial and non-spatial land records and Naksha. This is local service custody evidence only; it is not source integration, ownership evidence, or proof of citywide parcel availability.",
+  "officialPrimarySources": [
+    {"url": "https://ratlam.nic.in/en/service/land-records/", "observation": "Official Ratlam district page says land records for 1089 villages, spatial and non-spatial, are available through the MP land-record service and lists Naksha output; it identifies the Lok Seva Kendra, Office of the Tehsildar, Ratlam."},
+    {"url": "https://ratlam.nic.in/en/ratlam-gis/", "observation": "Official English Ratlam GIS page links the district GIS portal and describes roads, utilities, land use, government assets and public infrastructure; it does not document a parcel feature API."},
+    {"url": "https://ratlam.nic.in/e0-a4-b0-e0-a4-a4-e0-a4-b2-e0-a4-be-e0-a4-ae-e0-a4-9c-e0-a5-80-e0-a4-86-e0-a4-88-e0-a48f-e0-a5-8d/", "observation": "Official Hindi Ratlam GIS page confirms the same district GIS description and portal link."},
+    {"url": "https://mpbhulekh.gov.in/mpbhulekh.do", "observation": "Official state land-record portal identified by the Ratlam district page/search; direct retrieval timed out in this bounded pass, so its current JavaScript/configuration and feature schema were not verified."},
+    {"url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/440", "observation": "Official Government of India DILRMP Ratlam status route exposes cadastral-map, georeferencing, RoR-linking and ULPIN status headings; it is progress evidence, not a parcel feature endpoint."},
+    {"url": "https://mptownplan.gov.in/plan_Ratlam.html", "observation": "Official Madhya Pradesh town-planning page lists Ratlam khasra land-use/development-plan maps; these are planning-map materials, not a safe anonymous native parcel API."}
+  ],
+  "viewerConfiguration": {
+    "candidateRoutes": ["https://mpbhulekh.gov.in/mpbhulekh.do", "https://ratlamgis.mp.gov.in/"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful safe feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "geometry type", "source CRS", "source layer", "retrieval time"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://ratlam.nic.in/en/service/land-records/", "method": "GET; anonymous public read via first-party page/search", "normalTlsVerification": true, "result": "HTTP page content was available through first-party review; local land-record custody and MP service link verified; no parcel geometry response."},
+    {"url": "https://ratlam.nic.in/en/ratlam-gis/", "method": "GET; anonymous public read via first-party page/search", "normalTlsVerification": true, "result": "Official page content available; portal link and general GIS scope verified; no service configuration or parcel feature response."},
+    {"url": "https://ratlam.nic.in/e0-a4-b0-e0-a4-a4-e0-a4-b2-e0-a4-be-e0-a4-ae-e0-a4-9c-e0-a5-80-e0-a4-86-e0-a4-88-e0-a48f-e0-a5-8d/", "method": "GET; anonymous public read via first-party page/search", "normalTlsVerification": true, "result": "Official Hindi page content available; no parcel feature response."},
+    {"url": "https://mpbhulekh.gov.in/mpbhulekh.do", "method": "GET; anonymous public read with Chrome User-Agent, Accept, Accept-Language, cookie jar", "normalTlsVerification": true, "result": "Timed out during bounded direct retrieval; no login, CAPTCHA, survey-number, owner, address, or unsafe record request was made. Timeout is not treated as absence."},
+    {"url": "https://ratlamgis.mp.gov.in/", "method": "GET; anonymous public read with Chrome User-Agent, Accept, Accept-Language, cookie jar", "normalTlsVerification": true, "result": "Unusable for this pass: bounded direct retrieval did not return page/configuration content. No map extent or parcel query submitted."},
+    {"url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/440", "method": "GET; anonymous public read via first-party search result", "normalTlsVerification": true, "result": "Official Ratlam digitization/ULPIN status page found; no qualifying anonymous parcel geometry response."},
+    {"url": "https://mptownplan.gov.in/plan_Ratlam.html", "method": "GET; anonymous public read via first-party search result", "normalTlsVerification": true, "result": "Official Ratlam planning page found; listed maps are planning context and no safe parcel feature endpoint was verified."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "exactWupPointTest": "Not run: no anonymous parcel geometry layer was verified. Exact WUP point [23.3324144088455, 75.0384195046446] was preserved unchanged.", "query": "No point or extent parcel query submitted because the public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Ratlam District Administration land-record custody plus Madhya Pradesh Bhulekh/Naksha, Ratlam GIS and DILRMP reporting.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The public availability and schema of Ratlam parcel geometry, including urban coverage, CRS, stable native identity, and citywide completeness, remain unverified. Timeouts, unusable UI, planning maps, and administrative/digitization pages do not establish cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; this packet does not qualify an adapter or enable runtime."}
+}

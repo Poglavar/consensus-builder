@@ -1,0 +1,66 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "EE",
+ "country": "Estonia",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Maa- ja Ruumiamet (Estonian Land and Spatial Board) - Cadastre of Estonia (katastriyksused)",
+ "portalsFound": [
+  {
+   "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+   "observation": "Open GeoServer WFS 2.0 (INSPIRE-style capabilities) with layer kataster:ky_kehtiv (current cadastral units)."
+  },
+  {
+   "url": "https://xgis.maaamet.ee/xgis2/page/app/maainfo",
+   "observation": "Maa-amet public map viewer (HTTP 200)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster:ky_kehtiv&count=3&outputFormat=application/json&bbox=24.745,59.436,24.748,59.438,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels, Tallinn (tunnus, hkood, mk_nimi, l_aadress, siht1, maks_hind)"
+  },
+  {
+   "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster:ky_kehtiv&count=3&outputFormat=application/json&bbox=26.71,58.377,26.713,58.379,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 Polygon parcels, Tartu"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "ee-maaamet-kataster-wfs",
+  "requestUrl": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster:ky_kehtiv&count=3&outputFormat=application/json&bbox=24.745,59.436,24.748,59.438,EPSG:4326",
+  "method": "GET (WFS 2.0.0)",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   24.745,
+   59.436,
+   24.748,
+   59.438
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "tunnus (cadastral number)",
+  "responseFile": null,
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Tallinn (Harju); second sample Tartu; output coordinates EPSG:3301 (Estonian L-EST97)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "national (all cadastral units)",
+  "regionsVerified": [
+   "Tallinn",
+   "Tartu"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read (Maa-amet open data expected; confirm). Output CRS is EPSG:3301, not lon/lat, despite the EPSG:4326 bbox request.",
+ "nextStep": "Confirm licence, srsName option for 4326, and bulk download availability."
+}

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T21:50:35.727416+00:00",
+  "city": "sandiego",
+  "url": "http://localhost:5638/?city=sandiego&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "localUncommittedUndeployed": true,
+  "browserMode": "Dedicated headed Chrome with anti-throttling flags",
+  "sourceId": "us-ca-sangis-parcels-reference",
+  "loadedParcelLayers": 205,
+  "reportedLoadedParcels": 205,
+  "selectedParcelId": "US-CA-SANGIS-PARCEL-5349091",
+  "realPointerClick": {
+    "x": 252,
+    "y": 705
+  },
+  "detailsOpened": true,
+  "displayedNativeReferenceMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceAlerts": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "limitations": "Manual check confirms local source wiring and parcel interaction; whole-city completeness is unverified and intermittent provider deadlines remain documented."
+}

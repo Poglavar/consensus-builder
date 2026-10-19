@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7942-juiz-de-fora.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Exact point intersection query requested `outFields=OBJECTID` only, geometry and EPSG:4326 output, result limit 3. It returned one Polygon; an independent ring test confirms the unchanged WUP point lies inside and the ring is closed. The sample retains OBJECTID and unchanged geometry only.\\nExact request: https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query?f=geojson&where=1%3D1&geometry=-43.3632723968038%2C-21.7520452174457&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3\\nResult: HTTP 200; one polygon, OBJECTID 70049; unchanged locator contained inside.",
+  "registryAssessment": "The municipal SISURB lot service is explicitly described as registered municipal lots compiled from city and consortium cadastral datasets. Its public polygon layer returned an exact WUP-point intersecting feature, OBJECTID 70049.",
+  "officialPrimarySources": [
+    {
+      "title": "Juiz de Fora municipal SISURB ArcGIS lot layer metadata",
+      "url": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+      "observation": "Public municipal layer metadata labels the polygon layer PEUS.uso_cad_lotes and describes municipal-cadastral lot geometry."
+    },
+    {
+      "title": "Juiz de Fora municipal SISURB service root",
+      "url": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+      "observation": "Official city service root and lot layer directory."
+    },
+    {
+      "title": "Municipal parcel-query endpoint",
+      "url": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query",
+      "observation": "Safe exact-point request requested only OBJECTID plus geometry; one polygon returned."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Juiz de Fora Brazil official cadastral parcel map municipal land registry GIS urban lots",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+        "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+        "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "Juiz de Fora cadastro imobiliário mapa de lotes cadastro técnico municipal geoportal prefeitura oficial",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+        "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+        "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": true,
+    "sampleFile": "city-7942-juiz-de-fora-samples.geojson",
+    "details": "Exact point intersection query requested `outFields=OBJECTID` only, geometry and EPSG:4326 output, result limit 3. It returned one Polygon; an independent ring test confirms the unchanged WUP point lies inside and the ring is closed. The sample retains OBJECTID and unchanged geometry only."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The municipal SISURB lot service is explicitly described as registered municipal lots compiled from city and consortium cadastral datasets. Its public polygon layer returned an exact WUP-point intersecting feature, OBJECTID 70049.",
+    "verifiedOpenScope": "Exact point intersection query requested `outFields=OBJECTID` only, geometry and EPSG:4326 output, result limit 3. It returned one Polygon; an independent ring test confirms the unchanged WUP point lies inside and the ring is closed. The sample retains OBJECTID and unchanged geometry only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "bounded anonymous full-polygon query",
+      "requestUrl": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query?f=geojson&where=1%3D1&geometry=-43.3632723968038%2C-21.7520452174457&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "result": "HTTP 200; one polygon, OBJECTID 70049; unchanged locator contained inside.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "This one exact parcel verifies only the locator neighborhood; no citywide feature completeness is asserted."
+}

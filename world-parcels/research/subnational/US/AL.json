@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "AL",
+ "regionName": "Alabama",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-al-jefferson-county-parcels",
+  "name": "Jefferson County (Birmingham) Parcels",
+  "operator": "Jefferson County Commission, IT Services GIS Division",
+  "scope": "Jefferson County, AL",
+  "endpoint": "https://jccgis.jccal.org/server/rest/services/Basemap/Parcels/MapServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS REST query)",
+  "crs": "EPSG:4326 (outSR requested)",
+  "reuseStatus": "Layer copyright: Jefferson County Commission; terms not read"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-al-jefferson-county-parcels",
+  "requestUrl": "https://jccgis.jccal.org/server/rest/services/Basemap/Parcels/MapServer/0/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,PARCELID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -86.8112,
+   33.5201,
+   -86.8096,
+   33.5213
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCELID",
+  "responseFile": "AL-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "Jefferson County, AL"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide open parcel layer found on ArcGIS Online search (only county/city layers such as Mobile, Elmore, St. Clair, Jefferson). Publisher makes no statewide claim.",
+ "subregionsVerified": [
+  "Jefferson County, AL"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Alabama+parcels",
+   "observation": "Search returned Mobile County (MCRC_Public_Parcels), Elmore, Jefferson and several city layers; no state-agency statewide parcel service"
+  },
+  {
+   "url": "https://jccgis.jccal.org/server/rest/services/Basemap/Parcels/MapServer/0",
+   "observation": "Jefferson County parcel polygons; layer also carries owner/mailing fields, not saved"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://jccgis.jccal.org/server/rest/services/Basemap/Parcels/MapServer/0/query?...outFields=OBJECTID,PARCELID&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 parcel polygons, Birmingham; ID + geometry only"
+  }
+ ],
+ "reuseStatus": "Owner and address fields exist in the source; only OBJECTID and PARCELID were requested. Licence not read.",
+ "remainingUncertainty": "Statewide absence is from catalogue search only (no ADECA/AL Dept of Revenue viewer inspected); Mobile County (services8.arcgis.com MCRC_Public_Parcels) is a second candidate.",
+ "nextStep": "Check ADECA/Alabama GIS Advisory Committee for a statewide layer; else sample Mobile County."
+}

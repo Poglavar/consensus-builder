@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "annapolis",
+      "stateCode": "MD",
+      "sourceId": "us-md-annapolis-parcels",
+      "endpoint": "https://services.arcgis.com/7ww0md22RA7aTw3W/ArcGIS/rest/services/City_of_Annapolis_Parcels/FeatureServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.495,
+            38.975,
+            -76.4925,
+            38.9775
+          ],
+          "count": 129,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.4925,
+            38.975,
+            -76.49000000000001,
+            38.9775
+          ],
+          "count": 205,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.49000000000001,
+            38.975,
+            -76.48750000000001,
+            38.9775
+          ],
+          "count": 90,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.495,
+            38.9775,
+            -76.4925,
+            38.98
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.4925,
+            38.9775,
+            -76.49000000000001,
+            38.98
+          ],
+          "count": 97,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.49000000000001,
+            38.9775,
+            -76.48750000000001,
+            38.98
+          ],
+          "count": 236,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.495,
+            38.98,
+            -76.4925,
+            38.9825
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.4925,
+            38.98,
+            -76.49000000000001,
+            38.9825
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.49000000000001,
+            38.98,
+            -76.48750000000001,
+            38.9825
+          ],
+          "count": 142,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.48750000000001,
+            38.975,
+            -76.48500000000001,
+            38.9775
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.48500000000001,
+            38.975,
+            -76.4825,
+            38.9775
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.4825,
+            38.975,
+            -76.48,
+            38.9775
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.48750000000001,
+            38.9775,
+            -76.48500000000001,
+            38.98
+          ],
+          "count": 132,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.48500000000001,
+            38.9775,
+            -76.4825,
+            38.98
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.4825,
+            38.9775,
+            -76.48,
+            38.98
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.48750000000001,
+            38.98,
+            -76.48500000000001,
+            38.9825
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.48500000000001,
+            38.98,
+            -76.4825,
+            38.9825
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -76.4825,
+            38.98,
+            -76.48,
+            38.9825
+          ],
+          "count": 1,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -76.4825,
+          38.975,
+          -76.48,
+          38.9775
+        ],
+        "forcedPageSize": 3,
+        "count": 5,
+        "returned": 5,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 1010,
+      "exactResolved": 1010,
+      "nativeIds": [
+        "7143",
+        "7151",
+        "7172"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-md-annapolis-parcels",
+        "parcels": 1,
+        "siteM2": 615.35
+      },
+      "requests": 36
+    }
+  ]
+}

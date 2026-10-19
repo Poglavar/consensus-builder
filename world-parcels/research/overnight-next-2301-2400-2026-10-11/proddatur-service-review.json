@@ -1,0 +1,38 @@
+{
+  "cityRecord": "city-10203-proddatur.json",
+  "cityCode": 10203,
+  "queueRank": 2346,
+  "name": "Proddatur",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [14.7513530660249, 78.5525549968863],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method":"SEARCH","url":"https://bhunaksha.ap.gov.in/","httpStatus":"Discovery result available; official page readable in bounded web discovery","outcome":"Government of Andhra Pradesh Bhunaksha identifies itself as a cadastral mapping platform of the Survey, Settlements and Land Records department and says it integrates with Meebhoomi. Direct curl attempts timed out after 20 and 30 seconds; no login or bypass was attempted."},
+    {"method":"SEARCH","url":"https://bhuseva.ap.gov.in/","httpStatus":"Discovery result available; official portal readable in bounded web discovery","outcome":"Office of CCLA, Andhra Pradesh land-information portal; general state service/custodian evidence, not a Proddatur parcel response."},
+    {"method":"SEARCH","url":"https://kadapa.ap.gov.in/villages/","httpStatus":"Discovery result available; official page readable","outcome":"YSR Kadapa district official revenue-village listing places Proddatur under Proddatur mandal; this establishes administrative locality context, not parcel geometry."},
+    {"method":"GET","url":"https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps","httpStatus":200,"outcome":"Official APSAC AP Cadastral Maps page returned HTML and exposed the public Web AppBuilder configuration route."},
+    {"method":"GET","url":"https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/7e3b53a1a265421483fbcbb26c275834/data?f=json","httpStatus":200,"outcome":"Current public JavaScript/configuration inspected. It identifies web map item b54a4a9a00b441a2bdd8f993d140edd5 and portal https://apsac.ap.gov.in/gisportal."},
+    {"method":"GET","url":"https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/b54a4a9a00b441a2bdd8f993d140edd5/data?f=json","httpStatus":200,"outcome":"Web map configuration identifies the official cadastral map service https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer."},
+    {"method":"GET","url":"https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer?f=json","httpStatus":200,"outcome":"Service metadata inspected. It exposes one Parcel layer and is a cached MapServer; service capabilities are map rendering, not feature query."},
+    {"method":"GET","url":"https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer/0?f=json","httpStatus":200,"outcome":"Layer metadata inspected. Polygon layer; source spatial reference WKID 4326 and service/view spatial reference WKID 3857. Safe metadata fields include objectid, dmvcd, dstrctnam, dstrctcod, mandalnam, mandalcod, villagenam, villagecod, parcelnam, parceltyp, parceldsc, remarks, and polygon shape."},
+    {"method":"GET","url":"https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer/0/query","httpStatus":400,"outcome":"Bounded anonymous exact-point request used the preserved WUP point [14.7513530660249,78.5525549968863], geometryType esriGeometryPoint, inSR 4326, outFields objectid,dmvcd,parcelnam, returnGeometry=true and outSR 4326. Service returned Requested operation is not supported by this service. This is a capability limitation, not evidence of citywide parcel absence."},
+    {"method":"GET","url":"https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer/export","httpStatus":"Not executed","outcome":"No map export request was needed after the layer metadata and unsupported feature-query capability were established; no raster or synthetic geometry was retained."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "APSAC Web AppBuilder item and web-map JSON were inspected.",
+    "geometryCrs": "Layer source WKID 4326; map service/view WKID 3857 (Web Mercator). No feature geometry was returned.",
+    "nativeIdentity": "objectid is the exposed OID field, but no feature response was returned and it was not treated as a retained parcel identity.",
+    "sourceFieldMapping": {"objectid":"OID field; not retained", "parcelnam":"parcel label field; not requested in retained data", "shape":"polygon geometry field; no response"},
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point [14.7513530660249,78.5525549968863]", "featureCount":0, "nativeIdentity":null, "result":"query unsupported by cached MapServer"}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A real Andhra Pradesh cadastral map service and schema/CRS metadata are evidenced, but the public service is map-only and the bounded anonymous feature query returned unsupported; no safe native parcel ID-plus-geometry sample is available."},
+  "scopeLimits": ["The exact WUP point [14.7513530660249,78.5525549968863] was preserved and not shifted.", "No exact-point hit or miss was inferred from the unsupported query.", "No map export or raster was retained; map rendering would not establish safe native identity plus unchanged polygon geometry.", "Bhunaksha and APSAC are state-level platforms; no Proddatur municipal/district parcel feature endpoint was independently exposed in the bounded attempt.", "No GeoJSON sample is retained because no safe native identity plus unchanged full polygon was obtained.", "No owner, address, contact, titleholder, tax/account, certificate/title or personal fields were requested or retained."],
+  "uncertainty": "The Andhra Pradesh cadastral viewer and parcel layer metadata are verified, but anonymous Proddatur feature-query support, city coverage, stable parcel identity semantics, and update cadence remain unverified. Runtime/admission remains held."
+}

@@ -1,0 +1,60 @@
+{
+  "cityRecord": "city-6573-flower-mound.json",
+  "cityCode": 6573,
+  "queueRank": 2604,
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "route": "https://www.flowermound.gov/131/GIS-Maps",
+      "method": "GET",
+      "outcome": "Official GIS page was identified by first-party discovery as the municipal entry point for the public map viewer and GIS data products; direct curl retrieval timed out after 30 seconds in this run, so page content was not treated as a direct request success."
+    },
+    {
+      "route": "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer?f=pjson",
+      "method": "GET",
+      "outcome": "HTTP 200; official ArcGIS MapServer metadata retrieved. It identifies parcel layer 0, public query formats including GeoJSON, service extent, max record count 1000, and source spatial reference WKID 102738/latestWkid 2276."
+    },
+    {
+      "route": "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer/0?f=pjson",
+      "method": "GET",
+      "outcome": "HTTP 200; parcel Feature Layer metadata retrieved. Geometry is polygon; fields include safe native PID and OBJECTID plus unsafe owner/address/value fields. Only PID was selected for the sample; unsafe fields were not requested."
+    },
+    {
+      "route": "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer/0/query",
+      "method": "GET",
+      "outcome": "HTTP 200 GeoJSON; bounded envelope around exact WUP point [33.0242104850204, -97.0246110353803] returned zero features. This is recorded as an exact-point/local extent miss only, not citywide absence; the coordinate was not shifted."
+    },
+    {
+      "route": "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/Parcels_MS/MapServer/0/query",
+      "method": "GET",
+      "outcome": "HTTP 200 GeoJSON; separate bounded in-service envelope returned three full polygon features with native PID values R205717, R205718, and R205719. Response included exceededTransferLimit=true, but all three retained features were complete polygons and the request was capped at three records."
+    },
+    {
+      "route": "https://gismaps.flower-mound.com/wafmp/rest/services/Basemap/CW_Basemap/MapServer/2?f=pjson",
+      "method": "GET",
+      "outcome": "HTTP 200; second official parcel layer metadata retrieved. It documents PID, Denton PID, and subdivision-related fields, but no sample was taken from this duplicate/alternate layer."
+    }
+  ],
+  "schemaCrs": {
+    "source": "WKID 102738 (latest WKID 2276), NAD83 / Texas North Central State Plane, US survey feet",
+    "output": "GeoJSON query requested outSR=4326; retained coordinates are longitude/latitude GeoJSON order.",
+    "geometryType": "esriGeometryPolygon",
+    "nativeIdentity": "PID (stable native parcel identifier exposed by the layer); OBJECTID also exists but was not retained.",
+    "pagination": "ArcGIS maxRecordCount=1000; sample query explicitly capped at three and reported exceededTransferLimit=true."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier (PID)", "full parcel polygon geometry", "source CRS only when explicitly returned"],
+  "nativeFieldMapping": {"PID": "properties.id"},
+  "compositeKeyProvenance": null,
+  "sampleFiles": ["city-6573-flower-mound-sample.geojson"],
+  "scopeLimits": [
+    "The exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "The exact-point query returned no feature because the bounded envelope was outside the service's observed parcel extent near the eastern edge; this is not evidence of citywide absence.",
+    "The retained sample is from a separate bounded location within the official service extent and is not asserted to contain the WUP point.",
+    "No owner, address, contact, titleholder, personal, tax/account, or other unsafe fields were requested or retained.",
+    "A public parcel registry/map custodian is evidenced, but this packet is not source integration or runtime admission.",
+    "runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "uncertainty": "The public map service is anonymous and queryable, but municipal parcel boundaries are informational/approximate and may derive from county appraisal sources. The sample proves safe ID-plus-geometry retrieval only; it does not establish complete citywide coverage, legal boundary accuracy, or adapter readiness."
+}

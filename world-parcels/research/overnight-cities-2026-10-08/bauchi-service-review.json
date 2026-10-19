@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8679-bauchi.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage. The official BAGIS pages and law establish property-registration and cadastral-administration services, but no anonymous parcel geometry service or safe native feature schema was identified. The registration process is an application/title workflow requiring documents; no application or parcel-specific record query was made.",
+  "registryAssessment": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.bauchistate.gov.ng/financial-reports-2-4-2/",
+      "observation": "Bauchi State Government Land/Property Registrations page publishes BAGIS law and property-records/property-registration guidelines."
+    },
+    {
+      "url": "https://www.bauchistate.gov.ng/?download_id=2730&sdm_process_download=1",
+      "observation": "Official BAGIS property-registration guide places the customer service center at No. 5 Yakubun Bauchi Road, GRA Bauchi, and describes cadastral clearance and registration steps."
+    },
+    {
+      "url": "https://www.bauchistate.gov.ng/wp-content/uploads/2022/11/BAGIS_2019_LAW.pdf",
+      "observation": "Official Bauchi State BAGIS Law establishing the state geographic information/land-management framework."
+    },
+    {
+      "url": "https://www.bauchistate.gov.ng/sdm_categories/bagis-reports/",
+      "observation": "Official BAGIS resource category publishes SOP for Property Records, BAGIS Law, fees and registration guidelines."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bauchi official land registry cadastre GIS parcel map Bauchi State land records",
+      "result": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage. The official BAGIS pages and law establish property-registration and cadastral-administration services, but no anonymous parcel geometry service or safe native feature schema was identified. The registration process is an application/title workflow requiring documents; no application or parcel-specific record query was made.",
+      "method": "Separate language-specific search and official source review."
+    },
+    {
+      "language": "Hausa",
+      "query": "Bauchi jihar Bauchi taswirar fili rajistar ƙasa cadastral GIS hukuma",
+      "result": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage. The official BAGIS pages and law establish property-registration and cadastral-administration services, but no anonymous parcel geometry service or safe native feature schema was identified. The registration process is an application/title workflow requiring documents; no application or parcel-specific record query was made.",
+      "method": "Separate language-specific search and official source review."
+    },
+    {
+      "language": "English",
+      "query": "site:bauchistate.gov.ng Bauchi town land registry property records plot maps cadastral BAGIS office",
+      "result": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage. The official BAGIS pages and law establish property-registration and cadastral-administration services, but no anonymous parcel geometry service or safe native feature schema was identified. The registration process is an application/title workflow requiring documents; no application or parcel-specific record query was made.",
+      "method": "Separate language-specific search and official source review."
+    },
+    {
+      "language": "English",
+      "query": "site:bauchistate.gov.ng \"Bauchi Geographic Information Service\" parcel map",
+      "result": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage. The official BAGIS pages and law establish property-registration and cadastral-administration services, but no anonymous parcel geometry service or safe native feature schema was identified. The registration process is an application/title workflow requiring documents; no application or parcel-specific record query was made.",
+      "method": "Separate language-specific search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public feature with a verified safe identifier and full polygon geometry was obtained.",
+  "coverageAssessment": {
+    "claimedScope": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage.",
+    "verifiedOpenScope": "Bauchi State Government publishes BAGIS property-registration guidelines and law. The official individual registration guide places the BAGIS Customer Service Centre at No. 5 Yakubun Bauchi Road, GRA Bauchi, within Bauchi metropolis, and describes cadastral-unit clearance for land-registration applications. This confirms a local official registration/cadastral institution, not public vector feature coverage. The official BAGIS pages and law establish property-registration and cadastral-administration services, but no anonymous parcel geometry service or safe native feature schema was identified. The registration process is an application/title workflow requiring documents; no application or parcel-specific record query was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.bauchistate.gov.ng/financial-reports-2-4-2/",
+      "outcome": "Official institutional/registration service pages and BAGIS legal resource reviewed; no public anonymous geometry endpoint or feature schema discovered. No title/property application or record lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "url": "https://www.bauchistate.gov.ng/?download_id=2730&sdm_process_download=1",
+      "outcome": "Read the published property-registration process and office location only; did not submit an application or property request.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether BAGIS exposes a separate public map/vector endpoint, and whether any such source covers the WUP point, remain unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter protocol or runtime qualification was run in this worker pass."
+  },
+  "technicalBlocker": "The official BAGIS pages and law establish property-registration and cadastral-administration services, but no anonymous parcel geometry service or safe native feature schema was identified. The registration process is an application/title workflow requiring documents; no application or parcel-specific record query was made."
+}

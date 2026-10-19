@@ -1,0 +1,1028 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Revisit original top-200 candidates in already-supported countries and raise configured city count above 100.",
+  "baseline": {
+    "configuredCities": 97,
+    "executableProviders": 87,
+    "supportedCountryCodes": [
+      "AE",
+      "AO",
+      "AR",
+      "AU",
+      "BD",
+      "BE",
+      "BJ",
+      "BR",
+      "CA",
+      "CN",
+      "CO",
+      "DE",
+      "ES",
+      "FR",
+      "GB",
+      "HK",
+      "HR",
+      "JO",
+      "JP",
+      "ML",
+      "NL",
+      "OM",
+      "PE",
+      "QA",
+      "RS",
+      "SI",
+      "US",
+      "ZA",
+      "ZM"
+    ],
+    "originalCohortSize": 200,
+    "originalCohortMatchedCities": 34
+  },
+  "matchingMethod": "Same country code plus normalized name or center distance under 25 km, checked against configured-city identities.",
+  "sameCountryCandidateCount": 50,
+  "candidates": [
+    {
+      "cityId": "geonames:1185241",
+      "name": "Dhaka",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        23.7104,
+        90.40744
+      ],
+      "citySource": "https://www.geonames.org/1185241/dhaka.html",
+      "researchOrder": 2,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bd-dlrs-bds-sheets"
+      ],
+      "researchFile": "research/dhaka.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "geonames:1796236",
+      "name": "Shanghai",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.22222,
+        121.45806
+      ],
+      "citySource": "https://www.geonames.org/1796236/shanghai.html",
+      "researchOrder": 5,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/shanghai.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-north.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "account_oriented_service_entry",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "geonames:1809858",
+      "name": "Guangzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        23.11667,
+        113.25
+      ],
+      "citySource": "https://www.geonames.org/1809858/guangzhou.html",
+      "researchOrder": 6,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/guangzhou.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-southwest.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "public_lookup_documented_inspected_layers_are_points",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "geonames:1816670",
+      "name": "Beijing",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        39.9075,
+        116.39723
+      ],
+      "citySource": "https://www.geonames.org/1816670/beijing.html",
+      "researchOrder": 16,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/beijing.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-north.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "identity_verified_building_and_map_lookup",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:7935",
+      "wupCityCode": 7935,
+      "name": "Rio de Janeiro",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -22.84585,
+        -43.36665
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 35,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "br-rio-prefeitura-lotes-2013"
+      ],
+      "researchFile": "research/rio-de-janeiro.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:11632",
+      "wupCityCode": 11632,
+      "name": "Suzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.38144,
+        120.62354
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 43,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/suzhou.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "app_query_Gusu_lead_and_Zhangjiagang_real_name_viewer",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11700",
+      "wupCityCode": 11700,
+      "name": "Hangzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        30.28128,
+        120.25121
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 45,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/hangzhou.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_cadastral_registration_operations",
+        "publicQuery": "current_map_entry_not_verified",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:10474",
+      "wupCityCode": 10474,
+      "name": "Wuhan",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        30.56605,
+        114.2968
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 46,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/wuhan.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_citywide_cadastral_holdings",
+        "publicQuery": "government_portal_login_visual_lookup",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:9414",
+      "wupCityCode": 9414,
+      "name": "Tianjin",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        39.13268,
+        117.19419
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 47,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/tianjin.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-north.json",
+        "cadastreExistence": "official_indexed_internal_holdings_and_catalogue_lead",
+        "publicQuery": "registration_category_only_specific_parcel_product_unverified",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:3664",
+      "wupCityCode": 3664,
+      "name": "Johannesburg",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -26.12045,
+        27.86009
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 50,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "za-giscoe-erven"
+      ],
+      "researchFile": "research/johannesburg.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:8833",
+      "wupCityCode": 8833,
+      "name": "Chongqing",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        29.54541,
+        106.51597
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 51,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/chongqing.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-central-east.json",
+        "cadastreExistence": "documented_cadastral_map_service",
+        "publicQuery": "authorized_visual_pilot_Liangjiang_scope",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11254",
+      "wupCityCode": 11254,
+      "name": "Nanjing",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        32.03551,
+        118.77773
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 57,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/nanjing.json",
+      "previousResearchFile": "research/nanjing.json",
+      "retryFile": "research/retry/cities/nanjing.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11800",
+      "wupCityCode": 11800,
+      "name": "Chaozhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        23.65299,
+        116.32009
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 61,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/chaozhou.json",
+      "previousResearchFile": "research/chaozhou.json",
+      "retryFile": "research/retry/cities/chaozhou.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:6602",
+      "wupCityCode": 6602,
+      "name": "Chengdu",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        30.6723,
+        104.04603
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 64,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/chengdu.json",
+      "availabilityAudit": {
+        "checkedAt": "2026-10-03",
+        "evidenceFile": "research/china-language-audit-2026-10-03-southwest.json",
+        "cadastreExistence": "provincial_model_only_city_specific_geometry_unverified",
+        "publicQuery": "not_verified",
+        "anonymousVectorSample": "not_verified",
+        "absenceEstablished": false,
+        "termsAreInformational": true
+      },
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:10098",
+      "wupCityCode": 10098,
+      "name": "Shenyang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        41.79682,
+        123.38899
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 67,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/shenyang.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:8371",
+      "wupCityCode": 8371,
+      "name": "Xi'an",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        34.25487,
+        108.94684
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 77,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/xian.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:7537",
+      "wupCityCode": 7537,
+      "name": "Chattogram",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        22.37287,
+        91.8104
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 83,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "bd-dlrs-bds-sheets"
+      ],
+      "researchFile": "research/chattogram.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:9574",
+      "wupCityCode": 9574,
+      "name": "Zhengzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        34.76696,
+        113.65311
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 86,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/zhengzhou.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:10990",
+      "wupCityCode": 10990,
+      "name": "Hefei",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.84718,
+        117.26715
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 87,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/hefei.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:9738",
+      "wupCityCode": 9738,
+      "name": "Harbin",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        45.7443,
+        126.65899
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 96,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/harbin.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:7802",
+      "wupCityCode": 7802,
+      "name": "Belo Horizonte",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -19.90062,
+        -43.99167
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 105,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/belo-horizonte.json",
+      "previousResearchFile": "research/belo-horizonte.json",
+      "retryFile": "research/retry/cities/belo-horizonte.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:12032",
+      "wupCityCode": 12032,
+      "name": "Wenzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        28.01535,
+        120.63036
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 106,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/wenzhou.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:8609",
+      "wupCityCode": 8609,
+      "name": "Taiyuan",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        37.85311,
+        112.548
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 112,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/taiyuan.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11820",
+      "wupCityCode": 11820,
+      "name": "Puning",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        23.26183,
+        116.3952
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 113,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/puning.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:6237",
+      "wupCityCode": 6237,
+      "name": "Houston",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        29.74636,
+        -95.46767
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 115,
+      "parcelStatus": "verified_sample_county_scope",
+      "sourceIds": [
+        "us-tx-harris-hcad-parcels"
+      ],
+      "researchFile": "research/houston.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:2715",
+      "wupCityCode": 2715,
+      "name": "Ürümqi",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        43.82864,
+        87.59241
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 122,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/urumqi.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:8535",
+      "wupCityCode": 8535,
+      "name": "Recife",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -8.04622,
+        -34.92078
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 124,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "br-recife-prefeitura-lotes"
+      ],
+      "researchFile": "research/recife.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:7747",
+      "wupCityCode": 7747,
+      "name": "Chicago",
+      "country": "United States of America",
+      "countryCode": "US",
+      "centerLatLon": [
+        41.87261,
+        -87.70745
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 125,
+      "parcelStatus": "verified_sample_county_scope",
+      "sourceIds": [
+        "us-il-cook-county-clerk-parcels-2021"
+      ],
+      "researchFile": "research/chicago.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:10816",
+      "wupCityCode": 10816,
+      "name": "Qingdao",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        36.16737,
+        120.39214
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 128,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/qingdao.json",
+      "previousResearchFile": "research/qingdao.json",
+      "retryFile": "research/retry/cities/qingdao.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:9912",
+      "wupCityCode": 9912,
+      "name": "Jinan",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        36.66138,
+        117.01846
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 137,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/jinan.json",
+      "previousResearchFile": "research/jinan.json",
+      "retryFile": "research/retry/cities/jinan.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:10588",
+      "wupCityCode": 10588,
+      "name": "Changsha",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        28.19235,
+        112.98904
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 138,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/changsha.json",
+      "previousResearchFile": "research/changsha.json",
+      "retryFile": "research/retry/cities/changsha.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:2525",
+      "wupCityCode": 2525,
+      "name": "Medellín",
+      "country": "Colombia",
+      "countryCode": "CO",
+      "centerLatLon": [
+        6.2485,
+        -75.57935
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 139,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "co-medellin-catastro-lote"
+      ],
+      "researchFile": "research/medellin.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:9948",
+      "wupCityCode": 9948,
+      "name": "Changchun",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        43.87566,
+        125.30142
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 140,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/changchun.json",
+      "previousResearchFile": "research/changchun.json",
+      "retryFile": "research/retry/cities/changchun.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11188",
+      "wupCityCode": 11188,
+      "name": "Nanchang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        28.67958,
+        115.89641
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 142,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/nanchang.json",
+      "previousResearchFile": "research/nanchang.json",
+      "retryFile": "research/retry/cities/nanchang.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:10166",
+      "wupCityCode": 10166,
+      "name": "Nanning",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        22.82542,
+        108.31205
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 143,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/nanning.json",
+      "previousResearchFile": "research/nanning.json",
+      "retryFile": "research/retry/cities/nanning.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:12024",
+      "wupCityCode": 12024,
+      "name": "Quanzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        24.84913,
+        118.54494
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 144,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/quanzhou.json",
+      "previousResearchFile": "research/quanzhou.json",
+      "retryFile": "research/retry/cities/quanzhou.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:8285",
+      "wupCityCode": 8285,
+      "name": "Fortaleza",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -3.77702,
+        -38.55999
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 149,
+      "parcelStatus": "verified_sample_partial_coverage",
+      "sourceIds": [
+        "br-fortaleza-ipplan-zeis-pici-lotes"
+      ],
+      "researchFile": "research/fortaleza.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:8296",
+      "wupCityCode": 8296,
+      "name": "Kunming",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        25.04187,
+        102.7211
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 151,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/kunming.json",
+      "previousResearchFile": "research/kunming.json",
+      "retryFile": "research/retry/cities/kunming.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:5227",
+      "wupCityCode": 5227,
+      "name": "Durban",
+      "country": "South Africa",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -29.64517,
+        30.73477
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 153,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "za-giscoe-erven"
+      ],
+      "researchFile": "research/durban.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:8374",
+      "wupCityCode": 8374,
+      "name": "Salvador",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -12.93669,
+        -38.45137
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 158,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/salvador.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11956",
+      "wupCityCode": 11956,
+      "name": "Ningbo",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        29.91329,
+        121.56263
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 161,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/ningbo.json",
+      "previousResearchFile": "research/ningbo.json",
+      "retryFile": "research/retry/cities/ningbo.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:9058",
+      "wupCityCode": 9058,
+      "name": "Shijiazhuang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        38.04441,
+        114.48681
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 164,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/shijiazhuang.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:6721",
+      "wupCityCode": 6721,
+      "name": "Brahmanbaria",
+      "country": "Bangladesh",
+      "countryCode": "BD",
+      "centerLatLon": [
+        24.04659,
+        90.98007
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 169,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/brahmanbaria.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:12022",
+      "wupCityCode": 12022,
+      "name": "Fuzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        26.07371,
+        119.29785
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 171,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/fuzhou.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:10452",
+      "wupCityCode": 10452,
+      "name": "Dalian",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        38.93791,
+        121.55937
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 178,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/dalian.json",
+      "previousResearchFile": "research/dalian.json",
+      "retryFile": "research/retry/cities/dalian.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:899",
+      "wupCityCode": 899,
+      "name": "Cali",
+      "country": "Colombia",
+      "countryCode": "CO",
+      "centerLatLon": [
+        3.43291,
+        -76.5206
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 184,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "co-cali-idesc-cat-bas-terrenos"
+      ],
+      "researchFile": "research/cali.json",
+      "freshProbeSelected": true
+    },
+    {
+      "cityId": "wup2025:9300",
+      "wupCityCode": 9300,
+      "name": "Guiyang",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        26.58779,
+        106.70212
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 185,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/guiyang.json",
+      "previousResearchFile": "research/guiyang.json",
+      "retryFile": "research/retry/cities/guiyang.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11514",
+      "wupCityCode": 11514,
+      "name": "Changzhou",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.76965,
+        119.96065
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 189,
+      "parcelStatus": "temporarily_unavailable",
+      "sourceIds": [],
+      "researchFile": "research/changzhou.json",
+      "previousResearchFile": "research/changzhou.json",
+      "retryFile": "research/retry/cities/changzhou.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:11580",
+      "wupCityCode": 11580,
+      "name": "Wuxi",
+      "country": "China",
+      "countryCode": "CN",
+      "centerLatLon": [
+        31.58173,
+        120.28862
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 193,
+      "parcelStatus": "no_verified_open_endpoint_after_attempts",
+      "sourceIds": [],
+      "researchFile": "research/wuxi.json",
+      "freshProbeSelected": false
+    },
+    {
+      "cityId": "wup2025:6446",
+      "wupCityCode": 6446,
+      "name": "Curitiba",
+      "country": "Brazil",
+      "countryCode": "BR",
+      "centerLatLon": [
+        -25.45814,
+        -49.25534
+      ],
+      "citySource": "https://population.un.org/wup/",
+      "researchOrder": 200,
+      "parcelStatus": "verified_sample_city_scope",
+      "sourceIds": [
+        "br-curitiba-ippuc-lote-cadastral"
+      ],
+      "researchFile": "research/curitiba.json",
+      "freshProbeSelected": true
+    }
+  ],
+  "scopeNote": "Inventory selection is not a fresh verification of every candidate. Only freshProbeSelected cities are investigated in this batch; prior evidence remains authoritative for the others."
+}

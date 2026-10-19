@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:6353",
+  "queueRank": 59,
+  "wupCityCode": 6353,
+  "name": "Ādīs Ᾱbeba (Addis Ababa)",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "centerLatLon": [
+    9.00714292574818,
+    38.7489828471342
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 59,
+  "growthRank": null,
+  "population2025": 6705705,
+  "annualGrowthPct2015To2025": 3.818874,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [
+    {
+      "path": "research/addis-ababa.json",
+      "status": "temporarily_unavailable"
+    },
+    {
+      "path": "research/retry/cities/addis-ababa.json",
+      "status": null
+    }
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ne-country-ET.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Amharic and English",
+    "exactQuery": "አዲስ አበባ መሬት ካዳስተር የመሬት ካርታ GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.globgov.com/ET/Addis-Ababa/100327571879408/Addis-Ababa-City-Admin.-Landholding-Registration-and-Information-Agency",
+      "https://www.amn.gov.et/wp-content/uploads/2026/05/Addis-Lissan-Ginbot-22-2018-Final-9.pdf",
+      "https://aapdb.gov.et/uploads/Publication/-2024-05-29-66572bc2b95f0.pdf",
+      "https://fjli.gov.et/Tedocs/addisfile/a74.pdf",
+      "https://www.amn.gov.et/wp-content/uploads/2026/04/Addis-Lissan-Miyaziya-10-2018.pdf",
+      "https://www.amn.gov.et/wp-content/uploads/2025/11/Addis-Lissan-Hidati-6-2018.pdf",
+      "https://www.ulc.gov.et/uploads/Publication/regulation-no-292010-2025-11-02-6906ed02d739e.pdf",
+      "https://www.aapdb.gov.et/"
+    ],
+    "summary": "Amharic searches surfaced national/municipal land-administration references; public NRLAIS parcel geometry not found.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.globgov.com/ET/Addis-Ababa/100327571879408/Addis-Ababa-City-Admin.-Landholding-Registration-and-Information-Agency",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.amn.gov.et/wp-content/uploads/2026/05/Addis-Lissan-Ginbot-22-2018-Final-9.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://aapdb.gov.et/uploads/Publication/-2024-05-29-66572bc2b95f0.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://fjli.gov.et/Tedocs/addisfile/a74.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.amn.gov.et/wp-content/uploads/2026/04/Addis-Lissan-Miyaziya-10-2018.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.amn.gov.et/wp-content/uploads/2025/11/Addis-Lissan-Hidati-6-2018.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.ulc.gov.et/uploads/Publication/regulation-no-292010-2025-11-02-6906ed02d739e.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://www.aapdb.gov.et/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Ādīs Ᾱbeba\" Ethiopia (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22%C4%80d%C4%ABs+%E1%BE%B9beba%22+Ethiopia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Ādīs Ᾱbeba (Addis Ababa) parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Ask the Ethiopian land-system operator or Ādīs Ᾱbeba (Addis Ababa) city office whether a public parcel layer or anonymous bounded extract exists, then test geometry and IDs.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22%C4%80d%C4%ABs+%E1%BE%B9beba%22+Ethiopia+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

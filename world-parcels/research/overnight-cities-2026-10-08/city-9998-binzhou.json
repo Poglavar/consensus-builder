@@ -1,0 +1,114 @@
+{
+  "name": "Binzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 952,
+  "point": [
+    37.3828508188782,
+    117.996616885377
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Binzhou Shandong official real estate registration center cadastral parcel map GIS natural resources bureau",
+        "scope": "Find a local custodian, public parcel-map entry point, and safe geometry interface.",
+        "result": "The municipal root page timed out during this review. Official natural-resources bureau reports from other Shandong cities explicitly refer to Binzhou’s Real Estate Transaction and Registration Center; local Binzhou reporting describes that center’s 2026 service activity. No anonymous parcel vector endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.binzhou.gov.cn/"
+        ],
+        "executionMethod": "Separate English-language web search; official public source review."
+      },
+      {
+        "language": "Chinese",
+        "query": "滨州市 不动产交易登记中心 不动产登记 服务 官方 滨州",
+        "scope": "Find first-party city/local-language registry, cadastral mapping and parcel-service evidence.",
+        "result": "The municipal root page timed out during this review. Official natural-resources bureau reports from other Shandong cities explicitly refer to Binzhou’s Real Estate Transaction and Registration Center; local Binzhou reporting describes that center’s 2026 service activity. No anonymous parcel vector endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.binzhou.gov.cn/"
+        ],
+        "executionMethod": "Separate Chinese-language web search and first-party portal review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Binzhou Natural Resources and Planning / Real Estate Transaction and Registration Center",
+        "operator": "Binzhou municipal government and its real-estate transaction and registration center",
+        "homeUrl": "https://www.binzhou.gov.cn/",
+        "observation": "The municipal root page timed out during this review. Official natural-resources bureau reports from other Shandong cities explicitly refer to Binzhou’s Real Estate Transaction and Registration Center; local Binzhou reporting describes that center’s 2026 service activity. No anonymous parcel vector endpoint was identified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-9998-LOCAL-PARCEL-RESEARCH",
+    "name": "Binzhou Natural Resources and Planning / Real Estate Transaction and Registration Center",
+    "url": "https://www.binzhou.gov.cn/",
+    "operator": "Binzhou municipal government and its real-estate transaction and registration center",
+    "serviceType": "Official local registry/cadastre evidence reviewed; no anonymous geometry-only feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "A municipal registration center is evidenced, but direct first-party city portal access and exact WUP parcel coverage remain unverified.",
+    "verifiedOpenScope": "The municipal root page timed out during this review. Official natural-resources bureau reports from other Shandong cities explicitly refer to Binzhou’s Real Estate Transaction and Registration Center; local Binzhou reporting describes that center’s 2026 service activity. No anonymous parcel vector endpoint was identified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "Official city portal request timed out; search results and official peer-government references establish a local registration institution but no public parcel geometry schema or query route.",
+  "remainingUncertainty": "City-center area/point-in-layer relationship and anonymous geometry access remain unverified.",
+  "nextStep": "Revisit only if a public source publishes a schema with safe stable identifiers and an anonymous geometry-only query; keep any future sample bounded and field-allowlisted.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9998,
+  "cityId": "wup2025:9998",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    37.3828508188782,
+    117.996616885377
+  ],
+  "population2025k": 576.823,
+  "populationUnit": "persons",
+  "queueRank": 952,
+  "population2025": 576823,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Jining municipal Natural Resources and Planning Bureau directly identifies Binzhou Municipal Real Estate Transaction and Registration Center in its official 28 February 2025 report about a registration-service study visit. The Binzhou root portal timed out; the specific peer-government institutional report independently establishes local registration custody, but not anonymous parcel vectors.",
+  "registryEvidenceUrls": [
+    "https://www.binzhou.gov.cn/",
+    "https://nrp.jining.gov.cn/art/2025/2/28/art_60570_2731005.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Official city portal request timed out; search results and official peer-government references establish a local registration institution but no public parcel geometry schema or query route."
+  },
+  "rootPrimarySupplement": {
+    "url": "https://nrp.jining.gov.cn/art/2025/2/28/art_60570_2731005.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "济宁市自然资源和规划局（市林业局） 市内新闻 滨州市不动产登记中心来济宁开展改革创新工作调研"
+  },
+  "discoveryRegistryAssessment": {
+    "registryFound": true,
+    "registryBasis": "The municipal root page timed out during this review. Official natural-resources bureau reports from other Shandong cities explicitly refer to Binzhou’s Real Estate Transaction and Registration Center; local Binzhou reporting describes that center’s 2026 service activity. No anonymous parcel vector endpoint was identified."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.binzhou.gov.cn/",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

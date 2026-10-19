@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:3186886",
+  "name": "Zagreb",
+  "country": "Croatia",
+  "countryCode": "HR",
+  "centerLatLon": [
+    45.81444,
+    15.97798
+  ],
+  "checkedAt": "2026-09-30",
+  "status": "verified_sample_city_scope",
+  "note": "Outside the UN WUP 2025 top-200 queue; added because the app already runs on this source and it was sampled during the Croatia country probe.",
+  "verifiedParcelResponse": {
+    "sourceId": "hr-dgu-oss-dkp-cestice",
+    "requestUrl": "https://oss.uredjenazemlja.hr/OssWebServices/wfs?token=<OSS_PUBLIC_ACCESS_TOKEN>&service=WFS&version=2.0.0&request=GetFeature&outputFormat=json&typeName=oss%3ADKP_CESTICE&srsName=EPSG%3A3765&count=3&bbox=462000%2C5073900%2C462150%2C5074050%2CEPSG%3A3765",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "spatialTestArea": "150 m box in central Zagreb, EPSG:3765 x 462000-462150, y 5073900-5074050",
+    "parcelRecordCount": 3,
+    "totalFeaturesInBox": 21,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "CESTICA_ID",
+    "responseFile": "countries/HR-parcel-response.json",
+    "pagination": "WFS 2.0 count/startIndex"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Croatian cadastre (DKP)",
+    "verifiedOpenScope": "three central Zagreb parcels in a bounded sample; the app also uses this source for Split and Šibenik",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Public viewer token issuer and terms unread; completeness of Zagreb coverage not measured.",
+  "nextStep": "Read the DGU terms for the public token."
+}

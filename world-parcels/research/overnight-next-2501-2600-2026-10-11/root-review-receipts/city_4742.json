@@ -1,0 +1,14 @@
+{
+  "taskId": "city:4742",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-4742-kazipur.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/kazipur-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_4742-first-party-viewer-check.json"
+  ],
+  "checkedAt": "2026-10-11T15:38:04Z",
+  "reason": "Official viewer and exact-point Kazipur administrative context are recorded, but no safe native parcel ID or polygon was obtained. Failed or empty parcel routes do not establish citywide absence.",
+  "runtimeAdmission": false
+}

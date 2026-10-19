@@ -1,0 +1,241 @@
+{
+  "sourceId": "br-rio-prefeitura-lotes-2013",
+  "sourceName": "Lotes (2013) — Quadras_Lotes_Edificacoes FeatureServer layer 1, Prefeitura do Rio / DATA.RIO",
+  "checkedAt": "2026-10-03",
+  "endpoint": "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1",
+  "officialMetadata": {
+    "itemId": "e7a93d5c81844e07ab82ccfc45b436f4",
+    "owner": "PrefeituraRio",
+    "accessInformation": "Instituto Pereira Passos, PCRJ",
+    "license": "Creative Commons Attribution 4.0 (CC BY 4.0); attribution required",
+    "scope": "Physical lots derived from 2013 aerial photography; work executed 2013–2015 and 2019–2020. Not the legal registry cadastre.",
+    "nativeSpatialReference": "EPSG:31983",
+    "dataLastEditDate": "2022-10-28",
+    "serviceCount": 999757,
+    "objectIdField": "OBJECTID_12",
+    "uniqueIdField": {
+      "name": "OBJECTID_12",
+      "isSystemMaintained": true
+    },
+    "globalIdFieldName": "",
+    "idFieldStatus": "No documented durable parcel key identified. OBJECTID_12 is the system-maintained row OID, unique in service metadata, but not a semantic/durable ground-parcel key. cod_lote is nullable at schema level, has no uniqueness guarantee, and duplicates in bounded sample."
+  },
+  "boundedSample": {
+    "bboxWgs84": [
+      -43.368,
+      -22.8465,
+      -43.366,
+      -22.845
+    ],
+    "recordCount": 133,
+    "requestFields": [
+      "OBJECTID_12",
+      "cod_lote",
+      "cod_quadra",
+      "cod_np",
+      "cod_trecho"
+    ],
+    "ownerOrstreetFieldsRequested": false,
+    "cod_lote": {
+      "nullCount": 0,
+      "nonNullCount": 133,
+      "distinctNonNullCount": 118,
+      "duplicateValueCount": 6,
+      "duplicateExcessRows": 15,
+      "duplicateGroups": {
+        "891713": [
+          {
+            "OBJECTID_12": 936515,
+            "cod_lote": "891713",
+            "cod_quadra": "261E025691",
+            "cod_np": 758574,
+            "cod_trecho": 143900
+          },
+          {
+            "OBJECTID_12": 936792,
+            "cod_lote": "891713",
+            "cod_quadra": "261E025691",
+            "cod_np": 758589,
+            "cod_trecho": 143910
+          },
+          {
+            "OBJECTID_12": 936793,
+            "cod_lote": "891713",
+            "cod_quadra": "261E025691",
+            "cod_np": 758627,
+            "cod_trecho": 143910
+          },
+          {
+            "OBJECTID_12": 938679,
+            "cod_lote": "891713",
+            "cod_quadra": "261E025691",
+            "cod_np": 919876,
+            "cod_trecho": 165385
+          }
+        ],
+        "261E15376": [
+          {
+            "OBJECTID_12": 936568,
+            "cod_lote": "261E15376",
+            "cod_quadra": "261E005698",
+            "cod_np": 70424,
+            "cod_trecho": 142881
+          },
+          {
+            "OBJECTID_12": 936569,
+            "cod_lote": "261E15376",
+            "cod_quadra": "261E005698",
+            "cod_np": 70423,
+            "cod_trecho": 142881
+          }
+        ],
+        "018825": [
+          {
+            "OBJECTID_12": 937527,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 141983
+          },
+          {
+            "OBJECTID_12": 937544,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 141983
+          },
+          {
+            "OBJECTID_12": 938345,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 141982
+          },
+          {
+            "OBJECTID_12": 939326,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 0
+          },
+          {
+            "OBJECTID_12": 939739,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 0
+          },
+          {
+            "OBJECTID_12": 941038,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 0
+          },
+          {
+            "OBJECTID_12": 941224,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 0
+          },
+          {
+            "OBJECTID_12": 941226,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 0
+          },
+          {
+            "OBJECTID_12": 941227,
+            "cod_lote": "018825",
+            "cod_quadra": "261E025691",
+            "cod_np": 0,
+            "cod_trecho": 0
+          }
+        ],
+        "261E15294": [
+          {
+            "OBJECTID_12": 938440,
+            "cod_lote": "261E15294",
+            "cod_quadra": "261E005699",
+            "cod_np": 0,
+            "cod_trecho": 141282
+          },
+          {
+            "OBJECTID_12": 938643,
+            "cod_lote": "261E15294",
+            "cod_quadra": "261E005699",
+            "cod_np": 68121,
+            "cod_trecho": 142880
+          }
+        ],
+        "891659": [
+          {
+            "OBJECTID_12": 938680,
+            "cod_lote": "891659",
+            "cod_quadra": "261E025691",
+            "cod_np": 919877,
+            "cod_trecho": 165385
+          },
+          {
+            "OBJECTID_12": 938681,
+            "cod_lote": "891659",
+            "cod_quadra": "261E025691",
+            "cod_np": 919878,
+            "cod_trecho": 165385
+          }
+        ],
+        "891787": [
+          {
+            "OBJECTID_12": 965388,
+            "cod_lote": "891787",
+            "cod_quadra": "261E024433",
+            "cod_np": 0,
+            "cod_trecho": 179953
+          },
+          {
+            "OBJECTID_12": 965916,
+            "cod_lote": "891787",
+            "cod_quadra": "261E024433",
+            "cod_np": 920136,
+            "cod_trecho": 0
+          }
+        ]
+      }
+    },
+    "cod_quadraDistinctCount": 7,
+    "cod_npDistinctCount": 121,
+    "cod_trechoDistinctCount": 16,
+    "geometryConflictCheck": "Not completed for every repeated cod_lote; bounded attribute-only fetch proves the label is not unique, but cannot establish whether repeated rows have identical or distinct geometry. One repeated label has four OIDs (936515, 936792, 936793, 938679); source raw sample includes geometry only for 936515."
+  },
+  "adapterTests": [
+    {
+      "test": "Exact single row",
+      "inputId": "BR-RIO-LOT-936513",
+      "result": "Previously passed through existing ArcGIS adapter; returned one Polygon with cod_lote 261E16291. This validates one OID lookup, not durable identity."
+    },
+    {
+      "test": "Large bounded bbox",
+      "bboxWgs84": [
+        -43.368,
+        -22.8465,
+        -43.366,
+        -22.845
+      ],
+      "adapterPageSize": 50,
+      "result": "Timed out at adapter 15-second upstream timeout; HTTP 504. No complete canonical bbox response."
+    },
+    {
+      "test": "Smaller forced bbox page",
+      "result": "Not completed in this pass: local Node fetch failed with `fetch failed` under restricted network, and browser navigation to the ArcGIS query was blocked by the client. Do not count this as a provider failure or successful adapter check."
+    }
+  ],
+  "conclusion": "Hold from integration until an official continuity/durability contract for the row identifier or a permanent native parcel ID is found. The CC BY license is clear, but OBJECTID_12 is explicitly system-maintained transport identity, cod_lote repeats, and adapter page reliability remains unverified after the 50-row timeout.",
+  "description": "Current Rio physical-lot source identity and paging failures; runtime remains disabled.",
+  "primarySources": [
+    "https://www.arcgis.com/sharing/rest/content/items/e7a93d5c81844e07ab82ccfc45b436f4?f=json",
+    "https://services5.arcgis.com/mgrvZxGU0bSJbVld/arcgis/rest/services/Quadras_Lotes_Edificacoes/FeatureServer/1?f=json",
+    "https://creativecommons.org/licenses/by/4.0/"
+  ]
+}

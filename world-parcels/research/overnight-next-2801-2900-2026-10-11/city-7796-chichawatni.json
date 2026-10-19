@@ -1,0 +1,76 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 7796,
+  "queueRank": 2879,
+  "name": "Chichawatni",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [30.5264558226929, 72.6929611720675],
+  "population2025": 207047,
+  "population2025k": 207.047,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chichawatni Pakistan cadastral map land records official Punjab Pakistan",
+        "result": "First-party discovery found the Government of Punjab Punjab Land Records Authority (PLRA) public land-record portal, service-center network, and online Fard service. No Chichawatni-specific public cadastral viewer or anonymous parcel geometry endpoint was exposed in the discovered official pages.",
+        "actualResultUrls": ["https://www.punjab-zameen.gov.pk/", "https://onlinefard.punjab-zameen.gov.pk/Client/Index", "https://www.punjab.gov.pk/digital-platforms"]
+      },
+      {
+        "language": "Urdu",
+        "query": "چچواتنی پاکستان کادستر نقشہ اراضی ریکارڈ سرکاری",
+        "result": "Urdu-language discovery found the same official PLRA/LRMIS land-record services and an Urdu login portal. The discovered service requires authentication/CAPTCHA and did not provide an anonymous parcel-map response.",
+        "actualResultUrls": ["https://onlinefard.punjab-zameen.gov.pk/Client/Index", "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2FDocument%2F", "https://www.punjab-zameen.gov.pk/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "PLRA is an official Government of Punjab land-record custodian and its public portal describes digitized land records, Arazi Record Centres, Fard, property registration, and related services.",
+    "localCustodianScope": "The observed custodian is provincial (Punjab Land Records Authority / Board of Revenue Punjab). No Chichawatni tehsil or Sahiwal district map endpoint, local office record response, or city-specific cadastral coverage was independently evidenced.",
+    "urls": ["https://www.punjab-zameen.gov.pk/", "https://www.punjab.gov.pk/digital-platforms", "https://onlinefard.punjab-zameen.gov.pk/Client/Index"]
+  },
+  "officialSources": [
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Current official PLRA landing page identifies digital land-record services, service centers, Fard, property registration, and other land administration services."},
+    {"url": "https://www.punjab.gov.pk/digital-platforms", "observation": "Government of Punjab digital-platforms page lists Land Records Services as a provincial computerization initiative."},
+    {"url": "https://onlinefard.punjab-zameen.gov.pk/Client/Index", "observation": "Official online Fard/LRMIS service page was discovered, but no anonymous parcel geometry was returned."},
+    {"url": "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2FDocument%2F", "observation": "Official registry portal presents login and CAPTCHA; it is not an anonymous cadastral map/API response."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Punjab Land Records Authority / Punjab LRMIS",
+    "viewerUrl": "https://www.punjab-zameen.gov.pk/",
+    "serviceBase": "https://onlinefard.punjab-zameen.gov.pk/",
+    "administrativeSelection": {"province": "Punjab", "targetCity": "Chichawatni", "district": "Sahiwal", "tehsil": "Chichawatni", "selectionVerified": false},
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "geometryType": null
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://www.punjab-zameen.gov.pk/", "outcome": "200; official PLRA landing HTML retrieved."},
+    {"method": "GET", "url": "https://www.punjab-zameen.gov.pk/static/js/main.904661a8.js", "outcome": "200; current JavaScript bundle inspected. It exposed official service links, but no anonymous Chichawatni parcel geometry route was identified."},
+    {"method": "GET", "url": "https://www.punjab.gov.pk/digital-platforms", "outcome": "First-party Government of Punjab page discovered by search; it describes Land Records Services but does not return parcel features."},
+    {"method": "GET", "url": "https://onlinefard.punjab-zameen.gov.pk/Client/Index", "outcome": "Anonymous GET timed out after 12 seconds from this environment; no response body, schema, ID, or geometry observed."},
+    {"method": "GET", "url": "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2FDocument%2F", "outcome": "First-party discovery returned an authentication/CAPTCHA login page; no anonymous parcel response requested or retained."}
+  ],
+  "resultCategory": "official_registry_custodian_found_no_public_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Punjab provincial digital land-record and registration services.",
+    "verifiedOpenScope": "Official provincial custodian and service links only; no Chichawatni-local public map, bounded anonymous ID response, CRS, or parcel geometry verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["native parcel identifier if publicly returned", "geometry", "source CRS", "service metadata"],
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "remainingUncertainty": "The exact WUP point was preserved and not shifted. A zero exact-point hit was not obtained: the relevant public service was unavailable by timeout or required authentication/CAPTCHA. This is not evidence of citywide parcel absence. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained. Packet completion is research evidence only and is not source integration or admission."
+}

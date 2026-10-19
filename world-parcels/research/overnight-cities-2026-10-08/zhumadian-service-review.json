@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9992-zhumadian.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official city service catalogue and guide confirm the city real-property registration center and a purpose/eligibility-based record-query service. No public parcel geometry route was found.",
+  "registryAssessment": "The official Zhumadian municipal government service portal lists the Zhumadian Real Estate Registration Service Center as the implementing body for real-property query and related registration services. Its real-property query guide requires an authorized query subject, property within the office jurisdiction, complete application material and a clear lawful purpose. No anonymous public parcel-map or geometry-only route was found.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zwfw.zhumadian.gov.cn/getYztb.jspx",
+      "observation": "Official Zhumadian City service portal lists the Zhumadian Real Estate Registration Service Center's real-property query, new-home contract, lease registration, and certificate replacement services."
+    },
+    {
+      "url": "https://zwfw.zhumadian.gov.cn/lawguide/005947738GG54210001.jspx",
+      "observation": "Official guide describes 不动产查询, identifies the city real-estate registration/trading center as the implementing body, and requires an eligible query subject, local jurisdiction, complete materials, and clear lawful purpose."
+    },
+    {
+      "url": "https://www.hnzwfw.gov.cn/portal/guide/E4AF3495248AADC5A29A90486AFCE53B?region=411700000000",
+      "observation": "Henan government service guide independently identifies the Zhumadian Real Estate Registration and Transaction Center for city registration services."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhumadian China official real estate registration service center cadastral parcel map public GIS",
+      "result": "The official city service catalogue and guide confirm the city real-property registration center and a purpose/eligibility-based record-query service. No public parcel geometry route was found.",
+      "method": "English-language search followed by primary official-source review."
+    },
+    {
+      "language": "Chinese",
+      "query": "驻马店市 不动产登记中心 不动产查询 宗地地图 官方",
+      "result": "驻马店市政务服务网列有驻马店市不动产登记服务中心的不动产查询和相关登记事项；办事指南要求查询主体、管辖范围、申请材料和明确合法目的。没有发现匿名宗地几何服务。",
+      "method": "Native-language search followed by primary official-source review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The official municipal public-service catalogue lists 不动产查询 (real-estate record query) and associated registration/transaction services under the Zhumadian Real Estate Registration Service Center. The official service guide describes query eligibility and application requirements; it is a controlled records workflow, not a geometry feed. No service form was opened or submitted, and no property/owner/address query or geometry request was made."
+  },
+  "privacy": "No owner, address, taxpayer, account, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The city registry is confirmed, but no public cadastral map/service schema or anonymous parcel geometry endpoint was identified in the official portal review. The service catalogue confirms administrative services only and does not establish parcel data availability or coverage at the WUP point."
+  }
+}

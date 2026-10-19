@@ -1,0 +1,59 @@
+{
+  "kind": "country",
+  "key": "RO",
+  "checkedAt": "2026-09-30",
+  "previousStatus": "national_cadastre_viewer_only",
+  "newStatus": "temporarily_unavailable",
+  "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ro-RO,ro;q=0.9,en;q=0.8",
+  "changedByHeaders": false,
+  "foundViaViewerInspection": false,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "requests": [
+    {
+      "url": "https://eterra.ancpi.ro/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "ANCPI 'Acces restrictionat' page, now reads 'Scheduled maintenance / system under maintenance'"
+    },
+    {
+      "url": "https://eterra.ancpi.ro/eterra/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "same maintenance page"
+    },
+    {
+      "url": "https://www.ancpi.ro/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "ANCPI notice: only the integrated e-Terra system is being restarted; RTI, MyEterra, Registrul proprietarilor, Titluri de proprietate and Geoportal to be restarted in phases, ANCPI will announce each"
+    },
+    {
+      "url": "https://geoportal.ancpi.ro, inspire.ancpi.ro, gis.ancpi.ro, data.gov.ro",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "",
+      "assessment": "connection failed/reset"
+    },
+    {
+      "url": "https://geo-spatial.org/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Romanian community geodata site reachable; no cadastre link found"
+    },
+    {
+      "url": "https://inspire-geoportal.ec.europa.eu/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "EU INSPIRE geoportal reachable (not queried for RO parcels)"
+    }
+  ],
+  "geoBlockSuspected": false,
+  "notes": "New: ANCPI states the Geoportal (and other platforms besides e-Terra) is offline pending phased restart, so the earlier 'geo-block' guess is likely wrong and the earlier viewer_only status is not testable now. The access block on eterra is a maintenance page returned to this IP, not a header issue. Requires-account nature of e-Terra unchanged.",
+  "nextStep": "Re-check geoportal.ancpi.ro / INSPIRE CP WFS after ANCPI announces Geoportal restart."
+}

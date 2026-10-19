@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11220-qingyuan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified. No city-specific anonymous parcel-vector service and safe feature schema were identified; no geometry query was made.",
+  "registryAssessment": "The Qingyuan Municipal Real Estate Registration Center budget identifies the center as responsible for land/property registration, cadastral and ownership surveys, archives, and registration information services for Qingcheng and Qingxin districts. This is city-specific registry evidence, but it does not establish an anonymous parcel-vector endpoint or coverage at this WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.gdqy.gov.cn/qygtzyj/attachment/0/172/172296/1989971.pdf",
+      "observation": "The Qingyuan Municipal Real Estate Registration Center budget identifies the center as responsible for land/property registration, cadastral and ownership surveys, archives, and registration information services for Qingcheng and Qingxin districts. This is city-specific registry evidence, but it does not establish an anonymous parcel-vector endpoint or coverage at this WUP point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Qingyuan official city real estate registration center cadastral parcel map GIS public query",
+      "result": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified.",
+      "method": "Separate English-language discovery; official source review."
+    },
+    {
+      "language": "Chinese",
+      "query": "清远市 不动产登记中心 地籍图 宗地图 GIS 查询 清城区 清新区 官方",
+      "result": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified.",
+      "method": "Separate local-language discovery; official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained because a safe city-specific public feature schema was not verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Qingyuan Municipal Real Estate Registration Center budget identifies the center as responsible for land/property registration, cadastral and ownership surveys, archives, and registration information services for Qingcheng and Qingxin districts. This is city-specific registry evidence, but it does not establish an anonymous parcel-vector endpoint or coverage at this WUP point.",
+    "verifiedOpenScope": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://www.gdqy.gov.cn/qygtzyj/attachment/0/172/172296/1989971.pdf",
+      "outcome": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether another official Qingyuan map service provides anonymous parcel polygons and whether any mapped coverage includes the WUP point remain unresolved.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime contract or adapter behavior was tested."
+  },
+  "technicalBlocker": "No city-specific anonymous parcel-vector service and safe feature schema were identified; no geometry query was made."
+}

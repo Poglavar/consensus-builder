@@ -1,0 +1,131 @@
+{
+  "cityCode": 11457,
+  "queueRank": 1684,
+  "name": "Bhagalpur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [25.2427950444351, 86.9724499442831],
+  "population2025": 339560,
+  "population2025k": 339.56,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bhagalpur Bihar official cadastral map parcel map bhu naksha",
+        "result": "First-party results identified Bihar's official BhuNaksha cadastral viewer, the Bhagalpur district administration land-record route, and the Bihar Revenue and Land Reforms department portal. The viewer's public shell exposed its current JavaScript/configuration and Bhagalpur district selection, but bounded anonymous API calls returned no usable hierarchy or parcel feature response.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhagalpur.nic.in/service/land-records/",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://dlrs.bihar.gov.in/services.html"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "भागलपुर बिहार आधिकारिक भू नक्शा खसरा नक्शा",
+        "result": "First-party Hindi/official results confirmed the Bihar भू-नक्शा route and the Bhagalpur district land-record link. The public viewer presents district, sub-division, circle, mauza, survey type, map instance and sheet controls; no safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/UserRegister",
+          "https://bhagalpur.nic.in/service/land-records/",
+          "https://bhagalpur.nic.in/maps/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "observation": "Government of Bihar BhuNaksha public cadastral mapping viewer. The current HTML exposes district BHAGALPUR as a selectable location and controls for sub-division, circle, mauza, survey type, map instance and sheet number. Its page links assets/misc/config.js and index.js, which were fetched and inspected."
+    },
+    {
+      "url": "https://bhagalpur.nic.in/service/land-records/",
+      "observation": "Official Bhagalpur district administration land-record page directs users to the Bihar land-record service and labels the location Bhagalpur. This is local district custodian evidence, not parcel geometry evidence."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official Bihar Department of Revenue and Land Reforms portal lists Bhu-Naksha, online land records and related services."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "observation": "Official Directorate of Land Records and Survey service page lists Online Map, Online Revenue Records and special-survey map services."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Viewer shell loaded. It showed state Bihar and district option 22 BHAGALPUR; no parcel row was requested from the UI."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current configuration was inspected; public service path is same-origin and the viewer uses REST endpoints, WMS, ScalarDatahandler and OpenLayers."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Current JavaScript was inspected. It identifies rest/Levels/count, rest/Levels/ListsAfterLevel, rest/MapInfo/getPlotAtXY, rest/MapInfo/getVVVVExtentGeoref and WMS routes, but does not itself provide parcel data."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST state=22",
+      "httpStatus": 200,
+      "outcome": "Response body was 0; no usable level hierarchy was returned for the bounded anonymous request."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+      "method": "POST OP=2, level=1, selections=, state=22",
+      "httpStatus": 200,
+      "outcome": "Response body was empty; no district/subdivision/circle/mauza schema or parcel feature was obtained."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?service=WMS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Response body was empty in the bounded request environment; no layer schema or CRS was retained."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/LevelLabels",
+      "method": "POST state=22",
+      "httpStatus": 200,
+      "outcome": "Response body was empty; no field or level labels were obtained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official Bhagalpur district administration land-record page and Bihar Department of Revenue and Land Reforms/BhuNaksha viewer evidence a local/state cadastral custodian and public map procedure. They do not establish an accessible city-bounded parcel feature API in this attempt.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "bihar-bhunaksha-bhunaksha.bihar.gov.in",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Bihar Government BhuNaksha cadastral map service, with Bhagalpur available as district 22 in the public viewer.",
+    "cityCoverage": "Bhagalpur district selection and official land-record procedure are evidenced, but city polygon coverage, selected mauza/sheet, and parcel geometry access were not verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [25.2427950444351, 86.9724499442831] was preserved in latitude/longitude order and was not shifted. No exact-point hit/miss inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current selected-sheet route, anonymous response behavior, parcel layer schema, CRS, stable native identity and citywide coverage remain unresolved. No raw source-specific attributes, owner/address/contact information or synthetic identity was retained. This packet is not source integration/admission."
+}

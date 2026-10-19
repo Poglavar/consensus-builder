@@ -1,0 +1,91 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PY",
+ "country": "Paraguay",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Servicio Nacional de Catastro (SNC), Ministerio de Economia y Finanzas",
+ "portalsFound": [
+  {
+   "url": "https://www.catastro.gov.py/geoserver/ows",
+   "observation": "Open GeoServer WFS 2.0: layers snc:parcelas_activas (2,221,048 features), consulta:ly_parc_view, snc:ly_urba, snc:ly_dpto, snc:ly_dist, snc:area_afectada"
+  },
+  {
+   "url": "https://www.catastro.gov.py/visor/?snc=geo",
+   "observation": "SNC public map viewer"
+  },
+  {
+   "url": "https://www.catastro.gov.py/servicio-linea/",
+   "observation": "Online consultation of rural/urban accounts (cuentas rurales/corrientes)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.catastro.gov.py/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "6 feature types"
+  },
+  {
+   "url": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&count=2&outputFormat=application/json&typeNames=snc:parcelas_activas&srsName=EPSG:4326&bbox=-25.2820,-57.6360,-25.2810,-57.6350,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features (bbox axis order lat,lon wrong; GeoServer expects lon,lat with EPSG:4326 here)"
+  },
+  {
+   "url": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&count=2&outputFormat=application/json&typeNames=snc:parcelas_activas&srsName=EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 Polygon parcels in departments L and S, totalFeatures 2,221,048"
+  },
+  {
+   "url": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&count=3&outputFormat=application/json&typeNames=snc:parcelas_activas&srsName=EPSG:4326&bbox=-57.5475,-25.3170,-57.5460,-25.3160,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 Polygon parcels, Central dept (dpto L)"
+  },
+  {
+   "url": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&count=3&outputFormat=application/json&typeNames=snc:parcelas_activas&srsName=EPSG:4326&bbox=-54.6095,-24.1255,-54.6080,-24.1245,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 Polygon parcels, dpto S"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "py-snc-parcelas-activas",
+  "requestUrl": "https://www.catastro.gov.py/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&count=3&outputFormat=application/json&typeNames=snc:parcelas_activas&srsName=EPSG:4326&bbox=-57.5475,-25.3170,-57.5460,-25.3160,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -57.5475,
+   -25.317,
+   -57.546,
+   -25.316
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "id / clave_comparacion (dpto|dist|zona|mz|lote)",
+  "responseFile": "countries/PY-parcel-response.json",
+  "pagination": "WFS count/startIndex",
+  "regionSampled": "Central department (dpto L); second sample dpto S (-54.61,-24.125)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Country-wide parcel layer (parcelas_activas), 2.2M features",
+  "regionsVerified": [
+   "dpto L (near Asuncion)",
+   "dpto S (eastern Paraguay)"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence/terms not read. Some geometries look coarse (4-decimal degree rounding, few vertices). Layer 'parcelas_activas' may not include all parcels; bbox axis order is lon,lat.",
+ "nextStep": "Read SNC terms; compare with consulta:ly_parc_view; test paging."
+}

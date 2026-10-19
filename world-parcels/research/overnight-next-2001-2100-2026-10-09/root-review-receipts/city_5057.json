@@ -1,0 +1,40 @@
+{
+  "taskId": "city:5057",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-5057-taunggyi.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/taunggyi-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:50:41Z",
+  "identity": {
+    "cityCode": 5057,
+    "rank": 2093,
+    "country": "Myanmar",
+    "point": [
+      20.7812120589556,
+      97.0287752632216
+    ],
+    "populationPersons": 277312,
+    "queueAndRosterMatch": true
+  },
+  "searches": {
+    "englishAndLocalQueriesRecorded": true,
+    "actualResultUrlsRecorded": true
+  },
+  "sample": {
+    "retainedFullPolygonCount": 0,
+    "safeIdAttributesOnly": null
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "decisionReason": "Official Taunggyi land-area profile and Myanmar survey/land-administration context are evidenced. The Survey Department route timed out in the packet; no public native-ID parcel geometry response or independent adapter qualification exists. Timeout is unresolved access, not citywide absence."
+}

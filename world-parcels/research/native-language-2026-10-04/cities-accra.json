@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 71,
+  "city": "Accra",
+  "countryCode": "GH",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/accra.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Accra Ghana cadastral parcel GIS geospatial data open land commission official WFS"
+  },
+  "results": [
+    {
+      "title": "Ghana Lands Commission Survey and Mapping Division",
+      "url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+      "kind": "official",
+      "note": "Responsible for survey and parcel plan custody/production; no open vector feed specified."
+    },
+    {
+      "title": "Ghana Lands Commission online services",
+      "url": "https://onlineservices.lc.gov.gh/",
+      "kind": "official-service",
+      "note": "Land application/payment and account services; no public parcel geometry."
+    }
+  ],
+  "assessment": "English-language search found the official national surveying and online-services agency but not a public Accra parcel-vector endpoint or stable ID query.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

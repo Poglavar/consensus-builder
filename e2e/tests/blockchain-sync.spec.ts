@@ -4,6 +4,7 @@ import {
   connectWalletByConnectorId,
   injectMockEvmWallet,
   injectMockSolanaWallet,
+  waitForBlockchainRuntime,
 } from '../helpers/blockchain';
 
 test.describe('Blockchain sync @features', () => {
@@ -14,9 +15,12 @@ test.describe('Blockchain sync @features', () => {
       walletKind: 'metamask',
     });
 
-    await page.goto('/');
+    // A minted proposal joins only the store of the city its parcels belong to (c97bceea, projections
+    // M8), so the sync runs in Zagreb, the city of the HR- parcel the mocked contract returns.
+    await page.goto('/?city=zg');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'metamask');
+    await waitForBlockchainRuntime(page, ['BlockchainSync', 'ethers', 'walletManager']);
 
     const result = await page.evaluate(async () => {
       const globalWindow = window as typeof window & {
@@ -54,6 +58,7 @@ test.describe('Blockchain sync @features', () => {
         refreshCount: 0,
         showButtonCount: 0,
         totalSupplyCalls: 0,
+        totalSupplyAddresses: [] as string[],
         tokenByIndexCalls: 0,
         getProposalCalls: 0,
         ownerOfCalls: 0,
@@ -88,6 +93,11 @@ test.describe('Blockchain sync @features', () => {
             {
               chainId: '31337',
               contractAddress: '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318',
+            },
+            // On a chain the wallet is not on: skipped, never read through the wallet.
+            {
+              chainId: '84532',
+              contractAddress: '0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709',
             },
           ],
         },
@@ -135,6 +145,7 @@ test.describe('Blockchain sync @features', () => {
 
         async totalSupply() {
           metrics.totalSupplyCalls += 1;
+          metrics.totalSupplyAddresses.push(this.address);
           return 1n;
         }
 
@@ -210,10 +221,13 @@ test.describe('Blockchain sync @features', () => {
 
     expect(result.listenerEvents).toEqual(expect.arrayContaining(['accountsChanged', 'chainChanged']));
     expect(result.metrics.totalSupplyCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.tokenByIndexCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.getProposalCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.ownerOfCalls).toBeGreaterThanOrEqual(3);
-    expect(result.metrics.addProposalCalls).toBeGreaterThanOrEqual(3);
+    expect(result.metrics.totalSupplyAddresses).not.toContain('0x6c3AdE19a8947bC4CC75B2AE3F2E25F4cBb23709');
+    // Accounts/chain changes trigger incremental syncs. The supply is checked each time, while
+    // the already imported token is deliberately not fetched or inserted again.
+    expect(result.metrics.tokenByIndexCalls).toBe(1);
+    expect(result.metrics.getProposalCalls).toBe(1);
+    expect(result.metrics.ownerOfCalls).toBe(1);
+    expect(result.metrics.addProposalCalls).toBe(1);
     expect(result.metrics.contractOnEvents.filter((event) => event === 'Transfer')).toHaveLength(2);
     expect(result.metrics.contractOffEvents).toContain('Transfer');
     expect(result.metrics.refreshCount).toBeGreaterThanOrEqual(3);
@@ -226,8 +240,7 @@ test.describe('Blockchain sync @features', () => {
     });
     expect(result.addedProposals[0]).toMatchObject({
       proposalId: '31337-0x8a791620dd6260079bf849dc5567adc3f2fdc318-7',
-      parentParcelIds: ['HR-335754-1234'],
-      status: 'Active',
+      cadastreParcelIds: ['HR-335754-1234'],
       isMinted: true,
       nft: {
         chain: '31337',
@@ -246,6 +259,7 @@ test.describe('Blockchain sync @features', () => {
     await page.goto('/');
     await waitForMapReady(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
+    await waitForBlockchainRuntime(page, ['SolanaBlockchainSync', 'SolanaChainDataLoader', 'solanaWeb3']);
 
     const result = await page.evaluate(async () => {
       const globalWindow = window as typeof window & {
@@ -282,7 +296,7 @@ test.describe('Blockchain sync @features', () => {
 
       const existingProposal = {
         proposalId: 'local-solana-proposal',
-        parentParcelIds: ['HR-335754-1234'],
+        cadastreParcelIds: ['HR-335754-1234'],
       };
 
       globalWindow.getCityConfig = () => ({
@@ -320,14 +334,14 @@ test.describe('Blockchain sync @features', () => {
       };
 
       globalWindow.SolanaChainDataLoader.getAllProposals = async () => ([
-        { proposalId: '6sJ1xYjvSx2Jf2wzY6Jt2P1P1m7THTM8v6m4M4example' },
+        { proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT' },
       ]);
       globalWindow.SolanaChainDataLoader.getConnection = () => ({
         getAccountInfo: async () => ({ data: new Uint8Array([1, 2, 3, 4]) }),
       });
       globalWindow.SolanaChainDataLoader.parseProposalAccount = (_data: Uint8Array, address: string) => ({
         proposalId: address,
-        parentParcelIds: ['HR-335754-1234'],
+        cadastreParcelIds: ['HR-335754-1234'],
         isConditional: false,
         imageURI: 'ipfs://solana-proposal',
         acceptancePossible: true,
@@ -367,8 +381,8 @@ test.describe('Blockchain sync @features', () => {
     expect(result.metrics.saveCalls).toBe(0);
     expect(result.metrics.importCalls).toHaveLength(1);
     expect(result.metrics.importCalls[0]).toMatchObject({
-      proposalId: '6sJ1xYjvSx2Jf2wzY6Jt2P1P1m7THTM8v6m4M4example',
-      parentParcelIds: ['HR-335754-1234'],
+      proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
+      cadastreParcelIds: ['HR-335754-1234'],
       status: 'Active',
       chainId: 'solana-devnet',
       contractAddress: '3wsvs6lklo4yslalvxkdwud37fccje2yu9fvh1nmfxbg',
@@ -377,7 +391,7 @@ test.describe('Blockchain sync @features', () => {
       onchain: {
         chainId: 'solana-devnet',
         contractAddress: '3wsvs6lklo4yslalvxkdwud37fccje2yu9fvh1nmfxbg',
-        proposalId: '6sJ1xYjvSx2Jf2wzY6Jt2P1P1m7THTM8v6m4M4example',
+        proposalId: '7xKXtg2CWYcy6EH8d9xvPht4JyhV46Lxgq6vN6hS9wZT',
         acceptanceCount: '1',
         solBalance: '500000000',
         ethBalance: '500000000',

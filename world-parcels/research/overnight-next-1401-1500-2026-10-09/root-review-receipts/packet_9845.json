@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:9845",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9845-tumakuru.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/tumakuru-service-review.json",
+    "tmp/valhalla-parcel-research/tumakuru/citycorp.html",
+    "tmp/valhalla-parcel-research/tumakuru/citycorp.headers",
+    "tmp/valhalla-parcel-research/runs/20261009T155933-b8b9e873/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-10T07:56:01Z",
+  "finding": "WUP identity and executed English/Kannada searches verified. First-party municipal PID and assessment search form grounds local property-record custody; state Revenue Maps route timed out. No safe native-ID polygon response or adapter qualification. Timeout is not absence; held."
+}

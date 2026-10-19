@@ -1,0 +1,671 @@
+{
+  "description": "Complete bounded live parcel adapter response verified 2026-10-02 with page size 3; WGS84 coordinates.",
+  "bbox": [
+    2.355,
+    48.849,
+    2.356,
+    48.8495
+  ],
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0011",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35546935,
+                48.84926328
+              ],
+              [
+                2.35551789,
+                48.8492613
+              ],
+              [
+                2.35570235,
+                48.84925402
+              ],
+              [
+                2.35574121,
+                48.84918623
+              ],
+              [
+                2.35557451,
+                48.84907903
+              ],
+              [
+                2.35548299,
+                48.84914113
+              ],
+              [
+                2.35546073,
+                48.84915558
+              ],
+              [
+                2.35546935,
+                48.84926328
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0011",
+        "id": "FR-PCI-75105000AD0011",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0011",
+        "parcelNumber": "0011",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0011",
+          "numero": "0011",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 286
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0012",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35530601,
+                48.84926978
+              ],
+              [
+                2.35546935,
+                48.84926328
+              ],
+              [
+                2.35546073,
+                48.84915558
+              ],
+              [
+                2.35548299,
+                48.84914113
+              ],
+              [
+                2.35557451,
+                48.84907903
+              ],
+              [
+                2.35545771,
+                48.84900358
+              ],
+              [
+                2.35527947,
+                48.84912367
+              ],
+              [
+                2.35529466,
+                48.8491412
+              ],
+              [
+                2.35530601,
+                48.84926978
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0012",
+        "id": "FR-PCI-75105000AD0012",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0012",
+        "parcelNumber": "0012",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0012",
+          "numero": "0012",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 353
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0013",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35527947,
+                48.84912367
+              ],
+              [
+                2.35545771,
+                48.84900358
+              ],
+              [
+                2.35530224,
+                48.84890291
+              ],
+              [
+                2.355261,
+                48.84889855
+              ],
+              [
+                2.35513623,
+                48.84893799
+              ],
+              [
+                2.35522878,
+                48.84906818
+              ],
+              [
+                2.35527947,
+                48.84912367
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0013",
+        "id": "FR-PCI-75105000AD0013",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0013",
+        "parcelNumber": "0013",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0013",
+          "numero": "0013",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 311
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0014",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35509202,
+                48.84910773
+              ],
+              [
+                2.35512148,
+                48.84914989
+              ],
+              [
+                2.35513041,
+                48.84927657
+              ],
+              [
+                2.35530601,
+                48.84926978
+              ],
+              [
+                2.35529466,
+                48.8491412
+              ],
+              [
+                2.35527947,
+                48.84912367
+              ],
+              [
+                2.35522878,
+                48.84906818
+              ],
+              [
+                2.35513623,
+                48.84893799
+              ],
+              [
+                2.35500038,
+                48.84898061
+              ],
+              [
+                2.35509202,
+                48.84910773
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0014",
+        "id": "FR-PCI-75105000AD0014",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0014",
+        "parcelNumber": "0014",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0014",
+          "numero": "0014",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 439
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0015",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35509202,
+                48.84910773
+              ],
+              [
+                2.35504008,
+                48.84910961
+              ],
+              [
+                2.35492704,
+                48.84912582
+              ],
+              [
+                2.35493179,
+                48.84918268
+              ],
+              [
+                2.35494253,
+                48.84928419
+              ],
+              [
+                2.35513041,
+                48.84927657
+              ],
+              [
+                2.35512148,
+                48.84914989
+              ],
+              [
+                2.35509202,
+                48.84910773
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0015",
+        "id": "FR-PCI-75105000AD0015",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0015",
+        "parcelNumber": "0015",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0015",
+          "numero": "0015",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 255
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0016",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35509202,
+                48.84910773
+              ],
+              [
+                2.35500038,
+                48.84898061
+              ],
+              [
+                2.35485592,
+                48.84902578
+              ],
+              [
+                2.35492704,
+                48.84912582
+              ],
+              [
+                2.35504008,
+                48.84910961
+              ],
+              [
+                2.35509202,
+                48.84910773
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0016",
+        "id": "FR-PCI-75105000AD0016",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0016",
+        "parcelNumber": "0016",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0016",
+          "numero": "0016",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 162
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0043",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35579738,
+                48.84891997
+              ],
+              [
+                2.35617104,
+                48.8491622
+              ],
+              [
+                2.35618728,
+                48.84917155
+              ],
+              [
+                2.35619094,
+                48.84917355
+              ],
+              [
+                2.35620476,
+                48.84918001
+              ],
+              [
+                2.35621262,
+                48.8491832
+              ],
+              [
+                2.35622918,
+                48.84918868
+              ],
+              [
+                2.35623597,
+                48.8491907
+              ],
+              [
+                2.35625417,
+                48.84919538
+              ],
+              [
+                2.35627822,
+                48.84920091
+              ],
+              [
+                2.35629305,
+                48.84920269
+              ],
+              [
+                2.35630272,
+                48.8492032
+              ],
+              [
+                2.35632711,
+                48.84920369
+              ],
+              [
+                2.35635165,
+                48.84920256
+              ],
+              [
+                2.35637008,
+                48.84920014
+              ],
+              [
+                2.35637663,
+                48.84919901
+              ],
+              [
+                2.35650936,
+                48.84917724
+              ],
+              [
+                2.3566401,
+                48.84915087
+              ],
+              [
+                2.35664529,
+                48.84914964
+              ],
+              [
+                2.35668493,
+                48.84914005
+              ],
+              [
+                2.35606179,
+                48.8487399
+              ],
+              [
+                2.35579738,
+                48.84891997
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0043",
+        "id": "FR-PCI-75105000AD0043",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0043",
+        "parcelNumber": "0043",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0043",
+          "numero": "0043",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 1554
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "FR-PCI-75105000AD0046",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                2.35568881,
+                48.84899394
+              ],
+              [
+                2.35605491,
+                48.84923109
+              ],
+              [
+                2.35611122,
+                48.84923967
+              ],
+              [
+                2.35681503,
+                48.84921009
+              ],
+              [
+                2.35669518,
+                48.8491375
+              ],
+              [
+                2.35668493,
+                48.84914005
+              ],
+              [
+                2.35664529,
+                48.84914964
+              ],
+              [
+                2.3566401,
+                48.84915087
+              ],
+              [
+                2.35650936,
+                48.84917724
+              ],
+              [
+                2.35637663,
+                48.84919901
+              ],
+              [
+                2.35637008,
+                48.84920014
+              ],
+              [
+                2.35635165,
+                48.84920256
+              ],
+              [
+                2.35632711,
+                48.84920369
+              ],
+              [
+                2.35630272,
+                48.8492032
+              ],
+              [
+                2.35629305,
+                48.84920269
+              ],
+              [
+                2.35627822,
+                48.84920091
+              ],
+              [
+                2.35625417,
+                48.84919538
+              ],
+              [
+                2.35623597,
+                48.8491907
+              ],
+              [
+                2.35622918,
+                48.84918868
+              ],
+              [
+                2.35621262,
+                48.8491832
+              ],
+              [
+                2.35620476,
+                48.84918001
+              ],
+              [
+                2.35619094,
+                48.84917355
+              ],
+              [
+                2.35618728,
+                48.84917155
+              ],
+              [
+                2.35617104,
+                48.8491622
+              ],
+              [
+                2.35579738,
+                48.84891997
+              ],
+              [
+                2.35568881,
+                48.84899394
+              ]
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "FR-PCI-75105000AD0046",
+        "id": "FR-PCI-75105000AD0046",
+        "sourceId": "fr-ign-parcellaire-express",
+        "sourceParcelId": "75105000AD0046",
+        "parcelNumber": "0046",
+        "cadMunicipalityName": "paris",
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "idu": "75105000AD0046",
+          "numero": "0046",
+          "section": "AD",
+          "code_insee": "75056",
+          "nom_com": "Paris",
+          "code_dep": "75",
+          "code_com": "056",
+          "code_arr": "105",
+          "com_abs": "000",
+          "contenance": 696
+        }
+      }
+    }
+  ],
+  "complete": true,
+  "sourceId": "fr-ign-parcellaire-express",
+  "returnsWGS84": true
+}

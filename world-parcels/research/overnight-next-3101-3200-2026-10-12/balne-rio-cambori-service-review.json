@@ -1,0 +1,50 @@
+{
+  "cityRecord": "city-6921-balne-rio-cambori.json",
+  "cityCode": 6921,
+  "queueRank": 3135,
+  "name": "Balneário Camboriú",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "pointLatLon": [-27.0024489130727, -48.642018526167],
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://balneariocamboriu.sc.gov.br/imprensa_detalhe.cfm?codigo=38395","httpStatus":200,"outcome":"Official municipal notice identifies GeoMais as the city geoprocessing tool and says the public interface exposes the cadastral-map lot plant and lot lookup options. This is local custodian/service evidence, not a parcel response."},
+    {"method":"SEARCH","url":"https://www.bc.sc.gov.br/noticia/44264","httpStatus":200,"outcome":"Official municipal notice confirms the current GeoMais public-access workflow for locating lots and generating planning viability information."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/login","httpStatus":200,"outcome":"Current first-party viewer shell loaded. HTML exposed /static/js/main.ba321cd9.js and the application required JavaScript."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/static/js/main.ba321cd9.js","httpStatus":200,"outcome":"Current viewer JavaScript loaded and exposed chunks 95458 and 1594; route inspection found the map-source template /apimapa/v2/source/{configuration}/{layer}/{z}/{x}/{y}.mvt and API routes for configuration, user-public access, and parcel identification."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/static/js/1594.ca4b22a2.chunk.js","httpStatus":200,"outcome":"Current application chunk inspected for public-map/API configuration and parcel route strings. It contains the built-in public-access button behavior, which prepares login=publico and senha=base64(publico); that flow was not submitted because login is prohibited."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/api/v1/environment","httpStatus":200,"outcome":"Anonymous environment endpoint returned {SOLICITACOES_ACESSO_ATIVAS:false}; it did not expose a municipality configuration, parcel schema, or geometry."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/api/v2/termos-public/1","httpStatus":200,"outcome":"Public terms endpoint returned the viewer terms, which state that public access is configured by the municipality and that the system contains cadastral and territorial management functionality. Terms are prose/procedure evidence, not parcel geometry."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/api/v2/municipio","httpStatus":401,"outcome":"Token não encontrado. No login, credentials, private token, or workaround was attempted; this is an access limitation, not evidence of absent municipal coverage."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/api/v2/usuario/publico","httpStatus":401,"outcome":"Token não encontrado. The anonymous user-public configuration endpoint did not return a public configuration or parcel layer metadata."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/api/v1/configuracao","httpStatus":401,"outcome":"Token não encontrado. No configuration, source schema, CRS, or parcel identity was obtained."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/apimapa/v2/source/0/1/1/1.mvt","httpStatus":404,"outcome":"Tested only as a bounded route-shape check without a discovered municipal configuration; returned 404 and no feature data."},
+    {"method":"GET","url":"https://geo.bc.sc.gov.br/apimapa/v2/source/0/5/1/1/1.mvt","httpStatus":500,"outcome":"Tested only as a bounded route-shape check without a discovered municipal configuration; returned 500 and no feature data."},
+    {"method":"GET","url":"https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2020/SC/balneario_camboriu/4202008_MM.pdf","httpStatus":200,"outcome":"Official IBGE municipal map confirms municipality context and SIRGAS 2000, but it is a boundary/reference map and not a cadastral parcel service."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "https://geo.bc.sc.gov.br/login and current /static/js/main.ba321cd9.js plus chunk /static/js/1594.ca4b22a2.chunk.js",
+    "apiBase": "https://geo.bc.sc.gov.br/api and https://geo.bc.sc.gov.br/apimapa/v2/source",
+    "geometryCrs": "The IBGE reference map states SIRGAS 2000, but the municipal parcel API CRS was not exposed anonymously. WUP point was preserved in latitude/longitude order and was not shifted.",
+    "nativeIdentity": "No safe native parcel identity was returned. No synthetic identity was created and no GeoJSON sample was retained.",
+    "sourceFieldMapping": {"parcelLayer":"viewer route template indicates a configurable vector map source; municipal layer/configuration not reachable anonymously","parcelId":"not obtained","geometry":"not obtained","crs":"not obtained from municipal parcel response"},
+    "boundedAnonymousResponse": {"requestScope":"official search, viewer shell/JS inspection, environment and terms endpoints, protected configuration endpoints, and two route-shape MVT checks","featureCount":0,"geometryRetained":false}
+  },
+  "localCustodianAssessment": "The Prefeitura de Balneário Camboriú is evidenced as the local cadastral/geoprocessing custodian through its official GeoMais notices and first-party viewer. IBGE is only general official geographic reference context and was not treated as the parcel custodian.",
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently returned by a public route", "bounded public response metadata", "source service URL", "source CRS/coordinate order when declared", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A real municipal cadastral viewer and local custodian were evidenced, but anonymous configuration and parcel routes returned token-required errors; no parcel schema, stable identity, CRS, or geometry was obtained. Adapter qualification remains a separate serial review."},
+  "scopeLimits": [
+    "The exact WUP point and latitude/longitude order were preserved.",
+    "No coordinate was shifted to force a parcel hit; no exact-point parcel query was available on the tested anonymous routes.",
+    "A 401, 404, 500, login wall, or unusable anonymous configuration route is not evidence of citywide parcel absence.",
+    "No full parcel polygon is retained and no sample GeoJSON is created.",
+    "The public-access button's built-in public account flow was observed in JavaScript but not submitted; no login or credentials were used.",
+    "No owner, address, contact, titleholder, tax/account, certificate/title, or personal fields were requested or retained.",
+    "Raw HTML, JavaScript, and request captures remain under ignored tmp/valhalla-parcel-research/6921/."
+  ],
+  "uncertainty": "The official municipal cadastral viewer is reachable and its current JavaScript exposes the map/API route family, but anonymous municipality/configuration access requires a token and the tested MVT route shapes did not yield features. Parcel coverage, update cadence, licensing, native identity field, CRS, anonymous geometry access, and runtime adapter behavior remain unverified."
+}

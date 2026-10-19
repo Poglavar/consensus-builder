@@ -1,0 +1,94 @@
+{
+  "cityCode": 5720,
+  "queueRank": 3126,
+  "name": "Águas Lindas de Goiás",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "locId": 76,
+  "capital": false,
+  "point": [-15.7442164512803, -48.2764269014505],
+  "population2025": 192415,
+  "population2025k": 192.415,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Aguas Lindas de Goias cadastral parcels map official Brazil",
+        "result": "First-party discovery found the official IBGE municipal/urban-sector mapping and the official City of Águas Lindas site. The municipal cadastral service lead is the Prodata SIG portal linked by the city, but no anonymous parcel-vector endpoint was exposed.",
+        "actualResultUrls": [
+          "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2020/GO/aguas_lindas_de_goias/",
+          "https://aguaslindasdegoias.go.gov.br/mapa-do-site/",
+          "https://aguaslindas.prodataweb.inf.br/sig/"
+        ]
+      },
+      {
+        "language": "Portuguese (local/official language)",
+        "query": "Águas Lindas de Goiás cadastro imobiliário mapa parcelas geoprocessamento site oficial",
+        "result": "Busca em fontes oficiais encontrou o Código Tributário municipal, que exige a inscrição dos imóveis urbanos no Cadastro Imobiliário, e um edital municipal para atualização do cadastro imobiliário fiscal urbano com agrimensura/geoprocessamento. O site da cidade vincula Emitir IPTU e Emitir Certidão de Imóvel ao Prodata SIG; o ponto de entrada público atual é protegido por login.",
+        "actualResultUrls": [
+          "https://legislacao.aguaslindasdegoias.go.gov.br/leis/896",
+          "https://aguaslindasdegoias.go.gov.br/wp-content/uploads/2022/05/EDITAL-TOMADA-DE-PRECO-019-2018-3.pdf",
+          "https://aguaslindasdegoias.go.gov.br/mapa-do-site/",
+          "https://aguaslindas.prodataweb.inf.br/sig/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "The Prefeitura Municipal of Águas Lindas de Goiás is evidenced as the local Cadastro Imobiliário custodian for municipal fiscal purposes; Prodata is the linked SIG service provider/portal. No public local parcel registry endpoint was qualified in this attempt.",
+    "scope": "Municipal legislation and procurement establish a local fiscal property cadastre and geoprocessing work, but general legal/procurement prose is not evidence of an anonymous parcel API or downloadable parcel geometry. registryFound remains null because the current public SIG route requires login.",
+    "evidenceUrls": [
+      "https://legislacao.aguaslindasdegoias.go.gov.br/leis/896",
+      "https://aguaslindasdegoias.go.gov.br/wp-content/uploads/2022/05/EDITAL-TOMADA-DE-PRECO-019-2018-3.pdf",
+      "https://aguaslindasdegoias.go.gov.br/mapa-do-site/"
+    ]
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Municipal Prodata SIG entrypoint and official IBGE mapping were checked; no safe anonymous parcel response was returned.",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://aguaslindasdegoias.go.gov.br/mapa-do-site/",
+        "outcome": "HTTP 200 official municipal site map; it links Emitir IPTU and Emitir Certidão de Imóvel to the Prodata SIG portal. No parcel geometry or public schema was present in this page."
+      },
+      {
+        "method": "GET",
+        "url": "https://aguaslindas.prodataweb.inf.br/sig/",
+        "outcome": "HTTP 200 login page. Current JavaScript/UI exposes user/password login and possible CAPTCHA/MFA paths; no login, credentials, CAPTCHA interaction, or private route probing was attempted. No anonymous parcel ID-plus-geometry response was obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_municipais/colecao_de_mapas_municipais/2020/GO/aguas_lindas_de_goias/",
+        "outcome": "HTTP 200 official IBGE download index; municipal map PDF is general cartography, not a cadastral parcel-vector service, and was not retained as a parcel sample."
+      },
+      {
+        "method": "GET",
+        "url": "https://geoftp.ibge.gov.br/cartas_e_mapas/mapas_para_fins_de_levantamentos_estatisticos/censo_demografico_2022/mapas_e_descritivos_de_setores_censitarios/GO/5200258/52002580500/MSU/520025805000213/A3_520025805000213_MSU.pdf",
+        "outcome": "Official IBGE urban-sector map reviewed; it shows census block/face cartography, not cadastral parcel identities or a parcel API. No parcel polygon retained."
+      }
+    ],
+    "note": "The exact WUP point was preserved and was not shifted or used as an absence test. No exact-point parcel query was issued because no public parcel layer was exposed. A login wall or absent map extent is not evidence of citywide absence."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The municipal fiscal cadastre clearly exists by official law and procurement evidence, but current anonymous parcel-vector access and schema remain unresolved.",
+    "The Prodata SIG may expose parcel data after authorized authentication or through a supported interactive client; that route was not used.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "No sample GeoJSON was written because no safe native parcel identity plus full polygon was returned.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

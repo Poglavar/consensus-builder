@@ -1,0 +1,108 @@
+{
+  "name": "Cilacap",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 1010,
+  "point": [
+    -7.69195792026443,
+    109.043598654106
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cilacap Indonesia official land office cadastral parcel map public GIS",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "Cilacap’s official local legal registry documents list the Kantor Pertanahan Kabupaten Cilacap. Its public GIS shell was inspected, but the exposed thematic layer is unrelated mining-permit data, not parcel geometry.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kantor Pertanahan Kabupaten Cilacap peta bidang tanah resmi",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "Cilacap’s official local legal registry documents list the Kantor Pertanahan Kabupaten Cilacap. Its public GIS shell was inspected, but the exposed thematic layer is unrelated mining-permit data, not parcel geometry.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kantor Pertanahan Kabupaten Cilacap",
+        "operator": "Kantor Pertanahan Kabupaten Cilacap",
+        "homeUrl": "https://atrbpncilacap.or.id/",
+        "observation": "Cilacap Regency JDIH documents identify the local Kantor Pertanahan. The separately inspected WebGIS shell is branded as that office but includes contradictory Toboali/Bangka Selatan news and its exposed layer is mining permits; I therefore treat that GIS as unverified and do not infer parcel coverage from it."
+      }
+    ],
+    "requests": [
+      {
+        "observation": "Public QGIS shell HTTP 200. Inspected Export_Output_5_0.js header and first feature showed mining-permit fields/features from Bangka Belitung, not cadastral parcels.",
+        "method": "GET",
+        "url": "https://atrbpncilacap.or.id/qgis2/index.html",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "ID-6603-LOCAL-CADASTRE-REVIEW",
+    "name": "Kantor Pertanahan Kabupaten Cilacap",
+    "url": "https://atrbpncilacap.or.id/",
+    "operator": "Kantor Pertanahan Kabupaten Cilacap",
+    "serviceType": "Official local registry/cadastre reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Cilacap’s official local legal registry documents list the Kantor Pertanahan Kabupaten Cilacap. Its public GIS shell was inspected, but the exposed thematic layer is unrelated mining-permit data, not parcel geometry.",
+    "verifiedOpenScope": "Cilacap’s official local legal registry documents list the Kantor Pertanahan Kabupaten Cilacap. Its public GIS shell was inspected, but the exposed thematic layer is unrelated mining-permit data, not parcel geometry.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-polygon response exposed; no owner/address lookup made.",
+  "remainingUncertainty": "Parcel presence at WUP point and any public feature endpoint remain unverified.",
+  "nextStep": "If official source later exposes a documented feature service, inspect schema and make a bounded full-geometry query.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6603,
+  "cityId": "wup2025:6603",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -7.69195792026443,
+    109.043598654106
+  ],
+  "population2025k": 544.657,
+  "populationUnit": "persons",
+  "queueRank": 1010,
+  "population2025": 544657,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Cilacap’s official local legal registry documents list the Kantor Pertanahan Kabupaten Cilacap. Its public GIS shell was inspected, but the exposed thematic layer is unrelated mining-permit data, not parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://jdih.cilacapkab.go.id/v2/common/dokumen/2024pb3301009.pdf",
+    "https://jdih.cilacapkab.go.id/v2/common/dokumen/2012pb3301021.pdf",
+    "https://atrbpncilacap.or.id/qgis2/index.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-polygon response exposed; no owner/address lookup made."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. Cilacap’s official local legal registry documents list the Kantor Pertanahan Kabupaten Cilacap. Its public GIS shell was inspected, but the exposed thematic layer is unrelated mining-permit data, not parcel geometry."
+}

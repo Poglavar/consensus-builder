@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "4108",
+  "cityName": "Bournemouth",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/4108/attempt-1/evidence/full-safe.geojson",
+    "sha256": "988d4c8e609f7d8d719b6339071f25b2bc76d65dc8b4ac42047e26c1f024cba7",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 86
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "d17cf6cbbc47e4384ceccd04320b7d296950693aba5cdc735e0300e2438cbb46",
+    "geometryPass": true,
+    "featureCount": 86,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

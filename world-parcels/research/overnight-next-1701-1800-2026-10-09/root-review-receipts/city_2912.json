@@ -1,0 +1,16 @@
+{
+  "taskId": "city:2912",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-2912-h-i-d-ng.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/h-i-d-ng-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:56:56.694928Z",
+  "reason": "Immutable WUP code 2912/rank 1776, Viet Nam point and 323442 persons match the roster. English and Vietnamese searches are recorded. First-party ward notices and official land-registration legal text support cadastral custody/work, with ward scope narrower than the WUP city. No native-ID polygon response or source adapter was verified; no paging, 13-cell, metric GEOS, source-binding or headed Details qualification exists. Public geometry remains unresolved, not citywide absent.",
+  "firstPartyUrlsOpened": [
+    "https://haiduong.haiphong.gov.vn/binh-dan-hoc-vu-so/ubnd-phuong-hai-duong-trien-khai-nhiem-vu-xay-dung-co-so-du-lieu-dat-dai-va-huong-dan-nop-thue-d-945378",
+    "https://vbpl.vn/haiduong/Pages/vbpq-toanvan.aspx?ItemID=176544"
+  ]
+}

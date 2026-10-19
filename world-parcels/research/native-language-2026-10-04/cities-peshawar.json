@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 134,
+  "city": "Peshawar",
+  "countryCode": "PK",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/peshawar.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Perso-Arabic",
+    "text": "پشاور زمین ریکارڈ نقشہ کڈسٹر بورڈ آف ریونیو خیبر پختونخوا"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Urdu",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "پشاور زمین ریکارڈ نقشہ کڈسٹر بورڈ آف ریونیو خیبر پختونخوا",
+    "englishQuery": "Peshawar land records, cadastral map and Khyber Pakhtunkhwa Board of Revenue",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "Inauguration of SDC Peshawar City",
+      "url": "https://revenue.kp.gov.pk/general-news/inauguration-of-sdc-peshawar-city/",
+      "kind": "official-provincial-land-records-announcement",
+      "note": "Revenue department states computerized land records for 114 of 203 Peshawar mauzas were live at publication, and describes records/services; does not document public parcel-vector API."
+    },
+    {
+      "title": "Director Land Record",
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "kind": "official-provincial-department",
+      "note": "Department states responsibility for GIS-based cadastral mapping and digital land records; no open query contract established."
+    }
+  ],
+  "assessment": "Official KP sources confirm digitalized Peshawar land records and cadastral-mapping responsibility, but no anonymous spatial endpoint was identified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:4408",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

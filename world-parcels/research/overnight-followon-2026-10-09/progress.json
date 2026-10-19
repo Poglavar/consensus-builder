@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "kind": "population_ranked_followon_progress",
+  "cohort": "overnight-followon-1001-1100",
+  "status": "active",
+  "startedAt": "2026-10-09T05:25:22.103465+00:00",
+  "updatedAt": "2026-10-09T06:49:55+00:00",
+  "sourceFile": "ranked-population.json",
+  "sourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "totalRankedCities": 100,
+  "priorAttemptedCities": 4,
+  "initialEligibleCities": 96,
+  "newCityEvidenceFiles": 96,
+  "rootReviewedCities": 96,
+  "awaitingReviewOrFollowthrough": [],
+  "enabledLocallyThisRun": 7,
+  "pendingUnattemptedCities": 0,
+  "nextUnattemptedCities": [],
+  "researchReleaseState": "release_checkpoint_prepared",
+  "geometryVerifiedThisRun": 14,
+  "identityReviewsPending": 0,
+  "note": "Independent follow-on cohort only. The immutable ranked-population roster remains 100 cities with four prior-attempt skips; original top-1000 artifacts are untouched. All 96 eligible cities have packets: 96 are root-reviewed and integrated, 0 await root review, and 0 are unattempted. 14 packets record publicParcelGeometryFound=true and 7 are enabled locally. Qualified additions are included in the release checkpoint; deployed revision is identified by the public frontend release.json.",
+  "completeCityPackets": 96,
+  "integratedCities": 96,
+  "registryGeometryFoundThisRun": 14,
+  "runtimeReadinessCounts": {
+    "enabled": 7,
+    "held_native_geometry_conflicts": 5,
+    "held_native_invalid_geometry": 1,
+    "held_unqualified_wfs_reader": 1,
+    "not_enabled_no_verified_public_geometry": 81,
+    "not_enabled_wup_identity_unresolved": 1
+  },
+  "runtimeReadinessCountsCumulativeReviewed": {
+    "enabled": 7,
+    "held_native_geometry_conflicts": 5,
+    "held_native_invalid_geometry": 1,
+    "held_unqualified_wfs_reader": 1,
+    "not_enabled_no_verified_public_geometry": 81,
+    "not_enabled_wup_identity_unresolved": 1
+  },
+  "invalidOrIncompletePackets": [],
+  "priorAttemptRegistryMatches": [
+    {
+      "rank": 1015,
+      "cityCode": 5671,
+      "name": "Salt Lake City",
+      "cityIds": [
+        "us-capital:UT"
+      ]
+    }
+  ],
+  "rosterAttemptStateSource": "ranked-population.json original attemptState; this file is read-only and pending counts are recomputed from complete packets and the integration ledger",
+  "sourceHashBasis": "official WUP bulk CSV.gz input, not roster JSON",
+  "sourceRosterSha256": "88c2bbd1857feb1580e749cc732eea628624c3a3432eb252d7b20a7f3b937f3b",
+  "bulkSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "cohortReviewState": "all_eligible_cities_reviewed_integrated_locally"
+}

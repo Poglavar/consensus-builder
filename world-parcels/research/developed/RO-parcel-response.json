@@ -1,0 +1,17 @@
+{
+ "note": "No parcel reply obtained. geoportal.ancpi.ro / inspire.ancpi.ro do not connect (CONNECT 502 / DNS). eterra returns a maintenance page.",
+ "eterraReply": {
+  "url": "https://eterra.ancpi.ro/eterra/",
+  "httpStatus": 403,
+  "title": "Acces restrictionat",
+  "text": "Mentenanta programata / Scheduled maintenance. Sistemul este in mentenanta."
+ },
+ "ancpiHome": {
+  "httpStatus": 200,
+  "text": "Notice 20 Aug 2026: e-Terra 'Link de plata' reactivated; 329,476 requests 11-19 Aug"
+ },
+ "inspireServiceUrls": [
+  "http://geoportal.ancpi.ro/inspiredownload/rest/directories/arcgisforinspire/CP/CP_Download_MapServer/Main_ATOM_CP.xml",
+  "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/exts/InspireView/service?SERVICE=WMS&REQUEST=GetCapabilities"
+ ]
+}

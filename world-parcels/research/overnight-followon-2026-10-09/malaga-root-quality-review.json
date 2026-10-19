@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-09T06:42:58.658927+00:00",
+  "decision": "approved_by_root",
+  "geometryChangedOrRepaired": false,
+  "basis": "145 distinct unmodified full municipal cartographic parcel polygons around the unchanged WUP locator passed thirteen bounded grid cells, complete footprint lookup and source binding. Two independent anonymous downloads returned the complete 58,631-feature EPSG:4326 snapshot with identical decoded body hashes and the runtime gzip representation ETag. All 145 fresh exact native ID_PARCELA reads and explicit absence passed. Independent EPSG:32630 GEOS audit found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors in this bounded union. The exact locator lies inside ID_PARCELA 4196772. Snapshot revisions fail closed pending review; this does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "acceptanceFile": "research/overnight-followon-2026-10-09/malaga-snapshot-root-acceptance.json",
+  "qualityFile": "research/overnight-followon-2026-10-09/malaga-snapshot-root-quality.json",
+  "priorFailedCheckFile": "research/overnight-followon-2026-10-09/malaga-snapshot-initial-revision-mismatch.json",
+  "priorFailureResolution": "Initial client pinned the identity-encoding ETag. Actual runtime Node fetch receives the gzip representation ETag; two independent downloads confirmed identical decoded geometry and correct representation tag."
+}

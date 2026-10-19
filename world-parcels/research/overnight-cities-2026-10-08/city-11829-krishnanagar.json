@@ -1,0 +1,119 @@
+{
+  "name": "Krishnanagar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 551,
+  "point": [
+    23.3980775918327,
+    88.4960245821934
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Krishnanagar Nadia West Bengal municipal holding property assessment cadastral map official",
+        "result": "Krishnanagar Municipality runs a city-specific holding-tax due service by ward, road and holding number. Municipal service documentation describes assessment of new holdings and certified copies. No cadastral parcel viewer or vector layer was found.",
+        "urls": [
+          "https://tax.krishnanagarmunicipality.com/dueCheck",
+          "https://krishnanagarmunicipality.com/",
+          "https://udma.wb.gov.in/public/uploads/circular_pdf/1762256293_755orderma2526.pdf",
+          "https://udma.wb.gov.in/Main/urban_local_bodies"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "কৃষ্ণনগর পৌরসভা হোল্ডিং সম্পত্তি কর মূল্যায়ন জমির মানচিত্র অফিসিয়াল",
+        "result": "কৃষ্ণনগর পৌরসভার নিজস্ব পোর্টালে ওয়ার্ড, রাস্তা ও হোল্ডিং নম্বর দিয়ে করের বকেয়া যাচাই করা যায়। পৌর পরিষেবা নথিতে নতুন হোল্ডিংয়ের মূল্যায়ন ও প্রত্যয়িত কপির কথা আছে। কেডাস্ট্রাল পার্সেল মানচিত্র বা ভেক্টর সেবা পাওয়া যায়নি।",
+        "urls": [
+          "https://tax.krishnanagarmunicipality.com/dueCheck",
+          "https://krishnanagarmunicipality.com/",
+          "https://udma.wb.gov.in/public/uploads/circular_pdf/1762256293_755orderma2526.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://tax.krishnanagarmunicipality.com/dueCheck",
+        "httpStatus": 200,
+        "observation": "Official municipality-linked public due-check shell exposes ward, road-name and holding-number selectors; no holding lookup was performed and no property data were retrieved."
+      },
+      {
+        "url": "https://krishnanagarmunicipality.com/",
+        "httpStatus": 200,
+        "observation": "Municipality website identifies Krishnanagar Municipality and links public payment/service sections."
+      },
+      {
+        "url": "https://udma.wb.gov.in/Main/urban_local_bodies",
+        "observation": "Government of West Bengal UDMA directory identifies Krishnanagar Municipality in Nadia district."
+      },
+      {
+        "url": "https://udma.wb.gov.in/public/uploads/circular_pdf/1762256293_755orderma2526.pdf",
+        "observation": "West Bengal UDMA municipal order discusses Krishnanagar municipal service and property-tax collection; it records operational concerns and does not establish cadastral vector availability."
+      },
+      {
+        "url": "https://banglarbhumi.gov.in/",
+        "observation": "Official West Bengal land-record portal lists RS-LR plot information and plot/mouza map request services behind citizen-service login. Shell retrieval timed out locally; this is not treated as an origin failure and no login was attempted."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No parcel feature response or full polygon was retrieved."
+  },
+  "source": {
+    "id": "city-IN-11829-overnight-research",
+    "name": "Krishnanagar city-local parcel source review",
+    "operator": null,
+    "url": "https://tax.krishnanagarmunicipality.com/dueCheck",
+    "format": "Public geometry not schema-verified",
+    "access": "Public source discovery only; no account login or feature query used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Krishnanagar Municipality’s local holding-tax service identifies wards, road names and holding numbers, and its official municipal service charter describes assessment of new holdings and certified-copy services. This establishes local municipal holding/property-assessment records, not a cadastral land-title registry or vector map.",
+    "verifiedOpenScope": "No public cadastral map or parcel geometry route was found. City-specific tax records are organized by holding but do not establish survey-boundary geometry or a title-registry map.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Krishnanagar Municipality’s local holding-tax service identifies wards, road names and holding numbers, and its official municipal service charter describes assessment of new holdings and certified-copy services. This establishes local municipal holding/property-assessment records, not a cadastral land-title registry or vector map.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "municipal_holding_registry_no_cadastral_vector",
+  "technicalBlocker": "No public cadastral map or parcel geometry route was found. City-specific tax records are organized by holding but do not establish survey-boundary geometry or a title-registry map.",
+  "remainingUncertainty": "Whether Krishnanagar Municipality holds a separate tax-map dataset and whether current Banglarbhumi map access has any anonymous mode; neither was queried.",
+  "nextStep": "Keep the municipal holding record separate from parcel-boundary evidence; only test geometry if an official city/revenue map contract can be accessed publicly without account credentials.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11829,
+  "cityId": "wup2025:11829",
+  "queueRank": 551,
+  "population2025": 948788,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    23.3980775918327,
+    88.4960245821934
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, account credentials, tokens or feature responses were retained.",
+  "registryEvidenceUrls": [
+    "https://tax.krishnanagarmunicipality.com/dueCheck",
+    "https://krishnanagarmunicipality.com/",
+    "https://udma.wb.gov.in/public/uploads/circular_pdf/1762256293_755orderma2526.pdf",
+    "https://udma.wb.gov.in/Main/urban_local_bodies"
+  ],
+  "rootReviewedAt": "2026-10-09T01:29:32.105621+00:00"
+}

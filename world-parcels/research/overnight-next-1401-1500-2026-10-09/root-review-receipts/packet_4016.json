@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:4016",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4016-guarenas.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/guarenas-service-review.json",
+    "tmp/valhalla-parcel-research/4016/alcaldia.html",
+    "tmp/valhalla-parcel-research/4016/sigat.html",
+    "tmp/valhalla-parcel-research/4016/wp-search.json"
+  ],
+  "checkedAt": "2026-10-10T08:04:52Z",
+  "reason": "Code 4016, rank 1416, Venezuela, exact point and 399477 persons match the immutable roster and queue. English and Spanish executed searches are recorded in both paired files. Original municipal HTML and empty first-party WordPress search show administrative and tax-service context, without a verified parcel response. Failed IGVSB access remains unresolved, not evidence of citywide absence. Registry custody remains null. No adapter or headed Details qualification is evidenced.",
+  "admission": false
+}

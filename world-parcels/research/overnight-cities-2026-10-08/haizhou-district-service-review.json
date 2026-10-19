@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-haizhou-district-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Lianyungang Real Estate Registration Center / Haizhou branch registration hall",
+  "sourceUrl": "https://www.lyg.gov.cn/zglygzfmhwz/szfwj1/content/zwgk_783a1c4c71c64f3c8fe9f4a8985808cc.html",
+  "registryFound": true,
+  "registryBasis": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry.",
+  "officialSources": [
+    {
+      "url": "https://www.lyg.gov.cn/zglygzfmhwz/szfwj1/content/zwgk_783a1c4c71c64f3c8fe9f4a8985808cc.html",
+      "observation": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry."
+    },
+    {
+      "url": "https://lyg.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132070001425271963000715001007&iddept_yw_inf=113207000142527196300071500100705&ql_kind=07&webId=10",
+      "observation": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry."
+    },
+    {
+      "url": "https://lyghz.jszwfw.gov.cn/col/col173479/",
+      "observation": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Haizhou District Lianyungang official real estate registration cadastral parcel GIS",
+      "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry. No anonymous geometry schema or feature response was retained.",
+      "actualResultUrls": [
+        "https://www.lyg.gov.cn/zglygzfmhwz/szfwj1/content/zwgk_783a1c4c71c64f3c8fe9f4a8985808cc.html",
+        "https://lyg.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132070001425271963000715001007&iddept_yw_inf=113207000142527196300071500100705&ql_kind=07&webId=10",
+        "https://lyghz.jszwfw.gov.cn/col/col173479/"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "海州区 不动产登记中心 地籍 宗地 地图 官方",
+      "scope": "Find native-language city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry. No property-specific query was submitted and no anonymous geometry schema was verified.",
+      "actualResultUrls": [
+        "https://www.lyg.gov.cn/zglygzfmhwz/szfwj1/content/zwgk_783a1c4c71c64f3c8fe9f4a8985808cc.html",
+        "https://lyg.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132070001425271963000715001007&iddept_yw_inf=113207000142527196300071500100705&ql_kind=07&webId=10",
+        "https://lyghz.jszwfw.gov.cn/col/col173479/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_registry_verified_no_public_geometry_contract",
+    "reason": "The first-party sources confirm registration offices and service procedures but no public full-polygon geometry service was identified. No property or person-specific lookup was submitted.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.lyg.gov.cn/zglygzfmhwz/szfwj1/content/zwgk_783a1c4c71c64f3c8fe9f4a8985808cc.html",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry."
+    },
+    {
+      "url": "https://lyg.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132070001425271963000715001007&iddept_yw_inf=113207000142527196300071500100705&ql_kind=07&webId=10",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry."
+    },
+    {
+      "url": "https://lyghz.jszwfw.gov.cn/col/col173479/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Lianyungang city government identifies the city Real Estate Registration Center and a Haizhou branch registration hall; the city government-service portal lists Haizhou-area registration services. This establishes local registration records and service offices, not anonymous parcel geometry."
+    }
+  ],
+  "technicalBlocker": "The first-party sources confirm registration offices and service procedures but no public full-polygon geometry service was identified. No property or person-specific lookup was submitted.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether a separate anonymous vector feature schema or full-polygon route exists; citywide coverage and settlement-point parcel relation."
+}

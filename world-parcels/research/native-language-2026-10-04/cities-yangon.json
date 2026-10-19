@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 70,
+  "city": "Yangon",
+  "countryCode": "MM",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/yangon.json",
+  "query": {
+    "language": "Burmese",
+    "script": "Myanmar",
+    "text": "ရန်ကုန် မြေကွက် မြေစာရင်း မြေတိုင်း GIS မြေယာဝန်ကြီးဌာန တရားဝင်"
+  },
+  "results": [
+    {
+      "title": "Survey Department",
+      "url": "https://surveydepartment.gov.mm/",
+      "kind": "official-national-survey-agency",
+      "note": "Native-script search surfaced the national Survey Department but no Yangon cadastral parcel service or public vector contract."
+    }
+  ],
+  "assessment": "A current government survey agency is identifiable, but the search surfaced no Yangon-specific cadastral parcel service.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:5433",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Burmese",
+    "queryScript": "Myanmar",
+    "nativeQuery": "ရန်ကုန် မြေကွက် မြေစာရင်း မြေတိုင်း GIS မြေယာဝန်ကြီးဌာန တရားဝင်",
+    "englishQuery": "Yangon cadastral plots, land records, survey and GIS from the land ministry",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

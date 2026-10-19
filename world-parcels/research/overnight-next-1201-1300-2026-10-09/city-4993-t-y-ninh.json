@@ -1,0 +1,74 @@
+{
+  "cityCode": 4993,
+  "queueRank": 1273,
+  "name": "Tây Ninh",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso3": "VNM",
+  "point": [11.298163025558, 106.11326622941],
+  "population2025": 437816,
+  "population2025k": 437.816,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "A first-party provincial land-environment portal publishes a 2030 land-use planning map specifically for Thành phố Tây Ninh and directs map/data requests to the provincial Văn phòng Đăng ký Đất đai (Land Registration Office), CSDL-TTLT office. This evidences a local land-map/registry custodian and procedure, but not an openly downloadable cadastral parcel-vector service.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tay Ninh Vietnam official cadastral parcel map land registry GIS",
+        "result": "Found the official Tây Ninh provincial land-environment portal's Thành phố Tây Ninh 2030 land-use planning map page. It identifies the provincial Land Registration Office as the contact for map access. No public parcel API or safe geometry response was found in first-party results.",
+        "actualResultUrls": [
+          "https://sonnmt.tayninh.gov.vn/about/BAN-DO-QUY-HOACH-SU-DUNG-DAT-DEN-2030-THANH-PHO-TAY-NINH.html",
+          "https://sonnmt.tayninh.gov.vn/laws/",
+          "https://vbpl.vn/tayninh/Pages/vbpq-toanvan.aspx?ItemID=141654"
+        ]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Tây Ninh bản đồ địa chính thửa đất cổng thông tin chính thức",
+        "result": "Found the official provincial portal page BẢN ĐỒ QUY HOẠCH SỬ DỤNG ĐẤT ĐẾN 2030 - THÀNH PHỐ TÂY NINH and official legal/procedural material. The map page says organizations and individuals needing the map should contact Văn phòng Đăng ký Đất đai tỉnh Tây Ninh, Phòng CSDL-TTLT. Search results did not expose a public parcel feature service.",
+        "actualResultUrls": [
+          "https://sonnmt.tayninh.gov.vn/about/BAN-DO-QUY-HOACH-SU-DUNG-DAT-DEN-2030-THANH-PHO-TAY-NINH.html",
+          "https://thanhpho.tayninh.gov.vn/vi/news/cai-cach-hanh-chinh/thu-tuc-hanh-chinh-phai-thuc-hien-so-hoa-7731.html?download=1&id=2",
+          "https://vbpl.vn/tayninh/Pages/vbpq-print.aspx?ItemID=32475"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://sonnmt.tayninh.gov.vn/about/BAN-DO-QUY-HOACH-SU-DUNG-DAT-DEN-2030-THANH-PHO-TAY-NINH.html",
+      "role": "Tây Ninh provincial land-environment portal; Thành phố Tây Ninh 2030 land-use planning map",
+      "observation": "Indexed first-party page names the map and instructs users seeking map/data access to contact the provincial Văn phòng Đăng ký Đất đai, Phòng CSDL-TTLT, telephone 02766250758. This is land-use planning evidence, not proof of public cadastral parcel geometry."
+    },
+    {
+      "url": "https://sonnmt.tayninh.gov.vn/laws/",
+      "role": "Tây Ninh provincial land-environment legal portal",
+      "observation": "Official portal lists current land and environmental legal/procedural material, including land registration and data-management context."
+    },
+    {
+      "url": "https://vbpl.vn/tayninh/Pages/vbpq-print.aspx?ItemID=32475",
+      "role": "Official legal text mirror for Tây Ninh land-data provision rules",
+      "observation": "Indexed official legal text describes online land-data lookup and distinguishes publicly available attributes from restricted owner, address, title, scanned-certificate and coordinate information. No unsafe fields were requested."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe anonymous full parcel polygon response was obtained. The first-party map page was discoverable through search but direct access from this environment failed at DNS resolution; no parcel endpoint, schema, CRS, stable native parcel ID, or geometry was verified. Exact-point non-hit must not be interpreted as citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Tây Ninh provincial land-use planning map for Thành phố Tây Ninh to 2030, with map access handled by the provincial Land Registration Office.",
+    "verifiedOpenScope": "Local official map/registry custodian and access procedure verified from first-party indexed content; open cadastral parcel-vector availability, exact WUP-point inclusion, and complete city coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

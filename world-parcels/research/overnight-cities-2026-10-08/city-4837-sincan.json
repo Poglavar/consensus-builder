@@ -1,0 +1,110 @@
+{
+  "name": "Sincan",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "rank": 448,
+  "point": [
+    39.9558067799339,
+    32.6024648341959
+  ],
+  "population2025": 1149921,
+  "population2025k": 1149.921,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Local municipal land/planning services are confirmed. The exact WUP point was not overlaid against a Sincan boundary, and the linked map did not load in bounded checks.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Sincan Municipality publishes local e-İmar / e-Çap and planning services, including parcelation-plan notices. This confirms local municipal land/planning records; it does not establish an open parcel-vector service.",
+  "resultCategory": "local_municipal_land_planning_records_confirmed_no_public_vector_route",
+  "technicalBlocker": "The municipality-linked GIS host timed out; e-İmar requires e-Devlet identity verification. No vector layer schema or geometry response was available.",
+  "remainingUncertainty": "Point-specific village/administrative context and any independent open parcel-vector service remain unknown.",
+  "nextStep": "If pursued, retry the ordinary public municipality map; avoid authenticated e-İmar or property lookup workflows.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Turkish",
+        "query": "Sincan Belediyesi parsel sorgu harita imar durumu resmi",
+        "result": "The municipality advertises Kent Rehberi and E-İmar / E-Çap and road-level services. The public Kent Rehberi is an amenity directory rather than a cadastral parcel viewer; the e-İmar route requires e-Devlet authentication.",
+        "method": "Separate Turkish-language search and official municipal/e-Devlet page review."
+      },
+      {
+        "language": "English",
+        "query": "Sincan Ankara official municipal parcel map cadastral GIS public viewer",
+        "result": "The official municipal site links to its cbs.sincan.bel.tr Kent Rehberi, but the public content lists civic amenities. Direct viewer navigation timed out; no parcel-vector schema or geometry was verified.",
+        "method": "Separate English-language discovery and official municipal viewer inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.sincan.bel.tr/kentrehberi",
+        "observation": "Official Sincan Municipality Kent Rehberi page; its listed categories are public facilities and civic amenities, not parcels."
+      },
+      {
+        "url": "https://sincan.bel.tr/",
+        "observation": "Official municipal homepage lists E-İmar, E-Çap/road level, cadastral-plan notices, and a city guide."
+      },
+      {
+        "url": "https://www.turkiye.gov.tr/sincan-belediyesi-eimar-8569",
+        "observation": "Official e-Devlet Sincan e-İmar service requires identity authentication before use; no sign-in or submission attempted."
+      },
+      {
+        "url": "https://cbs.sincan.bel.tr/",
+        "observation": "Municipality-linked map subdomain; direct and web-reader requests timed out."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The official Sincan municipal site links a public amenity directory and an E-İmar/parcelation service workflow. The e-Devlet e-İmar page requires identity verification; cbs.sincan.bel.tr timed out. No feature schema or vector endpoint could be inspected.",
+      "geometryAttempted": false,
+      "geometryStatus": "not queried: public municipal map did not load and e-İmar required authentication",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "not queried: public municipal map did not load and e-İmar required authentication",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "source": {
+    "name": "Sincan Municipality e-İmar / city guide / parcelation services",
+    "operator": "Sincan Municipality",
+    "url": "https://www.sincan.bel.tr/kentrehberi",
+    "scope": "Local land and planning records confirmed; public parcel-vector access not verified.",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false
+  },
+  "sourceIds": [],
+  "queueRank": 448,
+  "wupCityCode": 4837,
+  "cityId": "wup2025:4837",
+  "centerLatLon": [
+    39.9558067799339,
+    32.6024648341959
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "registryEvidenceUrls": [
+    "https://www.sincan.bel.tr/kentrehberi",
+    "https://sincan.bel.tr/",
+    "https://www.turkiye.gov.tr/sincan-belediyesi-eimar-8569",
+    "https://cbs.sincan.bel.tr/"
+  ],
+  "rootReviewedAt": "2026-10-09T00:13:07.775882+00:00"
+}

@@ -1,0 +1,250 @@
+{
+  "purpose": "Fresh three-feature Porto-Novo sample from the official public ANDF WFS; geometry and nonpersonal cadastral keys only.",
+  "checkedAt": "2026-10-08",
+  "sourceResponseTimestamp": "2026-10-08T15:01:11.741Z",
+  "request": {
+    "method": "GET",
+    "url": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=efb%3Aefb_parcel&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=2.6269%2C6.4949%2C2.6309%2C6.4989%2CEPSG%3A4326&count=3&propertyName=boundary%2Cnup%2Ccommune_name",
+    "parameters": {
+      "service": "WFS",
+      "version": "2.0.0",
+      "request": "GetFeature",
+      "typeNames": "efb:efb_parcel",
+      "outputFormat": "application/json",
+      "srsName": "EPSG:4326",
+      "bbox": "2.6269,6.4949,2.6309,6.4989,EPSG:4326",
+      "count": 3,
+      "propertyName": "boundary,nup,commune_name"
+    },
+    "httpStatus": 200,
+    "bytes": 1799
+  },
+  "response": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": "efb_parcel.fid-167c2ba9_1a11c0355bd_7d09",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                2.62903165,
+                6.49502898
+              ],
+              [
+                2.62901557,
+                6.49488909
+              ],
+              [
+                2.62910052,
+                6.49487837
+              ],
+              [
+                2.62908848,
+                6.4947899
+              ],
+              [
+                2.62912702,
+                6.49475484
+              ],
+              [
+                2.62907928,
+                6.4946509
+              ],
+              [
+                2.6290777,
+                6.49451893
+              ],
+              [
+                2.62877542,
+                6.49454349
+              ],
+              [
+                2.62857862,
+                6.49453323
+              ],
+              [
+                2.62857807,
+                6.49462687
+              ],
+              [
+                2.62843191,
+                6.49465654
+              ],
+              [
+                2.62837193,
+                6.49466866
+              ],
+              [
+                2.62838271,
+                6.49486806
+              ],
+              [
+                2.62842366,
+                6.4948645
+              ],
+              [
+                2.62843057,
+                6.49494842
+              ],
+              [
+                2.62834823,
+                6.49495521
+              ],
+              [
+                2.62835352,
+                6.49515136
+              ],
+              [
+                2.62827563,
+                6.49515663
+              ],
+              [
+                2.62832704,
+                6.49532899
+              ],
+              [
+                2.62842084,
+                6.49529959
+              ],
+              [
+                2.62848149,
+                6.49528509
+              ],
+              [
+                2.62869321,
+                6.49518366
+              ],
+              [
+                2.62879281,
+                6.49516674
+              ],
+              [
+                2.62905184,
+                6.49514122
+              ],
+              [
+                2.62907251,
+                6.49510362
+              ],
+              [
+                2.62906106,
+                6.49502337
+              ],
+              [
+                2.62903165,
+                6.49502898
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "boundary",
+        "properties": {
+          "nup": "100266536",
+          "commune_name": "PORTO-NOVO"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "efb_parcel.fid-167c2ba9_1a11c0355bd_7d0a",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                2.62817206,
+                6.49518057
+              ],
+              [
+                2.62827563,
+                6.49515663
+              ],
+              [
+                2.62835352,
+                6.49515136
+              ],
+              [
+                2.62834823,
+                6.49495521
+              ],
+              [
+                2.62820107,
+                6.49496734
+              ],
+              [
+                2.62817206,
+                6.49518057
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "boundary",
+        "properties": {
+          "nup": "100266538",
+          "commune_name": "PORTO-NOVO"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": "efb_parcel.fid-167c2ba9_1a11c0355bd_7d0b",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                2.62819805,
+                6.49556908
+              ],
+              [
+                2.62823052,
+                6.4956863
+              ],
+              [
+                2.62825826,
+                6.49568302
+              ],
+              [
+                2.6283917,
+                6.49565249
+              ],
+              [
+                2.62835583,
+                6.49550824
+              ],
+              [
+                2.62832816,
+                6.49538605
+              ],
+              [
+                2.62816009,
+                6.49542552
+              ],
+              [
+                2.62819805,
+                6.49556908
+              ]
+            ]
+          ]
+        },
+        "geometry_name": "boundary",
+        "properties": {
+          "nup": "100266539",
+          "commune_name": "PORTO-NOVO"
+        }
+      }
+    ],
+    "totalFeatures": 304,
+    "numberMatched": 304,
+    "numberReturned": 3,
+    "timeStamp": "2026-10-08T15:01:11.741Z",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:EPSG::4326"
+      }
+    }
+  },
+  "qualification": "A real city-scoped sample; complete runtime acceptance is a separate check."
+}

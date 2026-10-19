@@ -1,0 +1,40 @@
+{
+  "cityRecord": "city-5550-el-oued.json",
+  "cityCode": 5550,
+  "queueRank": 2197,
+  "city": "El Oued",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": null,
+  "attemptedRoutes": [
+    {"route":"English first-party discovery","request":"Web search: El Oued Algeria official cadastral map parcel geospatial service","outcome":"Official BNDG viewer and Ministry of Finance cadastral-conservation material found; no El Oued-specific parcel API or geometry."},
+    {"route":"Arabic first-party discovery","request":"Web search: الوادي الجزائر كاداستر خريطة عقارية مسح الأراضي الموقع الرسمي","outcome":"Official Arabic land-property service report found; no El Oued-specific parcel API or geometry."},
+    {"route":"BNDG official map viewer","request":"GET https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx","outcome":"Search-indexed page exposes general 1:200,000 cartographic/wilaya/commune viewer; direct request timed out after 12 seconds."},
+    {"route":"Cadastre document route","request":"GET https://cadastre.dz/wathikacad","outcome":"Host did not resolve in bounded request; no response."},
+    {"route":"Ministry of Finance bulletin","request":"GET https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf","outcome":"HTTP 500; indexed official content provided general authority prose only."},
+    {"route":"Interior ministry service portal","request":"GET https://services.interieur.gov.dz/en/","outcome":"TLS verification failed with untrusted local issuer; no certificate exception or verification bypass used."}
+  ],
+  "custodianAssessment": {
+    "localOrCityEvidence": "No El Oued-local cadastral registry/map/procedure endpoint was evidenced.",
+    "generalAgencyEvidence": "Ministry of Finance / cadastral-conservation directorate material and the official BNDG national viewer establish general national infrastructure, not citywide El Oued parcel coverage.",
+    "urls": ["https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf","https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx","https://news.radioalgerie.dz/ar/node/56816"]
+  },
+  "boundedResponse": {"parcelFeatures":0,"nativeIds":[],"geometryRetained":false,"crs":null,"reason":"No anonymous ID-plus-geometry response obtained."},
+  "safeFieldAllowlist": ["stable native parcel identifier","parcel polygon geometry","source CRS","service URL","retrieval timestamp"],
+  "excludedFields": ["owner names","addresses","contact details","titleholder information","tax/account fields","personal identifiers","raw source attribute sets"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "scopeLimits": [
+    "Exact WUP point [33.3557054388029, 6.86819414136003] was preserved and not shifted.",
+    "Timeout, DNS failure, TLS failure, or unusable UI does not establish citywide absence.",
+    "No safe native identity plus full polygon was obtained, so no sample GeoJSON is retained.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, unsafe attribute request, or global TLS disable was used.",
+    "Runtime readiness remains held for independent serial review."
+  ],
+  "uncertainty": "A national Algerian cadastral custodian and general official mapping service are evidenced, but El Oued-local public parcel coverage, schema, CRS, native IDs, geometry, and completeness remain unresolved.",
+  "runtimeReadiness": "held",
+  "retainedSample": null,
+  "completion": "Attempt 1 research is complete and accurately records all executed discovery and bounded requests; this is not source integration or adapter admission."
+}

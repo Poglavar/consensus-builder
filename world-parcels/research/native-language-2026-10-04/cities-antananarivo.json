@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 118,
+  "city": "Antananarivo",
+  "countryCode": "MG",
+  "historicalStatus": "no_verified_sample_candidate_citywide",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/antananarivo.json",
+  "query": {
+    "language": "French",
+    "script": "Latin",
+    "text": "Antananarivo parcelles cadastrales données géographiques SIG ouvertes Madagascar"
+  },
+  "assessment": "French-language screening did not identify a public citywide parcel vector candidate. Historical record’s candidate status should remain pending further checks; this search is not evidence of absence.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

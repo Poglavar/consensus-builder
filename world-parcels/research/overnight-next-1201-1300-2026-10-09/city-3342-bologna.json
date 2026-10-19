@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:3342",
+  "wupCityCode": 3342,
+  "cityCode": 3342,
+  "queueRank": 1253,
+  "rank": 1253,
+  "name": "Bologna",
+  "country": "Italy",
+  "countryCode": "IT",
+  "iso3": "ITA",
+  "point": [44.4942527646909, 11.3383469340327],
+  "centerLatLon": [44.4942527646909, 11.3383469340327],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 443849,
+  "population2025k": 443.849,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_municipal_cadastral_service_and_public_coordinate_parcel_geometry_verified",
+  "registryFound": true,
+  "registryBasis": "The official Comune di Bologna SIT ArcGIS CATASTO service returned a parcel polygon and safe cadastral identity fields in a bounded anonymous query around the unchanged WUP point. This evidences public cadastral map coverage, not citywide completeness.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "Public parcel geometry is verified, but runtime remains held pending independent serial adapter qualification.",
+  "source": {
+    "operator": "Comune di Bologna - Sistema Informativo Territoriale (SIT)",
+    "custodianScope": "Municipal cadastral map service published by the Comune di Bologna SIT; the service metadata identifies a Bologna cadastral parcel layer.",
+    "viewerUrl": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+    "parcelLayerUrl": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0",
+    "queryUrl": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0/query",
+    "crs": "Native layer EPSG:23032 / ED50 UTM zone 32N; query output requested as EPSG:4326 GeoJSON with coordinate order [longitude, latitude]."
+  },
+  "sampleFile": "bologna-parcel-samples.geojson",
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "Official service metadata, layer schema inspection, and one bounded anonymous point-intersection query around the immutable WUP point.",
+    "verifiedOpenScope": "One safe Bologna parcel polygon returned, containing/intersecting the queried point vicinity.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "technicalBlocker": "Native response exposes FID and cadastral components PARTKEY, COMUNE, FOGLIO and MAPPALE. The retained canonical identity is the source composite PARTKEY; FID is an internal source OID and is not used as the sample identity.",
+  "remainingUncertainty": "The bounded query does not establish citywide completeness, parcel freshness, or universal service behavior. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bologna official cadastral map parcel viewer Comune Bologna catasto particelle",
+        "result": "First-party discovery located the Comune di Bologna SIT CATASTO ArcGIS MapServer and its parcel layer.",
+        "actualResultUrls": [
+          "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+          "https://sitmappe-test.comune.bologna.it/portal/home/webmap/viewer.html?webmap=2784c4dbacc641f5b281d82b0caf0d06"
+        ]
+      },
+      {
+        "language": "Italian",
+        "query": "Bologna mappa particelle catastali ufficiale Comune di Bologna catasto",
+        "result": "La ricerca in italiano ha trovato il servizio ufficiale CATASTO del SIT del Comune di Bologna e il layer comunale delle particelle catastali.",
+        "actualResultUrls": [
+          "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+          "https://sit-test-mappe.comune.bologna.it/arcgis/rest/services/puc/Ricerche/MapServer/3"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official Comune di Bologna SIT MapServer identified the CATASTO service, Bologna extent, native EPSG:23032, and parcel child layer 0."
+      },
+      {
+        "url": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Parcel layer metadata identified Polygon geometry, native EPSG:23032, safe fields FID, PARTKEY, COMUNE, FOGLIO and MAPPALE, and GeoJSON query support."
+      },
+      {
+        "url": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0/query",
+        "method": "GET; anonymous; TLS verification enabled; point intersection at transformed WUP point; outFields restricted to safe cadastral fields; outSR=4326; f=geojson",
+        "httpStatus": 200,
+        "assessment": "Returned one Bologna polygon with PARTKEY=A944_ 187  296, COMUNE=A944, FOGLIO=187 and MAPPALE=296; geometry was returned as GeoJSON in EPSG:4326."
+      }
+    ],
+    "inspectedConfiguration": {
+      "service": "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+      "parcelLayer": 0,
+      "responseSchemaObserved": "ArcGIS FeatureCollection/GeoJSON with Polygon geometry and safe cadastral attributes",
+      "nativeCrsObserved": "EPSG:23032",
+      "outputCrsObserved": "EPSG:4326",
+      "nativeIdentityMapping": "PARTKEY; source composite combining municipality and cadastral sheet/parcel components; FID is an internal OID and not the retained canonical identity."
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer",
+    "https://sitmappe.comune.bologna.it/arcgis/rest/services/CATASTO/CATASTO/MapServer/0",
+    "https://www.comune.bologna.it/novita/comunicati-stampa/ecco-bologna3d-la-mappa-tridimensionale-navigare-la-citta"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Source geometry is verified at a bounded location, but adapter qualification is reserved for the serial reviewer."
+  },
+  "sampleRetention": {
+    "retainedFeatureProperties": ["id"],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false
+  }
+}

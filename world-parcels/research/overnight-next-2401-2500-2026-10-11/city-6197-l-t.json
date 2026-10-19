@@ -1,0 +1,127 @@
+{
+  "cityCode": 6197,
+  "queueRank": 2450,
+  "name": "Đà Lạt",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso2": "VN",
+  "iso3": "VNM",
+  "point": [11.9503046382408, 108.446220374784],
+  "population2025": 239212,
+  "population2025k": 239.212,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Da Lat official cadastral parcel map land registry Lam Dong Vietnam",
+        "result": "First-party results identified the official Lâm Đồng land-status map for Đà Lạt, the official provincial planning site, the national land-data viewer, and official references to land-registration offices. These establish official land-data/custodian context but no anonymous safe parcel ID plus polygon service was verified.",
+        "actualResultUrls": [
+          "https://lamdong.gov.vn/sites/stnmt/du-lieu-so/dat-dai/SitePages/ban-do-hien-trang-su-dung-dat-tp-da-lat.aspx",
+          "https://maps.gdla.gov.vn/",
+          "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=67710"
+        ]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Đà Lạt bản đồ địa chính thửa đất Lâm Đồng chính thức",
+        "result": "First-party results identified the official Đà Lạt land-status map, Lâm Đồng planning/map portals, the national land-data viewer, and provincial rules naming land-registration offices in Đà Lạt. The results did not expose a public anonymous parcel feature response with a safe native identity and complete polygon.",
+        "actualResultUrls": [
+          "https://lamdong.gov.vn/sites/stnmt/du-lieu-so/dat-dai/SitePages/ban-do-hien-trang-su-dung-dat-tp-da-lat.aspx",
+          "https://quyhoach.lamdong.gov.vn/",
+          "https://quyhoach.dalat.vn/tracuu-quy-hoach-phan-khu",
+          "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=67710"
+        ]
+      }
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "route": "National land-data viewer landing page",
+      "url": "https://maps.gdla.gov.vn/",
+      "method": "GET",
+      "outcome": "HTTP 200 over TLS. Current JavaScript bundle was downloaded and inspected. It exposes cadastral routes including /api/dia-chinh/features and /api/dia-chinh/feature-detail, plus a cadastral field list. No anonymous parcel response was obtained."
+    },
+    {
+      "route": "National land-data public configuration",
+      "url": "https://maps.gdla.gov.vn/api/config",
+      "method": "GET",
+      "outcome": "HTTP 200 JSON. Configuration identifies cadastral fields such as mathuadat, maxa, sohieutobando, sothututhua, and geometry-oriented map settings, but this endpoint returned configuration only and no parcel geometry."
+    },
+    {
+      "route": "National land-data authenticated configuration",
+      "url": "https://maps.gdla.gov.vn/api/config-data",
+      "method": "GET",
+      "outcome": "HTTP 401 JSON login-required response. No login, credentials, or private token was used."
+    },
+    {
+      "route": "National land-data anonymous configuration",
+      "url": "https://maps.gdla.gov.vn/api/no-auth/config-data",
+      "method": "GET",
+      "outcome": "HTTP 404 HTML. No schema, CRS, parcel ID, or polygon geometry. This endpoint behavior is not evidence of citywide absence."
+    },
+    {
+      "route": "National land-data public region",
+      "url": "https://maps.gdla.gov.vn/api/public-region",
+      "method": "GET",
+      "outcome": "HTTP 200 JSON returned only year 2025 and global vn parameters; no Đà Lạt parcel IDs, parcel attributes, CRS, or geometry."
+    },
+    {
+      "route": "National cadastral feature route discovered from current JavaScript",
+      "url": "https://maps.gdla.gov.vn/api/dia-chinh/features",
+      "method": "POST",
+      "outcome": "Route and request contract were inspected in the current public JavaScript, but no request was issued because the required map parameters were not safely established and the response schema includes unsafe cadastral fields. No parcel data was requested or retained."
+    },
+    {
+      "route": "Official Lâm Đồng Đà Lạt land-status map",
+      "url": "https://lamdong.gov.vn/sites/stnmt/du-lieu-so/dat-dai/SitePages/ban-do-hien-trang-su-dung-dat-tp-da-lat.aspx",
+      "method": "GET",
+      "outcome": "HTTP 200 HTML. Official provincial page was retrieved; it is a land-use/status map publication, not a verified anonymous parcel ID-plus-polygon feature service."
+    },
+    {
+      "route": "Official Lâm Đồng planning map portal",
+      "url": "https://quyhoach.lamdong.gov.vn/",
+      "method": "GET",
+      "outcome": "TLS certificate was expired in this environment, so the request was not continued with verification disabled. Search discovery identified the official planning portal and its map context; no parcel data was obtained."
+    },
+    {
+      "route": "Official Đà Lạt planning portal",
+      "url": "https://quyhoach.dalat.vn/tracuu-quy-hoach-phan-khu",
+      "method": "GET",
+      "outcome": "TLS certificate was expired in this environment, so the request was not continued with verification disabled. Search discovery identified the official portal; no parcel data was obtained."
+    },
+    {
+      "route": "Official Lâm Đồng land-data fee and registration-office rule",
+      "url": "https://vbpl.vn/TW/Pages/vbpq-toanvan.aspx?ItemID=67710",
+      "method": "GET/search discovery",
+      "outcome": "Official legal publication identifies the Lâm Đồng land-registration information center and land-registration offices for Đà Lạt/Bảo Lộc as custodial/procedural actors. It is not an open parcel geometry service and contains no retained parcel geometry."
+    }
+  ],
+  "runtimeReadiness": "held",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryRetention": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "reason": "No safe anonymous native parcel ID plus complete polygon response was verified."
+  },
+  "scopeLimits": [
+    "The exact WUP point [11.9503046382408, 108.446220374784] is preserved in latitude/longitude order; no coordinate was shifted.",
+    "Official Lâm Đồng pages evidence provincial land-data and land-registration custody and Đà Lạt land-use publications, but not an open citywide cadastral geometry service.",
+    "The national viewer's public configuration and route names do not establish anonymous access, citywide coverage, CRS, or parcel geometry delivery.",
+    "A login wall, 404 route, expired certificate, or lack of an exact-point query is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration/admission; independent serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "source layer metadata",
+    "CRS"
+  ],
+  "qualificationDecision": "hold",
+  "uncertainty": "A restricted, browser-only, authenticated, unpublished, or currently unavailable Vietnamese parcel service may exist. Stable parcel identity, safe response schema, CRS, anonymous geometry access, and citywide coverage remain unresolved."
+}

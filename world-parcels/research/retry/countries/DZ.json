@@ -1,0 +1,67 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-DZ,fr;q=0.9,ar;q=0.8,en;q=0.7",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://fadaeldjazair.mf.gov.dz/fr/geo_services/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "TLS/tunnel reset by peer (curl 35 Recv failure), also in proxy log as tunnel closed mid-exchange"
+  },
+  {
+   "url": "https://fadaeldjazair.mf.gov.dz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "same reset"
+  },
+  {
+   "url": "https://www.mf.gov.dz/",
+   "method": "GET",
+   "httpStatus": 500,
+   "contentType": "text/html",
+   "assessment": "HTTP 500, empty body"
+  },
+  {
+   "url": "https://www.dgdn.gov.dz/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/html",
+   "assessment": "'DGDN - Website Under Maintenance'"
+  },
+  {
+   "url": "https://www.anc.dz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://cadastre.mf.gov.dz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  },
+  {
+   "url": "https://www.ands.dz/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): unreachable"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Geoportal host resets the connection with browser headers (possible foreign-IP filtering); DGDN site explicitly under maintenance (503) so partly a real outage.",
+ "notes": "Nothing new except DGDN site is under maintenance (503) and the geoportal still resets; viewer could not be inspected.",
+ "nextStep": "Retry later or from an Algerian network; inspect fadaeldjazair geo_services page for WMS/WFS/ArcGIS endpoints.",
+ "kind": "country",
+ "key": "DZ",
+ "checkedAt": "2026-09-30"
+}

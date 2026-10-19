@@ -1,0 +1,81 @@
+{
+  "cityCode": 3589,
+  "queueRank": 1845,
+  "name": "Modesto",
+  "country": "United States of America",
+  "countryCode": "US",
+  "iso2": "US",
+  "iso3": "USA",
+  "locId": 840,
+  "capital": false,
+  "point": [37.6482342106593, -120.984434522145],
+  "population2025": 310818,
+  "population2025k": 310.818,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:modestogov.com GIS parcel map Modesto California official; site:stancounty.com GIS parcel viewer assessor parcel map official Modesto California",
+        "result": "Found the City of Modesto official GIS page and its public ArcGIS parcel service. The official City online-services page also links to the assessor plat-map workflow.",
+        "actualResultUrls": [
+          "https://www.modestogov.com/476/Geographic-Information-Systems-GIS",
+          "https://gis.modestogov.com/",
+          "https://www.modestogov.com/1275/Online-Services",
+          "https://gis.modestogov.com/hosting/rest/services/ExternalServices/County_Parcels_Offline_External/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "English (United States local language)",
+        "query": "site:modestogov.com mapa parcelas GIS Modesto California; site:stancounty.com mapa parcelario Modesto California",
+        "result": "No distinct non-English local-language parcel endpoint was found. English is the applicable local language for this United States source; the same official City GIS parcel service was returned.",
+        "actualResultUrls": [
+          "https://gis.modestogov.com/",
+          "https://gis.modestogov.com/hosting/rest/services/ExternalServices/County_Parcels_Offline_External/FeatureServer/0",
+          "https://www.stancounty.com/tr-tax/pdf/parcel-map-application.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "City of Modesto GIS / Stanislaus County parcel service exposed by the City",
+    "service": "ExternalServices/County_Parcels_Offline_External",
+    "layer": 0,
+    "layerName": "Parcels (Offline)",
+    "serviceUrl": "https://gis.modestogov.com/hosting/rest/services/ExternalServices/County_Parcels_Offline_External/FeatureServer",
+    "queryUrl": "https://gis.modestogov.com/hosting/rest/services/ExternalServices/County_Parcels_Offline_External/FeatureServer/0/query",
+    "serviceType": "ArcGIS REST FeatureServer polygon layer",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "ESRI WKID 102643 (latest WKID 2227; US survey feet)",
+    "outputCrsAttempted": "EPSG:4326",
+    "nativeIdField": "apn",
+    "fallbackObjectIdField": "OBJECTID",
+    "geometryField": "geometry",
+    "safeFieldsRequested": ["OBJECTID", "apn", "geometry"],
+    "nativeFieldMapping": {"apn": "stable assessor parcel number", "OBJECTID": "ArcGIS object identifier", "geometry": "parcel polygon"},
+    "compositeKeyProvenance": null,
+    "parcelLayerConfirmed": true,
+    "schemaEvidenceUrl": "https://gis.modestogov.com/hosting/rest/services/ExternalServices/County_Parcels_Offline_External/FeatureServer/0"
+  },
+  "verifiedSample": {
+    "count": 0,
+    "sampleFile": null,
+    "exactWupPointQuery": "not completed because the first-party host timed out for direct requests and the query URL was inaccessible through the browsing route",
+    "result": "No geometry retained. A zero-hit or missing response was not treated as evidence of citywide absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/modesto/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-hosted external service named County Parcels Offline; layer metadata exposes a broad Stanislaus County extent and a parcel polygon layer.",
+    "verifiedOpenScope": "Anonymous service metadata and schema were read from the indexed official ArcGIS REST endpoint; parcel geometry response was not verified during this attempt.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification remain required",
+  "notes": "Research evidence only, not source integration or runtime admission. No owner, address, titleholder, contact, personal, tax/account, or other unsafe fields were requested or retained. The exact WUP point remains unchanged in latitude/longitude order; the corresponding ArcGIS query coordinates were not used to shift the point."
+}

@@ -1,0 +1,22 @@
+{
+  "taskId": "city:4108",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-4108-bournemouth.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/bournemouth-service-review.json",
+    "tmp/valhalla-parcel-research/bournemouth/inspire.html",
+    "tmp/valhalla-parcel-research/bournemouth/cap.xml",
+    "tmp/valhalla-parcel-research/bournemouth/parcel.json",
+    "tmp/valhalla-parcel-research/bournemouth/bcp.zip"
+  ],
+  "checkedAt": "2026-10-09T17:34:25.905221+00:00",
+  "reviewFindings": {
+    "identity": "Immutable queue, ranked roster, and original WUP 2025 CSV agree on Bournemouth, United Kingdom, rank 1473, point [50.7377349576354,-1.90482883545276], 386557 persons.",
+    "searches": "Paired packet and review record show two executed English searches, one framed as the UK local-language search.",
+    "sourceEvidence": "Cached first-party HMLR download page lists the BCP package; WMS capabilities advertise CP.CadastralParcel and EPSG:27700/CRS:84. Cached WFS response states service disabled; the archive response is a challenge redirect, not GML. No unchanged safe parcel feature or retained polygon was obtained.",
+    "holdReason": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, or headed Details check. The access wall is not citywide absence."
+  }
+}

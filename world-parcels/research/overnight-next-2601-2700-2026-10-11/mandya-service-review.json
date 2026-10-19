@@ -1,0 +1,80 @@
+{
+  "cityRecord": "city-9831-mandya.json",
+  "cityCode": 9831,
+  "queueRank": 2626,
+  "attempt": 1,
+  "serviceReview": {
+    "discovery": [
+      {
+        "route": "https://rcmysore.gov.in/mandya-district/",
+        "type": "official regional/local administrative custodian listing",
+        "outcome": "HTTP-accessible indexed official page; lists Mandya Deputy Director, Land Records and Tahasildar, Mandya contacts. No parcel map/API link was exposed on the inspected page."
+      },
+      {
+        "route": "https://landrecords.karnataka.gov.in",
+        "type": "official Karnataka Bhoomi land-record entry point",
+        "outcome": "Anonymous TLS GET timed out after 20 seconds. No login, credential, private token, CAPTCHA/Cloudflare bypass, or TLS verification disablement was attempted."
+      },
+      {
+        "route": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/579",
+        "type": "official national land-record modernization status page",
+        "outcome": "Search/open result identifies Karnataka state and Mandya district cadastral-map/ULPIN status fields. This is status reporting, not an interactive parcel geometry service."
+      },
+      {
+        "route": "https://www.dilrmp.gov.in/physicalProgressReports/clr/district-level/29",
+        "type": "official national land-record computerization report",
+        "outcome": "Search result reports Mandya district CLR statistics and digitized land-record coverage. No anonymous parcel geometry response was exposed."
+      },
+      {
+        "route": "https://www.sujala3lri.karnataka.gov.in/",
+        "type": "official Karnataka Sujala LRI GIS portal",
+        "outcome": "HTTP-accessible indexed page in Kannada; identifies the Karnataka Watershed Development Department and KSRSAC, links to LRI GIS, and describes thematic maps and regional PDF/KML/shape downloads. The inspected public content did not identify a cadastral parcel layer or a safe anonymous parcel query."
+      },
+      {
+        "route": "https://sujala3lri.karnataka.gov.in/Dashboard/Index",
+        "type": "official Sujala LRI GIS dashboard",
+        "outcome": "HTTP-accessible indexed dashboard; thematic/resource layers were described, but no Mandya parcel schema, service URL, native parcel identity, or bounded geometry response was obtained."
+      },
+      {
+        "route": "https://www.sujala3lri.karnataka.gov.in/LRICard/LRICard",
+        "type": "official Sujala LRI record-card service",
+        "outcome": "Public page describes district/taluk/village/survey-number selection and Kannada land-resource information fields. It is not evidence of a public cadastral polygon API and was not used for owner/address or other unsafe fields."
+      }
+    ],
+    "viewerAndApiInspection": {
+      "configurationSource": "https://www.sujala3lri.karnataka.gov.in/",
+      "observedService": null,
+      "schemaRequest": {
+        "outcome": "No public parcel service URL or parcel schema was exposed by the bounded indexed inspection; therefore no schema/CRS claim is made."
+      },
+      "exactPointRequest": {
+        "method": null,
+        "url": null,
+        "outcome": "Not attempted because no identified public cadastral parcel endpoint was available. The WUP point was not shifted and no zero-hit inference is made."
+      },
+      "boundedRequest": {
+        "method": null,
+        "url": null,
+        "outcome": "Not attempted because no identified public cadastral parcel endpoint was available."
+      }
+    },
+    "safeFieldAllowlist": [
+      "native parcel identifier if independently exposed by a future public parcel service",
+      "geometry",
+      "non-sensitive administrative/source fields only"
+    ],
+    "retainedSamples": 0,
+    "sampleIdentity": null,
+    "scopeLimits": [
+      "No raw source-specific attribute set was retained.",
+      "No parcel GeoJSON was retained because no safe native ID plus full polygon response was obtained.",
+      "Mandya district custodian and Karnataka Bhoomi evidence establish registry administration, not public citywide geometry availability.",
+      "DILRMP status pages are general national agency reporting and do not prove a local public map/API.",
+      "Sujala LRI is an official thematic land-resource portal; its public indexed content did not establish a cadastral parcel layer for this city.",
+      "A timeout, unavailable endpoint, or absent public UI is not evidence of citywide parcel absence.",
+      "No owner, address, contact, titleholder, tax/account, or other unsafe fields were requested or retained."
+    ],
+    "uncertainty": "The Karnataka Bhoomi and related government systems may expose additional authenticated, session-driven, or otherwise undiscovered public routes. This attempt did not qualify one anonymously. A serial reviewer should inspect the current official viewer configuration and independently test any candidate public service without credentials."
+  },
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,89 @@
+{
+  "cityCode": 4742,
+  "queueRank": 2589,
+  "name": "Kazipur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "iso3": "BGD",
+  "point": [24.6506178328325, 89.6078676053939],
+  "population2025": 227234,
+  "population2025k": 227.234,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kazipur Bangladesh cadastral parcel map land records official",
+        "result": "First-party discovery identified the Government of Bangladesh Ministry of Land public Mouza/plot map viewer, the DLRS online land record and survey system, the DLRS online map purchase portal, and the official Kazipur Upazila portal. The public viewer was reachable and its JavaScript/configuration exposed anonymous POST cascade and plot-information routes. Exact-point cascade requests resolved to Rajshahi division, Sirajganj district, and Kazipur upazila administrative areas, but no safe parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://www.settlement.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://kazipur.sirajganj.gov.bd/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "কাজীপুর বাংলাদেশ জমির নকশা খতিয়ান ভূমি তথ্য সরকারি",
+        "result": "প্রথম-পক্ষ অনুসন্ধানে ভূমি মন্ত্রণালয়ের ভূমি নকশা সেবা, ভূমি রেকর্ড ও জরিপ অধিদপ্তরের অনলাইন রেকর্ড/ম্যাপ ব্যবস্থা এবং কাজীপুর উপজেলা সরকারি পোর্টাল পাওয়া গেছে। সরকারি মানচিত্র ভিউয়ারের বর্তমান JavaScript-এ anonymous cascade ও plot routes পাওয়া যায়; সঠিক WUP বিন্দুতে বিভাগ, জেলা ও কাজীপুর উপজেলা সীমানা ফেরত এসেছে, কিন্তু নিরাপদ native parcel identity-সহ polygon ফেরত পাওয়া যায়নি।",
+        "actualResultUrls": [
+          "https://map.land.gov.bd/",
+          "https://www.settlement.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://kazipur.sirajganj.gov.bd/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Kazipur Upazila government portal at https://kazipur.sirajganj.gov.bd/ confirms the local administrative custodian and Kazipur's Sirajganj context; it does not itself expose a parcel feature service in this research.",
+    "nationalParcelService": "Bangladesh Ministry of Land/DLRS Mouza and plot map viewer at https://map.land.gov.bd/.",
+    "surveyRecordService": "DLRS online land record and survey system at https://www.settlement.gov.bd/ and official map purchase portal at https://map.settlement.gov.bd/.",
+    "registryBasis": "A first-party Bangladesh cadastral/mouza/plot map viewer was reached, its current JavaScript/configuration and anonymous routes were inspected, and exact-point administrative cascade responses identified Kazipur. This supports registryFound=true for source discovery only, not geometry completeness or adapter admission."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://map.land.gov.bd/",
+    "responseType": "JSON administrative cascade; plot geometry route is WKT when a plot context is supplied",
+    "geometryType": "MULTIPOLYGON (observed in administrative cascade responses; no parcel polygon returned)",
+    "geometryCrs": "EPSG:4326 (viewer JS reads WKT with dataProjection EPSG:4326)",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "inspectionNote": "The viewer JS exposes /getAdminByCode, /GetCascadeGeom, /getGeomByCode, and /GetPlotInfo. Exact-point /GetCascadeGeom requests returned administrative WKT and labels including Sirajganj/Kazipur. /GetCascadeGeom at forMauza returned HTTP 500 HTML, forPlot returned an empty array, and the dropdown route for Kazipur returned an empty array. No parcel native ID or parcel geometry was retained."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Executed at [24.6506178328325, 89.6078676053939] without coordinate shifting; administrative cascade matched Kazipur but parcel-level route did not return a safe parcel feature.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh national Ministry of Land/DLRS public map and survey services, plus Kazipur Upazila administrative context.",
+    "verifiedOpenScope": "Official service identity, current route/configuration, and exact-point administrative boundary response only; no parcel extent or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [24.6506178328325, 89.6078676053939] was preserved in latitude/longitude order and was not shifted.",
+    "The exact point resolved to administrative areas, not a parcel feature; empty/500 parcel routes are not evidence of citywide absence.",
+    "No native parcel identity, parcel schema, or parcel geometry was obtained; no sample GeoJSON is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The official Bangladesh cadastral map service is real and reachable, and exact-point administrative context confirms Kazipur in Sirajganj. Parcel access may require a valid mouza/sheet context or a route not discoverable from the current public UI; native parcel identity, parcel geometry, and citywide coverage remain unverified."
+}

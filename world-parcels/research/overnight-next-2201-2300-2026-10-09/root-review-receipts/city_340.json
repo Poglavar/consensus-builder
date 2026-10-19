@@ -1,0 +1,19 @@
+{
+  "taskId": "city:340",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-340-ensenada.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ensenada-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:39:07Z",
+  "reason": "Ensenada municipal first-party pages identify Subdirección de Catastro and IMIP SIGME with cadastral parcel layers, but direct access hit TLS/timeout or maintenance limits and no anonymous native-ID polygon response was captured. No adapter qualification or headed details check exists; access limits do not establish absence.",
+  "firstPartyCustodyUrls": [
+    "https://www.ensenada.gob.mx/?page_id=7114",
+    "https://www.ensenada.gob.mx/?p=24923",
+    "https://www.ensenada.gob.mx/?p=28137"
+  ],
+  "runtimeAdmission": "not admitted",
+  "samplePolygonsRetained": 0
+}

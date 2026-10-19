@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "MD",
+  "country": "Republic of Moldova",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Agentia Servicii Publice (ASP) / Institutul de Geodezie, Cartografie si Cadastru (ex-Cadastral Agency, cadastru.md)",
+  "portalsFound": [
+    {
+      "url": "https://www.cadastru.md/",
+      "observation": "Returns a 'content not available in your region/country' page (geo-block) with HTTP 200"
+    },
+    {
+      "url": "https://geoportal.md/",
+      "observation": "connection reset"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.cadastru.md/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "geo-block page (region unavailable), no parcel data"
+    },
+    {
+      "url": "https://geoportal.md/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failed/reset via proxy; unreachable, not evidence of absence"
+    },
+    {
+      "url": "https://geoportal.gov.md/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "CONNECT tunnel failed 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "National cadastre (ASP/Cadastru) exists; online openness not tested",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Hosts geo-blocked or unreachable from this network; nothing about open parcel endpoints tested.",
+  "nextStep": "Retry from a Moldova-reachable network; look for geoportal.md WMS/WFS and ASP cadastral services."
+}

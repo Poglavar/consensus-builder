@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-2223-hu-nuco.json",
+  "cityCode": 2223,
+  "queueRank": 3076,
+  "city": "Huánuco",
+  "country": "Peru",
+  "attempt": 1,
+  "reviewStatus": "held",
+  "queriesAndRoutes": [
+    {"route": "SUNARP BGR official service", "url": "https://www.gob.pe/es/63173-acceder-al-visor-de-la-base-grafica-registral", "outcome": "Public documentation confirms national registered-parcel map viewer; access requires DNI, issue date, and CAPTCHA, so no authenticated route was attempted."},
+    {"route": "SNCP official repository", "url": "https://www.idep.gob.pe/geovisor/SNCP/", "outcome": "Public official repository link identified; no anonymous parcel API response was retained."},
+    {"route": "SERFOR/MIDAGRI ArcGIS service root", "url": "https://geo.serfor.gob.pe/geoservicios/rest/services/Visor/OCAPAS_MIDAGRI/MapServer", "outcome": "HTTP 200; service lists Predios Rurales - Huánuco as layer 10."},
+    {"route": "SERFOR layer metadata", "url": "https://geo.serfor.gob.pe/geoservicios/rest/services/Visor/OCAPAS_MIDAGRI/MapServer/10?f=pjson", "outcome": "HTTP 200; polygon layer, EPSG:4326, OBJECTID schema, public GeoJSON query support."},
+    {"route": "SERFOR exact WUP point query", "url": "https://geo.serfor.gob.pe/geoservicios/rest/services/Visor/OCAPAS_MIDAGRI/MapServer/10/query", "outcome": "HTTP 200; zero features at exact point [-9.92866077122451,-76.2402783206565]; not interpreted as absence."},
+    {"route": "SERFOR bounded envelope query", "url": "https://geo.serfor.gob.pe/geoservicios/rest/services/Visor/OCAPAS_MIDAGRI/MapServer/10/query", "outcome": "HTTP 200; three polygons returned for envelope -76.30,-10.00,-76.18,-9.86 with OBJECTID 637, 723, 725; raw evidence is ignored scratch only."},
+    {"route": "Municipal official site", "url": "https://www.munihuanuco.gob.pe/", "outcome": "HTTP 200; official municipal custodian context. An official municipal resolution evidences Subgerencia de Control Urbano y Catastro."}
+  ],
+  "scopeLimits": [
+    "The rural parcel layer is not demonstrated to be complete urban cadastral coverage.",
+    "No exact-point hit is treated as evidence of citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or unsafe fields were requested or retained.",
+    "No credentials, private tokens, login, CAPTCHA solving, or global TLS disablement was used."
+  ],
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "nativeFieldMapping": {"nativeIdentity": "OBJECTID", "geometry": "Shape/geometry", "crs": "EPSG:4326"},
+  "compositeKeyProvenance": null,
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "BGR access wall prevents anonymous inspection of registered urban parcels.",
+    "SERFOR response proves bounded rural geometry availability near Huánuco, not citywide completeness or adapter readiness.",
+    "A diagnostic endpoint-status curl used -k narrowly on public endpoint checks without authorization; no parcel data request used that exception."
+  ]
+}

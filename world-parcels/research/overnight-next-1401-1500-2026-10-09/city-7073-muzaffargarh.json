@@ -1,0 +1,56 @@
+{
+  "cityCode": 7073,
+  "queueRank": 1479,
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [30.0715511199714, 71.1925889605798],
+  "population2025": 384838,
+  "population2025k": 384.838,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Muzaffargarh Pakistan official cadastral parcel map land records GIS",
+        "result": "Found the official District Administration Muzaffargarh revenue pages, Punjab Land Records Authority, and PULSE official map/cadastral services. The PULSE ArcGIS REST configuration exposes a Muzaffargarh polygon layer; a bounded anonymous geometry query returned parcel polygons and safe IDs, while the exact unchanged WUP point returned zero features.",
+        "actualResultUrls": [
+          "https://muzaffargarh.punjab.gov.pk/maps",
+          "https://muzaffargarh.punjab.gov.pk/District_Admin_Mzg",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "مظفرگڑھ پاکستان سرکاری کادستر نقشہ اراضی ریکارڈ GIS",
+        "result": "Urdu-language discovery located the official Punjab land-record service and Muzaffargarh district revenue context. The official PULSE/PLRA viewer and REST service were then inspected in English configuration; no Urdu-specific parcel API or separate local cadastral endpoint was identified.",
+        "actualResultUrls": [
+          "https://onlinefard.punjab-zameen.gov.pk/",
+          "https://muzaffargarh.punjab.gov.pk/adcrevenue",
+          "https://lis.pulse.gop.pk/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Punjab Land Records Authority / Punjab PULSE official cadastral mapping service, with Muzaffargarh district revenue administration as local land-record context.",
+    "localOffice": "District Administration Muzaffargarh revenue administration and ADC (Revenue) pages evidence local maintenance of revenue/land records; the parcel geometry service is provincial PULSE/PLRA rather than a separately identified municipal GIS office.",
+    "sourceScope": "Official ArcGIS MapServer `VendorMaps/Punjab_Cdastral_Maps`, layer 22 named `Muzaffargarh`; bounded parcel geometry access was verified, but citywide completeness was not.",
+    "geometryAccess": "Anonymous public viewer token endpoint supplied a short-lived service token; the token value is not retained. No login, credentials, CAPTCHA bypass, unsafe owner/address fields, or TLS weakening was used."
+  },
+  "geometry": {
+    "verified": true,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Performed without moving [30.0715511199714, 71.1925889605798]. The exact point query against layer 22 returned zero features; this is not treated as evidence of absence. A separate 0.04-degree envelope around the unchanged point returned 2,000 polygon features, equal to the service maxRecordCount.",
+    "crs": "EPSG:4326 (WGS 84), explicitly reported by the Muzaffargarh layer/service metadata."
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real official parcel service, schema, CRS, safe native IDs, and bounded polygon response were verified, but no independently qualified adapter has been reviewed. This packet records source discovery and bounded evidence only; it does not imply source integration or admission.",
+    "adapterAdmission": false
+  }
+}

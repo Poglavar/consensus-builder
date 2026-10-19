@@ -1,0 +1,72 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:WS:apia",
+  "name": "Apia",
+  "country": "Samoa",
+  "countryCode": "WS",
+  "centerLatLon": [
+    -13.816667,
+    -171.766667
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/WS.json",
+    "research/retry/countries/WS.json (national service/catalog searches"
+  ],
+  "priorEvidenceAssessment": "research/countries/WS.json; research/retry/countries/WS.json (national service/catalog searches; no Apia geometry).",
+  "executedQueries": [
+    {
+      "query": "Apia Samoa cadastral parcels GIS land registry official map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Samoa faʻafanua fanua fanua palasi cadastre Apia",
+      "language": "Samoan-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.mnre.gov.ws/",
+      "observation": "Official MNRE land/survey site was inspected and no public parcel viewer/service link was exposed. Official Samoa government Samoan-language land ministry references and local-language searches found cadastral plans/records but no public city feature service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mnre.gov.ws/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Official MNRE home page inspected; no public parcel viewer or service link surfaced."
+    },
+    {
+      "url": "https://www.samoagovt.ws/minister-mls_foisala/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "outcome": "Official Samoa ministry portfolio page inspected; identifies Ministry of Lands and Survey, no parcel service linked."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-apia.json"
+}

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Manual headed Chrome checks of the ten new city entries and coverage report; no browser test suite.",
+  "checkedAt": "2026-10-08",
+  "previewFrontend": "http://localhost:5638/",
+  "previewGateway": "http://127.0.0.1:5640",
+  "gatewayMode": "Actual repository parcel routes; unrelated GET requests forwarded to local API, no mutation forwarding.",
+  "cityChecks": [
+    {
+      "cityId": "vienna",
+      "renderedParcelLayers": 267,
+      "selectedParcelId": "AT-BEV-01004:601",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "cetinje",
+      "renderedParcelLayers": 452,
+      "selectedParcelId": "me-water:1449238",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "sanmarino",
+      "renderedParcelLayers": 352,
+      "selectedParcelId": "sm-cadastre:F42M266",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "thehague",
+      "renderedParcelLayers": 401,
+      "selectedParcelId": "NL-BRK-22250238970000",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "wellington",
+      "renderedParcelLayers": 263,
+      "selectedParcelId": "nz-linz:3879989",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "thimphu",
+      "renderedParcelLayers": 214,
+      "selectedParcelId": "bt-thimphu-taba:334",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "bandarseribegawan",
+      "renderedParcelLayers": 278,
+      "selectedParcelId": "BN-SD-BSB-88675",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "jerusalem",
+      "renderedParcelLayers": 174,
+      "selectedParcelId": "govmap:row:713902",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "eastjerusalem",
+      "renderedParcelLayers": 6,
+      "selectedParcelId": "govmap:row:786737",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    },
+    {
+      "cityId": "beirut",
+      "renderedParcelLayers": 172,
+      "selectedParcelId": "LB-BBED-Zo_89",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true
+    }
+  ],
+  "initialDiagnostics": [
+    "An initial apiPort query used the old API and returned source-unavailable. The correct backend query points to the task-owned gateway; Vienna then loaded 267 parcels.",
+    "An initial Beirut click hit the Tools toolbar because image pixels were confused with CSS viewport coordinates. Reading the actual 1200 by 818 CSS viewport and clicking the interior point of LB-BBED-Zo_89 selected it and opened its details."
+  ],
+  "browserClosed": true,
+  "bandarOpeningView": {
+    "centerLatLon": [
+      4.894,
+      114.946
+    ],
+    "basis": "Denser parcel cell already included in the 13-cell qualification; original central locator showed only edges of a large parcel."
+  },
+  "govmapBrowserIdBatches": {
+    "city": "jerusalem",
+    "requested": [
+      "govmap:row:575503",
+      "govmap:row:575504",
+      "govmap:row:575505",
+      "govmap:row:575506",
+      "govmap:row:575507",
+      "govmap:row:575508"
+    ],
+    "requests": [
+      {
+        "elapsedMs": 6206,
+        "status": 200,
+        "url": "http://localhost:5640/parcel-sources/il-govmap-cadastral-parcel-rows?ids=govmap%3Arow%3A575503%2Cgovmap%3Arow%3A575504%2Cgovmap%3Arow%3A575505"
+      },
+      {
+        "elapsedMs": 5668,
+        "status": 200,
+        "url": "http://localhost:5640/parcel-sources/il-govmap-cadastral-parcel-rows?ids=govmap%3Arow%3A575506%2Cgovmap%3Arow%3A575507%2Cgovmap%3Arow%3A575508"
+      }
+    ],
+    "returned": [
+      "govmap:row:575503",
+      "govmap:row:575504",
+      "govmap:row:575505",
+      "govmap:row:575506",
+      "govmap:row:575507",
+      "govmap:row:575508"
+    ],
+    "status": "ready"
+  },
+  "pageErrors": [],
+  "remainingAutomationSessions": 0,
+  "reportCheck": {
+    "url": "http://localhost:5638/parcel-coverage-report.html#cities",
+    "cities": [
+      {
+        "city": "Vienna",
+        "jurisdiction": "Austria",
+        "checked": true,
+        "checkedDate": "2026-10-08",
+        "registryFound": true,
+        "parcelSampleVerified": true,
+        "configuredInApp": true
+      },
+      {
+        "city": "East Jerusalem",
+        "jurisdiction": "State of Palestine",
+        "checked": true,
+        "checkedDate": "2026-10-08",
+        "registryFound": true,
+        "parcelSampleVerified": true,
+        "configuredInApp": true
+      }
+    ],
+    "pageErrors": []
+  }
+}

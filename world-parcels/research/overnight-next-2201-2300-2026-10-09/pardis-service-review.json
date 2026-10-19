@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-5509-pardis.json",
+  "cityCode": 5509,
+  "queueRank": 2214,
+  "name": "Pardis",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "pointLatLon": [35.7355726638643, 51.8305721180595],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method": "SEARCH", "url": "https://pardis.ntdc.ir", "httpStatus": 0, "outcome": "Official Pardis New Town Development Company site was identified, but a verified-TLS GET timed out after 20 seconds; no viewer, configuration, or API route was obtained."},
+    {"method": "SEARCH", "url": "https://pardis.city", "httpStatus": 403, "outcome": "Official electronic service domain was identified through official Pardis company material; direct GET returned a Cloudflare 403 page, so no public UI or API was qualified."},
+    {"method": "SEARCH", "url": "https://t.me/s/PardisNewCity1?before=9268", "httpStatus": 200, "outcome": "Official Pardis New City company channel describes electronic housing inquiry/service workflows; it is an administrative service lead, not evidence of an anonymous parcel geometry endpoint."},
+    {"method": "SEARCH", "url": "https://telegram.me/s/pardisNewCity1?q=%23%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D9%8A%D9%87", "httpStatus": 200, "outcome": "Official company-channel material references pardis.city and housing-land transactions; no safe parcel layer or public native parcel identity was exposed."},
+    {"method": "SEARCH", "url": "https://www.irna.ir/news/83866087/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%DA%A9%D8%AA%D8%B1%D9%88%D9%86%DB%8C%DA%A9-%D9%85%D8%B3%DA%A9%D9%86-%D9%85%D9%87%D8%B1-%D9%BE%D8%B1%D8%AF%DB%8C%D8%B3", "httpStatus": 200, "outcome": "News report confirms the electronic Pardis housing inquiry service, but describes authenticated property/contract workflows rather than a public parcel map."},
+    {"method": "SEARCH", "url": "https://ncc.gov.ir/uploads/1/2025/Jul/07/%D9%86%D8%B4%D8%B1%DB%8C%D9%87%20%D8%B4%D9%85%D8%A7%D8%B1%D9%87%20122.pdf", "httpStatus": 200, "outcome": "National Cartographic Center publication provides national spatial/cadastre context only; it does not establish a Pardis-local parcel service."},
+    {"method": "GET", "url": "https://pardis.city", "httpStatus": 403, "outcome": "Verified-TLS request returned a Cloudflare access-denied page; no login, CAPTCHA bypass, or further probing was attempted."},
+    {"method": "GET", "url": "https://pardis.ntdc.ir", "httpStatus": 0, "outcome": "Verified-TLS request timed out after 20 seconds; no response body or configuration was obtained."},
+    {"method": "GET", "url": "https://sh-pardis.ir", "httpStatus": 0, "outcome": "DNS resolution failed; no request was sent."}
+  ],
+  "schemaAndCrs": {"viewerConfig": null, "geometryCrs": null, "nativeIdentity": null, "boundedAnonymousResponse": null},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official Pardis development-company/service references were found, but no public anonymous service returned a safe native parcel identity plus unchanged geometry."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted; no exact-point parcel hit was obtained.",
+    "Timeout, DNS failure, HTTP 403, unavailable UI, or absence of a search hit is not evidence of citywide cadastral absence.",
+    "The Pardis development-company service and national cartographic references identify custodians/workflows, not a public local parcel endpoint.",
+    "No polygon is retained because no safe native identity and unchanged geometry were returned."
+  ],
+  "uncertainty": "Public cadastral coverage for Pardis remains unresolved. All executed discovery and request attempts are recorded; this packet is complete as research documentation, not source integration or admission."
+}

@@ -1,0 +1,116 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Botshabelo-N, South Africa; source and coverage claims are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 2694,
+  "queueRank": 2715,
+  "name": "Botshabelo-N",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "iso3": "ZAF",
+  "point": [-29.2462514325934, 26.7023396885052],
+  "population2025": 218046,
+  "population2025k": 218.046,
+  "populationUnit": "persons",
+  "aliases": ["botshabelo n"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Botshabelo South Africa official cadastral parcel GIS map land parcels Free State municipality",
+        "result": "Found a public Botshabelo-specific cadastral FeatureServer hosted by SMEC, an official Chief Surveyor-General data description, and official Free State/Mangaung administrative references. The public feature service returned polygon geometry in a bounded Botshabelo-area query.",
+        "actualResultUrls": [
+          "https://gis.smec.co.za/server/rest/services/Hosted/BotshabeloCads/FeatureServer",
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://www.cogta.fs.gov.za/?page_id=1502"
+        ]
+      },
+      {
+        "language": "Afrikaans / local-language attempt",
+        "query": "Botshabelo Free State kadastrale kaart erwe grondregister GIS",
+        "result": "Search returned South African cadastral/map material, including the public BotshabeloCads FeatureServer and official Free State cadastral/topographic references; no separate Botshabelo municipal parcel API or local-language viewer was established.",
+        "actualResultUrls": [
+          "https://gis.smec.co.za/server/rest/services/Hosted/BotshabeloCads/FeatureServer",
+          "https://www.freestateonline.fs.gov.za/wp-content/uploads/2019/04/Prov-Gazette-No.18-20-May-2016-Advert-208.pdf"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://gis.smec.co.za/server/rest/services/Hosted/BotshabeloCads/FeatureServer",
+      "observation": "Public ArcGIS FeatureServer named BotshabeloCads exposes a polygon layer whose full extent covers Botshabelo and whose service metadata reports EPSG:4326. The host is SMEC; local registry/custodian ownership was not established from the service metadata."
+    },
+    {
+      "url": "https://csg.dlrrd.gov.za/data.htm",
+      "observation": "Chief Surveyor-General data page describes South Africa's spatial cadastral component as a computerized map of land parcels and administrative boundaries, but this request did not retrieve a city-bounded CSG API response."
+    },
+    {
+      "url": "https://www.cogta.fs.gov.za/?page_id=1502",
+      "observation": "Official Free State government page identifies Botshabelo as part of Mangaung Metropolitan Municipality; this is administrative context, not parcel geometry custody."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gis.smec.co.za/server/rest/services/Hosted/BotshabeloCads/FeatureServer/0?f=pjson",
+      "method": "GET layer metadata",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "outcome": "Anonymous metadata response identified a Polygon layer, native object ID field fid, safe candidate identity fields id/featureid, full extent 26.6448095..26.7456801 E and -29.3013266..-29.1926198 N, and WKID/EPSG 4326. Native fields were inspected but unsafe attributes were not retained."
+    },
+    {
+      "url": "https://gis.smec.co.za/server/rest/services/Hosted/BotshabeloCads/FeatureServer/0/query?where=1%3D1&outFields=*&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "method": "GET bounded-by-record-count anonymous query",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "outcome": "Returned three Polygon features, but this broad first response was used only for schema/identity inspection; raw source properties were not retained."
+    },
+    {
+      "url": "https://gis.smec.co.za/server/rest/services/Hosted/BotshabeloCads/FeatureServer/0/query?where=1%3D1&geometry=26.6973396885%2C-29.2512514326%2C26.7073396885%2C-29.2412514326&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=id%2Cfeatureid%2Cparcel_no%2Cprcl_key%2Cmin_code%2Cmin_region&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+      "method": "GET bounded anonymous polygon query",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "outcome": "Returned three Polygon features intersecting a 0.01-degree envelope around the unchanged WUP point. Three geometries with canonical native id values were retained in botshabelo-n-safe-sample.geojson; no owner, address, titleholder, tax/account, contact, or personal fields were requested or retained. The response reported exceededTransferLimit despite resultRecordCount=3, so it is a sample, not a completeness claim."
+    },
+    {
+      "url": "https://csg.dlrrd.gov.za/data.htm",
+      "method": "GET",
+      "httpStatus": 111,
+      "outcome": "Connection refused from the local request environment; the official page was nevertheless identified by first-party search result. No claim about remote service availability or parcel absence is made."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A public Botshabelo-specific polygon parcel service was verified anonymously, and official national cadastral data documentation was found. The inspected public service is hosted by SMEC rather than demonstrably by Mangaung or the Chief Surveyor-General, so local custodian attribution remains unresolved.",
+  "registryEvidenceUrls": [
+    "https://gis.smec.co.za/server/rest/services/Hosted/BotshabeloCads/FeatureServer",
+    "https://csg.dlrrd.gov.za/data.htm"
+  ],
+  "verifiedSample": true,
+  "sampleFile": "botshabelo-n-safe-sample.geojson",
+  "sampleFiles": ["botshabelo-n-safe-sample.geojson"],
+  "publicParcelGeometryFound": true,
+  "source": "smec-botshabelo-cads",
+  "sourceIds": ["id:F03200050000265100000", "id:F03200050000236100000", "id:F03200050000236000000"],
+  "verifiedParcelResponse": "Three safe-ID Polygon features were returned by the bounded anonymous query; see botshabelo-n-safe-sample.geojson.",
+  "nativeSchema": {
+    "geometryType": "Polygon",
+    "crs": "EPSG:4326",
+    "nativeIdentityUsed": "id",
+    "nativeIdentityAlternativesObserved": ["fid", "featureid", "prcl_key", "parcel_no"],
+    "sourceFieldMapping": {"id": "native parcel ID", "geometry": "native polygon geometry"},
+    "compositeKeyProvenance": "The service also exposes prcl_key and min_code, but the retained canonical identity is the native id field; no synthetic row number was used."
+  },
+  "resultCategory": "primary_source_investigated_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Botshabelo-specific hosted cadastral layer; service metadata extent covers the Botshabelo area.",
+    "verifiedOpenScope": "Anonymous public polygon response verified within a bounded envelope around the WUP point; three samples retained.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "africa",
+  "remainingUncertainty": "The exact WUP point was preserved and was not shifted. The sample proves public polygon availability near the point, not complete Botshabelo-N coverage, official local custodianship, legal cadastral currency, or suitability for runtime integration."
+}

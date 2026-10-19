@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "cohort": [
+    {
+      "city": "Curitiba",
+      "queueRank": 200,
+      "priorEvidence": [
+        "research/curitiba.json",
+        "research/curitiba-live-assessment.json"
+      ],
+      "assessment": "First integration candidate. Existing evidence: 308920 rows; 308 null gtm_ind_fiscal; 308612 distinct nonnull values across the layer. Bounded samples showed distinct fiscal IDs. Offset pagination repeats rows, but ArcGIS supports ID manifests and an explicit nonnull filter can scope to identified rows. Reuse permission for this exact layer remains unresolved."
+    },
+    {
+      "city": "Rio de Janeiro",
+      "queueRank": 35,
+      "priorEvidence": [
+        "research/rio-de-janeiro.json",
+        "research/rio-live-assessment.json"
+      ],
+      "assessment": "Do not integrate yet. CC BY 4.0, but cod_lote duplicates within one bounded sample and OBJECTID_12 is a system-maintained row identity. No documented durable native parcel key; 50-row adapter bbox previously timed out."
+    },
+    {
+      "city": "Recife",
+      "queueRank": 124,
+      "priorEvidence": [
+        "research/recife.json",
+        "research/recife-seqimovel-live-hold-2026-10-03.json",
+        "research/next-five-source-attempts-2026-10-03.json"
+      ],
+      "assessment": "Strong first integration candidate after fresh verification. Both the previous layer 3 and a separate finance layer 1 returned identical 58-row samples and passed the same 18-cell gate using DSQFL object-ID manifests, native exact reads, and disjoint-parts checks. Four DSQFL IDs had multiple nonoverlapping components; no null DSQFL occurred in the tested grid."
+    }
+  ],
+  "candidates": [
+    {
+      "city": "Recife",
+      "priority": 1,
+      "centerLatLon": [
+        -8.04622135042311,
+        -34.9207751899257
+      ],
+      "descriptorSuggestion": {
+        "id": "br-recife-prefeitura-lotes-live",
+        "countryCode": "BR",
+        "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+        "idField": "DSQFL",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "br-recife:",
+        "idType": "string",
+        "attributeNotNull": [
+          "DSQFL"
+        ],
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "nativeGeometryMode": "parts",
+        "partsCoordinatePrecision": 9,
+        "disjointParts": true,
+        "outFields": [
+          "OBJECTID",
+          "DSQFL",
+          "DISTRITO",
+          "SETOR",
+          "QUADRA",
+          "FACE",
+          "LOTE"
+        ],
+        "pageSize": 2000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 31985,
+        "sourceCrs": "EPSG:31985 (SIRGAS 2000 / UTM zone 25S)",
+        "nativeIdFields": [
+          "DSQFL"
+        ],
+        "scope": "Official Recife Lotes polygons with nonnull DSQFL; other records outside identified scope are excluded. This is municipal coverage only; national or regional coverage is not inferred.",
+        "name": "Recife identified lot polygons",
+        "operator": "Prefeitura do Recife"
+      },
+      "identitySemantics": "DSQFL is the published district/sector/block/face/lot string key. Preserve as text, including leading zeroes. The prior Recife layer 3 result using this key had duplicate geometries in three cells. In the new full 18-cell recheck, each repeated-key group consisted of disjoint components; the adapter merged them and exact native-ID reads matched. Two rows in the small center sample lacked valid SEQIMOVEL, but DSQFL was present for all tested rows.",
+      "evidenceReference": "recifeLiveGate below"
+    },
+    {
+      "city": "Curitiba",
+      "priority": 1,
+      "centerLatLon": [
+        -25.4581368087922,
+        -49.2553428080241
+      ],
+      "descriptorSuggestion": {
+        "id": "br-curitiba-ippuc-lote-cadastral",
+        "countryCode": "BR",
+        "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+        "idField": "gtm_ind_fiscal",
+        "objectIdField": "objectid",
+        "idPrefix": "br-curitiba:",
+        "idType": "string",
+        "attributeNotNull": [
+          "gtm_ind_fiscal"
+        ],
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "nativeGeometryMode": "single",
+        "outFields": [
+          "objectid",
+          "gtm_ind_fiscal",
+          "gtm_cod_lote",
+          "gtm_cod_quadra"
+        ],
+        "sourceCrs": "EPSG:31982",
+        "proposedMetricCrs": "EPSG:31982",
+        "nativeIdFields": [
+          "gtm_ind_fiscal"
+        ],
+        "scope": "Curitiba mapped lots with nonnull municipal Indicação Fiscal; city-published technical cadastral base, not the legal land registry."
+      },
+      "identitySemantics": "Indicação Fiscal is the municipal property/cadastral identifier displayed and searched by the official Mapa Cadastral. Preserve as text; earlier aggregate showed nonnull values unique, but the layer does not declare a unique index. It can describe a tax sublot/unit, so root full gate must verify same-key geometries and determine intended scope. Null-key rows are deliberately outside the identified scope if filtered.",
+      "reuseGate": "Exact layer metadata and itemInfo have empty license/copyright fields. Prior assessment found no reuse grant specific to this layer. Obtain written permission or applicable explicit license before persistence/reuse; technical acceptance does not resolve this."
+    },
+    {
+      "city": "Rio de Janeiro",
+      "priority": 3,
+      "centerLatLon": [
+        -22.8458,
+        -43.3667
+      ],
+      "descriptorSuggestion": null,
+      "identitySemantics": "Physical lots from 2013 aerial survey; current candidate cod_lote is not unique and OBJECTID_12 is explicitly system-maintained, so no semantic native ID is established. A composite identity/parts strategy needs publisher documentation and full duplicate geometry analysis; do not use OID as parcel identity."
+    }
+  ],
+  "executedSearches": [
+    {
+      "language": "Portuguese",
+      "query": "site:ippuc.org.br \"Lote Cadastral\" Curitiba indicação fiscal",
+      "result": "Official GeoCuritiba layer 16 found; gtm_ind_fiscal is a string field. Official city service result confirms public cadastral map scope across 75 neighborhoods.",
+      "urls": [
+        "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/16",
+        "https://www.curitiba.pr.gov.br/servicos/mapa-cadastral-de-curitiba/concurso-publico-processo-seletivo-publico-inscricoes/70"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:curitiba.pr.gov.br \"Indicação Fiscal\" \"Mapa Cadastral\" GeoCuritiba",
+      "result": "Official city results confirm Indicação Fiscal as municipal property identification and say lots are consulted through Mapa Cadastral.",
+      "urls": [
+        "https://lp.curitiba.pr.gov.br/iptu_2024/",
+        "https://www.curitiba.pr.gov.br/noticias/base-cadastral-de-terrenos-e-lotes-de-curitiba-esta-na-internet/48430"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:rio.rj.gov.br \"lotes\" \"cadastro\" dados geográficos Prefeitura Rio",
+      "result": "Search returned official Diário Oficial material on cadastral lots, but no better open native-key parcel layer than prior DATA.RIO source.",
+      "urls": [
+        "https://doweb.rio.rj.gov.br/portal/edicoes/download/5144",
+        "https://doweb.rio.rj.gov.br/portal/edicoes/download/6912"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:datario.rio \"Lotes (2013)\" Quadras Lotes Edificações",
+      "result": "No new result; prior DATA.RIO ArcGIS Hub item remains identified in the previous evidence.",
+      "urls": [
+        "https://datariov2-pcrj.hub.arcgis.com/"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:esigportal2.recife.pe.gov.br \"Lotes\" \"SEQIMOVEL\" Recife",
+      "result": "Found separate official Recife Planejamento/BASES_LOTES_EDIFICACAO_BAIRRO FeatureServer layer 1 ('Lotes Finanças'), with nullable SEQIMOVEL and DSQFL fields, polygon geometry, EPSG:31985, and query capabilities.",
+      "urls": [
+        "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_LOTES_EDIFICACAO_BAIRRO/FeatureServer/1?f=pjson"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "site:dados.recife.pe.gov.br lote cadastro parcelamento lotes Recife GeoJSON",
+      "result": "Official open-data portal result describes Recife's Área Urbana package with lotes and other municipal urban divisions.",
+      "urls": [
+        "https://dados.recife.pe.gov.br/dataset/area-urbana"
+      ]
+    }
+  ],
+  "boundedRequests": [
+    {
+      "candidate": "Curitiba",
+      "url": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15/query?where=gtm_ind_fiscal+IS+NOT+NULL&geometry=-49.274%2C-25.43%2C-49.2725%2C-25.4288&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnIdsOnly=true&f=json",
+      "method": "GET attempted using urllib with Chrome UA, Accept application/json,text/plain,*/*, Accept-Language pt-BR,pt;q=0.9,en;q=0.8, Referer https://geocuritiba.ippuc.org.br/; timeout 40s; TLS verification enabled",
+      "result": "No HTTP response. Local Python URL open failed DNS name resolution. Escalated execution returned no output/HTTP response. This is an environment network limitation, not a source failure. Browser web retrieval could read layer metadata but marked the bounded query URL inaccessible. Root is independently attempting Node fetch."
+    },
+    {
+      "candidate": "Recife alternative layer 1",
+      "url": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_LOTES_EDIFICACAO_BAIRRO/FeatureServer/1/query?where=SEQIMOVEL+IS+NOT+NULL&geometry=-34.921%2C-8.047%2C-34.920%2C-8.046&geometryType=esriGeometryEnvelope&inSR=4326&outFields=OBJECTID%2CSEQIMOVEL%2CDSQFL&returnGeometry=false&resultRecordCount=3&f=json",
+      "method": "GET attempted through web retrieval",
+      "result": "Web retrieval marked URL inaccessible. Layer metadata is readable; no bounded feature result established."
+    }
+  ],
+  "metadataAndPriorGate": {
+    "curitiba": {
+      "rows": 308920,
+      "nullFiscalIds": 308,
+      "distinctNonNullFiscalIds": 308612,
+      "priorSmallBoxPages": 3,
+      "priorForcedOffsetPages": "repeated OIDs; incomplete",
+      "exactNativeLookup": "11150008 returned one polygon",
+      "reuseTerms": "unresolved"
+    },
+    "rioDeJaneiro": {
+      "boundedSampleRows": 133,
+      "cod_loteDistinct": 118,
+      "cod_loteDuplicateGroups": 6,
+      "oidField": "OBJECTID_12",
+      "oidIsSystemMaintained": true,
+      "globalId": "none",
+      "adapterLargeBox": "15-second upstream timeout"
+    },
+    "recife": {
+      "staticGeojsonFeatureCount": 114079,
+      "staticFileApproxBytes": 137000000,
+      "oldFeatureServerLayer3": "18-cell gate completed 5; 13 failed due missing/invalid SEQIMOVEL or same-key geometry conflict",
+      "newAlternativeLayer1": "metadata accessible; bounded query not verified"
+    }
+  },
+  "recifeLiveGate": {
+    "checkedAt": "2026-10-07",
+    "status": "passed_18_cell_DSQFL_parts_gate",
+    "method": "Repository createArcgisParcelSource with boundsQueryMode=object-ids, idsQueryMode=object-ids, nativeGeometryMode=parts, disjointParts=true, partsCoordinatePrecision=9, attributeNotNull=[DSQFL]. Same 3x3 grid of 0.0025-degree cells at WUP Recife center and grid shifted +0.004 degrees lon/lat; exact reads for all retained native IDs in batches of at most 80. Geometry was held in memory only and is not saved in this file.",
+    "spatialTestCenterLatLon": [
+      -8.04622135042311,
+      -34.9207751899257
+    ],
+    "cellCount": 18,
+    "bboxWidthDegrees": 0.0025,
+    "panDegrees": [
+      0.004,
+      0.004
+    ],
+    "headers": "Chrome 128 macOS User-Agent; Accept application/geo+json, application/json; Accept-Language pt-BR,pt;q=0.9,en;q=0.8; Referer https://esigportal2.recife.pe.gov.br/. TLS verified.",
+    "layers": [
+      {
+        "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+        "name": "Lotes",
+        "httpStatusMetadata": 200,
+        "sourceCrs": "EPSG:31985",
+        "maxRecordCount": 6000,
+        "nonNullDSQFLRowInstancesInGrid": 1396,
+        "missingOrNullDSQFLRowInstancesInGrid": 0,
+        "passedCells": 18,
+        "failedCells": 0,
+        "distinctDSQFLs": 1173,
+        "summedSourceRowsAcrossCells": 1397,
+        "exactIdsRequested": 1173,
+        "exactFeaturesRead": 1173,
+        "exactAbsentIds": 0,
+        "exactBatchFailures": 0,
+        "DSQFLWithMultipleDisjointParts": 4,
+        "rowsInThoseGroups": 13,
+        "maxPartsForOneDSQFL": 4
+      },
+      {
+        "endpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_LOTES_EDIFICACAO_BAIRRO/FeatureServer/1",
+        "name": "Lotes Finanças",
+        "httpStatusMetadata": 200,
+        "sourceCrs": "EPSG:31985",
+        "maxRecordCount": 2000,
+        "nonNullDSQFLRowInstancesInGrid": 1396,
+        "missingOrNullDSQFLRowInstancesInGrid": 0,
+        "passedCells": 18,
+        "failedCells": 0,
+        "distinctDSQFLs": 1173,
+        "summedSourceRowsAcrossCells": 1397,
+        "exactIdsRequested": 1173,
+        "exactFeaturesRead": 1173,
+        "exactAbsentIds": 0,
+        "exactBatchFailures": 0,
+        "DSQFLWithMultipleDisjointParts": 4,
+        "rowsInThoseGroups": 13,
+        "maxPartsForOneDSQFL": 4
+      }
+    ],
+    "smallAreaProbe": {
+      "bboxLonLat": [
+        -34.921,
+        -8.047,
+        -34.92,
+        -8.046
+      ],
+      "bboxApprox": "about 100 m per side",
+      "httpStatusBothQueryRequests": 200,
+      "rowsBothLayers": 58,
+      "invalidOrMissingSEQIMOVEL": 2,
+      "validUniqueSEQIMOVEL": 56,
+      "uniqueDSQFL": 58,
+      "DSQFLNullOrBlank": 0,
+      "sampleIDsStored": 0,
+      "geometryStored": false
+    },
+    "comparison": "Both layers returned identical metadata shape, extent CRS, same 58-row sample, and same 18-cell aggregate behavior. Recommend previously investigated general Lotes FeatureServer/3; it has a 6000 row cap versus 2000 for the finance layer, while keeping the selected outFields identity-only.",
+    "remainingUncertainty": "18 bounded cells establish local reproducibility and exact reads, not full municipal completeness or coverage beyond Recife municipality."
+  },
+  "coordinatorAcceptance": {
+    "curitiba": {
+      "runtimeStatus": "enabled",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/curitiba-identified-acceptance.json",
+      "nativeIdField": "gtm_ind_fiscal",
+      "exactNativeIds": 1568,
+      "catalogueSourceId": "br-curitiba-ippuc-lote-cadastral"
+    },
+    "recife": {
+      "runtimeStatus": "enabled",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/recife-acceptance.json",
+      "nativeIdField": "DSQFL",
+      "exactNativeIds": 1765,
+      "catalogueSourceId": "br-recife-prefeitura-lotes"
+    }
+  }
+}

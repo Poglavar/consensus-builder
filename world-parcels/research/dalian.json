@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:178",
+  "queueRank": 178,
+  "name": "Dalian",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    38.9379121386818,
+    121.559365721703
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyj.dl.gov.cn/",
+      "observation": "Dalian Natural Resources Bureau (candidate); unreachable through the proxy, unassessed."
+    },
+    {
+      "url": "https://data.dl.gov.cn/",
+      "observation": "Dalian open-data platform (candidate); unreachable, unassessed."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu platform; HTTP 418 to the client; its parcel services are key-gated and were not found open."
+    },
+    {
+      "url": "https://zrzy.ln.gov.cn/",
+      "observation": "Liaoning Provincial Department of Natural Resources (candidate); unreachable, unassessed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gtzy.dl.gov.cn/ , https://zrzyj.dl.gov.cn/ , https://data.dl.gov.cn/ , https://www.dl.gov.cn/ , https://www.dlgis.com/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure through the agent proxy for every host; unreachable, not a verdict"
+    },
+    {
+      "url": "https://zrzy.ln.gov.cn/ , https://www.mnr.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure; unreachable"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": null,
+      "assessment": "non-standard rejection; no service listing obtained"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (Dalian parcels/cadastral/land use)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "only story maps and route layers; no parcel layer"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Chinese cadastral parcel data is generally held by natural-resources/real-estate registration bureaus and not published as open polygons; no Dalian service located",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Every official Dalian and Liaoning host failed at the proxy, so no verdict is possible. Consistent with other Chinese cities in this queue (Shenyang, Guangzhou), no open polygon endpoint is known, but that is unconfirmed here.",
+  "nextStep": "Retry from a network that can reach .gov.cn hosts; check the Dalian open-data platform and the real-estate registration center map for a bounded parcel query."
+}

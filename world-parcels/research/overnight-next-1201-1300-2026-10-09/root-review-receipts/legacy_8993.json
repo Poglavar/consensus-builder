@@ -1,0 +1,13 @@
+{
+  "taskId": "legacy:8993",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2026-10-09/integration-ledger.json",
+    "world-parcels/research/overnight-next-2026-10-09/city-8993-ichalkaranji.json",
+    "world-parcels/research/overnight-next-2026-10-09/ichalkaranji-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T10:39:59Z",
+  "reason": "Ichalkaranji: Maharashtra land-record custody is documented; the municipal map is wards, and no parcel-specific geometry or native ID was queried. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are not evidenced; absence is not established."
+}

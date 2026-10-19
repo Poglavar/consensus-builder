@@ -1,0 +1,83 @@
+{
+  "name": "Amritsar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 395,
+  "point": [
+    31.6209599280907,
+    74.8854052563454
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Amritsar official cadastral parcel map land records Punjab India jamabandi bhunaksha GIS official",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "Punjab’s official viewer exposes public parcel lookup routes. At the WUP city point, the Amritsar-1 central hierarchy resolves to a patwar with no map-backed village entries; nearby unbacked urban villages are marked hasData=false. No exact point parcel geometry was returned or retained.",
+        "actualResultUrls": [
+          "https://amritsar.nic.in/fard-online/",
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx/TermsAndConditions.aspx"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      },
+      {
+        "language": "Punjabi",
+        "query": "ਅੰਮ੍ਰਿਤਸਰ ਸਰਕਾਰੀ ਭੂ ਨਕਸ਼ਾ ਜਮਾਬੰਦੀ ਪੰਜਾਬ ਭੂ ਅਭਿਲੇਖ ਨਕਸ਼ਾ",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "Punjab’s official viewer exposes public parcel lookup routes. At the WUP city point, the Amritsar-1 central hierarchy resolves to a patwar with no map-backed village entries; nearby unbacked urban villages are marked hasData=false. No exact point parcel geometry was returned or retained.",
+        "actualResultUrls": [
+          "https://amritsar.nic.in/fard-online/",
+          "https://gisbhunaksha.punjab.gov.in/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx/TermsAndConditions.aspx"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-4483-PUBLIC-CADASTRE",
+    "name": "Punjab BhuNaksha digital cadastral map viewer",
+    "url": "https://gisbhunaksha.punjab.gov.in/",
+    "operator": "Punjab Land Records Society / Punjab Department of Revenue",
+    "serviceType": "Public selectors, map extent and coordinate-to-plot lookup; geometry is map imagery/unsupported for the WUP urban hierarchy",
+    "layer": "Punjab BhuNaksha digital cadastral map viewer",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "No central-city parcel identifier returned; selector returns administrative codes only",
+    "nativeIdEvidence": "Viewer confirms Amritsar-1 and Amritsar-2 hierarchies. Central Amritsar-1 point vicinity has no map-backed village under the selected urban patwar; no city-center parcel geometry verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Viewer confirms Amritsar-1 and Amritsar-2 hierarchies. Central Amritsar-1 point vicinity has no map-backed village under the selected urban patwar; no city-center parcel geometry verified.",
+    "verifiedOpenScope": "Viewer confirms Amritsar-1 and Amritsar-2 hierarchies. Central Amritsar-1 point vicinity has no map-backed village under the selected urban patwar; no city-center parcel geometry verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_cadastral_registry_geometry_not_verified",
+  "technicalBlocker": "Punjab’s official viewer exposes public parcel lookup routes. At the WUP city point, the Amritsar-1 central hierarchy resolves to a patwar with no map-backed village entries; nearby unbacked urban villages are marked hasData=false. No exact point parcel geometry was returned or retained.",
+  "remainingUncertainty": "Citywide coverage and completeness are not established; this record is limited to the reviewed public source and WUP-point vicinity.",
+  "nextStep": "Recheck only if the official provider publishes an anonymous, safe vector feature endpoint or map-backed city-center hierarchy.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4483,
+  "cityId": "wup2025:4483",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    31.6209599280907,
+    74.8854052563454
+  ],
+  "population2025k": 1303.33,
+  "populationUnit": "persons",
+  "queueRank": 395,
+  "population2025": 1303330,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Amritsar District Administration links official public land-record services, and Punjab BhuNaksha selectors identify Amritsar-1 and Amritsar-2. The inspected central urban hierarchy has no map-backed village; this does not establish citywide absence.",
+  "rootReviewedAt": "2026-10-08T23:30:20.283150+00:00"
+}

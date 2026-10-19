@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-11966-guankou.json",
+  "cityCode": 11966,
+  "queueRank": 1661,
+  "city": "Guankou",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Xiamen/Jimei sources establish local natural-resources, surveying, and property-registration custodians and named cadastral/parcel-map services. Bounded anonymous requests found no usable public parcel geometry, stable native parcel identity, schema, CRS, or current open adapter route. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese first-party discovery queries and actual result URLs are recorded in city-11966-guankou.json.",
+  "requestOutcomes": "TLS verification remained enabled. The official Xiamen map route timed out, the surveying-center host did not yield usable HTML within the bounded request, the registration portal returned an authentication/real-name page, and the official bureau page established custody without exposing a parcel API. No login, credential, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or TLS disablement was used.",
+  "scopeLimits": [
+    "Exact WUP point [24.5770091121157, 118.026098381416] was preserved in latitude/longitude order; no coordinate shift or exact-point hit/miss inference was made.",
+    "Official custodian and procedure/map-service evidence establishes local registry/survey custody, not open anonymous parcel geometry availability or complete Guankou coverage.",
+    "A timeout, inaccessible viewer, authentication wall, map extent miss, or unavailable UI is not evidence of citywide cadastral absence.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "No owner, titleholder, address, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains pending."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no parcel polygon retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel geometry service was reached. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": [
+      "https://map.zygh.xm.gov.cn/ timed out after 20 seconds",
+      "https://chzx.zygh.xm.gov.cn/ did not yield usable public HTML in the bounded request",
+      "https://bdc.zygh.xm.gov.cn/yhrzpt/ returned an authentication/real-name page"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Xiamen municipal cadastral and property-registration services, including Jimei/Guankou.",
+    "verifiedOpenScope": "Institutional custody and named cadastral-map services only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A restricted, account-gated, formal-request, or not-yet-published cadastral service may exist behind the Xiamen map and registration platforms. Public availability, parcel schema, CRS, stable native identity, coverage, and safe anonymous runtime access remain unresolved.",
+  "retainedSample": null
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_source_technical_followup",
+  "countryCode": "CI",
+  "checkedAt": "2026-10-08",
+  "priorEvidence": "world-parcels/research/india-africa-2026-10-08/africa-ws-provider-CI.json",
+  "source": {
+    "name": "MCLU SIGFU public parcel viewer / generated Angular data client",
+    "operator": "Côte d’Ivoire Ministry of Construction, Housing and Urban Planning (MCLU), per portal identity",
+    "viewerUrl": "https://sigfu.gouv.ci/parcelles",
+    "dataBasePath": "https://sigfu.gouv.ci/api-sigfu-portail-data",
+    "scope": "Abidjan viewer-route investigation only; no parcel geometry verified."
+  },
+  "clientInspection": {
+    "localitiesMethod": "queryParcelleControllerGetLocalites",
+    "method": "GET",
+    "generatedPathSuffix": "/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+    "composedUrl": "https://sigfu.gouv.ci/api-sigfu-portail-data/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+    "headers": [
+      "Accept: application/json",
+      "Accept-Language: fr-CI,fr;q=0.9,en;q=0.6",
+      "Referer: https://sigfu.gouv.ci/parcelles",
+      "Chrome desktop User-Agent"
+    ],
+    "credentials": false,
+    "body": null,
+    "bulkRoute": "GetAllLots is a no-body full-set operation; not called. Lot and ilot reads are POST with DTO bodies; no bbox semantics/body was inferred.",
+    "bundleProvenance": "Public Angular client bundle linked from the SIGFU /parcelles viewer, inspected in temporary memory/storage. Relevant generated method/path/URL observations are retained here; the temporary bundle is not a durable evidence artifact."
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://sigfu.gouv.ci/parcelles",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 2701,
+      "assessment": "Fetched public viewer first with cookie jar; TLS verification enabled."
+    },
+    {
+      "method": "GET",
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "bytes": 568,
+      "assessment": "Exact URL composed by generated client; ordinary browser-like headers, same cookie jar, and public viewer Referer."
+    },
+    {
+      "method": "GET",
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "assessment": "Prior single-prefix retry with same viewer referer and cookie jar also returned 502."
+    }
+  ],
+  "assessment": "Promising official viewer, but its data API is unavailable on the tested path. The generated full-set lots route was not invoked and no parcel payload was retrieved.",
+  "reuseStatus": "Not assessed; technical access and reuse terms remain separate questions.",
+  "limitations": "No Abidjan sample, bbox query, geometry, or ownership fields were acquired; 502 is not a negative result."
+}

@@ -1,0 +1,26 @@
+{
+ "country": "Montenegro",
+ "previousStatus": "national_cadastre_credentialed_or_paid",
+ "newStatus": "national_cadastre_credentialed_or_paid",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Real Estate Administration (Uprava za katastar i drzavnu imovinu)",
+ "inspireRecordUrl": null,
+ "portalsFound": [],
+ "requests": [],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "regionsSampled": [],
+ "geoBlockSuspected": false,
+ "accessModel": "viewer-only",
+ "notes": "ekatastar.me returns login page (reCAPTCHA); katastar.gov.me, www.katastar.gov.me, geoportal.gov.me, gis.gov.me unreachable (connection failed); geoportal.co.me and geoportal.katastar.me return 503. Not an INSPIRE member so no INSPIRE CP record; no anonymous parcel endpoint found. The EU INSPIRE geoportal search API now redirects (301) to data.europa.eu; the country is not an EU/EFTA INSPIRE member so no obliged CP service was expected.",
+ "remainingUncertainty": "Login-only viewer; public parcel viewer on katastar.gov.me not reachable.",
+ "nextStep": "Retry from a regional network; inspect viewer JS there.",
+ "schemaVersion": 1,
+ "countryCode": "ME",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/html,application/xml;q=0.9,*/*;q=0.8; Accept-Language: local-language,en (cookie jar; Referer https://geoportal.asig.gov.al/)"
+}

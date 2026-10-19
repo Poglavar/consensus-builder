@@ -1,0 +1,84 @@
+{
+  "name": "Vellore",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 640,
+  "point": [
+    12.9312757541328,
+    79.1393776664254
+  ],
+  "population2025": 820103,
+  "populationUnit": "persons",
+  "population2025k": 820.103,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Vellore District government service page offers Patta and FMB/Chitta/TSLR land-record extracts and identifies the Vellore Collectorate. This confirms local land-record services, not an anonymous coordinate-to-parcel vector endpoint.",
+  "registryEvidenceUrls": [
+    "https://vellore.nic.in/service/e-services-anytime-anywhere-land/",
+    "https://eservices.tn.gov.in/eservicesnew/home.html",
+    "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Tamil",
+        "query": "வேலூர் நில பதிவுகள் புலப்படம் பட்டா FMB TSLR அரசு",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "Official district service lists Patta/FMB/Chitta/TSLR. It requires locality and survey details; no anonymous coordinate polygon service identified.",
+        "actualResultUrls": [
+          "https://vellore.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      },
+      {
+        "language": "English",
+        "query": "Vellore Tamil Nadu official cadastral parcel map land records GIS",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "Vellore district links to state land records for survey extracts and sketches; no public vector geometry endpoint identified.",
+        "actualResultUrls": [
+          "https://vellore.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      }
+    ]
+  },
+  "scopeLimits": "The official service requires rural/urban location and survey identifiers and describes record/sketch outputs; no coordinate-based vector request was available. No CAPTCHA or property lookup was submitted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "IN-TN-VELLORE-LANDRECORDS",
+    "name": "Tamil Nadu e-Services of Land Records (Vellore district link)",
+    "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+    "operator": "Tamil Nadu Revenue Department / Vellore District Administration",
+    "serviceType": "Survey-number and locality based Patta/FMB/Chitta/TSLR public-service portal",
+    "layer": "FMB sketches and TSLR extracts; no open vector layer identified",
+    "geometryType": "PDF/sketch output described; feature geometry unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "survey/town/ward/block/survey number needed; not inspected"
+  },
+  "wupCityCode": 10445,
+  "cityId": "wup2025:10445",
+  "queueRank": 640,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The official service requires rural/urban location and survey identifiers and describes record/sketch outputs; no coordinate-based vector request was available. No CAPTCHA or property lookup was submitted.",
+  "remainingUncertainty": "Exact locator coverage, safe source-native identifier and bounded anonymous geometry retrieval are unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    12.9312757541328,
+    79.1393776664254
+  ],
+  "rootReviewedAt": "2026-10-09T02:12:55.238180+00:00"
+}

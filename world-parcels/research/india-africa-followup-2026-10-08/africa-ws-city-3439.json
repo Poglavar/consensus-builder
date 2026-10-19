@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3439",
+  "queueRank": 60,
+  "wupCityCode": 3439,
+  "name": "Abidjan",
+  "country": "Côte d'Ivoire",
+  "countryCode": "CI",
+  "centerLatLon": [
+    5.35604816980528,
+    -4.01965468787951
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 60,
+  "growthRank": null,
+  "population2025": 6621711,
+  "annualGrowthPct2015To2025": 2.600423,
+  "checkedAt": "2026-10-08",
+  "status": "temporarily_unavailable",
+  "priorEvidence": [
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-city-3439.json",
+    "world-parcels/research/india-africa-2026-10-08/africa-ws-provider-CI.json"
+  ],
+  "priorStatuses": [
+    "temporarily_unavailable"
+  ],
+  "sharedCountryAssessment": "africa-ws-provider-CI-followup.json",
+  "freshCityLocalSearch": {
+    "languageScript": "French (Latin script)",
+    "exactQueries": [
+      "\"Abidjan\" \"parcelles cadastrales\" géoportail SIG Côte d'Ivoire cadastre"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [],
+    "summary": "Executed city-targeted native-language search as part of the shared query batch; see provider evidence for country/service findings. Search results are leads only, not parcel verification."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "Fresh technical inspection confirmed the public viewer’s generated locality GET path and ordinary cookie/referer flow, but the exact generated route returned HTTP 502. No safe bbox-scoped lot DTO was observed; bulk all-lots route was not called.",
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Retry only the exact generated locality GET when SIGFU is healthy, then inspect an observed public app path for a bounded/municipality-scoped lot request before testing any geometry.",
+  "requests": [
+    {
+      "url": "https://sigfu.gouv.ci/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "assessment": "Second ordinary retry with viewer Referer and session cookie jar also returned HTTP 502."
+    }
+  ],
+  "resultCategory": "promising_service_unavailable",
+  "evidenceType": "new_or_retry_target_service_probe",
+  "targetEndpointProbePerformed": true,
+  "followup": {
+    "checkedAt": "2026-10-08",
+    "viewerUrl": "https://sigfu.gouv.ci/parcelles",
+    "clientEvidence": "Saved public bundle /tmp/africa-ws-ci-main.js; `environment.apiDataBasePath` is `https://sigfu.gouv.ci/api-sigfu-portail-data`. Generated `queryParcelleControllerGetLocalites()` is GET with Accept: application/json and withCredentials=false; it declares no body. The generated method appends `/api-sigfu-portail-data/query-parcelle/query-parcelle/localites` to the basePath, making the exact composed URL below.",
+    "exactGeneratedGetUrl": "https://sigfu.gouv.ci/api-sigfu-portail-data/api-sigfu-portail-data/query-parcelle/query-parcelle/localites",
+    "cookieFlow": "Fetched public `/parcelles` first (HTTP 200, 2701 bytes) into a cookie jar; followed with Chrome-like UA, Accept application/json, Accept-Language fr-CI,fr;q=0.9,en;q=0.6, same cookie jar and Referer https://sigfu.gouv.ci/parcelles. TLS verification remained enabled.",
+    "result": "Generated path returned HTTP 502 text/html (568 bytes); no locality payload.",
+    "safety": "The generated `GetAllLots` operation is a full-set GET and does not expose a documented bbox argument; not called. `GetLot`/`GetIlots` are POST methods that require DTO bodies; no spatial request body was inferred or guessed. No parcel geometry or owner fields were requested or saved."
+  }
+}

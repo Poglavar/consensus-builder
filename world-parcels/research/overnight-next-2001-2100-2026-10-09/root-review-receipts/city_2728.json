@@ -1,0 +1,37 @@
+{
+  "taskId": "city:2728",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-2728-heroica-nogales.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/heroica-nogales-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-10T22:08:32Z",
+  "identity": {
+    "cityCode": 2728,
+    "queueRank": 2065,
+    "name": "Heroica Nogales",
+    "country": "Mexico",
+    "pointLatLon": [
+      31.2944156548932,
+      -110.944356082154
+    ],
+    "population2025Persons": 281580
+  },
+  "reason": "English and Spanish executed-search records and first-party municipal cadastral/cartography leads are present. The official static cadastral-values map and municipal procedures support local custody, but current direct service pages returned gateway errors and no anonymous native-ID parcel polygon response or safe source schema was retained. No citywide absence is inferred.",
+  "firstPartyUrlsChecked": [
+    "https://tramites.heroicanogales.gob.mx/categoria/13",
+    "https://tramites.heroicanogales.gob.mx/tramite/443",
+    "https://transparencia.heroicanogales.gob.mx/storage/information/YwB171ReMBk8dMQ2v8xAYV4eqOk5KMEOtfOvWGE5.pdf"
+  ],
+  "admissionGatesVerified": false,
+  "missingGates": [
+    "fresh native-ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ]
+}

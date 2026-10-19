@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.urbangametheory.xyz/docs/agents.json",
+  "title": "Urban Game Theory — minimal agent proposal recipe",
+  "description": "Body of POST /agent/proposals (x402-paid). Declare land with cadastreParcelIds, or give a site (or geometry of its own) for a material proposal on ground with no cadastral parcel. cadastreParcelIds must equal the server binding of the site (POST /agent/binding). agent.wallet and agent.paid are set by the server from the settled payment; author, if sent, must equal the paying wallet.",
+  "type": "object",
+  "anyOf": [
+    { "required": ["cadastreParcelIds"], "properties": { "cadastreParcelIds": { "minItems": 1 } } },
+    { "required": ["site"] }
+  ],
+  "properties": {
+    "city": { "type": "string", "description": "City id, e.g. zagreb, split, belgrade, new_york.", "maxLength": 100 },
+    "cadastreParcelIds": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 255 },
+      "description": "The parcels the proposal is bound to: exactly the parcels its site reaches into (POST /agent/binding answers binding.parcels). Empty is allowed for a material proposal (building, structure, road, readjustment) whose site lies on no cadastral parcel; never for a parcel act (offer, ownership transfer, vote, road designation)."
+    },
+    "site": {
+      "type": "object",
+      "description": "The ground the proposal occupies: GeoJSON Polygon or MultiPolygon, EPSG:4326 (at most 100000 vertices, 500 km² bounding box). Optional: without it the site is the proposal's own geometry (or, for a parcel act, its declared parcels). The proposal's geometry must lie inside it.",
+      "properties": {
+        "type": { "type": "string", "enum": ["Polygon", "MultiPolygon"] },
+        "coordinates": { "type": "array" }
+      },
+      "required": ["type", "coordinates"]
+    },
+    "toleranceM": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Linear intrusion tolerance in metres: a parcel is bound when the site reaches into it by more than this width (the diameter of the largest circle inside site ∩ parcel). Default 0: any reach binds. Measurement error only, never a design allowance."
+    },
+    "proposalId": { "type": "string", "maxLength": 255, "description": "Unique operation id. Reuse it, together with the same x402 payment identifier and body, for safe retries." },
+    "type": { "type": "string", "maxLength": 50, "description": "parcel | building | structure | road (free text, 50 chars)." },
+    "goal": {
+      "type": "string",
+      "description": "Semantic land-use goal. Formation goals include park, square, lake, station, road-track, single, buildings, and reparcellization. A park/square/lake/station/road-track forms public ground."
+    },
+    "name": { "type": "string", "maxLength": 500 },
+    "title": { "type": "string", "maxLength": 500 },
+    "description": { "type": "string" },
+    "author": { "type": "string", "maxLength": 255, "description": "Omit, or your paying wallet's base58 address." },
+    "lens": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$", "description": "Base58 Solana public key of a lens member (an attester)." },
+      "description": "The lens: public keys of the attesters whose SAS attestations (ParcelOwnership-v1, ProposalVerdict-v1) this proposal accepts. Pass the same list as the lens argument of mint_and_fund; it is immutable once minted (fork the proposal to change it). Pick members from GET /lenses/members; schemas at GET /lenses/schemas."
+    },
+    "proposalRole": {
+      "type": "string",
+      "enum": ["owner-offer"],
+      "description": "Omit for an ordinary proposal. owner-offer: the author is a lens-attested owner of the declared parcels offering its own land. Bids arrive as proposal_pledge pledges and donations (GET /agent/pledges/<proposal-account>), and the owner executes by signing accept_with_attestations for its parcels. Any other value is refused with 400."
+    },
+    "offer": { "type": "number", "description": "Amount offered to the parcel owners." },
+    "offerCurrency": { "type": "string", "maxLength": 10 },
+    "buildingProposal": { "type": "object", "description": "A building massing in the app's stored shape; copy from GET /proposals?city=…&limit=5." },
+    "geometry": { "type": "object", "description": "Top-level GeoJSON geometry for the proposal footprint." },
+    "structureProposal": {
+      "type": "object",
+      "description": "A park/square/lake/station. Set kind and its GeoJSON Polygon or MultiPolygon geometry.",
+      "properties": {
+        "kind": { "type": "string", "enum": ["park", "square", "lake", "station"] },
+        "geometry": { "type": "object" },
+        "applied": { "type": "boolean" }
+      },
+      "required": ["kind", "geometry"],
+      "additionalProperties": true
+    },
+    "roadProposal": { "type": "object", "description": "A road corridor in the app's stored shape." },
+    "facets": {
+      "type": "object",
+      "description": "Authored terms. For public formations use ownership: to-city.",
+      "properties": {
+        "ownership": { "type": "string", "enum": ["no-change", "to-me", "to-city", "third-party", "per-slice"] }
+      },
+      "additionalProperties": true
+    },
+    "ownershipFlow": {
+      "type": "array",
+      "description": "Publish-time effect stamp: area taken from each cadastral parcel and its destination. Public formations use destination: public.",
+      "items": {
+        "type": "object",
+        "required": ["parcelId", "cededM2", "destination"],
+        "properties": {
+          "parcelId": { "type": "string" },
+          "cededM2": { "type": "number", "minimum": 0 },
+          "destination": { "type": "string", "enum": ["public", "proposer", "mapping", "undecided"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cadastreFrame": {
+      "type": "object",
+      "description": "When the ownership flow was measured.",
+      "properties": { "capturedAt": { "type": "string", "description": "ISO 8601 capture timestamp." } },
+      "required": ["capturedAt"],
+      "additionalProperties": true
+    },
+    "effectHash": { "type": "string", "description": "Fingerprint of goal + footprint + ownershipFlow. Acceptances bind to this effect." },
+    "agent": {
+      "type": "object",
+      "description": "Free-form provenance kept on the record; wallet and paid are overwritten by the server.",
+      "properties": {
+        "persona": { "type": ["string", "null"] },
+        "controller": { "type": ["string", "null"], "enum": ["algorithm", "llm", null] },
+        "rationale": { "type": ["string", "null"] },
+        "run_id": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "additionalProperties": true
+}

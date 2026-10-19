@@ -1,0 +1,61 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "UA",
+ "country": "Ukraine",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "State Service of Ukraine for Geodesy, Cartography and Cadastre (State Geocadastre); Public Cadastral Map (map.land.gov.ua) and State Land Cadastre",
+ "portalsFound": [
+  {
+   "url": "https://map.land.gov.ua/",
+   "observation": "Official Public Cadastral Map; connection failed from this environment (also in the earlier Kyiv probe)."
+  },
+  {
+   "url": "https://e.land.gov.ua/",
+   "observation": "E-services portal, reachable earlier; the cad_num back-end lookup answered 302 redirect."
+  },
+  {
+   "url": "https://data.gov.ua/",
+   "observation": "National open-data portal; searches for '\u043a\u0430\u0434\u0430\u0441\u0442\u0440' returned 39 datasets, all thematic cadastres (fauna, water etc.), no land-parcel polygons seen."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://map.land.gov.ua/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://cadmap.land.gov.ua/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://e.land.gov.ua/back/cadaster/?cad_num=8000000000:01:001:0001",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": null,
+   "assessment": "redirect, no data"
+  },
+  {
+   "url": "https://data.gov.ua/api/3/action/package_search?q=\u043a\u0430\u0434\u0430\u0441\u0442\u0440",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "39 datasets, none parcel polygons in first 3 inspected"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Nationwide Public Cadastral Map (viewer, per authority)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official map host unreachable, so query capability and terms are unknown; wartime restrictions may apply. Not proof of absence.",
+ "nextStep": "Retry map.land.gov.ua from another network and inspect the viewer's network calls for a bounded parcel query."
+}

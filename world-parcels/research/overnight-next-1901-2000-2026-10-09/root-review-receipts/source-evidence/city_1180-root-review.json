@@ -1,0 +1,55 @@
+{
+  "taskId": "city:1180",
+  "decision": "held",
+  "checkedAt": "2026-10-10T20:37:10.129778Z",
+  "identity": {
+    "cityCode": 1180,
+    "rank": 2000,
+    "name": "Varna",
+    "country": "Bulgaria",
+    "pointLatLon": [
+      43.2213691753194,
+      27.9122114576963
+    ],
+    "populationPersons": 290572,
+    "verifiedAgainst": "pending queue, ranked roster and original SHA-256 verified UN WUP 2025 CSV archive"
+  },
+  "searchReview": {
+    "recordedExecutedQueries": [
+      {
+        "language": "English",
+        "query": "Varna Bulgaria official cadastral map parcel cadastre API AGKK",
+        "resultUrlCount": 4
+      },
+      {
+        "language": "Bulgarian",
+        "query": "Варна кадастрална карта официална АГКК кадастър карта имоти",
+        "resultUrlCount": 4
+      }
+    ],
+    "finding": "Separate English and local-language queries and result URLs are present; Euclid uses a second English query appropriate to the US context."
+  },
+  "custody": "Current official AGKK SGKK-Varna contact page returned HTTP 200. Saved KAIS page exposes cadastral map context, while saved service/layer responses are Request Rejected HTML; current CmcrPublic metadata GET returned HTTP 403. Local custody is supported, not anonymous parcel feature access.",
+  "sourceObservations": [
+    "Current SGKK-Varna page GET returned HTTP 200.",
+    "Current CmcrPublic MapServer metadata GET returned HTTP 403.",
+    "Saved CmcrPublic service and layer files contain Request Rejected HTML, not ArcGIS JSON.",
+    "No native ID or parcel polygon was returned."
+  ],
+  "sourceUrls": [
+    "https://www.cadastre.bg/contacts/sgkk-varna",
+    "https://arcgis.cadastre.bg/arcgisnopki/rest/services/InternalKais/CmcrPublic/MapServer"
+  ],
+  "samplePolygonCount": 0,
+  "safeNativeIdVerified": false,
+  "missingAdmissionGates": [
+    "fresh exact native-ID reads",
+    "stable complete manifest and forced paging",
+    "13 aligned bounded cells",
+    "metric GEOS validity, duplicate, overlap and operation checks",
+    "source binding",
+    "headed pointer and Details-panel verification"
+  ],
+  "absenceInterpretation": "Transport denial, null extent, empty selected layer, and missing point response do not establish citywide absence.",
+  "runtimeDecision": "No admission or runtime/catalog/report change."
+}

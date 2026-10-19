@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Taxila",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The supplied WUP locator is Taxila, Rawalpindi District, Pakistan. Official Rawalpindi district pages identify an Assistant Commissioner (Taxila), and the Punjab Land Records Authority describes province-wide Arazi Record Centres and land-record services. However, no official source located in this review ties a Taxila-specific Arazi Record Centre or public cadastral service to the supplied settlement point. The Rawalpindi Development Authority Taxila maps are land-use/planning maps, not cadastral parcels. The unestablished local status is null, not evidence that a registry does not exist. The primary PLRA archived printing-procurement index also lists an Arazi Record Center for Tehsil Taxila; its current service state was not verified.",
+  "registryEvidenceUrls": [
+    "https://rawalpindi.punjab.gov.pk/administration",
+    "https://www.punjab-zameen.gov.pk/",
+    "https://www.punjab-zameen.gov.pk/serviceCenters",
+    "https://rda.gop.pk/wp-content/uploads/2023/02/Classification_Map_Taxila.pdf",
+    "https://lis.pulse.gop.pk/",
+    "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6824,
+  "cityId": "wup2025:6824",
+  "centerLatLon": [
+    33.777744456941,
+    72.7628980583058
+  ],
+  "rank": 706,
+  "queueRank": 706,
+  "population2025": 757451,
+  "population2025k": 757.451,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous full-polygon geometry response was verified at the supplied WUP locator. Bonn's documented official WFS could not be queried from this environment; other portals did not publish a reviewed safe vector schema.",
+  "scopeLimits": "The WUP point is a population-weighted settlement locator, not a parcel or municipal-boundary assertion. Official Rawalpindi district administration identifies Taxila tehsil administration; PLRA describes Punjab-wide computerized land services but a Taxila-local center could not be confirmed. RDA Taxila maps are planning/land-use products and are not parcel evidence. PULSE advertises indicative property lines and a legal-boundary disclaimer; no geometry request was made because an official safe feature schema and exact point coverage were not verified. No full polygon retained; no owner/address or identity data queried.",
+  "priorEvidenceFiles": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Taxila Pakistan official land records Arazi Record Centre cadastral map PLRA Taxila",
+        "scope": "Find city-specific official registry/cadastre evidence and public parcel geometry; do not submit owner, address, identity, or property-specific lookup inputs.",
+        "result": "Official district administration and province-wide PLRA services surfaced. No Taxila-specific registry-center result or public parcel schema verified; RDA maps are land-use only.",
+        "actualResultUrls": [
+          "https://rawalpindi.punjab.gov.pk/administration",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://www.punjab-zameen.gov.pk/serviceCenters",
+          "https://rda.gop.pk/wp-content/uploads/2023/02/Classification_Map_Taxila.pdf",
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal/property-specific inputs submitted."
+      },
+      {
+        "language": "Urdu",
+        "query": "ٹیکسلا پنجاب پاکستان اراضی ریکارڈ مرکز PLRA کڈسٹرل نقشہ سرکاری",
+        "scope": "Find city-specific official registry/cadastre evidence and public parcel geometry; do not submit owner, address, identity, or property-specific lookup inputs.",
+        "result": "No city-specific official Arazi Record Centre or public parcel geometry source verified; RDA Taxila maps are land-use/planning products.",
+        "actualResultUrls": [
+          "https://rawalpindi.punjab.gov.pk/administration",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://www.punjab-zameen.gov.pk/serviceCenters",
+          "https://rda.gop.pk/wp-content/uploads/2023/02/Classification_Map_Taxila.pdf",
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal/property-specific inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://rawalpindi.punjab.gov.pk/administration",
+        "observation": "Official Rawalpindi district administration page lists the Assistant Commissioner (Taxila); it is administrative evidence, not a registry or parcel-map endpoint."
+      },
+      {
+        "url": "https://www.punjab-zameen.gov.pk/",
+        "observation": "Punjab Land Records Authority describes land-record services and Arazi Record Centres across Punjab; page does not confirm a Taxila center."
+      },
+      {
+        "url": "https://www.punjab-zameen.gov.pk/serviceCenters",
+        "observation": "Official PLRA center locator advertises province-wide center discovery; the Taxila result was not verified."
+      },
+      {
+        "url": "https://rda.gop.pk/wp-content/uploads/2023/02/Classification_Map_Taxila.pdf",
+        "observation": "Official RDA Taxila urban-area land-use classification map. It is thematic land-use mapping, not cadastral parcel geometry."
+      },
+      {
+        "url": "https://lis.pulse.gop.pk/",
+        "observation": "Punjab Urban Land Systems Enhancement public map describes indicative property lines and disclaims legal-boundary use; no point query or safe feature schema verified."
+      }
+    ]
+  },
+  "populationPlausibility2025": "Moderate",
+  "point": [
+    33.777744456941,
+    72.7628980583058
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00",
+  "sourceIds": []
+}

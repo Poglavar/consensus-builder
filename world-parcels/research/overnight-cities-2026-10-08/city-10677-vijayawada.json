@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Vijayawada",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official NTR District portal, whose headquarters is Vijayawada, directs residents to Andhra Pradesh land records; the Government of Andhra Pradesh Survey, Settlements and Land Records Department publishes BhuNaksha AP as cadastral mapping software. This verifies relevant local/state registry services but not parcel coverage at the WUP locator.",
+  "registryEvidenceUrls": [
+    "https://ntr.ap.gov.in/service/land-records-11/",
+    "https://ntr.ap.gov.in/",
+    "https://bhunaksha.ap.gov.in/",
+    "https://apsac.ap.gov.in/",
+    "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/",
+    "https://apsac.ap.gov.in/gisportal/apps/webappviewer/index.html?id=7e3b53a1a265421483fbcbb26c275834"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10677,
+  "cityId": "wup2025:10677",
+  "centerLatLon": [
+    16.5158984794553,
+    80.6417604131186
+  ],
+  "rank": 374,
+  "queueRank": 374,
+  "population2025": 1351098,
+  "population2025k": 1351.098,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official AP BhuNaksha HTTPS viewer path timed out on direct anonymous requests (Node and curl); HTTP also timed out. The official APSAC Cadastral Maps dashboard and public ArcGIS web-map metadata are reachable, but its AP cadastral map config contains only one cached tiled MapService layer plus administrative boundaries, no feature/vector layer. Its MapServer metadata path returns HTTP 403. No full georeferenced parcel polygon route was verified at the WUP locator.",
+  "scopeLimits": "The official NTR District portal confirms Vijayawada as district headquarters and links land records. Direct BhuNaksha viewer requests timed out, so its static JavaScript/schema and selector workflow could not be inspected. The official APSAC dashboard and cadastral-map page were directly fetched; its public map item is titled AP Cadastral Map, but the map config exposes only an ArcGISTiledMapServiceLayer named `cadastral_ap_cache` and four administrative layers. Direct metadata for that map service returned 403. A cached tile map is not full parcel feature geometry, and no vector geometry sample was returned or retained.",
+  "remainingUncertainty": "The AP BhuNaksha host could not be reached by the direct client, and the APSAC raster cache’s service metadata is restricted. Whether a separate anonymous AP feature service covers urban Vijayawada remains unverified; the published public map item does not expose feature layers.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Vijayawada cadastral parcel map official Andhra Pradesh BhuNaksha NTR district GIS",
+        "scope": "Find a city-specific land registry and anonymous full polygon feature service near Vijayawada.",
+        "result": "Official NTR District pages identify Vijayawada as the district headquarters and direct users to state land records. The AP BhuNaksha portal describes state cadastral mapping; no anonymous full georeferenced parcel polygon response was verified for Vijayawada.",
+        "actualResultUrls": [
+          "https://ntr.ap.gov.in/service/land-records-11/",
+          "https://ntr.ap.gov.in/",
+          "https://bhunaksha.ap.gov.in/",
+          "https://apsac.ap.gov.in/"
+        ],
+        "executionMethod": "English-language web search followed by inspection of official NTR District and Andhra Pradesh portal pages."
+      },
+      {
+        "language": "Telugu",
+        "query": "విజయవాడ భూ నక్ష సర్వే నంబర్ భూ పటం ఆంధ్రప్రదేశ్ అధికారిక NTR జిల్లా",
+        "scope": "విజయవాడకు సంబంధించిన అధికారిక భూ రికార్డులు మరియు ప్రజలకు అందుబాటులో ఉన్న పూర్తి పార్సెల్ జ్యామితి సేవను గుర్తించడం.",
+        "result": "NTR జిల్లా ప్రభుత్వ పోర్టల్ భూ రికార్డుల సేవను సూచిస్తుంది; ఆంధ్రప్రదేశ్ భూనక్ష పోర్టల్ కాడాస్ట్రల్ మ్యాపింగ్ సేవగా గుర్తించబడింది. విజయవాడ WUP స్థానానికి పూర్తి జియోరెఫరెన్స్ పార్సెల్ బహుభుజి స్పందన ధృవీకరించబడలేదు.",
+        "actualResultUrls": [
+          "https://ntr.ap.gov.in/service/land-records-11/",
+          "https://bhunaksha.ap.gov.in/"
+        ],
+        "executionMethod": "తెలుగు శోధనతో పాటు NTR జిల్లా మరియు ఆంధ్రప్రదేశ్ ప్రభుత్వ అధికారిక పేజీల సమీక్ష."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ntr.ap.gov.in/",
+        "observation": "Official NTR District portal states that district headquarters is Vijayawada and provides the district-level administrative context."
+      },
+      {
+        "url": "https://ntr.ap.gov.in/service/land-records-11/",
+        "observation": "Official NTR District land-records page directs users to the Andhra Pradesh land-records portal and identifies a Mee-Seva center in Vijayawada."
+      },
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "observation": "Government of Andhra Pradesh Survey, Settlements and Land Records portal identifies BhuNaksha as cadastral mapping software and describes geo-referenced spatial data. This does not establish an anonymous geometry endpoint or coverage at the target point."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/",
+        "observation": "Andhra Pradesh Space Applications Centre portal lists a state GIS and cadastral maps service; no Vijayawada parcel geometry response was obtained."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps/",
+        "observation": "Direct GET returned HTTP 200 and embeds a public ArcGIS Web AppBuilder map with app item ID `7e3b53a1a265421483fbcbb26c275834`."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/7e3b53a1a265421483fbcbb26c275834/data?f=json",
+        "observation": "Direct public JSON app configuration points to webmap item `b54a4a9a00b441a2bdd8f993d140edd5` and configures a default extent separate from the WUP locator."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/b54a4a9a00b441a2bdd8f993d140edd5/data?f=json",
+        "observation": "Direct public webmap configuration has five layers: one ArcGISTiledMapServiceLayer `cadastral_ap_cache`, and four administrative boundary/label map layers; it has no feature collection or feature service layer."
+      },
+      {
+        "url": "https://apsac.ap.gov.in/gisserver/rest/services/REVENUE/cadastral_ap_cache/MapServer?f=pjson",
+        "observation": "Direct anonymous metadata request returned HTTP 403 from nginx; no feature geometry was requested."
+      }
+    ],
+    "metadataReviewFile": "vijayawada-service-review.json",
+    "routeInspectionFile": "../../../../tmp/overnight-cities-2026-10-08/city-10677-vijayawada-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "in-ap-bhunaksha-ntr-vijayawada",
+    "name": "Andhra Pradesh BhuNaksha and NTR District land-records entry",
+    "operator": "Government of Andhra Pradesh Survey, Settlements and Land Records Department; NTR District Administration",
+    "url": "https://apsac.ap.gov.in/gisportal/sharing/rest/content/items/b54a4a9a00b441a2bdd8f993d140edd5/data?f=json",
+    "scope": "AP cadastral state portal plus NTR District land-records entry verified. The public AP Cadastral Map item exposes a cached tiled map service, not a vector feature layer; direct BhuNaksha viewer request timed out. No anonymous full polygon response verified.",
+    "nativeIdField": null,
+    "geometryStatus": "no_feature_layer_in_public_cadastral_webmap"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official NTR District pages establish that Vijayawada is the district headquarters and direct users to state land records. Andhra Pradesh’s BhuNaksha portal describes cadastral mapping and geo-referenced spatial data, but no bounded full-polygon response was verified at or around the WUP 2025 point. No geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00",
+  "sourceIds": [],
+  "point": [
+    16.5158984794553,
+    80.6417604131186
+  ]
+}

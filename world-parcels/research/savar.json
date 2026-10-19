@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:133",
+  "queueRank": 133,
+  "name": "Savar",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "centerLatLon": [
+    23.9741972610535,
+    90.2169056618034
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "bd-dlrs-bds-sheets",
+    "requestUrl": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+    "method": "POST (form: rsnum=201901&comcod=4105&unitcod=010510026&sheetno=001)",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "spatialTestAreaLonLat": [
+      90.22324,
+      23.96558,
+      90.22714,
+      23.96912
+    ],
+    "parcelRecordCount": 108,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "Dag_No (plot/dag number); FID",
+    "responseFile": "savar-parcel-response.json",
+    "pagination": "none; one mouza map sheet per request (saved file trimmed to 3 of 108 features)"
+  },
+  "source": {
+    "sourceId": "bd-dlrs-bds-sheets",
+    "name": "DLRS settlement.gov.bd BDS mouza sheet GeoJSON (Dhamsona mouza, Savar Upazila)",
+    "operator": "Department of Land Records and Survey (DLRS), Bangladesh",
+    "scope": "Per-mouza survey sheets; Dhaka district BDS survey 201901 (Savar upazila mouza sampled)",
+    "endpoint": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+    "method": "POST form",
+    "responseFormat": "GeoJSON FeatureCollection",
+    "crs": "EPSG:4326",
+    "reuseStatus": "Public without credentials; redistribution/caching/production terms not established (same source as the Dhaka probe)"
+  },
+  "portalsFound": [
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "observation": "Lists mouzas with sheets for survey 201901 in Dhaka district; Savar upazila (010510000) has Dhamsona mouza sheet 001 (unitcod 010510026)."
+    },
+    {
+      "url": "https://map.settlement.gov.bd/",
+      "observation": "Official DLRS map portal (from the Dhaka probe); sells official mouza maps."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "mouza list incl. Savar Dhamsona"
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSheetJsonBySurvey",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "parcelRecordCount": 108,
+      "assessment": "108 closed Polygon plots, EPSG:4326, roughly 1 km from the Savar centre point; verified"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Bangladesh DLRS survey sheets; only one Savar mouza sheet verified",
+    "verifiedOpenScope": "one mouza sheet (108 plots) in Savar upazila",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Only a single mouza sheet in the listing for Savar upazila; broader Savar coverage unproven. Reuse terms unestablished; attributes are plot numbers only (no owner data).",
+  "nextStep": "Check usage rights; test additional Savar mouzas and sheets."
+}

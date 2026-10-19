@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:105",
+  "queueRank": 105,
+  "name": "Belo Horizonte",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "centerLatLon": [
+    -19.9006209955912,
+    -43.9916716948718
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://dados.pbh.gov.br/",
+      "observation": "Prefeitura de Belo Horizonte open-data portal; expected to host the municipal lot layer (BHMap / IDE-BHGeo) but not readable from this client."
+    },
+    {
+      "url": "https://bhmap.pbh.gov.br/",
+      "observation": "Municipal BHMap viewer; blocked from this client."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://dados.pbh.gov.br/api/3/action/package_search?q=lote&rows=8",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "'Acesso Bloqueado' WAF page, not data; retryable from another network"
+    },
+    {
+      "url": "https://dados.pbh.gov.br/dataset/lote",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "same block page"
+    },
+    {
+      "url": "https://bhmap.pbh.gov.br/v2/api/idebhgeo/lote?f=json",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "same block page"
+    },
+    {
+      "url": "https://bhmap.pbh.gov.br/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "same block page"
+    },
+    {
+      "url": "https://ide.pbh.gov.br/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response (connection failed)"
+    },
+    {
+      "url": "https://dados.pbh.gov.br/api/3/action/package_list",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no response on retry"
+    },
+    {
+      "url": "https://opendata.arcgis.com/api/v3/search?q=lotes%20belo%20horizonte",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "no municipal lot layer among results"
+    },
+    {
+      "url": "https://prefeitura.pbh.gov.br/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "municipal homepage only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Belo Horizonte municipality (unverified)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All PBH data hosts returned a WAF/geo block or no response from this client, so absence of an open endpoint is NOT established. Endpoint names and layer are unverified guesses.",
+  "nextStep": "Retry from a Brazilian/unblocked network: dados.pbh.gov.br CKAN, then the BHMap/IDE-BHGeo WFS lote layer with a tiny bbox."
+}

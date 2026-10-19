@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6847",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:09:41Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-6847-auchi.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/auchi-service-review.json"
+  ],
+  "review": "WUP 2025 compressed source hash and row agree with queue and packet: Auchi, Nigeria, rank 2789, city code 6847, point [7.07120004321117,6.27664577839439], 212634 persons. EdoGIS state custody and Auchi context are recorded, but no public native-ID parcel geometry response or sample exists. The second recorded query is in English with Etsako place terms; a distinct local-language search is not evidenced. TLS failure and HTTP 403 are access limits, not absence. Fresh exact-ID reads, forced pagination, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are not evidenced. Hold from admission."
+}

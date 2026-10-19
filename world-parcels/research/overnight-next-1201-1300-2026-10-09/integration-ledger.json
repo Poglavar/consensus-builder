@@ -1,0 +1,1711 @@
+{
+  "schemaVersion": 1,
+  "kind": "population_ranked_followon_integration_ledger",
+  "cohort": "overnight-next-1201-1300",
+  "status": "active",
+  "createdAt": "2026-10-09T09:28:34.916149+00:00",
+  "updatedAt": "2026-10-09T09:28:34.916149+00:00",
+  "sourceRoster": "ranked-population.json",
+  "sourceSha256": "3bfad4448253fa7dc9d049e4849601b990ba45bd19611da6de139b7730ad0dbd",
+  "sourceHashBasis": "immutable ranked-population roster JSON",
+  "bulkSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "counts": {
+    "total": 100,
+    "priorAttemptSkipped": 3,
+    "pending": 97,
+    "rootReviewed": 0,
+    "integrated": 0,
+    "identityReviewHold": 0
+  },
+  "priorAttempts": [
+    {
+      "rank": 1212,
+      "cityCode": 7328,
+      "name": "Atlanta",
+      "country": "United States of America",
+      "iso2": "US",
+      "pop2025k": 458.225,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "reviewed-attempt-crosswalk",
+          "source": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json",
+          "evidenceFile": "world-parcels/research/us-capitals-2026-10-06/ga.json",
+          "distanceKm": 5.14,
+          "reason": "The earlier municipal Atlanta and Fulton County parcel investigation explicitly concerns the same city; a 5.14km population-weighted centroid difference does not make it a new city attempt. Both positive and unsuccessful prior investigations are excluded.",
+          "identityConfidence": "confirmed"
+        }
+      ],
+      "resolvedPriorMatches": [
+        {
+          "kind": "same-country-name-coordinate-candidate",
+          "evidenceFile": "research/us-capitals-2026-10-06/ga.json",
+          "cityId": "us-capital:GA",
+          "cityName": "Atlanta",
+          "parcelStatus": "verified_sample_capital_scope",
+          "checked": null,
+          "distanceKm": 5.14,
+          "identityConfidence": "probable-review-required",
+          "source": "registry"
+        },
+        {
+          "kind": "runtime-city-config-with-parcel-source",
+          "source": "frontend/js/city-config.js",
+          "cityId": "atlanta",
+          "label": "Atlanta, United States",
+          "identityConfidence": "review-required"
+        }
+      ],
+      "identityDecision": {
+        "wupCityCode": 7328,
+        "rank": 1212,
+        "countryCode": "US",
+        "name": "Atlanta",
+        "decision": "confirmed_attempt",
+        "effectiveAttemptState": "attempted",
+        "candidatePointLatLon": [
+          33.790562284868,
+          -84.3637780537448
+        ],
+        "priorCityId": "us-capital:GA",
+        "priorPointLatLon": [
+          33.749,
+          -84.388
+        ],
+        "distanceKm": 5.14,
+        "reason": "The earlier municipal Atlanta and Fulton County parcel investigation explicitly concerns the same city; a 5.14km population-weighted centroid difference does not make it a new city attempt. Both positive and unsuccessful prior investigations are excluded.",
+        "evidence": [
+          {
+            "path": "world-parcels/research/us-capitals-2026-10-06/ga.json",
+            "observation": "Prior city-specific Atlanta investigation returned public native ParcelID polygons and an exact native-ID readback on2026-10-06."
+          },
+          {
+            "path": "frontend/js/city-config.js",
+            "observation": "Existing Atlanta runtime entry uses the qualified city parcel source; configuration alone was not used as attempt evidence."
+          }
+        ],
+        "source": "world-parcels/research/overnight-next-1201-1300-2026-10-09/root-identity-decision-overlay.json",
+        "evidenceFile": "world-parcels/research/us-capitals-2026-10-06/ga.json"
+      }
+    },
+    {
+      "rank": 1244,
+      "cityCode": 5724,
+      "name": "Kolwezi",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "pop2025k": 446.709,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-5724.json",
+          "cityId": "wup2025:5724",
+          "cityName": "Kolwezi",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-5724.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1269,
+      "cityCode": 91,
+      "name": "Tallinn",
+      "country": "Estonia",
+      "iso2": "EE",
+      "pop2025k": 439.526,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+          "cityId": "wup2025:91",
+          "cityName": "Tallinn",
+          "parcelStatus": "verified_sample_partial_coverage",
+          "checked": true,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/country-integration-audit-2026-10-09/Tallinn-runtime-qualification.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/country-integration-audit-2026-10-09/tallinn-root-acceptance.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "cities": [
+    {
+      "cityCode": 9127,
+      "rank": 1201,
+      "name": "Haldwani",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        29.2175763639524,
+        79.51183207031
+      ],
+      "population2025Persons": 463530,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5646,
+      "rank": 1202,
+      "name": "West Valley City",
+      "country": "United States of America",
+      "iso2": "US",
+      "pointLatLon": [
+        40.6516355964175,
+        -111.987511764721
+      ],
+      "population2025Persons": 463325,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10624,
+      "rank": 1203,
+      "name": "Yuhu",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        27.8946741429977,
+        112.9032256862
+      ],
+      "population2025Persons": 462605,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 11162,
+      "rank": 1204,
+      "name": "Yanji",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        42.9065559396498,
+        129.512043765091
+      ],
+      "population2025Persons": 461800,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 3354,
+      "rank": 1205,
+      "name": "Morogoro",
+      "country": "United Republic of Tanzania",
+      "iso2": "TZ",
+      "pointLatLon": [
+        -6.80674697191197,
+        37.6579635980033
+      ],
+      "population2025Persons": 461634,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 12121,
+      "rank": 1206,
+      "name": "Zhanghua City",
+      "country": "China, Taiwan Province of China",
+      "iso2": "TW",
+      "pointLatLon": [
+        24.0755359501311,
+        120.515005910844
+      ],
+      "population2025Persons": 461552,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 860,
+      "rank": 1207,
+      "name": "Kismayo",
+      "country": "Somalia",
+      "iso2": "SO",
+      "pointLatLon": [
+        -0.353744276075123,
+        42.5428176867481
+      ],
+      "population2025Persons": 461302,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 11495,
+      "rank": 1208,
+      "name": "Purnia",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.7783442725468,
+        87.4877907323288
+      ],
+      "population2025Persons": 461043,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10193,
+      "rank": 1209,
+      "name": "Nagercoil",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        8.17640257083294,
+        77.4260297031687
+      ],
+      "population2025Persons": 460826,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2212,
+      "rank": 1210,
+      "name": "Kota Bharu",
+      "country": "Malaysia",
+      "iso2": "MY",
+      "pointLatLon": [
+        6.11825961704686,
+        102.262854032837
+      ],
+      "population2025Persons": 460445,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5734,
+      "rank": 1211,
+      "name": "Elenga",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pointLatLon": [
+        24.3419223748049,
+        89.9872724245112
+      ],
+      "population2025Persons": 459645,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7715,
+      "rank": 1213,
+      "name": "Jhelum",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "pointLatLon": [
+        32.9467303931881,
+        73.7184666343392
+      ],
+      "population2025Persons": 457793,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6894,
+      "rank": 1214,
+      "name": "Al Abbasa al Sharqiya",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pointLatLon": [
+        30.5708595246245,
+        31.6943125351129
+      ],
+      "population2025Persons": 457678,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6811,
+      "rank": 1215,
+      "name": "Barishal",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pointLatLon": [
+        22.6994140071446,
+        90.3591689216315
+      ],
+      "population2025Persons": 457323,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10722,
+      "rank": 1216,
+      "name": "Jiaozhou",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        36.2925260574482,
+        120.028600652066
+      ],
+      "population2025Persons": 457288,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6730,
+      "rank": 1217,
+      "name": "Batman",
+      "country": "Türkiye",
+      "iso2": "TR",
+      "pointLatLon": [
+        37.8895886235356,
+        41.1305601682502
+      ],
+      "population2025Persons": 456902,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 11339,
+      "rank": 1218,
+      "name": "Saharsa",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.8750955951988,
+        86.5896244596482
+      ],
+      "population2025Persons": 456879,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4530,
+      "rank": 1219,
+      "name": "Irapuato",
+      "country": "Mexico",
+      "iso2": "MX",
+      "pointLatLon": [
+        20.6729572371031,
+        -101.356085008183
+      ],
+      "population2025Persons": 456628,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5555,
+      "rank": 1220,
+      "name": "Cheboksary",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        56.1183130669807,
+        47.2546672928967
+      ],
+      "population2025Persons": 456304,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 11601,
+      "rank": 1221,
+      "name": "Raiganj",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.6229296944296,
+        88.137637673296
+      ],
+      "population2025Persons": 456239,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7835,
+      "rank": 1222,
+      "name": "Vladivostok",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        43.1274390055063,
+        131.920391588581
+      ],
+      "population2025Persons": 455141,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7901,
+      "rank": 1223,
+      "name": "Hafizabad",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "pointLatLon": [
+        32.0705864531695,
+        73.6889825364113
+      ],
+      "population2025Persons": 454903,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7370,
+      "rank": 1224,
+      "name": "Butembo",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "pointLatLon": [
+        0.116532088870001,
+        29.2956748029224
+      ],
+      "population2025Persons": 454857,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6839,
+      "rank": 1225,
+      "name": "Sadiqabad",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "pointLatLon": [
+        28.3029997816214,
+        70.1214652699818
+      ],
+      "population2025Persons": 454465,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 632,
+      "rank": 1226,
+      "name": "Surrey",
+      "country": "Canada",
+      "iso2": "CA",
+      "pointLatLon": [
+        49.1578411996007,
+        -122.842214202135
+      ],
+      "population2025Persons": 454230,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 1152,
+      "rank": 1227,
+      "name": "Nantes",
+      "country": "France",
+      "iso2": "FR",
+      "pointLatLon": [
+        47.2226716545731,
+        -1.55741025412737
+      ],
+      "population2025Persons": 453523,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 966,
+      "rank": 1228,
+      "name": "Chimoio",
+      "country": "Mozambique",
+      "iso2": "MZ",
+      "pointLatLon": [
+        -19.1171927912217,
+        33.479275523939
+      ],
+      "population2025Persons": 453521,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5072,
+      "rank": 1229,
+      "name": "Catania",
+      "country": "Italy",
+      "iso2": "IT",
+      "pointLatLon": [
+        37.527631735146,
+        15.0702397063375
+      ],
+      "population2025Persons": 453376,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6437,
+      "rank": 1230,
+      "name": "Shashamane",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "pointLatLon": [
+        7.19972406980754,
+        38.6017855741764
+      ],
+      "population2025Persons": 452945,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4458,
+      "rank": 1231,
+      "name": "Maturin",
+      "country": "Venezuela (Bolivarian Republic of)",
+      "iso2": "VE",
+      "pointLatLon": [
+        9.73302840745386,
+        -63.1841133113144
+      ],
+      "population2025Persons": 452835,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 8617,
+      "rank": 1232,
+      "name": "Jiangyang",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        28.9293929790689,
+        105.441729966685
+      ],
+      "population2025Persons": 452500,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5041,
+      "rank": 1233,
+      "name": "Polokwane",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "pointLatLon": [
+        -23.8681459171116,
+        29.4132145590407
+      ],
+      "population2025Persons": 451786,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6914,
+      "rank": 1234,
+      "name": "Haripur",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "pointLatLon": [
+        33.9992678950979,
+        72.9293728128631
+      ],
+      "population2025Persons": 451578,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4900,
+      "rank": 1235,
+      "name": "Ilesa",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pointLatLon": [
+        7.6279999985297,
+        4.7496374353995
+      ],
+      "population2025Persons": 450464,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10239,
+      "rank": 1236,
+      "name": "Basti",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        26.8009241721327,
+        82.7436691752189
+      ],
+      "population2025Persons": 450449,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 9283,
+      "rank": 1237,
+      "name": "Vijayapura",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        16.8304984756639,
+        75.7162603665653
+      ],
+      "population2025Persons": 450192,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 11542,
+      "rank": 1238,
+      "name": "Heyuan",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        23.707934644016,
+        114.682376540749
+      ],
+      "population2025Persons": 449860,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5505,
+      "rank": 1239,
+      "name": "Penza",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        53.194404977765,
+        44.9930989111174
+      ],
+      "population2025Persons": 449851,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2496,
+      "rank": 1240,
+      "name": "Ramadi",
+      "country": "Iraq",
+      "iso2": "IQ",
+      "pointLatLon": [
+        33.4266566041522,
+        43.2980396021696
+      ],
+      "population2025Persons": 449183,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 3447,
+      "rank": 1241,
+      "name": "Mannheim",
+      "country": "Germany",
+      "iso2": "DE",
+      "pointLatLon": [
+        49.485482134892,
+        8.47482558079509
+      ],
+      "population2025Persons": 448203,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 11895,
+      "rank": 1242,
+      "name": "Canning",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        22.3459469110544,
+        88.7375117722278
+      ],
+      "population2025Persons": 447522,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10184,
+      "rank": 1243,
+      "name": "Zoucheng",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        35.4003955374662,
+        116.950785835449
+      ],
+      "population2025Persons": 447484,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5239,
+      "rank": 1245,
+      "name": "Sirajganj",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pointLatLon": [
+        24.4428147841435,
+        89.6972650570864
+      ],
+      "population2025Persons": 446632,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 9383,
+      "rank": 1246,
+      "name": "Parbhani",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        19.2662427703109,
+        76.7764897917506
+      ],
+      "population2025Persons": 446508,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2513,
+      "rank": 1247,
+      "name": "Pematang Siantar",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "pointLatLon": [
+        2.9699913021302,
+        99.0743292415551
+      ],
+      "population2025Persons": 446269,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 3848,
+      "rank": 1248,
+      "name": "Ogbomosho",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pointLatLon": [
+        8.12637049117599,
+        4.23682772844258
+      ],
+      "population2025Persons": 445090,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 9176,
+      "rank": 1249,
+      "name": "Chengde",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        40.962009217654,
+        117.922629548203
+      ],
+      "population2025Persons": 444971,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6299,
+      "rank": 1250,
+      "name": "Hawassa",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "pointLatLon": [
+        7.047341148246,
+        38.488014071846
+      ],
+      "population2025Persons": 444909,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5758,
+      "rank": 1251,
+      "name": "Tangail",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pointLatLon": [
+        24.2510956079166,
+        89.9161176970175
+      ],
+      "population2025Persons": 444219,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 9596,
+      "rank": 1252,
+      "name": "Chaoyang",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        41.5935195114786,
+        120.436963716254
+      ],
+      "population2025Persons": 443864,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 3342,
+      "rank": 1253,
+      "name": "Bologna",
+      "country": "Italy",
+      "iso2": "IT",
+      "pointLatLon": [
+        44.4942527646909,
+        11.3383469340327
+      ],
+      "population2025Persons": 443849,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2945,
+      "rank": 1254,
+      "name": "Abéché",
+      "country": "Chad",
+      "iso2": "TD",
+      "pointLatLon": [
+        13.825454472527,
+        20.8296055719745
+      ],
+      "population2025Persons": 443793,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10581,
+      "rank": 1255,
+      "name": "Thanjavur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        10.7714485846302,
+        79.1313196204464
+      ],
+      "population2025Persons": 443736,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7744,
+      "rank": 1256,
+      "name": "Irkutsk",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        52.2725093828849,
+        104.300484423056
+      ],
+      "population2025Persons": 442807,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 6672,
+      "rank": 1257,
+      "name": "Bishoftu",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "pointLatLon": [
+        8.75862197493687,
+        38.9583814728029
+      ],
+      "population2025Persons": 442776,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 9767,
+      "rank": 1258,
+      "name": "Nizamabad",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        18.6760713100723,
+        78.0987992055297
+      ],
+      "population2025Persons": 442690,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4457,
+      "rank": 1259,
+      "name": "Santa Marta",
+      "country": "Colombia",
+      "iso2": "CO",
+      "pointLatLon": [
+        11.2345904677867,
+        -74.1864107381004
+      ],
+      "population2025Persons": 442455,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7613,
+      "rank": 1260,
+      "name": "Blitar",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "pointLatLon": [
+        -8.10100602100698,
+        112.181443093969
+      ],
+      "population2025Persons": 442219,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 9903,
+      "rank": 1261,
+      "name": "Anantapur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        14.6733011278587,
+        77.5918898198689
+      ],
+      "population2025Persons": 442201,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 220,
+      "rank": 1262,
+      "name": "Belfast",
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "pointLatLon": [
+        54.602197727664,
+        -5.93500686517269
+      ],
+      "population2025Persons": 441925,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5807,
+      "rank": 1263,
+      "name": "Toyohashi",
+      "country": "Japan",
+      "iso2": "JP",
+      "pointLatLon": [
+        34.7670614726782,
+        137.389808743258
+      ],
+      "population2025Persons": 441665,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4544,
+      "rank": 1264,
+      "name": "Chief Albert Luthuli Park",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "pointLatLon": [
+        -26.1276446337782,
+        28.442109859765
+      ],
+      "population2025Persons": 441204,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10924,
+      "rank": 1265,
+      "name": "Zhanjiang",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        21.2775461499627,
+        110.351604648056
+      ],
+      "population2025Persons": 440587,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2731,
+      "rank": 1266,
+      "name": "Manizales",
+      "country": "Colombia",
+      "iso2": "CO",
+      "pointLatLon": [
+        5.05763763232812,
+        -75.4975616323303
+      ],
+      "population2025Persons": 440407,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 3236,
+      "rank": 1267,
+      "name": "Gemena",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "pointLatLon": [
+        3.24829752121518,
+        19.7791382484463
+      ],
+      "population2025Persons": 440327,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7163,
+      "rank": 1268,
+      "name": "Maragha",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pointLatLon": [
+        26.6934115499495,
+        31.5436594623774
+      ],
+      "population2025Persons": 440011,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10261,
+      "rank": 1270,
+      "name": "Dindigul",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        10.3645102514528,
+        77.9787829314499
+      ],
+      "population2025Persons": 438809,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2832,
+      "rank": 1271,
+      "name": "Quelimane",
+      "country": "Mozambique",
+      "iso2": "MZ",
+      "pointLatLon": [
+        -17.8603350032055,
+        36.9022475404492
+      ],
+      "population2025Persons": 438554,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 499,
+      "rank": 1272,
+      "name": "Buenaventura",
+      "country": "Colombia",
+      "iso2": "CO",
+      "pointLatLon": [
+        3.87751185998404,
+        -77.019907696878
+      ],
+      "population2025Persons": 438063,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4993,
+      "rank": 1273,
+      "name": "Tây Ninh",
+      "country": "Viet Nam",
+      "iso2": "VN",
+      "pointLatLon": [
+        11.298163025558,
+        106.11326622941
+      ],
+      "population2025Persons": 437816,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2959,
+      "rank": 1274,
+      "name": "Ardabil",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "pointLatLon": [
+        38.245604918789,
+        48.2877089979808
+      ],
+      "population2025Persons": 437757,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 3739,
+      "rank": 1275,
+      "name": "Matsuyama",
+      "country": "Japan",
+      "iso2": "JP",
+      "pointLatLon": [
+        33.8263081285138,
+        132.766078613925
+      ],
+      "population2025Persons": 437355,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 8762,
+      "rank": 1276,
+      "name": "Titi",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pointLatLon": [
+        10.3076082095501,
+        11.2454887349368
+      ],
+      "population2025Persons": 436744,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 60,
+      "rank": 1277,
+      "name": "Geneva",
+      "country": "Switzerland",
+      "iso2": "CH",
+      "pointLatLon": [
+        46.2017520971079,
+        6.13622539632436
+      ],
+      "population2025Persons": 436587,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 86,
+      "rank": 1278,
+      "name": "Kaliningrad",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        54.7148268101403,
+        20.5072107472647
+      ],
+      "population2025Persons": 436555,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10743,
+      "rank": 1279,
+      "name": "Cuddalore",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        11.754857981796,
+        79.7597932867723
+      ],
+      "population2025Persons": 436495,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 12131,
+      "rank": 1280,
+      "name": "Chiayi",
+      "country": "China, Taiwan Province of China",
+      "iso2": "TW",
+      "pointLatLon": [
+        23.4788024733936,
+        120.452751544633
+      ],
+      "population2025Persons": 436393,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 8399,
+      "rank": 1281,
+      "name": "Oron",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pointLatLon": [
+        4.81068197745614,
+        8.23916597186041
+      ],
+      "population2025Persons": 436247,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 8685,
+      "rank": 1282,
+      "name": "Guang'an",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        30.4783655855194,
+        106.622789621089
+      ],
+      "population2025Persons": 436199,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4669,
+      "rank": 1283,
+      "name": "Pabna",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pointLatLon": [
+        24.0069361559384,
+        89.2376788585173
+      ],
+      "population2025Persons": 436119,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 8039,
+      "rank": 1284,
+      "name": "Sterling Heights",
+      "country": "United States of America",
+      "iso2": "US",
+      "pointLatLon": [
+        42.4672562666258,
+        -82.953282452946
+      ],
+      "population2025Persons": 435980,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 8987,
+      "rank": 1285,
+      "name": "Sambhal",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        28.5763003175642,
+        78.5685801713154
+      ],
+      "population2025Persons": 435760,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10978,
+      "rank": 1286,
+      "name": "Gaozhou",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        21.917830542753,
+        110.854435638004
+      ],
+      "population2025Persons": 435368,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2134,
+      "rank": 1287,
+      "name": "Seremban",
+      "country": "Malaysia",
+      "iso2": "MY",
+      "pointLatLon": [
+        2.70605282873579,
+        101.958045373885
+      ],
+      "population2025Persons": 434530,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 7815,
+      "rank": 1288,
+      "name": "Bhilwara",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.3436339514634,
+        74.6310689921485
+      ],
+      "population2025Persons": 434406,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 8133,
+      "rank": 1289,
+      "name": "Daska",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "pointLatLon": [
+        32.3328401257637,
+        74.3546794942495
+      ],
+      "population2025Persons": 433772,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10466,
+      "rank": 1290,
+      "name": "市中区",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        34.862914136582,
+        117.543919330528
+      ],
+      "population2025Persons": 433213,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2478,
+      "rank": 1291,
+      "name": "Mbandaka",
+      "country": "Democratic Republic of the Congo",
+      "iso2": "CD",
+      "pointLatLon": [
+        0.0412837424003591,
+        18.2629942789072
+      ],
+      "population2025Persons": 432976,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 2668,
+      "rank": 1292,
+      "name": "Hamilton",
+      "country": "Canada",
+      "iso2": "CA",
+      "pointLatLon": [
+        43.2335378918963,
+        -79.8541587136975
+      ],
+      "population2025Persons": 432788,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 9004,
+      "rank": 1293,
+      "name": "Huiminxiang",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        29.6215990570234,
+        107.202257668659
+      ],
+      "population2025Persons": 432064,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10187,
+      "rank": 1294,
+      "name": "Jhusi",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.4250788331479,
+        81.9580751860907
+      ],
+      "population2025Persons": 431880,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 5785,
+      "rank": 1295,
+      "name": "Takasaki [Maebashi]",
+      "country": "Japan",
+      "iso2": "JP",
+      "pointLatLon": [
+        36.3622938663979,
+        139.038838162225
+      ],
+      "population2025Persons": 431687,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 10553,
+      "rank": 1296,
+      "name": "Padrauna",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        26.8970542583885,
+        84.0080908667882
+      ],
+      "population2025Persons": 431649,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 4660,
+      "rank": 1297,
+      "name": "Kosti",
+      "country": "Sudan",
+      "iso2": "SD",
+      "pointLatLon": [
+        13.1515018530256,
+        32.6570937878657
+      ],
+      "population2025Persons": 431504,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 3287,
+      "rank": 1298,
+      "name": "Florence",
+      "country": "Italy",
+      "iso2": "IT",
+      "pointLatLon": [
+        43.7814801703684,
+        11.2283419834417
+      ],
+      "population2025Persons": 430806,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 1084,
+      "rank": 1299,
+      "name": "Kisumu",
+      "country": "Kenya",
+      "iso2": "KE",
+      "pointLatLon": [
+        -0.0912140573810018,
+        34.7712992043041
+      ],
+      "population2025Persons": 430532,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    },
+    {
+      "cityCode": 11529,
+      "rank": 1300,
+      "name": "Katihar",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.5448308206641,
+        87.5669238686115
+      ],
+      "population2025Persons": 430470,
+      "status": "pending",
+      "researchFile": null,
+      "rootReviewedAt": null,
+      "integratedAt": null
+    }
+  ],
+  "purpose": "Only explicit root-reviewed evidence can be integrated. Queue entries themselves do not count as research attempts."
+}

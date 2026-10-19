@@ -1,0 +1,75 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "XK",
+ "country": "Kosovo (under UNSC res. 1244)",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Kosovo Cadastral Agency (AKK) - cadastre and State Geoportal (geoportal.rks-gov.net)",
+ "portalsFound": [
+  {
+   "url": "https://geoportal.rks-gov.net/",
+   "observation": "Angular SPA 'Kosovo Geoportal' loads (200); official state geoportal run by AKK."
+  },
+  {
+   "url": "https://akk.rks-gov.net/en/produkte",
+   "observation": "AKK products page loads."
+  },
+  {
+   "url": "https://kcaportal.rks-gov.net/",
+   "observation": "Connection failed (000)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoportal.rks-gov.net/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "SPA"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "SPA fallback, no ArcGIS at that path"
+  },
+  {
+   "url": "https://geoportal.rks-gov.net/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "SPA fallback"
+  },
+  {
+   "url": "https://akk.rks-gov.net/en/produkte",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "product page"
+  },
+  {
+   "url": "https://kcaportal.rks-gov.net/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable"
+  },
+  {
+   "url": "https://gis.kca.rks-gov.net/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable (guessed)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Cadastral parcels for Kosovo via geoportal viewer/services (per search); not verified",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Geoportal is a JS SPA; underlying WMS/WFS endpoints not identified (guessed paths return SPA). The 'address register web services' page exists and a parcel service may be documented there.",
+ "nextStep": "Read geoportal web-services pages in a browser session and find WMS/WFS parcel URLs."
+}

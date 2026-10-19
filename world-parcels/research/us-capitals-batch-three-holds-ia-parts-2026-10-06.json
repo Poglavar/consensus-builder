@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "des-moines",
+      "stateCode": "IA",
+      "sourceId": "us-ia-des-moines-parcels",
+      "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.5825,
+            -93.625,
+            41.585
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.625,
+            41.5825,
+            -93.6225,
+            41.585
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6225,
+            41.5825,
+            -93.62,
+            41.585
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.585,
+            -93.625,
+            41.5875
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.625,
+            41.585,
+            -93.6225,
+            41.5875
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6225,
+            41.585,
+            -93.62,
+            41.5875
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.5875,
+            -93.625,
+            41.59
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.625,
+            41.5875,
+            -93.6225,
+            41.59
+          ],
+          "count": 48,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6225,
+            41.5875,
+            -93.62,
+            41.59
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.62,
+            41.5825,
+            -93.6175,
+            41.585
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6175,
+            41.5825,
+            -93.615,
+            41.585
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.615,
+            41.5825,
+            -93.6125,
+            41.585
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.62,
+            41.585,
+            -93.6175,
+            41.5875
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6175,
+            41.585,
+            -93.615,
+            41.5875
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.615,
+            41.585,
+            -93.6125,
+            41.5875
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.62,
+            41.5875,
+            -93.6175,
+            41.59
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6175,
+            41.5875,
+            -93.615,
+            41.59
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.615,
+            41.5875,
+            -93.6125,
+            41.59
+          ],
+          "count": 39,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -93.6175,
+          41.585,
+          -93.615,
+          41.5875
+        ],
+        "forcedPageSize": 3,
+        "count": 15,
+        "returned": 15,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 441,
+      "exactResolved": 441,
+      "nativeIds": [
+        "77-02001125002000",
+        "77-02001124001000",
+        "77-02002700005000"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ia-des-moines-parcels",
+        "parcels": 1,
+        "siteM2": 3117.11
+      },
+      "requests": 156,
+      "proposedDescriptor": {
+        "id": "us-ia-des-moines-parcels",
+        "name": "University of Iowa public mirror of Iowa statewide parcels, 2017",
+        "operator": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror",
+        "stateCode": "IA",
+        "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+        "idField": "STATEPARID",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "US-IA-",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "STATEPARID",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "STATEPARID",
+        "metricSrid": 32615,
+        "pageSize": 500,
+        "maxBboxKm2": 25,
+        "maxFeatures": 10000,
+        "adapter": "arcgis",
+        "countryCode": "US",
+        "cityIds": [
+          "des-moines"
+        ],
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "scope": "Iowa statewide assessment parcel snapshot last updated at most 2 November 2017; includes Des Moines, Polk County. STATEPARID is source county-qualified parcel code; all rows in its complete source group form the native parcel geometry.",
+        "caveats": "Historical 2017 snapshot supplied as-is; not current assessment data or a legal survey. Same STATEPARID groups also share source UNPARCELID and PARCELNUMB.",
+        "catalogueUrl": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+        "nativeGeometryMode": "parts",
+        "partsCoordinatePrecision": 9,
+        "maxConcurrent": 2
+      },
+      "identityDiagnosis": "Complete STATEPARID groups independently verified share source UNPARCELID/PARCELNUMB; distinct geometries disjoint, exact duplicates present; all native group source rows retained, no invented composites or current-ground filters."
+    }
+  ]
+}

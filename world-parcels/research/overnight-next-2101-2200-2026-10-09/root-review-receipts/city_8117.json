@@ -1,0 +1,23 @@
+{
+  "taskId": "city:8117",
+  "decision": "held",
+  "checkedAt": "2026-10-11T00:42:18Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-8117-vit-ria-da-conquista.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/vit-ria-da-conquista-service-review.json"
+  ],
+  "registryFound": true,
+  "reason": "The packet matches immutable WUP code 8117, rank 2172, Brazil, point [-14.8594682444513, -40.8494232857503], and 268375 persons. English and Portuguese executed searches are recorded. The municipal cadastral custodian and public cadastro.lote layer are supported by the paired evidence; a fresh first-party metadata response confirms Polygon geometry, layer bounds, and id described as the table's unique identifier. The cited PBF is tile-local and may clip polygons; no full source polygon sample was retained. The exact-point miss does not show citywide absence. No independently qualified adapter proves fresh full native-ID reads, forced paging, thirteen bounded cells, metric GEOS validity and overlap, source binding, or headed Details verification. Runtime admission is held.",
+  "freshFirstPartyCheck": {
+    "url": "https://tiles-vitoriadaconquista.geo360.com.br/cadastro.lote.json",
+    "httpStatus": 200,
+    "geometryType": "Polygon",
+    "nativeIdField": "id",
+    "nativeIdDescription": "Identificador único da tabela",
+    "bounds": [-40.984474182128906, -15.041089057922363, -40.6158447265625, -14.702041625976562]
+  },
+  "retainedFullPolygonCount": 0
+}

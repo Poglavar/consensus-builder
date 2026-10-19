@@ -1,0 +1,39 @@
+{
+  "cityRecord": "city-8316-rewari.json",
+  "cityCode": 8316,
+  "queueRank": 2683,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "conclusion": "Official Rewari district land-record procedure and Haryana cadastral-system custodians were evidenced, but all reachable parcel systems were either unavailable by timeout or behind an authentication wall. No anonymous Rewari parcel geometry or stable native parcel identity was verified. Runtime readiness is held.",
+  "attemptedRoutes": [
+    {"route": "English first-party discovery", "outcome": "Found District Rewari land-record page, Haryana Revenue/Web-HALRIS material, HARSAC EODB cadastral system and official Bhu-Naksha status."},
+    {"route": "Hindi first-party discovery", "outcome": "Found the Hindi District Rewari land-record page and Hindi district context; no separate anonymous parcel endpoint."},
+    {"route": "Jamabandi HTTP", "outcome": "Connection timeout after 20 seconds."},
+    {"route": "Jamabandi HTTPS", "outcome": "Connection timeout after 20 seconds."},
+    {"route": "HARSAC EODB current page", "outcome": "HTTP 200 content observed, but public mobile-OTP/security-check login wall; login not attempted."},
+    {"route": "National Bhu-Naksha current page", "outcome": "HTTP 200 content observed, but authorized-official login wall; login not attempted."}
+  ],
+  "scopeLimits": [
+    "The official District Rewari page evidences a local land-record procedure, not an open parcel API or citywide geometry coverage.",
+    "Timeouts and login walls were recorded as access failures, not as evidence of absence.",
+    "No exact-point parcel hit or map-extent survey was performed because no anonymous feature endpoint was available.",
+    "No parcel sample is retained and no source-specific attributes were retained."
+  ],
+  "safeFieldAllowlist": ["id", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "document details"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sourceAssessment": {
+    "localRegistryCustodian": "District Rewari Revenue / Haryana Revenue Department land-record procedure",
+    "generalAgencyEvidence": ["Haryana Revenue Department / Web-HALRIS", "HARSAC", "NIC Bhu-Naksha"],
+    "verifiedForRewariParcelGeometry": false,
+    "reason": "Local procedure is evidenced, but no anonymous Rewari parcel response was obtained."
+  },
+  "uncertainty": [
+    "Rewari coverage may be available only after OTP/authorized access or through an unindexed state configuration.",
+    "The failed portal requests do not distinguish service outage, network filtering, authentication requirement or separate village-level coverage.",
+    "The WUP city point is a population reference point and was not used to force a parcel lookup."
+  ],
+  "runtimeReadiness": "held",
+  "completionSummary": {"parcelSourceVerified": false, "geometrySampleRetained": 0, "unsafeFieldsRequested": false, "tlsExceptions": 0}
+}

@@ -1,0 +1,712 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Complete runtime acceptance with aggregates only; individual attempts and failures remain in their original files.",
+  "sources": [
+    {
+      "city": "Frankfort",
+      "stateCode": "KY",
+      "sourceId": "us-ky-frankfort-parcels",
+      "endpoint": "https://wfs.schneidercorp.com/arcgis/rest/services/FranklinCountyKY_WFS/MapServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.197500000000005,
+            -84.875,
+            38.2
+          ],
+          "count": 92,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.875,
+            38.197500000000005,
+            -84.8725,
+            38.2
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8725,
+            38.197500000000005,
+            -84.87,
+            38.2
+          ],
+          "count": 55,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.2,
+            -84.875,
+            38.2025
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.875,
+            38.2,
+            -84.8725,
+            38.2025
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8725,
+            38.2,
+            -84.87,
+            38.2025
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8775,
+            38.2025,
+            -84.875,
+            38.205000000000005
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.875,
+            38.2025,
+            -84.8725,
+            38.205000000000005
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8725,
+            38.2025,
+            -84.87,
+            38.205000000000005
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.87,
+            38.197500000000005,
+            -84.8675,
+            38.2
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8675,
+            38.197500000000005,
+            -84.865,
+            38.2
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.865,
+            38.197500000000005,
+            -84.8625,
+            38.2
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.87,
+            38.2,
+            -84.8675,
+            38.2025
+          ],
+          "count": 77,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8675,
+            38.2,
+            -84.865,
+            38.2025
+          ],
+          "count": 64,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.865,
+            38.2,
+            -84.8625,
+            38.2025
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.87,
+            38.2025,
+            -84.8675,
+            38.205000000000005
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.8675,
+            38.2025,
+            -84.865,
+            38.205000000000005
+          ],
+          "count": 94,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.865,
+            38.2025,
+            -84.8625,
+            38.205000000000005
+          ],
+          "count": 106,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -84.8725,
+          38.2025,
+          -84.87,
+          38.205000000000005
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 654,
+      "exactResolved": 654,
+      "nativeIds": [
+        "061-24-14-017.02~17.02",
+        "061-24-14-017.01~17.01",
+        "061-24-14-018.00~18"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ky-frankfort-parcels",
+        "parcels": 1,
+        "siteM2": 1383.22
+      },
+      "requests": 166
+    },
+    {
+      "city": "Oklahoma City",
+      "stateCode": "OK",
+      "sourceId": "us-ok-oklahoma_city-parcels",
+      "endpoint": "https://services8.arcgis.com/euhkr1dAJeQBIjV0/arcgis/rest/services/TaxParcelsPublics_view/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.465,
+            -97.5175,
+            35.4675
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.465,
+            -97.515,
+            35.4675
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.465,
+            -97.5125,
+            35.4675
+          ],
+          "count": 6,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.4675,
+            -97.5175,
+            35.47
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.4675,
+            -97.515,
+            35.47
+          ],
+          "count": 96,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.4675,
+            -97.5125,
+            35.47
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.52,
+            35.47,
+            -97.5175,
+            35.472500000000004
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5175,
+            35.47,
+            -97.515,
+            35.472500000000004
+          ],
+          "count": 42,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.515,
+            35.47,
+            -97.5125,
+            35.472500000000004
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.465,
+            -97.51,
+            35.4675
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.465,
+            -97.5075,
+            35.4675
+          ],
+          "count": 36,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.465,
+            -97.505,
+            35.4675
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.4675,
+            -97.51,
+            35.47
+          ],
+          "count": 101,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.4675,
+            -97.5075,
+            35.47
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.4675,
+            -97.505,
+            35.47
+          ],
+          "count": 82,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5125,
+            35.47,
+            -97.51,
+            35.472500000000004
+          ],
+          "count": 146,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.51,
+            35.47,
+            -97.5075,
+            35.472500000000004
+          ],
+          "count": 75,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -97.5075,
+            35.47,
+            -97.505,
+            35.472500000000004
+          ],
+          "count": 81,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -97.515,
+          35.465,
+          -97.5125,
+          35.4675
+        ],
+        "forcedPageSize": 3,
+        "count": 7,
+        "returned": 6,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 610,
+      "exactResolved": 610,
+      "nativeIds": [
+        "R010017936",
+        "R010018008",
+        "R010014360"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ok-oklahoma_city-parcels",
+        "parcels": 1,
+        "siteM2": 6984.43
+      },
+      "requests": 173
+    },
+    {
+      "city": "Pierre",
+      "stateCode": "SD",
+      "sourceId": "us-sd-pierre-parcels",
+      "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.355,
+            44.365,
+            -100.3525,
+            44.3675
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3525,
+            44.365,
+            -100.35000000000001,
+            44.3675
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.35000000000001,
+            44.365,
+            -100.34750000000001,
+            44.3675
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.355,
+            44.3675,
+            -100.3525,
+            44.37
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3525,
+            44.3675,
+            -100.35000000000001,
+            44.37
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.35000000000001,
+            44.3675,
+            -100.34750000000001,
+            44.37
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.355,
+            44.37,
+            -100.3525,
+            44.3725
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3525,
+            44.37,
+            -100.35000000000001,
+            44.3725
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.35000000000001,
+            44.37,
+            -100.34750000000001,
+            44.3725
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34750000000001,
+            44.365,
+            -100.34500000000001,
+            44.3675
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34500000000001,
+            44.365,
+            -100.3425,
+            44.3675
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3425,
+            44.365,
+            -100.34,
+            44.3675
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34750000000001,
+            44.3675,
+            -100.34500000000001,
+            44.37
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34500000000001,
+            44.3675,
+            -100.3425,
+            44.37
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3425,
+            44.3675,
+            -100.34,
+            44.37
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34750000000001,
+            44.37,
+            -100.34500000000001,
+            44.3725
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.34500000000001,
+            44.37,
+            -100.3425,
+            44.3725
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -100.3425,
+            44.37,
+            -100.34,
+            44.3725
+          ],
+          "count": 2,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -100.35000000000001,
+          44.365,
+          -100.34750000000001,
+          44.3675
+        ],
+        "forcedPageSize": 3,
+        "count": 9,
+        "returned": 8,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 349,
+      "exactResolved": 349,
+      "nativeIds": [
+        "6359",
+        "7879",
+        "6335"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-sd-pierre-parcels",
+        "parcels": 1,
+        "siteM2": 168.42
+      },
+      "requests": 149
+    }
+  ]
+}

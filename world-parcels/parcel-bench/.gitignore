@@ -1,0 +1,3 @@
+# Generated predictions, pooled scores and other run artefacts stay local; the ledger and manifests are tracked.
+output/
+__pycache__/

@@ -1,0 +1,93 @@
+{
+  "name": "Qingyuan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 763,
+  "point": [
+    23.7145266731375,
+    113.028229565554
+  ],
+  "population2025": 702881,
+  "population2025k": 702.881,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    23.7145266731375,
+    113.028229565554
+  ],
+  "adapterReady": false,
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Whether another official Qingyuan map service provides anonymous parcel polygons and whether any mapped coverage includes the WUP point remain unresolved. No runtime adapter checks were performed."
+  },
+  "scopeLimits": "This is a scoped source review only. It does not establish citywide or countrywide parcel completeness, title, survey accuracy, or runtime suitability.",
+  "registryFound": true,
+  "registryBasis": "The Qingyuan Municipal Real Estate Registration Center budget identifies the center as responsible for land/property registration, cadastral and ownership surveys, archives, and registration information services for Qingcheng and Qingxin districts. This is city-specific registry evidence, but it does not establish an anonymous parcel-vector endpoint or coverage at this WUP point.",
+  "registryEvidenceUrls": [
+    "https://www.gdqy.gov.cn/qygtzyj/attachment/0/172/172296/1989971.pdf"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "No city-specific anonymous parcel-vector service and safe feature schema were identified; no geometry query was made.",
+  "remainingUncertainty": "Whether another official Qingyuan map service provides anonymous parcel polygons and whether any mapped coverage includes the WUP point remain unresolved.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qingyuan official city real estate registration center cadastral parcel map GIS public query",
+        "scope": "Identify primary city-specific registry evidence and an anonymous safe parcel-geometry schema.",
+        "result": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://www.gdqy.gov.cn/qygtzyj/attachment/0/172/172296/1989971.pdf"
+        ],
+        "executionMethod": "Separate English-language search; inspect only official sources and service metadata. No owner/address/account fields requested."
+      },
+      {
+        "language": "Chinese",
+        "query": "清远市 不动产登记中心 地籍图 宗地图 GIS 查询 清城区 清新区 官方",
+        "scope": "Identify primary local-language city-specific registry/map evidence and verify safe public geometry access.",
+        "result": "Official city registration-center evidence confirms local registration and cadastral-survey functions, but no public safe feature schema or anonymous parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://www.gdqy.gov.cn/qygtzyj/attachment/0/172/172296/1989971.pdf"
+        ],
+        "executionMethod": "Separate local-language search; inspect only official sources. No personal property lookup or sensitive fields requested."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "CN-QINGYUAN-REGISTRATION-CENTER",
+    "name": "Qingyuan Municipal Real Estate Registration Center",
+    "url": "https://www.gdqy.gov.cn/qygtzyj/attachment/0/172/172296/1989971.pdf",
+    "operator": "Qingyuan Municipal Real Estate Registration Center",
+    "serviceType": "Official city real-estate registration and cadastral-survey institution; no public vector endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 11220,
+  "cityId": "wup2025:11220",
+  "queueRank": 763,
+  "rootPrimarySupplement": "Primary indexed 2025 budget text confirms the named city center and Qingcheng/Qingxin land/property registration duties; direct fetch returned 412. These are institutional duties, not parcel coverage.",
+  "rootPrimaryReadback": {
+    "url": "https://www.gdqy.gov.cn/qygtzyj/attachment/0/172/172296/1989971.pdf",
+    "fetch": "error",
+    "reason": "HTTP Error 412: Precondition Failed"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "sourceIds": []
+}

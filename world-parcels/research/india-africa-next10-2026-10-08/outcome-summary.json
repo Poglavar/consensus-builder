@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "kind": "india_africa_next10_outcome_summary",
+  "checkedAt": "2026-10-08",
+  "status": "local_acceptance_complete",
+  "next10research": "all10completed",
+  "scope": {
+    "cityCount": 10,
+    "indiaCount": 5,
+    "africaCount": 5,
+    "basis": "queue.json; each city assessed independently; shared route/metadata evidence is not target parcel verification."
+  },
+  "catalogCounts": {
+    "cities": 111,
+    "providers": 98,
+    "interpretation": "Current local validated catalogue; changes remain uncommitted and undeployed."
+  },
+  "counts": {
+    "boundedParcelOrPlanningPlotGridAudited": 2,
+    "targetAreaCandidatePolygonGeometryWithoutVerifiedParcelSemanticsOrNativeId": 2,
+    "nearbyOrNoncadastralGeometryNotVerifiedAsTargetParcels": 2,
+    "noTargetParcelGeometryVerified": 4,
+    "nativeExactReadBlocked": 1,
+    "registryFound": 2,
+    "nativeReadyBrowserAccepted": 1
+  },
+  "headline": "One new local app entry: Ahmedabad final AMC planning plots, with132 fresh native references and successful headed-browser loading, selection and pan. Ghatkesar survey geometry is verified but native exact-read reliability and JSON support block app use. Nairobi anonymous outlines omit native IDs. The other seven city checks retain their specific access, semantics or target-coverage limitations; no citywide absence is inferred.",
+  "cities": [
+    {
+      "wupCityCode": 9949,
+      "cityId": "wup2025:9949",
+      "name": "Bengaluru",
+      "countryCode": "IN",
+      "resultCategory": "no_verified_target_parcel_geometry",
+      "targetGeometryEvidence": "none",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "temporary endpoint/access blocker; reattempt official route from another network path.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/city-9949.json",
+        "research/india-africa-next10-2026-10-08/india-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    },
+    {
+      "wupCityCode": 10747,
+      "cityId": "wup2025:10747",
+      "name": "Chennai",
+      "countryCode": "IN",
+      "resultCategory": "no_verified_target_parcel_geometry",
+      "targetGeometryEvidence": "none",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "temporary endpoint/access blocker; resolve urban TSLR hierarchy and verify a published geometry route.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/city-10747.json",
+        "research/india-africa-next10-2026-10-08/india-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    },
+    {
+      "wupCityCode": 9913,
+      "cityId": "wup2025:9913",
+      "name": "Hyderabad",
+      "countryCode": "IN",
+      "resultCategory": "aggregate_geometry_not_parcel",
+      "targetGeometryEvidence": "aggregate_only",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "select official district/mandal/village and obtain a bounded parcel polygon with stable survey ID.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/city-9913.json",
+        "research/india-africa-next10-2026-10-08/india-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    },
+    {
+      "wupCityCode": 10035,
+      "cityId": "wup2025:10035",
+      "name": "Ghatkesar",
+      "countryCode": "IN",
+      "resultCategory": "bounded_grid_native_ids_exact_read_blocked",
+      "targetGeometryEvidence": "yes_but_exact_read_blocked",
+      "nativeIdReadiness": "not_runtime_ready",
+      "registryFound": true,
+      "verifiedParcelSample": true,
+      "technicalBlocker": "adapter needs compatible response format and a successful fresh exact native-ID audit; retain explicit whitespace-ID exclusions.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/city-10035.json",
+        "research/india-africa-next10-2026-10-08/ghatkesar-acceptance.json",
+        "research/india-africa-next10-2026-10-08/ghatkesar-source-proposal.json",
+        "research/india-africa-next10-2026-10-08/ghatkesar-boundary-exclusions.json",
+        "research/india-africa-next10-2026-10-08/india-city-10035-parcel-response.json",
+        "research/india-africa-next10-2026-10-08/india-index.json"
+      ],
+      "boundedGeometrySampleVerified": true
+    },
+    {
+      "wupCityCode": 6408,
+      "cityId": "wup2025:6408",
+      "name": "Ahmedabad",
+      "countryCode": "IN",
+      "resultCategory": "live_integration_enabled_local",
+      "targetGeometryEvidence": "final_AMC_planning_plots",
+      "nativeIdReadiness": "fresh_exact_read_and_browser_accepted",
+      "registryFound": true,
+      "verifiedParcelSample": true,
+      "technicalBlocker": null,
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/city-6408.json",
+        "research/india-africa-next10-2026-10-08/ahmedabad-acceptance.json",
+        "research/india-africa-next10-2026-10-08/ahmedabad-adapter-initial.json",
+        "research/india-africa-next10-2026-10-08/ahmedabad-small-page-counter-check.json",
+        "research/india-africa-next10-2026-10-08/ahmedabad-small-page-failure.json",
+        "research/india-africa-next10-2026-10-08/browser-check.json"
+      ],
+      "boundedGeometrySampleVerified": true,
+      "appCityId": "ahmedabad",
+      "outcome": "Final AMC planning plots accepted locally: 132 fresh native references, nine complete source cells, native geometry hashes, absence and proposal binding. Headed UI loaded 9 cells / 132 retained features, selected Sarangpur 18 FP 10 and panned to 12 cells / 221 retained features without warnings or page errors. Title/currentness and citywide completeness are not claimed."
+    },
+    {
+      "wupCityCode": 1265,
+      "cityId": "wup2025:1265",
+      "name": "Lagos",
+      "countryCode": "NG",
+      "resultCategory": "target_polygon_geometry_without_parcel_semantics_or_id",
+      "targetGeometryEvidence": "target_geometry_only",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "find publisher-described parcel polygon semantics and stable native lot/plan key before proposing a source.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/city-1265.json",
+        "research/india-africa-next10-2026-10-08/africa-west-lagos-arcgis-probes.json",
+        "research/india-africa-next10-2026-10-08/africa-west-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    },
+    {
+      "wupCityCode": 33,
+      "cityId": "wup2025:33",
+      "name": "Dakar",
+      "countryCode": "SN",
+      "resultCategory": "no_verified_target_parcel_sample",
+      "targetGeometryEvidence": "none",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "obtain an operational official parcel feature service or a bounded extract route with documented native identity.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/city-33.json",
+        "research/india-africa-next10-2026-10-08/africa-west-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    },
+    {
+      "wupCityCode": 1961,
+      "cityId": "wup2025:1961",
+      "name": "Antananarivo",
+      "countryCode": "MG",
+      "resultCategory": "planning_geometry_not_cadastre",
+      "targetGeometryEvidence": "no_target_parcel_geometry",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "ask custodian for layer definitions, native IDs, verified coverage and any separate cadastral service.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/africa-east-city-1961.json",
+        "research/india-africa-next10-2026-10-08/africa-east-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    },
+    {
+      "wupCityCode": 2033,
+      "cityId": "wup2025:2033",
+      "name": "Nairobi",
+      "countryCode": "KE",
+      "resultCategory": "anonymous_outline_geometry_without_public_id",
+      "targetGeometryEvidence": "target_outline_geometry_only",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "use only as geometry-only display with provenance unless an open source returns stable IDs without account access.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/africa-east-city-2033.json",
+        "research/india-africa-next10-2026-10-08/africa-east-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    },
+    {
+      "wupCityCode": 3566,
+      "cityId": "wup2025:3566",
+      "name": "Dar es Salaam",
+      "countryCode": "TZ",
+      "resultCategory": "nearby_candidate_extent_excludes_target",
+      "targetGeometryEvidence": "nearby_geometry_only",
+      "nativeIdReadiness": "not_verified",
+      "registryFound": null,
+      "verifiedParcelSample": false,
+      "technicalBlocker": "verify publisher, city coverage and extent containing target before a bounded local parcel-ID query.",
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/africa-east-city-3566.json",
+        "research/india-africa-next10-2026-10-08/africa-east-index.json"
+      ],
+      "boundedGeometrySampleVerified": false
+    }
+  ],
+  "completedAt": "2026-10-08T05:25:09.641379+00:00",
+  "newAppEntries": 1,
+  "newConfiguredCohortCities": 1
+}

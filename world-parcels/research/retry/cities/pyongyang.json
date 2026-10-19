@@ -1,0 +1,32 @@
+{
+ "kind": "city",
+ "key": "pyongyang",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_countrywide",
+ "newStatus": "no_verified_sample_candidate_countrywide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ko-KP,ko;q=0.9; cookie jar (curl -c/-b)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.naenara.com.kp/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response: proxy CONNECT 502 or connection reset (same as previous pass; headers did not change it)"
+  },
+  {
+   "url": "http://www.kcna.kp/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "proxy upstream error (per KP.json retry)"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "DPRK hosts not reachable externally",
+ "notes": "No public DPRK cadastre known; sites unreachable from outside. Consistent with KP.json.",
+ "nextStep": "None."
+}

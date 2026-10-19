@@ -1,0 +1,80 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 2606,
+  "queueRank": 3133,
+  "name": "Divo",
+  "aliases": ["divo"],
+  "country": "Côte d'Ivoire",
+  "countryCode": "CI",
+  "iso3": "CIV",
+  "point": [5.83156567218637, -5.36038273330132],
+  "population2025": 191745,
+  "population2025k": 191.745,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Divo Côte d'Ivoire official cadastral parcel map land registry",
+        "result": "First-party discovery found the official SIGFU urban-land parcel portal, AFOR rural geoportal/API, IDUFCI national parcel-identifier information, DGI cadastre materials, and an official Divo cadastral-service directory entry.",
+        "actualResultUrls": ["https://sigfu.gouv.ci/parcelles", "https://geoportail.afor.ci/", "https://www.idufci.gouv.ci/index.html", "https://www.opf.gouv.ci/annuaire-services-cadastre-pdf"]
+      },
+      {
+        "language": "French (local/official language)",
+        "query": "Divo Côte d'Ivoire cadastre parcelles carte officielle registre foncier",
+        "result": "French-language first-party discovery found SIGFU's approved-lot/parcel search, the AFOR rural land geoportal, DGI cadastre information, IDUFCI, and the Divo decentralized cadastre-service listing.",
+        "actualResultUrls": ["https://sigfu.gouv.ci/parcelles", "https://geoportail.afor.ci/", "https://dgi.gouv.ci/SITE_CADASTRE/index.php", "https://www.opf.gouv.ci/annuaire-services-cadastre-pdf"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "SIGFU is a first-party Ministry urban-land management portal with parcel/lot search; the official cadastre directory lists a decentralized DIVO cadastre service. AFOR is the first-party rural land agency geoportal/API.",
+    "localCustodianScope": "The Divo cadastral directory entry evidences a local Divo service, while SIGFU urban coverage and AFOR rural coverage are national systems. Citywide parcel completeness for Divo was not established.",
+    "urls": ["https://sigfu.gouv.ci/parcelles", "https://www.opf.gouv.ci/annuaire-services-cadastre-pdf", "https://geoportail.afor.ci/"]
+  },
+  "officialSources": [
+    {"url": "https://sigfu.gouv.ci/parcelles", "observation": "Official SIGFU parcel page describes searching approved lotissements/lots by locality and displaying parcel results."},
+    {"url": "https://geoportail.afor.ci/", "observation": "Official AFOR rural geoportal exposes parcel mapping and states that parcels appear after zooming; its current client configuration exposed the public API base https://api.geoportail.afor.ci."},
+    {"url": "https://www.opf.gouv.ci/annuaire-services-cadastre-pdf", "observation": "Official directory lists the DIVO cadastral service."},
+    {"url": "https://www.idufci.gouv.ci/index.html", "observation": "Official IDUFCI information describes a unique identifier intended for Côte d'Ivoire parcels and cadastral/georeferenced information exchange."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": {
+    "name": "Côte d'Ivoire SIGFU urban parcel portal / AFOR rural geoportal and API",
+    "viewerUrl": "https://sigfu.gouv.ci/parcelles",
+    "serviceBase": "https://api.geoportail.afor.ci",
+    "administrativeSelection": {"region": "LÔH-DJIBOUA", "department": "DIVO", "locality": "Divo"},
+    "nativeFieldMapping": {"safeIdentity": "AFOR parcel id (UUID) when returned", "geometry": "GeoJSON geometry", "unsafeFieldsNotRetained": ["dossierNumber", "applicant/holder names", "operator", "certificate and other personal/title fields"]},
+    "compositeKeyProvenance": null,
+    "crs": "Not explicitly returned by the bounded JSON response; GeoJSON coordinates were not retained.",
+    "geometryType": "Not verified for the exact city response"
+  },
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://sigfu.gouv.ci/parcelles", "outcome": "Search result identified the official urban parcel workflow; direct curl failed TLS certificate verification, so no exception or bypass was used."},
+    {"method": "GET", "url": "https://geoportail.afor.ci/", "outcome": "200; current first-party AFOR viewer HTML retrieved. JavaScript configuration exposed https://api.geoportail.afor.ci and parcel endpoints /filters, /parcels/map, /parcels, /parcels/extent, and /parcels/{id}/geometry."},
+    {"method": "GET", "url": "https://api.geoportail.afor.ci/filters", "outcome": "200; public filter metadata included DIVO as a department and DIVO as a sub-prefecture."},
+    {"method": "GET", "url": "https://api.geoportail.afor.ci/parcels/map?bbox=-5.37,5.82,-5.35,5.84&limit=3&detail=full", "outcome": "200; empty FeatureCollection at a bounded bbox around the exact WUP point. This is not evidence of citywide absence."},
+    {"method": "GET", "url": "https://api.geoportail.afor.ci/parcels/map?bbox=-5.3608,5.8310,-5.3598,5.8320&limit=3&detail=full", "outcome": "200; empty FeatureCollection at a smaller bounded bbox around the exact WUP point. This is not evidence of citywide absence."},
+    {"method": "GET", "url": "https://api.geoportail.afor.ci/parcels/extent", "outcome": "200; national rural extent returned bbox [-8.571508626,5.133452305,-2.748682987,10.413242879] and geometryCount 61967."},
+    {"method": "GET", "url": "https://api.geoportail.afor.ci/parcels/extent?department=DIVO", "outcome": "200; Divo department extent returned bbox [-5.54634,5.63994,-4.95157,6.2179] and geometryCount 3925; this is department-level evidence, not city-boundary coverage."},
+    {"method": "GET", "url": "https://api.geoportail.afor.ci/parcels?department=DIVO&page=1&pageSize=3", "outcome": "200; department parcel records were returned, proving public department-level records exist. The response included unsafe default attributes; no such attributes were retained in this packet and no parcel was treated as a Divo city sample."},
+    {"method": "GET", "url": "https://api.geoportail.afor.ci/parcels/map?department=DIVO&limit=1&detail=full", "outcome": "400; API requires bbox for map feature loading."}
+  ],
+  "resultCategory": "city_registry_found_geometry_not_verified",
+  "coverageAssessment": {
+    "claimedScope": "SIGFU urban approved-lot/parcel search and AFOR rural parcel geoportal/API; Divo local cadastre service is listed officially.",
+    "verifiedOpenScope": "AFOR public API has Divo department extent and records, but exact WUP-point bboxes returned no features; urban SIGFU service schema and Divo city coverage remain unverified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_adapter_review",
+  "remainingUncertainty": "The exact WUP point [5.83156567218637,-5.36038273330132] was preserved in latitude/longitude order and was not shifted. Empty exact-point responses may reflect extent, rural/urban system separation, or incomplete coverage. Native parcel schema/CRS for a city-relevant response, city boundaries, and citywide completeness remain unverified. No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were retained. This packet is research evidence only and is not source integration or admission."
+}

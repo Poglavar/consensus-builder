@@ -1,0 +1,101 @@
+{
+  "cityCode": 6632,
+  "queueRank": 2784,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [35.7287912317855, 107.641332294718],
+  "population2025": 212914,
+  "population2025k": 212.914,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qingyang Gansu China cadastral parcel map official land registry map API",
+        "result": "Found the official Qingyang Geographic Information Public Service Platform (Tianditu Qingyang), the Qingyang Natural Resources Bureau, and a Gansu government service page for real-estate-registration record inquiries.",
+        "actualResultUrls": [
+          "https://gansu.tianditu.gov.cn/qingyang/",
+          "https://zrzy.zgqingyang.gov.cn/",
+          "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11621000MB191703XJ3622015008000&taskHandleItem=11621000MB191703XJ362201500800001"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "庆阳市 不动产登记 地图 查询 官方",
+        "result": "Found the official Qingyang real-estate-registration inquiry procedure and official Tianditu Qingyang map portal. The procedure is an application/inquiry service, not an openly downloadable parcel geometry service.",
+        "actualResultUrls": [
+          "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11621000MB191703XJ3622015008000&taskHandleItem=11621000MB191703XJ362201500800001",
+          "https://gansu.tianditu.gov.cn/qingyang/",
+          "https://zrzy.zgqingyang.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The official Gansu government service record identifies Qingyang Natural Resources Bureau (Qingyang Real Estate Registration Administration) as the implementing authority for Qingyang real-estate-registration record inquiries; the official Qingyang Tianditu portal is hosted for the Qingyang Natural Resources Bureau.",
+  "routesAttempted": [
+    {
+      "url": "https://gansu.tianditu.gov.cn/qingyang/",
+      "method": "GET",
+      "outcome": "200; current portal HTML and JavaScript inspected"
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn/qingyang/map/index.html",
+      "method": "GET",
+      "outcome": "200; map viewer JavaScript inspected; it exposes public Tianditu basemap/service configuration but no parcel layer was identified"
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn/qingyang/speciallayer/map.html",
+      "method": "GET",
+      "outcome": "200; special-layer viewer and configuration inspected; public subject-layer and feature-service routes were identified in JavaScript, but no parcel catalog or anonymous geometry response was verified"
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn/qingyang/speciallayer/static/city.geojson",
+      "method": "GET",
+      "outcome": "200; returned Qingyang administrative boundary GeoJSON in EPSG:4490, not parcel polygons; not retained"
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn:8888/fmserver-v0.1/layercataloggroup/selectbyfilter",
+      "method": "GET",
+      "outcome": "Timed out anonymously; no response body"
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn:8888/fmserver-v0.1/dataset/getfeaturesdata",
+      "method": "GET",
+      "outcome": "Timed out anonymously; no response body; no fields or geometry requested or retained"
+    },
+    {
+      "url": "https://gansu.tianditu.gov.cn/subjectlayer-baiyin/layercataloggroup/selectbyfilter",
+      "method": "GET",
+      "outcome": "404 HTML portal fallback; wrong-city historical/configuration route, not evidence about Qingyang parcel coverage"
+    }
+  ],
+  "schemaAndCrs": {
+    "verified": false,
+    "viewerBoundaryCrs": "EPSG:4490 observed only for the administrative city boundary asset",
+    "parcelSchema": null,
+    "parcelCrs": null
+  },
+  "nativeFieldMapping": null,
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed against a verified parcel endpoint; no absence inference"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Qingyang geographic-information portal and Qingyang natural-resources/real-estate-registration services",
+    "verifiedOpenScope": "Official portal and administrative boundary only; no anonymous parcel feature response",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "uncertainty": "The official portal is current enough to establish a local map/service custodian, but its public viewer did not expose a verified anonymous parcel layer or schema during this bounded attempt. A timeout, 404, or lack of an exact-point hit is not treated as citywide absence.",
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "integrationDisposition": "Research packet only; not source integration or admission. No registry/catalog/runtime files were changed."
+}

@@ -1,0 +1,46 @@
+{
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: es-CU,es;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.onec.gob.cu/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://www.ipf.gob.cu/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://www.geocuba.cu/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  },
+  {
+   "url": "https://catastro.gob.cu/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection failed at the agent proxy (no HTTP status): CONNECT tunnel 502 (policy denial or upstream failure)"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "All .cu hosts fail at the egress proxy CONNECT with 502 (same for other restricted-country hosts in the proxy failure log); cannot distinguish egress policy from upstream outage.",
+ "notes": "Previous 'no_online_cadastre_found' was not a real negative: no Cuban host could be reached at all, so it is downgraded to temporarily_unavailable. Nothing new found.",
+ "nextStep": "Retry from a network that can reach .cu hosts; candidate authorities: IPF, Direccion de Catastro / Registro de la Propiedad (MINJUS), GEOCUBA.",
+ "kind": "country",
+ "key": "CU",
+ "checkedAt": "2026-09-30"
+}

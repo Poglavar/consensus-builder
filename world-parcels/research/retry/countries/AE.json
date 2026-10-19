@@ -1,0 +1,138 @@
+{
+ "kind": "country",
+ "key": "AE",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "subnational_only",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8 (application/json,*/*;q=0.8 for JSON/API calls); Accept-Language: ar-AE,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "ae-abudhabi-dmt-geosmart-plots",
+  "requestUrl": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query?where=1%3D1&geometry=55.7090,24.1168,55.7110,24.1185&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=plot_num,district_n,community_,PLOT_AREA,LANDUSE_CL,STATUS,FID&outSR=4326&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   55.709,
+   24.1168,
+   55.711,
+   24.1185
+  ],
+  "parcelRecordCount": 5,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "FID",
+  "responseFile": "research/retry/countries/AE-parcel-response.json (first 3 of 5 features; owner-type field OWNERSHIP_ not requested)",
+  "pagination": "resultRecordCount rejected ('Pagination is not supported'); the bbox keeps the reply small",
+  "regionSampled": "Abu Dhabi emirate, Al Ain area (approx 24.117N 55.710E)"
+ },
+ "source": {
+  "sourceId": "ae-abudhabi-dmt-geosmart-plots",
+  "name": "Plot - Estimated Value (Survey/AAM_Plots_EstimatedValue MapServer layer 0)",
+  "operator": "Abu Dhabi Department of Municipalities and Transport (DMT), GeoSmart",
+  "scope": "Abu Dhabi emirate only (emirate-level, not federal); layer extent metadata is unreliable (xmin 0)",
+  "endpoint": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0",
+  "method": "ArcGIS REST query, no token",
+  "responseFormat": "esri JSON",
+  "crs": "native EPSG:32640, requested outSR 4326",
+  "reuseStatus": "not read; licence terms unknown"
+ },
+ "requests": [
+  {
+   "url": "https://gis.dm.gov.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset by peer with full browser headers (same as before)"
+  },
+  {
+   "url": "https://opendata.dubaipulse.gov.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://www.dubaipulse.gov.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://geodubai.dm.gov.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://www.abudhabi.ae/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://sdi.abudhabi.ae/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 'http version not supported' after redirect to sdi.gov.abudhabi; not a parcel service"
+  },
+  {
+   "url": "https://www.dmt.gov.ae/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "DMT homepage; links to geosmart.dmt.gov.ae"
+  },
+  {
+   "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "anonymous ArcGIS Server 10.8 directory; folders BaseMaps, GeoPlanner2, Images, MasterPlan, SubAddressing, Survey, Topography, UDM, Utilities"
+  },
+  {
+   "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "lists AAM_Plots_EstimatedValue MapServer"
+  },
+  {
+   "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query (bbox Abu Dhabi island 54.370,24.470)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 features (no data at that spot) and 'Pagination is not supported' error when resultRecordCount used"
+  },
+  {
+   "url": "https://geosmart.dmt.gov.ae/arcgis/rest/services/Survey/AAM_Plots_EstimatedValue/MapServer/0/query (bbox 55.709,24.1168 to 55.711,24.1185)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "5 polygon plots: verified"
+  },
+  {
+   "url": "https://dubailand.gov.ae/en/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "homepage; only eservices/gis job service links, no parcel endpoint"
+  },
+  {
+   "url": "https://gis.dubailand.gov.ae/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Apache default page"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "Dubai hosts (gis.dm.gov.ae, Dubai Pulse) still reset connections with full headers; likely geo/IP filtering or proxy path, not proven. New: an open Abu Dhabi DMT ArcGIS Server exposes plot polygons (found via link on dmt.gov.ae). No federal cadastre exists, so status is subnational_only. Sampled only one area of Abu Dhabi emirate; completeness/currency of the layer (an 'estimated value' plots layer) unknown. Layer has an ownership-type field; not saved.",
+ "nextStep": "Check other Survey/Master plan layers and whether a full plots layer (not only estimated value) exists; retry Dubai (GeoDubai/DLD) from a UAE network; do not assume emirate coverage beyond Abu Dhabi."
+}

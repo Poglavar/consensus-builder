@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1743",
+  "cityCode": 1743,
+  "wupCityCode": 1743,
+  "name": "Daloa",
+  "country": "Côte d'Ivoire",
+  "countryCode": "CI",
+  "iso2": "CI",
+  "iso3": "CIV",
+  "rank": 1584,
+  "queueRank": 1584,
+  "point": [6.87706732651285, -6.44696500017697],
+  "centerLatLon": [6.87706732651285, -6.44696500017697],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 360630,
+  "population2025k": 360.63,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Côte d’Ivoire sources identify the national urban-land system SIGFU with a public parcel/lot search, and an official publication referencing the service du Cadastre de Daloa and the circonscription foncière de Daloa. This establishes city-specific cadastral custody/procedure, not open citywide parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.sigfu.gouv.ci/parcelles",
+    "https://agp.africanlii.org/en/akn/ci/act/decree/2019/101/fra@2023-07-18/publication",
+    "https://dgi.gouv.ci/SITE_CADASTRE/index.php"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The official SIGFU parcel page and AFOR rural geoportal were reachable through search indexing, but no verified anonymous response containing a safe native parcel ID and complete polygon was obtained. The SIGFU page did not expose a stable public API/schema in bounded retrieval; the AFOR geoportal reported parcel loading but did not provide a bounded feature response. No login, token, CAPTCHA bypass, or unsafe field request was attempted.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Côte d’Ivoire’s official SIGFU urban parcel/lot search and AFOR rural cadastral-information channels, with Daloa-specific cadastral custody evidenced by an official publication.",
+    "verifiedOpenScope": "No anonymous complete-polygon feature response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Daloa Côte d'Ivoire official cadastral parcel map land registry cadastre",
+        "scope": "Identify a Daloa-specific official cadastral custodian and a safe public parcel geometry route.",
+        "result": "Search located the official SIGFU urban parcel search, the official AFOR rural geoportal, the official DGI cadastre page, and an official/legal publication explicitly mentioning the service du Cadastre de Daloa and the circonscription foncière de Daloa. No verified anonymous safe parcel ID-plus-polygon response was found.",
+        "actualResultUrls": [
+          "https://www.sigfu.gouv.ci/parcelles",
+          "https://geoportail.afor.ci/",
+          "https://dgi.gouv.ci/SITE_CADASTRE/index.php",
+          "https://agp.africanlii.org/en/akn/ci/act/decree/2019/101/fra@2023-07-18/publication"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "French",
+        "query": "Daloa cadastre officiel Côte d'Ivoire parcelle carte registre foncier",
+        "scope": "Independent local-language search for Daloa’s cadastral custodian and public cadastral map/API.",
+        "result": "Search confirmed the official SIGFU parcel-search page, AFOR’s official rural geoportal and Daloa-specific official/legal cadastral references. The indexed viewer text showed lot/locality search and parcel loading, but no public schema or bounded safe feature response was verified.",
+        "actualResultUrls": [
+          "https://www.sigfu.gouv.ci/parcelles",
+          "https://sigfu.gouv.ci/public",
+          "https://geoportail.afor.ci/",
+          "https://www.afor.ci/news/nos-actualites/94",
+          "https://agp.africanlii.org/fr/akn/ci/act/decree/2019/101/fra@2023-07-18/publication"
+        ],
+        "executionMethod": "Separate French-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "No exact-point query was used to infer absence. The exact WUP point was preserved. Public service configuration, API route, schema, CRS, native parcel identity, geometry coverage, and citywide completeness remain unverified.",
+  "nextStep": "Serial reviewer may independently qualify a first-party digital cadastral route; do not enable runtime from this packet alone."
+}

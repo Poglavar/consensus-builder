@@ -186,6 +186,18 @@ describe('GET /urban-rules', () => {
         expect(sections[1].paragraphs[0]).toMatchObject({ name: '3', isException: true });
     });
 
+    it('joins texts and variables on COALESCE(short_name, title): every 2025 GUP rule has a NULL short_name', async () => {
+        const seen = [];
+        pool.query = async (sql) => { seen.push(sql); return { rows: [], rowCount: 0 }; };
+        await request(app).get('/urban-rules?coordinates=15.9,45.79');
+        await request(app).get('/urban-rules?coordinates=458000,5072000');
+        expect(seen).toHaveLength(2);
+        for (const sql of seen) {
+            expect(sql).toContain('LEFT JOIN urban_rule_text urt ON COALESCE(ur.short_name, ur.title) = urt.rule_short_name');
+            expect(sql).toContain('LEFT JOIN urban_rule_variable urv ON COALESCE(ur.short_name, ur.title) = urv.rule_short_name');
+        }
+    });
+
     it('returns 404 when no rules are found', async () => {
         pool.setResult({ rows: [], rowCount: 0 });
 

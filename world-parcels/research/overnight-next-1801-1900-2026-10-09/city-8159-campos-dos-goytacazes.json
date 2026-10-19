@@ -1,0 +1,77 @@
+{
+  "cityCode": 8159,
+  "queueRank": 1851,
+  "name": "Campos dos Goytacazes",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-21.7523065609658, -41.3194155481189],
+  "population2025": 310590,
+  "population2025k": 310.59,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Campos dos Goytacazes official cadastral parcel map GIS cadastro imobiliário geoprocessamento municipality",
+        "result": "Found the official municipal Geo portal, the Municipal Finance cadastral/IPTU portal, and the official municipal Planta On-line references. The Geo portal identifies a municipal geoprocessing custodian and publishes maps/data pages, but no anonymous parcel feature service returning a safe native ID and polygon was verified.",
+        "actualResultUrls": [
+          "https://geo.campos.rj.gov.br/",
+          "https://geo.campos.rj.gov.br/index.php/mapas/",
+          "https://geo.campos.rj.gov.br/index.php/dados/",
+          "https://fazenda.campos.rj.gov.br/",
+          "https://campos.rj.gov.br/exibirNoticia.php?id_noticia=78585"
+        ]
+      },
+      {
+        "language": "Portuguese (local)",
+        "query": "Campos dos Goytacazes prefeitura cadastro imobiliário mapa de parcelas lote geoprocessamento serviço oficial",
+        "result": "Confirmou-se a Prefeitura/Setor de Geoprocessamento como custodiante municipal de mapas e dados, e a Secretaria Municipal de Fazenda como custodiante do Cadastro Imobiliário e IPTU. O portal Geo publica mapas temáticos e o Mapa 08 - Parcelamento do Plano Diretor, mas não foi verificado um endpoint público anônimo com identificador nativo seguro e geometria parcelária.",
+        "actualResultUrls": [
+          "https://geo.campos.rj.gov.br/",
+          "https://geo.campos.rj.gov.br/index.php/mapas/",
+          "https://fazenda.campos.rj.gov.br/",
+          "https://fazenda.campos.rj.gov.br/2025/12/11/prefeitura-tera-nova-versao-do-sistema-planta-on-line/",
+          "https://campos.rj.gov.br/exibirNoticia.php?id_noticia=94973"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "provider": "Prefeitura Municipal de Campos dos Goytacazes, Setor de Geoprocessamento / Secretaria Municipal de Fazenda",
+    "viewerUrls": [
+      "https://geo.campos.rj.gov.br/",
+      "https://geo.campos.rj.gov.br/index.php/mapas/",
+      "https://geo.campos.rj.gov.br/index.php/dados/",
+      "https://tributos.campos.rj.gov.br:8084/imobiliarioGateway/"
+    ],
+    "serviceType": "Official municipal geoprocessing map/data catalog and municipal cadastral/IPTU services; no public anonymous parcel feature service confirmed",
+    "parcelLayerConfirmed": false,
+    "nativeIdField": null,
+    "geometryField": null,
+    "safeFieldsRequested": ["stable native parcel ID if publicly exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+    "crs": null,
+    "scopeNote": "The municipal Geo portal exposes public map/data pages and a Plano Diretor 2020 Mapa 08 - Parcelamento PDF, which is a planning map rather than a parcel feature response. The Municipal Finance portal and IPTU gateway describe cadastral/tax services, but access is account/property-number oriented and no safe parcel geometry endpoint was exposed. No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained."
+  },
+  "verifiedSample": {
+    "count": 0,
+    "exactWupPointQuery": false,
+    "result": "No anonymous parcel ID-plus-geometry response was obtained; no GeoJSON sample retained. This is not evidence of citywide parcel absence.",
+    "requestEvidence": "tmp/valhalla-parcel-research/8159/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Campos dos Goytacazes municipal geoprocessing portal and Municipal Finance cadastral/IPTU services.",
+    "verifiedOpenScope": "Municipal custodian and public map/catalog services verified; anonymous parcel schema, CRS, stable native identity and citywide polygon access unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; no independently verified parcel adapter candidate",
+  "notes": "Research evidence only; not source integration or runtime admission. Exact WUP point preserved in latitude/longitude order with no coordinate shift."
+}

@@ -139,7 +139,7 @@ describe('GET /parcel-ba', () => {
             bbox: undefined,
             limit: 2
         });
-        expect(pool.getCalls()[0].params).toEqual(['002', 2]);
+        expect(pool.getCalls()[0].params).toEqual(['002', 3]);
     });
 
     it('supports section and block queries without parcel filters', async () => {
@@ -178,7 +178,7 @@ describe('GET /parcel-ba', () => {
             bbox: undefined,
             limit: 2
         });
-        expect(pool.getCalls()[0].params).toEqual(['002', '062', 2]);
+        expect(pool.getCalls()[0].params).toEqual(['002', '062', 3]);
     });
 
     it('uses SQL ownership json strings when they are valid', async () => {
@@ -255,7 +255,7 @@ describe('GET /parcel-ba', () => {
         expect(res.body.query.type).toBe('bbox');
         expect(res.body.query.limit).toBe(2);
         expect(res.body.features[0].properties.ownershipList).toHaveLength(1);
-        expect(pool.getCalls()[0].params).toEqual([-58.4, -34.61, -58.39, -34.6, 2]);
+        expect(pool.getCalls()[0].params).toEqual([-58.4, -34.61, -58.39, -34.6, 3]);
     });
 
     it('still returns parcels when batch ownership enrichment fails', async () => {
@@ -291,91 +291,37 @@ describe('GET /parcel-ba', () => {
     });
 });
 
-describe('GET /parcel-ba/:smp/ownership', () => {
-    it('rejects invalid smp formats', async () => {
-        const res = await request(app).get('/parcel-ba/bad-format/ownership');
-        expect(res.status).toBe(400);
+describe('GET /parcel-ba offset paging', () => {
+    const baRow = (smp) => ({
+        smp, section: '002', block: '062', parcel: smp.slice(-3), area: 100,
+        geometry: { type: 'Polygon', coordinates: [[[-58.4, -34.6], [-58.39, -34.6], [-58.39, -34.61], [-58.4, -34.6]]] },
+        information_basic: {}, information_technical: {}, property_horizontal: null, doors: null,
+        date_added: null, date_updated: null, ownership_list_json: null, ownership_type: null
     });
 
-    it('returns 404 when ownership is missing', async () => {
-        pool.setResult({ rows: [], rowCount: 0 });
+    it('passes offset through to SQL with a total order, so the frontend pager advances', async () => {
+        pool.setResults([{ rows: [baRow('002-062-003')], rowCount: 1 }, { rows: [], rowCount: 0 }]);
 
-        const res = await request(app).get('/parcel-ba/002-062-000/ownership');
-
-        expect(res.status).toBe(404);
-        expect(res.body).toEqual({ error: 'Ownership data not found for the requested SMP.' });
-    });
-
-    it('returns 500 when ownership lookup fails', async () => {
-        pool.query = async () => {
-            throw new Error('ownership unavailable');
-        };
-
-        const res = await request(app).get('/parcel-ba/002-062-000/ownership');
-
-        expect(res.status).toBe(500);
-        expect(res.body).toEqual({ error: 'Failed to fetch Buenos Aires ownership data.' });
-    });
-
-    it('returns ownership data for a valid smp', async () => {
-        pool.setResult({
-            rows: [{
-                information_basic: { parcela: '000' },
-                information_technical: {},
-                property_horizontal: { phs: [{ dpto: 'A', porcentual: 100, pdahorizontal: '1' }] },
-                doors: null,
-                date_added: null,
-                date_updated: null
-            }],
-            rowCount: 1
-        });
-
-        const res = await request(app).get('/parcel-ba/002-062-000/ownership');
-        expect(res.status).toBe(200);
-        expect(res.body.parcelId).toBe('AR-002-062-000');
-        expect(res.body.ownershipType).toBe('private individual');
-    });
-
-    it('accepts AR-prefixed smp values and derives fractional unit ownership details', async () => {
-        pool.setResult({
-            rows: [{
-                information_basic: { parcela: '000' },
-                information_technical: {},
-                property_horizontal: { phs: [{ piso: '2', porcentual: 12.5, pdahorizontal: '7' }] },
-                doors: null,
-                date_added: null,
-                date_updated: null
-            }],
-            rowCount: 1
-        });
-
-        const res = await request(app).get('/parcel-ba/AR-002-062-000/ownership');
+        const res = await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&limit=2&offset=2');
 
         expect(res.status).toBe(200);
-        expect(res.body.parcelId).toBe('AR-002-062-000');
-        expect(res.body.possessionSheets[0].possessors[0]).toEqual({
-            name: 'Unit 1',
-            ownership: '1/8',
-            address: 'Piso 2'
-        });
+        const { sql, params } = pool.getCalls()[0];
+        expect(sql).toMatch(/ORDER BY block, parcel, smp\s+LIMIT \$5 OFFSET \$6/);
+        expect(params).toEqual([-58.4, -34.61, -58.39, -34.6, 3, 2]);
+        expect(res.body.query.offset).toBe(2);
     });
 
-    it('falls back to an unknown owner when no horizontal property data exists', async () => {
-        pool.setResult({
-            rows: [{
-                information_basic: { parcela: '000' },
-                information_technical: {},
-                property_horizontal: null,
-                doors: null,
-                date_added: null,
-                date_updated: null
-            }],
-            rowCount: 1
-        });
+    it('omits OFFSET for the first page', async () => {
+        pool.setResults([{ rows: [baRow('002-062-000')], rowCount: 1 }, { rows: [], rowCount: 0 }]);
+        await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&limit=2&offset=0');
+        expect(pool.getCalls()[0].sql).not.toMatch(/OFFSET/);
+    });
 
-        const res = await request(app).get('/parcel-ba/002-062-000/ownership');
-
-        expect(res.status).toBe(200);
-        expect(res.body.possessionSheets[0].possessors[0].name).toBe('Unknown owner');
+    it('rejects invalid and over-cap offsets without querying', async () => {
+        const bad = await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&offset=-5');
+        expect(bad.status).toBe(400);
+        const huge = await request(app).get('/parcel-ba?bbox=-58.4,-34.61,-58.39,-34.6&offset=50001');
+        expect(huge.status).toBe(400);
+        expect(pool.getCalls()).toHaveLength(0);
     });
 });

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "ET",
+  "country": "Ethiopia",
+  "checkedAt": "2026-10-08",
+  "status": "national_cadastre_credentialed_or_paid",
+  "accessModel": "registration/login",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Amharic",
+      "exactQuery": "ኢትዮጵያ መሬት ካዳስተር የመሬት መረጃ GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://justice.gov.et/am/directives/urban-cadastral-survey-directive-no-735-2013/",
+        "https://nsis.moa.gov.et/",
+        "https://eland.addiscadaster.gov.et/service",
+        "https://www.ulc.gov.et/uploads/Publication/proclamation-no-642019-2025-11-03-6908d8e06dc5e.pdf",
+        "https://www.moa.gov.et/wp-content/uploads/2024/06/%E1%8A%83%E1%88%8B%E1%8D%8A%E1%8A%90%E1%89%B5_%E1%8B%A8%E1%89%B0%E1%88%9E%E1%88%8B%E1%89%A0%E1%89%B5_%E1%8B%A8%E1%8C%8D%E1%89%A5%E1%88%AD%E1%8A%93_%E1%8A%A2%E1%8A%95%E1%89%A8%E1%88%B5%E1%89%B5%E1%88%98%E1%8A%95%E1%89%B5_%E1%8A%A0%E1%89%B0%E1%8C%88%E1%89%A3%E1%89%A0%E1%88%AD_%E1%8B%A8%E1%8A%A0%E1%88%A0%E1%88%AB%E1%88%AD_%E1%88%A5%E1%88%AD%E1%8B%93%E1%89%B5_%E1%8C%8B%E1%8B%AD%E1%8B%B5%E1%88%8B%E1%8B%AD%E1%8A%95.pdf",
+        "https://lschub.eiar.gov.et/",
+        "https://www.aalb.gov.et/directorates/services/detail/52",
+        "https://eland.addiscadaster.gov.et/"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://nrlais.gov.et/",
+      "observation": "NRLAIS aggregator shell and JS inspected in prior pass; administrative/replication endpoints require authenticated app session; no public parcel endpoint."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/",
+      "observation": "Addis land cadastre portal describes parcel registration/extract services; no anonymous parcel geometry found."
+    },
+    {
+      "url": "https://www.ethionsdi.gov.et/",
+      "observation": "National SDI was 503 earlier; Addis layers seen in previous search were land use rather than cadastral."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nrlais.gov.et/",
+      "method": "GET previous pass",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "App JS showed authenticated admin/replication console, not a public parcel feed."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Seek a public city parcel map or registration/export terms; do not infer geometry from land administration pages or legal documents."
+}

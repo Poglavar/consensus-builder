@@ -1,0 +1,112 @@
+{
+  "cityCode": 9118,
+  "queueRank": 3246,
+  "name": "Gaobeidian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [39.3314743291414, 115.86490612018],
+  "population2025": 186159,
+  "population2025k": 186.159,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gaobeidian China official cadastral parcel map land registration public map 高碑店市 不动产登记 地图 官方",
+        "result": "Discovery found the official Hebei Tianditu cadastral-zone/subzone viewer and map-service lead. Search results did not expose a Gaobeidian-specific anonymous parcel-vector endpoint.",
+        "actualResultUrls": [
+          "https://hebei.tianditu.gov.cn/streetscape/",
+          "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%8C%BA.json",
+          "https://gaobeidian.gov.cn/content-34-25695.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "高碑店市 不动产登记 自然资源局 宗地图 查询 官方",
+        "result": "Chinese discovery found the official Gaobeidian government site and the official Hebei cadastral viewer, but no verified Gaobeidian-local public parcel geometry service or anonymous parcel schema.",
+        "actualResultUrls": [
+          "https://gaobeidian.gov.cn/",
+          "https://hebei.tianditu.gov.cn/streetscape/",
+          "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%AD%90%E5%8C%BA.json"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": null,
+    "scope": "Official Hebei provincial cadastral-zone/subzone viewer; Gaobeidian local registry custodian was not independently verified as a public parcel-data provider.",
+    "evidenceUrls": [
+      "https://hebei.tianditu.gov.cn/streetscape/",
+      "https://gaobeidian.gov.cn/"
+    ],
+    "scopeNote": "The provincial service is cadastral-map evidence, not evidence of a Gaobeidian-local registry endpoint or complete parcel-vector coverage; registryFound remains null."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Official Hebei Tianditu cadastral-zone/subzone viewer and SuperMap map service",
+    "nativeIdField": null,
+    "crs": "CGCS2000 geographic coordinates; service metadata reports GCS_China_2000",
+    "boundedResponse": {
+      "featureCount": 0,
+      "result": "Both cadastral-zone and cadastral-subzone exact-point queries returned empty arrays. The service is zone/subzone data rather than a verified parcel polygon feed; this is not a citywide absence finding."
+    },
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No safe parcel identity-plus-full-polygon response was obtained or retained. The exact WUP point was preserved and not shifted."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/streetscape/", "httpStatus": 200, "contentType": "text/html", "outcome": "Official viewer shell retrieved."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/streetscape/static/config/app-config.js", "httpStatus": 200, "contentType": "application/javascript", "outcome": "Current viewer configuration retrieved; it publishes the official HBDJQ cadastral-zone and cadastral-subzone service URLs."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%8C%BA.json", "httpStatus": 200, "contentType": "application/json", "outcome": "Map metadata retrieved; view bounds include the WUP point and metadata reports CGCS2000/GCS_China_2000."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%AD%90%E5%8C%BA.json", "httpStatus": 200, "contentType": "application/json", "outcome": "Map metadata retrieved; view bounds include the WUP point and metadata reports CGCS2000/GCS_China_2000."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%8C%BA/queryResults.json?queryMode=SpatialQuery&geometry=Point%20%5B115.86490612018%2C39.3314743291414%5D", "httpStatus": 200, "contentType": "application/json", "outcome": "Returned []; no parcel geometry or native parcel identity was exposed."},
+    {"method": "GET", "url": "https://hebei.tianditu.gov.cn/iserver/services/map-HBDJQ/rest/maps/%E6%B2%B3%E5%8C%97%E5%9C%B0%E7%B1%8D%E5%AD%90%E5%8C%BA/queryResults.json?queryMode=SpatialQuery&geometry=Point%20%5B115.86490612018%2C39.3314743291414%5D", "httpStatus": 200, "contentType": "application/json", "outcome": "Returned []; no parcel geometry or native parcel identity was exposed."}
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "geometryCrs": "CGCS2000 geographic coordinates; GCS_China_2000",
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"featureCount": 0, "result": "No parcel response obtained."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "The exact WUP point [39.3314743291414, 115.86490612018] was queried in longitude/latitude request order [115.86490612018,39.3314743291414] and preserved without shifting; empty results do not establish citywide absence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hebei provincial cadastral-zone/subzone public viewer",
+    "verifiedOpenScope": "Current public viewer configuration, map metadata, and bounded anonymous exact-point requests only",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point and all population identity fields were preserved; no coordinate shift was made.",
+    "The inspected official layer is cadastral-zone/subzone data, not a verified Gaobeidian parcel polygon feed.",
+    "An empty point response is not evidence of citywide cadastral absence.",
+    "No parcel polygon, native parcel identity, or raw source-specific attribute set is retained.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "The official Hebei viewer and current service configuration are verified, and its published view bounds include the WUP point, but the inspected exact-point responses were empty and exposed no parcel schema or identity. A Gaobeidian-local parcel service or another viewer route may exist; completeness, update behavior, and citywide coverage remain unresolved."
+}

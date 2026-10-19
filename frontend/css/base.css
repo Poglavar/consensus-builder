@@ -32,19 +32,13 @@ body {
     min-height: var(--app-viewport-height);
     width: 100%;
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--cb-font-sans);
     padding-bottom: var(--app-safe-area-bottom);
     box-sizing: border-box;
 }
 
-/* Default tap-friendly button height unless explicitly overridden */
-button,
-input[type="button"],
-input[type="submit"],
-input[type="reset"],
-.btn {
-    min-height: 40px;
-}
+/* Buttons take their size from their class (.btn and the map chrome in css/utilities.css and
+   css/map-shell.css); there is no global minimum, so tabs, chips and icon buttons keep their own. */
 
 /* -------------------- Typography scale -------------------- */
 html {
@@ -63,4 +57,18 @@ h2 {
 
 h3 {
     font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+}
+
+/* Multi-tab guard banner (shown in a secondary tab when the app is open elsewhere; see
+   js/multi-tab-guard.js): a warning section of the shared banner card (css/primitives.css). */
+.cb-multitab-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--cb-space-3);
+}
+
+/* Its close is the shared close-circle-btn; this only places it at the end of the row. */
+.cb-multitab-banner__close {
+    margin-left: auto;
+    flex: 0 0 auto;
 }

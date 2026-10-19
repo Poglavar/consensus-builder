@@ -1,0 +1,31 @@
+{
+ "kind": "city",
+ "key": "coyah-conakry",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-GN,fr;q=0.9; cookie jar used",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://cadastre.mines.gov.gn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "703-byte default IIS page; mining cadastre only"
+  },
+  {
+   "url": "https://www.mvuh.gov.gn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed, 502"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Country file GN (viewer inspection) confirms the only reachable cadastre is mining-licence layers, not land parcels; land hosts do not connect. Nothing at Coyah/Conakry.",
+ "nextStep": "Look for a Conakry urban cadastre / World Bank funded parcel GIS."
+}

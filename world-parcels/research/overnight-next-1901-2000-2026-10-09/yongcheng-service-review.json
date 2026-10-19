@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10386-yongcheng.json",
+  "purpose": "Document first-party Yongcheng registry context and bounded anonymous cadastral-service access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Yongcheng local registry activity is evidenced by a first-party Yongcheng government notice from the Yongcheng Real Estate Registration Affairs Center. Anonymous inspection found no public parcel-vector route; the linked Shangqiu Natural Resources and Planning Bureau host returned HTTP 403.",
+  "registryAssessment": "Local registry/procedure evidenced: Yongcheng Real Estate Registration Affairs Center, with the official city site linking the Shangqiu Natural Resources and Planning Bureau. This is custodian/procedure evidence only, not source admission or runtime integration.",
+  "safeFieldAllowlist": ["safe public parcel/source ID if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "nativeFieldMapping": null,
+  "officialPrimarySources": [
+    {"url": "https://www.ycs.gov.cn/ywdt/tzgg/content_29350", "observation": "Official Yongcheng government notice names the Yongcheng Real Estate Registration Affairs Center as the publishing/registration institution; source page contains registration-procedure material, not parcel geometry."},
+    {"url": "https://www.ycs.gov.cn/zjxs/zrzy", "observation": "Official Yongcheng government Natural Resources section was fetched successfully; public HTML exposed department/navigation content but no cadastral viewer or parcel API configuration."},
+    {"url": "https://www.ycs.gov.cn/", "observation": "Official Yongcheng government home page returned HTTP 200 over HTTPS and links the Shangqiu Natural Resources and Planning Bureau."},
+    {"url": "https://zrzyghj.shangqiu.gov.cn", "observation": "Linked first-party Shangqiu Natural Resources and Planning Bureau host returned HTTP 403 to an anonymous HTTPS GET."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Yongcheng China official cadastral parcel map land registration natural resources bureau", "result": "Found official Yongcheng government and local registration-center material; no verified anonymous parcel geometry route.", "resultUrls": ["https://www.ycs.gov.cn/", "https://www.ycs.gov.cn/ywdt/tzgg/content_29350", "https://zrzyghj.shangqiu.gov.cn"]},
+    {"language": "Chinese", "query": "永城市 官方 不动产登记 地籍图 宗地图 自然资源和规划局", "result": "Found first-party local registry/procedure evidence; no verified anonymous cadastral viewer/API or parcel geometry route.", "resultUrls": ["https://www.ycs.gov.cn/ywdt/tzgg/content_29350", "https://www.ycs.gov.cn/zjxs/zrzy", "https://zrzyghj.shangqiu.gov.cn"]}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a verified cadastral parcel endpoint; exact point [33.9394302484405, 116.424176352057] remains unchanged and no absence inference is made.", "requestEvidence": []},
+  "attempts": [
+    {"url": "https://www.ycs.gov.cn/", "method": "GET", "httpStatus": 200, "result": "Official Yongcheng government home page fetched; no parcel service endpoint identified in public HTML."},
+    {"url": "https://www.ycs.gov.cn/zjxs/zrzy", "method": "GET", "httpStatus": 200, "result": "Official Natural Resources section fetched; department/navigation content only, no cadastral viewer/API identified."},
+    {"url": "https://www.ycs.gov.cn/ywdt/tzgg/content_29350", "method": "GET", "httpStatus": 200, "result": "Official registration notice read; local registration-center/procedure evidence only. Unsafe source attributes were not retained."},
+    {"url": "https://zrzyghj.shangqiu.gov.cn", "method": "GET", "httpStatus": 403, "result": "Linked first-party supervising natural-resources host denied anonymous access; no viewer/configuration or parcel payload returned."}
+  ],
+  "coverageAssessment": {"claimedScope": "Official local Yongcheng registry/procedure evidence plus bounded anonymous inspection of official web routes.", "verifiedOpenScope": "Local registry/procedure only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "remainingUncertainty": "An authenticated or separately published cadastral service may exist but was not accessed. Exact-point hit testing, CRS/schema, native identity, and citywide parcel completeness are unknown."
+}

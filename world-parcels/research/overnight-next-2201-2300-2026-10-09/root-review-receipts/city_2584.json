@@ -1,0 +1,23 @@
+{
+  "taskId": "city:2584",
+  "decision": "held",
+  "checkedAt": "2026-10-11T03:23:08Z",
+  "admission": "held; no runtime, catalog, registry, or coverage/report change",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-2584-tebing-tinggi.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/tebing-tinggi-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T031837-930a5063/stdout.jsonl",
+    "tmp/valhalla-parcel-research/2584/bhumi.html",
+    "tmp/valhalla-parcel-research/2584/console.html"
+  ],
+  "registryFound": true,
+  "publicGeometryFound": null,
+  "samplePolygonCount": 0,
+  "sourceUrls": [
+    "https://kot-tebingtinggi.atrbpn.go.id/assets/7475b8da-12ee-4c3f-87cc-03d25a892eb2",
+    "https://bhumi.atrbpn.go.id/"
+  ],
+  "reason": "Immutable WUP roster and pending queue agree on Tebing Tinggi, code 2584, rank 2297, Indonesia, unchanged point [3.33205141414238, 99.1596189659036], and 253625 persons. The worker trace confirms executed English and Indonesian searches. The official local ATR/BPN form identifies Kantor Pertanahan Kota Tebing Tinggi and cadastral measurement/mapping service, supporting local registry custody. Saved first-party BHUMI and console shells show a public viewer route but no independently identified safe city-bounded parcel API, native identity, or full polygon response. Viewer inspection is not citywide absence. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap/operation checks, source binding, and headed Details verification are missing. Keep registry custody true, public geometry unresolved, and runtime admission held."
+}

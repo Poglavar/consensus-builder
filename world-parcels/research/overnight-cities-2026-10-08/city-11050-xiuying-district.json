@@ -1,0 +1,95 @@
+{
+  "name": "Xiuying District",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 347,
+  "point": [
+    20.0038305732197,
+    110.32157201684
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "海口市 秀英区 不动产登记 地籍图 查询 官方 秀英区自然资源和规划局",
+        "scope": "Find the first-party local property-registration service and any anonymous cadastral map/vector viewer.",
+        "result": "Haikou’s municipal real-estate registration center is identified in a city procurement notice. The current municipal housing-bureau service notice says the registration service moved to the Haiyiban app/mini-program and requires login. No anonymous full parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://ggzy.haikou.gov.cn/gonggao/84284",
+          "https://hkrealestate.haikou.gov.cn/h5app/qualify/handleIndex"
+        ],
+        "executionMethod": "Chinese-language search and first-party municipal procurement/service notice inspection; no login or personal-record lookup."
+      },
+      {
+        "language": "English",
+        "query": "Haikou municipal real estate registration center cadastral map parcel map official public viewer",
+        "scope": "Cross-check local registry ownership and public geometry access.",
+        "result": "Official city sources identify the Haikou Municipal Real Estate Registration Center and the current registration-service route. The route directs applicants to a login-based app/mini-program. No English-language public parcel viewer or anonymous vector service was found.",
+        "actualResultUrls": [
+          "https://ggzy.haikou.gov.cn/gonggao/84284",
+          "https://hkrealestate.haikou.gov.cn/h5app/qualify/handleIndex"
+        ],
+        "executionMethod": "Separate English-language search and read-only inspection of first-party municipal pages."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Haikou Municipal Real Estate Registration Center procurement record",
+        "operator": "Haikou Municipal Real Estate Registration Center",
+        "homeUrl": "https://ggzy.haikou.gov.cn/gonggao/84284",
+        "observation": "City procurement notice identifies the local registration-center entity and archive-digitization work."
+      },
+      {
+        "name": "Real-estate registration service notice",
+        "operator": "Haikou Municipal Housing Bureau",
+        "homeUrl": "https://hkrealestate.haikou.gov.cn/h5app/qualify/handleIndex",
+        "observation": "Notice states service migrated to Haiyiban app/mini-program; login required. This is not an anonymous parcel-vector source."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": false,
+    "fullGeometrySampleCount": 0,
+    "bounded": true,
+    "pointLocated": false,
+    "note": "No full parcel geometry was verified."
+  },
+  "source": {
+    "operator": "Haikou Municipal Real Estate Registration Center",
+    "endpoint": null,
+    "featureType": null,
+    "geometryField": null,
+    "nativeIdField": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false
+  },
+  "coverageAssessment": "No public parcel-vector coverage verified.",
+  "registryFound": true,
+  "registryBasis": "Haikou municipal real-estate registration center is confirmed as a city-local registry institution. Evidence is municipality-level; a Xiuying-district-specific public branch was not confirmed.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_service_login_required_no_public_parcel_geometry_found",
+  "technicalBlocker": "The current official service path requires a Haiyiban app/mini-program login; no anonymous parcel geometry service was found.",
+  "remainingUncertainty": "No district-specific branch or public map/vector endpoint was verified. This negative search result is bounded to the official sources reviewed.",
+  "sourceIds": [],
+  "nextStep": "If needed, check with the municipal registration center for a lawful public map service or non-personal open data endpoint.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11050,
+  "cityId": "wup2025:11050",
+  "queueRank": 347,
+  "population2025": 1458377,
+  "population2025k": 1458.377,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    20.0038305732197,
+    110.32157201684
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

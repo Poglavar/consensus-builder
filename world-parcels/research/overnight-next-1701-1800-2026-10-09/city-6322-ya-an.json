@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 6322,
+  "queueRank": 1750,
+  "name": "Ya'an",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [29.9938059920299, 103.000840912365],
+  "population2025": 328287,
+  "population2025k": 328.287,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ya'an China official cadastral parcel map land registry GIS natural resources bureau",
+        "result": "First-party discovery identified the Ya'an Natural Resources and Planning Bureau website, the Ya'an municipal government department page, and Sichuan's official government-service listing. These establish the local custodian and registration procedures but did not expose an anonymous public parcel feature service.",
+        "actualResultUrls": [
+          "https://zrzyhghj.yaan.gov.cn/",
+          "https://www.yaan.gov.cn/dept/83c63a26-0485-48a5-be29-1769a1ca027f.html",
+          "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511800000000&deptCode=1151160073340298X3&itemCode=511F0093300093-511800000000-000-12511600MB0M34526A-1-00&taskType=7"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "雅安 不动产登记 地籍图 宗地图 自然资源和规划局 官方",
+        "result": "中文 first-party discovery found the Ya'an Natural Resources and Planning Bureau, an official Ya'an government notice naming the municipal Property Registration Center, and the Sichuan online service page. The official material describes unified registration and inquiry/procedure services, but no anonymous parcel polygon API, native parcel ID, schema, or CRS response was obtained.",
+        "actualResultUrls": [
+          "https://zrzyhghj.yaan.gov.cn/",
+          "https://www.yaan.gov.cn/gongkai/show/20160920170851-873980-00-000.html",
+          "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511800000000&deptCode=1151160073340298X3&itemCode=511F0093300093-511800000000-000-12511600MB0M34526A-1-00&taskType=7"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.yaan.gov.cn/dept/83c63a26-0485-48a5-be29-1769a1ca027f.html",
+      "observation": "Ya'an municipal government identifies the Natural Resources and Planning Bureau as responsible for unified natural-resource and real-estate title registration, cadastral inquiry/surveying, and management of the registration information platform."
+    },
+    {
+      "url": "https://www.yaan.gov.cn/gongkai/show/20160920170851-873980-00-000.html",
+      "observation": "Official Ya'an notice says the municipal Property Registration Center handles unified registration in the central urban area from 2016-09-26 and gives the public service-center location and consultation number. This evidences local custody, not an open geometry API."
+    },
+    {
+      "url": "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511800000000&deptCode=1151160073340298X3&itemCode=511F0093300093-511800000000-000-12511600MB0M34526A-1-00&taskType=7",
+      "observation": "Sichuan's official service page names Ya'an Natural Resources and Planning Bureau as the implementing authority for a real-estate registration service; online handling requires original-material pre-review and real-name authentication. No parcel geometry endpoint is exposed."
+    },
+    {
+      "url": "https://zrzyhghj.yaan.gov.cn/",
+      "observation": "Official bureau site search result exposes sections for natural-resource surveys, mapping and real-estate registration, but the bounded direct anonymous fetch timed out before current JavaScript/configuration could be inspected."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "A local registry custodian is evidenced by the official Ya'an government notice naming the municipal Property Registration Center and by the municipal government department description assigning unified registration and cadastral responsibilities to the Ya'an Natural Resources and Planning Bureau. This does not establish an open parcel geometry service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Ya'an municipal unified real-estate registration and cadastral responsibilities.",
+    "verifiedOpenScope": "Local institutional custody and registration procedures only; no anonymous city-bounded parcel feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials and private tokens"
+  ],
+  "nativeIdentityPolicy": "No native parcel identity was observed; no synthetic identity was created. A future retained sample must use exactly one stable native identity in GeoJSON properties and document source field mapping in review metadata.",
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "requests": [
+    {
+      "url": "https://zrzyhghj.yaan.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Bounded anonymous curl request timed out after 20 seconds; web search could identify the official site, but current JavaScript/configuration and any map/API route could not be inspected. No retry with credentials, private tokens, CAPTCHA bypass or altered TLS settings was attempted."
+    },
+    {
+      "url": "https://www.yaan.gov.cn/dept/83c63a26-0485-48a5-be29-1769a1ca027f.html",
+      "method": "GET",
+      "httpStatus": 0,
+      "outcome": "Web retrieval encountered a redirect loop. Search-indexed official content was used only for institutional-role evidence; no parcel data was inferred from the failure."
+    },
+    {
+      "url": "https://www.sczwfw.gov.cn/jiq/front/transition/ywTransToDetail?areaCode=511800000000&deptCode=1151160073340298X3&itemCode=511F0093300093-511800000000-000-12511600MB0M34526A-1-00&taskType=7",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official service page loaded and documented the Ya'an registration authority, real-name requirement and application workflow. It returned no anonymous parcel ID plus geometry, schema or CRS."
+    },
+    {
+      "url": "https://www.yaan.gov.cn/gongkai/show/20160920170851-873980-00-000.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official municipal notice was available through web search and documents the local Property Registration Center and unified-registration scope; it is not a feature service."
+    }
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "remainingUncertainty": "The current bureau viewer/API route, anonymous access behavior, parcel schema, CRS, stable native parcel identity and citywide coverage remain unknown. The exact WUP point was preserved and was not shifted or used to infer presence or absence. Timeouts, redirect loops and lack of a discovered endpoint are not evidence of citywide cadastral absence.",
+  "retainedSample": null
+}

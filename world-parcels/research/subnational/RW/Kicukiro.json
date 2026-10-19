@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "RW",
+  "checkedAt": "2026-09-30",
+  "headersUsed": "desktop Chrome UA, cookie jar, Referer https://geodata.rw/portal/home/ for geodata.rw",
+  "reuseStatus": "No licence text on any layer (copyrightText empty); NLA/RSDI terms not read.",
+  "regionCode": "Kicukiro",
+  "regionName": "Kicukiro (City of Kigali)",
+  "status": "verified_region_wide",
+  "source": {
+    "sourceId": "rw-nla-rsdi-kigali-parcels",
+    "name": "Kigali Parcels (LAIS), Rwanda Spatial Data Infrastructure",
+    "operator": "National Land Authority (NLA), Rwanda",
+    "scope": "City of Kigali (3 districts), 555,857 parcels",
+    "endpoint": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11",
+    "method": "GET",
+    "responseFormat": "ArcGIS JSON (esriGeometryPolygon)",
+    "crs": "ITRF_2005 TM30 native; EPSG:4326 via outSR"
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "rw-nla-rsdi-kigali-parcels",
+    "requestUrl": "https://geodata.rw/server/rest/services/LAISData/Kigali_Parcels/FeatureServer/11/query?where=1%3D1&geometry=%7B%22xmin%22%3A30.058%2C%22ymin%22%3A-1.948%2C%22xmax%22%3A30.062%2C%22ymax%22%3A-1.944%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=upi&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "upi",
+    "totalFeatures": 555857,
+    "responseFile": "../../retry/countries/RW-parcel-response.json",
+    "pagination": "maxRecordCount 20000"
+  },
+  "regionWideClaimed": true,
+  "regionWideBasis": "Single Kigali layer covering the three city districts; verified in two boxes (Nyarugenge centre, Kicukiro)",
+  "subregionsVerified": [
+    "Nyarugenge",
+    "Kicukiro"
+  ],
+  "remainingUncertainty": "Per-district completeness not measured; licence unread.",
+  "nextStep": "Read NLA/RSDI terms."
+}

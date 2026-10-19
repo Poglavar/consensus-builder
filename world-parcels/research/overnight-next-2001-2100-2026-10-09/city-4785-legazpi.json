@@ -1,0 +1,54 @@
+{
+  "cityCode": 4785,
+  "queueRank": 2099,
+  "name": "Legazpi",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "point": [13.1496163977733, 123.733536495319],
+  "population2025": 276662,
+  "population2025k": 276.662,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:denr.gov.ph cadastral map parcel Philippines Legazpi; site:lmb.gov.ph cadastral map online Philippines Legazpi",
+        "result": "First-party discovery found the official Geoportal Philippines lot-plotter, an LRA FOI response directing cadastral-map requests to DENR, a DENR-LMB FOI record for a Legazpi cadastral-map request, and official Legazpi City Assessor information. No public parcel polygon API was identified in search results.",
+        "actualResultUrls": [
+          "https://geoportal.gov.ph/gpapps/lotplotter",
+          "https://www.foi.gov.ph/agencies/lra/cadastral-map-of-legazpi-city/",
+          "https://www.foi.gov.ph/agencies/denrlmb/cadastral-map-of-legazpi-city-denrlmb-793756411219/",
+          "https://legazpi.gov.ph/city-assessors-office-2/"
+        ]
+      },
+      {
+        "language": "Filipino/Tagalog",
+        "query": "Legazpi mapa cadastral lote DENR Philippines; Legazpi mapa ng mga lote cadastral",
+        "result": "The Filipino-language discovery did not identify an additional public parcel-vector service. Indexed official material points to DENR/LMB and local assessor/tax-mapping procedures rather than anonymous parcel geometry access.",
+        "actualResultUrls": [
+          "https://www.foi.gov.ph/agencies/denrlmb/cadastral-map-of-legazpi-city-denrlmb-793756411219/",
+          "https://www.betterlegazpi.org/service-details/casso-services",
+          "https://r5.denr.gov.ph/about-us/denr-directory-5/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Official LRA and DENR-LMB FOI records document cadastral-map custody/request routing through DENR/LMB; the official Legazpi City Assessor page identifies the local assessor as custodian of real-property assessment records, and the city service description documents tax-map viewing. This establishes local custodial/procedural evidence, not an open parcel-vector endpoint.",
+  "sourceUrls": [
+    "https://geoportal.gov.ph/gpapps/lotplotter",
+    "https://geoportal.gov.ph/lp/getlocations",
+    "https://geoportal.gov.ph/lp/getMunicipality/ALBAY",
+    "https://geoportal.gov.ph/lp/gettp/ALBAY/LEGAZPI",
+    "https://www.foi.gov.ph/agencies/lra/cadastral-map-of-legazpi-city/",
+    "https://www.foi.gov.ph/agencies/denrlmb/cadastral-map-of-legazpi-city-denrlmb-793756411219/",
+    "https://legazpi.gov.ph/city-assessors-office-2/",
+    "https://www.betterlegazpi.org/service-details/casso-services",
+    "https://r5.denr.gov.ph/about-us/denr-directory-5/"
+  ],
+  "parcelService": null,
+  "geometrySample": null,
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter"
+}

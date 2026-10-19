@@ -1,0 +1,12 @@
+{
+  "taskId": "identity:11726",
+  "decision": "resolved",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-cities-2026-10-08/city-10440-fuyang.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/identity-review.json"
+  ],
+  "checkedAt": "2026-10-09T13:57:18.220156Z"
+}

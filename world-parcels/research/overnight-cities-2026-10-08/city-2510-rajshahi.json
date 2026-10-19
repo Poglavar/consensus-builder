@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Rajshahi",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Bangladesh DLRS provides an official map-search portal for survey plots and records, with division, district, survey, upazila/thana, mouza, sheet, and dag selectors. Its Rajshahi Zonal Settlement Office page lists Rajshahi among the districts under that office. This establishes local cadastral-record/lookup infrastructure, but the interface also surfaces khatiyan/owner fields and no anonymous full-polygon schema was verified, so no plot-specific request was made.",
+  "registryEvidenceUrls": [
+    "https://settlement.gov.bd/Home/",
+    "https://settlement.gov.bd/map/mapsearch",
+    "https://dlrs.gov.bd/pages/static-pages/6922e094933eb65569e27ad1",
+    "https://dlrs.gov.bd/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2510,
+  "cityId": "wup2025:2510",
+  "centerLatLon": [
+    24.3853199847525,
+    88.6125252657018
+  ],
+  "rank": 709,
+  "queueRank": 709,
+  "population2025": 755347,
+  "population2025k": 755.347,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous full-polygon geometry response was verified at the supplied WUP locator. Bonn's documented official WFS could not be queried from this environment; other portals did not publish a reviewed safe vector schema.",
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. DLRS officially offers survey-map search with division/district/survey/upazila/mouza/sheet/dag selection and lists Rajshahi within the Rajshahi zonal office jurisdiction. The interface includes khatiyan and owner-name sections; no plot-specific lookup or geometry request was made. Public anonymous full polygon schema, CRS and exact-point coverage remain unverified. No sample retained and no owner/address or identity data queried.",
+  "priorEvidenceFiles": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Rajshahi Bangladesh official land records cadastral map DLRS mouza map land office",
+        "scope": "Find city-specific official registry/cadastre evidence and public parcel geometry; do not submit owner, address, identity, or property-specific lookup inputs.",
+        "result": "Official DLRS sources identify the Rajshahi zonal office and map-search system. The system exposes district/mouza/plot selectors, but the safe polygon schema and point coverage were not verified.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Home/",
+          "https://settlement.gov.bd/map/mapsearch",
+          "https://dlrs.gov.bd/pages/static-pages/6922e094933eb65569e27ad1",
+          "https://dlrs.gov.bd/"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal/property-specific inputs submitted."
+      },
+      {
+        "language": "Bengali",
+        "query": "রাজশাহী সরকারি ভূমি রেকর্ড জরিপ অধিদপ্তর মৌজা নকশা দাগের ম্যাপ",
+        "scope": "Find city-specific official registry/cadastre evidence and public parcel geometry; do not submit owner, address, identity, or property-specific lookup inputs.",
+        "result": "সরকারি DLRS পোর্টালে রাজশাহী জোনাল সেটেলমেন্ট অফিস এবং মৌজা/দাগভিত্তিক ম্যাপ অনুসন্ধান সেবা পাওয়া গেছে। পূর্ণ জিওরেফারেন্সড পার্সেল জ্যামিতির নিরাপদ স্কিমা যাচাই করা হয়নি; কোনো নির্দিষ্ট জমি অনুসন্ধান করা হয়নি।",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Home/",
+          "https://settlement.gov.bd/map/mapsearch",
+          "https://dlrs.gov.bd/pages/static-pages/6922e094933eb65569e27ad1",
+          "https://dlrs.gov.bd/"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal/property-specific inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://settlement.gov.bd/Home/",
+        "observation": "Official DLRS/Ministry of Land online land-record and survey-management portal; identifies Rajshahi as a zone and provides map-display services."
+      },
+      {
+        "url": "https://settlement.gov.bd/map/mapsearch",
+        "observation": "Official map-search UI provides division/district/survey/upazila-or-thana/mouza/sheet/dag selectors and land/khatiyan information sections. No user/property-specific query made."
+      },
+      {
+        "url": "https://dlrs.gov.bd/pages/static-pages/6922e094933eb65569e27ad1",
+        "observation": "Official DLRS Rajshahi Zonal Settlement Office page lists Rajshahi among districts under that zonal office."
+      },
+      {
+        "url": "https://dlrs.gov.bd/",
+        "observation": "Official Department of Land Records and Surveys site describes current map and survey-record services, including online map ordering."
+      }
+    ]
+  },
+  "populationPlausibility2025": "High",
+  "point": [
+    24.3853199847525,
+    88.6125252657018
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00",
+  "sourceIds": []
+}

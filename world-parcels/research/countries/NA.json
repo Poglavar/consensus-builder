@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NA",
+ "country": "Namibia",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Office of the Surveyor-General, Ministry of Land Reform (Deeds Registry separate); NSDI via Namibia Statistics Agency",
+ "portalsFound": [
+  {
+   "url": "https://nsa.org.na/",
+   "observation": "NSA home page loads (301 from www); no cadastre service link seen."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.mlr.gov.na/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.mlrr.gov.na",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://nsdi.nsa.org.na/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.nsa.org.na/",
+   "method": "GET",
+   "httpStatus": 301,
+   "contentType": null,
+   "assessment": "redirect to nsa.org.na"
+  },
+  {
+   "url": "https://nsa.org.na/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "statistics agency home page, no parcel service"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Namibia%20cadastre&f=json&num=10",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "2 hits; 'Land Ownership' service is a world-cities point layer, irrelevant"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "National cadastre (SG diagrams, erven/farms) held by Surveyor-General",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Ministry hosts unreachable; no open parcel service found. Windhoek municipality GIS not probed.",
+ "nextStep": "Retry Ministry of Land Reform/SG hosts; look for Windhoek municipal GIS and NamSIS."
+}

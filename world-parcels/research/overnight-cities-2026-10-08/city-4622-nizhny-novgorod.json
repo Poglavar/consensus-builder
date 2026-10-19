@@ -1,0 +1,93 @@
+{
+  "name": "Nizhny Novgorod",
+  "country": "Russia",
+  "countryCode": "RU",
+  "rank": 432,
+  "point": [
+    56.2978809840111,
+    43.9223512678088
+  ],
+  "population2025": 1196944,
+  "population2025k": 1196.944,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Local land administration is confirmed, but the current official NSPD map timed out; exact locator boundary inclusion and parcel coverage were not tested.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official city land-plot procedures and local land/property administration are documented; city guidance points to public cadastral mapping, not open vector publication.",
+  "resultCategory": "local_land_registry_confirmed_public_map_geometry_unverified",
+  "technicalBlocker": "Official NSPD map host timed out before service schema or geometry could be requested.",
+  "remainingUncertainty": "Exact locator jurisdiction and current map endpoint availability remain unknown.",
+  "nextStep": "Retry official map when reachable; verify locator against official boundary before any geometry-only request.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Russian",
+        "query": "Нижний Новгород публичная кадастровая карта НСПД Роскадастр официальный земельный участок",
+        "result": "City land-plot page directs to public cadastral map; current NSPD request timed out.",
+        "method": "Separate Russian-language search and official pages review."
+      },
+      {
+        "language": "English",
+        "query": "Nizhny Novgorod official cadastral map parcel registry NSPD public map",
+        "result": "Local land administration found; no current anonymous geometry response.",
+        "method": "Separate English-language search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://admgor.nnov.ru/subordinate/1/page/Baza-gotovyh-resheniy/Zemelnye-uchastki",
+        "observation": "Official city land-plot guidance directs users to public cadastral map for cadastral-number information."
+      },
+      {
+        "url": "https://admgor.nnov.ru/Gorod/Gradostroitelstvo/Granica-goroda",
+        "observation": "Official boundary legal-act/schematic map page; no GIS overlay completed."
+      },
+      {
+        "url": "https://nspd.gov.ru/map?thematic=PKK",
+        "observation": "Official map route timed out during bounded anonymous attempts."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Official city guidance refers to the cadastral map. NSPD timed out during TCP connection before map config, schema, or feature inspection.",
+      "geometryStatus": "not queried: official map did not load",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "not queried: official map did not load",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 432,
+  "wupCityCode": 4622,
+  "cityId": "wup2025:4622",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    56.2978809840111,
+    43.9223512678088
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "registryEvidenceUrls": [
+    "https://admgor.nnov.ru/subordinate/1/page/Baza-gotovyh-resheniy/Zemelnye-uchastki",
+    "https://admgor.nnov.ru/Gorod/Gradostroitelstvo/Granica-goroda",
+    "https://nspd.gov.ru/map?thematic=PKK"
+  ],
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00"
+}

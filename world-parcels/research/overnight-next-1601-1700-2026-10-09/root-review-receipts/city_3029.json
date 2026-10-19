@@ -1,0 +1,16 @@
+{
+  "taskId": "city:3029",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3029-naogaon.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/naogaon-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:57:56Z",
+  "reason": "The official DLRS map search is live, but the bounded Naogaon survey enumeration yielded no parcel response. No native ID or polygon was retrieved; citywide absence is not inferred.",
+  "identityCheck": "Queue, ranked roster, and original WUP 2025 CSV agree on code, rank, country, point and population in persons.",
+  "searchCheck": "Paired packet and review record distinct English and local-language executed queries with result URLs.",
+  "sampleCheck": "No full parcel polygon retained; therefore no native parcel ID or unsafe sample attributes to admit.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed details-panel verification are not evidenced. Runtime remains held."
+}

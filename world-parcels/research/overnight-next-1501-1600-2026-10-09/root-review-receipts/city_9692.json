@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9692",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-9692-hulan.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/hulan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:21:00.533139Z",
+  "reason": "Official Harbin map configuration exposes basemap and annotation services, while Hulan-specific cadastral custody remains unresolved. Timed-out service root and absent parcel response do not establish citywide absence; adapter and headed details gates are unproven."
+}

@@ -1,0 +1,41 @@
+{
+ "country": "Tajikistan",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "State Committee on Land Management and Geodesy (Kadastr agency)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.kadastr.tj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://kadastr.tj/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Tajikistan+cadastre&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official hosts unreachable; no open service located.",
+ "nextStep": "Retry hosts later; search for a national land information system portal.",
+ "schemaVersion": 1,
+ "countryCode": "TJ",
+ "checkedAt": "2026-09-29"
+}

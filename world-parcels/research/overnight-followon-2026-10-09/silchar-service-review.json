@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12009-silchar.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained.",
+  "registryAssessment": "Assam’s cadastral map system and the Silchar Revenue Circle are first-party sources. The exact WUP point’s revenue village and whether it has public cadastral geometry remain unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhunaksha.assam.gov.in/",
+      "observation": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/",
+      "observation": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained."
+    },
+    {
+      "url": "https://dlrs.assam.gov.in/information-services/assam-land-records-manual-english",
+      "observation": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained."
+    },
+    {
+      "url": "https://tcp.assam.gov.in/information-services/development-authorities",
+      "observation": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Silchar Assam India official land records cadastral map Bhunaksha GIS",
+      "result": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained.",
+      "method": "Separate English-language web search followed by first-party page review.",
+      "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry."
+    },
+    {
+      "language": "Assamese",
+      "query": "শিলচৰ কাছাৰ ভূ নক্সা ভূমি মানচিত্ৰ চৰকাৰী অসম",
+      "result": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained.",
+      "method": "Separate local-language web search followed by first-party page review.",
+      "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Assam’s cadastral map system and the Silchar Revenue Circle are first-party sources. The exact WUP point’s revenue village and whether it has public cadastral geometry remain unverified.",
+    "verifiedOpenScope": "No public anonymous WUP-point parcel response or citywide parcel coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://bhunaksha.assam.gov.in/",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://ilrms.assam.gov.in/",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://dlrs.assam.gov.in/information-services/assam-land-records-manual-english",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://tcp.assam.gov.in/information-services/development-authorities",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    }
+  ],
+  "remainingUncertainty": "The urban WUP point may fall within a revenue village or town survey area not resolved from the map landing page; parcel coverage and exact village remain unknown."
+}

@@ -1,0 +1,178 @@
+{
+  "name": "Zurich",
+  "country": "Switzerland",
+  "countryCode": "CH",
+  "rank": 783,
+  "point": [
+    47.3819463819352,
+    8.53646620813248
+  ],
+  "population2025": 689657,
+  "population2025k": 689.657,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The City of Zürich publishes official cadastral-survey open data and the Canton of Zürich provides a machine-readable AV WFS. GetCapabilities and DescribeFeatureType confirm the `ms:liegenschaften_f` parcel layer with MultiSurface geometry and safe cadastral keys `nbident`, `nummer`, and `egris_egrid`; unstable system object IDs and unrelated fields were excluded. Exact-point, native EPSG:2056 and standard-axis EPSG:4326 bounded WFS queries returned no features, so parcel geometry at the ranked locator is not verified.",
+  "registryEvidenceUrls": [
+    "https://www.stadt-zuerich.ch/geodaten/download/Amtliche_Vermessung_Stadt_Zuerich",
+    "https://maps.zh.ch/wfs/AVZHWFS",
+    "https://www.geocat.ch/geonetwork/srv/api/records/ad78b0f8-dc57-4813-97e3-8be2409cd5aa",
+    "https://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting=8.53646620813248&northing=47.3819463819352&format=json"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No parcel geometry was retained. Citywide/countrywide completeness, title, survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_public_parcel_service_geometry_unverified_at_locator",
+  "technicalBlocker": "The official WFS and parcel-layer schema are public and safe fields are known. Exact point, earlier small boxes, a native EPSG:2056 ±100 m box and a standard EPSG:4326 (latitude,longitude) ±100 m box all returned HTTP 200 empty FeatureCollections; no polygon was available to retain at the locator.",
+  "remainingUncertainty": "The advertised WGS84 bounding box includes the ranked point; no native extent was included in the layer capabilities. Empty corrected-CRS responses indicate no intersecting parcel feature in the tested extent, but broader citywide completeness was not tested.",
+  "nextStep": "If continuing discovery, inspect a nearby official map view for local coverage, then issue only a bounded geometry request with safe cadastral keys.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zurich official cadastral survey parcels WFS Grundstücke Liegenschaften GIS open data",
+        "scope": "Find first-party official cadastral parcel service and safe public feature schema.",
+        "result": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim.",
+        "actualResultUrls": [
+          "https://www.stadt-zuerich.ch/geodaten/download/Amtliche_Vermessung_Stadt_Zuerich",
+          "https://maps.zh.ch/wfs/AVZHWFS",
+          "https://www.geocat.ch/geonetwork/srv/api/records/ad78b0f8-dc57-4813-97e3-8be2409cd5aa",
+          "https://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting=8.53646620813248&northing=47.3819463819352&format=json"
+        ],
+        "executionMethod": "Separate English-language search; official City/Canton service metadata and bounded feature queries."
+      },
+      {
+        "language": "German",
+        "query": "Zürich amtliche Vermessung Liegenschaften Grundstücke WFS Parzellen GIS Open Data",
+        "scope": "Cross-check in local language for the official cadastral parcel layer, schema and nearby public geometry.",
+        "result": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim.",
+        "actualResultUrls": [
+          "https://www.stadt-zuerich.ch/geodaten/download/Amtliche_Vermessung_Stadt_Zuerich",
+          "https://maps.zh.ch/wfs/AVZHWFS",
+          "https://www.geocat.ch/geonetwork/srv/api/records/ad78b0f8-dc57-4813-97e3-8be2409cd5aa",
+          "https://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting=8.53646620813248&northing=47.3819463819352&format=json"
+        ],
+        "executionMethod": "Separate German-language search and official source review."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "CH-ZH-AV-WFS-LIEGENSCHAFTEN",
+    "name": "Canton Zürich official cadastral survey WFS, parcel layer",
+    "url": "https://maps.zh.ch/wfs/AVZHWFS",
+    "operator": "Kanton Zürich; City of Zürich official cadastral open-data publisher",
+    "serviceType": "Public WFS cadastral parcel geometry; schema verified; bounded WUP-point and nearby queries returned empty feature collections.",
+    "layer": "ms:liegenschaften_f",
+    "geometryType": "MultiSurface",
+    "outputCrs": "CRS84 GeoJSON; native EPSG:2056",
+    "nativeIdField": "nummer (with nbident and egris_egrid; unstable system object IDs excluded)"
+  },
+  "wupCityCode": 1668,
+  "cityId": "wup2025:1668",
+  "queueRank": 783,
+  "sourceIds": [],
+  "centerLatLon": [
+    47.3819463819352,
+    8.53646620813248
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The City of Zürich publishes official cadastral-survey open data and the Canton of Zürich provides a machine-readable AV WFS. GetCapabilities and DescribeFeatureType confirm the `ms:liegenschaften_f` parcel layer with MultiSurface geometry and safe cadastral keys `nbident`, `nummer`, and `egris_egrid`; unstable system object IDs and unrelated fields were excluded. Exact-point and bounded surrounding WFS queries returned no features, so parcel geometry at the ranked locator is not verified.",
+    "verifiedOpenScope": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime contract or adapter behavior was tested."
+  },
+  "wfsCrsAxisExtentCheck": {
+    "capabilitiesUrl": "https://maps.zh.ch/wfs/AVZHWFS?service=WFS&version=2.0.0&request=GetCapabilities",
+    "describeFeatureTypeUrl": "https://maps.zh.ch/wfs/AVZHWFS?service=WFS&version=2.0.0&request=DescribeFeatureType&typenames=ms%3Aliegenschaften_f",
+    "wfsVersion": "2.0.0",
+    "defaultCrs": "EPSG:2056",
+    "otherCrs": [
+      "EPSG:21781",
+      "EPSG:21780",
+      "EPSG:21782",
+      "EPSG:4326",
+      "EPSG:31297",
+      "EPSG:4258",
+      "EPSG:3857"
+    ],
+    "wgs84BoundingBox": {
+      "lowerCornerLonLat": [
+        8.157224,
+        47.141694
+      ],
+      "upperCornerLonLat": [
+        9.037478,
+        47.712435
+      ],
+      "rankedPointInside": true
+    },
+    "nativeExtentAdvertised": false,
+    "nativeAxisOrder": "Easting, northing (LV95); exact federal transform result [E=2682900.8094122503,N=1248481.086045864].",
+    "epsg4326FilterAxisOrder": "Latitude, longitude for GML EPSG:4326 envelope; GeoJSON response declares CRS84 and longitude, latitude.",
+    "actualSchema": {
+      "geometry": "gml:MultiSurfacePropertyType",
+      "fields": [
+        "geodb_oid:integer",
+        "objectid:integer",
+        "objid:string",
+        "nbident:string",
+        "nummer:string",
+        "egris_egrid:string",
+        "vollstaendigkeit:string",
+        "flaechenmass:integer",
+        "bfsnr:integer",
+        "bearbeitungsdatum:string"
+      ],
+      "requestedSafeFields": [
+        "nbident",
+        "nummer",
+        "egris_egrid",
+        "geometry"
+      ],
+      "excludedSystemFields": [
+        "geodb_oid",
+        "objectid",
+        "objid"
+      ]
+    },
+    "testResults": [
+      {
+        "requestUrl": "https://maps.zh.ch/wfs/AVZHWFS?service=WFS&version=2.0.0&request=GetFeature&typenames=ms%3Aliegenschaften_f&count=3&outputformat=application%2Fjson%3B+subtype%3Dgeojson&srsname=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4326&propertyname=nbident%2Cnummer%2Cegris_egrid&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3Egeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2056%22%3E%3Cgml%3AlowerCorner%3E2682800.8094122503+1248381.086045864%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E2683000.8094122503+1248581.086045864%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AFilter%3E",
+        "httpStatus": 200,
+        "featureCount": 0,
+        "bboxCrs": "EPSG:2056",
+        "bboxAxisOrder": "Easting, northing",
+        "bboxRadiusMetres": 100
+      },
+      {
+        "requestUrl": "https://maps.zh.ch/wfs/AVZHWFS?service=WFS&version=2.0.0&request=GetFeature&typenames=ms%3Aliegenschaften_f&count=3&outputformat=application%2Fjson%3B+subtype%3Dgeojson&srsname=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4326&propertyname=nbident%2Cnummer%2Cegris_egrid&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3Egeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4326%22%3E%3Cgml%3AlowerCorner%3E47.3810463819352+8.53512620813248%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E47.3828463819352+8.53780620813248%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AFilter%3E",
+        "httpStatus": 200,
+        "featureCount": 0,
+        "bboxCrs": "EPSG:4326",
+        "bboxAxisOrder": "Latitude, longitude",
+        "bboxRadiusMetres": 100
+      }
+    ]
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.stadt-zuerich.ch/geodaten/download/Amtliche_Vermessung_Stadt_Zuerich",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Amtliche Vermessung Stadt Zürich - Stadt Zürich"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

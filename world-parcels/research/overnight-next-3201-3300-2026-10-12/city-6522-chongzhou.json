@@ -1,0 +1,138 @@
+{
+  "cityCode": 6522,
+  "queueRank": 3239,
+  "name": "Chongzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [30.6336130545364, 103.675711977162],
+  "population2025": 186383,
+  "population2025k": 186.383,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chongzhou China official natural resources bureau cadastral map parcel GIS real estate registration",
+        "result": "First-party discovery identified the Chongzhou government service portal, the Sichuan Natural Resources Department, and official Sichuan reporting on Chongzhou real-estate registration. No public anonymous parcel-vector endpoint was found.",
+        "actualResultUrls": [
+          "https://cdsczs.sczwfw.gov.cn/",
+          "https://dnr.sc.gov.cn/",
+          "https://dnr.sc.gov.cn/scdnr/scszdt/2021/9/22/787ab8e1584a4e4aa4e144abf475a4b4.shtml"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "崇州市 自然资源局 不动产登记 地籍图 宗地 查询 官方",
+        "result": "第一方检索找到崇州市政务服务网、崇州市人民政府行政许可清单以及四川省自然资源厅关于崇州市不动产登记全市通办的官方信息。材料证实地方规划和自然资源及不动产登记职责，但没有公开匿名安全的宗地编号加完整几何接口或可验证的崇州地籍图服务。",
+        "actualResultUrls": [
+          "https://cdsczs.sczwfw.gov.cn/",
+          "https://cdsczs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=2dd54dcb8bdc47c1af0db528e48d8d20.pdf",
+          "https://dnr.sc.gov.cn/scdnr/scszdt/2021/9/22/787ab8e1584a4e4aa4e144abf475a4b4.shtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Chongzhou Municipal Planning and Natural Resources Bureau (崇州市规划和自然资源局) and local real-estate registration function",
+    "scope": "Official Chongzhou administrative materials identify the municipal planning/natural-resources authority; Sichuan Natural Resources reporting documents Chongzhou real-estate-registration services.",
+    "evidenceUrls": [
+      "https://cdsczs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=2dd54dcb8bdc47c1af0db528e48d8d20.pdf",
+      "https://dnr.sc.gov.cn/scdnr/scszdt/2021/9/22/787ab8e1584a4e4aa4e144abf475a4b4.shtml"
+    ],
+    "scopeNote": "Local custodial and procedural evidence is present, but it does not establish an open parcel-vector feed or adapter readiness."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Chongzhou Government Service Portal, Chongzhou administrative materials, Sichuan Natural Resources Department",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "note": "No safe anonymous parcel ID-plus-geometry response was obtained. Exact WUP point was preserved; no exact-point or citywide absence inference was made."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://www.chongzhou.gov.cn/",
+      "httpStatus": 412,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Official Chongzhou government homepage returned an anti-bot/precondition response. No bypass, login, CAPTCHA/Cloudflare defeat, or private token was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://cdsczs.sczwfw.gov.cn/",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official Chongzhou government-service portal loaded anonymously. Public HTML exposed service links but no parcel viewer configuration or anonymous parcel geometry endpoint."
+    },
+    {
+      "method": "GET",
+      "url": "https://dnr.sc.gov.cn/",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official Sichuan Natural Resources Department homepage loaded anonymously; its public navigation exposed real-estate/natural-resources registration material but no Chongzhou parcel-vector service."
+    },
+    {
+      "method": "GET",
+      "url": "https://cdsczs.sczwfw.gov.cn/module/download/downfile.jsp?classid=0&filename=2dd54dcb8bdc47c1af0db528e48d8d20.pdf",
+      "httpStatus": "search-result/opened",
+      "contentType": "official PDF result",
+      "outcome": "Official 2025 Chongzhou administrative-list result identifies the municipal planning and natural-resources authority; it is administrative custodian evidence, not a parcel geometry response."
+    },
+    {
+      "method": "GET",
+      "url": "https://dnr.sc.gov.cn/scdnr/scszdt/2021/9/22/787ab8e1584a4e4aa4e144abf475a4b4.shtml",
+      "httpStatus": "search-result/opened",
+      "contentType": "official HTML result",
+      "outcome": "Official Sichuan publication documents Chongzhou real-estate-registration all-city service activity; no public parcel schema, CRS, ID, or geometry endpoint was exposed."
+    }
+  ],
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdField": null,
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"featureCount": 0, "result": "No parcel response obtained; zero is not an absence finding."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel endpoint reached; exact WUP point [30.6336130545364, 103.675711977162] preserved in latitude/longitude order. No hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Chongzhou municipal planning/natural-resources and real-estate-registration administration, plus Sichuan provincial natural-resources material.",
+    "verifiedOpenScope": "Local custodial and procedural evidence only; anonymous parcel schema, CRS, geometry delivery and citywide vector coverage not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "Exact WUP point [30.6336130545364, 103.675711977162] was preserved; no coordinate shift.",
+    "A zero exact-point hit, map extent miss, timeout, anti-bot response, or unusable UI is not evidence of citywide absence.",
+    "No native parcel identity, schema, CRS or polygon geometry was verified; no sample GeoJSON was retained.",
+    "No unsafe fields were requested or retained.",
+    "This packet is research only, not source integration or runtime admission."
+  ],
+  "uncertainty": "Local custodial and registration function are evidenced, but the current anonymous parcel endpoint, native identity semantics, CRS, geometry delivery, update behavior and citywide completeness remain unresolved."
+}

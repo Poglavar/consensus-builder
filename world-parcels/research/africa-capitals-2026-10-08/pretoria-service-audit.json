@@ -1,0 +1,426 @@
+{
+  "checkedAt": "2026-10-08T15:25:56.146Z",
+  "purpose": "Read-only current metadata/domain audit using repository createHttpsJsonFetch with published GeoTrust TLS RSA CA G1 intermediate and TLS verification enabled; excludes personal and title-deed values.",
+  "requests": [
+    {
+      "name": "service-metadata",
+      "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 5005,
+      "elapsedMs": 1357
+    },
+    {
+      "name": "layer-metadata",
+      "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "bytes": 6783,
+      "elapsedMs": 265
+    },
+    {
+      "name": "status-distinct",
+      "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1/query?where=1%3D1&outFields=status_lu_text&returnGeometry=false&returnDistinctValues=true&orderByFields=status_lu_text&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 407,
+      "elapsedMs": 641
+    },
+    {
+      "name": "status-type-counts",
+      "url": "https://e-gis003.tshwane.gov.za/server/rest/services/Other_WS/Land_Parcel/MapServer/1/query?where=1%3D1&outStatistics=%5B%7B%22statisticType%22%3A%22count%22%2C%22onStatisticField%22%3A%22OBJECTID%22%2C%22outStatisticFieldName%22%3A%22record_count%22%7D%5D&groupByFieldsForStatistics=status_lu_text%2Ctype_lu_text&returnGeometry=false&orderByFields=status_lu_text%2Ctype_lu_text&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 2538,
+      "elapsedMs": 825
+    }
+  ],
+  "service": {
+    "currentVersion": 11.1,
+    "serviceDescription": "Land Parcels",
+    "description": "Land Parcels",
+    "documentInfo": {
+      "Title": "E-GIS-Webservices.aprx",
+      "Author": "",
+      "Comments": "Land Parcels",
+      "Subject": "Land Parcels",
+      "Category": "",
+      "Version": "2.9.0",
+      "AntialiasingMode": "Fast",
+      "TextAntialiasingMode": "Force",
+      "Keywords": "Land Parcels,COT,Tshwane"
+    },
+    "capabilities": "Map,Query,Data",
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "layers": [
+      {
+        "id": 0,
+        "name": "Land Parcels",
+        "parentLayerId": -1,
+        "defaultVisibility": true,
+        "subLayerIds": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "minScale": 30000,
+        "maxScale": 0,
+        "type": "Group Layer",
+        "supportsDynamicLegends": false
+      },
+      {
+        "id": 1,
+        "name": "Land Parcels",
+        "parentLayerId": 0,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 50000,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 2,
+        "name": "Erven No",
+        "parentLayerId": 0,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 3,
+        "name": "Farm Portions No",
+        "parentLayerId": 0,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      },
+      {
+        "id": 4,
+        "name": "Agricultural Holdings No",
+        "parentLayerId": 0,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "type": "Feature Layer",
+        "geometryType": "esriGeometryPolygon",
+        "supportsDynamicLegends": true
+      }
+    ],
+    "tables": [],
+    "spatialReference": {
+      "wkt": "PROJCS[\"WG29\",GEOGCS[\"GCS_Hartebeesthoek_1994\",DATUM[\"D_Hartebeesthoek_1994\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",29.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]",
+      "xyTolerance": 0.000256000000238419,
+      "zTolerance": 2,
+      "mTolerance": 0.001,
+      "falseX": -5623200,
+      "falseY": -10002100,
+      "xyUnits": 450265407.00157917,
+      "falseZ": 0,
+      "zUnits": 1,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "fullExtent": {
+      "xmin": -128499.92052514758,
+      "ymin": -2885594.95612245,
+      "xmax": 15976.035705406219,
+      "ymax": -2776015.03000439,
+      "spatialReference": {
+        "wkt": "PROJCS[\"WG29\",GEOGCS[\"GCS_Hartebeesthoek_1994\",DATUM[\"D_Hartebeesthoek_1994\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",29.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]",
+        "xyTolerance": 0.000256000000238419,
+        "zTolerance": 2,
+        "mTolerance": 0.001,
+        "falseX": -5623200,
+        "falseY": -10002100,
+        "xyUnits": 450265407.00157917,
+        "falseZ": 0,
+        "zUnits": 1,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    }
+  },
+  "layer": {
+    "id": 1,
+    "name": "Land Parcels",
+    "type": "Feature Layer",
+    "description": "All original surveyed land parcels (erf, agricultural holding and farm portion). Data has been aligned to WGS84",
+    "geometryType": "esriGeometryPolygon",
+    "sourceSpatialReference": {
+      "wkt": "PROJCS[\"WG29\",GEOGCS[\"GCS_Hartebeesthoek_1994\",DATUM[\"D_Hartebeesthoek_1994\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",29.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]",
+      "xyTolerance": 0.000256000000238419,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -5623199.99994648,
+      "falseY": -10002099.9999342,
+      "xyUnits": 15624.999985448101,
+      "falseZ": 0,
+      "zUnits": 1,
+      "falseM": 0,
+      "mUnits": 1
+    },
+    "extent": {
+      "xmin": -128499.92052514758,
+      "ymin": -2885594.95612245,
+      "xmax": 15976.035705406219,
+      "ymax": -2776015.03000439,
+      "spatialReference": {
+        "wkt": "PROJCS[\"WG29\",GEOGCS[\"GCS_Hartebeesthoek_1994\",DATUM[\"D_Hartebeesthoek_1994\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",0.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",29.0],PARAMETER[\"Scale_Factor\",1.0],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]",
+        "xyTolerance": 0.000256000000238419,
+        "zTolerance": 2,
+        "mTolerance": 0.001,
+        "falseX": -5623200,
+        "falseY": -10002100,
+        "xyUnits": 450265407.00157917,
+        "falseZ": 0,
+        "zUnits": 1,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "displayField": "CLASS",
+    "typeIdField": null,
+    "subtypeFieldName": null,
+    "subtypes": [],
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "ObjectID",
+        "domain": null
+      },
+      {
+        "name": "lis_key",
+        "type": "esriFieldTypeString",
+        "alias": "LIS Key",
+        "length": 16,
+        "domain": null
+      },
+      {
+        "name": "legal_area",
+        "type": "esriFieldTypeDouble",
+        "alias": "Legal Area",
+        "domain": null
+      },
+      {
+        "name": "title_deed_no",
+        "type": "esriFieldTypeString",
+        "alias": "Title Deed No",
+        "length": 15,
+        "domain": null
+      },
+      {
+        "name": "parcel_label",
+        "type": "esriFieldTypeString",
+        "alias": "Parcel Label",
+        "length": 15,
+        "domain": null
+      },
+      {
+        "name": "boundary_label",
+        "type": "esriFieldTypeString",
+        "alias": "Boundary Label",
+        "length": 60,
+        "domain": null
+      },
+      {
+        "name": "status_lu_text",
+        "type": "esriFieldTypeString",
+        "alias": "Status",
+        "length": 50,
+        "domain": null
+      },
+      {
+        "name": "type_lu_text",
+        "type": "esriFieldTypeString",
+        "alias": "Type",
+        "length": 50,
+        "domain": null
+      },
+      {
+        "name": "shape",
+        "type": "esriFieldTypeGeometry",
+        "alias": "Shape",
+        "domain": null
+      },
+      {
+        "name": "shape.STArea()",
+        "type": "esriFieldTypeDouble",
+        "alias": "shape.STArea()",
+        "domain": null
+      },
+      {
+        "name": "shape.STLength()",
+        "type": "esriFieldTypeDouble",
+        "alias": "shape.STLength()",
+        "domain": null
+      }
+    ],
+    "ownershipBasedAccessControlForFeatures": {
+      "allowOthersToQuery": true
+    },
+    "maxRecordCount": 2000,
+    "capabilities": "Map,Query,Data",
+    "advancedQueryCapabilities": {
+      "useStandardizedQueries": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsPagination": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsTrueCurve": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsReturningQueryExtent": true,
+      "supportsQueryWithDistance": true,
+      "supportsSqlExpression": true,
+      "supportsTimeRelation": true,
+      "supportsSqlFormat": false,
+      "supportsQueryAnalytic": true
+    },
+    "hasGeometryProperties": true
+  },
+  "statusValues": [
+    "Now Scheme",
+    "Railway",
+    "Registered",
+    "Road",
+    "Unregistered"
+  ],
+  "statusTypeCounts": [
+    {
+      "status_lu_text": "Now Scheme",
+      "type_lu_text": null,
+      "record_count": 11282
+    },
+    {
+      "status_lu_text": "Now Scheme",
+      "type_lu_text": "Consolidated",
+      "record_count": 764
+    },
+    {
+      "status_lu_text": "Now Scheme",
+      "type_lu_text": "Park",
+      "record_count": 6
+    },
+    {
+      "status_lu_text": "Now Scheme",
+      "type_lu_text": "Road Closure",
+      "record_count": 1
+    },
+    {
+      "status_lu_text": "Now Scheme",
+      "type_lu_text": "Subdivided",
+      "record_count": 2811
+    },
+    {
+      "status_lu_text": "Railway",
+      "type_lu_text": null,
+      "record_count": 17
+    },
+    {
+      "status_lu_text": "Railway",
+      "type_lu_text": "Consolidated",
+      "record_count": 1
+    },
+    {
+      "status_lu_text": "Railway",
+      "type_lu_text": "Subdivided",
+      "record_count": 25
+    },
+    {
+      "status_lu_text": "Registered",
+      "type_lu_text": null,
+      "record_count": 451954
+    },
+    {
+      "status_lu_text": "Registered",
+      "type_lu_text": "Consolidated",
+      "record_count": 4342
+    },
+    {
+      "status_lu_text": "Registered",
+      "type_lu_text": "Park",
+      "record_count": 2655
+    },
+    {
+      "status_lu_text": "Registered",
+      "type_lu_text": "Remainder of Township",
+      "record_count": 303
+    },
+    {
+      "status_lu_text": "Registered",
+      "type_lu_text": "Road Closure",
+      "record_count": 46
+    },
+    {
+      "status_lu_text": "Registered",
+      "type_lu_text": "Subdivided",
+      "record_count": 93604
+    },
+    {
+      "status_lu_text": "Road",
+      "type_lu_text": null,
+      "record_count": 181
+    },
+    {
+      "status_lu_text": "Road",
+      "type_lu_text": "Park",
+      "record_count": 5
+    },
+    {
+      "status_lu_text": "Road",
+      "type_lu_text": "Subdivided",
+      "record_count": 394
+    },
+    {
+      "status_lu_text": "Unregistered",
+      "type_lu_text": null,
+      "record_count": 96902
+    },
+    {
+      "status_lu_text": "Unregistered",
+      "type_lu_text": "Consolidated",
+      "record_count": 1413
+    },
+    {
+      "status_lu_text": "Unregistered",
+      "type_lu_text": "Park",
+      "record_count": 595
+    },
+    {
+      "status_lu_text": "Unregistered",
+      "type_lu_text": "Remainder of Township",
+      "record_count": 175
+    },
+    {
+      "status_lu_text": "Unregistered",
+      "type_lu_text": "Road Closure",
+      "record_count": 121
+    },
+    {
+      "status_lu_text": "Unregistered",
+      "type_lu_text": "Subdivided",
+      "record_count": 15266
+    }
+  ]
+}

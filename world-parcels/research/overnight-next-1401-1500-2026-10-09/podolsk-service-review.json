@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2889-podolsk.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "Rosreestr's official public cadastral map is now routed through the National Spatial Data Platform (NSPD). Podolsk municipal property/land committee evidence establishes local procedural custody and cadastral-number use. The NSPD and legacy PKK hosts timed out for bounded anonymous requests, so no safe native parcel identity plus polygon was verified; no sample was retained and runtime remains held.",
+  "registryAssessment": "Podolsk's official Committee for Property and Land Relations is a local municipal land/property custodian and publishes cadastral-number procedures. Rosreestr/NSPD is the national cadastral-map custodian. Neither was verified here as an accessible open parcel-vector endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.kizopodolsk.ru/",
+      "operator": "Committee for Property and Land Relations, Administration of Podolsk Urban District",
+      "observation": "Official local authority page identifies the committee and its land/property remit."
+    },
+    {
+      "url": "https://www.kizopodolsk.ru/info/p2_start/240",
+      "operator": "Committee for Property and Land Relations, Administration of Podolsk Urban District",
+      "observation": "Official public-servitude notice lists cadastral parcel numbers for Podolsk-area land; no geometry or API is exposed."
+    },
+    {
+      "url": "https://nspd.gov.ru/map",
+      "operator": "Rosreestr / National Spatial Data Platform",
+      "observation": "Current official destination for the public cadastral map, as confirmed by Rosreestr discovery material; page was unreachable by bounded request from this environment."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Podolsk Russia official cadastral map land registry parcel GIS Rosreestr",
+      "result": "Found the official NSPD map route and Podolsk municipal committee evidence; no verified public parcel vector endpoint.",
+      "actualResultUrls": ["https://nspd.gov.ru/map", "https://www.kizopodolsk.ru/"]
+    },
+    {
+      "language": "Russian (local/native)",
+      "query": "Публичная кадастровая карта Подольск Росреестр НСПД официальный кадастровые участки",
+      "result": "Confirmed the NSPD migration and local Podolsk cadastral-procedure material; no machine-readable geometry response.",
+      "actualResultUrls": ["https://nspd.gov.ru/map", "https://www.kizopodolsk.ru/info/p2_start/240", "https://rosreestr.gov.ru/"]
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": "Official NSPD public-map route",
+      "result": "Bounded anonymous GET timed out after 30 seconds; current JavaScript/configuration and service endpoints could not be inspected.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Legacy Rosreestr public cadastral map host",
+      "result": "Bounded HEAD/GET timed out after 20 seconds; this was recorded only as a route failure, not evidence of absence.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Podolsk municipal first-party custodian/procedure review",
+      "result": "Official committee page and cadastral-number notice were identified; they establish custody and procedure context but expose no parcel geometry service.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nspd.gov.ru/map?zoom=14&coordinate_x=4177000&coordinate_y=7460000&theme_id=1",
+      "method": "GET",
+      "outcome": "timeout after 30 seconds",
+      "safeRequest": true
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/",
+      "method": "HEAD/GET",
+      "outcome": "timeout after 20 seconds",
+      "safeRequest": true
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No full parcel polygon and no verified stable native parcel identity were obtained. No exact-point hit or miss was used to infer coverage."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rosreestr/NSPD public cadastral-map route plus Podolsk municipal land/property custodian and procedure evidence.",
+    "verifiedOpenScope": "Custodian and route evidence only; parcel geometry, schema, CRS and citywide coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "sourceFieldMapping": null,
+  "safeFieldAllowlist": ["stable native parcel or cadastral identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "A current NSPD interactive workflow or regional backend may expose anonymous geometry, but it could not be reached or inspected in this attempt.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

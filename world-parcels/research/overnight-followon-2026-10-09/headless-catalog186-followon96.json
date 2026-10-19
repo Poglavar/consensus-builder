@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-09T06:53:11.531315+00:00",
+  "runtimeCityCount": 186,
+  "providerCount": 158,
+  "followonReviewed": 96,
+  "tests": 115,
+  "testFiles": 7,
+  "status": "passed",
+  "command": "npx vitest run test/parcel-catalog-startup.test.js test/parcel-coverage-report.test.js test/parcel-report-evidence.test.js test/coverage-evidence-consistency.test.js test/world-coverage-build.test.js test/frontend-world-coverage.test.js test/gml-wfs-source.test.js",
+  "priorHarnessFailure": "One earlier invocation used backend cwd for repository-level report builders, leaving generated coverage stale. The output consistency assertion failed as expected. Both reports were then regenerated from repo root before the passing check."
+}

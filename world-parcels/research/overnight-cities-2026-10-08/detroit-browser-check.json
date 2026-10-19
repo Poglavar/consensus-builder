@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-09T02:30:47.166271+00:00",
+  "appCityId": "detroit",
+  "url": "http://localhost:5638/?city=detroit&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 309,
+  "visibleParcels": 112,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "US-MI-DETROIT-16032881.",
+  "detailsHeading": "Parcel Copy to clipboard: US-MI-DETROIT-16032881.",
+  "detailsMatchesSelectedParcel": true,
+  "nativeKeyPunctuationPreserved": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

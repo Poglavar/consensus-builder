@@ -1,0 +1,65 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:SB:honiara",
+  "name": "Honiara",
+  "country": "Solomon Islands",
+  "countryCode": "SB",
+  "centerLatLon": [
+    -9.433333,
+    159.95
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/SB.json",
+    "research/retry/countries/SB.json (national search and portal retries"
+  ],
+  "priorEvidenceAssessment": "research/countries/SB.json; research/retry/countries/SB.json (national search and portal retries; no Honiara sample).",
+  "executedQueries": [
+    {
+      "query": "Honiara Solomon Islands land parcel GIS cadastral official mapping",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Solomon Islands graon land parcel map Honiara Pijin",
+      "language": "Pijin/local-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://solomons.gov.sb/",
+      "observation": "Official government services portal has Lands actions (register land transactions, survey land, access land records); service links are not a public parcel geometry endpoint. Ministry domain remains inaccessible from the environment; no city feature service found."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://solomons.gov.sb/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "outcome": "Official government services portal inspected. Lands menu provides registration/survey/records actions, not a public geometry endpoint; HTTP status not exposed."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-honiara.json"
+}

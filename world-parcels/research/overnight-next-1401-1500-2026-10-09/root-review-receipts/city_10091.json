@@ -1,0 +1,16 @@
+{
+  "taskId": "city:10091",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-10091-rewa.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/rewa-service-review.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T17:54:48Z",
+  "reason": "Immutable WUP rank 1485 identity matches both roster artifacts; English and Hindi searches and first-party custody evidence reviewed. No verified parcel response, native ID, sample polygon, or independent adapter qualification. MP portal timeouts do not establish absence.",
+  "firstPartyUrlsChecked": [
+    "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/432",
+    "https://www.services.mp.gov.in/eservice/eServices?srvs=19"
+  ]
+}

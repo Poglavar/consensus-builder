@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:275",
+  "wupCityCode": 275,
+  "name": "Alexandria",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    31.1933695758061,
+    29.9517660943627
+  ],
+  "population2025": 7266957,
+  "checkedAt": "2026-10-08",
+  "resultCategory": "official_mapping_product_no_open_endpoint",
+  "priorEvidence": [
+    {
+      "path": "research/alexandria.json",
+      "status": null
+    },
+    {
+      "path": "research/india-africa-2026-10-08/africa-ne-city-alexandria.json",
+      "status": "public_service_no_geometry"
+    }
+  ],
+  "priorBlocker": "The public city-specific search found no verified parcel polygons for Alexandria; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "الإسكندرية قطع الأراضي خريطة مساحية بيانات عقارية بوابة حكومية GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "https://services2.arcgis.com/ChYV69FhfjwkvRmy/ArcGIS/rest/services/Alexandria_Parcels/FeatureServer/0"
+      ],
+      "summary": "Found an official ESA Alexandria digital-map project and an apparent Alexandria parcel FeatureServer. Inspecting the service metadata extent shows it is in the United States (around longitude −77, latitude 39), not Alexandria, Egypt; rejected as a name collision."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+      "operator": "Egyptian Survey Authority (ESA), with Alexandria Governorate",
+      "observation": "Official ESA says it and Alexandria Governorate agreed to create digital GIS maps at 1:1,000 and 1:5,000 scales for governorate planning, urban-boundary work and state-property inventory. The page establishes map production but does not identify parcel-cadastre semantics or publish a feature endpoint."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "operator": "Egyptian Survey Authority (ESA)",
+      "observation": "Digital maps require written request specifying location, scale, layers and format, followed by estimate/payment and delivery; no anonymous export is described."
+    },
+    {
+      "url": "https://services2.arcgis.com/ChYV69FhfjwkvRmy/ArcGIS/rest/services/Alexandria_Parcels/FeatureServer/0",
+      "operator": "Unverified ArcGIS Online publisher",
+      "observation": "Polygon layer name and fields resemble a parcel layer, but REST metadata extent is EPSG:3857 X −8,587,667..−8,575,751, Y 4,691,628..4,699,487 (roughly Alexandria, Virginia, USA). This is unrelated to the target Alexandria in Egypt; no feature query was made."
+    },
+    {
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "operator": "Egyptian Survey Authority (ESA)",
+      "observation": "Official description of the National Urban Real-Estate Register confirms a property GIS initiative but names Cairo districts rather than Alexandria in its implementation list; it does not establish Alexandria parcel access."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Official project description only; digital map creation for Alexandria Governorate, no online vector endpoint."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Formal-request map access workflow; no anonymous bounded parcel query."
+    },
+    {
+      "url": "https://services2.arcgis.com/ChYV69FhfjwkvRmy/ArcGIS/rest/services/Alexandria_Parcels/FeatureServer/0",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "ArcGIS REST HTML metadata",
+      "assessment": "Polygon layer extent is in the Alexandria, Virginia area. Rejected as a geographic name collision without querying features."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "coverageAssessment": {
+    "claimedScope": "Target city only; national or administrative service descriptions do not establish city parcel coverage.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The official ESA confirms detailed Alexandria digital GIS map production, but its published access route is formal request and purchase. The seemingly relevant ArcGIS parcel service is outside Egypt.",
+  "remainingUncertainty": "The ESA may hold full city parcel data; public access, terms and an exact target-city feature endpoint remain unverified.",
+  "nextStep": "Ask ESA/Alexandria Governorate for a small licensed/open GIS extract or public service; do not use the US Alexandria layer."
+}

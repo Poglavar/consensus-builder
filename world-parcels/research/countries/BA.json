@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "BA",
+  "country": "Bosnia and Herzegovina",
+  "checkedAt": "2026-09-29",
+  "status": "subnational_only",
+  "cadastreAuthority": "Entity level: Federal Administration for Geodetic and Real Property Affairs (FGU, FBiH, katastar.ba) and Republic Authority for Geodetic and Real Property Affairs (RGURS, Republika Srpska, e-Katastar); Brcko District separate. No state-level cadastre.",
+  "portalsFound": [
+    {
+      "url": "https://www.katastar.ba",
+      "observation": "FBiH cadastre information system (parcel search by municipality/cadastral community); page reachable, no open feature API identified"
+    },
+    {
+      "url": "https://www.rgurs.org/sr-lat/stranica/e-katastar",
+      "observation": "RS e-Katastar viewer; TLS chain failed from this client"
+    },
+    {
+      "url": "https://www.fgu.com.ba/en/cadastre.html",
+      "observation": "FGU cadastre page"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.katastar.ba",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "app page"
+    },
+    {
+      "url": "https://www.fgu.com.ba/en/cadastre.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "info page"
+    },
+    {
+      "url": "https://www.rgurs.org/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "SSL certificate chain failed"
+    },
+    {
+      "url": "https://katastar.rgurs.org/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT 502"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Entity-level only; katastar.ba covers 79 FBiH municipalities per secondary source",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "viewer-only",
+  "remainingUncertainty": "No polygon response obtained from either entity.",
+  "nextStep": "Inspect katastar.ba and RGURS geoportal network calls."
+}

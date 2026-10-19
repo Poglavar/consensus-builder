@@ -1,0 +1,59 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "WY",
+ "regionName": "Wyoming",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "us-wy-parcels",
+  "name": "Laramie County GIS (Cheyenne), Assessor Parcels layer",
+  "operator": "Laramie County GIS (Cheyenne), Assessor Parcels layer",
+  "scope": "county only",
+  "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST query (f=geojson)",
+  "crs": "EPSG:3736 (requested outSR 4326)",
+  "reuseStatus": "No licence text in service metadata. Layer carries owner and address fields (not requested)."
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: application/json; Accept-Language: en-US,en;q=0.9; cookie jar (curl -b/-c); outbound via agent proxy, TLS verified",
+ "verifiedParcelResponse": {
+  "sourceId": "us-wy-parcels",
+  "requestUrl": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json / geo+json",
+  "spatialTestAreaLonLat": "bbox ~0.0024 deg (about 200 m) around each sample point, inSR=4326",
+  "parcelRecordCount": 2,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "statepidn",
+  "responseFile": "research/subnational/US/WY-parcel-response.json",
+  "pagination": "resultRecordCount=3; server maxRecordCount 100000 or 2000/1000",
+  "regionSampled": "Laramie County"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide open parcel layer found in ArcGIS Online search; only county/city services (Laramie County, Natrona County via casperwy.gov, City of Laramie, Sheridan). Layer is county-wide only.",
+ "subregionsVerified": [
+  "Laramie County"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2",
+   "observation": "anonymous ArcGIS REST layer; found via ArcGIS Online sharing search / known state service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/MapServer/2/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=statepidn&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "2 polygon(s), Laramie County"
+  }
+ ],
+ "reuseStatus": "No licence text in service metadata. Layer carries owner and address fields (not requested).",
+ "remainingUncertainty": "Wyoming statewide layer (e.g. via WyGISC/state GeoHub) not exhaustively searched; Natrona Assessor service on casperwy.gov returned an HTML page in a single quick test, not verified.",
+ "nextStep": "Check WyGISC GeoHub and Natrona/Sheridan services; try services.wygisc.org."
+}

@@ -1,0 +1,24 @@
+{
+  "taskId": "city:10396",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-10396-qinzhou.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/qinzhou-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T205539-64485aa5/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-11T20:59:22Z",
+  "reason": "Queue identity and executed English/Chinese searches checked. Official Guangxi search evidence describes cadastral map inquiry and a Qinzhou land-space platform, but the anonymous viewer timed out; no original parcel response, native ID, or polygon is available for qualification. A timeout or login requirement is not citywide absence. Registry custody remains unresolved (null).",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

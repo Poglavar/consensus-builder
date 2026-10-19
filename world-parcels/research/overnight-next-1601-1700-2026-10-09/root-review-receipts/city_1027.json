@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1027",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-1027-bo.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/bo-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/root-identity-decision-overlay.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/identity-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:08:20.266516Z",
+  "reason": "WUP 2025 Bo identity agrees with the hashed source archive; the prior BO file refers to Bolivia and its resolved identity overlay keeps Bo pending. English and Krio-oriented search records and official ministry/commission pages establish custody, but no anonymous native parcel ID or full polygon was retrieved. No adapter qualification or headed Details evidence."
+}

@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-xining-real-estate-registration-portal",
+  "purpose": "Service review for WUP2025 rank 372 Xining (city code 3826); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "西宁市不动产登记局 / Xining Real Estate Registration Bureau",
+  "sourceUrl": "https://www.xnsbdc.cn/index",
+  "registryFound": true,
+  "registryBasis": "The Xining Real Estate Registration Bureau operates an official local registration portal, xnsbdc.cn, with registration, certificate, archive-verification and transaction services. This confirms a city-local property registry; no public anonymous parcel geometry service was identified.",
+  "officialSources": [
+    {
+      "url": "https://www.xnsbdc.cn/index",
+      "observation": "Official Xining Real Estate Registration Bureau portal lists transaction progress, certificate query, online acceptance and archive verification and names the city bureau as publisher."
+    },
+    {
+      "url": "https://www.xnsbdc.cn/bsznpage",
+      "observation": "Official portal lists city registration service guides, including real-estate registration information query; no public parcel geometry service is described on this index page."
+    },
+    {
+      "url": "https://www.xining.gov.cn.wsyby.8686c.com/zwgk/fdzdgknr/ghxx/202506/P020250603362712543062.pdf",
+      "observation": "Xining municipal spatial plan PDF identifies the Xining Municipal Natural Resources and Planning Bureau; its maps are planning/regional maps, not parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Xining China official real estate registry cadastral map parcel GIS public map natural resources",
+      "scope": "Find a city-specific official cadastral registry and anonymous full parcel map service.",
+      "result": "The search surfaced Xining government land-use planning map material and an official Xining real-estate registration portal. The portal describes registration and online service functions; no anonymous citywide parcel feature service was found in the reviewed official pages.",
+      "actualResultUrls": [
+        "https://www.xnsbdc.cn/index",
+        "https://www.xnsbdc.cn/bsznpage",
+        "https://www.xining.gov.cn.wsyby.8686c.com/zwgk/fdzdgknr/ghxx/202506/P020250603362712543062.pdf"
+      ],
+      "executionMethod": "English-language web search followed by direct inspection of the Xining registration portal."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "西宁市 不动产登记 地籍图 查询 地图 西宁市不动产登记服务中心",
+      "scope": "查找西宁市本地不动产登记机构及公众可用的宗地地图/地籍图服务。",
+      "result": "找到西宁市不动产登记局/服务中心官方门户，列出登记、证书查询、查档核验及网上受理。公开页面没有证实匿名全市宗地矢量服务，也没有取得完整宗地几何。",
+      "actualResultUrls": [
+        "https://www.xnsbdc.cn/index",
+        "https://www.xnsbdc.cn/bsznpage"
+      ],
+      "executionMethod": "简体中文检索并直接查看官方西宁市不动产登记门户页面。"
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "The official portal publicly documents real-estate registration and lookup workflows but the reviewed public pages do not expose a citywide parcel layer or anonymous full polygon query. The published service menu is transaction-oriented. No login, identity verification, address lookup, or property-specific query was attempted.",
+    "publicHtmlFetched": true,
+    "publicHtmlRoutesInspected": [
+      "/index",
+      "/bsznpage"
+    ],
+    "advertisedMapLinkFound": false,
+    "registrationServiceRedirectsToLogin": true,
+    "linkedGuideImageFetched": false
+  },
+  "requestEvidence": [
+    {
+      "method": "web search",
+      "observation": "Searches were conducted separately in English and the city/country primary language. Search results and official source pages are recorded above; search-result presence is not treated as a parcel response."
+    },
+    {
+      "method": "official-page inspection",
+      "observation": "Inspected the listed official HTML/content sources only. No undocumented endpoint or feature response was observed, so no HTTP status, feature count, CRS or native feature ID is asserted."
+    },
+    {
+      "url": "https://www.xnsbdc.cn/index",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 55513,
+      "observation": "Public homepage directly fetched; HTML has no terms for map, cadastral, parcel, WFS or GeoServer."
+    },
+    {
+      "url": "https://www.xnsbdc.cn/bsznpage",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 36229,
+      "observation": "Public service-guide index directly fetched; no map/cadastral terms or map link surfaced."
+    },
+    {
+      "url": "https://www.xnsbdc.cn/cygn/ywbl",
+      "method": "GET",
+      "status": 302,
+      "location": "/userlogin",
+      "observation": "Anonymous business-handling route redirects to login. No login or record-specific lookup attempted."
+    },
+    {
+      "url": "https://www.xnsbdc.cn/view/2021bszns/2fd59a997d54403ea6b606eeb14018d6",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 4058,
+      "observation": "Public query-guide page title loaded, but body content is a linked image; image endpoint was not fetched."
+    }
+  ],
+  "technicalBlocker": "Direct anonymous GETs confirm the public Xining registration portal loads, but its homepage and service-guide index contain no publicly advertised cadastral-map/vector route. The business-handling service path returns HTTP 302 to `/userlogin`. No anonymous full parcel geometry endpoint was found; no sign-in or property-specific query was attempted.",
+  "sampleDisposition": "No public anonymous map geometry route verified. The public business-handling route redirects to login; zero polygons retained.",
+  "remainingUncertainty": "A local map layer may exist behind the portal or in a separate Qinghai/Xining mapping service. The public HTML and linked static site assets inspected do not establish its route or access conditions.",
+  "staticScriptInspection": {
+    "checkedAt": "2026-10-09",
+    "method": "Anonymous GET of each unique script src referenced by https://www.xnsbdc.cn/index; no login or property-specific action.",
+    "scriptCount": 12,
+    "scripts": [
+      "/layerjs",
+      "/layeruijs",
+      "/bootstrapjs",
+      "/jquerymin",
+      "/bookjs",
+      "/goodjs",
+      "/formjs",
+      "/laytpljs",
+      "/setsjs",
+      "/framejs",
+      "/basicindex",
+      "/outset/nodebug.js"
+    ],
+    "result": "All 12 returned HTTP 200. No site-specific public map/cadastre/parcel/schema endpoint was found. Generic “map” text occurred only in shared libraries; site-specific /basicindex had no map/cadastre/parcel/WFS/WMS/GeoJSON terms."
+  }
+}

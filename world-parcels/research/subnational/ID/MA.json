@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "MA",
+ "regionName": "Maluku",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "name": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000",
+  "operator": "BIG Satu Peta, data from Kementerian ATR/BPN",
+  "scope": "15 provinces with sublayers, patchy",
+  "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "esri JSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "licence not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/19/query?where=1%3D1&geometry=131.6370,-4.4810,131.6385,-4.4795&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   131.637,
+   -4.481,
+   131.6385,
+   -4.4795
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "nib (objectid is OID); sublayer also has kecamatan, kelurahan, tipehak (not saved)",
+  "responseFile": "MA-parcel-response.json",
+  "pagination": "resultRecordCount/resultOffset"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Sublayer 19 'Maluku' holds 8031 features (returnCountOnly) with extent lon 129.55-134.14, lat -6.76 to -3.29 (southeast Maluku: Kei/Tanimbar/Aru/Seram-east area); tipehak values seen: Hak Milik, Kosong. The publisher makes no full-province claim.",
+ "subregionsVerified": [
+  "southeast Maluku, around 131.64E -4.48S (not Ambon)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "Listing of the MapServer: group layer 10 has 15 province sublayers (11-25: NTB, Jatim, DIY, Kalbar, Sulbar, Kaltara, Aceh, Sultra, Maluku, Kaltim, Jabar, Bali, Banten, Kepri, Jateng). None for Maluku Utara, Papua Barat, Papua Barat Daya, Papua, Papua Selatan, Papua Tengah, Papua Pegunungan. Layers 28-35 and 51-57 are oil-palm permits in Papua districts, not parcels."
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer page returns 200 HTML; no open parcel endpoint identified (token-gated); not tested further"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer?f=json and /10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "sublayer list; headers used: Chrome/125 desktop UA, Accept application/json, Accept-Language id-ID, cookie jar, Referer https://satupeta.big.go.id/"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/19/query (3 boxes around Ambon 128.17-128.21E, -3.72..-3.68S; and a Ternate box)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "empty features: no parcels in Ambon; layer extent excludes it"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/19/query?returnCountOnly=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 8031"
+  }
+ ],
+ "reuseStatus": "licence/terms not read",
+ "remainingUncertainty": "Coverage confined to the sublayer extent (about 8k parcels), Ambon and the capital have none. Provincial geoportal hosts guessed (geoportal.malukuprov.go.id) did not resolve, so not checked.",
+ "nextStep": "Read BIG/ATR-BPN terms; find Maluku provincial Simpul Jaringan URL from the BIG node list; check Bhumi."
+}

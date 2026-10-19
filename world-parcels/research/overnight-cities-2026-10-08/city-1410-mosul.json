@@ -1,0 +1,92 @@
+{
+  "name": "Mosul",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 293,
+  "point": [
+    36.3410590032478,
+    43.1069655083468
+  ],
+  "population2025": 1665214,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. Official Ministry sources confirm a Nineveh/Mosul-area registration directorate, but public deed/map e-services are limited to selected Baghdad directorates and require owner documentation. The official reconstruction GIS is project/facility mapping, not a cadastre. No anonymous city parcel layer or parcel geometry was found; no private data or credentials were used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Iraqi Ministry of Justice lists the Nineveh Real Estate Registration Directorate (including al-Zuhoor) as a local property-registration office. The Ministry’s electronic deed/map services are described as rolled out in selected Baghdad directorates, and the official service workflow requires owner documents; this does not establish a public parcel-map service for Mosul.",
+  "resultCategory": "local_real_estate_registry_confirmed_no_public_parcel_geometry_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mosul Iraq cadastral parcel map registry land records official Nineveh GIS",
+        "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+        "result": "Official Ministry of Justice sources list the Nineveh Real Estate Registration Directorate and explain the limited Baghdad electronic deed/map rollout. No anonymous Mosul parcel map endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/contact_us.php",
+          "https://moj.gov.iq/view.9289/"
+        ],
+        "executionMethod": "Separate English web search and Ministry service/directory review."
+      },
+      {
+        "language": "Arabic",
+        "query": "نينوى الموصل التسجيل العقاري خارطة عقارية عقار دائرة التسجيل العقاري GIS",
+        "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+        "result": "المصادر الرسمية لوزارة العدل تسجل مديرية التسجيل العقاري في نينوى/الزهور. خدمة الخرائط الإلكترونية المعلنة متاحة لمديريات مختارة في بغداد وتتطلب مستندات المالك؛ لم يظهر عارض عام لقطع الموصل.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/contact_us.php",
+          "https://moj.gov.iq/view.9289/"
+        ],
+        "executionMethod": "بحث عربي منفصل ومراجعة دليل الوزارة وصفحات الخدمة الرسمية."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.moj.gov.iq/contact_us.php",
+        "method": "Official page and source inspection",
+        "observation": "Official Ministry directory lists the Nineveh Real Estate Registration Directorate / al-Zuhoor office."
+      },
+      {
+        "url": "https://moj.gov.iq/view.9289/",
+        "method": "Official page and source inspection",
+        "observation": "Official Ministry notice describes e-services for deed and parcel-map requests and names the currently participating Baghdad directorates; the announcement does not include Nineveh."
+      },
+      {
+        "url": "https://mnpcd.mop.gov.iq/GovernorateDetails.php?gov=4",
+        "method": "Official page and source inspection",
+        "observation": "Government project GIS for Nineveh concerns reconstruction projects/facilities, not cadastral parcels."
+      }
+    ],
+    "viewerAndServiceTrace": null
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IQ-NINEVEH-MOJ-REAL-ESTATE-REGISTRY",
+    "name": "Nineveh Real Estate Registration Directorate",
+    "url": "https://www.moj.gov.iq/contact_us.php",
+    "operator": "Iraqi Ministry of Justice, Nineveh Real Estate Registration Directorate",
+    "serviceType": "Official city-specific registry/cadastral office or map-service evidence; no anonymous parcel-geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "wupCityCode": 1410,
+  "cityId": "wup2025:1410",
+  "queueRank": 293,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    36.3410590032478,
+    43.1069655083468
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:09:53.255025+00:00"
+}

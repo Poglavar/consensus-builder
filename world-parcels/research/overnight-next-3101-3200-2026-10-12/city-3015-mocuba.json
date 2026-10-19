@@ -1,0 +1,120 @@
+{
+  "cityCode": 3015,
+  "queueRank": 3134,
+  "name": "Mocuba",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "iso3": "MOZ",
+  "point": [-16.8444463824618, 36.9814819548574],
+  "population2025": 191635,
+  "population2025k": 191.635,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mocuba Mozambique cadastral parcel map land registry GIS official",
+        "result": "First-party discovery found an official PDUL municipal assessment stating that the Conselho Municipal da Cidade de Mocuba uses ArcGIS for land-information management, with one shapefile per bairro and 20 Access databases containing talhão data. The official MOZGIS Mocuba service exposed only health/concentration-point and INE locality-boundary layers, not parcels.",
+        "actualResultUrls": [
+          "https://www.pdul.gov.mz/content/download/183/992/file/PDUL_AAD%202020_Mocuba.pdf",
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer",
+          "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer"
+        ]
+      },
+      {
+        "language": "Portuguese (local/official)",
+        "query": "Mocuba Moçambique cadastro predial mapa parcelas município registo cadastral",
+        "result": "A pesquisa oficial em português found the same PDUL evidence for Mocuba's municipal cadastral ArcGIS/shapefile and Access systems, plus the official MOZGIS portal and an official citizen-service description saying DUAT applications are made through the municipality. No public Mocuba parcel endpoint or safe ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.pdul.gov.mz/content/download/205/1108/file/DIISB4_MOCUBA%20Final_12%2011%202020.pdf",
+          "https://facim.moz.mz/catalogo",
+          "https://www.ade.gov.mz/",
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Conselho Municipal da Cidade de Mocuba (CMCM), municipal cadastro/land-information function",
+    "scope": "Local municipal custodian evidenced by the official PDUL assessment: ArcGIS land-information management with one shapefile per bairro and 20 historical Access databases containing talhão data. This establishes cadastral custody/context, not public vector availability.",
+    "evidence": "https://www.pdul.gov.mz/content/download/183/992/file/PDUL_AAD%202020_Mocuba.pdf"
+  },
+  "nationalContext": {
+    "name": "Agência Nacional de Desenvolvimento Geo-Espacial (ADE) / MOZGIS",
+    "scope": "National geospatial portal and public map-service context. The public Mocuba service is a health/locality map, not a cadastral parcel service.",
+    "evidence": "https://www.ade.gov.mz/"
+  },
+  "service": {
+    "name": "No qualified public Mocuba parcel service; official MOZGIS Mocuba FeatureServer inspected as adjacent public map source",
+    "viewerUrl": "https://dev.mozgis.gov.mz/",
+    "baseUrl": "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer",
+    "viewerConfiguration": "The official REST service metadata lists Concentration point, Health facility, and Locality boundary (Mocuba - INE 2017) layers only. The locality layer uses EPSG:32737 and has polygon geometry, but it is an administrative/locality boundary and was not retained as parcel evidence.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": [],
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer?f=pjson",
+      "status": 200,
+      "outcome": "Official service metadata returned three non-parcel layers; no parcel layer, parcel native ID field, or parcel geometry endpoint was present. Response saved in ignored scratch evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer/2?f=pjson",
+      "status": 200,
+      "outcome": "Official locality-boundary schema returned polygon geometry in EPSG:32737 with fid and administrative fields. This is not parcel data; no feature was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Hosted/Mocuba/FeatureServer/2/query?where=1%3D1&outFields=fid&returnGeometry=true&resultRecordCount=1&f=geojson",
+      "status": "not completed/timeout in shell attempt",
+      "outcome": "Bounded request did not produce a usable response within the attempt. This is not evidence of an exact-point miss or citywide parcel absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mozgis.gov.mz/server/rest/services?f=pjson",
+      "status": 200,
+      "outcome": "Official REST catalog root returned folders/services. Bounded folder inspection did not qualify a Mocuba parcel service."
+    },
+    {
+      "method": "GET",
+      "url": "https://gis.fnds.gov.mz/server/rest/services?f=pjson",
+      "status": "TLS verification failure",
+      "outcome": "Request stopped at certificate verification; no TLS bypass was used because no source-specific exception was authorized."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/mocuba/ (official service metadata and bounded request outputs; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-16.8444463824618, 36.9814819548574] was preserved in latitude/longitude order and was not shifted.",
+    "Municipal cadastral-system evidence does not establish that its ArcGIS/shapefiles are publicly accessible or currently published as an anonymous parcel API.",
+    "The inspected MOZGIS Mocuba layers are health and administrative/locality layers, not parcels; no GeoJSON parcel sample is retained.",
+    "Timeouts and TLS verification failure are access/qualification limits, not evidence of citywide parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax/account, DUAT-detail, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The municipal ArcGIS system and historical Access databases may be private, separately hosted, or not exposed through the national MOZGIS catalog.",
+    "No current public viewer JavaScript/configuration for the municipal parcel system was found.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "admissionDecision": "held",
+  "runtimeReadiness": "held"
+}

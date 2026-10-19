@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent anonymous API checks for root review; geography selectors and extent metadata only, no personal fields or full geometries.",
+  "executionContext": "require_escalated public network",
+  "requests": [
+    {
+      "wupCityCode": 9279,
+      "stage": "tehsils",
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "requestFields": {
+        "level": "2",
+        "codes": "161"
+      },
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 919,
+      "sha256": "3892e717db749b69f6d806e5bc957916b4e4caf737794f8119e841d2cb78ef75",
+      "checkedAt": "2026-10-09T09:38:25.682468+00:00",
+      "responseType": "list",
+      "rowCount": 6,
+      "rowKeys": [
+        "code",
+        "value",
+        "extraParams",
+        "object",
+        "toStringIsCode",
+        "toStringIsValue",
+        "extraParm"
+      ]
+    },
+    {
+      "wupCityCode": 9595,
+      "stage": "city-extent",
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "requestFields": {
+        "gisLevels": "154,00804,137657"
+      },
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 104,
+      "sha256": "8d7b8cc37c936a83da60e84aa899dd6b9df08e21de109cb7609f014d2fc1780d",
+      "checkedAt": "2026-10-09T09:38:25.600235+00:00",
+      "responseType": "dict",
+      "responseKeys": [
+        "xmin",
+        "ymin",
+        "xmax",
+        "ymax",
+        "attribution",
+        "gisCode"
+      ],
+      "extent": {
+        "xmin": 0.0,
+        "ymin": 0.0,
+        "xmax": 0.0,
+        "ymax": 0.0,
+        "gisCode": "15400804137657"
+      }
+    },
+    {
+      "wupCityCode": 9883,
+      "stage": "tehsils",
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "requestFields": {
+        "level": "2",
+        "codes": "158"
+      },
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "checkedAt": "2026-10-09T09:38:25.556201+00:00",
+      "responseType": "list",
+      "rowCount": 0,
+      "rowKeys": []
+    }
+  ]
+}

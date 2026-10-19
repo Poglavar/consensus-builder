@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-hengyang-city-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/yhyshjdjcc/djccbld/gzcx/20221018/i2816175.html",
+  "sourceUrl": "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/yhyshjdjcc/djccbld/gzcx/20221018/i2816175.html",
+  "registryFound": true,
+  "registryBasis": "The official Hengyang Real Estate Registration Center publishes city-specific rules for querying registration files and defines them to include cadastral-survey results. Query access is restricted by eligible holders/interested parties and identified property indexes; the separate Tianditu service found is a public map/basemap, not verified parcel geometry.",
+  "officialSources": [
+    {
+      "url": "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/yhyshjdjcc/djccbld/gzcx/20221018/i2816175.html",
+      "observation": "The official Hengyang Real Estate Registration Center publishes city-specific rules for querying registration files and defines them to include cadastral-survey results. Query access is restricted by eligible holders/interested parties and identified property indexes; the separate Tianditu service found is a public map/basemap, not verified parcel geometry."
+    },
+    {
+      "url": "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/bdcxxcx/index.html",
+      "observation": "The official Hengyang Real Estate Registration Center publishes city-specific rules for querying registration files and defines them to include cadastral-survey results. Query access is restricted by eligible holders/interested parties and identified property indexes; the separate Tianditu service found is a public map/basemap, not verified parcel geometry."
+    },
+    {
+      "url": "https://www.hengyang.gov.cn/zygh/xwdt/zyzz/20200831/i2132798.html",
+      "observation": "Public map or portal was inspected only for exposed functions; no coordinate, address, plot number or personal query was submitted."
+    },
+    {
+      "url": "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html",
+      "observation": "Official service listing names land/map services; no user-specific request was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hengyang China official cadastral parcel map GIS real estate registration center public map",
+      "scope": "Find a city-local registry/map basis and a safe anonymous geometry-only polygon route.",
+      "result": "Official city land-registration service pages document local property-registration queries and land information; provincial Tianditu is a public geographic-information map platform. No anonymous full parcel polygon service or schema was established.",
+      "actualResultUrls": [
+        "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/bdcxxcx/index.html",
+        "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "衡阳 官方 天地图 衡阳 地籍图 宗地 不动产登记资料查询 宗地图",
+      "scope": "Find a city-local registry/map basis and a safe anonymous geometry-only polygon route.",
+      "result": "衡阳市不动产登记中心公布查询规则：登记资料包括权籍调查成果；权利人可查询本人资料，利害关系人查询他人登记簿须按具体坐落、证书号或单元号并符合条件。公开天地图服务未被证明提供宗地矢量。未访问个人登记资料，也未查询宗地或权利人。",
+      "actualResultUrls": [
+        "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/yhyshjdjcc/djccbld/gzcx/20221018/i2816175.html",
+        "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/bdcxxcx/index.html",
+        "https://hunan.tianditu.gov.cn/TDTHN/public/topWeb.html"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_confirmed_no_public_geometry_contract",
+    "reason": "The city-specific registration-query workflow is limited by holder/interested-party rules. No anonymous parcel polygon layer or feature schema was verified; Tianditu public map is not evidence of parcel geometry.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no parcel attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/yhyshjdjcc/djccbld/gzcx/20221018/i2816175.html",
+      "method": "public official page open",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "City registration-center notice states access rules and includes cadastral-survey materials in registration files; query subject to holder/interested-party eligibility."
+    },
+    {
+      "url": "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/bdcxxcx/index.html",
+      "method": "official public-page review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "contentType": "unavailable",
+      "observation": "Official local land-service or records evidence reviewed; no individual parcel query made."
+    },
+    {
+      "url": "https://www.hengyang.gov.cn/zygh/ywgz/bdcdj/bdcxxcx/index.html",
+      "method": "public official page open",
+      "status": "412 Precondition Failed",
+      "httpStatusObtained": true,
+      "observation": "Official bureau endpoint rejected the web-open request with 412. This is a page-access response, not evidence of a parcel-service outage or geometry result."
+    }
+  ],
+  "technicalBlocker": "The city-specific registration-query workflow is limited by holder/interested-party rules. No anonymous parcel polygon layer or feature schema was verified; Tianditu public map is not evidence of parcel geometry.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether any municipal open map service exposes a parcel layer separate from the controlled registration-document workflow; point-level geometry and citywide coverage."
+}

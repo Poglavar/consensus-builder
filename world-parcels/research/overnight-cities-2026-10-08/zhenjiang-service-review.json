@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-zhenjiang-official-local-registry-review",
+  "purpose": "Service review for WUP2025 rank 679 Zhenjiang (city code 11392); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Jiangsu government service catalog assigns the listed first-registration service to the Zhenjiang bureau and states application and jurisdiction conditions.",
+  "sourceUrl": "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25",
+  "registryFound": true,
+  "registryBasis": "The Jiangsu government service catalog identifies Zhenjiang Natural Resources and Planning Bureau registration services, including first registration of household construction, with application/jurisdiction requirements. This confirms a city-local registry function; no anonymous parcel geometry route was verified.",
+  "officialSources": [
+    {
+      "url": "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25",
+      "observation": "Jiangsu government service catalog assigns the listed first-registration service to the Zhenjiang bureau and states application and jurisdiction conditions."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhenjiang Jiangsu official real estate registration cadastral map parcel GIS public",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "The official Jiangsu service catalog identifies city registration services and applicant/jurisdiction requirements; no anonymous public parcel geometry service was identified.",
+      "actualResultUrls": [
+        "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25"
+      ],
+      "executionMethod": "Official-source search and public-page review."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "镇江市 不动产登记 地籍图 宗地图 查询 官方 自然资源和规划局",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "江苏政务服务目录列出镇江市自然资源和规划局的不动产登记事项及申请/辖区要求；未发现匿名公开宗地几何服务。",
+      "actualResultUrls": [
+        "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25"
+      ],
+      "executionMethod": "Official-source search and public-page review."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "The reviewed official service-catalog route is application-oriented and does not expose public full-parcel geometry or a feature schema.",
+    "publicHtmlFetched": false,
+    "publicHtmlRoutesInspected": [],
+    "advertisedMapLinkFound": false
+  },
+  "requestEvidence": [
+    {
+      "method": "official-source review",
+      "observation": "Official evidence and access limits are summarized above. No property-specific query or non-public service was used; no HTTP status or geometry/schema is asserted."
+    },
+    {
+      "method": "official service-catalog page review",
+      "observation": "The public government catalog identifies Zhenjiang Natural Resources and Planning Bureau as the service body and describes an application workflow requiring application materials and identity documents. No application was submitted."
+    }
+  ],
+  "technicalBlocker": "The reviewed official service-catalog route is application-oriented and does not expose public full-parcel geometry or a feature schema.",
+  "sampleDisposition": "No safe anonymous full polygon route verified; zero polygons retained.",
+  "remainingUncertainty": "A separate municipal mapping endpoint may exist; none was verified in the official pages reviewed."
+}

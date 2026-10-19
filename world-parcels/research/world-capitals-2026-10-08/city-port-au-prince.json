@@ -1,0 +1,73 @@
+{
+  "purpose": "City-specific parcel-source research; reported registry and public geometry findings are limited to observed evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:HT:port-au-prince",
+  "name": "Port-au-Prince",
+  "country": "Haiti",
+  "countryCode": "HT",
+  "centerLatLon": [
+    18.533333333333335,
+    -72.333333
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "country-capitals.csv"
+  ],
+  "executedQueries": [
+    {
+      "query": "Port-au-Prince official cadastre parcel map Haiti cadastral GIS",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": []
+    },
+    {
+      "query": "Port-au-Prince cadastre parcelles cartographie géographique service officiel Haïti",
+      "language": "French",
+      "method": "web.run search_query",
+      "resultUrls": []
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://cnigs.ht/",
+      "observation": "Official national geospatial information center; no Port-au-Prince parcel registry or public parcel geometry layer was established."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cnigs.ht/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08",
+      "outcome": "Official CNIGS page opened; it identifies the national geospatial information center, but no Port-au-Prince parcel registry/geometry layer was established."
+    }
+  ],
+  "registryFound": null,
+  "registryEvidence": {
+    "basis": "The national CNIGS identifies the geospatial-information center, but no Port-au-Prince parcel registry or public parcel layer was established.",
+    "urls": [
+      "https://cnigs.ht/"
+    ]
+  },
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "no_city_specific_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "City-specific evidence only; complete municipal coverage is not established.",
+    "verifiedOpenScope": "The national CNIGS identifies the geospatial-information center, but no Port-au-Prince parcel registry or public parcel layer was established."
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "priorEvidenceAssessment": "No city-specific investigation or city-region geometry/query was found in the registry research rows, audited capital rosters, source catalog, or city config.",
+  "researchGroup": "americas",
+  "registryBasis": "The national CNIGS identifies the geospatial-information center, but no Port-au-Prince parcel registry or public parcel layer was established.",
+  "registryEvidenceUrls": [
+    "https://cnigs.ht/"
+  ],
+  "sourceIds": []
+}

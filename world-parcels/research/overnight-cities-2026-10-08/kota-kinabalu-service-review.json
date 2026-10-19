@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "my-kota-kinabalu-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Jabatan Tanah dan Ukur Sabah (Sabah Lands and Surveys Department); Dewan Bandaraya Kota Kinabalu",
+  "sourceUrl": "https://jtu.sabah.gov.my/homepage/index.html",
+  "registryFound": true,
+  "registryBasis": "Sabah Lands and Surveys Department lists its Land Registry Section in Kota Kinabalu. Its public services distinguish purchasable land-survey products and title/property search certificates from JTUWMA Pro, a registered-user system for detailed geometric cadastral information. DBKK separately offers local property assessment services. These establish city-local registry/cadastre and municipal assessment services, but no anonymous parcel-vector schema was found; no login, purchase, title search, lot number, or assessment lookup was used.",
+  "officialSources": [
+    {
+      "url": "https://jtu.sabah.gov.my/homepage/index.html",
+      "observation": "The Sabah Lands and Surveys Department describes E-Commerce as a public route to purchase land-survey products and JTUWMA Pro as a registered-user system for access to detailed geometric cadastral-related information. The page does not describe anonymous access to full parcel polygons."
+    },
+    {
+      "url": "https://jtu.sabah.gov.my/index.cfm?action=OrgAdm&id=808A0F094376BC56&section=About",
+      "observation": "The department organization page identifies the Land Registry Section and places it in Kota Kinabalu District, at Wisma Tanah dan Ukur."
+    },
+    {
+      "url": "https://www.lands.sabah.gov.my/ladess/index.cfm",
+      "observation": "Sabah’s LaDESS portal states that applications for title and property search certificates are made through the JTU e-Commerce system. No title or property search was submitted."
+    },
+    {
+      "url": "https://eservices.dbkk.sabah.gov.my/",
+      "observation": "Kota Kinabalu City Hall’s official e-services page lists local property rates/assessment, quick payment, and payment-status services; this is a local municipal record service, not parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kota Kinabalu Sabah official land registry cadastral map JTUWMA parcel geometry DBKK property assessment",
+      "result": "Sabah JTU identifies its Land Registry Section in Kota Kinabalu and says detailed geometry is served through registered-user JTUWMA Pro; land-survey products and title/property search certificates use the e-Commerce service. DBKK lists local property assessment services. No anonymous full-polygon layer was identified.",
+      "urls": [
+        "https://jtu.sabah.gov.my/homepage/index.html",
+        "https://jtu.sabah.gov.my/index.cfm?action=OrgAdm&id=808A0F094376BC56&section=About",
+        "https://eservices.dbkk.sabah.gov.my/"
+      ],
+      "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    },
+    {
+      "language": "Malay",
+      "query": "Kota Kinabalu kadaster peta lot ukur tanah pejabat tanah carian hak milik JTU Sabah",
+      "result": "Sumber rasmi Jabatan Tanah dan Ukur Sabah menerangkan produk ukur tanah dan carian sijil hak milik/hartanah melalui e-Commerce. JTUWMA Pro pula untuk pengguna berdaftar bagi maklumat kadaster geometri terperinci. Tiada skema poligon lot tanpa nama/pengenalan yang disahkan.",
+      "urls": [
+        "https://jtu.sabah.gov.my/homepage/index.html",
+        "https://www.lands.sabah.gov.my/ladess/index.cfm"
+      ],
+      "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "local_registry_or_candidate_found_safe_geometry_schema_unverified",
+    "reason": "The official department identifies the detailed cadastral map system as registered-user access; other public routes are product purchase or title/property search. No public anonymous geometry-only endpoint or safe field allowlist was found. No credentials, purchase, owner, address, title, parcel, or property-assessment query was made.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://jtu.sabah.gov.my/homepage/index.html",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "The Sabah Lands and Surveys Department describes E-Commerce as a public route to purchase land-survey products and JTUWMA Pro as a registered-user system for access to detailed geometric cadastral-related information. The page does not describe anonymous access to full parcel polygons."
+    },
+    {
+      "url": "https://jtu.sabah.gov.my/index.cfm?action=OrgAdm&id=808A0F094376BC56&section=About",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "The department organization page identifies the Land Registry Section and places it in Kota Kinabalu District, at Wisma Tanah dan Ukur."
+    },
+    {
+      "url": "https://www.lands.sabah.gov.my/ladess/index.cfm",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "Sabah’s LaDESS portal states that applications for title and property search certificates are made through the JTU e-Commerce system. No title or property search was submitted."
+    },
+    {
+      "url": "https://eservices.dbkk.sabah.gov.my/",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "Kota Kinabalu City Hall’s official e-services page lists local property rates/assessment, quick payment, and payment-status services; this is a local municipal record service, not parcel geometry."
+    }
+  ],
+  "technicalBlocker": "The official department identifies the detailed cadastral map system as registered-user access; other public routes are product purchase or title/property search. No public anonymous geometry-only endpoint or safe field allowlist was found. No credentials, purchase, owner, address, title, parcel, or property-assessment query was made.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether Sabah JTU offers a separately documented open geometry-only layer for Kota Kinabalu; scope of any product downloads and exact geometry coverage at the WUP point.",
+  "publicParcelGeometryCandidateFound": false
+}

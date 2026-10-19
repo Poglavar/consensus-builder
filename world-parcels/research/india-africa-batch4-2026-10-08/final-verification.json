@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T14:38:15.065941+00:00",
+  "kind": "batch4_final_verification",
+  "result": "passed",
+  "researchFilesParsed": [
+    "africa-north-east-index.json",
+    "africa-west-index.json",
+    "africa-west-yaounde7-parcels-all32-geometry.json",
+    "africa-west-yaounde7-parcels-sample.json",
+    "city-10447.json",
+    "city-1866.json",
+    "city-2076.json",
+    "city-2324.json",
+    "city-7330.json",
+    "city-8064.json",
+    "city-8120.json",
+    "city-8435.json",
+    "city-8886.json",
+    "city-9793.json",
+    "index.json",
+    "india-index.json",
+    "india-secondary-network-checks.json",
+    "india-varanasi-10447-map-sample.json",
+    "indore-municipal-diagnostic.json",
+    "jaipur-urban-gis-diagnostic.json",
+    "queue.json"
+  ],
+  "cityChecks": {
+    "expected": 10,
+    "completed": 10,
+    "india": 5,
+    "africa": 5,
+    "registryPresenceEvidence": 10,
+    "qualifiedGeometrySamples": 0,
+    "newAppEntries": 0,
+    "allLatestAssessmentPointersResolve": true,
+    "allGeneratedReportRowsHaveRegistryTrueSampleFalseNoAppEntry": true,
+    "onlyTargetRegistryCityRowsChanged": true,
+    "registrySourcesUnchanged": true
+  },
+  "catalogue": {
+    "configuredAppEntries": 114,
+    "executableProviders": 101
+  },
+  "headlessTests": {
+    "files": [
+      "india-africa-parcel-queue.test.js",
+      "parcel-coverage-report.test.js",
+      "parcel-report-evidence.test.js"
+    ],
+    "passed": 23,
+    "failed": 0,
+    "total": 23
+  },
+  "localReport": {
+    "url": "http://localhost:5638/parcel-coverage-report.html#cities",
+    "dataUrl": "http://localhost:5638/data/parcel-coverage-report.json",
+    "httpStatus": 200,
+    "cacheControl": "no-store, must-revalidate",
+    "servedBytesMatchGeneratedFile": true,
+    "sha256": "2867e3ec845983e8397c456db5b571b01a01a2e6c01e925816fc4b5b477604cc",
+    "warnings": [],
+    "regenerationNote": "The standard report build also reconciled existing registry records for Belgrade and Sarajevo with the previously generated report. Those registry rows were not changed in this batch and are not counted as new batch findings."
+  },
+  "independentYaoundeGeometryAudit": {
+    "features": 32,
+    "attributeFields": [
+      "OBJECTID"
+    ],
+    "allSingleRingsClosed": true,
+    "projectedCrs": "EPSG:3857",
+    "projectedAreaM2": {
+      "min": 0.15743451950623816,
+      "median": 0.6983641695576945,
+      "max": 60.77827179060627
+    },
+    "atMost25M2": 31,
+    "footprintWidthMeters": 36.81389999995008,
+    "footprintHeightMeters": 36.23560000199359,
+    "assessment": "The tiny cluster and implausible plot scale do not support usable city parcel geometry. Geometry values are retained unchanged."
+  },
+  "varanasiRasterInspection": {
+    "file": "india-varanasi-sadar-shivpur-plot89-wms.png",
+    "visuallyInspected": true,
+    "observation": "Rendered image contains plot boundary lines and numeric plot labels, including plot 89. No vector geometry is inferred from the image."
+  },
+  "privacyCheck": {
+    "ownerOrContactFeatureFieldsPersisted": false,
+    "machineHomePathsFoundInNewEvidence": false,
+    "bootstrapTokensPersistedInResearch": false
+  },
+  "gitDiffCheck": "passed",
+  "browserTestSuitesRun": false,
+  "newBrowsersOpened": 0,
+  "databaseGeometryImported": false,
+  "committed": false,
+  "deployed": false,
+  "allResearchReferencePathsChecked": true
+}

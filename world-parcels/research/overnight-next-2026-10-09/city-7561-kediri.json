@@ -1,0 +1,136 @@
+{
+  "name": "Kediri",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 1156,
+  "point": [
+    -7.81500491087017,
+    112.025931424207
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kediri Indonesia official land office cadastral parcel map ATR BPN",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+        "actualResultUrls": [
+          "https://kot-kediri.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kediri peta bidang tanah kadaster kantor pertanahan resmi ATR BPN",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+        "actualResultUrls": [
+          "https://kot-kediri.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://kot-kediri.atrbpn.go.id/",
+        "operator": "Indonesian Ministry of Agrarian Affairs and Spatial Planning / National Land Agency, Kediri City office",
+        "observation": "Official municipal land-office page identifies the city-level BPN office; it is an administrative/service page, not a public vector download."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/",
+        "operator": "Indonesian National Land Agency BHUMI",
+        "observation": "Official national public geospatial portal advertises land/spatial map layers; no Kediri parcel feature schema or safe exact-point response was verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://kot-kediri.atrbpn.go.id/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 6855,
+        "assessment": "Official city land-office page."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytesRead": 10178,
+        "assessment": "Official national portal landing page; no Kediri-specific vector feature query was made."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://kot-kediri.atrbpn.go.id/",
+    "url": "https://kot-kediri.atrbpn.go.id/",
+    "operator": "Indonesian Ministry of Agrarian Affairs and Spatial Planning / National Land Agency, Kediri City office",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See official source review and anonymous request outcomes; custody, geometry availability and runtime readiness are separate."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official ATR/BPN Kota Kediri office establishes local land-administration custody. The national BHUMI map lead did not yield a verified Kediri parcel feature response.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official local land office and national mapping portal are identified; no schema-backed Kediri full-geometry response at the exact WUP point was verified.",
+  "remainingUncertainty": "Official ATR/BPN Kota Kediri office establishes local land-administration custody. The national BHUMI map lead did not yield a verified Kediri parcel feature response. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7561,
+  "cityId": "wup2025:7561",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -7.81500491087017,
+    112.025931424207
+  ],
+  "population2025k": 480.038,
+  "populationUnit": "persons",
+  "queueRank": 1156,
+  "population2025": 480038,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official ATR/BPN Kota Kediri office establishes local land-administration custody. The national BHUMI map lead did not yield a verified Kediri parcel feature response.",
+  "registryEvidenceUrls": [
+    "https://kot-kediri.atrbpn.go.id/",
+    "https://bhumi.atrbpn.go.id/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official local land office and national mapping portal are identified; no schema-backed Kediri full-geometry response at the exact WUP point was verified."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  },
+  "integratedAt": "2026-10-09T07:25:03.115223+00:00"
+}

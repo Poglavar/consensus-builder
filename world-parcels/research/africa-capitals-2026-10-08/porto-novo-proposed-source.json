@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Proposed source-catalog descriptor only; do not merge automatically.",
+  "status": "proposal-only",
+  "baseEvidenceFile": "research/cotonou-live.json",
+  "additionalEvidenceFile": "research/africa-capitals-2026-10-08/porto-novo-acceptance.json",
+  "acceptanceOverrides": {
+    "pageSize": 25,
+    "maxFeatures": 3000,
+    "purpose": "Force multi-page completeness checks on the bounded grid; the checked-in production descriptor remains pageSize 500 / maxFeatures 10000. A separate forced-small-page test used pageSize 3."
+  },
+  "descriptor": {
+    "id": "bj-andf-efoncier-geoserver",
+    "adapter": "wfs",
+    "endpoint": "https://geoserver.andf.bj/geoserver/efb/wfs",
+    "featureType": "efb:efb_parcel",
+    "idField": "nup",
+    "idType": "string",
+    "idPrefix": "BJ-ANDF-",
+    "outFields": [
+      "nup",
+      "local_parcel_identification",
+      "commune_name"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "metricSrid": 32631,
+    "name": "ANDF e-Foncier cadastral parcels — Cotonou and Porto-Novo",
+    "cityIds": [
+      "cotonou",
+      "porto_novo"
+    ],
+    "countryCode": "BJ",
+    "idPattern": "^[0-9]+$",
+    "parcelNumberField": "local_parcel_identification",
+    "scope": "Verified bounded cadastral parcel samples near Cotonou and Porto-Novo. Porto-Novo evidence covers 9 aligned 0.0025-degree cells plus 8 pan cells around the 6.4969 N, 2.6289 E locator. Citywide, commune-wide and national completeness remain unverified; only these configured city entries are proposed.",
+    "licenceNote": "ANDF describes public consultation and duplication except personal or confidential information, with online/private access subject to conditions and fees. GeoServer Fees NONE / AccessConstraints NONE are service defaults, not a reuse licence. Publisher conditions remain informational.",
+    "licenceUrl": "https://andf.bj/cadastre/",
+    "catalogueUrl": "https://cadastre.andf.bj/",
+    "attribution": "ANDF (Agence Nationale du Domaine et du Foncier), e-Foncier cadastral parcels; adapted to WGS84. Verified bounded samples near Cotonou and Porto-Novo only.",
+    "evidenceFile": "research/cotonou-live.json"
+  }
+}

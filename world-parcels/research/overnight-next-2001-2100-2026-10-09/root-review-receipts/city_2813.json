@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2813",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-2813-eindhoven.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/eindhoven-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/eindhoven-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T20:58:29Z",
+  "reason": "Identity rank 2014, Netherlands, [51.4432163203009,5.45844256201511], 288852 persons matches queue. English and Dutch executed-search records are present. Original PDOK collection/schema and bbox response caches show two full MultiPolygons; retained geometry and native UUIDs exactly match the original response, with only id retained as a property. Fresh exact-ID reads, forced paging, 13 bounded cells, independent metric GEOS checks, source binding, and headed Details verification are not evidenced; discovery remains held.",
+  "firstPartyUrlsChecked": [
+    "https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart"
+  ]
+}

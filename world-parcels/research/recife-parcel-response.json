@@ -1,0 +1,198 @@
+{
+ "type": "FeatureCollection",
+ "name": "Lotes - 3 features nearest city centre, extracted from the full file",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "OBJECTID": 1981365,
+    "SITUACAOIMOVEL": "ATIVO",
+    "DISTRITO": 4,
+    "SETOR": 1475,
+    "QUADRA": 18,
+    "FACE": 16,
+    "LOTE": 534,
+    "ENDNUMERO": 8,
+    "V0": 817.26,
+    "AREATOTALCONSTRUIDA": 56.52,
+    "QTDPAVIMENTOS": 1,
+    "TIPOEMPREENDIMENTO": "CASA",
+    "AREALOTE": 60.0,
+    "TESTADAPRINCIPAL": 5.0,
+    "SEQIMOVEL": 4461177,
+    "DSQFL": "41475018160534",
+    "QTDUNHAB": 1,
+    "ANCONSTR": 1985,
+    "QTDMULTIPLAS": null,
+    "NMEDIFICACAO": null,
+    "NMENDCOMP": "Rua Pauini,  8, Cordeiro, Recife - Pernambuco, CEP  50711-420",
+    "TLOTESULAT": "2023-03-08T21:00:00",
+    "NMTIPOEMPRENDIMENTO": "CASA",
+    "EFTUTZDESC": "RESIDENCIAL",
+    "DB2GSE.ST_Area(SHAPE)": 65.408247,
+    "DB2GSE.SdeLength(SHAPE)": 35.28069305918029
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -34.92073307741606,
+        -8.0462442828983
+       ],
+       [
+        -34.92075522186777,
+        -8.046285404509637
+       ],
+       [
+        -34.920854016969834,
+        -8.046231150594654
+       ],
+       [
+        -34.920829162386084,
+        -8.04618871450774
+       ],
+       [
+        -34.92081069128057,
+        -8.046199349522487
+       ],
+       [
+        -34.92073307741606,
+        -8.0462442828983
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "OBJECTID": 1981800,
+    "SITUACAOIMOVEL": "ATIVO",
+    "DISTRITO": 4,
+    "SETOR": 1475,
+    "QUADRA": 18,
+    "FACE": 16,
+    "LOTE": 539,
+    "ENDNUMERO": 7,
+    "V0": 817.26,
+    "AREATOTALCONSTRUIDA": 24.0,
+    "QTDPAVIMENTOS": 1,
+    "TIPOEMPREENDIMENTO": "CASA",
+    "AREALOTE": 60.0,
+    "TESTADAPRINCIPAL": 5.0,
+    "SEQIMOVEL": 4461150,
+    "DSQFL": "41475018160539",
+    "QTDUNHAB": 1,
+    "ANCONSTR": 1985,
+    "QTDMULTIPLAS": null,
+    "NMEDIFICACAO": null,
+    "NMENDCOMP": "Rua Pauini,  7, Cordeiro, Recife - Pernambuco, CEP  50711-420",
+    "TLOTESULAT": "2023-03-08T21:00:00",
+    "NMTIPOEMPRENDIMENTO": "CASA",
+    "EFTUTZDESC": "RESIDENCIAL",
+    "DB2GSE.ST_Area(SHAPE)": 63.3362935,
+    "DB2GSE.SdeLength(SHAPE)": 34.73747898517028
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -34.92071074985907,
+        -8.046202800516607
+       ],
+       [
+        -34.92073307741606,
+        -8.0462442828983
+       ],
+       [
+        -34.92081069128057,
+        -8.046199349522487
+       ],
+       [
+        -34.920829162386084,
+        -8.04618871450774
+       ],
+       [
+        -34.920805278898676,
+        -8.046147933731936
+       ],
+       [
+        -34.92071074985907,
+        -8.046202800516607
+       ]
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "OBJECTID": 2043441,
+    "SITUACAOIMOVEL": "ATIVO",
+    "DISTRITO": 4,
+    "SETOR": 1475,
+    "QUADRA": 18,
+    "FACE": 16,
+    "LOTE": 529,
+    "ENDNUMERO": 9,
+    "V0": 817.26,
+    "AREATOTALCONSTRUIDA": 24.0,
+    "QTDPAVIMENTOS": 1,
+    "TIPOEMPREENDIMENTO": "CASA",
+    "AREALOTE": 60.0,
+    "TESTADAPRINCIPAL": 5.0,
+    "SEQIMOVEL": 4461185,
+    "DSQFL": "41475018160529",
+    "QTDUNHAB": 1,
+    "ANCONSTR": 1985,
+    "QTDMULTIPLAS": null,
+    "NMEDIFICACAO": null,
+    "NMENDCOMP": "Rua Pauini,  9, Cordeiro, Recife - Pernambuco, CEP  50711-420",
+    "TLOTESULAT": "2023-03-08T21:00:00",
+    "NMTIPOEMPRENDIMENTO": "CASA",
+    "EFTUTZDESC": "RESIDENCIAL",
+    "DB2GSE.ST_Area(SHAPE)": 59.07265,
+    "DB2GSE.SdeLength(SHAPE)": 34.369064869121765
+   },
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        -34.92075522186777,
+        -8.046285404509637
+       ],
+       [
+        -34.92077762395906,
+        -8.046323451103238
+       ],
+       [
+        -34.92086591318989,
+        -8.046272591366328
+       ],
+       [
+        -34.92087523054902,
+        -8.046267213806745
+       ],
+       [
+        -34.920854016969834,
+        -8.046231150594654
+       ],
+       [
+        -34.92075522186777,
+        -8.046285404509637
+       ]
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

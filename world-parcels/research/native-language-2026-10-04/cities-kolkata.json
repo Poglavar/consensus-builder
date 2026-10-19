@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 9,
+  "city": "Kolkata",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/kolkata.json",
+  "query": {
+    "language": "Bengali",
+    "script": "Bengali",
+    "text": "কলকাতা মৌজা মানচিত্র দাগ নম্বর জমি GIS খতিয়ান ওপেন ডেটা"
+  },
+  "results": [
+    {
+      "title": "West Bengal Registration property search",
+      "url": "https://wbregistration.gov.in/index/Search_By_Property_new.aspx",
+      "kind": "official-record-search",
+      "note": "Provides mouza/property transaction lookup; no parcel geometry service shown."
+    },
+    {
+      "title": "West Bengal land record Khatian/Plot information",
+      "url": "https://sarthac.gov.in/view-case-file?id=1111&year=2016",
+      "kind": "government-record-viewer",
+      "note": "Record-page result references Khatian and plot information; not evidence of citywide open GIS geometry."
+    }
+  ],
+  "assessment": "Bengali-language search surfaced land-record and registration lookup pages, but not an open Kolkata parcel polygon layer or feature endpoint.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

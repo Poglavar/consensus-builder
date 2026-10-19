@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-09T08:02:05.597037+00:00",
+  "status": "passed",
+  "configuredAppCities": 188,
+  "providers": 160,
+  "testFiles": 10,
+  "testCount": 243,
+  "scope": "ArcGIS adapters, isolated full catalog startup, reports, world coverage, frontend city/source contracts and locales.",
+  "browserCheckFile": "orlando-headed-browser-check.json",
+  "releaseState": "local_uncommitted_undeployed",
+  "releasedBaselineCommit": "ad47b45a5b1e82b853f5630ede1b6397c1dc5e1c",
+  "releasedBaselineCities": 187,
+  "releasedBaselineProviders": 159
+}

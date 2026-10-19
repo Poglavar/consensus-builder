@@ -1,0 +1,492 @@
+// Server-side port of frontend/js/map-screenshot.js `captureViaTileStitch`: fetch the basemap tiles
+// covering a proposal's geometry, stitch them onto a canvas, draw the proposal polygon (plus parcel
+// and neighbour outlines) on top, and return PNG bytes. Deliberately the same tile math, zoom
+// selection, padding and draw order as the browser, so a server-rendered thumbnail frames a proposal
+// the same way the client used to. Uses node-canvas (same Canvas 2D API as the browser), NOT a
+// headless browser and NOT leaflet-image — no live Leaflet map is involved anywhere in this path.
+import { createCanvas, loadImage } from 'canvas';
+import { createRequire } from 'node:module';
+import { defaultTileSource } from './tile-source.js';
+
+// One bbox rule for browser and server (no lat/lng guessing; an implausible box throws with values).
+const thumbnailBbox = createRequire(import.meta.url)('../../frontend/js/thumbnail-bbox.js');
+
+// MapTiler basic-v2 raster at 256px, the same style as the site's MapTiler basemap. Carto began
+// stamping keyless tiles with "API KEY REQUIRED" (seen 2026-09), which was baked into every
+// thumbnail. The key is public (the browser basemap ships it); prod sets it in ecosystem.config.cjs.
+function defaultTileUrl() {
+    const key = process.env.MAPTILER_API_KEY;
+    if (!key) throw new Error('MAPTILER_API_KEY is not set: proposal thumbnails have no basemap tile source.');
+    return `https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=${encodeURIComponent(key)}`;
+}
+const TILE_SIZE = 256;
+const DEFAULT_STITCH_ZOOM = 19;
+const MAX_STITCH_TILES_PER_AXIS = 6; // Target max ~36 tiles (6x6)
+// Hard per-thumbnail cap. The zoom search below goes down to MIN_STITCH_ZOOM so a large proposal
+// gets a coarser picture instead of more tiles; only a frame that still exceeds this is refused.
+// (It was 100 with a floor of z14: a district-sized road fetched 64 tiles per upload.)
+const MAX_TILES = MAX_STITCH_TILES_PER_AXIS * MAX_STITCH_TILES_PER_AXIS;
+const MIN_STITCH_ZOOM = 10;
+const DEFAULT_TILE_TIMEOUT_MS = 8000;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Tile math: convert WGS84 (lat/lng) ⇔ tile coordinates at zoom z
+// ─────────────────────────────────────────────────────────────────────────
+
+export function lngToTileX(lng, z) {
+    return Math.floor(((lng + 180) / 360) * Math.pow(2, z));
+}
+
+export function latToTileY(lat, z) {
+    const latRad = (lat * Math.PI) / 180;
+    const n = Math.pow(2, z);
+    return Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+}
+
+/**
+ * Convert a WGS84 coordinate to pixel position within a stitched tile grid.
+ */
+export function lngLatToPixel(lng, lat, xMin, yMin, z) {
+    const n = Math.pow(2, z);
+    const globalX = ((lng + 180) / 360) * n * TILE_SIZE;
+    const latRad = (lat * Math.PI) / 180;
+    const globalY = ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n * TILE_SIZE;
+    return { px: globalX - xMin * TILE_SIZE, py: globalY - yMin * TILE_SIZE };
+}
+
+/**
+ * Compute the best zoom level so that the bbox fits within maxTilesPerAxis tiles.
+ */
+export function computeBestZoomForBbox(lngMin, lngMax, latMin, latMax, maxTilesPerAxis = MAX_STITCH_TILES_PER_AXIS, minZoom = 14, maxZoom = 19) {
+    for (let z = maxZoom; z >= minZoom; z--) {
+        const xMin = lngToTileX(lngMin, z);
+        const xMax = lngToTileX(lngMax, z);
+        const yMin = latToTileY(latMax, z);
+        const yMax = latToTileY(latMin, z);
+        if ((xMax - xMin + 1) <= maxTilesPerAxis && (yMax - yMin + 1) <= maxTilesPerAxis) {
+            return z;
+        }
+    }
+    return minZoom;
+}
+
+export function expandTileUrl(template, x, y, z, cartoKey = process.env.CARTO_BASEMAP_API_KEY) {
+    const subdomains = ['a', 'b', 'c'];
+    const s = subdomains[(x + y) % subdomains.length];
+    const url = template
+        .replace('{s}', s)
+        .replace('{x}', String(x))
+        .replace('{y}', String(y))
+        .replace('{z}', String(z));
+    const parsed = new URL(url);
+    if (parsed.hostname === 'basemaps.cartocdn.com' || parsed.hostname.endsWith('.basemaps.cartocdn.com')) {
+        if (!cartoKey) throw new Error('Set CARTO_BASEMAP_API_KEY for CARTO thumbnails');
+        parsed.searchParams.set('key', cartoKey);
+        return parsed.href;
+    }
+    return url;
+}
+
+/**
+ * Normalize various polygon formats to GeoJSON [lng, lat] rings.
+ * Server-side variant of the browser's normalizeToGeoJSON: the Leaflet-bounds disambiguation branch
+ * is gone (there is no L on the server) — callers pass an explicit order hint, and the magnitude
+ * heuristic covers the rest.
+ * @param {string} inputOrder - 'lnglat' (already GeoJSON), 'latlng' (Leaflet order), or 'auto'
+ */
+export function normalizeToGeoJSON(polygon, inputOrder = 'auto') {
+    if (!polygon) return null;
+
+    const orderHint = inputOrder === true ? 'lnglat' : (inputOrder === false ? 'auto' : inputOrder);
+
+    const normalizePair = (a, b) => {
+        if (orderHint === 'lnglat') return [a, b];
+        if (orderHint === 'latlng') return [b, a];
+        if (Math.abs(a) > 90 && Math.abs(b) <= 90) return [a, b];
+        if (Math.abs(b) > 90 && Math.abs(a) <= 90) return [b, a];
+        return [b, a]; // Default to Leaflet order, as the browser does
+    };
+
+    if (Array.isArray(polygon) && polygon.length > 0) {
+        const first = polygon[0];
+
+        // MultiPolygon: [[[ [lng,lat], ... ]], ...] → flatten to array of rings
+        if (Array.isArray(first) && Array.isArray(first[0]) && Array.isArray(first[0][0]) && typeof first[0][0][0] === 'number') {
+            return polygon
+                .flatMap(poly => (Array.isArray(poly) ? poly : []))
+                .map(ring => (Array.isArray(ring) ? ring.map(c => normalizePair(c[0], c[1])) : ring))
+                .filter(ring => Array.isArray(ring) && ring.length >= 3);
+        }
+
+        // Polygon with rings/holes: [ring, hole1, ...]
+        if (Array.isArray(first) && Array.isArray(first[0]) && first[0].length >= 2 && typeof first[0][0] === 'number') {
+            return polygon.map(ring => ring.map(c => normalizePair(c[0], c[1])));
+        }
+
+        // Flat ring: [[lng,lat], ...]
+        if (Array.isArray(first) && first.length >= 2 && typeof first[0] === 'number') {
+            return polygon.map(c => normalizePair(c[0], c[1]));
+        }
+
+        // Array of {lat, lng} objects
+        if (first && typeof first === 'object' && 'lat' in first && 'lng' in first) {
+            return polygon.map(c => [c.lng, c.lat]);
+        }
+    }
+
+    // GeoJSON geometry object
+    if (polygon && typeof polygon === 'object' && typeof polygon.type === 'string' && Array.isArray(polygon.coordinates)) {
+        if (polygon.type === 'Polygon') {
+            return polygon.coordinates.map(ring => ring.map(c => normalizePair(c[0], c[1])));
+        }
+        if (polygon.type === 'MultiPolygon' && Array.isArray(polygon.coordinates[0])) {
+            return polygon.coordinates[0].map(ring => ring.map(c => normalizePair(c[0], c[1])));
+        }
+    }
+
+    return null;
+}
+
+function outerRingOf(norm) {
+    if (!Array.isArray(norm) || !norm.length) return null;
+    if (Array.isArray(norm[0]) && Array.isArray(norm[0][0])) return norm[0];
+    if (Array.isArray(norm[0]) && typeof norm[0][0] === 'number') return norm;
+    return null;
+}
+
+/**
+ * Pure framing step: from the proposal polygon (+ optional parcel/neighbour outlines) work out the
+ * padded bbox, the zoom that keeps the tile grid small, and the styled polygon list to draw.
+ * Split out of the render so the framing can be asserted in tests without fetching a single tile.
+ *
+ * @returns {{ lngMin, lngMax, latMin, latMax, zoom, xMin, xMax, yMin, yMax, tilesX, tilesY,
+ *             canvasWidth, canvasHeight, polygons }}
+ */
+export function computeStitchFrame(options = {}) {
+    const {
+        polygon,
+        padding = 0.05,
+        parcelPolygons = [],
+        zoom = DEFAULT_STITCH_ZOOM,
+        polygonOrder = 'auto',
+        parcelPolygonOrder = 'auto',
+        fitToPolygonOnly = false,
+        maxTilesPerAxis = MAX_STITCH_TILES_PER_AXIS
+    } = options;
+
+    const geoCoords = normalizeToGeoJSON(polygon, polygonOrder);
+    const outerRing = outerRingOf(geoCoords);
+    if (!outerRing || outerRing.length < 3) {
+        throw new Error('Invalid polygon for tile stitch capture');
+    }
+
+    // Coordinates are GeoJSON [lng, lat] once normalized; the caller states the input order.
+    const bbox = thumbnailBbox.bboxOfLngLat(geoCoords);
+    const expandBbox = (coords) => thumbnailBbox.extendBbox(bbox, coords);
+
+    const normalizeOrder = (order) => (order === 'lnglat' || order === 'latlng') ? order : 'auto';
+
+    // Draw order matches the browser: the proposal polygon first, then the parent parcel outlines.
+    //
+    // The browser also had a third "neighbours" layer (surrounding parcels, heavy dashed outlines).
+    // It is deliberately not reproduced here: it was fed from whatever the live map happened to have
+    // loaded, which in practice was nothing — every client-generated thumbnail we still have shows
+    // zero neighbour outlines. Re-creating it from the parcel table drowns the subject of the picture
+    // in 200 black dashed polygons, which is the opposite of what the layer was for.
+    const polygons = [
+        { coords: geoCoords, role: 'proposal', style: { color: '#ff6600', weight: 3, opacity: 0.9, fillColor: '#ff6600', fillOpacity: 0.18, lineJoin: 'round', lineCap: 'round' } }
+    ];
+
+    if (Array.isArray(parcelPolygons)) {
+        for (const p of parcelPolygons) {
+            const norm = normalizeToGeoJSON(p, normalizeOrder(parcelPolygonOrder || polygonOrder));
+            const ring = outerRingOf(norm);
+            if (ring && ring.length >= 3) {
+                // Parent parcels expand the frame (so the parcel stays in view) unless the caller
+                // pinned the frame to the proposal polygon — e.g. road corridors.
+                if (!fitToPolygonOnly) expandBbox(norm);
+                polygons.push({ coords: norm, role: 'parcel', style: { color: '#000', weight: 2.5, opacity: 1, dashArray: '3 2' } });
+            }
+        }
+    }
+
+    thumbnailBbox.assertValidBbox(bbox, 'computeStitchFrame');
+    let { lngMin, lngMax, latMin, latMax } = bbox;
+
+    // Apply padding
+    const padLng = (lngMax - lngMin) * padding;
+    const padLat = (latMax - latMin) * padding;
+    lngMin -= padLng;
+    lngMax += padLng;
+    latMin -= padLat;
+    latMax += padLat;
+
+    const effectiveZoom = computeBestZoomForBbox(lngMin, lngMax, latMin, latMax, maxTilesPerAxis, MIN_STITCH_ZOOM, zoom);
+
+    const xMin = lngToTileX(lngMin, effectiveZoom);
+    const xMax = lngToTileX(lngMax, effectiveZoom);
+    const yMin = latToTileY(latMax, effectiveZoom); // higher lat = lower tile Y
+    const yMax = latToTileY(latMin, effectiveZoom);
+    const tilesX = xMax - xMin + 1;
+    const tilesY = yMax - yMin + 1;
+
+    if (tilesX * tilesY > MAX_TILES) {
+        throw new Error(`Tile request too large (${tilesX * tilesY} tiles)`);
+    }
+
+    return {
+        lngMin, lngMax, latMin, latMax,
+        zoom: effectiveZoom,
+        xMin, xMax, yMin, yMax,
+        tilesX, tilesY,
+        canvasWidth: tilesX * TILE_SIZE,
+        canvasHeight: tilesY * TILE_SIZE,
+        polygons
+    };
+}
+
+function hexToRgba(hex, alpha) {
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+}
+
+function drawBadge(ctx, badge) {
+    if (!ctx || !badge || !badge.text) return;
+    const size = Number.isFinite(badge.size) ? badge.size : 56;
+    const margin = Number.isFinite(badge.margin) ? badge.margin : 12;
+    const radius = Math.min(size / 4, 14);
+    const x = margin;
+    const y = margin;
+
+    ctx.save();
+    ctx.beginPath();
+    roundRect(ctx, x, y, size, size, radius);
+    ctx.fillStyle = badge.background || 'rgba(255,255,255,0.94)';
+    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 4;
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = badge.borderColor || '#000';
+    ctx.stroke();
+
+    ctx.fillStyle = badge.color || '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = badge.font || '28px "Noto Emoji", "Apple Color Emoji", sans-serif';
+    ctx.fillText(badge.text, x + size / 2, y + size / 2 + 1);
+    ctx.restore();
+}
+
+// Tiles come through the shared tile source: on-disk cache first, and at most N network fetches in
+// flight across the whole process (thumbnails/tile-source.js).
+async function fetchTileImage(tileSource, { template, z, x, y, timeoutMs = DEFAULT_TILE_TIMEOUT_MS }) {
+    const url = expandTileUrl(template, x, y, z);
+    const bytes = await tileSource.getTileBytes({ template, z, x, y, url, timeoutMs });
+    return loadImage(bytes);
+}
+
+// Width of the white gap between the two panels of a pair image.
+const PAIR_GAP = 8;
+
+// Tiles covering the frame on one canvas. Missing tiles leave the grey background; the counts let
+// the caller refuse a wholly grey picture.
+async function stitchBase(frame, { tileUrl, tileTimeoutMs, tileSource }) {
+    const { xMin, xMax, yMin, yMax, zoom, canvasWidth, canvasHeight } = frame;
+    const canvas = createCanvas(canvasWidth, canvasHeight);
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#f0f0f0';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    let loaded = 0;
+    let failed = 0;
+    const tilePromises = [];
+    for (let ty = yMin; ty <= yMax; ty++) {
+        for (let tx = xMin; tx <= xMax; tx++) {
+            const dx = (tx - xMin) * TILE_SIZE;
+            const dy = (ty - yMin) * TILE_SIZE;
+            tilePromises.push(
+                fetchTileImage(tileSource, { template: tileUrl, z: zoom, x: tx, y: ty, timeoutMs: tileTimeoutMs })
+                    .then(img => {
+                        ctx.drawImage(img, dx, dy, TILE_SIZE, TILE_SIZE);
+                        loaded++;
+                    })
+                    .catch(err => {
+                        console.warn(`[thumbnail] tile ${zoom}/${tx}/${ty} failed: ${err.message}`);
+                        failed++;
+                    })
+            );
+        }
+    }
+    await Promise.all(tilePromises);
+    return { canvas, loaded, failed };
+}
+
+function cloneCanvas(source) {
+    const canvas = createCanvas(source.width, source.height);
+    canvas.getContext('2d').drawImage(source, 0, 0);
+    return canvas;
+}
+
+function drawPolygons(ctx, frame, polygons) {
+    const { xMin, yMin, zoom } = frame;
+    const traceRing = (ring) => {
+        let first = true;
+        for (const coord of ring) {
+            const { px, py } = lngLatToPixel(coord[0], coord[1], xMin, yMin, zoom);
+            if (first) {
+                ctx.moveTo(px, py);
+                first = false;
+            } else {
+                ctx.lineTo(px, py);
+            }
+        }
+        ctx.closePath();
+    };
+
+    for (const poly of polygons) {
+        const { coords, style = {} } = poly;
+        if (!coords) continue;
+
+        const rings = (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) ? coords : [coords];
+        const outer = rings[0];
+        if (!outer || outer.length < 3) continue;
+
+        ctx.beginPath();
+        rings.forEach(traceRing);
+
+        if (style.fillColor && style.fillOpacity > 0) {
+            ctx.fillStyle = hexToRgba(style.fillColor, style.fillOpacity || 0.2);
+            ctx.fill('evenodd');
+        }
+        if (style.color) {
+            ctx.strokeStyle = style.color;
+            ctx.lineWidth = style.weight || 2;
+            ctx.lineJoin = style.lineJoin || 'round';
+            ctx.lineCap = style.lineCap || 'round';
+            if (style.dashArray) {
+                const dashes = style.dashArray.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+                ctx.setLineDash(dashes);
+            } else {
+                ctx.setLineDash([]);
+            }
+            ctx.globalAlpha = style.opacity !== undefined ? style.opacity : 1;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.setLineDash([]);
+        }
+    }
+}
+
+function drawParcelLabel(ctx, frame, parcelLabel, polygons) {
+    if (!parcelLabel || !polygons.length) return;
+    const { xMin, yMin, zoom } = frame;
+    const ring = outerRingOf(polygons[0].coords);
+    if (!ring || !ring.length) return;
+    let sumLng = 0, sumLat = 0;
+    for (const c of ring) {
+        sumLng += c[0];
+        sumLat += c[1];
+    }
+    const { px, py } = lngLatToPixel(sumLng / ring.length, sumLat / ring.length, xMin, yMin, zoom);
+
+    ctx.font = 'bold 14px "Helvetica Neue", Arial, sans-serif';
+    const textWidth = ctx.measureText(parcelLabel).width;
+    const textHeight = 14;
+    const padX = 8, padY = 4;
+    const boxX = px - textWidth / 2 - padX;
+    const boxY = py - textHeight / 2 - padY;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.86)';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    roundRect(ctx, boxX, boxY, textWidth + padX * 2, textHeight + padY * 2, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(parcelLabel, px, py);
+}
+
+/**
+ * Stitch tiles covering the frame once and draw three pictures on them: the thumbnail as it
+ * always was ("after": proposal, parcel outlines, label, badge), the same ground with only the
+ * parcel outlines ("before": nothing of the proposal), and the two side by side ("pair", for link
+ * previews). dividers.md, M3.
+ *
+ * @param {Object} options - same shape as the browser's captureViaTileStitch
+ * @param {Array|Object} options.polygon - proposal geometry (rings or GeoJSON geometry)
+ * @param {Array} [options.parcelPolygons] - parent parcel outlines (expand the frame)
+ * @param {number} [options.padding=0.05]
+ * @param {number} [options.zoom=19] - maximum zoom; lowered automatically to cap the tile count
+ * @param {Object} [options.badge] - { text } goal badge drawn top-left
+ * @param {string} [options.parcelLabel] - label drawn at the polygon's centre
+ * @param {Object} [options.tileSource] - cache + fetch cap (thumbnails/tile-source.js); defaults to the shared one
+ * @returns {Promise<{ after: { buffer: Buffer }, before: { buffer: Buffer }, pair: { buffer: Buffer },
+ *                     frame: Object, tiles: { loaded: number, failed: number, total: number } }>}
+ */
+export async function renderProposalThumbnailSet(options = {}) {
+    const {
+        tileUrl = defaultTileUrl(),
+        parcelLabel = null,
+        badge = null,
+        tileTimeoutMs = DEFAULT_TILE_TIMEOUT_MS,
+        tileSource = defaultTileSource()
+    } = options;
+
+    const frame = computeStitchFrame(options);
+    const { canvas: base, loaded, failed } = await stitchBase(frame, { tileUrl, tileTimeoutMs, tileSource });
+
+    const after = cloneCanvas(base);
+    const afterCtx = after.getContext('2d');
+    drawPolygons(afterCtx, frame, frame.polygons);
+    drawParcelLabel(afterCtx, frame, parcelLabel, frame.polygons);
+    if (badge && badge.text) drawBadge(afterCtx, badge);
+
+    const before = cloneCanvas(base);
+    drawPolygons(before.getContext('2d'), frame, frame.polygons.filter(poly => poly.role === 'parcel'));
+
+    const pair = createCanvas(after.width * 2 + PAIR_GAP, after.height);
+    const pairCtx = pair.getContext('2d');
+    pairCtx.fillStyle = '#ffffff';
+    pairCtx.fillRect(0, 0, pair.width, pair.height);
+    pairCtx.drawImage(before, 0, 0);
+    pairCtx.drawImage(after, after.width + PAIR_GAP, 0);
+
+    return {
+        after: { buffer: after.toBuffer('image/png') },
+        before: { buffer: before.toBuffer('image/png') },
+        pair: { buffer: pair.toBuffer('image/png') },
+        frame,
+        tiles: { loaded, failed, total: loaded + failed }
+    };
+}
+
+/** The thumbnail alone ("after"), as PNG bytes: the shape the renderer always had. */
+export async function renderProposalThumbnail(options = {}) {
+    const set = await renderProposalThumbnailSet(options);
+    return { buffer: set.after.buffer, frame: set.frame, tiles: set.tiles };
+}
+
+export { defaultTileUrl, TILE_SIZE, MAX_STITCH_TILES_PER_AXIS, MAX_TILES, PAIR_GAP };

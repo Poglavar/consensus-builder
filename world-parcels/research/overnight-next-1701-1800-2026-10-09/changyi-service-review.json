@@ -1,0 +1,42 @@
+{
+  "cityRecord": "city-10444-changyi.json",
+  "schemaVersion": "1.0",
+  "cityCode": 10444,
+  "queueRank": 1709,
+  "city": "Changyi",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": null,
+  "summary": "Changyi property-registration custody is described by a Shandong government report, and the official Shandong map platform was inspected, but no anonymous public parcel ID plus full geometry response was verified. No GeoJSON sample is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, exact text and actual result URLs are recorded in city-10444-changyi.json.",
+  "requestOutcomes": "The official Shandong map viewer HTML, current JavaScript bundles and configuration were fetched and inspected. The API documentation describes general mapping/search/imagery/routing services. The Changyi report was available in indexed public text but direct open returned a gateway error. No parcel schema, CRS, safe native ID or geometry response was obtained.",
+  "attemptedRoutes": [
+    {"route": "official Shandong map viewer", "url": "https://www.sdmap.gov.cn/map.html", "outcome": "page and current JavaScript/configuration fetched; no public cadastral parcel route identified"},
+    {"route": "official Shandong API documentation", "url": "https://www.sdmap.gov.cn/mapAPI.html", "outcome": "readable; general map/WMS/search/imagery/routing services documented, no parcel feature endpoint"},
+    {"route": "Shandong government Changyi property-registration report", "url": "https://bdb.shandong.gov.cn/art/2023/8/25/art_76148_10318076.html", "outcome": "indexed official text describes local registration service; direct open gateway error; no geometry or safe parcel ID"}
+  ],
+  "scopeLimits": [
+    "Exact WUP point [36.8750851881148, 119.391874715732] was preserved; no exact-point hit/miss inference was made.",
+    "No city boundary or complete city coverage was established for an open geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or CRS was retrieved or retained.",
+    "Changyi custody evidence is a service/report description, not proof of an open vector parcel API.",
+    "A zero exact-point hit, map extent miss, gateway error, timeout, inaccessible viewer or absent public endpoint is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account or personal fields were requested or retained.",
+    "Packet completion does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable public geometry query reached; no hit/miss inference.", "requestEvidence": []},
+  "coverageAssessment": {"claimedScope": "Changyi municipal property-registration service and Shandong provincial public map platform.", "verifiedOpenScope": "Institutional/service description and general map API only.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Current local viewer/API route, access controls, cadastral layer schema, CRS, stable native parcel identity and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership or completeness.",
+  "retainedSample": null
+}

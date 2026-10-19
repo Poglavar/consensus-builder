@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1302-eldoret.json",
+  "cityCode": 1302,
+  "purpose": "Document first-party discovery, current public map/service routes, bounded anonymous access review, scope limits, and uncertainty for Eldoret.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "unsafeFieldsRequested": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Kenya land-registry directory identifies Eldoret Ardhi House in Uasin Gishu. The official City of Eldoret portal exposes property valuation and land-rates procedures. Anonymous GET metadata was obtained for Eldoret-specific public ArcGIS land-use and boundary/roads services, but neither is cadastral parcel data. A generic public Parcels_v service was inspected and rejected because its full extent is Nairobi. No safe Eldoret parcel ID+geometry response was verified and no GeoJSON sample is retained.",
+  "registryAssessment": "Local registry custodian/procedure context is evidenced, but a city-bounded open cadastral response is not. registryFound remains null.",
+  "safeFieldAllowlist": ["safe parcel or feature identifier only if publicly exposed and non-personal", "geometry", "CRS", "non-personal layer/schema metadata"],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Eldoret Kenya official cadastral parcel GIS map county land registry",
+      "outcome": "Official city portal, State Department for Lands registry directory, eProcedures Eldoret contact page, Ardhisasa, and Eldoret-related ArcGIS services found; no public anonymous Eldoret parcel vector response verified.",
+      "actualResultUrls": ["https://eldoretcity.go.ke/", "https://www.lands.go.ke/land-registries", "https://eprocedures.investkenya.go.ke/Contacts/100?includeSearch=false&l=en", "https://ardhisasa.lands.go.ke/", "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Land_Use_Land_Cover_Map_WFL1/FeatureServer", "https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Boundary_WFL1/FeatureServer"]
+    },
+    {
+      "language": "Swahili/local",
+      "query": "Eldoret Kenya ramani ya ardhi kadastri viwanja huduma rasmi",
+      "outcome": "Official Swahili Kenya Lands service-charter material found; it describes land registration, survey/mapping and plot services but no public Eldoret parcel endpoint.",
+      "actualResultUrls": ["https://lands.go.ke/sites/default/files/2025-04/Lands%20Swahili%20Service%20Charter.pdf", "https://lands.go.ke/wp-content/uploads/2024/09/MKATABA-WA-HUDUMA.pdf", "https://www.lands.go.ke/land-registries", "https://ardhisasa.lands.go.ke/"]
+    }
+  ],
+  "attempts": [
+    {"url":"https://eldoretcity.go.ke/","method":"GET","httpStatus":200,"result":"Official City of Eldoret portal loaded; service links cover land rates/property charges and property valuation, with no parcel API exposed in the fetched page."},
+    {"url":"https://www.lands.go.ke/land-registries","method":"web.run open/search result","httpStatus":200,"result":"Official registry directory identifies Eldoret Ardhi House and land registration, administration, valuation, survey and mapping functions."},
+    {"url":"https://eprocedures.investkenya.go.ke/Contacts/100?includeSearch=false&l=en","method":"web.run open","httpStatus":200,"result":"Official eProcedures contact page identifies Ministry of Lands and Physical Planning - Eldoret at Ardhi House, Oloo Street, and lists registrar, valuer, consent and rates counters; no open parcel geometry endpoint."},
+    {"url":"https://ardhisasa.lands.go.ke/","method":"GET","httpStatus":200,"result":"National Ardhisasa application shell loaded anonymously. No login or credentials were used; no safe parcel query/schema/geometry endpoint was obtained."},
+    {"url":"https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Land_Use_Land_Cover_Map_WFL1/FeatureServer?f=pjson","method":"GET","httpStatus":200,"result":"Metadata returned Web Mercator polygon layer Land Use 2020; thematic land-use data, not cadastral parcel data. No parcel query was attempted."},
+    {"url":"https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Eldoret_City_Boundary_WFL1/FeatureServer?f=pjson","method":"GET","httpStatus":200,"result":"Metadata returned EldoretCityBoundary polygon and Roads_prj polyline layers; no parcel layer."},
+    {"url":"https://services1.arcgis.com/PGZ6rHy9gfyUWIVY/ArcGIS/rest/services/Parcels_v/FeatureServer","method":"GET","httpStatus":200,"result":"Generic Parcels_v metadata returned parcel-like layer parcels_e with EPSG:4326, but full extent is Nairobi (36.8080967–36.8261209E, -1.2775184–-1.2638381N), not Eldoret; excluded as false positive and no query/sample retained."},
+    {"url":"https://www.lands.go.ke/land-registries","method":"GET","httpStatus":0,"result":"Local curl TLS verification failed because the host presented a self-signed certificate chain. No TLS verification bypass was used; the same official page was independently observed through web discovery/open results."}
+  ],
+  "geometryEvidence": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"nativeIdField":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"No exact-point parcel containment test was completed. The exact WUP point [0.524205333339166, 35.2660146100744] was preserved and not shifted; the rejected Nairobi service and non-cadastral Eldoret layers are not evidence of citywide absence."},
+  "remainingUncertainty": "The current Ardhisasa JavaScript/configuration, any authenticated or restricted Eldoret cadastral service, native parcel identity, parcel CRS, exact-point parcel, and citywide open coverage remain unverified. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception was used.",
+  "runtimeAssessment": "held; serial reviewer must independently qualify any adapter"
+}

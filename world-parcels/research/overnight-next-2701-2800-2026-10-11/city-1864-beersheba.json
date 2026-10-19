@@ -1,0 +1,74 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Beersheba, Israel; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 1864,
+  "queueRank": 2767,
+  "name": "Beersheba",
+  "country": "Israel",
+  "countryCode": "IL",
+  "iso3": "ISR",
+  "point": [31.2545180899882, 34.7869140000578],
+  "population2025": 214104,
+  "population2025k": 214.104,
+  "populationUnit": "persons",
+  "aliases": ["beersheba"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Israel official cadastral parcel map Beersheba GIS ArcGIS parcel layer",
+        "result": "Official Israeli mapping and government-data pages identify GovMap, Survey of Israel cadastral datasets, and the Israel Planning Administration services. An ArcGIS web-map item for Beersheba municipal planning information was also discoverable and its public data configuration exposed a municipal parcel layer.",
+        "actualResultUrls": [
+          "https://www.gov.il/en/departments/units/kadaster-deprtment",
+          "https://data.gov.il/organizations/israel_mapping_center",
+          "https://www.arcgis.com/home/item.html?id=c2c7c6fc5eb74f96a3ceb9f4a1a85bed"
+        ]
+      },
+      {
+        "language": "Hebrew",
+        "query": "באר שבע GIS חלקות גושים מפה עירונית רשמית",
+        "result": "The Hebrew search located the official Beersheba municipal planning web map item, whose public web-map configuration contains the layers חלקות (parcels) and גושים (blocks). Survey of Israel and data.gov.il pages corroborate the national cadastral custodian and public parcel dataset, but are not treated as local-custodian evidence.",
+        "actualResultUrls": [
+          "https://www.arcgis.com/home/item.html?id=c2c7c6fc5eb74f96a3ceb9f4a1a85bed",
+          "https://data.gov.il/he/datasets?orgs=israel_mapping_center",
+          "https://www.gov.il/he/departments/units/kadaster-deprtment"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://www.arcgis.com/home/item.html?id=c2c7c6fc5eb74f96a3ceb9f4a1a85bed", "observation": "Public ArcGIS web-map item titled מידע תכנוני; its public data configuration lists Beersheba planning layers including חלקות (parcels) and גושים (blocks)."},
+    {"url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10", "observation": "Public ArcGIS FeatureServer layer named חלקות; polygon geometry, Web Mercator query output supported, source/output CRS EPSG:2039, and public query capability observed."},
+    {"url": "https://www.gov.il/he/departments/units/kadaster-deprtment", "observation": "Survey of Israel describes the national cadastral division into blocks and parcels and cadastral mapping responsibilities; this is national-agency context, not local custodian proof."},
+    {"url": "https://data.gov.il/api/3/action/package_show?id=dff8a168-af6c-4e0f-bbe3-c4bd3646084c", "observation": "Official data.gov.il package metadata for Survey of Israel parcel SHP resources was readable; the downloadable AWS resource requests returned CloudFront 403 from this host."}
+  ],
+  "requests": [
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/c2c7c6fc5eb74f96a3ceb9f4a1a85bed?f=json", "method": "GET", "outcome": "Succeeded; public item metadata identified a Beersheba planning web map."},
+    {"url": "https://www.arcgis.com/sharing/rest/content/items/c2c7c6fc5eb74f96a3ceb9f4a1a85bed/data?f=json", "method": "GET", "outcome": "Succeeded; current public web-map configuration identified the municipal parcel layer URL and layer id 10."},
+    {"url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10?f=pjson", "method": "GET", "outcome": "Succeeded; layer חלקות, esriGeometryPolygon, source/output EPSG:2039, extent xmin 184973.66000000015 ymin 662343.6400000006 xmax 193773.42530000024 ymax 670480.1300000008, maxRecordCount 2000. Inspected fields: OBJECTID, LAYER, Gush, Helka, THICKNESS, GAR_KEY, gushlka, CreationDate, Creator, EditDate, Editor, Shape__Area, Shape__Length. Unsafe fields were not requested in feature queries."},
+    {"url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10/query", "method": "GET", "outcome": "Safe exact WUP-point intersects query with point [34.7869140000578,31.2545180899882] in EPSG:4326, outFields=OBJECTID,Gush,Helka,gushlka, returnGeometry=true, outSR=4326 returned an empty FeatureCollection."},
+    {"url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10/query", "method": "GET", "outcome": "Safe city-envelope intersects query for WGS84 envelope xmin 34.75 ymin 31.22 xmax 34.82 ymax 31.29 returned an empty FeatureCollection. This bounded miss is not evidence of citywide absence."},
+    {"url": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10/query", "method": "GET", "outcome": "A separate resultRecordCount=3 public query without a geographic filter returned polygon features with safe fields (Gush/Helka/gushlka values 7285-39, 7285-40, 7285-81). Because this was not geographically bounded to the WUP city envelope, no geometry was retained as a Beersheba sample."},
+    {"url": "https://data.gov.il/api/3/action/package_show?id=dff8a168-af6c-4e0f-bbe3-c4bd3646084c", "method": "GET", "outcome": "Succeeded; parcel SHP resource URLs and metadata were returned."},
+    {"url": "https://aws-e.data.gov.il/dataset/dff8a168-af6c-4e0f-bbe3-c4bd3646084c/resource/c68b4df6-c809-4bb5-a546-61fa1528fed5/download/parcel_all.zip", "method": "HEAD", "outcome": "CloudFront 403 from this host; no retry or bypass attempted."},
+    {"url": "https://govmap.gov.il/", "method": "GET", "outcome": "CloudFront 403; no CAPTCHA/Cloudflare bypass or login attempted."}
+  ],
+  "registryFound": true,
+  "registryBasis": "A public Beersheba municipal planning web map and its public ArcGIS parcel FeatureServer layer are evidenced. National Survey of Israel sources corroborate cadastral context but are not the basis for local custodian status.",
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": true,
+  "source": {"serviceUrl": "https://services9.arcgis.com/tfeLX7LFVABzD11G/arcgis/rest/services/%D7%A0%D7%AA%D7%95%D7%A0%D7%99_%D7%91%D7%A1%D7%99%D7%A1/FeatureServer/10", "layer": "חלקות", "geometry": "esriGeometryPolygon", "crs": "EPSG:2039"},
+  "sourceIds": [],
+  "nativeSchema": {"nativeIdentityCandidates": ["Gush+Helka composite (gushlka)", "Gush", "Helka", "OBJECTID"], "stableIdentityStatus": "Composite cadastral identity is present as gushlka and separately as Gush/Helka; no retained sample because the returned unfiltered features were not geographically bounded to the city envelope.", "inspectedFields": ["OBJECTID", "LAYER", "Gush", "Helka", "THICKNESS", "GAR_KEY", "gushlka", "CreationDate", "Creator", "EditDate", "Editor", "Shape__Area", "Shape__Length"], "safeAllowlist": ["stable native cadastral block/parcel identity", "geometry", "geometry CRS", "source layer name", "bounded query metadata"], "retainedPropertiesPolicy": "If a geographically bounded sample is retained later, use exactly one canonical native composite identity such as gushlka in properties.id and omit raw source attributes.", "compositeKeyProvenance": "gushlka is the source field labeled גוש וחלקה and is corroborated by the separate native Gush and Helka fields; it is not an internal synthetic row number."},
+  "resultCategory": "local_public_parcel_service_schema_and_unbounded_geometry_response_verified_bounded_response_empty",
+  "coverageAssessment": {"claimedScope": "Beersheba municipal planning web map and parcel layer; layer metadata extent is consistent with the city service.", "verifiedOpenScope": "Public parcel polygon layer, schema, CRS, and anonymous query behavior verified; exact point and tested city envelope returned no features, while an unfiltered safe query returned three polygons.", "countrywideVerified": false, "citywideCompleteness": false},
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "israel",
+  "remainingUncertainty": "The public municipal parcel layer is evidenced, but the tested point and envelope returned no features and the successful geometry response was unfiltered. No citywide completeness or point-level absence is inferred. The ArcGIS item owner/custodian relationship was not independently authenticated beyond the public municipal planning map metadata.",
+  "unsafeFieldsNotRequested": ["owner", "owner mailing address", "property address", "contact", "titleholder", "personal identity", "tax/account values"]
+}

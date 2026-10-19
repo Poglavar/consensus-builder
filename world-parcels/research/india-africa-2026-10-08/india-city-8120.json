@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 8120,
+  "cityId": "wup2025:8120",
+  "name": "Kalyan-Dombivli",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    19.2079660812588,
+    73.1699593951258
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 156,
+  "stateOrUT": "Maharashtra",
+  "administrativeIdentity": {
+    "district": "Thane",
+    "tehsilOrTaluk": "Ulhasnagar Subdistrict",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/kalyan-dombivli.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/kalyan-dombivli.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Maharashtra village maps via Bhu-Naksha viewer",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+            "httpStatus": 302,
+            "contentType": "text/html",
+            "assessment": "redirect chain to viewer shell; HTML only"
+          },
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+            "httpStatus": 200,
+            "contentType": "text/html;charset=UTF-8",
+            "assessment": "tiny JS redirect page; no parcel data"
+          },
+          {
+            "method": "GET",
+            "url": "https://mahabhunakasha.mahabhumi.gov.in/rest/VillageMapService/ListsAfterLevel",
+            "httpStatus": 404,
+            "contentType": "text/html",
+            "assessment": "guessed API path not valid"
+          },
+          {
+            "method": "GET",
+            "url": "https://kdmc.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "SSL legacy renegotiation error"
+          },
+          {
+            "method": "GET",
+            "url": "https://kdmc.maps.arcgis.com/sharing/rest/search?q=parcel&f=json",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "unrelated global results (nonexistent org filter); not a KDMC source"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhuvan-app1.nrsc.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.data.gov.in/search?title=cadastral",
+            "httpStatus": 503,
+            "contentType": "text/html",
+            "assessment": "service unavailable"
+          }
+        ],
+        "conclusion": "Bhu-Naksha likely has internal map-service calls, but no documented anonymous bounded polygon API was found; the KDMC host and Bhuvan were unreachable so those are not ruled out.",
+        "nextStep": "Inspect Bhu-Naksha's browser network calls for a documented WMS/GeoJSON endpoint and terms; retry KDMC GIS and data.gov.in later; test a bounded Kalyan-area query."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Marathi",
+        "query": "कल्याण डोंबिवली सातबारा मालमत्ता नकाशा भूमी अभिलेख",
+        "scope": "WUP 8120 Kalyan-Dombivli cohort label retained; actual query searched Maharashtra urban land records/maps.",
+        "result": "Search surfaced official Maharashtra land-records entry points. The official Mumbai Suburban District services page was opened and describes state urban property cards and digitized property maps; city-specific village/plot geometry was not tested for this WUP center.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Home/Index",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/PropertyCardDownload",
+          "https://bhumiabhilekh.maharashtra.gov.in/EODB",
+          "https://uatbhumiabhilekh.mahabhumi.gov.in/",
+          "https://mumbaisuburban.gov.in/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96/",
+          "https://kdmc.gov.in/kdmc/CitizenHome.html",
+          "https://www.loksatta.com/thane/land-record-maps-are-ignored-in-kdmc-planning-approving-building-construction-plans-ysh-95-3617067/",
+          "https://www.bhumiabhilekh.maharashtra.gov.in/Services/View712",
+          "https://sic.maharashtra.gov.in/site/Downloads/CauseList/22-07-2025%20Notice%20and%20Board.pdf",
+          "https://www.satara.gov.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A5%80-%E0%A4%85%E0%A4%AD%E0%A4%BF%E0%A4%B2%E0%A5%87%E0%A4%96-%E0%A4%86%E0%A4%AA%E0%A4%B2%E0%A4%BE-%E0%A5%AD-%E0%A5%A7%E0%A5%A8-%E0%A4%AA%E0%A4%B9%E0%A4%BE/",
+          "https://www.loksatta.com/thane/land-records-office-dombivali-kalyan-ysh-95-2692558/",
+          "https://www.mahaurja.maharashtra.gov.in/Site/Upload/pdf/PG1_Methodology.pdf",
+          "https://img.staticmb.com/mbimages/reradoc/2025/12/12/5440519CommencementCertificate_2_3.pdf",
+          "https://runwal-enterprises-media.s3.ap-south-1.amazonaws.com/images/compliance/environment-clearance/gardens/5.2_Six_Monthly_Compliance_Report_R_Gardens___December_2025.pdf",
+          "https://img.staticmb.com/mbimages/reradoc/2024/04/08/53823471CommencementCertificates_NAOrderforplotteddevelopment_2_3.pdf",
+          "https://cdnbbsr.s3waas.gov.in/s3b427426b8acd2c2e53827970f2c2f526/uploads/2025/10/20251006647267550.pdf",
+          "https://de.wikipedia.org/wiki/Kalyan-Dombivli",
+          "https://arxiv.org/abs/2609.03597",
+          "https://www.reddit.com/r/MadhyaPradesh/comments/1u520jq/uneven_distribution_of_land_issue_in_bara_396/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Maharashtra Bhumi Abhilekh urban property map",
+        "operator": "Government of Maharashtra, Land Records Department",
+        "homeUrl": "https://www.bhumiabhilekh.maharashtra.gov.in/",
+        "mapUrl": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "observation": "Mumbai Suburban District official services page states urban records are served through property cards and BhuNaksha digitized maps joined to city survey/gat numbers. This is a shared state-service pointer; it does not prove target-city coverage."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=19.2079660812588&lon=73.1699593951258&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Padmashree Mohammad Rafi Marg, उल्हासनगर, Ulhasnagar Subdistrict, Thane, Maharashtra, 421005, India",
+        "osmType": "way",
+        "osmId": 236079138,
+        "address": {
+          "road": "Padmashree Mohammad Rafi Marg",
+          "city": "उल्हासनगर",
+          "county": "Ulhasnagar Subdistrict",
+          "state_district": "Thane",
+          "state": "Maharashtra",
+          "ISO3166-2-lvl4": "IN-MH",
+          "postcode": "421005",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://mumbaisuburban.gov.in/सेवा-2/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official district page in Marathi links the state map and explains urban property cards and maps linked to city survey/gat numbers."
+      },
+      {
+        "method": "GET",
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "httpStatus": 0,
+        "contentType": "",
+        "assessment": "Web open reported redirect loop; map endpoint itself was not inspected."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+}

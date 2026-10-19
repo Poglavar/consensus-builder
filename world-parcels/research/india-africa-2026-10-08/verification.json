@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-07T21:34:21.473347+00:00",
+  "purpose": "Evidence validation for the prepared regional research cohort and report; no runtime city integration performed.",
+  "counts": {
+    "total": 171,
+    "india": 63,
+    "africa": 108,
+    "freshCityInvestigations": 164,
+    "retainedLiveBaselines": 7,
+    "newRegistryCityRecords": 95,
+    "freshGeometrySampleCities": 6,
+    "newGeometrySampleCities": 4,
+    "revalidatedPreviousSampleCities": 2,
+    "newAppCities": 0
+  },
+  "headlessTests": {
+    "files": 5,
+    "passed": 79,
+    "failed": 0,
+    "command": "npm test -- parcel-coverage-report.test.js india-africa-parcel-queue.test.js parcel-report-evidence.test.js world-coverage-build.test.js frontend-world-coverage.test.js",
+    "workingDirectory": "backend"
+  },
+  "browser": {
+    "mode": "dedicated headed Chrome, manual inspection",
+    "combinedRows": 171,
+    "indiaRows": 63,
+    "africaRows": 108,
+    "combinedCheckedRows": 171,
+    "verifiedData": [
+      "October 8 dates on fresh candidates",
+      "Accra provisional publisher/identity note",
+      "GISCOE native-ID caveat",
+      "Nairobi registry service versus geometry distinction"
+    ],
+    "pageErrors": 0,
+    "allTaskSessionsClosed": true,
+    "testUrl": "http://localhost:5638/parcel-coverage-report.html?cohort=india-africa#cities",
+    "cacheControl": "no-store, must-revalidate"
+  },
+  "artifactChecks": {
+    "reportCityCount": 460,
+    "reportWarnings": [],
+    "newRegistryRecords": 95,
+    "configuredAppCities": 103,
+    "duplicateCohortCities": 0,
+    "allManifestEvidenceFilesExist": true,
+    "jsonFilesParsedBeforeThisRecord": 225,
+    "gitDiffCheckPassed": true,
+    "geometryChecks": [
+      {
+        "cityId": "wup2025:3990",
+        "sampleFile": "africa-ws-city-3990-parcel-response.json",
+        "features": 3,
+        "uniqueNativeIds": 3,
+        "closedNonzeroRings": true,
+        "allGeometryBoundsIntersectQueryBbox": true,
+        "bbox": [
+          27.919363244874898,
+          -26.036963912412702,
+          27.9213632448749,
+          -26.0349639124127
+        ]
+      },
+      {
+        "cityId": "wup2025:4033",
+        "sampleFile": "africa-ws-city-4033-parcel-response.json",
+        "features": 3,
+        "uniqueNativeIds": 3,
+        "closedNonzeroRings": true,
+        "allGeometryBoundsIntersectQueryBbox": true,
+        "bbox": [
+          27.8437650141456,
+          -25.4672366387406,
+          27.845765014145602,
+          -25.4652366387406
+        ]
+      },
+      {
+        "cityId": "wup2025:3809",
+        "sampleFile": "africa-ws-city-3809-parcel-response.json",
+        "features": 3,
+        "uniqueNativeIds": 3,
+        "closedNonzeroRings": true,
+        "allGeometryBoundsIntersectQueryBbox": true,
+        "bbox": [
+          27.844942338699898,
+          -26.4072859886009,
+          27.8469423386999,
+          -26.405285988600898
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "Small geometry samples do not establish complete viewport coverage or native-ID retrieval for app integration.",
+    "Earlier Delhi and GISCOE native-ID conflicts are retained in source and coordinator evidence.",
+    "Accra publisher authority and native parcel-ID semantics are unconfirmed.",
+    "Three Kerala viewer probes retain endpoint-only evidence because opaque selector parameters were not preserved.",
+    "Seven already-live cities were retained as historical baselines, not freshly accepted."
+  ]
+}

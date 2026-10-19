@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "cityCount": 0,
+  "cities": [],
+  "resolvedDecisions": [
+    {
+      "cityCode": 2061,
+      "rank": 2129,
+      "decision": "different_settlement",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-10T23:03:46.340Z"
+    },
+    {
+      "cityCode": 7034,
+      "rank": 2200,
+      "decision": "different_settlement",
+      "decisionFile": "root-identity-decision-overlay.json",
+      "reviewedAt": "2026-10-10T23:03:46.340Z"
+    }
+  ]
+}

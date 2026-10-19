@@ -1,0 +1,835 @@
+{
+  "type": "FeatureCollection",
+  "name": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja – interna prometna mreža",
+  "bbox": [
+    15.886335312,
+    45.801088915,
+    15.887653687,
+    45.802204261
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.corridor-reconstruction.v1",
+    "proposal": {
+      "proposalId": "pionir-spansko-stenjevecki-odvojak-observed-access-387376686",
+      "city": "zagreb",
+      "name": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja – interna prometna mreža",
+      "title": "Špansko – Stenjevečki odvojak – rekonstrukcija izvedenog stanja – interna prometna mreža",
+      "description": "Rekonstrukcija 428 m površinskih internih pristupnih i servisnih prometnica uz izvedeni sklop. Središnjice i oznake namjene preuzete su iz aktualnog lokalnog OSM sloja; širine slijede OSM oznake, a kada ih nema, standarde profila aplikacije. Ovo nije geodetska snimka ni geometrija iz dozvole. Podzemni, prekratki i zgradama preklopljeni potezi nisu uključeni.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "road",
+      "goal": "road-track",
+      "primaryType": "Road",
+      "isCorridor": true,
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "roads",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "cadastreParcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "parcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.886335312,
+        45.801088915,
+        15.887653687,
+        45.802204261
+      ],
+      "source": {
+        "geometryBasis": "current OSM centrelines clipped to the reconstructed current parcel union",
+        "widthBasis": "OSM tags, then consensus-builder OSM profile defaults",
+        "footprintBasis": "projected per-segment profile buffers in HTRS96/TM (EPSG:3765)",
+        "exclusions": "tunnel/covered/negative-layer; fragment < 8 m; component < 30 m; building overlap >= 1 m²",
+        "osmWayIds": [
+          387376686,
+          513937898,
+          529943541,
+          529943542,
+          554225652,
+          554225653,
+          678122480
+        ],
+        "lengthM": 427.80550245200897,
+        "footprintAreaM2": 1153.684643518776,
+        "snapshotDate": "2026-08-13"
+      }
+    },
+    "roadProposal": {
+      "parentParcelIds": [
+        "HR-340057-2976/1"
+      ],
+      "childParcelIds": [],
+      "mode": "import",
+      "isCorridor": true
+    },
+    "definition": {
+      "profile": {
+        "strips": [
+          {
+            "type": "driving",
+            "width": 2.75,
+            "direction": "forward"
+          }
+        ]
+      },
+      "width": 2.75,
+      "segmentProfiles": {},
+      "tunnels": [],
+      "gradeSeparations": [],
+      "metadata": {
+        "mode": "import",
+        "type": "road",
+        "isTrack": false,
+        "isRoad": true,
+        "isCorridor": true,
+        "source": "osm-observed-state",
+        "observedReconstruction": true,
+        "sourceRows": [
+          {
+            "segmentId": "osm-387376686-1",
+            "osmWayId": 387376686,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": null,
+            "surface": null,
+            "tags": {
+              "highway": "service"
+            },
+            "insideLengthM": 96.53906349525028,
+            "modelledWidthM": 2.75
+          },
+          {
+            "segmentId": "osm-513937898-1",
+            "osmWayId": 513937898,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": null,
+            "surface": null,
+            "tags": {
+              "highway": "service"
+            },
+            "insideLengthM": 89.97223842277441,
+            "modelledWidthM": 2.75
+          },
+          {
+            "segmentId": "osm-529943541-1",
+            "osmWayId": 529943541,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": null,
+            "surface": null,
+            "tags": {
+              "highway": "service"
+            },
+            "insideLengthM": 20.38737078805034,
+            "modelledWidthM": 2.75
+          },
+          {
+            "segmentId": "osm-529943542-1",
+            "osmWayId": 529943542,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": null,
+            "surface": null,
+            "tags": {
+              "highway": "service"
+            },
+            "insideLengthM": 61.00094375890542,
+            "modelledWidthM": 2.75
+          },
+          {
+            "segmentId": "osm-554225652-1",
+            "osmWayId": 554225652,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": null,
+            "surface": null,
+            "tags": {
+              "highway": "service"
+            },
+            "insideLengthM": 64.49890969758384,
+            "modelledWidthM": 2.75
+          },
+          {
+            "segmentId": "osm-554225653-1",
+            "osmWayId": 554225653,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": null,
+            "surface": "asphalt",
+            "tags": {
+              "highway": "service",
+              "surface": "asphalt"
+            },
+            "insideLengthM": 11.039339589524296,
+            "modelledWidthM": 2.75
+          },
+          {
+            "segmentId": "osm-678122480-1",
+            "osmWayId": 678122480,
+            "osmPartIndex": 1,
+            "highway": "service",
+            "service": "emergency_access",
+            "surface": "grass_paver",
+            "tags": {
+              "highway": "service",
+              "service": "emergency_access",
+              "surface": "grass_paver"
+            },
+            "insideLengthM": 84.36763669992041,
+            "modelledWidthM": 2.75
+          }
+        ]
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-340057-2976/1",
+        "parcelIds": [
+          "HR-340057-2976/1"
+        ],
+        "cestica_ids": [
+          40367937
+        ],
+        "maticni_broj_ko": 340057,
+        "broj_cestice": "2976/1",
+        "brojevi_cestica": [
+          "2976/1"
+        ],
+        "areaM2": 13712.587299981511,
+        "source": "DGU katastar, aktualna čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.887270671,
+              45.801123805
+            ],
+            [
+              15.887309199,
+              45.80112977
+            ],
+            [
+              15.887345929,
+              45.801135546
+            ],
+            [
+              15.887377008,
+              45.801140392
+            ],
+            [
+              15.8877244,
+              45.801194892
+            ],
+            [
+              15.887719652,
+              45.801322998
+            ],
+            [
+              15.887717776,
+              45.801365098
+            ],
+            [
+              15.887715386,
+              45.801407106
+            ],
+            [
+              15.887712353,
+              45.80144911
+            ],
+            [
+              15.887708675,
+              45.801491201
+            ],
+            [
+              15.887704614,
+              45.80153311
+            ],
+            [
+              15.887699909,
+              45.801575105
+            ],
+            [
+              15.88769469,
+              45.801617008
+            ],
+            [
+              15.887688699,
+              45.801658906
+            ],
+            [
+              15.887682323,
+              45.801700712
+            ],
+            [
+              15.887675433,
+              45.801742516
+            ],
+            [
+              15.887668028,
+              45.801784317
+            ],
+            [
+              15.887659853,
+              45.801825934
+            ],
+            [
+              15.887651291,
+              45.801867638
+            ],
+            [
+              15.887642087,
+              45.80190925
+            ],
+            [
+              15.887580592,
+              45.802179489
+            ],
+            [
+              15.887010991,
+              45.802209547
+            ],
+            [
+              15.886867593,
+              45.802217146
+            ],
+            [
+              15.886660606,
+              45.802228002
+            ],
+            [
+              15.886529437,
+              45.802234946
+            ],
+            [
+              15.886239165,
+              45.802250304
+            ],
+            [
+              15.886194112,
+              45.802252671
+            ],
+            [
+              15.886211837,
+              45.802114647
+            ],
+            [
+              15.886231169,
+              45.801959176
+            ],
+            [
+              15.886240633,
+              45.801882294
+            ],
+            [
+              15.886249824,
+              45.801806761
+            ],
+            [
+              15.886286826,
+              45.801506607
+            ],
+            [
+              15.886320023,
+              45.801236577
+            ],
+            [
+              15.886351529,
+              45.800979854
+            ],
+            [
+              15.887270671,
+              45.801123805
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 0,
+        "consensus:segment-id": "osm-387376686-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.887651241,
+            45.801867866
+          ],
+          [
+            15.8876055,
+            45.8018634
+          ],
+          [
+            15.8872813,
+            45.8018478
+          ],
+          [
+            15.8873104,
+            45.8015084
+          ],
+          [
+            15.8873296,
+            45.8012709
+          ],
+          [
+            15.8873321,
+            45.8012398
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 1,
+        "consensus:segment-id": "osm-513937898-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.8872813,
+            45.8018478
+          ],
+          [
+            15.8870812,
+            45.8018399
+          ],
+          [
+            15.8866724,
+            45.8018216
+          ],
+          [
+            15.8866299,
+            45.8022033
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 2,
+        "consensus:segment-id": "osm-529943541-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.8870812,
+            45.8018399
+          ],
+          [
+            15.8870946,
+            45.8016567
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 3,
+        "consensus:segment-id": "osm-529943542-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.8873104,
+            45.8015084
+          ],
+          [
+            15.8868485,
+            45.8014918
+          ],
+          [
+            15.8868299,
+            45.8017168
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 4,
+        "consensus:segment-id": "osm-554225652-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.8866724,
+            45.8018216
+          ],
+          [
+            15.8867068,
+            45.8014852
+          ],
+          [
+            15.88636,
+            45.8014693
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 5,
+        "consensus:segment-id": "osm-554225653-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.8867068,
+            45.8014852
+          ],
+          [
+            15.8868485,
+            45.8014918
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:index": 6,
+        "consensus:segment-id": "osm-678122480-1",
+        "consensus:role": "corridor-centerline"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            15.886336632,
+            45.801101242
+          ],
+          [
+            15.8872661,
+            45.8011499
+          ],
+          [
+            15.8872918,
+            45.8011594
+          ],
+          [
+            15.8873121,
+            45.8011797
+          ],
+          [
+            15.8873244,
+            45.8012046
+          ],
+          [
+            15.887332,
+            45.8012302
+          ],
+          [
+            15.8873321,
+            45.8012398
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "consensus:role": "corridor-footprint"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.886335312,
+              45.801113579
+            ],
+            [
+              15.887261099,
+              45.801162045
+            ],
+            [
+              15.887279755,
+              45.801168941
+            ],
+            [
+              15.887296189,
+              45.801185374
+            ],
+            [
+              15.887307311,
+              45.801207891
+            ],
+            [
+              15.887314325,
+              45.801231515
+            ],
+            [
+              15.887314408,
+              45.801239498
+            ],
+            [
+              15.88731194,
+              45.801270204
+            ],
+            [
+              15.887293733,
+              45.801495413
+            ],
+            [
+              15.886849542,
+              45.801479449
+            ],
+            [
+              15.886707975,
+              45.801472855
+            ],
+            [
+              15.886707975,
+              45.801472857
+            ],
+            [
+              15.886707957,
+              45.801472855
+            ],
+            [
+              15.886361157,
+              45.801456955
+            ],
+            [
+              15.886358843,
+              45.801481645
+            ],
+            [
+              15.886687887,
+              45.801496731
+            ],
+            [
+              15.88665476,
+              45.801820678
+            ],
+            [
+              15.886612265,
+              45.802202339
+            ],
+            [
+              15.886647535,
+              45.802204261
+            ],
+            [
+              15.886688681,
+              45.801834726
+            ],
+            [
+              15.88708007,
+              45.801852247
+            ],
+            [
+              15.887080203,
+              45.801852252
+            ],
+            [
+              15.887280194,
+              45.801860148
+            ],
+            [
+              15.887603668,
+              45.801875713
+            ],
+            [
+              15.887648536,
+              45.801880094
+            ],
+            [
+              15.887651245,
+              45.801867846
+            ],
+            [
+              15.887653687,
+              45.801855613
+            ],
+            [
+              15.887607946,
+              45.801851147
+            ],
+            [
+              15.887606714,
+              45.801851057
+            ],
+            [
+              15.887300006,
+              45.801836299
+            ],
+            [
+              15.887328057,
+              45.801509141
+            ],
+            [
+              15.88732806,
+              45.801509098
+            ],
+            [
+              15.88734726,
+              45.801271598
+            ],
+            [
+              15.887349761,
+              45.801240495
+            ],
+            [
+              15.8873321,
+              45.8012398
+            ],
+            [
+              15.887349788,
+              45.80123971
+            ],
+            [
+              15.887349688,
+              45.80123011
+            ],
+            [
+              15.887349319,
+              45.801227685
+            ],
+            [
+              15.887341719,
+              45.801202085
+            ],
+            [
+              15.887341119,
+              45.80120056
+            ],
+            [
+              15.887328819,
+              45.80117566
+            ],
+            [
+              15.887326595,
+              45.801172609
+            ],
+            [
+              15.887306295,
+              45.801152309
+            ],
+            [
+              15.887303507,
+              45.801150126
+            ],
+            [
+              15.887300065,
+              45.801148462
+            ],
+            [
+              15.887274365,
+              45.801138962
+            ],
+            [
+              15.887270996,
+              45.801138011
+            ],
+            [
+              15.88726742,
+              45.801137563
+            ],
+            [
+              15.886338145,
+              45.801088915
+            ],
+            [
+              15.886336633,
+              45.801101233
+            ],
+            [
+              15.886335312,
+              45.801113579
+            ]
+          ],
+          [
+            [
+              15.886723188,
+              45.801498363
+            ],
+            [
+              15.886829829,
+              45.80150333
+            ],
+            [
+              15.886812241,
+              45.801716086
+            ],
+            [
+              15.886847559,
+              45.801717514
+            ],
+            [
+              15.886865144,
+              45.801504786
+            ],
+            [
+              15.887291675,
+              45.801520115
+            ],
+            [
+              15.887264698,
+              45.801834753
+            ],
+            [
+              15.887099764,
+              45.801828241
+            ],
+            [
+              15.887112265,
+              45.801657332
+            ],
+            [
+              15.887076935,
+              45.801656068
+            ],
+            [
+              15.88706445,
+              45.801826753
+            ],
+            [
+              15.886691315,
+              45.80181005
+            ],
+            [
+              15.886723188,
+              45.801498363
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

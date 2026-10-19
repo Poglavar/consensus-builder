@@ -1,0 +1,105 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GG",
+ "country": "Guernsey",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "not_probed",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "States of Guernsey / Digimap Channel Islands (cadastre 'TRP' dataset for Guernsey and Alderney: buildings, roads, land parcels)",
+ "inspireRecordUrl": null,
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: en-GB,en;q=0.9; Referer: (none needed); cookie jar",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "portalsFound": [
+  {
+   "url": "https://www.digimap.gg/ (redirects to https://digimapci.com/)",
+   "observation": "Digimap Channel Islands commercial site (store, terms); links to public ArcGIS Online instant apps (aerial photos, place names) whose configs name https://mapserver.digimap.gg/arcgis/rest"
+  },
+  {
+   "url": "https://mapserver.digimap.gg/arcgis/rest/services",
+   "observation": "ArcGIS Server 10.22 REST directory open with no token; folder StatesOfGuernsey/CadastreTRPOL (MapServer layers 0 Buildings, 1 Roads, 2 LandParcels; native wkid 102070)"
+  },
+  {
+   "url": "https://www.gov.gg/",
+   "observation": "government site, no parcel service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://mapserver.digimap.gg/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain;charset=utf-8",
+   "assessment": "open directory"
+  },
+  {
+   "url": "https://mapserver.digimap.gg/arcgis/rest/services/StatesOfGuernsey/CadastreTRPOL/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/plain",
+   "assessment": "Cadastre TRP combined Alderney & Guernsey"
+  },
+  {
+   "url": "https://mapserver.digimap.gg/arcgis/rest/services/StatesOfGuernsey/CadastreTRPOL/MapServer/2/query?f=json&where=LAYER_NAME%3D%27LAND+PARCELS%27&geometry=-2.5365,49.4550,-2.5350,49.4562&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "37 LAND PARCELS polygons (St Peter Port)"
+  },
+  {
+   "url": "https://mapserver.digimap.gg/arcgis/rest/services/StatesOfGuernsey/CadastreTRPOL/MapServer/2/query?f=json&where=LAYER_NAME%3D%27LAND+PARCELS%27&geometry=-2.5180,49.4770,-2.5175,49.4774&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 LAND PARCELS polygons (St Sampson/Vale area)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "gg-digimap-cadastretrp-landparcels",
+  "requestUrl": "https://mapserver.digimap.gg/arcgis/rest/services/StatesOfGuernsey/CadastreTRPOL/MapServer/2/query?f=json&where=LAYER_NAME%3D%27LAND+PARCELS%27&geometry=-2.5365,49.4550,-2.5350,49.4562&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/plain;charset=utf-8 (JSON body)",
+  "spatialTestAreaLonLat": "-2.5365,49.4550,-2.5350,49.4562",
+  "parcelRecordCount": 37,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID / UPRN",
+  "responseFile": "GG-parcel-response.json",
+  "pagination": "server ignored resultRecordCount (returned all in bbox; keep bboxes tiny); maxRecordCount 1000",
+  "regionSampled": "Guernsey: St Peter Port"
+ },
+ "additionalVerifiedRegion": {
+  "sourceId": "gg-digimap-cadastretrp-landparcels",
+  "requestUrl": "https://mapserver.digimap.gg/arcgis/rest/services/StatesOfGuernsey/CadastreTRPOL/MapServer/2/query?f=json&where=LAYER_NAME%3D%27LAND+PARCELS%27&geometry=-2.5180,49.4770,-2.5175,49.4774&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/plain;charset=utf-8 (JSON body)",
+  "spatialTestAreaLonLat": "-2.5180,49.4770,-2.5175,49.4774",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID / UPRN",
+  "responseFile": "GG-parcel-response.json",
+  "pagination": "server ignored resultRecordCount (returned all in bbox; keep bboxes tiny); maxRecordCount 1000",
+  "regionSampled": "Guernsey: St Sampson area"
+ },
+ "regionsSampled": [
+  "Guernsey: St Peter Port",
+  "Guernsey: St Sampson"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Guernsey and Alderney cadastre (layer ISLAND field); Sark/Herm not checked",
+  "regionsVerified": [
+   "St Peter Port",
+   "St Sampson"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open (unauthenticated REST; Digimap is a commercial data provider, licence status unknown)",
+ "remainingUncertainty": "IMPORTANT: layer attributes include OwnerNames/OwnerAddress/account fields populated for many parcels (43 of 66 rows in the first bbox); those were not saved. Licence/terms of use for this open endpoint not read (digimapci.com sells the data), so reuse status is unverified; likely not intended for bulk use. Alderney has few LAND PARCELS rows (1 returned) so coverage there is partial. Not an INSPIRE (non-EU) service.",
+ "nextStep": "Read digimapci.com terms of use; decide whether owner-bearing attributes make this unsuitable; check Alderney/Sark coverage."
+}

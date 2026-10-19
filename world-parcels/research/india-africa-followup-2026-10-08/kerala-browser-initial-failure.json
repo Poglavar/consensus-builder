@@ -1,0 +1,610 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T23:35:52.872Z",
+  "initialBrowserObservation": {
+    "city": "kozhikode",
+    "completeCellsRetained": 15,
+    "parcelsRetained": 328,
+    "visibleWarning": "No parcel register could be loaded here",
+    "loggedError": "Kerala parcel provider timed out",
+    "status": 504,
+    "queryBoxes": [
+      [
+        75.828,
+        11.162,
+        75.82900000000001,
+        11.163
+      ],
+      [
+        75.82900000000001,
+        11.162,
+        75.83,
+        11.163
+      ]
+    ],
+    "note": "The view logged a provider timeout, then loading stopped with a source warning. The saved request metadata cannot isolate the contribution of upstream delay versus queueing. Failure is retained and was not treated as empty coverage."
+  },
+  "sameCellRetry": {
+    "bbox": [
+      75.828,
+      11.162,
+      75.82900000000001,
+      11.163
+    ],
+    "httpStatus": 200,
+    "elapsedMs": 5174,
+    "complete": true,
+    "featureCount": 53
+  },
+  "secondBrowserObservation": {
+    "completeCellsRetained": 23,
+    "parcelsRetained": 622,
+    "visibleWarning": "No parcel register could be loaded here",
+    "loggedError": "Kerala parcel provider timed out",
+    "status": 504,
+    "selectedNativeParcelId": "IN-KL-ENTEBHOOMI-110114-77211068-4399-433e-8433-fa8299ad5e0a",
+    "assessment": "Selection can work on retained cells while the overall view remains incomplete; this does not pass browser acceptance."
+  },
+  "decision": "Hold the app entry after two incomplete normal browser loads; retain bounded geometry evidence.",
+  "iravipuramInitialPan": {
+    "initialLoad": {
+      "actionMenuVisible": true,
+      "alerts": [],
+      "boundsCount": 25,
+      "centerLatLon": [
+        8.847550721658688,
+        76.62750899791719
+      ],
+      "city": "iravipuram",
+      "fallbackVisible": false,
+      "featureCount": 382,
+      "loading": false,
+      "selectedParcelId": "IN-KL-ENTEBHOOMI-020301-80c7e159-369c-443b-9055-3fdc31bf5a71",
+      "zoom": 19
+    },
+    "pan": {
+      "alerts": [],
+      "boundsCount": 25,
+      "centerLatLon": [
+        8.847550721658688,
+        76.62844777107239
+      ],
+      "city": "iravipuram",
+      "fallbackVisible": true,
+      "featureCount": 382,
+      "loading": false,
+      "zoom": 19
+    },
+    "requestOutcomes": [
+      {
+        "bbox": "76.625,8.845,76.626,8.846",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:36.530Z"
+      },
+      {
+        "bbox": "76.625,8.846,76.626,8.847",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:36.530Z"
+      },
+      {
+        "bbox": "76.625,8.847,76.626,8.848",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:36.530Z"
+      },
+      {
+        "bbox": "76.625,8.848,76.626,8.849",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:36.531Z"
+      },
+      {
+        "bbox": "76.625,8.849,76.626,8.85",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:36.531Z"
+      },
+      {
+        "bbox": "76.626,8.845,76.627,8.846",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:36.531Z"
+      },
+      {
+        "bbox": "76.626,8.846,76.627,8.847",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:41.757Z"
+      },
+      {
+        "bbox": "76.626,8.847,76.627,8.848",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:44.156Z"
+      },
+      {
+        "bbox": "76.626,8.848,76.627,8.849",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:44.655Z"
+      },
+      {
+        "bbox": "76.626,8.849,76.627,8.85",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:46.255Z"
+      },
+      {
+        "bbox": "76.627,8.845,76.628,8.846",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:46.555Z"
+      },
+      {
+        "bbox": "76.627,8.846,76.628,8.847",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:46.954Z"
+      },
+      {
+        "bbox": "76.627,8.847,76.628,8.848",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:47.357Z"
+      },
+      {
+        "bbox": "76.627,8.848,76.628,8.849",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:47.654Z"
+      },
+      {
+        "bbox": "76.627,8.849,76.628,8.85",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:48.057Z"
+      },
+      {
+        "bbox": "76.628,8.845,76.629,8.846",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:48.457Z"
+      },
+      {
+        "bbox": "76.628,8.846,76.629,8.847",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:48.857Z"
+      },
+      {
+        "bbox": "76.628,8.847,76.629,8.848",
+        "status": null,
+        "requestedAt": "2026-10-07T23:38:49.454Z"
+      },
+      {
+        "bbox": "76.628,8.848,76.629,8.849",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:49.454Z"
+      },
+      {
+        "bbox": "76.628,8.849,76.629,8.85",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:49.857Z"
+      },
+      {
+        "bbox": "76.629,8.845,76.63,8.846",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:51.256Z"
+      },
+      {
+        "bbox": "76.629,8.846,76.63,8.847",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:51.355Z"
+      },
+      {
+        "bbox": "76.629,8.847,76.63,8.848",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:51.554Z"
+      },
+      {
+        "bbox": "76.629,8.848,76.63,8.849",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:38:58.855Z"
+      },
+      {
+        "bbox": "76.629,8.849,76.63,8.85",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:00.255Z"
+      },
+      {
+        "bbox": "76.628,8.847,76.629,8.848",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:05.057Z"
+      },
+      {
+        "bbox": "76.63,8.845,76.631,8.846",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:39:34.254Z"
+      },
+      {
+        "bbox": "76.63,8.846,76.631,8.847",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:39:34.254Z"
+      },
+      {
+        "bbox": "76.63,8.847,76.631,8.848",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:39:34.254Z"
+      },
+      {
+        "bbox": "76.63,8.848,76.631,8.849",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:39:34.254Z"
+      },
+      {
+        "bbox": "76.63,8.849,76.631,8.85",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:39:34.254Z"
+      }
+    ],
+    "assessment": "All 25 initial cells eventually loaded, including one browser retry after a request with no recorded HTTP status. The five new pan cells received 504 responses carrying a shared cooldown interval; this is not empty coverage. A fresh browser retry subsequently passed."
+  },
+  "iravipuramFreshRetry": {
+    "initialLoad": {
+      "completeCellsRetained": 25,
+      "parcelsRetained": 382,
+      "fallbackVisible": false
+    },
+    "pan": {
+      "boundsCount": 30,
+      "centerLatLon": [
+        8.847550721658688,
+        76.62844777107239
+      ],
+      "city": "iravipuram",
+      "fallbackVisible": false,
+      "featureCount": 527,
+      "loading": false
+    },
+    "decision": "Enable the named village entry after the complete fresh load and pan; retain the earlier transient failure."
+  },
+  "thiruvananthapuram": {
+    "initialLoad": {
+      "actionMenuVisible": true,
+      "alerts": [],
+      "boundsCount": 25,
+      "centerLatLon": [
+        8.539183364299287,
+        76.9560554623604
+      ],
+      "city": "thiruvananthapuram",
+      "fallbackVisible": false,
+      "featureCount": 1092,
+      "loading": false,
+      "selectedParcelId": "IN-KL-ENTEBHOOMI-010111-95fe702e-ee57-4e07-9407-4e688f0caa7f",
+      "zoom": 19
+    },
+    "initialPan": {
+      "alerts": [],
+      "boundsCount": 27,
+      "centerLatLon": [
+        8.539183364299287,
+        76.95793300867082
+      ],
+      "city": "thiruvananthapuram",
+      "fallbackVisible": true,
+      "featureCount": 1191,
+      "loading": false,
+      "zoom": 19
+    },
+    "freshRetryInitialLoad": {
+      "boundsCount": 12,
+      "centerLatLon": [
+        8.539183364299287,
+        76.9560554623604
+      ],
+      "city": "thiruvananthapuram",
+      "fallbackVisible": true,
+      "featureCount": 558,
+      "loading": false,
+      "zoom": 19
+    },
+    "requestOutcomesAcrossBothChecks": [
+      {
+        "bbox": "76.95400000000001,8.537,76.955,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:47.825000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.538,76.955,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:47.825000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.539,76.955,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:47.825000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.540000000000001,76.955,8.541",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:47.825000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.541,76.955,8.542",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:47.825000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.537,76.956,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:47.825000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.538,76.956,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:52.956000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.539,76.956,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:54.656000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.540000000000001,76.956,8.541",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:54.656000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.541,76.956,8.542",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:55.054000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.537,76.95700000000001,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:56.056000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.538,76.95700000000001,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:56.456000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.539,76.95700000000001,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:56.857000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.540000000000001,76.95700000000001,8.541",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:57.157000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.541,76.95700000000001,8.542",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:57.555000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95700000000001,8.537,76.958,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:39:57.957000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95700000000001,8.538,76.958,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:00.656000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95700000000001,8.539,76.958,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:00.956000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95700000000001,8.540000000000001,76.958,8.541",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:02.356000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95700000000001,8.541,76.958,8.542",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:02.657000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.958,8.537,76.959,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:03.054000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.958,8.538,76.959,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:03.354000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.958,8.539,76.959,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:03.757000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.958,8.540000000000001,76.959,8.541",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:04.154000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.958,8.541,76.959,8.542",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:40:05.656000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.959,8.537,76.96000000000001,8.538",
+        "status": null,
+        "requestedAt": "2026-10-07T23:42:34.816000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.959,8.538,76.96000000000001,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:42:34.816000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.959,8.539,76.96000000000001,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:42:34.816000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.959,8.540000000000001,76.96000000000001,8.541",
+        "status": null,
+        "requestedAt": "2026-10-07T23:42:34.816000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.959,8.541,76.96000000000001,8.542",
+        "status": null,
+        "requestedAt": "2026-10-07T23:42:34.816000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.959,8.537,76.96000000000001,8.538",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:42:34.816000Z",
+        "retryAfterSeconds": "30"
+      },
+      {
+        "bbox": "76.959,8.540000000000001,76.96000000000001,8.541",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:42:34.816000Z",
+        "retryAfterSeconds": "30"
+      },
+      {
+        "bbox": "76.95400000000001,8.537,76.955,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:02.982000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.538,76.955,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:02.982000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.539,76.955,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:02.982000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.540000000000001,76.955,8.541",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:02.982000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.95400000000001,8.541,76.955,8.542",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:02.982000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.537,76.956,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:02.982000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.538,76.956,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:06.726000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.539,76.956,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:06.726000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.540000000000001,76.956,8.541",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:07.227000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.955,8.541,76.956,8.542",
+        "status": null,
+        "requestedAt": "2026-10-07T23:48:08.027000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.537,76.95700000000001,8.538",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:08.426000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.538,76.95700000000001,8.539",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.539,76.95700000000001,8.540000000000001",
+        "status": 200,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.540000000000001,76.95700000000001,8.541",
+        "status": null,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": null
+      },
+      {
+        "bbox": "76.956,8.541,76.95700000000001,8.542",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": "30"
+      },
+      {
+        "bbox": "76.95700000000001,8.537,76.958,8.538",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": "30"
+      },
+      {
+        "bbox": "76.95700000000001,8.538,76.958,8.539",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": "30"
+      },
+      {
+        "bbox": "76.95700000000001,8.539,76.958,8.540000000000001",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": "30"
+      },
+      {
+        "bbox": "76.955,8.541,76.956,8.542",
+        "status": 504,
+        "requestedAt": "2026-10-07T23:48:26.537000Z",
+        "retryAfterSeconds": "30"
+      }
+    ],
+    "retryScreenshotVisuallyInspected": true,
+    "visibleWarning": "No parcel register could be loaded here",
+    "decision": "The native geometry audit passed 456 parcel IDs across nine cells, but the ordinary browser checks failed twice: the first view loaded 25 cells and then retained only 27 of 30 after panning; a fresh load after cooldown retained only 12 of 25 cells. Both displayed the unavailable-source warning. Keep the village research-only pending reliable expanded viewport loading under unchanged deadlines."
+  },
+  "diagnosticLimit": "Request records contain request-start timestamps and HTTP status where recorded, but not durations, failure reasons or response bodies. Timeouts and shared cooldowns are observed; upstream delay and browser/backend queueing contributions remain unresolved. The frontend can dispatch six cell requests while the source admits two; browser and provider deadlines are separately 15 seconds."
+}

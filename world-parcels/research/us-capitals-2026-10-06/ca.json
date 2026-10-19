@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "CA",
+  "state": "California",
+  "capital": "Sacramento",
+  "centerLatLon": [
+    38.5816,
+    -121.4944
+  ],
+  "query": {
+    "language": "English",
+    "text": "site:saccounty.gov parcel GIS parcels ArcGIS assessor official"
+  },
+  "references": [
+    {
+      "url": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8?f=pjson",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    },
+    {
+      "url": "https://data.saccounty.gov/",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=site%3Asaccounty.gov%20parcel%20GIS%20parcels%20ArcGIS%20assessor%20official",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=site%3Asaccounty.gov+parcel+GIS+parcels+ArcGIS+assessor+official",
+      "observation": "English search found Sacramento County GIS services and official open-data catalog."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Active GIS Parcel Base polygon layer; APN10 string field length 10 and OBJECTID OID. APN10 chosen over nonunique PARCEL; leading zeroes preserved."
+    },
+    {
+      "url": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8/query?where=1%3D1&geometry=-121.49504999999999%2C38.5811125%2C-121.49375%2C38.5820875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=APN10&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "5 capital-area polygons, unique APN10 strings; closed finite rings."
+    },
+    {
+      "url": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8/query?where=APN10%3D%270060036031%27&outFields=APN10&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Exact APN10 returned one matching polygon."
+    },
+    {
+      "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?where=1%3D1&geometry=-121.49504999999999%2C38.5811125%2C-121.49375%2C38.5820875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_APN&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Read timed out at 20 seconds; retain as a lead, not a negative."
+    }
+  ],
+  "source": {
+    "endpoint": "https://mapservices.gis.saccounty.gov/arcgis/rest/services/PARCELS/MapServer/8",
+    "adapter": "arcgis",
+    "name": "Active GIS Parcel Base",
+    "operator": "Sacramento County GIS",
+    "idField": "PARCEL_NUMBER",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPattern": "^[0-9]{14}$",
+    "outFields": [
+      "OBJECTID",
+      "PARCEL_NUMBER",
+      "APN_DASH"
+    ],
+    "parcelNumberField": "APN_DASH",
+    "metricSrid": 32610,
+    "proposedIdPrefix": "US-CA-SACRAMENTO-"
+  },
+  "verification": {
+    "stage": "runtime_acceptance",
+    "bbox": [
+      -121.4975,
+      38.5775,
+      -121.495,
+      38.58
+    ],
+    "viewportCells": 18,
+    "uniqueCanonicalIds": 837,
+    "nativeIDs": [
+      "00601550120000",
+      "00601530110000",
+      "00600980260000"
+    ],
+    "exactResolved": 837,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json"
+  },
+  "status": "verified_sample_capital_scope",
+  "limitations": "APN10 discovery sample was nonunique across subparcels during the wider runtime gate. The configured adapter uses full14-character PARCEL_NUMBER and APN_DASH display. All837 retained canonical IDs resolved exactly. Active county GIS parcel base only; no California-wide claim.",
+  "priorResearchFile": "research/subnational/US/CA.json",
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "discoveryStatus": "verified_sample_capital_scope",
+  "dataFound": true,
+  "nativeIDVerified": true,
+  "adapterReady": true,
+  "runtimeEvidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+  "discoveryVerification": {
+    "bbox": [
+      -121.495,
+      38.581,
+      -121.4938,
+      38.5822
+    ],
+    "count": 5,
+    "nativeIDs": [
+      "0060036031",
+      "0060042001",
+      "0060035010"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  }
+}

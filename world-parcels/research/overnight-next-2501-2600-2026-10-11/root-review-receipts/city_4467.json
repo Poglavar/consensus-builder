@@ -1,0 +1,42 @@
+{
+  "taskId": "city:4467",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-4467-kiel.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/kiel-service-review.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/root-review-receipts/source-evidence/city_4467-first-party-cache-review.json"
+  ],
+  "checkedAt": "2026-10-11T14:03:07Z",
+  "reason": "City-hosted Kiel polygon-layer metadata verifies cadastral custody and a candidate native ID field; original cached feature queries returned ArcGIS error 400. No safe polygon response or adapter qualification was verified.",
+  "identityCheck": {
+    "rank": 2524,
+    "cityCode": 4467,
+    "country": "Germany",
+    "pointLatLon": [
+      54.3232437231361,
+      10.1370059839948
+    ],
+    "populationPersons": 232651,
+    "matchedImmutableRosterAndQueue": true
+  },
+  "searchLanguagesChecked": [
+    "English",
+    "German"
+  ],
+  "registryFound": true,
+  "admissionGates": {
+    "freshNativeIdRead": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "absenceConclusion": null,
+  "runtimeAdmission": false,
+  "originalCachedPolygonCount": 0,
+  "durableSamplePolygonCount": 0
+}

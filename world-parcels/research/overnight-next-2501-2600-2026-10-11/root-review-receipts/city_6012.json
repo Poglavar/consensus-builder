@@ -1,0 +1,12 @@
+{
+  "taskId": "city:6012",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-6012-tlaxcala.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/tlaxcala-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:28:48.327452Z",
+  "reason": "The immutable WUP 2025 row, ranked roster, queue, and packet agree on Tlaxcala, Mexico, rank 2588, point [19.3169327945908,-98.2086307747163], and 227248 persons. The packet records English and Spanish queries with URLs and outcomes. Official Instituto de Catastro material supports registryFound=true, but the state entry is login gated or unavailable to the anonymous fetch and the municipal atlas is reference mapping. No parcel feature response, safe native ID, or polygon is retained. A gateway error, login wall, and absent exact-point parcel test do not establish citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are missing."
+}

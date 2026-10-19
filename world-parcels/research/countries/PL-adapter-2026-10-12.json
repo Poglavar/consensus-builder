@@ -1,0 +1,625 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "PL",
+  "sourceId": "pl-gugik-uldk",
+  "adapter": "pl-uldk-point",
+  "checkedAt": "2026-10-12",
+  "status": "held_live_verification_blocked",
+  "statusReason": "The verification machine's DNS resolver times out for every name under gugik.gov.pl and geoportal.gov.pl (uldk, opis.html docs host), so no fresh ULDK request was made. Public resolvers return an A record for uldk.gugik.gov.pl, and the zone's two authoritative nameservers (dns1.geoportal.gov.pl, ns.codgik.gov.pl) did not answer UDP/53 queries from this network. Pinning the resolution was refused by the session's permission policy, and server hosts were out of scope. tmp/adapter-staging/poland/live-verify.mjs performs the full verification wherever the host resolves.",
+  "service": {
+    "endpoint": "https://uldk.gugik.gov.pl/",
+    "documentationUrl": "https://uldk.gugik.gov.pl/opis.html",
+    "documentationAccess": "Not opened directly this session (same DNS failure). Content was taken from search-index excerpts of opis.html and from three independent open-source clients, as listed per observation below.",
+    "requestsUsed": {
+      "point": "GET https://uldk.gugik.gov.pl/?request=GetParcelByXY&xy=<lon>,<lat>,4326&result=id,geom_wkt&srid=4326",
+      "exactId": "GET https://uldk.gugik.gov.pl/?request=GetParcelById&id=<TERYT parcel id>&result=id,geom_wkt&srid=4326"
+    },
+    "requestsNotUsed": {
+      "GetParcelByIdOrNr": "Accepts a precinct name plus parcel number and can return several parcels with a count status line; not an exact-ID read.",
+      "SnapToPoint / GetAggregateArea": "Not parcel identity reads.",
+      "area enumeration": "None documented; ULDK is a per-object lookup."
+    },
+    "observations": [
+      {
+        "topic": "reply grammar",
+        "finding": "text/plain; first line is the status, following lines are records whose '|'-separated fields follow the order of the result parameter.",
+        "basis": [
+          "opis.html search excerpt: first line status, second line geometry; a plain request returns a two-line file",
+          "world-parcels/research/countries/PL-parcel-response.json (2026-09-29 live bodies: '0\\n<id>|SRID=4326;POLYGON((...', Content-Type text/plain; charset=UTF-8)",
+          "QGIS plugin envirosolutionspl/uldk_gugik request.py parses fields by result order"
+        ]
+      },
+      {
+        "topic": "success status",
+        "finding": "'0' followed by exactly one record for GetParcelByXY and GetParcelById.",
+        "basis": [
+          "rgugik R/parcel_get.R: '\"0\" means no server side errors'",
+          "2026-09-29 live bodies in PL-parcel-response.json"
+        ]
+      },
+      {
+        "topic": "multi-record status",
+        "finding": "Multi-object replies (e.g. name searches) start with a count line such as '2'; the adapter rejects any status other than '0' plus one record.",
+        "basis": [
+          "php-uldk tests/Factory/ResponseFactoryTest.php fixture '2\\nSRID=2180;POLYGON(...)|Bogatynia|Krzewina\\n...'"
+        ]
+      },
+      {
+        "topic": "no-result line",
+        "finding": "'-1 brak wyników' is the no-result reply.",
+        "basis": [
+          "QGIS plugin constants.py ULDK_NO_RESULTS = \"-1 brak wyników\" compared as a whole line",
+          "search excerpt of a ULDK reply page showing '-1 brak wyników'"
+        ],
+        "verifiedLive": false
+      },
+      {
+        "topic": "error lines",
+        "finding": "Errors are also '-1 <message>' lines, e.g. '-1 wystąpił bład'; the plugin additionally filters lines containing 'błęd' or 'XML'. A '-1' line alone therefore does not mean absence.",
+        "basis": [
+          "php-uldk tests/Factory/ResponseFactoryTest.php",
+          "QGIS plugin constants.py ULDK_ERROR_MARKERS / ULDK_XML_MARKER"
+        ]
+      },
+      {
+        "topic": "axis order and CRS",
+        "finding": "xy is read in the WKT axis order of the SRID given as its third value (longitude,latitude for 4326; easting,northing for 2180); srid selects the output CRS, default 2180. Output geometry is EWKT 'SRID=4326;POLYGON((lon lat,...))'.",
+        "basis": [
+          "opis.html search excerpt: order follows the WKT representation of the chosen system; srid=4326 example",
+          "2026-09-29 live: xy=21.0122,52.2297,4326 returned Warsaw parcel 146510_8.0502.1/3 with lon-first coordinates",
+          "rgugik passes 2180 as Y,X of its geodetic naming, i.e. easting,northing"
+        ],
+        "runtimeGuard": "Every point hit must contain the queried [lon, lat]; a swapped reading cannot pass."
+      },
+      {
+        "topic": "data origin",
+        "finding": "ULDK resolves each parcel from county (powiat) EGiB data; counties that have not connected or whose data is stale return nothing or outdated parcels.",
+        "basis": [
+          "mscanner.pl county pages and C-Geo forum via search (secondary)",
+          "bazaazbestowa.gov.pl FAQ 17: ULDK may lag recent subdivisions",
+          "gis-support.pl 2025-01-03 outage note (precinct search failed nationally)"
+        ],
+        "verifiedLive": false
+      }
+    ]
+  },
+  "identity": {
+    "nativeField": "id",
+    "canonicalId": "PL-ULDK-<native id>",
+    "format": "WWPPGG_R.OOOO[.AR_N].NR_DZ — voivodeship WW, county PP, commune GG, commune type R, four-digit precinct OOOO, optional map sheet AR_N, parcel number NR_DZ (natural number or fraction).",
+    "idPattern": "^[0-9]{6}_[0-9]\\.[0-9]{4}\\.(?:AR_[0-9]{1,4}\\.)?[0-9]{1,6}(?:/[0-9]{1,6})?$",
+    "charset": "digits, '_', '.', '/', and the literal 'AR_' sheet marker; no spaces, '|' or line breaks (both are reply separators).",
+    "examplesObserved": [
+      "146510_8.0502.1/3 (Warsaw, 2026-09-29)",
+      "126105_9.0120.107/1 (Kraków, 2026-09-29)",
+      "046101_1.0128.268/2 (Bydgoszcz, 2026-10-09)",
+      "141201_1.0001.6509 (rgugik documentation)",
+      "141301_1.0010.713/2 (QGIS plugin sample)"
+    ],
+    "formatBasis": [
+      "GUGiK geoportal EGiB page via search: WWPPGG_R.XXXX.NDZ with optional AR_NR sheet",
+      "QGIS plugin constants.py: 'WWPPGG_R.OOOO.[AR_NR].NR_DZ'"
+    ],
+    "unverified": "Real-world IDs with letters, multi-level fractions or non-numeric sheet numbers were not sampled; such IDs would be rejected (502) rather than accepted."
+  },
+  "absenceSemantics": {
+    "explicitAbsence": "Only a reply whose single line is exactly '-1 brak wyników' (NFC, optional trailing spaces/newline) for that request: point -> features [], exact ID -> absentIds [id].",
+    "unavailable": "Network errors, timeouts, non-2xx, non-text/plain, invalid UTF-8, empty bodies, count lines, any other '-1' message, records that fail ID/WKT/containment checks.",
+    "knownLimitation": "ULDK does not distinguish 'parcel does not exist' from 'county data missing or stale' in its no-result reply (secondary sources). Absence is therefore 'not in ULDK now', not proof of deletion. Not verified live.",
+    "httpStatusPolicy": "403 -> parcel-source-blocked, 429 -> parcel-source-rate-limited with Retry-After, never retried by the adapter."
+  },
+  "liveVerification": {
+    "host": "valhalla (laptop resolver could not resolve uldk.gugik.gov.pl)",
+    "ranAt": "2026-10-12",
+    "record": "research/countries/PL-uldk-live-verification-2026-10-12.json",
+    "summary": "51 of 53 uncovered Polish UN cities passed: point hit containing the query point, fresh-adapter exact-ID read with identical geometry, explicit absence for a format-valid missing ID. Stopped at Bełchatów, whose absence reply carried an extra unhandled-service fragment (treated as unavailable, not absence); Piotrków Trybunalski not reached.",
+    "noResultReply": "\"-1 brak wyników\" plus the fixed detail line \"błędny format odpowiedzi XML, usługa zwróciła odpowiedźZbiorcza baza danych obsłużyła zapytanie.\" (fixture backend/test/fixtures/pl-uldk-no-result-2026-10-12.txt)"
+  },
+  "unitTests": {
+    "file": "backend/test/pl-uldk-point-source.test.js",
+    "fixture": {
+      "file": "backend/test/fixtures/pl-uldk-bydgoszcz-parcel.txt",
+      "sha256": "5727d506bf82d7a0abf207554f58e2a5881b80631efad3cf294eb77545511936",
+      "bytes": 1124,
+      "provenance": "Reconstructed, not a raw capture: the ULDK reply for 046101_1.0128.268/2 in the adapter's result=id,geom_wkt form, rebuilt from bydgoszcz-parcel-sample.geojson with vertex 24 latitude restored to the source value 53.126844057528 recorded in root-review-receipts/city_1852.json."
+    },
+    "mutationChecks": "Seven deliberate adapter mutations (no containment check, no ID echo check, any '-1' as absence, multi-record accepted, no pacing, no last-start pacing, 3D WKT accepted) each turned at least one test red; the restored adapter is green."
+  },
+  "uncoveredCities": {
+    "derivation": "UN WUP 2025 cities with ISO2 PL and Year 2025 (60), minus City_Codes that already have a wup2025:<code> entry in frontend/data/world-coverage.json (1381, 1580, 2093, 2942, 3120, 3234, 3608). This gives 53; the brief said 52, so one more city may be counted as covered elsewhere.",
+    "count": 53,
+    "cities": [
+      {
+        "cityCode": "3660",
+        "name": "Warszawa (Warsaw)",
+        "point": [
+          21.0008161096485,
+          52.2229170530915
+        ],
+        "population2025k": 1882.756
+      },
+      {
+        "cityCode": "71",
+        "name": "Szczecin",
+        "point": [
+          14.5350485616163,
+          53.4353064484097
+        ],
+        "population2025k": 300.314
+      },
+      {
+        "cityCode": "4280",
+        "name": "Lublin",
+        "point": [
+          22.5517979898529,
+          51.2411675205158
+        ],
+        "population2025k": 300.013
+      },
+      {
+        "cityCode": "4240",
+        "name": "Białystok",
+        "point": [
+          23.148432356912,
+          53.1338242364049
+        ],
+        "population2025k": 288.641
+      },
+      {
+        "cityCode": "1852",
+        "name": "Bydgoszcz",
+        "point": [
+          17.997811624784,
+          53.1261021859871
+        ],
+        "population2025k": 266.908
+      },
+      {
+        "cityCode": "1935",
+        "name": "Gdynia",
+        "point": [
+          18.5076341710355,
+          54.5322041862711
+        ],
+        "population2025k": 209.918
+      },
+      {
+        "cityCode": "4199",
+        "name": "Rzeszów",
+        "point": [
+          22.0039593163143,
+          50.0320723876861
+        ],
+        "population2025k": 187.574
+      },
+      {
+        "cityCode": "3851",
+        "name": "Radom",
+        "point": [
+          21.1526507651136,
+          51.3964628828514
+        ],
+        "population2025k": 174.122
+      },
+      {
+        "cityCode": "2476",
+        "name": "Toruń",
+        "point": [
+          18.6212481126872,
+          53.0245852712266
+        ],
+        "population2025k": 166.921
+      },
+      {
+        "cityCode": "3758",
+        "name": "Kielce",
+        "point": [
+          20.6275441266407,
+          50.8750758566059
+        ],
+        "population2025k": 165.834
+      },
+      {
+        "cityCode": "3002",
+        "name": "Częstochowa",
+        "point": [
+          19.1134120802074,
+          50.8076252950718
+        ],
+        "population2025k": 164.337
+      },
+      {
+        "cityCode": "3502",
+        "name": "Olsztyn",
+        "point": [
+          20.4978271160328,
+          53.7665732876546
+        ],
+        "population2025k": 145.771
+      },
+      {
+        "cityCode": "544",
+        "name": "Zielona Góra",
+        "point": [
+          15.5023625952977,
+          51.9373160500613
+        ],
+        "population2025k": 133.925
+      },
+      {
+        "cityCode": "3397",
+        "name": "Bielsko-Biała",
+        "point": [
+          19.0423255904236,
+          49.8178778643515
+        ],
+        "population2025k": 133.022
+      },
+      {
+        "cityCode": "2620",
+        "name": "Elbląg",
+        "point": [
+          19.4103120545885,
+          54.1668551128978
+        ],
+        "population2025k": 107.088
+      },
+      {
+        "cityCode": "3178",
+        "name": "Tychy",
+        "point": [
+          18.987175031002,
+          50.1188429468754
+        ],
+        "population2025k": 100.761
+      },
+      {
+        "cityCode": "2881",
+        "name": "Gliwice",
+        "point": [
+          18.6726701509765,
+          50.2974825733379
+        ],
+        "population2025k": 95.73
+      },
+      {
+        "cityCode": "399",
+        "name": "Gorzów Wielkopolski",
+        "point": [
+          15.2389393766615,
+          52.7429409230698
+        ],
+        "population2025k": 94.196
+      },
+      {
+        "cityCode": "685",
+        "name": "Koszalin",
+        "point": [
+          16.1902100834576,
+          54.19411056018
+        ],
+        "population2025k": 93.416
+      },
+      {
+        "cityCode": "2401",
+        "name": "Opole",
+        "point": [
+          17.9404125955347,
+          50.6681692860732
+        ],
+        "population2025k": 90.669
+      },
+      {
+        "cityCode": "1053",
+        "name": "Słupsk",
+        "point": [
+          17.0213199178476,
+          54.4636975832782
+        ],
+        "population2025k": 83.293
+      },
+      {
+        "cityCode": "2249",
+        "name": "Kalisz",
+        "point": [
+          18.0833173060179,
+          51.7549404064184
+        ],
+        "population2025k": 82.099
+      },
+      {
+        "cityCode": "937",
+        "name": "Legnica",
+        "point": [
+          16.1741221611038,
+          51.2058512284457
+        ],
+        "population2025k": 76.676
+      },
+      {
+        "cityCode": "2549",
+        "name": "Grudziądz",
+        "point": [
+          18.7571110836073,
+          53.4788249167263
+        ],
+        "population2025k": 73.692
+      },
+      {
+        "cityCode": "4072",
+        "name": "Siedlce",
+        "point": [
+          22.2767061227765,
+          52.1656867656902
+        ],
+        "population2025k": 72.316
+      },
+      {
+        "cityCode": "2687",
+        "name": "Włocławek",
+        "point": [
+          19.0626658622382,
+          52.6505942526297
+        ],
+        "population2025k": 72.215
+      },
+      {
+        "cityCode": "3942",
+        "name": "Tarnów",
+        "point": [
+          20.9877709077343,
+          50.0164917071665
+        ],
+        "population2025k": 70.695
+      },
+      {
+        "cityCode": "3897",
+        "name": "Nowy Sącz",
+        "point": [
+          20.6998999214814,
+          49.6140452924349
+        ],
+        "population2025k": 67.282
+      },
+      {
+        "cityCode": "816",
+        "name": "Lubin",
+        "point": [
+          16.1963940635763,
+          51.3979869466992
+        ],
+        "population2025k": 67.14
+      },
+      {
+        "cityCode": "3289",
+        "name": "Płock",
+        "point": [
+          19.7195485490596,
+          52.5430998887522
+        ],
+        "population2025k": 67.138
+      },
+      {
+        "cityCode": "4115",
+        "name": "Suwałki",
+        "point": [
+          22.9331027875897,
+          54.1043061997561
+        ],
+        "population2025k": 65.194
+      },
+      {
+        "cityCode": "2172",
+        "name": "Inowrocław",
+        "point": [
+          18.2590588435053,
+          52.7902336993022
+        ],
+        "population2025k": 64.117
+      },
+      {
+        "cityCode": "3710",
+        "name": "Legionowo",
+        "point": [
+          20.9252703477092,
+          52.4039665953965
+        ],
+        "population2025k": 62.109
+      },
+      {
+        "cityCode": "3986",
+        "name": "Łomża",
+        "point": [
+          22.0646901929271,
+          53.1714002876591
+        ],
+        "population2025k": 62.058
+      },
+      {
+        "cityCode": "1167",
+        "name": "Pila",
+        "point": [
+          16.7464328052244,
+          53.1513682979439
+        ],
+        "population2025k": 60.401
+      },
+      {
+        "cityCode": "3061",
+        "name": "Pabianice",
+        "point": [
+          19.3534282663508,
+          51.6609967628735
+        ],
+        "population2025k": 60.303
+      },
+      {
+        "cityCode": "2014",
+        "name": "Ostrów Wielkopolski",
+        "point": [
+          17.8138050881419,
+          51.6497384459528
+        ],
+        "population2025k": 59.44
+      },
+      {
+        "cityCode": "241",
+        "name": "Stargard",
+        "point": [
+          15.030564201468,
+          53.3382279105169
+        ],
+        "population2025k": 58.692
+      },
+      {
+        "cityCode": "2754",
+        "name": "Rybnik",
+        "point": [
+          18.5383788655106,
+          50.099180479429
+        ],
+        "population2025k": 58.13
+      },
+      {
+        "cityCode": "4356",
+        "name": "Zamość",
+        "point": [
+          23.2609637553334,
+          50.7217702281141
+        ],
+        "population2025k": 57.576
+      },
+      {
+        "cityCode": "2325",
+        "name": "Tczew",
+        "point": [
+          18.7843364944908,
+          54.0908371715605
+        ],
+        "population2025k": 55.947
+      },
+      {
+        "cityCode": "1673",
+        "name": "Gniezno",
+        "point": [
+          17.6064312677703,
+          52.5344430787909
+        ],
+        "population2025k": 55.1
+      },
+      {
+        "cityCode": "1275",
+        "name": "Leszno",
+        "point": [
+          16.5773027600746,
+          51.8427843893659
+        ],
+        "population2025k": 54.448
+      },
+      {
+        "cityCode": "4157",
+        "name": "Stalowa Wola",
+        "point": [
+          22.0568167437462,
+          50.5664297325734
+        ],
+        "population2025k": 53.879
+      },
+      {
+        "cityCode": "4029",
+        "name": "Elk",
+        "point": [
+          22.3576680534356,
+          53.8234849792281
+        ],
+        "population2025k": 53.844
+      },
+      {
+        "cityCode": "2818",
+        "name": "Jastrzębie-Zdrój",
+        "point": [
+          18.5908434066578,
+          49.9518257086113
+        ],
+        "population2025k": 53.229
+      },
+      {
+        "cityCode": "3805",
+        "name": "Wołomin",
+        "point": [
+          21.2337346051155,
+          52.342697415251
+        ],
+        "population2025k": 53.038
+      },
+      {
+        "cityCode": "3555",
+        "name": "Tomaszów Mazowiecki",
+        "point": [
+          20.0135606379077,
+          51.5340194073462
+        ],
+        "population2025k": 52.153
+      },
+      {
+        "cityCode": "1763",
+        "name": "Wejherowo",
+        "point": [
+          18.2391802227089,
+          54.6054036640665
+        ],
+        "population2025k": 51.83
+      },
+      {
+        "cityCode": "4318",
+        "name": "Przemyśl",
+        "point": [
+          22.7720844417991,
+          49.7865703940357
+        ],
+        "population2025k": 51.468
+      },
+      {
+        "cityCode": "4394",
+        "name": "Chełm",
+        "point": [
+          23.4775917479072,
+          51.1343001957731
+        ],
+        "population2025k": 51.377
+      },
+      {
+        "cityCode": "3344",
+        "name": "Bełchatów",
+        "point": [
+          19.3733696862117,
+          51.3600738693611
+        ],
+        "population2025k": 51.141
+      },
+      {
+        "cityCode": "3449",
+        "name": "Piotrków Trybunalski",
+        "point": [
+          19.6836162711193,
+          51.4086733870137
+        ],
+        "population2025k": 50.606
+      }
+    ]
+  },
+  "coverageCaveats": [
+    "Coverage depends on each county's EGiB integration with ULDK; no official list of non-integrated counties was found.",
+    "ULDK may lag recent subdivisions (Baza Azbestowa FAQ).",
+    "National ULDK outages have been reported (gis-support.pl, 2025-01-03); the adapter maps them to unavailable, never to absence, unless ULDK itself answers '-1 brak wyników'.",
+    "Legal title, survey accuracy and currentness are not established by this lookup."
+  ],
+  "sources": [
+    "https://uldk.gugik.gov.pl/opis.html (search-index excerpts only)",
+    "https://github.com/envirosolutionspl/uldk_gugik (constants.py, request.py, uldk_api.py, uldk_xy.py)",
+    "https://github.com/kryst3q/php-uldk (src/Factory/ResponseFactory.php, tests/Factory/ResponseFactoryTest.php, src/Domain/RequestName.php, src/Domain/CoordinateSystem.php)",
+    "https://github.com/kadyb/rgugik (R/parcel_get.R)",
+    "https://bazaazbestowa.gov.pl/wiedza/mod/page/view.php?id=71",
+    "https://gis-support.pl/awaria-uldk-brak-mozliwosci-wyszukania-obrebu-ewidencyjnego-dla-gminy/"
+  ]
+}

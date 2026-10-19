@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-11",
+  "cityCode": 8496,
+  "queueRank": 2348,
+  "name": "Dausa",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [26.8976054048931, 76.3382552079103],
+  "population2025": 248804,
+  "population2025k": 248.804,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeReadiness": "held",
+  "registryFound": true,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dausa Rajasthan official cadastral parcel map Bhunaksha land records GIS",
+        "result": "Search identified the official Rajasthan Bhu-Naksha cadastral viewer, the Rajasthan Revenue Department, the official Dausa district site, and the Rajasthan Urban GIS portal. The state viewer is the relevant first-party parcel-map route; no bounded parcel API response was obtained in this environment.",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/rajasthan-revenue-department/Circular/OnlineTehsils.html",
+          "https://dausa.rajasthan.gov.in/pages/dptHome",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "दौसा राजस्थान आधिकारिक भू नक्शा कैडस्ट्रल मानचित्र भूमि अभिलेख GIS",
+        "result": "Search identified the official Dausa district site and Rajasthan Revenue Department Hindi cadastral/digitization and online-tehsil pages. The Revenue Department result lists Dausa tehsil as online and identifies the state cadastral-map program; no safe parcel geometry was returned.",
+        "actualResultUrls": [
+          "https://dausa.rajasthan.gov.in/pages/dptHome",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/hi/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+          "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/rajasthan-revenue-department/Circular/OnlineTehsils.html"
+        ]
+      }
+    ]
+  },
+  "administrativeIdentity": {
+    "district": "Dausa",
+    "state": "Rajasthan",
+    "identityEvidence": "Official Rajasthan Revenue Department online-tehsil listing includes दौसा/Dausa, and the official Dausa district government site identifies the district. This establishes the local administrative custodian context, not exact parcel membership at the WUP point."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan's official Bhu-Naksha viewer provides cadastral-map access for state land records; the Revenue Department separately documents cadastral-map digitization and lists Dausa as an online tehsil.",
+    "verifiedOpenScope": "Official viewer URL and Dausa administrative/revenue pages were verified through first-party discovery, but the viewer's current JavaScript/configuration and parcel response could not be inspected because direct requests timed out.",
+    "countrywideVerified": false,
+    "exactPointHit": false,
+    "exactPointHitInterpretation": "No exact-point query was completed. The timeout is not evidence of citywide parcel absence."
+  },
+  "resultCategory": "official_cadastral_viewer_discovered_no_bounded_geometry",
+  "verifiedSample": false,
+  "parcelGeometryVerified": false,
+  "technicalBlocker": "GET https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html timed out after 25 seconds. Subsequent HTTPS/HTTP requests to the Bhu-Naksha host timed out after 12 seconds each. No login, credentials, CAPTCHA bypass, private token, or unsafe field request was attempted.",
+  "remainingUncertainty": "Viewer service endpoints, schema, CRS, native parcel identity, exact WUP-point coverage, and citywide completeness remain unverified. Search-result prose and the official Revenue Department pages do not substitute for a parcel response.",
+  "nextStep": "A serial reviewer should retry the current Rajasthan Bhu-Naksha viewer/API from an environment that can reach the host, inspect its live configuration and safe ID-plus-geometry route, and independently qualify any adapter. Runtime admission remains held."
+}

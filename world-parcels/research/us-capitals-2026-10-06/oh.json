@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "OH",
+  "state": "Ohio",
+  "capital": "Columbus",
+  "centerLatLon": [
+    39.9612,
+    -82.9988
+  ],
+  "query": {
+    "language": "English",
+    "text": "Franklin County Auditor parcel GIS Columbus Ohio parcel boundaries"
+  },
+  "references": [
+    {
+      "url": "https://auditor.franklincountyohio.gov/Auditor/Geographic-Information-Systems-GIS",
+      "observation": "Official state/county GIS and parcel programme source."
+    },
+    {
+      "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0",
+      "observation": "Official ArcGIS REST layer metadata, HTTP 200."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "ArcGIS layer metadata retrieved; used only to identify genuine parcel key and object ID field."
+    },
+    {
+      "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0/query?f=geojson&where=1%3D1&geometry=-82.9999%2C39.9601%2C-82.99770000000001%2C39.9623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PARCELID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Capital-centered bbox query; requested ID and geometry only; max 3 records. Polygon closure, finite coordinates, sampled key values, and duplicate-key flag checked."
+    },
+    {
+      "url": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0/query?f=geojson&where=PARCELID%3D%27010-000602%27&outFields=PARCELID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Exact key round trip for 010-000602: 1 matching record(s), geometry valid=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.franklincountyohio.gov/hosting/rest/services/ParcelFeatures/Parcel_Features/MapServer/0",
+    "adapter": "arcgis",
+    "name": "Franklin County Auditor Parcels",
+    "operator": "Franklin County Auditor, GIS",
+    "scope": "county",
+    "idField": "PARCELID",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "PARCELID"
+    ],
+    "parcelNumberField": "PARCELID",
+    "metricSrid": 3735,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -82.9999,
+      39.9601,
+      -82.99770000000001,
+      39.9623
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "010-000602",
+      "010-007484",
+      "010-066782"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "The record is a bounded capital-location sample only; it does not assert complete municipal or county coverage."
+}

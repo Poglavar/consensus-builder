@@ -26,6 +26,7 @@ let app;
 beforeEach(() => {
     process.env.ENS_GATEWAY_SIGNER_KEY = wallet.privateKey;
     process.env.ENS_PARENT_NAME = 'parcels.urbangametheory.eth';
+    process.env.ENS_PROPOSALS_PARENT_NAME = 'proposals.urbangametheory.eth';
     process.env.ENS_PUBLIC_BASE_URL = 'https://urbangametheory.xyz';
     delete process.env.ENS_ADDR_RPC_URL;
     delete process.env.ENS_PARCEL_NFT_ADDRESS;
@@ -108,6 +109,34 @@ describe('GET /ens/:sender/:data', () => {
         // Mock pool returns no rows → the proposal does not exist here, so the
         // gateway must resolve to an empty url instead of a dead /proposals link.
         const callData = textUrlCallData('53.proposals.urbangametheory.eth');
+        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+        expect(res.status).toBe(200);
+        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
+        expect(abi.decode(['string'], result)[0]).toBe('');
+    });
+
+    it('resolves a chain-qualified mirror name to the chain proposal path', async () => {
+        const chainRef = { chainType: 'evm', chainId: '84532', contract: '0x1234567890123456789012345678901234567890', tokenId: '9' };
+        pool.setResult({ rows: [{
+            proposal_id: `chain_${'a'.repeat(64)}`, title: 'Riverside Lane', name: null,
+            screenshot_url: null, chain_ref: chainRef,
+        }], rowCount: 1 });
+        const callData = textUrlCallData(`chain-${'a'.repeat(48)}.proposals.urbangametheory.eth`);
+        const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
+        expect(res.status).toBe(200);
+        const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);
+        expect(abi.decode(['string'], result)[0]).toBe(
+            'https://urbangametheory.xyz/proposals/evm/84532/0x1234567890123456789012345678901234567890/9',
+        );
+        expect(pool.getCalls()[0].params).toEqual([`chain_${'a'.repeat(48)}`, `chain_${'a'.repeat(48)}g`]);
+    });
+
+    it('refuses an ambiguous chain hash prefix', async () => {
+        pool.setResult({ rows: [
+            { proposal_id: `chain_${'a'.repeat(48)}${'1'.repeat(16)}`, chain_ref: { chainType: 'evm', chainId: '1', contract: '0x1', tokenId: '2' } },
+            { proposal_id: `chain_${'a'.repeat(48)}${'2'.repeat(16)}`, chain_ref: { chainType: 'evm', chainId: '1', contract: '0x2', tokenId: '3' } },
+        ], rowCount: 2 });
+        const callData = textUrlCallData(`chain-${'a'.repeat(48)}.proposals.urbangametheory.eth`);
         const res = await request(app).get(`/ens/${SENDER}/${callData}.json`);
         expect(res.status).toBe(200);
         const [result] = abi.decode(['bytes', 'uint64', 'bytes'], res.body.data);

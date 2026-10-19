@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Tamale",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "registryFound": true,
+  "registryBasis": "The national Lands Commission lists a Client Service Access Unit in Tamale, and its Survey and Mapping Division states that it holds parcel-survey records and prepares/certifies survey plans for land registration. These establish a local service presence and national survey/cadastre functions, but not a publicly downloadable Tamale parcel layer.",
+  "registryEvidenceUrls": [
+    "https://www.lc.gov.gh/contact-us/csau/",
+    "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+    "https://www.lc.gov.gh/storage/2025/01/RTI-Manual-2025-LANDS-COMMISSION.pdf",
+    "https://www.lc.gov.gh/fees-charges/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2743,
+  "cityId": "wup2025:2743",
+  "centerLatLon": [
+    9.41421811170727,
+    -0.847811973776205
+  ],
+  "point": [
+    9.41421811170727,
+    -0.847811973776205
+  ],
+  "rank": 830,
+  "queueRank": 830,
+  "population2025": 654868,
+  "population2025k": 654.868,
+  "populationPlausibility2025": "Low",
+  "notes": null,
+  "coverageAssessment": {
+    "claimedScope": "The national Lands Commission lists a Client Service Access Unit in Tamale, and its Survey and Mapping Division states that it holds parcel-survey records and prepares/certifies survey plans for land registration. These establish a local service presence and national survey/cadastre functions, but not a publicly downloadable Tamale parcel layer.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with a safe stable identifier was verified; the documented routes are map-level only, application-based or identity-gated as described above.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tamale Ghana official land registry cadastral map parcel spatial data Lands Commission",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "The official Lands Commission lists Tamale among CSAU service locations and documents Survey and Mapping services. Plan approval requires survey materials and an application; no anonymous city parcel geometry API or download was identified.",
+        "actualResultUrls": [
+          "https://www.lc.gov.gh/contact-us/csau/",
+          "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+          "https://www.lc.gov.gh/storage/2025/01/RTI-Manual-2025-LANDS-COMMISSION.pdf",
+          "https://www.lc.gov.gh/fees-charges/"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      },
+      {
+        "language": "Dagbani/local-language supplementary query",
+        "query": "Dagbanli Tamale land cadastral map land registry",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "The search did not identify an official Dagbani-language public parcel map. English official Lands Commission service pages provide the relevant local evidence; no anonymous geometry route was verified.",
+        "actualResultUrls": [
+          "https://www.lc.gov.gh/contact-us/csau/",
+          "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+          "https://www.lc.gov.gh/storage/2025/01/RTI-Manual-2025-LANDS-COMMISSION.pdf",
+          "https://www.lc.gov.gh/fees-charges/"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.lc.gov.gh/contact-us/csau/",
+        "observation": "Official CSAU page lists Tamale among Lands Commission client-service locations and describes application workflows; some stated requirements include personal/client information, which was not submitted."
+      },
+      {
+        "url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+        "observation": "Official Survey and Mapping Division page describes custody of parcel survey records, plan preparation, mapping and certification as institutional duties."
+      },
+      {
+        "url": "https://www.lc.gov.gh/storage/2025/01/RTI-Manual-2025-LANDS-COMMISSION.pdf",
+        "observation": "Official 2025 RTI manual identifies the regional office structure and Northern Region office in Tamale. No map schema, anonymous vector download or safe feature endpoint appears in the reviewed material."
+      },
+      {
+        "url": "https://www.lc.gov.gh/fees-charges/",
+        "observation": "Official fee schedule lists paid survey/map services; this is a service route, not open parcel geometry."
+      }
+    ]
+  },
+  "source": {
+    "name": "Lands Commission Client Service Access Unit (Tamale) and national Survey and Mapping Division; reviewed service information rather than an interactive parcel viewer.",
+    "urls": [
+      "https://www.lc.gov.gh/contact-us/csau/",
+      "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+      "https://www.lc.gov.gh/storage/2025/01/RTI-Manual-2025-LANDS-COMMISSION.pdf",
+      "https://www.lc.gov.gh/fees-charges/"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "The identified parcel-plan and survey-data services require formal applications and/or licensed-surveyor inputs. No anonymous geometry+stable-ID schema or public city parcel dataset was verified; no property or client query was made.",
+  "scopeLimits": "Bounded review of public first-party sources. No owner, address, tax/account, applicant, identity, or property-specific data was queried or retained. No citywide completeness or legal/survey accuracy is asserted.",
+  "remainingUncertainty": "A separate Tamale-specific public cadastral dataset could exist outside the official service pages reviewed. No exact-point parcel coverage or citywide completeness is established.",
+  "resultCategory": "local_registry_service_presence_no_public_parcel_geometry",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The identified parcel-plan and survey-data services require formal applications and/or licensed-surveyor inputs. No anonymous geometry+stable-ID schema or public city parcel dataset was verified; no property or client query was made."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.lc.gov.gh/contact-us/csau/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "CSAU &#8211; Lands Commission"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

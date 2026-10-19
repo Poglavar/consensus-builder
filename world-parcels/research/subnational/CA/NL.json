@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "NL",
+ "regionName": "Newfoundland and Labrador",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "None found.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://data-stjohns.opendata.arcgis.com/",
+   "observation": "City of St. John's Hub site; search API returns 'private org id ... not accessible' (401), so not usable."
+  },
+  {
+   "url": "https://maps.gov.nl.ca/arcgis/rest/services",
+   "observation": "404 (guessed host, no such path)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://maps.gov.nl.ca/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "not found"
+  },
+  {
+   "url": "https://gis.gov.nl.ca/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "not found"
+  },
+  {
+   "url": "https://maps.stjohns.ca/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502, unreachable from here"
+  },
+  {
+   "url": "https://data-stjohns.opendata.arcgis.com/api/search/v1/collections/dataset/items?q=parcel",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "application/json",
+   "assessment": "private org"
+  },
+  {
+   "url": "ArcGIS Online search (parcel + NL/St. John's/Mount Pearl/Corner Brook)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no NL parcel polygon layer found"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Search was thin: real host names (GeoHub NL, Service NL) were not found; St. John's may have an open layer inside its private hub. Not a permanent negative.",
+ "nextStep": "Find the NL Service NL / Land Registry viewer JS; try St. John's ArcGIS host via its web map."
+}

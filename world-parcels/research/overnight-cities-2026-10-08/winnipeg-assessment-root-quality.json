@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32614",
+  "featureCount": 32,
+  "validNonemptyCount": 32,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 92.67651100066323,
+    "median": 1204.0554824028634,
+    "max": 13094.651416358636
+  },
+  "features": [
+    {
+      "id": "CA-WINNIPEG-GISID-71672",
+      "areaM2": 847.1489975691904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71696",
+      "areaM2": 564.0421558210528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71697",
+      "areaM2": 564.1040245596025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-618654",
+      "areaM2": 3949.529740430932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-638413",
+      "areaM2": 3667.884277860616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-642648",
+      "areaM2": 1693.477797602583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71704",
+      "areaM2": 4149.695414614809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71706",
+      "areaM2": 5609.719279831608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71708",
+      "areaM2": 6552.497739486069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71713",
+      "areaM2": 12234.708822046516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-441278",
+      "areaM2": 13094.651416358636,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-443462",
+      "areaM2": 3124.728619974029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-458360",
+      "areaM2": 8475.938226547136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-469043",
+      "areaM2": 2363.980620167864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71644",
+      "areaM2": 1813.5481163675354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71666",
+      "areaM2": 1048.208172849743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71667",
+      "areaM2": 1048.205605604031,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71673",
+      "areaM2": 786.16447317907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71680",
+      "areaM2": 262.05743735297546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71607",
+      "areaM2": 12176.40075125332,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-460371",
+      "areaM2": 1284.1104715470017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-465723",
+      "areaM2": 232.04244610379192,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71660",
+      "areaM2": 1055.5260272663268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71668",
+      "areaM2": 1047.9457915882188,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71676",
+      "areaM2": 639.7329446773886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-599344",
+      "areaM2": 2291.106501940789,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-612017",
+      "areaM2": 880.7032729784281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71657",
+      "areaM2": 1118.5024336470337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-71700",
+      "areaM2": 576.5434656920032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-190403",
+      "areaM2": 1124.000493258725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-465715",
+      "areaM2": 92.67651100066323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-469208",
+      "areaM2": 10852.674412841523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

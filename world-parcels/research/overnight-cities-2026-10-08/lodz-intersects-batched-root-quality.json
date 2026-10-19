@@ -1,0 +1,643 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32634",
+  "featureCount": 89,
+  "validNonemptyCount": 89,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 3.984948790226582,
+    "median": 1485.9982728508073,
+    "max": 27692.97838728861
+  },
+  "features": [
+    {
+      "id": "PL-LODZ-106105_9.0006.102",
+      "areaM2": 1272.5719887955843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.103/1",
+      "areaM2": 2253.2460679568144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.104/3",
+      "areaM2": 2552.884613837382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.105/1",
+      "areaM2": 1958.5173273013518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.106",
+      "areaM2": 621.0050730747431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.107/1",
+      "areaM2": 836.5110255654604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.190/7",
+      "areaM2": 2085.0629290937127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.190/8",
+      "areaM2": 354.2229403442587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.206/11",
+      "areaM2": 2058.7964058659477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.206/12",
+      "areaM2": 880.0034687825939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.206/13",
+      "areaM2": 3.984948790226582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.206/8",
+      "areaM2": 551.5423220697464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.207/1",
+      "areaM2": 1566.667568905155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.108/1",
+      "areaM2": 1028.7947302264524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.208/2",
+      "areaM2": 413.89266276661175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.208/5",
+      "areaM2": 110.65941312363132,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.208/6",
+      "areaM2": 190.60380153165028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.208/7",
+      "areaM2": 548.5804047217948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.208/8",
+      "areaM2": 20.72768284660256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.209/1",
+      "areaM2": 1385.6980615341602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.210/1",
+      "areaM2": 2129.484617146496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.26/14",
+      "areaM2": 27692.97838728861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.141/1",
+      "areaM2": 467.1396465672672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.143/1",
+      "areaM2": 1485.9982728508073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.144/6",
+      "areaM2": 1109.3765627348207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.189/18",
+      "areaM2": 3893.9805531943125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.230/1",
+      "areaM2": 33.30930314717752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.230/6",
+      "areaM2": 1843.2206143557928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.231/1",
+      "areaM2": 2640.769398962931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.233/3",
+      "areaM2": 1421.1392053219563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.100/2",
+      "areaM2": 2241.9982223920783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.101/1",
+      "areaM2": 1252.4013023833043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.91/1",
+      "areaM2": 3527.758049688905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.92/4",
+      "areaM2": 937.9682199192463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.93/1",
+      "areaM2": 1233.7161907832528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.93/4",
+      "areaM2": 471.336478522654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.93/5",
+      "areaM2": 291.2144765514712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.94/1",
+      "areaM2": 1700.523983671669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.95/1",
+      "areaM2": 315.69775932321403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.96",
+      "areaM2": 1454.1887052821442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.97/1",
+      "areaM2": 1291.0078243808525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.98/1",
+      "areaM2": 2270.323692071751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.99/2",
+      "areaM2": 1132.4319750460895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.99/4",
+      "areaM2": 1986.8926604348956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.99/5",
+      "areaM2": 415.5721671717547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.131/2",
+      "areaM2": 3127.453325015601,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.132/3",
+      "areaM2": 939.7163550053398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.132/7",
+      "areaM2": 2150.517029668034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.138/4",
+      "areaM2": 3103.3062382895373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.139/7",
+      "areaM2": 3106.812494183779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.140/2",
+      "areaM2": 3106.5665606555995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.142/2",
+      "areaM2": 2667.2132893419807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.84/4",
+      "areaM2": 1597.6765352042985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.84/5",
+      "areaM2": 4598.211616163136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.87/4",
+      "areaM2": 2152.505821182523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.88/12",
+      "areaM2": 887.1901030778704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.88/13",
+      "areaM2": 695.7393125978759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.88/6",
+      "areaM2": 36.538758332024265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.89/10",
+      "areaM2": 1186.605752286241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.89/13",
+      "areaM2": 250.53822436416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.89/17",
+      "areaM2": 7108.103568620362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.90/3",
+      "areaM2": 1288.1981356939575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.119/21",
+      "areaM2": 3273.466067938496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.120/1",
+      "areaM2": 2060.682020427372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.126/4",
+      "areaM2": 1247.2223958042987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.127/5",
+      "areaM2": 2903.021191977211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.130/1",
+      "areaM2": 3852.8810519691838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.121/1",
+      "areaM2": 540.0077071860308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.125/5",
+      "areaM2": 1767.828878530765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.211/3",
+      "areaM2": 1106.8634132699278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.211/4",
+      "areaM2": 1451.4833772974368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.213/7",
+      "areaM2": 2715.908633745565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.214",
+      "areaM2": 3475.352023048221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.216",
+      "areaM2": 2089.3536929227084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.217/1",
+      "areaM2": 2268.330263275775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.109/1",
+      "areaM2": 3459.838205454752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.110/3",
+      "areaM2": 1367.8956350542962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.23/1",
+      "areaM2": 2328.4194600673977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.24",
+      "areaM2": 1629.1388039699473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.44/7",
+      "areaM2": 890.0350620930211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.45/1",
+      "areaM2": 1486.3214527271539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.466",
+      "areaM2": 358.39622533165345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.65/8",
+      "areaM2": 3441.0603869756405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.66/2",
+      "areaM2": 1952.977342150212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.85/5",
+      "areaM2": 2170.673311689035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.86/4",
+      "areaM2": 1227.198000099444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.8/43",
+      "areaM2": 11136.705739574685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.92/3",
+      "areaM2": 588.3993948009446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-LODZ-106105_9.0006.145/4",
+      "areaM2": 2683.757967011698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

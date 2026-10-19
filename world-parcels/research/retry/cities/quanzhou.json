@@ -1,0 +1,74 @@
+{
+ "kind": "city",
+ "key": "quanzhou",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: zh-CN,zh;q=0.9; cookie jar used (curl -c/-b)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.quanzhou.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "reachable now (131 KB); links to bureau site zyghj.quanzhou.gov.cn and Fujian open-data catalogue"
+  },
+  {
+   "url": "https://zyghj.quanzhou.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Bureau site reachable; page/JS scanned for map, GIS, wfs, FeatureServer, MapServer, token strings: none found; only registration forms and news, no parcel viewer link"
+  },
+  {
+   "url": "https://zrzyj.quanzhou.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer / proxy CONNECT 502 (no HTTP reply from origin)"
+  },
+  {
+   "url": "https://data.fujian.gov.cn/oportal/catalog/index?filterParam=region_code&filterParamCode=350500000000&page=1",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer / proxy CONNECT 502 (no HTTP reply from origin)"
+  },
+  {
+   "url": "https://www.mnr.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer / proxy CONNECT 502 (no HTTP reply from origin)"
+  },
+  {
+   "url": "https://data.gov.cn/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset by peer / proxy CONNECT 502 (no HTTP reply from origin)"
+  },
+  {
+   "url": "https://www.tianditu.gov.cn/",
+   "method": "GET",
+   "httpStatus": 418,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "WAF block page; not bypassed; Tianditu also needs a registered key"
+  },
+  {
+   "url": "https://www.gov.cn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "reachable; national portal, no parcel service"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "many .gov.cn hosts reset or 502 at the proxy while www.gov.cn answers 200; likely geo/network filtering, unproven",
+ "notes": "Country retry (CN.json) found no open parcel endpoint and Shanghai flows need login; a national or city service does not cover this city. New: city and bureau homepages now reachable and contain no public parcel service link; the Fujian open-data catalogue that could list Quanzhou datasets resets the connection, so the check is incomplete.",
+ "nextStep": "Retry data.fujian.gov.cn catalogue (region 350500000000) from a China-region network and look for a parcel dataset/API."
+}

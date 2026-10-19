@@ -1,0 +1,14 @@
+{
+  "taskId": "city:10388",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-10388-hanchuan.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/hanchuan-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-09T14:09:42Z",
+  "reason": "Immutable rank 1311/China/point/426922 persons match queue and roster. English and Chinese search records are present. The packet URL ending 202509/t20250923_5777770.shtml is a 2025 surveying-qualification notice and does not support its Hanchuan platform claim. First-party Hubei land-acquisition notice at z20250421_6845623.aspx identifies Hanchuan Natural Resources and Planning Bureau, so local custody remains supported; the distinct 2023 surveying notice at 202309/t20230912_4835756.shtml describes an existing registration platform. No anonymous native-ID plus full-polygon response, adapter qualification, or headed Details proof exists. Host failures and HTTP 418 are not citywide absence; held.",
+  "admission": "not_integrated"
+}

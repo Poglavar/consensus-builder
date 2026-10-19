@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6305-nha-trang.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used.",
+  "registryAssessment": "Khánh Hòa provincial government identifies the provincial Land Registration Office and lists the Nha Trang city branch, including its branch office responsibilities. This is city-specific local registration custody; no public parcel geometry service was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa",
+      "observation": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nha Trang Khánh Hòa official cadastral office land registration branch GIS parcel map",
+      "result": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa"
+      ]
+    },
+    {
+      "language": "Vietnamese",
+      "query": "Nha Trang văn phòng đăng ký đất đai chi nhánh bản đồ địa chính Khánh Hòa chính thức",
+      "result": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained: no safe anonymous geometry-only route was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Khánh Hòa provincial government identifies the provincial Land Registration Office and lists the Nha Trang city branch, including its branch office responsibilities. This is city-specific local registration custody; no public parcel geometry service was verified.",
+    "verifiedOpenScope": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and adapter/runtime suitability remain unqualified; local registry evidence does not establish full public geometry availability.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No geometry request made; reviewed official HTML/search evidence only."
+  },
+  "runtimeAssessment": "Not enabled; root may perform full adapter qualification."
+}

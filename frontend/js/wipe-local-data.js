@@ -1,12 +1,12 @@
 (function (global) {
     'use strict';
 
-    // Provide a minimal, dependency-free wipeLocalData early in the load order.
-    if (typeof global.wipeLocalData === 'function') {
-        return;
-    }
-
-    global.wipeLocalData = async function wipeLocalData(options = {}) {
+    // The one function that actually erases local data. Dependency-free and defined early, so any
+    // caller can rely on it. Deliberately NOT named `wipeLocalData`: map-controls.js declares
+    // a global function of that name, which used to shadow this one after load — leaving the wipe
+    // button and the city switch quietly clearing less (no localStorage, no IndexedDB drop) than the
+    // boot path did. That wrapper now delegates here, so there is exactly one eraser.
+    global.wipeAllLocalData = async function wipeAllLocalData(options = {}) {
         const { skipReload = false } = options || {};
 
         // Synchronous in-memory clears first so anything reading from cache
@@ -14,6 +14,10 @@
         try { global.PersistentStorage && global.PersistentStorage.clear && global.PersistentStorage.clear(); } catch (_) { /* ignore */ }
         try { global.localStorage && global.localStorage.clear && global.localStorage.clear(); } catch (_) { /* ignore */ }
         try { global.sessionStorage && global.sessionStorage.clear && global.sessionStorage.clear(); } catch (_) { /* ignore */ }
+        // The proposal draft store caches its envelope in memory and re-persists it on
+        // pagehide/beforeunload — clearing localStorage alone would let the reload flush
+        // resurrect every draft. Its wipe empties the in-memory state as well.
+        try { global.proposalDraftStore && global.proposalDraftStore.wipeAll && global.proposalDraftStore.wipeAll(); } catch (_) { /* ignore */ }
 
         // Async cleanup: we must actually wait for these before reloading,
         // otherwise IndexedDB / Cache Storage can survive into the next session
@@ -26,15 +30,25 @@
             }).catch(() => { /* ignore */ }));
         }
 
+        // Every city now has its own database (consensus-builder-storage::<cityId>), plus the legacy
+        // unscoped one. "Erase all local data" has to mean all of them, not just the city on screen.
         if (global.indexedDB && typeof global.indexedDB.deleteDatabase === 'function') {
-            tasks.push(new Promise(resolve => {
+            const dropDatabase = (name) => new Promise(resolve => {
                 try {
-                    const req = global.indexedDB.deleteDatabase('consensus-builder-storage');
+                    const req = global.indexedDB.deleteDatabase(name);
                     req.onsuccess = () => resolve();
                     req.onerror = () => resolve();
                     req.onblocked = () => resolve();
                 } catch (_) { resolve(); }
-            }));
+            });
+
+            const namesPromise = (global.PersistentStorage && typeof global.PersistentStorage.listDatabaseNames === 'function')
+                ? global.PersistentStorage.listDatabaseNames()
+                : Promise.resolve(['consensus-builder-storage']);
+
+            tasks.push(namesPromise
+                .then(names => Promise.all((names.length ? names : ['consensus-builder-storage']).map(dropDatabase)))
+                .catch(() => dropDatabase('consensus-builder-storage')));
         }
 
         if (global.caches && typeof global.caches.keys === 'function') {

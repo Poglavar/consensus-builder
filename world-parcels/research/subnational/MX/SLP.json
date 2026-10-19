@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "SLP",
+ "regionName": "San Luis Potosí",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-MX,es;q=0.9; Referer: viewer/service origin; cookie jar on",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://slpcapital.gob.mx/",
+   "observation": "200 but a captive-portal login page only"
+  },
+  {
+   "url": "https://slp.gob.mx/",
+   "observation": "200; no catastro link found; /catastro 404"
+  }
+ ],
+ "requests": [
+  {
+   "url": "research/countries/MX.json, research/retry/countries/MX.json",
+   "method": "GET",
+   "httpStatus": "-",
+   "contentType": "",
+   "assessment": "Previous MX passes: RAN Akamai 403, INEGI no parcel service, most state catastro hosts unreachable; no state parcel service found."
+  },
+  {
+   "url": "catastro.slp.gob.mx, sig.slp.gob.mx, sigmun.slp.gob.mx, catastro.slpcapital.gob.mx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed / 502 from proxy (host unreachable from this network)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=<state catastro/predios queries>&f=json",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "ArcGIS Online searches for catastro/predios/lotes by state name; no state or municipal parcel layer found for this state",
+   "assessment": "application/json"
+  }
+ ],
+ "reuseStatus": "not established (no licence text read)",
+ "remainingUncertainty": "No catastro host reachable; negative is weak.",
+ "nextStep": "Locate state Dirección de Catastro / SLP capital viewer from a browser."
+}

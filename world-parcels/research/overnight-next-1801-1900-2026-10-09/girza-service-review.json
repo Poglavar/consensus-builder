@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "cityRecord": "city-6296-girza.json",
+  "cityCode": 6296,
+  "queueRank": 1833,
+  "city": "Girza",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Egyptian Survey Authority cadastral and digital-map procedures were found, including Giza map coverage. No public anonymous parcel service returning safe native IDs and geometry was verified, so no sample GeoJSON was retained.",
+  "queryOutcomes": "Separate English and Arabic discovery queries are recorded in city-6296-girza.json with their actual result URLs.",
+  "requestOutcomes": [
+    {"route":"https://www.esa.gov.eg/main.aspx","method":"GET","status":200,"outcome":"Official ESA home page retrieved; it identifies cadastral/register and map services."},
+    {"route":"https://www.esa.gov.eg/sellingmaproomdigital.aspx","method":"GET","status":200,"outcome":"Official digital-map procedure retrieved. It requires a formal request specifying location, scale, requested layers and GIS projection; no anonymous parcel API route was exposed in the page."},
+    {"route":"https://www.esa.gov.eg/files/Topographic_Maps.pdf","method":"GET","status":200,"outcome":"Official ESA topographic-map guide retrieved; the Giza entry evidences map coverage at topographic scales, not parcel-level open geometry."},
+    {"route":"https://www.esa.gov.eg/main2.aspx","method":"GET/search discovery","status":200,"outcome":"Arabic official ESA page retrieved; it describes urban cadastral-register work and digital, paper and historical maps."},
+    {"route":"https://psm.gov.eg/Services/233?serviceName=طلب بيان مساحي عن قطعة الأرض","method":"GET","status":"TLS certificate error","outcome":"TLS verification failed because the host certificate was expired; no certificate exception or retry with verification disabled was used."},
+    {"route":"https://kfs.gov.eg/services/019bbb46-a0c4-7373-a25b-d7853ad3b16c","method":"GET/search discovery","status":"timeout","outcome":"A government spatial-services page found by Arabic discovery did not respond within 20 seconds. It is outside Girza and was not treated as cadastral evidence for this city."}
+  ],
+  "requestCoordinates": {"wupPointLatLon":[29.4502276806298,31.2508723763762],"coordinateOrderNote":"WUP point preserved as latitude/longitude. No exact-point query completed and no coordinate shift applied."},
+  "safeFieldAllowlist": ["stable native parcel ID if exposed", "polygon geometry", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": {"source":null,"retainedSample":null},
+  "geometryQuality": "No parcel geometry response obtained; zero samples retained.",
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"exactWupPointTest":"Not completed because no public parcel feature service was found; this is not evidence of parcel absence.","requestEvidence":"tmp/valhalla-parcel-research/6296/"},
+  "coverageAssessment": {"claimedScope":"Official Egyptian national cadastral/cartographic authority and Giza map references.","verifiedOpenScope":"Official pages and PDF retrieved; anonymous parcel schema, CRS, stable identity and citywide coverage unverified.","citywideVerified":false,"countrywideVerified":false},
+  "scopeLimits": [
+    "ESA digital-map access is documented as a formal request/purchase workflow, not an open parcel API.",
+    "The Giza topographic-map guide does not establish parcel-level geometry or citywide cadastral completeness.",
+    "The TLS failure and timeout are service-access limitations, not evidence of parcel absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested, logged or retained.",
+    "Packet completion is research evidence only and does not admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent serial review remains required",
+  "uncertainty": "A current interactive or request-gated ESA source may provide parcel data, but no anonymous, safe ID-plus-geometry response was verified in this attempt. Parcel completeness, legal status, update currency and stable native identity remain unverified."
+}

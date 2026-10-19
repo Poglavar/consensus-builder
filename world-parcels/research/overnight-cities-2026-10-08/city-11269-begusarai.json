@@ -1,0 +1,149 @@
+{
+  "name": "Begusarai",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 426,
+  "point": [
+    25.43326859388,
+    86.0902533027572
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "बेगूसराय बिहार भू नक्शा जमीन का नक्शा आधिकारिक कैडस्ट्रल GIS",
+        "scope": "Find the official Begusarai municipal cadastral map and check for public full-polygon queries.",
+        "result": "Official Bihar BhuNaksha map offers public district/subdivision/circle/mauza selectors and a map/plot interface. State=10 selector responses identify Begusarai district code 20 with data, and subdivision/circle Begusarai code 01 with data. The viewer JavaScript uses WMS image layers and a plot-selection flow; no full vector geometry endpoint/response was verified for the queued urban point.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://begusarai.nic.in/service/land-records/"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      },
+      {
+        "language": "English",
+        "query": "Begusarai Bihar official cadastral parcel map BhuNaksha GIS full geometry API",
+        "scope": "Cross-check official land records and anonymous map response schema.",
+        "result": "Bihar BhuNaksha is maintained by the state Directorate of Land Records & Survey/NIC and exposes cadastral map selection. Its map shell renders WMS image layers; no anonymous complete GeoJSON parcel response was identified. The selected mauza example had null extent and is not evidence at the queued city point.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://begusarai.nic.in/service/land-records/"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      }
+    ],
+    "portals": [
+      {
+        "name": "BhuNaksha Bihar",
+        "operator": "Directorate of Land Records & Survey, Government of Bihar; National Informatics Centre",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "observation": "Public cadastral map viewer with State, District, Sub Div, Circle, Mauza, Survey Type, Map Instance and Sheet selectors. Official intro describes digital cadastral maps and the Government of Bihar land-records data source."
+      },
+      {
+        "name": "Begusarai district land-records page",
+        "operator": "District Administration Begusarai",
+        "homeUrl": "https://begusarai.nic.in/service/land-records/",
+        "observation": "Official district page links the state land-record service."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "observation": "Anonymous public map shell returned successfully."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/index.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/javascript",
+        "observation": "Viewer script shows OpenLayers ImageWMS map layers and selection through raster WMS; it does not expose a complete-feature vector query in the inspected route."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "State code 10 returned 7 selector levels."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "State=10 district list contains Begusarai code 20 with hasData=true; hierarchy reports Begusarai subdivision and circle code 01 with hasData=true."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "For one Begusarai circle/mauza selection, viewer returned administrative attribution and a GIS code but null extent coordinates; this example is not bound to the queued city point."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-BR-BEGUSARAI-BHUNAKSHA",
+    "name": "BhuNaksha Bihar public cadastral map viewer",
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "operator": "Directorate of Land Records & Survey, Government of Bihar; National Informatics Centre",
+    "serviceType": "Public hierarchical map viewer with WMS image overlays and plot-selection/report functions. Full public vector geometry response not verified.",
+    "layer": "Selected village cadastral map; no city-wide feature layer or vector schema confirmed.",
+    "geometryType": "Map image only in observed viewer route; full polygon response not obtained.",
+    "outputCrs": "Not established for a full geometry response.",
+    "nativeIdField": "Plot/survey number is a viewer search input; no public geometry record response obtained.",
+    "nativeIdEvidence": "Selector metadata confirms Begusarai district and subdivisions with map data; no exact feature identity returned at the queued point."
+  },
+  "coverageAssessment": {
+    "claimedScope": "State cadastral mapping application supports Bihar district and village map selection; Begusarai selector hierarchy reports data available.",
+    "verifiedOpenScope": "Public map interface and hierarchy verified. No city-located full feature geometry retrieved; one individual mauza extent response was null and was not treated as a city-point result.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_cadastral_viewer_no_full_vector_geometry_verified",
+  "technicalBlocker": "The official viewer’s inspected map path uses WMS image layers; an anonymous complete vector geometry response was not found. The map hierarchy alone does not confirm the queued city point’s coverage.",
+  "remainingUncertainty": "Whether a separately documented public vector endpoint exists, whether central Begusarai urban maps are digitized in BhuNaksha, and which mauza includes the queued WUP point.",
+  "nextStep": "If continuing, identify the exact urban mauza/map instance at the WUP point and check only documented public vector routes; do not infer city geometry from district selectors or WMS pixels.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:51:19Z",
+  "wupCityCode": 11269,
+  "cityId": "wup2025:11269",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.43326859388,
+    86.0902533027572
+  ],
+  "queueRank": 426,
+  "population2025": 1210200,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T23:55:03.250694+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "Official cadastral viewer exists, but no complete public polygon, exact identity/absence semantics or queued-point coverage verified."
+  },
+  "registryBasis": "The official DILRMP sub-registrar report names DSRO Begusarai; the local district-administration page names its Begusarai land-reforms and registration offices and gives the Collectorate location in Begusarai city. This confirms city-located registration/land-record institutions. The district Land Records link separately names Patna and is not used as city evidence. Public full parcel polygons remain unverified.",
+  "registryEvidenceUrls": [
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/sro/tehsil-level/222",
+    "https://begusarai.nic.in/district-administration/"
+  ],
+  "rootSupplementalResearch": {
+    "checkedAt": "2026-10-08T23:55:03.190178+00:00",
+    "urls": [
+      "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/sro/tehsil-level/222",
+      "https://begusarai.nic.in/district-administration/"
+    ],
+    "observation": "The official DILRMP sub-registrar report names DSRO Begusarai; the local district-administration page names its Begusarai land-reforms and registration offices and gives the Collectorate location in Begusarai city. This confirms city-located registration/land-record institutions. The district Land Records link separately names Patna and is not used as city evidence. Public full parcel polygons remain unverified."
+  }
+}

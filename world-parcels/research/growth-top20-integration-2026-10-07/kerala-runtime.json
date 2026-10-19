@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "cityId": "venjaramoodu",
+  "checkedAt": "2026-10-07T19:02:31.432Z",
+  "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+  "tests": [
+    {
+      "operation": "viewport",
+      "bbox": [
+        76.91,
+        8.65,
+        76.915,
+        8.655
+      ],
+      "count": 220,
+      "complete": true,
+      "gridSize": 0.005
+    },
+    {
+      "operation": "runtimeExact",
+      "count": 1,
+      "complete": true,
+      "geometryMatches": true,
+      "note": "The separate kerala-final.json acceptance used a fresh adapter to force upstream exact reads for all four local parcel IDs."
+    },
+    {
+      "operation": "POST /proposals/binding",
+      "coverage": "complete",
+      "parcelCount": 1,
+      "siteM2": 3520.2,
+      "sampledParcelId": "IN-KL-ENTEBHOOMI-010309-ce0688a8-8689-41b8-8d14-1edd191a86ee",
+      "geometrySha256": "adcd27368dc9cc30c3172e1a364ed90b63b990f434296bf5264e7c5eaf98b429"
+    }
+  ],
+  "requests": [
+    {
+      "path": "/parcel-sources/kerala-entebhoomi-ilms-map-proxy?bbox=76.91,8.65,76.915,8.655",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/parcel-sources/kerala-entebhoomi-ilms-map-proxy?ids=IN-KL-ENTEBHOOMI-010309-ce0688a8-8689-41b8-8d14-1edd191a86ee",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "path": "/proposals/binding",
+      "method": "POST",
+      "status": 200
+    }
+  ],
+  "privacy": "Counts, geometry hashes, parcel IDs and HTTP metadata only; no geometry, owner fields or credentials retained.",
+  "result": "passed"
+}

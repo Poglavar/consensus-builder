@@ -1,0 +1,44 @@
+{
+  "taskId": "city:2254",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/provider-expansion/completions/2254.json",
+    "world-parcels/research/provider-expansion/cities/2254/city-2254-provider-2254.json",
+    "world-parcels/research/provider-expansion/cities/2254/provider-2254-service-review.json",
+    "world-parcels/research/provider-expansion/cities/2254/provider-2254-parcel-samples.geojson",
+    "world-parcels/research/provider-expansion/providers/0198ab1272a58163c79e4b3c4245b2ba791ee8d7870fe1670aa5be2043943afd.json",
+    "world-parcels/research/provider-expansion/providers/acc1949e34cf5ffab808d96bb67f9093dd1abe60ba876e2cc02e2909ac3add76.json"
+  ],
+  "checkedAt": "2026-10-11T00:16:47Z",
+  "reason": "Immutable WUP queue and ranked roster agree on code 2254, rank 2148, Kimberley, South Africa (ZA), point [-28.7235329106847, 24.7342539937528], and 271078 persons (271.078 thousand). Completion hashes match the three immutable paired evidence files. Three full sample polygons have only safe native id attributes. A fresh first-party CSG Erven query returned HTTP 200 with the same three PRCL_KEY and OBJECTID pairs (3080230, 3080231, 3080232); sample rings matched those fresh responses exactly. A limited EPSG:32735 GEOS check found the three samples valid with zero pairwise overlap. The provider qualification artifact is for Klipgat, not Kimberley. No Kimberley-specific executed English and native-language searches, forced paging, 13 bounded cells, full metric topology/operation audit, runtime city source binding, or headed Details-panel proof were found in the paired evidence. The bounded positive discovery supports custody/geometry only; runtime admission remains held. No absence inference is made.",
+  "liveFirstPartyCheck": {
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+    "query": "PRCL_KEY IN (three sample native IDs); outFields=PRCL_KEY,OBJECTID; returnGeometry=true; outSR=4326; returnTrueCurves=true",
+    "httpStatus": 200,
+    "nativeIds": [
+      "N091C037000500007907000000",
+      "N091C037000500007906000000",
+      "N091C037000500007905000000"
+    ],
+    "objectIds": [
+      3080230,
+      3080231,
+      3080232
+    ],
+    "sampleMatchesLiveRings": true,
+    "sampleCount": 3,
+    "metricSrid": 32735,
+    "sampleValidCount": 3,
+    "samplePairwiseOverlapM2": 0
+  },
+  "admissionGatesMissing": [
+    "Kimberley bilingual executed searches",
+    "forced adapter paging",
+    "13 Kimberley bounded cells",
+    "full Kimberley metric GEOS validity/duplicate/overlap/operation audit",
+    "Kimberley runtime source binding",
+    "headed Details-panel verification"
+  ]
+}

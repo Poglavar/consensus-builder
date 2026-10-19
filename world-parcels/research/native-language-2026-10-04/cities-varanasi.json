@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 119,
+  "city": "Varanasi",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/varanasi.json",
+  "query": {
+    "language": "Hindi",
+    "script": "Devanagari",
+    "text": "वाराणसी भू नक्शा खसरा नक्शा राजस्व विभाग उत्तर प्रदेश सरकारी"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Hindi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "वाराणसी भू नक्शा खसरा नक्शा राजस्व विभाग उत्तर प्रदेश सरकारी",
+    "englishQuery": "Varanasi land map and khasra map from Uttar Pradesh Revenue Department",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "राजस्व परिषद् उत्तर प्रदेश",
+      "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "kind": "official-state-land-records",
+      "note": "The state lists revenue-village maps and plot-boundary views; Varanasi coverage and machine-readable endpoint were not checked."
+    },
+    {
+      "title": "भूलेख उत्तर प्रदेश",
+      "url": "https://upbhulekh.gov.in/",
+      "kind": "official-state-land-records",
+      "note": "Portal describes state land records and map linkage; no direct vector-query contract surfaced."
+    }
+  ],
+  "assessment": "State records system is a plausible cadastral viewing route, but Varanasi-specific coverage and public vector access are unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:10447",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

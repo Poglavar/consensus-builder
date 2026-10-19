@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:SC:victoria",
+  "queueRank": null,
+  "name": "Victoria",
+  "country": "Seychelles",
+  "countryCode": "SC",
+  "centerLatLon": [
+    -4.6191,
+    55.4513
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": true,
+  "sourceIds": [
+    "sc-mlh-current-parcels-arcgis"
+  ],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Victoria Seychelles public cadastre land parcels WebGIS cadastral map",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "French",
+        "query": "cadastre parcelles Victoria Seychelles carte cadastrale terrain WebGIS",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Seychellois Creole",
+        "query": "plan kadaster Sesel Victoria larestan parcel zarden map",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://www.webgis.gov.sc/introduction.phtml",
+        "observation": "Official Seychelles WebGIS introduction says the no-signup public map offers cadastre theme and land parcel/beacon search. Root is independently tracing the newer ArcGIS WebGIS and has identified/fetched parcel-layer metadata; await root evidence reconciliation before classifying actual Victoria geometry."
+      },
+      {
+        "url": "https://www.webgis.gov.sc/map_default.phtml?config=default",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      },
+      {
+        "url": "https://www.gis.gov.sc/portal/apps/experiencebuilder/experience/?id=48aa75ec829048fd942cef4f1cdb2008",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [],
+    "targetGeometryEvidence": {
+      "acceptanceFile": "victoria-acceptance.json",
+      "distinctParcelReferences": 496
+    },
+    "actualCoverage": "Thirteen bounded cells and 496 parcel references; no citywide completeness inference.",
+    "nativeIdReadiness": "All 496 source parcel references returned matching geometry in fresh exact reads.",
+    "blocker": "Published open-ended validity still includes an older parcel nearly partitioned by two newer parcels; all three geometries and dates were confirmed by fresh exact reads. No documented category, parent/subdivision or lifecycle rule identifies a safe exclusion.",
+    "nextStep": "Obtain a documented lifecycle rule or corrected publisher geometry before enabling the Victoria entry.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "The official public Seychelles WebGIS links a parcel FeatureServer that returned complete parcel polygons and references around Victoria. Current-subset topology retains unresolved older/newer overlaps, so geometry is verified but runtime is held.",
+  "registryEvidenceUrls": [
+    "https://www.webgis.gov.sc/introduction.phtml",
+    "https://www.webgis.gov.sc/map_default.phtml?config=default",
+    "https://www.gis.gov.sc/portal/apps/experiencebuilder/experience/?id=48aa75ec829048fd942cef4f1cdb2008"
+  ],
+  "resultCategory": "verified_geometry_held_quality_review",
+  "publicParcelGeometryFound": true,
+  "priorEvidence": [],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Victoria Seychelles public cadastre land parcels WebGIS cadastral map",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "French",
+      "query": "cadastre parcelles Victoria Seychelles carte cadastrale terrain WebGIS",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "Seychellois Creole",
+      "query": "plan kadaster Sesel Victoria larestan parcel zarden map",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "held_quality_review",
+  "technicalBlocker": "Published open-ended validity still includes an older parcel nearly partitioned by two newer parcels; all three geometries and dates were confirmed by fresh exact reads. No documented category, parent/subdivision or lifecycle rule identifies a safe exclusion.",
+  "nextStep": "Obtain a documented lifecycle rule or corrected publisher geometry before enabling the Victoria entry.",
+  "acceptance": {
+    "protocolFile": "victoria-acceptance.json",
+    "geometryQualityFile": "victoria-shapely-quality.json",
+    "followupFile": "victoria-overlap-review.json",
+    "protocolPassed": true,
+    "geometryQualityPassed": false,
+    "runtimeEnabled": false,
+    "distinctParcelReferences": 496
+  },
+  "parcelStatus": "verified_sample_partial_coverage"
+}

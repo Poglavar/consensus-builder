@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9455-kannur.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Kannur district’s official Survey and Land Records page describes district survey/re-survey, map preparation and records publication; the Kerala state eMaps Bhu-Naksha is a cadastral map application. The viewer route is known, but no current anonymous full-polygon response/schema was verified at the WUP locator.",
+  "registryAssessment": "Kannur district’s official Survey and Land Records page describes district survey/re-survey, map preparation and records publication; the Kerala state eMaps Bhu-Naksha is a cadastral map application. The viewer route is known, but no current anonymous full-polygon response/schema was verified at the WUP locator.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kannur.nic.in/en/survey-and-land-records/",
+      "observation": "Official Kannur district page describes Survey and Land Records functions including survey, resurvey, demarcation, land records and map preparation."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "observation": "Official Kerala Land Records Modernization Mission Bhu-Naksha page presents survey/block/subdivision selectors and a map viewer."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+      "observation": "Official state eMaps Bhu-Naksha overview describes village cadastral maps and the Kerala land-record modernization programme."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "observation": "Official Directorate of Survey and Land Records lists Kannur district resurvey office locations."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Malayalam",
+      "query": "കണ്ണൂർ ഭൂമി രേഖകൾ cadastral map survey official Kerala",
+      "result": "Official Kannur Survey and Land Records page and Kerala eMaps Bhu-Naksha were found; no anonymous full-polygon query was verified.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://kannur.nic.in/en/survey-and-land-records/",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+        "https://dslr.kerala.gov.in/en/sub-offices-2/"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Kannur village map cadastral Kerala official survey map",
+      "result": "Official district survey office and state Bhu-Naksha map viewer reviewed; no city-point vector response was obtained.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://kannur.nic.in/en/survey-and-land-records/",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+        "https://dslr.kerala.gov.in/en/sub-offices-2/"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Kannur land records map Kerala Survey and Land Records Department",
+      "result": "Official district page confirms survey/records responsibilities; eMaps route is a map viewer, but vector schema remains unverified.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://kannur.nic.in/en/survey-and-land-records/",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+        "https://dslr.kerala.gov.in/en/sub-offices-2/"
+      ]
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://kannur.nic.in/en/survey-and-land-records/",
+      "method": "GET official district survey page",
+      "result": "HTTP 200 current official page; describes district survey/re-survey functions and map preparation."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+      "method": "Official state Bhu-Naksha viewer route",
+      "result": "Search index identifies the map app and survey selectors. Direct local TLS handshake reports an expired certificate; no response/status for the map application was established."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "method": "GET official state survey office directory",
+      "result": "Official directory lists Kannur field/resurvey offices; no geometry API exposed on this page."
+    }
+  ],
+  "geometryEvidence": "No full parcel geometry was retained. State Bhu-Naksha is a cadastral viewer candidate, but the current schema and exact locator response were not verified; a local certificate-expiry error is not evidence of origin failure.",
+  "privacy": {
+    "ownerOrAddressDataRequested": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokensRequested": false,
+    "credentialsOrTokensRetained": false,
+    "notes": "Only public city-level or exact WUP locator requests were considered; no owner, address, account, or credential values were retained."
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No public full-polygon/native-key response was verified at the exact WUP locator; source candidates remain unqualified."
+  },
+  "geometryDisposition": "No full parcel geometry was retained. State Bhu-Naksha is a cadastral viewer candidate, but the current schema and exact locator response were not verified; a local certificate-expiry error is not evidence of origin failure."
+}

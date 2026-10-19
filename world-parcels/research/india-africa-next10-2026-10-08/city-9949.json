@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9949,
+  "cityId": "wup2025:9949",
+  "name": "Bengaluru",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    13.0062665301097,
+    77.5626340229947
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 114,
+  "stateOrUT": "Karnataka",
+  "administrativeIdentity": {
+    "district": "Bengaluru Urban (queue area; municipal extent not assumed)",
+    "tehsilOrTaluk": null,
+    "revenueVillage": null,
+    "identityEvidence": "No authoritative revenue-village/survey-division lookup at exact WUP center completed in this pass; cohort label Bengaluru retained."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/bengaluru.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/bengaluru.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "GEPTIS: BBMP municipality; Dishaank: Karnataka village and subdivision records with incomplete finer geometry",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://www.bbmp.gov.in/gisviewer/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": null
+          }
+        ],
+        "conclusion": "Dishaank may show suburban survey plots, while GEPTIS may show urban taxable properties. Neither supplies a verified anonymous polygon list near Bengaluru, and the two geometries must not be treated as equivalent.",
+        "nextStep": "Locate an official, reusable bounded Dishaank or municipal feature service and test a city-area parcel response."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Kannada",
+        "script": "Kannada",
+        "query": "ಬೆಂಗಳೂರು ಭೂ ನಕ್ಷೆ ಸರ್ವೆ ಸಂಖ್ಯೆ ದಿಶಾಂಕ್ ಕರ್ನಾಟಕ ಭೂಮಿ ಜಿಐಎಸ್ ಅಧಿಕೃತ",
+        "checkedAt": "2026-10-08",
+        "actualResultUrls": [
+          "https://play.google.com/store/apps/details?id=com.ksrsac.sslr",
+          "https://bengaluruurban.nic.in/en/service/land-records/",
+          "https://site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html",
+          "https://www.bbmp.gov.in/gisviewer/"
+        ],
+        "result": "Official results identify the Karnataka Dishaank cadastral-map app, state Bhoomi records, and BBMP GEPTIS municipal property-tax GIS. No official anonymous parcel-vector endpoint was returned by search."
+      },
+      {
+        "language": "Kannada",
+        "script": "Kannada",
+        "query": "ಬೆಂಗಳೂರು ಆಸ್ತಿ ನಕ್ಷೆ GIS GEPTIS BBMP ಅಧಿಕೃತ property map survey",
+        "checkedAt": "2026-10-08",
+        "actualResultUrls": [
+          "https://site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html",
+          "https://site.bbmp.gov.in/landusemaps.html"
+        ],
+        "result": "BBMP describes GEPTIS as property-tax GIS with PID identifiers; BBMP map archive is land-use/planning-map material, not cadastral feature geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Karnataka Bhoomi/Dishaank",
+        "operator": "Government of Karnataka / KSRSAC",
+        "homeUrl": "https://play.google.com/store/apps/details?id=com.ksrsac.sslr",
+        "observation": "Official KSRSAC developer app listing says Dishaank displays survey and hissa boundaries and RTC details; a Karnataka government presentation (2024) says all 33,000 village map sheets with whole survey numbers were digitized/georeferenced and exposed for public viewing through rdservices.karnataka.gov.in, while hissa/subdivision maps were 61% georeferenced at that presentation date and available through Dishaank. The current Dishaank/BhoomiMaps web routes were not reachable from the tested network; this does not prove service absence."
+      },
+      {
+        "name": "BBMP GEPTIS",
+        "operator": "Bruhat Bengaluru Mahanagara Palike",
+        "homeUrl": "https://site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html",
+        "observation": "Municipal property-tax GIS and PID reference; not evidence of complete cadastral parcel coverage or anonymous parcel feature API."
+      },
+      {
+        "name": "BBMP GIS viewer",
+        "operator": "Bruhat Bengaluru Mahanagara Palike",
+        "homeUrl": "https://www.bbmp.gov.in/gisviewer/",
+        "observation": "Public GIS viewer URL could not be reached in bounded direct requests; no feature geometry tested."
+      },
+      {
+        "name": "KSRSAC Dishaank digitized-map coverage documentation",
+        "operator": "Karnataka State Remote Sensing Applications Centre / Karnataka government",
+        "homeUrl": "https://cdnbbsr.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2024/10/20250225452195189.pdf",
+        "observation": "Government presentation says 100% of village maps (whole survey numbers) were scanned, digitized and georeferenced and made available through rdservices.karnataka.gov.in for public viewing; hissa/subdivision maps were 61% georeferenced at time of report and made available through Dishaank. This establishes a government map program, not an anonymous machine-readable feature endpoint or city-specific completeness."
+      },
+      {
+        "name": "Greater Bengaluru Authority GIS Viewer",
+        "operator": "Greater Bengaluru Authority, Government of Karnataka",
+        "homeUrl": "https://bbmp.gov.in/gisviewer/",
+        "observation": "Search-indexed UI lists Corporation/Zone/Old Ward selectors and street/satellite basemaps; it does not show a parcel layer in the returned interface text. Direct HTTP viewer/index requests timed out, so JavaScript/network configuration could not be inspected."
+      },
+      {
+        "name": "BBMP GEPTIS public view",
+        "operator": "Bruhat Bengaluru Mahanagara Palike IT Department",
+        "homeUrl": "https://site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html",
+        "observation": "Official document describes tax-property mapping and PID/ward/street/plot IDs; public viewer needs mobile-linked registration and limits number of viewed properties. Not an anonymous cadastral vector source; no registration or owner data accessed."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://bengaluruurban.nic.in/en/service/land-records/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "District government page describes Bhoomi land-record management and points to Karnataka Land Records; it is informational, not a parcel map response."
+      },
+      {
+        "method": "GET",
+        "url": "https://site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html",
+        "httpStatus": null,
+        "assessment": "Direct bounded request timed out; official page content previously returned through search results. No geometry request."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.bbmp.gov.in/gisviewer/",
+        "httpStatus": null,
+        "assessment": "Direct bounded request timed out; no geometry request."
+      },
+      {
+        "method": "GET",
+        "url": "https://landrecords.karnataka.gov.in/Dishaank/",
+        "httpStatus": null,
+        "assessment": "Direct bounded request timed out; no geometry request."
+      },
+      {
+        "method": "GET",
+        "url": "https://cdnbbs.s3waas.gov.in/s3d69116f8b0140cdeb1f99a4d5096ffe4/uploads/2024/10/20250225452195189.pdf",
+        "httpStatus": 200,
+        "assessment": "Government of India-hosted Karnataka government presentation found by search describes 100% digitized/georeferenced village maps (whole survey numbers) and 61% hissa/subdivision digitization/georeferencing. It says village maps are available through the public portal; this is a coverage statement in the presentation, not a tested city-specific endpoint."
+      }
+    ],
+    "result": "No geometry was obtained.",
+    "technicalDiscoveryChecks": [
+      {
+        "method": "Official site and web-app UI discovery",
+        "exactQuery": "\"bbmp.gov.in/gisviewer\" javascript map server service URL",
+        "checkedAt": "2026-10-08",
+        "actualResultUrls": [
+          "https://bbmp.gov.in/gisviewer/",
+          "https://bbmp.gov.in/"
+        ],
+        "observation": "Official Greater Bengaluru Authority GIS Viewer is indexed with search selectors for Corporation, Zone and Old Ward and base layers OpenStreetMap/Google imagery/street maps. This is administrative GIS UI content; no cadastral parcel layer is listed in the returned UI text. Search cache is not direct HTTP verification."
+      },
+      {
+        "method": "Direct ordinary GET to official viewer and Karnataka cadastral portal endpoints; escalated network request with browser UA, redirects allowed, connect timeout 8 s/read timeout 18 s",
+        "urls": [
+          "https://bbmp.gov.in/gisviewer/",
+          "https://bbmp.gov.in/gisviewer/index.html",
+          "https://rdservices.karnataka.gov.in/",
+          "https://rdservices.karnataka.gov.in/BhoomiMaps",
+          "https://landrecords.karnataka.gov.in/Dishaank/",
+          "https://ksrsac.karnataka.gov.in/"
+        ],
+        "result": "All six requests raised ConnectTimeout before an HTTP response. A follow-up to both Karnataka map routes over ordinary HTTP also raised ConnectTimeout. This is network reachability failure from this route, not evidence that the source is unavailable globally."
+      },
+      {
+        "method": "Official GEPTIS service-access review",
+        "exactQuery": "site:site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html \"public view\" portal URL",
+        "actualResultUrls": [
+          "https://site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html"
+        ],
+        "observation": "Official BBMP IT page describes GEPTIS as municipal property-tax GIS with PID (ward/street/plot) identifiers. Its public view requires mobile-linked registration, is view-limited, and distinguishes tax details from ownership data. No anonymous reusable parcel-vector endpoint is documented; no registration/account or owner record was used."
+      }
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "temporarily_unavailable",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "No geometry was obtained. Escalated ordinary GET attempts to the official Dishaank, Karnataka BhoomiMaps, KSRSAC and GBA GIS Viewer routes all ended in ConnectTimeout before HTTP response. The search-indexed GBA viewer exposes admin selectors; the official GEPTIS public view requires mobile-linked registration. These are specific access/interface findings, not evidence that no Karnataka data exists.",
+  "remainingUncertainty": "Whether the public Dishaank mobile app serves anonymous map tiles or vector features at the exact WUP coordinate remains unknown because the web endpoints could not be inspected. Village-map whole-survey digitization is documented at statewide level, but hissa availability is incomplete and no city-specific response/completeness was verified.",
+  "nextStep": "Retry the official Dishaank/BhoomiMaps viewer from a functioning ordinary browser route and inspect its public map requests with a bounded exact-coordinate view; do not assume hissa coverage from statewide whole-map statistics.",
+  "workstream": "india",
+  "kind": "city_parcel_source_research",
+  "queueCohorts": [
+    "largest200"
+  ],
+  "queuePriorAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-9949.json",
+    "resultCategory": "no_verified_open_endpoint_after_attempts",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+    "nextStep": "Find a reachable official cadastral-map service beyond BBMP e-Aasthi, resolve the WUP point to its survey/revenue-village location, and verify a parcel polygon with stable survey ID."
+  },
+  "registryFindingNote": "The current network-path timeouts do not establish city registry presence or absence; earlier unsuccessful-search records are retained separately."
+}

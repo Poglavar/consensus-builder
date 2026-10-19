@@ -1,0 +1,84 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:165",
+ "queueRank": 165,
+ "name": "Multan",
+ "country": "Pakistan",
+ "countryCode": "PK",
+ "centerLatLon": [
+  30.1904706782392,
+  71.4752917180368
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "no_verified_open_endpoint_after_attempts",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [
+  {
+   "url": "https://punjab-zameen.gov.pk/home/",
+   "observation": "Punjab Land Records Authority (PLRA) React portal; its JS references gismaps.punjab-zameen.gov.pk/arcgis, dmaps.pulse.gop.pk (raster tiles behind login) and geo-token.pulse.gop.pk token generation."
+  },
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+   "observation": "ArcGIS Server 11.3 with folders Multan, Faisalabad, Lahore, Rawalpindi, Stateland, etc., but token-based security."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://punjab-zameen.gov.pk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "portal shell"
+  },
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/info?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "isTokenBasedSecurity true"
+  },
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "root lists 20 folders including Multan; only ArcGIS_Shell GP and SampleWorldCities visible at root"
+  },
+  {
+   "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Multan?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "folder lists zero services anonymously (services hidden without token); no parcel query possible"
+  },
+  {
+   "url": "https://dmaps.pulse.gop.pk/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "login page"
+  },
+  {
+   "url": "https://www.landrecords.punjab.gov.pk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://www.sindhzameen.gos.pk/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Punjab province PLRA GIS (existence of a Multan folder suggests holdings, but not anonymously accessible)",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "Services in the Multan folder are hidden behind token authentication; I did not attempt to obtain a token. An anonymous or public data route may exist elsewhere. Province scope would not imply Pakistan coverage.",
+ "nextStep": "Look for an official public parcel viewer/API or open-data release; do not use credentialed access without permission."
+}

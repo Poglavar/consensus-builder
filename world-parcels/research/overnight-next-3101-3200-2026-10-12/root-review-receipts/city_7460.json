@@ -1,0 +1,26 @@
+{
+  "taskId": "city:7460",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-7460-qift.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/qift-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T03:44:46Z",
+  "queueIdentity": {
+    "rank": 3129,
+    "cityCode": 7460,
+    "country": "Egypt",
+    "point": [
+      26.0077790093701,
+      32.7889048704923
+    ],
+    "populationPersons": 191964
+  },
+  "finding": "WUP source, queue, ranked roster and packet agree. English and Arabic searches are recorded with first-party URLs. ESA services page was independently fetched (HTTP 200) and lists digital maps, but no public parcel feature response, native parcel ID or full polygon is evidenced. No sample or live adapter qualification exists; a map-request workflow does not prove citywide absence.",
+  "geometrySamplesRetained": 0,
+  "admissionGates": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime/catalog/report admission remains held.",
+  "absenceInference": "None; inaccessible services, timeouts and single-point results do not establish citywide absence."
+}

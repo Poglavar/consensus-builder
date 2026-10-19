@@ -1,0 +1,198 @@
+{
+  "checkedAt": "2026-10-07T22:46:49.560851Z",
+  "sourceId": "zm-nsdi-cadaster-new",
+  "endpoint": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+  "nativeIdField": "SDE.Lots.UPID",
+  "transportObjectIdField": "SDE.Lots.OBJECTID",
+  "outFields": "SDE.Lots.OBJECTID,SDE.Lots.UPID",
+  "serviceSrid": 32735,
+  "inputSrid": 4326,
+  "outputSrid": 4326,
+  "queryShape": "nine adjacent aligned 0.0025\u00b0 WGS84 square cells; center spacing 0.0025\u00b0 around WUP center",
+  "fieldsRequested": [
+    "SDE.Lots.OBJECTID",
+    "SDE.Lots.UPID"
+  ],
+  "objectIdRole": "transport-only manifest and geometry fetch; not used as canonical identity",
+  "cells": [
+    {
+      "ix": -1,
+      "iy": -1,
+      "bboxLonLat": [
+        28.8877356820841,
+        -11.2064834066671,
+        28.890235682084096,
+        -11.2039834066671
+      ],
+      "count": 9,
+      "oidManifestCount": 9,
+      "geometryRows": 9,
+      "complete": true,
+      "uniqueNativeUPIDs": 9,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": 0,
+      "iy": -1,
+      "bboxLonLat": [
+        28.8902356820841,
+        -11.2064834066671,
+        28.892735682084098,
+        -11.2039834066671
+      ],
+      "count": 4,
+      "oidManifestCount": 4,
+      "geometryRows": 4,
+      "complete": true,
+      "uniqueNativeUPIDs": 4,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": 1,
+      "iy": -1,
+      "bboxLonLat": [
+        28.8927356820841,
+        -11.2064834066671,
+        28.8952356820841,
+        -11.2039834066671
+      ],
+      "count": 34,
+      "oidManifestCount": 34,
+      "geometryRows": 34,
+      "complete": true,
+      "uniqueNativeUPIDs": 34,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": -1,
+      "iy": 0,
+      "bboxLonLat": [
+        28.8877356820841,
+        -11.203983406667101,
+        28.890235682084096,
+        -11.2014834066671
+      ],
+      "count": 8,
+      "oidManifestCount": 8,
+      "geometryRows": 8,
+      "complete": true,
+      "uniqueNativeUPIDs": 8,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": 0,
+      "iy": 0,
+      "bboxLonLat": [
+        28.8902356820841,
+        -11.203983406667101,
+        28.892735682084098,
+        -11.2014834066671
+      ],
+      "count": 1,
+      "oidManifestCount": 1,
+      "geometryRows": 1,
+      "complete": true,
+      "uniqueNativeUPIDs": 1,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": 1,
+      "iy": 0,
+      "bboxLonLat": [
+        28.8927356820841,
+        -11.203983406667101,
+        28.8952356820841,
+        -11.2014834066671
+      ],
+      "count": 1,
+      "oidManifestCount": 1,
+      "geometryRows": 1,
+      "complete": true,
+      "uniqueNativeUPIDs": 1,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": -1,
+      "iy": 1,
+      "bboxLonLat": [
+        28.8877356820841,
+        -11.201483406667101,
+        28.890235682084096,
+        -11.1989834066671
+      ],
+      "count": 38,
+      "oidManifestCount": 38,
+      "geometryRows": 38,
+      "complete": true,
+      "uniqueNativeUPIDs": 38,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": 0,
+      "iy": 1,
+      "bboxLonLat": [
+        28.8902356820841,
+        -11.201483406667101,
+        28.892735682084098,
+        -11.1989834066671
+      ],
+      "count": 5,
+      "oidManifestCount": 5,
+      "geometryRows": 5,
+      "complete": true,
+      "uniqueNativeUPIDs": 5,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    },
+    {
+      "ix": 1,
+      "iy": 1,
+      "bboxLonLat": [
+        28.8927356820841,
+        -11.201483406667101,
+        28.8952356820841,
+        -11.1989834066671
+      ],
+      "count": 2,
+      "oidManifestCount": 2,
+      "geometryRows": 2,
+      "complete": true,
+      "uniqueNativeUPIDs": 2,
+      "geometryTypes": [
+        "Polygon"
+      ],
+      "closedRings": true
+    }
+  ],
+  "summary": {
+    "cellCount": 9,
+    "completeCells": 9,
+    "spatialRows": 102,
+    "uniqueTransportOids": 86,
+    "uniqueNativeUPIDs": 86,
+    "nullUPIDRows": 0
+  }
+}

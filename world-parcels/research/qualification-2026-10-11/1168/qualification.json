@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "1168",
+  "cityName": "Brno",
+  "sourceId": "brno-city-gis-katastr-g-parcely",
+  "candidateSha256": "4daa754aec3c4c02e96c0dc1276d52a7ab766ecce87ada6b71ab9f906d25defb",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 174,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 174,
+      "collectedUniqueCount": 174
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 590
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "forcedComplete": true,
+      "pagingRequests": 10,
+      "observedPageLimits": [
+        1
+      ],
+      "singleIdRequests": 0,
+      "usesOffsetPaging": true,
+      "distinctOffsets": 2,
+      "pagedEvidence": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "a5ba8add58a7439c32021ff6bd9244520274071fd4c3d0a917aa80045d0d0b7f",
+      "featureCount": 174,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32633",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "a5ba8add58a7439c32021ff6bd9244520274071fd4c3d0a917aa80045d0d0b7f",
+  "featureCount": 174,
+  "sampleIds": [
+    "CZ-BRNO-1417958702"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 44,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        16.608,
+        49.202,
+        16.609,
+        49.203
+      ],
+      "complete": true,
+      "featureCount": 28
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        16.609,
+        49.202,
+        16.61,
+        49.203
+      ],
+      "complete": true,
+      "featureCount": 37
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        16.61,
+        49.202,
+        16.611,
+        49.203
+      ],
+      "complete": true,
+      "featureCount": 27
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        16.608,
+        49.203,
+        16.609,
+        49.204
+      ],
+      "complete": true,
+      "featureCount": 26
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        16.609,
+        49.203,
+        16.61,
+        49.204
+      ],
+      "complete": true,
+      "featureCount": 45
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        16.61,
+        49.203,
+        16.611,
+        49.204
+      ],
+      "complete": true,
+      "featureCount": 21
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        16.608,
+        49.204,
+        16.609,
+        49.205
+      ],
+      "complete": true,
+      "featureCount": 16
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        16.609,
+        49.204,
+        16.61,
+        49.205
+      ],
+      "complete": true,
+      "featureCount": 18
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        16.61,
+        49.204,
+        16.611,
+        49.205
+      ],
+      "complete": true,
+      "featureCount": 15
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        16.609,
+        49.201,
+        16.61,
+        49.202
+      ],
+      "complete": true,
+      "featureCount": 18
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        16.609,
+        49.205,
+        16.61,
+        49.206
+      ],
+      "complete": true,
+      "featureCount": 2
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        16.607,
+        49.203,
+        16.608,
+        49.204
+      ],
+      "complete": true,
+      "featureCount": 20
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        16.611,
+        49.203,
+        16.612,
+        49.204
+      ],
+      "complete": true,
+      "featureCount": 22
+    }
+  ]
+}

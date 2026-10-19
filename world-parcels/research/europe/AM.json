@@ -1,0 +1,51 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AM",
+ "country": "Armenia",
+ "checkedAt": "2026-09-30",
+ "status": "national_cadastre_viewer_only",
+ "previousStatus": "national_cadastre_viewer_only",
+ "newStatus": "national_cadastre_viewer_only",
+ "cadastreAuthority": "Cadastre Committee of Armenia (geoportal.am / e-cadastre.am)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language per country; cookie jar; Referer = viewer origin where applicable",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://geoportal.am/",
+   "observation": "National Geoportal loads (200, 54 KB) with browser headers"
+  },
+  {
+   "url": "https://geoportal.am/gs/wms",
+   "observation": "anonymous GeoServer WMS: arpis:V_VALID_MAP_PARCELS renders parcel outlines but is not queryable (see previous retry record); WFS disabled"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoportal.am/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "home loads"
+  },
+  {
+   "url": "https://geoportal.am/gs/wms?service=WMS&version=1.1.1&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "tiny (93 byte) reply, not a usable capabilities document with this query"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "regionsSampled": [],
+ "coverageAssessment": {
+  "claimedScope": "National cadastre; parcels only as WMS raster on geoportal.am, vector via login at e-cadastre.am",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "viewer-only",
+ "remainingUncertainty": "This pass added no new test of GetFeatureInfo on the parcel layer beyond the previous retry (layer answered OperationNotSupported); the automated permission check blocked my further WMS-capabilities probing, which I did not pursue. Blocks and buildings are queryable but are not parcels.",
+ "nextStep": "Look for a queryable parcel layer via a manual capabilities read on geoportal.am/gs or map.cadastre.am:8443 from another network.",
+ "geoBlockSuspected": false,
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true
+}

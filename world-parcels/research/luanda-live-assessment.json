@@ -1,0 +1,105 @@
+{
+  "city": "Luanda, Angola",
+  "sourceId": "ao-arcgis-luanda-agt-property-polygons",
+  "checkedAt": "2026-10-03",
+  "modelUsed": "gpt-6-luna (low)",
+  "endpoint": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+  "publisherAndAuthority": {
+    "arcgisItemId": "93db765728ef423a9de9accaeb71b4fa",
+    "arcgisOwner": "ANGOLA_GGPEN",
+    "itemAccess": "public",
+    "officialIdentityEvidence": "GGPEN is a public-law entity under Angola's MINTTICS, confirmed on https://ggpen.gov.ao/; however, no primary government page was found linking this layer or confirming AGT/GGPEN cadastral authority or stewardship.",
+    "AGTPrimary": "https://agt.minfin.gov.ao/PortalAGT/",
+    "IGCAPrimary": "https://www.igca.gov.ao/"
+  },
+  "metadata": {
+    "httpStatus": 200,
+    "geometry": "Polygon",
+    "nativeCRS": "EPSG:3857 (layer extent wkid 102100); outSR=4326 works",
+    "maxRecordCount": 2000,
+    "supportsGeoJSON": true,
+    "supportsPagination": true,
+    "featureCount": 2239859,
+    "countRequestStatus": 200,
+    "globalIdField": "GlobalID_1",
+    "globalIdFieldType": "esriFieldTypeGlobalID",
+    "globalIdUniqueIndex": true,
+    "oid": "OBJECTID; system-maintained, not preferred semantic key",
+    "id_agt": {
+      "nullable": true,
+      "sampleValues": [
+        "",
+        "",
+        ""
+      ],
+      "index": false
+    },
+    "id_ggpen": {
+      "alias": "ID do polígono GGPEN",
+      "sampleValue": "05117aa3c4701d9a4c3eb1ea4498d0213521",
+      "uniqueIndex": false
+    },
+    "copyrightText": "empty",
+    "licenseInfo": "null",
+    "accessInformation": "null",
+    "serviceLastEditUTC": "2026-09-23T15:59:59Z",
+    "schemaLastEditUTC": "2026-07-27T13:29:01Z",
+    "recordLastEditUTC": "2026-09-23T15:59:59Z"
+  },
+  "requests": [
+    {
+      "timeUTC": "2026-10-03",
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0?f=pjson",
+      "status": 200,
+      "result": "Current service/layer schema retrieved; metadata declares GlobalID_1 GlobalID field and a unique index; no reuse terms or publisher description."
+    },
+    {
+      "timeUTC": "2026-10-03",
+      "url": "https://www.arcgis.com/sharing/rest/content/items/93db765728ef423a9de9accaeb71b4fa?f=json",
+      "status": 200,
+      "result": "Public item; owner ANGOLA_GGPEN; licenseInfo null; item modified 2026-07-27 (ArcGIS timestamp)."
+    },
+    {
+      "timeUTC": "2026-10-03",
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?geometry={xmin:13.233,ymin:-8.8375,xmax:13.235,ymax:-8.836,spatialReference:{wkid:4326}}&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outSR=4326&outFields=GlobalID_1,ID_AGT,ID_GGPEN,Municipio,Comuna&returnGeometry=true&resultRecordCount=3&f=geojson",
+      "status": 200,
+      "seconds": 12.25,
+      "resultCount": 3,
+      "geometryTypes": [
+        "Polygon",
+        "Polygon",
+        "Polygon"
+      ],
+      "exceededTransferLimit": true,
+      "result": "Maianga polygons; ID_AGT empty on all three; three distinct GlobalID_1 and ID_GGPEN values; no owner fields requested."
+    },
+    {
+      "timeUTC": "2026-10-03",
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?where=GlobalID_1='{cd6a291d-870c-4126-b2e1-c82a723f5d79}'&outFields=OBJECTID,GlobalID_1,ID_AGT,ID_GGPEN,Municipio,Comuna&returnGeometry=true&outSR=4326&f=geojson",
+      "status": 200,
+      "resultCount": 1,
+      "result": "Exact brace-wrapped GlobalID_1 lookup returned a Polygon; canonical value serialized without braces."
+    },
+    {
+      "timeUTC": "2026-10-03",
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?where=ID_GGPEN='05117aa3c4701d9a4c3eb1ea4498d0213521'&outFields=OBJECTID,GlobalID_1,ID_AGT,ID_GGPEN,Municipio,Comuna&returnGeometry=true&outSR=4326&f=geojson",
+      "status": 200,
+      "resultCount": 1,
+      "result": "Exact ID_GGPEN sample lookup returned same Polygon; no uniqueness contract/index established."
+    },
+    {
+      "timeUTC": "2026-10-03",
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0/query?where=GlobalID_1='cd6a291d-870c-4126-b2e1-c82a723f5d79'&outFields=GlobalID_1&returnGeometry=false&f=geojson",
+      "status": 200,
+      "result": "ArcGIS SQL error 400: invalid where parameter; brace-wrapped form succeeds."
+    }
+  ],
+  "licenseEvidence": {
+    "primaryEvidence": "Layer and item both have empty/null copyright/license fields; public read access is not a redistribution grant.",
+    "policyLinks": [],
+    "conclusion": "Reuse rights unresolved."
+  },
+  "coverageAndIdentity": "Layer advertises 2,239,859 property polygons and uses Maianga municipal labels, but complete cadastral scope/authority and cross-Luanda quality are unverified. GlobalID_1 is the strongest row identity candidate (GlobalID type + unique index, exact filter works only when braces are included); adapter compatibility needs verification because service returns the GlobalID without braces while its SQL predicate rejects the unbraced form. ID_AGT is empty in the observed rows; ID_GGPEN has no uniqueness declaration.",
+  "recommendation": "HOLD. Technical features are promising, but no license/terms and no primary link confirming the layer's authority or custody; do not enable until GGPEN/AGT confirms reuse and cadastral status. If resolved, accommodate brace semantics and probe identity preservation through paged adapter requests.",
+  "description": "Fresh bounded source, identity and reuse assessment; source remains disabled."
+}

@@ -1,9 +1,9 @@
--- DDL for proposals table
--- This table stores all proposal data needed to recreate proposals on the map
+-- DDL for the proposal table
+-- This table stores proposal definitions and shared lifecycle state.
 
-CREATE TABLE IF NOT EXISTS proposals (
+CREATE TABLE IF NOT EXISTS proposal (
     id SERIAL PRIMARY KEY,
-    proposal_id VARCHAR(255) UNIQUE NOT NULL, -- Unique identifier (can be onchain ID or local ID)
+    proposal_id VARCHAR(255) NOT NULL, -- Unique identifier (can be onchain ID or local ID)
     city VARCHAR(100) DEFAULT 'city', -- City identifier for multi-city support
     
     -- Basic proposal information
@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS proposals (
     description TEXT,
     author VARCHAR(255),
     type VARCHAR(50) NOT NULL, -- 'parcel', 'road', 'building', 'structure'
-    status VARCHAR(50) DEFAULT 'unapplied', -- 'unapplied', 'applied', 'executed', 'cancelled', 'expired'
+    -- Marketplace/on-chain phase. Browser map visibility is intentionally not server state.
+    lifecycle_status VARCHAR(50) NOT NULL DEFAULT 'Active'
+        CHECK (lifecycle_status IN ('Active', 'Executed', 'Cancelled', 'Expired', 'draft')),
     
     -- Financial information
     offer NUMERIC(20, 8),
@@ -36,67 +38,107 @@ CREATE TABLE IF NOT EXISTS proposals (
     is_conditional BOOLEAN DEFAULT FALSE,
     disbursement_mode VARCHAR(50) DEFAULT 'partial', -- 'conditional' or 'partial'
     
-    -- Parcel relationships
-    ancestor_parcel_ids JSONB, -- Array of parcel IDs that are ancestors (parent parcels)
-    descendant_parcel_ids JSONB, -- Array of parcel IDs that are descendants (child parcels created by proposal)
+    -- Exact authored cadastral selection and consent
+    cadastre_parcel_ids JSONB NOT NULL,
     accepted_parcel_ids JSONB, -- Array of parcel IDs that have accepted the proposal
     owner_acceptances JSONB, -- Object mapping owner addresses to acceptance status
-    
+    ownership_flow JSONB, -- Per crossed base cadastral parcel: ceded m2 + where the ownership goes, stamped at publish
+    cadastre_frame JSONB, -- Which cadastre frame the publish-time stamps were computed against ({ capturedAt })
+    site geometry(MultiPolygon, 4326), -- The ground the proposal occupies (PARCEL-OPTIONAL.md)
+    binding JSONB, -- Server binding of the site at publish: { parcels, touched, toleranceM, coverage, unsurveyedM2, unknownM2, siteM2, source, computedAt }
+
     -- Proposal-specific data (stored as JSONB for flexibility)
-    -- For road proposals: definition (points, width), parentFeatures, childFeatures, metadata
-    -- For building proposals: buildingGeometry, parameters, parentParcelIds
-    -- For structure proposals: kind, geometry, parentParcelIds, blockName
+    -- For road proposals: authored definition (points, cross-sections, metadata)
+    -- For building proposals: authored geometry and parameters
+    -- For structure proposals: kind, geometry, and blockName
     -- For reparcellization: polygons with ownerKey, displayName, color, percent
     road_proposal JSONB,
     building_proposal JSONB,
     structure_proposal JSONB,
     reparcellization JSONB,
     
-    -- Feature collections (GeoJSON)
-    parent_features JSONB, -- Deep copy of original GeoJSON features before changes
-    child_features JSONB, -- GeoJSON features of new/modified objects created by proposal
-    
-    -- Dependency tracking
-    parent_proposal_ids JSONB, -- Array of parent proposal IDs
-    child_proposal_ids JSONB, -- Array of child proposal IDs
-    
     -- Additional metadata
     lens JSONB, -- Array of lens entries
     bounds JSONB, -- Bounds for reliable positioning [minX, minY, maxX, maxY]
     onchain_data JSONB, -- Blockchain-related data (NFT info, contract addresses, etc.)
     screenshot_url VARCHAR(2000), -- Static map screenshot URL used as the proposal thumbnail
+    screenshot_before_url VARCHAR(2000), -- The same ground without the proposal (dividers.md)
+    screenshot_pair_url VARCHAR(2000), -- before | after side by side, for link previews
     
+    -- Epoch bucket: which year of the plan's timeline this proposal belongs to
+    -- (e.g. 2035/2045/2055). Presentation metadata for the "Kumulativno do
+    -- godine" timeline — deliberately NOT an ordering or dependency mechanism
+    -- (apply order stays created_at via plan-order.js). NULL = unbucketed.
+    epoch_year INTEGER CHECK (epoch_year IS NULL OR (epoch_year BETWEEN 2026 AND 2966)),
+
+    -- x402 idempotency metadata. NULL for proposals created through the free human route.
+    agent_payment_id VARCHAR(128),
+    agent_request_hash VARCHAR(64),
+
+    -- sha256 (hex) of the edit token POST /proposals returns once. The PATCH routes (name,
+    -- screenshot, epoch) require the token. NULL = created before tokens existed: not editable.
+    edit_token_hash VARCHAR(64),
+
     -- Full proposal data as JSONB (for complete reconstruction)
     -- This stores the entire proposal object as it exists in the frontend
     proposal_data JSONB NOT NULL,
     
     -- Indexes for common queries
-    CONSTRAINT proposals_proposal_id_key UNIQUE (proposal_id)
+    CONSTRAINT proposal_proposal_id_key UNIQUE (proposal_id),
+    -- A proposal has cadastral land OR a site: material proposals may stand on unsurveyed ground.
+    CONSTRAINT proposal_cadastre_parcel_ids_or_site CHECK (
+        CASE WHEN jsonb_typeof(cadastre_parcel_ids) = 'array'
+            THEN jsonb_array_length(cadastre_parcel_ids) > 0 OR site IS NOT NULL
+            ELSE FALSE
+        END
+    ),
+    CONSTRAINT proposal_cadastre_declaration_matches_record CHECK (
+        proposal_data ? 'cadastreParcelIds'
+        AND proposal_data->'cadastreParcelIds' = cadastre_parcel_ids
+    )
 );
 
+-- Idempotent column additions for installs created from an older version of this file.
+ALTER TABLE proposal ADD COLUMN IF NOT EXISTS edit_token_hash VARCHAR(64);
+-- site / binding and the relaxed declaration CHECK: see proposal-site-ddl.sql (applied on deploy).
+-- screenshot_before_url / screenshot_pair_url: see proposal-thumbnail-ddl.sql (applied on deploy).
+
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_proposals_city ON proposals(city);
-CREATE INDEX IF NOT EXISTS idx_proposals_type ON proposals(type);
-CREATE INDEX IF NOT EXISTS idx_proposals_status ON proposals(status);
-CREATE INDEX IF NOT EXISTS idx_proposals_author ON proposals(author);
-CREATE INDEX IF NOT EXISTS idx_proposals_created_at ON proposals(created_at);
-CREATE INDEX IF NOT EXISTS idx_proposals_expires_at ON proposals(expires_at);
-CREATE INDEX IF NOT EXISTS idx_proposals_ancestor_parcel_ids ON proposals USING GIN(ancestor_parcel_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_descendant_parcel_ids ON proposals USING GIN(descendant_parcel_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_parent_proposal_ids ON proposals USING GIN(parent_proposal_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_child_proposal_ids ON proposals USING GIN(child_proposal_ids);
-CREATE INDEX IF NOT EXISTS idx_proposals_proposal_data ON proposals USING GIN(proposal_data);
+CREATE INDEX IF NOT EXISTS idx_proposal_city ON proposal(city);
+CREATE INDEX IF NOT EXISTS idx_proposal_type ON proposal(type);
+CREATE INDEX IF NOT EXISTS idx_proposal_lifecycle_status ON proposal(lifecycle_status);
+CREATE INDEX IF NOT EXISTS idx_proposal_author ON proposal(author);
+CREATE INDEX IF NOT EXISTS idx_proposal_created_at ON proposal(created_at);
+CREATE INDEX IF NOT EXISTS idx_proposal_expires_at ON proposal(expires_at);
+CREATE INDEX IF NOT EXISTS idx_proposal_cadastre_parcel_ids ON proposal USING GIN(cadastre_parcel_ids);
+CREATE INDEX IF NOT EXISTS idx_proposal_proposal_data ON proposal USING GIN(proposal_data);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_proposal_agent_payment_id
+    ON proposal(agent_payment_id) WHERE agent_payment_id IS NOT NULL;
 
 -- Comments for documentation
-COMMENT ON TABLE proposals IS 'Stores all proposal data needed to recreate proposals on the map';
-COMMENT ON COLUMN proposals.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
-COMMENT ON COLUMN proposals.ancestor_parcel_ids IS 'Array of parcel IDs that are ancestors (parent parcels before proposal)';
-COMMENT ON COLUMN proposals.descendant_parcel_ids IS 'Array of parcel IDs that are descendants (child parcels created by proposal)';
-COMMENT ON COLUMN proposals.parent_features IS 'Deep copy of original GeoJSON features (parcels, etc.) before they were changed';
-COMMENT ON COLUMN proposals.child_features IS 'GeoJSON features of the new/modified objects created by this proposal';
-COMMENT ON COLUMN proposals.proposal_data IS 'Complete proposal object as stored in frontend - used for full reconstruction';
-COMMENT ON COLUMN proposals.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
+COMMENT ON TABLE proposal IS 'Stores proposal definitions and shared lifecycle state';
+COMMENT ON COLUMN proposal.proposal_id IS 'Unique identifier for the proposal (can be onchain ID or local ID)';
+COMMENT ON COLUMN proposal.cadastre_parcel_ids IS 'Exact authored selection of immutable cadastral parcel IDs.';
+COMMENT ON COLUMN proposal.ownership_flow IS 'Per crossed base cadastral parcel: ceded area (m2) and ownership destination (public/proposer/mapping/undecided), stamped at publish. See rethink-proposals.md §9/§12.';
+COMMENT ON COLUMN proposal.site IS 'The ground the proposal occupies (MultiPolygon, EPSG:4326). See PARCEL-OPTIONAL.md.';
+COMMENT ON COLUMN proposal.binding IS 'Server binding of the site at publish time (parcels, intrusion, coverage). cadastre_parcel_ids equals its bound parcels.';
+COMMENT ON COLUMN proposal.cadastre_frame IS 'Which cadastre frame the publish-time stamps were computed against ({ capturedAt }). See rethink-proposals.md D5/§11.';
+COMMENT ON COLUMN proposal.proposal_data IS 'Complete proposal definition used for reconstruction';
+COMMENT ON COLUMN proposal.screenshot_url IS 'Static map screenshot URL used as the proposal thumbnail in lists and cards';
+COMMENT ON COLUMN proposal.screenshot_before_url IS 'Thumbnail of the same ground without the proposal: the before half of a before/after view (dividers.md)';
+COMMENT ON COLUMN proposal.screenshot_pair_url IS 'Before and after thumbnails side by side, the bet link preview image';
+COMMENT ON COLUMN proposal.agent_payment_id IS 'Stable x402 payment-identifier used to replay a completed agent submission without settling again';
+COMMENT ON COLUMN proposal.agent_request_hash IS 'SHA-256 of the accepted request JSON bound to agent_payment_id';
+COMMENT ON COLUMN proposal.edit_token_hash IS 'SHA-256 (hex) of the one-time edit token returned by POST /proposals; required by the PATCH routes. NULL = legacy row, not editable via the API';
 
 -- Migration for existing installs (table name is `proposal` on the live server):
 -- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS screenshot_url VARCHAR(2000);
-
+-- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS epoch_year INTEGER
+--     CHECK (epoch_year IS NULL OR (epoch_year BETWEEN 2026 AND 2966));
+-- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS agent_payment_id VARCHAR(128);
+-- ALTER TABLE proposal ADD COLUMN IF NOT EXISTS agent_request_hash VARCHAR(64);
+-- CREATE UNIQUE INDEX IF NOT EXISTS idx_proposal_agent_payment_id
+--     ON proposal(agent_payment_id) WHERE agent_payment_id IS NOT NULL;
+--
+-- Lifecycle cleanup — run backend/scripts/remove-server-applied.js in dry-run mode first, then with
+-- --apply. Add --drop-applied only after every deployed API version has stopped reading the column.

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8268-zhangjiakou.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official procurement material documents the municipal bureau cadastral database/base-layer project. No anonymous public parcel feature service or safe geometry schema was verified.",
+  "registryAssessment": "An official government procurement listing names Zhangjiakou Natural Resources and Planning Bureau and a city cadastral database/property-rights base-layer project. This is direct city-specific cadastral infrastructure evidence, but not proof of operational public access or WUP-point parcel coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ccgp.gov.cn/cggg/dfgg/zbgg/202609/t20260917_27347987.htm",
+      "observation": "An official government procurement listing names Zhangjiakou Natural Resources and Planning Bureau and a city cadastral database/property-rights base-layer project. This is direct city-specific cadastral infrastructure evidence, but not proof of operational public access or WUP-point parcel coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhangjiakou China official cadastral database property registration parcel map GIS",
+      "result": "Official government procurement material identifies a municipal cadastral database/property base-layer project; no public feature schema found.",
+      "method": "English-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "张家口市 自然资源和规划局 地籍数据库 不动产登记 地籍图 官方",
+      "result": "本地中文检索找到市级自然资源和规划局地籍数据库项目招采记录；未发现可安全核验的公开宗地几何服务.",
+      "method": "Local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying public geometry-only sample was available.",
+  "coverageAssessment": {
+    "claimedScope": "An official government procurement listing names Zhangjiakou Natural Resources and Planning Bureau and a city cadastral database/property-rights base-layer project. This is direct city-specific cadastral infrastructure evidence, but not proof of operational public access or WUP-point parcel coverage.",
+    "verifiedOpenScope": "No citywide coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "kind": "static-source-and-route-review",
+      "httpStatus": "not asserted",
+      "result": "Official source pages and public map/service references reviewed. No public geometry request was sent because a safe feature endpoint and geometry/identifier schema were not verified."
+    }
+  ],
+  "remainingUncertainty": "The deployed project, geographic scope, current public access and parcel presence at the WUP point are unknown."
+}

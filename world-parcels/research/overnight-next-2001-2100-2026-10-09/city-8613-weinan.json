@@ -1,0 +1,117 @@
+{
+  "cityCode": 8613,
+  "queueRank": 2018,
+  "name": "Weinan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [34.4962344497676, 109.487773754101],
+  "population2025": 288582,
+  "population2025k": 288.582,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T20:57:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Weinan China official cadastral parcel map land registration Natural Resources Bureau GIS",
+        "result": "Official Weinan municipal government and Shaanxi government results identify Weinan natural-resources/planning and real-estate registration service activity, including an integrated real-estate transaction and registration platform. No anonymous parcel ID-plus-geometry viewer/API was found.",
+        "actualResultUrls": [
+          "https://www.weinan.gov.cn/",
+          "https://zwfw.weinan.gov.cn/backendAttachment/20200316155801747.pdf",
+          "https://www.shaanxi.gov.cn/xw/ztzl/zxzt/jjsxtjzfznzbhfgfgg/gzjb/202102/P020210205387520666649.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "渭南市 自然资源和规划局 不动产登记中心 地籍图 查询 官方",
+        "result": "中文官方检索确认渭南市自然资源和规划局及不动产交易/登记政务服务线索；市政府站内检索和公开页面未 expose an anonymous parcel map/API or safe native parcel identity plus geometry. General national/other-city cadastral pages were not treated as Weinan sources.",
+        "actualResultUrls": [
+          "https://www.weinan.gov.cn/",
+          "https://s.so-gov.cn/s?siteCode=61050000082&tab=all&toolsStatus=1&qt=%E4%B8%8D%E5%8A%A8%E4%BA%A7",
+          "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27360359.htm"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "Official Weinan municipal government material and Shaanxi government material evidence the local natural-resources/planning authority and a Weinan real-estate transaction/registration service platform. This establishes local registry/service context, not an open parcel-geometry API.",
+  "registryEvidenceUrls": [
+    "https://www.weinan.gov.cn/",
+    "https://zwfw.weinan.gov.cn/backendAttachment/20200316155801747.pdf",
+    "https://www.shaanxi.gov.cn/xw/ztzl/zxzt/jjsxtjzfznzbhfgfgg/gzjb/202102/P020210205387520666649.pdf",
+    "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27360359.htm"
+  ],
+  "requests": [
+    {
+      "url": "https://www.weinan.gov.cn/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official municipal portal fetched successfully. Current HTML/navigation inspected; no cadastral parcel viewer, service URL, schema, CRS or geometry endpoint exposed. No login attempted."
+    },
+    {
+      "url": "https://www.weinan.gov.cn/so/dcld/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official municipal site-search page fetched; its public search target was identified. No parcel geometry response was returned."
+    },
+    {
+      "url": "https://s.so-gov.cn/s?siteCode=61050000082&tab=all&toolsStatus=1&qt=%E4%B8%8D%E5%8A%A8%E4%BA%A7",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Weinan site-search results fetched for 不动产; results exposed general service content but no anonymous parcel ID-plus-geometry API or viewer configuration."
+    },
+    {
+      "url": "https://zwfw.weinan.gov.cn/backendAttachment/20200316155801747.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Weinan government service document fetched; it concerns municipal housing/transaction service context, not an anonymous parcel geometry endpoint."
+    },
+    {
+      "url": "https://www.shaanxi.gov.cn/xw/ztzl/zxzt/jjsxtjzfznzbhfgfgg/gzjb/202102/P020210205387520666649.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Shaanxi government document fetched; it describes Weinan transaction, tax and real-estate registration service integration. No public parcel schema, CRS or geometry response was available."
+    },
+    {
+      "url": "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27360359.htm",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official national procurement notice identifies Weinan Natural Resources and Planning Bureau in a land-change-survey procurement context; it is not a public parcel viewer/API and yielded no geometry."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "not requested",
+      "httpStatus": null,
+      "outcome": "Not queried in this attempt; no claim is made about Tianditu availability."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Weinan municipal natural-resources/planning and real-estate transaction/registration service context evidenced by official municipal and Shaanxi government sources.",
+    "verifiedOpenScope": "Local registry/service context only; no anonymous ID-plus-geometry response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The current public parcel viewer/API endpoint, schema, CRS, safe native identity field, authentication boundary and citywide parcel coverage remain unknown. Exact WUP point was preserved and not shifted; no exact-point hit, map-extent miss, timeout, login wall or unusable UI was used as evidence of citywide absence."
+}

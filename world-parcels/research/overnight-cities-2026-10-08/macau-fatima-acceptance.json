@@ -1,0 +1,1540 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T21:24:47.253Z",
+  "city": "macau-fatima",
+  "descriptor": {
+    "adapter": "arcgis",
+    "id": "mo-cadastre-fatima",
+    "endpoint": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0",
+    "idField": "OBJECTID",
+    "objectIdField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "MO-CAD-FATIMA-",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 1,
+    "maxResponseBytes": 4194304,
+    "maxTotalResponseBytes": 25165824,
+    "projection": "EPSG:32649",
+    "name": "Macao DSCC Cad_lote parcel polygons — Nossa Senhora de Fatima sample"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        113.543,
+        22.193,
+        113.544,
+        22.194
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        113.544,
+        22.193,
+        113.545,
+        22.194
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        113.545,
+        22.193,
+        113.546,
+        22.194
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        113.543,
+        22.194,
+        113.544,
+        22.195
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        113.544,
+        22.194,
+        113.545,
+        22.195
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        113.545,
+        22.194,
+        113.546,
+        22.195
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        113.543,
+        22.195,
+        113.544,
+        22.196
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        113.544,
+        22.195,
+        113.545,
+        22.196
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        113.545,
+        22.195,
+        113.546,
+        22.196
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        113.544,
+        22.192,
+        113.545,
+        22.193
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        113.544,
+        22.196,
+        113.545,
+        22.197
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        113.542,
+        22.194,
+        113.543,
+        22.195
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        113.546,
+        22.194,
+        113.547,
+        22.195
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1354,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        113.543,
+        22.193,
+        113.544,
+        22.194
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1346,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        113.544,
+        22.193,
+        113.545,
+        22.194
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-87",
+          "geometrySha256": "f2e774781130fcc964f04a5f1bd20d120723fae9ec7e3371942a417dad842d24"
+        },
+        {
+          "id": "MO-CAD-FATIMA-88",
+          "geometrySha256": "b8431f9a209d41fd9d8f170e03fd168df235407d39abcd6ba2c9e13ae2f79460"
+        },
+        {
+          "id": "MO-CAD-FATIMA-150",
+          "geometrySha256": "c15ea120bf8dd7fcd198584d11c7bc4d55cf68372a7cf75f53beea4c2a5a1653"
+        },
+        {
+          "id": "MO-CAD-FATIMA-387",
+          "geometrySha256": "bc6cad60f8070ad6a1d2e61f0a64cf9c5b57f52ef13dc3d2c419b1694cb3b59a"
+        },
+        {
+          "id": "MO-CAD-FATIMA-389",
+          "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+        },
+        {
+          "id": "MO-CAD-FATIMA-396",
+          "geometrySha256": "70897e856eba760a915aba473b554b5044a6c545e1f0a948b291cc8b1fbde73d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 383,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        113.545,
+        22.193,
+        113.546,
+        22.194
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-84",
+          "geometrySha256": "923ea2b945206c81fcbf751270b1a96a4ab011deee12106763e1a625940f6350"
+        },
+        {
+          "id": "MO-CAD-FATIMA-85",
+          "geometrySha256": "64a90bf0a3d0e6529e5871a40932ca5c814c4916c0b9887fd3f1652ee733529a"
+        },
+        {
+          "id": "MO-CAD-FATIMA-86",
+          "geometrySha256": "37ed31a03989b3653679c02046287c2c46702ffeae6d07ce3b8d78ad58fea11c"
+        },
+        {
+          "id": "MO-CAD-FATIMA-87",
+          "geometrySha256": "f2e774781130fcc964f04a5f1bd20d120723fae9ec7e3371942a417dad842d24"
+        },
+        {
+          "id": "MO-CAD-FATIMA-361",
+          "geometrySha256": "fe7dd1fd4e026bea8976379b8ee2e842abb0c6c560046fcb1b92474e19f7a122"
+        },
+        {
+          "id": "MO-CAD-FATIMA-375",
+          "geometrySha256": "140e6aa1a34d3f16106db1d9225f84840d68f6bad486674deca65d04705d7db0"
+        },
+        {
+          "id": "MO-CAD-FATIMA-387",
+          "geometrySha256": "bc6cad60f8070ad6a1d2e61f0a64cf9c5b57f52ef13dc3d2c419b1694cb3b59a"
+        },
+        {
+          "id": "MO-CAD-FATIMA-388",
+          "geometrySha256": "5c5c81b54b738ade0088aa1c0d94dbcfd95606b692c29a6364529371b824f3bb"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 404,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        113.543,
+        22.194,
+        113.544,
+        22.195
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-389",
+          "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 387,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        113.544,
+        22.194,
+        113.545,
+        22.195
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-150",
+          "geometrySha256": "c15ea120bf8dd7fcd198584d11c7bc4d55cf68372a7cf75f53beea4c2a5a1653"
+        },
+        {
+          "id": "MO-CAD-FATIMA-389",
+          "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+        },
+        {
+          "id": "MO-CAD-FATIMA-460",
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 367,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        113.545,
+        22.194,
+        113.546,
+        22.195
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-85",
+          "geometrySha256": "64a90bf0a3d0e6529e5871a40932ca5c814c4916c0b9887fd3f1652ee733529a"
+        },
+        {
+          "id": "MO-CAD-FATIMA-150",
+          "geometrySha256": "c15ea120bf8dd7fcd198584d11c7bc4d55cf68372a7cf75f53beea4c2a5a1653"
+        },
+        {
+          "id": "MO-CAD-FATIMA-460",
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        },
+        {
+          "id": "MO-CAD-FATIMA-461",
+          "geometrySha256": "5a3ba2d1c8b2e46451af509797bdb4ac25cb90a8910019315dd6a4033adec8be"
+        },
+        {
+          "id": "MO-CAD-FATIMA-462",
+          "geometrySha256": "fe6e9819c561896154b2e501a07f6a582fe9b0c707e65a0df713bf858e1e3fab"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 356,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        113.543,
+        22.195,
+        113.544,
+        22.196
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 370,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        113.544,
+        22.195,
+        113.545,
+        22.196
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-460",
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 364,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        113.545,
+        22.195,
+        113.546,
+        22.196
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-273",
+          "geometrySha256": "13958ec9f8b0319b3683558faf108f9fc3cc76b7dfb2a95203b59cd0090605c4"
+        },
+        {
+          "id": "MO-CAD-FATIMA-460",
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        },
+        {
+          "id": "MO-CAD-FATIMA-461",
+          "geometrySha256": "5a3ba2d1c8b2e46451af509797bdb4ac25cb90a8910019315dd6a4033adec8be"
+        },
+        {
+          "id": "MO-CAD-FATIMA-462",
+          "geometrySha256": "fe6e9819c561896154b2e501a07f6a582fe9b0c707e65a0df713bf858e1e3fab"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 356,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        113.544,
+        22.192,
+        113.545,
+        22.193
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-88",
+          "geometrySha256": "b8431f9a209d41fd9d8f170e03fd168df235407d39abcd6ba2c9e13ae2f79460"
+        },
+        {
+          "id": "MO-CAD-FATIMA-375",
+          "geometrySha256": "140e6aa1a34d3f16106db1d9225f84840d68f6bad486674deca65d04705d7db0"
+        },
+        {
+          "id": "MO-CAD-FATIMA-376",
+          "geometrySha256": "32e46f8cc726fbf7b033656e770c8a78d8282ec87edbef807ff9c893289725e5"
+        },
+        {
+          "id": "MO-CAD-FATIMA-377",
+          "geometrySha256": "2489b8713a875a8df11202afb66d12061cab91a89c306485beb05f7828cd87e5"
+        },
+        {
+          "id": "MO-CAD-FATIMA-378",
+          "geometrySha256": "ed9b411dba5f10c88b257269cf9c8b3cdcc6f37a3b1a612d406b99455ca53498"
+        },
+        {
+          "id": "MO-CAD-FATIMA-379",
+          "geometrySha256": "ee22b952b149675afd71605b4373aa0709700c67001a5aba9a31b19f3d5820b7"
+        },
+        {
+          "id": "MO-CAD-FATIMA-380",
+          "geometrySha256": "d64010779ed2c146295a573b8c0c55fef4e346cc3bc02754c580d79c869e7599"
+        },
+        {
+          "id": "MO-CAD-FATIMA-381",
+          "geometrySha256": "7e509004e74a3f10ee6c3811d32a8af3f236b1c11c6827c80c6917da9ce1e00e"
+        },
+        {
+          "id": "MO-CAD-FATIMA-396",
+          "geometrySha256": "70897e856eba760a915aba473b554b5044a6c545e1f0a948b291cc8b1fbde73d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 358,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        113.544,
+        22.196,
+        113.545,
+        22.197
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 369,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        113.542,
+        22.194,
+        113.543,
+        22.195
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 360,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        113.546,
+        22.194,
+        113.547,
+        22.195
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "MO-CAD-FATIMA-71",
+          "geometrySha256": "cc7d9265b5077f95fa49d187f490de82ffc2de4ab6655e25c7062a463daa5fbf"
+        },
+        {
+          "id": "MO-CAD-FATIMA-73",
+          "geometrySha256": "2244a94ce3aeb9148a2166837834357f2f882cfc01ac9606b77d429c19ce15e2"
+        },
+        {
+          "id": "MO-CAD-FATIMA-91",
+          "geometrySha256": "bb940a748a1bda1d46285e867c41365271aacde1941e2a7e7d4b195754619969"
+        },
+        {
+          "id": "MO-CAD-FATIMA-151",
+          "geometrySha256": "25431afa4e2f72bf8bfed659032164555f2b17938176441faf101fbde4a5bf2c"
+        },
+        {
+          "id": "MO-CAD-FATIMA-339",
+          "geometrySha256": "5e2f741ac5fdefb8f7af4bec677a19c6831d6ac5f714bceef967633c3a4eec96"
+        },
+        {
+          "id": "MO-CAD-FATIMA-414",
+          "geometrySha256": "3581595acc8506865876126f18be9af0f11c328fbf2bcc2da0c8ab9055575cfb"
+        },
+        {
+          "id": "MO-CAD-FATIMA-462",
+          "geometrySha256": "fe6e9819c561896154b2e501a07f6a582fe9b0c707e65a0df713bf858e1e3fab"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1480,
+      "requestIndexes": [
+        13,
+        16
+      ],
+      "count": 9,
+      "geometryPages": 3,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 716,
+      "requestIndexes": [
+        17,
+        17
+      ],
+      "count": 28,
+      "ids": [
+        "MO-CAD-FATIMA-150",
+        "MO-CAD-FATIMA-151",
+        "MO-CAD-FATIMA-273",
+        "MO-CAD-FATIMA-339",
+        "MO-CAD-FATIMA-361",
+        "MO-CAD-FATIMA-375",
+        "MO-CAD-FATIMA-376",
+        "MO-CAD-FATIMA-377",
+        "MO-CAD-FATIMA-378",
+        "MO-CAD-FATIMA-379",
+        "MO-CAD-FATIMA-380",
+        "MO-CAD-FATIMA-381",
+        "MO-CAD-FATIMA-387",
+        "MO-CAD-FATIMA-388",
+        "MO-CAD-FATIMA-389",
+        "MO-CAD-FATIMA-396",
+        "MO-CAD-FATIMA-414",
+        "MO-CAD-FATIMA-460",
+        "MO-CAD-FATIMA-461",
+        "MO-CAD-FATIMA-462",
+        "MO-CAD-FATIMA-71",
+        "MO-CAD-FATIMA-73",
+        "MO-CAD-FATIMA-84",
+        "MO-CAD-FATIMA-85",
+        "MO-CAD-FATIMA-86",
+        "MO-CAD-FATIMA-87",
+        "MO-CAD-FATIMA-88",
+        "MO-CAD-FATIMA-91"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 361,
+      "requestIndexes": [
+        18,
+        18
+      ],
+      "absentIds": [
+        "MO-CAD-FATIMA-2147483647"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 363,
+      "requestIndexes": [
+        19,
+        19
+      ],
+      "selectedParcelId": "MO-CAD-FATIMA-377",
+      "count": 1,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 377,
+      "requestIndexes": [
+        20,
+        20
+      ],
+      "selectedParcelId": "MO-CAD-FATIMA-377",
+      "coverage": "complete",
+      "siteM2": 1494.57,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.543%2C22.193%2C113.544%2C22.194&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:47.255Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.544%2C22.193%2C113.545%2C22.194&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:48.609Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 8598,
+      "features": [
+        {
+          "transportId": 87,
+          "properties": {
+            "OBJECTID": 87
+          },
+          "geometrySha256": "f2e774781130fcc964f04a5f1bd20d120723fae9ec7e3371942a417dad842d24"
+        },
+        {
+          "transportId": 88,
+          "properties": {
+            "OBJECTID": 88
+          },
+          "geometrySha256": "b8431f9a209d41fd9d8f170e03fd168df235407d39abcd6ba2c9e13ae2f79460"
+        },
+        {
+          "transportId": 150,
+          "properties": {
+            "OBJECTID": 150
+          },
+          "geometrySha256": "c15ea120bf8dd7fcd198584d11c7bc4d55cf68372a7cf75f53beea4c2a5a1653"
+        },
+        {
+          "transportId": 387,
+          "properties": {
+            "OBJECTID": 387
+          },
+          "geometrySha256": "bc6cad60f8070ad6a1d2e61f0a64cf9c5b57f52ef13dc3d2c419b1694cb3b59a"
+        },
+        {
+          "transportId": 389,
+          "properties": {
+            "OBJECTID": 389
+          },
+          "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+        },
+        {
+          "transportId": 396,
+          "properties": {
+            "OBJECTID": 396
+          },
+          "geometrySha256": "70897e856eba760a915aba473b554b5044a6c545e1f0a948b291cc8b1fbde73d"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.545%2C22.193%2C113.546%2C22.194&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:49.956Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 13044,
+      "features": [
+        {
+          "transportId": 84,
+          "properties": {
+            "OBJECTID": 84
+          },
+          "geometrySha256": "923ea2b945206c81fcbf751270b1a96a4ab011deee12106763e1a625940f6350"
+        },
+        {
+          "transportId": 85,
+          "properties": {
+            "OBJECTID": 85
+          },
+          "geometrySha256": "64a90bf0a3d0e6529e5871a40932ca5c814c4916c0b9887fd3f1652ee733529a"
+        },
+        {
+          "transportId": 86,
+          "properties": {
+            "OBJECTID": 86
+          },
+          "geometrySha256": "37ed31a03989b3653679c02046287c2c46702ffeae6d07ce3b8d78ad58fea11c"
+        },
+        {
+          "transportId": 87,
+          "properties": {
+            "OBJECTID": 87
+          },
+          "geometrySha256": "f2e774781130fcc964f04a5f1bd20d120723fae9ec7e3371942a417dad842d24"
+        },
+        {
+          "transportId": 361,
+          "properties": {
+            "OBJECTID": 361
+          },
+          "geometrySha256": "fe7dd1fd4e026bea8976379b8ee2e842abb0c6c560046fcb1b92474e19f7a122"
+        },
+        {
+          "transportId": 375,
+          "properties": {
+            "OBJECTID": 375
+          },
+          "geometrySha256": "140e6aa1a34d3f16106db1d9225f84840d68f6bad486674deca65d04705d7db0"
+        },
+        {
+          "transportId": 387,
+          "properties": {
+            "OBJECTID": 387
+          },
+          "geometrySha256": "bc6cad60f8070ad6a1d2e61f0a64cf9c5b57f52ef13dc3d2c419b1694cb3b59a"
+        },
+        {
+          "transportId": 388,
+          "properties": {
+            "OBJECTID": 388
+          },
+          "geometrySha256": "5c5c81b54b738ade0088aa1c0d94dbcfd95606b692c29a6364529371b824f3bb"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.543%2C22.194%2C113.544%2C22.195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:50.344Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 403,
+      "features": [
+        {
+          "transportId": 389,
+          "properties": {
+            "OBJECTID": 389
+          },
+          "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.544%2C22.194%2C113.545%2C22.195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:50.748Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5269,
+      "features": [
+        {
+          "transportId": 150,
+          "properties": {
+            "OBJECTID": 150
+          },
+          "geometrySha256": "c15ea120bf8dd7fcd198584d11c7bc4d55cf68372a7cf75f53beea4c2a5a1653"
+        },
+        {
+          "transportId": 389,
+          "properties": {
+            "OBJECTID": 389
+          },
+          "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+        },
+        {
+          "transportId": 460,
+          "properties": {
+            "OBJECTID": 460
+          },
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.545%2C22.194%2C113.546%2C22.195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:51.136Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 16210,
+      "features": [
+        {
+          "transportId": 85,
+          "properties": {
+            "OBJECTID": 85
+          },
+          "geometrySha256": "64a90bf0a3d0e6529e5871a40932ca5c814c4916c0b9887fd3f1652ee733529a"
+        },
+        {
+          "transportId": 150,
+          "properties": {
+            "OBJECTID": 150
+          },
+          "geometrySha256": "c15ea120bf8dd7fcd198584d11c7bc4d55cf68372a7cf75f53beea4c2a5a1653"
+        },
+        {
+          "transportId": 460,
+          "properties": {
+            "OBJECTID": 460
+          },
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        },
+        {
+          "transportId": 461,
+          "properties": {
+            "OBJECTID": 461
+          },
+          "geometrySha256": "5a3ba2d1c8b2e46451af509797bdb4ac25cb90a8910019315dd6a4033adec8be"
+        },
+        {
+          "transportId": 462,
+          "properties": {
+            "OBJECTID": 462
+          },
+          "geometrySha256": "fe6e9819c561896154b2e501a07f6a582fe9b0c707e65a0df713bf858e1e3fab"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.543%2C22.195%2C113.544%2C22.196&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:51.503Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.544%2C22.195%2C113.545%2C22.196&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:51.860Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1276,
+      "features": [
+        {
+          "transportId": 460,
+          "properties": {
+            "OBJECTID": 460
+          },
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.545%2C22.195%2C113.546%2C22.196&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:52.231Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12607,
+      "features": [
+        {
+          "transportId": 273,
+          "properties": {
+            "OBJECTID": 273
+          },
+          "geometrySha256": "13958ec9f8b0319b3683558faf108f9fc3cc76b7dfb2a95203b59cd0090605c4"
+        },
+        {
+          "transportId": 460,
+          "properties": {
+            "OBJECTID": 460
+          },
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        },
+        {
+          "transportId": 461,
+          "properties": {
+            "OBJECTID": 461
+          },
+          "geometrySha256": "5a3ba2d1c8b2e46451af509797bdb4ac25cb90a8910019315dd6a4033adec8be"
+        },
+        {
+          "transportId": 462,
+          "properties": {
+            "OBJECTID": 462
+          },
+          "geometrySha256": "fe6e9819c561896154b2e501a07f6a582fe9b0c707e65a0df713bf858e1e3fab"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.544%2C22.192%2C113.545%2C22.193&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:52.597Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 9553,
+      "features": [
+        {
+          "transportId": 88,
+          "properties": {
+            "OBJECTID": 88
+          },
+          "geometrySha256": "b8431f9a209d41fd9d8f170e03fd168df235407d39abcd6ba2c9e13ae2f79460"
+        },
+        {
+          "transportId": 375,
+          "properties": {
+            "OBJECTID": 375
+          },
+          "geometrySha256": "140e6aa1a34d3f16106db1d9225f84840d68f6bad486674deca65d04705d7db0"
+        },
+        {
+          "transportId": 376,
+          "properties": {
+            "OBJECTID": 376
+          },
+          "geometrySha256": "32e46f8cc726fbf7b033656e770c8a78d8282ec87edbef807ff9c893289725e5"
+        },
+        {
+          "transportId": 377,
+          "properties": {
+            "OBJECTID": 377
+          },
+          "geometrySha256": "2489b8713a875a8df11202afb66d12061cab91a89c306485beb05f7828cd87e5"
+        },
+        {
+          "transportId": 378,
+          "properties": {
+            "OBJECTID": 378
+          },
+          "geometrySha256": "ed9b411dba5f10c88b257269cf9c8b3cdcc6f37a3b1a612d406b99455ca53498"
+        },
+        {
+          "transportId": 379,
+          "properties": {
+            "OBJECTID": 379
+          },
+          "geometrySha256": "ee22b952b149675afd71605b4373aa0709700c67001a5aba9a31b19f3d5820b7"
+        },
+        {
+          "transportId": 380,
+          "properties": {
+            "OBJECTID": 380
+          },
+          "geometrySha256": "d64010779ed2c146295a573b8c0c55fef4e346cc3bc02754c580d79c869e7599"
+        },
+        {
+          "transportId": 381,
+          "properties": {
+            "OBJECTID": 381
+          },
+          "geometrySha256": "7e509004e74a3f10ee6c3811d32a8af3f236b1c11c6827c80c6917da9ce1e00e"
+        },
+        {
+          "transportId": 396,
+          "properties": {
+            "OBJECTID": 396
+          },
+          "geometrySha256": "70897e856eba760a915aba473b554b5044a6c545e1f0a948b291cc8b1fbde73d"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.544%2C22.196%2C113.545%2C22.197&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:52.953Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.542%2C22.194%2C113.543%2C22.195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:53.311Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.546%2C22.194%2C113.547%2C22.195&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:53.682Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 10465,
+      "features": [
+        {
+          "transportId": 71,
+          "properties": {
+            "OBJECTID": 71
+          },
+          "geometrySha256": "cc7d9265b5077f95fa49d187f490de82ffc2de4ab6655e25c7062a463daa5fbf"
+        },
+        {
+          "transportId": 73,
+          "properties": {
+            "OBJECTID": 73
+          },
+          "geometrySha256": "2244a94ce3aeb9148a2166837834357f2f882cfc01ac9606b77d429c19ce15e2"
+        },
+        {
+          "transportId": 91,
+          "properties": {
+            "OBJECTID": 91
+          },
+          "geometrySha256": "bb940a748a1bda1d46285e867c41365271aacde1941e2a7e7d4b195754619969"
+        },
+        {
+          "transportId": 151,
+          "properties": {
+            "OBJECTID": 151
+          },
+          "geometrySha256": "25431afa4e2f72bf8bfed659032164555f2b17938176441faf101fbde4a5bf2c"
+        },
+        {
+          "transportId": 339,
+          "properties": {
+            "OBJECTID": 339
+          },
+          "geometrySha256": "5e2f741ac5fdefb8f7af4bec677a19c6831d6ac5f714bceef967633c3a4eec96"
+        },
+        {
+          "transportId": 414,
+          "properties": {
+            "OBJECTID": 414
+          },
+          "geometrySha256": "3581595acc8506865876126f18be9af0f11c328fbf2bcc2da0c8ab9055575cfb"
+        },
+        {
+          "transportId": 462,
+          "properties": {
+            "OBJECTID": 462
+          },
+          "geometrySha256": "fe6e9819c561896154b2e501a07f6a582fe9b0c707e65a0df713bf858e1e3fab"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=0&geometry=113.544%2C22.192%2C113.545%2C22.193&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:54.044Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4695,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 88,
+          "properties": {
+            "OBJECTID": 88
+          },
+          "geometrySha256": "b8431f9a209d41fd9d8f170e03fd168df235407d39abcd6ba2c9e13ae2f79460"
+        },
+        {
+          "transportId": 375,
+          "properties": {
+            "OBJECTID": 375
+          },
+          "geometrySha256": "140e6aa1a34d3f16106db1d9225f84840d68f6bad486674deca65d04705d7db0"
+        },
+        {
+          "transportId": 376,
+          "properties": {
+            "OBJECTID": 376
+          },
+          "geometrySha256": "32e46f8cc726fbf7b033656e770c8a78d8282ec87edbef807ff9c893289725e5"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=3&geometry=113.544%2C22.192%2C113.545%2C22.193&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:54.396Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1076,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 377,
+          "properties": {
+            "OBJECTID": 377
+          },
+          "geometrySha256": "2489b8713a875a8df11202afb66d12061cab91a89c306485beb05f7828cd87e5"
+        },
+        {
+          "transportId": 378,
+          "properties": {
+            "OBJECTID": 378
+          },
+          "geometrySha256": "ed9b411dba5f10c88b257269cf9c8b3cdcc6f37a3b1a612d406b99455ca53498"
+        },
+        {
+          "transportId": 379,
+          "properties": {
+            "OBJECTID": 379
+          },
+          "geometrySha256": "ee22b952b149675afd71605b4373aa0709700c67001a5aba9a31b19f3d5820b7"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=6&geometry=113.544%2C22.192%2C113.545%2C22.193&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:54.754Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4034,
+      "features": [
+        {
+          "transportId": 380,
+          "properties": {
+            "OBJECTID": 380
+          },
+          "geometrySha256": "d64010779ed2c146295a573b8c0c55fef4e346cc3bc02754c580d79c869e7599"
+        },
+        {
+          "transportId": 381,
+          "properties": {
+            "OBJECTID": 381
+          },
+          "geometrySha256": "7e509004e74a3f10ee6c3811d32a8af3f236b1c11c6827c80c6917da9ce1e00e"
+        },
+        {
+          "transportId": 396,
+          "properties": {
+            "OBJECTID": 396
+          },
+          "geometrySha256": "70897e856eba760a915aba473b554b5044a6c545e1f0a948b291cc8b1fbde73d"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=9&geometry=113.544%2C22.192%2C113.545%2C22.193&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:55.117Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=OBJECTID+IN+%28150%2C151%2C273%2C339%2C361%2C375%2C376%2C377%2C378%2C379%2C380%2C381%2C387%2C388%2C389%2C396%2C414%2C460%2C461%2C462%2C71%2C73%2C84%2C85%2C86%2C87%2C88%2C91%29&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:55.525Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 44111,
+      "features": [
+        {
+          "transportId": 71,
+          "properties": {
+            "OBJECTID": 71
+          },
+          "geometrySha256": "cc7d9265b5077f95fa49d187f490de82ffc2de4ab6655e25c7062a463daa5fbf"
+        },
+        {
+          "transportId": 73,
+          "properties": {
+            "OBJECTID": 73
+          },
+          "geometrySha256": "2244a94ce3aeb9148a2166837834357f2f882cfc01ac9606b77d429c19ce15e2"
+        },
+        {
+          "transportId": 84,
+          "properties": {
+            "OBJECTID": 84
+          },
+          "geometrySha256": "923ea2b945206c81fcbf751270b1a96a4ab011deee12106763e1a625940f6350"
+        },
+        {
+          "transportId": 85,
+          "properties": {
+            "OBJECTID": 85
+          },
+          "geometrySha256": "64a90bf0a3d0e6529e5871a40932ca5c814c4916c0b9887fd3f1652ee733529a"
+        },
+        {
+          "transportId": 86,
+          "properties": {
+            "OBJECTID": 86
+          },
+          "geometrySha256": "37ed31a03989b3653679c02046287c2c46702ffeae6d07ce3b8d78ad58fea11c"
+        },
+        {
+          "transportId": 87,
+          "properties": {
+            "OBJECTID": 87
+          },
+          "geometrySha256": "f2e774781130fcc964f04a5f1bd20d120723fae9ec7e3371942a417dad842d24"
+        },
+        {
+          "transportId": 88,
+          "properties": {
+            "OBJECTID": 88
+          },
+          "geometrySha256": "b8431f9a209d41fd9d8f170e03fd168df235407d39abcd6ba2c9e13ae2f79460"
+        },
+        {
+          "transportId": 91,
+          "properties": {
+            "OBJECTID": 91
+          },
+          "geometrySha256": "bb940a748a1bda1d46285e867c41365271aacde1941e2a7e7d4b195754619969"
+        },
+        {
+          "transportId": 150,
+          "properties": {
+            "OBJECTID": 150
+          },
+          "geometrySha256": "c15ea120bf8dd7fcd198584d11c7bc4d55cf68372a7cf75f53beea4c2a5a1653"
+        },
+        {
+          "transportId": 151,
+          "properties": {
+            "OBJECTID": 151
+          },
+          "geometrySha256": "25431afa4e2f72bf8bfed659032164555f2b17938176441faf101fbde4a5bf2c"
+        },
+        {
+          "transportId": 273,
+          "properties": {
+            "OBJECTID": 273
+          },
+          "geometrySha256": "13958ec9f8b0319b3683558faf108f9fc3cc76b7dfb2a95203b59cd0090605c4"
+        },
+        {
+          "transportId": 339,
+          "properties": {
+            "OBJECTID": 339
+          },
+          "geometrySha256": "5e2f741ac5fdefb8f7af4bec677a19c6831d6ac5f714bceef967633c3a4eec96"
+        },
+        {
+          "transportId": 361,
+          "properties": {
+            "OBJECTID": 361
+          },
+          "geometrySha256": "fe7dd1fd4e026bea8976379b8ee2e842abb0c6c560046fcb1b92474e19f7a122"
+        },
+        {
+          "transportId": 375,
+          "properties": {
+            "OBJECTID": 375
+          },
+          "geometrySha256": "140e6aa1a34d3f16106db1d9225f84840d68f6bad486674deca65d04705d7db0"
+        },
+        {
+          "transportId": 376,
+          "properties": {
+            "OBJECTID": 376
+          },
+          "geometrySha256": "32e46f8cc726fbf7b033656e770c8a78d8282ec87edbef807ff9c893289725e5"
+        },
+        {
+          "transportId": 377,
+          "properties": {
+            "OBJECTID": 377
+          },
+          "geometrySha256": "2489b8713a875a8df11202afb66d12061cab91a89c306485beb05f7828cd87e5"
+        },
+        {
+          "transportId": 378,
+          "properties": {
+            "OBJECTID": 378
+          },
+          "geometrySha256": "ed9b411dba5f10c88b257269cf9c8b3cdcc6f37a3b1a612d406b99455ca53498"
+        },
+        {
+          "transportId": 379,
+          "properties": {
+            "OBJECTID": 379
+          },
+          "geometrySha256": "ee22b952b149675afd71605b4373aa0709700c67001a5aba9a31b19f3d5820b7"
+        },
+        {
+          "transportId": 380,
+          "properties": {
+            "OBJECTID": 380
+          },
+          "geometrySha256": "d64010779ed2c146295a573b8c0c55fef4e346cc3bc02754c580d79c869e7599"
+        },
+        {
+          "transportId": 381,
+          "properties": {
+            "OBJECTID": 381
+          },
+          "geometrySha256": "7e509004e74a3f10ee6c3811d32a8af3f236b1c11c6827c80c6917da9ce1e00e"
+        },
+        {
+          "transportId": 387,
+          "properties": {
+            "OBJECTID": 387
+          },
+          "geometrySha256": "bc6cad60f8070ad6a1d2e61f0a64cf9c5b57f52ef13dc3d2c419b1694cb3b59a"
+        },
+        {
+          "transportId": 388,
+          "properties": {
+            "OBJECTID": 388
+          },
+          "geometrySha256": "5c5c81b54b738ade0088aa1c0d94dbcfd95606b692c29a6364529371b824f3bb"
+        },
+        {
+          "transportId": 389,
+          "properties": {
+            "OBJECTID": 389
+          },
+          "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+        },
+        {
+          "transportId": 396,
+          "properties": {
+            "OBJECTID": 396
+          },
+          "geometrySha256": "70897e856eba760a915aba473b554b5044a6c545e1f0a948b291cc8b1fbde73d"
+        },
+        {
+          "transportId": 414,
+          "properties": {
+            "OBJECTID": 414
+          },
+          "geometrySha256": "3581595acc8506865876126f18be9af0f11c328fbf2bcc2da0c8ab9055575cfb"
+        },
+        {
+          "transportId": 460,
+          "properties": {
+            "OBJECTID": 460
+          },
+          "geometrySha256": "e62873f7cb38f87cad54beb9746f7e056474998f185dc0bc9abfb7c8e7426b57"
+        },
+        {
+          "transportId": 461,
+          "properties": {
+            "OBJECTID": 461
+          },
+          "geometrySha256": "5a3ba2d1c8b2e46451af509797bdb4ac25cb90a8910019315dd6a4033adec8be"
+        },
+        {
+          "transportId": 462,
+          "properties": {
+            "OBJECTID": 462
+          },
+          "geometrySha256": "fe6e9819c561896154b2e501a07f6a582fe9b0c707e65a0df713bf858e1e3fab"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=OBJECTID+IN+%282147483647%29&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:56.242Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.54416828015013%2C22.19233286969433%2C113.54466930641766%2C22.19277609755431&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:56.605Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4217,
+      "features": [
+        {
+          "transportId": 376,
+          "properties": {
+            "OBJECTID": 376
+          },
+          "geometrySha256": "32e46f8cc726fbf7b033656e770c8a78d8282ec87edbef807ff9c893289725e5"
+        },
+        {
+          "transportId": 377,
+          "properties": {
+            "OBJECTID": 377
+          },
+          "geometrySha256": "2489b8713a875a8df11202afb66d12061cab91a89c306485beb05f7828cd87e5"
+        },
+        {
+          "transportId": 379,
+          "properties": {
+            "OBJECTID": 379
+          },
+          "geometrySha256": "ee22b952b149675afd71605b4373aa0709700c67001a5aba9a31b19f3d5820b7"
+        },
+        {
+          "transportId": 381,
+          "properties": {
+            "OBJECTID": 381
+          },
+          "geometrySha256": "7e509004e74a3f10ee6c3811d32a8af3f236b1c11c6827c80c6917da9ce1e00e"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=113.54416828015013%2C22.19233286969433%2C113.54466930641766%2C22.19277609755431&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:24:56.969Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4217,
+      "features": [
+        {
+          "transportId": 376,
+          "properties": {
+            "OBJECTID": 376
+          },
+          "geometrySha256": "32e46f8cc726fbf7b033656e770c8a78d8282ec87edbef807ff9c893289725e5"
+        },
+        {
+          "transportId": 377,
+          "properties": {
+            "OBJECTID": 377
+          },
+          "geometrySha256": "2489b8713a875a8df11202afb66d12061cab91a89c306485beb05f7828cd87e5"
+        },
+        {
+          "transportId": 379,
+          "properties": {
+            "OBJECTID": 379
+          },
+          "geometrySha256": "ee22b952b149675afd71605b4373aa0709700c67001a5aba9a31b19f3d5820b7"
+        },
+        {
+          "transportId": 381,
+          "properties": {
+            "OBJECTID": 381
+          },
+          "geometrySha256": "7e509004e74a3f10ee6c3811d32a8af3f236b1c11c6827c80c6917da9ce1e00e"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/macau-fatima-quality.json",
+  "uniqueParcels": 28,
+  "requestCount": 21,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T21:24:57.350Z",
+  "qualityStatus": "independent-geos-topology-check-clean",
+  "independentTopologyCheck": {
+    "library": "Shapely 2.2.0",
+    "metricCrs": "EPSG:32649",
+    "featureCount": 28,
+    "validNonemptyCount": 28,
+    "invalidFeatureCount": 0,
+    "exactDuplicateGeometryPairCount": 0,
+    "positiveAreaOverlapPairCount": 0,
+    "operationErrorCount": 0,
+    "summary": "All 28 temporary QA polygons are valid and nonempty; no exact duplicates, positive-area overlaps above 0.01 m², or GEOS operation errors."
+  }
+}

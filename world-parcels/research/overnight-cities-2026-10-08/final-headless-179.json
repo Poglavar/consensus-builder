@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 1,
+  "kind": "overnight-final-headless-report-build",
+  "asOf": "2026-10-09",
+  "scope": "Generated world coverage and parcel coverage reports plus bounded headless verification after Dresden admission.",
+  "commands": [
+    {
+      "command": "node scripts/build-world-coverage.mjs --run",
+      "exitCode": 0,
+      "result": {
+        "liveCitiesReported": 179,
+        "countryTiers": {
+          "source": 95,
+          "unknown": 84,
+          "none": 24,
+          "live": 1
+        },
+        "countryCoverage": {
+          "partial": 91,
+          "unknown": 84,
+          "none": 24,
+          "full": 5
+        },
+        "registryCitiesByTier": {
+          "source": 244,
+          "none": 831,
+          "unknown": 108
+        },
+        "outlinePoints": 9450
+      }
+    },
+    {
+      "command": "node scripts/build-parcel-coverage-report.mjs --run",
+      "exitCode": 0,
+      "artifactSummary": {
+        "asOf": "2026-10-09",
+        "demographicSnapshotDate": "2026-10-07",
+        "statisticsYear": 2025,
+        "cityCount": 1272,
+        "countryCount": 255,
+        "statisticalJurisdictions": 237,
+        "checkedCityCount": 1191,
+        "uncheckedCityCount": 81,
+        "cityRegistryFoundCount": 868,
+        "verifiedCitySampleCount": 252,
+        "nationalCadastreCount": 72,
+        "countryTwoRegionCount": 50,
+        "populationMatchedCount": 1124,
+        "growthMatchedCount": 430,
+        "checkedCitiesMissingDate": 0,
+        "wikiCityCount": 282,
+        "configuredAppCityCount": 179,
+        "unmatchedStatisticalAmounts": {
+          "landAreaKm2": 0,
+          "builtUpAreaKm2": 0.003000000084284693,
+          "population": 2
+        },
+        "warnings": []
+      }
+    }
+  ],
+  "generatedArtifacts": {
+    "worldCoverage": {
+      "path": "frontend/data/world-coverage.json",
+      "liveCitiesCount": 179,
+      "cityEntriesCount": 1183,
+      "dresden": {
+        "id": "wup2025:5626",
+        "name": "Dresden",
+        "cc": "DE",
+        "lat": 51.0413,
+        "lon": 13.7516,
+        "tier": "source",
+        "note": "GeoSN Saxony simplified ALKIS cadastral parcel polygons"
+      }
+    },
+    "parcelCoverageReport": {
+      "path": "frontend/data/parcel-coverage-report.json",
+      "metadata": {
+        "asOf": "2026-10-09",
+        "demographicSnapshotDate": "2026-10-07",
+        "statisticsYear": 2025,
+        "cityCount": 1272,
+        "countryCount": 255,
+        "statisticalJurisdictions": 237,
+        "checkedCityCount": 1191,
+        "uncheckedCityCount": 81,
+        "cityRegistryFoundCount": 868,
+        "verifiedCitySampleCount": 252,
+        "nationalCadastreCount": 72,
+        "countryTwoRegionCount": 50,
+        "populationMatchedCount": 1124,
+        "growthMatchedCount": 430,
+        "checkedCitiesMissingDate": 0,
+        "wikiCityCount": 282,
+        "configuredAppCityCount": 179,
+        "unmatchedStatisticalAmounts": {
+          "landAreaKm2": 0,
+          "builtUpAreaKm2": 0.003000000084284693,
+          "population": 2
+        },
+        "warnings": []
+      },
+      "world": {
+        "landAreaKm2": 134735851,
+        "builtUpAreaKm2": 515803.461,
+        "population": 8231613070
+      },
+      "dresden": {
+        "id": "wup2025:5626",
+        "registryFound": true,
+        "verifiedSample": true,
+        "sourceIds": [
+          "dresden-saxony-gml-wfs"
+        ],
+        "evidenceFiles": [
+          "research/overnight-cities-2026-10-08/city-5626-dresden.json",
+          "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-acceptance.json"
+        ],
+        "registryBasisStillContainsPriorNoFeatureResponseStatement": true
+      }
+    }
+  },
+  "headlessVerification": {
+    "baseManifest": "/tmp/overnight-cities-2026-10-09/current-24-headless-files.json",
+    "baseManifestFileCount": 24,
+    "additionalFile": "test/gml-wfs-source.test.js",
+    "uniqueFileCount": 25,
+    "invocation": "npx vitest run --pool=threads --maxWorkers=4 <24 manifest files> test/gml-wfs-source.test.js",
+    "exitCode": 0,
+    "testFilesPassed": 25,
+    "testFilesFailed": 0,
+    "testsPassed": 457,
+    "testsFailed": 0,
+    "durationSeconds": 2.04,
+    "files": [
+      "test/arcgis-composite-parcel-adapter.test.js",
+      "test/arcgis-parcel-adapter.test.js",
+      "test/catastro-wfs-source.test.js",
+      "test/coverage-evidence-consistency.test.js",
+      "test/csv-geojson-parcel-reader.test.js",
+      "test/esri-parcel-reader.test.js",
+      "test/frankfurt-wfs-source.test.js",
+      "test/frontend-city-source-integrations.test.js",
+      "test/frontend-world-coverage.test.js",
+      "test/geojson-snapshot-components.test.js",
+      "test/geojson-snapshot-parcel-adapter.test.js",
+      "test/gml-parcel-reader.test.js",
+      "test/hamburg-alkis-source.test.js",
+      "test/japan-shared-snapshot-sources.test.js",
+      "test/kazakhstan-pkk-source.test.js",
+      "test/parcel-attribute-filter.test.js",
+      "test/parcel-catalog-startup.test.js",
+      "test/parcel-coverage-report.test.js",
+      "test/parcel-source-city-metric.test.js",
+      "test/parcel-source-concurrency.test.js",
+      "test/tkgm-point-source.test.js",
+      "test/world-coverage-build.test.js",
+      "test/world-coverage-geography.test.js",
+      "test/pulse-public-source.test.js",
+      "test/gml-wfs-source.test.js"
+    ],
+    "rationale": "Used the current 24-file headless regression manifest and added the Dresden/Łódź GML WFS adapter suite, yielding 25 unique files."
+  },
+  "staticChecks": {
+    "nodeCheckFiles": [
+      "backend/parcels/gml-parcel-reader.js",
+      "backend/parcels/gml-wfs-source.js",
+      "backend/test/gml-parcel-reader.test.js",
+      "backend/test/gml-wfs-source.test.js"
+    ],
+    "nodeCheckExitCode": 0,
+    "gitDiffCheckExitCode": 0
+  },
+  "notes": [
+    "No browser suite, runtime, catalog, or registry edits were performed by this verification task.",
+    "The generated parcel report includes Dresden as registryFound=true and verifiedSample=true, but its rendered registryBasis still contains an older statement that no full safe feature response was obtained or retained; this is recorded for root follow-up and was not edited here."
+  ],
+  "rootFollowup": {
+    "checkedAt": "2026-10-09T05:27:40.966992+00:00",
+    "registryBasisCorrected": true,
+    "reportsRebuiltAfterCorrection": true,
+    "actualDresdenRegistryBasis": "GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including Dresden as a municipality choice. The anonymous simplified ALKIS WFS provides cadastral parcel identity and complete polygon geometry without ownership fields. Root bounded GML3.2 qualification, fresh native-ID readback and independent topology checks are documented separately from registry presence.",
+    "testScopeUnchanged": "Registry prose correction; executable source and test-covered geometry/paging logic unchanged."
+  }
+}

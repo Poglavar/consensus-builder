@@ -1,0 +1,97 @@
+{
+  "cityCode": 3331,
+  "queueRank": 2005,
+  "name": "Cascavel",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-24.9554648695865, -53.454425245713],
+  "population2025": 289904,
+  "population2025k": 289.904,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10T00:00:00Z",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cascavel Brazil official cadastral map parcels municipality geospatial",
+        "result": "Official results found the municipal GeoCascavel portal, IPC urban-map download, and a Paraná ArcGIS municipal cartographic service. No anonymous parcel-polygon response was established.",
+        "actualResultUrls": [
+          "https://geocascavel.cascavel.pr.gov.br/geo-view/faces/sistema/dashboard.xhtml",
+          "https://ipc.cascavel.pr.gov.br/download/mapa-urbano-do-municipio-de-cascavel/",
+          "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/70"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Cascavel PR cadastro técnico multifinalitário mapa parcelário prefeitura",
+        "result": "Official Portuguese-language results identify GeoCascavel as the municipal cadastral map portal and IPC instructions for locating lots and generating a Consulta Prévia. No public anonymous ID-plus-parcel-geometry endpoint was exposed in the inspected responses.",
+        "actualResultUrls": [
+          "https://cascavel.atende.net/cidadao/pagina/geocascavel",
+          "https://ipc.cascavel.pr.gov.br/perguntas-frequentes/",
+          "https://geocascavel.cascavel.pr.gov.br/geo-view/faces/sistema/dashboard.xhtml"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Cascavel municipality/IPC pages identify GeoCascavel as the municipal cadastral map system and describe lot lookup and municipal parcel procedures. This evidences a local municipal cadastral custodian, not an open parcel-geometry API.",
+  "registryEvidenceUrls": [
+    "https://cascavel.atende.net/cidadao/pagina/geocascavel",
+    "https://ipc.cascavel.pr.gov.br/perguntas-frequentes/"
+  ],
+  "requests": [
+    {
+      "url": "https://geocascavel.cascavel.pr.gov.br/geo-view/faces/sistema/dashboard.xhtml",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Municipal GeoCascavel portal returned HTML and was reachable on retry; anonymous page inspection showed dashboard/cadastral references but no bounded parcel feature schema or ID-plus-geometry response. An earlier request timed out during DNS resolution and was not treated as absence evidence."
+    },
+    {
+      "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/70?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official Paraná ArcGIS group layer for Cascavel returned extent and sublayers in EPSG:31982; sublayers are cartographic text/line and orthophoto, with no parcel polygon layer."
+    },
+    {
+      "url": "https://paranainterativo.pr.gov.br/interativo2/rest/services/Base_Cartografica/Base_Cartografica_Municipal/MapServer/3845?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Layer schema identifies Cascavel [2021_05] (esc2000) - Linha as esriGeometryPolyline in EPSG:31982; it is not parcel geometry and was not queried for unsafe attributes."
+    },
+    {
+      "url": "https://ipc.cascavel.pr.gov.br/download/mapa-urbano-do-municipio-de-cascavel/",
+      "method": "GET",
+      "httpStatus": "not separately fetched",
+      "outcome": "Official search result confirms a municipal urban-map download page; no parcel API/schema was inferred from the search listing."
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "verifiedParcelResponse": null,
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only when publicly returned",
+    "parcel polygon geometry",
+    "source service metadata",
+    "CRS and response-format metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner or right-holder names",
+    "addresses or contact details",
+    "title or certificate details",
+    "tax, account, identity, or application fields"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Cascavel municipal GeoCascavel cadastral map and Paraná municipal cartographic service.",
+    "verifiedOpenScope": "Municipal cadastral portal existence and a public non-parcel cartographic service; no anonymous parcel ID-plus-geometry response verified.",
+    "countrywideVerified": false,
+    "citywideGeometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "runtimeReadinessReason": "Held pending independent serial qualification of a real public parcel adapter. This packet is not source integration or admission.",
+  "resultCategory": "local_registry_evidenced_no_public_geometry",
+  "remainingUncertainty": "The municipal portal's internal service endpoints, parcel schema, safe native identity field, authentication boundary, and citywide polygon coverage remain unknown. No login, private token, CAPTCHA bypass, or protected property query was attempted."
+}

@@ -1,0 +1,1287 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32611",
+  "featureCount": 181,
+  "validNonemptyCount": 181,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 200.99441936782776,
+    "median": 366.6661375050321,
+    "max": 8366.797323352957
+  },
+  "features": [
+    {
+      "id": "CA-CALGARY-CPID-160521585",
+      "areaM2": 276.9684544959519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-170521586",
+      "areaM2": 267.98520759010387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-310152321",
+      "areaM2": 460.41823523582707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-320152322",
+      "areaM2": 460.34358342854773,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-330152323",
+      "areaM2": 460.184416493925,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-340152324",
+      "areaM2": 460.46827807229727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-40152391",
+      "areaM2": 564.4370487376372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-470153016",
+      "areaM2": 555.4627461515346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-480153114",
+      "areaM2": 548.5544921249466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-490153115",
+      "areaM2": 278.43403586914417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-500153116",
+      "areaM2": 278.402562499301,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-510153117",
+      "areaM2": 279.27461230504315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-520153118",
+      "areaM2": 255.09731710151806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-590152446",
+      "areaM2": 558.0182625609608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-830153149",
+      "areaM2": 426.8761045989854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960607429",
+      "areaM2": 283.2251319323149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-180152308",
+      "areaM2": 487.5328713427972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-200152310",
+      "areaM2": 243.99331710424173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-210152311",
+      "areaM2": 244.02036914663043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-220152312",
+      "areaM2": 488.2200459280721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-250152315",
+      "areaM2": 561.8587412671625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-260152316",
+      "areaM2": 473.3285185459885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-270152317",
+      "areaM2": 249.2412669421926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-70152297",
+      "areaM2": 2415.7963037796726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-820153148",
+      "areaM2": 438.49697838225535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960634818",
+      "areaM2": 323.4502562370063,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96069318",
+      "areaM2": 243.96583020080186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96069319",
+      "areaM2": 243.96618774220948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96081092",
+      "areaM2": 287.30106056455884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96081093",
+      "areaM2": 287.1924229914244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96081094",
+      "areaM2": 335.97998413729454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-20152292",
+      "areaM2": 638.0654783872494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-280152318",
+      "areaM2": 373.09690493383494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-290152319",
+      "areaM2": 266.41534258424787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-30152293",
+      "areaM2": 531.8399976295655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-940152287",
+      "areaM2": 552.1555169380924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960624807",
+      "areaM2": 323.5727013405336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960624808",
+      "areaM2": 323.6243246081469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960630062",
+      "areaM2": 292.40071184282516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960630063",
+      "areaM2": 292.40068106166297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960634819",
+      "areaM2": 323.0830056802806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960646257",
+      "areaM2": 274.8271429928849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960646258",
+      "areaM2": 276.02664349511406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960678396",
+      "areaM2": 1064.9657202766084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96147223",
+      "areaM2": 552.2480990476703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-160560482",
+      "areaM2": 238.39868731713446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-170560483",
+      "areaM2": 238.573910673718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-340570879",
+      "areaM2": 279.816935627369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-440152431",
+      "areaM2": 456.02356401266377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-450152432",
+      "areaM2": 200.99441936782776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-460152433",
+      "areaM2": 624.6728909019546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-470152434",
+      "areaM2": 554.9879674514629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-540152635",
+      "areaM2": 8366.797323352957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-860152279",
+      "areaM2": 495.2701109860158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-870152280",
+      "areaM2": 477.13370387581375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-880152281",
+      "areaM2": 715.5859769786559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-890152282",
+      "areaM2": 476.979917015417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-900152283",
+      "areaM2": 477.0501527470299,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960598279",
+      "areaM2": 277.55717116374075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960598280",
+      "areaM2": 277.38610500902575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-180566498",
+      "areaM2": 254.9777797549839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-190566499",
+      "areaM2": 255.1641055415608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-770152270",
+      "areaM2": 453.7812682801058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-780152271",
+      "areaM2": 357.4981414782559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-790152272",
+      "areaM2": 255.26800550410348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-800152273",
+      "areaM2": 425.69674877185787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-810152274",
+      "areaM2": 382.96134363099964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-820152275",
+      "areaM2": 534.1312880588172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-830152276",
+      "areaM2": 444.2259905482805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-850152278",
+      "areaM2": 510.4894222075651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-460153597",
+      "areaM2": 255.18993968954143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-540152247",
+      "areaM2": 255.3197681854462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-550152248",
+      "areaM2": 255.29333215609665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-560152249",
+      "areaM2": 255.26716855032365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-570152250",
+      "areaM2": 510.5351854122349,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-580152251",
+      "areaM2": 510.6434161463752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-590152252",
+      "areaM2": 510.4320271934808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-600152253",
+      "areaM2": 255.1636194281339,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-610152254",
+      "areaM2": 418.6258913559203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-620152255",
+      "areaM2": 347.0272938157375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-660152259",
+      "areaM2": 252.80771422357162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-680152261",
+      "areaM2": 252.6750075234881,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-690152262",
+      "areaM2": 252.43747771710298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-700152263",
+      "areaM2": 252.5955891276176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-710152264",
+      "areaM2": 252.38479140550356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-720152265",
+      "areaM2": 252.35858492966042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-730152266",
+      "areaM2": 252.51638393385457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-740152267",
+      "areaM2": 252.30578108101864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-750152268",
+      "areaM2": 378.45780332015846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-760152269",
+      "areaM2": 377.089448671726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960633109",
+      "areaM2": 252.59672325482654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960633110",
+      "areaM2": 252.57055630704528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96092017",
+      "areaM2": 252.6494085974399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-100153561",
+      "areaM2": 357.264069201034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-110153562",
+      "areaM2": 238.41830243806365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-120153563",
+      "areaM2": 477.14649143647443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-130153564",
+      "areaM2": 476.6529803500597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-150153566",
+      "areaM2": 237.4856358689467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-160153567",
+      "areaM2": 237.9274318041321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-170153568",
+      "areaM2": 562.1031412960335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-510152632",
+      "areaM2": 1095.8798107259286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-520152633",
+      "areaM2": 723.131071084766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960677427",
+      "areaM2": 238.63550238130242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960677428",
+      "areaM2": 238.19362725473525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-480152241",
+      "areaM2": 382.5309640529683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-500152243",
+      "areaM2": 639.6114901492847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-510152244",
+      "areaM2": 385.73922279832664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-520152245",
+      "areaM2": 601.8741369327158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960606858",
+      "areaM2": 236.84897774548594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960606859",
+      "areaM2": 236.567062555188,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96149392",
+      "areaM2": 256.3295425895967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96149393",
+      "areaM2": 256.5168455902389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-290153580",
+      "areaM2": 392.63666958968946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-300153581",
+      "areaM2": 382.08108565317076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-310153582",
+      "areaM2": 255.34221516654537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-410152234",
+      "areaM2": 383.3058373437317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-420152235",
+      "areaM2": 384.1986225846812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-440152237",
+      "areaM2": 631.612269296411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-530152246",
+      "areaM2": 710.5439721254602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-630152256",
+      "areaM2": 617.9028769568637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-640152257",
+      "areaM2": 378.9741909172628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96092016",
+      "areaM2": 252.86055494804492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96101335",
+      "areaM2": 257.8718833503696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96101336",
+      "areaM2": 251.82585704057942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96113169",
+      "areaM2": 255.10243154302916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96113170",
+      "areaM2": 407.8255465254252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96124277",
+      "areaM2": 255.66266588613445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96124278",
+      "areaM2": 255.84965602212324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96124282",
+      "areaM2": 248.06696729049764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-110152301",
+      "areaM2": 536.2675152326397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-120152302",
+      "areaM2": 459.5980506757473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-130152303",
+      "areaM2": 544.888845543121,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-140152304",
+      "areaM2": 425.52355334184807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-150152305",
+      "areaM2": 501.3171711983037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-160152306",
+      "areaM2": 501.22339704611954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-290153289",
+      "areaM2": 463.1276510751337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-300153290",
+      "areaM2": 540.235959813011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-470152337",
+      "areaM2": 410.17036994863645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-580152348",
+      "areaM2": 434.79400643989584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-690152359",
+      "areaM2": 755.4566903695464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-280153191",
+      "areaM2": 1348.1434353935829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-400162418",
+      "areaM2": 613.1299201125054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-410162419",
+      "areaM2": 613.258126876997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-420162420",
+      "areaM2": 613.2581038155514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-430162421",
+      "areaM2": 390.2518915669319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-460162424",
+      "areaM2": 414.55117765795154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-470152240",
+      "areaM2": 386.4561495171355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-80153559",
+      "areaM2": 597.0564301239409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-90153560",
+      "areaM2": 359.39576157149446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960621190",
+      "areaM2": 958.0317791566478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960627697",
+      "areaM2": 260.22736308151633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960627698",
+      "areaM2": 252.56226879213892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96124295",
+      "areaM2": 598.2063484721806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-20152971",
+      "areaM2": 292.7138274364807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-350570880",
+      "areaM2": 280.1148752799958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-500152437",
+      "areaM2": 277.8544812872066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-510152438",
+      "areaM2": 277.9391475395662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-520152439",
+      "areaM2": 277.8542058352477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-530152440",
+      "areaM2": 277.3407647207821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-600152447",
+      "areaM2": 555.9259947949163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-610152448",
+      "areaM2": 554.1738483354577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-620152449",
+      "areaM2": 556.5982869775629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-630152450",
+      "areaM2": 556.8594748556404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-710153040",
+      "areaM2": 279.56359332608724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-720153041",
+      "areaM2": 276.23542148824936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96102283",
+      "areaM2": 278.2782965008555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96124962",
+      "areaM2": 366.6661375050321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96124963",
+      "areaM2": 333.80664158430534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-96124964",
+      "areaM2": 333.78176613060276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-850151987",
+      "areaM2": 389.2168975112479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-860151988",
+      "areaM2": 376.06125097190545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-870151989",
+      "areaM2": 255.0010517842387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-880151990",
+      "areaM2": 255.0015032715242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-890151991",
+      "areaM2": 254.97491056616497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-900151992",
+      "areaM2": 254.94882428865213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-910151993",
+      "areaM2": 255.13546674599576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-920151994",
+      "areaM2": 254.94964949210083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-930151995",
+      "areaM2": 254.95010079917023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-940151996",
+      "areaM2": 427.4447529080108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-950151997",
+      "areaM2": 421.89425418845906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CA-CALGARY-CPID-960151998",
+      "areaM2": 424.2543187815078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

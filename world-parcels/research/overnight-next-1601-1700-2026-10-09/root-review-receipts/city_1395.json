@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1395",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-1395-erkezk-y.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/erkezk-y-service-review.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/cerkezkoy-parcels-sample.geojson"
+  ],
+  "checkedAt": "2026-10-10T12:53:46Z",
+  "reason": "Immutable rank 1686 identity, Türkiye, exact point and 338995 persons agree with queue. English and Turkish source searches are recorded. Independent live first-party TKGM reads returned IDs 164700/938/19 and 164700/938/21; both full Polygon geometries exactly match the two retained features, which have only a safe composite id property. This verifies bounded local geometry, not a complete city adapter. Forced paging or equivalent complete enumeration, 13 aligned bounded cells, independent metric GEOS and operation checks, source binding and headed Details verification are not evidenced; formal CRS and coverage remain unverified.",
+  "runtimeAdmission": false
+}

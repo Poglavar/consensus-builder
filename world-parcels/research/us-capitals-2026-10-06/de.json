@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "DE",
+  "state": "Delaware",
+  "capital": "Dover",
+  "centerLatLon": [
+    39.1582,
+    -75.5244
+  ],
+  "query": {
+    "language": "English",
+    "text": "Delaware official Dover parcels GIS FirstMap state parcels"
+  },
+  "references": [
+    {
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0?f=pjson",
+      "observation": "Source layer metadata queried for geometry, native key field and object ID schema."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Delaware%20official%20Dover%20parcels%20GIS%20FirstMap%20state%20parcels",
+      "observation": "English web search used to locate official capital/state parcel information."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Layer metadata confirms esriGeometryPolygon and native PIN field (esriFieldTypeString)."
+    },
+    {
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&geometry=-75.52505%2C39.1577125%2C-75.52375%2C39.1586875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PIN&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Capital bbox returned 6 polygons, native IDs and geometry only; rings checked closed and finite."
+    },
+    {
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=PIN%3D%272-05-07709-02-5800-00001%27&outFields=PIN&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Exact native key read returned 1 feature(s), includes the same key and valid geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "DE State Parcels",
+    "operator": "State of Delaware FirstMap (Delaware Geospatial Data Exchange)",
+    "idField": "PIN",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Returned native text values preserved verbatim (including leading zeros and any whitespace).",
+    "outFields": [
+      "PIN"
+    ],
+    "parcelNumberField": "PIN",
+    "metricSrid": "EPSG:4326 (outSR requested); native Web Mercator",
+    "proposedIdPrefix": "us-de-county"
+  },
+  "verification": {
+    "bbox": [
+      -75.52505,
+      39.1577125,
+      -75.52375,
+      39.1586875
+    ],
+    "count": 6,
+    "nativeIDs": [
+      "2-05-07709-02-5800-00001",
+      "2-05-07709-04-2001-00001",
+      "2-05-07709-05-0400-00001"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  },
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "status": "verified_sample_capital_scope",
+  "limitations": "Terms not read.",
+  "priorResearchFile": "research/subnational/US/DE.json"
+}

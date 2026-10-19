@@ -1,0 +1,141 @@
+{
+  "name": "Seville",
+  "country": "Spain",
+  "countryCode": "ES",
+  "rank": 769,
+  "point": [
+    37.3874986511576,
+    -5.96750760664189
+  ],
+  "population2025": 699504,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_incomplete_and_blocked_exact_id_reads",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Bounded city-source review only. No citywide completeness is claimed. At most three complete public parcel polygons are retained. No owner or address fields and no credentials or token values are retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Spanish Directorate General for Cadastre publishes the INSPIRE Cadastral Parcel dataset and public WFS/ATOM services. The live WFS advertises the CadastralParcel feature and returned full geometry in Seville at the city locator’s nearby window.",
+  "resultCategory": "official_inspire_cadastral_full_polygon_verified_nearby",
+  "technicalBlocker": "Public full parcel geometry is verified, but operational qualification failed: 13 bounded cells returned 326 distinct polygons and the first 120 fresh exact-ID reads matched; a later exact-ID response had inconsistent/incomplete feature counts, followed by HTTP 403 provider blocks. Absence, footprint and source-binding checks could not complete. Runtime remains disabled; failed evidence is retained without retries or modified geometry. Eight sampled overlap pairs above 0.01 m² total only 0.139 m²; this is recorded separately from the access/completeness blocker.",
+  "remainingUncertainty": "Whether the exact WUP centroid intersects a parcel at finer spatial tolerance, citywide completeness/quality, update consistency, and integration/runtime behavior. The WUP point is a population-weighted settlement locator, not a municipal boundary or parcel identity.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Spanish",
+        "query": "site:catastro.hacienda.gob.es Sevilla cartografía catastral parcelas INSPIRE WFS provincia Sevilla",
+        "scope": "Confirm official national cadastral parcel service and safe polygon schema for Seville.",
+        "result": "Official DG Catastro describes INSPIRE CP WFS and publishes the active service; direct metadata and bounded GetFeature response verified full CP geometry.",
+        "actualResultUrls": [
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+          "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+        ],
+        "executionMethod": "Separate Spanish-language discovery, official service-documentation review, then bounded WFS request."
+      },
+      {
+        "language": "English",
+        "query": "Catastro Spain Seville parcel WFS GetParcelByBBox cadastral polygons official",
+        "scope": "Cross-check endpoint/schema and supported download methods.",
+        "result": "Official WFS documentation confirms BBOX GetFeature and parcel geometry; direct live metadata and a projected Seville bbox returned full geometry.",
+        "actualResultUrls": [
+          "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf",
+          "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+        ],
+        "executionMethod": "Separate English-language discovery and official schema/API inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+        "observation": "DG Catastro describes INSPIRE CP, official WFS and per-municipality ATOM parcel downloads."
+      },
+      {
+        "url": "https://www.catastro.hacienda.gob.es/webinspire/documentos/inspire-cp-WFS_en.pdf",
+        "observation": "Official WFS documentation describes BBOX GetFeature requests, CP feature type, and service query behavior."
+      },
+      {
+        "url": "https://www.catastro.hacienda.gob.es/webinspire/documentos/Licencia_en.pdf",
+        "observation": "Official INSPIRE use licence; attribution/transform and reuse conditions must be followed for downstream use."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "apiBase": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "observedClientRoutes": [
+        "GetCapabilities",
+        "GetFeature typeNames=cp:CadastralParcel, SRSname=EPSG::25830, bbox=projected extent"
+      ],
+      "notes": "GetCapabilities HTTP 200 identifies Spanish INSPIRE Cadastral Parcels, WFS 2.0.0. A 20 m x 20 m bbox centered on the WUP point returned HTTP 200 with no records. A 200 m x 200 m bbox returned 104 full geometries despite COUNT=3; three complete features were retained and transformed from declared EPSG:25830 to WGS84 without geometry repair. No personal/address attributes were requested or retained."
+    }
+  },
+  "verifiedParcelResponse": {
+    "source": "Spanish DG Catastro INSPIRE CP WFS",
+    "queryPoint": [
+      37.3874986511576,
+      -5.96750760664189
+    ],
+    "queryCrs": "WGS84 locator transformed to EPSG:25830 for BBOX",
+    "request": "GetFeature typeNames=cp.cadastralparcel; bbox=237177,4141893,237378,4142094; EPSG:25830; requested count=3 (service returned 104)",
+    "httpStatus": 200,
+    "featureCount": 104,
+    "retainedFeatureCount": 3,
+    "exactLocatorWindow": {
+      "bbox": "237267,4141983,237287,4142003",
+      "crs": "EPSG:25830",
+      "httpStatus": 200,
+      "featureCount": 0
+    },
+    "geometryType": "INSPIRE MultiSurface",
+    "geometryFile": "city-2157-seville-samples.geojson",
+    "geometrySha256": "8e1706ba0f1e5ad0abfca4ec850816f52f73a53410fcb08144dd466ba4004232",
+    "retainedFullGeometryInCityRecord": false,
+    "adapterQualification": null
+  },
+  "source": {
+    "sourceId": "es-dgcatastro-inspire-cadastral-parcels",
+    "name": "Dirección General del Catastro INSPIRE Cadastral Parcels (CP)",
+    "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+    "operator": "Dirección General del Catastro, Ministerio de Hacienda, Spain",
+    "serviceType": "Anonymous official INSPIRE WFS 2.0 GetFeature for full cadastral-parcel geometry; national service, city location bounded by projected bbox.",
+    "layer": "cp:CadastralParcel",
+    "geometryType": "MultiSurface (INSPIRE CP; Polygon/MultiPolygon in retained GeoJSON)",
+    "outputCrs": "EPSG:25830 source GML; sample transformed to EPSG:4326 for GeoJSON",
+    "nativeIdField": "cp:nationalCadastralReference",
+    "nativeIdEvidence": "Official WFS feature schema/response exposes cp:nationalCadastralReference and INSPIRE inspireId; retained sample carries only the national cadastral reference, area, and full geometry.",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "personalAttributesRequested": false,
+    "scope": "A 200 m by 200 m projected bbox around the exact Seville WUP centroid returned 104 full CP features; only three were retained. A 20 m by 20 m bbox around the WUP point returned no records. No citywide completeness or point-intersection is claimed."
+  },
+  "wupCityCode": 2157,
+  "cityId": "wup2025:2157",
+  "queueRank": 769,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    37.3874986511576,
+    -5.96750760664189
+  ],
+  "sourceIds": [
+    "es-dgcatastro-inspire-cadastral-parcels"
+  ],
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_incomplete_and_blocked_exact_id_reads",
+    "reason": "Public full parcel geometry is verified, but operational qualification failed: 13 bounded cells returned 326 distinct polygons and the first 120 fresh exact-ID reads matched; a later exact-ID response had inconsistent/incomplete feature counts, followed by HTTP 403 provider blocks. Absence, footprint and source-binding checks could not complete. Runtime remains disabled; failed evidence is retained without retries or modified geometry. Eight sampled overlap pairs above 0.01 m² total only 0.139 m²; this is recorded separately from the access/completeness blocker.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/seville-catastro-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/seville-catastro-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/seville-root-quality-review.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Three full parcels from the 200 m projected window around Seville’s exact WUP locator; the 20 m centered window returned no records.",
+    "verifiedOpenScope": "A 200 m by 200 m projected bbox around the exact Seville WUP centroid returned 104 full CP features; only three were retained. A 20 m by 20 m bbox around the WUP point returned no records. No citywide completeness or point-intersection is claimed.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "rootReviewedAt": "2026-10-09T03:19:30.908964+00:00"
+}

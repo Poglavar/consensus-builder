@@ -9,7 +9,7 @@
             const api = global.i18n;
             if (api && typeof api.t === 'function') {
                 const translated = api.t(key, params || {});
-                if (translated !== undefined && translated !== null) {
+                if (translated !== undefined && translated !== null && translated !== key) {
                     return translated;
                 }
             }
@@ -17,15 +17,17 @@
         return fallback || key || '';
     };
 
-    function createProposalFromSingleParcel() {
-        // Gate: require personalized profile to create proposals
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
-            return;
-        }
+    // "Offer my land" asserts ownership: it needs a wallet a lens member attested as the parcels'
+    // owner (GuestPolicy 'ownership-proof'), not just a profile name. Says what is missing otherwise.
+    async function ownerOfferProofMissing() {
+        if (typeof global.requireOwnerOfferProof !== 'function') throw new Error('requireOwnerOfferProof is not loaded');
+        return !(await global.requireOwnerOfferProof());
+    }
 
+    async function createProposalFromSingleParcel() {
         if (!global.currentParcel || !global.currentParcel.layer) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('No parcel selected. Please select a parcel first.');
+                global.updateStatus(tParcel('panel.parcel.build.noParcelSelected', {}, 'No parcel selected. Please select a parcel first.'));
             }
             return;
         }
@@ -33,27 +35,26 @@
             if (!global.multiParcelSelection.isActive) {
                 global.multiParcelSelection.selectedParcels.clear();
                 global.multiParcelSelection.selectedParcels.add(global.currentParcel.id);
+                // Checked on the selection the offer would be made on.
+                if (await ownerOfferProofMissing()) return;
                 if (typeof global.showProposalDialog === 'function') {
-                    global.showProposalDialog();
+                    // Offer negotiates ownership only — building/land-use/parcel changes have
+                    // their own palette tools.
+                    global.showProposalDialog({ ownershipOnly: true, ownerOffer: true });
                 }
             } else {
                 console.warn('createProposalFromSingleParcel called while multi-select is active - this should not happen');
                 if (typeof global.updateStatus === 'function') {
-                    global.updateStatus('Please use the main "Create Proposal" button when multiple parcels are selected.');
+                    global.updateStatus(tParcel('panel.parcel.build.useMainCreateButton', {}, 'Please use the main "Create Proposal" button when multiple parcels are selected.'));
                 }
             }
         }
     }
 
-    function createProposalFromSelectedParcels() {
-        // Gate: require personalized profile to create proposals
-        if (typeof global.requirePersonalizedUser === 'function' && global.requirePersonalizedUser()) {
-            return;
-        }
-
+    async function createProposalFromSelectedParcels() {
         if (typeof global.multiParcelSelection === 'undefined' || !global.multiParcelSelection || !global.multiParcelSelection.isActive) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Enable multi-parcel selection to use this action.');
+                global.updateStatus(tParcel('panel.parcel.build.enableMultiSelect', {}, 'Enable multi-parcel selection to use this action.'));
             }
             return;
         }
@@ -61,14 +62,270 @@
         const hasSelection = global.multiParcelSelection.selectedParcels && global.multiParcelSelection.selectedParcels.size > 0;
         if (!hasSelection) {
             if (typeof global.updateStatus === 'function') {
-                global.updateStatus('Select at least one parcel to create a proposal.');
+                global.updateStatus(tParcel('panel.parcel.build.selectAtLeastOne', {}, 'Select at least one parcel to create a proposal.'));
             }
             return;
         }
 
+        if (await ownerOfferProofMissing()) return;
         if (typeof global.showProposalDialog === 'function') {
-            global.showProposalDialog();
+            global.showProposalDialog({ ownershipOnly: true, ownerOffer: true });
         }
+    }
+
+    // The Build palette: everything creatable on the current parcel(s), each button jumping
+    // straight into that type's design tool (SimCity: draw first, propose later). Building
+    // typologies and reparcellization open their design tools; park/square/lake are one click.
+    const PARCEL_BUILD_TOOLS = [
+        { key: 'buildings', icon: 'fa-city', labelKey: 'panel.parcel.build.block', fallback: 'Block' },
+        { key: 'row', icon: 'fa-grip-horizontal', labelKey: 'panel.parcel.build.row', fallback: 'Row houses' },
+        { key: 'parcelBased', icon: 'fa-home', labelKey: 'panel.parcel.build.parcelBased', fallback: 'Detached' },
+        { key: 'single', icon: 'fa-ruler-combined', labelKey: 'panel.parcel.build.single', fallback: 'Freeform' },
+        { key: 'reparcellization', icon: 'fa-vector-square', labelKey: 'panel.parcel.build.reparcel', fallback: 'Reparcel' },
+        { key: 'park', icon: 'fa-tree', labelKey: 'panel.parcel.build.park', fallback: 'Park' },
+        { key: 'square', icon: 'fa-chess-board', labelKey: 'panel.parcel.build.square', fallback: 'Square' },
+        { key: 'lake', icon: 'fa-water', labelKey: 'panel.parcel.build.lake', fallback: 'Lake' }
+    ];
+
+    // Terms-first proposals change rights rather than the map. Keep them visually and
+    // conceptually separate from both construction and transport tools.
+    const PARCEL_OWNERSHIP_TOOLS = [
+        { key: 'offer', icon: 'fa-handshake', labelKey: 'panel.parcel.build.offer', fallback: 'Offer' }
+    ];
+
+    // Corridors and stops are all transport-network proposals. Keep them together at the end of
+    // the parcel palette instead of presenting Road/Track as unrelated full-width form buttons.
+    const PARCEL_TRANSPORT_TOOLS = [
+        {
+            key: 'road', icon: 'fa-road', labelKey: 'panel.parcel.build.road', fallback: 'Road',
+            titleKey: 'sidebar.roads.drawManualTooltip', titleFallback: 'Open the manual road drawing tool'
+        },
+        {
+            key: 'track', icon: 'fa-train', labelKey: 'panel.parcel.build.track', fallback: 'Track',
+            titleKey: 'sidebar.roads.drawTrackTooltip', titleFallback: 'Open the manual track drawing tool with curvature constraints'
+        },
+        {
+            key: 'bus', stationType: 'bus', icon: 'fa-bus', labelKey: 'panel.parcel.build.busStation', fallback: 'Bus station',
+            titleKey: 'sidebar.stations.bus', titleFallback: 'Bus station'
+        },
+        {
+            key: 'tram', stationType: 'tram', icon: 'fa-tram', labelKey: 'panel.parcel.build.tramStation', fallback: 'Tram station',
+            titleKey: 'sidebar.stations.tram', titleFallback: 'Tram station'
+        },
+        {
+            key: 'underground', stationType: 'underground', icon: 'fa-train-subway',
+            labelKey: 'panel.parcel.build.undergroundStation', fallback: 'Metro station',
+            titleKey: 'sidebar.stations.underground', titleFallback: 'Underground station'
+        },
+        {
+            key: 'elevated', stationType: 'elevated', icon: 'fa-train',
+            labelKey: 'panel.parcel.build.elevatedStation', fallback: 'Elevated station',
+            titleKey: 'sidebar.stations.elevated', titleFallback: 'Elevated train station'
+        }
+    ];
+
+    function roadToolsEnabled() {
+        return (typeof global.CityConfigManager !== 'undefined'
+            && typeof global.CityConfigManager.isFeatureEnabled === 'function')
+            ? global.CityConfigManager.isFeatureEnabled('roadTools')
+            : true;
+    }
+
+    function startParcelTransportTool(toolKey) {
+        const key = String(toolKey || '').trim().toLowerCase();
+        if (key === 'road') {
+            global.requestRoadDrawTool?.();
+            return;
+        }
+        if (key === 'track') {
+            global.requestTrackDrawTool?.();
+            return;
+        }
+        const stationType = PARCEL_TRANSPORT_TOOLS.find(tool => tool.stationType === key)?.stationType;
+        if (stationType) global.startTransitStationPlacement?.(stationType);
+    }
+
+    function parcelBuildSelectionIds() {
+        const multi = global.multiParcelSelection;
+        if (multi && multi.isActive && multi.selectedParcels && multi.selectedParcels.size > 0) {
+            return [...multi.selectedParcels].map(String);
+        }
+        return global.currentParcel && global.currentParcel.id ? [String(global.currentParcel.id)] : [];
+    }
+
+    // One policy for every FRESH parcel-based design. Terms-only offers and corridors target the
+    // exact parcel(s) selected, while these land/building tools commonly operate on a whole block.
+    const WHOLE_BLOCK_FRESH_PROPOSAL_GOALS = new Set([
+        'buildings', 'block', 'row', 'parcelbased', 'single', 'reparcellization',
+        'park', 'square', 'lake', 'urban-rule'
+    ]);
+
+    function shouldSuggestWholeBlockForFreshProposal(goal) {
+        const key = String(goal || '').trim().toLowerCase();
+        return WHOLE_BLOCK_FRESH_PROPOSAL_GOALS.has(key);
+    }
+
+    // Single parcel selected but it sits in a multi-parcel block: the user may simply have
+    // forgotten to select the block first. Offer to do it for them — Yes selects the whole
+    // block (and lands on the Proposals tab, tool NOT auto-launched); No proceeds one-parcel.
+    // Returns true when the tool launch should stop here.
+    async function maybeSuggestWholeBlockForFreshProposal(goal, ids = []) {
+        if (!shouldSuggestWholeBlockForFreshProposal(goal) || ids.length !== 1) return false;
+        if (typeof global.detectBlockParcelIdsForParcel !== 'function') return false;
+        const block = global.detectBlockParcelIdsForParcel(ids[0]);
+        // The count belongs in the question, not in a hidden policy gate. A large block is still
+        // a block, and silently skipping the question made Detached behave differently depending
+        // on where in the city it was launched.
+        if (!block || block.count <= 1) return false;
+        if (typeof global.showStyledConfirm !== 'function') return false;
+        const message = tParcel('panel.parcel.suggestWholeBlock', { count: block.count },
+            `Only one parcel is selected. Did you mean the whole block (${block.count} parcels)?`);
+        const wantsBlock = await global.showStyledConfirm(message, {
+            okText: tParcel('panel.parcel.suggestWholeBlockYes', {}, 'Yes, select the block'),
+            cancelText: tParcel('panel.parcel.suggestWholeBlockNo', {}, 'No, just this parcel')
+        });
+        if (!wantsBlock) return false;
+        try { await Promise.resolve(global.animateFloodfillFromSelected?.({ replaceSelection: true })); } catch (error) {
+            console.warn('[buildPalette] block selection failed', error);
+        }
+        // Land on the build palette for the new selection. Selection changes no longer open the
+        // parcel panel (the map-driven UI shows the selection tray instead), so open it here —
+        // the same path as the tray's Propose — or the user is left with no palette on screen.
+        const multi = global.multiParcelSelection;
+        if (multi && multi.isActive && multi.selectedParcels && multi.selectedParcels.size > 0
+            && typeof multi.showSelectionInPanel === 'function') {
+            multi.showSelectionInPanel();
+        }
+        if (typeof global.switchParcelTab === 'function') global.switchParcelTab(null, 'propose-tab');
+        return true;
+    }
+
+    async function startParcelBuildTool(toolKey) {
+        const ids = parcelBuildSelectionIds();
+        if (!ids.length) {
+            if (typeof global.updateStatus === 'function') {
+                global.updateStatus(tParcel('panel.parcel.build.selectParcelFirst', {}, 'Select a parcel first.'));
+            }
+            return;
+        }
+        // The shared policy decides which fresh proposal types have block semantics. Run it before
+        // per-tool guards (a row on one parcel is exactly where selecting the block solves it).
+        if (await maybeSuggestWholeBlockForFreshProposal(toolKey, ids)) return;
+        // A row dictates form across parcels — on a single parcel it degenerates to a building.
+        if (toolKey === 'row' && ids.length < 2) {
+            const message = tParcel('panel.parcel.build.rowNeedsTwo', {}, 'Row houses need at least two parcels.');
+            if (typeof global.showEphemeralMessage === 'function') global.showEphemeralMessage(message, 4000, 'info');
+            else if (typeof global.updateStatus === 'function') global.updateStatus(message);
+            return;
+        }
+        if (toolKey === 'offer') {
+            const multi = global.multiParcelSelection;
+            if (multi && multi.isActive) createProposalFromSelectedParcels();
+            else createProposalFromSingleParcel();
+            return;
+        }
+        if (['park', 'square', 'lake'].includes(toolKey)) {
+            if (typeof global.instantCreateStructureFromSelection !== 'function') {
+                global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
+                return;
+            }
+            return Promise.resolve(global.instantCreateStructureFromSelection(toolKey, ids))
+                .catch(error => {
+                    if (typeof global.reportProposalDesignSaveFailure === 'function') global.reportProposalDesignSaveFailure(error);
+                    else console.warn('[buildPalette] structure creation failed', error);
+                });
+        } else {
+            if (typeof global.startInstantProposalDesign !== 'function') {
+                global.reportProposalDesignSaveFailure?.('proposalDrafts.design.unavailable');
+                return;
+            }
+            // Returned so the tile spins until the object exists or its design tool is open.
+            return Promise.resolve(global.startInstantProposalDesign(toolKey, ids))
+                .catch(error => {
+                    if (typeof global.reportProposalDesignSaveFailure === 'function') global.reportProposalDesignSaveFailure(error);
+                    else console.warn('[buildPalette] design tool failed to open', error);
+                });
+        }
+    }
+
+    // options (the site tool's palette, js/site-drawing.js, reuses this one):
+    //   buildHandler     — global called with the tool key (default startParcelBuildTool);
+    //   includeOwnership — the Ownership group (Offer is an act on parcels: parcel palette only);
+    //   disabled         — { toolKey: reason } shown disabled, the reason as its title and a note;
+    //   labels           — { toolKey: label } replaces a tool's label (the site tool names Land
+    //                      readjustment "Subdivide" on a site with open ground).
+    // The palette is the shared choice tiles (cb-tiles > cb-tile, css/primitives.css) under section
+    // kickers. parcel-build-btn and its --<tool> / parcel-transport-btn--<tool> modifiers stay on each
+    // tile as the hooks the specs and the site tool find them by; they paint nothing.
+    function buildPaletteHtml(options = {}) {
+        const buildHandler = options.buildHandler || 'startParcelBuildTool';
+        const disabled = options.disabled || {};
+        const labels = options.labels || {};
+        const escapeAttr = value => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        const buttonHtml = tool => {
+            const label = labels[tool.key] || tParcel(tool.labelKey, {}, tool.fallback);
+            const reason = disabled[tool.key];
+            return `
+            <button type="button" class="cb-tile parcel-build-btn parcel-build-btn--${tool.key}" onclick="BusyControl.track(this, () => ${buildHandler}('${tool.key}'))"
+                title="${escapeAttr(reason || label)}"${reason ? ' disabled aria-disabled="true"' : ''}>
+                <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
+                <span class="cb-tile__label">${label}</span>
+            </button>
+            ${reason ? `<p class="parcel-build-disabled-reason">${escapeAttr(reason)}</p>` : ''}
+        `;
+        };
+        // The §15a taxonomy, drawn as labelled groups (rethink-proposals.md, decision 2026-08-05):
+        // Land readjustment stands alone first — the formation primitive; Block/Row/Detached are
+        // RULES-based tools (form follows parameters → Urban rules); Freeform Building, Park,
+        // Square and Lake all TAKE their parcel (→ Structures). The urban-rule park (use
+        // restriction, no taking) joins the rules group when rules grow that vocabulary.
+        const RULE_KEYS = ['buildings', 'row', 'parcelBased'];
+        const STRUCTURE_KEYS = ['single', 'park', 'square', 'lake'];
+        const readjustmentButton = PARCEL_BUILD_TOOLS.filter(tool => tool.key === 'reparcellization').map(buttonHtml).join('');
+        const ruleButtons = PARCEL_BUILD_TOOLS.filter(tool => RULE_KEYS.includes(tool.key)).map(buttonHtml).join('');
+        const structureButtons = PARCEL_BUILD_TOOLS.filter(tool => STRUCTURE_KEYS.includes(tool.key)).map(buttonHtml).join('');
+        const ownershipButtons = PARCEL_OWNERSHIP_TOOLS.map(buttonHtml).join('');
+        const rulesTitle = tParcel('panel.parcel.build.rulesCategory', {}, 'Urban rules');
+        const structuresTitle = tParcel('panel.parcel.build.structuresCategory', {}, 'Structures');
+        // A station tile is a toggle: transit-stations.js marks the type being placed.
+        const transportButtons = PARCEL_TRANSPORT_TOOLS
+            .filter(tool => tool.stationType || roadToolsEnabled())
+            .map(tool => {
+                const label = tParcel(tool.labelKey, {}, tool.fallback);
+                const title = tParcel(tool.titleKey, {}, tool.titleFallback);
+                const stationAttribute = tool.stationType ? ` data-station-type="${tool.stationType}" aria-pressed="false"` : '';
+                return `
+                    <button type="button" class="cb-tile parcel-build-btn parcel-transport-btn parcel-transport-btn--${tool.key}"
+                        onclick="${options.transportHandler || 'startParcelTransportTool'}('${tool.key}')"${stationAttribute}
+                        title="${title}" aria-label="${title}">
+                        <i class="cb-tile__icon fas ${tool.icon}" aria-hidden="true"></i>
+                        <span class="cb-tile__label">${label}</span>
+                    </button>
+                `;
+            }).join('');
+        const transportTitle = tParcel('panel.parcel.build.transport', {}, 'Transport');
+        const ownershipTitle = tParcel('panel.parcel.build.ownershipCategory', {}, 'Ownership');
+        return `
+            <div class="parcel-build-palette">
+                <div class="cb-tiles parcel-build-grid">${readjustmentButton}</div>
+                <section class="parcel-rules-group">
+                    <h4 class="cb-kicker">${rulesTitle}</h4>
+                    <div class="cb-tiles parcel-rules-grid">${ruleButtons}</div>
+                </section>
+                <section class="parcel-structures-group">
+                    <h4 class="cb-kicker">${structuresTitle}</h4>
+                    <div class="cb-tiles parcel-structures-grid">${structureButtons}</div>
+                </section>
+                <section class="parcel-transport-group">
+                    <h4 class="cb-kicker">${transportTitle}</h4>
+                    <div class="cb-tiles parcel-transport-grid">${transportButtons}</div>
+                </section>
+                ${options.includeOwnership === false ? '' : `<section class="parcel-ownership-group">
+                    <h4 class="cb-kicker">${ownershipTitle}</h4>
+                    <div class="cb-tiles parcel-ownership-grid">${ownershipButtons}</div>
+                </section>`}
+            </div>
+        `;
     }
 
     function renderParcelProposalActions(parcelIdOverride = null) {
@@ -82,23 +339,11 @@
             ? global.multiParcelSelection.selectedParcels.size
             : 0;
 
-        if (multiSelectActive && selectionCount > 0) {
-            const label = tParcel('panel.parcel.proposalsSection.create', {}, 'Create proposal');
-            container.innerHTML = `
-            <button type="button" class="btn btn-proposal" id="createProposalFromSelectionButton" onclick="createProposalFromSelectedParcels()">
-                ${label}
-            </button>
-        `;
-            return;
-        }
-
         const parcelContextId = parcelIdOverride || (global.currentParcel && global.currentParcel.id);
-        if (parcelContextId) {
-            container.innerHTML = `
-            <button type="button" class="btn btn-proposal" id="createProposalFromParcelButton" onclick="createProposalFromSingleParcel()">
-                ${tParcel('panel.parcel.proposalsSection.create', {}, 'Create proposal')}
-            </button>
-        `;
+        // Shared with the parcel menu's "Offer my land" (ui/parcel-menu-model.js), which appears
+        // exactly when this palette — and its Ownership "Offer" tool — would.
+        if (global.ParcelMenuModel.buildPaletteAvailable({ multiSelectActive, selectionCount, parcelContextId })) {
+            container.innerHTML = buildPaletteHtml();
         } else {
             container.innerHTML = '';
         }
@@ -106,6 +351,10 @@
 
     global.createProposalFromSingleParcel = createProposalFromSingleParcel;
     global.createProposalFromSelectedParcels = createProposalFromSelectedParcels;
+    global.shouldSuggestWholeBlockForFreshProposal = shouldSuggestWholeBlockForFreshProposal;
+    global.maybeSuggestWholeBlockForFreshProposal = maybeSuggestWholeBlockForFreshProposal;
+    global.startParcelBuildTool = startParcelBuildTool;
+    global.startParcelTransportTool = startParcelTransportTool;
     global.renderParcelProposalActions = renderParcelProposalActions;
+    global.buildProposalPaletteHtml = buildPaletteHtml;
 })(typeof window !== 'undefined' ? window : globalThis);
-

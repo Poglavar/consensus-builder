@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Magelang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 844,
+  "wupCityCode": 7021,
+  "point": [
+    -7.52579327848381,
+    110.237614068471
+  ],
+  "registryFound": true,
+  "registryBasis": "Official ATR/BPN and Kota Magelang sources establish city-local land registration. Municipal Geoportal is a public geospatial catalog/viewer, but inspected shell and first-page titles do not verify a parcel layer or safe native parcel schema.",
+  "registryEvidenceUrls": [
+    "https://kot-magelang.atrbpn.go.id/",
+    "https://magelangkota.go.id/view/wali-kota-magelang-serahkan-13-sertipikat-tanah-warga-terdampak-proyek-flyover-canguk",
+    "https://geoportal.magelangkota.go.id/",
+    "https://geoportal.magelangkota.go.id/api/v2/datasets/?limit=100",
+    "https://datago.magelangkota.go.id/frontend/metadata/metadata/index?page=108"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Kota Magelang municipal Geoportal and ATR/BPN Kantor Pertanahan Kota Magelang.",
+      "operator": "Official government agency identified in sources",
+      "homeUrl": "https://kot-magelang.atrbpn.go.id/",
+      "observation": "Official ATR/BPN site identifies Kantor Pertanahan Kota Magelang; no authenticated workflow used."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geoportal.magelangkota.go.id/",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 60126,
+      "observation": "Public city map/catalogue shell."
+    },
+    {
+      "url": "https://geoportal.magelangkota.go.id/api/v2/datasets/?limit=100",
+      "method": "catalogue metadata GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "bytes": 211507,
+      "observation": "Metadata only; 10 of 161 entries."
+    },
+    {
+      "url": "https://geoportal.magelangkota.go.id/catalogue/csw?service=CSW&version=2.0.2&request=GetCapabilities",
+      "method": "capabilities GET",
+      "httpStatus": 200,
+      "contentType": "application/xml; charset=UTF-8",
+      "bytes": 19275,
+      "observation": "Catalogue capabilities only."
+    },
+    {
+      "url": "https://kot-magelang.atrbpn.go.id/",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official ATR/BPN site identifies Kantor Pertanahan Kota Magelang; no authenticated workflow used."
+    },
+    {
+      "url": "https://magelangkota.go.id/view/wali-kota-magelang-serahkan-13-sertipikat-tanah-warga-terdampak-proyek-flyover-canguk",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official city article describes title issuance with BPN Kota Magelang."
+    }
+  ],
+  "limitations": "No city parcel dataset with documented geometry+safe-ID allowlist verified. Public catalog does not establish cadastral feature publication; no feature data queried.",
+  "scopeLimits": "No protected, personal or property-specific data queried or retained. No anonymous full geometry/safe-ID schema verified; no completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_safe_geometry_schema",
+    "reason": "No city parcel dataset with documented geometry+safe-ID allowlist verified. Public catalog does not establish cadastral feature publication; no feature data queried."
+  }
+}

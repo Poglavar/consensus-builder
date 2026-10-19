@@ -1,56 +1,124 @@
 // GET /buildings/tables - Check what tables exist
 import { createBuildingProviders } from '../buildings/index.js';
+import { fetchOsmBuildings } from '../buildings/osm-reference.js';
+import { fetchStagedOsmBuildings } from '../buildings/osm-staged.js';
+import { attachNearbyFloorModels, nativeFloorModelSource } from '../buildings/floor-models.js';
+import { jurisdictionOf, jurisdictionAt } from '../jurisdiction.js';
+import {
+    fetchProposalsForCarve,
+    carveRecordsFor,
+    carveBuildings,
+    carveVerdicts,
+    carveRecordsBounds
+} from '../buildings/carve.js';
+
+// `proposals` may arrive as an array, a single id, or a comma-separated string.
+function parseProposalIds(value) {
+    const raw = Array.isArray(value) ? value : String(value ?? '').split(',');
+    return raw.map(id => String(id).trim()).filter(Boolean).slice(0, 100);
+}
+
+// The bbox layer caps how many footprints one request may return. A request that HITS the cap was
+// truncated — it does not cover its bbox, and the caller must be told, because a building that
+// never loaded can never be detected and so can never be demolished (see corridor-tunnel.js).
+const BUILDING_BBOX_LIMIT = 4000;
+
+// Buildings mostly (>= 90 %) inside one parcel. gdi_building_footprint holds invalid rings (344 on
+// prod, 2026-09, e.g. "Hole lies outside shell"), and ST_Intersection on those throws a GEOS
+// TopologyException that 500'd the whole request. Area math therefore runs on ST_MakeValid'd
+// polygons (CollectionExtract drops the line/point debris MakeValid can emit, which would also
+// make ST_Intersection reject a GeometryCollection), while the join keeps the RAW geoms so the
+// GiST index still drives it. NULLIF guards the ratio against a zero-area footprint.
+// Areas are geodesic: footprint_area is returned as an absolute m², measured the way the browser
+// measures (WGS84 ellipsoid via turf), not in projected metres.
+export const PARCEL_BUILDINGS_SQL = `
+    SELECT
+        bf.object_id,
+        bf.metadata,
+        bf.source,
+        ST_AsGeoJSON(bf.geom)::json AS geometry,
+        a.footprint_area,
+        a.intersection_area,
+        a.intersection_area / NULLIF(a.footprint_area, 0) AS containment_ratio,
+        p.cestica_id,
+        p.broj_cestice
+    FROM parcel p
+    JOIN gdi_building_footprint bf
+      ON bf.geom && p.geom
+     AND ST_Intersects(p.geom, bf.geom)
+    CROSS JOIN LATERAL (
+        SELECT ST_CollectionExtract(ST_MakeValid(p.geom), 3) AS parcel_geom,
+               ST_CollectionExtract(ST_MakeValid(bf.geom), 3) AS building_geom
+    ) v
+    CROSS JOIN LATERAL (
+        SELECT ST_Area(ST_Transform(v.building_geom, 4326)::geography) AS footprint_area,
+               ST_Area(ST_Transform(ST_Intersection(v.parcel_geom, v.building_geom), 4326)::geography) AS intersection_area
+    ) a
+    WHERE p.cestica_id = $1
+      AND p.current
+      AND a.intersection_area / NULLIF(a.footprint_area, 0) >= 0.9
+    ORDER BY containment_ratio DESC, bf.object_id
+`;
 
 export function setupBuildingsRoute(app, pool) {
     // Per-city 3D building source registry (Zagreb mesh table, NYC live footprints, …).
     const buildingProviders = createBuildingProviders(pool);
-    // GET /buildings?bbox=minX,minY,maxX,maxY  (HTRS96/TM EPSG:3765)
-    // GET /buildings?cestica_id=ID - Get buildings mostly contained within a parcel
-    // Respond with GeoJSON FeatureCollection compatible with OSS DKP_ZGRADE
 
-    // GET /buildings/?cestica_id= - Get buildings mostly contained within a parcel
+    // GET /buildings?bbox=minX,minY,maxX,maxY[&source=gdi|dgu]  (HTRS96/TM EPSG:3765)
+    // GET /buildings?cestica_id=ID - buildings mostly contained within a parcel
+    //
+    // TWO SURVEYS OF THE SAME CITY, and they disagree. `source` picks which one you get:
+    //
+    //   gdi (DEFAULT) — gdi_building_footprint, keyed by object_id. The photogrammetric survey:
+    //                   what is actually THERE. This is the WORKING SET — the same objects
+    //                   gdi_building_3d meshes (1:1 on object_id) and therefore the same objects
+    //                   the 3D view, the walk sim and the corridor carve all render. Cut / tunnel /
+    //                   demolish detection scans THIS, so a demolition record's id is an object_id
+    //                   and every downstream consumer matches it EXACTLY, by id, with no guessing.
+    //
+    //   dgu           — dgu_building, keyed by zgrada_id. The cadastre: what is REGISTERED. A
+    //                   visual reference layer only. Nothing is ever cut, tunnelled or demolished
+    //                   against it — its ids are a different key space (they relate to GDI only
+    //                   through dgu_gdi_building_match, many-to-one).
+    //
+    // Response is a GeoJSON FeatureCollection. `truncated` says the cap was hit and the bbox is
+    // NOT fully covered.
     app.get('/buildings', async (req, res) => {
         try {
             const cesticaId = req.query.cestica_id;
             const bbox = String(req.query.bbox || '').trim();
             const parts = bbox.split(',').map(n => Number(n));
+            const source = String(req.query.source || 'gdi').trim().toLowerCase();
 
             if (bbox && (parts.length !== 4 || parts.some(v => !isFinite(v)))) {
                 return res.status(400).json({ error: 'Invalid bbox. Expected minX,minY,maxX,maxY in EPSG:3765.' });
             }
+            if (source !== 'gdi' && source !== 'dgu') {
+                return res.status(400).json({ error: `Unknown source '${source}'. Expected 'gdi' or 'dgu'.` });
+            }
+
+            if (cesticaId !== undefined && !/^\d{1,18}$/.test(String(cesticaId))) {
+                return res.status(400).json({ error: 'Invalid cestica_id. Expected a numeric parcel id.' });
+            }
 
             if (cesticaId) {
-                // Query for buildings mostly contained within a specific parcel
-                const sql = `
-                    SELECT 
-                        bf.*,
-                        ST_AsGeoJSON(bf.geom)::json AS geometry,
-                        ST_Area(bf.geom) AS footprint_area,
-                        ST_Area(ST_Intersection(p.geom, bf.geom)) AS intersection_area,
-                        CASE 
-                            WHEN ST_Area(bf.geom) > 0 THEN ST_Area(ST_Intersection(p.geom, bf.geom)) / ST_Area(bf.geom)
-                            ELSE 0 
-                        END AS containment_ratio,
-                        p.CESTICA_ID,
-                        p.BROJ_CESTICE
-                    FROM building_footprint bf
-                    CROSS JOIN parcel p
-                    WHERE p.CESTICA_ID = $1
-                    AND ST_Intersects(p.geom, bf.geom)
-                    AND ST_Area(ST_Intersection(p.geom, bf.geom)) / ST_Area(bf.geom) >= 0.9
-                    ORDER BY containment_ratio DESC
-                `;
+                // Buildings inside a parcel: GDI footprints, the working set.
+                const { rows } = await pool.query(PARCEL_BUILDINGS_SQL, [cesticaId]);
 
-                const { rows } = await pool.query(sql, [cesticaId]);
-
+                // Explicit columns only: `bf.*` used to ship the raw hex `geom` alongside the
+                // GeoJSON, and `row.CESTICA_ID` (pg lowercases unquoted names) spread undefined
+                // over the real cestica_id.
                 const features = rows.map(row => ({
                     type: 'Feature',
                     properties: {
-                        ...row,
+                        object_id: row.object_id,
+                        metadata: row.metadata,
+                        source: row.source,
                         footprint_area: row.footprint_area,
+                        intersection_area: row.intersection_area,
                         containment_ratio: row.containment_ratio,
-                        cestica_id: row.CESTICA_ID,
-                        broj_cestice: row.BROJ_CESTICE
+                        cestica_id: row.cestica_id,
+                        broj_cestice: row.broj_cestice
                     },
                     geometry: row.geometry
                 }));
@@ -62,21 +130,41 @@ export function setupBuildingsRoute(app, pool) {
                     count: features.length
                 });
             } else {
-                // Original bbox query for backward compatibility
                 if (!bbox) {
                     return res.status(400).json({ error: 'Invalid bbox. Expected minX,minY,maxX,maxY in EPSG:3765.' });
                 }
                 const [minX, minY, maxX, maxY] = parts;
 
-                const sql = `
-                    SELECT
-                        ST_AsGeoJSON(b.geom)::json AS geometry,
-                        (to_jsonb(b) - 'geom') AS properties
-                    FROM building b
-                    WHERE b.geom && ST_MakeEnvelope($1,$2,$3,$4, 3765)
-                    AND ST_Intersects(b.geom, ST_MakeEnvelope($1,$2,$3,$4, 3765))
-                    LIMIT 2000
-                `;
+                // GDI (default): the objects we actually work with. `object_id` is the id every
+                // demolition record is keyed by, so it must be in the properties.
+                // DGU: the cadastre reference layer, keyed by zgrada_id, current rows only.
+                const sql = source === 'dgu'
+                    ? `
+                        SELECT
+                            ST_AsGeoJSON(b.geom)::json AS geometry,
+                            (to_jsonb(b) - 'geom' - 'bbox') AS properties
+                        FROM dgu_building b
+                        WHERE b.current
+                          AND b.geom && ST_MakeEnvelope($1,$2,$3,$4, 3765)
+                          AND ST_Intersects(b.geom, ST_MakeEnvelope($1,$2,$3,$4, 3765))
+                        LIMIT ${BUILDING_BBOX_LIMIT}
+                      `
+                    : `
+                        SELECT
+                            ST_AsGeoJSON(f.geom)::json AS geometry,
+                            jsonb_build_object(
+                                'object_id',     f.object_id,
+                                'area_m2',       g.area_m2,
+                                'height_m',      g.height_m,
+                                'eave_height_m', g.eave_height_m,
+                                'survey_year',   g.survey_year
+                            ) AS properties
+                        FROM gdi_building_footprint f
+                        LEFT JOIN gdi_building g ON g.object_id = f.object_id
+                        WHERE f.geom && ST_MakeEnvelope($1,$2,$3,$4, 3765)
+                          AND ST_Intersects(f.geom, ST_MakeEnvelope($1,$2,$3,$4, 3765))
+                        LIMIT ${BUILDING_BBOX_LIMIT}
+                      `;
 
                 const { rows } = await pool.query(sql, [minX, minY, maxX, maxY]);
 
@@ -86,7 +174,12 @@ export function setupBuildingsRoute(app, pool) {
                     geometry: row.geometry
                 }));
 
-                res.json({ type: 'FeatureCollection', features });
+                res.json({
+                    type: 'FeatureCollection',
+                    features,
+                    source,
+                    truncated: features.length >= BUILDING_BBOX_LIMIT
+                });
             }
         } catch (err) {
             console.error('Error in /buildings:', err);
@@ -95,12 +188,23 @@ export function setupBuildingsRoute(app, pool) {
     });
 
     // POST /buildings/near - Full 3D building meshes within `buffer_meters` of a GeoJSON point/geometry.
-    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number, city?: string }
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326>, buffer_meters?: number,
+    //         proposals?: string[] | string }
     //
-    // Source is per-city via the building-provider registry (see backend/buildings/): Zagreb
-    // serves pre-built LOD2 meshes from `building_3d`, NYC extrudes live Socrata footprints, etc.
-    // Whatever the source, every provider yields the same flat-face shape in EPSG:4326 with Z in
-    // metres. `city` is the CityConfigManager city id; omitting it defaults to Zagreb.
+    // The source follows the geometry via the building-provider registry (see backend/buildings/):
+    // in Zagreb the pre-built LOD2 meshes from `gdi_building_3d`, in New York the live footprint
+    // sources, etc. Whatever the source, every provider yields the same flat-face shape in EPSG:4326
+    // with Z in metres. A `city` in the body is ignored (location-first.md).
+    //
+    // `proposals` (OPTIONAL) is an explicit list of proposal definitions whose demolitions to apply
+    // to the meshes that come back — see backend/buildings/carve.js. With it:
+    //   demolished building → ABSENT from the response entirely (there is nothing left to draw, and
+    //                         a flag would just make every consumer re-implement the filter)
+    //   cut building        → present under the SAME object_id, its faces re-extruded from the
+    //                         surviving remainder (a mesh cannot be sliced face by face)
+    //   tunnelled building  → present, UNCHANGED — the road passes under it
+    // Omitting `proposals` leaves the endpoint behaving exactly as it always has: raw meshes, no
+    // proposal awareness, no extra query.
     //
     // Response shape:
     //   {
@@ -118,7 +222,7 @@ export function setupBuildingsRoute(app, pool) {
             const body = req.body || {};
             const geometry = body.geometry;
             const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 150;
-            const city = typeof body.city === 'string' ? body.city : undefined;
+            const proposalIds = body.proposals === undefined ? [] : parseProposalIds(body.proposals);
 
             if (!geometry || typeof geometry !== 'object' || !geometry.type) {
                 return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
@@ -127,16 +231,270 @@ export function setupBuildingsRoute(app, pool) {
                 return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
             }
 
-            const provider = buildingProviders.resolve(city);
+            // A user-chosen building source (`source`) wins over the one where the geometry lies.
+            const provider = buildingProviders.forRequest({ source: body.source, geometry });
             if (!provider) {
-                return res.status(400).json({ error: `No 3D building source for city '${city}'.` });
+                return res.status(400).json({ error: 'No 3D building source here.' });
             }
+            // Floor models are filed under the city whose data applies there.
+            const floorModelCity = jurisdictionOf(geometry) || 'explore';
 
             const result = await provider.near(geometry, bufferMeters);
-            res.json({ buildings: result.buildings, count: result.count, source: result.source });
+            const floorModelSource = nativeFloorModelSource(body.source, result.source);
+            // OSM: how many heights are measured, storey-derived or estimated, and whether the
+            // upstream answered only in part (Overpass throttling).
+            const extra = { floorModelSource };
+            if (result.heights !== undefined) extra.heights = result.heights;
+            if (result.partial !== undefined) extra.partial = result.partial;
+            // The upstream failed outright: the browser tells the person instead of drawing nothing.
+            if (result.unavailable) Object.assign(extra, { unavailable: true, retryAfter: result.retryAfter ?? null });
+            if (!proposalIds.length) {
+                const buildings = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource, result.buildings);
+                return res.json({ buildings, count: result.count, source: result.source, ...extra });
+            }
+
+            const proposals = await fetchProposalsForCarve(pool, proposalIds);
+            const carveContext = carveRecordsFor(proposals);
+            const buildings = carveBuildings(result.buildings, carveContext);
+            // A cut proxy no longer has the authored floor shape. Enrich only untouched
+            // objects (carveBuildings deliberately preserves those object references).
+            const originals = new Set(result.buildings);
+            const modeled = await attachNearbyFloorModels(pool, floorModelCity, floorModelSource,
+                buildings.filter(building => originals.has(building)));
+            const byId = new Map(modeled.map(building => [building.object_id, building]));
+            const enriched = buildings.map(building => originals.has(building) ? byId.get(building.object_id) : building);
+            res.json({ buildings: enriched, count: enriched.length, source: result.source, ...extra });
         } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
             console.error('Error in POST /buildings/near:', err);
             res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // POST /buildings/carve - What the explicitly selected proposals do to EXISTING buildings under
+    // them, as a verdict per AFFECTED building. Nothing else is returned: a building absent from
+    // `carves` is untouched and should render exactly as its source gives it.
+    // Body: { proposals: string[] | string, geometry?: <GeoJSON>, buffer_meters?: number }
+    //
+    // This exists for consumers that already have their own mesh source and only need to know what
+    // changed — the walk sim streams `gdi_building_3d` from the cadastre API (with facade colours
+    // and building types this API does not carry), so handing it carved meshes would mean handing
+    // it worse meshes. It asks what changed instead, and applies that to the buildings it already
+    // has. Both sides key on object_id, so a verdict lands on exactly the mesh it names.
+    //
+    // `geometry` is optional: with no area given, the proposals' own footprints define it, which is
+    // what a caller that just wants "everything these proposals touched" wants.
+    //
+    // A `cut` verdict ships BOTH the remainder footprint and the mesh already re-extruded from it,
+    // so a consumer never needs an extruder of its own — the sim swaps `faces` straight into the
+    // feature it fetched from its own mesh source, keeping that source's colours and building type.
+    //
+    // Response shape:
+    //   {
+    //     carves: [
+    //       { object_id, verdict: 'razed', remainder: null, faces: [] },
+    //       { object_id, verdict: 'cut', remainder: <GeoJSON Polygon|MultiPolygon>,
+    //         faces: [<GeoJSON Polygon with 3D coords>, ...], z_min, z_max },
+    //       ...
+    //     ],
+    //     count: N,
+    //     source: '<provider id>'
+    //   }
+    app.post('/buildings/carve', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const proposalIds = parseProposalIds(body.proposals);
+            const bufferMeters = Number.isFinite(Number(body.buffer_meters)) ? Number(body.buffer_meters) : 50;
+
+            if (!proposalIds.length) {
+                return res.status(400).json({ error: 'Missing `proposals` (expected one or more proposal ids).' });
+            }
+            if (!isFinite(bufferMeters) || bufferMeters < 0 || bufferMeters > 1000) {
+                return res.status(400).json({ error: 'Invalid `buffer_meters` (0..1000).' });
+            }
+
+            // A malformed user source is the caller's error before anything is read.
+            if (typeof body.source === 'string' && body.source) buildingProviders.resolveSource(body.source);
+
+            const proposals = await fetchProposalsForCarve(pool, proposalIds);
+            const carveContext = carveRecordsFor(proposals);
+
+            // No records at all (the ids matched nothing or carry no demolitions) means nothing was
+            // carved. Say so — do not fall through into an unbounded building query.
+            const area = (body.geometry && body.geometry.type) ? body.geometry : carveRecordsBounds(carveContext);
+            if (!area) {
+                return res.json({ carves: [], count: 0, source: null });
+            }
+
+            // A user-chosen building source (`source`) wins over the one where the area lies.
+            const provider = buildingProviders.forRequest({ source: body.source, geometry: area });
+            if (!provider) {
+                return res.status(400).json({ error: 'No 3D building source here.' });
+            }
+
+            const result = await provider.near(area, bufferMeters);
+            const carves = carveVerdicts(result.buildings, carveContext);
+            console.log(`[buildings/carve] ${proposalIds.length} proposal(s): ${carveContext.records.size} demolition `
+                + `record(s) → ${carves.length} building(s) affected (matched by object_id)`);
+            res.json({ carves, count: carves.length, source: result.source });
+        } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
+            console.error('Error in POST /buildings/carve:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // POST /buildings/footprints - 2D footprints (+ known heights) of existing buildings mostly
+    // inside a GeoJSON polygon. Backs the urban-rule "based on existing buildings" mode.
+    // Body: { geometry: <GeoJSON Geometry in EPSG:4326> }
+    //
+    // Footprints are an OPTIONAL per-city provider capability: a provider that implements
+    // `footprints(geometry)` supports it, everything else reports `supported: false` (the
+    // frontend hides/reverts the mode). Unknown cities resolve to no provider on purpose —
+    // the Zagreb fallback used by /buildings/near would falsely claim support here.
+    //
+    // Response shape:
+    //   {
+    //     supported: true|false,
+    //     footprints: [ { id, geometry: <GeoJSON Polygon/MultiPolygon>, height_m|null, floors|null }, ... ],
+    //     count: N,
+    //     source: '<provider id>'
+    //   }
+    // POST /buildings/under — buildings touching EACH of many regions, one request for a plan.
+    //
+    // A replay used to ask /buildings/footprints once per proposal: hundreds of round trips, most
+    // of them cold-cache, to answer a question one PostGIS join answers at once. POST because the
+    // regions are geometry (far past any URL), but a pure read — it must stay in
+    // RATE_LIMIT_EXEMPT_POST_PATHS with its siblings.
+    //
+    // Contract the client leans on: EVERY requested key appears in the response, an empty array
+    // meaning "scanned, nothing there" — absence of a key is the only thing that may mean "not
+    // covered". `truncated: true` voids the whole answer (the cap cannot say which region is
+    // short), and the client falls back to per-proposal fetching rather than under-demolishing.
+    app.post('/buildings/under', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const regions = Array.isArray(body.regions) ? body.regions : null;
+            if (!regions || !regions.length) {
+                return res.status(400).json({ error: 'regions must be a non-empty array of { key, geometry }.' });
+            }
+            if (regions.length > 400) {
+                return res.status(400).json({ error: 'regions is capped at 400 per request.' });
+            }
+            const seen = new Set();
+            for (const region of regions) {
+                const key = region && region.key !== undefined && region.key !== null ? String(region.key) : '';
+                if (!key) return res.status(400).json({ error: 'Every region needs a key.' });
+                if (seen.has(key)) return res.status(400).json({ error: `Duplicate region key: ${key}` });
+                seen.add(key);
+                const geometry = region.geometry;
+                const kind = geometry && typeof geometry === 'object' ? geometry.type : null;
+                if ((kind !== 'Polygon' && kind !== 'MultiPolygon') || !Array.isArray(geometry.coordinates)) {
+                    return res.status(400).json({ error: `Region ${key}: geometry must be a Polygon or MultiPolygon.` });
+                }
+            }
+
+            // A user-chosen building source (`source`) wins over the one where the regions lie (one
+            // request covers one scene, so its first region stands for all of them).
+            const provider = buildingProviders.forRequest({ source: body.source, geometry: regions[0].geometry });
+            if (!provider || typeof provider.footprintsUnder !== 'function') {
+                return res.json({ supported: false, regions: {}, truncated: false, source: null });
+            }
+            const result = await provider.footprintsUnder(regions);
+            const out = {};
+            result.regions.forEach((buildings, key) => { out[key] = buildings; });
+            res.json({
+                supported: true,
+                regions: out,
+                truncated: result.truncated === true,
+                scope: result.scope === undefined ? null : result.scope,
+                source: result.source,
+                ...(result.unavailable ? { unavailable: true, retryAfter: result.retryAfter ?? null } : {})
+            });
+        } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
+            console.error('Error in POST /buildings/under:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    app.post('/buildings/footprints', async (req, res) => {
+        try {
+            const body = req.body || {};
+            const geometry = body.geometry;
+
+            if (!geometry || typeof geometry !== 'object' || !geometry.type) {
+                return res.status(400).json({ error: 'Missing or invalid `geometry` (expected GeoJSON Geometry in EPSG:4326).' });
+            }
+
+            // A user-chosen building source (`source`) wins over the one where the geometry lies.
+            const provider = buildingProviders.forRequest({ source: body.source, geometry });
+            if (!provider || typeof provider.footprints !== 'function') {
+                return res.json({ supported: false, footprints: [], count: 0, source: null });
+            }
+
+            const result = await provider.footprints(geometry);
+            // `truncated` says the cap bound before the area did, so a caller filling a footprint
+            // pool must not record the queried area as covered. Absent means "not capped".
+            res.json({
+                supported: true,
+                footprints: result.footprints,
+                count: result.count,
+                truncated: result.truncated === true,
+                // Which ingest answered — city, region, country, or none at all (data-scope.js).
+                // Worth reporting: "874 buildings, scope croatia" is the difference between a city
+                // with its own survey and one reading the countrywide pull.
+                scope: result.scope === undefined ? null : result.scope,
+                source: result.source,
+                ...(result.unavailable ? { unavailable: true, retryAfter: result.retryAfter ?? null } : {})
+            });
+        } catch (err) {
+            // A malformed user building source id is the caller's error.
+            if (err && err.status === 400) return res.status(400).json({ error: err.message, code: err.code });
+            console.error('Error in POST /buildings/footprints:', err);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    // GET /buildings/osm?bbox=minLon,minLat,maxLon,maxLat  (WGS84 / EPSG:4326)
+    //
+    // The OSM buildings REFERENCE layer — the community footprints behind the OSM basemap, so they
+    // line up with the tiles the user sees. Live via Overpass (cached per grid cell), global, and
+    // like DGU it is a pure visual overlay: nothing is ever cut, tunnelled or demolished against it.
+    // Response is a GeoJSON FeatureCollection with `truncated` and `partial` flags.
+    //
+    // 503 + Retry-After means Overpass is throttling us and we are backing off — a temporary, known
+    // state, not a broken endpoint. It is separated from 502 (a real upstream failure) so the client
+    // can go quiet for the cool-off instead of retrying into the rate limiter.
+    app.get('/buildings/osm', async (req, res) => {
+        const bbox = String(req.query.bbox || '').trim().split(',').map(Number);
+        if (bbox.length !== 4 || bbox.some(v => !Number.isFinite(v))) {
+            return res.status(400).json({ error: 'Invalid bbox. Expected minLon,minLat,maxLon,maxLat in EPSG:4326.' });
+        }
+        // The staged label is that of the city whose data applies at the box's centre.
+        const city = jurisdictionAt((bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2) || 'explore';
+        try {
+            // Staged first: the same OSM footprints out of shared geodata, with no rate limit and no
+            // outage. Overpass answers only for cities nobody has ingested yet.
+            const staged = await fetchStagedOsmBuildings(pool, bbox, city).catch(err => {
+                console.warn('[buildings/osm] staged lookup failed, falling back to Overpass:', err.message);
+                return null;
+            });
+            const fc = staged || await fetchOsmBuildings(bbox);
+            res.json(fc);
+        } catch (err) {
+            const status = err && err.status ? err.status : 502;
+            if (status === 503) {
+                const retryAfter = Number(err.retryAfter) > 0 ? Math.ceil(err.retryAfter) : 60;
+                console.warn(`[buildings/osm] Overpass is throttling us; backing off ${retryAfter}s`);
+                res.set('Retry-After', String(retryAfter));
+                return res.status(503).json({ error: 'OSM reference is rate-limited upstream.', retryAfter });
+            }
+            if (status >= 500) console.error('Error in GET /buildings/osm:', err);
+            res.status(status).json({ error: status === 400 ? err.message : 'Failed to fetch OSM buildings.' });
         }
     });
 }

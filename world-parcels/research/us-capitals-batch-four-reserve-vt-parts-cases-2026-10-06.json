@@ -1,0 +1,52 @@
+[
+  {
+    "city": "montpelier",
+    "center": [
+      44.2601,
+      -72.5754
+    ],
+    "descriptor": {
+      "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+      "adapter": "arcgis",
+      "name": "Vermont SPAN assessment parcels",
+      "operator": "Vermont Center for Geographic Information / local municipalities",
+      "scope": "SPAN-identified Grand List assessment accounts at Montpelier, assembled by complete native-account manifests; unidentified exempt shapes excluded.",
+      "idField": "SPAN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": ".+",
+      "outFields": [
+        "SPAN",
+        "OBJECTID"
+      ],
+      "parcelNumberField": "SPAN",
+      "metricSrid": 32618,
+      "idPrefix": "US-VT-MONTPELIER-",
+      "attributeFilters": null,
+      "id": "us-vt-montpelier-parcels",
+      "countryCode": "US",
+      "stateCode": "VT",
+      "cityIds": [
+        "montpelier"
+      ],
+      "attributeNotNull": [
+        "SPAN"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://www.montpelier-vt.org/528/Maps-GIS",
+      "caveats": [
+        "Represents Grand List assessment account boundaries by publisher SPAN; an account may contain multiple mapped/legal lots and is not asserted to be one legal cadastral lot.",
+        "Unidentified exempt rail, road and water polygons with null SPAN are excluded consistently.",
+        "Montpelier sampled data use 2025 parcel and Grand List years; capital-area acceptance does not establish full municipal coverage."
+      ],
+      "nativeGeometryMode": "parts",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "partsCoordinatePrecision": 9
+    },
+    "sourceNote": "VCGI SPAN-identified Grand List assessment accounts; legal-lot multiplicity is not inferred. Current sampled parcel and Grand List year is 2025."
+  }
+]

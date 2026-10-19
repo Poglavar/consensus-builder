@@ -1,0 +1,43 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "F",
+ "regionName": "La Rioja",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "none",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://catastro.larioja.gob.ar/",
+   "observation": "Catastro site (200), pages use reCAPTCHA and link to an urban map on catastroweb.com.ar:8080 (third-party host)"
+  },
+  {
+   "url": "http://catastroweb.com.ar:8080/sistema/mapa/urbano_2025.html",
+   "observation": "timed out at 40 s"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://catastroweb.com.ar:8080/sistema/mapa/urbano_2025.html",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "timeout (twice)"
+  },
+  {
+   "url": "https://ide.larioja.gob.ar/, https://sig.larioja.gob.ar/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "guessed hosts, proxy 502 (do not exist)"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Viewer likely a web map on a non-standard port; service URL not seen; reCAPTCHA not bypassed.",
+ "nextStep": "Retry catastroweb.com.ar:8080 and inspect its JS."
+}

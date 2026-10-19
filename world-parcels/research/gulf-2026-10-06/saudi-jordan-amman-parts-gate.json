@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Amman",
+      "sourceId": "jo-dls-cassini-mapserver",
+      "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9575,
+            31.98,
+            35.96,
+            31.9825
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.96,
+            31.98,
+            35.9625,
+            31.9825
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9625,
+            31.98,
+            35.965,
+            31.9825
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9575,
+            31.9825,
+            35.96,
+            31.985000000000003
+          ],
+          "count": 91,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.96,
+            31.9825,
+            35.9625,
+            31.985000000000003
+          ],
+          "count": 141,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9625,
+            31.9825,
+            35.965,
+            31.985000000000003
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9575,
+            31.985000000000003,
+            35.96,
+            31.9875
+          ],
+          "count": 94,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.96,
+            31.985000000000003,
+            35.9625,
+            31.9875
+          ],
+          "count": 98,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9625,
+            31.985000000000003,
+            35.965,
+            31.9875
+          ],
+          "count": 77,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.965,
+            31.98,
+            35.9675,
+            31.9825
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9675,
+            31.98,
+            35.97,
+            31.9825
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.97,
+            31.98,
+            35.972500000000004,
+            31.9825
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.965,
+            31.9825,
+            35.9675,
+            31.985000000000003
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9675,
+            31.9825,
+            35.97,
+            31.985000000000003
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.97,
+            31.9825,
+            35.972500000000004,
+            31.985000000000003
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.965,
+            31.985000000000003,
+            35.9675,
+            31.9875
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.9675,
+            31.985000000000003,
+            35.97,
+            31.9875
+          ],
+          "count": 59,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            35.97,
+            31.985000000000003,
+            35.972500000000004,
+            31.9875
+          ],
+          "count": 60,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          35.97,
+          31.98,
+          35.972500000000004,
+          31.9825
+        ],
+        "forcedPageSize": 3,
+        "count": 7,
+        "returned": 7,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 895,
+      "exactResolved": 895,
+      "nativeIds": [
+        "012800300004708",
+        "012800300003437",
+        "012800300006576"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:jo-dls-cassini-mapserver",
+        "parcels": 1,
+        "siteM2": 652.7
+      },
+      "requests": 179
+    }
+  ]
+}

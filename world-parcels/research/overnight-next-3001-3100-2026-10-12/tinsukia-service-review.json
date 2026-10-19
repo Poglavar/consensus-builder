@@ -1,0 +1,15 @@
+{
+  "cityRecord": "city-12067-tinsukia.json",
+  "cityCode": 12067,
+  "queueRank": 3096,
+  "service": "Assam Bhunaksha / Dharitree",
+  "attempt": 1,
+  "reviewedAt": "2026-10-12",
+  "queryAndRequestOutcome": "English and Assamese first-party discovery identified Government of Assam Bhunaksha, ILRMS, Directorate of Land Records and the Tinsukia district site. The live viewer resolved district 18 and circle 180101 to Tinsukia and returned village codes. Current JavaScript exposed public administrative, dag, click-info, WMS and trace-map routes. The bounded WMS capabilities request returned HTTP 401; no safe native parcel ID plus full polygon was obtained.",
+  "registryFound": true,
+  "registryCustodian": "Revenue and Disaster Management Department / Directorate of Land Records, Government of Assam; public Bhunaksha/NIC Assam service.",
+  "safeFieldAllowlist": ["stable native parcel identifier", "full parcel polygon geometry", "source CRS", "public service/layer and administrative metadata"],
+  "scopeLimits": ["No citywide parcel completeness was verified.", "No exact-point hit/miss inference was made.", "401 authorization response was not bypassed.", "No unsafe land-record attributes were requested or retained.", "No GeoJSON sample is retained because no safe full polygon response was independently obtained."],
+  "runtimeReadiness": "held",
+  "uncertainty": "The current public viewer's full vector geometry route, CRS/schema response, municipal coverage and any authenticated-only parcel payload remain unresolved. Serial review must independently qualify any adapter; this packet is not source admission."
+}

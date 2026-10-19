@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1128,
+  "population2025k": 493.665,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "Moderate",
+  "verifiedParcelResponse": null,
+  "source": {
+    "name": "District Hardoi, Government of Uttar Pradesh",
+    "url": "https://hardoi.nic.in/service/landrecord/",
+    "operator": "District Hardoi, Government of Uttar Pradesh",
+    "serviceType": "official service/map evidence; vector access not verified",
+    "layer": "not verified",
+    "geometryType": "not verified",
+    "nativeIdField": null
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:9485",
+  "wupCityCode": 9485,
+  "name": "Hardoi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    27.3940397820603,
+    80.1320809167954
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_registry_route_geometry_unverified",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "हरदोई भू नक्शा भूमि अभिलेख तहसील सदर हरदोई अधिकारी",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://hardoi.nic.in/service/landrecord/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=155",
+        "https://upbhunaksha.gov.in/login/"
+      ],
+      "summary": "Official Hardoi district land-record/cadastral-map status is established; exact WUP point to tehsil/village and anonymous geometry remain unresolved."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Hardoi Uttar Pradesh official land records cadastral map district Sadar Bhunaksha",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://hardoi.nic.in/service/landrecord/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=155",
+        "https://upbhunaksha.gov.in/login/"
+      ],
+      "summary": "Official Hardoi district land-record/cadastral-map status is established; exact WUP point to tehsil/village and anonymous geometry remain unresolved."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://hardoi.nic.in/service/landrecord/",
+      "operator": "District Hardoi, Government of Uttar Pradesh",
+      "observation": "Official district land-record service page routes to UP Bhulekh."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=155",
+      "operator": "Revenue Board, Government of Uttar Pradesh",
+      "observation": "Official district dashboard reports Hardoi cadastral-map digitization by tehsil; no exact village from WUP point."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/login/",
+      "operator": "Uttar Pradesh BhuNaksha",
+      "observation": "Official map system entry page surfaced; viewer authentication/selection not bypassed and no anonymous city feature query verified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://hardoi.nic.in/service/landrecord/",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://hardoi.nic.in/service/landrecord/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 134776,
+      "sha256OfReadBytes": "372e6d41faf78e9d255579e7683a29b13980f527c3fb8d5d11ef7cefc6fce16e",
+      "title": "LandRecord | Website of District Hardoi | India",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://hardoi.nic.in/service/landrecord/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official district land-record service page routes to UP Bhulekh."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=155",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official district dashboard reports Hardoi cadastral-map digitization by tehsil; no exact village from WUP point."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/login/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official map system entry page surfaced; viewer authentication/selection not bypassed and no anonymous city feature query verified."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Hardoi district land-record/cadastral-map status is established; exact WUP point to tehsil/village and anonymous geometry remain unresolved.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "Map workflow is village-selected and login/viewer interface did not yield public full polygon query. No geometry retained.",
+  "remainingUncertainty": "Official Hardoi district land-record/cadastral-map status is established; exact WUP point to tehsil/village and anonymous geometry remain unresolved.",
+  "nextStep": "Map workflow is village-selected and login/viewer interface did not yield public full polygon query. No geometry retained.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 493665,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Hardoi district land-record/cadastral-map status is established; exact WUP point to tehsil/village and anonymous geometry remain unresolved.",
+  "registryEvidenceUrls": [
+    "https://hardoi.nic.in/service/landrecord/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=155",
+    "https://upbhunaksha.gov.in/login/"
+  ],
+  "technicalBlocker": "Map workflow is village-selected and login/viewer interface did not yield public full polygon query. No geometry retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Map workflow is village-selected and login/viewer interface did not yield public full polygon query. No geometry retained."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Official Hardoi district land-record/cadastral-map status is established; exact WUP point to tehsil/village and anonymous geometry remain unresolved.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

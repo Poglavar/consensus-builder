@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:128",
+  "queueRank": 128,
+  "name": "Qingdao",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    36.1673738784444,
+    120.392140434954
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "http://data.qingdao.gov.cn/",
+      "observation": "Qingdao Public Data Open Platform (per web search): lists land auction (招拍挂) transactions from the Natural Resources and Planning Bureau in XLS/XML/JSON/CSV; not parcel polygons."
+    },
+    {
+      "url": "http://zrzygh.qingdao.gov.cn/",
+      "observation": "Qingdao Municipal Bureau of Natural Resources and Planning site; not reachable from this network."
+    },
+    {
+      "url": "https://shandong.tianditu.gov.cn/shixian/qingdao/index.html",
+      "observation": "Qingdao geographic information public service platform (Tianditu); not reachable, service catalogue unseen."
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://data.qingdao.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "connection reset / proxy 503 (twice)"
+    },
+    {
+      "url": "http://zrzygh.qingdao.gov.cn/",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://shandong.tianditu.gov.cn/shixian/qingdao/index.html",
+      "method": "GET",
+      "httpStatus": null,
+      "assessment": "connection failed"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Unknown; Chinese cadastral parcel geometry is generally not open, only land-transaction records seen",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All Qingdao government hosts were unreachable from this network, so this is not evidence of absence.",
+  "nextStep": "Retry from a network able to reach .gov.cn; inspect the open-data catalogue and Tianditu Qingdao service list for parcel (宗地) layers."
+}

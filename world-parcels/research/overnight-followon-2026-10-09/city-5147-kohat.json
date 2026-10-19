@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:5147",
+  "wupCityCode": 5147,
+  "name": "Kohat",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 1094,
+  "queueRank": 1094,
+  "point": [
+    33.581409309218,
+    71.4523985116164
+  ],
+  "centerLatLon": [
+    33.581409309218,
+    71.4523985116164
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 506145,
+  "population2025k": 506.145,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Khyber Pakhtunkhwa Revenue Department identifies Kohat among districts with a digitized land-record program and reports operational mauzas; this is district-bound evidence of local revenue land-record custody. No public parcel geometry was verified.",
+  "registryEvidenceUrls": [
+    "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Official district land-record program is documented, but no safe public geometry-only route was exposed by reviewed sources.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa Revenue Department identifies Kohat among districts with a digitized land-record program and reports operational mauzas; this is district-bound evidence of local revenue land-record custody. No public parcel geometry was verified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Official district land-record program is documented, but no safe public geometry-only route was exposed by reviewed sources."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kohat Pakistan official land records cadastral map revenue department",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/"
+        ],
+        "executionMethod": "Separate English-language web search and official-source review."
+      },
+      {
+        "language": "Urdu",
+        "query": "کوہاٹ زمین ریکارڈ لینڈ ریکارڈ دفتر خیبر پختونخوا سرکاری",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted.",
+        "actualResultUrls": [
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/"
+        ],
+        "executionMethod": "Separate local-language web search and official-source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "observation": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "source": {
+    "sourceId": "PK-KOHAT-REVENUE-LAND-RECORDS",
+    "name": "Kohat official parcel/registry source",
+    "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "operator": null,
+    "serviceType": "Official local registry custody evidence reviewed; public parcel geometry remains unverified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Khyber Pakhtunkhwa Revenue Department identifies Kohat among districts with a digitized land-record program and reports operational mauzas; this is district-bound evidence of local revenue land-record custody. No public parcel geometry was verified.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

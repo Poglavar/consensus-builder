@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:68",
+  "queueRank": 68,
+  "name": "Kabul",
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "centerLatLon": [
+    34.5297462873789,
+    69.1552204695761
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.arazi.gov.af/english/index",
+      "observation": "ARAZI, Afghanistan Land Authority; unreachable from proxy. Public descriptions mention cadastral surveying of urban Kabul and Herat districts and a State Land Bank, not an open parcel service."
+    },
+    {
+      "url": "https://landportal.org/library/resources/afghanistan-land-administration-system-project-alasp",
+      "observation": "ALASP background (search result; not fetched: Cloudflare challenge)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.arazi.gov.af/english/index",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://www.amis.gov.af/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://landportal.org/library/resources/afghanistan-cadastre",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "assessment": "Cloudflare challenge"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Kabul%20parcels%20type:%22Feature%20Service%22&f=json&num=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "5 unrelated items (Kabul GAs/Gozar administrative layers by UN/individual accounts), no parcel layer"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "None found; ARAZI survey programmes only",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "No public cadastre found; official host untestable.",
+  "nextStep": "Retest ARAZI host; look for ALASP/Kabul municipality parcel datasets."
+}

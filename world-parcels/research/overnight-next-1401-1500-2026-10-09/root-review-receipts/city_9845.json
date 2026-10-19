@@ -1,0 +1,16 @@
+{
+  "taskId": "city:9845",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9845-tumakuru.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/tumakuru-service-review.json",
+    "tmp/valhalla-parcel-research/tumakuru/citycorp.html",
+    "tmp/valhalla-parcel-research/tumakuru/citycorp.headers",
+    "tmp/valhalla-parcel-research/runs/20261009T155933-b8b9e873/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-09T16:04:43Z",
+  "finding": "WUP identity and English/Kannada executed searches checked. First-party municipal property-search response supports local record custody; state Revenue Maps route timed out. No native-ID polygon response or adapter qualification; timeout is not evidence of absence. City held."
+}

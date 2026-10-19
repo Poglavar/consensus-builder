@@ -1,0 +1,90 @@
+{
+  "cityCode": 8628,
+  "queueRank": 2515,
+  "name": "Chakan",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [18.7506498607279, 73.8294835465844],
+  "population2025": 233615,
+  "population2025k": 233.615,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chakan Maharashtra official cadastral parcel map land records Bhu Naksha Pune",
+        "result": "First-party discovery identified the Government of Maharashtra Bhumi Abhilekh land-records department, its Mahabhunakasha/Bhu Naksha service, Pune district administration's official land-record links, and the national NIC Bhu-Naksha implementation page. The Maharashtra viewer was not anonymously retrievable in this bounded attempt because its host timed out; no parcel response or geometry was obtained.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://pune.gov.in/en/tenancy-branch/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "चाकण महाराष्ट्र अधिकृत भू नकाशा जमिनीचे अभिलेख कॅडस्ट्रल नकाशा पुणे",
+        "result": "प्रथम-पक्ष शोधात महाराष्ट्र भूमी अभिलेख विभागाचे अधिकृत संकेतस्थळ, महाभूनकाशा/भू नकाशा सेवा आणि पुणे जिल्हा प्रशासनाचे अधिकृत भूमी-अभिलेख दुवे सापडले. मर्यादित प्रयत्नात महाभूनकाशा सर्व्हरला अनामिक HTTPS GET वेळेत प्रतिसाद मिळाला नाही; त्यामुळे सुरक्षित पार्सल आयडी, स्कीमा, CRS किंवा भूमिती मिळाली नाही.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://pune.gov.in/en/tenancy-branch/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Pune district administration and the Maharashtra Bhumi Abhilekh department; Chakan is in Pune district. No Chakan-local parcel endpoint or office response was qualified.",
+    "nationalCadastreService": "NIC Bhu-Naksha is the national cadastral-mapping platform documentation/implementation reference; the Maharashtra deployment is linked as Mahabhunakasha.",
+    "stateParcelService": "Government of Maharashtra Bhumi Abhilekh / Mahabhumi official land-records portal and Mahabhunakasha viewer.",
+    "registryBasis": "The official state service page explicitly links Mahabhunakasha as the map-with-land-records service, and the official Pune district page links Maharashtra land-record services. This supports registryFound=true as source discovery only, not adapter qualification or citywide coverage.",
+    "registryFoundReason": "An official Maharashtra cadastral/map service and official Pune district land-record custodian are evidenced by first-party pages, although the map host was unavailable for bounded anonymous feature inspection."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "responseType": null,
+    "geometryType": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "inspectionNote": "The official NIC implementation page identifies Maharashtra state code 27 and links the Maharashtra deployment. Direct GET requests to the deployment root and /27/index.html timed out, so current JavaScript/configuration and anonymous ID-plus-geometry responses could not be inspected."
+  },
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not executed against a qualified parcel endpoint. The exact WUP point was preserved and not shifted.",
+    "nativeIdField": null,
+    "safeFieldsRetained": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Maharashtra Bhumi Abhilekh/Mahabhumi service discovery, official Pune district land-record links, and NIC Bhu-Naksha implementation documentation.",
+    "verifiedOpenScope": "Official service identity and public-link evidence only; no parcel geometry, map extent, or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if later evidenced", "full parcel polygon geometry if later evidenced", "source service URL", "observed coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [18.7506498607279, 73.8294835465844] was preserved in latitude/longitude order and was not shifted.",
+    "A timeout or unavailable map UI is not evidence of a zero parcel hit or citywide absence.",
+    "No native parcel identity, field schema, CRS, or geometry was obtained; no sample GeoJSON is retained.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "Official source discovery is strong, but the current Maharashtra Mahabhunakasha deployment could not be reached anonymously during this attempt. Chakan-specific parcel availability, native identity fields, response schema, CRS, and citywide coverage remain unverified."
+}

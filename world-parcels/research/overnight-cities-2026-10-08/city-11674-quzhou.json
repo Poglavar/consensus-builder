@@ -1,0 +1,80 @@
+{
+  "name": "Quzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 652,
+  "point": [
+    28.9547659966299,
+    118.8564519771
+  ],
+  "population2025": 811735,
+  "populationUnit": "persons",
+  "population2025k": 811.735,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Quzhou Natural Resources and Planning Bureau states that it manages unified natural-resource and immovable-property registration, cadastral/rights surveys and a citywide registration information platform. This establishes the municipal registry authority, not a public anonymous parcel-vector service.",
+  "registryEvidenceUrls": [
+    "https://www.qz.gov.cn/art/2019/5/23/art_1229040350_15097.html"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "衢州市 不动产登记 地籍图 公开 GIS 地块 几何 自然资源和规划局",
+        "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+        "result": "Official bureau material confirms municipal unified property registration, cadastral survey and a registration information platform. No anonymous public parcel-vector endpoint was found.",
+        "actualResultUrls": [
+          "https://www.qz.gov.cn/art/2019/5/23/art_1229040350_15097.html"
+        ],
+        "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+      },
+      {
+        "language": "English",
+        "query": "Quzhou China official property registration cadastral parcel GIS map open data",
+        "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+        "result": "English-language results did not identify a city parcel feature service; the official Quzhou bureau source describes local registration/cadastral duties but no anonymous geometry API.",
+        "actualResultUrls": [
+          "https://www.qz.gov.cn/art/2019/5/23/art_1229040350_15097.html"
+        ],
+        "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+      }
+    ]
+  },
+  "scopeLimits": "The bureau information describes registration and cadastral management but does not document anonymous public parcel geometry. No personal record query, login flow or parcel geometry request was submitted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "CN-QUZHOU-NATURAL-RESOURCES-REGISTRY",
+    "name": "Quzhou Natural Resources and Planning Bureau unified property registration and cadastral survey platform",
+    "url": "https://www.qz.gov.cn/art/2019/5/23/art_1229040350_15097.html",
+    "operator": "Quzhou Municipal Natural Resources and Planning Bureau",
+    "serviceType": "Municipal property-registration and cadastral-survey authority; public anonymous GIS endpoint unverified",
+    "layer": "Registration platform and cadastral-survey results; no public vector layer/schema identified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown"
+  },
+  "wupCityCode": 11674,
+  "cityId": "wup2025:11674",
+  "queueRank": 652,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The bureau information describes registration and cadastral management but does not document anonymous public parcel geometry. No personal record query, login flow or parcel geometry request was submitted.",
+  "remainingUncertainty": "Anonymous locator coverage, geometry service behavior and bounded parcel responses are unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    28.9547659966299,
+    118.8564519771
+  ],
+  "rootReviewedAt": "2026-10-09T02:23:14.725507+00:00"
+}

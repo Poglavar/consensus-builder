@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:145",
+  "queueRank": 145,
+  "name": "Washington, D.C.",
+  "country": "United States of America",
+  "countryCode": "US",
+  "centerLatLon": [
+    38.9071419499321,
+    -77.0743377301391
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "us-dc-dcgis-tax-lots",
+    "requestUrl": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39/query?where=1%3D1&geometry=%7B%22xmin%22%3A-77.0435%2C%22ymin%22%3A38.9095%2C%22xmax%22%3A-77.0415%2C%22ymax%22%3A38.911%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSSL%2CSQUARE%2CLOT%2CSTATEDAREA&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -77.0435,
+      38.9095,
+      -77.0415,
+      38.911
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "SSL (square/suffix/lot); OBJECTID",
+    "responseFile": "washington-dc-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000"
+  },
+  "source": {
+    "sourceId": "us-dc-dcgis-tax-lots",
+    "name": "DC GIS Property and Land, Tax Lots (layer 39)",
+    "operator": "Government of the District of Columbia (DC GIS; Real Property Tax Administration lots)",
+    "scope": "District of Columbia",
+    "endpoint": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39",
+    "method": "GET ArcGIS query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326 (outSR requested)",
+    "reuseStatus": "not reviewed; DC Open Data terms not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer",
+      "observation": "Public DC GIS MapServer listing Tax Lots, Record Lots, Parcel Lots, Owner Polygons, Square Boundaries and others."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "service description only; not counted"
+    },
+    {
+      "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39/query?where=1%3D1&geometry=%7B%22xmin%22%3A-77.0435%2C%22ymin%22%3A38.9095%2C%22xmax%22%3A-77.0415%2C%22ymax%22%3A38.911%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CSSL%2CSQUARE%2CLOT%2CSTATEDAREA&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "3 tax-lot polygons with closed rings; verification"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "District of Columbia tax lots",
+    "verifiedOpenScope": "three tax lots near Dupont Circle in a ~150x170 m box",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Tax lots are a taxation parcel fabric; other layers (Record Lots, Parcel Lots) differ. Completeness not proven. The urban agglomeration extends into Maryland and Virginia, which this source does not cover. Licence not reviewed.",
+  "nextStep": "Review DC Open Data terms; find Montgomery, Prince George's, Arlington and Fairfax parcel sources for the rest of the agglomeration."
+}

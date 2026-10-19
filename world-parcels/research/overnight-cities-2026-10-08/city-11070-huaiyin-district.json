@@ -1,0 +1,133 @@
+{
+  "name": "Huaiyin District",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 375,
+  "point": [
+    33.593720288815,
+    119.020160208039
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "淮阴区 不动产登记 地籍图 宗地图 可视化查询 官方 淮安市自然资源和规划局",
+        "scope": "Find Huaiyin-specific registered-parcel services and any anonymous public full-vector route.",
+        "result": "Huai’an Natural Resources and Planning Bureau describes an integrated “Online Su Xiaodeng · Huai’an E Service” platform and a real-estate unit health-code query that combines the registry ledger, house/unit diagrams, cadastral plans, and online visual cadastral-map lookup. The map lookup is attached to an identified real-estate unit; the page does not publish an anonymous vector endpoint or feature schema. A 2025 official award notice for the Huai’an cadastral-map compilation project explicitly assigns package 2 to Lianshui, Jinhu, Xuyi, and Huaiyin districts and calls for completing cadastral-survey results, parcel-geometry updates, and database compilation on the 2025/2026/2028 schedule.",
+        "actualResultUrls": [
+          "https://www.huaian.gov.cn/col/16657_173466/art/o/17197632/1722585018831ujb1Nrta.html",
+          "https://czj.huaian.gov.cn/col/7652_848872/content/17539776/ff8080819861dcf40198645e45070025.html"
+        ],
+        "executionMethod": "Chinese-language searches and direct reads of the city Natural Resources Bureau article and municipal procurement award; no login, health-code, parcel-identifying, or owner query was submitted."
+      },
+      {
+        "language": "English",
+        "query": "Huaiyin District Huai’an official cadastral parcel map GIS real estate registration service China",
+        "scope": "Cross-check city/district locality and public access mode.",
+        "result": "Official Huai’an pages confirm city cadastral-map visualization within the real-estate registration platform and a current cadastral compilation project that explicitly includes Huaiyin District. The public descriptions cover a registered-unit visualization service rather than an open GIS feature service. No full parcel geometry was returned or claimed.",
+        "actualResultUrls": [
+          "https://www.huaian.gov.cn/col/16657_173466/art/o/17197632/1722585018831ujb1Nrta.html",
+          "https://czj.huaian.gov.cn/col/7652_848872/content/17539776/ff8080819861dcf40198645e45070025.html",
+          "https://hahy.jszwfw.gov.cn/"
+        ],
+        "executionMethod": "English-language search with first-party Huai’an government and district-government service listings; public pages inspected only."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Huai’an “Online Su Xiaodeng · E Service” cadastral visual query",
+        "operator": "Huai’an Municipal Natural Resources and Planning Bureau",
+        "homeUrl": "https://www.huaian.gov.cn/col/16657_173466/art/o/17197632/1722585018831ujb1Nrta.html",
+        "observation": "Official city article says the integrated property-unit health-code query includes registry, house/unit diagram, parcel map and cadastral-map online visualization. It is a registered-unit workflow; no public vector API is linked."
+      },
+      {
+        "name": "Huai’an Cadastral Map Compilation Project",
+        "operator": "Huai’an Municipal Natural Resources and Planning Bureau / city procurement portal",
+        "homeUrl": "https://czj.huaian.gov.cn/col/7652_848872/content/17539776/ff8080819861dcf40198645e45070025.html",
+        "observation": "2025 award for the city cadastral-map compilation project explicitly covers Huaiyin District and cadastral survey/parcel-map database work scheduled across 2025, 2026 and 2028."
+      },
+      {
+        "name": "Huaiyin District Government Service Portal",
+        "operator": "Jiangsu Government Services Data Bureau",
+        "homeUrl": "https://hahy.jszwfw.gov.cn/",
+        "observation": "Public district service landing lists general registration and map-service categories; it does not expose a parcel-vector dataset or layer schema."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.huaian.gov.cn/col/16657_173466/art/o/17197632/1722585018831ujb1Nrta.html",
+        "method": "GET direct shell",
+        "status": 200,
+        "type": "text/html; charset=utf-8",
+        "observation": "Official city bureau article; states the real-estate unit health-code workflow includes cadastral-map visualization."
+      },
+      {
+        "url": "https://czj.huaian.gov.cn/col/7652_848872/content/17539776/ff8080819861dcf40198645e45070025.html",
+        "method": "GET direct shell",
+        "status": 200,
+        "type": "text/html; charset=utf-8",
+        "observation": "Official 2025 cadastral-map compilation award; package 2 includes Huaiyin District."
+      },
+      {
+        "url": "https://ha.jszwfw.gov.cn/index.html",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Public Huai’an government-services portal shell; search-indexed page exposes service categories but no parcel feature schema."
+      },
+      {
+        "url": "https://www.zghy.gov.cn/",
+        "method": "GET direct shell",
+        "status": null,
+        "type": null,
+        "observation": "TLS validation failed locally with SELF_SIGNED_CERT_IN_CHAIN; no HTTP response, not interpreted as provider downtime and not bypassed."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 0,
+    "bounded": false,
+    "pointLocated": false,
+    "note": "No anonymous full-vector parcel query produced geometry; see recorded official public routes and their request outcomes."
+  },
+  "source": {
+    "operator": "Huai’an Municipal Natural Resources and Planning Bureau / Huaiyin District government service system",
+    "endpoint": "https://www.huaian.gov.cn/col/16657_173466/art/o/17197632/1722585018831ujb1Nrta.html",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "serviceType": "Registered-unit cadastral visualization and cadastral-data compilation; no anonymous full-vector endpoint found",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false
+  },
+  "coverageAssessment": "Huai’an’s city-wide registry platform advertises cadastral-map visualization and the current official compilation project includes Huaiyin District. The WUP point has not been resolved to a parcel, and no anonymous full-geometry service was found.",
+  "registryFound": true,
+  "registryBasis": "City bureau evidence describes online cadastral-map visualization tied to a real-estate unit, while an official 2025 city procurement award explicitly includes Huaiyin District in parcel-geometry and cadastral-database work. This is local registry/data evidence, not evidence of an open vector feed.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_specific_registry_and_cadastral_project_no_anonymous_full_vector_route",
+  "technicalBlocker": "The city describes map viewing inside a real-estate-unit health-code/registration workflow, and the district service portal exposes no parcel feature endpoint or schema. No access-controlled query or health-code lookup was attempted.",
+  "remainingUncertainty": "Exact coverage/completion for the WUP center and the Huaiyin cadastral compilation remain unverified; the official project schedule runs through 2028. No public vector API is documented in the inspected pages.",
+  "nextStep": "Revisit only if Huai’an or Huaiyin publishes an anonymous cadastral layer or a documented safe vector endpoint; do not use unit-health-code or owner-record lookups.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11070,
+  "cityId": "wup2025:11070",
+  "queueRank": 375,
+  "population2025": 1349827,
+  "population2025k": 1349.827,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    33.593720288815,
+    119.020160208039
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00"
+}

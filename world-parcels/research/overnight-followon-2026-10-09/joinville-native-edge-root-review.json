@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-09T05:53:15.703394+00:00",
+  "sourceNativeCrs": "EPSG:31982",
+  "sourceKeys": [
+    "13-20-15-81-1804",
+    "13-20-15-81-1771"
+  ],
+  "freshExactRequests": [
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?f=json&where=iq%3D%2713-20-15-81-1804%27&outFields=objectid%2Ciq&returnGeometry=true&outSR=31982&returnTrueCurves=false",
+      "httpStatus": 200,
+      "spatialReference": {
+        "wkid": 31982,
+        "latestWkid": 31982
+      },
+      "nativeKey": "13-20-15-81-1804",
+      "nativeAreaM2": 3296.286516904367,
+      "valid": true
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?f=json&where=iq%3D%2713-20-15-81-1771%27&outFields=objectid%2Ciq&returnGeometry=true&outSR=31982&returnTrueCurves=false",
+      "httpStatus": 200,
+      "spatialReference": {
+        "wkid": 31982,
+        "latestWkid": 31982
+      },
+      "nativeKey": "13-20-15-81-1771",
+      "nativeAreaM2": 3449.6422570663594,
+      "valid": true
+    }
+  ],
+  "nativeOverlapM2": 0.01435972114927438,
+  "overlapMinimumRectangleSideLengthsM": [
+    39.1495259080925,
+    0.0005493606292502957,
+    39.14952590874752,
+    0.0005493612913000565
+  ],
+  "minimumRectangleWidthM": 0.0005493606292502957,
+  "nativeOverlapGeometryType": "MultiPolygon",
+  "geometryChangedOrRepaired": false,
+  "nativeGeometrySampleFile": null
+}

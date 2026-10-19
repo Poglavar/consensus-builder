@@ -1,0 +1,12 @@
+{
+  "taskId": "city:2941",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-2941-bertoua.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/bertoua-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-11T13:07:20Z",
+  "reason": "First-party MINDCAF identifies the national cadastral custodian; Bertoua municipal urbanism and MINHDU WEB-SIG pages support the recorded institutional and viewer evidence. The direct viewer timeout is not absence. No anonymous safe native ID or full polygon was returned, so adapter and all admission checks remain unqualified."
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8191",
+  "wupCityCode": 8191,
+  "name": "Xianyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1029,
+  "queueRank": 1029,
+  "point": [
+    34.3488238786218,
+    108.681951574188
+  ],
+  "centerLatLon": [
+    34.3488238786218,
+    108.681951574188
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 537601,
+  "population2025k": 537.601,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Shaanxi public-institution register identifies the Xianyang Real Estate Registration Center, says it undertakes urban-district real-estate registration, certificate issuance, archives and information-platform maintenance, and names the Xianyang Natural Resources Bureau as its sponsoring unit. The provincial natural-resources department also publishes Xianyang registration-center notices. No anonymous parcel polygon response was verified.",
+  "registryEvidenceUrls": [
+    "https://www.sxbb.gov.cn/site-sxdjgl/yearlyReport_view/218176",
+    "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "city_registry_confirmed_no_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "The Shaanxi public-institution register identifies the Xianyang Real Estate Registration Center, says it undertakes urban-district real-estate registration, certificate issuance, archives and information-platform maintenance, and names the Xianyang Natural Resources Bureau as its sponsoring unit. The provincial natural-resources department also publishes Xianyang registration-center notices. No anonymous parcel polygon response was verified.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xianyang China official real estate registration center natural resources cadastral",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "Official Shaanxi and Xianyang institutional sources identify an Xianyang real-estate registration center responsible for the city district and registration information systems; no public anonymous polygon service was established.",
+        "actualResultUrls": [
+          "https://www.sxbb.gov.cn/site-sxdjgl/yearlyReport_view/218176",
+          "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "咸阳市不动产登记中心 咸阳市自然资源局 不动产登记 地籍数据 官方",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "官方事业单位登记信息显示咸阳市不动产登记中心承担市区不动产登记、发证、档案管理及信息平台维护；陕西省自然资源厅网站也发布该中心业务信息。未核实匿名公开地块完整面几何接口。",
+        "actualResultUrls": [
+          "https://www.sxbb.gov.cn/site-sxdjgl/yearlyReport_view/218176",
+          "https://zrzyt.shaanxi.gov.cn/zrzygz/bdcdj/index_2.html"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:42:09.874013+00:00",
+        "url": "https://www.sxbb.gov.cn/site-sxdjgl/yearlyReport_view/218176",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error timed out>"
+      }
+    ],
+    "portals": [],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public anonymous feature access, geometry completeness and a source-native parcel identifier at the WUP point remain unverified.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The Shaanxi public-institution register identifies the Xianyang Real Estate Registration Center, says it undertakes urban-district real-estate registration, certificate issuance, archives and information-platform maintenance, and names the Xianyang Natural Resources Bureau as its sponsoring unit. The provincial natural-resources department also publishes Xianyang registration-center notices. No anonymous parcel polygon response was verified."
+}

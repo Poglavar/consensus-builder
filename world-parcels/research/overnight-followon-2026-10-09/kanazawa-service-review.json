@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4416-kanazawa.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Kanazawa’s official sources refer to cadastral-map and cadastral-register records, land-number reference maps, and the city open-data/map-information platform. Property-tax registers are available to owners and other legally eligible parties through documented application; the public map portal advertises facility maps and a map API but the reviewed catalogue did not expose a parcel-feature dataset or schema. No safe anonymous parcel-vector route or WUP-point geometry was verified.",
+  "registryAssessment": "Official Kanazawa materials identify city cadastral-map records and land-number reference mapping, while property-tax register inspection is limited to owners, agents, heirs or tenants with proof. No point-specific public geometry was confirmed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://portal-data.city.kanazawa.ishikawa.jp/",
+      "observation": "Official city open-data portal describes public datasets and map-information API; the reviewed catalog does not identify parcel polygons."
+    },
+    {
+      "url": "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+      "observation": "City page says fixed-asset registers may be viewed by the owner, agent, heir, tenant or other eligible parties with documentation."
+    },
+    {
+      "url": "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+      "observation": "Official city bulletin refers to city cadastral maps and books being prepared/notified; this is not a public vector service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kanazawa Japan official cadastral parcel map land registry GIS map city",
+      "result": "Kanazawa’s official sources refer to cadastral-map and cadastral-register records, land-number reference maps, and the city open-data/map-information platform. Property-tax registers are available to owners and other legally eligible parties through documented application; the public map portal advertises facility maps and a map API but the reviewed catalogue did not expose a parcel-feature dataset or schema. No safe anonymous parcel-vector route or WUP-point geometry was verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+        "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+        "https://portal-data.city.kanazawa.ishikawa.jp/",
+        "https://map.city.kanazawa.ishikawa.jp/"
+      ]
+    },
+    {
+      "language": "Japanese",
+      "query": "金沢市 地番図 地籍図 公開 地図情報サービス 土地登記 金沢市 公式",
+      "result": "Kanazawa’s official sources refer to cadastral-map and cadastral-register records, land-number reference maps, and the city open-data/map-information platform. Property-tax registers are available to owners and other legally eligible parties through documented application; the public map portal advertises facility maps and a map API but the reviewed catalogue did not expose a parcel-feature dataset or schema. No safe anonymous parcel-vector route or WUP-point geometry was verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+      "actualResultUrls": [
+        "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+        "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+        "https://portal-data.city.kanazawa.ishikawa.jp/",
+        "https://map.city.kanazawa.ishikawa.jp/"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no anonymous safe-ID geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official Kanazawa materials identify city cadastral-map records and land-number reference mapping, while property-tax register inspection is limited to owners, agents, heirs or tenants with proof. No point-specific public geometry was confirmed.",
+    "verifiedOpenScope": "Kanazawa’s official sources refer to cadastral-map and cadastral-register records, land-number reference maps, and the city open-data/map-information platform. Property-tax registers are available to owners and other legally eligible parties through documented application; the public map portal advertises facility maps and a map API but the reviewed catalogue did not expose a parcel-feature dataset or schema. No safe anonymous parcel-vector route or WUP-point geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://portal-data.city.kanazawa.ishikawa.jp/",
+      "result": "Official public catalog reviewed; map API manual and public facility-map entry found, but no cadastral feature layer in the reviewed catalog."
+    },
+    {
+      "url": "https://map.city.kanazawa.ishikawa.jp/",
+      "result": "Official public map entrypoint identified; no parcel layer/schema or geometry response verified."
+    }
+  ],
+  "remainingUncertainty": "Whether any separate city map API exposes cadastral polygons and whether the ranked WUP point is covered remain unknown.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification."
+}

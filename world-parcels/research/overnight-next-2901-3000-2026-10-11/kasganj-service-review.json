@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-9075-kasganj.json",
+  "cityCode": 9075,
+  "queueRank": 2911,
+  "name": "Kasganj",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 2,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "geometryVerified": false,
+  "runtimeReadiness": "held_not_serially_qualified",
+  "queryAndRequestOutcome": "English and Hindi discovery found official UP revenue/Bhulekh and Bhu-Naksha sources. The Kasganj tehsil dashboard returned HTTP 200 village/map digitization status, while direct Board of Revenue access timed out and no anonymous parcel geometry/schema response was captured. The national Bhu-Naksha landing page is informational and indicates authorized-official use.",
+  "localCustodian": "Kasganj tehsil revenue office / Uttar Pradesh Board of Revenue, evidenced by the Kasganj district administration service page and the official Kasganj tehsil digitization report.",
+  "generalAgencyEvidence": "UP Bhulekh and NIC Bhu-Naksha explain state/national land-record and cadastral-map systems but do not by themselves prove a Kasganj city parcel response.",
+  "attemptedRoutes": [
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=202", "outcome": "HTTP 200; district/tehsil summary read."},
+    {"url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=202&tehsilCode=01010", "outcome": "HTTP 200; Kasganj tehsil village-level digitization report read."},
+    {"url": "https://bor.up.nic.in/", "outcome": "Direct request timed out; no absence inference."},
+    {"url": "https://upbhulekh.gov.in/", "outcome": "Official portal discovered; no bounded geometry response captured."},
+    {"url": "https://upbhunaksha.gov.in/", "outcome": "Official viewer host identified; no anonymous API/schema/geometry captured."},
+    {"url": "https://bhunaksha.nic.in/bhunaksha/userhome.jsp", "outcome": "HTTP 200 informational landing page; no Kasganj geometry."}
+  ],
+  "scopeLimits": [
+    "Dashboard counts are digitization status, not proof of complete city coverage.",
+    "No parcel polygon was retained; therefore no native identity or CRS was asserted.",
+    "No owner, address, contact, titleholder, personal, tax, account or unsafe fields were requested or retained.",
+    "Exact WUP point [27.8106594249479, 78.6470176042412] was preserved and not used to force a hit.",
+    "Runtime remains held pending serial qualification by the designated reviewer."
+  ],
+  "safeFieldAllowlist": ["stable native parcel/map identity if exposed", "geometry"],
+  "sampleGeojson": null,
+  "uncertainty": "Viewer access may require an official UI flow or authorized role; current public API/configuration, CRS, native identity and city coverage are unknown. A timeout, map miss or unusable UI is not evidence of citywide absence.",
+  "evidenceUrls": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=202",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=202&tehsilCode=01010",
+    "https://upbhulekh.gov.in/",
+    "https://kasganj.nic.in/service/http-bor-up-nic-in/",
+    "https://bhunaksha.nic.in/bhunaksha/userhome.jsp"
+  ]
+}

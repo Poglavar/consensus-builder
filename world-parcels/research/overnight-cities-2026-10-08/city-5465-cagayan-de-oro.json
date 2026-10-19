@@ -1,0 +1,113 @@
+{
+  "name": "Cagayan de Oro",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "rank": 601,
+  "point": [
+    8.49166676747122,
+    124.660095420473
+  ],
+  "population2025": 870291,
+  "populationUnit": "persons",
+  "population2025k": 870.291,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official City Assessment Department describes citywide real-property assessment, tax mapping and GIS, plus property-location maps; the city also lists a Registry of Deeds for land-title registration. The City’s linked ULIS landing page currently reports scheduled maintenance. These sources establish local assessment/registration offices, but no anonymous parcel-geometry service was verified.",
+  "registryEvidenceUrls": [
+    "https://www.cagayandeoro.gov.ph/index.php/news/the-city-hall/the-departments-and-offices.html?id=14",
+    "https://www.cagayandeoro.gov.ph/index.php/component/content/article/2-uncategorised/106-city-registry-of-deeds.html",
+    "https://gismaps.cagayandeoro.gov.ph/index.php/online-services.html",
+    "https://ulis.cagayandeoro.gov.ph/",
+    "https://www.cagayandeoro.gov.ph/phocadownloadpap/CGO-CDO%202025%20CITIZENS%20CHARTER.pdf",
+    "https://lra.gov.ph/frequently-asked-questions/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "url": null,
+    "httpStatus": null,
+    "contentType": null,
+    "featureType": null,
+    "nativeCrs": null,
+    "responseCount": 0,
+    "responseNumberMatched": "not queried",
+    "requestLimit": 0,
+    "requestFilter": "No anonymous parcel-feature query was made or verified; the city-linked ULIS page is under maintenance.",
+    "requestedFields": [],
+    "safeFieldsRetained": [],
+    "featureIds": [],
+    "nativeParcelIdentifier": null,
+    "wupPointContained": false,
+    "sampleGeometryFile": null,
+    "sampleSha256": null,
+    "limitations": "No public parcel geometry or safe native parcel identifier was retrieved."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cagayan de Oro official City Assessor GIS tax mapping parcel map Registry of Deeds",
+        "scope": "Locate city-local cadastral/property-registration services and check for anonymous public parcel geometry.",
+        "result": "The official City Assessment Department documents citywide tax mapping/GIS, tax declarations, and property-location maps; the City Registry of Deeds documents local registration of land titles. The city links a Unified Land Information System, but that portal currently shows scheduled-maintenance content. No anonymous feature-query endpoint or parcel geometry at the WUP point was verified.",
+        "actualResultUrls": [
+          "https://www.cagayandeoro.gov.ph/index.php/news/the-city-hall/the-departments-and-offices.html?id=14",
+          "https://www.cagayandeoro.gov.ph/index.php/component/content/article/2-uncategorised/106-city-registry-of-deeds.html",
+          "https://gismaps.cagayandeoro.gov.ph/index.php/online-services.html",
+          "https://ulis.cagayandeoro.gov.ph/",
+          "https://www.cagayandeoro.gov.ph/phocadownloadpap/CGO-CDO%202025%20CITIZENS%20CHARTER.pdf",
+          "https://lra.gov.ph/frequently-asked-questions/"
+        ],
+        "executionMethod": "Separate English-language search followed by review of official city and Land Registration Authority sources; checked the city-linked ULIS landing page."
+      },
+      {
+        "language": "Cebuano",
+        "query": "Cagayan de Oro mapa sa yuta buwis assessor tax map lote GIS opisyal",
+        "scope": "Locate city-local cadastral/property-registration services and check for anonymous public parcel geometry.",
+        "result": "Ang opisyal nga City Assessor adunay tax mapping/GIS ug serbisyo para sa lokasyon sa propiedad ug mga mapa; ang City Registry of Deeds nagparehistro sa mga titulo sa yuta. Gi-link sa website sa siyudad ang Unified Land Information System, apan maintenance page kini karon. Wala makit-an o ma-verify ang anonymous parcel feature query o geometry sa WUP point.",
+        "actualResultUrls": [
+          "https://www.cagayandeoro.gov.ph/index.php/news/the-city-hall/the-departments-and-offices.html?id=14",
+          "https://www.cagayandeoro.gov.ph/index.php/component/content/article/2-uncategorised/106-city-registry-of-deeds.html",
+          "https://gismaps.cagayandeoro.gov.ph/index.php/online-services.html",
+          "https://ulis.cagayandeoro.gov.ph/",
+          "https://www.cagayandeoro.gov.ph/phocadownloadpap/CGO-CDO%202025%20CITIZENS%20CHARTER.pdf"
+        ],
+        "executionMethod": "Lahi nga Cebuano nga pagpangita ug pagrepaso sa opisyal nga city sources; gisusi ang city-linked ULIS landing page."
+      }
+    ]
+  },
+  "scopeLimits": "A WUP settlement point is not a parcel identifier. The city’s City Assessment Department offers real-property tax mapping and map services; the city-linked ULIS portal showed a maintenance page during this check. No owner/title lookup, authenticated query, or geometry request was made. Citywide parcel-vector availability and exact WUP-point coverage remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "PH-CDO-LOCAL-ASSESSMENT-REGISTRY",
+    "name": "Cagayan de Oro City Assessment Department / City Registry of Deeds",
+    "url": "https://www.cagayandeoro.gov.ph/index.php/news/the-city-hall/the-departments-and-offices.html?id=14",
+    "operator": "Cagayan de Oro City Government / Registry of Deeds",
+    "serviceType": "Official local property assessment, citywide tax mapping/GIS and land-title registration offices; public feature geometry not verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No anonymous parcel feature response was retrieved."
+  },
+  "wupCityCode": 5465,
+  "cityId": "wup2025:5465",
+  "queueRank": 601,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The WUP locator is not a parcel identifier. City tax maps are accessed through official assessor services, while the city-linked ULIS page is under maintenance; no anonymous parcel-vector endpoint or exact point response was verified.",
+  "remainingUncertainty": "Whether the city will restore public ULIS access or expose an anonymous parcel-vector service; no exact-point coverage test was possible.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous public parcel geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    8.49166676747122,
+    124.660095420473
+  ],
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00"
+}

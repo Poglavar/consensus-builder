@@ -86,10 +86,12 @@ function dedupeOwners(names) {
 // Fetch the owner list for the building containing this BBL. For a condo billing
 // lot we return every apartment-unit owner sharing the building address; for any
 // lot we also surface a real owner recorded against the exact lot in another
-// roll year. Returns { owners: string[], matched: 'unit'|'exact'|'none' }.
+// roll year. Returns { owners: string[], matched: 'unit'|'exact'|'none', year: number|null,
+// fetchedAt: ms|null }: year is the latest DOF roll year among the rows the owners came from (the
+// source's own time), fetchedAt is when this block was read from DOF (cached up to CACHE_TTL_MS).
 export async function fetchNycOwners(sbl, { env = process.env, fetchImpl = globalThis.fetch } = {}) {
     const bbl = parseBbl(sbl);
-    if (!bbl) return { owners: [], matched: 'none' };
+    if (!bbl) return { owners: [], matched: 'none', year: null, fetchedAt: null };
 
     const cacheKey = `${bbl.boro}/${bbl.block}`;
     let byLot = cache.get(cacheKey)?.byLot;
@@ -109,25 +111,26 @@ export async function fetchNycOwners(sbl, { env = process.env, fetchImpl = globa
         cache.set(cacheKey, { at: cacheNow(), byLot });
     }
 
+    const fetchedAt = cache.get(cacheKey).at;
     const refRow = byLot.get(bbl.lot);
 
     // Condo billing lot: collect owners of every unit lot sharing the building address.
     if (bbl.lot >= CONDO_BILLING_LOT_MIN && refRow && refRow.address) {
-        const unitOwners = [];
-        for (const row of byLot.values()) {
-            if (row.lot < CONDO_BILLING_LOT_MIN && row.address === refRow.address) {
-                unitOwners.push(row.owner);
-            }
-        }
-        const owners = dedupeOwners(unitOwners);
-        if (owners.length) return { owners, matched: 'unit' };
+        const unitRows = [...byLot.values()].filter(row => row.lot < CONDO_BILLING_LOT_MIN && row.address === refRow.address);
+        const owners = dedupeOwners(unitRows.map(row => row.owner));
+        if (owners.length) return { owners, matched: 'unit', year: latestYear(unitRows), fetchedAt };
     }
 
     // Otherwise (or if no units resolved): a real owner on the exact lot in any year.
     const exactOwners = dedupeOwners(refRow ? [refRow.owner] : []);
-    if (exactOwners.length) return { owners: exactOwners, matched: 'exact' };
+    if (exactOwners.length) return { owners: exactOwners, matched: 'exact', year: latestYear([refRow]), fetchedAt };
 
-    return { owners: [], matched: 'none' };
+    return { owners: [], matched: 'none', year: null, fetchedAt };
+}
+
+function latestYear(rows) {
+    const years = rows.map(row => row.year).filter(year => Number.isSafeInteger(year) && year > 0);
+    return years.length ? Math.max(...years) : null;
 }
 
 // Exposed for tests.

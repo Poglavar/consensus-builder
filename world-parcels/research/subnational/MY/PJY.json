@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "PJY",
+ "regionName": "Putrajaya",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://www.ppj.gov.my/",
+   "observation": "Perbadanan Putrajaya site loads (200); no GIS/parcel link in HTML (only a user registration link)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.ppj.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "no map service found"
+  },
+  {
+   "url": "https://gis.ppj.gov.my/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "TLS certificate verification failed; not bypassed"
+  },
+  {
+   "url": "https://smartmap.ppj.gov.my/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  },
+  {
+   "url": "https://gis.putrajaya.gov.my/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT tunnel failed (HTTP 502 from the sandbox proxy: policy denial or upstream failure), or TLS certificate verification failure (not bypassed), or connection reset; not a permanent negative"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "Putrajaya has a GIS host with a broken certificate chain from this client; a viewer may exist.",
+ "nextStep": "Retry from another network; inspect Putrajaya Corporation map portal."
+}

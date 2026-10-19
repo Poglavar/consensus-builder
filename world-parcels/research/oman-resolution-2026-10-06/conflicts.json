@@ -1,0 +1,229 @@
+{
+  "checkedAt": "2026-10-06",
+  "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+  "method": "GET native-key query; metadata and metrics only retained",
+  "attempts": [
+    {
+      "operation": "conflicting-native-pair-attributes",
+      "nativePair": [
+        "01-03-002-01-6220",
+        "6220"
+      ],
+      "httpStatus": 200,
+      "features": [
+        {
+          "PAIN": "01-03-002-01-6220",
+          "PLOTNUM": "6220",
+          "O_PAIN": "01-03-002-01-6220",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": "ALAMRAT",
+          "VILLAGE_EN": "MADINAT  AL NAHDHAH",
+          "BLOCK_EN": "PHASE 1",
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": "368.37"
+        },
+        {
+          "PAIN": "01-03-002-01-6220",
+          "PLOTNUM": "6220",
+          "O_PAIN": "01-03-002-01-6220",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": "ALAMRAT",
+          "VILLAGE_EN": "MADINAT  AL NAHDHAH",
+          "BLOCK_EN": "PHASE 1",
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-03-002-01-6220",
+          "PLOTNUM": "6220",
+          "O_PAIN": "01-03-002-01-6220",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": "ALAMRAT",
+          "VILLAGE_EN": "MADINAT  AL NAHDHAH",
+          "BLOCK_EN": "PHASE 1",
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-03-002-01-6220",
+          "PLOTNUM": "6220",
+          "O_PAIN": "01-03-002-01-6220",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": "ALAMRAT",
+          "VILLAGE_EN": "MADINAT  AL NAHDHAH",
+          "BLOCK_EN": "PHASE 1",
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        }
+      ]
+    },
+    {
+      "operation": "conflicting-native-pair-attributes",
+      "nativePair": [
+        "01-05-007-01-6216",
+        "6216"
+      ],
+      "httpStatus": 200,
+      "features": [
+        {
+          "PAIN": "01-05-007-01-6216",
+          "PLOTNUM": "6216",
+          "O_PAIN": null,
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": "AL SEEB",
+          "VILLAGE_EN": "AL KHOUDH",
+          "BLOCK_EN": "PHASE 1",
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-05-007-01-6216",
+          "PLOTNUM": "6216",
+          "O_PAIN": "01-05-007-01-6216",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": null,
+          "VILLAGE_EN": null,
+          "BLOCK_EN": null,
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-05-007-01-6216",
+          "PLOTNUM": "6216",
+          "O_PAIN": "01-05-007-01-6216",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": null,
+          "VILLAGE_EN": null,
+          "BLOCK_EN": null,
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        }
+      ]
+    },
+    {
+      "operation": "conflicting-native-pair-attributes",
+      "nativePair": [
+        "01-02-006-02-084",
+        "84"
+      ],
+      "httpStatus": 200,
+      "features": [
+        {
+          "PAIN": "01-02-006-02-084",
+          "PLOTNUM": "84",
+          "O_PAIN": "01-02-006-02-084",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": null,
+          "VILLAGE_EN": null,
+          "BLOCK_EN": null,
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-02-006-02-084",
+          "PLOTNUM": "84",
+          "O_PAIN": "01-02-006-02-084",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": null,
+          "VILLAGE_EN": null,
+          "BLOCK_EN": null,
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-02-006-02-084",
+          "PLOTNUM": "84",
+          "O_PAIN": "01-02-006-02-084",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": null,
+          "VILLAGE_EN": null,
+          "BLOCK_EN": null,
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-02-006-02-084",
+          "PLOTNUM": "84",
+          "O_PAIN": "01-02-006-02-084",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": null,
+          "VILLAGE_EN": null,
+          "BLOCK_EN": null,
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        },
+        {
+          "PAIN": "01-02-006-02-084",
+          "PLOTNUM": "84",
+          "O_PAIN": "01-02-006-02-084",
+          "O_PLOTNUM": null,
+          "GOVERNORATE_EN": "01",
+          "WILLAYAT_EN": null,
+          "VILLAGE_EN": null,
+          "BLOCK_EN": null,
+          "SOURCE_PROJECTION": "32640",
+          "STATUS": "VACANT",
+          "LANDSTATUS": null,
+          "CREATED_DATE": null,
+          "LAST_EDITED_DATE": null,
+          "AREA_SQ_M2": null
+        }
+      ]
+    }
+  ]
+}

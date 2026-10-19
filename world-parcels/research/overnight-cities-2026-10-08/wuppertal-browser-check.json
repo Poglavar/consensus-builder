@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-09",
+  "localOnly": true,
+  "url": "http://localhost:5638/?city=wuppertal&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "verification": "Dedicated headed Chrome; actual pointer selection followed by Details panel readback.",
+  "loadedNativeParcels": 7,
+  "visibleNativeParcels": 7,
+  "selectedParcelId": "DE-NRW-05327700500316______",
+  "detailsMatchedNativeId": true,
+  "uncaughtPageErrors": 0,
+  "scope": "Bounded initial viewport; no citywide geometry claim.",
+  "browserClosed": true,
+  "browserCloseConfirmedAt": "2026-10-09T04:12:31.591161+00:00"
+}

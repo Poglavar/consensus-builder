@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2289-malacca-city.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Local land office and cadastral map service directory found. Anonymous feature schema and point query were not completed. The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified.",
+  "registryAssessment": "The official Melaka Tengah District and Land Office is the local land-administration office serving the city’s central district. Official Melaka GIS directory metadata exposes JUPEM cadastral lot layers (2021, 2016, 2013 and 2012), but the layer metadata/query was not fetched because the endpoint presented an expired TLS certificate. The point’s source-layer coverage and geometry remain unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+      "observation": "Official Melaka Tengah District and Land Office page; local land administration."
+    },
+    {
+      "url": "https://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/MapServer",
+      "observation": "Official Melaka government GIS MapServer directory lists JUPEM cadastral lot layers (Lot_Kadaster_2021, 2016, 2013 and 2012)."
+    },
+    {
+      "url": "https://smartgis.mphtj.gov.my/peta",
+      "observation": "Official Hang Tuah Jaya TuahGIS lists a “Maklumat Lot Tanah” map, but its municipal footprint was not matched to this WUP locator."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Malacca City Malaysia land registry cadastral parcel map official GIS land office",
+      "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+      "result": "The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified. Official registry evidence: The official Melaka Tengah District and Land Office is the local land-administration office serving the city’s central district. Official Melaka GIS directory metadata exposes JUPEM cadastral lot layers (2021, 2016, 2013 and 2012), but the layer metadata/query was not fetched because the endpoint presented an expired TLS certificate. The point’s source-layer coverage and geometry remain unverified.",
+      "actualResultUrls": [
+        "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+        "https://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/MapServer",
+        "https://smartgis.mphtj.gov.my/peta"
+      ],
+      "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+    },
+    {
+      "language": "Malay",
+      "query": "Peta kadaster lot tanah Kota Melaka rasmi GIS Pejabat Tanah Melaka Tengah",
+      "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+      "result": "The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified. Official registry evidence: The official Melaka Tengah District and Land Office is the local land-administration office serving the city’s central district. Official Melaka GIS directory metadata exposes JUPEM cadastral lot layers (2021, 2016, 2013 and 2012), but the layer metadata/query was not fetched because the endpoint presented an expired TLS certificate. The point’s source-layer coverage and geometry remain unverified.",
+      "actualResultUrls": [
+        "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+        "https://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/MapServer",
+        "https://smartgis.mphtj.gov.my/peta"
+      ],
+      "executionMethod": "Separate Malay-language web search, followed by review of first-party source pages; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No full anonymous parcel feature response was obtained. No geometry sample is retained; exact point geometry remains unverified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official local sources and the exact unchanged WUP locator only; no citywide parcel completeness is claimed.",
+    "limits": "No safe full geometry or source-native parcel ID was retrieved; city-point coverage and layer freshness remain unverified."
+  },
+  "attempts": [
+    {
+      "url": "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+      "method": "Official public source/service review",
+      "result": "Official Melaka Tengah District and Land Office page; local land administration."
+    },
+    {
+      "url": "https://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/MapServer",
+      "method": "Official public source/service review",
+      "result": "Official Melaka government GIS MapServer directory lists JUPEM cadastral lot layers (Lot_Kadaster_2021, 2016, 2013 and 2012)."
+    },
+    {
+      "url": "https://smartgis.mphtj.gov.my/peta",
+      "method": "Official public source/service review",
+      "result": "Official Hang Tuah Jaya TuahGIS lists a “Maklumat Lot Tanah” map, but its municipal footprint was not matched to this WUP locator."
+    }
+  ],
+  "remainingUncertainty": "No safe full geometry or source-native parcel ID was retrieved; city-point coverage and layer freshness remain unverified."
+}

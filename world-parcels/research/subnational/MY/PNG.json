@@ -1,0 +1,108 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "PNG",
+ "regionName": "Pulau Pinang",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": {
+  "sourceId": "my-penang-pegis-lot-kadaster",
+  "name": "Hosted/Lot_Kadaster layer 0 'Sempadan Lot'",
+  "operator": "PeGIS (Penang Geographic Information System Centre), Penang state",
+  "scope": "Penang state lots, all five districts (daerah 01-05), 371,442 features",
+  "endpoint": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/0",
+  "method": "ArcGIS REST query",
+  "responseFormat": "esri JSON",
+  "crs": "native My_G_Cassini_Pulau_Pinang_&_Seberang_Perai; EPSG:4326 via outSR",
+  "reuseStatus": "not read; no licence text on layer metadata"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "my-penang-pegis-lot-kadaster",
+  "requestUrl": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   100.335,
+   5.413,
+   100.338,
+   5.416
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "upi (also objectid, lot)",
+  "responseFile": "research/subnational/MY/PNG-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount; maxRecordCount 2000; exceededTransferLimit true",
+  "regionSampled": "George Town area (daerah 04) and daerah 01 (second bbox 100.45,5.34,100.46,5.35); daerah 03 style count-only distinct check listed 01-05"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer covers negeri 07 with daerah values 01-05 (returnDistinctValues); publisher makes no stated scope claim. Public viewer 'Lot Finder' (ExB app) points at this layer.",
+ "subregionsVerified": [
+  "Daerah 04 (Timur Laut, George Town)",
+  "Daerah 01"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://pegis.penang.gov.my/geoportal/apps/experiencebuilder/experience/?id=59427edb3f974b4985454ddcaa4ecd06",
+   "observation": "Lot Finder app; its config JSON names the Hosted/Lot_Kadaster layer (found via viewer inspection)"
+  },
+  {
+   "url": "https://pegis.penang.gov.my/arcgis/rest/services/PEGIS/PgLot/MapServer",
+   "observation": "Listed service but layers empty/404; the Hosted FeatureServer is the working one"
+  },
+  {
+   "url": "https://data-pegis.opendata.arcgis.com/",
+   "observation": "Penang GIS open data hub (not examined further)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://pegis.penang.gov.my/arcgis/rest/services/PEGIS/PgLot/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service exists, layers list empty"
+  },
+  {
+   "url": "https://pegis.penang.gov.my/geoportal/sharing/rest/content/items/59427edb3f974b4985454ddcaa4ecd06/data?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "viewer config reveals Hosted/Lot_Kadaster/FeatureServer/0"
+  },
+  {
+   "url": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon layer 'Sempadan Lot', fields incl. owner-unrelated IDs; only objectid,upi,lot,mukim,daerah,negeri requested"
+  },
+  {
+   "url": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/0/query?...geometry=100.335,5.413,100.338,5.416&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons"
+  },
+  {
+   "url": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/0/query?...geometry=100.45,5.34,100.46,5.35&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons, daerah 01"
+  },
+  {
+   "url": "https://pegis.penang.gov.my/arcgis/rest/services/Hosted/Lot_Kadaster/FeatureServer/0/query?returnCountOnly=true",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "count 371442"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "Authority/vintage of hosted copy unknown (fields tarikh_kem, no_pw exist but not fetched). Licence unread. Seberang Perai (mainland) districts implied by daerah values but a mainland bbox was not sampled with geometry.",
+ "nextStep": "Read PeGIS open-data terms; sample a mainland (Seberang Perai) bbox."
+}

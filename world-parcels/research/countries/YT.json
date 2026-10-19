@@ -1,0 +1,73 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "YT",
+ "country": "Mayotte",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "French state cadastre (DGFiP Plan cadastral informatise) served openly via IGN API Carto (apicarto.ign.fr) and cadastre.data.gouv.fr (Etalab); Mayotte is a French overseas department/region",
+ "portalsFound": [
+  {
+   "url": "https://apicarto.ign.fr/api/doc/cadastre",
+   "observation": "IGN API Carto cadastre module, anonymous"
+  },
+  {
+   "url": "https://cadastre.data.gouv.fr/",
+   "observation": "Etalab open cadastre bundles (per-commune GeoJSON); connection failed through proxy this session, not used as evidence"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={\"type\":\"Point\",\"coordinates\":[45.2278,-12.7806]}&_limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "1 MultiPolygon parcel in Mamoudzou; verified"
+  },
+  {
+   "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={\"type\":\"Point\",\"coordinates\":[45.1,-12.85]}&_limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "1 MultiPolygon parcel in Sada; second commune, same schema"
+  },
+  {
+   "url": "https://cadastre.data.gouv.fr/bundler/cadastre-etalab/communes/97611/geojson/parcelles (range 0-2000)",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed via proxy (ws_closed_mid_exchange); temporarily unavailable"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+  "requestUrl": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={\"type\":\"Point\",\"coordinates\":[45.2278,-12.7806]}&_limit=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   45.2278,
+   -12.7806,
+   45.2278,
+   -12.7806
+  ],
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "numero + section + code_insee (idu)",
+  "responseFile": "YT-parcel-response.json",
+  "pagination": "_limit/_start",
+  "regionSampled": "Mamoudzou"
+ },
+ "coverageAssessment": {
+  "claimedScope": "All communes of Mayotte (French cadastre)",
+  "regionsVerified": [
+   "Mamoudzou",
+   "Sada"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Point query returns one parcel; bbox/polygon geometry queries and bulk Etalab bundles not tested. Cadastre coverage in overseas departments may be incomplete in rural areas. Licence (Licence Ouverte for Etalab bundles) not re-read.",
+ "nextStep": "Test Etalab bundle by HTTP range when the host is reachable; confirm bbox query."
+}

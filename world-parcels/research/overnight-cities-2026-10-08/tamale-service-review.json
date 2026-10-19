@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Tamale",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "rank": 830,
+  "wupCityCode": 2743,
+  "point": [
+    9.41421811170727,
+    -0.847811973776205
+  ],
+  "registryFound": true,
+  "registryBasis": "The national Lands Commission lists a Client Service Access Unit in Tamale, and its Survey and Mapping Division states that it holds parcel-survey records and prepares/certifies survey plans for land registration. These establish a local service presence and national survey/cadastre functions, but not a publicly downloadable Tamale parcel layer.",
+  "registryEvidenceUrls": [
+    "https://www.lc.gov.gh/contact-us/csau/",
+    "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+    "https://www.lc.gov.gh/storage/2025/01/RTI-Manual-2025-LANDS-COMMISSION.pdf",
+    "https://www.lc.gov.gh/fees-charges/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Lands Commission Client Service Access Unit (Tamale) and national Survey and Mapping Division; reviewed service information rather than an interactive parcel viewer.",
+      "operator": "Official local, regional or national agency as identified in the source pages",
+      "homeUrl": "https://www.lc.gov.gh/contact-us/csau/",
+      "observation": "Official CSAU page lists Tamale among Lands Commission client-service locations and describes application workflows; some stated requirements include personal/client information, which was not submitted."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lc.gov.gh/contact-us/csau/",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official CSAU page lists Tamale among Lands Commission client-service locations and describes application workflows; some stated requirements include personal/client information, which was not submitted."
+    },
+    {
+      "url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official Survey and Mapping Division page describes custody of parcel survey records, plan preparation, mapping and certification as institutional duties."
+    },
+    {
+      "url": "https://www.lc.gov.gh/storage/2025/01/RTI-Manual-2025-LANDS-COMMISSION.pdf",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official 2025 RTI manual identifies the regional office structure and Northern Region office in Tamale. No map schema, anonymous vector download or safe feature endpoint appears in the reviewed material."
+    },
+    {
+      "url": "https://www.lc.gov.gh/fees-charges/",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official fee schedule lists paid survey/map services; this is a service route, not open parcel geometry."
+    }
+  ],
+  "limitations": "The identified parcel-plan and survey-data services require formal applications and/or licensed-surveyor inputs. No anonymous geometry+stable-ID schema or public city parcel dataset was verified; no property or client query was made.",
+  "scopeLimits": "No protected or personal/property-specific information queried; no anonymous full geometry and stable-ID allowlist verified. No completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_geometry_schema",
+    "reason": "The identified parcel-plan and survey-data services require formal applications and/or licensed-surveyor inputs. No anonymous geometry+stable-ID schema or public city parcel dataset was verified; no property or client query was made."
+  }
+}

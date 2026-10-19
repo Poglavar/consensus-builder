@@ -1,0 +1,41 @@
+{
+  "cityRecord": "city-1856-brasov.json",
+  "cityCode": 1856,
+  "queueRank": 2595,
+  "name": "Brasov",
+  "country": "Romania",
+  "countryCode": "RO",
+  "pointLatLon": [45.651847832031, 25.6076169151495],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "queryOutcomes": [
+    {"language":"English","query":"Brasov Romania cadastral map parcel GIS official ANCPI geoportal","outcome":"First-party discovery found OCPI Brasov and the national Cadastral Parcel REST service lead."},
+    {"language":"Romanian","query":"Brașov cadastru hartă cadastrală parcele geoportal oficial ANCPI OCPI Brașov","outcome":"First-party discovery found official OCPI Brasov cadastral documentation and the same national service lead."}
+  ],
+  "requestOutcomes": [
+    {"method":"GET","url":"https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer?f=pjson","outcome":"Connection timeout; no metadata or schema."},
+    {"method":"GET","url":"https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=pjson","outcome":"Connection timeout; no layer metadata, CRS, ID, or geometry."},
+    {"method":"GET","url":"https://bv.ancpi.ro/","outcome":"Direct bounded request failed host resolution; official page and local custodian were observed in first-party search results."}
+  ],
+  "schemaAndCrs": {
+    "geometryType": "Not established; no feature response",
+    "geometryCrs": "Not established",
+    "nativeFieldMapping": "Not established; no response fields retrieved",
+    "compositeKeyProvenance": "Not applicable; no parcel feature returned",
+    "rawAttributesRetained": false
+  },
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently verified", "full parcel polygon geometry if independently verified", "source URL", "declared CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local custodian discovery is verified, but no anonymous parcel polygon/native identity was obtained; independent serial review is required before adapter qualification or admission."},
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a hit.",
+    "A zero result was not obtained; the requests timed out or failed host resolution, so there is no citywide absence claim.",
+    "Official local OCPI documentation establishes a custodian and map lead, not citywide open parcel coverage.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS verification disablement were used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The national cadastral-parcel service and local official site were identified, but service availability, current viewer configuration, native parcel identity, CRS, feature schema, and citywide completeness remain unqualified."
+}

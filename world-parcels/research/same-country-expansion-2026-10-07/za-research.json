@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "cohort": [
+    {
+      "cityId": "wup2025:3664",
+      "name": "Johannesburg",
+      "priorEvidence": "research/johannesburg.json"
+    },
+    {
+      "cityId": "wup2025:5227",
+      "name": "Durban",
+      "priorEvidence": "research/durban.json"
+    }
+  ],
+  "searches": [
+    {
+      "query": "Johannesburg cadastre parcels SG21KEY ParcelGuid GISCOE ArcGIS",
+      "language": "en-ZA",
+      "resultUrls": [
+        "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer",
+        "https://eservices.joburg.org.za/sites/cgismaps/Pages/Property-Theme.aspx"
+      ]
+    },
+    {
+      "query": "Durban eThekwini cadastral parcels ArcGIS MapServer",
+      "language": "en-ZA",
+      "resultUrls": [
+        "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer",
+        "https://gis.durban.gov.za/server/rest/services/WebViewers/External_Cadastral_Services_Publisher/MapServer"
+      ]
+    },
+    {
+      "query": "site.joburg.org.za SG21 cadastre GIS map erven",
+      "language": "en-ZA",
+      "resultUrls": [
+        "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer"
+      ]
+    },
+    {
+      "query": "site:gis.durban.gov.za amasimu umhlaba imephu",
+      "language": "zu",
+      "resultUrls": [],
+      "result": "No additional source established from this query."
+    },
+    {
+      "query": "site:joburg.org.za umhlaba imephu GIS cadastral",
+      "language": "zu/en-ZA",
+      "resultUrls": [
+        "https://eservices.joburg.org.za/sites/cgismaps/Pages/Property-Theme.aspx"
+      ],
+      "result": "Combined query results led back to the official English-language GIS portal; no separately verified Zulu endpoint."
+    }
+  ],
+  "headersUsed": {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "Accept": "application/json",
+    "Accept-Language": "en-ZA,en;q=0.9,zu;q=0.7"
+  },
+  "attempts": [
+    {
+      "endpoint": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer",
+      "operation": "Current official national candidate metadata",
+      "outcome": "dns-failure",
+      "detail": "Authorized network request could not resolve the hostname; no parcel-absence claim."
+    },
+    {
+      "endpoint": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+      "operation": "Tiny three-feature GeoJSON requests in Johannesburg and Durban",
+      "outcome": "verified-samples",
+      "httpStatus": 200,
+      "sampleFeatureCounts": {
+        "johannesburg": 3,
+        "durban": 3
+      },
+      "detail": "Old mirror still returns polygons; its historical exact-key blockers remain unresolved. Municipal alternatives were investigated instead."
+    },
+    {
+      "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "operation": "Normal verified TLS, then published missing intermediate",
+      "outcome": "verified-sample-with-complete-trust-chain",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/durban-tls-research.json"
+    },
+    {
+      "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+      "operation": "Official registered stands sample and runtime acceptance",
+      "outcome": "sample-verified-runtime-timeout",
+      "evidenceFile": "research/same-country-expansion-2026-10-07/johannesburg-research.json"
+    }
+  ],
+  "rawGeometrySaved": false,
+  "ownerAttributesRequested": false
+}

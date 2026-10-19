@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Padang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Padang’s local ATR/BPN Land Office is identified on the official kot-padang.atrbpn.go.id portal. The city Geoportal is a public JIGN/GeoNode service, but its anonymous datasets API currently returns one dataset titled “Peta Area Terdampak Banjir Sumatera,” not a cadastral layer. The BPN public app HTML is only a JavaScript shell; no parcel schema or geometry route was exposed in the inspected HTML/static client.",
+  "registryEvidenceUrls": [
+    "https://kot-padang.atrbpn.go.id/",
+    "https://geoportal.padang.go.id/",
+    "https://geoportal.padang.go.id/api/v2/datasets/?page=1&page_size=100",
+    "https://kot-padang.atrbpn.go.id/berita/pelataran-kantor-pertanahan-kota-padang-18-januari-2026"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3262,
+  "cityId": "wup2025:3262",
+  "centerLatLon": [
+    -0.917166990153238,
+    100.381372539384
+  ],
+  "rank": 436,
+  "queueRank": 436,
+  "population2025": 1184342,
+  "population2025k": 1184.342,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The city GeoPortal datasets endpoint returned a single flood-impact dataset, and the public ATR/BPN app returned only its JavaScript shell; static client bundles contained no parcel service or geometry schema route. A similarly named map candidate at atrbpnpadang.com initially displayed an extent around Bangka (lat -3.231 to -2.460, lon 105.664 to 106.957), not Padang, so it was not treated as a city source and its feature file was not fetched.",
+  "scopeLimits": "Review covered Padang’s public city GeoNode catalog/API and public city ATR/BPN app shell. No anonymous parcel layer or city-specific parcel geometry was verified.",
+  "remainingUncertainty": "A separate official land-office or internal cadastral service may exist, but no public anonymous feature endpoint, geometry schema, or parcel polygon route was exposed by the inspected public pages.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Padang Indonesia official cadastral parcel map land office open GIS",
+        "scope": "Find city-local parcel sources and anonymous geometry routes.",
+        "result": "The city Geoportal is a public GeoNode/JIGN catalog, but its current anonymous dataset list contains only a flood-impact dataset. The local ATR/BPN app shell exposes no map/feature route in static client code. No parcel geometry was verified.",
+        "urls": [
+          "https://geoportal.padang.go.id/",
+          "https://kot-padang.atrbpn.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Peta bidang tanah Kota Padang geoportal resmi persil kadaster ATR BPN",
+        "scope": "Mencari sumber bidang tanah dan rute geometri anonim khusus Kota Padang.",
+        "result": "Portal Geoportal Kota Padang menampilkan satu dataset publik area terdampak banjir, bukan layer bidang tanah. Halaman aplikasi Kantor Pertanahan Kota Padang hanya memberikan shell JavaScript; tidak ditemukan kontrak geometri bidang pada HTML atau bundel klien statis.",
+        "urls": [
+          "https://geoportal.padang.go.id/",
+          "https://kot-padang.atrbpn.go.id/",
+          "https://satudata.padang.go.id/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://geoportal.padang.go.id/",
+        "observation": "City Geoportal identifies itself as a JIGN data-sharing portal. Direct anonymous GET returned HTTP 200."
+      },
+      {
+        "url": "https://geoportal.padang.go.id/api/v2/datasets/?page=1&page_size=100",
+        "observation": "Anonymous GeoNode datasets API returned HTTP 200 with total=1: “Peta Area Terdampak Banjir Sumatera” (EPSG:4326). It is flood-impact mapping, not cadastral parcel data. Adding q=tanah returned the same listing."
+      },
+      {
+        "url": "https://kot-padang.atrbpn.go.id/",
+        "observation": "Official Padang ATR/BPN local-office app root returned HTTP 200 (6,855 bytes) with a JS application shell. Its two public JS bundles also returned HTTP 200 and exposed no map/cadastral service or geometry schema path."
+      },
+      {
+        "url": "https://satudata.padang.go.id/",
+        "observation": "Official Padang city open-data portal. Search pages for bidang tanah, persil, pertanahan and tanah returned “No datasets found”; this catalog search was not treated as parcel geometry."
+      },
+      {
+        "url": "https://kot-padang.atrbpn.go.id/berita/pelataran-kantor-pertanahan-kota-padang-18-januari-2026",
+        "observation": "Padang ATR/BPN’s indexed local-office news item identifies the Kantor Pertanahan Kota Padang. Direct page GET returned the same JS shell as the office portal; the rendered article is not a geometry source."
+      }
+    ],
+    "metadataReviewFile": "padang-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-3262-padang-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "id-padang-atrbpn-local-office-geonode-review",
+    "name": "Padang local registry and public parcel-map route review",
+    "operator": "Kantor Pertanahan Kota Padang (ATR/BPN) and Geoportal Kota Padang",
+    "url": "https://geoportal.padang.go.id/",
+    "scope": "Review covered Padang’s public city GeoNode catalog/API and public city ATR/BPN app shell. No anonymous parcel layer or city-specific parcel geometry was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature ID or geometry returned.",
+    "geometryStatus": "no_anonymous_city_parcel_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Review covered Padang’s public city GeoNode catalog/API and public city ATR/BPN app shell. No anonymous parcel layer or city-specific parcel geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00",
+  "sourceIds": [],
+  "point": [
+    -0.917166990153238,
+    100.381372539384
+  ]
+}

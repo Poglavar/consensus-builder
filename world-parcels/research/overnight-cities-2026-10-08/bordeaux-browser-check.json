@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-09T04:18:44.243018+00:00",
+  "appCityId": "bordeaux",
+  "url": "http://localhost:5638/?city=bordeaux&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 313,
+  "visibleParcels": 1,
+  "parcelFetchFinished": true,
+  "selectedParcelId": "FR-PCI-33063000IX0001",
+  "pointerCoordinates": [
+    234,
+    531
+  ],
+  "detailsMatchesNativeId": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "scope": "Actual initial viewport; selected large native park parcel retains its full geometry. No citywide completeness claim.",
+  "browserCloseConfirmedAt": "2026-10-09T04:19:31.541970+00:00"
+}

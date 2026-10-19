@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 117,
+  "city": "Toshkent (Tashkent)",
+  "countryCode": "UZ",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/toshkent.json",
+  "query": {
+    "language": "Uzbek",
+    "script": "Latin",
+    "text": "Toshkent kadastr yer uchastkalari xarita GIS ochiq ma’lumotlar geoportal"
+  },
+  "results": [
+    {
+      "title": "Uzbekistan National Geographic Information System open geoportal announcement",
+      "url": "https://gov.uz/oz/kadastr/news/view/143473",
+      "kind": "official-national-announcement",
+      "note": "Says public geoportal `open.ngis.uz` launched and gives citizens/businesses open information on land parcels and real estate."
+    },
+    {
+      "title": "National Geographic Information System purpose",
+      "url": "https://dgov.uz/uz/solution/detail/52/",
+      "kind": "official-digital-government",
+      "note": "Describes parcel cadastral numbers, addresses and use information through the national GIS."
+    },
+    {
+      "title": "E-Ijara agricultural land map",
+      "url": "https://e-ijara.uz/uz/map",
+      "kind": "official-specialized-map",
+      "note": "Agricultural lease parcels only; not citywide urban parcel coverage."
+    }
+  ],
+  "assessment": "Strong official Tashkent/Uzbektan lead: the national cadastral geoportal says parcel and property information is open. Exact endpoint format, parcel geometry coverage, IDs and direct query operations remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "5278",
+  "cityName": "Oxford",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/5278/attempt-3/evidence/full-safe.geojson",
+    "sha256": "c0c71c58d7423fbb9b750011ac2c9f75262a6c0dc8215e072c0e682b2ef13b00",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 344
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "3087796c8b75ad47356e3742ec28cac8e01e2e3d965520e2b8bef121f220074b",
+    "geometryPass": true,
+    "featureCount": 344,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

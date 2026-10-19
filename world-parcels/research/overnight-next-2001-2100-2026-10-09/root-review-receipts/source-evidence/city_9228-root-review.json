@@ -1,0 +1,54 @@
+{
+  "taskId": "city:9228",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:28:43Z",
+  "identity": {
+    "cityCode": 9228,
+    "rank": 2038,
+    "name": "Gaoping",
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      35.78945448775,
+      112.930606499431
+    ],
+    "populationPersons": 285819,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueAnd2025WupRowMatch": true
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Chinese"
+    ],
+    "pairedPacketAndReviewInspected": true,
+    "resultUrlsRecorded": true
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://xxgk.sxgp.gov.cn/gzbm/gpzrzyj/fdzdgknr/zzjg/nsjg/202309/t20230904_1848791.shtml",
+      "observation": "Official Gaoping Natural Resources Bureau institutional page assigns unified real-estate registration, cadastral survey and cadastral mapping responsibility to the city bureau."
+    }
+  ],
+  "firstPartyCache": [],
+  "custody": {
+    "registryFound": true,
+    "assessment": "Institutional cadastral custody is established. The public inquiry redirects to login and no anonymous parcel feature response or native identifier was saved. Availability of public geometry remains unresolved."
+  },
+  "samples": {
+    "fullPolygonCountInOriginalCache": 0,
+    "nativeParcelIds": [],
+    "retainedAttributeFields": [],
+    "unsafeAttributesRetained": false
+  },
+  "qualification": {
+    "freshExactNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "scopeCaveat": "Packet completion and bounded or blocked responses do not establish citywide coverage or citywide cadastral absence."
+}

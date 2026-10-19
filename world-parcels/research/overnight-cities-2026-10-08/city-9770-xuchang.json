@@ -1,0 +1,123 @@
+{
+  "name": "Xuchang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 564,
+  "point": [
+    34.0244453311886,
+    113.813220912291
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xuchang official real estate registration center cadastral parcel map public GIS China",
+        "result": "The official Xuchang bureau publishes a city Real Estate Registration Trading Center and registration guide. Public account services include property-information queries subject to identity matching; parcel-map attachments are linked to certificates for rights holders. The city Tianditu map provides general map services, while API calls require developer authorization; no anonymous cadastral feature feed was verified.",
+        "urls": [
+          "https://zrzyhghj.xuchang.gov.cn/ywdh/secondpage.html",
+          "https://zrzyhghj.xuchang.gov.cn/gtdt/001001/20250115/37758dff-917a-42f0-8f60-07ab227a9158.html",
+          "https://henan.tianditu.gov.cn/xuchang/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "许昌 不动产登记 地籍图 地块地图 官方 许昌自然资源和规划局",
+        "result": "许昌市自然资源和规划局官网发布市不动产登记中心办事指南，并说明依托官方微信公众号、经人证比对办理个人房产信息查询；权利人可从电子证照附图二维码查看宗地图。该流程属于实名/权利人服务，不能作为公开地籍矢量接口。天地图许昌提供通用地图，API/服务调用需开发授权。",
+        "urls": [
+          "https://zrzyhghj.xuchang.gov.cn/ywdh/secondpage.html",
+          "https://zrzyhghj.xuchang.gov.cn/gtdt/001001/20250115/37758dff-917a-42f0-8f60-07ab227a9158.html",
+          "https://henan.tianditu.gov.cn/xuchang/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://zrzyhghj.xuchang.gov.cn/",
+        "observation": "Official Xuchang Natural Resources and Planning Bureau portal."
+      },
+      {
+        "url": "https://zrzyhghj.xuchang.gov.cn/ywdh/secondpage.html",
+        "observation": "Bureau business-navigation page lists the Xuchang Real Estate Registration Center service guide and registration documents."
+      },
+      {
+        "url": "https://zrzyhghj.xuchang.gov.cn/ywdh/004003/20181217/a9325a74-5baa-428b-a34b-82c9187e1832.html",
+        "observation": "Official page links the Real Estate Registration Center service guide document."
+      },
+      {
+        "url": "https://zrzyhghj.xuchang.gov.cn/gtdt/001001/20250115/37758dff-917a-42f0-8f60-07ab227a9158.html",
+        "observation": "City bureau states the official registration WeChat service provides property-information queries after identity comparison, proof downloads, e-certificates, application progress and payments; it is not a public anonymous query."
+      },
+      {
+        "url": "https://zrzyhghj.xuchang.gov.cn/openDetailDynamic.html?infoid=13f3e0d1-6b23-4dc6-9c1b-a435e70dacba",
+        "observation": "Official city organizational listing identifies the Real Estate Registration Trading Center and local ownership registration functions."
+      },
+      {
+        "url": "https://henan.tianditu.gov.cn/xuchang/",
+        "observation": "Official Xuchang public geographic information platform provides generic base-map/service resources and displays a notice that Tianditu API/service calls require developer authorization."
+      },
+      {
+        "url": "https://henan.tianditu.gov.cn/xuchang/map.htm",
+        "observation": "Public city map shell exposes generic map interactions; no cadastral/parcel layer contract was identified."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No parcel feature response or full polygon was retrieved."
+  },
+  "source": {
+    "id": "city-CN-9770-overnight-research",
+    "name": "Xuchang city title-registration source review",
+    "operator": "Xuchang Municipal Natural Resources and Planning Bureau / Real Estate Registration Trading Center",
+    "url": "https://zrzyhghj.xuchang.gov.cn/",
+    "format": "Official registration center services and public base-map shell; no public parcel feature schema verified",
+    "access": "Public source review only; no account/identity verification, property query, WeChat transaction or developer authorization used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Xuchang Municipal Natural Resources and Planning Bureau and Real Estate Registration Trading Center serve the city. Public records identify rights-holder-specific property query/map access. No citywide anonymous parcel-vector coverage was verified.",
+    "verifiedOpenScope": "City title-registration records are confirmed. The public city Tianditu map provides generic map services; documented API authorization and identity-checked registry services do not provide anonymous full parcel geometry.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Xuchang’s official city bureau identifies the local Real Estate Registration Trading Center and its property-registration/query services. Information queries require identity matching; parcel map attachments are accessible through rights-holder certificate QR codes.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_title_registry_confirmed_no_public_parcel_vector",
+  "technicalBlocker": "Official property information is identity-verified, and title-certificate parcel maps are rights-holder-specific. The public city map’s API/services require developer authorization; no open parcel endpoint or safe feature schema is published in reviewed materials.",
+  "remainingUncertainty": "Whether a separately documented public cadastral layer exists for Xuchang, and whether the WUP centroid is covered by any anonymous parcel service, remain unknown.",
+  "nextStep": "Only pursue an officially documented public cadastral service that returns full geometry with an explicit safe attribute allowlist; do not use registration accounts, identity matching, or certificate QR access.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9770,
+  "cityId": "wup2025:9770",
+  "queueRank": 564,
+  "population2025": 916553,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    34.0244453311886,
+    113.813220912291
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, account credentials, tokens or feature responses were retained.",
+  "registryEvidenceUrls": [
+    "https://zrzyhghj.xuchang.gov.cn/ywdh/secondpage.html",
+    "https://zrzyhghj.xuchang.gov.cn/gtdt/001001/20250115/37758dff-917a-42f0-8f60-07ab227a9158.html",
+    "https://henan.tianditu.gov.cn/xuchang/"
+  ],
+  "rootReviewedAt": "2026-10-09T01:33:52.627254+00:00"
+}

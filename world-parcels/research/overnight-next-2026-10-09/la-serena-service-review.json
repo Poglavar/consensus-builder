@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-780-la-serena.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A municipal map portal and national land-assets reference were found, but local legal parcel custody is unconfirmed.",
+  "registryAssessment": "A city-level legal land/cadastral custodian was not established by this research.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mapas.laserena.cl/",
+      "operator": "La Serena Municipality Geoportal",
+      "scope": "Official municipal geoportal offers thematic planning/administrative maps and links to Bienes Nacionales cadastral information; no local parcel layer verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "La Serena Chile official cadastral parcel map municipal GIS SII map property parcels English",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://mapas.laserena.cl/"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Spanish",
+      "query": "La Serena Chile mapa predial catastro parcelas servicio municipal oficial GIS bienes raíces",
+      "result": "Municipal thematic planning portal found, but no cadastre layer.",
+      "actualResultUrls": [
+        "https://mapas.laserena.cl/"
+      ],
+      "method": "Separate Spanish-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "A municipal map portal and national land-assets reference were found, but local legal parcel custody is unconfirmed.",
+    "verifiedOpenScope": "No source-native full parcel polygon at the exact unchanged WUP point was retained; this investigation does not establish parcel absence or citywide coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "A municipal map portal and national land-assets reference were found, but local legal parcel custody is unconfirmed. Exact-point public parcel geometry, legal/title scope, coverage completeness, and currentness remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether an official source and full native geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

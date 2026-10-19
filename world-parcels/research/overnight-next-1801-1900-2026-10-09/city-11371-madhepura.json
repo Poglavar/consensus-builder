@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 11371,
+  "queueRank": 1863,
+  "cityId": "queue:1863",
+  "name": "Madhepura",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.9174225025172, 86.7858723235066],
+  "centerLatLon": [25.9174225025172, 86.7858723235066],
+  "population2025": 309065,
+  "population2025k": 309.065,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Madhepura Bihar official cadastral map land records parcel GIS site:gov.in",
+        "result": "First-party discovery identified the Government of Bihar BhuNaksha cadastral viewer, the Bihar Revenue and Land Reforms portal, the official Madhepura district land-records page, and the Government of India DILRMP map-digitization record for Madhepura.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/",
+          "https://madhepura.nic.in/service/land-records/",
+          "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1161"
+        ]
+      },
+      {
+        "language": "native/local (Hindi)",
+        "query": "बिहार मधेपुरा आधिकारिक भू नक्शा खसरा नक्शा भू-अभिलेख",
+        "result": "First-party Hindi discovery identified the Hindi Madhepura district revenue/land-record page and BiharBhumi portal. The official BhuNaksha viewer exposes Hindi hierarchy labels and public cadastral-map routes.",
+        "actualResultUrls": [
+          "https://madhepura.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Separate English and Hindi first-party discovery followed by TLS-verified anonymous GET/POST inspection of the current BhuNaksha HTML, JavaScript and public REST routes. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields or TLS disablement were used."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official Bihar cadastral mapping viewer; current HTML loads public JavaScript and exposes hierarchy, map extent, plot lookup and WMS routes."
+    },
+    {
+      "url": "https://madhepura.nic.in/service/land-records/",
+      "observation": "Official Madhepura district page identifies BiharBhumi as the land-record service and states that Madhepura has 13 circles; it is custodian/service prose, not an open parcel-vector endpoint."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/1161",
+      "observation": "Official DILRMP record for Bihar, Madhepura, Madhepura tehsil; it reports village-level cadastral-map digitization fields and Bhu-Naksha usage status."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Viewer HTML retrieved. It references config.js, index.js, public REST hierarchy/map routes, ScalarDatahandler and WMS."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/GetMapInstanceMap/getMapInstance",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "state=10",
+      "assessment": "Returned map-instance counts [14501,5569,4630,3713,1995,963,48722,72681,735,47,638]. This confirms public service metadata, not parcel features."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "text/plain",
+      "requestBody": "state=10",
+      "assessment": "Returned 7 hierarchy levels."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/LevelLabels",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "state=10",
+      "assessment": "Returned Hindi labels for district, subdivision, circle, mauza, survey type, map instance and sheet number."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "requestBody": "state=10; level=0; codes=; hasmap=true, then level=1 codes=11, and level=2 codes=11,02,",
+      "assessment": "Returned Bihar hierarchy metadata including district code 11 MADHEPURA, subdivision code 02 मधेपुरा, circle code 01 Madhepura, and a bounded mauza list. The response contains native location codes/names, but no parcel ID-plus-geometry feature was retained."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "httpStatus": 204,
+      "contentType": null,
+      "requestBody": "state=10; gisLevels=11,02,01,0013,,, and additional bounded hierarchy variants; srs=0",
+      "assessment": "No extent response for the tested candidate hierarchy variants. This is a route/extent miss or service limitation only and is not evidence of citywide absence."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/village_selector.jsp",
+      "method": "POST",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "requestBody": "state=10",
+      "assessment": "Returned an error page in the direct request; the browser JavaScript route itself was inspected and hierarchy REST calls were used instead."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Government of Bihar BhuNaksha cadastral viewer and official Madhepura district/DILRMP land-record evidence.",
+    "verifiedOpenScope": "Local official cadastral viewer, hierarchy metadata and public map-service behavior only; no open parcel ID-plus-geometry feature was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; viewer responses indicate projected service coordinates may be used, but no authoritative CRS declaration was retrieved",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable parcel response. The exact WUP point was preserved; extent miss/204 behavior is not evidence of citywide cadastral absence.",
+    "requestEvidence": []
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review required",
+  "remainingUncertainty": "The correct public feature route, stable native parcel identity, authoritative CRS, attribute schema, city boundary interpretation, update currency and citywide completeness remain unresolved. No owner, address, titleholder, contact, tax/account or other unsafe fields were requested or retained.",
+  "nextStep": "A later attempt may continue from the ignored request evidence, resolve the correct mauza/map-instance route, and request only bounded anonymous native ID-plus-geometry data. Packet completion is research evidence only and does not qualify or admit a runtime adapter."
+}

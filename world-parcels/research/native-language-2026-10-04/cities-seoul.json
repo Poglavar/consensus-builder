@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 10,
+  "city": "Seoul",
+  "countryCode": "KR",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/seoul.json",
+  "query": {
+    "language": "Korean",
+    "script": "Hangul",
+    "text": "서울 지적도 필지 공간정보 WFS 오픈데이터 지번 필지경계"
+  },
+  "results": [
+    {
+      "title": "S-MAP Seoul spatial information viewer",
+      "url": "https://smap.seoul.go.kr/",
+      "kind": "official-city-viewer",
+      "note": "Search index exposes parcel selection and land-use information; anonymous vector download and exact parcel IDs not verified."
+    },
+    {
+      "title": "Ministry of Land, Infrastructure and Transport cadastral map API (WMS/WFS)",
+      "url": "https://www.data.go.kr/data/15057570/openapi.do?recommendDataYn=Y",
+      "kind": "official-national-api-catalog",
+      "note": "Korean government catalog describes a cadastral-map WMS/WFS API and land attribute information; requires checking authorization/keys and Seoul coverage."
+    }
+  ],
+  "assessment": "Korean-language search surfaced Seoul’s official S-MAP viewer with parcel selection and a national cadastral WMS/WFS API catalog. Public anonymous access, Seoul coverage, and stable exact-ID query support remain unverified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

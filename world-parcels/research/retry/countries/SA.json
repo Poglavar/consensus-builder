@@ -1,0 +1,81 @@
+{
+ "kind": "country",
+ "key": "SA",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7; Accept-Language: ar-SA,ar;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://my.gov.sa/en/content/gis",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "Cloudflare 'Attention Required' block page, unchanged with full browser headers"
+  },
+  {
+   "url": "https://nationalgeoplatform.gov.sa/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://rega.gov.sa/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "REGA site reachable; no GIS/parcel link in HTML; Real Estate Registry page is a service description"
+  },
+  {
+   "url": "https://rega.gov.sa/rega-services/platforms/real-estate-registry/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "service page linking to open.data.gov.sa and my.gov.sa only; no parcel service URL"
+  },
+  {
+   "url": "https://www.moj.gov.sa/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "MoJ site reachable; nothing parcel-service related inspected"
+  },
+  {
+   "url": "https://www.geosa.gov.sa/ar/Pages/default.aspx",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=utf-8",
+   "assessment": "Saudi geospatial authority site reachable; not further inspected"
+  },
+  {
+   "url": "https://open.data.gov.sa/ar/home",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://www.momra.gov.sa/ | balady.gov.sa | geoportal.gov.sa | ngp.gov.sa | data.gov.sa | gis.rega.gov.sa | rer.rega.gov.sa | maps.balady.gov.sa",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection failed at proxy CONNECT/TLS (curl exit, no HTTP reply); same on retry with browser headers"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Saudi%20parcels&f=json&num=8",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "9 hits, all small user-owned survey/WFL feature services (Makkah/Khaybar), not a national cadastre; not tested"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "geoBlockReason": "Cloudflare 403 on my.gov.sa and CONNECT failures only for .gov.sa GIS hosts while other .gov.sa hosts answer suggest network/geo filtering; not confirmed.",
+ "notes": "Cloudflare 403 on my.gov.sa persists with browser headers. rega.gov.sa and geosa.gov.sa/moj.gov.sa now reachable but expose no public parcel service; registry is an authenticated e-service. Most GIS hosts (NGP, Balady maps, open data) fail at the proxy.",
+ "nextStep": "Retry from a Saudi-reachable network; inspect the NGP / Balady maps viewers' JS once reachable."
+}

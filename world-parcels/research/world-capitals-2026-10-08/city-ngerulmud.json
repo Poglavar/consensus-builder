@@ -1,0 +1,129 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:PW:ngerulmud",
+  "name": "Ngerulmud",
+  "country": "Palau",
+  "countryCode": "PW",
+  "centerLatLon": [
+    7.5006,
+    134.6242
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/PW.json absent"
+  ],
+  "priorEvidenceAssessment": "research/countries/PW.json absent; no city-specific project record found.",
+  "executedQueries": [
+    {
+      "query": "Ngerulmud Palau cadastral parcels GIS official land registry map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"Kolo\" \"Palau\" GIS land cadastral parcels Melekeok",
+      "language": "Palauan/local-language attempt",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Palau chelebuul land parcels map Melekeok",
+      "language": "Palauan-language attempt",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "\"206e4c1eb0f849c9b8aa21f967edf802\" PALARIS Palau parcel layer web map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Ngerulmud Palau parcels GIS land registry cadastral Melekeok",
+      "language": "English",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.palaugov.pw/palaris/",
+      "observation": "Official PALARIS office page identifies it as Palau’s national geospatial office/data hub and links the ArcGIS Experience."
+    },
+    {
+      "url": "https://experience.arcgis.com/experience/206e4c1eb0f849c9b8aa21f967edf802/page/Data?org=PalauGIS",
+      "observation": "Public ArcGIS Experience shell returned HTTP 200. Its public ArcGIS item data (item 206e4c1eb0f849c9b8aa21f967edf802, title “PALARIS Website”) lists six web-map data sources. The interactive map (item 4f6e0d33c8ad47b4aa221ddda2d490a6) publishes roads, buildings, state-boundary estimates and other infrastructure/environment layers; no cadastral or parcel layer is configured."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/206e4c1eb0f849c9b8aa21f967edf802/data?f=pjson",
+      "observation": "Public published Experience Builder configuration, HTTP 200, 412,411 bytes; web-map IDs and names recorded in the report. Public PalauGIS ArcGIS catalog search for parcel returned 0 items; cadastral returned the state-boundary feature service, not parcels."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.palaugov.pw/palaris/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "outcome": "Official PALARIS GIS office page inspected and ArcGIS Experience link followed."
+    },
+    {
+      "url": "https://experience.arcgis.com/experience/206e4c1eb0f849c9b8aa21f967edf802?org=PalauGIS",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "ArcGIS Experience shell loaded, but exposed page has no layer listing or direct query result."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/206e4c1eb0f849c9b8aa21f967edf802?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "outcome": "Public ArcGIS item metadata returned title PALARIS Website, owner Didip73, type Web Experience."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/206e4c1eb0f849c9b8aa21f967edf802/data?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "outcome": "Public app config returned 412411 bytes and six webmap data-source entries: a9b2b05410134baea7616cb2f30dbf19, 4f6e0d33c8ad47b4aa221ddda2d490a6, b8c3f90938c04926af70860128068818, bb4dc127a6944c9bb2557ee82943ce81, 2a42154a2fea42c9aaed514c902d8c6c, fbf6436b724646c28a462bc83336750d."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/content/items/4f6e0d33c8ad47b4aa221ddda2d490a6/data?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Published PALARIS interactive web map inspected. Feature layers include Palau_Buildings_2019, Palau_RoadNetwork_2025, Palau_StateBoundaryEstimate_2008 and other non-cadastral infrastructure/land-cover/hazard data; no parcel layer was found."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=orgid%3AUhegwRIXa8Qj9weD%20parcel&f=json&num=100",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "outcome": "Public PalauGIS organization catalog returned total=0 for parcel."
+    },
+    {
+      "url": "https://services7.arcgis.com/UhegwRIXa8Qj9weD/arcgis/rest/services/Palau_Buildings_2019/FeatureServer/0/query?f=json&where=1%3D1&geometry=134.620%2C7.490%2C134.640%2C7.510&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "outcome": "Bounded Ngerulmud-area query returned 5 polygon building features with exceededTransferLimit=true. This is a deliberately limited building-footprint query, not cadastral evidence."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No parcel layer appears in the public PALARIS Experience web maps or PalauGIS parcel-name catalog results. A bounded Ngerulmud-area query to the published building layer returned polygon footprints only; no parcel/cadastre query was available from the traced app sources.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_public_gis_investigated_no_parcel_layer_found_in_traced_app_sources",
+  "coverageAssessment": {
+    "claimedScope": "PALARIS identifies itself as the national geospatial data hub; public app web maps cover national theme layers and Koror-specific map/table layers.",
+    "verifiedOpenScope": "One bounded Ngerulmud building-footprint query only; no parcel/cadastral geometry verified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-ngerulmud.json"
+}

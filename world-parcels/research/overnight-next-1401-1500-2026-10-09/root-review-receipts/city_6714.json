@@ -1,0 +1,14 @@
+{
+  "taskId": "city:6714",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-6714-birimbal-al-quadima.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/birimbal-al-quadima-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T17:24:31.833506Z",
+  "reason": "ESA map purchase route is request and quotation based; CAPMAS portal timed out. No native ID or polygon response, adapter qualification, or headed details check.",
+  "registryFound": null,
+  "admissionQualified": false
+}

@@ -1,0 +1,225 @@
+{
+  "checkedAt": "2026-10-09",
+  "city": "Naha",
+  "wupCityCode": 4601,
+  "sourceArchive": {
+    "resource": "47201_那覇市_公共座標15系_筆R_2026.shp.zip",
+    "bytes": 13583967,
+    "nativeCrs": "JGD2011 / Japan Plane Rectangular CS XV (EPSG:6683)",
+    "fullSnapshotRecords": 136440
+  },
+  "boundedUnion": {
+    "windowCount": 13,
+    "alignedGridCellCount": 9,
+    "adjacentPanCount": 4,
+    "cellSizeDegrees": 0.001,
+    "anchor": "Official Naha City Hall reference point (not WUP point)",
+    "uniqueFeatureCount": 257,
+    "geosVersion": "3.14.1",
+    "geosOperations": "isValid, area on each record; bbox-filtered pairwise equals, overlaps, contains, within, intersects; GEOS operations used native projected coordinates (metres).",
+    "fullGeometriesRetainedInThisAudit": false,
+    "existingThreeFullSamplesPreserved": true
+  },
+  "geos": {
+    "validCount": 255,
+    "invalidCount": 2,
+    "invalidRecords": [
+      94048,
+      114149
+    ],
+    "areaMin_m2": 2.072343587820498,
+    "areaMax_m2": 29770.241367070143,
+    "zeroOrNegativeAreaCount": 0,
+    "bboxCandidatePairCount": 1022,
+    "intersectingPairCount": 623,
+    "equalGeometryPairs": [],
+    "duplicateGeometryPairCount": 0,
+    "interiorOverlapOrContainmentPairs": [
+      {
+        "aRecord": 94280,
+        "bRecord": 114005,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 3.356657802546419
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114006,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 4.21050333088165
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114007,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 7.067035444529921
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114011,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 0.751609542217587
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114012,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 1.4961622294152228
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114013,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 1.3016476543193858
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114014,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 1.1962349296181092
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114053,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 7.098958088550152
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114054,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 3.206466878686703
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114055,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 6.528596523267996
+      },
+      {
+        "aRecord": 94280,
+        "bRecord": 114149,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 39.242096453459865
+      },
+      {
+        "aRecord": 94048,
+        "bRecord": 94162,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 0.01237695784240508
+      },
+      {
+        "aRecord": 94191,
+        "bRecord": 94196,
+        "overlaps": true,
+        "aContainsB": false,
+        "aWithinB": false,
+        "equals": false,
+        "intersectionArea_m2": 0.0051696700899897035
+      }
+    ],
+    "interiorOverlapOrContainmentPairCount": 13,
+    "maxIntersectionArea_m2": 39.242096453459865,
+    "overlapAbove0_01m2Count": 12,
+    "geosOperationErrors": [],
+    "allValid": false,
+    "noEqualGeometryPairs": true,
+    "noInteriorOverlapContainment": false
+  },
+  "fullSnapshotCompositeIdentity": {
+    "dbfRows": 136440,
+    "fieldsReadOnly": [
+      "市区町村C",
+      "大字コード",
+      "丁目コード",
+      "小字コード",
+      "予備コード",
+      "地番"
+    ],
+    "fieldsNeverDecoded": [
+      "市区町村名",
+      "大字名",
+      "丁目名",
+      "小字名",
+      "予備名",
+      "精度区分",
+      "座標値種別",
+      "地図名",
+      "座標系",
+      "測地系判別",
+      "every other non-key DBF field"
+    ],
+    "ownerAddressTaxPersonalValuesRead": false,
+    "nonmissingCompositeIdentityRows": 136440,
+    "missingCompositeIdentityRows": 0,
+    "missingByComponent": {},
+    "uniqueNonmissingCompositeIds": 136412,
+    "duplicateCompositeIdGroups": 19,
+    "duplicateCompositeIdRowsBeyondFirst": 28,
+    "sourceIDDistinctValues": 15026,
+    "sourceIDMissingRows": 0,
+    "sourceIDDuplicateRows": 121414,
+    "compositeKeyComponents": [
+      "市区町村C",
+      "大字コード",
+      "丁目コード",
+      "小字コード",
+      "予備コード",
+      "地番"
+    ],
+    "rawCompositeIdValuesRetained": false,
+    "sourceIDCountsSource": "Prior full-snapshot safe-ID scan recorded in naha-2026-static-qualification.json; current pass read only composite-key fields."
+  },
+  "boundedIdentityCrosscheck": {
+    "uniqueCompositeIds": 257,
+    "missingCompositeIds": 0,
+    "duplicateCompositeIds": 0,
+    "all257RereadFromSecondArchiveStream": true,
+    "rawIDValuesForFullSnapshotRetained": false
+  },
+  "pointScope": {
+    "wupPointLatLon": [
+      26.2485177206029,
+      127.737901051124
+    ],
+    "wupPointOutsideNahaAdministrativeBoundary": true,
+    "wupPointOutsideDatasetExtent": true,
+    "isBlocker": false
+  },
+  "remainingRuntimeWork": "Existing repository runtime adapters do not support the shapefile archive. Full-snapshot native identity/binding and arbitrary footprint lookup have not been qualified; archive-level duplicate/missing composite ID counts above are diagnostic only. The 257-feature GEOS audit is complete. No new runtime reader or shared configuration was implemented."
+}

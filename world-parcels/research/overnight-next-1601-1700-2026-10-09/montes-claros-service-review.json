@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-7784-montes-claros.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "wupPointPreserved": true
+  },
+  "assessment": "Official municipal sources establish a local Cadastro Imobiliário and describe a digital map platform with quadras e lotes and property consultation. The current official page did not expose a viewer URL or JavaScript/API configuration. Candidate map-host requests were unavailable or unresolved. No safe anonymous parcel ID-plus-geometry response was verified, so no GeoJSON sample was retained.",
+  "registryAssessment": "Local municipal registry/map custody is evidenced by the Prefeitura de Montes Claros / SEFIN announcement and Decreto Municipal 4888/2024. The decree says the Cadastro Imobiliário records territorial parcels, buildings, improvements, titularity/possession/property and location, and identifies units by a numeric Índice Cadastral. This is local registry evidence; it does not establish public vector-service reuse.",
+  "officialPrimarySources": [
+    {
+      "url": "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+      "observation": "Official SEFIN page fetched HTTP 200. It describes a municipal GIS with quadras e lotes and citizen consultation of imóveis, lotes e edificações; no embedded viewer/API URL was present."
+    },
+    {
+      "url": "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024",
+      "observation": "Official municipal decree fetched HTTP 200. It regulates the Cadastro Imobiliário and defines the numeric Índice Cadastral; no public geometry endpoint is linked."
+    },
+    {
+      "url": "https://tesetecnologia.com.br/criacao-de-sig-para-montes-claros-mg/",
+      "observation": "Contractor project page describes historical SIG production for the municipality, including vectorized cadastral lots and cadastral-unit identifiers. It was used as contextual evidence only; no endpoint or raw parcel data was retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Montes Claros Brazil official cadastral map parcel registry GIS municipal lots",
+      "result": "Official SEFIN digital-maps announcement and municipal cadastral decree found; no public geometry endpoint exposed.",
+      "resultUrls": [
+        "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+        "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024"
+      ]
+    },
+    {
+      "language": "Portuguese (Brazil)",
+      "query": "Montes Claros cadastro imobiliário mapa digital lotes quadras geoprocessamento Prefeitura",
+      "result": "Official Portuguese-language sources confirm the municipal Cadastro Imobiliário and a digital maps platform listing blocks/lots; no anonymous parcel geometry service was exposed.",
+      "resultUrls": [
+        "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+        "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024",
+        "https://tesetecnologia.com.br/criacao-de-sig-para-montes-claros-mg/"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point [-16.7299988077705, -43.8579856504652] was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "attempts": [
+    {
+      "url": "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official platform announcement fetched with browser-like User-Agent, Accept, Accept-Language and cookie jar. HTML inspection found no iframe, script configuration, WMS/WFS, FeatureServer, MapServer or OGC API URL."
+    },
+    {
+      "url": "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official decree reviewed for local cadastral custodian, parcel terminology and identifier semantics. No public map/API endpoint found."
+    },
+    {
+      "url": "https://mapas.montesclaros.mg.gov.br/",
+      "method": "GET",
+      "httpStatus": 502,
+      "result": "Candidate host inferred from the official platform name returned upstream/proxy failure. Recorded as unavailable, not absence."
+    },
+    {
+      "url": "https://geo.montesclaros.mg.gov.br/",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "Candidate municipal GIS host did not resolve."
+    },
+    {
+      "url": "https://geoprocessamento.montesclaros.mg.gov.br/",
+      "method": "GET",
+      "httpStatus": 0,
+      "result": "Candidate municipal GIS host did not resolve."
+    }
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer name and public service metadata"
+  ],
+  "excludedFields": [
+    "owner or titleholder names",
+    "addresses and contact data",
+    "tax/account/registration details beyond a safe native parcel ID",
+    "credentials, private tokens and personal data"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal digital map platform and Cadastro Imobiliário for Montes Claros.",
+    "verifiedOpenScope": "Municipal registry custody and described map layers verified from official sources; open parcel geometry not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The map platform may have a current viewer/API not indexed or not linked in the announcement. Its public access mode, layer schema, CRS, native ID, and exact-point parcel coverage require a later independent inspection. A timeout, host failure or missing endpoint is not evidence of citywide absence.",
+  "runtimeAssessment": "held; packet research does not qualify or admit a runtime adapter"
+}

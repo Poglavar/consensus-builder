@@ -1,0 +1,63 @@
+{
+  "cityRecord": "city-7006-emeishan.json",
+  "schemaVersion": "1.0",
+  "cityCode": 7006,
+  "queueRank": 1853,
+  "city": "Emeishan",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Emeishan Natural Resources Bureau evidence establishes a local real-estate registration/cadastral custodian and the official Sichuan viewer was inspected, but no anonymous parcel ID-plus-geometry response was verified. No sample GeoJSON is retained; runtime remains held.",
+  "queryOutcomes": "Separate English and Simplified-Chinese discovery queries, outcomes, and actual URLs are recorded in city-7006-emeishan.json.",
+  "requestOutcomes": "The official Emeishan government pages and Sichuan Tianditu viewer/configuration loaded or were inspected. The Sichuan map-open-platform host timed out. No parcel schema, CRS, safe native identity or geometry response was exposed.",
+  "attemptedRoutes": [
+    "Emeishan government electronic government map notice",
+    "Emeishan Natural Resources Bureau real-estate registration center budget/custodian page",
+    "Sichuan Tianditu public viewer and current JavaScript/configuration",
+    "Sichuan map-open-platform host"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [29.6021934252249, 103.501209615595] was preserved in latitude/longitude order and never shifted; no exact-point hit/miss inference was made.",
+    "No Emeishan city boundary or complete citywide coverage was established for an open parcel geometry service.",
+    "No parcel geometry, stable native parcel identity, source schema or parcel CRS was retrieved or retained.",
+    "Local registry custody and the electronic government map are not proof of an open vector parcel API.",
+    "A zero exact-point hit, map extent miss, timeout, login wall or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, personal or other unsafe fields were requested or retained.",
+    "Packet completion is research evidence only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified",
+  "geometryQuality": "not applicable; no geometry retrieved",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No parcel geometry query reached a usable public service. The exact WUP point was preserved but no hit/miss inference was made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Emeishan City local natural-resources and real-estate-registration administration under Leshan, Sichuan.",
+    "verifiedOpenScope": "Local custodial evidence and public basemap viewer only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current local cadastral viewer/API route, access controls, layer schema, CRS, stable native parcel identity, update currency, legal access conditions and citywide coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, tax records or completeness of any Chinese cadastral dataset.",
+  "retainedSample": null
+}

@@ -1,0 +1,599 @@
+/* Purpose: style the universal proposal editor shell, review step, and grouped drafts list.
+   The shell is a docked editor on the --cb-z-editor rung; its controls are the shared vocabulary
+   (css/primitives.css: close-circle-btn, .btn roles, .cb-segmented, .cb-tabs, .cb-badge), so this
+   file only lays them out. */
+.proposal-editor-shell {
+    position: fixed;
+    z-index: var(--cb-z-editor);
+    top: max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    display: none;
+    width: min(430px, calc(100vw - 24px));
+    min-width: 300px;
+    overflow: hidden;
+    color: var(--cb-text);
+    background: var(--cb-glass-sheet);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-lg);
+    box-shadow: var(--cb-shadow-lg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.proposal-editor-approval-status,
+.proposal-approval-status {
+    margin: 10px 0;
+    padding: 9px 11px;
+    border-radius: var(--cb-radius-md);
+    color: var(--cb-warning-soft-ink);
+    background: var(--cb-warning-soft);
+    font-size: var(--cb-text-sm);
+    line-height: 1.45;
+}
+
+.proposal-editor-approval-status.is-ready {
+    color: var(--cb-success-soft-ink);
+    background: var(--cb-success-soft);
+}
+
+.proposal-editor-approval-error {
+    margin: 9px 0;
+    padding: 9px 11px;
+    border-radius: var(--cb-radius-md);
+    color: var(--cb-danger-soft-ink);
+    background: var(--cb-danger-soft);
+    font-size: var(--cb-text-sm);
+}
+
+/* An apply error that carries its way forward (proposals/ground-rebase.js): the action sits under the text. */
+.proposal-map-action-error .btn-ground-rebase {
+    display: flex;
+    margin-top: 8px;
+}
+
+.proposal-editor-approval-list {
+    display: grid;
+    gap: 7px;
+    max-height: 250px;
+    overflow: auto;
+}
+
+.proposal-editor-approval-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px 10px;
+    padding: 9px 10px;
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    font-size: var(--cb-text-sm);
+}
+
+.proposal-editor-approval-row strong {
+    overflow-wrap: anywhere;
+}
+
+.proposal-editor-approval-row > div {
+    grid-column: 1 / -1;
+    color: var(--cb-text-muted);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* Agreement rules (proposals/approval-setup.js): the scheme's details, and custom tests as rows. */
+.approval-setup__rule {
+    margin: var(--cb-space-2) 0;
+    color: var(--cb-text-strong);
+    line-height: 1.45;
+}
+
+.approval-setup__regime {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    margin: 0 0 var(--cb-space-2);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface-2);
+    font-size: var(--cb-text-sm);
+    line-height: 1.45;
+}
+
+.approval-setup__regime p,
+.approval-setup__allocation {
+    margin: 0;
+}
+
+.approval-setup__allocation {
+    padding-left: var(--cb-space-4);
+}
+
+.approval-setup__research {
+    background: var(--cb-warning-soft);
+    color: var(--cb-warning-soft-ink);
+}
+
+.approval-setup__sources,
+.approval-setup__caveat {
+    color: var(--cb-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.approval-setup__tests {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-2);
+}
+
+.approval-setup__test {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cb-space-1);
+    width: 100%;
+}
+
+.approval-setup__test select,
+.approval-setup__test input {
+    min-width: 0;
+    font-size: var(--cb-text-sm);
+}
+
+.approval-setup__test input {
+    width: 5.5em;
+}
+
+.proposal-editor-shell.is-open {
+    display: flex;
+    flex-direction: column;
+}
+
+.proposal-editor-shell > :not(.proposal-editor-body) {
+    flex-shrink: 0;
+}
+
+.proposal-editor-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: start;
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid var(--cb-line);
+}
+
+/* The proposal type above the title is a .cb-kicker. */
+.proposal-editor-eyebrow {
+    margin-bottom: var(--cb-space-1);
+}
+
+.proposal-editor-title {
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--cb-text-xl);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 1.25;
+    color: var(--cb-text-strong);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.proposal-editor-source {
+    margin: 4px 0 0;
+    overflow: hidden;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.proposal-editor-save-row,
+.proposal-editor-toolbar {
+    display: flex;
+    gap: var(--cb-space-1);
+    align-items: center;
+}
+
+.proposal-editor-save-row {
+    justify-content: space-between;
+    padding: 6px 16px;
+    color: var(--cb-text-muted);
+    background: var(--cb-surface-2);
+    font-size: var(--cb-text-sm);
+}
+
+.proposal-editor-autosave {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.proposal-editor-autosave::before {
+    width: 7px;
+    height: 7px;
+    background: var(--cb-success);
+    border-radius: 50%;
+    content: '';
+}
+
+/* Source only · Draft only · Overlay: a .cb-segmented row whose options share the width (and
+   wrap on the narrowest phones). */
+.proposal-editor-comparison {
+    padding: 10px 16px 0;
+}
+
+.proposal-editor-comparison .cb-segmented__option {
+    flex: 1 1 auto;
+}
+
+/* The facets are .cb-tabs; the strip scrolls sideways when they do not fit. */
+.proposal-editor-tabs {
+    margin-top: var(--cb-space-2);
+    padding: 0 var(--cb-space-3);
+}
+
+.proposal-editor-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 8px 16px 18px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.proposal-editor-section {
+    display: grid;
+    gap: 13px;
+}
+
+.proposal-editor-section h3,
+.proposal-editor-review h3 {
+    margin: 2px 0 0;
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.proposal-editor-section-copy {
+    margin: -5px 0 2px;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: 1.45;
+}
+
+.proposal-editor-field {
+    display: grid;
+    gap: 5px;
+}
+
+.proposal-editor-field > span,
+.proposal-editor-field > label {
+    color: var(--cb-text);
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+}
+
+/* The inputs take their look from the base form controls (css/primitives.css). */
+.proposal-editor-field input,
+.proposal-editor-field textarea,
+.proposal-editor-field select {
+    width: 100%;
+    min-width: 0;
+}
+
+.proposal-editor-field textarea {
+    min-height: 88px;
+}
+
+.proposal-editor-check {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: var(--cb-text-md);
+}
+
+.proposal-editor-check input {
+    width: 17px;
+    height: 17px;
+}
+
+.proposal-editor-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.proposal-editor-card {
+    padding: 12px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-lg);
+}
+
+.proposal-editor-card p {
+    margin: 4px 0 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: 1.45;
+}
+
+.proposal-editor-card strong {
+    font-size: var(--cb-text-md);
+}
+
+.proposal-editor-parcels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* A parcel id is a .cb-badge; a long one is cut, its full text in the title. */
+.proposal-editor-parcel-chip {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.proposal-editor-validation {
+    margin: 0 16px 10px;
+    padding: 10px 12px;
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-sm);
+}
+
+.proposal-editor-body > .proposal-editor-validation {
+    margin: 16px 0 0;
+}
+
+[data-editor-section="approval"] .proposal-editor-card h4 {
+    margin: 0 0 8px;
+}
+
+.proposal-editor-validation.is-valid {
+    color: var(--cb-success-soft-ink);
+    background: var(--cb-success-soft);
+}
+
+.proposal-editor-validation.has-errors {
+    color: var(--cb-danger-soft-ink);
+    background: var(--cb-danger-soft);
+}
+
+.proposal-editor-validation.has-warnings {
+    color: var(--cb-warning-soft-ink);
+    background: var(--cb-warning-soft);
+}
+
+.proposal-editor-validation ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+}
+
+.proposal-editor-validation ul + .proposal-editor-validation-heading {
+    display: block;
+    margin-top: 9px;
+}
+
+/* Each issue is a quiet .cb-link that jumps to the field. */
+.proposal-editor-validation li.is-warning,
+.proposal-editor-validation-heading.is-warning {
+    color: var(--cb-warning-soft-ink);
+}
+
+/* Discard on the left, the way forward filling the rest of the row. */
+.proposal-editor-footer {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 9px;
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--cb-line);
+}
+
+.proposal-editor-review {
+    display: grid;
+    gap: 12px;
+}
+
+.proposal-editor-review-notice {
+    padding: 10px 12px;
+    color: var(--cb-primary-soft-ink);
+    background: var(--cb-primary-soft);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-sm);
+    line-height: 1.45;
+}
+
+.proposal-editor-diff-list {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+}
+
+.proposal-editor-diff-row {
+    display: grid;
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--cb-line);
+    font-size: var(--cb-text-sm);
+}
+
+.proposal-editor-diff-row dt {
+    color: var(--cb-text-muted);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.proposal-editor-diff-row dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.proposal-editor-unsupported {
+    padding: 12px;
+    color: var(--cb-warning-soft-ink);
+    background: var(--cb-warning-soft);
+    border-radius: var(--cb-radius-md);
+    font-size: var(--cb-text-sm);
+    line-height: 1.5;
+}
+
+body.proposal-editor-open #proposal-details-panel.visible {
+    opacity: 0.42;
+    pointer-events: none;
+}
+
+@media (max-width: 767.98px) {
+    .proposal-editor-shell {
+        top: auto;
+        right: max(6px, env(safe-area-inset-right));
+        bottom: max(6px, env(safe-area-inset-bottom));
+        left: max(6px, env(safe-area-inset-left));
+        width: auto;
+        min-width: 0;
+        max-height: min(72vh, 680px);
+    }
+
+    .proposal-editor-header {
+        padding: 12px 13px 9px;
+    }
+
+    .proposal-editor-save-row,
+    .proposal-editor-comparison,
+    .proposal-editor-body,
+    .proposal-editor-footer {
+        padding-right: 13px;
+        padding-left: 13px;
+    }
+
+    .proposal-editor-title {
+        font-size: var(--cb-text-lg);
+    }
+
+    .proposal-editor-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 360px) {
+    .proposal-editor-shell {
+        right: 3px;
+        bottom: 3px;
+        left: 3px;
+        max-height: 76vh;
+    }
+
+    .proposal-editor-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .proposal-editor-footer > .btn-danger {
+        order: 2;
+    }
+
+}
+
+/* Node-edit mode: draggable centerline handles on a selected applied road. */
+.road-node-handle {
+    cursor: grab;
+    background: var(--cb-surface);
+    border: 3px solid var(--cb-success-soft-ink);
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.4);
+}
+
+.road-node-handle:active {
+    cursor: grabbing;
+    border-color: var(--cb-success);
+}
+
+/* Add-node + bulldoze controls at each road edge midpoint (node-edit mode). */
+.road-edge-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: 0;
+}
+
+/* Two equal circles, never squeezed by their row (flex: none) and square by construction
+   (aspect-ratio), each with its mark drawn as strokes centred on the circle. */
+.road-edge-action {
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    width: 16px;
+    height: auto;
+    aspect-ratio: 1;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    user-select: none;
+}
+
+.road-edge-action__glyph {
+    display: block;
+    width: 62%;
+    height: 62%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    pointer-events: none;
+}
+
+.road-edge-bulldoze .road-edge-action__glyph {
+    transform: rotate(45deg);
+}
+
+.road-edge-add {
+    cursor: pointer;
+    color: var(--cb-success-soft-ink);
+    background: var(--cb-success-soft);
+    border: 2px solid var(--cb-success-hover);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35);
+}
+
+.road-edge-add:hover {
+    color: var(--cb-success-ink);
+    background: var(--cb-success);
+}
+
+.road-edge-add--disabled,
+.road-edge-add--disabled:hover {
+    cursor: not-allowed;
+    color: var(--cb-text-muted);
+    background: var(--cb-surface-3);
+    border-color: var(--cb-line-strong);
+    opacity: 0.75;
+}
+
+.road-edge-bulldoze {
+    cursor: pointer;
+    color: var(--cb-danger-soft-ink);
+    background: var(--cb-danger-soft);
+    border: 2px solid var(--cb-danger);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.35);
+    opacity: 0.85;
+}
+
+.road-edge-bulldoze:hover {
+    color: var(--cb-danger-ink);
+    opacity: 1;
+    background: var(--cb-danger);
+}
+
+@media (pointer: coarse) {
+    .road-edge-action {
+        width: 26px;
+    }
+}
+
+/* Junction node: one bigger handle that moves every leg branching from it. */
+.road-node-handle--junction {
+    background: var(--cb-warning-soft);
+    border-color: var(--cb-warning);
+    border-width: 4px;
+}

@@ -1,0 +1,15 @@
+{
+  "taskId": "city:2282",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:59:21Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-2282-hotan.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/hotan-service-review.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "review": "Hotan has English and Chinese executed search entries. Official bureau duties and a cadastral database procurement lead support further research but do not establish a public local parcel registry or a safe native ID plus geometry response. The national registration portal timed out; no absence inference. Custody stays unresolved (registryFound null). No sample, adapter qualification, paging, 13 bounded cells, source binding, or headed Details verification.",
+  "wupSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+}

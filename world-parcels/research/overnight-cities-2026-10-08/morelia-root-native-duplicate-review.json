@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "decision": "native_duplicate_geometry_reproduced",
+  "nativeSrid": 6369,
+  "sourceCoordinatesModified": false,
+  "fullGeometryRetainedInReview": false,
+  "properties": [
+    {
+      "idpredio": "21a780d4-4431-4485-8ef5-6d62dfe2aa55",
+      "clave_catastro": "16-001-053-01-0001-005-007-00029-01-0002",
+      "forma": null,
+      "tipo": 2
+    },
+    {
+      "idpredio": "2c757ab4-47a9-4768-b5e7-99147a46a73e",
+      "clave_catastro": "16-001-053-01-0001-005-007-00029-01-0001",
+      "forma": null,
+      "tipo": 2
+    }
+  ],
+  "topologicallyIdentical": true,
+  "symmetricDifferenceNativeM2": 0.0,
+  "overlapNativeM2": 237.5336233470792,
+  "request": {
+    "url": "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=GetFeature&version=2.0.0&typeNames=gcm%3APredio&outputFormat=application%2Fjson&srsName=EPSG%3A6369&propertyName=clave_catastro%2Cidpredio%2Ctipo%2Cforma%2Cgeom&CQL_FILTER=clave_catastro+IN+%28%2716-001-053-01-0001-005-007-00029-01-0001%27%2C%2716-001-053-01-0001-005-007-00029-01-0002%27%29&count=5",
+    "httpStatus": 200,
+    "nativeSrid": 6369,
+    "featureCount": 2,
+    "sourceCoordinatesModified": false
+  },
+  "semanticsNote": "Both native rows publish tipo=2 and forma=null. No inspected publisher definition supplies an authoritative ground-only/lifecycle exclusion. Native UUID idpredio distinguishes rows but does not distinguish their identical footprint geometry."
+}

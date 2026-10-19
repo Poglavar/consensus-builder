@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-10641-viluppuram.json",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "purpose": "Document first-party Viluppuram/Tamil Nadu registry discovery, public route attempts, safe-field limits, and uncertainty.",
+  "assessment": "Official Viluppuram District Administration evidence establishes a local Assistant Director of Survey and Land Records and links Tamil Nadu land-record e-Services. DILRMP reports district cadastral-map digitization statistics, while TNGIS and NATMO expose broader GIS/map context. No safe anonymous ID-plus-complete-polygon response was obtained.",
+  "registryAssessment": "registryFound=true is supported by the official Viluppuram District Administration land-record page naming the Assistant Director of Survey and Land Records at the Collectorate in Viluppuram. This establishes local service custody only; it is not source integration, ownership evidence, or proof of citywide parcel availability.",
+  "officialPrimarySources": [
+    {"url": "https://viluppuram.nic.in/service/e-services-land-records/", "observation": "Official district page lists Patta/FMB/Chitta/TSLR, A-Register, verification services, links Tamil Nadu e-Services, and names the Assistant Director of Survey and Land Records."},
+    {"url": "https://eservices.tn.gov.in/eservicesnew/home.html", "observation": "Official Tamil Nadu land-record service route identified by the district page; it is described as survey-number-based land-record access, but no feature response was obtained in this pass."},
+    {"url": "https://www.tngis.tn.gov.in/apps.html", "observation": "Official Tamil Nadu GIS application listing includes Viluppuram and warns that portal data is informational and not statutory/legal parcel evidence; no usable parcel response was obtained."},
+    {"url": "https://dilrmp.gov.in/physicalProgressReports/map/district-level/33", "observation": "Official DILRMP district report lists Viluppuram cadastral-map/FMB and land-parcel digitization progress. This is coverage/progress evidence, not a public geometry API or city-specific feature sample."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/609", "observation": "Official DILRMP Viluppuram map-digitization/geo-referencing status page was found, but it did not expose a qualifying parcel feature response."},
+    {"url": "https://www.geoportal.natmo.gov.in/dataset/villupuram", "observation": "Public NATMO Viluppuram district planning-map dataset is raster/administrative planning context, not retained parcel geometry."}
+  ],
+  "viewerConfiguration": {
+    "candidateRoutes": ["https://eservices.tn.gov.in/eservicesnew/home.html", "https://www.tngis.tn.gov.in/apps/gi_viewer/"],
+    "schemaAndCrs": "Not verified from a successful parcel feature response.",
+    "nativeFieldNames": "Not retained; no successful safe feature response was obtained.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "geometry type", "source CRS", "source layer", "retrieval time"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://viluppuram.nic.in/service/e-services-land-records/", "method": "GET; anonymous public read", "normalTlsVerification": true, "result": "Official page found/read through first-party search review; local survey-and-land-record custody and state service link verified; no parcel geometry response."},
+    {"url": "https://eservices.tn.gov.in/eservicesnew/home.html", "method": "GET; anonymous public read", "normalTlsVerification": true, "result": "Direct shell retrieval timed out after 20 seconds. No survey-number query or unsafe record request was made; timeout is not treated as absence."},
+    {"url": "https://www.tngis.tn.gov.in/apps.html", "method": "GET; anonymous public read", "normalTlsVerification": true, "result": "Direct shell retrieval timed out after 15 seconds; search result identified the official app listing and Viluppuram entry. No parcel feature response."},
+    {"url": "https://tngis.tn.gov.in/apps/gi_viewer/", "method": "GET; anonymous public read", "normalTlsVerification": true, "result": "Direct shell retrieval timed out after 15 seconds. No map extent or parcel query submitted."},
+    {"url": "https://dilrmp.gov.in/physicalProgressReports/map/district-level/33", "method": "GET; anonymous public read via web search", "normalTlsVerification": true, "result": "Official Viluppuram district digitization report found; it reports cadastral-map and parcel progress but no usable geometry endpoint or bounded feature response."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/609", "method": "GET; anonymous public read via web search", "normalTlsVerification": true, "result": "Official Viluppuram status page found; no qualifying anonymous parcel geometry response."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "exactWupPointTest": "Not run: no anonymous parcel geometry layer was verified. Exact WUP point [11.9348150998099, 79.5013535000942] was preserved unchanged.", "query": "No point or extent parcel query submitted because the public service route and safe request shape were not verified."},
+  "coverageAssessment": {"claimedScope": "Viluppuram District Administration local survey-and-land-record service custody plus Tamil Nadu e-Services/TNGIS and DILRMP reporting.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The public availability and schema of Viluppuram parcel geometry, including urban coverage, CRS, stable native identity, and citywide completeness, remain unverified. Timeouts and administrative/digitization pages do not establish cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; this packet does not qualify an adapter or enable runtime."}
+}

@@ -1,0 +1,668 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32749",
+  "featureCount": 886,
+  "validNonemptyCount": 884,
+  "invalidFeatures": [
+    {
+      "id": "1099",
+      "reason": "Self-intersection[421361.163159966 9217092.10722511]",
+      "empty": false
+    },
+    {
+      "id": "1287",
+      "reason": "Self-intersection[411102.328419273 9236589.66699554]",
+      "empty": false
+    }
+  ],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "583",
+        "1133"
+      ],
+      "overlapM2": 5.266398949365082,
+      "fractionOfSmaller": 0.01281196798173811
+    },
+    {
+      "ids": [
+        "585",
+        "1212"
+      ],
+      "overlapM2": 8.34092152620397,
+      "fractionOfSmaller": 0.00438821684314968
+    },
+    {
+      "ids": [
+        "600",
+        "1378"
+      ],
+      "overlapM2": 19.220769035766136,
+      "fractionOfSmaller": 0.02350848293682515
+    },
+    {
+      "ids": [
+        "603",
+        "1167"
+      ],
+      "overlapM2": 7052.418552228022,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "604",
+        "1174"
+      ],
+      "overlapM2": 33.10890722109725,
+      "fractionOfSmaller": 0.0338365532194235
+    },
+    {
+      "ids": [
+        "616",
+        "1040"
+      ],
+      "overlapM2": 28.677267973307345,
+      "fractionOfSmaller": 0.040427740996111086
+    },
+    {
+      "ids": [
+        "619",
+        "1570"
+      ],
+      "overlapM2": 16832.06904508279,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "619",
+        "1571"
+      ],
+      "overlapM2": 8331.130349112043,
+      "fractionOfSmaller": 0.6645678603048217
+    },
+    {
+      "ids": [
+        "619",
+        "1578"
+      ],
+      "overlapM2": 41576.53452601038,
+      "fractionOfSmaller": 0.6792518609824906
+    },
+    {
+      "ids": [
+        "622",
+        "1370"
+      ],
+      "overlapM2": 2419.4178025941283,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "645",
+        "958"
+      ],
+      "overlapM2": 26.861107657783286,
+      "fractionOfSmaller": 0.002691062184539057
+    },
+    {
+      "ids": [
+        "647",
+        "960"
+      ],
+      "overlapM2": 3.3143455898701735,
+      "fractionOfSmaller": 0.0006649197942400843
+    },
+    {
+      "ids": [
+        "653",
+        "1444"
+      ],
+      "overlapM2": 0.2578016840967468,
+      "fractionOfSmaller": 0.00023282280383256452
+    },
+    {
+      "ids": [
+        "663",
+        "831"
+      ],
+      "overlapM2": 0.12207380227219942,
+      "fractionOfSmaller": 9.872295329738355e-05
+    },
+    {
+      "ids": [
+        "666",
+        "1463"
+      ],
+      "overlapM2": 0.4694639946272311,
+      "fractionOfSmaller": 0.0004690408655616104
+    },
+    {
+      "ids": [
+        "677",
+        "682"
+      ],
+      "overlapM2": 34.04134182487698,
+      "fractionOfSmaller": 0.007791372168034355
+    },
+    {
+      "ids": [
+        "680",
+        "681"
+      ],
+      "overlapM2": 187.9482682679636,
+      "fractionOfSmaller": 0.02711479222317036
+    },
+    {
+      "ids": [
+        "692",
+        "1439"
+      ],
+      "overlapM2": 12.217465419939058,
+      "fractionOfSmaller": 0.004279370596292957
+    },
+    {
+      "ids": [
+        "696",
+        "699"
+      ],
+      "overlapM2": 3.0709609655794594,
+      "fractionOfSmaller": 0.0010788984850522685
+    },
+    {
+      "ids": [
+        "696",
+        "697"
+      ],
+      "overlapM2": 1.7920861516989666,
+      "fractionOfSmaller": 0.0007194240141243152
+    },
+    {
+      "ids": [
+        "700",
+        "921"
+      ],
+      "overlapM2": 0.19864490193345385,
+      "fractionOfSmaller": 9.579394094547006e-05
+    },
+    {
+      "ids": [
+        "705",
+        "713"
+      ],
+      "overlapM2": 45.12995513010913,
+      "fractionOfSmaller": 0.008910417026256294
+    },
+    {
+      "ids": [
+        "732",
+        "810"
+      ],
+      "overlapM2": 14.193311063334878,
+      "fractionOfSmaller": 0.005546732772114767
+    },
+    {
+      "ids": [
+        "739",
+        "1266"
+      ],
+      "overlapM2": 23.978307260617,
+      "fractionOfSmaller": 0.013197704707268882
+    },
+    {
+      "ids": [
+        "742",
+        "1267"
+      ],
+      "overlapM2": 420.6241306895472,
+      "fractionOfSmaller": 0.06576977483441086
+    },
+    {
+      "ids": [
+        "752",
+        "1547"
+      ],
+      "overlapM2": 6.864059671606444,
+      "fractionOfSmaller": 0.0020845724756463164
+    },
+    {
+      "ids": [
+        "804",
+        "1578"
+      ],
+      "overlapM2": 123.79628283343538,
+      "fractionOfSmaller": 0.00816895842236427
+    },
+    {
+      "ids": [
+        "807",
+        "1008"
+      ],
+      "overlapM2": 180.14179628757634,
+      "fractionOfSmaller": 0.024168542841919955
+    },
+    {
+      "ids": [
+        "818",
+        "1099"
+      ],
+      "overlapM2": 47.79446368045549,
+      "fractionOfSmaller": 0.017554963998245608
+    },
+    {
+      "ids": [
+        "825",
+        "1229"
+      ],
+      "overlapM2": 84.91952671912733,
+      "fractionOfSmaller": 0.028712879177853368
+    },
+    {
+      "ids": [
+        "845",
+        "853"
+      ],
+      "overlapM2": 13.703863295819245,
+      "fractionOfSmaller": 0.008852177177458013
+    },
+    {
+      "ids": [
+        "910",
+        "1323"
+      ],
+      "overlapM2": 674.7701597557163,
+      "fractionOfSmaller": 0.9164873150362652
+    },
+    {
+      "ids": [
+        "915",
+        "1291"
+      ],
+      "overlapM2": 360.1770261771827,
+      "fractionOfSmaller": 0.7480729167275235
+    },
+    {
+      "ids": [
+        "941",
+        "942"
+      ],
+      "overlapM2": 0.058418597071408215,
+      "fractionOfSmaller": 0.00022373562670277407
+    },
+    {
+      "ids": [
+        "947",
+        "1025"
+      ],
+      "overlapM2": 39.57144010103066,
+      "fractionOfSmaller": 0.0031318704787518625
+    },
+    {
+      "ids": [
+        "948",
+        "1244"
+      ],
+      "overlapM2": 7.269858157867151,
+      "fractionOfSmaller": 0.007576261343947209
+    },
+    {
+      "ids": [
+        "1020",
+        "1243"
+      ],
+      "overlapM2": 176.88497738729893,
+      "fractionOfSmaller": 0.26669500208861696
+    },
+    {
+      "ids": [
+        "1023",
+        "1025"
+      ],
+      "overlapM2": 2.070732628320091,
+      "fractionOfSmaller": 0.00047761396085831565
+    },
+    {
+      "ids": [
+        "1024",
+        "1025"
+      ],
+      "overlapM2": 57.820335523565376,
+      "fractionOfSmaller": 0.005179086133077145
+    },
+    {
+      "ids": [
+        "1027",
+        "1102"
+      ],
+      "overlapM2": 7677.3072204406835,
+      "fractionOfSmaller": 0.9564626602805207
+    },
+    {
+      "ids": [
+        "1047",
+        "1168"
+      ],
+      "overlapM2": 163.66294886029235,
+      "fractionOfSmaller": 0.9999999999999998
+    },
+    {
+      "ids": [
+        "1072",
+        "1241"
+      ],
+      "overlapM2": 7.469047075057017,
+      "fractionOfSmaller": 0.0036610205255542053
+    },
+    {
+      "ids": [
+        "1080",
+        "1210"
+      ],
+      "overlapM2": 79.43852898914764,
+      "fractionOfSmaller": 0.028075966586864034
+    },
+    {
+      "ids": [
+        "1083",
+        "1095"
+      ],
+      "overlapM2": 20.81722811887021,
+      "fractionOfSmaller": 0.0019217019906706513
+    },
+    {
+      "ids": [
+        "1092",
+        "1238"
+      ],
+      "overlapM2": 970.361442532825,
+      "fractionOfSmaller": 0.2822727725940439
+    },
+    {
+      "ids": [
+        "1100",
+        "1339"
+      ],
+      "overlapM2": 2.3509406497737753,
+      "fractionOfSmaller": 0.0017380798383779409
+    },
+    {
+      "ids": [
+        "1116",
+        "1182"
+      ],
+      "overlapM2": 121.25898411307105,
+      "fractionOfSmaller": 0.0671633618358329
+    },
+    {
+      "ids": [
+        "1142",
+        "1315"
+      ],
+      "overlapM2": 54.99427951925791,
+      "fractionOfSmaller": 0.024511489067350276
+    },
+    {
+      "ids": [
+        "1142",
+        "1358"
+      ],
+      "overlapM2": 6.194371772783781,
+      "fractionOfSmaller": 0.0013923335265279577
+    },
+    {
+      "ids": [
+        "1147",
+        "1148"
+      ],
+      "overlapM2": 4.204963318015361,
+      "fractionOfSmaller": 0.01991081024868083
+    },
+    {
+      "ids": [
+        "1156",
+        "1345"
+      ],
+      "overlapM2": 9.306759788945323,
+      "fractionOfSmaller": 0.01972885189877433
+    },
+    {
+      "ids": [
+        "1158",
+        "1160"
+      ],
+      "overlapM2": 2.6996560004773578,
+      "fractionOfSmaller": 0.0038107196575193967
+    },
+    {
+      "ids": [
+        "1159",
+        "1160"
+      ],
+      "overlapM2": 2.3226312807398886,
+      "fractionOfSmaller": 0.0032785275891150266
+    },
+    {
+      "ids": [
+        "1165",
+        "1308"
+      ],
+      "overlapM2": 235.86292050590686,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "1170",
+        "1209"
+      ],
+      "overlapM2": 8.935706998453412,
+      "fractionOfSmaller": 0.010185893641169019
+    },
+    {
+      "ids": [
+        "1179",
+        "1264"
+      ],
+      "overlapM2": 1675.1692865937646,
+      "fractionOfSmaller": 0.9999900803049976
+    },
+    {
+      "ids": [
+        "1199",
+        "1479"
+      ],
+      "overlapM2": 160.11451549033427,
+      "fractionOfSmaller": 0.03697838264195203
+    },
+    {
+      "ids": [
+        "1206",
+        "1496"
+      ],
+      "overlapM2": 34.44400852179677,
+      "fractionOfSmaller": 0.015069742538783234
+    },
+    {
+      "ids": [
+        "1223",
+        "1435"
+      ],
+      "overlapM2": 0.5647543059848994,
+      "fractionOfSmaller": 0.00010035588138829657
+    },
+    {
+      "ids": [
+        "1226",
+        "1227"
+      ],
+      "overlapM2": 152.939222031985,
+      "fractionOfSmaller": 0.009197898685013688
+    },
+    {
+      "ids": [
+        "1226",
+        "1259"
+      ],
+      "overlapM2": 130.1433060010504,
+      "fractionOfSmaller": 0.33149489328978854
+    },
+    {
+      "ids": [
+        "1294",
+        "1295"
+      ],
+      "overlapM2": 5.95281293384442,
+      "fractionOfSmaller": 0.12041117712265156
+    },
+    {
+      "ids": [
+        "1307",
+        "1308"
+      ],
+      "overlapM2": 31.002207185688754,
+      "fractionOfSmaller": 0.006546007729448111
+    },
+    {
+      "ids": [
+        "1315",
+        "1317"
+      ],
+      "overlapM2": 4.429624131326026,
+      "fractionOfSmaller": 0.0031549431097735166
+    },
+    {
+      "ids": [
+        "1315",
+        "1358"
+      ],
+      "overlapM2": 52.426473161017476,
+      "fractionOfSmaller": 0.02336699262104185
+    },
+    {
+      "ids": [
+        "1345",
+        "1372"
+      ],
+      "overlapM2": 91.81041960260188,
+      "fractionOfSmaller": 0.17088552879852553
+    },
+    {
+      "ids": [
+        "1355",
+        "1356"
+      ],
+      "overlapM2": 17.51073521658079,
+      "fractionOfSmaller": 0.005913771482664304
+    },
+    {
+      "ids": [
+        "1377",
+        "1572"
+      ],
+      "overlapM2": 480.9715501496256,
+      "fractionOfSmaller": 0.10314662368571005
+    },
+    {
+      "ids": [
+        "1412",
+        "1416"
+      ],
+      "overlapM2": 235.67947961894376,
+      "fractionOfSmaller": 0.045997533768690396
+    },
+    {
+      "ids": [
+        "1416",
+        "1418"
+      ],
+      "overlapM2": 143.91733699804536,
+      "fractionOfSmaller": 0.028088328178468572
+    },
+    {
+      "ids": [
+        "1420",
+        "1421"
+      ],
+      "overlapM2": 0.23007353482917675,
+      "fractionOfSmaller": 4.048017875728232e-05
+    },
+    {
+      "ids": [
+        "1460",
+        "1493"
+      ],
+      "overlapM2": 0.04580526885030338,
+      "fractionOfSmaller": 0.0015413695462533565
+    },
+    {
+      "ids": [
+        "1566",
+        "1567"
+      ],
+      "overlapM2": 0.47855597838955,
+      "fractionOfSmaller": 0.001209852188974654
+    },
+    {
+      "ids": [
+        "1567",
+        "1568"
+      ],
+      "overlapM2": 0.1157163284062292,
+      "fractionOfSmaller": 0.0002925460333679606
+    },
+    {
+      "ids": [
+        "1570",
+        "1578"
+      ],
+      "overlapM2": 16805.68848254609,
+      "fractionOfSmaller": 0.9984327201566224
+    },
+    {
+      "ids": [
+        "1571",
+        "1578"
+      ],
+      "overlapM2": 12536.161988469843,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "1578",
+        "1579"
+      ],
+      "overlapM2": 71777.34485218424,
+      "fractionOfSmaller": 0.9999999999999998
+    }
+  ],
+  "sumPairwiseOverlapM2": 192560.57558117094,
+  "operationErrors": [
+    {
+      "ids": [
+        "738",
+        "1287"
+      ],
+      "error": "TopologyException: side location conflict at 411102.32841927308 9236589.6669955421. This can occur if the input geometry is invalid."
+    },
+    {
+      "ids": [
+        "1270",
+        "1287"
+      ],
+      "error": "TopologyException: side location conflict at 411102.32841927308 9236589.6669955421. This can occur if the input geometry is invalid."
+    },
+    {
+      "ids": [
+        "1272",
+        "1287"
+      ],
+      "error": "TopologyException: side location conflict at 411102.32841927308 9236589.6669955421. This can occur if the input geometry is invalid."
+    }
+  ],
+  "areaM2": {
+    "min": 18.9073540337545,
+    "median": 2829.9338209821644,
+    "max": 1187623.5386793383
+  }
+}

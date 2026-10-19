@@ -1,0 +1,1280 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32633",
+  "featureCount": 180,
+  "validNonemptyCount": 180,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.15226899790068296,
+    "median": 526.9765706982494,
+    "max": 30289.101238736
+  },
+  "features": [
+    {
+      "id": "DE-SN-140415___00540000f01",
+      "areaM2": 736.9277719902298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00545____02",
+      "areaM2": 2415.008334818779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00592____02",
+      "areaM2": 566.2726894717294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00593____00",
+      "areaM2": 231.84053049925012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00598000100",
+      "areaM2": 79.15054934732939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00598000200",
+      "areaM2": 38.453823642849954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00599000101",
+      "areaM2": 158.34386801361572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00599000201",
+      "areaM2": 17.92497098278722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00599000301",
+      "areaM2": 5.0727580002791095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00600____02",
+      "areaM2": 114.05270651435342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00601____02",
+      "areaM2": 60.34314851070016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00602____02",
+      "areaM2": 83.94394999638193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00603____02",
+      "areaM2": 66.99174701045311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00604000102",
+      "areaM2": 468.8800509898002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00604000202",
+      "areaM2": 39.13967800110056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00604000b02",
+      "areaM2": 672.4585499449338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00604000c03",
+      "areaM2": 502.4036840070338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00659____02",
+      "areaM2": 265.39635697508317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00660____02",
+      "areaM2": 273.84285799940676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00662____02",
+      "areaM2": 154.28801599647602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00663____02",
+      "areaM2": 145.45046499065108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00664____02",
+      "areaM2": 370.8127384833982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00665____02",
+      "areaM2": 1249.6415874873596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00666____02",
+      "areaM2": 340.80886902339654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00667000201",
+      "areaM2": 409.3776954811462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00667000300",
+      "areaM2": 253.3954184848337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00667000400",
+      "areaM2": 143.89246550441317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00668000101",
+      "areaM2": 528.2451459494664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00675____04",
+      "areaM2": 3482.2357095092552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04393____01",
+      "areaM2": 957.8464039894857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04404____01",
+      "areaM2": 1166.4695370589252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04405____02",
+      "areaM2": 7222.307346141255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04594____00",
+      "areaM2": 663.8581720150758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04832____00",
+      "areaM2": 1883.4466804704157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00001000400",
+      "areaM2": 2575.192010956724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00002000204",
+      "areaM2": 1244.4362930187235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00604000301",
+      "areaM2": 20.182787502651983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00668000201",
+      "areaM2": 103.8094960506133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00669____02",
+      "areaM2": 85.98640150959625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00670____02",
+      "areaM2": 193.37897750538434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00671000101",
+      "areaM2": 195.50425746335637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00673____00",
+      "areaM2": 181.8972870187912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00724000200",
+      "areaM2": 179.24961799693816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00724000500",
+      "areaM2": 1995.4661680648098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00724000600",
+      "areaM2": 56.69659948256954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04403____04",
+      "areaM2": 10585.494601871096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04408000400",
+      "areaM2": 5180.349822966613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00001000500",
+      "areaM2": 10.636516020775165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00003000103",
+      "areaM2": 1798.5633314759432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00003____04",
+      "areaM2": 1754.0648699930057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00012____03",
+      "areaM2": 372.2752710116551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00014____04",
+      "areaM2": 317.5298219787359,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00288____01",
+      "areaM2": 4308.484517544297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00297____02",
+      "areaM2": 2058.0055465101937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___03756____03",
+      "areaM2": 78.8318084723883,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04398____01",
+      "areaM2": 1887.5248999428186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04402000300",
+      "areaM2": 5139.597834198296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04530____03",
+      "areaM2": 2782.922377961546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00605____03",
+      "areaM2": 182.11332848580753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00606____05",
+      "areaM2": 116.5539050172606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00608____01",
+      "areaM2": 91.9262634992799,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00640____01",
+      "areaM2": 2084.4238944391645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00641000a01",
+      "areaM2": 539.0344230098875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00641____01",
+      "areaM2": 895.8620310327977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00643____00",
+      "areaM2": 166.4630824895989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00645____00",
+      "areaM2": 35.778269995599366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00646____00",
+      "areaM2": 35.80586199400481,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00647____00",
+      "areaM2": 34.72499300266071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00648____03",
+      "areaM2": 1321.308181026571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00651000102",
+      "areaM2": 531.1711819602774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00651000203",
+      "areaM2": 847.6157775481153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00652000102",
+      "areaM2": 210.73284801635018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00652000202",
+      "areaM2": 384.5329989353756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00653000102",
+      "areaM2": 677.7718759951715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00653000202",
+      "areaM2": 921.9078380247904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04391____01",
+      "areaM2": 1076.8576969502185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04392____01",
+      "areaM2": 1531.0201410259233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00653000302",
+      "areaM2": 9.64832750244862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00296____02",
+      "areaM2": 435.23188098821055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04397____01",
+      "areaM2": 895.0948300363636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04829____00",
+      "areaM2": 1795.4088284253576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00331____01",
+      "areaM2": 510.2899019806255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00332____02",
+      "areaM2": 665.495155496582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00333____00",
+      "areaM2": 239.54742297891528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00334____03",
+      "areaM2": 999.7342964566002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00609000201",
+      "areaM2": 241.59423799733722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00610____01",
+      "areaM2": 307.8599719826985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00632____01",
+      "areaM2": 1381.4337114783482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00633____00",
+      "areaM2": 106.10389400182565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00634____00",
+      "areaM2": 166.66767200514568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00635000100",
+      "areaM2": 904.6042429812161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00636____00",
+      "areaM2": 329.9034650086876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00637____01",
+      "areaM2": 927.8651049812374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00638____00",
+      "areaM2": 1305.5364664901426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00638000101",
+      "areaM2": 9.010155508820311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00638000201",
+      "areaM2": 525.7079954470322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00639____01",
+      "areaM2": 663.2616575200121,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04394____01",
+      "areaM2": 2484.01457346208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00322____01",
+      "areaM2": 806.5726095143599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00323____00",
+      "areaM2": 275.32590997309154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00324000100",
+      "areaM2": 179.16564350492166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00324000201",
+      "areaM2": 47.44786400216091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00325____00",
+      "areaM2": 208.8922779876225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00326____03",
+      "areaM2": 309.9306780102805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00327____03",
+      "areaM2": 583.3113184951283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00328____01",
+      "areaM2": 981.4068375197005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00330____02",
+      "areaM2": 865.7049589926534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04395____01",
+      "areaM2": 2913.969895936329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04708000601",
+      "areaM2": 1867.4728555029396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04708000801",
+      "areaM2": 2435.7521944622936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04708000900",
+      "areaM2": 3179.1469770001954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04827____01",
+      "areaM2": 1557.7149273793566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04830____00",
+      "areaM2": 587.3074145310287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04831____01",
+      "areaM2": 4552.594043472167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00677000102",
+      "areaM2": 1149.7400974715576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00686____00",
+      "areaM2": 752.2427779810248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00686000a00",
+      "areaM2": 40.33996400525608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00687____01",
+      "areaM2": 1100.8073444957058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00688____00",
+      "areaM2": 397.1443824941107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00690____02",
+      "areaM2": 1139.4933079973716,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00708000a04",
+      "areaM2": 4469.36766295444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00720000302",
+      "areaM2": 78.41321800152411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00720000400",
+      "areaM2": 0.5972674998771562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00720000502",
+      "areaM2": 386.44803548287206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00720000600",
+      "areaM2": 0.6841885004385442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00721000203",
+      "areaM2": 604.3255269714867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00721000302",
+      "areaM2": 95.80902098349829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00721000400",
+      "areaM2": 5.439580503432586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00722000203",
+      "areaM2": 96.49878701375268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00722000302",
+      "areaM2": 48.969031504448836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00722000400",
+      "areaM2": 4.8213350014217635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00723000200",
+      "areaM2": 95.17452249576779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00723000602",
+      "areaM2": 32.98655999799576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00723000700",
+      "areaM2": 3.353213996221231,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00723000802",
+      "areaM2": 827.8125154727828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04407____01",
+      "areaM2": 485.12694252775566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04408000201",
+      "areaM2": 0.21371899854040843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04409000102",
+      "areaM2": 22.330927445406193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04409000201",
+      "areaM2": 0.15226899790068296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04409000400",
+      "areaM2": 950.915729565902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00313000100",
+      "areaM2": 2.7024590018056065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00313000200",
+      "areaM2": 716.3529539905805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00314____01",
+      "areaM2": 295.5329609683226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00315____01",
+      "areaM2": 1436.800863469633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00317____01",
+      "areaM2": 1486.691275483915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00319____00",
+      "areaM2": 564.3855075622444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00320____00",
+      "areaM2": 505.5508059860584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00335____03",
+      "areaM2": 368.73428603337175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00336____01",
+      "areaM2": 815.2427574890238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00337____01",
+      "areaM2": 2034.2609865128652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00348000100",
+      "areaM2": 890.7552085188347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00348000201",
+      "areaM2": 4.26884999144564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00351000100",
+      "areaM2": 2.9028795120587847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00351000200",
+      "areaM2": 317.4080735018438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00352____03",
+      "areaM2": 248.58473400125976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04385001100",
+      "areaM2": 10166.982220991158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00532000a01",
+      "areaM2": 602.9940640077103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00532000b01",
+      "areaM2": 286.7905630207154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00532000c01",
+      "areaM2": 572.6512144825882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00532000d01",
+      "areaM2": 621.337762512228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00532000e00",
+      "areaM2": 747.2875980181208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00537000a01",
+      "areaM2": 593.2228159906313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00538____01",
+      "areaM2": 253.2789614819603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00539000a00",
+      "areaM2": 1086.8371099899318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00539000b01",
+      "areaM2": 995.901103890155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00540000a00",
+      "areaM2": 604.9947300520305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00540000b02",
+      "areaM2": 575.4698605181692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00540000d00",
+      "areaM2": 740.522659496827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00540000e00",
+      "areaM2": 615.1413870188767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04376000102",
+      "areaM2": 30289.101238736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00210____00",
+      "areaM2": 285.73001818085777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00226____01",
+      "areaM2": 1102.6666608462417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00227____05",
+      "areaM2": 1019.9792045095912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00229000100",
+      "areaM2": 683.6703369639347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00229000200",
+      "areaM2": 11.107769494950533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00230000100",
+      "areaM2": 1172.2506850827172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___00230000200",
+      "areaM2": 65.68273149974947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04399000101",
+      "areaM2": 4405.264780476071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04401____02",
+      "areaM2": 691.4085913171383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140415___04828____00",
+      "areaM2": 1138.9588460161367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

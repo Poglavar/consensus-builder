@@ -1,0 +1,32 @@
+{
+  "cityCode": 4947,
+  "queueRank": 1870,
+  "name": "Al-Shatrah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "iso3": "IRQ",
+  "point": [31.4094362614225, 46.1721629868318],
+  "population2025": 307652,
+  "population2025k": 307.652,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Al-Shatrah Iraq cadastral parcel map land registry official",
+        "result": "First-party Iraqi Ministry of Justice contact material identifies a dedicated Al-Shatrah real-estate registration directorate; the official Ur service provides deed and property-map requests, but the public workflow is not an anonymous parcel viewer.",
+        "actualResultUrls": ["https://moj.gov.iq/contact_us.php", "https://eservice.ur.gov.iq/index/new-service/10360"]
+      },
+      {
+        "language": "native/local",
+        "query": "الشطرة العراق خارطة عقارية تسجيل عقاري دائرة التسجيل العقاري",
+        "result": "وزارة العدل العراقية lists مديرية تسجيل عقاري الشطرة. The official Ur service describes requesting a سند وخارطة للعقار and requires an authenticated owner/service workflow; no public parcel geometry endpoint was found.",
+        "actualResultUrls": ["https://moj.gov.iq/contact_us.php", "https://eservice.ur.gov.iq/index/new-service/10360", "https://moj.gov.iq/view.9289/"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "The Iraqi Ministry of Justice first-party contact page explicitly lists مديرية تسجيل عقاري الشطرة (Al-Shatrah Real-Estate Registration Directorate) under the Dhi Qar registration offices.",
+  "sourceUrls": ["https://moj.gov.iq/contact_us.php", "https://eservice.ur.gov.iq/index/new-service/10360", "https://moj.gov.iq/view.9289/", "https://iraqld.msla.iq/legislations/showlegislation?lawbookid=8808"]
+}

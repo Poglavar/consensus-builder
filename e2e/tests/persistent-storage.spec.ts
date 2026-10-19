@@ -112,7 +112,7 @@ test.describe('PersistentStorage @core', () => {
     const result = await page.evaluate(async () => {
       const w = window as any;
       await w.PersistentStorage.ready;
-      if (typeof w.PersistentStorage.forEach !== 'function') return { skip: true };
+
 
       w.PersistentStorage.setItem('e2e_iter_a', 'val_a');
       w.PersistentStorage.setItem('e2e_iter_b', 'val_b');
@@ -127,7 +127,6 @@ test.describe('PersistentStorage @core', () => {
       return { skip: false, keys: keys.sort() };
     });
 
-    test.skip(result.skip === true, 'forEach not available');
     expect(result.keys).toEqual(['e2e_iter_a', 'e2e_iter_b']);
   });
 
@@ -138,7 +137,7 @@ test.describe('PersistentStorage @core', () => {
     const result = await page.evaluate(async () => {
       const w = window as any;
       await w.PersistentStorage.ready;
-      if (typeof w.PersistentStorage.length === 'undefined') return { skip: true };
+
 
       const before = w.PersistentStorage.length;
       w.PersistentStorage.setItem('e2e_len_test', 'x');
@@ -148,7 +147,6 @@ test.describe('PersistentStorage @core', () => {
       return { skip: false, increased: after > before, restored: restored === before };
     });
 
-    test.skip(result.skip === true, 'length not available');
     expect(result.increased).toBe(true);
     expect(result.restored).toBe(true);
   });

@@ -1,0 +1,93 @@
+[
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "AB",
+  "regionName": "Alberta",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "BC",
+  "regionName": "British Columbia",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "MB",
+  "regionName": "Manitoba",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "NB",
+  "regionName": "New Brunswick",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "NL",
+  "regionName": "Newfoundland and Labrador",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "NS",
+  "regionName": "Nova Scotia",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "NT",
+  "regionName": "Northwest Territories",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "NU",
+  "regionName": "Nunavut",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "ON",
+  "regionName": "Ontario",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "PE",
+  "regionName": "Prince Edward Island",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "QC",
+  "regionName": "Quebec",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "SK",
+  "regionName": "Saskatchewan",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ },
+ {
+  "iso2": "CA",
+  "country": "Canada",
+  "regionCode": "YT",
+  "regionName": "Yukon",
+  "hints": "Province/territory land registry or open-data portal: BC ParcelMap (verified), Ontario (Teranet/Ontario Parcel is licensed; check Land Information Ontario open layers and municipal open data e.g. Toronto verified), Quebec (Cadastre du Québec via Données Québec / Foncier Québec), Alberta (Altalis, licensed?), NB (Service New Brunswick GeoNB open), NS (Nova Scotia Property Records / GeoNOVA), PEI, NL, MB, SK (ISC), territories."
+ }
+]

@@ -1,0 +1,375 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "trenton",
+      "sourceId": "us-trenton-parcels",
+      "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.212500000000006,
+            -74.745,
+            40.215
+          ],
+          "count": 135,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.212500000000006,
+            -74.7425,
+            40.215
+          ],
+          "count": 208,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.212500000000006,
+            -74.74000000000001,
+            40.215
+          ],
+          "count": 252,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.215,
+            -74.745,
+            40.2175
+          ],
+          "count": 133,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.215,
+            -74.7425,
+            40.2175
+          ],
+          "count": 206,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.215,
+            -74.74000000000001,
+            40.2175
+          ],
+          "count": 115,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.2175,
+            -74.745,
+            40.220000000000006
+          ],
+          "count": 130,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.2175,
+            -74.7425,
+            40.220000000000006
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.2175,
+            -74.74000000000001,
+            40.220000000000006
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.212500000000006,
+            -74.73750000000001,
+            40.215
+          ],
+          "count": 271,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.212500000000006,
+            -74.735,
+            40.215
+          ],
+          "count": 260,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.212500000000006,
+            -74.7325,
+            40.215
+          ],
+          "count": 219,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.215,
+            -74.73750000000001,
+            40.2175
+          ],
+          "count": 257,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.215,
+            -74.735,
+            40.2175
+          ],
+          "count": 246,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.215,
+            -74.7325,
+            40.2175
+          ],
+          "count": 227,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.2175,
+            -74.73750000000001,
+            40.220000000000006
+          ],
+          "count": 119,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.2175,
+            -74.735,
+            40.220000000000006
+          ],
+          "count": 173,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.2175,
+            -74.7325,
+            40.220000000000006
+          ],
+          "count": 187,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -74.7425,
+          40.2175,
+          -74.74000000000001,
+          40.220000000000006
+        ],
+        "forcedPageSize": 3,
+        "count": 15,
+        "returned": 15,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 2716,
+      "exactResolved": 2716,
+      "nativeIds": [
+        "1111_15001_1",
+        "1111_15101_8",
+        "1111_15101_7"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-trenton-parcels",
+        "parcels": 1,
+        "siteM2": 28344.04
+      },
+      "requests": 61,
+      "proposedDescriptor": {
+        "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Cad_parcel_mod4 (Parcels_Composite_NJ_WM)",
+        "operator": "New Jersey Office of Information Technology, Office of GIS (NJOGIS)",
+        "idField": "PAMS_PIN",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "PAMS_PIN"
+        ],
+        "metricSrid": 32618,
+        "id": "us-trenton-parcels",
+        "idPrefix": "us-trenton:",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "gridSize": 0.0025,
+        "maxConcurrent": 2
+      },
+      "metadata": {
+        "city": "trenton",
+        "metadataUrl": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0?f=pjson",
+        "geometryType": "esriGeometryPolygon",
+        "name": "Cad_parcel_mod4",
+        "description": "The statewide composite of parcels (cadastral) data for New Jersey was developed during the Parcels Normalization Project in 2008-2014 by the NJ Office of Information Technology, Office of GIS (NJOGIS). The normalized parcels data are compatible with the New Jersey Department of Treasury MOD-IV system currently used by Tax Assessors and selected attributes from that system have been joined with the parcels in this dataset. This composite of parcels data serves as one of New Jersey's framework GIS datasets. Stewardship and maintenance of the data will continue to be the purview of county and municipal governments, but the statewide composite will be maintained by NJOGIS.This layer is published in Web Mercator (Auxiliary Sphere) (3857) projection. If your ArcGIS Pro project is set to a different coordinate system, you may see odd graphical rendering issues (arcs or spikes) when viewing the data. This is only a display issue\u2014the geometry data itself is not affected. If you need parcels in NJ State Plane (US Foot) datum, please download them directly from here instead of reprojecting in ArcGIS Pro.Parcel attributes were normalized to a standard structure, specified in the NJ GIS Parcel Mapping Standard, to store parcel information and provide a PIN (parcel identification number) field that can be used to match records with suitably-processed property tax data. The PIN also can be constructed from attributes available in the MOD-IV Tax List Search table (see below). This dataset includes a large number of additional attributes from matched MOD-IV records; however, not all MOD-IV records match to a parcel, for reasons explained elsewhere in this metadata record. The statewide property tax table, including all MOD-IV records, is available as a separate download \"MOD-IV Tax List Search Plus Database of New Jersey.\" Parcel boundaries with limited attributes are available for download here. Also available separately are countywide parcels and tables of property ownership and tax information extracted from the NJ Division of Taxation database. Learn more at NJGIN Parcels.The polygons delineated in this dataset do not represent legal boundaries and should not be used to provide a legal determination of land ownership. Parcels are not survey data and should not be used as such. Please note that these parcel datasets are not intended for use as tax maps. They are intended to provide reasonable representations of parcel boundaries for planning and other purposes. Please see Data Quality / Process Steps for details about updates to this composite since its first publication. See Supplemental Information for more details.***NOTE*** For users who incorporate NJOGIS services into web maps and/or web applications, please sign up for the NJ Geospatial Forum discussion listserv for early notification of service changes. Visit https://nj.gov/njgf/about/listserv/ for more information.",
+        "copyrightText": "NJ Office of Information Technology, Office of GIS (NJOGIS); \nAtlantic County; \nBergen County; \nBurlington County; \nCamden County; \nCape May County; \nCumberland County; \nEssex County; \nGloucester County; \nHudson County; \nHunterdon County; \nMercer County; \nMiddlesex County; \nMonmouth County; \nMorris County; \nOcean County; \nPassaic County; \nSalem County; \nSomerset County; \nSussex County; \nUnion County; \nWarren County; \nNewark; \nEast Brunswick; \nNew Brunswick; \nNorth Brunswick; \nPiscataway; \nSouth Brunswick; \nWoodbridge;\nCivil Solutions; \nSpatial Data Logic\n\nProcessing of data from Division of Taxation for use in this dataset was performed by NJOIT, Enterprise Data Services, Data Warehouse.",
+        "serviceItemId": "533599bbfbaa4748bf39faf1375a8a9c",
+        "editingInfo": {
+          "lastEditDate": 1787045558134,
+          "schemaLastEditDate": 1787045558134,
+          "dataLastEditDate": 1787045558134
+        },
+        "advancedQueryCapabilities": {
+          "supportsPagination": true,
+          "supportsPaginationOnAggregatedQueries": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsQueryWithDistance": true,
+          "supportsOutDistance": true,
+          "supportsReturningQueryExtent": true,
+          "supportsStatistics": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsQueryWithResultType": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsCountDistinct": true,
+          "supportsPercentileStatistics": true,
+          "supportsApproxPercentileStatistics": true,
+          "supportsSpatialAggregationStatistics": true,
+          "supportsTrueCurve": true,
+          "supportedSpatialAggregationStatistics": [
+            "EnvelopeAggregate",
+            "CentroidAggregate",
+            "ConvexHullAggregate"
+          ],
+          "supportsLod": true,
+          "supportsQueryWithLodSR": false,
+          "supportedLodTypes": [
+            "geohash"
+          ],
+          "supportsReturningGeometryCentroid": true,
+          "supportsReturningGeometryEnvelope": true,
+          "supportsReturningGeometryProperties": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsCurrentUserQueries": true,
+          "supportsHavingClause": true,
+          "supportsOutFieldSQLExpression": true,
+          "supportsMaxRecordCountFactor": true,
+          "supportsTopFeaturesQuery": true,
+          "supportsDisjointSpatialRel": true,
+          "supportsQueryWithCacheHint": true,
+          "supportedOperationsWithCacheHint": [
+            "query",
+            "queryTopFilter",
+            "queryAnalytics",
+            "queryAttachments",
+            "queryRelated",
+            "queryBins",
+            "queryPivot"
+          ],
+          "supportsQueryAnalytic": true,
+          "supportsQueryPivot": true,
+          "supportsQueryBins": true,
+          "supportsDefaultSR": true,
+          "supportsTranslations": false,
+          "supportsAggIds": true,
+          "supportsQueryWithCollation": true,
+          "supportsISODOW": true,
+          "supportsISOWeek": true,
+          "supportsFullTextSearch": true,
+          "fullTextSearchCapabilities": {
+            "supportsAccentSensitivity": true,
+            "supportsStopWords": true,
+            "supportsSearchOperator": true,
+            "supportsOperator": true
+          }
+        },
+        "maxRecordCount": 2000,
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "sqlType": "sqlTypeOther",
+            "nullable": false,
+            "editable": false,
+            "domain": null,
+            "defaultValue": null
+          },
+          {
+            "name": "PAMS_PIN",
+            "type": "esriFieldTypeString",
+            "alias": "PAMS_PIN",
+            "sqlType": "sqlTypeOther",
+            "length": 38,
+            "nullable": true,
+            "editable": true,
+            "domain": null,
+            "defaultValue": null
+          }
+        ]
+      },
+      "officialReferences": [
+        "https://nj.gov/njgin/edata/parcels/",
+        "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0"
+      ],
+      "reuseConditions": {
+        "status": "public service; provider attribution and published accuracy/use conditions retained",
+        "blocking": false
+      }
+    }
+  ]
+}

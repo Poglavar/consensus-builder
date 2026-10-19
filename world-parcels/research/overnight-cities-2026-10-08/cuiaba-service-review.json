@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "br-cuiaba-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Prefeitura Municipal de Cuiabá — Secretaria Municipal de Economia / Cadastro Fiscal Imobiliário",
+  "sourceUrl": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+  "registryFound": true,
+  "registryBasis": "Cuiabá’s official Finance portal describes its Cadastro Fiscal Imobiliário and a map-based SIG Cuiabá route for finding a property registration number; the city links a public SIG application. The same municipal service materials say the owner may need to search by CPF to find a property registration number. These establish a local fiscal parcel cadastre and public map interface, but the reviewed JS app shell exposed no safe geometry-only response schema. No map feature, CPF, owner, registration number, or property record was queried.",
+  "officialSources": [
+    {
+      "url": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+      "observation": "The official city Finance portal describes the Cadastro Fiscal Imobiliário and the SIG Cuiabá “Localização Inscrição Imobiliária por Mapa” service. This is municipal fiscal-cadastre evidence; the page does not publish a safe vector schema."
+    },
+    {
+      "url": "https://www.cuiaba.mt.gov.br/secretarias/economia/sig-cuiaba",
+      "observation": "Cuiabá’s municipal portal links the public SIG Cuiabá application at app.smartgis.net.br/cuiaba/publico/."
+    },
+    {
+      "url": "https://app.smartgis.net.br/cuiaba/publico/",
+      "observation": "The official public map route returned only a JavaScript application shell in the reviewed text interface; no layer list, safe field allowlist or geometry response was exposed."
+    },
+    {
+      "url": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/IPTU/DuvidasFrequentes",
+      "observation": "The official FAQ says property owners can use SIG Cuiabá or the taxpayer portal to find the property registration number and may search the property through CPF. No owner or property query was made."
+    },
+    {
+      "url": "https://gazetamunicipal.cuiaba.mt.gov.br/api/api/editions/viewPdf/10443",
+      "observation": "An official municipal gazette specification refers to the city’s cadastral cartographic base and shapefile outputs for lot, block and building layers in a contracted update. It does not establish public anonymous access to those vectors."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Cuiabá Brazil official municipal cadastral parcel GIS public map property registration geometry",
+      "result": "Cuiabá’s official Finance portal documents the municipal fiscal property cadastre and map-based SIG entry point. The linked public web application is a JS shell in the reviewed text view; no safe geometry-only layer/schema was available.",
+      "urls": [
+        "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+        "https://www.cuiaba.mt.gov.br/secretarias/economia/sig-cuiaba",
+        "https://app.smartgis.net.br/cuiaba/publico/"
+      ],
+      "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    },
+    {
+      "language": "Portuguese",
+      "query": "Cuiabá cadastro imobiliário municipal SIG mapa inscrição imobiliária cadastro fiscal imobiliário",
+      "result": "As fontes municipais confirmam o Cadastro Fiscal Imobiliário e o SIG Cuiabá para localizar inscrição imobiliária por mapa. O FAQ indica que a busca do imóvel pode exigir CPF do proprietário. Nenhuma busca de imóvel/CPF foi feita; o app não forneceu esquema seguro de geometria anônima.",
+      "urls": [
+        "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+        "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/IPTU/DuvidasFrequentes"
+      ],
+      "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_records_verified_no_public_geometry_contract",
+    "reason": "The map is officially linked, but the reviewed application shell did not reveal layer schema or a safe geometry-only allowlist. The taxpayer portal explicitly describes a CPF-based owner search path; that path was not used. No cadastral registration, identity, address or tax lookup was submitted.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The official city Finance portal describes the Cadastro Fiscal Imobiliário and the SIG Cuiabá “Localização Inscrição Imobiliária por Mapa” service. This is municipal fiscal-cadastre evidence; the page does not publish a safe vector schema."
+    },
+    {
+      "url": "https://www.cuiaba.mt.gov.br/secretarias/economia/sig-cuiaba",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Cuiabá’s municipal portal links the public SIG Cuiabá application at app.smartgis.net.br/cuiaba/publico/."
+    },
+    {
+      "url": "https://app.smartgis.net.br/cuiaba/publico/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The official public map route returned only a JavaScript application shell in the reviewed text interface; no layer list, safe field allowlist or geometry response was exposed."
+    },
+    {
+      "url": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/IPTU/DuvidasFrequentes",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The official FAQ says property owners can use SIG Cuiabá or the taxpayer portal to find the property registration number and may search the property through CPF. No owner or property query was made."
+    },
+    {
+      "url": "https://gazetamunicipal.cuiaba.mt.gov.br/api/api/editions/viewPdf/10443",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "An official municipal gazette specification refers to the city’s cadastral cartographic base and shapefile outputs for lot, block and building layers in a contracted update. It does not establish public anonymous access to those vectors."
+    }
+  ],
+  "technicalBlocker": "The map is officially linked, but the reviewed application shell did not reveal layer schema or a safe geometry-only allowlist. The taxpayer portal explicitly describes a CPF-based owner search path; that path was not used. No cadastral registration, identity, address or tax lookup was submitted.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether SIG Cuiabá supports anonymous full-polygon feature access with a safe field projection independent of its fiscal-registration/property-search flow; whether citywide polygon coverage is complete."
+}

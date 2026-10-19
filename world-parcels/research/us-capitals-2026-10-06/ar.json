@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "AR",
+  "state": "Arkansas",
+  "capital": "Little Rock",
+  "centerLatLon": [
+    34.7465,
+    -92.2896
+  ],
+  "query": {
+    "language": "English",
+    "text": "site:arkansas.gov Little Rock parcel GIS Pulaski County parcel official"
+  },
+  "references": [
+    {
+      "url": "https://www.gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6?f=pjson",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=site%3Aarkansas.gov%20Little%20Rock%20parcel%20GIS%20Pulaski%20County%20parcel%20official",
+      "observation": "Official layer metadata / official data portal result located or checked by the recorded English search."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "ArcGIS JSON",
+      "assessment": "Polygon layer metadata; native key parcelid is esriFieldTypeString; owner attributes not requested."
+    },
+    {
+      "url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6/query?where=1%3D1&geometry=-92.29024999999999%2C34.7460125%2C-92.28895%2C34.746987499999996&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=parcelid&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Capital bounding box returned 2 polygons; only native key and geometry requested."
+    },
+    {
+      "url": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6/query?where=parcelid%3D%2734L-032.00-016.00%27&outFields=parcelid&returnGeometry=true&outSR=4326&f=json&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "assessment": "Exact native ID filter returned a matching geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Planning_Cadastre/FeatureServer/6",
+    "adapter": "arcgis",
+    "name": "Arkansas Planning_Cadastre PARCEL_POLYGON_CAMP",
+    "operator": "Arkansas GIS Office",
+    "idField": "parcelid",
+    "objectIdField": "objectid",
+    "idType": "esriFieldTypeString",
+    "idPattern": "Text keys returned as strings; preserved padding and leading zeroes exactly.",
+    "outFields": [
+      "parcelid"
+    ],
+    "parcelNumberField": "parcelid",
+    "metricSrid": 4326,
+    "proposedIdPrefix": "US-AR-PULASKI-"
+  },
+  "verification": {
+    "stage": "runtime_acceptance",
+    "bbox": [
+      -92.2925,
+      34.7425,
+      -92.29,
+      34.745
+    ],
+    "viewportCells": 18,
+    "uniqueCanonicalIds": 420,
+    "nativeIDs": [
+      "34L-046.00-001.00",
+      "34L-046.00-024.00",
+      "34L-047.00-021.00"
+    ],
+    "exactResolved": 420,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json"
+  },
+  "status": "verified_sample_capital_scope",
+  "limitations": "State agency describes county-contributed statewide snapshot updated semi-annually; capital sample is Pulaski County. Owner fields exist but were not requested.",
+  "priorResearchFile": "research/subnational/US/AR.json",
+  "geometryFound": true,
+  "runtimeReadiness": "ready",
+  "discoveryStatus": "verified_sample_capital_scope",
+  "dataFound": true,
+  "nativeIDVerified": true,
+  "adapterReady": true,
+  "runtimeEvidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+  "discoveryVerification": {
+    "bbox": [
+      -92.29024999999999,
+      34.7460125,
+      -92.28895,
+      34.746987499999996
+    ],
+    "count": 2,
+    "nativeIDs": [
+      "34L-032.00-016.00",
+      "34L-032.00-011.00"
+    ],
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitallocation": true
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "cityCode": 7649,
+  "queueRank": 1680,
+  "name": "Gojra",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "locId": 586,
+  "point": [31.1495106926701, 72.6852516042621],
+  "population2025": 340108,
+  "population2025k": 340.108,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gojra Pakistan official land records cadastral map parcel Punjab Land Records Authority",
+        "result": "First-party discovery identified the Punjab Land Records Authority (PLRA), the PULSE Punjab Urban Land Systems Enhancement viewer, the official PULSE cadastral-map program, and the Toba Tek Singh district administration. The PULSE viewer's current HTML/JavaScript identifies a Punjab cadastral MapServer, but anonymous ArcGIS REST metadata requests returned Token Required and no parcel geometry was retrieved.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://www.pulse.gop.pk/",
+          "https://tobateksingh.punjab.gov.pk/district_profile"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "گوجرہ پاکستان سرکاری اراضی ریکارڈ نقشہ پارسل پنجاب لینڈ ریکارڈ اتھارٹی",
+        "result": "Urdu-language first-party discovery did not expose a separate Gojra parcel API. The official PLRA site and Urdu/English registry login pages describe Punjab land-record services; the public PULSE viewer remains the only identified map route. No login, CAPTCHA, owner lookup, or unsafe field request was attempted.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2F",
+          "https://lis.pulse.gop.pk/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official Punjab Land Records Authority site. It describes PLRA as the Government of Punjab land-record authority and lists digital land-record, Fard, registry, and Arazi Record Centre services."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official PULSE public map viewer. Its current JavaScript configuration identifies https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer as the Punjab cadastral map layer and states that complete parcel details require login."
+    },
+    {
+      "url": "https://www.pulse.gop.pk/",
+      "observation": "Official PULSE program site describing parcel-based mapping, records digitization, and cadastral maps for Punjab."
+    },
+    {
+      "url": "https://tobateksingh.punjab.gov.pk/district_profile",
+      "observation": "Official district administration page confirming Gojra as one of the district's four tehsils and describing revenue administration through the district revenue officials, tehsil officers, and patwaris."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf",
+      "observation": "Official PLRA procurement document listing an Arazi Record Center for Tehsil Gojra at the Tehsil Office, District Toba Tek Singh. This is local custodian evidence, not a public parcel geometry feed."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official PLRA service site loaded. No public city-bounded parcel geometry endpoint was exposed in the bounded HTML review."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official public map viewer shell loaded. Current JavaScript/configuration was inspected; no credentials, private token, login, CAPTCHA/Cloudflare bypass, or unsafe lookup was used."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "TLS-verified response was an ArcGIS JSON error with code 499, Token Required. No service schema, CRS, layer fields, parcel IDs, or geometry was returned."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "TLS-verified response was an ArcGIS JSON error with code 499, Token Required. No layer schema or parcel geometry was returned."
+    },
+    {
+      "url": "https://tobateksingh.punjab.gov.pk/district_profile",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official district profile loaded and confirmed Gojra tehsil and its revenue-administration context; it did not expose a parcel API."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/assets/documents/procurement/archproc/Bid_Doc_PrintingSolution.pdf",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Official PLRA document loaded; it lists the Gojra Arazi Record Center location. No parcel geometry or safe native identity was requested or retained."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "PLRA/PULSE are first-party Punjab land-record and cadastral-map custodians, and official Toba Tek Singh/PLRA evidence identifies Gojra tehsil and a Gojra Arazi Record Center. This does not establish an anonymously accessible citywide parcel geometry feed.",
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel feature response retrieved",
+  "geometryQuality": "not evaluated; no parcel geometry retrieved",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": "punjab-plra-pulse-punjab-cadastral-maps",
+  "verifiedParcelResponse": null,
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Punjab PLRA/PULSE cadastral mapping and associated Gojra tehsil land-record services.",
+    "cityCoverage": "Gojra tehsil and its official local Arazi Record Center were evidenced, but anonymous access to the current Punjab cadastral MapServer was token-gated and no city or tehsil parcel geometry coverage was verified.",
+    "exactPointChecked": false,
+    "note": "The exact WUP point [31.1495106926701, 72.6852516042621] was preserved in latitude/longitude order and was not shifted. No exact-point presence/absence inference was made."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata"
+  ],
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "A login-gated or otherwise restricted parcel service may expose additional data, and PULSE coverage may not include Gojra or may be unpublished. The bounded anonymous requests did not reveal schema, CRS, stable native parcel identity, or geometry. No raw source-specific attributes, unsafe personal fields, or synthetic identity were retained. This packet is research evidence only and is not source integration/admission."
+}

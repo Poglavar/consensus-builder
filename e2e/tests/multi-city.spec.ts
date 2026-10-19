@@ -17,7 +17,7 @@ test.describe('Multi-city data adapters @core', () => {
 
     const available = await page.evaluate(() => {
       const w = window as any;
-      if (!w.CityConfigManager?.getAvailableCities) return { skip: true };
+
       const cities = w.CityConfigManager.getAvailableCities();
       return {
         skip: false,
@@ -26,7 +26,6 @@ test.describe('Multi-city data adapters @core', () => {
       };
     });
 
-    test.skip(available.skip === true, 'CityConfigManager not available');
     expect(available.count).toBeGreaterThanOrEqual(2);
   });
 
@@ -61,7 +60,7 @@ test.describe('Multi-city data adapters @core', () => {
 
     const centers = await page.evaluate(() => {
       const w = window as any;
-      if (!w.CityConfigManager?.getAvailableCities) return { skip: true };
+
       const cities = w.CityConfigManager.getAvailableCities();
       return {
         skip: false,
@@ -72,29 +71,12 @@ test.describe('Multi-city data adapters @core', () => {
       };
     });
 
-    test.skip(centers.skip === true, 'City configs not available');
     // All centers should be unique (no two cities at same coordinates)
     const coords = centers.centers.map((c: any) => `${c.center[0]},${c.center[1]}`);
     const uniqueCoords = new Set(coords);
     expect(uniqueCoords.size).toBe(coords.length);
   });
 
-  test('backend base URL resolves for each data source mode', async ({ mockApi: page }) => {
-    await page.goto('/');
-    await waitForMapReady(page);
-
-    const result = await page.evaluate(() => {
-      const w = window as any;
-      if (typeof w.getBackendBase !== 'function') return { skip: true };
-      const base = w.getBackendBase();
-      return {
-        skip: false,
-        base,
-        isValidUrl: /^https?:\/\//.test(base),
-      };
-    });
-
-    test.skip(result.skip === true, 'getBackendBase not available');
-    expect(result.isValidUrl).toBe(true);
-  });
+  // A 'backend base URL resolves' test used to sit here. It was a duplicate of data-source.spec.ts,
+  // which asserts the same thing (and more precisely), so it only added a browser boot.
 });

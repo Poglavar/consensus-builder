@@ -1,0 +1,19 @@
+{
+  "taskId": "city:996",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-996-kulim.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/kulim-service-review.json",
+    "tmp/valhalla-parcel-research/kulim/finder-layer.json",
+    "tmp/valhalla-parcel-research/kulim/exact-point.geojson",
+    "tmp/valhalla-parcel-research/kulim/kadastral-layer.json"
+  ],
+  "checkedAt": "2026-10-11T21:46:41Z",
+  "identityCheck": "WUP rank 2866, Malaysia/MY/MYS, point [5.38926647944595,100.549987668423], 207980 persons; packet agrees with both rosters and original 2025 CSV.",
+  "custodyDecision": "registryFound true is supported by the live official Kulim District and Land Office page and municipal GIS layer lead; this does not qualify citywide parcel coverage.",
+  "sourceEvidence": "English and Malay executed searches are recorded. Original anonymous FeatureServer cache has one full Polygon and native UPI 0209400443820; the protected Kadastral_Kedah cache reports 499 Token Required. The raw point cache also includes non-ID administrative, area, use, status and GUID fields, exceeding the minimum ID-and-geometry request; no durable sample was filed.",
+  "reason": "No independent fresh exact-ID adapter reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification. Research completion is not integration or admission."
+}

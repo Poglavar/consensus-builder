@@ -1,0 +1,119 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:NZ:wellington",
+  "name": "Wellington",
+  "country": "New Zealand",
+  "countryCode": "NZ",
+  "centerLatLon": [
+    -41.2865,
+    174.7762
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/NZ.json nationwide service tested only in Auckland and Christchurch"
+  ],
+  "priorEvidenceAssessment": "research/countries/NZ.json nationwide service tested only in Auckland and Christchurch; this report is the first city-specific Wellington sample.",
+  "executedQueries": [
+    {
+      "query": "Wellington New Zealand land parcels cadastral GIS official LINZ",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "LINZ Wellington bounded parcel query at center [-41.2865,174.7762]",
+      "language": "English",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+      "observation": "LINZ official NZ Primary Parcels dataset and official LINZ-owned ArcGIS FeatureServer; direct bounded city query returned 3 HTTP 200 Polygon features."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "outcome": "Official LINZ Primary Parcels page read; service details support open parcel-data use."
+    },
+    {
+      "url": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=174.7762%2C-41.2865%2C174.7782%2C-41.2845&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=id&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "outcome": "GeoJSON FeatureCollection; three Polygon features; IDs and geometries only."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "LINZ primary cadastre feature service returned polygon parcels in the Wellington central-city bbox.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "source": {
+    "sourceId": "nz-linz-primary-parcels-arcgis",
+    "name": "NZ Primary Parcels",
+    "operator": "Toitū Te Whenua Land Information New Zealand",
+    "endpoint": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+    "method": "GET ArcGIS REST query",
+    "responseFormat": "GeoJSON",
+    "crs": "EPSG:4326 outSR",
+    "nativeIdentity": "id (feature transport/object id; legal parcel identifier fields not requested)",
+    "scope": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
+    "reuseNotice": "LINZ dataset page labels the service as open/CC BY. Confirm required attribution before reuse."
+  },
+  "sourceIds": [
+    "nz-linz-primary-parcels-arcgis"
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "nz-linz-primary-parcels-arcgis",
+    "requestUrl": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=174.7762%2C-41.2865%2C174.7782%2C-41.2845&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=id&returnGeometry=true&outSR=4326&resultRecordCount=3",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      174.7762,
+      -41.2865,
+      174.7782,
+      -41.2845
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "id",
+    "responseFile": "research/world-capitals-2026-10-08/wellington-safe-sample.geojson",
+    "sampledMunicipality": "Wellington"
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "enabled",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-wellington.json",
+  "appCityId": "wellington",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
+    "evidenceFile": "research/world-capitals-2026-10-08/wellington-acceptance.json",
+    "qualityFile": "research/world-capitals-2026-10-08/wellington-acceptance.json"
+  },
+  "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/wellington-safe-sample.geojson",
+  "appOpeningView": {
+    "centerLatLon": [
+      -41.2865,
+      174.7762
+    ],
+    "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
+    "gridSizeDegrees": 0.001
+  }
+}

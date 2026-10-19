@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "OM",
+ "country": "Oman",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Housing and Urban Planning (MOHUP) - land/cadastre; National Spatial Data Infrastructure (NSDI)",
+ "portalsFound": [
+  {
+   "url": "https://www.ncsi.gov.om/",
+   "observation": "NCSI statistics site reachable, no cadastre service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.ncsi.gov.om/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "statistics portal; not cadastre"
+  },
+  {
+   "url": "https://www.moh.gov.om/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  },
+  {
+   "url": "https://www.mohup.gov.om/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  },
+  {
+   "url": "https://www.nsdi.gov.om/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Host did not answer through the agent proxy (connection failed/CONNECT rejected); treated as temporarily unavailable, not as absence."
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Government land hosts unreachable; likely closed/e-service viewer but not confirmed.",
+ "nextStep": "Retry MOHUP land e-services and NSDI geoportal."
+}

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "capital:TZ:dodoma",
+  "queueRank": null,
+  "name": "Dodoma",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "centerLatLon": [
+    -6.163,
+    35.7516
+  ],
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIds": [],
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dodoma Tanzania public cadastral parcel map e-Ardhi land information GIS",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Swahili",
+        "query": "ardhi viwanja vya ardhi ramani ya cadastral e-Ardhi Dodoma Tanzania",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialEvidence": [
+      {
+        "url": "https://eardhi.lands.go.tz/",
+        "observation": "Official e-Ardhi portal offers land planning, survey/mapping, ownership, title registration and valuation, states account is needed for applications and some services are paid; ministry notice places Dodoma Region among implementing regions."
+      },
+      {
+        "url": "https://www.lands.go.tz/uploads/notices/sw1758881264-26%209%202025%20TAARIFA%20KWA%20UMMA%20MFUMO%20WA%20e-Ardhi-2.pdf",
+        "observation": "Candidate ArcGIS service exposes a layer titled LAND_LOT in indexed metadata, but live metadata request with f=pjson returned HTTP 499 Token Required; target-point GeoJSON query returned HTTP 400 Bad Request. It is not verified public geometry."
+      },
+      {
+        "url": "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9?f=pjson",
+        "observation": "Third-party-branded DCC Land Records sign-in claims an internal Dodoma city land register; login required and publisher authority is not established."
+      },
+      {
+        "url": "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9/query?f=geojson&geometry=35.7516%2C-6.1630&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      },
+      {
+        "url": "https://www.sdsportal.co.tz/",
+        "observation": "Source relevant to this city’s authority or scope; it does not itself verify public parcel geometry."
+      }
+    ],
+    "observedServices": [
+      {
+        "url": "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9?f=pjson",
+        "method": "GET",
+        "httpStatus": 499,
+        "contentType": "application/json",
+        "outcome": "ArcGIS response: Token Required. No token supplied or access attempted beyond public endpoint."
+      },
+      {
+        "url": "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9/query?f=geojson&geometry=35.7516%2C-6.1630&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+        "method": "GET",
+        "httpStatus": 400,
+        "contentType": "text/plain",
+        "outcome": "Bad Request; no feature response or geometry returned."
+      }
+    ],
+    "targetGeometryEvidence": null,
+    "actualCoverage": "No target parcel geometry feature was verified in this review. Do not infer parcel coverage from a country-wide agency or map product unless the city extent is explicitly evidenced.",
+    "nativeIdReadiness": "Not assessed: no public parcel feature response was verified.",
+    "blocker": "Third-party-branded DCC Land Records sign-in claims an internal Dodoma city land register; login required and publisher authority is not established.",
+    "nextStep": "Revisit the official map/service after a public, non-personal feature endpoint is identified; validate city coverage and geometry before calling this a sample.",
+    "scopeLimits": "Geographic query point is a locator only; parcel boundary, city extent, and municipal jurisdiction are not inferred from it."
+  },
+  "purpose": "Research whether authoritative land-registry evidence and publicly accessible parcel geometry exist for this capital seat; distinguish registry presence from open geometry and sample verification.",
+  "auditedAt": "2026-10-08T15:08:36Z",
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary",
+  "registryBasis": "Official e-Ardhi program explicitly includes Dodoma Region for survey, ownership and registration services; public parcel geometry is not verified.",
+  "registryEvidenceUrls": [
+    "https://eardhi.lands.go.tz/",
+    "https://www.lands.go.tz/uploads/notices/sw1758881264-26%209%202025%20TAARIFA%20KWA%20UMMA%20MFUMO%20WA%20e-Ardhi-2.pdf",
+    "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9?f=pjson",
+    "https://services3.arcgis.com/DJYycTb3Ke3beGwU/ArcGIS/rest/services/Dodoma/FeatureServer/9/query?f=geojson&geometry=35.7516%2C-6.1630&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+    "https://www.sdsportal.co.tz/"
+  ],
+  "resultCategory": "official_regional_land_system_account_based_no_public_geometry",
+  "publicParcelGeometryFound": false,
+  "priorEvidence": [
+    "world-parcels/research/countries/TZ.json",
+    "world-parcels/research/retry/countries/TZ.json"
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "language": "English",
+      "query": "Dodoma Tanzania public cadastral parcel map e-Ardhi land information GIS",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    },
+    {
+      "language": "Swahili",
+      "query": "ardhi viwanja vya ardhi ramani ya cadastral e-Ardhi Dodoma Tanzania",
+      "method": "web search",
+      "checkedAt": "2026-10-08"
+    }
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

@@ -1,0 +1,654 @@
+{
+  "schemaVersion": 1,
+  "kind": "nairobi_public_outline_geometry_quality_audit",
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:2033",
+  "wupCityCode": 2033,
+  "name": "Nairobi",
+  "countryCode": "KE",
+  "centerLatLon": [
+    -1.26592113731299,
+    36.845161927435
+  ],
+  "source": {
+    "operator": "Nairobi Maps (commercial, not government)",
+    "page": "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+    "viewportEndpoint": "https://nairobimaps.com/api/get_parcels.php",
+    "identifyEndpoint": "https://nairobimaps.com/find_parcel_at.php",
+    "access": "Anonymous, no account, API key, Authorization header, or session cookie; TLS verification enabled. Bounded public map-view requests only. WFS and downloadable dataset routes were not used.",
+    "limits": "Provider FAQ (https://nairobimaps.com/) describes anonymous outline preview as limited to 25 areas per day; this is an area allowance, not a 25-request ceiling. Provider GIS-data page (https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html) distinguishes public outline viewing from separate downloads/WFS and documents attribution/non-commercial versus written-permission terms for commercial/bulk use. The initial audit made six viewport requests and one point identify, all bounded around the same WUP vicinity. The later batch-three acceptance records its 9 grid cells, cold exact lookup cells, integration calls and actual previewRemaining metadata; TLS verification remained enabled.",
+    "dailyAreaBudgetDoc": "https://nairobimaps.com/ FAQ; provider describes a 25-area-per-day preview allowance (not 25 HTTP requests/day). The run captured every response previewRemaining field and did not use paid/account/WFS access or a quota workaround."
+  },
+  "requestManifest": {
+    "method": "GET",
+    "requests": [
+      {
+        "name": "core_repeat_1",
+        "bbox": "36.845,-1.2665,36.846,-1.2655",
+        "zoom": 19,
+        "httpStatus": 200,
+        "responseBytes": 17254,
+        "featureCount": 74,
+        "rawBodySha256": "cf3cd1eaa338f74c81e61e47525a401d77c3ed23d86fd47def13ec4a4aeb1d6e"
+      },
+      {
+        "name": "core_repeat_2",
+        "bbox": "36.845,-1.2665,36.846,-1.2655",
+        "zoom": 19,
+        "httpStatus": 200,
+        "responseBytes": 17254,
+        "featureCount": 74,
+        "rawBodySha256": "cf3cd1eaa338f74c81e61e47525a401d77c3ed23d86fd47def13ec4a4aeb1d6e"
+      },
+      {
+        "name": "east_half_overlap",
+        "bbox": "36.8455,-1.2665,36.8465,-1.2655",
+        "zoom": 19,
+        "httpStatus": 200,
+        "responseBytes": 10262,
+        "featureCount": 42,
+        "rawBodySha256": "f4814ec7efd45a92fd777c5586ca24786f7317f5dfa59acb93a821e8f6cff160"
+      },
+      {
+        "name": "east_edge_adjacent",
+        "bbox": "36.846,-1.2665,36.847,-1.2655",
+        "zoom": 19,
+        "httpStatus": 200,
+        "responseBytes": 5234,
+        "featureCount": 14,
+        "rawBodySha256": "a6792871d49d6a2e62b81995a7323a0cd9a9cb4cf725b32b07b36a9a20166353"
+      },
+      {
+        "name": "north_edge_adjacent",
+        "bbox": "36.845,-1.2655,36.846,-1.2645",
+        "zoom": 19,
+        "httpStatus": 200,
+        "responseBytes": 19000,
+        "featureCount": 84,
+        "rawBodySha256": "7d3d63e47810ce46e09068848c77bcf498bab028d4d67642da59880b3259d18b"
+      },
+      {
+        "name": "inner_view",
+        "bbox": "36.84545,-1.26605,36.8459,-1.2656",
+        "zoom": 19,
+        "httpStatus": 200,
+        "responseBytes": 5896,
+        "featureCount": 22,
+        "rawBodySha256": "0638425b3d659af6d17745646ee4ae99a1d937c517596c386ee102b7858554ec"
+      }
+    ],
+    "identifiedPoint": {
+      "url": "https://nairobimaps.com/find_parcel_at.php?lat=-1.26592113731299&lng=36.845161927435",
+      "httpStatus": 200,
+      "geometryType": "MultiPolygon",
+      "featureCount": 1,
+      "propertyKeys": [],
+      "metadata": {
+        "engine": "grid",
+        "partial": false,
+        "attributes": false
+      },
+      "matchesCoreFeatureIndex": 37
+    },
+    "fullRawRepeat": {
+      "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.845%2C-1.2665%2C36.846%2C-1.2655&zoom=19",
+      "params": {
+        "bbox": "36.845,-1.2665,36.846,-1.2655",
+        "zoom": 19
+      },
+      "httpStatus": 200,
+      "responseBytes": 17254,
+      "sha256": "cf3cd1eaa338f74c81e61e47525a401d77c3ed23d86fd47def13ec4a4aeb1d6e",
+      "actualResponseSavedTo": "/tmp/india-africa-batch3-nairobi/core-full-response.json",
+      "safeToRetain": "Actual FeatureCollection contains bbox, metadata, type, 74 polygon geometries; all properties empty, no feature IDs. This is the response body as returned by the service."
+    }
+  },
+  "responseMetadata": {
+    "featureCollectionKeys": [
+      "bbox",
+      "features",
+      "metadata",
+      "type"
+    ],
+    "bboxEcho": [
+      36.845,
+      -1.2665,
+      36.846,
+      -1.2655
+    ],
+    "metadata": {
+      "count": 74,
+      "zoom": 19,
+      "limit": 4000,
+      "truncated": false,
+      "previewRemaining": 24
+    },
+    "countInterpretation": "metadata.count equals returned feature count (74); no total/numberMatched field is present.",
+    "all74FeaturePropertiesEmpty": true,
+    "featureIdPresent": false,
+    "geometryTypeCounts": {
+      "MultiPolygon": 74
+    },
+    "priorZoom16LimitDiscrepancy": {
+      "inheritedEvidenceFile": "research/india-africa-next10-2026-10-08/africa-east-city-2033.json",
+      "earlierMetadataLimit": 7000,
+      "freshZoom19MetadataLimit": 4000,
+      "interpretation": "These are different response contexts/zoom levels; treat the observed limit as response metadata, not a stable source maximum. The fresh response had 74 features and truncated=false."
+    }
+  },
+  "shapeAndSpatialFilterChecks": {
+    "comparisonMethod": {
+      "wholeGeometryEquality": "@turf/boolean-equal at precision 6 (geojson-equality after cleanCoords), orientation/start-vertex invariance verified with a reversed-ring test; matching requires whole MultiPolygon geometry, not bbox-clipped fragments.",
+      "limitations": "This equality does not reconcile different vertex densification or coordinate generalization; it is not a persistent parcel identity. Ring-level self-intersection checks use Turf kinks against each ring separately."
+    },
+    "coreRepeatability": {
+      "responses": [
+        {
+          "name": "core_repeat_1",
+          "featureCount": 74,
+          "rawResponseSha256": "cf3cd1eaa338f74c81e61e47525a401d77c3ed23d86fd47def13ec4a4aeb1d6e"
+        },
+        {
+          "name": "core_repeat_2",
+          "featureCount": 74,
+          "rawResponseSha256": "cf3cd1eaa338f74c81e61e47525a401d77c3ed23d86fd47def13ec4a4aeb1d6e"
+        },
+        {
+          "name": "core_repeat_3",
+          "featureCount": 74,
+          "rawResponseSha256": "cf3cd1eaa338f74c81e61e47525a401d77c3ed23d86fd47def13ec4a4aeb1d6e",
+          "metadata": {
+            "count": 74,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          }
+        }
+      ],
+      "identicalBodyHashes": true,
+      "featureCountStable": true,
+      "coreFeatureUniqueCoordinateGeometries": 74
+    },
+    "crossViewWholeGeometryMatches": {
+      "east_half_overlap": {
+        "featureCount": 42,
+        "wholeGeometryTopologicalMatchesToCore": 36,
+        "allOutputRowsMatchFullCoreGeometry": false,
+        "matchedIndexExamples": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            6,
+            5
+          ]
+        ]
+      },
+      "east_edge_adjacent": {
+        "featureCount": 14,
+        "wholeGeometryTopologicalMatchesToCore": 7,
+        "allOutputRowsMatchFullCoreGeometry": false,
+        "matchedIndexExamples": [
+          [
+            0,
+            4
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            4,
+            35
+          ],
+          [
+            7,
+            46
+          ],
+          [
+            9,
+            61
+          ],
+          [
+            10,
+            63
+          ]
+        ]
+      },
+      "north_edge_adjacent": {
+        "featureCount": 84,
+        "wholeGeometryTopologicalMatchesToCore": 17,
+        "allOutputRowsMatchFullCoreGeometry": false,
+        "matchedIndexExamples": [
+          [
+            1,
+            12
+          ],
+          [
+            3,
+            13
+          ],
+          [
+            4,
+            15
+          ],
+          [
+            5,
+            16
+          ],
+          [
+            6,
+            17
+          ],
+          [
+            7,
+            22
+          ]
+        ]
+      },
+      "inner_view": {
+        "featureCount": 22,
+        "wholeGeometryTopologicalMatchesToCore": 22,
+        "allOutputRowsMatchFullCoreGeometry": true,
+        "matchedIndexExamples": [
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            2,
+            9
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            14
+          ]
+        ]
+      }
+    },
+    "bboxBehavior": {
+      "core_repeat_1": {
+        "requestBbox": [
+          36.845,
+          -1.2665,
+          36.846,
+          -1.2655
+        ],
+        "featureGeometryExtendsOutsideRequestBbox": 38,
+        "featuresOutsideBySide": {
+          "west": 9,
+          "south": 14,
+          "east": 7,
+          "north": 17
+        },
+        "exampleFullGeometryBboxes": [
+          [
+            36.8454085,
+            -1.26676,
+            36.8455812,
+            -1.2663659
+          ],
+          [
+            36.8455079,
+            -1.2667409,
+            36.8456735,
+            -1.2663633
+          ],
+          [
+            36.8456002,
+            -1.2667219,
+            36.8457657,
+            -1.2663443
+          ]
+        ]
+      },
+      "east_half_overlap": {
+        "requestBbox": [
+          36.8455,
+          -1.2665,
+          36.8465,
+          -1.2655
+        ],
+        "featureGeometryExtendsOutsideRequestBbox": 23,
+        "featuresOutsideBySide": {
+          "west": 5,
+          "south": 10,
+          "east": 1,
+          "north": 10
+        },
+        "exampleFullGeometryBboxes": [
+          [
+            36.8454085,
+            -1.26676,
+            36.8455812,
+            -1.2663659
+          ],
+          [
+            36.8455079,
+            -1.2667409,
+            36.8456735,
+            -1.2663633
+          ],
+          [
+            36.8456002,
+            -1.2667219,
+            36.8457657,
+            -1.2663443
+          ]
+        ]
+      },
+      "east_edge_adjacent": {
+        "requestBbox": [
+          36.846,
+          -1.2665,
+          36.847,
+          -1.2655
+        ],
+        "featureGeometryExtendsOutsideRequestBbox": 11,
+        "featuresOutsideBySide": {
+          "west": 7,
+          "south": 5,
+          "east": 2,
+          "north": 4
+        },
+        "exampleFullGeometryBboxes": [
+          [
+            36.845969,
+            -1.2666458,
+            36.8461346,
+            -1.2662682
+          ],
+          [
+            36.8460613,
+            -1.2666268,
+            36.8462268,
+            -1.2662492
+          ],
+          [
+            36.8458768,
+            -1.2666648,
+            36.8460423,
+            -1.2662872
+          ]
+        ]
+      },
+      "north_edge_adjacent": {
+        "requestBbox": [
+          36.845,
+          -1.2655,
+          36.846,
+          -1.2645
+        ],
+        "featureGeometryExtendsOutsideRequestBbox": 32,
+        "featuresOutsideBySide": {
+          "west": 10,
+          "south": 17,
+          "east": 5,
+          "north": 7
+        },
+        "exampleFullGeometryBboxes": [
+          [
+            36.8459409,
+            -1.2653601,
+            36.8460507,
+            -1.2652356
+          ],
+          [
+            36.8455505,
+            -1.2655325,
+            36.8456373,
+            -1.2653604
+          ],
+          [
+            36.845183,
+            -1.2655659,
+            36.8452772,
+            -1.2653937
+          ]
+        ]
+      },
+      "inner_view": {
+        "requestBbox": [
+          36.84545,
+          -1.26605,
+          36.8459,
+          -1.2656
+        ],
+        "featureGeometryExtendsOutsideRequestBbox": 19,
+        "featuresOutsideBySide": {
+          "west": 5,
+          "south": 8,
+          "east": 6,
+          "north": 8
+        },
+        "exampleFullGeometryBboxes": [
+          [
+            36.8454819,
+            -1.2660854,
+            36.8455589,
+            -1.2659139
+          ],
+          [
+            36.8454004,
+            -1.2656877,
+            36.8454873,
+            -1.2655151
+          ],
+          [
+            36.8455757,
+            -1.2656848,
+            36.8456701,
+            -1.2655198
+          ]
+        ]
+      }
+    },
+    "bboxIntersectionCounts": {
+      "core": {
+        "returned": 74,
+        "trueTurfIntersections": 72,
+        "centroidOutsideBbox": 21,
+        "fullGeometryBoundsExtendOutsideBbox": 38
+      },
+      "eastHalfOverlap": {
+        "returned": 42,
+        "trueTurfIntersections": 42,
+        "centroidOutsideBbox": 10,
+        "fullGeometryBoundsExtendOutsideBbox": 23
+      },
+      "eastAdjacent": {
+        "returned": 14,
+        "trueTurfIntersections": 13,
+        "centroidOutsideBbox": 5,
+        "fullGeometryBoundsExtendOutsideBbox": 11
+      },
+      "northAdjacent": {
+        "returned": 84,
+        "trueTurfIntersections": 84,
+        "centroidOutsideBbox": 14,
+        "fullGeometryBoundsExtendOutsideBbox": 32
+      },
+      "innerContained": {
+        "returned": 22,
+        "trueTurfIntersections": 19,
+        "centroidOutsideBbox": 10,
+        "fullGeometryBoundsExtendOutsideBbox": 19
+      },
+      "caveat": "TrueTurfIntersections uses @turf/boolean-intersects against the request rectangle; the few apparent nonintersections may reflect bbox-based server selection or floating-point/topology edge conditions. Returned geometry should not be assumed to be clipped or strictly intersecting by exact polygon topology."
+    },
+    "ringIntegrity": {
+      "sets": {
+        "core_repeat_1": {
+          "featureCount": 74,
+          "geometryTypeCounts": {
+            "MultiPolygon": 74
+          },
+          "vertexCount": 439,
+          "ringCount": 74,
+          "openRings": 0,
+          "shortRings": 0,
+          "nonfiniteCoordinates": 0,
+          "coordinatesOutsideWgs84": 0,
+          "selfIntersectingRings": 1,
+          "featuresWithSelfIntersectingRings": 1
+        },
+        "east_half_overlap": {
+          "featureCount": 42,
+          "geometryTypeCounts": {
+            "MultiPolygon": 42
+          },
+          "vertexCount": 265,
+          "ringCount": 42,
+          "openRings": 0,
+          "shortRings": 0,
+          "nonfiniteCoordinates": 0,
+          "coordinatesOutsideWgs84": 0,
+          "selfIntersectingRings": 1,
+          "featuresWithSelfIntersectingRings": 1
+        },
+        "east_edge_adjacent": {
+          "featureCount": 14,
+          "geometryTypeCounts": {
+            "MultiPolygon": 14
+          },
+          "vertexCount": 160,
+          "ringCount": 14,
+          "openRings": 0,
+          "shortRings": 0,
+          "nonfiniteCoordinates": 0,
+          "coordinatesOutsideWgs84": 0,
+          "selfIntersectingRings": 1,
+          "featuresWithSelfIntersectingRings": 1
+        },
+        "north_edge_adjacent": {
+          "featureCount": 84,
+          "geometryTypeCounts": {
+            "MultiPolygon": 84
+          },
+          "vertexCount": 474,
+          "ringCount": 84,
+          "openRings": 0,
+          "shortRings": 0,
+          "nonfiniteCoordinates": 0,
+          "coordinatesOutsideWgs84": 0,
+          "selfIntersectingRings": 1,
+          "featuresWithSelfIntersectingRings": 1
+        },
+        "inner_view": {
+          "featureCount": 22,
+          "geometryTypeCounts": {
+            "MultiPolygon": 22
+          },
+          "vertexCount": 157,
+          "ringCount": 22,
+          "openRings": 0,
+          "shortRings": 0,
+          "nonfiniteCoordinates": 0,
+          "coordinatesOutsideWgs84": 0,
+          "selfIntersectingRings": 1,
+          "featuresWithSelfIntersectingRings": 1
+        }
+      },
+      "allRingsClosed": true,
+      "shortOrInvalidRings": 0,
+      "nonfiniteOrOutOfWgs84Coordinates": 0,
+      "suspiciousGeometry": "One core MultiPolygon has a repeated adjacent coordinate [36.8463555,-1.2666761] at feature index 73, vertex 41; this produces one ring-kink report in raw coordinates. Removing only that zero-length consecutive duplicate for diagnosis (without modifying saved source geometry) leaves zero ring kinks. Do not silently clean the provider geometry."
+    },
+    "positiveAreaOverlaps": {
+      "core_repeat_1": {
+        "geometryRows": 74,
+        "uniqueGeometries": 74,
+        "positiveAreaOverlapPairsOver0_01m2": 0,
+        "largestOverlapSquareM": 0,
+        "bboxCandidatePairs": 169,
+        "intersectingPairs": 135,
+        "errors": 0
+      },
+      "east_half_overlap": {
+        "geometryRows": 42,
+        "uniqueGeometries": 42,
+        "positiveAreaOverlapPairsOver0_01m2": 0,
+        "largestOverlapSquareM": 0,
+        "bboxCandidatePairs": 98,
+        "intersectingPairs": 60,
+        "errors": 0
+      },
+      "east_edge_adjacent": {
+        "geometryRows": 14,
+        "uniqueGeometries": 14,
+        "positiveAreaOverlapPairsOver0_01m2": 0,
+        "largestOverlapSquareM": 0,
+        "bboxCandidatePairs": 22,
+        "intersectingPairs": 10,
+        "errors": 0
+      },
+      "north_edge_adjacent": {
+        "geometryRows": 84,
+        "uniqueGeometries": 84,
+        "positiveAreaOverlapPairsOver0_01m2": 0,
+        "largestOverlapSquareM": 0,
+        "bboxCandidatePairs": 198,
+        "intersectingPairs": 158,
+        "errors": 0
+      },
+      "inner_view": {
+        "geometryRows": 22,
+        "uniqueGeometries": 22,
+        "positiveAreaOverlapPairsOver0_01m2": 0,
+        "largestOverlapSquareM": 0,
+        "bboxCandidatePairs": 46,
+        "intersectingPairs": 31,
+        "errors": 0
+      }
+    }
+  },
+  "identityAssessment": {
+    "nativeParcelIdsPresent": false,
+    "stableSourceParcelId": null,
+    "sourceIdFieldPresent": false,
+    "pointIdentifyPropertiesEmpty": true,
+    "conclusion": "The anonymous viewer provides repeatable geometry with empty feature properties and no source identifiers. A geometry-derived identifier would be application-local, not an official parcel/registry ID; its stability across provider revisions, coordinate generalization, or boundary edits is untested."
+  },
+  "overallAssessment": "Strong repeatability and usable polygon display geometry were observed in a very small target-area sample: repeated full core response hashes match, overlapping/adjacent viewports share complete whole shapes, and the point identify reproduces a core polygon. Returned rows are not centroid-filtered (many returned-feature centroids lie outside their viewport); however, exact topology checks flag 2 of 74 core shapes as not intersecting the request rectangle, so the service may use bounding-box selection or expose edge artifacts. One raw ring has a duplicate adjacent vertex. No stable parcel identity is present, source authority is commercial, and geometry is not confirmed as an official boundary. This audit does not approve a parcel registry or legal boundary use; any geometry-derived app IDs must be marked synthetic and namespaced, with sourceParcelId null.",
+  "safeEvidenceFiles": {
+    "coreActualResponse": "/tmp/india-africa-batch3-nairobi/core-full-response.json",
+    "analysis": "/tmp/india-africa-batch3-nairobi/geometry-analysis.json",
+    "viewportMetadata": "/tmp/india-africa-batch3-nairobi/probe-metadata.json",
+    "coreResponseMetadata": "/tmp/india-africa-batch3-nairobi/core-full-response-metadata.json"
+  },
+  "scopeLimitations": [
+    "The cross-view sanitized .geojson files stored under /tmp use a geometry-only wrapper and placeholder meta object; use them only for shape comparisons. The full core repeat is preserved separately with its actual response metadata.",
+    "Full per-view source metadata for all five distinct viewport shapes was not retained in the first probe manifest. The exact count/bbox/zoom/limit/truncated values above are reported only where captured from the full core response; other rows retain their observed request parameters, HTTP result, size, count and body hash.",
+    "No official source geometry, nationwide completeness, legal validity, dataset licensing for commercial use, or persistent source-native identity was established."
+  ]
+}

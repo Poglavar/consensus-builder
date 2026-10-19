@@ -1,0 +1,67 @@
+/* Watched areas, shown inside the Activity sheet and in the "other monitors" dialog
+   (js/area-monitor/ui.js). The rows are cb-option and the filter a base form control
+   (css/primitives.css); these rules lay them out. */
+.area-monitor-list-filter {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--cb-control-height);
+    margin: 0 0 var(--cb-space-3);
+}
+
+.area-monitor-list-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    max-height: 34vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* The list keeps one gap; a row hidden by the filter takes no room. */
+.area-monitor-list-items .cb-option {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.area-monitor-list-items [hidden] {
+    display: none;
+}
+
+.area-monitor-list-message {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+/* The dialog keeps one height so it stays put while the filter shortens the list; only the
+   list scrolls under the title and filter. */
+.area-monitor-list-modal {
+    height: min(70dvh, 640px);
+}
+
+.area-monitor-list-modal__body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.area-monitor-list-modal__body .area-monitor-list-filter {
+    flex: 0 0 auto;
+}
+
+.area-monitor-list-modal__body .area-monitor-list-items {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+}
+
+.area-monitor-list-message {
+    padding: var(--cb-space-3) 0;
+}
+
+.area-monitor-list-message--error {
+    color: var(--cb-danger);
+}
+
+@media (pointer: coarse) {
+    .area-monitor-list-filter { min-height: var(--cb-control-height-lg); }
+}

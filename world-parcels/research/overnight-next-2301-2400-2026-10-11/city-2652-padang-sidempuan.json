@@ -1,0 +1,139 @@
+{
+  "cityCode": 2652,
+  "queueRank": 2311,
+  "name": "Padang Sidempuan",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [1.37598592057991, 99.2761913437371],
+  "population2025": 251906,
+  "population2025k": 251.906,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Padangsidimpuan official cadastral parcel map GIS land registry Indonesia site:go.id",
+        "result": "Official results identified the ATR/BPN BHUMI/ATLAS spatial portal and an official Padangsidimpuan city ArcGIS page. The city web map is an administrative slum-profile map, not a cadastral parcel service; no anonymous safe parcel feature response was found.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://atlas.atrbpn.go.id/",
+          "https://web.padangsidimpuankota.go.id/arcgis"
+        ]
+      },
+      {
+        "language": "Indonesian (native/local)",
+        "query": "Padangsidimpuan peta bidang tanah ATR BPN resmi",
+        "result": "Official Indonesian-language municipal results identify Kantor Pertanahan Kota Padangsidimpuan/BPN as the local land custodian and describe PTSL/GEMA PATAS land-boundary work. They do not publish an anonymous parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://web.padangsidimpuankota.go.id/Wali-Kota-Padangsidimpuan-Bersama-BPN-Kantah-Padangsidimpuan-Laksanakan-Survei-Rencana-Lahan-Huntara-dan-Huntap",
+          "https://web.padangsidimpuankota.go.id/Wawako-Arwin-Laksanakan-Aksi-GEMA-PATAS-di-Kel-lubuk-Raya",
+          "https://web.padangsidimpuankota.go.id/Melalui-Program-PTSL-Pemko-Berupaya-Memberi-Rasa-Aman-dan-Kepastian-Secara-Legal-Atas-Hak-Milik-Tanah"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Indonesian discovery plus bounded official viewer/configuration and public GET inspection",
+  "sourceReview": "The local custodian is evidenced by official Padangsidimpuan municipal reporting naming Kantor Pertanahan Kota Padangsidimpuan/BPN and describing land-registration, PTSL, and boundary-marking work. ATR/BPN BHUMI is the national public spatial viewer; its current JavaScript configuration exposes a Bidang Tanah layer named umum:Persil through /bhumigs/umum and describes parcel attributes such as NIB and area. The observed parcel retrieval flow uses /expapi/getPersil after a site token/login step. No credentials, private token, owner data, or unsafe fields were requested. The official city ArcGIS web map identified in the bounded inspection is the public “Peta Profil Kumuh Kota Padang Sidempuan” web map and contains administrative/slum-profile layers, not cadastral parcels.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "httpStatus": 200,
+      "outcome": "Official BHUMI help page loaded and identifies BHUMI as an interactive ATR/BPN spatial-information map integrated with ATLAS. It did not itself provide a city-specific parcel response."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "httpStatus": 200,
+      "outcome": "Current BHUMI map shell and JavaScript loaded. The configuration exposed a Geoserver-style Bidang Tanah layer at /bhumigs/umum with layer name umum:Persil, but no direct anonymous feature response was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities",
+      "httpStatus": 404,
+      "outcome": "Direct public WMS capabilities request returned 404 from the BHUMI application host; this is an endpoint failure, not evidence of parcel absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "httpStatus": 404,
+      "outcome": "Direct public WFS capabilities request returned 404 from the BHUMI application host; this is an endpoint failure, not evidence of parcel absence."
+    },
+    {
+      "method": "POST",
+      "url": "https://bhumi.atrbpn.go.id/api/proksi",
+      "httpStatus": 400,
+      "outcome": "Bounded proxy probe for the public /bhumigs/umum path returned 400 with JSON parse error. No credential or private token was supplied."
+    },
+    {
+      "method": "GET",
+      "url": "https://web.padangsidimpuankota.go.id/arcgis",
+      "httpStatus": 200,
+      "outcome": "Official city ArcGIS page exposed public ArcGIS web map item 371f141c814c437ea44bc9ac909901f5. Its title is Peta Profil Kumuh Kota Padang Sidempuan; item data contains administrative layers and World Imagery, not cadastral parcel geometry."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.arcgis.com/sharing/rest/content/items/371f141c814c437ea44bc9ac909901f5/data?f=json",
+      "httpStatus": 200,
+      "outcome": "Public web map JSON was inspected. It contains administrative boundaries/slum-profile data with fields such as FID, Kode_Kota, Kode_Kec, Kode_Kel, and Kelurahan; these are not native parcel identities and no parcel sample was retained."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://web.padangsidimpuankota.go.id/Wali-Kota-Padangsidimpuan-Bersama-BPN-Kantah-Padangsidimpuan-Laksanakan-Survei-Rencana-Lahan-Huntara-dan-Huntap",
+      "httpStatus": 200,
+      "outcome": "Official city report names Kantor Pertanahan Kota Padangsidimpuan/BPN and describes administrative and technical land verification. It is local custodian evidence, not parcel geometry evidence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://web.padangsidimpuankota.go.id/Wawako-Arwin-Laksanakan-Aksi-GEMA-PATAS-di-Kel-lubuk-Raya",
+      "httpStatus": 200,
+      "outcome": "Official city report describes BPN Kota Padang Sidempuan boundary-marking and digital land-data work. It does not expose an anonymous parcel API or safe ID-plus-polygon response."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "BHUMI current JavaScript configuration observed; parcel layer configured as vendor Geoserver, service path /bhumigs/umum, layer umum:Persil. The city ArcGIS web map is a separate public administrative map.",
+    "geometryCrs": "BHUMI parcel response CRS not observed. City ArcGIS web map uses EPSG:3857/Web Mercator, but it is not a parcel source.",
+    "nativeIdentity": "BHUMI configuration describes NIB as a parcel information field, but no anonymous feature response was obtained and no identity was retained. City map FID values were not treated as parcel identities.",
+    "sourceFieldMapping": {
+      "BHUMI": "Configured layer name umum:Persil; described display attributes include NIB and area, but no feature schema response was obtained.",
+      "cityArcGIS": "Administrative fields observed: FID, Kode_Kota, Kode_Kec, Kode_Kel, Kelurahan, Kab_Kota, Provinsi, Kode_Prov, Sumber, Kecamatan; not retained as parcel attributes."
+    },
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [1.37598592057991, 99.2761913437371] was preserved for qualification; no coordinate shift was attempted.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No safe anonymous parcel feature response was obtained. The 404/400 results are service-route failures and were not interpreted as an exact-point miss or citywide absence."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel ID if later exposed and source-proven",
+    "full parcel polygon geometry if later exposed",
+    "source service URL",
+    "source CRS / requested output CRS",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Local registry custodian and national public viewer evidence exists, but no safe anonymous parcel geometry plus native identity was qualified. The BHUMI parcel retrieval flow exposed by current JavaScript uses tokenized access; no credentials or tokens were used."
+  },
+  "scopeLimits": [
+    "The exact WUP point [1.37598592057991, 99.2761913437371] was preserved and not shifted.",
+    "No exact-point hit or miss was used as evidence of citywide cadastral absence.",
+    "The official city ArcGIS map is administrative/slum-profile context, not a cadastral source.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel-service CRS, or stable parcel-identity semantics were verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration, adapter admission, or runtime enablement."
+  ],
+  "uncertainty": "Padangsidimpuan local BPN/land-registration custodianship is evidenced by official municipal sources, and BHUMI's current public map configuration identifies a parcel layer. Anonymous parcel feature access, response schema, CRS, stable native identity, and citywide coverage remain unverified. Runtime/admission remains held pending independent serial review."
+}

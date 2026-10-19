@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3691-lipa.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of Lipa documents an assessor tax-mapping service for property location/boundary verification, while copies are limited to owners or authorized representatives presenting title and tax-declaration documents. The public map catalog lists static thematic maps. No anonymous parcel-vector service or geometry endpoint was identified. No property identifiers were submitted.",
+  "registryAssessment": "The official City of Lipa describes an assessor tax-mapping division that can verify property location/boundaries. Its published map-request workflow is for the property owner or authorized representative and asks for title and tax declaration; no anonymous vector service was identified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://lipa.gov.ph/maps/",
+      "observation": "The official City of Lipa describes an assessor tax-mapping division that can verify property location/boundaries. Its published map-request workflow is for the property owner or authorized representative and asks for title and tax declaration; no anonymous vector service was identified."
+    },
+    {
+      "url": "https://lipa.gov.ph/institutional-development/",
+      "observation": "The official City of Lipa describes an assessor tax-mapping division that can verify property location/boundaries. Its published map-request workflow is for the property owner or authorized representative and asks for title and tax declaration; no anonymous vector service was identified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Lipa Philippines official city cadastral parcel map GIS tax mapping assessor",
+      "result": "Official city map page lists static thematic maps; institutional-development page describes tax-mapping verification and owner-authorized tax-map copies. No anonymous parcel geometry endpoint identified.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    },
+    {
+      "language": "Filipino",
+      "query": "Lipa opisyal na mapa kadastral lote tax mapping assessor",
+      "result": "Opisyal na pahina ng Lungsod ng Lipa ang naglalarawan ng tax-mapping division at kahilingan ng may-ari/awtorisadong kinatawan para sa kopya ng tax map; walang pampublikong vector parcel endpoint na natukoy.",
+      "method": "Separate English/local-language source discovery and official-source/service review.",
+      "scope": "Identify local registry evidence and bounded anonymous parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact WUP settlement point and reviewed official sources only.",
+    "limits": "Whether a separate authenticated or unpublished local parcel GIS exists and whether any non-public cadastral coverage includes the WUP settlement locator."
+  },
+  "attempts": [
+    {
+      "url": "https://lipa.gov.ph/maps/",
+      "method": "GET official city maps page",
+      "result": "Static district, education, hazard and road maps are listed; no parcel-vector download or service link was exposed."
+    },
+    {
+      "url": "https://lipa.gov.ph/institutional-development/",
+      "method": "GET official city institutional-development page",
+      "result": "Tax-mapping verification is available through the assessor; map copies require owner/authorized representative, title and tax declaration, and a PHP 50 fee. No parcel query submitted."
+    }
+  ],
+  "remainingUncertainty": "Whether a separate authenticated or unpublished local parcel GIS exists and whether any non-public cadastral coverage includes the WUP settlement locator."
+}

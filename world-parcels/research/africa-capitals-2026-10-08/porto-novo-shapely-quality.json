@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "method": "Shapely 2.1.2 / GEOS 3.13.1; WGS84 GeoJSON projected via repository proj4 to EPSG:32631. No repair. OGC validity via is_valid; normalized duplicates via normalize + 2D WKB; STRtree bounding-box candidates followed by exact GEOS intersections. Area quantiles use nearest-index floor((n-1)*q).",
+  "sourceSample": "porto-novo-safe-sample.geojson",
+  "projectedInput": "temporary /tmp/africa-capitals-2026-10-08/porto-novo-all-metric.geojson (not stored in the batch folder)",
+  "runtimeAcceptance": "porto-novo-acceptance.json",
+  "featureCount": 2126,
+  "metricCRS": "EPSG:32631",
+  "validity": {
+    "validCount": 2117,
+    "invalidCount": 9,
+    "invalidExamples": [
+      {
+        "id": "BJ-ANDF-101470919",
+        "areaM2": 813.7840261296568,
+        "reason": "Self-intersection[458741.921807071 717669.377219543]"
+      },
+      {
+        "id": "BJ-ANDF-101472338",
+        "areaM2": 838.5114873191436,
+        "reason": "Ring Self-intersection[458966.184159512 718108.177789649]"
+      },
+      {
+        "id": "BJ-ANDF-101468853",
+        "areaM2": 423.9823477041719,
+        "reason": "Ring Self-intersection[459375.790968128 718218.889937099]"
+      },
+      {
+        "id": "BJ-ANDF-100259752",
+        "areaM2": 51613.38376613182,
+        "reason": "Ring Self-intersection[459438.275853064 718528.629217354]"
+      },
+      {
+        "id": "BJ-ANDF-101468110",
+        "areaM2": 1585.2148987799317,
+        "reason": "Self-intersection[458281.088553615 718220.542933265]"
+      },
+      {
+        "id": "BJ-ANDF-101468825",
+        "areaM2": 113.33706693986193,
+        "reason": "Self-intersection[459497.443086671 718149.674982826]"
+      },
+      {
+        "id": "BJ-ANDF-101470162",
+        "areaM2": 500.8205446949456,
+        "reason": "Ring Self-intersection[459433.591863533 717468.847322105]"
+      },
+      {
+        "id": "BJ-ANDF-101464713",
+        "areaM2": 517.4619213389567,
+        "reason": "Ring Self-intersection[458392.212778029 718544.243678576]"
+      },
+      {
+        "id": "BJ-ANDF-100260050",
+        "areaM2": 772.8844546200471,
+        "reason": "Self-intersection[459350.319587078 718742.49231616]"
+      }
+    ]
+  },
+  "duplicateGeometry": {
+    "normalizedDuplicateGroupCount": 0,
+    "groups": []
+  },
+  "positiveAreaOverlap": {
+    "pairCount": 21,
+    "maximumIntersectionAreaM2": 25095.381866474923,
+    "maximumRatioOfSmallerParcel": 0.9891096318232002,
+    "topByIntersectionArea": [
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472363"
+        ],
+        "intersectionAreaM2": 25095.381866474923,
+        "ratioOfSmallerParcel": 0.9891096318232002,
+        "parcelAreasM2": [
+          35246.75627743966,
+          25371.68889986164
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101469265"
+        ],
+        "intersectionAreaM2": 51.14629336622853,
+        "ratioOfSmallerParcel": 0.02582429879365213,
+        "parcelAreasM2": [
+          35246.75627743966,
+          1980.5491632090625
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472343"
+        ],
+        "intersectionAreaM2": 40.810817232246954,
+        "ratioOfSmallerParcel": 0.0018916430765752073,
+        "parcelAreasM2": [
+          35246.75627743966,
+          21574.269341621442
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472337"
+        ],
+        "intersectionAreaM2": 25.010468950942226,
+        "ratioOfSmallerParcel": 0.07169459326667413,
+        "parcelAreasM2": [
+          35246.75627743966,
+          348.84735112330804
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472327"
+        ],
+        "intersectionAreaM2": 11.454727912333377,
+        "ratioOfSmallerParcel": 0.018699661487254333,
+        "parcelAreasM2": [
+          35246.75627743966,
+          612.5633835746655
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472361"
+        ],
+        "intersectionAreaM2": 11.322248588380432,
+        "ratioOfSmallerParcel": 0.043786221196240024,
+        "parcelAreasM2": [
+          35246.75627743966,
+          258.5801715484114
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472320"
+        ],
+        "intersectionAreaM2": 10.404971214703409,
+        "ratioOfSmallerParcel": 0.023952784541767403,
+        "parcelAreasM2": [
+          35246.75627743966,
+          434.39505734958937
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472319"
+        ],
+        "intersectionAreaM2": 7.31873939007294,
+        "ratioOfSmallerParcel": 0.0042435765659032685,
+        "parcelAreasM2": [
+          35246.75627743966,
+          1724.6629762446873
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101469239"
+        ],
+        "intersectionAreaM2": 6.005687616721577,
+        "ratioOfSmallerParcel": 0.008632528691553227,
+        "parcelAreasM2": [
+          35246.75627743966,
+          695.7043331460959
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101469238"
+        ],
+        "intersectionAreaM2": 5.853899077657211,
+        "ratioOfSmallerParcel": 0.008926558030267144,
+        "parcelAreasM2": [
+          35246.75627743966,
+          655.7845765196937
+        ]
+      }
+    ],
+    "topByRelativeArea": [
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472363"
+        ],
+        "intersectionAreaM2": 25095.381866474923,
+        "ratioOfSmallerParcel": 0.9891096318232002,
+        "parcelAreasM2": [
+          35246.75627743966,
+          25371.68889986164
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472337"
+        ],
+        "intersectionAreaM2": 25.010468950942226,
+        "ratioOfSmallerParcel": 0.07169459326667413,
+        "parcelAreasM2": [
+          35246.75627743966,
+          348.84735112330804
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472361"
+        ],
+        "intersectionAreaM2": 11.322248588380432,
+        "ratioOfSmallerParcel": 0.043786221196240024,
+        "parcelAreasM2": [
+          35246.75627743966,
+          258.5801715484114
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101469265"
+        ],
+        "intersectionAreaM2": 51.14629336622853,
+        "ratioOfSmallerParcel": 0.02582429879365213,
+        "parcelAreasM2": [
+          35246.75627743966,
+          1980.5491632090625
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472320"
+        ],
+        "intersectionAreaM2": 10.404971214703409,
+        "ratioOfSmallerParcel": 0.023952784541767403,
+        "parcelAreasM2": [
+          35246.75627743966,
+          434.39505734958937
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472357"
+        ],
+        "intersectionAreaM2": 0.1796117223936124,
+        "ratioOfSmallerParcel": 0.020381207086034355,
+        "parcelAreasM2": [
+          35246.75627743966,
+          8.812614563770673
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472327"
+        ],
+        "intersectionAreaM2": 11.454727912333377,
+        "ratioOfSmallerParcel": 0.018699661487254333,
+        "parcelAreasM2": [
+          35246.75627743966,
+          612.5633835746655
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101469238"
+        ],
+        "intersectionAreaM2": 5.853899077657211,
+        "ratioOfSmallerParcel": 0.008926558030267144,
+        "parcelAreasM2": [
+          35246.75627743966,
+          655.7845765196937
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101469239"
+        ],
+        "intersectionAreaM2": 6.005687616721577,
+        "ratioOfSmallerParcel": 0.008632528691553227,
+        "parcelAreasM2": [
+          35246.75627743966,
+          695.7043331460959
+        ]
+      },
+      {
+        "ids": [
+          "BJ-ANDF-101471738",
+          "BJ-ANDF-101472330"
+        ],
+        "intersectionAreaM2": 4.27805576095228,
+        "ratioOfSmallerParcel": 0.007238025327878114,
+        "parcelAreasM2": [
+          35246.75627743966,
+          591.0528862720113
+        ]
+      }
+    ],
+    "overlayErrorCount": 0,
+    "overlayErrors": [],
+    "allUniqueFeaturePairs": 2258875,
+    "bboxCandidatePairs": 11588
+  },
+  "areaM2": {
+    "min": 8.630440929635359,
+    "p10": 176.37161268230759,
+    "median": 432.837635931219,
+    "p90": 1263.9656488823007,
+    "max": 87978.17786421579,
+    "below1m2Count": 0,
+    "below25m2Count": 8,
+    "below1m2Fraction": 0.0,
+    "below25m2Fraction": 0.0037629350893697085,
+    "below1m2Examples": [],
+    "below25m2Examples": [
+      {
+        "id": "BJ-ANDF-100266528",
+        "areaM2": 19.102958067596248
+      },
+      {
+        "id": "BJ-ANDF-100266803",
+        "areaM2": 10.070480382726736
+      },
+      {
+        "id": "BJ-ANDF-101472357",
+        "areaM2": 8.812614563770673
+      },
+      {
+        "id": "BJ-ANDF-101472362",
+        "areaM2": 16.19165753827152
+      },
+      {
+        "id": "BJ-ANDF-100740421",
+        "areaM2": 11.739240652882462
+      },
+      {
+        "id": "BJ-ANDF-101469729",
+        "areaM2": 8.630440929635359
+      },
+      {
+        "id": "BJ-ANDF-101469537",
+        "areaM2": 17.54931963657955
+      },
+      {
+        "id": "BJ-ANDF-101469182",
+        "areaM2": 24.558709403506278
+      }
+    ]
+  },
+  "interpretation": "Small features and small positive-area intersections are reported for review; neither is an automatic rejection criterion by itself. No geometries were repaired or filtered.",
+  "runtimeAcceptanceFeatureCount": 2126,
+  "runtimeAcceptanceExtent": "9 aligned cells and 8 pan cells around the Porto-Novo locator; bounded sample only.",
+  "reviewRecommended": true,
+  "reviewRationale": "Review the 9 OGC-invalid self-intersecting rings and 21 positive-area overlaps, especially BJ-ANDF-101471738 / BJ-ANDF-101472363 (25,095.38 m\u00b2, 98.91% of the smaller polygon). The 8 features below 25 m\u00b2 (0.38%) are reported for context and are not, by themselves, a rejection reason.",
+  "rawDataPolicy": "Only canonical parcel IDs, geometry hashes, areas, validity reasons and overlap metrics are stored. No upstream property payloads or full projected input are retained in the batch folder."
+}

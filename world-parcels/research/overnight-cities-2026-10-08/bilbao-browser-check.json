@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T03:03:04.228072+00:00",
+  "appCityId": "bilbao",
+  "url": "http://localhost:5638/?city=bilbao&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 118,
+  "visibleParcels": 50,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "ES-BIZKAIA-20~1106~2010",
+  "detailsHeading": "Parcel Copy to clipboard: ES-BIZKAIA-20~1106~2010",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

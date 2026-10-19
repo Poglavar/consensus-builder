@@ -1,0 +1,67 @@
+{
+  "cityCode": 11599,
+  "queueRank": 1752,
+  "name": "Puri",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [19.8066662998288, 85.8284420301884],
+  "population2025": 328196,
+  "population2025k": 328.196,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attempt": 1,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Puri Odisha official cadastral parcel map Bhulekh BhuNaksha government",
+        "result": "First-party discovery identified Odisha BhuNaksha, Odisha Bhulekh map/plot-view pages, the Puri district land-record procedure page, and the Puri district official site. BhuNaksha's public page explicitly exposes Odisha location selectors; no citywide downloadable vector endpoint was identified.",
+        "actualResultUrls": [
+          "https://app1bhunakshaodisha.nic.in/bhunaksha/",
+          "https://bhulekh.ori.nic.in/frmMapView.aspx",
+          "https://puri.odisha.gov.in/en/more/serviceshow-view-land-records-0",
+          "https://puri.odisha.gov.in/en"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ପୁରୀ ଓଡ଼ିଶା ଭୁଲେଖ ଭୂ ନକ୍ସା ସରକାରୀ ଜମି ମାନଚିତ୍ର",
+        "result": "First-party discovery returned the Odisha BhuNaksha and Bhulekh services. The live Bhulekh form lists Puri as district code 11 and the BhuNaksha location response returned Odia names for Puri tehsil and RI/village-level administrative choices. No parcel geometry payload was obtained.",
+        "actualResultUrls": [
+          "https://app1bhunakshaodisha.nic.in/bhunaksha/",
+          "https://bhulekh.ori.nic.in/frmMapView.aspx",
+          "https://bhulekh.ori.nic.in/index.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The Government of Odisha Revenue & Disaster Management Department's Bhulekh and NIC-developed BhuNaksha are public land-record/cadastral-map services. The official Puri district service page directs users to Bhulekh and identifies the respective Tahasil Offices. This evidences a state/local revenue custodian and public parcel-map workflow, not an open citywide parcel-vector API.",
+  "officialSources": [
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/", "observation": "Current Odisha BhuNaksha public viewer exposes District, Tehsil, RI, Village and Sheet selectors."},
+    {"url": "https://bhulekh.ori.nic.in/frmMapView.aspx", "observation": "Current Bhulekh map form lists Puri (ପୁରୀ) as district code 11 and requires administrative selection before a plot map can be viewed."},
+    {"url": "https://puri.odisha.gov.in/en/more/serviceshow-view-land-records-0", "observation": "Official Puri district page identifies Revenue and Disaster Management Department land records and directs users to Bhulekh; location is respective Tahasil Offices in Puri."},
+    {"url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp", "observation": "Government of India BhuNaksha implementation page lists Odisha as an implementation state; this is program metadata, not city geometry."}
+  ],
+  "requests": [
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/", "method": "GET", "outcome": "TLS-verified HTML retrieved; state code 21 and current JS/config references were inspected."},
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/assets/misc/config.js", "method": "GET", "outcome": "TLS-verified current config retrieved; service paths are same-origin."},
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/index.js", "method": "GET", "outcome": "TLS-verified current JavaScript retrieved; routes include rest/Levels/count, rest/Levels/ListsAfterLevel, rest/MapInfo/getVVVVExtentGeoref, rest/MapInfo/getPlotAtXY, rest/MapInfo/getGisCode, ScalarDatahandler, and same-origin WMS. The inspected code uses raster WMS for map display and does not expose a GeoJSON parcel export."},
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Levels/count", "method": "POST", "requestData": {"state": "21"}, "outcome": "HTTP 200; response 5, indicating five location levels."},
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/village_selector.jsp", "method": "POST", "requestData": {"state": "21"}, "outcome": "HTTP 200; selector HTML retrieved. The bounded response's initial/default lists were not treated as a parcel hit or citywide coverage result."},
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Levels/ListsAfterLevel", "method": "POST", "requestData": {"state": "21", "level": "1", "codes": "11,4,", "hasmap": true}, "outcome": "HTTP 200 JSON; Puri district code 11 and Puri tehsil code 4 returned Odia administrative names plus related location arrays; no parcel identity or geometry."},
+    {"url": "https://app1bhunakshaodisha.nic.in/bhunaksha/rest/Levels/ListsAfterLevel", "method": "POST", "requestData": {"state": "21", "level": "2", "codes": "11,4,3,", "hasmap": true}, "outcome": "HTTP 200 JSON; administrative RI-level response returned Odia names including Town North; no parcel identity or geometry."},
+    {"url": "https://bhulekh.ori.nic.in/frmMapView.aspx", "method": "GET", "outcome": "TLS-verified HTML retrieved; Puri district option was confirmed. The ASP.NET form requires further village/RI/plot selection and no geometry was requested using unsafe fields."},
+    {"url": "https://puri.odisha.gov.in/en/more/serviceshow-view-land-records-0", "method": "GET", "outcome": "TLS-verified official Puri district land-record procedure page retrieved; it links to Bhulekh and does not publish parcel geometry."}
+  ],
+  "source": "Odisha Revenue & Disaster Management Department Bhulekh and NIC BhuNaksha",
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "Odisha public Bhulekh/BhuNaksha land-record and cadastral-map workflow with Puri district and Puri tehsil selectors.", "verifiedOpenScope": "Official state/local custodian, Puri administrative lookup, and current public map-service routes; no parcel geometry response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "notes": "Exact WUP point preserved in latitude/longitude order. No exact-point hit/miss inference was made. No owner, address, titleholder, contact, tax/account, personal or unsafe fields were requested or retained. No GeoJSON sample is retained because no stable native parcel identity plus full polygon was independently obtained. Packet completion is not source integration or runtime admission; serial reviewer qualification remains required."
+}

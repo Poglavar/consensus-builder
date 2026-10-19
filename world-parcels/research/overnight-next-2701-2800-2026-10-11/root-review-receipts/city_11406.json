@@ -1,0 +1,13 @@
+{
+  "taskId": "city:11406",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:19:58Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-11406-lanhe.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/lanhe-service-review.json"
+  ],
+  "review": "WUP 2025 code 11406, rank 2705, China, point [22.8134259483606,113.37641012487], and 218861 persons match the verified UN source archive, roster, queue, packet, and paired review. English and Chinese searches are recorded. Guangzhou/Nansha procedural custody is evidenced in the packet, but the cadastral viewer was inaccessible and no anonymous native-ID plus polygon response, schema, or CRS was retained. No sample polygon exists. Access failure does not establish citywide absence. Fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, and headed Details verification are unevidenced; no admission or acceptance metrics."
+}

@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "AK",
+  "state": "Alaska",
+  "capital": "Juneau",
+  "centerLatLon": [
+    58.3016,
+    -134.4202
+  ],
+  "query": {
+    "language": "English",
+    "text": "site:alaska.gov Juneau parcel GIS parcels ArcGIS official"
+  },
+  "references": [
+    {
+      "url": "https://juneau.org/finance/assessor-office",
+      "observation": "Official assessor page links the CBJ Parcel Viewer and says parcel identification number is searchable."
+    },
+    {
+      "url": "https://juneau.org/community-development/maps",
+      "observation": "Official city maps page lists CBJ Parcel Viewer."
+    },
+    {
+      "url": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3?f=pjson",
+      "observation": "Municipal viewer service polygon layer metadata; native tax_id field, FID OID; query does not support pagination."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=site%3Aalaska.gov+Juneau+parcel+GIS+parcels+ArcGIS+official",
+      "observation": "English search result discovered official Juneau borough parcel metadata."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "ArcGIS JSON",
+      "assessment": "Municipal parcel viewer polygon layer; tax_id native field; FID is OID."
+    },
+    {
+      "url": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3/query?where=1%3D1&geometry=-134.42085%2C58.3011125%2C-134.41955%2C58.3020875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=tax_id&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "assessment": "13 capital bbox features; finite closed polygon rings. Repeated tax_id values mean ambiguity prevents verified status."
+    },
+    {
+      "url": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3/query?where=tax_id%3D%274B3001020020%27&outFields=tax_id&returnGeometry=true&outSR=4326&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=utf-8",
+      "assessment": "Known public tax_id returned four geometries; duplicate key condition confirmed."
+    },
+    {
+      "url": "https://services.arcgis.com/kpMKjjLr8H1rZ4XO/arcgis/rest/services/Juneau_Parcel_Viewer/FeatureServer/0/query?where=1%3D1&geometry=-134.42085%2C58.3011125%2C-134.41955%2C58.3020875&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=tax_id&returnGeometry=true&outSR=4326&resultRecordCount=6&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Unofficial ArcGIS Online mirror owner SEAKFHP; Juneau scope; rejected as authoritative because item description calls it non-cadastral. Same tax_id duplicate issue."
+    },
+    {
+      "url": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_asr/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "ArcGIS JSON",
+      "assessment": "Additional assessment layer lead; schema fields include property layer joined to assessment sales, not yet sampled."
+    }
+  ],
+  "source": {
+    "endpoint": "https://epv.ci.juneau.ak.us/arcgis/rest/services/prod/property_layers_ipv/MapServer/3",
+    "adapter": "arcgis",
+    "name": "CBJ property_layers_ipv parcels (light lines)",
+    "operator": "City and Borough of Juneau (municipal parcel viewer linked from juneau.org)",
+    "idField": "tax_id",
+    "objectIdField": "FID",
+    "idType": "string",
+    "idPattern": "^[A-Za-z0-9]+$",
+    "outFields": [
+      "FID",
+      "tax_id"
+    ],
+    "parcelNumberField": "tax_id",
+    "metricSrid": 32608,
+    "proposedIdPrefix": "US-AK-CBJ-",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "nativeGeometryMode": "parts",
+    "partsCoordinatePrecision": 9
+  },
+  "verification": {
+    "stage": "runtime_acceptance",
+    "bbox": [
+      -134.425,
+      58.29750000000001,
+      -134.4225,
+      58.300000000000004
+    ],
+    "viewportCells": 18,
+    "uniqueCanonicalIds": 689,
+    "nativeIDs": [
+      "1C100K830032",
+      "1C060U040000",
+      "1C060K600080"
+    ],
+    "exactResolved": 689,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "evidenceFile": "research/us-capitals-live-batch-2026-10-06.json"
+  },
+  "status": "verified_sample_capital_scope",
+  "limitations": "Identified municipal parcel-code groups only. A native tax_id can have multiple geometric rows; adapter fetches all rows for every observed code and dissolves them. UNASSIGNED and blank-placeholder records are excluded. Coordinates are normalized to9 decimal degrees before union. Original duplicate-ID and numerical/availability failures remain saved; no Alaska-wide or legal-boundary completeness is claimed.",
+  "priorResearchFile": "research/subnational/US/AK.json",
+  "discoveryStatus": "geometry_found_native_id_ambiguous",
+  "dataFound": true,
+  "nativeIDVerified": true,
+  "adapterReady": true,
+  "runtimeEvidenceFile": "research/us-capitals-live-batch-2026-10-06.json",
+  "runtimeVerification": {
+    "uniqueCanonicalIds": 689,
+    "exactResolved": 689,
+    "viewportCells": 18,
+    "identity": "All complete municipal tax_id components form one canonical parcel group; FID is never canonical identity."
+  },
+  "discoveryVerification": {
+    "bbox": [
+      -134.42085,
+      58.3011125,
+      -134.41955,
+      58.3020875
+    ],
+    "count": 13,
+    "nativeIDs": [
+      "1C060C250020",
+      "1C060C180070",
+      "1C060C190010"
+    ],
+    "exactCount": 4,
+    "geometryvalid": true,
+    "capitallocation": true
+  }
+}

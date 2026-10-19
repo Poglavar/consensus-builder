@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-2072-san-luis.json",
+  "cityCode": 2072,
+  "queueRank": 3292,
+  "attempt": 1,
+  "reviewStatus": "complete_pending_serial_runtime_review",
+  "registryFound": true,
+  "summary": "The provincial cadastral custodian and legal mandate were verified from first-party/public cadastral sources. The accessible official atlas exposed general map layers but no parcel schema or anonymous parcel geometry. Runtime admission remains held.",
+  "custodian": "Dirección Provincial de Catastro y Tierras Fiscales, Provincia de San Luis; the IGN page identifies its San Luis Capital office.",
+  "requests": "English and Spanish first-party discovery, official custodian/legal pages, catastro site access, public atlas catalog, ArcGIS app configuration, and public web-map layer inspection were completed. The exact WUP point was retained unchanged. No credentials, unsafe fields, CAPTCHA/Cloudflare bypass, or TLS disable was used.",
+  "schemaAndCrs": {
+    "parcelSchema": null,
+    "nativeIdFields": [],
+    "geometryCrs": null,
+    "fieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "geometry": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "retainedFeatureProperties": null
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier if later exposed",
+    "full parcel polygon geometry if later exposed",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "The official catastro site returned HTTP 403 and was not bypassed.",
+    "The official atlas exposed Localidades and Manzanas/general thematic layers, not parcels; no parcel endpoint was invented.",
+    "No exact-point parcel response was available. A map extent miss or unavailable viewer is not citywide absence evidence.",
+    "No raw source-specific attributes or unsafe legal/property information were retained.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "admissionDecision": "held",
+  "uncertainty": [
+    "No public parcel schema, CRS, native identity, or geometry was verified.",
+    "Citywide coverage and source freshness remain unknown."
+  ]
+}

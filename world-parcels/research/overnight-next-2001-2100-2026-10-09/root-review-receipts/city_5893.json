@@ -1,0 +1,25 @@
+{
+  "taskId": "city:5893",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-5893-kofu.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/kofu-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T22:17:06Z",
+  "reviewFinding": "Kofu first-party page confirms a municipal public GIS, but does not establish a cadastral parcel layer or cadastral registry custody. Viewer returned HTTP 403 on independent anonymous GET. Treat packet registryFound=true as municipal GIS only, not parcel-source qualification or absence.",
+  "firstPartyPagesChecked": [
+    "https://www.city.kofu.yamanashi.jp/joho/kofu_map.html",
+    "https://kofu.geocloud.jp/"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "retainedPolygonCount": 0
+}

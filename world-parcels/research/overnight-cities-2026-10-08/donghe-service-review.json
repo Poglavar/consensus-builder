@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "wup2025:5538",
+  "purpose": "City-specific parcel registry and safe public geometry route review",
+  "primaryPublisher": "https://czj.baotou.gov.cn/u/cms/www/202109/09141420rsst.pdf",
+  "sourceUrl": "https://czj.baotou.gov.cn/u/cms/www/202109/09141420rsst.pdf",
+  "registryFound": true,
+  "registryBasis": "Baotou municipal government materials identify Donghe as one of the city’s urban districts. The municipal Real Estate Registration Center report lists a Donghe receiving sub-center, establishing a local registration service. This supports local registry presence; the roster point is treated as the WUP settlement point, not a legal-boundary determination.",
+  "officialSources": [
+    {
+      "url": "https://czj.baotou.gov.cn/u/cms/www/202109/09141420rsst.pdf",
+      "observation": "Baotou municipal government materials identify Donghe as one of the city’s urban districts. The municipal Real Estate Registration Center report lists a Donghe receiving sub-center, establishing a local registration service. This supports local registry presence; the roster point is treated as the WUP settlement point, not a legal-boundary determination. The official material establishes registration service, but no anonymous public parcel-feature route or safe geometry-and-ID schema was verified. No map/property query was made."
+    },
+    {
+      "url": "https://www.baotou.gov.cn/yxbt/ms/dhq/",
+      "observation": "Baotou municipal government materials identify Donghe as one of the city’s urban districts. The municipal Real Estate Registration Center report lists a Donghe receiving sub-center, establishing a local registration service. This supports local registry presence; the roster point is treated as the WUP settlement point, not a legal-boundary determination. The official material establishes registration service, but no anonymous public parcel-feature route or safe geometry-and-ID schema was verified. No map/property query was made."
+    },
+    {
+      "url": "https://www.baotou.gov.cn/ztzl/zsyz/jbqkjcylzsfx/jbqk_dhq/dhq_zsfx/202511/P020251120588194808238.pdf",
+      "observation": "Baotou municipal government materials identify Donghe as one of the city’s urban districts. The municipal Real Estate Registration Center report lists a Donghe receiving sub-center, establishing a local registration service. This supports local registry presence; the roster point is treated as the WUP settlement point, not a legal-boundary determination. The official material establishes registration service, but no anonymous public parcel-feature route or safe geometry-and-ID schema was verified. No map/property query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Donghe Baotou official real estate registration cadastral map",
+      "scope": "Identify city-specific registry evidence and safe public geometry routes.",
+      "result": "Baotou municipal government materials identify Donghe as one of the city’s urban districts. The municipal Real Estate Registration Center report lists a Donghe receiving sub-center, establishing a local registration service. This supports local registry presence; the roster point is treated as the WUP settlement point, not a legal-boundary determination. The official material establishes registration service, but no anonymous public parcel-feature route or safe geometry-and-ID schema was verified. No map/property query was made.",
+      "actualResultUrls": [
+        "https://czj.baotou.gov.cn/u/cms/www/202109/09141420rsst.pdf",
+        "https://www.baotou.gov.cn/yxbt/ms/dhq/",
+        "https://www.baotou.gov.cn/ztzl/zsyz/jbqkjcylzsfx/jbqk_dhq/dhq_zsfx/202511/P020251120588194808238.pdf"
+      ],
+      "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+    },
+    {
+      "language": "Chinese",
+      "query": "包头 东河区 不动产登记 受理分中心 地籍图",
+      "scope": "Identify local-language primary evidence for city registry and public parcel-map services.",
+      "result": "Baotou municipal government materials identify Donghe as one of the city’s urban districts. The municipal Real Estate Registration Center report lists a Donghe receiving sub-center, establishing a local registration service. This supports local registry presence; the roster point is treated as the WUP settlement point, not a legal-boundary determination. The official material establishes registration service, but no anonymous public parcel-feature route or safe geometry-and-ID schema was verified. No map/property query was made.",
+      "actualResultUrls": [
+        "https://czj.baotou.gov.cn/u/cms/www/202109/09141420rsst.pdf",
+        "https://www.baotou.gov.cn/yxbt/ms/dhq/",
+        "https://www.baotou.gov.cn/ztzl/zsyz/jbqkjcylzsfx/jbqk_dhq/dhq_zsfx/202511/P020251120588194808238.pdf"
+      ],
+      "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The official material establishes registration service, but no anonymous public parcel-feature route or safe geometry-and-ID schema was verified. No map/property query was made."
+  },
+  "requestEvidence": {
+    "method": "public official source review",
+    "propertySpecificRequestSent": false,
+    "geometryRequestSent": false,
+    "notes": "No owner, address, tax-account, title, parcel-number, or person-specific lookup was performed."
+  },
+  "technicalBlocker": "The official material establishes registration service, but no anonymous public parcel-feature route or safe geometry-and-ID schema was verified. No map/property query was made.",
+  "sampleDisposition": "No polygon retained; no verified safe geometry endpoint.",
+  "remainingUncertainty": "A legally authoritative boundary overlay was not used to independently test the WUP centroid against Donghe district limits.",
+  "rootRuntimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "A legally authoritative boundary overlay was not used to independently test the WUP centroid against Donghe district limits."
+  }
+}

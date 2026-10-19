@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10447,
+  "cityId": "wup2025:10447",
+  "name": "Varanasi",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.3130953149596,
+    83.0050363443188
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 144,
+  "stateOrUT": "Uttar Pradesh",
+  "administrativeIdentity": {
+    "district": "वाराणसी",
+    "tehsilOrTaluk": "Sadar",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "freshResearch": {
+    "checkedAt": "2026-10-08",
+    "batch4Summary": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained.",
+    "queries": [
+      "वाराणसी राजस्व ग्राम नक्शा गाटा भू नक्शा उत्तर प्रदेश तहसील"
+    ],
+    "sources": [
+      "https://upbhunaksha.gov.in/home/",
+      "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+      "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "https://upbhunaksha.gov.in/bhunakshaserver/WMS",
+      "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot",
+      "https://upbhunaksha.gov.in/bhunakshaserver/mapModificationController/getGeoJSONLayerData"
+    ]
+  },
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "UP BhuNaksha exposes village hierarchy, georeferenced extents, plot hit-testing and WMS for some rural villages. The WUP city center did not resolve into either nearby sample village; no urban parcel coverage established.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "public_cadastral_raster_and_hit_test_no_open_vector_geometry",
+  "registryFound": true,
+  "verifiedSample": false,
+  "technicalBlocker": "Nearby public hit-test results provide parcel codes and bounding boxes only. The full-shape endpoint and GeoJSON layer endpoint return 401; the WMS evidence is a raster.",
+  "remainingUncertainty": "No public, nonempty parcel polygon associated with the exact WUP target point was verified.",
+  "nextStep": "Use a separately documented public vector route if one becomes available; validate full boundaries, geographic placement and fresh native-ID or source-scoped geometry-reference reads. Preserve the nearby public raster as viewing evidence only.",
+  "priorEvidence": [
+    {
+      "file": "world-parcels/research/india-africa-2026-10-08/india-city-10447.json",
+      "summary": "Earlier city assessment retained in referenced file; not duplicated in this batch record."
+    },
+    "research/india-africa-2026-10-08/india-city-10447.json"
+  ],
+  "registryBasis": "Official UP BhuNaksha resolves district 197 वाराणसी, Sadar tehsil 00996 and real nearby revenue-village maps/plots (Shivpur, Domari); these are city-region registry records, though neither nearby sample contains the WUP center.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "वाराणसी राजस्व ग्राम नक्शा गाटा भू नक्शा उत्तर प्रदेश तहसील",
+      "date": "2026-10-08",
+      "executionMethod": "web search; official portal inspection as listed in requestsAndEndpointChecks",
+      "resultUrls": [
+        "https://upbhunaksha.gov.in/home/",
+        "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+        "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+        "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+        "https://upbhunaksha.gov.in/bhunakshaserver/WMS",
+        "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot",
+        "https://upbhunaksha.gov.in/bhunakshaserver/mapModificationController/getGeoJSONLayerData"
+      ],
+      "summary": "Batch-4 search and follow-up only; prior search history is in priorEvidence."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/main-76RVRF3Z.js",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/WMS",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/mapModificationController/getGeoJSONLayerData",
+      "operator": "official city/state land-records or GIS authority",
+      "observation": "Payload schemas are application/x-www-form-urlencoded values used by the public SPA. Hit-test clicked coordinates and complete GetMap query were not retained; they are stated as such rather than reconstructed as exact. No owner, phone or address fields were requested or retained."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "method": "GET",
+      "status": "HTTP 200",
+      "summary": "Official SPA entry; public JS bundle inspected."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "POST",
+      "payload": {
+        "state": "09"
+      },
+      "status": "HTTP 200",
+      "summary": "Returns District/Tehsil/Village level labels."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "payload": {
+        "state": "09",
+        "level": "1",
+        "parent": "09"
+      },
+      "status": "HTTP 200",
+      "summary": "District values include 197 वाराणसी."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "payload": {
+        "state": "09",
+        "level": "2",
+        "parent": "197"
+      },
+      "status": "HTTP 200",
+      "summary": "Tehsil values include 00996 सदर."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "payload": {
+        "gisLevels": "197,00996,219307"
+      },
+      "status": "HTTP 200",
+      "summary": "Shivpur extent [698417.5300,2800294.2306,700520.4608,2801530.0953], EPSG:32644, gisCode 19700996219307."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "payload": {
+        "gisLevels": "197,00996,209728"
+      },
+      "status": "HTTP 200",
+      "summary": "Domari extent [702899.2299,2799634.2221,705751.0100,2802359.4699], EPSG:32644."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "payload": {
+        "giscode": "19700996219307",
+        "x": "<sample point within mapped village; exact clicked value not retained>",
+        "y": "<sample point within mapped village; exact clicked value not retained>"
+      },
+      "status": "HTTP 200",
+      "summary": "Returns plotCode/kide 89, public id V7r73JTET66b8nzjIoNeyw and only a plot bbox [699395.0847,2800831.4775,699578.4278,2800989.3677]; exact clicked x/y were not retained in checkpoint.",
+      "payloadValuesRetained": false
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "payload": {
+        "giscode": "19700996209728",
+        "x": "<sample point within mapped village; exact clicked value not retained>",
+        "y": "<sample point within mapped village; exact clicked value not retained>"
+      },
+      "status": "HTTP 200",
+      "summary": "Returns plotCode/kide 163, public id tgD_uq0pRYqK9x_IB763Cg and bbox [704230.9163,2800853.6780,704408.2710,2801059.6952]; exact clicked x/y were not retained in checkpoint.",
+      "payloadValuesRetained": false
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/WMS",
+      "method": "GET",
+      "payload": {
+        "service": "WMS",
+        "request": "GetMap",
+        "layers": "VILLAGE_MAP,PLOT_LIST",
+        "crs": "EPSG:32644"
+      },
+      "status": "HTTP 200 image/png",
+      "summary": "Raster displays village map and plot boundaries; image is not vector geometry.",
+      "payloadValuesRetained": false
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?bhucode=19700996219307&id=V7r73JTET66b8nzjIoNeyw",
+      "method": "GET",
+      "status": "HTTP 401",
+      "summary": "Authorization required; no bypass attempted."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/mapModificationController/getGeoJSONLayerData",
+      "method": "POST",
+      "payload": {
+        "bhucode": "19700996219307",
+        "id": "V7r73JTET66b8nzjIoNeyw"
+      },
+      "status": "HTTP 401",
+      "summary": "Authorization required; no bypass attempted."
+    }
+  ],
+  "sourceIds": [],
+  "runtimeEligible": false,
+  "identityPolicy": "High-quality public geometry can use source-scoped versioned geometry references if native parcel IDs are absent; do not present them as cadastral registry numbers.",
+  "registryEvidenceUrls": [
+    "https://upbhunaksha.gov.in/home/",
+    "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref"
+  ],
+  "blocker": "Nearby public hit-test results provide parcel codes and bounding boxes only. The full-shape endpoint and GeoJSON layer endpoint return 401; the WMS evidence is a raster.",
+  "supplementalEvidenceFiles": [
+    "research/india-africa-batch4-2026-10-08/india-varanasi-10447-map-sample.json"
+  ]
+}

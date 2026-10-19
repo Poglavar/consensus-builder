@@ -1,0 +1,152 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3224",
+  "wupCityCode": 3224,
+  "name": "Málaga",
+  "country": "Spain",
+  "countryCode": "ES",
+  "rank": 1057,
+  "queueRank": 1057,
+  "point": [
+    36.719979707331,
+    -4.43788341316648
+  ],
+  "centerLatLon": [
+    36.719979707331,
+    -4.43788341316648
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 521854,
+  "population2025k": 521.854,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Ayuntamiento de Málaga publishes a CC BY 4.0 municipal parcel GeoJSON (EPSG:25830). Fresh anonymous GET returned 60,931,934 bytes, HTTP Last-Modified 2026-10-08; CKAN resource metadata still lists 2025-04-09, so HTTP resource freshness and catalog metadata differ. The full geometry-only snapshot contains 58,631 features over native extent [358282.26599712,4055772.65591506,387188.726,4082816.5695]. The exact WUP point transforms to [371591.291186269,4064773.038900511] and is contained by native feature da_cartografiaParcela.4196772. Only that feature ID and unmodified full geometry were retained.",
+  "registryEvidenceUrls": [
+    "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela",
+    "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+    "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+    "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "es-malaga-municipal-parcel-snapshot"
+  ],
+  "adapterReady": true,
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "scopeLimits": "145 distinct unmodified full municipal cartographic parcel polygons around the unchanged WUP locator passed thirteen bounded grid cells, complete footprint lookup and source binding. Two independent anonymous downloads returned the complete 58,631-feature EPSG:4326 snapshot with identical decoded body hashes and the runtime gzip representation ETag. All 145 fresh exact native ID_PARCELA reads and explicit absence passed. Independent EPSG:32630 GEOS audit found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors in this bounded union. The exact locator lies inside ID_PARCELA 4196772. Snapshot revisions fail closed pending review; this does not establish citywide completeness, legal title, survey accuracy or currentness.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "Ayuntamiento de Málaga publishes a CC BY 4.0 municipal parcel GeoJSON (EPSG:25830). Fresh anonymous GET returned 60,931,934 bytes, HTTP Last-Modified 2026-10-08; CKAN resource metadata still lists 2025-04-09, so HTTP resource freshness and catalog metadata differ. The full geometry-only snapshot contains 58,631 features over native extent [358282.26599712,4055772.65591506,387188.726,4082816.5695]. The exact WUP point transforms to [371591.291186269,4064773.038900511] and is contained by native feature da_cartografiaParcela.4196772. Only that feature ID and unmodified full geometry were retained.",
+    "verifiedOpenScope": "145 distinct unmodified full municipal cartographic parcel polygons around the unchanged WUP locator passed thirteen bounded grid cells, complete footprint lookup and source binding. Two independent anonymous downloads returned the complete 58,631-feature EPSG:4326 snapshot with identical decoded body hashes and the runtime gzip representation ETag. All 145 fresh exact native ID_PARCELA reads and explicit absence passed. Independent EPSG:32630 GEOS audit found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors in this bounded union. The exact locator lies inside ID_PARCELA 4196772. Snapshot revisions fail closed pending review; this does not establish citywide completeness, legal title, survey accuracy or currentness.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "145 distinct unmodified full municipal cartographic parcel polygons around the unchanged WUP locator passed thirteen bounded grid cells, complete footprint lookup and source binding. Two independent anonymous downloads returned the complete 58,631-feature EPSG:4326 snapshot with identical decoded body hashes and the runtime gzip representation ETag. All 145 fresh exact native ID_PARCELA reads and explicit absence passed. Independent EPSG:32630 GEOS audit found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors in this bounded union. The exact locator lies inside ID_PARCELA 4196772. Snapshot revisions fail closed pending review; this does not establish citywide completeness, legal title, survey accuracy or currentness.",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/malaga-snapshot-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/malaga-snapshot-root-quality.json",
+    "qualityReviewFile": "research/overnight-followon-2026-10-09/malaga-root-quality-review.json"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Malaga official cadastre land parcels cadastral service Spain INSPIRE map",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "One complete native municipal parcel polygon contains the exact WUP point. Only native feature ID and full geometry were retained; no thematic or property attributes were retained. This is one local sample, not an adapter qualification or citywide completeness finding.",
+        "actualResultUrls": [
+          "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela",
+          "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+          "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      },
+      {
+        "language": "Spanish",
+        "query": "Málaga catastro parcelas catastrales Málaga Ayuntamiento Catastro INSPIRE",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "One complete native municipal parcel polygon contains the exact WUP point. Only native feature ID and full geometry were retained; no thematic or property attributes were retained. This is one local sample, not an adapter qualification or citywide completeness finding.",
+        "actualResultUrls": [
+          "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela",
+          "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+          "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+        "method": "GET Range bytes=0-16383",
+        "httpStatus": 206,
+        "contentType": "application/geo+json",
+        "contentRange": "bytes 0-16383/60931934",
+        "assessment": "Bounded initial response confirmed source size, format and first-party delivery before full geometry extraction."
+      },
+      {
+        "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+        "method": "GET (full public resource after an initial bounded Range schema check)",
+        "httpStatus": 200,
+        "contentType": "application/geo+json",
+        "responseBytes": 60931934,
+        "lastModified": "Thu, 08 Oct 2026 12:02:12 GMT",
+        "assessment": "Ayuntamiento de Málaga publishes a CC BY 4.0 municipal parcel GeoJSON (EPSG:25830). Fresh anonymous GET returned 60,931,934 bytes, HTTP Last-Modified 2026-10-08; CKAN resource metadata still lists 2025-04-09, so HTTP resource freshness and catalog metadata differ. The full geometry-only snapshot contains 58,631 features over native extent [358282.26599712,4055772.65591506,387188.726,4082816.5695]. The exact WUP point transforms to [371591.291186269,4064773.038900511] and is contained by native feature da_cartografiaParcela.4196772. Only that feature ID and unmodified full geometry were retained.",
+        "snapshot": {
+          "requestUrl": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+          "httpStatus": 200,
+          "contentType": "application/geo+json",
+          "downloadBytes": 60931934,
+          "httpLastModified": "Thu, 08 Oct 2026 12:02:12 GMT",
+          "ckanMetadataModified": "2025-04-28T07:45:29.025357",
+          "ckanResourceLastModified": "2025-04-09T13:06:41.855480",
+          "sourceCrs": "EPSG:25830",
+          "featureCount": 58631,
+          "geometryExtentNative": [
+            358282.26599712,
+            4055772.65591506,
+            387188.726,
+            4082816.5695
+          ],
+          "geometryOnlySummary": "Feature count and extent computed from geometry coordinate arrays; no feature properties retained."
+        }
+      },
+      {
+        "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?SERVICE=WFS&REQUEST=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 403,
+        "assessment": "Official DGC WFS replied with rate-limit response; no retry. Municipal GeoJSON supplied safe retained geometry."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela",
+        "observation": "Official municipal open data portal publishes GeoJSON, SHP and GML parcel resources under CC BY 4.0; resources declare EPSG:25830 and EPSG:4326 variants."
+      },
+      {
+        "url": "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+        "observation": "Official national DGC INSPIRE portal documents Cadastral Parcel WFS and city-wide municipal downloads; direct WFS request was rate-limited (403) and not retried."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Qualified bounded source-reference geometry only; whole-city completeness, legal title, survey accuracy, currentness and future revision identity continuity remain unverified.",
+  "nextStep": "Runtime profile enabled locally; whole-city completeness remains unverified.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sampleFile": "samples/malaga-ayu-parcela-wup3224.geojson",
+  "rootReviewedAt": "2026-10-09T06:42:58.658927+00:00",
+  "appCityId": "malaga"
+}

@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NE",
+ "country": "Niger",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Direction Générale du Cadastre / Ministère de l'Urbanisme et du Logement; IGN Niger (no confirmed portal)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://cadastre.gouv.ne",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.ign.ne",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://minurbanisme.gouv.ne",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/reset via proxy (curl exit, no HTTP reply); host unreachable, not evidence of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Niger%20cadastre",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 hits, all Nigeria/unrelated (mining cadastre, field form); none Niger parcels"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "None confirmed (urban cadastre of Niamey reported partial)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "No reachable official host; no portal identified.",
+ "nextStep": "Search for Niamey cadastre / SIF (foncier) project portals."
+}

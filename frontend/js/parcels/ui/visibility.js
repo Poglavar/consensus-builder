@@ -1,8 +1,6 @@
 (function (global) {
     'use strict';
 
-    const fetchApi = (global.Parcels && global.Parcels.fetch) ? global.Parcels.fetch : {};
-
     function isRoad(parcelId) {
         return (typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
     }
@@ -28,21 +26,30 @@
             }
             // Don't add layers directly - they're already rendered through parcelLayer FeatureGroup
             // Adding them directly would cause double rendering (darker appearance)
-        } else if (typeof fetchApi.fetchParcelData === 'function') {
-            fetchApi.fetchParcelData();
-        } else if (typeof global.fetchParcelData === 'function') {
-            global.fetchParcelData();
+        } else {
+            fetchGroundReported('show all parcels');
         }
+    }
+
+    // Parcel fetches here are fire-and-forget; the reported wrapper (parcels/fetch.js) turns a
+    // failure into a status message + console.error instead of an unhandled rejection.
+    function fetchGroundReported(source) {
+        if (typeof global.fetchParcelDataReported === 'function') {
+            return global.fetchParcelDataReported(undefined, source);
+        }
+        const error = new Error('Parcel fetch is unavailable (parcels/fetch.js not loaded).');
+        console.error(`[${new Date().toISOString()}] [ParcelVisibility] ${error.message}`);
+        global.updateStatus?.(error.message);
+        return Promise.resolve(null);
     }
 
     function showOnlyRoadParcels() {
         if (!global.parcelLayer) {
-            if (typeof fetchApi.fetchParcelData === 'function') {
-                fetchApi.fetchParcelData();
-            } else if (typeof global.fetchParcelData === 'function') {
-                global.fetchParcelData();
-            }
-            setTimeout(() => showOnlyRoadParcels(), 1000);
+            // Wait for the fetch itself instead of re-polling every second; retry exactly once.
+            fetchGroundReported('show road parcels').then(() => {
+                if (global.parcelLayer) showOnlyRoadParcels();
+                else global.updateStatus?.('No parcel layer loaded yet; road parcels cannot be shown.');
+            });
             return;
         }
         // Remove parcelLayer from map first to avoid double rendering
@@ -52,7 +59,7 @@
 
         let roadCount = 0;
         global.parcelLayer.eachLayer(layer => {
-            const parcelId = layer.feature.properties.parcelId;
+            const parcelId = global.ParcelPresenter?.getIdForLayer?.(layer) || null;
             const isRoad = (parcelId && typeof global.isRoadParcel === 'function') ? global.isRoadParcel(parcelId) : false;
             if (isRoad) {
                 // Add road parcels directly to map (parcelLayer is not on map, so no double rendering)
@@ -119,14 +126,7 @@
             return;
         }
 
-        const visibleParcels = layers.filter(layer => {
-            try {
-                const layerBounds = layer && typeof layer.getBounds === 'function' ? layer.getBounds() : null;
-                return layerBounds ? bounds.intersects(layerBounds) : false;
-            } catch (_) {
-                return false;
-            }
-        });
+        const visibleParcels = global.getParcelsInBounds(bounds);
 
         setLabel(
             'sidebar.parcels.inViewTemplate',
@@ -149,4 +149,3 @@
         updateVisibleParcelsCount
     };
 })(typeof window !== 'undefined' ? window : globalThis);
-

@@ -1,0 +1,28 @@
+{
+  "cityRecord":"city-9073-guna.json",
+  "cityCode":9073,
+  "queueRank":2138,
+  "city":"Guna",
+  "country":"India",
+  "countryCode":"IN",
+  "attempt":1,
+  "reviewStatus":"complete",
+  "registryFound":null,
+  "custodianAssessment":{"localOrCityEvidence":"The District Guna Government of Madhya Pradesh land-records page is first-party local evidence identifying the MP land-records portal for Guna; the District Guna GIS page identifies a district GIS portal.","generalAgencyEvidence":"National Bhu-Naksha and DILRMP pages describe cadastral-map systems nationally/statewide and are not treated as Guna-local registry evidence.","urls":["https://guna.nic.in/en/service/land-records/","https://guna.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/","https://guna.nic.in/en/guna-gis/","https://gunagis.mp.gov.in","https://landrecords.mp.gov.in","https://bhunaksha.nic.in/bhunaksha/index.jsp"]},
+  "attemptedRoutes":[
+    {"route":"District Guna English land-records page","request":"GET https://guna.nic.in/en/service/land-records/","outcome":"success; points to landrecords.mp.gov.in; no parcel schema or geometry"},
+    {"route":"District Guna Hindi land-records page","request":"GET https://guna.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/","outcome":"success; points to the same service; no parcel schema or geometry"},
+    {"route":"District Guna GIS landing page","request":"GET https://guna.nic.in/en/guna-gis/","outcome":"success; describes district GIS and links gunagis.mp.gov.in; no embedded feature endpoint"},
+    {"route":"MP Bhulekh public host","request":"GET https://mpbhulekh.gov.in/mpbhulekh.do (anonymous, TLS verification enabled, 20 second bound)","outcome":"timeout; no response body or schema; not treated as absence"},
+    {"route":"Guna GIS portal","request":"GET https://gunagis.mp.gov.in (anonymous, TLS verification enabled, 20 second bound)","outcome":"timeout; no response body or schema; not treated as absence"}
+  ],
+  "boundedResponse":{"parcelFeatures":0,"nativeIds":[],"geometryRetained":false,"crs":null,"reason":"No bounded anonymous ID-plus-geometry response was obtained."},
+  "safeFieldAllowlist":["stable native parcel identifier","parcel polygon geometry","source CRS","service URL","retrieval timestamp"],
+  "excludedFields":["owner names","addresses","contact details","titleholder information","tax/account fields","personal identifiers","raw source attribute sets"],
+  "sourceFieldMapping":null,
+  "compositeKeyProvenance":null,
+  "scopeLimits":["District landing pages establish a service pathway, not citywide parcel coverage.","The exact WUP point was not shifted and no exact-point parcel hit was claimed.","Timeouts and unavailable UI/API responses do not establish citywide absence.","No sample GeoJSON is retained because no safe native identity and full polygon were obtained."],
+  "uncertainty":"The MP public service and Guna GIS portal may require interactive navigation or be unavailable to bounded anonymous requests. Evidence is insufficient to qualify an adapter or retain parcel geometry.",
+  "runtimeReadiness":"held",
+  "completion":"Research attempts are fully recorded; packet is complete for attempt 1, with integration/admission held pending independent adapter qualification."
+}

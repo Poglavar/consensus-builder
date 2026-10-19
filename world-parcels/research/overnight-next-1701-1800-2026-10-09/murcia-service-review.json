@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-4312-murcia.json",
+  "cityCode": 4312,
+  "queueRank": 1735,
+  "city": "Murcia",
+  "country": "Spain",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "summary": "Murcia's first-party municipal geovisor, Geoportal, and SITAM parcel-layer metadata were evidenced, but no safe native parcel geometry response was verified. No sample GeoJSON was retained.",
+  "queryOutcomes": "English and Spanish discovery queries are recorded verbatim in city-4312-murcia.json under freshResearch.queries. Results were limited to official municipal viewer/Geoportal, SITAM layer metadata, and national Catastro documentation.",
+  "requestOutcomes": "Executed first-party HTML, metadata, bounded ArcGIS query, and documented WMS probes are recorded under requestsAndEndpointChecks. The exact WUP-point ArcGIS query returned an empty GeoJSON FeatureCollection; the legacy WMS probes returned HTTP 400. No login, CAPTCHA bypass, credentials, private token, unsafe field, or TLS exception was used.",
+  "scopeLimits": [
+    "The SITAM layer is named public parcels; its citywide completeness and whether it is cadastral, municipal-inventory, or public-property coverage are not established beyond the published layer metadata.",
+    "The municipal viewer advertises GeoJSON export and cadastral-reference search, but no bounded safe parcel response was obtained from the UI route in this attempt.",
+    "The exact WUP-point query was empty and is only a point-query miss, not evidence of citywide parcel absence.",
+    "The national Catastro WMS documentation is general agency evidence and was not treated as a Murcia local registry integration.",
+    "The legacy WMS HTTP 400 and viewer inspection limitation are request/UI limitations, not evidence of citywide absence."
+  ],
+  "safeFieldAllowlist": ["native parcel identifier", "geometry", "source layer name", "CRS", "service metadata"],
+  "nativeFieldMapping": {"FID": "native object identifier candidate", "fid_1": "native source integer candidate", "refcat": "cadastral reference candidate", "Shape": "native polygon geometry"},
+  "compositeKeyProvenance": null,
+  "geometryRetention": {"sampleGeoJSON": null, "featureCount": 0, "reason": "No safe, verified native parcel geometry response was available."},
+  "uncertainty": "Open parcel coverage, native identity semantics, geometry quality, and citywide completeness remain unverified. Municipal registry/map custody is documented, but runtime integration is not admitted.",
+  "qualificationDecision": "hold",
+  "completionSummary": {"recordWritten": true, "serviceReviewWritten": true, "sampleGeoJSONWritten": false, "openParcelEndpointVerified": false, "adapterQualified": false}
+}

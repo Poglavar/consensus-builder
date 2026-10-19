@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5627-kamina.json",
+  "purpose": "Document city-scope registry/cadastre evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The available registry consultation is a formal request that can return owner information; no anonymous geometry endpoint or safe feature schema was found.",
+  "registryAssessment": "The Ministry of Land Affairs locator lists Kamina among the local Haut-Lomami land/cadastre districts. The national public-service catalog describes consultation of land and cadastral register books through a formal paid request to the local registry/cadastre office, which can return owner information. No such lookup was submitted and no anonymous geometry service was found.",
+  "officialPrimarySources": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "The Ministry of Land Affairs locator lists Kamina among the local Haut-Lomami land/cadastre districts. The national public-service catalog describes consultation of land and cadastral register books through a formal paid request to the local registry/cadastre office, which can return owner information. No such lookup was submitted and no anonymous geometry service was found."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4642",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "French",
+      "query": "Kamina cadastre parcelle immeuble République démocratique Congo Haut-Lomami",
+      "result": "Les sources officielles identifient une circonscription foncière et cadastrale de Kamina; la consultation des registres est décrite comme une demande formelle payante pouvant révéler le nom du propriétaire. Aucun formulaire ni registre nominatif n’a été consulté; aucun service géométrique anonyme ni schéma sûr de données n’a été trouvé.",
+      "actualResultUrls": [
+        "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "https://servicepublic.gouv.cd/service/4671",
+        "https://servicepublic.gouv.cd/service/4642"
+      ],
+      "method": "Separate English and French discovery; reviewed official local office locator and service catalog. No formal request or register/owner lookup."
+    },
+    {
+      "language": "English",
+      "query": "Kamina DRC official cadastre land registry parcel map Haut-Lomami",
+      "result": "Official Ministry and public-service sources establish a local Kamina land/cadastre office and formal registry consultation. No anonymous polygon endpoint or safe feature schema was identified.",
+      "actualResultUrls": [
+        "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "https://servicepublic.gouv.cd/service/4671",
+        "https://servicepublic.gouv.cd/service/4642"
+      ],
+      "method": "Separate English and French discovery; reviewed official local office locator and service catalog. No formal request or register/owner lookup."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The available registry consultation is a formal request that can return owner information; no anonymous geometry endpoint or safe feature schema was found."
+  },
+  "privacy": "No owner, address, applicant, taxpayer, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The available registry consultation is a formal request that can return owner information; no anonymous geometry endpoint or safe feature schema was found."
+  }
+}

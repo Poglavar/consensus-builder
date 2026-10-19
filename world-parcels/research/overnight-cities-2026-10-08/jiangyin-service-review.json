@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Jiangyin",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 846,
+  "wupCityCode": 11538,
+  "point": [
+    31.9086280832761,
+    120.229678245069
+  ],
+  "registryFound": true,
+  "registryBasis": "Official Jiangyin government and Natural Resources Bureau identify the Jiangyin Real Estate Registration Center and local services. Public 掌上登/掌上查询 material describes registration/property-information workflows; no anonymous parcel map or safe geometry+ID schema verified.",
+  "registryEvidenceUrls": [
+    "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+    "https://www.jiangyin.gov.cn/doc/2025/08/05/1346255.shtml",
+    "https://www.jiangyin.gov.cn/uploadfiles/202502/14/2025021408411629144965.pdf",
+    "https://www.jiangyin.gov.cn/uploadfiles/202602/06/2026020615581481876386.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Jiangyin Natural Resources and Planning Bureau and municipal Real Estate Registration Center public information.",
+      "operator": "Official government agency identified in sources",
+      "homeUrl": "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+      "observation": "Official Bureau fee catalog lists Jiangyin Real Estate Registration Center and services."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.jiangyin.gov.cn/",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 84130,
+      "observation": "Municipal homepage; no cadastral endpoint."
+    },
+    {
+      "url": "https://www.jiangyin.gov.cn/doc/2025/08/05/1346255.shtml",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 18637,
+      "observation": "Official registration service info; no account/property query."
+    },
+    {
+      "url": "https://www.jiangyin.gov.cn/doc/2025/10/15/1359858.shtml",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official Bureau fee catalog lists Jiangyin Real Estate Registration Center and services."
+    },
+    {
+      "url": "https://www.jiangyin.gov.cn/uploadfiles/202502/14/2025021408411629144965.pdf",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "2025 center budget confirms local operations."
+    },
+    {
+      "url": "https://www.jiangyin.gov.cn/uploadfiles/202602/06/2026020615581481876386.pdf",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "2026 Bureau budget describes registration, cadastral survey and records management but no public parcel API."
+    }
+  ],
+  "limitations": "Documented 掌上登/掌上查询 is a property-information workflow, not a generic anonymous geometry layer. No safe feature endpoint/schema; no login or property query.",
+  "scopeLimits": "No protected, personal or property-specific data queried or retained. No anonymous full geometry/safe-ID schema verified; no completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_safe_geometry_schema",
+    "reason": "Documented 掌上登/掌上查询 is a property-information workflow, not a generic anonymous geometry layer. No safe feature endpoint/schema; no login or property query."
+  }
+}

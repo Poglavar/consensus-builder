@@ -1,0 +1,259 @@
+// Subdivision of a site (PARCEL-OPTIONAL.md phase 4): land readjustment generalised to ground that
+// is partly or wholly open. The pool is the site; the bound parcels' part of it is contributed by
+// their owners, the rest is open ground, which contributes area and has no owner. A subdivision
+// takes land and outputs only plots; a public strip is a plot assigned to public land.
+//
+// Pure: no DOM. turf is options.turf, the browser global, globalThis.turf or require('@turf/turf').
+(function (root, factory) {
+    const api = factory(root);
+    if (typeof module === 'object' && module.exports) module.exports = api;
+    if (root) root.__subdivision = api;
+})(typeof window !== 'undefined' ? window : globalThis, function (global) {
+    'use strict';
+
+    // The pseudo-owner of open ground in a readjustment plan: a plot assigned to it stays ground
+    // nobody can consent for. It is never an agent, never paid, and never given ownership on apply.
+    const OPEN_GROUND_OWNER_KEY = 'open-ground';
+    // Below this a piece is clipping noise, not ground.
+    const MIN_PIECE_M2 = 0.5;
+
+    // Polygon-clip failures are typed and counted in one place (parcel-arrangement.js clipHealth).
+    function clipFailureApi() {
+        const api = (typeof window !== 'undefined' && window.__parcelArrangement)
+            || (typeof require === 'function' ? require('./parcel-arrangement.js') : null);
+        if (!api || typeof api.clipFailure !== 'function') throw new Error('parcel-arrangement.js (clip failures) is not loaded');
+        return api;
+    }
+
+    function T(options) {
+        if (options && options.turf) return options.turf;
+        if (typeof turf !== 'undefined' && turf) return turf; // eslint-disable-line no-undef
+        if (global && global.turf) return global.turf;
+        try { return typeof require === 'function' ? require('@turf/turf') : null; } catch (_) { return null; }
+    }
+
+    function finite(value) {
+        return typeof value === 'number' && Number.isFinite(value);
+    }
+
+    function geometryOf(value) {
+        const g = value && value.type === 'Feature' ? value.geometry : value;
+        return g && (g.type === 'Polygon' || g.type === 'MultiPolygon') ? g : null;
+    }
+
+    function asFeature(value) {
+        const g = geometryOf(value);
+        return g ? { type: 'Feature', properties: {}, geometry: g } : null;
+    }
+
+    function areaOf(t, value) {
+        const f = asFeature(value);
+        if (!f) return 0;
+        try { return Number(t.area(f)) || 0; } catch (_) { return 0; }
+    }
+
+    // A one-part MultiPolygon as a Polygon (the editor and the slicer read Polygons best).
+    function simplestGeometry(value) {
+        const g = geometryOf(value);
+        if (g && g.type === 'MultiPolygon' && g.coordinates.length === 1) return { type: 'Polygon', coordinates: g.coordinates[0] };
+        return g;
+    }
+
+    function isOpenGroundOwnerKey(key) {
+        return key === OPEN_GROUND_OWNER_KEY;
+    }
+
+    /**
+     * The pool of a subdivision: the site, split into the bound parcels' parts (site ∩ parcel) and
+     * open ground (site minus every given parcel). Parcels are subtracted one at a time (turf's
+     * difference against a union of many real parcels is the known stack-overflow trap).
+     * @param {object} site Polygon/MultiPolygon (or Feature).
+     * @param {{id: string, geometry: object}[]} parcels the bound parcels' current geometry.
+     * @returns {{pool: object, totalAreaM2: number, parts: {parcelId: string, geometry: object,
+     *   areaM2: number}[], openGround: object|null, openGroundM2: number}}
+     */
+    function sitePool(site, parcels, options) {
+        const t = T(options);
+        if (!t) throw new Error('subdivision: turf is not available');
+        const siteFeature = asFeature(site);
+        if (!siteFeature) throw new TypeError('site must be a GeoJSON Polygon or MultiPolygon');
+        const totalAreaM2 = areaOf(t, siteFeature);
+        const parts = [];
+        let open = siteFeature;
+        for (const parcel of parcels || []) {
+            const g = geometryOf(parcel && parcel.geometry);
+            if (!g) continue;
+            const parcelFeature = { type: 'Feature', properties: {}, geometry: g };
+            let hit = null;
+            try { hit = t.intersect(siteFeature, parcelFeature); } catch (error) {
+                // Not "this parcel contributes nothing": its owner's share of the pool would vanish.
+                throw clipFailureApi().clipFailure('intersect', error, { site: 'subdivision.sitePool', parcelId: parcel.id }, [siteFeature, parcelFeature]);
+            }
+            const areaM2 = hit ? areaOf(t, hit) : 0;
+            if (areaM2 >= MIN_PIECE_M2) parts.push({ parcelId: String(parcel.id), geometry: hit.geometry, areaM2 });
+            if (open) {
+                // A failed subtraction is not "no parcel here": the open ground would be overstated.
+                open = t.difference(open, parcelFeature);
+            }
+        }
+        const openGroundM2 = open ? areaOf(t, open) : 0;
+        return {
+            pool: simplestGeometry(siteFeature.geometry),
+            totalAreaM2,
+            parts,
+            openGround: open && openGroundM2 >= MIN_PIECE_M2 ? open.geometry : null,
+            openGroundM2: openGroundM2 >= MIN_PIECE_M2 ? openGroundM2 : 0
+        };
+    }
+
+    /**
+     * Owner shares of a pool with open ground. `contributions` are the bound parcels' owners
+     * ({ownerKey, displayName, area, value|null, parcelIds}); open ground contributes area and has
+     * no owner and no known value, so a pool with open ground is measured by AREA (a value basis
+     * would rate unknown ground at zero). Percent = contributed area / pool area, open ground
+     * included as its own entry. Zero owners and zero open ground → no shares (never NaN).
+     * @returns {{shares: object[], basis: 'value'|'area', totalArea: number, totalValue: number|null,
+     *   poolUnitValue: number|null}}
+     */
+    function poolShares(contributions, options) {
+        const opts = options || {};
+        const list = (contributions || []).filter(entry => entry && finite(entry.area) && entry.area > 0);
+        const openGroundM2 = finite(opts.openGroundM2) && opts.openGroundM2 > 0 ? opts.openGroundM2 : 0;
+        const ownedArea = list.reduce((sum, entry) => sum + entry.area, 0);
+        const totalArea = ownedArea + openGroundM2;
+        if (!(totalArea > 0)) return { shares: [], basis: 'area', totalArea: 0, totalValue: null, poolUnitValue: null };
+        const values = list.map(entry => (finite(entry.value) && entry.value > 0 ? entry.value : null));
+        const useValue = openGroundM2 === 0 && list.length > 0 && values.every(value => value !== null);
+        const totalValue = useValue ? values.reduce((sum, value) => sum + value, 0) : null;
+        const shares = list.map((entry, index) => ({
+            ownerKey: entry.ownerKey,
+            displayName: entry.displayName,
+            parcelIds: Array.isArray(entry.parcelIds) ? entry.parcelIds.slice() : [],
+            area: entry.area,
+            value: values[index],
+            percent: useValue ? values[index] / totalValue : entry.area / totalArea
+        }));
+        if (openGroundM2 > 0) {
+            shares.push({
+                ownerKey: OPEN_GROUND_OWNER_KEY,
+                displayName: opts.openGroundLabel || 'Open ground (no owner)',
+                parcelIds: [],
+                area: openGroundM2,
+                value: null,
+                percent: openGroundM2 / totalArea,
+                noOwner: true
+            });
+        }
+        return {
+            shares: shares.filter(entry => entry.percent > 0).sort((a, b) => (a.noOwner === b.noOwner ? b.percent - a.percent : (a.noOwner ? 1 : -1))),
+            basis: useValue ? 'value' : 'area',
+            totalArea,
+            totalValue,
+            poolUnitValue: useValue ? totalValue / totalArea : null
+        };
+    }
+
+    /**
+     * Readjustment ledger of one share entry. Open ground has no owner: nothing is owed or paid,
+     * so its balance and cash offer are null (not 0 — "no one to pay" is not "even").
+     * @param {object} entry a share ({area, value, noOwner})
+     * @param {{basis: string, poolUnitValue: number|null, contributionRatio?: number, assignedArea: number}} context
+     */
+    function ledgerOf(entry, context) {
+        const ctx = context || {};
+        const useMoney = ctx.basis === 'value' && finite(ctx.poolUnitValue) && ctx.poolUnitValue > 0;
+        const unit = useMoney ? ctx.poolUnitValue : 1;
+        const area = finite(entry && entry.area) ? entry.area : 0;
+        const contributed = useMoney ? (finite(entry.value) ? entry.value : area * unit) : area;
+        const ratio = finite(ctx.contributionRatio) && ctx.contributionRatio > 0 ? ctx.contributionRatio : 1;
+        const entitled = contributed * ratio;
+        const assignedArea = finite(ctx.assignedArea) && ctx.assignedArea > 0 ? ctx.assignedArea : 0;
+        const assigned = assignedArea * unit;
+        const noOwner = !!(entry && (entry.noOwner || isOpenGroundOwnerKey(entry.ownerKey)));
+        return {
+            contributed,
+            entitled,
+            assigned,
+            assignedArea,
+            cashBalance: noOwner ? null : assigned - entitled,
+            noOwner
+        };
+    }
+
+    /**
+     * The contributor a plot belongs to by its ground: the share whose bound-parcel parts cover the
+     * most of it, or open ground when the open part covers more. `parts` are sitePool().parts;
+     * `shares` the poolShares() entries (with parcelIds). Null when nothing covers it.
+     */
+    function ownerKeyByGround(plotGeometry, pool, shares, options) {
+        const t = T(options);
+        const plot = asFeature(plotGeometry);
+        if (!t || !plot || !pool) return null;
+        const overlap = geometry => {
+            const other = asFeature(geometry);
+            if (!other) return 0;
+            try { const hit = t.intersect(plot, other); return hit ? areaOf(t, hit) : 0; } catch (error) {
+                // Zero would hand the plot to whichever contributor's overlap did compute.
+                throw clipFailureApi().clipFailure('intersect', error, { site: 'subdivision.ownerKeyByGround' }, [plot, other]);
+            }
+        };
+        const byParcel = new Map((pool.parts || []).map(part => [String(part.parcelId), overlap(part.geometry)]));
+        let best = null;
+        let bestArea = MIN_PIECE_M2;
+        for (const share of shares || []) {
+            const area = share.noOwner || isOpenGroundOwnerKey(share.ownerKey)
+                ? overlap(pool.openGround)
+                : (share.parcelIds || []).reduce((sum, id) => sum + (byParcel.get(String(id)) || 0), 0);
+            if (area > bestArea) { best = share.ownerKey; bestArea = area; }
+        }
+        return best;
+    }
+
+    /**
+     * May the create path turn this pending plan into a proposal? A readjustment pooled from a
+     * parcel selection must still be on the same selection. A subdivision (poolSource 'site') is
+     * pooled from its SITE: its parcels are the site's binding (possibly none, on open ground), not
+     * a selection, so the selection is never compared; the plan's pool must be the dialog's site.
+     * @param {object} plan window.pendingReparcellizationPlan
+     * @param {{selectedParcelIds?: string[], site?: object}} context the create dialog's selection
+     *   and site (the site context, null for a parcel-selection proposal).
+     * @returns {{ok: boolean, reason: null|'missing'|'parcels-changed'|'site-missing'|'site-changed'}}
+     */
+    function planCreateVerdict(plan, context, options) {
+        const ctx = context || {};
+        const verdict = reason => ({ ok: !reason, reason: reason || null });
+        if (!plan || !Array.isArray(plan.polygons) || !plan.polygons.length) return verdict('missing');
+        // Saved parcel readjustments also reopen with an authored site after their inputs
+        // have been replaced. Compare that immutable pool, not an empty live selection.
+        if (plan.poolSource === 'site' || ctx.site) {
+            const site = geometryOf(ctx.site);
+            if (!site) return verdict('site-missing');
+            const pool = geometryOf(plan.poolGeometry);
+            if (!pool) return verdict('missing');
+            const t = T(options);
+            if (!t) throw new Error('subdivision: turf is not available');
+            // Same ground, within clipping noise: the site was not redrawn after the plots were laid.
+            const outside = (a, b) => {
+                const rest = t.difference(asFeature(a), asFeature(b));
+                return rest ? areaOf(t, rest) : 0;
+            };
+            const tolerance = Math.max(1, areaOf(t, site) * 0.001);
+            return verdict(outside(site, pool) + outside(pool, site) > tolerance ? 'site-changed' : null);
+        }
+        if (!Array.isArray(plan.parcelIds)) return verdict('missing');
+        const planned = new Set(plan.parcelIds.map(String));
+        const selected = new Set((ctx.selectedParcelIds || []).map(String));
+        const same = planned.size === selected.size && Array.from(planned).every(id => selected.has(id));
+        return verdict(same ? null : 'parcels-changed');
+    }
+
+    return {
+        OPEN_GROUND_OWNER_KEY,
+        isOpenGroundOwnerKey,
+        sitePool,
+        poolShares,
+        ledgerOf,
+        ownerKeyByGround,
+        planCreateVerdict
+    };
+});

@@ -1,0 +1,1741 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32630",
+  "featureCount": 219,
+  "validNonemptyCount": 217,
+  "invalidFeatures": [
+    {
+      "id": "GB-HMLR-INSPIRE-51811805",
+      "reason": "Ring Self-intersection[622430.944829701 5869203.8225707]",
+      "empty": false
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29142533",
+      "reason": "Ring Self-intersection[622343.401992774 5869273.96564623]",
+      "empty": false
+    }
+  ],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29118940",
+        "GB-HMLR-INSPIRE-60885342"
+      ],
+      "overlapM2": 0.06475998364879443,
+      "fractionOfSmaller": 0.00047563997418269554
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29115066",
+        "GB-HMLR-INSPIRE-54513645"
+      ],
+      "overlapM2": 0.03413976113958794,
+      "fractionOfSmaller": 3.8596609516142366e-05
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-54513645",
+        "GB-HMLR-INSPIRE-29115436"
+      ],
+      "overlapM2": 0.0865994015148806,
+      "fractionOfSmaller": 0.0006441165243607071
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-54513645",
+        "GB-HMLR-INSPIRE-29114960"
+      ],
+      "overlapM2": 0.01646262865422487,
+      "fractionOfSmaller": 3.080079539925263e-05
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-58862182",
+        "GB-HMLR-INSPIRE-62450608"
+      ],
+      "overlapM2": 0.02952289693456356,
+      "fractionOfSmaller": 0.000664849790046425
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-54692013",
+        "GB-HMLR-INSPIRE-51811805"
+      ],
+      "overlapM2": 0.01747774283216226,
+      "fractionOfSmaller": 2.1179537292168367e-06
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29108328",
+        "GB-HMLR-INSPIRE-29113761"
+      ],
+      "overlapM2": 4.079281397947841,
+      "fractionOfSmaller": 0.04366708886692687
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29106438",
+        "GB-HMLR-INSPIRE-29104262"
+      ],
+      "overlapM2": 0.12742239725939006,
+      "fractionOfSmaller": 1.856030438768446e-05
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29113761",
+        "GB-HMLR-INSPIRE-29112531"
+      ],
+      "overlapM2": 0.08298521025817851,
+      "fractionOfSmaller": 0.0006635001756168838
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29113761",
+        "GB-HMLR-INSPIRE-29113319"
+      ],
+      "overlapM2": 0.011731818533289622,
+      "fractionOfSmaller": 0.0003187789176301195
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29118218",
+        "GB-HMLR-INSPIRE-61012157"
+      ],
+      "overlapM2": 0.22094139220174647,
+      "fractionOfSmaller": 0.001331354079675824
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29117023",
+        "GB-HMLR-INSPIRE-29117357"
+      ],
+      "overlapM2": 0.020795247710892004,
+      "fractionOfSmaller": 0.0003567298609714124
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29104217",
+        "GB-HMLR-INSPIRE-29107140"
+      ],
+      "overlapM2": 9.06215231408576,
+      "fractionOfSmaller": 0.031539011750552425
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-56664589",
+        "GB-HMLR-INSPIRE-29117179"
+      ],
+      "overlapM2": 0.2135321963795519,
+      "fractionOfSmaller": 0.0026100100982394603
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29118436",
+        "GB-HMLR-INSPIRE-63254657"
+      ],
+      "overlapM2": 0.028680961945892147,
+      "fractionOfSmaller": 0.00020854369199889517
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29117137",
+        "GB-HMLR-INSPIRE-54930900"
+      ],
+      "overlapM2": 0.10226772865016136,
+      "fractionOfSmaller": 0.001630383965963605
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-56664590",
+        "GB-HMLR-INSPIRE-54930900"
+      ],
+      "overlapM2": 0.023034561683504998,
+      "fractionOfSmaller": 0.00037852931210985885
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29111132",
+        "GB-HMLR-INSPIRE-61089927"
+      ],
+      "overlapM2": 0.011848939807972358,
+      "fractionOfSmaller": 0.0001756026604280644
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29117257",
+        "GB-HMLR-INSPIRE-54930900"
+      ],
+      "overlapM2": 0.11895544147635825,
+      "fractionOfSmaller": 0.0018046990468392427
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-54930722",
+        "GB-HMLR-INSPIRE-29117340"
+      ],
+      "overlapM2": 0.08417727785773865,
+      "fractionOfSmaller": 0.0013097670469302963
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-54930722",
+        "GB-HMLR-INSPIRE-54930900"
+      ],
+      "overlapM2": 3.3776181346533973,
+      "fractionOfSmaller": 0.052554478387382246
+    },
+    {
+      "ids": [
+        "GB-HMLR-INSPIRE-29125122",
+        "GB-HMLR-INSPIRE-29124629"
+      ],
+      "overlapM2": 0.014831462155943274,
+      "fractionOfSmaller": 0.00031507921601864336
+    }
+  ],
+  "sumPairwiseOverlapM2": 17.829218897331828,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 1.3763245383061111,
+    "median": 105.0774642724401,
+    "max": 9905.085787680942
+  },
+  "features": [
+    {
+      "id": "GB-HMLR-INSPIRE-29110329",
+      "areaM2": 712.1066440193667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56643887",
+      "areaM2": 2008.7812370424922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110253",
+      "areaM2": 140.20600346225737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111675",
+      "areaM2": 2109.1552390450265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111553",
+      "areaM2": 2548.50809890491,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29107639",
+      "areaM2": 2479.0014841179077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-57498490",
+      "areaM2": 6263.89433013817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-60885365",
+      "areaM2": 182.86219347441983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-60885363",
+      "areaM2": 19.433626836131555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117920",
+      "areaM2": 286.9620767965187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29127229",
+      "areaM2": 359.78743014754207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-58148161",
+      "areaM2": 120.8170285920259,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118940",
+      "areaM2": 175.14867849814433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111688",
+      "areaM2": 81.51984256503654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115066",
+      "areaM2": 884.527464136703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115386",
+      "areaM2": 38.461065845515805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115409",
+      "areaM2": 7.931550496093348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-54513645",
+      "areaM2": 1161.2533794577791,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29114960",
+      "areaM2": 534.4871273884157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-58862182",
+      "areaM2": 908.0946210129873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115436",
+      "areaM2": 134.44679377047729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-60885364",
+      "areaM2": 958.848513201084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-60885342",
+      "areaM2": 136.15336633568947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121147",
+      "areaM2": 696.8134136542352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-61024423",
+      "areaM2": 168.1135014096354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121000",
+      "areaM2": 298.1082575436323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-59376759",
+      "areaM2": 153.87703987431766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120511",
+      "areaM2": 105.0774642724401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122167",
+      "areaM2": 607.1995576832431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122294",
+      "areaM2": 361.89908017421254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29123313",
+      "areaM2": 254.46416383526366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122974",
+      "areaM2": 76.27782903201471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124076",
+      "areaM2": 168.0308809486824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120856",
+      "areaM2": 220.71656828578605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56629391",
+      "areaM2": 21.80319792521121,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121279",
+      "areaM2": 232.9741947910315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29123599",
+      "areaM2": 152.70365767299916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29123095",
+      "areaM2": 57.85025814778846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-54692013",
+      "areaM2": 9125.318292737913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118717",
+      "areaM2": 159.33966369788908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119047",
+      "areaM2": 54.599268393664985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119439",
+      "areaM2": 64.68711795476824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119810",
+      "areaM2": 59.94924413918035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56475209",
+      "areaM2": 2638.3904076822505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-62450608",
+      "areaM2": 44.405364003351856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-62512451",
+      "areaM2": 55.03892811067739,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29108328",
+      "areaM2": 93.41775473925532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-47601300",
+      "areaM2": 8893.012939761526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29106438",
+      "areaM2": 6865.318294237683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29104262",
+      "areaM2": 7561.708674954633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29113761",
+      "areaM2": 5278.98170688843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118218",
+      "areaM2": 176.17357017073564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116643",
+      "areaM2": 129.74109936674608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117421",
+      "areaM2": 152.58577890239394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56523602",
+      "areaM2": 169.80265804433355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-50846654",
+      "areaM2": 230.24830022893417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116714",
+      "areaM2": 58.67035517107649,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117023",
+      "areaM2": 58.929005020651765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116711",
+      "areaM2": 59.094098544352775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117012",
+      "areaM2": 53.928282944615106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115831",
+      "areaM2": 53.88652454261354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116114",
+      "areaM2": 61.396667003378084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116109",
+      "areaM2": 55.83925201653345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116405",
+      "areaM2": 58.74150175959047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116417",
+      "areaM2": 57.0170284015318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29112531",
+      "areaM2": 125.071873840913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29113319",
+      "areaM2": 36.80236641904312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29114452",
+      "areaM2": 216.5092837847384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29114103",
+      "areaM2": 16.543295117947125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115214",
+      "areaM2": 126.5511731543463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115339",
+      "areaM2": 67.94319638252469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115202",
+      "areaM2": 56.41224984756611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115493",
+      "areaM2": 52.740726625575114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115934",
+      "areaM2": 130.9368934887004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115768",
+      "areaM2": 54.059693971340046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29114768",
+      "areaM2": 1069.5098574523483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29112921",
+      "areaM2": 45.12067140480475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-61012157",
+      "areaM2": 165.95239055829856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118297",
+      "areaM2": 2662.8222144838674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122269",
+      "areaM2": 43.672426473356744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119966",
+      "areaM2": 65.90653126422055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122332",
+      "areaM2": 45.357025127127336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122194",
+      "areaM2": 43.75777555984834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122230",
+      "areaM2": 50.088530358200934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118590",
+      "areaM2": 108.03622934638688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121337",
+      "areaM2": 215.56802540602982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-51811805",
+      "areaM2": 8252.183506683627,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125336",
+      "areaM2": 113.32512764088985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122598",
+      "areaM2": 520.8854888362371,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121410",
+      "areaM2": 216.9149957967355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119449",
+      "areaM2": 367.5122371000159,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121902",
+      "areaM2": 1156.920609135923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117357",
+      "areaM2": 58.29410426776269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117668",
+      "areaM2": 58.32149876117194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118333",
+      "areaM2": 57.389483695872826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118963",
+      "areaM2": 57.25325986050878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119267",
+      "areaM2": 57.190255443796254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119612",
+      "areaM2": 61.348407355451634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120357",
+      "areaM2": 67.639145998146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120707",
+      "areaM2": 60.431105635713116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121047",
+      "areaM2": 62.71317365549311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122042",
+      "areaM2": 70.2682526183858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117686",
+      "areaM2": 58.58640129726216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118048",
+      "areaM2": 59.70652077486684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118341",
+      "areaM2": 55.22830418922328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118681",
+      "areaM2": 60.23472183130304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119012",
+      "areaM2": 55.666068302912855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122082",
+      "areaM2": 65.63335060190082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119674",
+      "areaM2": 59.0395706662527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120001",
+      "areaM2": 59.83921616915899,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122125",
+      "areaM2": 63.08718325332001,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120341",
+      "areaM2": 59.87361453158225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120439",
+      "areaM2": 1.3763245383061111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120644",
+      "areaM2": 46.645821328961006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29120459",
+      "areaM2": 43.340779066314624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122168",
+      "areaM2": 45.03801643592004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29121007",
+      "areaM2": 56.64441772538262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29119334",
+      "areaM2": 58.58513616980307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118005",
+      "areaM2": 63.64396398820622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118611",
+      "areaM2": 56.669764929128775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117358",
+      "areaM2": 56.1272991633323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-63525537",
+      "areaM2": 121.54136130762474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110622",
+      "areaM2": 130.90948904060522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29104217",
+      "areaM2": 287.3315240743721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29108510",
+      "areaM2": 1040.175101835658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110779",
+      "areaM2": 74.82077838327619,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110621",
+      "areaM2": 84.16816502959135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29109897",
+      "areaM2": 767.682805969223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29108134",
+      "areaM2": 4.808145779931057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110246",
+      "areaM2": 119.61218120956447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110992",
+      "areaM2": 111.92237820327746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29113731",
+      "areaM2": 1585.9570750329867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29108076",
+      "areaM2": 318.6324275686198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111039",
+      "areaM2": 94.87072121740239,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56826162",
+      "areaM2": 488.30933489864447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110926",
+      "areaM2": 94.16297319463986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111151",
+      "areaM2": 102.9729279524269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29107140",
+      "areaM2": 9905.085787680942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122602",
+      "areaM2": 3111.255578691735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-58131711",
+      "areaM2": 563.0111788597104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56879661",
+      "areaM2": 731.432732343947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56407898",
+      "areaM2": 603.5600899819151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29112448",
+      "areaM2": 427.1915668422206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29112811",
+      "areaM2": 124.06504736404496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29114518",
+      "areaM2": 213.32680701695253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29114891",
+      "areaM2": 94.53694295897606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115309",
+      "areaM2": 93.01794212348007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115755",
+      "areaM2": 114.06386131344084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116369",
+      "areaM2": 149.29263290880536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29116587",
+      "areaM2": 54.861325161096744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-59644204",
+      "areaM2": 125.77486539731643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29123178",
+      "areaM2": 93.60049713127086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29123559",
+      "areaM2": 90.75161772634819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-57052935",
+      "areaM2": 1079.0518879195702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56727786",
+      "areaM2": 819.7439561981904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29122451",
+      "areaM2": 201.7990882559206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56664589",
+      "areaM2": 104.95108818946656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56664528",
+      "areaM2": 268.49731258983036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111497",
+      "areaM2": 5.486075959472684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-54003411",
+      "areaM2": 440.4968131032634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56475104",
+      "areaM2": 173.11759517924327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29118436",
+      "areaM2": 172.0528098130639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117137",
+      "areaM2": 62.726161925738836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-58995629",
+      "areaM2": 69.39641795844908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-56664590",
+      "areaM2": 60.852781928866264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117179",
+      "areaM2": 81.81278552277884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111132",
+      "areaM2": 67.52032006887958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117257",
+      "areaM2": 65.9142817660913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-54930722",
+      "areaM2": 64.2688927431982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29117340",
+      "areaM2": 64.50377734961117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29110705",
+      "areaM2": 318.01139120860915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-60867133",
+      "areaM2": 207.3226348334899,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-60725401",
+      "areaM2": 64.26516541722297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-54930900",
+      "areaM2": 6361.0598284330235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-61089927",
+      "areaM2": 67.47585588446294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-55766628",
+      "areaM2": 1853.915272493948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-46014406",
+      "areaM2": 3535.670272213087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-63254657",
+      "areaM2": 137.5297505812072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29111800",
+      "areaM2": 1212.2906775916865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29115865",
+      "areaM2": 1326.3026247503149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29114553",
+      "areaM2": 3819.3692020838207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29127732",
+      "areaM2": 134.578693563219,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126239",
+      "areaM2": 55.43585711662689,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126616",
+      "areaM2": 53.963139707080444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126808",
+      "areaM2": 57.17911625095596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126986",
+      "areaM2": 60.90415490606622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29127374",
+      "areaM2": 91.54633778296694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29127308",
+      "areaM2": 52.66044890094974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29127710",
+      "areaM2": 57.85873434439908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124685",
+      "areaM2": 54.718330513764634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29128662",
+      "areaM2": 293.0188523649918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29128535",
+      "areaM2": 148.63343856603984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124871",
+      "areaM2": 55.39503753964437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124791",
+      "areaM2": 51.68733453755878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124673",
+      "areaM2": 60.13783224230234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124602",
+      "areaM2": 45.199214666004224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125276",
+      "areaM2": 65.46889797636278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125122",
+      "areaM2": 54.866358570649695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125694",
+      "areaM2": 58.33474812590201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125902",
+      "areaM2": 57.80746314588702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126073",
+      "areaM2": 59.343836591579475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-59976234",
+      "areaM2": 174.47221349742304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-51810868",
+      "areaM2": 164.38067776326096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125549",
+      "areaM2": 151.66544454737547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126868",
+      "areaM2": 162.0991068714158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126476",
+      "areaM2": 123.15716425728252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29137471",
+      "areaM2": 137.21712517235295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29137453",
+      "areaM2": 175.40265785957376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125086",
+      "areaM2": 116.11745065830011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29142533",
+      "areaM2": 2593.139981674336,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29137454",
+      "areaM2": 313.96523546050753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29129483",
+      "areaM2": 132.83260550487987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124733",
+      "areaM2": 46.2904784559107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124732",
+      "areaM2": 57.371998910875206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124629",
+      "areaM2": 47.07216916226455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29124569",
+      "areaM2": 50.97217360672397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29126439",
+      "areaM2": 54.11930495673474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-29125485",
+      "areaM2": 50.669880766748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "GB-HMLR-INSPIRE-63452779",
+      "areaM2": 159.93678945922446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

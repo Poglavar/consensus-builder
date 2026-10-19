@@ -1,0 +1,15 @@
+{
+  "taskId": "city:7744",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7744-irkutsk.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/irkutsk-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T12:21:47Z",
+  "identityReview": "Queue and roster agree on code 7744, rank 1256, Russian Federation, point [52.2725093828849, 104.300484423056], and 442807 persons.",
+  "searchReview": "Executed English and native/local language search queries and result URLs are recorded in the paired packet and service review.",
+  "geometryReview": "Zero retained polygons; no unsafe parcel attributes retained.",
+  "admissionReview": "National/regional references only; timeout and TLS failure yielded no parcel response. Local registry custody remains null. No adapter qualification."
+}

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11959,
+  "cityId": "wup2025:11959",
+  "name": "Moirabari",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.4453578533466,
+    92.3955537457384
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 40,
+  "stateOrUT": "Assam",
+  "administrativeIdentity": {
+    "district": "Marigaon",
+    "tehsilOrTaluk": "Laharighat",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Assamese",
+        "query": "মৈৰাবাৰী মৌজা নক্সা দাগ খতিয়ান অসম ভূমিলেখ",
+        "scope": "WUP 11959 Moirabari cohort label retained; search for official Assam parcel/map entry point.",
+        "result": "Actual native-script query surfaced the official state land-record entry point listed below; it did not return a city-specific parcel feature.",
+        "checkedAt": "2026-10-08",
+        "script": "Assamese (Eastern Nagari)",
+        "actualResultUrls": [
+          "https://bhumi.uttoradhikar.org/khatian/",
+          "https://boribariup.kishoreganj.gov.bd/pages/static-pages/6995a2cf35ce18e1c078fa0b",
+          "https://www.villagemaps.in/assam/mairabari-gaon-laharighat-morigaon-283818/",
+          "https://landhub.assam.gov.in/jamabandiLanguage/index.php/Welcome/SelectLOC",
+          "https://www.oparbangla.com/land-records",
+          "https://mathbariup.mymensingh.gov.bd/pages/static-pages/69708e58a31054345f15a38d",
+          "https://eporcha.tech/",
+          "https://e-bhumi.com/tools/mouza-map-downloader.php",
+          "https://www.sebi.gov.in/sebi_data/commondocs/oct-2019/43_-_Survey_No._21-8%2C_21-1%2C_At_Vil._-_Shenale%2C_Near_Maharashtra_Poly.%2C_Taluka-Mandangad%2C__Dist_-_Ratnagiri_p.pdf",
+          "https://www.dpp.gov.bd/upload_file/gazettes/20936_13463.pdf",
+          "https://dlrs.assam.gov.in/",
+          "https://www.villagemaps.in/assam/mikirbari-marigaon-morigaon-283926/amp/",
+          "https://basundhara.assam.gov.in/Welcome/",
+          "https://file-dhaka.portal.gov.bd/files/www.zso.faridpur.gov.bd/news/e980468a_f483_4482_a059_2980f2d6ca3e/22f5a79ab494adc839d82df442520cf6.pdf",
+          "https://mypatta.in/assam/jamabandi/",
+          "https://www.dpp.gov.bd/bgpress/bangla/index.php/home/download_file/gazettes/46416_38417.pdf",
+          "https://www.dpp.gov.bd/upload_file/gazettes/34815_73866.pdf",
+          "https://file-khulna.portal.gov.bd/files/dae.debhata.satkhira.gov.bd/notices/8f92cc8d_9823_4852_8391_177ec7ee00e4/249e01606a59a5d351e8306c7a64bac9.pdf",
+          "https://arxiv.org/abs/1504.01182",
+          "https://arxiv.org/abs/2005.02155",
+          "https://arxiv.org/abs/2308.15448",
+          "https://arxiv.org/abs/1210.4698"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Government of Assam, Integrated Land Records Management System (Dharitree)",
+        "operator": "Government of Assam, Integrated Land Records Management System (Dharitree)",
+        "homeUrl": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+        "mapUrl": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+        "observation": "HTTP 200 public selector page exposes District, Circle, Village/Town; Assamese-script district list and first-letter selector rendered. Portal says missing online record should be checked with Circle office; no parcel geometry was returned."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=26.4453578533466&lon=92.3955537457384&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Moirabari, Laharighat, Marigaon, Assam, 782126, India",
+        "osmType": "way",
+        "osmId": 1300113148,
+        "address": {
+          "town": "Moirabari",
+          "county": "Laharighat",
+          "state_district": "Marigaon",
+          "state": "Assam",
+          "ISO3166-2-lvl4": "IN-AS",
+          "postcode": "782126",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "HTTP 200 public selector page exposes District, Circle, Village/Town; Assamese-script district list and first-letter selector rendered. Portal says missing online record should be checked with Circle office; no parcel geometry was returned."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP point to the official district, circle and village in Dharitree; determine whether a public cadastral map response supplies plot geometry and stable dag/plot identity."
+}

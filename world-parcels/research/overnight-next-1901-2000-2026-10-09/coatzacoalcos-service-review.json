@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-6799-coatzacoalcos.json",
+  "purpose": "Document bilingual first-party discovery, official viewer inspection, attempted public service routes, scope limits, and safe-field qualification for Coatzacoalcos.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Local municipal/state cadastral custody is evidenced, but no safe anonymous parcel geometry response or stable native parcel identity was qualified. No GeoJSON sample is retained.",
+  "registryAssessment": "Local registry/cadastre custody is evidenced by the Ayuntamiento de Coatzacoalcos Catastro pages and Veracruz Delegación Regional de Catastro Coatzacoalcos records. The municipal predial viewer is a key-based tax lookup, not evidence of an open parcel geometry API. State SEMARNAT GIS layers encountered are general environmental/land-use data and are not treated as cadastral sources.",
+  "officialPrimarySources": [
+    {"url": "https://tramites.coatzacoalcos.gob.mx/tramites/81/", "observation": "Official municipal Deslinde de Predio procedure; requests a georeferenced parcel plan in UTM WGS84 among documentary requirements."},
+    {"url": "https://desarrollourbano.coatzacoalcos.gob.mx/desarrollo-urbano/directorio/", "observation": "Official municipal directorate lists Dirección Catastro Municipal."},
+    {"url": "https://pagoenlinea.coatzacoalcos.gob.mx/", "observation": "Official predial/payment viewer exposes Buscar Predio by Clave Catastral and ASP.NET/Telerik postback controls; no anonymous parcel vector endpoint was exposed in fetched HTML."},
+    {"url": "https://repositorio.veracruz.gob.mx/finanzas/wp-content/uploads/sites/2/2025/04/Servicios-catastrales-2024-Minatitlan.pdf", "observation": "Official Veracruz report labels Delegación Regional de Catastro: 08 Coatzacoalcos and lists cadastral services including cartography certificates."},
+    {"url": "https://repositorio.veracruz.gob.mx/finanzas/wp-content/uploads/sites/2/2025/04/Programa-Operativo-Anual-Minatitlan.pdf", "observation": "Official state program identifies Catastro Coatzacoalcos regional training and municipal geobase maintenance context."}
+  ],
+  "requestAttempts": [
+    {"url": "https://pagoenlinea.coatzacoalcos.gob.mx/", "method": "GET", "httpStatus": 200, "result": "HTML downloaded to ignored scratch; form requires clave catastral and uses ASP.NET/Telerik postback controls. No geometry response requested."},
+    {"url": "https://pagoenlinea.coatzacoalcos.gob.mx/assets/js/main.js", "method": "GET", "httpStatus": 404, "result": "Referenced asset path returned not found; no client API configuration recovered."},
+    {"url": "https://gisviewer.semarnat.gob.mx/ArcGIS/rest/services/APLICACIONES/ORDENAMIENTOS_UGAS/MapServer/36?f=pjson", "method": "GET", "httpStatus": "timeout after 25s", "result": "No response retained; this is a general environmental ordering layer discovered in search, not treated as cadastral."}
+  ],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "exactWupPointTest": "Not performed against a qualified cadastral layer; the unchanged WUP point [18.1360797405887, -94.4571756420788] was preserved and not shifted.", "requestEvidence": []},
+  "fieldMapping": {"nativeIdentityCandidates": [], "geometryLayer": null, "mappingNote": "No parcel schema or native identity response was observed. No synthetic row identity was created."},
+  "crs": {"declared": null, "inspectionNote": "Municipal procedure mentions UTM WGS84 for submitted parcel plans, but no public parcel layer CRS was exposed or qualified."},
+  "coverageAssessment": {"claimedScope": "Municipal and state cadastral custody plus public predial lookup context.", "verifiedOpenScope": "Custody/procedure context only; no open parcel geometry or citywide completeness established.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe public native parcel/source ID if independently qualified", "geometry", "declared CRS", "non-sensitive layer/schema metadata"],
+  "remainingUncertainty": "The public viewer may rely on an internal postback or a service not linked in the fetched page. No owner, address, contact, titleholder, tax/account, credential, or private-token data was requested or retained. No failed route is evidence of citywide absence.",
+  "runtimeDecision": "held"
+}

@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Surabaya",
+  "country": "Indonesia",
+  "iso2": "ID",
+  "cityCode": 7728,
+  "capital": false,
+  "lon": 112.687468920357,
+  "lat": -7.38052698284732,
+  "pop2025k": 6843.503,
+  "rank": 54
+ },
+ {
+  "name": "Pune",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 8616,
+  "capital": false,
+  "lon": 73.8602640542245,
+  "lat": 18.5350448991254,
+  "pop2025k": 6817.951,
+  "rank": 55
+ },
+ {
+  "name": "Al-Kharṭūm (Khartoum)",
+  "country": "Sudan",
+  "iso2": "SD",
+  "cityCode": 4325,
+  "capital": true,
+  "lon": 32.4952458979726,
+  "lat": 15.6335384772136,
+  "pop2025k": 6809.355,
+  "rank": 56
+ },
+ {
+  "name": "Nanjing",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11254,
+  "capital": false,
+  "lon": 118.777731053634,
+  "lat": 32.0355096011129,
+  "pop2025k": 6800.676,
+  "rank": 57
+ },
+ {
+  "name": "Santiago",
+  "country": "Chile",
+  "iso2": "CL",
+  "cityCode": 2380,
+  "capital": true,
+  "lon": -70.6533926759612,
+  "lat": -33.491535748246,
+  "pop2025k": 6726.045,
+  "rank": 58
+ },
+ {
+  "name": "Ādīs Ᾱbeba (Addis Ababa)",
+  "country": "Ethiopia",
+  "iso2": "ET",
+  "cityCode": 6353,
+  "capital": true,
+  "lon": 38.7489828471342,
+  "lat": 9.00714292574818,
+  "pop2025k": 6705.705,
+  "rank": 59
+ },
+ {
+  "name": "Abidjan",
+  "country": "Côte d'Ivoire",
+  "iso2": "CI",
+  "cityCode": 3439,
+  "capital": true,
+  "lon": -4.01965468787951,
+  "lat": 5.35604816980528,
+  "pop2025k": 6621.711,
+  "rank": 60
+ },
+ {
+  "name": "Chaozhou",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 11800,
+  "capital": false,
+  "lon": 116.320090416427,
+  "lat": 23.652988715908,
+  "pop2025k": 6407.77,
+  "rank": 61
+ },
+ {
+  "name": "Ammān (Amman)",
+  "country": "Jordan",
+  "iso2": "JO",
+  "cityCode": 850,
+  "capital": true,
+  "lon": 35.9602148481902,
+  "lat": 31.9836227976918,
+  "pop2025k": 6403.666,
+  "rank": 62
+ },
+ {
+  "name": "Baghdād (Baghdad)",
+  "country": "Iraq",
+  "iso2": "IQ",
+  "cityCode": 3303,
+  "capital": true,
+  "lon": 44.3886352455028,
+  "lat": 33.3371222481876,
+  "pop2025k": 6390.735,
+  "rank": 63
+ }
+]

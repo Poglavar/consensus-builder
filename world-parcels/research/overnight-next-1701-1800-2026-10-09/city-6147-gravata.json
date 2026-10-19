@@ -1,0 +1,142 @@
+{
+  "cityCode": 6147,
+  "queueRank": 1734,
+  "city": "Gravataí",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "point": [-29.9311365320899, -51.050251818165],
+  "population2025": 330969,
+  "population2025k": 330.969,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gravataí Brazil official cadastral parcel map geoportal cadastro imobiliário prefeitura",
+        "result": "First-party discovery identified the official Gravataí municipal SMDUR/SMFPO portals, Cadastro Imobiliário and Geoprocessamento contacts, and the municipality-specific GeoMais geospatial portal. A search-visible public map route was not found outside the official portal.",
+        "actualResultUrls": [
+          "https://geo.gravatai.rs.gov.br/id/login?idMunicipio=166",
+          "https://gravatai.atende.net/subportal/smdur-secretaria-municipal-de-desenvolvimento-urbano",
+          "https://ws-gravatai.atende.net/subportal/smfpo-secretaria-municipal-da-fazenda-planejamento-e-orcamento",
+          "https://nfse-gravatai.atende.net/cidadao/pagina/contatos-smdur"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Gravataí mapa cadastral parcelas geoportal cadastro imobiliário prefeitura",
+        "result": "First-party discovery in Portuguese found the municipal Cadastro Imobiliário and Geoprocessamento contacts, the official GeoMais portal, and a municipal report describing georeferenced cadastral updating. The current portal presented a login wall; no anonymous parcel layer or feature response was verified.",
+        "actualResultUrls": [
+          "https://geo.gravatai.rs.gov.br/id/login?idMunicipio=166",
+          "https://nfse-gravatai.atende.net/cidadao/pagina/contatos-smdur",
+          "https://gravatai.atende.net/subportal/smdur-secretaria-municipal-de-desenvolvimento-urbano",
+          "https://gravatai.rs.gov.br/cidadao/pagina/smdur-legislacao-municipal"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": "Prefeitura Municipal de Gravataí, Secretaria Municipal de Desenvolvimento Urbano (SMDUR) / Cadastro Imobiliário and Geoprocessamento; SMFPO is the municipal Fazenda, Planejamento e Orçamento department.",
+  "registryEvidence": {
+    "localCustodianUrl": "https://nfse-gravatai.atende.net/cidadao/pagina/contatos-smdur",
+    "municipalCadastreUrl": "https://gravatai.atende.net/subportal/smdur-secretaria-municipal-de-desenvolvimento-urbano",
+    "publicMapServiceUrl": "https://geo.gravatai.rs.gov.br/id/login?idMunicipio=166",
+    "evidence": "The official municipal SMDUR contact page separately identifies Cadastro Imobiliário and Geoprocessamento, and the official municipality-specific GeoMais portal identifies Gravataí by idMunicipio=166 and offers an Acesso Público control. The portal shell is public, but current map access was not anonymously verified."
+  },
+  "sourceReview": {
+    "service": "GeoMais municipal geospatial portal for Gravataí (idMunicipio=166), linked from the municipality-specific official host; SMDUR Cadastro Imobiliário/Geoprocessamento is the local custodian.",
+    "baseUrls": [
+      "https://geo.gravatai.rs.gov.br/id/login?idMunicipio=166",
+      "https://gravatai.atende.net/subportal/smdur-secretaria-municipal-de-desenvolvimento-urbano",
+      "https://nfse-gravatai.atende.net/cidadao/pagina/contatos-smdur"
+    ],
+    "officialAssetsInspected": [
+      "GeoMais login/public-access HTML and current JavaScript route shell",
+      "Municipal SMDUR page",
+      "Municipal SMDUR Cadastro Imobiliário and Geoprocessamento contact page",
+      "Municipal SMFPO page",
+      "Municipal cadastral legislation page"
+    ],
+    "nativeFieldMapping": "No parcel layer schema or feature response was exposed anonymously; no native field names or source attributes were retained.",
+    "compositeKeyProvenance": "No composite identity was constructed. No stable native parcel identity was observed in a returned feature.",
+    "crs": "Not exposed by the anonymous portal routes tested; no geometry was returned.",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier, only if feature-level stability is independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service, layer and coverage metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://geo.gravatai.rs.gov.br/id/login?idMunicipio=166",
+      "outcome": "200/readable current HTML; municipality-specific GeoMais login page exposed an Acesso Público button and version 2.53.0. The page required credentials for the normal login form. No login or public-access form submission was performed."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.gravatai.rs.gov.br/api/v3/public/municipio/imagem-fundo",
+      "outcome": "200 PNG background image from the public portal shell; this is presentation imagery, not parcel geometry or a cadastral feature response."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.gravatai.rs.gov.br/api/v3/public/municipio?idMunicipio=166",
+      "outcome": "404 JSON route-not-found response; no retry with guessed private routes or credentials."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.gravatai.rs.gov.br/api/v3/public/municipio/166",
+      "outcome": "404 JSON route-not-found response; no parcel data returned."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.gravatai.rs.gov.br/?idMunicipio=166",
+      "outcome": "401 with empty body; anonymous map/application route blocked. No authentication was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://geo.gravatai.rs.gov.br/mapa?idMunicipio=166",
+      "outcome": "401 with empty body; guessed public map route blocked. No authentication was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://nfse-gravatai.atende.net/cidadao/pagina/contatos-smdur",
+      "outcome": "200/readable official municipal contact page; identifies Cadastro Imobiliário and Geoprocessamento under SMDUR. No unsafe property lookup was attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://gravatai.atende.net/subportal/smdur-secretaria-municipal-de-desenvolvimento-urbano",
+      "outcome": "200/readable official municipal SMDUR page; describes the municipal urban-development role and map-related materials. No parcel feature response."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": "https://geo.gravatai.rs.gov.br/id/login?idMunicipio=166",
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not completed against a public parcel layer because the current portal map routes returned 401/login-wall responses; exact WUP point [-29.9311365320899, -51.050251818165] was preserved and not shifted.",
+    "requestEvidence": ["official municipal portal shell readable", "public map/application routes returned 401", "public API guesses returned 404", "no feature geometry or schema returned"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Gravataí municipal cadastral/geospatial system managed through SMDUR Cadastro Imobiliário and Geoprocessamento / GeoMais portal",
+    "verifiedOpenScope": "Local custodian evidence and current portal identity only; no anonymous parcel layer, schema or feature geometry",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [-29.9311365320899, -51.050251818165] and latitude/longitude order were preserved; no coordinate was shifted.",
+    "A login wall, 401, 404, map extent miss, timeout or unusable UI is not evidence of citywide cadastral absence.",
+    "No owner, address, titleholder, contact, tax/account, registration, personal or other unsafe fields were requested or retained.",
+    "No raw source-specific attribute set, parcel schema or GeoJSON sample was retained because no anonymous feature geometry and stable native identity were verified.",
+    "Packet completion records executed attempts only; it does not qualify or admit a runtime adapter."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "Municipal cadastral custodianship and a current municipality-specific GeoMais portal are evidenced. Anonymous parcel access, stable native identity, CRS, geometry, currentness and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

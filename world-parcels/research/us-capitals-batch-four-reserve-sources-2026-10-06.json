@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "city": "richmond",
+      "proposedDescriptor": {
+        "endpoint": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Virginia Parcels",
+        "operator": "Virginia Geographic Information Network / Virginia Department of Emergency Management",
+        "scope": "Richmond capital-area sample of the statewide VGIN compilation; wider coverage untested.",
+        "idField": "VGIN_QPID",
+        "objectIdField": "OBJECTID",
+        "idType": "integer",
+        "idPattern": "^[0-9]+$",
+        "outFields": [
+          "VGIN_QPID",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "VGIN_QPID",
+        "metricSrid": 32618,
+        "idPrefix": "US-VA-RICHMOND-",
+        "attributeFilters": null,
+        "id": "us-va-richmond-parcels",
+        "stateCode": "VA",
+        "cityIds": [
+          "richmond"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "caveats": [
+          "Capital-area acceptance only; this does not establish full municipal or statewide completeness."
+        ],
+        "countryCode": "US",
+        "catalogueUrl": "https://www.rva.gov/index.php/assessor-real-estate/gismapping"
+      },
+      "sourceNote": "Official source; bounded capital-area checks do not establish full jurisdictional coverage.",
+      "status": "passed",
+      "acceptanceEvidence": "us-capitals-batch-four-reserve-final-2026-10-06.json",
+      "nativeIds": [
+        "5176000050747",
+        "5176000051067",
+        "5176000051068"
+      ],
+      "uniqueNativeIds": 484,
+      "exactResolved": 484
+    },
+    {
+      "city": "salt_lake_city",
+      "proposedDescriptor": {
+        "endpoint": "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahStatewideParcels/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Utah State Parcels",
+        "operator": "Utah Geospatial Resource Center and local government",
+        "scope": "Salt Lake County only, enforced by County=SaltLake; capital-area sample.",
+        "idField": "PARCEL_ID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "PARCEL_ID",
+          "OBJECTID",
+          "County"
+        ],
+        "parcelNumberField": "PARCEL_ID",
+        "metricSrid": 32612,
+        "idPrefix": "US-UT-SALTLAKE-",
+        "attributeFilters": {
+          "County": "SaltLake"
+        },
+        "id": "us-ut-salt-lake-city-parcels",
+        "countryCode": "US",
+        "stateCode": "UT",
+        "cityIds": [
+          "salt_lake_city"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "catalogueUrl": "https://gis.utah.gov/products/sgid/cadastre/parcels/",
+        "caveats": [
+          "County-scoped capital-area acceptance only; statewide compilation completeness varies."
+        ]
+      },
+      "sourceNote": "Official source; bounded capital-area checks do not establish full jurisdictional coverage.",
+      "status": "passed",
+      "acceptanceEvidence": "us-capitals-batch-four-reserve-final-2026-10-06.json",
+      "nativeIds": [
+        "15014290110000",
+        "15014290120000",
+        "15014320030000"
+      ],
+      "uniqueNativeIds": 1154,
+      "exactResolved": 1154
+    },
+    {
+      "city": "montpelier",
+      "proposedDescriptor": {
+        "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Vermont SPAN assessment parcels",
+        "operator": "Vermont Center for Geographic Information / local municipalities",
+        "scope": "SPAN-identified Grand List assessment accounts at Montpelier, assembled by complete native-account manifests; unidentified exempt shapes excluded.",
+        "idField": "SPAN",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "SPAN",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "SPAN",
+        "metricSrid": 32618,
+        "idPrefix": "US-VT-MONTPELIER-",
+        "attributeFilters": null,
+        "id": "us-vt-montpelier-parcels",
+        "countryCode": "US",
+        "stateCode": "VT",
+        "cityIds": [
+          "montpelier"
+        ],
+        "attributeNotNull": [
+          "SPAN"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "catalogueUrl": "https://www.montpelier-vt.org/528/Maps-GIS",
+        "caveats": [
+          "Represents Grand List assessment account boundaries by publisher SPAN; an account may contain multiple mapped/legal lots and is not asserted to be one legal cadastral lot.",
+          "Unidentified exempt rail, road and water polygons with null SPAN are excluded consistently.",
+          "Montpelier sampled data use 2025 parcel and Grand List years; capital-area acceptance does not establish full municipal coverage."
+        ],
+        "nativeGeometryMode": "parts",
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "partsCoordinatePrecision": 9
+      },
+      "sourceNote": "VCGI SPAN-identified Grand List assessment accounts; legal-lot multiplicity is not inferred. Current sampled parcel and Grand List year is 2025.",
+      "status": "passed",
+      "acceptanceEvidence": "us-capitals-batch-four-reserve-vt-parts-live-2026-10-06.json",
+      "nativeIds": [
+        "405-126-11382",
+        "405-126-10381",
+        "405-126-10537"
+      ],
+      "uniqueNativeIds": 581,
+      "exactResolved": 581
+    },
+    {
+      "city": "austin",
+      "proposedDescriptor": {
+        "id": "us-tx-austin-parcels",
+        "countryCode": "US",
+        "stateCode": "TX",
+        "cityIds": [
+          "austin"
+        ],
+        "adapter": "arcgis",
+        "endpoint": "https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0",
+        "name": "City of Austin TCAD Parcels",
+        "operator": "City of Austin / Travis Central Appraisal District",
+        "scope": "Travis County TCAD parcels hosted by the City of Austin; bounded capital-area acceptance only.",
+        "idField": "PID_10",
+        "objectIdField": "OBJECTID_1",
+        "idType": "string",
+        "idPattern": ".+",
+        "idPrefix": "US-TX-TRAVIS-",
+        "outFields": [
+          "PID_10",
+          "OBJECTID_1"
+        ],
+        "parcelNumberField": "PID_10",
+        "metricSrid": 32614,
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "catalogueUrl": "https://maps.austintexas.gov/arcgis/rest/services/Shared/AppraisalDistricts/MapServer/0",
+        "caveats": [
+          "City and county coverage beyond sampled cells is untested."
+        ]
+      },
+      "sourceNote": "City of Austin official TCAD parcel layer; Travis County capital-area scope.",
+      "status": "passed",
+      "acceptanceEvidence": "us-capitals-batch-four-reserve-austin-live-2026-10-06.json",
+      "nativeIds": [
+        "0205011101",
+        "0205010901",
+        "0205010801"
+      ],
+      "uniqueNativeIds": 444,
+      "exactResolved": 444
+    }
+  ],
+  "diagnoses": [
+    {
+      "city": "montpelier",
+      "firstCellSourceRows": 16,
+      "missingSpan": 3,
+      "missingAlternateNativeIds": [
+        "GLIST_SPAN",
+        "PARCID"
+      ],
+      "unidentifiedExemptTypes": [
+        "ROW_RAIL",
+        "WATER",
+        "ROW_ROAD"
+      ],
+      "scopeDecision": "Exclude unidentified shapes by SPAN IS NOT NULL consistently in all adapter paths and independent count; do not union records."
+    },
+    {
+      "city": "salt_lake_city",
+      "scopeField": "County",
+      "scopeValue": "SaltLake",
+      "identity": "County-assigned PARCEL_ID, fixed SaltLake filter and namespace."
+    },
+    {
+      "city": "richmond",
+      "identity": "VGIN_QPID locality-qualified native safe integer key; PARCELID is not unique."
+    },
+    {
+      "city": "austin",
+      "alternate": "Official City of Austin AppraisalDistricts TCAD layer replaces timed-out Travis County metadata endpoint.",
+      "identity": "PID_10 string native Parcel ID; OBJECTID_1 is transport manifest only."
+    }
+  ],
+  "passedCount": 4,
+  "holds": []
+}

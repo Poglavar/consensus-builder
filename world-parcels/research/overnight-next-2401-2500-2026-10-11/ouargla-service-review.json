@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-4831-ouargla.json",
+  "cityCode": 4831,
+  "queueRank": 2449,
+  "name": "Ouargla",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "pointLatLon": [31.9462184540671, 5.33708363718061],
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "reviewDecision": "held_no_verified_public_geometry",
+  "queryAndRequestOutcome": "Separate English and Arabic/local-language first-party discovery identified Algeria's National Cadastre Agency, ASGA InfoGéolAlgérie viewers, and National Urban Land Agency. The ASGA 1:200,000 viewer is current-indexed with general cartographic layers, but direct anonymous retrieval timed out after 20 seconds. No public parcel ID-plus-polygon response, schema, CRS, or current API configuration was verified.",
+  "localRegistryCustodian": {
+    "found": false,
+    "evidence": "No Ouargla-specific local cadastral directorate endpoint or local parcel map was evidenced in this attempt. National official custody and general ASGA coverage are recorded separately and are not treated as local parcel-feature evidence."
+  },
+  "officialSources": [
+    {"url": "https://bndg.asga.dz/bndg/CARTO200K_P/Default_BNDG.aspx", "operator": "ASGA / InfoGéolAlgérie", "scope": "Official 1:200,000 public cartographic viewer."},
+    {"url": "https://bndg.asga.dz/bndg/CARTO50NV_P/Default_BNDG.aspx", "operator": "ASGA / InfoGéolAlgérie", "scope": "Official 1:50,000 public cartographic viewer."},
+    {"url": "https://a.dgdn.dz/", "operator": "Agence Nationale du Cadastre", "scope": "Official cadastral agency/service domain."},
+    {"url": "https://www.anfu.dz/", "operator": "Agence Nationale du Foncier Urbain", "scope": "Official urban-land agency; GIS/land-inventory mission, not verified parcel API."}
+  ],
+  "requestOutcomes": [
+    {"route": "ASGA CARTO200K_P", "method": "GET anonymous; TLS verified", "outcome": "Indexed first-party page identifies map layers and ESRI web viewer; direct curl timed out after 20 seconds before HTML/configuration could be inspected."},
+    {"route": "ASGA CARTO50NV_P", "method": "GET via indexed first-party page", "outcome": "General 1:50,000 map viewer evidenced; no cadastral parcel feature response."},
+    {"route": "National Cadastre Agency domain", "method": "GET via first-party discovery", "outcome": "Agency and cadastral document/procedure material evidenced; no anonymous Ouargla parcel geometry route found."},
+    {"route": "ANFU", "method": "GET via first-party discovery", "outcome": "Official land-inventory/GIS mission page evidenced; no safe parcel feature response."}
+  ],
+  "schemaAndCrs": {"viewerConfiguration": null, "geometryType": null, "geometryCrs": null, "nativeIdentity": null, "boundedAnonymousResponse": false},
+  "safeFieldAllowlist": ["stable native parcel ID if source-proven", "full parcel polygon geometry", "source URL", "source CRS", "layer/schema metadata", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "No full parcel polygon was retained because no safe native identity-plus-geometry response was obtained.",
+    "No raw source-specific attribute set was retained.",
+    "The exact WUP point is preserved in latitude/longitude order and was not shifted.",
+    "A timeout, unavailable viewer, map extent miss, or zero exact-point hit would not establish citywide absence.",
+    "National custodian evidence is not equivalent to a qualified local parcel adapter.",
+    "This packet is research evidence only and is not source integration or admission."
+  ],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No live safe parcel feature response, stable native ID, geometry, or CRS was verified."},
+  "uncertainty": "A future viewer route, authenticated-but-public procedure, or local Ouargla cadastral service may expose safe parcel geometry. Attempt 1 did not establish it and did not infer absence."
+}

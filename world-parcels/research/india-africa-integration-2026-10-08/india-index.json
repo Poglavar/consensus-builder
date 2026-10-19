@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "india_source_blocker_audit_index",
+  "checkedAt": "2026-10-08",
+  "description": "Bounded follow-up audit of root-owned Delhi and Pune source blockers; evidence files contain only newly observed results.",
+  "cities": [
+    {
+      "wupCityCode": 8364,
+      "name": "New Delhi",
+      "evidenceFile": "india-delhi-8364-audit.json",
+      "resultCategory": "no_alternate_identity_or_geometry_verified",
+      "verifiedGeometryCount": 0
+    },
+    {
+      "wupCityCode": 8616,
+      "name": "Pune",
+      "evidenceFile": "india-pune-8616-audit.json",
+      "resultCategory": "official_map_route_unavailable_no_fresh_geometry",
+      "verifiedGeometryCount": 0
+    }
+  ]
+}

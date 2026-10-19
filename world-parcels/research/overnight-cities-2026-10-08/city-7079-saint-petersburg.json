@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Saint Petersburg",
+  "country": "United States of America",
+  "countryCode": "US",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The City of St. Petersburg, Florida, hosts an official municipal parcel polygon service, while Pinellas County Property Appraiser publishes county parcel polygons and explicitly covers St. Petersburg in its jurisdiction mapping guidance. A safe geometry-only query to the countywide layer returned one polygon containing the WUP locator. The city service returned no feature at that locator, so the retained sample indicates county parcel coverage near the ranked settlement point, not verified municipal-boundary coverage. This packet is for Florida, not Saint Petersburg, Russia.",
+  "registryEvidenceUrls": [
+    "https://egis.stpete.org/arcgis/rest/services/ServicesDOTS/Parcels/MapServer/0?f=pjson",
+    "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0?f=pjson",
+    "https://www.pcpao.gov/node/266",
+    "https://www.pcpao.gov/learn-about/FAQs"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 7079,
+  "cityId": "wup2025:7079",
+  "centerLatLon": [
+    27.8713699437531,
+    -82.7305763266337
+  ],
+  "rank": 595,
+  "queueRank": 595,
+  "population2025": 877183,
+  "population2025k": 877.183,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "A full county parcel polygon is verified at the unchanged Saint Petersburg, Florida metropolitan settlement locator. The official Pinellas source uses table-qualified identifier fields, which need a strict qualified-field contract before the current ArcGIS adapter can be exercised. Municipal-service empty results remain preserved as a scope limit; neither municipal completeness nor inclusion inside the municipal boundary is a gate for bounded county ground.",
+  "scopeLimits": "38 valid distinct Pinellas County land polygons verified in thirteen local 0.001-degree cells around the unchanged Saint Petersburg metropolitan WUP locator in Florida. Complete object-ID manifests, forced three-row batches, all 38 fresh native PARCELID reads, valid absence, footprint and binding passed. Publisher-coded PARCELSUBTYPE=0 is Land Polygon; unit/subsurface/discrepancy classes are outside this explicit ground scope, which is enforced on every returned feature. Qualified joined column names are retained exactly. Native EPSG:3857 GeoJSON is requested with the documented geometryPrecision=6 parameter (one micrometre in response metres), retained without local rounding, and transformed explicitly only after CRS/precision verification. Earlier unfiltered/float-serialization failures remain preserved. Independent EPSG:32617 GEOS found no invalid/duplicate geometries and two narrow overlaps totalling 0.27016 m². Original unrounded native responses reproduce both as boundary slivers about 3.5 millimetres wide; they remain unchanged and are accepted for bounded reference use. The county feed covers nearby metropolitan ground, including the exact WUP point, without establishing Saint Petersburg municipal-only or citywide coverage, legal title, survey accuracy or long-term key continuity.",
+  "remainingUncertainty": "Citywide parcel coverage is not established. For the Florida row, retained geometry is from a countywide service and municipal-boundary coverage is unverified. For other rows, no broader completeness claim is made.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Saint Petersburg Florida official municipal parcel GIS Pinellas County parcel polygons",
+        "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+        "result": "The City of St. Petersburg, Florida, hosts an official municipal parcel polygon service, while Pinellas County Property Appraiser publishes county parcel polygons and explicitly covers St. Petersburg in its jurisdiction mapping guidance. A safe geometry-only query to the countywide layer returned one polygon containing the WUP locator. The city service returned no feature at that locator, so the retained sample indicates county parcel coverage near the ranked settlement point, not verified municipal-boundary coverage. This packet is for Florida, not Saint Petersburg, Russia. Inspected city and county ArcGIS REST schema metadata before geometry. County layer AGO/Parcels/MapServer/0 has Polygon geometry and qualified OID PGIS.PGIS.ParcelsPublic.OBJECTID; query explicitly requested only that field plus geometry. One county polygon contains the WUP point. City service ServicesDOTS/Parcels/MapServer/0 is also a polygon layer but returned zero at the point in WGS84 and native EPSG:2882. County sample is retained as county-ground coverage only; no owner, address, tax, or other property attributes were requested or retained.",
+        "actualResultUrls": [
+          "https://egis.stpete.org/arcgis/rest/services/ServicesDOTS/Parcels/MapServer/0?f=pjson",
+          "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0?f=pjson",
+          "https://www.pcpao.gov/node/266",
+          "https://www.pcpao.gov/learn-about/FAQs"
+        ],
+        "executionMethod": "English/local-language query plus official-source/schema review; no owner, address, tax, or property lookup."
+      },
+      {
+        "language": "English (US)",
+        "query": "St. Petersburg Florida official city parcel map Pinellas Property Appraiser GIS",
+        "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+        "result": "The City of St. Petersburg, Florida, hosts an official municipal parcel polygon service, while Pinellas County Property Appraiser publishes county parcel polygons and explicitly covers St. Petersburg in its jurisdiction mapping guidance. A safe geometry-only query to the countywide layer returned one polygon containing the WUP locator. The city service returned no feature at that locator, so the retained sample indicates county parcel coverage near the ranked settlement point, not verified municipal-boundary coverage. This packet is for Florida, not Saint Petersburg, Russia. Inspected city and county ArcGIS REST schema metadata before geometry. County layer AGO/Parcels/MapServer/0 has Polygon geometry and qualified OID PGIS.PGIS.ParcelsPublic.OBJECTID; query explicitly requested only that field plus geometry. One county polygon contains the WUP point. City service ServicesDOTS/Parcels/MapServer/0 is also a polygon layer but returned zero at the point in WGS84 and native EPSG:2882. County sample is retained as county-ground coverage only; no owner, address, tax, or other property attributes were requested or retained.",
+        "actualResultUrls": [
+          "https://egis.stpete.org/arcgis/rest/services/ServicesDOTS/Parcels/MapServer/0?f=pjson",
+          "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0?f=pjson",
+          "https://www.pcpao.gov/node/266",
+          "https://www.pcpao.gov/learn-about/FAQs"
+        ],
+        "executionMethod": "English/local-language query plus official-source/schema review; no owner, address, tax, or property lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "us-fl-pinellas-parcels",
+    "name": "Pinellas County public Land Polygon parcels",
+    "operator": "Pinellas County GIS / Property Appraiser",
+    "url": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0",
+    "nativeIdField": "PGIS.PGIS.ParcelsPublic.PARCELID",
+    "identityBasis": "Source-native cadastral parcel key, preserving original value; object ID supplies complete transport manifests/paging.",
+    "scope": "38 valid distinct Pinellas County land polygons verified in thirteen local 0.001-degree cells around the unchanged Saint Petersburg metropolitan WUP locator in Florida. Complete object-ID manifests, forced three-row batches, all 38 fresh native PARCELID reads, valid absence, footprint and binding passed. Publisher-coded PARCELSUBTYPE=0 is Land Polygon; unit/subsurface/discrepancy classes are outside this explicit ground scope, which is enforced on every returned feature. Qualified joined column names are retained exactly. Native EPSG:3857 GeoJSON is requested with the documented geometryPrecision=6 parameter (one micrometre in response metres), retained without local rounding, and transformed explicitly only after CRS/precision verification. Earlier unfiltered/float-serialization failures remain preserved. Independent EPSG:32617 GEOS found no invalid/duplicate geometries and two narrow overlaps totalling 0.27016 m². Original unrounded native responses reproduce both as boundary slivers about 3.5 millimetres wide; they remain unchanged and are accepted for bounded reference use. The county feed covers nearby metropolitan ground, including the exact WUP point, without establishing Saint Petersburg municipal-only or citywide coverage, legal title, survey accuracy or long-term key continuity."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "38 valid distinct Pinellas County land polygons verified in thirteen local 0.001-degree cells around the unchanged Saint Petersburg metropolitan WUP locator in Florida. Complete object-ID manifests, forced three-row batches, all 38 fresh native PARCELID reads, valid absence, footprint and binding passed. Publisher-coded PARCELSUBTYPE=0 is Land Polygon; unit/subsurface/discrepancy classes are outside this explicit ground scope, which is enforced on every returned feature. Qualified joined column names are retained exactly. Native EPSG:3857 GeoJSON is requested with the documented geometryPrecision=6 parameter (one micrometre in response metres), retained without local rounding, and transformed explicitly only after CRS/precision verification. Earlier unfiltered/float-serialization failures remain preserved. Independent EPSG:32617 GEOS found no invalid/duplicate geometries and two narrow overlaps totalling 0.27016 m². Original unrounded native responses reproduce both as boundary slivers about 3.5 millimetres wide; they remain unchanged and are accepted for bounded reference use. The county feed covers nearby metropolitan ground, including the exact WUP point, without establishing Saint Petersburg municipal-only or citywide coverage, legal title, survey accuracy or long-term key continuity.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Low",
+  "sourceIds": [
+    "us-fl-pinellas-parcels"
+  ],
+  "point": [
+    27.8713699437531,
+    -82.7305763266337
+  ],
+  "sampleFile": "city-7079-saint-petersburg-sample.geojson",
+  "sampleFeatureCount": 1,
+  "sampleCrs": "EPSG:4326 (requested output)",
+  "geometryEvidence": {
+    "sourceId": "us-pinellas-ago-parcels-layer0",
+    "summary": "Public geometry-only point response contains the exact WUP locator; only provider snapshot object ID and polygon geometry retained.",
+    "sampleCount": 1,
+    "sampleCrs": "EPSG:4326 (requested output)",
+    "attributesRetained": [
+      "sourceObjectId"
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "38 valid distinct Pinellas County land polygons verified in thirteen local 0.001-degree cells around the unchanged Saint Petersburg metropolitan WUP locator in Florida. Complete object-ID manifests, forced three-row batches, all 38 fresh native PARCELID reads, valid absence, footprint and binding passed. Publisher-coded PARCELSUBTYPE=0 is Land Polygon; unit/subsurface/discrepancy classes are outside this explicit ground scope, which is enforced on every returned feature. Qualified joined column names are retained exactly. Native EPSG:3857 GeoJSON is requested with the documented geometryPrecision=6 parameter (one micrometre in response metres), retained without local rounding, and transformed explicitly only after CRS/precision verification. Earlier unfiltered/float-serialization failures remain preserved. Independent EPSG:32617 GEOS found no invalid/duplicate geometries and two narrow overlaps totalling 0.27016 m². Original unrounded native responses reproduce both as boundary slivers about 3.5 millimetres wide; they remain unchanged and are accepted for bounded reference use. The county feed covers nearby metropolitan ground, including the exact WUP point, without establishing Saint Petersburg municipal-only or citywide coverage, legal title, survey accuracy or long-term key continuity.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/pinellas-root-ground-precision-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/pinellas-root-ground-precision-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/pinellas-root-native-edge-review.json"
+  },
+  "rootReviewedAt": "2026-10-09T02:23:15.218411+00:00",
+  "discoverySource": {
+    "sourceId": "us-pinellas-ago-parcels-layer0",
+    "name": "Saint Petersburg registry and parcel geometry review",
+    "operator": "City of St. Petersburg, Florida; Pinellas County Property Appraiser",
+    "url": "https://egis.stpete.org/arcgis/rest/services/ServicesDOTS/Parcels/MapServer/0",
+    "scope": "The county AGO parcel layer (MapServer layer 0, ParcelsPublic) supports polygon geometry; its schema includes other property-related fields, so the point query requested only the qualified system OBJECTID and geometry. The WUP point returned one countywide polygon, retained with OBJECTID 740498 only. The city parcel service schema also exists but returned zero features at the WUP point in both WGS84 and native EPSG:2882. Municipal boundary containment and point-level city coverage remain unverified.",
+    "nativeIdField": "PGIS.PGIS.ParcelsPublic.OBJECTID",
+    "attributesRequested": [],
+    "identityBasis": "Provider snapshot-local object ID only; all other attributes discarded.",
+    "geometryStatus": "countywide_geometry_sample_city_scope_unverified"
+  },
+  "rootRuntimeReview": {
+    "checkedAt": "2026-10-09T02:22:02.841232+00:00",
+    "decision": "approved_by_root",
+    "reason": "38 valid distinct Pinellas County land polygons verified in thirteen local 0.001-degree cells around the unchanged Saint Petersburg metropolitan WUP locator in Florida. Complete object-ID manifests, forced three-row batches, all 38 fresh native PARCELID reads, valid absence, footprint and binding passed. Publisher-coded PARCELSUBTYPE=0 is Land Polygon; unit/subsurface/discrepancy classes are outside this explicit ground scope, which is enforced on every returned feature. Qualified joined column names are retained exactly. Native EPSG:3857 GeoJSON is requested with the documented geometryPrecision=6 parameter (one micrometre in response metres), retained without local rounding, and transformed explicitly only after CRS/precision verification. Earlier unfiltered/float-serialization failures remain preserved. Independent EPSG:32617 GEOS found no invalid/duplicate geometries and two narrow overlaps totalling 0.27016 m². Original unrounded native responses reproduce both as boundary slivers about 3.5 millimetres wide; they remain unchanged and are accepted for bounded reference use. The county feed covers nearby metropolitan ground, including the exact WUP point, without establishing Saint Petersburg municipal-only or citywide coverage, legal title, survey accuracy or long-term key continuity.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/pinellas-root-ground-precision-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/pinellas-root-ground-precision-quality.json"
+  },
+  "appCityId": "saintpetersburgfl",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeQualification": {
+    "sourceId": "us-fl-pinellas-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/pinellas-root-ground-precision-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/pinellas-root-ground-precision-quality.json"
+  }
+}

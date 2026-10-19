@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11581,
+  "cityId": "wup2025:11581",
+  "name": "Choudwar",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    20.4996698735025,
+    85.9330728323426
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 61,
+  "stateOrUT": "Odisha",
+  "administrativeIdentity": {
+    "district": "कटक",
+    "tehsilOrTaluk": "Cuttack (M.Corp.) P.S",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Odia",
+        "query": "ଚୌଦ୍ୱାର ଜମି ମାନଚିତ୍ର ଖତିଆନ ଖସଡା ଓଡ଼ିଶା ଭୁଲେଖ",
+        "scope": "WUP 11581 Choudwar cohort label retained; search for official Odisha parcel/map entry point.",
+        "result": "Actual native-script query surfaced the official state land-record entry point listed below; it did not return a city-specific parcel feature.",
+        "checkedAt": "2026-10-08",
+        "script": "Odia",
+        "actualResultUrls": [
+          "https://odisha.gov.in/",
+          "https://odisha.gov.in/or",
+          "https://www.odisha.gov.in/",
+          "https://odisha.gov.in/index.php/or/node?page=1",
+          "https://cuttack.odisha.gov.in/or/about-district/map-of-district",
+          "https://kendujhar.odisha.gov.in/about-district/map-of-district",
+          "https://abhayattcc.github.io/Odia-Picture-Dictionary/",
+          "https://www.odiabooks.com/purnachandra-odia-bhashakosha-dictionary-by-gopal-chandra-praharaj.html",
+          "https://odisha.gov.in/or/node?page=0",
+          "https://odiobook.com/translate/odia-to-english",
+          "https://www.hindieasy.com/public/translator/english/odia",
+          "https://www.home.odisha.gov.in/",
+          "https://dharitriepaper.in/uploads/epaper/2026-03/69a63531c1bb2.pdf",
+          "https://revenue.odisha.gov.in/sites/default/files/2021-02/38919_07_12_19.pdf",
+          "https://nabarangpur.odisha.gov.in/sites/default/files/2025-06/Nishnahandi%20GP.pdf",
+          "https://revenue.odisha.gov.in/sites/default/files/2021-02/407.pdf",
+          "https://dharitriepaper.in/uploads/epaper/2022-05/628023bd7626f.pdf",
+          "https://ospcboard.odisha.gov.in/wp-content/plugins/hearing/uploads/files_1627288835_1945921764.pdf",
+          "https://www.reddit.com/r/u_copygoogle99/comments/fe980z",
+          "https://arxiv.org/abs/2207.03256",
+          "https://www.reddit.com/r/Bhubaneswar/comments/1jvjfwz",
+          "https://arxiv.org/abs/0911.0907",
+          "https://www.reddit.com/r/TheBerhampurCity/comments/1mh46mh",
+          "https://www.reddit.com/r/UnitedOdisha/comments/1v7obna/removed/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Government of Odisha, Bhulekh / NIC Bhubaneswar",
+        "operator": "Government of Odisha, Bhulekh / NIC Bhubaneswar",
+        "homeUrl": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+        "mapUrl": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+        "observation": "HTTP 200 Map View exposes District/Tahsil/Village/RI Circle/Plot selectors and link to BhuNaksha Odisha; no plot selection or parcel geometry retrieved."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=20.4996698735025&lon=85.9330728323426&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Tarol, Jagatpur, Cuttack (M.Corp.) P.S, कटक, Odisha, 754201, India",
+        "osmType": "way",
+        "osmId": 1258480545,
+        "address": {
+          "neighbourhood": "Tarol",
+          "town": "Jagatpur",
+          "county": "Cuttack (M.Corp.) P.S",
+          "state_district": "कटक",
+          "state": "Odisha",
+          "ISO3166-2-lvl4": "IN-OD",
+          "postcode": "754201",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "HTTP 200 Map View exposes District/Tahsil/Village/RI Circle/Plot selectors and link to BhuNaksha Odisha; no plot selection or parcel geometry retrieved."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Select the WUP location in the official district/tahsil/village/RI-circle map viewer, then verify a plot response with nonempty geometry and stable plot identifier."
+}

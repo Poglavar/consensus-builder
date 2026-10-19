@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "requests": [
+    {
+      "name": "delhi-main",
+      "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/mains.js",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:05.835882+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://ldo.mohua.gov.in/edharti/map"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "bytesRead": 116101,
+      "contentRange": null,
+      "bodyCapped": false,
+      "elapsedMs": 959
+    },
+    {
+      "name": "delhi-range",
+      "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:05.836517+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://ldo.mohua.gov.in/edharti/map",
+        "Range": "bytes=0-16383"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 206,
+      "contentType": "application/javascript",
+      "bytesRead": 16384,
+      "contentRange": "bytes 0-16383/22117499",
+      "bodyCapped": true,
+      "parcelRecordCount": 3,
+      "responseFile": "research/india-africa-2026-10-08/root-delhi-parcel-response.json",
+      "elapsedMs": 763
+    },
+    {
+      "name": "pune-root",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:05.836706+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://mahabhumi.gov.in/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35016
+    },
+    {
+      "name": "pune-georef",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/georef.js",
+      "params": null,
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:06.600621+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": null,
+      "error": "ConnectTimeout",
+      "elapsedMs": 35017
+    },
+    {
+      "name": "joburg-bbox",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query",
+      "params": {
+        "f": "geojson",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outSR": 4326,
+        "outFields": "OBJECTID,SG_ID,STAND_NO,PROPERTY_ID,STATUS_DESC",
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:06.795839+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 1330,
+      "contentRange": null,
+      "bodyCapped": false,
+      "featureCount": 3,
+      "exceededTransferLimit": true,
+      "error": null,
+      "elapsedMs": 1761
+    },
+    {
+      "name": "giscoe-bbox",
+      "url": "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1/query",
+      "params": {
+        "f": "geojson",
+        "where": "1=1",
+        "geometry": "27.85959,-26.12095,27.86059,-26.11995",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outSR": 4326,
+        "outFields": "OBJECTID,SG21KEY,SGSUBKEY",
+        "returnGeometry": "true",
+        "resultRecordCount": 3
+      },
+      "method": "GET",
+      "checkedAt": "2026-10-07T21:10:08.557661+00:00",
+      "headersUsed": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+        "Accept": "application/json,text/html,*/*;q=0.8",
+        "Accept-Language": "en-IN,en-ZA,en;q=0.9,hi;q=0.8,mr;q=0.7,af;q=0.6",
+        "Referer": "https://eservices.joburg.org.za/"
+      },
+      "cookieJarUsed": true,
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytesRead": 1547,
+      "contentRange": null,
+      "bodyCapped": false,
+      "featureCount": 3,
+      "exceededTransferLimit": true,
+      "error": null,
+      "elapsedMs": 339
+    }
+  ]
+}

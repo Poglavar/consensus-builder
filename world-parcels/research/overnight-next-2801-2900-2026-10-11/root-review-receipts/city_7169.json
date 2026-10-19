@@ -1,0 +1,22 @@
+{
+  "taskId": "city:7169",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-7169-munshir-hat.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/munshir-hat-service-review.json",
+    "tmp/valhalla-parcel-research/7169/barisal-districts.json",
+    "tmp/valhalla-parcel-research/7169/bhola-surveys.json",
+    "tmp/valhalla-parcel-research/7169/bhola-thanas.json",
+    "tmp/valhalla-parcel-research/7169/bhola-thanas-brs.json",
+    "tmp/valhalla-parcel-research/7169/bhola-diara-thanas.json",
+    "tmp/valhalla-parcel-research/7169/catalog.json"
+  ],
+  "checkedAt": "2026-10-11T21:24:57Z",
+  "identityCheck": "WUP 2025 bulk CSV SHA-256 verified; exact code 7169, rank 2852, Bangladesh, point, and 208908 persons agree across source, roster, queue, and packet.",
+  "researchCheck": "Separate English and local-language queries with recorded result URLs; zero retained full polygons (maximum three), no verified safe native parcel ID plus geometry.",
+  "registryFound": true,
+  "reason": "The original DLRS response caches enumerate Bhola and its surveys, but regular-survey thana responses are empty and the Diara response lists Kanchanpur/Tazumuddin only; the tile catalog has no usable local parcel layer. Official map custody is evidenced, while Munshir Hat native parcel ID and geometry remain unverified. Empty enumeration is not citywide absence. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, and headed Details verification are not evidenced; runtime/catalog/report admission stays held."
+}

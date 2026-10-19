@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Marrakesh",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "ANCFCC lists cadastral offices in Marrakech Gueliz and Marrakech Menara, alongside local land-conservation offices. Its cartography page describes a simplified public urban plan for Marrakech, but not a parcel vector layer. The online cadastral-plan request is applicant/title-specific and includes identity/address, title number, captcha, phone/SMS and payment fields; it was inspected only as a form and not submitted.",
+  "registryEvidenceUrls": [
+    "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage",
+    "https://ancfcc.gov.ma/nos-m%C3%A9tiers/cartographie/cartographie-urbaine/",
+    "https://ancfcc.gov.ma/ProduitsCartographieAr/",
+    "https://ancfcc.gov.ma/cadastreAr/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 1742,
+  "cityId": "wup2025:1742",
+  "centerLatLon": [
+    31.6260542732618,
+    -7.98824256169077
+  ],
+  "rank": 502,
+  "queueRank": 502,
+  "population2025": 1021530,
+  "population2025k": 1021.53,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "ANCFCC provides city-specific cadastral offices and public cartographic products, but no anonymous downloadable parcel-vector layer or geometry-only schema was verified. The title-plan request requires personal/title verification and payment fields, and was not submitted.",
+  "scopeLimits": "ANCFCC lists cadastral offices in Marrakech Gueliz and Marrakech Menara, alongside local land-conservation offices. Its cartography page describes a simplified public urban plan for Marrakech, but not a parcel vector layer. The online cadastral-plan request is applicant/title-specific and includes identity/address, title number, captcha, phone/SMS and payment fields; it was inspected only as a form and not submitted. No public anonymous parcel polygons were retained; the route review is limited to the official informational/map-product sources listed.",
+  "remainingUncertainty": "The public simplified urban map is not cadastral parcel geometry. ANCFCC may provide title-linked plans to applicants, but anonymous geometry, safe parcel IDs, completeness, and public feature-service behavior remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Marrakesh Morocco official cadastre parcel map ANCFCC GIS public map",
+        "scope": "Find the local cadastre and anonymous parcel geometry route.",
+        "result": "Official ANCFCC sources identify Marrakech cadastral offices and a generalized simplified public city plan. They provide no public parcel-vector schema in the reviewed material; the cadastral-plan request requires a title-specific applicant form, which was not submitted.",
+        "actualResultUrls": [
+          "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+          "https://ancfcc.gov.ma/nos-m%C3%A9tiers/cartographie/cartographie-urbaine/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "Local-language and English-language search plus review of official pages; no private lookup."
+      },
+      {
+        "language": "French",
+        "query": "cadastre Marrakech ANCFCC agence cadastrale Marrakech plan cadastral données géographiques publiques",
+        "scope": "Rechercher les services cadastraux locaux et une voie publique anonyme pour obtenir des géométries de parcelles.",
+        "result": "Les pages officielles ANCFCC listent les services cadastraux de Marrakech-Gueliz et Menara et montrent un plan urbain simplifié grand public. La demande de plan cadastral exige des champs personnels, un titre foncier, un captcha, un téléphone/SMS et un paiement; aucun formulaire n’a été rempli ni envoyé. Aucun service géométrique public de parcelles n’a été vérifié.",
+        "actualResultUrls": [
+          "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+          "https://ancfcc.gov.ma/nos-m%C3%A9tiers/cartographie/cartographie-urbaine/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage"
+        ],
+        "executionMethod": "Local-language and English-language search plus review of official pages; no private lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+        "observation": "Official ANCFCC network page lists cadastral services in Marrakech Gueliz and Menara."
+      },
+      {
+        "url": "https://ancfcc.gov.ma/nos-m%C3%A9tiers/cartographie/cartographie-urbaine/",
+        "observation": "ANCFCC describes a generalized simplified public urban plan and shows a Marrakech excerpt at 1:15,000; it is not parcel-vector evidence."
+      },
+      {
+        "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "observation": "Public cadastral-plan request form exposes applicant identity/address, land-title number, CAPTCHA, mobile/SMS verification, and payment fields. Form not submitted; no title or applicant values used."
+      },
+      {
+        "url": "https://ancfcc.gov.ma/ProduitsCartographieAr/",
+        "observation": "Official Arabic product page lists generalized city/topographic cartographic products and local Marrakech cadastral-service contact; no open parcel layer advertised."
+      },
+      {
+        "url": "https://ancfcc.gov.ma/cadastreAr/",
+        "observation": "ANCFCC explains its statutory cadastral and land-conservation tasks, including maintaining cadastral documents and digitized updated cadastral information."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "ma-marrakesh-ancfcc-cadastre",
+    "name": "Marrakesh local land-registration and public-map source review",
+    "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+    "url": "https://ancfcc.gov.ma/pr%C3%A9sentation/r%C3%A9seau-des-blocs-fonciers/",
+    "scope": "ANCFCC lists cadastral offices in Marrakech Gueliz and Marrakech Menara, alongside local land-conservation offices. Its cartography page describes a simplified public urban plan for Marrakech, but not a parcel vector layer. The online cadastral-plan request is applicant/title-specific and includes identity/address, title number, captcha, phone/SMS and payment fields; it was inspected only as a form and not submitted. No complete public parcel geometry was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local or jurisdictional registry/survey evidence was found; no anonymous full parcel polygons were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    31.6260542732618,
+    -7.98824256169077
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "ANCFCC provides city-specific cadastral offices and public cartographic products, but no anonymous downloadable parcel-vector layer or geometry-only schema was verified. The title-plan request requires personal/title verification and payment fields, and was not submitted."
+  },
+  "rootReviewedAt": "2026-10-09T01:02:36.862973+00:00"
+}

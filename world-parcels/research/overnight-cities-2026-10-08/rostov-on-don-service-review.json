@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5012-rostov-on-don.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+  "registryAssessment": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.rostov-gorod.ru/help/index/view/33",
+      "observation": "Municipal Architecture and Urban Planning Department geoportal help page identifies the “Land plots” map and references Rosreestr cadastral services/open-data resources. This help page is legacy-dated and does not establish current data currency."
+    },
+    {
+      "url": "https://gis.rostov-gorod.ru/map/index",
+      "observation": "Anonymous GET of the city geoportal map page returned HTTP 200. Public HTML shows the city geoportal, search controls and “Land plots” map, but also presents a login/password/CAPTCHA form; no credentials or search submitted. It does not publish a vector geometry schema in the visible HTML."
+    },
+    {
+      "url": "https://rosreestr.ru/wps/portal/cc_ib_opendata",
+      "observation": "Rosreestr open-data URL is referenced by municipal help content; no current city-point response was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Rostov-on-Don official public cadastral map municipal GIS parcel data",
+      "result": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    },
+    {
+      "language": "Russian",
+      "query": "Ростов-на-Дону официальный геопортал карта земельные участки кадастровая карта Росреестр",
+      "result": "Rostov-on-Don has a city geoportal that labels a “Land plots” map and references Rosreestr cadastral resources. Anonymous map-page HTML is accessible, but it presents account login and CAPTCHA controls, and no public geometry/schema was found or queried. The municipal help page refers to legacy 2010–2016 Rosreestr services, so current parcel service availability is unresolved.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://gis.rostov-gorod.ru/map/index",
+      "method": "GET anonymous HTTPS HTML",
+      "httpStatus": 200,
+      "observation": "Municipal map page shows a “Land plots” map and search UI plus login/password/CAPTCHA form. No user query or credentials submitted; no vector schema returned in the HTML."
+    }
+  ],
+  "geometryEvidence": null,
+  "temporaryEvidence": [
+    "/tmp/overnight-cities-2026-10-08/city-5012-route-inspection.json"
+  ]
+}

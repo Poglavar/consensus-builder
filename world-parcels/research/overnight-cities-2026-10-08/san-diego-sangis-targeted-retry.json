@@ -1,0 +1,185 @@
+{
+  "checkedAt": "2026-10-08T21:44:48.038Z",
+  "bbox": [
+    -117.087,
+    32.728,
+    -117.086,
+    32.729
+  ],
+  "purpose": "Targeted retry of current failed viewport4 using the unchanged real adapter. Raw failed complete-run evidence is retained.",
+  "responses": [
+    {
+      "url": "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16/query?where=1%3D1&outFields=OBJECTID%2CPARCELID%2CSUB_TYPE&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=100&resultOffset=0&geometry=-117.087%2C32.728%2C-117.086%2C32.729&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "checkedAt": "2026-10-08T21:44:48.043Z",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 9409,
+      "jsonEncodedUtf8BodySha256": "871e4a8f953c8a689ea4ae19fde3a68f223ff2a82d9db256000e346e8e54c8a9",
+      "digestBasis": "SHA256 of JSON.stringify(response UTF-8 text), not the raw response bytes. Raw byte digest was not retained."
+    },
+    {
+      "url": "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16/query?where=PARCELID+IN+%28283055%2C283056%2C283057%2C283058%2C283061%2C283062%2C283063%2C283064%2C283065%29&outFields=OBJECTID%2CPARCELID%2CSUB_TYPE&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=100&resultOffset=0",
+      "checkedAt": "2026-10-08T21:44:51.008Z",
+      "status": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3431,
+      "jsonEncodedUtf8BodySha256": "733bc8860d5e51e986ce30957f3a99d5131a5ea42a6e292b878de76bec16a986",
+      "digestBasis": "SHA256 of JSON.stringify(response UTF-8 text), not the raw response bytes. Raw byte digest was not retained."
+    }
+  ],
+  "complete": true,
+  "featureCount": 20,
+  "features": [
+    {
+      "id": "US-CA-SANGIS-PARCEL-5152",
+      "geometrySha256": "b19387b4d0a259c1bd971945e3cccfa9bd56f2a03b5ce5a49db781c045aecd50",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283054",
+      "geometrySha256": "10283976323223655c9df97b26d83fceac3798c53a06bf5c76c898c08c9dd816",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283055",
+      "geometrySha256": "24172dbe009c7013543773ca9889496b54bf0566f9deaa70b0c1564b9282228e",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283056",
+      "geometrySha256": "9f664f2b79ab2d69c94aaba206b102148dce524d9436a0250cb00e783d9ac63b",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283057",
+      "geometrySha256": "ec27f16afd9988d0a0ac527aa5a96cee725d3c8983eeca01c493e4763052fcc5",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283058",
+      "geometrySha256": "5e5999ac7cd059c953e82ced73b27e81c5f6770e13dfcfb36fefb2882d5838d7",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283059",
+      "geometrySha256": "d1fe748c6d021c71fc7412c9016f3866bbe7244834c626cdc9c73dfaad0938de",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283060",
+      "geometrySha256": "7d97d2a6b3223aae703f552548b674393aeef0f2d9cb67955c64d6827fb3b8ff",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283061",
+      "geometrySha256": "4c43050b20dcaf1ac41cc2e31911a59b513534ee8f4b144c405f363417506611",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283062",
+      "geometrySha256": "597e05fe0aa008eafd8910734743e95544b8674b77b393a03939c3f0acf3ce9d",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283063",
+      "geometrySha256": "5bfdba66da20e278454cdd95aedd48651fe3e249b9d8251a6081a7ca43d29160",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283064",
+      "geometrySha256": "209c8df1b8aa1c3e667cc289093c1fee336a7e7c053ebcab3cf18d7f7e7087e5",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283065",
+      "geometrySha256": "99a678c40992c13e32f6fd8dd381c2bfd6474488c7bf90829e3b2278d6e801c7",
+      "matchesCurrentCache": null
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283066",
+      "geometrySha256": "de10c11a3445f6b11d995ef5f46363e366ed8d86b5ea4a2999e32d169c1377c7",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349094",
+      "geometrySha256": "4b86a8a97f95e2922fd73e0abba881d741f72a912f3cecfd65a0fb5fff0f5de4",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349095",
+      "geometrySha256": "0579a3792c18c37258822971ad10f53590da6da75e1a3b610b711ae87855d1fa",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349096",
+      "geometrySha256": "d9cb693fcab2d5fc05149a3ef5e052e9e7c42807ca73f4f766a95be03a0f6f12",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349097",
+      "geometrySha256": "7b8ea8f9d0968560cb3b82efb402954e30f8c87e6952504a0b143adab0852a00",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349098",
+      "geometrySha256": "dc79f938ac2ef141ef6547d9c78ae7c3aca9c676ba29c23850969d1b78e61939",
+      "matchesCurrentCache": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349099",
+      "geometrySha256": "cac8576ca88f5a832ce1cccf63d2db363fdadbd19762837236ea5e4bd310cc95",
+      "matchesCurrentCache": true
+    }
+  ],
+  "newIds": [
+    "US-CA-SANGIS-PARCEL-283055",
+    "US-CA-SANGIS-PARCEL-283056",
+    "US-CA-SANGIS-PARCEL-283057",
+    "US-CA-SANGIS-PARCEL-283058",
+    "US-CA-SANGIS-PARCEL-283061",
+    "US-CA-SANGIS-PARCEL-283062",
+    "US-CA-SANGIS-PARCEL-283063",
+    "US-CA-SANGIS-PARCEL-283064",
+    "US-CA-SANGIS-PARCEL-283065"
+  ],
+  "newExactIds": [
+    {
+      "id": "US-CA-SANGIS-PARCEL-283055",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283056",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283057",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283058",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283061",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283062",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283063",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283064",
+      "matched": true
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283065",
+      "matched": true
+    }
+  ],
+  "passed": true,
+  "unionCount": 129
+}

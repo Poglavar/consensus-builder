@@ -1,0 +1,89 @@
+{
+  "cityCode": 2447,
+  "queueRank": 1379,
+  "name": "Mazatlán",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "iso3": "MEX",
+  "point": [23.2431324447942, -106.405496504792],
+  "population2025": 409143,
+  "population2025k": 409.143,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The Instituto Catastral del Estado de Sinaloa (ICES) is the state cadastral custodian and publishes an official Mazatlán manzanero viewer route. The public viewer is documented as an official first-party route, but its iframe backend was unavailable during this attempt; no claim of complete current parcel coverage is made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mazatlán Mexico official GIS cadastral parcel map API cadastre parcels",
+        "result": "Found the official ICES site, official ICES Mazatlán manzanero viewer route, official Sinaloa cadastral information portal, and official Sinaloa public registry portal. No anonymous parcel geometry API was identified in the search results.",
+        "actualResultUrls": [
+          "https://ices.gob.mx/",
+          "https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/",
+          "https://pagoscatastro.sinaloa.gob.mx/InformacionCatastral",
+          "https://portalregistral.sinaloa.gob.mx/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Mazatlán Sinaloa mapa catastral oficial parcelas GIS predial",
+        "result": "Found the official ICES Mazatlán manzanero viewer route, official ICES cadastral-information portal, Sinaloa open-data page, and the official public registry portal. Search evidence confirms cadastral maps and parcel services exist, but did not expose a bounded anonymous parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/",
+          "https://pagoscatastro.sinaloa.gob.mx/InformacionCatastral",
+          "https://transparencia.sinaloa.gob.mx/p/datos-abiertos-instituto-catastral-del-estado-de-sinaloa",
+          "https://portalregistral.sinaloa.gob.mx/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://ices.gob.mx/",
+      "role": "Instituto Catastral del Estado de Sinaloa official site",
+      "observation": "HTTP 200; identifies ICES as the state cadastral institution and links cadastral information, procedures, and territorial viewer services."
+    },
+    {
+      "url": "https://www.ices.gob.mx/sistema/visor/manzanero/mazatlan/",
+      "role": "Official ICES Mazatlán manzanero viewer route",
+      "observation": "HTTP 200; page embeds the Mazatlán cadastral manzanero viewer at http://ices-oblix.sinaloa.gob.mx/visores/mazatlanmanzanero/."
+    },
+    {
+      "url": "https://pagoscatastro.sinaloa.gob.mx/InformacionCatastral",
+      "role": "Official ICES/Sinaloa cadastral information portal",
+      "observation": "HTTP 200; current JavaScript/configuration exposes a catastral-information workflow keyed by ClaveCatastral, with payment-required form endpoints; it is not an anonymous parcel geometry API."
+    },
+    {
+      "url": "https://portalregistral.sinaloa.gob.mx/",
+      "role": "Official Sinaloa public property registry portal",
+      "observation": "HTTP 200; lists the Registro Público de la Propiedad y del Comercio office for the municipality of Mazatlan."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe anonymous ID-plus-geometry response was obtained. The official Mazatlán viewer backend returned Cloudflare 522 during the request attempt, and the cadastral-information portal requires a cadastral key and payment workflow. No parcel polygon was fabricated or retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official ICES Mazatlán cadastral/manzanero viewer and Sinaloa cadastral portals.",
+    "verifiedOpenScope": "The first-party route and cadastral custodian were verified, but the live viewer data service was not available to this attempt and complete current citywide parcel coverage was not independently proven.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "sourceSchema": {
+    "nativeIdentity": "The public portal exposes ClaveCatastral as the cadastral lookup key; no parcel feature schema or stable geometry identity was available anonymously.",
+    "nativeFieldsObserved": ["ClaveCatastral"],
+    "safeFieldsRequested": ["geometry", "stable native parcel identity", "CRS", "non-personal layer/schema metadata"],
+    "unsafeFieldsNotRequested": ["owner name", "address", "contact", "titleholder", "tax/account details", "assessed values", "legal description"],
+    "crs": null,
+    "compositeKeyProvenance": null
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

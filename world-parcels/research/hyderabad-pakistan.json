@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:174",
+  "queueRank": 174,
+  "name": "Hyderabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "centerLatLon": [
+    25.3769138790746,
+    68.3544103505108
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://bor.sindh.gov.pk/geodatabase",
+      "observation": "Sindh Board of Revenue 'Geodatabase (GIS)' page loaded; it is a menu/description page with no downloadable layer or service link."
+    },
+    {
+      "url": "https://bor.sindh.gov.pk/land-administration-revenue-management-information-system-larmis",
+      "observation": "Sindh LARMIS project page (HTTP 200 HTML); describes the land records system, no open parcel endpoint."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/",
+      "observation": "Sindh Zameen (land records) portal loads without www (HTTP 200 HTML); links are record-of-rights/CNIC/name searches (personal-data queries) and a maps.aspx page; www host fails certificate name check."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Punjab PULSE LIS viewer reachable (HTTP 200) but is a Punjab system, not Sindh."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.sindhzameen.gos.pk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "TLS certificate name mismatch (not bypassed); retried on non-www host"
+    },
+    {
+      "url": "https://bor.sindh.gov.pk/geodatabase",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "HTML page only; no parcel list"
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "HTML portal; record-search links only"
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/maps.aspx",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "SSL_ERROR_SYSCALL twice; the map page could not be inspected, so unassessed"
+    },
+    {
+      "url": "https://larmis.sindh.gov.pk/ and https://gis.sindh.gov.pk/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "proxy CONNECT failed (502); unassessed"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (Hyderabad Sindh cadastral/parcels)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no parcel layers; irrelevant results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Sindh land-records portal; parcel-map coverage and public access unknown",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The Sindh Zameen maps.aspx page (the most likely parcel viewer) could not be reached, and two GIS hosts failed at the proxy, so no verdict on Hyderabad. Even if a viewer exists, an anonymous bounded polygon endpoint and reuse terms are unverified; Sindh scope would not imply Pakistan-wide coverage. Karachi research reached the same portals.",
+  "nextStep": "Retry sindhzameen.gos.pk/maps.aspx and inspect its network requests for a feature/WMS service; test a bounded Hyderabad-area query."
+}

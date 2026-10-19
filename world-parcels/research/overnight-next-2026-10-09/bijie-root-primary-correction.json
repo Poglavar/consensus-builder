@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:42:53.947141+00:00",
+  "wupCityCode": 8914,
+  "url": "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/tjsj/202511/P020251119342232763673.pdf",
+  "httpStatus": 200,
+  "curlExit": 0,
+  "bytes": 2874957,
+  "sha256": "22a0d5532db9f53397f32542e7c55f02b13cedbab3efe77a5ec270965b20336f",
+  "executionContext": "require_escalated public network",
+  "pdfExtracted": true,
+  "bijieTermCount": 14,
+  "matchingRegistrationTablePages": [
+    {
+      "pdfPageNumber": 14,
+      "tableDescription": "2024 real-estate registration operations by prefecture",
+      "bijieRow": [
+        "毕节市 756414 119838 513307 67629 63769"
+      ]
+    }
+  ],
+  "scope": "Bijie prefecture registration activity includes the city jurisdiction; not a parcel endpoint or proof of nationwide/citywide geometry coverage.",
+  "priorSourceCorrection": "The earlier cited 167-page registration guide contained no extractable Bijie reference, so it does not support the claimed city registration counter."
+}

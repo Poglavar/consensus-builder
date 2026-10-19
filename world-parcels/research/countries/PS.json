@@ -1,0 +1,54 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PS",
+ "checkedAt": "2026-09-29",
+ "country": "State of Palestine",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Palestinian Land Authority (PLA); GeoMolg national geospatial portal",
+ "portalsFound": [
+  {
+   "url": "https://www.pla.pna.ps/",
+   "observation": "HTTP 200 but only a JS anti-bot 'One moment, please' loader page was returned to curl"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geomolg.ps/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "IIS 404 page (path guessed)"
+  },
+  {
+   "url": "https://geomolg.ps/server/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "IIS 404 page (path guessed)"
+  },
+  {
+   "url": "https://www.geomolg.ps/",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "404"
+  },
+  {
+   "url": "https://www.pla.pna.ps/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "anti-bot JS loader, no content"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "subnationalServices": [],
+ "coverageAssessment": {
+  "claimedScope": "Land registration in West Bank/Gaza by PLA; online parcel service not found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "PLA site sits behind a bot challenge; GeoMolg service paths were guessed and wrong. Not a negative.",
+ "nextStep": "Find the correct GeoMolg REST root via its portal; try PLA site with a full browser."
+}

@@ -1,0 +1,53 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MU",
+ "country": "Mauritius",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Housing and Land Use Planning; Land Survey Division and Registrar General's Dept (Land Registry)",
+ "portalsFound": [
+  {
+   "url": "https://housing.govmu.org/",
+   "observation": "ministry site loads (HTTP 200); no parcel service found"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://landsurvey.govmu.org/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://landsurvey.govmu.org/Pages/Home.aspx",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://housing.govmu.org/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry site, no parcel viewer"
+  },
+  {
+   "url": "https://opendata.govmu.org/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established from this client",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Land survey host unreachable; existence of a public parcel viewer/WFS unknown.",
+ "nextStep": "Retry; look for the Mauritius Geospatial / cadastral map service."
+}

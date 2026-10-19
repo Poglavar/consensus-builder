@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T09:54:38.954835+00:00",
+  "configuredCities": 193,
+  "providers": 165,
+  "headlessValidation": {
+    "testFiles": 16,
+    "passedTests": 382,
+    "failedTests": 0,
+    "parcelSet": {
+      "files": 15,
+      "tests": 377
+    },
+    "bindingWiring": {
+      "files": 1,
+      "tests": 5,
+      "executionContext": "require_escalated for temporary local listener; initial sandbox EPERM was an execution restriction"
+    }
+  },
+  "generatedReportWarnings": [],
+  "newRuntimeCities": [
+    "orlando",
+    "dublin",
+    "riga",
+    "tallinn",
+    "vilnius",
+    "jundiai"
+  ],
+  "heldSourcesNotEnabled": [
+    "fi-inspire-cp-wfs",
+    "no-teig-gml-wfs",
+    "macapa-egl-sit-physical-lot-layer-27"
+  ],
+  "geometryRepaired": false
+}

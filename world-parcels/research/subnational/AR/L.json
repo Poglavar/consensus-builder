@@ -1,0 +1,47 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AR",
+ "regionCode": "L",
+ "regionName": "La Pampa",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR,es;q=0.9; cookie jar used; Referer = viewer origin where noted",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "IDELP (run by the Dirección General de Catastro) publishes a 'Parcelario' public map per search results; not reachable here.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://idelp.lapampa.gob.ar/public_map/2",
+   "observation": "Parcelario map per search result; connection reset from this network"
+  },
+  {
+   "url": "https://catastro.lapampa.gob.ar/",
+   "observation": "connection reset"
+  },
+  {
+   "url": "https://geonodeide.santarosa.gob.ar",
+   "observation": "IDE Santa Rosa (capital); Cloudflare 'Just a moment' challenge, not bypassed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://idelp.lapampa.gob.ar/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl 35 connection reset by peer"
+  },
+  {
+   "url": "https://geonodeide.santarosa.gob.ar/geoserver/wfs?...GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare challenge"
+  }
+ ],
+ "reuseStatus": "n/a",
+ "remainingUncertainty": "Possible geo-block or WAF on lapampa.gob.ar hosts; no service URL discovered.",
+ "nextStep": "Retry from another network; look for IDELP geoserver via IDERA node listing."
+}

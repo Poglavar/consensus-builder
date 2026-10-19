@@ -1,0 +1,54 @@
+{
+  "taskId": "city:7624",
+  "decision": "held",
+  "checkedAt": "2026-10-12T04:27:21Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-7624-aurora.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/aurora-service-review.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/aurora-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/aurora/service.json",
+    "tmp/valhalla-parcel-research/aurora/layer.json",
+    "tmp/valhalla-parcel-research/aurora/point-query.geojson"
+  ],
+  "queueIdentity": {
+    "rank": 3162,
+    "cityCode": 7624,
+    "name": "Aurora",
+    "country": "United States of America",
+    "pointLatLon": [
+      41.7519835220937,
+      -88.2925862148956
+    ],
+    "population2025Persons": 190074
+  },
+  "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "executedSearchLanguages": [
+    "English",
+    "native/local (Spanish query)"
+  ],
+  "retainedFullPolygonCount": 1,
+  "registryFound": true,
+  "acceptanceMetrics": {
+    "originalBoundedFeatureCount": 1,
+    "nativeIdField": "PIN",
+    "nativeId": "15-26-130-009",
+    "geometryMatchesRetainedSample": true,
+    "sampleMetricValidity": true,
+    "sampleMetricAreaM2": 885.6694558309675,
+    "singleSampleOverlap": "not_applicable"
+  },
+  "qualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityOverlap": "one_sample_valid_only",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "First-party City of Aurora layer metadata and original bounded response show one full polygon with native PIN 15-26-130-009 at the exact WUP point. Independent fresh native-ID adapter reads, forced paging, 13 bounded cells, collection-wide metric GEOS validity/overlap checks, source binding, and headed Details-panel verification are absent, so the city is not admitted.",
+  "admission": "not_admitted",
+  "citywideAbsenceClaim": null
+}

@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-7354-oak-ridge.json",
+  "cityCode": 7354,
+  "queueRank": 1618,
+  "name": "Oak Ridge",
+  "attempt": 2,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "sourceReview": "Orange County Property Appraiser is the local county cadastral custodian. Its official Dynamic_Parcels/MapServer/3 Parcels_Poly layer is anonymous-queryable and returned three bounded polygons near the WUP point.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official Orange County GIS/property-appraiser directory and parcel service found.",
+    "localLanguageDiscovery": "Completed as a separate English wording because English is the United States local/native research language.",
+    "exactPoint": [28.5351266228199, -81.450928862174],
+    "bboxLonLat": [-81.455, 28.532, -81.447, 28.538],
+    "exactPointReturned": 0,
+    "boundedReturned": 3,
+    "ids": ["292231000000015", "292231000000012", "292231000000008"],
+    "geometry": "Polygon, query output EPSG:4326; native service CRS WKID 102658/latestWkid 2236",
+    "mapExtentOrPointMiss": true,
+    "pointMissInterpretation": "Exact point miss is not evidence of citywide absence."
+  },
+  "requestOutcomes": "County directory, service metadata, layer schema, exact-point query, and bounded envelope query completed. Metadata and queries returned HTTP 200. Full unchanged bounded response is ignored scratch evidence under tmp/valhalla-parcel-research/7354/extent-query.json; exact-point response is under tmp/valhalla-parcel-research/7354/point-query.json.",
+  "safeFieldAllowlist": ["PARCEL", "OBJECTID", "geometry"],
+  "nativeFieldMapping": {"id": "PARCEL", "sourceObjectId": "OBJECTID", "geometry": "SHAPE"},
+  "compositeKeyProvenance": null,
+  "retainedSample": "oak-ridge-parcel-samples.geojson",
+  "scopeLimits": [
+    "Three nearby polygons establish a local public response only; they do not prove citywide completeness.",
+    "Exact WUP point returned zero features; no absence conclusion is drawn.",
+    "Schema includes owner, address, legal/tax/value, and other unsafe fields; none were requested or retained.",
+    "The service's legal survey status, refresh cadence, and adapter behavior were not independently qualified.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about parcel absence outside the tested envelope, ownership, address, title, tax records, legal survey accuracy, or service completeness.",
+  "runtimeReadiness": "held_serial_review"
+}

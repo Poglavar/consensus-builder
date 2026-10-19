@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Manual headed Chrome verification of the three newly configured city entries and rendered report. No browser test suite was run.",
+  "checkedAt": "2026-10-08T16:11:06.889522+00:00",
+  "previewFrontend": "http://localhost:5638/",
+  "previewGateway": "http://127.0.0.1:5640",
+  "gatewayMode": "Actual repository parcel gateway; other GET requests forwarded to the existing local API. No mutation routes forwarded.",
+  "cityChecks": [
+    {
+      "cityId": "gaborone",
+      "renderedParcelLayers": 118,
+      "selectedParcelId": "gaborone:bofinet:1078~28229",
+      "realMouseSelectionPassed": true,
+      "sourceId": "gaborone-bofinet-plots-provisional",
+      "runtimePageSize": 100,
+      "pageErrors": []
+    },
+    {
+      "cityId": "bloemfontein",
+      "renderedParcelLayers": 62,
+      "selectedParcelId": "za-mangaung-sgcode:F00300030002472200001",
+      "realMouseSelectionPassed": true,
+      "sourceId": "za-mangaung-cadastre-2025",
+      "pageErrors": []
+    },
+    {
+      "cityId": "pretoria",
+      "renderedParcelLayers": 130,
+      "selectedParcelId": "tshwane:lis-key:002001140/1",
+      "realMouseSelectionPassed": true,
+      "detailsPanelOpened": true,
+      "sourceId": "za-tshwane-registered-parcels",
+      "observedStatus": "Registered",
+      "pageErrors": []
+    }
+  ],
+  "reportCheck": {
+    "url": "http://localhost:5638/parcel-coverage-report.html#cities",
+    "search": "Gaborone",
+    "visibleResult": "1 of 510 rows; checked 2026-10-08, registry found, parcel sample verified, configured in the app",
+    "pageErrors": []
+  },
+  "browserClosed": true,
+  "unrelatedBrowserSessionsPreserved": true,
+  "limits": "This checks actual rendered parcels and selection, not citywide geographic completeness, legal status or an exhaustive browser workflow."
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:37:18Z",
+  "purpose": "Record a single sequential retry of the public Norway Teig endpoint before attempting the bounded Oslo runtime qualification.",
+  "endpoint": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig",
+  "request": "GET GetCapabilities (WFS 2.0.0)",
+  "attempts": 1,
+  "concurrency": 1,
+  "transport": "curl",
+  "result": {
+    "httpStatus": null,
+    "curlHttpCode": "000",
+    "bytesReceived": 0,
+    "curlExitCode": 6,
+    "error": "Could not resolve host: wfs.geonorge.no",
+    "responseBodyReceived": false
+  },
+  "qualification": {
+    "thirteenCellOsloQueryRun": false,
+    "freshNativeIdReadbacksRun": false,
+    "fullFootprintBindingRun": false,
+    "polygonsPersisted": 0,
+    "reason": "DNS resolution failed before an HTTP connection. No query result or parcel absence can be inferred from this transport failure."
+  },
+  "priorEvidence": "Norway-teig-wfs-identity-protocol.json records earlier successful bounded protocol checks; this retry neither updates nor supersedes those observations."
+}

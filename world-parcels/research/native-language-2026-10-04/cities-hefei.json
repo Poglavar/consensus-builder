@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 87,
+  "city": "Hefei",
+  "countryCode": "CN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/hefei.json",
+  "query": {
+    "language": "Chinese (Simplified)",
+    "script": "Han",
+    "text": "合肥 不动产 地籍图 宗地 GIS 数据 开放 查询"
+  },
+  "results": [
+    {
+      "title": "Hefei real-property online query service",
+      "url": "https://union.china.com.cn/zhuanti/txt/2020-11/10/content_41354923.html",
+      "kind": "officially-attributed-service",
+      "note": "Reports authenticated “face” access for the owner and address-based lookup for others to see parcel area/use and cadastral maps; not open parcel vector feed."
+    },
+    {
+      "title": "Anhui one-network real-property registration service",
+      "url": "https://www.ahjx.gov.cn/OpennessContent/show/2567500.html",
+      "kind": "official-service"
+    }
+  ],
+  "assessment": "Chinese-language search found property map lookups but they are query-oriented and authenticated. No open parcel geometry endpoint was verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

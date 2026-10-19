@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-11684-haimen.json",
+  "cohort": "overnight-next-1501-1600",
+  "purpose": "Review official Haimen cadastral/registration custodian and public geographic-information channels for safe anonymous parcel geometry and stable parcel identity.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Haimen Natural Resources and Planning Bureau and the official Haimen real-estate registration service are evidenced local registry/cadastral custodians. Official material also documents cadastral-survey database construction and provincial data submission, but no current safe anonymous parcel vector response, native identity, CRS, or geometry was qualified.",
+  "registryAssessment": "Official Haimen government search results identify the local Natural Resources and Planning Bureau and registration-service workflow. A bureau work summary reports cadastral-survey results being databased and submitted to the provincial department. This establishes local registry/cadastral custody, not open parcel-vector access.",
+  "officialPrimarySources": [
+    {"url": "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html", "operator": "Haimen Natural Resources and Planning Bureau", "scope": "Official bureau organization/function index; direct request returned 403."},
+    {"url": "https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html", "operator": "Haimen Natural Resources and Planning Bureau / Haimen government", "scope": "Official real-estate registration appointment guide identified in search results; direct request returned 403."},
+    {"url": "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html", "operator": "Haimen Natural Resources Bureau", "scope": "Official work summary identified cadastral-survey databasing and provincial submission; direct request returned 403."},
+    {"url": "https://www.haimen.gov.cn/hmsgtj/zcwj/zcwj.html", "operator": "Haimen Natural Resources Bureau", "scope": "Official policy index; direct request returned 403."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Haimen China official cadastral map parcel service natural resources bureau 海门 不动产登记 地籍图 官方", "result": "Official Haimen bureau, registration-service, cadastral-survey, and planning results found; no safe anonymous polygon verified.", "actualResultUrls": ["https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html", "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html", "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html", "https://www.haimen.gov.cn/hmsgtj/gzgh/content/e29f385b-8af9-4175-9f5d-53048c521ba4.html"]},
+    {"language": "Chinese", "query": "海门区 自然资源和规划局 不动产登记 地籍 地图 官方", "result": "检索到官方自然资源局、登记预约指南及权籍调查建库信息；未验证安全匿名宗地要素响应。", "actualResultUrls": ["https://www.haimen.gov.cn/hmsrmzf/dwzsk/content/58b1527b-2766-4159-95a1-fd83ec962511.html", "https://www.haimen.gov.cn/hmsgtj/jhzj/content/62ae5074-5455-47ea-9542-891af7b0b86c.html", "https://www.haimen.gov.cn/hmsgtj/zcwj/zcwj.html"]}
+  ],
+  "attempts": [
+    "Ran separate English and Chinese first-party discovery searches and recorded the actual result URLs.",
+    "Requested the official Haimen registration guide anonymously with TLS verification; the site edge returned HTTP 403, while indexed content confirmed local registration workflow.",
+    "Requested the official Haimen bureau organization/function, policy-index, and cadastral-work-summary pages anonymously with TLS verification; each returned HTTP 403 in the direct request.",
+    "Requested the national Tianditu map host; HTTP 418 edge response, no parcel response.",
+    "Requested Jiangsu Tianditu root and Nantong node anonymously; both returned HTML shells with no parcel schema or geometry.",
+    "Requested the national geographic-information resource catalog; HTTP 502 edge failure, no Haimen parcel resource response.",
+    "No exact-point parcel feature query completed; no login, credentials, CAPTCHA/Cloudflare bypass, private token, owner/address/titleholder/tax/contact field, or unsafe attribute was requested.",
+    "Did not shift the exact WUP point and did not infer citywide absence from site refusal, portal-shell responses, or lack of a public feature response."
+  ],
+  "safeFieldAllowlist": ["safe parcel/native ID if publicly returned", "geometry", "geometry CRS", "layer/service metadata", "HTTP status and response size"],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No exact-point parcel feature query completed; official pages were refused and public Tianditu hosts exposed no safe anonymous parcel endpoint.", "requestEvidence": [{"url": "https://www.haimen.gov.cn/hmsgtj/jgzn/jgzn.html", "method": "GET", "httpStatus": 403, "result": "Official bureau page refused; no parcel geometry."}, {"url": "https://jiangsu.tianditu.gov.cn/nantong/", "method": "GET", "httpStatus": 200, "result": "Public node shell; no parcel geometry."}, {"url": "https://map.tianditu.gov.cn/", "method": "GET", "httpStatus": 418, "result": "Edge response; no parcel geometry."}]},
+  "coverageAssessment": {"claimedScope": "Official local custodian search results, official Haimen pages, and bounded anonymous public Tianditu requests reviewed.", "verifiedOpenScope": "Registry custodian and cadastral-survey/database activity evidenced; parcel geometry, native identity, CRS, and schema unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "nextStep": "Serial reviewer may re-check only a public anonymous network flow and qualify safe ID plus geometry if actually returned; preserve held runtime state.",
+  "remainingUncertainty": "No safe anonymous parcel polygon/native ID was returned; bounded inspection does not prove cadastral absence or citywide noncoverage.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "packet:7715",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7715-jhelum.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/jhelum-service-review.json",
+    "tmp/valhalla-parcel-research/jhelum/cadastral-service.json",
+    "tmp/valhalla-parcel-research/jhelum/cadastral-0.json",
+    "tmp/valhalla-parcel-research/jhelum/lis.html",
+    "tmp/valhalla-parcel-research/jhelum/qc.html"
+  ],
+  "checkedAt": "2026-10-09T11:57:37Z",
+  "reason": "Held. Queue code 7715, rank 1213, Pakistan, point and 457793 persons match the packet; English and Urdu searches are recorded. Local municipal map and revenue context support the existing custody claim. The original ArcGIS service and layer bodies both say 499 Token Required; the cached PULSE parcel route uses a bearer token. No anonymous full polygon, safe native ID, forced paging, thirteen cells, metric GEOS check, source binding or headed Details verification exists. The access wall is not evidence of citywide absence."
+}

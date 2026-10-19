@@ -1,0 +1,24 @@
+{
+  "cityRecord": "city-10695-vadalur.json",
+  "cityCode": 10695,
+  "queueRank": 2126,
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "service": "Tamil Nadu Government land-record / TamilNilam cadastral map services",
+  "serviceUrl": "https://tamilnilam.tn.gov.in/citizen",
+  "registryFound": true,
+  "publicParcelGeometryFound": false,
+  "requestOutcome": "Official discovery and bounded anonymous requests were recorded. TNGLMS loaded and exposed cadastral/FMB scope but its portal requires sign-in and captcha for the visible account route. TamilNilam, Integrated Land Records, TNGIS, and the Vadalur municipal map routes timed out or were not usable anonymously. No parcel geometry or native parcel identity was invented or retained.",
+  "safeFieldAllowlist": ["stable native parcel identity if publicly exposed", "full parcel polygon geometry if publicly exposed", "geometry CRS/service metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "sample": null,
+  "scopeLimits": [
+    "Exact WUP point [11.5658174591014,79.5798416182261] was preserved but not used to infer absence.",
+    "No login, captcha bypass, credentials, private tokens, or unsafe land-record fields were used.",
+    "No citywide coverage or current API schema/CRS was verified.",
+    "Packet completion is not source integration/admission."
+  ],
+  "runtimeReadiness": "held_pending_serial_review",
+  "uncertainty": "A serial reviewer should recheck anonymous access to TamilNilam/TNGLMS and any current public map configuration before adapter qualification."
+}

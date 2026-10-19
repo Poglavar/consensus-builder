@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 7718,
+  "queueRank": 1805,
+  "cityId": "queue:1805",
+  "name": "Qili",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [33.0893841330136, 107.022826514111],
+  "centerLatLon": [33.0893841330136, 107.022826514111],
+  "population2025": 318490,
+  "population2025k": 318.49,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qili China cadastral parcel map official natural resources 107.022826 33.089384",
+        "result": "Results identified the official Hanzhong Natural Resources Bureau, Hanzhong real-estate registration center, Hantai District government administrative page, and the national geographic-information catalog. No Qili anonymous parcel ID-plus-geometry service was exposed.",
+        "actualResultUrls": [
+          "https://gtj.hanzhong.gov.cn/hzzrzyj/gzdt/202604/aa0b8f2a618540d58df992afa22e9816.shtml",
+          "https://www.hzbdcdj.com/V320-147.html",
+          "https://www.htq.gov.cn/hzshtqzf/zjht/xzqh/202201/69130f96457b464c80a82a6601234f00.shtml",
+          "https://www.webmap.cn/main.do?method=index1"
+        ]
+      },
+      {
+        "language": "native/local (Simplified Chinese)",
+        "query": "七里街道 不动产登记 地籍图 汉中 汉台区 官方",
+        "result": "First-party results identify 七里 as an administrative area of Hantai District and identify Hanzhong Natural Resources Bureau / Hanzhong Real Estate Registration Center as the relevant city-level custody and registration bodies. Public search results and bounded requests did not reveal an anonymous parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.htq.gov.cn/hzshtqzf/zjht/xzqh/202201/69130f96457b464c80a82a6601234f00.shtml",
+          "https://www.hzbdcdj.com/V320-147.html",
+          "https://gtj.hanzhong.gov.cn/hzzrzyj/gzdt/202107/a79e216a9b1a4923878b2da541138877.shtml",
+          "https://gtj.hanzhong.gov.cn/hzzrzyj/rdjy/xxgk_gknb_list.shtml"
+        ]
+      }
+    ],
+    "searchedAt": "2026-10-10",
+    "method": "Web discovery followed by TLS-verified bounded GETs with browser-like User-Agent and Accept headers; no credentials, private tokens, login, CAPTCHA/Cloudflare bypass, or TLS disablement."
+  },
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://gtj.hanzhong.gov.cn/hzzrzyj/gzdt/202604/aa0b8f2a618540d58df992afa22e9816.shtml",
+      "observation": "Official Hanzhong Natural Resources Bureau report describes citywide real-estate registration work, cadastral-data quality and data aggregation, establishing the natural-resources custodian but not an open parcel API."
+    },
+    {
+      "url": "https://www.hzbdcdj.com/V320-147.html",
+      "observation": "Official Hanzhong Real Estate Registration and Transactions Service Center page identifies the registration center and describes a visualization query service; the public page does not expose an anonymous downloadable parcel feature response."
+    },
+    {
+      "url": "https://www.htq.gov.cn/hzshtqzf/zjht/xzqh/202201/69130f96457b464c80a82a6601234f00.shtml",
+      "observation": "Official Hantai District government administrative-division page lists 七里 among Hantai's subdistricts/towns and provides district geographic context."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "observation": "Official national geographic-information resource catalog loaded, but inspected content exposed general catalog/map resources rather than a Qili/Hanzhong cadastral parcel layer or anonymous geometry endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gtj.hanzhong.gov.cn/hzzrzyj/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official Natural Resources Bureau homepage returned HTML; no parcel viewer configuration or public feature endpoint identified in the bounded response."
+    },
+    {
+      "url": "https://www.hzbdcdj.com/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official registration-center homepage returned HTML; no anonymous safe ID-plus-geometry API response identified."
+    },
+    {
+      "url": "https://www.htq.gov.cn/hzshtqzf/zjht/xzqh/202201/69130f96457b464c80a82a6601234f00.shtml",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Official administrative-division page returned HTML and supports Qili/Hantai locality; it is not a cadastral geometry service."
+    },
+    {
+      "url": "https://www.webmap.cn/main.do?method=index1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "National catalog page returned HTML; no Qili parcel endpoint or schema was exposed in the inspected response."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html",
+      "assessment": "CloudWAF interception; no challenge defeat or retry bypass attempted. Not evidence of cadastral absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Qili (七里) locality within Hantai District, Hanzhong, under Hanzhong natural-resources and real-estate registration administration.",
+    "verifiedOpenScope": "Local administrative and registration custodian evidence only; no anonymous parcel geometry scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The current public viewer/API route, access controls, parcel schema, CRS, stable native parcel identity, update currency and citywide coverage remain unresolved. The exact WUP point was preserved and never shifted; no exact-point hit or miss inference was made. Official registration-center statements about visualization are not a public vector geometry response.",
+  "nextStep": "A later attempt may inspect an officially exposed Hanzhong/Shaanxi map viewer if one becomes discoverable and test only a bounded anonymous ID-plus-geometry query; do not infer absence from the unavailable viewer/API or WAF response."
+}

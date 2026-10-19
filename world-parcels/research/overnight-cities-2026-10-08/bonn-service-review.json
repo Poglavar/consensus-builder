@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1477-bonn.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The WUP point is a settlement centroid, not parcel identity. The Bonn cadastre is city-wide, and NRW publishes an ALKIS parcel INSPIRE-WFS. Official metadata identifies AX_Flurstueck multipolygon data and EPSG:25832/EPSG:4258 download options. Direct network access from the shell failed DNS, and the web fetch rejected XML content type, so no schema response or point-bounded polygon was fetched. No sample retained and no runtime-enabled claim. No building or administrative-boundary layer used; no owner/address data retained.",
+  "registryAssessment": "The City of Bonn states that its Liegenschaftskataster covers the entire municipal area and that parcel/building records are maintained in ALKIS. The official NRW INSPIRE-WFS catalog identifies the state download service for ALKIS cadastral parcels; official NRW metadata describes AX_Flurstueck as multipolygon data. Service identity and CRS are documented, but no actual point-bounded geometry response was fetched in this environment, so no sample or runtime-ready claim is made.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.bonn.de/themen-entdecken/planen-bauen/liegenschaftskataster.php?loc=de",
+      "observation": "Official City of Bonn page says the digital Liegenschaftskataster covers all Bonn and ALKIS maintains parcel and building records."
+    },
+    {
+      "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?REQUEST=GetCapabilities&SERVICE=WFS",
+      "observation": "Official NRW WFS endpoint/catalog URL for INSPIRE ALKIS cadastral parcels. Direct GetCapabilities fetch was blocked by this environment's XML content-type handling."
+    },
+    {
+      "url": "https://www.gdi.nrw/system/files/media/document/file/inspire_kommunale-betroffenheit-nrw_2021_v-3-0_0.pdf",
+      "observation": "Official GDI-NRW report identifies AX_Flurstueck (multipolygons) as ALKIS parcel data and lists the INSPIRE WFS."
+    },
+    {
+      "url": "https://www.distributions.informationgrid.eu/trefferanzeige?docuuid=6ee0316c-fff3-4c04-89c1-3aa2b453f95a&q=inspire-cp&service_type=service_type_download",
+      "observation": "Catalog record points to the official NRW INSPIRE-WFS and documents full downloads in EPSG:25832 and EPSG:4258, with Datenlizenz Deutschland Zero."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bonn Germany official cadastral parcel ALKIS WFS parcel geometry Bonn Geoportal",
+      "result": "Official City of Bonn confirms full municipal ALKIS coverage. NRW state INSPIRE WFS is the candidate parcel download service; direct capabilities/geometry request could not be inspected here.",
+      "urls": [
+        "https://www.bonn.de/themen-entdecken/planen-bauen/liegenschaftskataster.php?loc=de",
+        "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?REQUEST=GetCapabilities&SERVICE=WFS",
+        "https://www.gdi.nrw/system/files/media/document/file/inspire_kommunale-betroffenheit-nrw_2021_v-3-0_0.pdf",
+        "https://www.distributions.informationgrid.eu/trefferanzeige?docuuid=6ee0316c-fff3-4c04-89c1-3aa2b453f95a&q=inspire-cp&service_type=service_type_download"
+      ],
+      "scope": "Find official city-local registry/cadastre evidence and inspect public geometry-only routes without personal/property-specific queries."
+    },
+    {
+      "language": "German",
+      "query": "Bonn Liegenschaftskataster Flurstücke ALKIS WFS Katasterparzellen Geodaten",
+      "result": "Official city page confirms city-wide digital cadastre and ALKIS; official NRW catalog identifies cadastral parcel WFS, multipolygon source data and declared CRS. No actual feature query response verified.",
+      "urls": [
+        "https://www.bonn.de/themen-entdecken/planen-bauen/liegenschaftskataster.php?loc=de",
+        "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis?REQUEST=GetCapabilities&SERVICE=WFS",
+        "https://www.gdi.nrw/system/files/media/document/file/inspire_kommunale-betroffenheit-nrw_2021_v-3-0_0.pdf",
+        "https://www.distributions.informationgrid.eu/trefferanzeige?docuuid=6ee0316c-fff3-4c04-89c1-3aa2b453f95a&q=inspire-cp&service_type=service_type_download"
+      ],
+      "scope": "Find official city-local registry/cadastre evidence and inspect public geometry-only routes without personal/property-specific queries."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "privacy": "No parcel-specific lookup or geometry request was made; no owner/address/identity attributes, credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "rootRuntimeAssessment": {
+    "schemaVersion": 1,
+    "checkedAt": "2026-10-09T02:41:49.525472+00:00",
+    "decision": "approved_by_root",
+    "scope": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified.",
+    "acceptanceFile": "bonn-nrw-root-acceptance.json",
+    "qualityFile": "bonn-nrw-root-quality.json",
+    "sourceCoordinatesModified": false
+  }
+}

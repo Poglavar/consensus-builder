@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:06:11.643251+00:00",
+  "rawResponseSha256": "d48b36453bd768dfd0d6bec561e8a79bc46fe9242e6938879114c0ba84242c67",
+  "rawResponseCrs": "EPSG:25832",
+  "rawFeatures": [
+    {
+      "nationalCadastralReference": "020302___01391______",
+      "polygonPatches": 1,
+      "circularArcs": 0,
+      "interiorRings": 0
+    },
+    {
+      "nationalCadastralReference": "020302___02581______",
+      "polygonPatches": 1,
+      "circularArcs": 11,
+      "interiorRings": 0
+    },
+    {
+      "nationalCadastralReference": "020302___00717______",
+      "polygonPatches": 1,
+      "circularArcs": 1,
+      "interiorRings": 0
+    }
+  ],
+  "geometryAvailabilityVerified": true,
+  "conversionAssessment": "Earlier converter concatenated posList coordinates without respecting Ring/Curve/Arc structure. Circular arc control points are not straight polygon vertices; independent GEOS validity did not establish conversion fidelity. Earlier converted sample is unsuitable for runtime or geometry-accuracy claims.",
+  "retention": "Original raw GML and invalidated derived sample preserved outside repository; no full converted polygon sample retained in repository pending faithful provider output.",
+  "currentRuntimeEnabled": false,
+  "invalidatedDerivedSampleSha256": "5636fbac0083001c5cf020a99795ea5332d7edd60ed75861ee0050938faf5234"
+}

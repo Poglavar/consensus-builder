@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-10-10T19:53:04.801550Z",
+  "tokenEndpoint": "https://lis.pulse.gop.pk/api/gis/token",
+  "tokenHttpStatus": 200,
+  "tokenAvailable": true,
+  "layerUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/27",
+  "layerMetadata": {
+    "httpStatus": 200,
+    "errorCode": null,
+    "name": "Rahim Yar Khan",
+    "geometryType": "esriGeometryPolygon",
+    "objectIdField": null,
+    "spatialReference": null,
+    "responseSha256": "1eed972f6a8d774c92eb1fe8ba4c4b6684424ea8274d47b40ac56fb4b7a0df99"
+  },
+  "pointQuery": {
+    "httpStatus": 200,
+    "errorCode": null,
+    "featureCount": 0,
+    "responseSha256": "ed778c73ea51338d6576fb5992b189f2b94d9f3d5e199f46c1af520d6b0b3e6c"
+  },
+  "boundedQuery": {
+    "httpStatus": 200,
+    "errorCode": null,
+    "featureCount": 3,
+    "ids": [
+      "4624001",
+      "4624002",
+      "4624003"
+    ],
+    "exceededTransferLimit": true,
+    "responseSha256": "bced6442d09a70742b9b35fda369dc9cd70226dadd4684f537f6817601d657a5"
+  },
+  "sampleVerification": {
+    "sourceFeatureCount": 3,
+    "sampleFeatureCount": 3,
+    "checks": [
+      {
+        "id": "4624001",
+        "sameId": true,
+        "exactCoordinateMatch": true,
+        "isValid": true,
+        "areaPositive": true,
+        "safeProperties": true
+      },
+      {
+        "id": "4624002",
+        "sameId": true,
+        "exactCoordinateMatch": true,
+        "isValid": true,
+        "areaPositive": true,
+        "safeProperties": true
+      },
+      {
+        "id": "4624003",
+        "sameId": true,
+        "exactCoordinateMatch": true,
+        "isValid": true,
+        "areaPositive": true,
+        "safeProperties": true
+      }
+    ]
+  }
+}

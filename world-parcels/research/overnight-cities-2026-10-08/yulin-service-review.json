@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10684-yulin.json",
+  "purpose": "Local registry and public parcel-geometry source review. Queries were separated by English and local language. No owner, address, tax, or private property fields were queried or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Guangxi Natural Resources reporting states Yulin Natural Resources Bureau convened the 2024 citywide rural real-estate registration meeting and directed registration database work. Guangxi’s official registered-property “map inquiry” service requires identity authentication and can return parcel/building attributes; this was not accessed. The National Geo-information Portal is an official map platform, but no anonymous Yulin parcel geometry schema or response was verified. No full polygon was returned; geometry presence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml",
+      "observation": "Official Guangxi Natural Resources reporting states Yulin Natural Resources Bureau convened the 2024 citywide rural real-estate registration meeting and directed registration database work. Guangxi’s official registered-property “map inquiry” service requires identity authentication and can return parcel/building attributes; this was not accessed. The National Geo-information Portal is an official map platform, but no anonymous Yulin parcel geometry schema or response was verified."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Yulin Guangxi China official cadastral parcel map land registry GIS natural resources bureau"
+    },
+    {
+      "language": "Chinese",
+      "query": "玉林市 不动产登记中心 地籍图 官方 玉林自然资源局"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "Trace and inspect a public feature-service schema before any geometry request; restrict any future query to stable safe IDs and geometry."
+}

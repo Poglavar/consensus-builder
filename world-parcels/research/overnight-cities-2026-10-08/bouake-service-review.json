@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2990-bouake.json",
+  "purpose": "Document exact city-scope official registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Côte d’Ivoire’s national DGI cadastre directorate documents two decentralized cadastre offices in Bouaké; the official municipality also lists land/domain services. No safe anonymous parcel geometry route was found.",
+  "registryAssessment": "The DGI Cadastre Directorate’s official organizational material lists two decentralized cadastre services in Bouaké and describes cadastral functions and parcel data responsibilities. The municipality separately lists a land/domain service. This confirms local cadastral administration, not open geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/DCAD_MISSIONS_ORGANISATIONS.pdf",
+      "observation": "DGI Cadastre Directorate material describes its cadastre services and lists two decentralized services in Bouaké. It does not expose a public vector parcel endpoint."
+    },
+    {
+      "url": "https://www.dgi.gouv.ci/",
+      "observation": "Official DGI site links E-Cadastre; no anonymous full-geometry public route was verified."
+    },
+    {
+      "url": "https://www.mairiedebouake.ci/services",
+      "observation": "Official Bouaké municipal service page lists municipal land/domain services, a separate local workflow."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bouaké Côte d’Ivoire official land registry cadastral parcel map public GIS",
+      "result": "The official municipality lists a land/domain service and land-permit workflows. No open full parcel geometry route was verified.",
+      "method": "Separate English-language official-source-focused search."
+    },
+    {
+      "language": "French",
+      "query": "Bouaké Côte d’Ivoire cadastre foncier urbain service domanial mairie parcelle carte officielle",
+      "result": "Official DGI material identifies two local cadastral services in Bouaké and E-Cadastre; no anonymous full polygon route was exposed.",
+      "method": "Separate local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The DGI confirms local cadastre offices and links E-Cadastre, but reviewed public pages do not document an anonymous full-geometry endpoint or safe native parcel schema."
+  },
+  "privacy": "No parcel/owner/address/tax-account lookup or login was made. No geometry or private attributes retained.",
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "The DGI confirms local cadastre offices and links E-Cadastre, but reviewed public pages do not document an anonymous full-geometry endpoint or safe native parcel schema."
+  }
+}

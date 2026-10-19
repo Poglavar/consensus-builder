@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10253,
+  "queueRank": 3247,
+  "name": "Meja Road",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "point": [25.2495777305352, 82.120636943648],
+  "population2025": 186137,
+  "population2025k": 186.137,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Meja Road Uttar Pradesh official cadastral parcel map GIS Bhulekh BhuNaksha",
+        "result": "First-party discovery identified the Government of Uttar Pradesh BhuNaksha viewer, UP Bhulekh land-record portal, the Board of Revenue page describing village maps and plot-boundary services, and the state GIS portal. The current BhuNaksha application exposed anonymous level, map-extent, and plot lookup endpoints.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/bhulekh/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://stategisportal.nic.in/stategisportal/Home/State/9"
+        ]
+      },
+      {
+        "language": "Hindi (native/local-language discovery)",
+        "query": "मेजा रोड उत्तर प्रदेश सरकारी भू नक्शा भूलेख",
+        "result": "Hindi first-party discovery identified the same official UP Bhulekh/BhuNaksha and Board of Revenue services. The live official selector returned प्रयागराज district, मेजा tehsil, and मेजा खास village labels/codes; no parcel geometry was returned for the selected village.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/",
+          "https://upbhulekh.gov.in/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Board of Revenue, Government of Uttar Pradesh, with the state BhuNaksha/land-record service and Prayagraj district revenue hierarchy",
+    "scope": "The official state cadastral viewer exposed the Prayagraj district (175), Meja tehsil (00894), and Meja Khas village (163270) administrative path. This evidences a state/local revenue-map custodian, not open citywide parcel completeness.",
+    "evidenceUrls": [
+      "https://upbhunaksha.gov.in/",
+      "https://upbhulekh.gov.in/bhulekh/",
+      "https://bor.up.nic.in/?search_key=HOMECENTER"
+    ]
+  },
+  "officialSources": [
+    {"url": "https://upbhunaksha.gov.in/", "publisher": "Board of Revenue, Government of Uttar Pradesh", "observation": "Live official cadastral viewer; current HTML and JavaScript exposed District/Tehsil/Village selectors and anonymous map/plot service routes."},
+    {"url": "https://upbhulekh.gov.in/bhulekh/", "publisher": "Board of Revenue, Government of Uttar Pradesh", "observation": "Official Uttar Pradesh land-record computerization portal."},
+    {"url": "https://bor.up.nic.in/?search_key=HOMECENTER", "publisher": "Board of Revenue, Government of Uttar Pradesh", "observation": "Official service page listing revenue-village maps and plot-boundary (Bhu-Naksha/Shajra) services."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://upbhunaksha.gov.in/", "httpStatus": 200, "outcome": "TLS-verified live viewer HTML retrieved; current JS bundle main-76RVRF3Z.js and BhuNaksha API base https://upbhunaksha.gov.in/bhunakshaserver observed."},
+    {"method": "GET", "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/vsrLevelCount", "httpStatus": 200, "outcome": "Returned 3 selector levels."},
+    {"method": "GET", "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/mapLevelCount", "httpStatus": 200, "outcome": "Returned 0 additional map levels."},
+    {"method": "GET", "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels", "httpStatus": 200, "outcome": "Returned District, Tehsil, Village labels."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "payload": {"level": 1, "codes": ""}, "httpStatus": 200, "outcome": "Returned district list including Prayagraj code 175."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "payload": {"level": 2, "codes": "175"}, "httpStatus": 200, "outcome": "Returned Meja tehsil code 00894."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue", "payload": {"level": 3, "codes": "175,00894"}, "httpStatus": 200, "outcome": "Returned Meja Khas village code 163270 with hasData false, and many other Meja-tehsil villages."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "payload": {"gisLevels": "175,00894,163270"}, "httpStatus": 200, "outcome": "Returned attribution for Meja Khas and gisCode 17500894163270, but xmin/ymin/xmax/ymax were all 0.0; no CRS or parcel geometry."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getPlotByPlotNo", "payload": {"giscode": "17500894163270", "plotno": "1"}, "httpStatus": 200, "outcome": "Returned an empty JSON object; no parcel ID, geometry, schema, or CRS."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "payload": {"gisLevels": "175,00894,163265"}, "httpStatus": 200, "outcome": "Control check for neighboring Mejia village also returned zero extent; not treated as citywide absence."},
+    {"method": "POST", "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref", "payload": {"gisLevels": "175,00894,163328"}, "httpStatus": 200, "outcome": "Control check for Unchdih returned a non-zero extent with CRS EPSG:32644, confirming the route can expose map metadata when source data is available; no parcel geometry requested or retained from this control village."}
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Government of Uttar Pradesh BhuNaksha",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {"canonicalId": "Not observed in a parcel response", "safeGeometry": "Current viewer references map extent, plot lookup, and plot-info routes, but Meja Khas returned no parcel response"},
+    "compositeKeyProvenance": "Administrative selector codes 175/00894/163270 and gisCode 17500894163270 were observed as routing values only; no parcel identity was returned and no synthetic identity was assigned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh state BhuNaksha service with district, tehsil, and village cadastral selectors.",
+    "verifiedOpenScope": "Prayagraj district, Meja tehsil, and Meja Khas village selection metadata was returned; a neighboring control village returned a non-zero EPSG:32644 extent, while Meja Khas itself returned zero extent and no parcel response.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "exactPointParcelSample": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "uncertainty": [
+    "The WUP point is in latitude/longitude order and was preserved exactly; it was not shifted and was not used as an absence test.",
+    "Meja Khas was identified administratively, but its current public map extent is zero and plot lookup returned empty JSON; this may reflect unavailable or unpopulated map data, not citywide parcel absence.",
+    "The viewer exposes plot-info routes in JavaScript, but no safe parcel ID-plus-geometry response was available without a valid plot response; no owner, address, contact, titleholder, tax, account, or other unsafe fields were requested.",
+    "No login, credentials, CAPTCHA/Cloudflare bypass, private token, or TLS exception was used.",
+    "No citywide coverage or adapter qualification was performed; packet completion is not source integration or admission."
+  ],
+  "doNotInfer": ["A zero exact-point hit, map extent miss, HTTP empty response, or unusable UI is not evidence of citywide absence.", "Administrative selector metadata is not a parcel sample.", "Packet completion is not source integration or admission."],
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

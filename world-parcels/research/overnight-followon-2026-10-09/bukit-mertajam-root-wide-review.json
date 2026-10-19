@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-09T06:03:28.101Z",
+  "purpose": "Supplementary topology coverage of all accepted full geometry encountered in grid and selected-parcel footprint queries; every native ID freshly reread. No geometry changes or unrelated attributes retained.",
+  "gridFeatureCount": 18,
+  "selectedParcelId": "MY-PENANG-0701060001295",
+  "footprintFeatureCount": 7,
+  "unionFeatureCount": 19,
+  "freshExactIdCount": 19,
+  "allFreshGeometryHashesMatch": true,
+  "absentIds": [],
+  "requests": [
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.42734947849806%2C5.375808645455128%2C100.4284273918614%2C5.3768042909218545&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "11"
+    },
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.42734947849806%2C5.375808645455128%2C100.4284273918614%2C5.3768042909218545&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "90"
+    },
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10806%2C10807%2C10808%2C89482%2C89483%2C89484%2C89486%2C182616",
+      "httpStatus": 200,
+      "bytesDeclared": "4244"
+    },
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=UPI+IN+%28%2707010600010028%27%2C%2707010600010029%27%2C%27070106000123%27%2C%27070106000124%27%2C%27070106000126%27%2C%27070106000127%27%2C%270701060001294%27%2C%270701060001295%27%2C%270701060001313%27%2C%270701060001324%27%2C%27070106000133%27%2C%27070106000218%27%2C%270701060003760%27%2C%270701060003763%27%2C%270701060003764%27%2C%270701060003765%27%2C%270701060003766%27%2C%270701060003836%27%2C%270701060004287%27%29&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "12"
+    },
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=UPI+IN+%28%2707010600010028%27%2C%2707010600010029%27%2C%27070106000123%27%2C%27070106000124%27%2C%27070106000126%27%2C%27070106000127%27%2C%270701060001294%27%2C%270701060001295%27%2C%270701060001313%27%2C%270701060001324%27%2C%27070106000133%27%2C%27070106000218%27%2C%270701060003760%27%2C%270701060003763%27%2C%270701060003764%27%2C%270701060003765%27%2C%270701060003766%27%2C%270701060003836%27%2C%270701060004287%27%29&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "165"
+    },
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10793%2C10805%2C10806%2C10807%2C10808%2C89482%2C89483%2C89484%2C89486%2C182616%2C211786%2C211787%2C211788%2C233018%2C233337%2C233687%2C244430%2C262027%2C330428",
+      "httpStatus": 200,
+      "bytesDeclared": "12713"
+    }
+  ]
+}

@@ -1,0 +1,352 @@
+{
+ "scope": "Candlestick Point (CP) only, 2024 Modified Project Variant; HPS2 values excluded",
+ "residential": {
+  "homes_units": {
+   "value": 7218,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "also": {
+    "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+    "pdf_page": 14,
+    "printed_page": 8,
+    "section": "I.B.2 elements unchanged: \"Allow up to 7,218 residential units\""
+   }
+  },
+  "affordable_units": {
+   "value": 2472,
+   "document": "OCII project overview, https://sfocii.org/projects/hunters-point-shipyard-candlestick-point-2/overview (research/ocii/ocii_overview.html)",
+   "table": "CP-HPS Phase 2 Development Program, row \"Affordable Housing\", Candlestick Point column",
+   "note": "Not stated in Addendum 7; OCII states 31% of all 10,672 CP-HPS2 units (3,348) are affordable"
+  },
+  "density_ranges_units_per_acre": {
+   "Residential Density I": [
+    15,
+    75
+   ],
+   "Residential Density II": [
+    50,
+    125
+   ],
+   "Residential Density III": [
+    100,
+    175
+   ],
+   "Residential Density IV": [
+    175,
+    285
+   ],
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 21,
+   "printed_page": 15,
+   "figure": "Figure 3 legend, 2024 Modified Project Variant Land Use Plan",
+   "also": "same ranges in the Candlestick legend of DDA Exhibit A Development Plan (May 2025)"
+  }
+ },
+ "non_residential_gsf": {
+  "office_rd": {
+   "value": 2800000,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "note": "+2,050,000 sf transferred from HPS2 vs the 2019 variant (Add7 PDF p.15, Table 4 PDF p.19)"
+  },
+  "retail_total": {
+   "value": 304500,
+   "components": {
+    "regional_retail": 170000,
+    "neighborhood_retail": 134500
+   },
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "also": {
+    "document": "OCII project overview, https://sfocii.org/projects/hunters-point-shipyard-candlestick-point-2/overview (research/ocii/ocii_overview.html)",
+    "row": "Retail and Maker Space: 304,500 square feet"
+   }
+  },
+  "hotel": {
+   "value_gsf": 130000,
+   "rooms": 220,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "also": {
+    "document": "OCII commercial page, https://sfocii.org/projects/hunters-point-shipyard-candlestick-point-2/commercial (cites the 2024 DDA amendment)",
+    "row": "Hotel 130,000 sf (220 rooms)"
+   }
+  },
+  "community_use": {
+   "value": 50000,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)"
+  },
+  "arts_and_entertainment": {
+   "value": 69000,
+   "components": {
+    "film_arts_center_gsf": 64000,
+    "film_arts_center_seats": 1200,
+    "performance_venue_gsf": 5000,
+    "performance_venue_seats": 4400
+   },
+   "document": "OCII project overview, https://sfocii.org/projects/hunters-point-shipyard-candlestick-point-2/overview (research/ocii/ocii_overview.html)",
+   "row": "Arts and Entertainment Space: 69,000 square feet",
+   "components_source": {
+    "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+    "pdf_page": 16,
+    "printed_page": 10,
+    "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)"
+   },
+   "note": "Addendum 7 lists the two components separately (64,000 + 5,000 sf); the \"69,000\" on Add7 PDF p.19 is unrelated (2010 stadium seats)."
+  },
+  "total_gsf_excluding_residential": {
+   "value": 3353500,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "row": "Gross-Square-Foot Total"
+  }
+ },
+ "parking_spaces": {
+  "total": {
+   "value": 14191,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "components": {
+    "residential_structured": 7218,
+    "commercial_structured": 5613,
+    "on_street": 1360
+   },
+   "also": {
+    "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+    "pdf_page": 24,
+    "printed_page": 18,
+    "table": "Table 5 Maximum Allowed Parking Supply: on-street 1,360 + off-street 12,831 = 14,191"
+   },
+   "note": "Table 3 footnote d: estimate based on Transportation Plan ratios"
+  }
+ },
+ "parks_and_open_space_acres": {
+  "total": {
+   "value": 105.7,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "components": {
+    "new_parks": 9.0,
+    "new_sports_fields_active_recreation": 0.0,
+    "state_parkland": 96.7
+   },
+   "note": "State parkland = Candlestick Point State Recreation Area (existing park, improved by the project)"
+  },
+  "other_parks_not_counted": {
+   "value": 7.1,
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 16,
+   "printed_page": 10,
+   "table": "Table 3, 2024 Modified Project Variant Development Scenario (CP column)",
+   "note": "street landscaping, hillside landscaping, habitat; not creditable parkland"
+  }
+ },
+ "building_heights": {
+  "height_zones_2019_ft": {
+   "values": [
+    40,
+    65,
+    80,
+    85,
+    120
+   ],
+   "special": "40 ft if park, 65 ft if development parcel",
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 22,
+   "printed_page": 16,
+   "figure": "Figure 4 legend, Approved 2019 CP Maximum Building Heights",
+   "also": {
+    "document": "Candlestick Point Design for Development, 2024 amendment compilation (downloads/official/CP_D4D_2024_Amendment.pdf)",
+    "pdf_page": 147,
+    "figure": "Figure 4.3 Building Heights legend (40/65/80/85/120 ft)"
+   }
+  },
+  "height_zones_2024_ft": {
+   "values": [
+    40,
+    65,
+    80,
+    85,
+    120,
+    160,
+    180
+   ],
+   "special": "40 ft if park, 65 ft if development parcel",
+   "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+   "pdf_page": 23,
+   "printed_page": 17,
+   "figure": "Figure 5 legend, Proposed 2024 CP Maximum Building Heights",
+   "text": {
+    "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+    "pdf_page": 14,
+    "table": "Table 2: up to 180 ft at specified parcels along Arelious Walker Drive; 85-160 ft for the rest of Candlestick Center (prior 85-120 ft)"
+   }
+  },
+  "towers": {
+   "document": "Candlestick Point Design for Development, 2024 amendment compilation (downloads/official/CP_D4D_2024_Amendment.pdf)",
+   "pdf_page": 146,
+   "printed_page": 84,
+   "table": "Table 4.2 Maximum High-rise Podium Heights and Building Heights",
+   "locations": {
+    "document": "Candlestick Point Design for Development, 2024 amendment compilation (downloads/official/CP_D4D_2024_Amendment.pdf)",
+    "pdf_page": 147,
+    "figure": "Figure 4.3 (letters A-K)"
+   },
+   "max_overall_height_ft": {
+    "A": 220,
+    "B": 240,
+    "C": 220,
+    "D": 320,
+    "E": 170,
+    "F": 320,
+    "G": 240,
+    "H": 320,
+    "I": 420,
+    "J": 370,
+    "K": 320
+   },
+   "max_podium_height_ft": {
+    "A": 65,
+    "B": 65,
+    "C": 65,
+    "D": "65 fronting Gilman / 85 fronting Harney",
+    "E": 65,
+    "F": 85,
+    "G": 65,
+    "H": 65,
+    "I": 65,
+    "J": 65,
+    "K": 65
+   },
+   "footnote": "E and F: \"Pending the adoption of findings per planning code Section 295\"",
+   "approved_2019_table": {
+    "document": "FEIR Addendum 7 to the CP-HPS2 2010 FEIR, Aug 2024 (downloads/official/FEIR_Addendum7_2024.pdf)",
+    "pdf_page": 22,
+    "figure": "Figure 4 tower table (2019 lettering A-L, G \"Removed from CP-02\")",
+    "stories": {
+     "A": 22,
+     "B": 24,
+     "C": 22,
+     "D": 32,
+     "E": 17,
+     "F": 32,
+     "H": 24,
+     "I": 32,
+     "J": 42,
+     "K": 37,
+     "L": 32
+    },
+    "height_ft": {
+     "A": 220,
+     "B": 240,
+     "C": 220,
+     "D": 320,
+     "E": 170,
+     "F": 320,
+     "H": 240,
+     "I": 320,
+     "J": 420,
+     "K": 370,
+     "L": 320
+    },
+    "height_with_rooftop_mechanical_ft": {
+     "A": 242,
+     "B": 264,
+     "C": 242,
+     "D": 352,
+     "E": 187,
+     "F": 352,
+     "H": 264,
+     "I": 352,
+     "J": 462,
+     "K": 407,
+     "L": 352
+    },
+    "letter_mapping_to_d4d": "by symbol position: 2019 A-F = D4D A-F; 2019 H,I,J,K,L = D4D G,H,I,J,K (identical locations and heights)"
+   }
+  },
+  "innovation_district_parcels_ft": {
+   "values": {
+    "A": 180,
+    "B": 180,
+    "D": 180,
+    "E": 180,
+    "F": 160,
+    "G": 160,
+    "I": 160,
+    "J": 160,
+    "L": 160,
+    "C": 120,
+    "H": 120,
+    "K": 120,
+    "M": 85,
+    "N": 85
+   },
+   "document": "Candlestick Point Design for Development, 2024 amendment compilation (downloads/official/CP_D4D_2024_Amendment.pdf)",
+   "pdf_page": 38,
+   "figure": "Figure A5.3N Building Height Block Area Map (raster); heights by colour class = Add7 Fig 5 legend",
+   "signature_buildings": {
+    "parcels": [
+     "A",
+     "F",
+     "M",
+     "N"
+    ],
+    "pdf_page": 40,
+    "section": "A5.3.6 C Signature Buildings"
+   },
+   "coverage_above_90_ft": {
+    "office_rd_commercial": "85% of developable area (90-180 ft)",
+    "hotel_residential": "65% of developable area (90-180 ft)",
+    "pdf_page": 39,
+    "section": "A5.3.6 A Block Coverage"
+   }
+  }
+ },
+ "development_block_areas_acres": {
+  "Alice Griffith": {
+   "total": 19.02,
+   "pdf_page": 278,
+   "table": "Table 7.1"
+  },
+  "Candlestick North": {
+   "total": 31.35,
+   "pdf_page": 280,
+   "table": "Table 7.2"
+  },
+  "Candlestick Center": {
+   "total": 22.29,
+   "pdf_page": 282,
+   "table": "Table 7.3"
+  },
+  "Candlestick South": {
+   "total": 23.9,
+   "pdf_page": 284,
+   "table": "Table 7.4"
+  },
+  "document": "Candlestick Point Design for Development, 2024 amendment compilation (downloads/official/CP_D4D_2024_Amendment.pdf)",
+  "note": "Totals exclude open space and streets; per-block values are in blocks.geojson (area_acres_table)"
+ },
+ "site_area": {
+  "zone1_boundary_acres_computed": 271.0,
+  "document": "DataSF Former Redevelopment Project Areas, \"Bayview Hunters Point Area B Zone 1\"",
+  "ocii_text": "approximately 272-acre Candlestick Point area (OCII overview)"
+ }
+}

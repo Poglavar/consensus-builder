@@ -1,0 +1,29 @@
+{
+  "taskId": "city:5765",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-5765-texcoco-de-mora.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/texcoco-de-mora-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/provenance.json"
+  ],
+  "checkedAt": "2026-10-11T15:56:28Z",
+  "reason": "The municipal Catastro page and service catalogue evidence local cadastral custody; the San Bernardino embedded map is not a Texcoco parcel source. No bounded anonymous safe native-ID polygon response or adapter qualification is evidenced. Public geometry remains unresolved rather than proven absent.",
+  "custodyFinding": "true; first-party cadastral custodian evidence; geometry discovery and citywide coverage assessed separately",
+  "firstPartyUrls": [
+    "https://www.texcocoedomex.gob.mx/Catastro.html",
+    "https://texcoco.gob.mx/REMTYS.html"
+  ],
+  "qualification": {
+    "directExactNativeIdRead": false,
+    "freshAdapterNativeIdReads": false,
+    "fullPolygonsRetained": 0,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "runtimeAdmitted": false
+}

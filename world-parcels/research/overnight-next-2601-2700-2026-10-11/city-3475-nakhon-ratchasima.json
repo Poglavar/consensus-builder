@@ -1,0 +1,43 @@
+{
+  "cityCode": 3475,
+  "queueRank": 2688,
+  "name": "Nakhon Ratchasima",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "point": [14.9718372259703, 102.089263308796],
+  "population2025": 219863,
+  "population2025k": 219.863,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Thailand official cadastral parcel map Nakhon Ratchasima Department of Lands map service",
+        "result": "First-party discovery identified the Department of Lands cadastral-map center and the official Nakhon Ratchasima Provincial Land Office. The center advertises LandsMaps, the national cadastral parcel-search service; the local office page links LandsMaps and identifies the provincial land office as the local custodian. The LandsMaps host did not complete an anonymous HTTPS request in this environment.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/landmap/home/",
+          "https://www.dol.go.th/nakhonratchasima/home/",
+          "https://landsmaps.dol.go.th/",
+          "https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer"
+        ]
+      },
+      {
+        "language": "Thai",
+        "query": "แผนที่โฉนดที่ดิน นครราชสีมา กรมที่ดิน ระบบแผนที่",
+        "result": "Thai-language first-party discovery identified the Department of Lands cadastral-map center and the Nakhon Ratchasima Provincial Land Office. The local office page lists ค้นหารูปแปลงที่ดิน (LandsMaps) among public services. An official LDD ArcGIS service was reachable anonymously and exposes a point layer for land-parcel locations, but the bounded query at the required WUP point returned no feature and the layer is not a full parcel-polygon source.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/landmap/home/",
+          "https://www.dol.go.th/nakhonratchasima/home/",
+          "https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer",
+          "https://eis.ldd.go.th/ArcGIS/rest/services/LDD_PLM_WM/FeatureServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "The Nakhon Ratchasima Provincial Land Office is a local registry/cadastre custodian evidenced by its official Department of Lands page, which links the public LandsMaps parcel-search service and provides the office identity. The Department of Lands cadastral-map center and LDD national map service are national sources. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held",
+  "serviceReview": "nakhon-ratchasima-service-review.json",
+  "sampleGeoJSON": null
+}

@@ -1,0 +1,3219 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded identity and geometry acceptance of the public Mangaung Cadastre_2025 ArcGIS layer through the existing arcgis-source adapter. This is a proposal only; no source catalogue/runtime files are changed.",
+  "checkedAt": "2026-10-08T15:15:27.944Z",
+  "researchCityId": "capital:ZA:bloemfontein",
+  "sourceId": "za-mangaung-cadastre-2025",
+  "descriptor": {
+    "id": "za-mangaung-cadastre-2025",
+    "endpoint": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11",
+    "idField": "SG_CODE",
+    "idType": "string",
+    "idPrefix": "za-mangaung-sgcode:",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "SG_CODE",
+      "PARCEL_NR"
+    ],
+    "parcelNumberField": "PARCEL_NR",
+    "pageSize": 10,
+    "idBatchSize": 10,
+    "maxFeatures": 2500,
+    "maxBboxKm2": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "center": [
+    -29.118,
+    26.214
+  ],
+  "gridDegrees": 0.001,
+  "alignedCellCount": 9,
+  "panCellCount": 8,
+  "tests": [
+    {
+      "name": "aligned-0",
+      "passed": true,
+      "elapsedMs": 2012,
+      "bbox": [
+        26.212,
+        -29.119,
+        26.213,
+        -29.118
+      ],
+      "featureCount": 3,
+      "complete": true,
+      "uniqueIds": 3,
+      "sourceRows": 3
+    },
+    {
+      "name": "aligned-1",
+      "passed": true,
+      "elapsedMs": 1387,
+      "bbox": [
+        26.213,
+        -29.119,
+        26.214,
+        -29.118
+      ],
+      "featureCount": 7,
+      "complete": true,
+      "uniqueIds": 7,
+      "sourceRows": 7
+    },
+    {
+      "name": "aligned-2",
+      "passed": true,
+      "elapsedMs": 1678,
+      "bbox": [
+        26.214,
+        -29.119,
+        26.215,
+        -29.118
+      ],
+      "featureCount": 4,
+      "complete": true,
+      "uniqueIds": 4,
+      "sourceRows": 4
+    },
+    {
+      "name": "aligned-3",
+      "passed": true,
+      "elapsedMs": 1130,
+      "bbox": [
+        26.212,
+        -29.118,
+        26.213,
+        -29.117
+      ],
+      "featureCount": 10,
+      "complete": true,
+      "uniqueIds": 10,
+      "sourceRows": 10
+    },
+    {
+      "name": "aligned-4",
+      "passed": true,
+      "elapsedMs": 1001,
+      "bbox": [
+        26.213,
+        -29.118,
+        26.214,
+        -29.117
+      ],
+      "featureCount": 7,
+      "complete": true,
+      "uniqueIds": 7,
+      "sourceRows": 7
+    },
+    {
+      "name": "aligned-5",
+      "passed": true,
+      "elapsedMs": 1225,
+      "bbox": [
+        26.214,
+        -29.118,
+        26.215,
+        -29.117
+      ],
+      "featureCount": 4,
+      "complete": true,
+      "uniqueIds": 4,
+      "sourceRows": 4
+    },
+    {
+      "name": "aligned-6",
+      "passed": true,
+      "elapsedMs": 985,
+      "bbox": [
+        26.212,
+        -29.117,
+        26.213,
+        -29.116
+      ],
+      "featureCount": 5,
+      "complete": true,
+      "uniqueIds": 5,
+      "sourceRows": 5
+    },
+    {
+      "name": "aligned-7",
+      "passed": true,
+      "elapsedMs": 898,
+      "bbox": [
+        26.213,
+        -29.117,
+        26.214,
+        -29.116
+      ],
+      "featureCount": 3,
+      "complete": true,
+      "uniqueIds": 3,
+      "sourceRows": 3
+    },
+    {
+      "name": "aligned-8",
+      "passed": true,
+      "elapsedMs": 934,
+      "bbox": [
+        26.214,
+        -29.117,
+        26.215,
+        -29.116
+      ],
+      "featureCount": 2,
+      "complete": true,
+      "uniqueIds": 2,
+      "sourceRows": 2
+    },
+    {
+      "name": "pan-0",
+      "passed": true,
+      "elapsedMs": 967,
+      "bbox": [
+        26.211,
+        -29.118,
+        26.212,
+        -29.117
+      ],
+      "featureCount": 9,
+      "complete": true,
+      "uniqueIds": 9,
+      "sourceRows": 9
+    },
+    {
+      "name": "pan-1",
+      "passed": true,
+      "elapsedMs": 1000,
+      "bbox": [
+        26.215,
+        -29.118,
+        26.216,
+        -29.117
+      ],
+      "featureCount": 6,
+      "complete": true,
+      "uniqueIds": 6,
+      "sourceRows": 6
+    },
+    {
+      "name": "pan-2",
+      "passed": true,
+      "elapsedMs": 1137,
+      "bbox": [
+        26.213,
+        -29.12,
+        26.214,
+        -29.119
+      ],
+      "featureCount": 9,
+      "complete": true,
+      "uniqueIds": 9,
+      "sourceRows": 9
+    },
+    {
+      "name": "pan-3",
+      "passed": true,
+      "elapsedMs": 991,
+      "bbox": [
+        26.213,
+        -29.116,
+        26.214,
+        -29.115
+      ],
+      "featureCount": 2,
+      "complete": true,
+      "uniqueIds": 2,
+      "sourceRows": 2
+    },
+    {
+      "name": "pan-4",
+      "passed": true,
+      "elapsedMs": 958,
+      "bbox": [
+        26.211,
+        -29.12,
+        26.212,
+        -29.119
+      ],
+      "featureCount": 3,
+      "complete": true,
+      "uniqueIds": 3,
+      "sourceRows": 3
+    },
+    {
+      "name": "pan-5",
+      "passed": true,
+      "elapsedMs": 1113,
+      "bbox": [
+        26.211,
+        -29.116,
+        26.212,
+        -29.115
+      ],
+      "featureCount": 4,
+      "complete": true,
+      "uniqueIds": 4,
+      "sourceRows": 4
+    },
+    {
+      "name": "pan-6",
+      "passed": true,
+      "elapsedMs": 1041,
+      "bbox": [
+        26.215,
+        -29.12,
+        26.216,
+        -29.119
+      ],
+      "featureCount": 3,
+      "complete": true,
+      "uniqueIds": 3,
+      "sourceRows": 3
+    },
+    {
+      "name": "pan-7",
+      "passed": true,
+      "elapsedMs": 859,
+      "bbox": [
+        26.215,
+        -29.116,
+        26.216,
+        -29.115
+      ],
+      "featureCount": 9,
+      "complete": true,
+      "uniqueIds": 9,
+      "sourceRows": 9
+    },
+    {
+      "name": "identity-audit",
+      "passed": true,
+      "elapsedMs": 1,
+      "distinctObjectIds": 53,
+      "adapterRetainedNativeIds": 53,
+      "missingSG_CODE": 0,
+      "missingPARCEL_NR": 0,
+      "duplicateSG_CODEGroups": [],
+      "duplicateSG_CODEGroupCount": 0,
+      "uniquePARCEL_NRCount": 52,
+      "uniqueSG_CODECount": 53
+    },
+    {
+      "name": "exact-fresh-0",
+      "passed": true,
+      "elapsedMs": 11362,
+      "freshAdapterInstance": true,
+      "count": 20,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "za-mangaung-sgcode:F00300030002479700000",
+        "za-mangaung-sgcode:F00300030002479600000",
+        "za-mangaung-sgcode:F00300030002479700001",
+        "za-mangaung-sgcode:F00300030002479800000",
+        "za-mangaung-sgcode:F00300030002507200000",
+        "za-mangaung-sgcode:F00300030003710300000",
+        "za-mangaung-sgcode:F00300030002472200001",
+        "za-mangaung-sgcode:F00300030002472200002",
+        "za-mangaung-sgcode:F00300030000482300000",
+        "za-mangaung-sgcode:F00300030000759500000",
+        "za-mangaung-sgcode:F00300030000229000001",
+        "za-mangaung-sgcode:F00300030000229000000",
+        "za-mangaung-sgcode:F00300000000065400090",
+        "za-mangaung-sgcode:F00300030000213200000",
+        "za-mangaung-sgcode:F00300030000213000000",
+        "za-mangaung-sgcode:F00300030002504400000",
+        "za-mangaung-sgcode:F00300030000382300000",
+        "za-mangaung-sgcode:F00300030000326400000",
+        "za-mangaung-sgcode:F00300030000212900000",
+        "za-mangaung-sgcode:F00300030002489000000"
+      ]
+    },
+    {
+      "name": "exact-fresh-20",
+      "passed": true,
+      "elapsedMs": 2874,
+      "freshAdapterInstance": true,
+      "count": 20,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "za-mangaung-sgcode:F00300030000074400000",
+        "za-mangaung-sgcode:F00300030001404700000",
+        "za-mangaung-sgcode:F00300030000192800000",
+        "za-mangaung-sgcode:F00300030002479700006",
+        "za-mangaung-sgcode:F00300030000325100003",
+        "za-mangaung-sgcode:F00300030000292400000",
+        "za-mangaung-sgcode:F00300030002640800002",
+        "za-mangaung-sgcode:F00300030004061900000",
+        "za-mangaung-sgcode:F00300030002489200000",
+        "za-mangaung-sgcode:F00300030002489100000",
+        "za-mangaung-sgcode:F00300030000074700000",
+        "za-mangaung-sgcode:F00300030000322800000",
+        "za-mangaung-sgcode:F00300030002479700008",
+        "za-mangaung-sgcode:F00300030000194200003",
+        "za-mangaung-sgcode:F00300030002479700004",
+        "za-mangaung-sgcode:F00300030002664200000",
+        "za-mangaung-sgcode:F00300030002479700007",
+        "za-mangaung-sgcode:F00300030002472200003",
+        "za-mangaung-sgcode:F00300030001573500000",
+        "za-mangaung-sgcode:F00300030000325600000"
+      ]
+    },
+    {
+      "name": "exact-fresh-40",
+      "passed": true,
+      "elapsedMs": 3578,
+      "freshAdapterInstance": true,
+      "count": 13,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "za-mangaung-sgcode:F00300030002479700003",
+        "za-mangaung-sgcode:F00300030002640800021",
+        "za-mangaung-sgcode:F00300030002640800023",
+        "za-mangaung-sgcode:F00300030002640800024",
+        "za-mangaung-sgcode:F00300030000191700001",
+        "za-mangaung-sgcode:F00300030000073800000",
+        "za-mangaung-sgcode:F00300030000073800001",
+        "za-mangaung-sgcode:F00300030000073500000",
+        "za-mangaung-sgcode:F00300030000072900001",
+        "za-mangaung-sgcode:F00300030002488300001",
+        "za-mangaung-sgcode:F00300030002488300000",
+        "za-mangaung-sgcode:F00300030000072600000",
+        "za-mangaung-sgcode:F00300030002488500000"
+      ]
+    },
+    {
+      "name": "forced-small-pages",
+      "passed": true,
+      "elapsedMs": 1831,
+      "bbox": [
+        26.213,
+        -29.119,
+        26.214,
+        -29.118
+      ],
+      "count": 7,
+      "pageSize": 3,
+      "complete": true,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "genuine-absence",
+      "passed": true,
+      "elapsedMs": 999,
+      "freshAdapterInstance": true,
+      "absentId": "za-mangaung-sgcode:F00300030000213000001",
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1003,
+      "count": 5,
+      "parcelId": "za-mangaung-sgcode:F00300030002479700000",
+      "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d",
+      "complete": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 950,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "sampledParcelId": "za-mangaung-sgcode:F00300030002479700000",
+      "siteM2": 17125.51
+    }
+  ],
+  "requests": [
+    {
+      "requestIndex": 0,
+      "checkedAt": "2026-10-08T15:15:27.946Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.212%2C-29.119%2C26.213%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 1282,
+      "count": 3
+    },
+    {
+      "requestIndex": 1,
+      "checkedAt": "2026-10-08T15:15:29.230Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.212%2C-29.119%2C26.213%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 67,
+      "elapsedMs": 387,
+      "objectIds": [
+        172769,
+        172845,
+        190396
+      ]
+    },
+    {
+      "requestIndex": 2,
+      "checkedAt": "2026-10-08T15:15:29.617Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172769%2C172845%2C190396",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2109,
+      "elapsedMs": 339,
+      "featureCount": 3,
+      "features": [
+        {
+          "objectId": 172769,
+          "sgCode": "F00300030002479700000",
+          "parcelNr": "24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+        },
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        },
+        {
+          "objectId": 190396,
+          "sgCode": "F00300030002479700001",
+          "parcelNr": "1/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+        }
+      ]
+    },
+    {
+      "requestIndex": 3,
+      "checkedAt": "2026-10-08T15:15:29.958Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.119%2C26.214%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 322,
+      "count": 7
+    },
+    {
+      "requestIndex": 4,
+      "checkedAt": "2026-10-08T15:15:30.281Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.119%2C26.214%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 95,
+      "elapsedMs": 645,
+      "objectIds": [
+        172727,
+        172769,
+        172845,
+        172870,
+        176258,
+        190396,
+        203613
+      ]
+    },
+    {
+      "requestIndex": 5,
+      "checkedAt": "2026-10-08T15:15:30.927Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172727%2C172769%2C172845%2C172870%2C176258%2C190396%2C203613",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4140,
+      "elapsedMs": 416,
+      "featureCount": 7,
+      "features": [
+        {
+          "objectId": 172727,
+          "sgCode": "F00300030002479800000",
+          "parcelNr": "24798",
+          "geometryType": "Polygon",
+          "geometrySha256": "74f94606b0c0d8548dd0904eeac83441d30ad8c3225837e4b918959173cafcd1"
+        },
+        {
+          "objectId": 172769,
+          "sgCode": "F00300030002479700000",
+          "parcelNr": "24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+        },
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        },
+        {
+          "objectId": 172870,
+          "sgCode": "F00300030002507200000",
+          "parcelNr": "25072",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+        },
+        {
+          "objectId": 176258,
+          "sgCode": "F00300030003710300000",
+          "parcelNr": "37103",
+          "geometryType": "Polygon",
+          "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+        },
+        {
+          "objectId": 190396,
+          "sgCode": "F00300030002479700001",
+          "parcelNr": "1/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+        },
+        {
+          "objectId": 203613,
+          "sgCode": "F00300030002472200001",
+          "parcelNr": "1/24722",
+          "geometryType": "Polygon",
+          "geometrySha256": "46c0d8ecbd2520a86f42592eab238b46f541824c10416750770557d68fc48592"
+        }
+      ]
+    },
+    {
+      "requestIndex": 6,
+      "checkedAt": "2026-10-08T15:15:31.346Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.214%2C-29.119%2C26.215%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 812,
+      "count": 4
+    },
+    {
+      "requestIndex": 7,
+      "checkedAt": "2026-10-08T15:15:32.158Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.214%2C-29.119%2C26.215%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 74,
+      "elapsedMs": 312,
+      "objectIds": [
+        172652,
+        172727,
+        172870,
+        176258
+      ]
+    },
+    {
+      "requestIndex": 8,
+      "checkedAt": "2026-10-08T15:15:32.471Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172652%2C172727%2C172870%2C176258",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2275,
+      "elapsedMs": 549,
+      "featureCount": 4,
+      "features": [
+        {
+          "objectId": 172652,
+          "sgCode": "F00300030002472200002",
+          "parcelNr": "2/24722",
+          "geometryType": "Polygon",
+          "geometrySha256": "18f5ad53dfc29d140ca359316be11d0569345b8802c60f785735079632c8c096"
+        },
+        {
+          "objectId": 172727,
+          "sgCode": "F00300030002479800000",
+          "parcelNr": "24798",
+          "geometryType": "Polygon",
+          "geometrySha256": "74f94606b0c0d8548dd0904eeac83441d30ad8c3225837e4b918959173cafcd1"
+        },
+        {
+          "objectId": 172870,
+          "sgCode": "F00300030002507200000",
+          "parcelNr": "25072",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+        },
+        {
+          "objectId": 176258,
+          "sgCode": "F00300030003710300000",
+          "parcelNr": "37103",
+          "geometryType": "Polygon",
+          "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+        }
+      ]
+    },
+    {
+      "requestIndex": 9,
+      "checkedAt": "2026-10-08T15:15:33.025Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.212%2C-29.118%2C26.213%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12,
+      "elapsedMs": 371,
+      "count": 10
+    },
+    {
+      "requestIndex": 10,
+      "checkedAt": "2026-10-08T15:15:33.397Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.212%2C-29.118%2C26.213%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 116,
+      "elapsedMs": 339,
+      "objectIds": [
+        172845,
+        172897,
+        172985,
+        173084,
+        173089,
+        215028,
+        231358,
+        231360,
+        231361,
+        231815
+      ]
+    },
+    {
+      "requestIndex": 11,
+      "checkedAt": "2026-10-08T15:15:33.738Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172845%2C172897%2C172985%2C173084%2C173089%2C215028%2C231358%2C231360%2C231361%2C231815",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4544,
+      "elapsedMs": 406,
+      "featureCount": 10,
+      "features": [
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        },
+        {
+          "objectId": 172897,
+          "sgCode": "F00300030000482300000",
+          "parcelNr": "4823",
+          "geometryType": "Polygon",
+          "geometrySha256": "19dd3f2c3be8ad10f12adf53f6f6be6fd467ca614b5d4626001ba69254312949"
+        },
+        {
+          "objectId": 172985,
+          "sgCode": "F00300030000759500000",
+          "parcelNr": "7595",
+          "geometryType": "Polygon",
+          "geometrySha256": "c93447b07441c7cc04db4c6944886f9ae44d5cd71a3fee6fc664fe3242142e18"
+        },
+        {
+          "objectId": 173084,
+          "sgCode": "F00300030000229000001",
+          "parcelNr": "1/2290",
+          "geometryType": "Polygon",
+          "geometrySha256": "8d33fc56895bddb9c754cdaa57c307c94be2b06e2dec3ee586f2a0908e16bafe"
+        },
+        {
+          "objectId": 173089,
+          "sgCode": "F00300030000229000000",
+          "parcelNr": "2290",
+          "geometryType": "Polygon",
+          "geometrySha256": "3aa7ba1babdba93d7ef57f3823dca4201eba454c4ee534f77439bc8d47b08e7f"
+        },
+        {
+          "objectId": 215028,
+          "sgCode": "F00300000000065400090",
+          "parcelNr": "90/654",
+          "geometryType": "Polygon",
+          "geometrySha256": "f00a356203e83ae8de9ab9af0aaad187d09d92eadc8b7cf6ca96b854efbbbd72"
+        },
+        {
+          "objectId": 231358,
+          "sgCode": "F00300030000213200000",
+          "parcelNr": "2132",
+          "geometryType": "Polygon",
+          "geometrySha256": "f2ee55f758d939ff3050f89b16ba2ed895da3772ed68700356da892cdd6b70f4"
+        },
+        {
+          "objectId": 231360,
+          "sgCode": "F00300030000213000000",
+          "parcelNr": "2130",
+          "geometryType": "Polygon",
+          "geometrySha256": "ac089b81c483e7188e3fb938c54dc31f45636f68097e0994bfb5193594280eb4"
+        },
+        {
+          "objectId": 231361,
+          "sgCode": "F00300030002504400000",
+          "parcelNr": "25044",
+          "geometryType": "Polygon",
+          "geometrySha256": "91cefe6c050455fd285b061540b0344337ddc7f99d4419d7a943b4faf9e07e57"
+        },
+        {
+          "objectId": 231815,
+          "sgCode": "F00300030000382300000",
+          "parcelNr": "3823",
+          "geometryType": "Polygon",
+          "geometrySha256": "df439c28313fc5cc87aaf845c3c6fea2cabac10de440379067a15ad5593a2390"
+        }
+      ]
+    },
+    {
+      "requestIndex": 12,
+      "checkedAt": "2026-10-08T15:15:34.159Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.118%2C26.214%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 333,
+      "count": 7
+    },
+    {
+      "requestIndex": 13,
+      "checkedAt": "2026-10-08T15:15:34.493Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.118%2C26.214%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 95,
+      "elapsedMs": 337,
+      "objectIds": [
+        172870,
+        173000,
+        231358,
+        231359,
+        231360,
+        231361,
+        231815
+      ]
+    },
+    {
+      "requestIndex": 14,
+      "checkedAt": "2026-10-08T15:15:34.832Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172870%2C173000%2C231358%2C231359%2C231360%2C231361%2C231815",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2757,
+      "elapsedMs": 327,
+      "featureCount": 7,
+      "features": [
+        {
+          "objectId": 172870,
+          "sgCode": "F00300030002507200000",
+          "parcelNr": "25072",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+        },
+        {
+          "objectId": 173000,
+          "sgCode": "F00300030000326400000",
+          "parcelNr": "3264",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa5dc6bd226d0f1790cc6dab4bf54203b9af15a9328199f8e198ba445d6ae6b8"
+        },
+        {
+          "objectId": 231358,
+          "sgCode": "F00300030000213200000",
+          "parcelNr": "2132",
+          "geometryType": "Polygon",
+          "geometrySha256": "f2ee55f758d939ff3050f89b16ba2ed895da3772ed68700356da892cdd6b70f4"
+        },
+        {
+          "objectId": 231359,
+          "sgCode": "F00300030000212900000",
+          "parcelNr": "2129",
+          "geometryType": "Polygon",
+          "geometrySha256": "347cf73f9915f7ddf99c64c25e8c6119ace2695cca731fff667f289c94d3a9cc"
+        },
+        {
+          "objectId": 231360,
+          "sgCode": "F00300030000213000000",
+          "parcelNr": "2130",
+          "geometryType": "Polygon",
+          "geometrySha256": "ac089b81c483e7188e3fb938c54dc31f45636f68097e0994bfb5193594280eb4"
+        },
+        {
+          "objectId": 231361,
+          "sgCode": "F00300030002504400000",
+          "parcelNr": "25044",
+          "geometryType": "Polygon",
+          "geometrySha256": "91cefe6c050455fd285b061540b0344337ddc7f99d4419d7a943b4faf9e07e57"
+        },
+        {
+          "objectId": 231815,
+          "sgCode": "F00300030000382300000",
+          "parcelNr": "3823",
+          "geometryType": "Polygon",
+          "geometrySha256": "df439c28313fc5cc87aaf845c3c6fea2cabac10de440379067a15ad5593a2390"
+        }
+      ]
+    },
+    {
+      "requestIndex": 15,
+      "checkedAt": "2026-10-08T15:15:35.162Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.214%2C-29.118%2C26.215%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 481,
+      "count": 4
+    },
+    {
+      "requestIndex": 16,
+      "checkedAt": "2026-10-08T15:15:35.644Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.214%2C-29.118%2C26.215%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 74,
+      "elapsedMs": 353,
+      "objectIds": [
+        172870,
+        172955,
+        172971,
+        173000
+      ]
+    },
+    {
+      "requestIndex": 17,
+      "checkedAt": "2026-10-08T15:15:35.998Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172870%2C172955%2C172971%2C173000",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1566,
+      "elapsedMs": 374,
+      "featureCount": 4,
+      "features": [
+        {
+          "objectId": 172870,
+          "sgCode": "F00300030002507200000",
+          "parcelNr": "25072",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+        },
+        {
+          "objectId": 172955,
+          "sgCode": "F00300030002489000000",
+          "parcelNr": "24890",
+          "geometryType": "Polygon",
+          "geometrySha256": "f75b1f75d69d964da6ad71d8c1accbf37e55dc96c320df3d9cbd6c1b76855e4c"
+        },
+        {
+          "objectId": 172971,
+          "sgCode": "F00300030000074400000",
+          "parcelNr": "744",
+          "geometryType": "Polygon",
+          "geometrySha256": "d47374b961c61bc8964a643ef7e6767d8b924ffeab0e0a5c1a73865e54fa22ad"
+        },
+        {
+          "objectId": 173000,
+          "sgCode": "F00300030000326400000",
+          "parcelNr": "3264",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa5dc6bd226d0f1790cc6dab4bf54203b9af15a9328199f8e198ba445d6ae6b8"
+        }
+      ]
+    },
+    {
+      "requestIndex": 18,
+      "checkedAt": "2026-10-08T15:15:36.395Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.212%2C-29.117%2C26.213%2C-29.116&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 430,
+      "count": 5
+    },
+    {
+      "requestIndex": 19,
+      "checkedAt": "2026-10-08T15:15:36.826Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.212%2C-29.117%2C26.213%2C-29.116&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 81,
+      "elapsedMs": 259,
+      "objectIds": [
+        173084,
+        173089,
+        173321,
+        231358,
+        231359
+      ]
+    },
+    {
+      "requestIndex": 20,
+      "checkedAt": "2026-10-08T15:15:37.090Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=173084%2C173089%2C173321%2C231358%2C231359",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2575,
+      "elapsedMs": 286,
+      "featureCount": 5,
+      "features": [
+        {
+          "objectId": 173084,
+          "sgCode": "F00300030000229000001",
+          "parcelNr": "1/2290",
+          "geometryType": "Polygon",
+          "geometrySha256": "8d33fc56895bddb9c754cdaa57c307c94be2b06e2dec3ee586f2a0908e16bafe"
+        },
+        {
+          "objectId": 173089,
+          "sgCode": "F00300030000229000000",
+          "parcelNr": "2290",
+          "geometryType": "Polygon",
+          "geometrySha256": "3aa7ba1babdba93d7ef57f3823dca4201eba454c4ee534f77439bc8d47b08e7f"
+        },
+        {
+          "objectId": 173321,
+          "sgCode": "F00300030001404700000",
+          "parcelNr": "14047",
+          "geometryType": "Polygon",
+          "geometrySha256": "4315e6c59f050be9cbb99f34cf4edf81b2a6765ce749782ba332536c4b63e771"
+        },
+        {
+          "objectId": 231358,
+          "sgCode": "F00300030000213200000",
+          "parcelNr": "2132",
+          "geometryType": "Polygon",
+          "geometrySha256": "f2ee55f758d939ff3050f89b16ba2ed895da3772ed68700356da892cdd6b70f4"
+        },
+        {
+          "objectId": 231359,
+          "sgCode": "F00300030000212900000",
+          "parcelNr": "2129",
+          "geometryType": "Polygon",
+          "geometrySha256": "347cf73f9915f7ddf99c64c25e8c6119ace2695cca731fff667f289c94d3a9cc"
+        }
+      ]
+    },
+    {
+      "requestIndex": 21,
+      "checkedAt": "2026-10-08T15:15:37.379Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.117%2C26.214%2C-29.116&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 363,
+      "count": 3
+    },
+    {
+      "requestIndex": 22,
+      "checkedAt": "2026-10-08T15:15:37.745Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.117%2C26.214%2C-29.116&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 67,
+      "elapsedMs": 263,
+      "objectIds": [
+        173321,
+        231358,
+        231359
+      ]
+    },
+    {
+      "requestIndex": 23,
+      "checkedAt": "2026-10-08T15:15:38.009Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=173321%2C231358%2C231359",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1363,
+      "elapsedMs": 267,
+      "featureCount": 3,
+      "features": [
+        {
+          "objectId": 173321,
+          "sgCode": "F00300030001404700000",
+          "parcelNr": "14047",
+          "geometryType": "Polygon",
+          "geometrySha256": "4315e6c59f050be9cbb99f34cf4edf81b2a6765ce749782ba332536c4b63e771"
+        },
+        {
+          "objectId": 231358,
+          "sgCode": "F00300030000213200000",
+          "parcelNr": "2132",
+          "geometryType": "Polygon",
+          "geometrySha256": "f2ee55f758d939ff3050f89b16ba2ed895da3772ed68700356da892cdd6b70f4"
+        },
+        {
+          "objectId": 231359,
+          "sgCode": "F00300030000212900000",
+          "parcelNr": "2129",
+          "geometryType": "Polygon",
+          "geometrySha256": "347cf73f9915f7ddf99c64c25e8c6119ace2695cca731fff667f289c94d3a9cc"
+        }
+      ]
+    },
+    {
+      "requestIndex": 24,
+      "checkedAt": "2026-10-08T15:15:38.278Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.214%2C-29.117%2C26.215%2C-29.116&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 310,
+      "count": 2
+    },
+    {
+      "requestIndex": 25,
+      "checkedAt": "2026-10-08T15:15:38.589Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.214%2C-29.117%2C26.215%2C-29.116&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 60,
+      "elapsedMs": 305,
+      "objectIds": [
+        173000,
+        173231
+      ]
+    },
+    {
+      "requestIndex": 26,
+      "checkedAt": "2026-10-08T15:15:38.895Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=173000%2C173231",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 795,
+      "elapsedMs": 315,
+      "featureCount": 2,
+      "features": [
+        {
+          "objectId": 173000,
+          "sgCode": "F00300030000326400000",
+          "parcelNr": "3264",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa5dc6bd226d0f1790cc6dab4bf54203b9af15a9328199f8e198ba445d6ae6b8"
+        },
+        {
+          "objectId": 173231,
+          "sgCode": "F00300030000192800000",
+          "parcelNr": "1928",
+          "geometryType": "Polygon",
+          "geometrySha256": "6612fac63be59f5da2b049d7bbb5e56ff026d67196251ac53c27cd85c29c9eaa"
+        }
+      ]
+    },
+    {
+      "requestIndex": 27,
+      "checkedAt": "2026-10-08T15:15:39.215Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.211%2C-29.118%2C26.212%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 381,
+      "count": 9
+    },
+    {
+      "requestIndex": 28,
+      "checkedAt": "2026-10-08T15:15:39.598Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.211%2C-29.118%2C26.212%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 109,
+      "elapsedMs": 261,
+      "objectIds": [
+        172783,
+        172845,
+        172897,
+        172933,
+        173089,
+        173113,
+        173169,
+        179979,
+        215028
+      ]
+    },
+    {
+      "requestIndex": 29,
+      "checkedAt": "2026-10-08T15:15:39.861Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172783%2C172845%2C172897%2C172933%2C173089%2C173113%2C173169%2C179979%2C215028",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4716,
+      "elapsedMs": 319,
+      "featureCount": 9,
+      "features": [
+        {
+          "objectId": 172783,
+          "sgCode": "F00300030002479700006",
+          "parcelNr": "6/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "61f482e6942a73c1eab8045bbf340a17e7d13edfc711dd32dee945c0be938ad1"
+        },
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        },
+        {
+          "objectId": 172897,
+          "sgCode": "F00300030000482300000",
+          "parcelNr": "4823",
+          "geometryType": "Polygon",
+          "geometrySha256": "19dd3f2c3be8ad10f12adf53f6f6be6fd467ca614b5d4626001ba69254312949"
+        },
+        {
+          "objectId": 172933,
+          "sgCode": "F00300030000325100003",
+          "parcelNr": "3/3251",
+          "geometryType": "Polygon",
+          "geometrySha256": "e0bb43d58ca98b33779705219e6b0809e91ccd2c8591fb3773803d46bf5a2911"
+        },
+        {
+          "objectId": 173089,
+          "sgCode": "F00300030000229000000",
+          "parcelNr": "2290",
+          "geometryType": "Polygon",
+          "geometrySha256": "3aa7ba1babdba93d7ef57f3823dca4201eba454c4ee534f77439bc8d47b08e7f"
+        },
+        {
+          "objectId": 173113,
+          "sgCode": "F00300030000292400000",
+          "parcelNr": "2924",
+          "geometryType": "Polygon",
+          "geometrySha256": "9274631a6d47416a6a16b2db0490a0ee91f802835fb760308aa817944440cc6f"
+        },
+        {
+          "objectId": 173169,
+          "sgCode": "F00300030002640800002",
+          "parcelNr": "2/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "f3dad039adebca16ae899a49d65fd8514f70ed2efbb6442de79c5bd53112f116"
+        },
+        {
+          "objectId": 179979,
+          "sgCode": "F00300030004061900000",
+          "parcelNr": "40619",
+          "geometryType": "Polygon",
+          "geometrySha256": "5ac60e1382f252773f693250ad36c20565d86e3e427a1b06d13bb242b9ee6ed8"
+        },
+        {
+          "objectId": 215028,
+          "sgCode": "F00300000000065400090",
+          "parcelNr": "90/654",
+          "geometryType": "Polygon",
+          "geometrySha256": "f00a356203e83ae8de9ab9af0aaad187d09d92eadc8b7cf6ca96b854efbbbd72"
+        }
+      ]
+    },
+    {
+      "requestIndex": 30,
+      "checkedAt": "2026-10-08T15:15:40.183Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.215%2C-29.118%2C26.216%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 363,
+      "count": 6
+    },
+    {
+      "requestIndex": 31,
+      "checkedAt": "2026-10-08T15:15:40.547Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.215%2C-29.118%2C26.216%2C-29.117&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 88,
+      "elapsedMs": 296,
+      "objectIds": [
+        172870,
+        172895,
+        172910,
+        172918,
+        172955,
+        173231
+      ]
+    },
+    {
+      "requestIndex": 32,
+      "checkedAt": "2026-10-08T15:15:40.844Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172870%2C172895%2C172910%2C172918%2C172955%2C173231",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2414,
+      "elapsedMs": 338,
+      "featureCount": 6,
+      "features": [
+        {
+          "objectId": 172870,
+          "sgCode": "F00300030002507200000",
+          "parcelNr": "25072",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+        },
+        {
+          "objectId": 172895,
+          "sgCode": "F00300030002489200000",
+          "parcelNr": "24892",
+          "geometryType": "Polygon",
+          "geometrySha256": "4eb59978862adcb237d67a00e3d699ce8ff3a43aedded18db3a2dcb07587af78"
+        },
+        {
+          "objectId": 172910,
+          "sgCode": "F00300030002489100000",
+          "parcelNr": "24891",
+          "geometryType": "Polygon",
+          "geometrySha256": "8f5cf44c95a8019dcdef582e338509af23254ad6b4d6711917d424742aa2b581"
+        },
+        {
+          "objectId": 172918,
+          "sgCode": "F00300030000074700000",
+          "parcelNr": "747",
+          "geometryType": "Polygon",
+          "geometrySha256": "cf9eccfacd13844d5097cc9709e1e62329f55c5f81f570e3710f23c4362da2b0"
+        },
+        {
+          "objectId": 172955,
+          "sgCode": "F00300030002489000000",
+          "parcelNr": "24890",
+          "geometryType": "Polygon",
+          "geometrySha256": "f75b1f75d69d964da6ad71d8c1accbf37e55dc96c320df3d9cbd6c1b76855e4c"
+        },
+        {
+          "objectId": 173231,
+          "sgCode": "F00300030000192800000",
+          "parcelNr": "1928",
+          "geometryType": "Polygon",
+          "geometrySha256": "6612fac63be59f5da2b049d7bbb5e56ff026d67196251ac53c27cd85c29c9eaa"
+        }
+      ]
+    },
+    {
+      "requestIndex": 33,
+      "checkedAt": "2026-10-08T15:15:41.183Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.12%2C26.214%2C-29.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 310,
+      "count": 9
+    },
+    {
+      "requestIndex": 34,
+      "checkedAt": "2026-10-08T15:15:41.495Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.12%2C26.214%2C-29.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 109,
+      "elapsedMs": 331,
+      "objectIds": [
+        172433,
+        176257,
+        176258,
+        188246,
+        190395,
+        190396,
+        194800,
+        214563,
+        214564
+      ]
+    },
+    {
+      "requestIndex": 35,
+      "checkedAt": "2026-10-08T15:15:41.828Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172433%2C176257%2C176258%2C188246%2C190395%2C190396%2C194800%2C214563%2C214564",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5619,
+      "elapsedMs": 491,
+      "featureCount": 9,
+      "features": [
+        {
+          "objectId": 172433,
+          "sgCode": "F00300030000322800000",
+          "parcelNr": "3228",
+          "geometryType": "Polygon",
+          "geometrySha256": "94e3744f068dad7611ba4813d3695d07b6e5cf92bb6e98ede6aa671874a4f6bf"
+        },
+        {
+          "objectId": 176257,
+          "sgCode": "F00300030002479700008",
+          "parcelNr": "8/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "6b4f45f0059550ff5d44efe3b58d04b67cc6ae84acdf01ed05f6ef620687af38"
+        },
+        {
+          "objectId": 176258,
+          "sgCode": "F00300030003710300000",
+          "parcelNr": "37103",
+          "geometryType": "Polygon",
+          "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+        },
+        {
+          "objectId": 188246,
+          "sgCode": "F00300030000194200003",
+          "parcelNr": "3/1942",
+          "geometryType": "Polygon",
+          "geometrySha256": "42f8cbbdf45a04f59f1d91b6c76303b39f1762df3b37ec50a5366b92ce94a25f"
+        },
+        {
+          "objectId": 190395,
+          "sgCode": "F00300030002479700004",
+          "parcelNr": "4/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa461b7bf789c5368831fb20755d000436fa100746c5479b4a5c3e11fd6b8b85"
+        },
+        {
+          "objectId": 190396,
+          "sgCode": "F00300030002479700001",
+          "parcelNr": "1/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+        },
+        {
+          "objectId": 194800,
+          "sgCode": "F00300030002664200000",
+          "parcelNr": "26642",
+          "geometryType": "Polygon",
+          "geometrySha256": "3817fe1e020d622f89700aca77ba0b172660de95de10e5237965c7ba58950072"
+        },
+        {
+          "objectId": 214563,
+          "sgCode": "F00300030002479700007",
+          "parcelNr": "7/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "72ca1a56105141a89840ad2a7be389899ee8148d25de9065d02d92ef426f8359"
+        },
+        {
+          "objectId": 214564,
+          "sgCode": "F00300030002472200003",
+          "parcelNr": "3/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "f62664be3726df1e8bea23c65f8bb04ebd8dff06172c45ae4e55e80935b3852d"
+        }
+      ]
+    },
+    {
+      "requestIndex": 36,
+      "checkedAt": "2026-10-08T15:15:42.321Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.116%2C26.214%2C-29.115&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 399,
+      "count": 2
+    },
+    {
+      "requestIndex": 37,
+      "checkedAt": "2026-10-08T15:15:42.721Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.116%2C26.214%2C-29.115&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 60,
+      "elapsedMs": 314,
+      "objectIds": [
+        173321,
+        173463
+      ]
+    },
+    {
+      "requestIndex": 38,
+      "checkedAt": "2026-10-08T15:15:43.037Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=173321%2C173463",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1129,
+      "elapsedMs": 273,
+      "featureCount": 2,
+      "features": [
+        {
+          "objectId": 173321,
+          "sgCode": "F00300030001404700000",
+          "parcelNr": "14047",
+          "geometryType": "Polygon",
+          "geometrySha256": "4315e6c59f050be9cbb99f34cf4edf81b2a6765ce749782ba332536c4b63e771"
+        },
+        {
+          "objectId": 173463,
+          "sgCode": "F00300030001573500000",
+          "parcelNr": "15735",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa0df71aca629542a8c5d519e0330494be9f7e2b4d448fec3424a07f5c94aecb"
+        }
+      ]
+    },
+    {
+      "requestIndex": 39,
+      "checkedAt": "2026-10-08T15:15:43.313Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.211%2C-29.12%2C26.212%2C-29.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 282,
+      "count": 3
+    },
+    {
+      "requestIndex": 40,
+      "checkedAt": "2026-10-08T15:15:43.596Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.211%2C-29.12%2C26.212%2C-29.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 67,
+      "elapsedMs": 332,
+      "objectIds": [
+        172534,
+        172769,
+        190397
+      ]
+    },
+    {
+      "requestIndex": 41,
+      "checkedAt": "2026-10-08T15:15:43.929Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172534%2C172769%2C190397",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1704,
+      "elapsedMs": 340,
+      "featureCount": 3,
+      "features": [
+        {
+          "objectId": 172534,
+          "sgCode": "F00300030000325600000",
+          "parcelNr": "3256",
+          "geometryType": "Polygon",
+          "geometrySha256": "598e2ffdf3355c5b96570792db06d9c7abf8c7f0105f3377bf6a0cb5d48f594a"
+        },
+        {
+          "objectId": 172769,
+          "sgCode": "F00300030002479700000",
+          "parcelNr": "24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+        },
+        {
+          "objectId": 190397,
+          "sgCode": "F00300030002479700003",
+          "parcelNr": "3/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ac41d4ba80435e9c17613f12736c59420dc56c2fad4520164ead5a0f4d82c075"
+        }
+      ]
+    },
+    {
+      "requestIndex": 42,
+      "checkedAt": "2026-10-08T15:15:44.272Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.211%2C-29.116%2C26.212%2C-29.115&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 367,
+      "count": 4
+    },
+    {
+      "requestIndex": 43,
+      "checkedAt": "2026-10-08T15:15:44.640Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.211%2C-29.116%2C26.212%2C-29.115&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 74,
+      "elapsedMs": 284,
+      "objectIds": [
+        173211,
+        173321,
+        173461,
+        173822
+      ]
+    },
+    {
+      "requestIndex": 44,
+      "checkedAt": "2026-10-08T15:15:44.927Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=173211%2C173321%2C173461%2C173822",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2868,
+      "elapsedMs": 455,
+      "featureCount": 4,
+      "features": [
+        {
+          "objectId": 173211,
+          "sgCode": "F00300030002640800021",
+          "parcelNr": "21/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "84c64577425fe7346edfb348e1f567d0df356a05000f1ead9804d19b0366b237"
+        },
+        {
+          "objectId": 173321,
+          "sgCode": "F00300030001404700000",
+          "parcelNr": "14047",
+          "geometryType": "Polygon",
+          "geometrySha256": "4315e6c59f050be9cbb99f34cf4edf81b2a6765ce749782ba332536c4b63e771"
+        },
+        {
+          "objectId": 173461,
+          "sgCode": "F00300030002640800023",
+          "parcelNr": "23/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "e279a715360fccc13b0b51e486a863f906adfa127998789dd3d05f344ae364df"
+        },
+        {
+          "objectId": 173822,
+          "sgCode": "F00300030002640800024",
+          "parcelNr": "24/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "8248681efce00d5c45328fff8e2ffc53324f78ff58f2de31964e331da0aaa65f"
+        }
+      ]
+    },
+    {
+      "requestIndex": 45,
+      "checkedAt": "2026-10-08T15:15:45.386Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.215%2C-29.12%2C26.216%2C-29.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 293,
+      "count": 3
+    },
+    {
+      "requestIndex": 46,
+      "checkedAt": "2026-10-08T15:15:45.681Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.215%2C-29.12%2C26.216%2C-29.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 67,
+      "elapsedMs": 279,
+      "objectIds": [
+        172433,
+        172573,
+        172652
+      ]
+    },
+    {
+      "requestIndex": 47,
+      "checkedAt": "2026-10-08T15:15:45.962Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172433%2C172573%2C172652",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1886,
+      "elapsedMs": 464,
+      "featureCount": 3,
+      "features": [
+        {
+          "objectId": 172433,
+          "sgCode": "F00300030000322800000",
+          "parcelNr": "3228",
+          "geometryType": "Polygon",
+          "geometrySha256": "94e3744f068dad7611ba4813d3695d07b6e5cf92bb6e98ede6aa671874a4f6bf"
+        },
+        {
+          "objectId": 172573,
+          "sgCode": "F00300030000191700001",
+          "parcelNr": "1/1917",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4271f2acbf7b65502d4ed316b38865f61d2ca18ebe04a564a17a04e81b80f55"
+        },
+        {
+          "objectId": 172652,
+          "sgCode": "F00300030002472200002",
+          "parcelNr": "2/24722",
+          "geometryType": "Polygon",
+          "geometrySha256": "18f5ad53dfc29d140ca359316be11d0569345b8802c60f785735079632c8c096"
+        }
+      ]
+    },
+    {
+      "requestIndex": 48,
+      "checkedAt": "2026-10-08T15:15:46.429Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.215%2C-29.116%2C26.216%2C-29.115&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 286,
+      "count": 9
+    },
+    {
+      "requestIndex": 49,
+      "checkedAt": "2026-10-08T15:15:46.717Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.215%2C-29.116%2C26.216%2C-29.115&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 109,
+      "elapsedMs": 312,
+      "objectIds": [
+        173231,
+        173286,
+        173289,
+        173316,
+        173373,
+        173382,
+        173395,
+        173402,
+        179982
+      ]
+    },
+    {
+      "requestIndex": 50,
+      "checkedAt": "2026-10-08T15:15:47.032Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=173231%2C173286%2C173289%2C173316%2C173373%2C173382%2C173395%2C173402%2C179982",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3388,
+      "elapsedMs": 254,
+      "featureCount": 9,
+      "features": [
+        {
+          "objectId": 173231,
+          "sgCode": "F00300030000192800000",
+          "parcelNr": "1928",
+          "geometryType": "Polygon",
+          "geometrySha256": "6612fac63be59f5da2b049d7bbb5e56ff026d67196251ac53c27cd85c29c9eaa"
+        },
+        {
+          "objectId": 173286,
+          "sgCode": "F00300030000073800000",
+          "parcelNr": "738",
+          "geometryType": "Polygon",
+          "geometrySha256": "e970267d36cd6a477831c5554110a927b70dc58fb9641ce9d357a15afef2a61c"
+        },
+        {
+          "objectId": 173289,
+          "sgCode": "F00300030000073800001",
+          "parcelNr": "1/738",
+          "geometryType": "Polygon",
+          "geometrySha256": "483282558c70ec2f4aabc3c7ace3c7acc58668c449222ffeed00151418014160"
+        },
+        {
+          "objectId": 173316,
+          "sgCode": "F00300030000073500000",
+          "parcelNr": "735",
+          "geometryType": "Polygon",
+          "geometrySha256": "b00244d0234fe5d3f324141576fa1c8c6353fb2e15e4ed5db67e6b9b755202b4"
+        },
+        {
+          "objectId": 173373,
+          "sgCode": "F00300030000072900001",
+          "parcelNr": "1/729",
+          "geometryType": "Polygon",
+          "geometrySha256": "3970af5b0799b55d898f16449e072375a464d406d7781359fa18665f68ff73b3"
+        },
+        {
+          "objectId": 173382,
+          "sgCode": "F00300030002488300001",
+          "parcelNr": "1/24883",
+          "geometryType": "Polygon",
+          "geometrySha256": "8d1cf466f93a33591bc49656268036fab857677e16eb1eb6ef6f3d88ebe8730f"
+        },
+        {
+          "objectId": 173395,
+          "sgCode": "F00300030002488300000",
+          "parcelNr": "24883",
+          "geometryType": "Polygon",
+          "geometrySha256": "974eaf256410bacc810356018c9786c1c6df54ca50faadf6c609ea1a025c6e09"
+        },
+        {
+          "objectId": 173402,
+          "sgCode": "F00300030000072600000",
+          "parcelNr": "726",
+          "geometryType": "Polygon",
+          "geometrySha256": "c4ba340b61a4e0ed15f33bce9b7d61f35f3ce2f8fc59be67495bc98e50df4112"
+        },
+        {
+          "objectId": 179982,
+          "sgCode": "F00300030002488500000",
+          "parcelNr": "24885",
+          "geometryType": "Polygon",
+          "geometrySha256": "c11b951469cc51aaace6eb783c2d2616c979e9c3b1da4bc5b444e5f0bb96dd83"
+        }
+      ]
+    },
+    {
+      "requestIndex": 51,
+      "checkedAt": "2026-10-08T15:15:47.291Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030002479700000%27%2C%27F00300030002479600000%27%2C%27F00300030002479700001%27%2C%27F00300030002479800000%27%2C%27F00300030002507200000%27%2C%27F00300030003710300000%27%2C%27F00300030002472200001%27%2C%27F00300030002472200002%27%2C%27F00300030000482300000%27%2C%27F00300030000759500000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "elapsedMs": 8781,
+      "count": 10
+    },
+    {
+      "requestIndex": 52,
+      "checkedAt": "2026-10-08T15:15:56.074Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030002479700000%27%2C%27F00300030002479600000%27%2C%27F00300030002479700001%27%2C%27F00300030002479800000%27%2C%27F00300030002507200000%27%2C%27F00300030003710300000%27%2C%27F00300030002472200001%27%2C%27F00300030002472200002%27%2C%27F00300030000482300000%27%2C%27F00300030000759500000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 118,
+      "elapsedMs": 660,
+      "objectIds": [
+        172652,
+        172727,
+        172769,
+        172845,
+        172870,
+        172897,
+        172985,
+        176258,
+        190396,
+        203613
+      ]
+    },
+    {
+      "requestIndex": 53,
+      "checkedAt": "2026-10-08T15:15:56.735Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172652%2C172727%2C172769%2C172845%2C172870%2C172897%2C172985%2C176258%2C190396%2C203613",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5413,
+      "elapsedMs": 340,
+      "featureCount": 10,
+      "features": [
+        {
+          "objectId": 172652,
+          "sgCode": "F00300030002472200002",
+          "parcelNr": "2/24722",
+          "geometryType": "Polygon",
+          "geometrySha256": "18f5ad53dfc29d140ca359316be11d0569345b8802c60f785735079632c8c096"
+        },
+        {
+          "objectId": 172727,
+          "sgCode": "F00300030002479800000",
+          "parcelNr": "24798",
+          "geometryType": "Polygon",
+          "geometrySha256": "74f94606b0c0d8548dd0904eeac83441d30ad8c3225837e4b918959173cafcd1"
+        },
+        {
+          "objectId": 172769,
+          "sgCode": "F00300030002479700000",
+          "parcelNr": "24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+        },
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        },
+        {
+          "objectId": 172870,
+          "sgCode": "F00300030002507200000",
+          "parcelNr": "25072",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+        },
+        {
+          "objectId": 172897,
+          "sgCode": "F00300030000482300000",
+          "parcelNr": "4823",
+          "geometryType": "Polygon",
+          "geometrySha256": "19dd3f2c3be8ad10f12adf53f6f6be6fd467ca614b5d4626001ba69254312949"
+        },
+        {
+          "objectId": 172985,
+          "sgCode": "F00300030000759500000",
+          "parcelNr": "7595",
+          "geometryType": "Polygon",
+          "geometrySha256": "c93447b07441c7cc04db4c6944886f9ae44d5cd71a3fee6fc664fe3242142e18"
+        },
+        {
+          "objectId": 176258,
+          "sgCode": "F00300030003710300000",
+          "parcelNr": "37103",
+          "geometryType": "Polygon",
+          "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+        },
+        {
+          "objectId": 190396,
+          "sgCode": "F00300030002479700001",
+          "parcelNr": "1/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+        },
+        {
+          "objectId": 203613,
+          "sgCode": "F00300030002472200001",
+          "parcelNr": "1/24722",
+          "geometryType": "Polygon",
+          "geometrySha256": "46c0d8ecbd2520a86f42592eab238b46f541824c10416750770557d68fc48592"
+        }
+      ]
+    },
+    {
+      "requestIndex": 54,
+      "checkedAt": "2026-10-08T15:15:57.077Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000229000001%27%2C%27F00300030000229000000%27%2C%27F00300000000065400090%27%2C%27F00300030000213200000%27%2C%27F00300030000213000000%27%2C%27F00300030002504400000%27%2C%27F00300030000382300000%27%2C%27F00300030000326400000%27%2C%27F00300030000212900000%27%2C%27F00300030002489000000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "elapsedMs": 608,
+      "count": 10
+    },
+    {
+      "requestIndex": 55,
+      "checkedAt": "2026-10-08T15:15:57.687Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000229000001%27%2C%27F00300030000229000000%27%2C%27F00300000000065400090%27%2C%27F00300030000213200000%27%2C%27F00300030000213000000%27%2C%27F00300030002504400000%27%2C%27F00300030000382300000%27%2C%27F00300030000326400000%27%2C%27F00300030000212900000%27%2C%27F00300030002489000000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 118,
+      "elapsedMs": 661,
+      "objectIds": [
+        172955,
+        173000,
+        173084,
+        173089,
+        215028,
+        231358,
+        231359,
+        231360,
+        231361,
+        231815
+      ]
+    },
+    {
+      "requestIndex": 56,
+      "checkedAt": "2026-10-08T15:15:58.349Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172955%2C173000%2C173084%2C173089%2C215028%2C231358%2C231359%2C231360%2C231361%2C231815",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4392,
+      "elapsedMs": 302,
+      "featureCount": 10,
+      "features": [
+        {
+          "objectId": 172955,
+          "sgCode": "F00300030002489000000",
+          "parcelNr": "24890",
+          "geometryType": "Polygon",
+          "geometrySha256": "f75b1f75d69d964da6ad71d8c1accbf37e55dc96c320df3d9cbd6c1b76855e4c"
+        },
+        {
+          "objectId": 173000,
+          "sgCode": "F00300030000326400000",
+          "parcelNr": "3264",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa5dc6bd226d0f1790cc6dab4bf54203b9af15a9328199f8e198ba445d6ae6b8"
+        },
+        {
+          "objectId": 173084,
+          "sgCode": "F00300030000229000001",
+          "parcelNr": "1/2290",
+          "geometryType": "Polygon",
+          "geometrySha256": "8d33fc56895bddb9c754cdaa57c307c94be2b06e2dec3ee586f2a0908e16bafe"
+        },
+        {
+          "objectId": 173089,
+          "sgCode": "F00300030000229000000",
+          "parcelNr": "2290",
+          "geometryType": "Polygon",
+          "geometrySha256": "3aa7ba1babdba93d7ef57f3823dca4201eba454c4ee534f77439bc8d47b08e7f"
+        },
+        {
+          "objectId": 215028,
+          "sgCode": "F00300000000065400090",
+          "parcelNr": "90/654",
+          "geometryType": "Polygon",
+          "geometrySha256": "f00a356203e83ae8de9ab9af0aaad187d09d92eadc8b7cf6ca96b854efbbbd72"
+        },
+        {
+          "objectId": 231358,
+          "sgCode": "F00300030000213200000",
+          "parcelNr": "2132",
+          "geometryType": "Polygon",
+          "geometrySha256": "f2ee55f758d939ff3050f89b16ba2ed895da3772ed68700356da892cdd6b70f4"
+        },
+        {
+          "objectId": 231359,
+          "sgCode": "F00300030000212900000",
+          "parcelNr": "2129",
+          "geometryType": "Polygon",
+          "geometrySha256": "347cf73f9915f7ddf99c64c25e8c6119ace2695cca731fff667f289c94d3a9cc"
+        },
+        {
+          "objectId": 231360,
+          "sgCode": "F00300030000213000000",
+          "parcelNr": "2130",
+          "geometryType": "Polygon",
+          "geometrySha256": "ac089b81c483e7188e3fb938c54dc31f45636f68097e0994bfb5193594280eb4"
+        },
+        {
+          "objectId": 231361,
+          "sgCode": "F00300030002504400000",
+          "parcelNr": "25044",
+          "geometryType": "Polygon",
+          "geometrySha256": "91cefe6c050455fd285b061540b0344337ddc7f99d4419d7a943b4faf9e07e57"
+        },
+        {
+          "objectId": 231815,
+          "sgCode": "F00300030000382300000",
+          "parcelNr": "3823",
+          "geometryType": "Polygon",
+          "geometrySha256": "df439c28313fc5cc87aaf845c3c6fea2cabac10de440379067a15ad5593a2390"
+        }
+      ]
+    },
+    {
+      "requestIndex": 57,
+      "checkedAt": "2026-10-08T15:15:58.655Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000074400000%27%2C%27F00300030001404700000%27%2C%27F00300030000192800000%27%2C%27F00300030002479700006%27%2C%27F00300030000325100003%27%2C%27F00300030000292400000%27%2C%27F00300030002640800002%27%2C%27F00300030004061900000%27%2C%27F00300030002489200000%27%2C%27F00300030002489100000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "elapsedMs": 483,
+      "count": 10
+    },
+    {
+      "requestIndex": 58,
+      "checkedAt": "2026-10-08T15:15:59.139Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000074400000%27%2C%27F00300030001404700000%27%2C%27F00300030000192800000%27%2C%27F00300030002479700006%27%2C%27F00300030000325100003%27%2C%27F00300030000292400000%27%2C%27F00300030002640800002%27%2C%27F00300030004061900000%27%2C%27F00300030002489200000%27%2C%27F00300030002489100000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 118,
+      "elapsedMs": 525,
+      "objectIds": [
+        172783,
+        172895,
+        172910,
+        172933,
+        172971,
+        173113,
+        173169,
+        173231,
+        173321,
+        179979
+      ]
+    },
+    {
+      "requestIndex": 59,
+      "checkedAt": "2026-10-08T15:15:59.666Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172783%2C172895%2C172910%2C172933%2C172971%2C173113%2C173169%2C173231%2C173321%2C179979",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4810,
+      "elapsedMs": 336,
+      "featureCount": 10,
+      "features": [
+        {
+          "objectId": 172783,
+          "sgCode": "F00300030002479700006",
+          "parcelNr": "6/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "61f482e6942a73c1eab8045bbf340a17e7d13edfc711dd32dee945c0be938ad1"
+        },
+        {
+          "objectId": 172895,
+          "sgCode": "F00300030002489200000",
+          "parcelNr": "24892",
+          "geometryType": "Polygon",
+          "geometrySha256": "4eb59978862adcb237d67a00e3d699ce8ff3a43aedded18db3a2dcb07587af78"
+        },
+        {
+          "objectId": 172910,
+          "sgCode": "F00300030002489100000",
+          "parcelNr": "24891",
+          "geometryType": "Polygon",
+          "geometrySha256": "8f5cf44c95a8019dcdef582e338509af23254ad6b4d6711917d424742aa2b581"
+        },
+        {
+          "objectId": 172933,
+          "sgCode": "F00300030000325100003",
+          "parcelNr": "3/3251",
+          "geometryType": "Polygon",
+          "geometrySha256": "e0bb43d58ca98b33779705219e6b0809e91ccd2c8591fb3773803d46bf5a2911"
+        },
+        {
+          "objectId": 172971,
+          "sgCode": "F00300030000074400000",
+          "parcelNr": "744",
+          "geometryType": "Polygon",
+          "geometrySha256": "d47374b961c61bc8964a643ef7e6767d8b924ffeab0e0a5c1a73865e54fa22ad"
+        },
+        {
+          "objectId": 173113,
+          "sgCode": "F00300030000292400000",
+          "parcelNr": "2924",
+          "geometryType": "Polygon",
+          "geometrySha256": "9274631a6d47416a6a16b2db0490a0ee91f802835fb760308aa817944440cc6f"
+        },
+        {
+          "objectId": 173169,
+          "sgCode": "F00300030002640800002",
+          "parcelNr": "2/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "f3dad039adebca16ae899a49d65fd8514f70ed2efbb6442de79c5bd53112f116"
+        },
+        {
+          "objectId": 173231,
+          "sgCode": "F00300030000192800000",
+          "parcelNr": "1928",
+          "geometryType": "Polygon",
+          "geometrySha256": "6612fac63be59f5da2b049d7bbb5e56ff026d67196251ac53c27cd85c29c9eaa"
+        },
+        {
+          "objectId": 173321,
+          "sgCode": "F00300030001404700000",
+          "parcelNr": "14047",
+          "geometryType": "Polygon",
+          "geometrySha256": "4315e6c59f050be9cbb99f34cf4edf81b2a6765ce749782ba332536c4b63e771"
+        },
+        {
+          "objectId": 179979,
+          "sgCode": "F00300030004061900000",
+          "parcelNr": "40619",
+          "geometryType": "Polygon",
+          "geometrySha256": "5ac60e1382f252773f693250ad36c20565d86e3e427a1b06d13bb242b9ee6ed8"
+        }
+      ]
+    },
+    {
+      "requestIndex": 60,
+      "checkedAt": "2026-10-08T15:16:00.004Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000074700000%27%2C%27F00300030000322800000%27%2C%27F00300030002479700008%27%2C%27F00300030000194200003%27%2C%27F00300030002479700004%27%2C%27F00300030002664200000%27%2C%27F00300030002479700007%27%2C%27F00300030002472200003%27%2C%27F00300030001573500000%27%2C%27F00300030000325600000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "elapsedMs": 647,
+      "count": 10
+    },
+    {
+      "requestIndex": 61,
+      "checkedAt": "2026-10-08T15:16:00.657Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000074700000%27%2C%27F00300030000322800000%27%2C%27F00300030002479700008%27%2C%27F00300030000194200003%27%2C%27F00300030002479700004%27%2C%27F00300030002664200000%27%2C%27F00300030002479700007%27%2C%27F00300030002472200003%27%2C%27F00300030001573500000%27%2C%27F00300030000325600000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 118,
+      "elapsedMs": 513,
+      "objectIds": [
+        172433,
+        172534,
+        172918,
+        173463,
+        176257,
+        188246,
+        190395,
+        194800,
+        214563,
+        214564
+      ]
+    },
+    {
+      "requestIndex": 62,
+      "checkedAt": "2026-10-08T15:16:01.178Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172433%2C172534%2C172918%2C173463%2C176257%2C188246%2C190395%2C194800%2C214563%2C214564",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5226,
+      "elapsedMs": 318,
+      "featureCount": 10,
+      "features": [
+        {
+          "objectId": 172433,
+          "sgCode": "F00300030000322800000",
+          "parcelNr": "3228",
+          "geometryType": "Polygon",
+          "geometrySha256": "94e3744f068dad7611ba4813d3695d07b6e5cf92bb6e98ede6aa671874a4f6bf"
+        },
+        {
+          "objectId": 172534,
+          "sgCode": "F00300030000325600000",
+          "parcelNr": "3256",
+          "geometryType": "Polygon",
+          "geometrySha256": "598e2ffdf3355c5b96570792db06d9c7abf8c7f0105f3377bf6a0cb5d48f594a"
+        },
+        {
+          "objectId": 172918,
+          "sgCode": "F00300030000074700000",
+          "parcelNr": "747",
+          "geometryType": "Polygon",
+          "geometrySha256": "cf9eccfacd13844d5097cc9709e1e62329f55c5f81f570e3710f23c4362da2b0"
+        },
+        {
+          "objectId": 173463,
+          "sgCode": "F00300030001573500000",
+          "parcelNr": "15735",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa0df71aca629542a8c5d519e0330494be9f7e2b4d448fec3424a07f5c94aecb"
+        },
+        {
+          "objectId": 176257,
+          "sgCode": "F00300030002479700008",
+          "parcelNr": "8/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "6b4f45f0059550ff5d44efe3b58d04b67cc6ae84acdf01ed05f6ef620687af38"
+        },
+        {
+          "objectId": 188246,
+          "sgCode": "F00300030000194200003",
+          "parcelNr": "3/1942",
+          "geometryType": "Polygon",
+          "geometrySha256": "42f8cbbdf45a04f59f1d91b6c76303b39f1762df3b37ec50a5366b92ce94a25f"
+        },
+        {
+          "objectId": 190395,
+          "sgCode": "F00300030002479700004",
+          "parcelNr": "4/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "aa461b7bf789c5368831fb20755d000436fa100746c5479b4a5c3e11fd6b8b85"
+        },
+        {
+          "objectId": 194800,
+          "sgCode": "F00300030002664200000",
+          "parcelNr": "26642",
+          "geometryType": "Polygon",
+          "geometrySha256": "3817fe1e020d622f89700aca77ba0b172660de95de10e5237965c7ba58950072"
+        },
+        {
+          "objectId": 214563,
+          "sgCode": "F00300030002479700007",
+          "parcelNr": "7/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "72ca1a56105141a89840ad2a7be389899ee8148d25de9065d02d92ef426f8359"
+        },
+        {
+          "objectId": 214564,
+          "sgCode": "F00300030002472200003",
+          "parcelNr": "3/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "f62664be3726df1e8bea23c65f8bb04ebd8dff06172c45ae4e55e80935b3852d"
+        }
+      ]
+    },
+    {
+      "requestIndex": 63,
+      "checkedAt": "2026-10-08T15:16:01.554Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030002479700003%27%2C%27F00300030002640800021%27%2C%27F00300030002640800023%27%2C%27F00300030002640800024%27%2C%27F00300030000191700001%27%2C%27F00300030000073800000%27%2C%27F00300030000073800001%27%2C%27F00300030000073500000%27%2C%27F00300030000072900001%27%2C%27F00300030002488300001%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14,
+      "elapsedMs": 563,
+      "count": 10
+    },
+    {
+      "requestIndex": 64,
+      "checkedAt": "2026-10-08T15:16:02.124Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030002479700003%27%2C%27F00300030002640800021%27%2C%27F00300030002640800023%27%2C%27F00300030002640800024%27%2C%27F00300030000191700001%27%2C%27F00300030000073800000%27%2C%27F00300030000073800001%27%2C%27F00300030000073500000%27%2C%27F00300030000072900001%27%2C%27F00300030002488300001%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 118,
+      "elapsedMs": 659,
+      "objectIds": [
+        172573,
+        173211,
+        173286,
+        173289,
+        173316,
+        173373,
+        173382,
+        173461,
+        173822,
+        190397
+      ]
+    },
+    {
+      "requestIndex": 65,
+      "checkedAt": "2026-10-08T15:16:02.844Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172573%2C173211%2C173286%2C173289%2C173316%2C173373%2C173382%2C173461%2C173822%2C190397",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5297,
+      "elapsedMs": 556,
+      "featureCount": 10,
+      "features": [
+        {
+          "objectId": 172573,
+          "sgCode": "F00300030000191700001",
+          "parcelNr": "1/1917",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4271f2acbf7b65502d4ed316b38865f61d2ca18ebe04a564a17a04e81b80f55"
+        },
+        {
+          "objectId": 173211,
+          "sgCode": "F00300030002640800021",
+          "parcelNr": "21/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "84c64577425fe7346edfb348e1f567d0df356a05000f1ead9804d19b0366b237"
+        },
+        {
+          "objectId": 173286,
+          "sgCode": "F00300030000073800000",
+          "parcelNr": "738",
+          "geometryType": "Polygon",
+          "geometrySha256": "e970267d36cd6a477831c5554110a927b70dc58fb9641ce9d357a15afef2a61c"
+        },
+        {
+          "objectId": 173289,
+          "sgCode": "F00300030000073800001",
+          "parcelNr": "1/738",
+          "geometryType": "Polygon",
+          "geometrySha256": "483282558c70ec2f4aabc3c7ace3c7acc58668c449222ffeed00151418014160"
+        },
+        {
+          "objectId": 173316,
+          "sgCode": "F00300030000073500000",
+          "parcelNr": "735",
+          "geometryType": "Polygon",
+          "geometrySha256": "b00244d0234fe5d3f324141576fa1c8c6353fb2e15e4ed5db67e6b9b755202b4"
+        },
+        {
+          "objectId": 173373,
+          "sgCode": "F00300030000072900001",
+          "parcelNr": "1/729",
+          "geometryType": "Polygon",
+          "geometrySha256": "3970af5b0799b55d898f16449e072375a464d406d7781359fa18665f68ff73b3"
+        },
+        {
+          "objectId": 173382,
+          "sgCode": "F00300030002488300001",
+          "parcelNr": "1/24883",
+          "geometryType": "Polygon",
+          "geometrySha256": "8d1cf466f93a33591bc49656268036fab857677e16eb1eb6ef6f3d88ebe8730f"
+        },
+        {
+          "objectId": 173461,
+          "sgCode": "F00300030002640800023",
+          "parcelNr": "23/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "e279a715360fccc13b0b51e486a863f906adfa127998789dd3d05f344ae364df"
+        },
+        {
+          "objectId": 173822,
+          "sgCode": "F00300030002640800024",
+          "parcelNr": "24/26408",
+          "geometryType": "Polygon",
+          "geometrySha256": "8248681efce00d5c45328fff8e2ffc53324f78ff58f2de31964e331da0aaa65f"
+        },
+        {
+          "objectId": 190397,
+          "sgCode": "F00300030002479700003",
+          "parcelNr": "3/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ac41d4ba80435e9c17613f12736c59420dc56c2fad4520164ead5a0f4d82c075"
+        }
+      ]
+    },
+    {
+      "requestIndex": 66,
+      "checkedAt": "2026-10-08T15:16:03.797Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030002488300000%27%2C%27F00300030000072600000%27%2C%27F00300030002488500000%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 13,
+      "elapsedMs": 574,
+      "count": 3
+    },
+    {
+      "requestIndex": 67,
+      "checkedAt": "2026-10-08T15:16:04.375Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030002488300000%27%2C%27F00300030000072600000%27%2C%27F00300030002488500000%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 69,
+      "elapsedMs": 466,
+      "objectIds": [
+        173395,
+        173402,
+        179982
+      ]
+    },
+    {
+      "requestIndex": 68,
+      "checkedAt": "2026-10-08T15:16:04.844Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=173395%2C173402%2C179982",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1255,
+      "elapsedMs": 274,
+      "featureCount": 3,
+      "features": [
+        {
+          "objectId": 173395,
+          "sgCode": "F00300030002488300000",
+          "parcelNr": "24883",
+          "geometryType": "Polygon",
+          "geometrySha256": "974eaf256410bacc810356018c9786c1c6df54ca50faadf6c609ea1a025c6e09"
+        },
+        {
+          "objectId": 173402,
+          "sgCode": "F00300030000072600000",
+          "parcelNr": "726",
+          "geometryType": "Polygon",
+          "geometrySha256": "c4ba340b61a4e0ed15f33bce9b7d61f35f3ce2f8fc59be67495bc98e50df4112"
+        },
+        {
+          "objectId": 179982,
+          "sgCode": "F00300030002488500000",
+          "parcelNr": "24885",
+          "geometryType": "Polygon",
+          "geometrySha256": "c11b951469cc51aaace6eb783c2d2616c979e9c3b1da4bc5b444e5f0bb96dd83"
+        }
+      ]
+    },
+    {
+      "requestIndex": 69,
+      "checkedAt": "2026-10-08T15:16:05.147Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.119%2C26.214%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 406,
+      "count": 7
+    },
+    {
+      "requestIndex": 70,
+      "checkedAt": "2026-10-08T15:16:05.555Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.213%2C-29.119%2C26.214%2C-29.118&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 95,
+      "elapsedMs": 254,
+      "objectIds": [
+        172727,
+        172769,
+        172845,
+        172870,
+        176258,
+        190396,
+        203613
+      ]
+    },
+    {
+      "requestIndex": 71,
+      "checkedAt": "2026-10-08T15:16:05.811Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172727%2C172769%2C172845",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1664,
+      "elapsedMs": 292,
+      "featureCount": 3,
+      "features": [
+        {
+          "objectId": 172727,
+          "sgCode": "F00300030002479800000",
+          "parcelNr": "24798",
+          "geometryType": "Polygon",
+          "geometrySha256": "74f94606b0c0d8548dd0904eeac83441d30ad8c3225837e4b918959173cafcd1"
+        },
+        {
+          "objectId": 172769,
+          "sgCode": "F00300030002479700000",
+          "parcelNr": "24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+        },
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        }
+      ]
+    },
+    {
+      "requestIndex": 72,
+      "checkedAt": "2026-10-08T15:16:06.106Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172870%2C176258%2C190396",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2220,
+      "elapsedMs": 371,
+      "featureCount": 3,
+      "features": [
+        {
+          "objectId": 172870,
+          "sgCode": "F00300030002507200000",
+          "parcelNr": "25072",
+          "geometryType": "Polygon",
+          "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+        },
+        {
+          "objectId": 176258,
+          "sgCode": "F00300030003710300000",
+          "parcelNr": "37103",
+          "geometryType": "Polygon",
+          "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+        },
+        {
+          "objectId": 190396,
+          "sgCode": "F00300030002479700001",
+          "parcelNr": "1/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+        }
+      ]
+    },
+    {
+      "requestIndex": 73,
+      "checkedAt": "2026-10-08T15:16:06.479Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=203613",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 450,
+      "elapsedMs": 493,
+      "featureCount": 1,
+      "features": [
+        {
+          "objectId": 203613,
+          "sgCode": "F00300030002472200001",
+          "parcelNr": "1/24722",
+          "geometryType": "Polygon",
+          "geometrySha256": "46c0d8ecbd2520a86f42592eab238b46f541824c10416750770557d68fc48592"
+        }
+      ]
+    },
+    {
+      "requestIndex": 74,
+      "checkedAt": "2026-10-08T15:16:06.975Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000213000001%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 13,
+      "elapsedMs": 510,
+      "count": 0
+    },
+    {
+      "requestIndex": 75,
+      "checkedAt": "2026-10-08T15:16:07.488Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=SG_CODE+IN+%28%27F00300030000213000001%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 49,
+      "elapsedMs": 484,
+      "objectIds": []
+    },
+    {
+      "requestIndex": 76,
+      "checkedAt": "2026-10-08T15:16:07.975Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.2113077353716%2C-29.1191681563389%2C26.2133641925121%2C-29.1180009158535&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 337,
+      "count": 8
+    },
+    {
+      "requestIndex": 77,
+      "checkedAt": "2026-10-08T15:16:08.315Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.2113077353716%2C-29.1191681563389%2C26.2133641925121%2C-29.1180009158535&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 102,
+      "elapsedMs": 307,
+      "objectIds": [
+        172534,
+        172769,
+        172783,
+        172845,
+        176257,
+        176258,
+        190396,
+        190397
+      ]
+    },
+    {
+      "requestIndex": 78,
+      "checkedAt": "2026-10-08T15:16:08.623Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172534%2C172769%2C172783%2C172845%2C176257%2C176258%2C190396%2C190397",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4901,
+      "elapsedMs": 351,
+      "featureCount": 8,
+      "features": [
+        {
+          "objectId": 172534,
+          "sgCode": "F00300030000325600000",
+          "parcelNr": "3256",
+          "geometryType": "Polygon",
+          "geometrySha256": "598e2ffdf3355c5b96570792db06d9c7abf8c7f0105f3377bf6a0cb5d48f594a"
+        },
+        {
+          "objectId": 172769,
+          "sgCode": "F00300030002479700000",
+          "parcelNr": "24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+        },
+        {
+          "objectId": 172783,
+          "sgCode": "F00300030002479700006",
+          "parcelNr": "6/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "61f482e6942a73c1eab8045bbf340a17e7d13edfc711dd32dee945c0be938ad1"
+        },
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        },
+        {
+          "objectId": 176257,
+          "sgCode": "F00300030002479700008",
+          "parcelNr": "8/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "6b4f45f0059550ff5d44efe3b58d04b67cc6ae84acdf01ed05f6ef620687af38"
+        },
+        {
+          "objectId": 176258,
+          "sgCode": "F00300030003710300000",
+          "parcelNr": "37103",
+          "geometryType": "Polygon",
+          "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+        },
+        {
+          "objectId": 190396,
+          "sgCode": "F00300030002479700001",
+          "parcelNr": "1/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+        },
+        {
+          "objectId": 190397,
+          "sgCode": "F00300030002479700003",
+          "parcelNr": "3/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ac41d4ba80435e9c17613f12736c59420dc56c2fad4520164ead5a0f4d82c075"
+        }
+      ]
+    },
+    {
+      "requestIndex": 79,
+      "checkedAt": "2026-10-08T15:16:08.980Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.2113077353716%2C-29.1191681563389%2C26.2133641925121%2C-29.1180009158535&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 11,
+      "elapsedMs": 283,
+      "count": 8
+    },
+    {
+      "requestIndex": 80,
+      "checkedAt": "2026-10-08T15:16:09.268Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&geometry=26.2113077353716%2C-29.1191681563389%2C26.2133641925121%2C-29.1180009158535&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "oid-manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 102,
+      "elapsedMs": 301,
+      "objectIds": [
+        172534,
+        172769,
+        172783,
+        172845,
+        176257,
+        176258,
+        190396,
+        190397
+      ]
+    },
+    {
+      "requestIndex": 81,
+      "checkedAt": "2026-10-08T15:16:09.571Z",
+      "url": "https://services6.arcgis.com/ho5ShYx4j27gPCg4/ArcGIS/rest/services/Map_For_Publishing_Internal_2_WFL1/FeatureServer/11/query?where=1%3D1&outFields=OBJECTID%2CSG_CODE%2CPARCEL_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=172534%2C172769%2C172783%2C172845%2C176257%2C176258%2C190396%2C190397",
+      "method": "GET",
+      "operation": "geometry-by-objectids",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4901,
+      "elapsedMs": 334,
+      "featureCount": 8,
+      "features": [
+        {
+          "objectId": 172534,
+          "sgCode": "F00300030000325600000",
+          "parcelNr": "3256",
+          "geometryType": "Polygon",
+          "geometrySha256": "598e2ffdf3355c5b96570792db06d9c7abf8c7f0105f3377bf6a0cb5d48f594a"
+        },
+        {
+          "objectId": 172769,
+          "sgCode": "F00300030002479700000",
+          "parcelNr": "24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+        },
+        {
+          "objectId": 172783,
+          "sgCode": "F00300030002479700006",
+          "parcelNr": "6/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "61f482e6942a73c1eab8045bbf340a17e7d13edfc711dd32dee945c0be938ad1"
+        },
+        {
+          "objectId": 172845,
+          "sgCode": "F00300030002479600000",
+          "parcelNr": "24796",
+          "geometryType": "Polygon",
+          "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+        },
+        {
+          "objectId": 176257,
+          "sgCode": "F00300030002479700008",
+          "parcelNr": "8/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "6b4f45f0059550ff5d44efe3b58d04b67cc6ae84acdf01ed05f6ef620687af38"
+        },
+        {
+          "objectId": 176258,
+          "sgCode": "F00300030003710300000",
+          "parcelNr": "37103",
+          "geometryType": "Polygon",
+          "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+        },
+        {
+          "objectId": 190396,
+          "sgCode": "F00300030002479700001",
+          "parcelNr": "1/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+        },
+        {
+          "objectId": 190397,
+          "sgCode": "F00300030002479700003",
+          "parcelNr": "3/24797",
+          "geometryType": "Polygon",
+          "geometrySha256": "ac41d4ba80435e9c17613f12736c59420dc56c2fad4520164ead5a0f4d82c075"
+        }
+      ]
+    }
+  ],
+  "privacy": "Only OBJECTID transport manifests, SG_CODE, PARCEL_NR, counts and geometry hashes are saved. No owner, address, contact, transfer, price, deed, account or valuation fields are requested.",
+  "rawRowsByObjectId": {
+    "172433": {
+      "objectId": 172433,
+      "sgCode": "F00300030000322800000",
+      "parcelNr": "3228",
+      "geometryType": "Polygon",
+      "geometrySha256": "94e3744f068dad7611ba4813d3695d07b6e5cf92bb6e98ede6aa671874a4f6bf"
+    },
+    "172534": {
+      "objectId": 172534,
+      "sgCode": "F00300030000325600000",
+      "parcelNr": "3256",
+      "geometryType": "Polygon",
+      "geometrySha256": "598e2ffdf3355c5b96570792db06d9c7abf8c7f0105f3377bf6a0cb5d48f594a"
+    },
+    "172573": {
+      "objectId": 172573,
+      "sgCode": "F00300030000191700001",
+      "parcelNr": "1/1917",
+      "geometryType": "Polygon",
+      "geometrySha256": "e4271f2acbf7b65502d4ed316b38865f61d2ca18ebe04a564a17a04e81b80f55"
+    },
+    "172652": {
+      "objectId": 172652,
+      "sgCode": "F00300030002472200002",
+      "parcelNr": "2/24722",
+      "geometryType": "Polygon",
+      "geometrySha256": "18f5ad53dfc29d140ca359316be11d0569345b8802c60f785735079632c8c096"
+    },
+    "172727": {
+      "objectId": 172727,
+      "sgCode": "F00300030002479800000",
+      "parcelNr": "24798",
+      "geometryType": "Polygon",
+      "geometrySha256": "74f94606b0c0d8548dd0904eeac83441d30ad8c3225837e4b918959173cafcd1"
+    },
+    "172769": {
+      "objectId": 172769,
+      "sgCode": "F00300030002479700000",
+      "parcelNr": "24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "1415042b5d550323df1108c9d3c8f26a99dd9fffddceb212d8914295c3618a6d"
+    },
+    "172783": {
+      "objectId": 172783,
+      "sgCode": "F00300030002479700006",
+      "parcelNr": "6/24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "61f482e6942a73c1eab8045bbf340a17e7d13edfc711dd32dee945c0be938ad1"
+    },
+    "172845": {
+      "objectId": 172845,
+      "sgCode": "F00300030002479600000",
+      "parcelNr": "24796",
+      "geometryType": "Polygon",
+      "geometrySha256": "2bffe3ae1b71f062c91cecc109b30127184d8ad2e0c20954601f5b5585f7dd5d"
+    },
+    "172870": {
+      "objectId": 172870,
+      "sgCode": "F00300030002507200000",
+      "parcelNr": "25072",
+      "geometryType": "Polygon",
+      "geometrySha256": "e4b3fabbc499a4df393488c378291dfd46009cbc98fe54e599baf5bb0caad23d"
+    },
+    "172895": {
+      "objectId": 172895,
+      "sgCode": "F00300030002489200000",
+      "parcelNr": "24892",
+      "geometryType": "Polygon",
+      "geometrySha256": "4eb59978862adcb237d67a00e3d699ce8ff3a43aedded18db3a2dcb07587af78"
+    },
+    "172897": {
+      "objectId": 172897,
+      "sgCode": "F00300030000482300000",
+      "parcelNr": "4823",
+      "geometryType": "Polygon",
+      "geometrySha256": "19dd3f2c3be8ad10f12adf53f6f6be6fd467ca614b5d4626001ba69254312949"
+    },
+    "172910": {
+      "objectId": 172910,
+      "sgCode": "F00300030002489100000",
+      "parcelNr": "24891",
+      "geometryType": "Polygon",
+      "geometrySha256": "8f5cf44c95a8019dcdef582e338509af23254ad6b4d6711917d424742aa2b581"
+    },
+    "172918": {
+      "objectId": 172918,
+      "sgCode": "F00300030000074700000",
+      "parcelNr": "747",
+      "geometryType": "Polygon",
+      "geometrySha256": "cf9eccfacd13844d5097cc9709e1e62329f55c5f81f570e3710f23c4362da2b0"
+    },
+    "172933": {
+      "objectId": 172933,
+      "sgCode": "F00300030000325100003",
+      "parcelNr": "3/3251",
+      "geometryType": "Polygon",
+      "geometrySha256": "e0bb43d58ca98b33779705219e6b0809e91ccd2c8591fb3773803d46bf5a2911"
+    },
+    "172955": {
+      "objectId": 172955,
+      "sgCode": "F00300030002489000000",
+      "parcelNr": "24890",
+      "geometryType": "Polygon",
+      "geometrySha256": "f75b1f75d69d964da6ad71d8c1accbf37e55dc96c320df3d9cbd6c1b76855e4c"
+    },
+    "172971": {
+      "objectId": 172971,
+      "sgCode": "F00300030000074400000",
+      "parcelNr": "744",
+      "geometryType": "Polygon",
+      "geometrySha256": "d47374b961c61bc8964a643ef7e6767d8b924ffeab0e0a5c1a73865e54fa22ad"
+    },
+    "172985": {
+      "objectId": 172985,
+      "sgCode": "F00300030000759500000",
+      "parcelNr": "7595",
+      "geometryType": "Polygon",
+      "geometrySha256": "c93447b07441c7cc04db4c6944886f9ae44d5cd71a3fee6fc664fe3242142e18"
+    },
+    "173000": {
+      "objectId": 173000,
+      "sgCode": "F00300030000326400000",
+      "parcelNr": "3264",
+      "geometryType": "Polygon",
+      "geometrySha256": "aa5dc6bd226d0f1790cc6dab4bf54203b9af15a9328199f8e198ba445d6ae6b8"
+    },
+    "173084": {
+      "objectId": 173084,
+      "sgCode": "F00300030000229000001",
+      "parcelNr": "1/2290",
+      "geometryType": "Polygon",
+      "geometrySha256": "8d33fc56895bddb9c754cdaa57c307c94be2b06e2dec3ee586f2a0908e16bafe"
+    },
+    "173089": {
+      "objectId": 173089,
+      "sgCode": "F00300030000229000000",
+      "parcelNr": "2290",
+      "geometryType": "Polygon",
+      "geometrySha256": "3aa7ba1babdba93d7ef57f3823dca4201eba454c4ee534f77439bc8d47b08e7f"
+    },
+    "173113": {
+      "objectId": 173113,
+      "sgCode": "F00300030000292400000",
+      "parcelNr": "2924",
+      "geometryType": "Polygon",
+      "geometrySha256": "9274631a6d47416a6a16b2db0490a0ee91f802835fb760308aa817944440cc6f"
+    },
+    "173169": {
+      "objectId": 173169,
+      "sgCode": "F00300030002640800002",
+      "parcelNr": "2/26408",
+      "geometryType": "Polygon",
+      "geometrySha256": "f3dad039adebca16ae899a49d65fd8514f70ed2efbb6442de79c5bd53112f116"
+    },
+    "173211": {
+      "objectId": 173211,
+      "sgCode": "F00300030002640800021",
+      "parcelNr": "21/26408",
+      "geometryType": "Polygon",
+      "geometrySha256": "84c64577425fe7346edfb348e1f567d0df356a05000f1ead9804d19b0366b237"
+    },
+    "173231": {
+      "objectId": 173231,
+      "sgCode": "F00300030000192800000",
+      "parcelNr": "1928",
+      "geometryType": "Polygon",
+      "geometrySha256": "6612fac63be59f5da2b049d7bbb5e56ff026d67196251ac53c27cd85c29c9eaa"
+    },
+    "173286": {
+      "objectId": 173286,
+      "sgCode": "F00300030000073800000",
+      "parcelNr": "738",
+      "geometryType": "Polygon",
+      "geometrySha256": "e970267d36cd6a477831c5554110a927b70dc58fb9641ce9d357a15afef2a61c"
+    },
+    "173289": {
+      "objectId": 173289,
+      "sgCode": "F00300030000073800001",
+      "parcelNr": "1/738",
+      "geometryType": "Polygon",
+      "geometrySha256": "483282558c70ec2f4aabc3c7ace3c7acc58668c449222ffeed00151418014160"
+    },
+    "173316": {
+      "objectId": 173316,
+      "sgCode": "F00300030000073500000",
+      "parcelNr": "735",
+      "geometryType": "Polygon",
+      "geometrySha256": "b00244d0234fe5d3f324141576fa1c8c6353fb2e15e4ed5db67e6b9b755202b4"
+    },
+    "173321": {
+      "objectId": 173321,
+      "sgCode": "F00300030001404700000",
+      "parcelNr": "14047",
+      "geometryType": "Polygon",
+      "geometrySha256": "4315e6c59f050be9cbb99f34cf4edf81b2a6765ce749782ba332536c4b63e771"
+    },
+    "173373": {
+      "objectId": 173373,
+      "sgCode": "F00300030000072900001",
+      "parcelNr": "1/729",
+      "geometryType": "Polygon",
+      "geometrySha256": "3970af5b0799b55d898f16449e072375a464d406d7781359fa18665f68ff73b3"
+    },
+    "173382": {
+      "objectId": 173382,
+      "sgCode": "F00300030002488300001",
+      "parcelNr": "1/24883",
+      "geometryType": "Polygon",
+      "geometrySha256": "8d1cf466f93a33591bc49656268036fab857677e16eb1eb6ef6f3d88ebe8730f"
+    },
+    "173395": {
+      "objectId": 173395,
+      "sgCode": "F00300030002488300000",
+      "parcelNr": "24883",
+      "geometryType": "Polygon",
+      "geometrySha256": "974eaf256410bacc810356018c9786c1c6df54ca50faadf6c609ea1a025c6e09"
+    },
+    "173402": {
+      "objectId": 173402,
+      "sgCode": "F00300030000072600000",
+      "parcelNr": "726",
+      "geometryType": "Polygon",
+      "geometrySha256": "c4ba340b61a4e0ed15f33bce9b7d61f35f3ce2f8fc59be67495bc98e50df4112"
+    },
+    "173461": {
+      "objectId": 173461,
+      "sgCode": "F00300030002640800023",
+      "parcelNr": "23/26408",
+      "geometryType": "Polygon",
+      "geometrySha256": "e279a715360fccc13b0b51e486a863f906adfa127998789dd3d05f344ae364df"
+    },
+    "173463": {
+      "objectId": 173463,
+      "sgCode": "F00300030001573500000",
+      "parcelNr": "15735",
+      "geometryType": "Polygon",
+      "geometrySha256": "aa0df71aca629542a8c5d519e0330494be9f7e2b4d448fec3424a07f5c94aecb"
+    },
+    "173822": {
+      "objectId": 173822,
+      "sgCode": "F00300030002640800024",
+      "parcelNr": "24/26408",
+      "geometryType": "Polygon",
+      "geometrySha256": "8248681efce00d5c45328fff8e2ffc53324f78ff58f2de31964e331da0aaa65f"
+    },
+    "176257": {
+      "objectId": 176257,
+      "sgCode": "F00300030002479700008",
+      "parcelNr": "8/24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "6b4f45f0059550ff5d44efe3b58d04b67cc6ae84acdf01ed05f6ef620687af38"
+    },
+    "176258": {
+      "objectId": 176258,
+      "sgCode": "F00300030003710300000",
+      "parcelNr": "37103",
+      "geometryType": "Polygon",
+      "geometrySha256": "2ea9455e72385469449f961b99e48cc0f9f0b2340f184c5ec0231e20faa13982"
+    },
+    "179979": {
+      "objectId": 179979,
+      "sgCode": "F00300030004061900000",
+      "parcelNr": "40619",
+      "geometryType": "Polygon",
+      "geometrySha256": "5ac60e1382f252773f693250ad36c20565d86e3e427a1b06d13bb242b9ee6ed8"
+    },
+    "179982": {
+      "objectId": 179982,
+      "sgCode": "F00300030002488500000",
+      "parcelNr": "24885",
+      "geometryType": "Polygon",
+      "geometrySha256": "c11b951469cc51aaace6eb783c2d2616c979e9c3b1da4bc5b444e5f0bb96dd83"
+    },
+    "188246": {
+      "objectId": 188246,
+      "sgCode": "F00300030000194200003",
+      "parcelNr": "3/1942",
+      "geometryType": "Polygon",
+      "geometrySha256": "42f8cbbdf45a04f59f1d91b6c76303b39f1762df3b37ec50a5366b92ce94a25f"
+    },
+    "190395": {
+      "objectId": 190395,
+      "sgCode": "F00300030002479700004",
+      "parcelNr": "4/24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "aa461b7bf789c5368831fb20755d000436fa100746c5479b4a5c3e11fd6b8b85"
+    },
+    "190396": {
+      "objectId": 190396,
+      "sgCode": "F00300030002479700001",
+      "parcelNr": "1/24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "ccfe04893a8121e182b36eeb82370be678ca4cec33263465032e71fb52b7a395"
+    },
+    "190397": {
+      "objectId": 190397,
+      "sgCode": "F00300030002479700003",
+      "parcelNr": "3/24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "ac41d4ba80435e9c17613f12736c59420dc56c2fad4520164ead5a0f4d82c075"
+    },
+    "194800": {
+      "objectId": 194800,
+      "sgCode": "F00300030002664200000",
+      "parcelNr": "26642",
+      "geometryType": "Polygon",
+      "geometrySha256": "3817fe1e020d622f89700aca77ba0b172660de95de10e5237965c7ba58950072"
+    },
+    "203613": {
+      "objectId": 203613,
+      "sgCode": "F00300030002472200001",
+      "parcelNr": "1/24722",
+      "geometryType": "Polygon",
+      "geometrySha256": "46c0d8ecbd2520a86f42592eab238b46f541824c10416750770557d68fc48592"
+    },
+    "214563": {
+      "objectId": 214563,
+      "sgCode": "F00300030002479700007",
+      "parcelNr": "7/24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "72ca1a56105141a89840ad2a7be389899ee8148d25de9065d02d92ef426f8359"
+    },
+    "214564": {
+      "objectId": 214564,
+      "sgCode": "F00300030002472200003",
+      "parcelNr": "3/24797",
+      "geometryType": "Polygon",
+      "geometrySha256": "f62664be3726df1e8bea23c65f8bb04ebd8dff06172c45ae4e55e80935b3852d"
+    },
+    "215028": {
+      "objectId": 215028,
+      "sgCode": "F00300000000065400090",
+      "parcelNr": "90/654",
+      "geometryType": "Polygon",
+      "geometrySha256": "f00a356203e83ae8de9ab9af0aaad187d09d92eadc8b7cf6ca96b854efbbbd72"
+    },
+    "231358": {
+      "objectId": 231358,
+      "sgCode": "F00300030000213200000",
+      "parcelNr": "2132",
+      "geometryType": "Polygon",
+      "geometrySha256": "f2ee55f758d939ff3050f89b16ba2ed895da3772ed68700356da892cdd6b70f4"
+    },
+    "231359": {
+      "objectId": 231359,
+      "sgCode": "F00300030000212900000",
+      "parcelNr": "2129",
+      "geometryType": "Polygon",
+      "geometrySha256": "347cf73f9915f7ddf99c64c25e8c6119ace2695cca731fff667f289c94d3a9cc"
+    },
+    "231360": {
+      "objectId": 231360,
+      "sgCode": "F00300030000213000000",
+      "parcelNr": "2130",
+      "geometryType": "Polygon",
+      "geometrySha256": "ac089b81c483e7188e3fb938c54dc31f45636f68097e0994bfb5193594280eb4"
+    },
+    "231361": {
+      "objectId": 231361,
+      "sgCode": "F00300030002504400000",
+      "parcelNr": "25044",
+      "geometryType": "Polygon",
+      "geometrySha256": "91cefe6c050455fd285b061540b0344337ddc7f99d4419d7a943b4faf9e07e57"
+    },
+    "231815": {
+      "objectId": 231815,
+      "sgCode": "F00300030000382300000",
+      "parcelNr": "3823",
+      "geometryType": "Polygon",
+      "geometrySha256": "df439c28313fc5cc87aaf845c3c6fea2cabac10de440379067a15ad5593a2390"
+    }
+  },
+  "identityDiagnostics": {
+    "distinctObjectIds": 53,
+    "adapterRetainedNativeIds": 53,
+    "missingSG_CODE": 0,
+    "missingPARCEL_NR": 0,
+    "duplicateSG_CODEGroups": [],
+    "duplicateSG_CODEGroupCount": 0,
+    "uniquePARCEL_NRCount": 52,
+    "uniqueSG_CODECount": 53
+  },
+  "result": "passed",
+  "uniqueParcels": 53,
+  "completedAt": "2026-10-08T15:16:09.931Z",
+  "sampleFile": "bloemfontein-adapter-sample-initial.geojson",
+  "canonicalIdentityProposal": {
+    "field": "SG_CODE",
+    "type": "string",
+    "uniqueInSample": true,
+    "missingInSample": 0,
+    "qualifiedOnlyForSampledExtent": true
+  }
+}

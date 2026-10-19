@@ -1,0 +1,1959 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "city": {
+    "name": "Poznań",
+    "cityId": "wup2025:1381",
+    "countryCode": "PL",
+    "rank": 1121,
+    "population2025k": 494.839,
+    "centerLatLon": [
+      52.4033374848812,
+      16.9139953760299
+    ]
+  },
+  "purpose": "Qualification evidence for the actual backend fixed GML WFS adapter profile. This does not admit or enable a source in any catalog or runtime configuration.",
+  "profile": {
+    "id": "poznan-gml-wfs",
+    "name": "Poznań municipal EGiB parcel polygons",
+    "adapter": "gml-wfs",
+    "endpoint": "https://portal.geopoz.poznan.pl/wmsegib",
+    "featureType": "ms:dzialki",
+    "idField": "ID_DZIALKI",
+    "geometryField": "MSGEOMETRY",
+    "responseCrs": "EPSG:2177",
+    "idPrefix": "PL-POZNAN-",
+    "idType": "string",
+    "parcelNumberField": "ID_DZIALKI",
+    "outFields": [
+      "ID_DZIALKI"
+    ],
+    "maxBboxKm2": 1,
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxResponseBytes": 2097152,
+    "maxTotalResponseBytes": 16777216,
+    "timeoutMs": 15000,
+    "countryCode": "PL",
+    "metricSrid": 2180,
+    "cityIds": [
+      "poznan"
+    ],
+    "maxConcurrentQueries": 1
+  },
+  "sourceEndpoint": "https://portal.geopoz.poznan.pl/wmsegib",
+  "actualRuntime": {
+    "adapter": "backend/parcels/gml-wfs-source.js",
+    "reader": "backend/parcels/gml-parcel-reader.js",
+    "allTestsPassed": true,
+    "qualityStatus": "pending-full-topology-audit",
+    "requestCount": 73,
+    "startedAt": "2026-10-09T07:14:43.153Z",
+    "finishedAt": "2026-10-09T07:14:54.905Z",
+    "requestAudit": {
+      "total": 73,
+      "byStage": {
+        "grid": 45,
+        "forced-page-size-3": 5,
+        "independent-fresh-id": 23
+      },
+      "httpStatuses": {
+        "200": 73
+      },
+      "allResponsesHttp200": true,
+      "allRequestFields": "ID_DZIALKI and MSGEOMETRY only",
+      "requests": [
+        {
+          "index": 1,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "21452af94d1f49175ce1cc8d2b4890ce3c859765a236be985eb3b456d45ffc28",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 2,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 9632,
+          "bodySha256": "8faedb95923cf20f872af4fd59b5efb7c8a19f985ce8b175bbc050c39f901c8e",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.1/11",
+            "306401_1.0061.AR_01.3/41",
+            "306401_1.0061.AR_01.3/40",
+            "306401_1.0061.AR_01.3/39",
+            "306401_1.0061.AR_01.1/5",
+            "306401_1.0061.AR_01.3/38",
+            "306401_1.0061.AR_01.3/25",
+            "306401_1.0061.AR_01.3/37"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 3,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "21452af94d1f49175ce1cc8d2b4890ce3c859765a236be985eb3b456d45ffc28",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 4,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "a5580f9734f2a061075bc2556cb4b579435acb06cb8707b23d8056bd150460e2",
+          "numberMatched": "7",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 5,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 8448,
+          "bodySha256": "6e127eafc801f4c73cedfcfa5fe2d33ce58054bd47747cd642bc5fd03148f384",
+          "numberMatched": "unknown",
+          "numberReturned": "7",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.1/5",
+            "306401_1.0061.AR_01.3/27",
+            "306401_1.0061.AR_01.1/8",
+            "306401_1.0061.AR_01.3/28",
+            "306401_1.0061.AR_01.3/38",
+            "306401_1.0061.AR_01.3/25",
+            "306401_1.0061.AR_01.3/24"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "7",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 6,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "0bec980154c0c2781d90aa3e942d14ea22ab5485a48342181aabf6c862ff3274",
+          "numberMatched": "7",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 7,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "c1b6fdd847f0b74f7ca9d2ba6f9af77650aed7543d15421fc552750f235e91b7",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 8,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 9628,
+          "bodySha256": "bbd9be593f9550d5ac69d929ee150dc1826cc39851daf58e504f2e4988905056",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.3/27",
+            "306401_1.0061.AR_01.3/28",
+            "306401_1.0061.AR_01.2",
+            "306401_1.0061.AR_01.3/43",
+            "306401_1.0061.AR_01.3/1",
+            "306401_1.0061.AR_01.3/31",
+            "306401_1.0061.AR_01.3/29",
+            "306401_1.0061.AR_01.3/24"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 9,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "c1b6fdd847f0b74f7ca9d2ba6f9af77650aed7543d15421fc552750f235e91b7",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 10,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "c1b6fdd847f0b74f7ca9d2ba6f9af77650aed7543d15421fc552750f235e91b7",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 11,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 10011,
+          "bodySha256": "125330c4a9a9abd7bd9247c23e38903d1e11470d9d01d63f02376e5158fcc26b",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.29/8",
+            "306401_1.0051.AR_44.29/3",
+            "306401_1.0051.AR_44.22/2",
+            "306401_1.0051.AR_44.28",
+            "306401_1.0051.AR_44.27/6",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0061.AR_01.1/11",
+            "306401_1.0061.AR_01.1/5"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 12,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "bdce8ccf0a6501688ae65e51e4cdbe277168a2c0e8501156782f9a0295addec2",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 13,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "bdce8ccf0a6501688ae65e51e4cdbe277168a2c0e8501156782f9a0295addec2",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 14,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 9415,
+          "bodySha256": "bfc2fdad85662e1a22ae88409752bad95793efb34d6e8ca5b46952c58d309596",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0061.AR_01.1/9",
+            "306401_1.0051.AR_44.27/14",
+            "306401_1.0061.AR_01.1/5",
+            "306401_1.0061.AR_01.3/27",
+            "306401_1.0061.AR_01.1/8",
+            "306401_1.0061.AR_01.3/28"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 15,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "bdce8ccf0a6501688ae65e51e4cdbe277168a2c0e8501156782f9a0295addec2",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 16,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "e1cb32c762d345cbbbe9661e73bccfd65479aaa22ba752a8e52a1e350dcbca43",
+          "numberMatched": "15",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 17,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 16574,
+          "bodySha256": "5fea5f531f1f33aadb1ffeac8143cc6a9dd98f90392ceb011a1393917f35982f",
+          "numberMatched": "unknown",
+          "numberReturned": "15",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.22/4",
+            "306401_1.0051.AR_44.21/2",
+            "306401_1.0051.AR_44.20/16",
+            "306401_1.0051.AR_44.21/9",
+            "306401_1.0051.AR_44.20/17",
+            "306401_1.0051.AR_44.21/5",
+            "306401_1.0051.AR_44.21/12",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0051.AR_44.27/14",
+            "306401_1.0051.AR_44.27/4",
+            "306401_1.0051.AR_44.20/1",
+            "306401_1.0051.AR_44.21/6",
+            "306401_1.0061.AR_01.3/28",
+            "306401_1.0061.AR_01.3/1"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "15",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 18,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "0c865d8561b7f95a5ce8c0b4a77254c3df63e49e559fa082269721dc4bb80327",
+          "numberMatched": "15",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 19,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "a50c171a69670d5244e8b50c79d071864ddfa8448a0a23db4146d758972b64f6",
+          "numberMatched": "3",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 20,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 5614,
+          "bodySha256": "6ae847f8f8249ae94a1d7b608a06eee2f3810bab9a053d298f85790562c7eeb1",
+          "numberMatched": "unknown",
+          "numberReturned": "3",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.29/8",
+            "306401_1.0051.AR_44.28",
+            "306401_1.0051.AR_44.27/18"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "3",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 21,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "a50c171a69670d5244e8b50c79d071864ddfa8448a0a23db4146d758972b64f6",
+          "numberMatched": "3",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 22,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "ac1ce0a1e5c4876c3eaa37767273a5622ac86d917372e90caf7ec88bf94b4ade",
+          "numberMatched": "2",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 23,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 4207,
+          "bodySha256": "68692e15cabef8e2156950cc7ebd1f2571205c48e84d43b5b69067ec92a133f1",
+          "numberMatched": "unknown",
+          "numberReturned": "2",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.27/18"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "2",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 24,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "ac1ce0a1e5c4876c3eaa37767273a5622ac86d917372e90caf7ec88bf94b4ade",
+          "numberMatched": "2",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 25,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "cc3dd4d7a22f89d88c3841813f1f2eb3a0e1d7b812fc237bbc77d25634103f61",
+          "numberMatched": "9",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 26,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 11408,
+          "bodySha256": "e58321561b3b3a4e9eb2d59c09c04013af183e4883460a67357b8000d3b053b5",
+          "numberMatched": "unknown",
+          "numberReturned": "9",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.20/16",
+            "306401_1.0051.AR_44.20/14",
+            "306401_1.0051.AR_44.19",
+            "306401_1.0051.AR_44.20/17",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0051.AR_44.27/17",
+            "306401_1.0051.AR_44.20/9",
+            "306401_1.0051.AR_44.20/3"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "9",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 27,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "cc3dd4d7a22f89d88c3841813f1f2eb3a0e1d7b812fc237bbc77d25634103f61",
+          "numberMatched": "9",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 28,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "ac1ce0a1e5c4876c3eaa37767273a5622ac86d917372e90caf7ec88bf94b4ade",
+          "numberMatched": "2",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 29,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 2719,
+          "bodySha256": "647c9e40dfea6d768b3aa59af51cfce8a3f99029494284f2bde87921565d9c39",
+          "numberMatched": "unknown",
+          "numberReturned": "2",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.3/25",
+            "306401_1.0061.AR_01.3/24"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "2",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 30,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "cedfecc83b930723460fc839a87f6f4f2177aeab576a1a90589f304dfde8d454",
+          "numberMatched": "2",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 31,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "cedfecc83b930723460fc839a87f6f4f2177aeab576a1a90589f304dfde8d454",
+          "numberMatched": "2",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 32,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 4043,
+          "bodySha256": "a4a06b46d8968b628fd0c9f08aec5117a242ca75556a2c3f19f6a5ff9e18bacc",
+          "numberMatched": "unknown",
+          "numberReturned": "2",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.28",
+            "306401_1.0051.AR_44.27/18"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "2",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 33,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "cedfecc83b930723460fc839a87f6f4f2177aeab576a1a90589f304dfde8d454",
+          "numberMatched": "2",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 34,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "327e3762525cc10ee939ad5805f8b655efea59d686b1c4432cabf9c88f45b151",
+          "numberMatched": "14",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 35,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 17398,
+          "bodySha256": "dc2d4e020a737b8abdfbb3da84b9e6ad9e995bbf46f127776612e9ca32349f26",
+          "numberMatched": "unknown",
+          "numberReturned": "14",
+          "responseFeatureIds": [
+            "306401_1.0039.AR_10.1/54",
+            "306401_1.0039.AR_09.12",
+            "306401_1.0039.AR_10.1/53",
+            "306401_1.0051.AR_44.30/5",
+            "306401_1.0051.AR_44.29/7",
+            "306401_1.0051.AR_44.29/8",
+            "306401_1.0051.AR_44.29/3",
+            "306401_1.0051.AR_44.22/2",
+            "306401_1.0051.AR_44.28",
+            "306401_1.0061.AR_01.1/7",
+            "306401_1.0061.AR_01.1/6",
+            "306401_1.0039.AR_10.1/52",
+            "306401_1.0061.AR_01.1/11",
+            "306401_1.0051.AR_44.29/4"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "14",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 36,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "919518b9fabf764ea4f5022051b6e71b78396215df4eba3627a3e646c21eab3f",
+          "numberMatched": "14",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 37,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "ef6ed4611b678c09e0b129aafcd128bb339f15363b8955e2062d2fe5c2a54531",
+          "numberMatched": "9",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 38,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 9278,
+          "bodySha256": "bf8137a44760037dbc497a210bfe17e9dac2a95233a79f12b29738e2573e6fc8",
+          "numberMatched": "unknown",
+          "numberReturned": "9",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.22/4",
+            "306401_1.0051.AR_44.21/2",
+            "306401_1.0051.AR_44.21/9",
+            "306401_1.0051.AR_44.20/17",
+            "306401_1.0051.AR_44.21/5",
+            "306401_1.0051.AR_44.21/12",
+            "306401_1.0051.AR_44.21/11",
+            "306401_1.0051.AR_44.21/10",
+            "306401_1.0061.AR_01.3/1"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "9",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 39,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "97325234250160f72faf3e33fe9bb26af708734d7fdc5998069711bae9b98559",
+          "numberMatched": "9",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 40,
+          "stage": "forced-page-size-3",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "67ca19bd5182788d5c3b1ceb97723f855287a0b5ec59c496c5b1500af69cac22",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 41,
+          "stage": "forced-page-size-3",
+          "httpStatus": 200,
+          "bytes": 4929,
+          "bodySha256": "3e1920dda17a843c03079f60b2634ecbac13b069dbb5a55565d119772cf62416",
+          "numberMatched": "unknown",
+          "numberReturned": "3",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0061.AR_01.1/9"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "3",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 42,
+          "stage": "forced-page-size-3",
+          "httpStatus": 200,
+          "bytes": 3770,
+          "bodySha256": "f821574d8cca4739f66a1e50e68896e421d5fb9a1193e19ef5f9a9518d5f3563",
+          "numberMatched": "unknown",
+          "numberReturned": "3",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.27/14",
+            "306401_1.0061.AR_01.1/5",
+            "306401_1.0061.AR_01.3/27"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "3",
+            "startIndex": "3"
+          }
+        },
+        {
+          "index": 43,
+          "stage": "forced-page-size-3",
+          "httpStatus": 200,
+          "bytes": 2304,
+          "bodySha256": "d1e8f6f7f31c7ce0e72cb54602701dd8bcb74c7c80578e41c53b6b0700ac3f3d",
+          "numberMatched": "unknown",
+          "numberReturned": "2",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.1/8",
+            "306401_1.0061.AR_01.3/28"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "2",
+            "startIndex": "6"
+          }
+        },
+        {
+          "index": 44,
+          "stage": "forced-page-size-3",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 45,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 46,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 9315,
+          "bodySha256": "f984a4a9754d8a0e0dab9edd5036bb09ff50e4f436fa8ef2d38cb5bee09ed1ed",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0039.AR_09.12",
+            "306401_1.0039.AR_10.1/52",
+            "306401_1.0039.AR_10.1/53",
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.19",
+            "306401_1.0051.AR_44.20/1",
+            "306401_1.0051.AR_44.20/14",
+            "306401_1.0051.AR_44.20/16"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 47,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 48,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 49,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 7884,
+          "bodySha256": "9bee8268b52d05334d3087c6b9949d1036dfbe0b527966c052a21e36081a2d3d",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.20/17",
+            "306401_1.0051.AR_44.20/3",
+            "306401_1.0051.AR_44.20/9",
+            "306401_1.0051.AR_44.21/10",
+            "306401_1.0051.AR_44.21/11",
+            "306401_1.0051.AR_44.21/12",
+            "306401_1.0051.AR_44.21/2",
+            "306401_1.0051.AR_44.21/5"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 50,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 51,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 52,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 9051,
+          "bodySha256": "89fb23fd3ab565a4d91f6b48dbc622f1d133c374cec6f52e084f281bc120341f",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.21/6",
+            "306401_1.0051.AR_44.21/9",
+            "306401_1.0051.AR_44.22/2",
+            "306401_1.0051.AR_44.22/4",
+            "306401_1.0051.AR_44.27/14",
+            "306401_1.0051.AR_44.27/17",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0051.AR_44.27/4"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 53,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 54,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 55,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 10617,
+          "bodySha256": "d50394b657b971a4b9a704a33213cb75c78ab8c72704ff575609a991f0ca4184",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.27/6",
+            "306401_1.0051.AR_44.28",
+            "306401_1.0051.AR_44.29/3",
+            "306401_1.0051.AR_44.29/4",
+            "306401_1.0051.AR_44.29/7",
+            "306401_1.0051.AR_44.29/8",
+            "306401_1.0051.AR_44.30/5",
+            "306401_1.0061.AR_01.1/11"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 56,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 57,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 58,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 8298,
+          "bodySha256": "129283a1e4ab6867da9d2f58490b45b4ef967085daf73096ed964710f842b797",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.1/5",
+            "306401_1.0061.AR_01.1/6",
+            "306401_1.0061.AR_01.1/7",
+            "306401_1.0061.AR_01.1/8",
+            "306401_1.0061.AR_01.1/9",
+            "306401_1.0061.AR_01.2",
+            "306401_1.0061.AR_01.3/1",
+            "306401_1.0061.AR_01.3/24"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 59,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 60,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 61,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 9563,
+          "bodySha256": "20dbda14e529ffbd24d2e45dea9f0e37f41af0efd9a945335df3a044fc16dd9e",
+          "numberMatched": "unknown",
+          "numberReturned": "8",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.3/25",
+            "306401_1.0061.AR_01.3/27",
+            "306401_1.0061.AR_01.3/28",
+            "306401_1.0061.AR_01.3/29",
+            "306401_1.0061.AR_01.3/31",
+            "306401_1.0061.AR_01.3/37",
+            "306401_1.0061.AR_01.3/38",
+            "306401_1.0061.AR_01.3/39"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "8",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 62,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+          "numberMatched": "8",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 63,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "43c7bf7a91570faaaafa8738752e13a040b72b92ed3f07e4fc6aa7848b0629e0",
+          "numberMatched": "3",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 64,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 4730,
+          "bodySha256": "5395852dc69da5bc02ce0fcaf2c8eacc7b88d9aa26f7230fab00b270a4c26678",
+          "numberMatched": "unknown",
+          "numberReturned": "3",
+          "responseFeatureIds": [
+            "306401_1.0061.AR_01.3/40",
+            "306401_1.0061.AR_01.3/41",
+            "306401_1.0061.AR_01.3/43"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "3",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 65,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "43c7bf7a91570faaaafa8738752e13a040b72b92ed3f07e4fc6aa7848b0629e0",
+          "numberMatched": "3",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 66,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "666e487aabe0980f575dce23433fb7bcc61f2ee3458d5aba479ccfd4b4830cc2",
+          "numberMatched": "0",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 67,
+          "stage": "independent-fresh-id",
+          "httpStatus": 200,
+          "bytes": 788,
+          "bodySha256": "bc48cf8c39cea7c6a248cf03e95436d7e32cf78a6144bd3e99d6ab3faa484006",
+          "numberMatched": "0",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 68,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+          "numberMatched": "13",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 69,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 14467,
+          "bodySha256": "c5338cf1962ec54f92bdec5d9fab59111ef50e5e038031dc9caae8fc70228c61",
+          "numberMatched": "unknown",
+          "numberReturned": "13",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.22/4",
+            "306401_1.0051.AR_44.21/2",
+            "306401_1.0051.AR_44.20/16",
+            "306401_1.0051.AR_44.21/9",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0061.AR_01.1/9",
+            "306401_1.0051.AR_44.27/14",
+            "306401_1.0051.AR_44.27/4",
+            "306401_1.0051.AR_44.20/1",
+            "306401_1.0061.AR_01.1/8",
+            "306401_1.0061.AR_01.3/28",
+            "306401_1.0061.AR_01.3/1"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "13",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 70,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+          "numberMatched": "13",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 71,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+          "numberMatched": "13",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        },
+        {
+          "index": 72,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 14467,
+          "bodySha256": "c5338cf1962ec54f92bdec5d9fab59111ef50e5e038031dc9caae8fc70228c61",
+          "numberMatched": "unknown",
+          "numberReturned": "13",
+          "responseFeatureIds": [
+            "306401_1.0051.AR_44.16",
+            "306401_1.0051.AR_44.22/4",
+            "306401_1.0051.AR_44.21/2",
+            "306401_1.0051.AR_44.20/16",
+            "306401_1.0051.AR_44.21/9",
+            "306401_1.0051.AR_44.27/18",
+            "306401_1.0061.AR_01.1/9",
+            "306401_1.0051.AR_44.27/14",
+            "306401_1.0051.AR_44.27/4",
+            "306401_1.0051.AR_44.20/1",
+            "306401_1.0061.AR_01.1/8",
+            "306401_1.0061.AR_01.3/28",
+            "306401_1.0061.AR_01.3/1"
+          ],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": null,
+            "count": "13",
+            "startIndex": "0"
+          }
+        },
+        {
+          "index": 73,
+          "stage": "grid",
+          "httpStatus": 200,
+          "bytes": 789,
+          "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+          "numberMatched": "13",
+          "numberReturned": "0",
+          "responseFeatureIds": [],
+          "query": {
+            "typeNames": "ms:dzialki",
+            "propertyName": "ms:ID_DZIALKI,ms:MSGEOMETRY",
+            "resultType": "hits",
+            "count": null,
+            "startIndex": null
+          }
+        }
+      ]
+    }
+  },
+  "tests": [
+    {
+      "name": "grid-0",
+      "passed": true,
+      "bbox": [
+        16.912,
+        52.402,
+        16.913,
+        52.403
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0061.AR_01.3/41",
+        "306401_1.0061.AR_01.3/40",
+        "306401_1.0061.AR_01.3/39",
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/38",
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/37"
+      ]
+    },
+    {
+      "name": "grid-1",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.402,
+        16.914,
+        52.403
+      ],
+      "count": 7,
+      "ids": [
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/38",
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "name": "grid-2",
+      "passed": true,
+      "bbox": [
+        16.914,
+        52.402,
+        16.915,
+        52.403
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.2",
+        "306401_1.0061.AR_01.3/43",
+        "306401_1.0061.AR_01.3/1",
+        "306401_1.0061.AR_01.3/31",
+        "306401_1.0061.AR_01.3/29",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "name": "grid-3",
+      "passed": true,
+      "bbox": [
+        16.912,
+        52.403,
+        16.913,
+        52.404
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.29/3",
+        "306401_1.0051.AR_44.22/2",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/6",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0061.AR_01.1/5"
+      ]
+    },
+    {
+      "name": "grid-4",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.403,
+        16.914,
+        52.404
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28"
+      ]
+    },
+    {
+      "name": "grid-5",
+      "passed": true,
+      "bbox": [
+        16.914,
+        52.403,
+        16.915,
+        52.404
+      ],
+      "count": 15,
+      "ids": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.21/5",
+        "306401_1.0051.AR_44.21/12",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/4",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0051.AR_44.21/6",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "name": "grid-6",
+      "passed": true,
+      "bbox": [
+        16.912,
+        52.404,
+        16.913,
+        52.405
+      ],
+      "count": 3,
+      "ids": [
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "name": "grid-7",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.404,
+        16.914,
+        52.405
+      ],
+      "count": 1,
+      "ids": [
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "name": "grid-8",
+      "passed": true,
+      "bbox": [
+        16.914,
+        52.404,
+        16.915,
+        52.405
+      ],
+      "count": 9,
+      "ids": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.20/14",
+        "306401_1.0051.AR_44.19",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0051.AR_44.27/17",
+        "306401_1.0051.AR_44.20/9",
+        "306401_1.0051.AR_44.20/3"
+      ]
+    },
+    {
+      "name": "grid-9",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.401,
+        16.914,
+        52.402
+      ],
+      "count": 2,
+      "ids": [
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "name": "grid-10",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.405,
+        16.914,
+        52.406
+      ],
+      "count": 2,
+      "ids": [
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "name": "grid-11",
+      "passed": true,
+      "bbox": [
+        16.911,
+        52.403,
+        16.912,
+        52.404
+      ],
+      "count": 13,
+      "ids": [
+        "306401_1.0039.AR_09.12",
+        "306401_1.0039.AR_10.1/53",
+        "306401_1.0051.AR_44.30/5",
+        "306401_1.0051.AR_44.29/7",
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.29/3",
+        "306401_1.0051.AR_44.22/2",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0061.AR_01.1/7",
+        "306401_1.0061.AR_01.1/6",
+        "306401_1.0039.AR_10.1/52",
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0051.AR_44.29/4"
+      ]
+    },
+    {
+      "name": "grid-12",
+      "passed": true,
+      "bbox": [
+        16.915,
+        52.403,
+        16.916,
+        52.404
+      ],
+      "count": 9,
+      "ids": [
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.21/5",
+        "306401_1.0051.AR_44.21/12",
+        "306401_1.0051.AR_44.21/11",
+        "306401_1.0051.AR_44.21/10",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "name": "grid-summary",
+      "passed": true,
+      "cellCount": 13,
+      "rowCount": 93,
+      "uniqueNativeIds": 51,
+      "counts": [
+        8,
+        7,
+        8,
+        8,
+        8,
+        15,
+        3,
+        1,
+        9,
+        2,
+        2,
+        13,
+        9
+      ]
+    },
+    {
+      "name": "forced-three-row-paging",
+      "passed": true,
+      "requestedPageSize": 3,
+      "expected": 8,
+      "returned": 8,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-8",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-16",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-24",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-32",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-48",
+      "passed": true,
+      "requested": 3,
+      "returned": 3,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-id-summary",
+      "passed": true,
+      "uniqueNativeIds": 51,
+      "batchCount": 7,
+      "independentReadComplete": true
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "absentIds": [
+        "PL-POZNAN-999999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "wup-point-parcel",
+      "passed": true,
+      "wupPoint": [
+        16.9139953760299,
+        52.4033374848812
+      ],
+      "sourceParcelId": "306401_1.0051.AR_44.27/14",
+      "geometrySha256": "2601e99cb73681fb702df4651c8554eb55365ba1d98aedeac7a0d4a91e100c7d"
+    },
+    {
+      "name": "target-footprint-query",
+      "passed": true,
+      "sourceParcelId": "306401_1.0051.AR_44.27/14",
+      "intersectingCount": 13,
+      "targetGeometryMatches": true,
+      "allIntersectingIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/4",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "name": "source-proposal-binding",
+      "passed": true,
+      "coverage": "complete",
+      "siteM2": 2194.58,
+      "parcelCount": 1,
+      "targetParcelId": "PL-POZNAN-306401_1.0051.AR_44.27/14",
+      "targetOverlapM2": 2194.582,
+      "source": "server:poznan-gml-wfs"
+    }
+  ],
+  "geometryAudit": {
+    "checkedAt": "2026-10-09",
+    "input": "ignored runtime output cache from actual backend adapter; ID and geometry only",
+    "features": 51,
+    "distinctNativeIds": 51,
+    "allValidGEOS": true,
+    "invalidIds": [],
+    "allPositiveArea": true,
+    "nonpositiveAreaIds": [],
+    "metricProjection": "EPSG:2180 / Poland CS92; GRS80",
+    "positiveAreaOverlapThresholdM2": 1e-7,
+    "positiveAreaOverlapPairs": [],
+    "equalGeometryPairs": [],
+    "wupPointLatLon": [
+      52.4033374848812,
+      16.9139953760299
+    ],
+    "wupPointContainingIds": [
+      "306401_1.0051.AR_44.27/14"
+    ],
+    "allRingsClosed": true,
+    "retainedProperties": [
+      "parcelId",
+      "sourceParcelId"
+    ],
+    "noOwnerAddressOrKWRequested": true
+  },
+  "limits": {
+    "citywideCompletenessProven": false,
+    "legalTitleNotProven": true,
+    "currentnessBeyondResponseDateNotProven": true,
+    "publicReuseTermsNotAssessed": true,
+    "ownerAddressOrKWRequested": false,
+    "retainedFullPolygons": 3,
+    "trackedOutput": "poznan-parcel-samples.geojson",
+    "catalogOrRuntimeEnablement": false
+  }
+}

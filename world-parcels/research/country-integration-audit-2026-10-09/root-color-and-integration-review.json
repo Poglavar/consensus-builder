@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:50:39.568070+00:00",
+  "purpose": "Root audit requested after missing enabled European cities were mistaken for unavailable public parcels. Historical discovery, current access, national coverage and executable city runtime are distinct.",
+  "publishedReleaseChecked": {
+    "commit": "ad47b45a5b1e82b853f5630ede1b6397c1dc5e1c",
+    "buildId": "deploy-420",
+    "worldCoverageUrl": "https://urbangametheory.xyz/data/world-coverage.json",
+    "httpStatus": 200,
+    "publishedEnabledCities": 187,
+    "namedCountriesPublishedLiveCities": 0,
+    "countryColorClassificationsMatchedLocal": true
+  },
+  "colorEvidence": {
+    "file": "frontend/js/world/globe.js",
+    "yellow": "coverage partial: some open data",
+    "countryFillBasis": "coverage",
+    "cityMarkerBasis": "separate liveCities collection",
+    "romania": "unknown, gray"
+  },
+  "findings": [
+    {
+      "countryCode": "IE",
+      "country": "Ireland",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/IE.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "IS",
+      "country": "Iceland",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/IS.json",
+        "research/retry/countries/IS.json",
+        "research/europe/IS.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "SE",
+      "country": "Sweden",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/SE.json",
+        "research/retry/countries/SE.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "FI",
+      "country": "Finland",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/FI.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "PT",
+      "country": "Portugal",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/PT.json",
+        "research/europe/PT.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "NO",
+      "country": "Norway",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/NO.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "RO",
+      "country": "Romania",
+      "coverage": "unknown",
+      "tier": "unknown",
+      "countryProbeStatus": "temporarily_unavailable",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/RO.json",
+        "research/retry/countries/RO.json",
+        "research/developed/RO.json"
+      ],
+      "coverageNote": "ANCPI documents a parcel vector service, but the Geoportal hostname does not resolve from either network checked. ANCPI reports a staged restart. Access remains inconclusive; this is not a no-data finding.",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Current endpoint access is inconclusive; no claim that public geometry is absent."
+    },
+    {
+      "countryCode": "EE",
+      "country": "Estonia",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/EE.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "LV",
+      "country": "Latvia",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/LV.json",
+        "research/europe/LV.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    },
+    {
+      "countryCode": "LT",
+      "country": "Lithuania",
+      "coverage": "partial",
+      "tier": "source",
+      "countryProbeStatus": "national_online_cadastre_verified_sample",
+      "countryProbeDate": "2026-09-29",
+      "historicalEvidenceFiles": [
+        "research/countries/LT.json",
+        "research/retry/countries/LT.json"
+      ],
+      "coverageNote": "Parcel polygons verified in multiple regions; full country coverage is unconfirmed",
+      "configuredRuntimeProviderIds": [],
+      "enabledCityCount": 0,
+      "interpretation": "Open parcel evidence exists but no city runtime integration is configured."
+    }
+  ],
+  "nextStep": "Recheck source endpoints and qualify city integration from existing positive findings; retain prior-attempt ledger and label source requalification separately from fresh city investigations."
+}

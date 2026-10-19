@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:135",
+  "queueRank": 135,
+  "name": "Lusaka",
+  "country": "Zambia",
+  "countryCode": "ZM",
+  "centerLatLon": [
+    -15.3971082156756,
+    28.2915266777252
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "zm-lusaka-mtendere-east-agol-unofficial",
+    "requestUrl": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A28.3220%2C%22ymin%22%3A-15.3665%2C%22xmax%22%3A28.3320%2C%22ymax%22%3A-15.3630%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=FID%2CId%2CPCNumber%2CSettlement%2CVerified&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      28.322,
+      -15.3665,
+      28.332,
+      -15.363
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "FID (PCNumber/Id null in sample)",
+    "responseFile": "lusaka-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; layer holds 28 features in total (returnCountOnly)"
+  },
+  "source": {
+    "sourceId": "zm-lusaka-mtendere-east-agol-unofficial",
+    "name": "Lusaka_parcels_creation FeatureServer, layer 0 'Parcels_Mtendere_East' (ArcGIS Online)",
+    "operator": "Unconfirmed third-party ArcGIS Online account 'eodoi_medeem'; not an official Zambian government service",
+    "scope": "One informal settlement (Mtendere East, Lusaka), 28 polygons",
+    "endpoint": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0/query",
+    "method": "GET (ArcGIS REST query)",
+    "responseFormat": "Esri JSON",
+    "crs": "native EPSG:3857; outSR=4326 honoured",
+    "reuseStatus": "unknown; publisher and terms unconfirmed"
+  },
+  "portalsFound": [
+    {
+      "url": "https://ministry-of-lands-and-natural-resources-southernafrica.hub.arcgis.com/pages/nsdi",
+      "observation": "Ministry of Lands NSDI ArcGIS Hub (HTTP 200) describes a national spatial data infrastructure and cadastral purpose, but no open parcel layer was found there."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Lusaka%20parcel%20type:%22Feature%20Service%22&f=json",
+      "observation": "ArcGIS Online search returned the third-party Lusaka_parcels_creation service."
+    },
+    {
+      "url": "https://sivandesign.com/company/global-projects/zilims-zambia-lis/",
+      "observation": "From search results: ZILMIS/ZILAS land information/administration system (replacement ZILAS); a transactional system, no open parcel endpoint found; not fetched."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.zambia.gov.zm/ , https://zilmis.gov.zm/ , https://www.mlnr.gov.zm/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset / proxy 502 / TLS chain error; temporarily unreachable, not evidence of absence"
+    },
+    {
+      "url": "https://ministry-of-lands-and-natural-resources-southernafrica.hub.arcgis.com/pages/nsdi",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "hub page only; no parcel list"
+    },
+    {
+      "url": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0/query?where=1%3D1&returnCountOnly=true&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "count 28",
+      "parcelRecordCount": 28
+    },
+    {
+      "url": "https://services8.arcgis.com/baO0mx1RSvBYn91a/arcgis/rest/services/Lusaka_parcels_creation/FeatureServer/0/query?where=1%3D1&geometry=%7B%22xmin%22%3A28.3220%2C%22ymin%22%3A-15.3665%2C%22xmax%22%3A28.3320%2C%22ymax%22%3A-15.3630%2C%22spatialReference%22%3A%7B%22wkid%22%3A4326%7D%7D&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=FID%2CId%2CPCNumber%2CSettlement%2CVerified&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "3 closed-ring rectangular polygons in Mtendere East, about 4 km from centre; attributes mostly null",
+      "parcelRecordCount": 3
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "unknown; layer name implies parcels of one settlement",
+    "verifiedOpenScope": "3 of 28 polygons in Mtendere East only; nothing citywide",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Unofficial, tiny, attribute-poor layer (likely a community upgrading/enumeration exercise); polygons may be digitised sketches, not cadastral survey parcels. Official ZILAS/Surveyor General data not reachable and no open endpoint found.",
+  "nextStep": "Retry Ministry of Lands/Survey Department hosts; ask the Ministry about an open cadastral service; do not treat the AGOL layer as a citywide or official source."
+}

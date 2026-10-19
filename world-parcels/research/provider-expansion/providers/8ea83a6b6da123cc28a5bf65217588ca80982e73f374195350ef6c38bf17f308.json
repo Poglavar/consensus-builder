@@ -1,0 +1,87 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NZ",
+ "country": "New Zealand",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Land Information New Zealand (LINZ), Toitu Te Whenua; NZ Primary Parcels (Landonline)",
+ "portalsFound": [
+  {
+   "url": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+   "observation": "LINZ Data Service layer page loads; WFS at data.linz.govt.nz/services/wfs returns 401 without an API key (free key)."
+  },
+  {
+   "url": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer",
+   "observation": "LINZ-owned AGOL FeatureServer republishing NZ Primary Parcels, anonymous query."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://data.linz.govt.nz/services/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 401,
+   "contentType": "text/html",
+   "assessment": "API key required on LDS WFS"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=NZ Primary Parcels LINZ",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "LINZ_NZ_Primary_Parcels FeatureServer found"
+  },
+  {
+   "url": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "layer metadata"
+  },
+  {
+   "url": "…/FeatureServer/0/query?f=geojson bbox Auckland 174.763,-36.849,174.765,-36.8475 count 3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 Polygon parcels"
+  },
+  {
+   "url": "…/FeatureServer/0/query?f=geojson bbox Christchurch 172.635,-43.533,172.637,-43.5315 count 3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 Polygon parcels"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "nz-linz-primary-parcels-arcgis",
+  "requestUrl": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=172.6350,-43.5330,172.6370,-43.5315&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&resultRecordCount=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   172.635,
+   -43.533,
+   172.637,
+   -43.5315
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "id",
+  "responseFile": "research/countries/NZ-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount (exceededTransferLimit)",
+  "regionSampled": "Christchurch (also Auckland)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "All NZ primary parcels (land district, appellation, titles)",
+  "regionsVerified": [
+   "Auckland",
+   "Christchurch"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read (LINZ data is usually CC BY 4.0; confirm). Titles field may hold title identifiers only.",
+ "nextStep": "Promote to registry; confirm licence and update cadence."
+}

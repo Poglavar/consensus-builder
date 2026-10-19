@@ -1,0 +1,4598 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T04:31:19.857Z",
+  "city": "west-palm-beach-county-ground",
+  "descriptor": {
+    "id": "us-palm-beach-county-pao-parcels-ground-oid",
+    "name": "Palm Beach County Property Appraiser parcel polygons using service OID",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14",
+    "idField": "OBJECTID",
+    "idType": "integer",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "US-PBC-OID-",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 2000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "countryCode": "US",
+    "metricSrid": 32617,
+    "cityIds": [
+      "westpalmbeach"
+    ]
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -80.103,
+        26.621,
+        -80.102,
+        26.622
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -80.102,
+        26.621,
+        -80.101,
+        26.622
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -80.101,
+        26.621,
+        -80.1,
+        26.622
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -80.103,
+        26.622,
+        -80.102,
+        26.623
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -80.102,
+        26.622,
+        -80.101,
+        26.623
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -80.101,
+        26.622,
+        -80.1,
+        26.623
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -80.103,
+        26.623,
+        -80.102,
+        26.624
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -80.102,
+        26.623,
+        -80.101,
+        26.624
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -80.101,
+        26.623,
+        -80.1,
+        26.624
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -80.102,
+        26.62,
+        -80.101,
+        26.621
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -80.102,
+        26.624,
+        -80.101,
+        26.625
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -80.104,
+        26.622,
+        -80.103,
+        26.623
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -80.1,
+        26.622,
+        -80.099,
+        26.623
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1071,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        -80.103,
+        26.621,
+        -80.102,
+        26.622
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "US-PBC-OID-21812",
+          "geometrySha256": "aadb2d115749ab4e3f8b6e6bc59194b403a7dab1cee429d673929a3748994e0d"
+        },
+        {
+          "id": "US-PBC-OID-188528",
+          "geometrySha256": "e94985ceed5c8ff8e8c9789f0e5febf24dbc408709004a5942ef25108d5d26ae"
+        },
+        {
+          "id": "US-PBC-OID-243847",
+          "geometrySha256": "41c6f06906c25189e0c3888e3640b6aa34d5a18ee488c910cd9c839f9f55501d"
+        },
+        {
+          "id": "US-PBC-OID-312180",
+          "geometrySha256": "f28c8236bd90e0a274fa6de90ee77c494857a4c02a276753cf5aee2c35d42000"
+        },
+        {
+          "id": "US-PBC-OID-323511",
+          "geometrySha256": "01b4e909924df6242a09efa56ef575aa19708048a9253c5608d4748d6e94b054"
+        },
+        {
+          "id": "US-PBC-OID-323512",
+          "geometrySha256": "37c2e686c2aa68f7e3972c7f644a3da31e20d2d35baadbecb88eb2afce721c94"
+        },
+        {
+          "id": "US-PBC-OID-334776",
+          "geometrySha256": "48e4964c1421a414944e530a475728244538a2b4cdf904ca926ed8fa3f076f53"
+        },
+        {
+          "id": "US-PBC-OID-344699",
+          "geometrySha256": "2ecce47c5ca93a2bd2bc5038ddc5e3bcfecb9b50594f437039ff567b848054d7"
+        },
+        {
+          "id": "US-PBC-OID-373715",
+          "geometrySha256": "6146e5c1c792f8ff25fea6dbd2caaafe69ede9681e9d6e7062c332ac1f69de27"
+        },
+        {
+          "id": "US-PBC-OID-378159",
+          "geometrySha256": "5572f30b6d9b432550fce2e217dd162e27ec2de629815c1c7cd16ccb8e1b6bef"
+        },
+        {
+          "id": "US-PBC-OID-378160",
+          "geometrySha256": "ec89207733bc1ba5b32837623f1604bcadff022b8685ba8ccf13064602ed6210"
+        },
+        {
+          "id": "US-PBC-OID-380429",
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "id": "US-PBC-OID-389526",
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 633,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        -80.102,
+        26.621,
+        -80.101,
+        26.622
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-PBC-OID-125207",
+          "geometrySha256": "4ae4cc0646e56bf7da49cd78f5200f54200e0b2f02e55ccd5fd0ee07e03ca9c6"
+        },
+        {
+          "id": "US-PBC-OID-146653",
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "id": "US-PBC-OID-243847",
+          "geometrySha256": "41c6f06906c25189e0c3888e3640b6aa34d5a18ee488c910cd9c839f9f55501d"
+        },
+        {
+          "id": "US-PBC-OID-269247",
+          "geometrySha256": "91ef2d8da36129a51c91a5ab8f6aec648dcaf870b1e4bf4b238e7e292c0fca3c"
+        },
+        {
+          "id": "US-PBC-OID-309834",
+          "geometrySha256": "385ac0025a777b0fa56a6561cf344a7294ce4fa4b9c502d3089a2ea0463f943c"
+        },
+        {
+          "id": "US-PBC-OID-328581",
+          "geometrySha256": "91b004c2624b5134f16cc446a0cb1f6a06d2224212c3ce9c970c6462e83586b7"
+        },
+        {
+          "id": "US-PBC-OID-367303",
+          "geometrySha256": "16b2acd7f3af91b617448f3d1b638335ee09b97143d1238cbd2fe0e0cc7b6033"
+        },
+        {
+          "id": "US-PBC-OID-367304",
+          "geometrySha256": "9f8fe2f087df4c69e6ec85c10b953f4e63faddc5a0ec0fa10f7358a352d96ce4"
+        },
+        {
+          "id": "US-PBC-OID-380429",
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "id": "US-PBC-OID-382011",
+          "geometrySha256": "dc8a42134a95bfd1255edc24fe98025367de14d434f65f219ba3bb532515750c"
+        },
+        {
+          "id": "US-PBC-OID-389526",
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        },
+        {
+          "id": "US-PBC-OID-389860",
+          "geometrySha256": "a9dbc5296f28d63f08247a4e875f38a3ed1322927395c0b23c12a6f73eec4d1f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 621,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        -80.101,
+        26.621,
+        -80.1,
+        26.622
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "US-PBC-OID-113805",
+          "geometrySha256": "99098a2af0710277592f7151f5f1ceff8be09fedc3a6b535f6c8c3514d207dea"
+        },
+        {
+          "id": "US-PBC-OID-146653",
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "id": "US-PBC-OID-251904",
+          "geometrySha256": "fea5c6e9555b825b927db42e4818c814a79c9b6c009cf5fb1e7da43388e302db"
+        },
+        {
+          "id": "US-PBC-OID-274019",
+          "geometrySha256": "3c65d21cdd2fdabe2d1a8ab04aa670a279aacad35fe653832582004dae58df20"
+        },
+        {
+          "id": "US-PBC-OID-309834",
+          "geometrySha256": "385ac0025a777b0fa56a6561cf344a7294ce4fa4b9c502d3089a2ea0463f943c"
+        },
+        {
+          "id": "US-PBC-OID-312129",
+          "geometrySha256": "048bda796a67ed7f7be3435e4b795ced747f833f93a34d389e992fbd49e4b3d7"
+        },
+        {
+          "id": "US-PBC-OID-316967",
+          "geometrySha256": "fd472d8682481fda7cce05536e90fe294a806559fccb1573933ae36a77313232"
+        },
+        {
+          "id": "US-PBC-OID-322007",
+          "geometrySha256": "9e799d4c7d24c46e9d4d43abed3c14778a2c332b775531d8cfd88eb9cbfa1b03"
+        },
+        {
+          "id": "US-PBC-OID-333574",
+          "geometrySha256": "18311deba4e65a75fcded8ec91af75a5665f19fc6f0098a93c29fbe5d675cae5"
+        },
+        {
+          "id": "US-PBC-OID-374395",
+          "geometrySha256": "5cb32363a0419e4cfb0a729832b3ee4b45e4b4272a3579dde33849d994d7197a"
+        },
+        {
+          "id": "US-PBC-OID-382011",
+          "geometrySha256": "dc8a42134a95bfd1255edc24fe98025367de14d434f65f219ba3bb532515750c"
+        },
+        {
+          "id": "US-PBC-OID-389081",
+          "geometrySha256": "93e87fd87dd135b03cf9f3d2d82be4780a8f19a1f523281d72a003666ffa9441"
+        },
+        {
+          "id": "US-PBC-OID-389860",
+          "geometrySha256": "a9dbc5296f28d63f08247a4e875f38a3ed1322927395c0b23c12a6f73eec4d1f"
+        },
+        {
+          "id": "US-PBC-OID-393952",
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 631,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        -80.103,
+        26.622,
+        -80.102,
+        26.623
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-PBC-OID-221728",
+          "geometrySha256": "cc7cdd8530f38790df3b95098fd143025d4167494211637fea85f3aef26cd684"
+        },
+        {
+          "id": "US-PBC-OID-221729",
+          "geometrySha256": "89e40382edb52431a1eb8a2363346733a4caba1e88110c9883aac3e0d55b6eb9"
+        },
+        {
+          "id": "US-PBC-OID-221730",
+          "geometrySha256": "9a9832cb86ace6b3bdf49d21ea4f76ff83caa22c15508c3364ac656620e37fe7"
+        },
+        {
+          "id": "US-PBC-OID-221731",
+          "geometrySha256": "9b201746adf9f4b3dde59ecff790f8f3edede31f76816d14cc107ec478eec810"
+        },
+        {
+          "id": "US-PBC-OID-262599",
+          "geometrySha256": "31b7c8816ca96f0b96ac65707336ac7df47d93ffb6ae6f52f7464b08ae520d35"
+        },
+        {
+          "id": "US-PBC-OID-264758",
+          "geometrySha256": "5c110e750bf6fad62ebffd2eb463def2acf2d85d480c830808defa854332d1e6"
+        },
+        {
+          "id": "US-PBC-OID-289027",
+          "geometrySha256": "0592c825a9f642d4984d82493cf49740a7012bc84492f9ac939756153ba8af17"
+        },
+        {
+          "id": "US-PBC-OID-312180",
+          "geometrySha256": "f28c8236bd90e0a274fa6de90ee77c494857a4c02a276753cf5aee2c35d42000"
+        },
+        {
+          "id": "US-PBC-OID-325130",
+          "geometrySha256": "599aa2ab17fb2a5edadee9cc1b88c6c4a39b1cbbe3965f6875c2eacf1eaaad22"
+        },
+        {
+          "id": "US-PBC-OID-325131",
+          "geometrySha256": "4d9717b59d1884785c08e85f1b24447a3015eb8717460225cefc5444ef9ce01a"
+        },
+        {
+          "id": "US-PBC-OID-325299",
+          "geometrySha256": "73da1111b536a8c7468b5ec126a43df222db5dfcb50655986b3b2bb16c99ad30"
+        },
+        {
+          "id": "US-PBC-OID-334776",
+          "geometrySha256": "48e4964c1421a414944e530a475728244538a2b4cdf904ca926ed8fa3f076f53"
+        },
+        {
+          "id": "US-PBC-OID-360668",
+          "geometrySha256": "374358dfde89aa8426f7d6e1ec6fb9e2bb4ea1e8c0a2d1cf91b8e7738f9d60c6"
+        },
+        {
+          "id": "US-PBC-OID-373715",
+          "geometrySha256": "6146e5c1c792f8ff25fea6dbd2caaafe69ede9681e9d6e7062c332ac1f69de27"
+        },
+        {
+          "id": "US-PBC-OID-380429",
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "id": "US-PBC-OID-380584",
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "id": "US-PBC-OID-387475",
+          "geometrySha256": "ae808a71012cb7784dcfbfa662f524f4cb0eae31b9ac6a4be937561e98b65f9e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 663,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        -80.102,
+        26.622,
+        -80.101,
+        26.623
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-PBC-OID-146653",
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "id": "US-PBC-OID-289027",
+          "geometrySha256": "0592c825a9f642d4984d82493cf49740a7012bc84492f9ac939756153ba8af17"
+        },
+        {
+          "id": "US-PBC-OID-335357",
+          "geometrySha256": "55a3ee08f2ea09af883346fe6bae4d36c05306ea980de85248b5477e781e9538"
+        },
+        {
+          "id": "US-PBC-OID-367302",
+          "geometrySha256": "d1a39d38ecc57fe9bc280f967b4263fad858abb8cc4c4fe31a5bc5aef4af4d91"
+        },
+        {
+          "id": "US-PBC-OID-367303",
+          "geometrySha256": "16b2acd7f3af91b617448f3d1b638335ee09b97143d1238cbd2fe0e0cc7b6033"
+        },
+        {
+          "id": "US-PBC-OID-367304",
+          "geometrySha256": "9f8fe2f087df4c69e6ec85c10b953f4e63faddc5a0ec0fa10f7358a352d96ce4"
+        },
+        {
+          "id": "US-PBC-OID-380429",
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "id": "US-PBC-OID-380584",
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "id": "US-PBC-OID-380586",
+          "geometrySha256": "96efff8e81fc1c62515e473cc8a7356b3eba530657c445d0b92c82abb9e2063e"
+        },
+        {
+          "id": "US-PBC-OID-380587",
+          "geometrySha256": "f5e85f71ff4dbe9fbe65efbb6d3a9b012a7aff57c68c3330a00ca853d23aba98"
+        },
+        {
+          "id": "US-PBC-OID-387475",
+          "geometrySha256": "ae808a71012cb7784dcfbfa662f524f4cb0eae31b9ac6a4be937561e98b65f9e"
+        },
+        {
+          "id": "US-PBC-OID-408731",
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 638,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        -80.101,
+        26.622,
+        -80.1,
+        26.623
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-PBC-OID-146653",
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "id": "US-PBC-OID-316967",
+          "geometrySha256": "fd472d8682481fda7cce05536e90fe294a806559fccb1573933ae36a77313232"
+        },
+        {
+          "id": "US-PBC-OID-322007",
+          "geometrySha256": "9e799d4c7d24c46e9d4d43abed3c14778a2c332b775531d8cfd88eb9cbfa1b03"
+        },
+        {
+          "id": "US-PBC-OID-333574",
+          "geometrySha256": "18311deba4e65a75fcded8ec91af75a5665f19fc6f0098a93c29fbe5d675cae5"
+        },
+        {
+          "id": "US-PBC-OID-380586",
+          "geometrySha256": "96efff8e81fc1c62515e473cc8a7356b3eba530657c445d0b92c82abb9e2063e"
+        },
+        {
+          "id": "US-PBC-OID-380587",
+          "geometrySha256": "f5e85f71ff4dbe9fbe65efbb6d3a9b012a7aff57c68c3330a00ca853d23aba98"
+        },
+        {
+          "id": "US-PBC-OID-393630",
+          "geometrySha256": "412bde204023933c04616cfc1a83f527a262754a5dca7e109193c16cffd859e8"
+        },
+        {
+          "id": "US-PBC-OID-393952",
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        },
+        {
+          "id": "US-PBC-OID-401749",
+          "geometrySha256": "f97b44a083de5c69eeb3556a3f3f9b7a14c56580b8f72639cae4288024f633aa"
+        },
+        {
+          "id": "US-PBC-OID-408731",
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        },
+        {
+          "id": "US-PBC-OID-456588",
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        },
+        {
+          "id": "US-PBC-OID-464019",
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 736,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        -80.103,
+        26.623,
+        -80.102,
+        26.624
+      ],
+      "complete": true,
+      "count": 19,
+      "ids": [
+        {
+          "id": "US-PBC-OID-262597",
+          "geometrySha256": "25fb37015e6b3d8ef98d5538c2195e2c0b226241c2c4c11ec03a2bf22cceeeaf"
+        },
+        {
+          "id": "US-PBC-OID-262598",
+          "geometrySha256": "096b638c3a8179e1da9b6a5d23dd0d07503cc7adaa35f779988ea28bee14a94b"
+        },
+        {
+          "id": "US-PBC-OID-262599",
+          "geometrySha256": "31b7c8816ca96f0b96ac65707336ac7df47d93ffb6ae6f52f7464b08ae520d35"
+        },
+        {
+          "id": "US-PBC-OID-264758",
+          "geometrySha256": "5c110e750bf6fad62ebffd2eb463def2acf2d85d480c830808defa854332d1e6"
+        },
+        {
+          "id": "US-PBC-OID-275473",
+          "geometrySha256": "f6bb19fbecc04c924f80f8e7b7b0698449f14c517b8fa8cf084dad2800b8e091"
+        },
+        {
+          "id": "US-PBC-OID-275475",
+          "geometrySha256": "41b91c27fb519f82efeb19cfa4af9437bc676d7064718d3235acf9e5ba6d729a"
+        },
+        {
+          "id": "US-PBC-OID-285249",
+          "geometrySha256": "45589fe471bf3a61f95ae01f0055d46912dc1b5dc4561d8089c9d06f05bd10cb"
+        },
+        {
+          "id": "US-PBC-OID-292697",
+          "geometrySha256": "0dd5e7dd50a181c53ba75511f4f733988593388b670722ecab9c8714ad76f6c4"
+        },
+        {
+          "id": "US-PBC-OID-292699",
+          "geometrySha256": "9d6587d994afa9b87e72d97aca9626d04258bb3a8be12569d6012acb92288c77"
+        },
+        {
+          "id": "US-PBC-OID-304724",
+          "geometrySha256": "fef465812e6b2e520e12555c42671cf76c536630a513b18f21d9b60189c73da9"
+        },
+        {
+          "id": "US-PBC-OID-324766",
+          "geometrySha256": "e5c8fb21f8797ff829ab9f598cd654f7bf8d020c63d5adbb64b58fdb5088e1bb"
+        },
+        {
+          "id": "US-PBC-OID-325131",
+          "geometrySha256": "4d9717b59d1884785c08e85f1b24447a3015eb8717460225cefc5444ef9ce01a"
+        },
+        {
+          "id": "US-PBC-OID-325298",
+          "geometrySha256": "531afbbd6884688aa299ff74d8da93cc2c15cec150a105a9ac31bb75970ff536"
+        },
+        {
+          "id": "US-PBC-OID-380453",
+          "geometrySha256": "7040aa9e50965a75040853052fe7605dd689dc9bdd0286eb031edb2ce65be51b"
+        },
+        {
+          "id": "US-PBC-OID-380583",
+          "geometrySha256": "c1e14f3ee7a3dbcbaa4a2a99ed1e893cdec72957211d778857f060f392a44102"
+        },
+        {
+          "id": "US-PBC-OID-380584",
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "id": "US-PBC-OID-381121",
+          "geometrySha256": "1ef457238f7923049a8dec189d9f641d8d59b8e867ee04ffe8eaa8d77e586606"
+        },
+        {
+          "id": "US-PBC-OID-383931",
+          "geometrySha256": "caeaf369273d684b2c8d9280b70e08db82a3bb61b9effd1a8851ad55b0be26f6"
+        },
+        {
+          "id": "US-PBC-OID-386456",
+          "geometrySha256": "d5a31b07528dcb5cc04cfa2ddfc78679989c42a3d0ad1c1dd1af10a7044c8b63"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1044,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -80.102,
+        26.623,
+        -80.101,
+        26.624
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-PBC-OID-379485",
+          "geometrySha256": "b234ee1edce1f534ebb2813c972104e9998c62cbbed8d2de926ec6a92c0fcffe"
+        },
+        {
+          "id": "US-PBC-OID-380453",
+          "geometrySha256": "7040aa9e50965a75040853052fe7605dd689dc9bdd0286eb031edb2ce65be51b"
+        },
+        {
+          "id": "US-PBC-OID-380583",
+          "geometrySha256": "c1e14f3ee7a3dbcbaa4a2a99ed1e893cdec72957211d778857f060f392a44102"
+        },
+        {
+          "id": "US-PBC-OID-380584",
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "id": "US-PBC-OID-380933",
+          "geometrySha256": "bd6bc2794b8a1d44a6cf074820b5ea1d4554f0f2af0fe45ab6d4239a086ec3dd"
+        },
+        {
+          "id": "US-PBC-OID-381121",
+          "geometrySha256": "1ef457238f7923049a8dec189d9f641d8d59b8e867ee04ffe8eaa8d77e586606"
+        },
+        {
+          "id": "US-PBC-OID-383931",
+          "geometrySha256": "caeaf369273d684b2c8d9280b70e08db82a3bb61b9effd1a8851ad55b0be26f6"
+        },
+        {
+          "id": "US-PBC-OID-386456",
+          "geometrySha256": "d5a31b07528dcb5cc04cfa2ddfc78679989c42a3d0ad1c1dd1af10a7044c8b63"
+        },
+        {
+          "id": "US-PBC-OID-399051",
+          "geometrySha256": "2f26501f71ba1c8b6fe5a6f91f3bb02550e4f74b5eca601911126f9f5edfd4e3"
+        },
+        {
+          "id": "US-PBC-OID-401749",
+          "geometrySha256": "f97b44a083de5c69eeb3556a3f3f9b7a14c56580b8f72639cae4288024f633aa"
+        },
+        {
+          "id": "US-PBC-OID-408731",
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 991,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        -80.101,
+        26.623,
+        -80.1,
+        26.624
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "US-PBC-OID-379485",
+          "geometrySha256": "b234ee1edce1f534ebb2813c972104e9998c62cbbed8d2de926ec6a92c0fcffe"
+        },
+        {
+          "id": "US-PBC-OID-380088",
+          "geometrySha256": "96d78d7a1fcd4ef50f7ddda9a6d56eef5e98253a78542d02ff7aa7f39551e5e1"
+        },
+        {
+          "id": "US-PBC-OID-380933",
+          "geometrySha256": "bd6bc2794b8a1d44a6cf074820b5ea1d4554f0f2af0fe45ab6d4239a086ec3dd"
+        },
+        {
+          "id": "US-PBC-OID-390044",
+          "geometrySha256": "7813d139a81e79cb73cfa1f7bdfb41b99b3381b1366a966ad006e72fee9b622f"
+        },
+        {
+          "id": "US-PBC-OID-399051",
+          "geometrySha256": "2f26501f71ba1c8b6fe5a6f91f3bb02550e4f74b5eca601911126f9f5edfd4e3"
+        },
+        {
+          "id": "US-PBC-OID-401749",
+          "geometrySha256": "f97b44a083de5c69eeb3556a3f3f9b7a14c56580b8f72639cae4288024f633aa"
+        },
+        {
+          "id": "US-PBC-OID-408731",
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        },
+        {
+          "id": "US-PBC-OID-454482",
+          "geometrySha256": "d96d5e6a61d8e2ec5fadb7d79de8ca7bbac0b87df3c9da5ccaa56364611fe0d0"
+        },
+        {
+          "id": "US-PBC-OID-456588",
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        },
+        {
+          "id": "US-PBC-OID-464019",
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 599,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        -80.102,
+        26.62,
+        -80.101,
+        26.621
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-PBC-OID-312224",
+          "geometrySha256": "d3364dcb594a9293ec6375b8a11333dc2fc19a44a89d5f47d9f696b910e3002c"
+        },
+        {
+          "id": "US-PBC-OID-312225",
+          "geometrySha256": "e4b4e652351f0c1be6898633ce94456d3b9dd59bb17ff3f1b1ac22f73325dc00"
+        },
+        {
+          "id": "US-PBC-OID-332351",
+          "geometrySha256": "5022a00a44a630b85774f5ec09e8b797e8d1417e0639c4dc24d107697b228476"
+        },
+        {
+          "id": "US-PBC-OID-371227",
+          "geometrySha256": "ed26ae9668c06e8252eaaad94a18f02340d5f8bb226da9a065235462f943de94"
+        },
+        {
+          "id": "US-PBC-OID-371257",
+          "geometrySha256": "bfe331d530ec0134ae94ff3db42ffa80aa412f655c1947960b84f32a6efc3c0c"
+        },
+        {
+          "id": "US-PBC-OID-389524",
+          "geometrySha256": "ab14b06e7217c2379e607f1d6a728d678a03a36afff8052061d786dc5ca1de01"
+        },
+        {
+          "id": "US-PBC-OID-389525",
+          "geometrySha256": "39d10633d4c0ded24a35b16591799786d2f729b2ccfd4978492e1a30589ae446"
+        },
+        {
+          "id": "US-PBC-OID-389526",
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        },
+        {
+          "id": "US-PBC-OID-389860",
+          "geometrySha256": "a9dbc5296f28d63f08247a4e875f38a3ed1322927395c0b23c12a6f73eec4d1f"
+        },
+        {
+          "id": "US-PBC-OID-389871",
+          "geometrySha256": "8af8b70b7e8e3600876420fa53ad81fc75a3ca781b1be479d2006e2b64f84a17"
+        },
+        {
+          "id": "US-PBC-OID-404721",
+          "geometrySha256": "8b5b92c19606ca4eb13fef35b420e41c2d4868dd437bb8182000e64b06c48043"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 1058,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        -80.102,
+        26.624,
+        -80.101,
+        26.625
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "US-PBC-OID-132360",
+          "geometrySha256": "f4f903abcc163855c8d40ba86a112a8bfd924d985947536215df3ee45c712921"
+        },
+        {
+          "id": "US-PBC-OID-376458",
+          "geometrySha256": "582a001edda11038a0728a4731e86dfc68fb6aa53e631d5d8d9d50a79dcd4da0"
+        },
+        {
+          "id": "US-PBC-OID-381121",
+          "geometrySha256": "1ef457238f7923049a8dec189d9f641d8d59b8e867ee04ffe8eaa8d77e586606"
+        },
+        {
+          "id": "US-PBC-OID-383929",
+          "geometrySha256": "c0651518ef2b1ef43cd27d31c61e07ef6494647898197f325c2452ab9870235a"
+        },
+        {
+          "id": "US-PBC-OID-383930",
+          "geometrySha256": "541fe541178b9e59bf578f85f8217df9529dcdaff3aea6ea4727ea2d8bcdca7b"
+        },
+        {
+          "id": "US-PBC-OID-399051",
+          "geometrySha256": "2f26501f71ba1c8b6fe5a6f91f3bb02550e4f74b5eca601911126f9f5edfd4e3"
+        },
+        {
+          "id": "US-PBC-OID-400363",
+          "geometrySha256": "5a83cfe50d8bdbe65b708facabdf86c5f8e625096f7c4054e420d0c1f71fb16d"
+        },
+        {
+          "id": "US-PBC-OID-426153",
+          "geometrySha256": "ef6f25661e56ee86b673bcdcdeff121a2371b8af62f7a331f749b159a5cd21c2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 592,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        -80.104,
+        26.622,
+        -80.103,
+        26.623
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-PBC-OID-174753",
+          "geometrySha256": "07714c67b3d5ea25baf58ed07f588ee897b9b5b2c9a0b5843e36eb0b951f136c"
+        },
+        {
+          "id": "US-PBC-OID-174754",
+          "geometrySha256": "e250432b32f6ac867ddac6fb0aa69078933f8268426fbbfa35b6f66f7702305d"
+        },
+        {
+          "id": "US-PBC-OID-174755",
+          "geometrySha256": "234ac98a6a62f5b6d61ac5e04333eba00f234aa934f2558cd0627a3f86bf01fd"
+        },
+        {
+          "id": "US-PBC-OID-174756",
+          "geometrySha256": "d234726204ff3f406d200f2a3c050d2ab7668e948aa558296fcad9bab1d98764"
+        },
+        {
+          "id": "US-PBC-OID-221728",
+          "geometrySha256": "cc7cdd8530f38790df3b95098fd143025d4167494211637fea85f3aef26cd684"
+        },
+        {
+          "id": "US-PBC-OID-325130",
+          "geometrySha256": "599aa2ab17fb2a5edadee9cc1b88c6c4a39b1cbbe3965f6875c2eacf1eaaad22"
+        },
+        {
+          "id": "US-PBC-OID-325131",
+          "geometrySha256": "4d9717b59d1884785c08e85f1b24447a3015eb8717460225cefc5444ef9ce01a"
+        },
+        {
+          "id": "US-PBC-OID-341637",
+          "geometrySha256": "0c574cdad622bb85cd642dcb88406791c6b1dcd37bbed90bf304f08701103062"
+        },
+        {
+          "id": "US-PBC-OID-360668",
+          "geometrySha256": "374358dfde89aa8426f7d6e1ec6fb9e2bb4ea1e8c0a2d1cf91b8e7738f9d60c6"
+        },
+        {
+          "id": "US-PBC-OID-373715",
+          "geometrySha256": "6146e5c1c792f8ff25fea6dbd2caaafe69ede9681e9d6e7062c332ac1f69de27"
+        },
+        {
+          "id": "US-PBC-OID-436592",
+          "geometrySha256": "5f4dfa32fb43307323846b8475dd7fc8f14d241d08239fb2506b72b5127c9d87"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 609,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        -80.1,
+        26.622,
+        -80.099,
+        26.623
+      ],
+      "complete": true,
+      "count": 22,
+      "ids": [
+        {
+          "id": "US-PBC-OID-89883",
+          "geometrySha256": "ca298ed55af7321a941af15a37ec73b7e7ebee1a0510c56253cbe8adec427ddf"
+        },
+        {
+          "id": "US-PBC-OID-241240",
+          "geometrySha256": "a78fea42296cba0b6b8365cc0b9a7f4fef8a29a68c67fc2282bfe995da16c650"
+        },
+        {
+          "id": "US-PBC-OID-367072",
+          "geometrySha256": "83f0e7ed557e9758e54937dee144c3b17a5599d20dad498576156c0c6751b311"
+        },
+        {
+          "id": "US-PBC-OID-393630",
+          "geometrySha256": "412bde204023933c04616cfc1a83f527a262754a5dca7e109193c16cffd859e8"
+        },
+        {
+          "id": "US-PBC-OID-393952",
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        },
+        {
+          "id": "US-PBC-OID-403523",
+          "geometrySha256": "e577fd3ce53208c3f673456967abfa9376b08beeeb07cd26ba66cb8ebf6fd53b"
+        },
+        {
+          "id": "US-PBC-OID-424307",
+          "geometrySha256": "2f2b6094339e88aa0ebf2dbd0e424b4d15dfa668b2d34d696ac15dd2238329da"
+        },
+        {
+          "id": "US-PBC-OID-454473",
+          "geometrySha256": "5039b30cad9f51a6bcc5d0046fe4c69d8aa51552781d804cd1c91cb33f928699"
+        },
+        {
+          "id": "US-PBC-OID-454474",
+          "geometrySha256": "c96dd52ef2bd5ec61a91b83e85d8e32ee77ed182fd1954e067824ad29c74cf84"
+        },
+        {
+          "id": "US-PBC-OID-454475",
+          "geometrySha256": "044e450d06f62b59c8c299044454e9ec31d2c28b617ed1aceb65b42e6598435b"
+        },
+        {
+          "id": "US-PBC-OID-454476",
+          "geometrySha256": "8d47a15db6b120317d50ce8767f3d1e707cc97f8b824863e974a96b541667050"
+        },
+        {
+          "id": "US-PBC-OID-454477",
+          "geometrySha256": "e281cbe1ebcb241526a3c9d2e5e849924a8a5b2490e8b74d5e42103dac03aeab"
+        },
+        {
+          "id": "US-PBC-OID-454478",
+          "geometrySha256": "7011f34e7fab4fdb0dfba91857fc70b55158afccb3311f71462ce682a61cf55f"
+        },
+        {
+          "id": "US-PBC-OID-454479",
+          "geometrySha256": "ab120896222fe92374d961ca3fd36452b52288c96593806963888bdcbee5366f"
+        },
+        {
+          "id": "US-PBC-OID-454480",
+          "geometrySha256": "fea1feba5693dfa4e7d20e29bcdc8f370bf50eda1e8548b066da427489f4aac6"
+        },
+        {
+          "id": "US-PBC-OID-454481",
+          "geometrySha256": "292b7b5f01ad549e9924d853d91ef314ced4ef6ba2284a7466027c55ea57e5e2"
+        },
+        {
+          "id": "US-PBC-OID-456588",
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        },
+        {
+          "id": "US-PBC-OID-456589",
+          "geometrySha256": "06137a868056bab4234e89cd81defc005a451d97a8ed68ef37c73b799617c3d9"
+        },
+        {
+          "id": "US-PBC-OID-463737",
+          "geometrySha256": "2b6b65977970cb000767e26858af2ed0a21ac3da519edd89d0e8b79d5ca2e846"
+        },
+        {
+          "id": "US-PBC-OID-464019",
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        },
+        {
+          "id": "US-PBC-OID-464310",
+          "geometrySha256": "b98aba4f38f59f7afb37d8b84be5fb99ac5683a2b5587cd47efc78a20e6d00a7"
+        },
+        {
+          "id": "US-PBC-OID-476548",
+          "geometrySha256": "4e7e4b36e5b90bedbc6f62120f3c01b2709fbfd97212bb3b203628ce188128d0"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 2004,
+      "requestIndexes": [
+        39,
+        48
+      ],
+      "count": 22,
+      "geometryPages": 8,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 599,
+      "requestIndexes": [
+        49,
+        51
+      ],
+      "count": 40,
+      "ids": [
+        "US-PBC-OID-113805",
+        "US-PBC-OID-125207",
+        "US-PBC-OID-132360",
+        "US-PBC-OID-146653",
+        "US-PBC-OID-174753",
+        "US-PBC-OID-174754",
+        "US-PBC-OID-174755",
+        "US-PBC-OID-174756",
+        "US-PBC-OID-188528",
+        "US-PBC-OID-21812",
+        "US-PBC-OID-221728",
+        "US-PBC-OID-221729",
+        "US-PBC-OID-221730",
+        "US-PBC-OID-221731",
+        "US-PBC-OID-241240",
+        "US-PBC-OID-243847",
+        "US-PBC-OID-251904",
+        "US-PBC-OID-262597",
+        "US-PBC-OID-262598",
+        "US-PBC-OID-262599",
+        "US-PBC-OID-264758",
+        "US-PBC-OID-269247",
+        "US-PBC-OID-274019",
+        "US-PBC-OID-275473",
+        "US-PBC-OID-275475",
+        "US-PBC-OID-285249",
+        "US-PBC-OID-289027",
+        "US-PBC-OID-292697",
+        "US-PBC-OID-292699",
+        "US-PBC-OID-304724",
+        "US-PBC-OID-309834",
+        "US-PBC-OID-312129",
+        "US-PBC-OID-312180",
+        "US-PBC-OID-312224",
+        "US-PBC-OID-312225",
+        "US-PBC-OID-316967",
+        "US-PBC-OID-322007",
+        "US-PBC-OID-323511",
+        "US-PBC-OID-323512",
+        "US-PBC-OID-324766"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 601,
+      "requestIndexes": [
+        52,
+        54
+      ],
+      "count": 40,
+      "ids": [
+        "US-PBC-OID-325130",
+        "US-PBC-OID-325131",
+        "US-PBC-OID-325298",
+        "US-PBC-OID-325299",
+        "US-PBC-OID-328581",
+        "US-PBC-OID-332351",
+        "US-PBC-OID-333574",
+        "US-PBC-OID-334776",
+        "US-PBC-OID-335357",
+        "US-PBC-OID-341637",
+        "US-PBC-OID-344699",
+        "US-PBC-OID-360668",
+        "US-PBC-OID-367072",
+        "US-PBC-OID-367302",
+        "US-PBC-OID-367303",
+        "US-PBC-OID-367304",
+        "US-PBC-OID-371227",
+        "US-PBC-OID-371257",
+        "US-PBC-OID-373715",
+        "US-PBC-OID-374395",
+        "US-PBC-OID-376458",
+        "US-PBC-OID-378159",
+        "US-PBC-OID-378160",
+        "US-PBC-OID-379485",
+        "US-PBC-OID-380088",
+        "US-PBC-OID-380429",
+        "US-PBC-OID-380453",
+        "US-PBC-OID-380583",
+        "US-PBC-OID-380584",
+        "US-PBC-OID-380586",
+        "US-PBC-OID-380587",
+        "US-PBC-OID-380933",
+        "US-PBC-OID-381121",
+        "US-PBC-OID-382011",
+        "US-PBC-OID-383929",
+        "US-PBC-OID-383930",
+        "US-PBC-OID-383931",
+        "US-PBC-OID-386456",
+        "US-PBC-OID-387475",
+        "US-PBC-OID-389081"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 601,
+      "requestIndexes": [
+        55,
+        57
+      ],
+      "count": 34,
+      "ids": [
+        "US-PBC-OID-389524",
+        "US-PBC-OID-389525",
+        "US-PBC-OID-389526",
+        "US-PBC-OID-389860",
+        "US-PBC-OID-389871",
+        "US-PBC-OID-390044",
+        "US-PBC-OID-393630",
+        "US-PBC-OID-393952",
+        "US-PBC-OID-399051",
+        "US-PBC-OID-400363",
+        "US-PBC-OID-401749",
+        "US-PBC-OID-403523",
+        "US-PBC-OID-404721",
+        "US-PBC-OID-408731",
+        "US-PBC-OID-424307",
+        "US-PBC-OID-426153",
+        "US-PBC-OID-436592",
+        "US-PBC-OID-454473",
+        "US-PBC-OID-454474",
+        "US-PBC-OID-454475",
+        "US-PBC-OID-454476",
+        "US-PBC-OID-454477",
+        "US-PBC-OID-454478",
+        "US-PBC-OID-454479",
+        "US-PBC-OID-454480",
+        "US-PBC-OID-454481",
+        "US-PBC-OID-454482",
+        "US-PBC-OID-456588",
+        "US-PBC-OID-456589",
+        "US-PBC-OID-463737",
+        "US-PBC-OID-464019",
+        "US-PBC-OID-464310",
+        "US-PBC-OID-476548",
+        "US-PBC-OID-89883"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 393,
+      "requestIndexes": [
+        58,
+        59
+      ],
+      "absentIds": [
+        "US-PBC-OID-2147483647"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 600,
+      "requestIndexes": [
+        60,
+        62
+      ],
+      "selectedParcelId": "US-PBC-OID-323511",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 612,
+      "requestIndexes": [
+        63,
+        65
+      ],
+      "selectedParcelId": "US-PBC-OID-323511",
+      "coverage": "complete",
+      "siteM2": 1081.97,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.103%2C26.621%2C-80.102%2C26.622&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:19.859Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 13
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.103%2C26.621%2C-80.102%2C26.622&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:20.500Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 136,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        243847,
+        323512,
+        334776,
+        323511,
+        188528,
+        378159,
+        373715,
+        21812,
+        344699,
+        378160,
+        312180,
+        380429,
+        389526
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=243847%2C323512%2C334776%2C323511%2C188528%2C378159%2C373715%2C21812%2C344699%2C378160%2C312180%2C380429%2C389526",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:20.716Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4751,
+      "features": [
+        {
+          "transportId": 21812,
+          "properties": {
+            "OBJECTID": 21812
+          },
+          "geometrySha256": "aadb2d115749ab4e3f8b6e6bc59194b403a7dab1cee429d673929a3748994e0d"
+        },
+        {
+          "transportId": 188528,
+          "properties": {
+            "OBJECTID": 188528
+          },
+          "geometrySha256": "e94985ceed5c8ff8e8c9789f0e5febf24dbc408709004a5942ef25108d5d26ae"
+        },
+        {
+          "transportId": 243847,
+          "properties": {
+            "OBJECTID": 243847
+          },
+          "geometrySha256": "41c6f06906c25189e0c3888e3640b6aa34d5a18ee488c910cd9c839f9f55501d"
+        },
+        {
+          "transportId": 312180,
+          "properties": {
+            "OBJECTID": 312180
+          },
+          "geometrySha256": "f28c8236bd90e0a274fa6de90ee77c494857a4c02a276753cf5aee2c35d42000"
+        },
+        {
+          "transportId": 323511,
+          "properties": {
+            "OBJECTID": 323511
+          },
+          "geometrySha256": "01b4e909924df6242a09efa56ef575aa19708048a9253c5608d4748d6e94b054"
+        },
+        {
+          "transportId": 323512,
+          "properties": {
+            "OBJECTID": 323512
+          },
+          "geometrySha256": "37c2e686c2aa68f7e3972c7f644a3da31e20d2d35baadbecb88eb2afce721c94"
+        },
+        {
+          "transportId": 334776,
+          "properties": {
+            "OBJECTID": 334776
+          },
+          "geometrySha256": "48e4964c1421a414944e530a475728244538a2b4cdf904ca926ed8fa3f076f53"
+        },
+        {
+          "transportId": 344699,
+          "properties": {
+            "OBJECTID": 344699
+          },
+          "geometrySha256": "2ecce47c5ca93a2bd2bc5038ddc5e3bcfecb9b50594f437039ff567b848054d7"
+        },
+        {
+          "transportId": 373715,
+          "properties": {
+            "OBJECTID": 373715
+          },
+          "geometrySha256": "6146e5c1c792f8ff25fea6dbd2caaafe69ede9681e9d6e7062c332ac1f69de27"
+        },
+        {
+          "transportId": 378159,
+          "properties": {
+            "OBJECTID": 378159
+          },
+          "geometrySha256": "5572f30b6d9b432550fce2e217dd162e27ec2de629815c1c7cd16ccb8e1b6bef"
+        },
+        {
+          "transportId": 378160,
+          "properties": {
+            "OBJECTID": 378160
+          },
+          "geometrySha256": "ec89207733bc1ba5b32837623f1604bcadff022b8685ba8ccf13064602ed6210"
+        },
+        {
+          "transportId": 380429,
+          "properties": {
+            "OBJECTID": 380429
+          },
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "transportId": 389526,
+          "properties": {
+            "OBJECTID": 389526
+          },
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.621%2C-80.101%2C26.622&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:20.930Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 12
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.621%2C-80.101%2C26.622&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:21.142Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 130,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        367304,
+        243847,
+        367303,
+        389860,
+        309834,
+        382011,
+        146653,
+        380429,
+        328581,
+        389526,
+        125207,
+        269247
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=367304%2C243847%2C367303%2C389860%2C309834%2C382011%2C146653%2C380429%2C328581%2C389526%2C125207%2C269247",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:21.353Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4366,
+      "features": [
+        {
+          "transportId": 125207,
+          "properties": {
+            "OBJECTID": 125207
+          },
+          "geometrySha256": "4ae4cc0646e56bf7da49cd78f5200f54200e0b2f02e55ccd5fd0ee07e03ca9c6"
+        },
+        {
+          "transportId": 146653,
+          "properties": {
+            "OBJECTID": 146653
+          },
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "transportId": 243847,
+          "properties": {
+            "OBJECTID": 243847
+          },
+          "geometrySha256": "41c6f06906c25189e0c3888e3640b6aa34d5a18ee488c910cd9c839f9f55501d"
+        },
+        {
+          "transportId": 269247,
+          "properties": {
+            "OBJECTID": 269247
+          },
+          "geometrySha256": "91ef2d8da36129a51c91a5ab8f6aec648dcaf870b1e4bf4b238e7e292c0fca3c"
+        },
+        {
+          "transportId": 309834,
+          "properties": {
+            "OBJECTID": 309834
+          },
+          "geometrySha256": "385ac0025a777b0fa56a6561cf344a7294ce4fa4b9c502d3089a2ea0463f943c"
+        },
+        {
+          "transportId": 328581,
+          "properties": {
+            "OBJECTID": 328581
+          },
+          "geometrySha256": "91b004c2624b5134f16cc446a0cb1f6a06d2224212c3ce9c970c6462e83586b7"
+        },
+        {
+          "transportId": 367303,
+          "properties": {
+            "OBJECTID": 367303
+          },
+          "geometrySha256": "16b2acd7f3af91b617448f3d1b638335ee09b97143d1238cbd2fe0e0cc7b6033"
+        },
+        {
+          "transportId": 367304,
+          "properties": {
+            "OBJECTID": 367304
+          },
+          "geometrySha256": "9f8fe2f087df4c69e6ec85c10b953f4e63faddc5a0ec0fa10f7358a352d96ce4"
+        },
+        {
+          "transportId": 380429,
+          "properties": {
+            "OBJECTID": 380429
+          },
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "transportId": 382011,
+          "properties": {
+            "OBJECTID": 382011
+          },
+          "geometrySha256": "dc8a42134a95bfd1255edc24fe98025367de14d434f65f219ba3bb532515750c"
+        },
+        {
+          "transportId": 389526,
+          "properties": {
+            "OBJECTID": 389526
+          },
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        },
+        {
+          "transportId": 389860,
+          "properties": {
+            "OBJECTID": 389860
+          },
+          "geometrySha256": "a9dbc5296f28d63f08247a4e875f38a3ed1322927395c0b23c12a6f73eec4d1f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.101%2C26.621%2C-80.1%2C26.622&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:21.564Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 14
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.101%2C26.621%2C-80.1%2C26.622&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:21.770Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 144,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        393952,
+        316967,
+        389860,
+        389081,
+        309834,
+        113805,
+        382011,
+        312129,
+        146653,
+        322007,
+        251904,
+        274019,
+        333574,
+        374395
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=393952%2C316967%2C389860%2C389081%2C309834%2C113805%2C382011%2C312129%2C146653%2C322007%2C251904%2C274019%2C333574%2C374395",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:21.973Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5198,
+      "features": [
+        {
+          "transportId": 113805,
+          "properties": {
+            "OBJECTID": 113805
+          },
+          "geometrySha256": "99098a2af0710277592f7151f5f1ceff8be09fedc3a6b535f6c8c3514d207dea"
+        },
+        {
+          "transportId": 146653,
+          "properties": {
+            "OBJECTID": 146653
+          },
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "transportId": 251904,
+          "properties": {
+            "OBJECTID": 251904
+          },
+          "geometrySha256": "fea5c6e9555b825b927db42e4818c814a79c9b6c009cf5fb1e7da43388e302db"
+        },
+        {
+          "transportId": 274019,
+          "properties": {
+            "OBJECTID": 274019
+          },
+          "geometrySha256": "3c65d21cdd2fdabe2d1a8ab04aa670a279aacad35fe653832582004dae58df20"
+        },
+        {
+          "transportId": 309834,
+          "properties": {
+            "OBJECTID": 309834
+          },
+          "geometrySha256": "385ac0025a777b0fa56a6561cf344a7294ce4fa4b9c502d3089a2ea0463f943c"
+        },
+        {
+          "transportId": 312129,
+          "properties": {
+            "OBJECTID": 312129
+          },
+          "geometrySha256": "048bda796a67ed7f7be3435e4b795ced747f833f93a34d389e992fbd49e4b3d7"
+        },
+        {
+          "transportId": 316967,
+          "properties": {
+            "OBJECTID": 316967
+          },
+          "geometrySha256": "fd472d8682481fda7cce05536e90fe294a806559fccb1573933ae36a77313232"
+        },
+        {
+          "transportId": 322007,
+          "properties": {
+            "OBJECTID": 322007
+          },
+          "geometrySha256": "9e799d4c7d24c46e9d4d43abed3c14778a2c332b775531d8cfd88eb9cbfa1b03"
+        },
+        {
+          "transportId": 333574,
+          "properties": {
+            "OBJECTID": 333574
+          },
+          "geometrySha256": "18311deba4e65a75fcded8ec91af75a5665f19fc6f0098a93c29fbe5d675cae5"
+        },
+        {
+          "transportId": 374395,
+          "properties": {
+            "OBJECTID": 374395
+          },
+          "geometrySha256": "5cb32363a0419e4cfb0a729832b3ee4b45e4b4272a3579dde33849d994d7197a"
+        },
+        {
+          "transportId": 382011,
+          "properties": {
+            "OBJECTID": 382011
+          },
+          "geometrySha256": "dc8a42134a95bfd1255edc24fe98025367de14d434f65f219ba3bb532515750c"
+        },
+        {
+          "transportId": 389081,
+          "properties": {
+            "OBJECTID": 389081
+          },
+          "geometrySha256": "93e87fd87dd135b03cf9f3d2d82be4780a8f19a1f523281d72a003666ffa9441"
+        },
+        {
+          "transportId": 389860,
+          "properties": {
+            "OBJECTID": 389860
+          },
+          "geometrySha256": "a9dbc5296f28d63f08247a4e875f38a3ed1322927395c0b23c12a6f73eec4d1f"
+        },
+        {
+          "transportId": 393952,
+          "properties": {
+            "OBJECTID": 393952
+          },
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.103%2C26.622%2C-80.102%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:22.184Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 17
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.103%2C26.622%2C-80.102%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:22.397Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 165,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        221730,
+        360668,
+        221729,
+        334776,
+        387475,
+        325130,
+        264758,
+        289027,
+        373715,
+        221728,
+        221731,
+        325299,
+        325131,
+        312180,
+        262599,
+        380429,
+        380584
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=221730%2C360668%2C221729%2C334776%2C387475%2C325130%2C264758%2C289027%2C373715%2C221728%2C221731%2C325299%2C325131%2C312180%2C262599%2C380429%2C380584",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:22.604Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6055,
+      "features": [
+        {
+          "transportId": 221728,
+          "properties": {
+            "OBJECTID": 221728
+          },
+          "geometrySha256": "cc7cdd8530f38790df3b95098fd143025d4167494211637fea85f3aef26cd684"
+        },
+        {
+          "transportId": 221729,
+          "properties": {
+            "OBJECTID": 221729
+          },
+          "geometrySha256": "89e40382edb52431a1eb8a2363346733a4caba1e88110c9883aac3e0d55b6eb9"
+        },
+        {
+          "transportId": 221730,
+          "properties": {
+            "OBJECTID": 221730
+          },
+          "geometrySha256": "9a9832cb86ace6b3bdf49d21ea4f76ff83caa22c15508c3364ac656620e37fe7"
+        },
+        {
+          "transportId": 221731,
+          "properties": {
+            "OBJECTID": 221731
+          },
+          "geometrySha256": "9b201746adf9f4b3dde59ecff790f8f3edede31f76816d14cc107ec478eec810"
+        },
+        {
+          "transportId": 262599,
+          "properties": {
+            "OBJECTID": 262599
+          },
+          "geometrySha256": "31b7c8816ca96f0b96ac65707336ac7df47d93ffb6ae6f52f7464b08ae520d35"
+        },
+        {
+          "transportId": 264758,
+          "properties": {
+            "OBJECTID": 264758
+          },
+          "geometrySha256": "5c110e750bf6fad62ebffd2eb463def2acf2d85d480c830808defa854332d1e6"
+        },
+        {
+          "transportId": 289027,
+          "properties": {
+            "OBJECTID": 289027
+          },
+          "geometrySha256": "0592c825a9f642d4984d82493cf49740a7012bc84492f9ac939756153ba8af17"
+        },
+        {
+          "transportId": 312180,
+          "properties": {
+            "OBJECTID": 312180
+          },
+          "geometrySha256": "f28c8236bd90e0a274fa6de90ee77c494857a4c02a276753cf5aee2c35d42000"
+        },
+        {
+          "transportId": 325130,
+          "properties": {
+            "OBJECTID": 325130
+          },
+          "geometrySha256": "599aa2ab17fb2a5edadee9cc1b88c6c4a39b1cbbe3965f6875c2eacf1eaaad22"
+        },
+        {
+          "transportId": 325131,
+          "properties": {
+            "OBJECTID": 325131
+          },
+          "geometrySha256": "4d9717b59d1884785c08e85f1b24447a3015eb8717460225cefc5444ef9ce01a"
+        },
+        {
+          "transportId": 325299,
+          "properties": {
+            "OBJECTID": 325299
+          },
+          "geometrySha256": "73da1111b536a8c7468b5ec126a43df222db5dfcb50655986b3b2bb16c99ad30"
+        },
+        {
+          "transportId": 334776,
+          "properties": {
+            "OBJECTID": 334776
+          },
+          "geometrySha256": "48e4964c1421a414944e530a475728244538a2b4cdf904ca926ed8fa3f076f53"
+        },
+        {
+          "transportId": 360668,
+          "properties": {
+            "OBJECTID": 360668
+          },
+          "geometrySha256": "374358dfde89aa8426f7d6e1ec6fb9e2bb4ea1e8c0a2d1cf91b8e7738f9d60c6"
+        },
+        {
+          "transportId": 373715,
+          "properties": {
+            "OBJECTID": 373715
+          },
+          "geometrySha256": "6146e5c1c792f8ff25fea6dbd2caaafe69ede9681e9d6e7062c332ac1f69de27"
+        },
+        {
+          "transportId": 380429,
+          "properties": {
+            "OBJECTID": 380429
+          },
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "transportId": 380584,
+          "properties": {
+            "OBJECTID": 380584
+          },
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "transportId": 387475,
+          "properties": {
+            "OBJECTID": 387475
+          },
+          "geometrySha256": "ae808a71012cb7784dcfbfa662f524f4cb0eae31b9ac6a4be937561e98b65f9e"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.622%2C-80.101%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:22.815Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 12
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.622%2C-80.101%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:23.023Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 130,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        367304,
+        367303,
+        387475,
+        380586,
+        289027,
+        367302,
+        146653,
+        380587,
+        335357,
+        380429,
+        380584,
+        408731
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=367304%2C367303%2C387475%2C380586%2C289027%2C367302%2C146653%2C380587%2C335357%2C380429%2C380584%2C408731",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:23.267Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4532,
+      "features": [
+        {
+          "transportId": 146653,
+          "properties": {
+            "OBJECTID": 146653
+          },
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "transportId": 289027,
+          "properties": {
+            "OBJECTID": 289027
+          },
+          "geometrySha256": "0592c825a9f642d4984d82493cf49740a7012bc84492f9ac939756153ba8af17"
+        },
+        {
+          "transportId": 335357,
+          "properties": {
+            "OBJECTID": 335357
+          },
+          "geometrySha256": "55a3ee08f2ea09af883346fe6bae4d36c05306ea980de85248b5477e781e9538"
+        },
+        {
+          "transportId": 367302,
+          "properties": {
+            "OBJECTID": 367302
+          },
+          "geometrySha256": "d1a39d38ecc57fe9bc280f967b4263fad858abb8cc4c4fe31a5bc5aef4af4d91"
+        },
+        {
+          "transportId": 367303,
+          "properties": {
+            "OBJECTID": 367303
+          },
+          "geometrySha256": "16b2acd7f3af91b617448f3d1b638335ee09b97143d1238cbd2fe0e0cc7b6033"
+        },
+        {
+          "transportId": 367304,
+          "properties": {
+            "OBJECTID": 367304
+          },
+          "geometrySha256": "9f8fe2f087df4c69e6ec85c10b953f4e63faddc5a0ec0fa10f7358a352d96ce4"
+        },
+        {
+          "transportId": 380429,
+          "properties": {
+            "OBJECTID": 380429
+          },
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "transportId": 380584,
+          "properties": {
+            "OBJECTID": 380584
+          },
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "transportId": 380586,
+          "properties": {
+            "OBJECTID": 380586
+          },
+          "geometrySha256": "96efff8e81fc1c62515e473cc8a7356b3eba530657c445d0b92c82abb9e2063e"
+        },
+        {
+          "transportId": 380587,
+          "properties": {
+            "OBJECTID": 380587
+          },
+          "geometrySha256": "f5e85f71ff4dbe9fbe65efbb6d3a9b012a7aff57c68c3330a00ca853d23aba98"
+        },
+        {
+          "transportId": 387475,
+          "properties": {
+            "OBJECTID": 387475
+          },
+          "geometrySha256": "ae808a71012cb7784dcfbfa662f524f4cb0eae31b9ac6a4be937561e98b65f9e"
+        },
+        {
+          "transportId": 408731,
+          "properties": {
+            "OBJECTID": 408731
+          },
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.101%2C26.622%2C-80.1%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:23.479Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 12
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.101%2C26.622%2C-80.1%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:23.692Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 130,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        393952,
+        393630,
+        316967,
+        380586,
+        401749,
+        146653,
+        322007,
+        333574,
+        380587,
+        464019,
+        456588,
+        408731
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=393952%2C393630%2C316967%2C380586%2C401749%2C146653%2C322007%2C333574%2C380587%2C464019%2C456588%2C408731",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:23.903Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 9342,
+      "features": [
+        {
+          "transportId": 146653,
+          "properties": {
+            "OBJECTID": 146653
+          },
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "transportId": 316967,
+          "properties": {
+            "OBJECTID": 316967
+          },
+          "geometrySha256": "fd472d8682481fda7cce05536e90fe294a806559fccb1573933ae36a77313232"
+        },
+        {
+          "transportId": 322007,
+          "properties": {
+            "OBJECTID": 322007
+          },
+          "geometrySha256": "9e799d4c7d24c46e9d4d43abed3c14778a2c332b775531d8cfd88eb9cbfa1b03"
+        },
+        {
+          "transportId": 333574,
+          "properties": {
+            "OBJECTID": 333574
+          },
+          "geometrySha256": "18311deba4e65a75fcded8ec91af75a5665f19fc6f0098a93c29fbe5d675cae5"
+        },
+        {
+          "transportId": 380586,
+          "properties": {
+            "OBJECTID": 380586
+          },
+          "geometrySha256": "96efff8e81fc1c62515e473cc8a7356b3eba530657c445d0b92c82abb9e2063e"
+        },
+        {
+          "transportId": 380587,
+          "properties": {
+            "OBJECTID": 380587
+          },
+          "geometrySha256": "f5e85f71ff4dbe9fbe65efbb6d3a9b012a7aff57c68c3330a00ca853d23aba98"
+        },
+        {
+          "transportId": 393630,
+          "properties": {
+            "OBJECTID": 393630
+          },
+          "geometrySha256": "412bde204023933c04616cfc1a83f527a262754a5dca7e109193c16cffd859e8"
+        },
+        {
+          "transportId": 393952,
+          "properties": {
+            "OBJECTID": 393952
+          },
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        },
+        {
+          "transportId": 401749,
+          "properties": {
+            "OBJECTID": 401749
+          },
+          "geometrySha256": "f97b44a083de5c69eeb3556a3f3f9b7a14c56580b8f72639cae4288024f633aa"
+        },
+        {
+          "transportId": 408731,
+          "properties": {
+            "OBJECTID": 408731
+          },
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        },
+        {
+          "transportId": 456588,
+          "properties": {
+            "OBJECTID": 456588
+          },
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        },
+        {
+          "transportId": 464019,
+          "properties": {
+            "OBJECTID": 464019
+          },
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.103%2C26.623%2C-80.102%2C26.624&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:24.119Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 19
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.103%2C26.623%2C-80.102%2C26.624&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:24.333Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 179,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        325298,
+        304724,
+        380583,
+        275473,
+        262597,
+        262598,
+        275475,
+        264758,
+        381121,
+        292699,
+        380453,
+        383931,
+        285249,
+        325131,
+        324766,
+        262599,
+        292697,
+        380584,
+        386456
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=325298%2C304724%2C380583%2C275473%2C262597%2C262598%2C275475%2C264758%2C381121%2C292699%2C380453%2C383931%2C285249%2C325131%2C324766%2C262599%2C292697%2C380584%2C386456",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:24.635Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6731,
+      "features": [
+        {
+          "transportId": 262597,
+          "properties": {
+            "OBJECTID": 262597
+          },
+          "geometrySha256": "25fb37015e6b3d8ef98d5538c2195e2c0b226241c2c4c11ec03a2bf22cceeeaf"
+        },
+        {
+          "transportId": 262598,
+          "properties": {
+            "OBJECTID": 262598
+          },
+          "geometrySha256": "096b638c3a8179e1da9b6a5d23dd0d07503cc7adaa35f779988ea28bee14a94b"
+        },
+        {
+          "transportId": 262599,
+          "properties": {
+            "OBJECTID": 262599
+          },
+          "geometrySha256": "31b7c8816ca96f0b96ac65707336ac7df47d93ffb6ae6f52f7464b08ae520d35"
+        },
+        {
+          "transportId": 264758,
+          "properties": {
+            "OBJECTID": 264758
+          },
+          "geometrySha256": "5c110e750bf6fad62ebffd2eb463def2acf2d85d480c830808defa854332d1e6"
+        },
+        {
+          "transportId": 275473,
+          "properties": {
+            "OBJECTID": 275473
+          },
+          "geometrySha256": "f6bb19fbecc04c924f80f8e7b7b0698449f14c517b8fa8cf084dad2800b8e091"
+        },
+        {
+          "transportId": 275475,
+          "properties": {
+            "OBJECTID": 275475
+          },
+          "geometrySha256": "41b91c27fb519f82efeb19cfa4af9437bc676d7064718d3235acf9e5ba6d729a"
+        },
+        {
+          "transportId": 285249,
+          "properties": {
+            "OBJECTID": 285249
+          },
+          "geometrySha256": "45589fe471bf3a61f95ae01f0055d46912dc1b5dc4561d8089c9d06f05bd10cb"
+        },
+        {
+          "transportId": 292697,
+          "properties": {
+            "OBJECTID": 292697
+          },
+          "geometrySha256": "0dd5e7dd50a181c53ba75511f4f733988593388b670722ecab9c8714ad76f6c4"
+        },
+        {
+          "transportId": 292699,
+          "properties": {
+            "OBJECTID": 292699
+          },
+          "geometrySha256": "9d6587d994afa9b87e72d97aca9626d04258bb3a8be12569d6012acb92288c77"
+        },
+        {
+          "transportId": 304724,
+          "properties": {
+            "OBJECTID": 304724
+          },
+          "geometrySha256": "fef465812e6b2e520e12555c42671cf76c536630a513b18f21d9b60189c73da9"
+        },
+        {
+          "transportId": 324766,
+          "properties": {
+            "OBJECTID": 324766
+          },
+          "geometrySha256": "e5c8fb21f8797ff829ab9f598cd654f7bf8d020c63d5adbb64b58fdb5088e1bb"
+        },
+        {
+          "transportId": 325131,
+          "properties": {
+            "OBJECTID": 325131
+          },
+          "geometrySha256": "4d9717b59d1884785c08e85f1b24447a3015eb8717460225cefc5444ef9ce01a"
+        },
+        {
+          "transportId": 325298,
+          "properties": {
+            "OBJECTID": 325298
+          },
+          "geometrySha256": "531afbbd6884688aa299ff74d8da93cc2c15cec150a105a9ac31bb75970ff536"
+        },
+        {
+          "transportId": 380453,
+          "properties": {
+            "OBJECTID": 380453
+          },
+          "geometrySha256": "7040aa9e50965a75040853052fe7605dd689dc9bdd0286eb031edb2ce65be51b"
+        },
+        {
+          "transportId": 380583,
+          "properties": {
+            "OBJECTID": 380583
+          },
+          "geometrySha256": "c1e14f3ee7a3dbcbaa4a2a99ed1e893cdec72957211d778857f060f392a44102"
+        },
+        {
+          "transportId": 380584,
+          "properties": {
+            "OBJECTID": 380584
+          },
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "transportId": 381121,
+          "properties": {
+            "OBJECTID": 381121
+          },
+          "geometrySha256": "1ef457238f7923049a8dec189d9f641d8d59b8e867ee04ffe8eaa8d77e586606"
+        },
+        {
+          "transportId": 383931,
+          "properties": {
+            "OBJECTID": 383931
+          },
+          "geometrySha256": "caeaf369273d684b2c8d9280b70e08db82a3bb61b9effd1a8851ad55b0be26f6"
+        },
+        {
+          "transportId": 386456,
+          "properties": {
+            "OBJECTID": 386456
+          },
+          "geometrySha256": "d5a31b07528dcb5cc04cfa2ddfc78679989c42a3d0ad1c1dd1af10a7044c8b63"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.623%2C-80.101%2C26.624&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:24.856Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.623%2C-80.101%2C26.624&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:25.074Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 123,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        380583,
+        379485,
+        381121,
+        380453,
+        401749,
+        383931,
+        380933,
+        380584,
+        386456,
+        408731,
+        399051
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=380583%2C379485%2C381121%2C380453%2C401749%2C383931%2C380933%2C380584%2C386456%2C408731%2C399051",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:25.690Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4086,
+      "features": [
+        {
+          "transportId": 379485,
+          "properties": {
+            "OBJECTID": 379485
+          },
+          "geometrySha256": "b234ee1edce1f534ebb2813c972104e9998c62cbbed8d2de926ec6a92c0fcffe"
+        },
+        {
+          "transportId": 380453,
+          "properties": {
+            "OBJECTID": 380453
+          },
+          "geometrySha256": "7040aa9e50965a75040853052fe7605dd689dc9bdd0286eb031edb2ce65be51b"
+        },
+        {
+          "transportId": 380583,
+          "properties": {
+            "OBJECTID": 380583
+          },
+          "geometrySha256": "c1e14f3ee7a3dbcbaa4a2a99ed1e893cdec72957211d778857f060f392a44102"
+        },
+        {
+          "transportId": 380584,
+          "properties": {
+            "OBJECTID": 380584
+          },
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "transportId": 380933,
+          "properties": {
+            "OBJECTID": 380933
+          },
+          "geometrySha256": "bd6bc2794b8a1d44a6cf074820b5ea1d4554f0f2af0fe45ab6d4239a086ec3dd"
+        },
+        {
+          "transportId": 381121,
+          "properties": {
+            "OBJECTID": 381121
+          },
+          "geometrySha256": "1ef457238f7923049a8dec189d9f641d8d59b8e867ee04ffe8eaa8d77e586606"
+        },
+        {
+          "transportId": 383931,
+          "properties": {
+            "OBJECTID": 383931
+          },
+          "geometrySha256": "caeaf369273d684b2c8d9280b70e08db82a3bb61b9effd1a8851ad55b0be26f6"
+        },
+        {
+          "transportId": 386456,
+          "properties": {
+            "OBJECTID": 386456
+          },
+          "geometrySha256": "d5a31b07528dcb5cc04cfa2ddfc78679989c42a3d0ad1c1dd1af10a7044c8b63"
+        },
+        {
+          "transportId": 399051,
+          "properties": {
+            "OBJECTID": 399051
+          },
+          "geometrySha256": "2f26501f71ba1c8b6fe5a6f91f3bb02550e4f74b5eca601911126f9f5edfd4e3"
+        },
+        {
+          "transportId": 401749,
+          "properties": {
+            "OBJECTID": 401749
+          },
+          "geometrySha256": "f97b44a083de5c69eeb3556a3f3f9b7a14c56580b8f72639cae4288024f633aa"
+        },
+        {
+          "transportId": 408731,
+          "properties": {
+            "OBJECTID": 408731
+          },
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.101%2C26.623%2C-80.1%2C26.624&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:25.901Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 10
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.101%2C26.623%2C-80.1%2C26.624&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:26.113Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 116,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        454482,
+        390044,
+        379485,
+        401749,
+        464019,
+        380933,
+        456588,
+        380088,
+        408731,
+        399051
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=454482%2C390044%2C379485%2C401749%2C464019%2C380933%2C456588%2C380088%2C408731%2C399051",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:26.321Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 8463,
+      "features": [
+        {
+          "transportId": 379485,
+          "properties": {
+            "OBJECTID": 379485
+          },
+          "geometrySha256": "b234ee1edce1f534ebb2813c972104e9998c62cbbed8d2de926ec6a92c0fcffe"
+        },
+        {
+          "transportId": 380088,
+          "properties": {
+            "OBJECTID": 380088
+          },
+          "geometrySha256": "96d78d7a1fcd4ef50f7ddda9a6d56eef5e98253a78542d02ff7aa7f39551e5e1"
+        },
+        {
+          "transportId": 380933,
+          "properties": {
+            "OBJECTID": 380933
+          },
+          "geometrySha256": "bd6bc2794b8a1d44a6cf074820b5ea1d4554f0f2af0fe45ab6d4239a086ec3dd"
+        },
+        {
+          "transportId": 390044,
+          "properties": {
+            "OBJECTID": 390044
+          },
+          "geometrySha256": "7813d139a81e79cb73cfa1f7bdfb41b99b3381b1366a966ad006e72fee9b622f"
+        },
+        {
+          "transportId": 399051,
+          "properties": {
+            "OBJECTID": 399051
+          },
+          "geometrySha256": "2f26501f71ba1c8b6fe5a6f91f3bb02550e4f74b5eca601911126f9f5edfd4e3"
+        },
+        {
+          "transportId": 401749,
+          "properties": {
+            "OBJECTID": 401749
+          },
+          "geometrySha256": "f97b44a083de5c69eeb3556a3f3f9b7a14c56580b8f72639cae4288024f633aa"
+        },
+        {
+          "transportId": 408731,
+          "properties": {
+            "OBJECTID": 408731
+          },
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        },
+        {
+          "transportId": 454482,
+          "properties": {
+            "OBJECTID": 454482
+          },
+          "geometrySha256": "d96d5e6a61d8e2ec5fadb7d79de8ca7bbac0b87df3c9da5ccaa56364611fe0d0"
+        },
+        {
+          "transportId": 456588,
+          "properties": {
+            "OBJECTID": 456588
+          },
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        },
+        {
+          "transportId": 464019,
+          "properties": {
+            "OBJECTID": 464019
+          },
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.62%2C-80.101%2C26.621&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:26.892Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.62%2C-80.101%2C26.621&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:27.095Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 123,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        332351,
+        371227,
+        389860,
+        389524,
+        404721,
+        389525,
+        312225,
+        312224,
+        371257,
+        389526,
+        389871
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=332351%2C371227%2C389860%2C389524%2C404721%2C389525%2C312225%2C312224%2C371257%2C389526%2C389871",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:27.292Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4287,
+      "features": [
+        {
+          "transportId": 312224,
+          "properties": {
+            "OBJECTID": 312224
+          },
+          "geometrySha256": "d3364dcb594a9293ec6375b8a11333dc2fc19a44a89d5f47d9f696b910e3002c"
+        },
+        {
+          "transportId": 312225,
+          "properties": {
+            "OBJECTID": 312225
+          },
+          "geometrySha256": "e4b4e652351f0c1be6898633ce94456d3b9dd59bb17ff3f1b1ac22f73325dc00"
+        },
+        {
+          "transportId": 332351,
+          "properties": {
+            "OBJECTID": 332351
+          },
+          "geometrySha256": "5022a00a44a630b85774f5ec09e8b797e8d1417e0639c4dc24d107697b228476"
+        },
+        {
+          "transportId": 371227,
+          "properties": {
+            "OBJECTID": 371227
+          },
+          "geometrySha256": "ed26ae9668c06e8252eaaad94a18f02340d5f8bb226da9a065235462f943de94"
+        },
+        {
+          "transportId": 371257,
+          "properties": {
+            "OBJECTID": 371257
+          },
+          "geometrySha256": "bfe331d530ec0134ae94ff3db42ffa80aa412f655c1947960b84f32a6efc3c0c"
+        },
+        {
+          "transportId": 389524,
+          "properties": {
+            "OBJECTID": 389524
+          },
+          "geometrySha256": "ab14b06e7217c2379e607f1d6a728d678a03a36afff8052061d786dc5ca1de01"
+        },
+        {
+          "transportId": 389525,
+          "properties": {
+            "OBJECTID": 389525
+          },
+          "geometrySha256": "39d10633d4c0ded24a35b16591799786d2f729b2ccfd4978492e1a30589ae446"
+        },
+        {
+          "transportId": 389526,
+          "properties": {
+            "OBJECTID": 389526
+          },
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        },
+        {
+          "transportId": 389860,
+          "properties": {
+            "OBJECTID": 389860
+          },
+          "geometrySha256": "a9dbc5296f28d63f08247a4e875f38a3ed1322927395c0b23c12a6f73eec4d1f"
+        },
+        {
+          "transportId": 389871,
+          "properties": {
+            "OBJECTID": 389871
+          },
+          "geometrySha256": "8af8b70b7e8e3600876420fa53ad81fc75a3ca781b1be479d2006e2b64f84a17"
+        },
+        {
+          "transportId": 404721,
+          "properties": {
+            "OBJECTID": 404721
+          },
+          "geometrySha256": "8b5b92c19606ca4eb13fef35b420e41c2d4868dd437bb8182000e64b06c48043"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.624%2C-80.101%2C26.625&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:27.492Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.102%2C26.624%2C-80.101%2C26.625&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:28.147Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 102,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        132360,
+        383929,
+        426153,
+        381121,
+        400363,
+        376458,
+        383930,
+        399051
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=132360%2C383929%2C426153%2C381121%2C400363%2C376458%2C383930%2C399051",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:28.347Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3187,
+      "features": [
+        {
+          "transportId": 132360,
+          "properties": {
+            "OBJECTID": 132360
+          },
+          "geometrySha256": "f4f903abcc163855c8d40ba86a112a8bfd924d985947536215df3ee45c712921"
+        },
+        {
+          "transportId": 376458,
+          "properties": {
+            "OBJECTID": 376458
+          },
+          "geometrySha256": "582a001edda11038a0728a4731e86dfc68fb6aa53e631d5d8d9d50a79dcd4da0"
+        },
+        {
+          "transportId": 381121,
+          "properties": {
+            "OBJECTID": 381121
+          },
+          "geometrySha256": "1ef457238f7923049a8dec189d9f641d8d59b8e867ee04ffe8eaa8d77e586606"
+        },
+        {
+          "transportId": 383929,
+          "properties": {
+            "OBJECTID": 383929
+          },
+          "geometrySha256": "c0651518ef2b1ef43cd27d31c61e07ef6494647898197f325c2452ab9870235a"
+        },
+        {
+          "transportId": 383930,
+          "properties": {
+            "OBJECTID": 383930
+          },
+          "geometrySha256": "541fe541178b9e59bf578f85f8217df9529dcdaff3aea6ea4727ea2d8bcdca7b"
+        },
+        {
+          "transportId": 399051,
+          "properties": {
+            "OBJECTID": 399051
+          },
+          "geometrySha256": "2f26501f71ba1c8b6fe5a6f91f3bb02550e4f74b5eca601911126f9f5edfd4e3"
+        },
+        {
+          "transportId": 400363,
+          "properties": {
+            "OBJECTID": 400363
+          },
+          "geometrySha256": "5a83cfe50d8bdbe65b708facabdf86c5f8e625096f7c4054e420d0c1f71fb16d"
+        },
+        {
+          "transportId": 426153,
+          "properties": {
+            "OBJECTID": 426153
+          },
+          "geometrySha256": "ef6f25661e56ee86b673bcdcdeff121a2371b8af62f7a331f749b159a5cd21c2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.104%2C26.622%2C-80.103%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:28.552Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.104%2C26.622%2C-80.103%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:28.748Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 123,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        436592,
+        174753,
+        174754,
+        360668,
+        174756,
+        325130,
+        373715,
+        221728,
+        341637,
+        174755,
+        325131
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=436592%2C174753%2C174754%2C360668%2C174756%2C325130%2C373715%2C221728%2C341637%2C174755%2C325131",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:28.942Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4372,
+      "features": [
+        {
+          "transportId": 174753,
+          "properties": {
+            "OBJECTID": 174753
+          },
+          "geometrySha256": "07714c67b3d5ea25baf58ed07f588ee897b9b5b2c9a0b5843e36eb0b951f136c"
+        },
+        {
+          "transportId": 174754,
+          "properties": {
+            "OBJECTID": 174754
+          },
+          "geometrySha256": "e250432b32f6ac867ddac6fb0aa69078933f8268426fbbfa35b6f66f7702305d"
+        },
+        {
+          "transportId": 174755,
+          "properties": {
+            "OBJECTID": 174755
+          },
+          "geometrySha256": "234ac98a6a62f5b6d61ac5e04333eba00f234aa934f2558cd0627a3f86bf01fd"
+        },
+        {
+          "transportId": 174756,
+          "properties": {
+            "OBJECTID": 174756
+          },
+          "geometrySha256": "d234726204ff3f406d200f2a3c050d2ab7668e948aa558296fcad9bab1d98764"
+        },
+        {
+          "transportId": 221728,
+          "properties": {
+            "OBJECTID": 221728
+          },
+          "geometrySha256": "cc7cdd8530f38790df3b95098fd143025d4167494211637fea85f3aef26cd684"
+        },
+        {
+          "transportId": 325130,
+          "properties": {
+            "OBJECTID": 325130
+          },
+          "geometrySha256": "599aa2ab17fb2a5edadee9cc1b88c6c4a39b1cbbe3965f6875c2eacf1eaaad22"
+        },
+        {
+          "transportId": 325131,
+          "properties": {
+            "OBJECTID": 325131
+          },
+          "geometrySha256": "4d9717b59d1884785c08e85f1b24447a3015eb8717460225cefc5444ef9ce01a"
+        },
+        {
+          "transportId": 341637,
+          "properties": {
+            "OBJECTID": 341637
+          },
+          "geometrySha256": "0c574cdad622bb85cd642dcb88406791c6b1dcd37bbed90bf304f08701103062"
+        },
+        {
+          "transportId": 360668,
+          "properties": {
+            "OBJECTID": 360668
+          },
+          "geometrySha256": "374358dfde89aa8426f7d6e1ec6fb9e2bb4ea1e8c0a2d1cf91b8e7738f9d60c6"
+        },
+        {
+          "transportId": 373715,
+          "properties": {
+            "OBJECTID": 373715
+          },
+          "geometrySha256": "6146e5c1c792f8ff25fea6dbd2caaafe69ede9681e9d6e7062c332ac1f69de27"
+        },
+        {
+          "transportId": 436592,
+          "properties": {
+            "OBJECTID": 436592
+          },
+          "geometrySha256": "5f4dfa32fb43307323846b8475dd7fc8f14d241d08239fb2506b72b5127c9d87"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.1%2C26.622%2C-80.099%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:29.145Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 22
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.1%2C26.622%2C-80.099%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:29.342Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 199,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        393952,
+        89883,
+        393630,
+        454477,
+        454479,
+        454474,
+        454473,
+        241240,
+        454476,
+        456589,
+        476548,
+        454478,
+        454480,
+        463737,
+        464310,
+        464019,
+        367072,
+        454475,
+        456588,
+        403523,
+        454481,
+        424307
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=393952%2C89883%2C393630%2C454477%2C454479%2C454474%2C454473%2C241240%2C454476%2C456589%2C476548%2C454478%2C454480%2C463737%2C464310%2C464019%2C367072%2C454475%2C456588%2C403523%2C454481%2C424307",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:29.537Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 14276,
+      "features": [
+        {
+          "transportId": 89883,
+          "properties": {
+            "OBJECTID": 89883
+          },
+          "geometrySha256": "ca298ed55af7321a941af15a37ec73b7e7ebee1a0510c56253cbe8adec427ddf"
+        },
+        {
+          "transportId": 241240,
+          "properties": {
+            "OBJECTID": 241240
+          },
+          "geometrySha256": "a78fea42296cba0b6b8365cc0b9a7f4fef8a29a68c67fc2282bfe995da16c650"
+        },
+        {
+          "transportId": 367072,
+          "properties": {
+            "OBJECTID": 367072
+          },
+          "geometrySha256": "83f0e7ed557e9758e54937dee144c3b17a5599d20dad498576156c0c6751b311"
+        },
+        {
+          "transportId": 393630,
+          "properties": {
+            "OBJECTID": 393630
+          },
+          "geometrySha256": "412bde204023933c04616cfc1a83f527a262754a5dca7e109193c16cffd859e8"
+        },
+        {
+          "transportId": 393952,
+          "properties": {
+            "OBJECTID": 393952
+          },
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        },
+        {
+          "transportId": 403523,
+          "properties": {
+            "OBJECTID": 403523
+          },
+          "geometrySha256": "e577fd3ce53208c3f673456967abfa9376b08beeeb07cd26ba66cb8ebf6fd53b"
+        },
+        {
+          "transportId": 424307,
+          "properties": {
+            "OBJECTID": 424307
+          },
+          "geometrySha256": "2f2b6094339e88aa0ebf2dbd0e424b4d15dfa668b2d34d696ac15dd2238329da"
+        },
+        {
+          "transportId": 454473,
+          "properties": {
+            "OBJECTID": 454473
+          },
+          "geometrySha256": "5039b30cad9f51a6bcc5d0046fe4c69d8aa51552781d804cd1c91cb33f928699"
+        },
+        {
+          "transportId": 454474,
+          "properties": {
+            "OBJECTID": 454474
+          },
+          "geometrySha256": "c96dd52ef2bd5ec61a91b83e85d8e32ee77ed182fd1954e067824ad29c74cf84"
+        },
+        {
+          "transportId": 454475,
+          "properties": {
+            "OBJECTID": 454475
+          },
+          "geometrySha256": "044e450d06f62b59c8c299044454e9ec31d2c28b617ed1aceb65b42e6598435b"
+        },
+        {
+          "transportId": 454476,
+          "properties": {
+            "OBJECTID": 454476
+          },
+          "geometrySha256": "8d47a15db6b120317d50ce8767f3d1e707cc97f8b824863e974a96b541667050"
+        },
+        {
+          "transportId": 454477,
+          "properties": {
+            "OBJECTID": 454477
+          },
+          "geometrySha256": "e281cbe1ebcb241526a3c9d2e5e849924a8a5b2490e8b74d5e42103dac03aeab"
+        },
+        {
+          "transportId": 454478,
+          "properties": {
+            "OBJECTID": 454478
+          },
+          "geometrySha256": "7011f34e7fab4fdb0dfba91857fc70b55158afccb3311f71462ce682a61cf55f"
+        },
+        {
+          "transportId": 454479,
+          "properties": {
+            "OBJECTID": 454479
+          },
+          "geometrySha256": "ab120896222fe92374d961ca3fd36452b52288c96593806963888bdcbee5366f"
+        },
+        {
+          "transportId": 454480,
+          "properties": {
+            "OBJECTID": 454480
+          },
+          "geometrySha256": "fea1feba5693dfa4e7d20e29bcdc8f370bf50eda1e8548b066da427489f4aac6"
+        },
+        {
+          "transportId": 454481,
+          "properties": {
+            "OBJECTID": 454481
+          },
+          "geometrySha256": "292b7b5f01ad549e9924d853d91ef314ced4ef6ba2284a7466027c55ea57e5e2"
+        },
+        {
+          "transportId": 456588,
+          "properties": {
+            "OBJECTID": 456588
+          },
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        },
+        {
+          "transportId": 456589,
+          "properties": {
+            "OBJECTID": 456589
+          },
+          "geometrySha256": "06137a868056bab4234e89cd81defc005a451d97a8ed68ef37c73b799617c3d9"
+        },
+        {
+          "transportId": 463737,
+          "properties": {
+            "OBJECTID": 463737
+          },
+          "geometrySha256": "2b6b65977970cb000767e26858af2ed0a21ac3da519edd89d0e8b79d5ca2e846"
+        },
+        {
+          "transportId": 464019,
+          "properties": {
+            "OBJECTID": 464019
+          },
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        },
+        {
+          "transportId": 464310,
+          "properties": {
+            "OBJECTID": 464310
+          },
+          "geometrySha256": "b98aba4f38f59f7afb37d8b84be5fb99ac5683a2b5587cd47efc78a20e6d00a7"
+        },
+        {
+          "transportId": 476548,
+          "properties": {
+            "OBJECTID": 476548
+          },
+          "geometrySha256": "4e7e4b36e5b90bedbc6f62120f3c01b2709fbfd97212bb3b203628ce188128d0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.1%2C26.622%2C-80.099%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:29.756Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 22
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.1%2C26.622%2C-80.099%2C26.623&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:29.957Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 199,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        393952,
+        89883,
+        393630,
+        454477,
+        454479,
+        454474,
+        454473,
+        241240,
+        454476,
+        456589,
+        476548,
+        454478,
+        454480,
+        463737,
+        464310,
+        464019,
+        367072,
+        454475,
+        456588,
+        403523,
+        454481,
+        424307
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=393952%2C89883%2C393630",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:30.158Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1399,
+      "features": [
+        {
+          "transportId": 89883,
+          "properties": {
+            "OBJECTID": 89883
+          },
+          "geometrySha256": "ca298ed55af7321a941af15a37ec73b7e7ebee1a0510c56253cbe8adec427ddf"
+        },
+        {
+          "transportId": 393630,
+          "properties": {
+            "OBJECTID": 393630
+          },
+          "geometrySha256": "412bde204023933c04616cfc1a83f527a262754a5dca7e109193c16cffd859e8"
+        },
+        {
+          "transportId": 393952,
+          "properties": {
+            "OBJECTID": 393952
+          },
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=454477%2C454479%2C454474",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:30.358Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1516,
+      "features": [
+        {
+          "transportId": 454474,
+          "properties": {
+            "OBJECTID": 454474
+          },
+          "geometrySha256": "c96dd52ef2bd5ec61a91b83e85d8e32ee77ed182fd1954e067824ad29c74cf84"
+        },
+        {
+          "transportId": 454477,
+          "properties": {
+            "OBJECTID": 454477
+          },
+          "geometrySha256": "e281cbe1ebcb241526a3c9d2e5e849924a8a5b2490e8b74d5e42103dac03aeab"
+        },
+        {
+          "transportId": 454479,
+          "properties": {
+            "OBJECTID": 454479
+          },
+          "geometrySha256": "ab120896222fe92374d961ca3fd36452b52288c96593806963888bdcbee5366f"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=454473%2C241240%2C454476",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:30.563Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1070,
+      "features": [
+        {
+          "transportId": 241240,
+          "properties": {
+            "OBJECTID": 241240
+          },
+          "geometrySha256": "a78fea42296cba0b6b8365cc0b9a7f4fef8a29a68c67fc2282bfe995da16c650"
+        },
+        {
+          "transportId": 454473,
+          "properties": {
+            "OBJECTID": 454473
+          },
+          "geometrySha256": "5039b30cad9f51a6bcc5d0046fe4c69d8aa51552781d804cd1c91cb33f928699"
+        },
+        {
+          "transportId": 454476,
+          "properties": {
+            "OBJECTID": 454476
+          },
+          "geometrySha256": "8d47a15db6b120317d50ce8767f3d1e707cc97f8b824863e974a96b541667050"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=456589%2C476548%2C454478",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:30.771Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1552,
+      "features": [
+        {
+          "transportId": 454478,
+          "properties": {
+            "OBJECTID": 454478
+          },
+          "geometrySha256": "7011f34e7fab4fdb0dfba91857fc70b55158afccb3311f71462ce682a61cf55f"
+        },
+        {
+          "transportId": 456589,
+          "properties": {
+            "OBJECTID": 456589
+          },
+          "geometrySha256": "06137a868056bab4234e89cd81defc005a451d97a8ed68ef37c73b799617c3d9"
+        },
+        {
+          "transportId": 476548,
+          "properties": {
+            "OBJECTID": 476548
+          },
+          "geometrySha256": "4e7e4b36e5b90bedbc6f62120f3c01b2709fbfd97212bb3b203628ce188128d0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=454480%2C463737%2C464310",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:30.969Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1314,
+      "features": [
+        {
+          "transportId": 454480,
+          "properties": {
+            "OBJECTID": 454480
+          },
+          "geometrySha256": "fea1feba5693dfa4e7d20e29bcdc8f370bf50eda1e8548b066da427489f4aac6"
+        },
+        {
+          "transportId": 463737,
+          "properties": {
+            "OBJECTID": 463737
+          },
+          "geometrySha256": "2b6b65977970cb000767e26858af2ed0a21ac3da519edd89d0e8b79d5ca2e846"
+        },
+        {
+          "transportId": 464310,
+          "properties": {
+            "OBJECTID": 464310
+          },
+          "geometrySha256": "b98aba4f38f59f7afb37d8b84be5fb99ac5683a2b5587cd47efc78a20e6d00a7"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=464019%2C367072%2C454475",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:31.168Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4044,
+      "features": [
+        {
+          "transportId": 367072,
+          "properties": {
+            "OBJECTID": 367072
+          },
+          "geometrySha256": "83f0e7ed557e9758e54937dee144c3b17a5599d20dad498576156c0c6751b311"
+        },
+        {
+          "transportId": 454475,
+          "properties": {
+            "OBJECTID": 454475
+          },
+          "geometrySha256": "044e450d06f62b59c8c299044454e9ec31d2c28b617ed1aceb65b42e6598435b"
+        },
+        {
+          "transportId": 464019,
+          "properties": {
+            "OBJECTID": 464019
+          },
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=456588%2C403523%2C454481",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:31.366Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3110,
+      "features": [
+        {
+          "transportId": 403523,
+          "properties": {
+            "OBJECTID": 403523
+          },
+          "geometrySha256": "e577fd3ce53208c3f673456967abfa9376b08beeeb07cd26ba66cb8ebf6fd53b"
+        },
+        {
+          "transportId": 454481,
+          "properties": {
+            "OBJECTID": 454481
+          },
+          "geometrySha256": "292b7b5f01ad549e9924d853d91ef314ced4ef6ba2284a7466027c55ea57e5e2"
+        },
+        {
+          "transportId": 456588,
+          "properties": {
+            "OBJECTID": 456588
+          },
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=424307",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:31.564Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 558,
+      "features": [
+        {
+          "transportId": 424307,
+          "properties": {
+            "OBJECTID": 424307
+          },
+          "geometrySha256": "2f2b6094339e88aa0ebf2dbd0e424b4d15dfa668b2d34d696ac15dd2238329da"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%28113805%2C125207%2C132360%2C146653%2C174753%2C174754%2C174755%2C174756%2C188528%2C21812%2C221728%2C221729%2C221730%2C221731%2C241240%2C243847%2C251904%2C262597%2C262598%2C262599%2C264758%2C269247%2C274019%2C275473%2C275475%2C285249%2C289027%2C292697%2C292699%2C304724%2C309834%2C312129%2C312180%2C312224%2C312225%2C316967%2C322007%2C323511%2C323512%2C324766%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:31.761Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%28113805%2C125207%2C132360%2C146653%2C174753%2C174754%2C174755%2C174756%2C188528%2C21812%2C221728%2C221729%2C221730%2C221731%2C241240%2C243847%2C251904%2C262597%2C262598%2C262599%2C264758%2C269247%2C274019%2C275473%2C275475%2C285249%2C289027%2C292697%2C292699%2C304724%2C309834%2C312129%2C312180%2C312224%2C312225%2C316967%2C322007%2C323511%2C323512%2C324766%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:31.957Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 325,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        21812,
+        113805,
+        125207,
+        132360,
+        146653,
+        174753,
+        174754,
+        174755,
+        174756,
+        188528,
+        221728,
+        221729,
+        221730,
+        221731,
+        241240,
+        243847,
+        251904,
+        262597,
+        262598,
+        262599,
+        264758,
+        269247,
+        274019,
+        275473,
+        275475,
+        285249,
+        289027,
+        292697,
+        292699,
+        304724,
+        309834,
+        312129,
+        312180,
+        312224,
+        312225,
+        316967,
+        322007,
+        323511,
+        323512,
+        324766
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=21812%2C113805%2C125207%2C132360%2C146653%2C174753%2C174754%2C174755%2C174756%2C188528%2C221728%2C221729%2C221730%2C221731%2C241240%2C243847%2C251904%2C262597%2C262598%2C262599%2C264758%2C269247%2C274019%2C275473%2C275475%2C285249%2C289027%2C292697%2C292699%2C304724%2C309834%2C312129%2C312180%2C312224%2C312225%2C316967%2C322007%2C323511%2C323512%2C324766",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:32.157Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 13813,
+      "features": [
+        {
+          "transportId": 21812,
+          "properties": {
+            "OBJECTID": 21812
+          },
+          "geometrySha256": "aadb2d115749ab4e3f8b6e6bc59194b403a7dab1cee429d673929a3748994e0d"
+        },
+        {
+          "transportId": 113805,
+          "properties": {
+            "OBJECTID": 113805
+          },
+          "geometrySha256": "99098a2af0710277592f7151f5f1ceff8be09fedc3a6b535f6c8c3514d207dea"
+        },
+        {
+          "transportId": 125207,
+          "properties": {
+            "OBJECTID": 125207
+          },
+          "geometrySha256": "4ae4cc0646e56bf7da49cd78f5200f54200e0b2f02e55ccd5fd0ee07e03ca9c6"
+        },
+        {
+          "transportId": 132360,
+          "properties": {
+            "OBJECTID": 132360
+          },
+          "geometrySha256": "f4f903abcc163855c8d40ba86a112a8bfd924d985947536215df3ee45c712921"
+        },
+        {
+          "transportId": 146653,
+          "properties": {
+            "OBJECTID": 146653
+          },
+          "geometrySha256": "687df45bfc0c34c2d0d20c390f0702b573c4c8df943d4036b08dc578e4441ef8"
+        },
+        {
+          "transportId": 174753,
+          "properties": {
+            "OBJECTID": 174753
+          },
+          "geometrySha256": "07714c67b3d5ea25baf58ed07f588ee897b9b5b2c9a0b5843e36eb0b951f136c"
+        },
+        {
+          "transportId": 174754,
+          "properties": {
+            "OBJECTID": 174754
+          },
+          "geometrySha256": "e250432b32f6ac867ddac6fb0aa69078933f8268426fbbfa35b6f66f7702305d"
+        },
+        {
+          "transportId": 174755,
+          "properties": {
+            "OBJECTID": 174755
+          },
+          "geometrySha256": "234ac98a6a62f5b6d61ac5e04333eba00f234aa934f2558cd0627a3f86bf01fd"
+        },
+        {
+          "transportId": 174756,
+          "properties": {
+            "OBJECTID": 174756
+          },
+          "geometrySha256": "d234726204ff3f406d200f2a3c050d2ab7668e948aa558296fcad9bab1d98764"
+        },
+        {
+          "transportId": 188528,
+          "properties": {
+            "OBJECTID": 188528
+          },
+          "geometrySha256": "e94985ceed5c8ff8e8c9789f0e5febf24dbc408709004a5942ef25108d5d26ae"
+        },
+        {
+          "transportId": 221728,
+          "properties": {
+            "OBJECTID": 221728
+          },
+          "geometrySha256": "cc7cdd8530f38790df3b95098fd143025d4167494211637fea85f3aef26cd684"
+        },
+        {
+          "transportId": 221729,
+          "properties": {
+            "OBJECTID": 221729
+          },
+          "geometrySha256": "89e40382edb52431a1eb8a2363346733a4caba1e88110c9883aac3e0d55b6eb9"
+        },
+        {
+          "transportId": 221730,
+          "properties": {
+            "OBJECTID": 221730
+          },
+          "geometrySha256": "9a9832cb86ace6b3bdf49d21ea4f76ff83caa22c15508c3364ac656620e37fe7"
+        },
+        {
+          "transportId": 221731,
+          "properties": {
+            "OBJECTID": 221731
+          },
+          "geometrySha256": "9b201746adf9f4b3dde59ecff790f8f3edede31f76816d14cc107ec478eec810"
+        },
+        {
+          "transportId": 241240,
+          "properties": {
+            "OBJECTID": 241240
+          },
+          "geometrySha256": "a78fea42296cba0b6b8365cc0b9a7f4fef8a29a68c67fc2282bfe995da16c650"
+        },
+        {
+          "transportId": 243847,
+          "properties": {
+            "OBJECTID": 243847
+          },
+          "geometrySha256": "41c6f06906c25189e0c3888e3640b6aa34d5a18ee488c910cd9c839f9f55501d"
+        },
+        {
+          "transportId": 251904,
+          "properties": {
+            "OBJECTID": 251904
+          },
+          "geometrySha256": "fea5c6e9555b825b927db42e4818c814a79c9b6c009cf5fb1e7da43388e302db"
+        },
+        {
+          "transportId": 262597,
+          "properties": {
+            "OBJECTID": 262597
+          },
+          "geometrySha256": "25fb37015e6b3d8ef98d5538c2195e2c0b226241c2c4c11ec03a2bf22cceeeaf"
+        },
+        {
+          "transportId": 262598,
+          "properties": {
+            "OBJECTID": 262598
+          },
+          "geometrySha256": "096b638c3a8179e1da9b6a5d23dd0d07503cc7adaa35f779988ea28bee14a94b"
+        },
+        {
+          "transportId": 262599,
+          "properties": {
+            "OBJECTID": 262599
+          },
+          "geometrySha256": "31b7c8816ca96f0b96ac65707336ac7df47d93ffb6ae6f52f7464b08ae520d35"
+        },
+        {
+          "transportId": 264758,
+          "properties": {
+            "OBJECTID": 264758
+          },
+          "geometrySha256": "5c110e750bf6fad62ebffd2eb463def2acf2d85d480c830808defa854332d1e6"
+        },
+        {
+          "transportId": 269247,
+          "properties": {
+            "OBJECTID": 269247
+          },
+          "geometrySha256": "91ef2d8da36129a51c91a5ab8f6aec648dcaf870b1e4bf4b238e7e292c0fca3c"
+        },
+        {
+          "transportId": 274019,
+          "properties": {
+            "OBJECTID": 274019
+          },
+          "geometrySha256": "3c65d21cdd2fdabe2d1a8ab04aa670a279aacad35fe653832582004dae58df20"
+        },
+        {
+          "transportId": 275473,
+          "properties": {
+            "OBJECTID": 275473
+          },
+          "geometrySha256": "f6bb19fbecc04c924f80f8e7b7b0698449f14c517b8fa8cf084dad2800b8e091"
+        },
+        {
+          "transportId": 275475,
+          "properties": {
+            "OBJECTID": 275475
+          },
+          "geometrySha256": "41b91c27fb519f82efeb19cfa4af9437bc676d7064718d3235acf9e5ba6d729a"
+        },
+        {
+          "transportId": 285249,
+          "properties": {
+            "OBJECTID": 285249
+          },
+          "geometrySha256": "45589fe471bf3a61f95ae01f0055d46912dc1b5dc4561d8089c9d06f05bd10cb"
+        },
+        {
+          "transportId": 289027,
+          "properties": {
+            "OBJECTID": 289027
+          },
+          "geometrySha256": "0592c825a9f642d4984d82493cf49740a7012bc84492f9ac939756153ba8af17"
+        },
+        {
+          "transportId": 292697,
+          "properties": {
+            "OBJECTID": 292697
+          },
+          "geometrySha256": "0dd5e7dd50a181c53ba75511f4f733988593388b670722ecab9c8714ad76f6c4"
+        },
+        {
+          "transportId": 292699,
+          "properties": {
+            "OBJECTID": 292699
+          },
+          "geometrySha256": "9d6587d994afa9b87e72d97aca9626d04258bb3a8be12569d6012acb92288c77"
+        },
+        {
+          "transportId": 304724,
+          "properties": {
+            "OBJECTID": 304724
+          },
+          "geometrySha256": "fef465812e6b2e520e12555c42671cf76c536630a513b18f21d9b60189c73da9"
+        },
+        {
+          "transportId": 309834,
+          "properties": {
+            "OBJECTID": 309834
+          },
+          "geometrySha256": "385ac0025a777b0fa56a6561cf344a7294ce4fa4b9c502d3089a2ea0463f943c"
+        },
+        {
+          "transportId": 312129,
+          "properties": {
+            "OBJECTID": 312129
+          },
+          "geometrySha256": "048bda796a67ed7f7be3435e4b795ced747f833f93a34d389e992fbd49e4b3d7"
+        },
+        {
+          "transportId": 312180,
+          "properties": {
+            "OBJECTID": 312180
+          },
+          "geometrySha256": "f28c8236bd90e0a274fa6de90ee77c494857a4c02a276753cf5aee2c35d42000"
+        },
+        {
+          "transportId": 312224,
+          "properties": {
+            "OBJECTID": 312224
+          },
+          "geometrySha256": "d3364dcb594a9293ec6375b8a11333dc2fc19a44a89d5f47d9f696b910e3002c"
+        },
+        {
+          "transportId": 312225,
+          "properties": {
+            "OBJECTID": 312225
+          },
+          "geometrySha256": "e4b4e652351f0c1be6898633ce94456d3b9dd59bb17ff3f1b1ac22f73325dc00"
+        },
+        {
+          "transportId": 316967,
+          "properties": {
+            "OBJECTID": 316967
+          },
+          "geometrySha256": "fd472d8682481fda7cce05536e90fe294a806559fccb1573933ae36a77313232"
+        },
+        {
+          "transportId": 322007,
+          "properties": {
+            "OBJECTID": 322007
+          },
+          "geometrySha256": "9e799d4c7d24c46e9d4d43abed3c14778a2c332b775531d8cfd88eb9cbfa1b03"
+        },
+        {
+          "transportId": 323511,
+          "properties": {
+            "OBJECTID": 323511
+          },
+          "geometrySha256": "01b4e909924df6242a09efa56ef575aa19708048a9253c5608d4748d6e94b054"
+        },
+        {
+          "transportId": 323512,
+          "properties": {
+            "OBJECTID": 323512
+          },
+          "geometrySha256": "37c2e686c2aa68f7e3972c7f644a3da31e20d2d35baadbecb88eb2afce721c94"
+        },
+        {
+          "transportId": 324766,
+          "properties": {
+            "OBJECTID": 324766
+          },
+          "geometrySha256": "e5c8fb21f8797ff829ab9f598cd654f7bf8d020c63d5adbb64b58fdb5088e1bb"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%28325130%2C325131%2C325298%2C325299%2C328581%2C332351%2C333574%2C334776%2C335357%2C341637%2C344699%2C360668%2C367072%2C367302%2C367303%2C367304%2C371227%2C371257%2C373715%2C374395%2C376458%2C378159%2C378160%2C379485%2C380088%2C380429%2C380453%2C380583%2C380584%2C380586%2C380587%2C380933%2C381121%2C382011%2C383929%2C383930%2C383931%2C386456%2C387475%2C389081%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:32.361Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%28325130%2C325131%2C325298%2C325299%2C328581%2C332351%2C333574%2C334776%2C335357%2C341637%2C344699%2C360668%2C367072%2C367302%2C367303%2C367304%2C371227%2C371257%2C373715%2C374395%2C376458%2C378159%2C378160%2C379485%2C380088%2C380429%2C380453%2C380583%2C380584%2C380586%2C380587%2C380933%2C381121%2C382011%2C383929%2C383930%2C383931%2C386456%2C387475%2C389081%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:32.561Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 326,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        325130,
+        325131,
+        325298,
+        325299,
+        328581,
+        332351,
+        333574,
+        334776,
+        335357,
+        341637,
+        344699,
+        360668,
+        367072,
+        367302,
+        367303,
+        367304,
+        371227,
+        371257,
+        373715,
+        374395,
+        376458,
+        378159,
+        378160,
+        379485,
+        380088,
+        380429,
+        380453,
+        380583,
+        380584,
+        380586,
+        380587,
+        380933,
+        381121,
+        382011,
+        383929,
+        383930,
+        383931,
+        386456,
+        387475,
+        389081
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=325130%2C325131%2C325298%2C325299%2C328581%2C332351%2C333574%2C334776%2C335357%2C341637%2C344699%2C360668%2C367072%2C367302%2C367303%2C367304%2C371227%2C371257%2C373715%2C374395%2C376458%2C378159%2C378160%2C379485%2C380088%2C380429%2C380453%2C380583%2C380584%2C380586%2C380587%2C380933%2C381121%2C382011%2C383929%2C383930%2C383931%2C386456%2C387475%2C389081",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:32.760Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 14345,
+      "features": [
+        {
+          "transportId": 325130,
+          "properties": {
+            "OBJECTID": 325130
+          },
+          "geometrySha256": "599aa2ab17fb2a5edadee9cc1b88c6c4a39b1cbbe3965f6875c2eacf1eaaad22"
+        },
+        {
+          "transportId": 325131,
+          "properties": {
+            "OBJECTID": 325131
+          },
+          "geometrySha256": "4d9717b59d1884785c08e85f1b24447a3015eb8717460225cefc5444ef9ce01a"
+        },
+        {
+          "transportId": 325298,
+          "properties": {
+            "OBJECTID": 325298
+          },
+          "geometrySha256": "531afbbd6884688aa299ff74d8da93cc2c15cec150a105a9ac31bb75970ff536"
+        },
+        {
+          "transportId": 325299,
+          "properties": {
+            "OBJECTID": 325299
+          },
+          "geometrySha256": "73da1111b536a8c7468b5ec126a43df222db5dfcb50655986b3b2bb16c99ad30"
+        },
+        {
+          "transportId": 328581,
+          "properties": {
+            "OBJECTID": 328581
+          },
+          "geometrySha256": "91b004c2624b5134f16cc446a0cb1f6a06d2224212c3ce9c970c6462e83586b7"
+        },
+        {
+          "transportId": 332351,
+          "properties": {
+            "OBJECTID": 332351
+          },
+          "geometrySha256": "5022a00a44a630b85774f5ec09e8b797e8d1417e0639c4dc24d107697b228476"
+        },
+        {
+          "transportId": 333574,
+          "properties": {
+            "OBJECTID": 333574
+          },
+          "geometrySha256": "18311deba4e65a75fcded8ec91af75a5665f19fc6f0098a93c29fbe5d675cae5"
+        },
+        {
+          "transportId": 334776,
+          "properties": {
+            "OBJECTID": 334776
+          },
+          "geometrySha256": "48e4964c1421a414944e530a475728244538a2b4cdf904ca926ed8fa3f076f53"
+        },
+        {
+          "transportId": 335357,
+          "properties": {
+            "OBJECTID": 335357
+          },
+          "geometrySha256": "55a3ee08f2ea09af883346fe6bae4d36c05306ea980de85248b5477e781e9538"
+        },
+        {
+          "transportId": 341637,
+          "properties": {
+            "OBJECTID": 341637
+          },
+          "geometrySha256": "0c574cdad622bb85cd642dcb88406791c6b1dcd37bbed90bf304f08701103062"
+        },
+        {
+          "transportId": 344699,
+          "properties": {
+            "OBJECTID": 344699
+          },
+          "geometrySha256": "2ecce47c5ca93a2bd2bc5038ddc5e3bcfecb9b50594f437039ff567b848054d7"
+        },
+        {
+          "transportId": 360668,
+          "properties": {
+            "OBJECTID": 360668
+          },
+          "geometrySha256": "374358dfde89aa8426f7d6e1ec6fb9e2bb4ea1e8c0a2d1cf91b8e7738f9d60c6"
+        },
+        {
+          "transportId": 367072,
+          "properties": {
+            "OBJECTID": 367072
+          },
+          "geometrySha256": "83f0e7ed557e9758e54937dee144c3b17a5599d20dad498576156c0c6751b311"
+        },
+        {
+          "transportId": 367302,
+          "properties": {
+            "OBJECTID": 367302
+          },
+          "geometrySha256": "d1a39d38ecc57fe9bc280f967b4263fad858abb8cc4c4fe31a5bc5aef4af4d91"
+        },
+        {
+          "transportId": 367303,
+          "properties": {
+            "OBJECTID": 367303
+          },
+          "geometrySha256": "16b2acd7f3af91b617448f3d1b638335ee09b97143d1238cbd2fe0e0cc7b6033"
+        },
+        {
+          "transportId": 367304,
+          "properties": {
+            "OBJECTID": 367304
+          },
+          "geometrySha256": "9f8fe2f087df4c69e6ec85c10b953f4e63faddc5a0ec0fa10f7358a352d96ce4"
+        },
+        {
+          "transportId": 371227,
+          "properties": {
+            "OBJECTID": 371227
+          },
+          "geometrySha256": "ed26ae9668c06e8252eaaad94a18f02340d5f8bb226da9a065235462f943de94"
+        },
+        {
+          "transportId": 371257,
+          "properties": {
+            "OBJECTID": 371257
+          },
+          "geometrySha256": "bfe331d530ec0134ae94ff3db42ffa80aa412f655c1947960b84f32a6efc3c0c"
+        },
+        {
+          "transportId": 373715,
+          "properties": {
+            "OBJECTID": 373715
+          },
+          "geometrySha256": "6146e5c1c792f8ff25fea6dbd2caaafe69ede9681e9d6e7062c332ac1f69de27"
+        },
+        {
+          "transportId": 374395,
+          "properties": {
+            "OBJECTID": 374395
+          },
+          "geometrySha256": "5cb32363a0419e4cfb0a729832b3ee4b45e4b4272a3579dde33849d994d7197a"
+        },
+        {
+          "transportId": 376458,
+          "properties": {
+            "OBJECTID": 376458
+          },
+          "geometrySha256": "582a001edda11038a0728a4731e86dfc68fb6aa53e631d5d8d9d50a79dcd4da0"
+        },
+        {
+          "transportId": 378159,
+          "properties": {
+            "OBJECTID": 378159
+          },
+          "geometrySha256": "5572f30b6d9b432550fce2e217dd162e27ec2de629815c1c7cd16ccb8e1b6bef"
+        },
+        {
+          "transportId": 378160,
+          "properties": {
+            "OBJECTID": 378160
+          },
+          "geometrySha256": "ec89207733bc1ba5b32837623f1604bcadff022b8685ba8ccf13064602ed6210"
+        },
+        {
+          "transportId": 379485,
+          "properties": {
+            "OBJECTID": 379485
+          },
+          "geometrySha256": "b234ee1edce1f534ebb2813c972104e9998c62cbbed8d2de926ec6a92c0fcffe"
+        },
+        {
+          "transportId": 380088,
+          "properties": {
+            "OBJECTID": 380088
+          },
+          "geometrySha256": "96d78d7a1fcd4ef50f7ddda9a6d56eef5e98253a78542d02ff7aa7f39551e5e1"
+        },
+        {
+          "transportId": 380429,
+          "properties": {
+            "OBJECTID": 380429
+          },
+          "geometrySha256": "ade59d58bb02411d21eaf6401e9c2a39b8fbe219c1e5d8d491b62bc028201e64"
+        },
+        {
+          "transportId": 380453,
+          "properties": {
+            "OBJECTID": 380453
+          },
+          "geometrySha256": "7040aa9e50965a75040853052fe7605dd689dc9bdd0286eb031edb2ce65be51b"
+        },
+        {
+          "transportId": 380583,
+          "properties": {
+            "OBJECTID": 380583
+          },
+          "geometrySha256": "c1e14f3ee7a3dbcbaa4a2a99ed1e893cdec72957211d778857f060f392a44102"
+        },
+        {
+          "transportId": 380584,
+          "properties": {
+            "OBJECTID": 380584
+          },
+          "geometrySha256": "bce9252ef025229ebea6fa165ee191b98bf2e44862623e0f0cd5b43391cd0d3b"
+        },
+        {
+          "transportId": 380586,
+          "properties": {
+            "OBJECTID": 380586
+          },
+          "geometrySha256": "96efff8e81fc1c62515e473cc8a7356b3eba530657c445d0b92c82abb9e2063e"
+        },
+        {
+          "transportId": 380587,
+          "properties": {
+            "OBJECTID": 380587
+          },
+          "geometrySha256": "f5e85f71ff4dbe9fbe65efbb6d3a9b012a7aff57c68c3330a00ca853d23aba98"
+        },
+        {
+          "transportId": 380933,
+          "properties": {
+            "OBJECTID": 380933
+          },
+          "geometrySha256": "bd6bc2794b8a1d44a6cf074820b5ea1d4554f0f2af0fe45ab6d4239a086ec3dd"
+        },
+        {
+          "transportId": 381121,
+          "properties": {
+            "OBJECTID": 381121
+          },
+          "geometrySha256": "1ef457238f7923049a8dec189d9f641d8d59b8e867ee04ffe8eaa8d77e586606"
+        },
+        {
+          "transportId": 382011,
+          "properties": {
+            "OBJECTID": 382011
+          },
+          "geometrySha256": "dc8a42134a95bfd1255edc24fe98025367de14d434f65f219ba3bb532515750c"
+        },
+        {
+          "transportId": 383929,
+          "properties": {
+            "OBJECTID": 383929
+          },
+          "geometrySha256": "c0651518ef2b1ef43cd27d31c61e07ef6494647898197f325c2452ab9870235a"
+        },
+        {
+          "transportId": 383930,
+          "properties": {
+            "OBJECTID": 383930
+          },
+          "geometrySha256": "541fe541178b9e59bf578f85f8217df9529dcdaff3aea6ea4727ea2d8bcdca7b"
+        },
+        {
+          "transportId": 383931,
+          "properties": {
+            "OBJECTID": 383931
+          },
+          "geometrySha256": "caeaf369273d684b2c8d9280b70e08db82a3bb61b9effd1a8851ad55b0be26f6"
+        },
+        {
+          "transportId": 386456,
+          "properties": {
+            "OBJECTID": 386456
+          },
+          "geometrySha256": "d5a31b07528dcb5cc04cfa2ddfc78679989c42a3d0ad1c1dd1af10a7044c8b63"
+        },
+        {
+          "transportId": 387475,
+          "properties": {
+            "OBJECTID": 387475
+          },
+          "geometrySha256": "ae808a71012cb7784dcfbfa662f524f4cb0eae31b9ac6a4be937561e98b65f9e"
+        },
+        {
+          "transportId": 389081,
+          "properties": {
+            "OBJECTID": 389081
+          },
+          "geometrySha256": "93e87fd87dd135b03cf9f3d2d82be4780a8f19a1f523281d72a003666ffa9441"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%28389524%2C389525%2C389526%2C389860%2C389871%2C390044%2C393630%2C393952%2C399051%2C400363%2C401749%2C403523%2C404721%2C408731%2C424307%2C426153%2C436592%2C454473%2C454474%2C454475%2C454476%2C454477%2C454478%2C454479%2C454480%2C454481%2C454482%2C456588%2C456589%2C463737%2C464019%2C464310%2C476548%2C89883%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:32.963Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 34
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%28389524%2C389525%2C389526%2C389860%2C389871%2C390044%2C393630%2C393952%2C399051%2C400363%2C401749%2C403523%2C404721%2C408731%2C424307%2C426153%2C436592%2C454473%2C454474%2C454475%2C454476%2C454477%2C454478%2C454479%2C454480%2C454481%2C454482%2C456588%2C456589%2C463737%2C464019%2C464310%2C476548%2C89883%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:33.162Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 283,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        89883,
+        389524,
+        389525,
+        389526,
+        389860,
+        389871,
+        390044,
+        393630,
+        393952,
+        399051,
+        400363,
+        401749,
+        403523,
+        404721,
+        408731,
+        424307,
+        426153,
+        436592,
+        454473,
+        454474,
+        454475,
+        454476,
+        454477,
+        454478,
+        454479,
+        454480,
+        454481,
+        454482,
+        456588,
+        456589,
+        463737,
+        464019,
+        464310,
+        476548
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=89883%2C389524%2C389525%2C389526%2C389860%2C389871%2C390044%2C393630%2C393952%2C399051%2C400363%2C401749%2C403523%2C404721%2C408731%2C424307%2C426153%2C436592%2C454473%2C454474%2C454475%2C454476%2C454477%2C454478%2C454479%2C454480%2C454481%2C454482%2C456588%2C456589%2C463737%2C464019%2C464310%2C476548",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:33.360Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 19904,
+      "features": [
+        {
+          "transportId": 89883,
+          "properties": {
+            "OBJECTID": 89883
+          },
+          "geometrySha256": "ca298ed55af7321a941af15a37ec73b7e7ebee1a0510c56253cbe8adec427ddf"
+        },
+        {
+          "transportId": 389524,
+          "properties": {
+            "OBJECTID": 389524
+          },
+          "geometrySha256": "ab14b06e7217c2379e607f1d6a728d678a03a36afff8052061d786dc5ca1de01"
+        },
+        {
+          "transportId": 389525,
+          "properties": {
+            "OBJECTID": 389525
+          },
+          "geometrySha256": "39d10633d4c0ded24a35b16591799786d2f729b2ccfd4978492e1a30589ae446"
+        },
+        {
+          "transportId": 389526,
+          "properties": {
+            "OBJECTID": 389526
+          },
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        },
+        {
+          "transportId": 389860,
+          "properties": {
+            "OBJECTID": 389860
+          },
+          "geometrySha256": "a9dbc5296f28d63f08247a4e875f38a3ed1322927395c0b23c12a6f73eec4d1f"
+        },
+        {
+          "transportId": 389871,
+          "properties": {
+            "OBJECTID": 389871
+          },
+          "geometrySha256": "8af8b70b7e8e3600876420fa53ad81fc75a3ca781b1be479d2006e2b64f84a17"
+        },
+        {
+          "transportId": 390044,
+          "properties": {
+            "OBJECTID": 390044
+          },
+          "geometrySha256": "7813d139a81e79cb73cfa1f7bdfb41b99b3381b1366a966ad006e72fee9b622f"
+        },
+        {
+          "transportId": 393630,
+          "properties": {
+            "OBJECTID": 393630
+          },
+          "geometrySha256": "412bde204023933c04616cfc1a83f527a262754a5dca7e109193c16cffd859e8"
+        },
+        {
+          "transportId": 393952,
+          "properties": {
+            "OBJECTID": 393952
+          },
+          "geometrySha256": "b434bbcaea80f341d27812839e62844d43b401ee3e876ed2652b03077327fd36"
+        },
+        {
+          "transportId": 399051,
+          "properties": {
+            "OBJECTID": 399051
+          },
+          "geometrySha256": "2f26501f71ba1c8b6fe5a6f91f3bb02550e4f74b5eca601911126f9f5edfd4e3"
+        },
+        {
+          "transportId": 400363,
+          "properties": {
+            "OBJECTID": 400363
+          },
+          "geometrySha256": "5a83cfe50d8bdbe65b708facabdf86c5f8e625096f7c4054e420d0c1f71fb16d"
+        },
+        {
+          "transportId": 401749,
+          "properties": {
+            "OBJECTID": 401749
+          },
+          "geometrySha256": "f97b44a083de5c69eeb3556a3f3f9b7a14c56580b8f72639cae4288024f633aa"
+        },
+        {
+          "transportId": 403523,
+          "properties": {
+            "OBJECTID": 403523
+          },
+          "geometrySha256": "e577fd3ce53208c3f673456967abfa9376b08beeeb07cd26ba66cb8ebf6fd53b"
+        },
+        {
+          "transportId": 404721,
+          "properties": {
+            "OBJECTID": 404721
+          },
+          "geometrySha256": "8b5b92c19606ca4eb13fef35b420e41c2d4868dd437bb8182000e64b06c48043"
+        },
+        {
+          "transportId": 408731,
+          "properties": {
+            "OBJECTID": 408731
+          },
+          "geometrySha256": "4b2854bcad5a26eadbc4ca52a1234d587f0421c3b4c029940e54e2214a1a0af5"
+        },
+        {
+          "transportId": 424307,
+          "properties": {
+            "OBJECTID": 424307
+          },
+          "geometrySha256": "2f2b6094339e88aa0ebf2dbd0e424b4d15dfa668b2d34d696ac15dd2238329da"
+        },
+        {
+          "transportId": 426153,
+          "properties": {
+            "OBJECTID": 426153
+          },
+          "geometrySha256": "ef6f25661e56ee86b673bcdcdeff121a2371b8af62f7a331f749b159a5cd21c2"
+        },
+        {
+          "transportId": 436592,
+          "properties": {
+            "OBJECTID": 436592
+          },
+          "geometrySha256": "5f4dfa32fb43307323846b8475dd7fc8f14d241d08239fb2506b72b5127c9d87"
+        },
+        {
+          "transportId": 454473,
+          "properties": {
+            "OBJECTID": 454473
+          },
+          "geometrySha256": "5039b30cad9f51a6bcc5d0046fe4c69d8aa51552781d804cd1c91cb33f928699"
+        },
+        {
+          "transportId": 454474,
+          "properties": {
+            "OBJECTID": 454474
+          },
+          "geometrySha256": "c96dd52ef2bd5ec61a91b83e85d8e32ee77ed182fd1954e067824ad29c74cf84"
+        },
+        {
+          "transportId": 454475,
+          "properties": {
+            "OBJECTID": 454475
+          },
+          "geometrySha256": "044e450d06f62b59c8c299044454e9ec31d2c28b617ed1aceb65b42e6598435b"
+        },
+        {
+          "transportId": 454476,
+          "properties": {
+            "OBJECTID": 454476
+          },
+          "geometrySha256": "8d47a15db6b120317d50ce8767f3d1e707cc97f8b824863e974a96b541667050"
+        },
+        {
+          "transportId": 454477,
+          "properties": {
+            "OBJECTID": 454477
+          },
+          "geometrySha256": "e281cbe1ebcb241526a3c9d2e5e849924a8a5b2490e8b74d5e42103dac03aeab"
+        },
+        {
+          "transportId": 454478,
+          "properties": {
+            "OBJECTID": 454478
+          },
+          "geometrySha256": "7011f34e7fab4fdb0dfba91857fc70b55158afccb3311f71462ce682a61cf55f"
+        },
+        {
+          "transportId": 454479,
+          "properties": {
+            "OBJECTID": 454479
+          },
+          "geometrySha256": "ab120896222fe92374d961ca3fd36452b52288c96593806963888bdcbee5366f"
+        },
+        {
+          "transportId": 454480,
+          "properties": {
+            "OBJECTID": 454480
+          },
+          "geometrySha256": "fea1feba5693dfa4e7d20e29bcdc8f370bf50eda1e8548b066da427489f4aac6"
+        },
+        {
+          "transportId": 454481,
+          "properties": {
+            "OBJECTID": 454481
+          },
+          "geometrySha256": "292b7b5f01ad549e9924d853d91ef314ced4ef6ba2284a7466027c55ea57e5e2"
+        },
+        {
+          "transportId": 454482,
+          "properties": {
+            "OBJECTID": 454482
+          },
+          "geometrySha256": "d96d5e6a61d8e2ec5fadb7d79de8ca7bbac0b87df3c9da5ccaa56364611fe0d0"
+        },
+        {
+          "transportId": 456588,
+          "properties": {
+            "OBJECTID": 456588
+          },
+          "geometrySha256": "542396ed6562beebb50c07854ba0cd7e156f333977eeda65554958545ad449b8"
+        },
+        {
+          "transportId": 456589,
+          "properties": {
+            "OBJECTID": 456589
+          },
+          "geometrySha256": "06137a868056bab4234e89cd81defc005a451d97a8ed68ef37c73b799617c3d9"
+        },
+        {
+          "transportId": 463737,
+          "properties": {
+            "OBJECTID": 463737
+          },
+          "geometrySha256": "2b6b65977970cb000767e26858af2ed0a21ac3da519edd89d0e8b79d5ca2e846"
+        },
+        {
+          "transportId": 464019,
+          "properties": {
+            "OBJECTID": 464019
+          },
+          "geometrySha256": "25696dd9a77a9ff2ab6fb5fb264ac2fb5319a2a35d7c57ae22c8ea5aad495b89"
+        },
+        {
+          "transportId": 464310,
+          "properties": {
+            "OBJECTID": 464310
+          },
+          "geometrySha256": "b98aba4f38f59f7afb37d8b84be5fb99ac5683a2b5587cd47efc78a20e6d00a7"
+        },
+        {
+          "transportId": 476548,
+          "properties": {
+            "OBJECTID": 476548
+          },
+          "geometrySha256": "4e7e4b36e5b90bedbc6f62120f3c01b2709fbfd97212bb3b203628ce188128d0"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%282147483647%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:33.564Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=OBJECTID+IN+%282147483647%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:33.760Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.10264052644054%2C26.621145404583572%2C-80.1021882543394%2C26.621381961540585&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:33.962Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.10264052644054%2C26.621145404583572%2C-80.1021882543394%2C26.621381961540585&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:34.162Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 87,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        323512,
+        323511,
+        188528,
+        21812,
+        344699,
+        389526
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=323512%2C323511%2C188528%2C21812%2C344699%2C389526",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:34.365Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2258,
+      "features": [
+        {
+          "transportId": 21812,
+          "properties": {
+            "OBJECTID": 21812
+          },
+          "geometrySha256": "aadb2d115749ab4e3f8b6e6bc59194b403a7dab1cee429d673929a3748994e0d"
+        },
+        {
+          "transportId": 188528,
+          "properties": {
+            "OBJECTID": 188528
+          },
+          "geometrySha256": "e94985ceed5c8ff8e8c9789f0e5febf24dbc408709004a5942ef25108d5d26ae"
+        },
+        {
+          "transportId": 323511,
+          "properties": {
+            "OBJECTID": 323511
+          },
+          "geometrySha256": "01b4e909924df6242a09efa56ef575aa19708048a9253c5608d4748d6e94b054"
+        },
+        {
+          "transportId": 323512,
+          "properties": {
+            "OBJECTID": 323512
+          },
+          "geometrySha256": "37c2e686c2aa68f7e3972c7f644a3da31e20d2d35baadbecb88eb2afce721c94"
+        },
+        {
+          "transportId": 344699,
+          "properties": {
+            "OBJECTID": 344699
+          },
+          "geometrySha256": "2ecce47c5ca93a2bd2bc5038ddc5e3bcfecb9b50594f437039ff567b848054d7"
+        },
+        {
+          "transportId": 389526,
+          "properties": {
+            "OBJECTID": 389526
+          },
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.10264052644054%2C26.621145404583572%2C-80.1021882543394%2C26.621381961540585&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:34.563Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&geometry=-80.10264052644054%2C26.621145404583572%2C-80.1021882543394%2C26.621381961540585&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:34.759Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 87,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        323512,
+        323511,
+        188528,
+        21812,
+        344699,
+        389526
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=323512%2C323511%2C188528%2C21812%2C344699%2C389526",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:31:34.956Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2258,
+      "features": [
+        {
+          "transportId": 21812,
+          "properties": {
+            "OBJECTID": 21812
+          },
+          "geometrySha256": "aadb2d115749ab4e3f8b6e6bc59194b403a7dab1cee429d673929a3748994e0d"
+        },
+        {
+          "transportId": 188528,
+          "properties": {
+            "OBJECTID": 188528
+          },
+          "geometrySha256": "e94985ceed5c8ff8e8c9789f0e5febf24dbc408709004a5942ef25108d5d26ae"
+        },
+        {
+          "transportId": 323511,
+          "properties": {
+            "OBJECTID": 323511
+          },
+          "geometrySha256": "01b4e909924df6242a09efa56ef575aa19708048a9253c5608d4748d6e94b054"
+        },
+        {
+          "transportId": 323512,
+          "properties": {
+            "OBJECTID": 323512
+          },
+          "geometrySha256": "37c2e686c2aa68f7e3972c7f644a3da31e20d2d35baadbecb88eb2afce721c94"
+        },
+        {
+          "transportId": 344699,
+          "properties": {
+            "OBJECTID": 344699
+          },
+          "geometrySha256": "2ecce47c5ca93a2bd2bc5038ddc5e3bcfecb9b50594f437039ff567b848054d7"
+        },
+        {
+          "transportId": 389526,
+          "properties": {
+            "OBJECTID": 389526
+          },
+          "geometrySha256": "cbbd269e68d5e0080743de51c6a543749ce866ea8fd54c0a6aa34f0ee0e434ac"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/west-palm-beach-county-ground-quality.json",
+  "uniqueParcels": 114,
+  "requestCount": 66,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T04:31:35.180Z",
+  "qualityStatus": "passed_bounded_ground_topology"
+}

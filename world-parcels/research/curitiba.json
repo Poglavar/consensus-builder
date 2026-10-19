@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:200",
+  "queueRank": 200,
+  "name": "Curitiba",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "centerLatLon": [
+    -25.4581368087922,
+    -49.2553428080241
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "br-curitiba-ippuc-lote-cadastral",
+    "requestUrl": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15/query?where=1%3D1&geometry=-49.2740,-25.4300,-49.2725,-25.4288&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,gtm_ind_fiscal,gtm_cod_lote,gtm_cod_quadra,gtm_mtr_area_terreno&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -49.274,
+      -25.43,
+      -49.2725,
+      -25.4288
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "gtm_ind_fiscal (indicacao fiscal); also gtm_cod_lote, objectid",
+    "responseFile": "curitiba-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=2000"
+  },
+  "source": {
+    "sourceId": "br-curitiba-ippuc-lote-cadastral",
+    "name": "GeoCuritiba Mapa Cadastral, layer 15 Lote Cadastral",
+    "operator": "IPPUC (Instituto de Pesquisa e Planejamento Urbano de Curitiba) / Prefeitura de Curitiba",
+    "scope": "Municipality of Curitiba (layer native extent spans the city and part of the metropolitan region); one small area sampled",
+    "endpoint": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15",
+    "method": "GET ArcGIS MapServer query",
+    "responseFormat": "Esri JSON",
+    "crs": "native EPSG:31982 (SIRGAS 2000 UTM 22S); outSR=4326 honoured",
+    "reuseStatus": "no licence text or copyright found in the layer metadata (copyrightText empty); reuse terms unverified"
+  },
+  "portalsFound": [
+    {
+      "url": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba",
+      "observation": "Public ArcGIS Server folder (no token) listing Publico_GeoCuritiba_MapaCadastral MapServer (Map,Query,Data; 2000 record limit). The Cadastro_bic folder needs a token (HTTP 499 Token Required)."
+    },
+    {
+      "url": "https://www.curitiba.pr.gov.br/dadosabertos/",
+      "observation": "City open-data portal returned 403 Access Denied to curl even with a browser User-Agent; not used."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://geocuritiba.ippuc.org.br/server/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "directory listing only"
+    },
+    {
+      "url": "https://geocuritiba.ippuc.org.br/server/rest/services/Cadastro_bic?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "error 499 Token Required; not usable"
+    },
+    {
+      "url": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "layer description (esriGeometryPolygon, 40 attribute fields); not counted"
+    },
+    {
+      "url": "https://geocuritiba.ippuc.org.br/server/rest/services/GeoCuritiba/Publico_GeoCuritiba_MapaCadastral/MapServer/15/query?where=1%3D1&geometry=-49.2740,-25.4300,-49.2725,-25.4288&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,gtm_ind_fiscal,gtm_cod_lote,gtm_cod_quadra,gtm_mtr_area_terreno&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "parcelRecordCount": 3,
+      "assessment": "3 closed lot polygons in central Curitiba; saved reply limited to non-personal fields (owner/street fields not requested)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "cadastral lots of Curitiba (municipal technical multi-purpose cadastre)",
+    "verifiedOpenScope": "three lots in a ~130 m x 130 m box near the centre",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Completeness across the municipality and currency of the lots were not measured; the full attribute set includes street address and registration numbers (not saved). Licence unread. Brazilian coverage is per municipality; no national claim.",
+  "nextStep": "Confirm reuse terms with IPPUC / Curitiba open data, sample lots in outer districts, and check returnCountOnly totals."
+}

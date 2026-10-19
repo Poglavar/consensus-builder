@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5015-nasiriyah.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-specific real-estate registration involvement is documented by the governorate, while the Iraqi Ministry of Justice electronic property-map service announcement names only Baghdad directorates. No Nasiriyah anonymous geometry route was verified.",
+  "registryAssessment": "The official Dhi Qar Governorate reports a committee involving the Nasiriyah Municipality director and real-estate registration leadership in city development matters; the governorate also reports urban survey/registration work in Nasiriyah. This establishes local registry involvement, not open parcel coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://thiqar.gov.iq/%D8%A7%D9%84%D9%86%D8%A7%D8%A6%D8%A8-%D8%A7%D9%84%D8%A3%D9%88%D9%84/%D8%A7%D9%84%D8%BA%D8%B2%D9%8A-%D9%8A%D9%83%D8%B4%D9%81-%D8%AA%D9%81%D8%A7%D8%B5%D9%8A%D9%84-%D8%A2%D9%84%D9%8A%D8%A9-%D9%85%D9%86%D8%AD-%D9%81%D8%B1%D8%B5-%D8%A7%D9%84%D9%85%D8%B7%D9%88%D8%B1-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A-%D9%88%D8%AA%D8%AD%D9%88%D9%8A%D9%84-%D8%AE%D9%85%D8%B3%D8%A9-%D8%B7%D9%84%D8%A8%D8%A7%D8%AA-%D9%84%D9%84%D8%A7%D8%B3%D8%AA%D8%AB%D9%85%D8%A7%D8%B1",
+      "observation": "Official Dhi Qar Governorate article lists the Nasiriyah Municipality director and real-estate registration among members of the governorate investment-review committee."
+    },
+    {
+      "url": "https://www.moj.gov.iq/view.9289/",
+      "observation": "Official Ministry of Justice announcement describes an electronic property-map service launched in selected Baghdad directorates; it does not establish Nasiriyah coverage."
+    },
+    {
+      "url": "https://moj.gov.iq/contact_us.php",
+      "observation": "Official Iraqi Ministry of Justice contact portal; no Nasiriyah geometry endpoint exposed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nasiriyah Iraq official real estate registration directorate cadastral map GIS",
+      "result": "Official governorate evidence confirms local real-estate registration participation; no anonymous city parcel-map route was found.",
+      "method": "English search across governorate and Ministry of Justice sources.",
+      "scope": "Locate current official city-specific registry, cadastral map, or public geometry service."
+    },
+    {
+      "language": "Arabic",
+      "query": "الناصرية ذي قار التسجيل العقاري مسح عقاري رسمي خريطة عقار",
+      "result": "Official Dhi Qar Governorate material documents city registration involvement and urban survey work; the public geometry route was not verified.",
+      "method": "Separate Arabic search followed by official governorate/MOJ page review.",
+      "scope": "Locate current official city-specific registry, cadastral map, or public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official Dhi Qar Governorate reports a committee involving the Nasiriyah Municipality director and real-estate registration leadership in city development matters; the governorate also reports urban survey/registration work in Nasiriyah. This establishes local registry involvement, not open parcel coverage.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether a separate city-specific public feature service exists outside the governorate and Ministry pages reviewed."
+}

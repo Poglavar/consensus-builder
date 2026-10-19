@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 154,
+  "city": "Maputo",
+  "countryCode": "MZ",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/maputo.json",
+  "query": {
+    "language": "Portuguese",
+    "script": "Latin",
+    "text": "Maputo cadastro predial parcelas dados geográficos SIG dados abertos Moçambique"
+  },
+  "results": [
+    {
+      "title": "MozGIS — Maputo cadastral parcel FeatureServer layer",
+      "url": "https://www.mozgis.gov.mz/server/rest/services/Data/CMCMPlanCadastroLayersVisualizacao/FeatureServer/0",
+      "kind": "official-national-gis-catalog",
+      "note": "Search index describes polygon layer `vwCMCMPlanCadastroParcela`, display field `IdParcela`, fields including `CodigoParcela` and `NumParcela`, query capability, EPSG:32736; indexed extent is small (~2.7 x 1.9 km), so citywide completeness and live access remain unverified."
+    },
+    {
+      "title": "MozGIS national spatial-data network",
+      "url": "https://dev.mozgis.gov.mz/",
+      "kind": "official-national-portal"
+    }
+  ],
+  "assessment": "Search found a strong, specific parcel-feature endpoint candidate on the official national MozGIS catalog, with parcel ID fields and query capability. The indexed extent is small relative to Maputo, so do not treat it as citywide coverage; live access, completeness and reuse remain to be verified.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

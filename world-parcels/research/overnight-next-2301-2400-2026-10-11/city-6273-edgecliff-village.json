@@ -1,0 +1,111 @@
+{
+  "cityCode": 6273,
+  "queueRank": 2344,
+  "name": "Edgecliff Village",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [32.6689211757899, -97.3618144680358],
+  "population2025": 249260,
+  "population2025k": 249.26,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Edgecliff Village Texas official GIS parcel map cadastral property search",
+        "result": "Official Tarrant County results identify Edgecliff Village as an incorporated area and identify the Tarrant County GIS Portal Assistant. The official ArcGIS parcel layer is described as Tarrant County parcels derived from the Tarrant Appraisal District parcel property feature class.",
+        "actualResultUrls": [
+          "https://www.tarrantcountytx.gov/en/county/about-tarrant/incorporated-areas.html",
+          "https://mapit.tarrantcounty.com/GISPortalAssistant/",
+          "https://mapit.tarrantcounty.com/arcgis/rest/services/Tax/TCProperty/MapServer/0"
+        ]
+      },
+      {
+        "language": "English (local-language route; United States)",
+        "query": "Edgecliff Village Texas official parcel data Tarrant County GIS",
+        "result": "Official Tarrant County search results identify the local Tarrant County GIS parcel service and Tarrant Appraisal District property records. No separate municipal parcel API was identified in the bounded discovery.",
+        "actualResultUrls": [
+          "https://mapit.tarrantcounty.com/arcgis/rest/services/Tax/TCProperty/MapServer/0",
+          "https://www.tad.org/property?account=42869143",
+          "https://www.tarrantcountytx.gov/en/tax/property-tax/tax-entities.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": true,
+  "parcelGeometryVerified": true,
+  "verifiedSample": true,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English discovery plus separate local-language-route discovery and bounded official ArcGIS REST inspection",
+  "sourceReview": "Tarrant County is the local county GIS custodian for the public parcel map service; the layer description states that the parcels are derived from the Tarrant Appraisal District parcel property feature class. Tarrant Appraisal District is the underlying appraisal-data source referenced by the county layer. This is local parcel-service evidence, not merely national agency prose.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.tarrantcountytx.gov/en/county/about-tarrant/incorporated-areas.html",
+      "httpStatus": "Discovery result available; official page readable",
+      "outcome": "Official Tarrant County page lists Edgecliff Village among the county's incorporated areas and links the county GIS context."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://mapit.tarrantcounty.com/GISPortalAssistant/",
+      "httpStatus": "200 via bounded official discovery",
+      "outcome": "Tarrant County GIS Portal Assistant home page was reachable and identifies the county GIS portal."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapit.tarrantcounty.com/arcgis/rest/services/Tax/TCProperty/MapServer/0?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Official ArcGIS layer metadata returned geometryType esriGeometryPolygon, source/latest spatial reference WKID 102738/2276, maxRecordCount 1000, and supported query formats JSON and geoJSON. The description says the layer is derived from Tarrant Appraisal District parcel property feature class."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapit.tarrantcounty.com/arcgis/rest/services/Tax/TCProperty/MapServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=false&resultRecordCount=1&f=pjson",
+      "httpStatus": 200,
+      "outcome": "Bounded schema/sample request returned a native OID field named OBJECTID. No unsafe fields were requested."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapit.tarrantcounty.com/arcgis/rest/services/Tax/TCProperty/MapServer/0/query (exact WUP point; geometry in EPSG:4326; outFields=OBJECTID; returnGeometry=true; outSR=4326; f=geojson)",
+      "httpStatus": 200,
+      "outcome": "Exact point [32.6689211757899, -97.3618144680358] was preserved and returned zero features. This was recorded only as an exact-point result, not as evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://mapit.tarrantcounty.com/arcgis/rest/services/Tax/TCProperty/MapServer/0/query (bounded envelope xmin=-97.38,ymin=32.64,xmax=-97.32,ymax=32.69; outFields=OBJECTID; returnGeometry=true; outSR=4326; resultRecordCount=3; f=geojson)",
+      "httpStatus": 200,
+      "outcome": "Bounded anonymous envelope response returned one feature with native OBJECTID 18958 and a polygon in GeoJSON coordinates. Only that one unchanged polygon is retained in the sample."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://www.tad.org/property?account=42869143",
+      "httpStatus": "Discovery result available; official property page readable",
+      "outcome": "Tarrant Appraisal District property page confirms Edgecliff Village property coverage and identifies the appraisal district as the underlying local property custodian. Owner/address/tax fields were not requested or retained for this packet."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "The current county ArcGIS REST layer endpoint was inspected directly; no login, CAPTCHA, private token, or TLS bypass was used.",
+    "geometryCrs": "Source layer EPSG:2276 (latest WKID; metadata also reports legacy WKID 102738). Retained sample was requested in EPSG:4326 GeoJSON.",
+    "nativeIdentity": "OBJECTID is the official ArcGIS layer's native OID field and was used as the sole retained feature identity.",
+    "sourceFieldMapping": {"OBJECTID": "native ArcGIS OID; retained as properties.id"},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"exactPointFeatureCount": 0, "envelopeFeatureCountReturned": 1, "envelopeResultRecordCountLimit": 3, "result": "Safe ID-plus-geometry response obtained from the official public service."}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": "edgecliff-village-sample.geojson",
+  "sampleFile": "edgecliff-village-sample.geojson",
+  "sampleFiles": ["edgecliff-village-sample.geojson"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "A local public county parcel service and one safe native ID-plus-polygon sample are evidenced, but runtime adapter admission requires independent serial review."},
+  "scopeLimits": [
+    "The exact WUP point [32.6689211757899, -97.3618144680358] was preserved and not shifted.",
+    "The exact-point zero result is not citywide absence evidence; the envelope was bounded and was not treated as a complete city inventory.",
+    "Only one polygon is retained and no citywide coverage, update cadence, or completeness was established.",
+    "The county layer is derived from Tarrant Appraisal District data; no direct appraisal-district vector endpoint was separately qualified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "The official county parcel layer, polygon schema, native OBJECTID identity, source CRS, and one bounded sample are verified. Exact-point coverage is zero at the supplied WUP coordinate, but the coordinate may lie outside a parcel or service geometry and no citywide absence conclusion is made. Runtime/admission remains held."
+}

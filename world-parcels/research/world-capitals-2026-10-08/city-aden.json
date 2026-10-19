@@ -1,0 +1,126 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:YE:aden",
+  "name": "Aden",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "centerLatLon": [
+    12.7855,
+    45.0187
+  ],
+  "capitalRole": "temporary seat of internationally recognized government; current status requires verification",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Aden Yemen cadastral parcel map GIS land registry official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://agoye.gov.ye/page.php?id=374"
+      ]
+    },
+    {
+      "query": "عدن اليمن مكتب السجل العقاري والمساحة سجل عقاري محافظة عدن",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://agoye.gov.ye/page.php?id=374",
+        "https://14october.com/uploads/content/2412/A1L727YD-HD02U1-E9BD/4.pdf"
+      ]
+    },
+    {
+      "query": "عدن مكتب الهيئة العامة للأراضي والمساحة والتخطيط العمراني شؤون السجل العقاري إعلان",
+      "language": "Arabic",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://14october.com/uploads/content/2412/A1L727YD-HD02U1-E9BD/4.pdf",
+        "https://presidentalalimi.net/news799.html"
+      ],
+      "executedAt": "2026-10-08T19:36:51Z"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://agoye.gov.ye/page.php?id=374",
+      "observation": "Yemen official prosecution/government legislation portal publishes the national 1991 Real Estate Registry law covering parcel maps and unit records; it does not establish current public geometry or city coverage."
+    },
+    {
+      "url": "https://presidentalalimi.net/news799.html",
+      "observation": "Presidency page identifies the Foundation for Press, Printing and Publishing (14 October) as a state press institution, corroborating provenance of the newspaper-hosted notice."
+    },
+    {
+      "url": "https://14october.com/uploads/content/2412/A1L727YD-HD02U1-E9BD/4.pdf",
+      "observation": "Indexed Arabic text from page 4 of 14 October issue 17791, dated 10 December 2024, is a first-person notice from the General Authority for Lands, Survey and Urban Planning, Real Estate Registry Affairs / Aden, directing applicants to the authority branch in Al-Mualla. Direct PDF retrieval returned HTTP 403, so the indexed notice text is not independently page-rendered here; it supports a city registry office, not public parcel geometry."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://agoye.gov.ye/page.php?id=374",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://agoye.gov.ye/page.php?id=374; content type text/html; charset=utf-8; 50454 bytes.",
+      "firstPartyScripts": [
+        "https://agoye.gov.ye/js/jquery-2.2.3.min.js",
+        "https://agoye.gov.ye/js/bootstrap.min.js"
+      ],
+      "relevantOfficialLinks": [
+        "https://agoye.gov.ye/datarequest.php"
+      ]
+    },
+    {
+      "url": "https://agoye.gov.ye/page.php?id=374",
+      "method": "web.run open official legal source",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Official law page was inspected; it establishes a national registry framework, not an open GIS service."
+    },
+    {
+      "url": "https://agoye.gov.ye/page.php?id=374",
+      "method": "web.run open official legal source",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T18:55:00Z",
+      "outcome": "Official law page was inspected; it establishes a national registry framework, not an open GIS service."
+    },
+    {
+      "url": "https://14october.com/uploads/content/2412/A1L727YD-HD02U1-E9BD/4.pdf",
+      "method": "GET official-state-newspaper-hosted notice PDF",
+      "httpStatus": 403,
+      "checkedAt": "2026-10-08T19:36:51Z",
+      "outcome": "Direct retrieval returned HTTP 403. Official search indexing exposed the page-4 notice metadata/text; the Presidency source confirms 14 October is a state press institution. No personal/property details were copied and no geometry is implied."
+    },
+    {
+      "url": "https://presidentalalimi.net/news799.html",
+      "method": "GET official Presidency page inspection",
+      "httpStatus": null,
+      "checkedAt": "2026-10-08T19:36:51Z",
+      "outcome": "Opened official Presidency page identifying 14 October Press, Printing and Publishing as a state institution."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "An indexed first-party notice from the General Authority for Lands, Survey and Urban Planning, Real Estate Registry Affairs / Aden, directs registry applicants to its Al-Mualla branch. The notice is hosted in the state 14 October newspaper; the Presidency confirms that publisher is a state press institution. Direct PDF retrieval was blocked (HTTP 403), so this supports a local registry office with lower confidence and does not establish public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://agoye.gov.ye/page.php?id=374",
+    "https://14october.com/uploads/content/2412/A1L727YD-HD02U1-E9BD/4.pdf",
+    "https://presidentalalimi.net/news799.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_branch_evidence_public_geometry_not_found",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "No new bounded parcel-feature HTTP response with verifiable provenance recorded in this city artifact.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "The Arabic first-party notice is available only as indexed text because direct PDF retrieval returned HTTP 403. No public Aden parcel geometry endpoint or city coverage was verified.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

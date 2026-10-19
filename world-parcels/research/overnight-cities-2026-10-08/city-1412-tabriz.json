@@ -1,0 +1,132 @@
+{
+  "name": "Tabriz",
+  "country": "Iran",
+  "countryCode": "IR",
+  "rank": 393,
+  "point": [
+    38.0647912289003,
+    46.2966648037965
+  ],
+  "population2025": 1309004,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full parcel polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Municipal GIS/property planning is reported, but that does not establish a cadastral registry; no city registry endpoint was verified.",
+  "resultCategory": "municipal_gis_reported_no_cadastral_registry_or_public_geometry_confirmed",
+  "technicalBlocker": "No current public cadastral service URL was located; direct map hosts timed out locally.",
+  "remainingUncertainty": "Whether the municipal GIS dashboard includes public cadastral parcel boundaries or only planning/property asset layers.",
+  "nextStep": "Locate current official dashboard entry and inspect anonymous layer metadata only.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tabriz official cadastral parcel map city parcel GIS municipality Tabriz public map land registry",
+        "result": "Search found municipal GIS/property management reporting but no verified public cadastral polygon service. Publicly referenced map hosts timed out locally; this does not establish provider failure.",
+        "urls": [
+          "https://tabriz.ir/",
+          "http://map.tabriz.ir/",
+          "https://t.me/s/ShahryarnewsTBZ?after=217915",
+          "https://www.tasnimnews.ir/fa/news/1399/05/12/2319623/13-%D9%85%DB%8C%D9%84%DB%8C%D9%88%D9%86-%D8%A8%D8%B1%DA%AF-%D9%BE%D8%B1%D9%88%D9%86%D8%AF%D9%87-%D9%87%D8%A7%DB%8C-%D8%A7%D9%85%D9%84%D8%A7%DA%A9-%D9%85%D8%B1%D8%AF%D9%85-%D8%AF%D8%B1-%D8%B4%D9%87%D8%B1%D8%AF%D8%A7%D8%B1%DB%8C-%D8%AA%D8%A8%D8%B1%DB%8C%D8%B2-%D8%A8%D9%87-%D8%A2%D8%B1%D8%B4%DB%8C%D9%88-%D8%A7%D9%84%DA%A9%D8%AA%D8%B1%D9%88%D9%86%DB%8C%DA%A9%D9%8A-%D8%AA%D8%A8%D8%B1%DB%8C%D8%B2"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      },
+      {
+        "language": "Persian",
+        "query": "تبریز نقشه کاداستر شهرداری تبریز املاک قطعات زمین سامانه GIS رسمی اداره ثبت",
+        "result": "جست‌وجوی فارسی، سامانه نقشه شهرداری و گزارش‌هایی درباره GIS املاک و طرح تفصیلی را یافت؛ اما سرویس عمومی نقشه کاداستر یا پاسخ برداری چندضلعی تأیید نشد. میزبان‌های نقشه در این نشست تایم‌اوت شدند؛ این به‌تنهایی خرابی سرویس را ثابت نمی‌کند.",
+        "urls": [
+          "https://tabriz.ir/",
+          "http://map.tabriz.ir/",
+          "https://t.me/s/ShahryarnewsTBZ?after=217915"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://tabriz.ir/",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Direct HTTPS GET timed out locally before an HTTP response."
+      },
+      {
+        "url": "http://map.tabriz.ir/",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Direct HTTP GET timed out locally; current portal contents unknown."
+      },
+      {
+        "url": "https://tabrizgis.ir/",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Legacy map hostname failed local DNS resolution; not interpreted as origin downtime."
+      },
+      {
+        "url": "https://t.me/s/ShahryarnewsTBZ?after=217915",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": null,
+        "contentType": "text/html",
+        "observation": "City-news channel reports a municipal GIS dashboard and 21 e-services, but not a public cadastral layer or URL."
+      },
+      {
+        "url": "https://www.tasnimnews.ir/fa/news/1399/05/12/2319623/13-%D9%85%DB%8C%D9%84%DB%8C%D9%88%D9%86-%D8%A8%D8%B1%DA%AF-%D9%BE%D8%B1%D9%88%D9%86%D8%AF%D9%87-%D9%87%D8%A7%DB%8C-%D8%A7%D9%85%D9%84%D8%A7%DA%A9-%D9%85%D8%B1%D8%AF%D9%85-%D8%AF%D8%B1-%D8%B4%D9%87%D8%B1%D8%AF%D8%A7%D8%B1%DB%8C-%D8%AA%D8%A8%D8%B1%DB%8C%D8%B2",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Report quotes city planning deputy mayor on GIS-enabled property location in the detailed plan; this is planning/property management, not cadastral proof."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Tabriz municipality map (legacy referenced host)",
+        "operator": "Tabriz Municipality (reported)",
+        "url": "http://map.tabriz.ir/",
+        "observation": "Timed out locally; current operation and layer contents are unknown."
+      },
+      {
+        "name": "Municipal GIS dashboard",
+        "operator": "Tabriz Municipality Information Technology Organization (reported)",
+        "url": "https://t.me/s/ShahryarnewsTBZ?after=217915",
+        "observation": "City-news report says GIS dashboard was activated, but no public layer endpoint is given."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Municipal GIS and planning/property records are reported, but a current cadastral registry viewer or anonymous full-polygon endpoint was not verified. City map hosts timed out or failed DNS locally; no server-down conclusion is drawn.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "No full parcel polygon geometry was requested or retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 1412,
+  "cityId": "wup2025:1412",
+  "queueRank": 393,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    38.0647912289003,
+    46.2966648037965
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:20:33.128981+00:00"
+}

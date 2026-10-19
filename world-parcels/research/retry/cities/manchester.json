@@ -1,0 +1,62 @@
+{
+ "kind": "city",
+ "key": "manchester",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_countrywide",
+ "newStatus": "verified_sample_city_scope",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 | Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 | Accept-Language: en-GB,en;q=0.9 (cookie jar used)",
+ "changedByHeaders": true,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": {
+  "sourceId": "gb-hmlr-inspire-index-polygons",
+  "requestUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+  "method": "GET (cookie jar; anonymous session cookie; 302 to presigned S3 URL)",
+  "httpStatus": 200,
+  "contentType": "application/force-download (zip containing GML)",
+  "spatialTestAreaLonLat": "centroids within ~400 m of Manchester centre (E383155 N399711 EPSG:27700)",
+  "parcelRecordCount": 197,
+  "recordListPath": "wfs:FeatureCollection/wfs:member/LR:PREDEFINED",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "INSPIREID / NATIONALCADASTRALREFERENCE",
+  "responseFile": "research/retry/cities/manchester-parcel-response.json (3 features, geometry truncated)",
+  "pagination": "none; one 16.7 MB zip (124 MB GML, 120,989 polygons) for the whole Manchester City Council authority; filtered locally to the tiny area"
+ },
+ "source": {
+  "sourceId": "gb-hmlr-inspire-index-polygons",
+  "name": "HM Land Registry INSPIRE Index Polygons",
+  "operator": "HM Land Registry",
+  "scope": "Manchester City Council local authority (England and Wales index polygons of registered freehold title extents, not a full cadastre)",
+  "endpoint": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+  "method": "bulk GML download per authority, anonymous",
+  "responseFormat": "GML (WFS 2.0 FeatureCollection)",
+  "crs": "EPSG:27700",
+  "reuseStatus": "Download page states agreement to OGL conditions; zip contains 'INSPIRE Download Licence.pdf' which was not read"
+ },
+ "requests": [
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "dataset page reachable with cookie jar"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "lists per-authority zips incl. Manchester_City_Council.zip"
+  },
+  {
+   "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Manchester_City_Council.zip",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/zip",
+   "assessment": "16,698,544 bytes; GML with 120,989 members; 197 within ~400 m of centre; first is closed Polygon"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Previously a Cloudflare-like redirect; with browser headers plus a cookie jar the anonymous OGL-labelled download works (same as GB country retry result). Download was the whole authority file (unavoidable: no bbox API; WFS at inspire.landregistry.gov.uk remains disabled per country result). Scope: title-extent index polygons, city authority only; downloaded file discarded (only 3 truncated features saved).",
+ "nextStep": "Registry could record Manchester as city-scope bulk download (not queryable). Read the INSPIRE Download Licence.pdf before asserting terms."
+}

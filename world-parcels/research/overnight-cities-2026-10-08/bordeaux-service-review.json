@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1566-bordeaux.json",
+  "purpose": "Document official city-specific registry evidence, bounded anonymous geometry review and remaining coverage/runtime limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained.",
+  "registryAssessment": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained.",
+  "officialPrimarySources": [
+    {
+      "url": "https://apicarto.ign.fr/api/doc/",
+      "observation": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+      "observation": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained."
+    },
+    {
+      "url": "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+      "observation": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained."
+    },
+    {
+      "url": "https://www.geoportail.gouv.fr/pages/faq",
+      "observation": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained."
+    },
+    {
+      "url": "https://cadastre.data.gouv.fr/",
+      "observation": "IGN’s official API Carto cadastre documentation describes open GeoJSON parcel geometry from official cadastral/Géoplateforme WFS in WGS84. A read-only query at the exact unchanged WUP point in Bordeaux commune code 33063 returned one full MultiPolygon with safe native cadastral key `idu` (33063000IX0001); only that ID and full geometry are retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "French",
+      "query": "Bordeaux cadastre parcelles géométrie API IGN API Carto parcelle cadastrale officiel",
+      "result": "Official IGN API Carto documentation and open cadastre data were reviewed; exact WUP-point query returned one full parcel polygon in Bordeaux commune code 33063.",
+      "urls": [
+        "https://apicarto.ign.fr/api/doc/",
+        "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+        "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+        "https://www.geoportail.gouv.fr/pages/faq",
+        "https://cadastre.data.gouv.fr/"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Bordeaux France cadastral parcel polygons official open cadastre API",
+      "result": "IGN documents an official public GeoJSON API backed by cadastre services; one full polygon with native cadastral key was returned at the unchanged WUP point.",
+      "urls": [
+        "https://apicarto.ign.fr/api/doc/",
+        "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+        "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+        "https://www.geoportail.gouv.fr/pages/faq",
+        "https://cadastre.data.gouv.fr/"
+      ]
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://apicarto.ign.fr/api/doc/",
+      "method": "GET official IGN API documentation",
+      "observation": "Documents API Carto as REST/GeoJSON in WGS84 and lists cadastre endpoints for commune, division and parcel geometry."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/commune?code_insee=33063",
+      "method": "GET official IGN API Carto commune layer",
+      "observation": "Returns Bordeaux commune geometry; used to confirm endpoint response and commune code."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=33063&geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B-0.592897717816896%2C44.8360390353827%5D%7D",
+      "method": "GET official IGN API Carto parcel point-intersection query",
+      "observation": "One feature returned at exact WUP point. Full MultiPolygon; safe cadastral `idu` 33063000IX0001; ring closed. Only `idu` and geometry retained. API response is GeoJSON WGS84."
+    }
+  ],
+  "geometryEvidence": "Exact WUP point [44.8360390353827,-0.592897717816896] returned one full MultiPolygon from official IGN API Carto for Bordeaux commune code 33063. Only native cadastral key `idu` and full WGS84 geometry are retained. This is one-point evidence, not citywide completeness.",
+  "privacy": {
+    "ownerOrAddressDataRequested": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokensRequested": false,
+    "credentialsOrTokensRetained": false,
+    "notes": "No owner, address, tax/account, personal-property or credential data were queried or retained."
+  },
+  "runtimeAssessment": {
+    "decision": "parent_review_required",
+    "reason": "Full geometry at exact WUP point is verified; runtime service compatibility and parent qualification remain pending."
+  },
+  "qualification": {
+    "boundedSamples": 1,
+    "adapterQualified": false,
+    "note": "Exact-point geometry sample is stored for parent review; runtime qualification was not performed."
+  }
+}

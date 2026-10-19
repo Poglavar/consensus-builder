@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:199",
+  "queueRank": 199,
+  "name": "Bhopal",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    23.2399095144358,
+    77.4239121630525
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "observation": "Madhya Pradesh Bhulekh land-records portal (also hosts Bhu-Naksha maps for MP); connection reset from this environment."
+    },
+    {
+      "url": "https://mpbhunaksha.mp.gov.in/",
+      "observation": "MP Bhu-Naksha host unreachable (proxy CONNECT 502)."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/userguide.jsp",
+      "observation": "NIC Bhu-Naksha user guide (HTTP 200): describes viewer software, not an open API."
+    },
+    {
+      "url": "https://nakshauat.dolr.gov.in/",
+      "observation": "National NAKSHA urban cadastral pilot site (HTTP 301 only); whether Bhopal is covered was not established."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mpbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://bhunaksha.mp.gov.in/ and https://mpbhunaksha.mp.gov.in/bhunaksha/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://geoportal.mp.gov.in/, https://www.bmcbhopal.org/, https://bhopalsmartcity.com/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://geo.nic.in/server/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "parcelRecordCount": null,
+      "assessment": "unreachable"
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/userguide.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "parcelRecordCount": null,
+      "assessment": "viewer guide only"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "MP state Bhu-Naksha cadastral maps (rural/urban coverage unverified)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Key Madhya Pradesh hosts were unreachable, so absence of an open service is not shown (same situation as Indore). Indian Bhu-Naksha viewers are typically session-based rather than open feature APIs.",
+  "nextStep": "Retry MP Bhulekh / Bhu-Naksha and Bhopal Municipal Corporation GIS from another network; inspect the viewer's network calls for a bbox-queryable plot endpoint."
+}

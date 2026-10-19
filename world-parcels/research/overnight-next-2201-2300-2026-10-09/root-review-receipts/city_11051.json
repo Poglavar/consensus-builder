@@ -1,0 +1,17 @@
+{
+  "taskId": "city:11051",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-11051-masaurhi.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/masaurhi-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:39:07Z",
+  "reason": "Bihar BhuNaksha and cached first-party Masaurhi circle/village lists support state cadastral custody, but candidate extent calls returned empty bodies. No native-ID polygon response, forced paging, bounded-cell GEOS checks, source binding, or headed details check exists; empty responses do not establish absence.",
+  "firstPartyCustodyUrls": [
+    "https://bhunaksha.bihar.gov.in/index.jsp"
+  ],
+  "runtimeAdmission": "not admitted",
+  "samplePolygonsRetained": 0
+}

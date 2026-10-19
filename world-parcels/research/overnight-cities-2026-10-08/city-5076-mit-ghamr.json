@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Mit Ghamr",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An Egyptian Ministry of Finance government document listing Dakahlia service locations names “Mit Ghamr Real Estate Publicity Office” (مأمورية شهر ميت غمر) at the court building, alongside a local Mit Ghamr documentation branch. This supports a local real-estate registration/publicity service. Official map evidence found for Mit al-Ezz is a detailed village planning-map amendment within Mit Ghamr Center, not city cadastral polygons; no anonymous parcel geometry endpoint was verified.",
+  "registryEvidenceUrls": [
+    "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+    "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/73915/WQ211_20240925_4129.pdf?isAllowed=y&sequence=2",
+    "https://portal.eta.gov.eg/ar/node/1061"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5076,
+  "cityId": "wup2025:5076",
+  "centerLatLon": [
+    30.7074133551275,
+    31.2653327635426
+  ],
+  "rank": 649,
+  "queueRank": 649,
+  "population2025": 812947,
+  "population2025k": 812.947,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Local real-estate publicity service is evidenced, but no public anonymous cadastral polygon service or safe parcel schema was verified. The Mit al-Ezz plan is not attributed to the WUP city point as parcel geometry.",
+  "scopeLimits": "Bounded source discovery only. Official evidence confirms local registry/land-record services only where stated in registryBasis; it does not establish complete citywide cadastral coverage or parcel geometry at the WUP point. No owner, address, tax, personal-identity, credential, account, or property-identifier lookup was submitted or retained. No parcel geometry or feature attributes were retained.",
+  "remainingUncertainty": "Local real-estate publicity service is evidenced, but no public anonymous cadastral polygon service or safe parcel schema was verified. The Mit al-Ezz plan is not attributed to the WUP city point as parcel geometry.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mit Ghamr Egypt official land registry real estate publicity office cadastral map parcel GIS",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "Found a Government of Egypt Ministry of Finance location list naming a Mit Ghamr Real Estate Publicity Office. An Egyptian Gazette map amendment concerns Mit al-Ezz village within Mit Ghamr Center and is a planning layout, not a citywide parcel-vector service. No anonymous geometry schema was verified.",
+        "actualResultUrls": [
+          "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+          "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/73915/WQ211_20240925_4129.pdf?isAllowed=y&sequence=2",
+          "https://portal.eta.gov.eg/ar/node/1061"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "ميت غمر مأمورية الشهر العقاري سجل عقاري خرائط مساحية خريطة قطع أراضي رسمي",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "وثيقة حكومية مصرية لمواقع الخدمات في الدقهلية تذكر مأمورية شهر ميت غمر بمبنى المحكمة، وتوجد وثيقة الوقائع المصرية لتعديل مخطط تفصيلي لقرية ميت العز بمركز ميت غمر. المخطط خاص بالتخطيط الريفي وليس واجهة قطع عقارية متجهية للمدينة؛ لم يتم التحقق من مسار هندسة مجهول الهوية.",
+        "actualResultUrls": [
+          "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+          "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/73915/WQ211_20240925_4129.pdf?isAllowed=y&sequence=2",
+          "https://portal.eta.gov.eg/ar/node/1061"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "observation": "The Ministry of Finance hosted service-location document lists a Mit Ghamr Real Estate Publicity Office and Mit Ghamr suburbs documentation office under Dakahlia; this is evidence of a local registration service, not parcel-vector access."
+      },
+      {
+        "url": "https://mediadr.sis.gov.eg/xmlui/bitstream/handle/123456789/73915/WQ211_20240925_4129.pdf?isAllowed=y&sequence=2",
+        "observation": "The Official Gazette document hosted by Egypt’s State Information Service amends the detailed planning map for Mit al-Ezz village, Mit Ghamr Center. Its scope is that village and planning streets/plots, not the WUP city point’s complete cadastral coverage."
+      },
+      {
+        "url": "https://portal.eta.gov.eg/ar/node/1061",
+        "observation": "The Egyptian Tax Authority’s official page identifies the Mit Ghamr II tax office and its administrative service area. This is supporting local administrative context only, not a land registry or cadastre."
+      }
+    ],
+    "metadataReviewFile": "mit-ghamr-service-review.json"
+  },
+  "source": {
+    "sourceId": "eg-mit-ghamr-registry-review",
+    "name": "Mit Ghamr local registry/cadastre route review",
+    "operator": "Mit Ghamr local land/registry authority (as qualified in registryBasis)",
+    "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+    "scope": "Local real-estate publicity service is evidenced, but no public anonymous cadastral polygon service or safe parcel schema was verified. The Mit al-Ezz plan is not attributed to the WUP city point as parcel geometry.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local real-estate publicity service is evidenced, but no public anonymous cadastral polygon service or safe parcel schema was verified. The Mit al-Ezz plan is not attributed to the WUP city point as parcel geometry.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "point": [
+    30.7074133551275,
+    31.2653327635426
+  ],
+  "rootReviewedAt": "2026-10-09T02:15:55.042537+00:00"
+}

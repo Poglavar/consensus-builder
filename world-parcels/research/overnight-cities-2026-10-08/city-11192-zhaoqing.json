@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Zhaoqing",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage.",
+  "registryEvidenceUrls": [
+    "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+    "https://en.gdfao.gov.cn/2026-02/11/c_1015727.htm"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11192,
+  "cityId": "wup2025:11192",
+  "centerLatLon": [
+    23.0717436671655,
+    112.456268217082
+  ],
+  "rank": 894,
+  "queueRank": 894,
+  "population2025": 607624,
+  "population2025k": 607.624,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No safe anonymous parcel geometry-only map endpoint or feature schema was verified.",
+  "scopeLimits": "The Zhaoqing-region government service portal lists property registration and record-enquiry services. No direct Zhaoqing cadastral map/geometry endpoint was found; record services were not opened or queried.",
+  "remainingUncertainty": "Local cadastral map availability, public feature access, and service footprint remain unknown.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Zhaoqing China official real estate registration cadastral parcel GIS map",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "The official region-scoped Guangdong service portal offers property-registration services; no public parcel feature schema was found.",
+        "actualResultUrls": [
+          "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+          "https://en.gdfao.gov.cn/2026-02/11/c_1015727.htm"
+        ],
+        "executionMethod": "Separate English and local-language search followed by official-source review. No owner, address, title, tax, account, applicant, or property identifier was queried."
+      },
+      {
+        "language": "Chinese",
+        "query": "肇庆市不动产登记中心 地籍图 GIS 官方",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Official Zhaoqing-region government portal lists real-estate registration services; exact city bureau GIS evidence was not found.",
+        "actualResultUrls": [
+          "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+          "https://en.gdfao.gov.cn/2026-02/11/c_1015727.htm"
+        ],
+        "executionMethod": "Separate English and local-language search followed by official-source review. No owner, address, title, tax, account, applicant, or property identifier was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+        "observation": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage."
+      },
+      {
+        "url": "https://en.gdfao.gov.cn/2026-02/11/c_1015727.htm",
+        "observation": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage."
+      }
+    ],
+    "metadataReviewFile": "zhaoqing-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-11192-zhaoqing-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The Zhaoqing-region government service portal lists property registration and record-enquiry services. No direct Zhaoqing cadastral map/geometry endpoint was found; record services were not opened or queried."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage.",
+    "verifiedOpenScope": "No public parcel geometry sample was retained; bounded requests returned no geometry or no safe schema was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous parcel geometry-only map endpoint or feature schema was verified."
+  },
+  "rootReview": "pending",
+  "point": [
+    23.0717436671655,
+    112.456268217082
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "广东政务服务网"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

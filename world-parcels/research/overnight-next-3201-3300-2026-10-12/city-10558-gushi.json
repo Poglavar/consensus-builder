@@ -1,0 +1,105 @@
+{
+  "cityCode": 10558,
+  "queueRank": 3286,
+  "name": "Gushi",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [32.1923359990508, 115.672715169633],
+  "population2025": 183468,
+  "population2025k": 183.468,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gushi China official cadastral map parcel GIS land registry natural resources bureau",
+        "result": "First-party discovery found the official Gushi County Natural Resources Bureau remit for unified natural-resource and real-estate confirmation/registration, cadastral surveying, and an information-platform/public-query system; no anonymous parcel-vector endpoint was found.",
+        "actualResultUrls": [
+          "https://www.gushi.gov.cn/2025/01-09/772421.html",
+          "https://www.gushi.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "固始县 不动产登记 地籍图 宗地 查询 官方",
+        "result": "Official Gushi sources identify the Gushi real-estate registration center and an online service hall/WeChat route for registration queries; the local bureau page describes cadastral and registration responsibilities, but no safe anonymous parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://www.gushi.gov.cn/2025/07-24/760042.html",
+          "https://www.gushi.gov.cn/2025/01-09/772421.html",
+          "https://xinyang.zfcg.henan.gov.cn/cmsweb81e27e/nas/webfile2024/gushi/rootfiles/2025/06/17/73253dd6784e4362bc702eb3c77e2d22.pdf"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "localCustodian": "Gushi County Natural Resources Bureau and its Natural Resources Confirmation and Registration Bureau are evidenced by the official county government page; official Gushi material also identifies the Gushi County Real Estate Registration Center.",
+    "publicServiceEvidence": "The official county page describes online querying through the Gushi real-estate-registration WeChat/service-hall route. A county procurement notice describes connection to an integrated municipal real-estate transaction/registration platform including cadastral data, but does not publish an anonymous parcel-vector API.",
+    "anonymousParcelGeometry": false,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sampleGeoJSON": null
+  },
+  "runtimeReadiness": "held",
+  "attempts": [
+    {
+      "method": "GET",
+      "url": "https://www.gushi.gov.cn/2025/01-09/772421.html",
+      "httpStatus": 403,
+      "outcome": "TLS-default anonymous request was forbidden from this workspace. Search-indexed first-party content was used only to establish local custodial responsibility; no parcel response was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gushi.gov.cn/2025/07-24/760042.html",
+      "httpStatus": 403,
+      "outcome": "TLS-default anonymous request was forbidden from this workspace. Search-indexed official content identifies an online registration query route, but no viewer JavaScript/configuration or parcel geometry was obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gushi.gov.cn/",
+      "httpStatus": 403,
+      "outcome": "TLS-default anonymous request was forbidden; no public map/API route could be inspected."
+    },
+    {
+      "method": "GET",
+      "url": "https://xinyang.zfcg.henan.gov.cn/cmsweb81e27e/nas/webfile2024/gushi/rootfiles/2025/06/17/73253dd6784e4362bc702eb3c77e2d22.pdf",
+      "httpStatus": null,
+      "outcome": "TLS-default request did not yield a usable local response in this workspace. Search-indexed first-party procurement content records platform integration and cadastral-data scope, not an anonymous parcel endpoint."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "parcelApi": null,
+    "geometryCrs": "Unverified; no parcel geometry response obtained.",
+    "nativeIdentity": null,
+    "sourceFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"featureCount": 0, "result": "No parcel response obtained; zero is not an absence finding."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public service/layer metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not run against a verified parcel endpoint; exact WUP point [32.1923359990508, 115.672715169633] remains unchanged and no absence inference is made."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Gushi County natural-resource and real-estate registration/cadastral responsibilities and associated online query service.",
+    "verifiedOpenScope": "Local custodial and procedural evidence only; anonymous parcel schema, CRS, geometry delivery, and citywide vector coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "notes": [
+    "No coordinate was shifted.",
+    "No raw source-specific attribute set or unsafe personal/property-rights data was retained.",
+    "No GeoJSON sample is retained because no safe full parcel polygon and native identity were obtained.",
+    "Packet completion records research only; it is not source integration or adapter admission."
+  ],
+  "uncertainty": "Local custodial responsibility and an online registration-query route are evidenced, but current viewer configuration, anonymous parcel endpoint, native identity semantics, CRS, geometry delivery, coverage, licensing, and update cadence remain unresolved."
+}

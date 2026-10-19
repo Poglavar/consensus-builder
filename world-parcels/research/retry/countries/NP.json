@@ -1,0 +1,88 @@
+{
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ne-NP,ne;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://dolrm.gov.np/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.dolma.gov.np",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://dolma.gov.np/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://kitta.dolrm.gov.np/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://gis.dos.gov.np/ (and cadastre./geo./ngi.dos.gov.np)",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "curl exit 35 (connection reset by peer) through the agent proxy with full browser headers, no HTTP reply; unchanged from previous pass, not evidence of absence"
+  },
+  {
+   "url": "https://www.dos.gov.np/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Survey Department site NOW loads (was unreachable before); links to merokitta.dos.gov.np, dolma.gov.np and nationalgeoportal.gov.np; no map/WFS strings in JS"
+  },
+  {
+   "url": "https://merokitta.dos.gov.np/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Mero Kitta: e-service for ownership-certificate/parcel applications and status, with /auth/login; no map or open parcel API"
+  },
+  {
+   "url": "https://nationalgeoportal.gov.np/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "87 feature types; only parcel-adjacent names are geonode:landc_ar, wards, ward_nameupdated_wgs; no parcel layer"
+  },
+  {
+   "url": "https://nationalgeoportal.gov.np/api/v2/datasets, /api/layers, /catalogue/csw",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "React SPA shell returned for all API paths; catalogue not enumerable"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Nepal cadastral",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 hits"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "dolma/dolrm hosts reset while dos.gov.np and nationalgeoportal answer: intermittent or host-specific, not proven geo-block",
+ "notes": "Partly new: dos.gov.np is now reachable and its HTML reveals Mero Kitta (login/application e-service, not an open parcel map) and the DoLMA site dolma.gov.np (still resets). National geoportal WFS still has no parcel layer. Status kept temporarily_unavailable because dolma/kitta cadastre hosts are unreachable; Mero Kitta looks credentialed/e-service but that was not tested past its landing page.",
+ "nextStep": "Retry dolma.gov.np; examine merokitta.dos.gov.np after login flow only if a public no-login lookup exists (do not bypass login).",
+ "kind": "country",
+ "key": "NP",
+ "checkedAt": "2026-09-30"
+}

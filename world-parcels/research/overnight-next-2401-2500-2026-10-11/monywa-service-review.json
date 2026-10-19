@@ -1,0 +1,69 @@
+{
+  "cityRecord": "city-1972-monywa.json",
+  "cityCode": 1972,
+  "queueRank": 2462,
+  "city": "Monywa",
+  "country": "Myanmar",
+  "attempt": 1,
+  "reviewStatus": "hold",
+  "registryFound": null,
+  "serviceAssessment": "No qualifying anonymous cadastral parcel service was verified. Official national custodian and mapping references exist, but no Monywa-local public map/API returning a safe native parcel identity with complete polygon geometry was reached.",
+  "custodianEvidence": [
+    {
+      "agency": "Settlement and Land Records Department (SLRD)",
+      "scope": "national land-record custodian",
+      "url": "https://slrd.gov.mm/en",
+      "evidence": "Official department site identified in discovery; direct GET returned HTTP 403 Cloudflare challenge."
+    },
+    {
+      "agency": "Survey Department, Ministry of Natural Resources and Environmental Conservation",
+      "scope": "national surveying and map production",
+      "url": "https://surveydepartment.gov.mm/mapping",
+      "evidence": "Official mapping page describes national topographic/map production and projection material, not a public cadastral parcel API."
+    }
+  ],
+  "attemptedRoutes": [
+    "https://surveydepartment.gov.mm/",
+    "https://surveydepartment.gov.mm/mapping",
+    "https://slrd.gov.mm/en",
+    "https://onemapmyanmar.gov.mm/",
+    "https://www.moi.gov.mm/iprd/news/171575",
+    "https://surveydepartment.gov.mm/news/936"
+  ],
+  "requestSummary": {
+    "surveyDepartmentHomepage": "timeout after 20 seconds",
+    "surveyDepartmentMapping": "official discovery page; no parcel service exposed",
+    "slrdHomepage": "HTTP 403 Cloudflare challenge; no bypass attempted",
+    "oneMapMyanmarCandidate": "DNS resolution failure",
+    "monywaGisReport": "official GIS census report only; not cadastral",
+    "oneMapReport": "official Geoportal development report; no public endpoint exposed"
+  },
+  "schema": {
+    "nativeFieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null,
+    "geometryType": null
+  },
+  "geometry": {
+    "sampleGeoJSON": null,
+    "featureCount": 0,
+    "retainedProperties": [],
+    "reason": "No safe native parcel ID and complete polygon were returned."
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "source layer metadata",
+    "CRS"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [22.1148978187163, 95.1466501424968] was preserved and not shifted.",
+    "No exact-point hit or map extent test was used as evidence of citywide absence.",
+    "No unsafe owner, address, titleholder, contact, personal, tax/account, or similar fields were requested.",
+    "No TLS verification was disabled; no CAPTCHA or Cloudflare challenge was defeated.",
+    "The packet is complete as a research record, not as source integration or runtime admission."
+  ],
+  "runtimeReadiness": "held",
+  "qualificationDecision": "hold",
+  "uncertainty": "A restricted or unpublished Monywa cadastral service may exist; anonymous access, native identity, schema, CRS, geometry, and citywide coverage remain unverified."
+}

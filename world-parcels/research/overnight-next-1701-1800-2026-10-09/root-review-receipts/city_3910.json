@@ -1,0 +1,11 @@
+{
+  "taskId": "city:3910",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-3910-khorramabad.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/khorramabad-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T14:47:52.943977Z",
+  "reason": "English and Persian checks produced national custodial leads and timeouts, not a local geometry-plus-native-ID response; registry custody remains unresolved."
+}

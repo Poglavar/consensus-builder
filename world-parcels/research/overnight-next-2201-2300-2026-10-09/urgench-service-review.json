@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-981-urgench.json",
+  "purpose": "Document first-party local cadastral evidence and bounded anonymous parcel-geometry access review.",
+  "assessment": "Urgench has first-party regional cadastral administration evidence: the Chamber of State Cadastres directory lists the Xorazm regional department in Urganch city. Official national descriptions identify cadastral maintenance, geodesy/cartography, and real-estate-rights registration as agency functions. Public geoportal/service entry points were identified, but no safe anonymous parcel feature response containing a native parcel ID and full geometry was verified. No sample GeoJSON is retained.",
+  "registryFound": true,
+  "registryBasis": "Local/regional custodian evidenced by the official directory entry for Xorazm viloyati boshqarmasi at Urganch shahar, Istiqlol ko‘chasi 14-uy. National agency prose is recorded separately and is not used alone as local evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://uzdkp.uz/",
+      "observation": "Official Chamber of State Cadastres directory lists Xorazm regional department in Urganch city and separately lists the Urganch district office. The regional entry is the local custodian evidence used here."
+    },
+    {
+      "url": "https://gov.uz/en/kadastr/pages/about",
+      "observation": "Official Cadastre Agency page describes state cadastral maintenance, geodesy/cartography, land/cadastral control, and real-estate services through State Service Centers and the Unified Interactive State Services Portal."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "observation": "Officially branded National geo-information portal with coordinate and cadastral-number search UI and Esri-powered map shell; no safe anonymous parcel feature response was retrieved."
+    },
+    {
+      "url": "https://dshk.uz/ru/",
+      "observation": "State Urban Planning Cadastre geoportal entry point; search result describes public urban-cadastre information, but the reviewed route did not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://kadastryordamchi.uz/ru",
+      "observation": "Official Chamber public-service portal in test mode lists nearby cadastral-number determination, state real-estate registry, and other workflows; these are service/property workflows, not a verified citywide anonymous parcel-vector feed."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://uzdkp.uz/",
+      "method": "official first-party page/search review",
+      "result": "SUCCESS: Xorazm regional Chamber of State Cadastres entry located in Urganch city; no parcel geometry endpoint or schema exposed in the reviewed directory."
+    },
+    {
+      "url": "https://gov.uz/en/kadastr/pages/about",
+      "method": "official HTTPS page review",
+      "result": "HTTP/content available through first-party page review; agency scope and public-service channels documented, but no parcel geometry response."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "anonymous HTTPS GET and public geoportal inspection",
+      "result": "The public search index exposed the map shell and coordinate/cadastral-number controls. Direct curl retrieval timed out after 20 seconds, so no JavaScript/configuration or feature request was safely verified. Timeout is not treated as parcel absence."
+    },
+    {
+      "url": "https://dshk.uz/ru/",
+      "method": "anonymous HTTPS GET/public-page review",
+      "result": "Search index described the State Urban Planning Cadastre geoportal. Direct curl returned HTTP 403 from nginx; no retry, bypass, login, or protected request attempted. No geometry retained."
+    },
+    {
+      "url": "https://kadastryordamchi.uz/ru",
+      "method": "official public-page review",
+      "result": "Public page states the platform is in test mode and lists cadastral-number determination and registry workflows. No parcel polygon response was requested; no personal or property identifiers submitted."
+    }
+  ],
+  "queryOutcomes": {
+    "english": "First-party Cadastre Agency, Chamber of State Cadastres, National Geoportal, and State Urban Planning Cadastre sources found; safe anonymous parcel geometry+ID contract not verified.",
+    "local": "Uzbek Latin-language first-party search identified the same official cadastral institutions and Urganch/Xorazm regional office; no safe anonymous parcel geometry+ID contract verified."
+  },
+  "safeFieldAllowlist": ["native parcel/object ID only if directly returned by a public source", "full polygon geometry only if directly returned by a public source"],
+  "geometryDisposition": "No full geometry sample retained: no safe anonymous native-ID-plus-polygon response was verified.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointShifted": false
+  },
+  "sourceSchema": {
+    "crs": null,
+    "nativeIdField": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "reason": "No feature response was obtained."
+  },
+  "runtimeAssessment": {
+    "status": "held_no_verified_public_geometry",
+    "reason": "Serial runtime qualification is held because no anonymous parcel feature schema and geometry response were verified.",
+    "evidenceFile": "research/overnight-next-2201-2300-2026-10-09/urgench-service-review.json"
+  }
+}

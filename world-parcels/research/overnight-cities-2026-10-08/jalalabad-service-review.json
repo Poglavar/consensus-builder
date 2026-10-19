@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5176-jalalabad.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No anonymous parcel feature service, safe identifier schema, or exact-point digitized-coverage result was verified. Official local pages include municipal notices and programme activity, which are not a generic public parcel feed.",
+  "registryAssessment": "Municipal land administration and national property-registration activity are visible, but this review did not verify a city-local cadastral registry office or a city-specific first-party parcel map.",
+  "officialPrimarySources": [
+    {
+      "url": "https://jalalabad-m.gov.af/index.php/about-city",
+      "observation": "Official municipality overview identifies the city and its municipal administrative context; it does not document an anonymous parcel service."
+    },
+    {
+      "url": "https://jalalabad-m.gov.af/dr/node/394",
+      "observation": "Official Dari/Pashto municipality page describes Jalalabad urban districts and land-use context, not cadastral vector publication."
+    },
+    {
+      "url": "https://pms.moj.gov.af/",
+      "observation": "Ministry of Justice PRMIS portal is a property-registration system; no public spatial schema or anonymous full-polygon service was exposed in this review."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jalalabad Afghanistan official municipal land registry cadastral map parcel GIS",
+      "result": "Official municipal pages describe city administration and land/lease notices, but no generic public cadastral map or vector service was located.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Pashto/Dari",
+      "query": "جلال آباد نقشه کادستر ثبت زمین شهرداری ننگرهار",
+      "result": "No first-party local-language public parcel geometry service was located; official municipal/MUDH pages describe municipal or programme-specific land activity.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://jalalabad-m.gov.af/index.php/about-city",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Reviewed public descriptions only; no login, identity, rights-holder, plot or address query submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

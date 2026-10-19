@@ -1,0 +1,21 @@
+{
+  "taskId": "packet:860",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/integration-ledger.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-860-kismayo.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/kismayo-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T11:49:00Z",
+  "reason": "Official Nagaad RAP documents Kismayo Municipality land-registration responsibilities and planned processing of Jubaland title deeds for project-affected residents. This supports a municipal procedure only; an extant parcel register, safe native IDs, and public geometry remain unverified. The discovered ArcGIS layer is an administrative district boundary, not a parcel source.",
+  "firstPartySourceUrl": "https://nagaad.mpwr.gov.so/wp-content/uploads/2025/05/Kismayo-UPDATED-Package-3-RAP.pdf",
+  "identityCheck": "Exact city code, rank, country, point, and population in persons match the immutable SHA-256 roster and pending queue.",
+  "searchCheck": "Executed English and local-language queries with result URLs recorded in both paired files.",
+  "polygonCheck": "Zero retained full parcel polygons; no safe native parcel ID/full-polygon response verified.",
+  "qualificationCheck": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification.",
+  "cacheArtifactsInspected": [],
+  "integrationCheck": "Packet reviewed as held; no runtime, catalog, city configuration, or coverage report admission."
+}

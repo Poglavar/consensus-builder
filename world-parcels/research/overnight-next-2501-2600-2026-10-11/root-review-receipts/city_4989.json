@@ -1,0 +1,45 @@
+{
+  "taskId": "city:4989",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-4989-jhenaidah.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/jhenaidah-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T15:44:42.951741Z",
+  "reason": "Official DLRS map workflow and Jhenaidah district record-room service support registry custody. The selected survey returned an empty upazila list, not a parcel query or citywide absence; no native parcel ID, CRS, or polygon was obtained. Independent live adapter qualification, forced paging, 13 bounded cells, metric GEOS validity/overlap, source binding, and headed Details verification are absent; runtime admission remains held.",
+  "identity": {
+    "queueRank": 2597,
+    "country": "Bangladesh",
+    "point": [
+      23.5438497708508,
+      89.1725168996132
+    ],
+    "population2025Persons": 226534,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "searches": {
+    "englishAndLocalExecuted": true,
+    "languages": [
+      "English",
+      "Bengali"
+    ]
+  },
+  "sourceCheck": {
+    "firstPartyUrl": "https://settlement.gov.bd/Map/MapSearch",
+    "registryFound": true,
+    "parcelGeometryVerified": false,
+    "fullPolygonsRetained": 0,
+    "safeNativeIdVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "boundedCells13": false,
+    "metricGeosAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

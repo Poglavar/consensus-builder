@@ -1,0 +1,73 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MQ",
+ "country": "Martinique",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "French state cadastre (DGFiP Plan cadastral informatise) served openly via IGN API Carto (apicarto.ign.fr) and cadastre.data.gouv.fr (Etalab); Martinique is a French overseas department/region",
+ "portalsFound": [
+  {
+   "url": "https://apicarto.ign.fr/api/doc/cadastre",
+   "observation": "IGN API Carto cadastre module, anonymous"
+  },
+  {
+   "url": "https://cadastre.data.gouv.fr/",
+   "observation": "Etalab open cadastre bundles (per-commune GeoJSON); connection failed through proxy this session, not used as evidence"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={\"type\":\"Point\",\"coordinates\":[-61.0588,14.6161]}&_limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "1 MultiPolygon parcel in Fort-de-France; verified"
+  },
+  {
+   "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={\"type\":\"Point\",\"coordinates\":[-60.87,14.47]}&_limit=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=utf-8",
+   "assessment": "1 MultiPolygon parcel in Le Marin; second commune, same schema"
+  },
+  {
+   "url": "https://cadastre.data.gouv.fr/bundler/cadastre-etalab/communes/97209/geojson/parcelles (range 0-2000)",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed via proxy (ws_closed_mid_exchange); temporarily unavailable"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+  "requestUrl": "https://apicarto.ign.fr/api/cadastre/parcelle?geom={\"type\":\"Point\",\"coordinates\":[-61.0588,14.6161]}&_limit=3",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -61.0588,
+   14.6161,
+   -61.0588,
+   14.6161
+  ],
+  "parcelRecordCount": 1,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "numero + section + code_insee (idu)",
+  "responseFile": "MQ-parcel-response.json",
+  "pagination": "_limit/_start",
+  "regionSampled": "Fort-de-France"
+ },
+ "coverageAssessment": {
+  "claimedScope": "All communes of Martinique (French cadastre)",
+  "regionsVerified": [
+   "Fort-de-France",
+   "Le Marin"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Point query returns one parcel; bbox/polygon geometry queries and bulk Etalab bundles not tested. Cadastre coverage in overseas departments may be incomplete in rural areas. Licence (Licence Ouverte for Etalab bundles) not re-read.",
+ "nextStep": "Test Etalab bundle by HTTP range when the host is reachable; confirm bbox query."
+}

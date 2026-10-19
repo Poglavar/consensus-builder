@@ -1,0 +1,22 @@
+{
+  "taskId": "city:8415",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-8415-bridgeport.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/bridgeport-service-review.json",
+    "tmp/valhalla-parcel-research/8415/layer.json",
+    "tmp/valhalla-parcel-research/8415/exact.json",
+    "tmp/valhalla-parcel-research/8415/extent-safe.json"
+  ],
+  "checkedAt": "2026-10-11T19:14:51Z",
+  "reason": "First-party ArcGIS metadata and the bounded cached response support three nearby polygons with Parcel_ID, GIS_ID, and OBJECTID_12; the exact WUP point returned zero. Fresh adapter paging, 13 bounded cells, independent metric geometry checks, source binding, and headed Details verification are missing.",
+  "queueIdentityVerified": true,
+  "researchSearchesReviewed": [
+    "English",
+    "native/local"
+  ],
+  "retainedFullPolygonSampleCount": 0,
+  "runtimeAdmission": false
+}

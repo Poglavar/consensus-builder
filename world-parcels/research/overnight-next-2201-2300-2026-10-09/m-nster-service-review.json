@@ -1,0 +1,59 @@
+{
+  "cityRecord": "city-2088-m-nster.json",
+  "cityCode": 2088,
+  "queueRank": 2207,
+  "city": "Münster",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodian": {
+    "kind": "local registry/cadastre custodian",
+    "name": "Stadt Münster, Vermessungs- und Katasteramt",
+    "evidence": "Official city Geobasisdaten viewer lists Flurstücke and names the Vermessungs- und Katasteramt; official city Open Data dataset states the parcel boundaries come from ALKIS."
+  },
+  "discovery": {
+    "englishQuery": "Münster Germany official cadastral map ALKIS Geoportal Flurstücke WMS WFS",
+    "nativeQuery": "Münster Deutschland offizielles Liegenschaftskataster Flurstücke Geoportal WMS WFS",
+    "urls": [
+      "https://geo.stadt-muenster.de/webgis/application/Geobasisdaten",
+      "https://ckan.open.nrw.de/dataset/geokoordinaten-der-flurstucke-bzw-grundstucksgrenzen-ms",
+      "https://opendata.stadt-muenster.de/dataset/geokoordinaten-der-flurstücke-bzw-grundstücksgrenzen"
+    ]
+  },
+  "requests": [
+    {
+      "request": "WFS 1.1.0 GetCapabilities",
+      "url": "https://www.stadt-muenster.de/ows/mapserv706/odalkisserv?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=1.1.0",
+      "outcome": "success; layer ms:flurstuecke advertises default EPSG:25832 and alternate EPSG:4326, EPSG:3857, EPSG:31466, EPSG:31467"
+    },
+    {
+      "request": "WFS 1.1.0 DescribeFeatureType for ms:flurstuecke",
+      "url": "https://www.stadt-muenster.de/ows/mapserv706/odalkisserv?SERVICE=WFS&REQUEST=DescribeFeatureType&VERSION=1.1.0&TYPENAME=ms%3Aflurstuecke",
+      "outcome": "success; schema exposes geometry and safe cadastral identifiers/measurements/dates"
+    },
+    {
+      "request": "bounded anonymous WFS GetFeature, GeoJSON, max 3, EPSG:25832 BBOX 404000,5754000,405000,5755000",
+      "url": "https://www.stadt-muenster.de/ows/mapserv706/odalkisserv",
+      "outcome": "success; three Polygon features returned; response included oid_uid and flurstuecks_kz/fsk identities"
+    },
+    {
+      "request": "bounded anonymous WFS GetFeature, GeoJSON, EPSG:4326 BBOX near exact WUP point",
+      "url": "https://www.stadt-muenster.de/ows/mapserv706/odalkisserv",
+      "outcome": "valid empty FeatureCollection; not treated as citywide absence because the native-CRS bounded request returned nearby parcels"
+    }
+  ],
+  "fieldMapping": {
+    "preferredNativeIdentity": "oid_uid",
+    "fallbackCompositeKey": ["gmk_lan", "gmk_gmn", "fln", "fsn_zae"],
+    "sourceFieldsObserved": ["flurstuecks_kz", "fsk", "gmk_lan", "gmk_gmn", "fln", "fsn_zae", "afl", "zde", "lzi_beg", "oid_uid"],
+    "retainedGeoJsonProperties": "none; no sample retained",
+    "unsafeFieldsRequested": false
+  },
+  "scopeAndUncertainty": {
+    "coverage": "Official local ALKIS source and public service evidenced; bounded response only.",
+    "geometry": "Three nearby full polygons were inspected in ignored scratch evidence; none retained in cohort output.",
+    "limitations": ["No exact-point parcel claim.", "No citywide completeness claim.", "Public WFS availability does not by itself qualify a production adapter.", "Runtime readiness held for serial review."],
+    "tls": "Default TLS verification used; no certificate exception.",
+    "credentials": "No login, credentials, private tokens, CAPTCHA bypass, or unsafe personal fields used."
+  }
+}

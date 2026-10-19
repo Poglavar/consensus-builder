@@ -1,0 +1,201 @@
+{
+  "purpose": "Audit city-scoped land/cadastre evidence separately from accessible public parcel geometry; record only executed searches and actual page/request outcomes.",
+  "schemaVersion": 1,
+  "kind": "africa_capital_city_parcel_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "date": "2026-10-08",
+  "slug": "praia",
+  "cityId": "capital:CV:praia",
+  "name": "Praia",
+  "country": "Cabo Verde",
+  "code": "CV",
+  "centerLatLon": [
+    14.9177,
+    -23.5092
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "jurisdiction": "Municipality of Praia, Santiago Island; INGT is Cabo Verde's national cadastre and territorial authority.",
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.mf.gov.cv/documents/20126/0/Edital%2B-%2B%2BCadastro%2BPredial_Aprovado.pdf/b813258a-c6b9-cd7a-a778-d8b810a76fb2?download=true&t=1712681133184&version=1.0",
+    "https://portaldocadastro.ingt.gov.cv/",
+    "https://ingt.gov.cv/ingt/Servi%C3%A7os/cadastro-predial/"
+  ],
+  "registryBasis": "A 2024 official INGT notice starts the Santiago cadastral operation and explicitly includes Município da Praia, with declarations scheduled through November 2025; it also names Praia service locations. This establishes city-specific cadastral activity, not completion or open vector coverage. The live public portal exposes NIP-based cadastral lookup and cadastral-plan issuance workflows.",
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_cadastre_operation_portal_requires_login_no_public_parcel_geometry",
+  "findings": "City-specific registry activity is confirmed by the official 2024 Santiago cadastral-operation notice, which explicitly lists Praia. Fresh web.open inspection of the public portal showed NIP-based cadastral lookup and cadastral-plan issuance; clicking Planta Cadastral and Informação Cadastral redirected to a login screen. A fresh opened official ArcGIS REST FeatureServer lists administrative layers (ilha, concelho, freguesia, zona, cidade, vila, lugar, bairro_cidade, bairro_vila), not parcels. Direct WFS capabilities URLs were inaccessible through the web tool, with no HTTP status or server response. No anonymous public parcel geometry was verified; this is a scoped access finding, not evidence that the registry lacks parcel data.",
+  "englishQueries": [
+    "Praia Cape Verde cadastral parcel polygons public GIS WFS INGT official"
+  ],
+  "localLanguageQueries": [
+    "Praia Cabo Verde cadastro predial SIG parcelário dados geográficos INGT",
+    "site:ingt.gov.cv Praia cadastro parcela cartografia Cabo Verde parcelário portal cadastro",
+    "site:geoportal-ingt.gov.cv cadastro parcela Praia WFS",
+    "site:ingt.gov.cv Praia cadastro Santiago operação cadastral INGT Cabo Verde",
+    "Praia ilha de Santiago operação cadastral cadastro predial INGT Cabo Verde",
+    "site:ingtgeo.gov.cv/arcgisingt/rest/services cadastro parcelário Cabo Verde INGT",
+    "Praia cidade cadastro predial parcelas cartografia oficial Ilha de Santiago INGT"
+  ],
+  "searches": [
+    {
+      "query": "Praia Cape Verde cadastral parcel polygons public GIS WFS INGT official",
+      "language": "English",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Praia Cabo Verde cadastro predial SIG parcelário dados geográficos INGT",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:ingt.gov.cv Praia cadastro parcela cartografia Cabo Verde parcelário portal cadastro",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:geoportal-ingt.gov.cv cadastro parcela Praia WFS",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:ingt.gov.cv Praia cadastro Santiago operação cadastral INGT Cabo Verde",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Praia ilha de Santiago operação cadastral cadastro predial INGT Cabo Verde",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "site:ingtgeo.gov.cv/arcgisingt/rest/services cadastro parcelário Cabo Verde INGT",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    },
+    {
+      "query": "Praia cidade cadastro predial parcelas cartografia oficial Ilha de Santiago INGT",
+      "language": "Portuguese",
+      "method": "web.run search_query",
+      "retrieval": "search-result discovery only; no HTTP status implied"
+    }
+  ],
+  "requests": [],
+  "verifiedSample": false,
+  "technicalBlocker": "Official portal separates cadastral-plan document service from public browsing; no anonymous point-query vector endpoint located.",
+  "nextStep": "Ask INGT whether IDE-CV or the cadastro portal has an anonymous WFS/feature query for Praia, or request a sanitized sample plan layer.",
+  "coverageAssessment": {
+    "claimedScope": "Official cadastral operation for Santiago municipalities includes Praia; operation declarations were scheduled through November 2025.",
+    "verifiedOpenScope": "Public portal supports NIP-based lookup and plan/document workflows; the accessed public ArcGIS service is administrative boundaries only.",
+    "wholeCityCoverageVerified": false
+  },
+  "localLanguage": "Portuguese",
+  "localLanguageQueryNote": null,
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "portalInspections": [
+    {
+      "url": "https://portaldocadastro.ingt.gov.cv/",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "Page content returned; HTTP status was not exposed.",
+      "observed": "NIP-based cadastral information lookup and online cadastral-plan issuance are offered; no anonymous map or parcel-vector endpoint is shown."
+    },
+    {
+      "url": "https://portaldocadastro.ingt.gov.cv/processos-online/?secao=planta-cadastral&servico=planta-cadastral",
+      "method": "web.run click from portal homepage",
+      "httpStatus": null,
+      "toolOutcome": "Redirected to https://portaldocadastro.ingt.gov.cv/login/; login page content returned; HTTP status not exposed.",
+      "observed": "Cadastral-plan request workflow requires portal login; no parcel response was requested."
+    },
+    {
+      "url": "https://portaldocadastro.ingt.gov.cv/processos-online/?secao=informacao-cadastral&servico=informacao-cadastral",
+      "method": "web.run click from portal homepage",
+      "httpStatus": null,
+      "toolOutcome": "Redirected to login page; HTTP status not exposed.",
+      "observed": "Cadastral-information workflow is behind login; no personal data was entered."
+    },
+    {
+      "url": "https://ingtgeo.gov.cv/arcgisingt/rest/services/SDI/Divisao_Administrativa_CaboVerde/FeatureServer",
+      "method": "web.run open of official ArcGIS REST page",
+      "httpStatus": null,
+      "toolOutcome": "FeatureServer page content returned; HTTP status not exposed.",
+      "observed": "Lists nine administrative-division layers, not cadastral parcels."
+    },
+    {
+      "url": "https://geoservicos-ingt.gov.cv/geoserver/ows?service=WFS&request=GetCapabilities",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "URL reported inaccessible by web tool; no server status or response returned."
+    },
+    {
+      "url": "https://geoservicos-ingt.gov.cv/geoserver/wfs?service=WFS&request=GetCapabilities",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "URL reported inaccessible by web tool; no server status or response returned."
+    },
+    {
+      "url": "https://geoservicos-ingt.gov.cv/geoserver/rest/workspaces.json",
+      "method": "web.run open",
+      "httpStatus": null,
+      "toolOutcome": "URL reported inaccessible by web tool; no server status or response returned."
+    }
+  ],
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "countryCode": "CV",
+  "status": "complete",
+  "researchStatus": "complete",
+  "capitalRole": "primary",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Praia Cape Verde cadastral parcel polygons public GIS WFS INGT official",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Praia Cabo Verde cadastro predial SIG parcelário dados geográficos INGT",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:ingt.gov.cv Praia cadastro parcela cartografia Cabo Verde parcelário portal cadastro",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:geoportal-ingt.gov.cv cadastro parcela Praia WFS",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:ingt.gov.cv Praia cadastro Santiago operação cadastral INGT Cabo Verde",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Praia ilha de Santiago operação cadastral cadastro predial INGT Cabo Verde",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "site:ingtgeo.gov.cv/arcgisingt/rest/services cadastro parcelário Cabo Verde INGT",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Praia cidade cadastro predial parcelas cartografia oficial Ilha de Santiago INGT",
+      "language": "Portuguese",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

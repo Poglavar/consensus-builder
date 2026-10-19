@@ -1,0 +1,16 @@
+{
+  "taskId": "city:8779",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-8779-zengjia.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/zengjia-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T16:37:23.349673Z",
+  "reason": "Official Chongqing registration guidance confirms cadastral-map custody and directs lookup through government services; no anonymous native parcel ID or full polygon was obtained. DNS/timeout limits are not citywide absence.",
+  "sourceConfirmationUrl": "https://ghzrzyj.cq.gov.cn/ztlm_186/cqsbdcdj/yzzd/202003/t20200323_5980576.html",
+  "identityCheck": "City code, queue rank, country, unchanged point and 2025 population in persons agree with both immutable pending queue and ranked roster.",
+  "researchCheck": "English and local-language executed searches are documented in the paired packet; no retained sample polygons were reported.",
+  "admissionGates": "Not independently evidenced: fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding and headed Details-panel verification. No runtime admission."
+}

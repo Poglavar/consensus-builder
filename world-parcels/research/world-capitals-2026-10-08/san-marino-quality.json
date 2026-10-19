@@ -1,0 +1,1567 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32633",
+  "featureCount": 221,
+  "validNonemptyCount": 221,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 4.511359136787324,
+    "median": 147.82502265170814,
+    "max": 120316.84371013651
+  },
+  "features": [
+    {
+      "id": "sm-cadastre:F42M423",
+      "areaM2": 100.09346341175471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M240",
+      "areaM2": 764.0296380061567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M590",
+      "areaM2": 8.057113142551106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M553",
+      "areaM2": 67.23523261773103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M241",
+      "areaM2": 826.3129681027633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M307",
+      "areaM2": 9221.757201308537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M489",
+      "areaM2": 216.31703295736884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M568",
+      "areaM2": 74.36446159528833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M207",
+      "areaM2": 525.1270144708452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M490",
+      "areaM2": 523.7092211661864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M496",
+      "areaM2": 481.56636229566294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M210",
+      "areaM2": 341.6525636468757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M244",
+      "areaM2": 819.9118987460465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M239",
+      "areaM2": 777.4440694835406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M243",
+      "areaM2": 1097.4706112936426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M571",
+      "areaM2": 189.91492907419178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M477",
+      "areaM2": 748.3054228205318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M134",
+      "areaM2": 665.9667992516374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M322",
+      "areaM2": 501.91148780516284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M595",
+      "areaM2": 25.078720682423178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M326",
+      "areaM2": 1905.8990310287804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M324",
+      "areaM2": 322.7217981582776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M580",
+      "areaM2": 127.41120385063567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M245",
+      "areaM2": 930.7552114952084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M323",
+      "areaM2": 55.95429620315814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M260",
+      "areaM2": 53.80753486177608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M269",
+      "areaM2": 745.0469025803899,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M256",
+      "areaM2": 412.79772522077525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M248",
+      "areaM2": 40.26707716440336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M218",
+      "areaM2": 39.68437354206691,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M217",
+      "areaM2": 36.43635745250996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M261",
+      "areaM2": 260.2899825216515,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M264",
+      "areaM2": 68.48641735999504,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M262",
+      "areaM2": 5.528440886092757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M263",
+      "areaM2": 95.60905816987587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M411",
+      "areaM2": 22.71294200613718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M255",
+      "areaM2": 58.39953209814173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M258",
+      "areaM2": 163.9058697859395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M259",
+      "areaM2": 70.64011820460328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M266",
+      "areaM2": 316.2117431722695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M348",
+      "areaM2": 38.68054204388571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M347",
+      "areaM2": 89.72314059688081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M349",
+      "areaM2": 376.9455225004706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M333",
+      "areaM2": 76.33164613652187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M286",
+      "areaM2": 157.46464345028394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M284",
+      "areaM2": 187.55210645933587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M282",
+      "areaM2": 53.98162442403197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M281",
+      "areaM2": 53.77033501677628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M302",
+      "areaM2": 135.22324585304523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M376",
+      "areaM2": 466.91647062573225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M335",
+      "areaM2": 2928.482005719388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M276",
+      "areaM2": 102.98063552546338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M339",
+      "areaM2": 128.51001866172317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M340",
+      "areaM2": 45.54330498704232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M283",
+      "areaM2": 201.88517679056423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M279",
+      "areaM2": 92.64696820064657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M280",
+      "areaM2": 97.89934704827377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M278",
+      "areaM2": 110.12767159729253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M331",
+      "areaM2": 94.72271550223022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M528",
+      "areaM2": 20.643806666952443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M272",
+      "areaM2": 103.0864032718622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M294",
+      "areaM2": 230.48748487956377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M275",
+      "areaM2": 73.15552998177135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M274",
+      "areaM2": 59.31526466568421,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M296",
+      "areaM2": 47.77360689309099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M293",
+      "areaM2": 157.38843765077016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M292",
+      "areaM2": 118.26521177466735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M447",
+      "areaM2": 31.98135174308405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M344",
+      "areaM2": 141.58972229666247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M346",
+      "areaM2": 125.56417006410193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M341",
+      "areaM2": 440.0054106893673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M405",
+      "areaM2": 40.874813747616464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M332",
+      "areaM2": 494.01127596954933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M350",
+      "areaM2": 288.27066288102804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M300",
+      "areaM2": 167.45172837465935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M602",
+      "areaM2": 57.72802296065632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M180",
+      "areaM2": 66.53860367442563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M185",
+      "areaM2": 529.2361401210649,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M188",
+      "areaM2": 158.58877908466124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M187",
+      "areaM2": 94.74576994016313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M140",
+      "areaM2": 42.789519530157804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M215",
+      "areaM2": 901.9272385269908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M139",
+      "areaM2": 310.35751559209336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M179",
+      "areaM2": 236.32208693913353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M221",
+      "areaM2": 1261.356561611963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M183",
+      "areaM2": 223.14128645747473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M184",
+      "areaM2": 317.9790235315202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M181",
+      "areaM2": 13.062939114907216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M209",
+      "areaM2": 102.90877227148464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M208",
+      "areaM2": 88.71560866158926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M130",
+      "areaM2": 614.8943841922245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M132",
+      "areaM2": 663.6929144775546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M186",
+      "areaM2": 22.825214524818872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M189",
+      "areaM2": 1344.6486640565731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M141",
+      "areaM2": 488.8694407227906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M136",
+      "areaM2": 793.1836241376043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M199",
+      "areaM2": 312.8297850370499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M229",
+      "areaM2": 227.05961981609227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M193",
+      "areaM2": 484.65715828259897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M226",
+      "areaM2": 193.51959883413906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M216",
+      "areaM2": 96.25019430499401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M194",
+      "areaM2": 308.7568124281728,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M219",
+      "areaM2": 174.72956921449372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M220",
+      "areaM2": 91.52222523436387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M236",
+      "areaM2": 547.455985670102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M195",
+      "areaM2": 69.9092015115189,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M198",
+      "areaM2": 116.20394522996459,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M228",
+      "areaM2": 239.4077446270687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M227",
+      "areaM2": 64.31285719020912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M201",
+      "areaM2": 1135.8025718525187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M196",
+      "areaM2": 194.24922485564466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M200",
+      "areaM2": 79.93836705735927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M288",
+      "areaM2": 118.14916845621785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M237",
+      "areaM2": 4.511359136787324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M273",
+      "areaM2": 68.37066384041411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M230",
+      "areaM2": 15.757850679319596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M238",
+      "areaM2": 920.1137901744447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M297",
+      "areaM2": 1580.3162167644637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M566",
+      "areaM2": 62.85201060915815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M578",
+      "areaM2": 116.20283417869398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M233",
+      "areaM2": 147.82502265170814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M232",
+      "areaM2": 151.7297600752927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M235",
+      "areaM2": 87.9763932067955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M234",
+      "areaM2": 76.4201620505922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M289",
+      "areaM2": 397.2338322128807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M203",
+      "areaM2": 658.2196966996528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M202",
+      "areaM2": 149.48245006950097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F31M122",
+      "areaM2": 120316.84371013651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M92",
+      "areaM2": 373.730487736913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M94",
+      "areaM2": 73.16418454991049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M93",
+      "areaM2": 56.91929652106725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M54",
+      "areaM2": 2286.2519145164156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M98",
+      "areaM2": 165.32141609735783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M90",
+      "areaM2": 328.2339859710415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M95",
+      "areaM2": 137.516824409397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M96",
+      "areaM2": 381.46112608739594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M143",
+      "areaM2": 1236.8822588049363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M91",
+      "areaM2": 273.54146057627304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M99",
+      "areaM2": 243.27361567200342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M97",
+      "areaM2": 464.0918798901214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M146",
+      "areaM2": 136.70634412834352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M149",
+      "areaM2": 742.968133841608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M145",
+      "areaM2": 60.7459638271193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M147",
+      "areaM2": 55.173139373021755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M152",
+      "areaM2": 89.60897280540985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M144",
+      "areaM2": 139.19614455873972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M151",
+      "areaM2": 58.040447384058226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M148",
+      "areaM2": 99.77360906328069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M153",
+      "areaM2": 48.502420308946384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M558",
+      "areaM2": 58.60776074300478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M154",
+      "areaM2": 705.9379586161023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M150",
+      "areaM2": 75.81489995755913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M586",
+      "areaM2": 16.981967371857184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M191",
+      "areaM2": 25.86066182783037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M249",
+      "areaM2": 711.5178673383041,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M338",
+      "areaM2": 55.85626994230965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M356",
+      "areaM2": 742.9483981669317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M597",
+      "areaM2": 83.18318569594832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M250",
+      "areaM2": 233.86595622709007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M316",
+      "areaM2": 201.69721705970485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M252",
+      "areaM2": 403.6340304423026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M357",
+      "areaM2": 785.8297952556461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M414",
+      "areaM2": 967.6895244355642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M251",
+      "areaM2": 455.08182328302735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M333",
+      "areaM2": 206.29025115676856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M369",
+      "areaM2": 914.5548268496556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M413",
+      "areaM2": 894.2521801016281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F40M342",
+      "areaM2": 411.63199022838864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M225",
+      "areaM2": 199.38744452220087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F31M48",
+      "areaM2": 1656.9826009629112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M256",
+      "areaM2": 83.5650201983949,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F31M49",
+      "areaM2": 889.5615238092399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M265",
+      "areaM2": 98.72590357277967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M254",
+      "areaM2": 445.656217644321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M259",
+      "areaM2": 189.15654863523622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M257",
+      "areaM2": 156.2511846439997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M447",
+      "areaM2": 54.58648933263936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M263",
+      "areaM2": 67.86832793873383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M228",
+      "areaM2": 366.3538093499581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M207",
+      "areaM2": 50.53812656331285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M313",
+      "areaM2": 12.751801746503348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M205",
+      "areaM2": 32.05055787182228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M206",
+      "areaM2": 71.96945718578614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M314",
+      "areaM2": 13.625868486057819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F29M231",
+      "areaM2": 126.40145130185276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M403",
+      "areaM2": 537.7848834449871,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M176",
+      "areaM2": 36.70844696275835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M166",
+      "areaM2": 177.16021694661305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M178",
+      "areaM2": 431.0234134867563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M206",
+      "areaM2": 223.56700221548874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M120",
+      "areaM2": 60.9839176975082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M117",
+      "areaM2": 73.63197010744919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M165",
+      "areaM2": 12.621559873743264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M170",
+      "areaM2": 9.25200896582305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M172",
+      "areaM2": 76.52026244936789,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M169",
+      "areaM2": 87.565835498946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M174",
+      "areaM2": 153.62149343675472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M163",
+      "areaM2": 18.79477209080091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M173",
+      "areaM2": 20.089664950619635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M171",
+      "areaM2": 112.00328682975471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M164",
+      "areaM2": 138.85922734841967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M572",
+      "areaM2": 32.9668476316662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M161",
+      "areaM2": 78.21831499914816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M160",
+      "areaM2": 42.94137722541263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M175",
+      "areaM2": 50.31906819344535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M177",
+      "areaM2": 692.6218849651152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M448",
+      "areaM2": 74.03230632327008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M128",
+      "areaM2": 297.90905989115635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M162",
+      "areaM2": 17.836418115585687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M412",
+      "areaM2": 22.91524701441652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M167",
+      "areaM2": 974.133981718037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M157",
+      "areaM2": 484.9215078987088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M119",
+      "areaM2": 116.76555567391472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M114",
+      "areaM2": 377.43600509605574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M159",
+      "areaM2": 239.80565998421878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M156",
+      "areaM2": 121.61807904564019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M155",
+      "areaM2": 676.4867494522547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M440",
+      "areaM2": 382.3773461693052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M127",
+      "areaM2": 975.4279246944042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M84",
+      "areaM2": 344.85732438787363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "sm-cadastre:F42M301",
+      "areaM2": 117.6343656270096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

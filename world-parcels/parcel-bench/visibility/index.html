@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- ParcelBench visibility audit: label how visible each sampled reference parcel's outline is in the imagery.
+     Served by visibility_audit.py serve; labels are saved to the audit file as you go. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visibility Audit</title>
+<link rel="stylesheet" href="audit.css">
+</head>
+<body>
+<header class="bar">
+  <strong id="title">Visibility audit</strong>
+  <span id="progress"></span>
+  <span id="position"></span>
+</header>
+<main class="panels">
+  <figure class="panel">
+    <svg id="zoom" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"></svg>
+    <figcaption>Parcel close-up</figcaption>
+  </figure>
+  <figure class="panel">
+    <svg id="context" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" preserveAspectRatio="xMidYMid meet"></svg>
+    <figcaption>Whole tile</figcaption>
+  </figure>
+</main>
+<section class="controls">
+  <div id="buttons" class="buttons"></div>
+  <p class="keys">Keys: <kbd>1</kbd>–<kbd>4</kbd> label and go to the next unlabelled parcel · <kbd>0</kbd> clear ·
+    <kbd>←</kbd> <kbd>→</kbd> previous / next · <kbd>H</kbd> hide the outline to look at the ground under it.
+    Sides along the image border are where the tile cuts the parcel and are not drawn; judge the drawn sides.</p>
+  <dl id="definitions" class="definitions"></dl>
+  <p id="status" class="status" role="status"></p>
+</section>
+<script src="audit.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityId": "klipgat",
+  "wupCityCode": 4203,
+  "sourceId": "za-csg-dffe-erven",
+  "url": "http://localhost:5638/?city=klipgat&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browser": "Dedicated headed Chrome; fresh automation profile",
+  "loadedRepositoryParcels": 562,
+  "latestReportedViewportCount": 385,
+  "selectedParcelId": "ZA-CSG-DFFE-ERVEN-GTSHT0JR065500000847000000",
+  "normalMapClickMenu": true,
+  "menuAreaM2Rounded": 361,
+  "detailsOpened": true,
+  "detailsIdentityMatches": true,
+  "detailsPanelArea": "N/A; source feature has no area metadata. Map menu computes geometry area.",
+  "uncaughtBrowserErrors": [],
+  "browserClosed": true
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "packet:7370",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-7370-butembo.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/butembo-service-review.json",
+    "tmp/valhalla-parcel-research/7370/ministry.html",
+    "tmp/valhalla-parcel-research/7370/arcgis-service.json",
+    "tmp/valhalla-parcel-research/7370/arcgis-layer.json",
+    "tmp/valhalla-parcel-research/7370/arcgis-query.geojson"
+  ],
+  "checkedAt": "2026-10-09T12:10:12.703874Z",
+  "reason": "Queue identity matches code 7370/rank 1224/Democratic Republic of the Congo/CD/point [0.116532088870001,29.2956748029224]/454857 persons. English and French searches are recorded. First-party ministry directory names Butembo I and II under Nord-Kivu, and government procedure describes formal register consultation. Cached ArcGIS layer/query is a health-facility point, not a parcel polygon. No safe native-ID parcel response, paging, 13 cells, metric GEOS checks, source binding, or headed Details check. No verified open geometry is not citywide absence; held without admission."
+}

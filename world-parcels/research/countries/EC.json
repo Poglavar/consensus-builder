@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "EC",
+ "country": "Ecuador",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Sistema Nacional de Informacion de Tierras Rurales (SIGTIERRAS, MAG) for rural; municipal GADs hold urban cadastre; Sistema Nacional de Catastro Integrado Georreferenciado (SINAT/SNI)",
+ "portalsFound": [
+  {
+   "url": "https://geoportal.guayaquil.gob.ec/",
+   "observation": "Municipal (from guayaquil.json); unreachable then."
+  },
+  {
+   "url": "https://services3.arcgis.com/PYyU96woLS4j2PN8/arcgis/rest/services/Catastro_rural_y_nivel_de_inundacion_Guayaquil/FeatureServer/43",
+   "observation": "Third-party rural cadastre layer for Guayaquil area, verified in guayaquil.json (partial, non-official); subnational only."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://sni.gob.ec/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403 to browser UA"
+  },
+  {
+   "url": "https://ide.sni.gob.ec/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "403"
+  },
+  {
+   "url": "https://sigtierras.gob.ec/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://geoportal.igm.gob.ec/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (tunnel failure/connection reset); temporarily unavailable, not proof of absence"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=catastro%20predial%20Ecuador%20MAG%20SIGTIERRAS&f=json&num=5",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "national rural cadastre (SIGTIERRAS) + municipal urban cadastres",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Official national hosts blocked or unreachable; only a non-official Guayaquil layer seen. Urban cadastre is municipal.",
+ "nextStep": "Retry from another network; look for SIGTIERRAS WFS and municipal ArcGIS servers (Quito, Cuenca)."
+}

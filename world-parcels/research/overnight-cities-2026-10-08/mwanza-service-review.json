@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "tz-mwanza-city-council-land-survey-records",
+  "purpose": "Service review for WUP2025 rank 544 Mwanza (city code 1868); city-local registry basis and safe anonymous parcel-geometry access status.",
+  "primaryPublisher": "Mwanza City Council",
+  "sourceUrl": "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf",
+  "registryFound": true,
+  "registryBasis": "Mwanza City Council’s own strategic plan documents its Urban Planning, Land and Natural Resources activity, city survey-and-mapping capacity, surveyed plots and title-deed preparation. The figures are historical aggregate evidence, so they establish city-local land survey/registry work but not current database coverage or a public parcel geometry route.",
+  "registryEvidenceUrls": [
+    "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf",
+    "https://www.mwanzacc.go.tz/"
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf",
+      "method": "official-source inspection",
+      "observation": "Mwanza City Council Strategic Plan 2016/17–2020/21 reports aggregate city work: 300 title deeds prepared from 12 wards, survey/mapping section capacity, and 18,000 surveyed plots in planned areas. No household/parcel-level rows were read or retained."
+    },
+    {
+      "url": "https://www.mwanzacc.go.tz/",
+      "method": "GET",
+      "observation": "Official Mwanza City Council homepage returns a small static application shell referencing one public JavaScript bundle; no cadastre/map link is present in the shell. The bundle was not executed.",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 553
+    },
+    {
+      "url": "https://www.lands.go.tz/landrent/",
+      "method": "official-source inspection",
+      "observation": "National Ministry of Lands e-Ardhi land-rent estimator is property/person specific and was excluded; no form was submitted or identifier entered."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mwanza Tanzania official municipal land registry cadastral survey GIS plots City Council",
+      "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+      "result": "Mwanza City Council official strategic plan gives city-specific survey-and-mapping and aggregate title-deed/surveyed-plot activity; no public vector service was found.",
+      "actualResultUrls": [
+        "https://www.mwanzacc.go.tz/",
+        "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf"
+      ],
+      "executionMethod": "Web search followed by primary-page or public metadata inspection."
+    },
+    {
+      "language": "Swahili",
+      "query": "Mwanza Halmashauri ya Jiji ardhi upimaji ramani hati miliki viwanja rasmi",
+      "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+      "result": "Official City Council strategic plan identifies city survey/mapping and land activity. The national land-rent estimator is not a geometry route and requires property/person fields; it was not submitted.",
+      "actualResultUrls": [
+        "https://www.mwanzacc.go.tz/",
+        "https://www.mwanzacc.go.tz/storage/app/uploads/public/5bb/74d/e80/5bb74de803120412478265.pdf"
+      ],
+      "executionMethod": "Web search followed by primary-page or public metadata inspection."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "inspected_no_target_geometry_response",
+    "reason": "Historical city-local government evidence confirms surveying/land administration, but no safe anonymous map or schema-bearing parcel feature endpoint was exposed by the inspected official public HTML. The national property-specific e-Ardhi estimator was not used."
+  },
+  "requestEvidence": [
+    {
+      "method": "GET",
+      "url": "https://www.mwanzacc.go.tz/",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 553,
+      "observation": "Anonymous official city homepage delivered a static app shell; no cadastral map or vector-service link was present in that shell. Its JavaScript bundle was not executed."
+    }
+  ],
+  "technicalBlocker": "Historical city-local government evidence confirms surveying/land administration, but no safe anonymous map or schema-bearing parcel feature endpoint was exposed by the inspected official public HTML. The national property-specific e-Ardhi estimator was not used.",
+  "sampleDisposition": "No complete parcel polygon retained; no target-point geometry response was verified.",
+  "remainingUncertainty": "Current registry status and map access, exact footprint around the WUP locator, parcel coverage and update vintage; historical aggregate survey figures do not establish modern public data access."
+}

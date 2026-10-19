@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Batch four south bounded discovery and acceptance conclusions; no geometry or ownership values retained.",
+  "sources": [
+    {
+      "city": "nashville",
+      "status": "passed",
+      "proposedDescriptor": {
+        "endpoint": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0",
+        "adapter": "arcgis",
+        "name": "Cadastral Parcels (Ownership Parcels)",
+        "operator": "Metro Nashville GIS",
+        "scope": "Davidson County",
+        "idField": "APN",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "OBJECTID",
+          "APN"
+        ],
+        "parcelNumberField": "APN",
+        "attributeFilters": {},
+        "metricSrid": 32616,
+        "idPrefix": "US-TN-NASHVILLE-",
+        "id": "us-tn-nashville-parcels",
+        "stateCode": "TN",
+        "cityIds": [
+          "nashville"
+        ],
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "catalogueUrl": "https://www.nashville.gov/departments/planning/mapping-and-gis",
+        "countryCode": "US",
+        "maxBboxKm2": 25,
+        "caveats": [
+          "Bounded capital-area acceptance does not establish full county coverage or currency."
+        ]
+      },
+      "sourceNote": "Davidson County; Bounded capital-area acceptance does not establish full county coverage or currency.",
+      "evidenceFile": "us-capitals-batch-four-south-initial-live-2026-10-06.json"
+    },
+    {
+      "city": "columbia",
+      "status": "technical-pass-scope-hold",
+      "evidenceFile": "us-capitals-batch-four-south-retry-live-2026-10-06.json",
+      "attempts": [
+        {
+          "endpoint": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/8",
+          "httpStatus": 200,
+          "totalRows": 456,
+          "credit": "GIS Division, Richland County, Lexington County"
+        },
+        {
+          "endpoint": "https://www.arcgis.com/sharing/rest/content/items/9806fc781405495c9d54734dd0ff480f",
+          "httpStatus": 200,
+          "serviceError": 400,
+          "assessment": "Service-referenced item inaccessible."
+        }
+      ],
+      "scope": "456 polygons in City of Columbia Parcel layer; municipal asset versus wider cadastral scope unresolved.",
+      "caveats": [
+        "14 native TMS identifiers technically passed all live gates.",
+        "Do not promote until actual partial source scope and publisher provenance are established."
+      ]
+    },
+    {
+      "city": "harrisburg",
+      "status": "hold-native-conflicts",
+      "scope": "PA DEP Dauphin subset and official January 2024 municipal property-tax parcel snapshot tested.",
+      "attempts": [
+        {
+          "assessment": "Prior 06-018-025 duplicate crossed DAUPHIN and BUCKS counties; DAUPHIN fixed filter still exposed conflicting geometry on another identity."
+        },
+        {
+          "assessment": "January 2024 snapshot UPI conflicts immediately; bounded 1,353-row aggregate: UPI 17 distinct, PID and CAMA_PID each 1,347 distinct; final PID gate also failed conflicting geometry after four requests."
+        }
+      ],
+      "caveats": [
+        "No arbitrary duplicate union is authorized; assessment-group parts need publisher documentation."
+      ],
+      "evidenceFiles": [
+        "us-capitals-batch-four-south-initial-live-2026-10-06.json",
+        "us-capitals-batch-four-south-retry-live-2026-10-06.json",
+        "us-capitals-batch-four-south-pa-alternate-live-2026-10-06.json",
+        "us-capitals-batch-four-south-pa-pid-live-2026-10-06.json"
+      ]
+    },
+    {
+      "city": "providence",
+      "status": "hold-native-conflicts-and-alternate-unreachable",
+      "attempts": [
+        {
+          "endpoint": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+          "assessment": "TownCode PR fixed subset failed conflicting PlatLot geometry."
+        },
+        {
+          "endpoint": "https://www.arcgis.com/sharing/rest/content/items/f93b9968eee2470cadb3a476c9b180eb/data",
+          "httpStatus": 200,
+          "assessment": "Official PVDGIS_Admin Providence Parcels and Zoning Map identifies municipal parcel service."
+        },
+        {
+          "endpoint": "https://webgis.providenceri.gov/server/rest/services/Parcels/PVD_Parcel_Boundaries/MapServer/0",
+          "error": "UND_ERR_CONNECT_TIMEOUT",
+          "assessment": "Two bounded secure requests failed; TLS was not weakened."
+        }
+      ],
+      "caveats": [
+        "Vector data exists; current exact native read remains unresolved."
+      ]
+    },
+    {
+      "city": "pierre",
+      "status": "hold-current-public-vector-unverified",
+      "attempts": [
+        {
+          "endpoint": "https://gis.districtiii.org/arcgis/rest/services/HUGHES_LAYERS/MapServer/16",
+          "httpStatus": 404,
+          "assessment": "ArcGIS catalog discovered Hughes county parcel lead; endpoint returned HTML."
+        },
+        {
+          "endpoint": "https://www.arcgis.com/sharing/rest/content/items/6bfa0803b16c47cf89305403ddfa8e3a",
+          "httpStatus": 200,
+          "serviceError": 403,
+          "assessment": "Subscription canceled; item inaccessible."
+        },
+        {
+          "endpoint": "https://services6.arcgis.com/15GJI8WbC3n3DIUU/arcgis/rest/services/Hughes_County_Parcels_2023/FeatureServer/13",
+          "httpStatus": 200,
+          "assessment": "Polygon mirror exposes PARCEL_ID, but associated item describes Missouri River trail project and supplies no attribution; official source lineage unverified."
+        }
+      ],
+      "caveats": [
+        "Beacon official viewer and dated 2023 vector mirror are leads, not evidence of absent parcel data."
+      ]
+    }
+  ],
+  "preflightAttempts": [
+    {
+      "status": "local-descriptor-validation-failure",
+      "assessment": "Initial research-derived esriFieldTypeString value was not a runtime idType; adapter rejected before network. Corrected to string with object-ID in outFields, maxBboxKm2 and countryCode before acceptance runs."
+    }
+  ]
+}

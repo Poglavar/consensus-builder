@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [
+    "pk-pulse-okara-parcels"
+  ],
+  "name": "Okara",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "registryFound": true,
+  "registryBasis": "Punjab Land Records Authority/Board of Revenue and the official Punjab PULSE map provide Okara district cadastral-map services with village selectors. PULSE Feature Layer 25 returned a complete polygon at the exact WUP point (OBJECTID 10854687), establishing public geometry presence. Khasra_ID and Mouza_ID are zero, so a legal/native parcel identity is not verified; the portal’s indicative/non-legal notice is retained as a boundary-status caveat.",
+  "registryEvidenceUrls": [
+    "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+    "https://lis.pulse.gop.pk/",
+    "https://www.punjab-zameen.gov.pk/",
+    "https://okara.punjab.gov.pk/administration",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=pjson",
+    "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 8077,
+  "cityId": "wup2025:8077",
+  "centerLatLon": [
+    30.8083288852812,
+    73.4521453260116
+  ],
+  "point": [
+    30.8083288852812,
+    73.4521453260116
+  ],
+  "rank": 787,
+  "queueRank": 787,
+  "population2025": 683747,
+  "population2025k": 683.747,
+  "populationPlausibility2025": "Moderate",
+  "scopeLimits": "15 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 15 fresh source-ID reads, explicit absence, footprint and source binding passed in 58 requests. Independent metric EPSG:32643 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Public source-native OBJECTID is the cadastral-reference geometry identity, not a legal Khasra/Mouza key. Returned legal key fields are zero and are not promoted to legal identifiers. The real runtime adapter uses the documented anonymous public-viewer reader bootstrap; reader tokens stay in memory, simultaneous reads share one bootstrap, and renewal occurs within thirty seconds because publisher expiry omits a timezone. All request evidence omits token values. Six headless reader tests verify renewal, coalescing, endpoint confinement, unchanged geometry, blocked responses and safe errors. Native source CRS is EPSG:3857 (ArcGIS WKID102100). The original exact-point sample is topologically identical to fresh complete geometry: ring coordinate order differs, while projected symmetric difference and Hausdorff distance are both zero. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+  "remainingUncertainty": "Citywide completeness, legal title, currentness, survey accuracy and long-term native GIS identity continuity remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Urdu/Punjabi",
+        "query": "اوکاڑہ پنجاب سرکاری کھیوٹ خسرہ موضع کیڈسٹرل نقشہ زمین ریکارڈ PULSE",
+        "scope": "Verify city-local land registry/cadastre evidence and inspect public anonymous parcel geometry without property-specific inputs.",
+        "result": "سرکاری پنجاب لینڈ ریکارڈز میں ضلع/تحصیل/موضع کے مطابق کیڈسٹرل نقشے ہیں، اور PULSE کے اوکاڑہ Feature Layer نے WUP مقام پر ایک مکمل polygon واپس کیا (OBJECTID 10854687؛ Khasra_ID=0؛ Mouza_ID=0)۔ OBJECTID کو سروس transport ID کے طور پر محفوظ کیا گیا ہے؛ قانونی پارسل شناخت اور runtime qualification الگ اور غیر مصدقہ ہیں۔ PULSE حدود کو قانونی حد کے بجائے indicative بتاتا ہے۔",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://okara.punjab.gov.pk/administration",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=pjson",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query"
+        ],
+        "executionMethod": "Language-specific web search and first-party source inspection; public service routes were tested only with city-level or exact WUP locator inputs."
+      },
+      {
+        "language": "English",
+        "query": "Okara Punjab official cadastral parcel map PULSE Punjab Land Records public GIS",
+        "scope": "Cross-check local registry/map evidence and distinguish an identified public parcel feature from general/topographic or application-only records.",
+        "result": "Official Punjab Land Records provides village-wise cadastral maps with District/Tehsil/Village selectors. The official Punjab PULSE Okara polygon layer returned one complete full polygon at the exact WUP point (OBJECTID 10854687; Khasra_ID=0; Mouza_ID=0). The service OBJECTID is preserved as a transport identifier, while legal parcel identity and runtime qualification remain unverified; PULSE labels lines indicative/non-legal.",
+        "actualResultUrls": [
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://okara.punjab.gov.pk/administration",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=pjson",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query"
+        ],
+        "executionMethod": "English-language web search and first-party source/service inspection; no personal, owner, address, or property-specific query inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+        "observation": "Official Punjab Land Records cadastral map page offers district/tehsil/village selectors."
+      },
+      {
+        "url": "https://lis.pulse.gop.pk/",
+        "observation": "Official Punjab PULSE map lists cadastral-map layers and cautions that mapped lines are indicative, not legal boundaries."
+      },
+      {
+        "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25?f=pjson",
+        "observation": "Okara polygon layer metadata returned HTTP 200; fields were reviewed and unsafe owner/account-type fields excluded from queries."
+      },
+      {
+        "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25/query",
+        "observation": "Exact WUP query returned HTTP 200 polygon response; safe IDs Khasra_ID and Mouza_ID were both zero, so it does not verify a valid parcel. A 200m nearby query restricted to Khasra_ID > 0 returned no features."
+      }
+    ]
+  },
+  "source": {
+    "name": "Punjab PULSE Okara cadastral reference polygons",
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25",
+    "serviceType": "ArcGIS Feature Layer",
+    "layerId": 25,
+    "layerName": "Okara",
+    "geometryType": "esriGeometryPolygon",
+    "sourceSpatialReference": "EPSG:3857",
+    "queryOutputReference": "EPSG:4326",
+    "geometryServiceAccess": "Public viewer bootstraps a short-lived anonymous query token; token value not stored.",
+    "safeFeatureIdentity": {
+      "field": "OBJECTID",
+      "fieldType": "esriFieldTypeOID",
+      "returnedValue": 10854687,
+      "qualification": "Service transport/object identity only; layer objectIdField metadata is null, and this is not a legal/native parcel identifier."
+    },
+    "legalParcelIdentity": {
+      "fields": {
+        "Khasra_ID": 0,
+        "Mouza_ID": 0
+      },
+      "qualification": "Both fields returned zero; no legal/native parcel key verified."
+    },
+    "operator": "Punjab PULSE / Punjab Land Records Authority",
+    "nativeIdField": "OBJECTID",
+    "nativeIdEvidence": "Fresh exact native GIS reference reads reproduce complete source polygons; legal-title identity remains separate.",
+    "requestedAttributes": [
+      "OBJECTID"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "15 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 15 fresh source-ID reads, explicit absence, footprint and source binding passed in 58 requests. Independent metric EPSG:32643 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Public source-native OBJECTID is the cadastral-reference geometry identity, not a legal Khasra/Mouza key. Returned legal key fields are zero and are not promoted to legal identifiers. The real runtime adapter uses the documented anonymous public-viewer reader bootstrap; reader tokens stay in memory, simultaneous reads share one bootstrap, and renewal occurs within thirty seconds because publisher expiry omits a timezone. All request evidence omits token values. Six headless reader tests verify renewal, coalescing, endpoint confinement, unchanged geometry, blocked responses and safe errors. Native source CRS is EPSG:3857 (ArcGIS WKID102100). The original exact-point sample is topologically identical to fresh complete geometry: ring coordinate order differs, while projected symmetric difference and Hausdorff distance are both zero. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Punjab PULSE Cadastral Maps Okara feature layer can return polygon geometry at the exact WUP locator.",
+    "verifiedOpenScope": "15 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 15 fresh source-ID reads, explicit absence, footprint and source binding passed in 58 requests. Independent metric EPSG:32643 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Public source-native OBJECTID is the cadastral-reference geometry identity, not a legal Khasra/Mouza key. Returned legal key fields are zero and are not promoted to legal identifiers. The real runtime adapter uses the documented anonymous public-viewer reader bootstrap; reader tokens stay in memory, simultaneous reads share one bootstrap, and renewal occurs within thirty seconds because publisher expiry omits a timezone. All request evidence omits token values. Six headless reader tests verify renewal, coalescing, endpoint confinement, unchanged geometry, blocked responses and safe errors. Native source CRS is EPSG:3857 (ArcGIS WKID102100). The original exact-point sample is topologically identical to fresh complete geometry: ring coordinate order differs, while projected symmetric difference and Hausdorff distance are both zero. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "15 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 15 fresh source-ID reads, explicit absence, footprint and source binding passed in 58 requests. Independent metric EPSG:32643 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Public source-native OBJECTID is the cadastral-reference geometry identity, not a legal Khasra/Mouza key. Returned legal key fields are zero and are not promoted to legal identifiers. The real runtime adapter uses the documented anonymous public-viewer reader bootstrap; reader tokens stay in memory, simultaneous reads share one bootstrap, and renewal occurs within thirty seconds because publisher expiry omits a timezone. All request evidence omits token values. Six headless reader tests verify renewal, coalescing, endpoint confinement, unchanged geometry, blocked responses and safe errors. Native source CRS is EPSG:3857 (ArcGIS WKID102100). The original exact-point sample is topologically identical to fresh complete geometry: ring coordinate order differs, while projected symmetric difference and Hausdorff distance are both zero. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/okara-public-runtime-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/okara-public-runtime-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/okara-root-quality-review.json"
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "sampleFile": "research/overnight-cities-2026-10-08/city-8077-okara-samples.geojson",
+  "sampleFeatureCount": 1,
+  "sampleCrs": "EPSG:4326",
+  "geometryEvidence": "Punjab PULSE Cadastral Maps service, ArcGIS Feature Layer 25 named Okara, returned one full esriGeometryPolygon at the exact WUP point. Schema: OBJECTID esriFieldTypeOID; objectIdField/globalIdField metadata are null; Khasra_ID and Mouza_ID are integer legal/cadastral fields but both returned zero. OBJECTID 10854687 is preserved as the service transport identifier, not asserted as legal/native parcel identity. The point response has one 41-vertex ring. No owner/address/account-like Khewat_ID field was requested or retained.",
+  "rootReviewedAt": "2026-10-09T03:45:57.993973+00:00",
+  "adapterReady": true,
+  "appCityId": "okara",
+  "runtimeQualification": {
+    "sourceId": "pk-pulse-okara-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/okara-public-runtime-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/okara-public-runtime-root-quality.json"
+  }
+}

@@ -1,3 +1,11 @@
+Current release status — 2026-10-02
++ Upgrade devnet ParcelNFT v2, ProposalMarket v2 and ProposalNFT v3 in place; deployed binaries verified against local builds.
++ Headed protocol-boundary coverage for minting, lifecycle, ownership/lens, support and market UI actions.
+- Prove a normal human-wallet/attested-owner journey against live devnet and production services; mocks do not count as transaction evidence.
+- Preserve pending prospective evidence markets until a matching post-close source record exists.
+- Register verified builds and complete contract review before mainnet work.
+See docs/protocol.md and next-steps.md for current details. Older entries below retain their design context.
+
 In this branch we will work on the blockchain portion of the project.
 
 The feature will consist of two parts:

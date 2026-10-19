@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:78",
+  "queueRank": 78,
+  "name": "Sri Jayawardenepura Kotte - Colombo",
+  "country": "Sri Lanka",
+  "countryCode": "LK",
+  "centerLatLon": [
+    6.91944652502954,
+    79.9212854446979
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
+    "requestUrl": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1%3D1&geometry=79.8735%2C6.8065%2C79.8755%2C6.8080&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cparcel_id%2Csheet_id%2Cst_area&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      79.8735,
+      6.8065,
+      79.8755,
+      6.808
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "esriGeometryPolygon",
+    "closedRings": true,
+    "idField": "parcel_id",
+    "responseFile": "sri-jayawardenepura-kotte-colombo-parcel-response.json",
+    "pagination": "ArcGIS resultRecordCount=3; exceededTransferLimit=true; maxRecordCount=1000"
+  },
+  "source": {
+    "sourceId": "lk-nsdi-planning-cadastre-parcel-fabric",
+    "name": "Sri Lanka NSDI Planning Cadastre - Parcel Fabrics",
+    "operator": "Survey Department of Sri Lanka / NSDI",
+    "scope": "Partial: districts covered by the parcel fabric",
+    "endpoint": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2",
+    "method": "ArcGIS REST query",
+    "responseFormat": "Esri JSON",
+    "crs": "EPSG:4326",
+    "reuseStatus": "not reviewed"
+  },
+  "portalsFound": [
+    {
+      "url": "https://nsdi.gov.lk/planning-cadastre",
+      "observation": "Sri Lanka NSDI Planning Cadastre page linking to the WMS of the Planning_Cadastre service."
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer",
+      "observation": "NSDI ArcGIS MapServer with layers Parcel Fabrics (2), SLTDA Parcels (3), Road Right of ways, Landuse; layer 2 is a queryable polygon layer, maxRecordCount 1000, WGS84."
+    },
+    {
+      "url": "https://it.survey.gov.lk/nsdi/lis/index_cad.php",
+      "observation": "Survey Department Land Information System cadastral web portal (Cadastral Plan, Parcel Fabric); not reachable from the proxy."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "service description only"
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json&geometry=79.86,6.85,80.0,7.0",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "count 0: no parcels in the Kotte/Colombo core box"
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json&geometry=79.83,6.86,79.90,6.93",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "count 0: no parcels in central Colombo box"
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json&geometry=79.86,6.78,79.90,6.85",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "count 27060 parcels south of Colombo (Moratuwa area)"
+    },
+    {
+      "url": "https://gisapps.nsdi.gov.lk/server/rest/services/SLNSDI/Planning_Cadastre/MapServer/2/query?where=1%3D1&geometry=79.8735%2C6.8065%2C79.8755%2C6.8080&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid%2Cparcel_id%2Csheet_id%2Cst_area&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "3 polygon parcels returned",
+      "parcelRecordCount": 3
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Survey Department parcel fabric published via NSDI; layer extent lon 79.87-81.32, lat 6.72-8.11",
+    "verifiedOpenScope": "three parcels near 6.807N 79.874E (about 13 km south-southwest of the listed centre); none found in central Colombo or Sri Jayawardenepura Kotte boxes tested",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Sampled parcels are in the southern suburbs, not the Colombo/Kotte core, where two boxes returned zero; coverage seems to follow the Bimsaviya title-registration rollout. Licence/terms not read. Country-wide extent is not established (only lon 79.87-81.3 extent, other regions untested).",
+  "nextStep": "Test more boxes across Colombo district and other districts to map coverage; find the licence of NSDI data; try the Survey Department LIS service for Colombo core."
+}

@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0",
+  "cohort": "overnight-next-1201-1300",
+  "cityId": "wup2025:5072",
+  "wupCityCode": 5072,
+  "cityCode": 5072,
+  "queueRank": 1229,
+  "rank": 1229,
+  "name": "Catania",
+  "country": "Italy",
+  "countryCode": "IT",
+  "iso3": "ITA",
+  "point": [37.527631735146, 15.0702397063375],
+  "centerLatLon": [37.527631735146, 15.0702397063375],
+  "pointBasis": "Immutable WUP 2025 queue point copied unchanged in latitude/longitude order; no coordinate adjustment.",
+  "population2025": 453376,
+  "population2025k": 453.376,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "status": "complete",
+  "resultCategory": "official_regional_registry_and_public_coordinate_parcel_geometry_verified",
+  "registryFound": true,
+  "registryBasis": "The official Regione Siciliana SITR ArcGIS Cartografia Catastale service returned Catania parcel polygons and safe cadastral identifiers in a bounded query around the unchanged WUP point. This evidences public cadastral map coverage, not citywide completeness.",
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_quality_review",
+  "blocker": "Public parcel geometry is verified, but runtime remains held pending independent serial adapter qualification.",
+  "source": {
+    "operator": "Regione Siciliana - SITR",
+    "custodianScope": "Regional cadastral cartography derived from CXF data downloaded from the national exchange system; Catania local records are identified by COMUNE=C351 and PRO_COM_T=087015.",
+    "viewerUrl": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+    "parcelLayerUrl": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+    "queryUrl": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4/query",
+    "crs": "Native layer EPSG:25833 / ETRS89 UTM zone 33N; query output requested as EPSG:4326 GeoJSON with coordinate order [longitude, latitude]."
+  },
+  "sampleFile": "catania-parcel-samples.geojson",
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "Official service metadata and one bounded anonymous bbox query around the immutable WUP point.",
+    "verifiedOpenScope": "Multiple safe Catania Particelle polygon features returned, including the point vicinity.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "technicalBlocker": "Native response exposes OBJECTID plus cadastral components; retained IDs use the stable source composite ORIGINE:NUMERO rather than an internal synthetic row number. Source geometries were transformed by the service to WGS84 for the retained sample.",
+  "remainingUncertainty": "The bounded query does not establish citywide completeness, parcel freshness, or universal service behavior. The municipality SIT layer describes its own georeferenced cadastral data as non-probative; the regional service is the geometry source used here. No owner, address, contact, titleholder, tax/account, or personal fields were requested or retained.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Catania official cadastral parcel map Regione Siciliana SITR ArcGIS",
+        "result": "First-party discovery located the Regione Siciliana SITR Cartografia Catastale ArcGIS MapServer and the Comune di Catania SIT map. The regional service documents a whole-Sicily cadastral cartography layer with a Particelle polygon layer.",
+        "actualResultUrls": [
+          "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+          "https://map.comune.catania.it/index.php/view/embed?project=Catasto_Georef&repository=sit"
+        ]
+      },
+      {
+        "language": "Italian",
+        "query": "Catania mappa particelle catastali ufficiale Regione Siciliana SITR",
+        "result": "La ricerca in italiano ha trovato il servizio ufficiale SITR Regione Siciliana Cartografia Catastale e il SIT del Comune di Catania; il layer Particelle espone geometrie e identificativi catastali sicuri.",
+        "actualResultUrls": [
+          "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+          "https://map.comune.catania.it/index.php/view/map?project=SERVIZI&repository=sit"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official service metadata identified Cartografia Catastale, regional extent, and layers including Particelle (layer 4)."
+      },
+      {
+        "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4?f=pjson",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Particelle is an esriGeometryPolygon layer, native EPSG:25833; safe fields include OBJECTID, COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO, NUMERO, ORIGINE, PRO_COM_T and COMUNE_T."
+      },
+      {
+        "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4/query",
+        "method": "GET; anonymous; TLS verification enabled; bounded bbox around exact WUP point; outFields restricted to safe cadastral fields; outSR=4326; f=geojson",
+        "httpStatus": 200,
+        "assessment": "Returned Catania features with COMUNE=C351, PROVINCIA=Catania, PRO_COM_T=087015, polygon geometry, and parcel components."
+      },
+      {
+        "url": "https://map.comune.catania.it/index.php/view/embed?project=Catasto_Georef&repository=sit",
+        "method": "GET; anonymous; TLS verification enabled",
+        "httpStatus": 200,
+        "assessment": "Official municipal SIT viewer identifies Catasto_Georef_Sit and labels it non-probative georeferencing; no municipal API geometry was relied on for the retained sample."
+      }
+    ],
+    "inspectedConfiguration": {
+      "service": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+      "parcelLayer": 4,
+      "responseSchemaObserved": "ArcGIS FeatureCollection/GeoJSON with Polygon geometry and safe cadastral attributes",
+      "nativeCrsObserved": "EPSG:25833",
+      "outputCrsObserved": "EPSG:4326",
+      "nativeIdentityMapping": "ORIGINE:NUMERO; ORIGINE encodes commune/section/foglio and NUMERO is the parcel number; OBJECTID is retained only as source evidence, not as the canonical sample identity."
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+    "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+    "https://map.comune.catania.it/index.php/view/embed?project=Catasto_Georef&repository=sit"
+  ],
+  "checkedAt": "2026-10-09",
+  "researchAttempt": 1,
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Source geometry is verified at a bounded location, but adapter qualification is reserved for the serial reviewer."
+  },
+  "sampleRetention": {
+    "retainedFeatureProperties": ["id"],
+    "fullGeometryChanged": false,
+    "featureReferencesChanged": false
+  }
+}

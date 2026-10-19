@@ -1,0 +1,17 @@
+{
+  "taskId": "city:2406",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-2406-chernihiv.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/chernihiv-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T10:47:52Z",
+  "reason": "The official regional cadastral custodian and public map are identified, but the anonymous map request timed out. No native parcel ID, full polygon, schema, or live adapter qualification was obtained. Timeout is not citywide absence.",
+  "identityCheck": "Original UN WUP 2025 row (archive SHA-256 matches provenance), ranked roster, pending queue, and paired packet agree on city code, rank, country, point, and 2025 population in persons.",
+  "searchCheck": "The English and Ukrainian queries and result URLs are recorded in the packet; regional page outcomes and the failed map request are recorded in the paired review.",
+  "sampleCheck": "No full parcel polygon or native ID was retained; the three-polygon cap and safe-attribute limit are satisfied.",
+  "admissionCheck": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. Runtime and source admission remain held."
+}

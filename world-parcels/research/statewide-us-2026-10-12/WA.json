@@ -1,0 +1,1005 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "WA",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "new",
+ "descriptorId": "us-wa-watech-statewide-parcels",
+ "idPrefix": "US-WA-STATEWIDE-",
+ "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "5413",
+   "name": "Bellevue",
+   "lat": 47.6694577413674,
+   "lon": -122.166399898028,
+   "pop2025k": 267.696,
+   "rank": 2176
+  },
+  {
+   "cityCode": "5217",
+   "name": "Hazel Dell",
+   "lat": 45.6532383734832,
+   "lon": -122.569426017328,
+   "pop2025k": 259.716,
+   "rank": 2247
+  },
+  {
+   "cityCode": "5331",
+   "name": "Federal Way",
+   "lat": 47.3433562107519,
+   "lon": -122.331287833192,
+   "pop2025k": 198.137,
+   "rank": 3020
+  },
+  {
+   "cityCode": "5440",
+   "name": "Yakima",
+   "lat": 46.5950341911278,
+   "lon": -120.53759265329,
+   "pop2025k": 90.418,
+   "rank": 6856
+  },
+  {
+   "cityCode": "5596",
+   "name": "Bellingham",
+   "lat": 48.7488502456406,
+   "lon": -122.472157616913,
+   "pop2025k": 73.767,
+   "rank": 8446
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+   "layerName": "Parcels_2026",
+   "layerType": "Feature Layer",
+   "recordCount": 3321859,
+   "maxRecordCount": 2000,
+   "currentVersion": 12,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 2927,
+   "descriptionExcerpt": "The Washington State Parcels Project provides a statewide data set of tax parcels and ownership/taxpayer attributes that cover those counties that currently have digital tax parcels. Attribute data has been normalized so that the field names are the same across all counties. The data set contains the tax parcel identification number, the owner/taxpayer name and address information, situs addresses",
+   "copyrightText": "Washington Technology Solutions (WaTech), Washington State Counties",
+   "publishedFields": [
+    "OBJECTID",
+    "FIPS_NR",
+    "COUNTY_NM",
+    "PARCEL_ID_NR",
+    "ORIG_PARCEL_ID",
+    "SITUS_ADDRESS",
+    "SUB_ADDRESS",
+    "SITUS_CITY_NM",
+    "SITUS_ZIP_NR",
+    "LANDUSE_CD",
+    "ORIG_LANDUSE_CD",
+    "VALUE_LAND",
+    "VALUE_BLDG",
+    "DATA_LINK",
+    "GlobalID",
+    "Shape__Area",
+    "Shape__Length"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "PARCEL_ID_NR is WaTech's statewide key (3-digit county FIPS + \"-\" + county parcel number; every non-blank value matches ___-%). Unique in Bellevue; one Yakima key spans two disjoint rows (parts mode). GlobalID is unique too, but it is a row identifier that is not documented as stable across the annual reloads (unverified), so it is not used. ORIG_PARCEL_ID is county-scoped.",
+  "fields": [
+   "PARCEL_ID_NR"
+  ]
+ },
+ "statewideChecks": [
+  {
+   "state": "WA",
+   "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+   "checkedAt": "2026-10-12T10:57:11.249Z",
+   "results": {
+    "nullId": {
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+IS+NULL+OR+PARCEL_ID_NR+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+     "count": 29340
+    },
+    "counties": {
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=1%3D1&outFields=FIPS_NR&returnDistinctValues=true&returnGeometry=false&orderByFields=FIPS_NR&f=json",
+     "values": [
+      null,
+      "001",
+      "005",
+      "007",
+      "009",
+      "011",
+      "013",
+      "015",
+      "017",
+      "019",
+      "021",
+      "023",
+      "025",
+      "027",
+      "029",
+      "031",
+      "033",
+      "035",
+      "037",
+      "039",
+      "041",
+      "043",
+      "045",
+      "047",
+      "049",
+      "051",
+      "053",
+      "055",
+      "057",
+      "059",
+      "061",
+      "063",
+      "065",
+      "067",
+      "069",
+      "071",
+      "073",
+      "075",
+      "077"
+     ]
+    }
+   }
+  }
+ ],
+ "patternChecks": {
+  "WA": [
+   {
+    "where": "PARCEL_ID_NR IS NOT NULL AND PARCEL_ID_NR NOT IN ('',' ') AND PARCEL_ID_NR NOT LIKE '___-%'",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+IS+NOT+NULL+AND+PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+NOT+LIKE+%27___-%25%27&returnCountOnly=true&f=json",
+    "count": 0
+   },
+   {
+    "where": "PARCEL_ID_NR LIKE '% ' OR PARCEL_ID_NR LIKE ' %'",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+LIKE+%27%25+%27+OR+PARCEL_ID_NR+LIKE+%27+%25%27&returnCountOnly=true&f=json",
+    "count": 0
+   }
+  ]
+ },
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:52:47.101Z",
+   "fieldsRequested": [
+    "OBJECTID",
+    "FIPS_NR",
+    "COUNTY_NM",
+    "PARCEL_ID_NR",
+    "ORIG_PARCEL_ID",
+    "GlobalID"
+   ],
+   "cities": [
+    {
+     "city": "Bellevue",
+     "cityCode": "5413",
+     "bbox": [
+      -122.1714,
+      47.664458,
+      -122.1614,
+      47.674458
+     ],
+     "count": 663,
+     "rowsRead": 663,
+     "keys": {
+      "PARCEL_ID_NR": {
+       "blanks": 0,
+       "distinct": 663,
+       "repeatedValues": 0
+      },
+      "FIPS_NR+PARCEL_ID_NR": {
+       "blanks": 0,
+       "distinct": 663,
+       "repeatedValues": 0
+      },
+      "ORIG_PARCEL_ID": {
+       "blanks": 0,
+       "distinct": 663,
+       "repeatedValues": 0
+      },
+      "GlobalID": {
+       "blanks": 0,
+       "distinct": 663,
+       "repeatedValues": 0
+      }
+     }
+    },
+    {
+     "city": "Yakima",
+     "cityCode": "5440",
+     "bbox": [
+      -120.542593,
+      46.590034,
+      -120.532593,
+      46.600034
+     ],
+     "count": 672,
+     "rowsRead": 672,
+     "keys": {
+      "PARCEL_ID_NR": {
+       "blanks": 1,
+       "distinct": 670,
+       "repeatedValues": 1,
+       "sampledRepeats": 1,
+       "sampledRepeatsWithDistinctGeometry": 1,
+       "repeatSamples": [
+        {
+         "value": "077-18132611091",
+         "oids": [
+          3256247,
+          3256248
+         ],
+         "distinctGeometries": 2
+        }
+       ]
+      },
+      "FIPS_NR+PARCEL_ID_NR": {
+       "blanks": 1,
+       "distinct": 670,
+       "repeatedValues": 1,
+       "sampledRepeats": 1,
+       "sampledRepeatsWithDistinctGeometry": 1,
+       "repeatSamples": [
+        {
+         "value": "077~077-18132611091",
+         "oids": [
+          3256247,
+          3256248
+         ],
+         "distinctGeometries": 2
+        }
+       ]
+      },
+      "ORIG_PARCEL_ID": {
+       "blanks": 1,
+       "distinct": 670,
+       "repeatedValues": 1,
+       "sampledRepeats": 1,
+       "sampledRepeatsWithDistinctGeometry": 1,
+       "repeatSamples": [
+        {
+         "value": "18132611091",
+         "oids": [
+          3256247,
+          3256248
+         ],
+         "distinctGeometries": 2
+        }
+       ]
+      },
+      "GlobalID": {
+       "blanks": 0,
+       "distinct": 672,
+       "repeatedValues": 0
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:52:56.324Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-122.1714%2C47.664458%2C-122.1614%2C47.674458&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:52:58.588Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-122.1714%2C47.664458%2C-122.1614%2C47.674458&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CFIPS_NR%2CCOUNTY_NM%2CPARCEL_ID_NR%2CORIG_PARCEL_ID%2CGlobalID&returnGeometry=false&orderByFields=OBJECTID&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:52:59.722Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-120.542593%2C46.590034%2C-120.532593%2C46.600034&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:00.280Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=1%3D1&geometry=-120.542593%2C46.590034%2C-120.532593%2C46.600034&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CFIPS_NR%2CCOUNTY_NM%2CPARCEL_ID_NR%2CORIG_PARCEL_ID%2CGlobalID&returnGeometry=false&orderByFields=OBJECTID&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:01.590Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?objectIds=3256247%2C3256248&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:02.450Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?objectIds=3256247%2C3256248&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:05.396Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?objectIds=3256247%2C3256248&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [
+  {
+   "state": "WA",
+   "key": "PARCEL_ID_NR",
+   "groups": [
+    {
+     "city": "Yakima",
+     "value": "077-18132611091",
+     "rows": [
+      {
+       "oid": 3256247,
+       "props": {
+        "OBJECTID": 3256247,
+        "FIPS_NR": "077",
+        "COUNTY_NM": "77",
+        "PARCEL_ID_NR": "077-18132611091",
+        "ORIG_PARCEL_ID": "18132611091",
+        "GlobalID": "9b8c5063-7e85-4a96-b61c-642472cd036d"
+       },
+       "areaM2": 299.87,
+       "geomType": "Polygon",
+       "hash": "d5fae2997a48"
+      },
+      {
+       "oid": 3256248,
+       "props": {
+        "OBJECTID": 3256248,
+        "FIPS_NR": "077",
+        "COUNTY_NM": "77",
+        "PARCEL_ID_NR": "077-18132611091",
+        "ORIG_PARCEL_ID": "18132611091",
+        "GlobalID": "b19cb637-e9f7-4cfe-b545-65dce5eec5bf"
+       },
+       "areaM2": 120.43,
+       "geomType": "Polygon",
+       "hash": "a2f7146b7791"
+      }
+     ],
+     "pairs": [
+      {
+       "a": 3256247,
+       "b": 3256248,
+       "intersectM2": 0,
+       "touches": false
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "liveVerification": {
+  "descriptorId": "us-wa-watech-statewide-parcels",
+  "verifiedAt": "2026-10-12T11:11:36.622Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Bellevue",
+    "cityCode": "5413",
+    "unPoint": [
+     47.6694577413674,
+     -122.166399898028
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -122.1669,
+       47.668958,
+       -122.1659,
+       47.669958
+      ],
+      "features": 13
+     }
+    ],
+    "bbox": [
+     -122.1669,
+     47.668958,
+     -122.1659,
+     47.669958
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "sourceRows": 13,
+     "featureCount": 13
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-WA-STATEWIDE-033-7922660010",
+      "nativeId": "033-7922660010",
+      "type": "Polygon",
+      "geometrySha256": "8058598e219752f9c78da183b59e916c33831b50dbcced27e95cff5a696b97a3",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210210",
+      "nativeId": "033-2547210210",
+      "type": "Polygon",
+      "geometrySha256": "fb3ea308193f91c0ed6854bbe942b9023f3fc4a9610751ea45291f9c7d32de39",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210200",
+      "nativeId": "033-2547210200",
+      "type": "Polygon",
+      "geometrySha256": "e22bf70085e4180fddaf6cdcf1a3ccb467983c66ce60417ad05c04cb5ef843b2",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210190",
+      "nativeId": "033-2547210190",
+      "type": "Polygon",
+      "geometrySha256": "cebfead6b050ae2fece88f179f7e79c9039db20de4c1dcfe2824e006f63180cb",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210180",
+      "nativeId": "033-2547210180",
+      "type": "Polygon",
+      "geometrySha256": "c5091542a8234e362068fab61970d3ad59f610cc0aee619c86b2179128a1f4ca",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210160",
+      "nativeId": "033-2547210160",
+      "type": "Polygon",
+      "geometrySha256": "b9aeb7ba920ae701cbe7cf0582bd7889d399412414597926a5e76e052f7a860a",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210150",
+      "nativeId": "033-2547210150",
+      "type": "Polygon",
+      "geometrySha256": "9524080fe8694eefcfd87fac7aeef6cb0f90c05badaa6e048ec80e06d92a08a5",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210140",
+      "nativeId": "033-2547210140",
+      "type": "Polygon",
+      "geometrySha256": "6192d53c62afd9ccb3c58f45272be8fbe72d83762809cfb85aea54551bf92b21",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210130",
+      "nativeId": "033-2547210130",
+      "type": "Polygon",
+      "geometrySha256": "7df167b720e891052171be05347acc2d94a0b94cbd87767137b9dd6341a4fd6c",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547210010",
+      "nativeId": "033-2547210010",
+      "type": "Polygon",
+      "geometrySha256": "dae7c250e3a5a1d80b013828d53273b62f5c8690fa8e68a9b1e7c1a955fad310",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547100110",
+      "nativeId": "033-2547100110",
+      "type": "Polygon",
+      "geometrySha256": "99ade4a177b4b8ac534fa8b5b60b9ff29921a0242c58bdf193fa78d993fd88f8",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-2547100100",
+      "nativeId": "033-2547100100",
+      "type": "Polygon",
+      "geometrySha256": "43830c6685595f01f02124f0281f6e6f12dd8a3230d51d1e27819783d0be7766",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-033-1877200000",
+      "nativeId": "033-1877200000",
+      "type": "Polygon",
+      "geometrySha256": "cdd14a88eac1ea825781551b721f2ba85dd17484fa2ad09e0699fd121e3323c8",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-WA-STATEWIDE-033-7922660010",
+      "US-WA-STATEWIDE-033-2547210210",
+      "US-WA-STATEWIDE-033-2547210200"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "sourceRows": 3,
+     "features": [
+      {
+       "id": "US-WA-STATEWIDE-033-7922660010",
+       "geometrySha256": "8058598e219752f9c78da183b59e916c33831b50dbcced27e95cff5a696b97a3",
+       "parts": 1
+      },
+      {
+       "id": "US-WA-STATEWIDE-033-2547210210",
+       "geometrySha256": "fb3ea308193f91c0ed6854bbe942b9023f3fc4a9610751ea45291f9c7d32de39",
+       "parts": 1
+      },
+      {
+       "id": "US-WA-STATEWIDE-033-2547210200",
+       "geometrySha256": "e22bf70085e4180fddaf6cdcf1a3ccb467983c66ce60417ad05c04cb5ef843b2",
+       "parts": 1
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:11:37.833Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-122.1669%2C47.668958%2C-122.1659%2C47.669958&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:38.614Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-122.1669%2C47.668958%2C-122.1659%2C47.669958&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:39.521Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=852452%2C1175331%2C1175332%2C1175333%2C1175334%2C1175336%2C1175337%2C1175338%2C1175339%2C1175351%2C1175380%2C1175381%2C1234185",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:40.366Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27033-7922660010%27%2C%27033-2547210210%27%2C%27033-2547210200%27%2C%27033-2547210190%27%2C%27033-2547210180%27%2C%27033-2547210160%27%2C%27033-2547210150%27%2C%27033-2547210140%27%2C%27033-2547210130%27%2C%27033-2547210010%27%2C%27033-2547100110%27%2C%27033-2547100100%27%2C%27033-1877200000%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:41.488Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27033-7922660010%27%2C%27033-2547210210%27%2C%27033-2547210200%27%2C%27033-2547210190%27%2C%27033-2547210180%27%2C%27033-2547210160%27%2C%27033-2547210150%27%2C%27033-2547210140%27%2C%27033-2547210130%27%2C%27033-2547210010%27%2C%27033-2547100110%27%2C%27033-2547100100%27%2C%27033-1877200000%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:42.653Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=852452%2C1175331%2C1175332%2C1175333%2C1175334%2C1175336%2C1175337%2C1175338%2C1175339%2C1175351%2C1175380%2C1175381%2C1234185",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:43.696Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27033-7922660010%27%2C%27033-2547210210%27%2C%27033-2547210200%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:44.850Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27033-7922660010%27%2C%27033-2547210210%27%2C%27033-2547210200%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:46.380Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=852452%2C1175331%2C1175332",
+      "status": 200
+     }
+    ]
+   },
+   {
+    "city": "Yakima",
+    "cityCode": "5440",
+    "unPoint": [
+     46.5950341911278,
+     -120.53759265329
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -120.538093,
+       46.594534,
+       -120.537093,
+       46.595534
+      ],
+      "features": 3
+     }
+    ],
+    "bbox": [
+     -120.538093,
+     46.594534,
+     -120.537093,
+     46.595534
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "sourceRows": 3,
+     "featureCount": 3
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-WA-STATEWIDE-077-18132343417",
+      "nativeId": "077-18132343417",
+      "type": "Polygon",
+      "geometrySha256": "84538b31149cdb399adf014e2622f8eb840d61c263b0b9df325996dba4beff36",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-077-18132343426",
+      "nativeId": "077-18132343426",
+      "type": "Polygon",
+      "geometrySha256": "f541ebd0613298c9d37c8a808a21f80714db59c336813cd3bc5a85aec5c1c45d",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-WA-STATEWIDE-077-18132343435",
+      "nativeId": "077-18132343435",
+      "type": "Polygon",
+      "geometrySha256": "bebc1354e70615ae520d56a520e722722b1d58648ace023cc40ba00922437572",
+      "parts": 1,
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-WA-STATEWIDE-077-18132343417",
+      "US-WA-STATEWIDE-077-18132343426",
+      "US-WA-STATEWIDE-077-18132343435"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "sourceRows": 3,
+     "features": [
+      {
+       "id": "US-WA-STATEWIDE-077-18132343417",
+       "geometrySha256": "84538b31149cdb399adf014e2622f8eb840d61c263b0b9df325996dba4beff36",
+       "parts": 1
+      },
+      {
+       "id": "US-WA-STATEWIDE-077-18132343426",
+       "geometrySha256": "f541ebd0613298c9d37c8a808a21f80714db59c336813cd3bc5a85aec5c1c45d",
+       "parts": 1
+      },
+      {
+       "id": "US-WA-STATEWIDE-077-18132343435",
+       "geometrySha256": "bebc1354e70615ae520d56a520e722722b1d58648ace023cc40ba00922437572",
+       "parts": 1
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:11:47.450Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-120.538093%2C46.594534%2C-120.537093%2C46.595534&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:48.069Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-120.538093%2C46.594534%2C-120.537093%2C46.595534&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:49.180Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=3251789%2C3251797%2C3251804",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:50.319Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132343417%27%2C%27077-18132343426%27%2C%27077-18132343435%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:51.389Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132343417%27%2C%27077-18132343426%27%2C%27077-18132343435%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:53.373Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=3251789%2C3251797%2C3251804",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:55.237Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132343417%27%2C%27077-18132343426%27%2C%27077-18132343435%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:55.514Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132343417%27%2C%27077-18132343426%27%2C%27077-18132343435%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:11:56.558Z",
+      "method": "GET",
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=3251789%2C3251797%2C3251804",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [
+  {
+   "sourceId": "us-wa-watech-statewide-parcels",
+   "parcelId": "US-WA-STATEWIDE-077-18132611091",
+   "ids": {
+    "absentA": [],
+    "absentB": [],
+    "sourceRows": 2,
+    "parts": 2,
+    "type": "MultiPolygon",
+    "hashA": "46156774c472e98ad770a8539f88a4804e464a3a23740ba9056d2468fe8e2473",
+    "hashB": "46156774c472e98ad770a8539f88a4804e464a3a23740ba9056d2468fe8e2473",
+    "identical": true
+   },
+   "bounds": {
+    "bbox": [
+     -120.53496,
+     46.590166,
+     -120.53456,
+     46.590566
+    ],
+    "featureCount": 5,
+    "sourceRows": 6,
+    "viewportSourceRows": 6,
+    "found": true,
+    "hash": "46156774c472e98ad770a8539f88a4804e464a3a23740ba9056d2468fe8e2473",
+    "identical": true
+   },
+   "ok": true,
+   "requests": [
+    {
+     "ts": "2026-10-12T11:12:00.735Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132611091%27%29%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:01.188Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132611091%27%29%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:02.265Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=3256247%2C3256248",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:03.249Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132611091%27%29%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:04.166Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132611091%27%29%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:05.312Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=3256247%2C3256248",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:07.062Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-120.53496%2C46.590166%2C-120.53456%2C46.590566&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:08.031Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-120.53496%2C46.590166%2C-120.53456%2C46.590566&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:08.880Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=3256227%2C3256228%2C3256229%2C3256234%2C3256247%2C3256248",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:10.051Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132611070%27%2C%27077-18132611072%27%2C%27077-18132611073%27%2C%27077-18132611078%27%2C%27077-18132611091%27%29%29&f=json&returnCountOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:11.053Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27077-18132611070%27%2C%27077-18132611072%27%2C%27077-18132611073%27%2C%27077-18132611078%27%2C%27077-18132611091%27%29%29&f=json&returnIdsOnly=true",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T11:12:12.109Z",
+     "method": "GET",
+     "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=3256227%2C3256228%2C3256229%2C3256234%2C3256247%2C3256248",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "idBatchCheck": {
+  "file": "batch-ids.json",
+  "id": "us-wa-watech-statewide-parcels",
+  "city": "Bellevue",
+  "result": {
+   "bbox": [
+    -122.1679,
+    47.667958,
+    -122.1649,
+    47.670958
+   ],
+   "boundsFeatures": 90,
+   "idsRequested": 80,
+   "returned": 80,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 2626
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:14:31.055Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-122.1679%2C47.667958%2C-122.1649%2C47.670958&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 971
+   },
+   {
+    "ts": "2026-10-12T11:14:31.842Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&geometry=-122.1679%2C47.667958%2C-122.1649%2C47.670958&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 650
+   },
+   {
+    "ts": "2026-10-12T11:14:32.731Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=852436%2C852437%2C852438%2C852439%2C852449%2C852450%2C852451%2C852452%2C872759%2C1052996%2C1052997%2C1052998%2C1052999%2C1053003%2C10…",
+    "status": 200,
+    "ms": 435
+   },
+   {
+    "ts": "2026-10-12T11:14:33.970Z",
+    "method": "POST",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query",
+    "bodyBytes": 1981,
+    "status": 200,
+    "ms": 565
+   },
+   {
+    "ts": "2026-10-12T11:14:34.982Z",
+    "method": "POST",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query",
+    "bodyBytes": 1979,
+    "status": 200,
+    "ms": 476
+   },
+   {
+    "ts": "2026-10-12T11:14:36.337Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=852436%2C852437%2C852438%2C852439%2C852449%2C852450%2C852451%2C852452%2C872759%2C1052996%2C1052997%2C1052998%2C1052999%2C1053003%2C10…",
+    "status": 200,
+    "ms": 731
+   },
+   {
+    "ts": "2026-10-12T11:14:37.091Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27033-1241500129%27%2C%27033-1241500128%27%2C%27033-1241500126%27%2C%27033-1241500125%27%2C%27033-1241500123%27%2C%27033-1241500121%27%2C%27033-0925059258%27%2C%27033-0925059257%27%2C%2…",
+    "status": 200,
+    "ms": 382
+   },
+   {
+    "ts": "2026-10-12T11:14:38.611Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=%28PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL%29+AND+%28PARCEL_ID_NR+IN+%28%27033-1241500129%27%2C%27033-1241500128%27%2C%27033-1241500126%27%2C%27033-1241500125%27%2C%27033-1241500123%27%2C%27033-1241500121%27%2C%27033-0925059258%27%2C%27033-0925059257%27%2C%2…",
+    "status": 200,
+    "ms": 801
+   },
+   {
+    "ts": "2026-10-12T11:14:39.893Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=1296745%2C1296746%2C1296747%2C1296748%2C1296749%2C1296751%2C1323938%2C1323939%2C1323942%2C1324104",
+    "status": 200,
+    "ms": 981
+   },
+   {
+    "ts": "2026-10-12T11:14:40.541Z",
+    "method": "POST",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query",
+    "bodyBytes": 1981,
+    "status": 200,
+    "ms": 528
+   },
+   {
+    "ts": "2026-10-12T11:14:41.689Z",
+    "method": "POST",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query",
+    "bodyBytes": 1979,
+    "status": 200,
+    "ms": 574
+   },
+   {
+    "ts": "2026-10-12T11:14:42.490Z",
+    "method": "GET",
+    "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?where=PARCEL_ID_NR+NOT+IN+%28%27%27%2C%27+%27%29+AND+PARCEL_ID_NR+IS+NOT+NULL&outFields=OBJECTID%2CPARCEL_ID_NR&returnGeometry=true&outSR=4326&f=geojson&objectIds=852436%2C852437%2C852438%2C852439%2C852449%2C852450%2C852451%2C852452%2C872759%2C1052996%2C1052997%2C1052998%2C1052999%2C1053003%2C10…",
+    "status": 200,
+    "ms": 274
+   }
+  ]
+ },
+ "coverageCaveats": [
+  "Coverage is by participating counties, not a guaranteed statewide set: 38 county FIPS codes observed 2026-10-12; Asotin County (FIPS 003) absent.",
+  "Rows with null or blank PARCEL_ID_NR (29,340 statewide on 2026-10-12) have no native identity and are excluded.",
+  "Some county parcels are published as several disjoint rows sharing one PARCEL_ID_NR (observed in Yakima County); all components are fetched and dissolved (polygon union) into one canonical parcel.",
+  "Assessment mapping, not a boundary survey; layer also publishes owner, address and value fields, which are not requested."
+ ]
+}

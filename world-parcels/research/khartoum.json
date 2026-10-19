@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:56",
+  "queueRank": 56,
+  "name": "Khartoum",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "centerLatLon": [
+    15.6335384772136,
+    32.4952458979726
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.moj.gov.sd/",
+      "observation": "Ministry of Justice site (land registration authority); no HTTP response through the agent proxy (connection reset or tunnel failure)."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre%20Khartoum",
+      "observation": "ArcGIS Online search for Khartoum cadastre/parcels returned zero feature services."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.moj.gov.sd/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=cadastre Khartoum type:Feature Service&f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "0 results"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Web searches found no Sudan open cadastre; sources describe cadastral data mostly in hard copy. Sudan Survey Authority sites were not located or reachable, and the ongoing conflict may affect services, so this is not a definitive negative.",
+  "nextStep": "Locate Sudan Survey Authority / Khartoum State Land Registry GIS pages; check HDX and OSM-derived alternatives only as non-cadastral context."
+}

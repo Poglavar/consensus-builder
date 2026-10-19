@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "cityId": "capital:NA:windhoek",
+  "name": "Windhoek",
+  "country": "Namibia",
+  "countryCode": "NA",
+  "centerLatLon": [
+    -22.5597,
+    17.0832
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/NA.json"
+  ],
+  "registryFound": true,
+  "officialRegistryOrPortalFound": null,
+  "publicEndpointVerified": false,
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "resultCategory": "city_specific_partial_cadastral_activity_no_public_geometry",
+  "source": null,
+  "verifiedParcelResponse": null,
+  "englishQueries": [
+    {
+      "languageScript": "English",
+      "exactQuery": "Windhoek Namibia official cadastral erven parcel map GIS City of Windhoek land registry",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.windhoekcc.org.na/geomatics/",
+        "https://cowenlighten.windhoekcc.org.na/Enlighten_ext/homepage/login.aspx",
+        "https://services9.arcgis.com/gWyguONsWr81ViQt/ArcGIS/rest/services/MVA_WFL1/FeatureServer/29",
+        "https://www.windhoekcc.org.na/housing-property-and-human-settlements-services-2/"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Afrikaans",
+      "exactQuery": "Windhoek Namibia kadastrale kaart erwe munisipale GIS grondregister Stad Windhoek",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.windhoekcc.org.na/geomatics/",
+        "https://cowenlighten.windhoekcc.org.na/Enlighten_ext/homepage/login.aspx",
+        "https://services9.arcgis.com/gWyguONsWr81ViQt/ArcGIS/rest/services/MVA_WFL1/FeatureServer/29",
+        "https://www.windhoekcc.org.na/housing-property-and-human-settlements-services-2/"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.windhoekcc.org.na/geomatics/",
+      "observation": "City of Windhoek says Geomatics Division provides municipal land surveying and mapping."
+    },
+    {
+      "url": "https://cowenlighten.windhoekcc.org.na/Enlighten_ext/homepage/login.aspx",
+      "observation": "City Map Guide link lands at external property/infrastructure management login; no credentials or gated map data used."
+    },
+    {
+      "url": "https://services9.arcgis.com/gWyguONsWr81ViQt/ArcGIS/rest/services/MVA_WFL1/FeatureServer/29",
+      "observation": "Municipality-copyright polygon Townships layer (fields FID/Name/ID1; EPSG:3857) is an administrative township layer, not parcel boundaries."
+    },
+    {
+      "url": "https://www.windhoekcc.org.na/housing-property-and-human-settlements-services-2/",
+      "observation": "Official City page offers pointing-out of beacons on municipal erven, valuation records and topographic maps as services; no download/API listed."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.windhoekcc.org.na/geomatics/",
+      "method": "web.run open official City Geomatics page",
+      "httpStatus": "not exposed; page retrieved",
+      "assessment": "City states Geomatics Division provides municipal land-surveying and mapping."
+    },
+    {
+      "url": "https://cowenlighten.windhoekcc.org.na/Enlighten_ext/homepage/login.aspx",
+      "method": "web.run click official Map Guide link",
+      "httpStatus": "not exposed; page retrieved",
+      "assessment": "Official city Map Guide routes to an Enlighten property/infrastructure management login page. Stopped at the login screen; no credentials or gated data used."
+    },
+    {
+      "url": "https://services9.arcgis.com/gWyguONsWr81ViQt/ArcGIS/rest/services/MVA_WFL1/FeatureServer/29",
+      "method": "web.run open indexed ArcGIS metadata",
+      "httpStatus": "not exposed; layer metadata retrieved",
+      "assessment": "Polygon layer Townships; Windhoek municipal copyright; fields FID, Name, ID1 and geometry, 3857; this is township boundaries rather than parcel polygons."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City-level coverage not established.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+  "remainingUncertainty": "Current data coverage, freshness, legal completeness and anonymous geometry access remain unverified.",
+  "nextStep": "If source access terms and public services change, recheck the official portal for an anonymous bounded geometry service; otherwise retain as a documented non-geometry research result.",
+  "status": "complete",
+  "purpose": "City-specific research into parcel geometry and presence of a city-level registry or cadastre. Registry evidence is assessed separately from publicly retrievable geometry.",
+  "registryEvidenceUrls": [
+    "https://www.windhoekcc.org.na/geomatics/",
+    "https://www.windhoekcc.org.na/housing-property-and-human-settlements-services-2/",
+    "https://www.windhoekcc.org.na/wp-content/uploads/2026/03/Council-Meeting-Agenda-of-24-November-2025.pdf"
+  ],
+  "registryBasis": "Official City of Windhoek Geomatics and property services maintain municipal property records, beacon/erf services and cadastral survey diagrams. This is city-specific partial cadastral activity; title-registry operation, complete coverage and open vector geometry are not established.",
+  "portalInspectionComplete": true,
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "Windhoek Namibia official cadastral erven parcel map GIS City of Windhoek land registry",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Windhoek Namibia kadastrale kaart erwe munisipale GIS grondregister Stad Windhoek",
+      "language": "Afrikaans",
+      "method": "web.run search_query"
+    }
+  ],
+  "previousRegistryAssessment": {
+    "registryFound": null,
+    "registryBasis": "City geomatics division and cadastral/map services are verified, but a city-level land registry was not established separately from the national survey system.",
+    "resultCategory": "no_city_registry_or_geometry_verified"
+  },
+  "registryReview": {
+    "checkedAt": "2026-10-08",
+    "basis": "Official City of Windhoek Geomatics and property services maintain municipal property records, beacon/erf services and cadastral survey diagrams. This is city-specific partial cadastral activity; title-registry operation, complete coverage and open vector geometry are not established.",
+    "evidenceUrls": [
+      "https://www.windhoekcc.org.na/geomatics/",
+      "https://www.windhoekcc.org.na/housing-property-and-human-settlements-services-2/",
+      "https://www.windhoekcc.org.na/wp-content/uploads/2026/03/Council-Meeting-Agenda-of-24-November-2025.pdf"
+    ],
+    "interpretation": "Registry activity and partial cadastral records can establish presence; citywide completeness is not required."
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

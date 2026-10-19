@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-366-santa-cruz-de-tenerife.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, safe fields, and uncertainty.",
+  "assessment": "Official Spanish Catastro INSPIRE material and the municipality's PIC procedure evidence an open cadastral source. The province-38 Atom index links municipality 38900 Santa Cruz de Tenerife to a first-party parcel ZIP; the ZIP contains 44,304 cadastral parcel features in GML with CRS EPSG:32628. Three geometry-only features were retained as a sample.",
+  "registryAssessment": "The Ayuntamiento's official PIC is local service/custodian evidence for access to cadastral information and digital cartography. The Dirección General del Catastro is the national cadastral data custodian and the source of the parcel download. This is not evidence of registry titleholder or ownership data, which was not requested.",
+  "officialPrimarySources": [
+    {"url": "https://sede.santacruzdetenerife.es/sede/tramite/t370", "observation": "Official municipal procedure identifies the Punto de Información Catastral and states that non-protected cadastral data and digital cartography can be consulted."},
+    {"url": "https://www.catastro.hacienda.gob.es/webinspire/", "observation": "Official Catastro INSPIRE page documents WFS and municipality-level ATOM services for cadastral parcels."},
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/38/ES.SDGC.CP.atom_38.xml", "observation": "Official province-38 Atom index identifies 38900-SANTA CRUZ DE TENERIFE and links the municipality parcel ZIP."},
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/38/38900-SANTA%20CRUZ%20DE%20TENERIFE/A.ES.SDGC.CP.38900.zip", "observation": "Official municipality download retrieved successfully; source archive contains cadastralparcel GML, cadastralzoning GML, and metadata. The parcel GML declares numberMatched/numberReturned 44304 and EPSG:32628 geometry."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://www.sedecatastro.gob.es/",
+    "observedTechnology": "Official Catastro INSPIRE WFS documentation plus Atom bulk-download service; municipal PIC procedure.",
+    "observedControls": ["Catastro viewer", "INSPIRE cadastral parcel WFS", "municipality parcel Atom download", "municipal PIC digital-cartography consultation"],
+    "schemaAndCrs": "Source GML uses cp:CadastralParcel, cp:geometry with gml:MultiSurface, cp:inspireId/Identifier/localId, cp:nationalCadastralReference, and referencePoint. Sample geometry CRS is EPSG:32628 (WGS 84 / UTM zone 28N); retained GeoJSON is EPSG:4326.",
+    "nativeFieldNames": ["gml:id", "cp:inspireId/Identifier/localId", "cp:nationalCadastralReference", "cp:geometry"],
+    "sourceFieldMapping": "Canonical retained id is cp:nationalCadastralReference (same stable value as cp:inspireId localId in the sampled source); source field names remain documented here and are not retained in GeoJSON properties.",
+    "compositeKeyProvenance": "No composite key was needed; nationalCadastralReference/localId is the stable native parcel identity.",
+    "safeFieldAllowlist": ["stable native parcel identifier", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://sede.santacruzdetenerife.es/sede/tramite/t370", "method": "GET via first-party discovery", "normalTlsVerification": true, "result": "Official municipal PIC page retrieved in search; local service scope recorded."},
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/38/ES.SDGC.CP.atom_38.xml", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; province-38 Atom index retrieved and 38900 municipality entry located."},
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/38/38900-SANTA%20CRUZ%20DE%20TENERIFE/A.ES.SDGC.CP.38900.zip", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; 9.5 MB ZIP retrieved. Source parcel GML reports 44,304 features, EPSG:32628, and native cadastral identities."},
+    {"url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?SERVICE=WFS&REQUEST=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 400 HTML error from bounded anonymous WFS capability probe; no retry with credentials or challenge bypass."},
+    {"url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 400 HTML error from alternate bounded capability syntax; bulk Atom route remained successful."}
+  ],
+  "geometryDecision": "Retain exactly three full parcel polygons in santa-cruz-de-tenerife-parcel-sample.geojson; no raw source attributes retained.",
+  "geometryEvidence": {"sampleFile": "santa-cruz-de-tenerife-parcel-sample.geojson", "featureCount": 3, "sourceFeatureCount": 44304, "query": "Municipality-level first-party INSPIRE parcel download for 38900-SANTA CRUZ DE TENERIFE; first three source members sampled without changing their native polygon coordinates except CRS transformation to EPSG:4326."},
+  "coverageAssessment": {"claimedScope": "Municipality 38900 Santa Cruz de Tenerife in the official Catastro INSPIRE parcel dataset.", "verifiedOpenScope": "Complete municipality download was retrieved and its declared feature count and source schema inspected; only three polygons are retained.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The successful source is a bulk municipal dataset rather than an independently qualified runtime adapter. WFS capability probes returned HTTP 400, and no exact-point spatial query was used; the WUP point was preserved exactly and was not shifted to force a hit.",
+  "runtimeAssessment": {"status": "held", "reason": "A real public ID-plus-geometry extract is evidenced, but serial review is still required before adapter/runtime admission."}
+}

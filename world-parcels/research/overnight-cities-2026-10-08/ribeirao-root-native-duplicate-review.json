@@ -1,0 +1,23 @@
+{
+  "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0/query?objectIds=178927%2C178928&outFields=gid&returnGeometry=true&outSR=31983&f=geojson",
+  "httpStatus": 200,
+  "checkedAt": "2026-10-09T04:21:16.308Z",
+  "safeFields": [
+    "gid"
+  ],
+  "featureCount": 2,
+  "nativeCrs": "EPSG:31983",
+  "nativeIds": [
+    178928,
+    178927
+  ],
+  "bothValid": true,
+  "sameCompleteNativeGeometry": true,
+  "symmetricDifferenceM2": 0.0,
+  "overlapM2": 2636.5079105116265,
+  "sourceFeatureAreaM2": [
+    2636.5079105116265,
+    2636.5079105116265
+  ],
+  "conclusion": "Two distinct native GIS IDs return the same complete ground footprint. No merge, geometry repair, lifecycle or unit filter was applied."
+}

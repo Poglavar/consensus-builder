@@ -1,0 +1,13 @@
+{
+  "taskId": "city:255",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-255-novi-sad.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/novi-sad-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:55:20.228846Z",
+  "reason": "Immutable WUP roster and queue match Novi Sad, code 255, rank 2223, Serbia, point [45.2553804142272, 19.8244509114482], and 262324 persons. English and Serbian searches are recorded. Official RGZ directory names Novi Sad cadastral services; custody is supported. Viewer/login redirect and REST/map timeouts are access limitations, not citywide absence. No anonymous native-ID polygon, source binding, or independent adapter/Details qualification exists. Held without runtime admission.",
+  "admission": "held; no runtime/catalog/report change"
+}

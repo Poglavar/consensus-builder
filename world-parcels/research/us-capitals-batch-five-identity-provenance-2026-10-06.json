@@ -1,0 +1,96 @@
+[
+  {
+    "endpoint": "https://services.arcgis.com/SOVgyYCFVBkOrKDZ/arcgis/rest/services/Frankfort_Parcels_Public_View/FeatureServer?f=pjson",
+    "status": 200,
+    "metadata": {
+      "name": null,
+      "title": null,
+      "description": "",
+      "snippet": null,
+      "copyrightText": "",
+      "extent": null,
+      "layers": [
+        {
+          "id": 1,
+          "name": "FrankfortParcels",
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0,
+          "type": "Feature Layer",
+          "geometryType": "esriGeometryPolygon"
+        }
+      ],
+      "orgId": null,
+      "owner": null,
+      "url": null,
+      "error": null
+    }
+  },
+  {
+    "endpoint": "https://www.arcgis.com/sharing/rest/content/items/9806fc781405495c9d54734dd0ff480f?f=json",
+    "status": 200,
+    "metadata": {
+      "name": null,
+      "title": null,
+      "description": null,
+      "snippet": null,
+      "copyrightText": null,
+      "extent": null,
+      "layers": null,
+      "orgId": null,
+      "owner": null,
+      "url": null,
+      "error": {
+        "code": 400,
+        "messageCode": "CONT_0001",
+        "message": "Item does not exist or is inaccessible.",
+        "details": []
+      }
+    }
+  },
+  {
+    "endpoint": "https://enterprise.woolpert.com/server/rest/services/Hosted/City_of_Columbia_Parcel/FeatureServer/info/iteminfo?f=json",
+    "status": 200,
+    "metadata": {
+      "name": "City_of_Columbia_Parcel",
+      "title": "City of Columbia Parcel",
+      "description": "",
+      "snippet": "A polygon feature class representing tax assessment parcels in Richland and Lexington Counties. This feature class was created prior to April 2010.  Updates are done in conjunction with address and street updates.  Most information is digitized from georeferenced drawings but more recently has been available via CAD .dwg files.  Future edits to this data will be done solely with the aid of CAD .dwg files to ensure accuracy. Lexington County regularly provides a copy of data for verification purposes.  Richland County provides no direct assistance with this data.",
+      "copyrightText": null,
+      "extent": [
+        [
+          -81.070270168113,
+          33.9585513875401
+        ],
+        [
+          -80.8392817662156,
+          34.1123205176157
+        ]
+      ],
+      "layers": null,
+      "orgId": null,
+      "owner": null,
+      "url": "",
+      "error": null
+    }
+  },
+  {
+    "endpoint": "https://www.arcgis.com/sharing/rest/portals/wv9mHoqblhTsnqdG?f=json",
+    "status": 200,
+    "metadata": {
+      "name": "City of Providence",
+      "title": null,
+      "description": "Providence is the capital and most populous city in Rhode Island.  Founded in 1636, it is one of the oldest cities in the United States. It  is located in Providence County, and is the third-largest city in the  New England region after Boston and Worcester.",
+      "snippet": null,
+      "copyrightText": null,
+      "extent": null,
+      "layers": null,
+      "orgId": null,
+      "owner": null,
+      "url": null,
+      "error": null
+    }
+  }
+]

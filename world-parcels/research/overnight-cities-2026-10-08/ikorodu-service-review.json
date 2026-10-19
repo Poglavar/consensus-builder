@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2318-ikorodu.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Official Lagos State land-administration tools are statewide and do not document city-specific Ikorodu coverage. Ikorodu-specific LASBCA listings are building-control offices, not title registries. City-local registry and public parcel geometry are therefore left unconfirmed.",
+  "officialEvidence": [
+    {
+      "url": "https://landonline.lagosstate.gov.ng/",
+      "observation": "Statewide official land-administration portal; no Ikorodu-specific parcel dataset or public vector contract verified."
+    },
+    {
+      "url": "https://lagossurveyor.ebs-rcm.com/",
+      "observation": "Surveyor-General transaction portal advertises land records, record-copy, verification, survey consent and charting services; no anonymous parcel layer verified."
+    },
+    {
+      "url": "https://lasbca.lagosstate.gov.ng/district-offices/",
+      "observation": "Local Ikorodu district offices are building-control services and are not title/cadastre evidence."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://landonline.lagosstate.gov.ng/",
+      "routes": [
+        "Official statewide land-admin portal describes address/property-number/parcel-ID search and GIS map, but no public anonymous feature-list route was documented.",
+        "Surveyor-General portal offers record copy, verification, survey-consent and charting transactions; its certificate-validation form requires a survey-plan number."
+      ],
+      "notes": "No private property identifiers or user credentials were submitted; no geometry request was made."
+    },
+    "notes": "Lagos statewide coverage cannot be used to infer geometry or registry dataset completeness at the Ikorodu WUP point."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No Ikorodu-specific anonymous geometry endpoint or safe feature schema was documented; no parcel feature query was made."
+  }
+}

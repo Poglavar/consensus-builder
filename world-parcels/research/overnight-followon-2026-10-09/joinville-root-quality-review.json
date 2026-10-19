@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-09T06:00:16.709739+00:00",
+  "decision": "approved_by_root",
+  "featureCount": 201,
+  "safeFields": [
+    "objectid",
+    "iq"
+  ],
+  "nativeCrs": "EPSG:31982",
+  "metricAuditCrs": "EPSG:32722",
+  "geometryChangedOrRepaired": false,
+  "basis": "201 distinct full native municipal lot polygons around the unchanged Joinville WUP locator across thirteen bounded cells; all grid and footprint geometries independently audited in EPSG32722. No invalidity, duplicate geometry or operation errors. One 0.01436m² shared-edge overlap was independently reproduced in native EPSG31982, with a maximum rectangle width below0.6mm; preserved without repair as a bounded reference-data caveat. Forced three-row paging, all201 fresh exact native-key reads, explicit absence, footprint lookup and source binding passed. This evidence does not establish citywide completeness, positional accuracy, legal title or currentness.",
+  "acceptanceFile": "research/overnight-followon-2026-10-09/joinville-simgeo-root-acceptance.json",
+  "qualityFile": "research/overnight-followon-2026-10-09/joinville-simgeo-root-quality.json",
+  "wideReviewFile": "research/overnight-followon-2026-10-09/joinville-simgeo-root-wide-review.json",
+  "wideQualityFile": "research/overnight-followon-2026-10-09/joinville-simgeo-root-wide-quality.json",
+  "nativeEdgeReviewFile": "research/overnight-followon-2026-10-09/joinville-native-edge-root-review.json"
+}

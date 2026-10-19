@@ -1,0 +1,153 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; local registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09T00:00:00Z",
+  "cityCode": 2832,
+  "queueRank": 1271,
+  "cityId": "wup:2832",
+  "name": "Quelimane",
+  "country": "Mozambique",
+  "countryCode": "MZ",
+  "iso3": "MOZ",
+  "centerLatLon": [-17.8603350032055, 36.9022475404492],
+  "point": [-17.8603350032055, 36.9022475404492],
+  "population2025": 438554,
+  "population2025k": 438.554,
+  "populationUnit": "persons",
+  "status": "complete",
+  "year": 2025,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Quelimane Mozambique cadastral parcel map official land registry GIS",
+        "result": "First-party discovery identified the official MOZGIS/ADE ArcGIS service for Município de Quelimane and official planning diagnostics. The municipal service is public and city-scoped, but its published layers are not cadastral parcels. The planning diagnostic documents a municipal cadastral system (LIMS) that was inactive, plus outdated physical records; no parcel API was identified.",
+        "actualResultUrls": [
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Munic%C3%ADpio_de_Quelimane/MapServer",
+          "https://www.pdul.gov.mz/layout/set/print/content/download/203/1098/version/3/file/DIISB4_QUELIMANE_Final%2B12%2B11%2B2020.pdf",
+          "https://www.ade.gov.mz/"
+        ],
+        "scope": "Identify local registry/cadastre custody and safe anonymous parcel geometry without requesting owner, address, titleholder, contact, tax/account, personal data or credentials."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Quelimane cadastro predial mapa parcelas oficial Moçambique",
+        "result": "A separate Portuguese-language discovery pass identified the official Quelimane municipal MOZGIS MapServer and the official PDUL diagnostic. The diagnostic states that the municipal LIMS was deactivated and the physical register was outdated; it also states that the number of registered parcels could not be determined. No anonymous parcel-vector endpoint with a stable native ID was verified.",
+        "actualResultUrls": [
+          "https://www.mozgis.gov.mz/serverfederated/rest/services/Munic%C3%ADpio_de_Quelimane/MapServer",
+          "https://www.pdul.gov.mz/layout/set/print/content/download/203/1098/version/3/file/DIISB4_QUELIMANE_Final%2B12%2B11%2B2020.pdf",
+          "https://utente.srn.gov.mz/v71/Entrada"
+        ],
+        "scope": "Find a first-party public map/API and local registry procedure using Portuguese terminology; no authenticated or unsafe property-record lookup was attempted."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Munic%C3%ADpio_de_Quelimane/MapServer",
+      "operator": "Agência Nacional de Desenvolvimento Geo-Espacial (ADE, IP) / MOZGIS; municipal Quelimane service",
+      "observation": "The public ArcGIS MapServer covers Município de Quelimane and advertises EPSG:4326, JSON/geoJSON, and query capabilities. Its layers are health units, markets, terminals, worship sites, bairros, and population-density risk; no parcel layer or parcel table is published.",
+      "scope": "Official city map/API inspected; general municipal thematic mapping, not verified cadastral parcel geometry."
+    },
+    {
+      "url": "https://www.pdul.gov.mz/layout/set/print/content/download/203/1098/version/3/file/DIISB4_QUELIMANE_Final%2B12%2B11%2B2020.pdf",
+      "operator": "Programa de Desenvolvimento Urbano e Local (PDUL), Republic of Mozambique",
+      "observation": "Official Quelimane diagnostic states that the municipal cadastral system used LIMS, currently deactivated, and also had an outdated physical register; the number of registered parcels could not be determined.",
+      "scope": "Local municipal cadastral custody/status evidence; not a public parcel geometry endpoint."
+    },
+    {
+      "url": "https://utente.srn.gov.mz/v71/Entrada",
+      "operator": "Ministério da Justiça, Assuntos Constitucionais e Religiosos / Registos e Notariado",
+      "observation": "The official portal exposes Predial procedures for registration, transfer, mortgages and related real-property acts, but requires a procedure workflow and does not expose anonymous parcel polygons.",
+      "scope": "General national property-registration procedure; not city-specific open parcel data."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Munic%C3%ADpio_de_Quelimane/MapServer?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned ArcGIS service metadata. CRS is EPSG:4326; layers 2-7 are thematic point/polygon layers, with no parcel layer or table."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Munic%C3%ADpio_de_Quelimane/MapServer/6?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned the Bairros polygon schema. Native field OBJECTID and thematic fields are present, but this is neighbourhood boundary data, not parcel data; no geometry retained."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/serverfederated/rest/services?f=pjson",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned the public service directory. It listed Município_de_Quelimane and other thematic services, but no cadastral or parcel service was exposed."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/portal/sharing/rest/search?f=pjson&num=100&start=1&q=owner:ade_mozgis%20Quelimane",
+      "method": "GET; anonymous; TLS verification enabled",
+      "httpStatus": 200,
+      "outcome": "Returned zero portal items for the bounded owner/Quelimane search; this is not treated as evidence of citywide parcel absence."
+    },
+    {
+      "url": "https://www.pdul.gov.mz/layout/set/print/content/download/203/1098/version/3/file/DIISB4_QUELIMANE_Final%2B12%2B11%2B2020.pdf",
+      "method": "GET; anonymous; TLS verification enabled via first-party discovery result",
+      "httpStatus": 200,
+      "outcome": "Official diagnostic was available and supplied local cadastral-status evidence; no data query was made against registry records."
+    },
+    {
+      "url": "https://utente.srn.gov.mz/v71/Entrada",
+      "method": "GET; anonymous; TLS verification enabled via first-party discovery result",
+      "httpStatus": 200,
+      "outcome": "Official property-registration portal returned a public procedure landing page; no login, credentials, private token, CAPTCHA bypass, or record-specific lookup was attempted."
+    }
+  ],
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "08b61e5ee70c496a86eef4429dabe5e2",
+    "name": "MOZGIS Município de Quelimane MapServer",
+    "url": "https://www.mozgis.gov.mz/serverfederated/rest/services/Munic%C3%ADpio_de_Quelimane/MapServer",
+    "operator": "ADE, IP / MOZGIS; municipal Quelimane map service",
+    "serviceType": "Official public ArcGIS MapServer; thematic municipal layers reviewed, no parcel layer verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "The service is city-scoped and public, but its published layers do not include cadastral parcels."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official municipal MOZGIS service directory and Quelimane municipal cadastral-status documentation were reviewed.",
+    "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs, parcel schema, or citywide completeness was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The public city MapServer exposes thematic municipal layers but no parcel layer; official diagnostic evidence says the municipal LIMS was deactivated and the physical register was outdated.",
+  "remainingUncertainty": "A non-public or separately maintained municipal cadastral register may exist. No login, credentials, private token, CAPTCHA/Cloudflare bypass, or unsafe property-record query was used; no citywide absence claim is made.",
+  "nextStep": "Continue only if a current first-party anonymous parcel-vector endpoint is published; independently verify parcel schema, CRS, stable native IDs, bounded geometry response and coverage before adapter qualification.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "pointBasis": "Exact unchanged WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official PDUL diagnostic documents the municipal Quelimane cadastral custodian/status (LIMS inactive and physical register outdated); this establishes local registry evidence, not open parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.pdul.gov.mz/layout/set/print/content/download/203/1098/version/3/file/DIISB4_QUELIMANE_Final%2B12%2B11%2B2020.pdf",
+    "https://utente.srn.gov.mz/v71/Entrada"
+  ],
+  "runtimeAssessment": {
+    "status": "held",
+    "reason": "No verified anonymous parcel geometry and stable native ID response; runtime admission remains held pending independent serial qualification."
+  },
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "cohortState": "research_complete_pending_serial_review",
+  "integrationState": "not_integrated"
+}

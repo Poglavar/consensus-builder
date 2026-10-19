@@ -1,0 +1,124 @@
+{
+  "name": "Huambo",
+  "country": "Angola",
+  "countryCode": "AO",
+  "rank": 853,
+  "point": [
+    -12.770244492617,
+    15.7431009180318
+  ],
+  "population2025": 634669,
+  "population2025k": 634.669,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Huambo provincial government identifies a local land-rights concession and land-regularization initiative implemented with Angola’s IGCA. Its current provincial service catalog lists an in-person application to register agricultural land parcels and requires a topographic plan and title/lease document. This confirms local land-registration activity, but no anonymous parcel map or full-vector response was found.",
+  "registryEvidenceUrls": [
+    "https://huambo.gov.ao/web/noticias/governo-do-huambo-reforca-gestao-de-terras-com-a-implementacao-da-janela-unica-de-concessao-de-direitos-fundiarios",
+    "https://huambo.sinotec.ao/servicos/",
+    "https://www.igca.gov.ao/home"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3451,
+  "cityId": "wup2025:3451",
+  "centerLatLon": [
+    -12.770244492617,
+    15.7431009180318
+  ],
+  "queueRank": 853,
+  "scopeLimits": "Bounded official-source and public-service review. No citywide completeness is claimed. No owner, address, account, tax, personal-property or credential fields are retained.",
+  "resultCategory": "official_local_land_registration_no_public_geometry",
+  "technicalBlocker": "Identified local process is an in-person application, not an anonymous geometry endpoint. No schema or full polygon service was published.",
+  "remainingUncertainty": "No WUP-point parcel match or anonymous full-polygon API was verified; the provincial workflow does not establish exact centroid coverage.",
+  "nextStep": "Parent review may decide whether additional viewer/source investigation is useful; no geometry/runtime claim is made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese",
+        "query": "Huambo Angola cadastro predial mapa parcelas registo de terrenos site oficial",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official provincial sources describe the local land-rights concession/regularization initiative and an in-person parcel-registration process; no public polygon service was identified.",
+        "actualResultUrls": [
+          "https://huambo.gov.ao/web/noticias/governo-do-huambo-reforca-gestao-de-terras-com-a-implementacao-da-janela-unica-de-concessao-de-direitos-fundiarios",
+          "https://huambo.sinotec.ao/servicos/",
+          "https://www.igca.gov.ao/home"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      },
+      {
+        "language": "English",
+        "query": "Huambo Angola official cadastral parcel map land registry public GIS",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official provincial and national cadastral institute sources confirm land administration; no anonymous full geometry service was identified.",
+        "actualResultUrls": [
+          "https://huambo.gov.ao/web/noticias/governo-do-huambo-reforca-gestao-de-terras-com-a-implementacao-da-janela-unica-de-concessao-de-direitos-fundiarios",
+          "https://huambo.sinotec.ao/servicos/",
+          "https://www.igca.gov.ao/home"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Huambo official registry/cadastral review",
+        "operator": "Angola",
+        "homeUrl": "https://huambo.gov.ao/web/noticias/governo-do-huambo-reforca-gestao-de-terras-com-a-implementacao-da-janela-unica-de-concessao-de-direitos-fundiarios",
+        "observation": "The official Huambo provincial government identifies a local land-rights concession and land-regularization initiative implemented with Angola’s IGCA. Its current provincial service catalog lists an in-person application to register agricultural land parcels and requires a topographic plan and title/lease document. This confirms local land-registration activity, but no anonymous parcel map or full-vector response was found."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://huambo.sinotec.ao/servicos/",
+        "method": "GET official provincial service catalog",
+        "httpStatus": 200,
+        "observation": "Catalog updated May 2026 reports zero services online and lists in-person registration of agricultural land parcels; a topographic plan and title/lease document are required. No map schema is published."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "AO-3451-huambo-cadastre-review",
+    "name": "Huambo official cadastral/registry source review",
+    "url": "https://huambo.gov.ao/web/noticias/governo-do-huambo-reforca-gestao-de-terras-com-a-implementacao-da-janela-unica-de-concessao-de-direitos-fundiarios",
+    "operator": "Angola",
+    "serviceType": "In-person local parcel-registration process; no anonymous map or vector layer verified.",
+    "layer": "none verified",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No safe native parcel ID was confirmed in a full feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Huambo provincial government identifies a local land-rights concession and land-regularization initiative implemented with Angola’s IGCA. Its current provincial service catalog lists an in-person application to register agricultural land parcels and requires a topographic plan and title/lease document. This confirms local land-registration activity, but no anonymous parcel map or full-vector response was found.",
+    "verifiedOpenScope": "Official local registration/map evidence is documented, but no full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No verified public full-polygon response was obtained.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootPrimaryReadback": {
+    "url": "https://huambo.gov.ao/web/noticias/governo-do-huambo-reforca-gestao-de-terras-com-a-implementacao-da-janela-unica-de-concessao-de-direitos-fundiarios",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "GOVERNO DO HUAMBO REFORÇA GESTÃO DE TERRAS COM A IMPLEMENTAÇÃO DA JANELA ÚNICA DE CONCESSÃO DE DIREITOS FUNDIÁRIOS"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00",
+  "sourceIds": []
+}

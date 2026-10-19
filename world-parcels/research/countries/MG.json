@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MG",
+ "country": "Madagascar",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Land Planning/Land Services (MATSF), Guichets fonciers/Service des Domaines; parcels held in local PLOF/land offices (per research/antananarivo.json)",
+ "portalsFound": [
+  {
+   "url": "http://www.observatoire-foncier.mg/article-121/",
+   "observation": "Secondary source noting land data in local offices; no open service (from research/antananarivo.json)."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.foncier.gov.mg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.mataf.gov.mg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.gov.mg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Hosts unreachable from here; national parcel service unknown. Reuses research/antananarivo.json (also temporarily_unavailable).",
+ "nextStep": "Retry foncier.gov.mg/mataf; look for guichet foncier map portal."
+}

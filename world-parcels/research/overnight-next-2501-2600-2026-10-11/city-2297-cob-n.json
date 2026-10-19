@@ -1,0 +1,115 @@
+{
+  "cityCode": 2297,
+  "queueRank": 2564,
+  "name": "Cobán",
+  "country": "Guatemala",
+  "countryCode": "GT",
+  "iso3": "GTM",
+  "point": [15.4685387725559, -90.3799916317207],
+  "population2025": 229017,
+  "population2025k": 229.017,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cobán Guatemala official cadastral parcel map GIS land registry",
+        "result": "First-party discovery identified the Registro de Información Catastral de Guatemala Geoportal. Its official viewer exposes the national RIC GeoServer and a PREDIO parcel layer. A bounded anonymous WFS request returned three polygon records near the WUP point; this verifies an open parcel sample, not citywide completeness.",
+        "actualResultUrls": [
+          "https://portal.ric.gob.gt/geoportal",
+          "https://portal.ric.gob.gt/geoportal_/Geoportal.html",
+          "https://portal.ric.gob.gt/geoserver/wfs?service=WFS&version=1.0.0&request=GetCapabilities"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Cobán Guatemala mapa catastral parcelas predios visor oficial Registro de Información Catastral",
+        "result": "La búsqueda oficial identificó el Geoportal del Registro de Información Catastral (RIC). La inspección de su JavaScript actual reveló el servicio GeoServer y la capa GEO_RIC:PREDIO; una consulta WFS anónima y acotada devolvió tres polígonos cerca del punto WUP. No se afirma cobertura completa de Cobán.",
+        "actualResultUrls": [
+          "https://portal.ric.gob.gt/geoportal",
+          "https://portal.ric.gob.gt/geoportal_/Geoportal.html",
+          "https://portal.ric.gob.gt/geoserver/GEO_RIC/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=GEO_RIC:PREDIO&outputFormat=application%2Fjson&maxFeatures=3&srsName=EPSG:90180&bbox=657500,1709500,658500,1711500,EPSG:90180"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "No separate Municipalidad de Cobán cadastral service was qualified. The evidenced custodian is the national Registro de Información Catastral de Guatemala (RIC), whose official Geoportal publishes the parcel service.",
+    "publicLandMapService": "RIC Geoportal at https://portal.ric.gob.gt/geoportal_/Geoportal.html; current viewer code sets servidorMapas to https://portal.ric.gob.gt/geoserver and uses GEO_RIC:PREDIO.",
+    "sourceId": "gt-ric-geoserver-predio",
+    "scope": "National RIC parcel layer as exposed by the official Geoportal; the bounded sample is local to the Cobán vicinity and does not establish citywide or national completeness.",
+    "registryBasis": "The official RIC viewer and its live WFS parcel response are evidenced. This is source discovery and sample qualification only, not runtime adapter admission."
+  },
+  "schemaAndCrs": {
+    "viewerUrl": "https://portal.ric.gob.gt/geoportal_/Geoportal.html",
+    "serviceEndpoint": "https://portal.ric.gob.gt/geoserver/GEO_RIC/wfs",
+    "layer": "GEO_RIC:PREDIO",
+    "responseType": "GeoJSON FeatureCollection",
+    "geometryType": "Polygon",
+    "geometryCrs": "EPSG:90180 (reported by WFS response and viewer srsname)",
+    "nativeIdentity": "ccc (safe parcel identity; values withheld from retained artifacts), with GeoServer feature id also observed",
+    "nativeFieldMapping": {
+      "ccc": "stable parcel identity",
+      "geometry": "parcel polygon",
+      "fase": "not retained or requested for downstream use",
+      "area": "not retained or requested for downstream use",
+      "perimetro": "not retained or requested for downstream use",
+      "id_departamento": "administrative code observed only",
+      "cod_municipio": "administrative code observed only"
+    },
+    "compositeKeyProvenance": "No composite key used; native ccc was the observed parcel identity. GeoServer feature ids were recorded only as response metadata and are not used as a synthetic replacement."
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "gt-ric-geoserver-predio",
+    "requestUrl": "https://portal.ric.gob.gt/geoserver/GEO_RIC/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=GEO_RIC:PREDIO&outputFormat=application%2Fjson&maxFeatures=3&srsName=EPSG:90180&bbox=657500,1709500,658500,1711500,EPSG:90180",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [-90.382, 15.467, -90.378, 15.470],
+    "requestBboxNative": [657500, 1709500, 658500, 1711500],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "properties.ccc",
+    "responseFile": "tmp/valhalla-parcel-research/2297/predio-coban.json",
+    "pagination": "maxFeatures=3; bounded request; no pagination followed",
+    "rawAttributesRetained": false
+  },
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "gt-ric-geoserver-predio",
+    "sampleCount": 3,
+    "sampleFile": null,
+    "exactWupPointTest": "Not used as an absence test. The bounded native-CRS area was selected around the exact WUP location without shifting the recorded point.",
+    "nativeIdField": "ccc",
+    "safeFieldsRetained": ["native ccc parcel identity in scratch response", "full polygon geometry in scratch response", "source URL", "CRS", "retrieval timestamp"]
+  },
+  "coverageAssessment": {
+    "claimedScope": "RIC national cadastral Geoportal and its published GEO_RIC:PREDIO layer.",
+    "verifiedOpenScope": "Three polygon records in a bounded Cobán-vicinity query only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source service URL", "observed CRS and coordinate order", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "serialReviewerQualification": "required; research evidence is not source integration or admission",
+  "sampleGeoJSON": null,
+  "scopeLimits": [
+    "The exact WUP point [15.4685387725559, -90.3799916317207] was preserved in latitude/longitude order and was not shifted.",
+    "The three-feature result is a bounded local sample, not evidence of citywide completeness or countrywide coverage.",
+    "The RIC source is national; no separate local Municipalidad de Cobán registry endpoint was qualified.",
+    "The retained scratch response contains source fields only for qualification and is ignored; no raw source-specific attribute set is retained in cohort artifacts.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS verification disablement was used.",
+    "Packet completion records research only; it is not source integration or runtime admission."
+  ],
+  "uncertainty": "The RIC official Geoportal and live parcel WFS are verified with three polygons near Cobán. Citywide coverage, completeness, update cadence, licensing terms, and adapter behavior remain unqualified. The exact-point result was not used to infer absence."
+}

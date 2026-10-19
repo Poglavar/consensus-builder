@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "scope": "Chinese-language primary-source audit of cadastral parcel data accessibility in Guangzhou, Shenzhen, and Chengdu. Metadata and service-contract evidence only; no parcel geometries, owner attributes, or sample parcel records persisted.",
+  "cities": [
+    {
+      "name": "Guangzhou",
+      "nameZh": "广州",
+      "assessment": "Public cadastral-map lookup is officially documented. The four referenced land-right layers inspected are point geometry, and the tested query endpoint returned HTTP 500; no reusable polygon feed was verified.",
+      "sources": [
+        {
+          "title": "广州不动产登记便利度改革政策一问一答（信息查询编、14条）",
+          "publisher": "广州市规划和自然资源局",
+          "date": "2025-05-27",
+          "url": "https://ghzyj.gz.gov.cn/newyhyshj/ggcx/sjal/content/post_9022462.html",
+          "finding": "The official HTML confirms publication date 2025-05-27. It states any person may query cadastral maps by certificate number or spatial location; includes cadastral district/subdistrict and state/collective land-right information, and says the map is updated every half month. This is public lookup, not proof of bulk polygon download."
+        },
+        {
+          "title": "地籍图查询 (official interactive map)",
+          "publisher": "广东省自然资源厅/天地图·广东, Guangzhou map",
+          "url": "https://guangdong.tianditu.gov.cn/guangzhou/smartgzsky/Map/Djcx",
+          "script": "https://guangdong.tianditu.gov.cn/guangzhou/smartgzsky/Scripts/djcx/djcxjs.js",
+          "finding": "Map script lists four ArcGIS MapService layers for state construction land-use rights, collective land ownership, collective construction land-use rights, and land-right sources. All four layer metadata responses report esriGeometryPoint. A bounded and an unbounded query against the state land-right layer returned HTTP 500 with 查询图层信息失败. These are not parcel polygon features."
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E5%9B%BD%E6%9C%89%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+          "httpStatus": 200,
+          "result": "metadata only; esriGeometryPoint"
+        },
+        {
+          "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E9%9B%86%E4%BD%93%E5%9C%9F%E5%9C%B0%E6%89%80%E6%9C%89%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+          "httpStatus": 200,
+          "result": "metadata only; esriGeometryPoint"
+        },
+        {
+          "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E9%9B%86%E4%BD%93%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+          "httpStatus": 200,
+          "result": "metadata only; esriGeometryPoint"
+        },
+        {
+          "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/QSLY_4490/1e85e146b0728d2fb3a5312c75089400/0?f=pjson",
+          "httpStatus": 200,
+          "result": "metadata only; esriGeometryPoint"
+        },
+        {
+          "url": "https://guangdong.tianditu.gov.cn/guangzhou/ServiceAccess/MapService/%E5%9B%BD%E6%9C%89%E5%BB%BA%E8%AE%BE%E7%94%A8%E5%9C%B0%E4%BD%BF%E7%94%A8%E6%9D%83/1e85e146b0728d2fb3a5312c75089400/0/query",
+          "httpStatus": 500,
+          "result": "bounded and unbounded query requests both failed; no features returned"
+        }
+      ],
+      "boundary": "No current evidence of a public polygon export or anonymously reusable parcel geometry service; absence of other unpublished services is not established."
+    },
+    {
+      "name": "Shenzhen",
+      "nameZh": "深圳",
+      "assessment": "The official page documents a public cadastral viewer and its UI was inspected. Separately, the page-embedded public client flow exposed a nonempty bounded polygon feature query with native IDs and no identity input. This verifies technical sample access, not UI rendering or citywide completeness.",
+      "sources": [
+        {
+          "title": "深圳市规划和自然资源局关于提供地籍图公众查询服务的通告",
+          "publisher": "深圳市规划和自然资源局",
+          "date": "2020-09-16",
+          "url": "https://pnr.sz.gov.cn/xxgk/gggs/content/post_8124136.html",
+          "finding": "Announces public cadastral-map query for Shenzhen excluding the Shenshan Cooperation Zone, including boundary, parcel code, area, use, and location. The notice describes a public viewing/query service, not an open-data download API."
+        },
+        {
+          "title": "地籍图查询 (current official viewer)",
+          "publisher": "深圳市规划和自然资源局",
+          "url": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html",
+          "finding": "Current page displays cadastral overview/legend and query fields for boundaries/codes/area/use/location. It presents an agreement stating personal information will be used for the query; it was left unchecked and no identity-bearing search/submission was performed. The UI identifies CRS CGCS2000 and imprint GS(2024)0568. This records the official page and inspected UI, not a claim that sample parcels rendered in the UI."
+        }
+      ],
+      "observedClientContract": {
+        "configurationScript": "config.js (loaded by the official viewer)",
+        "serviceRoots": [
+          "https://pnr.sz.gov.cn/d-suplicmap/dynamap_1/rest/services/zdgx/MapServer",
+          "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/zdgx/MapServer",
+          "https://pnr.sz.gov.cn/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer"
+        ],
+        "clientBehavior": "main.js sends X-OPENAPI-SubscriptionToken on ArcGIS requests. Its findFeature helper asks layer 0 for an envelope with where=1=1, returnGeometry=true and outFields='*'; its parcel lookup separately calls getBusinessData({q_no,p_parcel_no,p_parcel_code,op_type:1}), then filters by PARCEL_NO or PARCEL_CODE. The public page script contains the opaque token as a static obfuscated client literal; no token-issuance endpoint, login, captcha, or personal-identity input is part of this client flow. Token value was never logged or saved.",
+        "authorizationBoundary": "No personal identity was sent. The UI agreement was not accepted. The bounded map-layer query was sent using only the page’s public client flow and requested non-sensitive native parcel identifiers; whether the UI notice governs direct map-layer requests remains unresolved.",
+        "credentialAcquisition": "Static opaque token delivered in the anonymous page JavaScript; no separate issuance/acquisition call, account, login, captcha, or identity field observed. Token was decoded transiently in process memory only and never printed or persisted."
+      },
+      "attempts": [
+        {
+          "url": "https://pnr.sz.gov.cn/d-suplicmap/dynamap_1/rest/services/zdgx/MapServer?f=pjson",
+          "httpStatus": 403,
+          "result": "metadata request without page client header rejected"
+        },
+        {
+          "url": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/zdgx/MapServer?f=pjson",
+          "httpStatus": 401,
+          "result": "metadata request without page client header rejected"
+        },
+        {
+          "url": "https://pnr.sz.gov.cn/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer?f=pjson",
+          "httpStatus": 403,
+          "result": "metadata request without page client header rejected"
+        },
+        {
+          "url": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0?f=pjson",
+          "httpStatus": 200,
+          "result": "page-embedded public client header accepted; layer 土地权属 is esriGeometryPolygon, WKID 4547, maxRecordCount 1000, capabilities Map/Query/Data, supportsPagination=false. OBJECTID is esriFieldTypeOID although objectIdField and uniqueIdField metadata properties are null. Fields include PARCEL_CODE, PARCEL_NO and LOT_NO."
+        },
+        {
+          "url": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0/query",
+          "httpStatus": 200,
+          "result": "tiny approximately 0.001-degree bbox; only OBJECTID/PARCEL_CODE/PARCEL_NO/LOT_NO requested: 5 polygon features. For each field, sample nonblank=5, unique=5, duplicate=0. CountOnly=5 and returnIdsOnly=5 unique OIDs agreed. Exact OID read returned 5/5. Exact PARCEL_NO and LOT_NO filters each returned 5/5 input keys exactly once; exact PARCEL_CODE filter returned 6 features for 5 distinct sampled values (four values once, one twice), so PARCEL_CODE is not unique in this sample. No geometry was retained."
+        },
+        {
+          "url": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0/query",
+          "httpStatus": 200,
+          "result": "Supplying resultRecordCount caused ArcGIS error “Pagination is not supported” (HTTP status still 200); layer metadata confirms supportsPagination=false. This is not adapter-safe pagination or a citywide completeness proof."
+        }
+      ],
+      "boundary": "Verified bounded spatial query succeeds with only the static key distributed in the public page; no personal identity was sent. The sample establishes five nonempty polygon features with finite coordinates and closed rings, and exact OID/PARCEL_NO/LOT_NO reads return equivalent geometry. PARCEL_CODE duplicated in an exact sample query; PARCEL_NO and LOT_NO are one-to-one only within these five records. supportsPagination=false and a pagination error leave dense-cell/full-city completeness unproven; keep research-only pending an ID-first completeness proof.",
+      "verifiedSample": {
+        "source": "https://pnr.sz.gov.cn:8001/d-suplicmap/dynamap_1/rest/services/LAND_CERTAIN/MapServer/0/query",
+        "request": {
+          "geometry": "114.1000,22.5400,114.1010,22.5410",
+          "geometryType": "esriGeometryEnvelope",
+          "inSR": 4326,
+          "outSR": 4326,
+          "spatialRel": "esriSpatialRelIntersects",
+          "where": "1=1",
+          "outFields": "OBJECTID,PARCEL_CODE,PARCEL_NO,LOT_NO",
+          "returnGeometry": true,
+          "resultRecordCount": "omitted; explicit resultRecordCount is unsupported by this layer"
+        },
+        "bboxRead": {
+          "httpStatus": 200,
+          "featureCount": 5,
+          "geometryType": "esriGeometryPolygon",
+          "finiteCoordinates": true,
+          "closedRings": true,
+          "polygonRingCount": 5,
+          "coordinateCount": 54
+        },
+        "sameBoundsCountAndIdChecks": {
+          "countOnlyHttpStatus": 200,
+          "count": 5,
+          "returnIdsOnlyHttpStatus": 200,
+          "idCount": 5,
+          "uniqueObjectIdCount": 5,
+          "idsEqualFeatureReadObjectIds": true
+        },
+        "exactReadGeometryComparison": {
+          "normalization": "canonical ring order/orientation and round coordinates to nine decimal places; comparison hashes calculated transiently only",
+          "objectIds": {
+            "httpStatus": 200,
+            "features": 5,
+            "idsMatchBboxRead": true,
+            "normalizedGeometryMatchesBbox": true,
+            "finiteCoordinates": true,
+            "closedRings": true
+          },
+          "PARCEL_NO": {
+            "httpStatus": 200,
+            "features": 5,
+            "distinctObjectIds": 5,
+            "idsMatchBboxRead": true,
+            "normalizedGeometryMatchesBbox": true,
+            "finiteCoordinates": true,
+            "closedRings": true
+          },
+          "LOT_NO": {
+            "httpStatus": 200,
+            "features": 5,
+            "distinctObjectIds": 5,
+            "idsMatchBboxRead": true,
+            "normalizedGeometryMatchesBbox": true,
+            "finiteCoordinates": true,
+            "closedRings": true
+          }
+        },
+        "sampleKeyQuality": {
+          "PARCEL_CODE": {
+            "bboxNonblank": 5,
+            "bboxDistinct": 5,
+            "exactMatchFeatureCountForFiveValues": 6,
+            "duplicateFrequencyHistogram": {
+              "one match": 4,
+              "two matches": 1
+            }
+          },
+          "PARCEL_NO": {
+            "bboxNonblank": 5,
+            "bboxDistinct": 5,
+            "exactMatchFeatureCount": 5,
+            "eachValueMatchedOnce": true
+          },
+          "LOT_NO": {
+            "bboxNonblank": 5,
+            "bboxDistinct": 5,
+            "exactMatchFeatureCount": 5,
+            "eachValueMatchedOnce": true
+          }
+        },
+        "rawGeometryAndIdentifierValuesPersisted": false,
+        "geometryHashesPersisted": false
+      }
+    },
+    {
+      "name": "Chengdu",
+      "nameZh": "成都",
+      "assessment": "Internal cadastral/registration database capability is supported by provincial official guidance, but no current Chengdu-specific public parcel polygon source was verified. The Chengdu public map inspected exposes planning/public-facility themes rather than a cadastral layer.",
+      "sources": [
+        {
+          "title": "四川省不动产登记服务指南",
+          "publisher": "四川省自然资源厅",
+          "date": "2024-05-09",
+          "url": "https://dnr.sc.gov.cn/scdnr/sczrzf/2024/5/9/e05c93e3e78c4cc8a0935d0a191690ec/files/%E3%80%8A%E5%9B%9B%E5%B7%9D%E7%9C%81%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0%E6%9C%8D%E5%8A%A1%E6%8C%87%E5%8D%97%E3%80%8B-20240511103718317.pdf",
+          "finding": "Provincial service guidance states registration agencies maintain/update cadastral databases in linkage with real-property registration databases, and the register is organized by parcel. This establishes the official operational data model, not a citywide public endpoint or Chengdu-specific open layer."
+        },
+        {
+          "title": "成都市城市地图 (official city map)",
+          "publisher": "成都市规划和自然资源局 (map portal)",
+          "url": "https://cdmap.cd168.cn/",
+          "finding": "Accessible public map lists civic facilities, boundaries, tourism, planning demonstrations, and construction-project themes; no cadastral parcel layer or parcel-query API was documented in the inspected UI."
+        },
+        {
+          "title": "四川省征地信息公开平台 (provincial natural-resources portal)",
+          "publisher": "四川省自然资源厅",
+          "url": "https://dnr.sc.gov.cn/scdnr/zdxxpt/sc_zdxxgk.shtml",
+          "finding": "Lists Chengdu among municipal natural-resources links and public services such as land acquisition information and land-transfer announcements; these are administrative/planning/transaction records, not a cadastral boundary dataset."
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://mpnr.chengdu.gov.cn/",
+          "httpStatus": 412,
+          "result": "precondition/anti-bot response; inconclusive"
+        },
+        {
+          "url": "https://mpnr.chengdu.gov.cn/bdc",
+          "httpStatus": 412,
+          "result": "precondition/anti-bot response; inconclusive"
+        },
+        {
+          "url": "https://mpnr.chengdu.gov.cn/bdcdjdtx",
+          "httpStatus": 412,
+          "result": "precondition/anti-bot response; inconclusive"
+        },
+        {
+          "url": "https://data.chengdu.gov.cn/",
+          "httpStatus": 0,
+          "result": "DNS resolution failure from this environment; inconclusive"
+        },
+        {
+          "url": "https://sichuan.tianditu.gov.cn/chengdu/public/service.aspx",
+          "httpStatus": 0,
+          "result": "request timed out; inconclusive"
+        }
+      ],
+      "boundary": "Do not treat advertised land-sale/project plots as cadastral parcels: they describe planned or transacted development sites and do not establish current registered parcel boundaries. No anonymous native-ID sample request was possible against a verified Chengdu cadastral service."
+    }
+  ],
+  "reuseTerms": "Terms/copyright statements were recorded as informational only; they were not used as a gate to technical integration. No reuse-license conclusion is made here."
+}

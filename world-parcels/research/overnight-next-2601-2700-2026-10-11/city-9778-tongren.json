@@ -1,0 +1,54 @@
+{
+  "cityCode": 9778,
+  "queueRank": 2644,
+  "country": "China",
+  "countryCode": "CN",
+  "point": [27.7281574098997, 109.18560465885],
+  "population2025": 223404,
+  "population2025k": 223.404,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tongren China cadastral parcel map official GIS; Tongren Guizhou natural resources cadastral map official",
+        "result": "Found the official Tongren Municipal Natural Resources Bureau site and Guizhou provincial first-party information describing the province's public geographic-information platform and natural-resources/information-management responsibilities. No anonymous Tongren parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://zrzy.trs.gov.cn/",
+          "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/dlxxgl/chdlxxtzgg/202201/t20220124_72393608.html",
+          "https://zrzy.guizhou.gov.cn/wzgb/zwgk/zdlyxxgk/dlxxgl/chdlxxdt/202407/t20240710_85083701.html"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "铜仁市 不动产登记 地籍图 官方 GIS；铜仁市自然资源局 官网 不动产登记",
+        "result": "Found and fetched the official 铜仁市自然资源局 site. Its public navigation exposes natural-resources, land-registration and government-service context, but no anonymous cadastral viewer, parcel query, safe parcel identifier, or public geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://zrzy.trs.gov.cn/",
+          "https://www.tongren.gov.cn/",
+          "https://zwfw.guizhou.gov.cn/bmqjd.do?ocode=009550375&areacode=520600"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "sourceAssessment": {
+    "localCustodian": {
+      "name": "铜仁市自然资源局 / Tongren Municipal Natural Resources Bureau",
+      "url": "https://zrzy.trs.gov.cn/",
+      "evidence": "The official site identifies the municipal bureau (site code 5206000036) and provides public natural-resources and government-service navigation. Search results and the bureau's public information describe unified natural-resource and real-estate registration, cadastral investigation and registration-information management responsibilities. This evidences a local registry custodian, not a public parcel API."
+    },
+    "generalAgency": {
+      "name": "贵州省自然资源厅 / Guizhou Provincial Department of Natural Resources",
+      "url": "https://zrzy.guizhou.gov.cn/",
+      "scope": "General provincial surveying/geospatial and natural-resources public-service context. Provincial planning says TianDiTu·Guizhou is a public geographic-information platform and that non-confidential natural-resources results may be shared; this was not evidence of an anonymous parcel layer for Tongren."
+    }
+  },
+  "parcelSource": null,
+  "sample": null,
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "No public anonymous parcel geometry endpoint, schema, CRS, or safe native parcel identity was independently evidenced. Registry existence does not qualify an adapter or establish public citywide parcel coverage."
+  }
+}

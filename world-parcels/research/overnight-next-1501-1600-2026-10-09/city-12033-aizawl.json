@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:12033",
+  "cityCode": 12033,
+  "wupCityCode": 12033,
+  "name": "Aizawl",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "rank": 1595,
+  "queueRank": 1595,
+  "point": [23.7330359417012, 92.7199494866714],
+  "centerLatLon": [23.7330359417012, 92.7199494866714],
+  "pointBasis": "Exact WUP2025 settlement point; not shifted and not a municipal boundary or parcel-coverage claim.",
+  "population2025": 356620,
+  "population2025k": 356.62,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Mizoram Land Revenue & Settlement Department e-ram portal provides land-revenue and settlement applications, and an official Mizoram government address states that the department's integrated GIS-based land-record system (e-ram) launched in Aizawl District. This establishes local/district service custody, not public parcel geometry or ownership evidence.",
+  "registryEvidenceUrls": [
+    "https://eram.mizoram.gov.in/",
+    "https://eram.mizoram.gov.in/pages/about-us",
+    "https://dipr.mizoram.gov.in/post/address-of-the-honourable-governor-of-mizoram-gen-dr-vijay-kumar-singh-pvsm-avsm-ysm-retd-to-the-fourth-session-cum-budget-session-of-the-ninth-legislative-assembly-of-mizoram-on-19th-february-2025-at-the-legislative-assembly-house-aizawl1739948354"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "No safe anonymous native parcel ID plus complete polygon was verified. The public e-ram site exposes service/application pages, while application creation redirects to citizen login; its current JavaScript bundle contains no identified public parcel/map API route. NAKSHA is a national programme portal with login-oriented access and was not a verified Aizawl parcel endpoint. No login, credentials, token, CAPTCHA bypass, or unsafe-field request was used.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Mizoram Land Revenue & Settlement Department e-ram service custody for Aizawl District, official state GIS-land-record description, and national DILRMP/NAKSHA context.",
+    "verifiedOpenScope": "No anonymous complete parcel polygon response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:mizoram.gov.in Aizawl land records cadastral map GIS portal",
+        "scope": "Identify first-party Aizawl/Mizoram land-record custody and a public cadastral/map route.",
+        "result": "Located the official Mizoram government address describing e-ram as an integrated GIS land-record system launched in Aizawl District, and the official e-ram portal. No public anonymous parcel feature response was found.",
+        "actualResultUrls": [
+          "https://dipr.mizoram.gov.in/post/address-of-the-honourable-governor-of-mizoram-gen-dr-vijay-kumar-singh-pvsm-avsm-ysm-retd-to-the-fourth-session-cum-budget-session-of-the-ninth-legislative-assembly-of-mizoram-on-19th-february-2025-at-the-legislative-assembly-house-aizawl1739948354",
+          "https://eram.mizoram.gov.in/",
+          "https://naksha.dolr.gov.in/NakshaPortal/",
+          "https://dolr.gov.in/en/ulpin/"
+        ],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Mizo",
+        "query": "Mizo ram leilung record Aizawl map",
+        "scope": "Independent local-language discovery for a local land-record, cadastral-map, or GIS service.",
+        "result": "Search returned the official e-ram portal and Mizo-language land/terrain map context, but no verified public anonymous Aizawl parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://eram.mizoram.gov.in/",
+          "https://eram.mizoram.gov.in/pages/about-us",
+          "https://silks.csb.gov.in/aizawl/IT/soil-map/"
+        ],
+        "executionMethod": "Separate Mizo-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "first_attempt",
+    "attemptEvidence": []
+  },
+  "remainingUncertainty": "The exact WUP point was not shifted. Public parcel-layer coverage, request shape, native field names, CRS, stable native identity, urban coverage, and citywide completeness remain unverified. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not treated as evidence of citywide parcel absence.",
+  "nextStep": "Serial reviewer should independently validate whether e-ram or another first-party Mizoram service exposes an anonymous safe native parcel-ID-plus-geometry endpoint for Aizawl before any adapter qualification; keep runtime held."
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:147",
+  "queueRank": 147,
+  "name": "Nagpur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    21.1403108339582,
+    79.0798475250127
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Maharashtra Bhu-Naksha (village cadastral map) viewer for state code 27; interactive viewer, no documented anonymous bounded polygon API found."
+    },
+    {
+      "url": "https://hub.arcgis.com/api/v3/search?q=nagpur%20parcel",
+      "observation": "ArcGIS Hub search returned only web maps, lakes and heat layers for Nagpur, no parcel layers."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "after redirects: JS redirect to viewer page"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "viewer page only"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/rest/MapInfo/getVillageMapInfo",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "guessed API path does not exist"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/rest/VillageMapService/ListsVillages?state=27&level=1&codes=",
+      "method": "GET",
+      "httpStatus": 404,
+      "contentType": "text/html",
+      "assessment": "guessed API path does not exist"
+    },
+    {
+      "url": "https://www.nmcnagpur.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://mrsac.maharashtra.gov.in/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "host unreachable (connection failed/timeout via proxy); not evidence of absence"
+    },
+    {
+      "url": "https://hub.arcgis.com/api/v3/search?q=nagpur%20parcel",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no parcel datasets"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra village cadastral maps via viewer",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Bhu-Naksha may have undocumented map-server endpoints behind the viewer; NMC and MRSAC hosts were unreachable. State scope would not imply India-wide coverage.",
+  "nextStep": "Inspect the viewer's network calls for a WMS/WFS backing service and test a bounded Nagpur village query; retry NMC/MRSAC."
+}

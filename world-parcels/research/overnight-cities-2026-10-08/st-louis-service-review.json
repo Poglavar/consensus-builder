@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7051-st-louis.json",
+  "purpose": "Document city-local registry evidence and schema-first anonymous public geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of St. Louis Assessor maintains plat maps for all parcels and publishes current parcel data. Metadata for the public Lots polygon layer was reviewed; the bounded point query requested only OBJECTID and geometry and timed out. The city’s whole-city shapefile was not downloaded, so no geometry sample or point coverage is claimed.",
+  "registryAssessment": "The City of St. Louis Assessor’s Records and Mapping section says it records real-property transfers and maintains assessment plat maps of all parcels. The official city data page publishes a weekly-updated current-parcels shapefile with key field HANDLE; the City also lists an interactive parcel map and an ArcGIS service. This is a city assessment/parcel-mapping source, not verified title or legal-survey geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.stlouis-mo.gov/government/departments/assessor/records-mapping/index.cfm",
+      "observation": "The City of St. Louis Assessor maintains plat maps for all parcels and publishes current parcel data. Metadata for the public Lots polygon layer was reviewed; the bounded point query requested only OBJECTID and geometry and timed out. The city’s whole-city shapefile was not downloaded, so no geometry sample or point coverage is claimed."
+    },
+    {
+      "url": "https://www.stlouis-mo.gov/data/datasets/distribution.cfm?id=179",
+      "observation": "The City of St. Louis Assessor maintains plat maps for all parcels and publishes current parcel data. Metadata for the public Lots polygon layer was reviewed; the bounded point query requested only OBJECTID and geometry and timed out. The city’s whole-city shapefile was not downloaded, so no geometry sample or point coverage is claimed."
+    },
+    {
+      "url": "https://dynamic.stlouis-mo.gov/opendata/downloads.cfm",
+      "observation": "The City of St. Louis Assessor maintains plat maps for all parcels and publishes current parcel data. Metadata for the public Lots polygon layer was reviewed; the bounded point query requested only OBJECTID and geometry and timed out. The city’s whole-city shapefile was not downloaded, so no geometry sample or point coverage is claimed."
+    },
+    {
+      "url": "https://maps8.stlouis-mo.gov/arcgis/rest/services/ASSESSOR/Assessor_Public_Parcels/MapServer/12",
+      "observation": "The City of St. Louis Assessor maintains plat maps for all parcels and publishes current parcel data. Metadata for the public Lots polygon layer was reviewed; the bounded point query requested only OBJECTID and geometry and timed out. The city’s whole-city shapefile was not downloaded, so no geometry sample or point coverage is claimed."
+    },
+    {
+      "url": "https://maps8.stlouis-mo.gov/arcgis/rest/services/ASSESSOR/",
+      "observation": "The City of St. Louis Assessor maintains plat maps for all parcels and publishes current parcel data. Metadata for the public Lots polygon layer was reviewed; the bounded point query requested only OBJECTID and geometry and timed out. The city’s whole-city shapefile was not downloaded, so no geometry sample or point coverage is claimed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "St. Louis Missouri official parcel map GIS parcel boundaries assessor city cadastral data portal",
+      "result": "Official City Assessor material says it maintains assessment plat maps for all parcels. City open-data documentation lists a current-parcels shapefile, key field HANDLE, and an interactive parcel map. The REST layer metadata identifies a Polygon Lots layer and safe query format, but bounded feature request timed out; no geometry was verified.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "English",
+      "query": "City of St. Louis official public parcel dataset map layer HANDLE GIS service",
+      "result": "Official City data lists current parcel data with HANDLE key and weekly update; service metadata describes Polygon geometry. A bounded point-intersection query requested only OBJECTID plus geometry and timed out after 15 seconds.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "English",
+      "query": "St. Louis City assessor parcel maps records mapping citywide parcel GIS official",
+      "result": "Official City records page states assessment plat maps are maintained for all parcels; no geometry response was obtained.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "English",
+      "query": "St. Louis Missouri interactive parcel map current parcels public download GIS official",
+      "result": "City data distribution lists an interactive parcel map and current parcel shapefile (7 MB; key HANDLE; listed update 2026-08-27). No whole-city dataset download was made; the bounded REST query did not complete.",
+      "method": "Separate language-specific search and official source/service review."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "retainedPolygonCount": 0,
+    "reason": "Layer metadata exposes property-record attributes, so the bounded query allowlisted OBJECTID only plus geometry. The official REST query timed out after 15 seconds. The official downloadable current-parcels file is a whole-city shapefile and was not fetched; no full geometry sample is verified."
+  },
+  "coverageAssessment": {
+    "citywideVerified": false,
+    "exactWupPointCoverageVerified": false,
+    "evidence": "Whether the public REST service is available for bounded reads and whether the assessment Lots layer matches legal parcel units or the WUP point remain unverified."
+  },
+  "attempts": [
+    {
+      "source": "https://maps8.stlouis-mo.gov/arcgis/rest/services/ASSESSOR/Assessor_Public_Parcels/MapServer/12",
+      "outcome": "Schema reviewed. A single bounded exact-point public query requested only OBJECTID and geometry; request timed out after 15 seconds. No response geometry was retained.",
+      "fieldsRequested": [
+        "OBJECTID",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false,
+      "httpStatus": null,
+      "error": "Connection timed out after 15 seconds."
+    }
+  ],
+  "remainingUncertainty": "Whether the public REST service is available for bounded reads and whether the assessment Lots layer matches legal parcel units or the WUP point remain unverified.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; no runtime contract or adapter qualification was tested."
+  },
+  "technicalBlocker": "Layer metadata exposes property-record attributes, so the bounded query allowlisted OBJECTID only plus geometry. The official REST query timed out after 15 seconds. The official downloadable current-parcels file is a whole-city shapefile and was not fetched; no full geometry sample is verified."
+}

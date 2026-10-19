@@ -1,0 +1,85 @@
+{
+  "name": "Ganzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 424,
+  "point": [
+    25.8531274996079,
+    114.943958331662
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ganzhou official cadastral parcel map land registry GIS natural resources bureau 赣州 地籍图 不动产登记",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "The official city-map article links a RAR5 archive that an ordinary anonymous HTTPS GET fetched successfully (HTTP 200; 20,223,190 bytes). Its non-extracting archive manifest contains exactly three static JPEG map images (traffic, administrative, and general maps; all dated 2021-11-19), with no GIS/vector files or parcel-feature schema. The city registration guide limits record queries to eligible parties and application channels; no record query was made. No anonymous parcel geometry was returned or retained.",
+        "actualResultUrls": [
+          "https://bnr.ganzhou.gov.cn/",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/37c014fd574640ce8abbce3c0529110b.shtml",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102687/202008/86c0a9a965ab45dbac538bf088cecca2.shtml",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102695/202504/8f4d4e1f3c5d4a6cbc96d917181fb94c.shtml"
+        ],
+        "executionMethod": "Separate English web search followed by direct review of official local pages and anonymous public map/service entry points."
+      },
+      {
+        "language": "Chinese",
+        "query": "赣州市 地籍图 不动产登记 查询 官方 自然资源局 赣州地图",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "The official city-map article links a RAR5 archive that an ordinary anonymous HTTPS GET fetched successfully (HTTP 200; 20,223,190 bytes). Its non-extracting archive manifest contains exactly three static JPEG map images (traffic, administrative, and general maps; all dated 2021-11-19), with no GIS/vector files or parcel-feature schema. The city registration guide limits record queries to eligible parties and application channels; no record query was made. No anonymous parcel geometry was returned or retained.",
+        "actualResultUrls": [
+          "https://bnr.ganzhou.gov.cn/",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102609/202012/37c014fd574640ce8abbce3c0529110b.shtml",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102687/202008/86c0a9a965ab45dbac538bf088cecca2.shtml",
+          "https://bnr.ganzhou.gov.cn/gzzrzy/c102695/202504/8f4d4e1f3c5d4a6cbc96d917181fb94c.shtml"
+        ],
+        "executionMethod": "Separate native-language web search followed by direct review of official local pages and anonymous public map/service entry points."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-11378-PUBLIC-CADASTRE",
+    "name": "Ganzhou city map and Real Estate Registration Center",
+    "url": "https://bnr.ganzhou.gov.cn/",
+    "operator": "Ganzhou Natural Resources Bureau and Ganzhou Real Estate Registration Center",
+    "serviceType": "Official city cartographic map archive (static JPEGs) and real-estate registration center; no anonymous parcel-vector endpoint/schema verified",
+    "layer": "No anonymous parcel feature layer verified",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "No public safe parcel identifier returned",
+    "nativeIdEvidence": "The public map archive contains only three static JPEGs and no parcel-feature schema or safe native parcel-ID field. The registration center confirms local registration operations, but its record-query guide restricts access to eligible parties."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The public map archive contains only three static JPEGs and no parcel-feature schema or safe native parcel-ID field. The registration center confirms local registration operations, but its record-query guide restricts access to eligible parties.",
+    "verifiedOpenScope": "The public map archive contains only three static JPEGs and no parcel-feature schema or safe native parcel-ID field. The registration center confirms local registration operations, but its record-query guide restricts access to eligible parties.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The official Ganzhou Natural Resources Bureau names the Ganzhou Real Estate Registration Center as the receiving unit and provides local registration-record channels; this confirms city-specific registry operations, not public geometry access.",
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The official city-map article links a RAR5 archive that an ordinary anonymous HTTPS GET fetched successfully (HTTP 200; 20,223,190 bytes). Its non-extracting archive manifest contains exactly three static JPEG map images (traffic, administrative, and general maps; all dated 2021-11-19), with no GIS/vector files or parcel-feature schema. The city registration guide limits record queries to eligible parties and application channels; no record query was made. No anonymous parcel geometry was returned or retained.",
+  "remainingUncertainty": "Whether any static map image visually depicts parcel boundaries is not assessed; the archive exposes no vector parcel features, query schema, or point-to-parcel route. No geometry response was obtained.",
+  "nextStep": "Recheck if the official local provider exposes an anonymous safe-ID parcel-vector layer or point-to-feature schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11378,
+  "cityId": "wup2025:11378",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.8531274996079,
+    114.943958331662
+  ],
+  "population2025k": 1216.248,
+  "populationUnit": "persons",
+  "queueRank": 424,
+  "population2025": 1216248,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

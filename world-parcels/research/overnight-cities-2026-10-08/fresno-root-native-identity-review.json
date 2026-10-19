@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:20:11.416032+00:00",
+  "nativeId": "43614106",
+  "nativeIdField": "apn",
+  "fieldCaseNote": "Actual REST layer schema names the string field lowercase apn; the original safe sample labels that same native value APN. Runtime queries use the schema field spelling apn.",
+  "originalSampleMatchesFreshFullGeometry": true,
+  "sourceCoordinatesModified": false,
+  "geometryRetainedInReview": false
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3241-ad-daein.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The national court page documents land-registration procedures and multi-state offices; the national spatial portal describes WMS/WFS. No East Darfur/Ad Da'ein cadastral layer, local office, parcel identifier, or full geometry was verified.",
+  "registryAssessment": "The official Sudan Judiciary describes a national land-registration administration with offices across the states and formal land-registration procedures, but the available official directory material does not identify an Ad Da'ein/East Darfur office. The National Spatial Portal advertises WMS/WFS; its linked portal did not load through the available read-only fetch path and no cadastral layer was confirmed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "observation": "The official Sudan Judiciary describes a national land-registration administration with offices across the states and formal land-registration procedures, but the available official directory material does not identify an Ad Da'ein/East Darfur office. The National Spatial Portal advertises WMS/WFS; its linked portal did not load through the available read-only fetch path and no cadastral layer was confirmed."
+    },
+    {
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "observation": "The official Sudan Judiciary describes a national land-registration administration with offices across the states and formal land-registration procedures, but the available official directory material does not identify an Ad Da'ein/East Darfur office. The National Spatial Portal advertises WMS/WFS; its linked portal did not load through the available read-only fetch path and no cadastral layer was confirmed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Arabic",
+      "query": "الضعين شرق دارفور السجل العقاري الأراضي المساحة خريطة رسمية",
+      "result": "Searches surfaced the official Sudan Judiciary land-registration administration and National Spatial Portal, but not a city-specific Ad Da'ein register or published cadastral layer. The spatial-portal project link was not retrievable through the browser fetch path.",
+      "method": "Separate Arabic search followed by official Sudan Judiciary and NIC page review.",
+      "scope": "Find first-party East Darfur land-registration and cadastral-map evidence."
+    },
+    {
+      "language": "English",
+      "query": "Ad Da'ein East Darfur official land registry cadastral parcel map GIS",
+      "result": "The official Sudan Judiciary says land registration offices operate across Sudan and documents property-specific procedures; it does not name an Ad Da'ein office. The official National Spatial Portal advertises WMS/WFS but no Ad Da'ein parcel layer was identified.",
+      "method": "Separate English search; inspected official national source pages and followed the official portal link.",
+      "scope": "Cross-check local registration office coverage and anonymous vector access."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained. No qualifying complete full polygon at a safely validated native parcel ID was returned.",
+  "coverageAssessment": {
+    "claimedScope": "No city-specific registry or parcel-map extent is claimed. Sudan has a national judiciary land-registration administration and a National Spatial Portal that advertises OGC WMS/WFS services.",
+    "verifiedOpenScope": "The national court page documents land-registration procedures and multi-state offices; the national spatial portal describes WMS/WFS. No East Darfur/Ad Da'ein cadastral layer, local office, parcel identifier, or full geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "method": "GET / official project page review",
+      "observation": "Official NIC page describes the national spatial portal as interactive and compliant with OGC WMS/WFS."
+    },
+    {
+      "url": "https://www.geoportal.gov.sd/",
+      "method": "official project link",
+      "status": "browser_fetch_timeout",
+      "observation": "The web fetch timed out before page content was returned; no origin availability conclusion is drawn."
+    },
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA%20%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "method": "official page review",
+      "observation": "National judiciary explains land-registration procedures and says offices operate throughout Sudan; no local office roster entry was found."
+    }
+  ],
+  "remainingUncertainty": "Whether Ad Da'ein has a currently operating local land-registration office, whether the national WFS includes cadastral parcels, and whether any public anonymous geometry covers the WUP locator."
+}

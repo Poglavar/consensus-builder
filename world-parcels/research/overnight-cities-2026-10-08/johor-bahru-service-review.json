@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2974-johor-bahru.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The City Council of Johor Bahru GeoJB public ArcGIS portal exposes a public item titled LOT KADASTER. Its app configuration names a Lot JUPEM FeatureServer layer and describes the data as the National Digital Cadastral Database provided by JUPEM. A bounded anonymous query at the ranked point returned ArcGIS HTTP 499 Token Required; no token or login was attempted. No full parcel polygons were retained."
+}

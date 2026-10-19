@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1816670",
+  "checkedAt": "2026-09-28",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://english.beijing.gov.cn/government/policytoolkittwo/INV_Policy_Text/202411/t20241127_3951281.html", "observation": "Beijing cadastral-map visualization is offered through an identity-verified real-estate service; this is not an anonymous parcel-list endpoint."},
+    {"url": "https://english.beijing.gov.cn/investinginbeijing/WhyBeijing/Environment/bus_env_policy/bizenv_pr/202006/t20200624_1932128.html", "observation": "Registered parcel maps and information are available through qualified inquiries, including real-estate owners at district registration halls."},
+    {"url": "https://data.beijing.gov.cn/", "observation": "Municipal open-data portal; no open cadastral polygon download was located in this pass."},
+    {"url": "https://beijing.tianditu.gov.cn/", "observation": "Public base-map platform; parcel polygon list not established."}
+  ],
+  "requests": [
+    {"url": "https://data.beijing.gov.cn/", "method": "GET", "httpStatus": null, "error": "DNS resolution failed in direct request; indexed official portal and policy pages inspected", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "Beijing municipal registration-map viewing, subject to identity verification", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "A closed or credentialed cadastral database may cover Beijing, but anonymous polygon retrieval, national coverage, and reuse rights are unverified.",
+  "nextStep": "Search official open-data catalog for a specifically licensed parcel polygon layer, then test a bounded query."
+}

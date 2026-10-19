@@ -1,0 +1,585 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Bounded exact follow-up of material Porto-Novo overlap and invalid polygon examples. Metadata was fetched first; exact feature query requested only boundary geometry, NUP and commune name because no lifecycle/status/version fields were found.",
+  "checkedAt": "2026-10-08T15:42:35.988Z",
+  "describeFeatureType": {
+    "url": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=efb%3Aefb_parcel",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/gml+xml; version=3.2",
+    "responseBytes": 5407,
+    "featureType": "efb:efb_parcel",
+    "fieldCount": 42,
+    "fields": [
+      {
+        "name": "spatial_unit_oid_namespace",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "spatial_unit_oid_local_id",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "level_oid_namespace",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "level_oid_local_id",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "quartier_oid_namespace",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "quartier_oid_local_id",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "arrondissement_oid_namespace",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "arrondissement_oid_local_id",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "commune_oid_namespace",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "commune_oid_local_id",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "departement_oid_namespace",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "departement_oid_local_id",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "nup",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "boundary",
+        "type": "gml:GeometryPropertyType",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "reference_point",
+        "type": "gml:GeometryPropertyType",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "surveyed_area",
+        "type": "xsd:double",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "calculated_area",
+        "type": "xsd:double",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "nature",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "project_parcel_identification",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "local_parcel_identification",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "level_name",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "register_type",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "structure",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "level_type",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "ba_unit_oid_namespace",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "ba_unit_oid_local_id",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "ba_unit_type",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "title_number_commune_name",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "title_number_number",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "shortcoming",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "shortcoming_observations",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "right_type",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "quartier_name",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "quartier_insae_code",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "arrondissement_name",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "arrondissement_insae_code",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "commune_name",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "commune_insae_code",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "departement_name",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "departement_insae_code",
+        "type": "xsd:string",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "party_exists",
+        "type": "xsd:boolean",
+        "minOccurs": "0",
+        "maxOccurs": "1",
+        "nillable": "true"
+      },
+      {
+        "name": "efb_parcel",
+        "type": "efb:efb_parcelType"
+      }
+    ],
+    "lifecycleStatusVersionFieldNames": []
+  },
+  "schemaAssessment": "No schema fields indicate status, version, deletion, creation/update date or lifecycle. Fields such as nature, register_type, shortcoming and right_type are ambiguous domain/rights attributes and were not treated as lifecycle controls or queried.",
+  "exactQuery": {
+    "url": "https://geoserver.andf.bj/geoserver/efb/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=efb%3Aefb_parcel&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=nup&count=20&startIndex=0&propertyName=boundary%2Cnup%2Ccommune_name&cql_filter=nup+IN+%28%27101471738%27%2C%27101472363%27%2C%27101470919%27%2C%27101472338%27%2C%27101468853%27%2C%27100259752%27%2C%27101468110%27%2C%27101468825%27%2C%27101470162%27%2C%27101464713%27%2C%27100260050%27%29",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "responseBytes": 17826,
+    "elapsedMs": 1778,
+    "requestedFields": [
+      "boundary",
+      "nup",
+      "commune_name"
+    ],
+    "requestedNupCount": 11,
+    "numberMatched": 11,
+    "numberReturned": 11,
+    "returnedFeatureCount": 11,
+    "propertySelectionHonored": true
+  },
+  "features": [
+    {
+      "id": "BJ-ANDF-100259752",
+      "nup": "100259752",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "303459863b715652edf5b01a56d8ce07786b7d0350b7504d8cfa587e472f7e92",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.63123849,
+        6.49953766,
+        2.63706236,
+        6.5110453
+      ],
+      "bboxCenterWgs84": [
+        2.6341504249999996,
+        6.50529148
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Ring Self-intersection[459438.275853064 718528.629217354]"
+    },
+    {
+      "id": "BJ-ANDF-100260050",
+      "nup": "100260050",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "ff4e2348598fcbf1b31b263dbeb79c543f4f0ba369a0fd14f62c2da5ffca5c2d",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.63204006,
+        6.50195274,
+        2.63251887,
+        6.50227557
+      ],
+      "bboxCenterWgs84": [
+        2.632279465,
+        6.502114155
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Self-intersection[459350.319587078 718742.49231616]"
+    },
+    {
+      "id": "BJ-ANDF-101464713",
+      "nup": "101464713",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "65a0284c5486c58c3bfa90702978493c0037d058cea6e07485bf005d6f3967ba",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.62364193,
+        6.50027616,
+        2.62392002,
+        6.50048838
+      ],
+      "bboxCenterWgs84": [
+        2.623780975,
+        6.50038227
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Ring Self-intersection[458392.212778029 718544.243678576]"
+    },
+    {
+      "id": "BJ-ANDF-101468110",
+      "nup": "101468110",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "0a324c54e589a5ba8a4dbb2be1e383205d3ee076d39377a58180ae7be27cfdd9",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.62267775,
+        6.49742781,
+        2.62320516,
+        6.49807456
+      ],
+      "bboxCenterWgs84": [
+        2.622941455,
+        6.497751185
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Self-intersection[458281.088553615 718220.542933265]"
+    },
+    {
+      "id": "BJ-ANDF-101468825",
+      "nup": "101468825",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "85a1e49772b7aa9b48c910b3535b60b23cca611e49c8efa380260ed76de15a39",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.63354145,
+        6.49683707,
+        2.63369798,
+        6.4969664
+      ],
+      "bboxCenterWgs84": [
+        2.633619715,
+        6.496901735
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Self-intersection[459497.443086671 718149.674982826]"
+    },
+    {
+      "id": "BJ-ANDF-101468853",
+      "nup": "101468853",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "c1db753d662cd9233474ef80bebee11090fb4c10691d49d8884f1379c65d9342",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.6324045,
+        6.49748498,
+        2.63262393,
+        6.4977365
+      ],
+      "bboxCenterWgs84": [
+        2.6325142149999996,
+        6.497610740000001
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Ring Self-intersection[459375.790968128 718218.889937099]"
+    },
+    {
+      "id": "BJ-ANDF-101470162",
+      "nup": "101470162",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "4be95bd9f27b24adc60052846c504f2e1d6b95c2b64652efe48edfa62aa887de",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.63309174,
+        6.49054231,
+        2.63334709,
+        6.49080781
+      ],
+      "bboxCenterWgs84": [
+        2.633219415,
+        6.49067506
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Ring Self-intersection[459433.591863533 717468.847322105]"
+    },
+    {
+      "id": "BJ-ANDF-101470919",
+      "nup": "101470919",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "4721fd6ed3482560d691ff032ff63d12af37e618da560169fd7ad485f976ec64",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.62663398,
+        6.49255429,
+        2.62694981,
+        6.49288445
+      ],
+      "bboxCenterWgs84": [
+        2.626791895,
+        6.49271937
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Self-intersection[458741.921807071 717669.377219543]"
+    },
+    {
+      "id": "BJ-ANDF-101471738",
+      "nup": "101471738",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "16dfd0dad1e6b420eab2b880ccd4c3c6c7397c0baa737f44c3b610ce7b44c67f",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.62623656,
+        6.49229576,
+        2.63743717,
+        6.50075902
+      ],
+      "bboxCenterWgs84": [
+        2.6318368650000004,
+        6.496527390000001
+      ],
+      "previousShapelyInvalid": false
+    },
+    {
+      "id": "BJ-ANDF-101472338",
+      "nup": "101472338",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "70d15124fb1a75d2ae9f54838eed898c0c086c9e34203fe894b77ed98ac2057a",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.62836756,
+        6.49647629,
+        2.62893948,
+        6.49670087
+      ],
+      "bboxCenterWgs84": [
+        2.6286535200000003,
+        6.49658858
+      ],
+      "previousShapelyInvalid": true,
+      "previousInvalidityReason": "Ring Self-intersection[458966.184159512 718108.177789649]"
+    },
+    {
+      "id": "BJ-ANDF-101472363",
+      "nup": "101472363",
+      "communeName": "PORTO-NOVO",
+      "geometryType": "Polygon",
+      "geometrySha256": "5d64f62852e8de55121af0cf8cc5f930feeb7efac768c8b4734bb6a976ce843b",
+      "hashMatchesCachedSample": true,
+      "bboxWgs84": [
+        2.6265058,
+        6.49229576,
+        2.63743717,
+        6.49838874
+      ],
+      "bboxCenterWgs84": [
+        2.631971485,
+        6.49534225
+      ],
+      "previousShapelyInvalid": false
+    }
+  ],
+  "spatialFindings": {
+    "worstOverlapPair": {
+      "ids": [
+        "BJ-ANDF-101471738",
+        "BJ-ANDF-101472363"
+      ],
+      "previousIntersectionAreaM2": 25095.381866474923,
+      "previousRatioOfSmallerParcel": 0.9891096318232002,
+      "hashesMatchCachedSample": true,
+      "intersectionShareOfLargerParcel": 0.7119912444975168,
+      "smallerOutsideLargerParcelM2": 276.3070333867181,
+      "largerOutsideSmallerParcelM2": 10151.374410964734,
+      "symmetricDifferenceAreaM2": 10427.681444351008,
+      "hausdorffDistanceM": 262.6544548307881,
+      "currentExactGeometryHashes": {
+        "BJ-ANDF-101471738": "16dfd0dad1e6b420eab2b880ccd4c3c6c7397c0baa737f44c3b610ce7b44c67f",
+        "BJ-ANDF-101472363": "5d64f62852e8de55121af0cf8cc5f930feeb7efac768c8b4734bb6a976ce843b"
+      },
+      "currentExactBboxesWgs84": {
+        "BJ-ANDF-101471738": [
+          2.62623656,
+          6.49229576,
+          2.63743717,
+          6.50075902
+        ],
+        "BJ-ANDF-101472363": [
+          2.6265058,
+          6.49229576,
+          2.63743717,
+          6.49838874
+        ]
+      },
+      "metricRelationSource": "Recomputed from the projected EPSG:32631 safe sample geometries after exact-WFS hashes matched the cached sample."
+    },
+    "invalidExampleCount": 9,
+    "allRequestedIdsReturned": true
+  },
+  "limitation": "The source exposes no lifecycle/status/version field to explain or filter the overlap or invalid rings. Exact features are current and unchanged only where hashMatchesCachedSample is true; no geometry repair or arbitrary row dropping was performed."
+}

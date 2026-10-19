@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7000-adama.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Adama City Administration pages identify the Land Office and list cadastral mapping, registration and parcel-management services. INSA documents a citywide land digitization project with security-by-design. No public safe vector service/schema was exposed; no authenticated land lookup was attempted.",
+  "registryAssessment": "Adama City Administration’s official eLand identifies the Land Office and states digital land services for registration, transfer and information access. The city’s eService lists cadastral-map preparation, digital registration/mapping and parcel split/merge services. INSA reports a 2026 Adama Land Digital Transformation and Digital Address project designed with security-by-design. These sources establish a city land registry and digital workflows, but no anonymous public parcel-geometry endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://eland.adamacity.gov.et/",
+      "observation": "Official Adama eLand page identifies the city Land Office and digital land registration, transfer and information services."
+    },
+    {
+      "url": "https://eservice.adamacity.gov.et/gada/welcome",
+      "observation": "Official Adama City eService lists surveying and cadastral map preparation, digital registration/mapping and parcel split/merge service workflows."
+    },
+    {
+      "url": "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today.",
+      "observation": "INSA report of 10 June 2026 describes the Adama Land Digital Transformation and Digital Address project and states security-by-design for land/citizen information."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Adama Ethiopia official land registry cadastral GIS parcel map city land office",
+      "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+      "result": "Official Adama City Administration pages identify the Land Office and list cadastral mapping, registration and parcel-management services. INSA documents a citywide land digitization project with security-by-design. No public safe vector service/schema was exposed; no authenticated land lookup was attempted.",
+      "actualResultUrls": [
+        "https://eland.adamacity.gov.et/",
+        "https://eservice.adamacity.gov.et/gada/welcome",
+        "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today."
+      ],
+      "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+    },
+    {
+      "language": "Amharic",
+      "query": "Adama Adaamaa ኦሮሚያ የመሬት ምዝገባ ካዳስተር ካርታ ከተማ መሬት ጽ/ቤት",
+      "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+      "result": "Official Adama City Administration pages identify the Land Office and list cadastral mapping, registration and parcel-management services. INSA documents a citywide land digitization project with security-by-design. No public safe vector service/schema was exposed; no authenticated land lookup was attempted.",
+      "actualResultUrls": [
+        "https://eland.adamacity.gov.et/",
+        "https://eservice.adamacity.gov.et/gada/welcome",
+        "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today."
+      ],
+      "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement point and reviewed official sources only.",
+    "limits": "No complete citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://eland.adamacity.gov.et/",
+      "method": "Official public page/service inspection",
+      "result": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint."
+    },
+    {
+      "url": "https://eservice.adamacity.gov.et/gada/welcome",
+      "method": "Official public page/service inspection",
+      "result": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint."
+    },
+    {
+      "url": "https://insa.gov.et/blog/Information-Network-Security-Administration-%28INSA%29-has-officially-handed-over-a-developed-3D-map-of-Adama-City-today.",
+      "method": "Official public page/service inspection",
+      "result": "Reviewed official city landing pages/service listings and the INSA project announcement. The e-service requires an application workflow; no login, identity, owner or parcel lookup was used. Static route/service descriptions revealed no anonymous parcel vector endpoint."
+    }
+  ],
+  "remainingUncertainty": "No anonymous safe-feature response was verified; broader source availability and exact locator coverage remain unresolved."
+}

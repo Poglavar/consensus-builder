@@ -1,0 +1,70 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:169",
+ "queueRank": 169,
+ "name": "Brahmanbaria",
+ "country": "Bangladesh",
+ "countryCode": "BD",
+ "centerLatLon": [
+  24.0465867356083,
+  90.9800651402632
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "no_verified_open_endpoint_after_attempts",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [
+  {
+   "url": "https://settlement.gov.bd/",
+   "observation": "DLRS portal whose Khatian/Map selector endpoints (same ones that yielded a Dhaka sample, see dhaka.json) respond anonymously."
+  },
+  {
+   "url": "https://map.land.gov.bd/",
+   "observation": "Smart Bhumi Naksha land-zoning portal; landing page HTML only, no queryable parcel endpoint found."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise (divid iterated over Map/GetDivisionList)",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "district Brahmanbaria found: unitcod 040800000, comcod 4116"
+  },
+  {
+   "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise (districtid=040800000, comcod=4116)",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "one survey listed: rsnum 235255 BDS (Bangladesh Digital Survey), status ongoing"
+  },
+  {
+   "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap (comcod=4116, rsno1=235255, districtid=040800000; parameter variants tried)",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "empty list [] for all three variants; no upazila/mouza/sheet available, so no parcel GeoJSON could be requested"
+  },
+  {
+   "url": "https://map.land.gov.bd/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "landing page only"
+  },
+  {
+   "url": "https://lmap.minland.gov.bd/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "BDS survey for Brahmanbaria district is listed as ongoing but exposes no sheets",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "The BDS sheet endpoint that works for Dhaka (BDS 201901) exposed no thana/mouza for Brahmanbaria; sheets may be added as the survey proceeds or other survey editions (CS/RS/SA) may exist under different codes. Reuse terms unknown.",
+ "nextStep": "Re-test GetThanaListBySurveyMap periodically; probe other survey types/comcod values for district 040800000."
+}

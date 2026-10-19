@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-11381-maheshkhunt.json",
+  "cityCode": 11381,
+  "queueRank": 2008,
+  "name": "Maheshkhunt",
+  "country": "India",
+  "countryCode": "IN",
+  "reviewedAt": "2026-10-10",
+  "attempt": 1,
+  "serviceStatus": "held",
+  "registryFound": true,
+  "registryCustodian": "Directorate of Land Records & Survey, Government of Bihar / Department of Revenue and Land Reforms, Government of Bihar",
+  "queryAndRequestOutcome": "English and Hindi first-party discovery found the official Bihar Bhu-Naksha cadastral viewer. Its current JavaScript/configuration was followed to REST level discovery and map-extent routes. The Khagaria / Gogri / Mahesh Khunt hierarchy resolved successfully; a bounded anonymous plot lookup returned a native ID and plot number, but no parcel polygon. A WMS GetFeatureInfo attempt returned HTTP 500 and the scalar plot-detail route returned HTTP 401. No credentials or login flow was attempted.",
+  "scopeLimits": [
+    "The verified local registry/map scope is Mahesh Khunt mauza within the Bihar cadastral viewer; it does not establish countrywide coverage.",
+    "A returned map extent and one plot ID do not prove complete citywide parcel coverage.",
+    "The exact WUP point [25.4398169405081, 86.6449392699432] was preserved and was not shifted or used as a parcel-absence test.",
+    "The WMS error and authorization wall are access limitations, not evidence of cadastral absence.",
+    "No GeoJSON sample is retained because no safe native parcel identity plus full polygon geometry was verified."
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier", "parcel polygon geometry", "source CRS", "non-personal source layer metadata"],
+  "sourceSpecificFields": "Observed route fields were state, giscode, x/y, and plot number; no raw source attribute set was retained. The returned native identity was k4ZkyGu4SUqdwwEbbsTFBQ with plot number 78.",
+  "compositeKeyProvenance": "Bhu-Naksha hierarchy: state=10, district=21, subdivision=02, circle=06, mauza=0182, survey type=CS, map instance=06, sheet=00; GIS code returned by the service: CS21020601822970600.",
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "qualification": "Not qualified for runtime integration or admission; a serial reviewer must independently qualify any future adapter.",
+  "uncertainty": "The official workflow may expose parcel geometry only via session-bound detail calls or alternate map requests. No owner, address, contact, titleholder, tax/account, personal, or other unsafe fields were requested.",
+  "status": "complete"
+}

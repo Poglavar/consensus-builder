@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-06",
+  "bbox": [
+    58.565,
+    23.5925,
+    58.5675,
+    23.595
+  ],
+  "comparisons": [
+    {
+      "key": "153646~46",
+      "rows": 2,
+      "metrics": [
+        {
+          "originalOverlapM2": 0.0000061945188443860225,
+          "roundedOverlapM2": 6.168087114695722e-8
+        }
+      ]
+    }
+  ],
+  "error": {
+    "message": "Parcel provider components could not form a valid complete parcel.",
+    "cause": "Parcel components overlap."
+  }
+}

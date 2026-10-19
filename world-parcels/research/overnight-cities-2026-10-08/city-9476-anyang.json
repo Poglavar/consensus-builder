@@ -1,0 +1,106 @@
+{
+  "name": "Anyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 341,
+  "point": [
+    36.0982635239834,
+    114.346334984298
+  ],
+  "population2025": 1489112,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local registration/land-record evidence was found, but no anonymous public parcel polygon was verified for this locator. No full geometry or owner/address data is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Anyang municipal procurement information identifies a city Real Estate Transaction and Registration Center. This confirms a local registration authority, not public access to parcel geometry.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "No city-specific parcel vector service was exposed by the inspected official public map viewer. Public geometry remains unverified.",
+  "remainingUncertainty": "Whether a separate authenticated or non-public cadastral interface exists, and whether any untraced public layer covers the WUP locator.",
+  "nextStep": "If needed, ask the municipal registry or Natural Resources and Planning Bureau for an open parcel-data service or public query interface; do not infer geometry from the city basemap.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Anyang China official cadastral parcel map land registry GIS 自然资源和规划局 地籍图 不动产登记",
+        "result": "Official Anyang Tianditu map is operated by the city Natural Resources and Planning Bureau and advertises public basemap and thematic services, but the inspected service list does not identify cadastral parcels. Official city procurement results identify the Anyang Real Estate Transaction and Registration Center. No parcel geometry endpoint was traced.",
+        "method": "Separate English-language web search; official map and municipal procurement pages reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "安阳市 自然资源和规划局 地籍图 查询 不动产登记 官方",
+        "result": "安阳自然资源和规划部门运营的天地图页面列出矢量、影像、地形、地名及公共专题服务；未见地籍宗地服务。市级采购信息确认安阳市不动产交易登记中心。没有验证到公开宗地几何接口。",
+        "method": "Separate Chinese-language web search; official map and city procurement pages reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "安阳市 不动产登记中心 地籍图 安阳政务服务 官方",
+        "result": "官方市级采购来源确认安阳市不动产交易登记中心；没有找到开放的宗地几何服务。",
+        "method": "Separate Chinese-language focused search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://henan.tianditu.gov.cn/anyang/",
+        "observation": "Official Anyang Tianditu public map operated by Anyang Natural Resources and Planning Bureau; listed content is general basemap/thematic mapping, not cadastral parcels."
+      },
+      {
+        "url": "https://henan.tianditu.gov.cn/anyang/contact.html",
+        "observation": "Official map contact page identifies the Anyang Natural Resources and Planning Bureau as owner/operator."
+      },
+      {
+        "url": "https://anyang.zfcg.henan.gov.cn/anyang/",
+        "observation": "Official procurement portal results identify a municipal Anyang Real Estate Transaction and Registration Center."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Static HTML, map page, configuration and main JavaScript bundle for the official Anyang Tianditu viewer were inspected. The viewer config contains a public embedded map API credential; its value was excluded from retained notes. The inspected bundle/config exposes basemap/thematic map behavior and no parcel/cadastral layer or feature-query endpoint. No geometry query was sent.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no safe anonymous full-vector geometry query",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://henan.tianditu.gov.cn/anyang/",
+    "https://henan.tianditu.gov.cn/anyang/contact.html",
+    "https://anyang.zfcg.henan.gov.cn/anyang/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Anyang municipal procurement information identifies a city Real Estate Transaction and Registration Center. This confirms a local registration authority, not public access to parcel geometry.",
+    "verifiedOpenScope": "No city-specific parcel vector service was exposed by the inspected official public map viewer. Public geometry remains unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Anyang local registry/map evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://henan.tianditu.gov.cn/anyang/",
+    "scope": "Official Anyang municipal procurement information identifies a city Real Estate Transaction and Registration Center. This confirms a local registration authority, not public access to parcel geometry."
+  },
+  "wupCityCode": 9476,
+  "cityId": "wup2025:9476",
+  "queueRank": 341,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    36.0982635239834,
+    114.346334984298
+  ],
+  "rootReviewedAt": "2026-10-08T22:44:29.461431+00:00"
+}

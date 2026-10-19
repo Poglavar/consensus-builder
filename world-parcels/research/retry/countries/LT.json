@@ -1,0 +1,108 @@
+{
+ "kind": "country",
+ "key": "LT",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: lt-LT,lt;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "lt-inspire-cp-wfs",
+  "requestUrl": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json&bbox=54.687,25.279,54.690,25.284,urn:ogc:def:crs:EPSG::4258",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   25.279,
+   54.687,
+   25.284,
+   54.69
+  ],
+  "regionSampled": "Vilnius",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "nationalcadastralreference",
+  "responseFile": "research/retry/countries/LT-parcel-response.json",
+  "pagination": "WFS count/startIndex",
+  "secondRegionRequestUrl": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json&bbox=55.700,21.130,55.703,21.135,urn:ogc:def:crs:EPSG::4258",
+  "secondRegionSampled": "Klaipeda area (55.700,21.130,55.703,21.135)",
+  "secondRegionRecordCount": 3
+ },
+ "source": {
+  "sourceId": "lt-inspire-cp-wfs",
+  "name": "INSPIRE Cadastral Parcels (CP.CadastralParcel) WFS",
+  "operator": "SE Centre of Registers (data provider), published on inspire-geoportal.lt",
+  "scope": "national (INSPIRE dataset, Lithuania)",
+  "endpoint": "https://www.inspire-geoportal.lt/geoserver/cp/ows",
+  "method": "GET WFS 2.0.0",
+  "responseFormat": "application/json (GeoJSON)",
+  "crs": "EPSG:4258 (lat,lon axis order in bbox)",
+  "reuseStatus": "Metadata says free for non-commercial use, non-commercial use only (WMS capabilities Fees/AccessConstraints); full licence not read"
+ },
+ "requests": [
+  {
+   "url": "https://www.geoportal.lt/map/",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "Nuxt/ArcGIS JS viewer; JS shows /mapproxy/ gateway (all /mapproxy/* paths 401 for anonymous requests, even nonexistent ones) and no public token found"
+  },
+  {
+   "url": "https://www.geoportal.lt/mapproxy/nzt_kadastras?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": "401",
+   "contentType": "text/html",
+   "assessment": "blanket 401 on /mapproxy/ (recheck with headers, unchanged)"
+  },
+  {
+   "url": "https://www.inspire-geoportal.lt/geonetwork/srv/api/records/05505413-1916-47cd-911d-42852b09b1c6/formatters/xml",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/xml",
+   "assessment": "INSPIRE CP metadata: links to WMS, ATOM download, GeoServer"
+  },
+  {
+   "url": "https://www.inspire-geoportal.lt/geoserver/cp/wms?service=WMS&version=1.3.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/xml",
+   "assessment": "layers CP.CadastralParcel, CP.CadastralZoning; Fees: free for non commercial use"
+  },
+  {
+   "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/xml",
+   "assessment": "feature types cp:CP.CadastralParcel, cp:CP.CadastralZoning"
+  },
+  {
+   "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json&bbox=54.687,25.279,54.690,25.284,urn:ogc:def:crs:EPSG::4258",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "3 closed Polygon parcels, Vilnius, attributes are cadastral refs/area/use, no owner data"
+  },
+  {
+   "url": "https://www.inspire-geoportal.lt/geoserver/cp/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CP.CadastralParcel&count=3&outputFormat=application/json&bbox=55.700,21.130,55.703,21.135,urn:ogc:def:crs:EPSG::4258",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "3 Polygon parcels, Klaipeda area, same schema"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: previously guessed geoportal.lt/mapproxy paths were 401; the real open service found via the INSPIRE metadata record (geonetwork) is the inspire-geoportal.lt GeoServer. Headers not needed. Two distinct regions sampled from one schema; description field is generic (use purpose).",
+ "nextStep": "Read the full licence (non-commercial); check completeness of coverage and update cadence (versionid 2026-09-01).",
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE cadastral parcels for Lithuania",
+  "regionsVerified": [
+   "Vilnius",
+   "Klaipeda area"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open (non-commercial use per metadata)"
+}

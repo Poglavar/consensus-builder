@@ -1,0 +1,314 @@
+{
+  "schemaVersion": 1,
+  "attempted": [
+    {
+      "rank": 2701,
+      "cityCode": 11226,
+      "name": "Nanchang",
+      "country": "China",
+      "iso2": "CN",
+      "pop2025k": 219.219,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/nanchang.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2714,
+      "cityCode": 4146,
+      "name": "Halifax",
+      "country": "Canada",
+      "iso2": "CA",
+      "pop2025k": 218.091,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/CA/NS.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2720,
+      "cityCode": 42,
+      "name": "Reykjavík",
+      "country": "Iceland",
+      "iso2": "IS",
+      "pop2025k": 217.616,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/europe/IS.json",
+          "cityId": "capital:IS:reykjavik",
+          "cityName": "Reykjavik",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/europe/IS.json",
+              "note": "Explicit Reykjavik-area parcel sample."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 4.91
+        }
+      ],
+      "resolvedPriorMatches": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/europe/IS.json",
+          "cityId": "capital:IS:reykjavik",
+          "cityName": "Reykjavik",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/europe/IS.json",
+              "note": "Explicit Reykjavik-area parcel sample."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 4.91
+        }
+      ],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "decisionFile": "root-identity-decision-overlay.json",
+        "reviewedAt": "2026-10-11T18:12:39.002Z"
+      }
+    },
+    {
+      "rank": 2730,
+      "cityCode": 326,
+      "name": "Viangchan (Vientiane)",
+      "country": "Lao People's Democratic Republic",
+      "iso2": "LA",
+      "pop2025k": 216.305,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/world-capitals-2026-10-08/city-vientiane.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2735,
+      "cityCode": 2162,
+      "name": "Tours",
+      "country": "France",
+      "iso2": "FR",
+      "pop2025k": 215.625,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2162/city-2162-provider-2162.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/2162/provider-2162-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2742,
+      "cityCode": 1158,
+      "name": "Haarlem",
+      "country": "Netherlands",
+      "iso2": "NL",
+      "pop2025k": 215.404,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/1158/city-1158-provider-1158.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/1158/provider-1158-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2749,
+      "cityCode": 3855,
+      "name": "Lenasia",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "pop2025k": 214.77,
+      "plausibility": "High",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3855/city-3855-provider-3855.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/provider-expansion/cities/3855/provider-3855-service-review.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2751,
+      "cityCode": 698,
+      "name": "Prishtina (Pristina)",
+      "country": "Kosovo (under UNSC res. 1244)",
+      "iso2": "XK",
+      "pop2025k": 214.721,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/retry/countries/XK.json",
+          "cityId": "capital:XK:pristina",
+          "cityName": "Pristina",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/retry/countries/XK.json",
+              "note": "Explicit Pristina bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 1.16
+        }
+      ],
+      "resolvedPriorMatches": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/retry/countries/XK.json",
+          "cityId": "capital:XK:pristina",
+          "cityName": "Pristina",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/retry/countries/XK.json",
+              "note": "Explicit Pristina bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 1.16
+        }
+      ],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "decisionFile": "root-identity-decision-overlay.json",
+        "reviewedAt": "2026-10-11T18:12:39.002Z"
+      }
+    },
+    {
+      "rank": 2796,
+      "cityCode": 2564,
+      "name": "Narus",
+      "country": "South Sudan",
+      "iso2": "SS",
+      "pop2025k": 212.131,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-narus.json",
+          "cityId": "wup2025:2564",
+          "cityName": "Narus",
+          "parcelStatus": "temporarily_unavailable",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-2564.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-narus.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 2799,
+      "cityCode": 10737,
+      "name": "Darauli",
+      "country": "India",
+      "iso2": "IN",
+      "pop2025k": 211.985,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-followup-2026-10-08/bihar-city-10737-darauli.json",
+          "cityId": "wup2025:10737",
+          "cityName": "Darauli",
+          "parcelStatus": "no_verified_sample_candidate_citywide",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/growth-top20-2026-10-07/city-10737.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-followup-2026-10-08/bihar-city-10737-darauli.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    }
+  ],
+  "identityReviewRequired": []
+}

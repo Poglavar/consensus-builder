@@ -1,0 +1,98 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "NO",
+ "country": "Norway",
+ "checkedAt": "2026-09-29",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "Kartverket (Norwegian Mapping Authority), Matrikkelen - Eiendomskart Teig, distributed via Geonorge",
+ "portalsFound": [
+  {
+   "url": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig",
+   "observation": "Open national WFS 2.0 (GML 3.2.1 only; application/json rejected), feature type app:Teig, native CRS EPSG:25833"
+  },
+  {
+   "url": "https://nedlasting.geonorge.no/api/capabilities/",
+   "observation": "Geonorge download API for Eiendomskart Teig (bulk/by-municipality)"
+  },
+  {
+   "url": "https://kartkatalog.geonorge.no/api/search?text=matrikkelen%20eiendomskart",
+   "observation": "Geonorge catalogue listing the datasets"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kartkatalog.geonorge.no/api/search?text=matrikkelen%20eiendomskart&limit=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "catalogue lists Eiendomskart Teig WFS/download"
+  },
+  {
+   "url": "https://wfs.geonorge.no/skwms1/wfs.matrikkelkart?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/vnd.ogc.se_xml",
+   "assessment": "guessed service name unknown (ServiceException)"
+  },
+  {
+   "url": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?service=WFS&version=2.0.0&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "capabilities OK"
+  },
+  {
+   "url": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?service=WFS&version=2.0.0&request=GetFeature&typeNames=app:Teig&count=3&outputFormat=application/json&bbox=59.9120,10.7370,59.9135,10.7395,urn:ogc:def:crs:EPSG::4326",
+   "method": "GET",
+   "httpStatus": 400,
+   "contentType": "application/xml",
+   "assessment": "JSON output not supported; use default GML"
+  },
+  {
+   "url": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?service=WFS&version=2.0.0&request=GetFeature&typeNames=app:Teig&count=3&bbox=59.9120,10.7370,59.9135,10.7395,urn:ogc:def:crs:EPSG::4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml; subtype=gml/3.2.1",
+   "assessment": "3 app:Teig members with gml:Polygon exterior rings, Oslo; attributes include kommunenummer, gardsnummer, bruksnummer, teigareal; no owner names saved"
+  },
+  {
+   "url": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?service=WFS&version=2.0.0&request=GetFeature&typeNames=app:Teig&count=3&bbox=69.6490,18.9550,69.6500,18.9570,urn:ogc:def:crs:EPSG::4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml; subtype=gml/3.2.1",
+   "assessment": "3 app:Teig members, Tromso (Troms)"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "no-kartverket-eiendomskart-teig",
+  "requestUrl": "https://wfs.geonorge.no/skwms1/wfs.matrikkelen-eiendomskart-teig?service=WFS&version=2.0.0&request=GetFeature&typeNames=app:Teig&count=3&bbox=59.9120,10.7370,59.9135,10.7395,urn:ogc:def:crs:EPSG::4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml; subtype=gml/3.2.1;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   10.737,
+   59.912,
+   10.7395,
+   59.9135
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/app:Teig",
+  "geometryType": "Polygon (gml:Polygon, EPSG:25833)",
+  "closedRings": true,
+  "idField": "app:teigId (gml:id teig.N)",
+  "responseFile": "countries/NO-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex",
+  "regionSampled": "Oslo; second sample Tromso (3 members)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "Norway-wide property parcels (teiger) from Matrikkelen",
+  "regionsVerified": [
+   "Oslo",
+   "Tromso"
+  ],
+  "nationwideVerified": true
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Licence not read (Geonorge data usually NLOD/CC BY, unverified here). GML only. Boundary quality varies (Teig is the map representation, not legal boundary certainty).",
+ "nextStep": "Read Geonorge licence; test bulk download API."
+}

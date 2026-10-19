@@ -1,0 +1,124 @@
+{
+  "name": "Vasai-Virar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 323,
+  "point": [
+    19.4195217096162,
+    72.8285661691412
+  ],
+  "population2025": 1542177,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Vasai-Virar City Municipal Corporation's official Marathi property-tax page links to a local Property Mapping service, while its corporate map page identifies the corporation. The linked mapping route opens a citizen RTS service that requires registration/login and does not expose an anonymous cadastral download. Maharashtra's official BhuNaksha is an additional statewide map-with-land-records service, but no city parcel sample was verified.",
+  "resultCategory": "city_registry_or_public_viewer_documented_no_public_vector_geometry_verified",
+  "technicalBlocker": "The state BhuNaksha landing page is described by official search-index content as an interactive state/category/district/taluka/village/parcel selector, but its web-reader open reports a redirect loop and direct anonymous HTTPS requests to index.jsp and index.html timed out before any HTTP response. No locality API, cookie/redirect route, or vector service was exposed.",
+  "remainingUncertainty": "Whether an anonymous session can reach the city-survey or locality selectors in BhuNaksha from another network, and whether the viewer serves safe public vector geometry rather than only record-level maps/cards. Direct network transport failed before the redirects/cookies could be observed.",
+  "nextStep": "Inspect the official municipal property-mapping service and Maharashtra BhuNaksha through a public map session without logging in or selecting a person's record; retain only a bounded geometry-only reply if the viewer documents an anonymous vector route.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Vasai Virar Maharashtra official land records city survey GIS cadastral map municipal property map parcel",
+        "result": "Search found the corporation's official property-tax page linking to a Property Mapping service and the state land-records portal listing Mahabhunakasha (maps with land records). Neither search results nor opened pages exposed a city-level anonymous vector endpoint.",
+        "urls": [
+          "https://vvcmc.in/online-property-tax/",
+          "https://bhumiabhilekh.maharashtra.gov.in/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"
+        ],
+        "method": "Separate English web search and official public-page review."
+      },
+      {
+        "language": "Marathi",
+        "query": "वसई विरार अधिकृत भूलेख सिटी सर्वे नकाशा जमिनीचे अभिलेख GIS वसई विरार महानगरपालिका",
+        "result": "वसई विरार महानगरपालिकेच्या अधिकृत मराठी करपृष्ठावर 'Property Mapping' सेवा दिली आहे. त्याचा दुवा नागरिक नोंदणी/लॉगिन असलेल्या RTS पोर्टलवर जातो. महाराष्ट्राच्या अधिकृत भूमिअभिलेख पोर्टलवर महाभूनकाशा व मालमत्ता पत्रिका सेवा सूचीबद्ध आहेत; शहरासाठी खुली मशीन-वाचनीय बहुभुज सेवा आढळली नाही.",
+        "urls": [
+          "https://vvcmc.in/online-property-tax/",
+          "https://onlinevvcmc.in/APP/FrmUserPropUpdate.aspx",
+          "https://bhumiabhilekh.maharashtra.gov.in/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"
+        ],
+        "method": "Separate Marathi web search and official corporation/state-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://vvcmc.in/online-property-tax/",
+        "method": "GET via web reader",
+        "observation": "HTTP 200 official Vasai-Virar City Municipal Corporation page, Marathi text; lines 233–253 list municipal property-tax services and link Property Mapping to onlinevvcmc.in.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://onlinevvcmc.in/APP/FrmUserPropUpdate.aspx",
+        "method": "GET via web reader following the official Property Mapping link",
+        "observation": "HTTP 200 RTS page states citizen must register, submit supporting documents and pay certificate charges; it is a transactional property-services page, not a public parcel API.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/",
+        "method": "GET via web search result",
+        "observation": "Official Maharashtra land-records portal lists free/paid land services, BhuNaksha maps, property cards and city-survey-number search; no anonymous city vector endpoint identified.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+        "method": "GET via official state map portal search result",
+        "observation": "Interactive BhuNaksha map landing page presents State/Category/District/Taluka/Village and parcel-number selectors; direct web fetch redirected in a loop. No parcel was selected and no geometry was requested.",
+        "httpStatus": null,
+        "contentType": "unknown"
+      }
+    ],
+    "portals": [
+      {
+        "name": "VVCMC Property Mapping / RTS portal",
+        "operator": "Vasai-Virar City Municipal Corporation",
+        "url": "https://vvcmc.in/online-property-tax/",
+        "observation": "Official corporation page links Property Mapping, but the route lands on a citizen RTS property service with required registration/login. No parcel polygons were requested."
+      },
+      {
+        "name": "Mahabhunakasha",
+        "operator": "Maharashtra Department of Land Records",
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+        "observation": "Statewide interactive maps-with-land-records viewer; the opened landing page requires administrative and parcel selection and provides no confirmed city-wide vector endpoint."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The official BhuNaksha landing page is indexed with state/category/district/taluka/village and parcel-number selectors; web-reader open reports a redirect loop. Two direct HTTPS requests (index.jsp and index.html) timed out before HTTP response, preventing cookie and redirect tracing. No locality/parcel number was selected and no geometry requested.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "outcome": "No anonymous parcel geometry query was made because no bounded public vector endpoint was identified."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 7917,
+  "cityId": "wup2025:7917",
+  "queueRank": 323,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    19.4195217096162,
+    72.8285661691412
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:34:01.071695+00:00"
+}

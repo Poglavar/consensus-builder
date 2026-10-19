@@ -1,0 +1,72 @@
+[
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "TI",
+  "regionName": "TI",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "UR",
+  "regionName": "UR",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "VS",
+  "regionName": "VS",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "ZG",
+  "regionName": "ZG",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "JU",
+  "regionName": "JU (gated: free up to 10 ha, contract and fee above)",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "LU",
+  "regionName": "LU (gated: area-based fees, contract)",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "NE",
+  "regionName": "NE (gated: contract; cantonal coverage flag false)",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "NW",
+  "regionName": "NW (gated: contract)",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "OW",
+  "regionName": "OW (gated: release required)",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ },
+ {
+  "iso2": "CH",
+  "country": "Switzerland",
+  "regionCode": "VD",
+  "regionName": "VD (gated: release required)",
+  "hints": "All via the national geodienste.ch open AV WFS https://geodienste.ch/db/av_0/deu (feature type ms:RESF, EPSG:2056; capabilities list FILTER_ALLOWED_CANTONS). For each open canton run one bounded GetFeature (count=3) in its capital and mark verified_region_wide; for the gated cantons confirm the 0-feature/denied behaviour and record the stated condition. Also note each canton's own geoportal if the WFS fails (e.g. map.geo.gr.ch, geo.ti.ch, map.geo.vs.ch)."
+ }
+]

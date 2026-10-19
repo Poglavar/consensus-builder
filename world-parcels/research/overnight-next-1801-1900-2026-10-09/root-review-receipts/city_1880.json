@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1880",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-1880-karaganda.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/karaganda-service-review.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md"
+  ],
+  "checkedAt": "2026-10-10T16:22:59Z",
+  "reviewNotes": "WUP identity and English/Kazakh-Russian search records checked. Saved AIS GZK viewer configuration advertises a MapServer route, whose saved response is 404. No native-ID polygon response or admission gates evidenced; route failure is not absence.",
+  "admissionGate": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed Details-panel verification. No runtime or coverage admission."
+}

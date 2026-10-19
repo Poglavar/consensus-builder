@@ -1,0 +1,13 @@
+{
+  "taskId": "city:981",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-981-urgench.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/urgench-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T01:55:20.228846Z",
+  "reason": "Immutable WUP roster and queue match Urgench, code 981, rank 2222, Uzbekistan, point [41.5533629942387, 60.6174767379248], and 262377 persons. English and Uzbek Latin searches are recorded. Official Chamber directory identifies its Xorazm regional department in Urganch; custody is supported. The geoportal timed out and the urban-cadastre route returned 403; neither establishes absence. No anonymous native-ID polygon, source binding, or independent adapter/Details qualification exists. Held without runtime admission.",
+  "admission": "held; no runtime/catalog/report change"
+}

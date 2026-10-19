@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11089-gaya.json",
+  "purpose": "Document city-local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Gaya district land-records page points users to Bihar land-record services, and the Bihar BhuNaksha public map exposes the district/subdivision/circle/mauza/survey hierarchy. This confirms local records and parcel-map indexing for Gaya, but not anonymous full-vector access. The official BhuNaksha client exposes parcel maps as WMS imagery and plot selection/detail routes, but no public full-geometry vector endpoint was identified. WMS tiles and plot-detail routes were not queried for parcel records.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gaya.nic.in/service/land-records/",
+      "observation": "Official Gaya district land-records page provides the local government land-record service entry point."
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "observation": "Official Bihar Revenue Department portal links revenue land records and cadastral map services."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "httpStatus": 200,
+      "observation": "Public Bihar BhuNaksha map shell has district, subdivision, circle, mauza and survey/map selectors. Client JavaScript uses WMS imagery and plot-selection/detail routes; no full geometry response was requested or returned."
+    }
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Gaya Bihar official land records cadastral parcel map BhuNaksha Gaya district"
+    },
+    {
+      "language": "Hindi",
+      "query": "गया बिहार भू नक्शा खसरा खतियान जमीन का नक्शा आधिकारिक"
+    }
+  ],
+  "attempts": []
+}

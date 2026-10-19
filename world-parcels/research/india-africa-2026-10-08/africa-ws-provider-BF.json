@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "BF",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "name": "DGI Burkina Faso digitization program",
+    "operator": "Direction Générale des Impôts, Burkina Faso",
+    "scope": "Seven Ouagadougou arrondissements reported in digitization work as of 2023",
+    "endpoint": "https://dgi.bf/informatisation-du-cadastre-national-les-plans-cadastraux-de-07-arrondissements-de-ouagadougou-en-cours-de-numerisation/",
+    "geometry": "No public feature endpoint surfaced",
+    "access": "Official report describes digitization of plans; no bounded polygon service sampled.",
+    "assessment": "City program lead, not open parcel feed."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "French (Latin)",
+      "exactQueries": [
+        "\"Bata\" Guinea Ecuatorial catastro parcelas geoportal SIG",
+        "\"Akakopé\" Togo cadastre parcelles géoportail SIG",
+        "\"Saint-Louis\" Sénégal \"parcelles cadastrales\" cadastre SIG",
+        "\"Dakar\" Sénégal \"parcelles cadastrales\" géoportail cadastre",
+        "\"Abidjan\" \"parcelles cadastrales\" géoportail SIG Côte d'Ivoire cadastre",
+        "\"Ouagadougou\" \"parcelles cadastrales\" géoportail SIG cadastre Burkina Faso",
+        "\"Siguiri\" \"cadastre\" parcelles SIG Guinée portail géographique",
+        "\"Coyah\" \"cadastre\" parcelles SIG Guinée Conakry"
+      ],
+      "checkedAt": "2026-10-08",
+      "resultUrls": [],
+      "assessment": "Queries executed; searches did not by themselves verify target polygon geometry."
+    }
+  ],
+  "requests": [],
+  "limitations": "These observations only support the named scope and cannot establish countrywide absence or coverage."
+}

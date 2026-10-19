@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 102,
+  "city": "Medan",
+  "countryCode": "ID",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/medan.json",
+  "query": {
+    "language": "Indonesian",
+    "script": "Latin",
+    "text": "Medan peta bidang tanah kadaster ATR BPN Sumatera Utara layanan peta resmi"
+  },
+  "results": [
+    {
+      "title": "BHUMI ATR/BPN",
+      "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+      "kind": "official-national-land-map-viewer",
+      "note": "National land/spatial map portal documents parcel identification and public map access; official guidance says formal reference use requires public-information request. Medan coverage and vector export remain unverified."
+    },
+    {
+      "title": "SI-POLA Medan",
+      "url": "https://bappeda.medan.go.id/sipola/index.html",
+      "kind": "official-city-planning-viewer",
+      "note": "City portal describes spatial planning and administrative boundaries; it does not list cadastral parcels as a confirmed layer."
+    }
+  ],
+  "assessment": "National land-map and city planning portals surfaced, but this search does not prove open Medan cadastral geometry or a stable public query contract.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:1806",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Indonesian",
+    "queryScript": "Latin",
+    "nativeQuery": "Medan peta bidang tanah kadaster ATR BPN Sumatera Utara layanan peta resmi",
+    "englishQuery": "Medan parcel map, cadastral records and official ATR/BPN map services",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

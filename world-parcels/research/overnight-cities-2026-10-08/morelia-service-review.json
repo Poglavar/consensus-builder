@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4343-morelia.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Morelia’s official municipal Geoportal describes municipal official cartography and interactive territorial services. Its public GeoServer WFS advertises `gcm:Predio`; schema identifies `clave_catastro` and polygon `geom`. Exact WUP point query returned no features; a bounded nearby WGS84 box returned 487 matched and 3 complete parcels at the requested COUNT=3. These three complete native-CRS polygons are evidence of nearby public geometry only.",
+  "registryAssessment": "Morelia’s official municipal Geoportal describes municipal official cartography and interactive territorial services. Its public GeoServer WFS advertises `gcm:Predio`; schema identifies `clave_catastro` and polygon `geom`. Exact WUP point query returned no features; a bounded nearby WGS84 box returned 487 matched and 3 complete parcels at the requested COUNT=3. These three complete native-CRS polygons are evidence of nearby public geometry only.",
+  "officialPrimarySources": [
+    {
+      "url": "https://morelia.gob.mx/",
+      "observation": "Official H. Ayuntamiento portal links to the city Geoportal and municipal map services."
+    },
+    {
+      "url": "https://morelia.gob.mx/blogs/6a3c27690ad979e1826f12c3",
+      "observation": "Official municipal June 2026 release describes Geoportal Morelia as an interactive cartographic viewer and current territorial-information platform."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/",
+      "observation": "Official Morelia Geoportal shell returned HTTP 200; it links the city GeoServer endpoint."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+      "observation": "HTTP 200 WFS 2.0 capabilities advertise `gcm:Predio`, title “Predios Catastro”, default CRS EPSG:6369."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeName=gcm%3APredio",
+      "observation": "HTTP 200 schema exposes `clave_catastro` and polygon-capable `geom`; only those two properties were requested."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/geoserver/wfs",
+      "observation": "HTTP 200 exact-point query returned zero; a nearby 0.004° box query returned 487 matched, with three full polygons requested and retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Spanish",
+      "query": "Morelia catastro municipal mapa predial cartografía catastral sitio oficial",
+      "result": "Official municipal portal, Geoportal and public WFS were reviewed. Exact WUP point returned zero; nearby bounded box returned three full polygons with safe cadastral keys.",
+      "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+      "urls": [
+        "https://morelia.gob.mx/",
+        "https://morelia.gob.mx/blogs/6a3c27690ad979e1826f12c3",
+        "https://geoportalmorelia.gob.mx/",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeName=gcm%3APredio",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "site:morelia.gob.mx catastro geográfico predial mapa",
+      "result": "Official municipal 2026 release describes Geoportal Morelia; the public WFS exposes cadastral parcel geometry.",
+      "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+      "urls": [
+        "https://morelia.gob.mx/",
+        "https://morelia.gob.mx/blogs/6a3c27690ad979e1826f12c3",
+        "https://geoportalmorelia.gob.mx/",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeName=gcm%3APredio",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Morelia cadastral parcels GIS official municipal cadastre map",
+      "result": "Official city Geoportal and WFS were inspected; only three nearby features were retained.",
+      "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+      "urls": [
+        "https://morelia.gob.mx/",
+        "https://morelia.gob.mx/blogs/6a3c27690ad979e1826f12c3",
+        "https://geoportalmorelia.gob.mx/",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeName=gcm%3APredio",
+        "https://geoportalmorelia.gob.mx/geoserver/wfs"
+      ]
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://morelia.gob.mx/",
+      "method": "GET official city portal",
+      "result": "HTTP 200 / search-indexed official municipal page links Geoportal and territorial-data services."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/",
+      "method": "GET official Geoportal shell",
+      "result": "HTTP 200; public application configuration identifies GeoServer."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+      "method": "GET WFS GetCapabilities",
+      "result": "HTTP 200; public layer `gcm:Predio` titled Predios Catastro; EPSG:6369."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/geoserver/wfs?service=WFS&request=DescribeFeatureType&version=2.0.0&typeName=gcm%3APredio",
+      "method": "GET WFS DescribeFeatureType",
+      "result": "HTTP 200; only safe fields `clave_catastro` and `geom` requested."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/geoserver/wfs",
+      "method": "GET WFS exact point Intersects filter",
+      "result": "HTTP 200; 0 features at unchanged WUP point."
+    },
+    {
+      "url": "https://geoportalmorelia.gob.mx/geoserver/wfs",
+      "method": "GET WFS bounded box Intersects filter",
+      "result": "HTTP 200; 487 matched, three returned via COUNT=3; all three full polygon geometries retained with source EPSG:6369 unchanged."
+    }
+  ],
+  "geometryEvidence": "Exact WUP point at [19.7059510700371, -101.199806215388] returned 0. Nearby query bounds were WGS84 lat 19.7039510700371–19.7079510700371 and lon -101.201806215388–-101.197806215388 (0.004° total span), transformed only for the service filter. WFS reported numberMatched=487 and numberReturned=3 with COUNT=3. The retained three complete polygons keep source EPSG:6369 coordinates and only `clave_catastro` plus geometry. No citywide claim.",
+  "privacy": {
+    "ownerOrAddressDataRequested": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokensRequested": false,
+    "credentialsOrTokensRetained": false,
+    "notes": "No owner, address, tax/account, or credential values were queried or retained. Morelia requests used only the safe cadastral key and full geometry."
+  },
+  "runtimeAssessment": {
+    "status": "source_verified_review_required",
+    "reason": "Nearby source geometry is verified only within the limited bounding box; exact point returned zero and root qualification is pending."
+  },
+  "geometryDisposition": "Exact WUP point at [19.7059510700371, -101.199806215388] returned 0. Nearby query bounds were WGS84 lat 19.7039510700371–19.7079510700371 and lon -101.201806215388–-101.197806215388 (0.004° total span), transformed only for the service filter. WFS reported numberMatched=487 and numberReturned=3 with COUNT=3. The retained three complete polygons keep source EPSG:6369 coordinates and only `clave_catastro` plus geometry. No citywide claim."
+}

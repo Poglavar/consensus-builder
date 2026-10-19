@@ -1,0 +1,49 @@
+{
+  "cityCode": 5028,
+  "queueRank": 2282,
+  "name": "Wakayama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "point": [34.2318015550311, 135.170036605849],
+  "population2025": 255782,
+  "population2025k": 255.782,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wakayama City official cadastral parcel map GIS",
+        "result": "Found the official Wakayama City map portal and official city cadastral-survey page. The portal catalog was inspected; it does not advertise a parcel/cadastral layer.",
+        "actualResultUrls": [
+          "https://www2.wagmap.jp/wakayamacity/Portal",
+          "https://www.city.wakayama.wakayama.jp/kurashi/douro_kouen_machi/1007741/1005148/1002195.html"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "和歌山市 公式 地番図 公図 GIS 筆界 地籍図",
+        "result": "Found the official Wakayama City map portal, cadastral-survey office/page, and Wakayama Legal Affairs Bureau map-making information. The city portal exposes public thematic maps but no parcel polygon layer in its current catalog.",
+        "actualResultUrls": [
+          "https://www2.wagmap.jp/wakayamacity/Portal",
+          "https://www.city.wakayama.wakayama.jp/shisei/1009417/soshiki/1002618/1002645/1007622.html",
+          "https://houmukyoku.moj.go.jp/wakayama/page000001_00500.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Wakayama City and Wakayama District Legal Affairs Bureau are evidenced as local custodians for city mapping/cadastral survey and legal-affairs map-making procedures.",
+    "parcelAvailability": "No public parcel/cadastral polygon dataset or parcel query layer was evidenced in the current anonymous city portal catalog.",
+    "urls": [
+      "https://www2.wagmap.jp/wakayamacity/Portal",
+      "https://www.city.wakayama.wakayama.jp/kurashi/douro_kouen_machi/1007741/1005148/1002195.html",
+      "https://houmukyoku.moj.go.jp/wakayama/page000001_00500.html"
+    ]
+  },
+  "serviceReview": "wakayama-service-review.json",
+  "sampleGeojson": null,
+  "runtimeReadiness": "held_serial_review_no_verified_public_parcel_geometry",
+  "researchNote": "Exact WUP point was preserved and was not shifted. Zero parcel hits are not asserted; the available city map was a thematic/planning map without a parcel layer."
+}

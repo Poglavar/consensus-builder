@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9182-changzhi.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "First-party city bureau responsibilities and service-documentation sources confirm municipal registry functions. Public map results did not provide a safe geometry-only parcel service.",
+  "registryAssessment": "Official Changzhi Natural Resources and Planning Bureau materials state local land/real-estate registration responsibilities and publish registration service procedures. This verifies city registry context but not open parcel geometry coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.changzhi.gov.cn/xxgkml/zfxxgkml/szfgzbm/sgtzyj/czsrmzf/zzjg_204/zyzz_205/202205/t20220531_2540105.shtml",
+      "observation": "Official Changzhi Natural Resources and Planning Bureau materials state local land/real-estate registration responsibilities and publish registration service procedures. This verifies city registry context but not open parcel geometry coverage."
+    },
+    {
+      "url": "https://www.changzhi.gov.cn/xxgkml/zfxxgkml/czsrmzf/gzdt_3400/tzgggs/202207/P020220708329966505348.pdf",
+      "observation": "Official Changzhi Natural Resources and Planning Bureau materials state local land/real-estate registration responsibilities and publish registration service procedures. This verifies city registry context but not open parcel geometry coverage."
+    },
+    {
+      "url": "https://www.changzhi.gov.cn/xwzx/jrzz/202410/t20241014_2970040.shtml",
+      "observation": "Official Changzhi Natural Resources and Planning Bureau materials state local land/real-estate registration responsibilities and publish registration service procedures. This verifies city registry context but not open parcel geometry coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Changzhi China official real estate registration cadastral map GIS",
+      "result": "Official city bureau materials describe registration functions; no public safe parcel feature service located.",
+      "method": "English-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "长治市 不动产登记 地籍图 GIS 自然资源和规划局 官方",
+      "result": "长治市自然资源和规划部门公开职责和登记服务材料；未找到可安全访问的宗地几何服务。",
+      "method": "Local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying public geometry-only sample was available.",
+  "coverageAssessment": {
+    "claimedScope": "Official Changzhi Natural Resources and Planning Bureau materials state local land/real-estate registration responsibilities and publish registration service procedures. This verifies city registry context but not open parcel geometry coverage.",
+    "verifiedOpenScope": "No citywide coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "kind": "static-source-and-route-review",
+      "httpStatus": "not asserted",
+      "result": "Official source pages and public map/service references reviewed. No public geometry request was sent because a safe feature endpoint and geometry/identifier schema were not verified."
+    }
+  ],
+  "remainingUncertainty": "Public parcel map availability and coverage at the WUP point remain unknown."
+}

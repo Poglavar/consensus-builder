@@ -1,0 +1,26 @@
+{
+ "country": "Republic of Moldova",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "ASP / Cadastre (cadastru.md)",
+ "inspireRecordUrl": null,
+ "portalsFound": [],
+ "requests": [],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "regionsSampled": [],
+ "geoBlockSuspected": true,
+ "accessModel": "unknown",
+ "notes": "cadastru.md (with and without www, /ro/geoportal) returns an explicit 'content not available in your region/country' page with HTTP 200 (geo-block); geoportal.md, geoportal.gov.md, gis.cadastru.md, geoportal.cadastru.md unreachable; asp.gov.md loads but offers no geoportal link. The EU INSPIRE geoportal search API now redirects (301) to data.europa.eu; the country is not an EU/EFTA INSPIRE member so no obliged CP service was expected.",
+ "remainingUncertainty": "No polygon reply obtained; hosts unreachable/blocked from this network.",
+ "nextStep": "Retry from a regional network; inspect viewer JS there.",
+ "schemaVersion": 1,
+ "countryCode": "MD",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/html,application/xml;q=0.9,*/*;q=0.8; Accept-Language: local-language,en (cookie jar; Referer https://geoportal.asig.gov.al/)"
+}

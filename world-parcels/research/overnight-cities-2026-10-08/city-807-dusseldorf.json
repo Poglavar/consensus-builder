@@ -1,0 +1,145 @@
+{
+  "name": "Düsseldorf",
+  "country": "Germany",
+  "countryCode": "DE",
+  "rank": 570,
+  "point": [
+    51.2180376209965,
+    6.78255471417581
+  ],
+  "population2025": 907386,
+  "populationUnit": "persons",
+  "population2025k": 907.386,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Düsseldorf Vermessungs- und Katasteramt maintains the city cadastral/Geoportal services; the city Geoportal describes over 120,000 searchable Flurstücke and the NRW ALKIS WFS returns a parcel polygon covering the ranked point.",
+  "registryEvidenceUrls": [
+    "https://www.duesseldorf.de/geoportal/",
+    "https://www.duesseldorf.de/geoportal/faq"
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis",
+    "httpStatus": 200,
+    "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+    "featureType": "cp:CadastralParcel",
+    "nativeCrs": "EPSG:25832",
+    "responseCount": 1,
+    "responseNumberMatched": "unknown",
+    "requestLimit": 3,
+    "requestFilter": "WFS 2.0.0 BBOX (2 m × 2 m envelope centered on WUP coordinate) 345140.447,5676407.464,345142.447,5676409.464 in EPSG:25832",
+    "requestedFields": [
+      "geometry",
+      "nationalCadastralReference"
+    ],
+    "safeFieldsRetained": [
+      "gml:id",
+      "nationalCadastralReference",
+      "geometry"
+    ],
+    "featureIds": [
+      "CadastralParcel_05346600300840______"
+    ],
+    "nationalCadastralReference": "05346600300840______",
+    "wupPointContained": true,
+    "sampleGeometryFile": "samples/dusseldorf-alkis-wup570.geojson",
+    "sampleSha256": "c2dedac6b9433daf91e4e1f19233a3d1af386623fdf5007fc9df563e25d4da57",
+    "limitations": "One parcel at the WUP point only; no citywide completeness claim. Server response included non-owner standard fields beyond the requested propertyName; only the safe parcel IDs and geometry were retained."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Düsseldorf ALKIS WFS Geobasis NRW Flurstücke polygon WFS official",
+        "scope": "Find a public official parcel layer, safe native parcel identifier, and exact coverage at Düsseldorf’s ranked point.",
+        "result": "The City of Düsseldorf Geoportal and Geoshop document the municipal cadastral office and parcel mapping. Geobasis NRW publishes the INSPIRE CadastralParcel WFS in EPSG:25832. A bounded 2 m envelope around the ranked point returned one Polygon carrying nationalCadastralReference; GEOS confirms it covers the point.",
+        "actualResultUrls": [
+          "https://www.duesseldorf.de/geoportal/",
+          "https://geoshop.duesseldorf.de/produkte/liegenschaftskataster/amtliche_flurkarte.html",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis"
+        ],
+        "executionMethod": "Separate English search, official city map/catalog pages, WFS capabilities/schema inspection, and one anonymous geometry query capped at three features."
+      },
+      {
+        "language": "German",
+        "query": "Düsseldorf offizielle ALKIS Flurstücke WFS Geoportal Katasterkarte",
+        "scope": "Das kommunale Liegenschaftskataster und den anonym nutzbaren Flurstücksdienst am Rangpunkt prüfen.",
+        "result": "Das Geoportal Düsseldorf und der GeoShop beschreiben das Liegenschaftskataster und Flurstücke. Der offizielle NRW-WFS „cp:CadastralParcel“ verwendet EPSG:25832. Eine begrenzte 2-m-Abfrage am WUP-Punkt lieferte ein gültiges Polygon, das den Punkt enthält; gespeichert wurden nur Geometrie und Flurstücksreferenz.",
+        "actualResultUrls": [
+          "https://www.duesseldorf.de/geoportal/",
+          "https://www.duesseldorf.de/geoportal/faq",
+          "https://geoshop.duesseldorf.de/",
+          "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis"
+        ],
+        "executionMethod": "Getrennte deutschsprachige Recherche, Prüfung offizieller Stadtseiten und WFS-Metadaten sowie eine anonyme, begrenzte Abfrage."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "de-nrw-lika-flurstueck",
+    "name": "Geobasis NRW ALKIS parcels",
+    "operator": "Geobasis NRW / Bezirksregierung Köln",
+    "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+    "serviceType": "ogc-api",
+    "layer": null,
+    "geometryType": "Polygon/MultiPolygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "flstkennz",
+    "scope": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "identityBasis": "Fresh bounded adapter qualification uses the publisher native cadastral key, preserving complete geometry and separate transport IDs."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Düsseldorf Vermessungs- und Katasteramt maintains the city cadastral/Geoportal services; the city Geoportal describes over 120,000 searchable Flurstücke and the NRW ALKIS WFS returns a parcel polygon covering the ranked point.",
+    "verifiedOpenScope": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Long-term persistence of provider identifiers and citywide completeness are not established.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 807,
+  "cityId": "wup2025:807",
+  "centerLatLon": [
+    51.2180376209965,
+    6.78255471417581
+  ],
+  "queueRank": 570,
+  "sourceIds": [
+    "de-nrw-lika-flurstueck"
+  ],
+  "runtimeReadiness": "enabled",
+  "appCityId": "dusseldorf",
+  "scopeLimits": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/dusseldorf-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "de-nrw-lika-flurstueck",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T01:41:16.717862+00:00",
+  "discoverySource": {
+    "sourceId": "DE-807-GEOBASIS-NRW-INSPIRE-CP",
+    "name": "Geobasis NRW INSPIRE Cadastral Parcels WFS",
+    "url": "https://www.wfs.nrw.de/geobasis/wfs_nw_inspire-flurstuecke_alkis",
+    "operator": "Geobasis NRW / Land North Rhine-Westphalia; Düsseldorf city survey and cadastral office provides local geoportal",
+    "serviceType": "Public WFS 2.0.0 polygon feature service for INSPIRE cadastral parcels",
+    "layer": "cp:CadastralParcel",
+    "geometryType": "Polygon",
+    "outputCrs": "Native EPSG:25832 (ETRS89 / UTM zone 32N); retained sample transformed to OGC:CRS84",
+    "nativeIdField": "nationalCadastralReference; gml:id",
+    "nativeIdEvidence": "DescribeFeatureType exposes geometry, inspireId, label and nationalCadastralReference; the feature response returned nationalCadastralReference=05346600300840______ and gml:id=CadastralParcel_05346600300840______. Owner fields are not in the advertised CadastralParcel schema.",
+    "scope": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+  }
+}

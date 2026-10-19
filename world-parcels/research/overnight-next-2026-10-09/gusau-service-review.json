@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7148-gusau.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The first-party Zamfara registration guideline explicitly identifies ZAGIS and Gusau registration jurisdiction. Current public ZAGIS pages advertise portal/archive applications; inspection of their public scripts and configuration did not verify a parcel-vector route in this pass.",
+  "registryAssessment": "The first-party Zamfara registration guideline explicitly identifies ZAGIS and Gusau registration jurisdiction. Current public ZAGIS pages advertise portal/archive applications; inspection of their public scripts and configuration did not verify a parcel-vector route in this pass.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zagis.org/",
+      "operator": "Zamfara Geographic Information System",
+      "scope": "Official state GIS portal; land/title services require login or registration, not attempted."
+    },
+    {
+      "url": "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf",
+      "operator": "Zamfara State Government",
+      "scope": "Official residential-property registration guidelines identify Gusau registration zone and list survey/title/identity documents required from applicants."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Gusau official cadastral parcel map GIS Zamfara land registry",
+      "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+      "actualResultUrls": [
+        "https://zagis.org/",
+        "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf"
+      ],
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Hausa",
+      "query": "Gusau Hausa taswirar fili rajistar ƙasa cadastral map Zamfara",
+      "result": "Official state land agency and Gusau-zone registration guidance found; anonymous geometry not established.",
+      "actualResultUrls": [
+        "https://zagis.org/",
+        "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf"
+      ],
+      "method": "Separate Hausa-language discovery followed by first-party source review.",
+      "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The first-party Zamfara registration guideline explicitly identifies ZAGIS and Gusau registration jurisdiction. Current public ZAGIS pages advertise portal/archive applications; inspection of their public scripts and configuration did not verify a parcel-vector route in this pass.",
+    "verifiedOpenScope": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel geometry with stable native IDs was verified within the reviewed discovery scope. Institutional documents and UI login pages do not establish geometry absence; continued first-party service discovery remains open.",
+  "nextStep": "Continue viewer configuration, public advertised service and API discovery; verify full native polygons and retrieval completeness before city admission.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:46:31.498552+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:46:31.498552+00:00",
+    "decision": "Paired discovery, exact roster identity and actual primary institutional evidence reviewed. Public geometry remains unverified in this bounded pass.",
+    "custodyScope": "The first-party Zamfara registration guideline explicitly identifies ZAGIS and Gusau registration jurisdiction. Current public ZAGIS pages advertise portal/archive applications; inspection of their public scripts and configuration did not verify a parcel-vector route in this pass.",
+    "source": "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf",
+    "rootNetworkEvidence": "root-primary-four-recheck.json",
+    "uiLoginOrTransportFailureNotAbsence": true,
+    "legalTitleTermsNotEligibilityGates": true,
+    "noCitywideAbsenceClaim": true,
+    "additionalPrimaryEvidence": "gusau-root-guidelines-check.json"
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 7148,
+      "stage": "zagis-home",
+      "url": "https://zagis.org/",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 254061,
+      "sha256": "cbe6791d7048bc7f966d5fd495318fee845f1f1f1ece2c316499ea885dc03ee4",
+      "checkedAt": "2026-10-09T09:40:30.473491+00:00",
+      "executionContext": "require_escalated public network",
+      "scriptUrls": [
+        "https://img1.wsimg.com/blobby/go/89100a79-1078-41fa-b14b-bfc86e0ce88e/gpub/18bab2dd0dfdd51b/script.js",
+        "https://img1.wsimg.com/ceph-p3-01/website-builder-data-prod/static/widgets/UX.7.3.0.js",
+        "https://img1.wsimg.com/blobby/go/89100a79-1078-41fa-b14b-bfc86e0ce88e/gpub/615764ebca9dc29/script.js",
+        "https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js"
+      ],
+      "advertisedMapOrPortalLinks": [
+        "https://zagis.org/f.atom",
+        "https://zagis.org/f.json",
+        "https://zagis.org/f.rss",
+        "https://zagis.org/",
+        "https://archive.zagis.org/login",
+        "https://portal.zagis.org"
+      ],
+      "publicMapLibraryTokens": []
+    },
+    {
+      "wupCityCode": 7148,
+      "stage": "zagis-login",
+      "url": "https://portal.zagis.org/login",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 21600,
+      "sha256": "6bc6ecea8b6fc73d0c2dcd0ceca4277f91fce975eb3f9ebb01feb5bb47d5e798",
+      "checkedAt": "2026-10-09T09:40:30.868517+00:00",
+      "executionContext": "require_escalated public network",
+      "scriptUrls": [
+        "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js",
+        "https://cdn.jsdelivr.net/npm/sweetalert2@11",
+        "https://portal.zagis.org/js/jquery1-3.4.1.min.js"
+      ],
+      "advertisedMapOrPortalLinks": [],
+      "publicMapLibraryTokens": []
+    },
+    {
+      "wupCityCode": 7148,
+      "stage": "state-land-forms",
+      "url": "https://zamfara.gov.ng/land-use-application-forms/",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 72151,
+      "sha256": "4b772f70c396c4bc67aa49fe4726986f1a5012251ea95ba60f468c17dee09382",
+      "checkedAt": "2026-10-09T09:40:32.309152+00:00",
+      "executionContext": "require_escalated public network",
+      "scriptUrls": [
+        "https://zamfara.gov.ng/wp-includes/js/jquery/jquery.min.js?ver=3.7.1",
+        "https://zamfara.gov.ng/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1",
+        "https://zamfara.gov.ng/wp-content/plugins/elementor/assets/js/webpack.runtime.min.js?ver=4.3.4",
+        "https://zamfara.gov.ng/wp-content/plugins/elementor/assets/js/frontend-modules.min.js?ver=4.3.4",
+        "https://zamfara.gov.ng/wp-includes/js/jquery/ui/core.min.js?ver=1.14.2",
+        "https://zamfara.gov.ng/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=4.3.4",
+        "https://zamfara.gov.ng/wp-content/themes/avril/assets/js/wow.min.js?ver=7.1.3",
+        "https://zamfara.gov.ng/wp-content/themes/avril/assets/js/custom.js?ver=7.1.3",
+        "https://zamfara.gov.ng/wp-content/plugins/clever-fox//inc/assets/js/jquery.counterup.min.js?ver=4.0.0",
+        "https://zamfara.gov.ng/wp-content/plugins/clever-fox/inc/assets/js/owl.carousel.min.js?ver=2.2.1",
+        "https://zamfara.gov.ng/wp-includes/js/mediaelement/mediaelement-and-player.min.js?ver=4.2.17",
+        "https://zamfara.gov.ng/wp-includes/js/mediaelement/mediaelement-migrate.min.js?ver=7.1.3",
+        "https://zamfara.gov.ng/wp-includes/js/mediaelement/wp-mediaelement.min.js?ver=7.1.3",
+        "https://zamfara.gov.ng/wp-includes/js/imagesloaded.min.js?ver=5.0.0",
+        "https://zamfara.gov.ng/wp-content/plugins/epic-news-element/assets/js/script.min.js",
+        "https://zamfara.gov.ng/wp-content/plugins/epic-news-element/assets/js/admin/elementor-frontend.js"
+      ],
+      "advertisedMapOrPortalLinks": [
+        "https://zamfara.gov.ng/wp-content/uploads/2023/12/Power-of-Attorney-Registration-Application-Form.pdf"
+      ],
+      "publicMapLibraryTokens": []
+    },
+    {
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-09T09:44:50.518527+00:00",
+      "wupCityCode": 7148,
+      "url": "https://zamfara.gov.ng/wp-content/uploads/2023/12/Guidelines-for-Residential-Property-Registration-Individual.pdf",
+      "httpStatus": 200,
+      "curlExit": 0,
+      "bytes": 396921,
+      "sha256": "13e9f1d04ef2eef5182b660479d1960b424ff3e958c2b80f1b551438a8838f16",
+      "executionContext": "require_escalated public network",
+      "pdfExtracted": true,
+      "institutionAndGeographyTermCounts": {
+        "ZAGIS": 8,
+        "Gusau": 7,
+        "survey": 1,
+        "registration": 9,
+        "ZAMFARA": 17
+      },
+      "scope": "Public government registration guideline; institutional/local custody context only. No form submission or property lookup, no contact fields retained, no parcel vectors verified."
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for Almada, Portugal; service-scope and access limitations are not treated as citywide absence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 375,
+  "queueRank": 2782,
+  "name": "Almada",
+  "country": "Portugal",
+  "countryCode": "PT",
+  "iso3": "PRT",
+  "point": [38.6511212877191, -9.16702585153014],
+  "population2025": 213171,
+  "population2025k": 213.171,
+  "populationUnit": "persons",
+  "aliases": ["almada"],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Almada Portugal official cadastral parcel map public viewer cadastro predial",
+        "result": "Found the official Almada municipal GeoPortal, Portugal's official DGT cadastral page, and the official SNIC viewer/manual. The municipal page establishes a public geographic-information portal, but search results did not expose a parcel WFS/GeoJSON endpoint.",
+        "actualResultUrls": [
+          "https://www.cm-almada.pt/o-que-e-o-geoportal",
+          "https://www.dgterritorio.gov.pt/atividades/cadastro",
+          "https://snic.dgterritorio.gov.pt/visualizadorcadastro"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Almada Portugal cadastro predial mapa parcelas visor oficial",
+        "result": "Found the official Câmara Municipal de Almada GeoPortal and DGT/SNIC cadastral documentation. The DGT page says the SNIC visualizer exposes cadastral buildings where available; the current configuration inspected below only declared a São Brás de Alportel cadastral layer, not an Almada layer.",
+        "actualResultUrls": [
+          "https://www.cm-almada.pt/informacaoterritorial",
+          "https://www.cm-almada.pt/como-obter-uma-planta-de-localizacao",
+          "https://snic.dgterritorio.gov.pt/snic_help/",
+          "https://snic.dgterritorio.gov.pt/geoportal/static/viewer/config.json"
+        ]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://www.cm-almada.pt/o-que-e-o-geoportal",
+      "observation": "Câmara Municipal de Almada describes its GeoPortal as a public, dynamic geographic-information service containing cartography, roads/toponymy, planning and public urbanism information, with location-plan generation. It is a local municipal custodian for geographic information, but the page does not prove cadastral parcel geometry availability."
+    },
+    {
+      "url": "https://www.dgterritorio.gov.pt/atividades/cadastro",
+      "observation": "DGT states that SNIC integrates cadastral information and that the cadastral chart can be viewed in the official viewer. The page describes national cadastral governance, not an Almada-specific response."
+    },
+    {
+      "url": "https://snic.dgterritorio.gov.pt/snic_help/",
+      "observation": "Official viewer manual documents vector cadastral-building visualization, map inquiry, web services, and printing; printed output is not a certificate."
+    },
+    {
+      "url": "https://snic.dgterritorio.gov.pt/geoportal/static/viewer/config.json",
+      "observation": "Current public JavaScript/configuration was fetched. It declared a public WMS/WFS source at dgt.wkt.pt/geoserver/cp for layer cp:mv_0812_publicar titled São Brás de Alportel, with CRS EPSG:3763 and fields titular, concelho, area_m2. No Almada layer was declared; unsafe fields were not requested or retained."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://snic.dgterritorio.gov.pt/visualizadorcadastro",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned the official viewer shell. No parcel response was requested at the WUP point because the public configuration was inspected first."
+    },
+    {
+      "url": "https://snic.dgterritorio.gov.pt/geoportal/static/viewer/config.json",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned current viewer configuration. It exposed only a São Brás de Alportel cadastral WMS/WFS layer in the cadastral section; no Almada-specific layer, schema, or parcel ID was found."
+    },
+    {
+      "url": "https://dgt.wkt.pt/geoserver/cp/wfs?service=WFS&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": null,
+      "outcome": "Anonymous bounded request failed with TLS connection reset before headers/body. No TLS verification was disabled and no retry/bypass was attempted."
+    },
+    {
+      "url": "https://geoportal.cm-almada.pt/Apps/Portal?tenant=sigcma",
+      "method": "GET",
+      "httpStatus": 200,
+      "outcome": "Returned the municipal M.App Enterprise shell after redirect. The referenced relative Apps.js path was not retrievable at the tested URL, so the current municipal JavaScript/service configuration and any parcel layer could not be established."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "Almada municipal GeoPortal is an evidenced local geographic-information custodian, while DGT/SNIC is the national cadastral custodian. No Almada-specific public cadastral parcel layer or safe anonymous parcel response was verified.",
+  "registryEvidenceUrls": ["https://www.cm-almada.pt/o-que-e-o-geoportal", "https://www.dgterritorio.gov.pt/atividades/cadastro"],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Official Almada municipal GeoPortal and Portugal DGT/SNIC cadastral-service discovery.",
+    "verifiedOpenScope": "Municipal/national service documentation and current SNIC configuration; no Almada parcel geometry or stable native parcel identity.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel/object ID when independently verified", "full native parcel polygon geometry", "geometry CRS", "source layer/service metadata", "bounded query metadata"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "tax/account", "registration details", "personal fields"],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "status": "complete",
+  "researchGroup": "europe",
+  "remainingUncertainty": "The municipal GeoPortal may contain additional restricted or dynamically loaded themes, and the national SNIC dataset may change. The tested public configuration did not expose Almada cadastral geometry. The exact WUP point was preserved without shifting; no exact-point or map-extent miss was used as absence evidence."
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7486-novosibirsk.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official NSPD map URL timed out in both the web reader and an ordinary anonymous HTTPS GET. No layer metadata, service JS, or full geometry response could be inspected. Whether the current NSPD viewer exposes a public vector or only rendered parcel graphics from this environment; the WUP point’s parcel coverage remains unverified.",
+  "registryAssessment": "Novosibirsk municipal notices prepared with the regional Rosreestr/Roskadastr offices direct citizens to the NSPD Public Cadastral Map and its EGRN Land Parcels layer for information on local land parcels. Public map use is described as available to anyone, without owner names.",
+  "officialPrimarySources": [
+    {
+      "url": "https://novo-sibirsk.ru/news/432571/",
+      "observation": "Municipal page relaying Novosibirsk Rosreestr guidance: the public cadastral map is on NSPD; any user can view EGRN public data, including cadastral number and parcel area, without owner names."
+    },
+    {
+      "url": "https://novo-sibirsk.ru/dep/partners/news/466557/",
+      "observation": "2026 municipal/Rosreestr notice instructs users to select Land parcels → EGRN Land Parcels in the public NSPD map; it is a public parcel map for Novosibirsk region."
+    },
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "observation": "Official Public Cadastral Map destination linked from Novosibirsk municipal/Rosreestr notices; web fetch and direct public GET timed out during this review."
+    },
+    {
+      "url": "https://map.novo-sibirsk.ru/portal/instruction",
+      "observation": "Municipal map portal instruction URL returned an interactive-map-not-found/login page; it was not used for cadastre or login."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Novosibirsk official cadastral parcel map public GIS land registry Rosreestr map service city",
+      "result": "Found municipal pages relaying regional Rosreestr guidance to the free public cadastral map hosted by NSPD, but the official NSPD map endpoint timed out during this review.",
+      "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+    },
+    {
+      "language": "Russian",
+      "query": "Новосибирск публичная кадастровая карта официальный НСПД кадастровые участки Новосибирск Росреестр",
+      "result": "Russian-language search found Novosibirsk Rosreestr notices directing users to NSPD and its EGRN Land Parcels layer; no reachable service schema or vector response was retrieved.",
+      "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry was retained because no anonymous safe-field geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Novosibirsk municipal notices prepared with the regional Rosreestr/Roskadastr offices direct citizens to the NSPD Public Cadastral Map and its EGRN Land Parcels layer for information on local land parcels. Public map use is described as available to anyone, without owner names.",
+    "verifiedOpenScope": "The official NSPD map URL timed out in both the web reader and an ordinary anonymous HTTPS GET. No layer metadata, service JS, or full geometry response could be inspected.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "method": "Anonymous official public-map page open and direct HTTPS GET, no credentials.",
+      "result": "Both web and shell requests timed out; no JS/service or geometry response retrieved."
+    },
+    {
+      "url": "https://map.novo-sibirsk.ru/portal/instruction",
+      "method": "Open official municipal map portal instruction.",
+      "result": "Interactive map not found and page presents sign-in; not used for cadastral access and no login attempted."
+    }
+  ],
+  "remainingUncertainty": "Whether the current NSPD viewer exposes a public vector or only rendered parcel graphics from this environment; the WUP point’s parcel coverage remains unverified."
+}

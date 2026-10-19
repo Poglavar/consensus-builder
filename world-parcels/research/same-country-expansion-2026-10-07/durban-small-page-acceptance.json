@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "durban",
+      "sourceId": "za-ethekwini-cadastral-parcels",
+      "endpoint": "https://gis.durban.gov.za/server/rest/services/WebViewers/EXT_Cadastral/MapServer/17",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0175,
+            -29.8625,
+            31.02,
+            -29.86
+          ],
+          "count": 105,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.02,
+            -29.8625,
+            31.0225,
+            -29.86
+          ],
+          "count": 121,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0225,
+            -29.8625,
+            31.025,
+            -29.86
+          ],
+          "count": 101,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0175,
+            -29.86,
+            31.02,
+            -29.857499999999998
+          ],
+          "count": 151,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.02,
+            -29.86,
+            31.0225,
+            -29.857499999999998
+          ],
+          "count": 137,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0225,
+            -29.86,
+            31.025,
+            -29.857499999999998
+          ],
+          "count": 116,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0175,
+            -29.857499999999998,
+            31.02,
+            -29.855
+          ],
+          "count": 102,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.02,
+            -29.857499999999998,
+            31.0225,
+            -29.855
+          ],
+          "count": 69,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.0225,
+            -29.857499999999998,
+            31.025,
+            -29.855
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            31.025,
+            -29.8625,
+            31.0275,
+            -29.86
+          ],
+          "count": 42,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider timed out.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 71,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry-by-OID",
+        "parameterLength": 221
+      }
+    }
+  ]
+}

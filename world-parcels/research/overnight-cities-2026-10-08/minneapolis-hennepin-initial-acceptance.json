@@ -1,0 +1,1558 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T00:28:44.956Z",
+  "city": "minneapolis-hennepin-parcels",
+  "descriptor": {
+    "id": "us-mn-hennepin-county-parcels-metroc",
+    "name": "Hennepin County Parcels (Metropolitan Council public layer)",
+    "adapter": "arcgis",
+    "endpoint": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3",
+    "idField": "COUNTY_PIN",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "us-mn-hennepin:",
+    "outFields": [
+      "OBJECTID",
+      "COUNTY_PIN"
+    ],
+    "pageSize": 1000,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "boundsSrid": 26915,
+    "boundsProjection": "EPSG:26915",
+    "countryCode": "US",
+    "metricSrid": 26915,
+    "cityIds": [
+      "minneapolis"
+    ]
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -93.239,
+        44.971,
+        -93.238,
+        44.972
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -93.238,
+        44.971,
+        -93.237,
+        44.972
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -93.237,
+        44.971,
+        -93.236,
+        44.972
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -93.239,
+        44.972,
+        -93.238,
+        44.973
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -93.238,
+        44.972,
+        -93.237,
+        44.973
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -93.237,
+        44.972,
+        -93.236,
+        44.973
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -93.239,
+        44.973,
+        -93.238,
+        44.974
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -93.238,
+        44.973,
+        -93.237,
+        44.974
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -93.237,
+        44.973,
+        -93.236,
+        44.974
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -93.238,
+        44.97,
+        -93.237,
+        44.971
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -93.238,
+        44.974,
+        -93.237,
+        44.975
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -93.24,
+        44.972,
+        -93.239,
+        44.973
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -93.236,
+        44.972,
+        -93.235,
+        44.973
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1056,
+      "requestIndexes": [
+        0,
+        1
+      ],
+      "bbox": [
+        -93.239,
+        44.971,
+        -93.238,
+        44.972
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 688,
+      "requestIndexes": [
+        2,
+        4
+      ],
+      "bbox": [
+        -93.238,
+        44.971,
+        -93.237,
+        44.972
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924130011",
+          "geometrySha256": "602697d7fbaf86b0748c09a3cb8d735523ee406d042ab86cf8b0d7db1bc28d41"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130005",
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 682,
+      "requestIndexes": [
+        5,
+        7
+      ],
+      "bbox": [
+        -93.237,
+        44.971,
+        -93.236,
+        44.972
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924130010",
+          "geometrySha256": "68d781da16f8d5ffe17289126acf05a85022b3e24cddc44475960a17491453b8"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130011",
+          "geometrySha256": "602697d7fbaf86b0748c09a3cb8d735523ee406d042ab86cf8b0d7db1bc28d41"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130005",
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130004",
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 449,
+      "requestIndexes": [
+        8,
+        9
+      ],
+      "bbox": [
+        -93.239,
+        44.972,
+        -93.238,
+        44.973
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 695,
+      "requestIndexes": [
+        10,
+        12
+      ],
+      "bbox": [
+        -93.238,
+        44.972,
+        -93.237,
+        44.973
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924130003",
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130005",
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 736,
+      "requestIndexes": [
+        13,
+        15
+      ],
+      "bbox": [
+        -93.237,
+        44.972,
+        -93.236,
+        44.973
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924130003",
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130005",
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130004",
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 716,
+      "requestIndexes": [
+        16,
+        17
+      ],
+      "bbox": [
+        -93.239,
+        44.973,
+        -93.238,
+        44.974
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1595,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        -93.238,
+        44.973,
+        -93.237,
+        44.974
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924130003",
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "id": "us-mn-hennepin:2502924110011",
+          "geometrySha256": "43df539c75286ed4902eea0faa8170167fb5f5bc78e5caef8b0b422f28d78614"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1079,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -93.237,
+        44.973,
+        -93.236,
+        44.974
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924130003",
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "id": "us-mn-hennepin:2502924110011",
+          "geometrySha256": "43df539c75286ed4902eea0faa8170167fb5f5bc78e5caef8b0b422f28d78614"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 548,
+      "requestIndexes": [
+        24,
+        25
+      ],
+      "bbox": [
+        -93.238,
+        44.97,
+        -93.237,
+        44.971
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 1049,
+      "requestIndexes": [
+        26,
+        28
+      ],
+      "bbox": [
+        -93.238,
+        44.974,
+        -93.237,
+        44.975
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924110011",
+          "geometrySha256": "43df539c75286ed4902eea0faa8170167fb5f5bc78e5caef8b0b422f28d78614"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 692,
+      "requestIndexes": [
+        29,
+        31
+      ],
+      "bbox": [
+        -93.24,
+        44.972,
+        -93.239,
+        44.973
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924240050",
+          "geometrySha256": "c9020b40b270a607405eb960a371b5ef0ba873704e2328b4ef2a5fe7e27cb0b9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 726,
+      "requestIndexes": [
+        32,
+        34
+      ],
+      "bbox": [
+        -93.236,
+        44.972,
+        -93.235,
+        44.973
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "us-mn-hennepin:2502924130003",
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "id": "us-mn-hennepin:2502924130004",
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 921,
+      "requestIndexes": [
+        35,
+        38
+      ],
+      "count": 4,
+      "geometryPages": 2,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 1267,
+      "requestIndexes": [
+        39,
+        41
+      ],
+      "count": 7,
+      "ids": [
+        "us-mn-hennepin:2502924110011",
+        "us-mn-hennepin:2502924130003",
+        "us-mn-hennepin:2502924130004",
+        "us-mn-hennepin:2502924130005",
+        "us-mn-hennepin:2502924130010",
+        "us-mn-hennepin:2502924130011",
+        "us-mn-hennepin:2502924240050"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 563,
+      "requestIndexes": [
+        42,
+        43
+      ],
+      "absentIds": [
+        "us-mn-hennepin:ZZZZZZZZZZ"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1121,
+      "requestIndexes": [
+        44,
+        46
+      ],
+      "selectedParcelId": "us-mn-hennepin:2502924240050",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 1165,
+      "requestIndexes": [
+        47,
+        49
+      ],
+      "selectedParcelId": "us-mn-hennepin:2502924240050",
+      "coverage": "complete",
+      "siteM2": 28816.96,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481153.6442821575%2C4979756.424350369%2C481232.82545619516%2C4979867.743107499&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:44.958Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481153.6442821575%2C4979756.424350369%2C481232.82545619516%2C4979867.743107499&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:45.782Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481232.4993282268%2C4979756.193336504%2C481311.67913194874%2C4979867.511120911&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:46.013Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481232.4993282268%2C4979756.193336504%2C481311.67913194874%2C4979867.511120911&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:46.244Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222425,
+        225781
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222425%2C225781",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:46.476Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1623,
+      "features": [
+        {
+          "transportId": 222425,
+          "properties": {
+            "OBJECTID": 222425,
+            "COUNTY_PIN": "2502924130011"
+          },
+          "geometrySha256": "602697d7fbaf86b0748c09a3cb8d735523ee406d042ab86cf8b0d7db1bc28d41"
+        },
+        {
+          "transportId": 225781,
+          "properties": {
+            "OBJECTID": 225781,
+            "COUNTY_PIN": "2502924130005"
+          },
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481311.3543742818%2C4979755.96329534%2C481390.53280768514%2C4979867.280107025&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:46.702Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481311.3543742818%2C4979755.96329534%2C481390.53280768514%2C4979867.280107025&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:46.930Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 74,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222424,
+        222425,
+        225781,
+        241205
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222424%2C222425%2C225781%2C241205",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:47.166Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4230,
+      "features": [
+        {
+          "transportId": 222424,
+          "properties": {
+            "OBJECTID": 222424,
+            "COUNTY_PIN": "2502924130010"
+          },
+          "geometrySha256": "68d781da16f8d5ffe17289126acf05a85022b3e24cddc44475960a17491453b8"
+        },
+        {
+          "transportId": 222425,
+          "properties": {
+            "OBJECTID": 222425,
+            "COUNTY_PIN": "2502924130011"
+          },
+          "geometrySha256": "602697d7fbaf86b0748c09a3cb8d735523ee406d042ab86cf8b0d7db1bc28d41"
+        },
+        {
+          "transportId": 225781,
+          "properties": {
+            "OBJECTID": 225781,
+            "COUNTY_PIN": "2502924130005"
+          },
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        },
+        {
+          "transportId": 241205,
+          "properties": {
+            "OBJECTID": 241205,
+            "COUNTY_PIN": "2502924130004"
+          },
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481153.97178042744%2C4979867.511120911%2C481233.1515899184%2C4979978.829897563&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:47.384Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481153.97178042744%2C4979867.511120911%2C481233.1515899184%2C4979978.829897563&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:47.604Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481232.82545619516%2C4979867.280107025%2C481312.00389534637%2C4979978.597910955&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:47.833Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481232.82545619516%2C4979867.280107025%2C481312.00389534637%2C4979978.597910955&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:48.065Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222412,
+        225781
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222412%2C225781",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:48.301Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1624,
+      "features": [
+        {
+          "transportId": 222412,
+          "properties": {
+            "OBJECTID": 222412,
+            "COUNTY_PIN": "2502924130003"
+          },
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "transportId": 225781,
+          "properties": {
+            "OBJECTID": 225781,
+            "COUNTY_PIN": "2502924130005"
+          },
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481311.67913194874%2C4979867.05006584%2C481390.85620075744%2C4979978.366897047&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:48.529Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481311.67913194874%2C4979867.05006584%2C481390.85620075744%2C4979978.366897047&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:48.754Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 67,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222412,
+        225781,
+        241205
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222412%2C225781%2C241205",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:48.987Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2579,
+      "features": [
+        {
+          "transportId": 222412,
+          "properties": {
+            "OBJECTID": 222412,
+            "COUNTY_PIN": "2502924130003"
+          },
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "transportId": 225781,
+          "properties": {
+            "OBJECTID": 225781,
+            "COUNTY_PIN": "2502924130005"
+          },
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        },
+        {
+          "transportId": 241205,
+          "properties": {
+            "OBJECTID": 241205,
+            "COUNTY_PIN": "2502924130004"
+          },
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481154.29928447644%2C4979978.597910955%2C481233.4777293964%2C4980089.916707127&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:49.265Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481154.29928447644%2C4979978.597910955%2C481233.4777293964%2C4980089.916707127&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:49.629Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481233.1515899184%2C4979978.366897047%2C481312.32866447465%2C4980089.684720497&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:49.982Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481233.1515899184%2C4979978.366897047%2C481312.32866447465%2C4980089.684720497&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:50.346Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222412,
+        225780
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222412%2C225780",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:50.692Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6515,
+      "features": [
+        {
+          "transportId": 222412,
+          "properties": {
+            "OBJECTID": 222412,
+            "COUNTY_PIN": "2502924130003"
+          },
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "transportId": 225780,
+          "properties": {
+            "OBJECTID": 225780,
+            "COUNTY_PIN": "2502924110011"
+          },
+          "geometrySha256": "43df539c75286ed4902eea0faa8170167fb5f5bc78e5caef8b0b422f28d78614"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481312.00389534637%2C4979978.13685584%2C481391.1795995362%2C4980089.453706569&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:51.577Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481312.00389534637%2C4979978.13685584%2C481391.1795995362%2C4980089.453706569&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:51.818Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222412,
+        225780
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222412%2C225780",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:52.155Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6515,
+      "features": [
+        {
+          "transportId": 222412,
+          "properties": {
+            "OBJECTID": 222412,
+            "COUNTY_PIN": "2502924130003"
+          },
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "transportId": 225780,
+          "properties": {
+            "OBJECTID": 225780,
+            "COUNTY_PIN": "2502924110011"
+          },
+          "geometrySha256": "43df539c75286ed4902eea0faa8170167fb5f5bc78e5caef8b0b422f28d78614"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481232.1732060134%2C4979645.106585485%2C481311.3543742818%2C4979756.424350369&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:52.657Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481232.1732060134%2C4979645.106585485%2C481311.3543742818%2C4979756.424350369&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:52.913Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481233.4777293964%2C4980089.453706569%2C481312.65343933343%2C4980200.771549542&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:53.205Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481233.4777293964%2C4980089.453706569%2C481312.65343933343%2C4980200.771549542&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:53.486Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 53,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        225780
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=225780",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:53.771Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5480,
+      "features": [
+        {
+          "transportId": 225780,
+          "properties": {
+            "OBJECTID": 225780,
+            "COUNTY_PIN": "2502924110011"
+          },
+          "geometrySha256": "43df539c75286ed4902eea0faa8170167fb5f5bc78e5caef8b0b422f28d78614"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481075.1181046444%2C4979867.743107499%2C481154.29928447644%2C4979979.062856874&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:54.254Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481075.1181046444%2C4979867.743107499%2C481154.29928447644%2C4979979.062856874&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:54.489Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 53,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        411291
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=411291",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:54.713Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2028,
+      "features": [
+        {
+          "transportId": 411291,
+          "properties": {
+            "OBJECTID": 411291,
+            "COUNTY_PIN": "2502924240050"
+          },
+          "geometrySha256": "c9020b40b270a607405eb960a371b5ef0ba873704e2328b4ef2a5fe7e27cb0b9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481390.53280768514%2C4979866.8209973555%2C481469.70850615564%2C4979978.13685584&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:54.947Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481390.53280768514%2C4979866.8209973555%2C481469.70850615564%2C4979978.13685584&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:55.175Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222412,
+        241205
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222412%2C241205",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:55.403Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2031,
+      "features": [
+        {
+          "transportId": 222412,
+          "properties": {
+            "OBJECTID": 222412,
+            "COUNTY_PIN": "2502924130003"
+          },
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "transportId": 241205,
+          "properties": {
+            "OBJECTID": 241205,
+            "COUNTY_PIN": "2502924130004"
+          },
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481311.3543742818%2C4979755.96329534%2C481390.53280768514%2C4979867.280107025&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:55.674Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=481311.3543742818%2C4979755.96329534%2C481390.53280768514%2C4979867.280107025&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:55.898Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 74,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222424,
+        222425,
+        225781,
+        241205
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222424%2C222425%2C225781",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:56.147Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3275,
+      "features": [
+        {
+          "transportId": 222424,
+          "properties": {
+            "OBJECTID": 222424,
+            "COUNTY_PIN": "2502924130010"
+          },
+          "geometrySha256": "68d781da16f8d5ffe17289126acf05a85022b3e24cddc44475960a17491453b8"
+        },
+        {
+          "transportId": 222425,
+          "properties": {
+            "OBJECTID": 222425,
+            "COUNTY_PIN": "2502924130011"
+          },
+          "geometrySha256": "602697d7fbaf86b0748c09a3cb8d735523ee406d042ab86cf8b0d7db1bc28d41"
+        },
+        {
+          "transportId": 225781,
+          "properties": {
+            "OBJECTID": 225781,
+            "COUNTY_PIN": "2502924130005"
+          },
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=241205",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:56.371Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 996,
+      "features": [
+        {
+          "transportId": 241205,
+          "properties": {
+            "OBJECTID": 241205,
+            "COUNTY_PIN": "2502924130004"
+          },
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=COUNTY_PIN+IN+%28%272502924110011%27%2C%272502924130003%27%2C%272502924130004%27%2C%272502924130005%27%2C%272502924130010%27%2C%272502924130011%27%2C%272502924240050%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:56.596Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=COUNTY_PIN+IN+%28%272502924110011%27%2C%272502924130003%27%2C%272502924130004%27%2C%272502924130005%27%2C%272502924130010%27%2C%272502924130011%27%2C%272502924240050%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:56.913Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 95,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        225780,
+        225781,
+        241205,
+        411291,
+        222412,
+        222424,
+        222425
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=225780%2C225781%2C241205%2C411291%2C222412%2C222424%2C222425",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:57.223Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 12691,
+      "features": [
+        {
+          "transportId": 222412,
+          "properties": {
+            "OBJECTID": 222412,
+            "COUNTY_PIN": "2502924130003"
+          },
+          "geometrySha256": "858439ea503077771b745b532243845befe59fd86d89c9c64c0a114808f50c1d"
+        },
+        {
+          "transportId": 222424,
+          "properties": {
+            "OBJECTID": 222424,
+            "COUNTY_PIN": "2502924130010"
+          },
+          "geometrySha256": "68d781da16f8d5ffe17289126acf05a85022b3e24cddc44475960a17491453b8"
+        },
+        {
+          "transportId": 222425,
+          "properties": {
+            "OBJECTID": 222425,
+            "COUNTY_PIN": "2502924130011"
+          },
+          "geometrySha256": "602697d7fbaf86b0748c09a3cb8d735523ee406d042ab86cf8b0d7db1bc28d41"
+        },
+        {
+          "transportId": 225780,
+          "properties": {
+            "OBJECTID": 225780,
+            "COUNTY_PIN": "2502924110011"
+          },
+          "geometrySha256": "43df539c75286ed4902eea0faa8170167fb5f5bc78e5caef8b0b422f28d78614"
+        },
+        {
+          "transportId": 225781,
+          "properties": {
+            "OBJECTID": 225781,
+            "COUNTY_PIN": "2502924130005"
+          },
+          "geometrySha256": "dd6c9af70c62af9f864fe1ddfbd80ddf6f196e88e4f85b2ec885660839a6f857"
+        },
+        {
+          "transportId": 241205,
+          "properties": {
+            "OBJECTID": 241205,
+            "COUNTY_PIN": "2502924130004"
+          },
+          "geometrySha256": "0ad64300ce0f2eed448b492f3c60c0a18257177c77170d95dc2072b7dffa1a1c"
+        },
+        {
+          "transportId": 411291,
+          "properties": {
+            "OBJECTID": 411291,
+            "COUNTY_PIN": "2502924240050"
+          },
+          "geometrySha256": "c9020b40b270a607405eb960a371b5ef0ba873704e2328b4ef2a5fe7e27cb0b9"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=COUNTY_PIN+IN+%28%27ZZZZZZZZZZ%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:57.863Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=COUNTY_PIN+IN+%28%27ZZZZZZZZZZ%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:58.149Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=480959.15315436356%2C4979568.686994649%2C481218.8672040496%2C4980013.770086043&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:58.427Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 9
+    },
+    {
+      "test": "footprint",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=480959.15315436356%2C4979568.686994649%2C481218.8672040496%2C4980013.770086043&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:58.650Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 109,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222747,
+        225793,
+        225963,
+        241468,
+        241469,
+        411291,
+        411292,
+        411303,
+        411304
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222747%2C225793%2C225963%2C241468%2C241469%2C411291%2C411292%2C411303%2C411304",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:58.881Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 15045,
+      "features": [
+        {
+          "transportId": 222747,
+          "properties": {
+            "OBJECTID": 222747,
+            "COUNTY_PIN": "2502924240051"
+          },
+          "geometrySha256": "23f42162b208d26ee037b8d94ffe45b21c848afda7e1cd770485762a5a7684c0"
+        },
+        {
+          "transportId": 225793,
+          "properties": {
+            "OBJECTID": 225793,
+            "COUNTY_PIN": "2502924210009"
+          },
+          "geometrySha256": "8b5b14f35a7188f0934420e637c49d9a16940d23da2e9fd4f4b2a99e367c9b22"
+        },
+        {
+          "transportId": 225963,
+          "properties": {
+            "OBJECTID": 225963,
+            "COUNTY_PIN": "2502924230066"
+          },
+          "geometrySha256": "35078636ff0a89eb325d6285c07b65bbeff36dcdcf55ad646aa744e4b504af24"
+        },
+        {
+          "transportId": 241468,
+          "properties": {
+            "OBJECTID": 241468,
+            "COUNTY_PIN": "2502924240017"
+          },
+          "geometrySha256": "b098e6e182aebd3e95cb8488517ce1075b3bd886e86648773b2d13b91de7c957"
+        },
+        {
+          "transportId": 241469,
+          "properties": {
+            "OBJECTID": 241469,
+            "COUNTY_PIN": "2502924240053"
+          },
+          "geometrySha256": "e7a4dc5db69937202f5c5be836c2b57a7111644676ccd392b85cd61bf2206ea6"
+        },
+        {
+          "transportId": 411291,
+          "properties": {
+            "OBJECTID": 411291,
+            "COUNTY_PIN": "2502924240050"
+          },
+          "geometrySha256": "c9020b40b270a607405eb960a371b5ef0ba873704e2328b4ef2a5fe7e27cb0b9"
+        },
+        {
+          "transportId": 411292,
+          "properties": {
+            "OBJECTID": 411292,
+            "COUNTY_PIN": "2502924240052"
+          },
+          "geometrySha256": "d76e5c1743488e0140f9a6adf6ddb14135e57298e9bef559fc8fd412a321516d"
+        },
+        {
+          "transportId": 411303,
+          "properties": {
+            "OBJECTID": 411303,
+            "COUNTY_PIN": "2502924310087"
+          },
+          "geometrySha256": "3e388bb0e3123db30d295ef1398bf200c7c502d83ba55bc982faecbfadc233c6"
+        },
+        {
+          "transportId": 411304,
+          "properties": {
+            "OBJECTID": 411304,
+            "COUNTY_PIN": "2502924310095"
+          },
+          "geometrySha256": "39f9c5d4c5ebe02beed9bdc085ca324436d1b49b890c48bfdf32f54d8b75fd7b"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=480959.15315436356%2C4979568.686994649%2C481218.8672040496%2C4980013.770086043&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:59.548Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 9
+    },
+    {
+      "test": "source-binding",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&geometry=480959.15315436356%2C4979568.686994649%2C481218.8672040496%2C4980013.770086043&geometryType=esriGeometryEnvelope&inSR=26915&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:28:59.803Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 109,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        222747,
+        225793,
+        225963,
+        241468,
+        241469,
+        411291,
+        411292,
+        411303,
+        411304
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query?where=1%3D1&outFields=OBJECTID%2CCOUNTY_PIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=222747%2C225793%2C225963%2C241468%2C241469%2C411291%2C411292%2C411303%2C411304",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:29:00.041Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 15045,
+      "features": [
+        {
+          "transportId": 222747,
+          "properties": {
+            "OBJECTID": 222747,
+            "COUNTY_PIN": "2502924240051"
+          },
+          "geometrySha256": "23f42162b208d26ee037b8d94ffe45b21c848afda7e1cd770485762a5a7684c0"
+        },
+        {
+          "transportId": 225793,
+          "properties": {
+            "OBJECTID": 225793,
+            "COUNTY_PIN": "2502924210009"
+          },
+          "geometrySha256": "8b5b14f35a7188f0934420e637c49d9a16940d23da2e9fd4f4b2a99e367c9b22"
+        },
+        {
+          "transportId": 225963,
+          "properties": {
+            "OBJECTID": 225963,
+            "COUNTY_PIN": "2502924230066"
+          },
+          "geometrySha256": "35078636ff0a89eb325d6285c07b65bbeff36dcdcf55ad646aa744e4b504af24"
+        },
+        {
+          "transportId": 241468,
+          "properties": {
+            "OBJECTID": 241468,
+            "COUNTY_PIN": "2502924240017"
+          },
+          "geometrySha256": "b098e6e182aebd3e95cb8488517ce1075b3bd886e86648773b2d13b91de7c957"
+        },
+        {
+          "transportId": 241469,
+          "properties": {
+            "OBJECTID": 241469,
+            "COUNTY_PIN": "2502924240053"
+          },
+          "geometrySha256": "e7a4dc5db69937202f5c5be836c2b57a7111644676ccd392b85cd61bf2206ea6"
+        },
+        {
+          "transportId": 411291,
+          "properties": {
+            "OBJECTID": 411291,
+            "COUNTY_PIN": "2502924240050"
+          },
+          "geometrySha256": "c9020b40b270a607405eb960a371b5ef0ba873704e2328b4ef2a5fe7e27cb0b9"
+        },
+        {
+          "transportId": 411292,
+          "properties": {
+            "OBJECTID": 411292,
+            "COUNTY_PIN": "2502924240052"
+          },
+          "geometrySha256": "d76e5c1743488e0140f9a6adf6ddb14135e57298e9bef559fc8fd412a321516d"
+        },
+        {
+          "transportId": 411303,
+          "properties": {
+            "OBJECTID": 411303,
+            "COUNTY_PIN": "2502924310087"
+          },
+          "geometrySha256": "3e388bb0e3123db30d295ef1398bf200c7c502d83ba55bc982faecbfadc233c6"
+        },
+        {
+          "transportId": 411304,
+          "properties": {
+            "OBJECTID": 411304,
+            "COUNTY_PIN": "2502924310095"
+          },
+          "geometrySha256": "39f9c5d4c5ebe02beed9bdc085ca324436d1b49b890c48bfdf32f54d8b75fd7b"
+        }
+      ]
+    }
+  ],
+  "uniqueParcels": 7,
+  "requestCount": 50,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T00:29:00.715Z",
+  "qualityStatus": "passed_independent_metric_topology",
+  "exactWupPointSummary": {
+    "point": [
+      44.9726015122978,
+      -93.2378207757913
+    ],
+    "safeOutFields": [
+      "OBJECTID",
+      "COUNTY_PIN"
+    ],
+    "httpStatus": 200,
+    "count": 0,
+    "exceededTransferLimit": false,
+    "features": []
+  },
+  "qualityDecision": "approved_by_root",
+  "qualityFile": "research/overnight-cities-2026-10-08/minneapolis-hennepin-root-quality.json"
+}

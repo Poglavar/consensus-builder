@@ -1,0 +1,168 @@
+{
+  "name": "Rajkot",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 314,
+  "point": [
+    22.2855161155393,
+    70.7931296579573
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rajkot Gujarat official City GIS city survey plot map property GIS Rajkot Municipal Corporation parcel",
+        "result": "The Rajkot Municipal Corporation citizen GIS portal describes property and location searches and its map lists City Survey Plot, Final Plot, Original Plot, Layout, Survey Boundary and Town Planning layers. The FAQ describes it as a free public citizen service. The map route and help page were opened, but no machine-readable full polygon response or API endpoint was verified.",
+        "urls": [
+          "https://gis.rmc.gov.in/rajkotcitygis/",
+          "https://gis.rmc.gov.in/rajkotcitygis/map/all",
+          "https://gis.rmc.gov.in/rajkotcitygis/map/help",
+          "https://gis.rmc.gov.in/rajkotcitygis/map/faq",
+          "https://rmc.gov.in/"
+        ],
+        "method": "Separate English web search and official portal/map/help page inspection; no credentials or owner attributes submitted."
+      },
+      {
+        "language": "Gujarati",
+        "query": "રાજકોટ શહેર સિટી સર્વે પ્લોટ જી.આઈ.એસ. મિલકત નકશો રાજકોટ મહાનગરપાલિકા",
+        "result": "રાજકોટ મહાનગરપાલિકાના અધિકૃત પોર્ટલમાં સિટી GIS, મિલકત વેરા સેવાઓ અને નગર રચના યોજનાના નકશા મળે છે. નાગરિક GIS માં City Survey Plot તથા Final/Original Plot સ્તરો દેખાય છે; પરંતુ ગુજરાતી પોર્ટલ-શોધથી પણ કોઈ જાહેર વેક્ટર ફીચર સર્વિસ કે પૂર્ણ પાર્સલ જિયોમેટ્રી પ્રતિભાવ ચકાસ્યો નથી.",
+        "urls": [
+          "https://gis.rmc.gov.in/rajkotcitygis/map/all",
+          "https://rmc.gov.in/TPMap",
+          "https://rmc.gov.in/"
+        ],
+        "method": "Separate Gujarati-language web search; official municipal map pages inspected."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Rajkot Smart City GIS citizen portal",
+        "operator": "Rajkot Municipal Corporation / Rajkot Smart City Development Limited",
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/",
+        "observation": "The live public citizen map exposes City Survey Plot (37,493 features) and related plot layers. Its page data says export disabled. The app’s GeoJSON POST contract has no outFields or result cap; no full geometry response or safe adapter contract was verified."
+      },
+      {
+        "name": "Rajkot GIS map/help",
+        "operator": "Rajkot Municipal Corporation",
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/map/all",
+        "observation": "Help describes plot-number and map feature lookup. No anonymous full-polygon API was discovered."
+      },
+      {
+        "name": "RMC Town Planning map page",
+        "operator": "Rajkot Municipal Corporation",
+        "url": "https://rmc.gov.in/TPMap",
+        "observation": "Provides planning-scheme map links/PDFs; this is cartographic planning reference, not verified parcel-vector data."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/map/all",
+        "method": "Official web page open",
+        "status": null,
+        "type": "text/html page content",
+        "observation": "Page content loaded in web inspection; status code not exposed. Public map lists City Survey Plot and related layers; no feature response inspected."
+      },
+      {
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/map/help",
+        "method": "Official web page open",
+        "status": null,
+        "type": "text/html page content",
+        "observation": "Help page content loaded; says users can search plot number/owner/address. No query was run and no personal/owner data was accessed."
+      },
+      {
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/map/all",
+        "method": "Chrome browser HTTPS UI inspection",
+        "status": null,
+        "type": "interactive map page",
+        "observation": "The live citizen map loaded and exposes the Layers control with City Survey Plot, Final Plot, Original Plot and related layers; no bounded feature request or full geometry was made."
+      },
+      {
+        "url": "https://gis.rmc.gov.in/geoserver/wms?service=WMS&request=GetCapabilities",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "text/xml",
+        "observation": "WMS GetCapabilities returned 42 named layers; it did not list a cadastral/parcel layer. The viewer static config points to WMS and its CityMapAjax script calls an internal getGeoJsonData route with POST; that POST endpoint was not invoked. No full geometry response was obtained."
+      },
+      {
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/map/all",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "text/html with embedded public layer metadata",
+        "observation": "Embedded City Survey Plot layer metadata identifies table r_tp_city_survey_plot, geometryType Polygon, geomationId Rajkot_City_GIS;614, public citizen flag, and isExportAllow false; feature count shown as 37,493. No row attributes or geometries were requested."
+      },
+      {
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/js/map/CityMapAjax.js",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "application/javascript",
+        "observation": "The app GetGeoJSON wrapper POSTs value (WKT), tablename, dataType, isTableData, and fid. No field allowlist or max-feature parameter appears in the client request contract."
+      },
+      {
+        "url": "https://gis.rmc.gov.in/rajkotcitygis/js/map/mapController.js",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "application/javascript",
+        "observation": "The app wrapper sets isTableData=false and fid=0 for its spatial GeoJSON path; the input WKT is passed to the server. No result limit or safe property-field selection is present in that client contract."
+      },
+      {
+        "url": "https://gis.rmc.gov.in/rajkot_map_services/api/wms/1.1.1/map?service=WMS&request=GetCapabilities",
+        "method": "Anonymous HTTPS GET",
+        "status": 200,
+        "type": "WMS capabilities XML",
+        "observation": "WMS advertises the City Survey Plot display layer Rajkot_City_GIS.614 (title R_TP_City_Survey_Plot) and EPSG:3857. This is WMS map metadata, not full polygon GeoJSON."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No anonymous full parcel polygon response was fetched and independently verified."
+  },
+  "source": {
+    "id": null,
+    "name": "Rajkot Smart City GIS citizen portal",
+    "operator": "Rajkot Municipal Corporation / Rajkot Smart City Development Limited",
+    "url": "https://gis.rmc.gov.in/rajkotcitygis/",
+    "format": "Public WMS plus application-proxied GeoJSON POST; full GeoJSON contract lacks a safe property allowlist/result limit and was not called.",
+    "access": "Official portal reviewed; city-specific registry/cadastral material documented. No credentials, payment or private record lookup used.",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rajkot Municipal Corporation’s official city GIS exposes city-survey and plot layers and its free citizen portal supports property/plot lookup; this is city-local cadastral-map evidence, not a verified open parcel-vector endpoint.",
+    "verifiedOpenScope": "No anonymous public full-polygon vector endpoint verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Rajkot Municipal Corporation’s official city GIS exposes city-survey and plot layers and its free citizen portal supports property/plot lookup; this is city-local cadastral-map evidence, not a verified open parcel-vector endpoint.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_city_cadastral_map_geometry_not_verified",
+  "technicalBlocker": "The public page embeds City Survey Plot metadata (table r_tp_city_survey_plot, Polygon, approx. 37,493 features, export disabled). Its only full-GeoJSON app contract is POST /rajkotcitygis/map/getGeoJsonData with WKT, tableName, dataType, isTableData, fid; it has no documented result limit or safe outFields filter. The contract may return all feature properties, so no parcel request was made. The WMS is raster and is not a full-geometry substitute.",
+  "remainingUncertainty": "Whether the internal GeoJSON route can safely constrain both fields and feature count is undocumented. The UI layer count is 37,493; WUP-point parcel, full geometry, and response CRS remain unverified. App metadata declares dataProjection EPSG:32642 and map EPSG:3857; GeoJSON parser expects EPSG:4326, but the actual GeoJSON CRS was not observed.",
+  "nextStep": "Obtain a documented endpoint with a server-enforced small-result limit and safe identifier-plus-geometry output (or a field allowlist); verify actual returned CRS and topology before adapter work.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4003,
+  "cityId": "wup2025:4003",
+  "queueRank": 314,
+  "population2025": 1581235,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    22.2855161155393,
+    70.7931296579573
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:24:15.611909+00:00"
+}

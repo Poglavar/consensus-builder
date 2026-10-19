@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityCode": 4660,
+  "queueRank": 1297,
+  "name": "Kosti",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "iso3": "SDN",
+  "point": [13.1515018530256, 32.6570937878657],
+  "population2025": 431504,
+  "population2025k": 431.504,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kosti Sudan official cadastral map land registry parcel GIS survey authority",
+        "result": "Search found Sudan's official national spatial portal description and the Judiciary-affiliated Aqari property-services platform, but no verified Kosti parcel viewer or anonymous geometry endpoint.",
+        "actualResultUrls": ["https://www.nic.gov.sd/public/projectDetails/3", "https://aqari.nctr.sd/en"]
+      },
+      {
+        "language": "Arabic",
+        "query": "كوستي السودان خريطة عقارية السجل العقاري الأراضي المساحة",
+        "result": "Search found the official Aqari national property-registration platform and a nonofficial Kosti land-office directory result; no public Kosti parcel map or safe anonymous geometry response was verified.",
+        "actualResultUrls": ["https://aqari.nctr.sd/ar", "https://aqari.nctr.sd/ar/about"]
+      }
+    ],
+    "sources": ["https://www.nic.gov.sd/public/projectDetails/3", "https://aqari.nctr.sd/ar", "https://aqari.nctr.sd/en"]
+  },
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Sudan national spatial/property-registration services were identified; Kosti-specific cadastral coverage and open parcel geometry were not verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_national_land_services_no_verified_open_kosti_geometry",
+  "geometryDecision": "No GeoJSON retained: no qualifying safe parcel polygon and native parcel identity were returned.",
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "A national portal and registration platform may contain data unavailable through the public anonymous routes checked; this is not evidence of citywide parcel absence.",
+  "serviceReview": "kosti-service-review.json"
+}

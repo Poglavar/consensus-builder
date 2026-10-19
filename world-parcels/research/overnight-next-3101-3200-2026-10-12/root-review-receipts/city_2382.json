@@ -1,0 +1,26 @@
+{
+  "taskId": "city:2382",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-2382-rondon-polis.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/rondon-polis-service-review.json",
+    "tmp/valhalla-parcel-research/rondonopolis-webmap-data.json",
+    "tmp/valhalla-parcel-research/rondonopolis-lotes-layer.json",
+    "tmp/valhalla-parcel-research/rondonopolis-lotes-point.geojson",
+    "tmp/valhalla-parcel-research/rondonopolis-lotes-sample.geojson"
+  ],
+  "checkedAt": "2026-10-12T05:12:58Z",
+  "finding": "Rondonópolis code 2382, rank 3197, Brazil, WUP point and 188577 persons match the original WUP 2025 archive and immutable queue. The packet records English and Portuguese searches with result URLs. The municipal SIGGEO page links the public ArcGIS Experience; the original web-map cache binds LOTES to FeatureServer/16. The original layer schema identifies polygon geometry, service OID FID and numeric id; the bounded cache contains three polygons with only FID/id attributes, and the separate point response contains one polygon with FID only. No durable sample was written. These local reads support public geometry discovery and municipal custody, but do not prove stable native id semantics, complete pagination, bounded-area coverage, metric geometry quality, full-parcel adapter binding or headed UI operation.",
+  "missingGates": [
+    "independent fresh canonical native ID reads",
+    "forced paging",
+    "13 bounded cells",
+    "metric GEOS validity and overlap",
+    "full-parcel source binding",
+    "headed Details-panel verification"
+  ]
+}

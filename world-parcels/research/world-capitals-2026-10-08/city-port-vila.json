@@ -1,0 +1,72 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:VU:port-vila",
+  "name": "Port Vila",
+  "country": "Vanuatu",
+  "countryCode": "VU",
+  "centerLatLon": [
+    -17.733333,
+    168.316667
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/VU.json",
+    "research/retry/countries/VU.json (ministry/ArcGIS searches"
+  ],
+  "priorEvidenceAssessment": "research/countries/VU.json; research/retry/countries/VU.json (ministry/ArcGIS searches; no Port Vila sample).",
+  "executedQueries": [
+    {
+      "query": "Port Vila cadastral parcels Vanuatu map land registry",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Port Vila Vanuatu graon map kastom land survey",
+      "language": "Bislama-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://mol.gov.vu/",
+      "observation": "Official Ministry site lists Land Search, Leases, Surveys, Land Registry. Its separate Customary Land Map was inspected; it is a declared/disputed customary land map, not a cadastre parcel endpoint. Ministry homepage timed out in this session; no open parcel service identified."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mol.gov.vu/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Official Ministry of Lands page inspected; advertises Land Search, Leases, Surveys and Land Registry, but no open geometry service link found."
+    },
+    {
+      "url": "https://clmo.gov.vu/index.php/map",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": "text/html",
+      "outcome": "Official Customary Land Map page inspected; shows declared/disputed customary areas, not cadastral parcels."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-port-vila.json"
+}

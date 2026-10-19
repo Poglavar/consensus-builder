@@ -1,0 +1,44 @@
+{
+  "taskId": "city:3094",
+  "decision": "held",
+  "checkedAt": "2026-10-12T04:27:21Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-3094-sibu.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/sibu-service-review.json",
+    "tmp/valhalla-parcel-research/sibu/upi-root.json",
+    "tmp/valhalla-parcel-research/sibu/upi-point-query.json"
+  ],
+  "queueIdentity": {
+    "rank": 3163,
+    "cityCode": 3094,
+    "name": "Sibu",
+    "country": "Malaysia",
+    "pointLatLon": [
+      2.29910957244445,
+      111.842326008594
+    ],
+    "population2025Persons": 189927
+  },
+  "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "executedSearchLanguages": [
+    "English",
+    "Malay"
+  ],
+  "retainedFullPolygonCount": 0,
+  "registryFound": true,
+  "acceptanceMetrics": null,
+  "qualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "reason": "Sarawak Land and Survey Department custody and Sibu district scope are evidenced. The original myGOS response is administrative Admin4, not a parcel layer, and its empty point result does not establish parcel absence. No anonymous Sibu native-ID parcel polygon or adapter qualification is evidenced; SarawakPass/product access is unresolved.",
+  "admission": "not_admitted",
+  "citywideAbsenceClaim": null
+}

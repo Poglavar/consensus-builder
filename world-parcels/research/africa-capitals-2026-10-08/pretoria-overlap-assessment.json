@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T15:39:48Z",
+  "purpose": "Assess whether bounded-sample parcel intersections indicate substantial topology defects or narrow boundary slivers.",
+  "crs": "EPSG:32735",
+  "thresholds": {
+    "tinyOverlap": "<0.05 m\u00b2 and <0.01% of smaller parcel",
+    "largerOverlap": "otherwise; reviewed by area share and effective width",
+    "effectiveWidth": "2 * intersection area / intersection perimeter; approximate only"
+  },
+  "summary": {
+    "pairCount": 7,
+    "maxOverlapAreaM2": 2.256163752217909,
+    "maxPercentOfSmaller": 0.3384545918379474,
+    "sliverLikeCount": 7,
+    "sliverLikeDefinition": "intersection area < 3 m2 and < 0.5% of the smaller parcel area"
+  },
+  "pairs": [
+    {
+      "objectIds": [
+        "1476",
+        "9729"
+      ],
+      "lisKeys": [
+        "002000499/1/R",
+        "002001125/1"
+      ],
+      "areasM2": [
+        877.0849366318992,
+        1265.8696481411864
+      ],
+      "intersectionAreaM2": 0.011539367655201476,
+      "intersectionPctOfSmaller": 0.00131564996424564,
+      "effectiveWidthApproxM": 0.0009389103707228292,
+      "classification": "tiny boundary sliver"
+    },
+    {
+      "objectIds": [
+        "4103",
+        "9729"
+      ],
+      "lisKeys": [
+        "002000499/2",
+        "002001125/1"
+      ],
+      "areasM2": [
+        1035.4864888161314,
+        1265.8696481411864
+      ],
+      "intersectionAreaM2": 0.03753637757131891,
+      "intersectionPctOfSmaller": 0.003624999261384293,
+      "effectiveWidthApproxM": 0.0008551743363252933,
+      "classification": "tiny boundary sliver"
+    },
+    {
+      "objectIds": [
+        "80645",
+        "674640"
+      ],
+      "lisKeys": [
+        "002000494/3",
+        "002000494/2"
+      ],
+      "areasM2": [
+        576.0988974054299,
+        999.5433017366455
+      ],
+      "intersectionAreaM2": 0.03090531809135353,
+      "intersectionPctOfSmaller": 0.005364585530460388,
+      "effectiveWidthApproxM": 0.0014176044310899641,
+      "classification": "tiny boundary sliver"
+    },
+    {
+      "objectIds": [
+        "116977",
+        "674707"
+      ],
+      "lisKeys": [
+        "020200000/199/R",
+        "020200000/257"
+      ],
+      "areasM2": [
+        30636.187723136052,
+        367.25941081321605
+      ],
+      "intersectionAreaM2": 1.1464014105263565,
+      "intersectionPctOfSmaller": 0.31215031576397184,
+      "effectiveWidthApproxM": 0.05171118297990636,
+      "classification": "small overlap; inspect if materially sensitive"
+    },
+    {
+      "objectIds": [
+        "29904",
+        "75458"
+      ],
+      "lisKeys": [
+        "027200038/2",
+        "027200805"
+      ],
+      "areasM2": [
+        841.4357774363436,
+        5100.552483815452
+      ],
+      "intersectionAreaM2": 0.04977030945226304,
+      "intersectionPctOfSmaller": 0.005914926698731711,
+      "effectiveWidthApproxM": 0.0018004265561252875,
+      "classification": "tiny boundary sliver"
+    },
+    {
+      "objectIds": [
+        "75458",
+        "566601"
+      ],
+      "lisKeys": [
+        "027200805",
+        "027200037"
+      ],
+      "areasM2": [
+        5100.552483815452,
+        2550.1265711481897
+      ],
+      "intersectionAreaM2": 0.02140645864513857,
+      "intersectionPctOfSmaller": 0.0008394273008770837,
+      "effectiveWidthApproxM": 0.0018002707305120064,
+      "classification": "tiny boundary sliver"
+    },
+    {
+      "objectIds": [
+        "566603",
+        "566618"
+      ],
+      "lisKeys": [
+        "027200040/1",
+        "027200041/1/R"
+      ],
+      "areasM2": [
+        1275.0952910464866,
+        666.6075174120149
+      ],
+      "intersectionAreaM2": 2.256163752217909,
+      "intersectionPctOfSmaller": 0.3384545918379474,
+      "effectiveWidthApproxM": 0.0650390263514,
+      "classification": "small overlap; inspect if materially sensitive"
+    }
+  ],
+  "recommendation": "All sampled pairs are valid geometries; all intersections are below 2.26 m\u00b2 and below 0.34% of the smaller polygon. Five are <0.05 m\u00b2 and <0.01%; the remaining 1.146 m\u00b2 and 2.256 m\u00b2 intersections are under 0.34%, with approximate effective widths of 0.052 m and 0.065 m. These results do not justify holding all valid sample geometry, though the larger two are suitable for targeted review. Source metadata says original surveyed parcels; parent/child historical semantics remain an independent caveat."
+}

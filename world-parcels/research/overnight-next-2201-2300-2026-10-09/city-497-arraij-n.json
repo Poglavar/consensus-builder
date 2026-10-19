@@ -1,0 +1,41 @@
+{
+  "cityCode": 497,
+  "queueRank": 2274,
+  "name": "Arraiján",
+  "country": "Panama",
+  "countryCode": "PA",
+  "point": [8.93675966464451, -79.6838048325634],
+  "population2025": 257136,
+  "population2025k": 257.136,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Arraiján Panama official cadastral map parcel viewer cadastre municipality",
+        "result": "Official discovery found the Municipality of Arraiján and an official 2016 municipal functions manual documenting a cadastral/GIS unit responsible for municipal cadastral information and parcel cartography. It also found the current MIVIOT Geoportal, but that portal is for territorial planning/zoning and did not evidence an Arraiján parcel layer.",
+        "actualResultUrls": [
+          "https://www.gacetaoficial.gob.pa/pdfTemp/28084_A/GacetaNo_28084a_20160728.pdf",
+          "https://arraijan.municipios.gob.pa/",
+          "https://geoportal-miviot.hub.arcgis.com/",
+          "https://www.miviot.gob.pa/infoterritorial/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Arraiján Panamá catastro mapa catastral parcelas visor oficial municipio",
+        "result": "La búsqueda oficial/local identificó al Municipio de Arraiján como custodio municipal de información catastral y cartografía parcelaria. Panamá Digital identifica los servicios de puntos catastrales y aprobación de planos de ANATI, pero no se encontró un visor público anónimo con identidad nativa y geometría parcelaria para Arraiján.",
+        "actualResultUrls": [
+          "https://arraijan.municipios.gob.pa/",
+          "https://www.datosabiertos.gob.pa/organization/about/municipio-de-arraijan",
+          "https://www.panamadigital.gob.pa/InformacionTramite/informacion-de-puntos-catastrales",
+          "https://www.panamadigital.gob.pa/InformacionTramite/aprobacion-de-planos"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "The Municipality of Arraiján is treated as a local cadastral custodian because the official municipal manual assigns cadastral/GIS and parcel-cartography functions within its jurisdiction. This packet records source discovery only; no parcel source was admitted and runtimeReadiness remains held.",
+  "runtimeReadiness": "held"
+}

@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "IR",
+ "country": "Iran (Islamic Republic of)",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Deeds and Properties Registration Organization (SSAA / ثبت اسناد و املاک کشور); cadastre/plans via Sabte Ahval/ Sazman Sabt; NCC (National Cartographic Center) for mapping",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.ssaa.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://www.sabteahval.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://geo.gov.ir",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://www.ncc.gov.ir/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "unverified; national cadastre run by SSAA",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "All .ir hosts unreachable from this environment (likely network filtering); see research/tehran.json, mashhad.json, karaj.json. Not proof of absence.",
+ "nextStep": "Retry from a network with .ir access; look for SSAA e-map/estelam services (probably credentialed)."
+}

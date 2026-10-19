@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3765",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-3765-en-nahud.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/en-nahud-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T20:51:08Z",
+  "identityCheck": "The checksum-verified WUP 2025 archive, ranked roster, pending queue and city packet agree on code 3765, rank 2820, Sudan, exact point [12.6900568233347,28.4212621930496] and 211073 persons; the paired review agrees on code and rank.",
+  "researchCheck": "English and Arabic searches recorded with result URLs. NIC first-party portal description advertises national WMS/WFS but supplies no En Nahud parcel layer; linked geoportal timed out in the worker attempt. Registry custody remains null; no native-ID polygon sample is present.",
+  "reason": "No public En Nahud parcel ID and full polygon response or independent adapter qualification. Required fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details check are absent. Timeout is not citywide absence."
+}

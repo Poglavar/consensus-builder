@@ -1,0 +1,118 @@
+{
+  "name": "Bulandshahr",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1013,
+  "point": [
+    28.4057994042145,
+    77.8519494710285
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bulandshahr Uttar Pradesh official land records Bhu Naksha cadastral map public",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "Official Bulandshahr district page directs users to UP Bhulekh and says service covers all tehsils. Public UP BhuNaksha viewer initially showed Agra district/tehsil/village rather than target; no target village resolved and no parcel geometry queried.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "Hindi",
+        "query": "बुलंदशहर भू नक्शा खतौनी जमीन नक्शा उत्तर प्रदेश सरकारी",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "Official Bulandshahr district page directs users to UP Bhulekh and says service covers all tehsils. Public UP BhuNaksha viewer initially showed Agra district/tehsil/village rather than target; no target village resolved and no parcel geometry queried.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Uttar Pradesh Bhulekh and BhuNaksha public services",
+        "operator": "Uttar Pradesh Revenue Board / Bulandshahr District Administration",
+        "homeUrl": "https://bulandshahar.nic.in/service/online-land-records/",
+        "observation": "Official Bulandshahr district page directs users to UP Bhulekh and says service covers all tehsils. Public UP BhuNaksha viewer initially showed Agra district/tehsil/village rather than target; no target village resolved and no parcel geometry queried."
+      }
+    ],
+    "requests": [
+      {
+        "observation": "Public selector opened on default Agra district 146 / tehsil 00766 / village 124649, not target; no parcel query or geometry claim.",
+        "method": "GET",
+        "url": "https://upbhunaksha.gov.in/"
+      },
+      {
+        "checkedAt": "2026-10-09T05:42:07.564263+00:00",
+        "url": "https://bulandshahar.nic.in/service/online-land-records/",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "finalUrl": "https://bulandshahar.nic.in/service/online-land-records/",
+        "bytesRead": 115311,
+        "boundedReadIncomplete": false,
+        "sha256": "fe32bd0018d59d77d366ffcef631dc8907cb6b9f1f172ccaac90a3561c55af60",
+        "title": "Online Land Records | District Bulandshahr, Government of Uttar Pradesh | India"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-8799-LOCAL-CADASTRE-REVIEW",
+    "name": "Uttar Pradesh Bhulekh and BhuNaksha public services",
+    "url": "https://bulandshahar.nic.in/service/online-land-records/",
+    "operator": "Uttar Pradesh Revenue Board / Bulandshahr District Administration",
+    "serviceType": "Official local registry/cadastre reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public selector opened on default Agra district 146 / tehsil 00766 / village 124649, not target; no parcel query or geometry claim.",
+    "verifiedOpenScope": "Official Bulandshahr district page directs users to UP Bhulekh and says service covers all tehsils. Public UP BhuNaksha viewer initially showed Agra district/tehsil/village rather than target; no target village resolved and no parcel geometry queried.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-polygon response exposed; no owner/address lookup made.",
+  "remainingUncertainty": "Parcel presence at WUP point and any public feature endpoint remain unverified.",
+  "nextStep": "If official source later exposes a documented feature service, inspect schema and make a bounded full-geometry query.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8799,
+  "cityId": "wup2025:8799",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    28.4057994042145,
+    77.8519494710285
+  ],
+  "population2025k": 543.659,
+  "populationUnit": "persons",
+  "queueRank": 1013,
+  "population2025": 543659,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Bulandshahr district Online Land Records service directs local access to UP Bhulekh and describes coverage across its tehsils. The UP BhuNaksha viewer opened with Agra defaults; those defaults do not establish coverage at the unchanged Bulandshahr locator. No correct-city native full-polygon response was verified.",
+  "registryEvidenceUrls": [
+    "https://bulandshahar.nic.in/service/online-land-records/",
+    "https://upbhunaksha.gov.in/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-polygon response exposed; no owner/address lookup made."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootPreviousRegistryBasis": "Public selector opened on default Agra district 146 / tehsil 00766 / village 124649, not target; no parcel query or geometry claim.",
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The official Bulandshahr district Online Land Records service directs local access to UP Bhulekh and describes coverage across its tehsils. The UP BhuNaksha viewer opened with Agra defaults; those defaults do not establish coverage at the unchanged Bulandshahr locator. No correct-city native full-polygon response was verified."
+}

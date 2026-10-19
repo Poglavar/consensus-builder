@@ -1,0 +1,26 @@
+{
+  "taskId": "city:2456",
+  "decision": "held",
+  "checkedAt": "2026-10-11T16:46:46Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-2456-neuqu-n.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/neuqu-n-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-2456-neuqu-n-sample.geojson",
+    "tmp/valhalla-parcel-research/2456/ide-parcel.json",
+    "tmp/valhalla-parcel-research/2456/layer.json",
+    "tmp/valhalla-parcel-research/2456/ide-exact.geojson",
+    "tmp/valhalla-parcel-research/2456/extent.geojson",
+    "world-parcels/research/subnational/AR/Q.json"
+  ],
+  "identityFinding": "Official WUP 2025 archive SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114, rank roster, queue, and packet agree: code 2456, rank 2640, Argentina, [-38.9516300686619,-68.0804705509146] latitude/longitude, 223753 persons.",
+  "searchFinding": "Paired packet and review record English and Spanish query text, result URLs, and first-party cadastral endpoint requests; no separate query-execution transcript was retained.",
+  "custodyFinding": true,
+  "custodyReason": "First-party Neuquén provincial Catastro Parcelas layer returned local polygons with native OBJECTID; this is a provincial custodian, not verified complete municipal coverage.",
+  "geometryFinding": "Three full sample polygons match cached first-party ArcGIS geometries exactly and retain only canonical id mapped from OBJECTID. Independent EPSG:32719 GEOS checks found each sample valid, positive-area and mutually nonoverlapping. Cached exact-point response has zero features and the bounded response sets exceededTransferLimit=true; neither establishes citywide absence or a complete manifest.",
+  "qualificationFinding": "No fresh independent adapter exact-ID read, forced paging, 13 aligned bounded cells, full-source metric overlap/operation checks, proposal source binding, or headed Details-panel verification; runtime remains held.",
+  "runtimeAdmitted": false
+}

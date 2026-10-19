@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3233-maroua.json",
+  "city": "Maroua",
+  "wupCityCode": 3233,
+  "country": "Cameroon",
+  "countryCode": "CM",
+  "purpose": "Determine whether first-party MINDCAF/cadastre evidence links a local Maroua/Diamaré registry custodian, separating it from MINHDU urban-planning services.",
+  "assessment": "Maroua is officially identified as the chief town of the Diamaré department. MINDCAF’s official 2023 statistical yearbook and organization material establish that its departmental delegations include a Departmental Cadastre Service and Land Conservation. However, neither the official yearbook nor the MINDCAF materials reviewed identify a Diamaré/Maroua MINDCAF delegation or say it serves Maroua. The locally named MINHDU office is a different ministry and is not evidence of cadastre custody. Consequently the city-local MINDCAF custody link remains unestablished and should stay null under the requested evidence standard.",
+  "registryCustody": "unresolved_local_mindcaf_link_not_verified",
+  "registryFound": null,
+  "registryBasis": "No first-party MINDCAF source found that identifies a Diamaré or Maroua cadastre/land-registry office. National organization rules say departmental delegations contain a cadastre service and land conservation; MINAT identifies Maroua as the Diamaré chief town. That administrative linkage is insufficient to establish the local MINDCAF office or WUP-point title coverage. MINHDU planning office evidence is separate and not transferable.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.mindcaf.gov.cm/media/filer_public/5a/23/5a234f08-0ccc-4b44-9887-d314c27dd70b/annuaire_statistique_2023.pdf",
+      "observation": "Official MINDCAF statistical yearbook. Pages 17–18 describe regional and departmental delegations; the latter contain a Service Départemental du Cadastre and Conservation Foncière. Search/find of this document returned no “Diamaré” or “Maroua” match, so it does not establish a locality-specific office."
+    },
+    {
+      "url": "https://mindcaf.gov.cm/fr/organisation/",
+      "observation": "Official ministry organization page reproduces decree 2012/390; Articles 104 and 110 describe the jurisdiction and cadastral functions of generic departmental MINDCAF delegations/services. It does not name Maroua or Diamaré."
+    },
+    {
+      "url": "https://minat.gov.cm/presentation/carte-des-regions/extreme-nord/",
+      "observation": "Official MINAT regional page states Maroua is chief town of the Diamaré department and of the Far North region. This locates the city administratively, but does not identify MINDCAF custody."
+    },
+    {
+      "url": "https://www.minhdu.gov.cm/contact/",
+      "observation": "MINHDU source identifies a local planning/urban-development office; MINHDU is institutionally distinct from MINDCAF and this page is not evidence of cadastral or land-registry custody."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Maroua cadastral registry MINDCAF Diamaré Cameroon local land registry official",
+      "result": "Search did not locate a first-party MINDCAF page identifying a Maroua or Diamaré cadastral office. Official national MINDCAF organization material and MINAT administrative geography were reviewed; together they do not establish that office’s local presence or jurisdiction.",
+      "method": "Separate English-language web search and first-party source review."
+    },
+    {
+      "language": "French",
+      "query": "Maroua cadastre MINDCAF délégation départementale Diamaré cadastre officiel",
+      "result": "Search found MINDCAF’s official national organization/delegation rules and official MINAT geography linking Maroua as chef-lieu of Diamaré, but no MINDCAF result naming a local Diamaré/Maroua cadastral delegation. The MINHDU contact result is a different custodian. A non-government academic/other directory result was excluded.",
+      "method": "Separate French-language web search, then official MINDCAF and MINAT source review."
+    }
+  ],
+  "geometryAssessment": "No parcel geometry or title lookup was requested. This assessment does not infer parcel coverage at the WUP point from administrative geography.",
+  "recommendation": "Retain registryFound=null until a first-party MINDCAF source explicitly names the Diamaré/Maroua delegation, cadastre service, or land conservation office. Do not count MINHDU urban-planning evidence as registry custody. No existing packet was edited.",
+  "scopeLimits": {
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "geometryQueried": false,
+    "exactWupPointTitleCoverageAsserted": false
+  }
+}

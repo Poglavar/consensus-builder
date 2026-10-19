@@ -1,0 +1,94 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "HU",
+ "country": "Hungary",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "partial_or_unofficial_sample",
+ "status": "partial_or_unofficial_sample",
+ "cadastreAuthority": "Lechner Knowledge Centre (national INSPIRE server, inspire.gov.hu -> inspire.lechnerkozpont.hu); land registry by Land Offices (Kormanyhivatal) via Takarnet / e-Ingatlan-nyilvantartas",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: <per country, e.g. el-GR,el;q=0.9,en;q=0.8>; cookie jar on; Referer = viewer/portal origin",
+ "inspireRecordUrl": "http://inspire.lechnerkozpont.hu/geonetwork/srv/api/records/adc31900-5237-4ee3-ba73-f40b169266fa/formatters/xml (ATOM), also records 2d1c17e0-4e0a-4884-9e1f-f31ee44913f0 (view) and 278bb777-aaac-4678-bd91-d4032c7e8a8c (dataset), all titled 'Mesterszallas sampling area'",
+ "portalsFound": [
+  {
+   "url": "https://inspire.gov.hu/",
+   "observation": "'Orszagos INSPIRE szerver', links only to inspire.lechnerkozpont.hu"
+  },
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geonetwork/srv/",
+   "observation": "GeoNetwork CSW; CP records describe a 'Mesterszallas sampling area' only, ATOM abstract: cadastral parcels of Mesterszallas sampling area, 1:500"
+  },
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geoserver/wfs",
+   "observation": "single CP feature type CP:CP.CadastralParcels (plus 'mesterszallas' and 'vab' types); GetCapabilities 200"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geoserver/wfs?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "only CP feature type is CP:CP.CadastralParcels"
+  },
+  {
+   "url": "...wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP:CP.CadastralParcels&resultType=hits",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html (GML body)",
+   "assessment": "numberMatched=1774"
+  },
+  {
+   "url": "...&count=1774 (full)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html (GML body)",
+   "assessment": "1806 rings all within EPSG:23700 x 752964-760282, y 173355-183147 (about 7 x 10 km around Mesterszallas): the layer is a pilot area, not national"
+  },
+  {
+   "url": "https://map.foldhivatal.hu/, https://www.takarnet.hu/, https://e-ingatlan.gov.hu/, https://www.ingatlan.gov.hu/, https://arcgis.takarnet.hu/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "CONNECT 502 / connection reset: not reachable from this network"
+  },
+  {
+   "url": "https://inspire.lechnerkozpont.hu/geonetwork/srv/eng/csw (GetRecords 'parcel')",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/xml",
+   "assessment": "only sampling-area CP records; no national CP service registered"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "hu-lechner-inspire-cp",
+  "requestUrl": "https://inspire.lechnerkozpont.hu/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=CP:CP.CadastralParcels&count=3&startIndex=1000",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/html; charset=UTF-8 (body WFS 2.0 GML)",
+  "spatialTestAreaLonLat": "Mesterszallas, ~46.55N 20.5E (only place covered)",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member",
+  "geometryType": "Surface/PolygonPatch",
+  "closedRings": true,
+  "idField": "gml:id / nationalCadastralReference",
+  "responseFile": "europe/HU-parcel-response.json",
+  "pagination": "count/startIndex; hits=1774",
+  "regionSampled": "Mesterszallas only"
+ },
+ "regionsSampled": [
+  "Mesterszallas (only)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "INSPIRE sampling area only",
+  "regionsVerified": [
+   "Mesterszallas"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open (sample); national parcel data not open online from what was reachable",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "remainingUncertainty": "Full national CP (DAT) is not published by the national INSPIRE server; the e-Ingatlan/Takarnet/foldhivatal viewer hosts did not connect from here so their backend was not inspected.",
+ "nextStep": "Retry foldhivatal/takarnet viewers from a Hungary-reachable network; otherwise treat HU as sample only."
+}

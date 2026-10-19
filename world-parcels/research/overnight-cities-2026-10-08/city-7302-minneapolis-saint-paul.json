@@ -1,0 +1,151 @@
+{
+  "name": "Minneapolis [Saint Paul]",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 466,
+  "point": [
+    44.9726015122978,
+    -93.2378207757913
+  ],
+  "population2025": 1107243,
+  "population2025k": 1107.243,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Hennepin County assessment parcels on the Minneapolis side of the combined Minneapolis–Saint Paul settlement. Thirteen aligned cells plus four adjacent pans and an expanded 35-view check around the unchanged WUP locator yielded 10 distinct full county parcel geometries. Native EPSG:26915 count and object-ID manifests agreed, forced three-row paging completed, all 10 fresh COUNTY_PIN reads reproduced geometry, and explicit absence, full footprint lookup and complete proposal binding passed. GEOS in EPSG:26915 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only OBJECTID transport keys and native COUNTY_PIN identifiers accompany geometry. The exact WUP point returned no parcel; nearby verified polygons remain usable. Hennepin metadata describes taxed, tax-exempt and stacked multi-PID assessment parcels; the small sampled area contains no stacked duplicates, while broader county completeness and topology remain unverified. The endpoint is named Parcels_2025; its current revision and identity continuity after replacement were not established. Saint Paul/Ramsey coverage remains a separate source. Published survey and legal-use notices are retained as scope information.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Hennepin County’s public County Parcels dataset is maintained from parcel geometry created by the County Survey Division and county property-tax data. It provides local parcel GIS, but is an assessor/tax parcel fabric and carries a non-survey/legal-use disclaimer.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Settlement-wide coverage across Minneapolis and Saint Paul requires separate county sources. Only Hennepin County was sampled here. Exact point non-intersection does not establish that the entire source lacks coverage or that no legal parcel exists.",
+  "nextStep": "Inspect enabled Hennepin source in headed Minneapolis app.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Minneapolis official parcel map property polygons city GIS open data",
+        "result": "Found Minneapolis GIS/open-data guidance and Hennepin County public parcel data; exact locator is within Minneapolis and Hennepin County, while nearby polygons but no exact-point parcel were returned.",
+        "method": "Separate English-language discovery search, official service metadata and bounded point/envelope requests."
+      },
+      {
+        "language": "English",
+        "query": "Minneapolis Hennepin parcels 2025 Metropolitan Council COUNTY_PIN public polygon query",
+        "result": "Fresh root search returned Metropolitan Council parcel schema and official Hennepin County dataset metadata explaining monthly extracts and stacked multi-PID assessment geometry. Qualification uses the specific Hennepin layer, not the regional administrative layer.",
+        "method": "Separate root discovery query on 9 October 2026."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.minneapolismn.gov/government/departments/it/gis/",
+        "observation": "Minneapolis GIS page points users to City GIS, Open Data Minneapolis and City of Saint Paul GIS as separate resources."
+      },
+      {
+        "url": "https://gis.data.mn.gov/maps/hennepin::county-parcels/about",
+        "observation": "Minnesota Geospatial Commons identifies the public Hennepin County County Parcels dataset, monthly refresh, and county PIN field; describes stacked multi-PID geometries."
+      },
+      {
+        "url": "https://www.arcgis.com/home/item.html?id=7975aabf6e1e42998a40a4b085ffefdf&sublayer=1",
+        "observation": "Hennepin County metadata says parcel geometry is created and maintained by Hennepin County Survey Division, combined with county property-tax extracts, and is not suitable for legal, engineering or surveying use."
+      },
+      {
+        "url": "https://arcgis.metc.state.mn.us/data1/rest/services/cd/city_boundaries/MapServer/0",
+        "observation": "Metropolitan Council city-boundary layer used to identify exact WUP point as Minneapolis."
+      },
+      {
+        "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3",
+        "observation": "Metropolitan Council Hennepin County parcel layer queried with safe field allowlist only."
+      },
+      {
+        "url": "https://www.hennepincounty.gov/services/property/property-maps-data",
+        "observation": "Official Hennepin County property page lists public property maps, survey plats and maps for download or purchase."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Exact coordinate was queried against a public Metropolitan Council city-boundary layer and Hennepin County parcel layer. The boundary service returned Minneapolis. The parcel service returned no exact-point feature; a bounded 25 m square query returned two nearby polygons. Existing Ramsey County app source is specifically scoped to Saint Paul and is not a match for this Minneapolis point.",
+      "geometryStatus": "HTTP 200 boundary exact point: Minneapolis; HTTP 200 Hennepin exact parcel point: empty; HTTP 200 25 m envelope: 2 polygons",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 2,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Exact-point parcel query returned empty; 25 m square query returned two polygons",
+      "retainedFeatures": 2,
+      "fieldsRequested": [
+        "OBJECTID",
+        "COUNTY_PIN"
+      ],
+      "geometryRetained": true,
+      "geojsonFile": "city-7302-minneapolis-saint-paul-samples.geojson"
+    }
+  },
+  "sourceIds": [
+    "us-mn-hennepin-county-parcels-metroc"
+  ],
+  "queueRank": 466,
+  "wupCityCode": 7302,
+  "cityId": "wup2025:7302",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    44.9726015122978,
+    -93.2378207757913
+  ],
+  "verifiedSampleFile": "city-7302-minneapolis-saint-paul-samples.geojson",
+  "adapterReady": true,
+  "source": {
+    "sourceId": "us-mn-hennepin-county-parcels-metroc",
+    "name": "Hennepin County Parcels (Metropolitan Council public layer)",
+    "operator": "Hennepin County GIS and Survey Division; public query service hosted by Metropolitan Council",
+    "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3",
+    "layer": 3,
+    "geometryType": "Polygon",
+    "coordinateReferenceSystem": "EPSG:26915 native; EPSG:4326 requested output",
+    "nativeIdFields": [
+      "COUNTY_PIN"
+    ],
+    "requestedAttributes": [
+      "OBJECTID",
+      "COUNTY_PIN",
+      "geometry"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "Hennepin County assessment parcels on the Minneapolis side of the combined Minneapolis–Saint Paul settlement. Thirteen aligned cells plus four adjacent pans and an expanded 35-view check around the unchanged WUP locator yielded 10 distinct full county parcel geometries. Native EPSG:26915 count and object-ID manifests agreed, forced three-row paging completed, all 10 fresh COUNTY_PIN reads reproduced geometry, and explicit absence, full footprint lookup and complete proposal binding passed. GEOS in EPSG:26915 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only OBJECTID transport keys and native COUNTY_PIN identifiers accompany geometry. The exact WUP point returned no parcel; nearby verified polygons remain usable. Hennepin metadata describes taxed, tax-exempt and stacked multi-PID assessment parcels; the small sampled area contains no stacked duplicates, while broader county completeness and topology remain unverified. The endpoint is named Parcels_2025; its current revision and identity continuity after replacement were not established. Saint Paul/Ramsey coverage remains a separate source. Published survey and legal-use notices are retained as scope information."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hennepin County tax parcel layer; Minneapolis point verified within city boundary. Does not cover the Saint Paul side of the combined WUP settlement.",
+    "verifiedOpenScope": "Hennepin County assessment parcels on the Minneapolis side of the combined Minneapolis–Saint Paul settlement. Thirteen aligned cells plus four adjacent pans and an expanded 35-view check around the unchanged WUP locator yielded 10 distinct full county parcel geometries. Native EPSG:26915 count and object-ID manifests agreed, forced three-row paging completed, all 10 fresh COUNTY_PIN reads reproduced geometry, and explicit absence, full footprint lookup and complete proposal binding passed. GEOS in EPSG:26915 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only OBJECTID transport keys and native COUNTY_PIN identifiers accompany geometry. The exact WUP point returned no parcel; nearby verified polygons remain usable. Hennepin metadata describes taxed, tax-exempt and stacked multi-PID assessment parcels; the small sampled area contains no stacked duplicates, while broader county completeness and topology remain unverified. The endpoint is named Parcels_2025; its current revision and identity continuity after replacement were not established. Saint Paul/Ramsey coverage remains a separate source. Published survey and legal-use notices are retained as scope information.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://gis.data.mn.gov/maps/hennepin::county-parcels/about",
+    "https://www.arcgis.com/home/item.html?id=7975aabf6e1e42998a40a4b085ffefdf&sublayer=1",
+    "https://www.hennepincounty.gov/services/property/property-maps-data"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "Hennepin County assessment parcels on the Minneapolis side of the combined Minneapolis–Saint Paul settlement. Thirteen aligned cells plus four adjacent pans and an expanded 35-view check around the unchanged WUP locator yielded 10 distinct full county parcel geometries. Native EPSG:26915 count and object-ID manifests agreed, forced three-row paging completed, all 10 fresh COUNTY_PIN reads reproduced geometry, and explicit absence, full footprint lookup and complete proposal binding passed. GEOS in EPSG:26915 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only OBJECTID transport keys and native COUNTY_PIN identifiers accompany geometry. The exact WUP point returned no parcel; nearby verified polygons remain usable. Hennepin metadata describes taxed, tax-exempt and stacked multi-PID assessment parcels; the small sampled area contains no stacked duplicates, while broader county completeness and topology remain unverified. The endpoint is named Parcels_2025; its current revision and identity continuity after replacement were not established. Saint Paul/Ramsey coverage remains a separate source. Published survey and legal-use notices are retained as scope information.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/minneapolis-hennepin-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/minneapolis-hennepin-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/minneapolis-hennepin-service-review.json"
+  },
+  "appCityId": "minneapolis",
+  "runtimeQualification": {
+    "sourceId": "us-mn-hennepin-county-parcels-metroc",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/minneapolis-hennepin-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/minneapolis-hennepin-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T00:40:24.924125+00:00"
+}

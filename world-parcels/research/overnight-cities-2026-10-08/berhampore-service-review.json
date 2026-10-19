@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11733-berhampore.json",
+  "purpose": "Document local district/state land-record evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The district administration directs Berhampore residents to the State land-record portal. Banglarbhumi lists plot-map and mouza-map request services, but those Citizen Services require login; no public vector geometry was verified. The WUP point was not assigned to a local Mouza or ward, so the district/state registry discovery is not treated as exact location coverage.",
+  "registryAssessment": "Local land-record service pathway exists through the Berhampore SDO and West Bengal portal. No exact parcel/map record was queried.",
+  "officialPrimarySources": [
+    {
+      "url": "https://murshidabad.gov.in/service/land-records/",
+      "observation": "Murshidabad District administration says citizens access Land & Land Reforms Department services through Banglarbhumi and lists the Berhampore SDO office."
+    },
+    {
+      "url": "https://murshidabad.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/",
+      "observation": "Bengali district page repeats the same official land-service portal and Berhampore location."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "observation": "State Land & Land Reforms portal lists Plot Map Request, Mouza Map Request and Mouza Map Availability Details; page instructs users to log in before using Citizen Services."
+    },
+    {
+      "url": "https://berhamporemunicipality.org.in/Default.aspx?PageId=514",
+      "observation": "Municipality page lists the civic body’s area/ward context; it did not provide a vector boundary or parcel data used in this review."
+    },
+    {
+      "url": "https://planning.wb.gov.in/departmentdetails/11",
+      "observation": "West Bengal Planning and Statistics describes state/district GIS administrative layers including Mouza boundaries; it is not a parcel layer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Berhampore Murshidabad official land records cadastral map plot map Banglarbhumi",
+      "result": "Found district land-record service directing citizens to Banglarbhumi and Berhampore municipal context; no public vector endpoint found.",
+      "method": "Separate English-language discovery search and official page review."
+    },
+    {
+      "language": "Bengali",
+      "query": "বহরমপুর মুর্শিদাবাদ মৌজা নকশা ভূমি ও ভূমি সংস্কার দপ্তর",
+      "result": "Found the district’s Bengali land-record page, which points to the West Bengal state portal; no target-specific Mouza or public vector geometry was obtained.",
+      "method": "Separate Bengali-language discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://murshidabad.gov.in/service/land-records/",
+      "method": "GET official district service page",
+      "observation": "Links citizens to Banglarbhumi; page location is Berhampore SDO."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET homepage via web reader",
+      "observation": "Portal lists plot/mouza map services, with an explicit login prerequisite for Citizen Services; page fetch timed out."
+    },
+    {
+      "url": "https://berhamporemunicipality.org.in/Default.aspx?PageId=514",
+      "method": "GET official municipal context",
+      "observation": "Describes municipality but no machine-readable parcel or administrative boundary."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, title or plot-record lookup was submitted; no parcel geometry retained.",
+  "runtimeAssessment": "not_enabled_no_public_vector_response_verified"
+}

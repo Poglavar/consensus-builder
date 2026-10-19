@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5534,
+  "cityId": "wup2025:5534",
+  "name": "Pishva",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "iso3": "IRN",
+  "centerLatLon": [35.3147323433886, 51.7203431759136],
+  "point": [35.3147323433886, 51.7203431759136],
+  "queueRank": 1467,
+  "population2025": 388154,
+  "population2025k": 388.154,
+  "populationUnit": "persons",
+  "cohorts": ["overnight-next-1401-1500-2026-10-09"],
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pishva Iran official cadastral map land parcels cadastre public GIS",
+        "result": "No official Pishva parcel viewer or anonymous parcel geometry service was found. Search results identified SSAA as Iran's national registration/cadastre custodian, but no public endpoint, layer schema, CRS, or bounded parcel response was available.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://shamim.ssaa.ir",
+          "https://www.pishva.ir/"
+        ]
+      },
+      {
+        "language": "Persian (local/native)",
+        "query": "پیشوا نقشه کاداستر املاک قطعات زمین سازمان ثبت اسناد و املاک",
+        "result": "Persian-language discovery identified the national SSAA/Shamim cadastre references and a local report about اداره ثبت اسناد و املاک شهرستان پیشوا and its cadastre unit. No public Pishva parcel map/API or safe anonymous ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://ssaa.ir",
+          "https://shamim.ssaa.ir",
+          "https://t.me/s/pishvast?after=51414"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "Iran's national registration/cadastre custodian is evidenced, and a non-first-party local report describes a Pishva registry office and cadastre unit. A current official local registry page or public Pishva parcel service was not independently verified, so registryFound remains null.",
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://ssaa.ir",
+      "operator": "State Organization for Registration of Deeds and Properties of Iran",
+      "observation": "National registration authority lead identified in discovery; anonymous HTTPS checks timed out before a public map/API or schema could be inspected."
+    },
+    {
+      "url": "https://shamim.ssaa.ir",
+      "operator": "SSAA Shamim positioning/cadastre service lead",
+      "observation": "Cadastre-related service lead identified in discovery; anonymous HTTPS checks timed out. No login, credential, token, or CAPTCHA route was attempted."
+    },
+    {
+      "url": "https://t.me/s/pishvast?after=51414",
+      "operator": "Local news channel, not a cadastral authority",
+      "observation": "Reports that the Pishva registry office has a cadastre unit; this is contextual evidence only and does not establish a public parcel service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://ssaa.ir",
+      "method": "HEAD/GET",
+      "status": "timeout",
+      "result": "Anonymous TLS request timed out after 15 seconds; no page, viewer configuration, endpoint, schema, CRS, or geometry returned."
+    },
+    {
+      "url": "https://shamim.ssaa.ir",
+      "method": "HEAD/GET",
+      "status": "timeout",
+      "result": "Anonymous TLS request timed out after 15 seconds; no page, viewer configuration, endpoint, schema, CRS, or geometry returned."
+    },
+    {
+      "url": "https://map.ssaa.ir",
+      "method": "HEAD",
+      "status": "timeout/unfinished",
+      "result": "Anonymous probe did not produce a usable response within the bounded check; no map/API or parcel response obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Iran national registration/cadastre leads and Pishva local registry context.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "geometryDecision": "No GeoJSON retained. No safe anonymous native parcel ID-plus-geometry response was available; the exact WUP point was not used to infer absence.",
+  "sourceIds": [],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "safeFieldAllowlist": ["stable native parcel or cadastral identity if publicly exposed", "geometry", "source CRS", "service layer name"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax/account", "private credentials or tokens"],
+  "remainingUncertainty": "A public SSAA/Shamim map or service may exist but could not be reached in the bounded anonymous checks. Pishva point inclusion, parcel-layer schema/CRS, and citywide coverage remain unverified.",
+  "nextStep": "A serial reviewer should independently check current SSAA/Shamim public configuration and any Tehran Province/Pishva registry map route, then qualify a geometry-only native-ID sample before adapter consideration."
+}

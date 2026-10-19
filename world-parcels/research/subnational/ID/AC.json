@@ -1,0 +1,96 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "ID",
+ "regionCode": "AC",
+ "regionName": "Aceh",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Chrome/126 desktop UA (Mozilla/5.0 (X11; Linux x86_64) ... Chrome/126.0.0.0 Safari/537.36), Accept application/json, Accept-Language id-ID, cookie jar, Referer https://satupeta.big.go.id/",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "name": "BIG Satu Peta - Peta Penggunaan dan Kepemilikan Tanah (Hak Milik) 1:5000, sublayer 17 Aceh",
+  "operator": "Badan Informasi Geospasial (BIG) Satu Peta, data from Kementerian ATR/BPN",
+  "scope": "titled (hak milik) parcels, sparse, part of the province only",
+  "endpoint": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/17",
+  "method": "ArcGIS REST query",
+  "responseFormat": "esri JSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "licence/terms not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "id-big-satupeta-hak-milik",
+  "requestUrl": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/17/query?where=1%3D1&geometry=95.327,5.591,95.331,5.595&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   95.327,
+   5.591,
+   95.331,
+   5.595
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "nib (not unique alone; pair with kelurahan; objectid is OID)",
+  "responseFile": "AC-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset",
+  "regionSampled": "Banda Aceh"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "Layer extent spans most of the province but count-only probes show data only in patches. Second Aceh area with data: box 96.8-97.0E,5.1-5.3N (1796 features count-only). Boxes at 96.0,4.0 and 97.6,3.6 were empty. Fields on layer: objectid, kecamatan, kelurahan, tipehak, nib, shape; only objectid and nib requested.",
+ "subregionsVerified": [
+  "Banda Aceh"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer",
+   "observation": "BIG Satu Peta ArcGIS MapServer"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "observation": "ATR/BPN BHUMI viewer, token-gated, not used"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/10?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "group layer 10 lists 15 province sublayers: NTB 11, Jatim 12, DIY 13, Kalbar 14, Sulbar 15, Kaltara 16, Aceh 17, Sultra 18, Maluku 19, Kaltim 20, Jabar 21, Bali 22, Banten 23, Kepri 24, Jateng 25"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/17?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "Feature Layer with fields objectid,kecamatan,kelurahan,tipehak,nib,shape"
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/17/query (returnCountOnly, several boxes)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "counts: {\"95.31,5.54,95.33,5.56\": 0, \"95.30,5.50,95.40,5.60\": 2284}; Second Aceh area with data: box 96.8-97.0E,5.1-5.3N (1796 features count-only). Boxes at 96.0,4.0 and 97.6,3.6 were empty."
+  },
+  {
+   "url": "https://kspservices.big.go.id/satupeta/rest/services/PUBLIK/PERIZINAN_DAN_PERTANAHAN/MapServer/17/query?where=1%3D1&geometry=95.327,5.591,95.331,5.595&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=objectid,nib&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 closed polygons, ID+geometry only"
+  },
+  {
+   "url": "https://bhumi.atrbpn.go.id/peta",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Next.js app shell only; no open parcel endpoint identified (see research/jakarta.json); token-gated internal API not used"
+  }
+ ],
+ "reuseStatus": "not read; BIG Satu Peta terms unverified",
+ "remainingUncertainty": "Coverage patchy; only titled hak-milik parcels; currency and licence unknown; provincial geoportal not checked for a fuller layer.",
+ "nextStep": "Read BIG/ATR-BPN terms; map coverage extent; look for kabupaten/kota-level parcel services."
+}

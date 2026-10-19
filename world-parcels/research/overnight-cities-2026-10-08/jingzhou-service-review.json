@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10026-jingzhou.json",
+  "purpose": "Document city-local registry evidence and schema-first anonymous public geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Hubei’s official Natural Resources Department reports that the Jingzhou Real Estate Registration and Transaction Center provides “one certificate, one code, scan to see map” services for the city center; it describes cadastral/rights survey as part of registration and identifies parcel maps and building subdivision plans as registry products. This is city-local registry evidence, but no anonymous, schema-safe parcel vector endpoint was identified. Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried.",
+  "registryAssessment": "Hubei’s official Natural Resources Department reports that the Jingzhou Real Estate Registration and Transaction Center provides “one certificate, one code, scan to see map” services for the city center; it describes cadastral/rights survey as part of registration and identifies parcel maps and building subdivision plans as registry products. This is city-local registry evidence, but no anonymous, schema-safe parcel vector endpoint was identified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202204/t20220421_4091526.shtml",
+      "observation": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2631/site/attach/0/c09ab04507344ac2ba6cea77527834bd.pdf",
+      "observation": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jingzhou Hubei official cadastral parcel map land registry natural resources GIS",
+      "result": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "Chinese",
+      "query": "荆州市不动产登记中心 以图查房 地籍图 查询 荆州市自然资源和规划局",
+      "result": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried.",
+      "method": "Separate language-specific search and official source/service review."
+    }
+  ],
+  "geometryDecision": "No geometry retained; no anonymous schema-safe public parcel feature endpoint was identified.",
+  "coverageAssessment": {
+    "claimedScope": "Hubei’s official Natural Resources Department reports that the Jingzhou Real Estate Registration and Transaction Center provides “one certificate, one code, scan to see map” services for the city center; it describes cadastral/rights survey as part of registration and identifies parcel maps and building subdivision plans as registry products. This is city-local registry evidence, but no anonymous, schema-safe parcel vector endpoint was identified.",
+    "verifiedOpenScope": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202204/t20220421_4091526.shtml",
+      "outcome": "Official registry/map evidence review only; no individual property query or feature service call.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2631/site/attach/0/c09ab04507344ac2ba6cea77527834bd.pdf",
+      "outcome": "Official registry/map evidence review only; no individual property query or feature service call.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether the registry’s visual-map access has a separately published anonymous geometry layer and which legal/native key is suitable remain unresolved.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime adapter/contract test was performed."
+  },
+  "technicalBlocker": "The inspected official record service is certificate/QR based; no anonymous GIS feature schema or safe geometry-only query was exposed. No login, certificate QR, address or property lookup was attempted."
+}

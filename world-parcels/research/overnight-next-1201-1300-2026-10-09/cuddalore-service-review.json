@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10743-cuddalore.json",
+  "purpose": "Independent review of Cuddalore first-party registry context and bounded anonymous geometry access.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Cuddalore District Government and Tamil Nadu NIC sources evidence district Survey and Land Records custody and a public e-services workflow for land records and cadastral maps. The bounded anonymous review could not reach the current viewer/API, so no safe parcel ID, schema, CRS, or geometry was verified.",
+  "registryAssessment": "Local registry/cadastre procedure and custodians evidenced through official Cuddalore District material; this is institutional custody evidence, not admission of a public parcel source or runtime integration.",
+  "officialPrimarySources": [
+    {"url": "https://cuddalore.nic.in/survey/", "observation": "District Survey page identifies the Assistant Director of Survey and Land Records, district survey offices and computerised A-Register, Chitta, FMB, Natham and Town records."},
+    {"url": "https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/", "observation": "District service page lists public Patta/FMB, Chitta, TSLR, A-Register and FMB-sketch services and links the official Tamil Nadu e-services portal."},
+    {"url": "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/", "observation": "NIC Tamil Nadu describes the Integrated Land Record combining Record of Rights, FMB/maps and Chitta and links TamilNilam/e-services."},
+    {"url": "https://cdnbbsr.s3waas.gov.in/s3b5f1e8fb36cd7fbeb7988e8639ac79e9/uploads/2025/01/2025010931.pdf", "observation": "Official technical overview describes CollabLand cadastral-map digitisation and public cadastral-map access through e-services."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Cuddalore Tamil Nadu official cadastral parcel map GIS land records survey map", "result": "Official Cuddalore District Survey/e-Services and Tamil Nadu NIC land-record documentation found; no verified anonymous parcel geometry route.", "resultUrls": ["https://cuddalore.nic.in/survey/", "https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/", "https://tn.nic.in/news/additional-land-records-services-launch-by-honourable-minister-for-revenue-and-disaster-management-tamil-nadu/"]},
+    {"language": "Tamil", "query": "கடலூர் அதிகாரப்பூர்வ நில அளவை வரைபடம் பட்டா நிலப்பதிவு GIS", "result": "Official Tamil Nadu/Cuddalore land-record service context found; current viewer/API was not anonymously inspectable in the bounded review.", "resultUrls": ["https://cuddalore.nic.in/", "https://eservices.tn.gov.in/eservicesnew/index.html", "https://tamilnilam.tn.gov.in/citizen"]}
+  ],
+  "attempts": [
+    {"url": "https://eservices.tn.gov.in/eservicesnew/index.html", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "result": "Timed out after 25 seconds; no page JavaScript/configuration or API route inspected."},
+    {"url": "https://www.tngis.tn.gov.in/apps.html", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "result": "Timed out; no current app configuration inspected."},
+    {"url": "https://tngis.tn.gov.in/apps/gi_viewer/", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "result": "Timed out; no map service request or geometry response."},
+    {"url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/5849", "method": "GET; anonymous; TLS verification enabled", "httpStatus": "timeout", "result": "Official DILRMP Cuddalore route timed out; no digitisation-status payload retained."}
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "exactWupPointTest": "Not performed against a verified feature layer; exact WUP point [11.754857981796, 79.7597932867723] remains unchanged and no absence inference is made.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {"claimedScope": "Official district/state land-record and cadastral-map services.", "verifiedOpenScope": "Registry custody and public procedure only; parcel geometry access unverified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe public survey/cadastral identifier if available", "geometry", "CRS", "non-sensitive layer/schema metadata"],
+  "runtimeReadiness": "held_quality_review",
+  "remainingUncertainty": "A public sketch/map may become available through the official hierarchy-based interface, but the current anonymous viewer/API was unreachable. No owner, address, contact, titleholder, tax, account or personal fields were requested or retained."
+}

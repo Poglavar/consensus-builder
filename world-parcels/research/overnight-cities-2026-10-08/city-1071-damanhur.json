@@ -1,0 +1,152 @@
+{
+  "name": "Damanhur",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 949,
+  "point": [
+    31.0363291084858,
+    30.4665319161784
+  ],
+  "population2025": 579215,
+  "population2025k": 579.215,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "An official Ministry of Finance directory lists the Damanhur real-estate registration office and a Damanhur registry unit in Beheira. The Egyptian Survey Authority (ESA) describes its role in ownership maps and property records and offers digital maps through a written request/quotation/payment process. This confirms local record/map institutions, but not open vector data.",
+  "registryEvidenceUrls": [
+    "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+    "https://www.esa.gov.eg/main.aspx",
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+    "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+  ],
+  "resultCategory": "official_registry_no_public_vector_geometry",
+  "remainingUncertainty": "Whether a separate city cadastral viewer or public service API exists; whether any anonymous full polygon is available at the WUP center; formal CRS/native parcel-ID schema.",
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "EG-ESA-DAMANHUR-MAP-PRODUCTS",
+    "name": "Egyptian Survey Authority survey and digital map products",
+    "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+    "operator": "Egyptian Survey Authority, Ministry of Water Resources and Irrigation, Government of Egypt; local office directory from Ministry of Finance.",
+    "serviceType": "Official land-survey and digital-map products by request; no anonymous parcel feature API or geometry endpoint verified.",
+    "layer": "ESA map-product catalogue; Damanhur cadastral layer not publicly identified.",
+    "geometryType": "Map products; no machine-readable full polygon returned.",
+    "outputCrs": null,
+    "nativeIdField": "Map request area/scale/layer selection; parcel-level native ID schema not published in the open service page.",
+    "nativeIdEvidence": "No feature record or parcel identifier was returned."
+  },
+  "sourceIds": [],
+  "wupCityCode": 1071,
+  "cityId": "wup2025:1071",
+  "queueRank": 949,
+  "centerLatLon": [
+    31.0363291084858,
+    30.4665319161784
+  ],
+  "technicalBlocker": "ESA digital mapping is handled as a map-product request with selected area/scale/layers and quotation/payment; no anonymous vector endpoint was exposed in the public service pages inspected.",
+  "coverageAssessment": {
+    "claimedScope": "Beheira real-estate registration and ESA survey/map products. ESA topographic map-sheet coverage is not treated as a cadastral vector layer.",
+    "verifiedOpenScope": "The Ministry of Finance directory lists Damanhur real-estate registration. ESA states its historic role in producing ownership maps/registers, and its digital map product workflow is request-based. No anonymous Damanhur parcel vector service or full geometry response was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "ESA digital mapping is handled as a map-product request with selected area/scale/layers and quotation/payment; no anonymous vector endpoint was exposed in the public service pages inspected."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Arabic",
+        "query": "دمنهور البحيرة الشهر العقاري المساحة خريطة كادستر قطع الأراضي رسمي",
+        "scope": "Find first-party Damanhur property-register and survey/map service evidence.",
+        "result": "Official Ministry of Finance data lists a real-estate registration office in Damanhur. ESA official pages describe ownership-map and survey products; the digital map workflow is a request-based product process rather than an anonymous parcel vector API.",
+        "actualResultUrls": [
+          "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+        ],
+        "executionMethod": "Separate Arabic search and official Ministry of Finance/ESA page review."
+      },
+      {
+        "language": "English",
+        "query": "Damanhur Beheira official land registry cadastral parcel map Egyptian Survey Authority GIS",
+        "scope": "Cross-check local registry and public full-geometry access.",
+        "result": "The local registration office and ESA map-product source are confirmed. The ESA map index identifies Beheira map-sheet products, but no anonymous cadastral feature service or full polygon was obtained.",
+        "actualResultUrls": [
+          "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+        ],
+        "executionMethod": "Separate English search followed by official local-office and ESA product-path review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "observation": "An official Ministry of Finance directory lists the Damanhur real-estate registration office and a Damanhur registry unit in Beheira. The Egyptian Survey Authority (ESA) describes its role in ownership maps and property records and offers digital maps through a written request/quotation/payment process. This confirms local record/map institutions, but not open vector data."
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "observation": "An official Ministry of Finance directory lists the Damanhur real-estate registration office and a Damanhur registry unit in Beheira. The Egyptian Survey Authority (ESA) describes its role in ownership maps and property records and offers digital maps through a written request/quotation/payment process. This confirms local record/map institutions, but not open vector data."
+      },
+      {
+        "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "observation": "An official Ministry of Finance directory lists the Damanhur real-estate registration office and a Damanhur registry unit in Beheira. The Egyptian Survey Authority (ESA) describes its role in ownership maps and property records and offers digital maps through a written request/quotation/payment process. This confirms local record/map institutions, but not open vector data."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "observation": "An official Ministry of Finance directory lists the Damanhur real-estate registration office and a Damanhur registry unit in Beheira. The Egyptian Survey Authority (ESA) describes its role in ownership maps and property records and offers digital maps through a written request/quotation/payment process. This confirms local record/map institutions, but not open vector data."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "method": "official directory review",
+        "observation": "Ministry of Finance PDF lists the Damanhur real-estate registration office and local Damanhur registry unit."
+      },
+      {
+        "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Official ESA digital-map product page describes request/quotation/payment workflow; no anonymous vector query is offered."
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "method": "GET / official authority page review",
+        "observation": "ESA documents its survey and ownership-map/register mandate."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "method": "official map-index review",
+        "observation": "Map-sheet products cover the region; these are not a full-geometry parcel endpoint."
+      }
+    ],
+    "geometryDecision": "No full parcel polygon retained. Tile/raster/document outputs, guessed layers, and unverified points are not parcel geometry."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+    "fetch": "error",
+    "reason": "<urlopen error [Errno 54] Connection reset by peer>"
+  },
+  "rootReviewNote": "Reviewed the local institutional evidence separately from public geometry. Indexed official evidence and direct readback failures are distinguished; no full polygon response was verified. Registry null indicates uncertainty rather than absence.",
+  "rootReviewedAt": "2026-10-09T04:48:05.515266+00:00"
+}

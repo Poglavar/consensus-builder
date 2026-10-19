@@ -1,0 +1,85 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 3094,
+  "queueRank": 3163,
+  "name": "Sibu",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "iso2": "MY",
+  "iso3": "MYS",
+  "locId": 458,
+  "capital": false,
+  "aliases": ["sibu"],
+  "point": [2.29910957244445, 111.842326008594],
+  "population2025": 189927,
+  "population2025k": 189.927,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sibu Malaysia official cadastral parcel map GIS land registry Sarawak JUPEM",
+        "result": "First-party discovery identified the Sarawak Land and Survey Department, its eLASIS public portal, and a Sibu-specific official district page. eLASIS documents cadastral map products and Mobile LASIS land search/map layers; anonymous parcel-vector download was not exposed in the reviewed public pages.",
+        "actualResultUrls": ["https://landsurvey.sarawak.gov.my/web/subpage/webpage_view/1699", "https://landsurvey.sarawak.gov.my/page-0-0-575-Planning-Information-System-PLIS.html", "https://elasis.sarawak.gov.my/modules/web/index.php", "https://elasis.sarawak.gov.my/page-0-28-24-Cadastral-Map-Sheet.html"]
+      },
+      {
+        "language": "Malay (local/national language)",
+        "query": "Sibu Malaysia peta kadaster lot tanah rasmi Sarawak JUPEM",
+        "result": "Malay-language/official discovery identified JUPEM cadastral products and the Sarawak eLASIS cadastral-map service. The reviewed eLASIS material describes cadastral boundaries, lot numbers, and Timbalai 1948 / RSO Borneo Meters for cadastral sheets; no anonymous parcel geometry response was obtained.",
+        "actualResultUrls": ["https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T", "https://elasis.sarawak.gov.my/page-0-28-24-Cadastral-Map-Sheet.html", "https://www.jupem.gov.my/ebiz/info-korp"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Land and Survey Department Sarawak (Jabatan Tanah dan Survei Sarawak), through eLASIS/LASIS; the official Sibu page lists Sibu Town District and other Sibu land districts.",
+    "locality": "Sibu, Sarawak, Malaysia; official Sibu district and Sibu Town District pages were reviewed.",
+    "evidenceUrls": ["https://landsurvey.sarawak.gov.my/web/subpage/webpage_view/1699", "https://landsurvey.sarawak.gov.my/web/subpage/webpage_view/1941", "https://elasis.sarawak.gov.my/modules/web/index.php", "https://elasis.sarawak.gov.my/page-0-28-24-Cadastral-Map-Sheet.html"],
+    "scopeNote": "Local/state cadastral custody and public map/product procedures are evidenced. Open parcel-vector coverage and a safe anonymous parcel API for Sibu are not established."
+  },
+  "officialSources": [
+    {"url": "https://landsurvey.sarawak.gov.my/web/subpage/webpage_view/1699", "observation": "Official Sibu page lists Sibu District land districts, including SIBU TOWN DISTRICT and SEDUAN LAND DISTRICT."},
+    {"url": "https://landsurvey.sarawak.gov.my/page-0-0-575-Planning-Information-System-PLIS.html", "observation": "Official page describes Mobile LASIS as Sarawak Land and Survey Department's public land-search/map service, including search by parcel identifier or coordinates and lot-boundary/labelling layers."},
+    {"url": "https://elasis.sarawak.gov.my/page-0-28-24-Cadastral-Map-Sheet.html", "observation": "Official eLASIS page describes cadastral map sheets showing survey-lot boundaries and lot numbers; it states Timbalai 1948 and RSO Borneo Meters for the cadastral sheet product."},
+    {"url": "https://elasis.sarawak.gov.my/modules/web/index.php", "observation": "Official eLASIS portal exposes eMap cadastral products and eSearch land-registry products; current public access requires SarawakPass for services."},
+    {"url": "https://mygos.mygeoportal.gov.my/gisserver/rest/services/UPI/UPI/MapServer?f=pjson", "observation": "Official/current national UPI ArcGIS service metadata returned Admin1-Admin4 polygon layers in EPSG:4326, not parcel layers."}
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Sarawak Land and Survey Department/eLASIS public pages; bounded myGOS UPI service inspection",
+    "nativeIdField": null,
+    "crs": "eLASIS cadastral sheets document Timbalai 1948 / RSO Borneo Meters; the inspected myGOS UPI administrative service reports EPSG:4326. No parcel geometry was returned to validate parcel CRS.",
+    "boundedResponse": "The inspected UPI service exposed only Admin1-Admin4 administrative polygons. An exact WUP-point intersects query against Admin4 with outFields OBJECTID_1, GlobalID, FCD and returnGeometry=true returned an empty feature array; this was not a parcel query and is not evidence of citywide absence.",
+    "note": "The exact WUP point was preserved and not shifted. No parcel polygon or source-specific attribute set is retained."
+  },
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://landsurvey.sarawak.gov.my/web/subpage/webpage_view/1699", "outcome": "HTTP 200; official Sibu district page and named land districts reviewed."},
+    {"method": "GET", "url": "https://landsurvey.sarawak.gov.my/page-0-0-575-Planning-Information-System-PLIS.html", "outcome": "HTTP 200; official Mobile LASIS land-search and map-layer scope reviewed."},
+    {"method": "GET", "url": "https://landsurvey.sarawak.gov.my/web/subpage/webpage_view/1941", "outcome": "HTTP 200; official Sibu Town District page loaded, but no public parcel vector was exposed."},
+    {"method": "GET", "url": "https://elasis.sarawak.gov.my/modules/web/index.php", "outcome": "HTTP 200; eLASIS public portal and product/service catalogue reviewed; no anonymous parcel-vector endpoint exposed."},
+    {"method": "GET", "url": "https://elasis.sarawak.gov.my/page-0-28-24-Cadastral-Map-Sheet.html", "outcome": "HTTP 200; cadastral map-sheet procedure, lot-boundary scope, and documented CRS reviewed; product purchase/access route, not anonymous parcel JSON."},
+    {"method": "GET", "url": "https://elasis.sarawak.gov.my/eLasis/welcome", "outcome": "HTTP 200; current portal states SarawakPass is required for eLASIS services; no login or credentials used."},
+    {"method": "GET", "url": "https://mygos.mygeoportal.gov.my/gisserver/rest/services/UPI/UPI/MapServer?f=pjson", "outcome": "HTTP 200; service schema inspected. Layers are Admin1, Admin2, Admin3, Admin4; no parcel layer."},
+    {"method": "GET", "url": "https://mygos.mygeoportal.gov.my/gisserver/rest/services/UPI/UPI/MapServer/3/query", "outcome": "HTTP 200; exact-point EPSG:4326 query returned zero Admin4 features with safe administrative fields and geometry requested. Not treated as a parcel hit/miss or citywide absence test."},
+    {"method": "GET", "url": "https://ebiz.jupem.gov.my/PetaInteraktif?c=pl&jenis=Pemetaan&no=7991&type=MY701T", "outcome": "Official JUPEM interactive product page located; it describes digital cadastral-lot purchasing and shows login requirement for purchase. No login or purchase attempted."}
+  ],
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public source/service metadata", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "No usable anonymous parcel-vector response; no parcel hit/miss or citywide absence inference."},
+  "coverageAssessment": {"claimedScope": "Sarawak Land and Survey Department/eLASIS cadastral and land-registry services, including Sibu districts.", "verifiedOpenScope": "Local/state cadastral custodian, Sibu district scope, public cadastral-map procedures, and public map/search feature descriptions were evidenced; anonymous Sibu parcel geometry and native identity semantics were not verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "integration": "not_admitted",
+  "scopeLimits": ["Exact WUP point [2.29910957244445, 111.842326008594] was preserved and not shifted to force a hit.", "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.", "No parcel polygon or source-specific raw attribute set is retained.", "No Sibu-specific anonymous parcel response, validated returned parcel CRS, native identity semantics, completeness, or update cadence was verified.", "No login, credentials, private token, CAPTCHA/Cloudflare bypass, owner/address/titleholder/personal/tax fields, or unsafe registry fields were requested.", "This packet records research only and is not source integration or admission."],
+  "uncertainty": "Sarawak Land and Survey Department/eLASIS is a clearly evidenced local/state cadastral custodian for Sibu, but the public materials reviewed expose product and map-search descriptions rather than a safely queryable anonymous parcel ID-plus-geometry response. Runtime remains held."
+}

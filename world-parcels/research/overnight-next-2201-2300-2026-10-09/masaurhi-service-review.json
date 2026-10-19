@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-11051-masaurhi.json",
+  "cityCode": 11051,
+  "queueRank": 2260,
+  "name": "Masaurhi",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [25.3588202274754, 85.0679366427528],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/index.jsp","httpStatus":200,"outcome":"Official Bihar BhuNaksha viewer loaded."},
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/assets/misc/config.js","httpStatus":200,"outcome":"Official configuration exposed public relative service path."},
+    {"method":"GET","url":"https://bhunaksha.bihar.gov.in/index.js","httpStatus":200,"outcome":"Current JavaScript inspected; it uses REST location, extent, plot-at-XY and GeoServer WMS routes."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/Levels/count","httpStatus":200,"outcome":"Returned 7 location levels for state 10 (Bihar)."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/village_selector.jsp","httpStatus":200,"outcome":"Returned Bihar district selectors including Patna code 28."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel","httpStatus":200,"outcome":"For state 10 and Patna code 28, returned Masaurhi subdivision code 04; for 28,04 returned Masaurhi circle code 12; village selector included Chhotki Masaurhi code 0744."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/ScalarDatahandler","httpStatus":200,"outcome":"Returned village HTML for state 10, selections 28,04,12; included Chhotki Masaurhi (0744)."},
+    {"method":"POST","url":"https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref","httpStatus":200,"outcome":"Candidate requests for GIS selections 28,04,12,0744 and 28,04,12,0755 returned empty bodies; no extent, CRS, parcel ID, or geometry was available."}
+  ],
+  "schemaAndCrs": {"localViewer":"BhuNaksha Bihar/NIC cadastral viewer","geometryCrs":null,"nativeIdentity":null,"safeResponse":null},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified","polygon geometry","source service URL","CRS","retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","tax/account","certificate/title","personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true,"runtimeReadiness":"held","reason":"No bounded anonymous parcel ID-plus-geometry response was verified."},
+  "scopeLimits": ["The WUP point was not shifted to force a hit.","Candidate village extent misses and empty responses do not establish citywide absence.","Official national/state agency descriptions are not by themselves local parcel coverage evidence.","No login, credentials, CAPTCHA bypass, private token, or unsafe field was used."],
+  "uncertainty": "The official Bihar cadastral viewer and state custodian are evidenced, and Masaurhi's administrative codes were resolved. Public geometry retrieval remained unresolved; this packet records discovery and attempted routes only, not source integration or admission."
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2731-manizales.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Manizales local cadastral custody and bounded anonymous official-service checks without treating a timeout or unavailable UI as parcel absence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Manizales has evidenced local cadastral GIS custody through the Alcaldía SIG/GEOPREDIAL services and an operating MASORA gestor record in the official IGAC registry. Municipal direct requests timed out, so no parcel geometry was retained and runtime qualification remains held.",
+  "registryAssessment": "IGAC's Gestores_Catastrales query for 17001 returned Manizales, Caldas, with MASORA as gestor_catastral, EN OPERACION status, and gestor contratado por the municipality. Municipal SIG indexed metadata identifies urban LIMITE PREDIAL and Hacienda GEOPREDIAL Predios_Manizales polygon services.",
+  "coverageAssessment": {
+    "claimedScope": "Official Manizales municipal SIG/GEOPREDIAL services and IGAC gestor registry.",
+    "verifiedOpenScope": "Municipal layer metadata and local custody; no returned parcel feature.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {"url": "https://sig.manizales.gov.co/index.html", "operator": "Alcaldía de Manizales", "observation": "Official municipal GIS portal."},
+    {"url": "https://sig.manizales.gov.co/wadmzl/rest/services/2022_WEB/2022_consulta_catas_urbano_web_NEW/MapServer/1", "operator": "SIG-Alcaldía de Manizales", "observation": "Indexed official metadata for polygon LIMITE PREDIAL layer 1."},
+    {"url": "https://sig.manizales.gov.co/wadmzl/rest/services/HACIENDA/servicio_GEOPREDIAL/MapServer/layers", "operator": "Alcaldía de Manizales, Hacienda", "observation": "Indexed official metadata for polygon Predios_Manizales layer 2; unsafe attributes were excluded."},
+    {"url": "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1", "operator": "IGAC", "observation": "Anonymous query confirms the operating local cadastral gestor for 17001."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Manizales Colombia official cadastral map parcel GIS cadastre Alcaldía IGAC", "actualResultUrls": ["https://sig.manizales.gov.co/index.html", "https://sig.manizales.gov.co/wadmzl/rest/services/HACIENDA/servicio_GEOPREDIAL/MapServer/layers", "https://www.igac.gov.co/datos-abiertos/datos-abiertos-geoespaciales"]},
+    {"language": "Spanish", "query": "Manizales Colombia mapa catastral oficial predios SIG catastro Alcaldía IGAC", "actualResultUrls": ["https://sig.manizales.gov.co/wadmzl/rest/services/2022_WEB/2022_consulta_catas_urbano_web_NEW/MapServer/1", "https://sig.manizales.gov.co/Manuales/manual1.pdf", "https://mapas.igac.gov.co/server/rest/services/catastro/Gestores_Catastrales/MapServer/1"]}
+  ],
+  "attempts": [
+    "Attempted anonymous verified-TLS GET of the municipal SIG portal; curl timed out after 20 seconds.",
+    "Attempted anonymous verified-TLS GET of the 2022 urban LIMITE PREDIAL service metadata; curl timed out after 20 seconds.",
+    "Attempted an anonymous exact-point urban parcel query using the unchanged WUP point and safe OBJECTID-only output; host timed out before a response.",
+    "Attempted anonymous verified-TLS GET of the municipal GEOPREDIAL layers metadata; curl timed out after 20 seconds.",
+    "Did not issue a GEOPREDIAL feature query after repeated host timeouts; no geometry was retained.",
+    "Queried official IGAC Gestores_Catastrales for mpcodigo 17001 with safe custody fields only; HTTP 200 returned the MASORA operating gestor record.",
+    "No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS-verification exception was used."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No feature response obtained at exact point [5.05763763232812, -75.4975616323303]; exact coordinates preserved unchanged.",
+    "requestEvidence": [
+      {"url": "https://sig.manizales.gov.co/wadmzl/rest/services/2022_WEB/2022_consulta_catas_urbano_web_NEW/MapServer/1/query", "method": "GET; anonymous; exact point; safe OBJECTID only", "httpStatus": null, "assessment": "Timed out before response; not evidence of absence."},
+      {"url": "https://sig.manizales.gov.co/wadmzl/rest/services/HACIENDA/servicio_GEOPREDIAL/MapServer/2", "method": "GET; anonymous metadata", "httpStatus": null, "assessment": "Timed out; indexed metadata identifies a polygon candidate but no geometry was accepted."}
+    ],
+    "identityProvenance": "If a future safe feature response is independently verified, prefer native terreno_codigo, IDPH or ficha_nuev as returned by the municipal service; OBJECTID is only a service OID fallback. Never use an internal synthetic row number."
+  },
+  "safeFieldAllowlist": ["terreno_codigo", "IDPH", "ficha_nuev", "local_id", "GmlID", "t_ili_tid", "npn", "OBJECTID only as service OID fallback", "geometry", "CRS/layer metadata"],
+  "nextStep": "Hold for serial review. Only a separately verified anonymous feature response with safe native ID and geometry should advance runtime qualification.",
+  "remainingUncertainty": "Municipal services may be intermittently available or require a different current endpoint, and the indexed service metadata does not prove citywide completeness. Timeouts do not establish parcel absence."
+}

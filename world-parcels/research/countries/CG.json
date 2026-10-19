@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "CG",
+  "country": "Congo",
+  "checkedAt": "2026-09-29",
+  "status": "no_online_cadastre_found",
+  "cadastreAuthority": "Unknown; land/cadastral regime documents refer to the Ministry of Land Affairs (Cadastre) but no online portal identified",
+  "portalsFound": [
+    {
+      "url": "https://download.geofabrik.de/africa/congo-brazzaville.html",
+      "observation": "OpenStreetMap extract only (from brazzaville.json); not an official cadastre."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.geoportail.cg/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "guessed host unreachable"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "none found",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "City evidence found no official portal; only guessed hosts failed.",
+  "nextStep": "Look for a national land-tenure information system or donor-funded cadastre portal."
+}

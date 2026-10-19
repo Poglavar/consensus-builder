@@ -1,27 +1,31 @@
 import { test, expect } from '../helpers/fixtures';
 import { waitForMapReady } from '../helpers/app';
-import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal } from '../helpers/blockchain';
+import { getWalletStates, injectMockEvmWallet, injectMockSolanaWallet, openWalletModal, waitForBlockchainRuntime } from '../helpers/blockchain';
 import { selectors } from '../helpers/selectors';
 
 test.describe('Wallet connection @features', () => {
-  test('wallet connection module is loaded', async ({ mockApi: page }) => {
-    await page.goto('/');
+  // This asserts the CDN chain (ethers + solanaWeb3) actually loaded — a real browser concern, and
+  // the canary for every wallet test below. It used to also probe connectWallet / walletConnect /
+  // disconnectWallet / getWalletAddress / getConnectedAddress: none of those exist anywhere in the
+  // app, and their results were computed and then never asserted on. Removed rather than left to
+  // imply coverage that was never there — the real wallet API is `walletManager`, exercised below.
+  test('the wallet CDN libraries (ethers + solanaWeb3) are loaded', async ({ mockApi: page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
+    await waitForBlockchainRuntime(page, ['ethers', 'solanaWeb3', 'walletManager']);
 
     const walletModule = await page.evaluate(() => {
       const w = window as any;
       return {
-        hasWalletConnect: typeof w.connectWallet === 'function' || typeof w.walletConnect === 'function',
-        hasDisconnect: typeof w.disconnectWallet === 'function',
-        hasGetAddress: typeof w.getWalletAddress === 'function' || typeof w.getConnectedAddress === 'function',
         hasEthers: typeof w.ethers !== 'undefined',
         hasSolanaWeb3: typeof w.solanaWeb3 !== 'undefined',
+        hasWalletManager: typeof w.walletManager === 'object' && w.walletManager !== null,
       };
     });
 
-    // Core blockchain libraries should be loaded
     expect(walletModule.hasEthers).toBe(true);
     expect(walletModule.hasSolanaWeb3).toBe(true);
+    expect(walletModule.hasWalletManager).toBe(true);
   });
 
   test('EVM wallet connects through the connector modal and can disconnect', async ({ mockApi: page }) => {
@@ -31,7 +35,7 @@ test.describe('Wallet connection @features', () => {
       walletKind: 'metamask',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 
@@ -73,7 +77,7 @@ test.describe('Wallet connection @features', () => {
       walletKind: 'metamask',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 
@@ -100,7 +104,7 @@ test.describe('Wallet connection @features', () => {
       providerName: 'phantom',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 
@@ -146,7 +150,7 @@ test.describe('Wallet connection @features', () => {
       providerName: 'brave',
     });
 
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitForMapReady(page);
     await openWalletModal(page);
 

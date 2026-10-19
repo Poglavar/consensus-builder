@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "kind": "municipal_parcel_source_diagnostic",
+  "cityId": "wup2025:8064",
+  "name": "Jaipur",
+  "countryCode": "IN",
+  "checkedAt": "2026-10-08T14:26:04.877253+00:00",
+  "registryFound": true,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "publicViewer": {
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+    "localOutcome": "TCP connection timeout",
+    "secondaryNetworkOutcome": "HTTP 200 public HTML; published map scripts retrieved",
+    "controls": [
+      "Khasra Search",
+      "Plots/Scheme Search",
+      "Khasra layer",
+      "Plot layer"
+    ],
+    "provenance": "Official Rajasthan Urban GIS Portal; disclaimer attributes khasra/village boundaries to Settlement Department and other data to the respective urban agency. Viewing data are not a legal boundary certification."
+  },
+  "advertisedLayers": [
+    {
+      "role": "Khasra parcel boundaries",
+      "configKey": "KHASARA",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0"
+    },
+    {
+      "role": "JDA scheme plots",
+      "configKey": "JDASCHEME",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/JDA_Plots/MapServer/0"
+    }
+  ],
+  "anonymousBootstrap": {
+    "url": "https://rajdharaa.rajasthan.gov.in/RajdharaaCommonWebAPI/api/GenerateGISToken",
+    "method": "POST",
+    "body": "empty form body",
+    "httpStatus": 200,
+    "responseStatus": true,
+    "serviceNames": [
+      "geocode",
+      "basemap",
+      "departmental",
+      "dynamicquery",
+      "gatishakti",
+      "rajasthan"
+    ],
+    "workflow": "The published registerTokens.js calls this without user credentials as ordinary citizen-viewer initialization.",
+    "retainedTokenValues": false
+  },
+  "serviceAvailability": "The advertised gisprod.rajasthan.gov.in layer metadata endpoints timed out during TCP connection from both networks, before TLS and before any geometry response. Anonymous bootstrap success does not establish downstream service health. No metadata, feature geometry, identifier values or data update date was retrieved from these layers.",
+  "alternativeTownPlan": {
+    "url": "https://gis.rajasthan.gov.in/TownPlan/Default.aspx",
+    "outcome": "Public HTML and scripts returned HTTP 200. Its anonymous rajasthan/rest/services directory returned an empty services/folders listing; no additional verified parcel feed surfaced."
+  },
+  "requests": [
+    {
+      "key": "jaipur-udh-retry",
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+      "httpStatus": "000",
+      "effectiveUrl": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+      "contentType": null,
+      "checkedAt": "2026-10-08T14:16:56.006054+00:00",
+      "curlExitCode": 28,
+      "error": "curl: (28) Failed to connect to rajdharaa.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached",
+      "certificateException": false,
+      "initialTlsError": null,
+      "bytes": 0
+    },
+    {
+      "key": "jaipur-townplan",
+      "url": "https://gis.rajasthan.gov.in/TownPlan/Default.aspx",
+      "httpStatus": "200",
+      "effectiveUrl": "https://gis.rajasthan.gov.in/TownPlan/Default.aspx",
+      "contentType": "text/html; charset=utf-8",
+      "checkedAt": "2026-10-08T14:16:49.878922+00:00",
+      "curlExitCode": 0,
+      "error": "",
+      "certificateException": false,
+      "initialTlsError": null,
+      "bytes": 58308,
+      "sha256": "6bf0e9000dcbc6a5ff2348547ad9b1c7826232ca94fd2b1d6e0d9ad91c742c44"
+    },
+    {
+      "key": "jaipur-services",
+      "url": "https://gis.rajasthan.gov.in/rajasthan/rest/services?f=pjson",
+      "httpStatus": "200",
+      "effectiveUrl": "https://gis.rajasthan.gov.in/rajasthan/rest/services?f=pjson",
+      "contentType": "text/plain;charset=utf-8",
+      "checkedAt": "2026-10-08T14:16:49.486909+00:00",
+      "curlExitCode": 0,
+      "error": "",
+      "certificateException": false,
+      "initialTlsError": null,
+      "bytes": 61,
+      "sha256": "cea25d67e230a8188622bd131ab17f1917edf4abaf1357ffbf44305e515f52bf"
+    },
+    {
+      "key": "jaipur-udh-config",
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js",
+      "checkedAt": "2026-10-08T14:18:46.316353+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 5609,
+      "sha256": "ee5c5fb9a1ae35a37f038eff90c07919e3d2a4d8a3f6bf1394181b23c9c830af",
+      "certificateException": false
+    },
+    {
+      "key": "jaipur-udh-map",
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/map.js",
+      "checkedAt": "2026-10-08T14:18:47.307147+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 350281,
+      "sha256": "cabc1045835823fea9cd45dd9185af2b99146cde0063c2f04752fab6b2a64ff8",
+      "certificateException": false
+    },
+    {
+      "key": "jaipur-udh-register",
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/registerTokens.js",
+      "checkedAt": "2026-10-08T14:18:46.287854+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 2587,
+      "sha256": "a305db8744946a7c6763ccc56ee84157d1ee5d6683fa8c93cce8ab8ea2fd8efd",
+      "certificateException": false
+    },
+    {
+      "key": "jaipur-jdaplots-meta",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/JDA_Plots/MapServer/0?f=pjson",
+      "httpStatus": "000",
+      "effectiveUrl": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/JDA_Plots/MapServer/0?f=pjson",
+      "contentType": null,
+      "checkedAt": "2026-10-08T14:19:54.565963+00:00",
+      "curlExitCode": 28,
+      "error": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached",
+      "certificateException": false,
+      "initialTlsError": null,
+      "bytes": 0
+    },
+    {
+      "key": "jaipur-settlement-meta",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson",
+      "httpStatus": "000",
+      "effectiveUrl": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson",
+      "contentType": null,
+      "checkedAt": "2026-10-08T14:19:54.566502+00:00",
+      "curlExitCode": 28,
+      "error": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached",
+      "certificateException": false,
+      "initialTlsError": null,
+      "bytes": 0
+    },
+    {
+      "key": "jaipur-settlement0-meta",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+      "httpStatus": "000",
+      "effectiveUrl": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+      "contentType": null,
+      "checkedAt": "2026-10-08T14:19:54.566838+00:00",
+      "curlExitCode": 28,
+      "error": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8006 ms: Timeout was reached",
+      "certificateException": false,
+      "initialTlsError": null,
+      "bytes": 0
+    },
+    {
+      "key": "jaipur-jdaplots-meta-secondary",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/JDA_Plots/MapServer/0?f=pjson",
+      "checkedAt": "2026-10-08T14:20:33.331380+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 28,
+      "httpStatus": "000",
+      "effectiveUrl": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/JDA_Plots/MapServer/0?f=pjson",
+      "contentType": "",
+      "error": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8000 ms: Timeout was reached",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "certificateException": false
+    },
+    {
+      "key": "jaipur-settlement-meta-secondary",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson",
+      "checkedAt": "2026-10-08T14:20:33.269754+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 28,
+      "httpStatus": "000",
+      "effectiveUrl": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson",
+      "contentType": "",
+      "error": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8000 ms: Timeout was reached",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "certificateException": false
+    },
+    {
+      "key": "jaipur-settlement0-meta-secondary",
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+      "checkedAt": "2026-10-08T14:20:33.367042+00:00",
+      "network": "secondary dev-server network",
+      "curlExitCode": 28,
+      "httpStatus": "000",
+      "effectiveUrl": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+      "contentType": "",
+      "error": "curl: (28) Failed to connect to gisprod.rajasthan.gov.in port 443 after 8000 ms: Timeout was reached",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "certificateException": false
+    }
+  ],
+  "blocker": "Advertised official parcel services are currently unreachable from both checked networks. Certificate bypass cannot cure a pre-TLS TCP timeout.",
+  "nextStep": "Retry the exact public parcel services when reachable, following the portal’s ordinary anonymous bootstrap if required, then request only geometry and parcel identifiers in a small Jaipur bbox. Confirm location, polygon quality and fresh identity resolution before enabling a provider."
+}

@@ -1,0 +1,93 @@
+{
+  "cityRecord": "city-6804-abu-kabir.json",
+  "cityCode": 6804,
+  "queueRank": 2118,
+  "rank": 2118,
+  "name": "Abu Kabir",
+  "cityName": "Abu Kabir",
+  "country": "Egypt",
+  "iso2": "EG",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [30.7271238942036, 31.6760236518254],
+  "population2025": 274073,
+  "population2025k": 274.073,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "discoveryMethod": "Separate first-party English and Egyptian-Arabic discovery, official ESA page review, Sharqia district-route inspection, and bounded anonymous GET checks of public pages; no parcel API route was exposed.",
+  "queryOutcomes": "English and Arabic discovery both identified the Egyptian General Survey Authority as the national survey/map custodian. ESA's official digital-map page documents a paid/request workflow requiring location, scale, layers, format, and projection; its district page links a Sharqia office map. No public parcel viewer, JavaScript map configuration, service URL, native parcel schema, or anonymous parcel geometry response was found. The government land-survey statement URL failed TLS verification because its certificate was expired; the certificate was not bypassed.",
+  "attempts": [
+    {
+      "method": "web search",
+      "language": "English",
+      "query": "Egypt official cadastral map parcel viewer Abu Kabir Sharqia cadastral map Egyptian General Survey Authority",
+      "outcome": "First-party ESA main site, digital-map page, and district-map route found; no public Abu Kabir parcel API/viewer found."
+    },
+    {
+      "method": "web search",
+      "language": "Arabic (Egypt)",
+      "query": "أبو كبير الشرقية خريطة كادسترية قطع الأراضي الهيئة المصرية العامة للمساحة",
+      "outcome": "First-party Arabic ESA pages and the Sharqia district route found; no public parcel API/viewer found."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "httpStatus": 200,
+      "outcome": "Official Arabic ESA page loaded; it identifies survey/property-map responsibilities and links map services."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "httpStatus": 200,
+      "outcome": "Official digital-map page loaded. It documents formal purchase/request steps and offers scale choices 1:50000, 1:2500, and 1:5000; no public parcel query endpoint or schema was exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/testmap.aspx",
+      "httpStatus": 200,
+      "outcome": "Official district page loaded. Its image map links the Sharqia district office map; it does not provide parcel geometry or parcel identifiers."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/districts/%D8%B4%D8%B1%D9%82%D9%8A%D8%A9.jpeg",
+      "httpStatus": 200,
+      "outcome": "Sharqia district JPEG loaded as an office/district route; no parcel feature data."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.esa.gov.eg/egypt_maps.aspx",
+      "httpStatus": 200,
+      "outcome": "Official general-map catalog loaded; it contained country/region map products, not a city parcel viewer or feature service."
+    },
+    {
+      "method": "GET",
+      "url": "https://psm.gov.eg/Services/233?serviceName=-%D8%B7%D9%84%D8%A8-%D8%A8%D9%8A%D8%A7%D9%86-%D9%85%D8%B3%D8%A7%D8%AD%D9%8A-%D8%B9%D9%86-%D9%82%D8%B7%D8%B9%D8%A9-%D8%A7%D9%84%D8%A3%D8%B1%D8%B6",
+      "httpStatus": null,
+      "outcome": "TLS certificate verification failed because the certificate was expired. No retry with verification disabled was made."
+    }
+  ],
+  "sourceAssessment": {
+    "localCustodian": "No Abu Kabir-specific local cadastral custodian was evidenced. The Egyptian General Survey Authority is the evidenced national survey/map custodian; the ESA Sharqia district route is an office/contact route only.",
+    "publicService": "No public parcel service was evidenced. The strongest official candidate is ESA's digital-map request/catalog page, which requires a formal request and delivery workflow rather than anonymous feature queries.",
+    "nativeFieldsObserved": "No parcel-layer fields or native parcel identifiers were exposed by the inspected official pages.",
+    "fieldMapping": null,
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if a future official parcel feature response exposes one", "geometry: polygon"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"],
+  "scopeLimits": [
+    "ESA national custody does not establish citywide parcel coverage for Abu Kabir.",
+    "The official digital-map workflow is request/purchase based; no anonymous parcel geometry or ID response was available.",
+    "The Sharqia JPEG is an office/district route, not parcel evidence.",
+    "The failed government service TLS check and absence of a public viewer are availability findings, not evidence of cadastral absence.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI would not establish citywide absence; no such absence inference was made.",
+    "No GeoJSON sample is included because no unchanged native parcel geometry with a safe native identity was obtained.",
+    "No unsafe fields were requested or retained.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "The national official custodian and an official Sharqia route are established, but Abu Kabir-specific parcel coverage, public service availability, native identity fields, CRS, geometry access, and adapter qualification remain unresolved.",
+  "researchGroup": "north-africa",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

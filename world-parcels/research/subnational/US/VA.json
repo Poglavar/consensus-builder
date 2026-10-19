@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "VA",
+ "regionName": "Virginia",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-va-parcels",
+  "name": "Virginia Geographic Information Network (VGIN), VA Emergency Management; statewide Virginia Parcels",
+  "operator": "Virginia Geographic Information Network (VGIN), VA Emergency Management; statewide Virginia Parcels",
+  "scope": "statewide layer",
+  "endpoint": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST query (f=geojson)",
+  "crs": "EPSG:3857 (requested outSR 4326)",
+  "reuseStatus": "Description disclaimer only (cartographic use); no licence text read. Copyright: VGIN."
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36; Accept: application/json; Accept-Language: en-US,en;q=0.9; cookie jar (curl -b/-c); outbound via agent proxy, TLS verified",
+ "verifiedParcelResponse": {
+  "sourceId": "us-va-parcels",
+  "requestUrl": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json / geo+json",
+  "spatialTestAreaLonLat": "bbox ~0.0024 deg (about 200 m) around each sample point, inSR=4326",
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "Polygon",
+  "closedRings": true,
+  "idField": "PARCELID",
+  "responseFile": "research/subnational/US/VA-parcel-response.json",
+  "pagination": "resultRecordCount=3; server maxRecordCount 100000 or 2000/1000",
+  "regionSampled": "Richmond City, Fairfax City"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "VGIN statewide layer 'Virginia Parcels' aggregating locality parcel data (FIPS/LOCALITY fields); two localities sampled from the same layer. Description says boundaries are for cartographic use, not legal descriptions, and not edge-matched across jurisdictions.",
+ "subregionsVerified": [
+  "Richmond City",
+  "Fairfax City"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0",
+   "observation": "anonymous ArcGIS REST layer; found via ArcGIS Online sharing search / known state service"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=PARCELID,LOCALITY&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 polygon(s), Richmond City"
+  },
+  {
+   "url": "https://vginmaps.vdem.virginia.gov/arcgis/rest/services/VA_Base_Layers/VA_Parcels/FeatureServer/0/query?f=geojson&where=1=1&geometry=<bbox>&geometryType=esriGeometryEnvelope&inSR=4326&outFields=PARCELID,LOCALITY&returnGeometry=true&outSR=4326&resultRecordCount=3",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "json",
+   "assessment": "3 polygon(s), Fairfax City"
+  }
+ ],
+ "reuseStatus": "Description disclaimer only (cartographic use); no licence text read. Copyright: VGIN.",
+ "remainingUncertainty": "Some localities may withhold parcels from the statewide layer; coverage list not checked.",
+ "nextStep": "Check VGIN Virginia Parcels page for participating localities and terms."
+}

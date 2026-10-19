@@ -1,0 +1,112 @@
+[
+ {
+  "name": "Hyderabad",
+  "country": "Pakistan",
+  "iso2": "PK",
+  "cityCode": 5822,
+  "capital": false,
+  "lon": 68.3544103505108,
+  "lat": 25.3769138790746,
+  "pop2025k": 2863.633,
+  "rank": 174
+ },
+ {
+  "name": "Ciudad de Guatemala (Guatemala City)",
+  "country": "Guatemala",
+  "iso2": "GT",
+  "cityCode": 2063,
+  "capital": true,
+  "lon": -90.5446061703246,
+  "lat": 14.5983508835391,
+  "pop2025k": 2837.708,
+  "rank": 175
+ },
+ {
+  "name": "Lubumbashi",
+  "country": "Democratic Republic of the Congo",
+  "iso2": "CD",
+  "cityCode": 6577,
+  "capital": false,
+  "lon": 27.4813527003548,
+  "lat": -11.6638992235197,
+  "pop2025k": 2832.853,
+  "rank": 176
+ },
+ {
+  "name": "Tasikmalaya",
+  "country": "Indonesia",
+  "iso2": "ID",
+  "cityCode": 6234,
+  "capital": false,
+  "lon": 108.214688775464,
+  "lat": -7.29783520822771,
+  "pop2025k": 2827.255,
+  "rank": 177
+ },
+ {
+  "name": "Dalian",
+  "country": "China",
+  "iso2": "CN",
+  "cityCode": 10452,
+  "capital": false,
+  "lon": 121.559365721703,
+  "lat": 38.9379121386818,
+  "pop2025k": 2796.248,
+  "rank": 178
+ },
+ {
+  "name": "Yogyakarta",
+  "country": "Indonesia",
+  "iso2": "ID",
+  "cityCode": 7035,
+  "capital": false,
+  "lon": 110.434774240325,
+  "lat": -7.77431905735274,
+  "pop2025k": 2793.747,
+  "rank": 179
+ },
+ {
+  "name": "Agra",
+  "country": "India",
+  "iso2": "IN",
+  "cityCode": 8971,
+  "capital": false,
+  "lon": 78.0013166778967,
+  "lat": 27.1881643913104,
+  "pop2025k": 2786.762,
+  "rank": 180
+ },
+ {
+  "name": "Naples",
+  "country": "Italy",
+  "iso2": "IT",
+  "cityCode": 4726,
+  "capital": false,
+  "lon": 14.3092110700935,
+  "lat": 40.8614542525246,
+  "pop2025k": 2767.923,
+  "rank": 181
+ },
+ {
+  "name": "Coyah (Conacry)",
+  "country": "Guinea",
+  "iso2": "GN",
+  "cityCode": 655,
+  "capital": false,
+  "lon": -13.5649835400196,
+  "lat": 9.64830229365228,
+  "pop2025k": 2727.684,
+  "rank": 182
+ },
+ {
+  "name": "Essen",
+  "country": "Germany",
+  "iso2": "DE",
+  "cityCode": 675,
+  "capital": false,
+  "lon": 6.97216877251344,
+  "lat": 51.4886212700177,
+  "pop2025k": 2717.087,
+  "rank": 183
+ }
+]

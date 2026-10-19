@@ -1,0 +1,71 @@
+{
+  "name": "Andijon",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "rank": 658,
+  "point": [
+    40.7783436728413,
+    72.3420203468598
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Andijon Uzbekistan official cadastral map land registry GIS city",
+        "result": "Found the official national State Cadastre Chamber directory and official agency pages for Andijon; the surfaced regional office portal requires login and no public parcel map was verified.",
+        "method": "Separate English-language search followed by official cadastre directory review."
+      },
+      {
+        "language": "Uzbek",
+        "query": "Andijon shahar kadastr rasmiy Davlat kadastrlari palatasi xarita",
+        "result": "The official national cadastral directory lists Andijon shahar office, and official government results describe Andijon city cadastral work. No anonymous geometry route or schema was exposed.",
+        "method": "Separate Uzbek-language search and official cadastral-agency directory review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Andijon official registry / cadastral map sources",
+        "operator": "Official city, regional or national public authority, as described per source",
+        "homeUrl": "https://uzdkp.uz/",
+        "observation": "A city-specific cadastre office is listed in the national cadastral agency’s official directory. The regional office portal found during research is a login page, and no public geometry schema or anonymous feature service was verified. No authentication or property-record lookup was attempted."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "The official State Cadastre Chamber directory lists a distinct Andijon city office and the regional cadastral office in Andijon. Official cadastral-agency materials also discuss Andijon city land/cadastral activity. This verifies a city-local cadastre institution, not point-level public parcel access.",
+    "verifiedOpenScope": "No anonymous public geometry-only parcel response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The discoverable regional cadastral portal is login-only; no public anonymous geometry route or feature schema was found.",
+  "remainingUncertainty": "Whether the city or regional cadastre office provides a separate public geometry-only map outside the official pages reviewed.",
+  "nextStep": "If parcel geometry is needed, verify a distinct official public geometry-only feature service with a server-side allowlist before any point request.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4738,
+  "cityId": "wup2025:4738",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    40.7783436728413,
+    72.3420203468598
+  ],
+  "queueRank": 658,
+  "population2025": 803518,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official State Cadastre Chamber directory lists a distinct Andijon city office and the regional cadastral office in Andijon. Official cadastral-agency materials also discuss Andijon city land/cadastral activity. This verifies a city-local cadastre institution, not point-level public parcel access.",
+  "registryEvidenceUrls": [
+    "https://uzdkp.uz/"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

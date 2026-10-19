@@ -1,0 +1,18 @@
+{
+  "taskId": "city:9613",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-9613-chhatarpur.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/chhatarpur-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:36:11Z",
+  "identityReview": "Code 9613, rank 2170, India, exact WUP point [24.9070054895029, 79.5874445983489], and population 268598 persons match the immutable roster and pending queue.",
+  "searchReview": "Paired packet and service review record executed English and Hindi queries with first-party result URLs.",
+  "registryFound": true,
+  "custodyBasis": "The first-party Chhatarpur district Land Records page describes public spatial land records for 1210 villages and names the local Tehsildar office. This supports local custody, not city parcel geometry.",
+  "retainedFullPolygonCount": 0,
+  "reason": "The MP Bhulekh viewer timed out and no original parcel ID/geometry response, native ID, CRS, or polygon sample was obtained. The DILRMP TLS failure and viewer timeout do not establish citywide absence.",
+  "admissionGates": "Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed Details verification are not evidenced; runtime remains held."
+}

@@ -1,0 +1,33 @@
+{
+  "taskId": "city:11360",
+  "decision": "held",
+  "checkedAt": "2026-10-11T00:52:33.039499Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-11360-taishan.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/taishan-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json"
+  ],
+  "city": "Taishan",
+  "reason": "The Taishan Natural Resources Bureau page identifies the local real-estate registration bureau and cadastral duties. Its checked property-query route requires identity authentication; no safe anonymous parcel ID and polygon response or adapter qualification is evidenced.",
+  "identityValidated": {
+    "cityCode": 11360,
+    "rank": 2183,
+    "country": "China",
+    "pointLatLon": [
+      22.2508392239325,
+      112.790546990734
+    ],
+    "populationPersons": 267107
+  },
+  "bilingualSearchesRecorded": [
+    "English",
+    "native/local"
+  ],
+  "samplePolygonCount": 0,
+  "qualificationGates": "No fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification; city remains unenabled.",
+  "firstPartyPagesChecked": [
+    "https://www.cnts.gov.cn/zfgzbm/szrzyj/zwgk/zfxxgkml/zzjg/nsjg/content/post_3309759.html",
+    "https://www.cnts.gov.cn/zfgzbm/szrzyj/tpxw/content/post_2810878.html"
+  ]
+}

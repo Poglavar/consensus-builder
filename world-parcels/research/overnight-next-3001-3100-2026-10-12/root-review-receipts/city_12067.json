@@ -1,0 +1,48 @@
+{
+  "taskId": "city:12067",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:53:55Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-12067-tinsukia.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/tinsukia-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 12067,
+    "rank": 3096,
+    "name": "Tinsukia",
+    "country": "India",
+    "point": [
+      27.4879622104757,
+      95.3527522846116
+    ],
+    "populationPersons": 193952
+  },
+  "identityCheck": "Packet and paired review match the immutable pending queue, ranked roster, and original WUP 2025 bulk row; the bulk source SHA-256 matches provenance.",
+  "searchCheck": {
+    "recordedExecutedLanguages": [
+      "English",
+      "Assamese"
+    ],
+    "queriesAndResultUrlsPresent": true
+  },
+  "retainedFullPolygons": 0,
+  "safeNativeParcelIdWithGeometryVerified": false,
+  "runtimeQualification": {
+    "freshNativeIdReads": "not_evidenced",
+    "forcedPaging": "not_evidenced",
+    "boundedCells13": "not_evidenced",
+    "metricGeosValidityAndOverlap": "not_evidenced",
+    "sourceBinding": "not_evidenced",
+    "headedDetailsPanel": "not_evidenced"
+  },
+  "registryFound": true,
+  "firstPartyCustodyUrls": [
+    "https://bhunaksha.assam.gov.in/",
+    "https://dlrs.assam.gov.in/"
+  ],
+  "reason": "Assam Bhunaksha resolves the Tinsukia administrative hierarchy, but its bounded WMS capabilities request returned 401. No safe native parcel ID plus full polygon was obtained; the access response is not citywide absence.",
+  "scopeLimit": "Research completion and institutional custody do not establish open parcel-vector geometry, complete city coverage, adapter qualification, integration, or runtime admission. No runtime, catalog, or report state was changed."
+}

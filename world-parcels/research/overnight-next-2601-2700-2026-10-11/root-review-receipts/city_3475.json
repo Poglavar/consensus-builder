@@ -1,0 +1,19 @@
+{
+  "taskId": "city:3475",
+  "decision": "held",
+  "checkedAt": "2026-10-11T17:53:56Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-3475-nakhon-ratchasima.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/nakhon-ratchasima-service-review.json"
+  ],
+  "review": {
+    "identity": "Roster, queue and packet agree on code 3475, rank 2688, Thailand, point [14.9718372259703,102.089263308796], and 219863 persons in 2025.",
+    "searches": "English and Thai search queries and result URLs are recorded in the packet; the first-party provincial land-office page independently confirms custody and links LandsMaps.",
+    "samplePolygons": 0,
+    "registryFound": true,
+    "reason": "The local custodian is evidenced, but LandsMaps timed out in the worker attempt and the reachable LDD layer is point geometry with zero features at the exact WUP point. It cannot qualify as full parcel polygons or prove citywide absence. Fresh native-ID polygon reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed Details verification are absent."
+  }
+}

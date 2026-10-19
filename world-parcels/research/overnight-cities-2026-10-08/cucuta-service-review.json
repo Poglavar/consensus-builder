@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "co-cucuta-city-cadastre-and-open-data",
+  "purpose": "Service review for WUP2025 rank 617 Cúcuta (city code 4895); city-bound registry evidence and safe anonymous parcel-geometry route.",
+  "primaryPublisher": "Municipality of San José de Cúcuta, Subsecretaría de Gestión Catastral Multipropósito",
+  "sourceUrl": "https://ide.cucuta.gov.co/geoportal/",
+  "registryFound": true,
+  "registryBasis": "Official San José de Cúcuta municipal sources identify the Subsecretaría de Gestión Catastral Multipropósito and the city cadastral portal. Its IDEEP open-data catalogue lists city parcel and building datasets with downloadable formats. This establishes local cadastral services and publicly advertised geometry products, but direct data retrieval and schema verification were blocked by an expired TLS certificate; no feature geometry or record values were downloaded.",
+  "officialSources": [
+    {
+      "url": "https://ide.cucuta.gov.co/geoportal/",
+      "observation": "Official municipal IDEEP landing identifies Cúcuta cadastral services, open data, metadata, and city map applications. Direct HTTPS request failed certificate verification; no bypass was used."
+    },
+    {
+      "url": "https://ide.cucuta.gov.co/ideep_datos_abiertos/",
+      "observation": "Official catalogue search result lists municipal San José de Cúcuta parcel datasets and KML/Excel/SHP formats. The host returned a certificate-expiry error on direct HTTPS GET, so actual file contents and field schema remain unverified."
+    },
+    {
+      "url": "https://catastro.cucuta.gov.co/descarte-su-carta-catastral/",
+      "observation": "Official city cadastral portal describes the cadastral-letter service; the form is parcel-number based and was not submitted."
+    },
+    {
+      "url": "https://geovisor.idec.cucuta.gov.co/carta-catastral",
+      "observation": "Official spatial-data site describes cadastral-letter download by parcel number. No parcel number or query was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Cúcuta Colombia official municipal cadastre parcel map GIS open data",
+      "scope": "Find city-bound registry evidence and an anonymous geometry-only parcel source.",
+      "result": "The official city IDEEP portal describes municipal cadastral services and its open-data catalogue lists parcel datasets with KML/Excel/SHP downloads. The direct HTTPS host for the catalogue failed standard certificate verification, so no archive or schema was retrieved; the separate cadastral-letter portal requires a parcel number and was not queried.",
+      "actualResultUrls": [
+        "https://ide.cucuta.gov.co/geoportal/",
+        "https://ide.cucuta.gov.co/ideep_datos_abiertos/",
+        "https://catastro.cucuta.gov.co/descarte-su-carta-catastral/"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    },
+    {
+      "language": "Spanish",
+      "query": "catastro Cúcuta datos abiertos predios geovisor IDEEP capas catastrales",
+      "scope": "Confirmar el gestor catastral municipal y buscar un servicio público de geometría sin datos de predio.",
+      "result": "La IDEEP de Cúcuta identifica trámites catastrales y datos abiertos; el catálogo indexado ofrece capas Predios en formatos descargables. La conexión HTTPS directa al catálogo presenta certificado vencido, por lo que no se descargó ni inspeccionó el esquema. El geovisor de carta catastral solicita número predial; no se ingresó ningún dato.",
+      "actualResultUrls": [
+        "https://ide.cucuta.gov.co/geoportal/",
+        "https://ide.cucuta.gov.co/ideep_datos_abiertos/",
+        "https://geovisor.idec.cucuta.gov.co/carta-catastral"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "paymentSubmitted": false,
+    "routeInspectionStatus": "reviewed_no_safe_public_geometry_route_verified",
+    "reason": "The city catalogue advertises parcel downloads, but the source host fails standard TLS certificate verification. The separate citizen viewer is keyed by parcel identifier; no feature schema or geometry-only route was safely verified.",
+    "candidateLayer": null,
+    "candidateSchema": null,
+    "targetGeometryRequest": null
+  },
+  "requestEvidence": [
+    {
+      "method": "public page/search and bounded static metadata review",
+      "observation": "No parcel identifier, property address, owner, tax account or identity query was sent. No feature geometry or attribute response was requested or retained."
+    }
+  ],
+  "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-4895-cucuta-route-inspection.json"
+}

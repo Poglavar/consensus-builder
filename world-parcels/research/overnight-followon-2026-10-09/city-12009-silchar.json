@@ -1,0 +1,116 @@
+{
+  "name": "Silchar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1008,
+  "point": [
+    24.8144094658394,
+    92.7938955468641
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Silchar Assam India official land records cadastral map Bhunaksha GIS",
+        "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry.",
+        "result": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained.",
+        "executionMethod": "Separate English-language web search followed by first-party page review."
+      },
+      {
+        "language": "Assamese",
+        "query": "শিলচৰ কাছাৰ ভূ নক্সা ভূমি মানচিত্ৰ চৰকাৰী অসম",
+        "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality.",
+        "result": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained.",
+        "executionMethod": "Separate local-language web search followed by first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Assam ILRMS BhuNaksha cadastral map and Cachar/Silchar Revenue Circle",
+        "operator": "Revenue and Disaster Management Department, Government of Assam; Directorate of Land Records",
+        "homeUrl": "https://bhunaksha.assam.gov.in/",
+        "observation": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:42:07.563820+00:00",
+        "url": "https://dlrs.assam.gov.in/information-services/detail/know-your-circle-offices",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "finalUrl": "https://dlrs.assam.gov.in/information-services/detail/know-your-circle-offices",
+        "bytesRead": 88796,
+        "boundedReadIncomplete": false,
+        "sha256": "6b6792a0535f5056500cbfbdf14f3e49853755a8bc51467893d6a14f312be298",
+        "title": "Know Your Circle Offices | Directorate of Land Records | Government Of Assam, India"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-12009-LOCAL-CADASTRE-REVIEW",
+    "name": "Assam ILRMS BhuNaksha cadastral map and Cachar/Silchar Revenue Circle",
+    "url": "https://bhunaksha.assam.gov.in/",
+    "operator": "Revenue and Disaster Management Department, Government of Assam; Directorate of Land Records",
+    "serviceType": "Official local registry/map service reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Assam’s cadastral map system and the Silchar Revenue Circle are first-party sources. The exact WUP point’s revenue village and whether it has public cadastral geometry remain unverified.",
+    "verifiedOpenScope": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The public map was reviewed only at its landing shell; no district/circle/mouza/lot/village selection was submitted and no parcel feature response or stable native-ID-only schema was obtained. Personal dag/owner/deed details were not requested.",
+  "remainingUncertainty": "The urban WUP point may fall within a revenue village or town survey area not resolved from the map landing page; parcel coverage and exact village remain unknown.",
+  "nextStep": "If the official source later exposes a documented public feature service, inspect metadata first and make only a bounded query retaining safe native IDs plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 12009,
+  "cityId": "wup2025:12009",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    24.8144094658394,
+    92.7938955468641
+  ],
+  "population2025k": 544.936,
+  "populationUnit": "persons",
+  "queueRank": 1008,
+  "population2025": 544936,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Assam Directorate of Land Records official Circle Offices directory explicitly lists Silchar Revenue Circle under Cachar. ILRMS documents BhuNaksha cadastral mapping. This establishes local land-record custody; no safe complete native polygon response or revenue-village match was verified.",
+  "registryEvidenceUrls": [
+    "https://dlrs.assam.gov.in/information-services/detail/know-your-circle-offices",
+    "https://bhunaksha.assam.gov.in/",
+    "https://ilrms.assam.gov.in/",
+    "https://dlrs.assam.gov.in/information-services/assam-land-records-manual-english",
+    "https://tcp.assam.gov.in/information-services/development-authorities"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The public map was reviewed only at its landing shell; no district/circle/mouza/lot/village selection was submitted and no parcel feature response or stable native-ID-only schema was obtained. Personal dag/owner/deed details were not requested."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootPreviousRegistryBasis": "The official ILRMS portal identifies BhuNaksha as cadastral-mapping software. The public map interface shows location selectors and dag/map detail controls, and the Land Records Directorate lists the Silchar Revenue Circle in Cachar. The map page did not expose an exact selectable revenue village or safe anonymous geometry endpoint from the available interface; Dag detail fields include owner and deed information, which were not queried or retained.",
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The Assam Directorate of Land Records official Circle Offices directory explicitly lists Silchar Revenue Circle under Cachar. ILRMS documents BhuNaksha cadastral mapping. This establishes local land-record custody; no safe complete native polygon response or revenue-village match was verified."
+}

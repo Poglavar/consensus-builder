@@ -1,0 +1,40 @@
+{
+  "cityCode": 10203,
+  "queueRank": 2346,
+  "name": "Proddatur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [14.7513530660249, 78.5525549968863],
+  "population2025": 248957,
+  "population2025k": 248.957,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Proddatur Andhra Pradesh official cadastral parcel map land records GIS",
+        "result": "First-party discovery identified Andhra Pradesh Bhunaksha, the Government of Andhra Pradesh Survey, Settlements and Land Records cadastral mapping portal, and the official APSAC AP Cadastral Maps application. The APSAC configuration leads to a public cached cadastral MapServer, but no safe anonymous parcel feature response was available.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://apsac.ap.gov.in/dashboard-staging/ap-cadastral-maps",
+          "https://dilrmp.gov.in/dilrmpold/State-RoR-Web",
+          "https://kadapa.ap.gov.in/villages/"
+        ]
+      },
+      {
+        "language": "Telugu",
+        "query": "ప్రొద్దుటూరు ఆంధ్రప్రదేశ్ అధికారిక భూ రికార్డులు కాడస్ట్రల్ పార్సెల్ మ్యాప్",
+        "result": "Telugu-language discovery located the official AP Bhuseva land-information portal and the AP Government Bhunaksha cadastral viewer. Kadapa district’s official revenue-village listing identifies Proddatur as a revenue village under Proddatur mandal. No anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://bhuseva.ap.gov.in/",
+          "https://bhunaksha.ap.gov.in/",
+          "https://kadapa.ap.gov.in/villages/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "A first-party Andhra Pradesh cadastral source is evidenced, but the bounded public service is map-only and did not return parcel features. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

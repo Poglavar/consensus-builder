@@ -1,0 +1,75 @@
+{
+  "cityCode": 3139,
+  "queueRank": 1310,
+  "name": "Burao",
+  "country": "Somalia",
+  "countryCode": "SO",
+  "iso3": "SOM",
+  "point": [9.51899209198386, 45.5378988168787],
+  "population2025": 427013,
+  "population2025k": 427.013,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The official Local Government of Burao District site documents an online land-registration procedure and says land is to be registered in district-government records. This evidences a local registration procedure, but not an open cadastral map, parcel-vector API, or anonymous public parcel lookup.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Burao Somalia official cadastral map land registry parcel API local government",
+        "result": "Found the official Local Government of Burao District online land-registration page and official local-government home page. The service describes applicant registration, technical-officer review, payment, and certificate download; no public map, parcel layer, API, schema, CRS, or safe parcel-ID response was exposed.",
+        "actualResultUrls": [
+          "https://www.burao.govsomaliland.online/article/online-land-registration",
+          "https://www.burao.govsomaliland.online/",
+          "https://www.burao.govsomaliland.online/article/online-property-registration"
+        ]
+      },
+      {
+        "language": "Somali",
+        "query": "Burco Soomaaliya khariidadda cadastral diiwaanka dhulka adeegga dawladda hoose",
+        "result": "Search results identified the same official Burao/Burco local-government domain and Somali-language land-registration context, plus general Somali land-law and audit material. No public parcel map, anonymous geometry endpoint, native parcel identity, or CRS response was found.",
+        "actualResultUrls": [
+          "https://www.burao.govsomaliland.online/article/online-land-registration",
+          "https://www.burao.govsomaliland.online/",
+          "https://oag.gov.so/wp-content/uploads/2024/08/Warbixinta-Uhoggaasanaanta-Sharciga-2023.pdf",
+          "https://somlii.org/laws/agricultural-land-law-1975/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.burao.govsomaliland.online/article/online-land-registration",
+      "role": "Local Government of Burao District official online land-registration procedure",
+      "observation": "The page states that land in districts should be registered in local-government records and describes login/application, technical review, payment, and certificate-download steps. It does not expose parcel geometry or a public query endpoint."
+    },
+    {
+      "url": "https://www.burao.govsomaliland.online/",
+      "role": "Local Government of Burao District official service portal",
+      "observation": "The official portal lists land registration, property registration, land tax, and related municipal services."
+    },
+    {
+      "url": "https://www.burao.govsomaliland.online/article/online-property-registration",
+      "role": "Local Government of Burao District official property-registration procedure",
+      "observation": "The page describes online/offline property-document registration and application workflow; it does not provide anonymous parcel geometry or a safe native parcel identifier."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The official service is an applicant workflow, not an open viewer/API, and the linked application route https://www.burao.govsomaliland.online/land-registration/add returned 404 in the web client. A shell GET attempt also failed DNS resolution for the www host. These failures are not evidence of citywide absence; the exact WUP point was preserved and not shifted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local Government of Burao District land/property-registration procedures and publicly indexed Somali land-registry material.",
+    "verifiedOpenScope": "Local procedure and service existence only; citywide parcel-vector access, exact-point containment, native identity, schema, CRS, and open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

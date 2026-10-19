@@ -1,0 +1,99 @@
+{
+  "cityCode": 1557,
+  "queueRank": 3105,
+  "name": "Louga",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "iso3": "SEN",
+  "locId": 686,
+  "capital": false,
+  "point": [15.6206112652558, -16.2252500871381],
+  "population2025": 193553,
+  "population2025k": 193.553,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Louga Senegal official cadastral map parcel cadastre GIS land registry",
+        "result": "First-party discovery identified the official Géo Sénégal Louga geospatial-data page, the official DGID NICAD/cadastral procedure, and the official ONDDL SIG territorial-data portal. The Louga Géo Sénégal material is land-use and urban base data, not a cadastral parcel layer. No safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.geosenegal.gouv.sn/louga.html",
+          "https://www.dgid.sn/fiches/nicad",
+          "https://sig.onddl.sn/"
+        ]
+      },
+      {
+        "language": "French (local/official language)",
+        "query": "Louga Sénégal carte cadastrale officielle parcelles cadastre géoportail",
+        "result": "French first-party discovery found the official Géo Sénégal Louga page and its Louga regional catalogue entries, plus DGID's official French NICAD procedure. The official material confirms cadastral procedures through the local cadastral office in general, but does not identify a public Louga parcel viewer/API or expose safe parcel geometry. No geometry was retained.",
+        "actualResultUrls": [
+          "https://www.geosenegal.gouv.sn/%2B-louga-24-%2B.html",
+          "https://www.geosenegal.gouv.sn/louga.html",
+          "https://www.dgid.sn/fiches/nicad"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryEvidence": {
+    "custodian": "No Louga-local registry/cadastre/map custodian was independently evidenced in this attempt. Senegal DGID is recorded only as the national cadastral/domain authority and Géo Sénégal/ONDDL as national geospatial portals.",
+    "scope": "DGID's NICAD page states that the cadastral document is delivered by the cadastral office of the locality, but it does not expose a Louga-specific public parcel service. Géo Sénégal lists Louga datasets, but they are land-use, buildings, roads, networks, and environmental/urban data rather than cadastral parcels.",
+    "evidenceUrls": [
+      "https://www.dgid.sn/fiches/nicad",
+      "https://www.geosenegal.gouv.sn/louga.html",
+      "https://sig.onddl.sn/"
+    ],
+    "scopeNote": "General national-agency prose is not treated as proof of a city-local public registry endpoint; registryFound therefore remains null."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "ONDDL SIG public GeoServer and Géo Sénégal official Louga catalogue; DGID NICAD procedure checked for custodial context",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://www.geosenegal.gouv.sn/louga.html",
+        "outcome": "HTTP 200 HTML received; page exposes a 2020 OMVS Louga land-use GDB download, not cadastral parcel polygons or a parcel service endpoint. The download was not retained or treated as cadastral evidence."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.geosenegal.gouv.sn/%2B-louga-24-%2B.html",
+        "outcome": "HTTP 200/search result page received; Louga catalogue entries cover urban/environmental/base-map datasets and do not expose a cadastral parcel layer."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.dgid.sn/fiches/nicad",
+        "outcome": "HTTP 200 HTML received; official French procedure documents NICAD as the cadastral identifier and says the document is delivered by the cadastral office of the locality. No public anonymous parcel query, schema, CRS, or geometry endpoint was exposed. Unsafe owner and personal fields were not requested."
+      },
+      {
+        "method": "GET",
+        "url": "https://sig.onddl.sn/",
+        "outcome": "HTTP 200 HTML received; public ONDDL SIG GeoNode landing page was reachable. Its public API route guesses /api/base/resources/ and /api/base/datasets/ returned HTTP 404 and were not treated as service endpoints."
+      },
+      {
+        "method": "GET",
+        "url": "https://sig.onddl.sn/geoserver/ows?service=WFS&request=GetCapabilities",
+        "outcome": "HTTP 200 WFS capabilities XML received. The bounded public service exposed geonode:dep_pole_casamance, geonode:departement, geonode:gadm41_sen_0, geonode:gadm41_sen_1, geonode:gadm41_sen_2, geonode:gadm41_sen_3, and geonode:region; no cadastral/parcel layer was listed."
+      }
+    ],
+    "note": "The exact WUP point was preserved and was not shifted or used as an absence test. No point query was issued against a parcel layer because no parcel layer was exposed. A timeout, map extent miss, or zero exact-point hit would not have been treated as citywide absence."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The national portals may expose additional authenticated, interactive, or non-indexed services that were not used; no login, credentials, private token, CAPTCHA/Cloudflare bypass, or TLS bypass was attempted.",
+    "Géo Sénégal's Louga GDB and urban datasets are not cadastral evidence and were not retained as parcel samples.",
+    "The ONDDL WFS capability result is a bounded service inventory, not proof that no other protected or unpublished parcel service exists.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

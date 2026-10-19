@@ -1,0 +1,17 @@
+{
+  "taskId": "city:5035",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-5035-terrassa.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/terrassa-service-review.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/terrassa-sample.geojson",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_5035-exact-point.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/root-review-receipts/source-evidence/city_5035-layer.json"
+  ],
+  "checkedAt": "2026-10-11T01:38:59.058457Z",
+  "reason": "WUP 2025 source, immutable roster, and queue match code 5035, rank 2210, Spain, point [41.5603345913882, 2.01611575947249], and 264025 persons. English and Spanish/Catalan executed searches are recorded. Fresh first-party municipal layer 5 exact-point response returned one full polygon, FID 20408 and native REFCAD 8016615DG1081B. Sample retains only id and identical coordinates; its projected EPSG:25831 polygon is valid, covers the exact point, and has area about 817.72 square metres. The service is a positive local geometry discovery, but independent fresh native-ID reads, complete stable manifests, forced paging, 13 bounded cells, metric duplicates/overlap/operation checks, source binding, and headed Details verification are absent. Runtime admission remains held.",
+  "registryFound": true,
+  "admission": "held; no runtime/catalog/report change"
+}

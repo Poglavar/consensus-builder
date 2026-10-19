@@ -1,0 +1,227 @@
+// Public read API for deterministic land events and the immutable recipe consumed by the proposal
+// prediction market. Event production is a separate restartable CLI, never a side effect of GET.
+
+import { Connection, PublicKey } from '@solana/web3.js';
+import fs from 'node:fs';
+import {
+    buildProposalLifecycleRecipe,
+    buildProposalLifecycleRecipeV2,
+    EVENT_TYPE,
+    PROPOSAL_PROGRAM_ID,
+    readProposalLens,
+    RECIPE_ID,
+    RECIPE_V2_ID
+} from '../oracle/proposal-lifecycle.js';
+import { ACCEPTANCE_EVENT_TYPE, VERDICT_EVENT_TYPE } from '../oracle/proposal-consent.js';
+import { landEventParcelCondition, validParcelUid } from '../oracle/parcel-history.js';
+import {
+    buildCourtParcelOperationRecipe,
+    buildCourtParcelOperationRecipeV2,
+    COURT_RECIPE_ID,
+    COURT_RECIPE_V2_ID,
+    COURT_SCHEMA_V2,
+    externalMarketAddress
+} from '../oracle/court-parcel-operation.js';
+
+// ?type= of GET /oracle/events. proposal_lifecycle stays the default so existing readers see no change.
+const EVENT_TYPES = Object.freeze([EVENT_TYPE, ACCEPTANCE_EVENT_TYPE, VERDICT_EVENT_TYPE]);
+
+// The proposal account bytes, or null when the account does not exist or is not a proposal_nft
+// account. Default reads devnet through SOLANA_RPC_URL; tests inject their own.
+function defaultProposalAccountReader() {
+    let connection = null;
+    return async (proposalAccount) => {
+        connection ??= new Connection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+        const info = await connection.getAccountInfo(new PublicKey(proposalAccount), 'confirmed');
+        if (!info?.data || info.owner?.toBase58?.() !== PROPOSAL_PROGRAM_ID) return null;
+        return info.data;
+    };
+}
+
+const RECIPE_SCHEMA = JSON.parse(fs.readFileSync(new URL('../oracle/recipe.schema.json', import.meta.url), 'utf8'));
+
+function limitOf(value) {
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, 100) : 25;
+}
+
+function validAddress(value) {
+    try { return new PublicKey(String(value)).toBase58(); } catch { return null; }
+}
+
+function eventFromRow(row) {
+    return {
+        id: row.event_id,
+        eventType: row.event_type,
+        subject: { type: row.subject_type, id: row.subject_id },
+        outcome: row.outcome,
+        observedAt: row.source_observed_at,
+        recordedAt: row.created_at,
+        attester: { kind: 'solana_program', address: row.attester },
+        source: {
+            url: row.source_url,
+            hash: row.source_hash,
+            transaction: row.transaction_signature,
+            ...(row.evidence?.source || {})
+        },
+        evidence: row.evidence || {}
+    };
+}
+
+export function setupLandEventsRoute(app, pool, { readProposalAccount = defaultProposalAccountReader() } = {}) {
+    app.get('/oracle/recipe.schema.json', (_req, res) => res.json(RECIPE_SCHEMA));
+
+    app.get('/oracle/public-records/summary', async (_req, res) => {
+        try {
+            const { rows } = await pool.query(`
+                WITH filtered AS (
+                    SELECT schema_id, parcel_uid, decision_uuid, created_at
+                    FROM court.attestation
+                    WHERE chain = 'solana-devnet'
+                ), by_schema AS (
+                    SELECT schema_id, count(*)::int AS attestations,
+                           max(created_at) AS latest_attestation_at
+                    FROM filtered
+                    GROUP BY schema_id
+                )
+                SELECT count(*)::int AS attestations,
+                       count(DISTINCT parcel_uid)::int AS parcels,
+                       count(DISTINCT decision_uuid)::int AS decisions,
+                       min(schema_id) AS schema_id,
+                       max(created_at) AS latest_attestation_at,
+                       (SELECT COALESCE(json_agg(json_build_object(
+                           'schemaId', schema_id,
+                           'attestations', attestations,
+                           'latestAttestationAt', latest_attestation_at
+                       ) ORDER BY schema_id), '[]'::json) FROM by_schema) AS schemas
+                FROM filtered
+            `);
+            const row = rows[0] || {};
+            const schemaId = row.schema_id || null;
+            const schemas = Array.isArray(row.schemas) ? row.schemas : [];
+            const v2Row = schemas.find(item => item.schemaId === COURT_SCHEMA_V2);
+            return res.json({
+                source: 'Croatian judiciary e-Oglasna archive',
+                evidence: 'parcel-level court-decision attestations',
+                privacy: 'aggregate-only; decision identifiers, parties, quotes and parcel identifiers are not republished here',
+                chain: 'solana:devnet',
+                schemaId,
+                schemaUrl: schemaId
+                    ? `https://explorer.solana.com/address/${encodeURIComponent(schemaId)}?cluster=devnet`
+                    : null,
+                schemas,
+                v2: {
+                    status: v2Row ? 'live_devnet' : 'awaiting_first_attestation',
+                    schemaId: COURT_SCHEMA_V2,
+                    schemaUrl: `https://explorer.solana.com/address/${COURT_SCHEMA_V2}?cluster=devnet`,
+                    attestations: Number(v2Row?.attestations || 0),
+                    sourceTimestamped: true
+                },
+                attestations: Number(row.attestations || 0),
+                parcels: Number(row.parcels || 0),
+                decisions: Number(row.decisions || 0),
+                latestAttestationAt: row.latest_attestation_at || null,
+                marketIntegration: 'recipe-bound market verifier, V1 settlement and source-timed V2 attestations are live on devnet'
+            });
+        } catch (error) {
+            console.error('GET /oracle/public-records/summary failed', error);
+            return res.status(500).json({ error: 'Failed to read public-record oracle summary' });
+        }
+    });
+
+    app.get('/oracle/events', async (req, res) => {
+        try {
+            const limit = limitOf(req.query.limit);
+            const subject = req.query.subject ? validAddress(req.query.subject) : null;
+            if (req.query.subject && !subject) return res.status(400).json({ error: 'subject must be a Solana address' });
+            const eventType = req.query.type ? String(req.query.type) : EVENT_TYPE;
+            if (!EVENT_TYPES.includes(eventType)) return res.status(400).json({ error: `type must be one of ${EVENT_TYPES.join(', ')}` });
+            const params = [eventType];
+            let where = 'event_type = $1';
+            if (subject) { params.push(subject); where += ` AND subject_id = $${params.length}`; }
+            // ?parcelUid=: acceptances naming the parcel, and lifecycle/verdict events of proposals listing it.
+            const parcelUid = req.query.parcelUid !== undefined ? validParcelUid(String(req.query.parcelUid)) : null;
+            if (req.query.parcelUid !== undefined && !parcelUid) return res.status(400).json({ error: 'parcelUid must be 1-128 printable characters' });
+            if (parcelUid) { params.push(parcelUid); where += ` AND ${landEventParcelCondition(params.length)}`; }
+            params.push(limit);
+            const { rows } = await pool.query(`
+                SELECT event_id, event_type, subject_type, subject_id, outcome, source_url,
+                       source_hash, source_observed_at, attester, transaction_signature,
+                       evidence, created_at
+                FROM consensus.land_event
+                WHERE ${where}
+                ORDER BY source_observed_at DESC
+                LIMIT $${params.length}
+            `, params);
+            const events = rows.map(eventFromRow);
+            return res.json({ events, count: events.length, eventType, ...(parcelUid ? { parcelUid } : {}) });
+        } catch (error) {
+            console.error('GET /oracle/events failed', error);
+            return res.status(500).json({ error: 'Failed to read land events' });
+        }
+    });
+
+    // Precommitted v1: program-only attester, no chain read, hash never changes.
+    app.get(`/oracle/recipes/${RECIPE_ID}`, (req, res) => {
+        const proposalAccount = validAddress(req.query.proposal);
+        const marketAccount = req.query.market ? validAddress(req.query.market) : null;
+        if (!proposalAccount) return res.status(400).json({ error: 'proposal must be a Solana address' });
+        if (req.query.market && !marketAccount) return res.status(400).json({ error: 'market must be a Solana address' });
+        return res.json({ recipe: buildProposalLifecycleRecipe({ proposalAccount, marketAccount }) });
+    });
+
+    // v2: trusted attesters derive from the proposal's on-chain lens, so the account is read.
+    app.get(`/oracle/recipes/${RECIPE_V2_ID}`, async (req, res) => {
+        const proposalAccount = validAddress(req.query.proposal);
+        const marketAccount = req.query.market ? validAddress(req.query.market) : null;
+        if (!proposalAccount) return res.status(400).json({ error: 'proposal must be a Solana address' });
+        if (req.query.market && !marketAccount) return res.status(400).json({ error: 'market must be a Solana address' });
+        let data;
+        try {
+            data = await readProposalAccount(proposalAccount);
+        } catch (error) {
+            console.error(`GET /oracle/recipes/${RECIPE_V2_ID} could not read the proposal account`, error);
+            return res.status(502).json({ error: 'Failed to read the proposal account from Solana' });
+        }
+        if (!data) return res.status(404).json({ error: 'proposal account not found on Solana devnet' });
+        let lens;
+        try {
+            lens = readProposalLens(data);
+        } catch (error) {
+            return res.status(422).json({ error: `proposal account has no readable lens: ${error.message}` });
+        }
+        if (!lens.length) return res.status(422).json({ error: `proposal account has an empty lens; use ${RECIPE_ID}` });
+        return res.json({ recipe: buildProposalLifecycleRecipeV2({ proposalAccount, marketAccount, lens }) });
+    });
+
+    app.get(`/oracle/recipes/${COURT_RECIPE_ID}`, (req, res) => {
+        try {
+            const recipe = buildCourtParcelOperationRecipe({
+                parcelUid: req.query.parcelUid,
+                yesOperation: req.query.yesOperation,
+                noOperation: req.query.noOperation,
+                closesAt: req.query.closesAt
+            });
+            return res.json({ recipe, marketAccount: externalMarketAddress(recipe.hash) });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    });
+
+    app.get(`/oracle/recipes/${COURT_RECIPE_V2_ID}`, (req, res) => {
+        try {
+            const recipe = buildCourtParcelOperationRecipeV2({
+                parcelUid: req.query.parcelUid,
+                yesOperation: req.query.yesOperation,
+                noOperation: req.query.noOperation,
+                closesAt: req.query.closesAt,
+                schema: req.query.schema
+            });
+            return res.json({ recipe, marketAccount: externalMarketAddress(recipe.hash) });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+    });
+}
+
+export { eventFromRow, limitOf, validAddress };

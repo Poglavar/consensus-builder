@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "cityId": "wup2025:2633",
+  "queueRank": 13,
+  "growthCohort": "top20-2015-2025",
+  "name": "Bukalasi",
+  "countryCode": "UG",
+  "centerLatLon": [
+    1.01864172628934,
+    34.3514980249162
+  ],
+  "administrativeIdentity": "Bukalasi, Uganda at supplied WUP coordinate; likely local/administrative place in eastern Uganda, exact district and parcel coverage not verified.",
+  "checkedAt": "2026-10-07",
+  "status": "temporarily_unavailable",
+  "registryFound": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourcesFound": [
+    {
+      "url": "https://mlhud.go.ug/ugnlis/",
+      "observation": "Official MLHUD description says UgNLIS manages spatially referenced land registration, valuation, planning and administration data across Uganda."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "observation": "Official UgNLIS public portal linked by MLHUD; search for parcel/title information exists, but Ministry poster says parcel search requires parcel identifiers and a UGX 10,000 fee."
+    },
+    {
+      "url": "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf",
+      "observation": "Official UgNLIS poster describes parcel search, cadastral division map and paid portal search; viewer does not establish open polygon access."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "observation": "Official UgNLIS public portal linked by MLHUD; search for parcel/title information exists, but Ministry poster says parcel search requires parcel identifiers and a UGX 10,000 fee."
+    },
+    {
+      "url": "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf",
+      "observation": "Official UgNLIS poster describes parcel search, cadastral division map and paid portal search; viewer does not establish open polygon access."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://mlhud.go.ug/ugnlis/",
+      "method": "GET",
+      "httpStatus": "web-open",
+      "contentType": "text/html",
+      "assessment": "Official UgNLIS description establishes national spatial land system; not a parcel endpoint."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "method": "GET",
+      "httpStatus": "web-open",
+      "contentType": "unknown",
+      "assessment": "Official portal link timed out through web fetch; prior direct retry reported intermittent connection resets and no API inspection."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Prior retry obtained shell once, but connection reset during bundle retrieval."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Browser-header request returned 31 KB Ionic SPA shell. Script references runtime.feef167cd20bfc0f.js, polyfills.7626f7ef3e7f56d2.js, main.8123d6213976b174.js; bundle fetch attempts timed out/hung before API inspection. No parcel data returned."
+    },
+    {
+      "url": "https://ugnlis.mlhud.go.ug/public",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Browser-header request returned 31 KB Ionic SPA shell. Script references runtime.feef167cd20bfc0f.js, polyfills.7626f7ef3e7f56d2.js, main.8123d6213976b174.js; bundle fetch attempts timed out/hung before API inspection. No parcel data returned."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "Uganda official UgNLIS parcel cadastral map Bukalasi Mbale",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://mlhud.go.ug/ugnlis/",
+        "https://ugnlis.mlhud.go.ug/public",
+        "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf"
+      ]
+    },
+    {
+      "language": "Luganda/English",
+      "exactQuery": "Uganda official land parcel search cadastral map Bukalasi land information system",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://mlhud.go.ug/ugnlis/",
+        "https://ugnlis.mlhud.go.ug/public",
+        "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf"
+      ]
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National UgNLIS system; coverage of particular settlements unknown",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "targetAreaRegistryConfirmed": false
+  },
+  "nextStep": "Inspect UgNLIS portal JS/API when stable, determine whether public map can return geometry without payment; test bounded query around Bukalasi and confirm its district/locality. Current portal/search is a lead only.",
+  "failedAttemptsPreserved": [
+    {
+      "reference": "world-parcels/research/retry/countries/UG.json",
+      "note": "Prior dated country retry retained; see this record’s requests for current follow-up and note status history."
+    }
+  ],
+  "requestHeadersUsed": "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml,application/json,*/*;q=0.8; Accept-Language varied by target country (en-SS/ar; en-KE/sw-KE; en-UG; fr-DZ/ar; fr-MG/mg); cookie jar enabled in direct requests. Web research used for official indexed pages.",
+  "registryLeadFound": true,
+  "registryFoundReason": "UgNLIS is a national land information system and includes parcel search, but no evidence ties registry records/service coverage to Bukalasi specifically; the public portal shell was reachable but no target parcel data was observed.",
+  "scopedConclusion": {
+    "targetArea": "Bukalasi, Uganda at supplied WUP coordinate; likely local/administrative place in eastern Uganda, exact district and parcel coverage not verified.",
+    "cadastralRegistryConfirmedAtTarget": false,
+    "registryLeadFound": true,
+    "conclusion": "UgNLIS is a national land information system and includes parcel search, but no evidence ties registry records/service coverage to Bukalasi specifically; the public portal shell was reachable but no target parcel data was observed.",
+    "coverageBoundary": "This conclusion is limited to the named target area and supplied WUP coordinate; national or other-area sources are leads only."
+  },
+  "registryBasis": "UgNLIS is a national land information system and includes parcel search, but no evidence ties registry records/service coverage to Bukalasi specifically; the public portal shell was reachable but no target parcel data was observed.",
+  "registryEvidenceUrls": [
+    "https://ugnlis.mlhud.go.ug/public",
+    "https://mlhud.go.ug/wp-content/uploads/2025/06/UgNlis-Poster-2.pdf",
+    "https://mlhud.go.ug/ugnlis/"
+  ]
+}

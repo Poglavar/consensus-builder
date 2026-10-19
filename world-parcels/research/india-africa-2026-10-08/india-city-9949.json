@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 9949,
+  "cityId": "wup2025:9949",
+  "name": "Bengaluru",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    13.0062665301097,
+    77.5626340229947
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 114,
+  "stateOrUT": "Karnataka",
+  "administrativeIdentity": {
+    "district": "Bengaluru Urban",
+    "tehsilOrTaluk": "Bangalore North",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/bengaluru.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/bengaluru.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "GEPTIS: BBMP municipality; Dishaank: Karnataka village and subdivision records with incomplete finer geometry",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://www.bbmp.gov.in/gisviewer/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": null
+          }
+        ],
+        "conclusion": "Dishaank may show suburban survey plots, while GEPTIS may show urban taxable properties. Neither supplies a verified anonymous polygon list near Bengaluru, and the two geometries must not be treated as equivalent.",
+        "nextStep": "Locate an official, reusable bounded Dishaank or municipal feature service and test a city-area parcel response."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Kannada",
+        "query": "ಬೆಂಗಳೂರು ಭೂ ದಾಖಲೆ ನಕ್ಷೆ ಸರ್ವೆ ನಂಬರ್ ಭೂಮಿ ಕಂದಾಯ ಇಲಾಖೆ",
+        "scope": "WUP 9949 Bengaluru cohort label retained; native-script query searched for official local/state cadastral records.",
+        "result": "Direct Government Bhoomi land-record portal open timed out. Native search surfaced BBMP e-Aasthi, a municipal property-record service, not a cadastral map/parcel geometry source. No parcel feature was returned.",
+        "checkedAt": "2026-10-08",
+        "script": "Kannada",
+        "actualResultUrls": [
+          "https://bbmpeaasthi.karnataka.gov.in/office/Default.aspx"
+        ],
+        "actualResultUrlsStatus": "preserved_from_original_search_result",
+        "actualResultUrlsNote": "City-specific official result URL(s) recorded from the actual search output; these are leads and do not confirm parcel geometry at the WUP point.",
+        "executionMethod": "City query was run in the 2026-10-08 multi-query search batch; the preserved URL(s) below were returned and matched to this city query from that batch output (not individually rerun).",
+        "recheckedAt": "2026-10-08 (batch result attribution; not an individual rerun)",
+        "resultScope": "Search-only discovery result; the URL is a query-linked lead and does not verify target parcel geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Karnataka land records/map entry point",
+        "operator": "State government source as identified on portal/search result; see observation",
+        "homeUrl": "https://landrecords.karnataka.gov.in/",
+        "mapUrl": "https://bbmpeaasthi.karnataka.gov.in/office/Default.aspx",
+        "observation": "Direct Government Bhoomi land-record portal open timed out. Native search surfaced BBMP e-Aasthi, a municipal property-record service, not a cadastral map/parcel geometry source. No parcel feature was returned."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=13.0062665301097&lon=77.5626340229947&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "52, 11th Main Road, Malleswaram, Malleshwaram, Bengaluru West City Corporation, Bengaluru, Bangalore North, Bengaluru Urban, Karnataka, 560003, India",
+        "osmType": "node",
+        "osmId": 11477687064,
+        "address": {
+          "house_number": "52",
+          "road": "11th Main Road",
+          "suburb": "Malleswaram",
+          "city_district": "Bengaluru West City Corporation",
+          "city": "Bengaluru",
+          "county": "Bangalore North",
+          "state_district": "Bengaluru Urban",
+          "state": "Karnataka",
+          "ISO3166-2-lvl4": "IN-KA",
+          "postcode": "560003",
+          "country": "India",
+          "country_code": "in"
+        }
+      },
+      {
+        "method": "GET",
+        "url": "https://landrecords.karnataka.gov.in/",
+        "httpStatus": 0,
+        "contentType": "",
+        "assessment": "Direct Government Bhoomi land-record portal open timed out. Native search surfaced BBMP e-Aasthi, a municipal property-record service, not a cadastral map/parcel geometry source. No parcel feature was returned."
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://landrecords.karnataka.gov.in/",
+          "https://bbmpeaasthi.karnataka.gov.in/office/Default.aspx"
+        ],
+        "scope": "Exact official endpoint/result URLs checked or surfaced during the city query; the state service is a lead, not confirmation of WUP-point parcel coverage."
+      }
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_open_endpoint_after_attempts",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Find a reachable official cadastral-map service beyond BBMP e-Aasthi, resolve the WUP point to its survey/revenue-village location, and verify a parcel polygon with stable survey ID."
+}

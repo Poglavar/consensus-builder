@@ -1,0 +1,77 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "MO",
+ "regionName": "Missouri",
+ "checkedAt": "2026-09-30",
+ "status": "verified_partial_region",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-mo-stlouis-city-assessor-parcels",
+  "name": "Assessor Public Parcels (layer 11 Parcels), City of St. Louis",
+  "operator": "City of St. Louis Assessor / GIS",
+  "scope": "city only; a second municipal source (Kansas City, Jackson County) also verified",
+  "endpoint": "https://maps8.stlouis-mo.gov/arcgis/rest/services/ASSESSOR/Assessor_Public_Parcels/MapServer/11",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "native SR; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-mo-stlouis-city-assessor-parcels",
+  "requestUrl": "https://maps8.stlouis-mo.gov/arcgis/rest/services/ASSESSOR/Assessor_Public_Parcels/MapServer/11/query?geometry=<bbox ~150m>&outFields=ParcelId | APN,KIVAPIN&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-90.2002,38.6262,-90.1986,38.6278]",
+   "[-94.5794,39.0989,-94.5778,39.1005]"
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "ParcelId (St. Louis); APN,KIVAPIN (Kansas City)",
+  "responseFile": "research/subnational/US/MO-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset",
+  "regionSampled": [
+   "City of St. Louis",
+   "Kansas City"
+  ]
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "No statewide Missouri layer found in this pass. City of St. Louis publishes Assessor_Public_Parcels; Kansas City publishes Parcels at https://mapd.kcmo.org/kcgis/rest/services/AGOL/MapServer/6 (only APN,KIVAPIN requested).",
+ "subregionsVerified": [
+  "City of St. Louis",
+  "Kansas City (Jackson County)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://www.stlouis-mo.gov/data/datasets/distribution.cfm?id=119",
+   "observation": "open data page naming the service"
+  },
+  {
+   "url": "https://data-stlcogis.opendata.arcgis.com/",
+   "observation": "St. Louis County Hub (found via search, parcel service not tested)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://maps8.stlouis-mo.gov/arcgis/rest/services/ASSESSOR/Assessor_Public_Parcels/MapServer/11/query?...outFields=ParcelId",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  },
+  {
+   "url": "https://mapd.kcmo.org/kcgis/rest/services/AGOL/MapServer/6/query?...outFields=APN,KIVAPIN",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution.",
+ "remainingUncertainty": "St. Louis County (largest county) and Jackson County-wide services not tested. Both layers carry owner names/addresses; not requested.",
+ "nextStep": "Test St. Louis County GIS parcel service and Jackson County; look for a statewide MSDIS layer."
+}

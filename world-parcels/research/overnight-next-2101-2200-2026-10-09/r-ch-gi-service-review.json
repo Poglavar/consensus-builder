@@ -1,0 +1,80 @@
+{
+  "cityRecord": "city-4562-r-ch-gi.json",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "purpose": "Document first-party English/Vietnamese discovery and bounded anonymous review of cadastral/geospatial services for Rạch Giá; no runtime/catalog integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerAddressContactTitleholderTaxOrAccountDataRequested": false,
+    "credentialsOrPrivateTokensUsed": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointPreserved": true
+  },
+  "assessment": "A local/provincial cadastral custodian is evidenced by an official Kiên Giang notice referring to a cadastral extract in Rạch Giá and the Văn phòng Đăng ký đất đai. The national geospatial portal is publicly reachable, but its current portal/configuration checks did not yield a usable anonymous parcel feature service. No safe native parcel identity plus full polygon was obtained, so no sample GeoJSON was written.",
+  "registryAssessment": "true for local/provincial custodian and procedure evidence only; this does not establish citywide public parcel geometry coverage or adapter admission.",
+  "officialSources": [
+    {
+      "url": "https://kiengiang.gov.vn/Lists/TinTuc/Attachments/21344/109%20CV%20tiep%20tuc%20dang%20tai%20thong%20bao%20DGQSDD%2003%20khu%20dat%20tren%20dia%20ban%20Rach%20Gia%20va%20Kien%20Luong_split.pdf",
+      "observation": "Official Kiên Giang provincial PDF; its text identifies a cadastral extract for a Rạch Giá parcel and states it was prepared by the former land-use-rights registration office, now the land-registration office. This is direct custodian/procedure evidence, not a public vector endpoint."
+    },
+    {
+      "url": "https://vnsdi.mae.gov.vn/infomation",
+      "observation": "Official Vietnam National Spatial Data Infrastructure information portal, fetched anonymously with HTTP 200. The page describes access to national geospatial data and services."
+    },
+    {
+      "url": "https://dosmvn.mae.gov.vn/Pages/home.aspx",
+      "observation": "Official national surveying, mapping and geospatial-information authority homepage, fetched anonymously with HTTP 200; it describes national land/GIS information-system responsibilities."
+    },
+    {
+      "url": "https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-dung-chung.html?ma_thu_tuc=1.012789",
+      "observation": "Official national public-service procedure page describing requests for land information/data through the land-registration office or its branch. The page was identified in search results but the bounded direct request timed out."
+    }
+  ],
+  "requestChecks": [
+    {
+      "url": "https://vnsdi.mae.gov.vn/infomation",
+      "method": "GET",
+      "status": 200,
+      "observation": "Anonymous HTML fetched; current JavaScript assets were inspected. The app configuration points to https://dosm.vnsdi.gov.vn/portal and https://dosm.vnsdi.gov.vn/apiportal/api/Values?urlportal=... ."
+    },
+    {
+      "url": "https://dosm.vnsdi.gov.vn/portal",
+      "method": "GET",
+      "status": 500,
+      "observation": "Current portal redirected to /portal/home and returned an application-error page. No login, CAPTCHA bypass, credential, private token, or TLS exception was used."
+    },
+    {
+      "url": "https://dosm.vnsdi.gov.vn/apiportal/api/Values?urlportal=https%3A%2F%2Fdosm.vnsdi.gov.vn%2Fportal",
+      "method": "GET",
+      "status": 500,
+      "observation": "Current JavaScript/configuration-discovered API route returned {\"Message\":\"An error has occurred.\"}; no schema, CRS, native ID, or geometry response was available."
+    },
+    {
+      "url": "https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-dung-chung.html?ma_thu_tuc=1.012789",
+      "method": "GET",
+      "status": null,
+      "observation": "Anonymous request timed out after 20 seconds. Search-result content was used only as discovery evidence; no retry with credentials or bypass was attempted."
+    },
+    {
+      "url": "https://kiengiang.gov.vn/",
+      "method": "GET",
+      "status": "000",
+      "observation": "TLS verification failed because the server presented a self-signed certificate chain. No certificate exception was authorized or used; the separate official PDF URL was retained from first-party search evidence."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID if directly evidenced", "geometry", "source CRS", "publication/update metadata"],
+  "nativeFieldMapping": {
+    "source": "No parcel feature schema response obtained; official procedure evidence refers generically to cadastral-map extracts and land data.",
+    "documentedFields": [],
+    "mappingStatus": "not qualified; no feature rows joined or retained"
+  },
+  "geometryEvidence": null,
+  "uncertainty": [
+    "The WUP point is a city locator, not a parcel identity.",
+    "The public national portal was reachable, but its current viewer/API returned server errors before any layer schema or CRS could be inspected.",
+    "The provincial notice demonstrates cadastral-document production for Rạch Giá, not complete public citywide parcel geometry.",
+    "No GeoJSON sample was retained because no safe native parcel identity and unchanged full polygon were verified."
+  ],
+  "decision": "complete_research_packet_runtime_held_no_geometry"
+}

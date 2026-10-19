@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "JHR",
+ "regionName": "Johor",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "http://geoportal.johor.gov.my/",
+   "observation": "GeoJohor public Leaflet viewer: RSNJ2030, land use, zoning, facilities; no lot/cadastre layer or service URL in page source"
+  },
+  {
+   "url": "https://www.iskandarmalaysia.com.my",
+   "observation": "Iskandar Malaysia open-data hub (imgis-irda.opendata.arcgis.com) loads; no lot layer identified"
+  }
+ ],
+ "requests": [
+  {
+   "url": "http://geoportal.johor.gov.my/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "viewer page, no parcel layer"
+  },
+  {
+   "url": "https://gis.johor.gov.my/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "proxy CONNECT 502 (host unreachable)"
+  },
+  {
+   "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/JOHOR_2021/MapServer/77",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "TLS verification failed (unable to get local issuer cert); not bypassed. Search snippets show this Forestry Dept service has a 'Lot Kadaster' layer for Johor"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "A Forestry Department (geoformatik) MapServer reportedly lists a Johor Lot Kadaster layer but its certificate did not verify here, so untested; it is not a Johor state service anyway.",
+ "nextStep": "Retry geoformatik from a network with the intermediate CA; check Iskandar hub for lot dataset."
+}

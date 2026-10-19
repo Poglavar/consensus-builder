@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "metricCrs": "EPSG:31984",
+  "method": "Fresh native-CRS safe identifier queries; original straight rings audited without coordinate repair.",
+  "parcelsChecked": 7,
+  "allHttp200": true,
+  "pairs": [
+    {
+      "ids": [
+        "BR-VIX-LOTE-20889~59446",
+        "BR-VIX-LOTE-24567~17739"
+      ],
+      "overlapM2": 0.06670860885863664,
+      "fractionOfSmaller": 5.94457802723814e-05,
+      "nativeCrsOverlapM2": 0.06670857885446324,
+      "nativeGeometriesValid": true,
+      "nativeOverlapGeometryType": "MultiPolygon",
+      "nativeIntersectionLengthM": 251.132244502056,
+      "approxMeanStripWidthM": 0.0005312625544101892,
+      "maxComponentMinimumRectangleWidthM": 6.185877037935718,
+      "overlapPolygonPartCount": 2,
+      "overlapPartInscribedDiametersM": [
+        0.0009220098115310071,
+        0.0015089984508268605
+      ],
+      "inscribedCircleToleranceM": 0.0001
+    },
+    {
+      "ids": [
+        "BR-VIX-LOTE-24567~17739",
+        "BR-VIX-LOTE-47307~17920"
+      ],
+      "overlapM2": 0.1723253606357551,
+      "fractionOfSmaller": 0.00017673263577846316,
+      "nativeCrsOverlapM2": 0.17232533066078304,
+      "nativeGeometriesValid": true,
+      "nativeOverlapGeometryType": "GeometryCollection",
+      "nativeIntersectionLengthM": 67.42597974831413,
+      "approxMeanStripWidthM": 0.00511154102036142,
+      "maxComponentMinimumRectangleWidthM": 1.1356633597325911,
+      "overlapPolygonPartCount": 1,
+      "overlapPartInscribedDiametersM": [
+        0.010690407633389085
+      ],
+      "inscribedCircleToleranceM": 0.0001
+    },
+    {
+      "ids": [
+        "BR-VIX-LOTE-29214~56441",
+        "BR-VIX-LOTE-36024~56440"
+      ],
+      "overlapM2": 0.013447111268093614,
+      "fractionOfSmaller": 6.57342935309871e-05,
+      "nativeCrsOverlapM2": 0.01344711740546245,
+      "nativeGeometriesValid": true,
+      "nativeOverlapGeometryType": "GeometryCollection",
+      "nativeIntersectionLengthM": 32.277941348903106,
+      "approxMeanStripWidthM": 0.0008332078715992475,
+      "maxComponentMinimumRectangleWidthM": 0.00242025703097389,
+      "overlapPolygonPartCount": 1,
+      "overlapPartInscribedDiametersM": [
+        0.0023854573019669507
+      ],
+      "inscribedCircleToleranceM": 0.0001
+    },
+    {
+      "ids": [
+        "BR-VIX-LOTE-47315~17926",
+        "BR-VIX-LOTE-47317~17927"
+      ],
+      "overlapM2": 0.12030942228344166,
+      "fractionOfSmaller": 0.0003196563296560708,
+      "nativeCrsOverlapM2": 0.12030941758143854,
+      "nativeGeometriesValid": true,
+      "nativeOverlapGeometryType": "GeometryCollection",
+      "nativeIntersectionLengthM": 55.40423303101711,
+      "approxMeanStripWidthM": 0.004342968433985374,
+      "maxComponentMinimumRectangleWidthM": 0.01378607818645974,
+      "overlapPolygonPartCount": 2,
+      "overlapPartInscribedDiametersM": [
+        0.006775767248834048,
+        0.013305937549971236
+      ],
+      "inscribedCircleToleranceM": 0.0001
+    }
+  ]
+}

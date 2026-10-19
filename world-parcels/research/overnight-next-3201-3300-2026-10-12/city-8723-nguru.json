@@ -1,0 +1,78 @@
+{
+  "cityCode": 8723,
+  "queueRank": 3230,
+  "name": "Nguru",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso2": "NG",
+  "iso3": "NGA",
+  "point": [12.8756421295139, 10.447944244719],
+  "population2025": 186988,
+  "population2025k": 186.988,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-12",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nguru Yobe cadastral parcel map official land registry survey GIS",
+        "result": "First-party Yobe evidence identified Yobe Geographic Information Service (YOGIS) and Yobe State housing/property functions. The Yobe budget describes YOGIS GIS Phase II and house numbering, while the indexed YOGIS digitisation TOR describes land-record and parcel-survey-document workflows. No current public Nguru parcel viewer, schema, or anonymous ID-plus-geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://budget.pfm.yb.gov.ng/wp-content/uploads/2025/01/Yobe-State-FY-2025-Budget-Publication-Printout-2.pdf",
+          "https://saber.pfm.yb.gov.ng/wp-content/uploads/2024/12/Yobe-Digitalisation-TOR.pdf",
+          "https://www.yhpdc.yb.gov.ng/index.html"
+        ]
+      },
+      {
+        "language": "Hausa/Kanuri local-language discovery",
+        "query": "Nguru Yobe cadastral map Hausa filaye rajistar ƙasa hukuma",
+        "result": "No first-party local-language cadastral viewer, parcel API, or geometry service was located. English is Nigeria's official administrative language; Nguru is in a multilingual Yobe setting, so the local-language search was treated as discovery only and not as evidence of absence.",
+        "actualResultUrls": [
+          "https://budget.pfm.yb.gov.ng/wp-content/uploads/2025/01/Yobe-State-FY-2025-Budget-Publication-Printout-2.pdf",
+          "https://www.yhpdc.yb.gov.ng/index.html"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Yobe State Geographic Information Service (YOGIS) is evidenced in the official Yobe budget as a state GIS service, and the Yobe State Housing and Property Development Corporation is evidenced as a state land/property body. The reviewed material does not establish a public Nguru cadastral registry endpoint.",
+    "publicMapLead": "YOGIS GIS Phase II / land-record digitisation is the strongest official lead, but no live public map/API was verified.",
+    "registryEvidence": "https://budget.pfm.yb.gov.ng/wp-content/uploads/2025/01/Yobe-State-FY-2025-Budget-Publication-Printout-2.pdf",
+    "registryEvidenceUrls": [
+      "https://budget.pfm.yb.gov.ng/wp-content/uploads/2025/01/Yobe-State-FY-2025-Budget-Publication-Printout-2.pdf",
+      "https://saber.pfm.yb.gov.ng/wp-content/uploads/2024/12/Yobe-Digitalisation-TOR.pdf",
+      "https://www.yhpdc.yb.gov.ng/index.html"
+    ]
+  },
+  "attemptsRecorded": [
+    {"method":"SEARCH","url":"https://www.google.com/search?q=Nguru+Yobe+cadastral+parcel+map+official+land+registry+survey+GIS","httpStatus":null,"outcome":"First-party Yobe budget and property-agency sources were located; no public parcel-vector endpoint was found."},
+    {"method":"SEARCH","url":"https://www.google.com/search?q=Nguru+Yobe+State+Ministry+Lands+Housing+cadastral+map+official","httpStatus":null,"outcome":"Yobe GIS and housing/property sources were located; no city-specific public cadastral viewer or API was found."},
+    {"method":"SEARCH","url":"https://www.google.com/search?q=Nguru+Yobe+cadastral+map+Hausa+filaye+rajistar+%C6%99asa+hukuma","httpStatus":null,"outcome":"No first-party local-language parcel service was located; this was not treated as evidence of absence."},
+    {"method":"GET","url":"https://budget.pfm.yb.gov.ng/wp-content/uploads/2025/01/Yobe-State-FY-2025-Budget-Publication-Printout-2.pdf","httpStatus":200,"outcome":"Official Yobe budget PDF loaded. It names Yobe Geographic Information Service and funds GIS Phase II and house numbering; no live parcel API, schema, CRS, or geometry response was present."},
+    {"method":"GET","url":"https://saber.pfm.yb.gov.ng/wp-content/uploads/2024/12/Yobe-Digitalisation-TOR.pdf","httpStatus":404,"outcome":"Indexed official Yobe digitisation TOR URL returned 404 in the bounded request. Search evidence described planned searchable land/C of O records and parcel survey diagrams, but no live endpoint was obtained."},
+    {"method":"GET","url":"https://www.yhpdc.yb.gov.ng/index.html","httpStatus":200,"outcome":"Official Yobe State Housing and Property Development Corporation page loaded. It describes land allocation/property functions but exposes no public parcel map, API, schema, CRS, or geometry response."},
+    {"method":"GET","url":"https://osgof.gov.ng/","httpStatus":200,"outcome":"Official federal Surveyor-General site loaded and lists general requests for maps, coordinates, and cadastral surveys; it is national service prose, not a Nguru/Yobe parcel registry or open geometry endpoint."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point [12.8756421295139,10.447944244719] was preserved in latitude/longitude order; no coordinate shift or parcel query was used.","featureCount":null,"result":"No safe anonymous parcel ID-plus-geometry response was obtained."}
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if independently confirmed","full parcel polygon geometry","geometry CRS / coordinate reference metadata","public source/service metadata","retrieval date"],
+  "unsafeFieldsNotRequested": ["owner","address","contact","titleholder","personal data","tax/account","certificate/title"],
+  "sampleGeoJSON": null,
+  "geometryDecision": {"verified":false,"sourceId":null,"sampleCount":0,"sampleFile":null,"nativeId":null,"nativeIdField":null,"exactWupPointTest":"No usable anonymous parcel-vector response; no hit/miss inference."},
+  "coverageAssessment": {"claimedScope":"YOGIS and Yobe land/property administration are evidenced, but no public parcel-vector scope was verified.","verifiedOpenScope":"State GIS and property-administration custodianship was evidenced; anonymous geometry, schema, CRS, native identity and open coverage were not verified.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false},
+  "runtimeReadiness":"held_no_verified_public_geometry",
+  "serialReviewerQualification":"not qualified; independent serial review still required",
+  "scopeLimits": ["Exact WUP point was preserved and not shifted to force a hit.","A zero exact-point hit, map extent miss, timeout, login wall, 404, or unusable UI is not evidence of citywide absence.","No parcel polygon or source-specific raw attribute set is retained.","No citywide polygon completeness, current API, CRS, native identity semantics, or update cadence was verified.","This packet records research only and is not source integration or runtime admission."],
+  "uncertainty":"Yobe state GIS and land/property administration are evidenced, but the reviewed first-party material does not expose a current anonymous parcel-vector service. The indexed digitisation TOR was unavailable at request time. Current YOGIS endpoint, schema, CRS, native identity semantics, safe geometry behavior, and Nguru coverage remain unresolved."
+}

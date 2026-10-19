@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "RU",
+ "country": "Russian Federation",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "cadastreAuthority": "Rosreestr; NSPD (nspd.gov.ru), successor to pkk.rosreestr.ru",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language per country; cookie jar; Referer = viewer origin where applicable",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://nspd.gov.ru/",
+   "observation": "connection reset before HTTP response"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://nspd.gov.ru/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset (curl 35)"
+  },
+  {
+   "url": "https://nspd.gov.ru/map",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://pkk.rosreestr.ru/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://lk.rosreestr.ru/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://rosreestr.gov.ru/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "regionsSampled": [],
+ "coverageAssessment": {
+  "claimedScope": "Nationwide public cadastral map (NSPD)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "All Rosreestr/NSPD hosts reset connections; foreign-IP filtering suspected. Nothing tested at service level. Not an INSPIRE country.",
+ "nextStep": "Retry from a network that can reach Russian government hosts; probe NSPD search/WMS with a small bbox.",
+ "geoBlockSuspected": true,
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false
+}

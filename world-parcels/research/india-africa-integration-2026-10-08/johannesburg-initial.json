@@ -1,0 +1,1889 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Complete bounded, exact identity, footprint and binding acceptance through the existing adapter; no imported parcels.",
+  "checkedAt": "2026-10-07T21:49:09.665Z",
+  "researchCityId": "wup2025:3664",
+  "sourceId": "za-joburg-registered-stands",
+  "descriptor": {
+    "id": "za-joburg-registered-stands",
+    "name": "Johannesburg registered cadastral stands",
+    "adapter": "arcgis",
+    "cityIds": [
+      "johannesburg"
+    ],
+    "countryCode": "ZA",
+    "endpoint": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6",
+    "idField": "SG_ID",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "ZA-JOBURG-",
+    "outFields": [
+      "OBJECTID",
+      "SG_ID",
+      "PROPERTY_ID",
+      "STAND_NO",
+      "STATUS_DESC",
+      "LAND_TYPE_NAME"
+    ],
+    "attributeNotNull": [
+      "SG_ID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "nativeGeometryMode": "parts",
+    "disjointParts": true,
+    "partsCoordinatePrecision": 9,
+    "partMatchFields": [
+      "PROPERTY_ID",
+      "STAND_NO",
+      "STATUS_DESC"
+    ],
+    "pageSize": 10,
+    "maxFeatures": 1500,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 2,
+    "metricSrid": 32735,
+    "idBatchSize": 10,
+    "parcelNumberField": "STAND_NO"
+  },
+  "center": [
+    -26.12045,
+    27.86009
+  ],
+  "grid": 0.001,
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 10827,
+      "bbox": [
+        27.86,
+        -26.121,
+        27.861,
+        -26.12
+      ],
+      "count": 13,
+      "sourceRows": 13,
+      "viewportSourceRows": 13,
+      "complete": true
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 4455,
+      "bbox": [
+        27.859,
+        -26.121,
+        27.86,
+        -26.12
+      ],
+      "count": 12,
+      "sourceRows": 12,
+      "viewportSourceRows": 12,
+      "complete": true
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 4821,
+      "bbox": [
+        27.861,
+        -26.121,
+        27.862,
+        -26.12
+      ],
+      "count": 16,
+      "sourceRows": 16,
+      "viewportSourceRows": 16,
+      "complete": true
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 4529,
+      "bbox": [
+        27.86,
+        -26.122,
+        27.861,
+        -26.121
+      ],
+      "count": 15,
+      "sourceRows": 15,
+      "viewportSourceRows": 15,
+      "complete": true
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 4359,
+      "bbox": [
+        27.86,
+        -26.12,
+        27.861,
+        -26.119
+      ],
+      "count": 15,
+      "sourceRows": 15,
+      "viewportSourceRows": 15,
+      "complete": true
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 4044,
+      "bbox": [
+        27.859,
+        -26.122,
+        27.86,
+        -26.121
+      ],
+      "count": 15,
+      "sourceRows": 15,
+      "viewportSourceRows": 15,
+      "complete": true
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 4713,
+      "bbox": [
+        27.861,
+        -26.122,
+        27.862,
+        -26.121
+      ],
+      "count": 15,
+      "sourceRows": 16,
+      "viewportSourceRows": 16,
+      "complete": true
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 4455,
+      "bbox": [
+        27.859,
+        -26.12,
+        27.86,
+        -26.119
+      ],
+      "count": 13,
+      "sourceRows": 13,
+      "viewportSourceRows": 13,
+      "complete": true
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 4681,
+      "bbox": [
+        27.861,
+        -26.12,
+        27.862,
+        -26.119
+      ],
+      "count": 17,
+      "sourceRows": 17,
+      "viewportSourceRows": 17,
+      "complete": true
+    },
+    {
+      "name": "exact-0",
+      "passed": true,
+      "elapsedMs": 1677,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0488014000024550000000",
+        "ZA-JOBURG-T0IQ0488014000024540000000",
+        "ZA-JOBURG-T0IQ0488014000024530000000",
+        "ZA-JOBURG-T0IQ0488014000024260000000",
+        "ZA-JOBURG-T0IQ04880140000000000000RE",
+        "ZA-JOBURG-T0IQ0488014000024270000000",
+        "ZA-JOBURG-T0IQ0488014000024140000000",
+        "ZA-JOBURG-T0IQ0488014000024150000000",
+        "ZA-JOBURG-T0IQ0488014000024280000000",
+        "ZA-JOBURG-T0IQ0488014000024290000000"
+      ]
+    },
+    {
+      "name": "exact-10",
+      "passed": true,
+      "elapsedMs": 1588,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0488014000024160000000",
+        "ZA-JOBURG-T0IQ0488014000024300000000",
+        "ZA-JOBURG-T0IQ0488014000024310000000",
+        "ZA-JOBURG-T0IQ0488014000024520000000",
+        "ZA-JOBURG-T0IQ0488014000024480000000",
+        "ZA-JOBURG-T0IQ0488014000024470000000",
+        "ZA-JOBURG-T0IQ0488014000024500000000",
+        "ZA-JOBURG-T0IQ0488014000024460000000",
+        "ZA-JOBURG-T0IQ0488014000024450000000",
+        "ZA-JOBURG-T0IQ0488014000024510000000"
+      ]
+    },
+    {
+      "name": "exact-20",
+      "passed": true,
+      "elapsedMs": 3469,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0488014000024090000100",
+        "ZA-JOBURG-T0IQ04880140000240900000RE",
+        "ZA-JOBURG-T0IQ0488014000024170000000",
+        "ZA-JOBURG-T0IQ0488014000024180000000",
+        "ZA-JOBURG-T0IQ0488014000024190000000",
+        "ZA-JOBURG-T0IQ0488014000024200000000",
+        "ZA-JOBURG-T0IQ0488014000024330000000",
+        "ZA-JOBURG-T0IQ0488014000024320000000",
+        "ZA-JOBURG-T0IQ0488014000024340000000",
+        "ZA-JOBURG-T0IQ0488014000024350000000"
+      ]
+    },
+    {
+      "name": "exact-30",
+      "passed": true,
+      "elapsedMs": 2961,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0488014000024230000000",
+        "ZA-JOBURG-T0IQ0488014000024240000000",
+        "ZA-JOBURG-T0IQ0488014000024220000000",
+        "ZA-JOBURG-T0IQ0488014000024210000000",
+        "ZA-JOBURG-T0IQ0488014000024650000000",
+        "ZA-JOBURG-T0IQ0488014000024720000000",
+        "ZA-JOBURG-T0IQ0488014000024710000000",
+        "ZA-JOBURG-T0IQ0488014000024690000000",
+        "ZA-JOBURG-T0IQ0488014000024700000000",
+        "ZA-JOBURG-T0IQ0488014000024620000000"
+      ]
+    },
+    {
+      "name": "exact-40",
+      "passed": true,
+      "elapsedMs": 1484,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0488014000024630000000",
+        "ZA-JOBURG-T0IQ0488014000024640000000",
+        "ZA-JOBURG-T0IQ0488014000024570000000",
+        "ZA-JOBURG-T0IQ0488014000024560000000",
+        "ZA-JOBURG-T0IQ0488014000024610000000",
+        "ZA-JOBURG-T0IQ04880160000000000000RE",
+        "ZA-JOBURG-T0IQ0488016000025640000500",
+        "ZA-JOBURG-T0IQ0488014000023980000000",
+        "ZA-JOBURG-T0IQ0488014000024120000000",
+        "ZA-JOBURG-T0IQ0488014000024130000000"
+      ]
+    },
+    {
+      "name": "exact-50",
+      "passed": true,
+      "elapsedMs": 1934,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0488014000024110000000",
+        "ZA-JOBURG-T0IQ0488016000025650000000",
+        "ZA-JOBURG-T0IQ0488016000025660000000",
+        "ZA-JOBURG-T0IQ0488014000025130000000",
+        "ZA-JOBURG-T0IQ0488014000024980000000",
+        "ZA-JOBURG-T0IQ0488014000024970000000",
+        "ZA-JOBURG-T0IQ0488014000024990000000",
+        "ZA-JOBURG-T0IQ0488014000025000000000",
+        "ZA-JOBURG-T0IQ0488014000024490000000",
+        "ZA-JOBURG-T0IQ01560160000000000000RE"
+      ]
+    },
+    {
+      "name": "exact-60",
+      "passed": true,
+      "elapsedMs": 1356,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0156016000020720000000",
+        "ZA-JOBURG-T0IQ0488014000024600000000",
+        "ZA-JOBURG-T0IQ0488014000024660000000",
+        "ZA-JOBURG-T0IQ0488014000024590000000",
+        "ZA-JOBURG-T0IQ0488014000024580000000",
+        "ZA-JOBURG-T0IQ0156016000020730000000",
+        "ZA-JOBURG-T0IQ01560180000000000000RE",
+        "ZA-JOBURG-T0IQ0488014000024100000000",
+        "ZA-JOBURG-T0IQ0488014000024060000000",
+        "ZA-JOBURG-T0IQ0488014000024050000000"
+      ]
+    },
+    {
+      "name": "exact-70",
+      "passed": true,
+      "elapsedMs": 1388,
+      "count": 10,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0488014000023950000000",
+        "ZA-JOBURG-T0IQ0488014000023970000000",
+        "ZA-JOBURG-T0IQ0488014000023960000000",
+        "ZA-JOBURG-T0IQ0488014000024070000000",
+        "ZA-JOBURG-T0IQ0488014000024080000000",
+        "ZA-JOBURG-T0IQ0156006000012000000000",
+        "ZA-JOBURG-T0IQ0156006000012030000000",
+        "ZA-JOBURG-T0IQ0156006000012020000000",
+        "ZA-JOBURG-T0IQ0156006000012010000000",
+        "ZA-JOBURG-T0IQ0156006000011900000000"
+      ]
+    },
+    {
+      "name": "exact-80",
+      "passed": true,
+      "elapsedMs": 1408,
+      "count": 3,
+      "allGeometriesMatch": true,
+      "ids": [
+        "ZA-JOBURG-T0IQ0156006000011910000000",
+        "ZA-JOBURG-T0IQ0156006000011920000000",
+        "ZA-JOBURG-T0IQ01560060000000000000RE"
+      ]
+    },
+    {
+      "name": "forced-page",
+      "passed": true,
+      "elapsedMs": 6539,
+      "bbox": [
+        27.86,
+        -26.121,
+        27.861,
+        -26.12
+      ],
+      "count": 13,
+      "sourceRows": 13,
+      "pageSize": 3,
+      "allGeometriesMatch": true
+    },
+    {
+      "name": "absent",
+      "passed": true,
+      "elapsedMs": 900,
+      "absentId": "ZA-JOBURG-Z0000000000000000000000000",
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 2360,
+      "count": 4,
+      "parcelId": "ZA-JOBURG-T0IQ0488014000024550000000",
+      "geometrySha256": "b8e301e06712b46a5565f653f2144e599bb615ed2e723a7968883eef528cbcd1"
+    },
+    {
+      "name": "binding",
+      "passed": true,
+      "elapsedMs": 2498,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "sampledParcelId": "ZA-JOBURG-T0IQ0488014000024550000000"
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-07T21:49:09.677Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.121%2C27.861%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 6035
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:15.717Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.121%2C27.861%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 137,
+      "elapsedMs": 541
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:16.261Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247113%2C247114%2C247116%2C247125%2C247130%2C283742%2C283743%2C283747%2C283754%2C283755",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15312,
+      "elapsedMs": 355
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:16.624Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283756%2C283757%2C283758",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1375,
+      "elapsedMs": 599
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:17.228Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488014000024280000000%27%2C%27T0IQ0488014000024290000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 638
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:17.876Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488014000024280000000%27%2C%27T0IQ0488014000024290000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 661
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:18.549Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247113%2C247114%2C247116%2C247125%2C247130%2C283742%2C283743%2C283747%2C283754%2C283755",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15312,
+      "elapsedMs": 466
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:19.018Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 608
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:19.628Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 67,
+      "elapsedMs": 506
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:20.137Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283756%2C283757%2C283758",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1375,
+      "elapsedMs": 364
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:20.511Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.859%2C-26.121%2C27.86%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 417
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:20.932Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.859%2C-26.121%2C27.86%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 130,
+      "elapsedMs": 440
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:21.376Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247115%2C247116%2C247119%2C247120%2C247121%2C247122%2C247123%2C247124%2C247125%2C247126",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5227,
+      "elapsedMs": 325
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:21.709Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247130%2C283738",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11675,
+      "elapsedMs": 437
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:22.151Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024520000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024480000000%27%2C%27T0IQ0488014000024470000000%27%2C%27T0IQ0488014000024500000000%27%2C%27T0IQ0488014000024460000000%27%2C%27T0IQ0488014000024450000000%27%2C%27T0IQ0488014000024510000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ0488014000024090000100%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 561
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:22.714Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024520000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024480000000%27%2C%27T0IQ0488014000024470000000%27%2C%27T0IQ0488014000024500000000%27%2C%27T0IQ0488014000024460000000%27%2C%27T0IQ0488014000024450000000%27%2C%27T0IQ0488014000024510000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ0488014000024090000100%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 546
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:23.266Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247115%2C247116%2C247119%2C247120%2C247121%2C247122%2C247123%2C247124%2C247125%2C247126",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5227,
+      "elapsedMs": 429
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:23.699Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ04880140000000000000RE%27%2C%27T0IQ04880140000240900000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 463
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:24.167Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ04880140000000000000RE%27%2C%27T0IQ04880140000240900000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 60,
+      "elapsedMs": 443
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:24.612Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247130%2C283738",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11675,
+      "elapsedMs": 344
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:24.968Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.861%2C-26.121%2C27.862%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 398
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:25.368Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.861%2C-26.121%2C27.862%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 158,
+      "elapsedMs": 447
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:25.817Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247130%2C283751%2C283752%2C283753%2C283756%2C283757%2C283758%2C283759%2C283760%2C283761",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15186,
+      "elapsedMs": 410
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:26.264Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283762%2C283763%2C283764%2C283765%2C283769%2C283770",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2996,
+      "elapsedMs": 382
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:26.651Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024180000000%27%2C%27T0IQ0488014000024190000000%27%2C%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%2C%27T0IQ0488014000024200000000%27%2C%27T0IQ0488014000024330000000%27%2C%27T0IQ0488014000024320000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 489
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:27.142Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024180000000%27%2C%27T0IQ0488014000024190000000%27%2C%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%2C%27T0IQ0488014000024200000000%27%2C%27T0IQ0488014000024330000000%27%2C%27T0IQ0488014000024320000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 584
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:27.738Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247130%2C283751%2C283752%2C283753%2C283756%2C283757%2C283758%2C283759%2C283760%2C283761",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15186,
+      "elapsedMs": 481
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:28.244Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024340000000%27%2C%27T0IQ0488014000024350000000%27%2C%27T0IQ0488014000024230000000%27%2C%27T0IQ0488014000024240000000%27%2C%27T0IQ0488014000024220000000%27%2C%27T0IQ0488014000024210000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 635
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:28.887Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024340000000%27%2C%27T0IQ0488014000024350000000%27%2C%27T0IQ0488014000024230000000%27%2C%27T0IQ0488014000024240000000%27%2C%27T0IQ0488014000024220000000%27%2C%27T0IQ0488014000024210000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 88,
+      "elapsedMs": 572
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:29.461Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283762%2C283763%2C283764%2C283765%2C283769%2C283770",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2996,
+      "elapsedMs": 323
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:29.791Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.122%2C27.861%2C-26.121&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 458
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:30.258Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.122%2C27.861%2C-26.121&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 151,
+      "elapsedMs": 372
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:30.634Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=246976%2C247099%2C247100%2C247104%2C247105%2C247106%2C247107%2C247108%2C247111%2C247112",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4540,
+      "elapsedMs": 331
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:30.968Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247113%2C247114%2C247116%2C247117%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12840,
+      "elapsedMs": 391
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:31.368Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024650000000%27%2C%27T0IQ0488014000024720000000%27%2C%27T0IQ0488014000024710000000%27%2C%27T0IQ0488014000024690000000%27%2C%27T0IQ0488014000024700000000%27%2C%27T0IQ0488014000024620000000%27%2C%27T0IQ0488014000024630000000%27%2C%27T0IQ0488014000024640000000%27%2C%27T0IQ0488014000024570000000%27%2C%27T0IQ0488014000024560000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 483
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:31.854Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024650000000%27%2C%27T0IQ0488014000024720000000%27%2C%27T0IQ0488014000024710000000%27%2C%27T0IQ0488014000024690000000%27%2C%27T0IQ0488014000024700000000%27%2C%27T0IQ0488014000024620000000%27%2C%27T0IQ0488014000024630000000%27%2C%27T0IQ0488014000024640000000%27%2C%27T0IQ0488014000024570000000%27%2C%27T0IQ0488014000024560000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 488
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:32.347Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=246976%2C247099%2C247100%2C247104%2C247105%2C247106%2C247107%2C247108%2C247111%2C247112",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4540,
+      "elapsedMs": 639
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:32.995Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024610000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 470
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:33.491Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024610000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 81,
+      "elapsedMs": 496
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:33.994Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247113%2C247114%2C247116%2C247117%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12840,
+      "elapsedMs": 309
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:34.326Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.12%2C27.861%2C-26.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 423
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:34.754Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.12%2C27.861%2C-26.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 151,
+      "elapsedMs": 357
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:35.126Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247125%2C247130%2C283692%2C283729%2C283740%2C283741%2C283742%2C283743%2C283744%2C283745",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 18224,
+      "elapsedMs": 325
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:35.449Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283746%2C283747%2C283749%2C283751%2C283756",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2763,
+      "elapsedMs": 441
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:35.895Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ04880160000000000000RE%27%2C%27T0IQ0488016000025640000500%27%2C%27T0IQ0488014000023980000000%27%2C%27T0IQ0488014000024120000000%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024130000000%27%2C%27T0IQ0488014000024110000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 543
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:36.444Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ04880160000000000000RE%27%2C%27T0IQ0488016000025640000500%27%2C%27T0IQ0488014000023980000000%27%2C%27T0IQ0488014000024120000000%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024130000000%27%2C%27T0IQ0488014000024110000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 487
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:36.942Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247125%2C247130%2C283692%2C283729%2C283740%2C283741%2C283742%2C283743%2C283744%2C283745",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 18224,
+      "elapsedMs": 343
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:37.288Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488016000025650000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488016000025660000000%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024160000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 484
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:37.777Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488016000025650000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488016000025660000000%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024160000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 81,
+      "elapsedMs": 513
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:38.329Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283746%2C283747%2C283749%2C283751%2C283756",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2763,
+      "elapsedMs": 352
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:38.689Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.859%2C-26.122%2C27.86%2C-26.121&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 355
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:39.047Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.859%2C-26.122%2C27.86%2C-26.121&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 151,
+      "elapsedMs": 347
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:39.397Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247094%2C247096%2C247097%2C247098%2C247099%2C247100%2C247101%2C247115%2C247116%2C247117",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4781,
+      "elapsedMs": 316
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:39.719Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247118%2C247119%2C247121%2C247124%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 13289,
+      "elapsedMs": 336
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:40.065Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000025130000000%27%2C%27T0IQ0488014000024980000000%27%2C%27T0IQ0488014000024970000000%27%2C%27T0IQ0488014000024990000000%27%2C%27T0IQ0488014000024720000000%27%2C%27T0IQ0488014000024710000000%27%2C%27T0IQ0488014000025000000000%27%2C%27T0IQ0488014000024520000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024610000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 463
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:40.530Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000025130000000%27%2C%27T0IQ0488014000024980000000%27%2C%27T0IQ0488014000024970000000%27%2C%27T0IQ0488014000024990000000%27%2C%27T0IQ0488014000024720000000%27%2C%27T0IQ0488014000024710000000%27%2C%27T0IQ0488014000025000000000%27%2C%27T0IQ0488014000024520000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024610000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 516
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:41.048Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247094%2C247096%2C247097%2C247098%2C247099%2C247100%2C247101%2C247115%2C247116%2C247117",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4781,
+      "elapsedMs": 323
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:41.375Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024490000000%27%2C%27T0IQ0488014000024480000000%27%2C%27T0IQ0488014000024500000000%27%2C%27T0IQ0488014000024510000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 524
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:41.902Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024490000000%27%2C%27T0IQ0488014000024480000000%27%2C%27T0IQ0488014000024500000000%27%2C%27T0IQ0488014000024510000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 81,
+      "elapsedMs": 505
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:42.413Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247118%2C247119%2C247121%2C247124%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 13289,
+      "elapsedMs": 315
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:42.748Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.861%2C-26.122%2C27.862%2C-26.121&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 390
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:43.183Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.861%2C-26.122%2C27.862%2C-26.121&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 158,
+      "elapsedMs": 380
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:43.566Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=246942%2C246943%2C246974%2C246975%2C246976%2C246977%2C247108%2C247109%2C247110%2C247111",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11739,
+      "elapsedMs": 359
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:43.934Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247130%2C283760%2C283762%2C283763%2C283967%2C284019",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 16208,
+      "elapsedMs": 308
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:44.248Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ01560160000000000000RE%27%2C%27T0IQ0156016000020720000000%27%2C%27T0IQ0488014000024600000000%27%2C%27T0IQ0488014000024650000000%27%2C%27T0IQ0488014000024660000000%27%2C%27T0IQ0488014000024640000000%27%2C%27T0IQ0488014000024590000000%27%2C%27T0IQ0488014000024580000000%27%2C%27T0IQ0488014000024570000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 515
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:44.768Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ01560160000000000000RE%27%2C%27T0IQ0156016000020720000000%27%2C%27T0IQ0488014000024600000000%27%2C%27T0IQ0488014000024650000000%27%2C%27T0IQ0488014000024660000000%27%2C%27T0IQ0488014000024640000000%27%2C%27T0IQ0488014000024590000000%27%2C%27T0IQ0488014000024580000000%27%2C%27T0IQ0488014000024570000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 123,
+      "elapsedMs": 551
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:45.324Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=246942%2C246943%2C246974%2C246975%2C246976%2C246977%2C247108%2C247109%2C247110%2C247111",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11739,
+      "elapsedMs": 426
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:45.756Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11022,
+      "elapsedMs": 363
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:46.131Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024330000000%27%2C%27T0IQ0488014000024340000000%27%2C%27T0IQ0488014000024350000000%27%2C%27T0IQ0156016000020730000000%27%2C%27T0IQ01560180000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 420
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:46.557Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024330000000%27%2C%27T0IQ0488014000024340000000%27%2C%27T0IQ0488014000024350000000%27%2C%27T0IQ0156016000020730000000%27%2C%27T0IQ01560180000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 81,
+      "elapsedMs": 529
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:47.086Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283760%2C283762%2C283763%2C283967%2C284019",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5227,
+      "elapsedMs": 340
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:47.463Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.859%2C-26.12%2C27.86%2C-26.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 441
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:47.912Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.859%2C-26.12%2C27.86%2C-26.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 137,
+      "elapsedMs": 415
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:48.337Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247125%2C247126%2C247127%2C247129%2C247130%2C247131%2C283674%2C283734%2C283735%2C283736",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 16091,
+      "elapsedMs": 364
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:48.710Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283737%2C283738%2C283740",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1989,
+      "elapsedMs": 310
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:49.045Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024260000000%27%2C%27T0IQ0488014000024090000100%27%2C%27T0IQ0488014000024100000000%27%2C%27T0IQ0488014000024060000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024050000000%27%2C%27T0IQ0488014000023950000000%27%2C%27T0IQ0488014000023970000000%27%2C%27T0IQ0488014000023960000000%27%2C%27T0IQ0488014000024070000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 436
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:49.525Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024260000000%27%2C%27T0IQ0488014000024090000100%27%2C%27T0IQ0488014000024100000000%27%2C%27T0IQ0488014000024060000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024050000000%27%2C%27T0IQ0488014000023950000000%27%2C%27T0IQ0488014000023970000000%27%2C%27T0IQ0488014000023960000000%27%2C%27T0IQ0488014000024070000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 633
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:50.163Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247125%2C247126%2C247127%2C247129%2C247130%2C247131%2C283674%2C283734%2C283735%2C283736",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 16091,
+      "elapsedMs": 339
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:50.524Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024080000000%27%2C%27T0IQ04880140000240900000RE%27%2C%27T0IQ0488014000023980000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 485
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:51.018Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024080000000%27%2C%27T0IQ04880140000240900000RE%27%2C%27T0IQ0488014000023980000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 67,
+      "elapsedMs": 526
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:51.549Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283737%2C283738%2C283740",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1989,
+      "elapsedMs": 361
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:51.925Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.861%2C-26.12%2C27.862%2C-26.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 376
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:52.327Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.861%2C-26.12%2C27.862%2C-26.119&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 165,
+      "elapsedMs": 346
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:52.675Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283692%2C283747%2C283749%2C283750%2C283751%2C283752%2C283753%2C283756%2C283768%2C283769",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7536,
+      "elapsedMs": 380
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:53.058Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283770%2C283771%2C283772%2C283793%2C283794%2C283795%2C283814",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 17253,
+      "elapsedMs": 336
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:53.408Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ04880160000000000000RE%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488016000025660000000%27%2C%27T0IQ0156006000012000000000%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024180000000%27%2C%27T0IQ0488014000024190000000%27%2C%27T0IQ0488014000024160000000%27%2C%27T0IQ0156006000012030000000%27%2C%27T0IQ0488014000024220000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 462
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:53.878Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ04880160000000000000RE%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488016000025660000000%27%2C%27T0IQ0156006000012000000000%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024180000000%27%2C%27T0IQ0488014000024190000000%27%2C%27T0IQ0488014000024160000000%27%2C%27T0IQ0156006000012030000000%27%2C%27T0IQ0488014000024220000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 657
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:54.555Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283692%2C283747%2C283749%2C283750%2C283751%2C283752%2C283753%2C283756%2C283768%2C283769",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7536,
+      "elapsedMs": 454
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:55.014Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024210000000%27%2C%27T0IQ0156006000012020000000%27%2C%27T0IQ0156006000012010000000%27%2C%27T0IQ0156006000011900000000%27%2C%27T0IQ0156006000011910000000%27%2C%27T0IQ0156006000011920000000%27%2C%27T0IQ01560060000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 514
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:55.550Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024210000000%27%2C%27T0IQ0156006000012020000000%27%2C%27T0IQ0156006000012010000000%27%2C%27T0IQ0156006000011900000000%27%2C%27T0IQ0156006000011910000000%27%2C%27T0IQ0156006000011920000000%27%2C%27T0IQ01560060000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 95,
+      "elapsedMs": 579
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:56.153Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283770%2C283771%2C283772%2C283793%2C283794%2C283795%2C283814",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 17253,
+      "elapsedMs": 420
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:56.670Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488014000024280000000%27%2C%27T0IQ0488014000024290000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 496
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:57.169Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488014000024280000000%27%2C%27T0IQ0488014000024290000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 537
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:57.771Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247113%2C247114%2C247116%2C247125%2C247130%2C283742%2C283743%2C283747%2C283754%2C283755",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15312,
+      "elapsedMs": 454
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:58.374Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%2C%27T0IQ0488014000024520000000%27%2C%27T0IQ0488014000024480000000%27%2C%27T0IQ0488014000024470000000%27%2C%27T0IQ0488014000024500000000%27%2C%27T0IQ0488014000024460000000%27%2C%27T0IQ0488014000024450000000%27%2C%27T0IQ0488014000024510000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 512
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:58.964Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%2C%27T0IQ0488014000024520000000%27%2C%27T0IQ0488014000024480000000%27%2C%27T0IQ0488014000024470000000%27%2C%27T0IQ0488014000024500000000%27%2C%27T0IQ0488014000024460000000%27%2C%27T0IQ0488014000024450000000%27%2C%27T0IQ0488014000024510000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 509
+    },
+    {
+      "checkedAt": "2026-10-07T21:49:59.521Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247115%2C247119%2C247120%2C247121%2C247122%2C247123%2C247124%2C283756%2C283757%2C283758",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5061,
+      "elapsedMs": 383
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:00.037Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024090000100%27%2C%27T0IQ04880140000240900000RE%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024180000000%27%2C%27T0IQ0488014000024190000000%27%2C%27T0IQ0488014000024200000000%27%2C%27T0IQ0488014000024330000000%27%2C%27T0IQ0488014000024320000000%27%2C%27T0IQ0488014000024340000000%27%2C%27T0IQ0488014000024350000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 559
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:00.641Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024090000100%27%2C%27T0IQ04880140000240900000RE%27%2C%27T0IQ0488014000024170000000%27%2C%27T0IQ0488014000024180000000%27%2C%27T0IQ0488014000024190000000%27%2C%27T0IQ0488014000024200000000%27%2C%27T0IQ0488014000024330000000%27%2C%27T0IQ0488014000024320000000%27%2C%27T0IQ0488014000024340000000%27%2C%27T0IQ0488014000024350000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 611
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:01.307Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247126%2C283738%2C283751%2C283752%2C283753%2C283759%2C283760%2C283761%2C283762%2C283763",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4944,
+      "elapsedMs": 2190
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:03.516Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024230000000%27%2C%27T0IQ0488014000024240000000%27%2C%27T0IQ0488014000024220000000%27%2C%27T0IQ0488014000024210000000%27%2C%27T0IQ0488014000024650000000%27%2C%27T0IQ0488014000024720000000%27%2C%27T0IQ0488014000024710000000%27%2C%27T0IQ0488014000024690000000%27%2C%27T0IQ0488014000024700000000%27%2C%27T0IQ0488014000024620000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 1902
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:05.463Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024230000000%27%2C%27T0IQ0488014000024240000000%27%2C%27T0IQ0488014000024220000000%27%2C%27T0IQ0488014000024210000000%27%2C%27T0IQ0488014000024650000000%27%2C%27T0IQ0488014000024720000000%27%2C%27T0IQ0488014000024710000000%27%2C%27T0IQ0488014000024690000000%27%2C%27T0IQ0488014000024700000000%27%2C%27T0IQ0488014000024620000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 561
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:06.029Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=246976%2C247099%2C247100%2C247104%2C247105%2C247106%2C283764%2C283765%2C283769%2C283770",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4820,
+      "elapsedMs": 388
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:06.565Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024630000000%27%2C%27T0IQ0488014000024640000000%27%2C%27T0IQ0488014000024570000000%27%2C%27T0IQ0488014000024560000000%27%2C%27T0IQ0488014000024610000000%27%2C%27T0IQ04880160000000000000RE%27%2C%27T0IQ0488016000025640000500%27%2C%27T0IQ0488014000023980000000%27%2C%27T0IQ0488014000024120000000%27%2C%27T0IQ0488014000024130000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 493
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:07.064Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024630000000%27%2C%27T0IQ0488014000024640000000%27%2C%27T0IQ0488014000024570000000%27%2C%27T0IQ0488014000024560000000%27%2C%27T0IQ0488014000024610000000%27%2C%27T0IQ04880160000000000000RE%27%2C%27T0IQ0488016000025640000500%27%2C%27T0IQ0488014000023980000000%27%2C%27T0IQ0488014000024120000000%27%2C%27T0IQ0488014000024130000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 494
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:07.563Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247107%2C247108%2C247111%2C247112%2C247117%2C283692%2C283729%2C283740%2C283741%2C283744",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7570,
+      "elapsedMs": 435
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:08.056Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024110000000%27%2C%27T0IQ0488016000025650000000%27%2C%27T0IQ0488016000025660000000%27%2C%27T0IQ0488014000025130000000%27%2C%27T0IQ0488014000024980000000%27%2C%27T0IQ0488014000024970000000%27%2C%27T0IQ0488014000024990000000%27%2C%27T0IQ0488014000025000000000%27%2C%27T0IQ0488014000024490000000%27%2C%27T0IQ01560160000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 572
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:08.636Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024110000000%27%2C%27T0IQ0488016000025650000000%27%2C%27T0IQ0488016000025660000000%27%2C%27T0IQ0488014000025130000000%27%2C%27T0IQ0488014000024980000000%27%2C%27T0IQ0488014000024970000000%27%2C%27T0IQ0488014000024990000000%27%2C%27T0IQ0488014000025000000000%27%2C%27T0IQ0488014000024490000000%27%2C%27T0IQ01560160000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 123,
+      "elapsedMs": 547
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:09.186Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=246942%2C246943%2C247094%2C247096%2C247097%2C247098%2C247101%2C247118%2C283745%2C283746",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11980,
+      "elapsedMs": 423
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:09.628Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283749",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 610,
+      "elapsedMs": 337
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:10.022Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0156016000020720000000%27%2C%27T0IQ0488014000024600000000%27%2C%27T0IQ0488014000024660000000%27%2C%27T0IQ0488014000024590000000%27%2C%27T0IQ0488014000024580000000%27%2C%27T0IQ0156016000020730000000%27%2C%27T0IQ01560180000000000000RE%27%2C%27T0IQ0488014000024100000000%27%2C%27T0IQ0488014000024060000000%27%2C%27T0IQ0488014000024050000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 442
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:10.488Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0156016000020720000000%27%2C%27T0IQ0488014000024600000000%27%2C%27T0IQ0488014000024660000000%27%2C%27T0IQ0488014000024590000000%27%2C%27T0IQ0488014000024580000000%27%2C%27T0IQ0156016000020730000000%27%2C%27T0IQ01560180000000000000RE%27%2C%27T0IQ0488014000024100000000%27%2C%27T0IQ0488014000024060000000%27%2C%27T0IQ0488014000024050000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 486
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:11.010Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=246974%2C246975%2C246977%2C247109%2C247110%2C247127%2C247129%2C247131%2C283967%2C284019",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7943,
+      "elapsedMs": 340
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:11.388Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000023950000000%27%2C%27T0IQ0488014000023970000000%27%2C%27T0IQ0488014000023960000000%27%2C%27T0IQ0488014000024070000000%27%2C%27T0IQ0488014000024080000000%27%2C%27T0IQ0156006000012000000000%27%2C%27T0IQ0156006000012030000000%27%2C%27T0IQ0156006000012020000000%27%2C%27T0IQ0156006000012010000000%27%2C%27T0IQ0156006000011900000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 541
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:11.940Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000023950000000%27%2C%27T0IQ0488014000023970000000%27%2C%27T0IQ0488014000023960000000%27%2C%27T0IQ0488014000024070000000%27%2C%27T0IQ0488014000024080000000%27%2C%27T0IQ0156006000012000000000%27%2C%27T0IQ0156006000012030000000%27%2C%27T0IQ0156006000012020000000%27%2C%27T0IQ0156006000012010000000%27%2C%27T0IQ0156006000011900000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 494
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:12.437Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283674%2C283734%2C283735%2C283736%2C283737%2C283750%2C283768%2C283771%2C283772%2C283793",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5551,
+      "elapsedMs": 324
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:12.783Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0156006000011910000000%27%2C%27T0IQ0156006000011920000000%27%2C%27T0IQ01560060000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 512
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:13.302Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0156006000011910000000%27%2C%27T0IQ0156006000011920000000%27%2C%27T0IQ01560060000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 67,
+      "elapsedMs": 488
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:13.796Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283794%2C283795%2C283814",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 15190,
+      "elapsedMs": 375
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:14.218Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.121%2C27.861%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 345
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:14.619Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.86%2C-26.121%2C27.861%2C-26.12&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 137,
+      "elapsedMs": 329
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:14.950Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247113%2C247114%2C247116",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1373,
+      "elapsedMs": 304
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:15.262Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247125%2C247130%2C283742",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11995,
+      "elapsedMs": 344
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:15.617Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283743%2C283747%2C283754",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1581,
+      "elapsedMs": 369
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:15.992Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283755%2C283756%2C283757",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1378,
+      "elapsedMs": 389
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:16.395Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283758",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 483,
+      "elapsedMs": 368
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:16.768Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488014000024280000000%27%2C%27T0IQ0488014000024290000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 557
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:17.331Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ0488014000024530000000%27%2C%27T0IQ0488014000024260000000%27%2C%27T0IQ04880140000000000000RE%27%2C%27T0IQ0488014000024270000000%27%2C%27T0IQ0488014000024140000000%27%2C%27T0IQ0488014000024150000000%27%2C%27T0IQ0488014000024280000000%27%2C%27T0IQ0488014000024290000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 116,
+      "elapsedMs": 616
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:17.961Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247113%2C247114%2C247116",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1373,
+      "elapsedMs": 318
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:18.288Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247125%2C247130%2C283742",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 11995,
+      "elapsedMs": 344
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:18.645Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283743%2C283747%2C283754",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1581,
+      "elapsedMs": 310
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:18.974Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283755",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 486,
+      "elapsedMs": 397
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:19.375Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 446
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:19.830Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024160000000%27%2C%27T0IQ0488014000024300000000%27%2C%27T0IQ0488014000024310000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 67,
+      "elapsedMs": 461
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:20.349Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=283756%2C283757%2C283758",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1375,
+      "elapsedMs": 396
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:20.775Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27Z0000000000000000000000000%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 480
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:21.262Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27Z0000000000000000000000000%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 49,
+      "elapsedMs": 405
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:21.682Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.860341294%2C-26.121352446%2C27.860756068%2C-26.120930975&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 340
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:22.041Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.860341294%2C-26.121352446%2C27.860756068%2C-26.120930975&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 74,
+      "elapsedMs": 363
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:22.417Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247112%2C247113%2C247114%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12357,
+      "elapsedMs": 383
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:22.806Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024560000000%27%2C%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 426
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:23.238Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024560000000%27%2C%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 74,
+      "elapsedMs": 481
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:23.727Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247112%2C247113%2C247114%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12357,
+      "elapsedMs": 305
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:24.044Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.860341294%2C-26.121352446%2C27.860756068%2C-26.120930975&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 375
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:24.425Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&geometry=27.860341294%2C-26.121352446%2C27.860756068%2C-26.120930975&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 74,
+      "elapsedMs": 350
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:24.779Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247112%2C247113%2C247114%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12357,
+      "elapsedMs": 426
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:25.214Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024560000000%27%2C%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 475
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:25.693Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=%28SG_ID+IS+NOT+NULL%29+AND+%28SG_ID+IN+%28%27T0IQ0488014000024560000000%27%2C%27T0IQ0488014000024550000000%27%2C%27T0IQ0488014000024540000000%27%2C%27T0IQ04880140000000000000RE%27%29%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 74,
+      "elapsedMs": 456
+    },
+    {
+      "checkedAt": "2026-10-07T21:50:26.155Z",
+      "url": "https://ags.joburg.org.za/server/rest/services/ConstructionPermitSystem/Property/MapServer/6/query?where=SG_ID+IS+NOT+NULL&outFields=OBJECTID%2CSG_ID%2CPROPERTY_ID%2CSTAND_NO%2CSTATUS_DESC%2CLAND_TYPE_NAME&returnGeometry=true&outSR=4326&f=geojson&objectIds=247112%2C247113%2C247114%2C247130",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12357,
+      "elapsedMs": 320
+    }
+  ],
+  "privacy": "Only request parameters, native parcel identifiers, counts and geometry hashes saved in repository. Geometry stays in temporary acceptance cache; no owners requested.",
+  "result": "passed",
+  "uniqueParcels": 83,
+  "completedAt": "2026-10-07T21:50:26.542Z"
+}

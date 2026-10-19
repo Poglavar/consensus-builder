@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3473",
+  "decision": "held",
+  "checkedAt": "2026-10-11T20:21:13Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-3473-zhangye.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/zhangye-service-review.json"
+  ],
+  "firstPartyCustodyUrl": "https://www.zhangye.gov.cn/gtj/dzdt/bdcdj/index_6.html",
+  "review": "Immutable WUP queue and ranked roster agree on code 3473, rank 2800, China, point [38.9379546130786, 100.456815788527], and 211842 persons. Official Zhangye Natural Resources Bureau registration section and Tianditu article support local custody/map context; packet records English and Chinese searches. Public map evidence is basemap/platform metadata, without native parcel ID or geometry, bounded cells, pagination, metric GEOS checks, source binding, or headed Details-panel verification. No full polygons retained; runtime/catalog/coverage admission remains held."
+}

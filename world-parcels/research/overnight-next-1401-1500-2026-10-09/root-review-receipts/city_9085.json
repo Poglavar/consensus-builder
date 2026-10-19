@@ -1,0 +1,12 @@
+{
+  "taskId": "city:9085",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-9085-khandwa.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/khandwa-service-review.json"
+  ],
+  "checkedAt": "2026-10-09T16:49:37.370225Z",
+  "reason": "District land-record custodian is evidenced, but the three public viewer requests timed out and no parcel geometry, native ID, or adapter qualification exists. This is not citywide absence."
+}

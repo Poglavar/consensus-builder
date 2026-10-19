@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4713-bacolod.json",
+  "city": "Bacolod",
+  "countryCode": "PH",
+  "wupCityCode": 4713,
+  "rank": 828,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://bacolodcity.gov.ph/wp-content/uploads/2022/07/ASSESSORS.pdf",
+    "https://bacolodcity.gov.ph/departments/",
+    "https://lra.gov.ph/land-registration-authority-lra-conducted-an-on-site-inspection-on-the-region-of-negros-occidental/",
+    "https://www.lra.gov.ph/images/Transparency_Page/XIII.ISO_QMS/condocrev2_1.pdf"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "routeInspectionStatus": "official_local_registry_verified_no_safe_public_geometry_contract",
+    "reason": "Official city assessment and title-registration offices are confirmed, but available location/mapping service is a document-based request workflow and no anonymous public geometry schema was identified.",
+    "nativeIdsUsed": "No safe parcel feature identifier was confirmed; no feature attributes requested."
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bacolod official cadastral map parcel geometry city assessor tax map GIS registry of deeds",
+      "result": "The official City Assessor service document identifies a tax-mapping division for property location/identification and a document-based procedure; official LRA sources confirm a Registry of Deeds in Bacolod City. Searches found no public anonymous parcel feature schema.",
+      "method": "Separate English web search and official city/LRA service review; no personal or property-specific request."
+    },
+    {
+      "language": "Filipino",
+      "query": "Bacolod City opisyal na mapa ng lupa buwis sa ari-arian city assessor rehistro ng lupa",
+      "result": "No separate Filipino-language anonymous parcel-vector service was identified. First-party Bacolod City Assessor and LRA materials document the local assessment/tax-mapping and Registry of Deeds functions; no property-specific records were requested.",
+      "method": "Separate Filipino web search; official city/LRA sources reviewed in English; no identity, title, tax, or owner lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://bacolodcity.gov.ph/wp-content/uploads/2022/07/ASSESSORS.pdf",
+      "observation": "Bacolod City Assessor citizen-service document says its office maintains real-property assessment information and routes location/identification requests to the tax-mapping division; records/certifications require title or land-tax reference, identification and fees."
+    },
+    {
+      "url": "https://bacolodcity.gov.ph/departments/",
+      "observation": "Official city department directory confirms the City Assessor’s Office and its assessment role."
+    },
+    {
+      "url": "https://lra.gov.ph/land-registration-authority-lra-conducted-an-on-site-inspection-on-the-region-of-negros-occidental/",
+      "observation": "The national Land Registration Authority reports an inspection at the Registry of Deeds, Bacolod City, confirming a city-local title-registration office."
+    },
+    {
+      "url": "https://www.lra.gov.ph/images/Transparency_Page/XIII.ISO_QMS/condocrev2_1.pdf",
+      "observation": "LRA official register-of-documents list identifies a distinct RD Bacolod City, Negros Occidental. No parcel map/vector service is described."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://bacolodcity.gov.ph/wp-content/uploads/2022/07/ASSESSORS.pdf",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Bacolod City Assessor citizen-service document says its office maintains real-property assessment information and routes location/identification requests to the tax-mapping division; records/certifications require title or land-tax reference, identification and fees."
+    },
+    {
+      "url": "https://bacolodcity.gov.ph/departments/",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Official city department directory confirms the City Assessor’s Office and its assessment role."
+    },
+    {
+      "url": "https://lra.gov.ph/land-registration-authority-lra-conducted-an-on-site-inspection-on-the-region-of-negros-occidental/",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "The national Land Registration Authority reports an inspection at the Registry of Deeds, Bacolod City, confirming a city-local title-registration office."
+    },
+    {
+      "url": "https://www.lra.gov.ph/images/Transparency_Page/XIII.ISO_QMS/condocrev2_1.pdf",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "LRA official register-of-documents list identifies a distinct RD Bacolod City, Negros Occidental. No parcel map/vector service is described."
+    }
+  ],
+  "technicalBlocker": "The City Assessor procedure is a request/certification workflow that calls for title/land-tax reference, identification and fees. No anonymous public parcel vector layer or safe feature schema was identified. No request for a person, owner, title or property was submitted.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "coverageAssessment": {
+    "claimedScope": "Official city materials document a City Assessor with a tax-mapping division for real-property location/identification; national LRA sources confirm a Registry of Deeds in Bacolod City. These are city-local assessment/title registry functions, but no public anonymous parcel feature service/schema was found.",
+    "verifiedOpenScope": "The City Assessor procedure is a request/certification workflow that calls for title/land-tax reference, identification and fees. No anonymous public parcel vector layer or safe feature schema was identified. No request for a person, owner, title or property was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No safe public feature schema/geometry contract was verified."
+  },
+  "remainingUncertainty": "Whether another first-party service exposes anonymous parcel geometry and which safe native identifier/CRS it uses remain unresolved."
+}

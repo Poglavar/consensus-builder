@@ -1,0 +1,650 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:31983",
+  "featureCount": 90,
+  "validNonemptyCount": 90,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 320.9588979100829,
+    "median": 401.2831753371921,
+    "max": 28692.346389076207
+  },
+  "features": [
+    {
+      "id": "BR-SG-CAD-1042513",
+      "areaM2": 1685.5255541843462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1042514",
+      "areaM2": 2356.6144956728585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1042515",
+      "areaM2": 2317.1425063618444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1042516",
+      "areaM2": 1337.463820567666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1042517",
+      "areaM2": 1281.5830008567423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039986",
+      "areaM2": 355.42316150697195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039987",
+      "areaM2": 362.2088953102935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039988",
+      "areaM2": 430.05702200336066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041128",
+      "areaM2": 360.9361041250452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041133",
+      "areaM2": 455.94000717015194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1043291",
+      "areaM2": 417.9046002915708,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073060",
+      "areaM2": 364.7626543682767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039984",
+      "areaM2": 375.8086399412216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039985",
+      "areaM2": 407.33068919817885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041127",
+      "areaM2": 431.42183575121237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041171",
+      "areaM2": 340.15904771139407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041294",
+      "areaM2": 426.5596801253783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041311",
+      "areaM2": 377.08728632419945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041315",
+      "areaM2": 563.0641379413256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041317",
+      "areaM2": 353.37379153642087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041318",
+      "areaM2": 409.5357992670716,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041319",
+      "areaM2": 392.361743385718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041325",
+      "areaM2": 465.9775385732894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073056",
+      "areaM2": 371.06031927759955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1037319",
+      "areaM2": 28692.346389076207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040071",
+      "areaM2": 336.4718186787436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040073",
+      "areaM2": 384.42757500076783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041000",
+      "areaM2": 435.63359610799296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041055",
+      "areaM2": 435.67153709847116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041060",
+      "areaM2": 358.7178842279489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041082",
+      "areaM2": 507.0628999851263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039989",
+      "areaM2": 367.3058373707862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039990",
+      "areaM2": 363.52031624199424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039991",
+      "areaM2": 353.5795769322721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039992",
+      "areaM2": 354.01409622453855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039994",
+      "areaM2": 367.3976875857684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039996",
+      "areaM2": 337.42231525423836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039999",
+      "areaM2": 478.6565434141338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040003",
+      "areaM2": 437.49412915283534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040006",
+      "areaM2": 429.2413998740267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040007",
+      "areaM2": 441.63204492213066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040009",
+      "areaM2": 350.84818968076644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040011",
+      "areaM2": 405.2856819943907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040015",
+      "areaM2": 416.5722022360472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040016",
+      "areaM2": 359.4633134711466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041084",
+      "areaM2": 387.5427981976022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041087",
+      "areaM2": 425.85930957718466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1043289",
+      "areaM2": 429.16412732591726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1043290",
+      "areaM2": 345.1616022100796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073063",
+      "areaM2": 445.6970216113026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073065",
+      "areaM2": 444.0269070768008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1039993",
+      "areaM2": 423.9040155358081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040008",
+      "areaM2": 327.9553682628505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040010",
+      "areaM2": 372.4377919732068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040014",
+      "areaM2": 377.9108585690618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040018",
+      "areaM2": 379.01625815047913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041123",
+      "areaM2": 445.9851059212366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041143",
+      "areaM2": 365.5330122847444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041279",
+      "areaM2": 416.7824399385132,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041292",
+      "areaM2": 356.2429973292961,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1043272",
+      "areaM2": 328.3390084673097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073034",
+      "areaM2": 404.4016599468555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073035",
+      "areaM2": 382.13193363671667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073036",
+      "areaM2": 394.5247868359692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1037101",
+      "areaM2": 390.9507055167969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040019",
+      "areaM2": 398.16469072752875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040020",
+      "areaM2": 367.7249113671118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040021",
+      "areaM2": 349.1793411450016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1040940",
+      "areaM2": 457.7801402541029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041014",
+      "areaM2": 691.7828425308326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041018",
+      "areaM2": 378.299774766789,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041028",
+      "areaM2": 380.65779872468215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041040",
+      "areaM2": 359.6485249550545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041071",
+      "areaM2": 320.9588979100829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041072",
+      "areaM2": 494.9837972396952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041080",
+      "areaM2": 492.1708354569409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1041099",
+      "areaM2": 423.6982091603181,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1043271",
+      "areaM2": 389.23076054656246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1043274",
+      "areaM2": 347.9747127725282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1072723",
+      "areaM2": 470.9302144585094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073026",
+      "areaM2": 535.576753952479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073027",
+      "areaM2": 457.15146019853773,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073066",
+      "areaM2": 469.7968582185783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073077",
+      "areaM2": 337.1487809538711,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073081",
+      "areaM2": 486.49555836415436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073082",
+      "areaM2": 371.1581528112677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073083",
+      "areaM2": 379.2190950587391,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1073084",
+      "areaM2": 438.809385341953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1042518",
+      "areaM2": 1176.0260174815294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-SG-CAD-1042519",
+      "areaM2": 1130.9332177095953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

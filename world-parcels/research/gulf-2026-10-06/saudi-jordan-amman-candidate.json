@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "candidate": {
+    "city": "Amman",
+    "center": [
+      31.9836227976918,
+      35.9602148481902
+    ],
+    "descriptor": {
+      "id": "jo-dls-cassini-mapserver",
+      "countryCode": "JO",
+      "endpoint": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3",
+      "idField": "DLS_KEY",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "jo-dls:",
+      "idType": "string",
+      "idPattern": "^[0-9]{15}$",
+      "parcelNumberField": "PARCEL_ID",
+      "outFields": [
+        "OBJECTID",
+        "DLS_KEY",
+        "PARCEL_ID",
+        "VILL_CODE",
+        "HOD_CODE",
+        "SECTOR_CODE"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "attributeNotNull": [
+        "DLS_KEY"
+      ],
+      "attributeExclusions": {
+        "DLS_KEY": [
+          " "
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "partsCoordinatePrecision": 9,
+      "type": "arcgis",
+      "name": "Jordan DLS keyed cadastral parcel parts",
+      "operator": "Department of Lands and Survey, Jordan",
+      "catalogueUrl": "https://maps.dls.gov.jo/dlsweb/",
+      "scope": "DLS_Cassini parcels with nonnull/nonblank DLS_KEY; source rows without cadastral key excluded, so this is a partial identified cadastral scope.",
+      "coverageNote": "18 cells around central Amman verified; national completeness not asserted.",
+      "nativeIdFields": [
+        "DLS_KEY"
+      ],
+      "sourceCrs": "EPSG:28191, Palestine 1923 / Palestine Grid (Cassini); service reprojection to WGS84",
+      "termsNote": "Informational only, not a runtime eligibility gate."
+    }
+  },
+  "status": "passed-full-gate-partial-keyed-scope",
+  "acceptanceEvidence": "saudi-jordan-amman-parts-gate.json",
+  "metadata": {
+    "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3?f=json",
+    "httpStatus": 200,
+    "origin": "laptop curl TLS verified",
+    "name": "قطع الاراضي",
+    "maxRecordCount": 2000,
+    "supportsPagination": true,
+    "nativeFields": [
+      {
+        "name": "OBJECTID",
+        "alias": "OBJECTID",
+        "type": "esriFieldTypeOID"
+      },
+      {
+        "name": "VILL_CODE",
+        "alias": "رقم القرية",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "HOD_CODE",
+        "alias": "رقم الحوض",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "SECTOR_CODE",
+        "alias": "رقم الحي",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "PARCEL_ID",
+        "alias": "رقم قطعة الارض",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "DLS_KEY",
+        "alias": "مفتاح قطعة الارض",
+        "type": "esriFieldTypeString"
+      }
+    ]
+  },
+  "identityScopeEvidence": {
+    "bbox": [
+      35.955,
+      31.98,
+      35.9575,
+      31.9825
+    ],
+    "rows": 58,
+    "valid15DigitDlsKeys": 52,
+    "nullKeys": 2,
+    "spaceKeys": 4,
+    "assessment": "Unfiltered descriptor fails native identity. Explicit DLS_KEY IS NOT NULL AND DLS_KEY <> single-space subset passes all gates with complete source parts. OBJECTID used solely enumeration, never parcel identity."
+  },
+  "earlierAttempts": [
+    "saudi-jordan-amman-gate.json",
+    "saudi-jordan-amman-keyed-gate.json"
+  ],
+  "adapterNeeded": false,
+  "publisherIdentityEvidence": {
+    "metadataUrl": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3?f=json",
+    "DLS_KEY": {
+      "alias": "مفتاح قطعة الارض",
+      "meaning": "land parcel key",
+      "fieldType": "esriFieldTypeString",
+      "length": 15
+    },
+    "constituents": {
+      "VILL_CODE": {
+        "alias": "رقم القرية",
+        "length": 4
+      },
+      "HOD_CODE": {
+        "alias": "رقم الحوض",
+        "length": 3
+      },
+      "SECTOR_CODE": {
+        "alias": "رقم الحي",
+        "length": 3
+      },
+      "PARCEL_ID": {
+        "alias": "رقم قطعة الارض",
+        "length": 5
+      }
+    },
+    "correspondence": "Observed DLS_KEY equals VILL_CODE + HOD_CODE + SECTOR_CODE + PARCEL_ID (4+3+3+5 digits). Native publisher key rather than synthetic OBJECTID.",
+    "viewerEvidence": "Official viewer offers parcel-key lookup (مفتاح القطعة), plus village/basin/neighborhood/parcel-number lookup."
+  },
+  "partsSemanticsAudit": {
+    "checkedAt": "2026-10-06",
+    "bbox": [
+      35.9575,
+      31.98,
+      35.9725,
+      31.9875
+    ],
+    "rows": 976,
+    "nullKeys": 28,
+    "blankKeys": 45,
+    "allKeyedConcatenationsMatch": true,
+    "exceededTransferLimit": false,
+    "keyedRows": 903,
+    "uniqueKeys": 902,
+    "duplicateGroups": 1,
+    "groups": [
+      {
+        "nativeId": "012900500001980",
+        "sourceRows": 2,
+        "componentFields": [
+          {
+            "VILL_CODE": "0129",
+            "HOD_CODE": "005",
+            "SECTOR_CODE": "000",
+            "PARCEL_ID": "01980",
+            "PARCEL_PART_NO": 0,
+            "PARCEL_TYPE": 11,
+            "STATUS": null,
+            "TRANSACTION_TYPE": null,
+            "TRANSACTION_DATE": null,
+            "CREATION_DATE": null,
+            "LASTMODIFIED_DATE": 1735213071000,
+            "CREATED_DATE": null,
+            "LAST_EDITED_DATE": null
+          },
+          {
+            "VILL_CODE": "0129",
+            "HOD_CODE": "005",
+            "SECTOR_CODE": "000",
+            "PARCEL_ID": "01980",
+            "PARCEL_PART_NO": 0,
+            "PARCEL_TYPE": 11,
+            "STATUS": null,
+            "TRANSACTION_TYPE": null,
+            "TRANSACTION_DATE": null,
+            "CREATION_DATE": null,
+            "LASTMODIFIED_DATE": 1735213068000,
+            "CREATED_DATE": null,
+            "LAST_EDITED_DATE": null
+          }
+        ],
+        "constituentsConsistent": true,
+        "keyMatchesConcatenation": true,
+        "distinctGeometryHashes": 2,
+        "geometryRelationship": {
+          "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=geojson&where=DLS_KEY%3D%27012900500001980%27&outFields=DLS_KEY,PARCEL_PART_NO&returnGeometry=true&outSR=4326",
+          "httpStatus": 200,
+          "origin": "laptop direct Node verified TLS",
+          "rows": 2,
+          "areasM2": [
+            618.2896969486634,
+            549.1893962364541
+          ],
+          "intersectionM2": 0,
+          "overlapFractionOfSmaller": 0,
+          "bboxes": [
+            [
+              35.96884526942573,
+              31.985405878027507,
+              35.96910603385778,
+              31.985719726768266
+            ],
+            [
+              35.96879698614287,
+              31.985694120870637,
+              35.96904757892976,
+              31.985967630499943
+            ]
+          ]
+        }
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=1%3D1&geometry=35.9575%2C31.98%2C35.9725%2C31.9875&geometryType=esriGeometryEnvelope&inSR=4326&outFields=DLS_KEY%2CVILL_CODE%2CHOD_CODE%2CSECTOR_CODE%2CPARCEL_ID%2CPARCEL_PART_NO%2CPARCEL_TYPE%2CSTATUS%2CTRANSACTION_TYPE%2CTRANSACTION_DATE%2CCREATION_DATE%2CLASTMODIFIED_DATE%2CCREATED_DATE%2CLAST_EDITED_DATE&returnGeometry=false&resultRecordCount=2000",
+        "httpStatus": 200,
+        "origin": "laptop direct urllib TLS verified",
+        "error": null
+      },
+      {
+        "url": "https://maps.dls.gov.jo/arcgis/rest/services/DLS_Cassini/MapServer/3/query?f=json&where=DLS_KEY%3D%27012900500001980%27&geometryType=esriGeometryEnvelope&inSR=4326&outFields=DLS_KEY%2CVILL_CODE%2CHOD_CODE%2CSECTOR_CODE%2CPARCEL_ID%2CPARCEL_PART_NO%2CPARCEL_TYPE%2CSTATUS%2CTRANSACTION_TYPE%2CTRANSACTION_DATE%2CCREATION_DATE%2CLASTMODIFIED_DATE%2CCREATED_DATE%2CLAST_EDITED_DATE&returnGeometry=true&resultRecordCount=2000&outSR=4326",
+        "httpStatus": 200,
+        "origin": "laptop direct urllib TLS verified",
+        "error": null
+      }
+    ],
+    "assessment": "Exactly one duplicate native-key group found in this complete bounded scan. Identical cadastral constituents and zero areal overlap support disjoint geometric portions under one publisher cadastral key. Both rows have PARCEL_PART_NO=0, so that field alone is insufficient proof; geometry comparison supplies the evidence. Null status/transaction markers and edits 3 seconds apart do not establish competing current versions. No overlapping alternate geometry version observed in tested group; nationwide semantics not inferred.",
+    "failedAttempt": {
+      "operation": "same bounded metadata query without browser headers",
+      "httpStatus": 451,
+      "origin": "laptop direct urllib TLS verified",
+      "assessment": "Retry using normal Mozilla user agent returned200; not interpreted as source absence."
+    }
+  },
+  "scopeEnforcement": {
+    "where": "DLS_KEY IS NOT NULL AND DLS_KEY <> ' '",
+    "pattern": "^[0-9]{15}$",
+    "blankStringBehavior": "ArcGIS source rejects malformed IDs; does not silently drop unanticipated blank/malformed records. Observed exclusions are null and exactly one-space key.",
+    "completenessMeaning": "Complete retrieval within explicitly filtered identified cadastral subset; does not claim unkeyed polygons absent."
+  }
+}

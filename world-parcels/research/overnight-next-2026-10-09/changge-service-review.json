@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9720-changge.json",
+  "purpose": "Document separate English/local-language source discovery, land-registry custody, anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint.",
+  "registryAssessment": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.changge.gov.cn/",
+      "operator": "Changge Municipal Natural Resources and Planning Bureau / Real Estate Registration Transaction Center",
+      "scope": "Municipal government sources identify the natural-resources bureau and property-registration transaction center and describe cadastral deliverables. No anonymous parcel-map service or exact-point geometry was found."
+    },
+    {
+      "url": "https://www.changge.gov.cn/uploadfile/0d9bab1d-d5f8-44e5-816f-4bf3b1e11d82/20251120115755532.pdf",
+      "operator": "Changge Municipal Natural Resources and Planning Bureau / Real Estate Registration Transaction Center",
+      "scope": "Municipal government sources identify the natural-resources bureau and property-registration transaction center and describe cadastral deliverables. No anonymous parcel-map service or exact-point geometry was found."
+    },
+    {
+      "url": "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html",
+      "operator": "Changge Municipal Natural Resources and Planning Bureau / Real Estate Registration Transaction Center",
+      "scope": "Municipal government sources identify the natural-resources bureau and property-registration transaction center and describe cadastral deliverables. No anonymous parcel-map service or exact-point geometry was found."
+    },
+    {
+      "url": "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html",
+      "operator": "Government source with the jurisdictional scope stated in observation",
+      "observation": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Changge official cadastral parcel map land registry GIS",
+      "result": "Separate English-language discovery followed by first-party source review; only the government sources listed are retained.",
+      "actualResultUrls": [
+        "https://www.changge.gov.cn/",
+        "https://www.changge.gov.cn/uploadfile/0d9bab1d-d5f8-44e5-816f-4bf3b1e11d82/20251120115755532.pdf",
+        "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html"
+      ],
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "长葛市 自然资源和规划局 不动产登记 地籍调查 宗地图",
+      "result": "Official Changge municipal government publishes natural-resources/real-estate registration services and departmental records; no public anonymous parcel-geometry endpoint was identified.",
+      "actualResultUrls": [
+        "https://www.changge.gov.cn/",
+        "https://www.changge.gov.cn/uploadfile/0d9bab1d-d5f8-44e5-816f-4bf3b1e11d82/20251120115755532.pdf",
+        "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html"
+      ],
+      "method": "Separate Chinese (Simplified)-language discovery followed by first-party source review.",
+      "scope": "Identify local or jurisdictionally local land/cadastral custody and public parcel geometry; no owner, address, tax, account, title, cadastral-number or applicant values submitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "Changge municipal registration guide describes city land registration and cadastral survey materials. Direct HTTP200 text was inspected; this supports local registration responsibility, not a public geometry endpoint.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9720,
+      "url": "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html",
+      "checkedAt": "2026-10-09T08:58:45.774579+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": 200,
+      "finalUrl": "https://www.changge.gov.cn/jczwgkbzhgfhml/027001/027001033/027001033006/027001033006001/20230112/42dceb49-9c85-43bc-863d-e0a2760fb688.html",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 32933,
+      "sha256": "e3503d9c158637fe218be3e248dd4ecf3a3840211c5bae833af5bc67f49b3287",
+      "complete": true,
+      "termPresence": {
+        "不动产": true,
+        "地籍": true,
+        "北仑": false,
+        "桐乡": false,
+        "晋中": false,
+        "登记": true,
+        "catastro": false,
+        "Piura": false,
+        "COFOPRI": false
+      },
+      "parcelProtocolStringsPresent": {
+        "FeatureServer": false,
+        "geoserver": false,
+        "GetFeature": false,
+        "MapServer": false,
+        "OpenLayers": false,
+        "WFS": false
+      }
+    }
+  ]
+}

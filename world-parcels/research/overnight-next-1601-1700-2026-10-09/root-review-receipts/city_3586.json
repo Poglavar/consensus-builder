@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3586",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-3586-fukuyama.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/fukuyama-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T10:54:07Z",
+  "reason": "Fukuyama: the original city ZIP contains 789640 polygons and LINKKEY values, but no .prj/SRS. The city calls this a fixed-asset reference map. Coordinate transform and independent adapter qualification remain unproven.",
+  "runtimeAdmission": false
+}

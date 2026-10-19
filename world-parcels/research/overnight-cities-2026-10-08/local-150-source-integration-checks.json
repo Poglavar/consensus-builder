@@ -1,0 +1,15 @@
+{
+  "numTotalTests": 88,
+  "numPassedTests": 88,
+  "numFailedTests": 0,
+  "success": true,
+  "checkedAt": "2026-10-09",
+  "scope": "150-city intermediate catalog before deterministic wider Baltimore hold",
+  "testFiles": [
+    "frontend-city-source-integrations.test.js",
+    "frontend-world-coverage.test.js",
+    "parcel-source-binding.test.js",
+    "parcel-source-city-metric.test.js",
+    "world-coverage-build.test.js"
+  ]
+}

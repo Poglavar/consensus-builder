@@ -1,0 +1,12 @@
+{
+  "taskId": "city:1416",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-1416-ambano.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ambano-service-review.json"
+  ],
+  "reason": "National ministry and Ambano context are documented, but no local public parcel endpoint, safe native ID, CRS, or polygon was verified. Fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed details-panel verification are not independently evidenced. No citywide absence is inferred.",
+  "checkedAt": "2026-10-11T00:25:59.035Z"
+}

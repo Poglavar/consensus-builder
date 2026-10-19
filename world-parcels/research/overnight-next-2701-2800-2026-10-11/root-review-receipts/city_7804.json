@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7804",
+  "decision": "held",
+  "checkedAt": "2026-10-11T18:29:08Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-7804-togechane.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/togechane-service-review.json",
+    "tmp/valhalla-parcel-research/7804/api.config.json",
+    "tmp/valhalla-parcel-research/7804/wfs-bbox-safe.json",
+    "tmp/valhalla-parcel-research/7804/wfs-addis-id-geometry.json",
+    "tmp/valhalla-parcel-research/7804/wfs-addis-full.json"
+  ],
+  "review": "WUP 2025 code 7804, rank 2711, Ethiopia, point [9.59627390824979,43.3325356584054], and 218193 persons match the source archive, roster, queue, packet and paired review. English and Amharic searches are recorded. Original Addis e-Land config is AA-ADS scoped; its bounded Togechane response has zero features, which does not establish citywide absence. Addis control full response has a MultiPolygon, but the saved safe ID-field response has null geometry; neither is a Togechane sample. Local registry custody stays null. No local full polygon, live adapter qualification, forced paging, 13 bounded cells, metric geometry/overlap checks, source binding or headed Details check. No admission."
+}

@@ -1,0 +1,161 @@
+{
+  "name": "Huancayo",
+  "country": "Peru",
+  "countryCode": "PE",
+  "rank": 1179,
+  "point": [
+    -12.0626815606747,
+    -75.2170085204294
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huancayo Peru official cadastral parcel map land registry GIS catastro urbano English",
+        "result": "Separate English-language search followed by first-party source review; listed official sources are the evidence retained.",
+        "actualResultUrls": [
+          "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+          "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0"
+        ],
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry at the exact unchanged UN WUP settlement point."
+      },
+      {
+        "language": "Spanish",
+        "query": "Huancayo catastro predios mapa parcelas servicio oficial municipal GIS distrito",
+        "result": "Official local urban/rural cadastre responsibility identified; city map service is raster-only.",
+        "actualResultUrls": [
+          "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+          "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0"
+        ],
+        "method": "Separate Spanish-language discovery followed by first-party source review.",
+        "scope": "Identify city-local land/cadastral custody and anonymous public parcel geometry; no owner, address, tax, account or applicant values submitted."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+        "operator": "Huancayo Provincial Municipality, Urban Development Management Office",
+        "scope": "Official office functions include maintaining the urban and rural cadastre."
+      },
+      {
+        "url": "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0",
+        "operator": "Huancayo Municipal Infrastructure Data (IDEMIL)",
+        "scope": "Official city spatial map service; checked ArcGIS cache was a fused raster, not vector parcel features."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0?f=pjson",
+        "method": "Anonymous ArcGIS metadata/query check",
+        "httpStatus": null,
+        "contentType": null,
+        "bytesRead": null,
+        "assessment": "Service timed out; the known cached map layer is raster-only and has no parcel polygon features."
+      }
+    ],
+    "historicalContext": [
+      "Preflight check on 2026-10-09: rank 1179 was not listed in prior attempted, identityReviewRequired, or resolvedIdentityDecisions entries; no prior city packet existed."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+    "url": "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+    "operator": "Huancayo Provincial Municipality, Urban Development Management Office",
+    "serviceType": "Official local registry, map or cadastral source reviewed; no safe full parcel geometry was returned.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See source review; custody, point coverage, parcel geometry and runtime readiness are separately assessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Huancayo municipal urban-development department duties include preparing and maintaining urban and rural cadastre. Indexed first-party text supports municipal cadastral responsibility; current direct TLS certificate failure and the earlier raster-service finding do not establish absence of vector parcels.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "remainingUncertainty": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted.",
+  "nextStep": "Continue first-party viewer configuration, advertised service and API discovery; qualify complete geometry and retrieval semantics before enabling runtime.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2732,
+  "cityId": "wup2025:2732",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -12.0626815606747,
+    -75.2170085204294
+  ],
+  "population2025k": 470.685,
+  "populationUnit": "persons",
+  "queueRank": 1179,
+  "population2025": 470685,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 settlement point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Huancayo municipal urban-development department duties include preparing and maintaining urban and rural cadastre. Indexed first-party text supports municipal cadastral responsibility; current direct TLS certificate failure and the earlier raster-service finding do not establish absence of vector parcels.",
+  "registryEvidenceUrls": [
+    "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+    "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous full parcel polygon with stable native identity was verified in the reviewed source and endpoint evidence. Further endpoint discovery remains open; no citywide absence is asserted."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "priorCustodyAssessment": {
+    "registryFound": true,
+    "registryBasis": "Huancayo municipal sources identify urban/rural cadastre responsibility; the checked spatial service was raster only.",
+    "registryEvidenceUrls": [
+      "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+      "https://www.idemil.gob.pe/geoportal/rest/services/Hosted/HUANCAYO/MapServer/0"
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T09:09:33.635078+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 2732,
+      "url": "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+      "checkedAt": "2026-10-09T08:59:11.526150+00:00",
+      "method": "Anonymous read-only GET; no property values or credentials submitted",
+      "executionContext": "Explicit require_escalated network execution",
+      "rawHtmlRetained": false,
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)>",
+      "responseVerified": false
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T09:09:33.635078+00:00",
+    "decision": "Reviewed paired discovery, exact WUP identity, primary custodial evidence and scoped endpoint outcomes. Public geometry remains unverified in this pass.",
+    "custodyScope": "Huancayo municipal urban-development department duties include preparing and maintaining urban and rural cadastre. Indexed first-party text supports municipal cadastral responsibility; current direct TLS certificate failure and the earlier raster-service finding do not establish absence of vector parcels.",
+    "transportFailuresDoNotProveAbsence": true,
+    "uiOrTermsAreNotGeometryGates": true,
+    "geometryClaimScope": "Investigation outcome only; no citywide absence asserted."
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://documentos.munihuancayo.gob.pe/documentos/webgdu23/funciones.html",
+      "observation": "Huancayo municipal urban-development department duties include preparing and maintaining urban and rural cadastre. Indexed first-party text supports municipal cadastral responsibility; current direct TLS certificate failure and the earlier raster-service finding do not establish absence of vector parcels.",
+      "method": "Root primary-page review plus scoped direct network checks"
+    }
+  ],
+  "integratedAt": "2026-10-09T09:09:44.889046+00:00"
+}

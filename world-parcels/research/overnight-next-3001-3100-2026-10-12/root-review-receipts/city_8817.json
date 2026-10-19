@@ -1,0 +1,39 @@
+{
+  "taskId": "city:8817",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:39:54Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-8817-govardhan.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/govardhan-service-review.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 8817,
+    "rank": 3087,
+    "country": "India",
+    "point": [
+      27.4957826951429,
+      77.4637808483488
+    ],
+    "populationPersons": 194777
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": true,
+  "firstPartyUrlsChecked": [
+    "https://mathura.nic.in/tehsil/",
+    "https://upbhulekh.gov.in/GeoDashboard/unavailable_maps?distCode=145&tehsilCode=01048"
+  ],
+  "reason": "The official Mathura tehsil listing confirms Goverdhan, and the Uttar Pradesh cadastral-map dashboard lists village 124236 as an unavailable map. The worker reports a zero extent and empty safe plot lookups, but no original response cache was available to independently validate those API metrics. There is no retained native parcel ID or polygon. An unavailable village map is not citywide absence; admission gates remain unproven."
+}

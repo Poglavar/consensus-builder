@@ -1,0 +1,595 @@
+{
+  "type": "FeatureCollection",
+  "name": "Pergošićeva A1–A4 – rekonstrukcija izvedenog stanja",
+  "bbox": [
+    15.889778602,
+    45.806482311,
+    15.891555762,
+    45.806793294
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "pionir-pergosiceva-a1-a4-observed",
+      "city": "zagreb",
+      "name": "Pergošićeva A1–A4 – rekonstrukcija izvedenog stanja",
+      "title": "Pergošićeva A1–A4 – rekonstrukcija izvedenog stanja",
+      "description": "Rekonstrukcija četiriju izvedenih stambeno-poslovnih zgrada na k.č. 2859/15, k.o. Stenjevec Jug. Tlocrti su aktualne pravne DGU geometrije, a visine su iz podudarnih GDI objekata snimljenih 2008. Pionirova referenca navodi ukupno 189 stanova, 31 lokal i 86 garaža, ali ne raspodjeljuje ih po zgradama. Oznake A1–A4 nisu sigurno pridružene pojedinim tlocrtima; interni nazivi samo opisuju položaj od zapada prema istoku.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-13T00:00:00.000Z",
+      "updatedAt": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "observed-built-state"
+      ],
+      "parentParcelIds": [
+        "HR-340057-2859/15"
+      ],
+      "cadastreParcelIds": [
+        "HR-340057-2859/15"
+      ],
+      "parcelIds": [
+        "HR-340057-2859/15"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.889778602,
+        45.806482311,
+        15.891555762,
+        45.806793294
+      ],
+      "source": {
+        "projectSource": "https://pionir.hr/reference/stambeno-poslovni-objekti/",
+        "projectDates": "Kompleks je postojao pri GDI snimanju 2008.; točan početak i završetak nisu utvrđeni.",
+        "parcel": "k.č. 2859/15, MB 340057, k.o. Stenjevec Jug",
+        "coordinateSystem": "DGU/GDI HTRS96/TM (EPSG:3765), transformed to WGS84 for the app",
+        "footprintBasis": "current DGU legal building geometry",
+        "heightBasis": "matched GDI surveyed object",
+        "companyRoleNote": "GIP PIONIR objavljuje kompleks u svojim referencama; pronađeni izvor ne navodi investitora ni preciznu ugovornu ulogu.",
+        "officialProjectLabels": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 3236.0324151697264,
+            "footprintAreaM2": 1983.9009305085126,
+            "siteCoveragePercent": 61.30658398872866,
+            "heightEquivalentAboveGroundGbpM2": 14663.249921222337,
+            "heightEquivalentKin": 4.531243213907444,
+            "buildingCount": 4,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          },
+          "publishedProjectTotals": {
+            "apartments": 189,
+            "commercialUnits": 31,
+            "garages": 86,
+            "source": "GIP PIONIR službena referenca; ukupno za cijelu lokaciju, bez raspodjele po zgradama"
+          }
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-340057-2859/15"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-340057-2859/15",
+          "number": "2859/15",
+          "cadastre": "Stenjevec Jug"
+        }
+      ],
+      "createdFrom": "single-building",
+      "typologyType": "single",
+      "blockName": "Pergošićeva A1–A4 – k.č. 2859/15",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "observed-built-state",
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 3236.0324151697264,
+            "footprintAreaM2": 1983.9009305085126,
+            "siteCoveragePercent": 61.30658398872866,
+            "heightEquivalentAboveGroundGbpM2": 14663.249921222337,
+            "heightEquivalentKin": 4.531243213907444,
+            "buildingCount": 4,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          },
+          "publishedProjectTotals": {
+            "apartments": 189,
+            "commercialUnits": 31,
+            "garages": 86,
+            "source": "GIP PIONIR službena referenca; ukupno za cijelu lokaciju, bez raspodjele po zgradama"
+          }
+        }
+      },
+      "ancestorKey": "HR-340057-2859/15",
+      "takeWholeParcels": true,
+      "metadata": {
+        "sourceStatistics": {
+          "geometryDerived": {
+            "parcelAreaM2": 3236.0324151697264,
+            "footprintAreaM2": 1983.9009305085126,
+            "siteCoveragePercent": 61.30658398872866,
+            "heightEquivalentAboveGroundGbpM2": 14663.249921222337,
+            "heightEquivalentKin": 4.531243213907444,
+            "buildingCount": 4,
+            "method": "DGU footprint area × GDI height / 3 m; diagnostic estimate, not permit GBP"
+          },
+          "publishedProjectTotals": {
+            "apartments": 189,
+            "commercialUnits": 31,
+            "garages": 86,
+            "source": "GIP PIONIR službena referenca; ukupno za cijelu lokaciju, bez raspodjele po zgradama"
+          }
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "HR-340057-2859/15",
+        "cestica_id": 40368039,
+        "maticni_broj_ko": 340057,
+        "broj_cestice": "2859/15",
+        "areaM2": 3236.140549961278,
+        "source": "DGU katastar, aktualna čestica",
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.89071524,
+                45.806546765
+              ],
+              [
+                15.891184576,
+                45.806512375
+              ],
+              [
+                15.891303959,
+                45.806501674
+              ],
+              [
+                15.8913547,
+                45.806497175
+              ],
+              [
+                15.891520317,
+                45.806482311
+              ],
+              [
+                15.891555762,
+                45.806689183
+              ],
+              [
+                15.891514028,
+                45.806693639
+              ],
+              [
+                15.891219092,
+                45.806721761
+              ],
+              [
+                15.891039431,
+                45.80673835
+              ],
+              [
+                15.890741113,
+                45.806758085
+              ],
+              [
+                15.890560154,
+                45.806763868
+              ],
+              [
+                15.890263606,
+                45.806774613
+              ],
+              [
+                15.890080053,
+                45.806782362
+              ],
+              [
+                15.889785175,
+                45.806793294
+              ],
+              [
+                15.889779459,
+                45.806598008
+              ],
+              [
+                15.889778602,
+                45.80657047
+              ],
+              [
+                15.890248388,
+                45.806565689
+              ],
+              [
+                15.89071524,
+                45.806546765
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 1 (zapadna)",
+        "block": "Pergošićeva A1–A4 – k.č. 2859/15",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 23.2964,
+        "heightM": 23.2964,
+        "floors": 8,
+        "storeys": 8,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju od zapada prema istoku; nije oznaka A1–A4 iz dozvole",
+        "officialProjectLabels": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "dguBuildingId": 13391607,
+        "dguBuildingNumber": "1113",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 532.4297999953619,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 305296,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 23.2964,
+        "gdiMatchOverlapRatio": 0.9506951203008273,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.889876191,
+                45.80657621
+              ],
+              [
+                15.889899739,
+                45.806575976
+              ],
+              [
+                15.889956741,
+                45.80657538
+              ],
+              [
+                15.889983247,
+                45.806575162
+              ],
+              [
+                15.889983591,
+                45.80659082
+              ],
+              [
+                15.889957084,
+                45.806591128
+              ],
+              [
+                15.889957157,
+                45.806596168
+              ],
+              [
+                15.890083773,
+                45.806594774
+              ],
+              [
+                15.890132926,
+                45.806594317
+              ],
+              [
+                15.890133738,
+                45.806637781
+              ],
+              [
+                15.890084713,
+                45.806638329
+              ],
+              [
+                15.890080053,
+                45.806782362
+              ],
+              [
+                15.889785175,
+                45.806793294
+              ],
+              [
+                15.889779459,
+                45.806598008
+              ],
+              [
+                15.889900156,
+                45.806596673
+              ],
+              [
+                15.889900082,
+                45.806591634
+              ],
+              [
+                15.889876535,
+                45.806591868
+              ],
+              [
+                15.889876191,
+                45.80657621
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 2 (središnja zapadna)",
+        "block": "Pergošićeva A1–A4 – k.č. 2859/15",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.3585,
+        "heightM": 21.3585,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#d63384",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju od zapada prema istoku; nije oznaka A1–A4 iz dozvole",
+        "officialProjectLabels": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "dguBuildingId": 13391608,
+        "dguBuildingNumber": "1112",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 467.87659999489523,
+        "parcelOverlapRatio": 0.9999999999999999,
+        "gdiObjectId": 305295,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 21.3585,
+        "gdiMatchOverlapRatio": 1.0000000000000002,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.890263606,
+                45.806774613
+              ],
+              [
+                15.890250411,
+                45.806592514
+              ],
+              [
+                15.890546192,
+                45.806581225
+              ],
+              [
+                15.890560154,
+                45.806763868
+              ],
+              [
+                15.890263606,
+                45.806774613
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 3 (središnja istočna)",
+        "block": "Pergošićeva A1–A4 – k.č. 2859/15",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 21.5452,
+        "heightM": 21.5452,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#198754",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju od zapada prema istoku; nije oznaka A1–A4 iz dozvole",
+        "officialProjectLabels": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "dguBuildingId": 13391609,
+        "dguBuildingNumber": "1111",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 496.16499999463673,
+        "parcelOverlapRatio": 1,
+        "gdiObjectId": 305294,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 21.5452,
+        "gdiMatchOverlapRatio": 0.9926793127864016,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.890741113,
+                45.806758085
+              ],
+              [
+                15.890716378,
+                45.806572235
+              ],
+              [
+                15.89074496,
+                45.806570408
+              ],
+              [
+                15.890744481,
+                45.806567076
+              ],
+              [
+                15.890834737,
+                45.806561079
+              ],
+              [
+                15.890833433,
+                45.806550814
+              ],
+              [
+                15.890895491,
+                45.806546736
+              ],
+              [
+                15.890896794,
+                45.806557091
+              ],
+              [
+                15.890987691,
+                45.806551187
+              ],
+              [
+                15.89098804,
+                45.806554608
+              ],
+              [
+                15.891015594,
+                45.806552685
+              ],
+              [
+                15.891039431,
+                45.80673835
+              ],
+              [
+                15.890741113,
+                45.806758085
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Zgrada 4 (istočna)",
+        "block": "Pergošićeva A1–A4 – k.č. 2859/15",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 22.3682,
+        "heightM": 22.3682,
+        "floors": 7,
+        "storeys": 7,
+        "floorCountBasis": "procjena iz GDI visine / 3 m; nije podatak iz dozvole",
+        "color": "#fd7e14",
+        "source": "DGU tlocrt + podudarna GDI izmjerena visina",
+        "positionalLabelBasis": "interni naziv prema položaju od zapada prema istoku; nije oznaka A1–A4 iz dozvole",
+        "officialProjectLabels": [
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "dguBuildingId": 13391610,
+        "dguBuildingNumber": "982",
+        "dguBuildingType": "STAMBENA ZGRADA",
+        "dguFootprintAreaM2": 487.4986499977804,
+        "parcelOverlapRatio": 1.0000000000000002,
+        "gdiObjectId": 305293,
+        "gdiSurveyYear": 2008,
+        "gdiHeightM": 22.3682,
+        "gdiMatchOverlapRatio": 0.9953382278303308,
+        "observedUseClass": "Stambena i mješovita",
+        "observedUseGroup": "Stambene i mješovite površine",
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.891308211,
+                45.806524731
+              ],
+              [
+                15.891303959,
+                45.806501674
+              ],
+              [
+                15.8913547,
+                45.806497175
+              ],
+              [
+                15.891358824,
+                45.806520142
+              ],
+              [
+                15.891477821,
+                45.806509528
+              ],
+              [
+                15.891514028,
+                45.806693639
+              ],
+              [
+                15.891219092,
+                45.806721761
+              ],
+              [
+                15.891185995,
+                45.806535687
+              ],
+              [
+                15.891308211,
+                45.806524731
+              ]
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

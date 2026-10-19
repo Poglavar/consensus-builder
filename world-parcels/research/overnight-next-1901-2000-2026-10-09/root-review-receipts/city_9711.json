@@ -1,0 +1,15 @@
+{
+  "taskId": "city:9711",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-9711-chhindwara.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/chhindwara-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_9711-root-review.json",
+    "tmp/valhalla-parcel-research/9711/62a11de745b8.txt",
+    "tmp/valhalla-parcel-research/9711/3924a220e028.txt",
+    "tmp/valhalla-parcel-research/9711/c8c97c6a4f30.txt"
+  ],
+  "checkedAt": "2026-10-10T20:03:43.538244Z"
+}

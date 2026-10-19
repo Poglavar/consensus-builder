@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-364-thies.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search.",
+  "registryAssessment": "DGID is Senegal’s official land/cadastre authority and its current service-centre directory names CSF Thiès. DGID contact data says local cadastral identifiers are provided by local Cadastre offices; official DGID materials establish local cadastral administration, but no anonymous full-polygon source was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.dgid.sn/",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://www.dgid.sn/contact",
+      "observation": "Official DGID lists CSF Thiès, Place de France, and states a NICAD is obtained through the local Cadastre office."
+    },
+    {
+      "url": "https://www.dgid.sn/projets/presid",
+      "observation": "Official DGID states it is responsible for national land/domain/cadastre policy and reports renovation of Thiès service centre."
+    },
+    {
+      "url": "https://www.dgid.sn/fiches/nicad",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://www.dgid.sn/wp-content/uploads/2022/11/arrete_n_10012_du_14_juin_2017_portant_organisation_de_la_dgid_zip_0.pdf",
+      "observation": "DGID organization decree assigns the Thiès CSF the Thiès region and defines a Cadastre office for cadastral matters; no map-vector resource was linked."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Thies Senegal official cadastral land registry property cadastral map",
+      "resultUrls": [
+        "https://www.dgid.sn/",
+        "https://www.dgid.sn/contact",
+        "https://www.dgid.sn/projets/presid",
+        "https://www.dgid.sn/fiches/nicad",
+        "https://www.dgid.sn/wp-content/uploads/2022/11/arrete_n_10012_du_14_juin_2017_portant_organisation_de_la_dgid_zip_0.pdf"
+      ]
+    },
+    {
+      "language": "French",
+      "query": "Thiès Sénégal cadastre foncier service des impôts domaines Thiès",
+      "resultUrls": [
+        "https://www.dgid.sn/",
+        "https://www.dgid.sn/contact",
+        "https://www.dgid.sn/projets/presid",
+        "https://www.dgid.sn/fiches/nicad",
+        "https://www.dgid.sn/wp-content/uploads/2022/11/arrete_n_10012_du_14_juin_2017_portant_organisation_de_la_dgid_zip_0.pdf"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "DGID is Senegal’s official land/cadastre authority and its current service-centre directory names CSF Thiès. DGID contact data says local cadastral identifiers are provided by local Cadastre offices; official DGID materials establish local cadastral administration, but no anonymous full-polygon source was verified.",
+    "verifiedOpenScope": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Primary DGID material confirms the Thiès local cadastral/service office. No anonymous safe full polygon response or schema was found in this bounded search."
+}

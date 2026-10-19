@@ -1,0 +1,94 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:166",
+ "queueRank": 166,
+ "name": "Thiruvananthapuram",
+ "country": "India",
+ "countryCode": "IN",
+ "centerLatLon": [
+  8.50983231508796,
+  76.9676364538033
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [
+  {
+   "url": "https://kerala.gov.in/",
+   "observation": "Kerala state portal reachable (landing only); Digital Re-survey / e-Bhoomi hosts not reachable"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "state landing only"
+  },
+  {
+   "url": "https://bhunaksha.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://erekha.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://entebhoomi.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://ecadastre.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://www.surveykerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://resurvey.kerala.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://dilrmp.gov.in/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=cadastral parcels Kerala (Feature Service)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Kerala Digital Re-survey / e-Bhoomi (unverified)",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "All Kerala land-records and re-survey hosts tried were unreachable from this client (proxy refusals, resets, one TLS issuer error), which does not prove absence. State scope would not imply India-wide coverage.",
+ "nextStep": "Retry from a different network path; look for the Digital Survey / Kerala Land Information Map service and test a bounded query."
+}

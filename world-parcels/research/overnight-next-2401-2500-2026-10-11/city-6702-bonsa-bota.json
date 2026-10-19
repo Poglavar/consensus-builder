@@ -1,0 +1,146 @@
+{
+  "cityCode": 6702,
+  "queueRank": 2472,
+  "city": "Bonsa Bota",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "point": [6.52511068371666, 38.8286285048554],
+  "population2025": 237061,
+  "population2025k": 237.061,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bonsa Bota Ethiopia cadastral parcel map official GIS land registry; site:gov.et Bonsa Bota land cadastral map Ethiopia",
+        "result": "First-party discovery identified Ethiopia's official Addis e-Land cadastral portal and Ethio-NSDI national spatial-data portal. Results did not identify a Bonsa Bota local registry, cadastral viewer, or parcel API. The e-Land service is presented as an Addis Ababa cadastral service.",
+        "actualResultUrls": [
+          "https://eland.addiscadaster.gov.et/",
+          "https://eland.addiscadaster.gov.et/maps",
+          "https://ethionsdi.gov.et/",
+          "https://data.moa.gov.et/dataset/ethiopian-administrative-boundary2"
+        ]
+      },
+      {
+        "language": "Afaan Oromo",
+        "query": "Bonsa Bota kaartaa lafa galmee lafaa mootummaa; Bonsa Bota Itoophiyaa kaartaa lafaa GIS mootummaa",
+        "result": "Afaan Oromo discovery found official Oromia government land-management prose and national/official land-information references, but no Bonsa Bota parcel layer, local registry endpoint, or anonymous parcel geometry service. Bonsa Bota is described by search results as a Sidama locality, so Oromia references were not treated as local registry evidence.",
+        "actualResultUrls": [
+          "https://www.oromiacommunication.gov.et/detail/b6851cc1-1643-40a2-ac7b-2a5034e7b03f",
+          "https://www.moa.gov.et/wp-content/uploads/2024/11/Oromia-Approved-Final-Watershade-Pro.-1223.2012.pdf",
+          "https://eland.addiscadaster.gov.et/",
+          "https://ethionsdi.gov.et/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryCustodian": "Potential national custodians evidenced: Ethiopia Land Holding Registration and Information Agency / Addis e-Land and the national Ethio-NSDI portal. No Bonsa Bota or Sidama local registry/cadastre endpoint was verified.",
+  "registryEvidence": {
+    "officialViewerUrl": "https://eland.addiscadaster.gov.et/",
+    "nationalSpatialDataPortalUrl": "https://ethionsdi.gov.et/",
+    "viewerText": "The public e-Land page describes digital cadastral services, parcel registration, GIS-based mapping, online applications, and integrated urban land information. Its current public configuration identifies cityCode AA-ADS and Addis branding.",
+    "localAdministrativeEvidence": "No first-party Bonsa Bota/Sidama parcel registry or cadastral map was found in the executed searches. General Oromia land-management material is not local registry evidence."
+  },
+  "sourceReview": {
+    "service": "Ethiopia Addis e-Land public viewer and configured GeoServer WFS",
+    "officialAssetsInspected": [
+      "https://eland.addiscadaster.gov.et/",
+      "https://eland.addiscadaster.gov.et/maps",
+      "https://eland.addiscadaster.gov.et/assets/api.config.json",
+      "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js",
+      "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=ncrprs_cadaster:v_1_registered_parcel"
+    ],
+    "nativeFieldMapping": {
+      "nativeIdentityField": "uniqueparcelid",
+      "safeGeometryField": "geometry",
+      "otherSchemaFieldsObserved": ["documentedarea", "measuredarea", "parcel_type", "citycode"],
+      "mappingStatus": "Observed in the Addis WFS schema only; not verified as applicable to Bonsa Bota. No source attributes retained."
+    },
+    "compositeKeyProvenance": null,
+    "crs": "The WFS schema/capabilities advertise EPSG:20137 for the Addis layer; the viewer config requests EPSG:4326 output. No Bonsa Bota geometry or CRS was obtained.",
+    "safeFieldAllowlist": [
+      "stable native parcel identifier only, if independently confirmed",
+      "full parcel polygon geometry",
+      "geometry CRS / coordinate reference metadata",
+      "public service and layer metadata"
+    ]
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/",
+      "outcome": "200; public landing page readable; no login used. Page exposes current Angular asset names and describes e-Land cadastral services."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/maps",
+      "outcome": "200; public map route served the same application shell; no login used."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/assets/api.config.json",
+      "outcome": "200; current production configuration inspected. It identifies Addis cityCode AA-ADS, Addis branding, an Addis cadastral WFS layer, and public GeoServer URL. No Bonsa Bota or Sidama layer was configured."
+    },
+    {
+      "method": "GET",
+      "url": "https://eland.addiscadaster.gov.et/main.d3525dff4b9098d6.js",
+      "outcome": "200; current JavaScript inspected to follow the viewer configuration. No Bonsa Bota-specific public endpoint was found."
+    },
+    {
+      "method": "GET",
+      "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+      "outcome": "200; WFS capabilities readable. The registered-parcel layer advertised an Addis-area bounding box (longitude 38.774734667620265 to 38.774923465992316; latitude 8.979524009934137 to 8.979773489125702), not Bonsa Bota."
+    },
+    {
+      "method": "GET",
+      "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=ncrprs_cadaster:v_1_registered_parcel",
+      "outcome": "200; schema readable. Safe candidate identity field is uniqueparcelid and geometry is a MultiPolygon; no feature data retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=38.8283,6.5248,38.8289,6.5254,EPSG:4326&maxFeatures=3",
+      "outcome": "200; bounded anonymous response was a FeatureCollection with totalFeatures=0 and no features. This is only a miss against the Addis-configured service/query and is not evidence of citywide absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://ethionsdi.gov.et/",
+      "outcome": "TLS certificate verification failed with the default verifier. No certificate exception was authorized or attempted; no data was requested from this host."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not a valid Bonsa Bota parcel test; the bounded request was sent to the Addis-configured WFS and returned zero features. No hit/miss inference made.",
+    "requestEvidence": [
+      "https://geos.addiscadaster.gov.et/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=ncrprs_cadaster:v_1_registered_parcel&outputFormat=application/json&srsname=EPSG:4326&bbox=38.8283,6.5248,38.8289,6.5254,EPSG:4326&maxFeatures=3"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public Ethiopia land/cadastral discovery, official Addis e-Land viewer assets, configured GeoServer WFS, and Ethio-NSDI discovery.",
+    "verifiedOpenScope": "Public Addis e-Land pages and its Addis-configured registered-parcel WFS metadata only; no Bonsa Bota parcel-vector source verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "scopeLimits": [
+    "The exact WUP point [6.52511068371666, 38.8286285048554] was preserved and not shifted.",
+    "The Addis-configured WFS bounding box and zero-feature response do not establish Bonsa Bota or Ethiopia-wide absence.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, TLS failure, or unusable UI is not evidence of citywide absence.",
+    "No owner, address, titleholder, contact, tax/account, personal, or unsafe fields were requested or retained.",
+    "No raw source-specific attribute set and no GeoJSON sample were retained.",
+    "The packet is not source integration or adapter admission; serial reviewer qualification remains required."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "A Bonsa Bota/Sidama local registry, open parcel coverage, stable native identity semantics, schema, CRS, geometry endpoint behavior, and citywide completeness remain unresolved.",
+  "retainedSample": null
+}

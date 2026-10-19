@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 10460,
+  "queueRank": 2552,
+  "cityId": "wup2025:10460",
+  "name": "Meihekou",
+  "nativeName": "梅河口市",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [42.5324074115392, 125.681016286914],
+  "population2025": 230177,
+  "population2025k": 230.177,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Meihekou municipal site publishes a Natural Resources Bureau section, and Jilin government material identifies 梅河口市不动产登记中心 (Meihekou Real Estate Registration Center). This evidences a local registry/cadastral custodian, not an open parcel geometry feed.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Meihekou China cadastral parcel map official GIS natural resources real estate registration public API",
+        "result": "Search found the official Meihekou Natural Resources Bureau site and national real-estate-registration reference material, but no Meihekou-specific anonymous parcel viewer, service endpoint, schema, or geometry response.",
+        "actualResultUrls": [
+          "https://mhk.gov.cn/jyhpt/zrzyj/gzdt/index_9.html",
+          "https://www.rerc.com.cn/",
+          "https://www.mnr.gov.cn/zt/td/bdcdj/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "梅河口市 自然资源局 不动产登记 地籍图 公开地图 服务 官方",
+        "result": "Search found the official Meihekou Natural Resources Bureau page and Jilin government search material naming the local Real Estate Registration Center; no anonymous parcel geometry/API endpoint was exposed.",
+        "actualResultUrls": [
+          "https://mhk.gov.cn/jyhpt/zrzyj/gzdt/index_9.html",
+          "https://was.jl.gov.cn/was5/web/search?StringEncoding=UTF-8&StringEncoding=utf-8&channelid=239229&outlinepage=5&page=8&perpage=10",
+          "https://www.tianditu.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "officialLeads": [
+    {
+      "url": "https://mhk.gov.cn/jyhpt/zrzyj/gzdt/index_9.html",
+      "operator": "Meihekou Municipal Natural Resources Bureau",
+      "scope": "Local municipal natural-resources custodian",
+      "observation": "Official site search result identifies the bureau's work-dynamics section; no public parcel viewer or API was exposed by the returned page/search material."
+    },
+    {
+      "url": "https://was.jl.gov.cn/was5/web/search?StringEncoding=UTF-8&StringEncoding=utf-8&channelid=239229&outlinepage=5&page=8&perpage=10",
+      "operator": "Jilin government information search / Meihekou government material",
+      "scope": "Government administrative evidence",
+      "observation": "Search result material identifies 梅河口市不动产登记中心, establishing a local registration custodian; it does not expose parcel geometry."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "operator": "National Tianditu geospatial portal",
+      "scope": "General national map portal",
+      "observation": "A general national map lead was checked in discovery; no Meihekou-specific cadastral service or safe anonymous parcel response was identified."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://mhk.gov.cn/",
+      "method": "GET",
+      "outcome": "TLS certificate hostname mismatch for mhk.gov.cn; request stopped with verification enabled; no certificate exception used",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "url": "https://mhk.gov.cn/jyhpt/zrzyj/gzdt/index_9.html",
+      "method": "GET via web discovery",
+      "outcome": "Official search result found; no parcel service metadata or geometry exposed",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "url": "https://was.jl.gov.cn/was5/web/search?StringEncoding=UTF-8&StringEncoding=utf-8&channelid=239229&searchword=%E6%A2%85%E6%B2%B3%E5%8F%A3%20%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0",
+      "method": "GET",
+      "outcome": "DNS resolution timed out after 20 seconds; no bypass attempted",
+      "safeRequest": true,
+      "geometryReturned": false
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET via discovery",
+      "outcome": "General national map portal lead only; no Meihekou parcel endpoint located",
+      "safeRequest": true,
+      "geometryReturned": false
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Local registry custodian existence only; no citywide cadastral coverage verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "exactPointResult": "No parcel request was successfully executed; the exact WUP point is not evidence of citywide absence."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier", "geometry", "source CRS", "geometry type", "service metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax", "account", "personal data"],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "No anonymous first-party parcel geometry endpoint or bounded ID-plus-geometry response was exposed or reachable in this attempt.",
+  "remainingUncertainty": "A separate local cadastral viewer or authenticated government workflow may exist. This packet does not infer absence from the exact point, timeout, or TLS-blocked request.",
+  "nextStep": "Retry official local map/service discovery and inspect any public JavaScript/configuration, then independently qualify a safe anonymous geometry response before runtime admission."
+}

@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32633",
+  "featureCount": 27,
+  "validNonemptyCount": 27,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 160.2482194696104,
+    "median": 6696.824774488397,
+    "max": 1466973.1908873192
+  },
+  "features": [
+    {
+      "id": "DE-SN-140209___00622001800",
+      "areaM2": 1466973.1908873192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00256____03",
+      "areaM2": 71459.56839818881,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00622001002",
+      "areaM2": 5997.753392114541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00972____00",
+      "areaM2": 25176.708969353167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00248000101",
+      "areaM2": 11935.078831053654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00256000200",
+      "areaM2": 26988.827564893858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00975____00",
+      "areaM2": 11196.527218807874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00976____01",
+      "areaM2": 6696.824774488397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00622001103",
+      "areaM2": 2748.9369984736363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00890000100",
+      "areaM2": 62810.151466160314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00248000a05",
+      "areaM2": 32397.467412173555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140208___03176____00",
+      "areaM2": 205.99983062969358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140208___03180____00",
+      "areaM2": 5389.259235524288,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00232000700",
+      "areaM2": 43389.40045039652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00232000800",
+      "areaM2": 1208.7564167511518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00239000901",
+      "areaM2": 2654.055779555918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00259000100",
+      "areaM2": 12991.799664317814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00622000400",
+      "areaM2": 37603.402285762066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00951000400",
+      "areaM2": 5956.968334450338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00971000101",
+      "areaM2": 3995.5796695131808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00979____00",
+      "areaM2": 4379.196775558352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00980000300",
+      "areaM2": 9370.557027774226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00980000400",
+      "areaM2": 1504.042254508534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___01245000100",
+      "areaM2": 4468.365477717158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___01296____00",
+      "areaM2": 160.2482194696104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___01297____00",
+      "areaM2": 7312.318631033769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___01298____00",
+      "areaM2": 1834.9549425263272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

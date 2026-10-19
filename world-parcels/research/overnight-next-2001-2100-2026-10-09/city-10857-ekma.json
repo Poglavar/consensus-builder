@@ -1,0 +1,69 @@
+{
+  "cityCode": 10857,
+  "queueRank": 2080,
+  "country": "India",
+  "countryCode": "IN",
+  "name": "Ekma",
+  "point": [25.9306107654707, 84.5626213627248],
+  "population2025": 279229,
+  "population2025k": 279.229,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ekma Saran Bihar official land records cadastral map Bhunaksha Bihar",
+        "result": "First-party discovery identified the Government of Bihar BhuNaksha cadastral viewer, Bihar Department of Revenue and Land Reforms, the Directorate of Land Records and Survey, and the national Bhu-Naksha implementation page. The current Bihar viewer exposes Bihar, Saran, Sadar, Ekma, and the village entry Ekma/एकमा (163).",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://land.bihar.gov.in/landbihar/Default.aspx",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "एकमा सारण बिहार भू नक्शा जमाबंदी आधिकारिक",
+        "result": "First-party Hindi discovery returned the same official Bihar BhuNaksha and Bihar Bhumi services. The official Hindi-facing material describes भू-नक्शा and जमाबंदी services; it does not itself expose a safe anonymous parcel vector response.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/Default.aspx",
+          "https://biharbhumi.bihar.gov.in/biharbhumi/FAQ/12.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Government of Bihar BhuNaksha viewer is a public cadastral map service with a location hierarchy that was queried successfully through its current JavaScript-driven selectors: state Bihar (10), district Saran (17), subdivision Sadar (01), circle Ekma (06), and village Ekma/एकमा (0509; displayed as Ekma (163)). This evidences a local/state cadastral map custodian, but not open citywide parcel-vector coverage.",
+  "sourceAssessment": {
+    "officialSources": [
+      "https://bhunaksha.bihar.gov.in/index.jsp",
+      "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "https://dlrs.bihar.gov.in/services.html",
+      "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp"
+    ],
+    "requests": [
+      {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/index.jsp", "outcome": "HTTP page available; current JavaScript/configuration loaded from assets/misc/config.js and index.js."},
+      {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js", "outcome": "TLS-verified public configuration inspected; SERVICE_PATH and COMMON_SERVER_PATH are same-origin empty prefixes."},
+      {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/index.js", "outcome": "TLS-verified viewer JavaScript inspected; documented REST endpoints include Levels, ScalarDatahandler, MapInfo and WMS routes."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "outcome": "state=10 returned 7 location/map levels."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/village_selector.jsp", "outcome": "state=10 returned the Bihar district selector including Saran (17)."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler", "outcome": "OP=2 level requests returned public selector HTML; Saran/Sadar/Ekma and village Ekma/एकमा (0509; displayed 163) were confirmed. Survey choices SS/RS/CS and map choices were returned."},
+      {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "outcome": "Bounded requests for the confirmed Ekma selections returned an empty response; no extent, CRS, GIS code, parcel ID or geometry was obtained."}
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Government of Bihar BhuNaksha public cadastral viewer, with the Saran/Sadar/Ekma location path evidenced.",
+    "verifiedOpenScope": "Location-selector coverage only; parcel-vector coverage not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_and_public_viewer_lead_no_verified_open_vector_geometry",
+  "remainingUncertainty": "The viewer schema and CRS are only partially visible in JavaScript; the extent endpoint returned no body for the confirmed location path. Native parcel identity, geometry response format, exact-point parcel relation, and citywide coverage remain unresolved. No absence inference is made.",
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review still required"
+}

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:49:45.370462+00:00",
+  "decision": "approved_by_root",
+  "scope": "Seven valid distinct NRW ALKIS cadastral references verified in thirteen bounded 0.001-degree cells around the unchanged Wuppertal WUP settlement locator. Complete offset paging, forced three-row geometry pages, all seven fresh exact native cadastral identities, explicit absence, footprint and source binding passed in twenty requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Existing official North Rhine-Westphalia OGC API and native flstkennz namespace are reused. The original exact-point WFS sample and API polygon share the same native key; independent projected comparison finds Hausdorff distance 0.000006263 metres and symmetric difference 0.0099301 m², consistent with the two published CRS transformations, rather than byte-identical coordinates. Both complete source shapes remain unchanged. Wider municipal completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+  "acceptanceFile": "wuppertal-nrw-root-acceptance.json",
+  "qualityFile": "wuppertal-nrw-root-quality.json",
+  "originalSampleComparisonFile": "wuppertal-root-sample-comparison.json",
+  "sourceCoordinatesModified": false
+}

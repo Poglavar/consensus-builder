@@ -1,0 +1,117 @@
+{
+  "cityCode": 1334,
+  "queueRank": 1864,
+  "name": "Nagasaki",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso3": "JPN",
+  "point": [32.7750877010875, 129.865140801342],
+  "population2025": 308986,
+  "population2025k": 308.986,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nagasaki City official cadastral parcel map GIS land registry Japan",
+        "result": "First-party discovery identified Nagasaki City’s public Nagasaki Map viewer, its reference lot-number map, Nagasaki Legal Affairs Bureau map-maintenance work, and the Ministry of Justice registry-map data catalog entry. No public first-party vector parcel API was identified.",
+        "actualResultUrls": [
+          "https://www.city.nagasaki.lg.jp/page/5509.html",
+          "https://houmukyoku.moj.go.jp/nagasaki/page000215_00042.html",
+          "https://search.ckan.jp/datasets/www.geospatial.jp__ckan__dataset%3Ahoumusyouchizu-2026-1-1794"
+        ]
+      },
+      {
+        "language": "Japanese (local/native)",
+        "query": "地籍図 長崎市 GIS 公開 地番参考図 登記所備付地図データ",
+        "result": "Japanese first-party discovery identified the official 長崎市地図情報サービスサイト（ながさきマップ）, the city’s notice directing users to its 地番参考図, and the Ministry of Justice/Nagasaki Legal Affairs Bureau registry-map dataset. The current viewer exposes 地番参考図 as a raster theme; no bounded public parcel-geometry response was found.",
+        "actualResultUrls": [
+          "https://www.city.nagasaki.lg.jp/page/5509.html",
+          "https://www.city.nagasaki.lg.jp/page/70329.html",
+          "https://search.ckan.jp/datasets/www.geospatial.jp__ckan__dataset%3Ahoumusyouchizu-2026-1-1794"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Nagasaki City is evidenced as the local publisher/custodian of the public Nagasaki Map and its 地番参考図 reference lot-number map; the Nagasaki Legal Affairs Bureau is the national registry-map custodian for official registry-map data.",
+    "publicViewer": "https://www.sonicweb-asp.jp/nagasakicity/",
+    "nationalDataset": "https://search.ckan.jp/datasets/www.geospatial.jp__ckan__dataset%3Ahoumusyouchizu-2026-1-1794",
+    "basis": "The official city page states that Nagasaki Map publishes administrative information including 地番参考図. The current viewer JavaScript identifies the 地番参考図 layer as a raster theme with an EPSG:2443 viewer configuration. The official catalog identifies Nagasaki-city registry-office map data in map XML format, but no bounded anonymous geometry API was evidenced.",
+    "urls": [
+      "https://www.city.nagasaki.lg.jp/page/5509.html",
+      "https://www.city.nagasaki.lg.jp/page/70329.html",
+      "https://www.sonicweb-asp.jp/nagasakicity/",
+      "https://houmukyoku.moj.go.jp/nagasaki/page000215_00042.html",
+      "https://search.ckan.jp/datasets/www.geospatial.jp__ckan__dataset%3Ahoumusyouchizu-2026-1-1794"
+    ]
+  },
+  "requests": [
+    {
+      "route": "https://www.city.nagasaki.lg.jp/page/5509.html",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official Nagasaki City page returned HTML and states that Nagasaki Map provides urban-planning, road, 地番参考図, and public-facility information. It links to the current public viewer."
+    },
+    {
+      "route": "https://www.city.nagasaki.lg.jp/page/70329.html",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Official city asset-tax notice returned HTML. It states that counter service for 字図 ended on 2026-03-31 and directs users to Nagasaki Map’s 地番参考図 for location checking; it directs official map documents to the Legal Affairs Bureau."
+    },
+    {
+      "route": "https://www.sonicweb-asp.jp/nagasakicity/",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Current public viewer landing page returned HTML. No login was attempted. The page loaded map.js and modules_index_min.js."
+    },
+    {
+      "route": "https://www.sonicweb-asp.jp/nagasakicity/map.js?ver=1.0.815",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Current viewer JavaScript/configuration returned. It exposes apiUrl/gazetteerUrl at https://www.sonicweb-asp.jp/nagasakicity/api/, sonicEpsg 2443, the viewer extent, and a 地番参考図 theme named th_5 whose layer type is raster. No parcel vector layer, feature schema, or geometry endpoint was exposed in the configuration."
+    },
+    {
+      "route": "https://www.sonicweb-asp.jp/nagasakicity/api/",
+      "method": "GET",
+      "status": 404,
+      "outcome": "Anonymous direct request to the viewer-configured API root returned the site’s 404 HTML page. No credentials, tokens, or private fields were used."
+    },
+    {
+      "route": "https://houmukyoku.moj.go.jp/nagasaki/page000215_00042.html",
+      "method": "GET",
+      "status": "not independently fetched; search result",
+      "outcome": "Official Nagasaki Legal Affairs Bureau result documents a 2025–2026 registry map-making project in parts of Narutaki 2-chome, Katabuchi 2/3-chome, and Meotogawa-machi. This is custodian/project evidence, not a public geometry response."
+    },
+    {
+      "route": "https://search.ckan.jp/datasets/www.geospatial.jp__ckan__dataset:houmusyouchizu-2026-1-1794",
+      "method": "GET",
+      "status": 200,
+      "outcome": "Catalog mirror returned metadata for the official Ministry of Justice dataset titled 長崎市（長崎地方法務局）登記所備付地図データ. It describes downloadable map XML and lists 2025 and 2026 ZIP resources; the catalog reports each archive at roughly 318 MB. No bounded feature query or lightweight geometry service was identified, and the archive was not downloaded."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native map/dataset identity if exposed", "full polygon or multipolygon geometry if exposed", "service/layer metadata", "CRS metadata"],
+  "nativeFieldMapping": {"sourceViewer": "SonicWeb Nagasaki Map", "sourceParcelLayer": "th_5 / 地番参考図", "sourceIdField": null, "geometryField": null, "retainedProperties": null},
+  "compositeKeyProvenance": null,
+  "crs": {"viewerConfig": "EPSG:2443", "retainedSample": null, "coordinateOrderNote": "Exact WUP point is recorded in latitude/longitude order; no coordinate transformation or shift was applied."},
+  "verifiedSample": {"count": 0, "sampleFile": null, "exactWupPointQuery": false, "result": "No parcel polygon was retained. The public city viewer exposed only a raster reference-map layer, and the registry-map dataset was distributed as a large map-XML archive rather than a bounded anonymous geometry response."},
+  "publicParcelGeometryFound": false,
+  "coverageAssessment": {"claimedScope": "Nagasaki City public Nagasaki Map reference lot-number map plus Ministry of Justice/Nagasaki Legal Affairs Bureau registry-map dataset.", "verifiedOpenScope": "The city’s public viewer and official registry-map dataset are evidenced, but no anonymous vector geometry response or citywide polygon coverage was verified.", "citywideVerified": false, "countrywideVerified": false},
+  "runtimeReadiness": "held_pending_serial_review",
+  "serialReviewerQualification": "not qualified; independent adapter qualification remains required",
+  "scopeLimits": [
+    "Exact WUP latitude/longitude [32.7750877010875, 129.865140801342] preserved; no coordinate shift applied.",
+    "No GeoJSON sample was retained because no safe native parcel identity plus full polygon geometry was returned through a bounded anonymous request.",
+    "The city’s 地番参考図 is explicitly a reference map and is not evidence of legal parcel-boundary geometry or ownership.",
+    "The Ministry of Justice catalog/archive is source evidence, not an executed parcel-geometry extraction; the large archive was not downloaded.",
+    "No owner, address, contact, titleholder, tax/account, personal, or unsafe fields were requested or retained.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS-verification bypass was used.",
+    "A raster-only viewer, API-root 404, or absent bounded geometry endpoint does not establish citywide cadastral absence."
+  ],
+  "remainingUncertainty": "Nagasaki has an official public reference lot-number viewer and an official registry-office map dataset, but parcel geometry access, stable native parcel identifiers, XML schema details, citywide completeness, legal parcel semantics, update currency, and production suitability remain unverified."
+}

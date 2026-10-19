@@ -1,0 +1,3345 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T18:45:05.094Z",
+  "city": "vienna",
+  "descriptor": {
+    "id": "at-bev-kataster-vector-tiles",
+    "adapter": "bev-tiles",
+    "endpoint": "https://kataster.bev.gv.at/tiles/kataster/{z}/{x}/{y}.pbf",
+    "idPrefix": "AT-BEV-",
+    "outFields": [
+      "kg",
+      "gnr",
+      "ez",
+      "kgez",
+      "rstatus"
+    ],
+    "parcelNumberField": "gnr",
+    "maxTiles": 64,
+    "maxFeatures": 500,
+    "maxBboxKm2": 1
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        16.3695,
+        48.2085,
+        16.37,
+        48.209
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        16.37,
+        48.2085,
+        16.3705,
+        48.209
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        16.3705,
+        48.2085,
+        16.371,
+        48.209
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        16.3695,
+        48.209,
+        16.37,
+        48.2095
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        16.37,
+        48.209,
+        16.3705,
+        48.2095
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        16.3705,
+        48.209,
+        16.371,
+        48.2095
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        16.3695,
+        48.2095,
+        16.37,
+        48.21
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        16.37,
+        48.2095,
+        16.3705,
+        48.21
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        16.3705,
+        48.2095,
+        16.371,
+        48.21
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        16.37,
+        48.208,
+        16.3705,
+        48.2085
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        16.37,
+        48.21,
+        16.3705,
+        48.2105
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        16.369,
+        48.209,
+        16.3695,
+        48.2095
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        16.371,
+        48.209,
+        16.3715,
+        48.2095
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1345,
+      "requestIndexes": [
+        0,
+        9
+      ],
+      "bbox": [
+        16.3695,
+        48.2085,
+        16.37,
+        48.209
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1129/2",
+          "geometrySha256": "7f880476e5fd8ad591f2a0a4317ba89e1391b9c21f48a7bbfd5c40c2c8d6fb90"
+        },
+        {
+          "id": "AT-BEV-01004:1144",
+          "geometrySha256": "748895a7a47abc29449f6ea4ff2986c39f9e6f7e3bd125375221600c424bbb4e"
+        },
+        {
+          "id": "AT-BEV-01004:1665",
+          "geometrySha256": "6884022d5cc9dd6717aa2d4efe2beb50da2f2ca32334e242fa813d2cb16b33c8"
+        },
+        {
+          "id": "AT-BEV-01004:1672",
+          "geometrySha256": "6a0fa11f4604e1d5603aa956c0bcad23f1360e80896edd7d2b58bf51941ac466"
+        },
+        {
+          "id": "AT-BEV-01004:579",
+          "geometrySha256": "70eb9e516801547b4a1bd51fc34633c6023e791d1b0f387ba56273ea15e36c4a"
+        },
+        {
+          "id": "AT-BEV-01004:580",
+          "geometrySha256": "580cfb34e35f9a084755c6e942df188fb82e09a44a39ef217ca6ee29bb78c66c"
+        },
+        {
+          "id": "AT-BEV-01004:581",
+          "geometrySha256": "b1740681368e6c4a45aa335b679dcd876dac8869b0bd41e7d7ff442bbbc6aede"
+        },
+        {
+          "id": "AT-BEV-01004:582",
+          "geometrySha256": "d2a1c7a0a6f7d46d203c0a25bc5ebab57f0bd9a280ed2a48ca752e6a9453f7f4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 687,
+      "requestIndexes": [
+        10,
+        19
+      ],
+      "bbox": [
+        16.37,
+        48.2085,
+        16.3705,
+        48.209
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1664",
+          "geometrySha256": "30bed690ba4fa0c09ad4a4a77ecaf90abec35fdb7935c3dd58410a678c610c01"
+        },
+        {
+          "id": "AT-BEV-01004:1665",
+          "geometrySha256": "6884022d5cc9dd6717aa2d4efe2beb50da2f2ca32334e242fa813d2cb16b33c8"
+        },
+        {
+          "id": "AT-BEV-01004:579",
+          "geometrySha256": "70eb9e516801547b4a1bd51fc34633c6023e791d1b0f387ba56273ea15e36c4a"
+        },
+        {
+          "id": "AT-BEV-01004:580",
+          "geometrySha256": "580cfb34e35f9a084755c6e942df188fb82e09a44a39ef217ca6ee29bb78c66c"
+        },
+        {
+          "id": "AT-BEV-01004:581",
+          "geometrySha256": "b1740681368e6c4a45aa335b679dcd876dac8869b0bd41e7d7ff442bbbc6aede"
+        },
+        {
+          "id": "AT-BEV-01004:588/1",
+          "geometrySha256": "2f77af3f43b0ee2ac96f9fdbee987dec8dfc73dfa2872648619c770ce03e69c2"
+        },
+        {
+          "id": "AT-BEV-01004:588/2",
+          "geometrySha256": "ac423210e728a803e344ea4b83ab4a5868b00f56edd091e29168ca29074952de"
+        },
+        {
+          "id": "AT-BEV-01004:588/3",
+          "geometrySha256": "6096b50e409d75a5440feab476bec6ff51a64e7dc56bae3c12c1c72b420742b1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 512,
+      "requestIndexes": [
+        20,
+        30
+      ],
+      "bbox": [
+        16.3705,
+        48.2085,
+        16.371,
+        48.209
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1663",
+          "geometrySha256": "03d3017c2fed248275f730039f1a8fe615e815910ee7a47aae8e71633542aefe"
+        },
+        {
+          "id": "AT-BEV-01004:1664",
+          "geometrySha256": "30bed690ba4fa0c09ad4a4a77ecaf90abec35fdb7935c3dd58410a678c610c01"
+        },
+        {
+          "id": "AT-BEV-01004:1665",
+          "geometrySha256": "6884022d5cc9dd6717aa2d4efe2beb50da2f2ca32334e242fa813d2cb16b33c8"
+        },
+        {
+          "id": "AT-BEV-01004:588/1",
+          "geometrySha256": "2f77af3f43b0ee2ac96f9fdbee987dec8dfc73dfa2872648619c770ce03e69c2"
+        },
+        {
+          "id": "AT-BEV-01004:588/2",
+          "geometrySha256": "ac423210e728a803e344ea4b83ab4a5868b00f56edd091e29168ca29074952de"
+        },
+        {
+          "id": "AT-BEV-01004:588/3",
+          "geometrySha256": "6096b50e409d75a5440feab476bec6ff51a64e7dc56bae3c12c1c72b420742b1"
+        },
+        {
+          "id": "AT-BEV-01004:589",
+          "geometrySha256": "63ed9cd9a4916a7c66e737fe19f1dd6a1d0ae4fa84a03f06ca265c01a80436e3"
+        },
+        {
+          "id": "AT-BEV-01004:600",
+          "geometrySha256": "28d9cf856248bfdfb2cd2e10fd84cd7b2381dbb6e3844b50c63f1e87058284d0"
+        },
+        {
+          "id": "AT-BEV-01004:601",
+          "geometrySha256": "a9f86f5e0b879401cb57bb9a47100754484e9d9d269c5eb53febc4a9bc96c589"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 896,
+      "requestIndexes": [
+        31,
+        43
+      ],
+      "bbox": [
+        16.3695,
+        48.209,
+        16.37,
+        48.2095
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1660/1",
+          "geometrySha256": "2ae00e52b66974a247c243cac3db32e73aafad4762dd0b09b6ec79e567d9bf5c"
+        },
+        {
+          "id": "AT-BEV-01004:1660/2",
+          "geometrySha256": "b36430b3a4c0400bd26b401e058fc60f9ccf687b5078170a7e6dae432a92d4b3"
+        },
+        {
+          "id": "AT-BEV-01004:1661",
+          "geometrySha256": "25cecf3922dd418cdee97159841b9fa3087bf4647438eb289ccb81315cf0a503"
+        },
+        {
+          "id": "AT-BEV-01004:1665",
+          "geometrySha256": "6884022d5cc9dd6717aa2d4efe2beb50da2f2ca32334e242fa813d2cb16b33c8"
+        },
+        {
+          "id": "AT-BEV-01004:572",
+          "geometrySha256": "2adf677e6df77287ee2f0946de4195498577fed987fca8469d55e5a07d7539c2"
+        },
+        {
+          "id": "AT-BEV-01004:576",
+          "geometrySha256": "68c017736903f1930457499f5fe648d3e75d93f0d105480d07487cf82a4cd479"
+        },
+        {
+          "id": "AT-BEV-01004:577",
+          "geometrySha256": "bcec7182fa086edabe27f732b96a95f01694cd15ccf962c78d8ce085849f6bd9"
+        },
+        {
+          "id": "AT-BEV-01004:578",
+          "geometrySha256": "6741b385ce42015ee36e68f777ac9ef7c4413124085145601f771e0b33de4eed"
+        },
+        {
+          "id": "AT-BEV-01004:579",
+          "geometrySha256": "70eb9e516801547b4a1bd51fc34633c6023e791d1b0f387ba56273ea15e36c4a"
+        },
+        {
+          "id": "AT-BEV-01004:581",
+          "geometrySha256": "b1740681368e6c4a45aa335b679dcd876dac8869b0bd41e7d7ff442bbbc6aede"
+        },
+        {
+          "id": "AT-BEV-01004:582",
+          "geometrySha256": "d2a1c7a0a6f7d46d203c0a25bc5ebab57f0bd9a280ed2a48ca752e6a9453f7f4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 586,
+      "requestIndexes": [
+        44,
+        53
+      ],
+      "bbox": [
+        16.37,
+        48.209,
+        16.3705,
+        48.2095
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1660/1",
+          "geometrySha256": "2ae00e52b66974a247c243cac3db32e73aafad4762dd0b09b6ec79e567d9bf5c"
+        },
+        {
+          "id": "AT-BEV-01004:1660/2",
+          "geometrySha256": "b36430b3a4c0400bd26b401e058fc60f9ccf687b5078170a7e6dae432a92d4b3"
+        },
+        {
+          "id": "AT-BEV-01004:1664",
+          "geometrySha256": "30bed690ba4fa0c09ad4a4a77ecaf90abec35fdb7935c3dd58410a678c610c01"
+        },
+        {
+          "id": "AT-BEV-01004:571",
+          "geometrySha256": "0e274b9223542174ceae359924185a57fc8e5d1b4b549566a3002bcd87e5c451"
+        },
+        {
+          "id": "AT-BEV-01004:572",
+          "geometrySha256": "2adf677e6df77287ee2f0946de4195498577fed987fca8469d55e5a07d7539c2"
+        },
+        {
+          "id": "AT-BEV-01004:579",
+          "geometrySha256": "70eb9e516801547b4a1bd51fc34633c6023e791d1b0f387ba56273ea15e36c4a"
+        },
+        {
+          "id": "AT-BEV-01004:581",
+          "geometrySha256": "b1740681368e6c4a45aa335b679dcd876dac8869b0bd41e7d7ff442bbbc6aede"
+        },
+        {
+          "id": "AT-BEV-01004:588/2",
+          "geometrySha256": "ac423210e728a803e344ea4b83ab4a5868b00f56edd091e29168ca29074952de"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 523,
+      "requestIndexes": [
+        54,
+        65
+      ],
+      "bbox": [
+        16.3705,
+        48.209,
+        16.371,
+        48.2095
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1654",
+          "geometrySha256": "53dee99efd3f02f29cf4a873036f98aaf95357bca51e48762e800264fbbb260b"
+        },
+        {
+          "id": "AT-BEV-01004:1660/1",
+          "geometrySha256": "2ae00e52b66974a247c243cac3db32e73aafad4762dd0b09b6ec79e567d9bf5c"
+        },
+        {
+          "id": "AT-BEV-01004:1663",
+          "geometrySha256": "03d3017c2fed248275f730039f1a8fe615e815910ee7a47aae8e71633542aefe"
+        },
+        {
+          "id": "AT-BEV-01004:1664",
+          "geometrySha256": "30bed690ba4fa0c09ad4a4a77ecaf90abec35fdb7935c3dd58410a678c610c01"
+        },
+        {
+          "id": "AT-BEV-01004:565",
+          "geometrySha256": "bf63bc5427003e53c3f327670b8233b0dcc8f01af5105bbc5442553000b52880"
+        },
+        {
+          "id": "AT-BEV-01004:571",
+          "geometrySha256": "0e274b9223542174ceae359924185a57fc8e5d1b4b549566a3002bcd87e5c451"
+        },
+        {
+          "id": "AT-BEV-01004:588/2",
+          "geometrySha256": "ac423210e728a803e344ea4b83ab4a5868b00f56edd091e29168ca29074952de"
+        },
+        {
+          "id": "AT-BEV-01004:600",
+          "geometrySha256": "28d9cf856248bfdfb2cd2e10fd84cd7b2381dbb6e3844b50c63f1e87058284d0"
+        },
+        {
+          "id": "AT-BEV-01004:601",
+          "geometrySha256": "a9f86f5e0b879401cb57bb9a47100754484e9d9d269c5eb53febc4a9bc96c589"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 864,
+      "requestIndexes": [
+        66,
+        77
+      ],
+      "bbox": [
+        16.3695,
+        48.2095,
+        16.37,
+        48.21
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1656/1",
+          "geometrySha256": "d855767fe0e5c805a86194306c82dfd4884226c21276e912d5bcc4f4878ea041"
+        },
+        {
+          "id": "AT-BEV-01004:1659",
+          "geometrySha256": "b9fda617b72edb804358491e3295e54ebf8b4eb2917a7d24fd8ec41e3de5fba1"
+        },
+        {
+          "id": "AT-BEV-01004:1660/1",
+          "geometrySha256": "2ae00e52b66974a247c243cac3db32e73aafad4762dd0b09b6ec79e567d9bf5c"
+        },
+        {
+          "id": "AT-BEV-01004:1660/2",
+          "geometrySha256": "b36430b3a4c0400bd26b401e058fc60f9ccf687b5078170a7e6dae432a92d4b3"
+        },
+        {
+          "id": "AT-BEV-01004:1665",
+          "geometrySha256": "6884022d5cc9dd6717aa2d4efe2beb50da2f2ca32334e242fa813d2cb16b33c8"
+        },
+        {
+          "id": "AT-BEV-01004:572",
+          "geometrySha256": "2adf677e6df77287ee2f0946de4195498577fed987fca8469d55e5a07d7539c2"
+        },
+        {
+          "id": "AT-BEV-01004:576",
+          "geometrySha256": "68c017736903f1930457499f5fe648d3e75d93f0d105480d07487cf82a4cd479"
+        },
+        {
+          "id": "AT-BEV-01004:577",
+          "geometrySha256": "bcec7182fa086edabe27f732b96a95f01694cd15ccf962c78d8ce085849f6bd9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 605,
+      "requestIndexes": [
+        78,
+        89
+      ],
+      "bbox": [
+        16.37,
+        48.2095,
+        16.3705,
+        48.21
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1657",
+          "geometrySha256": "f1b1376f7962c64fe785466cfcead9ca13cd5fbdc5bf658e8451ac9bcf774ecd"
+        },
+        {
+          "id": "AT-BEV-01004:1659",
+          "geometrySha256": "b9fda617b72edb804358491e3295e54ebf8b4eb2917a7d24fd8ec41e3de5fba1"
+        },
+        {
+          "id": "AT-BEV-01004:1660/1",
+          "geometrySha256": "2ae00e52b66974a247c243cac3db32e73aafad4762dd0b09b6ec79e567d9bf5c"
+        },
+        {
+          "id": "AT-BEV-01004:1660/2",
+          "geometrySha256": "b36430b3a4c0400bd26b401e058fc60f9ccf687b5078170a7e6dae432a92d4b3"
+        },
+        {
+          "id": "AT-BEV-01004:563/1",
+          "geometrySha256": "d45ca927c1003d4f92f8dc6c8285fb1b1c6e6886517f1e4a7d8eb5c3a82970e3"
+        },
+        {
+          "id": "AT-BEV-01004:564",
+          "geometrySha256": "bd624e70523b81627b01d913952e031551a7724e424f50451844ff954f7658bd"
+        },
+        {
+          "id": "AT-BEV-01004:572",
+          "geometrySha256": "2adf677e6df77287ee2f0946de4195498577fed987fca8469d55e5a07d7539c2"
+        },
+        {
+          "id": "AT-BEV-01004:573",
+          "geometrySha256": "e5660d66780148487608a50903e274d0a90be84cac627fc8c84874d87ba4a75c"
+        },
+        {
+          "id": "AT-BEV-01004:576",
+          "geometrySha256": "68c017736903f1930457499f5fe648d3e75d93f0d105480d07487cf82a4cd479"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 911,
+      "requestIndexes": [
+        90,
+        102
+      ],
+      "bbox": [
+        16.3705,
+        48.2095,
+        16.371,
+        48.21
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1654",
+          "geometrySha256": "53dee99efd3f02f29cf4a873036f98aaf95357bca51e48762e800264fbbb260b"
+        },
+        {
+          "id": "AT-BEV-01004:1657",
+          "geometrySha256": "f1b1376f7962c64fe785466cfcead9ca13cd5fbdc5bf658e8451ac9bcf774ecd"
+        },
+        {
+          "id": "AT-BEV-01004:1660/1",
+          "geometrySha256": "2ae00e52b66974a247c243cac3db32e73aafad4762dd0b09b6ec79e567d9bf5c"
+        },
+        {
+          "id": "AT-BEV-01004:1663",
+          "geometrySha256": "03d3017c2fed248275f730039f1a8fe615e815910ee7a47aae8e71633542aefe"
+        },
+        {
+          "id": "AT-BEV-01004:551/1",
+          "geometrySha256": "d968a60654cf2fd5e70f314c60632bdde8af31d1c7c84605ab8909e17a27a692"
+        },
+        {
+          "id": "AT-BEV-01004:551/2",
+          "geometrySha256": "7196ba7b2309b423e1a86d4cd73e0af98563364487155c13dcbb2b4b33e7ca34"
+        },
+        {
+          "id": "AT-BEV-01004:552/3",
+          "geometrySha256": "3dacaabcec718597a48a16709d2cb8048e0217bc215536a55374ee94cde82bac"
+        },
+        {
+          "id": "AT-BEV-01004:563/1",
+          "geometrySha256": "d45ca927c1003d4f92f8dc6c8285fb1b1c6e6886517f1e4a7d8eb5c3a82970e3"
+        },
+        {
+          "id": "AT-BEV-01004:564",
+          "geometrySha256": "bd624e70523b81627b01d913952e031551a7724e424f50451844ff954f7658bd"
+        },
+        {
+          "id": "AT-BEV-01004:565",
+          "geometrySha256": "bf63bc5427003e53c3f327670b8233b0dcc8f01af5105bbc5442553000b52880"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 882,
+      "requestIndexes": [
+        103,
+        116
+      ],
+      "bbox": [
+        16.37,
+        48.208,
+        16.3705,
+        48.2085
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1126",
+          "geometrySha256": "ddc4dd64b579e5d58b5c016222c7c7b2713b609082425c865654975c841aef95"
+        },
+        {
+          "id": "AT-BEV-01004:1127/1",
+          "geometrySha256": "7c091394e28ac3ab32815784b12ce6d31a8cd2be215c8263bf330a83ce043622"
+        },
+        {
+          "id": "AT-BEV-01004:1128",
+          "geometrySha256": "87db862b7595924bd74ce3b7a407c63df0882b162458ae4fa29640c67ff511cb"
+        },
+        {
+          "id": "AT-BEV-01004:1664",
+          "geometrySha256": "30bed690ba4fa0c09ad4a4a77ecaf90abec35fdb7935c3dd58410a678c610c01"
+        },
+        {
+          "id": "AT-BEV-01004:1665",
+          "geometrySha256": "6884022d5cc9dd6717aa2d4efe2beb50da2f2ca32334e242fa813d2cb16b33c8"
+        },
+        {
+          "id": "AT-BEV-01004:1675",
+          "geometrySha256": "7a0b5d5ce28642cf71ca02feaafaf0d3522c4f08968eb6f38358b25731405124"
+        },
+        {
+          "id": "AT-BEV-01004:1677",
+          "geometrySha256": "6757999f1f10e2c2f1cbce55cf8c90309ecf2e0302399f951b89ba8de4b3da0a"
+        },
+        {
+          "id": "AT-BEV-01004:1681",
+          "geometrySha256": "d33aff20afc929b9b4df68faf7840a85a4c270422ba0e096a7ab1b796439acca"
+        },
+        {
+          "id": "AT-BEV-01004:588/1",
+          "geometrySha256": "2f77af3f43b0ee2ac96f9fdbee987dec8dfc73dfa2872648619c770ce03e69c2"
+        },
+        {
+          "id": "AT-BEV-01004:588/3",
+          "geometrySha256": "6096b50e409d75a5440feab476bec6ff51a64e7dc56bae3c12c1c72b420742b1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 1094,
+      "requestIndexes": [
+        117,
+        130
+      ],
+      "bbox": [
+        16.37,
+        48.21,
+        16.3705,
+        48.2105
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1616",
+          "geometrySha256": "38f0451ba200b41ccf56b64dbcb4abcfa3332f75864724890cdc50044979f53e"
+        },
+        {
+          "id": "AT-BEV-01004:1656/1",
+          "geometrySha256": "d855767fe0e5c805a86194306c82dfd4884226c21276e912d5bcc4f4878ea041"
+        },
+        {
+          "id": "AT-BEV-01004:1657",
+          "geometrySha256": "f1b1376f7962c64fe785466cfcead9ca13cd5fbdc5bf658e8451ac9bcf774ecd"
+        },
+        {
+          "id": "AT-BEV-01004:1659",
+          "geometrySha256": "b9fda617b72edb804358491e3295e54ebf8b4eb2917a7d24fd8ec41e3de5fba1"
+        },
+        {
+          "id": "AT-BEV-01004:388",
+          "geometrySha256": "3d31eba740f554f96b54e05e982c737128ba3b6016c8367a79e27076ddac327c"
+        },
+        {
+          "id": "AT-BEV-01004:397",
+          "geometrySha256": "a9c1c5fc4516df4b1679d1d1372bca24ceb9bbbcf50c06d5a4310b938837dbd5"
+        },
+        {
+          "id": "AT-BEV-01004:398/1",
+          "geometrySha256": "88ff00fe4c02c9a9fc5f357eee87ff1d88658b7774a4c0c62ca87fc1054375c1"
+        },
+        {
+          "id": "AT-BEV-01004:563/1",
+          "geometrySha256": "d45ca927c1003d4f92f8dc6c8285fb1b1c6e6886517f1e4a7d8eb5c3a82970e3"
+        },
+        {
+          "id": "AT-BEV-01004:573",
+          "geometrySha256": "e5660d66780148487608a50903e274d0a90be84cac627fc8c84874d87ba4a75c"
+        },
+        {
+          "id": "AT-BEV-01004:576",
+          "geometrySha256": "68c017736903f1930457499f5fe648d3e75d93f0d105480d07487cf82a4cd479"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 479,
+      "requestIndexes": [
+        131,
+        140
+      ],
+      "bbox": [
+        16.369,
+        48.209,
+        16.3695,
+        48.2095
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1146",
+          "geometrySha256": "ac9e9173a11adfc81e2b1201a744157b3a6b265909c9e606513e469d93437dbf"
+        },
+        {
+          "id": "AT-BEV-01004:1660/1",
+          "geometrySha256": "2ae00e52b66974a247c243cac3db32e73aafad4762dd0b09b6ec79e567d9bf5c"
+        },
+        {
+          "id": "AT-BEV-01004:1660/2",
+          "geometrySha256": "b36430b3a4c0400bd26b401e058fc60f9ccf687b5078170a7e6dae432a92d4b3"
+        },
+        {
+          "id": "AT-BEV-01004:1661",
+          "geometrySha256": "25cecf3922dd418cdee97159841b9fa3087bf4647438eb289ccb81315cf0a503"
+        },
+        {
+          "id": "AT-BEV-01004:1665",
+          "geometrySha256": "6884022d5cc9dd6717aa2d4efe2beb50da2f2ca32334e242fa813d2cb16b33c8"
+        },
+        {
+          "id": "AT-BEV-01004:576",
+          "geometrySha256": "68c017736903f1930457499f5fe648d3e75d93f0d105480d07487cf82a4cd479"
+        },
+        {
+          "id": "AT-BEV-01004:577",
+          "geometrySha256": "bcec7182fa086edabe27f732b96a95f01694cd15ccf962c78d8ce085849f6bd9"
+        },
+        {
+          "id": "AT-BEV-01004:578",
+          "geometrySha256": "6741b385ce42015ee36e68f777ac9ef7c4413124085145601f771e0b33de4eed"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 505,
+      "requestIndexes": [
+        141,
+        150
+      ],
+      "bbox": [
+        16.371,
+        48.209,
+        16.3715,
+        48.2095
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "AT-BEV-01004:1654",
+          "geometrySha256": "53dee99efd3f02f29cf4a873036f98aaf95357bca51e48762e800264fbbb260b"
+        },
+        {
+          "id": "AT-BEV-01004:1664",
+          "geometrySha256": "30bed690ba4fa0c09ad4a4a77ecaf90abec35fdb7935c3dd58410a678c610c01"
+        },
+        {
+          "id": "AT-BEV-01004:565",
+          "geometrySha256": "bf63bc5427003e53c3f327670b8233b0dcc8f01af5105bbc5442553000b52880"
+        },
+        {
+          "id": "AT-BEV-01004:600",
+          "geometrySha256": "28d9cf856248bfdfb2cd2e10fd84cd7b2381dbb6e3844b50c63f1e87058284d0"
+        },
+        {
+          "id": "AT-BEV-01004:601",
+          "geometrySha256": "a9f86f5e0b879401cb57bb9a47100754484e9d9d269c5eb53febc4a9bc96c589"
+        },
+        {
+          "id": "AT-BEV-01004:603/3",
+          "geometrySha256": "b720d727309b228c75233a38eeb5dd82dfe588f09432dedc2fecb7f19a0e73c7"
+        },
+        {
+          "id": "AT-BEV-01004:605/3",
+          "geometrySha256": "bb7be870e666a540a873b9e67fc9654a7d7faca899a349ebcb1324b3a1abaec9"
+        },
+        {
+          "id": "AT-BEV-01004:609",
+          "geometrySha256": "90a81ed77aeba89dfe47b23a898d7c991880015ef5fa01e82e015de6761fc263"
+        }
+      ]
+    },
+    {
+      "name": "cross-tile-complete-native-parcels",
+      "passed": true,
+      "elapsedMs": 411,
+      "requestIndexes": [
+        151,
+        160
+      ],
+      "count": 3,
+      "ids": [
+        "AT-BEV-01004:576",
+        "AT-BEV-01004:387/1",
+        "AT-BEV-01004:1"
+      ],
+      "complete": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 2172,
+      "requestIndexes": [
+        161,
+        208
+      ],
+      "count": 40,
+      "ids": [
+        "AT-BEV-01004:1",
+        "AT-BEV-01004:1126",
+        "AT-BEV-01004:1127/1",
+        "AT-BEV-01004:1128",
+        "AT-BEV-01004:1129/2",
+        "AT-BEV-01004:1144",
+        "AT-BEV-01004:1146",
+        "AT-BEV-01004:1616",
+        "AT-BEV-01004:1654",
+        "AT-BEV-01004:1656/1",
+        "AT-BEV-01004:1657",
+        "AT-BEV-01004:1659",
+        "AT-BEV-01004:1660/1",
+        "AT-BEV-01004:1660/2",
+        "AT-BEV-01004:1661",
+        "AT-BEV-01004:1663",
+        "AT-BEV-01004:1664",
+        "AT-BEV-01004:1665",
+        "AT-BEV-01004:1672",
+        "AT-BEV-01004:1675",
+        "AT-BEV-01004:1677",
+        "AT-BEV-01004:1681",
+        "AT-BEV-01004:387/1",
+        "AT-BEV-01004:388",
+        "AT-BEV-01004:397",
+        "AT-BEV-01004:398/1",
+        "AT-BEV-01004:551/1",
+        "AT-BEV-01004:551/2",
+        "AT-BEV-01004:552/3",
+        "AT-BEV-01004:563/1",
+        "AT-BEV-01004:564",
+        "AT-BEV-01004:565",
+        "AT-BEV-01004:571",
+        "AT-BEV-01004:572",
+        "AT-BEV-01004:573",
+        "AT-BEV-01004:576",
+        "AT-BEV-01004:577",
+        "AT-BEV-01004:578",
+        "AT-BEV-01004:579",
+        "AT-BEV-01004:580"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 531,
+      "requestIndexes": [
+        209,
+        221
+      ],
+      "count": 11,
+      "ids": [
+        "AT-BEV-01004:581",
+        "AT-BEV-01004:582",
+        "AT-BEV-01004:588/1",
+        "AT-BEV-01004:588/2",
+        "AT-BEV-01004:588/3",
+        "AT-BEV-01004:589",
+        "AT-BEV-01004:600",
+        "AT-BEV-01004:601",
+        "AT-BEV-01004:603/3",
+        "AT-BEV-01004:605/3",
+        "AT-BEV-01004:609"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "requestIndexes": [
+        255,
+        256
+      ],
+      "code": "parcel-source-unavailable",
+      "checkedAt": "2026-10-08T18:47:23.239Z",
+      "complete": true,
+      "absentIds": [
+        "AT-BEV-01004:999999999"
+      ],
+      "followup": "Search omits features for no results; exact native endpoint independently confirms absence."
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 840,
+      "requestIndexes": [
+        223,
+        238
+      ],
+      "selectedParcelId": "AT-BEV-01004:398/1",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 953,
+      "requestIndexes": [
+        239,
+        254
+      ],
+      "selectedParcelId": "AT-BEV-01004:398/1",
+      "coverage": "complete",
+      "siteM2": 873.87,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:05.099Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:05.528Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1129%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:05.956Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 423
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1144&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:05.957Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 413
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:05.958Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1672&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.269Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+579&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.270Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+580&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.271Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+581&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.358Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+582&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.359Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.444Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1664&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.703Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.704Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+579&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.704Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.785Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+580&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.952Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+581&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.953Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:06.953Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.031Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.032Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.131Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1663&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.220Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1664&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.221Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.221Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.311Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.467Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.467Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.468Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+589&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.559Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 410
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+600&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.560Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+601&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.560Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 410
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.643Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.723Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.903Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.904Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1661&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.905Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.992Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+572&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.994Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+576&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:07.995Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+577&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.075Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+578&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.075Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+579&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.075Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+581&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.160Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+582&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.161Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.540Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.731Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.731Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1664&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.732Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.802Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+571&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.964Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+572&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.965Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+579&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:08.965Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+581&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.042Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.042Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.127Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1654&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.212Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.216Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1663&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.218Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.300Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.387Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1664&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.474Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+565&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.475Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+571&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.476Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.555Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+600&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.556Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+601&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.557Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 410
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.652Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.829Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1656%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.929Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1659&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.930Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:09.931Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.011Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.013Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 113665
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.178Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.179Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+572&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.179Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+576&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.262Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+577&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.263Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.516Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1657&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.690Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1659&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.691Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.692Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.768Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.774Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.946Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+563%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.948Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+564&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:10.949Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+572&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.030Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+573&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.031Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 413
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+576&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.031Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.125Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1654&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.299Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1657&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.300Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.300Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.385Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.397Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1663&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.557Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+551%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.558Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 763
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+551%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.559Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 763
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+552%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.652Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1103
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+563%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.652Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+564&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.653Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+565&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:11.950Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.037Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1126&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.123Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 417
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1127%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.124Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 768
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1128&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.125Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 417
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.217Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1664&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.393Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.394Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1675&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.395Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22725.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.478Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 68640
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22725.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.651Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 111935
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1677&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.752Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1681&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.753Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.754Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.839Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:12.920Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.014Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1616&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.184Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1656%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.185Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1657&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.186Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.262Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 113665
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.434Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1659&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.513Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+388&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.515Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+397&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.517Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+398%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.612Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 765
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+563%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.612Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+573&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.614Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 413
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+576&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:13.924Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.015Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1146&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.112Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 417
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.114Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.115Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.198Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1661&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.295Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.296Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+576&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.297Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+577&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.411Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+578&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.413Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.496Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1654&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.590Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1664&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.593Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+565&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.594Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.678Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+600&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.770Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+601&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.771Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 410
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+603%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.772Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1101
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+605%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.902Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+609&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:14.903Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+576&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.003Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+387%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.004Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1106
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.006Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 406
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.077Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 113665
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35746/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.081Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 34293
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.089Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35746/22725.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.170Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 33990
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.180Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.181Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "cross-tile-complete-native-parcels",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22725.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.285Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 68640
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.415Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 406
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1126&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.417Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 417
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1127%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.418Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 768
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.488Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35746/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.537Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 34293
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35746/22725.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.616Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 33990
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.704Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22725.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.800Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 68640
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1128&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.997Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 417
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1129%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:15.999Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 423
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1144&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.001Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 413
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1146&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.085Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 417
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1616&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.086Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1654&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.088Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.161Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1656%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.258Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1657&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.259Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1659&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.261Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.348Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 113665
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.454Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1660%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.456Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 767
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1661&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.457Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1663&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.544Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1664&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.546Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1665&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.547Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1672&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.625Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1675&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.627Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1677&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.629Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22725.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.728Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 111935
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1681&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.935Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 418
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+387%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.937Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1106
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+388&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:16.938Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+397&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.038Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+398%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.040Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 765
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+551%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.041Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 763
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+551%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.133Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 763
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+552%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.135Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1103
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+563%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.137Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 416
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+564&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.219Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+565&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.220Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+571&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.222Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+572&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.308Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+573&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.309Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 413
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+576&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.310Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+577&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.414Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+578&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.415Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+579&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.417Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+580&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.498Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+581&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.589Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+582&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.590Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.592Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.668Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.678Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.846Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+588%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.847Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1095
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+589&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.849Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 410
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+600&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.930Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+601&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.932Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 410
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+603%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:17.933Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1101
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+605%2F3&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.036Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+609&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.038Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+999999999&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.121Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 68
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.210Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1616&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.336Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1656%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.338Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1656%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.340Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.413Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 113665
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.531Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.693Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+395&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.784Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+396&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.786Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+397&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.787Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+398%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.876Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 765
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+398%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.878Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 765
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+399&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.879Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+400&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.961Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+401&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.963Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "footprint",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+552%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:18.964Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1103
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.052Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 114799
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1616&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.226Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1656%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.228Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+1656%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.229Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 762
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22723.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.303Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 113665
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35747/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.473Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 77801
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/tiles/kataster/16/35748/22724.pbf",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.559Z",
+      "httpStatus": 200,
+      "contentType": null,
+      "bytes": 115087
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+395&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.730Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+396&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.731Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 414
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+397&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.733Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+398%2F1&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.817Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 765
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+398%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.818Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 765
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+399&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.819Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 412
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+400&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.903Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 411
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+401&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.904Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 415
+    },
+    {
+      "test": "source-binding",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+552%2F2&layers=GST-KG",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:45:19.906Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1103
+    },
+    {
+      "test": "explicit-absence-confirmed",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/all/?term=01004+999999999&layers=GST-KG",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:47:22.936Z",
+      "body": {
+        "searchTerm": "01004 999999999",
+        "data": {
+          "type": "FeatureCollection"
+        }
+      }
+    },
+    {
+      "test": "explicit-absence-confirmed",
+      "url": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/01004/999999999/",
+      "httpStatus": 404,
+      "checkedAt": "2026-10-08T18:47:23.239Z",
+      "body": {
+        "message": "Grundstück nicht vorhanden"
+      }
+    }
+  ],
+  "qualityFile": "research/world-capitals-2026-10-08/vienna-quality.json",
+  "uniqueParcels": 51,
+  "requestCount": 257,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T18:47:23.239Z",
+  "qualityStatus": "51 valid complete polygons; no overlaps or duplicate geometry",
+  "initialFailedChecks": [
+    {
+      "name": "explicit-absence",
+      "passed": false,
+      "elapsedMs": 87,
+      "requestIndexes": [
+        222,
+        222
+      ],
+      "error": "BEV parcel search returned inconsistent results.",
+      "code": "parcel-source-unavailable"
+    }
+  ],
+  "initialDetailLocatorAssessment": {
+    "gridCellsFailed": 13,
+    "reason": "Detailed history/land-use route takes 22–29 seconds for some roads, beyond bounded operation timeout. Official reference search supplies matching complete parcel envelopes in about 0.3 seconds.",
+    "diagnosticDate": "2026-10-08"
+  }
+}

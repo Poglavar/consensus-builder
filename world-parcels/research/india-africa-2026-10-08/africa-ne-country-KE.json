@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "KE",
+  "country": "Kenya",
+  "checkedAt": "2026-10-08",
+  "status": "national_cadastre_credentialed_or_paid",
+  "accessModel": "registration",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Swahili and English",
+      "exactQuery": "Kenya ardhi viwanja ramani ya ardhi cadastral GIS Ardhisasa",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://ardhisasa.lands.go.ke/home",
+        "https://ardhisasa.lands.go.ke/home/faqs",
+        "https://eprocedures.investkenya.go.ke/procedure/print/239/102/step/560?embed=true&includeSearch=false&l=en&showCertification=false&showRecourses=true",
+        "https://eprocedures.investkenya.go.ke/procedure/print/244/134/step/779?l=en&showCertification=false&showRecourses=true",
+        "https://www.lands.go.ke/land-survey-searches",
+        "https://cmsuat.icta.go.ke/lands/history",
+        "https://eprocedures.investkenya.go.ke/procedure/print/200/102/step/558?embed=true&includeSearch=false&l=en&showCertification=false&showRecourses=true",
+        "https://www.lands.go.ke/"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://ardhisasa.lands.go.ke/",
+      "observation": "Official national land information platform; JS inspected earlier: account-based, parcel-number APIs, no public spatial feed."
+    },
+    {
+      "url": "https://ardhi.nairobiservices.go.ke/",
+      "observation": "Official Nairobi LIMS page HTTP 200; app is service/account front end, City Map anchor has no map; bundle has service/product/auth routes but no parcel endpoint."
+    },
+    {
+      "url": "https://ardhi.meru.go.ke/default",
+      "observation": "Official Meru County EDAMS HTTP 200; only service/login pages, e-DAMS login/signup; no parcel map feed. Relevant to Mutuati locality only."
+    },
+    {
+      "url": "https://www.lands.go.ke/land-registries",
+      "observation": "Official land-registry offices index includes Naivasha registry; a registry listing is not geometry."
+    },
+    {
+      "url": "https://www.surveyofkenya.go.ke/",
+      "observation": "Survey authority host was unreachable in earlier probes."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ardhi.nairobiservices.go.ke/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official Nairobi LIMS page; JS exposes authenticated service/product endpoints, no map implementation or parcel API."
+    },
+    {
+      "url": "https://ardhi.meru.go.ke/default",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official Meru EDAMS home page has login/signup and service requests, no public map/parcel endpoint."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Check county-level land offices for public city-extent map services; Ardhisasa account availability does not verify anonymous parcel polygons."
+}

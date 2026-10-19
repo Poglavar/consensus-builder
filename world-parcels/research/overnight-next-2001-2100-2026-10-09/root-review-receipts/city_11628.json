@@ -1,0 +1,16 @@
+{
+  "taskId": "city:11628",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-11628-yangkou.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/yangkou-service-review.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-10T21:32:40Z",
+  "reason": "Queue identity matches rank 2041, China, [28.4315593325592, 118.171217328587], 285611 persons; English and Chinese searches are recorded and no polygon is retained. The worker attributed local custody to Suichang, Zhejiang and searched 阳口, while first-party Chinese government material locates 洋口镇 in Shangrao's Guangfeng District, Jiangxi. The Suichang bureau evidence therefore cannot ground registryFound:true for this WUP settlement. No city-scoped native-ID geometry response or any adapter qualification gates are evidenced; held for corrected local custody research.",
+  "firstPartyUrlsChecked": [
+    "https://www.moj.gov.cn/pub/sfbgw/zwgkztzl/2025nianzhuanti/2025jjshzazhzlzxgfhjs/2025jjshzazhzlzxgfhjs_jscg/202505/t20250526_520046.html",
+    "https://www.suichang.gov.cn/art/2025/5/22/art_1229428360_5521958.html"
+  ],
+  "admissionGatesVerified": false
+}

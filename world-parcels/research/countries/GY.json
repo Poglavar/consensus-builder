@@ -1,0 +1,60 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "GY",
+ "country": "Guyana",
+ "checkedAt": "2026-09-29",
+ "status": "national_cadastre_viewer_only",
+ "cadastreAuthority": "Guyana Lands and Surveys Commission (GLSC); Deeds Registry for titles",
+ "portalsFound": [
+  {
+   "url": "https://www.glsc.gov.gy/",
+   "observation": "GLSC site loads (Next.js app; pages 'Maps & Plans/Gazetteer', 'e-lands-act', references to maps.arcgis.com); describes cadastral, engineering and topographic surveys; no open parcel query endpoint found"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.glsc.gov.gy/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "informational site with map product pages"
+  },
+  {
+   "url": "https://glsc.gov.gy/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "same"
+  },
+  {
+   "url": "https://lands.gov.gy/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://gis.glsc.gov.gy/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection failed/timeout from this environment (proxy returned no response)"
+  },
+  {
+   "url": "https://www.glsc.gov.gy/index.php",
+   "method": "GET",
+   "httpStatus": 404,
+   "contentType": "text/html",
+   "assessment": "n/a"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "GLSC holds national cadastral survey plans; online access appears to be map products/plan requests",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "ArcGIS Online items linked from the GLSC site were not enumerated; a parcel web map may exist. Classified viewer-only tentatively.",
+ "nextStep": "Enumerate GLSC maps.arcgis.com items/web apps and test feature layers."
+}

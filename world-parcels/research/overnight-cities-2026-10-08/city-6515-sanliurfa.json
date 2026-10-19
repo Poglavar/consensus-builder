@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Şanlıurfa",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "TKGM’s official directory lists Şanlıurfa Kadastro Müdürlüğü in Haliliye. Şanlıurfa Metropolitan Municipality links a Kent Rehberi and E-İmar service from its official homepage. These are local cadastral and city-planning sources; no geometry-only parcel schema was verified.",
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/sanliurfa-bm/bagli-mudurlukler/sanliurfa-kadastro-mudurlugu",
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "https://www.sanliurfa.bel.tr/",
+    "https://keos.sanliurfa.bel.tr/keos/",
+    "https://keos.sanliurfa.bel.tr/imardurumu/",
+    "https://parselsorgu.tkgm.gov.tr/",
+    "https://parselsorguv2.tkgm.gov.tr/",
+    "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6515,
+  "cityId": "wup2025:6515",
+  "centerLatLon": [
+    37.1665385817413,
+    38.7995601396527
+  ],
+  "rank": 723,
+  "queueRank": 723,
+  "population2025": 739807,
+  "population2025k": 739.807,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data.",
+  "scopeLimits": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data.",
+  "remainingUncertainty": "The official KEOS map’s loaded layer catalog and hit-test response schema remain unknown. TKGM’s geographic-query response may include additional attributes; without confirming server-side geometry/ID filtering, no query is appropriate. The new TKGM host’s direct-client DNS failure is not an HTTP status or outage finding.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Şanlıurfa Turkey official cadastral office public parcel map GIS land registry",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "The city cadastral office and municipality map services are verified. The municipality’s E-İmar page exposes parcel/address selectors, while TKGM’s static client supports coordinate-based parcel lookup; without a documented geometry/ID-only response allowlist, no feature query was sent.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/sanliurfa-bm/bagli-mudurlukler/sanliurfa-kadastro-mudurlugu",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.sanliurfa.bel.tr/",
+          "https://keos.sanliurfa.bel.tr/keos/",
+          "https://keos.sanliurfa.bel.tr/imardurumu/",
+          "https://parselsorgu.tkgm.gov.tr/",
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/"
+        ],
+        "executionMethod": "Separate English and local-language searches, followed by official-source review and limited anonymous public-shell inspection where available."
+      },
+      {
+        "language": "Turkish",
+        "query": "Şanlıurfa Kadastro Müdürlüğü parselsorgu kent rehberi ada parsel tapu resmi",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "The city cadastral office and municipality map services are verified. The municipality’s E-İmar page exposes parcel/address selectors, while TKGM’s static client supports coordinate-based parcel lookup; without a documented geometry/ID-only response allowlist, no feature query was sent.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/sanliurfa-bm/bagli-mudurlukler/sanliurfa-kadastro-mudurlugu",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.sanliurfa.bel.tr/",
+          "https://keos.sanliurfa.bel.tr/keos/",
+          "https://keos.sanliurfa.bel.tr/imardurumu/",
+          "https://parselsorgu.tkgm.gov.tr/",
+          "https://parselsorguv2.tkgm.gov.tr/",
+          "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/"
+        ],
+        "executionMethod": "Separate English and local-language searches, followed by official-source review and limited anonymous public-shell inspection where available."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tkgm.gov.tr/sanliurfa-bm/bagli-mudurlukler/sanliurfa-kadastro-mudurlugu",
+        "observation": "TKGM’s official directory lists Şanlıurfa Kadastro Müdürlüğü in Haliliye. Şanlıurfa Metropolitan Municipality links a Kent Rehberi and E-İmar service from its official homepage. These are local cadastral and city-planning sources; no geometry-only parcel schema was verified."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+      },
+      {
+        "url": "https://www.sanliurfa.bel.tr/",
+        "observation": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+      },
+      {
+        "url": "https://keos.sanliurfa.bel.tr/keos/",
+        "observation": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+      },
+      {
+        "url": "https://keos.sanliurfa.bel.tr/imardurumu/",
+        "observation": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+      },
+      {
+        "url": "https://parselsorgu.tkgm.gov.tr/",
+        "observation": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+      },
+      {
+        "url": "https://parselsorguv2.tkgm.gov.tr/",
+        "observation": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/",
+        "observation": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+      }
+    ],
+    "metadataReviewFile": "sanliurfa-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+  },
+  "coverageAssessment": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official city homepage links Kent Rehberi and E-İmar. An anonymous GET of the KEOS map shell returned HTTP 200 and its public HTML initializes a Netcad map workspace; the visible startup config does not disclose a safe parcel-feature schema. The E-İmar page displays district, neighborhood, street, door-number and ada/parsel selectors and was not submitted. TKGM’s new `parselsorguv2` hostname failed direct DNS resolution (curl exit 6; no HTTP response); its legacy public shell returned HTTP 200 and its static client exposes a coordinate-query route. The published static client does not provide a verified safe field allowlist for geometry retrieval, so no parcel feature request was made. These failures are transport/schema holds, not proof of absent parcel data."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://www.tkgm.gov.tr/sanliurfa-bm/bagli-mudurlukler/sanliurfa-kadastro-mudurlugu",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Tapu ve Kadastro Genel Müdürlüğü (TKGM) | TKGM"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    37.1665385817413,
+    38.7995601396527
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

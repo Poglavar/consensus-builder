@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "WA",
+  "state": "Washington",
+  "capital": "Olympia",
+  "centerLatLon": [
+    47.0379,
+    -122.9007
+  ],
+  "query": {
+    "language": "English",
+    "text": "Washington state parcel data Olympia Thurston County GIS parcel boundaries official"
+  },
+  "references": [
+    {
+      "url": "https://www.thurstoncountywa.gov/departments/geodata-center",
+      "observation": "Official source found by the recorded English web query."
+    },
+    {
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+      "observation": "Official parcel layer endpoint tested with an ID-and-geometry-only spatial sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "ArcGIS layer metadata retrieved; schema inspected without requesting personal parcel fields."
+    },
+    {
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-122.9018%2C47.0368%2C-122.8996%2C47.039&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PARCEL_ID_NR&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Tiny capital-centered bbox; requested only PARCEL_ID_NR and geometry; count=3, geometry valid=True, null IDs=0, duplicate IDs=True."
+    },
+    {
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?f=geojson&where=PARCEL_ID_NR%3D%27067-09850005000%27&outFields=PARCEL_ID_NR&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact ID round trip for 067-09850005000: exact count 3, geometry valid=True."
+    },
+    {
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Follow-up metadata confirms ORIG_PARCEL_ID is available as an alternate native parcel-number field."
+    },
+    {
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-122.9018%2C47.0368%2C-122.8996%2C47.039&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=ORIG_PARCEL_ID&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Capital bbox requested ORIG_PARCEL_ID and geometry only; 3 valid polygon features all repeat the same ID."
+    },
+    {
+      "url": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0/query?f=geojson&where=ORIG_PARCEL_ID%3D%2709850005000%27&outFields=ORIG_PARCEL_ID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact alternate ID 09850005000 returned 3 features; likely requires parcel-part dissolve/aggregation."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services.arcgis.com/jsIt88o09Q0r1j8h/arcgis/rest/services/Current_Parcels/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Washington State Parcels Project",
+    "operator": "Washington Technology Solutions and counties",
+    "scope": "Statewide compilation (county participation varies)",
+    "idField": "PARCEL_ID_NR",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "PARCEL_ID_NR"
+    ],
+    "parcelNumberField": "PARCEL_ID_NR",
+    "metricSrid": 2927,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -122.9018,
+      47.0368,
+      -122.8996,
+      47.039
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "067-09850005000",
+      "067-09850005000",
+      "067-09850005000"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": true,
+    "exactCount": 3,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": false,
+    "adapterReady": false,
+    "dataFormat": "ArcGIS FeatureServer parcel polygons"
+  },
+  "status": "lead",
+  "remainingUncertainty": "The state layer returns valid Olympia parcel polygons, but both PARCEL_ID_NR and ORIG_PARCEL_ID repeat across the sampled polygon parts (exact read returns three features). A dissolve/aggregation rule or alternative local service is needed."
+}

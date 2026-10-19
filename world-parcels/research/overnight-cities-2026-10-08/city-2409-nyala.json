@@ -1,0 +1,97 @@
+{
+  "name": "Nyala",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "rank": 548,
+  "point": [
+    12.0557720367588,
+    24.8816201506161
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nyala South Darfur official cadastral map land registry parcel map government",
+        "result": "Searches found no first-party South Darfur or Nyala parcel/cadastre viewer. National or unrelated service directories do not establish city-local cadastral coverage; no geometry service was queried.",
+        "urls": [
+          "https://cbos.gov.sd/en/content/nyala-branch",
+          "https://www.darfur-gov.com/ar/states"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "نيالا ولاية جنوب دارفور السجل العقاري خريطة الأراضي مصلحة الأراضي رسمي",
+        "result": "لم يظهر في البحث مصدر حكومي أولي خاص بنيالا يثبت وجود عارض خرائط عقارية أو بيانات قطع أراضٍ. ظهرت إشارات غير حكومية إلى إدارة الأراضي المحلية، لكنها لا تكفي لإثبات السجل أو توفر هندسة مكانية عامة.",
+        "urls": [
+          "https://www.darfur-gov.com/ar/states",
+          "https://cbos.gov.sd/en/content/nyala-branch"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.darfur-gov.com/ar/states",
+        "observation": "A regional information site refers to South Darfur and Nyala but does not establish a cadastral registry or public parcel service; not treated as primary land evidence."
+      },
+      {
+        "url": "https://cbos.gov.sd/en/content/nyala-branch",
+        "observation": "Central Bank of Sudan branch directory confirms Nyala locality only; it is unrelated to land records and was not used as registry evidence."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No full parcel geometry was retrieved or independently validated."
+  },
+  "source": {
+    "id": "city-SD-2409-overnight-research",
+    "name": "Nyala city-local parcel source review",
+    "operator": null,
+    "url": null,
+    "format": "No verified full-vector geometry source",
+    "access": "Public source discovery only; no login or credentials used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "No first-party South Darfur/Nyala land-registry or cadastral source was found in the English and Arabic searches. Search results included national services unrelated to parcel geometry and non-government directories/news, which are not enough to establish a city-local registry. The result remains unknown rather than a negative claim.",
+    "verifiedOpenScope": "No official city/state land-registry portal, map viewer, or parcel service was established in these searches. Local news and directory references were not promoted to a positive registry claim.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "No first-party South Darfur/Nyala land-registry or cadastral source was found in the English and Arabic searches. Search results included national services unrelated to parcel geometry and non-government directories/news, which are not enough to establish a city-local registry. The result remains unknown rather than a negative claim.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_unconfirmed_no_public_geometry_source",
+  "technicalBlocker": "No official city/state land-registry portal, map viewer, or parcel service was established in these searches. Local news and directory references were not promoted to a positive registry claim.",
+  "remainingUncertainty": "A local land authority may exist but its current first-party service, status, and data access could not be verified. No statement about registry nonexistence is made.",
+  "nextStep": "Recheck with an accessible first-party South Darfur authority or official land administration contact when one is available; do not infer parcel coverage from regional boundaries.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2409,
+  "cityId": "wup2025:2409",
+  "queueRank": 548,
+  "population2025": 950803,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    12.0557720367588,
+    24.8816201506161
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, credentials, login sessions, or tokens were retained.",
+  "registryEvidenceUrls": [],
+  "rootReviewedAt": "2026-10-09T01:23:12.168688+00:00"
+}

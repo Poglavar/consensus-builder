@@ -1,0 +1,132 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PT",
+ "country": "Portugal",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "partial_or_unofficial_sample",
+ "newStatus": "national_online_cadastre_verified_sample",
+ "status": "national_online_cadastre_verified_sample",
+ "cadastreAuthority": "DGT - Direcao-Geral do Territorio (Cadastro Predial / BUPi, mainland)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: <per country, e.g. el-GR,el;q=0.9,en;q=0.8>; cookie jar on; Referer = viewer/portal origin",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro",
+   "observation": "OGC API Features, 'Cadastro Predial (Continente)', bbox and limit/offset supported"
+  },
+  {
+   "url": "https://ide.madeira.gov.pt/",
+   "observation": "IDE Madeira ASP.NET portal, menus are __doPostBack; no service URL found in HTML"
+  },
+  {
+   "url": "https://ideia.azores.gov.pt/",
+   "observation": "CONNECT 502, unreachable"
+  },
+  {
+   "url": "https://cadastro.dgterritorio.gov.pt/",
+   "observation": "CONNECT 502, unreachable"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-9.32,39.16,-9.30,39.18",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, admin unit 110808 (Lisboa district, Mafra), numberMatched 414"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-8.72,39.48,-8.70,39.50",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, unit 140208 (Leiria district), 539 in bbox"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-7.92,37.02,-7.90,37.04",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, unit 080507 (Faro district / Algarve), 197 in bbox"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-7.91,38.56,-7.89,38.58",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 parcels, units 070522/070523 (Evora district), 119 in bbox"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-8.62,41.14,-8.60,41.16",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 (Porto: not in layer)"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-8.42,40.20,-8.40,40.22",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 (Coimbra area: not in layer)"
+  },
+  {
+   "url": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-6.77,41.80,-6.75,41.82",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 (Braganca area: not in layer)"
+  },
+  {
+   "url": "items bbox Azores -25.7,37.7,-25.6,37.8 and Madeira -16.95,32.6,-16.85,32.7",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0: collection is Continente only"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "pt-dgt-cadastro-predial",
+  "requestUrl": "https://ogcapi.dgterritorio.gov.pt/collections/cadastro/items?f=json&limit=3&bbox=-7.92,37.02,-7.90,37.04",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -7.92,
+   37.02,
+   -7.9,
+   37.04
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "nationalcadastralreference",
+  "responseFile": "europe/PT-parcel-response.json",
+  "pagination": "limit/offset, bbox",
+  "regionSampled": "Faro (Algarve) and Lisboa district (Mafra); also Leiria and Evora"
+ },
+ "regionsSampled": [
+  "Lisboa district (Mafra 110808)",
+  "Leiria district (140208)",
+  "Faro district (080507)",
+  "Evora district (070522/070523)"
+ ],
+ "coverageAssessment": {
+  "claimedScope": "Cadastro Predial, mainland municipalities surveyed to date (1,820,088 features previously reported)",
+  "regionsVerified": [
+   "Lisboa",
+   "Leiria",
+   "Faro",
+   "Evora"
+  ],
+  "nationwideVerified": false,
+  "twoRegionTestPassed": true,
+  "note": "four distinct mainland districts return parcels from the same layer/schema, so the two-region test passes for the mainland service; not marked nationwide because Porto, Coimbra and Braganca bboxes returned 0 (surveying incomplete) and Azores/Madeira are absent"
+ },
+ "accessModel": "open",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "remainingUncertainty": "Porto/Coimbra/Braganca empties are consistent with the cadastre not yet covering those municipalities, but were only tested with one small bbox each. Azores (IDEiA) and Madeira (IDE Madeira) vector services not reached. Licence not read.",
+ "nextStep": "Register the DGT OGC API as mainland-partial; probe more municipalities to map coverage; find Azores/Madeira services."
+}

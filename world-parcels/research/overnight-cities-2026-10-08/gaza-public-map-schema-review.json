@@ -1,0 +1,1175 @@
+{
+  "url": "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json",
+  "httpStatus": 200,
+  "bytesInspected": 24767337,
+  "schemaCount": 26,
+  "schemas": [
+    {
+      "name": "Utitlity",
+      "geometryType": "esriGeometryPoint",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "A_NAME",
+          "type": "esriFieldTypeString"
+        }
+      ]
+    },
+    {
+      "name": "Ü⌐ƒα∩_∩ÑΓ⌐_óºƒφΘ∞ƒ_τßπƒ",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "منطقة",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "تصنيف",
+          "type": "esriFieldTypeString"
+        }
+      ]
+    },
+    {
+      "name": "TYPE1_NORTH",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "GAZA",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE1SOUTH",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "NORTH",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE2GAZA1",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE2GAZA2",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE2MID1",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE2SOUTH",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3NORTH",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA1",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA2",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA3",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA4",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA5",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA6",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA7",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA8",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE4",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": "TYPE3GAZA10",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "التصن",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "رقم_ا",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "رقم__1",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "القسي",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "المسا",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "NOTE1",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "TYPE",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "SHAPE_Area",
+          "type": "esriFieldTypeDouble"
+        }
+      ]
+    },
+    {
+      "name": null,
+      "geometryType": null,
+      "objectIdField": null,
+      "spatialReference": null,
+      "fields": []
+    },
+    {
+      "name": null,
+      "geometryType": null,
+      "objectIdField": null,
+      "spatialReference": null,
+      "fields": []
+    },
+    {
+      "name": null,
+      "geometryType": null,
+      "objectIdField": null,
+      "spatialReference": null,
+      "fields": []
+    },
+    {
+      "name": null,
+      "geometryType": null,
+      "objectIdField": null,
+      "spatialReference": null,
+      "fields": []
+    },
+    {
+      "name": "EskanBoundary",
+      "geometryType": "esriGeometryPolygon",
+      "objectIdField": "FID",
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      },
+      "fields": [
+        {
+          "name": "FID",
+          "type": "esriFieldTypeOID"
+        },
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeInteger"
+        },
+        {
+          "name": "S_NOTES",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "PROJ_NAME",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "GOVERNMENT",
+          "type": "esriFieldTypeString"
+        },
+        {
+          "name": "Shape_Leng",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "Shape_Area",
+          "type": "esriFieldTypeDouble"
+        },
+        {
+          "name": "Type",
+          "type": "esriFieldTypeString"
+        }
+      ]
+    }
+  ],
+  "featurePropertiesRetained": false
+}

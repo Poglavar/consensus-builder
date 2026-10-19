@@ -1,0 +1,595 @@
+{
+ "_comment": "Shape of local server record 1348 (2026-10-01): a site-only subdivision in explore Tokyo, no parcels (open ground), plan poolSource site without parcelIds.",
+ "proposalId": "c2-xhqg17s0oy6r",
+ "city": "explore",
+ "goal": "reparcellization",
+ "type": "parcel",
+ "primaryType": "Reparcellization",
+ "title": "Subdivide 0110-1931",
+ "name": "Subdivide 0110-1931",
+ "author": "Guest 1020",
+ "site": {
+  "type": "MultiPolygon",
+  "coordinates": [
+   [
+    [
+     [
+      139.7595047950745,
+      35.679496315087185
+     ],
+     [
+      139.7606956958771,
+      35.679496315087185
+     ],
+     [
+      139.7606956958771,
+      35.68009764443414
+     ],
+     [
+      139.7595047950745,
+      35.68009764443414
+     ],
+     [
+      139.7595047950745,
+      35.679496315087185
+     ]
+    ]
+   ]
+  ]
+ },
+ "binding": {
+  "reason": "This city has no cadastre: the whole site is open ground.",
+  "siteM2": 7192.91,
+  "source": "server:hr-cadastre",
+  "parcels": [],
+  "touched": [],
+  "coverage": "none",
+  "unknownM2": 0,
+  "computedAt": "2026-10-01T15:37:26.652Z",
+  "toleranceM": 0,
+  "unsurveyedM2": 7192.91
+ },
+ "cadastreParcelIds": [],
+ "reparcellization": {
+  "source": "server",
+  "polygons": [
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.76045751571658,
+        35.679841895524866
+       ],
+       [
+        139.7606956958771,
+        35.679841895524866
+       ],
+       [
+        139.7606956958771,
+        35.68009764443414
+       ],
+       [
+        139.76045751571658,
+        35.68009764443414
+       ],
+       [
+        139.76045751571658,
+        35.679841895524866
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.76021933555606,
+        35.679841895524866
+       ],
+       [
+        139.76045751571658,
+        35.679841895524866
+       ],
+       [
+        139.76045751571658,
+        35.68009764443414
+       ],
+       [
+        139.76021933555606,
+        35.68009764443414
+       ],
+       [
+        139.76021933555606,
+        35.679841895524866
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.75998115539554,
+        35.679841895524866
+       ],
+       [
+        139.76021933555606,
+        35.679841895524866
+       ],
+       [
+        139.76021933555606,
+        35.68009764443414
+       ],
+       [
+        139.75998115539554,
+        35.68009764443414
+       ],
+       [
+        139.75998115539554,
+        35.679841895524866
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.759742975235,
+        35.679841895524866
+       ],
+       [
+        139.75998115539554,
+        35.679841895524866
+       ],
+       [
+        139.75998115539554,
+        35.68009764443414
+       ],
+       [
+        139.759742975235,
+        35.68009764443414
+       ],
+       [
+        139.759742975235,
+        35.679841895524866
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.7595047950745,
+        35.679841895524866
+       ],
+       [
+        139.759742975235,
+        35.679841895524866
+       ],
+       [
+        139.759742975235,
+        35.68009764443414
+       ],
+       [
+        139.7595047950745,
+        35.68009764443414
+       ],
+       [
+        139.7595047950745,
+        35.679841895524866
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.76045751571658,
+        35.679496315087185
+       ],
+       [
+        139.7606956958771,
+        35.679496315087185
+       ],
+       [
+        139.7606956958771,
+        35.67975206399646
+       ],
+       [
+        139.76045751571658,
+        35.67975206399646
+       ],
+       [
+        139.76045751571658,
+        35.679496315087185
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.76021933555606,
+        35.679496315087185
+       ],
+       [
+        139.76045751571658,
+        35.679496315087185
+       ],
+       [
+        139.76045751571658,
+        35.67975206399646
+       ],
+       [
+        139.76021933555606,
+        35.67975206399646
+       ],
+       [
+        139.76021933555606,
+        35.679496315087185
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.75998115539554,
+        35.679496315087185
+       ],
+       [
+        139.76021933555606,
+        35.679496315087185
+       ],
+       [
+        139.76021933555606,
+        35.67975206399646
+       ],
+       [
+        139.75998115539554,
+        35.67975206399646
+       ],
+       [
+        139.75998115539554,
+        35.679496315087185
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.759742975235,
+        35.679496315087185
+       ],
+       [
+        139.75998115539554,
+        35.679496315087185
+       ],
+       [
+        139.75998115539554,
+        35.67975206399646
+       ],
+       [
+        139.759742975235,
+        35.67975206399646
+       ],
+       [
+        139.759742975235,
+        35.679496315087185
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "area": 613,
+    "color": "#e8dcc0",
+    "owners": [
+     {
+      "color": "#e8dcc0",
+      "share": 1,
+      "ownerKey": "open-ground",
+      "displayName": "Open ground (no owner)"
+     }
+    ],
+    "source": "street-plots",
+    "percent": 8.51,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.7595047950745,
+        35.679496315087185
+       ],
+       [
+        139.759742975235,
+        35.679496315087185
+       ],
+       [
+        139.759742975235,
+        35.67975206399646
+       ],
+       [
+        139.7595047950745,
+        35.67975206399646
+       ],
+       [
+        139.7595047950745,
+        35.679496315087185
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "open-ground",
+    "displayName": "Open ground (no owner)"
+   },
+   {
+    "use": "street",
+    "area": 1077,
+    "color": "#ffffff",
+    "owners": [
+     {
+      "color": "#ffffff",
+      "share": 1,
+      "ownerKey": "public-land",
+      "displayName": "Public land"
+     }
+    ],
+    "source": "street",
+    "percent": 14.94,
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        139.7595047950745,
+        35.67975206399646
+       ],
+       [
+        139.7606956958771,
+        35.67975206399646
+       ],
+       [
+        139.7606956958771,
+        35.679841895524866
+       ],
+       [
+        139.7595047950745,
+        35.679841895524866
+       ],
+       [
+        139.7595047950745,
+        35.67975206399646
+       ]
+      ]
+     ]
+    },
+    "ownerKey": "public-land",
+    "displayName": "Public land"
+   }
+  ],
+  "algorithm": "street-plots",
+  "totalArea": 7208,
+  "validated": false,
+  "poolSource": "site",
+  "totalValue": null,
+  "generatedAt": "2026-10-01T15:31:42.222Z",
+  "ownerShares": [
+   {
+    "color": "#e8dcc0",
+    "noOwner": true,
+    "percent": 1,
+    "ownerKey": "open-ground",
+    "cashOffer": null,
+    "cashBalance": null,
+    "displayName": "Open ground (no owner)",
+    "assignedArea": 6131.581363163573,
+    "assignedValue": 6131.581363163573,
+    "entitledValue": 7208.437031861097,
+    "contributedArea": 7208.437031861097,
+    "contributedValue": null
+   }
+  ],
+  "openGroundM2": 7208.44,
+  "poolGeometry": {
+   "type": "Polygon",
+   "coordinates": [
+    [
+     [
+      139.7595047950745,
+      35.679496315087185
+     ],
+     [
+      139.7606956958771,
+      35.679496315087185
+     ],
+     [
+      139.7606956958771,
+      35.68009764443414
+     ],
+     [
+      139.7595047950745,
+      35.68009764443414
+     ],
+     [
+      139.7595047950745,
+      35.679496315087185
+     ]
+    ]
+   ]
+  },
+  "isSingleOwner": false,
+  "poolUnitValue": null,
+  "totalCashOffer": 0,
+  "contributionBasis": "area",
+  "contributionRatio": 1,
+  "streetFrontageIndex": 2
+ },
+ "offer": 345000,
+ "offerCurrency": "USDT",
+ "isConditional": false,
+ "acquisitionMode": null,
+ "boundaryAdjustment": null,
+ "createdAt": "2026-10-01T15:37:26.655Z",
+ "serverProposalId": "1348"
+}

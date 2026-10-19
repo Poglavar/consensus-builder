@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Krasnodar",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official city administration identifies the Municipal Information Center for Urban-Planning Activity (GISOGD) as the unit that maintains and provides Krasnodar GISOGD information and supports municipal cadastral-plan procedures. Official city documents contain cadastral-plan sheets and parcel maps, but the reviewed material is document/request based, not an anonymous vector feature service. The city’s official-publication amendment to the GISOGD service regulation and available municipal map documents did not yield a safe public polygon schema. No land/parcel identifier, owner, address, request form, or personal identity was submitted.",
+  "registryEvidenceUrls": [
+    "https://krd.ru/administratsiya/administratsii-krasnodara/departament-arkhitektury-i-gradostroitelstva/podvedomstvennye-organizatsii/org-08102013-1702/",
+    "https://docs.krd.ru/document/6a1ee5c52f63bc52dac08cfa",
+    "https://krd.ru/upload/iblock/b88/idy3fb72c01t3j78thg5y29qsmbgo2lb/Vestnik-13_300_-ot-30.11.2023.pdf",
+    "https://krd.ru/administratsiya/administratsii-krasnodara/departament-munitsipalnoy-sobstvennosti-i-gorodskikh-zemel/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5109,
+  "cityId": "wup2025:5109",
+  "centerLatLon": [
+    45.0550475547941,
+    39.0101173877586
+  ],
+  "point": [
+    45.0550475547941,
+    39.0101173877586
+  ],
+  "rank": 676,
+  "queueRank": 676,
+  "population2025": 783125,
+  "population2025k": 783.125,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Official municipal material establishes GISOGD, cadastral-plan workflows, and document-based records but does not publish an anonymous feature endpoint/schema. No credentials, cadastral number, address, person, or property document request was submitted.",
+  "scopeLimits": "Official public-page/document discovery only. No owner, address, tax, personal-identity, credential, account, title, cadastral-number, CPF, or property-specific lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Whether the national public cadastral map or Krasnodar GISOGD exposes a safe anonymous full-polygon service that can be spatially bounded to the supplied WUP point; coverage and non-identifying fields are unknown.",
+  "nextStep": "Find first-party map-service metadata and a safe field projection before feature queries; avoid cadastral-number/address-based lookups and property-record request forms.",
+  "priorAttemptState": "pending",
+  "priorAttemptEvidence": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Krasnodar Russia official municipal cadastral parcel map land registry GISOGD public geometry",
+        "result": "English-language search did not surface an official public parcel-vector service. The municipal administration identifies a city GISOGD information center, and official city documents contain cadastral-plan material; no anonymous feature schema or safe field allowlist was found.",
+        "urls": [
+          "https://krd.ru/administratsiya/administratsii-krasnodara/departament-arkhitektury-i-gradostroitelstva/podvedomstvennye-organizatsii/org-08102013-1702/",
+          "https://docs.krd.ru/document/6a1ee5c52f63bc52dac08cfa"
+        ],
+        "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by official city/agency page or document review; no identity, ownership, address or property-specific query submitted."
+      },
+      {
+        "language": "Russian",
+        "query": "Краснодар город официальный кадастр земельных участков карта ГИСОГД муниципальный земельный реестр геометрия",
+        "result": "Официальная администрация Краснодара подтверждает работу муниципального Информационного центра ГИСОГД и выдачу сведений/материалов, включая процедуры с кадастровыми планами. В просмотренных официальных документах есть картографические схемы отдельных участков, но не обнаружен безопасный анонимный векторный слой с опубликованной схемой полей. Запрос по адресу или кадастровому номеру не подавался.",
+        "urls": [
+          "https://krd.ru/administratsiya/administratsii-krasnodara/departament-arkhitektury-i-gradostroitelstva/podvedomstvennye-organizatsii/org-08102013-1702/",
+          "https://docs.krd.ru/document/6a1ee5c52f63bc52dac08cfa",
+          "https://krd.ru/upload/iblock/b88/idy3fb72c01t3j78thg5y29qsmbgo2lb/Vestnik-13_300_-ot-30.11.2023.pdf"
+        ],
+        "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by official city/agency page or document review; no identity, ownership, address or property-specific query submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://krd.ru/administratsiya/administratsii-krasnodara/departament-arkhitektury-i-gradostroitelstva/podvedomstvennye-organizatsii/org-08102013-1702/",
+        "observation": "The official Krasnodar City Administration identifies its municipal information center for urban-planning activity, which maintains the city GISOGD, provides documents/materials from that system, and handles cadastral-plan location schemes."
+      },
+      {
+        "url": "https://docs.krd.ru/document/6a1ee5c52f63bc52dac08cfa",
+        "observation": "Official city document repository lists a Krasnodar cadastral-plan land-location scheme; this is a specific municipal document, not a general public parcel API."
+      },
+      {
+        "url": "https://krd.ru/upload/iblock/b88/idy3fb72c01t3j78thg5y29qsmbgo2lb/Vestnik-13_300_-ot-30.11.2023.pdf",
+        "observation": "Official Krasnodar municipal bulletin publishes amendments to the GISOGD information/materials service regulation. The published service is a request workflow; it does not expose a public safe parcel-layer schema."
+      },
+      {
+        "url": "https://krd.ru/administratsiya/administratsii-krasnodara/departament-munitsipalnoy-sobstvennosti-i-gorodskikh-zemel/",
+        "observation": "The municipal administration has a Department of Municipal Property and City Lands, confirming the local land-management institutional remit."
+      }
+    ],
+    "metadataReviewFile": "krasnodar-service-review.json"
+  },
+  "source": {
+    "sourceId": "ru-krasnodar-registry-review",
+    "name": "Krasnodar local registry/cadastre route review",
+    "operator": "Administration of the Municipal Formation City of Krasnodar; Rosreestr / Krasnodar Krai cadastral administration",
+    "url": "https://krd.ru/administratsiya/administratsii-krasnodara/departament-arkhitektury-i-gradostroitelstva/podvedomstvennye-organizatsii/org-08102013-1702/",
+    "scope": "The official city administration identifies the Municipal Information Center for Urban-Planning Activity (GISOGD) as the unit that maintains and provides Krasnodar GISOGD information and supports municipal cadastral-plan procedures. Official city documents contain cadastral-plan sheets and parcel maps, but the reviewed material is document/request based, not an anonymous vector feature service. The city’s official-publication amendment to the GISOGD service regulation and available municipal map documents did not yield a safe public polygon schema. No land/parcel identifier, owner, address, request form, or personal identity was submitted.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_safe_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official city administration identifies the Municipal Information Center for Urban-Planning Activity (GISOGD) as the unit that maintains and provides Krasnodar GISOGD information and supports municipal cadastral-plan procedures. Official city documents contain cadastral-plan sheets and parcel maps, but the reviewed material is document/request based, not an anonymous vector feature service. The city’s official-publication amendment to the GISOGD service regulation and available municipal map documents did not yield a safe public polygon schema. No land/parcel identifier, owner, address, request form, or personal identity was submitted.",
+    "notEstablished": [
+      "anonymous safe full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "publicParcelGeometryCandidateFound": false,
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": []
+}

@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MX",
+ "regionCode": "SIN",
+ "regionName": "Sinaloa",
+ "checkedAt": "2026-09-30",
+ "status": "viewer_only",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "not established",
+ "subregionsVerified": [],
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept-Language: es-MX,es;q=0.9; cookie jar; viewer-origin Referer where applicable",
+ "portalsFound": [
+  {
+   "url": "https://visor.catastro.culiacan.gob.mx/",
+   "observation": "Culiacan municipal parcel viewer behind login"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://catastro.culiacan.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "Culiacan municipal catastro site; links to visor"
+  },
+  {
+   "url": "https://visor.catastro.culiacan.gob.mx/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "Login form (/check POST, email+password); page has a built-in 'publico' button that auto-fills a shared login. Not used: treated as a login wall, not bypassed"
+  },
+  {
+   "url": "http://catastro.culiacan.gob.mx:8002",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "not tested (non-standard port, ficha/revaluacion app)"
+  }
+ ],
+ "reuseStatus": "not read",
+ "remainingUncertainty": "No statewide layer found; Culiacan (largest municipality) viewer sits behind a login so no bounded parcel query was made. Viewer's API endpoint not inspected past the login.",
+ "nextStep": "Decide whether the viewer's own public-access button is acceptable to use, then inspect its network calls; try Mazatlan/Sinaloa state catastro."
+}

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "iq-najaf-moj-local-register-no-public-parcel-geometry",
+  "purpose": "Service review for WUP2025 rank 403 Al-Najaf (city code 4039); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "www.moj.gov.iq",
+  "sourceUrl": "https://www.moj.gov.iq/view.9386/",
+  "registryFound": true,
+  "registryBasis": "Official Iraqi Ministry of Justice notices identify Najaf Real Estate Registration Directorates One and Two and their records. The same ministry describes a deed-and-property-map request service as currently electronic only in selected Baghdad directorates; the public service information says requests are made by a property owner or authorized representative. The official Najaf Municipality website offers municipal land-allotment applications, not a public parcel map. This confirms a local registration institution, not open parcel coverage.",
+  "officialSources": [
+    {
+      "url": "https://www.moj.gov.iq/view.9386/",
+      "observation": "Ministry of Justice notice dated 2025-06-22 says archival work covered Najaf First and Najaf Second Real Estate Registration Directorates and their sub-offices."
+    },
+    {
+      "url": "https://www.moj.gov.iq/view.7998/",
+      "observation": "Ministry of Justice notice dated 2024-03-26 reports image-archiving of property registers for Najaf Governorate."
+    },
+    {
+      "url": "https://najafmunicipality.com/en/services/",
+      "observation": "Official Municipality of Najaf services page lists electronic applications related to municipal land plots; the inspected page contains no public parcel-map or feature-service link."
+    },
+    {
+      "url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+      "observation": "Unified Iraqi e-government service description says deed/map requests are currently available electronically in Baghdad only and are submitted by the owner or authorized representative; it is not a public city geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Al-Najaf Iraq official land registry cadastral map parcels Najaf municipality",
+      "scope": "Find Najaf-specific registration evidence and anonymous parcel-geometry services.",
+      "result": "The Ministry of Justice identifies Najaf registry directorates and records; its published property-map rollout is limited to selected Baghdad offices. The municipal public site lists services and plot applications but no public geospatial parcel service.",
+      "actualResultUrls": [
+        "https://www.moj.gov.iq/view.9386/",
+        "https://www.moj.gov.iq/view.7998/",
+        "https://najafmunicipality.com/en/services/"
+      ],
+      "executionMethod": "English-language web search followed by official Iraqi Ministry of Justice and Najaf Municipality source inspection."
+    },
+    {
+      "language": "Arabic",
+      "query": "النجف الأشرف خارطة عقارية التسجيل العقاري وزارة العدل بلدية النجف",
+      "scope": "البحث عن دائرة تسجيل محلية وخدمة عامة مجهولة الهوية لإظهار مضلعات العقارات في النجف.",
+      "result": "تؤكد وزارة العدل وجود مديريات التسجيل العقاري الأولى والثانية في النجف. وتوضح معلومات الخدمة الإلكترونية لخارطة العقار أنها متاحة حالياً في مديريات مختارة في بغداد، وأن طلب السند والخارطة يقدمه المالك أو وكيله. لم يُعثر على خدمة عامة مجهولة الهوية لبيانات هندسية عقارية في النجف.",
+      "actualResultUrls": [
+        "https://www.moj.gov.iq/view.9386/",
+        "https://www.moj.gov.iq/view.7998/",
+        "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+        "https://najafmunicipality.com/"
+      ],
+      "executionMethod": "بحث باللغة العربية ومراجعة صفحات وزارة العدل وبوابة أور وبلدية النجف الرسمية."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "inspected_no_target_geometry_response",
+    "reason": "No anonymous public parcel geometry service was found. Owner-directed property-map service information was treated as a separate, access-limited workflow and was not submitted or queried."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://najafmunicipality.com/en/home/",
+      "method": "GET",
+      "status": 200,
+      "observation": "Anonymous official English municipal homepage loaded; it links to municipal services and an employee residential-plot application."
+    },
+    {
+      "url": "https://najafmunicipality.com/en/services/",
+      "method": "GET",
+      "status": 200,
+      "bytes": 198922,
+      "observation": "Anonymous official English services page loaded; no public cadastre map or parcel geometry route in the page."
+    },
+    {
+      "url": "https://najafmunicipality.com/%d8%a7%d9%84%d8%ae%d8%af%d9%85%d8%a7%d8%aa/",
+      "method": "GET",
+      "status": 200,
+      "bytes": 203203,
+      "observation": "Anonymous official Arabic municipal services page loaded; it lists municipal application services, not a parcel feature service."
+    },
+    {
+      "url": "https://www.moj.gov.iq/view.9386/",
+      "method": "official-page inspection",
+      "status": 200,
+      "observation": "Arabic Ministry of Justice notice establishes local Najaf registry office activity; no geometry route advertised."
+    },
+    {
+      "url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+      "method": "official-page inspection",
+      "status": 200,
+      "observation": "Public service description reviewed only; no form submitted, no credentials or identity/property details entered."
+    }
+  ],
+  "technicalBlocker": "The anonymous municipal HTML inspected contains service and land-allotment application links but no public map viewer or vector service. The Ministry’s public property-map service information is owner/authorized-party directed and says electronic availability is currently in Baghdad only. No anonymous geometry-only route for Najaf or the WUP point was identified; no private record or application was queried.",
+  "sampleDisposition": "No complete parcel polygons retained; no target-point geometry response was verified.",
+  "remainingUncertainty": "An unindexed, in-person, or owner-mediated cadastral service may exist. Public parcel geometry and coverage near the WUP locator remain unverified.",
+  "viewerClientInspection": {
+    "candidateMapFound": false,
+    "clientInspection": "Inspected anonymous English and Arabic Najaf Municipality service-page HTML and links. No map viewer, GIS API, WFS/feature layer, schema, CRS, or geometry-safe query route was advertised. The official Ministry property-map service description was reviewed as public informational content only."
+  }
+}

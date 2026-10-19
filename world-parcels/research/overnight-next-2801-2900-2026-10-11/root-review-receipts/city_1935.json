@@ -1,0 +1,28 @@
+{
+  "taskId": "city:1935",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-1935-gdynia.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/gdynia-service-review.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/gdynia-parcel-sample.geojson",
+    "tmp/valhalla-parcel-research/gdynia/bbox-response-axis.gml",
+    "tmp/valhalla-parcel-research/runs/20261011T205934-d66122df/stdout.jsonl"
+  ],
+  "checkedAt": "2026-10-11T21:03:48Z",
+  "reason": "Official GUGiK EGiB WFS returned three full polygons with native ID_DZIALKI values. Its response reports numberMatched unknown and a next page, so this is bounded discovery, not a complete manifest. No independent live adapter qualification, 13-cell metric GEOS review, source binding, or headed Details verification.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "registryCustody": true,
+  "publicGeometryDiscovery": true,
+  "durableSamplePolygonCount": 3,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

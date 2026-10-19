@@ -1,0 +1,22 @@
+{
+  "taskId": "city:6682",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6682-amassoma.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/amassoma-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:31:56Z",
+  "findings": {
+    "identity": "WUP 2025 source SHA-256, City_Code 6682, rank 3209, Nigeria, exact 2025 point, and 188265 persons agree across source row, roster, queue, and packet; source plausibility is low and preserved.",
+    "searches": "Packet records English and an Ijaw/Izon-oriented query with outcomes and URLs, but the latter query text is English; an executed native-language query is not evidenced.",
+    "custody": "registryFound true is supported by Bayelsa GIS first-party About and Services pages describing state land-administration, land records, and cadastral surveys. This does not prove an anonymous Amassoma parcel feed.",
+    "firstPartyUrls": [
+      "https://bgis.bayelsastate.gov.ng/about-us/",
+      "https://bgis.bayelsastate.gov.ng/services/"
+    ],
+    "geometry": "Zero retained polygons; no public ID-plus-full-polygon response, native ID field, schema, CRS, or bounded parcel response. No response is not an absence finding.",
+    "admission": "No independently evidenced fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap and operation checks, source binding, or headed Details-panel check. Held; no runtime/catalog/report admission."
+  }
+}

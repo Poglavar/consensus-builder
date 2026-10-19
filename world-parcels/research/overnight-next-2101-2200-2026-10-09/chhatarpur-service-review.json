@@ -1,0 +1,92 @@
+{
+  "cityRecord": "city-9613-chhatarpur.json",
+  "cityCode": 9613,
+  "queueRank": 2170,
+  "city": "Chhatarpur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localOrScopedEvidence": "The official District Chhatarpur administration land-records page identifies the Tehsildar Chhatarpur office (Chhatarpur, PIN 471001) and states that spatial and non-spatial records for 1,210 villages are public through MP Bhulekh. The official Hindi page gives the same local land-record service description. This is evidence of a local/scoped registry procedure, not evidence that the city parcel layer was successfully fetched.",
+    "generalAgencyEvidence": "The Government of India DILRMP page identifies the Chhatarpur district map-digitization/ULPIN status view. The Madhya Pradesh e-service page describes certified Khasra, B-1, and Naksha services. These national/state service descriptions were not treated as city geometry evidence by themselves.",
+    "sourceUrls": [
+      "https://chhatarpur.nic.in/en/service/land-records/",
+      "https://chhatarpur.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/427",
+      "https://services.mp.gov.in/eservice/eServices?srvs=19"
+    ]
+  },
+  "discovery": {
+    "englishQuery": "Chhatarpur Madhya Pradesh official cadastral parcel map GIS land records",
+    "nativeQuery": "छतरपुर मध्य प्रदेश भू नक्शा खसरा आधिकारिक",
+    "urls": [
+      "https://chhatarpur.nic.in/en/service/land-records/",
+      "https://chhatarpur.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "https://mpbhulekh.gov.in/",
+      "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/427",
+      "https://services.mp.gov.in/eservice/eServices?srvs=19"
+    ]
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://chhatarpur.nic.in/en/service/land-records/",
+      "outcome": "200 HTML; official page read successfully. It links MP Bhulekh, states spatial and non-spatial data for 1,210 villages is public, and names the Tehsildar Chhatarpur office. No parcel geometry or public API configuration was present in the page HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://chhatarpur.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "outcome": "200 HTML; official Hindi counterpart read successfully. It repeats the computerized spatial/non-spatial land-record and Naksha service description. No parcel geometry or public API configuration was present in the page HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://mpbhulekh.gov.in/",
+      "outcome": "Timed out after 20 seconds from the anonymous request. No login was attempted, no credentials or private token were used, and the timeout is not evidence of source absence."
+    },
+    {
+      "method": "GET",
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/427",
+      "outcome": "TLS certificate verification failed in the local curl environment. The route was not retried with verification disabled because no source-specific certificate exception was authorized. Search results independently identified the page as the official Chhatarpur DILRMP status page; no response schema or geometry was accepted from the failed request."
+    },
+    {
+      "method": "GET",
+      "url": "https://services.mp.gov.in/eservice/eServices?srvs=19",
+      "outcome": "Official Madhya Pradesh e-service page found through discovery; it describes certified Naksha/Khasra/B-1 services. No parcel geometry response or anonymous map API was obtained in this attempt."
+    }
+  ],
+  "responseEvidence": {
+    "geometry": "None retained or verified. No bounded anonymous ID-plus-geometry response was obtained.",
+    "nativeFieldsObserved": [],
+    "safeFieldAllowlist": [
+      "stable native parcel identity if a future public response exposes one",
+      "geometry",
+      "source URL",
+      "district/tehsil/village/survey and map provenance"
+    ],
+    "unsafeFieldsExcluded": [
+      "owner names",
+      "addresses",
+      "contact details",
+      "titleholder information",
+      "tax/account data",
+      "khasra or khatauni personal contents"
+    ]
+  },
+  "sample": {
+    "retained": false,
+    "reason": "No parcel geometry was obtained. No sample GeoJSON is retained.",
+    "exactPointHit": "not tested; no coordinate shift performed"
+  },
+  "scopeLimits": [
+    "The district page evidences a public land-record procedure and spatial-data claim for 1,210 villages, but not a citywide Chhatarpur parcel dataset or a verified API response.",
+    "MP Bhulekh direct retrieval timed out; a map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.",
+    "No CRS, parcel schema, native identity, or geometry response was observed.",
+    "No authentication, credentials, private token, CAPTCHA bypass, unsafe owner field, or certificate exception was used.",
+    "No source integration or adapter admission is claimed."
+  ],
+  "runtimeReadiness": "held-pending-independent-serial-reviewer",
+  "uncertainty": "A local/scoped official land-record custodian and public cadastral-map procedure are evidenced, but the current public viewer/API could not be inspected anonymously in this attempt and city-level coverage remains unqualified."
+}

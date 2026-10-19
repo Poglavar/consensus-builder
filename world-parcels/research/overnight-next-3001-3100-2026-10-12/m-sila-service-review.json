@@ -1,0 +1,22 @@
+{
+  "cityRecord": "city-4427-m-sila.json",
+  "cityCode": 4427,
+  "queueRank": 3008,
+  "city": "M'Sila",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "reviewedAt": "2026-10-12",
+  "attempt": 1,
+  "outcome": "complete_research_packet_runtime_held",
+  "summary": "First-party English and Arabic discovery evidenced the local Wilaya cadastral/land-conservation directorate and the official Fada El Djazair/dzds.dz digital service route. The portal timed out and dzds.dz returned anonymous 403; no safe anonymous parcel ID-plus-geometry response was qualified, so no sample is retained.",
+  "queryAndRequestOutcomes": "All executed discovery queries, official URLs, HTTP 200 official custodian page, portal timeout, and dzds.dz 403 are recorded in city-4427-m-sila.json.",
+  "custodians": ["Direction de Wilaya du Cadastre et de la Conservation Foncière / مديرية مسح الأراضي والحفظ العقاري لولاية المسيلة", "Direction Générale des Domaines Nationales / المديرية العامة للأملاك الوطنية"],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "geometrySamples": [],
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "scopeLimits": ["Exact WUP point was preserved and not moved.", "No exact-point hit or miss was inferred from timeout, 403, or absent public endpoint details.", "No citywide public vector coverage, safe native identity, schema, CRS, or parcel polygon was qualified.", "No unsafe fields were requested or retained.", "Independent serial review is required before any adapter/runtime qualification."],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "Local cadastral custody and official service routes are evidenced, but no anonymous parcel ID-plus-geometry response, schema, CRS, or public citywide coverage was qualified."},
+  "registryFound": true,
+  "admissionDecision": "held",
+  "uncertainty": "The local custodian is real, but the current public machine-readable parcel service, identity semantics, geometry schema, CRS, and coverage remain unresolved."
+}

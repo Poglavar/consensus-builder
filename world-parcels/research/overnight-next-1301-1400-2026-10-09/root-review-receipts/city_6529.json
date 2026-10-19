@@ -1,0 +1,26 @@
+{
+  "taskId": "city:6529",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-6529-kongolo.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/kongolo-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "tmp/valhalla-parcel-research/6529/Map-DqgmpJB7.js",
+    "tmp/valhalla-parcel-research/6529/supabase-exact.json",
+    "tmp/valhalla-parcel-research/6529/supabase-bbox.json",
+    "tmp/valhalla-parcel-research/6529/supabase-bbox-2.json",
+    "tmp/valhalla-parcel-research/6529/supabase-wide.json"
+  ],
+  "checkedAt": "2026-10-09T15:28:39+00:00",
+  "reason": "The immutable WUP identity and bilingual recorded searches match. Original bounded public BIC responses include empty arrays; one early bbox request returned Invalid API key before a later empty response. The official central-government register procedure is not Kongolo local custody or a polygon service. No safe full parcel polygon or independent adapter qualification exists; bounded empties are not citywide absence.",
+  "reviewFindings": {
+    "queueIdentityVerified": true,
+    "englishAndLocalSearchesRecorded": true,
+    "retainedFullPolygons": 0,
+    "safeNativeIdGeometryVerified": false,
+    "adapterQualificationComplete": false,
+    "integrationState": "held"
+  }
+}

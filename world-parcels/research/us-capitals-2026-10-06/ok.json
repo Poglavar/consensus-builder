@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "OK",
+  "state": "Oklahoma",
+  "capital": "Oklahoma City",
+  "centerLatLon": [
+    35.4676,
+    -97.5164
+  ],
+  "query": {
+    "language": "English",
+    "text": "Oklahoma City parcel GIS Oklahoma County Assessor official parcel map"
+  },
+  "references": [
+    {
+      "url": "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/2",
+      "observation": "Official county GIS/parcel source found by the recorded English web query."
+    },
+    {
+      "url": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+      "observation": "Candidate parcel source/official viewer."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1?f=pjson",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Official ArcGIS layer metadata retrieved; schema inspected without reading personal values."
+    },
+    {
+      "url": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1/query?f=geojson&where=1%3D1&geometry=-97.5175%2C35.466499999999996%2C-97.51530000000001%2C35.4687&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=AcctNum&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Tiny capital-centered spatial query requested only AcctNum and geometry: 0 features; polygon geometry valid=False; null IDs=0; duplicate IDs=False."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+    "adapter": "arcgis",
+    "name": "OK County Assessor Parcels",
+    "operator": "Oklahoma County Assessor",
+    "scope": "Oklahoma County",
+    "idField": "AcctNum",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "AcctNum"
+    ],
+    "parcelNumberField": "AcctNum",
+    "metricSrid": 102039,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -97.5175,
+      35.466499999999996,
+      -97.51530000000001,
+      35.4687
+    ],
+    "count": 0,
+    "nativeIDs": [],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": null,
+    "geometryvalid": false,
+    "capitalLocation": false,
+    "dataFound": false,
+    "nativeIDVerified": false,
+    "adapterReady": false,
+    "dataFormat": "ArcGIS parcel polygon service"
+  },
+  "status": "lead",
+  "remainingUncertainty": "The tested official county parcel service returned no features in a small area around the capital. This does not establish that parcel data is absent; inspect another official city/state layer or alternate format."
+}

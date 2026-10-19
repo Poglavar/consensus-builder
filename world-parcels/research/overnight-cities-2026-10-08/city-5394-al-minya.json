@@ -1,0 +1,115 @@
+{
+  "name": "Al Minya",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 976,
+  "point": [
+    28.0917524041359,
+    30.7604543203012
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Al Minya Egypt official cadastral parcel map land registry survey GIS governorate",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "The governorate operates the Advanced Geospatial Intelligence Complex (MAGIC) and publicizes GIS/surveying services. The national Egyptian General Survey Authority maintains cadastral/topographic map products; official gazette/legal material documents real-property registration sections in Minya Governorate. No public anonymous parcel feature schema or geometry-only point query was verified; maps are supplied through request/product channels.",
+        "actualResultUrls": [
+          "https://magic.minya.gov.eg/"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Arabic",
+        "query": "المنيا خريطة مساحية قطع الأراضي السجل العيني التسجيل العقاري محافظة المنيا رسمي",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "The governorate operates the Advanced Geospatial Intelligence Complex (MAGIC) and publicizes GIS/surveying services. The national Egyptian General Survey Authority maintains cadastral/topographic map products; official gazette/legal material documents real-property registration sections in Minya Governorate. No public anonymous parcel feature schema or geometry-only point query was verified; maps are supplied through request/product channels.",
+        "actualResultUrls": [
+          "https://magic.minya.gov.eg/"
+        ],
+        "executionMethod": "Separate Arabic-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Minya Governorate Advanced Geospatial Intelligence Complex and Egyptian General Survey Authority",
+        "operator": "Minya Governorate; Egyptian General Survey Authority and local real-estate registration offices",
+        "homeUrl": "https://magic.minya.gov.eg/",
+        "observation": "The governorate operates the Advanced Geospatial Intelligence Complex (MAGIC) and publicizes GIS/surveying services. The national Egyptian General Survey Authority maintains cadastral/topographic map products; official gazette/legal material documents real-property registration sections in Minya Governorate. No public anonymous parcel feature schema or geometry-only point query was verified; maps are supplied through request/product channels."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "EG-5394-LOCAL-CADASTRE-REVIEW",
+    "name": "Minya Governorate Advanced Geospatial Intelligence Complex and Egyptian General Survey Authority",
+    "url": "https://magic.minya.gov.eg/",
+    "operator": "Minya Governorate; Egyptian General Survey Authority and local real-estate registration offices",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local governorate geospatial capability and a local registry/cadastral institution are documented; exact point coverage and open parcel vectors are unverified.",
+    "verifiedOpenScope": "The governorate operates the Advanced Geospatial Intelligence Complex (MAGIC) and publicizes GIS/surveying services. The national Egyptian General Survey Authority maintains cadastral/topographic map products; official gazette/legal material documents real-property registration sections in Minya Governorate. No public anonymous parcel feature schema or geometry-only point query was verified; maps are supplied through request/product channels.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No public schema-backed parcel geometry endpoint was found; official map products and land-registration services use requests/identifier-based processes.",
+  "remainingUncertainty": "Exact WUP point inclusion in any mapped urban section is unknown.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5394,
+  "cityId": "wup2025:5394",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    28.0917524041359,
+    30.7604543203012
+  ],
+  "population2025k": 561.945,
+  "populationUnit": "persons",
+  "queueRank": 976,
+  "population2025": 561945,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Egyptian Survey Authority official news page identifies Minya Survey Directorate and its participation in land regularization and survey work with Minya Governorate. This establishes a specific local survey/cadastral custodian; the MAGIC geospatial center alone does not establish a title registry. No anonymous public parcel vector response was verified.",
+  "registryEvidenceUrls": [
+    "https://magic.minya.gov.eg/",
+    "https://www.esa.gov.eg/NewsContent2.aspx?id=1516"
+  ],
+  "rootPrimarySupplement": {
+    "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1516",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "الهيئة المصرية العامة للمساحة"
+  },
+  "discoveryRegistryAssessment": {
+    "registryFound": true,
+    "registryBasis": "The governorate operates the Advanced Geospatial Intelligence Complex (MAGIC) and publicizes GIS/surveying services. The national Egyptian General Survey Authority maintains cadastral/topographic map products; official gazette/legal material documents real-property registration sections in Minya Governorate. No public anonymous parcel feature schema or geometry-only point query was verified; maps are supplied through request/product channels."
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No public schema-backed parcel geometry endpoint was found; official map products and land-registration services use requests/identifier-based processes."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://magic.minya.gov.eg/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "\n    مجمع الذكاء المكاني المتقدم بمحافظة المنيا\n    MAGIC – Advanced GeoSpatial Intelligence Complex | Minya Governorate\n  "
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

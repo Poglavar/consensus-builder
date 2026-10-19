@@ -1,0 +1,1 @@
+{"note": "raw 401 reply from Lantmateriet OGC API registerenhetsomradesytor items without credentials", "status": 401, "body": {"code": "900902", "message": "Missing Credentials", "description": "Invalid Credentials. Make sure your API invocation call has a header: 'Authorization : Bearer ACCESS_TOKEN' or 'Authorization : Basic ACCESS_TOKEN' or 'ApiKey : API_KEY'"}}

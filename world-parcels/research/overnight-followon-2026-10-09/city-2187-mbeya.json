@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2187",
+  "wupCityCode": 2187,
+  "name": "Mbeya",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "rank": 1025,
+  "queueRank": 1025,
+  "point": [
+    -8.9114119975848,
+    33.4790065137258
+  ],
+  "centerLatLon": [
+    -8.9114119975848,
+    33.4790065137258
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 539248,
+  "population2025k": 539.248,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An indexed first-party Mbeya City Council report explicitly cites the City Council Land Register; Ministry land-service material includes Mbeya. The original report URL currently returns HTTP200 HTML GWF CORE rather than the indexed PDF, so its historical city-register evidence and present transport behavior are distinguished. No source-native polygon geometry or citywide cadastral service is verified.",
+  "registryEvidenceUrls": [
+    "https://mbeyacc.go.tz/storage/app/uploads/public/5a1/d12/9c1/5a1d129c18597286453032.pdf",
+    "https://landrent.lands.go.tz/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist.",
+  "scopeLimits": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "An indexed first-party Mbeya City Council report explicitly cites the City Council Land Register; Ministry land-service material includes Mbeya. The original report URL currently returns HTTP200 HTML GWF CORE rather than the indexed PDF, so its historical city-register evidence and present transport behavior are distinguished. No source-native polygon geometry or citywide cadastral service is verified.",
+    "verifiedOpenScope": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mbeya Tanzania official city land registry cadastral map plots",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "An indexed first-party Mbeya City Council report explicitly cites the City Council Land Register; Ministry land-service material includes Mbeya. The original report URL currently returns HTTP200 HTML GWF CORE rather than the indexed PDF, so its historical city-register evidence and present transport behavior are distinguished. No source-native polygon geometry or citywide cadastral service is verified.",
+        "actualResultUrls": [
+          "https://mbeyacc.go.tz/storage/app/uploads/public/5a1/d12/9c1/5a1d129c18597286453032.pdf",
+          "https://landrent.lands.go.tz/"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Swahili",
+        "query": "Mbeya ardhi ofisi hati ramani viwanja usajili rasmi",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "An indexed first-party Mbeya City Council report explicitly cites the City Council Land Register; Ministry land-service material includes Mbeya. The original report URL currently returns HTTP200 HTML GWF CORE rather than the indexed PDF, so its historical city-register evidence and present transport behavior are distinguished. No source-native polygon geometry or citywide cadastral service is verified.",
+        "actualResultUrls": [
+          "https://mbeyacc.go.tz/storage/app/uploads/public/5a1/d12/9c1/5a1d129c18597286453032.pdf",
+          "https://landrent.lands.go.tz/"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:16.612751+00:00",
+        "url": "https://mbeyacc.go.tz/storage/app/uploads/public/5a1/d12/9c1/5a1d129c18597286453032.pdf",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "finalUrl": "https://mbeyacc.go.tz/storage/app/uploads/public/5a1/d12/9c1/5a1d129c18597286453032.pdf",
+        "bytesRead": 553,
+        "boundedReadIncomplete": false,
+        "sha256": "b9bf56403259df6f450d2146452bb41048b349d1465a9116bce121d6aa246445",
+        "title": "GWF CORE"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://mbeyacc.go.tz/storage/app/uploads/public/5a1/d12/9c1/5a1d129c18597286453032.pdf",
+        "observation": "An indexed first-party Mbeya City Council report explicitly cites the City Council Land Register; Ministry land-service material includes Mbeya. The original report URL currently returns HTTP200 HTML GWF CORE rather than the indexed PDF, so its historical city-register evidence and present transport behavior are distinguished. No source-native polygon geometry or citywide cadastral service is verified."
+      },
+      {
+        "homeUrl": "https://landrent.lands.go.tz/",
+        "observation": "An indexed first-party Mbeya City Council report explicitly cites the City Council Land Register; Ministry land-service material includes Mbeya. The original report URL currently returns HTTP200 HTML GWF CORE rather than the indexed PDF, so its historical city-register evidence and present transport behavior are distinguished. No source-native polygon geometry or citywide cadastral service is verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "An indexed first-party Mbeya City Council report explicitly cites the City Council Land Register; Ministry land-service material includes Mbeya. The original report URL currently returns HTTP200 HTML GWF CORE rather than the indexed PDF, so its historical city-register evidence and present transport behavior are distinguished. No source-native polygon geometry or citywide cadastral service is verified. No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00"
+}

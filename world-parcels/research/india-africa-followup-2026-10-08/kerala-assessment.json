@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "two_villages_accepted_two_runtime_availability_holds",
+  "purpose": "Four published cadastral villages, with explicit local entry points and separate settlement attribution. No citywide coverage or parcel-geometry import.",
+  "viewportCells": 36,
+  "uniqueNativeIdentities": 1127,
+  "exactConcurrency": 16,
+  "maxExactBatchSize": 80,
+  "runtimeDeadlineMs": 15000,
+  "deadlineChanged": false,
+  "allExactGeometryHashesMatch": true,
+  "maximumObservedCold80IdBatchMs": 13204,
+  "timingContext": "Each check records host load and CPU count. The host was busy; these are observed request-completion checks, not an isolated performance benchmark.",
+  "priorAttempts": [
+    {
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-adapter-initial.json",
+      "outcome": "Serial exact reads observed at 15–19 seconds per ten IDs; this run was stopped to address bounded request concurrency."
+    },
+    {
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json",
+      "outcome": "Kozhikode first cold exact batch hit one connection timeout; the whole query failed. Other three villages passed all checks."
+    },
+    {
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-adapter-retry.json",
+      "outcome": "Fresh full Kozhikode acceptance passed, including all 280 IDs; earlier failure retained."
+    },
+    {
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json",
+      "outcome": "Kozhikode failed two expanded browser loads; Thiruvananthapuram failed a pan and a fresh expanded load. Both are held despite successful smaller native geometry audits. Iravipuram passed one fresh load and pan after an initial cooldown failure."
+    }
+  ],
+  "existingSourceRegression": "research/india-africa-followup-2026-10-08/kerala-venjaramoodu-regression.json",
+  "cities": [
+    {
+      "cityId": "wup2025:9765",
+      "name": "Kochi",
+      "countryCode": "IN",
+      "appCityId": "kochi",
+      "relatedResearchWupCityCode": 9765,
+      "wupCityMappingConfirmed": true,
+      "sourceId": "in-kl-entebhoomi-070211",
+      "village": "Thiruvankulam",
+      "locationCode": "070211",
+      "entryCenterLatLon": [
+        9.963406805925196,
+        76.36082896288808
+      ],
+      "gridDegrees": 0.001,
+      "uniqueNativeIdentities": 229,
+      "viewportCells": 9,
+      "freshExactRead": true,
+      "absence": true,
+      "footprint": true,
+      "binding": "complete",
+      "scope": "Published Thiruvankulam cadastral village (070211), limited to bounded source queries. Village lies in Thrippunithura Municipality and the historical Kochi urban agglomeration; Kochi Corporation and WUP-point coverage are not claimed.",
+      "cityAssociationBasis": "A named Thiruvankulam sample may be associated with the historical Kochi Urban Agglomeration cohort, with the 2001 basis and village-sample scope stated. Retain its Tripunithura municipal identity; do not imply Kochi Corporation or citywide/WUP-point coverage.",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json",
+      "status": "enabled",
+      "browserEvidenceFile": "research/india-africa-followup-2026-10-08/browser-check.json"
+    },
+    {
+      "cityId": "village:IN-KL-020301",
+      "name": "Iravipuram (Kollam)",
+      "countryCode": "IN",
+      "appCityId": "iravipuram",
+      "relatedResearchWupCityCode": 9847,
+      "wupCityMappingConfirmed": false,
+      "sourceId": "in-kl-entebhoomi-020301",
+      "village": "Iravipuram",
+      "locationCode": "020301",
+      "entryCenterLatLon": [
+        8.847550832774829,
+        76.62751009273858
+      ],
+      "gridDegrees": 0.001,
+      "uniqueNativeIdentities": 162,
+      "viewportCells": 9,
+      "freshExactRead": true,
+      "absence": true,
+      "footprint": true,
+      "binding": "complete",
+      "scope": "Published Iravipuram cadastral village (020301), limited to bounded source queries. Iravipuram, Kollam Corporation. Kept separate from the WUP Kollam entry because its saved point is about 54 km away and the settlement crosswalk is unresolved.",
+      "cityAssociationBasis": "Keep the observed sample identified as Iravipuram, Kollam Corporation. Do not present it as WUP Kollam city-center or citywide coverage. If association must be unambiguous, use a distinct Iravipuram village entry and leave WUP 9847 disabled until a reliable boundary/settlement crosswalk is available.",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json",
+      "status": "enabled",
+      "browserEvidenceFile": "research/india-africa-followup-2026-10-08/browser-check.json"
+    },
+    {
+      "cityId": "wup2025:10013",
+      "name": "Thiruvananthapuram",
+      "countryCode": "IN",
+      "relatedResearchWupCityCode": 10013,
+      "wupCityMappingConfirmed": true,
+      "sourceId": "in-kl-entebhoomi-010111",
+      "village": "Kudappanakunnu",
+      "locationCode": "010111",
+      "entryCenterLatLon": [
+        8.539182930773997,
+        76.95605473987032
+      ],
+      "gridDegrees": 0.001,
+      "uniqueNativeIdentities": 456,
+      "viewportCells": 9,
+      "freshExactRead": true,
+      "absence": true,
+      "footprint": true,
+      "binding": "complete",
+      "scope": "Published Kudappanakunnu cadastral village (010111), limited to bounded source queries. Named published village associated with a Thiruvananthapuram Corporation zone; WUP-point coverage is unestablished.",
+      "cityAssociationBasis": "Retain Kudappanakunnu as the named sample locality in Thiruvananthapuram; describe it as a municipal-zone sample without claiming coverage around the WUP point or across the city.",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json",
+      "status": "held_runtime_availability",
+      "proposedAppCityId": "thiruvananthapuram",
+      "technicalBlockers": [
+        "The native geometry audit passed 456 parcel IDs across nine cells, but the ordinary browser checks failed twice: the first view loaded 25 cells and then retained only 27 of 30 after panning; a fresh load after cooldown retained only 12 of 25 cells. Both displayed the unavailable-source warning. Keep the village research-only pending reliable expanded viewport loading under unchanged deadlines."
+      ],
+      "browserEvidenceFile": "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+    },
+    {
+      "cityId": "wup2025:9587",
+      "name": "Kozhikode",
+      "countryCode": "IN",
+      "relatedResearchWupCityCode": 9587,
+      "wupCityMappingConfirmed": true,
+      "sourceId": "in-kl-entebhoomi-110114",
+      "village": "Karuvanthuruthi",
+      "locationCode": "110114",
+      "entryCenterLatLon": [
+        11.161157398601766,
+        75.8286666200833
+      ],
+      "gridDegrees": 0.001,
+      "uniqueNativeIdentities": 280,
+      "viewportCells": 9,
+      "freshExactRead": true,
+      "absence": true,
+      "footprint": true,
+      "binding": "complete",
+      "scope": "Published Karuvanthuruthi cadastral village (110114), limited to bounded source queries. Kozhikode urban-area association is based on the official 2001 Census component list; current WUP footprint and WUP-point coverage are unestablished.",
+      "cityAssociationBasis": "A named Karuvanthuruthi/ Feroke-area sample may be associated with the historical Kozhikode Urban Agglomeration cohort, with the 2001 basis and village-sample scope stated. Do not imply Kozhikode Corporation or citywide coverage; confirm current WUP settlement footprint separately if required.",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-adapter-retry.json",
+      "status": "held_runtime_availability",
+      "proposedAppCityId": "kozhikode",
+      "technicalBlockers": [
+        "The native geometry audit passed 280 parcel IDs across nine cells, but the ordinary 25-cell browser view timed out in two consecutive loads. It retained only 15 then 23 complete cells and displayed the normal unavailable-source warning. Some same-cell retries passed; reliable expanded viewport loading remains unverified. No timeout or failure handling is weakened."
+      ],
+      "browserEvidenceFile": "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+    }
+  ],
+  "termsAreInformational": true,
+  "enabledAppEntries": 2,
+  "enabledUniqueNativeIdentities": 391,
+  "browserEvidenceFile": "research/india-africa-followup-2026-10-08/browser-check.json"
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "cityId": "wup2025:11772",
+  "wupCityCode": 11772,
+  "queueRank": 1578,
+  "name": "Qidong",
+  "country": "China",
+  "countryCode": "CN",
+  "region": "Jiangsu",
+  "point": [31.8172210142948, 121.661261170867],
+  "population2025": 362192,
+  "population2025k": 362.192,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sourceIdCandidate": null,
+  "operator": "启东市自然资源和规划局 / Qidong Municipal Bureau of Natural Resources and Planning",
+  "source": null,
+  "nativeIdentity": null,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qidong China official cadastral parcel map land registration map API",
+        "result": "Search did not identify a Qidong-specific public cadastral parcel viewer or anonymous parcel geometry API. It did identify the official Jiangsu government service procedure for Qidong real-estate registration, which names the local natural-resources bureau as the implementing authority.",
+        "actualResultUrls": [
+          "https://ntqd.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132068101425001954000715001007&iddept_yw_inf=113206810142500195400071500100701&ql_kind=07&webId=52"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "启东市 不动产登记 地籍图 宗地图 地图 官方",
+        "result": "Official Chinese-language results identify Qidong's real-estate registration authority and procedures. The procedure page mentions the national web-map reference and cadastral-survey materials, but no public Qidong parcel layer, viewer configuration, schema, or anonymous geometry response was exposed.",
+        "actualResultUrls": [
+          "https://ntqd.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=1132068101425001954000715001007&iddept_yw_inf=113206810142500195400071500100701&ql_kind=07&webId=52",
+          "http://www.webmap.cn/store.do?method=store&storeId=909#"
+        ]
+      }
+    ]
+  },
+  "technicalBlocker": "A local official registration/procedure source was verified, but no public Qidong map/API endpoint with safe anonymous parcel IDs and geometry was found. No exact-point hit or citywide absence is inferred.",
+  "runtimeReadiness": "held",
+  "nextStep": "Independently qualify a public Qidong parcel geometry adapter if a first-party viewer/API becomes discoverable; do not infer citywide coverage from this procedure source."
+}

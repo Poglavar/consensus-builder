@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 8971,
+  "cityId": "wup2025:8971",
+  "name": "Agra",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    27.1881643913104,
+    78.0013166778967
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 162,
+  "stateOrUT": "Uttar Pradesh",
+  "administrativeIdentity": {
+    "district": "आगरा",
+    "tehsilOrTaluk": "Agra",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/agra.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/agra.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Uttar Pradesh Bhunaksha village cadastral maps (state scope, viewer only); Agra coverage not verified",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "assessment": "Angular app shell only"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/WMS/tile?SERVICE=WMS&REQUEST=GetCapabilities",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "assessment": "SPA fallback HTML, not WMS capabilities"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhunaksha.gov.in/bhunakshaserver/v1/khasramap/plot?lon=78.0013&lat=27.1882",
+            "httpStatus": 401,
+            "contentType": "application/json",
+            "assessment": "'Missing or invalid Authorization header'; auth wall, not verification"
+          },
+          {
+            "method": "GET",
+            "url": "https://upbhulekh.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "record-search HTML only"
+          },
+          {
+            "method": "GET",
+            "url": "https://agrasmartcity.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "landing page only"
+          },
+          {
+            "method": "GET",
+            "url": "https://agra.nic.in/ , https://agracantt.gov.in/ , https://adaagra.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "unreachable through the proxy; not a verdict"
+          }
+        ],
+        "conclusion": "The public Bhunaksha viewer serves raster tiles and its vector plot API requires authorization; Agra district's coverage in that viewer was not confirmed. Local authority hosts were unreachable. State scope would not establish India-wide coverage, and terms for automated access were not read.",
+        "nextStep": "Look for an open UP Bhunaksha vector export or WMS with a known Agra gis_code; check Agra Municipal Corporation/ADA GIS portals from another network."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "आगरा राजस्व गांव खतौनी नक्शा भू-नक्शा उत्तर प्रदेश",
+        "scope": "WUP 8971 Agra cohort label retained. Actual search targeted official UP revenue village map/gata services.",
+        "result": "Official Board of Revenue and Bhulekh state entries surfaced; search did not establish a parcel feature at the WUP point.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://bor.up.nic.in/?search_key=bhulekh+up",
+          "https://bor.up.nic.in/Department_login.aspx",
+          "https://akhairkar.github.io/BhumiRecord/districts/uttar-pradesh/agra.html",
+          "https://upbhulekh.gov.in/?form=MG0AV3",
+          "https://bor.up.nic.in/?search_key=edrop.sec.kerala.gov.in%2Fpublic",
+          "https://bhulekhnakshaup.com/documents",
+          "https://bhulekh.up.in/bhu-naksha-up/",
+          "https://information.up.gov.in/admin/UploadDocument/OtherPress/compressed_18062025010328varshiki2.pdf",
+          "https://www.bajajfinserv.in/hindi/bhulekh-agra",
+          "https://up-bhulekhh.com/",
+          "https://up-rera.in/ViewDocument?Param=16642655932.pdf",
+          "https://up-rera.in/ViewDocument?Param=71855337.pdf",
+          "https://up-rera.in/ViewDocument?Param=16642655952.pdf",
+          "https://up-rera.in/ViewDocument?Param=16642653528.pdf",
+          "https://upbhulekh.gov.in/?trk=organization-update_share-update_update-text",
+          "https://revenue.up.gov.in/",
+          "https://www.greentribunal.gov.in/sites/default/files/news_updates/Further%20Report%20by%20DM%2C%20Agra%20in%20OA%20No.%20994%20of%202024%20%28Puran%20Singh%20Chouhan%20Vs%20State%20of%20U.P.%29.pdf",
+          "https://www.reddit.com/r/u_pratiyogitakosh/comments/glgnwx",
+          "https://www.reddit.com/r/uttarpradesh/comments/1ujl3ow/%E0%A4%B2%E0%A4%97%E0%A4%97_%E0%A4%86%E0%A4%97_%E0%A4%A4_%E0%A4%86%E0%A4%90%E0%A4%97_%E0%A4%95%E0%A4%88_%E0%A4%98%E0%A4%B0_%E0%A4%9C%E0%A4%A6_%E0%A4%AE_%E0%A4%AF%E0%A4%B9_%E0%A4%AA_%E0%A4%AE%E0%A4%95%E0%A4%A8_%E0%A4%B8%E0%A4%B0%E0%A4%AB_%E0%A4%85%E0%A4%AC%E0%A4%A6%E0%A4%B2_%E0%A4%95_%E0%A4%A5%E0%A4%A1_%E0%A4%B9/"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "UP Board of Revenue / Bhulekh",
+        "operator": "Government of Uttar Pradesh, Board of Revenue",
+        "homeUrl": "https://bor.up.nic.in/?search_key=HOMECENTER",
+        "mapUrl": "https://upbhulekh.gov.in/?form=MG0AV3",
+        "observation": "Official Board of Revenue Hindi page lists revenue village maps and gata boundaries; shared state service. No city-specific parcel geometry verified in this query."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=27.1881643913104&lon=78.0013166778967&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Mahatma Gandhi Road, Civil Lines, Agra, आगरा, Uttar Pradesh, 282002, India",
+        "osmType": "way",
+        "osmId": 388205151,
+        "address": {
+          "road": "Mahatma Gandhi Road",
+          "suburb": "Civil Lines",
+          "city": "Agra",
+          "county": "Agra",
+          "state_district": "आगरा",
+          "state": "Uttar Pradesh",
+          "ISO3166-2-lvl4": "IN-UP",
+          "postcode": "282002",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/?form=MG0AV3"
+        ],
+        "scope": "Actual official search-result URLs observed for the Hindi query; shared portal links, not a verified city sample."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "State revenue portals are discoverable, but this bounded search did not resolve the exact WUP-point revenue village or return a nonempty parcel geometry.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+}

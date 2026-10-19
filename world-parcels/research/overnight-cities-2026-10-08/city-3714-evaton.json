@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Evaton",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Chief Surveyor-General’s public cadastral spatial dataset describes a national polygon layer of surveyed parcels and exposes native PRCL_KEY. Official Emfuleni planning material identifies Evaton within Emfuleni Local Municipality. A point-intersects query at the exact WUP locator returned one CSG “Erven” polygon; only PRCL_KEY and geometry were requested.",
+  "registryEvidenceUrls": [
+    "https://csg.dlrrd.gov.za/data.htm",
+    "https://csg.dlrrd.gov.za/spatial.htm",
+    "https://csg.dlrrd.gov.za/disclaimer.htm",
+    "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "https://emfuleni.gov.za/wp-content/uploads/2025/02/Emfuleni-Spatial-Development-Framework-Vision-2035.pdf"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 3714,
+  "cityId": "wup2025:3714",
+  "centerLatLon": [
+    -26.525228941691,
+    27.8512191216245
+  ],
+  "rank": 688,
+  "queueRank": 688,
+  "population2025": 773229,
+  "population2025k": 773.229,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": null,
+  "scopeLimits": "46 valid distinct Chief Surveyor-General Erven references verified in thirteen bounded 0.001-degree cells around the unchanged Evaton WUP settlement locator. Complete object-ID manifests, forced three-row geometry pages, all 46 fresh native PRCL_KEY reads, explicit absence, footprint and binding passed in 59 requests through the existing strict Esri JSON reader. Independent EPSG:32735 GEOS found no invalid geometries, exact duplicates or operation errors, and one 0.0130704 m² boundary overlap. A fresh original native EPSG:4148 response reproduces that overlap as a strip under one millimetre wide over about 54 metres; both full polygons retain it without repair or exclusion and are accepted for bounded reference use. The publisher states its web dataset is beta/not current and coordinates are not legal values; currentness, legal title, survey accuracy and wider citywide completeness remain unverified.",
+  "remainingUncertainty": "Root still needs to assess the existing CSG provider contract, stable key identity, bounded paging and geometry quality. The CSG disclaimer says the web dataset is beta/not current and coordinates are not legal values; citywide coverage, currentness and legal accuracy are unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Evaton Emfuleni official municipal cadastre cadastral parcels CSG spatial data Evaton map",
+        "scope": "Find city-specific official registry evidence and safe anonymous full parcel geometry.",
+        "result": "The CSG describes a public national spatial parcel map and the Emfuleni Spatial Development Framework identifies Evaton as an Emfuleni node. The official CSG-hosted Erven layer exposes polygon geometry and the native parcel-key field; an exact-point geometry-only query returned one polygon.",
+        "actualResultUrls": [
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://csg.dlrrd.gov.za/spatial.htm",
+          "https://csg.dlrrd.gov.za/disclaimer.htm",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+          "https://emfuleni.gov.za/wp-content/uploads/2025/02/Emfuleni-Spatial-Development-Framework-Vision-2035.pdf"
+        ],
+        "executionMethod": "English and local-language web searches, followed by official public-page and route metadata review."
+      },
+      {
+        "language": "Sesotho",
+        "query": "Evaton Emfuleni mapa oa mobu cadastral parcels land records Surveyor General",
+        "scope": "Find city-specific official registry evidence and safe anonymous full parcel geometry.",
+        "result": "The Sesotho-language search did not surface a separate local registry/map endpoint. Primary geometry evidence is the official Chief Surveyor-General cadastral service; Evaton/Emfuleni locality is identified in municipal planning material.",
+        "actualResultUrls": [
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://csg.dlrrd.gov.za/spatial.htm",
+          "https://csg.dlrrd.gov.za/disclaimer.htm",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+          "https://emfuleni.gov.za/wp-content/uploads/2025/02/Emfuleni-Spatial-Development-Framework-Vision-2035.pdf"
+        ],
+        "executionMethod": "English and local-language web searches, followed by official public-page and route metadata review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://csg.dlrrd.gov.za/data.htm",
+        "observation": "Chief Surveyor-General describes its spatial component as a computerized map of South African land parcels and administrative boundaries."
+      },
+      {
+        "url": "https://csg.dlrrd.gov.za/spatial.htm",
+        "observation": "Chief Surveyor-General lists parcel types including erven and offers a view-spatial-data route."
+      },
+      {
+        "url": "https://csg.dlrrd.gov.za/disclaimer.htm",
+        "observation": "CSG warns the web cadastral data is beta/not current and that coordinates are not legal values; sample is retained for research only and runtime is not enabled."
+      },
+      {
+        "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+        "observation": "Government-hosted CSG “Erven” feature layer metadata declares polygon geometry, EPSG:4148 source extent, public JSON/GeoJSON query support, and string field PRCL_KEY."
+      },
+      {
+        "url": "https://emfuleni.gov.za/wp-content/uploads/2025/02/Emfuleni-Spatial-Development-Framework-Vision-2035.pdf",
+        "observation": "Official Emfuleni municipality spatial-development framework names Evaton among its settlements/nodes."
+      },
+      {
+        "url": "https://services7.arcgis.com/7AeITMPw4WVTwpaT/ArcGIS/rest/services/emfuleni_cadastre_169444/FeatureServer/0",
+        "observation": "A public Emfuleni-named ArcGIS layer was inspected as a secondary cross-check only; its ArcGIS item owner metadata did not identify a government publisher. A geometry-only point query returned a two-feature boundary intersection, one carrying the same PRCL_KEY; it was not retained as the primary sample."
+      }
+    ],
+    "metadataReviewFile": "evaton-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository",
+    "sampleFile": "city-3714-evaton-samples.geojson"
+  },
+  "source": {
+    "sourceId": "za-csg-dffe-erven",
+    "name": "Chief Surveyor-General public Erven cadastral polygons",
+    "operator": "Chief Surveyor-General, South Africa (government-hosted CSG Cadastral Data service)",
+    "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "scope": "46 valid distinct Chief Surveyor-General Erven references verified in thirteen bounded 0.001-degree cells around the unchanged Evaton WUP settlement locator. Complete object-ID manifests, forced three-row geometry pages, all 46 fresh native PRCL_KEY reads, explicit absence, footprint and binding passed in 59 requests through the existing strict Esri JSON reader. Independent EPSG:32735 GEOS found no invalid geometries, exact duplicates or operation errors, and one 0.0130704 m² boundary overlap. A fresh original native EPSG:4148 response reproduces that overlap as a strip under one millimetre wide over about 54 metres; both full polygons retain it without repair or exclusion and are accepted for bounded reference use. The publisher states its web dataset is beta/not current and coordinates are not legal values; currentness, legal title, survey accuracy and wider citywide completeness remain unverified.",
+    "nativeIdField": "PRCL_KEY",
+    "geometryStatus": "verified_point_sample"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Exact WUP point only; no citywide coverage claim.",
+    "verifiedOpenScope": "46 valid distinct Chief Surveyor-General Erven references verified in thirteen bounded 0.001-degree cells around the unchanged Evaton WUP settlement locator. Complete object-ID manifests, forced three-row geometry pages, all 46 fresh native PRCL_KEY reads, explicit absence, footprint and binding passed in 59 requests through the existing strict Esri JSON reader. Independent EPSG:32735 GEOS found no invalid geometries, exact duplicates or operation errors, and one 0.0130704 m² boundary overlap. A fresh original native EPSG:4148 response reproduces that overlap as a strip under one millimetre wide over about 54 metres; both full polygons retain it without repair or exclusion and are accepted for bounded reference use. The publisher states its web dataset is beta/not current and coordinates are not legal values; currentness, legal title, survey accuracy and wider citywide completeness remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00",
+  "sourceIds": [
+    "za-csg-dffe-erven"
+  ],
+  "point": [
+    -26.525228941691,
+    27.8512191216245
+  ],
+  "sampleDisposition": {
+    "sampleFile": "city-3714-evaton-samples.geojson",
+    "featureCount": 1,
+    "sourceNativeIdField": "PRCL_KEY",
+    "retainedProperties": [
+      "PRCL_KEY"
+    ],
+    "coordinateReferenceSystem": "EPSG:4326 requested output",
+    "note": "One closed polygon returned for the exact WUP point. Only source-native PRCL_KEY is retained. Candidate is pending root contract, identity, paging and geometry-quality checks; the CSG beta/currentness disclaimer remains documented."
+  },
+  "appCityId": "evaton",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "46 valid distinct Chief Surveyor-General Erven references verified in thirteen bounded 0.001-degree cells around the unchanged Evaton WUP settlement locator. Complete object-ID manifests, forced three-row geometry pages, all 46 fresh native PRCL_KEY reads, explicit absence, footprint and binding passed in 59 requests through the existing strict Esri JSON reader. Independent EPSG:32735 GEOS found no invalid geometries, exact duplicates or operation errors, and one 0.0130704 m² boundary overlap. A fresh original native EPSG:4148 response reproduces that overlap as a strip under one millimetre wide over about 54 metres; both full polygons retain it without repair or exclusion and are accepted for bounded reference use. The publisher states its web dataset is beta/not current and coordinates are not legal values; currentness, legal title, survey accuracy and wider citywide completeness remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/evaton-csg-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/evaton-root-native-edge-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "za-csg-dffe-erven",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/evaton-csg-root-quality.json"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "cityCode": 1390,
+  "queueRank": 2317,
+  "name": "Craiova",
+  "country": "Romania",
+  "countryCode": "RO",
+  "point": [44.3205464164281, 23.7998155335723],
+  "population2025": 251285,
+  "population2025k": 251.285,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Craiova Romania official cadastral parcel map ANCPI geoportal",
+        "result": "First-party discovery identified ANCPI's official cadastral property viewer and its official INSPIRE ArcGIS Cadastral Parcel service. The service metadata states polygon geometry, ETRS89 geographic CRS EPSG:4258, GeoJSON query support, and an id_namespace display field. A live bounded geometry response was not obtained in this attempt.",
+        "actualResultUrls": [
+          "https://geoportal.ancpi.ro/imobile.html",
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer",
+          "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1"
+        ]
+      },
+      {
+        "language": "Romanian",
+        "query": "Craiova cadastru hartă parcele oficial ANCPI Geoportal",
+        "result": "Căutarea în limba română a identificat aplicația oficială ANCPI de vizualizare a imobilelor, serviciul INSPIRE pentru parcela cadastrală și dovezi publicate de Primăria Craiova că OCPI Dolj / Biroul de Cadastru și Publicitate Imobiliară Craiova este custodele local pentru cadastral-plan documents. No safe anonymous ID-plus-geometry response was retrieved.",
+        "actualResultUrls": [
+          "https://geoportal.ancpi.ro/imobile.html",
+          "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+          "https://www.primariacraiova.ro/uploads/articole/attachments/68fb1d55c98dd093407714.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "source": {
+    "sourceId": "ANCPI-INSPIRE-CP",
+    "name": "ANCPI Geoportal / INIS Cadastral Parcel service",
+    "url": "https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+    "operator": "Agenția Națională de Cadastru și Publicitate Imobiliară (ANCPI); local procedural custodian evidenced by OCPI Dolj / Biroul de Cadastru și Publicitate Imobiliară Craiova",
+    "serviceType": "Official public cadastral viewer and INSPIRE ArcGIS MapServer layer",
+    "layer": "Cadastral Parcel (1)",
+    "geometryType": "esriGeometryPolygon",
+    "outputCrs": "EPSG:4258 (ETRS89 geographic coordinates)",
+    "nativeIdField": "id_namespace (display field; feature schema not retrieved live)",
+    "nativeIdEvidence": "ArcGIS layer metadata in first-party search result identifies id_namespace as the display field; no feature response was retained.",
+    "attributesRequested": ["id_namespace"],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified"
+  },
+  "attemptsRecorded": [
+    {
+      "route": "ANCPI layer metadata",
+      "request": "GET https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=pjson",
+      "outcome": "502 Bad Gateway from the research fetcher; metadata was independently observed in first-party indexed service output, but the live JSON response was not retrieved."
+    },
+    {
+      "route": "bounded Craiova parcel query",
+      "request": "GET https://geoportal.ancpi.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query?f=geojson&where=1%3D1&geometry=23.78%2C44.30%2C23.82%2C44.34&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=id_namespace&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "outcome": "Endpoint was reported inaccessible by the research fetcher; no parcel features, IDs, or geometry were obtained."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "ANCPI's national public cadastral viewer / INSPIRE parcel layer; local Craiova procedure evidence is from OCPI Dolj / Biroul de Cadastru și Publicitate Imobiliară Craiova.",
+    "verifiedOpenScope": "National service identity and layer metadata were identified, but Craiova feature coverage was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "verifiedParcelResponse": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_and_layer_identified_geometry_unverified",
+  "runtimeReadiness": "held_pending_serial_review",
+  "adapterReady": false,
+  "cohort": "overnight-next-2301-2400-2026-10-11",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "integrationState": "not_integrated",
+  "researchNote": "Exact WUP point was preserved and not shifted. Inaccessible requests are not evidence of citywide cadastral absence. No unsafe owner, address, contact, titleholder, personal, tax, or account fields were requested or retained."
+}

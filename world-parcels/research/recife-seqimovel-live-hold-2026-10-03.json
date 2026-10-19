@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-03",
+  "cityId": "recife",
+  "status": "held",
+  "method": "Repository ArcGIS adapter; 3x3 grid of 0.0025-degree cells at WUP Recife center and same grid shifted +0.004 degrees lon/lat. Feature geometries were transient validation inputs only; this record contains no parcel IDs or geometries.",
+  "source": {
+    "id": "br-recife-prefeitura-lotes",
+    "candidateLayerEndpoint": "https://esigportal2.recife.pe.gov.br/arcgis/rest/services/Planejamento/BASES_BAIRRO_FACEQUADRA_LOGRADOURO_LOTE/FeatureServer/3",
+    "publisher": "Prefeitura do Recife, ArcGIS FeatureServer layer 3",
+    "nativeIdentityField": "SEQIMOVEL",
+    "nativeIdentityType": "integer",
+    "transportObjectId": "OBJECTID",
+    "otherAvailableParcelLabels": [
+      "DSQFL",
+      "DISTRITO",
+      "SETOR",
+      "QUADRA",
+      "FACE",
+      "LOTE"
+    ]
+  },
+  "test": {
+    "cellCount": 18,
+    "completeCells": 5,
+    "failedCells": 13,
+    "featureRows": 230,
+    "distinctRetainedSeqimovelIds": 226,
+    "exactIdsRequested": 226,
+    "exactFeaturesRead": 226,
+    "exactAbsentIds": 0,
+    "exactConflictingBatches": 0,
+    "exactBatches": [
+      {
+        "requested": 80,
+        "features": 80,
+        "absent": 0,
+        "underlyingHttpStatuses": [
+          200,
+          200
+        ]
+      },
+      {
+        "requested": 80,
+        "features": 80,
+        "absent": 0,
+        "underlyingHttpStatuses": [
+          200,
+          200
+        ]
+      },
+      {
+        "requested": 66,
+        "features": 66,
+        "absent": 0,
+        "underlyingHttpStatuses": [
+          200
+        ]
+      }
+    ],
+    "underlyingHttpStatusCounts": {
+      "200": 65
+    },
+    "adapterFailureClasses": {
+      "missing/invalid SEQIMOVEL": 12,
+      "conflicting geometry under SEQIMOVEL": 1
+    },
+    "allFailedCellsHadUnderlyingHttp200": true
+  },
+  "technicalBlockers": [
+    "Only 5 of 18 bounded cells completed.",
+    "12 cells failed because SEQIMOVEL was missing or invalid on returned rows.",
+    "One cell failed because the same SEQIMOVEL had conflicting polygons; this was an adapter integrity rejection after successful HTTP responses, not an upstream HTTP error.",
+    "The 226 retained IDs exact-read successfully in batches of 80, 80, and 66 with no absent IDs, but exact reads do not repair incomplete spatial coverage."
+  ],
+  "decision": "Hold this ArcGIS layer as an alternative; do not substitute SEQIMOVEL for a durable parcel key without a published, stable identity contract. The existing static GeoJSON source and DSQFL assessment remain separately recorded.",
+  "evidenceInput": "/tmp/next5-recife-seqimovel.json"
+}

@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "PE",
+ "country": "Peru",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Fragmented: SUNARP (registry, paid title search), COFOPRI (formalisation cadastre), MIDAGRI (rural cadastre), MVCS GeoVivienda, municipal urban cadastre; no single national parcel service confirmed",
+ "portalsFound": [
+  {
+   "url": "https://geo.vivienda.gob.pe/",
+   "observation": "GeoVivienda (MVCS) reachable: login-oriented web app, no open parcel API observed"
+  },
+  {
+   "url": "https://www.gob.pe/cofopri",
+   "observation": "COFOPRI institutional page reachable; no service endpoint"
+  },
+  {
+   "url": "https://geoservidor.minam.gob.pe/",
+   "observation": "MINAM Geoservidor reachable (environmental layers, not cadastre)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geo.vivienda.gob.pe/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "web app with login/logout links; no parcel endpoint observed"
+  },
+  {
+   "url": "https://www.gob.pe/cofopri",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "institutional page"
+  },
+  {
+   "url": "https://geo.midagri.gob.pe/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "unreachable via proxy (untested)"
+  },
+  {
+   "url": "https://www.cofopri.gob.pe/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "unreachable via proxy (untested)"
+  },
+  {
+   "url": "https://www.sunarp.gob.pe/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect only"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "MIDAGRI, COFOPRI, SUNARP GIS hosts not reachable/queried; no evidence either way.",
+ "nextStep": "Retry midagri geo services (rural cadastre WFS) and SUNARP geoportal."
+}

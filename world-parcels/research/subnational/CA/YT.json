@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CA",
+ "regionCode": "YT",
+ "regionName": "Yukon",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-CA,en;q=0.9,fr-CA;q=0.8; cookie jar on",
+ "source": {
+  "sourceId": "ca-yt-geoyukon-land-parcels",
+  "name": "GeoYukon Land Tenure: Land Parcels Polygon - Surveyed",
+  "operator": "Government of Yukon (GeoYukon)",
+  "scope": "Yukon (layer extent covers the territory)",
+  "endpoint": "https://mapservices.gov.yk.ca/arcgis/rest/services/GeoYukon/GY_LandTenure/MapServer/27",
+  "method": "ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR (native 3578)",
+  "reuseStatus": "Anonymous public GeoYukon service; licence not read."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ca-yt-geoyukon-land-parcels",
+  "requestUrl": "https://mapservices.gov.yk.ca/arcgis/rest/services/GeoYukon/GY_LandTenure/MapServer/27/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID_NUMBER&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-135.06,60.71,-135.04,60.73",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json; charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -135.06,
+   60.71,
+   -135.04,
+   60.73
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "PARCEL_ID_NUMBER",
+  "responseFile": "YT-parcel-response.json",
+  "pagination": "ArcGIS resultRecordCount; maxRecordCount 1000",
+  "regionSampled": "Whitehorse"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer is 'Land Parcels Polygon - Surveyed' in the territorial Land Tenure service; extent about -124..969 km / 611..1685 km in Yukon Albers. Only Whitehorse sampled. Also covered by NRCan Canada Lands aggregate (untested for YT).",
+ "subregionsVerified": [
+  "Whitehorse"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://mapservices.gov.yk.ca/arcgis/rest/services/GeoYukon/GY_LandTenure/MapServer",
+   "observation": "Anonymous; also lists Agricultural Land Parcels, Condos, Easements."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://mapservices.gov.yk.ca/arcgis/rest/services/GeoYukon/GY_LandTenure/MapServer/27/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=PARCEL_ID_NUMBER&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json&geometry=-135.06,60.71,-135.04,60.73",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 polygon parcels, PARCEL_ID_NUMBER only"
+  }
+ ],
+ "reuseStatus": "Not verified.",
+ "remainingUncertainty": "Surveyed parcels only (unsurveyed tenure not included); second Yukon area not sampled.",
+ "nextStep": "Sample Dawson or Watson Lake."
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10979-kalyanpur.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official land-record portal and local circle candidate reviewed; point jurisdiction remains unconfirmed and no public vector response was verified. No official point-to-circle/mauza boundary match or safe public polygon API was identified. Bihar land records are record-search workflows rather than an anonymous geometry-only service.",
+  "registryAssessment": "The exact WUP point has not been tied to a specific district, circle or cadastral unit. Official Samastipur sources expose a Circle Officer Kalyanpur and revenue records for Samastipur Kalyanpur, but this does not establish that this distinct Kalyanpur locator falls within that jurisdiction.",
+  "officialPrimarySources": [
+    {
+      "url": "https://samastipur.nic.in/directory/",
+      "observation": "Samastipur district directory lists a Circle Officer Kalyanpur; jurisdiction over this exact locator is unverified."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "observation": "Official Bihar land-revenue report lists Samastipur district / Kalyanpur circle mauza records; no locator-to-mauza match was established."
+    },
+    {
+      "url": "https://samastipur.nic.in/service/land-records/",
+      "observation": "Samastipur district directs users to Bihar land records; no parcel-vector endpoint or point coverage is provided."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kalyanpur Bihar India official land records registry cadastral map Samastipur Muzaffarpur",
+      "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+      "result": "No official point-to-circle/mauza boundary match or safe public polygon API was identified. Bihar land records are record-search workflows rather than an anonymous geometry-only service. Official registry evidence: The exact WUP point has not been tied to a specific district, circle or cadastral unit. Official Samastipur sources expose a Circle Officer Kalyanpur and revenue records for Samastipur Kalyanpur, but this does not establish that this distinct Kalyanpur locator falls within that jurisdiction.",
+      "actualResultUrls": [
+        "https://samastipur.nic.in/directory/",
+        "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+        "https://samastipur.nic.in/service/land-records/"
+      ],
+      "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+    },
+    {
+      "language": "Hindi",
+      "query": "कल्याणपुर मुजफ्फरपुर समस्तीपुर भूमि अभिलेख भू नक्शा आधिकारिक बिहार",
+      "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+      "result": "No official point-to-circle/mauza boundary match or safe public polygon API was identified. Bihar land records are record-search workflows rather than an anonymous geometry-only service. Official registry evidence: The exact WUP point has not been tied to a specific district, circle or cadastral unit. Official Samastipur sources expose a Circle Officer Kalyanpur and revenue records for Samastipur Kalyanpur, but this does not establish that this distinct Kalyanpur locator falls within that jurisdiction.",
+      "actualResultUrls": [
+        "https://samastipur.nic.in/directory/",
+        "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+        "https://samastipur.nic.in/service/land-records/"
+      ],
+      "executionMethod": "Separate Hindi-language web search, followed by review of first-party source pages; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No full anonymous parcel feature response was obtained. No geometry sample is retained; exact point geometry remains unverified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official local sources and the exact unchanged WUP locator only; no citywide parcel completeness is claimed.",
+    "limits": "The WUP point may refer to a different settlement than Samastipur Kalyanpur; local custody and map coverage cannot be assigned from the reviewed evidence."
+  },
+  "attempts": [
+    {
+      "url": "https://samastipur.nic.in/directory/",
+      "method": "Official public source/service review",
+      "result": "Samastipur district directory lists a Circle Officer Kalyanpur; jurisdiction over this exact locator is unverified."
+    },
+    {
+      "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+      "method": "Official public source/service review",
+      "result": "Official Bihar land-revenue report lists Samastipur district / Kalyanpur circle mauza records; no locator-to-mauza match was established."
+    },
+    {
+      "url": "https://samastipur.nic.in/service/land-records/",
+      "method": "Official public source/service review",
+      "result": "Samastipur district directs users to Bihar land records; no parcel-vector endpoint or point coverage is provided."
+    }
+  ],
+  "remainingUncertainty": "The WUP point may refer to a different settlement than Samastipur Kalyanpur; local custody and map coverage cannot be assigned from the reviewed evidence."
+}

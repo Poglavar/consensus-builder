@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-11773-amarshi.json",
+  "cityCode": 11773,
+  "queueRank": 2534,
+  "name": "Amarshi",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [22.0945074118388, 87.7119589198608],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://banglarbhumi.gov.in/", "httpStatus": "timeout", "outcome": "Official West Bengal Banglarbhumi portal did not respond within the bounded 20-second direct request; no HTML, JavaScript/configuration, schema, CRS, or parcel response was obtained."},
+    {"method": "GET", "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action", "httpStatus": "web-open result available; invalid operation", "outcome": "First-party search/open evidence identifies the Know Your Property route and the portal's plot/mouza map services, but the returned page reports an HTTP header method change; no parcel request was made."},
+    {"method": "GET", "url": "https://purbamedinipur.gov.in/ero/", "httpStatus": "web-open result available", "outcome": "Official Purba Medinipur page identifies Patashpur as a district administrative block context; it is custodian/context evidence, not a parcel response."},
+    {"method": "GET", "url": "https://purbamedinipur.gov.in/bn/notice/পূর্ব-মেদিনীপুর-জেলা-ভূমি/", "httpStatus": "web-open result available", "outcome": "Official Bengali district notice identifies the Purba Medinipur district land-and-land-reforms office; it does not expose parcel geometry."},
+    {"method": "GET", "url": "https://purbamedinipur.gov.in/land-records/", "httpStatus": 404, "outcome": "Guessed English district land-records route was not found; no inference about cadastral coverage was made."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null, "rawAttributesRetained": false, "inspection": "No safe anonymous parcel feature response was obtained. The official Banglarbhumi host timed out and the alternate public route did not provide a usable parcel response."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official source discovery is recorded, but no Amarshi parcel feature response, native identity, schema, CRS, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of absence.", "No citywide extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The official West Bengal and Purba Medinipur sources evidence a real cadastral service and local custodian context, but the live parcel portal was unreachable for bounded anonymous inspection. Amarshi-specific parcel access and service schema remain unresolved."
+}

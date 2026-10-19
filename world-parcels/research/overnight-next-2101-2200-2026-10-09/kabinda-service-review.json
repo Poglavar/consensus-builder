@@ -1,0 +1,91 @@
+{
+  "cityRecord": "city-5577-kabinda.json",
+  "cityCode": 5577,
+  "queueRank": 2164,
+  "rank": 2164,
+  "name": "Kabinda",
+  "cityName": "Kabinda",
+  "country": "Democratic Republic of the Congo",
+  "iso2": "CD",
+  "countryCode": "CD",
+  "iso3": "COD",
+  "point": [-6.1383507982268, 24.4842003324521],
+  "population2025": 269115,
+  "population2025k": 269.115,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "discoveryMethod": "Separate English and French first-party discovery, official Ministry directory and service-page review, current JavaScript/configuration inspection of the public directory, and bounded anonymous GET checks.",
+  "queryOutcomes": "English discovery found the official Ministry of Land Affairs portal and cadastral directory. French discovery confirmed the Kabinda/Lomami circonscription entry and the formal research-request workflow. Neither route exposed public parcel geometry or a parcel API.",
+  "attempts": [
+    {
+      "method": "web search",
+      "language": "English",
+      "query": "Kabinda Democratic Republic of Congo official cadastral parcel map land registry GIS",
+      "outcome": "Official Ministry portal, cadastral directory, and service workflow found; no public parcel viewer or feature endpoint found."
+    },
+    {
+      "method": "web search",
+      "language": "French",
+      "query": "Kabinda RDC cadastre parcelles carte cadastrale site officiel ministère des affaires foncières",
+      "outcome": "Official directory explicitly lists Kabinda in Lomami; no public parcel geometry/API found."
+    },
+    {
+      "method": "GET",
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "httpStatus": 200,
+      "outcome": "Loaded first-party HTML directory; Kabinda appears under Province Lomami. Current page is a directory, not a map or feature service."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "httpStatus": 200,
+      "outcome": "Loaded first-party request form. Province/circonscription and property-reference fields are present, but the workflow requires applicant identity/documents and provides no anonymous parcel geometry. No form was submitted."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/secretariat/directions",
+      "httpStatus": 200,
+      "outcome": "Loaded first-party organizational page identifying the Direction du Cadastre Foncier; no API, map, schema, CRS, or parcel response exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "httpStatus": 200,
+      "outcome": "Loaded official portal. Page exposes digitization/archive information and document/service links, not a public Kabinda parcel layer."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/robots.txt",
+      "httpStatus": 200,
+      "outcome": "Robots resource loaded; no cadastral feature endpoint identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.affairesfoncieres.gouv.cd/sitemap.xml",
+      "httpStatus": 200,
+      "outcome": "Sitemap resource loaded; inspected official route inventory yielded no public parcel map/API route."
+    }
+  ],
+  "sourceAssessment": {
+    "localCustodian": "Kabinda is explicitly listed as a land/cadastral circonscription under Lomami by the first-party Ministry directory. No Kabinda office endpoint, contact record, parcel layer, or map service was exposed.",
+    "publicService": "No public anonymous parcel service was evidenced. The official alternative is an administrative research request requiring identifying details and documents; it was not used or submitted.",
+    "nativeFieldsObserved": "No parcel-layer fields or native parcel identifiers were exposed.",
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "crs": null
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if a future official parcel feature response exposes one", "geometry: polygon"],
+  "unsafeFieldsNotRequestedOrRetained": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "valuation", "assessment", "legal/title records"],
+  "scopeLimits": [
+    "The official Kabinda circonscription listing establishes administrative custody, not citywide public parcel coverage.",
+    "No map extent, exact-point parcel query, parcel ID response, geometry, CRS, or schema was available, so no GeoJSON sample is included.",
+    "A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI would not establish citywide absence; no citywide-absence inference is made.",
+    "The administrative request workflow is not evidence of an anonymous API and no request was submitted.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS-verification exception were used.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "A first-party local cadastral jurisdiction is confirmed, but public parcel coverage, service availability, native identity fields, CRS, geometry access, and adapter qualification remain unresolved.",
+  "pointBasis": "Immutable WUP queue point; retained exactly and not shifted to seek a parcel hit."
+}

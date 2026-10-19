@@ -1,0 +1,65 @@
+{
+  "taskId": "city:1545",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:28:43Z",
+  "identity": {
+    "cityCode": 1545,
+    "rank": 2040,
+    "name": "La Ceiba",
+    "country": "Honduras",
+    "countryCode": "HN",
+    "point": [
+      15.7690158562588,
+      -86.797312584364
+    ],
+    "populationPersons": 285756,
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueAnd2025WupRowMatch": true
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Spanish (local)"
+    ],
+    "pairedPacketAndReviewInspected": true,
+    "resultUrlsRecorded": true
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://portalunico.iaip.gob.hn/30/50/",
+      "observation": "Official municipal transparency page identifies La Ceiba cadastral reports and municipal cadastral administration."
+    },
+    {
+      "url": "https://sinit.hn/2025/02/07/0101-la-ceiba/",
+      "observation": "Official SINIT La Ceiba page lists thematic map downloads and a request-layer route, without a demonstrated parcel-feature response."
+    }
+  ],
+  "firstPartyCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/la-ceiba/nacaome.json",
+      "sha256": "c97d372537fe7f73d09ee01471351348d2bcfc3fb5012ec5cf8baad57894b676",
+      "bytes": 4551,
+      "observation": "Blocked HTML, not JSON parcel data and unrelated to La Ceiba."
+    }
+  ],
+  "custody": {
+    "registryFound": true,
+    "assessment": "Municipal cadastral custody is evidenced, but no La Ceiba polygon feature response or safe native parcel ID was obtained. Blocked SINAP routes and unrelated Nacaome metadata do not prove absence."
+  },
+  "samples": {
+    "fullPolygonCountInOriginalCache": 0,
+    "nativeParcelIds": [],
+    "retainedAttributeFields": [],
+    "unsafeAttributesRetained": false
+  },
+  "qualification": {
+    "freshExactNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "scopeCaveat": "Packet completion and bounded or blocked responses do not establish citywide coverage or citywide cadastral absence."
+}

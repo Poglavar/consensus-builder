@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 121,
+  "city": "Owerri",
+  "countryCode": "NG",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/owerri.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Owerri cadastral parcel GIS geospatial land registry Imo State Nigeria open data"
+  },
+  "results": [
+    {
+      "title": "Imo State Ministry of Lands",
+      "url": "https://lands.im.gov.ng/",
+      "kind": "official-state-agency",
+      "note": "States that its survey/mapping services provide geospatial data and that it is digitizing through IGIS; dataset catalog/access not shown."
+    },
+    {
+      "title": "ArcGIS REST search result with Owerri layers",
+      "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services",
+      "kind": "unverified-ArcGIS-lead",
+      "note": "Catalog search shows Owerri ward/heat layers, not cadastral parcels; do not treat these as parcel coverage."
+    }
+  ],
+  "assessment": "Official Imo ministry identifies a geospatial digitization program, while an ArcGIS catalog has urban climate/ward layers. No cadastral parcel endpoint found.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

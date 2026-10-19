@@ -1,0 +1,13 @@
+{
+  "taskId": "city:5666",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/city-5666-long-th-nh.json",
+    "world-parcels/research/overnight-next-2201-2300-2026-10-09/long-th-nh-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T02:19:23.055884Z",
+  "reason": "Long Thành: English and Vietnamese searches and official local/provincial custodial context are documented; registryFound remains unresolved. The review's featureCount 0 accompanies an explicit no-query-completed statement and is not an observed zero or absence finding. No native parcel ID, unchanged polygon, qualified anonymous source response, live adapter, or headed Details verification.",
+  "admission": "held; no runtime, catalog, registry, or report admission change"
+}

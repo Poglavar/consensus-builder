@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "León",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Municipio de León confirms a municipal Dirección de Catastro and a city catastro platform that publishes digital valuation cartography. These are local registry/cadastre evidence; the publicly indexed map products reviewed are value zones and planning layers, not parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1",
+    "https://www.leon.gob.mx/appportal/consultacartografica/",
+    "https://www.plataformaleon.gob.mx/descarga.php"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4456,
+  "cityId": "wup2025:4456",
+  "centerLatLon": [
+    21.1241552910899,
+    -101.66695408078
+  ],
+  "rank": 371,
+  "queueRank": 371,
+  "population2025": 1367521,
+  "population2025k": 1367.521,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "A public León IMPLAN GeoExplorer/WFS is now verified. Its map-83 configuration lists 18 public planning layers; the 392-type WFS catalogue contains a pilot `implan:predios_piloto` MultiSurface schema with `objectid`, but its advertised extent is about 7.93 km from the WUP locator and a geometry-only request within a 4.4 km by 4.4 km target box returned zero features. The catalogue advertises block polygons and thematic predio risk overlays, not a verified citywide parcel layer. The layer advertises a projected CRS while its bbox numbers are degree-like, so the zero response is not treated as proof of parcel absence. No qualifying target geometry was returned.",
+  "scopeLimits": "The Municipio de León confirms a municipal Dirección de Catastro and city cadastral valuation maps. Direct inspection of the municipal geographic download index found 14 KMZ layers (development polygons, UGAT, land use, primary roads, schools, health, libraries, sports, markets, green areas, vacant lots, urban limit and delegations), with no cadastral parcel download. The official city map page embeds GeoExplorer map 83. Its public configuration lists 18 planning/utility layers, including blocks and colonias. The linked public WFS advertises 392 feature types, including `implan:predios_piloto` (geometry schema MultiSurface, native safe ID `objectid`) and several thematic hazard overlays. The pilot layer’s advertised bbox is outside the WUP-centroid query box and its declared CRS conflicts with the degree-like extent values. A geometry-only bbox request near the WUP point returned an empty FeatureCollection. No full polygon geometry was retained; this does not establish that the cadastral system has no parcel records or that parcels are absent elsewhere in León.",
+  "remainingUncertainty": "The WFS pilot layer’s CRS/extent metadata is internally inconsistent, and its advertised footprint is outside the WUP-centroid box. Its geometry was not sampled outside that target area. The official `www.leon.gob.mx` cadastral valuation page could not be fetched from the direct client because DNS resolution failed, though its official content was visible through web search/open. Whole-city parcel coverage and anonymous parcel geometry near the target remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "León Guanajuato official cadastral map parcels GIS municipal catastro open data",
+        "scope": "Find the city-specific cadastral registry and anonymous parcel polygon/map services.",
+        "result": "Official city pages identify the municipal Dirección de Catastro and a cadastral valuation map. The city geographic platform download index publishes zoning, urban limit, development, and other planning layers, but does not list parcel polygons. No full parcel geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1",
+          "https://www.leon.gob.mx/appportal/consultacartografica/",
+          "https://www.plataformaleon.gob.mx/descarga.php"
+        ],
+        "executionMethod": "English-language web search followed by direct inspection of official city pages."
+      },
+      {
+        "language": "Spanish",
+        "query": "León Guanajuato catastro mapa predial datos abiertos parcelas WFS oficial",
+        "scope": "Buscar el catastro municipal y servicios cartográficos abiertos con geometría predial para León.",
+        "result": "La búsqueda oficial localizó el plano municipal de valores de terreno, el portal geográfico municipal y la Dirección de Catastro. Los recursos publicados revisados son planos de valor y capas de planeación; no se verificó un servicio público con polígonos prediales completos.",
+        "actualResultUrls": [
+          "https://www.leon.gob.mx/appportal/consultacartografica/",
+          "https://www.plataformaleon.gob.mx/descarga.php",
+          "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1"
+        ],
+        "executionMethod": "Búsqueda en español y revisión de páginas oficiales del Municipio de León."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1",
+        "observation": "Municipal Dirección General de Ingresos page identifies the Dirección de Catastro Municipal and says it supervises digital cartography of parcels and subdivisions."
+      },
+      {
+        "url": "https://www.leon.gob.mx/appportal/consultacartografica/",
+        "observation": "Official city cadastral page offers 2026 land-value maps by street segment and neighborhood; those are valuation maps, not verified parcel geometry."
+      },
+      {
+        "url": "https://www.plataformaleon.gob.mx/descarga.php",
+        "observation": "Official city geographic platform download index lists planning, development and census polygons and PDF maps; it does not list a cadastral parcel geometry download."
+      },
+      {
+        "url": "https://www.plataformaleon.gob.mx/mapamunicipio.php",
+        "observation": "HTTP 200 direct GET; official IMPLAN map page embeds `https://plataformaleon.gob.mx/geoexplorer/composer/#maps/83`."
+      },
+      {
+        "url": "https://plataformaleon.gob.mx/geoexplorer/composer/#maps/83",
+        "observation": "Public GeoExplorer shell and map ID 83 configuration inspected anonymously. The map configuration listed 18 layers such as urban boundary, blocks, colonias, vacant lots, parks, markets and planning layers; no parcel cadastral layer was in this configured map."
+      },
+      {
+        "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+        "observation": "HTTP 200 WFS GetCapabilities, 299844 bytes, 392 advertised feature types. The `catastro` workspace listed colonias, municipal/suburban/urban limits, localities, manzanas, roads and segments; no `predios` layer in that workspace. A separate `implan:predios_piloto` candidate and thematic hazard-predio overlays exist."
+      },
+      {
+        "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=implan%3Apredios_piloto",
+        "observation": "HTTP 200 schema response; geometry field `geom` is `gml:MultiSurfacePropertyType`; safe native ID field `objectid` is `xsd:long`. Other attributes were not requested or retained."
+      }
+    ],
+    "metadataReviewFile": "leon-service-review.json",
+    "routeInspectionFile": "../../../../tmp/overnight-cities-2026-10-08/city-4456-leon-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "mx-leon-implan-public-geoserver-predios-piloto",
+    "name": "León IMPLAN GeoExplorer and public GeoServer WFS pilot-predio candidate",
+    "operator": "Instituto Municipal de Planeación de León (IMPLAN León) / Municipio de León",
+    "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+    "scope": "Public WFS catalog and planning map verified. The only candidate parcel-like polygon layer was `implan:predios_piloto`, with a MultiSurface schema and extent about 7.93 km from the WUP locator; a geometry-only bbox request near the WUP point returned zero features. CRS/extent metadata is inconsistent; no full parcel geometry sample qualifies.",
+    "nativeIdField": "objectid",
+    "attributesRequested": [
+      "geom"
+    ],
+    "identityBasis": "The candidate schema exposes native objectid, but no feature ID or parcel geometry was returned for the target bbox.",
+    "geometryStatus": "target_query_empty_candidate_pilot_outside_target"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City-specific official pages establish a municipal cadastre and downloadable mapping, including 2026 land-value maps. The downloads page lists development, zoning, urban-limit, road, and census-development layers. None inspected was a machine-readable full parcel polygon source, and no sample polygon was retained. This is a source-access result, not a claim that León lacks parcel records.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00",
+  "sourceIds": [],
+  "point": [
+    21.1241552910899,
+    -101.66695408078
+  ]
+}

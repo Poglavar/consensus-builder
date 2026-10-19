@@ -1,0 +1,18 @@
+{
+  "taskId": "city:11448",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11448-dongtai.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/dongtai-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json"
+  ],
+  "checkedAt": "2026-10-09T15:32:41.603152Z",
+  "reason": "The Dongtai municipal bureau page supports registration and cadastral-survey custody. The original national platform response is HTTP 502; no safe native-ID polygon, adapter qualification, or headed Details evidence exists. Gateway failure is not citywide absence.",
+  "custodyDecision": true,
+  "sourceObservation": {
+    "url": "https://www.dongtai.gov.cn/art/2026/7/7/art_24447_4436513.html",
+    "observation": "First-party bureau responsibilities include unified property registration and cadastral survey; saved webmap header records HTTP 502.",
+    "cacheSha256": "d475c06eb48005ce5f512486f125b9b00f1f57e99fe74570947858103901b4fc"
+  }
+}

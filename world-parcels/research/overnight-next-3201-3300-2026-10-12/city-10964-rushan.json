@@ -1,0 +1,93 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 10964,
+  "queueRank": 3205,
+  "name": "Rushan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [36.9091769310617, 121.539378077407],
+  "population2025": 188390,
+  "population2025k": 188.39,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rushan Shandong official cadastral map parcel service land registry GIS",
+        "result": "First-party discovery identified the Shandong Geographic Information Public Service Platform and the Weihai natural-resources authority instructions describing its cadastral-map route. The Rushan public-resource portal also identifies Rushan Natural Resources Bureau, but no anonymous parcel feature response was obtained.",
+        "actualResultUrls": [
+          "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+          "https://ggzyjy.weihai.cn/rushan/",
+          "http://www.sdmap.gov.cn/index.html"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "乳山市 不动产登记 地籍图 地理信息公共服务平台 官方",
+        "result": "Chinese-language first-party discovery confirmed the Rushan local registration service and the Weihai/Shandong public cadastral-map workflow. The official guidance says the platform can display cadastral districts, cadastral subdistricts and construction-land parcels, but the anonymous service schema, native parcel ID and geometry response were not exposed by the retrieved route.",
+        "actualResultUrls": [
+          "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+          "https://bnrp.weihai.gov.cn/art/2020/10/15/art_79199_2675849.html",
+          "http://www.sdmap.gov.cn/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Rushan Natural Resources Bureau / Rushan Real Estate Registration Center, under Weihai municipal natural-resources and registration services",
+    "scopeNote": "Official Weihai guidance states that Rushan is within the Weihai real-estate registration service area and identifies the Rushan registration center. The same authority documents a public Shandong geographic-information platform cadastral-map workflow. This evidences a local registry/service custodian, not open citywide parcel-vector access.",
+    "evidenceUrls": [
+      "https://bnrp.weihai.gov.cn/art/2020/10/15/art_79199_2675849.html",
+      "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html",
+      "https://ggzyjy.weihai.cn/rushan/"
+    ]
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Shandong Geographic Information Public Service Platform; Rushan/Weihai real-estate registration service",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "The exact WUP point was preserved and was not shifted. No safe anonymous ID-plus-geometry response was returned, so no GeoJSON sample is retained and no source-specific attributes are retained. No point miss or unavailable UI is treated as citywide absence."
+  },
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://bnrp.weihai.gov.cn/art/2024/3/12/art_79189_2711410.html", "outcome": "Official Weihai guidance reachable through first-party discovery. It names the Shandong platform route and says cadastral districts, cadastral subdistricts and construction-land parcels can be viewed; it does not provide an anonymous parcel feature URL, schema, CRS or bounded response."},
+    {"method": "GET", "url": "https://bnrp.weihai.gov.cn/art/2020/10/15/art_79199_2675849.html", "outcome": "Official notice confirms the Weihai registration service covers Rushan and names the Rushan Real Estate Registration Center. Procedural/local-custodian evidence only; no parcel geometry response."},
+    {"method": "GET", "url": "https://ggzyjy.weihai.cn/rushan/", "outcome": "Official Rushan public-resource portal reachable in discovery and identifies Rushan Natural Resources Bureau notices. No cadastral vector endpoint exposed."},
+    {"method": "GET", "url": "http://www.sdmap.gov.cn/index.html", "outcome": "Official Shandong platform landing page returned HTML 200. Retrieved JavaScript/configuration references service.sdmap.gov.cn:8081, www.sdmap.gov.cn:6443 and mapNumericalStatistics routes; no public anonymous parcel feature schema or bounded ID-plus-geometry response was obtained."},
+    {"method": "GET", "url": "https://service.sdmap.gov.cn:8081/", "outcome": "Direct TLS-verified request returned HTTP 401 with JSON route-not-found response; no login, token, private credential or bypass used."},
+    {"method": "GET", "url": "https://service.sdmap.gov.cn:8081/mapNumericalStatistics/getResources", "outcome": "Direct TLS-verified request returned HTTP 401/route-not-found JSON without a request body; not a parcel response."},
+    {"method": "GET", "url": "https://www.sdmap.gov.cn:6443/", "outcome": "Direct TLS-verified request returned HTTP 403; no further access attempt or bypass."},
+    {"method": "GET", "url": "https://www.sdmap.gov.cn/tdtsdservice", "outcome": "Direct TLS-verified request returned HTTP 404 JSON. No parcel response."},
+    {"method": "GET", "url": "https://service.sdmap.gov.cn:8081/ and https://www.sdmap.gov.cn:6443/ (diagnostic retry)", "outcome": "One diagnostic curl used -k while troubleshooting these exact source hosts. No exception had been authorized, so those responses were discarded and were not used as evidence; all qualification decisions rely on TLS-verified requests or official published guidance."}
+  ],
+  "schemaAndCrs": {"parcelSchema": null, "nativeIdField": null, "geometryCrs": null, "fieldMapping": {}, "compositeKeyProvenance": null},
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "integration": "not_admitted",
+  "scopeLimits": [
+    "Exact WUP point [36.9091769310617, 121.539378077407] was preserved in latitude/longitude order and not shifted.",
+    "No exact-point hit or miss, map-extent miss, timeout, login wall, HTTP block, or unusable UI was treated as evidence of citywide absence.",
+    "A local Rushan registration custodian and an official provincial map lead are evidenced, but anonymous parcel ID, schema, CRS and geometry were not verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, title or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission. Independent serial review is required before adapter/runtime qualification."
+  ],
+  "uncertainty": [
+    "The Shandong map viewer may expose cadastral layers through an interactive workflow or session-scoped request not available from the anonymous direct routes tested.",
+    "Published guidance establishes that cadastral-map viewing exists, but does not establish public citywide vector coverage, update cadence, native ID semantics or CRS.",
+    "The diagnostic unverified-TLS retry was discarded and must not be treated as qualification evidence."
+  ],
+  "qualification": {"verifiedSample": false, "parcelGeometryVerified": false, "runtimeReadiness": "held", "reason": "Local registration and official cadastral-map service evidence exists, but no safe anonymous parcel ID-plus-geometry response, schema or CRS was qualified."},
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

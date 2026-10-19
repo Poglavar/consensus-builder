@@ -1,0 +1,41 @@
+{
+  "taskId": "city:11705",
+  "decision": "held",
+  "checkedAt": "2026-10-12T02:13:36Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-11705-balasore.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/balasore-service-review.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/provenance.json",
+    "tmp/valhalla-parcel-research/balasore/levels-after-1.json",
+    "tmp/valhalla-parcel-research/balasore/levels-2.json",
+    "tmp/valhalla-parcel-research/balasore/index.js",
+    "tmp/valhalla-parcel-research/balasore/extent.json",
+    "tmp/valhalla-parcel-research/balasore/plot-query.json",
+    "tmp/valhalla-parcel-research/balasore/wms-capabilities.xml"
+  ],
+  "queueIdentity": {
+    "cityCode": 11705,
+    "rank": 3068,
+    "country": "India",
+    "point": [
+      21.4907109901395,
+      86.9348478733332
+    ],
+    "populationPersons": 195551
+  },
+  "checks": {
+    "bilingualExecutedSearchesRecorded": true,
+    "fullPolygonSamples": 0,
+    "safeNativeParcelIdentityVerified": false,
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "bounded13Cells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "registryFound": true,
+  "reason": "Official Odisha viewer and Balasore town hierarchy support registry custody, but the saved extent, point and WMS responses contain no safe native ID plus full parcel geometry. No adapter qualification gates or headed Details check are evidenced. Empty/204 responses do not establish citywide absence."
+}

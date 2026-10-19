@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 6077,
+  "wupCityCode": 6077,
+  "queueRank": 2695,
+  "cityId": "wup2025:6077",
+  "name": "Volzhskiy",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "locId": 643,
+  "point": [48.7791871114685, 44.7836212806429],
+  "centerLatLon": [48.7791871114685, 44.7836212806429],
+  "population2025": 219451,
+  "population2025k": 219.451,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Potential first-party sources are Rosreestr/National Spatial Data System and the Volgograd Oblast cadastral-evaluation institution; no anonymous parcel feature response was obtained.",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Volzhsky Volgograd official cadastral map parcel GIS API Rosreestr public cadastral map",
+        "result": "Found the current official NSPD public cadastral map entrypoint, an official Volgograd Oblast cadastral-evaluation institution that links Rosreestr services, and Russian cadastral-map references for Volzhskiy. No successful city-scoped first-party feature endpoint was exposed by discovery.",
+        "actualResultUrls": [
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://volbti.ru/",
+          "https://roscadaster.com/map/volgogradskaya-oblast/volzhskij",
+          "https://openvlz34.ru/%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BA%D0%B0%D1%80%D1%82%D1%8B"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "Волжский Волгоградская область официальная публичная кадастровая карта Росреестр кадастровый GIS API",
+        "result": "Found the official Volgograd Oblast cadastral-evaluation institution, the current NSPD public cadastral map URL, a Volzhskiy cadastral-map page, and a Volzhskiy municipal interactive-map lead. Discovery did not establish a city-specific anonymous parcel API or returned feature.",
+        "actualResultUrls": [
+          "https://volbti.ru/",
+          "https://nspd.gov.ru/map?thematic=PKK",
+          "https://roscadaster.com/map/volgogradskaya-oblast/volzhskij",
+          "https://openvlz34.ru/%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BA%D0%B0%D1%80%D1%82%D1%8B"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "operator": "National Spatial Data System / Rosreestr public cadastral map",
+      "scope": "Russian Federation public cadastral-map portal; city coverage not independently verified",
+      "observation": "Current public cadastral-map entrypoint identified in discovery. Anonymous shell retrieval from this environment timed out."
+    },
+    {
+      "url": "https://volbti.ru/",
+      "operator": "ГБУ ВО «Центр государственной кадастровой оценки»",
+      "scope": "Volgograd Oblast cadastral valuation and links to Rosreestr property-information services",
+      "observation": "First-party regional institution page advertises online property information, public cadastral map, and valuation-data services. This is regional agency evidence, not proof of a Volzhskiy parcel API."
+    },
+    {
+      "url": "https://openvlz34.ru/%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BA%D0%B0%D1%80%D1%82%D1%8B",
+      "operator": "Open Volzhskiy municipal/local interactive-map lead",
+      "scope": "Volzhskiy local interactive maps",
+      "observation": "Search result lists a public cadastral map among local interactive maps, but the page/service configuration and authoritative parcel endpoint were not successfully inspected."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "method": "GET",
+      "status": "connection timeout after 25 seconds",
+      "summary": "Current official public-map page did not return an anonymous HTML/configuration response. No login, credentials, token, CAPTCHA/Cloudflare bypass, or TLS exception was attempted."
+    },
+    {
+      "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer?f=pjson",
+      "method": "GET",
+      "status": "connection timeout after 20 seconds",
+      "summary": "Legacy/documented Rosreestr ArcGIS service root did not return metadata. No schema, CRS, or layer list was obtained."
+    },
+    {
+      "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer/0?f=pjson",
+      "method": "GET",
+      "status": "not completed after service-root timeout",
+      "summary": "Layer metadata request was attempted but not allowed to run beyond the bounded check; no parcel response retained."
+    },
+    {
+      "url": "https://maps.rosreestr.ru/ArcGIS/rest/services/CadastreNew/Cadastre/MapServer/0/query?where=1%3D1&geometry=44.7836212806429%2C48.7791871114685&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+      "method": "GET",
+      "status": "not executed to completion because the service root timed out",
+      "summary": "A bounded exact-point probe was prepared with only a safe identity candidate and geometry, but no response was obtained. Exact WUP point was preserved and not shifted."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Russian public cadastral-map ecosystem with a Volgograd Oblast regional service lead and Volzhskiy local map lead.",
+    "verifiedOpenScope": "Discovery and service-availability evidence only; no successful city-scoped parcel feature response.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "Regional first-party cadastral-valuation service is evidenced; a Volzhskiy-specific registry/cadastre endpoint is not verified, so registryFound remains null."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "Not assessed; no feature geometry returned.",
+    "crs": "Not verified from a live service response. Russian cadastral materials may use local MСК systems, so no CRS is assumed.",
+    "identityReadiness": "Not assessed from a returned feature; no native parcel identity retained.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "attributesRequested": "No successful parcel response. Unsafe owner, address, contact, titleholder, personal, tax, account, or document fields were not requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify a live anonymous Volzhskiy parcel response, stable native identity, CRS/axis handling, and city coverage before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [48.7791871114685,44.7836212806429] was preserved in latitude/longitude order and was not shifted.",
+    "A timeout, map extent miss, login wall, or unusable viewer is not evidence of citywide parcel absence.",
+    "No retained GeoJSON sample because no safe native parcel feature with geometry and identity was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and composite-key provenance in city/service-review metadata."
+}

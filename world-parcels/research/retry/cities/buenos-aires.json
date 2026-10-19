@@ -1,0 +1,81 @@
+{
+ "kind": "city",
+ "key": "buenos-aires",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_citywide",
+ "newStatus": "verified_sample_city_scope",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: es-AR (cookie jar used)",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": {
+  "sourceId": "ar-caba-idecaba-wfs-parcelas",
+  "requestUrl": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130:parcelas&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-58.3780,-34.6140,-58.3765,-34.6125,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   -58.378,
+   -34.614,
+   -58.3765,
+   -34.6125
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "nam (parcel code, e.g. 02-012-003) / gid",
+  "responseFile": "research/retry/cities/buenos-aires-parcel-response.json",
+  "pagination": "WFS 2.0 count/startIndex"
+ },
+ "source": {
+  "sourceId": "ar-caba-idecaba-wfs-parcelas",
+  "name": "Parcelas catastrales (catalogo_og_130:parcelas)",
+  "operator": "Gobierno de la Ciudad de Buenos Aires (IDECABA)",
+  "scope": "Ciudad Autonoma de Buenos Aires only; not Greater Buenos Aires, not Argentina",
+  "endpoint": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs",
+  "method": "WFS 2.0.0 GetFeature, GeoJSON output, no key",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326 (srsName requested)",
+  "reuseStatus": "Terms not read on the WFS; the catalog dataset page previously stated CC-BY-2.5-AR (not re-verified this pass)"
+ },
+ "requests": [
+  {
+   "url": "https://data.buenosaires.gob.ar/dataset/parcelas",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Catalog page OK; resource /download links and CKAN API return an F5 'Request Rejected' page (245 bytes) even with full headers, also with Referer/XHR headers"
+  },
+  {
+   "url": "https://data.buenosaires.gob.ar/dataset/parcelas/resource/8d8ffe66-9eb9-4f12-8f23-e1586a2d888d/download",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "F5 WAF 'Request Rejected', not data"
+  },
+  {
+   "url": "https://idecaba.buenosaires.gob.ar/env.js",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/javascript",
+   "assessment": "Portal config: points to geonetwork-idecaba (no token saved)"
+  },
+  {
+   "url": "https://geonetwork-idecaba.buenosaires.gob.ar/geonetwork/srv/api/search/records/_search",
+   "method": "POST",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "POST search 'parcelas catastro': record 'Parcelas catastrales' lists OGC:WFS https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs layer catalogo_og_130:parcelas"
+  },
+  {
+   "url": "https://geoserver.buenosaires.gob.ar/geoserver/catalogo_og_130/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=catalogo_og_130:parcelas&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-58.3780,-34.6140,-58.3765,-34.6125,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=UTF-8",
+   "assessment": "3 closed MultiPolygon parcels near Plaza de Mayo/Microcentro, parcel codes 02-012-003..005A. Verified"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "New: the city's own GeoNetwork catalogue publishes an anonymous WFS for parcels; the CKAN download that timed out before is WAF-blocked, but WFS is not. Sample bbox is near the city centre coordinates. Scope is CABA only.",
+ "nextStep": "Check the layer's licence text and paginate a second CABA district; Greater Buenos Aires (provincial ARBA) is separate."
+}

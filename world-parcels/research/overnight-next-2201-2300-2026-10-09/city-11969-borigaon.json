@@ -1,0 +1,41 @@
+{
+  "cityCode": 11969,
+  "queueRank": 2299,
+  "name": "Borigaon",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.4310167500445, 92.5406925865649],
+  "population2025": 253566,
+  "population2025k": 253.566,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Borigaon Assam official cadastral parcel map land records GIS Dharitree survey map",
+        "result": "First-party discovery found Assam ILRMS/Dharitree, the official Bhunaksha cadastral mapping viewer, the Directorate of Land Records circle-office directory, and an official Udalguri government PDF that lists Borigaon under Udalguri Revenue Circle. The current public Bhunaksha JavaScript exposes parcel, WMS and click-info routes, but its live district list omitted Udalguri; no safe anonymous Borigaon parcel response was obtained.",
+        "actualResultUrls": [
+          "https://ilrms.assam.gov.in/",
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://bhunaksha.assam.gov.in/",
+          "https://dlrs.assam.gov.in/information-services/assam-land-records-manual-english",
+          "https://igr.assam.gov.in/sites/default/files/swf_utility_folder/departments/asdma_revenue_uneecopscloud_com_oid_70/menu/document/udalguri_2025_26.pdf"
+        ]
+      },
+      {
+        "language": "Assamese",
+        "query": "বৰিগাঁও উদালগুৰি ৰাজহ চক্ৰ ভূমি অভিলেখ চৰকাৰী",
+        "result": "Assamese-language first-party discovery located Assam government land-record pages and the official ILRMS/Dharitree service. The official Udalguri government PDF identifies Borigaon as a village under Udalguri Revenue Circle. No safe anonymous parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://ilrms.assam.gov.in/dhar/index.php/Welcome/SelectLOC",
+          "https://dlrs.assam.gov.in/",
+          "https://igr.assam.gov.in/sites/default/files/swf_utility_folder/departments/asdma_revenue_uneecopscloud_com_oid_70/menu/document/udalguri_2025_26.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "researchNote": "An Assam government land-record/cadastral workflow and a local Udalguri Revenue Circle custodian are evidenced. Public anonymous parcel geometry and stable native parcel identity remain unqualified. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

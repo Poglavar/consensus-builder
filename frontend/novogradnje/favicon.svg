@@ -1,0 +1,15 @@
+<!-- A newborn in a builder's hardhat: the Novogradnje site icon. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Beba s građevinskom kacigom</title>
+  <rect width="64" height="64" rx="17" fill="#f3eee5"/>
+  <g stroke="#202522" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 33c-7-4-8 10 0 10m34-10c7-4 8 10 0 10" fill="#f6cba7"/>
+    <path d="M14 28h36v10c0 13-8 20-18 20s-18-7-18-20z" fill="#f6cba7"/>
+    <path d="M14 25a18 18 0 0 1 36 0v5H14z" fill="#f3ad36"/>
+    <path d="M28 8h8v20h-8z" fill="#ffd571"/>
+    <path d="M10 27h44v6H10z" fill="#f3ad36"/>
+    <path d="M23 40h.1M41 40h.1" stroke-width="4"/>
+    <path d="M26 49c3 4 9 4 12 0" fill="none"/>
+  </g>
+  <circle cx="20" cy="46" r="3" fill="#ed9d87"/><circle cx="44" cy="46" r="3" fill="#ed9d87"/>
+</svg>

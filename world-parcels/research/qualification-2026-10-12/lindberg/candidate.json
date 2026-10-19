@@ -1,0 +1,51 @@
+{
+  "descriptor": {
+    "adapter": "arcgis",
+    "boundsQueryMode": "offset",
+    "capabilities": {
+      "areaEnumeration": true
+    },
+    "catalogueUrl": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+    "countryCode": "US",
+    "endpoint": "https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2",
+    "id": "arlington-tax-parcels",
+    "idField": "TaxParcelId",
+    "idPrefix": "US-TX-ARLINGTON-",
+    "idType": "integer",
+    "idsQueryMode": "offset",
+    "maxBboxKm2": 1,
+    "maxFeatures": 10000,
+    "metricSrid": 32614,
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "TaxParcelId",
+      "OBJECTID"
+    ],
+    "pageSize": 200,
+    "queryFormat": "geojson",
+    "viewerUrl": "https://gis.arlingtontx.gov/mapsonline/"
+  },
+  "city": {
+    "code": "6345",
+    "name": "Lindberg",
+    "point": [
+      -97.1431006262883,
+      32.6471024349277
+    ]
+  },
+  "sampleIds": [
+    "US-TX-ARLINGTON-8200544",
+    "US-TX-ARLINGTON-8200501",
+    "US-TX-ARLINGTON-8200543"
+  ],
+  "absentId": "US-TX-ARLINGTON-999999999",
+  "metricEpsg": 32614,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "First-party Tax Parcel polygon layer purpose: Distinct, continuous, measured portion or tract of land owned by some owner(s). Source: https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer/2?f=pjson",
+      "First-party geographic scope: Layers that provide information about land in the city. Source: https://gis2.arlingtontx.gov/agsext2/rest/services/OpenData/OD_Property/MapServer?f=pjson. The frozen point lies inside the official layer extent, and all three frozen samples intersect the packet's bounded query around that coordinate. Zero point containment is not absence. See evidence/source-purpose.json for exact excerpts, retrieval limits and frozen input hashes."
+    ]
+  }
+}

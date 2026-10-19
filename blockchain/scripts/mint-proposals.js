@@ -42,7 +42,7 @@ const CENTER_LON = 15.962169;
 const ZOOM = 17;
 const NUM_PROPOSALS = 3; // Configure how many proposals to mint
 const SMP_REGEX = /^[0-9]{3}-[0-9]{3}[A-Za-z]?-[0-9]{3}[A-Za-z]?$/;
-const REQUIRED_DB_ENV_VARS = ['PGHOST', 'PGUSER', 'PGDATABASE'];
+const REQUIRED_DB_ENV_VARS = ['DATABASE_URL'];
 
 const SUPPORTED_NETWORKS = {
     hardhat: { chainId: 31337, rpcEnv: 'RPC_URL' },
@@ -352,13 +352,7 @@ function validateDbConfig() {
 
 async function connectToDatabase() {
     validateDbConfig();
-    const client = new Client({
-        host: process.env.PGHOST,
-        port: process.env.PGPORT ? Number(process.env.PGPORT) : undefined,
-        user: process.env.PGUSER,
-        password: process.env.PGPASSWORD,
-        database: process.env.PGDATABASE
-    });
+    const client = new Client({ connectionString: process.env.DATABASE_URL });
     await client.connect();
     return client;
 }

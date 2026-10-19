@@ -1,0 +1,135 @@
+{
+  "name": "Roorkee",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1086,
+  "point": [
+    29.8606452370305,
+    77.8852764930208
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Roorkee India official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+        "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+        "result": "Haridwar District’s official land-record page explicitly identifies Roorkee tehsil and links state Bhulekh; the state registration statistics list Roorkee-I/II/III offices. No anonymous public polygon response, safe geometry schema, or WUP-point parcel hit was verified. No owner or title lookup was submitted.",
+        "executionMethod": "Separate English-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://haridwar.nic.in/service/land-records/",
+          "http://bhulekh.uk.gov.in/",
+          "https://mis.eregistrationukgov.in/SRO_Scanning_Total_details.aspx"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "रुड़की तहसील भूमि अभिलेख खसरा नक्शा भूलेख आधिकारिक हरिद्वार",
+        "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+        "result": "Haridwar District’s official land-record page explicitly identifies Roorkee tehsil and links state Bhulekh; the state registration statistics list Roorkee-I/II/III offices. No anonymous public polygon response, safe geometry schema, or WUP-point parcel hit was verified. No owner or title lookup was submitted.",
+        "executionMethod": "Separate local-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://haridwar.nic.in/service/land-records/",
+          "http://bhulekh.uk.gov.in/",
+          "https://mis.eregistrationukgov.in/SRO_Scanning_Total_details.aspx"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Haridwar District land records",
+        "operator": "India",
+        "homeUrl": "https://haridwar.nic.in/service/land-records/",
+        "observation": "District page names Roorkee tehsil and links the official Uttarakhand Bhulekh land-record service."
+      },
+      {
+        "name": "Uttarakhand Bhulekh",
+        "operator": "India",
+        "homeUrl": "http://bhulekh.uk.gov.in/",
+        "observation": "Official state land-record portal; parcel/property record workflows may expose personal record attributes, and no safe vector geometry route was verified."
+      },
+      {
+        "name": "Uttarakhand registration statistics",
+        "operator": "India",
+        "homeUrl": "https://mis.eregistrationukgov.in/SRO_Scanning_Total_details.aspx",
+        "observation": "Official registration service statistics list Roorkee-I, II and III sub-registrar offices."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Uttarakhand registration statistics",
+    "url": "https://mis.eregistrationukgov.in/SRO_Scanning_Total_details.aspx",
+    "operator": null,
+    "serviceType": "Official local registry/service reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Haridwar District’s official land-record page explicitly identifies Roorkee tehsil and links state Bhulekh; the state registration statistics list Roorkee-I/II/III offices. No anonymous public polygon response, safe geometry schema, or WUP-point parcel hit was verified. No owner or title lookup was submitted.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_public_geometry",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint or response was verified.",
+  "remainingUncertainty": "Exact village/mauza and geometry coverage at the population-weighted WUP locator remain unverified.",
+  "nextStep": "Revisit only if a public safe geometry response or point-specific map evidence becomes available.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8608,
+  "cityId": "wup2025:8608",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    29.8606452370305,
+    77.8852764930208
+  ],
+  "population2025k": 511.291,
+  "populationUnit": "persons",
+  "queueRank": 1086,
+  "population2025": 511291,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryEvidenceUrls": [
+    "https://haridwar.nic.in/service/land-records/",
+    "http://bhulekh.uk.gov.in/",
+    "https://mis.eregistrationukgov.in/SRO_Scanning_Total_details.aspx"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint or response was verified."
+  },
+  "scopeLimits": "Haridwar District’s official land-record page explicitly identifies Roorkee tehsil and links state Bhulekh; the state registration statistics list Roorkee-I/II/III offices. No anonymous public polygon response, safe geometry schema, or WUP-point parcel hit was verified. No owner or title lookup was submitted.",
+  "sampleFile": null,
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "registryBasis": "Haridwar District’s official land-record page explicitly identifies Roorkee tehsil and links state Bhulekh; the state registration statistics list Roorkee-I/II/III offices. No anonymous public polygon response, safe geometry schema, or WUP-point parcel hit was verified. No owner or title lookup was submitted.",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

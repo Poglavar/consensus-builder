@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "purpose": "First-party CRS evidence distinguishes parcel JSON wire CRS from an unrelated WMS raster group.",
+  "parcelEndpoint": "https://ecadastre.dgi.bf/api/locations/geojson",
+  "parcelResponseCrs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "parcelNativeStorageCrs": null,
+  "wmsCadastreGroupCrs": "EPSG:32630",
+  "wmsDescriptionTypes": [
+    "WCS"
+  ],
+  "wmsDescriptionCount": 125,
+  "wfsFeatureTypeCount": 0,
+  "conclusion": "The 125 WCS descriptions are raster coverages, not native vectors corresponding to the JSON parcel polygons. Their UTM code is not native parcel proof.",
+  "rawEvidenceSha256": {
+    "metadata.txt": "fd32cf92aba26c19ac5b181b8a370e15e9b316f6f7c1b2933a6106db7a3362ba",
+    "wfs-capabilities.xml": "dbd9635e29b4873cd60fd331f90b77fb56b65126ea8b31fbc3d433e8133f4e17",
+    "describe-layer.txt": "20a4e73448e4f4f538929fa7992ea728eb0a76487829abd3b2f568366fca83e5",
+    "viewer-main.js": "2f117b3fdb714cfef6096986ac9f3fce3112b1445417ff4cd182a5feb3d0f8dc"
+  }
+}

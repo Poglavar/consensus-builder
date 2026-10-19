@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 9982,
+  "wupCityCode": 9982,
+  "queueRank": 2779,
+  "cityId": "wup2025:9982",
+  "name": "Caoxian",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "point": [34.8343335880412, 115.550030399828],
+  "centerLatLon": [34.8343335880412, 115.550030399828],
+  "pointOrder": "latitude,longitude",
+  "population2025": 213400,
+  "population2025k": 213.4,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": null,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Caoxian China official cadastral parcel map land records GIS",
+        "result": "Search returned the Ministry of Natural Resources Real Estate Registration Center (RERC) as the national official lead and general Chinese official guidance on cadastral-map access. No Caoxian-specific public map/API or anonymous parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://rerc.com.cn/",
+          "https://english.beijing.gov.cn/investinginbeijing/WhyBeijing/Environment/bus_env_policy/bizenv_pr/202006/t20200624_1932128.html",
+          "https://zygh.xa.gov.cn/ztzl/yhyshj/bsrk/bdcdj/bszn/djtcxbszn/1774698618606374913.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "曹县 不动产登记 地籍图 公开 地图 服务",
+        "result": "Chinese-language discovery returned the national RERC site and general official examples describing county/city registration services, but no verified Caoxian natural-resources viewer, public cadastral layer, or safe anonymous parcel response. A search result labelled 曹县人民政府 was not treated as first-party because its host was not an official government domain.",
+        "actualResultUrls": [
+          "https://rerc.com.cn/",
+          "https://www.huaibei.gov.cn/gzdt/jndt/57377631.html",
+          "https://www.beijing.gov.cn/gate/big5/www.beijing.gov.cn/zhengce/gfxwj/sj/202205/t20220523_2718876.html"
+        ]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://rerc.com.cn/",
+      "operator": "Real Estate Registration Center, Ministry of Natural Resources, China",
+      "scope": "National real-estate registration information and links to local registration websites; general lead, not Caoxian coverage",
+      "observation": "The indexed result identifies the national center and a local registration-site directory. It does not expose a Caoxian parcel feature service or anonymous geometry API. Direct fetch failed with a 502 in the web tool and DNS failure in the bounded shell request."
+    },
+    {
+      "url": "https://www.huaibei.gov.cn/gzdt/jndt/57377631.html",
+      "operator": "Huabei Municipal Natural Resources and Planning Bureau",
+      "scope": "Huabei-specific cadastral viewer example; not Caoxian",
+      "observation": "Official prose confirms some Chinese cities publish cadastral viewers over Tianditu and can expose parcel information, but it is not evidence of Caoxian coverage. No Caoxian service URL was derived from it."
+    },
+    {
+      "url": "https://www.beijing.gov.cn/gate/big5/www.gov.cn/zhengce/gfxwj/sj/202205/t20220523_2718876.html",
+      "operator": "Beijing Municipal Planning and Natural Resources Commission",
+      "scope": "Beijing cadastral query policy example; not Caoxian",
+      "observation": "Official policy describes authenticated cadastral-map lookup and states that registration is handled at the property location by the relevant local registration institution. It is general comparative evidence only."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.caoxian.gov.cn/",
+      "method": "GET",
+      "status": "DNS resolution timeout after 8 seconds",
+      "summary": "No response, viewer JavaScript, configuration, or service URL obtained. This is an access failure, not evidence of absent Caoxian coverage."
+    },
+    {
+      "url": "https://www.heze.gov.cn/",
+      "method": "GET",
+      "status": "DNS resolution timeout after 8 seconds",
+      "summary": "Heze is the prefecture-level authority associated with Caoxian, but the official host could not be reached in the bounded request. No endpoint was inferred from the failure."
+    },
+    {
+      "url": "https://rerc.com.cn/",
+      "method": "GET",
+      "status": "web fetch HTTP 502; shell DNS failure",
+      "summary": "National official lead was recorded from search results, but no live HTML/configuration or local Caoxian link could be inspected."
+    },
+    {
+      "url": "WUP exact point [34.8343335880412, 115.550030399828]",
+      "method": "GET/POST parcel query",
+      "status": "not attempted against an identified parcel service",
+      "summary": "No public Caoxian viewer/API was identified, so no point query was fabricated or redirected. The exact WUP coordinate was preserved unchanged."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Chinese national/local real-estate registration and cadastral-map administration relevant to Caoxian.",
+    "verifiedOpenScope": "National custodianship and general official service-policy evidence only; no Caoxian-specific public parcel service was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false,
+    "registryExistenceScope": "null: local Caoxian registration custodian was not directly evidenced by an accessible first-party page in this attempt."
+  },
+  "qualityAssessment": {
+    "geometryQuality": "Not assessed; no parcel geometry returned.",
+    "crs": "Unknown; no viewer configuration or feature response retrieved.",
+    "identityReadiness": "Not ready; no stable native parcel identity returned.",
+    "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source layer/year", "source CRS if declared", "retrieval timestamp"],
+    "nativeFieldMapping": null,
+    "attributesRequested": "No parcel attributes requested. Owner, address, contact, titleholder, personal, tax, account, and document fields were not requested or retained."
+  },
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "blocker": "Serial review must independently qualify a live anonymous Caoxian parcel response, stable native identity, CRS/axis handling, and local coverage before runtime use.",
+  "scopeLimits": [
+    "Exact WUP point [34.8343335880412,115.550030399828] was preserved in latitude/longitude order and was not shifted.",
+    "A DNS failure, timeout, inaccessible viewer, or absence of an exact-point request is not evidence of citywide cadastral absence.",
+    "No GeoJSON sample was retained because no safe native parcel feature with geometry and identity was obtained.",
+    "Packet completion is research evidence only and is not source integration/admission.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception was used."
+  ],
+  "identityPolicy": "No GeoJSON was retained. If later obtained, retain exactly one stable native parcel identity in properties.id; keep native field mapping and composite-key provenance in city/service-review metadata."
+}

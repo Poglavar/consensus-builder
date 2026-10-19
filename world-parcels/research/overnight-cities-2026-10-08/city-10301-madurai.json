@@ -1,0 +1,120 @@
+{
+  "name": "Madurai",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 236,
+  "point": [
+    9.92418503600906,
+    78.115593861303
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Tamil",
+        "query": "மதுரை பட்டா சிட்டா FMB நில வரைபடம் அதிகாரப்பூர்வ கணக்கெடுப்பு",
+        "scope": "Locate official Madurai urban parcel and survey-map access.",
+        "result": "The official Madurai district page links the Tamil Nadu e-Services land portal and explicitly lists Patta/FMB, Chitta and TSLR extracts. The district Survey page identifies original town-survey records at the Central Survey Office, Chennai, and TSLR/block maps at the concerned Taluk Office. Following the official link to the TSLR-capable extract page (`https://eservices.tn.gov.in/eservicesnew/land/chittaExtract_en.html?lan=en`) and to the linked e-Services home, read-only GETs timed out from this network path. No full-polygon response was retrieved; the service is an extract/sketch route rather than a verified GeoJSON feature API.",
+        "actualResultUrls": [
+          "https://madurai.nic.in/ta/service/%E0%AE%87%E0%AE%A3%E0%AF%88%E0%AE%B5%E0%AE%B4%E0%AE%BF-%E0%AE%9A%E0%AF%87%E0%AE%B5%E0%AF%88%E0%AE%95%E0%AE%B3%E0%AF%8D-%E0%AE%A8%E0%AE%BF%E0%AE%B2%E0%AE%AE%E0%AF%8D/",
+          "https://madurai.nic.in/survey/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html",
+          "https://eservices.tn.gov.in/eservicesnew/land/chittaExtract_en.html?lan=en"
+        ],
+        "executionMethod": "Native-language search, official district page inspection, then read-only follow-through to the linked state land-record home and TSLR-capable extract route; those portal GETs timed out."
+      },
+      {
+        "language": "English",
+        "query": "Madurai official land records TSLR FMB cadastral map parcel GIS public map",
+        "scope": "Cross-check English official services and determine whether town survey maps expose vector geometry.",
+        "result": "The official district e-services page directs residents to the state service for Patta/FMB/Chitta/TSLR. The Government of India service description gives the urban lookup hierarchy (district, urban/rural selection, town, ward, block, survey number and subdivision). Direct tests of the state service home and TSLR-capable chittaExtract page timed out, so no map, extract, parcel identifier or full geometry response was inspected. The city Survey page documents who holds TSLR/block-map records but is not an online vector route.",
+        "actualResultUrls": [
+          "https://madurai.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://eservices.tn.gov.in/eservicesnew/home.html",
+          "https://eservices.tn.gov.in/eservicesnew/land/chittaExtract_en.html?lan=en",
+          "https://services.india.gov.in/service/detail/view-land-records-of-patta--chitta--fmb-rural-tamil-nadu"
+        ],
+        "executionMethod": "English search plus official Madurai e-services link follow-through; state portal GETs timed out; government-service directory reviewed for urban selector fields."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Madurai district land services and survey records",
+        "operator": "District Administration Madurai, Government of Tamil Nadu",
+        "homeUrl": "https://eservices.tn.gov.in/eservicesnew/home.html",
+        "observation": "Official service information links to an extract system that covers urban TSLR and rural FMB. The linked state home and TSLR-capable extract route timed out on direct read; the outputs are document/extract/sketch services, and no full-geometry feature API was verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://madurai.nic.in/survey/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "observation": "Official city-district page identifies Original Town Survey records at Central Survey Office, Chennai and TSLR/block maps at the concerned Taluk Office."
+      },
+      {
+        "url": "https://madurai.nic.in/service/e-services-anytime-anywhere-land/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "observation": "Official district land-services page links public Patta/FMB/Chitta/TSLR services; page does not expose full parcel geometry."
+      },
+      {
+        "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+        "method": "GET",
+        "observation": "Read-only request to the exact state portal home linked by Madurai District timed out before an HTTP response; this is recorded as a local reachability limitation, not a provider outage."
+      },
+      {
+        "url": "https://eservices.tn.gov.in/eservicesnew/land/chittaExtract_en.html?lan=en",
+        "method": "GET",
+        "observation": "Read-only follow-through to the TSLR-capable extract route referenced by the official e-Services service and published records also timed out before an HTTP response. No parcel values were submitted."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-TN-MADURAI-TSLR-ESERVICES",
+    "name": "Tamil Nadu land-record e-services (TSLR/FMB extract route)",
+    "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+    "operator": "Survey and Land Records Department, Government of Tamil Nadu; link published by Madurai District Administration",
+    "serviceType": "Urban TSLR extract and rural FMB/document-sketch lookup via state e-Services. Direct linked routes timed out; no public full-polygon feature route verified.",
+    "layer": null,
+    "geometryType": "Document extract/sketch documented; no GeoJSON or full polygon observed.",
+    "outputCrs": null,
+    "nativeIdField": "Urban: town, ward, block, survey number, subdivision; rural: district/taluk/village/survey number",
+    "nativeIdEvidence": "The city page and government service description specify lookup fields, but no parcel record was submitted or returned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Madurai city land records include urban Town Survey Land Register (TSLR) extracts and town-survey block maps; state e-Services also provides FMB records.",
+    "verifiedOpenScope": "The official Madurai pages and linked service describe TSLR/FMB document routes. The linked state portal home and extract endpoint timed out; no actual TSLR record or full parcel geometry was observed, and coverage at the WUP point remains unknown.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The available official interface is an extract/sketch workflow requiring administrative and survey identifiers; its linked home and TSLR-capable extract endpoint timed out on direct access, and no feature geometry endpoint was identified.",
+  "remainingUncertainty": "Whether the TSLR sketch route returns a full vector geometry or a rendered document; exact Madurai town/ward/block/survey identifiers at the WUP point; portal access from a browser path.",
+  "nextStep": "From the live state e-Services UI, select the Madurai urban district and resolve town/ward/block/survey number at the WUP point; inspect whether TSLR sketch is only a document or exposes full geometry.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10301,
+  "cityId": "wup2025:10301",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    9.92418503600906,
+    78.115593861303
+  ],
+  "population2025k": 2138.746,
+  "queueRank": 236,
+  "population2025": 2138746,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Madurai city district pages explicitly identify TSLR/Original Town Survey records, their custodians, and the state extract service serving the city. The record system is confirmed; anonymous feature geometry is not.",
+  "rootReviewedAt": "2026-10-08T21:25:23.474999+00:00"
+}

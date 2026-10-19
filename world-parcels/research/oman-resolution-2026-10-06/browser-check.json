@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "method": "Manual headed Chrome inspection using agent-browser; no browser test suite.",
+  "cityId": "muscat",
+  "sourceId": "om-muscat-mutrah-plots",
+  "apiPort": 4638,
+  "frontendPort": 5638,
+  "initial": {
+    "zoom": 19,
+    "loadedParcels": 76,
+    "renderedParcelOutlinesObserved": true,
+    "sourceAttributionObserved": "Mutrah identified new-number plots only; partial Muscat coverage"
+  },
+  "selection": {
+    "method": "pointer click on a visible rendered parcel",
+    "parcelId": "OM-MM-MUTRAH-152642~128",
+    "parcelNumber": "128",
+    "actionMenuVisible": true
+  },
+  "pan": {
+    "centerLatLon": [
+      23.596,
+      58.563
+    ],
+    "retainedParcels": 189,
+    "sourceWarning": false,
+    "uncaughtPageErrors": 0
+  },
+  "freshReload": {
+    "loadedParcels": 76,
+    "sourceWarning": false,
+    "uncaughtPageErrors": 0
+  },
+  "earlierAttempt": {
+    "outcome": "The first navigation reached the task-owned API before it finished restarting; the existing source-unavailable notice appeared. Retry after startup succeeded. A later fresh navigation verified initial loading without that race.",
+    "providerFailure": false
+  },
+  "parcelImport": false,
+  "privacy": "No parcel geometry, credentials, owner attributes or personal filesystem paths retained."
+}

@@ -1,0 +1,121 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel sources for Elelim, Indonesia; claims are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 8670,
+  "queueRank": 2743,
+  "name": "Elelim",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "locId": 360,
+  "capital": false,
+  "point": [-3.77563214874298, 139.387009762108],
+  "population2025": 215216,
+  "population2025k": 215.216,
+  "populationUnit": "persons",
+  "aliases": ["elelim"],
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Elelim Papua Indonesia official cadastral parcel map GIS ATR BPN",
+        "result": "Found the official ATR/BPN BHUMI and ATLAS public geospatial portals, plus the official Yalimo government site. Search results describe BHUMI as an open interactive land/spatial map, but no Elelim-specific anonymous parcel response was established.",
+        "actualResultUrls": ["https://atlas.atrbpn.go.id/", "https://bhumi.atrbpn.go.id/", "https://yalimokab.go.id/"]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Elelim Papua Indonesia peta kadaster pertanahan resmi GIS ATR BPN",
+        "result": "Found the official ATR/BPN BHUMI/ATLAS portals and documentation describing bidang tanah/persil layers, and a Yalimo land-service result outside the official ATR/BPN domain. No safe public Elelim parcel ID-plus-geometry response was verified.",
+        "actualResultUrls": ["https://bhumi.atrbpn.go.id/bantuan/landing", "https://bhumi.atrbpn.go.id/bantuan/unsur_peta", "https://atlas.atrbpn.go.id/"]
+      }
+    ]
+  },
+  "priorEvidence": [],
+  "officialSources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "observation": "Current official ATR/BPN BHUMI entry point was reachable. Its HTML loads the current konsolbhumi.atrbpn.go.id viewer iframe; the public landing material describes an interactive land/spatial map and cautions that official use requires the public-information process. No anonymous Elelim feature response was obtained."
+    },
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "observation": "Current official ATR/BPN ATLAS portal was reachable. Its visible catalog exposed seven public sources, including land-office locations, but no Elelim parcel layer or safe bounded parcel response was identified."
+    },
+    {
+      "url": "https://yalimokab.go.id/",
+      "observation": "Official Yalimo Regency government site identifies Elelim as the regency administrative context and gives an Elelim government address. This is local-government context, not parcel geometry or proof of cadastral coverage."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "observation": "Official BHUMI help page documents map elements including land parcels/bidang tanah and coordinate display. It does not expose a city-specific public schema, CRS response, or downloadable Elelim geometry in the observed page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://atlas.atrbpn.go.id/",
+      "method": "GET official geospatial catalog",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Anonymous page loaded. Current catalog was inspected; no Elelim parcel service or parcel schema/CRS was exposed in the observed catalog."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/",
+      "method": "GET official cadastral map entry point",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Anonymous page loaded and current JavaScript/configuration entry was followed to the konsolbhumi viewer. No login, credentials, CAPTCHA/Cloudflare bypass, or private token was used."
+    },
+    {
+      "url": "https://konsolbhumi.atrbpn.go.id/",
+      "method": "GET current public viewer application",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Viewer shell loaded. Static JavaScript was inspected for public service routes; no safe anonymous Elelim ID-plus-geometry response, parcel schema, or CRS was obtained."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/geoserver/smartvillage",
+      "method": "GET service candidate surfaced by first-party service listing",
+      "httpStatus": 403,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Access was forbidden at the anonymous endpoint. This is an access outcome, not evidence of Elelim parcel absence; no bypass was attempted."
+    },
+    {
+      "url": "https://gistaru.atrbpn.go.id/arcgis/rest/services/009_RTR_PROVINSI_PULAU_PAPUA/_9000_PROVINSI_PAPUA_PR_PERDA/MapServer?f=pjson",
+      "method": "GET related official ArcGIS service candidate",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "Request timed out during the bounded anonymous check; no retry escalation or TLS exception was used. This is not evidence of parcel absence."
+    },
+    {
+      "url": "https://yalimokab.go.id/",
+      "method": "GET official local-government site",
+      "httpStatus": null,
+      "contentType": null,
+      "outcome": "The web search result was first-party and usable for local context; the direct bounded curl check timed out. No cadastral endpoint was inferred from this failure."
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "The official ATR/BPN BHUMI/ATLAS public land-map portals evidence Indonesia's national cadastral/spatial custodian and public map entry point. Elelim-specific local coverage or a local parcel service was not established.",
+  "registryEvidenceUrls": ["https://bhumi.atrbpn.go.id/", "https://atlas.atrbpn.go.id/"],
+  "verifiedSample": false,
+  "sampleFile": null,
+  "sampleFiles": [],
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "nativeSchema": null,
+  "resultCategory": "official_cadastral_portal_found_city_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "ATR/BPN operates official national land/spatial portals that document parcel/bidang tanah mapping.",
+    "verifiedOpenScope": "Only official portal and documentation availability was verified; no Elelim parcel geometry, native ID, schema, or CRS was returned anonymously.",
+    "countrywideVerified": false,
+    "citywideCompleteness": false
+  },
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "remainingUncertainty": "BHUMI may expose Elelim parcel data through an interactive route or a service requiring additional public workflow. The exact WUP point was preserved and not shifted. A zero exact-point hit, forbidden route, timeout, or incomplete viewer inspection is not evidence of citywide cadastral absence.",
+  "safeFieldAllowlist": ["stable native parcel ID when independently verified", "geometry", "geometry CRS", "source layer name", "service URL", "bounded query metadata"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal identity", "tax/account", "certificate/title data"]
+}

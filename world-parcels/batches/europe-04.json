@@ -1,0 +1,72 @@
+[
+ {
+  "iso2": "LV",
+  "name": "Latvia",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/LV.json"
+  ],
+  "hints": "VZD: INSPIRE CP WFS (grafws.kadastrs.lv / ogc.kadastrs.lv) and kadastrs.lv viewer JS; aim for a raw server reply in two regions (Riga + Daugavpils)."
+ },
+ {
+  "iso2": "IS",
+  "name": "Iceland",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/IS.json",
+   "research/retry/countries/IS.json"
+  ],
+  "hints": "HMS (Vercel challenge): try the INSPIRE record via gatt.lmi.is / LMÍ, opingogn.is, skra.is fasteignaskrá map services; Iceland parcels (landeignir) may be on LMÍ WFS under a different layer."
+ },
+ {
+  "iso2": "FO",
+  "name": "Faroe Islands",
+  "previousStatus": "not_probed",
+  "previousEvidence": [],
+  "hints": "Faroe Islands: Umhvørvisstovan kortal.fo / us.fo open matrikul (cadastre) WFS."
+ },
+ {
+  "iso2": "GB",
+  "name": "United Kingdom",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/GB.json",
+   "research/retry/countries/GB.json"
+  ],
+  "hints": "England/Wales index polygons verified by bulk. Add: Scotland (Registers of Scotland ScotLIS cadastral map, INSPIRE via spatialdata.gov.scot), Northern Ireland (LPS 'Spatial NI' parcel/OSNI open WFS), and a second England authority zip, so GB can pass a two-region test."
+ },
+ {
+  "iso2": "GG",
+  "name": "Guernsey",
+  "previousStatus": "not_probed",
+  "previousEvidence": [],
+  "hints": "Guernsey: Digimap (likely paid); record access model."
+ },
+ {
+  "iso2": "JE",
+  "name": "Jersey",
+  "previousStatus": "partial_or_unofficial_sample",
+  "previousEvidence": [
+   "research/countries/JE.json",
+   "research/retry/countries/JE.json"
+  ],
+  "hints": "Jersey: mapping.gov.je / Jersey Digital Map for property boundaries; the public-land layer is known."
+ },
+ {
+  "iso2": "IM",
+  "name": "Isle of Man",
+  "previousStatus": "not_probed",
+  "previousEvidence": [],
+  "hints": "Isle of Man: Land Registry / mapping.gov.im."
+ },
+ {
+  "iso2": "GI",
+  "name": "Gibraltar",
+  "previousStatus": "temporarily_unavailable",
+  "previousEvidence": [
+   "research/countries/GI.json",
+   "research/retry/countries/GI.json"
+  ],
+  "hints": "Gibraltar: GeoServer at download.geoportal.gov.gi (403 from here, geo-block suspected); retry with Referer and record."
+ }
+]

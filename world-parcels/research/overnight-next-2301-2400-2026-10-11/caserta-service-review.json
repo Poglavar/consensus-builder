@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-4762-caserta.json",
+  "cityCode": 4762,
+  "queueRank": 2306,
+  "name": "Caserta",
+  "country": "Italy",
+  "countryCode": "IT",
+  "pointLatLon": [41.0647224792735, 14.3060067488945],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method":"SEARCH","url":"https://sit.comune.caserta.it/","httpStatus":"Discovery result available; official page readable in bounded web discovery","outcome":"Comune di Caserta geoportal identifies a municipal Ufficio di Piano/SIT web GIS for cartographic and territorial information."},
+    {"method":"SEARCH","url":"https://sit.comune.caserta.it/sistema-informativo-territoriale/","httpStatus":"Discovery result available; official page readable in bounded web discovery","outcome":"Municipal SIT page describes georeferenced cartographic/database layers and states that DWG cartography is released by request for study or technical-professional purposes; no parcel feature response was exposed."},
+    {"method":"SEARCH","url":"https://geoportale.urba.cloud/esplora/servizi-wms/","httpStatus":"200 via bounded web discovery","outcome":"Current Geoportale Cartografico WMS directory lists Cartografia Catastale Città di Caserta and provides a GetCapabilities link."},
+    {"method":"GET","url":"https://geoportale.urba.cloud/maps/Cartografia%20Catastale%20Citt%C3%A0%20di%20Caserta/wms/?REQUEST=GetCapabilities&SERVICE=WMS&VERSION=1.3.0","httpStatus":"Endpoint link resolved; XML fetch not consumable by bounded web tool","outcome":"The current WMS capabilities endpoint was identified from the directory. The bounded fetch reported unsupported text/xml content; no schema, native field list, or parcel geometry was asserted."},
+    {"method":"SEARCH","url":"https://geoportale.urba.cloud/esplora/servizi-wfs/","httpStatus":"200 via bounded web discovery","outcome":"The public WFS documentation says the Comune makes WFS consultation services available through PDND procedures and access is reserved exclusively to authorized entities. No anonymous feature request was attempted beyond this documented public route."},
+    {"method":"SEARCH","url":"https://archiviocartografico.regione.campania.it/ud/fascrc-ctc630","httpStatus":"Discovery result available","outcome":"Regional Campania archive documents historical Caserta cadastral map sheets and parcel boundaries (1931-1956). This is archival cartography, not a current anonymous parcel API; no sample retained."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "The public WMS directory and service URL were inspected through bounded web discovery; the municipal SIT page was separately reviewed.",
+    "geometryCrs": "The Geoportale directory identifies the Caserta cadastral map as EPSG:32633. No vector feature response was obtained, so no output geometry CRS was independently verified.",
+    "nativeIdentity": "No native parcel identity field was returned. The WMS directory is map-rendering metadata only; no synthetic identity was created.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {"requestScope":"Exact WUP point [41.0647224792735,14.3060067488945] preserved; no point was shifted","featureCount":null,"nativeIdentity":null,"result":"No safe anonymous feature response; WMS is rendering-only and public WFS access is restricted to authorized entities."}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"A local Caserta municipal SIT and current cadastral WMS listing are evidenced, but no safe anonymous native parcel ID-plus-geometry response was obtained. The WFS route is documented as restricted to authorized entities."},
+  "scopeLimits": ["The exact WUP point [41.0647224792735, 14.3060067488945] was preserved and not shifted.", "No exact-point hit or miss was inferred from the unavailable feature response.", "WMS rendering access cannot establish parcel identity, geometry download, or citywide coverage.", "The municipal SIT is a local custodian; the Urba WMS directory is a public map-service directory and its underlying vector custody/field semantics were not independently verified.", "The regional archive result is historical cartography and was not treated as a current parcel service.", "No GeoJSON sample is retained because no safe native identity plus unchanged full polygon was obtained.", "No owner, address, contact, titleholder, tax/account, certificate/title or personal fields were requested or retained."],
+  "uncertainty": "The existence of Caserta's local SIT and cadastral WMS listing is verified, but anonymous feature-query support, native identity semantics, current parcel coverage, and update cadence remain unverified. Runtime/admission remains held."
+}

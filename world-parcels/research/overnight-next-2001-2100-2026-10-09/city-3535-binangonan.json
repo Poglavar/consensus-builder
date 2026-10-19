@@ -1,0 +1,46 @@
+{
+  "cityCode": 3535,
+  "queueRank": 2097,
+  "name": "Binangonan",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "iso3": "PHL",
+  "point": [14.4832560087139, 121.19684590607],
+  "population2025": 276785,
+  "population2025k": 276.785,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "freshResearch": {"queries": [
+    {"language": "English", "query": "Binangonan Philippines official cadastral parcel map GIS land registry", "result": "First-party results identified the official municipal map, assessor procedure, and Geoportal Philippines/LMB parcel catalog; no bounded public parcel feature response was obtained.", "actualResultUrls": ["https://binangonan.gov.ph/mainland-map/", "https://binangonan.gov.ph/contact-us/", "https://binangonan.gov.ph/wp-content/uploads/2022/01/lgu-binangonan-citizens-charter-2021.pdf", "https://www.geoportal.gov.ph/"]},
+    {"language": "Filipino/Tagalog", "query": "Binangonan mapa cadastral lupa GIS opisyal Philippines; Binangonan mapa ng mga lote cadastral munisipyo opisyal", "result": "No distinct Filipino-language first-party parcel endpoint surfaced. The municipal map and citizens-charter results were the relevant first-party matches; the charter references approved lot plans and cadastral maps.", "actualResultUrls": ["https://binangonan.gov.ph/mainland-map/", "https://binangonan.gov.ph/wp-content/uploads/2022/01/lgu-binangonan-citizens-charter-2021.pdf"]}
+  ]},
+  "registryFound": true,
+  "registryEvidence": {"basis": "The municipal site publishes a map and its official citizens charter documents the Municipal Assessor cadastral-map/lot-plan procedure. This establishes a local custodian, but not an open parcel API or verified geometry.", "urls": ["https://binangonan.gov.ph/mainland-map/", "https://binangonan.gov.ph/contact-us/", "https://binangonan.gov.ph/wp-content/uploads/2022/01/lgu-binangonan-citizens-charter-2021.pdf"]},
+  "officialSources": [
+    {"url": "https://binangonan.gov.ph/mainland-map/", "scope": "Municipality of Binangonan", "observation": "Official municipal map page; direct retrieval returned HTTP 403 and no parcel vector layer was inspectable."},
+    {"url": "https://binangonan.gov.ph/contact-us/", "scope": "Municipality of Binangonan", "observation": "Identifies the Municipal Assessor's Office and Landtax section; custodian evidence, not a geometry endpoint."},
+    {"url": "https://binangonan.gov.ph/wp-content/uploads/2022/01/lgu-binangonan-citizens-charter-2021.pdf", "scope": "Municipality of Binangonan", "observation": "Official charter describes assessor appraisal/assessment and lists an approved lot plan, lot data computation, or cadastral map as a requirement."},
+    {"url": "https://www.geoportal.gov.ph/", "scope": "Philippines national geospatial portal", "observation": "Official portal exposes LMB Parcel data and configures https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms; national/general evidence only."}
+  ],
+  "requests": [
+    {"url": "https://binangonan.gov.ph/mainland-map/", "method": "GET", "httpStatus": 403, "outcome": "Forbidden; no login, bypass, or CAPTCHA attempt."},
+    {"url": "https://www.geoportal.gov.ph/", "method": "GET", "httpStatus": 200, "outcome": "Fetched official portal HTML and followed its JavaScript configuration."},
+    {"url": "https://www.geoportal.gov.ph/layers/fetchlayers", "method": "GET", "httpStatus": 200, "outcome": "Layer catalog contained LMB/denr_parcel_data titled Parcel data; no bounded feature schema was provided."},
+    {"url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wms", "method": "GET", "params": {"service": "WMS", "request": "GetCapabilities"}, "outcome": "Timed out locally with HTTP 000; no remote outage or empty coverage inferred."},
+    {"url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/ows", "method": "GET", "params": {"service": "WFS", "request": "GetCapabilities"}, "outcome": "Timed out locally with HTTP 000; no schema, CRS, native ID, or geometry retained."},
+    {"url": "https://geoserver.geoportal.gov.ph/geoserver/geoportal/wfs", "method": "GET", "params": {"service": "WFS", "request": "GetCapabilities"}, "outcome": "Timed out locally with HTTP 000; no feature query attempted after capability failure."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "safeFieldAllowlist": ["stable native parcel ID only if returned by a future verified source", "full native Polygon or MultiPolygon geometry only"],
+  "scopeLimits": {"maxFullPolygonsRetainedInRepository": 3, "citywideCoverageVerified": false, "exactPointHitTestPerformed": false},
+  "coverageAssessment": {"claimedScope": "Municipal assessor/cadastral procedure and national Geoportal LMB parcel-data catalog were evidenced.", "verifiedOpenScope": "No Binangonan-bounded public parcel response was verified.", "countrywideVerified": false},
+  "runtimeReadiness": "held_pending_serial_review_and_verified_public_geometry",
+  "resultCategory": "local_registry_and_national_parcel_catalog_evidenced_geometry_unverified",
+  "remainingUncertainty": "The municipal map may be visual-only or protected, and the LMB layer's public feature access, CRS, schema, native IDs, and Binangonan coverage remain unverified. A zero exact-point hit was not used as evidence of absence.",
+  "sampleFiles": []
+}

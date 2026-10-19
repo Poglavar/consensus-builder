@@ -1,0 +1,97 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 9545,
+  "queueRank": 2938,
+  "name": "Pusad",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [19.9067952901833, 77.5647423530702],
+  "population2025": 202862,
+  "population2025k": 202.862,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pusad Maharashtra official cadastral map land records parcel map Mahabhulekh BhuNaksha",
+        "result": "First-party Maharashtra Bhumi Abhilekh pages identify Mahabhunakasha/BhuNaksha as the official map-with-land-records service and describe village, urban survey, and parcel maps. The Mahabhumi portal identifies the Settlement Commissioner and Director of Land Records, Maharashtra, as the authorised land-records portal operator.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ]
+      },
+      {
+        "language": "Marathi (local)",
+        "query": "पुसद महाराष्ट्र अधिकृत जमिनीचा नकाशा भू नकाशा भूमी अभिलेख",
+        "result": "अधिकृत महाराष्ट्र भूमी अभिलेख स्रोतांमध्ये महाभू-नकाशा/भू नकाशा ही जमिनीच्या नोंदींसह नकाशे देणारी सेवा म्हणून नमूद आहे. यवतमाळ जिल्ह्याच्या अधिकृत संपर्क पृष्ठावर पुसद येथील उप अधीक्षक भूमि अभिलेख कार्यालय नोंदलेले आहे.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/",
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Maharashtra Bhumi Abhilekh Department; local procedure/custodian evidence is the Sub-Divisional Land Records Office, Pusad, Yavatmal district.",
+    "locality": "Pusad, Yavatmal district, Maharashtra, India",
+    "evidenceUrls": [
+      "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact",
+      "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+    ],
+    "scopeNote": "A local Pusad land-record office and the state public BhuNaksha route are evidenced. No city-specific anonymous parcel geometry was verified in this attempt."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "nativeIdField": null,
+    "nativeIdentityObserved": null,
+    "crs": null,
+    "boundedResponse": null,
+    "note": "The official viewer landing page was identified, but the direct anonymous HTML retrieval timed out before its current JavaScript/configuration or a public map/API response could be inspected. No parcel polygon was retained. This is not evidence of citywide absence."
+  },
+  "requestOutcomes": [
+    {
+      "method": "GET",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "outcome": "First-party service page retrieved through web discovery; identifies e-Map/BhuNaksha as a public land-map service."
+    },
+    {
+      "method": "GET",
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard",
+      "outcome": "First-party portal page retrieved through web discovery; identifies Mahabhunakasha and the authorised Maharashtra land-records portal."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=22&source=DistrictContact",
+      "outcome": "First-party Yavatmal district contact page retrieved through web discovery; lists the Sub-Divisional Land Records Office, Pusad."
+    },
+    {
+      "method": "GET",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "outcome": "Official BhuNaksha route identified; direct curl retrieval timed out after 20 seconds. No login, CAPTCHA, Cloudflare bypass, credentials, private token, or TLS exception was used."
+    }
+  ],
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The state BhuNaksha service and local Pusad land-record office are evidenced, but the anonymous map/API schema and parcel geometry were not verified.",
+    "No exact-point or bounded parcel query response was obtained; this is not evidence of absence or a map-extent miss.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

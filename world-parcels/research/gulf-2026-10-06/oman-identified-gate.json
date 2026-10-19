@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "Muscat",
+      "sourceId": "om-muscat-mm",
+      "endpoint": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.38,
+            23.585,
+            58.3825,
+            23.587500000000002
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3825,
+            23.585,
+            58.385,
+            23.587500000000002
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.385,
+            23.585,
+            58.3875,
+            23.587500000000002
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.38,
+            23.587500000000002,
+            58.3825,
+            23.590000000000003
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3825,
+            23.587500000000002,
+            58.385,
+            23.590000000000003
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.385,
+            23.587500000000002,
+            58.3875,
+            23.590000000000003
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.38,
+            23.590000000000003,
+            58.3825,
+            23.5925
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3825,
+            23.590000000000003,
+            58.385,
+            23.5925
+          ],
+          "count": 53,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.385,
+            23.590000000000003,
+            58.3875,
+            23.5925
+          ],
+          "count": 77,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3875,
+            23.585,
+            58.39,
+            23.587500000000002
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.39,
+            23.585,
+            58.3925,
+            23.587500000000002
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3925,
+            23.585,
+            58.395,
+            23.587500000000002
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3875,
+            23.587500000000002,
+            58.39,
+            23.590000000000003
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.39,
+            23.587500000000002,
+            58.3925,
+            23.590000000000003
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3925,
+            23.587500000000002,
+            58.395,
+            23.590000000000003
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.3875,
+            23.590000000000003,
+            58.39,
+            23.5925
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            58.39,
+            23.590000000000003,
+            58.3925,
+            23.5925
+          ],
+          "count": 73,
+          "complete": true
+        }
+      ],
+      "status": "failed",
+      "error": {
+        "name": "Error",
+        "message": "Parcel provider returned conflicting geometry for one parcel ID.",
+        "code": "parcel-source-unavailable"
+      },
+      "requests": 18,
+      "lastRequest": {
+        "method": "GET",
+        "operation": "geometry",
+        "parameterLength": 321,
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8"
+      }
+    }
+  ]
+}

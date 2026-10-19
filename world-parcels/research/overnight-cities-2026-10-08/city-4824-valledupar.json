@@ -1,0 +1,104 @@
+{
+  "name": "Valledupar",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "rank": 954,
+  "point": [
+    10.4651505401655,
+    -73.2597933292061
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Valledupar official cadastral parcel map multipurpose cadastre public GIS municipal portal",
+        "scope": "Find a local custodian, public parcel-map entry point, and safe geometry interface.",
+        "result": "Official operator says it serves Valledupar’s municipal cadastre, publishes complete parcel cartography for six urban sectors and 25 rural corregimientos, and offers a citizen parcel query. Linked public geoportal exposes cadastral/property detail panels that can include NPN, address and land-area attributes; no geometry-only safe-field route was verified, so no feature query was sent. Cadastral certification products require identity/title documentation.",
+        "actualResultUrls": [
+          "https://www.tuterritorio.gov.co/"
+        ],
+        "executionMethod": "Separate English-language web search; official public source review."
+      },
+      {
+        "language": "Spanish",
+        "query": "Valledupar catastro multipropósito visor predios consulta tu predio geoservicio oficial",
+        "scope": "Find first-party city/local-language registry, cadastral mapping and parcel-service evidence.",
+        "result": "Official operator says it serves Valledupar’s municipal cadastre, publishes complete parcel cartography for six urban sectors and 25 rural corregimientos, and offers a citizen parcel query. Linked public geoportal exposes cadastral/property detail panels that can include NPN, address and land-area attributes; no geometry-only safe-field route was verified, so no feature query was sent. Cadastral certification products require identity/title documentation.",
+        "actualResultUrls": [
+          "https://www.tuterritorio.gov.co/"
+        ],
+        "executionMethod": "Separate Spanish-language web search and first-party portal review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Municipal Cadastre Manager of Valledupar / Tuterritorio cadastral operator",
+        "operator": "Tuterritorio S.A.S. operates services for the municipal cadastral manager",
+        "homeUrl": "https://www.tuterritorio.gov.co/",
+        "observation": "Official operator says it serves Valledupar’s municipal cadastre, publishes complete parcel cartography for six urban sectors and 25 rural corregimientos, and offers a citizen parcel query. Linked public geoportal exposes cadastral/property detail panels that can include NPN, address and land-area attributes; no geometry-only safe-field route was verified, so no feature query was sent. Cadastral certification products require identity/title documentation."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CO-4824-LOCAL-PARCEL-RESEARCH",
+    "name": "Municipal Cadastre Manager of Valledupar / Tuterritorio cadastral operator",
+    "url": "https://www.tuterritorio.gov.co/",
+    "operator": "Tuterritorio S.A.S. operates services for the municipal cadastral manager",
+    "serviceType": "Official local registry/cadastre evidence reviewed; no anonymous geometry-only feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "A local cadastral operator and public map/query are evidenced. Published scope is described by sectors, but exact WUP coordinate-to-sector match was not verified.",
+    "verifiedOpenScope": "Official operator says it serves Valledupar’s municipal cadastre, publishes complete parcel cartography for six urban sectors and 25 rural corregimientos, and offers a citizen parcel query. Linked public geoportal exposes cadastral/property detail panels that can include NPN, address and land-area attributes; no geometry-only safe-field route was verified, so no feature query was sent. Cadastral certification products require identity/title documentation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "Public UI’s parcel query can expose identifying property attributes; static review did not establish a field-limited geometry-only endpoint. No risky parcel query submitted.",
+  "remainingUncertainty": "The official operator’s stated sectors do not demonstrate exact WUP-point coverage; no full feature geometry was retrieved.",
+  "nextStep": "Revisit only if a public source publishes a schema with safe stable identifiers and an anonymous geometry-only query; keep any future sample bounded and field-allowlisted.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4824,
+  "cityId": "wup2025:4824",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    10.4651505401655,
+    -73.2597933292061
+  ],
+  "population2025k": 574.824,
+  "populationUnit": "persons",
+  "queueRank": 954,
+  "population2025": 574824,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official operator says it serves Valledupar’s municipal cadastre, publishes complete parcel cartography for six urban sectors and 25 rural corregimientos, and offers a citizen parcel query. Linked public geoportal exposes cadastral/property detail panels that can include NPN, address and land-area attributes; no geometry-only safe-field route was verified, so no feature query was sent. Cadastral certification products require identity/title documentation.",
+  "registryEvidenceUrls": [
+    "https://www.tuterritorio.gov.co/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Public UI’s parcel query can expose identifying property attributes; static review did not establish a field-limited geometry-only endpoint. No risky parcel query submitted."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.tuterritorio.gov.co/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Tuterritorio - Catastro Multipropósito de Valledupar"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

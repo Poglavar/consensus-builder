@@ -1,0 +1,140 @@
+{
+  "cityCode": 10972,
+  "queueRank": 2808,
+  "name": "Wuxue",
+  "country": "China",
+  "countryCode": "CN",
+  "iso2": "CN",
+  "iso3": "CHN",
+  "point": [29.852459912596, 115.568333287283],
+  "population2025": 211544,
+  "population2025k": 211.544,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wuxue China official cadastral parcel map GIS natural resources",
+        "result": "Discovery found an official Hubei Natural Resources Department article identifying Wuxue Natural Resources and Planning Bureau and Wuxue Real Estate Registration Center, and the official Hubei geographic-information public-service platform. No anonymous Wuxue cadastral parcel-vector endpoint or safe parcel schema was exposed.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719539.shtml",
+          "https://zrzyt.hubei.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (local/native)",
+        "query": "武穴市 不动产登记 地籍图 自然资源和规划局 官方 地图",
+        "result": "中文 discovery confirmed the Wuxue Natural Resources and Planning Bureau and Wuxue Real Estate Registration Center through official Hubei government reporting, and identified Tian地图·湖北 as the province-wide public geographic-information platform. No public anonymous Wuxue parcel geometry, native parcel ID, or local cadastral viewer/API was found.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719539.shtml",
+          "https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202311/t20231121_4959782.shtml",
+          "https://hubei.tianditu.gov.cn/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Wuxue Natural Resources and Planning Bureau and Wuxue Real Estate Registration Center were identified in an official Hubei Natural Resources Department publication; the publication describes registration operations, not an open cadastral parcel service.",
+    "regionalPublicMap": "Tian地图·湖北 (Hubei Geographic Information Public Service Platform), https://hubei.tianditu.gov.cn/.",
+    "registryEvidence": null,
+    "registryEvidenceUrls": []
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719539.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Hubei Natural Resources Department article states that Wuxue Natural Resources and Planning Bureau and Wuxue Real Estate Registration Center handle unified real-estate registration. It exposes no anonymous parcel-vector service, schema, CRS, or safe parcel-ID query."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://zrzyt.hubei.gov.cn/fbjd/zhengce/qtzdgkwj/202311/t20231121_4959782.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Hubei platform-management notice confirms provincial, municipal, and county geographic-information public-service nodes and says county natural-resources authorities are responsible for local platform data production and updates. It does not establish Wuxue cadastral parcel coverage."
+    },
+    {
+      "method": "GET",
+      "url": "https://zrzyt.hubei.gov.cn/",
+      "httpStatus": 200,
+      "outcome": "Official Hubei Natural Resources Department portal loaded and linked to Tian地图·湖北 and other public services; no Wuxue parcel vector endpoint was exposed in the inspected result."
+    },
+    {
+      "method": "GET",
+      "url": "https://hubei.tianditu.gov.cn/",
+      "httpStatus": null,
+      "outcome": "Anonymous HTTPS GET timed out after 20 seconds from the research environment. No content, endpoint, geometry, or absence inference was made; no TLS exception or bypass was used."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://sft.hubei.gov.cn/fbjd/szcz/hg/202206/t20220616_4178472.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Hubei Justice Department report confirms a Wuxue real-estate-registration plus notarization workflow and names the Wuxue Real Estate Registration Center, but it is a service procedure and not an anonymous parcel map/API."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202509/t20250925_5778987.shtml",
+      "httpStatus": 200,
+      "outcome": "Official Hubei Natural Resources Department report describes Wuxue inheritance-transfer registration as an online/offline service workflow. It exposes no safe parcel geometry or native parcel identity."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No current Hubei Tian地图 viewer HTML/configuration was retrieved because the anonymous homepage GET timed out.",
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [29.852459912596, 115.568333287283] was preserved in latitude/longitude order; no coordinate shift or parcel query was used.",
+      "featureCount": null,
+      "result": "No public Wuxue parcel-vector route or safe ID-plus-geometry response was identified."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Wuxue local registration custodian and Hubei provincial public geographic-information services.",
+    "verifiedOpenScope": "Official local custodian identity and provincial platform governance were evidenced; no anonymous Wuxue parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point was preserved and was not shifted to force a parcel hit.",
+    "A zero exact-point hit, map extent miss, timeout, or absence of a parcel route in public search results was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, local service CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "A local Wuxue registration custodian is established by official Hubei reporting, and Hubei operates a public geographic-information platform. The current anonymous platform homepage timed out, while official reports did not expose a parcel-vector URL, schema, CRS, native identity, or citywide cadastral coverage. Runtime readiness remains held."
+}

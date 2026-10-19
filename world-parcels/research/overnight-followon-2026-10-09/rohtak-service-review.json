@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8085-rohtak.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No anonymous, complete source-native parcel polygon response was established for the exact Rohtak WUP point. The district/state land-record services establish local registry context, but no safe parcel vector route was verified.",
+  "registryAssessment": "The official Rohtak district portal exposes land-records access and current collector-rate materials for Rohtak tehsil; Haryana Revenue provides the state land-record framework and an official map-download page. This confirms relevant local revenue administration, but no anonymous full parcel geometry at the unchanged point was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rohtak.gov.in/",
+      "observation": "Official District Rohtak portal includes Land Records, tehsil collector-rate links including Rohtak, and district revenue links; no parcel vector schema or anonymous geometry-only route identified."
+    },
+    {
+      "url": "https://rohtak.gov.in/hi/",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://revenueharyana.gov.in/citizens/",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://revenueharyana.gov.in/document/map/",
+      "observation": "Official Revenue Haryana map page lists a downloadable district map; page is not a full native parcel-vector response."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Rohtak official land registry cadastral map Revenue Haryana district administration",
+      "resultUrls": [
+        "https://rohtak.gov.in/",
+        "https://rohtak.gov.in/hi/",
+        "https://revenueharyana.gov.in/citizens/",
+        "https://revenueharyana.gov.in/document/map/"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "रोहतक तहसील भूमि अभिलेख जमाबंदी भू नक्शा आधिकारिक",
+      "resultUrls": [
+        "https://rohtak.gov.in/",
+        "https://rohtak.gov.in/hi/",
+        "https://revenueharyana.gov.in/citizens/",
+        "https://revenueharyana.gov.in/document/map/"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No anonymous, complete source-native parcel polygon response was established for the exact Rohtak WUP point. The district/state land-record services establish local registry context, but no safe parcel vector route was verified.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Rohtak district portal exposes land-records access and current collector-rate materials for Rohtak tehsil; Haryana Revenue provides the state land-record framework and an official map-download page. This confirms relevant local revenue administration, but no anonymous full parcel geometry at the unchanged point was verified.",
+    "verifiedOpenScope": "No anonymous, complete source-native parcel polygon response was established for the exact Rohtak WUP point. The district/state land-record services establish local registry context, but no safe parcel vector route was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous, complete source-native parcel polygon response was established for the exact Rohtak WUP point. The district/state land-record services establish local registry context, but no safe parcel vector route was verified."
+}

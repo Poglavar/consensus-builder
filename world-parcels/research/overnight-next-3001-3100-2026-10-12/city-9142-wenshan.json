@@ -1,0 +1,79 @@
+{
+  "cityCode": 9142,
+  "queueRank": 3041,
+  "name": "Wenshan",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "locId": 156,
+  "capital": false,
+  "point": [23.3716372857311, 104.242325856872],
+  "population2025": 196833,
+  "population2025k": 196.833,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Wenshan Yunnan official cadastral parcel map GIS real estate registration natural resources bureau",
+        "result": "First-party discovery identified the official Wenshan City government site, Yunnan Natural Resources Department, and the national Real Estate Registration Center. Official material indicates cadastral/real-estate registration services and a Yunnan public planning map, but no safe anonymous parcel ID-plus-polygon API was exposed.",
+        "actualResultUrls": [
+          "https://www.ynwss.gov.cn/",
+          "https://dnr.yn.gov.cn/html/2025/tzgg_1230/4051733.html",
+          "https://www.rerc.com.cn/"
+        ]
+      },
+      {
+        "language": "Chinese (native/local)",
+        "query": "文山州 文山市 不动产登记 地籍图 GIS 公开 地图 自然资源局",
+        "result": "官方中文结果确认文山市政府站点发布文山市不动产登记中心公告；云南省自然资源厅说明云南省国土空间规划一张图公众版可公开查询部分规划控制线；云南省互联网+不动产登记平台提供登记业务和信息查询入口，但 no anonymous safe parcel-vector response was obtained.",
+        "actualResultUrls": [
+          "https://www.ynwss.gov.cn/",
+          "https://www.ynwss.gov.cn/wssrmzf/xzxkjqtdwglfwsx/pc/content/content_2031986258625290240.html",
+          "https://dnr.yn.gov.cn/html/2021/ziranziyuanxinxi_0727/32379.html",
+          "https://www.ynsyzt.cn/",
+          "https://www.ynbdcdj.cn:8081/ynwwsq/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "文山市不动产登记中心 / Wenshan City Real Estate Registration Center, under the local natural-resources administration",
+    "scope": "Official Wenshan government material identifies the local real-estate registration center as the registration institution and publishes registration notices; this evidences local registry custody, not public parcel-vector coverage.",
+    "evidenceUrls": [
+      "https://www.ynwss.gov.cn/wssrmzf/xzxkjqtdwglfwsx/pc/content/content_2031986258625290240.html",
+      "https://www.ynwss.gov.cn/"
+    ],
+    "scopeNote": "Yunnan provincial planning and internet-registration sources are recorded separately from the local Wenshan custodian. No local anonymous cadastral vector service was qualified."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "attemptedRoutes": [
+      {"method":"GET","url":"https://www.ynwss.gov.cn/","httpStatus":200,"outcome":"Official Wenshan government site reachable through discovery; site content and linked notices identify local registry activity, but no public parcel viewer/API or safe geometry response was exposed."},
+      {"method":"GET","url":"https://www.ynwss.gov.cn/wssrmzf/xzxkjqtdwglfwsx/pc/content/content_2031986258625290240.html","httpStatus":200,"outcome":"Official Wenshan registration-center notice reachable; it confirms the local registration institution and registration workflow, but contains unsafe rights-holder/address details that were not retained and no parcel-vector endpoint."},
+      {"method":"GET","url":"https://dnr.yn.gov.cn/html/2025/tzgg_1230/4051733.html","httpStatus":200,"outcome":"Official Yunnan notice reachable; it links the public Yunnan land-space-planning map at https://www.ynsyzt.cn/ and limits the announced public layers to three planning control lines, not cadastral parcels."},
+      {"method":"GET","url":"https://www.ynsyzt.cn/","httpStatus":0,"outcome":"Anonymous fetch timed out after 30 seconds from the research host; no login, TLS bypass, or coordinate-shift retry used. This is not evidence of citywide absence."},
+      {"method":"GET","url":"https://www.ynbdcdj.cn:8081/ynwwsq/","httpStatus":0,"outcome":"Anonymous fetch was attempted for the provincial internet-plus-real-estate-registration shell but was not usable within the bounded request window after the preceding host timeout; no credentials or private query was attempted."},
+      {"method":"GET","url":"https://www.rerc.com.cn/","httpStatus":200,"outcome":"Official national Real Estate Registration Center site reachable; general national custodian/procedure information only, not evidence of a Wenshan parcel service or local citywide coverage."}
+    ],
+    "note": "The exact WUP point [23.3716372857311, 104.242325856872] was preserved and not used as an absence test. No bounded anonymous ID-plus-geometry request was made because no safe public parcel-vector route was exposed by the reachable official material."
+  },
+  "schemaAndCrs": {"viewerConfig":"Not exposed","geometryCrs":"Not observed","nativeIdentity":"Not observed","sourceFieldMapping":{},"compositeKeyProvenance":null},
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed anonymously", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "runtimeReadiness": "held",
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Local registry custody is evidenced, but no current safe anonymous parcel response with stable native identity, schema, CRS, and unchanged polygon was qualified."},
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift.","A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide parcel absence.","No raw source-specific attribute set or GeoJSON sample retained.","National/general policy material was not treated as local Wenshan parcel coverage.","This packet is research completion only and does not admit or integrate a runtime source."],
+  "uncertainty": "The local custodian and registration activity are verified, but current anonymous parcel-vector reachability, citywide coverage, schema, CRS, stable native identity, and update cadence remain unresolved."
+}

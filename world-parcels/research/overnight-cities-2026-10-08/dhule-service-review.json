@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8736-dhule.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+  "registryAssessment": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://dhule.gov.in/en/service/land-records/",
+      "observation": "Official Dhule district Land Records page links to MahaBhumi and lists the local Dhule Maha eSeva center; content owned by the District Administration."
+    },
+    {
+      "url": "https://dhule.gov.in/e0-a4-9c-e0-a4-bf-e0-a4-b2-e0-a4-b9-e0-a4-be-e0-a4-85-e0-a4-a7-e0-a5-80-e0-a4-95-e0-a5-8d-e0-a4-ad-e0-a5-82-e0-a4-ae-e0-a4-bf-e0-a4-85-e0-a4-ad-e0-a4-bf-e0-a4-b2/",
+      "observation": "District Superintendent of Land Records, Dhule page gives its local office address and directs citizens to Mahabhunakasha to download land-related maps."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "observation": "Official Maharashtra BhuNakasha map viewer target; web reader reported a redirect loop, so no viewer schema or parcel geometry was obtained."
+    },
+    {
+      "url": "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+      "observation": "Official state land-records portal describes Mahabhunakasha as maps with land records and the state’s property-record services."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dhule official cadastral map land records Maharashtra BhuNaksha city parcel map",
+      "result": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+      "method": "Separate language-specific search and official source review."
+    },
+    {
+      "language": "Marathi",
+      "query": "धुळे शहर अधिकृत भू नक्शा जमीन अभिलेख ई नकाशा महाराष्ट्र भूमी अभिलेख",
+      "result": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+      "method": "Separate language-specific search and official source review."
+    },
+    {
+      "language": "Marathi",
+      "query": "site:dhule.gov.in भूमी अभिलेख धुळे जिल्हा अधीक्षक भूमि अभिलेख धुळे भू नकाशा शहर सर्वे",
+      "result": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+      "method": "Separate language-specific search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public feature with a verified safe identifier and full polygon geometry was obtained.",
+  "coverageAssessment": {
+    "claimedScope": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point.",
+    "verifiedOpenScope": "The Government of Maharashtra Dhule district site identifies the District Superintendent of Land Records, Dhule, and links the state Mahabhunakasha portal for land maps, along with MahaBhumi for land records and property cards. This is a local land-record/cadastral office and service route; it does not establish vector geometry coverage at the WUP point. The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+      "outcome": "Official map shell inspection only; web reader returned a redirect-loop error. No feature query was made because the service schema and safe fields could not be verified.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "url": "https://dhule.gov.in/e0-a4-9c-e0-a4-bf-e0-a4-b2-e0-a4-b9-e0-a4-be-e0-a4-85-e0-a4-a7-e0-a5-80-e0-a4-95-e0-a5-8d-e0-a4-ad-e0-a5-82-e0-a4-ae-e0-a4-bf-e0-a4-85-e0-a4-ad-e0-a4-bf-e0-a4-b2/",
+      "outcome": "Read official office and map-service links; no record or parcel lookup submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether the district-linked map viewer exposes a public vector geometry endpoint with safe native IDs for the Dhule urban locality and whether the unchanged WUP point lies inside a mapped parcel remain unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter protocol or runtime qualification was run in this worker pass."
+  },
+  "technicalBlocker": "The official district source points to Mahabhunakasha maps, but the anonymous viewer page could not be inspected because the page reader encountered a redirect loop. No public feature schema or safe geometry response was verified; no plot-number or property-card lookup was submitted."
+}

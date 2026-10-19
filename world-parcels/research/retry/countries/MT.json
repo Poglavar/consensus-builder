@@ -1,0 +1,108 @@
+{
+ "kind": "country",
+ "key": "MT",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: en-MT,en;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.pa.org.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://pa.org.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://www.pa.org.mt/en/mapping",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://pamapserver.pa.org.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://pamapserver.pa.org.mt/arcgis/rest/services?f=json",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://msdi.data.gov.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://msdi.data.gov.mt/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://msdi.data.gov.mt/geoserver/web/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://portal.data.gov.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://www.gov.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://www.era.org.mt/",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html",
+   "assessment": "Cloudflare managed challenge ('Just a moment' / 'Attention Required'), not passed"
+  },
+  {
+   "url": "https://lra.mt/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Land Registration Agency site; only registry/legal pages, no map or parcel service"
+  },
+  {
+   "url": "geoserver.pa.org.mt, msdi.mt, mma.gov.mt, geoportal.mt",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connect failures"
+  }
+ ],
+ "geoBlockSuspected": "true (Cloudflare challenge from this network on all pa.org.mt / data.gov.mt / gov.mt hosts, while non-Cloudflare Maltese hosts such as lra.mt load)",
+ "notes": "No change. Browser headers did not clear the Cloudflare challenge on any Maltese government host; I did not attempt to solve the challenge. LRA site reachable but has no parcel service.",
+ "nextStep": "Needs a real browser session/JS-capable client or an allowlisted network to inspect PA Map Server and Malta MSDI GeoServer."
+}

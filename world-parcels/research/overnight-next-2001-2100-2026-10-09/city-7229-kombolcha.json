@@ -1,0 +1,71 @@
+{
+  "cityCode": 7229,
+  "queueRank": 2012,
+  "name": "Kombolcha",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "iso3": "ETH",
+  "point": [11.0840423975748, 39.7263876964214],
+  "population2025": 288941,
+  "population2025k": 288.941,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kombolcha Ethiopia cadastral parcel map land registry official",
+        "result": "First-party results identified Ethiopia's Ministry of Urban and Infrastructure Land and Cadastre CEO and Ministry of Justice urban-cadastral material, plus the Addis Ababa e-Land viewer. No public Kombolcha cadastral parcel viewer, map service, or anonymous parcel API was found.",
+        "actualResultUrls": [
+          "https://mui.gov.et/land-and-cadastre-ceo/",
+          "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+          "https://eland.addiscadaster.gov.et/"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "ኮምቦልቻ ካዳስተር የመሬት ምዝገባ ካርታ ይፋዊ",
+        "result": "Amharic first-party results identified the Ministry of Justice's Amharic urban-cadastral survey directive and the Amhara Regional Government portal, including a Kombolcha-related regional-government announcement. These establish institutional/planning context only; no public Kombolcha parcel geometry or service endpoint was exposed.",
+        "actualResultUrls": [
+          "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+          "https://amhara.gov.et/web/",
+          "https://amhara.gov.et/"
+        ]
+      }
+    ]
+  },
+  "attempt": 1,
+  "cohort": "overnight-next-2001-2100-2026-10-09",
+  "sourceAssessment": {
+    "localCustodian": "No Kombolcha city land-registry/cadastre custodian with an accessible public parcel map or API was evidenced.",
+    "regionalAuthorities": [
+      {
+        "name": "Amhara Regional Government",
+        "role": "Official regional government portal; Kombolcha appears in a regional-government announcement.",
+        "parcelService": "not evidenced"
+      }
+    ],
+    "nationalAuthorities": [
+      {
+        "name": "Ministry of Urban and Infrastructure Land and Cadastre CEO",
+        "role": "National urban land development, administration, registration and information policy/capacity authority.",
+        "parcelService": "general institutional prose only; no Kombolcha service endpoint"
+      },
+      {
+        "name": "Ministry of Justice",
+        "role": "Official publisher of Urban Cadastral Survey Directive No. 735/2013.",
+        "parcelService": "directive/document only; no parcel data response"
+      },
+      {
+        "name": "Addis Ababa Landholding Registration and Information Agency e-Land",
+        "role": "Official digital cadastral viewer/service for Addis Ababa and configured participating city offices.",
+        "parcelService": "not evidenced for Kombolcha; public shell and JavaScript inspected"
+      }
+    ],
+    "safeFieldsAllowed": ["stable native parcel ID", "geometry", "source CRS", "service URL", "retrieval timestamp"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "transaction details"]
+  },
+  "runtimeReadiness": "held",
+  "notes": "No parcel sample retained. Exact WUP point was preserved in latitude/longitude order and was not shifted. A zero exact-point hit, map extent miss, timeout, login wall, or unavailable UI is not treated as citywide cadastral absence. Packet is complete for this attempt; source integration/admission remains unqualified."
+}

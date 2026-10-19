@@ -1,0 +1,68 @@
+{
+  "cityRecord": "city-5237-khairpur.json",
+  "cityCode": 5237,
+  "queueRank": 2381,
+  "city": "Khairpur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "scope": "Khairpur, Sindh, Pakistan; exact WUP point preserved as latitude/longitude [27.5250887459164, 68.753226428932]. No coordinate shift or exact-point parcel inference was made.",
+  "discovery": {
+    "english": "Official Board of Revenue Sindh land-record portal and official RSU District Khairpur Mirs GIS page were found. The BOR portal describes Deh Maps and survey/property records; the BOR preservation page explicitly lists Khairpur as a record location.",
+    "native": "Urdu-language discovery found the same Sindh Zameen official portal and Khairpur government context; it did not expose a separate safe parcel endpoint.",
+    "actualUrls": [
+      "https://sindhzameen.gos.pk/Default.aspx",
+      "https://bor.sindh.gov.pk/preservation-of-record",
+      "https://rsusindh.gov.pk/programs/onlineGIS.php?district=Khairpur+Mirs",
+      "https://khairpur.gos.pk/"
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://sindhzameen.gos.pk/Default.aspx",
+      "method": "GET/search",
+      "outcome": "Search discovery succeeded and identified the official public portal and its Deh Maps/property/survey-record services. A direct TLS-verified curl request once returned HTTP 200 with 30,581 bytes, but a subsequent direct fetch timed out after 30 seconds; no portal JavaScript/configuration or parcel response could be reliably retrieved. No TLS bypass was used."
+    },
+    {
+      "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+      "method": "GET",
+      "outcome": "TLS verification failed because the certificate subject did not match the www host. The request was not retried with verification disabled."
+    },
+    {
+      "url": "https://bor.sindh.gov.pk/preservation-of-record",
+      "method": "GET/search",
+      "outcome": "Official page content was available through search discovery. It describes preservation/digitization of land registers and survey maps and lists Khairpur among record locations; no parcel geometry endpoint was returned."
+    },
+    {
+      "url": "https://rsusindh.gov.pk/programs/onlineGIS.php?district=Khairpur+Mirs",
+      "method": "GET",
+      "outcome": "Succeeded anonymously. Current HTML was inspected: the page embeds Google My Maps at https://www.google.com/maps/d/embed?mid=1w59p7QFCoY5uq6AJA9L48U9r-aesKq3U. This is an education GIS map, not evidence of cadastral parcel schema or a parcel API; no parcel geometry was retained."
+    },
+    {
+      "url": "https://khairpur.gos.pk/",
+      "method": "GET/search",
+      "outcome": "Official district-government context found; no public parcel service or safe geometry response was exposed."
+    }
+  ],
+  "schemaCrs": {
+    "inspectedService": "No cadastral feature service response was safely available. RSU page source exposed only a Google My Maps iframe.",
+    "responseCrs": null,
+    "parcelSchema": null
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "safeFieldAllowlist": ["id", "geometry"],
+  "excludedFields": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "unsafe source-specific attributes"],
+  "retainedSamples": [],
+  "scopeLimits": [
+    "BOR Sindh service evidence establishes an official provincial custodian and Khairpur record scope, not an anonymously queryable parcel feature API at the city point.",
+    "The RSU map is not cadastral evidence and was not treated as parcel coverage.",
+    "A timeout, certificate-host mismatch, unavailable JavaScript viewer, or lack of exact-point hit is not evidence of citywide parcel absence.",
+    "No full parcel polygon was obtained, so no sample GeoJSON was written.",
+    "This packet does not claim source integration or runtime admission."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "The current Sindh Zameen portal may expose map requests behind a JavaScript workflow or intermittent service. A bounded anonymous inspection did not recover a safe ID-plus-geometry response, CRS, or parcel schema."
+}

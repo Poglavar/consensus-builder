@@ -1,0 +1,2367 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:25830",
+  "featureCount": 326,
+  "validNonemptyCount": 326,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "ES-DGC-7321005TG3472S",
+        "ES-DGC-7321026TG3472S"
+      ],
+      "overlapM2": 0.02400000246497802,
+      "fractionOfSmaller": 0.00020018886536786286
+    },
+    {
+      "ids": [
+        "ES-DGC-7321005TG3472S",
+        "ES-DGC-7321011TG3472S"
+      ],
+      "overlapM2": 0.010923306492477467,
+      "fractionOfSmaller": 9.111350450840367e-05
+    },
+    {
+      "ids": [
+        "ES-DGC-7321006TG3472S",
+        "ES-DGC-7321011TG3472S"
+      ],
+      "overlapM2": 0.018392790254435368,
+      "fractionOfSmaller": 0.0001532295816919891
+    },
+    {
+      "ids": [
+        "ES-DGC-7321007TG3472S",
+        "ES-DGC-7321011TG3472S"
+      ],
+      "overlapM2": 0.012634520892938914,
+      "fractionOfSmaller": 0.00010532221103004905
+    },
+    {
+      "ids": [
+        "ES-DGC-7321008TG3472S",
+        "ES-DGC-7321011TG3472S"
+      ],
+      "overlapM2": 0.012899393338387083,
+      "fractionOfSmaller": 0.00010772651159258876
+    },
+    {
+      "ids": [
+        "ES-DGC-7421018TG3472S",
+        "ES-DGC-7421028TG3472S"
+      ],
+      "overlapM2": 0.02772470333081846,
+      "fractionOfSmaller": 2.5957765987240886e-05
+    },
+    {
+      "ids": [
+        "ES-DGC-7423108TG3472S",
+        "ES-DGC-7423130TG3472S"
+      ],
+      "overlapM2": 0.01299423518041748,
+      "fractionOfSmaller": 7.870826758465919e-05
+    },
+    {
+      "ids": [
+        "ES-DGC-7121001TG3472S",
+        "ES-DGC-7121023TG3472S"
+      ],
+      "overlapM2": 0.01930000471438975,
+      "fractionOfSmaller": 5.092667988664012e-05
+    }
+  ],
+  "sumPairwiseOverlapM2": 0.13886895666884252,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.8325499929910158,
+    "median": 165.137424993784,
+    "max": 7643.722900041078
+  },
+  "features": [
+    {
+      "id": "ES-DGC-7321003TG3472S",
+      "areaM2": 644.9441500077912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321005TG3472S",
+      "areaM2": 119.88680000196874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321006TG3472S",
+      "areaM2": 120.0341999980605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321007TG3472S",
+      "areaM2": 119.96064998421093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321008TG3472S",
+      "areaM2": 119.74205000874196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321009TG3472S",
+      "areaM2": 119.31245000718857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321010TG3472S",
+      "areaM2": 118.95759999521697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321011TG3472S",
+      "areaM2": 1511.8122000182127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321012TG3472S",
+      "areaM2": 225.8416000016494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321013TG3472S",
+      "areaM2": 2204.6817999910377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321014TG3472S",
+      "areaM2": 229.7099999959805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321015TG3472S",
+      "areaM2": 196.68910001381073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321016TG3472S",
+      "areaM2": 174.5232500057761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321017TG3472S",
+      "areaM2": 264.6286000015652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321018TG3472S",
+      "areaM2": 8.980150003340526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321019TG3472S",
+      "areaM2": 110.46634999727723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321020TG3472S",
+      "areaM2": 107.90245000285093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321021TG3472S",
+      "areaM2": 109.08685000439492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321022TG3472S",
+      "areaM2": 138.08725000823796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321023TG3472S",
+      "areaM2": 128.4751499975346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321024TG3472S",
+      "areaM2": 134.10585000752494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321025TG3472S",
+      "areaM2": 1329.014449991396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321026TG3472S",
+      "areaM2": 3115.364350032109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321027TG3472S",
+      "areaM2": 95.74525000687858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321028TG3472S",
+      "areaM2": 199.39959999377336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421009TG3472S",
+      "areaM2": 56.90305000278102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421010TG3472S",
+      "areaM2": 67.2141499964268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421011TG3472S",
+      "areaM2": 66.08239999106058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421012TG3472S",
+      "areaM2": 68.44905001306178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421013TG3472S",
+      "areaM2": 68.79180000542335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421014TG3472S",
+      "areaM2": 93.99910000301263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421018TG3472S",
+      "areaM2": 1068.0697000060052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421019TG3472S",
+      "areaM2": 1038.4121999902638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421025TG3472S",
+      "areaM2": 1684.9505499747668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421026TG3472S",
+      "areaM2": 1028.8410500039865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421027TG3472S",
+      "areaM2": 398.4420999819921,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421028TG3472S",
+      "areaM2": 2160.380550027245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421029TG3472S",
+      "areaM2": 984.1702999608822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421030TG3472S",
+      "areaM2": 1740.7067999946794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421031TG3472S",
+      "areaM2": 2532.8875499900146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421032TG3472S",
+      "areaM2": 0.8325499929910158,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "ES-DGC-7421033TG3472S",
+      "areaM2": 333.27725000067716,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421007TG3472S",
+      "areaM2": 173.27319999457842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421008TG3472S",
+      "areaM2": 61.7875499999151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421015TG3472S",
+      "areaM2": 83.2697000002055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421016TG3472S",
+      "areaM2": 83.55614998937051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421017TG3472S",
+      "areaM2": 74.20200001183619,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421020TG3472S",
+      "areaM2": 174.4845499967963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421021TG3472S",
+      "areaM2": 170.77504999841625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421022TG3472S",
+      "areaM2": 163.1507500036525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421023TG3472S",
+      "areaM2": 138.6201499958818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421024TG3472S",
+      "areaM2": 63.13579999996365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421034TG3472S",
+      "areaM2": 885.6981500096567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7520102TG3472S",
+      "areaM2": 503.9045499542313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7520104TG3472S",
+      "areaM2": 183.87290000116667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7520105TG3472S",
+      "areaM2": 76.39585000584445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7520106TG3472S",
+      "areaM2": 183.35010000330462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521003TG3472S",
+      "areaM2": 315.57980001129425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521004TG3472S",
+      "areaM2": 327.66505000837674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521005TG3472S",
+      "areaM2": 81.41885000014368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521006TG3472S",
+      "areaM2": 77.44764999644408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521007TG3472S",
+      "areaM2": 81.17639999965915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521008TG3472S",
+      "areaM2": 96.26614999638193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521009TG3472S",
+      "areaM2": 161.2257000030022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521010TG3472S",
+      "areaM2": 212.31559999711078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521012TG3472S",
+      "areaM2": 366.14994999187496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521013TG3472S",
+      "areaM2": 165.61585001755031,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521014TG3472S",
+      "areaM2": 163.97879999802134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521018TG3472S",
+      "areaM2": 604.2731500267157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521019TG3472S",
+      "areaM2": 192.5855000110124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521020TG3472S",
+      "areaM2": 181.25219999609632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521021TG3472S",
+      "areaM2": 191.55919999339517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521022TG3472S",
+      "areaM2": 482.3191999946502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521023TG3472S",
+      "areaM2": 187.5298999934881,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521024TG3472S",
+      "areaM2": 188.61015000863802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521025TG3472S",
+      "areaM2": 187.86139999354506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521026TG3472S",
+      "areaM2": 185.31879999556904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521027TG3472S",
+      "areaM2": 231.9047000073266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521028TG3472S",
+      "areaM2": 192.36675000524545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521029TG3472S",
+      "areaM2": 189.8423499979936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521030TG3472S",
+      "areaM2": 231.6503500046546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521031TG3472S",
+      "areaM2": 236.38324998918898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521034TG3472S",
+      "areaM2": 189.1344500055069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521035TG3472S",
+      "areaM2": 310.220599993107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521040TG3472S",
+      "areaM2": 338.88464999636574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122302TG3472S",
+      "areaM2": 91.39020000851878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122305TG3472S",
+      "areaM2": 944.1224500059615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122306TG3472S",
+      "areaM2": 466.0926999844633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122307TG3472S",
+      "areaM2": 603.3301500038222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122308TG3472S",
+      "areaM2": 301.0963000058107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122309TG3472S",
+      "areaM2": 505.5337999888664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122326TG3472S",
+      "areaM2": 513.1876000223454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122327TG3472S",
+      "areaM2": 165.20185000335854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122329TG3472S",
+      "areaM2": 280.09844998723014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321001TG3472S",
+      "areaM2": 155.77184999751677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321002TG3472S",
+      "areaM2": 162.85044999030228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321004TG3472S",
+      "areaM2": 167.27045000333555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321029TG3472S",
+      "areaM2": 751.899299975166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321030TG3472S",
+      "areaM2": 286.3260499982636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321031TG3472S",
+      "areaM2": 1033.3625000211562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7321032TG3472S",
+      "areaM2": 150.351699993676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322110TG3472S",
+      "areaM2": 676.5832499836733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422210TG3472S",
+      "areaM2": 486.5336499907643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422403TG3472S",
+      "areaM2": 415.64070000618705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422404TG3472S",
+      "areaM2": 508.23295001986776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422405TG3472S",
+      "areaM2": 415.66915001006925,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422406TG3472S",
+      "areaM2": 262.76094999143385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422408TG3472S",
+      "areaM2": 504.42900000451186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7421002TG3472S",
+      "areaM2": 76.42570000751068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422205TG3472S",
+      "areaM2": 227.74745000682157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422206TG3472S",
+      "areaM2": 221.3858499961104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422207TG3472S",
+      "areaM2": 261.29899999164184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422208TG3472S",
+      "areaM2": 316.0006500084751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422209TG3472S",
+      "areaM2": 169.88520000442998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422401TG3472S",
+      "areaM2": 236.47140001050587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422402TG3472S",
+      "areaM2": 250.64345001241105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521001TG3472S",
+      "areaM2": 219.17180001309922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521002TG3472S",
+      "areaM2": 203.80794999239012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521036TG3472S",
+      "areaM2": 190.6436500261045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521037TG3472S",
+      "areaM2": 161.35609999173045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521038TG3472S",
+      "areaM2": 243.2185500017927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521039TG3472S",
+      "areaM2": 149.56284999498462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521105TG3472S",
+      "areaM2": 397.94504999796425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7522402TG3472S",
+      "areaM2": 163.36090000052525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7522403TG3472S",
+      "areaM2": 164.7799500106231,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122301TG3472S",
+      "areaM2": 95.75454999215393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7222201TG3472S",
+      "areaM2": 86.18709998549362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7222202TG3472S",
+      "areaM2": 77.00234998997607,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7222203TG3472S",
+      "areaM2": 82.06405000803176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223201TG3472S",
+      "areaM2": 148.91610000603444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223202TG3472S",
+      "areaM2": 99.97595000830684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223203TG3472S",
+      "areaM2": 135.45559998068757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223204TG3472S",
+      "areaM2": 133.06135000904536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223205TG3472S",
+      "areaM2": 252.57719998892549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223206TG3472S",
+      "areaM2": 203.04430000205366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223207TG3472S",
+      "areaM2": 139.8146999967212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223208TG3472S",
+      "areaM2": 644.6802999912212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223209TG3472S",
+      "areaM2": 143.67315000121772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223210TG3472S",
+      "areaM2": 253.1090499967837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223211TG3472S",
+      "areaM2": 135.8387499990364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223212TG3472S",
+      "areaM2": 204.11909998181974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223213TG3472S",
+      "areaM2": 139.77765000590946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223214TG3472S",
+      "areaM2": 160.3263999948428,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223215TG3472S",
+      "areaM2": 119.25600000273121,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223216TG3472S",
+      "areaM2": 140.37115000450214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223217TG3472S",
+      "areaM2": 141.9646000115334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223218TG3472S",
+      "areaM2": 137.2234500025367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223219TG3472S",
+      "areaM2": 162.67089999568555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223220TG3472S",
+      "areaM2": 135.06399999289536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7223221TG3472S",
+      "areaM2": 136.49834999254486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322101TG3472S",
+      "areaM2": 181.70509997932018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322102TG3472S",
+      "areaM2": 271.0978999991296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322103TG3472S",
+      "areaM2": 68.81520000357025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322104TG3472S",
+      "areaM2": 105.21915000484537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322105TG3472S",
+      "areaM2": 64.61120000125895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322106TG3472S",
+      "areaM2": 66.45695000190703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322107TG3472S",
+      "areaM2": 74.16650000102669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322108TG3472S",
+      "areaM2": 68.54100001211836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7322109TG3472S",
+      "areaM2": 68.33904999259248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323001TG3472S",
+      "areaM2": 198.59970001382752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323002TG3472S",
+      "areaM2": 101.45780000282507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323003TG3472S",
+      "areaM2": 102.29564999169354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323004TG3472S",
+      "areaM2": 199.61464998640346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323005TG3472S",
+      "areaM2": 150.55169999532734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323006TG3472S",
+      "areaM2": 153.17829999219933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323007TG3472S",
+      "areaM2": 128.56500000061615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323008TG3472S",
+      "areaM2": 120.96160000467124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323009TG3472S",
+      "areaM2": 120.75609999580962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323010TG3472S",
+      "areaM2": 168.20255001164045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323011TG3472S",
+      "areaM2": 90.98465001150873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323012TG3472S",
+      "areaM2": 133.766700003172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323013TG3472S",
+      "areaM2": 121.70089999710966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323014TG3472S",
+      "areaM2": 108.60459999316596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323015TG3472S",
+      "areaM2": 117.38155000252009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323016TG3472S",
+      "areaM2": 187.88404999108926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323017TG3472S",
+      "areaM2": 123.8421999975885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323018TG3472S",
+      "areaM2": 153.8459499990265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7323019TG3472S",
+      "areaM2": 148.34405001008795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422407TG3472S",
+      "areaM2": 337.176199995545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423013TG3472S",
+      "areaM2": 151.77800000293576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423014TG3472S",
+      "areaM2": 95.86229999977989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423015TG3472S",
+      "areaM2": 95.89829999994534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423016TG3472S",
+      "areaM2": 148.90825001043686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423017TG3472S",
+      "areaM2": 111.1539000024159,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423018TG3472S",
+      "areaM2": 113.01710001057967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423019TG3472S",
+      "areaM2": 199.29300000876785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423020TG3472S",
+      "areaM2": 134.23510000107473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423021TG3472S",
+      "areaM2": 215.2362500053909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423022TG3472S",
+      "areaM2": 50.88225000028709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423023TG3472S",
+      "areaM2": 89.88905000268568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423024TG3472S",
+      "areaM2": 88.65875000182075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423025TG3472S",
+      "areaM2": 92.29949999968038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423026TG3472S",
+      "areaM2": 107.14064999507335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423027TG3472S",
+      "areaM2": 91.00615000125333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423028TG3472S",
+      "areaM2": 90.12625000094759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423029TG3472S",
+      "areaM2": 93.81090000092368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423111TG3472S",
+      "areaM2": 181.3437999947559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423112TG3472S",
+      "areaM2": 179.7392999929777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423113TG3472S",
+      "areaM2": 235.70150000572076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423114TG3472S",
+      "areaM2": 161.09770000013077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423115TG3472S",
+      "areaM2": 165.5043999970731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423116TG3472S",
+      "areaM2": 375.278449986853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423117TG3472S",
+      "areaM2": 141.73989999625417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423118TG3472S",
+      "areaM2": 90.33755000999814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423119TG3472S",
+      "areaM2": 133.62705000852543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423120TG3472S",
+      "areaM2": 56.664700000228194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423121TG3472S",
+      "areaM2": 62.50740000227137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423122TG3472S",
+      "areaM2": 160.696149997278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423123TG3472S",
+      "areaM2": 159.236800001384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423124TG3472S",
+      "areaM2": 144.2420999897873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423125TG3472S",
+      "areaM2": 170.47460000932125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423126TG3472S",
+      "areaM2": 159.28355000997206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423127TG3472S",
+      "areaM2": 143.0474999969933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422211TG3472S",
+      "areaM2": 96.79210000474289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422212TG3472S",
+      "areaM2": 97.76419999605844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422213TG3472S",
+      "areaM2": 101.00454998931745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422214TG3472S",
+      "areaM2": 235.45424999539082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422215TG3472S",
+      "areaM2": 117.82684999651504,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422216TG3472S",
+      "areaM2": 116.49289999703916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422217TG3472S",
+      "areaM2": 118.28589999741261,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422218TG3472S",
+      "areaM2": 118.3368999872904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422219TG3472S",
+      "areaM2": 125.34890000681989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422220TG3472S",
+      "areaM2": 119.07009999716779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422221TG3472S",
+      "areaM2": 118.41390000026513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422222TG3472S",
+      "areaM2": 121.84704999890953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423001TG3472S",
+      "areaM2": 190.10215000128338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423002TG3472S",
+      "areaM2": 220.97680001588878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423003TG3472S",
+      "areaM2": 103.02900000332207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423004TG3472S",
+      "areaM2": 105.65174999739438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423005TG3472S",
+      "areaM2": 101.83169999857242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423006TG3472S",
+      "areaM2": 98.45759999925512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423007TG3472S",
+      "areaM2": 105.04315000544447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423008TG3472S",
+      "areaM2": 101.82724999874867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423009TG3472S",
+      "areaM2": 102.82779999252205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423010TG3472S",
+      "areaM2": 134.1616500073128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423011TG3472S",
+      "areaM2": 118.00869999552957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423012TG3472S",
+      "areaM2": 103.31174999888042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423030TG3472S",
+      "areaM2": 111.50239999482659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423031TG3472S",
+      "areaM2": 99.43835000551937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423032TG3472S",
+      "areaM2": 126.47649999898096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423033TG3472S",
+      "areaM2": 126.77414999605107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423034TG3472S",
+      "areaM2": 108.17134999473906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423035TG3472S",
+      "areaM2": 78.44209999878795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423036TG3472S",
+      "areaM2": 107.17759999583514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423037TG3472S",
+      "areaM2": 103.86844999894969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423038TG3472S",
+      "areaM2": 107.77580000471107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423039TG3472S",
+      "areaM2": 107.63280000015773,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423101TG3472S",
+      "areaM2": 442.9374500026566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423102TG3472S",
+      "areaM2": 340.70000001003206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423103TG3472S",
+      "areaM2": 7.155000001135631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423104TG3472S",
+      "areaM2": 97.63905001030362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423105TG3472S",
+      "areaM2": 102.40825000444525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423106TG3472S",
+      "areaM2": 202.020999994837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423107TG3472S",
+      "areaM2": 148.1985999980498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423108TG3472S",
+      "areaM2": 198.89370000616677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423109TG3472S",
+      "areaM2": 86.17745000396938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423110TG3472S",
+      "areaM2": 91.73970000095579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423128TG3472S",
+      "areaM2": 142.56120001157566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423129TG3472S",
+      "areaM2": 142.82485000668137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423130TG3472S",
+      "areaM2": 165.0936499960539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7423131TG3472S",
+      "areaM2": 188.15249999933008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7419001TG3471N",
+      "areaM2": 875.1551000185601,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7419010TG3471N",
+      "areaM2": 1208.3805999729893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7419013TG3471N",
+      "areaM2": 6705.858749963559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7419014TG3471N",
+      "areaM2": 1634.1761999788969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7419015TG4471N",
+      "areaM2": 1142.8301000307756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7419016TG3471N",
+      "areaM2": 683.0867999852034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324001TG3472S",
+      "areaM2": 201.67140000276567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324002TG3472S",
+      "areaM2": 143.11594999538534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324003TG3472S",
+      "areaM2": 206.19195000351175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324004TG3472S",
+      "areaM2": 265.5755999941336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324101TG3472S",
+      "areaM2": 168.5998499978417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324102TG3472S",
+      "areaM2": 236.91624999277352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324103TG3472S",
+      "areaM2": 194.76574999643734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7324104TG3472S",
+      "areaM2": 199.22570000651035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424402TG3472S",
+      "areaM2": 304.9424999961004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424408TG3472S",
+      "areaM2": 222.8448000124747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424409TG3472S",
+      "areaM2": 167.4573499988699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424411TG3472S",
+      "areaM2": 356.9888999974409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424413TG3472S",
+      "areaM2": 126.60945001245543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424414TG3472S",
+      "areaM2": 165.1811999915141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424415TG3472S",
+      "areaM2": 228.35220000935666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424416TG3472S",
+      "areaM2": 241.52535000634413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7424417TG3472S",
+      "areaM2": 259.49604999720657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7425001TG3472N",
+      "areaM2": 2357.7842499813783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7425002TG3472N",
+      "areaM2": 507.9346499848897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7425003TG3472N",
+      "areaM2": 478.63994999916144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7425005TG3472N",
+      "areaM2": 860.2574499935954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7121001TG3472S",
+      "areaM2": 378.9762999934506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7121002TG3472S",
+      "areaM2": 274.013150009471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7121003TG3472S",
+      "areaM2": 132.48690000128877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7121020TG3472S",
+      "areaM2": 343.29014996388304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7121021TG3472S",
+      "areaM2": 332.0556499720953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7121023TG3472S",
+      "areaM2": 420.8421999972489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7121025TG3472S",
+      "areaM2": 1532.8552500362919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122310TG3472S",
+      "areaM2": 605.4791500064098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122311TG3472S",
+      "areaM2": 420.5469000023048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122312TG3472S",
+      "areaM2": 615.4484500041318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122313TG3472S",
+      "areaM2": 301.3878000073816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122314TG3472S",
+      "areaM2": 454.5264500077368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122315TG3472S",
+      "areaM2": 3049.663249945066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122321TG3472S",
+      "areaM2": 638.5486000017723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122322TG3472S",
+      "areaM2": 244.37075001277418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122323TG3472S",
+      "areaM2": 339.81875000215285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122324TG3472S",
+      "areaM2": 337.1791999941489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122325TG3472S",
+      "areaM2": 342.82224999363217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7122328TG3472S",
+      "areaM2": 513.1188999912638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422202TG3472S",
+      "areaM2": 175.96439998995106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7422203TG3472S",
+      "areaM2": 178.43985000331958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7520603TG3472N",
+      "areaM2": 7643.722900041078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521101TG3472S",
+      "areaM2": 188.97185000364405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521102TG3472S",
+      "areaM2": 105.92484998342215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521103TG3472S",
+      "areaM2": 135.82960000980637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521106TG3472S",
+      "areaM2": 75.3032500028105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521107TG3472S",
+      "areaM2": 94.411999995715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521108TG3472S",
+      "areaM2": 147.44169998588174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521109TG3472S",
+      "areaM2": 164.81629999435862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521201TG3472S",
+      "areaM2": 527.8687999984032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521202TG3472S",
+      "areaM2": 331.5373499962438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521203TG3472S",
+      "areaM2": 201.42455000711684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521206TG3472S",
+      "areaM2": 106.31169999542747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7521207TG3472S",
+      "areaM2": 38.90355000354506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7522401TG3472S",
+      "areaM2": 170.55149999815933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7621011TG3472S",
+      "areaM2": 785.8328999982376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7621012TG3472S",
+      "areaM2": 199.94335002009777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ES-DGC-7621013TG3472S",
+      "areaM2": 197.2325999787637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

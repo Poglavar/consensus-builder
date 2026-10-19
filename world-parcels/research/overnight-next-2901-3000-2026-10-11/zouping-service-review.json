@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-10052-zouping.json",
+  "cityCode": 10052,
+  "queueRank": 2930,
+  "name": "Zouping",
+  "country": "China",
+  "countryCode": "CN",
+  "pointLatLon": [36.8848973742942, 117.762839376346],
+  "population2025": 203838,
+  "population2025k": 203.838,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "queryAndRequestOutcome": "Separate English and Chinese discovery found national official context but no directly evidenced Zouping first-party cadastral viewer/API. The only Zouping-specific material located was secondary directory content describing local agencies; no safe anonymous native parcel ID plus geometry response was obtained. One official registration site returned HTTP 418 during bounded retrieval; no bypass was attempted.",
+  "schemaAndCrs": {
+    "viewerConfig": "Not exposed",
+    "geometryCrs": "Not observed",
+    "nativeIdentity": "Not observed",
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if later exposed and source-proven", "full parcel polygon geometry if later exposed", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "No local first-party registry evidence or anonymous parcel geometry/native identity was qualified."
+  },
+  "reviewDecision": "held_no_verified_public_geometry",
+  "scopeLimits": [
+    "Exact WUP point preserved; no coordinate shift.",
+    "No exact-point or map-extent miss, timeout, HTTP 418, login wall, or unusable UI was inferred as citywide absence.",
+    "No raw source-specific attribute set retained.",
+    "No GeoJSON sample retained; maximum allowed would have been three full parcel polygons.",
+    "This packet does not admit or integrate a runtime source."
+  ],
+  "uncertainty": "A usable local Zouping cadastral adapter, public coverage, schema, CRS, and stable native parcel identity remain unverified. Runtime remains held.",
+  "evidenceUrls": [
+    "https://www.rerc.com.cn/",
+    "https://z.mnr.gov.cn/",
+    "https://www.webmap.cn/main.do?method=index1",
+    "https://www.95ye.com/shop/mobile-do-detail-id-69149.html",
+    "https://www.95ye.com/article/60277.html"
+  ]
+}

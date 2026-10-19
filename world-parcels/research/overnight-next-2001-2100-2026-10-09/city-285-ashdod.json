@@ -1,0 +1,43 @@
+{
+  "cityCode": 285,
+  "queueRank": 2032,
+  "name": "Ashdod",
+  "country": "Israel",
+  "countryCode": "IL",
+  "point": [31.7987303087695, 34.65004462462],
+  "population2025": 286310,
+  "population2025k": 286.31,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "aliases": ["ashdod"],
+  "freshResearch": {
+    "queries": [
+      {"language":"English","query":"Ashdod Israel official cadastral parcel map GIS API","result":"Found the first-party Ashdod municipal ArcGIS REST directory, including a parcel/block service (גושים_וחלקות) and a municipal engineering/GIS route. The parcel layer exposed public query access and returned a bounded polygon response.","actualResultUrls":["https://gis.ashdod.muni.il/arcgis/rest/services","https://ashdod.muni.il/he-il/אתר-העיר/הנדסה/מידע-הנדסי-ושרותי-הנדסה-נוספים/"]},
+      {"language":"Hebrew (local)","query":"אשדוד מפת גושים חלקות кадаסטר GIS parcel official","result":"מצאתי את ספריית ה-REST הרשמית של עיריית אשדוד ואת שירות גושים וחלקות; שכבת החלקות זמינה לשאילתה ציבורית אנונימית ומחזירה גיאומטריית פוליגון ושדות זיהוי גוש/חלקה.","actualResultUrls":["https://gis.ashdod.muni.il/arcgis/rest/services","https://www.ashdod.muni.il/he-il/אתר-העיר/הנדסה/מידע-הנדסי-ושרותי-הנדסה-נוספים/"]}
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {"custodian":"Ashdod Municipality, Engineering Administration / municipal GIS","basis":"The first-party municipal GIS REST directory publishes the גושים וחלקות (blocks and parcels) MapServer and the municipal engineering page links the city GIS service.","urls":["https://gis.ashdod.muni.il/arcgis/rest/services","https://www.ashdod.muni.il/he-il/אתר-העיר/הנדסה/מידע-הנדסי-ושרותי-הנדסה-נוספים/"]},
+  "officialSources": [{"url":"https://gis.ashdod.muni.il/arcgis/rest/services/גושים_וחלקות/MapServer","observation":"Official Ashdod municipal ArcGIS MapServer with block-boundary and parcel layers; service CRS is EPSG:2039 and parcel layer supports Query with GeoJSON output.","scope":"Ashdod municipal GIS parcel/block service."}],
+  "requests": [
+    {"url":"https://gis.ashdod.muni.il/arcgis/rest/services","method":"GET","httpStatus":200,"outcome":"Fetched official ArcGIS REST service directory; identified גושים_וחלקות/MapServer."},
+    {"url":"https://gis.ashdod.muni.il/arcgis/rest/services/גושים_וחלקות/MapServer?f=pjson","method":"GET","httpStatus":200,"outcome":"Inspected service metadata: extent EPSG:2039; layers 0 block boundaries and 1 parcel layer."},
+    {"url":"https://gis.ashdod.muni.il/arcgis/rest/services/גושים_וחלקות/MapServer/1?f=pjson","method":"GET","httpStatus":200,"outcome":"Inspected parcel schema. Native fields include OBJECTID, Helka (parcel), Gush (block), Helka_Area and geometry; only safe ID/geometry fields were used."},
+    {"url":"https://gis.ashdod.muni.il/arcgis/rest/services/גושים_וחלקות/MapServer/1/query","method":"GET","httpStatus":200,"outcome":"Anonymous point-intersects query at the exact WUP point transformed to EPSG:2039 (166954.572, 634134.164) returned one Polygon: native OBJECTID 6473, Gush 2068, Helka 199. Response GeoJSON coordinates are WGS84 longitude/latitude. Full raw response retained only under ignored tmp/valhalla-parcel-research/285/exact.geojson."},
+    {"url":"https://gis.ashdod.muni.il/arcgis/rest/services/portal/whats_around/MapServer?f=pjson","method":"GET","httpStatus":200,"outcome":"Inspected related municipal map service; it exposed planning/building layers but was not used for parcel geometry."}
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": true,
+  "sampleFile": null,
+  "source": "Ashdod municipal ArcGIS REST גושים_וחלקות/MapServer layer 1",
+  "sourceIds": ["Gush=2068; Helka=199; OBJECTID=6473"],
+  "coverageAssessment": {"claimedScope":"Ashdod municipal GIS parcel/block service.","verifiedOpenScope":"Exact-point anonymous query returned one parcel polygon; this is local point evidence, not a complete citywide extract.","countrywideVerified":false},
+  "safeFieldAllowlist":["stable native parcel identifier","parcel polygon geometry","source CRS","non-personal source layer metadata"],
+  "unsafeFieldsNotRequested":["owner","address","contact","titleholder","tax","account","personal identifiers","encumbrances"],
+  "runtimeReadiness":"held_serial_qualification_required",
+  "resultCategory":"municipal_public_arcgis_geometry_verified",
+  "remainingUncertainty":"The public municipal route and exact-point geometry are verified, but this bounded query does not establish complete citywide coverage, update cadence, or adapter robustness. A retained sample was not written because the full unchanged polygon was kept only in ignored temporary evidence; no coordinate was shifted to force a hit.",
+  "researchFile":"research/overnight-next-2001-2100-2026-10-09/city-285-ashdod.json"
+}

@@ -1,0 +1,80 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "NM",
+ "regionName": "New Mexico",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: en-US,en;q=0.9; cookie jar on; via pre-configured proxy",
+ "source": {
+  "sourceId": "us-nm-ose-county-parcels-2025",
+  "name": "County Parcels 2025",
+  "operator": "NM Office of the State Engineer, data from NM TRD Property Tax Division and county assessors",
+  "scope": "one MapServer with a layer per county (33 layers); statewide by aggregation",
+  "endpoint": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/{countyLayerId}",
+  "method": "GET",
+  "responseFormat": "ArcGIS REST JSON",
+  "crs": "native SR from service; requested outSR=4326",
+  "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "us-nm-ose-county-parcels-2025",
+  "requestUrl": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/{0 Bernalillo, 26 Santa Fe}/query?geometry=<bbox ~150m>&outFields=UPC,AccountNumber,County&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   "[-106.6512,35.0836,-106.6496,35.0852]",
+   "[-105.9386,35.6862,-105.9370,35.6878]"
+  ],
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "UPC (with AccountNumber)",
+  "responseFile": "research/subnational/US/NM-parcel-response.json",
+  "pagination": "resultRecordCount / resultOffset (per-sample 3 records)",
+  "regionSampled": [
+   "Bernalillo County",
+   "Santa Fe County"
+  ]
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Layer description: \"real property parcel polygons aggregated from the State's thirty-three County Assessor Offices... collected annually between April and June\". Coverage is one layer per county; a statewide query needs 33 layer calls.",
+ "subregionsVerified": [
+  "Bernalillo County (layer 0)",
+  "Santa Fe County (layer 26)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer",
+   "observation": "public, 33 county layers"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/{0 Bernalillo, 26 Santa Fe}?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "service/layer description read"
+  },
+  {
+   "url": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/{0 Bernalillo, 26 Santa Fe}/query?geometry=<bbox ~150m near Bernalillo County>&outFields=UPC,AccountNumber,County...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  },
+  {
+   "url": "https://gis.ose.nm.gov/server_s/rest/services/Parcels/County_Parcels_2025/MapServer/{0 Bernalillo, 26 Santa Fe}/query?geometry=<bbox ~150m near Santa Fe County>&outFields=UPC,AccountNumber,County...",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygons returned with ID and geometry only"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read on the service; publisher description quoted in regionWideBasis. Treat as unverified for redistribution. Layers include owner and mailing address fields; not requested.",
+ "remainingUncertainty": "Not every county polygon layer sampled; some counties use mass-appraisal tables only. Statewide queries need per-layer calls.",
+ "nextStep": "Sample the remaining county layers if full coverage is needed."
+}

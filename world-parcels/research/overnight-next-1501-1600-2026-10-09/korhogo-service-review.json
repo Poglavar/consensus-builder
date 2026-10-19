@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-2386-korhogo.json",
+  "purpose": "Document first-party registry/map discovery, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Côte d'Ivoire sources evidence Korhogo's land-conservation district and current national urban parcel and land-identifier channels. No anonymous complete safe parcel polygon response with a verified native identity was obtained.",
+  "registryAssessment": "The DGI land-circonscriptions publication explicitly names the circonscription foncière de Korhogo and its Livre foncier de Korhogo. SIGFU is the official urban-land management system with parcel/lot search; IDUFCI describes a national unique parcel identifier. These establish local custody and public procedures/channels, not open citywide parcel geometry.",
+  "officialPrimarySources": [
+    {"url": "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/CIRCONSCRIPTIONS_FONCIERES_241031_160555.pdf", "observation": "Official DGI publication lists Korhogo as a land-conservation district, assigns it the Korhogo land book, and states the competence area includes the Korhogo department and neighboring departments."},
+    {"url": "https://www.sigfu.gouv.ci/parcelles", "observation": "Official SIGFU parcel page describes public locality, lotissement, lot and parcel search and says results concern approved subdivisions; no schema or complete polygon response was retained."},
+    {"url": "https://sigfu.gouv.ci/public", "observation": "Official SIGFU public landing page describes parcel/lot cartography and administrative land-verification services."},
+    {"url": "https://www.idufci.gouv.ci/index.html", "observation": "Official IDUFCI page describes a unique identifier intended for every Côte d'Ivoire land parcel and links spatial and textual land information; no public feature response was verified."},
+    {"url": "https://servicepublic.gouv.ci/accueil/detaildemarcheparticulier/1/475/29", "observation": "Official service portal describes requesting a cadastral section plan from the responsible tax/cadastre office; it is a procedure, not an anonymous parcel geometry API."}
+  ],
+  "viewerConfiguration": {
+    "homeUrls": ["https://www.sigfu.gouv.ci/parcelles", "https://sigfu.gouv.ci/public"],
+    "observedTechnology": "Public HTML/search-indexed viewer material; direct local retrieval of SIGFU was blocked by TLS trust-chain verification. No stable service configuration or API contract was verified.",
+    "observedControls": ["SIGFU locality/lotissement/lot/parcel search", "SIGFU public parcel/lot cartography and verification links"],
+    "schemaAndCrs": "Not exposed by bounded retrieval; no CRS, native ID field, or feature schema was verified.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": "None verified.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.sigfu.gouv.ci/parcelles", "method": "GET via indexed first-party retrieval", "normalTlsVerification": true, "result": "Search result exposed official parcel/locality/lot search controls and approved-subdivision scope; direct bounded feature response, schema and geometry were not obtained."},
+    {"url": "https://sigfu.gouv.ci/public", "method": "GET via indexed first-party retrieval", "normalTlsVerification": true, "result": "Official public landing page described parcel/lot cartography and land-verification services; no feature response or schema obtained."},
+    {"url": "https://www.dgi.gouv.ci/assets/documents/transfert_propriete/services/CIRCONSCRIPTIONS_FONCIERES_241031_160555.pdf", "method": "GET via first-party PDF retrieval", "normalTlsVerification": true, "result": "Official publication content verified Korhogo cadastral custody and competence area; no geometry request submitted."},
+    {"url": "https://www.idufci.gouv.ci/index.html", "method": "GET via indexed first-party retrieval", "normalTlsVerification": true, "result": "Official IDUFCI description verified the national parcel-identifier framework; no safe anonymous feature response obtained."},
+    {"url": "https://servicepublic.gouv.ci/accueil/detaildemarcheparticulier/1/475/29", "method": "GET via first-party retrieval", "normalTlsVerification": true, "result": "Official procedure verified that a section plan is requested from the responsible cadastre service; no geometry request submitted."},
+    {"url": "https://www.sigfu.gouv.ci/parcelles", "method": "GET with local curl", "normalTlsVerification": true, "result": "TLS certificate chain could not be verified by the local curl trust store; request was not retried with verification disabled or bypassed."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "No parcel feature query was submitted because the public pages did not expose a verified anonymous endpoint/schema and the direct SIGFU request encountered a TLS trust-chain failure."},
+  "coverageAssessment": {"claimedScope": "Korhogo cadastral custody plus official Côte d'Ivoire SIGFU and IDUFCI channels.", "verifiedOpenScope": "No anonymous complete-polygon feature response verified.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "The SIGFU and IDUFCI current JavaScript/API routes, anonymous access policy, CRS, native identity field, returned schema, geometry coverage, and citywide completeness remain unverified. Search indexing, TLS failure, and lack of a bounded response are not evidence of cadastral absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independently verified anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

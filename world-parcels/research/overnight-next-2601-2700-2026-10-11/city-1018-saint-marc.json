@@ -1,0 +1,84 @@
+{
+  "cityCode": 1018,
+  "queueRank": 2669,
+  "name": "Saint-Marc",
+  "country": "Haiti",
+  "countryCode": "HT",
+  "iso3": "HTI",
+  "locId": 332,
+  "point": [19.1043514220814, -72.6963014126943],
+  "pointOrder": "latitude,longitude",
+  "population2025": 221032,
+  "population2025k": 221.032,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Saint-Marc Haiti official cadastral parcel map cadastre GIS registry",
+        "result": "First-party results identified MTPTC/ONACA cadastral material, DGI land/property administration, CIAT land-policy material, and an official Saint-Marc judicial map. No current public Saint-Marc parcel viewer, parcel API, or anonymous ID-plus-geometry response was found.",
+        "actualResultUrls": [
+          "https://mtptc.gouv.ht/media/upload/doc/publications/Bilan_MTPTC_2013.pdf",
+          "https://dgi.gouv.ht/",
+          "https://ciat.gouv.ht/legislation-institutions-foncier/",
+          "https://mjsp.gouv.ht/cartographie-judiciaire"
+        ]
+      },
+      {
+        "language": "Haitian Creole/French",
+        "query": "Ayiti Sen Mak kadast tè kat jeyografik ofisyèl; Haiti Saint-Marc cadastre parcelles carte cadastrale registre foncier officiel",
+        "result": "The Haitian Creole/French discovery surfaced official and official-hosted material describing ONACA's cadastral mandate and historical Saint-Marc work, but no current public parcel map/API or bounded parcel feature response.",
+        "actualResultUrls": [
+          "https://mtptc.gouv.ht/media/upload/doc/publications/OFFICE%20NATIONAL%20DU%20CADASTRIE.pdf",
+          "https://www.mtptc.gouv.ht/accueil/publications/media/upload/doc/publications/MDUR-PAR_%2520Bassin_Rhodo-Janvier2021.pdf",
+          "https://ciat.gouv.ht/legislation-institutions-foncier/",
+          "https://www.haitidocs.org/doc/onaca-2014-nouvelle-vision-gestion-cadastre-haiti?lang=fr"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "ONACA is evidenced as Haiti's national cadastral custodian, and official MTPTC material records historical ONACA activity in Saint-Marc. No current city-local registry endpoint, public parcel viewer, anonymous parcel API, schema/CRS response, or safe parcel identity-plus-geometry response was verified; national custodian evidence is not treated as a local registry finding.",
+  "officialSources": [
+    {
+      "url": "https://mtptc.gouv.ht/media/upload/doc/publications/Bilan_MTPTC_2013.pdf",
+      "observation": "Official MTPTC activity report states that ONACA teams were mobilized in the centres-villes of Jacmel, Pétion-Ville, Saint-Marc, and the Artibonite valley; it describes cadastral plan/base-database work but exposes no current download or query endpoint.",
+      "scope": "national agency report with historical Saint-Marc operational evidence"
+    },
+    {
+      "url": "https://mail.mtptc.gouv.ht/accueil/page_oast.html",
+      "observation": "Official MTPTC page identifies ONACA and assigns it responsibility for establishing the general cadastre of Haiti.",
+      "scope": "national agency"
+    },
+    {
+      "url": "https://dgi.gouv.ht/",
+      "observation": "Official DGI site provides property-tax and land-registration administration context; no Saint-Marc parcel geometry service was exposed in the inspected public pages.",
+      "scope": "national tax/registration agency"
+    },
+    {
+      "url": "https://ciat.gouv.ht/legislation-institutions-foncier/",
+      "observation": "Official CIAT land-policy page discusses cadastre and land security, but is policy/documentation rather than a parcel feature service.",
+      "scope": "national land-policy documentation"
+    },
+    {
+      "url": "https://mjsp.gouv.ht/cartographie-judiciaire",
+      "observation": "Official MJSP map lists Saint-Marc as a judicial jurisdiction and gives a nearby jurisdiction coordinate; it is not cadastral parcel data.",
+      "scope": "local administrative/judicial map, not parcel coverage"
+    }
+  ],
+  "source": null,
+  "sourceIds": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_custodian_and_historical_city_activity_no_current_public_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "ONACA's mandate is national and the historical report documents Saint-Marc intervention; neither establishes current open parcel coverage.",
+    "verifiedOpenScope": "No current public Saint-Marc parcel layer, parcel API, anonymous feature response, schema, CRS, or safe native parcel identity was verified.",
+    "countrywideVerified": false,
+    "citywideAbsenceClaim": false
+  },
+  "researchFile": "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-1018-saint-marc.json"
+}

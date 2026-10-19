@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8199-samarinda.json",
+  "purpose": "Verify local official registry/cadastre evidence and inspect anonymous public map HTML/static JS/schema and geometry-safe routes for city parcel coverage.",
+  "scopeLimits": "Inspected the local land office homepage, city Satu Peta HTML/client config, public Samarinda GeoServer WMS/WFS capabilities, BHUMI public map shell/client, and BHUMI default-layer metadata only. Did not request GetFeature, click-identify, or any BHUMI attribute record. BHUMI help explains parcel identification exposes property attributes; no such identify call was made.",
+  "assessment": "BHUMI’s public metadata advertises a nationwide cadastral 2D layer, but the listed `/bhumigs/umum` service and tested standard WMS/WFS endpoints return HTTP 404; no feature geometry route or schema could be verified. Samarinda’s official city GeoServer WFS capabilities are public (205 feature types) but contain no parcel/bidang/persil layer; only a groundwater-tax layer contains the word “tanah.”",
+  "registryAssessment": "The Samarinda Land Office is the local ATR/BPN office. BHUMI is the national ATR/BPN interactive cadastral map; its public layer metadata advertises the 2D “Bidang Tanah” layer and a GeoServer `umum:Persil` service. Samarinda’s own Satu Peta GeoServer is directly accessible, but its public WFS catalog contains no parcel/persil/bidang layer.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kot-samarinda.atrbpn.go.id/",
+      "observation": "HTTP 200, 6,855 bytes; official Kantor Pertanahan Kota Samarinda office landing page."
+    },
+    {
+      "url": "https://geoportal.samarindakota.go.id/satu-peta",
+      "observation": "HTTP 200, 1,590,789 bytes. Public city GIS uses the official GeoServer host and lists thematic city layers."
+    },
+    {
+      "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+      "observation": "HTTP 200, 213,096 bytes; 205 WFS feature types. Name scan for parcel/bidang/tanah/persil/cadastral terms returned only a groundwater-tax theme (`pajak_air_tanah`), not parcel geometry."
+    },
+    {
+      "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+      "observation": "HTTP 200, 561,011 bytes; 203 WMS layer nodes."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "observation": "HTTP 200, 13,552 bytes; public interactive map shell. Its static page bundle loads published default layer metadata from the public panel API."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter[default][_eq]=true&filter[status][_eq]=published&fields=*,fields.*",
+      "observation": "HTTP 200, 1,545 bytes; one default layer record, “Bidang Tanah”, type 2D, vendor GeoServer, layer `umum:Persil`, configured path `/bhumigs/umum`. This is layer metadata, not feature geometry."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "Official BHUMI help describes the interactive map as a public spatial-information interface integrated with ATR/BPN Atlas."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "observation": "Official BHUMI help describes a “bidang tanah” map layer and identifies the information shown after feature click; no click-identify or property lookup was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Indonesian",
+      "query": "site:atrbpn.go.id Samarinda Kantor Pertanahan Kota Samarinda peta bidang tanah",
+      "result": "Found official local land office and public ATR/BPN BHUMI map help describing a cadastral parcel layer."
+    },
+    {
+      "language": "English",
+      "query": "Samarinda official land office cadastral map parcel GIS",
+      "result": "Found Samarinda Satu Peta and BHUMI; the city GeoServer has thematic layers only, and BHUMI layer-service route is not directly resolvable as OGC."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "directRequests": [
+      {
+        "url": "https://kot-samarinda.atrbpn.go.id/",
+        "method": "GET",
+        "status": 200,
+        "bytes": 6855
+      },
+      {
+        "url": "https://geoportal.samarindakota.go.id/satu-peta",
+        "method": "GET",
+        "status": 200,
+        "bytes": 1590789
+      },
+      {
+        "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+        "method": "GET",
+        "status": 200,
+        "bytes": 561011,
+        "wmsLayerNodes": 203
+      },
+      {
+        "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+        "method": "GET",
+        "status": 200,
+        "bytes": 213096,
+        "featureTypeCount": 205,
+        "parcelLayerNameMatches": []
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/",
+        "method": "GET",
+        "status": 200,
+        "bytes": 10178
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/peta",
+        "method": "GET",
+        "status": 200,
+        "bytes": 13552
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter[default][_eq]=true&filter[status][_eq]=published&fields=*,fields.*",
+        "method": "GET",
+        "status": 200,
+        "bytes": 1545,
+        "defaultLayerCount": 1,
+        "parcelLayer": "umum:Persil",
+        "vendor": "GeoServer"
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WMS&request=GetCapabilities&version=1.3.0",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities&version=2.0.0",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+        "method": "GET",
+        "status": 404
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WFS&request=GetCapabilities&version=2.0.0",
+        "method": "GET",
+        "status": 404
+      }
+    ],
+    "geometryDisposition": "No full geometry requested or retained; BHUMI fields, map layer configuration, and city WFS capabilities only.",
+    "panGridRequests": 0,
+    "panGridReason": "No anonymously reachable vector feature route was verified: BHUMI service paths returned 404 and the city WFS catalog has no parcel layer."
+  },
+  "geometryDecision": "No qualifying anonymous parcel polygon geometry was obtained or retained.",
+  "sampleDisposition": "No qualifying sample.",
+  "nativeAndTransportIdentity": {
+    "nativeParcelIdValueRequested": false,
+    "propertyAttributesRequested": false,
+    "credentialsUsed": false,
+    "httpStatusRecordedOnlyForActualHttpResponses": true
+  },
+  "privacy": "No credentials, owner names, addresses, personal records, parcel identifiers, Khatian data, or property-detail lookups were submitted. Static schema and route names were inspected only where publicly exposed.",
+  "remainingUncertainty": "Whether BHUMI’s `umum:Persil` layer is served through an alternate browser-only or proxy endpoint that returns geometry; whether its nationwide map layer has parcel footprint in the city. The city GeoServer catalog does not expose a local cadastral vector layer.",
+  "nextStep": "Root review; no runtime source adapter or global registry/catalog change is justified by the verified geometry evidence."
+}

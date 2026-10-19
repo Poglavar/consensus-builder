@@ -1,0 +1,285 @@
+{
+  "engine": "Shapely/GEOS",
+  "shapelyVersion": "2.2.0",
+  "geosVersion": "3.14.1",
+  "inputCache": "tmp/overnight-cities-2026-10-09/provo-runtime-cache-26912.geojson",
+  "inputCount": 157,
+  "projection": "NAD83 / UTM zone 12N (EPSG:26912)",
+  "validCount": 157,
+  "positiveAreaCount": 157,
+  "closedRingFeatures": 157,
+  "exactDuplicateGeometryPairs": [],
+  "positiveOverlapThresholdM2": 1e-07,
+  "positiveOverlapPairCount": 221,
+  "maxPositiveOverlapM2": 108.39423187208882,
+  "largestOverlaps": [
+    {
+      "parcelIds": [
+        "170340027",
+        "340230023"
+      ],
+      "overlapM2": 108.39423187208882
+    },
+    {
+      "parcelIds": [
+        "170340027",
+        "340230500"
+      ],
+      "overlapM2": 54.30207790200942
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160055"
+      ],
+      "overlapM2": 46.566555072639
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160019"
+      ],
+      "overlapM2": 42.012146341032775
+    },
+    {
+      "parcelIds": [
+        "350160037",
+        "350160500"
+      ],
+      "overlapM2": 41.979057966979596
+    },
+    {
+      "parcelIds": [
+        "170340052",
+        "340230005"
+      ],
+      "overlapM2": 27.443755364318278
+    },
+    {
+      "parcelIds": [
+        "350180500",
+        "350180040"
+      ],
+      "overlapM2": 24.6220421250592
+    },
+    {
+      "parcelIds": [
+        "350160038",
+        "350160500"
+      ],
+      "overlapM2": 14.551591045623606
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160022"
+      ],
+      "overlapM2": 14.550645643980005
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160035"
+      ],
+      "overlapM2": 14.542968009949131
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160021"
+      ],
+      "overlapM2": 14.538573840560428
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160020"
+      ],
+      "overlapM2": 14.534215118715494
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160036"
+      ],
+      "overlapM2": 14.010563543048946
+    },
+    {
+      "parcelIds": [
+        "350160041",
+        "350160500"
+      ],
+      "overlapM2": 12.216686739070493
+    },
+    {
+      "parcelIds": [
+        "350160039",
+        "350160500"
+      ],
+      "overlapM2": 12.205122619506602
+    },
+    {
+      "parcelIds": [
+        "350180500",
+        "350180071"
+      ],
+      "overlapM2": 11.762471111287923
+    },
+    {
+      "parcelIds": [
+        "350180500",
+        "350180042"
+      ],
+      "overlapM2": 10.41679435617762
+    },
+    {
+      "parcelIds": [
+        "350180500",
+        "350180041"
+      ],
+      "overlapM2": 9.719284265319441
+    },
+    {
+      "parcelIds": [
+        "350180500",
+        "350180070"
+      ],
+      "overlapM2": 9.422405043739165
+    },
+    {
+      "parcelIds": [
+        "350170055",
+        "350170500"
+      ],
+      "overlapM2": 9.414346092830383
+    },
+    {
+      "parcelIds": [
+        "350160040",
+        "350160500"
+      ],
+      "overlapM2": 9.342228582113934
+    },
+    {
+      "parcelIds": [
+        "350180003",
+        "350180500"
+      ],
+      "overlapM2": 8.63798576613828
+    },
+    {
+      "parcelIds": [
+        "350180004",
+        "350180500"
+      ],
+      "overlapM2": 8.63559085437463
+    },
+    {
+      "parcelIds": [
+        "350180500",
+        "350180005"
+      ],
+      "overlapM2": 8.630754863411564
+    },
+    {
+      "parcelIds": [
+        "350160500",
+        "350160042"
+      ],
+      "overlapM2": 8.457129652115437
+    },
+    {
+      "parcelIds": [
+        "350180500",
+        "350180069"
+      ],
+      "overlapM2": 8.329561337464954
+    },
+    {
+      "parcelIds": [
+        "170340052",
+        "170340002"
+      ],
+      "overlapM2": 7.875596454576419
+    },
+    {
+      "parcelIds": [
+        "350170054",
+        "350170500"
+      ],
+      "overlapM2": 7.7101709872217645
+    },
+    {
+      "parcelIds": [
+        "350170053",
+        "350170500"
+      ],
+      "overlapM2": 7.5872521805652315
+    },
+    {
+      "parcelIds": [
+        "350170052",
+        "350170500"
+      ],
+      "overlapM2": 7.581935351819804
+    }
+  ],
+  "invalidFeatures": [],
+  "nonPositiveAreaFeatures": [],
+  "city": {
+    "name": "Provo",
+    "cityId": "wup2025:5621",
+    "countryCode": "US",
+    "rank": 1136,
+    "population2025k": 488.429,
+    "centerLatLon": [
+      40.3078525920474,
+      -111.714794014436
+    ]
+  },
+  "candidateLayer": "https://maps.utahcounty.gov/arcgis/rest/services/Parcels/TaxParcels_mobile/MapServer/15",
+  "targetParcelId": "350180070",
+  "targetGeometryFootprintBinding": {
+    "passed": false,
+    "coverage": "complete",
+    "siteM2": 800.6,
+    "unsurveyedM2": 0,
+    "expectedBoundParcelCount": 1,
+    "actualBoundParcelCount": 3,
+    "boundParcels": [
+      {
+        "PARCELID": "350180019",
+        "overlapM2": 0.0,
+        "intrusionM": 0.001,
+        "note": "rounding-floor inclusion; raw intersection area 0.0000013m2"
+      },
+      {
+        "PARCELID": "350180070",
+        "overlapM2": 800.603,
+        "intrusionM": 23.8871
+      },
+      {
+        "PARCELID": "350180500",
+        "overlapM2": 9.44,
+        "intrusionM": 0.394
+      }
+    ],
+    "touchedParcels": [
+      {
+        "PARCELID": "350180018",
+        "overlapM2": 0.004,
+        "intrusionM": 0.0003
+      },
+      {
+        "PARCELID": "350180072",
+        "overlapM2": 0.032,
+        "intrusionM": 0.0012
+      }
+    ],
+    "reason": "The complete source binding includes the target and two additional bound IDs; 350180500 intrudes materially (about 0.394 m). This fails single-parcel binding."
+  },
+  "fullGeometrySampleCountInRepository": 3,
+  "fullGeometrySampleFile": "provo-parcel-samples-native.json",
+  "auditSourceCache": "tmp/overnight-cities-2026-10-09/provo-runtime-cache-26912.geojson",
+  "containsFullGeometries": false
+}

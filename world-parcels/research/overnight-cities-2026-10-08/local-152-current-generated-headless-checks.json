@@ -1,0 +1,20 @@
+{
+  "purpose": "Focused catalog and generated coverage checks after Tuen Mun integration and report regeneration.",
+  "passedTests": 20,
+  "failedTests": 0,
+  "success": true,
+  "files": [
+    {
+      "file": "parcel-catalog-startup.test.js",
+      "status": "passed"
+    },
+    {
+      "file": "parcel-source-city-metric.test.js",
+      "status": "passed"
+    },
+    {
+      "file": "world-coverage-build.test.js",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:62",
+  "queueRank": 62,
+  "name": "Amman",
+  "country": "Jordan",
+  "countryCode": "JO",
+  "centerLatLon": [
+    31.9836227976918,
+    35.9602148481902
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "http://www.ammancitygis.gov.jo/ArcGIS/rest/services",
+      "observation": "Greater Amman Municipality's ArcGIS REST directory is listed in search results (a services/okemg/FeatureServer path); request returned 503 upstream timeout."
+    },
+    {
+      "url": "https://www.dls.gov.jo/",
+      "observation": "Department of Lands and Survey site loads (200); no public parcel service found on the landing page."
+    },
+    {
+      "url": "https://opendata.gov.jo/",
+      "observation": "Jordan open-data portal loads (200); not searched for parcel datasets beyond landing."
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://www.ammancitygis.gov.jo/ArcGIS/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": 503,
+      "contentType": "text/plain",
+      "assessment": "upstream connect timeout"
+    },
+    {
+      "url": "https://www.ammancitygis.gov.jo/ArcGIS/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://maps.ammancitygis.gov.jo/arcgis/rest/services?f=json",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    },
+    {
+      "url": "https://www.dls.gov.jo/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "landing page only"
+    },
+    {
+      "url": "https://opendata.gov.jo/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "landing page only"
+    },
+    {
+      "url": "https://opendata.amman.jo/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no HTTP response through the agent proxy (connection reset or tunnel failure)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "GAM GIS offers free and paid property/land services; scope unverified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The most promising endpoint (GAM ArcGIS REST) timed out; it is a temporary failure, not a negative.",
+  "nextStep": "Retry the GAM REST directory, list services for a parcel/land layer and test a bounded query; check licence for the free tier."
+}

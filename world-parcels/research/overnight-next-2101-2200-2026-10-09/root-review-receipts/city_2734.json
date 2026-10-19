@@ -1,0 +1,29 @@
+{
+  "taskId": "city:2734",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-2734-acarigua.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/acarigua-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T00:01:54Z",
+  "identityReview": "Packet city code, rank, country, exact WUP point and 2025 population in persons match immutable pending queue and ranked roster.",
+  "searchReview": "Packet records executed English and local-language searches with query text and actual first-party result URLs; paired review inspected.",
+  "registryFound": true,
+  "retainedFullPolygonCount": 0,
+  "firstPartyCacheChecks": [
+    {
+      "cachePath": "tmp/valhalla-parcel-research/2734/alcaldia.html",
+      "sha256": "438a05acba7dd1696da55089ecf554b30ebce5804501adb2266cfba3d59930b6",
+      "observation": "First-party municipal page lists Dirección de Catastro in Acarigua and registration, cadastral-solvency, valuation, and urban-control services."
+    },
+    {
+      "cachePath": "tmp/valhalla-parcel-research/2734/igvsb.html",
+      "sha256": "7c79773254918f77fade6ef715db87d4c02d74ef0efd055115398d7d042868fd",
+      "observation": "First-party national institute homepage offers general mapping context; no bounded Acarigua parcel ID/geometry response verified."
+    }
+  ],
+  "reason": "Official Páez municipal HTML lists Dirección de Catastro in Acarigua and cadastral services. The inspected IGVSB page is a national cartographic portal, not a bounded Acarigua parcel response. No native ID or polygon was obtained.",
+  "admissionGates": "No public native-ID polygon response or independently qualified live adapter; fresh ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding and headed details-panel verification are missing. Runtime admission remains held; no citywide absence inferred."
+}

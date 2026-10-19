@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Cancún",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "registryFound": true,
+  "registryBasis": "Benito Juárez’s official Catastro Directorate says it maintains the municipal Registro Catastral. Public pages describe consultation/services, not an anonymous parcel endpoint; the municipal value-zone plan maps zones, not parcels.",
+  "registryEvidenceUrls": [
+    "https://catastro.cancun.gob.mx/dcm/home/inicio",
+    "https://catastro.cancun.gob.mx/dcm/home/conocenos",
+    "https://cancun.gob.mx/uploads/19/129/Tabla%20Version%20Final%20Catastro.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7106,
+  "cityId": "wup2025:7106",
+  "centerLatLon": [
+    21.165484558762,
+    -86.8621985906125
+  ],
+  "point": [
+    21.165484558762,
+    -86.8621985906125
+  ],
+  "rank": 845,
+  "queueRank": 845,
+  "population2025": 637532,
+  "population2025k": 637.532,
+  "populationPlausibility2025": "High",
+  "notes": null,
+  "coverageAssessment": {
+    "claimedScope": "Benito Juárez’s official Catastro Directorate says it maintains the municipal Registro Catastral. Public pages describe consultation/services, not an anonymous parcel endpoint; the municipal value-zone plan maps zones, not parcels.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with safe stable ID was verified; findings and limits are described in source and service review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Spanish",
+        "query": "Catastro Municipal Benito Juárez Cancún mapa catastral parcelas GIS predios público oficial",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "Official Catastro says it maintains the municipal register and offers consultation/regularization. Its interactive map is forthcoming; value-zone plan is thematic, not parcel geometry. No property lookup.",
+        "actualResultUrls": [
+          "https://catastro.cancun.gob.mx/dcm/home/inicio",
+          "https://catastro.cancun.gob.mx/dcm/home/conocenos",
+          "https://cancun.gob.mx/uploads/19/129/Tabla%20Version%20Final%20Catastro.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      },
+      {
+        "language": "English",
+        "query": "Cancun Benito Juarez municipality official cadastral registry public parcel map GIS",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "Official sources confirm municipal Catastro. No anonymous parcel vector endpoint or safe geometry+ID schema found; public map is value zones.",
+        "actualResultUrls": [
+          "https://catastro.cancun.gob.mx/dcm/home/inicio",
+          "https://catastro.cancun.gob.mx/dcm/home/conocenos",
+          "https://cancun.gob.mx/uploads/19/129/Tabla%20Version%20Final%20Catastro.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://catastro.cancun.gob.mx/dcm/home/inicio",
+        "observation": "Official Benito Juárez Catastro home identifies the authority maintaining the municipal register."
+      },
+      {
+        "url": "https://catastro.cancun.gob.mx/dcm/home/conocenos",
+        "observation": "Official Conócenos page lists consultation/regularization; interactive office-location map is forthcoming."
+      },
+      {
+        "url": "https://cancun.gob.mx/uploads/19/129/Tabla%20Version%20Final%20Catastro.pdf",
+        "observation": "Municipal value-zone plan is not parcel geometry. Home GET HTTP 200 (13,321 bytes), no scripts/vector route; no form submitted."
+      }
+    ]
+  },
+  "source": {
+    "name": "Dirección de Catastro Municipal, Ayuntamiento de Benito Juárez, Quintana Roo.",
+    "urls": [
+      "https://catastro.cancun.gob.mx/dcm/home/inicio",
+      "https://catastro.cancun.gob.mx/dcm/home/conocenos",
+      "https://cancun.gob.mx/uploads/19/129/Tabla%20Version%20Final%20Catastro.pdf"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "Official public Catastro pages describe registry/consultation but no parcel viewer or safe schema. Published map is value-zone mapping; no tax/address/property request.",
+  "scopeLimits": "Bounded public-source review. No owner, address, tax/account, applicant, identity or property-specific data queried or retained. No completeness or legal/survey accuracy claim.",
+  "remainingUncertainty": "Parcel plans may be issued by application; no anonymous geometry route or WUP hit verified.",
+  "resultCategory": "municipal_cadastre_confirmed_no_public_parcel_vector_verified",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "Official public Catastro pages describe registry/consultation but no parcel viewer or safe schema. Published map is value-zone mapping; no tax/address/property request."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://catastro.cancun.gob.mx/dcm/home/inicio",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": null
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

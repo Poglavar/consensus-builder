@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:67",
+  "queueRank": 67,
+  "name": "Shenyang",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    41.796815705277,
+    123.388989217199
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://zrzyj.shenyang.gov.cn/",
+      "observation": "Shenyang Natural Resources Bureau (candidate); connection reset from proxy."
+    },
+    {
+      "url": "https://data.shenyang.gov.cn/",
+      "observation": "Shenyang open-data platform (candidate); connection reset."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu platform; anti-bot page."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzyj.shenyang.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 35: connection reset by peer; treated as unreachable, not a permanent negative"
+    },
+    {
+      "url": "https://data.shenyang.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 35: connection reset by peer; treated as unreachable, not a permanent negative"
+    },
+    {
+      "url": "https://sydata.shenyang.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html",
+      "assessment": "anti-bot block page; no data"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Shenyang municipal land records (not confirmed online)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official hosts were unreachable from this network, so absence of an open service is unconfirmed.",
+  "nextStep": "Retest from a China-reachable network; check for Liaoning/Shenyang parcel datasets."
+}

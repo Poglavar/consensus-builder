@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 73,
+  "city": "Faisalabad",
+  "countryCode": "PK",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/faisalabad.json",
+  "query": {
+    "language": "Urdu",
+    "script": "Perso-Arabic",
+    "text": "فیصل آباد زمین ریکارڈ نقشہ پلاٹ بورڈ آف ریونیو پنجاب سرکاری"
+  },
+  "results": [
+    {
+      "title": "PULSE - Punjab Urban Land Systems Enhancement",
+      "url": "https://lis.pulse.gop.pk/",
+      "kind": "official-provincial-map-viewer",
+      "note": "Search result lists Faisalabad and property/parcel-related map themes; complete parcel details require login, and public vector service is not established."
+    },
+    {
+      "title": "Punjab Land Records Cadastral Map",
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "kind": "official-provincial-cadastral-viewer",
+      "note": "Village-wise cadastral viewer offers district/tehsil/village selectors, but not a direct reusable service endpoint."
+    }
+  ],
+  "assessment": "Punjab government map and cadastral-record portals are relevant to Faisalabad, but the search does not verify anonymous parcel-vector access.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:7724",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Urdu",
+    "queryScript": "Perso-Arabic",
+    "nativeQuery": "فیصل آباد زمین ریکارڈ نقشہ پلاٹ بورڈ آف ریونیو پنجاب سرکاری",
+    "englishQuery": "Faisalabad land records, parcel map, and Punjab Board of Revenue",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

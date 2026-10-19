@@ -1,0 +1,19 @@
+{
+  "taskId": "city:7078",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-7078-playa-del-carmen.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/playa-del-carmen-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-11T12:19:24Z",
+  "registryFound": null,
+  "reason": "Original UN WUP 2025 CSV SHA-256 e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114 confirms code 7078, rank 2453, Mexico, point [20.6506057933015,-87.0728192508159], and Pop 238.944 thousand = 238944 persons. English and Spanish search queries and outcomes were inspected and independently repeated. Official municipal procedure pages establish a Catastro office and cartographic workflow; the official systems directory labels SIGEM internal. The packet's conservative registryFound null remains unresolved; it is not false absence. Inspected SITU/INEGI responses are map/configuration evidence, not native parcel geometry. RAN 403 and internal-host DNS failure do not show citywide absence. No safe native-ID polygon response or retained polygon exists. Fresh ID reads, paging, 13 bounded cells, metric GEOS checks, source binding, and headed details-panel verification have no independent qualification evidence. Runtime admission remains held.",
+  "firstPartySourcesChecked": [
+    "https://playadelcarmen.gob.mx/mpdc-tm-c-coc-009",
+    "https://playadelcarmen.gob.mx/mpdc-tm-c-cu-006",
+    "https://aplicaciones.playadelcarmen.gob.mx/"
+  ],
+  "retainedFullPolygonCount": 0
+}

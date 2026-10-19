@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 11027,
+  "cityId": "wup2025:11027",
+  "name": "Hajipur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.9809989936602,
+    85.4509953679278
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 118,
+  "stateOrUT": "Bihar",
+  "administrativeIdentity": {
+    "district": "मुज़फ़्फ़रपुर",
+    "tehsilOrTaluk": "Sakra",
+    "revenueVillage": null,
+    "identityEvidence": "Nominatim reverse-geocode lead at exact WUP coordinate; not an official revenue-village confirmation."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "no_verified_open_endpoint_after_attempts"
+    ],
+    "previousEvidenceFiles": [
+      "research/hajipur.json"
+    ],
+    "registryFoundBefore": false,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/hajipur.json",
+        "checkedAt": "2026-09-29",
+        "status": "no_verified_open_endpoint_after_attempts",
+        "scope": "Bihar village cadastral maps (viewer)",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.bihar.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html;charset=UTF-8",
+            "assessment": "HTML login page only"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.bihar.gov.in/rest/GetMapInstanceMap/getMapInstance",
+            "httpStatus": 405,
+            "contentType": "text/html",
+            "assessment": "internal endpoint requires POST/session; not an open API and not probed further"
+          },
+          {
+            "method": "GET",
+            "url": "https://bhunaksha.bihar.gov.in/rest/VillageMapInfo/getVillageList",
+            "httpStatus": 404,
+            "contentType": "text/html",
+            "assessment": "not found"
+          },
+          {
+            "method": "GET",
+            "url": "https://biharbhumi.bihar.gov.in/",
+            "httpStatus": 200,
+            "contentType": "text/html",
+            "assessment": "stub"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.nakshauat.dolr.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection failure (000)"
+          }
+        ],
+        "conclusion": "Bhu-Naksha likely has plot polygons for Vaishali district villages, but only through a session-based viewer; no open bounded polygon endpoint verified, and reuse terms unread.",
+        "nextStep": "Inspect the Bhu-Naksha viewer's network flow/terms for a permitted API; check Bihar open-data and Bhuvan for ULB property GIS."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "हाजीपुर वैशाली बिहार मौजा नक्शा खेसरा भू नक्शा",
+        "scope": "WUP 11027 Hajipur cohort label retained; exact native-script search used to identify Bihar official revenue/cadastral map entry points.",
+        "result": "Search outputs pointed to the shared official Bihar BhuNaksha/Bihar Bhumi entry points; no city-specific parcel polygon or exact WUP revenue village was returned by this search.",
+        "checkedAt": "2026-10-08",
+        "script": "Devanagari",
+        "actualResultUrls": [
+          "https://akhairkar.github.io/BhumiRecord/districts/bihar/vaishali.html",
+          "https://biharbhumiseva.com/download-bhumi-map/",
+          "https://www.biharbhumiseva.in/blogs/search-view-map/",
+          "https://www.biharbhumiseva.in/download-map",
+          "https://phonemap.in/bhu-naksha/bihar/",
+          "https://biharbhumii.com/",
+          "https://vaishali.nic.in/hi/document/%E0%A4%B5%E0%A5%88%E0%A4%B6%E0%A4%BE%E0%A4%B2%E0%A5%80-%E0%A4%B8%E0%A4%AE%E0%A4%BE%E0%A4%B9%E0%A4%B0%E0%A4%A3%E0%A4%BE%E0%A4%B2%E0%A4%AF-%E0%A4%B9%E0%A4%BE%E0%A4%9C%E0%A5%80%E0%A4%AA%E0%A5%81-4/",
+          "https://www.knowbihar.in/hi/subdivision/hajipur/",
+          "https://rera.bihar.gov.in/All_Document/RERAP31201800101RERAP31201800101-2LanddocumentsLocation.pdf",
+          "https://biharbhumijankari.in/",
+          "https://biharbhumionline.com/",
+          "https://www.egovtschemes.com/bhu-naksha-bihar/",
+          "https://biharbhumionline.in/",
+          "https://environmentclearance.nic.in/writereaddata/Online/EDS/0_0_21_Jan_2021_2042328801TirupatiADSReply.pdf",
+          "https://bspcb.bihar.gov.in/EIA-IA%20Warsaliganj_merged.pdf",
+          "https://dlrs.bihar.gov.in/docs/Form/Ch_21.pdf",
+          "https://en.wikipedia.org/wiki/Bahuara%2C_Vaishali_district",
+          "https://de.wikipedia.org/wiki/Vaishali_%28Distrikt%29",
+          "https://www.reddit.com/r/bihar/comments/1tovakh/%E0%A4%AC%E0%A4%B9%E0%A4%B0_%E0%A4%AE_%E0%A4%9C%E0%A4%AE%E0%A4%A8_%E0%A4%96%E0%A4%B0%E0%A4%A6%E0%A4%A8_%E0%A4%B8_%E0%A4%AA%E0%A4%B9%E0%A4%B2_%E0%A4%B8%E0%A4%B0%E0%A4%AB_%E0%A4%96%E0%A4%A4%E0%A4%96%E0%A4%B8%E0%A4%B0_%E0%A4%A8%E0%A4%B9_bhu_naksha_%E0%A4%AD/",
+          "https://en.wikipedia.org/wiki/Goshpur_Ezra",
+          "https://en.wikipedia.org/wiki/Vaishali_district",
+          "https://en.wikipedia.org/wiki/Vaishali_%28community_development_block%29",
+          "https://en.wikipedia.org/wiki/Dighikala_West"
+        ],
+        "actualResultUrlsStatus": "returned_by_individual_query_recheck",
+        "actualResultUrlsNote": "The exact result-URL-to-query association was not preserved. Shared state portal URLs remain under freshResearch.portals/searchResults/requests and are not attributed to this individual query.",
+        "executionMethod": "Reran the exact saved query individually using web search; URLs are the source-header URLs returned by that query call.",
+        "recheckedAt": "2026-10-08",
+        "priorLogLimitation": "The prior batch log did not preserve query-specific URL attribution; this individual rerun supersedes that limitation.",
+        "resultScope": "Search-only discovery result. Returned URLs are not evidence of a verified parcel feature or geometry."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bihar BhuNaksha and Bihar Bhumi",
+        "operator": "Government of Bihar, Directorate of Land Records & Survey / Revenue and Land Reforms Department",
+        "homeUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "mapUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "observation": "Shared official state entry points returned by native Hindi searches. Prior selector evidence is recorded in inherited research; this city-specific pass did not verify a target parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://nominatim.openstreetmap.org/reverse?lat=25.9809989936602&lon=85.4509953679278&format=jsonv2&zoom=18&addressdetails=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json; charset=utf-8",
+        "observation": "Resolved OSM/Nominatim locality/admin lead; must confirm with an official state cadastral selector before attributing parcels.",
+        "source": "OpenStreetMap Nominatim reverse geocoder; geographic lead only, not authoritative revenue-village identity.",
+        "displayName": "Sakra, मुज़फ़्फ़रपुर, Bihar, 844112, India",
+        "osmType": "way",
+        "osmId": 753172662,
+        "address": {
+          "county": "Sakra",
+          "state_district": "मुज़फ़्फ़रपुर",
+          "state": "Bihar",
+          "ISO3166-2-lvl4": "IN-BR",
+          "postcode": "844112",
+          "country": "India",
+          "country_code": "in"
+        }
+      }
+    ],
+    "searchResults": [
+      {
+        "urls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://dlrs.bihar.gov.in/services.html"
+        ],
+        "scope": "Official state URLs observed in Bihar query outputs; shared across the Bihar city batch, not evidence of a city-specific sample."
+      }
+    ]
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "technicalBlocker": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+  "remainingUncertainty": "No target-city parcel geometry or current native-ID/completeness proof was obtained; see technicalBlocker and nextStep.",
+  "nextStep": "Resolve the WUP coordinate to an official revenue district, taluk and revenue village; then select that location in Bihar BhuNaksha and verify a bounded parcel response with polygon geometry and stable plot ID."
+}

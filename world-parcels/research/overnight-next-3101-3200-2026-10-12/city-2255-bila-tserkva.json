@@ -1,0 +1,123 @@
+{
+  "cityCode": 2255,
+  "queueRank": 3139,
+  "name": "Bila Tserkva",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "iso3": "UKR",
+  "locId": 804,
+  "capital": false,
+  "point": [49.8009702357111, 30.1190210589534],
+  "population2025": 191217,
+  "population2025k": 191.217,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "attempt": 1,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bila Tserkva Ukraine official cadastral parcel map public parcel map",
+        "result": "First-party discovery identified Ukraine's official Public Cadastral Map, the state Centre of State Land Cadastre, Kyiv Oblast StateGeoCadastre guidance, and the official national cadastral/NSDI documentation. No city-specific safe parcel geometry endpoint was evidenced.",
+        "actualResultUrls": [
+          "https://map.land.gov.ua/",
+          "https://dzk.gov.ua/",
+          "https://kyivska.land.gov.ua/do-uvahy-hromadian-orhaniv-derzhavnoi-vlady-mistsevoho-samovriaduvannia-pidpryiemstv-ustanov-ta-orhanizatsii/",
+          "https://nsdi.gov.ua/docs/portal/"
+        ]
+      },
+      {
+        "language": "Ukrainian (local)",
+        "query": "Україна Біла Церква офіційна кадастрова карта земельний кадастр",
+        "result": "Україномовний first-party discovery confirmed the national Public Cadastral Map and the Kyiv Oblast StateGeoCadastre public guidance. The official sources describe cadastral parcel map contents and search/service routes, but no anonymous citywide parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://map.land.gov.ua/kadastrova-karta",
+          "https://kyivska.land.gov.ua/do-uvahy-hromadian-orhaniv-derzhavnoi-vlady-mistsevoho-samovriaduvannia-pidpryiemstv-ustanov-ta-orhanizatsii/",
+          "https://land.gov.ua/faq/",
+          "https://wikimap.dzk.gov.ua/wiki/%D0%9F%D1%83%D0%B1%D0%BB%D1%96%D1%87%D0%BD%D0%B0_%D0%BA%D0%B0%D0%B4%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B2%D0%B0_%D0%BA%D0%B0%D1%80%D1%82%D0%B0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "StateGeoCadastre of Ukraine, with the Main Department of the StateGeoCadastre in Kyiv Oblast as the relevant regional cadastral custodian context",
+    "scope": "The official national Public Cadastral Map and Kyiv Oblast StateGeoCadastre guidance evidence a state cadastral/map route covering Ukraine and Kyiv Oblast. This does not qualify an open Bila Tserkva-specific parcel API or citywide geometry feed.",
+    "evidenceUrls": [
+      "https://dzk.gov.ua/",
+      "https://kyivska.land.gov.ua/do-uvahy-hromadian-orhaniv-derzhavnoi-vlady-mistsevoho-samovriaduvannia-pidpryiemstv-ustanov-ta-orhanizatsii/",
+      "https://land.gov.ua/faq/"
+    ],
+    "scopeNote": "This is state/regional cadastral custodian evidence, not proof of a local Bila Tserkva municipal parcel service. A local registry is not asserted because no city-maintained parcel endpoint was found."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Ukraine Public Cadastral Map / StateGeoCadastre and National Geoportal documentation",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": null,
+    "compositeKeyProvenance": null,
+    "attemptedRoutes": [
+      {
+        "method": "GET",
+        "url": "https://map.land.gov.ua/",
+        "outcome": "TLS-verified request timed out after 30 seconds; no HTML, JavaScript, configuration, schema, CRS, or service endpoint was inspected. This is an access limit, not evidence of parcel absence."
+      },
+      {
+        "method": "GET",
+        "url": "https://m1.land.gov.ua/geowebcache/service/wms?SERVICE=WMS&REQUEST=GetCapabilities",
+        "outcome": "TLS-verified request timed out after 20 seconds; no capabilities document returned."
+      },
+      {
+        "method": "GET",
+        "url": "https://map.land.gov.ua/geoserver/kadastr/ows?service=WFS&version=1.0.0&request=GetCapabilities",
+        "outcome": "The route was probed in a bounded request, but no verified parcel feature response was obtained before the service access stalled. No response was used as evidence."
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/docs/api/v2/gis.html",
+        "outcome": "HTTP 200 official documentation received. It documents public WFS/WMS routes, default EPSG:4326, a parcels layer example, and safe/public access levels, but it is documentation rather than a Bila Tserkva parcel response."
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/api/v2/wfs/default/parcels?REQUEST=GetCapabilities",
+        "outcome": "HTTP 404 HTML 'page not found'; guessed route did not expose a service response."
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/api/v2/wfs/default/parcels?REQUEST=GetFeature&bbox=30.109,49.791,30.129,49.811&count=3&version=2.0.0&srsName=EPSG:4326",
+        "outcome": "HTTP 404 HTML 'page not found'; no parcel features, IDs, geometry, schema, or CRS response obtained. The bbox was bounded around the exact WUP point and was not used as an absence test."
+      },
+      {
+        "method": "GET",
+        "url": "https://nsdi.gov.ua/api/v2/wms/default?REQUEST=GetCapabilities",
+        "outcome": "HTTP 404 HTML 'page not found'; no map capabilities response obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://map.land.gov.ua/geowebcache/service/wms?SERVICE=WMS&REQUEST=GetCapabilities (TLS-exception probe)",
+        "outcome": "A non-qualifying diagnostic probe was attempted with certificate verification disabled despite no authorized exception; it returned no useful response before timeout. It is excluded from evidence and was not used for qualification. No further TLS bypass was attempted."
+      }
+    ],
+    "note": "The exact WUP point [49.8009702357111, 30.1190210589534] was preserved and not shifted. No parcel ID, geometry, schema, CRS, or bounded anonymous parcel-feature response was obtained."
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "uncertainty": [
+    "The national map and its legacy WMS host were unavailable or timed out during direct TLS-verified inspection.",
+    "NSDI documentation describes WFS/WMS and parcel-search patterns, but the documented examples are not proof that a current anonymous production endpoint is live or exposes Bila Tserkva parcels.",
+    "No exact-point hit, map extent miss, timeout, or unusable route is evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, or other unsafe fields were requested or retained.",
+    "Packet completion is not source integration or runtime admission."
+  ]
+}

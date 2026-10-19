@@ -1,0 +1,89 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "SGR",
+ "regionName": "Selangor",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar on; Referer = viewer origin",
+ "source": {
+  "sourceId": "my-selangor-jps-lot-kadaster",
+  "name": "Lot_Kadaster_MIL1 FeatureServer, 9 district lot layers (LOT_DAERAH_*)",
+  "operator": "Jabatan Pengairan dan Saliran (Drainage and Irrigation) Selangor",
+  "scope": "all 9 Selangor districts (Gombak, Hulu Langat, Hulu Selangor, Klang, Kuala Langat, Kuala Selangor, Petaling, Sabak Bernam, Sepang); 424,306 lots in total by layer counts",
+  "endpoint": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer",
+  "method": "ArcGIS REST query (layer per district)",
+  "responseFormat": "esri JSON",
+  "crs": "native EPSG:3857; EPSG:4326 via outSR",
+  "reuseStatus": "unknown; no licence text on service; agency working layer, not the JUPEM authoritative cadastre"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "my-selangor-jps-lot-kadaster",
+  "requestUrl": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/8/query",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": "first 3 records by OBJECTID (Sabak Bernam ~100.92,3.73; Klang ~101.44,3.12); Petaling bbox 101.62,3.09,101.65,3.11 verified earlier",
+  "parcelRecordCount": 6,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "OBJECTID, No_Lot",
+  "responseFile": "research/subnational/MY/SGR-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount, maxRecordCount 2000",
+  "regionSampled": "Sabak Bernam (layer 8) and Klang (layer 4), plus Petaling (layer 7) from earlier evidence"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Inferred from the service: nine layers, one per Selangor district, per-layer counts 24,646 / 78,365 / 35,839 / 98,242 / 36,123 / 32,619 / 63,603 / 34,552 / 20,317. The publisher makes no explicit statewide-completeness claim; Kuala Lumpur and Putrajaya (Federal Territories) are not covered.",
+ "subregionsVerified": [
+  "Sabak Bernam",
+  "Klang",
+  "Petaling"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services",
+   "observation": "public ArcGIS Server 10.61, folders and Lot_Kadaster_MIL1 service; anonymous read; capabilities list also shows edit operations (not tested)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "9 district layers, maxRecordCount 2000"
+  },
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/{1..9}/query?where=1=1&returnCountOnly=true&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "counts per layer as listed"
+  },
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/8/query?where=1=1&outFields=OBJECTID,No_Lot&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "3 closed polygons, Sabak Bernam"
+  },
+  {
+   "url": "https://jpsselgis.selangor.gov.my/gis/rest/services/Lot_Kadaster_MIL1/FeatureServer/4/query (same parameters)",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "3 closed polygons, Klang"
+  },
+  {
+   "url": "research/kuala-lumpur.json and research/retry/countries/MY.json: layer 7 Petaling bbox",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "",
+   "assessment": "3 polygons, reused"
+  }
+ ],
+ "reuseStatus": "unknown; no licence text read",
+ "remainingUncertainty": "Layer is drainage-agency data; vintage, completeness against the JUPEM cadastre and licence unknown. Saved fields exclude applicant/developer/consultant names present in the full schema.",
+ "nextStep": "Confirm licence with JPS Selangor; compare against JUPEM cadastre."
+}

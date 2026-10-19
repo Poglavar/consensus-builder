@@ -1,0 +1,31 @@
+{
+  "taskId": "city:789",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-789-makeni.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/makeni-service-review.json",
+    "tmp/valhalla-parcel-research/makeni/services.html",
+    "tmp/valhalla-parcel-research/makeni/nlc.html"
+  ],
+  "checkedAt": "2026-10-12T00:01:24Z",
+  "reason": "Official government presentation identifies a Makeni regional Surveys and Lands office and survey-plan custody; current ministry services use account workflows and the NLC cadastral-map portal says it is under development. This establishes limited custody, not public citywide geometry. No safe anonymous native-ID full polygon or independent adapter admission proof exists.",
+  "registryFound": true,
+  "identityVerifiedAgainstOriginalWup": true,
+  "bilingualExecutedSearchesRecorded": true,
+  "durableSamplePolygonCount": 0,
+  "firstPartyUrlsChecked": [
+    "https://www.anticorruption.gov.sl/slides/slide/ministry-of-lands-country-planning-and-environment-474/pdf_content",
+    "https://app.molhcp.gov.sl/services.aspx",
+    "https://nlc.gov.sl/digital-portal"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

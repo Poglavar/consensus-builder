@@ -1,0 +1,67 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "BR",
+ "regionCode": "SC",
+ "regionName": "Santa Catarina",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json,text/plain,*/*; Accept-Language: pt-BR,pt;q=0.9,en;q=0.8; Referer: https://consultapublica.car.gov.br/publico/imoveis/index; cookie jar used",
+ "source": {
+  "sourceId": "br-sicar-car-imoveis-sc",
+  "name": "SICAR / CAR rural property perimeters, layer sicar_imoveis_sc",
+  "operator": "Servico Florestal Brasileiro (SICAR)",
+  "scope": "State of Santa Catarina, rural properties (CAR, self-declared); not urban lots and not the legal cadastre",
+  "endpoint": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+  "method": "GET WFS 2.0.0 GetFeature",
+  "responseFormat": "GeoJSON",
+  "crs": "EPSG:4326",
+  "reuseStatus": "Licence/terms not read"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "br-sicar-car-imoveis-sc",
+  "requestUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sc&count=3&outputFormat=application/json&bbox=-48.6,-27.65,-48.5,-27.55,EPSG:4326",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=utf-8",
+  "spatialTestAreaLonLat": [
+   -48.6,
+   -27.65,
+   -48.5,
+   -27.55
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "MultiPolygon",
+  "closedRings": true,
+  "idField": "cod_imovel",
+  "responseFile": "SC-parcel-response.json",
+  "pagination": "WFS startIndex/count",
+  "sampledMunicipality": "Florianópolis"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "SICAR publishes one WFS layer per UF covering the whole state (rural CAR perimeters); one bbox sampled. Urban lots are municipal.",
+ "layerType": "rural (SICAR/CAR self-declared)",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://consultapublica.car.gov.br/publico/imoveis/index",
+   "observation": "CAR public consultation viewer, used as Referer"
+  },
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+   "observation": "SICAR GeoServer, open WFS, no token needed"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geoserver.car.gov.br/geoserver/sicar/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sicar:sicar_imoveis_sc&count=3&outputFormat=application/json&bbox=-48.6,-27.65,-48.5,-27.55,EPSG:4326",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json;charset=utf-8",
+   "assessment": "3 MultiPolygon rural CAR properties (Florianópolis); server ignored propertyName filter, only cod_imovel/municipio and geometry saved (no owner fields exist in the layer)"
+  }
+ ],
+ "reuseStatus": "Licence/terms not read",
+ "remainingUncertainty": "Rural, self-declared CAR polygons only, not the legal cadastre; no state urban-lot layer found in this pass. Licence not read.",
+ "nextStep": "Look for state IDE / capital urban lot layers and INCRA SIGEF certified parcels."
+}

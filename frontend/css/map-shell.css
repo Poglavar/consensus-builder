@@ -1,0 +1,1156 @@
+/* ========== Floating map shell ==========
+   The floating buttons and the sheets that replaced the left sidebar
+   (js/ui/map-shell.js; layout table in UI-REWORK.md), plus the styles of the controls rehoused into
+   those sheets. A sheet is a popover anchored to its button on desktop (map-shell.js sets the
+   --sheet-* offsets) and a bottom sheet under 768px. */
+
+:root {
+    --map-shell-gap: 8px;
+    --map-shell-edge: 10px;
+    --map-shell-button-size: 40px;
+    /* Navigation owns the bottom edge. Credits occupy the map above it. */
+    --map-shell-bottom: 0px;
+    /* The bottom row is Proposals · Bets · Activity: three pills centred on the bottom edge on a
+       wide map, a labelled bar across the width on a phone (the phone block below). Its height
+       drives the clearance ladder (toast, tray, sheets, docked panels), whichever shape it takes. */
+    --map-shell-bar-height: var(--map-shell-button-size);
+    --map-shell-dock-height: calc(var(--map-shell-bar-height) + var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
+    /* The Leaflet corners (credits, scale bar) share the pills' row on a wide map and sit above
+       the bar on a phone. */
+    --map-visible-bottom: 0px;
+    /* The rows the floating chrome occupies. A docked panel (parcel, proposal, road, block) starts
+       below the top row and ends above the bottom row, so no control moves when a panel opens. */
+    --map-shell-top-clearance: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
+    --map-shell-bottom-clearance: calc(var(--map-shell-dock-height) + var(--map-shell-gap));
+}
+
+/* ---- Hooks for later phases: empty until something mounts in them ---- */
+.map-shell-slot:empty {
+    display: none;
+}
+
+.map-shell-slot--search {
+    position: absolute;
+    top: var(--map-shell-edge);
+    left: var(--map-shell-edge);
+    z-index: var(--cb-z-map-chrome);
+}
+
+.map-shell-slot--tray {
+    position: absolute;
+    left: 50%;
+    bottom: var(--map-shell-bottom);
+    transform: translateX(-50%);
+    z-index: var(--cb-z-map-chrome);
+}
+
+/* ---- Floating buttons ---- */
+.map-shell-cluster {
+    position: absolute;
+    z-index: var(--cb-z-map-chrome);
+    display: flex;
+    gap: var(--map-shell-gap);
+}
+
+.map-shell-cluster--top-right {
+    top: var(--map-shell-edge);
+    right: var(--map-shell-edge);
+}
+
+/* Wide map: three pills on the bottom edge, the same chrome as the top-right cluster, so the map
+   keeps its bottom edge and the credits and scale bar share the row from the corners. */
+.map-shell-cluster--bottom-right {
+    bottom: var(--map-shell-edge);
+    left: var(--map-shell-centre, 50%);
+    transform: translateX(-50%);
+    align-items: center;
+    justify-content: center;
+}
+
+/* A docked panel runs down to the bottom-right corner on a wide map (--right-dock-bottom,
+   css/panels.css), so the pills and the status line centre in the map left of the dock instead
+   of under it. Below 900px the panels stop above the pills and the centre stays the map's. */
+@media (min-width: 900px) {
+    body:has(#parcel-info-panel.visible),
+    body:has(#road-info-panel.visible),
+    body:has(#proposal-details-panel.visible:not(.is-minimized)) {
+        --map-shell-centre: calc((100% - var(--right-dock-width) - 2 * var(--right-dock-gap)) / 2);
+    }
+}
+
+.map-shell-cluster--bottom-right .map-shell-button--labelled {
+    flex: 0 0 auto;
+    height: var(--map-shell-bar-height);
+    border-radius: var(--cb-radius-pill);
+}
+
+.map-utility-button {
+    position: absolute;
+    left: var(--map-mode-stack-left);
+    top: var(--map-mode-slot-1);
+    z-index: var(--cb-z-map-chrome);
+    width: var(--cb-space-8);
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+}
+
+.layer-actions > summary {
+    padding: var(--cb-space-3) 0;
+    font-weight: var(--cb-weight-semibold);
+    cursor: pointer;
+}
+
+.layer-actions .btn-group { margin-bottom: var(--cb-space-2); }
+
+.layer-source-actions { margin-bottom: var(--cb-space-3); }
+
+details > summary.sheet-section-title::before {
+    content: '▸';
+}
+
+details[open] > summary.sheet-section-title::before {
+    content: '▾';
+}
+
+#model-layer-controls:empty { display: none; }
+
+#cadastre-view-toggle[aria-pressed="true"] {
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary);
+    border-color: var(--cb-primary);
+}
+
+.map-editor-toolbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--cb-z-sheet);
+    min-height: var(--map-shell-dock-height);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-3) calc(var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-top: 1px solid var(--cb-line);
+    font-size: var(--cb-text-sm);
+}
+
+.map-editor-toolbar[hidden] { display: none; }
+
+.map-editor-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+/* Each 2D editor owns the dock while it is active. Its actual finish/cancel actions stay
+   attached to the editor, and mode changes only hide that UI, preserving the draft. */
+body:not(.three-mode-active):is(.site-tool-active, .station-placement-active, .area-monitor-drawing-active, .area-monitor-creation-active, .corridor-drawing-active) #map-shell-bottom-right {
+    visibility: hidden;
+}
+
+body.three-mode-active :is(.map-editor-toolbar, .area-monitor-creation-panel) {
+    display: none;
+}
+
+/* The site tool's panel is a compact card of its own (site-tool.css). */
+.area-monitor-creation-panel {
+    position: fixed;
+    top: auto;
+    left: var(--map-mode-strip);
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-width: none;
+    max-height: min(50dvh, calc(100dvh - var(--map-shell-top-clearance)));
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: var(--cb-space-3) var(--cb-space-4) calc(var(--cb-space-3) + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-top: 1px solid var(--cb-line);
+    border-radius: 0;
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: var(--cb-text);
+    box-shadow: var(--cb-shadow-md);
+    z-index: var(--cb-z-notice);
+}
+
+/* Its inside (js/area-monitor/ui.js showCreationPanel): a title, the name field, the parcel
+   count, the Cancel / Create row and the error line. The input and buttons are the shared ones. */
+.area-monitor-creation-panel__title {
+    margin: 0 0 var(--cb-space-3);
+    font-size: var(--cb-text-lg);
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text-strong);
+}
+
+.area-monitor-creation-panel__field {
+    margin-bottom: var(--cb-space-3);
+}
+
+.area-monitor-creation-panel__label {
+    display: block;
+    margin-bottom: var(--cb-space-1);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-medium);
+}
+
+.area-monitor-creation-panel__input {
+    display: block;
+    width: 100%;
+}
+
+.area-monitor-creation-panel__parcels {
+    margin: 0 0 var(--cb-space-3);
+    font-size: var(--cb-text-md);
+    color: var(--cb-text-muted);
+}
+
+.area-monitor-creation-panel__actions {
+    margin-top: var(--cb-space-4);
+}
+
+.area-monitor-creation-panel__error {
+    margin: var(--cb-space-2) 0 0;
+    font-size: var(--cb-text-sm);
+    color: var(--cb-danger);
+}
+
+@media (max-width: 767.98px) {
+    /* The Leaflet corners (the basemap credit bottom-left, the scale bar bottom-right) stay in the
+       map while a bottom sheet is open: they sit on the sheet's top edge, which the sheet reports
+       as --map-sheet-occupied on #map-container (js/mobile-dock-sheet.js), and fall back to the
+       bottom bar's row when no sheet is open. The credit's text is the licence's, "OpenStreetMap"
+       (the OSMF attribution guideline asks for the name, not an abbreviation), one size smaller. */
+    #map-container .leaflet-bottom {
+        bottom: var(--map-sheet-occupied, var(--map-visible-bottom));
+    }
+
+    .map-credits-control {
+        font-size: var(--cb-text-xs);
+        padding: 2px 6px;
+    }
+
+    /* The status line too: one row above the credits, over the open sheet, in the map. */
+    #map-container .map-feedback-stack {
+        bottom: calc(var(--map-sheet-occupied, var(--map-visible-bottom)) + var(--cb-control-height) + var(--map-shell-gap));
+    }
+
+}
+
+.leaflet-bottom {
+    bottom: var(--map-visible-bottom);
+}
+body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
+
+.map-shell-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: var(--map-shell-button-size);
+    height: var(--map-shell-button-size);
+    padding: 0 10px;
+    box-sizing: border-box;
+    border: 1px solid var(--cb-line-glass);
+    border-radius: 20px;
+    background: var(--cb-glass);
+    box-shadow: var(--cb-shadow-sm);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.map-shell-button i {
+    font-size: 16px;
+    color: var(--cb-text);
+}
+
+.map-shell-button:hover {
+    background: var(--cb-surface-2);
+}
+
+/* A map button with nothing to do yet (the geometry editor's Undo before the first edit). */
+.map-shell-button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.map-shell-button:focus-visible,
+#map-container .username-display:focus-visible,
+.map-sheet:focus-visible {
+    outline: 2px solid var(--cb-primary);
+    outline-offset: 2px;
+}
+
+/* The open sheet's button (aria-expanded, js/ui/map-shell.js) and a map mode that is on
+   (aria-pressed: the walk's ground pick): the one selected look of the app (primary-soft fill,
+   primary border), the same as a pressed .btn, on every width. */
+.map-shell-button[aria-expanded="true"],
+.map-shell-button[aria-pressed="true"] {
+    background: var(--cb-primary-soft);
+    border-color: var(--cb-primary);
+    color: var(--cb-primary-soft-ink);
+}
+
+.map-shell-button[aria-expanded="true"] i,
+.map-shell-button[aria-pressed="true"] i {
+    color: var(--cb-primary);
+}
+
+.map-shell-badge {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    box-sizing: border-box;
+    border-radius: 9px;
+    background: var(--cb-primary);
+    color: var(--cb-primary-ink);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+}
+
+.map-shell-badge[hidden] {
+    display: none;
+}
+
+.map-shell-badge.is-unopened {
+    animation: map-shell-proposals-arrival-pulse 1.45s ease-in-out infinite;
+}
+
+@keyframes map-shell-proposals-arrival-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.44); }
+    50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(37, 99, 235, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-shell-badge.is-unopened { animation: none; }
+}
+
+/* The Activity button's running dot: the in-UI simulation is running (js/ui/simulation-indicator.js).
+   It rides on the button's top-right corner; reduced motion keeps the dot and drops the pulse. */
+.map-shell-running-dot {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border: 2px solid var(--cb-surface);
+    border-radius: 50%;
+    background: var(--cb-success);
+    animation: map-shell-running-pulse 1.6s ease-in-out infinite;
+}
+
+.map-shell-running-dot[hidden] {
+    display: none;
+}
+
+@keyframes map-shell-running-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.55); }
+    50% { box-shadow: 0 0 0 5px rgba(22, 163, 74, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .map-shell-running-dot {
+        animation: none;
+    }
+}
+
+/* The user bubble sits left of the Layers and Settings buttons in the same top row. */
+#map-container .username-display {
+    top: var(--map-shell-edge);
+    right: calc(var(--map-shell-edge) + 2 * var(--map-shell-button-size) + 2 * var(--map-shell-gap));
+    height: var(--map-shell-button-size);
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+#map-container #username-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#map-container .username-display .user-avatar,
+#map-container .username-display .wallet-status-icon {
+    flex: 0 0 auto;
+}
+
+/* Visually hidden, still read out (e.g. the simulation's play/pause label in the Activity sheet). */
+.map-shell-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ---- Sheets ---- */
+.map-sheet {
+    position: fixed;
+    top: var(--sheet-top, auto);
+    bottom: var(--sheet-bottom, auto);
+    left: var(--sheet-left, auto);
+    right: var(--sheet-right, auto);
+    z-index: var(--cb-z-sheet); /* over the docked parcel/road panels: the person just asked for it */
+    width: 340px;
+    max-width: calc(100vw - 2 * var(--map-shell-edge));
+    max-height: min(var(--sheet-max-height, 70vh), 80vh);
+    box-sizing: border-box;
+    flex-direction: column;
+    /* Every panel over the map lets a little of it through (user rule 2026-10-17; --cb-glass-sheet). */
+    background: var(--cb-glass-sheet);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: 12px;
+    box-shadow: var(--cb-shadow-md);
+    color: var(--cb-text);
+    overflow: hidden;
+}
+
+.map-sheet:not([hidden]) {
+    display: flex;
+}
+
+.map-sheet [hidden],
+[data-map-modes][hidden] {
+    display: none;
+}
+
+.map-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px 8px 14px;
+    border-bottom: 1px solid var(--cb-line);
+    flex-shrink: 0;
+}
+
+.map-sheet-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.map-sheet-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px 14px 14px;
+    overscroll-behavior: contain;
+}
+
+.map-sheet-body * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* ---- Dock sheets: Proposals, Bets, Activity ----
+   The bottom row's three destinations share one frame: the same width and height, centred on the
+   row (its data-sheet-anchor in index.html), so switching between them swaps the content and
+   nothing moves or resizes. Wide enough for a row with a thumbnail, a title and its actions. On a
+   phone they fill the screen above the bar instead (the phone block at the end of this file). */
+.map-sheet--dock {
+    width: 560px;
+    height: min(var(--sheet-max-height, 70vh), 80vh, 880px);
+}
+
+.map-sheet .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* A section inside a sheet: a plain heading over its controls (the accordions are gone; the
+   `.accordion-section[data-section]` wrapper stays because code and the city config find it). */
+.map-sheet-body > .accordion-section + .accordion-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--cb-line);
+}
+
+/* The base map row closes the Layers sheet like one more section. */
+.map-sheet-body > .map-sheet-base-map {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--cb-line);
+}
+
+.sheet-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cb-text-strong);
+}
+
+.sheet-section-title i {
+    color: var(--cb-text-muted);
+    width: 16px;
+    text-align: center;
+}
+
+.sheet-section-body.section-disabled,
+.section-dependent-content.section-disabled {
+    opacity: 0.6;
+}
+
+/* A section locked by a long-running action (MapShell.setSectionBusy). */
+.sheet-section-busy {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-soft-ink);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.sheet-section-busy__spinner {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--cb-primary-soft);
+    border-top-color: var(--cb-primary);
+    border-radius: 50%;
+    animation: sheet-section-busy-spin 0.8s linear infinite;
+}
+
+@keyframes sheet-section-busy-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sheet-section-busy__spinner {
+        animation: none;
+    }
+}
+
+/* The blocks list lives in the Layers sheet (its markup sits under the Parcel Blocks buttons). It
+   was a fixed overlay from the sidebar days: in a sheet it floated over the sheet itself and
+   vanished whenever the sheet closed. Inside the sheet it is an inline list under its buttons. */
+#layers-sheet #blocks-list-container {
+    position: static;
+    max-height: 40vh;
+    margin-top: 8px;
+    border: 1px solid var(--cb-line);
+    box-shadow: none;
+}
+
+/* Settings → Appearance: the theme choice under the shortcuts. */
+.settings-appearance {
+    margin: var(--cb-space-3) 0 var(--cb-space-4);
+}
+
+.settings-appearance .cb-kicker {
+    margin-bottom: var(--cb-space-2);
+}
+
+/* ---- Controls inside the sheets ----
+   One compact layout for everything rehoused from the sidebar: full-width rows with an icon,
+   whatever role the button carries (the roles keep their colours, css/primitives.css). Scoped to
+   .map-sheet so the same classes elsewhere (modals, panels) keep their layout. Rows are 36px on
+   desktop and 44px touch targets on phones. */
+.map-sheet {
+    --sheet-row-height: 36px;
+    --sheet-border: var(--cb-line-strong);
+    --sheet-muted: var(--cb-text-muted);
+    --sheet-hover: var(--cb-surface-2);
+    --sheet-focus: var(--cb-focus);
+    --sheet-danger: var(--cb-danger);
+}
+
+.control-group {
+    margin-bottom: 12px;
+    max-width: 100%;
+}
+
+.control-group-title {
+    margin: 0 0 6px;
+    color: var(--sheet-muted, var(--cb-text));
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.map-sheet .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Sheet rows: every button in a sheet is a full-width, left-aligned row of one height. Only the
+   layout lives here; the role classes keep their colours (css/utilities.css), so a primary, a
+   success or a danger button inside a sheet looks like one anywhere else. */
+.map-sheet .btn:not(.btn-sm):not(.btn-icon) {
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+    min-height: var(--sheet-row-height);
+    margin: 0;
+    padding: 7px 12px;
+    text-align: left;
+}
+
+.map-sheet .btn > i {
+    flex: 0 0 16px;
+    text-align: center;
+}
+
+.map-sheet .btn:focus-visible,
+.map-sheet select:focus-visible,
+.map-sheet input:focus-visible,
+.map-sheet a:focus-visible {
+    outline: 2px solid var(--sheet-focus);
+    outline-offset: 2px;
+}
+
+/* Rows that carry a second line (share plan's "apply some first", the spinners) stay left-aligned. */
+.map-sheet .share-plan-button {
+    flex-wrap: wrap;
+}
+
+.map-sheet .share-plan-label,
+.map-sheet .share-plan-subtext {
+    text-align: left;
+}
+
+.map-sheet .share-plan-subtext {
+    padding-left: 24px;
+    color: var(--sheet-muted);
+}
+
+.map-sheet select {
+    width: 100%;
+    min-height: var(--sheet-row-height);
+    padding: 6px 10px;
+    border: 1px solid var(--sheet-border);
+    border-radius: 8px;
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: 13.5px;
+}
+
+/* Checkbox rows: the whole row is the target. */
+.map-sheet .checkbox-group {
+    gap: 2px;
+}
+
+.map-sheet .checkbox-group label {
+    gap: 8px;
+    min-height: 32px;
+    margin: 0;
+    padding: 4px 6px;
+    border-radius: 6px;
+    color: var(--cb-text);
+    font-size: 13.5px;
+    line-height: 1.3;
+    cursor: pointer;
+}
+
+/* A single checkbox row that is itself the group (the Simulation settings' Enable game mode). */
+.map-sheet label.checkbox-group {
+    min-height: var(--sheet-row-height);
+    color: var(--cb-text);
+    font-size: 13.5px;
+    cursor: pointer;
+}
+
+.map-sheet label.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--sheet-focus);
+}
+
+.map-sheet .checkbox-group label:hover {
+    background: var(--sheet-hover);
+}
+
+/* A disabled row (3D lock, a section gated off, a control not built yet) reads as disabled. */
+.map-sheet .checkbox-group label:has(input:disabled),
+.map-sheet label.checkbox-group:has(input:disabled) {
+    color: var(--cb-text-faint);
+    cursor: not-allowed;
+}
+
+.map-sheet .checkbox-group label:has(input:disabled):hover {
+    background: transparent;
+}
+
+.map-sheet .checkbox-group input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--sheet-focus);
+}
+
+.map-sheet .checkbox-group .ownership-legend-swatch {
+    margin-right: 0;
+}
+
+.map-sheet .checkbox-group + .checkbox-group {
+    margin-top: 2px;
+}
+
+/* The rooster keeps its own card look (css/grain-score.css), aligned with the rows around it. */
+
+/* Settings → Information: sub-headings in the sheet's type scale. */
+.map-sheet .info-subsection h4 {
+    margin: 0 0 6px;
+    color: var(--cb-text-strong);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.map-sheet .info-subsection p {
+    font-size: 13.5px;
+}
+
+.map-sheet .info-subsection + hr {
+    margin: 12px 0;
+    border: none;
+    border-top: 1px solid var(--cb-line);
+}
+
+/* A label over its select (Settings: data source, base map). */
+.sheet-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sheet-field-label {
+    color: var(--sheet-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* A quiet one-line readout (parcels in view, parcels counted). */
+.sheet-note {
+    margin: 0 0 12px;
+    color: var(--sheet-muted);
+    font-size: 12.5px;
+}
+
+/* The World view / Command palette pair at the top of Settings. */
+.sheet-shortcuts {
+    margin-bottom: 12px;
+}
+
+.block-toggles {
+    gap: 6px;
+}
+
+#station-placement-status {
+    margin-top: 8px;
+    color: var(--cb-text-muted);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.accordion-section[data-section="data"] > .sheet-section-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.accordion-section[data-section="data"] .control-group-title {
+    margin: 6px 0 0;
+}
+
+@media (max-width: 767.98px) {
+    .map-sheet {
+        --sheet-row-height: 44px;
+    }
+
+    .map-sheet .checkbox-group label {
+        min-height: 44px;
+    }
+}
+
+/* Settings: the destructive upkeep folded under one row (index.html .sheet-reset). */
+.sheet-reset {
+    margin-top: var(--cb-space-2);
+}
+
+.sheet-reset > summary {
+    cursor: pointer;
+    padding: var(--cb-space-2) 0;
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-md);
+    font-weight: var(--cb-weight-medium);
+}
+
+.sheet-reset > summary:hover {
+    color: var(--cb-text);
+}
+
+.sheet-reset[open] > summary {
+    margin-bottom: var(--cb-space-2);
+}
+
+/* Keyboard shortcut hints mean nothing on a touch screen. */
+@media (pointer: coarse) {
+    .settings-palette-shortcut,
+    kbd.settings-palette-shortcut {
+        display: none;
+    }
+}
+
+/* Simulation: the master switch is the first row of its section (index.html), outside the gated
+   settings, so it is always live. */
+.map-sheet .activity-simulation-switch {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--cb-space-2);
+    margin: 0 0 var(--cb-space-2);
+    min-height: 0;
+}
+
+.map-sheet .activity-simulation-switch input {
+    margin: 0;
+}
+
+/* Activity sheet: the explorer buttons over the status line and its log */
+.activity-sheet-actions {
+    margin-bottom: 12px;
+}
+
+/* Simulation: a secondary section under the explorer buttons. One muted row (a small play/pause
+   icon button, then date · turn) and its settings folded into a <details>. */
+#activity-sheet .activity-simulation {
+    margin-bottom: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--cb-line);
+}
+
+.activity-simulation .sheet-section-title {
+    margin-bottom: 6px;
+    color: var(--sheet-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.activity-simulation-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Play / pause is a btn btn-icon btn-sm toggle (css/primitives.css): running is aria-pressed. */
+.activity-simulation-settings > summary:focus-visible {
+    outline: 2px solid var(--sheet-focus);
+    outline-offset: 2px;
+}
+
+.activity-simulation-metrics {
+    display: inline-flex;
+    gap: 4px;
+    min-width: 0;
+    color: var(--sheet-muted);
+    font-size: 12.5px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.activity-simulation-settings {
+    margin-top: 6px;
+}
+
+.activity-simulation-settings > summary {
+    width: fit-content;
+    padding: 2px 0;
+    color: var(--sheet-muted);
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+.activity-simulation-settings > .sheet-section-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.activity-simulation-settings label.checkbox-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.activity-simulation-settings .slider-group,
+.activity-simulation-settings .turn-progress {
+    margin: 0;
+}
+
+@media (max-width: 767.98px) {
+    /* A full-size tap target on a phone. */
+    .activity-simulation-play.btn-icon {
+        width: var(--cb-control-height);
+        min-width: var(--cb-control-height);
+        min-height: var(--cb-control-height);
+    }
+
+    .activity-simulation-settings > summary {
+        padding: 8px 0;
+    }
+}
+
+#activity-sheet .status-bar {
+    border: 1px solid var(--cb-line);
+    border-radius: 8px;
+}
+
+/* The expanded log and its Copy all / Open log row were positioned above the bar, as they were
+   over the sidebar's bottom edge. In the sheet that put the log over the explorer buttons, clipped
+   by the sheet, with the two buttons on top of its last line. Here they flow under the status
+   line: line, log, buttons. */
+#activity-sheet .status-log-expanded {
+    position: static;
+    max-height: 40vh;
+    margin-top: 8px;
+    border-bottom: 1px solid var(--cb-line);
+    border-radius: 6px;
+    box-shadow: none;
+}
+
+#activity-sheet .status-log-actions {
+    position: static;
+    justify-content: flex-end;
+    margin: 8px 0 0;
+}
+
+/* Settings sheet: brand, debug badges, the city row */
+.settings-brand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.settings-brand-logo {
+    width: 28px;
+    height: 28px;
+}
+
+.settings-brand-title {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* The environment badges (cb-badge tones) in a row, shown by environment.js updateBadgeVisibility
+   in debug mode (the hidden attribute). */
+.settings-badge-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: var(--cb-surface-2);
+    border: 1px solid var(--cb-line);
+}
+
+.settings-badge-bar[hidden] {
+    display: none;
+}
+
+/* A panel docked on the right (parcel, proposal details, road, block) sits in the column between
+   the top row and the bottom row of floating controls (--map-shell-top/bottom-clearance, used by
+   panels.css and utilities.css), so the buttons and the user bubble stay where they are. */
+
+/* ---- Boot gate ----
+   The shell is painted long before the script list at the end of the body has parsed, so its
+   handlers do not exist yet. Until boot-ready.js removes body.app-loading, keep it inert: an early
+   click does nothing instead of throwing. */
+body.app-loading {
+    cursor: progress;
+}
+
+body.app-loading .map-shell-cluster {
+    pointer-events: none;
+}
+
+/* ---- Phones: bottom sheets, compact buttons ---- */
+@media (max-width: 767.98px) {
+    .map-sheet {
+        top: auto;
+        bottom: var(--map-shell-dock-height);
+        left: 0;
+        right: 0;
+        width: auto;
+        max-width: none;
+        max-height: min(70dvh, calc(100dvh - var(--map-shell-dock-height) - var(--map-shell-top-clearance)));
+        border-radius: 16px 16px 0 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* The bar's own sheets are full screens above it, not bottom sheets: the bar stays as the way
+       between them. They take the bar's veil, so the map still shows through, blurred. */
+    .map-sheet--dock {
+        top: 0;
+        bottom: var(--map-shell-dock-height);
+        height: auto;
+        max-height: none;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: 0;
+        border: 0;
+        border-radius: 0;
+        background: var(--cb-glass-veil);
+        backdrop-filter: blur(12px);
+        box-shadow: none;
+    }
+
+    /* A labelled bar along the bottom (docs/design-language.md): three equal buttons, icon over
+       label, instead of an icon-only column with a floating count. The bottom clearance grows with
+       it so the toast and the tray sit above the bar, and the credits and scale bar take the row
+       between. */
+    :root {
+        --map-shell-bar-height: 52px;
+        --map-visible-bottom: var(--map-shell-dock-height);
+        --map-shell-bottom-clearance: calc(var(--map-shell-dock-height) + var(--cb-control-height) + var(--map-shell-gap));
+    }
+
+    .map-shell-cluster--bottom-right {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transform: none;
+        flex-direction: row;
+        min-height: var(--map-shell-dock-height);
+        box-sizing: border-box;
+        padding: var(--cb-space-1) var(--map-shell-edge) calc(var(--cb-space-1) + env(safe-area-inset-bottom, 0px));
+        /* A veil, not a wall: the map shows through, blurred so the labels stay legible over busy tiles. */
+        background: var(--cb-glass-veil);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid var(--cb-line);
+    }
+
+    .map-shell-cluster--bottom-right .map-shell-button--labelled {
+        flex: 1 1 0;
+        min-width: 0;
+        width: auto;
+        height: var(--map-shell-bar-height);
+        flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+        padding: 4px 6px;
+        border-radius: var(--cb-radius-md);
+        border-color: transparent;
+        /* Transparent at rest so the veil is what one sees; hover and the active state keep their fills. */
+        background: transparent;
+        box-shadow: none;
+    }
+
+    /* The open sheet's button, in the tab-bar way. The dark pill fill does not reach this far (the
+       rule above wins), which left its white label on the light veil, unreadable. */
+    .map-shell-cluster--bottom-right .map-shell-button--labelled[aria-expanded="true"] {
+        background: var(--cb-primary-soft);
+        border-color: var(--cb-primary);
+        color: var(--cb-primary-soft-ink);
+    }
+
+    .map-shell-cluster--bottom-right .map-shell-button--labelled[aria-expanded="true"] i {
+        color: var(--cb-primary);
+    }
+
+    .map-shell-cluster--bottom-right .map-shell-button-label {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 11px;
+        line-height: 1;
+    }
+
+    /* The count rides on the icon's corner. */
+    .map-shell-cluster--bottom-right .map-shell-button--labelled .map-shell-badge {
+        position: absolute;
+        top: 4px;
+        right: calc(50% - 22px);
+    }
+
+    /* Clear of the compact search box top-left (css/map-search.css). */
+    #map-container .username-display {
+        padding: 6px 8px;
+        gap: 4px;
+        font-size: 12px;
+        max-width: calc(100vw - 2 * var(--map-shell-edge) - 2 * var(--map-shell-button-size) - 3 * var(--map-shell-gap) - var(--map-search-compact-width));
+    }
+}
+
+/* Phones: the avatar alone, no name, no link icon. Its ring says whether a wallet is connected
+   (data-wallet on the bubble, js/user-management.js): solid green when it is, a dashed neutral ring
+   when it is not. */
+@media (max-width: 767.98px) {
+    #map-container .username-display {
+        width: var(--map-shell-button-size);
+        min-width: var(--map-shell-button-size);
+        padding: 6px;
+        gap: 0;
+        justify-content: center;
+    }
+    #map-container .username-display .user-avatar {
+        width: 28px;
+        height: 28px;
+        box-sizing: border-box;
+        border: 2px dashed var(--cb-line-strong);
+    }
+    #map-container .username-display[data-wallet="connected"] .user-avatar {
+        border: 2px solid var(--cb-success);
+    }
+    #map-container .username-display .wallet-status-icon { display: none; }
+    #map-container #username-text {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+}
+
+/* A touch device has no command-key shortcut to use. */
+@media (hover: none), (pointer: coarse) {
+    [data-command-palette-shortcut], .map-search__shortcut { display: none; }
+}

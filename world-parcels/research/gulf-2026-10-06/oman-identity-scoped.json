@@ -1,0 +1,111 @@
+[
+  {
+    "name": "all",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=1%3D1&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 293860
+    }
+  },
+  {
+    "name": "identified",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+%3C%3E+%27+%27&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 280660
+    }
+  },
+  {
+    "name": "empty",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+%3D+%27+%27&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 0
+    }
+  },
+  {
+    "name": "distinct",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+%3C%3E+%27+%27&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C+%22onStatisticField%22%3A+%22PAIN%22%2C+%22outStatisticFieldName%22%3A+%22totalPAIN%22%7D%5D&returnGeometry=false&returnDistinctValues=true&outFields=PAIN&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "displayFieldName": "",
+      "fieldAliases": {
+        "TOTALPAIN": "TOTALPAIN"
+      },
+      "fields": [
+        {
+          "name": "TOTALPAIN",
+          "type": "esriFieldTypeBigInteger",
+          "alias": "TOTALPAIN"
+        }
+      ],
+      "features": [
+        {
+          "attributes": {
+            "TOTALPAIN": 279761
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "duplicates",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+%3C%3E+%27+%27&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C+%22onStatisticField%22%3A+%22PAIN%22%2C+%22outStatisticFieldName%22%3A+%22n%22%7D%5D&groupByFieldsForStatistics=PAIN&having=COUNT%28PAIN%29%3E1&orderByFields=n+DESC&resultRecordCount=3&returnGeometry=false&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "displayFieldName": "",
+      "fieldAliases": {
+        "PAIN": "PAIN",
+        "N": "N"
+      },
+      "fields": [
+        {
+          "name": "PAIN",
+          "type": "esriFieldTypeString",
+          "alias": "PAIN",
+          "length": 255
+        },
+        {
+          "name": "N",
+          "type": "esriFieldTypeBigInteger",
+          "alias": "N"
+        }
+      ],
+      "features": [
+        {
+          "attributes": {
+            "PAIN": "-",
+            "N": 78
+          }
+        },
+        {
+          "attributes": {
+            "PAIN": "1-05-011-01-739",
+            "N": 31
+          }
+        },
+        {
+          "attributes": {
+            "PAIN": "01-01-016-01-1031",
+            "N": 29
+          }
+        }
+      ],
+      "aggregate": {
+        "duplicateNativeKeys": 525,
+        "duplicateSourceRows": 1424,
+        "providerIgnoredResultRecordCount3": true
+      }
+    }
+  }
+]

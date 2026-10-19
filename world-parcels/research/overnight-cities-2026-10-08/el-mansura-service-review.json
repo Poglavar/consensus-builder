@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5256-el-mansura.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The Egyptian Survey Authority has a Dakahlia Survey Directorate with a Mansoura-specific public surveying/expropriation notice. The notice says maps and compensation lists are displayed at the local directorate and East Mansoura district office. This establishes a local survey-record source, but not an anonymous parcel GIS or the national urban real-property register: ESA lists its initial register rollout for nine Cairo areas, not Mansoura. No full parcel polygons were retained."
+}

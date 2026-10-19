@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:413",
+  "queueRank": 93,
+  "wupCityCode": 413,
+  "name": "Cape Town",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "centerLatLon": [
+    -33.9805360922243,
+    18.5999587421507
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 93,
+  "growthRank": null,
+  "population2025": 4508921,
+  "annualGrowthPct2015To2025": 2.661422,
+  "checkedAt": "2026-10-08",
+  "status": "verified_sample_city_scope",
+  "priorEvidence": [
+    "research/cape-town.json"
+  ],
+  "priorStatuses": [
+    "verified_sample_city_scope"
+  ],
+  "sharedCountryAssessment": "africa-ws-provider-ZA.json",
+  "freshCityLocalSearch": null,
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": true,
+  "verifiedSample": true,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage is implied.",
+    "verifiedOpenScope": "Cape Town",
+    "countrywideVerified": false
+  },
+  "blocker": null,
+  "remainingUncertainty": "A failed, absent, or unavailable query does not establish that the city has no cadastral data; authenticated, offline, non-indexed or locally hosted records may exist.",
+  "nextStep": "Locate a documented anonymous feature endpoint, then test a bounded ~200 m target bbox with count=3 and ID+geometry fields only.",
+  "requests": [],
+  "resultCategory": "inherited_live_baseline",
+  "evidenceType": "inherited_live_baseline",
+  "targetEndpointProbePerformed": false
+}

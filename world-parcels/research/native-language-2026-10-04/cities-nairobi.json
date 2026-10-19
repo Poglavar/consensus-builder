@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 65,
+  "city": "Nairobi",
+  "countryCode": "KE",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/nairobi.json",
+  "query": {
+    "language": "English",
+    "script": "Latin",
+    "text": "Nairobi cadastre parcel boundaries GIS open data land registry Kenya official WFS"
+  },
+  "results": [
+    {
+      "title": "Nairobi Maps parcel cadastre GIS data",
+      "url": "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+      "kind": "third-party-live-WFS-lead",
+      "note": "Claims every Nairobi parcel, attributes LR/block and plot numbers, and gives live WFS `https://nairobimaps.com/wfs.php`, layer `nm:parcels`. Publisher is not a government authority; completeness, access terms, identity semantics and geometry should be independently checked."
+    },
+    {
+      "title": "Kenya State Department for Lands survey searches",
+      "url": "https://lands.go.ke/land-survey-searches",
+      "kind": "official-land-service",
+      "note": "Official parcel survey records/maps are available via search service; not bulk open vector data."
+    }
+  ],
+  "assessment": "Search found a specific WFS claiming full Nairobi parcel coverage and plot identifiers, but it is a non-government publisher. Treat it as an adapter candidate requiring ownership/completeness/reuse verification, not a verified official source.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

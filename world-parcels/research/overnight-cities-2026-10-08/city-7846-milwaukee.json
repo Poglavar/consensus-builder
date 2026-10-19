@@ -1,0 +1,131 @@
+{
+  "name": "Milwaukee",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 764,
+  "point": [
+    43.0472023941442,
+    -87.9561409333908
+  ],
+  "population2025": 701928,
+  "population2025k": 701.928,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    43.0472023941442,
+    -87.9561409333908
+  ],
+  "adapterReady": true,
+  "coverageAssessment": {
+    "verifiedOpenScope": "146 valid distinct county cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Milwaukee WUP settlement locator. Map_ID is the non-null integer field explicitly labelled GIS Polygon ID; null Parcel_Key values do not substitute a tax-account identifier or block public reference geometry. Complete bounded paging, forced three-row pages, all 146 fresh Map_ID reads, explicit absence, footprint and source binding passed in 30 requests. Independent metric EPSG:32616 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. All three original nearby samples match fresh complete geometry unchanged. The exact WUP point itself returned no intersecting parcel; usable nearby coverage is verified. Native source CRS is EPSG:6609 (ArcGIS WKID103191); requested EPSG:4326 output is retained unchanged. Map_ID is public source geometry identity; legal-title identity, citywide completeness, survey accuracy, currentness and long-term key continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "146 valid distinct county cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Milwaukee WUP settlement locator. Map_ID is the non-null integer field explicitly labelled GIS Polygon ID; null Parcel_Key values do not substitute a tax-account identifier or block public reference geometry. Complete bounded paging, forced three-row pages, all 146 fresh Map_ID reads, explicit absence, footprint and source binding passed in 30 requests. Independent metric EPSG:32616 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. All three original nearby samples match fresh complete geometry unchanged. The exact WUP point itself returned no intersecting parcel; usable nearby coverage is verified. Native source CRS is EPSG:6609 (ArcGIS WKID103191); requested EPSG:4326 output is retained unchanged. Map_ID is public source geometry identity; legal-title identity, citywide completeness, survey accuracy, currentness and long-term key continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/milwaukee-county-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/milwaukee-county-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/milwaukee-root-quality-review.json"
+  },
+  "scopeLimits": "146 valid distinct county cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Milwaukee WUP settlement locator. Map_ID is the non-null integer field explicitly labelled GIS Polygon ID; null Parcel_Key values do not substitute a tax-account identifier or block public reference geometry. Complete bounded paging, forced three-row pages, all 146 fresh Map_ID reads, explicit absence, footprint and source binding passed in 30 requests. Independent metric EPSG:32616 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. All three original nearby samples match fresh complete geometry unchanged. The exact WUP point itself returned no intersecting parcel; usable nearby coverage is verified. Native source CRS is EPSG:6609 (ArcGIS WKID103191); requested EPSG:4326 output is retained unchanged. Map_ID is public source geometry identity; legal-title identity, citywide completeness, survey accuracy, currentness and long-term key continuity remain unverified.",
+  "registryFound": true,
+  "registryBasis": "Milwaukee County Land Information Office publishes a county cadastral parcel layer covering municipalities including Milwaukee. Safe schema inspection identified Polygon geometry and Parcel_Key; tax keys and unrelated fields were excluded. The bounded query returned nearby geometry but Parcel_Key was null in all returned features; the transfer-limit flag means this partial response does not establish full local coverage.",
+  "registryEvidenceUrls": [
+    "https://county.milwaukee.gov/EN/Administrative-Services/Land-Information-Office",
+    "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7"
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "source": "Milwaukee County Cadastral/Taxparcel FeatureServer layer 7",
+    "publisherUrl": "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7",
+    "queryPoint": [
+      43.0472023941442,
+      -87.9561409333908
+    ],
+    "requestGeometryLonLat": [
+      -87.9561409333908,
+      43.0472023941442
+    ],
+    "queryCrs": "EPSG:4326",
+    "request": "25 m point-distance query; outFields=Parcel_Key; returnGeometry=true; outSR=4326; resultRecordCount=3",
+    "httpStatus": 200,
+    "featureCount": 3,
+    "nativeObjectId": null,
+    "nativeParcelKey": null,
+    "geometryType": "Polygon",
+    "geometrySha256": "c58ca9f82e17fa97fbecad9db5182757fd9ba9016125f44370725b595eb106e5",
+    "samplePath": "samples/milwaukee-county-cadastral-wup7846-samples.geojson",
+    "retainedFullGeometryInCityReport": false,
+    "responseTransferLimited": true,
+    "attributePolicy": "Only Parcel_Key and geometry requested/retained. Parcel_Key was null in all three returned features. No owner, address, tax, account or other fields requested."
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Legal-title identity, citywide completeness, currentness, survey accuracy and long-term Map_ID continuity remain unverified.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Milwaukee official county land information office cadastral parcel GIS feature layer",
+        "scope": "Identify primary city-specific registry evidence and an anonymous safe parcel-geometry schema.",
+        "result": "Official county cadastral service metadata described a polygon layer and safe Parcel_Key field. Exact WUP point intersection returned an empty FeatureCollection. A single 25 m point-distance query returned three polygon geometries, all with Parcel_Key=null, and properties.exceededTransferLimit=true. No sensitive fields were requested.",
+        "actualResultUrls": [
+          "https://county.milwaukee.gov/EN/Administrative-Services/Land-Information-Office",
+          "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7"
+        ],
+        "executionMethod": "Separate English-language search; inspect only official sources and service metadata. No owner/address/account fields requested."
+      },
+      {
+        "language": "English",
+        "query": "Milwaukee County parcel cadastral map Parcel_Key official land information",
+        "scope": "Identify primary local-language city-specific registry/map evidence and verify safe public geometry access.",
+        "result": "Official county cadastral service metadata described a polygon layer and safe Parcel_Key field. Exact WUP point intersection returned an empty FeatureCollection. A single 25 m point-distance query returned three polygon geometries, all with Parcel_Key=null, and properties.exceededTransferLimit=true. No sensitive fields were requested.",
+        "actualResultUrls": [
+          "https://county.milwaukee.gov/EN/Administrative-Services/Land-Information-Office",
+          "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7"
+        ],
+        "executionMethod": "Separate local-language search; inspect only official sources. No personal property lookup or sensitive fields requested."
+      }
+    ]
+  },
+  "source": {
+    "name": "Milwaukee County public cadastral polygons",
+    "operator": "Milwaukee County Land Information Office / Register of Deeds",
+    "url": "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7",
+    "serviceType": "ArcGIS public cadastral polygons",
+    "nativeIdField": "Map_ID",
+    "nativeIdEvidence": "Integer field alias GIS Polygon ID; all 146 sampled Map_ID values have fresh full-geometry equality and identity checks. All three saved null-Parcel_Key samples match those fresh geometry responses.",
+    "requestedAttributes": [
+      "OBJECTID",
+      "Map_ID",
+      "Parcel_Key",
+      "Parcel_Type",
+      "Overlap"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "146 valid distinct county cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Milwaukee WUP settlement locator. Map_ID is the non-null integer field explicitly labelled GIS Polygon ID; null Parcel_Key values do not substitute a tax-account identifier or block public reference geometry. Complete bounded paging, forced three-row pages, all 146 fresh Map_ID reads, explicit absence, footprint and source binding passed in 30 requests. Independent metric EPSG:32616 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. All three original nearby samples match fresh complete geometry unchanged. The exact WUP point itself returned no intersecting parcel; usable nearby coverage is verified. Native source CRS is EPSG:6609 (ArcGIS WKID103191); requested EPSG:4326 output is retained unchanged. Map_ID is public source geometry identity; legal-title identity, citywide completeness, survey accuracy, currentness and long-term key continuity remain unverified."
+  },
+  "wupCityCode": 7846,
+  "cityId": "wup2025:7846",
+  "queueRank": 764,
+  "runtimeReadiness": "enabled",
+  "appCityId": "milwaukee",
+  "sourceIds": [
+    "us-wi-milwaukee-county-taxparcel-map-id"
+  ],
+  "runtimeQualification": {
+    "sourceId": "us-wi-milwaukee-county-taxparcel-map-id",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/milwaukee-county-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/milwaukee-county-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T03:11:15.554204+00:00"
+}

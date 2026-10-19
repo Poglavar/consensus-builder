@@ -1,0 +1,34 @@
+{
+  "taskId": "city:8673",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:18:10.838Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-8673-ulanhot.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ulanhot-service-review.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 8673,
+    "rank": 2750,
+    "name": "Ulanhot",
+    "country": "China",
+    "point": [
+      46.0737176410876,
+      122.059607832862
+    ],
+    "populationPersons": 214734
+  },
+  "researchChecks": {
+    "bilingualExecutedSearches": "English and Chinese",
+    "verifiedFullPolygonCount": 0,
+    "safeNativeParcelIdResponse": false,
+    "sourceBinding": false,
+    "freshLiveAdapterReads": false,
+    "forcedPaging": false,
+    "boundedCellCount": 0,
+    "metricGeosValidityAndOverlap": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official Xing'an League page establishes the Ulanhot-serving registration custodian, and the official Ulanhot-2000 notice establishes coordinate-system context. The registration viewer timed out and no native parcel ID or full polygon was returned; neither timeout nor TLS failure is citywide absence."
+}

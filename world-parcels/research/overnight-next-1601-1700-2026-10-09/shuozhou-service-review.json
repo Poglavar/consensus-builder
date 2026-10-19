@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-7682-shuozhou.json",
+  "cityCode": 7682,
+  "queueRank": 1699,
+  "attempt": 1,
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "service": "Shuozhou Natural Resources and Planning Bureau / Shuozhou Real Estate Registration Center",
+  "serviceUrl": "https://gtj.shuozhou.gov.cn/",
+  "layerUrl": null,
+  "layer": null,
+  "query": {
+    "pointLatLon": [39.319574216236, 112.426133144563],
+    "result": "No parcel query executed: official bureau homepage timed out before viewer/API configuration could be inspected."
+  },
+  "requestOutcomes": [
+    {
+      "route": "https://gtj.shuozhou.gov.cn/",
+      "method": "GET",
+      "status": "timeout",
+      "outcome": "20-second timeout with no response bytes; no TLS exception or access-control bypass used."
+    },
+    {
+      "route": "https://sxsz.wenming.cn/cxjs/202508/t20250825_9006509.shtml",
+      "method": "GET via public discovery",
+      "status": "observed",
+      "outcome": "Identified local registration center and 三晋通/onsite/self-service query channels, but no public parcel layer or safe geometry endpoint."
+    },
+    {
+      "route": "https://rerc.com.cn/",
+      "method": "GET via public discovery",
+      "status": "observed",
+      "outcome": "Official national registration-center directory context; no anonymous Shuozhou geometry response."
+    }
+  ],
+  "scopeLimits": [
+    "No parcel feature service, schema, CRS, native ID field, or geometry was retrieved.",
+    "Local institutional custody does not prove public API availability or citywide parcel coverage.",
+    "The exact WUP point was not shifted and no exact-point hit/miss was inferred.",
+    "Timeout/login wall/map extent miss would not be treated as citywide absence.",
+    "No owner, titleholder, address, contact, tax/account, credential, or private-token fields were requested or retained."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon geometry", "CRS", "public source/layer metadata"],
+  "sourceFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "geometrySample": null,
+  "runtimeReadiness": "held_pending_serial_review",
+  "uncertainty": "An anonymous official map/API may exist behind the timed-out bureau site or 三晋通 service, but its current route and access requirements are unresolved. Packet completion records executed research only and does not admit a source into runtime."
+}

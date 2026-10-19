@@ -5,14 +5,34 @@
 (function (global) {
     'use strict';
 
+    // The parcel source shared by every Croatian city: one countrywide DGU dataset behind one
+    // backend route, so an `HR-` id says which COUNTRY a parcel is in but not which city.
+    const CROATIAN_PARCEL_SOURCE = 'oss-wfs';
+    // Where an HR parcel goes when we cannot place it (offline, unknown id). Matches the behaviour
+    // from before Croatia had more than one city, so nothing regresses when the lookup fails.
+    const CROATIAN_FALLBACK_CITY = 'zagreb';
+    // Deadline for that lookup. Allow the source's 15 s request timeout plus the bounded queue of
+    // startup viewport requests sharing its concurrency slots, while keeping a wedged lookup from
+    // blocking deep-link boot indefinitely. Read at call time so unit tests can shorten it — the
+    // real timeout would otherwise add 30 idle seconds to a suite run just to watch a timer expire.
+    const CITY_LOOKUP_TIMEOUT_MS = 30000;
+    function cityLookupTimeoutMs() {
+        const override = Number(global.__CB_CITY_LOOKUP_TIMEOUT_MS__);
+        return Number.isFinite(override) && override > 0 ? override : CITY_LOOKUP_TIMEOUT_MS;
+    }
+
     // Map a parcelId to its city id using the per-city id prefix conventions
     // (mirrors the formats produced by the backend parcel routes / mint scripts).
     // Returns null when the city can't be derived; the caller then tries the
     // current city as-is.
+    //
+    // Shared source prefixes identify a provider, not a city. Resolve those from geometry below.
     function parcelIdToCityId(rawId) {
         const id = (rawId || '').toString().trim().toUpperCase();
         if (!id) return null;
-        if (id.startsWith('HR-')) return 'zagreb';
+        if (id.startsWith('HR-')) return null;
+        const configured = citiesForParcelId(id);
+        if (configured.length) return configured.length === 1 ? configured[0].id : null;
         if (id.startsWith('US-NY-')) return 'new_york';
         if (id.startsWith('US-CO-')) return 'colorado';
         if (id.startsWith('SI-')) return 'ljubljana';
@@ -20,6 +40,122 @@
         // Buenos Aires uses a bare SMP (e.g. 001-005-027A) with no country prefix.
         if (/^[0-9]{3}-[0-9]{3}[A-Z]?-[0-9]{3}[A-Z]?$/.test(id)) return 'buenos_aires';
         return null;
+    }
+
+    function citiesForParcelId(rawId) {
+        const id = String(rawId || '').trim().toUpperCase();
+        // A city answers for its current prefix and for the prefixes of sources it used before, so
+        // a link saved under an earlier namespace still opens in that city.
+        const matchLength = city => Math.max(0, ...[city.parcels?.idPrefix, ...(city.parcels?.historicalSources || []).map(row => row.idPrefix)]
+            .filter(prefix => prefix && id.startsWith(String(prefix).toUpperCase())).map(prefix => prefix.length));
+        const matches = (global.CityConfigManager?.getAvailableCities?.() || []).filter(city => matchLength(city) > 0);
+        // A legacy broad prefix may coexist with later city-specific namespaces from the same
+        // provider (for example GB-HMLR- and GB-HMLR-LONDON-). Prefer the most specific match;
+        // equally specific shared prefixes still resolve from feature geometry below.
+        const longestPrefix = Math.max(0, ...matches.map(matchLength));
+        return matches.filter(city => matchLength(city) === longestPrefix);
+    }
+
+    function isCroatianParcelId(rawId) {
+        return (rawId || '').toString().trim().toUpperCase().startsWith('HR-');
+    }
+
+    // First coordinate of a GeoJSON feature, at any nesting depth (Polygon / MultiPolygon).
+    // Only used to place the parcel against city centres hundreds of km apart, so a corner is as
+    // good as a centroid and costs no geometry library.
+    function firstLatLngOfFeature(feature) {
+        const coords = feature?.geometry?.coordinates;
+        let node = coords;
+        while (Array.isArray(node) && Array.isArray(node[0])) node = node[0];
+        if (!Array.isArray(node) || node.length < 2) return null;
+        const [lng, lat] = node;
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+        return [lat, lng];
+    }
+
+    // Which Croatian city owns this parcel? The id carries its cadastral municipality
+    // (HR-<maticni_broj_ko>-<broj_cestice>) but no city, and a hardcoded KO→city table would be ~90
+    // numbers that go stale the moment a KO is added or a city's extent changes. So ask the data:
+    // the cadastral repository serves the WHOLE country regardless of which city the app is
+    // currently in, so one service lookup gives real coordinates, and the nearest city among those
+    // reading the Croatian cadastre is the answer. A fourth Croatian city then needs no change here.
+    async function resolveCroatianCityId(parcelId) {
+        const manager = global.CityConfigManager;
+        const ground = global.CadastralParcelRepository;
+        if (!manager || typeof manager.findNearestCity !== 'function'
+            || !ground || typeof ground.ensureIds !== 'function') {
+            return CROATIAN_FALLBACK_CITY;
+        }
+
+        const candidates = typeof manager.getCitiesByParcelSource === 'function'
+            ? manager.getCitiesByParcelSource(CROATIAN_PARCEL_SOURCE)
+            : [];
+        // One Croatian city configured (or none) — no ambiguity to resolve, so skip the request.
+        if (candidates.length <= 1) {
+            return candidates[0]?.id || CROATIAN_FALLBACK_CITY;
+        }
+
+        let timeoutHandle = null;
+        try {
+            const timeout = new Promise((_, reject) => {
+                timeoutHandle = setTimeout(() => reject(new Error('cadastral ground lookup timed out')), cityLookupTimeoutMs());
+            });
+            const result = await Promise.race([ground.ensureIds([parcelId]), timeout]);
+            const feature = result && Array.isArray(result.features) ? result.features[0] : null;
+            const latLng = firstLatLngOfFeature(feature);
+            if (!latLng) throw new Error('parcel has no usable geometry');
+
+            const candidateIds = new Set(candidates.map(c => c.id));
+            const nearest = manager.findNearestCity(latLng[0], latLng[1], {
+                filter: config => candidateIds.has(config.id)
+            });
+            return nearest?.id || CROATIAN_FALLBACK_CITY;
+        } catch (error) {
+            console.warn('[handleParcelRouteFromUrl] could not place Croatian parcel', parcelId,
+                '- falling back to', CROATIAN_FALLBACK_CITY, error && error.message);
+            return CROATIAN_FALLBACK_CITY;
+        } finally {
+            if (timeoutHandle) clearTimeout(timeoutHandle);
+        }
+    }
+
+    // Query the shared provider through the repository, without publishing the result into
+    // whichever city's cadastral repository happens to be active during deep-link boot.
+    async function resolveSharedSourceCityId(parcelId, candidates) {
+        const sourceId = candidates[0]?.parcels?.sourceId;
+        const ground = global.CadastralParcelRepository;
+        if (!sourceId || candidates.some(city => city.parcels?.sourceId !== sourceId)
+            || typeof ground?.locateIds !== 'function') return null;
+        let timer;
+        try {
+            const timeout = new Promise((_, reject) => {
+                timer = setTimeout(() => reject(new Error('parcel city lookup timed out')), cityLookupTimeoutMs());
+            });
+            const result = await Promise.race([
+                ground.locateIds([parcelId], { city: candidates[0].id }), timeout
+            ]);
+            if (result?.status !== 'ready') return null;
+            const feature = result.features?.find(item => (item.id || item.properties?.parcelId) === parcelId);
+            const location = firstLatLngOfFeature(feature);
+            if (!location) return null;
+            const ids = new Set(candidates.map(city => city.id));
+            return global.CityConfigManager.findNearestCity(location[0], location[1], {
+                filter: city => ids.has(city.id)
+            })?.id || null;
+        } catch (error) {
+            console.warn('[handleParcelRouteFromUrl] could not place shared-source parcel', parcelId, error.message);
+            return null;
+        } finally {
+            clearTimeout(timer);
+        }
+    }
+
+    // Prefix alone where unambiguous; otherwise place exact source geometry among its cities.
+    async function resolveCityIdForParcel(parcelId) {
+        if (isCroatianParcelId(parcelId)) return resolveCroatianCityId(parcelId);
+        const candidates = citiesForParcelId(parcelId);
+        if (candidates.length > 1) return resolveSharedSourceCityId(parcelId, candidates);
+        return parcelIdToCityId(parcelId);
     }
 
     // Pull the parcel id from the path (/parcel/<id>) or, as a host-agnostic
@@ -42,18 +178,30 @@
         }
     }
 
-    async function handleParcelRouteFromUrl(attempt = 0) {
+    // Runs after app boot (whenAppBooted, map-core.js): every dependency below is a classic script
+    // that defines its global at evaluation, so one missing now is a load failure to report, not
+    // something that polling would ever fix.
+    function reportParcelRouteFailure(parcelId, message) {
+        console.error(`[${new Date().toISOString()}] [handleParcelRouteFromUrl] cannot open parcel ${parcelId}: ${message}`);
+        global.updateStatus?.(`Could not open parcel ${parcelId}: ${message}`);
+    }
+
+    async function handleParcelRouteFromUrl() {
         const parcelId = parseParcelIdFromUrl();
         if (!parcelId) return;
 
         const cityManager = global.CityConfigManager;
         if (!cityManager || typeof cityManager.getCurrentCityId !== 'function') {
-            if (attempt < 20) setTimeout(() => handleParcelRouteFromUrl(attempt + 1), 200);
+            reportParcelRouteFailure(parcelId, 'city configuration did not load.');
             return;
         }
 
-        const targetCityId = parcelIdToCityId(parcelId);
+        const targetCityId = await resolveCityIdForParcel(parcelId);
         const currentCityId = cityManager.getCurrentCityId();
+        if (!targetCityId && citiesForParcelId(parcelId).length > 1) {
+            reportParcelRouteFailure(parcelId, 'could not determine the city from the parcel source.');
+            return;
+        }
 
         // Wrong city → switch. navigateToCity only sets ?city= and reloads, so the
         // /parcel/<id> path is preserved and this handler runs again on reload with
@@ -74,30 +222,48 @@
         // parcel machinery, then fetch the parcel by id and select/centre it —
         // same path the sidebar "locate parcel" feature uses.
         const selectParcel = (global.Parcels && global.Parcels.selection && global.Parcels.selection.selectParcel) || global.selectParcel;
-        const fetchSingle = (global.Parcels && global.Parcels.fetch && global.Parcels.fetch.fetchSingleParcelById) || global.fetchSingleParcelById;
-        if (!global.parcelLayer || typeof fetchSingle !== 'function' || typeof selectParcel !== 'function') {
-            if (attempt < 40) setTimeout(() => handleParcelRouteFromUrl(attempt + 1), 250);
+        const ground = global.CadastralParcelRepository;
+        const fabric = global.LiveParcelFabric;
+        const presenter = global.ParcelPresenter;
+        if (!ground || typeof ground.ensureIds !== 'function'
+            || !fabric || typeof fabric.get !== 'function'
+            || !presenter || typeof presenter.resolveLiveLayers !== 'function'
+            || typeof selectParcel !== 'function') {
+            reportParcelRouteFailure(parcelId, 'parcel modules did not load.');
             return;
         }
 
         try {
             console.log('[handleParcelRouteFromUrl] opening parcel', parcelId);
-            const layer = await fetchSingle(parcelId);
-            const resolvedId = (layer && layer.feature && typeof global.getParcelId === 'function')
-                ? (global.getParcelId(layer.feature) || parcelId)
-                : parcelId;
+            await ground.ensureIds([parcelId]);
+            const layer = presenter.getLayer(parcelId)
+                || presenter.resolveLiveLayers([parcelId], { includeCorridors: true })[0]
+                || null;
+            const resolvedId = presenter.getIdForLayer?.(layer) || parcelId;
+            if (!layer) throw new Error('Parcel not found');
             // selectParcel centres + zooms (and now bumps zoom up for very large
             // parcels so the grid stays visible — see selection.js).
             selectParcel(resolvedId);
         } catch (error) {
-            console.error('[handleParcelRouteFromUrl] failed to open parcel', parcelId, error && error.message);
+            reportParcelRouteFailure(parcelId, (error && error.message) || String(error));
         }
     }
 
     global.parcelIdToCityId = parcelIdToCityId;
+    global.resolveCityIdForParcel = resolveCityIdForParcel;
     global.handleParcelRouteFromUrl = handleParcelRouteFromUrl;
 
-    global.addEventListener('load', () => {
-        setTimeout(() => handleParcelRouteFromUrl(), 150);
-    });
+    // Node-testable exports for the pure pieces (the classic script still installs the globals above
+    // when loaded in a browser, where `module` is undefined).
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = { parcelIdToCityId, isCroatianParcelId, firstLatLngOfFeature, resolveCroatianCityId, resolveCityIdForParcel, handleParcelRouteFromUrl };
+    }
+
+    // Guarded so a node `require` of this file (for the unit tests) doesn't blow up on a global with
+    // no addEventListener — the browser path is unchanged.
+    if (typeof global.whenAppBooted === 'function') {
+        global.whenAppBooted().then(() => handleParcelRouteFromUrl());
+    } else if (typeof global.addEventListener === 'function') {
+        console.error(`[${new Date().toISOString()}] [parcels/route] whenAppBooted is missing (map-core.js not loaded); /parcel/ route not handled.`);
+    }
 })(typeof window !== 'undefined' ? window : globalThis);

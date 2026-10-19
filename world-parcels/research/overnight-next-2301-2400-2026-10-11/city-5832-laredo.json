@@ -1,0 +1,120 @@
+{
+  "cityCode": 5832,
+  "queueRank": 2335,
+  "name": "Laredo",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [27.5178462953798, -99.4799582250288],
+  "population2025": 249861,
+  "population2025k": 249.861,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Laredo Texas official GIS parcel map ArcGIS Webb County appraisal district parcels",
+        "result": "Official City of Laredo Open GIS material and the City/County-backed OL_LandBase ArcGIS layer were found. The layer provides public parcel/subdivision polygons and metadata.",
+        "actualResultUrls": [
+          "https://www.openlaredo.com/open-gis-portal.html",
+          "https://services3.arcgis.com/h9QEFLHkUI1SIRs7/ArcGIS/rest/services/OL_LandBase/FeatureServer/14",
+          "https://legacy.webbcountytx.gov/Planning/GISMaps/"
+        ]
+      },
+      {
+        "language": "Spanish (local-language discovery)",
+        "query": "Laredo Texas mapa oficial parcelas GIS catastro Webb County parcelas",
+        "result": "Spanish-language discovery surfaced official Webb County GIS/map-book material and Spanish parcel terminology in TxDOT public material, but no separate Spanish-language parcel endpoint. The same first-party Laredo OL_LandBase service was used for bounded inspection.",
+        "actualResultUrls": [
+          "https://www.webbcountytx.gov/Planning/GISMaps/",
+          "https://www.webbcountytx.gov/580/Map-Book",
+          "https://ftp.txdot.gov/pub/txdot/get-involved/lrd/laredo-outer-loop/LDO_OuterLoop_Mtg_Summary_SP.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": true,
+  "parcelGeometryVerified": true,
+  "verifiedSample": true,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Spanish discovery plus bounded anonymous ArcGIS REST layer and exact-point inspection",
+  "sourceReview": "The City of Laredo Open Data OL_LandBase FeatureServer layer is a local municipal GIS parcel/subdivision source. Its description says coverage focuses on City of Laredo corporate limits and extends outside them; maintenance uses orthophotography and subdivision plats recorded with the Webb County Clerk's Office. Copyright text credits City of Laredo Open Data Division, City of Laredo Building Development Services GIS Division, and Webb County Appraisal District.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://www.openlaredo.com/open-gis-portal.html",
+      "httpStatus": 200,
+      "outcome": "Official City of Laredo open-GIS portal discovery page found; page fetch was slow during direct inspection, so the ArcGIS service URL was followed from first-party search evidence."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://legacy.webbcountytx.gov/Planning/GISMaps/",
+      "httpStatus": 200,
+      "outcome": "Official Webb County GIS page loaded and identified the county Planning GIS/map-book context. Its downloadable maps are reference products and do not themselves expose parcel geometry API access."
+    },
+    {
+      "method": "GET",
+      "url": "https://services3.arcgis.com/h9QEFLHkUI1SIRs7/ArcGIS/rest/services/OL_LandBase/FeatureServer/14?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Layer metadata loaded anonymously over TLS. It identifies OL LandBase as an esriGeometryPolygon Feature Layer, native spatial reference WKID 102741/latestWkid 2279, native object/unique ID field FID, and a native extent covering the Laredo area."
+    },
+    {
+      "method": "GET",
+      "url": "https://services3.arcgis.com/h9QEFLHkUI1SIRs7/ArcGIS/rest/services/OL_LandBase/FeatureServer/14/query",
+      "httpStatus": 200,
+      "outcome": "Bounded envelope query around the exact WUP point returned polygon features with outFields=FID, returnGeometry=true, outSR=4326, and resultRecordCount=3. The response indicated exceededTransferLimit=true, so it was treated as a local sample only, not citywide coverage evidence."
+    },
+    {
+      "method": "GET",
+      "url": "https://services3.arcgis.com/h9QEFLHkUI1SIRs7/ArcGIS/rest/services/OL_LandBase/FeatureServer/14/query?geometry=-99.479958225,27.517846295&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FID&returnGeometry=false&f=pjson",
+      "httpStatus": 200,
+      "outcome": "Exact unchanged WUP point [27.5178462953798, -99.4799582250288] intersected one polygon, native FID 40927. This is a point hit only and is not a citywide completeness claim."
+    },
+    {
+      "method": "GET",
+      "url": "https://services3.arcgis.com/h9QEFLHkUI1SIRs7/ArcGIS/rest/services/OL_LandBase/FeatureServer/14/query?objectIds=40927&outFields=FID&returnGeometry=true&outSR=4326&f=geojson",
+      "httpStatus": 200,
+      "outcome": "Returned one unchanged polygon in EPSG:4326 GeoJSON with canonical native identity FID 40927. Only the safe ID and geometry were retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "ArcGIS REST FeatureServer layer metadata was directly inspectable; no login, private token, CAPTCHA, or TLS exception was used.",
+    "nativeGeometryType": "esriGeometryPolygon",
+    "nativeCrs": "EPSG:2279 (ArcGIS WKID 102741; latestWkid 2279)",
+    "sampleOutputCrs": "EPSG:4326",
+    "nativeIdentity": "FID (system-maintained OID/unique ID field)",
+    "observedNativeFieldMapping": {
+      "identity": "FID",
+      "otherObservedSourceFields": ["FTR_CODE", "SUBDIVISIO", "PHASE_UNIT", "LOT", "BLOCK", "FULLADDRES", "YRPLATTED", "OVERLAY", "ZONING", "SITUS_NO", "SITUS_ST", "PLATID", "NOTES"],
+      "retainedFields": ["FID", "geometry"]
+    },
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "exactWupPoint": [27.5178462953798, -99.4799582250288],
+      "exactPointFeatureCount": 1,
+      "exactPointNativeIds": [40927],
+      "envelopeFeatureSampleCount": 3,
+      "exceededTransferLimit": true
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID FID", "full parcel polygon geometry", "source service URL", "source CRS", "requested output CRS", "geometry type", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": "laredo-parcel-sample.geojson",
+  "sampleFiles": ["laredo-parcel-sample.geojson"],
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "A real local public parcel polygon and stable native FID were verified, but runtime/admission requires independent serial qualification and this packet does not modify adapter configuration."
+  },
+  "scopeLimits": [
+    "Exact WUP point was preserved in latitude/longitude order and was not shifted.",
+    "The exact-point hit demonstrates local service availability at one coordinate only; it does not establish citywide completeness.",
+    "The envelope response exceeded its bounded transfer limit and was not treated as a complete extent inventory.",
+    "The service description says coverage focuses on corporate limits but extends outside them; precise citywide boundary completeness was not independently verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Local custodianship, layer schema/CRS, stable FID identity, and one exact-point polygon were verified. Citywide completeness, update cadence, legal survey accuracy, and adapter/runtime suitability remain unverified pending serial review."
+}

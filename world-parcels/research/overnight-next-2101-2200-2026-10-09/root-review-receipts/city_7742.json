@@ -1,0 +1,22 @@
+{
+  "taskId": "city:7742",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/city-7742-vehari.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/vehari-service-review.json",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/vehari-parcel-sample.geojson",
+    "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-review-receipts/city_7742-native-id-source-response.json"
+  ],
+  "checkedAt": "2026-10-10T23:37:58Z",
+  "registryFound": true,
+  "reason": "WUP code 7742, rank 2120, Pakistan, exact point and 273823 persons match the immutable roster. English and Urdu executed searches were inspected. Official Vehari revenue administration supports registry custody (true). The fresh first-party PULSE layer 37 response returned one exact native OBJECTID 2616884 polygon with only safe ID and geometry. Its valid full polygon matches the one-feature sample with 0.0 m2 metric symmetric difference, covers the WUP point, and measures 3057869.5 m2 in EPSG:32642. This is bounded discovery, not an inventory or adapter admission. Forced paging, 13 bounded cells, independent metric overlap/operation checks, source binding, and headed Details verification are missing; no runtime admission.",
+  "firstPartySourceRead": {
+    "file": "world-parcels/research/overnight-next-2101-2200-2026-10-09/root-review-receipts/city_7742-native-id-source-response.json",
+    "nativeId": "2616884",
+    "featureCount": 1,
+    "metricAreaM2": 3057869.5,
+    "sampleSymmetricDifferenceM2": 0.0
+  }
+}

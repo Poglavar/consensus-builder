@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:103",
+  "queueRank": 103,
+  "name": "Bamako",
+  "country": "Mali",
+  "countryCode": "ML",
+  "centerLatLon": [
+    12.6310497786104,
+    -7.98841144489398
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+    "requestUrl": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali:parcelle&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-8.0430,12.6755,-8.0415,12.6775,EPSG:4326",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "spatialTestAreaLonLat": [
+      -8.043,
+      12.6755,
+      -8.0415,
+      12.6775
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "features",
+    "geometryType": "Polygon",
+    "closedRings": true,
+    "idField": "ninacad (national cadastral ID; also uoid, numeroparc)",
+    "responseFile": "bamako-parcel-response.json",
+    "pagination": "WFS maxFeatures/startIndex; numberMatched=74 in the test box"
+  },
+  "source": {
+    "sourceId": "ml-sprdf-ninacad-parcelle-wfs",
+    "name": "NINACAD parcel layer (sifMali:parcelle) via SPRDF GeoServer",
+    "operator": "Secretariat Permanent de la Reforme Domaniale et Fonciere (SPRDF), Mali",
+    "scope": "Mali (layer WGS84 extent lon -9.46..-6.05, lat 12.03..13.72: Bamako district and surrounding Koulikoro/Segou areas); coverage of other regions unverified",
+    "endpoint": "https://geodata.sprdf.ml/geoserver/sifMali/ows",
+    "method": "GET (OGC WFS 1.1.0/2.0.0, GeoServer)",
+    "responseFormat": "GeoJSON (also GML, KML, CSV, shapefile-zip)",
+    "crs": "EPSG:4326",
+    "reuseStatus": "no licence terms found; anonymous read observed, reuse terms not read"
+  },
+  "portalsFound": [
+    {
+      "url": "https://ninacad.sprdf.ml/",
+      "observation": "Portail NINACAD web app (SPRDF); its JS config names geodata.sprdf.ml GeoServer WFS/OWS as the map backend and api/Home/loadCommunes as the commune list."
+    },
+    {
+      "url": "http://bamada.net/portail-web-du-numero-didentification-unique-cadastral-une-porte-dentree-commune-aux-donnees-geographiques-et-informations-foncieres",
+      "observation": "Press report of the official NINACAD launch (unique cadastral ID for parcels; Bamako plan of ~524,830 parcels reported)."
+    },
+    {
+      "url": "https://www.dndc.gouv.ml/",
+      "observation": "Direction Generale des Domaines et du Cadastre du Mali; modernisation plan."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ninacad.sprdf.ml/api/Home/loadCommunes",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "commune list incl. Bamako Communes I-VI"
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/xml",
+      "assessment": "one feature type sifMali:parcelle; GeoJSON output allowed"
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=sifMali:parcelle&count=3&outputFormat=application/json&srsName=EPSG:4326&bbox=12.6300,-7.9890,12.6310,-7.9880,EPSG:4326",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "0 features at the supplied centroid (no parcels mapped there)"
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali:parcelle&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-7.9910,12.6290,-7.9860,12.6330,EPSG:4326",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "0 features at the centroid, 400 m box"
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?...&maxFeatures=3&CQL_FILTER=ninacad LIKE '001%'",
+      "method": "GET",
+      "httpStatus": "200",
+      "contentType": "application/json",
+      "assessment": "3 Bamako Commune III polygons near -8.042,12.677"
+    },
+    {
+      "url": "https://geodata.sprdf.ml/geoserver/sifMali/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=sifMali:parcelle&maxFeatures=3&outputFormat=application/json&srsName=EPSG:4326&bbox=-8.0430,12.6755,-8.0415,12.6775,EPSG:4326",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "assessment": "VERIFIED: 3 closed Polygon parcels, numberMatched 74 in ~160x220 m box (Bamako Commune III, ~8 km from supplied centroid)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "NINACAD national cadastral identifier portal; Bamako district plus other areas within the layer extent",
+    "verifiedOpenScope": "three Bamako Commune III parcels in a bounded sample; no parcels at the supplied city centroid",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Coverage is patchy: zero parcels at the supplied centroid box, so completeness across Bamako's six communes is unknown. Hit count of 1,000,000 from resultType=hits may be a cap. Licence terms not found; schema has only id/section/area fields.",
+  "nextStep": "Sample all six Bamako communes and one other region (e.g. Segou/Sikasso) to test national scope; read SPRDF terms; a Mali country probe should reuse this source."
+}

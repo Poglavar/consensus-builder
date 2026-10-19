@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:57:00Z",
+  "appCityId": "ciudadjuarez",
+  "sourceId": "mx-juarez-predios",
+  "verification": "Dedicated headed Chrome; normal parcel layer click, then Details button.",
+  "loadedParcels": 345,
+  "selectedId": "MX-JUA-PREDIO-{6A8E7F00-74BB-4EB0-B429-5B2FCB9E1771}",
+  "selectedNativeLabel": "1-184-080-009",
+  "parcelMenuAreaM2": 765,
+  "detailsIdMatchesSelection": true,
+  "uncaughtPageErrors": 0,
+  "browserClosed": true
+}

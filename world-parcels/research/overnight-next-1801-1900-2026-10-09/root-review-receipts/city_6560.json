@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6560",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-6560-ughelli.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/ughelli-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T17:23:50.856802Z",
+  "reason": "Delta State ministry and Ughelli fee-schedule mention corroborated; no anonymous parcel endpoint or polygon. Claimed Urhobo query uses Yoruba “ilẹ”, so native-language search is inadequately evidenced; adapter and headed Details proof absent.",
+  "registryCustody": true,
+  "publicGeometryVerified": false,
+  "runtimeQualified": false
+}

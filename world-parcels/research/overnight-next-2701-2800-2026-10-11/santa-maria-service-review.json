@@ -1,0 +1,75 @@
+{
+  "cityRecord": "city-3932-santa-maria.json",
+  "cityCode": 3932,
+  "queueRank": 2798,
+  "city": "Santa Maria",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "reviewStatus": "held",
+  "reviewOutcome": "The official municipal GEO Santa Maria cadastral GIS was evidenced, but the current GeoMais public entry point did not provide an anonymous response. No safe native parcel ID-plus-geometry response, layer schema, or CRS was verified, so no sample GeoJSON was retained and runtime qualification remains held.",
+  "queryAndRequestOutcomes": [
+    {
+      "request": "GET https://geocadastro.santamaria.rs.gov.br/",
+      "outcome": "HTTP 401, zero-byte body; response included no-store and cleared the GeoMais identity-provider session cookie. No login or credential attempt was made."
+    },
+    {
+      "request": "GET https://geocadastro.santamaria.rs.gov.br/index.php/pt/",
+      "outcome": "HTTP 401, zero-byte body."
+    },
+    {
+      "request": "GET https://geocadastro.santamaria.rs.gov.br/index.php/pt/imobiliario",
+      "outcome": "HTTP 401, zero-byte body."
+    },
+    {
+      "request": "GET https://geocadastro.santamaria.rs.gov.br/index.php/pt/acesso-publico",
+      "outcome": "HTTP 401, zero-byte body."
+    },
+    {
+      "request": "GET https://geocadastro.santamaria.rs.gov.br/publico",
+      "outcome": "HTTP 401, zero-byte body."
+    },
+    {
+      "request": "GET https://urbanismo.santamaria.rs.gov.br/144-geo-santa-maria",
+      "outcome": "HTTP 200 first-party informational page; describes municipal cadastral coverage and lot/block/property/building information, but does not expose a machine-readable parcel endpoint in the retrieved page."
+    },
+    {
+      "request": "GET https://urbanismo.santamaria.rs.gov.br/arquivos/baixar-arquivo/conteudo/D01-0-337.pdf",
+      "outcome": "HTTP 200 official GEO Santa Maria technical manual; documents cadastral lookup concepts and lot fields, but no directly usable anonymous API response was extracted."
+    }
+  ],
+  "cityOrLocalCustodian": "The evidenced local custodian is Prefeitura Municipal de Santa Maria, through Secretaria de Município de Urbanismo e Projetos / Instituto de Planejamento de Santa Maria. The service description identifies GEO Santa Maria as a municipal GIS covering cadastral and cartographic information. No separate state or national parcel service was used as a substitute.",
+  "schemaAndCrs": null,
+  "nativeFieldNames": [
+    "The technical manual describes concepts such as cadastro imobiliário, inscrição imobiliária, código de cadastro, matrícula, quadra and lote, but no live response was obtained to verify exact API field names."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity only if independently verified",
+    "parcel geometry",
+    "geometry CRS",
+    "source layer name",
+    "service URL",
+    "bounded query metadata"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal identity",
+    "tax/account",
+    "certificate/title data"
+  ],
+  "sampleGeojson": null,
+  "scopeLimits": [
+    "The official page says coverage is the urban 1st District-Sede and some district seats; this is not evidence of complete municipality-wide parcel coverage.",
+    "No exact-point hit, map-extent miss, timeout, or login wall is evidence of citywide parcel absence.",
+    "The WUP point remains exactly [-29.6915141491841, -53.8250039928481] in latitude/longitude order.",
+    "No credentials, private tokens, CAPTCHA/Cloudflare bypass, or TLS verification disablement was used.",
+    "No parcel owner, address, titleholder, personal, tax/account, certificate, or contact fields were requested or retained.",
+    "No parcel sample GeoJSON was retained because no safe native ID-plus-geometry response was verified.",
+    "No registry, catalog, runtime configuration, queue, identity ledger, or global report was changed."
+  ],
+  "runtimeReadiness": "held_pending_serial_reviewer_qualification",
+  "uncertainty": "The public GIS may require a changed route, browser-generated session, or later anonymous access policy. The observed HTTP 401 responses establish current anonymous transport access failure only; they do not establish cadastral absence.",
+  "integrationDisposition": "Research packet only; no source integration or admission."
+}

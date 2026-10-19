@@ -1,0 +1,130 @@
+{
+  "name": "Fangshan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 854,
+  "point": [
+    39.7114071932044,
+    116.039128596027
+  ],
+  "population2025": 633763,
+  "population2025k": 633.763,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Beijing’s official service map lists the Fangshan District Real Estate Registration Center and says district centers perform local real-property registration. Beijing Municipal Commission of Planning and Natural Resources policy provides a public online cadastral-map/land-parcel query by parcel identifier, unit number or location. It describes returned parcel metadata and attached drawings, but no machine-readable full polygon schema was established here.",
+  "registryEvidenceUrls": [
+    "https://map.beijing.gov.cn/place?placeId=66a8a146e4a9ed67df286028",
+    "https://english.beijing.gov.cn/investinginbeijing/WhyBeijing/Environment/bus_env_policy/bizenv_pr/202006/t20200624_1932128.html",
+    "https://beijing.tianditu.gov.cn/?type=6"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9052,
+  "cityId": "wup2025:9052",
+  "centerLatLon": [
+    39.7114071932044,
+    116.039128596027
+  ],
+  "queueRank": 854,
+  "scopeLimits": "Bounded official-source and public-service review. No citywide completeness is claimed. No owner, address, account, tax, personal-property or credential fields are retained.",
+  "resultCategory": "official_city_registry_public_cadastral_query_geometry_unverified",
+  "technicalBlocker": "Documented query route provides an online parcel/cadastral information view; no anonymous vector or full-geometry response schema was identified. No location-specific query was made.",
+  "remainingUncertainty": "Public query may return attached map imagery/drawings rather than machine-readable complete geometry; WUP-point coverage and exact query output remain untested.",
+  "nextStep": "Parent review may decide whether additional viewer/source investigation is useful; no geometry/runtime claim is made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "房山区 不动产登记中心 地籍图 查询 宗地 官方 北京",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official Beijing policy documents public cadastral-map and parcel query channels. Beijing service map identifies Fangshan’s district registration center. No full-vector API schema was verified.",
+        "actualResultUrls": [
+          "https://map.beijing.gov.cn/place?placeId=66a8a146e4a9ed67df286028",
+          "https://english.beijing.gov.cn/investinginbeijing/WhyBeijing/Environment/bus_env_policy/bizenv_pr/202006/t20200624_1932128.html",
+          "https://beijing.tianditu.gov.cn/?type=6"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      },
+      {
+        "language": "English",
+        "query": "Fangshan Beijing official cadastral map query real estate registration parcel GIS",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "The Fangshan registration center and Beijing public cadastral query policy were confirmed; no anonymous full-polygon geometry interface was identified.",
+        "actualResultUrls": [
+          "https://map.beijing.gov.cn/place?placeId=66a8a146e4a9ed67df286028",
+          "https://english.beijing.gov.cn/investinginbeijing/WhyBeijing/Environment/bus_env_policy/bizenv_pr/202006/t20200624_1932128.html",
+          "https://beijing.tianditu.gov.cn/?type=6"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Fangshan official registry/cadastral review",
+        "operator": "China",
+        "homeUrl": "https://map.beijing.gov.cn/place?placeId=66a8a146e4a9ed67df286028",
+        "observation": "Beijing’s official service map lists the Fangshan District Real Estate Registration Center and says district centers perform local real-property registration. Beijing Municipal Commission of Planning and Natural Resources policy provides a public online cadastral-map/land-parcel query by parcel identifier, unit number or location. It describes returned parcel metadata and attached drawings, but no machine-readable full polygon schema was established here."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://map.beijing.gov.cn/place?placeId=66a8a146e4a9ed67df286028",
+        "method": "GET official Beijing service map",
+        "httpStatus": 200,
+        "observation": "Lists Fangshan District Real Estate Registration Center; says districts conduct registration matters for local real property."
+      },
+      {
+        "url": "https://english.beijing.gov.cn/investinginbeijing/WhyBeijing/Environment/bus_env_policy/bizenv_pr/202006/t20200624_1932128.html",
+        "method": "GET official policy",
+        "httpStatus": 200,
+        "observation": "Documents a public cadastral-map query and parcel query by parcel ID, unit number or location, returning parcel identifier/location/area/right type/attached drawing. It does not publish a vector feature schema or WFS."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-9052-fangshan-cadastre-review",
+    "name": "Fangshan official cadastral/registry source review",
+    "url": "https://map.beijing.gov.cn/place?placeId=66a8a146e4a9ed67df286028",
+    "operator": "China",
+    "serviceType": "Public cadastral-map/parcel-information query documented; no full-vector service verified.",
+    "layer": "No feature layer/schema inspected; official policy describes map query only.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No safe native parcel ID was confirmed in a full feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Beijing’s official service map lists the Fangshan District Real Estate Registration Center and says district centers perform local real-property registration. Beijing Municipal Commission of Planning and Natural Resources policy provides a public online cadastral-map/land-parcel query by parcel identifier, unit number or location. It describes returned parcel metadata and attached drawings, but no machine-readable full polygon schema was established here.",
+    "verifiedOpenScope": "Official local registration/map evidence is documented, but no full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No verified public full-polygon response was obtained.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootPrimaryReadback": {
+    "url": "https://map.beijing.gov.cn/place?placeId=66a8a146e4a9ed67df286028",
+    "fetch": 200,
+    "contentType": "text/html;charset=UTF-8",
+    "title": "北京12345服务导图"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00",
+  "sourceIds": []
+}

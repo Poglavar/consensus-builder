@@ -1,0 +1,118 @@
+{
+  "purpose": "City parcel geometry and registry/cadastre research; registry evidence and publicly retrievable vector geometry are assessed independently.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T18:35:55Z",
+  "cityId": "capital:TL:dili",
+  "name": "Dili",
+  "country": "Timor-Leste",
+  "countryCode": "TL",
+  "centerLatLon": [
+    -8.583333333333334,
+    125.6
+  ],
+  "capitalRole": "primary",
+  "priorEvidence": [],
+  "executedQueries": [
+    {
+      "query": "Dili Timor-Leste cadastral parcel map GIS official land cadastral open data",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.mj.gov.tl/?q=node%2F489",
+        "https://www.mj.gov.tl/?q=node%2F1939"
+      ]
+    },
+    {
+      "query": "site:gov.tl cadastro parcel map Dili land GIS official",
+      "language": "English",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.mj.gov.tl/?q=node%2F489",
+        "https://www.mj.gov.tl/?q=node%2F1939"
+      ]
+    },
+    {
+      "query": "Dili Timor-Leste mapa rai cadastral parcela dalan land parcel map",
+      "language": "Tetum/Portuguese terms",
+      "method": "web.run search_query",
+      "resultUrls": [
+        "https://www.mj.gov.tl/?q=node%2F489",
+        "https://timor-leste.gov.tl/?lang=pt&n=1&p=6431"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.mj.gov.tl/?q=node%2F489",
+      "observation": "Ministry of Justice National Directorate for Land, Property and Cadastral Services identifies a “Timor-Leste GIS Portal” and municipal land-map publications."
+    },
+    {
+      "url": "https://www.mj.gov.tl/?q=node%2F1939",
+      "observation": "Ministry of Justice lists public-request geospatial datasets including reference points and Dili road map; no open cadastral feature endpoint confirmed."
+    },
+    {
+      "url": "https://timor-leste.gov.tl/?lang=pt&n=1&p=6431",
+      "observation": "Government of Timor-Leste notes publication of land maps for Nain Feto and Vera Cruz subdistricts in Dili."
+    },
+    {
+      "url": "https://www.mj.gov.tl/?q=node%2F489",
+      "observation": "Timor-Leste Ministry of Justice cadastre directorate page loaded over HTTPS and links to historical Dili cadastral-map images. These are raster map products, not a verified public polygon service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.mj.gov.tl/?q=node%2F489",
+      "method": "GET primary portal/page inspection",
+      "httpStatus": 200,
+      "checkedAt": "2026-10-08T18:12:00Z",
+      "outcome": "Fetched page returned HTTP 200; final URL https://www.mj.gov.tl/?q=node%2F489; content type text/html; charset=utf-8; 16803 bytes.",
+      "firstPartyScripts": [
+        "https://www.mj.gov.tl/misc/jquery.js?v=1.4.4",
+        "https://www.mj.gov.tl/misc/jquery-extend-3.4.0.js?v=1.4.4",
+        "https://www.mj.gov.tl/misc/jquery.once.js?v=1.2",
+        "https://www.mj.gov.tl/misc/drupal.js?rqgqhv",
+        "https://www.mj.gov.tl/sites/default/files/languages/pt-pt_Bpq4Ry1QHRsJBUouvPfveQFgqOEgZ4wTuK4Zt06aV2w.js?rqgqhv",
+        "https://www.mj.gov.tl/themes/business_theme/js/html5.js",
+        "https://www.mj.gov.tl/modules/statistics/statistics.js?rqgqhv"
+      ],
+      "relevantOfficialLinks": [
+        "https://www.mj.gov.tl/images/2018/01_AICA_MAPA_Dili_060218_060297.jpg",
+        "https://www.mj.gov.tl/images/2018/02_AICA_MAPA_Dili_060209_060304.jpg",
+        "https://www.mj.gov.tl/images/2018/07_AICA_MAPA_Dili_060210_060280.jpg",
+        "https://www.mj.gov.tl/images/2018/03_AICA_MAPA_Liquica_090076_090096_ok.jpg",
+        "https://www.mj.gov.tl/images/2018/03_AICA_MAPA_Liquica_090094_090100_ok.jpg",
+        "https://www.mj.gov.tl/images/2018/10_AICA_MAPA_Liquica_090101_090112.jpg",
+        "https://www.mj.gov.tl/images/2018/04_AICA_MAPA_Manatuto_100092_100110_ok.jpg",
+        "https://www.mj.gov.tl/images/2018/04_AICA_MAPA_Manatuto_100093_100113_ok.jpg",
+        "https://www.mj.gov.tl/images/2018/06_AICA_MAPA_Manatuto_100082_100109.jpg",
+        "https://www.mj.gov.tl/images/2018/08_AICA_MAPA_Aileu_010056_010095.jpg",
+        "https://www.mj.gov.tl/images/2018/09_AICA_MAPA_Bobonaro_040048_040127.jpg",
+        "https://www.mj.gov.tl/images/2018/11_AICA_MAPA_Oecusse_120048_120075.jpg"
+      ]
+    }
+  ],
+  "registryFound": true,
+  "registryBasis": "National cadastral services and published Dili land maps exist, but no public polygon service/feature query verified.",
+  "registryEvidenceUrls": [
+    "https://www.mj.gov.tl/?q=node%2F489",
+    "https://www.mj.gov.tl/?q=node%2F1939",
+    "https://timor-leste.gov.tl/?lang=pt&n=1&p=6431"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": null,
+  "verifiedParcelResponse": null,
+  "resultCategory": "registry_found_city_maps_nonvector_no_geometry_response",
+  "coverageAssessment": {
+    "claimedScope": "As described by the official source(s) listed.",
+    "verifiedOpenScope": "No new bounded parcel-feature HTTP response with verifiable provenance recorded in this city artifact.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "remainingUncertainty": "No bounded city parcel feature query with safe fields was verified; the listed source may be a viewer, planning dataset, nonpublic service or national registry.",
+  "researchGroup": "asia",
+  "pointBasis": "Chosen approximate central-city locator from reference data and manual seat placement; not an official boundary or WUP centroid.",
+  "sourceIds": []
+}

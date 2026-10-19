@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fresh exact adapter reread for every source feature in the complete LotId=681 group using candidate composite identity [LotId, OBJECTID_1].",
+  "checkedAt": "2026-10-08T15:20:24.862Z",
+  "descriptor": {
+    "id": "gaborone-bofinet-composite-probe",
+    "idPrefix": "gaborone:bofinet:",
+    "endpoint": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0",
+    "idFields": [
+      "LotId",
+      "OBJECTID_1"
+    ],
+    "idFieldTypes": {
+      "LotId": "string",
+      "OBJECTID_1": "integer"
+    },
+    "objectIdField": "FID",
+    "outFields": [
+      "FID",
+      "OBJECTID",
+      "OBJECTID_1",
+      "LotId",
+      "Extension_",
+      "Town_Lot_I",
+      "SR_No",
+      "Diagram_No"
+    ],
+    "pageSize": 3,
+    "idBatchSize": 3,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 25,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "ids": [
+    "gaborone:bofinet:681~9340",
+    "gaborone:bofinet:681~9341",
+    "gaborone:bofinet:681~9897",
+    "gaborone:bofinet:681~48733"
+  ],
+  "requests": [
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9340%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9341%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9897%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:20:24.866Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9340%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9341%29+OR+%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+9897%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:20:26.324Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 56
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=9102%2C9103%2C9645",
+      "checkedAt": "2026-10-08T15:20:26.969Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1531
+    },
+    {
+      "operation": "count",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+48733%29&f=json&returnCountOnly=true",
+      "checkedAt": "2026-10-08T15:20:27.377Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11
+    },
+    {
+      "operation": "object-id-manifest",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=%28LotId+%3D+%27681%27+AND+OBJECTID_1+%3D+48733%29&f=json&returnIdsOnly=true",
+      "checkedAt": "2026-10-08T15:20:27.971Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 47
+    },
+    {
+      "operation": "geometry-by-oids",
+      "method": "GET",
+      "url": "https://bofinetarcgisportal.bofinet.co.bw/server/rest/services/PUBLIC/GABORONE_PLOTS/MapServer/0/query?where=1%3D1&outFields=FID%2COBJECTID%2COBJECTID_1%2CLotId%2CExtension_%2CTown_Lot_I%2CSR_No%2CDiagram_No&returnGeometry=true&outSR=4326&f=geojson&objectIds=47651",
+      "checkedAt": "2026-10-08T15:20:28.594Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 504
+    }
+  ],
+  "tests": [
+    {
+      "name": "fresh-exact-lotid-681-group",
+      "count": 4,
+      "allGeometriesMatch": true,
+      "absentIds": [],
+      "sourceFids": [
+        9102,
+        9103,
+        9645,
+        47651
+      ],
+      "compositeIds": [
+        "gaborone:bofinet:681~9340",
+        "gaborone:bofinet:681~9341",
+        "gaborone:bofinet:681~9897",
+        "gaborone:bofinet:681~48733"
+      ]
+    }
+  ],
+  "privacy": "Only safe cadastral fields and geometry requested; no owner-like fields.",
+  "result": "passed",
+  "completedAt": "2026-10-08T15:20:28.924Z"
+}

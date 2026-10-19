@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09T10:46:00Z",
+  "cityRecord": "city-4530-irapuato.json",
+  "cohort": "overnight-next-1201-1300-2026-10-09",
+  "purpose": "Independent service review for Irapuato official cadastral and parcel-oriented map sources.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Irapuato has an evidenced local municipal cadastral custodian and an official GeoPortal advertising SIUS, a parcel-oriented land-use viewer. The reviewed SIUS and cadastral-certification pages require login or account procedures. Anonymous direct shell requests to the GeoPortal timed out, while indexed official content remained readable. No safe native parcel ID, layer schema, CRS, or full polygon was verified; the packet is complete for this attempt but runtime readiness remains held.",
+  "registryAssessment": "Official municipal sources establish Dirección de Catastro and municipal GeoPortal/SIUS custody. This is local registry/cadastre evidence, not proof of open vector access or legal title coverage.",
+  "coverageAssessment": {
+    "claimedScope": "Municipal Irapuato GeoPortal, SIUS parcel-oriented land-use viewer, and cadastral-certification procedure pages.",
+    "verifiedOpenScope": "Descriptive public pages and a login-gated viewer; no anonymous full parcel geometry or stable safe ID.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "officialPrimarySources": [
+    {
+      "url": "https://geoportal.irapuato.gob.mx/",
+      "operator": "Municipio de Irapuato, Dirección de Tecnologías de la Información y Geomática",
+      "scope": "Official municipal IDE landing page. It advertises fiscal-value and parcel-oriented spatial tools but exposes no public layer schema in the reviewed response."
+    },
+    {
+      "url": "https://geoportal.irapuato.gob.mx/sius/",
+      "operator": "Municipio de Irapuato, Dirección General de Desarrollo Urbano",
+      "scope": "Official SIUS description says map search can use location, map click, address, or predial account; the page displays a login requirement."
+    },
+    {
+      "url": "https://vccc.irapuato.gob.mx/",
+      "operator": "Tesorería Municipal / Dirección de Catastro",
+      "scope": "Official cadastral certificate portal and help page. It requires account login and applicant documentation; no anonymous parcel vector was exposed."
+    },
+    {
+      "url": "https://www.irapuato.gob.mx/minegocio/",
+      "operator": "Gobierno Municipal de Irapuato",
+      "scope": "Official municipal service page naming Dirección de Catastro and routing cadastral-key procedures to the municipal platform."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Irapuato Mexico official cadastral map land registry parcel GIS",
+      "result": "Located the official municipal GeoPortal, SIUS, VCCC cadastral portal and municipal service references. No anonymous parcel-geometry API was documented.",
+      "actualResultUrls": ["https://geoportal.irapuato.gob.mx/", "https://geoportal.irapuato.gob.mx/sius/", "https://vccc.irapuato.gob.mx/", "https://digital.irapuato.gob.mx/"]
+    },
+    {
+      "language": "Spanish",
+      "query": "Irapuato mapa catastral oficial predios catastro GIS",
+      "result": "La búsqueda localizó el Geoportal municipal, SIUS y la Ventanilla de Constancia de Certificación Catastral. Las páginas revisadas no exponen geometría parcelaria anónima; SIUS y VCCC indican inicio de sesión.",
+      "actualResultUrls": ["https://geoportal.irapuato.gob.mx/", "https://geoportal.irapuato.gob.mx/sius/", "https://vccc.irapuato.gob.mx/", "https://www.irapuato.gob.mx/minegocio/"]
+    }
+  ],
+  "attempts": [
+    "Ran separate English and Spanish first-party discovery queries and reviewed the municipal GeoPortal, SIUS, VCCC and municipal service pages.",
+    "Followed the official GeoPortal links to /tramos_valor/ and /sius/; the SIUS page describes map/predial/geographic search but shows 'Iniciar Sesión'.",
+    "Attempted anonymous GET retrieval of the GeoPortal and SIUS routes with TLS verification enabled; both shell requests timed out after 12 seconds.",
+    "Attempted anonymous HEAD of the VCCC route; it returned HTTP 200 and a session cookie, but no authenticated flow or cadastral lookup was attempted because the page requires login/account procedures.",
+    "Inspected indexed official HTML for GeoPortal/SIUS/VCCC; no public JavaScript/configuration, layer schema, CRS, safe native ID, or geometry endpoint was surfaced.",
+    "Did not request or retain owner, address, contact, titleholder, tax, predial-account, applicant, credential, token, or personal fields. Did not shift or query a substitute coordinate."
+  ],
+  "geometryEvidence": {
+    "verified": false,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not run: no anonymous full parcel-geometry endpoint was verified. The WUP point [20.6729572371031, -101.356085008183] is preserved unchanged.",
+    "requestEvidence": [
+      {"url": "https://geoportal.irapuato.gob.mx/", "method": "GET; anonymous", "httpStatus": null, "error": "curl timeout after 12 seconds", "assessment": "Transport failure only; not evidence of no parcels."},
+      {"url": "https://geoportal.irapuato.gob.mx/sius/", "method": "GET; anonymous", "httpStatus": null, "error": "curl timeout after 12 seconds", "assessment": "Transport failure only; indexed page shows login requirement; not evidence of no parcels."},
+      {"url": "https://vccc.irapuato.gob.mx/", "method": "HEAD; anonymous", "httpStatus": 200, "assessment": "Landing route responds, but service is account/login based; no lookup performed."}
+    ]
+  },
+  "safeFieldAllowlist": ["safe parcel/cadastral identifier only if exposed by a future anonymous endpoint", "geometry", "CRS/layer metadata"],
+  "nextStep": "A later bounded attempt may inspect the municipal GeoPortal from a network path that can retrieve its current JavaScript/configuration, without logging in or supplying predial/account or personal data.",
+  "remainingUncertainty": "The live GeoPortal backend, any public map-service endpoints, and the municipal cadastral dataset's geometry/ID schema remain unknown. The login wall and shell timeouts do not establish absence or incompleteness of citywide parcel data.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

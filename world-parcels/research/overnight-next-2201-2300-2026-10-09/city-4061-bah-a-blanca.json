@@ -1,0 +1,64 @@
+{
+  "cityCode": 4061,
+  "queueRank": 2269,
+  "name": "Bahía Blanca",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "iso3": "ARG",
+  "locId": 32,
+  "point": [-38.7199011544995, -62.2653007739001],
+  "population2025": 257379,
+  "population2025k": 257.379,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bahía Blanca Argentina official cadastral map parcel GIS catastro parcelas municipal",
+        "result": "First-party discovery found the official Municipio de Bahía Blanca Catastro pages, the municipal map/portal pages, the municipal SITeBB reference, and the Provincia de Buenos Aires ARBA Carto viewer. These establish local and provincial cadastral/map custodians; no safe anonymous parcel feature response was retained.",
+        "actualResultUrls": [
+          "https://www.bahia.gob.ar/tramites/catastro/",
+          "https://www.bahia.gob.ar/informacion-catastral-y-urbanistica-y-certificado-de-informacion-catastral-y-urbanistica/",
+          "https://carto.arba.gov.ar/cartoArba",
+          "https://sibom.slyt.gba.gob.ar/bulletins/3300.pdf"
+        ]
+      },
+      {
+        "language": "Spanish (local)",
+        "query": "Bahía Blanca Argentina sitio oficial catastro mapa parcelas GIS registro catastral",
+        "result": "La búsqueda oficial en español encontró el Departamento de Catastro municipal, sus trámites de información catastral, registros gráficos y actualización del estado parcelario, además de la referencia oficial al SITeBB y el visor Carto ARBA. La consulta acotada no produjo una respuesta anónima segura con identidad parcelaria y polígono completo.",
+        "actualResultUrls": [
+          "https://www.bahia.gob.ar/tramites/catastro/",
+          "https://www.bahia.gob.ar/mapas/CPU/",
+          "https://gobiernoabierto.bahia.gob.ar/mapas/",
+          "https://carto.arba.gov.ar/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registry": {
+    "custodian": "Municipalidad de Bahía Blanca, Departamento de Catastro; provincial cadastral/cartographic context by Agencia de Recaudación de la Provincia de Buenos Aires (ARBA).",
+    "service": "Municipal SITeBB / Catastro services and the public Carto ARBA viewer.",
+    "viewerUrl": "https://carto.arba.gov.ar/cartoArba/",
+    "localCustodianEvidence": "The official municipal Catastro page lists parcel/inmueble information, registros gráficos and parcel-state update procedures. An official municipal bulletin describes SITeBB as the territorial information system led by Departamento Catastro and notes public access at a limited information level with restricted expanded information.",
+    "scope": "Municipal cadastral custody and a provincial public cartographic viewer are evidenced. Current anonymous citywide parcel extraction, schema, and completeness were not established.",
+    "nationalOrGeneralAgencyEvidence": "ARBA is the Buenos Aires provincial agency and Carto ARBA is general provincial map context; it is not treated as the municipal custodian. The Registro de la Propiedad Inmueble delegation was not used for parcel geometry or titleholder data."
+  },
+  "parcelEvidence": {
+    "sampleFile": null,
+    "safeNativeIdentity": false,
+    "geometryRetained": false,
+    "reason": "The public Carto ARBA viewer loaded anonymously and exposed map/search JavaScript routes, but bounded anonymous requests did not produce a verified safe parcel identity plus unchanged full polygon suitable for retention. No synthetic identity or shifted point was used.",
+    "runtimeReadiness": "held",
+    "qualification": "Not admitted as a runtime parcel adapter; serial review required."
+  },
+  "researchNotes": [
+    "The exact WUP point was preserved in latitude/longitude order; no coordinate shift or exact-point parcel-hit inference was made.",
+    "Official municipal pages describe parcel information, graphic records and parcel-state procedures; the municipal bulletin identifies SITeBB and its access boundaries.",
+    "The current Carto ARBA page was followed to its JavaScript/configuration. It loaded with normal TLS verification and exposed anonymous search routes such as client/getNomencla and client/getPdoPda, but no safe bounded ID-plus-full-polygon response was obtained.",
+    "Only safe administrative, service, CRS/schema and geometry metadata were in scope. Owner, address, contact, titleholder, tax/account, deed, registration and personal fields were not requested.",
+    "This packet records source research only and is not source integration or runtime admission."
+  ]
+}

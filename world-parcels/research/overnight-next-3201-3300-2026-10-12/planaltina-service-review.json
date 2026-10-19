@@ -1,0 +1,44 @@
+{
+  "cityRecord": "city-6310-planaltina.json",
+  "cityCode": 6310,
+  "queueRank": 3267,
+  "name": "Planaltina",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "custodian": "Distrito Federal SEDUH / IDE-DF public cadastral services, with RA VI Planaltina code 6",
+  "queryOutcomes": "Separate English and Portuguese discovery queries, exact query text, outcomes, and actual URLs are recorded in city-6310-planaltina.json under freshResearch. Official SEDUH/IDE-DF sources document a public GeoPortal and cadastral ArcGIS service.",
+  "service": {
+    "url": "https://www.geoservicos.ide.df.gov.br/arcgis/rest/services/Publico/CADASTRO_TERRITORIAL/MapServer",
+    "kind": "ArcGIS MapServer",
+    "layers": {"registeredLots": 10, "identifiedOccupations": 11},
+    "sourceCrs": "EPSG:31983",
+    "outputCrsTested": "EPSG:4326",
+    "nativeIdentity": "objectid (ArcGIS OID)",
+    "fieldMapping": {"objectid": "canonical id", "shape": "geometry"},
+    "compositeKey": null
+  },
+  "requestSummary": {
+    "exactPointRegisteredLots": "HTTP 200, zero features",
+    "exactPointIdentifiedOccupations": "HTTP 200, zero features",
+    "planaltinaFilter": "HTTP 200, pu_ra=6 returned three sample polygons and exceededTransferLimit=true"
+  },
+  "retainedSample": {
+    "file": "planaltina-parcel-sample.geojson",
+    "featureCount": 3,
+    "properties": "Exactly one canonical native identity property, id, per feature; raw source attributes were not retained.",
+    "ids": ["5869", "11277", "11278"]
+  },
+  "safeFieldAllowlist": ["objectid", "geometry"],
+  "unsafeFieldsNotRequested": ["pu_end_cart", "pu_end_usual", "pu_cep", "pu_ciu", "pu_cipu", "owner", "address", "titleholder", "tax", "registration", "contact"],
+  "scopeLimits": [
+    "The public source is regional Distrito Federal custody, not a separately verified Planaltina-GO municipal parcel API.",
+    "The exact WUP point is not a citywide coverage test; zero exact-point hits do not establish absence.",
+    "The pu_ra=6 response is a bounded sample and does not prove complete citywide coverage or currentness.",
+    "No adapter was implemented or admitted; runtime readiness remains held pending serial review."
+  ],
+  "uncertainty": "The supplied city name is ambiguous between Planaltina in the Distrito Federal and Planaltina municipality in Goiás. The immutable WUP point is in the DF context, so the DF service was evaluated without shifting coordinates.",
+  "registryFound": true,
+  "runtimeReadiness": "held_no_serial_adapter_qualification"
+}

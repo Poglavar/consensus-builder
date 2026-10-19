@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T21:39:09.794291+00:00",
+  "city": "lasvegas",
+  "url": "http://localhost:5638/?city=lasvegas&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "localUncommittedUndeployed": true,
+  "browserMode": "Dedicated headed Chrome with anti-throttling flags",
+  "sourceId": "us-nv-clark-assessor-parcels",
+  "loadedParcelLayers": 134,
+  "reportedLoadedParcels": 134,
+  "selectedParcelId": "US-NV-CLARK-16204399004",
+  "realPointerClick": {
+    "x": 461,
+    "y": 492
+  },
+  "detailsOpened": true,
+  "displayedNativeReferenceMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceAlerts": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "limitations": "Manual check confirms this local source wiring and parcel interaction. It does not establish county completeness or remove observed intermittent publisher failures."
+}

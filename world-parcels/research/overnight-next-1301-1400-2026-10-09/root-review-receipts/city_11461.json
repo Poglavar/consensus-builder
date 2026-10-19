@@ -1,0 +1,12 @@
+{
+  "taskId": "city:11461",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/city-11461-deoghar.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/deoghar-service-review.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1301-1400-2026-10-09/ranked-population.json"
+  ],
+  "checkedAt": "2026-10-09T14:22:47Z",
+  "reason": "Official district land-record service and Jharkhand viewer route are documented, but viewer requests timed out and no anonymous safe native-ID/full-polygon response exists. All live adapter admission gates remain unevidenced. Registry custody remains unresolved, not absent."
+}

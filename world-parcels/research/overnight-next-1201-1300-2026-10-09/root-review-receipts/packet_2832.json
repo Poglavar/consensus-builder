@@ -1,0 +1,16 @@
+{
+  "taskId": "packet:2832",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-2832-quelimane.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/quelimane-service-review.json",
+    "tmp/valhalla-parcel-research/2832/quelimane-mapserver.json",
+    "tmp/valhalla-parcel-research/2832/quelimane-bairros.json",
+    "tmp/valhalla-parcel-research/2832/services-root.json",
+    "tmp/valhalla-parcel-research/2832/portal-search.json"
+  ],
+  "checkedAt": "2026-10-09T13:45:22Z",
+  "reason": "Immutable WUP code 2832, rank 1271, Mozambique, point and 438554 persons match the queue. English and Portuguese research is recorded. Original MOZGIS metadata exposes thematic layers and Bairros boundaries, not parcel polygons; the bounded portal search has zero items but proves no citywide absence. Municipal cadastral custody is reported from the official PDUL diagnostic. No safe native-ID parcel response or independent runtime qualification exists."
+}

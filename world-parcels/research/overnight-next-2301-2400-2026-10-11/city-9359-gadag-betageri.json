@@ -1,0 +1,107 @@
+{
+  "cityCode": 9359,
+  "queueRank": 2365,
+  "name": "Gadag-Betageri",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [15.4302141090956, 75.6373748382615],
+  "population2025": 246730,
+  "population2025k": 246.73,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gadag Betageri Karnataka official cadastral parcel map land records GIS Bhoomi Mojini",
+        "result": "Official Gadag district Revenue Department and Bhoomi pages were found. The district page links the Karnataka Bhoomi land-record service; no public parcel feature response was obtained in bounded inspection.",
+        "actualResultUrls": [
+          "https://gadag.nic.in/en/revenue-dept/",
+          "https://gadag.nic.in/bhoomi/",
+          "https://landrecords.karnataka.gov.in/Service2/"
+        ]
+      },
+      {
+        "language": "Kannada (native/local)",
+        "query": "ಗದಗ ಬೆಟಗೇರಿ ಭೂ ನಕ್ಷೆ ಜಮೀನು ನಕ್ಷೆ ಅಧಿಕೃತ",
+        "result": "Kannada discovery found the official Gadag district Bhoomi page and the Kannada Revenue Department route. The linked Karnataka service timed out; no parcel geometry or native ID was obtained.",
+        "actualResultUrls": [
+          "https://gadag.nic.in/bhoomi/",
+          "https://gadag.nic.in/%e0%b2%87%e0%b2%b2%e0%b2%be%e0%b2%96%e0%b3%86%e0%b2%97%e0%b2%b3%e0%b3%81/%e0%b2%95%e0%b2%82%e0%b2%a6%e0%b2%be%e0%b2%af-%e0%b2%87%e0%b2%b2%e0%b2%be%e0%b2%96%e0%b3%86/",
+          "https://landrecords.karnataka.gov.in/Service2/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeEligible": false,
+  "runtimeReadiness": "held",
+  "discoveryMethod": "first-party English and Kannada discovery plus bounded anonymous official-page/service inspection",
+  "sourceReview": "Gadag district Government of Karnataka identifies Bhoomi under the Revenue Department. The official Gadag Bhoomi page links the Karnataka Land Records Service2 route. This is local district/state registry and service evidence, not evidence of an open parcel feature layer.",
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH/GET",
+      "url": "https://gadag.nic.in/en/revenue-dept/",
+      "httpStatus": "200 via public indexed page",
+      "outcome": "Official Gadag district Revenue Department page loaded; it identifies revenue/land administration and lists Bhoomi among department services. No parcel geometry was embedded."
+    },
+    {
+      "method": "SEARCH/GET",
+      "url": "https://gadag.nic.in/bhoomi/",
+      "httpStatus": "200",
+      "outcome": "Official Kannada Gadag Bhoomi page loaded. Its page text describes Bhoomi as Karnataka government land-record management and links https://landrecords.karnataka.gov.in/Service2/. No parcel geometry was embedded."
+    },
+    {
+      "method": "GET",
+      "url": "https://landrecords.karnataka.gov.in/Service2/",
+      "httpStatus": "timeout after 25 seconds",
+      "outcome": "The current official service route did not return an anonymous response in the bounded request. No retry bypass, login, CAPTCHA, credential, or TLS bypass was attempted; this is an unavailable-route observation only."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhoomi.karnataka.gov.in/",
+      "httpStatus": "timeout in bounded anonymous inspection",
+      "outcome": "A commonly referenced Karnataka Bhoomi hostname did not return a response. It was not treated as evidence of absent cadastral coverage."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://bhoomigeoportal-nbsslup.in/BHOOMI_StateWise/",
+      "httpStatus": "200 via public indexed page",
+      "outcome": "National soil/land-resource portal exposed Karnataka and Gadag administrative/cadastral-themed controls, but it is not a local Gadag parcel registry service and no parcel geometry was requested or retained."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "The district page exposed the Service2 link, but the linked application timed out before HTML/JavaScript/configuration could be inspected.",
+    "geometryTransport": "Not observed; no feature response returned.",
+    "geometryCrs": "Not observed.",
+    "nativeIdentity": "Not observed; no parcel response returned.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [15.4302141090956,75.6373748382615] was preserved; no coordinate shift or exact-point miss was inferred.",
+      "featureCount": null,
+      "nativeIdentity": null,
+      "result": "No safe parcel ID-plus-unchanged-geometry response qualified."
+    }
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "full parcel polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "sampleGeoJSON": null,
+  "qualification": {
+    "serialReviewerRequired": true,
+    "runtimeReadiness": "held",
+    "reason": "Official local/state land-record custodianship is evidenced, but the current anonymous Karnataka service route was unavailable and no native parcel identity plus unchanged polygon was obtained."
+  },
+  "scopeLimits": [
+    "Exact WUP point [15.4302141090956,75.6373748382615] was preserved and not shifted.",
+    "A timeout or unusable service was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no safe native identity plus unchanged full polygon was obtained.",
+    "No citywide coverage, service CRS, stable parcel-identity semantics, or update cadence was verified.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate/title fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "The official Gadag district Revenue Department and Bhoomi link establish a relevant registry/service route. Current anonymous parcel feature access, schema, CRS, stable native identity semantics, and citywide Gadag-Betageri coverage remain unverified."
+}

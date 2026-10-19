@@ -1,0 +1,15 @@
+{
+  "taskId": "city:6883",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-6883-neqab.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/neqab-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T07:53:26.004604Z",
+  "reason": "Official cadastral hosts timed out and no local anonymous parcel geometry service or native ID was evidenced. No adapter qualification or headed Details proof.",
+  "identityVerified": true,
+  "bilingualSearchesVerified": true,
+  "samplePolygonCount": 0,
+  "runtimeAdmitted": false
+}

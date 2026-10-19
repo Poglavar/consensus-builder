@@ -1,0 +1,128 @@
+{
+  "name": "Yuxi",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 857,
+  "point": [
+    24.3691536116303,
+    102.540395929407
+  ],
+  "population2025": 631209,
+  "population2025k": 631.209,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found.",
+  "registryEvidenceUrls": [
+    "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+    "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+    "https://www.yuxi.gov.cn/yxszfxxgk/bmyjsgkzl1889/20260210/1648414.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8467,
+  "cityId": "wup2025:8467",
+  "centerLatLon": [
+    24.3691536116303,
+    102.540395929407
+  ],
+  "queueRank": 857,
+  "scopeLimits": "Bounded official-source and public-service review. No citywide completeness is claimed. No owner, address, account, tax, personal-property or credential fields are retained.",
+  "resultCategory": "official_city_registry_no_public_geometry",
+  "technicalBlocker": "Official material documents registration and query services but no anonymous full-polygon endpoint or public feature schema.",
+  "remainingUncertainty": "No WUP-point parcel query or full vector geometry route was identified; internal registration/geographic platforms do not establish public vector access.",
+  "nextStep": "Parent review may decide whether additional viewer/source investigation is useful; no geometry/runtime claim is made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "玉溪市 不动产登记中心 地籍图 查询 宗地 自然资源和规划局 官方",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official 2026 city records identify the municipal registration center, its platform/data-query duties and local district/county registration outlets. No anonymous vector parcel interface was identified.",
+        "actualResultUrls": [
+          "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+          "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+          "https://www.yuxi.gov.cn/yxszfxxgk/bmyjsgkzl1889/20260210/1648414.html"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      },
+      {
+        "language": "English",
+        "query": "Yuxi China cadastral map land parcel registry public GIS real estate registration",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official Yuxi government records confirm a city registration center and multiple local registry outlets. No public full-polygon query schema was found.",
+        "actualResultUrls": [
+          "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+          "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+          "https://www.yuxi.gov.cn/yxszfxxgk/bmyjsgkzl1889/20260210/1648414.html"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Yuxi official registry/cadastral review",
+        "operator": "China",
+        "homeUrl": "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+        "observation": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+        "method": "GET official municipal organizational notice",
+        "observation": "Defines Yuxi Real Estate Registration Center / Basic Geographic Information Center under the Natural Resources and Planning Bureau, with registration-data and query-service responsibilities."
+      },
+      {
+        "url": "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+        "method": "GET official 2026 service-outlet directory",
+        "observation": "Lists real-estate registration service locations for Yuxi districts and counties, including the central Hongta District service hall."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-8467-yuxi-cadastre-review",
+    "name": "Yuxi official cadastral/registry source review",
+    "url": "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+    "operator": "China",
+    "serviceType": "Municipal registration/data service center; no public parcel-vector interface verified.",
+    "layer": "No feature layer/schema verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No safe native parcel ID was confirmed in a full feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found.",
+    "verifiedOpenScope": "Official local registration/map evidence is documented, but no full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No verified public full-polygon response was obtained.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "玉溪市政府信息公开"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00",
+  "sourceIds": []
+}

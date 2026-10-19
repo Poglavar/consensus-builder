@@ -1,0 +1,58 @@
+[
+ {
+  "kind": "country",
+  "key": "NA",
+  "name": "Namibia",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/NA.json"
+ },
+ {
+  "kind": "country",
+  "key": "NC",
+  "name": "New Caledonia",
+  "previousStatus": "national_cadastre_viewer_only",
+  "evidenceFile": "research/countries/NC.json"
+ },
+ {
+  "kind": "country",
+  "key": "NE",
+  "name": "Niger",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/NE.json"
+ },
+ {
+  "kind": "country",
+  "key": "NI",
+  "name": "Nicaragua",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/NI.json"
+ },
+ {
+  "kind": "country",
+  "key": "NP",
+  "name": "Nepal",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/NP.json"
+ },
+ {
+  "kind": "country",
+  "key": "OM",
+  "name": "Oman",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/OM.json"
+ },
+ {
+  "kind": "country",
+  "key": "PA",
+  "name": "Panama",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/PA.json"
+ },
+ {
+  "kind": "country",
+  "key": "PE",
+  "name": "Peru",
+  "previousStatus": "temporarily_unavailable",
+  "evidenceFile": "research/countries/PE.json"
+ }
+]

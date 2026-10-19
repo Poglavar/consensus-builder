@@ -1,0 +1,59 @@
+{
+ "kind": "city",
+ "key": "seoul",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_verified_sample_candidate_countrywide",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ko-KR (cookie jar used)",
+ "changedByHeaders": "Retry from a Korea-reachable network with a registered VWorld key; sample Seoul then a second province.",
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://api.vworld.kr/req/wfs?SERVICE=WFS&REQUEST=GetCapabilities",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection died after 5 retries"
+  },
+  {
+   "url": "https://api.vworld.kr/req/data?service=data&request=GetFeature&data=LP_PA_CBND_BUBUN&geomFilter=BOX(126.978,37.565,126.979,37.566)&size=3&format=json",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection died (no API key available in any case)"
+  },
+  {
+   "url": "https://www.vworld.kr/ , https://map.vworld.kr/ , https://api.vworld.kr/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "Connection died after 5 retries each"
+  },
+  {
+   "url": "https://www.data.go.kr/data/15045882/fileData.do",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Catalog page loads; download is delegated to www.vworld.kr/dtmk/dtmk_ntads_s002.do?svcCde=NA&dsId=23, unreachable"
+  },
+  {
+   "url": "https://www.data.go.kr/data/15123899/openapi.do",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://data.seoul.go.kr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Seoul open-data portal loads; openapi.seoul.go.kr:8088 reset; no parcel polygon service found here"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "All vworld.kr hosts drop connections from this network while other .go.kr hosts answer; consistent with the country retry KR.json. Not proven.",
+ "nextStep": "No change: strong national candidate (VWorld continuous cadastre, free registered key required) but no sample obtainable from here."
+}

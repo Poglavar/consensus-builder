@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T04:06:37.295099+00:00",
+  "browser": "Dedicated headed Chrome through agent-browser; manual inspection, no browser test suite.",
+  "url": "http://localhost:5638/?city=kitwe&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "initialViewportResult": "Provider timed out; no parcels initially loaded.",
+  "explicitRetryCount": 1,
+  "retryResult": "24 native parcels loaded, 8 visible by app status; some viewport cells still failed with provider timeouts. Complete wider viewport coverage is unverified.",
+  "loadedParcels": 24,
+  "visibleParcelCenters": 4,
+  "pointerSelectedParcelId": "ZM-NSDI-LOT-112196",
+  "detailsHeadingMatchedNativeIdentity": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "providerWarningRetained": true,
+  "browserCloseConfirmedAt": "2026-10-09T04:12:31.591161+00:00",
+  "browserCloseEvidence": "Named validation session closed; subsequent session list returned No active sessions."
+}

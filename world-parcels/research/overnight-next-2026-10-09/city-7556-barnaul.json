@@ -1,0 +1,147 @@
+{
+  "name": "Barnaul",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 1102,
+  "point": [
+    53.3421465888379,
+    83.7146605640255
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Barnaul official cadastral parcel map Rosreestr GIS Altai Krai",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search mostly surfaced third-party cadastral service offers; no official public geometry endpoint was identified.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://barnaul-zem.ru/",
+          "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+          "https://lkkadastr.ru/altajskij-kraj/"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Барнаул официальный сайт кадастровая карта земельные участки Росреестр Алтайский край",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Russian search found the official Barnaul Committee for Land Resources and Land Management and the city’s land-service application route; these are administrative workflows, not parcel geometry.",
+        "executionMethod": "Separate Russian-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://barnaul-zem.ru/",
+          "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+          "https://lkkadastr.ru/altajskij-kraj/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://barnaul-zem.ru/",
+        "operator": "Russian Federation",
+        "homeUrl": "https://barnaul-zem.ru/",
+        "observation": "Official city Committee for Land Resources and Land Management; city-admin-linked home page and contacts. It establishes local land administration responsibility, not a public vector layer."
+      },
+      {
+        "name": "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+        "operator": "Russian Federation",
+        "homeUrl": "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+        "observation": "Official Barnaul city information says municipal land services, including land-plot plan approval, are accessed through Gosuslugi; this is an application workflow rather than anonymous parcel geometry."
+      },
+      {
+        "name": "https://lkkadastr.ru/altajskij-kraj/",
+        "operator": "Russian Federation",
+        "homeUrl": "https://lkkadastr.ru/altajskij-kraj/",
+        "observation": "Search result for Roskadastr services in Altai Krai; not treated as a public parcel data service or geometry evidence."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://barnaul-zem.ru/",
+    "url": "https://barnaul-zem.ru/",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Barnaul’s official land committee is the local custodian; the municipality points users to administrative land-service applications. No first-party anonymous geometry feature endpoint or point response was established.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "A public cadastral viewer may exist at the federal level, but no documented safe-ID geometry schema or anonymous point response was verified in this city-specific pass.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7556,
+  "cityId": "wup2025:7556",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    53.3421465888379,
+    83.7146605640255
+  ],
+  "population2025k": 502.491,
+  "populationUnit": "persons",
+  "queueRank": 1102,
+  "population2025": 502491,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Barnaul’s official land committee is the local custodian; the municipality points users to administrative land-service applications. No first-party anonymous geometry feature endpoint or point response was established.",
+  "registryEvidenceUrls": [
+    "https://barnaul-zem.ru/",
+    "https://new.barnaul.org/vlast/news/poluchit-uslugi-administratsii-goroda-v-sfere-zemelnykh-otnosheniy-mozhno-na-portale-gosuslugi.html",
+    "https://lkkadastr.ru/altajskij-kraj/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 7556,
+      "url": "https://barnaul-zem.ru/",
+      "checkedAt": "2026-10-09T07:10:39.364351+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://barnaul-zem.ru/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 15861,
+      "sha256": "2b8ff2d1eb027b1c910dc28e8c3303f90ef5a084cecb421556280daa9c00b7a1",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Barnaul’s official land committee is the local custodian; the municipality points users to administrative land-service applications. No first-party anonymous geometry feature endpoint or point response was established.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8800-dazhou.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city sources identify the local registration center and municipal cadastral survey/boundary-map functions. No anonymous public parcel polygon service, safe field schema, or point-specific geometry response was verified. No city-specific anonymous geometry endpoint with a verified safe field allowlist was identified; no feature query was made.",
+  "registryAssessment": "Dazhou Natural Resources and Planning Bureau’s official 2024 departmental accounts identify the Dazhou Real Estate Registration Center as a subordinate unit. A municipal land-supply procedure also assigns the city cadastral affairs center boundary/area surveys and the land survey/planning team plot boundary maps. These confirm local registration and cadastral functions, not a public vector service or point coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.dazhou.gov.cn/uploadfile/44/Attachment/0f4eeacd18.pdf",
+      "observation": "Dazhou Natural Resources and Planning Bureau’s official 2024 departmental accounts identify the Dazhou Real Estate Registration Center as a subordinate unit. A municipal land-supply procedure also assigns the city cadastral affairs center boundary/area surveys and the land survey/planning team plot boundary maps. These confirm local registration and cadastral functions, not a public vector service or point coverage."
+    },
+    {
+      "url": "https://zrzyj.dazhou.gov.cn/oldfile/zrzyghj/2021013680/index.php",
+      "observation": "Dazhou Natural Resources and Planning Bureau’s official 2024 departmental accounts identify the Dazhou Real Estate Registration Center as a subordinate unit. A municipal land-supply procedure also assigns the city cadastral affairs center boundary/area surveys and the land survey/planning team plot boundary maps. These confirm local registration and cadastral functions, not a public vector service or point coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dazhou official real estate registration center cadastral parcel boundary map GIS public service",
+      "result": "Official city sources identify the local registration center and municipal cadastral survey/boundary-map functions. No anonymous public parcel polygon service, safe field schema, or point-specific geometry response was verified.",
+      "method": "Separate English-language search and official source review."
+    },
+    {
+      "language": "Chinese",
+      "query": "达州市 不动产登记中心 地籍 宗地界址图 测绘 地图查询 官方",
+      "result": "Official city sources identify the local registration center and municipal cadastral survey/boundary-map functions. No anonymous public parcel polygon service, safe field schema, or point-specific geometry response was verified.",
+      "method": "Separate local-language search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous schema-safe exact-point geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Dazhou Natural Resources and Planning Bureau’s official 2024 departmental accounts identify the Dazhou Real Estate Registration Center as a subordinate unit. A municipal land-supply procedure also assigns the city cadastral affairs center boundary/area surveys and the land survey/planning team plot boundary maps. These confirm local registration and cadastral functions, not a public vector service or point coverage.",
+    "verifiedOpenScope": "Official city sources identify the local registration center and municipal cadastral survey/boundary-map functions. No anonymous public parcel polygon service, safe field schema, or point-specific geometry response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://zrzyj.dazhou.gov.cn/uploadfile/44/Attachment/0f4eeacd18.pdf",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://zrzyj.dazhou.gov.cn/oldfile/zrzyghj/2021013680/index.php",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether an official Dazhou public map service exposes parcel polygons with safe key-only selection and covers the WUP point remains unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "No city-specific anonymous geometry endpoint with a verified safe field allowlist was identified; no feature query was made."
+}

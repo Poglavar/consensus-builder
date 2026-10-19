@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 11409,
+  "queueRank": 3245,
+  "name": "Sultanganj",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "locId": 356,
+  "capital": false,
+  "point": [25.2404175409475, 86.7640055237178],
+  "population2025": 186175,
+  "population2025k": 186.175,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sultanganj Bihar official cadastral map parcel land records GIS",
+        "result": "First-party discovery identified the Bhagalpur district land-record link, the Government of Bihar BhuNaksha cadastral viewer, and Bihar GIS. The live BhuNaksha viewer exposes Bihar administrative selectors and anonymous REST endpoints.",
+        "actualResultUrls": [
+          "https://bhagalpur.nic.in/service/land-records/",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://gis.bihar.gov.in/DEPTS/IPRD.aspx",
+          "https://biharbhumi.bihar.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi (native/local-language discovery)",
+        "query": "सुल्तानगंज बिहार आधिकारिक भू नक्शा जमीन नक्शा",
+        "result": "Hindi first-party discovery identified BiharBhumi's Hindi land-record gateway and the official Bihar BhuNaksha map portal. The Bhagalpur district land-record page identifies BiharBhumi as the official service.",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://bhagalpur.nic.in/service/land-records/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "Directorate of Land Records & Survey / Revenue and Land Reforms Department, Government of Bihar; Bhagalpur district administration",
+    "scope": "The official Bhagalpur district page directs users to BiharBhumi, and the live Government of Bihar BhuNaksha viewer returned Bhagalpur, Sultanganj circle, and Sultanganj-area mauza selector metadata. This evidences a local/state cadastral map custodian, not open citywide parcel completeness.",
+    "evidenceUrls": [
+      "https://bhagalpur.nic.in/service/land-records/",
+      "https://bhunaksha.bihar.gov.in/index.jsp",
+      "https://biharbhumi.bihar.gov.in/"
+    ]
+  },
+  "officialSources": [
+    {"url": "https://bhunaksha.bihar.gov.in/index.jsp", "publisher": "Government of Bihar Revenue and Land Reforms / land-record mapping service", "observation": "Live BhuNaksha viewer; HTML and linked JavaScript expose district, subdivision, circle, mauza, survey type, map instance and sheet selectors."},
+    {"url": "https://bhagalpur.nic.in/service/land-records/", "publisher": "Bhagalpur District Administration", "observation": "Official district land-record page links to BiharBhumi and identifies the Bhagalpur location."},
+    {"url": "https://biharbhumi.bihar.gov.in/", "publisher": "Revenue and Land Reforms Department, Government of Bihar", "observation": "Official Hindi/English land-record gateway listing Bhu-Manचित्र and related land services."}
+  ],
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/index.jsp", "httpStatus": 200, "outcome": "TLS-verified live viewer HTML retrieved; state value 10 and current JavaScript/config entrypoints observed."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js", "httpStatus": 200, "outcome": "Current configuration retrieved; service path is same-origin."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/index.js", "httpStatus": 200, "outcome": "Current JavaScript retrieved; observed rest/Levels/count, rest/Levels/ListsAfterLevel, rest/MapInfo/getVVVVExtentGeoref, rest/MapInfo/getPlotAtXY, ScalarDatahandler, and WMS routes. No credentials or login used."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "payload": {"state": "10"}, "httpStatus": 200, "outcome": "Returned 7 levels."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel", "payload": {"state": "10", "level": 1, "codes": "22,01,01,", "hasmap": true}, "httpStatus": 200, "outcome": "Returned Bhagalpur district/subdivision/circle context, Sultanganj circle code 01, 158 mauza entries, and survey choices including Cadastral Survey; observed nearby/local mauza labels include Mirhati, Gangania, Murarpur, Nawada, and others. This was selector metadata, not a parcel response."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "payload": {"state": "10", "gisLevels": "22,01,01,0126,CS,00,00,", "srs": "0"}, "httpStatus": 200, "outcome": "Returned null extent fields and a GIS code/attribution for Gangania(77); no usable parcel geometry or parcel ID was returned."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "payload": {"state": "10", "gisLevels": "22,01,01,0037,CS,00,00,", "srs": "0"}, "httpStatus": 204, "outcome": "No extent response for the attempted Murarpur route; not treated as parcel absence."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/rest/WMS?service=WMS&request=GetCapabilities", "httpStatus": 200, "outcome": "Returned a generic error page rather than WMS capabilities; no CRS or vector schema inferred."}
+  ],
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "Government of Bihar BhuNaksha",
+    "nativeIdField": null,
+    "crs": null,
+    "boundedResponse": null,
+    "fieldMapping": {"canonicalId": "Not observed in a parcel response", "safeGeometry": "Viewer JavaScript references plot selection and map/WMS routes, but no parcel ID-plus-geometry response was returned"},
+    "compositeKeyProvenance": "Administrative selector codes 22/01/01 plus mauza/survey/map-instance routing values were observed only as service parameters; no parcel identity was returned and no synthetic identity was assigned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bihar state BhuNaksha service with Bhagalpur district and Sultanganj circle/mauza selectors.",
+    "verifiedOpenScope": "Sultanganj administrative selector metadata was returned, but attempted map extent routes did not return usable geometry.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "exactPointParcelSample": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only if source-proven", "full parcel polygon geometry", "geometry CRS", "public source/service metadata", "retrieval date"],
+  "runtimeReadiness": "held",
+  "verifiedSample": false,
+  "uncertainty": [
+    "No parcel ID-plus-geometry response was returned in this attempt.",
+    "Null/204 map extent results may reflect unavailable or unpopulated selected map data; they are not evidence of citywide parcel absence.",
+    "The exact WUP point was preserved and was not shifted or used as an absence test.",
+    "No login, CAPTCHA, credentials, private token, owner, address, contact, titleholder, tax, or account fields were requested or retained.",
+    "No citywide coverage or adapter qualification was performed."
+  ],
+  "doNotInfer": ["A zero exact-point hit, map extent miss, HTTP 204, or unusable direct route is not evidence of citywide absence.", "Administrative selector metadata is not a parcel sample.", "Packet completion is not source integration or admission."],
+  "completionSummary": {"packetComplete": true, "registryFound": true, "cityPointParcelSample": false, "runtimeReadiness": "held", "nextAttemptNeeded": true}
+}

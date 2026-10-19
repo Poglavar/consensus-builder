@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11684",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-11684-haimen.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/haimen-service-review.json",
+    "tmp/valhalla-parcel-research/haimen-bureau.headers",
+    "tmp/valhalla-parcel-research/haimen-bureau.html"
+  ],
+  "checkedAt": "2026-10-10T08:48:27.609396Z",
+  "reviewNote": "Official Haimen site cache is a 403 ACL refusal. Paired packet records English and Chinese executed queries, but no anonymous parcel feature response, native ID, CRS, full sample, or adapter qualification exists. Registry custody is a research lead; citywide absence is unresolved."
+}

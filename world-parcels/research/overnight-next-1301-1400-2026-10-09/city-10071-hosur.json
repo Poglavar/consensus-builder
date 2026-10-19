@@ -1,0 +1,56 @@
+{
+  "cityCode": 10071,
+  "queueRank": 1340,
+  "name": "Hosur",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [12.7430006442616, 77.8176054992941],
+  "population2025": 420017,
+  "population2025k": 420.017,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "registryFound": true,
+  "registryAssessment": "The official Krishnagiri District Revenue Administration page identifies Hosur as revenue taluk code 09 and lists its revenue villages; the official district Revenue Department directory identifies the Tahsildar Hosur and Revenue Divisional Officer Hosur. Tamil Nadu's official eAdangal service exposes survey/subdivision land-record lookup. This establishes local/state registry provenance, not open parcel-vector integration.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hosur Tamil Nadu official cadastral parcel map land records survey map site:tn.gov.in OR site:krishnagiri.nic.in OR site:eservices.tn.gov.in",
+        "result": "Found official Krishnagiri Revenue Administration and Revenue Department pages, official Tamil Nadu eAdangal survey-number lookup, TNGIS map editor, and Hosur City Municipal Corporation maps. No anonymous public parcel-vector endpoint or current parcel schema/CRS was exposed.",
+        "actualResultUrls": [
+          "https://krishnagiri.nic.in/about-district/administrative-setup/revenue-administration/",
+          "https://krishnagiri.nic.in/department/revenue/",
+          "https://eadangal.tn.gov.in/eadangal/EadngalExtract.aspx",
+          "https://tngis.tn.gov.in/apps/cumta/",
+          "https://www.tnurbantree.tn.gov.in/hosur/ward-map-2/"
+        ]
+      },
+      {
+        "language": "Tamil",
+        "query": "ஹோசூர் தமிழ்நாடு அதிகாரப்பூர்வ நில வரைபடம் பட்டா சர்வே எண் நில பதிவுகள்",
+        "result": "Tamil discovery found official Tamil Krishnagiri/Hosur municipal pages and the Tamil-facing eAdangal service with district, taluk, village, survey and subdivision inputs. It did not identify an anonymous public parcel geometry API.",
+        "actualResultUrls": [
+          "https://krishnagiri.nic.in/ta/public-utility/%E0%AE%93%E0%AE%9A%E0%AF%82%E0%AE%B0%E0%AF%8D-%E0%AE%A8%E0%AE%95%E0%AE%B0%E0%AE%BE%E0%AE%9F%E0%AF%8D%E0%AE%9A%E0%AE%BF/",
+          "https://eadangal.tn.gov.in/eadangal/EadngalExtract.aspx",
+          "https://www.tnurbantree.tn.gov.in/hosur/ta/%E0%AE%AE%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%B3%E0%AF%8D-%E0%AE%9A%E0%AE%BE%E0%AE%9A%E0%AE%A9%E0%AE%AE%E0%AF%8D/"
+        ]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url": "https://krishnagiri.nic.in/about-district/administrative-setup/revenue-administration/", "role": "Krishnagiri District official revenue administration", "observation": "Lists Hosur as taluk code 09 and enumerates Hosur taluk revenue villages; page opened in discovery."},
+    {"url": "https://krishnagiri.nic.in/department/revenue/", "role": "Krishnagiri District official local revenue directory", "observation": "Lists Tahsildar Hosur and Revenue Divisional Officer Hosur; local custodian evidence."},
+    {"url": "https://eadangal.tn.gov.in/eadangal/EadngalExtract.aspx", "role": "Tamil Nadu Revenue Administration official land-record service", "observation": "Public form exposes district, taluk, village, survey number and subdivision inputs; no parcel geometry was returned or requested."},
+    {"url": "https://tngis.tn.gov.in/apps/cumta/", "role": "Tamil Nadu GIS official map editor", "observation": "Map shell exposes administrative layers and a WFS upload control; discovery did not expose a parcel layer URL, schema, CRS, or anonymous feature response."},
+    {"url": "https://www.tnurbantree.tn.gov.in/hosur/ward-map-2/", "role": "Hosur City Municipal Corporation official map page", "observation": "Municipal ward-map reference only; not evidence of cadastral parcel geometry."}
+  ],
+  "geometryDecision": {"verified": false, "sampleCount": 0, "sampleFile": null, "reason": "No safe native parcel ID plus full polygon was obtained from an anonymous public response. The exact WUP point was preserved and not shifted; map extent miss, timeout, or unavailable public endpoint does not establish citywide absence."},
+  "coverageAssessment": {"claimedScope": "Hosur taluk/local revenue administration, Tamil Nadu eAdangal, TNGIS map shell, and Hosur municipal mapping references.", "verifiedOpenScope": "Local registry/service provenance was established, but anonymous parcel-vector access, schema, CRS, native identity, exact-point containment, and citywide coverage were not verified.", "exactWupPointParcelSample": false, "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["safe parcel identifier only if publicly exposed and non-personal", "geometry", "CRS or coordinate-system metadata", "non-personal layer/schema metadata", "administrative hierarchy codes and names"],
+  "runtimeReadiness": "held",
+  "researchAttempt": 1,
+  "checkedAt": "2026-10-09"
+}

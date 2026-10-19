@@ -1,0 +1,17 @@
+{
+  "taskId": "city:7720",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7720-elmhurst.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/elmhurst-service-review.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-7720-elmhurst-sample.geojson",
+    "tmp/valhalla-parcel-research/root-review-2637/metadata.json",
+    "tmp/valhalla-parcel-research/root-review-2637/ids.json"
+  ],
+  "reason": "WUP rank 2637, code 7720, United States, point and 223924 persons match roster and queue; two English/local search records are present. First-party DuPage layer metadata and a fresh exact native OBJECTID read returned three full polygons whose geometries exactly match the safe retained samples (IDs 27684, 32027, 35791). This supports bounded public geometry and county custody, not citywide coverage. Forced paging, 13 bounded cells, independent metric GEOS checks over the admission scope, source binding and headed Details verification remain unevidenced, so runtime admission stays held.",
+  "retainedFullPolygons": 3,
+  "runtimeAdmitted": false,
+  "checkedAt": "2026-10-11T16:40:59Z"
+}

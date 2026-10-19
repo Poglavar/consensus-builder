@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "FR",
+  "country": "France",
+  "checkedAt": "2026-09-29",
+  "status": "national_online_cadastre_verified_sample",
+  "cadastreAuthority": "DGFiP cadastre (PCI Vecteur, Etalab) served by IGN Geoplateforme API Carto",
+  "portalsFound": [
+    {
+      "url": "https://apicarto.ign.fr/api/doc/cadastre",
+      "observation": "API Carto cadastre module; no key needed"
+    },
+    {
+      "url": "https://cadastre.data.gouv.fr/",
+      "observation": "Etalab open PCI Vecteur downloads by commune/department"
+    },
+    {
+      "url": "https://data.geopf.fr/wfs/ows",
+      "observation": "Geoplateforme WFS (PARCELLAIRE_EXPRESS)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=Point(5.3698,43.2965)&_limit=2",
+      "method": "FeatureCollection with MultiPolygon parcel features (Marseille)",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=Point(-52.3269,4.9372)&_limit=2",
+      "method": "FeatureCollection with MultiPolygon parcel features (Cayenne, French Guiana)",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "application/json; charset=utf-8"
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=Point(-149.5585,-17.5334)&_limit=2",
+      "method": "valid but empty FeatureCollection (Papeete, French Polynesia); no PCI cadastre there",
+      "httpStatus": "GET",
+      "contentType": 200,
+      "assessment": "application/json; charset=utf-8"
+    }
+  ],
+  "verifiedParcelResponse": {
+    "sourceId": "fr-ign-apicarto-cadastre-parcelle",
+    "requestUrl": "https://apicarto.ign.fr/api/cadastre/parcelle?geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B5.3698%2C43.2965%5D%7D&_limit=2",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "spatialTestAreaLonLat": [
+      5.3698,
+      43.2965,
+      5.3698,
+      43.2965
+    ],
+    "parcelRecordCount": 2,
+    "recordListPath": "features",
+    "geometryType": "MultiPolygon",
+    "closedRings": true,
+    "idField": "idu",
+    "responseFile": null,
+    "pagination": "_limit/_start",
+    "regionSampled": "Marseille (Bouches-du-Rhone); also Paris 5e (see research/paris.json) and Cayenne (GF)"
+  },
+  "coverageAssessment": {
+    "claimedScope": "France metropolitan and DROM (excluding areas lacking PCI, e.g. French Polynesia; Alsace-Moselle has different cadastre)",
+    "regionsVerified": [
+      "Paris 5e",
+      "Marseille",
+      "Cayenne (French Guiana)"
+    ],
+    "nationwideVerified": true
+  },
+  "accessModel": "open",
+  "remainingUncertainty": "Licence (Licence Ouverte/Etalab) not read here. Alsace-Moselle, Mayotte and other overseas coverage not sampled.",
+  "nextStep": "Sample Alsace-Moselle and Mayotte; use cadastre.data.gouv.fr for bulk."
+}

@@ -1,0 +1,42 @@
+{
+  "cityCode": 4562,
+  "queueRank": 2119,
+  "name": "Rạch Giá",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "point": [9.98204357358876, 105.10268534047],
+  "population2025": 273864,
+  "population2025k": 273.864,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rach Gia Vietnam official cadastral parcel map GIS land registry public service",
+        "result": "First-party results identified the Vietnam National Spatial Data Infrastructure portal, the national surveying/mapping authority, and the national land-data information procedure. An official Kiên Giang notice also identifies a cadastral extract for a Rạch Giá parcel and the provincial land-registration office. No anonymous safe parcel feature response was verified.",
+        "actualResultUrls": [
+          "https://vnsdi.mae.gov.vn/infomation",
+          "https://dosmvn.mae.gov.vn/Pages/home.aspx",
+          "https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-dung-chung.html?ma_thu_tuc=1.012789",
+          "https://kiengiang.gov.vn/Lists/TinTuc/Attachments/21344/109%20CV%20tiep%20tuc%20dang%20tai%20thong%20bao%20DGQSDD%2003%20khu%20dat%20tren%20dia%20ban%20Rach%20Gia%20va%20Kien%20Luong_split.pdf"
+        ]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Rạch Giá Kiên Giang bản đồ địa chính thửa đất cổng thông tin chính thức",
+        "result": "Kết quả nguồn chính thức xác nhận thủ tục cung cấp dữ liệu đất đai qua Văn phòng đăng ký đất đai/chi nhánh; thông báo của tỉnh Kiên Giang ghi nhận trích lục bản đồ địa chính tại khu vực thành phố Rạch Giá và cơ quan đăng ký đất đai. Không xác minh được phản hồi GeoJSON ẩn danh có mã thửa an toàn và hình học đầy đủ.",
+        "actualResultUrls": [
+          "https://kiengiang.gov.vn/Lists/TinTuc/Attachments/21344/109%20CV%20tiep%20tuc%20dang%20tai%20thong%20bao%20DGQSDD%2003%20khu%20dat%20tren%20dia%20ban%20Rach%20Gia%20va%20Kien%20Luong_split.pdf",
+          "https://vbpl.vn/kiengiang/Pages/vbpq-toanvan.aspx?ItemID=121214",
+          "https://vnsdi.mae.gov.vn/infomation"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "A first-party Kiên Giang provincial notice documents a cadastral-map extract for a parcel in Rạch Giá and identifies the provincial land-registration office as the producing/maintaining authority. This establishes a local/provincial cadastral custodian and procedure evidence, not anonymous citywide parcel API coverage.",
+  "runtimeReadiness": "held",
+  "geometry": null,
+  "sourceNotes": "No parcel polygon retained. The exact WUP point was preserved without shifting. Anonymous map/API failures and an exact-point miss would not support a citywide absence claim. No owner, address, contact, titleholder, tax, account, or other unsafe fields were requested."
+}

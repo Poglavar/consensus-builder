@@ -242,24 +242,22 @@
         updatePolyline();
     }
 
-    // Find parcel layers that intersect the given GeoJSON Polygon.
+    // Find live parcels that intersect the given GeoJSON Polygon.
     function findParcelsInPolygon(polygon) {
-        if (typeof turf === 'undefined' || !global.parcelLayer) return [];
+        const fabric = global.LiveParcelFabric;
+        if (typeof turf === 'undefined' || !fabric?.queryBounds) return [];
         const polygonFeature = turf.feature(polygon);
-        const [minX, minY, maxX, maxY] = turf.bbox(polygonFeature);
         const matched = [];
-        global.parcelLayer.eachLayer(layer => {
-            if (!layer.feature) return;
-            const props = layer.feature.properties || {};
-            const parcelId = global.getParcelId ? global.getParcelId(layer.feature) : (props.parcelId || props.parcel_id);
+        fabric.queryBounds(turf.bbox(polygonFeature), { includeCorridors: false }).forEach(feature => {
+            const parcelId = fabric.featureId?.(feature);
             if (!parcelId) return;
-            const b = layer.getBounds ? layer.getBounds() : null;
-            if (b && (b.getEast() < minX || b.getWest() > maxX || b.getNorth() < minY || b.getSouth() > maxY)) return;
             try {
-                if (turf.booleanIntersects(polygonFeature, layer.feature)) {
-                    matched.push({ parcelId: String(parcelId), feature: layer.feature });
+                if (turf.booleanIntersects(polygonFeature, feature)) {
+                    matched.push({ parcelId: String(parcelId), feature });
                 }
-            } catch (_) {}
+            } catch (error) {
+                console.warn(`Unable to test painted-area intersection for ${parcelId}.`, error);
+            }
         });
         return matched;
     }
@@ -299,6 +297,7 @@
     // --- ESC key ---
 
     function onKeyDown(e) {
+        if (document.body.classList.contains('three-mode-active')) return;
         if (!active) return;
         if (e.key === 'Escape') deactivate();
     }
@@ -313,6 +312,7 @@
         if (active) return;
         if (!getMap()) return;
         active = true;
+        global.dispatchEvent(new CustomEvent('areaMonitorDrawStart', { detail: { source: 'paint' } }));
         path = [];
         closed = false;
         allPlanCoords = null;
@@ -331,6 +331,7 @@
     function deactivate() {
         if (!active) return;
         active = false;
+        global.dispatchEvent(new CustomEvent('areaMonitorDrawCancel', { detail: { source: 'paint' } }));
         const map = getMap();
         map.off('moveend', onMapMove);
         if (_mapLayerAddWatcher) {

@@ -1,9 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import request from 'supertest';
 import { fetchNycOwners, parseBbl, isPlaceholderOwner, __clearCache } from '../routes/nyc-condo-owners.js';
-import { setupParcelNycRoute } from '../routes/parcel-nyc.js';
-import { createRouteApp } from './helpers/create-route-app.js';
-import { createMockPool } from './helpers/mock-pool.js';
 
 // Builds a Socrata-style PVAD response (one row per lot/year) for a fake block.
 function pvadResponse(rows) {
@@ -83,88 +79,11 @@ describe('fetchNycOwners', () => {
         const rows = [{ lot: '53', year: '2025', owner: 'UNAVAILABLE OWNER', housenum_lo: '14', street_name: 'WEST 4 STREET' }];
         const fetchImpl = vi.fn(async () => pvadResponse(rows));
         const result = await fetchNycOwners('1005520053', { env: {}, fetchImpl });
-        expect(result).toEqual({ owners: [], matched: 'none' });
+        expect(result).toEqual({ owners: [], matched: 'none', year: null, fetchedAt: expect.any(Number) });
     });
 
     it('throws on a non-ok Socrata response', async () => {
         const fetchImpl = vi.fn(async () => ({ ok: false, status: 503, text: async () => 'busy' }));
         await expect(fetchNycOwners('1005527502', { env: {}, fetchImpl })).rejects.toThrow('NYC DOF HTTP 503');
-    });
-});
-
-describe('GET /parcel-nyc/:parcelId/ownership DOF enrichment', () => {
-    let pool;
-    let app;
-
-    beforeEach(() => {
-        pool = createMockPool();
-        app = createRouteApp(setupParcelNycRoute, pool);
-    });
-
-    it('replaces UNAVAILABLE OWNER with resolved condo unit owners', async () => {
-        pool.setResult({
-            rows: [{ swis_sbl_id: '6201001005527502', sbl: '1005527502', primary_owner: ['UNAVAILABLE OWNER'] }],
-            rowCount: 1,
-        });
-        global.fetch = vi.fn(async () => pvadResponse([
-            { lot: '7502', year: '2027', owner: 'UNAVAILABLE OWNER', housenum_lo: '106', street_name: 'WAVERLY PLACE' },
-            { lot: '1101', year: '2027', owner: 'JOEL SHARIR', housenum_lo: '106', street_name: 'WAVERLY PLACE' },
-            { lot: '1102', year: '2027', owner: 'JANE DOE', housenum_lo: '106', street_name: 'WAVERLY PLACE' },
-        ]));
-
-        const res = await request(app).get('/parcel-nyc/US-NY-6201001005527502/ownership');
-
-        expect(res.status).toBe(200);
-        const names = res.body.possessionSheets[0].possessors.map(p => p.name).sort();
-        expect(names).toEqual(['JANE DOE', 'JOEL SHARIR']);
-    });
-
-    it('resolves unit owners for a condo billing lot even when the DB has the association name', async () => {
-        // NY State stores the condominium entity (not unit owners) on the billing lot.
-        pool.setResult({
-            rows: [{ swis_sbl_id: '6201001005257507', sbl: '1005257507', primary_owner: ['181 SULLIVAN STREET CONDOMINIUM'] }],
-            rowCount: 1,
-        });
-        global.fetch = vi.fn(async () => pvadResponse([
-            { lot: '7507', year: '2027', owner: '181 SULLIVAN STREET CONDOMINIUM', housenum_lo: '181', street_name: 'SULLIVAN STREET' },
-            { lot: '1201', year: '2027', owner: 'UNAVAILABLE OWNER', housenum_lo: '181', street_name: 'SULLIVAN STREET' },
-            { lot: '1202', year: '2027', owner: 'GOLDICAPITAL US LLC', housenum_lo: '181', street_name: 'SULLIVAN STREET' },
-            { lot: '1203', year: '2027', owner: 'SONG, JUNDAI', housenum_lo: '181', street_name: 'SULLIVAN STREET' },
-        ]));
-
-        const res = await request(app).get('/parcel-nyc/US-NY-6201001005257507/ownership');
-
-        expect(res.status).toBe(200);
-        const names = res.body.possessionSheets[0].possessors.map(p => p.name).sort();
-        expect(names).toEqual(['GOLDICAPITAL US LLC', 'SONG, JUNDAI']);
-    });
-
-    it('falls back to the Unknown owner placeholder when DOF resolves nothing', async () => {
-        pool.setResult({
-            rows: [{ swis_sbl_id: '6201001005527502', sbl: '1005527502', primary_owner: ['UNAVAILABLE OWNER'] }],
-            rowCount: 1,
-        });
-        global.fetch = vi.fn(async () => pvadResponse([
-            { lot: '7502', year: '2027', owner: 'UNAVAILABLE OWNER', housenum_lo: '106', street_name: 'WAVERLY PLACE' },
-        ]));
-
-        const res = await request(app).get('/parcel-nyc/US-NY-6201001005527502/ownership');
-
-        expect(res.status).toBe(200);
-        expect(res.body.possessionSheets[0].possessors[0].name).toBe('Unknown owner');
-    });
-
-    it('does not call DOF when the parcel already has a real owner', async () => {
-        pool.setResult({
-            rows: [{ swis_sbl_id: '100001', sbl: '1000010001', primary_owner: ['City of New York'] }],
-            rowCount: 1,
-        });
-        global.fetch = vi.fn();
-
-        const res = await request(app).get('/parcel-nyc/US-NY-100001/ownership');
-
-        expect(res.status).toBe(200);
-        expect(global.fetch).not.toHaveBeenCalled();
-        expect(res.body.ownershipList).toHaveLength(1);
     });
 });

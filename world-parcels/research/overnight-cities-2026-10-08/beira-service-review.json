@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1869-beira.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Beira’s city-specific digital land-cadastre function is documented in the government program evaluation. The official national GIS directory contains cadastral services for other named municipalities, including Matola; those were excluded as cross-city inference. No Beira parcel schema or public geometry route was verified.",
+  "registryAssessment": "An official Mozambique PDUL municipal performance evaluation specifically for Beira documents its municipal land-management system and digital land-cadastre records. The source is a city-bound government evaluation; it does not publish an anonymous geometry-only endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.pdul.gov.mz/content/download/177/962/file/PDUL_AAD%202020_Beira.pdf",
+      "observation": "An official Mozambique PDUL municipal performance evaluation specifically for Beira documents its municipal land-management system and digital land-cadastre records. The source is a city-bound government evaluation; it does not publish an anonymous geometry-only endpoint."
+    },
+    {
+      "url": "https://www.mozgis.gov.mz/server/rest/services",
+      "observation": "An official Mozambique PDUL municipal performance evaluation specifically for Beira documents its municipal land-management system and digital land-cadastre records. The source is a city-bound government evaluation; it does not publish an anonymous geometry-only endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Beira Mozambique official municipal land cadastre digital parcels GIS",
+      "result": "Official PDUL city performance evaluation confirms Beira digital municipal land records; no Beira geometry service found.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Portuguese",
+      "query": "Município da Beira cadastro municipal de terras cadastro digital SIG parcelas",
+      "result": "Government PDUL assessment for Beira documents a municipal land-management system and digital cadastre. A generic SiGeM SaaS page was excluded; no application or parcel lookup used.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "An official Mozambique PDUL municipal performance evaluation specifically for Beira documents its municipal land-management system and digital land-cadastre records. The source is a city-bound government evaluation; it does not publish an anonymous geometry-only endpoint.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "The municipal cadastral data are documented, but their current coverage and public vector access remain unknown."
+}

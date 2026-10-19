@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T02:29:51.947899+00:00",
+  "appCityId": "saintpetersburgfl",
+  "url": "http://localhost:5638/?city=saintpetersburgfl&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 61,
+  "visibleParcels": 15,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "US-FL-PINELLAS-183016697684003303",
+  "detailsHeading": "Parcel Copy to clipboard: US-FL-PINELLAS-183016697684003303",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

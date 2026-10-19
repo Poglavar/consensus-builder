@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:91",
+  "queueRank": 91,
+  "name": "Saint Petersburg",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "centerLatLon": [
+    59.9340628982321,
+    30.3377740290309
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "NSPD (National Spatial Data System, Rosreestr) is the official federal cadastral map; connection resets from this environment."
+    },
+    {
+      "url": "https://pkk.rosreestr.ru/",
+      "observation": "Legacy public cadastral map; unreachable here."
+    },
+    {
+      "url": "https://rgis.spb.ru/",
+      "observation": "St Petersburg regional GIS; unreachable here."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://nspd.gov.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://nspd.gov.ru/api/geoportal/v2/search/geoportal?query=59.9340,30.3377&thematicSearchId=1",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://nspd.gov.ru/api/aeggis/v3/36048/wms?REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0&FORMAT=image/png&LAYERS=36048&CRS=EPSG:3857&BBOX=3376000,8383000,3377000,8384000&WIDTH=256&HEIGHT=256",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection reset by peer"
+    },
+    {
+      "url": "https://rgis.spb.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no connection (proxy/DNS)"
+    },
+    {
+      "url": "https://data.gov.spb.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no connection (proxy/DNS)"
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "no connection (proxy/DNS)"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Rosreestr NSPD covers Russia's cadastre; not verified",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "All Russian hosts were unreachable from this network (resets/proxy rejection, plausibly geo-blocking), so nothing about openness or the parcel API was tested. Reuse Moscow's finding (also untested).",
+  "nextStep": "Retry from a Russia-reachable network; test NSPD/Rosreestr and St Petersburg RGIS with a bounded query."
+}

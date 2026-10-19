@@ -1,0 +1,14 @@
+{
+  "taskId": "city:8039",
+  "decision": "held",
+  "reason": "Sterling Heights rank 1284, United States, unchanged point and 435980 persons match the immutable roster. Two executed English searches cover the local language. First-party city GIS and Macomb County resources support local public parcel-map custody (registryFound=true), but the saved city ArcGIS connection timed out before metadata or native-ID geometry was returned. Timeout is not citywide absence. No retained polygon or independent live adapter admission gates.",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/pending-queue.json",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/city-8039-sterling-heights.json",
+    "world-parcels/research/overnight-next-1201-1300-2026-10-09/sterling-heights-service-review.json",
+    "tmp/valhalla-parcel-research/8039/curl.log"
+  ],
+  "checkedAt": "2026-10-09T13:03:22.983203Z"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-firozabad-land-records-review",
+  "wupCityCode": 9079,
+  "rank": 594,
+  "purpose": "City-specific registry/map source review and safe route inspection for ranked WUP settlement point.",
+  "primaryPublisher": "District Administration Firozabad; Uttar Pradesh Revenue Department",
+  "sourceUrl": "https://firozabad.nic.in/service/land-records/",
+  "registryFound": true,
+  "registryBasis": "The official Firozabad district land-record page places the revenue tehsil office in Firozabad city and links Uttar Pradesh BHULEKH records. The state cadastral-map digitization dashboard has a Firozabad tehsil row with linked/georeferenced map-sheet progress. This verifies city-linked land-record administration but not public vector access or point-level coverage. This is Firozabad, Uttar Pradesh, India, not Faisalabad, Pakistan.",
+  "officialSources": [
+    {
+      "url": "https://firozabad.nic.in/service/land-records/",
+      "observation": "District Administration page says UP BHULEKH computerizes land records, links the portal, and identifies the related Revenue Department tehsil office in City: Firozabad."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=147",
+      "observation": "UP government dashboard lists Firozabad tehsil map digitization status; it is an aggregate progress table, not parcel geometry."
+    },
+    {
+      "url": "https://bor.up.nic.in/",
+      "observation": "Official Uttar Pradesh Board of Revenue page advertises revenue-village map and plot-boundary services; no plot identifier or property record was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Firozabad Uttar Pradesh official land records cadastral map BhuNaksha",
+      "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+      "result": "The official Firozabad district land-record page places the revenue tehsil office in Firozabad city and links Uttar Pradesh BHULEKH records. The state cadastral-map digitization dashboard has a Firozabad tehsil row with linked/georeferenced map-sheet progress. This verifies city-linked land-record administration but not public vector access or point-level coverage. This is Firozabad, Uttar Pradesh, India, not Faisalabad, Pakistan. Inspected the official Firozabad district land-record page and UP cadastral-map digitization report. The district page links the land-record portal; the public dashboard exposes State/District/Tehsil selectors and progress tables rather than parcel geometry. The BhuNaksha/Khatauni workflow is identifier-dependent; no individual parcel or record was selected. No vector schema or full polygon obtained."
+    },
+    {
+      "language": "Hindi",
+      "query": "फिरोजाबाद उत्तर प्रदेश आधिकारिक भूलेख भू नक्शा राजस्व भूमि अभिलेख",
+      "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+      "result": "The official Firozabad district land-record page places the revenue tehsil office in Firozabad city and links Uttar Pradesh BHULEKH records. The state cadastral-map digitization dashboard has a Firozabad tehsil row with linked/georeferenced map-sheet progress. This verifies city-linked land-record administration but not public vector access or point-level coverage. This is Firozabad, Uttar Pradesh, India, not Faisalabad, Pakistan. Inspected the official Firozabad district land-record page and UP cadastral-map digitization report. The district page links the land-record portal; the public dashboard exposes State/District/Tehsil selectors and progress tables rather than parcel geometry. The BhuNaksha/Khatauni workflow is identifier-dependent; no individual parcel or record was selected. No vector schema or full polygon obtained."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://firozabad.nic.in/service/land-records/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": null,
+      "observation": "Read city-specific district revenue-service page; no form submitted."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=147",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 24945,
+      "observation": "Read Firozabad tehsil and district aggregate digitization progress only; no row-specific cadastral query."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html (web-rendered public page)",
+      "bytes": null,
+      "observation": "Public landing inspected; no Khatauni, plot, or ownership lookup."
+    }
+  ],
+  "routeInspectionSummary": "Inspected the official Firozabad district land-record page and UP cadastral-map digitization report. The district page links the land-record portal; the public dashboard exposes State/District/Tehsil selectors and progress tables rather than parcel geometry. The BhuNaksha/Khatauni workflow is identifier-dependent; no individual parcel or record was selected. No vector schema or full polygon obtained.",
+  "geometrySampleCount": 0,
+  "geometryRetained": false,
+  "nativeIdField": null,
+  "attributesRequested": [],
+  "attributesRetained": [],
+  "runtimeEnabled": false,
+  "rootQualificationStatus": "pending_root_review"
+}

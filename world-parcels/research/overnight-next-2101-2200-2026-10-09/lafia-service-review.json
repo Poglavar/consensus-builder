@@ -1,0 +1,37 @@
+{
+  "cityRecord": "city-8513-lafia.json",
+  "cityCode": 8513,
+  "queueRank": 2178,
+  "city": "Lafia",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "iso3": "NGA",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "custodianAssessment": {
+    "localOrScopedEvidence": "NAGIS is the official Nasarawa state GIS/land-administration agency, lists its head office in Lafia, and official procedure material names the Lafia-based Ministry of Lands and Urban Development/Office of the Surveyor-General. This is local/scoped custodian evidence, not geometry evidence.",
+    "generalAgencyEvidence": "No general national agency prose was used to claim Lafia parcel coverage."
+  },
+  "discovery": {
+    "englishQuery": "Lafia Nasarawa cadastral parcel map official GIS land registry",
+    "nativeQuery": "Lafia Nasarawa taswirin fili rajista filaye",
+    "urls": ["https://nagis.na.gov.ng/", "https://nagis.na.gov.ng/how-to-register-land", "https://nagis.na.gov.ng/SRO-application"]
+  },
+  "requests": "See city-8513-lafia.json requests; all attempted first-party GET routes and outcomes are recorded there.",
+  "responseEvidence": {
+    "geometry": "None retained or verified.",
+    "nativeFieldsObserved": [],
+    "safeFieldAllowlist": ["stable native parcel identity if a future public response exposes one", "geometry", "source URL", "administrative/source provenance"],
+    "unsafeFieldsExcluded": ["owner names", "addresses", "contact details", "titleholder information", "tax/account data", "personal registry contents"]
+  },
+  "sample": {"retained": false, "reason": "No parcel geometry obtained; no sample GeoJSON retained."},
+  "scopeLimits": [
+    "The NAGIS site documents a state GIS/land-administration system and claimed urban orthophoto coverage, but no public cadastral feature endpoint was exposed.",
+    "No CRS, schema, native parcel ID, city extent, or bounded ID-plus-geometry response was observed.",
+    "Timeouts, login walls, map extent misses, and unusable UI were not treated as citywide absence; no exact-point absence claim was made.",
+    "No integration, adapter qualification, or runtime admission is claimed."
+  ],
+  "runtimeReadiness": "held-pending-independent-serial-reviewer",
+  "uncertainty": "Custodian evidence is strong enough for registryFound=true, but open parcel geometry and service schema remain unverified."
+}

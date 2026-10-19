@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Ulsan",
+  "country": "South Korea",
+  "countryCode": "KR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Ulsan Metropolitan City’s official SmartMap publicly advertises an “연속지적도” (continuous cadastral map) layer and describes city-wide thematic map viewing. This verifies an official city cadastral map, but not accessible feature geometry or a parcel-key schema.",
+  "registryEvidenceUrls": [
+    "https://map.ulsan.go.kr/",
+    "https://map.ulsan.go.kr/ide.do",
+    "https://www.ulsan.go.kr/u/rep/contents.ulsan?mId=001005002003000000"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3785,
+  "cityId": "wup2025:3785",
+  "centerLatLon": [
+    35.5281745631567,
+    129.353632380625
+  ],
+  "rank": 588,
+  "queueRank": 588,
+  "population2025": 881858,
+  "population2025k": 881.858,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Standard HTTPS validation error prevented direct static script/schema inspection of the interactive map shell. No TLS verification bypass, login, or geometry request was attempted.",
+  "scopeLimits": "The city SmartMap public landing and topic-map listing identify a continuous cadastral map layer. Direct standard HTTPS retrieval of the interactive map shell failed TLS certificate validation; no bypass was attempted. No query or parcel selection was made and no geometry was retained.",
+  "remainingUncertainty": "No complete georeferenced parcel polygon with a verified safe native ID was obtained for this city. Public maps or registry workflows may provide visual layers or identity-dependent services that were not queried.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ulsan Korea official continuous cadastral map SmartMap parcel GIS",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "Ulsan Metropolitan City’s official SmartMap publicly advertises an “연속지적도” (continuous cadastral map) layer and describes city-wide thematic map viewing. This verifies an official city cadastral map, but not accessible feature geometry or a parcel-key schema. The public city SmartMap page lists continuous cadastral map among its layers and describes viewing it in a 3D map. Direct /ide.do HTTPS inspection failed certificate validation. No credentials, developer key, parcel selector, or property query was used. No vector feature schema was verified.",
+        "actualResultUrls": [
+          "https://map.ulsan.go.kr/",
+          "https://map.ulsan.go.kr/ide.do",
+          "https://www.ulsan.go.kr/u/rep/contents.ulsan?mId=001005002003000000"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      },
+      {
+        "language": "Korean",
+        "query": "울산광역시 스마트맵 연속지적도 지적도 공개 지도 공식",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "Ulsan Metropolitan City’s official SmartMap publicly advertises an “연속지적도” (continuous cadastral map) layer and describes city-wide thematic map viewing. This verifies an official city cadastral map, but not accessible feature geometry or a parcel-key schema. The public city SmartMap page lists continuous cadastral map among its layers and describes viewing it in a 3D map. Direct /ide.do HTTPS inspection failed certificate validation. No credentials, developer key, parcel selector, or property query was used. No vector feature schema was verified.",
+        "actualResultUrls": [
+          "https://map.ulsan.go.kr/",
+          "https://map.ulsan.go.kr/ide.do",
+          "https://www.ulsan.go.kr/u/rep/contents.ulsan?mId=001005002003000000"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "kr-ulsan-registry-map-review",
+    "name": "Ulsan local registry/map source review",
+    "operator": "Ulsan Metropolitan City",
+    "url": "https://map.ulsan.go.kr/",
+    "scope": "The city SmartMap public landing and topic-map listing identify a continuous cadastral map layer. Direct standard HTTPS retrieval of the interactive map shell failed TLS certificate validation; no bypass was attempted. No query or parcel selection was made and no geometry was retained.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature ID obtained.",
+    "geometryStatus": "no_geometry_response_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The city SmartMap public landing and topic-map listing identify a continuous cadastral map layer. Direct standard HTTPS retrieval of the interactive map shell failed TLS certificate validation; no bypass was attempted. No query or parcel selection was made and no geometry was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    35.5281745631567,
+    129.353632380625
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "reason": "No full geometry-only parcel sample and native safe ID were verified."
+  },
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00"
+}

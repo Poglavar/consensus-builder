@@ -1,0 +1,3073 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "method": {
+    "viewportCellsPerCity": 18,
+    "gridSizeDegrees": 0.0025,
+    "forcedTransportPageSize": 3,
+    "allRetainedNativeKeysExactResolved": true,
+    "viewportExactGeometryAgreement": true,
+    "authoritativeBinding": "complete",
+    "retainedEvidence": "Metadata, aggregates and at most three public native IDs per source record."
+  },
+  "purpose": "Third configured US capital batch: complete live viewport, paging, exact-native and authoritative binding acceptance. No geometry import or ownership payload retention.",
+  "cityIds": [
+    "indianapolis",
+    "des_moines",
+    "lansing",
+    "saint_paul",
+    "jefferson_city",
+    "helena",
+    "lincoln",
+    "concord",
+    "trenton",
+    "santa_fe"
+  ],
+  "attemptEvidenceFiles": [
+    "research/us-capitals-batch-three-albany-live-2026-10-06.json",
+    "research/us-capitals-batch-three-albany-reserve-2026-10-06.json",
+    "research/us-capitals-batch-three-concord-live-2026-10-06.json",
+    "research/us-capitals-batch-three-east-concord-duplicates-2026-10-06.json",
+    "research/us-capitals-batch-three-east-concord-identity-2026-10-06.json",
+    "research/us-capitals-batch-three-east-initial-live-2026-10-06.json",
+    "research/us-capitals-batch-three-east-metadata-2026-10-06.json",
+    "research/us-capitals-batch-three-helena-live-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-bounded-retries-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-ia-diagnosis-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-ia-group-geometry-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-ia-parts-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-initial-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-metadata-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-mi-passed-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-mi-publisher-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-provenance-2026-10-06.json",
+    "research/us-capitals-batch-three-holds-test.json",
+    "research/us-capitals-batch-three-jefferson-city-live-2026-10-06.json",
+    "research/us-capitals-batch-three-lincoln-live-2026-10-06.json",
+    "research/us-capitals-batch-three-midwest-alternates-live-2026-10-06.json",
+    "research/us-capitals-batch-three-midwest-final-retry-live-2026-10-06.json",
+    "research/us-capitals-batch-three-midwest-initial-live-2026-10-06.json",
+    "research/us-capitals-batch-three-midwest-leads-2026-10-06.json",
+    "research/us-capitals-batch-three-midwest-manifest-retry-live-2026-10-06.json",
+    "research/us-capitals-batch-three-midwest-retry-live-2026-10-06.json",
+    "research/us-capitals-batch-three-reserved-live-2026-10-06.json",
+    "research/us-capitals-batch-three-santa-fe-live-2026-10-06.json",
+    "research/us-capitals-batch-three-trenton-live-2026-10-06.json"
+  ],
+  "sources": [
+    {
+      "city": "indianapolis",
+      "stateCode": "IN",
+      "sourceId": "us-in-marion-indianapolis-parcels",
+      "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.765,
+            -86.16,
+            39.7675
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.765,
+            -86.1575,
+            39.7675
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.765,
+            -86.155,
+            39.7675
+          ],
+          "count": 87,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.7675,
+            -86.16,
+            39.769999999999996
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.7675,
+            -86.1575,
+            39.769999999999996
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.7675,
+            -86.155,
+            39.769999999999996
+          ],
+          "count": 155,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1625,
+            39.769999999999996,
+            -86.16,
+            39.7725
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.16,
+            39.769999999999996,
+            -86.1575,
+            39.7725
+          ],
+          "count": 68,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1575,
+            39.769999999999996,
+            -86.155,
+            39.7725
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.765,
+            -86.1525,
+            39.7675
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.765,
+            -86.14999999999999,
+            39.7675
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.765,
+            -86.1475,
+            39.7675
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.7675,
+            -86.1525,
+            39.769999999999996
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.7675,
+            -86.14999999999999,
+            39.769999999999996
+          ],
+          "count": 114,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.7675,
+            -86.1475,
+            39.769999999999996
+          ],
+          "count": 54,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.155,
+            39.769999999999996,
+            -86.1525,
+            39.7725
+          ],
+          "count": 83,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.1525,
+            39.769999999999996,
+            -86.14999999999999,
+            39.7725
+          ],
+          "count": 139,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -86.14999999999999,
+            39.769999999999996,
+            -86.1475,
+            39.7725
+          ],
+          "count": 188,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -86.1575,
+          39.769999999999996,
+          -86.155,
+          39.7725
+        ],
+        "forcedPageSize": 3,
+        "count": 11,
+        "returned": 11,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 988,
+      "exactResolved": 988,
+      "nativeIds": [
+        "1050626",
+        "1379517",
+        "1050634"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-in-marion-indianapolis-parcels",
+        "parcels": 1,
+        "siteM2": 3951.01
+      },
+      "requests": 38,
+      "proposedDescriptor": {
+        "id": "us-in-marion-indianapolis-parcels",
+        "name": "IndianaMap Parcel Boundaries of Indiana Current — Marion County",
+        "adapter": "arcgis",
+        "endpoint": "https://gisdata.in.gov/server/rest/services/Hosted/Parcel_Boundaries_of_Indiana_Current/FeatureServer/0",
+        "idField": "local_id",
+        "idType": "string",
+        "idPattern": "^[0-9]+$",
+        "objectIdField": "objectid",
+        "idPrefix": "US-IN-MARION-",
+        "outFields": [
+          "objectid",
+          "local_id",
+          "county_id",
+          "state_parcel_id"
+        ],
+        "parcelNumberField": "state_parcel_id",
+        "attributeFilters": {
+          "county_id": "49"
+        },
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "countryCode": "US",
+        "stateCode": "IN",
+        "metricSrid": 32616,
+        "cityIds": [
+          "indianapolis"
+        ],
+        "operator": "Indiana Geographic Information Office (IGIO), State of Indiana / IndianaMap",
+        "scope": "Marion County parcels from the IndianaMap statewide compilation, fixed to county_id 49; configured for Indianapolis only, no statewide completeness claim.",
+        "catalogueUrl": "https://www.in.gov/gis/geoinsights/posts/data-harvest/",
+        "evidenceFile": "research/us-capitals-batch-two-indianapolis-2026-10-06.json",
+        "attribution": "Indiana Geographic Information Office, IndianaMap Parcel Boundaries of Indiana Current. Adapted to WGS84.",
+        "licenceNote": "Official service publishes parcel geometry and county fields; no named open-data licence was stated in the reviewed service metadata."
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-reserved-live-2026-10-06.json"
+    },
+    {
+      "city": "des_moines",
+      "stateCode": "IA",
+      "sourceId": "us-ia-des-moines-parcels",
+      "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.5825,
+            -93.625,
+            41.585
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.625,
+            41.5825,
+            -93.6225,
+            41.585
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6225,
+            41.5825,
+            -93.62,
+            41.585
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.585,
+            -93.625,
+            41.5875
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.625,
+            41.585,
+            -93.6225,
+            41.5875
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6225,
+            41.585,
+            -93.62,
+            41.5875
+          ],
+          "count": 46,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6275,
+            41.5875,
+            -93.625,
+            41.59
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.625,
+            41.5875,
+            -93.6225,
+            41.59
+          ],
+          "count": 48,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6225,
+            41.5875,
+            -93.62,
+            41.59
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.62,
+            41.5825,
+            -93.6175,
+            41.585
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6175,
+            41.5825,
+            -93.615,
+            41.585
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.615,
+            41.5825,
+            -93.6125,
+            41.585
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.62,
+            41.585,
+            -93.6175,
+            41.5875
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6175,
+            41.585,
+            -93.615,
+            41.5875
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.615,
+            41.585,
+            -93.6125,
+            41.5875
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.62,
+            41.5875,
+            -93.6175,
+            41.59
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.6175,
+            41.5875,
+            -93.615,
+            41.59
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.615,
+            41.5875,
+            -93.6125,
+            41.59
+          ],
+          "count": 39,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -93.6175,
+          41.585,
+          -93.615,
+          41.5875
+        ],
+        "forcedPageSize": 3,
+        "count": 15,
+        "returned": 15,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 441,
+      "exactResolved": 441,
+      "nativeIds": [
+        "77-02001125002000",
+        "77-02001124001000",
+        "77-02002700005000"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ia-des-moines-parcels",
+        "parcels": 1,
+        "siteM2": 3117.11
+      },
+      "requests": 156,
+      "proposedDescriptor": {
+        "id": "us-ia-des-moines-parcels",
+        "name": "University of Iowa public mirror of Iowa statewide parcels, 2017",
+        "operator": "Iowa Department of Homeland Security & Emergency Management; University of Iowa public mirror",
+        "stateCode": "IA",
+        "endpoint": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+        "idField": "STATEPARID",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "US-IA-",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "STATEPARID",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "STATEPARID",
+        "metricSrid": 32615,
+        "pageSize": 500,
+        "maxBboxKm2": 25,
+        "maxFeatures": 10000,
+        "adapter": "arcgis",
+        "countryCode": "US",
+        "cityIds": [
+          "des_moines"
+        ],
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "scope": "Iowa statewide assessment parcel snapshot last updated at most 2 November 2017; includes Des Moines, Polk County. STATEPARID is source county-qualified parcel code; all rows in its complete source group form the native parcel geometry.",
+        "caveats": [
+          "Historical 2017 snapshot supplied as-is; not current assessment data or a legal survey. Same STATEPARID groups also share source UNPARCELID and PARCELNUMB."
+        ],
+        "catalogueUrl": "https://services3.arcgis.com/kd9gaiUExYqUbnoq/arcgis/rest/services/Iowa_Parcels_2017/FeatureServer/0",
+        "nativeGeometryMode": "parts",
+        "partsCoordinatePrecision": 9,
+        "maxConcurrentQueries": 2
+      },
+      "identityDiagnosis": "Complete STATEPARID groups independently verified share source UNPARCELID/PARCELNUMB; distinct geometries disjoint, exact duplicates present; all native group source rows retained, no invented composites or current-ground filters.",
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-holds-ia-parts-2026-10-06.json"
+    },
+    {
+      "city": "lansing",
+      "stateCode": "MI",
+      "sourceId": "us-mi-lansing-parcels",
+      "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.56,
+            42.730000000000004,
+            -84.5575,
+            42.7325
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5575,
+            42.730000000000004,
+            -84.555,
+            42.7325
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.555,
+            42.730000000000004,
+            -84.55250000000001,
+            42.7325
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.56,
+            42.7325,
+            -84.5575,
+            42.735
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5575,
+            42.7325,
+            -84.555,
+            42.735
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.555,
+            42.7325,
+            -84.55250000000001,
+            42.735
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.56,
+            42.735,
+            -84.5575,
+            42.737500000000004
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5575,
+            42.735,
+            -84.555,
+            42.737500000000004
+          ],
+          "count": 40,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.555,
+            42.735,
+            -84.55250000000001,
+            42.737500000000004
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55250000000001,
+            42.730000000000004,
+            -84.55000000000001,
+            42.7325
+          ],
+          "count": 66,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55000000000001,
+            42.730000000000004,
+            -84.5475,
+            42.7325
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5475,
+            42.730000000000004,
+            -84.545,
+            42.7325
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55250000000001,
+            42.7325,
+            -84.55000000000001,
+            42.735
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55000000000001,
+            42.7325,
+            -84.5475,
+            42.735
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5475,
+            42.7325,
+            -84.545,
+            42.735
+          ],
+          "count": 35,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55250000000001,
+            42.735,
+            -84.55000000000001,
+            42.737500000000004
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.55000000000001,
+            42.735,
+            -84.5475,
+            42.737500000000004
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -84.5475,
+            42.735,
+            -84.545,
+            42.737500000000004
+          ],
+          "count": 22,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -84.56,
+          42.7325,
+          -84.5575,
+          42.735
+        ],
+        "forcedPageSize": 3,
+        "count": 10,
+        "returned": 10,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 369,
+      "exactResolved": 369,
+      "nativeIds": [
+        "33-01-01-16-306-001",
+        "33-01-01-16-307-002",
+        "33-01-01-16-311-003"
+      ],
+      "footprintCount": 2,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mi-lansing-parcels",
+        "parcels": 1,
+        "siteM2": 13566.85
+      },
+      "requests": 82,
+      "proposedDescriptor": {
+        "id": "us-mi-lansing-parcels",
+        "name": "Ingham County Parcels 2025 public service",
+        "operator": "Ingham County Equalization parcel data; public publisher Ingham County Drain Office",
+        "stateCode": "MI",
+        "endpoint": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1",
+        "idField": "PARCELNUM",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "US-MI-",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "PARCELNUM",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "PARCELNUM",
+        "metricSrid": 32616,
+        "pageSize": 500,
+        "maxBboxKm2": 25,
+        "maxFeatures": 10000,
+        "adapter": "arcgis",
+        "countryCode": "US",
+        "cityIds": [
+          "lansing"
+        ],
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "scope": "Ingham County Equalization 2025 assessment parcel polygons, including downtown Lansing.",
+        "caveats": [
+          "Assessment mapping; not a legal survey.",
+          "Lansing areas in Eaton and Clinton counties are outside this source."
+        ],
+        "catalogueUrl": "https://services3.arcgis.com/ySzhFSJfYeginRjx/ArcGIS/rest/services/Ingham_County_Parcels_2025/FeatureServer/1"
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-holds-mi-passed-2026-10-06.json"
+    },
+    {
+      "city": "saint_paul",
+      "stateCode": "MN",
+      "sourceId": "us-mn-ramsey-saint-paul-parcels",
+      "endpoint": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.95,
+            -93.09,
+            44.9525
+          ],
+          "count": 333,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.95,
+            -93.0875,
+            44.9525
+          ],
+          "count": 427,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.95,
+            -93.08500000000001,
+            44.9525
+          ],
+          "count": 343,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.9525,
+            -93.09,
+            44.955
+          ],
+          "count": 237,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.9525,
+            -93.0875,
+            44.955
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.9525,
+            -93.08500000000001,
+            44.955
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0925,
+            44.955,
+            -93.09,
+            44.9575
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.09,
+            44.955,
+            -93.0875,
+            44.9575
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.0875,
+            44.955,
+            -93.08500000000001,
+            44.9575
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.95,
+            -93.08250000000001,
+            44.9525
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.95,
+            -93.08,
+            44.9525
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.95,
+            -93.0775,
+            44.9525
+          ],
+          "count": 8,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.9525,
+            -93.08250000000001,
+            44.955
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.9525,
+            -93.08,
+            44.955
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.9525,
+            -93.0775,
+            44.955
+          ],
+          "count": 10,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08500000000001,
+            44.955,
+            -93.08250000000001,
+            44.9575
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08250000000001,
+            44.955,
+            -93.08,
+            44.9575
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -93.08,
+            44.955,
+            -93.0775,
+            44.9575
+          ],
+          "count": 34,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -93.08250000000001,
+          44.9525,
+          -93.08,
+          44.955
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 926,
+      "exactResolved": 926,
+      "nativeIds": [
+        "312922440077",
+        "312922430532",
+        "312922430531"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mn-ramsey-saint-paul-parcels",
+        "parcels": 1,
+        "siteM2": 473.75
+      },
+      "requests": 35,
+      "proposedDescriptor": {
+        "id": "us-mn-ramsey-saint-paul-parcels",
+        "name": "Ramsey County Tax Parcels",
+        "adapter": "arcgis",
+        "endpoint": "https://gis.ramseycountymn.gov/server/rest/services/MapRamsey/MapRamseyOperational_AttributedParcel/MapServer/4",
+        "idField": "ParcelID",
+        "idType": "string",
+        "idPattern": "^[0-9]{12}$",
+        "objectIdField": "OBJECTID",
+        "idPrefix": "US-MN-RAMSEY-",
+        "outFields": [
+          "OBJECTID",
+          "ParcelID"
+        ],
+        "parcelNumberField": "ParcelID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "countryCode": "US",
+        "stateCode": "MN",
+        "metricSrid": 32615,
+        "cityIds": [
+          "saint_paul"
+        ],
+        "operator": "Ramsey County GIS",
+        "scope": "Ramsey County parcel service; configured for Saint Paul only.",
+        "catalogueUrl": "https://www.stpaul.gov/departments/planning-and-economic-development/maps-and-data",
+        "evidenceFile": "research/us-capitals-batch-two-saint-paul-2026-10-06.json",
+        "attribution": "Ramsey County GIS Tax Parcels. Adapted to WGS84.",
+        "licenceNote": "Official public county service; source conditions informational."
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-reserved-live-2026-10-06.json"
+    },
+    {
+      "city": "jefferson_city",
+      "stateCode": "MO",
+      "sourceId": "us-mo-jefferson_city-parcels",
+      "endpoint": "https://services6.arcgis.com/rXa0aMElf2BPjgBA/arcgis/rest/services/JCBaseMap/FeatureServer/15",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1775,
+            38.572500000000005,
+            -92.175,
+            38.575
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.175,
+            38.572500000000005,
+            -92.1725,
+            38.575
+          ],
+          "count": 20,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1725,
+            38.572500000000005,
+            -92.17,
+            38.575
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1775,
+            38.575,
+            -92.175,
+            38.5775
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.175,
+            38.575,
+            -92.1725,
+            38.5775
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1725,
+            38.575,
+            -92.17,
+            38.5775
+          ],
+          "count": 84,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1775,
+            38.5775,
+            -92.175,
+            38.580000000000005
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.175,
+            38.5775,
+            -92.1725,
+            38.580000000000005
+          ],
+          "count": 9,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1725,
+            38.5775,
+            -92.17,
+            38.580000000000005
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.17,
+            38.572500000000005,
+            -92.1675,
+            38.575
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1675,
+            38.572500000000005,
+            -92.16499999999999,
+            38.575
+          ],
+          "count": 60,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.16499999999999,
+            38.572500000000005,
+            -92.1625,
+            38.575
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.17,
+            38.575,
+            -92.1675,
+            38.5775
+          ],
+          "count": 41,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1675,
+            38.575,
+            -92.16499999999999,
+            38.5775
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.16499999999999,
+            38.575,
+            -92.1625,
+            38.5775
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.17,
+            38.5775,
+            -92.1675,
+            38.580000000000005
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.1675,
+            38.5775,
+            -92.16499999999999,
+            38.580000000000005
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -92.16499999999999,
+            38.5775,
+            -92.1625,
+            38.580000000000005
+          ],
+          "count": 1,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -92.1725,
+          38.5775,
+          -92.17,
+          38.580000000000005
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 377,
+      "exactResolved": 377,
+      "nativeIds": [
+        "1103070004016001",
+        "1103070004030007",
+        "1103070004028001"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mo-jefferson_city-parcels",
+        "parcels": 1,
+        "siteM2": 973.83
+      },
+      "requests": 28,
+      "proposedDescriptor": {
+        "id": "us-mo-jefferson_city-parcels",
+        "name": "Cole County GIS / Jefferson City (JCMO_ADMIN) — Jefferson City",
+        "adapter": "arcgis",
+        "endpoint": "https://services6.arcgis.com/rXa0aMElf2BPjgBA/arcgis/rest/services/JCBaseMap/FeatureServer/15",
+        "idField": "PID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": "^[0-9]{1,19}$",
+        "idPrefix": "US-MO-JEFFERSON_CITY-",
+        "outFields": [
+          "OBJECTID",
+          "PID"
+        ],
+        "parcelNumberField": "PID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 32615,
+        "countryCode": "US",
+        "stateCode": "MO",
+        "cityIds": [
+          "jefferson_city"
+        ],
+        "operator": "Cole County GIS / Jefferson City (JCMO_ADMIN)",
+        "scope": "Public capital-region cadastral polygons around Jefferson City.",
+        "catalogueUrl": "https://www.colecounty.org/424/GISMapping",
+        "licenceNote": "Source conditions informational; users choose source and intended use."
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-jefferson-city-live-2026-10-06.json"
+    },
+    {
+      "city": "helena",
+      "stateCode": "MT",
+      "sourceId": "us-mt-helena-parcels",
+      "endpoint": "https://gisservice.mt.gov/ArcGIS/rest/services/msdi_cadastral_map_v1/MapServer/1",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0425,
+            46.585,
+            -112.04,
+            46.5875
+          ],
+          "count": 50,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.04,
+            46.585,
+            -112.03750000000001,
+            46.5875
+          ],
+          "count": 38,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03750000000001,
+            46.585,
+            -112.03500000000001,
+            46.5875
+          ],
+          "count": 75,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0425,
+            46.5875,
+            -112.04,
+            46.589999999999996
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.04,
+            46.5875,
+            -112.03750000000001,
+            46.589999999999996
+          ],
+          "count": 49,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03750000000001,
+            46.5875,
+            -112.03500000000001,
+            46.589999999999996
+          ],
+          "count": 45,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.0425,
+            46.589999999999996,
+            -112.04,
+            46.5925
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.04,
+            46.589999999999996,
+            -112.03750000000001,
+            46.5925
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03750000000001,
+            46.589999999999996,
+            -112.03500000000001,
+            46.5925
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03500000000001,
+            46.585,
+            -112.03250000000001,
+            46.5875
+          ],
+          "count": 85,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03250000000001,
+            46.585,
+            -112.03,
+            46.5875
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03,
+            46.585,
+            -112.0275,
+            46.5875
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03500000000001,
+            46.5875,
+            -112.03250000000001,
+            46.589999999999996
+          ],
+          "count": 63,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03250000000001,
+            46.5875,
+            -112.03,
+            46.589999999999996
+          ],
+          "count": 74,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03,
+            46.5875,
+            -112.0275,
+            46.589999999999996
+          ],
+          "count": 81,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03500000000001,
+            46.589999999999996,
+            -112.03250000000001,
+            46.5925
+          ],
+          "count": 56,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03250000000001,
+            46.589999999999996,
+            -112.03,
+            46.5925
+          ],
+          "count": 62,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -112.03,
+            46.589999999999996,
+            -112.0275,
+            46.5925
+          ],
+          "count": 76,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -112.04,
+          46.589999999999996,
+          -112.03750000000001,
+          46.5925
+        ],
+        "forcedPageSize": 3,
+        "count": 32,
+        "returned": 32,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 839,
+      "exactResolved": 839,
+      "nativeIds": [
+        "05188831233037000",
+        "05188831234210000",
+        "05188831234090000"
+      ],
+      "footprintCount": 4,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-mt-helena-parcels",
+        "parcels": 1,
+        "siteM2": 992.61
+      },
+      "requests": 43,
+      "proposedDescriptor": {
+        "id": "us-mt-helena-parcels",
+        "name": "Montana Parcels (Montana Cadastral Framework)",
+        "adapter": "arcgis",
+        "endpoint": "https://gisservice.mt.gov/ArcGIS/rest/services/msdi_cadastral_map_v1/MapServer/1",
+        "idField": "PARCELID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": "^[0-9]{17}$",
+        "idPrefix": "US-MT-HELENA-",
+        "outFields": [
+          "OBJECTID",
+          "PARCELID"
+        ],
+        "parcelNumberField": "PARCELID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 32612,
+        "countryCode": "US",
+        "stateCode": "MT",
+        "cityIds": [
+          "helena"
+        ],
+        "operator": "Montana Department of Revenue and county GIS offices; integrated by Montana State Library",
+        "scope": "Capital-region parcel polygons around Helena.",
+        "catalogueUrl": "https://www.msl.mt.gov/geoinfo/msdi/cadastral/",
+        "licenceNote": "Source conditions informational; users choose source and intended use.",
+        "caveats": [
+          "NULL PARCELID source rows have no cadastral identity and are excluded through explicit attributeNotNull; no synthesized parcel identity."
+        ],
+        "attributeNotNull": [
+          "PARCELID"
+        ]
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-helena-live-2026-10-06.json"
+    },
+    {
+      "city": "lincoln",
+      "stateCode": "NE",
+      "sourceId": "us-ne-lincoln-parcels",
+      "endpoint": "https://services1.arcgis.com/wpJGOi6N4Rq5cqFv/arcgis/rest/services/TaxParcels/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7075,
+            40.81,
+            -96.705,
+            40.8125
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.705,
+            40.81,
+            -96.7025,
+            40.8125
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7025,
+            40.81,
+            -96.7,
+            40.8125
+          ],
+          "count": 19,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7075,
+            40.8125,
+            -96.705,
+            40.815
+          ],
+          "count": 200,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.705,
+            40.8125,
+            -96.7025,
+            40.815
+          ],
+          "count": 88,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7025,
+            40.8125,
+            -96.7,
+            40.815
+          ],
+          "count": 176,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7075,
+            40.815,
+            -96.705,
+            40.8175
+          ],
+          "count": 62,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.705,
+            40.815,
+            -96.7025,
+            40.8175
+          ],
+          "count": 77,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7025,
+            40.815,
+            -96.7,
+            40.8175
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7,
+            40.81,
+            -96.6975,
+            40.8125
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.6975,
+            40.81,
+            -96.695,
+            40.8125
+          ],
+          "count": 30,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.695,
+            40.81,
+            -96.6925,
+            40.8125
+          ],
+          "count": 33,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7,
+            40.8125,
+            -96.6975,
+            40.815
+          ],
+          "count": 28,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.6975,
+            40.8125,
+            -96.695,
+            40.815
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.695,
+            40.8125,
+            -96.6925,
+            40.815
+          ],
+          "count": 25,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.7,
+            40.815,
+            -96.6975,
+            40.8175
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.6975,
+            40.815,
+            -96.695,
+            40.8175
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -96.695,
+            40.815,
+            -96.6925,
+            40.8175
+          ],
+          "count": 16,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -96.695,
+          40.815,
+          -96.6925,
+          40.8175
+        ],
+        "forcedPageSize": 3,
+        "count": 16,
+        "returned": 16,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 799,
+      "exactResolved": 799,
+      "nativeIds": [
+        "1026215016000",
+        "1026209003000",
+        "1026209009000"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ne-lincoln-parcels",
+        "parcels": 1,
+        "siteM2": 3961.19
+      },
+      "requests": 37,
+      "proposedDescriptor": {
+        "id": "us-ne-lincoln-parcels",
+        "name": "City of Lincoln / Lancaster County (CountyCityPub) — Lincoln",
+        "adapter": "arcgis",
+        "endpoint": "https://services1.arcgis.com/wpJGOi6N4Rq5cqFv/arcgis/rest/services/TaxParcels/FeatureServer/0",
+        "idField": "PARCELID",
+        "objectIdField": "OBJECTID_1",
+        "idType": "string",
+        "idPattern": "^[0-9]{1,19}$",
+        "idPrefix": "US-NE-LINCOLN-",
+        "outFields": [
+          "OBJECTID_1",
+          "PARCELID"
+        ],
+        "parcelNumberField": "PARCELID",
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "metricSrid": 32614,
+        "countryCode": "US",
+        "stateCode": "NE",
+        "cityIds": [
+          "lincoln"
+        ],
+        "operator": "City of Lincoln / Lancaster County (CountyCityPub)",
+        "scope": "Public capital-region cadastral polygons around Lincoln.",
+        "catalogueUrl": "https://www.arcgis.com/home/item.html?id=1da5644990874ff2857daffa043b3617",
+        "licenceNote": "Source conditions informational; users choose source and intended use."
+      },
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-lincoln-live-2026-10-06.json"
+    },
+    {
+      "city": "concord",
+      "sourceId": "us-nh-concord-parcels",
+      "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.5425,
+            43.205000000000005,
+            -71.54,
+            43.2075
+          ],
+          "count": 73,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.54,
+            43.205000000000005,
+            -71.53750000000001,
+            43.2075
+          ],
+          "count": 24,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53750000000001,
+            43.205000000000005,
+            -71.53500000000001,
+            43.2075
+          ],
+          "count": 51,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.5425,
+            43.2075,
+            -71.54,
+            43.21
+          ],
+          "count": 80,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.54,
+            43.2075,
+            -71.53750000000001,
+            43.21
+          ],
+          "count": 39,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53750000000001,
+            43.2075,
+            -71.53500000000001,
+            43.21
+          ],
+          "count": 27,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.5425,
+            43.21,
+            -71.54,
+            43.212500000000006
+          ],
+          "count": 76,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.54,
+            43.21,
+            -71.53750000000001,
+            43.212500000000006
+          ],
+          "count": 47,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53750000000001,
+            43.21,
+            -71.53500000000001,
+            43.212500000000006
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53500000000001,
+            43.205000000000005,
+            -71.53250000000001,
+            43.2075
+          ],
+          "count": 12,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53250000000001,
+            43.205000000000005,
+            -71.53,
+            43.2075
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53,
+            43.205000000000005,
+            -71.5275,
+            43.2075
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53500000000001,
+            43.2075,
+            -71.53250000000001,
+            43.21
+          ],
+          "count": 7,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53250000000001,
+            43.2075,
+            -71.53,
+            43.21
+          ],
+          "count": 5,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53,
+            43.2075,
+            -71.5275,
+            43.21
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53500000000001,
+            43.21,
+            -71.53250000000001,
+            43.212500000000006
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53250000000001,
+            43.21,
+            -71.53,
+            43.212500000000006
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -71.53,
+            43.21,
+            -71.5275,
+            43.212500000000006
+          ],
+          "count": 4,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -71.53,
+          43.2075,
+          -71.5275,
+          43.21
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 373,
+      "exactResolved": 373,
+      "nativeIds": [
+        "07046-2917",
+        "07046-2916",
+        "07046-2923"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-nh-concord-parcels",
+        "parcels": 1,
+        "siteM2": 290.61
+      },
+      "requests": 28,
+      "proposedDescriptor": {
+        "endpoint": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "NH Parcels",
+        "operator": "New Hampshire GRANIT / NH Department of Environmental Services",
+        "idField": "nh_gis_id",
+        "objectIdField": "objectid",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "objectid",
+          "nh_gis_id",
+          "town"
+        ],
+        "metricSrid": 32619,
+        "attributeFilters": {
+          "town": "Concord"
+        },
+        "id": "us-nh-concord-parcels",
+        "idPrefix": "US-NH-CONCORD-",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "attributeExclusions": {
+          "nh_gis_id": "07046-0"
+        },
+        "maxConcurrentQueries": 2,
+        "stateCode": "NH",
+        "countryCode": "US",
+        "catalogueUrl": "https://www.granit.unh.edu/",
+        "scope": "Identified Concord assessment parcels from NH GRANIT/NHDES.",
+        "caveats": [
+          "One observed nonunique native key, 07046-0, has five disjoint rows and no replacement U_ID/DisplayId. It is explicitly excluded; the published semantics do not establish a single multipart parcel."
+        ],
+        "parcelNumberField": "nh_gis_id",
+        "cityIds": [
+          "concord"
+        ]
+      },
+      "metadata": {
+        "city": "concord",
+        "metadataUrl": "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0?f=pjson",
+        "geometryType": "esriGeometryPolygon",
+        "name": "NH Parcels",
+        "description": "",
+        "copyrightText": "",
+        "serviceItemId": "41356aa9df1042519511f06d8ac6f309",
+        "editingInfo": {},
+        "advancedQueryCapabilities": {
+          "supportsSqlExpression": true,
+          "supportsQueryWithResultType": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsQueryWithCacheHint": false,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsCurrentUserQueries": true,
+          "supportsQueryAttachmentsWithReturnUrl": true,
+          "fullTextSearchCapabilities": {
+            "supportsOperator": true,
+            "supportsSearchOperator": true
+          },
+          "supportsDefaultSR": true,
+          "supportsQueryDateBins": false,
+          "supportsQueryWithLodSR": true,
+          "supportsPaginationOnAggregatedQueries": true,
+          "supportsPagination": true,
+          "supportsMaxRecordCountFactor": true,
+          "fullTextSearchableFields": [],
+          "supportsStatistics": true,
+          "supportsOrderBy": true,
+          "supportsReturningGeometryProperties": true,
+          "supportsFullTextSearch": true,
+          "supportsQueryWithDistance": true,
+          "supportsLod": true,
+          "supportsSpatialAggregationStatistics": false,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryAttachments": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryAttachmentsCountOnly": true,
+          "supportsOrderByOnlyOnLayerFields": false,
+          "supportsOutFieldSqlExpression": true,
+          "supportsTopFeaturesQuery": true,
+          "supportsReturningGeometryEnvelope": true,
+          "supportsDistinct": true,
+          "supportsReturningGeometryCentroid": true,
+          "supportsQueryAnalytic": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true
+        },
+        "maxRecordCount": 2000,
+        "fields": [
+          {
+            "nullable": false,
+            "defaultValue": null,
+            "editable": false,
+            "length": 4,
+            "type": "esriFieldTypeOID",
+            "modelName": "objectid",
+            "domain": null,
+            "name": "objectid",
+            "alias": "OBJECTID"
+          },
+          {
+            "modelName": "nh_gis_id",
+            "nullable": true,
+            "editable": true,
+            "defaultValue": null,
+            "domain": null,
+            "name": "nh_gis_id",
+            "length": 100,
+            "alias": "NH_GIS_ID",
+            "type": "esriFieldTypeString"
+          },
+          {
+            "modelName": "town",
+            "nullable": true,
+            "editable": true,
+            "defaultValue": null,
+            "domain": null,
+            "name": "town",
+            "length": 25,
+            "alias": "Town",
+            "type": "esriFieldTypeString"
+          }
+        ]
+      },
+      "officialReferences": [
+        "https://www.concordnh.gov/436/GIS",
+        "https://gis.des.nh.gov/server/rest/services/Hosted/NH_Parcels_ExportFeatures/FeatureServer/0"
+      ],
+      "reuseConditions": {
+        "status": "Public query service; attribution to NH GRANIT/NHDES; municipality accuracy disclaimer at official GIS page. No explicit license text on queried layer or item.",
+        "blocking": false
+      },
+      "identityDiagnosis": {
+        "excludedKey": "07046-0",
+        "reason": "Observed ambiguous/nonunique native key 07046-0 occurs across five disjoint source rows with null U_ID and DisplayId. Publisher documentation reviewed does not establish its parcel semantics. Explicitly exclude this key from identified-parcel scope; do not invent IDs or merge unrelated geometry.",
+        "diagnosticFile": "research/us-capitals-batch-three-east-concord-duplicates-2026-10-06.json",
+        "failedProof": "research/us-capitals-batch-three-east-initial-live-2026-10-06.json"
+      },
+      "stateCode": "NH",
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-concord-live-2026-10-06.json",
+      "originalProbeSourceId": "us-concord-parcels",
+      "originalProbeIdPrefix": "us-concord:",
+      "namespaceNormalization": "Only app namespace metadata changed; provider queries and native values unchanged. Configured gateway tests cover the final namespace."
+    },
+    {
+      "city": "trenton",
+      "sourceId": "us-nj-trenton-parcels",
+      "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.212500000000006,
+            -74.745,
+            40.215
+          ],
+          "count": 135,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.212500000000006,
+            -74.7425,
+            40.215
+          ],
+          "count": 208,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.212500000000006,
+            -74.74000000000001,
+            40.215
+          ],
+          "count": 252,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.215,
+            -74.745,
+            40.2175
+          ],
+          "count": 133,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.215,
+            -74.7425,
+            40.2175
+          ],
+          "count": 206,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.215,
+            -74.74000000000001,
+            40.2175
+          ],
+          "count": 115,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7475,
+            40.2175,
+            -74.745,
+            40.220000000000006
+          ],
+          "count": 130,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.745,
+            40.2175,
+            -74.7425,
+            40.220000000000006
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.7425,
+            40.2175,
+            -74.74000000000001,
+            40.220000000000006
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.212500000000006,
+            -74.73750000000001,
+            40.215
+          ],
+          "count": 271,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.212500000000006,
+            -74.735,
+            40.215
+          ],
+          "count": 260,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.212500000000006,
+            -74.7325,
+            40.215
+          ],
+          "count": 219,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.215,
+            -74.73750000000001,
+            40.2175
+          ],
+          "count": 257,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.215,
+            -74.735,
+            40.2175
+          ],
+          "count": 246,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.215,
+            -74.7325,
+            40.2175
+          ],
+          "count": 227,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.74000000000001,
+            40.2175,
+            -74.73750000000001,
+            40.220000000000006
+          ],
+          "count": 119,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.73750000000001,
+            40.2175,
+            -74.735,
+            40.220000000000006
+          ],
+          "count": 173,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -74.735,
+            40.2175,
+            -74.7325,
+            40.220000000000006
+          ],
+          "count": 187,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -74.7425,
+          40.2175,
+          -74.74000000000001,
+          40.220000000000006
+        ],
+        "forcedPageSize": 3,
+        "count": 15,
+        "returned": 15,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 2716,
+      "exactResolved": 2716,
+      "nativeIds": [
+        "1111_15001_1",
+        "1111_15101_8",
+        "1111_15101_7"
+      ],
+      "footprintCount": 1,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-nj-trenton-parcels",
+        "parcels": 1,
+        "siteM2": 28344.04
+      },
+      "requests": 61,
+      "proposedDescriptor": {
+        "endpoint": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0",
+        "adapter": "arcgis",
+        "name": "Cad_parcel_mod4 (Parcels_Composite_NJ_WM)",
+        "operator": "New Jersey Office of Information Technology, Office of GIS (NJOGIS)",
+        "idField": "PAMS_PIN",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "PAMS_PIN"
+        ],
+        "metricSrid": 32618,
+        "id": "us-nj-trenton-parcels",
+        "idPrefix": "US-NJ-TRENTON-",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "stateCode": "NJ",
+        "countryCode": "US",
+        "catalogueUrl": "https://nj.gov/njgin/edata/parcels/",
+        "scope": "New Jersey composite parcel service, configured for Trenton; no statewide completeness claim.",
+        "caveats": [
+          "County-contributed assessment geometry; accuracy and dates vary."
+        ],
+        "parcelNumberField": "PAMS_PIN",
+        "cityIds": [
+          "trenton"
+        ]
+      },
+      "metadata": {
+        "city": "trenton",
+        "metadataUrl": "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0?f=pjson",
+        "geometryType": "esriGeometryPolygon",
+        "name": "Cad_parcel_mod4",
+        "description": "The statewide composite of parcels (cadastral) data for New Jersey was developed during the Parcels Normalization Project in 2008-2014 by the NJ Office of Information Technology, Office of GIS (NJOGIS). The normalized parcels data are compatible with the New Jersey Department of Treasury MOD-IV system currently used by Tax Assessors and selected attributes from that system have been joined with the parcels in this dataset. This composite of parcels data serves as one of New Jersey's framework GIS datasets. Stewardship and maintenance of the data will continue to be the purview of county and municipal governments, but the statewide composite will be maintained by NJOGIS.This layer is published in Web Mercator (Auxiliary Sphere) (3857) projection. If your ArcGIS Pro project is set to a different coordinate system, you may see odd graphical rendering issues (arcs or spikes) when viewing the data. This is only a display issue—the geometry data itself is not affected. If you need parcels in NJ State Plane (US Foot) datum, please download them directly from here instead of reprojecting in ArcGIS Pro.Parcel attributes were normalized to a standard structure, specified in the NJ GIS Parcel Mapping Standard, to store parcel information and provide a PIN (parcel identification number) field that can be used to match records with suitably-processed property tax data. The PIN also can be constructed from attributes available in the MOD-IV Tax List Search table (see below). This dataset includes a large number of additional attributes from matched MOD-IV records; however, not all MOD-IV records match to a parcel, for reasons explained elsewhere in this metadata record. The statewide property tax table, including all MOD-IV records, is available as a separate download \"MOD-IV Tax List Search Plus Database of New Jersey.\" Parcel boundaries with limited attributes are available for download here. Also available separately are countywide parcels and tables of property ownership and tax information extracted from the NJ Division of Taxation database. Learn more at NJGIN Parcels.The polygons delineated in this dataset do not represent legal boundaries and should not be used to provide a legal determination of land ownership. Parcels are not survey data and should not be used as such. Please note that these parcel datasets are not intended for use as tax maps. They are intended to provide reasonable representations of parcel boundaries for planning and other purposes. Please see Data Quality / Process Steps for details about updates to this composite since its first publication. See Supplemental Information for more details.***NOTE*** For users who incorporate NJOGIS services into web maps and/or web applications, please sign up for the NJ Geospatial Forum discussion listserv for early notification of service changes. Visit https://nj.gov/njgf/about/listserv/ for more information.",
+        "copyrightText": "NJ Office of Information Technology, Office of GIS (NJOGIS); \nAtlantic County; \nBergen County; \nBurlington County; \nCamden County; \nCape May County; \nCumberland County; \nEssex County; \nGloucester County; \nHudson County; \nHunterdon County; \nMercer County; \nMiddlesex County; \nMonmouth County; \nMorris County; \nOcean County; \nPassaic County; \nSalem County; \nSomerset County; \nSussex County; \nUnion County; \nWarren County; \nNewark; \nEast Brunswick; \nNew Brunswick; \nNorth Brunswick; \nPiscataway; \nSouth Brunswick; \nWoodbridge;\nCivil Solutions; \nSpatial Data Logic\n\nProcessing of data from Division of Taxation for use in this dataset was performed by NJOIT, Enterprise Data Services, Data Warehouse.",
+        "serviceItemId": "533599bbfbaa4748bf39faf1375a8a9c",
+        "editingInfo": {
+          "lastEditDate": 1787045558134,
+          "schemaLastEditDate": 1787045558134,
+          "dataLastEditDate": 1787045558134
+        },
+        "advancedQueryCapabilities": {
+          "supportsPagination": true,
+          "supportsPaginationOnAggregatedQueries": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsQueryWithDistance": true,
+          "supportsOutDistance": true,
+          "supportsReturningQueryExtent": true,
+          "supportsStatistics": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsQueryWithResultType": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsCountDistinct": true,
+          "supportsPercentileStatistics": true,
+          "supportsApproxPercentileStatistics": true,
+          "supportsSpatialAggregationStatistics": true,
+          "supportsTrueCurve": true,
+          "supportedSpatialAggregationStatistics": [
+            "EnvelopeAggregate",
+            "CentroidAggregate",
+            "ConvexHullAggregate"
+          ],
+          "supportsLod": true,
+          "supportsQueryWithLodSR": false,
+          "supportedLodTypes": [
+            "geohash"
+          ],
+          "supportsReturningGeometryCentroid": true,
+          "supportsReturningGeometryEnvelope": true,
+          "supportsReturningGeometryProperties": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsCurrentUserQueries": true,
+          "supportsHavingClause": true,
+          "supportsOutFieldSQLExpression": true,
+          "supportsMaxRecordCountFactor": true,
+          "supportsTopFeaturesQuery": true,
+          "supportsDisjointSpatialRel": true,
+          "supportsQueryWithCacheHint": true,
+          "supportedOperationsWithCacheHint": [
+            "query",
+            "queryTopFilter",
+            "queryAnalytics",
+            "queryAttachments",
+            "queryRelated",
+            "queryBins",
+            "queryPivot"
+          ],
+          "supportsQueryAnalytic": true,
+          "supportsQueryPivot": true,
+          "supportsQueryBins": true,
+          "supportsDefaultSR": true,
+          "supportsTranslations": false,
+          "supportsAggIds": true,
+          "supportsQueryWithCollation": true,
+          "supportsISODOW": true,
+          "supportsISOWeek": true,
+          "supportsFullTextSearch": true,
+          "fullTextSearchCapabilities": {
+            "supportsAccentSensitivity": true,
+            "supportsStopWords": true,
+            "supportsSearchOperator": true,
+            "supportsOperator": true
+          }
+        },
+        "maxRecordCount": 2000,
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "sqlType": "sqlTypeOther",
+            "nullable": false,
+            "editable": false,
+            "domain": null,
+            "defaultValue": null
+          },
+          {
+            "name": "PAMS_PIN",
+            "type": "esriFieldTypeString",
+            "alias": "PAMS_PIN",
+            "sqlType": "sqlTypeOther",
+            "length": 38,
+            "nullable": true,
+            "editable": true,
+            "domain": null,
+            "defaultValue": null
+          }
+        ]
+      },
+      "officialReferences": [
+        "https://nj.gov/njgin/edata/parcels/",
+        "https://services2.arcgis.com/XVOqAjTOJ5P6ngMu/arcgis/rest/services/Parcels_Composite_NJ_WM/FeatureServer/0"
+      ],
+      "reuseConditions": {
+        "status": "public service; provider attribution and published accuracy/use conditions retained",
+        "blocking": false
+      },
+      "stateCode": "NJ",
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-trenton-live-2026-10-06.json",
+      "originalProbeSourceId": "us-trenton-parcels",
+      "originalProbeIdPrefix": "us-trenton:",
+      "namespaceNormalization": "Only app namespace metadata changed; provider queries and native values unchanged. Configured gateway tests cover the final namespace."
+    },
+    {
+      "city": "santa_fe",
+      "sourceId": "us-nm-santa-fe-parcels",
+      "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.682500000000005,
+            -105.94,
+            35.685
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.682500000000005,
+            -105.9375,
+            35.685
+          ],
+          "count": 43,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.682500000000005,
+            -105.935,
+            35.685
+          ],
+          "count": 17,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.685,
+            -105.94,
+            35.6875
+          ],
+          "count": 61,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.685,
+            -105.9375,
+            35.6875
+          ],
+          "count": 58,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.685,
+            -105.935,
+            35.6875
+          ],
+          "count": 23,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9425,
+            35.6875,
+            -105.94,
+            35.690000000000005
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.94,
+            35.6875,
+            -105.9375,
+            35.690000000000005
+          ],
+          "count": 52,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9375,
+            35.6875,
+            -105.935,
+            35.690000000000005
+          ],
+          "count": 44,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.682500000000005,
+            -105.9325,
+            35.685
+          ],
+          "count": 65,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.682500000000005,
+            -105.92999999999999,
+            35.685
+          ],
+          "count": 91,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.682500000000005,
+            -105.9275,
+            35.685
+          ],
+          "count": 117,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.685,
+            -105.9325,
+            35.6875
+          ],
+          "count": 31,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.685,
+            -105.92999999999999,
+            35.6875
+          ],
+          "count": 99,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.685,
+            -105.9275,
+            35.6875
+          ],
+          "count": 73,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.935,
+            35.6875,
+            -105.9325,
+            35.690000000000005
+          ],
+          "count": 70,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.9325,
+            35.6875,
+            -105.92999999999999,
+            35.690000000000005
+          ],
+          "count": 32,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -105.92999999999999,
+            35.6875,
+            -105.9275,
+            35.690000000000005
+          ],
+          "count": 24,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -105.9425,
+          35.682500000000005,
+          -105.94,
+          35.685
+        ],
+        "forcedPageSize": 3,
+        "count": 14,
+        "returned": 14,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 776,
+      "exactResolved": 776,
+      "nativeIds": [
+        "99306489",
+        "12048768",
+        "11488896"
+      ],
+      "footprintCount": 6,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-nm-santa-fe-parcels",
+        "parcels": 1,
+        "siteM2": 5983.09
+      },
+      "requests": 36,
+      "proposedDescriptor": {
+        "endpoint": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+        "adapter": "arcgis",
+        "name": "Santa Fe County Parcels",
+        "operator": "Santa Fe County GIS Division",
+        "idField": "parcel_number",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "idPattern": ".+",
+        "outFields": [
+          "OBJECTID",
+          "parcel_number"
+        ],
+        "parcelNumberField": "parcel_number",
+        "metricSrid": 32613,
+        "id": "us-nm-santa-fe-parcels",
+        "idPrefix": "US-NM-SANTA-FE-",
+        "pageSize": 1000,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "stateCode": "NM",
+        "countryCode": "US",
+        "catalogueUrl": "https://www.santafecountynm.gov/growth-management/gis",
+        "scope": "Santa Fe County assessment parcels served through the City GIS service; configured for Santa Fe.",
+        "caveats": [
+          "Assessment mapping; not a legal survey."
+        ],
+        "cityIds": [
+          "santa_fe"
+        ]
+      },
+      "metadata": {
+        "city": "santa_fe",
+        "metadataUrl": "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2?f=pjson",
+        "geometryType": "esriGeometryPolygon",
+        "name": "Santa Fe County Parcels",
+        "description": "",
+        "copyrightText": "",
+        "serviceItemId": "892196b040024d9f9c5cf39609123d38",
+        "editingInfo": null,
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsAdvancedQueryRelated": true,
+          "supportsQueryRelatedPagination": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": true,
+          "supportsCurrentUserQueries": true
+        },
+        "maxRecordCount": 2000,
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "parcel_number",
+            "type": "esriFieldTypeString",
+            "alias": "parcel_number",
+            "length": 30,
+            "domain": null
+          }
+        ]
+      },
+      "officialReferences": [
+        "https://gis.santafenm.gov/server/rest/services/OpenGov_GIS_Service/MapServer/2",
+        "https://www.santafecountynm.gov/growth-management/gis",
+        "https://santafenm.gov/information-technology-telecommunications/gis"
+      ],
+      "reuseConditions": {
+        "status": "public service; provider attribution and published accuracy/use conditions retained",
+        "blocking": false
+      },
+      "stateCode": "NM",
+      "acceptanceEvidenceFile": "research/us-capitals-batch-three-santa-fe-live-2026-10-06.json",
+      "originalProbeSourceId": "us-santa_fe-parcels",
+      "originalProbeIdPrefix": "us-santa_fe:",
+      "namespaceNormalization": "Only app namespace metadata changed; provider queries and native values unchanged. Configured gateway tests cover the final namespace."
+    }
+  ],
+  "totalViewportCells": 180,
+  "totalExactNativeIdsResolved": 8604,
+  "reserveCities": [
+    "albany"
+  ],
+  "validation": {
+    "headless": {
+      "files": 20,
+      "testsPassed": 382,
+      "browserSuiteRun": false
+    },
+    "generatedCoverage": "Regenerated and byte-for-byte headless check passed.",
+    "headedBrowser": {
+      "city": "des_moines",
+      "initial": {
+        "retainedParcels": 231,
+        "cells": 9
+      },
+      "pointerSelection": "Parcel action menu opened from a visible polygon interior.",
+      "afterPan": {
+        "retainedParcels": 395,
+        "cells": 15,
+        "fetchInProgress": false
+      },
+      "sourceAlerts": [],
+      "pageErrors": [],
+      "sourceNotice": "2017 snapshot · assessment parcel groups",
+      "browserClosed": true
+    }
+  },
+  "after": {
+    "configuredCapitals": 27,
+    "capitalsRemainingToIntegrate": 24,
+    "appCities": 69,
+    "executableProviderDescriptors": 59,
+    "representedUSStates": 28,
+    "federalDistricts": [
+      "DC"
+    ]
+  }
+}

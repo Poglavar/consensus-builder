@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T02:58:21.098803+00:00",
+  "decision": "approved_by_root",
+  "scope": "368 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Thessaloniki WUP settlement locator. Complete bounded paging, forced three-row pages, all 368 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 78 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The municipal KAEK strings include Greek alphabetic characters and are preserved unchanged; declared source CRS is EPSG:2100 and requested output EPSG:4326. The municipal reference layer is distinct from the national legal register. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "thessaloniki-root-acceptance.json",
+  "qualityFile": "thessaloniki-root-quality.json"
+}

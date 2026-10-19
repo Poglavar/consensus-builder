@@ -1,0 +1,33 @@
+{
+  "cityRecord": "city-9095-burhanpur.json",
+  "cityCode": 9095,
+  "queueRank": 1650,
+  "city": "Burhanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official Burhanpur district, Madhya Pradesh WebGIS/Bhu-Naksha, and Government of India DILRMP sources establish a cadastral/map custodian and public map procedure. The live viewer/GIS hosts timed out or exposed only a JavaScript shell during bounded anonymous requests, so no current parcel schema, CRS, safe native identity, or polygon was verified. No GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Hindi discovery queries and actual first-party URLs are recorded in city-9095-burhanpur.json.",
+  "requestOutcomes": "TLS verification remained enabled. Official district GIS loaded; WebGIS 2.0 shell showed JavaScript/security-notice content; direct requests to burhanpurgis.mp.gov.in and mpbhulekh.gov.in timed out. DILRMP indexed first-party content supplied district/tehsil digitization statistics but no parcel feature row. No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe lookup, or TLS exception was used.",
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "source layer and public service metadata"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no usable parcel geometry response",
+  "geometryQuality": "not evaluated; no parcel geometry retained",
+  "retainedSample": null,
+  "scopeLimits": [
+    "Exact WUP point [21.3153487824855, 76.2250488491978] was preserved in latitude/longitude order; it was not shifted and no exact-point presence/absence conclusion was drawn.",
+    "DILRMP Burhanpur and BURHANPUR NAGAR statistics evidence digitization/georeferencing status, not complete city polygon coverage or an accessible parcel API.",
+    "Timeouts, JavaScript-only shell access, and unavailable response bodies are not evidence of citywide parcel absence.",
+    "No source-specific raw attribute set, owner/address/contact information, or synthetic parcel identity was retained.",
+    "No GeoJSON was retained because no safe native ID plus full polygon response was verified.",
+    "This packet is not source integration/admission; serial reviewer qualification remains pending."
+  ],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "uncertainty": "The current selected-sheet route, parcel layer schema, CRS, stable native identity, anonymous geometry access and citywide coverage remain unresolved. Future work should continue through public first-party routes only and retain at most three full polygons with exactly one canonical native identity per feature if a safe geometry response is independently verified."
+}

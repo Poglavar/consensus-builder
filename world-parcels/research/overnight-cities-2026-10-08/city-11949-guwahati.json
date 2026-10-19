@@ -1,0 +1,132 @@
+{
+  "name": "Guwahati",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 392,
+  "point": [
+    26.1501700092523,
+    91.7579305026308
+  ],
+  "population2025": 1314019,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full parcel polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Assam government identifies BhuNaksha cadastral mapping; official state handbook includes Guwahati plot-level land records. This confirms registry activity but not an open polygon API.",
+  "resultCategory": "city_registry_public_map_raster_only_no_public_vector_geometry_verified",
+  "technicalBlocker": "Public viewer’s map layer is WMS raster; separate detail route not queried. GeoHub could not be fetched locally.",
+  "remainingUncertainty": "Whether new GeoHub contains an anonymous vector parcel layer and whether BhuNaksha has a full geometry endpoint.",
+  "nextStep": "Inspect public GeoHub layer catalog only if reachable; do not query Dag, owner, or address details.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Guwahati official land records cadastral map GIS Guwahati city parcel map Assam",
+        "result": "Assam government ILRMS provides public BhuNaksha cadastral viewer, and official Assam planning handbook shows Guwahati plot-level records. New urban GIS GeoHub officially launched but its portal timed out locally.",
+        "urls": [
+          "https://ilrms.assam.gov.in/",
+          "https://bhunaksha.assam.gov.in/",
+          "https://tcp.assam.gov.in/sites/default/files/swf_utility_folder/departments/dtcp_medhassu_in_oid_4/menu/schemes/handbook_-_preparation_of_local_area_plan_in_assam_compressed-1.pdf",
+          "https://gistcp.assam.gov.in/geoportal/index.aspx"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      },
+      {
+        "language": "Assamese",
+        "query": "গুৱাহাটী নগৰ ভূমি নথি ভূচিত্ৰ মানচিত্ৰ সম্পত্তি ভূমি জৰীপ চৰকাৰী অসম",
+        "result": "অসম চৰকাৰৰ ILRMS-এ BhuNaksha-ক cadastral mapping বুলি চিহ্নিত কৰিছে। ৰাজহুৱা মানচিত্ৰৰ shell সক্ৰিয়; নতুন GIS GeoHub-ৰ portal-ত এই session-ত স্থানীয় timeout হৈছিল। কোনো plot বা মালিকৰ তথ্য বিচৰা হোৱা নাই।",
+        "urls": [
+          "https://ilrms.assam.gov.in/",
+          "https://bhunaksha.assam.gov.in/",
+          "https://tcp.assam.gov.in/frontimpotentdata/launch-of-gis-geohub-portal-by-the-department-of-housing-urban-affairs-government"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ilrms.assam.gov.in/",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official Assam ILRMS labels BhuNaksha cadastral mapping software and lists Jamabandi among citizen services."
+      },
+      {
+        "url": "https://bhunaksha.assam.gov.in/",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "observation": "Direct anonymous GET returned live React map shell."
+      },
+      {
+        "url": "https://bhunaksha.assam.gov.in/assets/index-qVUqnX9k.js",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Public viewer JS uses village-specific ASSAM_PARCEL WMS raster map; separate parcel-info route was not queried."
+      },
+      {
+        "url": "https://tcp.assam.gov.in/frontimpotentdata/launch-of-gis-geohub-portal-by-the-department-of-housing-urban-affairs-government",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official T&CP page says urban GeoHub launched 2025 and links portal."
+      },
+      {
+        "url": "https://gistcp.assam.gov.in/geoportal/index.aspx",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Direct GET timed out locally before HTTP response; this does not show server downtime."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Assam BhuNaksha",
+        "operator": "Revenue and Disaster Management Department, Govt of Assam / NIC Assam",
+        "url": "https://bhunaksha.assam.gov.in/",
+        "observation": "Anonymous cadastral map UI is live; inspected code shows village-specific WMS image display, no full vector geometry verified."
+      },
+      {
+        "name": "Assam GIS GeoHub",
+        "operator": "Department of Housing and Urban Affairs / Directorate of Town and Country Planning, Govt of Assam",
+        "url": "https://gistcp.assam.gov.in/geoportal/index.aspx",
+        "observation": "Official launch notice calls it a public urban spatial-data portal; local HTTP timeout leaves layers unknown."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "BhuNaksha public UI draws ASSAM_PARCEL as village-selected WMS raster. A separate parcel-info request exists and may return details; it was not called. No full-polygon API/GeoJSON verified. GeoHub direct fetch timed out locally, not evidence of origin failure.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "No full parcel polygon geometry was requested or retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 11949,
+  "cityId": "wup2025:11949",
+  "queueRank": 392,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    26.1501700092523,
+    91.7579305026308
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:20:33.128981+00:00"
+}

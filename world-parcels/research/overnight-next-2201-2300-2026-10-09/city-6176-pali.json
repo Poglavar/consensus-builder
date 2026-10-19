@@ -1,0 +1,41 @@
+{
+  "cityCode": 6176,
+  "queueRank": 2216,
+  "name": "Pali",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [25.7775801479588, 73.3262135162123],
+  "population2025": 263275,
+  "population2025k": 263.275,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pali Rajasthan official cadastral parcel map Bhu Naksha land records GIS",
+        "result": "First-party discovery identified Rajasthan Bhu-Naksha, Apna Khata, Rajdharaa Urban GIS, and the official UIT Pali site. Rajdharaa's public JavaScript configuration exposed Rajasthan ArcGIS service URLs and a Khasra layer, but bounded anonymous service metadata and parcel requests timed out. No safe Pali parcel ID-plus-geometry response was obtained.",
+        "actualResultUrls": [
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://uit.rajasthan.gov.in/uitpali/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "पाली राजस्थान आधिकारिक भू नक्शा जमाबंदी भूमि रिकॉर्ड GIS खसरा",
+        "result": "Hindi-language discovery returned the official Rajasthan Apna Khata/Bhu-Naksha routes and the official Pali UIT site. The public material establishes cadastral-map and revenue-record procedures, but no anonymous Pali parcel geometry or stable native parcel identity was recovered.",
+        "actualResultUrls": [
+          "https://apnakhata.rajasthan.gov.in/LrcLogin.aspx",
+          "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://uit.rajasthan.gov.in/uitpali/"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "Rajasthan Revenue/Apna Khata, Bhu-Naksha, Rajdharaa Urban GIS, and UIT Pali official routes were evidenced. The state viewer configuration was inspected and disclosed ArcGIS service families, but no bounded anonymous Pali parcel response with safe native identity and geometry was obtained. This packet is not source integration or runtime admission.",
+  "runtimeReadiness": "held"
+}

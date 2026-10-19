@@ -1,0 +1,56 @@
+{
+  "cityRecord": "city-7518-awka.json",
+  "cityCode": 7518,
+  "queueRank": 2053,
+  "name": "Awka",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "point": [6.22381098134918, 7.07230528873716],
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.mol.anambrastate.gov.ng/anamgis/",
+      "outcome": "200 HTML. Official Ministry page states ANAMGIS is a digital geospatial data repository for Certificate of Occupancy processing, geospatial analysis, land acquisition/allocation, and land administration. No map viewer URL, service URL, schema, CRS, parcel ID, or geometry response exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.mol.anambrastate.gov.ng/governor-soludo-commissions-anamgis/",
+      "outcome": "200 HTML. Official Ministry report confirms ANAMGIS was commissioned at the Ministry of Lands headquarters in Awka and describes digital mapping/land-administration objectives. No anonymous parcel endpoint or geometry exposed."
+    },
+    {
+      "method": "GET",
+      "url": "https://anambrastate.gov.ng/ease-of-doing-business/land-property/",
+      "outcome": "Search result exposed official land/property procedure content; direct curl returned HTTP 403 during this attempt. The indexed official content describes the Land Use Office in Awka, cadastral vetting, title numbers, survey plans, and land-registration procedures, but not a public parcel API. No bypass attempted."
+    },
+    {
+      "method": "GET",
+      "url": "https://onlineservices.mol.anambrastate.gov.ng/",
+      "outcome": "HTTP 403 Cloudflare managed challenge (cf-mitigated: challenge). The official Ministry page links this host for online land services. No CAPTCHA/Cloudflare bypass, login, credentials, or private token was attempted. No JavaScript/configuration or parcel response could be inspected."
+    },
+    {
+      "method": "GET",
+      "url": "https://osgof.gov.ng/",
+      "outcome": "Official national Surveyor-General site identified in discovery; general surveying/cadastral-service prose only. No Awka-specific parcel endpoint or geometry requested."
+    }
+  ],
+  "schemaCrs": {
+    "status": "not available",
+    "details": "No public parcel response was obtained; native field schema, CRS, geometry encoding, and stable parcel identity could not be verified."
+  },
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSamples": [],
+  "scopeLimits": [
+    "ANAMGIS and Ministry of Lands evidence establish the local custodian and a state GIS/land-administration system, not public parcel coverage or an admissible runtime adapter.",
+    "Online services were blocked by a Cloudflare challenge; this is an access limitation, not evidence of parcel absence.",
+    "No exact-point query was issued because no public parcel endpoint was discovered and the only online-service route was challenge-protected.",
+    "No map extent miss, timeout, login wall, or unusable UI is treated as citywide cadastral absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, transaction, or other unsafe fields were requested or retained.",
+    "No GeoJSON sample was retained because no safe native ID plus full parcel polygon was verified."
+  ],
+  "runtimeReadiness": "held",
+  "uncertainty": "High: Anambra's official ANAMGIS system may contain Awka parcel data behind its protected online services or an internal/public route not exposed in the inspected pages. Independent serial review is required before adapter or source admission."
+}

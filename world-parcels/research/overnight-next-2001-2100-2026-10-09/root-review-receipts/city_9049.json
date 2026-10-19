@@ -1,0 +1,25 @@
+{
+  "taskId": "city:9049",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/city-9049-tundla.json",
+    "world-parcels/research/overnight-next-2001-2100-2026-10-09/tundla-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T22:17:06Z",
+  "reviewFinding": "UP first-party Tundla tehsil map-status report supports local cadastral custody. Viewer loaded but no safe native parcel ID and polygon response or adapter qualification exists; timeouts are not absence.",
+  "firstPartyPagesChecked": [
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=147&tehsilCode=00771",
+    "https://upbhunaksha.gov.in/"
+  ],
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "retainedPolygonCount": 0
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:64",
+  "queueRank": 64,
+  "name": "Chengdu",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    30.6722990667209,
+    104.046029731707
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://ghzrzy.chengdu.gov.cn/",
+      "observation": "Chengdu Planning and Natural Resources Bureau (candidate official portal); unreachable from proxy."
+    },
+    {
+      "url": "https://data.chengdu.gov.cn/",
+      "observation": "Chengdu open-data platform (candidate); unreachable from proxy."
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "observation": "National Tianditu platform; returned anti-bot page, no parcel service documented."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.chengdu.gov.cn/gkml/",
+      "method": "GET",
+      "httpStatus": 412,
+      "contentType": "text/html",
+      "assessment": "anti-bot block page; no data"
+    },
+    {
+      "url": "https://www.tianditu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 418,
+      "contentType": "text/html",
+      "assessment": "anti-bot block page; no data"
+    },
+    {
+      "url": "https://ghzrzy.chengdu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://data.chengdu.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://mnr.gov.cn/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Chengdu municipal land/cadastral information (not confirmed online)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official hosts were blocked or unreachable from this network, so absence of an open service is unconfirmed. China's registered land-parcel data is generally served through login/real-name systems; no documented anonymous parcel endpoint found.",
+  "nextStep": "Retest from a China-reachable network; check Chengdu data portal for a parcel dataset and any Tianditu/Sichuan parcel WFS."
+}

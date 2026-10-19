@@ -1,0 +1,1485 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "1336",
+  "cityName": "Point Cook",
+  "sourceId": "au-vic-vicmap-parcel",
+  "candidateSha256": "40c1ff8a1b0c99fa81e18893f73b03b2fa0c4321dc5543d554da898db9313ecc",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 3,
+      "returnedCount": 3,
+      "freshCollectedIds": 218,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 218,
+      "collectedUniqueCount": 218
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 582,
+      "sampleCentroidCell": {
+        "index": 4,
+        "dx": 0,
+        "dy": 0,
+        "bbox": [
+          144.701,
+          -37.875,
+          144.702,
+          -37.874
+        ],
+        "reason": "WUP point had no containing sampled parcel; sample centroid cell added.",
+        "complete": true,
+        "featureCount": 22,
+        "ids": [
+          "AU-VIC-PARCEL-150835348",
+          "AU-VIC-PARCEL-1774091",
+          "AU-VIC-PARCEL-1774093",
+          "AU-VIC-PARCEL-1794581",
+          "AU-VIC-PARCEL-1794583",
+          "AU-VIC-PARCEL-1794585",
+          "AU-VIC-PARCEL-1794587",
+          "AU-VIC-PARCEL-1794589",
+          "AU-VIC-PARCEL-1794591",
+          "AU-VIC-PARCEL-1794593",
+          "AU-VIC-PARCEL-1794595",
+          "AU-VIC-PARCEL-1800885",
+          "AU-VIC-PARCEL-1800886",
+          "AU-VIC-PARCEL-1800887",
+          "AU-VIC-PARCEL-1800888",
+          "AU-VIC-PARCEL-1800889",
+          "AU-VIC-PARCEL-1800890",
+          "AU-VIC-PARCEL-1800891",
+          "AU-VIC-PARCEL-1800892",
+          "AU-VIC-PARCEL-1800893",
+          "AU-VIC-PARCEL-1800895",
+          "AU-VIC-PARCEL-1800897"
+        ]
+      }
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "kind": "feature-queries",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "featurePageRequests": 10,
+      "distinctFeatureQueries": 10,
+      "duplicatePageRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 3
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "metric-report.json",
+      "inputSha256": "ce6e5b9a35ea0e0d21fc948bf14c02a2a16491482927c53507c0a581b80c7d0f",
+      "featureCount": 218,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32755",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "ce6e5b9a35ea0e0d21fc948bf14c02a2a16491482927c53507c0a581b80c7d0f",
+  "featureCount": 218,
+  "sampleIds": [
+    "AU-VIC-PARCEL-1800897",
+    "AU-VIC-PARCEL-1800896",
+    "AU-VIC-PARCEL-1774095"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        144.699,
+        -37.877,
+        144.7,
+        -37.876
+      ],
+      "complete": true,
+      "featureCount": 29,
+      "ids": [
+        "AU-VIC-PARCEL-213016173",
+        "AU-VIC-PARCEL-1794063",
+        "AU-VIC-PARCEL-1786089",
+        "AU-VIC-PARCEL-1774082",
+        "AU-VIC-PARCEL-215075024",
+        "AU-VIC-PARCEL-1794064",
+        "AU-VIC-PARCEL-1786088",
+        "AU-VIC-PARCEL-1786085",
+        "AU-VIC-PARCEL-1786084",
+        "AU-VIC-PARCEL-1794062",
+        "AU-VIC-PARCEL-1786066",
+        "AU-VIC-PARCEL-1794065",
+        "AU-VIC-PARCEL-1786082",
+        "AU-VIC-PARCEL-1786080",
+        "AU-VIC-PARCEL-215075016",
+        "AU-VIC-PARCEL-1786086",
+        "AU-VIC-PARCEL-1786091",
+        "AU-VIC-PARCEL-1774083",
+        "AU-VIC-PARCEL-1794072",
+        "AU-VIC-PARCEL-1794061",
+        "AU-VIC-PARCEL-1786065",
+        "AU-VIC-PARCEL-1786087",
+        "AU-VIC-PARCEL-1794066",
+        "AU-VIC-PARCEL-1774112",
+        "AU-VIC-PARCEL-1786064",
+        "AU-VIC-PARCEL-1774084",
+        "AU-VIC-PARCEL-1786083",
+        "AU-VIC-PARCEL-215075044",
+        "AU-VIC-PARCEL-215075037"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        144.7,
+        -37.877,
+        144.701,
+        -37.876
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "AU-VIC-PARCEL-25225",
+        "AU-VIC-PARCEL-2005871",
+        "AU-VIC-PARCEL-1794063",
+        "AU-VIC-PARCEL-1786073",
+        "AU-VIC-PARCEL-1805687",
+        "AU-VIC-PARCEL-1786072",
+        "AU-VIC-PARCEL-1786085",
+        "AU-VIC-PARCEL-1805697",
+        "AU-VIC-PARCEL-1794065",
+        "AU-VIC-PARCEL-1805700",
+        "AU-VIC-PARCEL-1786080",
+        "AU-VIC-PARCEL-1786081",
+        "AU-VIC-PARCEL-1786074",
+        "AU-VIC-PARCEL-1794061",
+        "AU-VIC-PARCEL-1805698",
+        "AU-VIC-PARCEL-1786078",
+        "AU-VIC-PARCEL-1805695",
+        "AU-VIC-PARCEL-1805690",
+        "AU-VIC-PARCEL-1805691",
+        "AU-VIC-PARCEL-1786083",
+        "AU-VIC-PARCEL-1805696",
+        "AU-VIC-PARCEL-25224",
+        "AU-VIC-PARCEL-1786076",
+        "AU-VIC-PARCEL-1786075"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        144.701,
+        -37.877,
+        144.702,
+        -37.876
+      ],
+      "complete": true,
+      "featureCount": 18,
+      "ids": [
+        "AU-VIC-PARCEL-1786073",
+        "AU-VIC-PARCEL-1805687",
+        "AU-VIC-PARCEL-210384538",
+        "AU-VIC-PARCEL-1786072",
+        "AU-VIC-PARCEL-1805697",
+        "AU-VIC-PARCEL-1794568",
+        "AU-VIC-PARCEL-1794565",
+        "AU-VIC-PARCEL-2081737",
+        "AU-VIC-PARCEL-1794566",
+        "AU-VIC-PARCEL-1805695",
+        "AU-VIC-PARCEL-1805691",
+        "AU-VIC-PARCEL-1794569",
+        "AU-VIC-PARCEL-1786069",
+        "AU-VIC-PARCEL-1794567",
+        "AU-VIC-PARCEL-23545",
+        "AU-VIC-PARCEL-1794570",
+        "AU-VIC-PARCEL-1794571",
+        "AU-VIC-PARCEL-210384522"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        144.699,
+        -37.876,
+        144.7,
+        -37.875
+      ],
+      "complete": true,
+      "featureCount": 24,
+      "ids": [
+        "AU-VIC-PARCEL-428534101",
+        "AU-VIC-PARCEL-1774082",
+        "AU-VIC-PARCEL-1786085",
+        "AU-VIC-PARCEL-48496",
+        "AU-VIC-PARCEL-1805868",
+        "AU-VIC-PARCEL-1786066",
+        "AU-VIC-PARCEL-48497",
+        "AU-VIC-PARCEL-428534102",
+        "AU-VIC-PARCEL-1774108",
+        "AU-VIC-PARCEL-1774113",
+        "AU-VIC-PARCEL-1774105",
+        "AU-VIC-PARCEL-1785156",
+        "AU-VIC-PARCEL-1774106",
+        "AU-VIC-PARCEL-1774103",
+        "AU-VIC-PARCEL-1774083",
+        "AU-VIC-PARCEL-1774104",
+        "AU-VIC-PARCEL-1785154",
+        "AU-VIC-PARCEL-1786065",
+        "AU-VIC-PARCEL-1774112",
+        "AU-VIC-PARCEL-1774115",
+        "AU-VIC-PARCEL-1774084",
+        "AU-VIC-PARCEL-1786083",
+        "AU-VIC-PARCEL-1774107",
+        "AU-VIC-PARCEL-1774085"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        144.7,
+        -37.876,
+        144.701,
+        -37.875
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "AU-VIC-PARCEL-1786073",
+        "AU-VIC-PARCEL-1774100",
+        "AU-VIC-PARCEL-1774095",
+        "AU-VIC-PARCEL-1774102",
+        "AU-VIC-PARCEL-218895864",
+        "AU-VIC-PARCEL-1774105",
+        "AU-VIC-PARCEL-1786081",
+        "AU-VIC-PARCEL-1774106",
+        "AU-VIC-PARCEL-1774103",
+        "AU-VIC-PARCEL-1774097",
+        "AU-VIC-PARCEL-1774099",
+        "AU-VIC-PARCEL-1774104",
+        "AU-VIC-PARCEL-218895848",
+        "AU-VIC-PARCEL-1774096",
+        "AU-VIC-PARCEL-1774094",
+        "AU-VIC-PARCEL-1786083",
+        "AU-VIC-PARCEL-1774098",
+        "AU-VIC-PARCEL-1786079",
+        "AU-VIC-PARCEL-1786075",
+        "AU-VIC-PARCEL-1786077"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        144.701,
+        -37.876,
+        144.702,
+        -37.875
+      ],
+      "complete": true,
+      "featureCount": 20,
+      "ids": [
+        "AU-VIC-PARCEL-1794581",
+        "AU-VIC-PARCEL-1794575",
+        "AU-VIC-PARCEL-1786073",
+        "AU-VIC-PARCEL-210384538",
+        "AU-VIC-PARCEL-2063672",
+        "AU-VIC-PARCEL-1794579",
+        "AU-VIC-PARCEL-1774081",
+        "AU-VIC-PARCEL-1794583",
+        "AU-VIC-PARCEL-1774093",
+        "AU-VIC-PARCEL-2063670",
+        "AU-VIC-PARCEL-1794573",
+        "AU-VIC-PARCEL-2063669",
+        "AU-VIC-PARCEL-1774094",
+        "AU-VIC-PARCEL-1794571",
+        "AU-VIC-PARCEL-2063671",
+        "AU-VIC-PARCEL-210384522",
+        "AU-VIC-PARCEL-210384530",
+        "AU-VIC-PARCEL-1794577",
+        "AU-VIC-PARCEL-1774091",
+        "AU-VIC-PARCEL-1786075"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        144.699,
+        -37.875,
+        144.7,
+        -37.874
+      ],
+      "complete": true,
+      "featureCount": 26,
+      "ids": [
+        "AU-VIC-PARCEL-1805857",
+        "AU-VIC-PARCEL-48496",
+        "AU-VIC-PARCEL-1805868",
+        "AU-VIC-PARCEL-1805858",
+        "AU-VIC-PARCEL-1805861",
+        "AU-VIC-PARCEL-1805855",
+        "AU-VIC-PARCEL-1805865",
+        "AU-VIC-PARCEL-1774105",
+        "AU-VIC-PARCEL-1774103",
+        "AU-VIC-PARCEL-1785152",
+        "AU-VIC-PARCEL-1805860",
+        "AU-VIC-PARCEL-1805862",
+        "AU-VIC-PARCEL-1805856",
+        "AU-VIC-PARCEL-1785154",
+        "AU-VIC-PARCEL-221419815",
+        "AU-VIC-PARCEL-1773670",
+        "AU-VIC-PARCEL-1805859",
+        "AU-VIC-PARCEL-221419823",
+        "AU-VIC-PARCEL-1805864",
+        "AU-VIC-PARCEL-1773667",
+        "AU-VIC-PARCEL-221419807",
+        "AU-VIC-PARCEL-1773669",
+        "AU-VIC-PARCEL-1773665",
+        "AU-VIC-PARCEL-1805863",
+        "AU-VIC-PARCEL-1805866",
+        "AU-VIC-PARCEL-1773671"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        144.7,
+        -37.875,
+        144.701,
+        -37.874
+      ],
+      "complete": true,
+      "featureCount": 25,
+      "ids": [
+        "AU-VIC-PARCEL-150835348",
+        "AU-VIC-PARCEL-1773666",
+        "AU-VIC-PARCEL-1773662",
+        "AU-VIC-PARCEL-1773668",
+        "AU-VIC-PARCEL-1800896",
+        "AU-VIC-PARCEL-1800888",
+        "AU-VIC-PARCEL-1774095",
+        "AU-VIC-PARCEL-1773664",
+        "AU-VIC-PARCEL-218895864",
+        "AU-VIC-PARCEL-1773660",
+        "AU-VIC-PARCEL-1800892",
+        "AU-VIC-PARCEL-1800890",
+        "AU-VIC-PARCEL-1774103",
+        "AU-VIC-PARCEL-1800894",
+        "AU-VIC-PARCEL-1800886",
+        "AU-VIC-PARCEL-1774097",
+        "AU-VIC-PARCEL-1774099",
+        "AU-VIC-PARCEL-218895848",
+        "AU-VIC-PARCEL-1773670",
+        "AU-VIC-PARCEL-218895856",
+        "AU-VIC-PARCEL-1773667",
+        "AU-VIC-PARCEL-1773669",
+        "AU-VIC-PARCEL-1773665",
+        "AU-VIC-PARCEL-1805866",
+        "AU-VIC-PARCEL-1773671"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        144.701,
+        -37.875,
+        144.702,
+        -37.874
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "AU-VIC-PARCEL-1794581",
+        "AU-VIC-PARCEL-150835348",
+        "AU-VIC-PARCEL-1800895",
+        "AU-VIC-PARCEL-1800897",
+        "AU-VIC-PARCEL-1800891",
+        "AU-VIC-PARCEL-1794585",
+        "AU-VIC-PARCEL-1800888",
+        "AU-VIC-PARCEL-1800885",
+        "AU-VIC-PARCEL-1800893",
+        "AU-VIC-PARCEL-1800887",
+        "AU-VIC-PARCEL-1794593",
+        "AU-VIC-PARCEL-1794591",
+        "AU-VIC-PARCEL-1800892",
+        "AU-VIC-PARCEL-1800890",
+        "AU-VIC-PARCEL-1794587",
+        "AU-VIC-PARCEL-1800886",
+        "AU-VIC-PARCEL-1794583",
+        "AU-VIC-PARCEL-1800889",
+        "AU-VIC-PARCEL-1774093",
+        "AU-VIC-PARCEL-1794595",
+        "AU-VIC-PARCEL-1794589",
+        "AU-VIC-PARCEL-1774091"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        144.7,
+        -37.878,
+        144.701,
+        -37.877
+      ],
+      "complete": true,
+      "featureCount": 23,
+      "ids": [
+        "AU-VIC-PARCEL-422189511",
+        "AU-VIC-PARCEL-1805713",
+        "AU-VIC-PARCEL-1794071",
+        "AU-VIC-PARCEL-1805706",
+        "AU-VIC-PARCEL-1805708",
+        "AU-VIC-PARCEL-1805710",
+        "AU-VIC-PARCEL-1805702",
+        "AU-VIC-PARCEL-1805697",
+        "AU-VIC-PARCEL-1794065",
+        "AU-VIC-PARCEL-1805700",
+        "AU-VIC-PARCEL-422189512",
+        "AU-VIC-PARCEL-1805704",
+        "AU-VIC-PARCEL-1805707",
+        "AU-VIC-PARCEL-1805703",
+        "AU-VIC-PARCEL-1794558",
+        "AU-VIC-PARCEL-422189510",
+        "AU-VIC-PARCEL-1805711",
+        "AU-VIC-PARCEL-1805709",
+        "AU-VIC-PARCEL-1805701",
+        "AU-VIC-PARCEL-1794067",
+        "AU-VIC-PARCEL-1794559",
+        "AU-VIC-PARCEL-1805699",
+        "AU-VIC-PARCEL-1805705"
+      ]
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        144.7,
+        -37.874,
+        144.701,
+        -37.873
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "AU-VIC-PARCEL-150835348",
+        "AU-VIC-PARCEL-1773655",
+        "AU-VIC-PARCEL-1773662",
+        "AU-VIC-PARCEL-1773659",
+        "AU-VIC-PARCEL-1773658",
+        "AU-VIC-PARCEL-1800882",
+        "AU-VIC-PARCEL-1773650",
+        "AU-VIC-PARCEL-1800878",
+        "AU-VIC-PARCEL-1773651",
+        "AU-VIC-PARCEL-1800874",
+        "AU-VIC-PARCEL-1773653",
+        "AU-VIC-PARCEL-1773660",
+        "AU-VIC-PARCEL-1773652",
+        "AU-VIC-PARCEL-1800872",
+        "AU-VIC-PARCEL-1773656",
+        "AU-VIC-PARCEL-1773661",
+        "AU-VIC-PARCEL-1800880",
+        "AU-VIC-PARCEL-1773663",
+        "AU-VIC-PARCEL-1773665",
+        "AU-VIC-PARCEL-1773654",
+        "AU-VIC-PARCEL-1800876",
+        "AU-VIC-PARCEL-1773657"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        144.698,
+        -37.876,
+        144.699,
+        -37.875
+      ],
+      "complete": true,
+      "featureCount": 21,
+      "ids": [
+        "AU-VIC-PARCEL-213016173",
+        "AU-VIC-PARCEL-1772019",
+        "AU-VIC-PARCEL-1785157",
+        "AU-VIC-PARCEL-1772018",
+        "AU-VIC-PARCEL-1772021",
+        "AU-VIC-PARCEL-213016165",
+        "AU-VIC-PARCEL-1774119",
+        "AU-VIC-PARCEL-1785155",
+        "AU-VIC-PARCEL-1785158",
+        "AU-VIC-PARCEL-1774116",
+        "AU-VIC-PARCEL-1785156",
+        "AU-VIC-PARCEL-1785152",
+        "AU-VIC-PARCEL-1785154",
+        "AU-VIC-PARCEL-1774118",
+        "AU-VIC-PARCEL-1785153",
+        "AU-VIC-PARCEL-1774112",
+        "AU-VIC-PARCEL-1774115",
+        "AU-VIC-PARCEL-1774123",
+        "AU-VIC-PARCEL-1772020",
+        "AU-VIC-PARCEL-1774117",
+        "AU-VIC-PARCEL-1774121"
+      ]
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        144.702,
+        -37.876,
+        144.703,
+        -37.875
+      ],
+      "complete": true,
+      "featureCount": 17,
+      "ids": [
+        "AU-VIC-PARCEL-1782899",
+        "AU-VIC-PARCEL-2081723",
+        "AU-VIC-PARCEL-1782895",
+        "AU-VIC-PARCEL-2081724",
+        "AU-VIC-PARCEL-2081725",
+        "AU-VIC-PARCEL-2081731",
+        "AU-VIC-PARCEL-2095549",
+        "AU-VIC-PARCEL-2095550",
+        "AU-VIC-PARCEL-1794574",
+        "AU-VIC-PARCEL-1782898",
+        "AU-VIC-PARCEL-1794572",
+        "AU-VIC-PARCEL-2081730",
+        "AU-VIC-PARCEL-1782894",
+        "AU-VIC-PARCEL-1782896",
+        "AU-VIC-PARCEL-1782900",
+        "AU-VIC-PARCEL-1782897",
+        "AU-VIC-PARCEL-1782893"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        144.701,
+        -37.875,
+        144.702,
+        -37.874
+      ],
+      "complete": true,
+      "featureCount": 22,
+      "ids": [
+        "AU-VIC-PARCEL-150835348",
+        "AU-VIC-PARCEL-1774091",
+        "AU-VIC-PARCEL-1774093",
+        "AU-VIC-PARCEL-1794581",
+        "AU-VIC-PARCEL-1794583",
+        "AU-VIC-PARCEL-1794585",
+        "AU-VIC-PARCEL-1794587",
+        "AU-VIC-PARCEL-1794589",
+        "AU-VIC-PARCEL-1794591",
+        "AU-VIC-PARCEL-1794593",
+        "AU-VIC-PARCEL-1794595",
+        "AU-VIC-PARCEL-1800885",
+        "AU-VIC-PARCEL-1800886",
+        "AU-VIC-PARCEL-1800887",
+        "AU-VIC-PARCEL-1800888",
+        "AU-VIC-PARCEL-1800889",
+        "AU-VIC-PARCEL-1800890",
+        "AU-VIC-PARCEL-1800891",
+        "AU-VIC-PARCEL-1800892",
+        "AU-VIC-PARCEL-1800893",
+        "AU-VIC-PARCEL-1800895",
+        "AU-VIC-PARCEL-1800897"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 46,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:02.449Z",
+      "queryHash": "2257e212df3d262e4769e8bb2976a2319b2b6e9c64c0c20b471aeab78a5e7869",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1245
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:03.700Z",
+      "queryHash": "2257e212df3d262e4769e8bb2976a2319b2b6e9c64c0c20b471aeab78a5e7869",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 46
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:03.749Z",
+      "queryHash": "448573cf7c3adef20f579813bc23077a0bdc6400be800f8fd2993e532cf10bd3",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1157
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:04.908Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1005
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:05.915Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 923
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:06.840Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 354
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:07.196Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 363
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:07.561Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 450
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:08.013Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 528
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:08.543Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 360
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:08.905Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 351
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:09.258Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 349
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:09.609Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 348
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:09.959Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:10.307Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 358
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:10.667Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 354
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:11.022Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 349
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:11.373Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:11.722Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 349
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:12.072Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:12.420Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 344
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:12.765Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:13.113Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 347
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:13.462Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 345
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:13.808Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 446
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:14.256Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 351
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:14.609Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 359
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:14.969Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 344
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:15.315Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 346
+    },
+    {
+      "stage": "sample-centroid-cell-pass-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:15.665Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 348
+    },
+    {
+      "stage": "sample-centroid-cell-pass-two",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:16.015Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 352
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:16.373Z",
+      "queryHash": "212f3d3293ace0d17d9123c267988780ab572f97b517afa839034b361ce55dfd",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 358
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:16.732Z",
+      "queryHash": "f86338c44b5ff36505cd9b2bac155e37de2d464ee4cd4d2582e0adc43b7e4fa7",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 356
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:17.089Z",
+      "queryHash": "9c94b4002ebc95de3a9ea63fbf024c85ea912d740fe9cb1cc23a9bab262cd996",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 950
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:18.039Z",
+      "queryHash": "69ffde3b81e366b8a412b9fca3e5261b9553a608e97a67f574f3836915335aa9",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 358
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:18.398Z",
+      "queryHash": "6fd1159709a650e4ebed4899f13c8805d29c52b7bc7fdba7542f7ee84a5d6dc5",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1079
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:19.478Z",
+      "queryHash": "a2e95fe237ced8819fd2972eb54aaee0d99140263c1bc6335d9d57879773297e",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1083
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:20.562Z",
+      "queryHash": "09343607f8259cacefd97eb01b36e9c7744c72d0238317e2942a484c13823505",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 928
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:21.491Z",
+      "queryHash": "1a5ac34ff87651d99af910690492b442c7f60fc8dc9855eb0eb618e2049541c5",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 1089
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:22.581Z",
+      "queryHash": "c0990340801ccb32aaccbb52548191fb21c2fe5053bb561cf4c5feeefed65312",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1000
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:23.582Z",
+      "queryHash": "70ca98f3f147f523f11a15ce694a5fed41e1b2fc314fec66aba77284c4485c81",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 1,
+      "offsetParam": "resultOffset",
+      "offset": 1,
+      "httpStatus": 200,
+      "elapsedMs": 906
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:24.491Z",
+      "queryHash": "2257e212df3d262e4769e8bb2976a2319b2b6e9c64c0c20b471aeab78a5e7869",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 39
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:24.538Z",
+      "queryHash": "671d195a27191ca0da526c874618ae2ba08f12f13aff3b81dd1db3a1a4568120",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 911
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:25.496Z",
+      "queryHash": "deb370a0fcaf59b224dd80d0c407b991b97677f6bc9df7d917d6e4a857dd2bd5",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 384
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:25.886Z",
+      "queryHash": "fa851623a9d8bce0a10a4ea108610c9dbf7c0e7db34dd0b7c24d5c32fa704da6",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 955
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "services-ap1.arcgis.com",
+      "method": "GET",
+      "startedAt": "2026-10-11T11:12:26.845Z",
+      "queryHash": "1acf48430746571462b8bbe3ce27909472ad43f995a7035492a1bd28576e9019",
+      "safeParamNames": [
+        "resultOffset",
+        "resultRecordCount",
+        "where"
+      ],
+      "pageLimitParam": "resultRecordCount",
+      "pageLimit": 2000,
+      "offsetParam": "resultOffset",
+      "offset": 0,
+      "httpStatus": 200,
+      "elapsedMs": 1133
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

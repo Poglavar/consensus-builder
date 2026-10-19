@@ -1,0 +1,1227 @@
+{
+  "checkedAt": "2026-10-07T22:48:11.068778Z",
+  "sourceId": "zm-nsdi-cadaster-new",
+  "endpoint": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+  "method": "Unfiltered exact native-ID batches: qualified UPID IN expression; returnCountOnly and returnIdsOnly completeness checks; exact geometry fetched only by OID manifest.",
+  "nativeIdField": "SDE.Lots.UPID",
+  "transportObjectIdField": "SDE.Lots.OBJECTID",
+  "transportObjectIdsCanonical": false,
+  "outFields": "SDE.Lots.OBJECTID,SDE.Lots.UPID",
+  "inputSrid": "none (exact attribute-only lookup)",
+  "outputSrid": 4326,
+  "batchSize": 10,
+  "summary": {
+    "observedUniqueNativeIds": 86,
+    "requestedNativeIds": 86,
+    "completeBatches": 9,
+    "expectedBatches": 9,
+    "missingNativeIds": [],
+    "allObservedGeometriesMatched": true,
+    "nativeIdsWithMultipleExactRows": []
+  },
+  "batches": [
+    {
+      "batchIndex": 0,
+      "requestedNativeIds": [
+        "MAN/165",
+        "MAN/166",
+        "MAN/168",
+        "MAN/169",
+        "MAN/170",
+        "MAN/171",
+        "MAN/186",
+        "MAN/223",
+        "MAN/225",
+        "MAN/226"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/165",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "d2b4633a1b2fd4774ff40e07a194f947ffc9a0a67da87572a00bedcce87bfae7"
+          ],
+          "observedGeometrySha256": [
+            "d2b4633a1b2fd4774ff40e07a194f947ffc9a0a67da87572a00bedcce87bfae7"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/166",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "3850ddf9ed55bf7887864429b804e27138811de37de044b2573a2c78c101e735"
+          ],
+          "observedGeometrySha256": [
+            "3850ddf9ed55bf7887864429b804e27138811de37de044b2573a2c78c101e735"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/168",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "0a64e60a074c53bcf7488935231c542f5d995c34802bfce848906c4100c4ac69"
+          ],
+          "observedGeometrySha256": [
+            "0a64e60a074c53bcf7488935231c542f5d995c34802bfce848906c4100c4ac69"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/169",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "7173e1a9b7af51d763244f334bd18e1020cd83c5358a2da3e853997c8488fa56"
+          ],
+          "observedGeometrySha256": [
+            "7173e1a9b7af51d763244f334bd18e1020cd83c5358a2da3e853997c8488fa56"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/170",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "95ff0ea4e5306eafa31c3ec5eb05002b25c9abae91732e284c150036f4a602c2"
+          ],
+          "observedGeometrySha256": [
+            "95ff0ea4e5306eafa31c3ec5eb05002b25c9abae91732e284c150036f4a602c2"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/171",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "86f6da114ade3d0e694ca86676c3314929fb16ebe721f2b035d6cd0d51dd5458"
+          ],
+          "observedGeometrySha256": [
+            "86f6da114ade3d0e694ca86676c3314929fb16ebe721f2b035d6cd0d51dd5458"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/186",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "6f5a68d20c5937fbc52afa55598ddbdd643c3c7c804a0e49fb24b1f5d49f52c8"
+          ],
+          "observedGeometrySha256": [
+            "6f5a68d20c5937fbc52afa55598ddbdd643c3c7c804a0e49fb24b1f5d49f52c8"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/223",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "fd1daea4da44288b5766893981bf8efdd06bbfb4fddba0e9e80673b9455ae588"
+          ],
+          "observedGeometrySha256": [
+            "fd1daea4da44288b5766893981bf8efdd06bbfb4fddba0e9e80673b9455ae588"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/225",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "0eb72525d8130805f13c64a841a861b2fb58a7b6123025efea6f1e7d054ec159"
+          ],
+          "observedGeometrySha256": [
+            "0eb72525d8130805f13c64a841a861b2fb58a7b6123025efea6f1e7d054ec159"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/226",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "b59f37bdd4398c19b3e8f71c0ad88b767d59736e586cfd71925466e5c2929638"
+          ],
+          "observedGeometrySha256": [
+            "b59f37bdd4398c19b3e8f71c0ad88b767d59736e586cfd71925466e5c2929638"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        3.417,
+        2.511,
+        2.524
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/165','MAN/166','MAN/168','MAN/169','MAN/170','MAN/171','MAN/186','MAN/223','MAN/225','MAN/226')"
+    },
+    {
+      "batchIndex": 1,
+      "requestedNativeIds": [
+        "MAN/233",
+        "MAN/247",
+        "MAN/248",
+        "MAN/249",
+        "MAN/250",
+        "MAN/251",
+        "MAN/252",
+        "MAN/253",
+        "MAN/256",
+        "MAN/257"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/233",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "da9ba15b32a00334be9c1f862e02c679a4c9e18026b91fd9bfedb21fe40e090c"
+          ],
+          "observedGeometrySha256": [
+            "da9ba15b32a00334be9c1f862e02c679a4c9e18026b91fd9bfedb21fe40e090c"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/247",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "356b220e110c36558518f07836e2cd967110557170f6ecbebb49b3fecb35211e"
+          ],
+          "observedGeometrySha256": [
+            "356b220e110c36558518f07836e2cd967110557170f6ecbebb49b3fecb35211e"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/248",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "dd94a3c8c04e504dd0cf48f149e7aa288ad52ea237397c52cace24ab3ce5f3db"
+          ],
+          "observedGeometrySha256": [
+            "dd94a3c8c04e504dd0cf48f149e7aa288ad52ea237397c52cace24ab3ce5f3db"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/249",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "f61e3a9b0a59a192a6aaf3146072622fc7c68c082be766a57d17187696ad41fe"
+          ],
+          "observedGeometrySha256": [
+            "f61e3a9b0a59a192a6aaf3146072622fc7c68c082be766a57d17187696ad41fe"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/250",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "9390e82cfa2c0661ba841f80656ff757480a1a85f77ffd441fec53acb8ebd77e"
+          ],
+          "observedGeometrySha256": [
+            "9390e82cfa2c0661ba841f80656ff757480a1a85f77ffd441fec53acb8ebd77e"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/251",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "50d9bd1a14b844b536fbbc5f9bd99b524f94e4376758fbde3067913e58b33b69"
+          ],
+          "observedGeometrySha256": [
+            "50d9bd1a14b844b536fbbc5f9bd99b524f94e4376758fbde3067913e58b33b69"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/252",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "00914cc93f9c36e8e24979913a8ab97d69a1fb5909b93be3a1e33f6cce52fb8d"
+          ],
+          "observedGeometrySha256": [
+            "00914cc93f9c36e8e24979913a8ab97d69a1fb5909b93be3a1e33f6cce52fb8d"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/253",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "f1b98c1353a0dc8caeb0cb5e895958e29eed9b0bf6930dac27c21a4f204aa047"
+          ],
+          "observedGeometrySha256": [
+            "f1b98c1353a0dc8caeb0cb5e895958e29eed9b0bf6930dac27c21a4f204aa047"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/256",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "4692f401ae25b60fb946c67cab3e853830b9f0766413862da3d26b09c149c2ab"
+          ],
+          "observedGeometrySha256": [
+            "4692f401ae25b60fb946c67cab3e853830b9f0766413862da3d26b09c149c2ab"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/257",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "5a30a7e68abc795692df0afd41db4faf4acb8315d16d083d71525b14d9299eca"
+          ],
+          "observedGeometrySha256": [
+            "5a30a7e68abc795692df0afd41db4faf4acb8315d16d083d71525b14d9299eca"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        5.238,
+        4.566,
+        4.601
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/233','MAN/247','MAN/248','MAN/249','MAN/250','MAN/251','MAN/252','MAN/253','MAN/256','MAN/257')"
+    },
+    {
+      "batchIndex": 2,
+      "requestedNativeIds": [
+        "MAN/258",
+        "MAN/259",
+        "MAN/260",
+        "MAN/261",
+        "MAN/262",
+        "MAN/263",
+        "MAN/264",
+        "MAN/265",
+        "MAN/266",
+        "MAN/267"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/258",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "b080673f6e66ccebf28e9ad56bc1620512dcbb021593d3d55aa5fbe5ee3fe6dc"
+          ],
+          "observedGeometrySha256": [
+            "b080673f6e66ccebf28e9ad56bc1620512dcbb021593d3d55aa5fbe5ee3fe6dc"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/259",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "f2fe466b7cc75638855b3e1a6feafdd32c08a4d39387185b5ad248d179374af6"
+          ],
+          "observedGeometrySha256": [
+            "f2fe466b7cc75638855b3e1a6feafdd32c08a4d39387185b5ad248d179374af6"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/260",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "f9b7a4784dff909ddbc8fd576ebef320df17d0542b4843c54cc2ce92523b9062"
+          ],
+          "observedGeometrySha256": [
+            "f9b7a4784dff909ddbc8fd576ebef320df17d0542b4843c54cc2ce92523b9062"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/261",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "b3cabf9905ced8ef9ee136182999e811a40d7bcfb79e4fda0263e47d9cde0764"
+          ],
+          "observedGeometrySha256": [
+            "b3cabf9905ced8ef9ee136182999e811a40d7bcfb79e4fda0263e47d9cde0764"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/262",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "2e29a4c643b0f54b9656de1d1552b60bb67a6418121638582e1c6f157e13c384"
+          ],
+          "observedGeometrySha256": [
+            "2e29a4c643b0f54b9656de1d1552b60bb67a6418121638582e1c6f157e13c384"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/263",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "b5708c2e134ccbb03cafb1557fcb65b9a55de11e9d1f7437167e63db28e8295c"
+          ],
+          "observedGeometrySha256": [
+            "b5708c2e134ccbb03cafb1557fcb65b9a55de11e9d1f7437167e63db28e8295c"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/264",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "fec453f65ee6c0820ccc89fd4b639e175b22841aab7335b768ac2337a1a6a855"
+          ],
+          "observedGeometrySha256": [
+            "fec453f65ee6c0820ccc89fd4b639e175b22841aab7335b768ac2337a1a6a855"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/265",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "0d8ace56aeda71ba918330d68fe153b036a59b0bc6b216b0b342da865f6724e3"
+          ],
+          "observedGeometrySha256": [
+            "0d8ace56aeda71ba918330d68fe153b036a59b0bc6b216b0b342da865f6724e3"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/266",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "651c63404c2195f207970cf3cd10ca3ab9b2301cf3132bfd79cf4ad611db98be"
+          ],
+          "observedGeometrySha256": [
+            "651c63404c2195f207970cf3cd10ca3ab9b2301cf3132bfd79cf4ad611db98be"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/267",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "71f222db59700858a0c127ba511e99e889b6feec8c9bc43732aa7cfa402c9ef2"
+          ],
+          "observedGeometrySha256": [
+            "71f222db59700858a0c127ba511e99e889b6feec8c9bc43732aa7cfa402c9ef2"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        3.289,
+        2.191,
+        2.223
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/258','MAN/259','MAN/260','MAN/261','MAN/262','MAN/263','MAN/264','MAN/265','MAN/266','MAN/267')"
+    },
+    {
+      "batchIndex": 3,
+      "requestedNativeIds": [
+        "MAN/268",
+        "MAN/269",
+        "MAN/270",
+        "MAN/271",
+        "MAN/272",
+        "MAN/273",
+        "MAN/274",
+        "MAN/294",
+        "MAN/296",
+        "MAN/297"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/268",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "1f80d7a2e597b90a2260379a42a6e68620621a1ff79756a9d319bc86467bba7e"
+          ],
+          "observedGeometrySha256": [
+            "1f80d7a2e597b90a2260379a42a6e68620621a1ff79756a9d319bc86467bba7e"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/269",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "69c3409b9673dad19641965514339817947650a7cb5916d92a692deafc16db75"
+          ],
+          "observedGeometrySha256": [
+            "69c3409b9673dad19641965514339817947650a7cb5916d92a692deafc16db75"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/270",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "1dd074c8c171b1abae5d514d13b924abda1552a367394578b4093c540bca907a"
+          ],
+          "observedGeometrySha256": [
+            "1dd074c8c171b1abae5d514d13b924abda1552a367394578b4093c540bca907a"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/271",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "d9328cb4e069c969eeb9192c0f24748aa72fd283e60a288ab283f25970b6ca93"
+          ],
+          "observedGeometrySha256": [
+            "d9328cb4e069c969eeb9192c0f24748aa72fd283e60a288ab283f25970b6ca93"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/272",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "90f1710512386c15a4e763f0be71f6cdbf3c3ecaea65d477a01561d3a992c80e"
+          ],
+          "observedGeometrySha256": [
+            "90f1710512386c15a4e763f0be71f6cdbf3c3ecaea65d477a01561d3a992c80e"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/273",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "bf8ee708ebcd9929a4bf7727a5f3be6920653dbd8c3e85bcf306b336fe85be69"
+          ],
+          "observedGeometrySha256": [
+            "bf8ee708ebcd9929a4bf7727a5f3be6920653dbd8c3e85bcf306b336fe85be69"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/274",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "7b25062ad750da2a0f1a4f0a2074813d90be8b24a88fc52681e7a97e2a913d84"
+          ],
+          "observedGeometrySha256": [
+            "7b25062ad750da2a0f1a4f0a2074813d90be8b24a88fc52681e7a97e2a913d84"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/294",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "ae450f832654ac65448cc610da24cea63aadbfea002bbdce02412add30de96a1"
+          ],
+          "observedGeometrySha256": [
+            "ae450f832654ac65448cc610da24cea63aadbfea002bbdce02412add30de96a1"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/296",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "d8ca5892631a51d2160a920ff00f71c019db25f8e7a9b62d7f83e84205a4b458"
+          ],
+          "observedGeometrySha256": [
+            "d8ca5892631a51d2160a920ff00f71c019db25f8e7a9b62d7f83e84205a4b458"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/297",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "4ba4942c98aba8fdb088d0842761a733da0b5806dc200bfe5735ca81b9722ec9"
+          ],
+          "observedGeometrySha256": [
+            "4ba4942c98aba8fdb088d0842761a733da0b5806dc200bfe5735ca81b9722ec9"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        4.901,
+        4.516,
+        4.76
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/268','MAN/269','MAN/270','MAN/271','MAN/272','MAN/273','MAN/274','MAN/294','MAN/296','MAN/297')"
+    },
+    {
+      "batchIndex": 4,
+      "requestedNativeIds": [
+        "MAN/298",
+        "MAN/299",
+        "MAN/300",
+        "MAN/301",
+        "MAN/302",
+        "MAN/303",
+        "MAN/309",
+        "MAN/407",
+        "MAN/411",
+        "MAN/412"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/298",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "0e2a21b73e7356a018036a2bd419f4c6b60eac98d0f2b748880c766eb6fca32c"
+          ],
+          "observedGeometrySha256": [
+            "0e2a21b73e7356a018036a2bd419f4c6b60eac98d0f2b748880c766eb6fca32c"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/299",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "81e1ae2173ab33715cc3ae5063b9391a8648452ab48dd450e8a1427880f26af3"
+          ],
+          "observedGeometrySha256": [
+            "81e1ae2173ab33715cc3ae5063b9391a8648452ab48dd450e8a1427880f26af3"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/300",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "72f0267c053326a75652492b4340fd878682a46bb69902f9499484396f0fc33c"
+          ],
+          "observedGeometrySha256": [
+            "72f0267c053326a75652492b4340fd878682a46bb69902f9499484396f0fc33c"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/301",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "5d6e7818b6b569a693a920b7b85977de51ae37e0813cbd9efe13dafa552af0bc"
+          ],
+          "observedGeometrySha256": [
+            "5d6e7818b6b569a693a920b7b85977de51ae37e0813cbd9efe13dafa552af0bc"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/302",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "719d9e52f722d5432ec2e174ad30031ade697b25cf59821619956a75e2848c24"
+          ],
+          "observedGeometrySha256": [
+            "719d9e52f722d5432ec2e174ad30031ade697b25cf59821619956a75e2848c24"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/303",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "d7916905bd1e22f1f9eae04cb9fac794269c48d8c2dc4286a8b81e2638c2a84a"
+          ],
+          "observedGeometrySha256": [
+            "d7916905bd1e22f1f9eae04cb9fac794269c48d8c2dc4286a8b81e2638c2a84a"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/309",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "70a8601eb7dd31365e403306b8589ccd2e1fec512ab62d72d8bb5cf3e6c38384"
+          ],
+          "observedGeometrySha256": [
+            "70a8601eb7dd31365e403306b8589ccd2e1fec512ab62d72d8bb5cf3e6c38384"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/407",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "eb5cf1a4c379903d9f121e1a20000350f4eb59b5b478d83355283399e59683b1"
+          ],
+          "observedGeometrySha256": [
+            "eb5cf1a4c379903d9f121e1a20000350f4eb59b5b478d83355283399e59683b1"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/411",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "8c5c14ccae184926c89c24589caa6082afb3ab3978166c2f469f4b77ab578f85"
+          ],
+          "observedGeometrySha256": [
+            "8c5c14ccae184926c89c24589caa6082afb3ab3978166c2f469f4b77ab578f85"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/412",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "1ed89818ae96cb1383b1fcd12fcb30139ec3bfbd276a0d1ce3cdc694871f4e23"
+          ],
+          "observedGeometrySha256": [
+            "1ed89818ae96cb1383b1fcd12fcb30139ec3bfbd276a0d1ce3cdc694871f4e23"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        3.362,
+        2.555,
+        2.55
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/298','MAN/299','MAN/300','MAN/301','MAN/302','MAN/303','MAN/309','MAN/407','MAN/411','MAN/412')"
+    },
+    {
+      "batchIndex": 5,
+      "requestedNativeIds": [
+        "MAN/413",
+        "MAN/414",
+        "MAN/415",
+        "MAN/416",
+        "MAN/417",
+        "MAN/418",
+        "MAN/419",
+        "MAN/420",
+        "MAN/421",
+        "MAN/422"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/413",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "e1779467aa2ae84062be979afc0beeb3b71b24421f05b9509a203c53dffce899"
+          ],
+          "observedGeometrySha256": [
+            "e1779467aa2ae84062be979afc0beeb3b71b24421f05b9509a203c53dffce899"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/414",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "d1521b89ba92d77b9dbbd061090215e57e5a96245238ab74e98b804df6d95a9a"
+          ],
+          "observedGeometrySha256": [
+            "d1521b89ba92d77b9dbbd061090215e57e5a96245238ab74e98b804df6d95a9a"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/415",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "e2485d637001fc8e1c6657d48ead0537fb1355800d67cff49dbc36f9165c371c"
+          ],
+          "observedGeometrySha256": [
+            "e2485d637001fc8e1c6657d48ead0537fb1355800d67cff49dbc36f9165c371c"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/416",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "57893403b0819676732e0c807b53c548cd90b6b42e3646d734fdfb0c26d8f1a4"
+          ],
+          "observedGeometrySha256": [
+            "57893403b0819676732e0c807b53c548cd90b6b42e3646d734fdfb0c26d8f1a4"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/417",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "6d4ee571b4b6fe1c609ec12b2c5bd44e962cc967844d2124fc58a6427c303dd8"
+          ],
+          "observedGeometrySha256": [
+            "6d4ee571b4b6fe1c609ec12b2c5bd44e962cc967844d2124fc58a6427c303dd8"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/418",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "c8d036c00e6df3639ef62603fee3383ea0cdcfa3deed59eb2e831d76b9a60b40"
+          ],
+          "observedGeometrySha256": [
+            "c8d036c00e6df3639ef62603fee3383ea0cdcfa3deed59eb2e831d76b9a60b40"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/419",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "588c230dd06f002f3c99c1912968c11edf804e67ce0d5dcf06e01da949f94cbb"
+          ],
+          "observedGeometrySha256": [
+            "588c230dd06f002f3c99c1912968c11edf804e67ce0d5dcf06e01da949f94cbb"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/420",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "32ff80bc76ca41fd7be86fce42bba820ad347054a4ea494a1e5e3230c1fd0a9e"
+          ],
+          "observedGeometrySha256": [
+            "32ff80bc76ca41fd7be86fce42bba820ad347054a4ea494a1e5e3230c1fd0a9e"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/421",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "68dd3f3630faa029f387ed3588dbea21b53d4de40f864b021c4935d315297bf1"
+          ],
+          "observedGeometrySha256": [
+            "68dd3f3630faa029f387ed3588dbea21b53d4de40f864b021c4935d315297bf1"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/422",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "e797292311cfeca693adafb8c10c5ce60acf37559020f20e6e09255ee7953823"
+          ],
+          "observedGeometrySha256": [
+            "e797292311cfeca693adafb8c10c5ce60acf37559020f20e6e09255ee7953823"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        3.386,
+        2.432,
+        2.507
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/413','MAN/414','MAN/415','MAN/416','MAN/417','MAN/418','MAN/419','MAN/420','MAN/421','MAN/422')"
+    },
+    {
+      "batchIndex": 6,
+      "requestedNativeIds": [
+        "MAN/423",
+        "MAN/424",
+        "MAN/425",
+        "MAN/426",
+        "MAN/427",
+        "MAN/428",
+        "MAN/429",
+        "MAN/430",
+        "MAN/431",
+        "MAN/432"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/423",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "00dab706b399696ccfeb87e93f99cacd5b4d794f9ce37a3b2ce862000fbeb948"
+          ],
+          "observedGeometrySha256": [
+            "00dab706b399696ccfeb87e93f99cacd5b4d794f9ce37a3b2ce862000fbeb948"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/424",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "55409e1790b6ab91a987be6593c0258033fe3397a292ceef6ffba59b63a433fe"
+          ],
+          "observedGeometrySha256": [
+            "55409e1790b6ab91a987be6593c0258033fe3397a292ceef6ffba59b63a433fe"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/425",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "fdb0dca810f19753998bef09dace891faf5781378911d01fd35964bd3de02cdc"
+          ],
+          "observedGeometrySha256": [
+            "fdb0dca810f19753998bef09dace891faf5781378911d01fd35964bd3de02cdc"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/426",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "714b8af9268373cbd3748ffff8ba6ce275450e4c43a3f881cf00a3251db174bf"
+          ],
+          "observedGeometrySha256": [
+            "714b8af9268373cbd3748ffff8ba6ce275450e4c43a3f881cf00a3251db174bf"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/427",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "412a4f4b8c7e124e519770735fc1f00c582928113816e1a62e412864fdcac1d6"
+          ],
+          "observedGeometrySha256": [
+            "412a4f4b8c7e124e519770735fc1f00c582928113816e1a62e412864fdcac1d6"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/428",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "225fb20c38204c38c1049f3b9a3fb2ab2f03b33664833ec28e90674b4ed01f98"
+          ],
+          "observedGeometrySha256": [
+            "225fb20c38204c38c1049f3b9a3fb2ab2f03b33664833ec28e90674b4ed01f98"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/429",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "79073806860eb8dda384d5cb2ddc67722bbd90655b3bd9b03518c43b0684aedb"
+          ],
+          "observedGeometrySha256": [
+            "79073806860eb8dda384d5cb2ddc67722bbd90655b3bd9b03518c43b0684aedb"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/430",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "5b49393b5b087ea24fa1703c28bc62bab291b501f744a52a1d0636a7b6e87542"
+          ],
+          "observedGeometrySha256": [
+            "5b49393b5b087ea24fa1703c28bc62bab291b501f744a52a1d0636a7b6e87542"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/431",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "7f6bbc5d4b6ca569501ef6f835d699a424f2ad3778e365fafb8cd50418f04090"
+          ],
+          "observedGeometrySha256": [
+            "7f6bbc5d4b6ca569501ef6f835d699a424f2ad3778e365fafb8cd50418f04090"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/432",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "c233094155f49ad8b888e6a3da573131e777f67e9b7dc353f228dedb8d0cc80a"
+          ],
+          "observedGeometrySha256": [
+            "c233094155f49ad8b888e6a3da573131e777f67e9b7dc353f228dedb8d0cc80a"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        5.209,
+        4.01,
+        4.634
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/423','MAN/424','MAN/425','MAN/426','MAN/427','MAN/428','MAN/429','MAN/430','MAN/431','MAN/432')"
+    },
+    {
+      "batchIndex": 7,
+      "requestedNativeIds": [
+        "MAN/433",
+        "MAN/434",
+        "MAN/446",
+        "MAN/468",
+        "MAN/471",
+        "MAN/506",
+        "MANS/170",
+        "MANS/2/A/1",
+        "MANS/2422",
+        "MANS/2423"
+      ],
+      "exactCount": 10,
+      "oidManifestCount": 10,
+      "geometryRows": 10,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MAN/433",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "7da04e41843505c0cf36a870880f60f555aaa418f78a422bf2f25dd2ff4eb631"
+          ],
+          "observedGeometrySha256": [
+            "7da04e41843505c0cf36a870880f60f555aaa418f78a422bf2f25dd2ff4eb631"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/434",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "1b263a2677d7de7d5f00a3a4d151bb0c3a67f2757c66ceeae7bea6f39fc5d970"
+          ],
+          "observedGeometrySha256": [
+            "1b263a2677d7de7d5f00a3a4d151bb0c3a67f2757c66ceeae7bea6f39fc5d970"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/446",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "345ca33525e3ffd64d82dc81728aa3bc3e1ae2dd96d592481683cba0e47c4213"
+          ],
+          "observedGeometrySha256": [
+            "345ca33525e3ffd64d82dc81728aa3bc3e1ae2dd96d592481683cba0e47c4213"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/468",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "148fa0486cda0cb671cda2a5f893be23923525bd9ea86fed9547121e3717e734"
+          ],
+          "observedGeometrySha256": [
+            "148fa0486cda0cb671cda2a5f893be23923525bd9ea86fed9547121e3717e734"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/471",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "376c06b5b1ae72a1c887dc300810e576ac9bfb426d3e9fc61da64bb897b7c960"
+          ],
+          "observedGeometrySha256": [
+            "376c06b5b1ae72a1c887dc300810e576ac9bfb426d3e9fc61da64bb897b7c960"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MAN/506",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "8cecad87bd6088060a6648ad96271c6b2b6c011e7c0834dbff52c5c155d4d094"
+          ],
+          "observedGeometrySha256": [
+            "8cecad87bd6088060a6648ad96271c6b2b6c011e7c0834dbff52c5c155d4d094"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/170",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "420c88baa99f93cae56c16fcd69e56f68ae67d9e47d481a98261877defa5280e"
+          ],
+          "observedGeometrySha256": [
+            "420c88baa99f93cae56c16fcd69e56f68ae67d9e47d481a98261877defa5280e"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/2/A/1",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "2ac93920df76dd3dfe03874215095514e56e05291259bfb728bcb8b25ad9cfc0"
+          ],
+          "observedGeometrySha256": [
+            "2ac93920df76dd3dfe03874215095514e56e05291259bfb728bcb8b25ad9cfc0"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/2422",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "b0f77f332308fbec3e7bbe2415f5452171e88e926bc823e0eea0727714e8676a"
+          ],
+          "observedGeometrySha256": [
+            "b0f77f332308fbec3e7bbe2415f5452171e88e926bc823e0eea0727714e8676a"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/2423",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "b7c40ee74ffd1e45ab5155c71319161113f344ea4d7c0b76aee45c861d940c69"
+          ],
+          "observedGeometrySha256": [
+            "b7c40ee74ffd1e45ab5155c71319161113f344ea4d7c0b76aee45c861d940c69"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        3.293,
+        2.516,
+        2.335
+      ],
+      "where": "SDE.Lots.UPID IN ('MAN/433','MAN/434','MAN/446','MAN/468','MAN/471','MAN/506','MANS/170','MANS/2/A/1','MANS/2422','MANS/2423')"
+    },
+    {
+      "batchIndex": 8,
+      "requestedNativeIds": [
+        "MANS/2424",
+        "MANS/308",
+        "MANS/323",
+        "MANS/324",
+        "MANS/603",
+        "MANS/762"
+      ],
+      "exactCount": 6,
+      "oidManifestCount": 6,
+      "geometryRows": 6,
+      "complete": true,
+      "missingNativeIds": [],
+      "unexpectedNativeIds": [],
+      "nativeResults": [
+        {
+          "nativeId": "MANS/2424",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "3705fa65b56e6bec3a461cb932ed6512bd593141a015167c5482287a6e14bc3b"
+          ],
+          "observedGeometrySha256": [
+            "3705fa65b56e6bec3a461cb932ed6512bd593141a015167c5482287a6e14bc3b"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/308",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "2401cf8d02538cc3963aabb4234176439e71040d4aa16a6ac5b00bb766618cf0"
+          ],
+          "observedGeometrySha256": [
+            "2401cf8d02538cc3963aabb4234176439e71040d4aa16a6ac5b00bb766618cf0"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/323",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "6c4aca03df7d135e3e4a8ef5109dfcead6fbde5c4e55a93dedeb11e652a3f30d"
+          ],
+          "observedGeometrySha256": [
+            "6c4aca03df7d135e3e4a8ef5109dfcead6fbde5c4e55a93dedeb11e652a3f30d"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/324",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "b247509f8e746f68c635d44e05ee0398feaa37023a5ddbfc55d6cd7ea7da5a39"
+          ],
+          "observedGeometrySha256": [
+            "b247509f8e746f68c635d44e05ee0398feaa37023a5ddbfc55d6cd7ea7da5a39"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/603",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "176e7dd6c7e7d2fef9793ca92c7d2d00bf3696a901da26cd7caeecefabe01b25"
+          ],
+          "observedGeometrySha256": [
+            "176e7dd6c7e7d2fef9793ca92c7d2d00bf3696a901da26cd7caeecefabe01b25"
+          ],
+          "allObservedGeometryMatched": true
+        },
+        {
+          "nativeId": "MANS/762",
+          "exactRecordCount": 1,
+          "exactGeometrySha256": [
+            "aae1de4fbabda71ca3654cbce942a9f506058606fa6fe660773d6a4967d4589c"
+          ],
+          "observedGeometrySha256": [
+            "aae1de4fbabda71ca3654cbce942a9f506058606fa6fe660773d6a4967d4589c"
+          ],
+          "allObservedGeometryMatched": true
+        }
+      ],
+      "requestTimingsSeconds": [
+        3.549,
+        3.891,
+        4.174
+      ],
+      "where": "SDE.Lots.UPID IN ('MANS/2424','MANS/308','MANS/323','MANS/324','MANS/603','MANS/762')"
+    }
+  ]
+}

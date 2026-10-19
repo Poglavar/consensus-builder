@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Kamina",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "rank": 741,
+  "point": [
+    -8.73822004991765,
+    24.9960689567053
+  ],
+  "population2025": 724982,
+  "population2025k": 724.982,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "wupCityCode": 5627,
+  "cityId": "wup2025:5627",
+  "queueRank": 741,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Ministry of Land Affairs locator lists Kamina among the local Haut-Lomami land/cadastre districts. The national public-service catalog describes consultation of land and cadastral register books through a formal paid request to the local registry/cadastre office, which can return owner information. No such lookup was submitted and no anonymous geometry service was found.",
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://servicepublic.gouv.cd/service/4642"
+  ],
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "adapterReady": false,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Kamina cadastre parcelle immeuble République démocratique Congo Haut-Lomami",
+        "scope": "Verify the local Kamina cadastral/registry office and identify any safe public geometry route.",
+        "result": "Les sources officielles identifient une circonscription foncière et cadastrale de Kamina; la consultation des registres est décrite comme une demande formelle payante pouvant révéler le nom du propriétaire. Aucun formulaire ni registre nominatif n’a été consulté; aucun service géométrique anonyme ni schéma sûr de données n’a été trouvé.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://servicepublic.gouv.cd/service/4642"
+        ],
+        "executionMethod": "Separate English and French discovery; reviewed official local office locator and service catalog. No formal request or register/owner lookup."
+      },
+      {
+        "language": "English",
+        "query": "Kamina DRC official cadastre land registry parcel map Haut-Lomami",
+        "scope": "Verify the local Kamina cadastral/registry office and identify any safe public geometry route.",
+        "result": "Official Ministry and public-service sources establish a local Kamina land/cadastre office and formal registry consultation. No anonymous polygon endpoint or safe feature schema was identified.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://servicepublic.gouv.cd/service/4642"
+        ],
+        "executionMethod": "Separate English and French discovery; reviewed official local office locator and service catalog. No formal request or register/owner lookup."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The WUP point identifies the ranked Kamina entry. Local registry/cadastral administration is documented, but no parcel geometry was verified at the point.",
+    "verifiedOpenScope": "No safe anonymous full polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "cd-kamina-land-cadastre-circonscription",
+    "name": "Kamina land/cadastre district and formal registry services",
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "operator": "Ministry of Land Affairs, DRC; Haut-Lomami local land/cadastre office",
+    "serviceType": "Local land/cadastral administration and formal register consultation by request; no anonymous vector endpoint/schema identified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The available registry consultation is a formal request that can return owner information; no anonymous geometry endpoint or safe feature schema was found.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/kamina-service-review.json"
+  },
+  "technicalBlocker": "The available registry consultation is a formal request that can return owner information; no anonymous geometry endpoint or safe feature schema was found.",
+  "remainingUncertainty": "Whether a public map has a documented anonymous vector service, safe non-sensitive field allowlist, and coverage at the exact WUP point remains unverified.",
+  "scopeLimits": "No full parcel polygons, owner names, addresses, applicant, taxpayer, title, assessment, or sale data were requested or retained. No citywide completeness claim.",
+  "rootPrimaryReadback": {
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Circonscriptions foncières et cadastrales en RDC - Ministère des Affaires Foncières"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "centerLatLon": [
+    -8.73822004991765,
+    24.9960689567053
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

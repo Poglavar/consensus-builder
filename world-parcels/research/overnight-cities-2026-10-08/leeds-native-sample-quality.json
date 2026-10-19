@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:27700",
+  "featureCount": 3,
+  "validNonemptyCount": 3,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "109262",
+        "109271"
+      ],
+      "overlapM2": 185.57892499988384,
+      "fractionOfSmaller": 0.9999999999999999
+    }
+  ],
+  "sumPairwiseOverlapM2": 185.57892499988384,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 185.57892499988387,
+    "median": 13015.174049999172,
+    "max": 21168.77399999957
+  },
+  "features": [
+    {
+      "id": "109269",
+      "areaM2": 21168.77399999957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "109262",
+      "areaM2": 13015.174049999172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "109271",
+      "areaM2": 185.57892499988387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

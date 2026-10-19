@@ -1,0 +1,1645 @@
+{
+  "type": "FeatureCollection",
+  "name": "Podbrežje – jedanaest stambenih blokova UPU-a",
+  "bbox": [
+    15.965800551,
+    45.763810349,
+    15.976689456,
+    45.767242121
+  ],
+  "reconstruction": {
+    "schema": "consensus-builder.reconstruction.v1",
+    "proposal": {
+      "proposalId": "reconstruction-podbrezje-buildings",
+      "city": "zagreb",
+      "name": "Podbrežje – jedanaest stambenih blokova UPU-a",
+      "title": "Podbrežje – jedanaest stambenih blokova UPU-a",
+      "description": "Četiri izvedena bloka imaju aktualne DGU tlocrte i podudarne GDI visine. Preostalih sedam prikazano je kao plan-derived envelope: položaj i os slijede jedanaest službenih polja M1 te pobjednički urbanistički koncept, a širina i završni odmaci kalibrirani su na četiri izvedena bloka. To nisu tlocrti iz budućih građevinskih dozvola niti sigurna veza s oznakama A1–A11.",
+      "author": "zagreb.lol – lokalna analiza",
+      "type": "building",
+      "goal": "single",
+      "primaryType": "Urban Rule",
+      "typologyType": "single",
+      "lifecycleStatus": "Active",
+      "createdAt": "2026-08-14T00:02:00.000Z",
+      "updatedAt": "2026-08-14T00:02:00.000Z",
+      "tags": [
+        "buildings",
+        "research",
+        "reconstruction",
+        "neighbourhood-plan",
+        "mixed-design-state"
+      ],
+      "parentParcelIds": [
+        "HR-335495-1556/18",
+        "HR-335495-1557/19",
+        "HR-335495-1556/16",
+        "HR-335495-1557/10",
+        "HR-335495-1557/8",
+        "HR-335495-1556/12",
+        "HR-335495-1556/5",
+        "HR-335495-1557/6",
+        "HR-335495-1557/9",
+        "HR-335495-2458",
+        "HR-335495-1552/2",
+        "HR-335495-1556/9",
+        "HR-335495-2456",
+        "HR-335495-1549/1",
+        "HR-335495-1550/7",
+        "HR-335495-2466",
+        "HR-335495-1557/23",
+        "HR-335495-1555/1",
+        "HR-335495-1558/11",
+        "HR-335495-1554/2",
+        "HR-335495-2479",
+        "HR-335495-2483",
+        "HR-335495-1553/6",
+        "HR-335495-2485",
+        "HR-335495-2460",
+        "HR-335495-2471",
+        "HR-335495-2459",
+        "HR-335495-2475",
+        "HR-335495-1556/15",
+        "HR-335495-1554/1",
+        "HR-335495-1553/7"
+      ],
+      "cadastreParcelIds": [
+        "HR-335495-1556/18",
+        "HR-335495-1557/19",
+        "HR-335495-1556/16",
+        "HR-335495-1557/10",
+        "HR-335495-1557/8",
+        "HR-335495-1556/12",
+        "HR-335495-1556/5",
+        "HR-335495-1557/6",
+        "HR-335495-1557/9",
+        "HR-335495-2458",
+        "HR-335495-1552/2",
+        "HR-335495-1556/9",
+        "HR-335495-2456",
+        "HR-335495-1549/1",
+        "HR-335495-1550/7",
+        "HR-335495-2466",
+        "HR-335495-1557/23",
+        "HR-335495-1555/1",
+        "HR-335495-1558/11",
+        "HR-335495-1554/2",
+        "HR-335495-2479",
+        "HR-335495-2483",
+        "HR-335495-1553/6",
+        "HR-335495-2485",
+        "HR-335495-2460",
+        "HR-335495-2471",
+        "HR-335495-2459",
+        "HR-335495-2475",
+        "HR-335495-1556/15",
+        "HR-335495-1554/1",
+        "HR-335495-1553/7"
+      ],
+      "parcelIds": [
+        "HR-335495-1556/18",
+        "HR-335495-1557/19",
+        "HR-335495-1556/16",
+        "HR-335495-1557/10",
+        "HR-335495-1557/8",
+        "HR-335495-1556/12",
+        "HR-335495-1556/5",
+        "HR-335495-1557/6",
+        "HR-335495-1557/9",
+        "HR-335495-2458",
+        "HR-335495-1552/2",
+        "HR-335495-1556/9",
+        "HR-335495-2456",
+        "HR-335495-1549/1",
+        "HR-335495-1550/7",
+        "HR-335495-2466",
+        "HR-335495-1557/23",
+        "HR-335495-1555/1",
+        "HR-335495-1558/11",
+        "HR-335495-1554/2",
+        "HR-335495-2479",
+        "HR-335495-2483",
+        "HR-335495-1553/6",
+        "HR-335495-2485",
+        "HR-335495-2460",
+        "HR-335495-2471",
+        "HR-335495-2459",
+        "HR-335495-2475",
+        "HR-335495-1556/15",
+        "HR-335495-1554/1",
+        "HR-335495-1553/7"
+      ],
+      "acceptedParcelIds": [],
+      "bounds": [
+        15.965800551,
+        45.763810349,
+        15.976689456,
+        45.767242121
+      ],
+      "source": {
+        "planName": "UPU Podbrežje",
+        "planYears": "UPU 2007.; izmjene 2011.",
+        "implementationStatus": "četiri stambena bloka izvedena; A11 u gradnji; ostatak plana fazno neizveden",
+        "sources": [
+          "https://zagreb.hr/izmjene-i-dopune-urbanistickog-plana-ure%C4%91enja-podb/89126",
+          "https://www.log-urbis.hr/development-podbrezje",
+          "https://www.zgh.hr/podbrezje/najcesca-pitanja-faq/4506",
+          "https://zagreb.hr/gradonacelnik-tomasevic-obisao-radove-na-zgradi-za/217781",
+          "https://data.zagreb.hr/dataset/geoportal-urbanisticki-planovi-uredenja"
+        ],
+        "coordinateSystem": "lokalni izvori u HTRS96/TM (EPSG:3765), izvoz za aplikaciju u WGS84",
+        "footprintBasis": "četiri aktualna DGU tlocrta + sedam izričito označenih indikativnih omotnica unutar M1 polja",
+        "heightBasis": "GDI za izvedene blokove; P+8 za indikativne neizvedene blokove",
+        "sourceStatistics": {
+          "parcelAreaM2": 194277.14717369305,
+          "footprintAreaM2": 22587.187786034694,
+          "siteCoveragePercent": 11.626271084699772,
+          "heightEquivalentAboveGroundGbpM2": 209915.75688444191,
+          "heightEquivalentKin": 1.0804963936224943,
+          "buildingCount": 11,
+          "observedBuildingCount": 4,
+          "planDerivedBuildingCount": 7,
+          "method": "zbroj površine tlocrta × procijenjeni broj etaža; dijagnostička vrijednost, nije službeni GBP"
+        }
+      }
+    },
+    "buildingProposal": {
+      "parentParcelIds": [
+        "HR-335495-1556/18",
+        "HR-335495-1557/19",
+        "HR-335495-1556/16",
+        "HR-335495-1557/10",
+        "HR-335495-1557/8",
+        "HR-335495-1556/12",
+        "HR-335495-1556/5",
+        "HR-335495-1557/6",
+        "HR-335495-1557/9",
+        "HR-335495-2458",
+        "HR-335495-1552/2",
+        "HR-335495-1556/9",
+        "HR-335495-2456",
+        "HR-335495-1549/1",
+        "HR-335495-1550/7",
+        "HR-335495-2466",
+        "HR-335495-1557/23",
+        "HR-335495-1555/1",
+        "HR-335495-1558/11",
+        "HR-335495-1554/2",
+        "HR-335495-2479",
+        "HR-335495-2483",
+        "HR-335495-1553/6",
+        "HR-335495-2485",
+        "HR-335495-2460",
+        "HR-335495-2471",
+        "HR-335495-2459",
+        "HR-335495-2475",
+        "HR-335495-1556/15",
+        "HR-335495-1554/1",
+        "HR-335495-1553/7"
+      ],
+      "parentParcelNumbers": [
+        {
+          "id": "HR-335495-1556/18",
+          "number": "HR-335495-1556/18"
+        },
+        {
+          "id": "HR-335495-1557/19",
+          "number": "HR-335495-1557/19"
+        },
+        {
+          "id": "HR-335495-1556/16",
+          "number": "HR-335495-1556/16"
+        },
+        {
+          "id": "HR-335495-1557/10",
+          "number": "HR-335495-1557/10"
+        },
+        {
+          "id": "HR-335495-1557/8",
+          "number": "HR-335495-1557/8"
+        },
+        {
+          "id": "HR-335495-1556/12",
+          "number": "HR-335495-1556/12"
+        },
+        {
+          "id": "HR-335495-1556/5",
+          "number": "HR-335495-1556/5"
+        },
+        {
+          "id": "HR-335495-1557/6",
+          "number": "HR-335495-1557/6"
+        },
+        {
+          "id": "HR-335495-1557/9",
+          "number": "HR-335495-1557/9"
+        },
+        {
+          "id": "HR-335495-2458",
+          "number": "HR-335495-2458"
+        },
+        {
+          "id": "HR-335495-1552/2",
+          "number": "HR-335495-1552/2"
+        },
+        {
+          "id": "HR-335495-1556/9",
+          "number": "HR-335495-1556/9"
+        },
+        {
+          "id": "HR-335495-2456",
+          "number": "HR-335495-2456"
+        },
+        {
+          "id": "HR-335495-1549/1",
+          "number": "HR-335495-1549/1"
+        },
+        {
+          "id": "HR-335495-1550/7",
+          "number": "HR-335495-1550/7"
+        },
+        {
+          "id": "HR-335495-2466",
+          "number": "HR-335495-2466"
+        },
+        {
+          "id": "HR-335495-1557/23",
+          "number": "HR-335495-1557/23"
+        },
+        {
+          "id": "HR-335495-1555/1",
+          "number": "HR-335495-1555/1"
+        },
+        {
+          "id": "HR-335495-1558/11",
+          "number": "HR-335495-1558/11"
+        },
+        {
+          "id": "HR-335495-1554/2",
+          "number": "HR-335495-1554/2"
+        },
+        {
+          "id": "HR-335495-2479",
+          "number": "HR-335495-2479"
+        },
+        {
+          "id": "HR-335495-2483",
+          "number": "HR-335495-2483"
+        },
+        {
+          "id": "HR-335495-1553/6",
+          "number": "HR-335495-1553/6"
+        },
+        {
+          "id": "HR-335495-2485",
+          "number": "HR-335495-2485"
+        },
+        {
+          "id": "HR-335495-2460",
+          "number": "HR-335495-2460"
+        },
+        {
+          "id": "HR-335495-2471",
+          "number": "HR-335495-2471"
+        },
+        {
+          "id": "HR-335495-2459",
+          "number": "HR-335495-2459"
+        },
+        {
+          "id": "HR-335495-2475",
+          "number": "HR-335495-2475"
+        },
+        {
+          "id": "HR-335495-1556/15",
+          "number": "HR-335495-1556/15"
+        },
+        {
+          "id": "HR-335495-1554/1",
+          "number": "HR-335495-1554/1"
+        },
+        {
+          "id": "HR-335495-1553/7",
+          "number": "HR-335495-1553/7"
+        }
+      ],
+      "createdFrom": "reconstructed-neighbourhood-plan",
+      "typologyType": "single",
+      "blockName": "Podbrežje – rekonstrukcija UPU-a",
+      "parameters": {
+        "typology": "single",
+        "floorHeightM": 3,
+        "geometryBasis": "mixed-observed-and-plan-derived",
+        "sourceStatistics": {
+          "parcelAreaM2": 194277.14717369305,
+          "footprintAreaM2": 22587.187786034694,
+          "siteCoveragePercent": 11.626271084699772,
+          "heightEquivalentAboveGroundGbpM2": 209915.75688444191,
+          "heightEquivalentKin": 1.0804963936224943,
+          "buildingCount": 11,
+          "observedBuildingCount": 4,
+          "planDerivedBuildingCount": 7,
+          "method": "zbroj površine tlocrta × procijenjeni broj etaža; dijagnostička vrijednost, nije službeni GBP"
+        }
+      },
+      "ancestorKey": "HR-335495-1549/1|HR-335495-1550/7|HR-335495-1552/2|HR-335495-1553/6|HR-335495-1553/7|HR-335495-1554/1|HR-335495-1554/2|HR-335495-1555/1|HR-335495-1556/12|HR-335495-1556/15|HR-335495-1556/16|HR-335495-1556/18|HR-335495-1556/5|HR-335495-1556/9|HR-335495-1557/10|HR-335495-1557/19|HR-335495-1557/23|HR-335495-1557/6|HR-335495-1557/8|HR-335495-1557/9|HR-335495-1558/11|HR-335495-2456|HR-335495-2458|HR-335495-2459|HR-335495-2460|HR-335495-2466|HR-335495-2471|HR-335495-2475|HR-335495-2479|HR-335495-2483|HR-335495-2485",
+      "takeWholeParcels": false,
+      "metadata": {
+        "sourceStatistics": {
+          "parcelAreaM2": 194277.14717369305,
+          "footprintAreaM2": 22587.187786034694,
+          "siteCoveragePercent": 11.626271084699772,
+          "heightEquivalentAboveGroundGbpM2": 209915.75688444191,
+          "heightEquivalentKin": 1.0804963936224943,
+          "buildingCount": 11,
+          "observedBuildingCount": 4,
+          "planDerivedBuildingCount": 7,
+          "method": "zbroj površine tlocrta × procijenjeni broj etaža; dijagnostička vrijednost, nije službeni GBP"
+        }
+      }
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "plan-site:podbrezje",
+        "name": "UPU Podbrežje",
+        "source": "Grad Zagreb – planirana namjena površina",
+        "areaM2": 194283.10389678026,
+        "featureCount": 23,
+        "consensus:role": "site"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.967171475,
+              45.76637601
+            ],
+            [
+              15.966953221,
+              45.76653291
+            ],
+            [
+              15.966681023,
+              45.766486702
+            ],
+            [
+              15.966662929,
+              45.76648363
+            ],
+            [
+              15.965800551,
+              45.767103569
+            ],
+            [
+              15.965808076,
+              45.767103808
+            ],
+            [
+              15.965942231,
+              45.767108083
+            ],
+            [
+              15.966083914,
+              45.767112527
+            ],
+            [
+              15.966225603,
+              45.767116899
+            ],
+            [
+              15.966416011,
+              45.767108737
+            ],
+            [
+              15.966673538,
+              45.767097699
+            ],
+            [
+              15.966673925,
+              45.767097683
+            ],
+            [
+              15.966815658,
+              45.767099746
+            ],
+            [
+              15.967664915,
+              45.767112108
+            ],
+            [
+              15.967740843,
+              45.767113214
+            ],
+            [
+              15.976621774,
+              45.767242103
+            ],
+            [
+              15.976623085,
+              45.767242121
+            ],
+            [
+              15.976634691,
+              45.76684937
+            ],
+            [
+              15.976689437,
+              45.764996679
+            ],
+            [
+              15.976689456,
+              45.764996041
+            ],
+            [
+              15.974216705,
+              45.764923783
+            ],
+            [
+              15.974062907,
+              45.764919287
+            ],
+            [
+              15.973611081,
+              45.764886452
+            ],
+            [
+              15.973165603,
+              45.76482425
+            ],
+            [
+              15.972730365,
+              45.764733224
+            ],
+            [
+              15.972309163,
+              45.764614166
+            ],
+            [
+              15.971905675,
+              45.764468119
+            ],
+            [
+              15.971523422,
+              45.764296355
+            ],
+            [
+              15.971165738,
+              45.764100375
+            ],
+            [
+              15.971018283,
+              45.764007771
+            ],
+            [
+              15.97087634,
+              45.763911042
+            ],
+            [
+              15.970816915,
+              45.763867109
+            ],
+            [
+              15.970763038,
+              45.763827276
+            ],
+            [
+              15.970740141,
+              45.763810349
+            ],
+            [
+              15.970714274,
+              45.763828946
+            ],
+            [
+              15.970600113,
+              45.763911027
+            ],
+            [
+              15.97011523,
+              45.764259647
+            ],
+            [
+              15.96810771,
+              45.765702945
+            ],
+            [
+              15.967575214,
+              45.766085762
+            ],
+            [
+              15.967171475,
+              45.76637601
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "planirani blok M1/1020",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+8 prema izvedenim blokovima i programu aktualne A11; indikativno, nije buduća dozvola",
+        "color": "#fd7e14",
+        "reconstructionState": "plan-derived-envelope",
+        "source": "službeno polje M1 + pobjednički masterplan; širina i završni odmaci kalibrirani na četiri izvedena bloka",
+        "officialLandUseObjectId": 1020,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": 18.75,
+        "inferredEndClearanceM": 3.5,
+        "fieldLongDimensionM": 231.64553845490101,
+        "footprintAreaM2": 4162.701631933222,
+        "dguBuildingId": null,
+        "dguBuildingNumber": null,
+        "dguBuildingType": null,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.97046965,
+              45.765875423
+            ],
+            [
+              15.970710653,
+              45.765878924
+            ],
+            [
+              15.970771311,
+              45.763833393
+            ],
+            [
+              15.970763038,
+              45.763827276
+            ],
+            [
+              15.970761869,
+              45.763826412
+            ],
+            [
+              15.970718672,
+              45.763825785
+            ],
+            [
+              15.970714274,
+              45.763828946
+            ],
+            [
+              15.970600113,
+              45.763911027
+            ],
+            [
+              15.970526338,
+              45.76396407
+            ],
+            [
+              15.97046965,
+              45.765875423
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "planirani blok M1/1021",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+8 prema izvedenim blokovima i programu aktualne A11; indikativno, nije buduća dozvola",
+        "color": "#fd7e14",
+        "reconstructionState": "plan-derived-envelope",
+        "source": "službeno polje M1 + pobjednički masterplan; širina i završni odmaci kalibrirani na četiri izvedena bloka",
+        "officialLandUseObjectId": 1021,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": 18.75,
+        "inferredEndClearanceM": 3.5,
+        "fieldLongDimensionM": 168.6699223911952,
+        "footprintAreaM2": 3096.931361405652,
+        "dguBuildingId": null,
+        "dguBuildingNumber": null,
+        "dguBuildingType": null,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.976199282,
+              45.765418769
+            ],
+            [
+              15.975958281,
+              45.765415279
+            ],
+            [
+              15.975914356,
+              45.766901132
+            ],
+            [
+              15.976155364,
+              45.766904621
+            ],
+            [
+              15.976199282,
+              45.765418769
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "planirani blok M1/1022",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+8 prema izvedenim blokovima i programu aktualne A11; indikativno, nije buduća dozvola",
+        "color": "#fd7e14",
+        "reconstructionState": "plan-derived-envelope",
+        "source": "službeno polje M1 + pobjednički masterplan; širina i završni odmaci kalibrirani na četiri izvedena bloka",
+        "officialLandUseObjectId": 1022,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": 18.75,
+        "inferredEndClearanceM": 3.5,
+        "fieldLongDimensionM": 129.5887188775357,
+        "footprintAreaM2": 2103.571455790237,
+        "dguBuildingId": null,
+        "dguBuildingNumber": null,
+        "dguBuildingType": null,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 2
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.971769933,
+              45.765677423
+            ],
+            [
+              15.972010934,
+              45.765680922
+            ],
+            [
+              15.972039554,
+              45.764715072
+            ],
+            [
+              15.97202941,
+              45.764711717
+            ],
+            [
+              15.971801144,
+              45.764624259
+            ],
+            [
+              15.971769933,
+              45.765677423
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "planirani blok M1/1023",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+8 prema izvedenim blokovima i programu aktualne A11; indikativno, nije buduća dozvola",
+        "color": "#fd7e14",
+        "reconstructionState": "plan-derived-envelope",
+        "source": "službeno polje M1 + pobjednički masterplan; širina i završni odmaci kalibrirani na četiri izvedena bloka",
+        "officialLandUseObjectId": 1023,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": 18.75,
+        "inferredEndClearanceM": 3.5,
+        "fieldLongDimensionM": 109.29554770398217,
+        "footprintAreaM2": 1983.6616870871371,
+        "dguBuildingId": null,
+        "dguBuildingNumber": null,
+        "dguBuildingType": null,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 3
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.969506726,
+              45.766808167
+            ],
+            [
+              15.969747732,
+              45.766811669
+            ],
+            [
+              15.969775974,
+              45.765859946
+            ],
+            [
+              15.969534972,
+              45.765856444
+            ],
+            [
+              15.969506726,
+              45.766808167
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "izvedeni blok M1/1024",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.4978,
+        "heightM": 29.4978,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "officialLandUseObjectId": 1024,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": null,
+        "inferredEndClearanceM": null,
+        "fieldLongDimensionM": 109.29560449723945,
+        "footprintAreaM2": 1963.008800005553,
+        "dguBuildingId": 12288053,
+        "dguBuildingNumber": "3895",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "gdiObjectId": 148980,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 29.4978,
+        "gdiMatchOverlapRatio": 0.9940587457719436,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 4
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.974991544,
+                45.766897753
+              ],
+              [
+                15.974889988,
+                45.766896476
+              ],
+              [
+                15.974890673,
+                45.766864536
+              ],
+              [
+                15.974852882,
+                45.766863733
+              ],
+              [
+                15.97485176,
+                45.766901069
+              ],
+              [
+                15.974749692,
+                45.76689952
+              ],
+              [
+                15.974777159,
+                45.765959173
+              ],
+              [
+                15.97487974,
+                45.765960725
+              ],
+              [
+                15.974879689,
+                45.765966123
+              ],
+              [
+                15.974916968,
+                45.765966654
+              ],
+              [
+                15.974917814,
+                45.765945063
+              ],
+              [
+                15.975019752,
+                45.765946521
+              ],
+              [
+                15.974991544,
+                45.766897753
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "izvedeni blok M1/1025",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.4978,
+        "heightM": 29.4978,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "officialLandUseObjectId": 1025,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": null,
+        "inferredEndClearanceM": null,
+        "fieldLongDimensionM": 109.2956604296808,
+        "footprintAreaM2": 1962.7959000042276,
+        "dguBuildingId": 12288048,
+        "dguBuildingNumber": "3888",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "gdiObjectId": 148972,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 29.4978,
+        "gdiMatchOverlapRatio": 0.9922189660374383,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 5
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.972204274,
+                45.766862416
+              ],
+              [
+                15.972101821,
+                45.766860863
+              ],
+              [
+                15.972130358,
+                45.765920881
+              ],
+              [
+                15.972231911,
+                45.76592225
+              ],
+              [
+                15.972231732,
+                45.765927648
+              ],
+              [
+                15.972270043,
+                45.765927825
+              ],
+              [
+                15.9722705,
+                45.765906592
+              ],
+              [
+                15.972372567,
+                45.765908053
+              ],
+              [
+                15.972344056,
+                45.766859372
+              ],
+              [
+                15.972242116,
+                45.766857822
+              ],
+              [
+                15.972242932,
+                45.766825882
+              ],
+              [
+                15.972205396,
+                45.766825259
+              ],
+              [
+                15.972204274,
+                45.766862416
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "planirani blok M1/1026",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+8 prema izvedenim blokovima i programu aktualne A11; indikativno, nije buduća dozvola",
+        "color": "#fd7e14",
+        "reconstructionState": "plan-derived-envelope",
+        "source": "službeno polje M1 + pobjednički masterplan; širina i završni odmaci kalibrirani na četiri izvedena bloka",
+        "officialLandUseObjectId": 1026,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": 18.75,
+        "inferredEndClearanceM": 3.5,
+        "fieldLongDimensionM": 105.831874856084,
+        "footprintAreaM2": 1871.0613026810447,
+        "dguBuildingId": null,
+        "dguBuildingNumber": null,
+        "dguBuildingType": null,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 6
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.973286264,
+              45.765916312
+            ],
+            [
+              15.973527267,
+              45.765919806
+            ],
+            [
+              15.973553547,
+              45.765032067
+            ],
+            [
+              15.973549583,
+              45.765031826
+            ],
+            [
+              15.973314099,
+              45.765008598
+            ],
+            [
+              15.973313143,
+              45.765008467
+            ],
+            [
+              15.973286264,
+              45.765916312
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "izvedeni blok M1/1027",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.7164,
+        "heightM": 29.7164,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "officialLandUseObjectId": 1027,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": null,
+        "inferredEndClearanceM": null,
+        "fieldLongDimensionM": 78.89697757398012,
+        "footprintAreaM2": 1353.5967999945062,
+        "dguBuildingId": 12288072,
+        "dguBuildingNumber": "3881",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "gdiObjectId": 148971,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 29.7164,
+        "gdiMatchOverlapRatio": 0.9945079565907237,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 7
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.970789561,
+                45.766613015
+              ],
+              [
+                15.970790461,
+                45.766613019
+              ],
+              [
+                15.970791712,
+                45.766562366
+              ],
+              [
+                15.970790941,
+                45.766562273
+              ],
+              [
+                15.970794613,
+                45.766445855
+              ],
+              [
+                15.970795255,
+                45.766445948
+              ],
+              [
+                15.970796896,
+                45.766394757
+              ],
+              [
+                15.970795997,
+                45.766394663
+              ],
+              [
+                15.970797727,
+                45.766334114
+              ],
+              [
+                15.970813152,
+                45.766334456
+              ],
+              [
+                15.970814403,
+                45.766283713
+              ],
+              [
+                15.970798979,
+                45.766283281
+              ],
+              [
+                15.97079928,
+                45.766278604
+              ],
+              [
+                15.970800052,
+                45.766278607
+              ],
+              [
+                15.970801434,
+                45.766227595
+              ],
+              [
+                15.97080092,
+                45.766227593
+              ],
+              [
+                15.970801094,
+                45.766222824
+              ],
+              [
+                15.97082642,
+                45.766222942
+              ],
+              [
+                15.970826435,
+                45.766221322
+              ],
+              [
+                15.970829521,
+                45.766221336
+              ],
+              [
+                15.970831189,
+                45.766167266
+              ],
+              [
+                15.971042266,
+                45.766170223
+              ],
+              [
+                15.971040151,
+                45.76623077
+              ],
+              [
+                15.971039122,
+                45.766230855
+              ],
+              [
+                15.971037484,
+                45.766281686
+              ],
+              [
+                15.97103877,
+                45.766281692
+              ],
+              [
+                15.971038532,
+                45.766293299
+              ],
+              [
+                15.971037632,
+                45.766293294
+              ],
+              [
+                15.971034952,
+                45.766386412
+              ],
+              [
+                15.971035723,
+                45.766386415
+              ],
+              [
+                15.971035613,
+                45.766398022
+              ],
+              [
+                15.971034199,
+                45.766398016
+              ],
+              [
+                15.971032559,
+                45.766449117
+              ],
+              [
+                15.97103423,
+                45.766449214
+              ],
+              [
+                15.971033735,
+                45.76646073
+              ],
+              [
+                15.971032835,
+                45.766460725
+              ],
+              [
+                15.971030153,
+                45.766554023
+              ],
+              [
+                15.971030796,
+                45.766554026
+              ],
+              [
+                15.971030558,
+                45.766565632
+              ],
+              [
+                15.971029144,
+                45.766565625
+              ],
+              [
+                15.971027636,
+                45.766616367
+              ],
+              [
+                15.971028922,
+                45.766616283
+              ],
+              [
+                15.971028426,
+                45.766627978
+              ],
+              [
+                15.971027783,
+                45.766627975
+              ],
+              [
+                15.971025102,
+                45.766721182
+              ],
+              [
+                15.971026001,
+                45.766721277
+              ],
+              [
+                15.971025635,
+                45.766732792
+              ],
+              [
+                15.971024221,
+                45.766732786
+              ],
+              [
+                15.971022968,
+                45.766783709
+              ],
+              [
+                15.971024125,
+                45.766783714
+              ],
+              [
+                15.971024085,
+                45.766787943
+              ],
+              [
+                15.971022672,
+                45.766787847
+              ],
+              [
+                15.97102151,
+                45.766842819
+              ],
+              [
+                15.971003126,
+                45.766842644
+              ],
+              [
+                15.971003112,
+                45.766844084
+              ],
+              [
+                15.970994628,
+                45.766843954
+              ],
+              [
+                15.970994636,
+                45.766843145
+              ],
+              [
+                15.970799109,
+                45.766840619
+              ],
+              [
+                15.970800658,
+                45.766785559
+              ],
+              [
+                15.970784201,
+                45.766785572
+              ],
+              [
+                15.970784378,
+                45.766780444
+              ],
+              [
+                15.970785407,
+                45.766780449
+              ],
+              [
+                15.970787048,
+                45.766729258
+              ],
+              [
+                15.97078602,
+                45.766729163
+              ],
+              [
+                15.970786066,
+                45.766724305
+              ],
+              [
+                15.970801494,
+                45.766724286
+              ],
+              [
+                15.970803129,
+                45.766673815
+              ],
+              [
+                15.970787702,
+                45.766673653
+              ],
+              [
+                15.970789561,
+                45.766613015
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "izvedeni blok M1/1028",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 29.7164,
+        "heightM": 29.7164,
+        "floors": 10,
+        "storeys": 10,
+        "floorCountBasis": "procjena iz GDI izmjerene visine / 3 m; nije podatak iz dozvole",
+        "color": "#2f6fed",
+        "reconstructionState": "observed-built-state",
+        "source": "DGU pravni tlocrt + podudarna GDI izmjerena visina",
+        "officialLandUseObjectId": 1028,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": null,
+        "inferredEndClearanceM": null,
+        "fieldLongDimensionM": 78.89685480668116,
+        "footprintAreaM2": 1351.7373499958728,
+        "dguBuildingId": 12288073,
+        "dguBuildingNumber": "3876",
+        "dguBuildingType": "ZGRADA MJEŠOVITE UPORABE",
+        "gdiObjectId": 148970,
+        "gdiSurveyYear": 2019,
+        "gdiHeightM": 29.7164,
+        "gdiMatchOverlapRatio": 0.9973734527605501,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 8
+      },
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                15.97346264,
+                45.766321502
+              ],
+              [
+                15.973447858,
+                45.766321164
+              ],
+              [
+                15.973449841,
+                45.766260706
+              ],
+              [
+                15.973478122,
+                45.766261107
+              ],
+              [
+                15.973479931,
+                45.766205417
+              ],
+              [
+                15.973690361,
+                45.766208906
+              ],
+              [
+                15.973688251,
+                45.766269183
+              ],
+              [
+                15.973686837,
+                45.766269177
+              ],
+              [
+                15.973670058,
+                45.766822928
+              ],
+              [
+                15.973670573,
+                45.76682293
+              ],
+              [
+                15.973668997,
+                45.76688114
+              ],
+              [
+                15.973650613,
+                45.766880965
+              ],
+              [
+                15.973650602,
+                45.766882135
+              ],
+              [
+                15.973445822,
+                45.766879212
+              ],
+              [
+                15.973447642,
+                45.766822353
+              ],
+              [
+                15.973432732,
+                45.766822014
+              ],
+              [
+                15.973434442,
+                45.766763175
+              ],
+              [
+                15.973448969,
+                45.766763332
+              ],
+              [
+                15.973450478,
+                45.76671223
+              ],
+              [
+                15.973435052,
+                45.766712069
+              ],
+              [
+                15.973445831,
+                45.766372623
+              ],
+              [
+                15.973461001,
+                45.766372693
+              ],
+              [
+                15.97346264,
+                45.766321502
+              ]
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "planirani blok M1/1029",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+8 prema izvedenim blokovima i programu aktualne A11; indikativno, nije buduća dozvola",
+        "color": "#fd7e14",
+        "reconstructionState": "plan-derived-envelope",
+        "source": "službeno polje M1 + pobjednički masterplan; širina i završni odmaci kalibrirani na četiri izvedena bloka",
+        "officialLandUseObjectId": 1029,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": 18.75,
+        "inferredEndClearanceM": 3.5,
+        "fieldLongDimensionM": 78.89690502762303,
+        "footprintAreaM2": 1413.6877411591984,
+        "dguBuildingId": null,
+        "dguBuildingNumber": null,
+        "dguBuildingType": null,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 9
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.967983941,
+              45.766786022
+            ],
+            [
+              15.968224948,
+              45.766789528
+            ],
+            [
+              15.968245093,
+              45.766111268
+            ],
+            [
+              15.96800409,
+              45.766107761
+            ],
+            [
+              15.967983941,
+              45.766786022
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "planirani blok M1/1030",
+        "block": "Podbrežje – rekonstrukcija UPU-a",
+        "type": "proposedBuildingSingle",
+        "footprintMode": "polygon",
+        "height": 27,
+        "heightM": 27,
+        "floors": 9,
+        "storeys": 9,
+        "floorCountBasis": "P+8 prema izvedenim blokovima i programu aktualne A11; indikativno, nije buduća dozvola",
+        "color": "#fd7e14",
+        "reconstructionState": "plan-derived-envelope",
+        "source": "službeno polje M1 + pobjednički masterplan; širina i završni odmaci kalibrirani na četiri izvedena bloka",
+        "officialLandUseObjectId": 1030,
+        "officialLandUseCode": "M1",
+        "inferredSlabWidthM": 18.75,
+        "inferredEndClearanceM": 3.5,
+        "fieldLongDimensionM": 74.14833048614997,
+        "footprintAreaM2": 1324.6554344011133,
+        "dguBuildingId": null,
+        "dguBuildingNumber": null,
+        "dguBuildingType": null,
+        "gdiObjectId": null,
+        "gdiSurveyYear": null,
+        "gdiHeightM": null,
+        "gdiMatchOverlapRatio": null,
+        "officialPhaseLabel": null,
+        "officialPhaseLabelStatus": "A1–A11 nisu sigurno pridruženi pojedinim M1 poljima u korištenim izvorima",
+        "consensus:role": "building",
+        "consensus:index": 10
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              15.974417636,
+              45.765715831
+            ],
+            [
+              15.974658639,
+              45.765719324
+            ],
+            [
+              15.974677441,
+              45.765083779
+            ],
+            [
+              15.974436442,
+              45.765080286
+            ],
+            [
+              15.974417636,
+              45.765715831
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

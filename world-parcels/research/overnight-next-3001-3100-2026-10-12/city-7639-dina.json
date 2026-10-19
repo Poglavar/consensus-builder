@@ -1,0 +1,138 @@
+{
+  "cityCode": 7639,
+  "queueRank": 3042,
+  "name": "Dina",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "iso3": "PAK",
+  "point": [33.0447352768778, 73.6133236648661],
+  "population2025": 196799,
+  "population2025k": 196.799,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pakistan official cadastral parcel map Dina Jhelum Punjab land records authority GIS API",
+        "result": "First-party discovery identified the Punjab Land Records Authority (PLRA) and its PULSE land-information viewer. The viewer's current HTML/JavaScript names a Jhelum cadastral-map layer and the Punjab cadastral ArcGIS service. The public service metadata and bounded exact-point query required an ArcGIS token, so no anonymous ID-plus-geometry response was available.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer"
+        ]
+      },
+      {
+        "language": "Urdu (local/native)",
+        "query": "پاکستان پنجاب دینہ جہلم سرکاری اراضی ریکارڈ کادسترل نقشہ جی آئی ایس API",
+        "result": "Urdu/native-language discovery reached the official PLRA/PULSE services and confirmed that land-record access is an official PLRA workflow. The public map is indicative and complete parcel details require login/token access; no credentials, CAPTCHA bypass, identity lookup, ownership lookup, or unsafe field request was used.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2FDocument%2F",
+          "https://pmu-lgcdd.gop.pk/jhelum/"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://www.punjab-zameen.gov.pk/",
+      "https://lis.pulse.gop.pk/",
+      "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+      "https://pmu-lgcdd.gop.pk/jhelum/"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Punjab Land Records Authority (PLRA) / Punjab Urban Land Systems Enhancement (PULSE), Government of Punjab",
+    "scope": "Provincial land-record and cadastral-map custodian. The official PULSE viewer exposes a Jhelum cadastral-map category and the PLRA-hosted Punjab_Cdastral_Maps ArcGIS service; this is service evidence, not proof of public citywide vector coverage for Dina.",
+    "evidence": "https://lis.pulse.gop.pk/"
+  },
+  "localCustodianContext": {
+    "name": "No separately evidenced Dina cadastral registry endpoint",
+    "scope": "Dina is identified in official Punjab planning material as a municipal area in Jhelum District, but the reviewed material did not evidence a separate city-level parcel service or local registry custodian.",
+    "evidence": "https://pmu-lgcdd.gop.pk/jhelum/"
+  },
+  "service": {
+    "name": "PULSE public land-information viewer and PLRA-hosted ArcGIS cadastral service",
+    "viewerUrl": "https://lis.pulse.gop.pk/",
+    "baseUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services",
+    "viewerConfiguration": "The downloaded current PULSE HTML references https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer as the Punjab cadastral layer and lists Jhelum in its cadastral-map options. The viewer displays a login-for-complete-parcel-details notice.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "status": 200,
+      "outcome": "Official PLRA public site loaded. Its current JavaScript was fetched for service discovery; no parcel vector response was exposed there."
+    },
+    {
+      "method": "GET",
+      "url": "https://lis.pulse.gop.pk/",
+      "status": 200,
+      "outcome": "Official PULSE viewer loaded. Current HTML/JavaScript exposed the PLRA ArcGIS base and Punjab cadastral layer, listed Jhelum cadastral maps, and displayed that complete parcel details require login."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services?f=pjson",
+      "status": 200,
+      "outcome": "ArcGIS REST directory returned public folders/services, but the configured Punjab_Cdastral_Maps service was not anonymously queryable without a token."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+      "status": 499,
+      "outcome": "Token Required. No token was requested, generated, extracted, or supplied. Parcel schema, layer list, native identity, and CRS were therefore not qualified."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0?f=pjson",
+      "status": 499,
+      "outcome": "Token Required. No layer metadata or field schema was retained."
+    },
+    {
+      "method": "GET",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/0/query?where=1%3D1&geometry=73.6133236648661%2C33.0447352768778&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+      "status": 499,
+      "outcome": "Bounded anonymous exact-WUP-point ID-plus-geometry query returned Token Required. This is an access/qualification result, not evidence of parcel absence or a point miss."
+    },
+    {
+      "method": "GET",
+      "url": "https://eregistration.punjab-zameen.gov.pk/Security/Authentication/UserLogin?ReturnUrl=%2FDocument%2F",
+      "status": 200,
+      "outcome": "Login/CAPTCHA page observed. No login, CAPTCHA bypass, credentials, private token, or owner/address/titleholder/tax/account lookup was attempted."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/7639/ (unchanged viewer HTML/JS and bounded response bodies; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [33.0447352768778, 73.6133236648661] was preserved in latitude/longitude order and was not shifted.",
+    "The official PULSE/PLRA configuration evidences a provincial cadastral-map service relevant to Jhelum District, not confirmed citywide public parcel-vector coverage for Dina.",
+    "Token-required service metadata and query responses do not establish parcel presence or absence.",
+    "No parcel schema, native identity field, geometry CRS, or safe anonymous vector response was qualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "PULSE may expose parcel vectors after an authenticated workflow or through a separately protected layer not anonymously inspectable.",
+    "The viewer's Jhelum category and configured Punjab cadastral service do not prove that the exact Dina point is covered.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

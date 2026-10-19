@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7087-joharabad.json",
+  "purpose": "Document first-party local/provincial cadastral-map evidence and bounded anonymous safe geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "registryAssessment": "The official Punjab PULSE viewer exposes a GPC Parcels map service operated on the Punjab Land Records Authority GIS host. This is actual public cadastral/map evidence, so registryFound is true; the evidence is provincial and does not prove a separate Joharabad local registry custodian or citywide coverage.",
+  "officialPrimarySources": [
+    {"url": "https://lis.pulse.gop.pk/", "observation": "Current official PULSE viewer HTML exposes the GPC Parcels ArcGIS service and its public token route."},
+    {"url": "https://www.punjab-zameen.gov.pk/", "observation": "Official Punjab Land Records Authority service context; no ownership or personal data requested."},
+    {"url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer", "observation": "Official ArcGIS MapServer metadata identifies the GPC Parcel polygon layer, query capability, WGS84/WKID 4326, and native field names."}
+  ],
+  "searchQueries": [
+    {"language": "English", "query": "Joharabad Pakistan cadastral map parcel GIS official land records", "result": "Official Punjab PULSE GIS and PLRA sources found; PULSE parcel service was then inspected.", "actualResultUrls": ["https://lis.pulse.gop.pk/", "https://www.punjab-zameen.gov.pk/"]},
+    {"language": "Urdu", "query": "جوہرآباد پاکستان کادستر نقشہ اراضی ریکارڈ سرکاری", "result": "Official Punjab PLRA/PULSE routes found; native search did not independently prove city-specific coverage.", "actualResultUrls": ["https://lis.pulse.gop.pk/", "https://www.punjab-zameen.gov.pk/"]}
+  ],
+  "safeFieldAllowlist": ["GPCParcelId"],
+  "nativeFieldMapping": {"canonicalIdentity": "GPCParcelId", "sourceIdentityField": "GPCParcelId", "excludedFields": ["Id", "ObjectId", "MauzaId", "GPCParcelNo", "BaseKhasraId", "BaseKhasraNo", "UniqueParcelCode", "StatusCode", "Remarks", "Status", "CreatedAt"]},
+  "attempts": [
+    {"method": "GET", "url": "https://lis.pulse.gop.pk/", "httpStatus": 200, "result": "Viewer HTML fetched; current service URLs and /api/gis/token route were visible."},
+    {"method": "GET", "url": "https://lis.pulse.gop.pk/api/gis/token", "httpStatus": 200, "result": "Anonymous viewer token route returned a short-lived token; token value was not retained or published. No login or credentials used."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson", "httpStatus": 499, "result": "Direct metadata request without viewer token was rejected as Token Required."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson&token=<short-lived-viewer-token>", "httpStatus": 200, "result": "Metadata returned one GPC Parcel polygon layer with query support and WKID 4326; field names inspected only."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer/0/query?geometry=72.3079529336539,32.2918972963112&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Id,GPCParcelId,GPCParcelNo&returnGeometry=true&f=geojson&token=<short-lived-viewer-token>", "httpStatus": 200, "result": "Exact WUP point query returned an empty FeatureCollection. This is not evidence of citywide absence."},
+    {"method": "GET", "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer/0/query?geometry=72.2879529336539,32.2718972963112,72.3279529336539,32.3118972963112&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Id,GPCParcelId,GPCParcelNo&returnGeometry=true&resultRecordCount=3&f=geojson&token=<short-lived-viewer-token>", "httpStatus": 200, "result": "Bounded envelope returned three polygon features; retained sample keeps only canonical GPCParcelId properties."}
+  ],
+  "geometryDecision": {"verified": true, "sourceId": "GPCParcelId", "sampleCount": 3, "sampleFile": "joharabad-gpc-sample.geojson", "exactWupPointTest": "zero features", "nativeIdField": "GPCParcelId"},
+  "coverageAssessment": {"claimedScope": "Official provincial GPC parcel map service near Joharabad.", "verifiedOpenScope": "Three nearby polygons only; exact point empty; no citywide or countrywide completeness claim.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": true},
+  "remainingUncertainty": "No local Joharabad municipal boundary or authoritative coverage manifest was exposed in this bounded pass. The three polygons are nearby sample evidence, not a city parcel inventory.",
+  "runtimeAssessment": "held; no adapter qualification or source integration/admission performed"
+}

@@ -1,0 +1,14 @@
+{
+  "taskId": "city:3208",
+  "checkedAt": "2026-10-11T00:19:07Z",
+  "checks": [
+    {
+      "url": "https://www.naenara.com.kp/",
+      "method": "GET",
+      "observedResult": "TLS certificate verification failed (curl 60); no content accepted",
+      "parcelResponse": false
+    }
+  ],
+  "acceptanceMetrics": null,
+  "acceptanceMetricsReason": "No first-party parcel feature response or native-ID polygon cache exists for this batch; no runtime qualification metrics were claimed."
+}

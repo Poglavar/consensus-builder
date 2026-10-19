@@ -1,0 +1,61 @@
+{
+ "country": "Thailand",
+ "status": "national_cadastre_credentialed_or_paid",
+ "cadastreAuthority": "Department of Lands (DOL), Ministry of Interior",
+ "portalsFound": [
+  {
+   "url": "https://data.go.th/dataset/mapland-parcel",
+   "observation": "Per bangkok.json: nationwide parcel-search API listing requiring prior permission and Consumer-Key/Secret; re-request returned 403 from data.go.th to this client."
+  },
+  {
+   "url": "https://www.dol.go.th/landmap/home/",
+   "observation": "Parcel-map centre; returned 302 redirect (8.5 KB HTML); no anonymous polygon API seen."
+  },
+  {
+   "url": "https://landsmaps.dol.go.th/",
+   "observation": "LandsMaps national viewer host behind Incapsula WAF; challenge page returned to this client."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://landsmaps.dol.go.th/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Incapsula bot-challenge page, no app content"
+  },
+  {
+   "url": "https://landsmaps.dol.go.th/geoserver/ows?service=WFS&request=GetCapabilities",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Incapsula challenge page, not WFS"
+  },
+  {
+   "url": "https://data.go.th/dataset/mapland-parcel",
+   "method": "GET",
+   "httpStatus": 403,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "blocked"
+  },
+  {
+   "url": "https://www.dol.go.th/landmap/home/",
+   "method": "GET",
+   "httpStatus": 302,
+   "contentType": "text/html",
+   "assessment": "redirect, no parcel data"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Nationwide DOL parcel data via credentialed API and LandsMaps viewer",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "registration",
+ "remainingUncertainty": "Credential requirement is from a previous record and the catalogue page was not readable here; WAF blocks scripted access to LandsMaps. Bangkok LDD land-use layer is not parcels.",
+ "nextStep": "Read the data.go.th API terms from a browser and apply for a key; retry LandsMaps with a real browser session.",
+ "schemaVersion": 1,
+ "countryCode": "TH",
+ "checkedAt": "2026-09-29"
+}

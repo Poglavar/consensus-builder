@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "sources": [
+    {
+      "stateCode": "CT",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "status": "sample-attributes-observed",
+      "attempts": [
+        {
+          "url": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0/query?where=1%3D1&geometry=-72.6744%2C41.7648%2C-72.6724%2C41.766799999999996&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=Parcel_ID%2CTown_Name&returnGeometry=false&resultRecordCount=3&f=json",
+          "operation": "Bounded capital native-key and scope attributes",
+          "httpStatus": 200,
+          "assessment": "Native-key and fixed namespace candidates only; no geometry or owner attributes requested."
+        }
+      ],
+      "nativeIds": [
+        "246348765",
+        "246348764",
+        "269353004"
+      ],
+      "filterValues": [
+        "Hartford"
+      ],
+      "error": null
+    },
+    {
+      "stateCode": "DE",
+      "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+      "status": "sample-attributes-observed",
+      "attempts": [
+        {
+          "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&geometry=-75.5254%2C39.1572%2C-75.5234%2C39.1592&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=PIN%2CCOUNTY&returnGeometry=false&resultRecordCount=3&f=json",
+          "operation": "Bounded capital native-key and scope attributes",
+          "httpStatus": 200,
+          "assessment": "Native-key and fixed namespace candidates only; no geometry or owner attributes requested."
+        }
+      ],
+      "nativeIds": [
+        "2-05-07709-02-3700-00001",
+        "2-05-07709-02-5800-00001",
+        "2-05-07709-02-4000-00001"
+      ],
+      "filterValues": [
+        "Kent"
+      ],
+      "error": null
+    },
+    {
+      "stateCode": "ID",
+      "endpoint": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7",
+      "status": "sample-attributes-observed",
+      "attempts": [
+        {
+          "url": "https://services1.arcgis.com/CNPdEkvnGl65jCX8/arcgis/rest/services/Public_Idaho_Parcels_/FeatureServer/7/query?where=1%3D1&geometry=-116.2033%2C43.614000000000004%2C-116.20129999999999%2C43.616&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=PARCEL_ID%2CCounty&returnGeometry=false&resultRecordCount=3&f=json",
+          "operation": "Bounded capital native-key and scope attributes",
+          "httpStatus": 200,
+          "assessment": "Native-key and fixed namespace candidates only; no geometry or owner attributes requested."
+        }
+      ],
+      "nativeIds": [
+        "R0998100100",
+        "R1013000146",
+        "R1013000202"
+      ],
+      "filterValues": [
+        "Ada"
+      ],
+      "error": null
+    },
+    {
+      "stateCode": "HI",
+      "endpoint": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25",
+      "status": "sample-attributes-observed",
+      "attempts": [
+        {
+          "url": "https://geodata.hawaii.gov/arcgis/rest/services/ParcelsZoning/MapServer/25/query?where=1%3D1&geometry=-157.8591%2C21.308899999999998%2C-157.8571%2C21.3109&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=tmk%2Ccounty&returnGeometry=false&resultRecordCount=3&f=json",
+          "operation": "Bounded capital native-key and scope attributes",
+          "httpStatus": 200,
+          "assessment": "Native-key and fixed namespace candidates only; no geometry or owner attributes requested."
+        }
+      ],
+      "nativeIds": [
+        121010052,
+        121010053,
+        121017001
+      ],
+      "filterValues": [
+        "Honolulu"
+      ],
+      "error": null
+    },
+    {
+      "stateCode": "GA",
+      "endpoint": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11",
+      "status": "sample-attributes-observed",
+      "attempts": [
+        {
+          "url": "https://gismaps.fultoncountyga.gov/arcgispub2/rest/services/PropertyMapViewer/PropertyMapViewer/MapServer/11/query?where=1%3D1&geometry=-84.38900000000001%2C33.748000000000005%2C-84.387%2C33.75&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects&inSR=4326&outFields=ParcelID&returnGeometry=false&resultRecordCount=3&f=json",
+          "operation": "Bounded capital native-key and scope attributes",
+          "httpStatus": 200,
+          "assessment": "Native-key and fixed namespace candidates only; no geometry or owner attributes requested."
+        }
+      ],
+      "nativeIds": [
+        "14 007700110253",
+        "14 007700110246",
+        "14 007700110279"
+      ],
+      "filterValues": [],
+      "error": null
+    }
+  ]
+}

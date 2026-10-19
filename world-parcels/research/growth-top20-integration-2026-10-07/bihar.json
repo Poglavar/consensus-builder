@@ -1,0 +1,500 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07",
+  "countryCode": "IN",
+  "state": "Bihar",
+  "sourceId": "bihar-bhunaksha",
+  "source": {
+    "name": "BhuNaksha Bihar",
+    "operator": "Directorate of Land Records & Survey, Government of Bihar; BhuNaksha viewer developed by NIC",
+    "viewerUrl": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "stateViewerUrl": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "viewerClientScript": "https://bhunaksha.bihar.gov.in/index.js",
+    "selectorEndpoint": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+    "extentEndpoint": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+    "identifyEndpoint": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+    "scalarEndpoint": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+    "mapEndpoint": "https://bhunaksha.bihar.gov.in/WMS",
+    "reuseTerms": "Not assessed; informational only."
+  },
+  "clientInspection": {
+    "httpStatus": 200,
+    "contentType": "text/javascript",
+    "observedRoutes": [
+      "rest/Levels/count",
+      "rest/Levels/ListsAfterLevel",
+      "rest/Levels/levelsFromGiscode",
+      "rest/MapInfo/getVVVVExtentGeoref",
+      "rest/MapInfo/getPlotAtXY",
+      "rest/MapInfo/getGisCode",
+      "rest/MapInfo/getPointsfromPNIU",
+      "rest/Layers/getLayers",
+      "rest/Settings/settingsForCodes",
+      "ScalarDatahandler OP=2 (administrative selector), OP=4 (point identify/details), OP=5 (plot-number lookup)"
+    ],
+    "geometryFinding": "The public viewer's JavaScript uses WMS raster layers for VILLAGE_MAP and PLOT_LIST. Its coordinate identify call returns an opaque plot ID and a plot number. ScalarDatahandler OP=4 returns the same ID and an EPSG:32645 bbox; it has no geometry field. No public vector/WFS/GeoJSON/FlatGeobuf endpoint or viewport feature query was found in the official client."
+  },
+  "probeMethod": {
+    "headers": "Chrome 129 desktop User-Agent; Accept: application/json,image/png,application/xml,*/*; Accept-Language: en-IN,en;q=0.9,hi;q=0.8; Origin and Referer set to https://bhunaksha.bihar.gov.in; cookie-persisting requests.Session used.",
+    "selector": "POST form application/x-www-form-urlencoded to ListsAfterLevel with state=10, a small target tehsil hierarchy, and hasmap=true. Only target tehsil and named village descendants were examined.",
+    "crs": "Extent endpoint reports EPSG:32645. WUP WGS84 points were transformed to EPSG:32645 for map-sheet extent comparison.",
+    "scope": "Two city-named local cadastral sheet selections plus a small named subset of candidate Semapur/Barari revenue villages; no countrywide download or parcel enumeration."
+  },
+  "cities": [
+    {
+      "cityId": "wup2025:11511",
+      "queueRank": 4,
+      "name": "Semapur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.4980899560268,
+        87.4841083291156
+      ],
+      "administrativeIdentity": "Semapur locality is in Barari block, Katihar district. The official BhuNaksha Barari-circle selector returned 88 mapped revenue-village entries but none named Semapur. A state telecom-government table groups several Barari Gram Panchayats under 'Semapur TE', but does not tie the supplied coordinate to an exact revenue mauza.",
+      "registryFound": null,
+      "registryLeadFound": true,
+      "registryLeadReason": "Bihar BhuNaksha lists cadastral survey sheets for the Barari revenue circle, and DILRMP has a Barari tehsil inventory. Exact WUP point-to-mauza match and plot response remain unverified.",
+      "selectorEvidence": {
+        "stateCode": "10",
+        "districtCode": "10",
+        "district": "Katihar",
+        "subdivisionCode": "01",
+        "revenueCircleCode": "09",
+        "revenueCircle": "Barari",
+        "mappedVillageEntries": 88,
+        "exactSemapurLabelFound": false,
+        "candidateLocalitiesFromOfficialBroadbandTable": [
+          "Baisa Govindpur",
+          "Bareta",
+          "Durgapur",
+          "Jagdishpur",
+          "Kabar",
+          "Sakraili",
+          "Sikkat",
+          "Sisia",
+          "Sujapur",
+          "Sukhasan"
+        ]
+      },
+      "probeResults": [
+        {
+          "method": "getVVVVExtentGeoref",
+          "selection": "Barari circle, village Barari(254), Cadastral Survey, CS Map sheets 01 and 02",
+          "httpStatus": 200,
+          "result": "Both Barari(254) sheet extents lie west of the WUP point. The UTM45N target is 548652.82, 2820190.88; neither sheet bbox contains it."
+        },
+        {
+          "method": "getVVVVExtentGeoref",
+          "selection": "Eight named Semapur-TE candidate villages from government broadband table, CS map sheets returned by selectors",
+          "httpStatus": 200,
+          "result": "No tested sheet bbox for Baretha(202), Durgapur(163), Jagdishpur(171), Kabar(173), Sakraili(203), Sisia(192), Sujapur(196), or Sukhasan Milik(169) contains the WUP point. Other Barari-circle entries were not tested; this is not a negative result for the target registry."
+        }
+      ],
+      "coverageConclusion": "No target-area cadastral feature verified. Exact revenue mauza remains unresolved; Barari is a registry lead only.",
+      "nextStep": "Identify the revenue mauza containing the supplied coordinate from an authoritative local boundary or the remaining relevant BhuNaksha village extents; only then test its sheet and point lookup."
+    },
+    {
+      "cityId": "wup2025:10737",
+      "queueRank": 14,
+      "name": "Darauli",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.1350913588765,
+        84.1658019427551
+      ],
+      "administrativeIdentity": "Darauli tehsil/block, Siwan district. The public Siwan/BhuNaksha selectors include a revenue mauza Darauli(157), but the supplied WUP coordinate does not fall in the four exposed CS map-sheet bounding boxes for that mauza.",
+      "registryFound": null,
+      "registryLeadFound": true,
+      "registryLeadReason": "Official DILRMP reports digitized cadastral maps for Darauli tehsil, and BhuNaksha exposes mapped CS sheets for the namesake Darauli revenue mauza. The supplied WUP point is outside all four listed sheet bounds; exact neighboring mauza has not been determined.",
+      "selectorEvidence": {
+        "stateCode": "10",
+        "districtCode": "16",
+        "district": "Siwan",
+        "subdivisionCode": "01",
+        "subdivision": "Siwan Sadar",
+        "revenueCircleCode": "01",
+        "revenueCircle": "Darauli",
+        "revenueVillageCode": "0046",
+        "revenueVillage": "Darauli(157)",
+        "surveyType": "CS",
+        "mapType": "06",
+        "sheetCodes": [
+          "01",
+          "02",
+          "03",
+          "04"
+        ],
+        "wupPointUtm45": [
+          216614.05,
+          2893733.54
+        ],
+        "sheetBoundsContainWupPoint": false,
+        "sheet04Extent": "degenerate zero-area extent returned by endpoint"
+      },
+      "sampleParcel": {
+        "responseFile": "bihar-point-samples.json#Darauli",
+        "samplePointIsWupCoordinate": false,
+        "result": "Inside a selected Darauli(157) CS sheet, getPlotAtXY and ScalarDatahandler OP=4 returned the same stable parcel ID and plot number; OP=4 provided only a bbox, no polygon."
+      },
+      "dilrmpUrl": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218",
+      "coverageConclusion": "A namesake local cadastral registry/map is present, but the WUP city point is outside its exposed sheets. No exact target-point parcel feature verified.",
+      "nextStep": "Resolve the WUP point to the neighboring exact revenue mauza and inspect its BhuNaksha map sheets; the namesake Darauli sheets alone do not establish point coverage."
+    },
+    {
+      "cityId": "wup2025:10791",
+      "queueRank": 18,
+      "name": "Raghunathpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.9929452167679,
+        84.2915701031615
+      ],
+      "administrativeIdentity": "Raghunathpur tehsil/block, Siwan district. The public Siwan/BhuNaksha selectors include revenue mauza Raghunathpur(384), but the supplied WUP coordinate lies east of all three exposed CS map-sheet bounding boxes for that mauza.",
+      "registryFound": null,
+      "registryLeadFound": true,
+      "registryLeadReason": "Official DILRMP reports cadastral maps for Raghunathpur tehsil, and BhuNaksha exposes three mapped CS sheets for the namesake Raghunathpur revenue mauza. The supplied WUP point falls outside all three listed sheet bounds; exact neighboring mauza has not been determined.",
+      "selectorEvidence": {
+        "stateCode": "10",
+        "districtCode": "16",
+        "district": "Siwan",
+        "subdivisionCode": "01",
+        "subdivision": "Siwan Sadar",
+        "revenueCircleCode": "06",
+        "revenueCircle": "Raghunathpur",
+        "revenueVillageCode": "0493",
+        "revenueVillage": "Raghunathpur(384)",
+        "surveyType": "CS",
+        "mapType": "06",
+        "sheetCodes": [
+          "01",
+          "02",
+          "03"
+        ],
+        "wupPointUtm45": [
+          228867.84,
+          2877712.48
+        ],
+        "sheetBoundsContainWupPoint": false
+      },
+      "sampleParcel": {
+        "responseFile": "bihar-point-samples.json#Raghunathpur",
+        "samplePointIsWupCoordinate": false,
+        "result": "Inside a selected Raghunathpur(384) CS sheet, getPlotAtXY and ScalarDatahandler OP=4 returned the same stable parcel ID and plot number; OP=4 provided only a bbox, no polygon."
+      },
+      "dilrmpUrl": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218",
+      "coverageConclusion": "A namesake local cadastral registry/map is present, but the WUP city point is outside its exposed sheets. No exact target-point parcel feature verified.",
+      "nextStep": "Resolve the WUP point to the neighboring exact revenue mauza and inspect its BhuNaksha map sheets; the namesake Raghunathpur sheets alone do not establish point coverage."
+    }
+  ],
+  "otherOfficialLeads": [
+    {
+      "url": "https://katihar.nic.in/block-maps/",
+      "observation": "Katihar district portal publishes block maps including Barari, but these are administrative block-map downloads, not georeferenced parcel polygons."
+    },
+    {
+      "url": "https://siwan.nic.in/village-panchayats/",
+      "observation": "Official Siwan village/panchayat table lists village groups for Darauli, including namesake Darauli."
+    },
+    {
+      "url": "https://bbnl.nic.in/admnis/admin/showimg.aspx?ID=11",
+      "observation": "Government of India Bharat Broadband Network Limited administrative table associates several Barari Gram Panchayats with Semapur TE; it does not identify cadastral revenue-mauza boundaries or parcel sheets for the WUP point."
+    }
+  ],
+  "requestMatrix": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "assessment": "Official main viewer loaded with Chrome browser headers and cookie session."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/index.js",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/javascript",
+      "assessment": "Client source confirms public MapInfo and ScalarDatahandler point/ID operations; no vector or bounded viewport geometry route is called by the viewer."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+      "method": "POST",
+      "httpStatus": 200,
+      "form": {
+        "state": "10"
+      },
+      "assessment": "Bihar selector reports seven levels."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "assessment": "Target-only hierarchy selectors returned Katihar/Barari and Siwan/Darauli and Siwan/Raghunathpur cadastral village lists, with exact codes captured above."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST",
+      "httpStatus": 200,
+      "formShape": {
+        "state": "10",
+        "gisLevels": "<target district, subdivision, circle, mauza, CS, map type, sheet>",
+        "srs": "0"
+      },
+      "assessment": "Returns the selected cadastral sheet's EPSG:32645 rectangular extent and a GIS code. Tested exact named-mauza sheet extents do not contain the Darauli or Raghunathpur WUP coordinate; only a small named candidate subset was checked for Semapur."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "httpStatus": 200,
+      "formShape": {
+        "state": "10",
+        "giscode": "<viewer-returned GIS code>",
+        "x": "EPSG:32645 easting",
+        "y": "EPSG:32645 northing"
+      },
+      "assessment": "At selected-sheet sample points, returns one opaque plot ID plus kide/plot number. An empty giscode at each WUP city coordinate returned HTTP 204, so this is not a city-wide coordinate query."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=4",
+      "method": "GET",
+      "httpStatus": 200,
+      "queryShape": {
+        "state": "10",
+        "levels": "<full target sheet hierarchy>",
+        "x": "EPSG:32645 easting",
+        "y": "EPSG:32645 northing"
+      },
+      "assessment": "Returns single-plot information including the same parcel ID, plot number, and xmin/ymin/xmax/ymax envelope; no Polygon/MultiPolygon/WKT/GeoJSON is returned. Sanitized point examples are in bihar-point-samples.json."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS",
+      "method": "GET",
+      "httpStatus": 200,
+      "responseContentType": "image/png",
+      "assessment": "Official viewer-configured GetMap request returns the rendered village/cadastral map raster. Standard GetFeatureInfo probes returned only the raster response (no feature JSON/GML). This image can be placed against a map-sheet extent, but the viewer supplies neither vector geometry nor complete bounded parcel features."
+    }
+  ],
+  "adapterDecision": {
+    "descriptorProposed": false,
+    "backendAdapterWritten": false,
+    "testWritten": false,
+    "reason": "The official public protocol supports point identification for one manually selected sheet and exact opaque plot IDs, but not a complete bounded viewport query. ScalarDatahandler provides bbox envelopes only, and WMS provides raster imagery. No complete polygon feature response was found. A viewport assembled from repeated click samples or raster-derived boundaries would be incomplete or approximate and is not implemented.",
+    "revisitWhen": "A public bounded vector query or downloadable georeferenced parcel polygon layer with stable IDs and completeness semantics is found; separately resolve the WUP coordinate to its exact revenue mauza."
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "exactQuery": "official Bihar BhuNaksha cadastral map parcel viewer Semapur Katihar Barari",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://katihar.nic.in/block-maps/"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "सेमापुर कटिहार बरारी मौजा भू नक्शा खाता खेसरा सरकारी",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://bbnl.nic.in/admnis/admin/showimg.aspx?ID=11"
+      ]
+    },
+    {
+      "language": "English",
+      "exactQuery": "official Siwan Bihar village list Darauli Raghunathpur revenue villages",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://siwan.nic.in/village-panchayats/",
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218"
+      ]
+    },
+    {
+      "language": "Hindi (Devanagari)",
+      "exactQuery": "सीवान दरौली रघुनाथपुर राजस्व गांव भू नक्शा सरकारी",
+      "date": "2026-10-07",
+      "resultURLs": [
+        "https://bhunaksha.bihar.gov.in/index.jsp",
+        "https://siwan.nic.in/village-panchayats/"
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "type": "empty_map_info",
+      "endpoint": "getPlotAtXY with an empty giscode at WUP city point",
+      "httpStatus": 204,
+      "assessment": "The public point lookup requires a preselected map-sheet GIS code; it does not search all cadastral records spatially by WGS84 coordinate."
+    },
+    {
+      "type": "target_sheet_mismatch",
+      "endpoint": "getVVVVExtentGeoref",
+      "assessment": "All exposed CS sheet extent bboxes for namesake Darauli(157) and Raghunathpur(384) revenue mauzas fall outside their respective WUP city points. The exact adjacent mauza was not resolved, so this does not establish absence of surrounding parcel coverage."
+    },
+    {
+      "type": "empty_wms_feature_info",
+      "endpoint": "/WMS GetFeatureInfo with JSON/HTML/GML requested",
+      "httpStatus": 200,
+      "assessment": "The service returned image/png map content, not feature attributes or geometry."
+    },
+    {
+      "type": "local_sandbox_dns",
+      "endpoint": "bhunaksha.bihar.gov.in direct DNS from default sandbox shell",
+      "assessment": "Initial sandbox request failed before HTTP. Repeated official reads were made with `require_escalated`, browser headers and cookies; external requests succeeded. Sandbox DNS failure is not treated as upstream outage."
+    }
+  ],
+  "transportChecks": {
+    "checkedAt": "2026-10-07",
+    "mapRequest": {
+      "endpoint": "https://bhunaksha.bihar.gov.in/WMS",
+      "request": "WMS 1.1.1 GetMap",
+      "parameters": {
+        "LAYERS": "VILLAGE_MAP",
+        "STYLES": "VILLAGE_MAP",
+        "FORMAT": "image/png",
+        "SRS": "EPSG:32645",
+        "WIDTH": 256,
+        "HEIGHT": 256,
+        "state": "10",
+        "gis_code": "GIS code returned by getVVVVExtentGeoref",
+        "overlay_codes": ""
+      },
+      "response": "All three requests returned HTTP 200 image/png at exactly 256x256. The map is a raster image aligned to the supplied BBOX; it contains no feature IDs or parcel polygon coordinates.",
+      "nearestOfficialCSsheetSamples": [
+        {
+          "city": "Semapur",
+          "targetUtm45": [
+            548652.82,
+            2820190.88
+          ],
+          "selectedRevenueMauza": "Barari(254)",
+          "levels": "10,01,09,0558,CS,06,02,",
+          "gisCode": "CS10010905582540602",
+          "bbox": [
+            537905.8513682154,
+            2820051.404456005,
+            539721.6225131694,
+            2821949.960197803
+          ],
+          "distanceToBboxM": 8931.2,
+          "targetInsideBbox": false,
+          "httpStatus": 200,
+          "contentType": "image/png",
+          "bytes": 6477,
+          "actualDimensions": [
+            256,
+            256
+          ],
+          "selectionScope": "Barari(254), the nearest sheet of that tested mauza; exact Semapur revenue mauza unresolved, so this is not asserted globally nearest."
+        },
+        {
+          "city": "Darauli",
+          "targetUtm45": [
+            216614.05,
+            2893733.54
+          ],
+          "selectedRevenueMauza": "Darauli(157)",
+          "levels": "16,01,01,0046,CS,06,01,",
+          "gisCode": "CS16010100461570601",
+          "bbox": [
+            212366.71219875166,
+            2886409.1401322647,
+            215463.17966433006,
+            2888863.503121295
+          ],
+          "distanceToBboxM": 5004.2,
+          "targetInsideBbox": false,
+          "httpStatus": 200,
+          "contentType": "image/png",
+          "bytes": 5152,
+          "actualDimensions": [
+            256,
+            256
+          ],
+          "selectionScope": "Nearest of all four exposed CS sheets for namesake Darauli(157)."
+        },
+        {
+          "city": "Raghunathpur",
+          "targetUtm45": [
+            228867.84,
+            2877712.48
+          ],
+          "selectedRevenueMauza": "Raghunathpur(384)",
+          "levels": "16,01,06,0493,CS,06,02,",
+          "gisCode": "CS16010604933840602",
+          "bbox": [
+            226783.5008673066,
+            2877373.2023815215,
+            228374.3734425999,
+            2880107.1629167143
+          ],
+          "distanceToBboxM": 493.5,
+          "targetInsideBbox": false,
+          "httpStatus": 200,
+          "contentType": "image/png",
+          "bytes": 7277,
+          "actualDimensions": [
+            256,
+            256
+          ],
+          "selectionScope": "Nearest of all three exposed CS sheets for namesake Raghunathpur(384)."
+        }
+      ]
+    },
+    "getFeatureInfo": {
+      "endpoint": "https://bhunaksha.bihar.gov.in/WMS",
+      "request": "WMS 1.1.1 GetFeatureInfo against Raghunathpur(384) CS sheet 02; LAYERS=QUERY_LAYERS=VILLAGE_MAP; BBOX, SRS, WIDTH=256, HEIGHT=256, X=Y=128; INFO_FORMAT varied among application/json, text/html, application/vnd.ogc.gml, application/vnd.ogc.gml/3.1.1.",
+      "observed": "All four requests returned HTTP 200 image/png with the same 7277-byte body as GetMap, not feature attributes or geometry."
+    },
+    "getPointsfromPNIU": {
+      "endpoint": "POST /rest/MapInfo/getPointsfromPNIU",
+      "clientCaller": "index.js getPlotForPNIU(pniu) posts state, pniu, and current gisCode; it splits the comma-delimited response and reads indexes 4..9 as plot ID, plot number, xmin, ymin, xmax, ymax.",
+      "probe": "Using an already selected Raghunathpur plot PNIU and GIS code returned HTTP 200 text/plain, 10 comma-delimited tokens. The layout is projected point x/y, geographic point lon/lat, plot ID, plot number, then four geographic bbox values.",
+      "assessment": "This is a selected-plot locator/envelope response, not a polygon ring or complete viewport query. No property values or PNIU/ID values retained here."
+    },
+    "scalarClientInspection": {
+      "source": "https://bhunaksha.bihar.gov.in/index.js",
+      "httpStatus": 200,
+      "literalScalarOperations": [
+        "2",
+        "4",
+        "5"
+      ],
+      "op5Probe": {
+        "httpStatus": 401,
+        "contentType": "text/html;charset=UTF-8",
+        "note": "Retry after loading the viewer and establishing its cookie session also returned 401; no response schema was available. The actual client calls OP=5 with state, selected levels, and plotno."
+      },
+      "op4ObservedKeys": [
+        "ymin",
+        "has_data",
+        "xmin",
+        "ymax",
+        "xmax",
+        "plotNo",
+        "plotInfoLinks",
+        "ID",
+        "gisCode",
+        "PNIU",
+        "attrs",
+        "info"
+      ],
+      "assessment": "OP=4 gives scalar attributes and bbox envelope. OP=2 is used for administrative selection and OP=5 for plot-number lookup in the client. None of the inspected response schemas supplies polygon geometry."
+    },
+    "conclusion": "The actual WMS raster transport works and is dimensionally georeferenced by BBOX, but it is not a complete vector or parcel-ID response. GetFeatureInfo returns only the same PNG. The PNIU path returns a single plot locator and bbox, not a polygon. OP=5 returned 401 in the read-only probe. The tested public-client MapInfo, ScalarDatahandler, and WMS paths yielded no bounded exact-ID polygon transport; all three WUP points are outside the tested named-mauza CS sheet extents.",
+    "semapurBroadRSAnomaly": {
+      "candidate": "Durgapur(163), RS survey, map type 07, sheet 01",
+      "levels": "10,01,09,0475,RS,07,01,",
+      "extentEPSG": "EPSG:32645",
+      "bbox": [
+        138.42324688124012,
+        132.0442026805481,
+        551103.5808433973,
+        2823375.985777463
+      ],
+      "exactWupPointIdentifyHttpStatus": 204,
+      "assessment": "The numerically enormous extent contains the target only because its minimum coordinates are near zero; an exact coordinate identify returned no content. It is treated as an anomalous extent, not as confirmed coverage. No geometry or parcel ID resulted.",
+      "candidateExtentScope": "One candidate Durgapur(163) RS sheet returned via official selector; exact Semapur mauza remains unresolved."
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "name": "Fort Lauderdale",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 370,
+  "point": [
+    26.2136403895659,
+    -80.2006810091933
+  ],
+  "population2025": 1368027,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [
+    "fort-lauderdale-acceptance.json",
+    "fort-lauderdale-quality.json",
+    "city-7380-fort-lauderdale-samples.geojson"
+  ],
+  "scopeLimits": "46 valid, distinct Fort Lauderdale ground Parcel records verified in thirteen bounded cells around the unchanged ranked WUP locator. The publisher-defined RECORDTYPE=Parcel filter excludes redundant Condo Unit rows and is enforced on every query. OBJECTID is the unique service row identity; PARCELID is a non-unique display label. Complete object-ID manifests, forced three-row paging (26 rows over nine pages), all 46 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32617 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. This is municipal tax-parcel geometry; citywide completeness, legal title, survey accuracy and permanent service-row identity are unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The City of Fort Lauderdale’s TaxParcel MapServer publishes real-property polygon areas combined with city assessing and tax-system data. This confirms a municipal tax-parcel layer, not legal title or a cadastral survey.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Coverage, current legal title and survey accuracy beyond the sampled cells remain unverified.",
+  "nextStep": "Review the enabled local parcel map and normal parcel selection.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Fort Lauderdale official parcel map GIS property appraiser parcel boundaries Broward County assessor GIS",
+        "result": "Found the City of Fort Lauderdale TaxParcel MapServer and layer metadata. The layer is a polygon feature layer; metadata lists extensive tax/owner/address fields, so only OBJECTID and PARCELID were requested.",
+        "method": "Separate English-language search followed by official city service metadata and bounded point query review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer",
+        "observation": "Official City of Fort Lauderdale map service describes published real-property areas combined with assessment and tax information; notes possible redundant condo geometry."
+      },
+      {
+        "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0",
+        "observation": "Official polygon feature layer; supports JSON/GeoJSON. A bounded WUP-point query returned one polygon using OBJECTID/PARCELID only."
+      },
+      {
+        "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0",
+        "observation": "The qualified bounded source scope is RECORDTYPE=Parcel with OBJECTID native identity. RECORDTYPE=Condo Unit rows are excluded by an exact validated publisher-defined filter; no owner/address/account details were requested."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The city TaxParcel service contains both Parcel and Condo Unit feature rows. The qualified source scope uses the publisher’s RECORDTYPE=Parcel filter and OBJECTID as the unique native row identity; PARCELID is retained only as a non-unique label. A 13-cell run passed forced three-row paging (26 source rows over nine pages), fresh geometry reads for all 46 IDs, explicit absence, footprint, and binding checks. All 46 filtered geometries passed independent EPSG:32617 GEOS validity/duplicate/overlap checks. The ranked WUP point is covered by ground parcel OBJECTID 97983. This is a city tax-parcel layer, not a title determination or citywide completeness claim.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 3,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "13-cell adapter qualification passed for RECORDTYPE=Parcel; WUP point matched native row 97983",
+      "retainedFeatures": 3,
+      "fieldsRequested": [
+        "OBJECTID",
+        "PARCELID",
+        "RECORDTYPE",
+        "geometry"
+      ],
+      "geometryRetained": true,
+      "geojsonFile": "city-7380-fort-lauderdale-samples.geojson"
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer",
+    "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0"
+  ],
+  "sourceIds": [
+    "us-fl-fort-lauderdale-taxparcels-ground"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The City of Fort Lauderdale’s TaxParcel MapServer publishes real-property polygon areas combined with city assessing and tax-system data. This confirms a municipal tax-parcel layer, not legal title or a cadastral survey.",
+    "verifiedOpenScope": "46 valid, distinct Fort Lauderdale ground Parcel records verified in thirteen bounded cells around the unchanged ranked WUP locator. The publisher-defined RECORDTYPE=Parcel filter excludes redundant Condo Unit rows and is enforced on every query. OBJECTID is the unique service row identity; PARCELID is a non-unique display label. Complete object-ID manifests, forced three-row paging (26 rows over nine pages), all 46 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32617 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. This is municipal tax-parcel geometry; citywide completeness, legal title, survey accuracy and permanent service-row identity are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Fort Lauderdale official TaxParcel service (ground Parcel records)",
+    "operator": "City of Fort Lauderdale GIS",
+    "url": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0",
+    "scope": "46 valid, distinct Fort Lauderdale ground Parcel records verified in thirteen bounded cells around the unchanged ranked WUP locator. The publisher-defined RECORDTYPE=Parcel filter excludes redundant Condo Unit rows and is enforced on every query. OBJECTID is the unique service row identity; PARCELID is a non-unique display label. Complete object-ID manifests, forced three-row paging (26 rows over nine pages), all 46 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32617 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. This is municipal tax-parcel geometry; citywide completeness, legal title, survey accuracy and permanent service-row identity are unverified."
+  },
+  "wupCityCode": 7380,
+  "cityId": "wup2025:7380",
+  "queueRank": 370,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    26.2136403895659,
+    -80.2006810091933
+  ],
+  "adapterReady": true,
+  "appCityId": "fortlauderdale",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "46 valid, distinct Fort Lauderdale ground Parcel records verified in thirteen bounded cells around the unchanged ranked WUP locator. The publisher-defined RECORDTYPE=Parcel filter excludes redundant Condo Unit rows and is enforced on every query. OBJECTID is the unique service row identity; PARCELID is a non-unique display label. Complete object-ID manifests, forced three-row paging (26 rows over nine pages), all 46 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32617 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. This is municipal tax-parcel geometry; citywide completeness, legal title, survey accuracy and permanent service-row identity are unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/fort-lauderdale-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/fort-lauderdale-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/fort-lauderdale-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-fl-fort-lauderdale-taxparcels-ground",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/fort-lauderdale-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/fort-lauderdale-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00"
+}

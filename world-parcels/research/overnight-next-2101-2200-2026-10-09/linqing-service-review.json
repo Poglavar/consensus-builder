@@ -1,0 +1,48 @@
+{
+  "cityRecord": "city-9650-linqing.json",
+  "cityCode": 9650,
+  "wupCityCode": 9650,
+  "queueRank": 2175,
+  "rank": 2175,
+  "name": "Linqing",
+  "cityName": "Linqing",
+  "country": "China",
+  "iso2": "CN",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [36.8470453911166, 115.712400011323],
+  "population2025": 267732,
+  "population2025k": 267.732,
+  "populationUnit": "persons",
+  "status": "complete",
+  "runtimeEligible": false,
+  "registryFound": true,
+  "geometryVerified": false,
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "discoveryMethod": "first-party English and Simplified Chinese web discovery plus bounded HTTPS inspection",
+  "queryOutcomes": "English and Chinese searches found an official Linqing municipal planning publication and the Ministry of Natural Resources national catalog. They did not reveal a current public parcel viewer/API, native schema, CRS, or anonymous bounded geometry response.",
+  "attempts": [
+    {"method": "web search", "language": "English", "query": "Linqing China cadastral parcel map GIS official Linqing land registry map", "outcome": "Official Linqing domain and national catalog result found; no parcel geometry endpoint."},
+    {"method": "web search", "language": "Chinese (Simplified)", "query": "临清市 不动产登记 地籍图 宗地 GIS 官方", "outcome": "Official Linqing planning PDF and national catalog found; no anonymous cadastral map/API geometry."},
+    {"method": "GET/open", "url": "https://www.linqing.gov.cn/", "outcome": "Official-domain open timed out; no TLS exception, login, or CAPTCHA bypass used."},
+    {"method": "GET/open", "url": "https://www.linqing.gov.cn/resources/public/20260212/698d702d306812a92d8d2b57.pdf", "outcome": "Official planning PDF fetch timed out; no schema or geometry obtained."},
+    {"method": "GET/open", "url": "https://www.webmap.cn/main.do?method=index2", "httpStatus": 200, "outcome": "Official national catalog opened; no Linqing parcel service exposed in inspected page."}
+  ],
+  "sourceAssessment": {
+    "localCustodian": "Linqing municipal government land-use/planning administration is evidenced by the official municipal planning publication; a dedicated cadastral registry custodian was not separately identified.",
+    "publicService": "No public cadastral feature service or anonymous parcel geometry response verified.",
+    "nativeFieldsObserved": "No parcel API schema was retrieved.",
+    "safeFieldAllowlist": ["stable native parcel identifier only", "geometry"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account"]
+  },
+  "scopeLimits": [
+    "Exact WUP point is a locator only; timeout or zero response would not establish citywide absence.",
+    "No city boundary or municipal parcel-coverage polygon was obtained.",
+    "No parcel polygons are retained; no GeoJSON sample is written.",
+    "Research completion does not constitute source integration, adapter admission, or runtime qualification."
+  ],
+  "sampleFile": null,
+  "runtimeReadiness": "held_pending_independent_serial_qualification",
+  "uncertainty": "Local planning context is evidenced, but the current cadastral custodian, public viewer/API, CRS, field schema, parcel coverage, and anonymous geometry availability are unresolved."
+}

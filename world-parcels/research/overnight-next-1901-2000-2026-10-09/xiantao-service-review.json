@@ -1,0 +1,46 @@
+{
+  "cityRecord": "city-10336-xiantao.json",
+  "cityCode": 10336,
+  "queueRank": 1938,
+  "city": "Xiantao",
+  "country": "China",
+  "countryCode": "CN",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "Xiantao Real Estate Registration Center / Xiantao Natural Resources and Urban-Rural Construction authority; official Hubei and Xiantao publications evidence the local custodian and service workflows",
+  "serviceUrl": null,
+  "discoveryUrls": [
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250515_5651271.shtml",
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202011/t20201118_3036398.shtml",
+    "https://credit.xiantao.gov.cn/wcm/content/detail/20230704155156_100562.html",
+    "https://credit.xiantao.gov.cn/wcm/content/detail/20240813162917_100312.html",
+    "https://credit.xiantao.gov.cn/wcm/content/detail/20240820144539_100352.html",
+    "https://app.www.gov.cn/govdata/gov/202310/12/508153/article.html"
+  ],
+  "attemptedRoutes": [
+    {"route":"English and Chinese first-party web discovery","outcome":"completed; local custodian and service descriptions found, no anonymous parcel API URL exposed"},
+    {"route":"GET official Hubei/Xiantao registration and bureau articles","outcome":"succeeded/indexed; articles describe online registration, 一码看图, and visual query services but return no parcel feature schema or geometry"},
+    {"route":"GET https://credit.xiantao.gov.cn/wcm/content/detail/20230704155156_100562.html","outcome":"succeeded with verified TLS; current article HTML inspected, ordinary scripts only, no parcel viewer configuration or feature endpoint"},
+    {"route":"湖北政务服务网 / 鄂汇办 service references","outcome":"discovered as official identity-mediated channels; no login, credentials, private token, CAPTCHA bypass, or unsafe data request attempted"},
+    {"route":"Exact WUP point [30.3722179748149, 113.449733072211]","outcome":"not run because no anonymous parcel endpoint was identified; no point-hit or absence claim made"}
+  ],
+  "scope": "Public first-party discovery and bounded GET inspection covered the Xiantao local registration custodian, official Hubei reporting, Xiantao municipal data-policy material, and the referenced online registration ecosystem. Citywide open parcel coverage was not verified.",
+  "schemaAndCrs": "Unavailable; no anonymous parcel feature response was obtained.",
+  "nativeIdentity": "Unavailable; no parcel feature was retained.",
+  "fieldMapping": {},
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON sample retained; there was no safe native parcel ID or geometry.",
+  "safeFieldAllowlist": ["geometry", "stable native parcel id if later exposed"],
+  "unsafeDataPolicy": "No owner, titleholder, address, contact, personal, tax/account, legal-description, or rights/title fields were requested or retained. No authentication or private access was attempted.",
+  "officialCustodyEvidence": "Official Hubei Natural Resources reports identify the Xiantao Real Estate Registration Center and Xiantao natural-resources authority; official Xiantao publications describe the city's registration data platform and map-related public-service functions. This is local-custodian evidence, while general national policy was kept separate as background only.",
+  "limits": [
+    "No public anonymous parcel feature endpoint, schema, CRS, native ID, or geometry was exposed.",
+    "The described 一码看图/以图查房 workflows may be identity-mediated and property-query oriented rather than open parcel layers.",
+    "No exact-point query was possible and no absence inference was made.",
+    "No GeoJSON sample was retained because the safe identity-plus-geometry requirement was not met.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "A current official portal or restricted/public map service may exist outside the indexed pages, but this attempt did not expose an anonymous, safe, reproducible parcel response. Further qualification requires independent inspection of the current official portal."
+}

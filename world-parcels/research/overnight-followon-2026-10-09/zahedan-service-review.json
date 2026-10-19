@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7335-zahedan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Separate English and Persian searches did not establish a Zahedan-specific cadastral registry/map office or a public anonymous parcel-feature service. Results for national cadastral/registration systems did not disclose a city-level map endpoint, safe feature schema or point coverage that could be verified. No property or personal-record query was attempted.",
+  "registryAssessment": "No city-specific first-party registry/cadastre evidence tying the service scope to Zahedan was verified in this pass; registry status remains unresolved.",
+  "officialPrimarySources": [],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zahedan Iran official land registry cadastral parcel map GIS Sistan Baluchestan",
+      "result": "Separate English and Persian searches did not establish a Zahedan-specific cadastral registry/map office or a public anonymous parcel-feature service. Results for national cadastral/registration systems did not disclose a city-level map endpoint, safe feature schema or point coverage that could be verified. No property or personal-record query was attempted.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": []
+    },
+    {
+      "language": "Persian",
+      "query": "زاهدان نقشه کاداستر قطعات زمین ثبت اسناد و املاک سیستان و بلوچستان سامانه رسمی",
+      "result": "Separate English and Persian searches did not establish a Zahedan-specific cadastral registry/map office or a public anonymous parcel-feature service. Results for national cadastral/registration systems did not disclose a city-level map endpoint, safe feature schema or point coverage that could be verified. No property or personal-record query was attempted.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+      "actualResultUrls": []
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no anonymous safe-ID geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "No city-specific first-party registry/cadastre evidence tying the service scope to Zahedan was verified in this pass; registry status remains unresolved.",
+    "verifiedOpenScope": "Separate English and Persian searches did not establish a Zahedan-specific cadastral registry/map office or a public anonymous parcel-feature service. Results for national cadastral/registration systems did not disclose a city-level map endpoint, safe feature schema or point coverage that could be verified. No property or personal-record query was attempted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether a local registry or public cadastre layer exists for Zahedan and covers the WUP point remains unknown.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification."
+}

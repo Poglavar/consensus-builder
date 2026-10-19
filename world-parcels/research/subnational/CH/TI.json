@@ -1,0 +1,63 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "regionCode": "TI",
+ "regionName": "TI",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; Accept-Language: de-CH,de;q=0.9; Referer https://geodienste.ch/; cookie jar used",
+ "status": "verified_partial_region",
+ "source": {
+  "sourceId": "ch-geodienste-av0",
+  "name": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
+  "operator": "Cantons and Confederation via geodienste.ch",
+  "scope": "canton TI as one filter of a multi-canton national aggregate",
+  "endpoint": "https://geodienste.ch/db/av_0/deu",
+  "method": "GET",
+  "responseFormat": "WFS 2.0 GML 3.2 (text/xml)",
+  "crs": "EPSG:2056",
+  "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. (per services.json); canton terms https://www4.ti.ch/dt/sg/sai/ugeo/temi/geoportale-ticino/geoportale/condizioni-utilizzo/"
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "ch-geodienste-av0",
+  "requestUrl": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2722100,1116900,2722250,1117050,urn:ogc:def:crs:EPSG::2056",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "text/xml",
+  "spatialTestAreaLonLat": "LV95 150 m box at E2722100 N1116900 (Bellinzona)",
+  "parcelRecordCount": 3,
+  "recordListPath": "wfs:member/ms:RESF",
+  "geometryType": "gml:Polygon",
+  "closedRings": true,
+  "idField": "ms:EGRIS_EGRID / ms:Nummer + ms:NBIdent",
+  "responseFile": "research/subnational/CH/TI-parcel-response.json",
+  "pagination": "WFS 2.0 STARTINDEX/COUNT",
+  "regionSampled": "Bellinzona"
+ },
+ "regionWideClaimed": false,
+ "regionWideBasis": "geodienste.ch services.json: cantonal_coverage=false, so the canton dataset is incomplete/partial; publication_data 'Frei erhältlich', open terms 'Freie Nutzung. Quellenangabe ist Pflicht.'",
+ "subregionsVerified": [
+  "Bellinzona"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "TI av entry: publication_data=Frei erhältlich, cantonal_coverage=False, contract_required_data=False, opendata_terms_data=Freie Nutzung. Quellenangabe ist Pflicht., terms_of_use_data=https://www4.ti.ch/dt/sg/sai/ugeo/temi/geoportale-ticino/geoportale/condizioni-utilizzo/"
+  },
+  {
+   "url": "https://geodienste.ch/services/av",
+   "observation": "geodienste.ch AV topic page (terms https://geodienste.ch/terms-of-use)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2722100,1116900,2722250,1117050,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "3 RESF features"
+  }
+ ],
+ "reuseStatus": "Freie Nutzung. Quellenangabe ist Pflicht. Licence text taken from services.json, canton terms page not independently read.",
+ "remainingUncertainty": "One 3-feature sample; full-canton completeness not measured. Cantonal_coverage false means only part of the canton's survey lots are published.",
+ "nextStep": "Cantonal geoportal (geo.ti.ch / map.geo.vs.ch) could be checked for full coverage."
+}

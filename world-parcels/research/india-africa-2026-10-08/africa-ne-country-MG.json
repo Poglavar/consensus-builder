@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_country_service_assessment",
+  "countryCode": "MG",
+  "country": "Madagascar",
+  "checkedAt": "2026-10-08",
+  "status": "subnational_only",
+  "accessModel": "unknown",
+  "searches": [
+    {
+      "searchScope": "shared_country_service_discovery",
+      "languageScript": "Malagasy and French",
+      "exactQuery": "Madagasikara sarintany tany fananan-tany PLOF cadastral",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=short",
+      "resultUrls": [
+        "https://torolalana.gov.mg/mg/services/transformer-cadastre-en-titre/",
+        "https://torolalana.gov.mg/mg/services/acheter-un-terrain-aupres-d-un-particulier/?category=habitat-et-foncier",
+        "https://cnlegis.gov.mg/uploads/L2022-013-VM.pdf",
+        "https://cnlegis.gov.mg/uploads/A31938-2020-VM.pdf",
+        "https://www.scribd.com/document/588334289/Torolalana-Fananan-tany",
+        "https://cnlegis.gov.mg/uploads/A6482-2022-VM.pdf",
+        "https://sif-mada.org/wp-content/uploads/2023/05/SIF_Guide_foncier.pdf",
+        "https://tenymalagasy.org/bins/teny1/drafitsarintanyvitakadasitra?w=drafitsarintanyvitakadasitra"
+      ],
+      "resultUrlScopeNote": "Results are country-level discovery leads only; no city coverage or parcel geometry is inferred.",
+      "summary": "Executed shared country search; URL list is the actual search output. Service availability and parcel coverage are assessed separately in portalsFound/requests."
+    }
+  ],
+  "portalsFound": [
+    {
+      "url": "https://observatoire-territoire.mg/carte/",
+      "observation": "SILOAT viewer inspected in previous Antananarivo retry, with public MapServer WFS PLOF layers."
+    },
+    {
+      "url": "https://observatoire-territoire.mg/",
+      "observation": "Official OITF explains PLOF is a local land status map by commune; earlier polygons had no attributes/stable IDs and cadastral semantics remain unconfirmed."
+    },
+    {
+      "url": "https://foncier.gov.mg/",
+      "observation": "Previous government host unreachable."
+    }
+  ],
+  "requests": [],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Country service or named municipality only, as described by source.",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "remainingUncertainty": "No city target in this pass has a fresh, bounded anonymous response containing parcel-like polygons and stable native IDs.",
+  "nextStep": "Clarify the candidate PLOF layer’s meaning, attributes, ID stability and coverage before assigning it to Antananarivo or any other city."
+}

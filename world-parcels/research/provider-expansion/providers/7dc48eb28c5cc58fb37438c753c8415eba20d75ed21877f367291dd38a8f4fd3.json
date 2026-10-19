@@ -1,0 +1,821 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "DE",
+ "checkedAt": "2026-10-12",
+ "status": "ready",
+ "category": "newOnEndpointWithScopedEntry",
+ "descriptorId": "us-de-firstmap-statewide-parcels",
+ "idPrefix": "US-DE-STATEWIDE-",
+ "sharesEndpointWithScopedEntry": "us-de-kent-dover-parcels",
+ "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+ "politeAccess": "HTTPS only, no credentials; at most one request start per 1.1 s per host (serial per-host queue), bounded envelopes and counts; outFields limited to native-ID, object-ID and ID-part fields.",
+ "uncoveredUnCities": [
+  {
+   "cityCode": "8228",
+   "name": "Wilmington",
+   "lat": 39.7459671684999,
+   "lon": -75.5615080662526,
+   "pop2025k": 127.195,
+   "rank": 4809
+  }
+ ],
+ "endpointMetadata": [
+  {
+   "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+   "layerName": "State Parcels",
+   "layerType": "Feature Layer",
+   "recordCount": 454603,
+   "maxRecordCount": 2000,
+   "currentVersion": 11.3,
+   "supportsPagination": true,
+   "supportedQueryFormats": "JSON, geoJSON, PBF",
+   "spatialReference": 3857,
+   "descriptionExcerpt": null,
+   "copyrightText": null,
+   "publishedFields": [
+    "OBJECTID",
+    "PIN",
+    "ACRES",
+    "COUNTY",
+    "UPDATED",
+    "Shape__Area",
+    "Shape__Length"
+   ]
+  }
+ ],
+ "identity": {
+  "choice": "PIN is county-assigned with county-specific formats, so COUNTY+PIN (composite). Unique in Wilmington (one apparent repeat was the same object returned twice by offset paging).",
+  "fields": [
+   "COUNTY",
+   "PIN"
+  ]
+ },
+ "statewideChecks": [
+  {
+   "state": "DE",
+   "endpoint": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0",
+   "checkedAt": "2026-10-12T10:57:11.249Z",
+   "results": {
+    "nullId": {
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=PIN+IS+NULL+OR+PIN+IN+%28%27%27%2C%27+%27%29&returnCountOnly=true&f=json",
+     "count": 6
+    },
+    "counties": {
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&outFields=COUNTY&returnDistinctValues=true&returnGeometry=false&orderByFields=COUNTY&f=json",
+     "values": [
+      "Kent",
+      "New Castle",
+      "Sussex"
+     ]
+    }
+   }
+  }
+ ],
+ "patternChecks": {
+  "DE": [
+   {
+    "where": "PIN LIKE '% ' OR PIN LIKE ' %'",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=PIN+LIKE+%27%25+%27+OR+PIN+LIKE+%27+%25%27&returnCountOnly=true&f=json",
+    "count": 1
+   },
+   {
+    "where": "COUNTY IS NULL",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NULL&returnCountOnly=true&f=json",
+    "count": 0
+   }
+  ]
+ },
+ "uniqueness": [
+  {
+   "boxDegrees": 0.01,
+   "checkedAt": "2026-10-12T10:53:38.319Z",
+   "fieldsRequested": [
+    "OBJECTID",
+    "PIN",
+    "COUNTY"
+   ],
+   "cities": [
+    {
+     "city": "Wilmington",
+     "cityCode": "8228",
+     "bbox": [
+      -75.566508,
+      39.740967,
+      -75.556508,
+      39.750967
+     ],
+     "count": 2655,
+     "rowsRead": 2656,
+     "keys": {
+      "PIN": {
+       "blanks": 0,
+       "distinct": 2655,
+       "repeatedValues": 1,
+       "sampledRepeats": 1,
+       "sampledRepeatsWithDistinctGeometry": 0,
+       "repeatSamples": [
+        {
+         "value": "2603410284",
+         "oids": [
+          20659383,
+          20659383
+         ],
+         "distinctGeometries": 1
+        }
+       ]
+      },
+      "COUNTY+PIN": {
+       "blanks": 0,
+       "distinct": 2655,
+       "repeatedValues": 1,
+       "sampledRepeats": 1,
+       "sampledRepeatsWithDistinctGeometry": 0,
+       "repeatSamples": [
+        {
+         "value": "New Castle~2603410284",
+         "oids": [
+          20659383,
+          20659383
+         ],
+         "distinctGeometries": 1
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "requests": [
+    {
+     "ts": "2026-10-12T10:53:39.191Z",
+     "method": "GET",
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&geometry=-75.566508%2C39.740967%2C-75.556508%2C39.750967&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:39.738Z",
+     "method": "GET",
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&geometry=-75.566508%2C39.740967%2C-75.556508%2C39.750967&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPIN%2CCOUNTY&returnGeometry=false&orderByFields=OBJECTID&resultOffset=0&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:40.802Z",
+     "method": "GET",
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&geometry=-75.566508%2C39.740967%2C-75.556508%2C39.750967&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPIN%2CCOUNTY&returnGeometry=false&orderByFields=OBJECTID&resultOffset=1000&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:41.907Z",
+     "method": "GET",
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=1%3D1&geometry=-75.566508%2C39.740967%2C-75.556508%2C39.750967&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CPIN%2CCOUNTY&returnGeometry=false&orderByFields=OBJECTID&resultOffset=2000&resultRecordCount=1000&f=json",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:43.061Z",
+     "method": "GET",
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?objectIds=20659383%2C20659383&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+     "status": 200
+    },
+    {
+     "ts": "2026-10-12T10:53:44.445Z",
+     "method": "GET",
+     "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?objectIds=20659383%2C20659383&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson",
+     "status": 200
+    }
+   ]
+  }
+ ],
+ "repeatInspection": [],
+ "liveVerification": {
+  "descriptorId": "us-de-firstmap-statewide-parcels",
+  "verifiedAt": "2026-10-12T11:08:22.906Z",
+  "ok": true,
+  "cities": [
+   {
+    "city": "Wilmington",
+    "cityCode": "8228",
+    "unPoint": [
+     39.7459671684999,
+     -75.5615080662526
+    ],
+    "attempts": [
+     {
+      "bbox": [
+       -75.562008,
+       39.745467,
+       -75.561008,
+       39.746467
+      ],
+      "features": 49
+     }
+    ],
+    "bbox": [
+     -75.562008,
+     39.745467,
+     -75.561008,
+     39.746467
+    ],
+    "ok": true,
+    "boundsSummary": {
+     "complete": true,
+     "returnsWGS84": true,
+     "featureCount": 49
+    },
+    "boundsFeatures": [
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740204",
+      "nativeId": "New%20Castle~2602740204",
+      "type": "Polygon",
+      "geometrySha256": "25df31e2ff091c945d484bfd5fc8f80f497e1bb37eb4bf4bca0e217ce6515022",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740205",
+      "nativeId": "New%20Castle~2602740205",
+      "type": "Polygon",
+      "geometrySha256": "914aa24088fe68ee7dae11fd5b376edf4aff62750f48d78542ba66168469cd5e",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740206",
+      "nativeId": "New%20Castle~2602740206",
+      "type": "Polygon",
+      "geometrySha256": "6f4371ebf1d4190c9bdb6c2679bc5ff49b7b961dd8816e6264f4af641c382357",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740207",
+      "nativeId": "New%20Castle~2602740207",
+      "type": "Polygon",
+      "geometrySha256": "6f92e96b6484f69f098dd49a64e300d1d9f1c5849fbbb90aa4f7031161bfa3e3",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740208",
+      "nativeId": "New%20Castle~2602740208",
+      "type": "Polygon",
+      "geometrySha256": "bec8862e03b736e10ca4c0342b9a13efab241d8447cb8ba441e7da147c2b9969",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740209",
+      "nativeId": "New%20Castle~2602740209",
+      "type": "Polygon",
+      "geometrySha256": "daadef2a8fca6b00d66fee3043c6effe6b0b2a25feab053000095fefe63efede",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740223",
+      "nativeId": "New%20Castle~2602740223",
+      "type": "Polygon",
+      "geometrySha256": "bbf6a595fbe185b0ec3ba7c8ad231fe96275b735119f27d349dd22540262107c",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740224",
+      "nativeId": "New%20Castle~2602740224",
+      "type": "Polygon",
+      "geometrySha256": "a39e91561992157a488b223efcf99cce48df15eb1c5b12ef9de1c41dc11de567",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740225",
+      "nativeId": "New%20Castle~2602740225",
+      "type": "Polygon",
+      "geometrySha256": "0b873a85682bc5c194985779a169bceb608b470d00d0086e4b034229977a40be",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740226",
+      "nativeId": "New%20Castle~2602740226",
+      "type": "Polygon",
+      "geometrySha256": "7d79324774580890e131ed15a172e476d7e2d5a8e2a6905aef8c56957dfffd99",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740227",
+      "nativeId": "New%20Castle~2602740227",
+      "type": "Polygon",
+      "geometrySha256": "c95320e1662830d678d04792948cae6bc85c250c5a48d3fea89be269a21776dd",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740228",
+      "nativeId": "New%20Castle~2602740228",
+      "type": "Polygon",
+      "geometrySha256": "917dc87c86e2395e5a5238e5b1489b1dd2806b9f306921b41cd9e36009188101",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740229",
+      "nativeId": "New%20Castle~2602740229",
+      "type": "Polygon",
+      "geometrySha256": "5fd4f1fa2ebe922d7fb299a5572643e28a516853fdd4b9256ce9f012fb5ddb3b",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740230",
+      "nativeId": "New%20Castle~2602740230",
+      "type": "Polygon",
+      "geometrySha256": "c4aa76b3db85a54de5c3dbb2e64ff4828b2bfb6d2a8fadc81634632a5f22be81",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740231",
+      "nativeId": "New%20Castle~2602740231",
+      "type": "Polygon",
+      "geometrySha256": "3f15f6adeb2a3b041d571c4cb42d7b797f236ce00ea354e17086e8f3e30cb9bd",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740232",
+      "nativeId": "New%20Castle~2602740232",
+      "type": "Polygon",
+      "geometrySha256": "a6c84630e78e4fceaca12988876d467a3fe6d250fc6366872f52c338ac898f33",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740233",
+      "nativeId": "New%20Castle~2602740233",
+      "type": "Polygon",
+      "geometrySha256": "88726703ac573c337afb28bf43cad1f271cf0a0a0fbfa30a2c503cd582f26e48",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2602740234",
+      "nativeId": "New%20Castle~2602740234",
+      "type": "Polygon",
+      "geometrySha256": "d56a3e8f0228e2a70fac1508f1818839b3f4ea77a926e5d87c70120f4c6770bc",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420152",
+      "nativeId": "New%20Castle~2603420152",
+      "type": "MultiPolygon",
+      "geometrySha256": "bc14cb68079cdf4ebe71222b047a9108244ff654755103142a842b2e0b7041f8",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420153",
+      "nativeId": "New%20Castle~2603420153",
+      "type": "Polygon",
+      "geometrySha256": "b3a95f7087537ba8cba914c2240d4b50196a87e366a6d493acffe687b2473f81",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420154",
+      "nativeId": "New%20Castle~2603420154",
+      "type": "Polygon",
+      "geometrySha256": "4edce6f65de92bceae67f429e0f1ec7da235c4857a033e5ce958288d8cb4b83d",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420155",
+      "nativeId": "New%20Castle~2603420155",
+      "type": "Polygon",
+      "geometrySha256": "3d14c33650723d88df582638ab4e2dfd243dd8be05e159aae85e338cf0313123",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420156",
+      "nativeId": "New%20Castle~2603420156",
+      "type": "Polygon",
+      "geometrySha256": "456c4df53a27e978e67df0f044f226a33a98c5039f1dbe644062d90067636087",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420013",
+      "nativeId": "New%20Castle~2603420013",
+      "type": "Polygon",
+      "geometrySha256": "ebbf056607c1228ebae359b395960afff33724ff9a1af294c1a4ccd7a57eea53",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420014",
+      "nativeId": "New%20Castle~2603420014",
+      "type": "Polygon",
+      "geometrySha256": "74eec03179731088bbac41aa94ffdd02ba769b2255c1bb834d7031bf52d4842a",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420015",
+      "nativeId": "New%20Castle~2603420015",
+      "type": "Polygon",
+      "geometrySha256": "d373c7e9d96a31109f764212fb3ada951cb2efff8dc47ff4b7198678b83ed2eb",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420016",
+      "nativeId": "New%20Castle~2603420016",
+      "type": "Polygon",
+      "geometrySha256": "c6e9a4d6f823a74526619ab351f99be39102a9cbae07fb14a5863b14dd3827cb",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420017",
+      "nativeId": "New%20Castle~2603420017",
+      "type": "Polygon",
+      "geometrySha256": "926f91c38facbfe164a362944a714b5ff79ef7698f8e3f299cecb0dc091fad2a",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420022",
+      "nativeId": "New%20Castle~2603420022",
+      "type": "Polygon",
+      "geometrySha256": "cc93070016e2f5fda6ddd2f8010de8b108b897a343e935c6118b3ed3ddc23602",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420023",
+      "nativeId": "New%20Castle~2603420023",
+      "type": "Polygon",
+      "geometrySha256": "9cb681a600a1658fca4e1192adf797378bfbfc6fb7dedc181f1ea63e667bf91c",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420024",
+      "nativeId": "New%20Castle~2603420024",
+      "type": "Polygon",
+      "geometrySha256": "da92dd3577ad76cfe721caaa449924ddb362eacdf8bef18c5087152a9e21e933",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420025",
+      "nativeId": "New%20Castle~2603420025",
+      "type": "Polygon",
+      "geometrySha256": "306d2aa59f61bb3e2f0470f9cd887ff3a65f948d5cdd53bd5d097c5d517cfe11",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420026",
+      "nativeId": "New%20Castle~2603420026",
+      "type": "Polygon",
+      "geometrySha256": "f3907a0eb0e0f0d19bd32468a9cbaae95c9108d0da15730ef54c0c390845f67e",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420027",
+      "nativeId": "New%20Castle~2603420027",
+      "type": "Polygon",
+      "geometrySha256": "65d12ebffbfab7fa636b9b5c27c611e53452dacc6b4e94f1fb20d35308ecdf68",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420028",
+      "nativeId": "New%20Castle~2603420028",
+      "type": "Polygon",
+      "geometrySha256": "47967e33aeba237dd45604a67b219a8d3f56b8b93b8129849c58158b28f15d8a",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420029",
+      "nativeId": "New%20Castle~2603420029",
+      "type": "Polygon",
+      "geometrySha256": "ca1afbff68e915089b939db094e081eedad5d5f4bfe6b432343fba8e1dcc13cf",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420030",
+      "nativeId": "New%20Castle~2603420030",
+      "type": "Polygon",
+      "geometrySha256": "1f25981f69fce73bfa759db2d74eb148b17a60874bc1d1ac90873c7597876a67",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420031",
+      "nativeId": "New%20Castle~2603420031",
+      "type": "Polygon",
+      "geometrySha256": "ef5d6cd154c9f366e6aabc3a13e4815123b132f15d42b67818f266100980e218",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420032",
+      "nativeId": "New%20Castle~2603420032",
+      "type": "Polygon",
+      "geometrySha256": "035e623ff890b4260e5ba93d69837c49fefb29be8fdc5d5a1c55c304945a12de",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420033",
+      "nativeId": "New%20Castle~2603420033",
+      "type": "Polygon",
+      "geometrySha256": "ad08f114dd1e8936d6b898e9cfac72acb660022df4f8e87c1a6e1f5238c2662f",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420034",
+      "nativeId": "New%20Castle~2603420034",
+      "type": "Polygon",
+      "geometrySha256": "97001424e90d989415b12e494028d1e9dcc7ac491b040bc792cedf6f2a961285",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420035",
+      "nativeId": "New%20Castle~2603420035",
+      "type": "Polygon",
+      "geometrySha256": "427098fa00f5656da375e3b5bbb4c285da63a358175d571c4c317bde51ec5649",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420071",
+      "nativeId": "New%20Castle~2603420071",
+      "type": "Polygon",
+      "geometrySha256": "6872fa8be9aeaa262cd531c3a5a3f9ddd4af396c98e12d9f130f7bea8aed9e42",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420072",
+      "nativeId": "New%20Castle~2603420072",
+      "type": "Polygon",
+      "geometrySha256": "f85fb45c5f59dedc909fd470e2d22e479a8ceb042ae85fd748cc5af2e605e30f",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420073",
+      "nativeId": "New%20Castle~2603420073",
+      "type": "Polygon",
+      "geometrySha256": "cd19df635d24da1585546a065b0b3e036c6669e744c3235ee0d1f13211f62fcb",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420074",
+      "nativeId": "New%20Castle~2603420074",
+      "type": "Polygon",
+      "geometrySha256": "d5b909630094c3f3cbb5642bae484195124fae5b6afbfe95e5f6318a7b77fa6f",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420075",
+      "nativeId": "New%20Castle~2603420075",
+      "type": "Polygon",
+      "geometrySha256": "cbe6afef4f62a03543b0e7702a2649704f3028214345753f9a2c381a1f90645b",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420076",
+      "nativeId": "New%20Castle~2603420076",
+      "type": "Polygon",
+      "geometrySha256": "f43d34a7b9ab795ab92d3285d0052b00fb745e1b39c020fbdbd31d9b73efa7b7",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     },
+     {
+      "id": "US-DE-STATEWIDE-New%20Castle~2603420077",
+      "nativeId": "New%20Castle~2603420077",
+      "type": "Polygon",
+      "geometrySha256": "59aec79df9c1d6608e82a1f9d9411ace486bf8714992f5caa338a876b8c57cdc",
+      "wgs84": true,
+      "closed": true,
+      "idOk": true
+     }
+    ],
+    "idsQuery": {
+     "ids": [
+      "US-DE-STATEWIDE-New%20Castle~2602740204",
+      "US-DE-STATEWIDE-New%20Castle~2602740205",
+      "US-DE-STATEWIDE-New%20Castle~2602740206"
+     ],
+     "absentIds": [],
+     "returned": 3,
+     "features": [
+      {
+       "id": "US-DE-STATEWIDE-New%20Castle~2602740204",
+       "geometrySha256": "25df31e2ff091c945d484bfd5fc8f80f497e1bb37eb4bf4bca0e217ce6515022"
+      },
+      {
+       "id": "US-DE-STATEWIDE-New%20Castle~2602740205",
+       "geometrySha256": "914aa24088fe68ee7dae11fd5b376edf4aff62750f48d78542ba66168469cd5e"
+      },
+      {
+       "id": "US-DE-STATEWIDE-New%20Castle~2602740206",
+       "geometrySha256": "6f4371ebf1d4190c9bdb6c2679bc5ff49b7b961dd8816e6264f4af641c382357"
+      }
+     ],
+     "sameIds": true,
+     "byteIdentical": true
+    },
+    "requests": [
+     {
+      "ts": "2026-10-12T11:08:24.236Z",
+      "method": "GET",
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&geometry=-75.562008%2C39.745467%2C-75.561008%2C39.746467&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:08:24.464Z",
+      "method": "GET",
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&geometry=-75.562008%2C39.745467%2C-75.561008%2C39.746467&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:08:25.557Z",
+      "method": "GET",
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&outFields=OBJECTID%2CCOUNTY%2CPIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=20655654%2C20661126%2C20659431%2C20659432%2C20661114%2C20661130%2C20659433%2C20661115%2C20655655%2C20661124%2C20655652%2C20655649%2C20655647%2C20655646%2C20655538%2C20655522%2C20661118%2C20661117%2C20661125%2C20661135%2C20655653%2C20661127%2C20655648%2C20661131%2C20661132%2C20661134%2C20661136%2C20655537%2C20655518%2C20661116%2C20661276%2C20661274%2C20661133%2C20655519%2C20655520%2C20655521%2C20655523%2C20655651%2C20655650%2C20661128%2C20661129%2C20661272%2C20661273%2C20661278%2C20661277%2C20661123%2C20661275%2C20659434%2C20659430",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:08:26.728Z",
+      "method": "GET",
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=%28COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL%29+AND+%28%28COUNTY+%3D+%27New+Castle%27+AND+PIN+%3D+%272602740204%27%29+OR+%28COUNTY+%3D+%27New+Castle%27+AND+PIN+%3D+%272602740205%27%29+OR+%28COUNTY+%3D+%27New+Castle%27+AND+PIN+%3D+%272602740206%27%29%29&f=json&returnCountOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:08:27.820Z",
+      "method": "GET",
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=%28COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL%29+AND+%28%28COUNTY+%3D+%27New+Castle%27+AND+PIN+%3D+%272602740204%27%29+OR+%28COUNTY+%3D+%27New+Castle%27+AND+PIN+%3D+%272602740205%27%29+OR+%28COUNTY+%3D+%27New+Castle%27+AND+PIN+%3D+%272602740206%27%29%29&f=json&returnIdsOnly=true",
+      "status": 200
+     },
+     {
+      "ts": "2026-10-12T11:08:28.851Z",
+      "method": "GET",
+      "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&outFields=OBJECTID%2CCOUNTY%2CPIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=20655518%2C20655519%2C20655520",
+      "status": 200
+     }
+    ]
+   }
+  ]
+ },
+ "targetedMultiRow": [],
+ "idBatchCheck": {
+  "file": "batch-ids.json",
+  "id": "us-de-firstmap-statewide-parcels",
+  "city": "Wilmington",
+  "result": {
+   "bbox": [
+    -75.563008,
+    39.744467,
+    -75.560008,
+    39.747467
+   ],
+   "boundsFeatures": 341,
+   "idsRequested": 80,
+   "returned": 80,
+   "absent": 0,
+   "allIdentical": true,
+   "ms": 3225
+  },
+  "ok": true,
+  "requests": [
+   {
+    "ts": "2026-10-12T11:14:31.430Z",
+    "method": "GET",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&geometry=-75.563008%2C39.744467%2C-75.560008%2C39.747467&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+    "status": 200,
+    "ms": 1273
+   },
+   {
+    "ts": "2026-10-12T11:14:31.663Z",
+    "method": "GET",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&geometry=-75.563008%2C39.744467%2C-75.560008%2C39.747467&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+    "status": 200,
+    "ms": 219
+   },
+   {
+    "ts": "2026-10-12T11:14:32.820Z",
+    "method": "POST",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query",
+    "bodyBytes": 3878,
+    "status": 200,
+    "ms": 273
+   },
+   {
+    "ts": "2026-10-12T11:14:34.007Z",
+    "method": "POST",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query",
+    "bodyBytes": 5365,
+    "status": 200,
+    "ms": 358
+   },
+   {
+    "ts": "2026-10-12T11:14:35.226Z",
+    "method": "POST",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query",
+    "bodyBytes": 5363,
+    "status": 200,
+    "ms": 475
+   },
+   {
+    "ts": "2026-10-12T11:14:36.258Z",
+    "method": "GET",
+    "url": "https://enterprise.firstmap.delaware.gov/arcgis/rest/services/PlanningCadastre/DE_StateParcels/FeatureServer/0/query?where=COUNTY+IS+NOT+NULL+AND+PIN+IS+NOT+NULL&outFields=OBJECTID%2CCOUNTY%2CPIN&returnGeometry=true&outSR=4326&f=geojson&objectIds=20654966%2C20654967%2C20654968%2C20654969%2C20654970%2C20654971%2C20654972%2C20655503%2C20655504%2C20655505%2C20655506%2C20655507%2C20655508%2C20655509%2…",
+    "status": 200,
+    "ms": 405
+   }
+  ]
+ },
+ "emptyStringQuirk": {
+  "observedAt": "2026-10-12T11:07:5xZ",
+  "bbox": "-75.5665,39.741,-75.5565,39.751",
+  "counts": {
+   "1=1": 2650,
+   "PIN NOT IN ('',' ')": 0,
+   "PIN <> ''": 0,
+   "PIN <> ' '": 2650,
+   "PIN IS NOT NULL": 2650,
+   "statewide PIN IS NULL": 6,
+   "statewide PIN = ''": 0,
+   "statewide PIN = ' '": 0
+  },
+  "consequence": "Blank-string exclusions match zero rows on this service, so the descriptor uses attributeNotNull only."
+ },
+ "coverageCaveats": [
+  "Offset paging on this service returned the same object twice across pages (Wilmington, 2026-10-12); bounded reads use complete count/object-ID manifests.",
+  "This service evaluates any comparison with an empty-string literal as unknown (PIN <> '' and PIN NOT IN ('',' ') match zero rows), so no blank-string exclusion is configured; the 6 blank PINs statewide are NULL and are excluded by attributeNotNull. One PIN carries a leading or trailing space and is kept verbatim.",
+  "Same endpoint as us-de-kent-dover-parcels (COUNTY=Kent, key PIN under US-DE-KENT-); Kent County parcels would exist under both namespaces."
+ ]
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:70",
+  "queueRank": 70,
+  "name": "Yangon",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "centerLatLon": [
+    16.8617300599396,
+    96.145394871956
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.dalr.gov.mm/",
+      "observation": "Department of Agricultural Land Management and Statistics (candidate); unreachable from proxy."
+    },
+    {
+      "url": "https://dpsmap.com/gis/",
+      "observation": "Yangon GIS map site (reachable; not an official cadastre and no parcel endpoint identified)."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.dalr.gov.mm/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://landrecords.gov.mm/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "curl exit 56: proxy CONNECT tunnel failed (502); host unreachable from the research proxy, not evidence about the service"
+    },
+    {
+      "url": "https://dpsmap.com/gis/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "map site page, no parcel feed"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=Yangon%20parcel%20OR%20cadastre&f=json&num=8",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "248 hits, top results roads/rivers/population by individual accounts; no parcel layer"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "None found; public sources describe incomplete, non-digital cadastral records",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Official hosts untestable; Myanmar's cadastre is reported incomplete and largely non-public.",
+  "nextStep": "Retest official hosts; look for Yangon City Development Committee parcel data."
+}

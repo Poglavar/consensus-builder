@@ -1,0 +1,49 @@
+[
+  {
+    "city": "cheyenne",
+    "center": [
+      41.14,
+      -104.8202
+    ],
+    "liveRadiusKm": 6,
+    "descriptor": {
+      "id": "us-wy-cheyenne-parcels",
+      "name": "Laramie County parcels — cheyenne",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "idField": "statepidn",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPrefix": "US-WY-CHEYENNE-LARAMIE-",
+      "outFields": [
+        "objectid",
+        "statepidn",
+        "accountno"
+      ],
+      "parcelNumberField": "statepidn",
+      "pageSize": 500,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "maxConcurrentQueries": 2,
+      "metricSrid": 32613,
+      "countryCode": "US",
+      "stateCode": "WY",
+      "cityIds": [
+        "cheyenne"
+      ],
+      "operator": "Laramie County",
+      "scope": "Laramie County assessment parcel mapping configured for cheyenne. Native identifier namespace is county-scoped.",
+      "catalogueUrl": "https://maps.laramiecounty.com/arcgis/rest/services/features/CountyBaseMapFeatures/FeatureServer/2",
+      "caveats": [
+        "Assessment mapping; not a boundary survey.",
+        "Assessment parcels with accountno present only; RAILROAD placeholder with null assessment account and lifecycle fields is excluded."
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "attributeNotNull": [
+        "accountno"
+      ]
+    },
+    "sourceNote": "Laramie County account-identified assessment parcel mapping"
+  }
+]

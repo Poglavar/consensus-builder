@@ -1,0 +1,42 @@
+{
+  "taskId": "city:11146",
+  "decision": "held",
+  "checkedAt": "2026-10-11T17:08:48Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-11146-yangchun.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/yangchun-service-review.json"
+  ],
+  "sourceUrlsReviewed": [
+    "https://www.yangchun.gov.cn/yjyczrzy/gkmlpt/mguide",
+    "https://www.yangchun.gov.cn/jdhy/rdhy/content/post_846656.html"
+  ],
+  "queueIdentity": {
+    "cityCode": 11146,
+    "rank": 2654,
+    "country": "China",
+    "pointLatLon": [
+      22.1824354126937,
+      111.777718601226
+    ],
+    "population2025Persons": 222700,
+    "verifiedAgainst": "ranked queue and SHA-256-verified UN WUP 2025 bulk source"
+  },
+  "registryFound": null,
+  "bilingualSearchesRecorded": true,
+  "retainedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official Yangchun Natural Resources Bureau and registration-center pages identify local custodians, but no public native parcel ID plus full polygon response was obtained. Registry custody remains unresolved (null); no adapter qualification or headed details-panel evidence exists.",
+  "absenceConclusion": null,
+  "runtimeAdmitted": false
+}

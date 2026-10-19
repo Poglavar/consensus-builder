@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "purpose": "Real configured adapter acceptance; no parcel imports or raw geometry retained.",
+  "sources": [
+    {
+      "city": "hartford",
+      "stateCode": "CT",
+      "sourceId": "us-ct-hartford-parcels",
+      "endpoint": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer_2025/FeatureServer/0",
+      "attempts": [
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6775,
+            41.7625,
+            -72.675,
+            41.765
+          ],
+          "count": 14,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.675,
+            41.7625,
+            -72.6725,
+            41.765
+          ],
+          "count": 16,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6725,
+            41.7625,
+            -72.67,
+            41.765
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6775,
+            41.765,
+            -72.675,
+            41.7675
+          ],
+          "count": 34,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.675,
+            41.765,
+            -72.6725,
+            41.7675
+          ],
+          "count": 29,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6725,
+            41.765,
+            -72.67,
+            41.7675
+          ],
+          "count": 15,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6775,
+            41.7675,
+            -72.675,
+            41.77
+          ],
+          "count": 18,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.675,
+            41.7675,
+            -72.6725,
+            41.77
+          ],
+          "count": 22,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6725,
+            41.7675,
+            -72.67,
+            41.77
+          ],
+          "count": 21,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.67,
+            41.7625,
+            -72.6675,
+            41.765
+          ],
+          "count": 26,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6675,
+            41.7625,
+            -72.66499999999999,
+            41.765
+          ],
+          "count": 4,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.66499999999999,
+            41.7625,
+            -72.6625,
+            41.765
+          ],
+          "count": 1,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.67,
+            41.765,
+            -72.6675,
+            41.7675
+          ],
+          "count": 13,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6675,
+            41.765,
+            -72.66499999999999,
+            41.7675
+          ],
+          "count": 3,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.66499999999999,
+            41.765,
+            -72.6625,
+            41.7675
+          ],
+          "count": 0,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.67,
+            41.7675,
+            -72.6675,
+            41.77
+          ],
+          "count": 11,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.6675,
+            41.7675,
+            -72.66499999999999,
+            41.77
+          ],
+          "count": 2,
+          "complete": true
+        },
+        {
+          "operation": "viewport",
+          "bbox": [
+            -72.66499999999999,
+            41.7675,
+            -72.6625,
+            41.77
+          ],
+          "count": 0,
+          "complete": true
+        }
+      ],
+      "paging": {
+        "bbox": [
+          -72.6675,
+          41.7625,
+          -72.66499999999999,
+          41.765
+        ],
+        "forcedPageSize": 3,
+        "count": 4,
+        "returned": 4,
+        "complete": true
+      },
+      "status": "passed",
+      "viewportCells": 18,
+      "uniqueNativeIds": 158,
+      "exactResolved": 158,
+      "nativeIds": [
+        "247451213",
+        "247451214",
+        "246363901"
+      ],
+      "footprintCount": 3,
+      "binding": {
+        "coverage": "complete",
+        "source": "server:us-ct-hartford-parcels",
+        "parcels": 1,
+        "siteM2": 255.66
+      },
+      "requests": 132
+    }
+  ]
+}

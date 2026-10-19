@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "VT",
+  "state": "Vermont",
+  "capital": "Montpelier",
+  "centerLatLon": [
+    44.2601,
+    -72.5754
+  ],
+  "query": {
+    "language": "English",
+    "text": "Montpelier Vermont GIS parcel data Washington County official"
+  },
+  "references": [
+    {
+      "url": "https://www.montpelier-vt.org/528/Maps-GIS",
+      "observation": "Official source found by the recorded English web query."
+    },
+    {
+      "url": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+      "observation": "Official parcel layer endpoint tested with an ID-and-geometry-only spatial sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0?f=pjson",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "ArcGIS layer metadata retrieved; schema inspected without requesting personal parcel fields."
+    },
+    {
+      "url": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-72.5765%2C44.259%2C-72.57430000000001%2C44.2612&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=SPAN&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Tiny capital-centered bbox; requested only SPAN and geometry; count=3, geometry valid=True, null IDs=0, duplicate IDs=False."
+    },
+    {
+      "url": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0/query?f=geojson&where=SPAN%3D%27405-126-11038%27&outFields=SPAN&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact ID round trip for 405-126-11038: exact count 1, geometry valid=True."
+    }
+  ],
+  "source": {
+    "endpoint": "https://services1.arcgis.com/BkFxaEFNwHqX3tAw/arcgis/rest/services/FS_VCGI_OPENDATA_Cadastral_VTPARCELS_poly_standardized_parcels_SP_v1/FeatureServer/0",
+    "adapter": "arcgis",
+    "name": "Vermont standardized tax parcels",
+    "operator": "Vermont Center for Geographic Information / local municipalities",
+    "scope": "Statewide standardized parcels with municipal coverage gaps",
+    "idField": "SPAN",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "SPAN"
+    ],
+    "parcelNumberField": "SPAN",
+    "metricSrid": 32145,
+    "idPrefix": null,
+    "attributeFilters": null
+  },
+  "verification": {
+    "bbox": [
+      -72.5765,
+      44.259,
+      -72.57430000000001,
+      44.2612
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "405-126-11038",
+      "405-126-11355",
+      "405-126-11376"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS parcel polygons"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "This verifies a small parcel sample at the capital only; completeness across the city/county is untested."
+}

@@ -1,0 +1,80 @@
+{
+ "kind": "country",
+ "key": "KZ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ru-KZ,ru;q=0.9,kk;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "ArcGIS 10.2 directory lists ~40 MapServers (aisgzkSyti*, aisgzkZem, ...); f=pjson works for service/layer metadata"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkSyti01_174/MapServer/0/query?...bbox EPSG:32642...&resultRecordCount=3&f=pjson",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "Russian error page: ArcGIS Web Adaptor cannot connect to remote server (backend down), same as before"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkZem/MapServer/21?f=pjson",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "layer U_01_174 is a street layer (NAME_ULIC), not parcels"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkSyti20/MapServer/0?f=pjson",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "text/html",
+   "assessment": "layer G_20_311 is polyline, not parcels"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkZem/MapServer/21/query?where=1=1&outFields=*&resultRecordCount=3&f=pjson",
+   "method": "GET",
+   "httpStatus": "404",
+   "contentType": "text/html",
+   "assessment": "404 (query endpoint flaky/blocked; other Syti services also alternate 200/404)"
+  },
+  {
+   "url": "https://aisgzk.kz/arcgis/rest/services/aisgzkSyti21/MapServer/0?f=pjson",
+   "method": "GET",
+   "httpStatus": "404",
+   "contentType": "text/html",
+   "assessment": "404"
+  },
+  {
+   "url": "https://arcgis.gharysh.kz/server/rest/services/AISGZK?f=json",
+   "method": "GET",
+   "httpStatus": "200",
+   "contentType": "application/json",
+   "assessment": "folder AISGZK exists but lists no services; other folders (Landuse, Open_GP, Zher_open) are not cadastral parcels"
+  },
+  {
+   "url": "https://aisgzk.kz/aisgzk/Proxy/aisgzkZem2/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": "404",
+   "contentType": "text/html",
+   "assessment": "proxy path from web search does not exist"
+  },
+  {
+   "url": "https://map.gov4c.kz/egkn/",
+   "method": "GET",
+   "httpStatus": "0",
+   "contentType": "",
+   "assessment": "connection failure via proxy"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "notes": "Server reachable but query backend still unavailable; possible parcel layers are the G_* layers in the aisgzkSyti* services (SR 32642), unverified. New candidate host arcgis.gharysh.kz (AISGZK folder empty).",
+ "nextStep": "Retry queries against aisgzkSyti* G_ layers later or from a KZ network; look at aisgzk.kz/aisgzk/ru/content/maps viewer JS for the real parcel service; map.gov4c.kz unreachable here."
+}

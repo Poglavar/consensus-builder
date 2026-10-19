@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "city": {
+    "code": "4353",
+    "name": "Grenoble",
+    "point": [
+      5.72378420259572,
+      45.1806156549356
+    ]
+  },
+  "descriptor": {
+    "id": "fr-ign-parcellaire-express",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "adapter": "wfs",
+    "endpoint": "https://data.geopf.fr/wfs/ows",
+    "featureType": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle",
+    "idField": "idu",
+    "idType": "string",
+    "idPattern": "^[0-9A-Z]{14}$",
+    "idPrefix": "FR-PCI-",
+    "outFields": [
+      "idu",
+      "gid",
+      "code_insee"
+    ],
+    "pageSize": 100,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 25,
+    "countryCode": "FR",
+    "metricSrid": 32631,
+    "scope": "Candidate for bounded Grenoble commune 38185 review, using the national IGN assembly of DGFiP PCI cadastral parcel polygons; no citywide completeness claim.",
+    "attribution": "IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.",
+    "licenceUrl": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+    "catalogueUrl": "https://www.data.gouv.fr/datasets/parcellaire-express-pci",
+    "objectIdField": "gid",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "attributeFilters": {
+      "code_insee": "38185"
+    },
+    "capabilities": {
+      "areaEnumeration": true
+    }
+  },
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "IGN first-party catalogue describes Parcellaire Express (PCI) as cadastral parcel information assembled from DGFiP PCI Vecteur across cadastral France: https://www.data.gouv.fr/datasets/parcellaire-express-pci . Frozen packet and service review identify IGN and Grenoble commune 38185; official WFS exact lookup returned idu 38185000DN0001 with code_insee 38185.",
+      "Ville de Grenoble first-party dataset describes Grenoble land-parcel boundaries derived from DGFiP PCI: https://www.data.gouv.fr/datasets/parcelles-grenoble . That separate, publisher-simplified municipal dataset is corroborating scope evidence, not the geometry used for this candidate."
+    ]
+  },
+  "sourceCandidateSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+  "qualificationRecordedSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+  "sourceCandidatePath": "qualification/evidence/cities/4353/candidate.json",
+  "originalSeedSha256": "7ccf6a9df6e960032820d0a31f5ae60fc00f7e1fd194b192b796362b29aab59b",
+  "originalSeedPath": "qualification/evidence/cities/4353/candidate.json"
+}

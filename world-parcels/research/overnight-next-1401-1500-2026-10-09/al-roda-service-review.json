@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6562-al-roda.json",
+  "purpose": "Document first-party Egyptian cadastral-source discovery and bounded public-service review for Al Roda, Egypt.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official ESA site establishes a national survey/cadastral custodian and documents digital-map, topographic-map, historic-map, and map-room services. Its current Egypt map page is a static ASP.NET page with a Google Maps JavaScript include; it does not expose a public parcel layer, native parcel identity field, CRS/schema, or anonymous geometry endpoint. No Al Roda-local cadastral service was verified.",
+  "registryAssessment": "registryFound=null: a national custodian is evidenced, but no local Al Roda registry, cadastre, map, or parcel procedure was specifically evidenced.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "ESA describes its historical and current role in producing maps and ownership/cadastral records for agricultural land and built property, but provides no Al Roda parcel endpoint."
+    },
+    {
+      "url": "https://www.esa.gov.eg/egyptmap.aspx",
+      "observation": "Official Egypt map page retrieved over TLS. HTML is an ASP.NET form with a Google Maps JavaScript include; no parcel layer/API/configuration or safe parcel schema was present."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "observation": "Official services index lists digital maps, historic maps, topographic maps, coordinate certificates, and land-boundary services. These are service descriptions, not an anonymous parcel query API."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "observation": "Official digital-map sales page describes requesting GIS/CAD/PDF/JPG/orthophoto products with a specified projection; it requires a service request and does not publish a parcel feature service."
+    },
+    {
+      "url": "https://www.esa.gov.eg/egy_his_maps.aspx",
+      "observation": "Official historic-map page includes historic cadastral-map descriptions, but its public listing is not an Al Roda parcel dataset or current parcel API."
+    },
+    {
+      "url": "https://www.esa.gov.eg/zemam_maps.aspx",
+      "observation": "Official zemam-map page exposes historical-map selection fields; no Al Roda current parcel geometry or anonymous feature response was available."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Al Roda Egypt official cadastral parcel map land registry GIS",
+      "result": "ESA first-party map and service pages found; no local public parcel API or geometry verified.",
+      "actualResultUrls": [
+        "https://www.esa.gov.eg/egyptmap.aspx",
+        "https://www.esa.gov.eg/services.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+      ]
+    },
+    {
+      "language": "Arabic",
+      "query": "الروضة مصر خريطة كادسترية أراضي مساحية موقع رسمي",
+      "result": "ESA Arabic pages found; no Al Roda-local public parcel service, safe native parcel ID, or geometry verified.",
+      "actualResultUrls": [
+        "https://www.esa.gov.eg/main.aspx",
+        "https://www.esa.gov.eg/egy_his_maps.aspx",
+        "https://www.esa.gov.eg/zemam_maps.aspx"
+      ]
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.esa.gov.eg/egyptmap.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official page retrieved anonymously over TLS. HTML exposed an ASP.NET form and Google Maps JavaScript include, but no parcel layer, service URL, query endpoint, native field schema, or CRS declaration."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official ESA mandate page retrieved. It documents cadastral/ownership-map responsibilities at national level; no local Al Roda service route was exposed."
+    },
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official service index retrieved. Digital-map and boundary-related procedures were listed, but no anonymous parcel query or downloadable safe parcel geometry was published."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official digital-map request page retrieved. It describes customer-requested GIS/CAD products and projection selection; it is not a public feature service and no request was submitted."
+    },
+    {
+      "url": "https://www.esa.gov.eg/egy_his_maps.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official historic-map page retrieved. Historic cadastral-map descriptions were visible, but no Al Roda current parcel layer or safe native identity was returned."
+    },
+    {
+      "url": "https://www.esa.gov.eg/zemam_maps.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "result": "Official zemam-map page retrieved. Public selection UI did not yield a bounded current parcel response for the exact WUP point."
+    }
+  ],
+  "safeFieldAllowlist": ["id", "geometry"],
+  "nativeFieldMapping": {
+    "nativeIdentityField": null,
+    "nativeIdentityObserved": null,
+    "geometryEvidence": "No parcel geometry response was obtained.",
+    "otherObservedFieldNames": []
+  },
+  "compositeKeyProvenance": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not executable because the official pages did not expose a parcel query endpoint. The unchanged WUP point [31.3310644881072, 31.7251647525109] was not moved or used to infer absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "ESA national survey/cadastral mapping and map-product services.",
+    "verifiedOpenScope": "Public documentation and static map page only; no anonymous parcel-feature scope verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A local Damietta/governorate custodian, current cadastral parcel layer, access-controlled or request-only GIS service, native identity schema, CRS, geometry retrieval method, freshness, and completeness remain unverified. Static-page inspection and lack of an exact-point endpoint are not evidence of citywide parcel absence.",
+  "runtimeAssessment": "held; no adapter admission or source integration implied"
+}

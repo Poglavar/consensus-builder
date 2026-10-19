@@ -1,0 +1,13 @@
+{
+  "taskId": "city:9442",
+  "decision": "held",
+  "checkedAt": "2026-10-12T05:52:14Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/provenance.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-9442-cixian.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/cixian-service-review.json"
+  ],
+  "reason": "WUP archive SHA-256 and its 2025 row confirm Cixian code 9442, rank 3222 in the immutable queue, China, point [36.3671335896048, 114.375692831453], and 187364 persons. English and Chinese searches with actual result URLs are recorded. Original Hebei viewer configuration and map metadata identify cadastral-zone/subzone maps, not parcel polygons. The WUP point lies outside their viewBounds but inside their broader bounds; the worker packet's claim that it is outside the service extent is therefore too broad. Its empty point query cannot establish citywide absence. Cixian-local custody remains unverified, so registryFound null is preserved. No native parcel ID, full polygon, or sample exists. Fresh exact-ID reads, forced paging, thirteen bounded cells, metric geometry checks, source binding, and headed Details verification are missing. Runtime admission remains held."
+}

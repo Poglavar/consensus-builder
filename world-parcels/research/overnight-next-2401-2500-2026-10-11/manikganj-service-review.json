@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-11",
+  "cityRecord": "city-6120-manikganj.json",
+  "cohort": "overnight-next-2401-2500-2026-10-11",
+  "cityCode": 6120,
+  "queueRank": 2469,
+  "name": "Manikganj",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "pointLatLon": [23.8530998172502, 89.9946007071417],
+  "population2025": 237163,
+  "population2025k": 237.163,
+  "populationUnit": "persons",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "verifiedParcelResponse": null,
+  "sampleGeoJSON": null,
+  "queryAndRequestOutcome": "Separate English and Bangla first-party discovery found the Government of Bangladesh DLRS/settlement.gov.bd cadastral-map custodian. The current viewer JavaScript was inspected and its public hierarchy and sheet GeoJSON route were called anonymously with browser headers, cookies, verified TLS, and bounded parameters. Manikganj district resolved, but the BDS survey response exposed Saturia and Singair entries rather than Manikganj Sadar. One Saturia sheet returned parcel-like EPSG:4326 polygons; it was not retained because it is not a verified Manikganj-city sample and stable native identity was not proven.",
+  "routeInspection": {
+    "viewer": "https://settlement.gov.bd/Map/MapSearch",
+    "script": "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+    "publicRoutesObserved": ["/Map/GetDivisionList", "/Khatian/getdistrictlistdivisionwise", "/Khatian/GetSurveyListDistrictWise", "/Khatian/GetThanaListBySurveyMap", "/Khatian/GetMouzaListBySurveyMap", "/Khatian/GetMouzaListBySurveyMapForshet", "/Khatian/GetSheetJsonBySurvey", "/tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf", "/tiles/parcels/{rsnum}/{comcod}/{unitcod}/meta"],
+    "publicToken": "none observed"
+  },
+  "schemaAndCrs": {
+    "geometryType": "Polygon in returned sheet response",
+    "geometryCrs": "EPSG:4326",
+    "observedFields": ["FID", "id", "Dag_No"],
+    "nativeFieldMapping": {"candidateIdentityFields": ["id", "FID"], "parcelLabel": "Dag_No", "qualification": "unproven stable native identity; not used in retained GeoJSON"},
+    "compositeKeyProvenance": {"routeKey": ["rsnum", "comcod", "unitcod", "sheetno"], "valuesTested": ["201901", "4105", "011202096", "001"], "meaning": "viewer request locator, not asserted as parcel identity"}
+  },
+  "safeFieldAllowlist": ["stable native parcel identity if source-proven", "full parcel polygon geometry if city-scoped", "source service URL", "source CRS", "survey and administrative codes", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "scopeLimits": ["Exact WUP point preserved; no coordinate shift.", "No zero exact-point result or missing city hierarchy entry was treated as citywide absence.", "District boundary and Saturia sheet geometry are not citywide evidence.", "No raw source-specific attribute set or full parcel geometry was retained in the cohort.", "At most three full parcel polygons would be allowed; retained count is zero.", "Map-purchase portal indicates a paid/document-delivery route; terms were not inferred beyond the visible portal description."],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official custodian and bounded parcel response are evidenced, but city-scoped coverage and stable native parcel identity remain unresolved."},
+  "reviewDecision": "held_no_verified_city_geometry",
+  "uncertainty": "Manikganj district has a first-party survey-map service, and the tested sheet endpoint is openly callable. The current BDS hierarchy may be incomplete/ongoing or may require another survey/administrative route for the city. No conclusion about parcel absence, completeness, or city coverage is justified.",
+  "integrationDecision": "not_integrated",
+  "runtimeDecision": "held_serial_review"
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "stateCode": "TN",
+  "state": "Tennessee",
+  "capital": "Nashville",
+  "centerLatLon": [
+    36.1627,
+    -86.7816
+  ],
+  "query": {
+    "language": "English",
+    "text": "Nashville Davidson County parcel viewer GIS official tax parcels ArcGIS"
+  },
+  "references": [
+    {
+      "url": "https://www.nashville.gov/departments/planning/mapping-and-gis",
+      "observation": "Official Metro Nashville site says it maintains cadastral maps for parcels throughout Davidson County and links parcel mapping."
+    },
+    {
+      "url": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0",
+      "observation": "Official Metro Nashville parcel boundary layer metadata and bounded sample."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "ArcGIS layer metadata fetched."
+    },
+    {
+      "url": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0/query?f=geojson&where=1%3D1&geometry=-86.78269999999999%2C36.1616%2C-86.7805%2C36.1638&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=PropInstr&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Capital-centered bounded query requested PropInstr plus geometry only; count=3; geometry valid=True; duplicate sampled IDs=True; null IDs=0."
+    },
+    {
+      "url": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0/query?f=geojson&where=PropInstr%3D%27AM-20050527+0060253%27&outFields=PropInstr&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Exact native-key round trip for sample ID AM-20050527 0060253: 3 matches; valid geometry=True."
+    },
+    {
+      "url": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0?f=pjson",
+      "status": 403,
+      "contentType": "text/html",
+      "assessment": "Public TDEC parcel boundary layer direct metadata request returned HTTP 403 with browser-like headers."
+    },
+    {
+      "url": "https://tdeconline.tn.gov/arcgis/rest/services/Parcels_OG/MapServer/0?f=pjson",
+      "status": 403,
+      "contentType": "text/html",
+      "assessment": "Retried TDEC layer with official tdeconline.tn.gov Referer; still returned HTTP 403."
+    },
+    {
+      "url": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0?f=pjson",
+      "status": 200,
+      "contentType": "text/plain; charset=UTF-8",
+      "assessment": "Metro Nashville parcel-layer metadata retrieved; APN field is the parcel identifier."
+    },
+    {
+      "url": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0/query?f=geojson&where=1%3D1&geometry=-86.78269999999999%2C36.1616%2C-86.7805%2C36.1638&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&outFields=APN&returnGeometry=true&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Capital bbox requested APN and geometry only; 3 polygons, valid=True, duplicate IDs=False."
+    },
+    {
+      "url": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0/query?f=geojson&where=APN%3D%27093061C10000CO%27&outFields=APN&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "assessment": "Exact APN round trip 093061C10000CO returned 1 feature with valid polygon geometry."
+    }
+  ],
+  "source": {
+    "endpoint": "https://maps.nashville.gov/arcgis/rest/services/Cadastral/Parcels/MapServer/0",
+    "adapter": "arcgis",
+    "name": "Cadastral Parcels (Ownership Parcels)",
+    "operator": "Metro Nashville GIS",
+    "scope": "Davidson County",
+    "idField": "APN",
+    "objectIdField": "OBJECTID",
+    "idType": "esriFieldTypeString",
+    "idPattern": null,
+    "outFields": [
+      "APN"
+    ],
+    "parcelNumberField": "APN",
+    "attributeFilters": null,
+    "metricSrid": 3857,
+    "idPrefix": null
+  },
+  "verification": {
+    "bbox": [
+      -86.78269999999999,
+      36.1616,
+      -86.7805,
+      36.1638
+    ],
+    "count": 3,
+    "nativeIDs": [
+      "093061C10000CO",
+      "093061C10100CO",
+      "09306102700"
+    ],
+    "nullIDs": 0,
+    "duplicateIDs": false,
+    "exactCount": 1,
+    "geometryvalid": true,
+    "capitalLocation": true,
+    "dataFound": true,
+    "nativeIDVerified": true,
+    "adapterReady": true,
+    "dataFormat": "ArcGIS FeatureServer polygon layer"
+  },
+  "status": "verified_sample_capital_scope",
+  "remainingUncertainty": "A small, valid parcel sample and unique exact APN read were verified at the capital. The sampled location does not establish wider coverage or currency."
+}

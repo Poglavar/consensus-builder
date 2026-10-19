@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1795565",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html", "observation": "Official Shenzhen cadastral-map viewer says any person may query parcel boundaries, codes, area, and land use free of charge. Stated scope is Shenzhen city except the Shenshan Cooperation Zone; map data updates in real time. This is a viewing service, with no reusable feature-list endpoint verified."},
+    {"url": "https://pnr.sz.gov.cn/d-rer/ycwx/wx/index/index.html", "observation": "Official registration center links the cadastral-map query and property-information query as separate services."}
+  ],
+  "requests": [
+    {"url": "https://pnr.sz.gov.cn/d-djtcx/djtcx/index.html", "method": "GET", "httpStatus": 412, "contentType": "text/html; charset=utf-8", "parcelRecordCount": null, "assessment": "Automated direct request was blocked and yielded no parcel records"}
+  ],
+  "coverageAssessment": {"claimedScope": "Shenzhen municipality excluding Shenshan Cooperation Zone", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "The official viewer's parcel map could have a bounded data service, but its API, reuse rights, and geometry format are unverified. Its stated scope is municipal, not China-wide.",
+  "nextStep": "Inspect the viewer in a permitted browser session or find official open-data documentation, then test a bounded polygon feature request."
+}

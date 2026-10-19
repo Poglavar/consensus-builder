@@ -1,0 +1,2750 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32633",
+  "featureCount": 390,
+  "validNonemptyCount": 390,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 6.0955654999878295,
+    "median": 186.2812132575117,
+    "max": 5881.876312598181
+  },
+  "features": [
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~260",
+      "areaM2": 322.06427952674943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~261",
+      "areaM2": 224.8571020054602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~262",
+      "areaM2": 119.9633239944094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~335",
+      "areaM2": 241.03115448472897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~336",
+      "areaM2": 294.33078700334335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~337",
+      "areaM2": 186.40004800775046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~338",
+      "areaM2": 219.42001399656897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~339",
+      "areaM2": 13.51091449993914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~340",
+      "areaM2": 215.51966050636617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~341",
+      "areaM2": 183.13688151253913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~342",
+      "areaM2": 171.0923169988932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~343",
+      "areaM2": 118.57075499429537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~344",
+      "areaM2": 780.3025835181628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~346",
+      "areaM2": 392.2204589863837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~347",
+      "areaM2": 135.48951297014008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~348",
+      "areaM2": 332.3174050448639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~350",
+      "areaM2": 240.54078199090884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~351",
+      "areaM2": 188.98892801582298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~353",
+      "areaM2": 507.74322003466466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~354",
+      "areaM2": 202.59844701015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~355",
+      "areaM2": 178.0705394880369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~356",
+      "areaM2": 203.44340449465022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~357",
+      "areaM2": 158.00766898817352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~370",
+      "areaM2": 208.22090551145948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~371",
+      "areaM2": 250.9198609987206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~418",
+      "areaM2": 439.5406640222187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~419",
+      "areaM2": 357.96331150852836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~420",
+      "areaM2": 248.84280450044844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~473",
+      "areaM2": 379.34327501155116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~475",
+      "areaM2": 156.99178399571582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~493",
+      "areaM2": 76.01584549326479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~501",
+      "areaM2": 219.34558950935917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~502",
+      "areaM2": 432.6607500268831,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~503",
+      "areaM2": 207.27619599428704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~504",
+      "areaM2": 405.2712800112391,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~572",
+      "areaM2": 360.83752049847146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~574",
+      "areaM2": 307.60642199336087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~712",
+      "areaM2": 246.78949100503343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~358",
+      "areaM2": 149.51859551454737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~359",
+      "areaM2": 66.34184398761151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~360",
+      "areaM2": 145.80976500356385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~361",
+      "areaM2": 173.5042700050924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~362",
+      "areaM2": 206.99940450728704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~363",
+      "areaM2": 84.53831300474296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~365",
+      "areaM2": 111.28931100240703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~366",
+      "areaM2": 103.3587680196858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~367",
+      "areaM2": 43.4864345270097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~368",
+      "areaM2": 159.9085365057593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~369",
+      "areaM2": 238.19406149442884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~373",
+      "areaM2": 69.4740449977943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~374",
+      "areaM2": 86.89487351572224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~375",
+      "areaM2": 94.95311950676394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~376",
+      "areaM2": 119.29868850454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~377",
+      "areaM2": 144.2284260010377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~378",
+      "areaM2": 197.04577502054192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~379",
+      "areaM2": 172.50841051559252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~380",
+      "areaM2": 110.83119050045508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~381",
+      "areaM2": 170.56678701932788,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~382",
+      "areaM2": 175.8082994791152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~383",
+      "areaM2": 243.5924035061684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~384",
+      "areaM2": 225.69357698488767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~385",
+      "areaM2": 179.8775994873439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~386",
+      "areaM2": 208.6650850068213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~387",
+      "areaM2": 220.59444901110112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~388",
+      "areaM2": 212.6782625007763,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~433",
+      "areaM2": 298.58772247698437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~434",
+      "areaM2": 319.5351445100659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~435",
+      "areaM2": 660.1840459943774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~439",
+      "areaM2": 92.1906914931711,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~440",
+      "areaM2": 83.81301750360568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~441",
+      "areaM2": 76.09242352565317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~442",
+      "areaM2": 117.1322369944907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~443",
+      "areaM2": 84.91692549789259,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~444",
+      "areaM2": 183.0446159941228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~447",
+      "areaM2": 713.5448295037806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~448",
+      "areaM2": 40.87920599187172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~449",
+      "areaM2": 299.2638415354578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~453",
+      "areaM2": 1088.2292860774653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~389",
+      "areaM2": 193.39555849692886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~390",
+      "areaM2": 198.7871064993382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~393",
+      "areaM2": 292.00510154210417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~394",
+      "areaM2": 342.56123498162424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~395",
+      "areaM2": 155.86431349481492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~396",
+      "areaM2": 485.9279370179721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~397",
+      "areaM2": 134.34491599852547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~398",
+      "areaM2": 643.012122002785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~401",
+      "areaM2": 163.24128701008723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~403",
+      "areaM2": 407.123826501809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~404",
+      "areaM2": 289.47634748967005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~408",
+      "areaM2": 382.86454101279827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~409",
+      "areaM2": 362.2615365093275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~410",
+      "areaM2": 326.20132750885824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~454",
+      "areaM2": 1562.3417800015825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~455",
+      "areaM2": 362.86759002670163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~456",
+      "areaM2": 479.86397101541854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~457",
+      "areaM2": 398.1153495124421,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~458",
+      "areaM2": 231.9657725206693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~459",
+      "areaM2": 250.26588896611446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~460",
+      "areaM2": 313.8480894941875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~461",
+      "areaM2": 249.85004402323557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~462",
+      "areaM2": 380.44201300083523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~534",
+      "areaM2": 221.3376425257319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~539",
+      "areaM2": 6.0955654999878295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~589",
+      "areaM2": 155.93103299927293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~590",
+      "areaM2": 19.806469996964125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~591",
+      "areaM2": 21.274894994658844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~112",
+      "areaM2": 248.99758800320774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~113",
+      "areaM2": 209.97904598322452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~114",
+      "areaM2": 250.3589795301657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~115",
+      "areaM2": 174.44373798788237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~116",
+      "areaM2": 100.11052999837263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~117",
+      "areaM2": 531.2730070401643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~118",
+      "areaM2": 427.07074350931117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~120",
+      "areaM2": 910.3732939662008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~246",
+      "areaM2": 457.3596815044954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~247",
+      "areaM2": 82.78720549694546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~249",
+      "areaM2": 86.64461949942864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~250",
+      "areaM2": 63.57205198304937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~251",
+      "areaM2": 88.38726650336069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~252",
+      "areaM2": 144.07491149791903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~253",
+      "areaM2": 102.62895449654107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~255",
+      "areaM2": 238.31663898557827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~256",
+      "areaM2": 256.9676585008484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~263",
+      "areaM2": 64.90555600870312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~264",
+      "areaM2": 40.551167018241905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~265",
+      "areaM2": 108.91698749122406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~266",
+      "areaM2": 44.347726001560446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~267",
+      "areaM2": 18.730230991055052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~268",
+      "areaM2": 116.98651449871429,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~269",
+      "areaM2": 123.33051602646027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~270",
+      "areaM2": 167.58931048567766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~271",
+      "areaM2": 181.43768952792215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~272",
+      "areaM2": 71.98807899474615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~274",
+      "areaM2": 125.74405948656896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~275",
+      "areaM2": 140.3420204931095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~277",
+      "areaM2": 156.586504995768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~278",
+      "areaM2": 148.46015801808466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~279",
+      "areaM2": 145.8855259904747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~280",
+      "areaM2": 286.08836199735197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~281",
+      "areaM2": 50.5150850007391,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~282",
+      "areaM2": 117.01242648618043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~283",
+      "areaM2": 257.8252755232202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~579",
+      "areaM2": 155.2673560065455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~69",
+      "areaM2": 192.47912450063177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~71",
+      "areaM2": 279.5009660239399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~72",
+      "areaM2": 123.31383002736932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~73",
+      "areaM2": 407.6673249959923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~74",
+      "areaM2": 130.46267898655125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~76",
+      "areaM2": 112.06440350071324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~77",
+      "areaM2": 111.22984499431183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~78",
+      "areaM2": 104.29284051519261,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~79",
+      "areaM2": 216.31051799465118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~80",
+      "areaM2": 202.0353400112308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~969",
+      "areaM2": 268.4422524896837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~122",
+      "areaM2": 109.76697949900144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~123",
+      "areaM2": 244.25256151008074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~147",
+      "areaM2": 342.6734765176258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~149",
+      "areaM2": 125.83208450481229,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~285",
+      "areaM2": 109.34660399046521,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~286",
+      "areaM2": 324.8397945258688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~287",
+      "areaM2": 334.54134496455475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~288",
+      "areaM2": 121.47733701551887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~289",
+      "areaM2": 182.7547414783608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~290",
+      "areaM2": 62.583062000133886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~291",
+      "areaM2": 200.98003254642495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~292",
+      "areaM2": 113.71151200348976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~293",
+      "areaM2": 352.21435397615903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~294",
+      "areaM2": 262.4664074966452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~295",
+      "areaM2": 217.52057300994863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~296",
+      "areaM2": 198.90021051410847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~297",
+      "areaM2": 81.85079000158068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~298",
+      "areaM2": 567.0248094800285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~299",
+      "areaM2": 440.4207519936378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~300",
+      "areaM2": 223.64344649648442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~301",
+      "areaM2": 288.67716950374086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~A",
+      "areaM2": 548.073187538073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~302",
+      "areaM2": 212.65193702669242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~303",
+      "areaM2": 107.00142949357867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~304",
+      "areaM2": 95.1175080036299,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~305",
+      "areaM2": 14.751612996599011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~306",
+      "areaM2": 99.50315150073504,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~307",
+      "areaM2": 107.48122250509272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~308",
+      "areaM2": 167.35411899338243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~309",
+      "areaM2": 283.9047659986639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~310",
+      "areaM2": 128.75179102536143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~311",
+      "areaM2": 186.16237850727296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~312",
+      "areaM2": 163.68655749820874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~313",
+      "areaM2": 208.30911650018498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~314",
+      "areaM2": 637.7032200414345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~315",
+      "areaM2": 548.5665474202095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~316",
+      "areaM2": 271.44990002479375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~317",
+      "areaM2": 168.16329899208387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~318",
+      "areaM2": 12.354535996476502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~319",
+      "areaM2": 274.9835610012657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~320",
+      "areaM2": 230.1955044964313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~321",
+      "areaM2": 489.04608947983627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~322",
+      "areaM2": 205.93578701412997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~323",
+      "areaM2": 185.4729095225555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~391",
+      "areaM2": 89.87299098767767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~392",
+      "areaM2": 115.80969601035184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~399",
+      "areaM2": 180.05511198040426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~400",
+      "areaM2": 111.35729648859234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~405",
+      "areaM2": 201.0598650017712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~704",
+      "areaM2": 5881.876312598181,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~977",
+      "areaM2": 1485.7139184918392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~100",
+      "areaM2": 182.74673251971612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~101",
+      "areaM2": 325.1736494904632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~102",
+      "areaM2": 118.00056601115072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~103",
+      "areaM2": 121.19830851040724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~104",
+      "areaM2": 152.3754190137703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~105",
+      "areaM2": 33.60067199279388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~106",
+      "areaM2": 303.3441855088218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~108",
+      "areaM2": 353.9507890314811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~109",
+      "areaM2": 407.14850648720784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~110",
+      "areaM2": 362.22428348099527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~111",
+      "areaM2": 209.22248602016046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~119",
+      "areaM2": 538.4397865375279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~29",
+      "areaM2": 369.40997696929315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~38",
+      "areaM2": 282.5441345213786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~39",
+      "areaM2": 119.38988303353666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~485",
+      "areaM2": 92.85826500859616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~486",
+      "areaM2": 120.57533348445813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~490",
+      "areaM2": 244.23736051753053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~491",
+      "areaM2": 213.08405948287464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~507",
+      "areaM2": 112.62010197923048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~546",
+      "areaM2": 49.71252750625944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~563",
+      "areaM2": 354.2004920173744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~60",
+      "areaM2": 399.79935851980497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~61",
+      "areaM2": 224.86956351578328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~62",
+      "areaM2": 240.41079400802997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~64",
+      "areaM2": 198.94338252510494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~65",
+      "areaM2": 217.51944202787166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~68",
+      "areaM2": 189.15706097427537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~690",
+      "areaM2": 173.96801499946758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~714",
+      "areaM2": 39.345110995789554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~91",
+      "areaM2": 124.62654097205606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~95",
+      "areaM2": 150.8551634985372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~96",
+      "areaM2": 27.5977934986795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~97",
+      "areaM2": 52.06649800844254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~971",
+      "areaM2": 44.34792299676067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~98",
+      "areaM2": 17.29963700172426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~99",
+      "areaM2": 39.07856249373083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~121",
+      "areaM2": 102.66198802565327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~134",
+      "areaM2": 530.8149279978891,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~136",
+      "areaM2": 221.36092899071974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~137",
+      "areaM2": 166.3867230074025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~139",
+      "areaM2": 437.32350650992527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~141",
+      "areaM2": 366.2122689829612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~142",
+      "areaM2": 615.029755959972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~143",
+      "areaM2": 1301.4736790742304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~145",
+      "areaM2": 136.59790650582568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~146",
+      "areaM2": 455.6527219660879,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~151",
+      "areaM2": 605.2734889833092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~482",
+      "areaM2": 230.98557101118215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~492",
+      "areaM2": 473.1093540008203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~521",
+      "areaM2": 110.54257300603402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~531",
+      "areaM2": 80.34271751012936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~736",
+      "areaM2": 594.9002555125242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~189",
+      "areaM2": 303.84674801326184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~204",
+      "areaM2": 2234.5396435494295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~205",
+      "areaM2": 319.15395651940065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~206",
+      "areaM2": 136.89975199904217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~209",
+      "areaM2": 1104.11211255293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~210",
+      "areaM2": 225.03326251838143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~212",
+      "areaM2": 255.05134899848957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~213",
+      "areaM2": 115.68179202550468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~214",
+      "areaM2": 114.98943098698719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~227",
+      "areaM2": 169.15126598467538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~228",
+      "areaM2": 78.44608799907442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~229",
+      "areaM2": 125.18044901812436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~230",
+      "areaM2": 142.62184600531359,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~231",
+      "areaM2": 139.9616960007051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~232",
+      "areaM2": 135.9929670158753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~233",
+      "areaM2": 134.7800644937317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~234",
+      "areaM2": 128.42616500180404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~235",
+      "areaM2": 178.90660802020454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~746",
+      "areaM2": 156.63308401170292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1106",
+      "areaM2": 57.519728495927126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1235",
+      "areaM2": 322.5988595184422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1274",
+      "areaM2": 1189.5575399915742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1279",
+      "areaM2": 508.88086999540553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1355",
+      "areaM2": 545.1751279806205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1430",
+      "areaM2": 244.5176060392695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~2346",
+      "areaM2": 15.010742497654626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~412",
+      "areaM2": 785.4201574762292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~414",
+      "areaM2": 190.2864749711171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~425",
+      "areaM2": 469.8460269954362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~465",
+      "areaM2": 900.734341509273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~470",
+      "areaM2": 155.32577550755153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~431",
+      "areaM2": 280.268402451728,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~432",
+      "areaM2": 886.0558040058537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~436",
+      "areaM2": 53.42378600368755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~437",
+      "areaM2": 51.104781998739874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~438",
+      "areaM2": 45.254209004213564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~445",
+      "areaM2": 211.41205052336028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~446",
+      "areaM2": 212.8278250165501,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~450",
+      "areaM2": 56.28304049289107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~451",
+      "areaM2": 10.34362749640999,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~452",
+      "areaM2": 54.98016399691489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~533",
+      "areaM2": 75.10032850555802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~538",
+      "areaM2": 20.725612513426096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~124",
+      "areaM2": 563.6199825035739,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~125",
+      "areaM2": 398.16381350774503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~126",
+      "areaM2": 235.99444099200053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~127",
+      "areaM2": 129.32045299203767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~128",
+      "areaM2": 392.3390915125559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~129",
+      "areaM2": 263.92356199825616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~131",
+      "areaM2": 45.207431995026454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~132",
+      "areaM2": 378.21591651948313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~135",
+      "areaM2": 338.2824475429864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~138",
+      "areaM2": 233.80050600398792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~154",
+      "areaM2": 232.2708945089343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~155",
+      "areaM2": 496.43165500495473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~156",
+      "areaM2": 54.394729991102544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~175",
+      "areaM2": 1174.9213255077416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~186",
+      "areaM2": 253.55410201926904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~470",
+      "areaM2": 139.40058801940864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~700",
+      "areaM2": 1479.4917380239392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~719",
+      "areaM2": 158.8495364928774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~720",
+      "areaM2": 785.0467429468756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1060",
+      "areaM2": 932.2813179548023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1064",
+      "areaM2": 348.96067601649935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1065",
+      "areaM2": 384.8233330094853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1066",
+      "areaM2": 331.3731680308185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~1067",
+      "areaM2": 311.11151196485133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~246",
+      "areaM2": 145.1172644877038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~248",
+      "areaM2": 624.6864910300362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~249",
+      "areaM2": 357.8166325075247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~250",
+      "areaM2": 101.80916396989377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~251",
+      "areaM2": 174.10895503472878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~266",
+      "areaM2": 288.1792669789484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~51~%20~%20~275",
+      "areaM2": 464.4962775244018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~240",
+      "areaM2": 124.75872800167824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~241",
+      "areaM2": 150.2651089918993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~242",
+      "areaM2": 163.10037748536922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~244",
+      "areaM2": 277.06748900268946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~257",
+      "areaM2": 154.1671240095076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~258",
+      "areaM2": 200.44177147299547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~259",
+      "areaM2": 256.8986764834568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~45",
+      "areaM2": 133.3613894935073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~46",
+      "areaM2": 130.14749201348098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~47",
+      "areaM2": 313.681962024532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~48",
+      "areaM2": 139.68659701675662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~50",
+      "areaM2": 125.69304602098995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~51",
+      "areaM2": 141.25120548925204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~52",
+      "areaM2": 136.95182000365585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~53",
+      "areaM2": 126.00247651068165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~54",
+      "areaM2": 112.84730797775214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~55",
+      "areaM2": 332.2328975180857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~56",
+      "areaM2": 126.14505351195338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~57",
+      "areaM2": 122.4189965084191,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~58",
+      "areaM2": 124.65598349249827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~691",
+      "areaM2": 271.94350450928675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~70",
+      "areaM2": 193.07273400771908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~737",
+      "areaM2": 90.71997450900037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~75",
+      "areaM2": 97.7159279893535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~324",
+      "areaM2": 104.10822749379564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~325",
+      "areaM2": 150.30595348019722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~326",
+      "areaM2": 55.42665349870323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~327",
+      "areaM2": 213.11483850348623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~328",
+      "areaM2": 161.81943952518765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~329",
+      "areaM2": 452.7800884946685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~330",
+      "areaM2": 113.30891201182702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~331",
+      "areaM2": 17.07440100795451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~332",
+      "areaM2": 586.9933020195477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~415",
+      "areaM2": 254.90084899578358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~416",
+      "areaM2": 57.222433516673206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~417",
+      "areaM2": 600.9579879979345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~494",
+      "areaM2": 201.76354847331345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~545",
+      "areaM2": 44.27243050087458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~662",
+      "areaM2": 155.92301651871583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~713",
+      "areaM2": 55.20768650228595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~967",
+      "areaM2": 111.04412350938847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~976",
+      "areaM2": 88.85883148818715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~41",
+      "areaM2": 132.14893199492576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~42",
+      "areaM2": 109.74516050113434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~43",
+      "areaM2": 34.11613000629028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~48",
+      "areaM2": 144.6225369747203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~49",
+      "areaM2": 142.57177602962685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~50",
+      "areaM2": 243.18864999482153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~51",
+      "areaM2": 58.86159500641966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~56",
+      "areaM2": 101.15453448730602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~57",
+      "areaM2": 11.241288496764751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~58",
+      "areaM2": 104.3886495335294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~59",
+      "areaM2": 127.36586699365192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~60",
+      "areaM2": 154.1840510250934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~65",
+      "areaM2": 504.6606765205296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~66",
+      "areaM2": 117.40284449107166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~69",
+      "areaM2": 393.97527350133515,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "IT-SICILIA-PARCEL-G273~%20~126~%20~%20~73",
+      "areaM2": 270.90785602204477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T03:24:28.130565+00:00",
+  "appCityId": "fresno",
+  "url": "http://localhost:5638/?city=fresno&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 201,
+  "visibleParcels": 58,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "US-CA-FRESNO-APN-43614106",
+  "detailsHeading": "Parcel US-CA-FRESNO-APN-43614106",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

@@ -1,0 +1,58 @@
+{
+  "descriptor": {
+    "adapter": "arcgis",
+    "boundsQueryMode": "offset",
+    "capabilities": {
+      "areaEnumeration": true,
+      "bbox": true,
+      "exactId": true,
+      "geometry": "full-wgs84",
+      "point": false
+    },
+    "catalogueUrl": "https://www3.erie.gov/gis/internet-mapping",
+    "countryCode": "US",
+    "endpoint": "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0",
+    "id": "us-ny-erie-parcels",
+    "idField": "OBJECTID",
+    "idPrefix": "US-NY-ERIE-",
+    "idType": "integer",
+    "idsQueryMode": "offset",
+    "maxBboxKm2": 25,
+    "maxFeatures": 10000,
+    "metricSrid": 32617,
+    "name": "Erie County Office of GIS tax parcels",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 1000,
+    "queryFormat": "geojson",
+    "scope": "Erie County tax-parcel polygon service; first-party CITYTOWN count confirms City of Lackawanna coverage. Bounded local qualification at the unchanged frozen Lackawanna WUP point, whose frozen samples are labelled City of Buffalo by the service. Lackawanna municipal completeness is unverified.",
+    "stateCode": "NY"
+  },
+  "city": {
+    "code": "8193",
+    "name": "Lackawanna",
+    "point": [
+      -78.8135507251543,
+      42.8429861120278
+    ]
+  },
+  "sampleIds": [
+    "US-NY-ERIE-228820",
+    "US-NY-ERIE-228822",
+    "US-NY-ERIE-228824"
+  ],
+  "absentId": "US-NY-ERIE-2147483647",
+  "metricEpsg": 32617,
+  "cellSizeDegrees": 0.001,
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "https://www3.erie.gov/gis/internet-mapping: Erie County explicitly identifies On-Map as a tax-parcel search and links its parcel metadata; exact excerpt and response hash retained in evidence/first-party-source.json.",
+      "https://www3.erie.gov/gis/press/erie-county-tax-parcel-data-now-available: County announces the GIS tax-parcel dataset; first-party purpose verified, with no form submission or download required.",
+      "https://gis.erie.gov/server/rest/services/OGIS/Parcels/MapServer/0?f=pjson: Official polygon feature layer description is Erie County Parcels; OBJECTID is an OID and pagination/order-by are supported.",
+      "Official geometry-free CITYTOWN = 'City of Lackawanna' count returned 6663 records, confirming county source coverage of Lackawanna. Frozen sample IDs 228820,228822,228824 are labelled City of Buffalo. Qualification keeps the frozen city point unchanged and makes no Lackawanna municipal-completeness claim; safe scope evidence retained in evidence/first-party-source.json."
+    ]
+  }
+}

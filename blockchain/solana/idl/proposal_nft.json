@@ -8,19 +8,23 @@
   },
   "instructions": [
     {
-      "name": "accept_proposal",
+      "name": "accept_with_attestations",
       "docs": [
-        "Accept a proposal (parcel owner)"
+        "Record one attested owner's yes for one parcel. `ownership` is a lens member's",
+        "ParcelOwnership-v1 SAS attestation naming `owner`; `owner` signs this transaction. A parcel",
+        "completes when every owner the member recognises (`ownerCount`) has a record; the proposal",
+        "executes when every parcel is complete. A second acceptance by the same owner fails at the",
+        "`record` init (account already in use)."
       ],
       "discriminator": [
-        33,
-        190,
-        130,
-        178,
-        27,
-        12,
+        89,
+        240,
+        102,
+        93,
         168,
-        238
+        200,
+        164,
+        125
       ],
       "accounts": [
         {
@@ -31,17 +35,110 @@
           "name": "parcel"
         },
         {
-          "name": "parcel_program"
+          "name": "ownership",
+          "docs": [
+            "membership and payload are checked in the handler."
+          ]
         },
         {
-          "name": "accepter",
+          "name": "ownership_credential",
+          "docs": [
+            "authority are checked in the handler."
+          ]
+        },
+        {
+          "name": "tally",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  115,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "arg",
+                "path": "parcel_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  99,
+                  99,
+                  101,
+                  112,
+                  116,
+                  97,
+                  110,
+                  99,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "arg",
+                "path": "parcel_id"
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "docs": [
+            "The attested owner saying yes; must equal the ownership payload's `owner`."
+          ],
           "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Pays rent for the tally and the record; may be the owner."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
         {
           "name": "parcel_id",
           "type": "string"
+        },
+        {
+          "name": "payout",
+          "type": {
+            "option": "pubkey"
+          }
         }
       ]
     },
@@ -112,7 +209,14 @@
     {
       "name": "distribute_funds",
       "docs": [
-        "Distribute locked SOL equally to owners of accepted parcel certificates."
+        "Distribute the locked SOL of an Executed proposal over its acceptance records: each",
+        "accepted parcel gets an equal share, split equally between that parcel's records. A",
+        "record's share goes to its `payout`; a record without one pays the proposal owner.",
+        "Remaining accounts, per accepted parcel in `accepted_parcels` order: the parcel's tally,",
+        "then `tally.accepted` pairs of (acceptance record, recipient). Rounding dust goes to the",
+        "first recipient of the first parcel. A proposal Executed by verdict with no accepted parcel",
+        "has no records: the whole balance returns to the proposal owner, passed as the only",
+        "remaining account."
       ],
       "discriminator": [
         124,
@@ -127,10 +231,10 @@
       "accounts": [
         {
           "name": "proposal",
+          "docs": [
+            "Remaining accounts carry, per accepted parcel, its tally and (record, recipient) pairs."
+          ],
           "writable": true
-        },
-        {
-          "name": "parcel_program"
         }
       ],
       "args": []
@@ -297,23 +401,41 @@
           "type": {
             "vec": "pubkey"
           }
+        },
+        {
+          "name": "verdict_may_execute",
+          "type": "bool"
+        },
+        {
+          "name": "site_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "open_ground",
+          "type": "bool"
         }
       ]
     },
     {
-      "name": "withdraw_acceptance",
+      "name": "reclaim_expired_funds",
       "docs": [
-        "Withdraw acceptance (conditional proposals only)"
+        "Return the locked SOL of an Expired proposal to its creator (cancel_and_refund stays",
+        "Active-only, so this is the only exit for funds on an expired proposal)."
       ],
       "discriminator": [
-        161,
         178,
-        133,
-        95,
-        233,
-        67,
-        43,
-        218
+        97,
+        244,
+        181,
+        163,
+        193,
+        217,
+        246
       ],
       "accounts": [
         {
@@ -321,25 +443,121 @@
           "writable": true
         },
         {
-          "name": "parcel"
-        },
-        {
-          "name": "parcel_program"
-        },
-        {
-          "name": "withdrawer",
-          "signer": true
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "proposal"
+          ]
         }
       ],
-      "args": [
+      "args": []
+    },
+    {
+      "name": "settle_with_verdict",
+      "docs": [
+        "Settle an Active proposal from a lens member's ProposalVerdict-v1 attestation: `expired`",
+        "sets Expired; `executed` needs a proposal minted with `verdict_may_execute` (a verdict",
+        "cannot skip per-parcel consent otherwise) and then executes it, except on an open-ground",
+        "proposal with parcels: there it clears the open ground, and the proposal executes now if",
+        "every parcel is already accepted, or at the last acceptance otherwise."
+      ],
+      "discriminator": [
+        167,
+        16,
+        204,
+        105,
+        225,
+        93,
+        188,
+        202
+      ],
+      "accounts": [
         {
-          "name": "parcel_id",
-          "type": "string"
+          "name": "proposal",
+          "writable": true
+        },
+        {
+          "name": "verdict"
+        },
+        {
+          "name": "verdict_credential"
+        },
+        {
+          "name": "verdict_record",
+          "docs": [
+            "Permanent evidence of the settlement. `init`, so replaying the same attestation fails with",
+            "\"already in use\" before the handler runs."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  101,
+                  114,
+                  100,
+                  105,
+                  99,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "proposal"
+              },
+              {
+                "kind": "account",
+                "path": "verdict"
+              }
+            ]
+          }
+        },
+        {
+          "name": "submitter",
+          "docs": [
+            "Pays rent for the verdict record."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
-      ]
+      ],
+      "args": []
     }
   ],
   "accounts": [
+    {
+      "name": "AcceptanceRecord",
+      "discriminator": [
+        8,
+        191,
+        82,
+        210,
+        167,
+        58,
+        12,
+        34
+      ]
+    },
+    {
+      "name": "ConsentTally",
+      "discriminator": [
+        200,
+        21,
+        66,
+        56,
+        62,
+        148,
+        43,
+        226
+      ]
+    },
     {
       "name": "Proposal",
       "discriminator": [
@@ -365,13 +583,41 @@
         182,
         5
       ]
+    },
+    {
+      "name": "VerdictRecord",
+      "discriminator": [
+        5,
+        210,
+        137,
+        12,
+        43,
+        13,
+        62,
+        182
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "VerdictSettled",
+      "discriminator": [
+        22,
+        37,
+        95,
+        129,
+        233,
+        148,
+        146,
+        49
+      ]
     }
   ],
   "errors": [
     {
       "code": 6000,
       "name": "NoParcels",
-      "msg": "Must include at least one parcel"
+      "msg": "Must include at least one parcel, or a site_hash for a proposal on open ground"
     },
     {
       "code": 6001,
@@ -447,9 +693,194 @@
       "code": 6015,
       "name": "InsufficientEscrowBalance",
       "msg": "Insufficient escrow balance"
+    },
+    {
+      "code": 6016,
+      "name": "MemberNotInLens",
+      "msg": "The attestation issuer is not in this proposal's lens"
+    },
+    {
+      "code": 6017,
+      "name": "InvalidAttestation",
+      "msg": "The account is not a valid SAS attestation or credential"
+    },
+    {
+      "code": 6018,
+      "name": "AttestationExpired",
+      "msg": "The attestation has expired"
+    },
+    {
+      "code": 6019,
+      "name": "WrongCredential",
+      "msg": "The attestation was issued under a different credential"
+    },
+    {
+      "code": 6020,
+      "name": "CredentialAuthorityMismatch",
+      "msg": "The credential's authority did not sign the attestation"
+    },
+    {
+      "code": 6021,
+      "name": "WrongSchema",
+      "msg": "The attestation is not under the expected lens schema"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidAttestationPayload",
+      "msg": "The attestation payload does not match its schema"
+    },
+    {
+      "code": 6023,
+      "name": "WrongParcel",
+      "msg": "The ownership attestation is about a different parcel"
+    },
+    {
+      "code": 6024,
+      "name": "InvalidOwnerCount",
+      "msg": "The ownership attestation's ownerCount must be at least 1"
+    },
+    {
+      "code": 6025,
+      "name": "OwnerMismatch",
+      "msg": "The signer is not the attested owner"
+    },
+    {
+      "code": 6026,
+      "name": "AttestationFromFuture",
+      "msg": "The attestation's source time is in the future"
+    },
+    {
+      "code": 6027,
+      "name": "OwnerCountMismatch",
+      "msg": "The attestation's ownerCount differs from the parcel's tally"
+    },
+    {
+      "code": 6028,
+      "name": "TallyMemberMismatch",
+      "msg": "Another lens member already opened this parcel's tally"
+    },
+    {
+      "code": 6029,
+      "name": "WrongProposal",
+      "msg": "The verdict is about a different proposal"
+    },
+    {
+      "code": 6030,
+      "name": "InvalidVerdict",
+      "msg": "The verdict must be executed or expired"
+    },
+    {
+      "code": 6031,
+      "name": "VerdictCannotSkipConsent",
+      "msg": "An executed verdict cannot skip per-parcel consent"
+    },
+    {
+      "code": 6032,
+      "name": "NotExpired",
+      "msg": "Proposal is not expired"
+    },
+    {
+      "code": 6033,
+      "name": "EmptyBindingIsOpenGround",
+      "msg": "A proposal without parcels is all open ground: open_ground must be set"
+    },
+    {
+      "code": 6034,
+      "name": "OpenGroundNeedsSite",
+      "msg": "Open ground needs a site: site_hash must be set"
     }
   ],
   "types": [
+    {
+      "name": "AcceptanceRecord",
+      "docs": [
+        "One attested owner's yes: PDA [\"acceptance\", proposal, parcel_id, owner]. Keeps the ownership",
+        "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
+        "account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "parcel_id",
+            "type": "string"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "ownership_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "ownership_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "payout",
+            "type": "pubkey"
+          },
+          {
+            "name": "accepted_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConsentTally",
+      "docs": [
+        "One lens member's view of one parcel's owner set within one proposal:",
+        "PDA [\"consent\", proposal, parcel_id]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "parcel_id",
+            "type": "string"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "required",
+            "type": "u8"
+          },
+          {
+            "name": "accepted",
+            "type": "u8"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
     {
       "name": "Proposal",
       "type": {
@@ -516,6 +947,45 @@
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "verdict_may_execute",
+            "type": "bool"
+          },
+          {
+            "name": "site_hash",
+            "docs": [
+              "sha256 of the canonical site encoding (frontend/js/proposals/site-hash.js); zero = no site."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "open_ground",
+            "docs": [
+              "Part of the site lies on no bound parcel: execution also needs an executed verdict."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "open_ground_cleared",
+            "docs": [
+              "An executed verdict has cleared the open ground (only meaningful with `open_ground`)."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "layout_version",
+            "docs": [
+              "Account layout the mint wrote: PROPOSAL_LAYOUT_VERSION (3) for a v3 mint, 0 for a v1/v2",
+              "account (zero padding; only the mint sets it, so it stays 0). Tells a legacy account from a v3",
+              "mint without a site, which both hold a zero `site_hash`."
+            ],
+            "type": "u8"
           }
         ]
       }
@@ -548,6 +1018,101 @@
           },
           {
             "name": "Expired"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerdictRecord",
+      "docs": [
+        "One settled verdict: PDA [\"verdict\", proposal, verdict_attestation]. Keeps the verdict",
+        "attestation's key and the sha256 of its whole account bytes, so the evidence outlives the SAS",
+        "account (and the transaction logs that carry `VerdictSettled`). `verdict` is what the verdict",
+        "said: 1 executed, 3 expired. An executed verdict on an open-ground proposal with parcels clears",
+        "the open ground and may leave the proposal Active until the last owner accepts."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verdict",
+            "type": "u8"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VerdictSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_attestation",
+            "type": "pubkey"
+          },
+          {
+            "name": "verdict_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "member",
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "The proposal's status after the settlement (0 Active for an open-ground clearance)."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "settled_at",
+            "type": "i64"
+          },
+          {
+            "name": "verdict",
+            "docs": [
+              "What the verdict said: 1 executed, 3 expired."
+            ],
+            "type": "u8"
           }
         ]
       }

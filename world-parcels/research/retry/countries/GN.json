@@ -1,0 +1,60 @@
+{
+ "kind": "country",
+ "key": "GN",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "no_online_cadastre_found",
+ "newStatus": "no_online_cadastre_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: fr-GN,fr;q=0.9",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://guinee.cadastreminier.org/en/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Spatial Dimension Landfolio; inspected JS: ArcGIS MapServer layers under cadastre.mines.gov.gn/arcgis/rest/services/MapPortal/GuineaPortal_*Layer are mining licence layers, not land parcels"
+  },
+  {
+   "url": "https://cadastre.mines.gov.gn/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "default IIS page"
+  },
+  {
+   "url": "https://www.sigmof.gov.gn",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  },
+  {
+   "url": "https://www.mines.gov.gn/",
+   "method": "GET",
+   "httpStatus": 202,
+   "contentType": "text/html",
+   "assessment": "tiny placeholder reply"
+  },
+  {
+   "url": "https://www.gouvernement.gov.gn/",
+   "method": "GET",
+   "httpStatus": 202,
+   "contentType": "text/html",
+   "assessment": "tiny placeholder reply"
+  },
+  {
+   "url": "https://www.mh.gov.gn/, sig.gov.gn, urbanisme.gov.gn, mut.gov.gn, cadastre.gov.gn, conakry.gov.gn, guinee.gov.gn",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no response"
+  }
+ ],
+ "geoBlockSuspected": false,
+ "geoBlockReason": "mining cadastre hosts reachable; land-cadastre hosts simply do not connect",
+ "notes": "Viewer inspected; confirms mining-only cadastre. No land-parcel service found. Mining licence polygons are not parcels and were not saved.",
+ "nextStep": "Search for Direction Nationale du Cadastre / Conakry urban cadastre projects (World Bank funded)."
+}

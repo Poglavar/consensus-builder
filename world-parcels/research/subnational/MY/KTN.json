@@ -1,0 +1,50 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MY",
+ "regionCode": "KTN",
+ "regionName": "Kelantan",
+ "checkedAt": "2026-09-30",
+ "status": "no_open_service_found",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.9,*/*;q=0.8; Accept-Language: ms-MY,ms;q=0.9,en;q=0.8; cookie jar; Referer = viewer origin",
+ "source": null,
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://kelgis.kelantan.gov.my/portal/",
+   "observation": "Kel-GIS ArcGIS Enterprise; public search for lot/kadaster/ndcdb returns no cadastral layer (only tanah terbiar statistics, unrelated foreign layers)"
+  },
+  {
+   "url": "https://kelgis1.kelantan.gov.my/server/rest/services",
+   "observation": "public listing of 125 Hosted services, none a lot/parcel layer; BKIGIS folder returns 'Token Required'"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://kelgis.kelantan.gov.my/portal/sharing/rest/search?q=lot&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "5 items, no parcel polygons"
+  },
+  {
+   "url": "https://kelgis1.kelantan.gov.my/server/rest/services/Hosted?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "no lot/kadaster service names"
+  },
+  {
+   "url": "https://kelgis1.kelantan.gov.my/server/rest/services/BKIGIS?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "error 499 Token Required; not pursued"
+  }
+ ],
+ "reuseStatus": "not read; no licence text seen",
+ "remainingUncertainty": "Token-gated folder BKIGIS not examined; a cadastre may exist behind credentials.",
+ "nextStep": "Ask Kel-GIS whether a lot layer is offered publicly."
+}

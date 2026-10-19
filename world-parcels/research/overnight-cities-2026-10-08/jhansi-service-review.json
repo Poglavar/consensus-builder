@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9295-jhansi.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Jhansi district’s official land-record page links UP Bhulekh and describes khatauni records. UP BhuNaksha is the official state cadastral map viewer; its current shell responds, but the exact WUP city point was not resolved to a village or safe full-polygon output.",
+  "registryAssessment": "Jhansi district’s official land-record page links UP Bhulekh and describes khatauni records. UP BhuNaksha is the official state cadastral map viewer; its current shell responds, but the exact WUP city point was not resolved to a village or safe full-polygon output.",
+  "officialPrimarySources": [
+    {
+      "url": "https://jhansi.nic.in/service/land-records/",
+      "observation": "Official Jhansi district page says UP Bhulekh provides online khatauni copies and identifies the local collectorate."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "observation": "Official UP BhuNaksha current map application shell; city-specific village/plot selection is needed."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "observation": "Official NIC BhuNaksha implementation status lists Uttar Pradesh."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf",
+      "observation": "Official NIC guide documents district/tehsil/village GIS code and plot-based cadastral map workflow."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Hindi",
+      "query": "झांसी भू नक्शा official cadastral map",
+      "result": "Official Jhansi district land-record page and UP BhuNaksha viewer route were reviewed; no full-polygon response was obtained.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://jhansi.nic.in/service/land-records/",
+        "https://upbhunaksha.gov.in/home/",
+        "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+        "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Jhansi cadastral map official UP Bhunaksha",
+      "result": "The official UP viewer is live as an application shell, but exact village/plot geometry remains unverified.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://jhansi.nic.in/service/land-records/",
+        "https://upbhunaksha.gov.in/home/",
+        "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+        "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "site:upbhunaksha.gov.in Jhansi map",
+      "result": "Search confirms the official state viewer; no city-locator parcel identity or anonymous geometry response was returned.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://jhansi.nic.in/service/land-records/",
+        "https://upbhunaksha.gov.in/home/",
+        "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+        "https://bhunaksha.nic.in/bhunaksha/Bhunaksha3.0UserGuide/Bhunaksha3.0UserGuide.pdf"
+      ]
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://jhansi.nic.in/service/land-records/",
+      "method": "GET official district page",
+      "result": "HTTP 200; the district links UP Bhulekh and explains khatauni access; no property-specific record query was made."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "method": "GET official state viewer shell",
+      "result": "HTTP 200 HTML application shell. Administrative selection is required; no full polygon or parcel-key schema was obtained."
+    },
+    {
+      "url": "https://bhunaksha.nic.in/bhunaksha/implementationstatus.jsp",
+      "method": "GET official NIC service status",
+      "result": "Page lists Uttar Pradesh as a BhuNaksha implementation; this does not establish WUP-point coverage."
+    }
+  ],
+  "geometryEvidence": "No full parcel geometry was retained. Official viewer availability and land-record workflow establish a candidate only; no public full polygon/native-ID response was verified at the unchanged WUP point.",
+  "privacy": {
+    "ownerOrAddressDataRequested": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokensRequested": false,
+    "credentialsOrTokensRetained": false,
+    "notes": "Only public city-level or exact WUP locator requests were considered; no owner, address, account, or credential values were retained."
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No public full-polygon/native-key response was verified at the exact WUP locator; source candidates remain unqualified."
+  },
+  "geometryDisposition": "No full parcel geometry was retained. Official viewer availability and land-record workflow establish a candidate only; no public full polygon/native-ID response was verified at the unchanged WUP point."
+}

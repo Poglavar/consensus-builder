@@ -1,0 +1,3125 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T03:13:20.119Z",
+  "city": "krakow-msip-root",
+  "descriptor": {
+    "id": "pl-krakow-msip-egib-parcels",
+    "name": "Kraków MSIP public EGiB parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0",
+    "idField": "id_dzialki",
+    "idType": "string",
+    "objectIdField": "id",
+    "idPrefix": "PL-KRAKOW-EGIB-",
+    "outFields": [
+      "id",
+      "id_dzialki",
+      "numer_dzialki"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "PL",
+    "metricSrid": 32634,
+    "cityIds": [
+      "krakow"
+    ],
+    "maxConcurrentQueries": 2,
+    "operator": "City of Kraków Geodesy Department / MSIP",
+    "scope": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/krakow-msip-root-acceptance.json",
+    "attribution": "City of Kraków MSIP · public EGiB cadastral polygons · adapted",
+    "catalogueUrl": "https://msip.krakow.pl/dataset/1562",
+    "licenceNote": "Anonymous bounded public geometry access and publisher attribution verified. City reuse/currentness/legal-coordinate conditions are informational; this reference layer does not establish legal title or survey accuracy. Personal fields are excluded."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        19.963,
+        50.053,
+        19.964,
+        50.054
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        19.964,
+        50.053,
+        19.965,
+        50.054
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        19.965,
+        50.053,
+        19.966,
+        50.054
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        19.963,
+        50.054,
+        19.964,
+        50.055
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        19.964,
+        50.054,
+        19.965,
+        50.055
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        19.965,
+        50.054,
+        19.966,
+        50.055
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        19.963,
+        50.055,
+        19.964,
+        50.056
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        19.964,
+        50.055,
+        19.965,
+        50.056
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        19.965,
+        50.055,
+        19.966,
+        50.056
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        19.964,
+        50.052,
+        19.965,
+        50.053
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        19.964,
+        50.056,
+        19.965,
+        50.057
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        19.962,
+        50.054,
+        19.963,
+        50.055
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        19.966,
+        50.054,
+        19.967,
+        50.055
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 5331,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        19.963,
+        50.053,
+        19.964,
+        50.054
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/13",
+          "geometrySha256": "05f8a3757d5cfa14d883df64c43df6bf3f444e371847b85d58200d7d07620e86"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/6",
+          "geometrySha256": "511c3f1a7e8cdb0c41dccba822eaccc6eac0b9366beaa9f5150b001536100a69"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/11",
+          "geometrySha256": "231f63cf73f857e27a50ca2a40555cb9a686c2fda0c732717278c1c0d3a03337"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.240/3",
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/9",
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 115,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        19.964,
+        50.053,
+        19.965,
+        50.054
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/10",
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/13",
+          "geometrySha256": "05f8a3757d5cfa14d883df64c43df6bf3f444e371847b85d58200d7d07620e86"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/8",
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.243/1",
+          "geometrySha256": "512bcfafb26511561e5e34092130a3a40b06a95cc477e7077603bd20d9598120"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/6",
+          "geometrySha256": "511c3f1a7e8cdb0c41dccba822eaccc6eac0b9366beaa9f5150b001536100a69"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/11",
+          "geometrySha256": "231f63cf73f857e27a50ca2a40555cb9a686c2fda0c732717278c1c0d3a03337"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.240/3",
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/9",
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/30",
+          "geometrySha256": "47a4bd345ef2ca8029ead1422e640c06209bc1d217f6bd98218226b8443d2fe1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 111,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        19.965,
+        50.053,
+        19.966,
+        50.054
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/10",
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/8",
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/11",
+          "geometrySha256": "231f63cf73f857e27a50ca2a40555cb9a686c2fda0c732717278c1c0d3a03337"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/9",
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 115,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        19.963,
+        50.054,
+        19.964,
+        50.055
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/11",
+          "geometrySha256": "bc8ed5caed09ccaf64de652aff191d8b7b09861f6820dd50546835bb6a5f0f2e"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/15",
+          "geometrySha256": "cafa95d07648bfa5b3ae95260343e5065e66046b5e36e4e63414321539549d99"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/3",
+          "geometrySha256": "42a64e7df1e1015c57367d5e05de6eb458c010089b6ab1638517be78516bb17f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/56",
+          "geometrySha256": "a066daae6ab0a780b8982855d3fb536883eb6043d28b4531284efae387c41d2e"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.240/3",
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.241",
+          "geometrySha256": "703594eb926517c5ee3813de53bab0e302d645eab700220e8a04e91e91a43fd4"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/7",
+          "geometrySha256": "fad7b713a4d79b74771e39238b718794f440df155323d14bb478b51f82ec7b97"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/10",
+          "geometrySha256": "33944b0b9b5edaf8adee7818c183a54956f4aa2044efef230162d4781eba9d6f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/9",
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/54",
+          "geometrySha256": "23dab55243be0589e852f9a9521e6131c53655f10ba2a049b4eb561dd1c20fe7"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/17",
+          "geometrySha256": "03a37a2d23d1feb3df722a270248b2cca363dde006a0f07dfdcd3e9aad915490"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 114,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        19.964,
+        50.054,
+        19.965,
+        50.055
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/10",
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/13",
+          "geometrySha256": "05f8a3757d5cfa14d883df64c43df6bf3f444e371847b85d58200d7d07620e86"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/8",
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/56",
+          "geometrySha256": "a066daae6ab0a780b8982855d3fb536883eb6043d28b4531284efae387c41d2e"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.240/3",
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/10",
+          "geometrySha256": "33944b0b9b5edaf8adee7818c183a54956f4aa2044efef230162d4781eba9d6f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/9",
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/30",
+          "geometrySha256": "47a4bd345ef2ca8029ead1422e640c06209bc1d217f6bd98218226b8443d2fe1"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/29",
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/57",
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/25",
+          "geometrySha256": "36323df98786c7f4dfd4c122408f2cae0c14da3e2e26d874565010ad9f905a16"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/18",
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 112,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        19.965,
+        50.054,
+        19.966,
+        50.055
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/10",
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/8",
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/19",
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/29",
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/28",
+          "geometrySha256": "b229a1b9700548fd3201aceeee5f41f026d5e754e1856c47fc0176408d3130cd"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/27",
+          "geometrySha256": "1c3b9e34e33688d7c8b8374ddf8b1114ac0c97746d06e6fa1003272c48ee2d44"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/57",
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/25",
+          "geometrySha256": "36323df98786c7f4dfd4c122408f2cae0c14da3e2e26d874565010ad9f905a16"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/22",
+          "geometrySha256": "0482b45479adb6981f46ffdc85c9c4044cb9603f7d04a24f084887cd9975422c"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/23",
+          "geometrySha256": "90f3725e1cb48a2d52ebfa019f923ad782bb2df03b8e276f6245d0fae41eab56"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/24",
+          "geometrySha256": "707b5b7d87ef6c0be236298cca297a0327329612d9f9d29ea9751d4bd4ba6f38"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 111,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        19.963,
+        50.055,
+        19.964,
+        50.056
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/7",
+          "geometrySha256": "fad7b713a4d79b74771e39238b718794f440df155323d14bb478b51f82ec7b97"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/8",
+          "geometrySha256": "9bdfa8decf034fe770cf9ddb4ec2ad7cf3107c988c4072d06c09cde29c10b9aa"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/9",
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/14",
+          "geometrySha256": "63f309fc9611ee04b726ce7c31ca01824bbd97d2b6ee9a87723f29d734af46ab"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/18",
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/12",
+          "geometrySha256": "528e46755826f09fe7d71f547cb716e187e9e769eabb00e47db02a3b742f5dd8"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/21",
+          "geometrySha256": "019a4ca6ff816f69875384fe2eb742a3e6092e21d444a981348bcc5a4cc18cbd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 113,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        19.964,
+        50.055,
+        19.965,
+        50.056
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.179/1",
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/9",
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/57",
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/14",
+          "geometrySha256": "63f309fc9611ee04b726ce7c31ca01824bbd97d2b6ee9a87723f29d734af46ab"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/18",
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.272/12",
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/21",
+          "geometrySha256": "019a4ca6ff816f69875384fe2eb742a3e6092e21d444a981348bcc5a4cc18cbd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 112,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        19.965,
+        50.055,
+        19.966,
+        50.056
+      ],
+      "complete": true,
+      "count": 19,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.397/3",
+          "geometrySha256": "b129bc440b57326e852f8de4c143b26704bd7a5eb860c82fffddbde30fc4a582"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.179/1",
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.272/10",
+          "geometrySha256": "5d99ce7d296132c16a692ec8055c315857e7024e646a0af4fb0f39e1a92731ce"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.272/11",
+          "geometrySha256": "64900e3c76cac786fe63e155edbdbe632db6144e2f32596283605f0dff3c6240"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/58",
+          "geometrySha256": "d478dd48e1ab507d1daf7b4118e0d80a5c25ac3d5edb585fd715c4d83cbadaf8"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.272/9",
+          "geometrySha256": "a0b3fcc77e874b8f98598132d0a3796844136cd91f1a52fa224a88a13c0e8eda"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.272/8",
+          "geometrySha256": "08eb1a621c015f32ea6416e625862414d013fa065d9584c87ed21c9976d9b887"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.179/8",
+          "geometrySha256": "6f3cd56a98266a8e3f6fb4cd4bded6dfe3d6c9e15e4c7df81ef166f0b9ecab10"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/15",
+          "geometrySha256": "e41bef6aac1d8556514da1f08c950492c83d91c9c89fd67bdfa6d31bcedc9932"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/19",
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/29",
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/26",
+          "geometrySha256": "674d2b64c31fadefd41cfdd158f612c21d5576f10ee6a3b6b34af61998c4c3bb"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/28",
+          "geometrySha256": "b229a1b9700548fd3201aceeee5f41f026d5e754e1856c47fc0176408d3130cd"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/27",
+          "geometrySha256": "1c3b9e34e33688d7c8b8374ddf8b1114ac0c97746d06e6fa1003272c48ee2d44"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/57",
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/22",
+          "geometrySha256": "0482b45479adb6981f46ffdc85c9c4044cb9603f7d04a24f084887cd9975422c"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/23",
+          "geometrySha256": "90f3725e1cb48a2d52ebfa019f923ad782bb2df03b8e276f6245d0fae41eab56"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/18",
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.272/12",
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 139,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        19.964,
+        50.052,
+        19.965,
+        50.053
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126104_9.0014.197/3",
+          "geometrySha256": "eb74a21b04ac05ad613d57a7aa69998272f75dc44c2d16d32bac1f1dc388a9b0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126104_9.0014.1/5",
+          "geometrySha256": "f8043835c24332fcde02cf41fa8ce1ec2b10b5ba026eb260b449db7469779f8e"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.289/9",
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 115,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        19.964,
+        50.056,
+        19.965,
+        50.057
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.397/1",
+          "geometrySha256": "34085ae0060a42b2a7cffc92ab080c2720feab308a0117a23df4c245139d3f1f"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.179/1",
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.179/8",
+          "geometrySha256": "6f3cd56a98266a8e3f6fb4cd4bded6dfe3d6c9e15e4c7df81ef166f0b9ecab10"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.180/1",
+          "geometrySha256": "dded34c756475672307abeb6baf5ed05fff1784d57916334d5ea5cd85b33649e"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.464",
+          "geometrySha256": "53f9b2641b73b3fb3e42c992550159678d4f7a6116d1a219875591294d280f6a"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.272/12",
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/20",
+          "geometrySha256": "4444ff954cfd17eb90cf47b33456e7d39ca2c775cbba144832ab0fb035f76e1b"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.411/21",
+          "geometrySha256": "019a4ca6ff816f69875384fe2eb742a3e6092e21d444a981348bcc5a4cc18cbd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 107,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        19.962,
+        50.054,
+        19.963,
+        50.055
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/13",
+          "geometrySha256": "6c6e49e189ce4a30a3b6084bb61c0822463c7aff9cd3b21404d16981f960da10"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/15",
+          "geometrySha256": "cafa95d07648bfa5b3ae95260343e5065e66046b5e36e4e63414321539549d99"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/29",
+          "geometrySha256": "3d096e7bd71411ac1ad67aaa942badbc64ffa80446212db7895ee3ed578273bf"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/48",
+          "geometrySha256": "103ac1429ade816fecdc9d4b9c5946082c6024073b781d828d4704e7ce6404d2"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.240/3",
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/7",
+          "geometrySha256": "fad7b713a4d79b74771e39238b718794f440df155323d14bb478b51f82ec7b97"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/54",
+          "geometrySha256": "23dab55243be0589e852f9a9521e6131c53655f10ba2a049b4eb561dd1c20fe7"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/14",
+          "geometrySha256": "c521cfc9b59a013fd5251202c648890d892329f4c5d5b253e7706240df0e2fc7"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/17",
+          "geometrySha256": "03a37a2d23d1feb3df722a270248b2cca363dde006a0f07dfdcd3e9aad915490"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.298/18",
+          "geometrySha256": "a6ed8326591d99a07a305828a7fce3afa215399926ae6c6d0607256c405e1de6"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.270/55",
+          "geometrySha256": "13b574c1ec6d9191459cb4ac3219a68421c31c9b4e70fc9f776f94503191d778"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 106,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        19.966,
+        50.054,
+        19.967,
+        50.055
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.242/8",
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/15",
+          "geometrySha256": "e41bef6aac1d8556514da1f08c950492c83d91c9c89fd67bdfa6d31bcedc9932"
+        },
+        {
+          "id": "PL-KRAKOW-EGIB-126105_9.0017.173/19",
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 771,
+      "requestIndexes": [
+        13,
+        19
+      ],
+      "count": 19,
+      "geometryPages": 7,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 458,
+      "requestIndexes": [
+        20,
+        20
+      ],
+      "count": 40,
+      "ids": [
+        "PL-KRAKOW-EGIB-126104_9.0014.1/5",
+        "PL-KRAKOW-EGIB-126104_9.0014.197/3",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/10",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/15",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/19",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/22",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/23",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/24",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/25",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/26",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/27",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/28",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/29",
+        "PL-KRAKOW-EGIB-126105_9.0017.173/30",
+        "PL-KRAKOW-EGIB-126105_9.0017.179/1",
+        "PL-KRAKOW-EGIB-126105_9.0017.179/8",
+        "PL-KRAKOW-EGIB-126105_9.0017.180/1",
+        "PL-KRAKOW-EGIB-126105_9.0017.240/3",
+        "PL-KRAKOW-EGIB-126105_9.0017.241",
+        "PL-KRAKOW-EGIB-126105_9.0017.242/13",
+        "PL-KRAKOW-EGIB-126105_9.0017.242/8",
+        "PL-KRAKOW-EGIB-126105_9.0017.243/1",
+        "PL-KRAKOW-EGIB-126105_9.0017.270/29",
+        "PL-KRAKOW-EGIB-126105_9.0017.270/48",
+        "PL-KRAKOW-EGIB-126105_9.0017.270/54",
+        "PL-KRAKOW-EGIB-126105_9.0017.270/55",
+        "PL-KRAKOW-EGIB-126105_9.0017.270/56",
+        "PL-KRAKOW-EGIB-126105_9.0017.270/57",
+        "PL-KRAKOW-EGIB-126105_9.0017.270/58",
+        "PL-KRAKOW-EGIB-126105_9.0017.272/10",
+        "PL-KRAKOW-EGIB-126105_9.0017.272/11",
+        "PL-KRAKOW-EGIB-126105_9.0017.272/12",
+        "PL-KRAKOW-EGIB-126105_9.0017.272/8",
+        "PL-KRAKOW-EGIB-126105_9.0017.272/9",
+        "PL-KRAKOW-EGIB-126105_9.0017.289/11",
+        "PL-KRAKOW-EGIB-126105_9.0017.289/6",
+        "PL-KRAKOW-EGIB-126105_9.0017.289/9",
+        "PL-KRAKOW-EGIB-126105_9.0017.298/11",
+        "PL-KRAKOW-EGIB-126105_9.0017.298/13",
+        "PL-KRAKOW-EGIB-126105_9.0017.298/14"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 223,
+      "requestIndexes": [
+        21,
+        21
+      ],
+      "count": 16,
+      "ids": [
+        "PL-KRAKOW-EGIB-126105_9.0017.298/15",
+        "PL-KRAKOW-EGIB-126105_9.0017.298/17",
+        "PL-KRAKOW-EGIB-126105_9.0017.298/18",
+        "PL-KRAKOW-EGIB-126105_9.0017.298/7",
+        "PL-KRAKOW-EGIB-126105_9.0017.397/1",
+        "PL-KRAKOW-EGIB-126105_9.0017.397/3",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/10",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/12",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/14",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/18",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/20",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/21",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/3",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/8",
+        "PL-KRAKOW-EGIB-126105_9.0017.411/9",
+        "PL-KRAKOW-EGIB-126105_9.0017.464"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 210,
+      "requestIndexes": [
+        22,
+        22
+      ],
+      "absentIds": [
+        "PL-KRAKOW-EGIB-126105_9.0017.99999999/99999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 119,
+      "requestIndexes": [
+        23,
+        23
+      ],
+      "selectedParcelId": "PL-KRAKOW-EGIB-126105_9.0017.270/54",
+      "count": 9,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 146,
+      "requestIndexes": [
+        24,
+        24
+      ],
+      "selectedParcelId": "PL-KRAKOW-EGIB-126105_9.0017.270/54",
+      "coverage": "complete",
+      "siteM2": 1273.95,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.963%2C50.053%2C19.964%2C50.054&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:20.121Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 8533,
+      "features": [
+        {
+          "transportId": 62537946,
+          "properties": {
+            "id": 62537946,
+            "id_dzialki": "126105_9.0017.242/13",
+            "numer_dzialki": "242/13"
+          },
+          "geometrySha256": "05f8a3757d5cfa14d883df64c43df6bf3f444e371847b85d58200d7d07620e86"
+        },
+        {
+          "transportId": 62537988,
+          "properties": {
+            "id": 62537988,
+            "id_dzialki": "126105_9.0017.289/6",
+            "numer_dzialki": "289/6"
+          },
+          "geometrySha256": "511c3f1a7e8cdb0c41dccba822eaccc6eac0b9366beaa9f5150b001536100a69"
+        },
+        {
+          "transportId": 62807319,
+          "properties": {
+            "id": 62807319,
+            "id_dzialki": "126105_9.0017.289/11",
+            "numer_dzialki": "289/11"
+          },
+          "geometrySha256": "231f63cf73f857e27a50ca2a40555cb9a686c2fda0c732717278c1c0d3a03337"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 64196026,
+          "properties": {
+            "id": 64196026,
+            "id_dzialki": "126105_9.0017.289/9",
+            "numer_dzialki": "289/9"
+          },
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.964%2C50.053%2C19.965%2C50.054&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:25.453Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 11764,
+      "features": [
+        {
+          "transportId": 62537824,
+          "properties": {
+            "id": 62537824,
+            "id_dzialki": "126105_9.0017.173/10",
+            "numer_dzialki": "173/10"
+          },
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "transportId": 62537946,
+          "properties": {
+            "id": 62537946,
+            "id_dzialki": "126105_9.0017.242/13",
+            "numer_dzialki": "242/13"
+          },
+          "geometrySha256": "05f8a3757d5cfa14d883df64c43df6bf3f444e371847b85d58200d7d07620e86"
+        },
+        {
+          "transportId": 62537947,
+          "properties": {
+            "id": 62537947,
+            "id_dzialki": "126105_9.0017.242/8",
+            "numer_dzialki": "242/8"
+          },
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "transportId": 62537948,
+          "properties": {
+            "id": 62537948,
+            "id_dzialki": "126105_9.0017.243/1",
+            "numer_dzialki": "243/1"
+          },
+          "geometrySha256": "512bcfafb26511561e5e34092130a3a40b06a95cc477e7077603bd20d9598120"
+        },
+        {
+          "transportId": 62537988,
+          "properties": {
+            "id": 62537988,
+            "id_dzialki": "126105_9.0017.289/6",
+            "numer_dzialki": "289/6"
+          },
+          "geometrySha256": "511c3f1a7e8cdb0c41dccba822eaccc6eac0b9366beaa9f5150b001536100a69"
+        },
+        {
+          "transportId": 62807319,
+          "properties": {
+            "id": 62807319,
+            "id_dzialki": "126105_9.0017.289/11",
+            "numer_dzialki": "289/11"
+          },
+          "geometrySha256": "231f63cf73f857e27a50ca2a40555cb9a686c2fda0c732717278c1c0d3a03337"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 64196026,
+          "properties": {
+            "id": 64196026,
+            "id_dzialki": "126105_9.0017.289/9",
+            "numer_dzialki": "289/9"
+          },
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        },
+        {
+          "transportId": 64225911,
+          "properties": {
+            "id": 64225911,
+            "id_dzialki": "126105_9.0017.173/30",
+            "numer_dzialki": "173/30"
+          },
+          "geometrySha256": "47a4bd345ef2ca8029ead1422e640c06209bc1d217f6bd98218226b8443d2fe1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.965%2C50.053%2C19.966%2C50.054&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:25.568Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7692,
+      "features": [
+        {
+          "transportId": 62537824,
+          "properties": {
+            "id": 62537824,
+            "id_dzialki": "126105_9.0017.173/10",
+            "numer_dzialki": "173/10"
+          },
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "transportId": 62537947,
+          "properties": {
+            "id": 62537947,
+            "id_dzialki": "126105_9.0017.242/8",
+            "numer_dzialki": "242/8"
+          },
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "transportId": 62807319,
+          "properties": {
+            "id": 62807319,
+            "id_dzialki": "126105_9.0017.289/11",
+            "numer_dzialki": "289/11"
+          },
+          "geometrySha256": "231f63cf73f857e27a50ca2a40555cb9a686c2fda0c732717278c1c0d3a03337"
+        },
+        {
+          "transportId": 64196026,
+          "properties": {
+            "id": 64196026,
+            "id_dzialki": "126105_9.0017.289/9",
+            "numer_dzialki": "289/9"
+          },
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.963%2C50.054%2C19.964%2C50.055&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:25.680Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 8709,
+      "features": [
+        {
+          "transportId": 62537996,
+          "properties": {
+            "id": 62537996,
+            "id_dzialki": "126105_9.0017.298/11",
+            "numer_dzialki": "298/11"
+          },
+          "geometrySha256": "bc8ed5caed09ccaf64de652aff191d8b7b09861f6820dd50546835bb6a5f0f2e"
+        },
+        {
+          "transportId": 62811910,
+          "properties": {
+            "id": 62811910,
+            "id_dzialki": "126105_9.0017.298/15",
+            "numer_dzialki": "298/15"
+          },
+          "geometrySha256": "cafa95d07648bfa5b3ae95260343e5065e66046b5e36e4e63414321539549d99"
+        },
+        {
+          "transportId": 63043365,
+          "properties": {
+            "id": 63043365,
+            "id_dzialki": "126105_9.0017.411/3",
+            "numer_dzialki": "411/3"
+          },
+          "geometrySha256": "42a64e7df1e1015c57367d5e05de6eb458c010089b6ab1638517be78516bb17f"
+        },
+        {
+          "transportId": 63092706,
+          "properties": {
+            "id": 63092706,
+            "id_dzialki": "126105_9.0017.270/56",
+            "numer_dzialki": "270/56"
+          },
+          "geometrySha256": "a066daae6ab0a780b8982855d3fb536883eb6043d28b4531284efae387c41d2e"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 63155954,
+          "properties": {
+            "id": 63155954,
+            "id_dzialki": "126105_9.0017.241",
+            "numer_dzialki": "241"
+          },
+          "geometrySha256": "703594eb926517c5ee3813de53bab0e302d645eab700220e8a04e91e91a43fd4"
+        },
+        {
+          "transportId": 63198410,
+          "properties": {
+            "id": 63198410,
+            "id_dzialki": "126105_9.0017.298/7",
+            "numer_dzialki": "298/7"
+          },
+          "geometrySha256": "fad7b713a4d79b74771e39238b718794f440df155323d14bb478b51f82ec7b97"
+        },
+        {
+          "transportId": 63198411,
+          "properties": {
+            "id": 63198411,
+            "id_dzialki": "126105_9.0017.411/10",
+            "numer_dzialki": "411/10"
+          },
+          "geometrySha256": "33944b0b9b5edaf8adee7818c183a54956f4aa2044efef230162d4781eba9d6f"
+        },
+        {
+          "transportId": 63445490,
+          "properties": {
+            "id": 63445490,
+            "id_dzialki": "126105_9.0017.411/9",
+            "numer_dzialki": "411/9"
+          },
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "transportId": 63734372,
+          "properties": {
+            "id": 63734372,
+            "id_dzialki": "126105_9.0017.270/54",
+            "numer_dzialki": "270/54"
+          },
+          "geometrySha256": "23dab55243be0589e852f9a9521e6131c53655f10ba2a049b4eb561dd1c20fe7"
+        },
+        {
+          "transportId": 64105839,
+          "properties": {
+            "id": 64105839,
+            "id_dzialki": "126105_9.0017.298/17",
+            "numer_dzialki": "298/17"
+          },
+          "geometrySha256": "03a37a2d23d1feb3df722a270248b2cca363dde006a0f07dfdcd3e9aad915490"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.964%2C50.054%2C19.965%2C50.055&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:25.797Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 10563,
+      "features": [
+        {
+          "transportId": 62537824,
+          "properties": {
+            "id": 62537824,
+            "id_dzialki": "126105_9.0017.173/10",
+            "numer_dzialki": "173/10"
+          },
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "transportId": 62537946,
+          "properties": {
+            "id": 62537946,
+            "id_dzialki": "126105_9.0017.242/13",
+            "numer_dzialki": "242/13"
+          },
+          "geometrySha256": "05f8a3757d5cfa14d883df64c43df6bf3f444e371847b85d58200d7d07620e86"
+        },
+        {
+          "transportId": 62537947,
+          "properties": {
+            "id": 62537947,
+            "id_dzialki": "126105_9.0017.242/8",
+            "numer_dzialki": "242/8"
+          },
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "transportId": 63092706,
+          "properties": {
+            "id": 63092706,
+            "id_dzialki": "126105_9.0017.270/56",
+            "numer_dzialki": "270/56"
+          },
+          "geometrySha256": "a066daae6ab0a780b8982855d3fb536883eb6043d28b4531284efae387c41d2e"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 63198411,
+          "properties": {
+            "id": 63198411,
+            "id_dzialki": "126105_9.0017.411/10",
+            "numer_dzialki": "411/10"
+          },
+          "geometrySha256": "33944b0b9b5edaf8adee7818c183a54956f4aa2044efef230162d4781eba9d6f"
+        },
+        {
+          "transportId": 63445490,
+          "properties": {
+            "id": 63445490,
+            "id_dzialki": "126105_9.0017.411/9",
+            "numer_dzialki": "411/9"
+          },
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "transportId": 64225911,
+          "properties": {
+            "id": 64225911,
+            "id_dzialki": "126105_9.0017.173/30",
+            "numer_dzialki": "173/30"
+          },
+          "geometrySha256": "47a4bd345ef2ca8029ead1422e640c06209bc1d217f6bd98218226b8443d2fe1"
+        },
+        {
+          "transportId": 64225912,
+          "properties": {
+            "id": 64225912,
+            "id_dzialki": "126105_9.0017.173/29",
+            "numer_dzialki": "173/29"
+          },
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "transportId": 64225916,
+          "properties": {
+            "id": 64225916,
+            "id_dzialki": "126105_9.0017.270/57",
+            "numer_dzialki": "270/57"
+          },
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "transportId": 64225917,
+          "properties": {
+            "id": 64225917,
+            "id_dzialki": "126105_9.0017.173/25",
+            "numer_dzialki": "173/25"
+          },
+          "geometrySha256": "36323df98786c7f4dfd4c122408f2cae0c14da3e2e26d874565010ad9f905a16"
+        },
+        {
+          "transportId": 69500489,
+          "properties": {
+            "id": 69500489,
+            "id_dzialki": "126105_9.0017.411/18",
+            "numer_dzialki": "411/18"
+          },
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.965%2C50.054%2C19.966%2C50.055&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:25.912Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7885,
+      "features": [
+        {
+          "transportId": 62537824,
+          "properties": {
+            "id": 62537824,
+            "id_dzialki": "126105_9.0017.173/10",
+            "numer_dzialki": "173/10"
+          },
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "transportId": 62537947,
+          "properties": {
+            "id": 62537947,
+            "id_dzialki": "126105_9.0017.242/8",
+            "numer_dzialki": "242/8"
+          },
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "transportId": 64224143,
+          "properties": {
+            "id": 64224143,
+            "id_dzialki": "126105_9.0017.173/19",
+            "numer_dzialki": "173/19"
+          },
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        },
+        {
+          "transportId": 64225912,
+          "properties": {
+            "id": 64225912,
+            "id_dzialki": "126105_9.0017.173/29",
+            "numer_dzialki": "173/29"
+          },
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "transportId": 64225914,
+          "properties": {
+            "id": 64225914,
+            "id_dzialki": "126105_9.0017.173/28",
+            "numer_dzialki": "173/28"
+          },
+          "geometrySha256": "b229a1b9700548fd3201aceeee5f41f026d5e754e1856c47fc0176408d3130cd"
+        },
+        {
+          "transportId": 64225915,
+          "properties": {
+            "id": 64225915,
+            "id_dzialki": "126105_9.0017.173/27",
+            "numer_dzialki": "173/27"
+          },
+          "geometrySha256": "1c3b9e34e33688d7c8b8374ddf8b1114ac0c97746d06e6fa1003272c48ee2d44"
+        },
+        {
+          "transportId": 64225916,
+          "properties": {
+            "id": 64225916,
+            "id_dzialki": "126105_9.0017.270/57",
+            "numer_dzialki": "270/57"
+          },
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "transportId": 64225917,
+          "properties": {
+            "id": 64225917,
+            "id_dzialki": "126105_9.0017.173/25",
+            "numer_dzialki": "173/25"
+          },
+          "geometrySha256": "36323df98786c7f4dfd4c122408f2cae0c14da3e2e26d874565010ad9f905a16"
+        },
+        {
+          "transportId": 64225919,
+          "properties": {
+            "id": 64225919,
+            "id_dzialki": "126105_9.0017.173/22",
+            "numer_dzialki": "173/22"
+          },
+          "geometrySha256": "0482b45479adb6981f46ffdc85c9c4044cb9603f7d04a24f084887cd9975422c"
+        },
+        {
+          "transportId": 64225920,
+          "properties": {
+            "id": 64225920,
+            "id_dzialki": "126105_9.0017.173/23",
+            "numer_dzialki": "173/23"
+          },
+          "geometrySha256": "90f3725e1cb48a2d52ebfa019f923ad782bb2df03b8e276f6245d0fae41eab56"
+        },
+        {
+          "transportId": 68475794,
+          "properties": {
+            "id": 68475794,
+            "id_dzialki": "126105_9.0017.173/24",
+            "numer_dzialki": "173/24"
+          },
+          "geometrySha256": "707b5b7d87ef6c0be236298cca297a0327329612d9f9d29ea9751d4bd4ba6f38"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.963%2C50.055%2C19.964%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.024Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5524,
+      "features": [
+        {
+          "transportId": 63198410,
+          "properties": {
+            "id": 63198410,
+            "id_dzialki": "126105_9.0017.298/7",
+            "numer_dzialki": "298/7"
+          },
+          "geometrySha256": "fad7b713a4d79b74771e39238b718794f440df155323d14bb478b51f82ec7b97"
+        },
+        {
+          "transportId": 63198412,
+          "properties": {
+            "id": 63198412,
+            "id_dzialki": "126105_9.0017.411/8",
+            "numer_dzialki": "411/8"
+          },
+          "geometrySha256": "9bdfa8decf034fe770cf9ddb4ec2ad7cf3107c988c4072d06c09cde29c10b9aa"
+        },
+        {
+          "transportId": 63445490,
+          "properties": {
+            "id": 63445490,
+            "id_dzialki": "126105_9.0017.411/9",
+            "numer_dzialki": "411/9"
+          },
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "transportId": 65207597,
+          "properties": {
+            "id": 65207597,
+            "id_dzialki": "126105_9.0017.411/14",
+            "numer_dzialki": "411/14"
+          },
+          "geometrySha256": "63f309fc9611ee04b726ce7c31ca01824bbd97d2b6ee9a87723f29d734af46ab"
+        },
+        {
+          "transportId": 69500489,
+          "properties": {
+            "id": 69500489,
+            "id_dzialki": "126105_9.0017.411/18",
+            "numer_dzialki": "411/18"
+          },
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        },
+        {
+          "transportId": 71590682,
+          "properties": {
+            "id": 71590682,
+            "id_dzialki": "126105_9.0017.411/12",
+            "numer_dzialki": "411/12"
+          },
+          "geometrySha256": "528e46755826f09fe7d71f547cb716e187e9e769eabb00e47db02a3b742f5dd8"
+        },
+        {
+          "transportId": 71590693,
+          "properties": {
+            "id": 71590693,
+            "id_dzialki": "126105_9.0017.411/21",
+            "numer_dzialki": "411/21"
+          },
+          "geometrySha256": "019a4ca6ff816f69875384fe2eb742a3e6092e21d444a981348bcc5a4cc18cbd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.964%2C50.055%2C19.965%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.136Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5530,
+      "features": [
+        {
+          "transportId": 62506664,
+          "properties": {
+            "id": 62506664,
+            "id_dzialki": "126105_9.0017.179/1",
+            "numer_dzialki": "179/1"
+          },
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "transportId": 63445490,
+          "properties": {
+            "id": 63445490,
+            "id_dzialki": "126105_9.0017.411/9",
+            "numer_dzialki": "411/9"
+          },
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "transportId": 64225916,
+          "properties": {
+            "id": 64225916,
+            "id_dzialki": "126105_9.0017.270/57",
+            "numer_dzialki": "270/57"
+          },
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "transportId": 65207597,
+          "properties": {
+            "id": 65207597,
+            "id_dzialki": "126105_9.0017.411/14",
+            "numer_dzialki": "411/14"
+          },
+          "geometrySha256": "63f309fc9611ee04b726ce7c31ca01824bbd97d2b6ee9a87723f29d734af46ab"
+        },
+        {
+          "transportId": 69500489,
+          "properties": {
+            "id": 69500489,
+            "id_dzialki": "126105_9.0017.411/18",
+            "numer_dzialki": "411/18"
+          },
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        },
+        {
+          "transportId": 71590675,
+          "properties": {
+            "id": 71590675,
+            "id_dzialki": "126105_9.0017.272/12",
+            "numer_dzialki": "272/12"
+          },
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        },
+        {
+          "transportId": 71590693,
+          "properties": {
+            "id": 71590693,
+            "id_dzialki": "126105_9.0017.411/21",
+            "numer_dzialki": "411/21"
+          },
+          "geometrySha256": "019a4ca6ff816f69875384fe2eb742a3e6092e21d444a981348bcc5a4cc18cbd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.250Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 13810,
+      "features": [
+        {
+          "transportId": 62450338,
+          "properties": {
+            "id": 62450338,
+            "id_dzialki": "126105_9.0017.397/3",
+            "numer_dzialki": "397/3"
+          },
+          "geometrySha256": "b129bc440b57326e852f8de4c143b26704bd7a5eb860c82fffddbde30fc4a582"
+        },
+        {
+          "transportId": 62506664,
+          "properties": {
+            "id": 62506664,
+            "id_dzialki": "126105_9.0017.179/1",
+            "numer_dzialki": "179/1"
+          },
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "transportId": 62507252,
+          "properties": {
+            "id": 62507252,
+            "id_dzialki": "126105_9.0017.272/10",
+            "numer_dzialki": "272/10"
+          },
+          "geometrySha256": "5d99ce7d296132c16a692ec8055c315857e7024e646a0af4fb0f39e1a92731ce"
+        },
+        {
+          "transportId": 62513032,
+          "properties": {
+            "id": 62513032,
+            "id_dzialki": "126105_9.0017.272/11",
+            "numer_dzialki": "272/11"
+          },
+          "geometrySha256": "64900e3c76cac786fe63e155edbdbe632db6144e2f32596283605f0dff3c6240"
+        },
+        {
+          "transportId": 62537973,
+          "properties": {
+            "id": 62537973,
+            "id_dzialki": "126105_9.0017.270/58",
+            "numer_dzialki": "270/58"
+          },
+          "geometrySha256": "d478dd48e1ab507d1daf7b4118e0d80a5c25ac3d5edb585fd715c4d83cbadaf8"
+        },
+        {
+          "transportId": 62871544,
+          "properties": {
+            "id": 62871544,
+            "id_dzialki": "126105_9.0017.272/9",
+            "numer_dzialki": "272/9"
+          },
+          "geometrySha256": "a0b3fcc77e874b8f98598132d0a3796844136cd91f1a52fa224a88a13c0e8eda"
+        },
+        {
+          "transportId": 62871545,
+          "properties": {
+            "id": 62871545,
+            "id_dzialki": "126105_9.0017.272/8",
+            "numer_dzialki": "272/8"
+          },
+          "geometrySha256": "08eb1a621c015f32ea6416e625862414d013fa065d9584c87ed21c9976d9b887"
+        },
+        {
+          "transportId": 62871546,
+          "properties": {
+            "id": 62871546,
+            "id_dzialki": "126105_9.0017.179/8",
+            "numer_dzialki": "179/8"
+          },
+          "geometrySha256": "6f3cd56a98266a8e3f6fb4cd4bded6dfe3d6c9e15e4c7df81ef166f0b9ecab10"
+        },
+        {
+          "transportId": 63232541,
+          "properties": {
+            "id": 63232541,
+            "id_dzialki": "126105_9.0017.173/15",
+            "numer_dzialki": "173/15"
+          },
+          "geometrySha256": "e41bef6aac1d8556514da1f08c950492c83d91c9c89fd67bdfa6d31bcedc9932"
+        },
+        {
+          "transportId": 64224143,
+          "properties": {
+            "id": 64224143,
+            "id_dzialki": "126105_9.0017.173/19",
+            "numer_dzialki": "173/19"
+          },
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        },
+        {
+          "transportId": 64225912,
+          "properties": {
+            "id": 64225912,
+            "id_dzialki": "126105_9.0017.173/29",
+            "numer_dzialki": "173/29"
+          },
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "transportId": 64225913,
+          "properties": {
+            "id": 64225913,
+            "id_dzialki": "126105_9.0017.173/26",
+            "numer_dzialki": "173/26"
+          },
+          "geometrySha256": "674d2b64c31fadefd41cfdd158f612c21d5576f10ee6a3b6b34af61998c4c3bb"
+        },
+        {
+          "transportId": 64225914,
+          "properties": {
+            "id": 64225914,
+            "id_dzialki": "126105_9.0017.173/28",
+            "numer_dzialki": "173/28"
+          },
+          "geometrySha256": "b229a1b9700548fd3201aceeee5f41f026d5e754e1856c47fc0176408d3130cd"
+        },
+        {
+          "transportId": 64225915,
+          "properties": {
+            "id": 64225915,
+            "id_dzialki": "126105_9.0017.173/27",
+            "numer_dzialki": "173/27"
+          },
+          "geometrySha256": "1c3b9e34e33688d7c8b8374ddf8b1114ac0c97746d06e6fa1003272c48ee2d44"
+        },
+        {
+          "transportId": 64225916,
+          "properties": {
+            "id": 64225916,
+            "id_dzialki": "126105_9.0017.270/57",
+            "numer_dzialki": "270/57"
+          },
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "transportId": 64225919,
+          "properties": {
+            "id": 64225919,
+            "id_dzialki": "126105_9.0017.173/22",
+            "numer_dzialki": "173/22"
+          },
+          "geometrySha256": "0482b45479adb6981f46ffdc85c9c4044cb9603f7d04a24f084887cd9975422c"
+        },
+        {
+          "transportId": 64225920,
+          "properties": {
+            "id": 64225920,
+            "id_dzialki": "126105_9.0017.173/23",
+            "numer_dzialki": "173/23"
+          },
+          "geometrySha256": "90f3725e1cb48a2d52ebfa019f923ad782bb2df03b8e276f6245d0fae41eab56"
+        },
+        {
+          "transportId": 69500489,
+          "properties": {
+            "id": 69500489,
+            "id_dzialki": "126105_9.0017.411/18",
+            "numer_dzialki": "411/18"
+          },
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        },
+        {
+          "transportId": 71590675,
+          "properties": {
+            "id": 71590675,
+            "id_dzialki": "126105_9.0017.272/12",
+            "numer_dzialki": "272/12"
+          },
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.964%2C50.052%2C19.965%2C50.053&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.364Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 11537,
+      "features": [
+        {
+          "transportId": 62711862,
+          "properties": {
+            "id": 62711862,
+            "id_dzialki": "126104_9.0014.197/3",
+            "numer_dzialki": "197/3"
+          },
+          "geometrySha256": "eb74a21b04ac05ad613d57a7aa69998272f75dc44c2d16d32bac1f1dc388a9b0"
+        },
+        {
+          "transportId": 62851748,
+          "properties": {
+            "id": 62851748,
+            "id_dzialki": "126104_9.0014.1/5",
+            "numer_dzialki": "1/5"
+          },
+          "geometrySha256": "f8043835c24332fcde02cf41fa8ce1ec2b10b5ba026eb260b449db7469779f8e"
+        },
+        {
+          "transportId": 64196026,
+          "properties": {
+            "id": 64196026,
+            "id_dzialki": "126105_9.0017.289/9",
+            "numer_dzialki": "289/9"
+          },
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.964%2C50.056%2C19.965%2C50.057&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.505Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5051,
+      "features": [
+        {
+          "transportId": 62450376,
+          "properties": {
+            "id": 62450376,
+            "id_dzialki": "126105_9.0017.397/1",
+            "numer_dzialki": "397/1"
+          },
+          "geometrySha256": "34085ae0060a42b2a7cffc92ab080c2720feab308a0117a23df4c245139d3f1f"
+        },
+        {
+          "transportId": 62506664,
+          "properties": {
+            "id": 62506664,
+            "id_dzialki": "126105_9.0017.179/1",
+            "numer_dzialki": "179/1"
+          },
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "transportId": 62871546,
+          "properties": {
+            "id": 62871546,
+            "id_dzialki": "126105_9.0017.179/8",
+            "numer_dzialki": "179/8"
+          },
+          "geometrySha256": "6f3cd56a98266a8e3f6fb4cd4bded6dfe3d6c9e15e4c7df81ef166f0b9ecab10"
+        },
+        {
+          "transportId": 64372564,
+          "properties": {
+            "id": 64372564,
+            "id_dzialki": "126105_9.0017.180/1",
+            "numer_dzialki": "180/1"
+          },
+          "geometrySha256": "dded34c756475672307abeb6baf5ed05fff1784d57916334d5ea5cd85b33649e"
+        },
+        {
+          "transportId": 64381531,
+          "properties": {
+            "id": 64381531,
+            "id_dzialki": "126105_9.0017.464",
+            "numer_dzialki": "464"
+          },
+          "geometrySha256": "53f9b2641b73b3fb3e42c992550159678d4f7a6116d1a219875591294d280f6a"
+        },
+        {
+          "transportId": 71590675,
+          "properties": {
+            "id": 71590675,
+            "id_dzialki": "126105_9.0017.272/12",
+            "numer_dzialki": "272/12"
+          },
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        },
+        {
+          "transportId": 71590692,
+          "properties": {
+            "id": 71590692,
+            "id_dzialki": "126105_9.0017.411/20",
+            "numer_dzialki": "411/20"
+          },
+          "geometrySha256": "4444ff954cfd17eb90cf47b33456e7d39ca2c775cbba144832ab0fb035f76e1b"
+        },
+        {
+          "transportId": 71590693,
+          "properties": {
+            "id": 71590693,
+            "id_dzialki": "126105_9.0017.411/21",
+            "numer_dzialki": "411/21"
+          },
+          "geometrySha256": "019a4ca6ff816f69875384fe2eb742a3e6092e21d444a981348bcc5a4cc18cbd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.962%2C50.054%2C19.963%2C50.055&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.622Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 8677,
+      "features": [
+        {
+          "transportId": 62501513,
+          "properties": {
+            "id": 62501513,
+            "id_dzialki": "126105_9.0017.298/13",
+            "numer_dzialki": "298/13"
+          },
+          "geometrySha256": "6c6e49e189ce4a30a3b6084bb61c0822463c7aff9cd3b21404d16981f960da10"
+        },
+        {
+          "transportId": 62811910,
+          "properties": {
+            "id": 62811910,
+            "id_dzialki": "126105_9.0017.298/15",
+            "numer_dzialki": "298/15"
+          },
+          "geometrySha256": "cafa95d07648bfa5b3ae95260343e5065e66046b5e36e4e63414321539549d99"
+        },
+        {
+          "transportId": 63069630,
+          "properties": {
+            "id": 63069630,
+            "id_dzialki": "126105_9.0017.270/29",
+            "numer_dzialki": "270/29"
+          },
+          "geometrySha256": "3d096e7bd71411ac1ad67aaa942badbc64ffa80446212db7895ee3ed578273bf"
+        },
+        {
+          "transportId": 63092707,
+          "properties": {
+            "id": 63092707,
+            "id_dzialki": "126105_9.0017.270/48",
+            "numer_dzialki": "270/48"
+          },
+          "geometrySha256": "103ac1429ade816fecdc9d4b9c5946082c6024073b781d828d4704e7ce6404d2"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 63198410,
+          "properties": {
+            "id": 63198410,
+            "id_dzialki": "126105_9.0017.298/7",
+            "numer_dzialki": "298/7"
+          },
+          "geometrySha256": "fad7b713a4d79b74771e39238b718794f440df155323d14bb478b51f82ec7b97"
+        },
+        {
+          "transportId": 63734372,
+          "properties": {
+            "id": 63734372,
+            "id_dzialki": "126105_9.0017.270/54",
+            "numer_dzialki": "270/54"
+          },
+          "geometrySha256": "23dab55243be0589e852f9a9521e6131c53655f10ba2a049b4eb561dd1c20fe7"
+        },
+        {
+          "transportId": 64105838,
+          "properties": {
+            "id": 64105838,
+            "id_dzialki": "126105_9.0017.298/14",
+            "numer_dzialki": "298/14"
+          },
+          "geometrySha256": "c521cfc9b59a013fd5251202c648890d892329f4c5d5b253e7706240df0e2fc7"
+        },
+        {
+          "transportId": 64105839,
+          "properties": {
+            "id": 64105839,
+            "id_dzialki": "126105_9.0017.298/17",
+            "numer_dzialki": "298/17"
+          },
+          "geometrySha256": "03a37a2d23d1feb3df722a270248b2cca363dde006a0f07dfdcd3e9aad915490"
+        },
+        {
+          "transportId": 64105840,
+          "properties": {
+            "id": 64105840,
+            "id_dzialki": "126105_9.0017.298/18",
+            "numer_dzialki": "298/18"
+          },
+          "geometrySha256": "a6ed8326591d99a07a305828a7fce3afa215399926ae6c6d0607256c405e1de6"
+        },
+        {
+          "transportId": 64162068,
+          "properties": {
+            "id": 64162068,
+            "id_dzialki": "126105_9.0017.270/55",
+            "numer_dzialki": "270/55"
+          },
+          "geometrySha256": "13b574c1ec6d9191459cb4ac3219a68421c31c9b4e70fc9f776f94503191d778"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.966%2C50.054%2C19.967%2C50.055&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.730Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3861,
+      "features": [
+        {
+          "transportId": 62537947,
+          "properties": {
+            "id": 62537947,
+            "id_dzialki": "126105_9.0017.242/8",
+            "numer_dzialki": "242/8"
+          },
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "transportId": 63232541,
+          "properties": {
+            "id": 63232541,
+            "id_dzialki": "126105_9.0017.173/15",
+            "numer_dzialki": "173/15"
+          },
+          "geometrySha256": "e41bef6aac1d8556514da1f08c950492c83d91c9c89fd67bdfa6d31bcedc9932"
+        },
+        {
+          "transportId": 64224143,
+          "properties": {
+            "id": 64224143,
+            "id_dzialki": "126105_9.0017.173/19",
+            "numer_dzialki": "173/19"
+          },
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=3&resultOffset=0&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.838Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1975,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 62450338,
+          "properties": {
+            "id": 62450338,
+            "id_dzialki": "126105_9.0017.397/3",
+            "numer_dzialki": "397/3"
+          },
+          "geometrySha256": "b129bc440b57326e852f8de4c143b26704bd7a5eb860c82fffddbde30fc4a582"
+        },
+        {
+          "transportId": 62506664,
+          "properties": {
+            "id": 62506664,
+            "id_dzialki": "126105_9.0017.179/1",
+            "numer_dzialki": "179/1"
+          },
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "transportId": 62507252,
+          "properties": {
+            "id": 62507252,
+            "id_dzialki": "126105_9.0017.272/10",
+            "numer_dzialki": "272/10"
+          },
+          "geometrySha256": "5d99ce7d296132c16a692ec8055c315857e7024e646a0af4fb0f39e1a92731ce"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=3&resultOffset=3&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:26.944Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2929,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 62513032,
+          "properties": {
+            "id": 62513032,
+            "id_dzialki": "126105_9.0017.272/11",
+            "numer_dzialki": "272/11"
+          },
+          "geometrySha256": "64900e3c76cac786fe63e155edbdbe632db6144e2f32596283605f0dff3c6240"
+        },
+        {
+          "transportId": 62537973,
+          "properties": {
+            "id": 62537973,
+            "id_dzialki": "126105_9.0017.270/58",
+            "numer_dzialki": "270/58"
+          },
+          "geometrySha256": "d478dd48e1ab507d1daf7b4118e0d80a5c25ac3d5edb585fd715c4d83cbadaf8"
+        },
+        {
+          "transportId": 62871544,
+          "properties": {
+            "id": 62871544,
+            "id_dzialki": "126105_9.0017.272/9",
+            "numer_dzialki": "272/9"
+          },
+          "geometrySha256": "a0b3fcc77e874b8f98598132d0a3796844136cd91f1a52fa224a88a13c0e8eda"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=3&resultOffset=6&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:27.056Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1973,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 62871545,
+          "properties": {
+            "id": 62871545,
+            "id_dzialki": "126105_9.0017.272/8",
+            "numer_dzialki": "272/8"
+          },
+          "geometrySha256": "08eb1a621c015f32ea6416e625862414d013fa065d9584c87ed21c9976d9b887"
+        },
+        {
+          "transportId": 62871546,
+          "properties": {
+            "id": 62871546,
+            "id_dzialki": "126105_9.0017.179/8",
+            "numer_dzialki": "179/8"
+          },
+          "geometrySha256": "6f3cd56a98266a8e3f6fb4cd4bded6dfe3d6c9e15e4c7df81ef166f0b9ecab10"
+        },
+        {
+          "transportId": 63232541,
+          "properties": {
+            "id": 63232541,
+            "id_dzialki": "126105_9.0017.173/15",
+            "numer_dzialki": "173/15"
+          },
+          "geometrySha256": "e41bef6aac1d8556514da1f08c950492c83d91c9c89fd67bdfa6d31bcedc9932"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=3&resultOffset=9&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:27.167Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2097,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 64224143,
+          "properties": {
+            "id": 64224143,
+            "id_dzialki": "126105_9.0017.173/19",
+            "numer_dzialki": "173/19"
+          },
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        },
+        {
+          "transportId": 64225912,
+          "properties": {
+            "id": 64225912,
+            "id_dzialki": "126105_9.0017.173/29",
+            "numer_dzialki": "173/29"
+          },
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "transportId": 64225913,
+          "properties": {
+            "id": 64225913,
+            "id_dzialki": "126105_9.0017.173/26",
+            "numer_dzialki": "173/26"
+          },
+          "geometrySha256": "674d2b64c31fadefd41cfdd158f612c21d5576f10ee6a3b6b34af61998c4c3bb"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=3&resultOffset=12&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:27.275Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1822,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 64225914,
+          "properties": {
+            "id": 64225914,
+            "id_dzialki": "126105_9.0017.173/28",
+            "numer_dzialki": "173/28"
+          },
+          "geometrySha256": "b229a1b9700548fd3201aceeee5f41f026d5e754e1856c47fc0176408d3130cd"
+        },
+        {
+          "transportId": 64225915,
+          "properties": {
+            "id": 64225915,
+            "id_dzialki": "126105_9.0017.173/27",
+            "numer_dzialki": "173/27"
+          },
+          "geometrySha256": "1c3b9e34e33688d7c8b8374ddf8b1114ac0c97746d06e6fa1003272c48ee2d44"
+        },
+        {
+          "transportId": 64225916,
+          "properties": {
+            "id": 64225916,
+            "id_dzialki": "126105_9.0017.270/57",
+            "numer_dzialki": "270/57"
+          },
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=3&resultOffset=15&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:27.394Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2572,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 64225919,
+          "properties": {
+            "id": 64225919,
+            "id_dzialki": "126105_9.0017.173/22",
+            "numer_dzialki": "173/22"
+          },
+          "geometrySha256": "0482b45479adb6981f46ffdc85c9c4044cb9603f7d04a24f084887cd9975422c"
+        },
+        {
+          "transportId": 64225920,
+          "properties": {
+            "id": 64225920,
+            "id_dzialki": "126105_9.0017.173/23",
+            "numer_dzialki": "173/23"
+          },
+          "geometrySha256": "90f3725e1cb48a2d52ebfa019f923ad782bb2df03b8e276f6245d0fae41eab56"
+        },
+        {
+          "transportId": 69500489,
+          "properties": {
+            "id": 69500489,
+            "id_dzialki": "126105_9.0017.411/18",
+            "numer_dzialki": "411/18"
+          },
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=3&resultOffset=18&geometry=19.965%2C50.055%2C19.966%2C50.056&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:27.501Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1126,
+      "features": [
+        {
+          "transportId": 71590675,
+          "properties": {
+            "id": 71590675,
+            "id_dzialki": "126105_9.0017.272/12",
+            "numer_dzialki": "272/12"
+          },
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=id_dzialki+IN+%28%27126104_9.0014.1%2F5%27%2C%27126104_9.0014.197%2F3%27%2C%27126105_9.0017.173%2F10%27%2C%27126105_9.0017.173%2F15%27%2C%27126105_9.0017.173%2F19%27%2C%27126105_9.0017.173%2F22%27%2C%27126105_9.0017.173%2F23%27%2C%27126105_9.0017.173%2F24%27%2C%27126105_9.0017.173%2F25%27%2C%27126105_9.0017.173%2F26%27%2C%27126105_9.0017.173%2F27%27%2C%27126105_9.0017.173%2F28%27%2C%27126105_9.0017.173%2F29%27%2C%27126105_9.0017.173%2F30%27%2C%27126105_9.0017.179%2F1%27%2C%27126105_9.0017.179%2F8%27%2C%27126105_9.0017.180%2F1%27%2C%27126105_9.0017.240%2F3%27%2C%27126105_9.0017.241%27%2C%27126105_9.0017.242%2F13%27%2C%27126105_9.0017.242%2F8%27%2C%27126105_9.0017.243%2F1%27%2C%27126105_9.0017.270%2F29%27%2C%27126105_9.0017.270%2F48%27%2C%27126105_9.0017.270%2F54%27%2C%27126105_9.0017.270%2F55%27%2C%27126105_9.0017.270%2F56%27%2C%27126105_9.0017.270%2F57%27%2C%27126105_9.0017.270%2F58%27%2C%27126105_9.0017.272%2F10%27%2C%27126105_9.0017.272%2F11%27%2C%27126105_9.0017.272%2F12%27%2C%27126105_9.0017.272%2F8%27%2C%27126105_9.0017.272%2F9%27%2C%27126105_9.0017.289%2F11%27%2C%27126105_9.0017.289%2F6%27%2C%27126105_9.0017.289%2F9%27%2C%27126105_9.0017.298%2F11%27%2C%27126105_9.0017.298%2F13%27%2C%27126105_9.0017.298%2F14%27%29&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:27.610Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 39345,
+      "features": [
+        {
+          "transportId": 62501513,
+          "properties": {
+            "id": 62501513,
+            "id_dzialki": "126105_9.0017.298/13",
+            "numer_dzialki": "298/13"
+          },
+          "geometrySha256": "6c6e49e189ce4a30a3b6084bb61c0822463c7aff9cd3b21404d16981f960da10"
+        },
+        {
+          "transportId": 62506664,
+          "properties": {
+            "id": 62506664,
+            "id_dzialki": "126105_9.0017.179/1",
+            "numer_dzialki": "179/1"
+          },
+          "geometrySha256": "3bb25b1dff7c143af35f849d07e360c3c907d5e76bb55e891718d4689c4ebad2"
+        },
+        {
+          "transportId": 62507252,
+          "properties": {
+            "id": 62507252,
+            "id_dzialki": "126105_9.0017.272/10",
+            "numer_dzialki": "272/10"
+          },
+          "geometrySha256": "5d99ce7d296132c16a692ec8055c315857e7024e646a0af4fb0f39e1a92731ce"
+        },
+        {
+          "transportId": 62513032,
+          "properties": {
+            "id": 62513032,
+            "id_dzialki": "126105_9.0017.272/11",
+            "numer_dzialki": "272/11"
+          },
+          "geometrySha256": "64900e3c76cac786fe63e155edbdbe632db6144e2f32596283605f0dff3c6240"
+        },
+        {
+          "transportId": 62537824,
+          "properties": {
+            "id": 62537824,
+            "id_dzialki": "126105_9.0017.173/10",
+            "numer_dzialki": "173/10"
+          },
+          "geometrySha256": "053f18cca61333a732269f3a3a066a41d17774eaaa4579c4f27179ac38202646"
+        },
+        {
+          "transportId": 62537946,
+          "properties": {
+            "id": 62537946,
+            "id_dzialki": "126105_9.0017.242/13",
+            "numer_dzialki": "242/13"
+          },
+          "geometrySha256": "05f8a3757d5cfa14d883df64c43df6bf3f444e371847b85d58200d7d07620e86"
+        },
+        {
+          "transportId": 62537947,
+          "properties": {
+            "id": 62537947,
+            "id_dzialki": "126105_9.0017.242/8",
+            "numer_dzialki": "242/8"
+          },
+          "geometrySha256": "c07989c691019acb5e34ff2422748ea8f6be5e9bd2f3d8eaac8969bd7b6c14be"
+        },
+        {
+          "transportId": 62537948,
+          "properties": {
+            "id": 62537948,
+            "id_dzialki": "126105_9.0017.243/1",
+            "numer_dzialki": "243/1"
+          },
+          "geometrySha256": "512bcfafb26511561e5e34092130a3a40b06a95cc477e7077603bd20d9598120"
+        },
+        {
+          "transportId": 62537973,
+          "properties": {
+            "id": 62537973,
+            "id_dzialki": "126105_9.0017.270/58",
+            "numer_dzialki": "270/58"
+          },
+          "geometrySha256": "d478dd48e1ab507d1daf7b4118e0d80a5c25ac3d5edb585fd715c4d83cbadaf8"
+        },
+        {
+          "transportId": 62537988,
+          "properties": {
+            "id": 62537988,
+            "id_dzialki": "126105_9.0017.289/6",
+            "numer_dzialki": "289/6"
+          },
+          "geometrySha256": "511c3f1a7e8cdb0c41dccba822eaccc6eac0b9366beaa9f5150b001536100a69"
+        },
+        {
+          "transportId": 62537996,
+          "properties": {
+            "id": 62537996,
+            "id_dzialki": "126105_9.0017.298/11",
+            "numer_dzialki": "298/11"
+          },
+          "geometrySha256": "bc8ed5caed09ccaf64de652aff191d8b7b09861f6820dd50546835bb6a5f0f2e"
+        },
+        {
+          "transportId": 62711862,
+          "properties": {
+            "id": 62711862,
+            "id_dzialki": "126104_9.0014.197/3",
+            "numer_dzialki": "197/3"
+          },
+          "geometrySha256": "eb74a21b04ac05ad613d57a7aa69998272f75dc44c2d16d32bac1f1dc388a9b0"
+        },
+        {
+          "transportId": 62807319,
+          "properties": {
+            "id": 62807319,
+            "id_dzialki": "126105_9.0017.289/11",
+            "numer_dzialki": "289/11"
+          },
+          "geometrySha256": "231f63cf73f857e27a50ca2a40555cb9a686c2fda0c732717278c1c0d3a03337"
+        },
+        {
+          "transportId": 62851748,
+          "properties": {
+            "id": 62851748,
+            "id_dzialki": "126104_9.0014.1/5",
+            "numer_dzialki": "1/5"
+          },
+          "geometrySha256": "f8043835c24332fcde02cf41fa8ce1ec2b10b5ba026eb260b449db7469779f8e"
+        },
+        {
+          "transportId": 62871544,
+          "properties": {
+            "id": 62871544,
+            "id_dzialki": "126105_9.0017.272/9",
+            "numer_dzialki": "272/9"
+          },
+          "geometrySha256": "a0b3fcc77e874b8f98598132d0a3796844136cd91f1a52fa224a88a13c0e8eda"
+        },
+        {
+          "transportId": 62871545,
+          "properties": {
+            "id": 62871545,
+            "id_dzialki": "126105_9.0017.272/8",
+            "numer_dzialki": "272/8"
+          },
+          "geometrySha256": "08eb1a621c015f32ea6416e625862414d013fa065d9584c87ed21c9976d9b887"
+        },
+        {
+          "transportId": 62871546,
+          "properties": {
+            "id": 62871546,
+            "id_dzialki": "126105_9.0017.179/8",
+            "numer_dzialki": "179/8"
+          },
+          "geometrySha256": "6f3cd56a98266a8e3f6fb4cd4bded6dfe3d6c9e15e4c7df81ef166f0b9ecab10"
+        },
+        {
+          "transportId": 63069630,
+          "properties": {
+            "id": 63069630,
+            "id_dzialki": "126105_9.0017.270/29",
+            "numer_dzialki": "270/29"
+          },
+          "geometrySha256": "3d096e7bd71411ac1ad67aaa942badbc64ffa80446212db7895ee3ed578273bf"
+        },
+        {
+          "transportId": 63092706,
+          "properties": {
+            "id": 63092706,
+            "id_dzialki": "126105_9.0017.270/56",
+            "numer_dzialki": "270/56"
+          },
+          "geometrySha256": "a066daae6ab0a780b8982855d3fb536883eb6043d28b4531284efae387c41d2e"
+        },
+        {
+          "transportId": 63092707,
+          "properties": {
+            "id": 63092707,
+            "id_dzialki": "126105_9.0017.270/48",
+            "numer_dzialki": "270/48"
+          },
+          "geometrySha256": "103ac1429ade816fecdc9d4b9c5946082c6024073b781d828d4704e7ce6404d2"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 63155954,
+          "properties": {
+            "id": 63155954,
+            "id_dzialki": "126105_9.0017.241",
+            "numer_dzialki": "241"
+          },
+          "geometrySha256": "703594eb926517c5ee3813de53bab0e302d645eab700220e8a04e91e91a43fd4"
+        },
+        {
+          "transportId": 63232541,
+          "properties": {
+            "id": 63232541,
+            "id_dzialki": "126105_9.0017.173/15",
+            "numer_dzialki": "173/15"
+          },
+          "geometrySha256": "e41bef6aac1d8556514da1f08c950492c83d91c9c89fd67bdfa6d31bcedc9932"
+        },
+        {
+          "transportId": 63734372,
+          "properties": {
+            "id": 63734372,
+            "id_dzialki": "126105_9.0017.270/54",
+            "numer_dzialki": "270/54"
+          },
+          "geometrySha256": "23dab55243be0589e852f9a9521e6131c53655f10ba2a049b4eb561dd1c20fe7"
+        },
+        {
+          "transportId": 64105838,
+          "properties": {
+            "id": 64105838,
+            "id_dzialki": "126105_9.0017.298/14",
+            "numer_dzialki": "298/14"
+          },
+          "geometrySha256": "c521cfc9b59a013fd5251202c648890d892329f4c5d5b253e7706240df0e2fc7"
+        },
+        {
+          "transportId": 64162068,
+          "properties": {
+            "id": 64162068,
+            "id_dzialki": "126105_9.0017.270/55",
+            "numer_dzialki": "270/55"
+          },
+          "geometrySha256": "13b574c1ec6d9191459cb4ac3219a68421c31c9b4e70fc9f776f94503191d778"
+        },
+        {
+          "transportId": 64196026,
+          "properties": {
+            "id": 64196026,
+            "id_dzialki": "126105_9.0017.289/9",
+            "numer_dzialki": "289/9"
+          },
+          "geometrySha256": "5d5f0d2f6a6415a1a50812bf1d08ff5394a296de63b73eff91faf2a538c1ac3f"
+        },
+        {
+          "transportId": 64224143,
+          "properties": {
+            "id": 64224143,
+            "id_dzialki": "126105_9.0017.173/19",
+            "numer_dzialki": "173/19"
+          },
+          "geometrySha256": "4263f801e0a0c5b651bc35be429a3fd7a4fe1d16de3cf70e122ba64c2b6d3030"
+        },
+        {
+          "transportId": 64225911,
+          "properties": {
+            "id": 64225911,
+            "id_dzialki": "126105_9.0017.173/30",
+            "numer_dzialki": "173/30"
+          },
+          "geometrySha256": "47a4bd345ef2ca8029ead1422e640c06209bc1d217f6bd98218226b8443d2fe1"
+        },
+        {
+          "transportId": 64225912,
+          "properties": {
+            "id": 64225912,
+            "id_dzialki": "126105_9.0017.173/29",
+            "numer_dzialki": "173/29"
+          },
+          "geometrySha256": "0f696a390242cb7c58a6305eff9f115fc6b2e236a34288d61b2f32fa117be31f"
+        },
+        {
+          "transportId": 64225913,
+          "properties": {
+            "id": 64225913,
+            "id_dzialki": "126105_9.0017.173/26",
+            "numer_dzialki": "173/26"
+          },
+          "geometrySha256": "674d2b64c31fadefd41cfdd158f612c21d5576f10ee6a3b6b34af61998c4c3bb"
+        },
+        {
+          "transportId": 64225914,
+          "properties": {
+            "id": 64225914,
+            "id_dzialki": "126105_9.0017.173/28",
+            "numer_dzialki": "173/28"
+          },
+          "geometrySha256": "b229a1b9700548fd3201aceeee5f41f026d5e754e1856c47fc0176408d3130cd"
+        },
+        {
+          "transportId": 64225915,
+          "properties": {
+            "id": 64225915,
+            "id_dzialki": "126105_9.0017.173/27",
+            "numer_dzialki": "173/27"
+          },
+          "geometrySha256": "1c3b9e34e33688d7c8b8374ddf8b1114ac0c97746d06e6fa1003272c48ee2d44"
+        },
+        {
+          "transportId": 64225916,
+          "properties": {
+            "id": 64225916,
+            "id_dzialki": "126105_9.0017.270/57",
+            "numer_dzialki": "270/57"
+          },
+          "geometrySha256": "1303257ba59539c89efa4948a4047c0bf61d0c3140299b8cc3271427fb714766"
+        },
+        {
+          "transportId": 64225917,
+          "properties": {
+            "id": 64225917,
+            "id_dzialki": "126105_9.0017.173/25",
+            "numer_dzialki": "173/25"
+          },
+          "geometrySha256": "36323df98786c7f4dfd4c122408f2cae0c14da3e2e26d874565010ad9f905a16"
+        },
+        {
+          "transportId": 64225919,
+          "properties": {
+            "id": 64225919,
+            "id_dzialki": "126105_9.0017.173/22",
+            "numer_dzialki": "173/22"
+          },
+          "geometrySha256": "0482b45479adb6981f46ffdc85c9c4044cb9603f7d04a24f084887cd9975422c"
+        },
+        {
+          "transportId": 64225920,
+          "properties": {
+            "id": 64225920,
+            "id_dzialki": "126105_9.0017.173/23",
+            "numer_dzialki": "173/23"
+          },
+          "geometrySha256": "90f3725e1cb48a2d52ebfa019f923ad782bb2df03b8e276f6245d0fae41eab56"
+        },
+        {
+          "transportId": 64372564,
+          "properties": {
+            "id": 64372564,
+            "id_dzialki": "126105_9.0017.180/1",
+            "numer_dzialki": "180/1"
+          },
+          "geometrySha256": "dded34c756475672307abeb6baf5ed05fff1784d57916334d5ea5cd85b33649e"
+        },
+        {
+          "transportId": 68475794,
+          "properties": {
+            "id": 68475794,
+            "id_dzialki": "126105_9.0017.173/24",
+            "numer_dzialki": "173/24"
+          },
+          "geometrySha256": "707b5b7d87ef6c0be236298cca297a0327329612d9f9d29ea9751d4bd4ba6f38"
+        },
+        {
+          "transportId": 71590675,
+          "properties": {
+            "id": 71590675,
+            "id_dzialki": "126105_9.0017.272/12",
+            "numer_dzialki": "272/12"
+          },
+          "geometrySha256": "46cbcb9dd246b88b1787e583d481161e1a46c07a328b1e6310687a48ffb4ca5d"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=id_dzialki+IN+%28%27126105_9.0017.298%2F15%27%2C%27126105_9.0017.298%2F17%27%2C%27126105_9.0017.298%2F18%27%2C%27126105_9.0017.298%2F7%27%2C%27126105_9.0017.397%2F1%27%2C%27126105_9.0017.397%2F3%27%2C%27126105_9.0017.411%2F10%27%2C%27126105_9.0017.411%2F12%27%2C%27126105_9.0017.411%2F14%27%2C%27126105_9.0017.411%2F18%27%2C%27126105_9.0017.411%2F20%27%2C%27126105_9.0017.411%2F21%27%2C%27126105_9.0017.411%2F3%27%2C%27126105_9.0017.411%2F8%27%2C%27126105_9.0017.411%2F9%27%2C%27126105_9.0017.464%27%29&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:28.069Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 12107,
+      "features": [
+        {
+          "transportId": 62450338,
+          "properties": {
+            "id": 62450338,
+            "id_dzialki": "126105_9.0017.397/3",
+            "numer_dzialki": "397/3"
+          },
+          "geometrySha256": "b129bc440b57326e852f8de4c143b26704bd7a5eb860c82fffddbde30fc4a582"
+        },
+        {
+          "transportId": 62450376,
+          "properties": {
+            "id": 62450376,
+            "id_dzialki": "126105_9.0017.397/1",
+            "numer_dzialki": "397/1"
+          },
+          "geometrySha256": "34085ae0060a42b2a7cffc92ab080c2720feab308a0117a23df4c245139d3f1f"
+        },
+        {
+          "transportId": 62811910,
+          "properties": {
+            "id": 62811910,
+            "id_dzialki": "126105_9.0017.298/15",
+            "numer_dzialki": "298/15"
+          },
+          "geometrySha256": "cafa95d07648bfa5b3ae95260343e5065e66046b5e36e4e63414321539549d99"
+        },
+        {
+          "transportId": 63043365,
+          "properties": {
+            "id": 63043365,
+            "id_dzialki": "126105_9.0017.411/3",
+            "numer_dzialki": "411/3"
+          },
+          "geometrySha256": "42a64e7df1e1015c57367d5e05de6eb458c010089b6ab1638517be78516bb17f"
+        },
+        {
+          "transportId": 63198410,
+          "properties": {
+            "id": 63198410,
+            "id_dzialki": "126105_9.0017.298/7",
+            "numer_dzialki": "298/7"
+          },
+          "geometrySha256": "fad7b713a4d79b74771e39238b718794f440df155323d14bb478b51f82ec7b97"
+        },
+        {
+          "transportId": 63198411,
+          "properties": {
+            "id": 63198411,
+            "id_dzialki": "126105_9.0017.411/10",
+            "numer_dzialki": "411/10"
+          },
+          "geometrySha256": "33944b0b9b5edaf8adee7818c183a54956f4aa2044efef230162d4781eba9d6f"
+        },
+        {
+          "transportId": 63198412,
+          "properties": {
+            "id": 63198412,
+            "id_dzialki": "126105_9.0017.411/8",
+            "numer_dzialki": "411/8"
+          },
+          "geometrySha256": "9bdfa8decf034fe770cf9ddb4ec2ad7cf3107c988c4072d06c09cde29c10b9aa"
+        },
+        {
+          "transportId": 63445490,
+          "properties": {
+            "id": 63445490,
+            "id_dzialki": "126105_9.0017.411/9",
+            "numer_dzialki": "411/9"
+          },
+          "geometrySha256": "72edccb6fbb7eceb0ddbeb0218d3d0c4ff5e6e2f2c4ca8ec538894c37a948541"
+        },
+        {
+          "transportId": 64105839,
+          "properties": {
+            "id": 64105839,
+            "id_dzialki": "126105_9.0017.298/17",
+            "numer_dzialki": "298/17"
+          },
+          "geometrySha256": "03a37a2d23d1feb3df722a270248b2cca363dde006a0f07dfdcd3e9aad915490"
+        },
+        {
+          "transportId": 64105840,
+          "properties": {
+            "id": 64105840,
+            "id_dzialki": "126105_9.0017.298/18",
+            "numer_dzialki": "298/18"
+          },
+          "geometrySha256": "a6ed8326591d99a07a305828a7fce3afa215399926ae6c6d0607256c405e1de6"
+        },
+        {
+          "transportId": 64381531,
+          "properties": {
+            "id": 64381531,
+            "id_dzialki": "126105_9.0017.464",
+            "numer_dzialki": "464"
+          },
+          "geometrySha256": "53f9b2641b73b3fb3e42c992550159678d4f7a6116d1a219875591294d280f6a"
+        },
+        {
+          "transportId": 65207597,
+          "properties": {
+            "id": 65207597,
+            "id_dzialki": "126105_9.0017.411/14",
+            "numer_dzialki": "411/14"
+          },
+          "geometrySha256": "63f309fc9611ee04b726ce7c31ca01824bbd97d2b6ee9a87723f29d734af46ab"
+        },
+        {
+          "transportId": 69500489,
+          "properties": {
+            "id": 69500489,
+            "id_dzialki": "126105_9.0017.411/18",
+            "numer_dzialki": "411/18"
+          },
+          "geometrySha256": "7511ac76abd62ffd5d8147227bba4cc24bb4e8a46a9986ef4b6d74182f0f40c0"
+        },
+        {
+          "transportId": 71590682,
+          "properties": {
+            "id": 71590682,
+            "id_dzialki": "126105_9.0017.411/12",
+            "numer_dzialki": "411/12"
+          },
+          "geometrySha256": "528e46755826f09fe7d71f547cb716e187e9e769eabb00e47db02a3b742f5dd8"
+        },
+        {
+          "transportId": 71590692,
+          "properties": {
+            "id": 71590692,
+            "id_dzialki": "126105_9.0017.411/20",
+            "numer_dzialki": "411/20"
+          },
+          "geometrySha256": "4444ff954cfd17eb90cf47b33456e7d39ca2c775cbba144832ab0fb035f76e1b"
+        },
+        {
+          "transportId": 71590693,
+          "properties": {
+            "id": 71590693,
+            "id_dzialki": "126105_9.0017.411/21",
+            "numer_dzialki": "411/21"
+          },
+          "geometrySha256": "019a4ca6ff816f69875384fe2eb742a3e6092e21d444a981348bcc5a4cc18cbd"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=id_dzialki+IN+%28%27126105_9.0017.99999999%2F99999999%27%29&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:28.293Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.962565698387564%2C50.05408906974686%2C19.963599330923152%2C50.05444707055721&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:28.508Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7832,
+      "features": [
+        {
+          "transportId": 62811910,
+          "properties": {
+            "id": 62811910,
+            "id_dzialki": "126105_9.0017.298/15",
+            "numer_dzialki": "298/15"
+          },
+          "geometrySha256": "cafa95d07648bfa5b3ae95260343e5065e66046b5e36e4e63414321539549d99"
+        },
+        {
+          "transportId": 63043365,
+          "properties": {
+            "id": 63043365,
+            "id_dzialki": "126105_9.0017.411/3",
+            "numer_dzialki": "411/3"
+          },
+          "geometrySha256": "42a64e7df1e1015c57367d5e05de6eb458c010089b6ab1638517be78516bb17f"
+        },
+        {
+          "transportId": 63069630,
+          "properties": {
+            "id": 63069630,
+            "id_dzialki": "126105_9.0017.270/29",
+            "numer_dzialki": "270/29"
+          },
+          "geometrySha256": "3d096e7bd71411ac1ad67aaa942badbc64ffa80446212db7895ee3ed578273bf"
+        },
+        {
+          "transportId": 63092706,
+          "properties": {
+            "id": 63092706,
+            "id_dzialki": "126105_9.0017.270/56",
+            "numer_dzialki": "270/56"
+          },
+          "geometrySha256": "a066daae6ab0a780b8982855d3fb536883eb6043d28b4531284efae387c41d2e"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 63198411,
+          "properties": {
+            "id": 63198411,
+            "id_dzialki": "126105_9.0017.411/10",
+            "numer_dzialki": "411/10"
+          },
+          "geometrySha256": "33944b0b9b5edaf8adee7818c183a54956f4aa2044efef230162d4781eba9d6f"
+        },
+        {
+          "transportId": 63734372,
+          "properties": {
+            "id": 63734372,
+            "id_dzialki": "126105_9.0017.270/54",
+            "numer_dzialki": "270/54"
+          },
+          "geometrySha256": "23dab55243be0589e852f9a9521e6131c53655f10ba2a049b4eb561dd1c20fe7"
+        },
+        {
+          "transportId": 64105839,
+          "properties": {
+            "id": 64105839,
+            "id_dzialki": "126105_9.0017.298/17",
+            "numer_dzialki": "298/17"
+          },
+          "geometrySha256": "03a37a2d23d1feb3df722a270248b2cca363dde006a0f07dfdcd3e9aad915490"
+        },
+        {
+          "transportId": 64105840,
+          "properties": {
+            "id": 64105840,
+            "id_dzialki": "126105_9.0017.298/18",
+            "numer_dzialki": "298/18"
+          },
+          "geometrySha256": "a6ed8326591d99a07a305828a7fce3afa215399926ae6c6d0607256c405e1de6"
+        },
+        {
+          "transportId": 64162068,
+          "properties": {
+            "id": 64162068,
+            "id_dzialki": "126105_9.0017.270/55",
+            "numer_dzialki": "270/55"
+          },
+          "geometrySha256": "13b574c1ec6d9191459cb4ac3219a68421c31c9b4e70fc9f776f94503191d778"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query?where=1%3D1&outFields=id%2Cid_dzialki%2Cnumer_dzialki&returnGeometry=true&outSR=4326&f=geojson&orderByFields=id&resultRecordCount=1000&resultOffset=0&geometry=19.962565698387564%2C50.05408906974686%2C19.963599330923152%2C50.05444707055721&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:13:28.628Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7832,
+      "features": [
+        {
+          "transportId": 62811910,
+          "properties": {
+            "id": 62811910,
+            "id_dzialki": "126105_9.0017.298/15",
+            "numer_dzialki": "298/15"
+          },
+          "geometrySha256": "cafa95d07648bfa5b3ae95260343e5065e66046b5e36e4e63414321539549d99"
+        },
+        {
+          "transportId": 63043365,
+          "properties": {
+            "id": 63043365,
+            "id_dzialki": "126105_9.0017.411/3",
+            "numer_dzialki": "411/3"
+          },
+          "geometrySha256": "42a64e7df1e1015c57367d5e05de6eb458c010089b6ab1638517be78516bb17f"
+        },
+        {
+          "transportId": 63069630,
+          "properties": {
+            "id": 63069630,
+            "id_dzialki": "126105_9.0017.270/29",
+            "numer_dzialki": "270/29"
+          },
+          "geometrySha256": "3d096e7bd71411ac1ad67aaa942badbc64ffa80446212db7895ee3ed578273bf"
+        },
+        {
+          "transportId": 63092706,
+          "properties": {
+            "id": 63092706,
+            "id_dzialki": "126105_9.0017.270/56",
+            "numer_dzialki": "270/56"
+          },
+          "geometrySha256": "a066daae6ab0a780b8982855d3fb536883eb6043d28b4531284efae387c41d2e"
+        },
+        {
+          "transportId": 63155953,
+          "properties": {
+            "id": 63155953,
+            "id_dzialki": "126105_9.0017.240/3",
+            "numer_dzialki": "240/3"
+          },
+          "geometrySha256": "a92bc7705f30222963a123592a19a711d02678b282bd147939329e3471f883d0"
+        },
+        {
+          "transportId": 63198411,
+          "properties": {
+            "id": 63198411,
+            "id_dzialki": "126105_9.0017.411/10",
+            "numer_dzialki": "411/10"
+          },
+          "geometrySha256": "33944b0b9b5edaf8adee7818c183a54956f4aa2044efef230162d4781eba9d6f"
+        },
+        {
+          "transportId": 63734372,
+          "properties": {
+            "id": 63734372,
+            "id_dzialki": "126105_9.0017.270/54",
+            "numer_dzialki": "270/54"
+          },
+          "geometrySha256": "23dab55243be0589e852f9a9521e6131c53655f10ba2a049b4eb561dd1c20fe7"
+        },
+        {
+          "transportId": 64105839,
+          "properties": {
+            "id": 64105839,
+            "id_dzialki": "126105_9.0017.298/17",
+            "numer_dzialki": "298/17"
+          },
+          "geometrySha256": "03a37a2d23d1feb3df722a270248b2cca363dde006a0f07dfdcd3e9aad915490"
+        },
+        {
+          "transportId": 64105840,
+          "properties": {
+            "id": 64105840,
+            "id_dzialki": "126105_9.0017.298/18",
+            "numer_dzialki": "298/18"
+          },
+          "geometrySha256": "a6ed8326591d99a07a305828a7fce3afa215399926ae6c6d0607256c405e1de6"
+        },
+        {
+          "transportId": 64162068,
+          "properties": {
+            "id": 64162068,
+            "id_dzialki": "126105_9.0017.270/55",
+            "numer_dzialki": "270/55"
+          },
+          "geometrySha256": "13b574c1ec6d9191459cb4ac3219a68421c31c9b4e70fc9f776f94503191d778"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/krakow-msip-root-quality.json",
+  "uniqueParcels": 56,
+  "requestCount": 25,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T03:13:28.779Z",
+  "qualityStatus": "approved_by_root"
+}

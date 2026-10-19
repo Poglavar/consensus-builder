@@ -1,0 +1,88 @@
+{
+  "cityCode": 2931,
+  "queueRank": 2426,
+  "name": "Córdoba",
+  "country": "Spain",
+  "countryCode": "ES",
+  "iso2": "ES",
+  "iso3": "ESP",
+  "locId": 724,
+  "point": [37.8877717912882, -4.78225054209289],
+  "population2025": 241778,
+  "population2025k": 241.778,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cordoba Spain official cadastral parcels GIS cadastre viewer",
+        "result": "Found the official Spanish Directorate General for Cadastre INSPIRE page, public Cadastral Parcel WFS and ATOM services, and the national cadastral viewer.",
+        "actualResultUrls": [
+          "https://www.catastro.hacienda.gob.es/webinspire/index_eng.html",
+          "https://www.sedecatastro.gob.es/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Córdoba España parcelas catastrales visor oficial SIG catastro",
+        "result": "Found official Spanish Catastro INSPIRE documentation and the Córdoba territorial-office ATOM catalog entry listing municipality 14900-CORDOBA. A Córdoba municipal cadastral result returned by search was Argentina, not Spain, and was treated as a false lead.",
+        "actualResultUrls": [
+          "https://www.catastro.hacienda.gob.es/webinspire/index.html",
+          "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+          "https://www.sedecatastro.gob.es/"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "es-dgc-inspire-cp-wfs",
+    "name": "Dirección General del Catastro INSPIRE Cadastral Parcels",
+    "operator": "Dirección General del Catastro, Ministerio de Hacienda",
+    "scope": "National Spanish cadastral parcel service; the official catalog lists Territorial Office 14 Córdoba and municipality code 14900 Córdoba.",
+    "endpoint": "http://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+    "method": "GET WFS 2.0.0 GetFeature",
+    "responseFormat": "INSPIRE CP GML 3.2",
+    "crs": "EPSG:25830 source; sample transformed to EPSG:4326/CRS84",
+    "reuseStatus": "research-only; runtime held pending serial adapter review"
+  },
+  "verifiedParcelResponse": {
+    "sourceId": "es-dgc-inspire-cp-wfs",
+    "requestUrl": "http://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CadastralParcel&count=3&srsName=EPSG:25830&bbox=343028,4194610,343528,4195110,EPSG:25830&outputFormat=application/json",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "text/xml; charset=utf-8",
+    "spatialTestAreaLonLat": [-4.7852, 37.8862, -4.7794, 37.8899],
+    "parcelRecordCount": 343,
+    "recordListPath": "wfs:FeatureCollection/member/cp:CadastralParcel",
+    "geometryType": "gml:MultiSurface",
+    "closedRings": true,
+    "idField": "cp:nationalCadastralReference / inspire localId",
+    "responseFile": "tmp/valhalla-parcel-research/2931/wfs25830b.json",
+    "pagination": "Server returned 343 records despite count=3; only three were retained in the sample."
+  },
+  "portalsFound": [
+    {"url": "https://www.sedecatastro.gob.es/", "observation": "Official national cadastral viewer and data-diffusion portal."},
+    {"url": "https://www.catastro.hacienda.gob.es/webinspire/index.html", "observation": "Official INSPIRE CP WMS, WFS and ATOM service directory."},
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml", "observation": "Official ATOM catalog; Territorial Office 14 Córdoba lists municipality 14900-CORDOBA and links its municipal download feed."}
+  ],
+  "requests": [
+    {"url": "https://www.catastro.hacienda.gob.es/webinspire/index.html", "method": "GET anonymous; TLS verified", "httpStatus": 200, "contentType": "text/html", "assessment": "Official service documentation retrieved."},
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml", "method": "GET anonymous; TLS verified", "httpStatus": 200, "contentType": "application/atom+xml", "assessment": "Córdoba territorial office and municipality 14900 catalog entry verified."},
+    {"url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/14/ES.SDGC.CP.atom_14.xml", "method": "GET anonymous; TLS verified", "httpStatus": 200, "contentType": "browser-extension rejection text", "assessment": "Direct HTTPS municipal feed was rejected by the server based on file extension; catalog evidence and the national WFS remained usable."},
+    {"url": "http://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CadastralParcel&count=3&srsName=EPSG:4326&bbox=-4.78425,37.88677,-4.78025,37.88877,EPSG:4326&outputFormat=application/json", "method": "GET anonymous with Chrome headers, Spanish Accept-Language and viewer Referer; TLS not applicable to documented HTTP endpoint", "httpStatus": 200, "contentType": "text/xml", "assessment": "No records for the provided 4326 BBOX/SRS; not treated as absence."},
+    {"url": "http://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&typeNames=cp:CadastralParcel&count=3&srsName=EPSG:25830&bbox=343028,4194610,343528,4195110,EPSG:25830&outputFormat=application/json", "method": "GET anonymous with Chrome headers, Spanish Accept-Language and viewer Referer; TLS not applicable to documented HTTP endpoint", "httpStatus": 200, "contentType": "text/xml; charset=utf-8", "assessment": "Returned 343 CP records with closed polygon geometry and native identities; three safe samples retained."}
+  ],
+  "coverageAssessment": {"claimedScope": "National Spanish cadastral parcel service, excluding jurisdictions identified by the catalog such as Basque Country and Navarra.", "verifiedOpenScope": "Bounded Córdoba-area sample only.", "citywideVerified": false, "countrywideVerified": false},
+  "sampleGeoJSON": "c-rdoba-sample.geojson",
+  "nativeFieldMapping": {"gml:id": "source feature identity", "cp:nationalCadastralReference": "canonical properties.id", "cp:geometry": "retained geometry"},
+  "compositeKeyProvenance": null,
+  "safeFieldAllowlist": ["stable native cadastral identity", "full parcel polygon geometry", "source CRS", "output CRS", "service URL", "retrieval date", "administrative catalog code"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The WFS is openly queryable and a bounded Córdoba-area sample is verified, but citywide completeness, exact point membership, stable adapter behavior, and admission semantics require serial review. The initial EPSG:4326 no-record response was a request/SRS outcome only.",
+  "nextStep": "Serial reviewer should independently qualify the WFS request, CRS/axis handling, canonical identity semantics, and bounded sample before any adapter admission."
+}

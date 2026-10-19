@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:1277333",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://site.bbmp.gov.in/departmentwebsites/BBMPIT/geptis.html", "observation": "Municipal GEPTIS records over two million mapped properties inside the BBMP jurisdiction, but the public view requires mobile registration and limits how many property records can be viewed. Property-tax footprints may differ from cadastral parcels."},
+    {"url": "https://www.bbmp.gov.in/gisviewer/", "observation": "Greater Bengaluru Authority GIS viewer opened in web indexing, but a direct request timed out and no parcel feature API was verified."},
+    {"url": "https://negd.gov.in/isl/Directory/statedata/424", "observation": "Government directory describes Karnataka Dishaank's digitized village survey boundaries, a state-level candidate. A 2024 government presentation says village maps are georeferenced but subdivision maps are not yet complete. No reusable Bengaluru parcel endpoint was identified."}
+  ],
+  "requests": [
+    {"url": "https://www.bbmp.gov.in/gisviewer/", "method": "GET", "httpStatus": null, "error": "Direct request timed out after 20 seconds", "parcelRecordCount": null}
+  ],
+  "coverageAssessment": {"claimedScope": "GEPTIS: BBMP municipality; Dishaank: Karnataka village and subdivision records with incomplete finer geometry", "verifiedOpenScope": "none", "countrywideVerified": false},
+  "remainingUncertainty": "Dishaank may show suburban survey plots, while GEPTIS may show urban taxable properties. Neither supplies a verified anonymous polygon list near Bengaluru, and the two geometries must not be treated as equivalent.",
+  "nextStep": "Locate an official, reusable bounded Dishaank or municipal feature service and test a city-area parcel response."
+}

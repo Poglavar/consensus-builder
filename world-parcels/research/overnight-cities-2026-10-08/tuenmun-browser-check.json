@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-09",
+  "appCityId": "tuenmun",
+  "providerId": "hk-landsd-csdi-lot",
+  "headedBrowser": true,
+  "testUrl": "http://localhost:5638/?city=tuenmun&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "loadedParcelCount": 123,
+  "visibleParcelCount": 35,
+  "mapZoom": 19,
+  "selectionMethod": "Normal pointer move/down/up at CSS point [600,409] on visible rendered polygon",
+  "selectedParcelId": "HK-LANDSD-CSDI-LOT-CSUID-180002685",
+  "normalParcelMenuOpened": true,
+  "detailsIdMatchesSelection": true,
+  "pageErrors": [],
+  "browserClosed": true
+}

@@ -1,0 +1,47 @@
+{
+  "cityRecord": "city-2972-tanjung-balai.json",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-10",
+  "cityCode": 2972,
+  "queueRank": 2127,
+  "attempt": 1,
+  "city": "Tanjung Balai",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "point": [2.96503024318831, 99.7966303783882],
+  "status": "complete",
+  "registryFound": true,
+  "runtimeReadiness": "held",
+  "summary": "The local Kantor Pertanahan Kota Tanjungbalai is evidenced as cadastral custodian by an official city publication, and the current ATR/BPN BHUMI/ATLAS WFS is a plausible national service route. Bounded anonymous parcel requests returned zero features, so no geometry or native ID was retained.",
+  "queryOutcomes": "English and Indonesian first-party discovery queries are recorded in the city record. They identified the official city publication, BHUMI/ATLAS, and ATR/BPN cadastral policy material.",
+  "requestOutcomes": [
+    {"route": "https://atlas.atrbpn.go.id/", "method": "GET", "outcome": "HTTP 200; current Next.js portal HTML retrieved."},
+    {"route": "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000", "method": "GET", "outcome": "HTTP 200; catalog returned 7 public resources, none identified as a Tanjung Balai parcel dataset."},
+    {"route": "https://atlas.atrbpn.go.id/geoserver/wfs?service=WFS&request=GetCapabilities", "method": "GET", "outcome": "HTTP 200; WFS 2.0.0 capabilities retrieved. Candidate parcel layers include bhumi:Persil; declared CRS is EPSG:4326."},
+    {"route": "https://atlas.atrbpn.go.id/geoserver/wfs", "method": "GET", "outcome": "GetFeature bhumi:Persil, count=3, exact-point-area bbox around [2.96503024318831,99.7966303783882], propertyName=nib: valid GeoJSON response with zero features."},
+    {"route": "https://atlas.atrbpn.go.id/geoserver/wfs", "method": "GET", "outcome": "GetFeature bhumi:Persil, count=3, bounded city-area bbox 99.74..99.85 / 2.92..3.01, propertyName=nib: valid GeoJSON response with zero features."},
+    {"route": "https://geosrv-app.atrbpn.go.id/geoserver/wfs", "method": "GET", "outcome": "Hostname did not resolve from this environment; no certificate bypass or retry with disabled TLS was used."}
+  ],
+  "scopeLimits": [
+    "A zero exact-point or bounded-area response is not evidence of citywide parcel absence.",
+    "No coordinate shift was made.",
+    "The official city publication evidences local custody but does not expose a machine-readable parcel service.",
+    "The national WFS layer is a candidate service, not proof of Tanjung Balai coverage or runtime compatibility.",
+    "No owner, address, contact, titleholder, tax/account, status detail, or other unsafe attribute was requested or retained.",
+    "No credentials, login, CAPTCHA/Cloudflare bypass, private token, or TLS-disablement was used."
+  ],
+  "safeFieldAllowlist": ["native parcel ID (NIB)", "geometry", "CRS", "source layer/service name", "retrieval timestamp"],
+  "sourceSpecificFieldMapping": {"bhumi:Persil.nib": "native parcel identity"},
+  "uncertainty": "The public layer may be empty, filtered, generalized, unavailable for this city, or use a different backend layer. The failed remote-host resolution and zero bounded response do not establish citywide absence.",
+  "retainedGeojson": null,
+  "runtimeQualification": {"state": "held", "reason": "No independently qualified real adapter or verified open Tanjung Balai parcel geometry/native identity response."},
+  "attemptedRoutes": [
+    "https://atlas.atrbpn.go.id/",
+    "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000",
+    "https://atlas.atrbpn.go.id/geoserver/wms?service=WMS&request=GetCapabilities",
+    "https://atlas.atrbpn.go.id/geoserver/wfs?service=WFS&request=GetCapabilities",
+    "https://atlas.atrbpn.go.id/geoserver/wfs",
+    "https://geosrv-app.atrbpn.go.id/geoserver/wfs",
+    "https://tanjungbalaikota.go.id/berita/wali-kota-tanjungbalai-targetkan-program-ptsl-tahun-2020-peta-bidang-tanah-9-000-dan-sertifikat-hak-atas-tanah-7-500-untuk-masyarakat-tanjungbalai"
+  ]
+}

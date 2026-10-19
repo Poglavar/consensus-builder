@@ -1,0 +1,65 @@
+{
+  "cityCode": 10923,
+  "queueRank": 2662,
+  "name": "Sahebganj",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [26.2485599267954, 84.9467454606709],
+  "population2025": 221858,
+  "population2025k": 221.858,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sahebganj Bihar cadastral map official parcel Bhu Naksha",
+        "result": "Official Bihar BhuNaksha viewer and Bihar Revenue/Land Records portals were found. The WUP point reverse-geocoded to Sahebganj, Muzaffarpur, Bihar; the official viewer hierarchy contains Muzaffarpur district and Sahebganj circle.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default",
+          "https://dlrs.bihar.gov.in/services.html"
+        ]
+      },
+      {
+        "language": "Hindi/native",
+        "query": "साहेबगंज बिहार भू नक्शा cadastral map official",
+        "result": "The official Hindi Bihar Bhumi/BhuNaksha results identify the Bihar revenue-map viewer and the government land-records custodian; no separate city-specific public feature service was surfaced by search.",
+        "actualResultUrls": [
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://dlrs.bihar.gov.in/services.html"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": "Official Bihar Directorate of Land Records and Survey / BhuNaksha viewer exposed the Muzaffarpur district (14), Muzaffarpur West subdivision (01), Sahebganj circle (13), mauza selections, survey types and map instances. This is local/state cadastral-source evidence, not a claim of citywide coverage.",
+  "requestsAndEndpointChecks": [
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/index.jsp", "httpStatus": 200, "outcome": "Official public viewer HTML loaded; current assets index.js and assets/misc/config.js were inspected."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/assets/misc/config.js", "httpStatus": 200, "outcome": "Viewer configuration returned same-origin service paths; no credentials or private tokens used."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/index.js", "httpStatus": 200, "outcome": "Current JavaScript showed REST endpoints for level selection, georeferenced map extent, point lookup and WMS rendering."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count", "httpStatus": 200, "outcome": "State 10 returned seven selection levels."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=2&level=2&selections=14%2C&state=10", "httpStatus": 200, "outcome": "Muzaffarpur district hierarchy returned subdivision 01 and circle 13 Sahebganj among the official selections."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler?OP=2&level=4&selections=14%2C01%2C13%2C&state=10", "httpStatus": 200, "outcome": "Returned the official Sahebganj mauza list and survey/map selection chain."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref", "httpStatus": 200, "outcome": "For Sahebganj mauza candidates, returned service extents and EPSG:32645 for mapped CS/06/00 selections. Extent overlap is not treated as parcel containment."},
+    {"method": "POST", "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY", "httpStatus": 200, "outcome": "Using the exact WUP point transformed only for the service request to EPSG:32645, two overlapping map candidates returned opaque native plot IDs with kide 792; one candidate returned HTTP 204. No geometry was included."},
+    {"method": "GET", "url": "https://bhunaksha.bihar.gov.in/WMS", "httpStatus": 200, "outcome": "WMS rendering request returned PNG imagery rather than a safe feature/geometry payload; no polygon retained."},
+    {"method": "GET", "url": "https://nominatim.openstreetmap.org/reverse?lat=26.2485599267954&lon=84.9467454606709&format=jsonv2&zoom=14", "httpStatus": 200, "outcome": "Context-only reverse geocoder identified Sahebganj, Muzaffarpur, Bihar; not used as cadastral evidence."}
+  ],
+  "schemaAndCrs": {
+    "geometryType": null,
+    "geometryCrs": "EPSG:32645 observed in official getVVVVExtentGeoref response; no returned parcel geometry to qualify",
+    "nativeFieldMapping": {"id": "opaque native plot lookup identifier returned by getPlotAtXY", "kide": "native plot/khasra number returned by getPlotAtXY", "gisCode": "official selection-chain map identifier"},
+    "compositeKeyProvenance": "state 10 / district 14 / subdivision 01 / circle 13 / mauza selection / survey type and map instance, as returned by BhuNaksha viewer responses",
+    "rawAttributesRetained": false
+  },
+  "sampleGeoJson": null,
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel polygon geometry", "source URL", "observed coordinate order", "CRS", "source layer/theme", "feature count"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal", "tax", "account", "certificate", "title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "Official local/state cadastral viewer and anonymous native plot lookup responses were evidenced, but no safe parcel polygon/schema feature response or citywide completeness was qualified."},
+  "scopeLimits": ["No full parcel polygon retained; no sample GeoJSON written.", "The exact WUP point was preserved and not shifted; projected coordinates were used only for the official service request.", "A zero/ambiguous exact-point or map-extent result is not evidence of citywide absence.", "No citywide or countrywide completeness claim.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "The public BhuNaksha service is live and exposes safe opaque plot IDs and service CRS, but the bounded anonymous route did not expose parcel geometry. The overlapping mauza extent candidates and plot lookup results do not establish a unique parcel containment or citywide parcel coverage."
+}

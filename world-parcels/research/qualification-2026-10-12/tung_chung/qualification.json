@@ -1,0 +1,1712 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "11554",
+  "cityName": "Tung Chung",
+  "sourceId": "hk-landsd-csdi-lot",
+  "candidateSha256": "9f320d008e5b5fe25e8e64ccca8463781beb64ee9d8b298ca1b3accd9def5196",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 2
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 2,
+      "returnedCount": 2,
+      "freshCollectedIds": 2,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 2,
+      "collectedUniqueCount": 2
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 34
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 2,
+      "kind": "object-ids-manifest",
+      "completeManifest": true,
+      "returnedIdsMatch": true,
+      "singletonObjectIdRequests": 2,
+      "distinctSingletonObjectIdQueries": 2,
+      "duplicateObjectIdRequests": 0
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 2
+    },
+    "metric": {
+      "passed": true,
+      "reportPath": "[absolute path omitted]",
+      "inputSha256": "0e4f0689671043b3fc77a3c5c899539f6c4667045c60e86186f99f5ae9637155",
+      "featureCount": 2,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32649",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "[saved full-safe cache intentionally omitted from durable release]",
+  "cacheSha256": "0e4f0689671043b3fc77a3c5c899539f6c4667045c60e86186f99f5ae9637155",
+  "featureCount": 2,
+  "sampleIds": [
+    "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+    "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+  ],
+  "cellSizeDegrees": 0.001,
+  "sampledCells": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        113.941,
+        22.285,
+        113.942,
+        22.286
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        113.942,
+        22.285,
+        113.943,
+        22.286
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        113.943,
+        22.285,
+        113.944,
+        22.286
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500007"
+      ]
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        113.941,
+        22.286,
+        113.942,
+        22.287
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        113.942,
+        22.286,
+        113.943,
+        22.287
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        113.943,
+        22.286,
+        113.944,
+        22.287
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        113.941,
+        22.287,
+        113.942,
+        22.288
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        113.942,
+        22.287,
+        113.943,
+        22.288
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        113.943,
+        22.287,
+        113.944,
+        22.288
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        113.942,
+        22.284,
+        113.943,
+        22.285
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        113.942,
+        22.288,
+        113.943,
+        22.289
+      ],
+      "complete": true,
+      "featureCount": 2,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500007",
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        113.94,
+        22.286,
+        113.941,
+        22.287
+      ],
+      "complete": true,
+      "featureCount": 0,
+      "ids": []
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        113.944,
+        22.286,
+        113.945,
+        22.287
+      ],
+      "complete": true,
+      "featureCount": 1,
+      "ids": [
+        "HK-LANDSD-CSDI-LOT-CSUID-744500040"
+      ]
+    }
+  ],
+  "sampledPoints": [],
+  "requestCount": 109,
+  "requestLimit": 300,
+  "requests": [
+    {
+      "stage": "exact-id-first-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:07.962Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 2106
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:10.075Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1057
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:11.135Z",
+      "queryHash": "1f0b177471a2094d07ad909611141288066b7cc1c5f90c7303cb7ce589bcc417",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 413
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:11.745Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 415
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:12.161Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 499
+    },
+    {
+      "stage": "exact-id-first-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:12.661Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 389
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:13.257Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 301
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:13.559Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 278
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:13.838Z",
+      "queryHash": "1f0b177471a2094d07ad909611141288066b7cc1c5f90c7303cb7ce589bcc417",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 325
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:14.168Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:14.452Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 291
+    },
+    {
+      "stage": "exact-id-independent-read",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:14.744Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 327
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:15.104Z",
+      "queryHash": "551f8afd96d9b32c5985234d6c6e352c51c34ae569a67aaa296a4f705bc3e6f4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 323
+    },
+    {
+      "stage": "explicit-absence",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:15.428Z",
+      "queryHash": "551f8afd96d9b32c5985234d6c6e352c51c34ae569a67aaa296a4f705bc3e6f4",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:15.707Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 508
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:16.216Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 676
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:16.893Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 333
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:17.459Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:17.840Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 519
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:18.360Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 318
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:18.719Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 393
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:19.112Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 631
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:19.743Z",
+      "queryHash": "1f0b177471a2094d07ad909611141288066b7cc1c5f90c7303cb7ce589bcc417",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 298
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:20.047Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 734
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:20.781Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 617
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:21.399Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 298
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:21.717Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 538
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:22.256Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 402
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:22.659Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 300
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:22.991Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:23.372Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 438
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:23.811Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 317
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:24.159Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 381
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:24.541Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 399
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:24.941Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 298
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:25.255Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 383
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:25.639Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 492
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:26.132Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 319
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:26.477Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 668
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:27.147Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 608
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:27.756Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 309
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:28.095Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 550
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:28.649Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:29.029Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:29.414Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 427
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:29.842Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 380
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:30.250Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 387
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:30.638Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 1040
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:31.679Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 643
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:32.322Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 506
+    },
+    {
+      "stage": "13-cell-pass-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:32.829Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 337
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:33.182Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 555
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:33.738Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 403
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:34.142Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 292
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:34.452Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 753
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:35.205Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 392
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:35.598Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 300
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:35.930Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 492
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:36.423Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 736
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:37.160Z",
+      "queryHash": "1f0b177471a2094d07ad909611141288066b7cc1c5f90c7303cb7ce589bcc417",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 309
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:37.474Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 419
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:37.893Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 562
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:38.456Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 299
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:38.772Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 386
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:39.159Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 523
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:39.683Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 328
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:40.236Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:40.617Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 379
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:40.997Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 318
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:41.345Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 464
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:41.810Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 932
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:42.742Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 303
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:43.064Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 589
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:43.656Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 488
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:44.144Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 313
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:44.488Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 396
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:44.885Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 408
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:45.293Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 322
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:45.643Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 402
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:46.046Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 485
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:46.532Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 528
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:47.064Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 403
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:47.468Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 302
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:47.797Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 385
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:48.183Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 593
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:48.778Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 409
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:49.188Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 572
+    },
+    {
+      "stage": "13-cell-pass-two",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:49.761Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 319
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:50.101Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 296
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:50.397Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 283
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:50.682Z",
+      "queryHash": "1f0b177471a2094d07ad909611141288066b7cc1c5f90c7303cb7ce589bcc417",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 294
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:50.979Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 296
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:51.276Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 305
+    },
+    {
+      "stage": "forced-page-size-one",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:51.582Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 313
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:51.914Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 282
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:52.196Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 281
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:52.478Z",
+      "queryHash": "1f0b177471a2094d07ad909611141288066b7cc1c5f90c7303cb7ce589bcc417",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 305
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:52.786Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 277
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:53.064Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 276
+    },
+    {
+      "stage": "parcel-act-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:53.340Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 294
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:53.779Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 628
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:54.408Z",
+      "queryHash": "94dc9ad2ea5ef7050d53aed8996347c9315e3221f3255b62f98466d8c01bab8e",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 497
+    },
+    {
+      "stage": "geometry-binding",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:54.906Z",
+      "queryHash": "51a2369e32f59b5a22c72790ddf4bc51a1e184950b6ee5eff14d38427c640517",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 2,
+      "httpStatus": 200,
+      "elapsedMs": 362
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:55.763Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 323
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:56.087Z",
+      "queryHash": "9d9b180fdf4d269c03408c78dfb961bddbba8c0f8c0ffef00b53c7870da059b3",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 276
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:56.364Z",
+      "queryHash": "1f0b177471a2094d07ad909611141288066b7cc1c5f90c7303cb7ce589bcc417",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 410
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:56.777Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 309
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:57.086Z",
+      "queryHash": "61d421f3bb5a8f91d7a2709356363d0a514a205ef1bd792557e9e53d4f17faa6",
+      "safeParamNames": [
+        "where"
+      ],
+      "httpStatus": 200,
+      "elapsedMs": 280
+    },
+    {
+      "stage": "fresh-read-all-collected-ids",
+      "host": "portal.csdi.gov.hk",
+      "method": "GET",
+      "startedAt": "2026-10-11T20:05:57.367Z",
+      "queryHash": "5b09aea29ea3deab1c481446022d14c23e2eefef5f013f75f93f171f1cbecf2f",
+      "safeParamNames": [
+        "objectIds",
+        "where"
+      ],
+      "idListParam": "objectIds",
+      "idListCount": 1,
+      "httpStatus": 200,
+      "elapsedMs": 298
+    }
+  ],
+  "failures": {},
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ]
+}

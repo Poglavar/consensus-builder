@@ -1,0 +1,97 @@
+{
+  "snapshotIdentity": {
+    "dbfRecords": 414023,
+    "selectedSafeField": "土地key",
+    "otherDbfValuesRead": false,
+    "nonmissing": 414023,
+    "missing": 0,
+    "uniqueNonmissing": 410061,
+    "duplicateGroups": 3810,
+    "duplicateRowsBeyondFirst": 3962,
+    "selectedSampleIdCounts": {
+      "180796": 1,
+      "180797": 1,
+      "2020005882": 1
+    }
+  },
+  "sampleGeometryQa": {
+    "geosVersion": "GEOS 3.14.1",
+    "features": [
+      {
+        "nativeId": "2020005882",
+        "shapefileRecord": 227437,
+        "nativeCrs": "EPSG:2448",
+        "nativeGEOSValid": "true",
+        "reprojectedCrs": "OGC:CRS84",
+        "reprojectedGEOSValid": "true",
+        "nativeAreaSquareMeters": 19104.26377329735,
+        "wgs84PlanarAreaDegreesSquared": 1.8791051081748655e-06,
+        "maxStoredWgs84CoordinateDifferenceDegrees": 0.0,
+        "inverseProjectionMaxErrorMeters": 7.129559360661718e-07,
+        "sourceVertexCount": 1336,
+        "sourcePartCount": 1,
+        "ringsClosed": true
+      },
+      {
+        "nativeId": "180797",
+        "shapefileRecord": 226929,
+        "nativeCrs": "EPSG:2448",
+        "nativeGEOSValid": "true",
+        "reprojectedCrs": "OGC:CRS84",
+        "reprojectedGEOSValid": "true",
+        "nativeAreaSquareMeters": 642.8117499897744,
+        "wgs84PlanarAreaDegreesSquared": 6.322460727954026e-08,
+        "maxStoredWgs84CoordinateDifferenceDegrees": 0.0,
+        "inverseProjectionMaxErrorMeters": 5.721952597660982e-07,
+        "sourceVertexCount": 9,
+        "sourcePartCount": 1,
+        "ringsClosed": true
+      },
+      {
+        "nativeId": "180796",
+        "shapefileRecord": 226924,
+        "nativeCrs": "EPSG:2448",
+        "nativeGEOSValid": "true",
+        "reprojectedCrs": "OGC:CRS84",
+        "reprojectedGEOSValid": "true",
+        "nativeAreaSquareMeters": 817.0859469996507,
+        "wgs84PlanarAreaDegreesSquared": 8.036561812104581e-08,
+        "maxStoredWgs84CoordinateDifferenceDegrees": 0.0,
+        "inverseProjectionMaxErrorMeters": 5.406465868244915e-07,
+        "sourceVertexCount": 9,
+        "sourcePartCount": 1,
+        "ringsClosed": true
+      }
+    ],
+    "sourceToOutputIdAndRecordMappingPreserved": true,
+    "allThreeSourceIdsUniqueInFullDBF": true
+  },
+  "naraMunicipalFootprintCheck": {
+    "boundaryLayer": "Nara City published 大字界 shapefile, 1,205 Polygon records, native EPSG:2448; only geometry read",
+    "method": "The two relevant subdivision polygons (source records 444 and 453) were individually GEOS-valid and unioned in native CRS. GEOS covers predicate tested each sample polygon against that union.",
+    "boundaryPolygons": {
+      "444": "valid",
+      "453": "valid"
+    },
+    "samples": [
+      {
+        "nativeId": "2020005882",
+        "record": 227437,
+        "withinOfficialNaraOazaUnion": true
+      },
+      {
+        "nativeId": "180797",
+        "record": 226929,
+        "withinOfficialNaraOazaUnion": true
+      },
+      {
+        "nativeId": "180796",
+        "record": 226924,
+        "withinOfficialNaraOazaUnion": true
+      }
+    ],
+    "unionCoversAllSamples": true,
+    "geosVersion": "3.14.1"
+  },
+  "interpretation": "All three sample polygons are valid in source EPSG:2448 and output CRS84; inverse-transform errors are below 0.000001 m, stored CRS84 coordinates exactly match the forward transform, and IDs/record mapping are preserved. GEOS covers confirms all three complete geometries lie in the union of relevant Nara City subdivisions. The WUP locator remains 3.835–3.839 km away and is not a coverage gate. Runtime remains held due unsupported Shapefile format and unresolved snapshot-wide identity/paging/footprint/source-binding semantics; no parser was implemented."
+}

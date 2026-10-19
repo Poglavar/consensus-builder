@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fresh native-coordinate reread of material overlap pairs, with only non-personal lifecycle metadata; no geometry repair.",
+  "checkedAt": "2026-10-08T20:47:24.301Z",
+  "request": {
+    "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom%2Cdate_end%2Cland_status%2Cis_del%2Cddate&count=40&sortBy=gid&viewparams=district_id%3A244&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023245%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023025%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023052%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023062%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023278%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023228%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023311%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023227%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023329%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E",
+    "httpStatus": 200,
+    "bytes": 5040,
+    "sha256": "6f540e17026170850f19473c142f7fc6e7fe40df30d77d67bf42798c5276121c"
+  },
+  "counts": {
+    "numberMatched": 9,
+    "numberReturned": 9,
+    "totalFeatures": 9
+  },
+  "pairs": [
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023245",
+        "KZ-ALMATY-PKK-20311023025"
+      ],
+      "overlapM2": 56.29238491495347,
+      "fractionOfSmaller": 0.07648032454153492,
+      "nativeOverlapM2": 56.292384886306024,
+      "nativeFractionOfSmaller": 0.07648032449602991,
+      "differenceFromProjectedOverlapM2": -2.864744885755499e-08
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023052",
+        "KZ-ALMATY-PKK-20311023062"
+      ],
+      "overlapM2": 36.81689001695528,
+      "fractionOfSmaller": 0.055009467205008204,
+      "nativeOverlapM2": 36.81689000867214,
+      "nativeFractionOfSmaller": 0.05500946718880269,
+      "differenceFromProjectedOverlapM2": -8.283137731268653e-09
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023278",
+        "KZ-ALMATY-PKK-20311023228"
+      ],
+      "overlapM2": 52.46518249945723,
+      "fractionOfSmaller": 0.07816982568061988,
+      "nativeOverlapM2": 52.46518252925674,
+      "nativeFractionOfSmaller": 0.0781698257224732,
+      "differenceFromProjectedOverlapM2": 2.9799508638461703e-08
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023228",
+        "KZ-ALMATY-PKK-20311023311"
+      ],
+      "overlapM2": 3.13707655827373,
+      "fractionOfSmaller": 0.004167455782927624,
+      "nativeOverlapM2": 3.1370765560046574,
+      "nativeFractionOfSmaller": 0.004167455779874981,
+      "differenceFromProjectedOverlapM2": -2.2690724854612654e-09
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023227",
+        "KZ-ALMATY-PKK-20311023311"
+      ],
+      "overlapM2": 20.111538840746054,
+      "fractionOfSmaller": 0.025062008230438474,
+      "nativeOverlapM2": 20.111538861897944,
+      "nativeFractionOfSmaller": 0.025062008257512095,
+      "differenceFromProjectedOverlapM2": 2.115189090545755e-08
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023227",
+        "KZ-ALMATY-PKK-20311023329"
+      ],
+      "overlapM2": 35.63035453748479,
+      "fractionOfSmaller": 0.04740407256023244,
+      "nativeOverlapM2": 35.63035451830888,
+      "nativeFractionOfSmaller": 0.04740407253543258,
+      "differenceFromProjectedOverlapM2": -1.9175914189872856e-08
+    }
+  ],
+  "features": [
+    {
+      "properties": {
+        "gid": 7229407,
+        "kad_nomer": "20311023052",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "7610a1ea78dc0c6f8cf238da855c53f647f52acdf7b926c4df5884efb24ab44e"
+    },
+    {
+      "properties": {
+        "gid": 7230085,
+        "kad_nomer": "20311023278",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "7460a9dd6555d6b5f18bf6289a00ac812484739fd612281340de7de6eef182d8"
+    },
+    {
+      "properties": {
+        "gid": 7230106,
+        "kad_nomer": "20311023245",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "b78f007ba21e0c83f3ab3eac8d8bae95142b2276e79caf64e904ec9361fd1c42"
+    },
+    {
+      "properties": {
+        "gid": 7230121,
+        "kad_nomer": "20311023228",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "7ad94f9a5d52f7f947f9d7d183c753873bc99d3267b7341aa69e714b814b2e1a"
+    },
+    {
+      "properties": {
+        "gid": 7235054,
+        "kad_nomer": "20311023062",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "f036e15b4f50bdbc0cbfa819e02f7a76b61140a0573cba22c83d378fc9ee1ca6"
+    },
+    {
+      "properties": {
+        "gid": 7235533,
+        "kad_nomer": "20311023025",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "c4fdfc9d46daa70abde56ac2f4fb6f407d815046ba4a0c4aba8a389ec72d2406"
+    },
+    {
+      "properties": {
+        "gid": 7235545,
+        "kad_nomer": "20311023227",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "bbac61b35988194c071a8d14760619f63e288af4b3ca22203ef7efd626d70015"
+    },
+    {
+      "properties": {
+        "gid": 7236587,
+        "kad_nomer": "20311023311",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "d77a98d0ce6f0eeabfc057fe66ec8db02bc617c2db9e0a8747bd9336cec26b04"
+    },
+    {
+      "properties": {
+        "gid": 7236588,
+        "kad_nomer": "20311023329",
+        "date_end": null,
+        "land_status": null,
+        "ddate": null,
+        "is_del": null
+      },
+      "geometrySha256": "2aaf5993b2129c228aa20498732b491d42b164ec4c7d3b2619868ea3baca040a"
+    }
+  ],
+  "nativeCoordinateReview": {
+    "metricCrs": "EPSG:32643",
+    "library": "Shapely 2.1.2",
+    "allNineValidNonempty": true,
+    "materialOverlapsConfirmed": true,
+    "lifecycleMetadataFinding": "date_end,land_status,is_del,ddate are null for every reread object; no documented active-only filter established.",
+    "geometryRepairApplied": false
+  }
+}

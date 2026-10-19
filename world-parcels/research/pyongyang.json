@@ -1,0 +1,47 @@
+{
+ "schemaVersion": 1,
+ "cityId": "queue:172",
+ "queueRank": 172,
+ "name": "P'yŏngyang (Pyongyang)",
+ "country": "Dem. People's Republic of Korea",
+ "countryCode": "KP",
+ "centerLatLon": [
+  39.026065627335,
+  125.743817349996
+ ],
+ "checkedAt": "2026-09-29",
+ "status": "no_verified_sample_candidate_countrywide",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.naenara.com.kp/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "no HTTP response through the agent proxy (CONNECT tunnel refused, 502, or connection reset)"
+  },
+  {
+   "url": "http://www.ryongnamsan.edu.kp/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "DNS resolution failed (transient)"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Pyongyang cadastral parcels",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "zero results"
+  }
+ ],
+ "coverageAssessment": {
+  "claimedScope": "none found; no public online cadastre known",
+  "verifiedOpenScope": "none",
+  "countrywideVerified": false
+ },
+ "remainingUncertainty": "DPRK official sites are largely unreachable from outside and no public parcel service is known; absence not proven but the prior is strongly negative.",
+ "nextStep": "No further action likely useful; revisit only if an official or open dataset is published."
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "cityCode": 4712,
+  "wupCityCode": 4712,
+  "queueRank": 2628,
+  "cityId": "wup2025:4712",
+  "name": "Toyama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "iso2": "JP",
+  "iso3": "JPN",
+  "point": [36.6949238084729, 137.228155640063],
+  "centerLatLon": [36.6949238084729, 137.228155640063],
+  "population2025": 224491,
+  "population2025k": 224.491,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "status": "complete",
+  "attemptStatus": "complete_packet_held_for_serial_qualification",
+  "registryFound": true,
+  "verifiedSample": false,
+  "sampleFile": null,
+  "source": "Toyama City 地番参考図 (parcel-number reference map), official open-data catalog and Infomap viewer",
+  "freshResearch": {
+    "checkedAt": "2026-10-11",
+    "queries": [
+      {"language":"English","query":"Toyama City official cadastral map parcel public GIS Japan","result":"Found Toyama City official open-data parcel-number reference-map dataset and the official Infomap viewer; the open-data page publishes a 2026 ZIP resource.","actualResultUrls":["https://opdt.city.toyama.lg.jp/dataset/chiban","https://www.city.toyama.lg.jp/kurashi/zei/1010215/1018593.html","https://www2.wagmap.jp/toyama/Portal?dtpold=&mid=16&npg=%2Ftoyama%2Ftop%2Fselect.asp&npr=dtp%3D16%2Fpl%3D3"]},
+      {"language":"Japanese","query":"富山市 地籍図 公開 GIS 筆界 地番","result":"Found Toyama City’s official 地番参考図 notice, open-data ZIP, and official Infomap map 33. The notice says the map is a reference drawing, not a certified survey or rights document, and some areas are not drawn.","actualResultUrls":["https://www.city.toyama.lg.jp/kurashi/zei/1010215/1018593.html","https://opdt.city.toyama.lg.jp/dataset/chiban","https://www2.wagmap.jp/toyama/Portal?dtpold=&mid=16&npg=%2Ftoyama%2Ftop%2Fselect.asp&npr=dtp%3D16%2Fpl%3D3"]}
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {"url":"https://www.city.toyama.lg.jp/kurashi/zei/1010215/1018593.html","operator":"Toyama City Asset Tax Division","scope":"Toyama City","observation":"Official notice says the city publishes a 地番参考図, searchable in Infomap and downloadable as SHAPE; it is a reference drawing and not usable as a survey, rights, or legal-boundary document; some areas are not provided."},
+    {"url":"https://opdt.city.toyama.lg.jp/dataset/chiban","operator":"Toyama City Open Data","scope":"Toyama City","observation":"Official catalog lists 2026-01-01 and 2025-01-01 parcel-reference ZIP resources. The resource page identifies the current 2026 ZIP download."},
+    {"url":"https://www2.wagmap.jp/toyama/Portal?dtpold=&mid=16&npg=%2Ftoyama%2Ftop%2Fselect.asp&npr=dtp%3D16%2Fpl%3D3","operator":"Toyama City Infomap","scope":"Toyama City","observation":"Official viewer advertises 地番参考図 map 33. Current configuration exposes layer tree 154 with 大字, 小字, 地番 and 筆界 layers; public map projection configuration includes EPSG:2449 / JGD2000 plane rectangular zone 7 and WGS84 conversion parameters."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url":"https://opdt.city.toyama.lg.jp/dataset/chiban","method":"GET","status":"HTTP 200","summary":"Catalog HTML returned official 2026 and 2025 ZIP resource links and reference-map limitations."},
+    {"url":"https://opdt.city.toyama.lg.jp/dataset/856f5ec8-8277-4c1e-b766-f1d494add874/resource/95844c7a-5e3b-4c96-bcbe-db2d315f6d42/download/r080101.zip","method":"GET","status":"HTTP 200; partial bounded download stopped after 30 seconds","summary":"Official 2026 ZIP endpoint responded as application/zip with advertised Content-Length 277143130 bytes; no retained sample was made from the incomplete download."},
+    {"url":"https://www2.wagmap.jp/toyama/Agreement/Agree","method":"POST","status":"HTTP 200; JSON success with empty JsonResult","summary":"Anonymous public-use agreement was accepted for MapId 33; no login or credential was used."},
+    {"url":"https://www2.wagmap.jp/toyama/Map/GetLayerTree","method":"POST mid=33","status":"HTTP 200; JSON layer tree","summary":"Returned map 33 地番参考図, layer tree 154, and layers 681 大字, 682 小字, 683 地番, 684 筆界. Schema fields exposed map/layer metadata only; no unsafe fields requested."},
+    {"url":"https://www2.wagmap.jp/toyama/Map/GetFeature","method":"POST bounded probes with mid=33, WUP point, layerid=683, and a small bbox","status":"HTTP 200 application JSON with JsonCode E9000001 and null JsonResult for each probe","summary":"Viewer route was reached but did not return a usable bounded ID+geometry response. This is an endpoint/protocol failure, not evidence of a citywide or exact-point absence."}
+  ],
+  "coverageAssessment": {"claimedScope":"Toyama City parcel-number reference map published by Toyama City.","verifiedOpenScope":"Official catalog and viewer route verified; no parcel feature geometry retained.","citywideVerified":false,"countrywideVerified":false,"geometryVerified":false,"registryExistenceScope":"Local city custodian evidenced through Toyama City’s official notice, open-data catalog, and public map viewer."},
+  "qualityAssessment": {"geometryQuality":"No retained geometry; public viewer feature route returned E9000001.","crs":"Viewer configuration exposes EPSG:2449 / JGD2000 zone 7 and DD_WGS84 conversion parameters; no feature response was available to verify geometry CRS/axis in this attempt.","identityReadiness":"Not qualified. Viewer layer schema and native identity field names were not returned by the bounded feature probes; no synthetic identity was invented.","safeFieldAllowlist":["stable native parcel identity if independently observed","geometry","source layer/year","source CRS if declared","retrieval timestamp"],"attributesRequested":"Only map/layer metadata and bounded feature probes were attempted; no owner, address, titleholder, contact, tax, account, or other unsafe fields were requested or retained."},
+  "runtimeReadiness":"held",
+  "runtimeEligible":false,
+  "blocker":"Serial review must independently qualify the city reference-map semantics, coverage gaps, native identity fields, CRS/axis handling, and a reproducible anonymous feature/geometry route. The official notice expressly limits the map to reference use and says some areas are not provided.",
+  "scopeLimits":["Exact WUP point [36.6949238084729,137.228155640063] preserved in latitude/longitude order; no coordinate shift or exact-point hit/miss inference.","No GeoJSON sample retained because the official ZIP download was incomplete and the viewer feature endpoint returned E9000001.","A zero exact-point result, endpoint error, or incomplete ZIP cannot establish citywide absence or completeness.","No login, credentials, private token, CAPTCHA/Cloudflare bypass, unsafe field request, or TLS exception used.","Packet completion is research evidence only and is not source integration/admission."],
+  "identityPolicy":"No retained GeoJSON features. If a later attempt qualifies geometry, retain exactly one stable native identity as properties.id and keep source field mapping in metadata.",
+  "nextStep":"Serial reviewer should independently test the official ZIP or viewer protocol, verify safe native IDs and CRS/axis semantics, assess map coverage, and keep runtime admission held until qualified."
+}

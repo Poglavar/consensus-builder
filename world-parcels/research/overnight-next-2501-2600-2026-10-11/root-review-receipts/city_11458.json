@@ -1,0 +1,31 @@
+{
+  "taskId": "city:11458",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-11458-doumen.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/doumen-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T13:57:59Z",
+  "reason": "The public Zhuhai cadastral-map route currently reaches Guangdong real-name SSO. No anonymous native parcel ID or geometry response exists in the reviewed evidence; the authentication wall does not establish citywide absence. Independent live adapter qualification has no fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity/overlap checks, source binding, or headed details-panel verification.",
+  "identityCheck": {
+    "rank": 2520,
+    "cityCode": 11458,
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      22.2024903865488,
+      113.296921596555
+    ],
+    "populationPersons": 233015,
+    "matchedWup2025SourceQueueAndRankedRoster": true
+  },
+  "searchesChecked": [
+    "English",
+    "Chinese"
+  ],
+  "retainedPolygonCount": 0,
+  "runtimeAdmission": "held"
+}

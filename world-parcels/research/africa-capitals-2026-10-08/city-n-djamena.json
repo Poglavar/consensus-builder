@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T15:14:47Z",
+  "cityId": "capital:TD:n-djamena",
+  "name": "N’Djamena",
+  "country": "Chad",
+  "countryCode": "TD",
+  "centerLatLon": [
+    12.1348,
+    15.0557
+  ],
+  "pointBasis": "Chosen approximate central-city query point; not a WUP centroid or official boundary.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/TD.json"
+  ],
+  "registryFound": true,
+  "officialRegistryOrPortalFound": true,
+  "publicEndpointVerified": false,
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "resultCategory": "official_registry_or_service_no_geometry",
+  "source": null,
+  "verifiedParcelResponse": null,
+  "englishQueries": [
+    {
+      "languageScript": "English",
+      "exactQuery": "N'Djamena official municipal cadastre parcel map GIS land registry website",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://amenagement.gouv.td/",
+        "https://faolex.fao.org/docs/pdf/cha141674.pdf",
+        "https://www.foncier-developpement.fr/wp-content/uploads/fiche-pays-tchad.pdf"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "French",
+      "exactQuery": "N'Djamena Tchad cadastre parcelles géoportail SIG carte foncière mairie",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://amenagement.gouv.td/",
+        "https://faolex.fao.org/docs/pdf/cha141674.pdf",
+        "https://www.foncier-developpement.fr/wp-content/uploads/fiche-pays-tchad.pdf"
+      ],
+      "summary": "Search executed; official and relevant results inspected as noted below."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://amenagement.gouv.td/",
+      "observation": "Official Ministry of Territorial Planning, Housing and Urbanism site is located in N’Djamena; no parcel viewer was found on its surfaced pages."
+    },
+    {
+      "url": "https://faolex.fao.org/docs/pdf/cha141674.pdf",
+      "observation": "Government decree mandates a national cadastre directorate to maintain cadastral documents and a land database for all cities; it does not publish a queryable layer."
+    },
+    {
+      "url": "https://www.foncier-developpement.fr/wp-content/uploads/fiche-pays-tchad.pdf",
+      "observation": "Country land-sector note previously reviewed says cadastral functions are barely operational outside N’Djamena; not evidence of public digital geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://faolex.fao.org/docs/pdf/cha141674.pdf",
+      "method": "web.run open government cadastral-directorate decree (PDF)",
+      "httpStatus": "not exposed; PDF retrieved",
+      "assessment": "Decree assigns the national cadastral directorate a mandate to maintain cadastral documents, a land database for all cities, and make cadastral information available. This is national mandate evidence, not a current N’Djamena public viewer or parcel response."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "City-level coverage not established.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous public city parcel-feature response was verified. This is not evidence that the land registry or cadastral information does not exist.",
+  "remainingUncertainty": "Current data coverage, freshness, legal completeness and anonymous geometry access remain unverified.",
+  "nextStep": "If source access terms and public services change, recheck the official portal for an anonymous bounded geometry service; otherwise retain as a documented non-geometry research result.",
+  "status": "complete",
+  "purpose": "City-specific research into parcel geometry and presence of a city-level registry or cadastre. Registry evidence is assessed separately from publicly retrievable geometry.",
+  "registryEvidenceUrls": [
+    "https://faolex.fao.org/docs/pdf/cha141674.pdf",
+    "https://www.foncier-developpement.fr/wp-content/uploads/fiche-pays-tchad.pdf"
+  ],
+  "registryBasis": "Government decree mandates a cadastral directorate to maintain cadastral information for all cities; earlier sector source says operations are concentrated in N’Djamena. Current registry completeness is not verified.",
+  "portalInspectionComplete": true,
+  "sourceEvidenceProvenance": "Search outputs are discovery-only snippets. Direct page content, redirects, and tool errors are recorded in portalInspections with HTTP status null unless a genuine request status is explicitly shown in requests. Evidence URLs not otherwise listed remain discovery references; no server status is inferred.",
+  "queryExecutionNote": "Every string in englishQueries/localLanguageQueries is an exact web.run search_query that was executed. Search outputs are discovery snippets, not direct server/API responses.",
+  "researchStatus": "complete",
+  "scopeTier": "national_capital_or_associated_seat",
+  "executedQueries": [
+    {
+      "query": "N'Djamena official municipal cadastre parcel map GIS land registry website",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "N'Djamena Tchad cadastre parcelles géoportail SIG carte foncière mairie",
+      "language": "French",
+      "method": "web.run search_query"
+    }
+  ],
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "parcelStatus": "no_verified_open_endpoint_after_attempts"
+}

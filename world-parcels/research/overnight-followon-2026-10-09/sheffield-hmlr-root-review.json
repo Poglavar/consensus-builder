@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-09T05:41:19.809151+00:00",
+  "archiveSha256": "177350de3a9cb1c27d1982c96d730694bb8df42319611f2bb721ff9d34b37d45",
+  "archiveBytes": 28341363,
+  "schemaFieldNames": [
+    "GEOMETRY",
+    "INSPIREID",
+    "LABEL",
+    "NATIONALCADASTRALREFERENCE",
+    "VALIDFROM",
+    "BEGINLIFESPANVERSION"
+  ],
+  "retainedFields": [
+    "INSPIREID",
+    "GEOMETRY"
+  ],
+  "nativeCrs": "EPSG:27700",
+  "sourceFeatureCollection": {
+    "numberMatched": "172021",
+    "numberReturned": "172021",
+    "timeStamp": "2026-10-04T03:15:10.328Z"
+  },
+  "actualMembers": 172021,
+  "boundedBoxMeters": [
+    435583.8951191662,
+    385607.63061614917,
+    436583.8951191662,
+    386607.63061614917
+  ],
+  "boundedFullGeometryCount": 554,
+  "containsWupPointIds": [
+    "27535317"
+  ],
+  "samples": [
+    {
+      "id": "27535317",
+      "distanceToWupPointM": 0.0,
+      "areaM2": 7531.806927500928,
+      "nativeGeometrySha256": "876c374456fc281a02b0272a636c2c2374c29eef1c20598a6f83b592b1f56f36"
+    },
+    {
+      "id": "55793458",
+      "distanceToWupPointM": 0.9015018999025055,
+      "areaM2": 10215.10640850082,
+      "nativeGeometrySha256": "852866565ecd19e8f220b72dc15b38a06f64491114f00cfe664c572d5b8cedaf"
+    },
+    {
+      "id": "27585748",
+      "distanceToWupPointM": 23.574982122441902,
+      "areaM2": 15153.429816998723,
+      "nativeGeometrySha256": "2cf004bce6fed871f570ea4e9af99d7d98a8fdcf361650d2c33230206bf14b1b"
+    }
+  ],
+  "fullNativeGeometryPreserved": true,
+  "geometryRepaired": false,
+  "downloadObservation": {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Sheffield_City_Council.zip",
+    "httpStatus": 200,
+    "anonymousCookieSessionRequired": true,
+    "initialCookielessRedirectLoop": true,
+    "archiveBytes": 28341363
+  }
+}

@@ -1,0 +1,64 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "DC",
+ "regionName": "District of Columbia",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "source": {
+  "sourceId": "us-dc-dcgis-tax-lots",
+  "name": "DC GIS Property and Land, Tax Lots (layer 39)",
+  "operator": "Government of the District of Columbia (DC GIS; Real Property Tax Administration lots)",
+  "scope": "District of Columbia",
+  "endpoint": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON (ArcGIS MapServer query)",
+  "crs": "EPSG:4326 (outSR requested)",
+  "reuseStatus": "not reviewed; DC Open Data terms not read (see research/washington-dc.json)"
+ },
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: application/json, text/plain, */*; Accept-Language: en-US,en;q=0.9; cookie jar used; no token required",
+ "verifiedParcelResponse": {
+  "sourceId": "us-dc-dcgis-tax-lots",
+  "requestUrl": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39/query?where=1%3D1&geometry=<bbox lon/lat>&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID,SSL&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   -77.0435,
+   38.9095,
+   -77.0415,
+   38.911
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "SSL",
+  "responseFile": "DC-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount",
+  "regionSampled": "District of Columbia (Dupont Circle area)"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Single municipal-government tax-lot layer covering the whole District (district = one jurisdiction). Re-verified today; earlier evidence in research/washington-dc.json.",
+ "subregionsVerified": [
+  "District of Columbia (Dupont Circle area)"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39",
+   "observation": "DC tax lots"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Property_and_Land_WebMercator/MapServer/39/query?...outFields=OBJECTID,SSL",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json; charset=UTF-8",
+   "assessment": "3 lots near Dupont Circle"
+  }
+ ],
+ "reuseStatus": "Reuse terms not read.",
+ "remainingUncertainty": "Only one small area sampled; a whole-District extent is assumed from the layer scope.",
+ "nextStep": "None needed beyond terms review."
+}

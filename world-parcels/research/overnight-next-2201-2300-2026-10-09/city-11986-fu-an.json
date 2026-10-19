@@ -1,0 +1,91 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-11",
+  "cityCode": 11986,
+  "queueRank": 2242,
+  "name": "Fu'an",
+  "country": "China",
+  "countryCode": "CN",
+  "iso3": "CHN",
+  "point": [27.0938226757313, 119.647876297754],
+  "population2025": 260464,
+  "population2025k": 260.464,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fu'an Fujian China official cadastral parcel map land registry GIS",
+        "result": "Searches found no Fu'an-specific anonymous parcel feature service. First-party Fujian sources describe the provincial Tianditu map/API and provincial online real-estate-registration system generally, while a first-party local-government oversight page confirms the Fu'an Natural Resources Bureau and Fu'an Real Estate Registration Center. No parcel ID+geometry response was verified.",
+        "actualResultUrls": [
+          "https://zrzyt.fj.gov.cn/",
+          "https://www.fajwjw.gov.cn/doc/release?resourceId=dc621eba20e723e&resourceType=3",
+          "https://www.fajwjw.gov.cn/doc/release?resourceId=dc68db44c5b0e81&resourceType=3"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "福安市 自然资源局 不动产登记 地籍图 宗地图 查询 服务",
+        "result": "The search located first-party references to 福安市不动产登记中心 and the local Natural Resources Bureau, plus official Fujian guidance for 天地图·福建 and the provincial online registration system. No Fu'an-specific public cadastral viewer, layer configuration, schema, CRS, or anonymous parcel geometry endpoint was established.",
+        "actualResultUrls": [
+          "https://www.fajwjw.gov.cn/doc/release?resourceId=dc621eba20e723e&resourceType=3",
+          "https://www.fajwjw.gov.cn/doc/release?resourceId=dc68db44c5b0e81&resourceType=3",
+          "https://zrzyt.fj.gov.cn/zwgk/xwdt/zrzyyw/202610/t20261009_7222216.htm"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "basis": "A first-party Fu'an Municipal Commission for Discipline Inspection publication about the Fu'an Natural Resources Bureau explicitly names 福安市不动产登记中心 (Fu'an Real Estate Registration Center) and describes its registration-service work. This is local-custodian evidence, distinct from general national or provincial agency prose.",
+    "urls": [
+      "https://www.fajwjw.gov.cn/doc/release?resourceId=dc621eba20e723e&resourceType=3",
+      "https://www.fajwjw.gov.cn/doc/release?resourceId=dc68db44c5b0e81&resourceType=3"
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.fajwjw.gov.cn/doc/release?resourceId=dc621eba20e723e&resourceType=3",
+      "observation": "First-party local oversight publication identifies the Fu'an Natural Resources Bureau and Fu'an Real Estate Registration Center and discusses registration-service operations; it does not expose parcel geometry."
+    },
+    {
+      "url": "https://www.fajwjw.gov.cn/doc/release?resourceId=dc68db44c5b0e81&resourceType=3",
+      "observation": "First-party local oversight publication again identifies the local Natural Resources Bureau and registration-center service context; it documents information-security controls rather than a public map/API."
+    },
+    {
+      "url": "https://zrzyt.fj.gov.cn/zwgk/xwdt/zrzyyw/202610/t20261009_7222216.htm",
+      "observation": "Official Fujian Natural Resources Department guidance describes the public Tianditu Fujian portal and standard API concept, but does not provide a Fu'an cadastral layer or anonymous parcel feature response."
+    },
+    {
+      "url": "https://zrzyt.fj.gov.cn/",
+      "observation": "Official Fujian Natural Resources Department portal inspected as the provincial agency route; no Fu'an-specific parcel endpoint was identified during this bounded attempt."
+    }
+  ],
+  "routes": [
+    {"method": "GET/search", "url": "https://www.fajwjw.gov.cn/doc/release?resourceId=dc621eba20e723e&resourceType=3", "httpStatus": 200, "outcome": "Official local-government page retrieved; local registry center evidenced, no geometry."},
+    {"method": "GET/search", "url": "https://www.fajwjw.gov.cn/doc/release?resourceId=dc68db44c5b0e81&resourceType=3", "httpStatus": 200, "outcome": "Official local-government page retrieved; local bureau/registration operations evidenced, no geometry."},
+    {"method": "GET", "url": "https://zrzyt.fj.gov.cn/", "httpStatus": 200, "outcome": "Provincial natural-resources portal loaded; general agency route only, no Fu'an parcel layer established."},
+    {"method": "GET", "url": "https://zrzyt.fj.gov.cn/zwgk/xwdt/zrzyyw/202610/t20261009_7222216.htm", "httpStatus": 200, "outcome": "Official Tianditu Fujian guidance retrieved; public map/API capability described, but no anonymous cadastral feature response or schema/CRS found."},
+    {"method": "GET/POST", "url": "https://fujian.tianditu.gov.cn/", "httpStatus": 0, "outcome": "Candidate public map portal/API route was identified from official guidance but no Fu'an cadastral endpoint or bounded parcel response was verified; no credentials or private tokens used."}
+  ],
+  "schemaAndCrs": {"geometryCrs": null, "nativeIdentity": null, "observedSchema": "No parcel feature schema or geometry response returned."},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "city_registry_found_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Fu'an local registration custodian and Fujian provincial public geospatial/registration routes discovered through first-party sources.",
+    "verifiedOpenScope": "No anonymous city-bounded parcel feature response was retrieved; no CRS, schema, native parcel identity, or safe polygon sample was available.",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "remainingUncertainty": "The local registration center or provincial platform may expose additional map functionality after permitted user authentication or through an undiscovered local route. A zero exact-point result, map extent miss, unavailable route, or authentication boundary would not establish citywide absence. No login, credentials, CAPTCHA/Cloudflare bypass, or unsafe owner/address/contact/titleholder/tax/account fields were used. Packet completion records research attempts only and is not source integration or admission."
+}

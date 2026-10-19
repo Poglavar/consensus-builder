@@ -1,0 +1,46 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "MR",
+ "country": "Mauritania",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Direction des Domaines / Ministry of Finance (cadastre); no online cadastre identified",
+ "portalsFound": [
+  {
+   "url": "https://www.finances.gov.mr/",
+   "observation": "ministry site loads (HTTP 200); no cadastre service identified"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.finances.gov.mr/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "ministry homepage only"
+  },
+  {
+   "url": "https://www.cadastre.gov.mr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  },
+  {
+   "url": "https://cadastre.gouv.mr/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "connection failed"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "not established from this client",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Guessed hostnames failed; no evidence either way about an online cadastre.",
+ "nextStep": "Search for Mauritanian land information system / Agence Nationale du Cadastre."
+}

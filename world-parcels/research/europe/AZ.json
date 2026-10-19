@@ -1,0 +1,68 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AZ",
+ "country": "Azerbaijan",
+ "checkedAt": "2026-09-30",
+ "status": "temporarily_unavailable",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "cadastreAuthority": "State Service on Property Issues (emlak.gov.az)",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language per country; cookie jar; Referer = viewer origin where applicable",
+ "inspireRecordUrl": null,
+ "portalsFound": [
+  {
+   "url": "https://www.emlak.gov.az/",
+   "observation": "agency site loads (200), no parcel map link seen"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://www.emlak.gov.az/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "agency site loads; no viewer"
+  },
+  {
+   "url": "https://e-emlak.gov.az/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://www.e-emlak.gov.az/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "connection reset"
+  },
+  {
+   "url": "https://map.emlak.gov.az/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  },
+  {
+   "url": "https://azmap.gov.az/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT 502"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "regionsSampled": [],
+ "coverageAssessment": {
+  "claimedScope": "Digital land cadastre (internal per FIG paper); no public service found",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "e-emlak.gov.az (likely e-service host) resets connections; geo-block suspected, not proven. Public viewer existence unconfirmed.",
+ "nextStep": "Retry e-emlak.gov.az from an Azerbaijani/other network and read its viewer JS.",
+ "geoBlockSuspected": true,
+ "changedByHeaders": false,
+ "foundViaViewerInspection": false
+}

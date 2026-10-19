@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Norfolk",
+  "nativeName": "Norfolk",
+  "country": "United States of America",
+  "countryCode": "US",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Norfolk City’s Real Estate Assessor says it maintains city land records including parcel boundaries, and the City GIS Bureau publishes an official ArcGIS polygon parcel layer. This verifies a local parcel-record custodian and a public geometry candidate; a bounded feature query timed out without HTTP response, so no sample is claimed.",
+  "registryEvidenceUrls": [
+    "https://www.norfolk.gov/assessor",
+    "https://www.norfolk.gov/1596/Geographic-Information-Systems",
+    "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/MapServer/1",
+    "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/FeatureServer/1"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8102,
+  "cityId": "wup2025:8102",
+  "centerLatLon": [
+    36.8489951683071,
+    -76.206100528634
+  ],
+  "rank": 965,
+  "queueRank": 965,
+  "population2025": 567473,
+  "population2025k": 567.473,
+  "populationPlausibility2025": "Moderate",
+  "point": [
+    36.8489951683071,
+    -76.206100528634
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Two bounded requests timed out before any HTTP response; retain the transport failure and do not infer source absence.",
+  "resultCategory": "local_registry_or_cadastre_verified_no_verified_geometry_sample",
+  "scopeLimits": "Research is limited to the exact unchanged WUP locator and reviewed local official sources. No owner, address, tax-account, private property, credential, or token values were requested or retained. No citywide completeness or legal-title claim is made.",
+  "remainingUncertainty": "Citywide coverage, source currentness, legal title and survey accuracy remain unverified; no full parcel geometry was retained.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Norfolk Virginia official GIS parcels property boundaries open data city",
+        "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+        "result": "Official City Assessor says it maintains city parcel-boundary land records. City GIS metadata describes a city parcel polygon layer with public JSON/GeoJSON query formats. Two bounded geometry GET attempts (MapServer and FeatureServer, OBJECTID only) timed out at 12 seconds before an HTTP response; this does not show parcel absence.",
+        "actualResultUrls": [
+          "https://www.norfolk.gov/assessor",
+          "https://www.norfolk.gov/1596/Geographic-Information-Systems",
+          "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/MapServer/1",
+          "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/FeatureServer/1"
+        ],
+        "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+      },
+      {
+        "language": "English (local)",
+        "query": "site:norfolk.gov/1596 OR site:norfolk.gov/assessor Norfolk City GIS parcel boundaries Real Estate Assessor official open map",
+        "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+        "result": "English is Norfolk’s local administrative language. A separate city-site search returned the Assessor and GIS pages; the City GIS disclaimer says mapping is informational and accuracy is not guaranteed.",
+        "actualResultUrls": [
+          "https://www.norfolk.gov/assessor",
+          "https://www.norfolk.gov/1596/Geographic-Information-Systems",
+          "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/MapServer/1",
+          "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/FeatureServer/1"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.norfolk.gov/assessor",
+        "observation": "City Real Estate Assessor states it maintains land-record information including parcel boundaries."
+      },
+      {
+        "url": "https://www.norfolk.gov/1596/Geographic-Information-Systems",
+        "observation": "Official City GIS page describes interactive mapping applications and an informational-use disclaimer."
+      },
+      {
+        "url": "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/MapServer/1",
+        "observation": "Public City GIS metadata describes a city parcel polygon feature layer and supports JSON/GeoJSON; only the safe OBJECTID was specified in attempted bounded queries."
+      }
+    ],
+    "geometryReview": "Public polygon layer metadata verified, but no geometry sample retained: bounded MapServer and FeatureServer requests around the unchanged WUP point both timed out at 12 seconds with no HTTP status. Geometry is therefore an unverified candidate, not an absence claim."
+  },
+  "sourceIds": [],
+  "adapterReady": false,
+  "coverageAssessment": {
+    "claimedScope": "Norfolk City’s Real Estate Assessor says it maintains city land records including parcel boundaries, and the City GIS Bureau publishes an official ArcGIS polygon parcel layer. This verifies a local parcel-record custodian and a public geometry candidate; a bounded feature query timed out without HTTP response, so no sample is claimed.",
+    "verifiedOpenScope": "Local institutional/registry context only; no verified parcel sample.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_transport_no_geometry",
+    "reason": "Indexed official polygon metadata is a candidate, but both discovery feature queries and the root native Node metadata connection failed before any HTTP response. Native Node metadata produced UND_ERR_CONNECT_TIMEOUT; geometry remains unverified, not absent."
+  },
+  "priorEvidenceAudit": {
+    "attemptState": "pending",
+    "evidenceFiles": [],
+    "possiblePriorMatches": [],
+    "cityRecordFilesAbsentAtStart": true
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.norfolk.gov/assessor",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Office of the Real Estate Assessor | City of Norfolk, Virginia - Official Website"
+  },
+  "rootReviewNote": "Reviewed the local institutional evidence separately from public geometry. Indexed official evidence and direct readback failures are distinguished; no full polygon response was verified. Registry null indicates uncertainty rather than absence.",
+  "rootReviewedAt": "2026-10-09T04:50:18.532255+00:00",
+  "rootTransportScopeNote": "Two bounded MapServer/FeatureServer requests produced no HTTP response; official public polygon metadata remains a candidate and the timeout establishes neither parcel absence nor permanent service failure.",
+  "rootTransportReadback": {
+    "url": "https://gisshare.norfolk.gov/pubserver/rest/services/OpenData/Parcels/MapServer/1?f=pjson",
+    "checkedAt": "2026-10-09T04:49:42.574Z",
+    "elapsedMs": 10566,
+    "error": "fetch failed",
+    "cause": "UND_ERR_CONNECT_TIMEOUT",
+    "geometryReceived": false
+  }
+}

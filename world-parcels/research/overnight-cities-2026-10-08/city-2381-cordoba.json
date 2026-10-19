@@ -1,0 +1,152 @@
+{
+  "name": "Cordoba",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "rank": 346,
+  "point": [
+    -31.3991858994118,
+    -64.2065456865464
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "catastro municipal Córdoba Capital mapa parcelario parcelas geoportal oficial",
+        "scope": "Find the first-party municipal cadastre and public parcel geometry services.",
+        "result": "The City GeoPortal presents official maps and live GIS services. The municipal Cadastre Parcelarios page supports public block-plan lookup by cadastral nomenclature. The city GeoServer exposes CATASTRO:vm_t_parcelas through WFS; bounded anonymous requests returned full polygons and integer id_parcela values. The repository adapter passed protocol checks, but independent GEOS QA found invalid rings and overlaps in the bounded sample.",
+        "actualResultUrls": [
+          "https://geoportal.cordoba.gob.ar/",
+          "https://solucionesgis.cordoba.gob.ar/parcelarios/index_test.php",
+          "https://geomap.dev.cordoba.gob.ar/geoserver/ows"
+        ],
+        "executionMethod": "Separate Spanish-language search, first-party city pages, WFS capabilities/schema and bounded requests for geometry plus id_parcela only; no owner/address/personal fields."
+      },
+      {
+        "language": "English",
+        "query": "Córdoba Argentina municipal cadastral parcel map public GIS official city cadastre",
+        "scope": "Cross-check city-local ownership, public access, and parcel-vector behavior.",
+        "result": "Official city pages identify the GeoPortal as a source of official maps and live GIS services and identify the parcel-plan viewer as a municipal Cadastre Directorate service. WFS metadata lists the CATASTRO parcel layer. A 13-cell sample around the WUP city point returned 440 unique complete polygons; all adapter protocol checks passed, but topology QA did not. The public municipal host name is informational; the reproduced topology failures determine the runtime hold.",
+        "actualResultUrls": [
+          "https://geoportal.cordoba.gob.ar/",
+          "https://solucionesgis.cordoba.gob.ar/parcelarios/index_test.php",
+          "https://geomap.dev.cordoba.gob.ar/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities"
+        ],
+        "executionMethod": "Separate English-language search, first-party site inspection and anonymous WFS metadata/query checks; no credentials or personal attributes."
+      }
+    ],
+    "portals": [
+      {
+        "name": "GeoPortal Municipalidad de Córdoba",
+        "operator": "Municipalidad de Córdoba",
+        "homeUrl": "https://geoportal.cordoba.gob.ar/",
+        "observation": "Official city GeoPortal publishes city maps and live GIS services."
+      },
+      {
+        "name": "Catastro Municipal Parcelarios",
+        "operator": "Dirección de Catastro, Municipalidad de Córdoba",
+        "homeUrl": "https://solucionesgis.cordoba.gob.ar/parcelarios/index_test.php",
+        "observation": "Public block-plan lookup by district/zone/block cadastral nomenclature; page identifies the plancheta as an official document."
+      },
+      {
+        "name": "CATASTRO WFS",
+        "operator": "Municipalidad de Córdoba (host is dev-labeled)",
+        "homeUrl": "https://geomap.dev.cordoba.gob.ar/geoserver/ows",
+        "observation": "Anonymous WFS 2.0.0 exposes CATASTRO:vm_t_parcelas. DescribeFeatureType reports shape geometry and nullable integer id_parcela. Public host status is informational; native source geometry quality is checked separately."
+      }
+    ],
+    "requests": [
+      {
+        "purpose": "WFS GetCapabilities",
+        "httpStatus": 200,
+        "method": "GET",
+        "result": "CATASTRO:vm_t_parcelas listed; native layer CRS EPSG:22174."
+      },
+      {
+        "purpose": "WFS DescribeFeatureType",
+        "httpStatus": 200,
+        "method": "GET",
+        "result": "shape geometry and nullable integer id_parcela; only these fields requested."
+      },
+      {
+        "purpose": "Bounded GetFeature",
+        "httpStatus": 200,
+        "method": "GET",
+        "result": "Full GeoJSON polygons returned; acceptance report records 13 grid tests, forced page-size 3, fresh-ID batches and absence check."
+      }
+    ],
+    "acceptanceArtifact": "cordoba-municipal-parcel-acceptance.json",
+    "qualityArtifact": "cordoba-municipal-parcel-quality.json",
+    "sampleArtifact": "cordoba-municipal-parcel-samples.geojson"
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 3,
+    "bounded": true,
+    "pointLocated": true,
+    "note": "See compact parcel acceptance and independent quality artifacts.",
+    "uniqueFullPolygonsObserved": 440,
+    "adapterHttpRequestCount": 384,
+    "sampleType": "complete WFS polygons"
+  },
+  "source": {
+    "operator": "Municipalidad de Córdoba",
+    "endpoint": "https://geomap.dev.cordoba.gob.ar/geoserver/ows",
+    "featureType": "CATASTRO:vm_t_parcelas",
+    "geometryField": "shape",
+    "nativeIdField": "id_parcela",
+    "requestedAttributes": [
+      "shape",
+      "id_parcela"
+    ],
+    "personalAttributesRequested": false,
+    "wfsVersion": "2.0.0",
+    "crs": "EPSG:22174 native; adapter output CRS:84/WGS84",
+    "idType": "integer",
+    "hostStatusCaveat": "dev-labeled host; production status not established",
+    "scope": "440 bounded complete source geometries; Independent root GEOS audit reproduces 22 invalid geometries among 440 complete original source polygons, three positive-area overlap pairs totaling 395.24 m² and five overlay operation errors. The source is held without repairs or selective deletion. A dev-labelled public municipal host is informational and is not an eligibility gate."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Publisher city cadastral-map dataset; no whole-city completeness is asserted.",
+    "verifiedOpenScope": "440 bounded complete source geometries; Independent root GEOS audit reproduces 22 invalid geometries among 440 complete original source polygons, three positive-area overlap pairs totaling 395.24 m² and five overlay operation errors. The source is held without repairs or selective deletion. A dev-labelled public municipal host is informational and is not an eligibility gate.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The first-party municipal Cadastre Directorate parcel-plan viewer and municipal CATASTRO WFS establish local cadastral-map activity and full public polygons. The publicly accessible host name is not an eligibility gate.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "resultCategory": "verified_public_geometry_held_quality",
+  "technicalBlocker": "Independent root GEOS audit reproduces 22 invalid geometries among 440 complete original source polygons, three positive-area overlap pairs totaling 395.24 m² and five overlay operation errors. The source is held without repairs or selective deletion. A dev-labelled public municipal host is informational and is not an eligibility gate.",
+  "remainingUncertainty": "The 13-cell sample is not a citywide completeness claim. Confirm production status and source geometry semantics with the city; source id_parcela is nullable in schema though present in returned samples.",
+  "sourceIds": [
+    "AR-CORDOBA-MUNI-CATASTRO-WFS"
+  ],
+  "nextStep": "Review source/host status and topology defects; then repeat bounded validation before any adapter activation.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2381,
+  "cityId": "wup2025:2381",
+  "queueRank": 346,
+  "population2025": 1460491,
+  "population2025k": 1460.491,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    -31.3991858994118,
+    -64.2065456865464
+  ],
+  "runtimeReadiness": "held_geometry_quality",
+  "adapterReady": false,
+  "registryEvidenceUrls": [
+    "https://geomap.dev.cordoba.gob.ar/geoserver/ows"
+  ],
+  "runtimeAssessment": {
+    "status": "held_geometry_quality",
+    "reason": "Independent root GEOS audit reproduces 22 invalid geometries among 440 complete original source polygons, three positive-area overlap pairs totaling 395.24 m² and five overlay operation errors. The source is held without repairs or selective deletion. A dev-labelled public municipal host is informational and is not an eligibility gate.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/cordoba-municipal-parcel-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/cordoba-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

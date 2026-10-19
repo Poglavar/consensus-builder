@@ -1,0 +1,100 @@
+{
+  "cityRecord": "city-4828-derby.json",
+  "cityCode": 4828,
+  "queueRank": 2146,
+  "city": "Derby",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-11T00:12:00Z",
+  "discovery": {
+    "english": "HM Land Registry INSPIRE Index Polygons, the official bulk download route, and Derby City Council's official maps/local-land-charges pages were found.",
+    "native": "English is the United Kingdom local/native language for this route; the distinct local-language query also found the same national source. No separate Derby municipal cadastral custodian was evidenced."
+  },
+  "custodian": {
+    "name": "HM Land Registry",
+    "role": "National land-registration and cadastral custodian for England and Wales; publishes open INSPIRE Index Polygons for registered freehold property.",
+    "localDerbyRole": "Derby City Council publishes general map layers and handles local-authority land-charge searches/procedures; those pages do not evidence an anonymous cadastral parcel API.",
+    "evidenceUrls": [
+      "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "https://use-land-property-data.service.gov.uk/",
+      "https://www.derby.gov.uk/environment-and-planning/maps/",
+      "https://www.derby.gov.uk/housing/land-and-premises/local-land-charges-search/"
+    ]
+  },
+  "attemptedRoutes": [
+    {
+      "route": "English first-party discovery",
+      "outcome": "Found official HM Land Registry INSPIRE guidance, the national download service, and Derby City Council maps/local-land-charges pages."
+    },
+    {
+      "route": "English local/native-language discovery variant",
+      "outcome": "Found the same official national source and Derby pages; no separate local cadastral parcel custodian was evidenced."
+    },
+    {
+      "url": "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+      "method": "GET",
+      "outcome": "Official guidance describes open GML INSPIRE Index Polygons, monthly publication, and a unique Land Registry-INSPIRE identifier; coverage is indicative registered-freehold property in England and Wales."
+    },
+    {
+      "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "method": "GET",
+      "outcome": "National Data Library metadata attributes the dataset to HM Land Registry and states that files are divided by local-authority area."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "outcome": "Anonymous request returned HTTP 302 with Location pointing back to the same path; bounded curl follow stopped after 50 redirects. No Derby GML file, schema payload, or parcel geometry was obtained."
+    },
+    {
+      "url": "https://www.derby.gov.uk/environment-and-planning/maps/",
+      "method": "GET",
+      "outcome": "Official Derby map portal page returned and describes general geographic-information layers; it did not evidence a cadastral parcel service."
+    },
+    {
+      "url": "https://www.derby.gov.uk/housing/land-and-premises/local-land-charges-search/",
+      "method": "GET",
+      "outcome": "Official local-land-charges procedure returned; it documents searches and plans/fees, not an anonymous cadastral parcel API."
+    }
+  ],
+  "fieldPolicy": {
+    "allowlist": [
+      "stable Land Registry-INSPIRE polygon identifier",
+      "indicative parcel/polygon geometry",
+      "source field names and mapping in metadata only",
+      "CRS/format and request metadata"
+    ],
+    "notRequested": [
+      "owner/right-holder",
+      "address/contact",
+      "titleholder/certificate",
+      "tax/account/identity/application",
+      "legal-description, valuation, land-use, or exemption fields"
+    ]
+  },
+  "geometryReview": {
+    "publicGeometryFound": false,
+    "sampleFile": null,
+    "parcelCount": 0,
+    "identities": [],
+    "reason": "The official source is a bulk GML download by local-authority area. The anonymous download route self-redirected, so no unchanged native geometry was obtained and no sample GeoJSON was created."
+  },
+  "scopeLimits": [
+    "Exact WUP point [52.911534635347, -1.47278567567583] was preserved and not shifted.",
+    "No exact-point or map-extent query was used; this packet makes no presence/absence claim at the point.",
+    "INSPIRE is an indicative registered-freehold index subset, not a complete citywide cadastral fabric; leasehold and unregistered land are not represented by this open subset.",
+    "Derby City Council maps and local-land-charges pages evidence local information/procedure only, not a local cadastral parcel API.",
+    "The redirect/timeout-like download failure is not evidence that Derby has no parcels.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe owner/address/title/tax fields were used or requested.",
+    "Packet completion and source verification do not constitute source integration or admission."
+  ],
+  "qualification": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "runtimeReadiness": "held",
+    "serialReviewerRequired": true,
+    "uncertainty": "Official custodian, dataset scope, identifier concept, and delivery format are evidenced; Derby's current file URL, exact schema/CRS, and any bounded geometry response remain unverified."
+  }
+}

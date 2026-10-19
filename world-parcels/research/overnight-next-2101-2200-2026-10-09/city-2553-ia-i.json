@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-10",
+  "attempt": 1,
+  "cityCode": 2553,
+  "wupCityCode": 2553,
+  "queueRank": 2104,
+  "cityId": "wup2025:2553",
+  "name": "Iași",
+  "country": "Romania",
+  "countryCode": "RO",
+  "iso3": "ROU",
+  "locId": 642,
+  "capital": false,
+  "point": [47.1562551602493, 27.5839625989799],
+  "centerLatLon": [47.1562551602493, 27.5839625989799],
+  "population2025": 275840,
+  "population2025k": 275.84,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none accepted",
+  "nativeIdReadiness": "not_ready_no_verified_anonymous_parcel_response",
+  "runtimeReadiness": "held",
+  "freshResearch": {
+    "checkedAt": "2026-10-10",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Iași cadastral parcel map official GIS cadastre Romania",
+        "result": "Found the official ANCPI Imobile viewer, the national INIS/Geoportal Cadastral Parcel ArcGIS layer, and the Municipality of Iași GIS Cadastru 2026 publication page. No live anonymous parcel response was retained.",
+        "actualResultUrls": ["https://geoportal.ancpi.ro/imobile.html", "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1", "https://www.primaria-iasi.ro/dm_iasi/portal.nsf/pagini/gis%2Bcadastru%2B2026-000465A6?Open="]
+      },
+      {
+        "language": "Romanian",
+        "query": "Iași cadastru hartă parcele geoportal oficial ANCPI",
+        "result": "Found first-party OCPI Iași information pages, the ANCPI viewer, and the national Cadastral Parcel service. Municipal GIS Cadastru 2026 publishes Iași cadastral notices and cadastral numbers, but the reviewed pages do not expose a public vector download or documented parcel API.",
+        "actualResultUrls": ["https://is.ancpi.ro/informatii-utile/", "https://is.ancpi.ro/informatii-pnccf/", "https://geoportal.ancpi.ro/imobile.html", "https://eportal.primaria-iasi.ro/dm_iasi/portal.nsf/pagini/gis%2Bcadastru%2B2026-000465A6?Open=&Start=1"]
+      }
+    ]
+  },
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://geoportal.ancpi.ro/imobile.html",
+      "operator": "Agenția Națională de Cadastru și Publicitate Imobiliară (ANCPI)",
+      "scope": "national public viewer for registered immovables and buildings",
+      "observation": "Official viewer documentation says data comes from the ANCPI geospatial database, is updated daily, and exposes parcel/building limits at appropriate scale; search is by address, county/UAT/carte funciară, or geographic position. It is a viewer, not proof of a stable anonymous vector endpoint."
+    },
+    {
+      "url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1",
+      "operator": "Romanian national Geoportal/INIS",
+      "scope": "national INSPIRE Cadastral Parcel layer",
+      "observation": "Indexed ArcGIS metadata identifies a polygon Feature Layer named Cadastral Parcel, supports JSON/GeoJSON and queries, uses EPSG:4258, and has a Romania-scale extent. The live host timed out during this attempt, so no Iași feature was accepted."
+    },
+    {
+      "url": "https://www.primaria-iasi.ro/dm_iasi/portal.nsf/pagini/gis%2Bcadastru%2B2026?Open=",
+      "operator": "Municipiul Iași, Serviciul GIS Cadastru",
+      "scope": "local municipal cadastral publication/notice service",
+      "observation": "Official page loaded and publishes 2026 agricultural land-sale/pre-emption notices with cadastral numbers for Municipiul Iași. It establishes a local cadastral custodian/publication route, not open parcel geometry coverage."
+    },
+    {
+      "url": "https://is.ancpi.ro/informatii-utile/",
+      "operator": "OCPI Iași / ANCPI",
+      "scope": "county cadastral office information and official service links",
+      "observation": "First-party OCPI Iași page identifies the local office and links Geoportal ANCPI, PNCCF and related cadastral services. No geometry response was exposed in the page content."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://www.primaria-iasi.ro/dm_iasi/portal.nsf/pagini/gis%2Bcadastru%2B2026-000465A6?Open=", "method": "GET", "status": "HTTP 200", "summary": "Official municipal GIS Cadastru 2026 page loaded; notices and cadastral numbers visible; no public vector endpoint identified."},
+    {"url": "https://eportal.primaria-iasi.ro/dm_iasi/portal.nsf/pagini/gis%2Bcadastru%2B2026-000465A6?Open=&Start=1", "method": "GET", "status": "HTTP 200 via indexed result; direct host not re-fetched after the primary page", "summary": "Official municipal publication route recorded as a local lead."},
+    {"url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1?f=json", "method": "GET", "status": "timeout after 30 seconds", "summary": "Attempted live layer metadata; no response received."},
+    {"url": "https://geoportal.gov.ro/inspireview/rest/services/CP/CP_View/MapServer/1/query", "method": "GET", "status": "not executed after metadata timeout", "summary": "A bounded point-intersection request was prepared but not sent; no exact-point hit or miss inferred."},
+    {"url": "https://geoportal.ancpi.ro/imobile.html", "method": "GET", "status": "DNS resolution failed in local curl environment", "summary": "Official viewer was established from first-party indexed content; no retry or bypass used."},
+    {"url": "https://is.ancpi.ro/informatii-utile/", "method": "GET", "status": "DNS resolution failed in local curl environment", "summary": "Official OCPI Iași lead was established from first-party indexed content; no retry or bypass used."}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Local Iași municipal cadastral publication and national Romanian cadastral viewer/INSPIRE layer are evidenced; no anonymous citywide parcel geometry scope was verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier if publicly exposed", "geometry", "source layer name", "CRS", "service URL", "retrieval timestamp"],
+  "unsafeFieldsExcluded": ["owner", "address", "contact", "titleholder", "tax/account details", "personal identifiers"],
+  "sourceIds": [],
+  "blocker": "The official national Cadastral Parcel service timed out before metadata or geometry could be read live, and ANCPI/OCPI hosts had local DNS failures. The municipal GIS page is a publication/notice service without a verified public vector response. No safe anonymous Iași parcel ID-plus-geometry response was established.",
+  "remainingUncertainty": "The indexed national layer metadata indicates a Romania-scale polygon service and the ANCPI viewer may show registered immovables, but route availability, Iași coverage, field schema and current geometry could not be verified in this attempt. A zero exact-point hit was not used as an absence claim.",
+  "nextStep": "Retry the official Geoportal/ANCPI services when reachable; inspect only public geometry-plus-ID responses and confirm CRS and Iași coverage before any adapter qualification.",
+  "resultCategory": "official_local_registry_and_national_cadastral_services_no_verified_open_geometry",
+  "runtimeEligible": false
+}

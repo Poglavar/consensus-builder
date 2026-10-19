@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-10751-chidambaram.json",
+  "cityCode": 10751,
+  "queueRank": 2241,
+  "name": "Chidambaram",
+  "country": "India",
+  "countryCode": "IN",
+  "pointLatLon": [11.3982202551027, 79.6959707526047],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": null,
+  "routes": [
+    {"method":"SEARCH","url":"https://cuddalore.nic.in/survey/","httpStatus":"Discovery result available; official page readable in bounded web discovery","outcome":"Local district Survey and Land Records custodian evidence. The Assistant Director of Survey and Land Records at Cuddalore is the district officer; the page specifically identifies an Inspector of Survey for Cuddalore, Chidambaram and Virudhachalam divisions and says land records/FMB-related records are computerized through TamilNilam. No parcel geometry endpoint was exposed."},
+    {"method":"SEARCH","url":"https://cuddalore.nic.in/service/e-services-anytime-anywhere-land/","httpStatus":"Discovery result available; official page readable in bounded web discovery","outcome":"Cuddalore district land-service page lists Patta, Chitta, FMB, TSLR and A-Register services and links to the state e-Services portal. It is service/custodian evidence, not a parcel API response."},
+    {"method":"GET","url":"https://eservices.tn.gov.in/eservicesnew/index.html","httpStatus":"Timed out after 15 seconds with no response","outcome":"Official Tamil Nadu public land-record portal route. No login was attempted and no parcel request was completed."},
+    {"method":"GET","url":"https://eservices.tn.gov.in/eservicesnew/home.html","httpStatus":"Timed out after 15 seconds with no response","outcome":"Alternate official e-Services route identified by government service pages. No parcel response was obtained."},
+    {"method":"GET","url":"https://tamilnilam.tn.gov.in/citizen","httpStatus":"Timed out in bounded direct fetch; no parcel response","outcome":"Official TamilNilam citizen route. No credentials, private token, unsafe field or CAPTCHA bypass was used."},
+    {"method":"GET","url":"https://tnglms.in/","httpStatus":"200","outcome":"Official Tamil Nadu Government Land Management System page describes land parcels, land survey and integration with Tamil Nilam/CollabLand. The accessible page exposed login-oriented functionality and no safe anonymous parcel API response."},
+    {"method":"SEARCH","url":"https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu","httpStatus":"Discovery result available; official government service description","outcome":"National Government Services Portal describes Tamil Nadu Patta/FMB/Chitta/TSLR lookup by district, rural/urban mode and survey identifiers. General service documentation only; no Chidambaram parcel response."},
+    {"method":"SEARCH","url":"https://tnslurb.tn.gov.in/tinai/","httpStatus":"Discovery result available; official page readable in bounded web discovery","outcome":"Official geospatial platform was reviewed for possible map access. Its disclaimer says the data is not cadastral scale and does not replace statutory records; it was not used for parcel extraction."}
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "No current public JavaScript/configuration endpoint yielding a safe anonymous Chidambaram parcel service was recovered in the bounded attempt.",
+    "geometryCrs": "Not observed for a Chidambaram parcel response.",
+    "nativeIdentity": "Not observed; no parcel response was obtained.",
+    "sourceFieldMapping": {},
+    "boundedAnonymousResponse": {"requestScope":"No Chidambaram parcel query completed","featureCount":0,"nativeIdentity":null}
+  },
+  "safeFieldAllowlist": ["stable native parcel ID if exposed by an official service", "polygon geometry", "source service URL", "source CRS / requested output CRS", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired":true,"runtimeReadiness":"held","reason":"Official Tamil Nadu land-record/cadastral workflows and the Cuddalore district Survey and Land Records custodian for Chidambaram division are evidenced, but no safe anonymous parcel ID-plus-geometry response was obtained."},
+  "scopeLimits": ["The exact WUP point [11.3982202551027, 79.6959707526047] was preserved and not shifted.", "No exact-point hit or miss was inferred because no exact-point parcel query completed.", "Timeouts, login-gated interfaces and absent public schema are route limitations, not evidence of citywide absence.", "Cuddalore district Survey and Land Records is the evidenced local/district custodian; Tamil Nadu e-Services, TamilNilam and TNGLMS are state-level systems.", "TiNAI was not treated as parcel integration because its official disclaimer excludes cadastral-scale/statutory use.", "No GeoJSON sample is retained because no safe native parcel identity and unchanged geometry were obtained.", "No owner, address, contact, titleholder, tax/account, certificate/title or personal fields were requested or retained."],
+  "uncertainty": "The existence of Tamil Nadu land-record/FMB/TSLR services and the Cuddalore/Chidambaram survey administration is clear, but anonymous Chidambaram endpoint reachability, coverage, schema, CRS, stable parcel identity and update cadence remain unverified. Runtime/admission remains held."
+}

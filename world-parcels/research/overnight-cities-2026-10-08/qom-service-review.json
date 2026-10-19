@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5374-qom.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No primary city-bound public registry or anonymous parcel geometry route was verified. Provincial references and secondary republication are insufficient to resolve this city-level assessment.",
+  "registryAssessment": "No city-bound primary registry evidence was verified. Search results surfaced provincial-level registry material and secondary reporting about a municipal property system, which do not establish a current city registry or public cadastral service.",
+  "officialPrimarySources": [],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Qom Iran official city cadastral parcel map property registry GIS",
+      "result": "No current city-bound official registry or public parcel map endpoint was verified.",
+      "method": "Separate English web search; official sources reviewed where directly identifiable.",
+      "scope": "Locate current official city-specific registry, cadastral map, or public geometry service."
+    },
+    {
+      "language": "Persian",
+      "query": "قم نقشه کاداستر سامانه املاک ثبت اسناد شهرداری قم",
+      "result": "Search results surfaced provincial or secondary material, but no current primary city-bound public registry or geometry route was verified.",
+      "method": "Separate Persian web search; no login, private-record lookup, or CAPTCHA interaction.",
+      "scope": "Locate current official city-specific registry, cadastral map, or public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "No city-bound primary registry evidence was verified. Search results surfaced provincial-level registry material and secondary reporting about a municipal property system, which do not establish a current city registry or public cadastral service.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "A current city-specific registry or separate municipal GIS may exist outside the official material located in this bounded review."
+}

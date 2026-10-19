@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 29,
+  "city": "Chennai",
+  "countryCode": "IN",
+  "historicalStatus": "temporarily_unavailable",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/chennai.json",
+  "query": {
+    "language": "Tamil",
+    "script": "Tamil",
+    "text": "சென்னை நில அளவை நிலப் பதிவு வரைபடம் புல எண் GIS தமிழ்நாடு அரசு site:tn.gov.in"
+  },
+  "results": [
+    {
+      "title": "TNGIS - Map Editor: Chennai Unified Metropolitan Transport Authority",
+      "url": "https://tngis.tn.gov.in/apps/cumta/",
+      "kind": "official-state-GIS-viewer",
+      "note": "Chennai-focused map editor exposes boundary and land-ownership themes, including SIPCOT estates; reviewed layer list does not establish cadastral parcel geometry."
+    },
+    {
+      "title": "TNGIS | TN WEB GIS | TN State",
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "kind": "official-state-GIS-catalog",
+      "note": "State GIS catalog carries informational-use restrictions; no Chennai cadastral parcel service was identified in this search."
+    }
+  ],
+  "assessment": "Search surfaced Chennai planning/state-GIS layers, not a verified cadastral parcel feature source. Historical retry status remains temporarily unavailable; this search does not resolve it.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "geonames:1264527",
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Tamil",
+    "queryScript": "Tamil",
+    "nativeQuery": "சென்னை நில அளவை நிலப் பதிவு வரைபடம் புல எண் GIS தமிழ்நாடு அரசு site:tn.gov.in",
+    "englishQuery": "Chennai land survey, land records, field number map, and GIS from Tamil Nadu government",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

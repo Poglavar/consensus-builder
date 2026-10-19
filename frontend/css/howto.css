@@ -1,0 +1,792 @@
+/* Shared styling for the how-to guide pages and the roadmap: the shared page header
+   (css/page-chrome.css) over a guide navigation column and a calm editorial reading column for the
+   hub and each per-proposal-type walkthrough, with reusable cards, steps and callouts. The
+   reading column scrolls on its own, so the header and the guide navigation stay in view; the
+   landing page (css/urban-planning.css) returns to normal document flow. */
+
+/* The guides' palette, read through the product tokens (css/tokens.css): the accent is the
+   product primary, the ground and the paper are the page and card surfaces. */
+:root {
+    --guide-ink: var(--cb-text-strong);
+    --guide-muted: var(--cb-text-muted);
+    --guide-blue: var(--cb-primary);
+    --guide-sand: var(--cb-bg);
+    --guide-paper: var(--cb-surface);
+    --guide-line: var(--cb-line);
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+        "header header"
+        "nav main";
+    height: 100%;
+    background-color: var(--guide-sand);
+    color: var(--guide-ink);
+}
+
+body > .cb-page-header {
+    grid-area: header;
+}
+
+/* Guide navigation: the hub, this guide's sections and the neighbouring pages. */
+.sidebar {
+    grid-area: nav;
+    box-sizing: border-box;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 20px 12px;
+    background: var(--guide-paper);
+    border-right: 1px solid var(--guide-line);
+}
+
+.sidebar-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-links .btn {
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.sidebar-links .btn > i {
+    width: 18px;
+    text-align: center;
+}
+
+.sidebar-links [aria-current="page"] {
+    background: var(--cb-primary-soft);
+    color: var(--guide-blue);
+}
+
+.sidebar-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--guide-line);
+}
+
+/* Main content */
+.main-content {
+    grid-area: main;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    background-color: var(--guide-sand);
+}
+
+.container {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 40px 24px 80px 24px;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.intro h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    color: var(--guide-ink);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    margin-bottom: 12px;
+}
+
+.intro p {
+    font-size: 16px;
+    color: var(--guide-muted);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.intro-with-visual {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    gap: 34px;
+    align-items: center;
+    text-align: left;
+    padding: 28px;
+    background: var(--guide-paper);
+    border: 1px solid var(--guide-line);
+    border-radius: 22px;
+    box-shadow: var(--cb-shadow-sm);
+}
+
+.intro-with-visual p {
+    margin: 0 0 20px;
+}
+
+.intro-with-visual img {
+    width: 100%;
+    min-width: 0;
+    display: block;
+    border-radius: 16px;
+    background: var(--cb-surface-2);
+}
+
+.eyebrow {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--guide-blue);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+/* Hub: cards that link to each guide */
+.guide-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.guide-card {
+    display: block;
+    background: var(--guide-paper);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: var(--cb-shadow-sm);
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--guide-line);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guide-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--cb-shadow-md);
+}
+
+.guide-card .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--cb-primary-soft);
+    color: var(--guide-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+}
+
+.guide-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: var(--guide-blue);
+}
+
+.guide-card p {
+    margin: 0;
+    color: var(--guide-muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.guide-card.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Compact landing-page sections used by the Croatian basics guide. */
+.guide-section {
+    margin-top: 48px;
+    scroll-margin-top: 24px;
+}
+
+.guide-section p,
+.guide-section li {
+    line-height: 1.65;
+}
+
+.guide-section li + li {
+    margin-top: 8px;
+}
+
+/* The video library links to one walkthrough per clip; players load on demand. */
+.video-library {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.video-card {
+    overflow: hidden;
+    min-width: 0;
+    border: 1px solid var(--guide-line);
+    border-radius: 14px;
+    background: var(--guide-paper);
+    color: inherit;
+    text-decoration: none;
+    box-shadow: var(--cb-shadow-sm);
+}
+
+.video-card:hover {
+    border-color: var(--guide-blue);
+}
+
+.video-card-preview {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: var(--cb-surface-2);
+}
+
+.video-card-preview img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.video-card-play,
+.video-card-duration {
+    position: absolute;
+    background: var(--guide-ink);
+    color: var(--guide-paper);
+    border-radius: 6px;
+}
+
+.video-card-play {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    left: 12px;
+    bottom: 12px;
+}
+
+.video-card-duration {
+    right: 12px;
+    bottom: 12px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.video-card-copy {
+    padding: 18px;
+}
+
+.video-card-copy .eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+}
+
+.video-card-copy h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    line-height: 1.3;
+}
+
+.video-card-copy p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--guide-muted);
+}
+
+.howto-video {
+    margin: 24px 0;
+    scroll-margin-top: 24px;
+    padding: 16px;
+    border: 1px solid var(--guide-line);
+    border-radius: 14px;
+    background: var(--guide-paper);
+    box-shadow: var(--cb-shadow-sm);
+}
+
+.video-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.video-duration {
+    font-size: 13px;
+    color: var(--guide-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.howto-video video {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    border-radius: 8px;
+    background: var(--guide-ink);
+}
+
+.howto-video figcaption {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--guide-muted);
+    line-height: 1.6;
+}
+
+.guide-footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--guide-line);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+    .video-library {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.guide-section > h2,
+#izrada > h2 {
+    color: var(--guide-ink);
+    font-size: 22px;
+    margin: 0 0 20px;
+}
+
+#izrada > h3 {
+    color: var(--guide-ink);
+    margin: 34px 0 0;
+}
+
+.compact-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.compact-steps .step {
+    margin: 0;
+}
+
+.basics-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.basics-grid .guide-card {
+    padding: 20px;
+}
+
+.view-list {
+    display: grid;
+    gap: 12px;
+}
+
+.view-list article {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 18px 20px;
+    background: var(--guide-paper);
+    border: 1px solid var(--guide-line);
+    border-radius: 12px;
+}
+
+.view-number {
+    flex: 0 0 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--guide-blue);
+    color: var(--cb-primary-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.view-list h3 {
+    color: var(--guide-ink);
+    font-size: 17px;
+    margin: 0 0 4px;
+}
+
+.view-list p {
+    color: var(--guide-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.final-tip {
+    margin-top: 40px;
+}
+
+/* Step list */
+.steps {
+    list-style: none;
+    counter-reset: step;
+    padding: 0;
+    margin: 0;
+}
+
+.step {
+    position: relative;
+    background: var(--guide-paper);
+    border-radius: 14px;
+    padding: 22px 24px 22px 70px;
+    margin-bottom: 22px;
+    border: 1px solid var(--guide-line);
+}
+
+.step::before {
+    counter-increment: step;
+    content: counter(step);
+    position: absolute;
+    left: 20px;
+    top: 22px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--guide-blue);
+    color: var(--cb-primary-ink);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step h3 {
+    margin: 4px 0 10px 0;
+    font-size: 18px;
+    color: var(--guide-ink);
+}
+
+.step p {
+    color: var(--cb-text);
+    line-height: 1.65;
+    margin: 0 0 10px 0;
+}
+
+.step p:last-child {
+    margin-bottom: 0;
+}
+
+/* UI label chip — used to quote the exact button text the user sees */
+.ui-label {
+    display: inline-block;
+    background: var(--cb-info-soft);
+    color: var(--cb-info-soft-ink);
+    border: 1px solid color-mix(in srgb, var(--cb-info) 25%, transparent);
+    border-radius: 5px;
+    padding: 1px 8px;
+    font-weight: 600;
+    font-size: 0.92em;
+    white-space: nowrap;
+}
+
+/* Callout boxes */
+.callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.callout i {
+    margin-right: 8px;
+}
+
+.callout.tip {
+    background: var(--cb-success-soft);
+    border: 1px solid color-mix(in srgb, var(--cb-success) 30%, transparent);
+    color: var(--cb-success-soft-ink);
+}
+
+.callout.note {
+    background: var(--cb-surface-2);
+    border: 1px solid var(--guide-line);
+    color: var(--cb-text);
+}
+
+.callout.warn {
+    background: var(--cb-warning-soft);
+    border: 1px solid color-mix(in srgb, var(--cb-warning) 30%, transparent);
+    color: var(--cb-warning-soft-ink);
+}
+
+/* Screenshot frames. An <img> sits on top of a "pending" placeholder; when the
+   image file is missing it falls back (onerror hides the img) to a labelled box,
+   so the page looks intentional before screenshots are captured. */
+.howto-shot {
+    margin: 16px 0 4px 0;
+}
+
+.shot-frame {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--guide-line);
+    background: var(--cb-surface-2);
+    min-height: 120px;
+    display: flex;
+}
+
+.shot-frame img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: auto;
+    display: block;
+    background: var(--cb-surface);
+}
+
+.shot-pending {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: var(--cb-text-faint);
+    font-size: 14px;
+    background: repeating-linear-gradient(45deg, var(--cb-surface-2), var(--cb-surface-2) 10px, var(--cb-surface-3) 10px, var(--cb-surface-3) 20px);
+}
+
+.shot-pending i {
+    font-size: 26px;
+}
+
+.howto-shot figcaption {
+    color: var(--guide-muted);
+    font-size: 13px;
+    margin-top: 6px;
+    font-style: italic;
+}
+
+/* Language switcher (hr <-> en). The guides are static pages, so this is a plain link
+   pair rather than the app's i18n runtime. */
+
+/* The "draw first, propose later" flow strip on the hub page. */
+.flow-strip {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin: 26px 0 8px;
+    flex-wrap: wrap;
+}
+
+.flow-strip .flow-step {
+    flex: 1 1 130px;
+    background: var(--guide-paper);
+    border: 1px solid var(--guide-line);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+}
+
+.flow-strip .flow-step i {
+    display: block;
+    font-size: 20px;
+    color: var(--guide-blue);
+    margin-bottom: 8px;
+}
+
+.flow-strip .flow-step strong {
+    display: block;
+    font-size: 14px;
+    color: var(--guide-ink);
+    margin-bottom: 3px;
+}
+
+.flow-strip .flow-step span {
+    font-size: 12px;
+    color: var(--guide-muted);
+    line-height: 1.4;
+}
+
+.flow-strip .flow-arrow {
+    align-self: center;
+    color: var(--cb-text-faint);
+    font-size: 14px;
+}
+
+/* Tool reference table (the Build palette). */
+.tool-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    background: var(--guide-paper);
+    border: 1px solid var(--guide-line);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+.tool-table th {
+    background: var(--cb-surface-2);
+    color: var(--guide-blue);
+    text-align: left;
+    padding: 11px 14px;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+.tool-table td {
+    padding: 11px 14px;
+    border-top: 1px solid var(--guide-line);
+    color: var(--cb-text);
+    line-height: 1.5;
+    vertical-align: top;
+}
+
+.tool-table td:first-child {
+    white-space: nowrap;
+    font-weight: 600;
+    color: var(--guide-ink);
+}
+
+.tool-table td:first-child i {
+    color: var(--guide-blue);
+    margin-right: 7px;
+    width: 16px;
+    text-align: center;
+}
+
+.tool-table tr.is-grouped td {
+    background: var(--guide-sand);
+}
+
+/* Wide content must scroll inside itself rather than pushing the page sideways. */
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Two screenshots side by side (before/after, 2D/3D). */
+.shot-pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.shot-pair .howto-shot {
+    margin: 16px 0 4px;
+    min-width: 0;
+}
+
+/* A heading's lighter aside ("Block — “Urban Rule”"). */
+.heading-note {
+    font-weight: var(--cb-weight-normal);
+}
+
+/* Responsive: on a phone the page scrolls as one document, with scrollable navigation rows
+   under the header. */
+@media (max-width: 767.98px) {
+    html,
+    body {
+        height: auto;
+    }
+
+    body {
+        display: block;
+    }
+
+    .shot-pair {
+        grid-template-columns: 1fr;
+    }
+
+    .flow-strip .flow-arrow {
+        display: none;
+    }
+
+    .sidebar {
+        overflow-y: visible;
+        padding: 8px 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--guide-line);
+    }
+
+    .sidebar-links {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0 8px;
+    }
+
+    .sidebar-links .btn {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .sidebar-section {
+        margin-top: 8px;
+        padding: 12px 0 0;
+    }
+
+    .sidebar-section > .eyebrow {
+        padding: 0 8px;
+    }
+
+    .video-library {
+        grid-template-columns: 1fr;
+    }
+
+    .howto-video {
+        padding: 10px;
+    }
+
+    .ui-label {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .main-content {
+        overflow: visible;
+    }
+
+    .container {
+        padding: 28px 16px 60px 16px;
+    }
+
+    .intro-with-visual {
+        grid-template-columns: 1fr;
+        padding: 20px;
+        gap: 22px;
+    }
+
+    .step {
+        padding: 20px 18px 20px 18px;
+    }
+
+    .step::before {
+        position: static;
+        margin-bottom: 12px;
+    }
+
+    .compact-steps,
+    .basics-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Long translated back links need a separate row on the narrowest phones. */
+@media (max-width: 360px) {
+    .cb-page-header {
+        grid-template-areas:
+            "brand lang"
+            "title title"
+            "back back";
+    }
+
+    .cb-page-header > .cb-back-link {
+        justify-self: start;
+    }
+}

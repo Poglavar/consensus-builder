@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3563",
+  "cityCode": 3563,
+  "wupCityCode": 3563,
+  "name": "Tula",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "iso2": "RU",
+  "iso3": "RUS",
+  "rank": 1598,
+  "queueRank": 1598,
+  "point": [54.1954315651313, 37.6188269247801],
+  "centerLatLon": [54.1954315651313, 37.6188269247801],
+  "pointBasis": "Exact WUP2025 settlement point; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 356025,
+  "population2025k": 356.025,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-next-1501-1600-2026-10-09",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Tula-region State Bureau of Technical Inventory (ГУ ТО «Областное БТИ») documents cadastral work and state cadastral valuation, identifies the regional Rosreestr/NSPD channels, and reports operational use of NSPD services. Official regional material also identifies the Tula-region Rosreestr administration and Roskadastr branch in cadastral administration. This is custodian/procedure evidence, not proof of an open Tula parcel feature service.",
+  "registryEvidenceUrls": [
+    "https://bti-tula.ru/",
+    "https://bti-tula.ru/uslugi/kadastrovye-raboty/",
+    "https://bti-tula.ru/news/novosti_/tsifrovaya-platforma-natsionalnaya-sistema-prostranstvennykh-dannykh-nspd-/",
+    "https://bti-tula.ru/ob-uchrezhdenii/news/novosti_/gu-to-oblastnoe-bti-prinimaet-obrashcheniya-po-voprosam-gosudarstvennoy-kadastrovoy-otsenki-/",
+    "https://nspd.gov.ru/",
+    "https://pkk.rosreestr.ru/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_pending_serial_reviewer",
+  "technicalBlocker": "The current NSPD/Rosreestr viewer JavaScript, configuration, service endpoint, schema, CRS, and safe anonymous feature response could not be retrieved: direct anonymous GETs to nspd.gov.ru, pkk.rosreestr.ru, and rosreestr.gov.ru timed out. The reachable BTI page is procedural/institutional and does not expose parcel geometry. No safe ID-plus-complete-geometry response was obtained, so no polygon or native field schema is retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "registry_found_no_public_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "Tula regional cadastral administration and official BTI cadastral-work/valuation activity; federal Rosreestr/NSPD public spatial-data channel.",
+    "verifiedOpenScope": "Official BTI institutional pages were retrieved, but no anonymous parcel feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "serviceEvidence": {
+    "serviceUrl": "https://nspd.gov.ru/",
+    "layer": null,
+    "layerName": null,
+    "geometryType": null,
+    "sourceCrs": null,
+    "nativeIdentityField": null,
+    "safeRequestedFields": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "boundedFeatureCount": 0,
+    "representativeNativeIds": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tula Russia official cadastral map public parcel Rosreestr Tula region official",
+        "scope": "Identify an official Tula-in-scope cadastral custodian and a safe public parcel geometry route.",
+        "result": "Search identified the official Tula-region BTI, its cadastral-work and NSPD pages, and the federal NSPD/Rosreestr map routes. Direct map-host requests timed out; no API schema or geometry was retrieved.",
+        "actualResultUrls": ["https://bti-tula.ru/", "https://bti-tula.ru/uslugi/kadastrovye-raboty/", "https://bti-tula.ru/news/novosti_/tsifrovaya-platforma-natsionalnaya-sistema-prostranstvennykh-dannykh-nspd-/", "https://nspd.gov.ru/", "https://pkk.rosreestr.ru/"],
+        "executionMethod": "Separate English web search and first-party source review."
+      },
+      {
+        "language": "Russian",
+        "query": "Тула официальный кадастровая карта публичная Росреестр земельные участки",
+        "scope": "Independent local-language search for the Tula regional cadastral custodian and public map/API.",
+        "result": "Search identified the official regional BTI, Tula-region Rosreestr/Roskadastr references, NSPD, and public-cadastral-map references. The official BTI site was reachable, but the national viewer routes timed out and no safe parcel geometry response was verified.",
+        "actualResultUrls": ["https://bti-tula.ru/", "https://bti-tula.ru/ob-uchrezhdenii/news/novosti_/gu-to-oblastnoe-bti-prinimaet-obrashcheniya-po-voprosam-gosudarstvennoy-kadastrovoy-otsenki-/", "https://bti-tula.ru/news/novosti_/tsifrovaya-platforma-natsionalnaya-sistema-prostranstvennykh-dannykh-nspd-/", "https://nspd.gov.ru/", "https://pkk.rosreestr.ru/"],
+        "executionMethod": "Separate Russian-language web search and first-party source review."
+      }
+    ]
+  },
+  "priorEvidenceFiles": [],
+  "priorCheck": {"attemptState": "first_attempt", "attemptEvidence": []},
+  "remainingUncertainty": "The current viewer configuration, service endpoint, layer schema, CRS, native parcel identity, anonymous query shape, and coverage remain unverified. Timeout or unavailable UI is not evidence of citywide cadastral absence.",
+  "nextStep": "Serial reviewer may independently inspect NSPD/Rosreestr and qualify a safe adapter if an anonymous ID-plus-geometry response becomes available; keep runtime held from this packet alone."
+}

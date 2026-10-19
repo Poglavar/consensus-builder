@@ -1,0 +1,128 @@
+{
+  "cityCode": 6843,
+  "queueRank": 3046,
+  "name": "Banjarnegara",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "iso3": "IDN",
+  "point": [-7.39650964695577, 109.6773631898],
+  "population2025": 196560,
+  "population2025k": 196.56,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "freshResearch": {
+    "sourceDiscoveryDate": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Banjarnegara Indonesia official cadastral parcel map ATR/BPN BHUMI Geoserver API; Banjarnegara land office parcel data",
+        "result": "First-party discovery identified BHUMI ATR/BPN, integrated with the official ATLAS geoportal, as the public spatial viewer. Its official help page describes parcel layers and parcel information, while the official Banjarnegara government reports the local Kantor Pertanahan and Peta Bidang Tanah/land-registration work. No anonymous ID-plus-geometry response was qualified.",
+        "actualResultUrls": [
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://atlas.atrbpn.go.id/",
+          "https://banjarnegarakab.go.id/2022/12/26/tahun-2022-27-401-sertifikat-tanah-diterbitkan-kantor-pertanahan-banjarnegara/"
+        ]
+      },
+      {
+        "language": "Indonesian (local/native)",
+        "query": "peta bidang tanah Banjarnegara resmi ATR BPN Kantor Pertanahan Kabupaten Banjarnegara BHUMI layanan geospasial",
+        "result": "Indonesian-language first-party discovery confirmed Kantor Pertanahan Kabupaten Banjarnegara as the local cadastral custodian and found official local-government references to PTSL, Peta Bidang Tanah, and land-zone mapping. BHUMI documentation states that the parcel layer is public-facing, but the live anonymous service did not return a usable parcel feature response.",
+        "actualResultUrls": [
+          "https://banjarnegarakab.go.id/2022/12/26/tahun-2022-27-401-sertifikat-tanah-diterbitkan-kantor-pertanahan-banjarnegara/",
+          "https://banjarnegarakab.go.id/2025/06/30/pemkab-terima-25-sertifikat-aset-tanah-dari-bpn/",
+          "https://mandiraja.banjarnegarakab.go.id/sosialisasi-pembuatan-peta-zona-nilai-tanah-pada-ilaspp-tahun-2026/",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+        ]
+      }
+    ],
+    "sourceCitations": [
+      "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "https://atlas.atrbpn.go.id/",
+      "https://banjarnegarakab.go.id/2022/12/26/tahun-2022-27-401-sertifikat-tanah-diterbitkan-kantor-pertanahan-banjarnegara/",
+      "https://banjarnegarakab.go.id/2025/06/30/pemkab-terima-25-sertifikat-aset-tanah-dari-bpn/"
+    ]
+  },
+  "registryFound": true,
+  "registryCustodian": {
+    "name": "Kantor Pertanahan Kabupaten Banjarnegara / ATR-BPN",
+    "scope": "Local cadastral/land-registration custodian for Kabupaten Banjarnegara, evidenced by official local-government reports describing its PTSL, certificates, and Peta Bidang Tanah work.",
+    "evidence": "https://banjarnegarakab.go.id/2022/12/26/tahun-2022-27-401-sertifikat-tanah-diterbitkan-kantor-pertanahan-banjarnegara/"
+  },
+  "service": {
+    "name": "BHUMI ATR/BPN public interactive map / ATLAS geoportal",
+    "viewerUrl": "https://bhumi.atrbpn.go.id/peta",
+    "baseUrl": "https://bhumi.atrbpn.go.id/",
+    "viewerConfiguration": "The current public Next.js viewer JavaScript (retrieved 2026-10-12) defines a Directus layer named Bidang Tanah with map_service_vendor Geoserver, map_service_layer_name umum:Persil, and map_service_url /bhumigs/umum. Official help documents describe coordinate systems, parcel layers, and parcel identification by NIB/HAK/NIBEL.",
+    "schemaAndCrs": {
+      "parcelSchema": null,
+      "nativeIdFields": null,
+      "geometryCrs": null,
+      "fieldMapping": {},
+      "compositeKeyProvenance": null
+    }
+  },
+  "requestsAndEndpointChecks": [
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "status": 200,
+      "outcome": "Anonymous viewer HTML loaded; current JavaScript/configuration was inspected and exposed the Geoserver parcel layer metadata above. No feature response was embedded in the HTML."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/_next/static/chunks/8815-bbff2c697dacdd84.js",
+      "status": 200,
+      "outcome": "Current viewer chunk loaded; confirmed layer name umum:Persil, vendor Geoserver, and relative service path /bhumigs/umum."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&request=GetCapabilities",
+      "status": 404,
+      "outcome": "Public host route returned the BHUMI 404 page; no WFS capabilities, schema, CRS, or parcel features obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/wms?service=WMS&request=GetCapabilities",
+      "status": 404,
+      "outcome": "Public host route returned the BHUMI 404 page; no WMS capabilities or feature-identification endpoint obtained."
+    },
+    {
+      "method": "GET",
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum/ows?service=WMS&request=GetCapabilities",
+      "status": 404,
+      "outcome": "Public host route returned the BHUMI 404 page; no OWS capabilities or feature response obtained."
+    },
+    {
+      "method": "POST",
+      "url": "https://bhumi.atrbpn.go.id/api/proksi",
+      "status": 200,
+      "outcome": "Viewer proxy was tested with the configured service URL and WFS capabilities query; proxy returned JSON error message Unexpected token < in JSON at position 0, indicating the upstream response was an HTML/error page rather than usable service JSON. No retry with credentials or TLS bypass was attempted."
+    }
+  ],
+  "scratchEvidence": "tmp/valhalla-parcel-research/6843/ (viewer HTML/chunk, response headers, and failed capability/proxy responses only; no unsafe fields retained)",
+  "geometrySamples": [],
+  "safeFieldAllowlist": [
+    "stable native cadastral parcel identifier only if source-proven",
+    "full parcel polygon geometry only when safely returned",
+    "geometry CRS",
+    "public source/service metadata",
+    "retrieval date"
+  ],
+  "scopeLimits": [
+    "Exact WUP point [-7.39650964695577, 109.6773631898] was preserved in latitude/longitude order and was not shifted.",
+    "The viewer configuration proves an official parcel-layer route exists in the current client, but route 404/proxy HTML error prevented qualification of the upstream service.",
+    "No exact-point parcel query or citywide feature request produced a usable ID-plus-geometry response; this is not evidence of a point miss or citywide absence.",
+    "Parcel schema, native identity field, geometry CRS, and bounded anonymous geometry response remain unqualified; no GeoJSON sample is retained.",
+    "No owner, address, contact, titleholder, personal, tax/account, certificate, or other unsafe fields were requested or retained.",
+    "Packet completion is research completion only and is not source integration or admission."
+  ],
+  "uncertainty": [
+    "The public viewer may construct an internal/reverse-proxied request not reachable as a direct WFS/WMS route from this environment.",
+    "The official viewer advertises parcel identification by NIB/HAK/NIBEL, but no anonymous parcel feature payload was exposed during this attempt.",
+    "No independent serial reviewer has qualified a runtime adapter."
+  ],
+  "runtimeReadiness": "held"
+}

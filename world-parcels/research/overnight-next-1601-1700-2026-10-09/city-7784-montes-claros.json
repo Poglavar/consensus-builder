@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "cityCode": 7784,
+  "queueRank": 1601,
+  "name": "Montes Claros",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "iso3": "BRA",
+  "point": [-16.7299988077705, -43.8579856504652],
+  "population2025": 355651,
+  "population2025k": 355.651,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Montes Claros Brazil official cadastral map parcel registry GIS municipal lots",
+        "result": "Search located the official Montes Claros SEFIN digital-maps announcement and the municipal cadastral regulation. The sources establish a municipal cadastral/map program, but no public feature-service URL or bounded parcel API response was exposed.",
+        "actualResultUrls": [
+          "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+          "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024"
+        ]
+      },
+      {
+        "language": "Portuguese (Brazil)",
+        "query": "Montes Claros cadastro imobiliário mapa digital lotes quadras geoprocessamento Prefeitura",
+        "result": "The official Portuguese-language SEFIN announcement says the platform includes quadras e lotes, edificações, logradouros and cadastral/property consultation. The municipal decree defines the Cadastro Imobiliário and Índice Cadastral. No anonymous geometry endpoint or schema was discoverable from the official pages.",
+        "actualResultUrls": [
+          "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+          "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024",
+          "https://tesetecnologia.com.br/criacao-de-sig-para-montes-claros-mg/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryAssessment": "Montes Claros has a locally administered Cadastro Imobiliário under the municipal Secretaria Municipal de Finanças (SEFIN). The official municipal digital-maps announcement describes public cadastral lots/blocks and property consultation; the municipal decree defines cadastral records for territorial parcels and a numeric Índice Cadastral. This is local municipal registry evidence, not proof of an open parcel API.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "montes-claros-sefin-digital-maps",
+    "name": "Plataforma de Mapas Digitais de Montes Claros",
+    "operator": "Prefeitura Municipal de Montes Claros, Secretaria Municipal de Finanças (SEFIN)",
+    "scope": "Municipal cadastral and geospatial map platform; announcement says it includes blocks, lots, buildings, streets and property consultation.",
+    "endpoint": null,
+    "method": null,
+    "responseFormat": null,
+    "crs": null,
+    "reuseStatus": "viewer/service endpoint not exposed or verified anonymously"
+  },
+  "portalsFound": [
+    {
+      "url": "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+      "observation": "Official SEFIN announcement for a digital map platform; lists quadras e lotes and says citizens can consult imóveis, lotes e edificações. The page contains no map iframe, service URL, WMS/WFS, ArcGIS endpoint, or API configuration."
+    },
+    {
+      "url": "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024",
+      "observation": "Official municipal decree regulates the Cadastro Imobiliário, covering parcels, buildings, improvements, ownership/possession and location; it defines the numeric Índice Cadastral. No public geometry service is linked."
+    },
+    {
+      "url": "https://tesetecnologia.com.br/criacao-de-sig-para-montes-claros-mg/",
+      "observation": "Project page from the named SIG contractor describes historical municipal cadastral GIS work, including vectorized lots and stable cadastral-unit keying; it is contextual evidence, not a current public service endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://financas.montesclaros.mg.gov.br/comunicado/plataforma-de-mapas-digitais-de-montes-claros",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official announcement fetched with browser-like headers and cookie jar; no embedded public map/API endpoint found."
+    },
+    {
+      "url": "https://portal.montesclaros.mg.gov.br/decreto/com-numero/decreto-n-4888-21-de-novembro-de-2024",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Official municipal cadastral regulation fetched; no geometry service or safe anonymous query route found."
+    },
+    {
+      "url": "https://mapas.montesclaros.mg.gov.br/",
+      "method": "GET",
+      "httpStatus": 502,
+      "contentType": "text/html",
+      "assessment": "Candidate map host inferred from the official platform name; upstream/proxy failure. Not evidence of absence."
+    },
+    {
+      "url": "https://geo.montesclaros.mg.gov.br/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Candidate municipal GIS host did not resolve. Not evidence of absence."
+    },
+    {
+      "url": "https://geoprocessamento.montesclaros.mg.gov.br/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Candidate municipal GIS host did not resolve. Not evidence of absence."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Municipal digital map platform and Cadastro Imobiliário covering Montes Claros municipal territory, according to the official SEFIN announcement and municipal decree.",
+    "verifiedOpenScope": "Municipal cadastral custody and a described public-facing map platform were verified from official prose, but no open parcel feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "The current platform's public viewer URL, service configuration, schema, CRS, native parcel identifier field, anonymous access behavior, and exact WUP-point coverage remain unverified. A zero exact-point geometry result was not obtained and must not be treated as citywide absence.",
+  "nextStep": "Serial reviewer should independently locate the current SEFIN map viewer or obtain an officially published geometry endpoint, then test a bounded geometry-only query with a stable native parcel ID if anonymous access is available.",
+  "runtimeReadiness": "held; no adapter qualification or source admission performed"
+}

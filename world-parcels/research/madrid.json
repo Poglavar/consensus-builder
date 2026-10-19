@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:72",
+  "queueRank": 72,
+  "name": "Madrid",
+  "country": "Spain",
+  "countryCode": "ES",
+  "centerLatLon": [
+    40.4051902313398,
+    -3.70761468237855
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "verified_sample_city_scope",
+  "verifiedParcelResponse": {
+    "sourceId": "es-catastro-inspire-cadastral-parcels-atom",
+    "requestUrl": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/28900-MADRID/A.ES.SDGC.CP.28900.zip",
+    "method": "GET (HTTP Range: bytes=0-400000)",
+    "httpStatus": 206,
+    "contentType": "application/x-zip-compressed",
+    "spatialTestAreaLonLat": [
+      -3.5703,
+      40.3535,
+      -3.5696,
+      40.3543
+    ],
+    "parcelRecordCount": 3,
+    "recordListPath": "wfs:member/cp:CadastralParcel (GML 3.2)",
+    "geometryType": "gml:MultiSurface of PolygonPatch, srsDimension 2, EPSG:25830",
+    "closedRings": true,
+    "idField": "gml:id ES.SDGC.CP.<refcat14> / cp:nationalCadastralReference",
+    "responseFile": "madrid-parcel-response.json",
+    "pagination": "none; whole-municipality file (141,430 parcels, 325 MB uncompressed GML, 40 MB ZIP). Bounded sampling here was done by Range read of the first bytes only; a runtime adapter would need the WFS or a server-side spatial index"
+  },
+  "source": {
+    "sourceId": "es-catastro-inspire-cadastral-parcels-atom",
+    "name": "Direccion General del Catastro - INSPIRE Cadastral Parcels download service (ATOM)",
+    "operator": "Direccion General del Catastro, Ministerio de Hacienda, Spain",
+    "scope": "Spain except Basque Country and Navarre (which run their own cadastres) per Catastro's INSPIRE description; not verified here beyond Madrid",
+    "endpoint": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+    "method": "GET ATOM feed -> per-province feed -> per-municipality ZIP of GML",
+    "responseFormat": "INSPIRE CadastralParcels GML 3.2 in ZIP",
+    "crs": "EPSG:25830 for Madrid (zone-dependent: 25829/25830/25831, 32628 Canaries)",
+    "reuseStatus": "not read; verify Catastro's INSPIRE licence terms before redistribution"
+  },
+  "portalsFound": [
+    {
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/ES.SDGC.CP.atom.xml",
+      "observation": "Top-level INSPIRE ATOM feed listing per-province download feeds (HTTP 200, 685 KB)."
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/ES.SDGC.CP.atom_28.xml",
+      "observation": "Province 28 (Madrid) feed listing 179 municipality ZIPs; Madrid municipality is listed under code 28900-MADRID."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "observation": "Catastro's INSPIRE WFS stored-query endpoint (bbox queries would be the preferred bounded route). Every request to ovc.catastro.meh.es, including its root and GetCapabilities, returned HTTP 400 from this network, so the WFS could not be tested."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=wfs&version=2&request=GetFeature&STOREDQUERE_ID=GetParcel&srsname=EPSG::4326&bbox=40.4160,-3.7040,40.4170,-3.7028",
+      "method": "GET",
+      "httpStatus": 400,
+      "contentType": "text/html",
+      "assessment": "Catastro generic error page 'No se puede procesar su peticion'; also 400 for GetCapabilities, the site root, WMS capabilities and coordinate service with several parameter variants, so likely host-level blocking of this client network; not a parcel result"
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/ES.SDGC.CP.atom_28.xml",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "province feed; no parcels"
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/28900-MADRID/A.ES.SDGC.CP.28900.zip",
+      "method": "HEAD",
+      "httpStatus": 200,
+      "contentType": "application/x-zip-compressed",
+      "assessment": "Content-Length 40435873, Accept-Ranges bytes"
+    },
+    {
+      "url": "https://www.catastro.hacienda.gob.es/INSPIRE/CadastralParcels/28/28900-MADRID/A.ES.SDGC.CP.28900.zip",
+      "method": "GET Range 0-400000",
+      "httpStatus": 206,
+      "contentType": "application/x-zip-compressed",
+      "assessment": "first 400 KB of the ZIP (HTTP 206 Partial Content) decompressed to 3.75 MB of GML containing 1,587 complete CadastralParcel members; first 3 saved"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Spanish national cadastre (Catastro) covers the municipality of Madrid; file header numberMatched=141430",
+    "verifiedOpenScope": "Madrid municipality file exists and its first parcels (south-east of the city, roughly 40.354N 3.570W, ~15 km from the UN centre point) were read; not sampled at the centre",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "The UN Madrid agglomeration extends into other municipalities (each a separate ZIP, e.g. 28005 Alcala de Henares listed in the province feed). Sample is not at the city centre and is the file's first records only. WFS bbox route untested because the ovc host returned 400. Licence terms not read.",
+  "nextStep": "Retest ovc.catastro.meh.es WFS (GetParcel stored query with bbox) from another network; otherwise build an offline tile/index from the municipality ZIP. Read the INSPIRE licence."
+}

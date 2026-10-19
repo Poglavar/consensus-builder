@@ -1,0 +1,14 @@
+{
+  "taskId": "city:1136",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/city-1136-tarija.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/tarija-service-review.json",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/tarija-sample.geojson",
+    "world-parcels/research/overnight-next-2401-2500-2026-10-11/root-review-receipts/source-evidence/city_1136-lotes-bounded-original.json"
+  ],
+  "checkedAt": "2026-10-11T13:13:42Z",
+  "finding": "Queue rank 2492, Bolivia, immutable latitude/longitude point and 235198 persons match packet and review. English and Spanish searches are recorded. GISCloud lotes bounded source response has 117 rows with 115 nonnull codigo_cat values; two rows have null native IDs. Three retained full Polygon samples contain only canonical id, closed rings, and finite coordinates. Bounded discovery supports a local cadastral layer, but no independent fresh exact-ID reads, forced paging, 13 cells, complete manifest, metric GEOS validity/overlap, proposal binding, or headed Details verification are evidenced. No runtime admission."
+}

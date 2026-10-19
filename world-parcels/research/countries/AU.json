@@ -1,0 +1,90 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "country": "Australia",
+ "checkedAt": "2026-09-29",
+ "status": "subnational_only",
+ "cadastreAuthority": "No single national open cadastre; state/territory land agencies publish cadastres (Geoscape national parcel product is commercial)",
+ "portalsFound": [
+  {
+   "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0",
+   "observation": "Victoria Vicmap Property polygons, open ArcGIS FeatureServer."
+  },
+  {
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9",
+   "observation": "NSW Cadastre lots; verified earlier (sydney.json); today's re-test timed out/erred."
+  },
+  {
+   "url": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4",
+   "observation": "Queensland DCDB cadastral parcels, open."
+  },
+  {
+   "url": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer",
+   "observation": "Western Australia SLIP Property_and_Planning service reachable (200); parcel layer not sampled."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4/query?where=1%3D1&geometry=153.0250,-27.4700,153.0260,-27.4690&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=lotplan&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "3 polygons (Brisbane), closed rings",
+   "contentType": "application/json",
+   "parcelRecordCount": 3
+  },
+  {
+   "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0/query?where=1%3D1&geometry=145.0585,-37.8312,145.0595,-37.8304&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=prop_pfi&returnGeometry=false&resultRecordCount=3&f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "3 polygon features returned (re-verified, geometry omitted)",
+   "contentType": "application/json",
+   "parcelRecordCount": 3
+  },
+  {
+   "url": "https://maps.six.nsw.gov.au/arcgis/rest/services/public/NSW_Cadastre/MapServer/9/query?...",
+   "method": "GET",
+   "httpStatus": null,
+   "assessment": "timeout / query failure today; earlier probe verified 3 lots"
+  },
+  {
+   "url": "https://services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Property_and_Planning/MapServer?f=json",
+   "method": "GET",
+   "httpStatus": 200,
+   "assessment": "service description only",
+   "contentType": "application/json"
+  }
+ ],
+ "verifiedParcelResponse": {
+  "sourceId": "au-qld-dcdb",
+  "requestUrl": "https://spatial-gis.information.qld.gov.au/arcgis/rest/services/PlanningCadastre/LandParcelPropertyFramework/MapServer/4/query?where=1%3D1&geometry=153.0250,-27.4700,153.0260,-27.4690&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=lotplan&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json;charset=UTF-8",
+  "spatialTestAreaLonLat": [
+   153.025,
+   -27.47,
+   153.026,
+   -27.469
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "lotplan",
+  "responseFile": "AU-qld-parcel-response.json",
+  "pagination": "resultOffset/resultRecordCount; exceededTransferLimit true",
+  "regionSampled": "Queensland (Brisbane)"
+ },
+ "coverageAssessment": {
+  "claimedScope": "State-level open cadastres; no national service",
+  "regionsVerified": [
+   "Victoria (Melbourne, re-verified count)",
+   "Queensland (Brisbane)",
+   "New South Wales (Sydney, earlier probe)"
+  ],
+  "nationwideVerified": false
+ },
+ "accessModel": "open",
+ "remainingUncertainty": "Different schemas per state; SA, WA, TAS, NT, ACT not sampled; licences unreviewed.",
+ "nextStep": "Sample WA (SLIP Landgate cadastre), SA, TAS (LIST), ACT, NT."
+}

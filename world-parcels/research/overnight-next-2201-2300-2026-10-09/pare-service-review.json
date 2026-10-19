@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-7643-pare.json",
+  "cityCode": 7643,
+  "queueRank": 2231,
+  "name": "Pare",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "pointLatLon": [-7.76915257792334, 112.190272243183],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "GET", "url": "https://lokageokediri.com/", "httpStatus": 200, "outcome": "Local Kediri geospatial portal loaded; page describes verified WebGIS and local data coverage."},
+    {"method": "GET", "url": "https://lokageokediri.com/katalog-data.html", "httpStatus": 200, "outcome": "Public catalog loaded; inspected entries were administrative/thematic datasets with SHP/GeoJSON download choices, not cadastral parcels."},
+    {"method": "GET", "url": "https://atlas.atrbpn.go.id/", "httpStatus": 200, "outcome": "Official ATR/BPN portal loaded; current JavaScript/configuration was inspected for public catalog routes."},
+    {"method": "GET", "url": "https://atlas.atrbpn.go.id/geonode/api/v2/resources?format=json&page_size=1000", "httpStatus": 200, "outcome": "Returned seven public resources. Titles/metadata covered land-office locations, disaster/health accessibility, outer islands, wakaf layers for Pekalongan/Bekasi, and Java LBS; no Pare/Kediri parcel resource."},
+    {"method": "GET", "url": "https://kedirikota.go.id/p/berita/10112400/kota-kediri-dideklarasikan-sebagai-kota-lengkap-oleh-menteri-atrbpn-republik-indonesia", "httpStatus": 200, "outcome": "Official Kota Kediri contextual page loaded; its complete-city statement does not cover Pare in Kabupaten Kediri."},
+    {"method": "GET", "url": "https://data.go.id/dataset/dataset/pertanahan2", "httpStatus": 200, "outcome": "National open-data page for Kota Kediri land statistics loaded; it is tabular/general land information, not a parcel geometry service and not Pare coverage."}
+  ],
+  "schemaAndCrs": {"localCatalog": "HTML catalog with SHP/GeoJSON format options; no parcel feature schema returned.", "nationalCatalog": "GeoNode-style JSON resource catalog; no Pare/Kediri parcel resource returned.", "geometryCrs": null, "nativeIdentity": null},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No bounded anonymous parcel ID+geometry response was verified."},
+  "scopeLimits": ["Pare's WUP point was preserved exactly and was not used to force a parcel hit.", "A catalog omission is not proof of citywide absence.", "The Kota Kediri complete-city page is outside Pare's Kabupaten Kediri jurisdiction.", "Local portal evidence establishes a map/data custodian, while ATR/BPN evidence is national agency catalog evidence; neither yielded public Pare parcel geometry."],
+  "uncertainty": "Public cadastral access for Pare remains unresolved; this packet records observed first-party routes and outcomes only and does not constitute source integration or admission."
+}

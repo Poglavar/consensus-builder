@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9064-chifeng.json",
+  "purpose": "Document official local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Chifeng Natural Resources Bureau sources establish local registration and cadastral administration, including parcel-oriented rural land/right registration. Reviewed official pages do not expose a public parcel-vector endpoint, service schema or sample geometry. No property-specific records were queried or retained.",
+  "registryAssessment": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.chifeng.gov.cn/",
+      "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+    },
+    {
+      "url": "https://zrzyj.chifeng.gov.cn/zzllms/zzGzdt/index_74.html",
+      "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+    },
+    {
+      "url": "https://zrzyj.chifeng.gov.cn/zwgk/czxx/",
+      "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+    },
+    {
+      "url": "https://chifeng.gov.cn/zwgk/",
+      "observation": "The official Chifeng Natural Resources Bureau reports active unified real-estate registration, cadastral-rights administration and parcel-level rural property-registration work; the city Registration Center is listed as a municipal unit. No public city parcel GIS or anonymous geometry endpoint was located."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Chifeng Inner Mongolia official cadastral parcel map GIS land registry",
+      "result": "English search did not identify a public parcel GIS. Official municipal Chinese sources confirm an active real-estate registration center and cadastral land-rights work.",
+      "method": "Separate English and local-language source discovery followed by official-source review.",
+      "scope": "Find local registry evidence and public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "赤峰 地籍图 宗地 不动产登记 GIS 自然资源局 官方",
+      "result": "赤峰市自然资源局资料说明全市开展不动产确权登记和房地一体宗地登记，并设市不动产登记中心；未发现公开地块矢量服务。",
+      "method": "Separate English and local-language source discovery followed by official-source review.",
+      "scope": "Find local registry evidence and public parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; no anonymous exact-point geometry response was verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official sources and exact unchanged WUP settlement locator only.",
+    "limits": "Whether any public/authenticated parcel GIS exists and whether its coverage includes the exact settlement locator remain unverified."
+  },
+  "attempts": [
+    {
+      "url": "https://zrzyj.chifeng.gov.cn/",
+      "method": "GET official Chifeng Natural Resources Bureau homepage",
+      "result": "Identifies the bureau and land/registration notices; no public cadastral viewer link found."
+    },
+    {
+      "url": "https://zrzyj.chifeng.gov.cn/zzllms/zzGzdt/index_74.html",
+      "method": "GET official Chifeng bureau activity page",
+      "result": "Reports city-wide land-rights registration and parcel survey/registration actions; no public parcel geometry service."
+    },
+    {
+      "url": "https://zrzyj.chifeng.gov.cn/zwgk/czxx/",
+      "method": "GET official bureau public-disclosure page",
+      "result": "Lists Chifeng Real Estate Registration Center as a municipal bureau unit; no feature endpoint exposed."
+    }
+  ],
+  "remainingUncertainty": "Whether any public/authenticated parcel GIS exists and whether its coverage includes the exact settlement locator remain unverified."
+}

@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-06",
+  "language": "English",
+  "executedSearches": [
+    {
+      "query": "site.tlcgis.org parcels open data download TAXID",
+      "method": "web search tool"
+    },
+    {
+      "query": "site.snco.gov GIS parcel ArcGIS Topeka",
+      "method": "web search tool"
+    },
+    {
+      "query": "Pierre Hughes County South Dakota parcel GIS ArcGIS",
+      "method": "web search tool"
+    },
+    {
+      "query": "site.tlcgis.org GeoData Hub parcel",
+      "method": "web search tool"
+    },
+    {
+      "query": "Pierre GIS parcels site:arcgis.com",
+      "method": "web search tool"
+    },
+    {
+      "query": "Oklahoma City open data parcels ArcGIS AcctNum",
+      "method": "web search tool"
+    },
+    {
+      "query": "Pierre GIS parcel data site:cityofpierre.org",
+      "method": "web search tool"
+    },
+    {
+      "query": "\"Hughes\" \"parcels\" \"arcgis\" South Dakota",
+      "method": "web search tool"
+    },
+    {
+      "query": "\"Oklahoma County\" \"Parcels\" \"FeatureServer\"",
+      "method": "web search tool"
+    },
+    {
+      "query": "Tallahassee Leon parcels",
+      "url": "https://www.arcgis.com/sharing/rest/search"
+    },
+    {
+      "query": "Pierre Hughes parcels",
+      "url": "https://www.arcgis.com/sharing/rest/search"
+    },
+    {
+      "query": "Oklahoma County assessor parcels",
+      "url": "https://www.arcgis.com/sharing/rest/search"
+    },
+    {
+      "query": "owner:CityOfPierre",
+      "url": "https://www.arcgis.com/sharing/rest/search"
+    },
+    {
+      "query": "\"parcels\" AND (owner:OKCGIS OR owner:okc OR owner:OklahomaCounty)",
+      "url": "https://www.arcgis.com/sharing/rest/search"
+    }
+  ],
+  "sources": [
+    {
+      "stateCode": "KS",
+      "city": "topeka",
+      "endpoint": "https://gis.sncoapps.us/arcgis2/rest/services/Parcels/MapServer/0",
+      "status": "passed",
+      "assessment": "Full adapter gate passed: 18 cells, 280 unique PINs and all exact geometries; native repeated suffix PARCELNUM correctly rejected.",
+      "descriptor": {
+        "id": "us-ks-topeka-parcels",
+        "countryCode": "US",
+        "stateCode": "KS",
+        "cityIds": [
+          "topeka"
+        ],
+        "idPrefix": "US-KS-TOPEKA-",
+        "adapter": "arcgis",
+        "endpoint": "https://gis.sncoapps.us/arcgis2/rest/services/Parcels/MapServer/0",
+        "name": "Shawnee County Parcels",
+        "operator": "Shawnee County Appraiser GIS and Mapping Division",
+        "scope": "Shawnee County parcel polygons",
+        "catalogueUrl": "https://snco.gov/ap/mapping.php",
+        "idField": "PIN",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "PIN",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "PIN",
+        "metricSrid": 32614,
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "caveats": [
+          "Acceptance proves sampled capital-area scope only."
+        ]
+      },
+      "sourceNote": "Official Shawnee County parcel polygons keyed by native PIN. Capital-area acceptance only.",
+      "references": [
+        "https://snco.gov/ap/mapping.php",
+        "https://gis.sncoapps.us/arcgis2/rest/services/Parcels/MapServer/0?f=json"
+      ]
+    },
+    {
+      "stateCode": "MS",
+      "city": "jackson",
+      "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+      "status": "passed",
+      "assessment": "MDEQ official Hinds County PARNO polygons passed full gate: 18 cells, 307 unique native parcel numbers, all exact geometry round trips, paging count, footprint and complete binding. CMPDD city overlay and county 2024 layer both repeated native dpin with conflicting geometry; no blind union accepted.",
+      "descriptor": {
+        "id": "us-ms-jackson-parcels",
+        "countryCode": "US",
+        "stateCode": "MS",
+        "cityIds": [
+          "jackson"
+        ],
+        "idPrefix": "US-MS-JACKSON-",
+        "adapter": "arcgis",
+        "endpoint": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+        "name": "MDEQ Hinds County Parcel Polygons",
+        "operator": "Mississippi Department of Environmental Quality / Hinds County Tax Assessor / Tristate Consulting",
+        "scope": "Hinds County official state parcel compilation",
+        "catalogueUrl": "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer",
+        "idField": "PARNO",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "PARNO",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "PARNO",
+        "metricSrid": 32615,
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "caveats": [
+          "Official state parcel compilation snapshot; current tax-year date must be observed.",
+          "Capital-area acceptance only."
+        ]
+      },
+      "sourceNote": "Official MDEQ Hinds County parcel compilation, credited to County Tax Assessor and Tristate Consulting. Capital-area acceptance only.",
+      "references": [
+        "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/0",
+        "https://opcgis.deq.state.ms.us/opcgis/rest/services/Government/HINDS_PARCELS/MapServer/info/iteminfo"
+      ],
+      "proof": "world-parcels/research/us-capitals-batch-five-access-jackson-state-live-2026-10-06.json"
+    },
+    {
+      "stateCode": "FL",
+      "city": "tallahassee",
+      "endpoint": "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/EXLU_2025_WM/FeatureServer/19",
+      "status": "passed",
+      "assessment": "Full adapter gate passed: 18 cells, 933 unique TAXIDs and exact geometries; official dated November 2025 parcel mirror.",
+      "descriptor": {
+        "id": "us-fl-tallahassee-parcels",
+        "countryCode": "US",
+        "stateCode": "FL",
+        "cityIds": [
+          "tallahassee"
+        ],
+        "idPrefix": "US-FL-TALLAHASSEE-",
+        "adapter": "arcgis",
+        "endpoint": "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/EXLU_2025_WM/FeatureServer/19",
+        "name": "TLCGIS Existing Land Use 2025",
+        "operator": "Tallahassee-Leon County Planning Department / TLCGIS",
+        "scope": "Leon County parcel-based existing land use snapshot 2025",
+        "catalogueUrl": "https://www.arcgis.com/home/item.html?id=0647430cc90e435093e9d064cb22481f",
+        "idField": "TAXID",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "TAXID",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "TAXID",
+        "metricSrid": 32616,
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "caveats": [
+          "Official parcel-based land-use snapshot reflecting November 2025; current cadastral updates after this snapshot are not represented.",
+          "Sampled capital-area acceptance does not establish all municipal parcels are present."
+        ]
+      },
+      "sourceNote": "Dated official November 2025 parcel-based land-use mirror. Publisher states each parcel receives one land-use category and identifies county, city and Property Appraiser source data.",
+      "references": [
+        "https://www.tlcgis.org/Help/FAQ",
+        "https://www.arcgis.com/sharing/rest/content/items/0647430cc90e435093e9d064cb22481f?f=json"
+      ],
+      "provenance": {
+        "snapshot": "November 2025",
+        "publisherStatement": "Parcel-based mapping; one land-use category per parcel; source data from county, city and Property Appraiser.",
+        "officialAlternative": "TLCGIS GeoData Hub supports GeoJSON, Shapefile, KML and CSV exports, but direct hub page could not be read (HTTP 403)."
+      }
+    },
+    {
+      "stateCode": "OK",
+      "city": "oklahoma_city",
+      "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+      "status": "technical_hold",
+      "assessment": "Original hosted layer returned zero across all 18 capital grid cells and its full extent is a small patch. Correct city parcel services returned HTTP 200 HTML Incapsula block, so no geometry acquired from them.",
+      "descriptor": {
+        "id": "us-ok-oklahoma-city-parcels",
+        "countryCode": "US",
+        "stateCode": "OK",
+        "cityIds": [
+          "oklahoma_city"
+        ],
+        "idPrefix": "US-OK-OKLAHOMA-CITY-",
+        "adapter": "arcgis",
+        "endpoint": "https://services3.arcgis.com/MUsqg3LXXXYe8gDP/ArcGIS/rest/services/OK_County_Assessor_Parcels/FeatureServer/1",
+        "name": "OK County Assessor Parcels",
+        "operator": "Oklahoma County Assessor",
+        "scope": "Oklahoma County",
+        "catalogueUrl": "https://www.oklahomacounty.org/elected-offices/assessor/pageindex8072/2",
+        "idField": "AcctNum",
+        "objectIdField": "OBJECTID",
+        "idType": "string",
+        "outFields": [
+          "AcctNum",
+          "OBJECTID"
+        ],
+        "parcelNumberField": "AcctNum",
+        "metricSrid": 32614,
+        "pageSize": 500,
+        "maxFeatures": 10000,
+        "maxBboxKm2": 25,
+        "maxConcurrentQueries": 2,
+        "caveats": [
+          "Acceptance proves sampled capital-area scope only."
+        ]
+      },
+      "sourceNote": "Official county or municipal parcel service; native key acceptance pending.",
+      "references": [
+        "https://gis.okc.gov/arcgis/rest/services/Public/Data_OKC_Gov_Application_Service/MapServer",
+        "https://gis.okc.gov/arcgis/rest/services/Public/Data_OKC_Gov_Application_Service/MapServer/3?f=json"
+      ],
+      "alternateAttempt": {
+        "endpoint": "https://gis.okc.gov/arcgis/rest/services/Public/Data_OKC_Gov_Application_Service/MapServer/3?f=json",
+        "status": 200,
+        "contentType": "text/html",
+        "assessment": "Incapsula request-unsuccessful iframe rather than ArcGIS JSON; incident details and cookies omitted."
+      }
+    },
+    {
+      "stateCode": "SD",
+      "city": "pierre",
+      "endpoint": "https://beacon.schneidercorp.com/Application.aspx?AppID=940&LayerID=18376&PageID=8187&PageTypeID=2",
+      "status": "technical_hold",
+      "assessment": "Official county portal identifies GIS map access through Beacon, and city archived Beacon parcel document corroborates parcel IDs. Verified HTTPS provider request returns 403. Public ArcGIS searches found no official alternate query endpoint. This is a blocked public read path, not evidence absent cadastral data or unsupported geometry format.",
+      "adapterNeeded": "Identify authorized public Beacon geometry/native-ID API or obtain county native SHP/FileGDB/GeoJSON export; actual service schema is not observed.",
+      "references": [
+        "https://hughescounty.org/realestate",
+        "https://www.cityofpierre.org/AgendaCenter/ViewFile/Item/32?fileID=5360",
+        "https://www.cityofpierre.org/Directory/Home/DepartmentListing?DID=14"
+      ]
+    }
+  ],
+  "proofs": [
+    "world-parcels/research/us-capitals-batch-five-access-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-retry-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-mirror-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-alternates-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-jackson-key-diagnosis-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-jackson-2024-live-2026-10-06.json",
+    "world-parcels/research/us-capitals-batch-five-access-jackson-state-live-2026-10-06.json"
+  ]
+}

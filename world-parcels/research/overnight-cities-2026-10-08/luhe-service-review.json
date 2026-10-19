@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11250-luhe.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Nanjing bureau says cadastral maps are available through Nanjing E-registration, while identity verification is required for personal registration-information queries. No anonymous, geometry-only public parcel route was confirmed for Liuhe.",
+  "registryAssessment": "Nanjing Planning and Natural Resources Bureau documents online cadastral-map services through the Nanjing E-registration platform, while stating that personal or interested-party registry queries require authenticated/legal access. The WUP point is in Liuhe District, but a public anonymous parcel geometry endpoint was not verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ghj.nanjing.gov.cn/ztzl/ztzl/ywyd/202406/t20240625_4698387.html",
+      "observation": "Nanjing bureau says cadastral maps are available through Nanjing E-registration, while identity verification is required for personal registration-information queries. No anonymous, geometry-only public parcel route was confirmed for Liuhe."
+    },
+    {
+      "url": "https://njsj.nanjing.gov.cn/xwdt/202305/t20230524_3919254.html",
+      "observation": "Nanjing bureau says cadastral maps are available through Nanjing E-registration, while identity verification is required for personal registration-information queries. No anonymous, geometry-only public parcel route was confirmed for Liuhe."
+    },
+    {
+      "url": "https://ydtb.njghzy.com.cn/ydtb_pc/index.html#/index",
+      "observation": "Nanjing bureau says cadastral maps are available through Nanjing E-registration, while identity verification is required for personal registration-information queries. No anonymous, geometry-only public parcel route was confirmed for Liuhe."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Luhe China official cadastre cadastral parcel map GIS land registry",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "Nanjing bureau says cadastral maps are available through Nanjing E-registration, while identity verification is required for personal registration-information queries. No anonymous, geometry-only public parcel route was confirmed for Liuhe.",
+      "actualResultUrls": [
+        "https://ghj.nanjing.gov.cn/ztzl/ztzl/ywyd/202406/t20240625_4698387.html",
+        "https://njsj.nanjing.gov.cn/xwdt/202305/t20230524_3919254.html",
+        "https://ydtb.njghzy.com.cn/ydtb_pc/index.html#/index"
+      ],
+      "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    },
+    {
+      "language": "Chinese",
+      "query": "六合区 南京 不动产登记 地籍图 查询 线上苏小登 南京官方",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "Nanjing bureau says cadastral maps are available through Nanjing E-registration, while identity verification is required for personal registration-information queries. No anonymous, geometry-only public parcel route was confirmed for Liuhe.",
+      "actualResultUrls": [
+        "https://ghj.nanjing.gov.cn/ztzl/ztzl/ywyd/202406/t20240625_4698387.html",
+        "https://njsj.nanjing.gov.cn/xwdt/202305/t20230524_3919254.html",
+        "https://ydtb.njghzy.com.cn/ydtb_pc/index.html#/index"
+      ],
+      "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry retained; no qualifying full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Nanjing Planning and Natural Resources Bureau documents online cadastral-map services through the Nanjing E-registration platform, while stating that personal or interested-party registry queries require authenticated/legal access. The WUP point is in Liuhe District, but a public anonymous parcel geometry endpoint was not verified.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Public anonymous parcel geometry, exact WUP-point coverage, and citywide coverage remain unverified."
+}

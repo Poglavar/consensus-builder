@@ -1,0 +1,50 @@
+[
+ {
+  "iso2": "SE",
+  "name": "Sweden"
+ },
+ {
+  "iso2": "CH",
+  "name": "Switzerland"
+ },
+ {
+  "iso2": "SY",
+  "name": "Syrian Arab Republic"
+ },
+ {
+  "iso2": "TJ",
+  "name": "Tajikistan"
+ },
+ {
+  "iso2": "TH",
+  "name": "Thailand"
+ },
+ {
+  "iso2": "TL",
+  "name": "Timor-Leste"
+ },
+ {
+  "iso2": "TG",
+  "name": "Togo"
+ },
+ {
+  "iso2": "TT",
+  "name": "Trinidad and Tobago"
+ },
+ {
+  "iso2": "TN",
+  "name": "Tunisia"
+ },
+ {
+  "iso2": "TM",
+  "name": "Turkmenistan"
+ },
+ {
+  "iso2": "TR",
+  "name": "Türkiye"
+ },
+ {
+  "iso2": "UG",
+  "name": "Uganda"
+ }
+]

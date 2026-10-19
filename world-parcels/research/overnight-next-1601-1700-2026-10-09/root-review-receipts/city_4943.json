@@ -1,0 +1,22 @@
+{
+  "taskId": "city:4943",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-4943-luhansk.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/luhansk-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T11:03:13Z",
+  "reviewNote": "Luhansk: immutable WUP identity matches roster and queue; English and local-language searches checked. Official custodian evidence: https://luhanska.land.gov.ua/info/elektronni-posluhy-derzhheokadastru/. No anonymous native-ID polygon response or retained sample; public availability remains unresolved.",
+  "qualificationGaps": [
+    "fresh native-ID reads",
+    "forced pagination",
+    "13 bounded cells",
+    "metric GEOS validity and overlap checks",
+    "source binding",
+    "headed Details-panel verification"
+  ],
+  "runtimeAdmission": false
+}

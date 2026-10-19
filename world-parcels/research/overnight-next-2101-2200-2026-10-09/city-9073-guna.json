@@ -1,0 +1,22 @@
+{
+  "cityCode": 9073,
+  "queueRank": 2138,
+  "name": "Guna",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [24.6471630850083, 77.3128148173307],
+  "population2025": 271913,
+  "population2025k": 271.913,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "freshResearch": {
+    "queries": [
+      {"language":"English","query":"Guna Madhya Pradesh official cadastral map land records bhu naksha Guna","result":"First-party discovery located the District Guna Government of Madhya Pradesh land-records page directing users to the MP land-records service, and the official Guna GIS page linking to the district GIS portal. No anonymous parcel feature service or downloadable parcel geometry was exposed in the indexed result.","actualResultUrls":["https://guna.nic.in/en/service/land-records/","https://guna.nic.in/en/guna-gis/","https://gunagis.mp.gov.in","https://landrecords.mp.gov.in"]},
+      {"language":"Hindi","query":"गुना मध्य प्रदेश भू नक्शा आधिकारिक खसरा नक्शा","result":"First-party discovery located the Hindi District Guna land-records page, which directs users to landrecords.mp.gov.in. This confirms a public land-records/map service in the state workflow but provides no safe parcel ID/geometry response for Guna.","actualResultUrls":["https://guna.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/","https://landrecords.mp.gov.in"]}
+    ]
+  },
+  "researchNotes":"Official district pages evidence the local custodian/service pathway, but the bounded anonymous API/UI follow-up did not yield parcel records. A timeout is not treated as citywide absence. No sample GeoJSON is retained.",
+  "runtimeReadiness":"held"
+}

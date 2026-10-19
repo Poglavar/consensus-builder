@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "jp-nara-municipal-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only route without querying personal/property attributes.",
+  "primaryPublisher": "Nara City Asset Tax Division",
+  "sourceUrl": "https://www.city.nara.lg.jp/soshiki/14/104605.html",
+  "registryFound": true,
+  "registryBasis": "Nara City’s Asset Tax Division publishes a city-wide parcel-reference map (“地番図”) as CC BY 2.1 Japan open data, including shapefile boundary layers. The 2025-01-01 snapshot contains 414,023 boundary polygons. Three nearest complete sample polygons are valid in native EPSG:2448 and covered by the union of relevant official Nara City 大字界 subdivision polygons, confirming city binding. The city says the map is for reference and does not evidence rights or exact legal boundaries.",
+  "officialSources": [
+    {
+      "url": "https://www.city.nara.lg.jp/soshiki/14/104605.html",
+      "observation": "Nara City’s Asset Tax Division publishes a city-wide parcel-reference map (“地番図”) as CC BY 2.1 Japan open data, including shapefile boundary layers. The 2025-01-01 snapshot contains 414,023 boundary polygons. Three nearest complete sample polygons are valid in native EPSG:2448 and covered by the union of relevant official Nara City 大字界 subdivision polygons, confirming city binding. The city says the map is for reference and does not evidence rights or exact legal boundaries."
+    },
+    {
+      "url": "https://www.city.nara.lg.jp/soshiki/6/94247.html",
+      "observation": "Nara City’s Asset Tax Division publishes a city-wide parcel-reference map (“地番図”) as CC BY 2.1 Japan open data, including shapefile boundary layers. The 2025-01-01 snapshot has 414,023 boundary polygons; three nearest complete native shapes were retained as a bounded sample. The city explicitly says the map is only a reference, not an authoritative boundary/rights record, and does not guarantee positional accuracy."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nara City Japan official cadastral parcel map open data boundary shapefile",
+      "scope": "Find city-specific registry/cartography basis and safe anonymous geometry routes.",
+      "result": "Nara City’s official open-data page lists parcel-map shapefile layers and CC BY 2.1 Japan reuse conditions. The page dates the data 2025-01-01 and warns that the map is only a reference, may differ from cadastral maps, and is not evidence of rights or exact boundaries. The map portal also lists parcel map layers.",
+      "actualResultUrls": [
+        "https://www.city.nara.lg.jp/soshiki/14/104605.html",
+        "https://www.city.nara.lg.jp/soshiki/6/94247.html"
+      ]
+    },
+    {
+      "language": "Japanese",
+      "query": "奈良市 地番図 オープンデータ 筆界線 公式",
+      "scope": "Find local-language city-specific registry/cartography basis and safe anonymous geometry routes.",
+      "result": "奈良市資産税課の公式ページに地番図オープンデータ（筆界線1〜3）があり、2025年1月1日時点、CC BY 2.1日本と明記。公図との誤差があり精度・権利関係を証明せず、参考利用に限るという注意書きがある。",
+      "actualResultUrls": [
+        "https://www.city.nara.lg.jp/soshiki/14/104605.html",
+        "https://www.city.nara.lg.jp/soshiki/6/94247.html"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 3,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "verified_bounded_city_sample_snapshot_runtime_qualification_hold",
+    "reason": "Existing repository runtime adapters do not support this static Shapefile archive. A scan of all 414,023 土地key values found 410,061 distinct nonmissing keys, 3,810 duplicate groups / 3,962 rows beyond first, and 0 missing; each retained sample ID occurs once. Snapshot-wide identity semantics, paging, arbitrary-footprint behavior and source binding remain unqualified. No runtime parser was implemented.",
+    "nativeIdsUsed": "Safe ID field 土地key. Full DBF scan read only this field: 410,061 distinct nonmissing values / 414,023 records, 3,810 duplicate groups and 3,962 extra repeated rows, 0 missing. Each retained sample key occurs once; no other DBF row values were read.",
+    "sampleFile": "world-parcels/research/overnight-cities-2026-10-08/nara-parcel-sample.geojson",
+    "geometryRetainedInRepository": true,
+    "coordinateReferenceSystem": "OGC:CRS84; source JGD2000 / Japan Plane Rectangular CS VI (EPSG:2448)",
+    "sampleDistancesFromWupMeters": [
+      3835.4253,
+      3837.8238,
+      3838.6118
+    ],
+    "snapshotIdentityCounts": {
+      "records": 414023,
+      "uniqueNonmissing": 410061,
+      "duplicateGroups": 3810,
+      "duplicateRowsBeyondFirst": 3962,
+      "missing": 0
+    },
+    "sampleGeometryQa": {
+      "allThreeNativeGeosValid": true,
+      "allThreeCrs84GeosValid": true,
+      "allThreeCoveredByOfficialNaraOazaUnion": true,
+      "geosVersion": "3.14.1",
+      "maxInverseTransformErrorMeters": 7.129559360661718e-07,
+      "maxStoredOutputCoordinateDifferenceDegrees": 0
+    }
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.city.nara.lg.jp/soshiki/14/104605.html",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "Official open-data page lists Japanese parcel-map layer downloads, licensing, snapshot date, and limitations."
+    },
+    {
+      "url": "https://www.city.nara.lg.jp/uploaded/attachment/208256.zip",
+      "method": "GET (download link from official page)",
+      "status": 200,
+      "contentType": "application/zip",
+      "observation": "Anonymous GET of the official boundary-line ZIP returned HTTP 200 (37,415,484 bytes). The split shapefile component bundle contains SHP/SHX/PRJ; source Polygon shape type 5, 414,023 records; DBF header count matches. PRJ identifies JGD2000 / Japan Plane Rectangular CS VI (EPSG:2448). DBF schema was inspected before reading only three selected 土地key values; no other row values were accessed.",
+      "bytes": 37415484
+    },
+    {
+      "url": "https://naracity.geocloud.jp/",
+      "method": "GET",
+      "status": 403,
+      "contentType": "text/html",
+      "observation": "Public viewer direct anonymous request denied; no authentication or bypass attempted. The separate official archive route was used."
+    },
+    {
+      "url": "https://www.city.nara.lg.jp/uploaded/attachment/208252.zip",
+      "method": "GET (official open-data attachment)",
+      "status": 200,
+      "contentType": "application/zip",
+      "bytes": 8245012,
+      "observation": "Separate parcel-label bundle. Header/schema reviewed only; no DBF row values were read from this file."
+    }
+  ],
+  "technicalBlocker": "Existing repository runtime adapters do not support this static Shapefile archive. A scan of all 414,023 土地key values found 410,061 distinct nonmissing keys, 3,810 duplicate groups / 3,962 rows beyond first, and 0 missing; each retained sample ID occurs once. Snapshot-wide identity semantics, paging, arbitrary-footprint behavior and source binding remain unqualified. No runtime parser was implemented.",
+  "sampleDisposition": "Three complete polygons retained in nara-parcel-sample.geojson with safe 土地key IDs and shapefile record numbers only. Independent GEOS 3.14.1 validates source and output geometries; official Nara City subdivision coverage verified.",
+  "remainingUncertainty": "The unchanged WUP locator is 3.835–3.839 km from the retained samples; it is not a coverage gate. Full snapshot 土地key has 3,810 duplicate groups and 3,962 repeated rows beyond first. Snapshot-wide ID resolution, paging, arbitrary-footprint behavior and authoritative source binding are not qualified; the existing adapters do not read this Shapefile archive. No runtime parser or adapter was implemented.",
+  "rootDecision": "held_snapshot_identity_and_format_review",
+  "rootQualityFile": "nara-root-qualification-review.json"
+}

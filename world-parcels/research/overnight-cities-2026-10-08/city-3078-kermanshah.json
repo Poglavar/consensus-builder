@@ -1,0 +1,86 @@
+{
+  "name": "Kermanshah",
+  "country": "Iran",
+  "countryCode": "IR",
+  "rank": 629,
+  "point": [
+    34.3407467206697,
+    47.0899149129658
+  ],
+  "population2025": 837230,
+  "populationUnit": "persons",
+  "population2025k": 837.23,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "City-specific registry presence remains unestablished. Research found a provincial-level Kermanshah registration office and local property-registration activity reported by regional news sources, along with a regional subdomain associated with the national Registration Organization. A current direct official service page or public cadastral map endpoint could not be verified, so the local office evidence is provisional and does not establish a parcel-geometry service.",
+  "registryEvidenceUrls": [],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Persian",
+        "query": "کرمانشاه نقشه کاداستر پلاک ثبتی اداره ثبت اسناد املاک رسمی",
+        "scope": "Locate official Kermanshah land-registration/cadastre offices and determine whether there is public parcel geometry.",
+        "result": "Search results identified a Kermanshah Registration Organization regional office subdomain, and regional reporting describes the provincial registration directorate and local property-registration activity. No current official public map or vector service was found.",
+        "actualResultUrls": [
+          "http://ks.ssaa.ir/",
+          "https://www.tasnimnews.ir/fa/news/1405/06/18/3692589/مالکان-اسناد-عادی-بخوانند-2-سال-برای-ثبت-ادعای-ملکی-فرصت-دارید",
+          "https://portal.kshnotary.ir/"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+      },
+      {
+        "language": "English",
+        "query": "Kermanshah Iran official cadastral parcel map land registry GIS",
+        "scope": "Locate official Kermanshah land-registration/cadastre offices and determine whether there is public parcel geometry.",
+        "result": "Search results found a regional Registration Organization office and local registration activity, but no anonymous parcel geometry service or public feature schema.",
+        "actualResultUrls": [
+          "http://ks.ssaa.ir/",
+          "https://portal.kshnotary.ir/",
+          "https://www.irancodify.com/b/%D8%A2%DB%8C%DB%8C%D9%86_%D9%86%D8%A7%D9%85%D9%87_%D9%82%D8%A7%D9%86%D9%88%D9%86_%D8%AC%D8%A7%D9%85%D8%B9_%D8%AD%D8%AF%D9%86%DA%AF%D8%A7%D8%B1_%28%DA%A9%D8%A7%D8%AF%D8%A7%D8%B3%D8%AA%D8%B1%29_%D9%85%D8%B5%D9%88%D8%A8_1395-01-22"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+      }
+    ]
+  },
+  "scopeLimits": "The regional subdomain is referenced by a local notaries association but was not directly verified as a current first-party page. Regional news reports confirm a local registration directorate and property registration activity. No public anonymous cadastral viewer or vector endpoint was identified, and no parcel lookup was attempted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "IR-KERMANSHAH-REGISTRATION-OFFICE",
+    "name": "Kermanshah provincial Property Deeds and Estates Registration Office",
+    "url": "http://ks.ssaa.ir/",
+    "operator": "Iran National Organization for Registration of Deeds and Properties (regional office; current direct page not verified)",
+    "serviceType": "Registration institution; no public map service or schema found",
+    "layer": "none verified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "none verified"
+  },
+  "wupCityCode": 3078,
+  "cityId": "wup2025:3078",
+  "queueRank": 629,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The regional subdomain is referenced by a local notaries association but was not directly verified as a current first-party page. Regional news reports confirm a local registration directorate and property registration activity. No public anonymous cadastral viewer or vector endpoint was identified, and no parcel lookup was attempted.",
+  "remainingUncertainty": "Whether the WUP locator falls within a public parcel service’s queryable coverage and whether any candidate service supports safe stable identifiers and repeatable bounded geometry retrieval.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous parcel polygon was retained for this city.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    34.3407467206697,
+    47.0899149129658
+  ],
+  "rootRegistryReview": {
+    "decision": "local_registry_unestablished",
+    "reason": "No verified first-party city-specific institutional evidence; attributed republication or regional reporting is preserved as discovery evidence only. Registry absence is not established."
+  },
+  "rootReviewedAt": "2026-10-09T02:09:36.300766+00:00"
+}

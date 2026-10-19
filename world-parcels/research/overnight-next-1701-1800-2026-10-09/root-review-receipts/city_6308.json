@@ -1,0 +1,34 @@
+{
+  "taskId": "city:6308",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/city-6308-ciudad-victoria.json",
+    "world-parcels/research/overnight-next-1701-1800-2026-10-09/ciudad-victoria-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T15:01:23.243863Z",
+  "reason": "Official Tamaulipas institutional and finance pages support cadastral custody. Original response caches show the services page and an anti-bot challenge; no native-ID polygon response or sample exists. Anti-bot and timeout observations leave open geometry unresolved, not absent.",
+  "firstPartyUrlsChecked": [
+    "https://www.tamaulipas.gob.mx/secretariageneral/instituto-registral-y-catastral/",
+    "https://finanzas.tamaulipas.gob.mx/pago-de-contribuciones/Servicios-Catastrales.php"
+  ],
+  "originalCacheInspection": [
+    {
+      "path": "tmp/valhalla-parcel-research/6308/irct.html",
+      "sha256": "64b640a55c13c465a1055d1306654e1828e27a8dfae87dc887612ba7b9be896b"
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/6308/catastro.html",
+      "sha256": "f8dd3bdab93b1196975d8a309d8d163d3a461d37cd98676252cec423fe0dd16e"
+    }
+  ],
+  "admissionGatesIndependentlyVerified": {
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "freshExactNativeIdReads": false
+  }
+}

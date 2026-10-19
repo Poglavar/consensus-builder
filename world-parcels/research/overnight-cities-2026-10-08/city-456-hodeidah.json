@@ -1,0 +1,107 @@
+{
+  "name": "Hodeidah",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "rank": 634,
+  "point": [
+    14.798073664044,
+    42.9596053571309
+  ],
+  "population2025": 827012,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "This is city-source research, not a boundary or completeness assertion. No owner, address, tax, account, or other personal property data were requested or retained. No authentication, CAPTCHA, applicant form, or identifier-based property lookup was used. No full parcel polygons were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Official local-governorate and national land-authority sources establish a General Authority for Lands, Survey and Urban Planning branch serving Hodeidah governorate, but the available pages do not establish its registry jurisdiction at the ranked Hodeidah city point. City-specific registry presence therefore remains unverified.",
+  "resultCategory": "regional_registry_city_binding_unverified",
+  "technicalBlocker": "No public city cadastre/map layer or safe parcel geometry schema was identified. The official authority site browser fetch timed out; no direct HTTP status, outage, or city-specific coverage is inferred.",
+  "remainingUncertainty": "Whether the governorate branch administers property registry coverage at the ranked Hodeidah city point, the coverage/currentness of any city cadastral data, and whether a safe public geometry layer exists. Population plausibility is Low and has not been independently resolved in this packet.",
+  "nextStep": "If a city municipal cadastre service is later identified, first check public terms and layer schema; stop if it requires a case, applicant, owner, title, or plot identifier.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Hodeidah Yemen city land registry cadastral survey official public parcel map",
+        "result": "English and Arabic searches found official Hodeidah governorate reporting about the local lands-authority branch and official agency reporting on its governorate branches and registry operations. Search results also surface record notices containing claimant and parcel descriptions; no notices, names, addresses, plot identifiers, or record details were opened or retained. No public city parcel viewer or geometry-only service was found.",
+        "method": "Separate English-language search followed by official source review and anonymous public-route inspection."
+      },
+      {
+        "language": "Arabic",
+        "query": "الحديدة السجل العقاري المساحة فرع هيئة الأراضي خريطة قطع الأراضي الحديدة",
+        "result": "English and Arabic searches found official Hodeidah governorate reporting about the local lands-authority branch and official agency reporting on its governorate branches and registry operations. Search results also surface record notices containing claimant and parcel descriptions; no notices, names, addresses, plot identifiers, or record details were opened or retained. No public city parcel viewer or geometry-only service was found.",
+        "method": "Separate local-language search followed by official source review; no applicant or parcel-specific search was submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.hodeidah-gov.com/?no=2550",
+        "observation": "The official Hodeidah governorate information site identifies the local director of the General Authority for Lands, Survey and Urban Planning branch, and the authority’s official site reports a Hodeidah branch with registry and planning operations. This supports local institutional presence only; published sources describe governorate-level responsibilities and do not establish cadastral coverage at the city point."
+      },
+      {
+        "url": "https://galsup.gov.ye/?p=2192",
+        "observation": "Public institutional/map information reviewed for the city-linked source; it did not establish a geometry-only parcel endpoint."
+      },
+      {
+        "url": "https://galsup.gov.ye/",
+        "observation": "Additional official/local context; no parcel query or private-field access was made."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "No public city cadastre/map layer or safe parcel geometry schema was identified. The official authority site browser fetch timed out; no direct HTTP status, outage, or city-specific coverage is inferred.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "No anonymous geometry-only feature route with a verified safe schema was identified; no parcel feature request was made.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://www.hodeidah-gov.com/?no=2550",
+    "https://galsup.gov.ye/?p=2192",
+    "https://galsup.gov.ye/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official local-governorate and national land-authority sources establish a General Authority for Lands, Survey and Urban Planning branch serving Hodeidah governorate, but the available pages do not establish its registry jurisdiction at the ranked Hodeidah city point. City-specific registry presence therefore remains unverified.",
+    "verifiedOpenScope": "No public city cadastre/map layer or safe parcel geometry schema was identified. The official authority site browser fetch timed out; no direct HTTP status, outage, or city-specific coverage is inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "YE-456-CADASTRE-RESEARCH",
+    "name": "Hodeidah local registry/map evidence",
+    "url": "https://www.hodeidah-gov.com/?no=2550",
+    "operator": "Local or state public authority named in official sources",
+    "serviceType": "Registry/cadastre function confirmed; anonymous full parcel geometry route not verified.",
+    "layer": "No safe parcel feature layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No feature-level geometry response obtained."
+  },
+  "wupCityCode": 456,
+  "cityId": "wup2025:456",
+  "queueRank": 634,
+  "populationPlausibility2025": "Low",
+  "centerLatLon": [
+    14.798073664044,
+    42.9596053571309
+  ],
+  "rootReviewedAt": "2026-10-09T02:12:55.238180+00:00"
+}

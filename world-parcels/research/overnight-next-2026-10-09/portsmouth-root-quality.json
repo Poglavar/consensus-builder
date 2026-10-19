@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:21:48.175282+00:00",
+  "method": "Independent GEOS/Shapely validity, exact topological equality and complete STRtree candidate-pair intersections; unmodified full polygon geometry.",
+  "inputSha256": "45e71b7530df68f15a9c8df814f9e2c5646080709fc1a5107ca4a3c845666dfd",
+  "metricCrs": "EPSG:27700",
+  "featureCount": 112,
+  "invalidCount": 0,
+  "invalid": [],
+  "duplicatePairCount": 0,
+  "duplicatePairs": [],
+  "overlapThresholdM2": 0.01,
+  "overlapPairCount": 29,
+  "totalOverlapM2": 248.7759092118819,
+  "overlaps": [
+    {
+      "ids": [
+        "93",
+        "94"
+      ],
+      "areaM2": 194.72251250005655,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "17",
+        "44"
+      ],
+      "areaM2": 25.701488095883136,
+      "fractionOfSmaller": 0.758870358902105
+    },
+    {
+      "ids": [
+        "7",
+        "32"
+      ],
+      "areaM2": 14.658210000069428,
+      "fractionOfSmaller": 0.019239978448678828
+    },
+    {
+      "ids": [
+        "14",
+        "44"
+      ],
+      "areaM2": 8.678916116943704,
+      "fractionOfSmaller": 0.2444748644352906
+    },
+    {
+      "ids": [
+        "90",
+        "93"
+      ],
+      "areaM2": 0.9530999999823456,
+      "fractionOfSmaller": 0.004870816489623388
+    },
+    {
+      "ids": [
+        "44",
+        "66"
+      ],
+      "areaM2": 0.4688275682299611,
+      "fractionOfSmaller": 0.00014895477368601686
+    },
+    {
+      "ids": [
+        "35",
+        "41"
+      ],
+      "areaM2": 0.4219474026629909,
+      "fractionOfSmaller": 0.0015310960525108108
+    },
+    {
+      "ids": [
+        "83",
+        "86"
+      ],
+      "areaM2": 0.40835000013873524,
+      "fractionOfSmaller": 0.002785749434401099
+    },
+    {
+      "ids": [
+        "9",
+        "44"
+      ],
+      "areaM2": 0.37792384576356386,
+      "fractionOfSmaller": 0.0019057010445004989
+    },
+    {
+      "ids": [
+        "59",
+        "63"
+      ],
+      "areaM2": 0.3418800000102247,
+      "fractionOfSmaller": 0.0024386255693595676
+    },
+    {
+      "ids": [
+        "31",
+        "44"
+      ],
+      "areaM2": 0.3372255807837873,
+      "fractionOfSmaller": 0.008779533688895266
+    },
+    {
+      "ids": [
+        "75",
+        "76"
+      ],
+      "areaM2": 0.2920018945463464,
+      "fractionOfSmaller": 0.0022298616046213375
+    },
+    {
+      "ids": [
+        "4",
+        "5"
+      ],
+      "areaM2": 0.25113850001908666,
+      "fractionOfSmaller": 0.0021814781885685247
+    },
+    {
+      "ids": [
+        "32",
+        "55"
+      ],
+      "areaM2": 0.1829659999369545,
+      "fractionOfSmaller": 0.0012570772166440548
+    },
+    {
+      "ids": [
+        "39",
+        "40"
+      ],
+      "areaM2": 0.16498000010222633,
+      "fractionOfSmaller": 0.0013120736896919522
+    },
+    {
+      "ids": [
+        "66",
+        "109"
+      ],
+      "areaM2": 0.16073249958060276,
+      "fractionOfSmaller": 5.106754534382018e-05
+    },
+    {
+      "ids": [
+        "74",
+        "75"
+      ],
+      "areaM2": 0.12025774611380512,
+      "fractionOfSmaller": 0.0006036268186888138
+    },
+    {
+      "ids": [
+        "78",
+        "80"
+      ],
+      "areaM2": 0.09362621895537049,
+      "fractionOfSmaller": 0.0008050961017299184
+    },
+    {
+      "ids": [
+        "41",
+        "69"
+      ],
+      "areaM2": 0.0863366252132449,
+      "fractionOfSmaller": 0.0002681013034420881
+    },
+    {
+      "ids": [
+        "6",
+        "44"
+      ],
+      "areaM2": 0.0860491048112592,
+      "fractionOfSmaller": 0.0002025782061301384
+    },
+    {
+      "ids": [
+        "8",
+        "32"
+      ],
+      "areaM2": 0.0637567257501067,
+      "fractionOfSmaller": 0.00010027326694203645
+    },
+    {
+      "ids": [
+        "10",
+        "12"
+      ],
+      "areaM2": 0.04142724474457174,
+      "fractionOfSmaller": 0.0002939495639155899
+    },
+    {
+      "ids": [
+        "32",
+        "106"
+      ],
+      "areaM2": 0.0401986953371631,
+      "fractionOfSmaller": 0.0011616384128831359
+    },
+    {
+      "ids": [
+        "32",
+        "46"
+      ],
+      "areaM2": 0.036354035954508146,
+      "fractionOfSmaller": 0.00040038987757306876
+    },
+    {
+      "ids": [
+        "62",
+        "70"
+      ],
+      "areaM2": 0.02724309012856687,
+      "fractionOfSmaller": 0.00011055444952216346
+    },
+    {
+      "ids": [
+        "44",
+        "69"
+      ],
+      "areaM2": 0.01798837474764709,
+      "fractionOfSmaller": 5.585933785038747e-05
+    },
+    {
+      "ids": [
+        "10",
+        "32"
+      ],
+      "areaM2": 0.01695799992229019,
+      "fractionOfSmaller": 0.00010776717574757409
+    },
+    {
+      "ids": [
+        "32",
+        "70"
+      ],
+      "areaM2": 0.011871409898615981,
+      "fractionOfSmaller": 4.8175048432455236e-05
+    },
+    {
+      "ids": [
+        "66",
+        "110"
+      ],
+      "areaM2": 0.011641935595093855,
+      "fractionOfSmaller": 3.698847933327586e-06
+    }
+  ],
+  "operationErrorCount": 0,
+  "operationErrors": [],
+  "geometryChangedOrRepaired": false,
+  "metricCrsBasis": "Input sourceCrs declaresEPSG:27700 and unmodified coordinates parsed directly from the official native GML; audit reports source-native metric areas."
+}

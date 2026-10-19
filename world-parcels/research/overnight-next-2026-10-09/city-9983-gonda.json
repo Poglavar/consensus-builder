@@ -1,0 +1,200 @@
+{
+  "name": "Gonda",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1162,
+  "point": [
+    27.1362705963641,
+    81.9635768974354
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Gonda Uttar Pradesh official Bhunaksha cadastral parcel map land records",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=183"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "गोंडा भू नक्शा भू अभिलेख आधिकारिक भूलेख खसरा नक्शा",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=183"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+        "operator": "Government of Uttar Pradesh BhuNaksha",
+        "observation": "Official public map exposes District/Tehsil/Village selectors and a public map identify flow; no plot number or personal property data was entered."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=183",
+        "operator": "Government of Uttar Pradesh cadastral-map digitisation dashboard",
+        "observation": "Official Gonda district report shows georeferenced maps and village links in BhuNaksha for each tehsil. The exact WUP point did not fall in the single selected Gonda Chati village extent, so no geometry query was sent."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 153705,
+        "assessment": "Official public BhuNaksha map shell with geographic selectors."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 11672,
+        "assessment": "Public state/district selector list, level=1; geography only."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 630,
+        "assessment": "Public tehsil selector for district Gonda (code 183), geography only."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 98809,
+        "assessment": "Public revenue-village selector for Gonda tehsil (code 00928); geography only."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "POST; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 316,
+        "assessment": "Map extent for public village selector Gonda Chati; transformed WUP point lies outside its extent, so no plot-identifier/geometry call was sent."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=183",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "bytesRead": 24006,
+        "assessment": "Official Gonda district map-digitisation report."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "Anonymous public geography-selector POST; level=1, codes=09; no parcel/property identifier",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 11672,
+        "assessment": "District selectors for the public Uttar Pradesh map; geography only."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "Anonymous public geography-selector POST; level=2, codes=183; no parcel/property identifier",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 630,
+        "assessment": "Tehsil selectors for public Gonda district; geography only."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "Anonymous public geography-selector POST; level=3, codes=183,00928; no parcel/property identifier",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 98809,
+        "assessment": "Revenue-village selectors for public Gonda tehsil; geography only."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+        "method": "Anonymous public map-extent POST for geography selectors Gonda / Gonda / Gonda Chati; no plot number, applicant or account identifier",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "bytesRead": 316,
+        "assessment": "Returned extent [599102.6681,3026876.2999,600317.9186,3028428.8917] in EPSG:32644. Exact WUP point transforms to [595488.604,3001894.863], outside this selected village extent; no plot identify/geometry query was made."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+    "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+    "operator": "Government of Uttar Pradesh BhuNaksha",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See official source review and anonymous request outcomes; custody, geometry availability and runtime readiness are separate."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh public BhuNaksha map and state Gonda district digitisation report document public cadastral mapping for Gonda tehsils; this is state-level revenue-map custody.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Public BhuNaksha exposes geographic selectors and an XY identify flow. The selected Gonda Chati extent excludes the unchanged WUP point; the correct revenue-village selector was not established, so no parcel identify call was sent.",
+  "remainingUncertainty": "Uttar Pradesh public BhuNaksha map and state Gonda district digitisation report document public cadastral mapping for Gonda tehsils; this is state-level revenue-map custody. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9983,
+  "cityId": "wup2025:9983",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    27.1362705963641,
+    81.9635768974354
+  ],
+  "population2025k": 477.697,
+  "populationUnit": "persons",
+  "queueRank": 1162,
+  "population2025": 477697,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Uttar Pradesh public BhuNaksha map and state Gonda district digitisation report document public cadastral mapping for Gonda tehsils; this is state-level revenue-map custody.",
+  "registryEvidenceUrls": [
+    "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=183"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Public BhuNaksha exposes geographic selectors and an XY identify flow. The selected Gonda Chati extent excludes the unchanged WUP point; the correct revenue-village selector was not established, so no parcel identify call was sent."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  },
+  "integratedAt": "2026-10-09T07:25:03.115223+00:00"
+}

@@ -1,0 +1,73 @@
+{
+  "taskId": "city:10056",
+  "decision": "held",
+  "checkedAt": "2026-10-10T22:04:26Z",
+  "identity": {
+    "cityCode": 10056,
+    "rank": 2062,
+    "name": "Suizhou",
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      31.7132302693937,
+      113.389859576764
+    ],
+    "populationPersons": 282058,
+    "populationUnit": "persons",
+    "sourceArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114"
+  },
+  "searches": {
+    "languagesRecorded": [
+      "English",
+      "Chinese"
+    ],
+    "queriesHaveResultsAndUrls": true,
+    "executionEvidence": "Worker packet records actual result URLs and outcomes; root checked those records and cited first-party sources."
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202411/t20241113_5411368.shtml",
+      "observation": "Official Hubei natural-resources report names the Suizhou bureau and real-estate registration center, and mentions cadastral-map visualization."
+    },
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/zrzyyw/201910/t20191031_231755.shtml",
+      "observation": "Official Hubei notice describes Tianditu Suizhou as a public general map, with place categories rather than a parcel vector layer."
+    }
+  ],
+  "originalCache": [
+    {
+      "path": "tmp/valhalla-parcel-research/suizhou/viewer.html",
+      "sha256": "c72f73c1c65311caaf8dac2c2a37fe9d53745f76d24620cd7b48e066695247ba",
+      "bytes": 651
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/suizhou/tianditu-http.headers",
+      "sha256": "87463808f1ab65373c31512f5e736746634ba13d1fa61d18b2e302b70233c3f0",
+      "bytes": 148
+    },
+    {
+      "path": "tmp/valhalla-parcel-research/suizhou/tianditu-http.html",
+      "sha256": "32f2fa940d4b4fe19aca1e53a24e5aac29c57b7c5ee78588325b87f1b649c864",
+      "bytes": 146
+    }
+  ],
+  "custody": {
+    "packetRegistryFound": true,
+    "rootAssessment": "Local registration custody is supported by the Hubei report. The saved viewer body is access-restricted and the Tianditu HTTP response is 403. No parcel feature response was obtained."
+  },
+  "sample": {
+    "retainedFullPolygonCount": 0,
+    "nativeParcelIdObserved": false,
+    "safeIdAttributesVerified": false
+  },
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "scopeCaveat": "No anonymous public native-ID/full-polygon response was independently verified. Restricted viewers, unavailable routes and portal shells do not show citywide parcel absence."
+}

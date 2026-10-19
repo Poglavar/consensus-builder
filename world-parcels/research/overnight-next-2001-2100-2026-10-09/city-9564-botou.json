@@ -1,0 +1,36 @@
+{
+  "cityCode": 9564,
+  "queueRank": 2088,
+  "name": "Botou",
+  "country": "China",
+  "countryCode": "CN",
+  "point": [38.0770634650992, 116.565811662975],
+  "population2025": 278262,
+  "population2025k": 278.262,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 3,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Botou China official cadastral parcel map land registry GIS service parcel geometry",
+        "result": "Executed in the retained research run. Search results were mostly general cadastral/real-estate-registration material outside Botou; no Botou-specific public parcel ID-plus-geometry service was identified.",
+        "actualResultUrls": ["https://www.shqp.gov.cn/prog/gzbdcdj/20221107/1039926.html", "https://english.beijing.gov.cn/investinginbeijing/WhyBeijing/Environment/bus_env_policy/bizenv_pr/202006/t20200624_1932128.html", "https://beijing.tianditu.gov.cn/YunTaKan/", "https://www.rerc.com.cn/"]
+      },
+      {
+        "language": "Chinese",
+        "query": "泊头市 不动产登记 地籍图 GIS 官方",
+        "result": "Executed in the retained research run. Chinese search results included a public-resource notice mentioning Botou Natural Resources and Planning Bureau, but did not expose an anonymous parcel geometry service or establish a local cadastral viewer/API.",
+        "actualResultUrls": ["https://ggzyfw.beijing.gov.cn/xtgghbcrgg/20260528/5550459.html", "https://scjg.hebei.gov.cn/uploads/1/file/public/202602/20260224151305_6tcrhu73ly.pdf", "https://www.mnr.gov.cn/zt/td/bdcdj/", "https://hbepb.hebei.gov.cn/zycms/ewebeditor/uploadfile/20250811084218618009.pdf"]
+      }
+    ],
+    "retryConstraint": "Artifact-validation retry used retained first-attempt logs only; no search, network/API request, or source investigation was repeated."
+  },
+  "registryFound": null,
+  "registryEvidence": null,
+  "sourceUrls": [],
+  "parcelService": null,
+  "geometrySample": null,
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter"
+}

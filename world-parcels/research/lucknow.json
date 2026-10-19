@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:82",
+  "queueRank": 82,
+  "name": "Lucknow",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    26.8615244724503,
+    80.9654352206033
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "Uttar Pradesh Bhunaksha (DILRMP cadastral map) web app; reachable (200 Angular app) and lists MapInfo/getPlotAtXY, getPlotInfo endpoints under /bhunakshaserver."
+    },
+    {
+      "url": "https://nakshauat.dolr.gov.in",
+      "observation": "Department of Land Resources national Bhu-Naksha host; only a 301 redirect fetched."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "Angular app shell"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/stateCode",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/plain;charset=UTF-8",
+      "assessment": "returns 09 (Uttar Pradesh); not parcel data"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/Levels/levelLabels",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "['District','Tehsil','Village']; not parcel data"
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST",
+      "httpStatus": 500,
+      "contentType": "application/json",
+      "assessment": "backend reports upstream 403 Forbidden (auth-gated); tried level=0/1 with codes=09, 3 attempts; no district/village codes obtained so no plot query possible"
+    },
+    {
+      "url": "https://bhunaksha.up.nic.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh village cadastral maps, plot-level",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Public UI claims free plot maps but the backend's level-lookup call returned an upstream 403 to an anonymous non-browser client, so village codes and plot geometry could not be requested. It may work from the browser session with a captcha; not tested. Recorded for reuse across Bhunaksha states.",
+  "nextStep": "Inspect browser flow for a captcha/session token; then call MapInfo/getPlotAtXY with a Lucknow village gisCode and check for polygon geometry; confirm terms."
+}

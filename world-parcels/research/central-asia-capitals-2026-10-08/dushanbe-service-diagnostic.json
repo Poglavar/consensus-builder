@@ -1,0 +1,831 @@
+{
+  "purpose": "Records bounded public Dushanbe parcel-service checks after bypassing only this source's expired TLS certificate.",
+  "schemaVersion": 1,
+  "kind": "public_parcel_service_diagnostic",
+  "cityId": "capital:TJ:dushanbe",
+  "name": "Dushanbe",
+  "countryCode": "TJ",
+  "checkedAt": "2026-10-08",
+  "decision": "promising_official_parcel_source_currently_unusable",
+  "runtimeEnabled": false,
+  "verifiedSample": false,
+  "nonemptyParcelResponses": 0,
+  "conclusion": "A per-request TLS certificate exception reaches the public portal, web map and OLD_DATA Dushanbe parcel-layer metadata. Actual count, spatial and object-ID reads return ArcGIS error 400 through both FeatureServer and MapServer, including on a second network. CADASTR_NEW parcel-layer metadata times out after 55 seconds locally and 80 seconds on the second network despite a completed TLS handshake. No nonempty parcel response was obtained; the evidence points to a provider-side data-service failure whose exact internal cause is unexposed. The certificate exception is working.",
+  "nextStep": "Retry the published OLD_DATA/OLD_DATA/FeatureServer/6 and MapServer/6 queries, plus CADASTR/CADASTR_NEW/FeatureServer/1, after the service recovers. A source-specific certificate exception is authorized; normal certificate validation remains the default. After obtaining polygons, audit local coverage, validity/overlaps, cadastral-code availability and repeatability before enabling the source.",
+  "transport": {
+    "protocol": "HTTPS",
+    "certificateVerification": "disabled per diagnostic request to geoportal.tj only",
+    "globalTlsConfigurationChanged": false,
+    "authentication": "anonymous",
+    "networksTested": 2,
+    "note": "The secondary CADASTR_NEW request completed its TLS handshake in about four seconds but received no response bytes before the 80-second timeout."
+  },
+  "discovery": {
+    "officialAuthority": "https://baqaydgiri.tj/",
+    "portal": "https://geoportal.tj/",
+    "publicApp": "https://geoportal.tj/portal/apps/webappviewer/index.html?id=88b9d98aa10c40629596524b7b22b253",
+    "publicAppAccess": "public",
+    "publicAppModifiedAt": "2024-12-13T07:58:45.198000+00:00",
+    "publicWebMapItem": "https://geoportal.tj/portal/sharing/rest/content/items/f3f68196359c49a48b07c745ae33d24b?f=json",
+    "publicWebMapAccess": "public",
+    "publicWebMapModifiedAt": "2024-12-16T08:43:33.540000+00:00",
+    "dateInterpretation": "Portal item modification dates are publication metadata, not parcel survey or update dates.",
+    "portalScope": "The public map describes registered land parcels and cadastral numbers. Its employee application was not queried."
+  },
+  "candidateLayers": [
+    {
+      "name": "Қитъаҳои замин Душанбе",
+      "featureEndpoint": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6",
+      "mapEndpoint": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer/6",
+      "metadataVerified": true,
+      "geometryType": "esriGeometryPolygon",
+      "sourceSpatialReference": {
+        "wkid": 32642,
+        "latestWkid": 32642
+      },
+      "objectIdField": "OBJECTID",
+      "cadastralCodeField": "Cadastral_code",
+      "fieldMetadata": [
+        {
+          "name": "OBJECTID",
+          "type": "esriFieldTypeOID",
+          "alias": "OBJECTID",
+          "domain": null,
+          "editable": false,
+          "nullable": false,
+          "defaultValue": null,
+          "modelName": "OBJECTID"
+        },
+        {
+          "name": "Cadastral_code",
+          "type": "esriFieldTypeString",
+          "alias": "Рақами кадастрӣ",
+          "domain": null,
+          "editable": true,
+          "nullable": true,
+          "length": 50,
+          "defaultValue": null,
+          "modelName": "РК_китъ_за"
+        },
+        {
+          "name": "Date",
+          "type": "esriFieldTypeDate",
+          "alias": "Сана воридкунӣ",
+          "domain": null,
+          "editable": true,
+          "nullable": true,
+          "length": 8,
+          "defaultValue": null,
+          "modelName": "сана"
+        }
+      ],
+      "declaredExtent": {
+        "xmin": 465924.45419999957,
+        "ymin": 4255531.59,
+        "xmax": 494886.97420000006,
+        "ymax": 4284743.0765,
+        "spatialReference": {
+          "wkid": 32642,
+          "latestWkid": 32642
+        }
+      },
+      "approximateExtentSizeKm": [
+        28.96252,
+        29.2114865
+      ],
+      "declaredExtentWgs84Envelope": [
+        68.60807230264257,
+        38.4474226245744,
+        68.94140501011466,
+        38.71131268182416
+      ],
+      "maxRecordCount": 1000,
+      "supportedQueryFormats": "JSON, geoJSON",
+      "capabilities": "Query",
+      "actualRecordCount": null,
+      "observedParcelIdentifiers": [],
+      "identityReadiness": "schema_only_unverified_values",
+      "coverageQualification": "Declared layer extent only; no feature coverage or completeness verified.",
+      "parcelDataDate": null
+    },
+    {
+      "name": "Қитъаҳои замин",
+      "featureEndpoint": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/FeatureServer/1",
+      "mapService": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/MapServer",
+      "discovery": "Explicitly referenced by the public web map and public CADASTR service directory.",
+      "metadataVerified": false,
+      "result": "Timed out locally and on a second network."
+    }
+  ],
+  "requestCount": 24,
+  "requests": [
+    {
+      "key": "services",
+      "url": "https://geoportal.tj/server/rest/services/?f=json",
+      "checkedAt": "2026-10-08T09:47:11.203757+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 93,
+      "summary": {
+        "currentVersion": 10.71,
+        "folders": [
+          "BORDERS",
+          "CADASTR",
+          "OLD_DATA",
+          "Utilities"
+        ],
+        "services": []
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-feature-service",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer?f=json",
+      "checkedAt": "2026-10-08T09:47:11.183274+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 3213,
+      "summary": {
+        "currentVersion": 10.71,
+        "serviceDescription": "",
+        "capabilities": "Query",
+        "supportedQueryFormats": "JSON",
+        "maxRecordCount": 1000,
+        "layers": [
+          {
+            "id": 0,
+            "name": "Маҳалли аҳолинишин Ваҳдат",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 1,
+            "name": "Маҳалли аҳолинишин Рудакӣ",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 2,
+            "name": "Маҳалли аҳолинишин Ҳисор",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 3,
+            "name": "Заминҳои кишоварзӣ Ваҳдат",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 4,
+            "name": "Заминҳои кишоварзӣ Рӯдакӣ",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 5,
+            "name": "Заминҳои кишоварзӣ Ҳисор",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 6,
+            "name": "Қитъаҳои замин Душанбе",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 7,
+            "name": "Биноҳои истиқоматӣ ва ғайриистиқоматии ҷудогона",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 8,
+            "name": "Биноҳои истиқоматӣ ва ғайриистиқоматӣ",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          }
+        ]
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-map-service",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer?f=json",
+      "checkedAt": "2026-10-08T09:47:11.182567+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 3145,
+      "summary": {
+        "currentVersion": 10.71,
+        "serviceDescription": "",
+        "capabilities": "Map,Query,Data",
+        "supportedQueryFormats": "JSON, geoJSON",
+        "maxRecordCount": 1000,
+        "layers": [
+          {
+            "id": 0,
+            "name": "Маҳалли аҳолинишин Ваҳдат",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 1,
+            "name": "Маҳалли аҳолинишин Рудакӣ",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 2,
+            "name": "Маҳалли аҳолинишин Ҳисор",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 3,
+            "name": "Заминҳои кишоварзӣ Ваҳдат",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 4,
+            "name": "Заминҳои кишоварзӣ Рӯдакӣ",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 5,
+            "name": "Заминҳои кишоварзӣ Ҳисор",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 6,
+            "name": "Қитъаҳои замин Душанбе",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 7,
+            "name": "Биноҳои истиқоматӣ ва ғайриистиқоматии ҷудогона",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          },
+          {
+            "id": 8,
+            "name": "Биноҳои истиқоматӣ ва ғайриистиқоматӣ",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 50000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon"
+          }
+        ]
+      },
+      "network": "primary"
+    },
+    {
+      "key": "new-parcel-layer",
+      "url": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/FeatureServer/1?f=json",
+      "checkedAt": "2026-10-08T09:47:36.215986+00:00",
+      "httpStatus": "000",
+      "curlExitCode": 28,
+      "error": "curl: (28) Operation timed out after 25006 milliseconds with 0 bytes received\n",
+      "bytes": 0,
+      "network": "primary"
+    },
+    {
+      "key": "old-count",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6/query?f=json&where=1%3D1&returnCountOnly=true",
+      "checkedAt": "2026-10-08T09:47:22.697863+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 77,
+      "summary": {
+        "error": {
+          "code": 400,
+          "message": "Unable to complete operation.",
+          "details": []
+        }
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-empty-query",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6/query?f=json&where=1%3D0&outFields=OBJECTID&returnGeometry=false&resultRecordCount=1",
+      "checkedAt": "2026-10-08T09:47:36.222933+00:00",
+      "httpStatus": "000",
+      "curlExitCode": 28,
+      "error": "curl: (28) Operation timed out after 25006 milliseconds with 0 bytes received\n",
+      "bytes": 0,
+      "network": "primary"
+    },
+    {
+      "key": "cadastre-folder",
+      "url": "https://geoportal.tj/server/rest/services/CADASTR?f=json",
+      "checkedAt": "2026-10-08T09:48:11.159135+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 154,
+      "summary": {
+        "currentVersion": 10.71,
+        "folders": [],
+        "services": [
+          {
+            "name": "CADASTR/CADASTR_NEW",
+            "type": "FeatureServer"
+          },
+          {
+            "name": "CADASTR/CADASTR_NEW",
+            "type": "MapServer"
+          }
+        ]
+      },
+      "network": "primary"
+    },
+    {
+      "key": "new-feature-service",
+      "url": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/FeatureServer?f=json",
+      "checkedAt": "2026-10-08T09:48:34.982058+00:00",
+      "httpStatus": "000",
+      "curlExitCode": 28,
+      "error": "curl: (28) Operation timed out after 25006 milliseconds with 0 bytes received\n",
+      "bytes": 0,
+      "network": "primary"
+    },
+    {
+      "key": "new-map-service",
+      "url": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/MapServer?f=json",
+      "checkedAt": "2026-10-08T09:48:34.982284+00:00",
+      "httpStatus": "000",
+      "curlExitCode": 28,
+      "error": "curl: (28) Operation timed out after 25006 milliseconds with 0 bytes received\n",
+      "bytes": 0,
+      "network": "primary"
+    },
+    {
+      "key": "old-map-parcel-layer",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer/6?f=json",
+      "checkedAt": "2026-10-08T09:48:11.948773+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 3021,
+      "summary": {
+        "currentVersion": 10.71,
+        "capabilities": "Map,Query,Data",
+        "supportedQueryFormats": "JSON, geoJSON",
+        "maxRecordCount": 1000,
+        "name": "Қитъаҳои замин Душанбе",
+        "geometryType": "esriGeometryPolygon",
+        "extent": {
+          "xmin": 465924.45419999957,
+          "ymin": 4255531.59,
+          "xmax": 494886.97420000006,
+          "ymax": 4284743.0765,
+          "spatialReference": {
+            "wkid": 32642,
+            "latestWkid": 32642
+          }
+        },
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "Cadastral_code",
+            "type": "esriFieldTypeString",
+            "alias": "Рақами кадастрӣ",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "Date",
+            "type": "esriFieldTypeDate",
+            "alias": "Сана воридкунӣ",
+            "length": 8,
+            "domain": null
+          }
+        ]
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-map-count",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer/6/query?f=json&where=1%3D1&returnCountOnly=true",
+      "checkedAt": "2026-10-08T09:48:13.033649+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 72,
+      "summary": {
+        "error": {
+          "code": 400,
+          "message": "Failed to execute query.",
+          "details": []
+        }
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-first-feature",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6/query?f=json&where=OBJECTID%3E0&outFields=OBJECTID%2CCadastral_code&returnGeometry=true&resultRecordCount=1",
+      "checkedAt": "2026-10-08T09:48:13.880119+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 113,
+      "summary": {
+        "error": {
+          "code": 400,
+          "message": "Unable to complete operation.",
+          "details": [
+            "Unable to perform query operation."
+          ]
+        }
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-count-post",
+      "method": "POST",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6/query",
+      "parameters": {
+        "f": "json",
+        "where": "1=1",
+        "returnCountOnly": "true"
+      },
+      "checkedAt": "2026-10-08T09:49:46.137626+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 77,
+      "summary": {
+        "error": {
+          "code": 400,
+          "message": "Unable to complete operation.",
+          "details": []
+        }
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-map-empty-query",
+      "method": "GET",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer/6/query?f=json&where=1%3D0&outFields=OBJECTID&returnGeometry=false",
+      "parameters": {
+        "f": "json",
+        "where": "1=0",
+        "outFields": "OBJECTID",
+        "returnGeometry": "false"
+      },
+      "checkedAt": "2026-10-08T09:49:46.138213+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 166,
+      "summary": {
+        "features": [],
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID"
+          }
+        ]
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-map-parcel-export",
+      "method": "GET",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer/export?f=json&bbox=481005.2645%2C4267394.6520%2C481879.0945%2C4268506.2996&bboxSR=32642&imageSR=32642&size=400%2C400&layers=show%3A6&format=png32&transparent=true",
+      "parameters": {
+        "f": "json",
+        "bbox": "481005.2645,4267394.6520,481879.0945,4268506.2996",
+        "bboxSR": "32642",
+        "imageSR": "32642",
+        "size": "400,400",
+        "layers": "show:6",
+        "format": "png32",
+        "transparent": "true"
+      },
+      "checkedAt": "2026-10-08T09:49:46.196056+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 361,
+      "summary": {
+        "extent": {
+          "xmin": 480886.3557000001,
+          "ymin": 4267394.651999999,
+          "xmax": 481998.00329999987,
+          "ymax": 4268506.299599999,
+          "spatialReference": {
+            "wkid": 32642,
+            "latestWkid": 32642
+          }
+        },
+        "href": "https://geoportal.tj/server/rest/directories/arcgisoutput/OLD_DATA/OLD_DATA_MapServer/_ags_map8225764c3dfc4bbe864280b25e8272ea.png"
+      },
+      "network": "primary"
+    },
+    {
+      "key": "new-parcel-layer-long",
+      "method": "GET",
+      "url": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/FeatureServer/1?f=json",
+      "parameters": {
+        "f": "json"
+      },
+      "checkedAt": "2026-10-08T09:50:41.166081+00:00",
+      "httpStatus": "000",
+      "curlExitCode": 28,
+      "error": "curl: (28) Operation timed out after 55006 milliseconds with 0 bytes received\n",
+      "bytes": 0,
+      "network": "primary"
+    },
+    {
+      "key": "new-map-service-long",
+      "method": "GET",
+      "url": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/MapServer?f=json",
+      "parameters": {
+        "f": "json"
+      },
+      "checkedAt": "2026-10-08T09:50:41.165253+00:00",
+      "httpStatus": "000",
+      "curlExitCode": 28,
+      "error": "curl: (28) Operation timed out after 55005 milliseconds with 0 bytes received\n",
+      "bytes": 0,
+      "network": "primary"
+    },
+    {
+      "key": "public-webmap-item",
+      "method": "GET",
+      "url": "https://geoportal.tj/portal/sharing/rest/content/items/f3f68196359c49a48b07c745ae33d24b?f=json",
+      "parameters": {
+        "f": "json"
+      },
+      "checkedAt": "2026-10-08T09:49:48.951412+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 1055,
+      "summary": {
+        "extent": [
+          [
+            68.6461,
+            38.4857
+          ],
+          [
+            68.8997,
+            38.5968
+          ]
+        ],
+        "name": null,
+        "access": "public",
+        "title": "Харитаи дастраси умум",
+        "created": 1733907035459,
+        "modified": 1734338613540,
+        "licenseInfo": null,
+        "type": "Web Map",
+        "url": null
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-map-spatial-only",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer/6/query?f=json&geometry=481005.2645%2C4267394.6520%2C481879.0945%2C4268506.2996&geometryType=esriGeometryEnvelope&inSR=32642&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CCadastral_code&returnGeometry=true&resultRecordCount=5",
+      "checkedAt": "2026-10-08T09:52:37.508109+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 72,
+      "summary": {
+        "error": {
+          "code": 400,
+          "message": "Failed to execute query.",
+          "details": []
+        }
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-feature-objectid",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6/query?f=json&objectIds=1&outFields=OBJECTID%2CCadastral_code&returnGeometry=true",
+      "checkedAt": "2026-10-08T09:52:37.444832+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 113,
+      "summary": {
+        "error": {
+          "code": 400,
+          "message": "Unable to complete operation.",
+          "details": [
+            "Unable to perform query operation."
+          ]
+        }
+      },
+      "network": "primary"
+    },
+    {
+      "key": "old-folder",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA?f=json",
+      "checkedAt": "2026-10-08T09:52:38.868590+00:00",
+      "httpStatus": "200",
+      "curlExitCode": 0,
+      "error": "",
+      "bytes": 150,
+      "summary": {
+        "currentVersion": 10.71,
+        "folders": [],
+        "services": [
+          {
+            "name": "OLD_DATA/OLD_DATA",
+            "type": "FeatureServer"
+          },
+          {
+            "name": "OLD_DATA/OLD_DATA",
+            "type": "MapServer"
+          }
+        ]
+      },
+      "network": "primary"
+    },
+    {
+      "key": "secondary-old-count",
+      "network": "secondary",
+      "checkedAt": "2026-10-08T09:51:54.823536+00:00",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/FeatureServer/6/query?f=json&where=1%3D1&returnCountOnly=true",
+      "curlExitCode": 0,
+      "error": "",
+      "transportTiming": "200 0.369975 0.585099 0.712141 0.712207",
+      "body": {
+        "error": {
+          "code": 400,
+          "message": "Unable to complete operation.",
+          "details": []
+        }
+      }
+    },
+    {
+      "key": "secondary-old-map-sample",
+      "network": "secondary",
+      "checkedAt": "2026-10-08T09:51:54.836052+00:00",
+      "url": "https://geoportal.tj/server/rest/services/OLD_DATA/OLD_DATA/MapServer/6/query?f=json&geometry=481005.2645%2C4267394.6520%2C481879.0945%2C4268506.2996&geometryType=esriGeometryEnvelope&inSR=32642&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CCadastral_code&returnGeometry=true&resultRecordCount=5",
+      "curlExitCode": 0,
+      "error": "",
+      "transportTiming": "200 0.371673 0.585057 0.724601 0.724650",
+      "body": {
+        "error": {
+          "code": 400,
+          "message": "Failed to execute query.",
+          "details": []
+        }
+      }
+    },
+    {
+      "key": "secondary-new-parcel-layer",
+      "network": "secondary",
+      "checkedAt": "2026-10-08T09:53:14.113094+00:00",
+      "url": "https://geoportal.tj/server/rest/services/CADASTR/CADASTR_NEW/FeatureServer/1?f=json",
+      "curlExitCode": 28,
+      "error": "curl: (28) Operation timed out after 80002 milliseconds with 0 bytes received\n",
+      "transportTiming": "000 3.447335 3.964677 0.000000 80.002099",
+      "nonJsonBytes": 0
+    }
+  ],
+  "mapImageCheck": {
+    "requestKey": "old-map-parcel-export",
+    "downloadHttpStatus": 200,
+    "imageFile": "research/central-asia-capitals-2026-10-08/dushanbe-old-map-empty-export.png",
+    "sha256": "2c4d30b5777edc30c909c58266f1f81a6e7d5ebabfdb96cfafa06db103de05ce",
+    "width": 400,
+    "height": 400,
+    "nonTransparentPixels": 0,
+    "visualInspection": "Entirely transparent; no parcel outlines. A successful image response does not verify underlying data."
+  },
+  "queryInterpretation": {
+    "emptyPredicate": "MapServer accepted where=1=0 and returned an empty feature array. That deliberately impossible predicate is not evidence that the dataset is empty or that data reads work.",
+    "httpStatus": "ArcGIS query failures return HTTP 200 with an error.code=400 JSON body; adapters must inspect the body.",
+    "queryVariants": "Counts by GET and POST, a tiny native-CRS spatial query without SQL filtering, and an object-ID query all failed.",
+    "rootCause": "Provider-side data-service failure inferred from query errors on two networks and the newer service timeout; the exact database/service fault is not exposed."
+  },
+  "usefulness": {
+    "prospective": "Appropriate official parcel semantics, a Dushanbe-specific layer and cadastral-code schema make this a useful recovery candidate.",
+    "current": "Not usable as a live geometry provider today: zero polygons retrieved, so shape quality, coverage, identifier values and update dates cannot be evaluated.",
+    "limitations": [
+      "Layer name OLD_DATA does not establish a dataset date.",
+      "Advertised extent does not establish complete coverage.",
+      "Public access does not establish current boundary/title status."
+    ]
+  },
+  "dataMinimization": "Geometry reads requested only OBJECTID and Cadastral_code; owner, address and performer values were not requested.",
+  "verification": {
+    "headlessTestsPassed": 27,
+    "testFiles": [
+      "backend/test/parcel-report-evidence.test.js",
+      "backend/test/parcel-coverage-report.test.js",
+      "backend/test/world-coverage-build.test.js"
+    ],
+    "runtimeAdapterAdded": false,
+    "applicationTlsDefaultsChanged": false,
+    "deployment": "Research/report changes local only; no commit or deployment in this follow-up."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "cityCode": 7805,
+  "queueRank": 2618,
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "point": [31.0623974892014, 72.9552373817102],
+  "population2025": 225170,
+  "population2025k": 225.17,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Samundri Pakistan cadastral parcel map official land records GIS",
+        "result": "Found the official Punjab Land Records Authority and PULSE viewer. The viewer source identifies a public Punjab cadastral ArcGIS map service with a Faisalabad sublayer; no separate Samundri local portal was found.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "سمندری پاکستان نقشہ اراضی ریکارڈ سرکاری",
+        "result": "Search found official Punjab land-record services and Urdu-language land-record context, but no Samundri-specific Urdu parcel viewer. The English-discovered official PULSE/ArcGIS route was used for bounded map inspection.",
+        "actualResultUrls": [
+          "https://www.punjab-zameen.gov.pk/",
+          "https://onlinefard.punjab-zameen.gov.pk/Client/Index",
+          "https://pra-borpunjab.gov.pk/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "sourceAssessment": {
+    "localCustodian": {
+      "name": "Punjab Land Records Authority / Punjab PULSE",
+      "url": "https://lis.pulse.gop.pk/",
+      "evidence": "The official PULSE viewer configuration points to the Punjab_Cdastral_Maps ArcGIS MapServer and its Faisalabad layer 7; a bounded query returned features whose Tehsil attribute is Samundri. This evidences a provincial cadastral map service covering the city area, not a separately identified municipal registry office."
+    },
+    "generalAgency": {
+      "name": "Board of Revenue, Government of Punjab",
+      "url": "https://pra-borpunjab.gov.pk/",
+      "scope": "General provincial land-revenue authority context; not treated as proof of a Samundri-specific public API."
+    }
+  },
+  "parcelSource": {
+    "serviceUrl": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer",
+    "layerId": 7,
+    "layerName": "Faisalabad",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:3857",
+    "responseCrs": "GeoJSON coordinates in EPSG:4326",
+    "nativeIdentity": "OBJECTID",
+    "observedNativeFields": ["OBJECTID", "District", "Dist_ID", "Tehsil", "Tehsil_ID", "Mouza", "Mouza_ID", "Khasra_ID", "Label"],
+    "fieldMapping": {"id": "OBJECTID"},
+    "compositeKeyProvenance": null
+  },
+  "sample": {
+    "file": "city-7805-samundri-sample.geojson",
+    "featureCount": 3,
+    "selection": "First three returned polygons from a bounded envelope around the WUP point; returned attributes included Tehsil=Samundri and Mouza=140 GB.",
+    "exactPointHit": false
+  },
+  "runtimeReadiness": {
+    "status": "held",
+    "reason": "A real public source and safe parcel IDs/geometries were evidenced, but runtime admission remains held pending independent serial adapter qualification."
+  }
+}

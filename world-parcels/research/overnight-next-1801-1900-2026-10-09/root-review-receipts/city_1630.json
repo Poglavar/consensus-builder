@@ -1,0 +1,15 @@
+{
+  "taskId": "city:1630",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/city-1630-kanggye.json",
+    "world-parcels/research/overnight-next-1801-1900-2026-10-09/kanggye-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T16:58:44Z",
+  "firstPartyUrlsChecked": [],
+  "reviewNote": "No verified DPRK/Kanggye first-party parcel source; registry custody remains unresolved. Search and connection failures do not establish absence.",
+  "identityCheck": "City code, rank, country, point, and 2025 population persons match immutable queue and official WUP archive; English and local-language queries are recorded and were independently re-searched.",
+  "sampleCount": 0,
+  "admissionGates": "Not qualified: no fresh native-ID feature reads, forced paging, 13 bounded cells, metric GEOS geometry/overlap checks, source binding, or headed Details-panel verification."
+}

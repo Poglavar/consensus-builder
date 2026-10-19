@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8575-jos.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The Jos-area cadastre is verified from city-specific PLAGIS sector documentation and the Plateau State 2024 cadastral-Jos mapping budget. Public geometry is unverified; official title/cadastral workflows are not equivalent to an anonymous parcel feed.",
+  "officialEvidence": [
+    {
+      "url": "https://plagis.plateaustate.gov.ng/about-us",
+      "observation": "Official PLAGIS description distinguishes registry functions (land administration, deed registry, land/property valuation) from cadastral functions (GIS, surveying, map production)."
+    },
+    {
+      "url": "https://plagis.plateaustate.gov.ng/document/rates/Cadastral-Zones.pdf",
+      "observation": "Jos North/Jos South localities appear in Greater Jos cadastral-sector schedules."
+    },
+    {
+      "url": "https://plateaustate.gov.ng/uploads/PLATEAU_STATE_2024_FINANCIAL_STATEMENT.pdf",
+      "observation": "State 2024 financial statement records city-specific cadastral mapping for Jos at 1:2,000."
+    },
+    {
+      "url": "https://plagis.plateaustate.gov.ng/",
+      "observation": "Public shell has login/property-registration routes; no parcel API or field allowlist was observed."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://plagis.plateaustate.gov.ng/",
+      "routes": [
+        "Public information routes publish cadastral-zone schedules, rates, forms and workflow guidance.",
+        "The service menu’s registration/payment link resolves to the home shell; no anonymous parcel-query endpoint was exposed in reviewed pages."
+      ],
+      "notes": "No WUP point query, parcel identifier, or private property search was submitted."
+    },
+    "notes": "Cadastral map production is documented for Jos; downloadable schedule is a sector list, not parcel geometry."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No anonymous feature endpoint or safe feature schema was found. No parcel feature query was made."
+  }
+}

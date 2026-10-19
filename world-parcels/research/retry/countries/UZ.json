@@ -1,0 +1,129 @@
+{
+ "kind": "country",
+ "key": "UZ",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: uz-UZ,uz;q=0.9,ru;q=0.8,en;q=0.5; cookie jar (curl -c/-b) enabled",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": "Retry kadastr.uz and its geoportal from an Uzbek or CIS network.",
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://kadastr.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TCP/TLS connection reset by peer (curl 35)"
+  },
+  {
+   "url": "https://kadastr.uz/en",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TCP/TLS connection reset by peer (curl 35)"
+  },
+  {
+   "url": "https://kadastr.uz/uz/etirof-etish-reja-jadvali",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TCP/TLS connection reset by peer (curl 35)"
+  },
+  {
+   "url": "https://geoportal.kadastr.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://www.kadastr.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://cadastre.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://uzkadastr.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://cadastre.gov.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://geoportal.gov.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://openkadastr.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed 502 (curl 56)"
+  },
+  {
+   "url": "https://data.egov.uz/eng/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TCP/TLS connection reset by peer (curl 35)"
+  },
+  {
+   "url": "https://data.gov.uz/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": null,
+   "assessment": "TCP/TLS connection reset by peer (curl 35)"
+  },
+  {
+   "url": "https://gov.uz/en/kadastr",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "agency page on gov.uz; only social links and a kadastr.uz link"
+  },
+  {
+   "url": "https://gov.uz/uz/kadastr/pages/geoportal",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "page shell has no geoportal URL in its text or links"
+  },
+  {
+   "url": "https://my.gov.uz/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "services portal loads; not inspected for parcel services"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Uzbekistan%20cadastre%20parcel&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 results"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "kadastr.uz, data.gov.uz and data.egov.uz reset the connection while gov.uz answers; plausible geo/network filtering, unproven.",
+ "nextStep": "No change. Agency site still unreachable, so the geoportal viewer could not be inspected."
+}

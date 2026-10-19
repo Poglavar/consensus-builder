@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP settlement centroid is not a parcel identity or city boundary. The public service notice describes a visual query and parcel information, not downloadable vector geometry. No owner, address, rights-holder, tax, account, or authentication data was requested or copied; no login, CAPTCHA, credentials, or token was used.",
+  "wupCityCode": 6045,
+  "queueRank": 248,
+  "name": "Hohhot",
+  "centerLatLon": [
+    40.8203025243888,
+    111.663628480578
+  ],
+  "population2025": 1993292,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Hohhot Municipal Natural Resources Bureau published an active notice from the Hohhot Real Estate Registration Center announcing a free visual cadastral-map query system for any person, covering the urban districts and searchable by real-property unit number or parcel code. The notice directs users to the Center’s WeChat public account. This is strong city-specific public cadastral-query evidence, but no anonymous web service or parcel geometry endpoint was identified.",
+  "resultCategory": "official_city_public_cadastral_query_via_wechat_no_polygon_endpoint_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Hohhot China official public cadastral parcel GIS map land registration center",
+        "scope": "Find Hohhot-specific official cadastral map and public land-registration services.",
+        "result": "Search surfaced an official Hohhot Natural Resources Bureau notice announcing a free cadastral-map visual query for anyone across Hohhot urban districts. The public entry path is the real-estate registration center’s WeChat public account; no web-based vector export endpoint was identified.",
+        "actualResultUrls": [
+          "https://zrzyj.huhhot.gov.cn/ztzl/ztzl_50646/yhyshj2024/zcfg_67039/bdcdj/zcfg/202405/t20240530_1719863.html"
+        ],
+        "executionMethod": "English-language web search, followed by official notice review."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "呼和浩特市不动产登记 查询 地籍图 宗地代码 官方 自然资源局",
+        "scope": "Check Chinese-language city-government evidence for public cadastral-map query access.",
+        "result": "呼和浩特市自然资源局发布的不动产登记中心公告称，可视化地籍图查询面向任何人，覆盖呼和浩特市区，可按不动产单元号或宗地代码查询；入口是微信公众号“呼和浩特市不动产登记中心”的办事大厅。公告未提供可下载地块矢量或公开网络接口。",
+        "actualResultUrls": [
+          "https://zrzyj.huhhot.gov.cn/ztzl/ztzl_50646/yhyshj2024/zcfg_67039/bdcdj/zcfg/202405/t20240530_1719863.html"
+        ],
+        "executionMethod": "Separate Simplified-Chinese web search and official notice review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyj.huhhot.gov.cn/ztzl/ztzl_50646/yhyshj2024/zcfg_67039/bdcdj/zcfg/202405/t20240530_1719863.html",
+        "operator": "Hohhot Municipal Natural Resources Bureau; notice issued by Hohhot Real Estate Registration Center",
+        "observation": "Notice dated 2023-10-20 announces a free visual cadastral-map query for any person, covering Hohhot urban districts, searchable using property-unit number or parcel code. It specifies a WeChat public-account channel and does not offer a vector API or download."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://zrzyj.huhhot.gov.cn/ztzl/ztzl_50646/yhyshj2024/zcfg_67039/bdcdj/zcfg/202405/t20240530_1719863.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official bureau notice reviewed; states open-to-anyone/no-fee/urban-district visual cadastral query, accessed through WeChat."
+      },
+      {
+        "url": "https://zrzyj.huhhot.gov.cn/ztzl/ztzl_50646/yhyshj2024/zcfg_67039/bdcdj/zcfg/202405/t20240530_1719863.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Live page review confirmed the only content link is a file-download attachment; no QR code, H5 link, or alternate public map URL appears in page content."
+      },
+      {
+        "url": "https://zrzyj.huhhot.gov.cn/zcwjnew/openApi/downloadPdf?url=https://zrzyj.huhhot.gov.cn/ztzl/ztzl_50646/yhyshj2024/zcfg_67039/bdcdj/zcfg/202405/t20240530_1719863.html&docid=1719863&code=hhhtzrzyj",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain",
+        "observation": "The official notice’s only file-download link was followed with a normal TLS-verified GET; it returned HTTP 200 text/plain (64 bytes) with a short failure response rather than a PDF. No attachment contents or parcel data were obtained."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "No citywide polygon scope is claimed.",
+      "verifiedOpenScope": "Official local records/map service discovery only; no full parcel polygon verified.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "The identified official public query is delivered through the registration center’s WeChat public account. No public web vector service or full parcel response was exposed by the official notice or search results.",
+    "remainingUncertainty": "Whether the WeChat visual query draws from a service with a separate public, anonymous geometry endpoint; whether the WUP point falls within the notice’s urban-district coverage."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "cityId": "wup2025:6045",
+  "populationPlausibility2025": "High",
+  "technicalBlocker": "The official bureau notice routes users to a WeChat public account, but provides no QR code or H5/web link. The only page link is a file-download attachment; its TLS-verified request returned HTTP 200 text/plain with a short failure response rather than a usable PDF. The WeChat mini-program interface and any network/API routes therefore remain uninspected.",
+  "remainingUncertainty": "Whether the WeChat visual cadastral query has an anonymous H5/vector endpoint and whether the WUP centroid is within the notice's urban-district service area.",
+  "nextStep": "If revisited, use a city-published H5/web link or QR from the official account notice; inspect the public query flow without login or personal identifiers and require returned full parcel polygons to verify.",
+  "rootReviewedAt": "2026-10-08T21:44:23.947164+00:00",
+  "sourceIds": [],
+  "point": [
+    40.8203025243888,
+    111.663628480578
+  ]
+}

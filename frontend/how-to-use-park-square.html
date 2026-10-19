@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<!-- Parks, squares and lakes: current map workflows, video walkthroughs and proposal review.
+     Static English/Croatian guide pair: kako-koristiti-park-trg.html. -->
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Parks, squares and lakes · Consensus Builder
+  </title>
+  <meta content="Create the surface first, then arrange trees, paths, water and furniture directly on the map. Review the same design in 3D." name="description"/>
+  <link href="images/consensus-builder-logo-2.png" rel="icon" type="image/png"/>
+  <link href="css/tokens.css?v=2" rel="stylesheet"/>
+  <link href="css/primitives.css?v=2" rel="stylesheet"/>
+  <link href="css/page-chrome.css?v=1" rel="stylesheet"/>
+  <link href="vendor/fontawesome-6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="css/howto.css?v=20261014" rel="stylesheet"/>
+  <link rel="canonical" href="https://urbangametheory.xyz/how-to-use-park-square.html" />
+  <link rel="alternate" hreflang="en" href="https://urbangametheory.xyz/how-to-use-park-square.html" />
+  <link rel="alternate" hreflang="hr" href="https://urbangametheory.xyz/kako-koristiti-park-trg.html" />
+  <link rel="alternate" hreflang="x-default" href="https://urbangametheory.xyz/how-to-use-park-square.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Consensus Builder" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:title" content="Parks, squares and lakes · Consensus Builder" />
+  <meta property="og:description" content="Create the surface first, then arrange trees, paths, water and furniture directly on the map. Review the same design in 3D." />
+  <meta property="og:url" content="https://urbangametheory.xyz/how-to-use-park-square.html" />
+  <meta property="og:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@UrbanGameTheory" />
+  <meta name="twitter:title" content="Parks, squares and lakes · Consensus Builder" />
+  <meta name="twitter:description" content="Create the surface first, then arrange trees, paths, water and furniture directly on the map. Review the same design in 3D." />
+  <meta name="twitter:image" content="https://urbangametheory.xyz/images/og-globe-20261019.jpg" />
+    <meta name="twitter:image:alt" content="The Consensus Builder globe showing parcel-data coverage across countries and cities.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Parks, squares and lakes","description":"Create the surface first, then arrange trees, paths, water and furniture directly on the map. Review the same design in 3D.","inLanguage":"en","url":"https://urbangametheory.xyz/how-to-use-park-square.html","image":"https://urbangametheory.xyz/images/og-globe-20261019.jpg","isPartOf":{"@type":"WebSite","name":"Consensus Builder","url":"https://urbangametheory.xyz/"},"publisher":{"@type":"Organization","name":"Urban Game Theory","url":"https://urbangametheory.xyz/"}}</script>
+ </head>
+ <body class="cb-page">
+  <header class="cb-page-header">
+   <span class="cb-page-header__brand">
+    <img alt="" class="cb-page-header__logo" height="28" src="images/consensus-builder-logo.png" width="28"/>
+    <span>
+     Consensus Builder
+    </span>
+   </span>
+   <div class="cb-page-header__title">
+    <h1>
+     Parks, squares and lakes
+    </h1>
+   </div>
+   <a class="cb-link cb-back-link" href="/?lang=en">
+    <i aria-hidden="true" class="fa-solid fa-arrow-left">
+    </i>
+    Back to the map
+   </a>
+   <nav aria-label="Language" class="cb-page-header__lang cb-segmented">
+    <a class="cb-segmented__option" href="kako-koristiti-park-trg.html" hreflang="hr" lang="hr">
+     HR
+    </a>
+    <a aria-current="page" class="cb-segmented__option" href="how-to-use-park-square.html" hreflang="en" lang="en">
+     EN
+    </a>
+   </nav>
+  </header>
+  <nav aria-label="Guide navigation" class="sidebar">
+   <div class="sidebar-links">
+    <a class="btn btn-quiet" href="how-to-use.html">
+     <i aria-hidden="true" class="fa-solid fa-book-open">
+     </i>
+     How to use
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-buildings.html">
+     <i aria-hidden="true" class="fa-solid fa-building">
+     </i>
+     Buildings
+    </a>
+    <a aria-current="page" class="btn btn-quiet" href="how-to-use-park-square.html">
+     <i aria-hidden="true" class="fa-solid fa-tree">
+     </i>
+     Parks, squares and lakes
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-reparcellization.html">
+     <i aria-hidden="true" class="fa-solid fa-vector-square">
+     </i>
+     Land readjustment
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-road.html">
+     <i aria-hidden="true" class="fa-solid fa-road">
+     </i>
+     Roads and tracks
+    </a>
+    <a class="btn btn-quiet" href="how-to-use-views.html">
+     <i aria-hidden="true" class="fa-solid fa-cube">
+     </i>
+     Views and comparisons
+    </a>
+   </div>
+   <div class="sidebar-section">
+    <span class="eyebrow">
+     On this page
+    </span>
+    <div class="sidebar-links">
+     <a class="btn btn-quiet" href="#start">
+      Start
+     </a>
+     <a class="btn btn-quiet" href="#park">
+      Park
+     </a>
+     <a class="btn btn-quiet" href="#square">
+      Square
+     </a>
+     <a class="btn btn-quiet" href="#lake">
+      Lake
+     </a>
+     <a class="btn btn-quiet" href="#save">
+      Save and inspect
+     </a>
+    </div>
+   </div>
+  </nav>
+  <main class="main-content">
+   <div class="container">
+    <div class="intro">
+     <span class="eyebrow">
+      Learn by doing
+     </span>
+     <h2>
+      Make room for public life
+     </h2>
+     <p>
+      Create the surface first, then arrange trees, paths, water and furniture directly on the map. Review the same design in 3D.
+     </p>
+    </div>
+    <section class="guide-section" id="start">
+     <h2>
+      Create the space and open its editor
+     </h2>
+     <p>
+      Select the parcels or a site, open
+      <span class="ui-label">
+       Proposals
+      </span>
+      and choose
+      <span class="ui-label">
+       Park
+      </span>
+      ,
+      <span class="ui-label">
+       Square
+      </span>
+      or
+      <span class="ui-label">
+       Lake
+      </span>
+      from the palette. The tool creates the surface in one click. Click the resulting object and choose
+      <span class="ui-label">
+       Edit geometry
+      </span>
+      to place or revise furniture.
+     </p>
+     <div class="callout note">
+      <i aria-hidden="true" class="fa-solid fa-circle-info">
+      </i>
+      The furniture editor works directly on the map. Keep every item inside the dashed boundary; drag an item to move it. Geometry revisions carry the design into a new version rather than changing the shared source.
+     </div>
+    </section>
+    <section class="guide-section" id="park">
+     <h2>
+      Park: trees, paths and ponds
+     </h2>
+     <figure class="howto-video" id="watch-park">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Watch the workflow
+       </span>
+       <span class="video-duration">
+        0:37
+       </span>
+      </div>
+      <video aria-describedby="caption-park" aria-label="Create a park" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-02-park-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-02-park-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-02-park-review.mp4">
+        Open the video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-park">
+       <strong>
+        Create a park.
+       </strong>
+       Place trees, paths and ponds, then inspect the result in 3D.
+       <a class="cb-link" href="videos/howto/consensus-builder-02-park-review.mp4">
+        Open the video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Choose Tree, Bench, Flowerbed or Pond, then click inside the park. Flowerbeds and ponds occupy a circular area that must fit completely inside the boundary. Zoom in for smaller, more precise placement.
+     </p>
+     <p>
+      For a
+      <span class="ui-label">
+       Footpath
+      </span>
+      , click its points and choose
+      <span class="ui-label">
+       Finish path
+      </span>
+      or press
+      <span class="ui-label">
+       Enter
+      </span>
+      . Drag the path to reposition it. Use
+      <span class="ui-label">
+       Remove
+      </span>
+      and click an item to delete it.
+     </p>
+    </section>
+    <section class="guide-section" id="square">
+     <h2>
+      Square: fountains and furniture
+     </h2>
+     <figure class="howto-video" id="watch-square">
+      <div class="video-heading">
+       <span class="eyebrow">
+        Watch the workflow
+       </span>
+       <span class="video-duration">
+        0:33
+       </span>
+      </div>
+      <video aria-describedby="caption-square" aria-label="Create a square" controls="" height="960" playsinline="" poster="videos/howto/consensus-builder-03-square-review.jpg" preload="none" width="1440">
+       <source src="videos/howto/consensus-builder-03-square-review.mp4" type="video/mp4"/>
+       <a href="videos/howto/consensus-builder-03-square-review.mp4">
+        Open the video
+       </a>
+       .
+      </video>
+      <figcaption id="caption-square">
+       <strong>
+        Create a square.
+       </strong>
+       Add a fountain and arrange the furniture on the map.
+       <a class="cb-link" href="videos/howto/consensus-builder-03-square-review.mp4">
+        Open the video
+       </a>
+      </figcaption>
+     </figure>
+     <p>
+      Use Fountain, Tree, Bench, Table and Statue to furnish the square. Choose a type and click inside the outline. Move existing items by dragging them, or use Remove to clear them. The video shows adding a fountain and checking the square in 3D.
+     </p>
+    </section>
+    <section class="guide-section" id="lake">
+     <h2>
+      Lake: a water surface
+     </h2>
+     <p>
+      Lake creates a water surface across contiguous selected parcels. It is different from the small Pond decoration inside a park. Inspect water together with the surrounding buildings in 3D.
+     </p>
+    </section>
+    <section class="guide-section" id="save">
+     <h2>
+      Save and inspect
+     </h2>
+     <p>
+      <span class="ui-label">
+       Save design
+      </span>
+      commits the furniture arrangement;
+      <span class="ui-label">
+       Cancel
+      </span>
+      discards changes from the editing session. Switch to 3D to check the positions. In view controls,
+      <span class="ui-label">
+       Planned
+      </span>
+      includes the public-space surface and decorations;
+      <span class="ui-label">
+       Trees
+      </span>
+      and
+      <span class="ui-label">
+       Water
+      </span>
+      control their visibility.
+     </p>
+     <p>
+      <a class="cb-link" href="how-to-use-views.html">
+       Check the view and compare before / after →
+      </a>
+     </p>
+    </section>
+    <footer class="guide-footer">
+     <a class="cb-link" href="how-to-use.html">
+      All instructions
+     </a>
+     ·
+     <a class="cb-link" href="index.html?lang=en">
+      Try it on the map
+     </a>
+     ·
+     <a class="cb-link" href="roadmap.html">
+      Roadmap
+     </a>
+    </footer>
+   </div>
+  </main>
+ </body>
+</html>

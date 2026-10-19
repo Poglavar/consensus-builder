@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "auditType": "saved-artifact-integrity",
+  "cityCode": "6053",
+  "cityName": "Hull",
+  "sourceId": "gb-hmlr-browser-v1",
+  "releaseId": "44a56028732ae4895442909dfcb048e34dffd1f0b2714f4d0f50901d7544cd90",
+  "qualificationStatus": "technical-qualified",
+  "eightQualificationGatesPassed": true,
+  "savedCache": {
+    "originalPath": "originals/extracted/originals/cities/6053/attempt-1/evidence/full-safe.geojson",
+    "sha256": "c7d60dbbe91f95d5efb1a506aaaccb89cd5ed92baedeb4dbc286ca3fafa1ec63",
+    "matchesQualificationCacheSha256": true,
+    "matchesMetricReportInputSha256": true,
+    "featureCount": 374
+  },
+  "savedMetricReport": {
+    "path": "metric-report.json",
+    "sha256": "62ab9821bedaf727fd179bf3bf6b37560e9778c2e44c7418ee76098d2969bb64",
+    "geometryPass": true,
+    "featureCount": 374,
+    "invalidCount": 0,
+    "overlapPairCount": 0,
+    "operationErrorCount": 0
+  },
+  "verificationNote": "Saved qualification, source metric report and full-safe cache were hash-checked. No fresh geometry recomputation or live city qualification was run."
+}

@@ -1,0 +1,512 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T08:28:35.700Z",
+  "city": "tallinn",
+  "descriptor": {
+    "id": "ee-maaamet-kataster-wfs",
+    "endpoint": "https://gsavalik.envir.ee/geoserver/kataster/wfs",
+    "featureType": "kataster:ky_kehtiv",
+    "idField": "tunnus",
+    "geometryField": "geom",
+    "idPrefix": "EE-KATASTER-",
+    "outFields": [
+      "tunnus"
+    ],
+    "requestProperties": true,
+    "responseSrid": 3857,
+    "metricSrid": 3301,
+    "adapter": "wfs",
+    "version": "2.0.0",
+    "pageSize": 100,
+    "idBatchSize": 80,
+    "maxFeatures": 3000,
+    "minRequestIntervalMs": 150,
+    "idType": "string",
+    "maxBboxKm2": 1,
+    "countryCode": "EE",
+    "cityIds": [
+      "tallinn"
+    ],
+    "maxConcurrentQueries": 1
+  },
+  "metricDefinition": "+proj=lcc +lat_0=57.5175539305556 +lon_0=24 +lat_1=59.3333333333333 +lat_2=58 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs",
+  "qualifiedFeatureCount": 60,
+  "fullSafeCacheSha256": "19046c312ef19cb363ef0dc350ec5cf8e4d2ab5df79344651af6bd34423fdf89",
+  "freshFullGeometryReads": {
+    "count": 60,
+    "allGeometryHashesMatch": true,
+    "hashes": [
+      {
+        "id": "EE-KATASTER-78401:101:1710",
+        "sha256": "1c944bfcfac72dc2a478d408353b15b72c92989ea030ffe69a423831937727c4"
+      },
+      {
+        "id": "EE-KATASTER-78401:101:2125",
+        "sha256": "bb6d5690b02a15a48955e666daa41a2c1a325e05d4f20b7d9714e11c7cb70128"
+      },
+      {
+        "id": "EE-KATASTER-78401:101:3115",
+        "sha256": "b210965f2853c5636887d5362ba885bd78734bbcaa5f5a2bb6fa1b0c2c9ee4a0"
+      },
+      {
+        "id": "EE-KATASTER-78401:101:3117",
+        "sha256": "e8276cfc751ee06ea2cda24a3369e218204fb0dc32c7b01f0732dc2f0663314e"
+      },
+      {
+        "id": "EE-KATASTER-78401:101:3118",
+        "sha256": "0804411cdae11d3bcc31c3cef2c30c45a573c3011c3fefb8da0378607fdb6b80"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0004",
+        "sha256": "538a18eb0198d637dfa97a050c6c4a48234e6cb173e86b6d29dc1e24f224520d"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0021",
+        "sha256": "3b64de982a7f09fe4c296ed3fb7be7a801cbbb0e3d8b671a3121f4c75d1f8cc3"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0035",
+        "sha256": "d96c86f83f26e2078eaa0bb37a3495bf9482403ecca422ea52bd542ed5f3ba97"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0038",
+        "sha256": "ca0750bc2c9578160a72a4bf171a6346bd38bc76b2984d64d771a270c6dc3264"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0051",
+        "sha256": "31bbb24da9ef24904e5c4c782dfdb75b277ec2826b2d713d918503e3382fe072"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0056",
+        "sha256": "0f7e96a399646c8f6e1867e4a66ca7b86deac72f377eed43e3a17c93e2d73edd"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0073",
+        "sha256": "6338b4d5efa09ee65184ea778762271137f0d03b977dc809be3ef96cef465d2a"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0075",
+        "sha256": "f990819df394a0834df6b9be5cf6897ac9582a1b2325f89c92bc5ffda96bb802"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0076",
+        "sha256": "5e60e5bb1acd91da602662e87a66503ac7411504d480e51ba2eedd56c77bee0d"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0078",
+        "sha256": "b4fb5c1ac611d2f1fa2f5b1a18e48859a8fb81eb8fd21401ac5ee58456f39115"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0092",
+        "sha256": "c343e2893de27f75acd1a96bdf929a891ed59f234b2981592c5fa6cbbc62fc1a"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0095",
+        "sha256": "aa69d1eae205330307401a5d8f0ac8d763ddfefb8270f921b8891e89ba88f0b3"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0096",
+        "sha256": "a2d8831ad41f9250bd0d8da9face62e0ced98a1bbb4b4a18b68da783b3943383"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0160",
+        "sha256": "946aee31fb4552e96c813fe7f50b12282382d3a61d7bb97ed97dbddc10e373d8"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0170",
+        "sha256": "7bab34f9040317adae16926831b2536e911f3cb4276eff76903eb0c034d0bf24"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0270",
+        "sha256": "f562d00cbb5c1a853d2af62850dddb6a217cf90904726e3842595d3bc68ee680"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0540",
+        "sha256": "5a510051facbe384a114130b9d911bdcc35ad5253d2c0d84d286e135497d6582"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0570",
+        "sha256": "d76fd768844d25672e4ff3d12a6ac1e6be6b56e972312d8238e6d1fb5e654f28"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0580",
+        "sha256": "bf6d84d2ab7859d3c62a04e2f9bb1e4e3f1ab8ae6943ec4dd02c11fa2861f796"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0590",
+        "sha256": "f781e3fc667c15bc974ccb5e02d7b316d42406f39a0ee2f93414222bcee45b61"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0710",
+        "sha256": "d4fb955516676920bed76faf65e9ac971b03bf2b9d76767245f0e45a71ae8e0e"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0760",
+        "sha256": "27b1a0a65937e91594b852bcdf56965f23f77aba066a562c808b320d029175bf"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0790",
+        "sha256": "9fc5cd3975ad635809baac4bd242d6786c97af2415172f79eb59f3d156afab19"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:0900",
+        "sha256": "1194a6dc46a157320109b6ae1d337307dfa489f794f77ed68bce39a09c694a79"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1090",
+        "sha256": "aa9db5c897f552c51d6682752d635c37dec981c1e3732e0882501b17345abaa2"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1170",
+        "sha256": "4adcbfd477b9a07e16eb0898bd590a4661955873eddf836c5b7904bf360a8af3"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1320",
+        "sha256": "e885ad165487b81424551ce19379d7d13b286b93e467adcf970b8c03a240e259"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1420",
+        "sha256": "00546357395954ef30c6218c32350aa25494268ccb48e10f054881ec31730854"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1560",
+        "sha256": "c56b42f25d6b0aebcaa564a35414b9eab38097b92251f5b12b2afef90b26eefb"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1680",
+        "sha256": "ec86dae5bd30c8a41710e8ff7b189980eb05024af70d183d7c113e943b957eac"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1710",
+        "sha256": "191b9c997edaf3f9282a0cd7015b25d91f20cec9432522d9ea8a370157fff2be"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1810",
+        "sha256": "20a660d99bd04356268de4e454bbe4c9ccf32dffbe3acc3d8caa114de102ab15"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:1960",
+        "sha256": "22348928e53d61d4db480da271a624882dad8bf17033acd22dc0bba4dfcfa92f"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2000",
+        "sha256": "c97faeeef3e5fcd31cbf7df0ba41d6101153c313dff2f1b6ac2e46ec318a023c"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2060",
+        "sha256": "6c150ec1a3f9450050aae17d4143cba06cfb767ffba9bdb7b1088fc7f0d4c413"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2180",
+        "sha256": "2898ad4f9167421d1cca9d4ffc6a3e9ff635ac46f914edf73fff4a5d72e06297"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2220",
+        "sha256": "8878e67bffee08bbb989c9306bee96eca0415755880c24b4508b119d79838079"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2280",
+        "sha256": "2258bdc79bcdf9d49ada64eeaaf2abf0b2b6f77b95d79f1d4216087fd23a0ff8"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2400",
+        "sha256": "a1bda97ce97ca78971fc72d74d34b2c08c2aaaae874f720933f9d809e0ce4dd2"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2580",
+        "sha256": "0f79e0caef3909e5ff38db328b4cbb346eedb0edc6d9d42af3eabb1626ee0fcf"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2620",
+        "sha256": "ec6e5b6a57821cc898335c68f12d8da49a2df8b4e6c29f60c58c675182c6ab66"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2640",
+        "sha256": "1cef15b70558fb994e4fb6cc33cba5d21449647687aac3439e28e9ae0fbef46c"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2690",
+        "sha256": "128cbf0909ab433b00a6451e3d019d5399ca363e967443223b49ac3051b7b941"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2850",
+        "sha256": "fe1b98271eb116129d1293d7aa61c7d349726e0cf925fb73f84b26b5f6bf3fe4"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2960",
+        "sha256": "358ab3f758784cc156c506fa9fb809cadd0081dc28c16873765093f7a368a911"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:2990",
+        "sha256": "206da77c19a3d08a977caa8bd07b10857921f8938f879c45f966488fbed2d1a3"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:3060",
+        "sha256": "0f2421a46c32b0d9f1867504e5cc251c2c0a098599acb35bfb67e1330c9f20ce"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:3070",
+        "sha256": "0959d18b5668acb6235b2b990f43d17d1d46803ec1784492599cd4e4ccdf8f42"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:3120",
+        "sha256": "ea48cf1c40ce7560e52f4e940b1401256b082d9e449b4f28b879da23da90a007"
+      },
+      {
+        "id": "EE-KATASTER-78401:109:3260",
+        "sha256": "3437a55445a05801b24f3520dbfc9af6948d3e5a94ea152998716b78d7eb25a5"
+      },
+      {
+        "id": "EE-KATASTER-78401:110:0002",
+        "sha256": "a83c2db70277c7d0babae4636d8c7332fd6de14ebf3803f9a1ae84ba9ec1bdca"
+      },
+      {
+        "id": "EE-KATASTER-78401:110:0119",
+        "sha256": "68756185a9d300d2e4ce85e3e394d9d456852170829d0da9ef19e44c07344c77"
+      },
+      {
+        "id": "EE-KATASTER-78401:110:0120",
+        "sha256": "be3d79331b252166d4ab027951f48247a52d443d2803e7eb638fd1b6a485ffd9"
+      },
+      {
+        "id": "EE-KATASTER-78401:110:0470",
+        "sha256": "659e6b69add387f132331c8e657e98d7235a253555572d7694a9ce2bb69129fb"
+      },
+      {
+        "id": "EE-KATASTER-78401:110:2170",
+        "sha256": "608c7388017e88c3d7a92fb2bff7b628914257671ff21ae2f8fec54387b6e9d9"
+      }
+    ]
+  },
+  "nativeShapedExplicitAbsence": "EE-KATASTER-99999:999:9999",
+  "forcedOneFeaturePaging": {
+    "bbox": [
+      24.741,
+      59.423,
+      24.742,
+      59.424
+    ],
+    "count": 14,
+    "complete": true,
+    "allFullGeometryMatches": true
+  },
+  "targetId": "EE-KATASTER-78401:109:0710",
+  "unchangedWupCenter": [
+    59.4231329005097,
+    24.7413568470487
+  ],
+  "fullParcelFootprint": {
+    "complete": true,
+    "returnedIds": [
+      "EE-KATASTER-78401:109:0092",
+      "EE-KATASTER-78401:109:0710",
+      "EE-KATASTER-78401:109:3060"
+    ]
+  },
+  "fullParcelBinding": {
+    "parcels": [
+      {
+        "parcelId": "EE-KATASTER-78401:109:0710",
+        "overlapM2": 3928.227,
+        "intrusionM": 59.283
+      }
+    ],
+    "touched": [],
+    "toleranceM": 0,
+    "coverage": "complete",
+    "unsurveyedM2": 0,
+    "siteM2": 3928.23,
+    "source": "server:ee-maaamet-kataster-wfs",
+    "unknownM2": 0,
+    "computedAt": "2026-10-09T08:28:35.686Z"
+  },
+  "geometryChangedOrRepaired": false,
+  "requests": [
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 19451,
+      "sha256": "3acf1845501c9323ffc97b8573b9566bae47452a745b9be0fe8c5f58670a052e"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.74%2C59.422%2C24.741%2C59.423%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 9322,
+      "sha256": "1f7a4e9948d6c3c637747d612998076f993ec5abed9c315991430d1985782f40"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.741%2C59.422%2C24.742%2C59.423%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 9331,
+      "sha256": "a7cea0686d93a20afb6db270be66ae577902c34c2bb1c16c347bef82066e2124"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.742%2C59.422%2C24.743%2C59.423%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 7625,
+      "sha256": "cc3db30227679e5e008cdf68d354c1aa935913c9e84b50d7a24e043d00bc2c51"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.74%2C59.423%2C24.741%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 17598,
+      "sha256": "bbbe17d2ece3070ded4affa05e69bc54f6c3d87c35698d3f4267e4883d2fc7ed"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.742%2C59.423%2C24.743%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 15340,
+      "sha256": "380f784acfd31449c9b1f18c3681c847ad83fa6276e10fc449938fb5e49d1010"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.74%2C59.424%2C24.741%2C59.425%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 10375,
+      "sha256": "d1e59c4559ed2caa74de3306557db91494973bf797f92acd4fbec462bd672549"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.741%2C59.424%2C24.742%2C59.425%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 11727,
+      "sha256": "b6770a912ee50ab30982653724a32a792aa21595ffae13937be411e3be6f6afc"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.742%2C59.424%2C24.743%2C59.425%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 6428,
+      "sha256": "622cb41af474cd5a8edb1b9a828c7af27b928bada2646e7adb4938419e64978c"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.741%2C59.421%2C24.742%2C59.422%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 13829,
+      "sha256": "94224be955677dff2f5bb34b5078dc6ab40f9cd8ba1be7fbbcbae9bf575ab739"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.741%2C59.425%2C24.742%2C59.426%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 11085,
+      "sha256": "0749633e630ef120bd7d7b1ea28f01186abfcddd524d7e15db5f30aa6215ec83"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.739%2C59.423%2C24.74%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 15509,
+      "sha256": "aa93f332b49da71420cfc8fea05fad5845bbc57c3c3b5f2ef90f635e0c68bd65"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.743%2C59.423%2C24.744%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 6881,
+      "sha256": "0f458429d32e9b44ddca172e04fce6cac2eca7c731736ffc6ff70a4ad710262c"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&cql_filter=tunnus+IN+%28%2778401%3A101%3A1710%27%2C%2778401%3A109%3A0051%27%2C%2778401%3A109%3A0076%27%2C%2778401%3A109%3A0078%27%2C%2778401%3A109%3A0092%27%2C%2778401%3A109%3A0270%27%2C%2778401%3A109%3A0580%27%2C%2778401%3A109%3A0590%27%2C%2778401%3A109%3A0710%27%2C%2778401%3A109%3A1320%27%2C%2778401%3A109%3A2220%27%2C%2778401%3A109%3A2690%27%2C%2778401%3A109%3A2850%27%2C%2778401%3A109%3A3060%27%2C%2778401%3A109%3A0056%27%2C%2778401%3A109%3A0075%27%2C%2778401%3A109%3A0790%27%2C%2778401%3A109%3A2000%27%2C%2778401%3A109%3A3070%27%2C%2778401%3A109%3A0073%27%2C%2778401%3A109%3A0540%27%2C%2778401%3A110%3A0119%27%2C%2778401%3A109%3A0004%27%2C%2778401%3A109%3A0760%27%2C%2778401%3A109%3A1680%27%2C%2778401%3A109%3A2640%27%2C%2778401%3A110%3A0002%27%2C%2778401%3A110%3A0470%27%2C%2778401%3A109%3A0570%27%2C%2778401%3A109%3A1960%27%2C%2778401%3A109%3A2280%27%2C%2778401%3A109%3A2400%27%2C%2778401%3A109%3A2620%27%2C%2778401%3A109%3A0096%27%2C%2778401%3A109%3A0170%27%2C%2778401%3A109%3A1420%27%2C%2778401%3A109%3A2180%27%2C%2778401%3A109%3A2580%27%2C%2778401%3A110%3A2170%27%2C%2778401%3A101%3A2125%27%2C%2778401%3A109%3A0021%27%2C%2778401%3A109%3A0038%27%2C%2778401%3A109%3A0095%27%2C%2778401%3A109%3A0160%27%2C%2778401%3A109%3A0900%27%2C%2778401%3A109%3A1560%27%2C%2778401%3A109%3A2990%27%2C%2778401%3A109%3A3260%27%2C%2778401%3A109%3A1090%27%2C%2778401%3A109%3A1170%27%2C%2778401%3A109%3A1710%27%2C%2778401%3A109%3A1810%27%2C%2778401%3A109%3A3120%27%2C%2778401%3A109%3A0035%27%2C%2778401%3A109%3A2060%27%2C%2778401%3A109%3A2960%27%2C%2778401%3A101%3A3115%27%2C%2778401%3A101%3A3117%27%2C%2778401%3A101%3A3118%27%2C%2778401%3A110%3A0120%27%29",
+      "httpStatus": 200,
+      "responseBytes": 49564,
+      "sha256": "60d3ea7f5f7e08c1d3a471f1b8a8e9e343b14d98956f23d378b4c0c3bacbf48a"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&cql_filter=tunnus+IN+%28%2799999%3A999%3A9999%27%29",
+      "httpStatus": 200,
+      "responseBytes": 147,
+      "sha256": "4433431096c02eaf86b28720890906d86300fd8cdf420c3f5fe08bd0fae30a46"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=0&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1020,
+      "sha256": "ef8cc8da5817788f248b2b7c40cabcef054b1c32bc4ac747a2185f92d96899c2"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=1&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1459,
+      "sha256": "265358adbca94d8154d4ad0540065fae2c7aebeb0548933fb0eb015efdc9423f"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=2&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1460,
+      "sha256": "15f952489dc91ead5ad45a861ebb41bd9bb9aa29fd6591929b172e39a592e1c0"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=3&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 7110,
+      "sha256": "2437530c7d1670c3c9cd9a97a5840ea2d74abc61ab925bb882e81f73e71bbd6d"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=4&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 7084,
+      "sha256": "f331d849b13bd52546634e8f648ed00b8c15f956078a4bae5aca42d7d2b39a12"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=5&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1352,
+      "sha256": "cb1a395e82efe26d3123012b0defdcc9d6d34e9796b5aae25269aa8d043de3e8"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=6&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1351,
+      "sha256": "3c7bbf5218fcc61f631cf78f8d77774fd8fc3e7bb38e25bba056b114b6e78e55"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=7&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1281,
+      "sha256": "58ee56e4eea8307da8ae713ed170680c24b6a7674a8258c3c0cb8b8420ae5bdd"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=8&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1425,
+      "sha256": "ccaa7acc7423c286b87e79b8e9774f6cf089870e12493757eb3b26fc8950c027"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=9&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1350,
+      "sha256": "e1ecf23157d19b4d019a1e51c95000d08b34a1448cb7d47166996ba27d7a6756"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=10&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1673,
+      "sha256": "02da88870cf668cbfa2e6ea067ff9dd0c4a1dfd8e66bf8689349480adc7aa9ff"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=11&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1602,
+      "sha256": "3effaf649b147f07b21ffb5238ca0ba097ec8ca5eb5bf079298f209adb63c2b6"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=12&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 1351,
+      "sha256": "20edd63e28851691a4fec9f673541ee20bee11fe0245d4c7836733bf03217287"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=1&startIndex=13&bbox=24.741%2C59.423%2C24.742%2C59.424%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 2607,
+      "sha256": "964defff6fd484104ddfc220c963bed7f3fd81ba38ab4409ef8359fb08fd89c3"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.740596910326474%2C59.42263085706127%2C24.741844151505987%2C59.42319444690018%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 8484,
+      "sha256": "c33495a5ec8758f2c9f09b312b5a8baa6c740ebf65133a0694ab1aac985d69f7"
+    },
+    {
+      "url": "https://gsavalik.envir.ee/geoserver/kataster/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=kataster%3Aky_kehtiv&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=tunnus&propertyName=geom%2Ctunnus&count=100&startIndex=0&bbox=24.740596910326474%2C59.42263085706127%2C24.741844151505987%2C59.42319444690018%2CCRS%3A84",
+      "httpStatus": 200,
+      "responseBytes": 8484,
+      "sha256": "cb34bca0f3ca29071af1fe333ecddac8fcf84fde7576dc54177834d5b431a1ce"
+    }
+  ]
+}

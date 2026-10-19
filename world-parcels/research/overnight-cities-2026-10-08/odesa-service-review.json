@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "city": "Odesa",
+  "countryCode": "UA",
+  "wupCityCode": 2693,
+  "rank": 575,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://ombk.omr.gov.ua/",
+    "https://omr.gov.ua/ru/city/departments/uag/",
+    "https://uma.od.gov.ua/geoportal-mistobudivnogo-kadastru/"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The city’s own portal blocks urban-cadastre maps for security reasons during martial law; no public anonymous feature schema or geometry route is available from the inspected pages. National parcel search is not Odesa-specific and was not used. Runtime remains disabled.",
+    "nativeIdsUsed": "No safe parcel feature identifier read; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://ombk.omr.gov.ua/",
+      "method": "public official city portal inspection",
+      "status": "accessible",
+      "observation": "City Council portal explicitly states urban-cadastre maps are blocked for public viewing for security reasons; no map data requested."
+    },
+    {
+      "url": "https://uma.od.gov.ua/geoportal-mistobudivnogo-kadastru/",
+      "method": "public official regional geoportal page inspection",
+      "status": "accessible",
+      "observation": "States public viewing of geoportal data is temporarily unavailable during martial law; this regional site was used only as supporting context."
+    },
+    {
+      "url": "https://nsdi.gov.ua/docs/portal/1start/4poshukZD.html",
+      "method": "official national geoportal documentation reviewed as an exclusion only",
+      "status": "excluded_no_query",
+      "observation": "Documentation describes searches by cadastral number and a panel containing address/ownership-related fields; no number was provided, no feature query was made, and it is not city-specific proof of runtime access."
+    }
+  ],
+  "technicalBlocker": "The city’s own portal blocks urban-cadastre maps for security reasons during martial law; no public anonymous feature schema or geometry route is available from the inspected pages. National parcel search is not Odesa-specific and was not used. Runtime remains disabled.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "remainingUncertainty": "Local evidence establishes a municipal urban-planning cadastre only. It does not establish a legal parcel registry or public parcel geometry. No owner/address/cadastral-number query was submitted."
+}

@@ -1,0 +1,72 @@
+{
+  "purpose": "City-specific discovery of official cadastral parcel geometry for this national capital seat; failed access and source-search outcomes are not treated as evidence that no cadastre exists.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "capital:KI:south-tarawa",
+  "name": "South Tarawa",
+  "country": "Kiribati",
+  "countryCode": "KI",
+  "centerLatLon": [
+    -0.883333,
+    169.533333
+  ],
+  "pointBasis": "Capital seed point from the inventory; not an official boundary or surveyed centroid.",
+  "capitalRole": "primary",
+  "priorEvidence": [
+    "research/countries/KI.json",
+    "research/retry/countries/KI.json (nationwide GIS/cadastre search, no public city geometry)."
+  ],
+  "priorEvidenceAssessment": "research/countries/KI.json; research/retry/countries/KI.json (nationwide GIS/cadastre search, no public city geometry).",
+  "executedQueries": [
+    {
+      "query": "South Tarawa Kiribati cadastral parcel GIS official land map",
+      "language": "English",
+      "method": "web.run search_query"
+    },
+    {
+      "query": "Kiribati \"aba\" \"GIS\" \"land\" \"cadastral\" maps",
+      "language": "Gilbertese/local-language attempt",
+      "method": "web.run search_query"
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://lands.melad.gov.ki/mapping/",
+      "observation": "Official GIS Unit states it maintains/upgrades cadastral and topographic maps and mapping for all islands. Official page exposes information-request and in-person GIS services, but no public parcel viewer/API or queryable feature endpoint."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://lands.melad.gov.ki/mapping/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "outcome": "Official GIS Unit page inspected; describes cadastral mapping responsibility and information requests, with no public geometry endpoint."
+    },
+    {
+      "url": "https://www.melad.gov.ki/index.php?Itemid=355&id=34&option=com_quix&view=page",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "outcome": "Official Land Management Division page inspected; identifies Land Information and GIS/SRS offices and computerized Kiribati Land Information System."
+    }
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-bounded primary registry response was captured for this candidate; access/result is unknown unless a verified sample is stated below.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "resultCategory": "primary_source_investigated_no_city_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "National/agency scope described by source material where indicated; otherwise unknown",
+    "verifiedOpenScope": "None verified",
+    "countrywideVerified": false
+  },
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "status": "complete",
+  "researchGroup": "oceania",
+  "researchFile": "research/world-capitals-2026-10-08/city-south-tarawa.json"
+}

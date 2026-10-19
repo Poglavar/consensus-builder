@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2409-nyala.json",
+  "purpose": "Read-only source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "No first-party South Darfur/Nyala land-registry or cadastral source was found in the English and Arabic searches. Search results included national services unrelated to parcel geometry and non-government directories/news, which are not enough to establish a city-local registry. The result remains unknown rather than a negative claim. No official city/state land-registry portal, map viewer, or parcel service was established in these searches. Local news and directory references were not promoted to a positive registry claim.",
+  "officialEvidence": [
+    {
+      "url": "https://www.darfur-gov.com/ar/states",
+      "observation": "A regional information site refers to South Darfur and Nyala but does not establish a cadastral registry or public parcel service; not treated as primary land evidence."
+    },
+    {
+      "url": "https://cbos.gov.sd/en/content/nyala-branch",
+      "observation": "Central Bank of Sudan branch directory confirms Nyala locality only; it is unrelated to land records and was not used as registry evidence."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": null,
+    "routes": [],
+    "notes": "A local land authority may exist but its current first-party service, status, and data access could not be verified. No statement about registry nonexistence is made."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No official city/state land-registry portal, map viewer, or parcel service was established in these searches. Local news and directory references were not promoted to a positive registry claim."
+  }
+}

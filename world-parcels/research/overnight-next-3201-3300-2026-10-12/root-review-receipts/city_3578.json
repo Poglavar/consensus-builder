@@ -1,0 +1,18 @@
+{
+  "taskId": "city:3578",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/city-3578-kurigram.json",
+    "world-parcels/research/overnight-next-3201-3300-2026-10-12/kurigram-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T06:02:29Z",
+  "findings": {
+    "identity": "WUP 2025 archive hash matches the handoff; the source row, ranked roster, queue and packet agree on code 3578, rank 3227, Bangladesh, point [25.8102782085582, 89.641716081154], and 187101 persons.",
+    "searches": "Packet records executed English and Bangla queries with first-party result URLs and bounded viewer requests.",
+    "custody": "Keep registryFound true for the evidenced Kurigram district record-room and DLRS map service; this does not establish a public parcel layer.",
+    "geometry": "No parcel sample or safe native parcel ID is retained. The cached successful geometry response is an administrative district boundary, and the Kurigram survey-to-upazila response is an empty list, not citywide parcel absence.",
+    "admission": "No independent fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, or headed Details-panel verification. No runtime admission."
+  }
+}

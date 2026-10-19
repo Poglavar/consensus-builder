@@ -1,0 +1,77 @@
+{
+  "descriptor": {
+    "id": "de-bw-lgl-alkis-flurstueck",
+    "name": "Baden-Württemberg LGL ALKIS cadastral parcels",
+    "adapter": "wfs",
+    "endpoint": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+    "featureType": "nora:v_al_flurstueck",
+    "idField": "flurstueckskennzeichen",
+    "idType": "string",
+    "idPattern": "^08[0-9]{18}$",
+    "idPrefix": "DE-BW-ALKIS-",
+    "outFields": [
+      "flurstueckskennzeichen"
+    ],
+    "requestProperties": true,
+    "geometryField": "geom",
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "DE",
+    "metricSrid": 32632,
+    "cityIds": [
+      "stuttgart",
+      "3756"
+    ],
+    "scope": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json",
+    "operator": "Landesamt für Geoinformation und Landentwicklung Baden-Württemberg (LGL)",
+    "catalogueUrl": "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html",
+    "licenceNote": "Official LGL owner-free ALKIS parcel geometry; publisher conditions informational. Legal title, boundary survey accuracy and citywide completeness are unverified.",
+    "attribution": "LGL Baden-Württemberg · ALKIS Flurstücke · adapted",
+    "maxConcurrentQueries": 2,
+    "cityScopes": {
+      "stuttgart": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+    },
+    "discovery": {
+      "jurisdiction": {
+        "countryCode": "DE",
+        "admin1": [
+          "DE-BW"
+        ],
+        "basis": "Baden-Württemberg statewide ALKIS cadastral parcels (LGL).",
+        "evidence": [
+          "research/europe/DE.json",
+          "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json"
+        ]
+      }
+    }
+  },
+  "city": {
+    "code": "3756",
+    "name": "Heidelberg",
+    "point": [
+      8.6720920591206,
+      49.3910185824291
+    ]
+  },
+  "sampleIds": [
+    "DE-BW-ALKIS-08332000041475000000",
+    "DE-BW-ALKIS-08332000041576000004",
+    "DE-BW-ALKIS-08332000041598000001"
+  ],
+  "absentId": "DE-BW-ALKIS-08999999999999999999",
+  "metricEpsg": "EPSG:32632",
+  "sourceClassification": {
+    "isParcel": true,
+    "evidence": [
+      "Baden-Württemberg LGL ALKIS cadastral parcels",
+      "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+      "First-party WFS GetCapabilities (https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS, provider Landesamt für Geoinformation und Landentwicklung Baden-Württemberg): feature type nora:v_al_flurstueck, Title \"Flurstücke\", Abstract \"Landesweiter, vollständiger Flurstückslayer ALKIS-Daten tagesaktuell\" (state-wide, complete cadastral parcel layer) - parcel purpose and Baden-Württemberg-wide scope."
+    ]
+  },
+  "workerAdjustments": [
+    "absentId native tail 08999999999999999999 is format-valid for idPattern ^08[0-9]{18}$ (Land 08, Gemarkung 9999, Flur 999) and names no real cadastral reference; the direct preparer's digit-to-9 codec yields a 99... tail that violates the 08 prefix"
+  ],
+  "cellSizeDegrees": 0.001
+}

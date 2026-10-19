@@ -1,0 +1,28 @@
+{
+  "taskId": "city:10255",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-10255-madanapalle.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/madanapalle-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:30:39Z",
+  "reason": "WUP 2025 source, immutable queue, packet and paired review agree on Madanapalle, rank 2951, India, exact point and 201938 persons. English and Telugu query records carry result URLs. Government of India DILRMP lists Madanapalle tehsil and digitized/georeferenced cadastral maps, supporting local custody. Andhra Pradesh Bhunaksha timed out and Bhudhaar returned 502 in available inspection; these are access outcomes, not absence. No safe anonymous native parcel ID, full polygon, or independent adapter qualification exists.",
+  "firstPartyUrlsChecked": [
+    "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/village-level/5429",
+    "https://bhunaksha.ap.gov.in/",
+    "https://bhudhaar.ap.gov.in/"
+  ],
+  "registryFound": true,
+  "durableSamplePolygonCount": 0,
+  "observedBoundedPolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

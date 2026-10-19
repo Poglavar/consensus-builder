@@ -1,0 +1,14 @@
+{
+  "taskId": "city:11040",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/city-11040-sanya.json",
+    "world-parcels/research/overnight-next-1401-1500-2026-10-09/sanya-service-review.json",
+    "tmp/valhalla-parcel-research/sanya/zgj.html",
+    "tmp/valhalla-parcel-research/sanya/official-search-zh.html"
+  ],
+  "checkedAt": "2026-10-09T16:30:05.502721Z",
+  "reviewNotes": "Municipal custodian and authorized cadastral lookup are supported by captured first-party pages; no anonymous native-ID polygon response or adapter qualification."
+}

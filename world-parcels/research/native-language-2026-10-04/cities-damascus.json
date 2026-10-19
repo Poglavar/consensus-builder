@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 99,
+  "city": "Dimashq (Damascus)",
+  "countryCode": "SY",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/damascus.json",
+  "query": {
+    "language": "Arabic",
+    "script": "Arabic",
+    "text": "دمشق خريطة عقارية قطع الأراضي كادستر نظم المعلومات الجغرافية بيانات"
+  },
+  "results": [
+    {
+      "title": "Arabic GIS parcel-planning study (secondary)",
+      "url": "https://shamra-academia.com/index.php/show/797a705cf9e449",
+      "kind": "secondary",
+      "note": "Describes a parcel-planning information system; does not establish public data access."
+    }
+  ],
+  "assessment": "Search results mentioned a Damascus GIS parcel-planning academic system and general real-estate registry offices, but no current official anonymous parcel-vector layer/API. The result is not sufficient to count as a reusable feed.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; does not change the historical registry or assert that no source exists."
+}

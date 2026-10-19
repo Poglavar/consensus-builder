@@ -1,0 +1,53 @@
+{
+  "cityCode": 5783,
+  "queueRank": 2619,
+  "name": "Pleiku",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "iso2": "VN",
+  "iso3": "VNM",
+  "point": [13.9810796315592, 108.00609393472],
+  "population2025": 225153,
+  "population2025k": 225.153,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pleiku Viet Nam official cadastral parcel map cadastre GIS Gia Lai",
+        "result": "First-party discovery located the official Pleiku ward portal and the national General Department of Land Administration (GDLA) land-inventory map. The Pleiku portal provides land-related public information and links to land procedures, but no anonymous parcel feature service was exposed. The GDLA map is public as a viewer, while cadastral feature/detail routes require login.",
+        "actualResultUrls": [
+          "https://pleiku.gialai.gov.vn/",
+          "https://maps.gdla.gov.vn/"
+        ]
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Pleiku Gia Lai bản đồ địa chính thửa đất cổng thông tin chính thức",
+        "result": "First-party Vietnamese discovery confirmed the official Pleiku portal, its land-information collection activity, and the GDLA map system. Official material identifies the Pleiku land-registration branch as the custodian involved in cadastral extracts, but the public map application returned a login response for anonymous cadastral feature and feature-detail requests. No parcel polygon was retained.",
+        "actualResultUrls": [
+          "https://pleiku.gialai.gov.vn/tin-tuc/tin-kinh-te-tong-hop/ubnd-phuong-pleiku-trien-khai-thu-thap-thong-tin-dat-dai-phuc-vu-co-so-du-lieu-quoc-gia.html",
+          "https://maps.gdla.gov.vn/",
+          "https://pleiku.gialai.gov.vn/upload/105647/20260402/23927_2026_23927_44_signed_signed__THONG_BAO_CONG_KHAI_DM_TTHCTNMM_996_cd31c.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "localCustodian": "Official Pleiku portal material identifies the municipal/ward land administration process and the Văn phòng đăng ký đất đai tỉnh Gia Lai - Chi nhánh Pleiku as the cadastral-registration branch involved in cadastral-map extracts. The official portal also documents collection of land-user information for the national land database.",
+    "officialPublicMap": "The GDLA national land-map viewer at maps.gdla.gov.vn is an official public map application. Its public configuration exposes land-use categories and map-layer configuration, but cadastral feature data is not anonymous.",
+    "urls": [
+      "https://pleiku.gialai.gov.vn/",
+      "https://pleiku.gialai.gov.vn/tin-tuc/tin-kinh-te-tong-hop/ubnd-phuong-pleiku-trien-khai-thu-thap-thong-tin-dat-dai-phuc-vu-co-so-du-lieu-quoc-gia.html",
+      "https://maps.gdla.gov.vn/",
+      "https://maps.gdla.gov.vn/api/config"
+    ]
+  },
+  "parcelGeometryVerified": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "sampleFiles": []
+}

@@ -1,0 +1,31 @@
+{
+  "taskId": "city:855",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-855-ar-ar.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ar-ar-service-review.json",
+    "tmp/valhalla-parcel-research/runs/20261011T213258-fb2584e2/stdout.jsonl",
+    "tmp/valhalla-parcel-research/855/configs.json",
+    "tmp/valhalla-parcel-research/855/layers.json",
+    "tmp/valhalla-parcel-research/855/layers_1.json",
+    "tmp/valhalla-parcel-research/855/main-73KWGRT7.js"
+  ],
+  "checkedAt": "2026-10-11T21:39:02Z",
+  "reason": "The Northern Borders municipal plot-inquiry service and UMAPS parcel-layer configuration support a custody/service lead. Both anonymous parcel-layer metadata reads returned Token Required; no native parcel ID, geometry, schema, or CRS was read. This is an access wall, not evidence of citywide absence.",
+  "identityVerified": true,
+  "bilingualExecutedSearchesVerified": true,
+  "bilingualSearchNote": "The worker transcript records English and Arabic discovery queries.",
+  "durableSamplePolygonCount": 0,
+  "registryCustodyAssessment": "institutional/service lead evidenced; citywide public parcel geometry unverified",
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

@@ -1,0 +1,41 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "LB",
+ "country": "Lebanon",
+ "checkedAt": "2026-09-29",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Direction Generale des Affaires Fonciere (General Directorate of Land Affairs and Cadastre, DGLAC)",
+ "portalsFound": [],
+ "requests": [
+  {
+   "url": "https://www.cadastre.gov.lb/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "https://www.cadastre.gov.lb/en",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  },
+  {
+   "url": "http://www.cadastre.gov.lb/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "unreachable from this environment (connection failed/reset via proxy)"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "Unknown",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "Host unreachable; parcel data online status unknown.",
+ "nextStep": "Retry cadastre.gov.lb later; look for any ArcGIS service."
+}

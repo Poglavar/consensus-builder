@@ -1,0 +1,143 @@
+{
+  "name": "Palermo",
+  "country": "Italy",
+  "countryCode": "IT",
+  "rank": 812,
+  "point": [
+    38.1207651044272,
+    13.3478178274778
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Palermo Italy public cadastral parcel polygon GIS vector map official",
+        "scope": "Find city-local registry evidence and a safe anonymous geometry-only parcel route for Palermo.",
+        "result": "Agenzia delle Entrate lists an open WFS for cadastral cartography; the official WFS GetCapabilities request returned HTTP 403 anonymously, so its schema was not inspected. Independently, Regione Siciliana SITR’s official regional ArcGIS service exposes a polygon layer “Particelle” with JSON/GeoJSON query support, native service object ID, and CC BY 4.0 dataset metadata. One exact-point intersection returned one polygon with OBJECTID only.",
+        "actualResultUrls": [
+          "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_G273_PALERMO",
+          "https://www.sitr.regione.sicilia.it/geoportale/it/metadata/details/830",
+          "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer"
+        ]
+      },
+      {
+        "language": "Italian",
+        "query": "Palermo Comune cartografia catastale particelle vettoriali WFS SITR Agenzia Entrate",
+        "scope": "Find primary local registry evidence and publicly documented geometry services for Palermo.",
+        "result": "Agenzia delle Entrate lists an open WFS for cadastral cartography; the official WFS GetCapabilities request returned HTTP 403 anonymously, so its schema was not inspected. Independently, Regione Siciliana SITR’s official regional ArcGIS service exposes a polygon layer “Particelle” with JSON/GeoJSON query support, native service object ID, and CC BY 4.0 dataset metadata. One exact-point intersection returned one polygon with OBJECTID only.",
+        "actualResultUrls": [
+          "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_G273_PALERMO",
+          "https://www.sitr.regione.sicilia.it/geoportale/it/metadata/details/830",
+          "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Regione Siciliana SITR cadastral map service / Agenzia delle Entrate city dataset",
+        "operator": "Regione Siciliana SITR; source and attribution Agenzia delle Entrate – Regione Siciliana",
+        "homeUrl": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+        "observation": "Agenzia delle Entrate lists an open WFS for cadastral cartography; the official WFS GetCapabilities request returned HTTP 403 anonymously, so its schema was not inspected. Independently, Regione Siciliana SITR’s official regional ArcGIS service exposes a polygon layer “Particelle” with JSON/GeoJSON query support, native service object ID, and CC BY 4.0 dataset metadata. One exact-point intersection returned one polygon with OBJECTID only."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "sampleFile": "samples/palermo-sitr-wup812.geojson",
+    "retainedFullExamples": 1,
+    "verifiedUniqueParcels": 1
+  },
+  "source": {
+    "sourceId": "it-palermo-official-parcel-research",
+    "name": "Sicilia SITR public cadastral parcels",
+    "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+    "operator": "Regione Siciliana / Sistema Informativo Territoriale Regionale",
+    "serviceType": "Official local registry evidence reviewed; safe anonymous geometry status recorded separately.",
+    "geometryType": "Polygon",
+    "nativeIdField": "OBJECTID",
+    "requestedAttributes": [
+      "OBJECTID",
+      "COMUNE",
+      "SEZIONE",
+      "FOGLIO",
+      "ALLEGATO",
+      "SVILUPPO",
+      "NUMERO",
+      "LIVELLO",
+      "ORIGINE"
+    ],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": true,
+    "directGeometryQueryVerified": true,
+    "scope": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Agenzia delle Entrate’s RNDT catalogue has a city-specific vector cadastral dataset “Cartografia catastale - Comune di PALERMO” (revised 2025-01-20). Regione Siciliana SITR publishes regional cadastral cartography with a queryable polygon layer “Particelle”, refreshed July 2026. A safe geometry-only query at the exact WUP point returned one polygon, requesting only service OBJECTID.",
+    "verifiedOpenScope": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "publicParcelGeometryCandidateFound": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Legal title, survey accuracy, currentness, long-term identity continuity and citywide completeness remain unverified.",
+  "nextStep": "Review the source and sample before any runtime/adaptor enablement; confirm full-city coverage and privacy-safe query behavior first.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4616,
+  "cityId": "wup2025:4616",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    38.1207651044272,
+    13.3478178274778
+  ],
+  "queueRank": 812,
+  "population2025": 667442,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "population2025k": 667.442,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [
+    "it-sicilia-sitr-cadastral-parcels"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/palermo-root-quality-review.json"
+  },
+  "registryBasis": "Agenzia delle Entrate’s RNDT catalogue has a city-specific vector cadastral dataset “Cartografia catastale - Comune di PALERMO” (revised 2025-01-20). Regione Siciliana SITR publishes regional cadastral cartography with a queryable polygon layer “Particelle”, refreshed July 2026. A safe geometry-only query at the exact WUP point returned one polygon, requesting only service OBJECTID.",
+  "registryEvidenceUrls": [
+    "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_G273_PALERMO",
+    "https://www.sitr.regione.sicilia.it/geoportale/it/metadata/details/830",
+    "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer"
+  ],
+  "sampleFile": "samples/palermo-sitr-wup812.geojson",
+  "sampleFeatureCount": 1,
+  "sampleCrs": "OGC:CRS84 / WGS84 longitude-latitude",
+  "geometryEvidence": {
+    "serviceUrl": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+    "layerName": "Particelle",
+    "layerId": 4,
+    "nativeIdField": "OBJECTID",
+    "nativeId": 5685467,
+    "requestRestriction": "Point intersection at the exact queued WUP point; returnGeometry=true; outFields=OBJECTID only; no other properties retained.",
+    "response": "HTTP 200 GeoJSON, one Polygon; single closed ring.",
+    "sampleFile": "samples/palermo-sitr-wup812.geojson"
+  },
+  "appCityId": "palermo",
+  "scopeLimits": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+  "runtimeQualification": {
+    "sourceId": "it-sicilia-sitr-cadastral-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T04:02:13.534863+00:00"
+}

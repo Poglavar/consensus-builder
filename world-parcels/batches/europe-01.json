@@ -1,0 +1,11 @@
+[
+ {
+  "iso2": "DE",
+  "name": "Germany",
+  "previousStatus": "subnational_only",
+  "previousEvidence": [
+   "research/countries/DE.json"
+  ],
+  "hints": "Per-Land ALKIS. NRW (verified, Essen) and Berlin (TLS chain fails from here) are known. Try open WFS for Hamburg (geodienste.hamburg.de ALKIS), Brandenburg (geobasis-bb.de), Bavaria (geodaten.bayern.de / Flurstücke), Thüringen, Sachsen, Sachsen-Anhalt, Niedersachsen, Hessen, Schleswig-Holstein, MV, RLP, Saarland, Bremen, BW. Aim: verify as many Länder as possible; list all with status and licence (many are dl-de/zero or by-2.0)."
+ }
+]

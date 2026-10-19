@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:3448439",
+  "checkedAt": "2026-09-28",
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": {
+    "url": "https://dadosabertos.urbis.prefeitura.sp.gov.br/dataset/053f9a1f-0a01-44d3-8a25-aac520a00071/resource/c13fbaf6-c598-4fed-8751-222a34e00133/download/lotes_fiscais.geojson",
+    "method": "GET",
+    "httpStatus": 200,
+    "resumeHttpStatus": 206,
+    "contentType": "application/geo+json",
+    "responseBytes": 58436650,
+    "recordListPath": "features",
+    "parcelRecordCount": 50000,
+    "reportedTotalFeatures": 1688215,
+    "geometryType": "Polygon",
+    "sampleClosedRings": true,
+    "crs": "EPSG:31983",
+    "responsePreviewFile": "sao-paulo-lotes-response-preview.json",
+    "previewNote": "Five source geometries and IDs retained; fiscal and address properties removed. The 58 MB full response was inspected in temporary storage and is not committed."
+  },
+  "portalsFound": [
+    {"url": "https://dadosabertos.urbis.prefeitura.sp.gov.br/dataset/lotes-fiscais", "observation": "Official fiscal-lot polygons for the municipality of São Paulo, CC BY-SA 4.0."},
+    {"url": "https://dadosabertos.urbis.prefeitura.sp.gov.br/dataset/lotes-fiscais/resource/c13fbaf6-c598-4fed-8751-222a34e00133", "observation": "GeoJSON resource, updated 5 September 2026, EPSG:31983, monthly publication, municipal spatial coverage."},
+    {"url": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs", "observation": "Municipal WFS is documented, but host did not resolve during this test; lot layer and bounded pagination still need verification."}
+  ],
+  "requests": [
+    {"url": "https://dadosabertos.urbis.prefeitura.sp.gov.br/dataset/053f9a1f-0a01-44d3-8a25-aac520a00071/resource/c13fbaf6-c598-4fed-8751-222a34e00133/download/lotes_fiscais.geojson", "method": "GET", "httpStatus": 200, "parcelRecordCount": 50000},
+    {"url": "https://wfs.geosampa.prefeitura.sp.gov.br/geoserver/geoportal/wfs?service=WFS&request=GetCapabilities&version=2.0.0", "method": "GET", "httpStatus": null, "error": "DNS resolution failed"}
+  ],
+  "coverageAssessment": {
+    "claimedScope": "São Paulo municipality",
+    "verifiedOpenScope": "50,000 polygon records in one municipal GeoJSON response; its own metadata reports 1,688,215 matching records, so this file is incomplete",
+    "countrywideVerified": false,
+    "scopeEvidence": "https://dadosabertos.urbis.prefeitura.sp.gov.br/dataset/lotes-fiscais/resource/c13fbaf6-c598-4fed-8751-222a34e00133"
+  },
+  "remainingUncertainty": "Determine how to page or spatially query the complete lot layer before using it as citywide coverage. Fiscal lots may differ from legal cadastral parcels.",
+  "nextStep": "Identify the WFS layer and test bounded pagination or a complete municipal export."
+}

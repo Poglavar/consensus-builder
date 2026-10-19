@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "United States",
+  "countryCode": "US",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred.",
+  "wupCityCode": 1542,
+  "queueRank": 337,
+  "name": "Oakland",
+  "centerLatLon": [
+    37.7460795032621,
+    -122.171539055455
+  ],
+  "population2025": 1503319,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The City of Oakland GIS publishes the GISADMIN.AC_PARCELS_2023 polygon layer, explicitly extracted from county parcels and clipped to Oakland city limits. Its public ArcGIS REST feature layer supports geometry queries. A bounded response was retrieved with only OBJECTID and APN_1 requested; no owner/address attributes were requested.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Oakland California official parcel map assessor GIS parcels city of Oakland open data parcel polygons",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "Found official city GIS ArcGIS parcel layer; metadata identifies polygon features clipped to Oakland limits.",
+        "actualResultUrls": [
+          "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+          "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0/query"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      },
+      {
+        "language": "English",
+        "query": "Oakland official GIS parcel polygons ArcGIS REST city clipped county parcels",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "Confirmed public ArcGIS query service, polygon geometry, pagination support, and safe identifier fields OBJECTID and APN_1.",
+        "actualResultUrls": [
+          "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+          "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0/query"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+        "operator": "City of Oakland GIS",
+        "observation": "Layer GISADMIN.AC_PARCELS_2023; polygon geometry; county parcels extracted and clipped to Oakland city limits; public ArcGIS REST query; maximum record count 1000; spatial reference 2227. Fields include OBJECTID and APN_1; query restricted to those fields."
+      },
+      {
+        "url": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0/query",
+        "operator": "City of Oakland GIS",
+        "observation": "Bounded WGS84 envelope query returned HTTP 200 and three Polygon features using outFields=OBJECTID,APN_1, returnGeometry=true, outSR=4326, resultRecordCount=3. Three safe APNs retained only in the three-feature adapter sample."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Official public layer metadata identifies polygon geometry, city-clipped parcel layer, query support, record limit and fields."
+      },
+      {
+        "url": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain (JSON GeoJSON body)",
+        "observation": "Initial bounded response returned three full polygons. Root qualification subsequently passed all 23 checks with complete object-ID manifests, 13 cells, forced three-row paging, 203 fresh native identities, absence, footprint and binding."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "Publisher describes county parcel geometry clipped to Oakland city limits.",
+      "verifiedOpenScope": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred.",
+      "citywideVerified": false,
+      "countrywideVerified": false
+    },
+    "technicalBlocker": null,
+    "remainingUncertainty": "The source metadata describes the Oakland-clipped dataset but does not make the sampled qualification a guarantee of currency/completeness outside tested cells.",
+    "qualificationHistory": {
+      "initialOffsetOnlyRun": {
+        "uniqueParcels": 204,
+        "freshExactIdCount": 204,
+        "metricCrs": "EPSG:3857",
+        "disposition": "Superseded by explicit-manifest qualification; raw original evidence retained in temporary audit storage."
+      },
+      "rootManifestRun": {
+        "uniqueParcels": 203,
+        "freshExactIdCount": 203,
+        "metricCrs": "EPSG:32610",
+        "requestCount": 77,
+        "allTestsPassed": true
+      },
+      "initialOnlyNativeId": "046 543500200",
+      "limitation": "The two runs have different bounded candidate sets; no source deletion or citywide completeness is inferred."
+    }
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "text/plain JSON GeoJSON body",
+    "endpoint": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0/query",
+    "requestedFields": [
+      "OBJECTID",
+      "APN_1"
+    ],
+    "fullPolygonReturned": true,
+    "repoGeometrySample": "oakland-adapter-sample.geojson (three features only)",
+    "uniqueFullPolygonCount": 203,
+    "retainedFullPolygonCount": 3
+  },
+  "source": {
+    "id": "us-ca-oakland-parcels",
+    "adapter": "arcgis",
+    "url": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+    "idField": "APN_1",
+    "objectIdField": "OBJECTID",
+    "geometryType": "Polygon",
+    "spatialReference": 2227,
+    "maxRecordCount": 1000,
+    "outFields": [
+      "OBJECTID",
+      "APN_1"
+    ],
+    "scope": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred."
+  },
+  "cityId": "wup2025:1542",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [
+    "us-ca-oakland-parcels"
+  ],
+  "technicalBlocker": null,
+  "remainingUncertainty": "Current legal boundaries, completeness and APN_1 uniqueness outside the bounded sample.",
+  "nextStep": "Integrate reviewed provider and inspect a real parcel selection locally.",
+  "coverageAssessment": {
+    "claimedScope": "Publisher describes county parcel geometry clipped to Oakland city limits.",
+    "verifiedOpenScope": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0"
+  ],
+  "appCityId": "oakland",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/oakland-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/oakland-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/oakland-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-ca-oakland-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/oakland-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/oakland-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T22:46:50.763357+00:00",
+  "point": [
+    37.7460795032621,
+    -122.171539055455
+  ]
+}

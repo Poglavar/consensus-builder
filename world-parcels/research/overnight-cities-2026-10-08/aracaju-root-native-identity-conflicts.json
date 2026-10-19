@@ -1,0 +1,160 @@
+{
+  "duplicateDistinctGeometryEvidence": [
+    {
+      "test": "viewport-3",
+      "nativeKey": "18010730067",
+      "records": [
+        {
+          "transportId": "malha_lote.97709",
+          "properties": {
+            "objectid": 328909,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 112.33
+          },
+          "geometrySha256": "172e1ea612a135597c10b29e018bd8ef44488d38cecfc6c623c728a39bd3a15a"
+        },
+        {
+          "transportId": "malha_lote.97748",
+          "properties": {
+            "objectid": 328948,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 1160.93
+          },
+          "geometrySha256": "1c7033de8e35fb203060d6d5add004347c5ca145c5acedcdeb079d12df77d97c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "nativeKey": "18010730067",
+      "records": [
+        {
+          "transportId": "malha_lote.97708",
+          "properties": {
+            "objectid": 328908,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 113.13
+          },
+          "geometrySha256": "4ccae9d91e4e44958ced64d0b843322dbb8964036e9f8deb426e9d4b8117892a"
+        },
+        {
+          "transportId": "malha_lote.97709",
+          "properties": {
+            "objectid": 328909,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 112.33
+          },
+          "geometrySha256": "172e1ea612a135597c10b29e018bd8ef44488d38cecfc6c623c728a39bd3a15a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "nativeKey": "18010730067",
+      "records": [
+        {
+          "transportId": "malha_lote.97709",
+          "properties": {
+            "objectid": 328909,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 112.33
+          },
+          "geometrySha256": "172e1ea612a135597c10b29e018bd8ef44488d38cecfc6c623c728a39bd3a15a"
+        },
+        {
+          "transportId": "malha_lote.97748",
+          "properties": {
+            "objectid": 328948,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 1160.93
+          },
+          "geometrySha256": "1c7033de8e35fb203060d6d5add004347c5ca145c5acedcdeb079d12df77d97c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "nativeKey": "18010570308",
+      "records": [
+        {
+          "transportId": "malha_lote.52217",
+          "properties": {
+            "objectid": 330876,
+            "inscricao_lote": "18010570308",
+            "quadra": "1801057",
+            "area": 106.94
+          },
+          "geometrySha256": "1049c34eb1bf9fe15aca2b74c9b34165428f74e985f4ee283c6e678a8fe41a33"
+        },
+        {
+          "transportId": "malha_lote.99550",
+          "properties": {
+            "objectid": 330875,
+            "inscricao_lote": "18010570308",
+            "quadra": "1801057",
+            "area": 118.11
+          },
+          "geometrySha256": "b52b88f8240e4c79cdfd10ad548fb898ce2fbdc80604fc2e4683e551b6f19a09"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-200",
+      "nativeKey": "18010730067",
+      "records": [
+        {
+          "transportId": "malha_lote.97748",
+          "properties": {
+            "objectid": 328948,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 1160.93
+          },
+          "geometrySha256": "1c7033de8e35fb203060d6d5add004347c5ca145c5acedcdeb079d12df77d97c"
+        },
+        {
+          "transportId": "malha_lote.97708",
+          "properties": {
+            "objectid": 328908,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 113.13
+          },
+          "geometrySha256": "4ccae9d91e4e44958ced64d0b843322dbb8964036e9f8deb426e9d4b8117892a"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-200",
+      "nativeKey": "18010730067",
+      "records": [
+        {
+          "transportId": "malha_lote.97708",
+          "properties": {
+            "objectid": 328908,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 113.13
+          },
+          "geometrySha256": "4ccae9d91e4e44958ced64d0b843322dbb8964036e9f8deb426e9d4b8117892a"
+        },
+        {
+          "transportId": "malha_lote.97709",
+          "properties": {
+            "objectid": 328909,
+            "inscricao_lote": "18010730067",
+            "quadra": "1801073",
+            "area": 112.33
+          },
+          "geometrySha256": "172e1ea612a135597c10b29e018bd8ef44488d38cecfc6c623c728a39bd3a15a"
+        }
+      ]
+    }
+  ]
+}

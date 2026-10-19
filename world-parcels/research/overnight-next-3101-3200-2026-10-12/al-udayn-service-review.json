@@ -1,0 +1,27 @@
+{
+  "cityRecord": "city-4404-al-udayn.json",
+  "cityCode": 4404,
+  "queueRank": 3150,
+  "serviceReview": "Yemen national real-estate registry law and Ministry of Justice institutional announcements were evidenced, but no local Al `Udayn custodian, open map, public parcel API, safe native parcel identity, CRS, or geometry was qualified.",
+  "registryFound": null,
+  "registryCustodian": "Yemen Ministry of Justice and Human Rights / Real Estate Registry and Documentation Authority; local Al `Udayn custody was not evidenced.",
+  "sourceLead": "https://moj.gov.ye/NewsD/17330",
+  "requestOutcomes": [
+    {"method":"GET","url":"https://agoye.gov.ye/page.php?id=374","outcome":"HTTP 200; official national Real Estate Registry Law retrieved; no open parcel service."},
+    {"method":"GET","url":"https://moj.gov.ye/NewsD/17288","outcome":"HTTP 200; official notice on the newly formed registry/documentation authority retrieved."},
+    {"method":"GET","url":"https://moj.gov.ye/NewsD/17330","outcome":"HTTP 200; official notice on initial authority organization retrieved; no public map/API."},
+    {"method":"GET","url":"https://www.moj.gov.ye/CircularsMD/1","outcome":"HTTP 200; official circular retrieved; general legal/registry references only."},
+    {"method":"GET","url":"https://cso-ye.org/%D9%85%D8%B1%D9%83%D8%B2-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%AC%D8%BA%D8%B1%D8%A7%D9%81%D9%8A%D8%A9/","outcome":"Bot-verification page; no bypass or parcel request."}
+  ],
+  "scopeAndLimits": [
+    "Exact WUP point [13.9670403999154, 43.9971348717393] was preserved and not shifted.",
+    "No exact-point request was made because no public Al `Udayn parcel service was identified; this is not evidence of citywide absence.",
+    "No local registry/map/API, schema, CRS, stable native ID, or polygon was verified.",
+    "The national law and institutional notices do not prove local service coverage or data completeness.",
+    "No unsafe fields, credentials, private tokens, CAPTCHA bypass, or login were used."
+  ],
+  "safeFieldAllowlist": ["stable native parcel ID", "full parcel polygon", "CRS", "public service metadata", "retrieval date"],
+  "geometry": {"verified": false, "sampleCount": 0, "sampleFile": null, "retainedFeatureProperties": null},
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "uncertainty": "National first-party legal and organizational evidence does not establish an open Al `Udayn cadastral map/API or citywide parcel completeness."
+}

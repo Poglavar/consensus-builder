@@ -1,0 +1,30 @@
+{
+  "cityRecord": "city-3952-abu-gharaq.json",
+  "cityCode": 3952,
+  "queueRank": 3169,
+  "attempt": 1,
+  "reviewStatus": "complete_research_held_runtime",
+  "service": "Iraq Ministry of Justice General Real Estate Registration Department / Ur Portal",
+  "queryAndRequestOutcome": "Separate English and Arabic first-party discovery completed. The Ministry of Justice officially identifies a real-estate-registration directorate in Abu Gharaq, Babylon. Official Ministry and Ur Portal routes were fetched or inspected, including the current JavaScript service shell and its generic API/auth references. No bounded anonymous parcel ID-plus-geometry response, schema, CRS, or safe native identity was obtained.",
+  "scopeLimits": [
+    "Local registry custody is evidenced, but its service announcement is not evidence of open parcel-vector coverage.",
+    "The property-map service appears to be a citizen workflow and may require authentication; no login or credentials were attempted.",
+    "A zero exact-point hit, map extent miss, HTTP 418, JavaScript-only shell, or absent public endpoint is not evidence of citywide parcel absence.",
+    "No city boundary, coverage completeness, or runtime adapter readiness was established."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identity",
+    "full parcel geometry",
+    "geometry CRS",
+    "reproduction metadata for the public service"
+  ],
+  "retainedSamples": [],
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "No GeoJSON sample is retained because no full parcel polygon with a stable native identity was observed.",
+    "The Ministry announcement establishes a local registry directorate but does not publish field names, parcel keys, service configuration, or public geometry access.",
+    "Unsafe owner/title/address/personal/tax/account fields were neither requested nor retained.",
+    "Independent serial review is required before any runtime use."
+  ]
+}

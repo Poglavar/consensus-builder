@@ -137,8 +137,13 @@
     }
 
     function onKeyDown(e) {
+        if (document.body.classList.contains('three-mode-active')) return;
         if (!active) return;
-        if (e.key === 'Escape') deactivate();
+        if (e.key === 'Escape') {
+            // Escape cancels only this drawing; the shell owns its own navigation state.
+            e.preventDefault();
+            deactivate();
+        }
     }
 
     function addVertexMarker(latlng, isFirst) {
@@ -205,8 +210,8 @@
     }
 
     function findParcelsInPolygon(polygon) {
-        const parcelLayer = global.parcelLayer;
-        if (!parcelLayer || typeof parcelLayer.eachLayer !== 'function') {
+        const fabric = global.LiveParcelFabric;
+        if (!fabric || typeof fabric.queryBounds !== 'function') {
             return [];
         }
 
@@ -218,11 +223,8 @@
         const polygonFeature = turf.polygon(polygon.coordinates);
         const matched = [];
 
-        parcelLayer.eachLayer(layer => {
-            const feature = layer.feature;
-            if (!feature || !feature.geometry) return;
-
-            const parcelId = global.getParcelId ? global.getParcelId(feature) : (feature.properties?.parcelId || feature.properties?.id);
+        fabric.queryBounds(turf.bbox(polygonFeature), { includeCorridors: false }).forEach(feature => {
+            const parcelId = fabric.featureId?.(feature);
             if (!parcelId) return;
 
             try {
@@ -233,8 +235,8 @@
                         feature
                     });
                 }
-            } catch (_) {
-                // Skip invalid geometries
+            } catch (error) {
+                console.warn(`Unable to test area-monitor intersection for ${parcelId}.`, error);
             }
         });
 

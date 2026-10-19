@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "cityCode": 6669,
+  "queueRank": 2586,
+  "cityId": "wup2025:6669",
+  "name": "Hihya",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "iso3": "EGY",
+  "point": [30.647762716809, 31.5984131782602],
+  "population2025": 227360,
+  "population2025k": 227.36,
+  "populationUnit": "persons",
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hihya Egypt cadastral parcel map official GIS Egyptian Survey Authority Sharkia public map API",
+        "result": "Search identified the official Egyptian Survey Authority and the Egyptian government EGIS ArcGIS REST directory. The ESA pages document map production and purchase/request procedures; the reachable EGIS service inspected was a governorate-boundary layer, not a parcel layer. No Hihya cadastral geometry endpoint was exposed.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.egis.idsc.gov.eg/server/rest/services?f=pjson"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "ههيا مصر خريطة كادسترية قطع الأراضي هيئة المساحة المصرية الشرقية بوابة جغرافية",
+        "result": "البحث أظهر هيئة المساحة المصرية الرسمية وصفحات الخرائط الرقمية والورقية، مع إجراءات طلب/شراء الخرائط، ولم يُظهر خدمة عامة مجهولة للاستعلام عن قطع الأراضي في ههيا. جرى فحص خدمة EGIS الحكومية المتاحة؛ وهي طبقة حدود إدارية للمحافظات وليست طبقة قطع أراضٍ.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingMapRoom.aspx",
+          "https://www.esa.gov.eg/ehdathyat.aspx"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "registryBasis": "The Egyptian Survey Authority is the national mapping/survey custodian and documents cadastral/property-map production historically and map-request services currently. No Hihya-local registry/cadastre viewer or public parcel endpoint was evidenced.",
+  "runtimeReadiness": "held"
+}

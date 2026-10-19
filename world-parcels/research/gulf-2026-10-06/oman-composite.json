@@ -1,0 +1,97 @@
+[
+  {
+    "operation": "scopeCount",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+%3C%3E+%27+%27+AND+PLOTNUM+IS+NOT+NULL+AND+PLOTNUM+%3C%3E+%27+%27&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 280660
+    }
+  },
+  {
+    "operation": "missingPlotNumber",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+%3C%3E+%27+%27+AND+%28PLOTNUM+IS+NULL+OR+PLOTNUM+%3D+%27+%27%29&returnCountOnly=true&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "count": 0
+    }
+  },
+  {
+    "operation": "distinctPairs",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+%3C%3E+%27+%27+AND+PLOTNUM+IS+NOT+NULL+AND+PLOTNUM+%3C%3E+%27+%27&outFields=PAIN%2CPLOTNUM&returnDistinctValues=true&returnCountOnly=true&returnGeometry=false&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "error": {
+        "code": 400,
+        "message": "When returnCountOnly and returnDistinctValues are true, more than one field specified in outFields is not supported.",
+        "details": []
+      }
+    }
+  },
+  {
+    "operation": "duplicatePairs",
+    "url": "https://geoportal.mm.gov.om/server/rest/services/MM/EnglishWebsite_mmm12c/MapServer/6/query?where=PAIN+IS+NOT+NULL+AND+PAIN+%3C%3E+%27+%27+AND+PLOTNUM+IS+NOT+NULL+AND+PLOTNUM+%3C%3E+%27+%27&outStatistics=%5B%7B%22statisticType%22%3A+%22count%22%2C+%22onStatisticField%22%3A+%22PLOTNUM%22%2C+%22outStatisticFieldName%22%3A+%22n%22%7D%5D&groupByFieldsForStatistics=PAIN%2CPLOTNUM&having=COUNT%28PLOTNUM%29%3E1&orderByFields=n+DESC&returnGeometry=false&f=json",
+    "httpStatus": "200",
+    "exit": 0,
+    "error": "",
+    "result": {
+      "displayFieldName": "",
+      "fieldAliases": {
+        "PAIN": "PAIN",
+        "PLOTNUM": "PLOTNUM",
+        "N": "N"
+      },
+      "fields": [
+        {
+          "name": "PAIN",
+          "type": "esriFieldTypeString",
+          "alias": "PAIN",
+          "length": 255
+        },
+        {
+          "name": "PLOTNUM",
+          "type": "esriFieldTypeString",
+          "alias": "PLOTNUM",
+          "length": 255
+        },
+        {
+          "name": "N",
+          "type": "esriFieldTypeBigInteger",
+          "alias": "N"
+        }
+      ],
+      "features": [
+        {
+          "attributes": {
+            "PAIN": "01-02-006-02-084",
+            "PLOTNUM": "84",
+            "N": 5
+          }
+        },
+        {
+          "attributes": {
+            "PAIN": "01-03-002-01-6220",
+            "PLOTNUM": "6220",
+            "N": 4
+          }
+        },
+        {
+          "attributes": {
+            "PAIN": "01-05-007-01-6216",
+            "PLOTNUM": "6216",
+            "N": 3
+          }
+        }
+      ],
+      "aggregate": {
+        "duplicatePairs": 192,
+        "duplicateRows": 393
+      }
+    }
+  }
+]

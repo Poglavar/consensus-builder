@@ -1,0 +1,114 @@
+{
+  "purpose": "City-specific cadastral-source research; findings are limited to observed first-party evidence.",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-12",
+  "attempt": 1,
+  "cityCode": 1489,
+  "queueRank": 2999,
+  "name": "Niš",
+  "country": "Serbia",
+  "countryCode": "RS",
+  "iso3": "SRB",
+  "locId": 688,
+  "capital": false,
+  "point": [43.3188198916352, 21.9103223663759],
+  "population2025": 199431,
+  "population2025k": 199.431,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "researchedAt": "2026-10-12",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Niš Serbia official cadastral parcel map RGZ geoportal",
+        "result": "First-party discovery identified the Republic Geodetic Authority (RGZ) cadastral-office/public-access pages and the official City of Niš GIS Smart Portal. The municipal GIS exposes an ArcGIS MapServer layer named Nis_NEP with polygon geometry and parcel/object classification; no successful anonymous feature response was obtained.",
+        "actualResultUrls": [
+          "https://www.rgz.gov.rs/katastri-u-srbiji",
+          "https://www.rgz.gov.rs/javni-pristup",
+          "https://gis.ni.rs/smartPortal/gunisPublic",
+          "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0"
+        ]
+      },
+      {
+        "language": "Serbian (local/native)",
+        "query": "Niš katastar parcela zvanični geoportal RGZ",
+        "result": "First-party Serbian-language RGZ results identify the Niš cadastral service/public eKatastar route. The official City of Niš GIS Smart Portal and Nis_NEP ArcGIS layer were also confirmed; no safe anonymous parcel geometry response was returned by the bounded probes.",
+        "actualResultUrls": [
+          "https://www.rgz.gov.rs/katastri-u-srbiji",
+          "https://preview.rgz.gov.rs/е-катастар",
+          "https://gis.ni.rs/smartPortal/gunisPublic",
+          "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryEvidence": {
+    "custodian": "City of Niš GIS Smart Portal is a local first-party municipal GIS route; RGZ is the national cadastral custodian and lists the Niš cadastral office/service.",
+    "locality": "The GIS service is explicitly named Nis_NEP and is hosted under the City of Niš GIS domain. RGZ public-access material describes Serbia-wide cadastral search by cadastral municipality/parcel or address.",
+    "evidenceUrls": [
+      "https://gis.ni.rs/smartPortal/gunisPublic",
+      "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer",
+      "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0",
+      "https://www.rgz.gov.rs/katastri-u-srbiji",
+      "https://www.rgz.gov.rs/javni-pristup"
+    ],
+    "scopeNote": "The municipal service is evidence of a local first-party GIS/cadastral-style map route, not evidence that all cadastral records or all city parcels are publicly queryable or complete. RGZ is recorded as general/national agency context, not as a successful geometry integration route."
+  },
+  "parcelDiscovery": {
+    "geometryFound": false,
+    "sampleFiles": [],
+    "source": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0",
+    "nativeIdField": "objectid (OID); metadata also exposes gis_id, deoparcele_id, brparcele and related source fields",
+    "nativeIdentityObserved": null,
+    "crs": "EPSG:3857 (service/layer metadata reports WKID 102100/latestWkid 3857)",
+    "boundedResponse": "No usable feature response; the service layer metadata was retrieved successfully, but anonymous /query probes returned an HTML error page or ArcGIS error 500.",
+    "note": "The official layer metadata reports esriGeometryPolygon and a parcel/object classification field. Because no bounded ID+geometry response was obtained, no GeoJSON was retained. Source-specific attributes, including potentially unsafe fields visible in the schema, were not requested for retention."
+  },
+  "sourceReview": {
+    "attempts": [
+      {
+        "method": "GET",
+        "url": "https://gis.ni.rs/smartPortal/gunisPublic",
+        "outcome": "HTTP 200 viewer HTML retrieved; current page references the GDi Smart Portal JavaScript bootstrap. No login or credentials used."
+      },
+      {
+        "method": "GET",
+        "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer?f=pjson",
+        "outcome": "HTTP 200; official ArcGIS service metadata retrieved. Service contains layer 0 Nis_NEP, polygon layer, service CRS EPSG:3857, and Map/TilesOnly capabilities."
+      },
+      {
+        "method": "GET",
+        "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0?f=pjson",
+        "outcome": "HTTP 200; layer schema retrieved. Polygon geometry and safe candidate native identifier objectid were observed; metadata also exposed many non-safe descriptive/right-holder fields, which were not requested or retained."
+      },
+      {
+        "method": "GET",
+        "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0/query?where=nepokretnost%3D%27parcela%27&outFields=objectid&returnGeometry=true&outSR=4326&f=geojson&resultRecordCount=3",
+        "outcome": "No usable GeoJSON response; returned an HTML error page from the MapServer route. No feature or geometry retained."
+      },
+      {
+        "method": "GET",
+        "url": "https://gis.ni.rs/server/rest/services/Hosted/Nis_NEP/MapServer/0/query?geometry=21.9103223663759%2C43.3188198916352&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&where=nepokretnost%3D%27parcela%27&outFields=objectid&returnGeometry=true&outSR=4326&f=pjson",
+        "outcome": "HTTP 200 transport with ArcGIS JSON error code 500, Error performing query operation. This is an unusable query outcome, not evidence of a zero exact-point hit or citywide absence; the exact WUP point was preserved and not shifted."
+      },
+      {
+        "method": "GET",
+        "url": "https://www.rgz.gov.rs/javni-pristup",
+        "outcome": "Official RGZ public-access guidance retrieved; it describes public eKatastar search by parcel number within cadastral municipality or address, but no anonymous polygon API was exposed by this route."
+      }
+    ]
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "full parcel geometry", "geometry CRS", "source layer/service metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "integration": "not_admitted",
+  "uncertainty": [
+    "The exact WUP point [43.3188198916352, 21.9103223663759] was preserved and never shifted.",
+    "The official local layer metadata demonstrates a municipal parcel/object map layer, but the current anonymous query route did not return usable features; this may reflect MapServer capability or route/query restrictions.",
+    "No zero-hit, extent miss, timeout, login wall, or unusable UI result is interpreted as citywide absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, certificate, or other unsafe fields were requested or retained.",
+    "This packet is research evidence only and is not source integration or admission."
+  ]
+}

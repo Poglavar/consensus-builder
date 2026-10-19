@@ -1,0 +1,16 @@
+{
+  "taskId": "city:4258",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-4258-bayannur.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/bayannur-service-review.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/root-review-receipts/source-evidence/city_4258-root-review.json",
+    "tmp/valhalla-parcel-research/bayannur/cadastre.html",
+    "tmp/valhalla-parcel-research/bayannur/cadastre.headers",
+    "tmp/valhalla-parcel-research/bayannur/search.headers",
+    "tmp/valhalla-parcel-research/bayannur/search.html"
+  ],
+  "checkedAt": "2026-10-10T20:20:49.407324Z"
+}

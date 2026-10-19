@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-04",
+  "researchOrder": 141,
+  "city": "Patna",
+  "countryCode": "IN",
+  "historicalStatus": "no_verified_open_endpoint_after_attempts",
+  "researchSource": "world-parcels/registry.json",
+  "priorEvidenceFile": "research/patna.json",
+  "query": {
+    "language": "Hindi",
+    "script": "Devanagari",
+    "text": "पटना बिहार भू नक्शा भूमि सर्वेक्षण राजस्व विभाग सरकारी"
+  },
+  "searchTrace": {
+    "date": "2026-10-04",
+    "method": "web search",
+    "queryLanguage": "Hindi",
+    "queryScript": "Devanagari",
+    "nativeQuery": "पटना बिहार भू नक्शा भूमि सर्वेक्षण राजस्व विभाग सरकारी",
+    "englishQuery": "Patna Bihar land map and land survey records from the Revenue Department",
+    "searchScope": "search-result discovery only; results below reflect what surfaced, not proof of absence"
+  },
+  "results": [
+    {
+      "title": "BhuNaksha Bihar",
+      "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "kind": "official-state-cadastral-viewer",
+      "note": "Government cadastral viewer selects district and local survey units; Patna coverage and machine-readable public access were not verified."
+    },
+    {
+      "title": "BiharBhumi",
+      "url": "https://biharbhumi.bihar.gov.in/Biharbhumi/default/Default",
+      "kind": "official-state-land-records",
+      "note": "State land portal lists Bhu-Naksha map service and survey services; no spatial endpoint/API documented in search results."
+    }
+  ],
+  "assessment": "Bihar’s official land-record portals advertise map services, but this search did not confirm a Patna-specific parcel layer or export API.",
+  "endpointStatus": "not-verified",
+  "note": "Native-language discovery only; sources and coverage are recorded only where surfaced by this search. This note does not establish source absence or alter historical registry status.",
+  "cityId": "wup2025:11039",
+  "searchedAt": "2026-10-04T01:42:55+04:00"
+}

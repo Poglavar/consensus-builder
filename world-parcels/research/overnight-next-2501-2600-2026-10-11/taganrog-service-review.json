@@ -1,0 +1,35 @@
+{
+  "cityRecord": "city-4804-taganrog.json",
+  "cityCode": 4804,
+  "queueRank": 2537,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": null,
+  "service": "No verified public Taganrog cadastral parcel service",
+  "officialEvidence": [
+    {"url": "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/pravila-zemlepolzovaniya-i-zastroyki-munitsipalnogo-obrazovaniya-gorod-taganrog/", "observation": "Official Taganrog municipal page provides zoning maps, zoning rules, and planning documents. It is municipal planning evidence, not a parcel-geometry service or cadastral registry endpoint."},
+    {"url": "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/generalnyy-plan-munitsipalnogo-obrazovaniya-gorod-taganrog/", "observation": "Official Taganrog municipal page provides general-plan materials and planned infrastructure maps; no parcel API or native parcel identity schema was exposed."},
+    {"url": "https://nspd.gov.ru/", "observation": "Official national NSPD destination identified by Russian cadastral-platform documentation as the successor location for the Public Cadastral Map; the map endpoint was not usable for anonymous response inspection during this attempt."},
+    {"url": "https://roskadastr.tatarstan.ru/index.htm/news/2499998.htm", "observation": "Official Roskadastr regional publication states that the Public Cadastral Map moved to NSPD and describes its public cadastral purpose; this is national service documentation, not Taganrog-local service evidence."},
+    {"url": "https://cgko.tatarstan.ru/index.htm/news/2372481.htm", "observation": "Official regional cadastral-evaluation publication documents NSPD map functions and public cadastral layers; it does not expose a Taganrog-specific endpoint or response."}
+  ],
+  "requestsAndEndpointChecks": [
+    {"url": "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/pravila-zemlepolzovaniya-i-zastroyki-munitsipalnogo-obrazovaniya-gorod-taganrog/", "method": "GET", "status": "HTTP 200", "observation": "HTML loaded; links/materials are planning and zoning documents, with no advertised parcel API."},
+    {"url": "https://tagancity.ru/vlast/gradostroitelnaya-deyatelnost/generalnyy-plan-munitsipalnogo-obrazovaniya-gorod-taganrog/", "method": "GET", "status": "HTTP 200", "observation": "HTML loaded; general-plan materials were available, but no parcel schema or geometry endpoint was advertised."},
+    {"url": "https://nspd.gov.ru/", "method": "GET", "status": "timeout after 15 seconds", "observation": "Official national portal was not usable for further anonymous JavaScript/configuration inspection; this is not evidence of citywide absence."},
+    {"url": "https://nspd.gov.ru/maps", "method": "GET", "status": "timeout after 20 seconds", "observation": "Official map route did not return an inspectable response; no schema, CRS, or geometry was retained."}
+  ],
+  "sourceFieldMapping": null,
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "CRS", "source scope/provenance"],
+  "sample": {"file": null, "featureCount": 0, "nativeIds": [], "propertiesPolicy": "No sample retained."},
+  "coverageAssessment": {"claimedScope": "Official Taganrog planning documents and national Russian cadastral-platform documentation.", "verifiedOpenScope": null, "countrywideVerified": false},
+  "uncertainty": [
+    "No city-local registry/cadastre service, public parcel API, schema/CRS response, safe native parcel identity, or parcel geometry was verified.",
+    "The exact WUP point [47.234231592592, 38.9019133582081] was preserved and not shifted.",
+    "Municipal zoning and general-plan materials cannot qualify as cadastral parcel geometry.",
+    "National agency prose and NSPD destination evidence identify a custodian/platform, not a verified open Taganrog route.",
+    "Packet completion is research only; runtimeReadiness remains held pending independent serial adapter qualification."
+  ],
+  "runtimeReadiness": "held",
+  "technicalBlocker": "No safe anonymous Taganrog parcel geometry endpoint was found after bounded first-party English and Russian discovery and direct public GET checks."
+}

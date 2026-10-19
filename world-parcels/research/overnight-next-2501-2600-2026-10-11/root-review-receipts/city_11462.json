@@ -1,0 +1,31 @@
+{
+  "taskId": "city:11462",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/city-11462-jiangyan.json",
+    "world-parcels/research/overnight-next-2501-2600-2026-10-11/jiangyan-service-review.json",
+    "tmp/valhalla-parcel-research/11462/json.js",
+    "tmp/valhalla-parcel-research/11462/login.html"
+  ],
+  "checkedAt": "2026-10-11T13:50:32.430073Z",
+  "reason": "Held: First-party configuration maps 姜堰区 code 321204 to a login page; cached page requires credentials and CAPTCHA. No parcel ID or geometry. Independent live adapter qualification (fresh native-ID reads, forced paging, 13 bounded cells, metric GEOS checks, source binding, headed Details) is absent. This is not evidence of citywide parcel absence.",
+  "identityCheck": {
+    "rank": 2518,
+    "cityCode": 11462,
+    "country": "China",
+    "countryCode": "CN",
+    "point": [
+      32.5059501151603,
+      120.153584959365
+    ],
+    "populationPersons": 233463,
+    "matchedQueueAndRankedRoster": true
+  },
+  "searchesChecked": [
+    "English",
+    "Chinese"
+  ],
+  "retainedPolygonCount": 0
+}

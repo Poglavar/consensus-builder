@@ -1,0 +1,48 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "CH",
+ "regionCode": "OW",
+ "regionName": "OW",
+ "checkedAt": "2026-09-30",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36; Accept: application/json,text/xml,application/xml,text/html;q=0.9,*/*;q=0.8; Accept-Language: de-CH,de;q=0.9; Referer https://geodienste.ch/; cookie jar used",
+ "status": "credentialed_or_paid",
+ "source": {
+  "sourceId": "ch-geodienste-av0",
+  "name": "geodienste.ch Amtliche Vermessung (av_0) WFS 2.0, feature type ms:RESF",
+  "operator": "Cantons and Confederation via geodienste.ch",
+  "scope": "canton OW as one filter of a multi-canton national aggregate",
+  "endpoint": "https://geodienste.ch/db/av_0/deu",
+  "method": "GET",
+  "responseFormat": "WFS 2.0 GML 3.2 (text/xml)",
+  "crs": "EPSG:2056",
+  "reuseStatus": "keine Angabe (per services.json); canton terms https://geodienste.ch/pdfs/OW/av/data/Produkteinformation_fuer_Datenausgabe_NW_OW.pdf"
+ },
+ "verifiedParcelResponse": null,
+ "regionWideClaimed": false,
+ "regionWideBasis": "Not open. Release required (publication_data \"Freigabe erforderlich\"); free only if the client is a municipality, canton or Confederation; via GIS Daten AG Sarnen.",
+ "subregionsVerified": [],
+ "portalsFound": [
+  {
+   "url": "https://geodienste.ch/info/services.json",
+   "observation": "OW av entry: publication_data=Freigabe erforderlich, cantonal_coverage=True, contract_required_data=False, opendata_terms_data=keine Angabe, terms_of_use_data=https://geodienste.ch/pdfs/OW/av/data/Produkteinformation_fuer_Datenausgabe_NW_OW.pdf"
+  },
+  {
+   "url": "https://geodienste.ch/services/av",
+   "observation": "geodienste.ch AV topic page (terms https://geodienste.ch/terms-of-use)"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://geodienste.ch/db/av_0/deu?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ms:RESF&COUNT=3&SRSNAME=urn:ogc:def:crs:EPSG::2056&BBOX=2661000,1189000,2661150,1189150,urn:ogc:def:crs:EPSG::2056",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/xml",
+   "assessment": "0 RESF features"
+  }
+ ],
+ "gatedCondition": "Release required (publication_data \"Freigabe erforderlich\"); free only if the client is a municipality, canton or Confederation; via GIS Daten AG Sarnen.",
+ "gatedBehaviour": "Bounded GetFeature at Sarnen returned HTTP 200 with numberReturned=0 (release filter FILTER_ALLOWED_CANTONS excludes OW); not bypassed.",
+ "reuseStatus": "Release required (publication_data \"Freigabe erforderlich\"); free only if the client is a municipality, canton or Confederation; via GIS Daten AG Sarnen.",
+ "remainingUncertainty": "A 0-feature result is the documented release gate; not retried with credentials. No login attempted. Cantonal WMS is free but is not a parcel record list.",
+ "nextStep": "Obtain contract/release from canton (GIS Daten AG) if parcel data for OW is needed."
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:76",
+  "queueRank": 76,
+  "name": "Dubai",
+  "country": "United Arab Emirates",
+  "countryCode": "AE",
+  "centerLatLon": [
+    25.2660457368685,
+    55.3424842471265
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.dm.gov.ae/municipality-business/planning-and-construction/geographic-information-systems/gis-services/",
+      "observation": "Dubai Municipality GIS Services page (reachable, lists an Open Data link); provides maps/data to entities on request, no public parcel query endpoint documented."
+    },
+    {
+      "url": "https://dubailand.gov.ae/en/open-data/",
+      "observation": "Dubai Land Department open-data page (reachable); statistics/transaction data, no parcel polygons verified."
+    },
+    {
+      "url": "https://geodubai.dm.gov.ae/en/Pages/default.aspx",
+      "observation": "GeoDubai portal (found via search); connection reset from research proxy."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.dm.gov.ae/municipality-business/planning-and-construction/geographic-information-systems/gis-services/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "assessment": "HTML page only"
+    },
+    {
+      "url": "https://dubailand.gov.ae/en/open-data/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "HTML page only"
+    },
+    {
+      "url": "https://geodubai.dm.gov.ae/en/Pages/default.aspx",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection reset"
+    },
+    {
+      "url": "https://www.dubaipulse.gov.ae/",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://gis.dm.gov.ae/arcgis/rest/services",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": "",
+      "assessment": "connection failed"
+    },
+    {
+      "url": "https://services1.arcgis.com/RTiKiFNGzgAobBzy/arcgis/rest/services/Parcels/FeatureServer/0?f=json",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "search hit is Palm Beach County, Florida parcels, not Dubai; rejected"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Emirate of Dubai land (Dubai Municipality / DLD)",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "Several Dubai government hosts (Dubai Pulse, GeoDubai, DM GIS servers) could not be reached, so an open feature service may exist behind them. Data appears to be provided on request. UAE-wide coverage is not implied.",
+  "nextStep": "Retry Dubai Pulse / GeoDubai; check whether DM publishes plot polygons via Dubai Pulse open-data API (may require registration)."
+}

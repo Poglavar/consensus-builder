@@ -1,0 +1,18 @@
+{
+  "cityRecord": "city-1232-glenfield.json",
+  "cityCode": 1232,
+  "queueRank": 2106,
+  "city": "Glenfield",
+  "country": "New Zealand",
+  "countryCode": "NZ",
+  "attempt": 1,
+  "reviewStatus": "complete",
+  "reviewedAt": "2026-10-10T00:00:00Z",
+  "discovery": {"english": "Official LINZ discovery found the NZ Primary Parcels dataset and public ArcGIS feature service.", "native": "The Māori-language/native query variant found LINZ Māori cadastral guidance and the same official national parcel source; no local Glenfield custodian was evidenced."},
+  "custodian": {"name": "Toitū Te Whenua Land Information New Zealand (LINZ)", "role": "National cadastral and land-record custodian; publishes current primary parcel polygons and public service metadata.", "evidenceUrls": ["https://www.linz.govt.nz/products-services/data/types-linz-data/property-ownership-and-boundary-data", "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/", "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0"]},
+  "attemptedRoutes": ["LINZ dataset page", "LINZ ArcGIS Online item", "ArcGIS item JSON", "ArcGIS layer metadata", "malformed-order exact point query", "corrected exact WUP-point query", "bounded local envelope query"],
+  "fieldPolicy": {"allowlist": ["stable native parcel id", "parcel polygon geometry", "source field names and mapping in metadata only", "CRS/format and request metadata"], "notRequested": ["owner/right-holder", "address/contact", "titleholder/certificate", "tax/account/identity/application data", "appellation/titles/legal-description/valuation/land-use/exemption fields"]},
+  "geometryReview": {"publicGeometryFound": true, "sampleFile": "glenfield-sample.geojson", "parcelCount": 1, "identities": ["5176177"], "reason": "Official public ArcGIS query intersecting the exact WUP point returned one polygon; GeoJSON retains exactly one canonical native LINZ id property and the full polygon geometry."},
+  "scopeLimits": ["Exact WUP point [-36.769531623771, 174.735780487087] was preserved and not shifted.", "The first point request used the wrong ArcGIS x,y order and returned zero; it was corrected and returned one parcel.", "One exact-point hit and a small envelope response do not establish citywide coverage.", "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, or unsafe owner/address/title/tax fields were used or requested.", "LINZ national custodianship was distinguished from a local Auckland/Glenfield registry; no local route was evidenced.", "Packet completion and sample verification do not constitute source integration or admission."],
+  "qualification": {"registryFound": true, "publicParcelGeometryFound": true, "runtimeReadiness": "held", "serialReviewerRequired": true, "uncertainty": "Official service schema, CRS, native identity, and one exact-point geometry are verified; municipal boundary clipping and citywide completeness remain unverified."}
+}

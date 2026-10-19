@@ -1,0 +1,72 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "AU",
+ "regionCode": "VIC",
+ "regionName": "Victoria",
+ "checkedAt": "2026-09-30",
+ "status": "verified_region_wide",
+ "headersUsed": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 | Accept: application/json, text/plain, */* | Accept-Language: en-AU,en;q=0.9 | cookie jar kept",
+ "source": {
+  "sourceId": "au-vic-vicmap-property",
+  "name": "Vicmap Property - Property Map Polygons, FeatureServer layer 0",
+  "operator": "State of Victoria, Dept of Transport and Planning (Vicmap; ArcGIS Online)",
+  "scope": "Victoria (state/territory-wide layer)",
+  "endpoint": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0",
+  "method": "GET ArcGIS REST query",
+  "responseFormat": "Esri JSON",
+  "crs": "EPSG:4326 via outSR",
+  "reuseStatus": "Item licenseInfo (per research/melbourne.json) says Vicmap data is provided under a licence; terms not independently reviewed here."
+ },
+ "verifiedParcelResponse": {
+  "sourceId": "au-vic-vicmap-property",
+  "requestUrl": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=prop_pfi&geometry=145.0585,-37.8312,145.0595,-37.8304",
+  "method": "GET",
+  "httpStatus": 200,
+  "contentType": "application/json",
+  "spatialTestAreaLonLat": [
+   145.0585,
+   -37.8312,
+   145.0595,
+   -37.8304
+  ],
+  "parcelRecordCount": 3,
+  "recordListPath": "features",
+  "geometryType": "esriGeometryPolygon",
+  "closedRings": true,
+  "idField": "prop_pfi",
+  "responseFile": "VIC-parcel-response.json",
+  "pagination": "resultRecordCount; maxRecordCount 2000; exceededTransferLimit true",
+  "regionSampled": "Melbourne (Camberwell) and Mildura"
+ },
+ "regionWideClaimed": true,
+ "regionWideBasis": "Vicmap Property covers the State of Victoria per publisher (item scope); sampled Melbourne and Mildura.",
+ "subregionsVerified": [
+  "Melbourne",
+  "Mildura"
+ ],
+ "portalsFound": [
+  {
+   "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0",
+   "observation": "Public ArcGIS REST endpoint; none"
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=prop_pfi&geometry=145.0585,-37.8312,145.0595,-37.8304",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "3 polygon features, closed rings (Melbourne (Camberwell))"
+  },
+  {
+   "url": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/arcgis/rest/services/Vicmap_Property/FeatureServer/0/query?where=1%3D1&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=4326&resultRecordCount=3&f=json&returnGeometry=true&outFields=prop_pfi&geometry=142.158,-34.185,142.159,-34.184",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "polygon features returned, closed rings (Mildura)"
+  }
+ ],
+ "reuseStatus": "Item licenseInfo (per research/melbourne.json) says Vicmap data is provided under a licence; terms not independently reviewed here.",
+ "remainingUncertainty": "Two bounded samples only; full-state completeness and currency not verified.",
+ "nextStep": "Read the publisher licence before any bulk use."
+}

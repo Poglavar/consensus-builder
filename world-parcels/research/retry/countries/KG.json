@@ -1,0 +1,80 @@
+{
+ "kind": "country",
+ "key": "KG",
+ "checkedAt": "2026-09-30",
+ "previousStatus": "temporarily_unavailable",
+ "newStatus": "temporarily_unavailable",
+ "headersUsed": "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36; Accept: text/html,application/xhtml+xml,application/xml;q=0.9,application/json,*/*;q=0.8; Accept-Language: ru-KG,ru;q=0.9,en;q=0.8",
+ "changedByHeaders": false,
+ "foundViaViewerInspection": true,
+ "verifiedParcelResponse": null,
+ "source": null,
+ "requests": [
+  {
+   "url": "https://www.gosreg.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "TLS/CONNECT failure (not bypassed)"
+  },
+  {
+   "url": "https://cadastre.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "TLS verification failed (not bypassed)"
+  },
+  {
+   "url": "http://cadastre.kg/",
+   "method": "GET",
+   "httpStatus": 503,
+   "contentType": "text/plain",
+   "assessment": "proxy upstream error"
+  },
+  {
+   "url": "https://srs.gov.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://aisgzk.kg/",
+   "method": "GET",
+   "httpStatus": 0,
+   "contentType": "",
+   "assessment": "CONNECT 502"
+  },
+  {
+   "url": "https://www.gosreg.gov.kg",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "official GAZR (State Agency for Land Resources) site loads; links to cadastre.kg, darek.kg/Map, kyrgyzmap.kg"
+  },
+  {
+   "url": "http://darek.kg/Map/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "GISAR address register viewer (ExtJS/OpenLayers) run by 'Kadastr' state institution; addresses, no parcel service URL found in HTML"
+  },
+  {
+   "url": "https://www.kyrgyzmap.kg/",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "text/html",
+   "assessment": "Goskartografiya MapStore2 viewer; localConfig.json is stock demo config, no cadastre layers"
+  },
+  {
+   "url": "https://data.gov.kg/api/3/action/package_search?q=кадастр&rows=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "0 datasets"
+  }
+ ],
+ "geoBlockSuspected": true,
+ "notes": "New: correct authority host is gosreg.gov.kg (agency now GAZR); discovered cadastre.kg, darek.kg (address register) and kyrgyzmap.kg. cadastre.kg still unreachable (TLS error / 503). Several Kyrgyz hosts refuse tunnel from this network; geo-block suspected because some .kg hosts load and others do not.",
+ "nextStep": "Retry cadastre.kg from another network/time; inspect its viewer JS; inspect darek.kg layer requests in a browser."
+}

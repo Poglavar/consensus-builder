@@ -1,0 +1,28 @@
+{
+  "cityRecord": "city-3013-deir-ez-zor.json",
+  "cityCode": 3013,
+  "queueRank": 2246,
+  "name": "Deir Ez Zor",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "pointLatLon": [35.3335021024199, 40.1373166892185],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "routes": [
+    {"method": "SEARCH", "url": "https://gov.nawafith.net/ar/ministry/almdyryh-alaamh-llmsalh-alaqaryh-wzarh-aladarh-almhlyh-walbyyh", "httpStatus": 200, "outcome": "English discovery located the official General Directorate of Real Estate Affairs directory page; it is institutional evidence, not a parcel API."},
+    {"method": "SEARCH", "url": "https://gov.nawafith.net/ar/ministry/almdyryh-alaamh-llmsalh-alaqaryh-wzarh-aladarh-almhlyh-walbyyh", "httpStatus": 200, "outcome": "Arabic discovery located the same official directorate page."},
+    {"method": "SEARCH", "url": "https://t.me/s/DeirezZorGov1?before=9623", "httpStatus": 200, "outcome": "First-party Deir ez-Zor governorate channel result described the cadastral survey directorate's boundary-verification procedure using cadastral plans; no downloadable geometry or service endpoint was exposed."},
+    {"method": "GET", "url": "https://gov.nawafith.net/ar/ministry/almdyryh-alaamh-llmsalh-alaqaryh-wzarh-aladarh-almhlyh-walbyyh", "httpStatus": 200, "outcome": "Page loaded. HTML and JavaScript were inspected; the page is a government directory/editorial registry and did not expose a cadastral map, parcel schema, or public feature route."},
+    {"method": "GET", "url": "https://sana.sy/governorates/2433432/", "httpStatus": 200, "outcome": "Official SANA page loaded. It states current electronic cadastral-record coverage is Damascus, Daraa, Quneitra and Latakia, with expansion planned; Deir ez-Zor was not listed."},
+    {"method": "GET", "url": "https://ecsc.gov.sy/", "httpStatus": null, "outcome": "Timed out after 20 seconds; no login was attempted and no conclusion about service absence was drawn."}
+  ],
+  "schemaAndCrs": {"localCatalog": null, "geometryCrs": null, "nativeIdentity": null},
+  "safeFieldAllowlist": ["stable native parcel ID if independently verified", "polygon geometry", "source service URL", "CRS", "retrieval timestamp"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "certificate/title", "personal data"],
+  "sampleGeoJSON": null,
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "No bounded anonymous parcel ID+geometry response or public parcel service schema was verified."},
+  "scopeLimits": ["The WUP point was preserved exactly and was not shifted to seek a hit.", "A local cadastral procedure does not imply open parcel geometry access.", "The SANA coverage statement and ecsc.gov.sy timeout do not prove citywide absence.", "No national or local parcel catalog/API response was available to inspect for CRS or native identity."],
+  "uncertainty": "The city has evidenced cadastral administration and boundary-verification activity, but public safe parcel geometry remains unresolved. This report documents observed routes and does not constitute source integration or admission."
+}

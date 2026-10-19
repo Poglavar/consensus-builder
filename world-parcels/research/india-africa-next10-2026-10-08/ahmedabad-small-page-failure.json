@@ -1,0 +1,540 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fresh acceptance of the filtered Ahmedabad catalogue descriptor; no parcel database import.",
+  "checkedAt": "2026-10-08T05:12:01.526Z",
+  "cityId": "wup2025:6408",
+  "descriptor": {
+    "id": "in-gj-tpvd-final-plots",
+    "name": "Gujarat TPVD — Ahmedabad final planning plots",
+    "adapter": "wfs",
+    "version": "1.1.0",
+    "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+    "featureType": "ctp:final_plot_boundary",
+    "geometryField": "the_geom",
+    "idField": "search",
+    "idType": "string",
+    "idPrefix": "IN-GJ-TPVD-",
+    "parcelNumberField": "fp_no",
+    "outFields": [
+      "search",
+      "fp_no",
+      "tps_id",
+      "tps_no",
+      "tps_name",
+      "village",
+      "city",
+      "authority",
+      "district",
+      "status"
+    ],
+    "attributeFilters": {
+      "status": "Final",
+      "city": "Ahmedabad",
+      "authority": "AMC"
+    },
+    "pageSize": 100,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 6,
+    "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+    "countryCode": "IN",
+    "metricSrid": 32643,
+    "cityIds": [
+      "ahmedabad"
+    ],
+    "scope": "Published final town-planning plots in Ahmedabad Municipal Corporation schemes only. The native search reference combines the provider's village, town-planning scheme and final-plot labels; fp_no is the display number. Bounded central Ahmedabad samples are verified; citywide completeness, current legal registration and ownership are not established.",
+    "evidenceFile": "research/india-africa-next10-2026-10-08/city-6408.json",
+    "attribution": "Government of Gujarat, Town Planning and Valuation Department (TPVD) — final AMC planning plots. Partial coverage; registration and currentness unverified. Adapted to WGS84.",
+    "catalogueUrl": "https://townplanning.gujarat.gov.in/Home",
+    "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+    "caveats": [
+      "The official TPVD website links to the public TPWebGIS host; no account is used.",
+      "Final planning plots are not proof of current land title or ownership. Draft, preliminary and non-AMC schemes are excluded by fixed upstream and response-validated filters.",
+      "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+      "WFS FIDs and gid are transport data, not parcel identities."
+    ]
+  },
+  "cellSize": 0.005,
+  "centerLatLon": [
+    23.0208369805955,
+    72.5971679403649
+  ],
+  "tests": [
+    {
+      "name": "six-simultaneous-cold-cells",
+      "passed": true,
+      "elapsedMs": 1858,
+      "cells": [
+        {
+          "bbox": [
+            72.59,
+            23.015,
+            72.595,
+            23.02
+          ],
+          "count": 50,
+          "elapsedMs": 1857,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.595,
+            23.015,
+            72.6,
+            23.02
+          ],
+          "count": 17,
+          "elapsedMs": 1354,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.6,
+            23.015,
+            72.605,
+            23.02
+          ],
+          "count": 18,
+          "elapsedMs": 1665,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.59,
+            23.02,
+            72.595,
+            23.025
+          ],
+          "count": 0,
+          "elapsedMs": 986,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.595,
+            23.02,
+            72.6,
+            23.025
+          ],
+          "count": 4,
+          "elapsedMs": 969,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.6,
+            23.02,
+            72.605,
+            23.025
+          ],
+          "count": 44,
+          "elapsedMs": 1550,
+          "complete": true
+        }
+      ],
+      "totalElapsedMs": 1858
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 248,
+      "bbox": [
+        72.59,
+        23.025,
+        72.595,
+        23.03
+      ],
+      "count": 0,
+      "complete": true
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 281,
+      "bbox": [
+        72.595,
+        23.025,
+        72.6,
+        23.03
+      ],
+      "count": 0,
+      "complete": true
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 251,
+      "bbox": [
+        72.6,
+        23.025,
+        72.605,
+        23.03
+      ],
+      "count": 17,
+      "complete": true
+    },
+    {
+      "name": "fresh-exact-0",
+      "passed": true,
+      "elapsedMs": 978,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Sarangpur 18 10",
+        "IN-GJ-TPVD-Sarangpur 18 12",
+        "IN-GJ-TPVD-Sarangpur 18 8",
+        "IN-GJ-TPVD-Sarangpur 18 9",
+        "IN-GJ-TPVD-Kankaria_Varid 2 50/A",
+        "IN-GJ-TPVD-Kankaria_Varid 2 52",
+        "IN-GJ-TPVD-Kankaria_Varid 2 53",
+        "IN-GJ-TPVD-Kankaria_Varid 2 54",
+        "IN-GJ-TPVD-Kankaria_Varid 2 55",
+        "IN-GJ-TPVD-Sarangpur 18 11",
+        "IN-GJ-TPVD-Sarangpur 18 16",
+        "IN-GJ-TPVD-Sarangpur 18 17",
+        "IN-GJ-TPVD-Sarangpur 18 18",
+        "IN-GJ-TPVD-Sarangpur 18 19",
+        "IN-GJ-TPVD-Sarangpur 18 20",
+        "IN-GJ-TPVD-Sarangpur 18 21",
+        "IN-GJ-TPVD-Sarangpur 18 27",
+        "IN-GJ-TPVD-Sarangpur 18 28",
+        "IN-GJ-TPVD-Sarangpur 18 29",
+        "IN-GJ-TPVD-Sarangpur 18 1",
+        "IN-GJ-TPVD-Sarangpur 18 13",
+        "IN-GJ-TPVD-Sarangpur 18 2+3",
+        "IN-GJ-TPVD-Sarangpur 18 4",
+        "IN-GJ-TPVD-Sarangpur 18 5",
+        "IN-GJ-TPVD-Sarangpur 18 6",
+        "IN-GJ-TPVD-Sarangpur 18 7",
+        "IN-GJ-TPVD-Shaher_Kotda 16 101",
+        "IN-GJ-TPVD-Shaher_Kotda 16 104",
+        "IN-GJ-TPVD-Shaher_Kotda 16 145",
+        "IN-GJ-TPVD-Shaher_Kotda 16 151",
+        "IN-GJ-TPVD-Shaher_Kotda 16 152",
+        "IN-GJ-TPVD-Shaher_Kotda 16 153",
+        "IN-GJ-TPVD-Shaher_Kotda 16 154",
+        "IN-GJ-TPVD-Shaher_Kotda 16 155",
+        "IN-GJ-TPVD-Shaher_Kotda 16 156",
+        "IN-GJ-TPVD-Shaher_Kotda 16 157",
+        "IN-GJ-TPVD-Shaher_Kotda 16 158",
+        "IN-GJ-TPVD-Shaher_Kotda 16 159",
+        "IN-GJ-TPVD-Shaher_Kotda 16 160",
+        "IN-GJ-TPVD-Shaher_Kotda 16 161"
+      ]
+    },
+    {
+      "name": "fresh-exact-40",
+      "passed": true,
+      "elapsedMs": 899,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Shaher_Kotda 16 162",
+        "IN-GJ-TPVD-Shaher_Kotda 16 163",
+        "IN-GJ-TPVD-Shaher_Kotda 16 164",
+        "IN-GJ-TPVD-Shaher_Kotda 16 165",
+        "IN-GJ-TPVD-Shaher_Kotda 16 166",
+        "IN-GJ-TPVD-Shaher_Kotda 16 167",
+        "IN-GJ-TPVD-Shaher_Kotda 16 168",
+        "IN-GJ-TPVD-Shaher_Kotda 16 169",
+        "IN-GJ-TPVD-Shaher_Kotda 16 170",
+        "IN-GJ-TPVD-Shaher_Kotda 16 171",
+        "IN-GJ-TPVD-Shaher_Kotda 16 172",
+        "IN-GJ-TPVD-Shaher_Kotda 16 173",
+        "IN-GJ-TPVD-Shaher_Kotda 16 174",
+        "IN-GJ-TPVD-Shaher_Kotda 16 181",
+        "IN-GJ-TPVD-Shaher_Kotda 16 183",
+        "IN-GJ-TPVD-Shaher_Kotda 16 184",
+        "IN-GJ-TPVD-Shaher_Kotda 16 185",
+        "IN-GJ-TPVD-Shaher_Kotda 16 187",
+        "IN-GJ-TPVD-Shaher_Kotda 16 188",
+        "IN-GJ-TPVD-Shaher_Kotda 16 308",
+        "IN-GJ-TPVD-Kankaria_Varid 2 188+189+190+191",
+        "IN-GJ-TPVD-Sarangpur 18 14",
+        "IN-GJ-TPVD-Sarangpur 18 15",
+        "IN-GJ-TPVD-Sarangpur 18 30",
+        "IN-GJ-TPVD-Sarangpur 18 31",
+        "IN-GJ-TPVD-Sarangpur 18 32",
+        "IN-GJ-TPVD-Sarangpur 18 33",
+        "IN-GJ-TPVD-Sarangpur 18 34",
+        "IN-GJ-TPVD-Shaher_Kotda 16 186",
+        "IN-GJ-TPVD-Shaher_Kotda 16 229",
+        "IN-GJ-TPVD-Jamalpur 1 108",
+        "IN-GJ-TPVD-Jamalpur 1 11",
+        "IN-GJ-TPVD-Jamalpur 1 12",
+        "IN-GJ-TPVD-Kankaria_Varid 2 1/1",
+        "IN-GJ-TPVD-Kankaria_Varid 2 1/2",
+        "IN-GJ-TPVD-Kankaria_Varid 2 11",
+        "IN-GJ-TPVD-Kankaria_Varid 2 12",
+        "IN-GJ-TPVD-Kankaria_Varid 2 13",
+        "IN-GJ-TPVD-Kankaria_Varid 2 14/1",
+        "IN-GJ-TPVD-Kankaria_Varid 2 14/2"
+      ]
+    },
+    {
+      "name": "fresh-exact-80",
+      "passed": true,
+      "elapsedMs": 827,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Kankaria_Varid 2 14/A",
+        "IN-GJ-TPVD-Kankaria_Varid 2 15",
+        "IN-GJ-TPVD-Kankaria_Varid 2 17",
+        "IN-GJ-TPVD-Kankaria_Varid 2 18",
+        "IN-GJ-TPVD-Kankaria_Varid 2 19",
+        "IN-GJ-TPVD-Kankaria_Varid 2 2",
+        "IN-GJ-TPVD-Kankaria_Varid 2 20",
+        "IN-GJ-TPVD-Kankaria_Varid 2 21",
+        "IN-GJ-TPVD-Kankaria_Varid 2 22",
+        "IN-GJ-TPVD-Kankaria_Varid 2 23",
+        "IN-GJ-TPVD-Kankaria_Varid 2 24",
+        "IN-GJ-TPVD-Kankaria_Varid 2 25",
+        "IN-GJ-TPVD-Kankaria_Varid 2 26",
+        "IN-GJ-TPVD-Kankaria_Varid 2 27",
+        "IN-GJ-TPVD-Kankaria_Varid 2 28",
+        "IN-GJ-TPVD-Kankaria_Varid 2 29",
+        "IN-GJ-TPVD-Kankaria_Varid 2 3",
+        "IN-GJ-TPVD-Kankaria_Varid 2 30",
+        "IN-GJ-TPVD-Kankaria_Varid 2 31",
+        "IN-GJ-TPVD-Kankaria_Varid 2 32",
+        "IN-GJ-TPVD-Kankaria_Varid 2 33",
+        "IN-GJ-TPVD-Kankaria_Varid 2 34",
+        "IN-GJ-TPVD-Kankaria_Varid 2 35",
+        "IN-GJ-TPVD-Kankaria_Varid 2 36",
+        "IN-GJ-TPVD-Kankaria_Varid 2 37",
+        "IN-GJ-TPVD-Kankaria_Varid 2 38",
+        "IN-GJ-TPVD-Kankaria_Varid 2 4",
+        "IN-GJ-TPVD-Kankaria_Varid 2 41+42+43",
+        "IN-GJ-TPVD-Kankaria_Varid 2 47/1",
+        "IN-GJ-TPVD-Kankaria_Varid 2 47/2",
+        "IN-GJ-TPVD-Kankaria_Varid 2 48",
+        "IN-GJ-TPVD-Kankaria_Varid 2 49",
+        "IN-GJ-TPVD-Kankaria_Varid 2 5",
+        "IN-GJ-TPVD-Kankaria_Varid 2 50",
+        "IN-GJ-TPVD-Kankaria_Varid 2 51",
+        "IN-GJ-TPVD-Kankaria_Varid 2 6+8",
+        "IN-GJ-TPVD-Kankaria_Varid 2 7",
+        "IN-GJ-TPVD-Kankaria_Varid 2 9+10",
+        "IN-GJ-TPVD-Shaher_Kotda 16 100",
+        "IN-GJ-TPVD-Shaher_Kotda 16 105"
+      ]
+    },
+    {
+      "name": "fresh-exact-120",
+      "passed": true,
+      "elapsedMs": 617,
+      "count": 12,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-TPVD-Shaher_Kotda 16 106",
+        "IN-GJ-TPVD-Shaher_Kotda 16 107",
+        "IN-GJ-TPVD-Shaher_Kotda 16 88",
+        "IN-GJ-TPVD-Shaher_Kotda 16 89",
+        "IN-GJ-TPVD-Shaher_Kotda 16 90",
+        "IN-GJ-TPVD-Shaher_Kotda 16 93",
+        "IN-GJ-TPVD-Shaher_Kotda 16 94",
+        "IN-GJ-TPVD-Shaher_Kotda 16 95",
+        "IN-GJ-TPVD-Shaher_Kotda 16 96",
+        "IN-GJ-TPVD-Shaher_Kotda 16 97",
+        "IN-GJ-TPVD-Shaher_Kotda 16 98",
+        "IN-GJ-TPVD-Shaher_Kotda 16 99"
+      ]
+    },
+    {
+      "name": "forced-small-pages",
+      "passed": false,
+      "elapsedMs": 4301,
+      "error": "WFS parcel provider returned missing, inconsistent or changing match counts."
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-08T05:12:01.528Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 994
+    },
+    {
+      "at": "2026-10-08T05:12:01.545Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.595%2C23.015%2C72.6%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 921
+    },
+    {
+      "at": "2026-10-08T05:12:01.550Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.6%2C23.015%2C72.605%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 981
+    },
+    {
+      "at": "2026-10-08T05:12:01.556Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.02%2C72.595%2C23.025%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 956
+    },
+    {
+      "at": "2026-10-08T05:12:01.562Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.595%2C23.02%2C72.6%2C23.025%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 932
+    },
+    {
+      "at": "2026-10-08T05:12:01.568Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.6%2C23.02%2C72.605%2C23.025%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 903
+    },
+    {
+      "at": "2026-10-08T05:12:03.386Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.025%2C72.595%2C23.03%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 246
+    },
+    {
+      "at": "2026-10-08T05:12:03.635Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.595%2C23.025%2C72.6%2C23.03%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 281
+    },
+    {
+      "at": "2026-10-08T05:12:03.917Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.6%2C23.025%2C72.605%2C23.03%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 237
+    },
+    {
+      "at": "2026-10-08T05:12:04.169Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Sarangpur+18+10%27%2C%27Sarangpur+18+12%27%2C%27Sarangpur+18+8%27%2C%27Sarangpur+18+9%27%2C%27Kankaria_Varid+2+50%2FA%27%2C%27Kankaria_Varid+2+52%27%2C%27Kankaria_Varid+2+53%27%2C%27Kankaria_Varid+2+54%27%2C%27Kankaria_Varid+2+55%27%2C%27Sarangpur+18+11%27%2C%27Sarangpur+18+16%27%2C%27Sarangpur+18+17%27%2C%27Sarangpur+18+18%27%2C%27Sarangpur+18+19%27%2C%27Sarangpur+18+20%27%2C%27Sarangpur+18+21%27%2C%27Sarangpur+18+27%27%2C%27Sarangpur+18+28%27%2C%27Sarangpur+18+29%27%2C%27Sarangpur+18+1%27%2C%27Sarangpur+18+13%27%2C%27Sarangpur+18+2%2B3%27%2C%27Sarangpur+18+4%27%2C%27Sarangpur+18+5%27%2C%27Sarangpur+18+6%27%2C%27Sarangpur+18+7%27%2C%27Shaher_Kotda+16+101%27%2C%27Shaher_Kotda+16+104%27%2C%27Shaher_Kotda+16+145%27%2C%27Shaher_Kotda+16+151%27%2C%27Shaher_Kotda+16+152%27%2C%27Shaher_Kotda+16+153%27%2C%27Shaher_Kotda+16+154%27%2C%27Shaher_Kotda+16+155%27%2C%27Shaher_Kotda+16+156%27%2C%27Shaher_Kotda+16+157%27%2C%27Shaher_Kotda+16+158%27%2C%27Shaher_Kotda+16+159%27%2C%27Shaher_Kotda+16+160%27%2C%27Shaher_Kotda+16+161%27%29%29",
+      "status": 200,
+      "elapsedMs": 756
+    },
+    {
+      "at": "2026-10-08T05:12:05.147Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Shaher_Kotda+16+162%27%2C%27Shaher_Kotda+16+163%27%2C%27Shaher_Kotda+16+164%27%2C%27Shaher_Kotda+16+165%27%2C%27Shaher_Kotda+16+166%27%2C%27Shaher_Kotda+16+167%27%2C%27Shaher_Kotda+16+168%27%2C%27Shaher_Kotda+16+169%27%2C%27Shaher_Kotda+16+170%27%2C%27Shaher_Kotda+16+171%27%2C%27Shaher_Kotda+16+172%27%2C%27Shaher_Kotda+16+173%27%2C%27Shaher_Kotda+16+174%27%2C%27Shaher_Kotda+16+181%27%2C%27Shaher_Kotda+16+183%27%2C%27Shaher_Kotda+16+184%27%2C%27Shaher_Kotda+16+185%27%2C%27Shaher_Kotda+16+187%27%2C%27Shaher_Kotda+16+188%27%2C%27Shaher_Kotda+16+308%27%2C%27Kankaria_Varid+2+188%2B189%2B190%2B191%27%2C%27Sarangpur+18+14%27%2C%27Sarangpur+18+15%27%2C%27Sarangpur+18+30%27%2C%27Sarangpur+18+31%27%2C%27Sarangpur+18+32%27%2C%27Sarangpur+18+33%27%2C%27Sarangpur+18+34%27%2C%27Shaher_Kotda+16+186%27%2C%27Shaher_Kotda+16+229%27%2C%27Jamalpur+1+108%27%2C%27Jamalpur+1+11%27%2C%27Jamalpur+1+12%27%2C%27Kankaria_Varid+2+1%2F1%27%2C%27Kankaria_Varid+2+1%2F2%27%2C%27Kankaria_Varid+2+11%27%2C%27Kankaria_Varid+2+12%27%2C%27Kankaria_Varid+2+13%27%2C%27Kankaria_Varid+2+14%2F1%27%2C%27Kankaria_Varid+2+14%2F2%27%29%29",
+      "status": 200,
+      "elapsedMs": 678
+    },
+    {
+      "at": "2026-10-08T05:12:06.046Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Kankaria_Varid+2+14%2FA%27%2C%27Kankaria_Varid+2+15%27%2C%27Kankaria_Varid+2+17%27%2C%27Kankaria_Varid+2+18%27%2C%27Kankaria_Varid+2+19%27%2C%27Kankaria_Varid+2+2%27%2C%27Kankaria_Varid+2+20%27%2C%27Kankaria_Varid+2+21%27%2C%27Kankaria_Varid+2+22%27%2C%27Kankaria_Varid+2+23%27%2C%27Kankaria_Varid+2+24%27%2C%27Kankaria_Varid+2+25%27%2C%27Kankaria_Varid+2+26%27%2C%27Kankaria_Varid+2+27%27%2C%27Kankaria_Varid+2+28%27%2C%27Kankaria_Varid+2+29%27%2C%27Kankaria_Varid+2+3%27%2C%27Kankaria_Varid+2+30%27%2C%27Kankaria_Varid+2+31%27%2C%27Kankaria_Varid+2+32%27%2C%27Kankaria_Varid+2+33%27%2C%27Kankaria_Varid+2+34%27%2C%27Kankaria_Varid+2+35%27%2C%27Kankaria_Varid+2+36%27%2C%27Kankaria_Varid+2+37%27%2C%27Kankaria_Varid+2+38%27%2C%27Kankaria_Varid+2+4%27%2C%27Kankaria_Varid+2+41%2B42%2B43%27%2C%27Kankaria_Varid+2+47%2F1%27%2C%27Kankaria_Varid+2+47%2F2%27%2C%27Kankaria_Varid+2+48%27%2C%27Kankaria_Varid+2+49%27%2C%27Kankaria_Varid+2+5%27%2C%27Kankaria_Varid+2+50%27%2C%27Kankaria_Varid+2+51%27%2C%27Kankaria_Varid+2+6%2B8%27%2C%27Kankaria_Varid+2+7%27%2C%27Kankaria_Varid+2+9%2B10%27%2C%27Shaher_Kotda+16+100%27%2C%27Shaher_Kotda+16+105%27%29%29",
+      "status": 200,
+      "elapsedMs": 570
+    },
+    {
+      "at": "2026-10-08T05:12:06.874Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=100&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28search+IN+%28%27Shaher_Kotda+16+106%27%2C%27Shaher_Kotda+16+107%27%2C%27Shaher_Kotda+16+88%27%2C%27Shaher_Kotda+16+89%27%2C%27Shaher_Kotda+16+90%27%2C%27Shaher_Kotda+16+93%27%2C%27Shaher_Kotda+16+94%27%2C%27Shaher_Kotda+16+95%27%2C%27Shaher_Kotda+16+96%27%2C%27Shaher_Kotda+16+97%27%2C%27Shaher_Kotda+16+98%27%2C%27Shaher_Kotda+16+99%27%29%29",
+      "status": 200,
+      "elapsedMs": 611
+    },
+    {
+      "at": "2026-10-08T05:12:07.492Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 253
+    },
+    {
+      "at": "2026-10-08T05:12:07.747Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=3&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 254
+    },
+    {
+      "at": "2026-10-08T05:12:08.003Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=6&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 256
+    },
+    {
+      "at": "2026-10-08T05:12:08.260Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=9&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 254
+    },
+    {
+      "at": "2026-10-08T05:12:08.515Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=12&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 250
+    },
+    {
+      "at": "2026-10-08T05:12:08.765Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=15&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 253
+    },
+    {
+      "at": "2026-10-08T05:12:09.019Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=18&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 254
+    },
+    {
+      "at": "2026-10-08T05:12:09.274Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=21&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 254
+    },
+    {
+      "at": "2026-10-08T05:12:09.529Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=24&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 258
+    },
+    {
+      "at": "2026-10-08T05:12:09.789Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=27&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 251
+    },
+    {
+      "at": "2026-10-08T05:12:10.040Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=30&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 256
+    },
+    {
+      "at": "2026-10-08T05:12:10.298Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=33&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 250
+    },
+    {
+      "at": "2026-10-08T05:12:10.552Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=36&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 242
+    },
+    {
+      "at": "2026-10-08T05:12:10.795Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=39&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 234
+    },
+    {
+      "at": "2026-10-08T05:12:11.031Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=42&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 241
+    },
+    {
+      "at": "2026-10-08T05:12:11.274Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=45&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 268
+    },
+    {
+      "at": "2026-10-08T05:12:11.544Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=3&startIndex=48&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Ahmedabad%27+AND+authority+%3D+%27AMC%27%29+AND+%28BBOX%28the_geom%2C72.59%2C23.015%2C72.595%2C23.02%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 247
+    }
+  ],
+  "nativeGeometryHashes": [],
+  "result": "failed",
+  "failure": {
+    "message": "WFS parcel provider returned missing, inconsistent or changing match counts.",
+    "status": 502,
+    "code": "parcel-source-unavailable"
+  }
+}

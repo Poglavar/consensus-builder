@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "cityId": "geonames:745044",
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_sample_candidate_countrywide",
+  "verifiedParcelResponse": null,
+  "portalsFound": [
+    {"url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama", "observation": "Turkish cadastre authority documents a free public parcel lookup for province, district, neighborhood and parcel number, including map viewing and individual KML export. It does not document an anonymous bounded list API."},
+    {"url": "https://parselsorgu.tkgm.gov.tr/", "observation": "The national parcel viewer loaded, but returned an HTML app shell rather than parcel records."},
+    {"url": "https://sehirharitasiapi.ibb.gov.tr/developer/api.html", "observation": "Istanbul municipality's city map API requires an API key; example polygons are drawing examples, not a cadastral list."}
+  ],
+  "requests": [
+    {"url": "https://parselsorgu.tkgm.gov.tr/", "method": "GET", "httpStatus": 200, "contentType": "text/html", "responseBytes": 4498, "parcelRecordCount": 0, "observation": "HTML viewer only"}
+  ],
+  "coverageAssessment": {"claimedScope": "National TKGM individual-parcel lookup", "verifiedOpenScope": "none; no parcel-list response", "countrywideVerified": false},
+  "remainingUncertainty": "Nationwide lookup does not establish nationwide reusable polygon downloads or bounded browser queries; public terms and bulk access need review.",
+  "nextStep": "Seek a documented TKGM vector endpoint or licensed export and verify parcel lists in Istanbul and a second province."
+}

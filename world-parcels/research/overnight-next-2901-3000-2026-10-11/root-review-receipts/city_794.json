@@ -1,0 +1,23 @@
+{
+  "taskId": "city:794",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/pending-queue.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/city-794-duekoue.json",
+    "world-parcels/research/overnight-next-2901-3000-2026-10-11/duekoue-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T23:05:23Z",
+  "reason": "Immutable WUP code 794, rank 2933, Côte d'Ivoire, point [6.73828965079841, -7.35266176241838] and 203323 persons match the original UN 2025 row. The packet records English and French searches and official SIGFU, AFOR and cadastre discovery, but its live viewer fetches failed TLS certificate validation before an HTTP response. No Duekoue parcel native ID, schema, CRS or polygon was retrieved, and the local registryFound value remains null because the discovered service descriptions do not independently establish a queried local registry. There is no fresh adapter native-ID read, forced paging, 13-cell metric audit, source binding or headed Details verification. Viewer unavailability is not citywide absence.",
+  "registryFound": null,
+  "durableSamplePolygonCount": 0,
+  "admissionGates": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  }
+}

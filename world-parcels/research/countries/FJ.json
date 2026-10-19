@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "countryCode": "FJ",
+  "country": "Fiji",
+  "checkedAt": "2026-09-29",
+  "status": "temporarily_unavailable",
+  "cadastreAuthority": "Ministry of Lands and Mineral Resources (Department of Lands / Lands and Survey)",
+  "portalsFound": [
+    {
+      "url": "https://www.lands.gov.fj/",
+      "observation": "Ministry site; connection reset from this network"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.lands.gov.fj/",
+      "method": "GET",
+      "httpStatus": "000",
+      "contentType": null,
+      "assessment": "connection reset by peer; host unreachable, not proof of absence"
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "unknown",
+    "regionsVerified": [],
+    "nationwideVerified": false
+  },
+  "accessModel": "unknown",
+  "remainingUncertainty": "Only one host attempted; no cadastre viewer or parcel service inspected.",
+  "nextStep": "Retry later; search Fiji Lands Department GIS / FijiGIS / Pacific Community (SPC) portals."
+}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Shiyan",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint.",
+  "registryEvidenceUrls": [
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719549.shtml",
+    "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9312,
+  "cityId": "wup2025:9312",
+  "centerLatLon": [
+    32.6330848273126,
+    110.779591761241
+  ],
+  "rank": 518,
+  "queueRank": 518,
+  "population2025": 992165,
+  "population2025k": 992.165,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous geometry-only route was identified. The documented map retrieval depends on a certificate QR, an app or a staffed/self-service query, so no lookup was performed.",
+  "scopeLimits": "Evidence is specific to Shiyan city/urban districts and its Real Estate Registration Center. The QR-retrieved parcel sketch is for an identified certificate and is not a public anonymous feed.",
+  "remainingUncertainty": "No public geometry/schema route was verified. Service channels may provide parcel sketches only for certificate-linked or applicant-authorized cases.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Shiyan China official real estate registration center cadastral parcel map public",
+        "scope": "Find city-specific registry/cartography basis and safe anonymous geometry routes.",
+        "result": "Official Hubei and Shiyan registration-center publications document the city Real Estate Registration Center and service locations in urban districts. The publicized parcel-map access is certificate-QR, app, kiosk or registration service; no anonymous vector layer/schema was found. No certificate or property data was accessed.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719549.shtml",
+          "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "十堰市 不动产登记中心 宗地图 不动产登记 公开地图",
+        "scope": "Find local-language city-specific registry/cartography basis and safe anonymous geometry routes.",
+        "result": "湖北省自然资源厅及十堰市不动产登记中心公开信息确认十堰市区的不动产登记机构和服务网点。“一证一码”宗地图/分户图通过权证二维码、政务App或自助机查询，未发现匿名公开矢量图层或几何接口；未使用任何权证或房产标识。",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719549.shtml",
+          "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+        "observation": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint."
+      },
+      {
+        "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202507/t20250711_5719549.shtml",
+        "observation": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint."
+      },
+      {
+        "url": "https://news.cjn.cn/hbpd_19912/sy_19931/202506/t5155793.htm",
+        "observation": "Shiyan has a city-specific Real Estate Registration Center. Official municipal and Hubei Natural Resources Department publications describe registration outlets and services within Shiyan’s urban districts, establishing a city-local registry. Access to parcel maps described in the “one certificate, one code” workflow is tied to an issued certificate QR or assisted/self-service channel, not an anonymous public geometry endpoint."
+      }
+    ],
+    "metadataReviewFile": "shiyan-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-9312-shiyan-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "cn-shiyan-municipal-registry",
+    "name": "Shiyan local registry/cartography route review",
+    "operator": "Shiyan Real Estate Registration Center",
+    "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdccxzf/202504/t20250407_5604960.shtml",
+    "scope": "Evidence is specific to Shiyan city/urban districts and its Real Estate Registration Center. The QR-retrieved parcel sketch is for an identified certificate and is not a public anonymous feed.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_geometry"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Evidence is specific to Shiyan city/urban districts and its Real Estate Registration Center. The QR-retrieved parcel sketch is for an identified certificate and is not a public anonymous feed.",
+    "notEstablished": [
+      "legal ownership or boundary",
+      "complete citywide parcel coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T01:14:01.434685+00:00",
+  "sourceIds": [],
+  "point": [
+    32.6330848273126,
+    110.779591761241
+  ]
+}

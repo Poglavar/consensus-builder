@@ -25,11 +25,57 @@
 
     const resolveParcelId = (feature) => {
         const props = feature?.properties || {};
-        const id = typeof ensureParcelId === 'function'
-            ? ensureParcelId(feature)
+        const id = typeof global.getParcelId === 'function'
+            ? global.getParcelId(feature)
             : (props.parcelId ?? props.parcel_id ?? props.id);
         return id !== undefined && id !== null ? id.toString() : null;
     };
+
+    const parcelIdForLayer = layer => global.ParcelPresenter?.getIdForLayer?.(layer) || null;
+    const parcelFeature = parcelId => parcelId && global.LiveParcelFabric?.get?.(parcelId) || null;
+
+    // Per-parcel counts from the server (GET /proposals/counts) — shared across all users, unlike the
+    // browser-local proposalStorage. Mirrors the CantonCounts pattern: fetch for the visible parcels,
+    // cache, redraw on update. A parcel present in this map has an authoritative server count; absent
+    // means "not fetched" and the badge falls back to the local count (so an unreachable backend or a
+    // parcel-id mismatch degrades to today's behaviour, never worse).
+    const serverProposalCounts = new Map(); // parcelId -> count
+    let serverCountsSignature = '';
+    let serverCountsInFlight = false;
+
+    function isGroundPiece(parcelId) {
+        const fabric = global.LiveParcelFabric;
+        const feature = fabric && typeof fabric.peek === 'function' ? fabric.peek(parcelId) : null;
+        return !!(feature && global.__openGround && global.__openGround.isGroundPiece(feature));
+    }
+
+    function ensureServerProposalCounts(parcelIds) {
+        if (typeof fetch !== 'function' || !Array.isArray(parcelIds) || !parcelIds.length) return;
+        const base = (typeof global.getBackendBase === 'function') ? global.getBackendBase() : '';
+        if (!base) return;
+        const ids = Array.from(new Set(parcelIds.filter(Boolean).map(String)));
+        if (!ids.length) return;
+        const signature = ids.slice().sort().join(',');
+        if (signature === serverCountsSignature || serverCountsInFlight) return;
+
+        serverCountsInFlight = true;
+        const city = (typeof global.getCurrentCityId === 'function') ? (global.getCurrentCityId() || '') : '';
+        const url = `${base.replace(/\/$/, '')}/proposals/counts?parcel_ids=${encodeURIComponent(ids.join(','))}`
+            + (city ? `&city=${encodeURIComponent(city)}` : '');
+        fetch(url)
+            .then(resp => (resp.ok ? resp.json() : null))
+            .then(data => {
+                serverCountsInFlight = false;
+                if (!data || !data.counts) return;
+                serverProposalCounts.clear();
+                // Seed every requested id at 0 so `.has()` means "fetched"; then apply the real counts.
+                ids.forEach(id => serverProposalCounts.set(id, 0));
+                Object.entries(data.counts).forEach(([pid, n]) => serverProposalCounts.set(String(pid), Number(n) || 0));
+                serverCountsSignature = signature;
+                refreshProposalCountLabelsIfVisible();
+            })
+            .catch(() => { serverCountsInFlight = false; });
+    }
 
     /**
      * Get proposal count for a parcel from ALL proposals
@@ -49,13 +95,23 @@
 
         try {
             // Get all proposals for this parcel
-            const proposals = global.proposalStorage.getProposalsForParcel(normalizedId, { hydrateRoadAssets: false });
+            const proposals = global.proposalStorage.getProposalsForParcel(normalizedId);
 
             // Exclude Canton proposals — they're surfaced by the separate purple
             // Canton badge (from the ledger), so counting their local copy here too
             // would double-count the same proposal.
             const isCanton = global.CantonMode && global.CantonMode.isCantonProposal;
             const evm = isCanton ? proposals.filter((p) => !global.CantonMode.isCantonProposal(p)) : proposals;
+
+            // If the server has authoritative counts for this parcel, use them (everyone agrees) and
+            // add only the browser-local proposals never uploaded (drafts + minted-not-uploaded), so
+            // they aren't double-counted against the server's copy. Otherwise fall back to local.
+            const key = parcelId.toString();
+            if (serverProposalCounts.has(key)) {
+                const serverCount = serverProposalCounts.get(key) || 0;
+                const localOnly = evm.filter(p => p && !p.serverProposalId).length;
+                return serverCount + localOnly;
+            }
             return evm.length;
         } catch (error) {
             console.warn('Failed to get proposal count for parcel', parcelId, error);
@@ -109,19 +165,27 @@
         }
 
         // Process only visible parcels
+        const visibleIds = [];
         for (let i = 0; i < parcelsToProcess.length; i++) {
-            processLayerForCount(parcelsToProcess[i], bounds);
+            const layer = parcelsToProcess[i];
+            processLayerForCount(layer, bounds);
+            const pid = parcelIdForLayer(layer);
+            // Pieces on open ground are no cadastral parcels: never ask the server to count them.
+            if (pid && !isGroundPiece(pid)) visibleIds.push(pid);
         }
+        // Fetch shared server counts for the visible parcels (redraws on update).
+        ensureServerProposalCounts(visibleIds);
     }
 
     function processLayerForCount(layer, bounds) {
-        if (!layer?.feature?.properties) return;
-        const parcelId = resolveParcelId(layer.feature);
+        const parcelId = parcelIdForLayer(layer);
+        const feature = parcelFeature(parcelId);
+        if (!feature) return;
         if (proposalCountLabelFilter && parcelId && !proposalCountLabelFilter.has(parcelId)) {
             return;
         }
 
-        const proposalCount = getProposalCountFromFeature(layer.feature);
+        const proposalCount = getProposalCountFromFeature(feature);
         // Canton proposals are private — we only know a public count (existence
         // signal), not terms. Shown as a separate, distinctly-styled badge.
         const cantonCount = (global.CantonCounts && parcelId) ? global.CantonCounts.getCount(parcelId) : 0;
@@ -130,7 +194,7 @@
         if (proposalCount === 0 && cantonCount === 0) return;
 
         let labelLatLng = null;
-        const geometry = layer.feature.geometry;
+        const geometry = feature.geometry;
 
         if (geometry && typeof turf !== 'undefined' && typeof turf.centerOfMass === 'function') {
             try {

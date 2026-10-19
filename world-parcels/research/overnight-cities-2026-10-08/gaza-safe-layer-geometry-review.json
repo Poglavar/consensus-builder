@@ -1,0 +1,107 @@
+{
+  "conversionErrors": [
+    {
+      "ids": {
+        "FID": 916,
+        "OBJECTID": 2988
+      },
+      "error": "Ambiguous Esri hole; no repair applied"
+    }
+  ],
+  "sourceUrl": "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json",
+  "targetLayer": "GAZA",
+  "sourceCrs": "EPSG:3857",
+  "fieldAliases": [
+    {
+      "name": "FID",
+      "alias": "FID"
+    },
+    {
+      "name": "OBJECTID",
+      "alias": "OBJECTID"
+    },
+    {
+      "name": "التصن",
+      "alias": "التصن"
+    },
+    {
+      "name": "رقم_ا",
+      "alias": "رقم_ا"
+    },
+    {
+      "name": "رقم__1",
+      "alias": "رقم__1"
+    },
+    {
+      "name": "القسي",
+      "alias": "القسي"
+    },
+    {
+      "name": "المسا",
+      "alias": "المسا"
+    },
+    {
+      "name": "NOTE1",
+      "alias": "NOTE1"
+    },
+    {
+      "name": "TYPE",
+      "alias": "TYPE"
+    },
+    {
+      "name": "SHAPE_Leng",
+      "alias": "SHAPE_Leng"
+    },
+    {
+      "name": "SHAPE_Area",
+      "alias": "SHAPE_Area"
+    }
+  ],
+  "featureCount": 1187,
+  "invalidSourceGeometryCount": 10,
+  "areaM2": {
+    "minimum": 1.3699999998742716,
+    "median": 1378.825000005169,
+    "maximum": 487715.35999991046
+  },
+  "nearestSamples": [
+    {
+      "distanceM": 142.10119140332046,
+      "ids": {
+        "FID": 947,
+        "OBJECTID": 3089
+      },
+      "areaM2": 1776.2600000127777,
+      "valid": true,
+      "containsWupPoint": false
+    },
+    {
+      "distanceM": 159.75640570045766,
+      "ids": {
+        "FID": 968,
+        "OBJECTID": 3110
+      },
+      "areaM2": 770.0300000207785,
+      "valid": true,
+      "containsWupPoint": false
+    },
+    {
+      "distanceM": 226.92627756864238,
+      "ids": {
+        "FID": 967,
+        "OBJECTID": 3109
+      },
+      "areaM2": 758.5700000194321,
+      "valid": true,
+      "containsWupPoint": false
+    }
+  ],
+  "fieldsRetained": [
+    "FID",
+    "OBJECTID",
+    "sourceLayer",
+    "full polygon geometry"
+  ],
+  "otherFeaturePropertiesRetained": false,
+  "sourceSnapshotRevisionContinuityVerified": false
+}

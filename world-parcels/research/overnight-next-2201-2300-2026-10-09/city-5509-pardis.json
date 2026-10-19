@@ -1,0 +1,38 @@
+{
+  "cityCode": 5509,
+  "queueRank": 2214,
+  "name": "Pardis",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "point": [35.7355726638643, 51.8305721180595],
+  "population2025": 263537,
+  "population2025k": 263.537,
+  "populationUnit": "persons",
+  "status": "complete",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Pardis Iran cadastral parcel map official GIS Pardis municipality land registry",
+        "result": "Discovery found official Pardis New Town Development Company references and its electronic service domain, but no public city parcel viewer, safe parcel API, or downloadable parcel dataset.",
+        "actualResultUrls": [
+          "https://pardis.ntdc.ir",
+          "https://pardis.city",
+          "https://www.irna.ir/news/83866087/%D8%B3%D8%A7%D9%85%D8%A7%D9%86%D9%87-%D8%AE%D8%AF%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%DA%A9%D8%AA%D8%B1%D9%88%D9%86%DB%8C%DA%A9-%D9%85%D8%B3%DA%A9%D9%86-%D9%85%D9%87%D8%B1-%D9%BE%D8%B1%D8%AF%DB%8C%D8%B3"
+        ]
+      },
+      {
+        "language": "native/local",
+        "query": "پردیس کاداستر نقشه پارسل سامانه رسمی ثبت اسناد املاک؛ پردیس نقشه GIS املاک و اراضی",
+        "result": "نتایج به شرکت عمران شهر جدید پردیس، سامانه خدمات الکترونیک pardis.city و مراجع ملی نقشه‌برداری/ثبت اسناد اشاره کردند؛ سرویس عمومی محلیِ پارسل با شناسه پایدار و هندسه ناشناس پیدا نشد.",
+        "actualResultUrls": [
+          "https://t.me/s/PardisNewCity1?before=9268",
+          "https://telegram.me/s/pardisNewCity1?q=%23%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D9%8A%D9%87",
+          "https://ncc.gov.ir/uploads/1/2025/Jul/07/%D9%86%D8%B4%D8%B1%DB%8C%D9%87%20%D8%B4%D9%85%D8%A7%D8%B1%D9%87%20122.pdf"
+        ]
+      }
+    ]
+  },
+  "registryFound": null,
+  "researchNote": "First-party discovery and qualification evidence are documented in pardis-service-review.json. The local development-company service is evidenced, but no anonymous safe parcel ID+geometry response was obtained. This packet is not source integration or runtime admission."
+}

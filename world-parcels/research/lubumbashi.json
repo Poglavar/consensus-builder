@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "cityId": "queue:176",
+  "queueRank": 176,
+  "name": "Lubumbashi",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "centerLatLon": [
+    -11.6638992235197,
+    27.4813527003548
+  ],
+  "checkedAt": "2026-09-29",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "portalsFound": [
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "observation": "Ministry of Land Affairs site (HTTP 200 HTML, 105,772 bytes); per Kinshasa research it has no geodata service, only a cadastre-digitisation pilot reference."
+    },
+    {
+      "url": "https://cadastre.gouv.cd/",
+      "observation": "Listed cadastre site; unreachable through the proxy."
+    },
+    {
+      "url": "https://www.cami.cd/",
+      "observation": "CAMI (Cadastre Minier) is the mining-titles cadastre, not a land-parcel cadastre; page load reset/near-empty, and it would cover mining permits only."
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search",
+      "observation": "ArcGIS Online search for Lubumbashi returned only academic land-cover/urban-sprawl maps and a historical basemap tile service, no parcel layer."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cadastre.gouv.cd/",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "connection failure; unreachable, not a verdict"
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "HTML only; no parcel list"
+    },
+    {
+      "url": "https://www.cami.cd/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "first attempt 12 KB shell with no service links; second attempt connection reset; mining cadastre, not land parcels"
+    },
+    {
+      "url": "https://cadastreminier.cd/ , https://geoportail.cd/ , https://portals.flexicadastre.com/drc/ , https://drc.cadastrecentral.com",
+      "method": "GET",
+      "httpStatus": null,
+      "contentType": null,
+      "assessment": "unreachable through the proxy"
+    },
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search (Lubumbashi parcelles/cadastre/parcels)",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "no parcel layers"
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Land ministry cadastre digitisation is planned (starting in Kinshasa Gombe); no Lubumbashi/Haut-Katanga parcel service found",
+    "verifiedOpenScope": "none",
+    "countrywideVerified": false
+  },
+  "remainingUncertainty": "cadastre.gouv.cd and other candidate GIS hosts were unreachable, so a public parcel viewer cannot be ruled out. Absence of open data here is not proven; DRC has no known national open cadastre.",
+  "nextStep": "Retry cadastre.gouv.cd; check Haut-Katanga provincial land registry (conservation des titres immobiliers) and any e-Foncier viewer for a bounded polygon endpoint."
+}

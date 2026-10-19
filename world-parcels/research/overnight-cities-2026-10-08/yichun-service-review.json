@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11016-yichun.json",
+  "purpose": "Document city-local registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "WUP locator is the Jiangxi city 宜春 (lat 27.806, lon 114.384), not Heilongjiang 伊春. City-center service evidence confirms online property-registration functions, but the available portal path is account/login oriented and does not expose public parcel polygons. Direct portal inspection was unavailable; no personal/property lookup or geometry request was made. No owner/address or identity data retained.",
+  "registryAssessment": "The WUP point [27.8063767560573, 114.383713162049] is in Jiangxi 宜春, not Heilongjiang 伊春. A city-specific 2025 notice authored by the Yichun Real Estate Registration Center says the city operated an online registration service hall and describes its service migration; a local republishing page attributes the notice to that center and cites the Yichun portal URL. The actual hall is login-oriented and its direct endpoint was not independently inspectable here. This confirms a local registration service, not anonymous public cadastral geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "http://www.ycbdc.com.cn:8888/dl",
+      "observation": "City-specific online real-estate registration service-hall URL quoted by the Yichun Registration Center in its 2025 service notice. Login and application functions are described; no public anonymous parcel map or feature endpoint is documented."
+    },
+    {
+      "url": "https://jx.ifeng.com/c/8mAFAj56XOr",
+      "observation": "Local outlet republishes a notice explicitly attributed to 宜春市不动产登记中心, dated 2025-08-27, announcing the municipal online hall and its registration query/application/appointment services. This is a republished center-authored notice, not a first-party host."
+    },
+    {
+      "url": "https://www.yichun.gov.cn/",
+      "observation": "Candidate city-government portal for Jiangxi 宜春; direct page retrieval timed out. It was not used to assert service details."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yichun Jiangxi 宜春 official real estate registration center cadastral parcel map GIS",
+      "result": "Search was explicitly scoped to Jiangxi 宜春. A center-authored service-hall notice surfaced via a local republisher, but no public anonymous parcel-geometry service or schema was found. Heilongjiang 伊春 results were excluded.",
+      "urls": [
+        "http://www.ycbdc.com.cn:8888/dl",
+        "https://jx.ifeng.com/c/8mAFAj56XOr",
+        "https://www.yichun.gov.cn/"
+      ],
+      "scope": "Find city-specific local registry/cadastre evidence and schema-reviewed anonymous vector access without querying property identities."
+    },
+    {
+      "language": "Chinese",
+      "query": "江西宜春市 不动产登记中心 地籍图 宜春市本级 不动产线上综合服务大厅",
+      "result": "A local notice attributed to the 宜春市不动产登记中心 documents its online registration hall and service migration. No public cadastral parcel vector layer was found; unrelated Heilongjiang 伊春 results were excluded.",
+      "urls": [
+        "http://www.ycbdc.com.cn:8888/dl",
+        "https://jx.ifeng.com/c/8mAFAj56XOr",
+        "https://www.yichun.gov.cn/"
+      ],
+      "scope": "Find city-specific local registry/cadastre evidence and schema-reviewed anonymous vector access without querying property identities."
+    }
+  ],
+  "serviceChecks": [],
+  "schemaFirstReview": {
+    "completed": false,
+    "reason": "No public parcel vector layer/schema was found for these two locations; no feature request was made. The Yichun portal is a login-oriented registration hall; ESA’s map workflow is request based."
+  },
+  "geometryEvidence": null,
+  "privacy": "No parcel-specific lookup or geometry request was made; no owner/address/identity attributes, credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "rootRegistryReview": {
+    "registryFound": null,
+    "reason": "Jiangxi 宜春 is the unchanged WUP target, distinct from Heilongjiang 伊春. A city-center service notice is syndicated by Phoenix and a ycbdc.com.cn login route is a candidate, but an exact primary municipal/bureau document or primary link verifying that operator was not retrieved. Generic city government and wrong-homonym sources do not verify this local registry. Status is unestablished, not evidence of no registry."
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8026-sao-goncalo.json",
+  "purpose": "Read-only source discovery and public map/service review for the exact ranked city record; no globals/runtime/catalog integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The ranked WUP point is a settlement centroid, not an official boundary or parcel identity. The normal Topovision public layer list shows imagery and municipal limits and omits the cadastral WFS layer; the city GeoServer nevertheless publicly exposes it. Research queried only the safe `id` attribute plus geometry. Sampled polygon geometry is evidence of nearby cadastral mapping, not a title determination or citywide coverage claim. No owner/address fields were requested or retained.",
+  "registryAssessment": "The municipal Topovision is an official city GIS, and the municipality’s cadastral technical service procedure handles cadastral/lot-related certifications. Its public GeoServer WFS capabilities expose the city cadastral lot feature type `SaoGoncalo:lote_a_cadastro_sg`; bounded anonymous geometry queries and full adapter qualification returned parcel polygons near the ranked locator.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "São Gonçalo Rio de Janeiro official cadastral parcel map public GIS WFS municipal lot layer",
+      "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+      "result": "Official city Topovision and municipal cadastral technical-service sources were found. Topovision’s default layers show orthophotos and municipal limits; its public GeoServer WFS exposes a cadastral lot layer. Bounded WFS queries returned polygons near the WUP point.",
+      "actualResultUrls": [
+        "https://topovision.pmsg.rj.gov.br/",
+        "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+      ],
+      "executionMethod": "Separate English web search, public viewer/config inspection, WFS GetCapabilities/DescribeFeatureType and bounded geometry-only requests."
+    },
+    {
+      "language": "Portuguese",
+      "query": "São Gonçalo prefeitura cadastro imobiliário mapa de lotes geoportal geoprocessamento cadastro técnico oficial",
+      "scope": "Identify official city cadastral/registry sources and public parcel geometry.",
+      "result": "O portal municipal Topovision mostra ortofotos e limite municipal; o serviço público GeoServer anuncia camadas cadastrais de lotes. A consulta WFS limitada retornou polígonos próximos ao ponto WUP, solicitando somente `id` e geometria.",
+      "actualResultUrls": [
+        "https://topovision.pmsg.rj.gov.br/",
+        "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+      ],
+      "executionMethod": "Busca em português separada; inspeção do portal municipal, capacidades/esquema WFS e consultas públicas limitadas."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://topovision.pmsg.rj.gov.br/",
+      "method": "Official page and source inspection",
+      "observation": "Official municipal Topovision GIS. Its visible/configured public layer list contains orthophoto/imagery and municipal boundary layers; it does not list the cadastral lots exposed directly by the WFS."
+    },
+    {
+      "url": "https://www.pmsg.rj.gov.br/sao-goncalo/mapas-e-bairros/",
+      "method": "Official page and source inspection",
+      "observation": "City Hall map and neighborhood page; supports local municipal mapping context."
+    },
+    {
+      "url": "https://www.saogoncalo.rj.gov.br/wp-content/uploads/2024/02/Formulario-de-Abertura-de-Processo-na-Subsecretaria.pdf",
+      "method": "Official page and source inspection",
+      "observation": "Municipal form for the technical cadastre subsecretariat includes lot/legalization/parceling/certification procedures."
+    },
+    {
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+      "method": "Official page and source inspection",
+      "observation": "Public GeoServer WFS capabilities list cadastral layers including SaoGoncalo:lote_a_cadastro_sg; no account or token was used."
+    },
+    {
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=SaoGoncalo%3Alote_a_cadastro_sg",
+      "method": "Anonymous WFS DescribeFeatureType GET",
+      "observation": "Layer schema exposes safe numeric `id`, polygon `geom`, and `lote`; the research request selected only `id` and geometry."
+    },
+    {
+      "url": "https://geoserver.pmsg.rj.gov.br/ows",
+      "method": "Anonymous WFS 2.0.0 GetFeature",
+      "observation": "Public WFS endpoint used for bounded 13-cell geometry queries, capped pages, fresh exact-ID reads, explicit absence, footprint lookup and binding."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "url": "https://topovision.pmsg.rj.gov.br/",
+    "publicViewerBundle": "Viewer HTML / bundled scripts inspected; standard startup layer list exposed orthophoto imagery and municipal boundary only.",
+    "service": "https://geoserver.pmsg.rj.gov.br/ows",
+    "layer": "SaoGoncalo:lote_a_cadastro_sg",
+    "geometryType": "Polygon",
+    "nativeIdField": "id (integer)",
+    "requestFieldAllowlist": [
+      "id"
+    ],
+    "queryMode": "WFS 2.0.0; CRS:84 bbox; response in EPSG:4326; geometry-only plus id; page-size test 3; no login/token.",
+    "qualifier": {
+      "gridCells": 13,
+      "uniquePolygons": 90,
+      "forcedPageSize": 3,
+      "forcedPagingPassed": true,
+      "freshExactIdsRead": 90,
+      "explicitAbsentId": "BR-SG-CAD-999999999",
+      "explicitAbsencePassed": true,
+      "footprintId": "BR-SG-CAD-1073034",
+      "footprintPassed": true,
+      "bindingCoverage": "complete",
+      "bindingParcelCount": 1,
+      "geometryCache": "/tmp/overnight-cities-2026-10-08/sao-goncalo-public-cadastre-cache.geojson",
+      "qa": "Independent GEOS 3.14.1 check: 90/90 polygons valid, all Polygon, non-empty; metric areas 320.9589–28692.3464 m². Full QA geometries remained in /tmp; up to three ID-plus-polygon samples are included in the companion GeoJSON."
+    }
+  },
+  "geometryDecision": "The exact WUP-point probe was empty. A bounded 13-cell adapter qualification returned 90 unique nearby lot polygons; all 20 tests passed, including forced three-row paging, 90 fresh-ID reads, explicit absence, footprint lookup and binding. GEOS 3.14.1 validates all 90 polygons. Three safe id-plus-geometry samples are retained. Citywide and exact-point coverage remain unverified.",
+  "qualificationEvidence": "sao-goncalo-public-cadastre-acceptance.json",
+  "geometrySamples": "sao-goncalo-public-cadastre-samples.geojson",
+  "geometryQuality": "sao-goncalo-public-cadastre-quality.json",
+  "duplicateAndTopologyQa": {
+    "rawNativeIdObservations": 139,
+    "uniqueIds": 90,
+    "duplicateObservationCount": 49,
+    "nativeIdsRepeatedAcrossCells": 34,
+    "duplicateNativeIdObservationPairs": 67,
+    "exactDuplicateGeometryHashesAcrossDistinctIds": 0,
+    "pairwiseDistinctIdPairsCompared": 4005,
+    "intersectingPairs": 133,
+    "positiveAreaOverlapsAbove0_01m2": 0,
+    "operationErrors": 0,
+    "geosVersion": "3.14.1"
+  },
+  "nativeAndTransportIdentity": {
+    "nativeSourceIdField": "id (integer)",
+    "freshLookup": "Exact native-id queries for all 90 IDs returned identical geometry hashes. Example id 1039986 matches hash e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec.",
+    "transportFeatureId": "GeoServer/WFS feature.id varies across viewport and exact-ID reads; not used as parcel identity.",
+    "persistenceLimit": "Native numeric id was stable during this run; provider long-term permanence semantics undocumented."
+  },
+  "rootReviewedAt": "2026-10-08T22:19:02.590133+00:00",
+  "runtimeAssessment": {
+    "status": "enabled_locally_uncommitted_undeployed",
+    "scope": "90 independently audited nearby parcel geometries; no exact WUP point or municipality-wide completeness claim.",
+    "canonicalSourceId": "br-sg-prefeitura-geoserver-lote-cadastro",
+    "acceptanceFile": "sao-goncalo-public-cadastre-acceptance.json",
+    "rootQualityFile": "sao-goncalo-public-cadastre-root-quality.json",
+    "browserFile": "sao-goncalo-public-cadastre-browser-check.json"
+  }
+}

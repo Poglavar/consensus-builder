@@ -1,0 +1,13 @@
+{
+  "taskId": "city:6304",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/city-6304-dujiangyan.json",
+    "world-parcels/research/overnight-next-1601-1700-2026-10-09/dujiangyan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T12:28:15Z",
+  "reason": "First-party Dujiangyan government-service material supports local planning and natural-resources custody. HTTP 412 and timeout leave public parcel access unresolved; no native-ID polygon response or adapter qualification is evidenced.",
+  "admissionGates": "No safe public parcel feature with a stable native ID was retrieved. Fresh exact-ID reads, forced paging, 13 bounded cells, metric GEOS validity and overlap checks, source binding, and headed details-panel verification remain unevidenced. Runtime admission remains held."
+}

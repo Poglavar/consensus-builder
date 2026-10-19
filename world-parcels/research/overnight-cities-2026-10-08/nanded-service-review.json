@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9521-nanded.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official portal exposes interactive map/property-card functionality, but a public feature schema was not verified. No parcel lookup or geometry sample retained.",
+  "registryAssessment": "Maharashtra’s official land-records department identifies the Nanded urban-survey office and states that urban survey maps and property cards are digitized for city/municipal areas and available through the public Bhunakasha portal. This is local land-record evidence; no anonymous safe vector layer or native polygon schema was verified.",
+  "searchQueries": [
+    {
+      "language": "Marathi",
+      "query": "नांदेड नगर भूमापन मालमत्ता पत्रक शहर सर्वे नकाशा भू-नकाशा महाराष्ट्र शासन",
+      "scope": "Find city-specific land-record authority and safe anonymous parcel geometry.",
+      "result": "Official Nanded district land-record office material describes urban city-survey maps/property cards and the public Bhunakasha portal. No safe vector schema or geometry endpoint was verified.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=28",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+      ],
+      "executionMethod": "Reviewed official state land-record and Bhunakasha pages; no plot/property search or personal record lookup."
+    },
+    {
+      "language": "English",
+      "query": "Nanded city survey map property card official Maharashtra Bhunakasha parcel polygon GIS",
+      "scope": "Find city-specific land-record authority and safe anonymous parcel geometry.",
+      "result": "Official state/district sources confirm Nanded urban land records and digitized city-survey maps/property cards. Public portal is interactive, but no safe feature schema or anonymous coordinate-to-polygon query was identified.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=28",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "https://nanded.gov.in/"
+      ],
+      "executionMethod": "Separate English-language discovery and official-source review. No survey/plot number, owner, or address lookup submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, taxpayer, assessment, sale, or other private property fields were requested or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The interactive public portal exposes map/property-card functions, but no safe anonymous feature schema or response was verified."
+}

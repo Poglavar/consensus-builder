@@ -1,0 +1,5099 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Actual adapter wire request trace captured without rewriting URLs, headers, bodies, AbortSignals, or responses. Only the descriptor-configured safe properties were requested.",
+  "city": "jerusalem",
+  "descriptor": {
+    "adapter": "wfs",
+    "id": "govmap-parcel-all-jerusalem-rowid",
+    "endpoint": "https://open.govmap.gov.il/geoserver/opendata/wfs",
+    "featureType": "opendata:PARCEL_ALL",
+    "geometryField": "the_geom",
+    "requestProperties": true,
+    "version": "2.0.0",
+    "idField": "OBJECTID",
+    "idType": "integer",
+    "idPrefix": "IL-JERUSALEM-ROW-",
+    "outFields": [
+      "OBJECTID",
+      "PARCEL_ID",
+      "GUSH_NUM",
+      "GUSH_SUFFI",
+      "PARCEL"
+    ],
+    "pageSize": 100,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "responseSrid": 3857,
+    "minRequestIntervalMs": 100,
+    "idBatchSize": 3
+  },
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.213%2C31.781%2C35.214%2C31.782%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:07.161Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 19341,
+      "numberMatched": 28,
+      "numberReturned": 28,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.709721",
+          "properties": {
+            "OBJECTID": 714145,
+            "PARCEL_ID": 713579,
+            "GUSH_NUM": 31756,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "577ddccd219a8d3f424e90ffe50792ebc207cea24dd8108830b2620fb5b6678c"
+        },
+        {
+          "transportId": "PARCEL_ALL.712495",
+          "properties": {
+            "OBJECTID": 715071,
+            "PARCEL_ID": 715611,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "506bcfa75de6238180ff84fa948a7d93f97ed1fe338e87aa82de68aa9745f625"
+        },
+        {
+          "transportId": "PARCEL_ALL.713749",
+          "properties": {
+            "OBJECTID": 715315,
+            "PARCEL_ID": 715619,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "88135a69be3c4c22bb44338c77da212acfb4d10ec3ab2586ac8762d746a92adb"
+        },
+        {
+          "transportId": "PARCEL_ALL.713754",
+          "properties": {
+            "OBJECTID": 715320,
+            "PARCEL_ID": 715624,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "356c645e6bedad2c6bae435a30a41e1357cb4bd758e2d1396cb7af6401d01f3a"
+        },
+        {
+          "transportId": "PARCEL_ALL.713755",
+          "properties": {
+            "OBJECTID": 715321,
+            "PARCEL_ID": 715625,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "bff410ec06b6f3f6b5bb49cdc13db61e3ee6550741747342fc262b81ce3546c3"
+        },
+        {
+          "transportId": "PARCEL_ALL.713756",
+          "properties": {
+            "OBJECTID": 715322,
+            "PARCEL_ID": 715626,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "9f06208e0f37270cca873df5db5ad6b35aa2e6138fd959412a0b2ecab9522810"
+        },
+        {
+          "transportId": "PARCEL_ALL.713757",
+          "properties": {
+            "OBJECTID": 715323,
+            "PARCEL_ID": 715627,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "0540414ba7177bb8447b537a390caa89ab720585eaaf1ecf96a8ef8ad4b42696"
+        },
+        {
+          "transportId": "PARCEL_ALL.713758",
+          "properties": {
+            "OBJECTID": 715324,
+            "PARCEL_ID": 715628,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "0e6da7ee4358bcd77a7060c2970471eecae0a6b3059c12b56da0867c7d6ff181"
+        },
+        {
+          "transportId": "PARCEL_ALL.713931",
+          "properties": {
+            "OBJECTID": 715325,
+            "PARCEL_ID": 715629,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "e960ca9255071946d42433a77484dc12ee7864ec7eac9174a450ea998b133bf8"
+        },
+        {
+          "transportId": "PARCEL_ALL.713932",
+          "properties": {
+            "OBJECTID": 715326,
+            "PARCEL_ID": 1073172,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "36793c0b178953ab07f506f4215c71c2203ff3c1d9b301c0135fe3dfc37d5c24"
+        },
+        {
+          "transportId": "PARCEL_ALL.713933",
+          "properties": {
+            "OBJECTID": 715327,
+            "PARCEL_ID": 715631,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "d4e0efa1d7ba7665c42368d3db7694190b416760047eadfc2aed89db6892f45c"
+        },
+        {
+          "transportId": "PARCEL_ALL.713934",
+          "properties": {
+            "OBJECTID": 715328,
+            "PARCEL_ID": 1073173,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "fd2686593c5a10ac18f7e6e71352b8f2e22721316ee91d0caf815fb4e17172c1"
+        },
+        {
+          "transportId": "PARCEL_ALL.713935",
+          "properties": {
+            "OBJECTID": 715329,
+            "PARCEL_ID": 1073179,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "ac0950b84902ba0ecc8c3ce675c2f49da8de6fabf0098880a7c071d1a3743577"
+        },
+        {
+          "transportId": "PARCEL_ALL.713936",
+          "properties": {
+            "OBJECTID": 715330,
+            "PARCEL_ID": 715634,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "630e97ba24b3d7c0209a05e86938c189536fd428fdd5aefdad3e987e6948e111"
+        },
+        {
+          "transportId": "PARCEL_ALL.713937",
+          "properties": {
+            "OBJECTID": 715331,
+            "PARCEL_ID": 715635,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "d3021087990aebba60b21c6e3720c0125c94ca104976528890b11267b4fbef4b"
+        },
+        {
+          "transportId": "PARCEL_ALL.713941",
+          "properties": {
+            "OBJECTID": 715335,
+            "PARCEL_ID": 715639,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "5960dc71ee0cabe443b22bc39bdbc44a91d118705aa79f3743ff947b1076ffe5"
+        },
+        {
+          "transportId": "PARCEL_ALL.713942",
+          "properties": {
+            "OBJECTID": 715336,
+            "PARCEL_ID": 715640,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "e2757712a09c587005d8493b8d4b9f25d5e984d0aef16e1a5901cf3a0790b983"
+        },
+        {
+          "transportId": "PARCEL_ALL.713943",
+          "properties": {
+            "OBJECTID": 715337,
+            "PARCEL_ID": 715641,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 15
+          },
+          "geometrySha256": "6b0d20dd4044630f505d4bc3b68d7770701da05bac039a114af1b64386b4323b"
+        },
+        {
+          "transportId": "PARCEL_ALL.785478",
+          "properties": {
+            "OBJECTID": 786743,
+            "PARCEL_ID": 781045,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "dd0495373ca0500d5987fa39e0fa9b6581c879ec75846f5cc779f6dd1d0b1d2e"
+        },
+        {
+          "transportId": "PARCEL_ALL.785479",
+          "properties": {
+            "OBJECTID": 786744,
+            "PARCEL_ID": 781046,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "e7191bf4ad363c407a2a5e2ee1b27480b45a6372a391ee29b6cd4b0a8871ea1e"
+        },
+        {
+          "transportId": "PARCEL_ALL.785480",
+          "properties": {
+            "OBJECTID": 786745,
+            "PARCEL_ID": 781047,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "c42b8c2178194e3cb17f71bfd52ae6d3041d0e518a7db0a87d6acb998dc5364f"
+        },
+        {
+          "transportId": "PARCEL_ALL.785484",
+          "properties": {
+            "OBJECTID": 786749,
+            "PARCEL_ID": 781051,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "d10b189d8d307a4840d228cc89392629a3669bc246999d0ce1f2f5e8447c9f3c"
+        },
+        {
+          "transportId": "PARCEL_ALL.785485",
+          "properties": {
+            "OBJECTID": 786750,
+            "PARCEL_ID": 781052,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "d4e0b528df3ae72e4b049287bfe43dfb6ed8b62d86570672b7e5c966f25752f4"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079737",
+          "properties": {
+            "OBJECTID": 1082693,
+            "PARCEL_ID": 1073113,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "67746adc85d775aff179dce6ee61514c1c238750097b69543967f06fac86a6da"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079742",
+          "properties": {
+            "OBJECTID": 1082698,
+            "PARCEL_ID": 1073118,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "65883c668ad213c771e4330b6ca8bd4197c66de5d15a7f5c1184a1a957643bcc"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079743",
+          "properties": {
+            "OBJECTID": 1082699,
+            "PARCEL_ID": 1076452,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "3fd18069d26678e109c04ab08f39e53bb657ddef8b784e2bb4750647de6ed479"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079884",
+          "properties": {
+            "OBJECTID": 1082700,
+            "PARCEL_ID": 1073120,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "3cd4f9821d01e083518c84c604d518569ad627ca89b4b8d66903d59e8ad2b80b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.214%2C31.781%2C35.215%2C31.782%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:08.061Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 31733,
+      "numberMatched": 34,
+      "numberReturned": 34,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.710920",
+          "properties": {
+            "OBJECTID": 713897,
+            "PARCEL_ID": 713544,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "e3b43e9d796346eb07d636eeeaf5326ba24564e3018a16ed97e267befcec4b8f"
+        },
+        {
+          "transportId": "PARCEL_ALL.710921",
+          "properties": {
+            "OBJECTID": 713898,
+            "PARCEL_ID": 713545,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "b871119bcede179512b2952931f12dd61104a0debad720cc5b4b1097b553d00e"
+        },
+        {
+          "transportId": "PARCEL_ALL.710922",
+          "properties": {
+            "OBJECTID": 713899,
+            "PARCEL_ID": 713546,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "4aba481109db9d100cbc4eb56b9303ff1d0cc3a4cbd00dd8a8d3f0a468705178"
+        },
+        {
+          "transportId": "PARCEL_ALL.711111",
+          "properties": {
+            "OBJECTID": 713900,
+            "PARCEL_ID": 713547,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "094289bf77e75efb29f5ab33236b69cfbd783bf7d6c720fe293166460533d8db"
+        },
+        {
+          "transportId": "PARCEL_ALL.711112",
+          "properties": {
+            "OBJECTID": 713901,
+            "PARCEL_ID": 713548,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "27e8ee108d9f4260f4c921c9b9486949c0a1ed14a5782da3ef222f8210a1ad33"
+        },
+        {
+          "transportId": "PARCEL_ALL.711113",
+          "properties": {
+            "OBJECTID": 713902,
+            "PARCEL_ID": 713549,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "2b62985ace7c2ef8745e54e3e16f402c4b2ed102f0e9042af0a2e015a793245b"
+        },
+        {
+          "transportId": "PARCEL_ALL.711114",
+          "properties": {
+            "OBJECTID": 713903,
+            "PARCEL_ID": 713550,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "09f80acd311ecf6b0d9a0b2a854bf8a67c353c8d3781de03b6283e270ba8febd"
+        },
+        {
+          "transportId": "PARCEL_ALL.710377",
+          "properties": {
+            "OBJECTID": 714012,
+            "PARCEL_ID": 713551,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "18752107a53f36aad8b5dd2e6f57838808cadd19897f7deb6e2a956c59112c9b"
+        },
+        {
+          "transportId": "PARCEL_ALL.710378",
+          "properties": {
+            "OBJECTID": 714013,
+            "PARCEL_ID": 713552,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "3e8d0646ab0660200a4b3c5481cd4767a1389bd0c982bc1c3c5114cdce8bd9ae"
+        },
+        {
+          "transportId": "PARCEL_ALL.710380",
+          "properties": {
+            "OBJECTID": 714015,
+            "PARCEL_ID": 713554,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 18
+          },
+          "geometrySha256": "4e7151ed6f401ce91e5caf7133704a93ea68d897b9f05164243707dd95f4ec7c"
+        },
+        {
+          "transportId": "PARCEL_ALL.710381",
+          "properties": {
+            "OBJECTID": 714016,
+            "PARCEL_ID": 713555,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "a65950e4c31ba058df9f37f2b206b6e4909e7df7dbbdc878c73c1b87856aca7e"
+        },
+        {
+          "transportId": "PARCEL_ALL.710382",
+          "properties": {
+            "OBJECTID": 714017,
+            "PARCEL_ID": 713556,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "e08b9102f93f4b4b1c813446b2f8d38cb81029e275228ac4d59442c70bcf4c05"
+        },
+        {
+          "transportId": "PARCEL_ALL.710383",
+          "properties": {
+            "OBJECTID": 714018,
+            "PARCEL_ID": 1076455,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "20a49ac4d8ff37dfda4d9c5d445fb7f74c8f8f2d6fb5f6b2f0afbd3c9d66b98a"
+        },
+        {
+          "transportId": "PARCEL_ALL.710385",
+          "properties": {
+            "OBJECTID": 714020,
+            "PARCEL_ID": 713559,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 19
+          },
+          "geometrySha256": "a538cc12fe4762c56c7ee12e3e1818c2815001e7b49d8b894b2f3ae163a21bd4"
+        },
+        {
+          "transportId": "PARCEL_ALL.710386",
+          "properties": {
+            "OBJECTID": 714021,
+            "PARCEL_ID": 713560,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 20
+          },
+          "geometrySha256": "49819031d860b25f2e403076511d1d4f8fc8b687c71aff64070d31d71fa09a3a"
+        },
+        {
+          "transportId": "PARCEL_ALL.709722",
+          "properties": {
+            "OBJECTID": 714146,
+            "PARCEL_ID": 1073178,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 17
+          },
+          "geometrySha256": "f67243b48a9e8c5e565f91fe3cd35b06541127889d150d5d18225b22125561cb"
+        },
+        {
+          "transportId": "PARCEL_ALL.709723",
+          "properties": {
+            "OBJECTID": 714147,
+            "PARCEL_ID": 713581,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 15
+          },
+          "geometrySha256": "674dd218ba2eb834662955ea3eb671de49ca8fe46b42eb0b3b2add576ed83730"
+        },
+        {
+          "transportId": "PARCEL_ALL.713758",
+          "properties": {
+            "OBJECTID": 715324,
+            "PARCEL_ID": 715628,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "0e6da7ee4358bcd77a7060c2970471eecae0a6b3059c12b56da0867c7d6ff181"
+        },
+        {
+          "transportId": "PARCEL_ALL.713931",
+          "properties": {
+            "OBJECTID": 715325,
+            "PARCEL_ID": 715629,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "e960ca9255071946d42433a77484dc12ee7864ec7eac9174a450ea998b133bf8"
+        },
+        {
+          "transportId": "PARCEL_ALL.713934",
+          "properties": {
+            "OBJECTID": 715328,
+            "PARCEL_ID": 1073173,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "fd2686593c5a10ac18f7e6e71352b8f2e22721316ee91d0caf815fb4e17172c1"
+        },
+        {
+          "transportId": "PARCEL_ALL.713938",
+          "properties": {
+            "OBJECTID": 715332,
+            "PARCEL_ID": 715636,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "bcc75faa7445c2a82548d27add3b345d4364bb96506495b6a42659899811b5fa"
+        },
+        {
+          "transportId": "PARCEL_ALL.713939",
+          "properties": {
+            "OBJECTID": 715333,
+            "PARCEL_ID": 1073174,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "ac3c1a314bc6b9cd8abad49e39a98d82ee397602aa1b9a86f712f5e7f06208ae"
+        },
+        {
+          "transportId": "PARCEL_ALL.713941",
+          "properties": {
+            "OBJECTID": 715335,
+            "PARCEL_ID": 715639,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "5960dc71ee0cabe443b22bc39bdbc44a91d118705aa79f3743ff947b1076ffe5"
+        },
+        {
+          "transportId": "PARCEL_ALL.713942",
+          "properties": {
+            "OBJECTID": 715336,
+            "PARCEL_ID": 715640,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "e2757712a09c587005d8493b8d4b9f25d5e984d0aef16e1a5901cf3a0790b983"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079737",
+          "properties": {
+            "OBJECTID": 1082693,
+            "PARCEL_ID": 1073113,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "67746adc85d775aff179dce6ee61514c1c238750097b69543967f06fac86a6da"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079739",
+          "properties": {
+            "OBJECTID": 1082695,
+            "PARCEL_ID": 1073115,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "2eff2012d4fde86fe52c0cb688e638154fbe4cec1cefc978e44cfc85961aef53"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079741",
+          "properties": {
+            "OBJECTID": 1082697,
+            "PARCEL_ID": 1073117,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "472df361b617a8866bba9e37a739ed363f7f43ba46c4b42e990d4bbf40c2e0f4"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079743",
+          "properties": {
+            "OBJECTID": 1082699,
+            "PARCEL_ID": 1076452,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "3fd18069d26678e109c04ab08f39e53bb657ddef8b784e2bb4750647de6ed479"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079884",
+          "properties": {
+            "OBJECTID": 1082700,
+            "PARCEL_ID": 1073120,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "3cd4f9821d01e083518c84c604d518569ad627ca89b4b8d66903d59e8ad2b80b"
+        },
+        {
+          "transportId": "PARCEL_ALL.258181",
+          "properties": {
+            "OBJECTID": 1091863,
+            "PARCEL_ID": 1076485,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 22
+          },
+          "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+        },
+        {
+          "transportId": "PARCEL_ALL.258179",
+          "properties": {
+            "OBJECTID": 1091864,
+            "PARCEL_ID": 1076486,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 29
+          },
+          "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+        },
+        {
+          "transportId": "PARCEL_ALL.789590",
+          "properties": {
+            "OBJECTID": 1091866,
+            "PARCEL_ID": 1076488,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 28
+          },
+          "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+        },
+        {
+          "transportId": "PARCEL_ALL.789593",
+          "properties": {
+            "OBJECTID": 1091867,
+            "PARCEL_ID": 1076489,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 23
+          },
+          "geometrySha256": "109c45609beaa07dd598698303ebd8f8d163c3ed5490e8d356c7b31eae9693c2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.215%2C31.781%2C35.216%2C31.782%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:08.704Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 32115,
+      "numberMatched": 20,
+      "numberReturned": 20,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353165",
+          "properties": {
+            "OBJECTID": 354916,
+            "PARCEL_ID": 355200,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "f307eb6539950cc94e0fbcadeb76aa2258301dbdf90902f47d0821c6b901e1e3"
+        },
+        {
+          "transportId": "PARCEL_ALL.353336",
+          "properties": {
+            "OBJECTID": 354924,
+            "PARCEL_ID": 355208,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "02816b86996b680905bb59c92bc89a442773469468248aa79c56fb4af627aa65"
+        },
+        {
+          "transportId": "PARCEL_ALL.353337",
+          "properties": {
+            "OBJECTID": 354925,
+            "PARCEL_ID": 355209,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "207cae9ef70ea2151feb9e80d3e9edfc7210ec675416daa0c0bf8c7b8e3bc73a"
+        },
+        {
+          "transportId": "PARCEL_ALL.353338",
+          "properties": {
+            "OBJECTID": 354926,
+            "PARCEL_ID": 355210,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "94fcd618e5ec1eca2f472eddf5775d04ef6a349f495e83bd5a619cdd37d560ca"
+        },
+        {
+          "transportId": "PARCEL_ALL.353339",
+          "properties": {
+            "OBJECTID": 354927,
+            "PARCEL_ID": 355211,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "d915d847c4c75cb88cacc41ba2e89e98ab24dc782221dde5aa46a1af4e22de44"
+        },
+        {
+          "transportId": "PARCEL_ALL.353340",
+          "properties": {
+            "OBJECTID": 354928,
+            "PARCEL_ID": 355212,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "987e5ca0e8f3e0148a662269222f0f8fd4a594e12dde88344f6fbe43bd4972cf"
+        },
+        {
+          "transportId": "PARCEL_ALL.354376",
+          "properties": {
+            "OBJECTID": 355162,
+            "PARCEL_ID": 355213,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "538fc1db36a57d31ddb97e404d25b79a525b025cd4f13115bc73401f79ca8ea3"
+        },
+        {
+          "transportId": "PARCEL_ALL.354377",
+          "properties": {
+            "OBJECTID": 355163,
+            "PARCEL_ID": 355214,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "6731285c1ff9b7cb794d25da334a7c37566c15bd2826608b8450f177c0a5b4b3"
+        },
+        {
+          "transportId": "PARCEL_ALL.531321",
+          "properties": {
+            "OBJECTID": 531735,
+            "PARCEL_ID": 531870,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "b12e3bed7f151653a5ac4db0aab74417939e20f9a1cc44e40579eb7e8e873446"
+        },
+        {
+          "transportId": "PARCEL_ALL.531322",
+          "properties": {
+            "OBJECTID": 531736,
+            "PARCEL_ID": 531871,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "ca47281526ded37f2d4fbc1ace86bce824fe787c67af4917e01bd1bb613cb5c9"
+        },
+        {
+          "transportId": "PARCEL_ALL.531497",
+          "properties": {
+            "OBJECTID": 531737,
+            "PARCEL_ID": 531872,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "af170c319f1784b674dcc74eded758df73090a6f4782411e0ff58136c678d5e1"
+        },
+        {
+          "transportId": "PARCEL_ALL.710922",
+          "properties": {
+            "OBJECTID": 713899,
+            "PARCEL_ID": 713546,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "4aba481109db9d100cbc4eb56b9303ff1d0cc3a4cbd00dd8a8d3f0a468705178"
+        },
+        {
+          "transportId": "PARCEL_ALL.711112",
+          "properties": {
+            "OBJECTID": 713901,
+            "PARCEL_ID": 713548,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "27e8ee108d9f4260f4c921c9b9486949c0a1ed14a5782da3ef222f8210a1ad33"
+        },
+        {
+          "transportId": "PARCEL_ALL.710381",
+          "properties": {
+            "OBJECTID": 714016,
+            "PARCEL_ID": 713555,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "a65950e4c31ba058df9f37f2b206b6e4909e7df7dbbdc878c73c1b87856aca7e"
+        },
+        {
+          "transportId": "PARCEL_ALL.710382",
+          "properties": {
+            "OBJECTID": 714017,
+            "PARCEL_ID": 713556,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "e08b9102f93f4b4b1c813446b2f8d38cb81029e275228ac4d59442c70bcf4c05"
+        },
+        {
+          "transportId": "PARCEL_ALL.710383",
+          "properties": {
+            "OBJECTID": 714018,
+            "PARCEL_ID": 1076455,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "20a49ac4d8ff37dfda4d9c5d445fb7f74c8f8f2d6fb5f6b2f0afbd3c9d66b98a"
+        },
+        {
+          "transportId": "PARCEL_ALL.710384",
+          "properties": {
+            "OBJECTID": 714019,
+            "PARCEL_ID": 713558,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "03a74957b322bc22a9f62820427b5892a3a43ac75da4839384b35f66ab1c07cc"
+        },
+        {
+          "transportId": "PARCEL_ALL.710385",
+          "properties": {
+            "OBJECTID": 714020,
+            "PARCEL_ID": 713559,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 19
+          },
+          "geometrySha256": "a538cc12fe4762c56c7ee12e3e1818c2815001e7b49d8b894b2f3ae163a21bd4"
+        },
+        {
+          "transportId": "PARCEL_ALL.710386",
+          "properties": {
+            "OBJECTID": 714021,
+            "PARCEL_ID": 713560,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 20
+          },
+          "geometrySha256": "49819031d860b25f2e403076511d1d4f8fc8b687c71aff64070d31d71fa09a3a"
+        },
+        {
+          "transportId": "PARCEL_ALL.709722",
+          "properties": {
+            "OBJECTID": 714146,
+            "PARCEL_ID": 1073178,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 17
+          },
+          "geometrySha256": "f67243b48a9e8c5e565f91fe3cd35b06541127889d150d5d18225b22125561cb"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.213%2C31.782%2C35.214%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:09.305Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 9353,
+      "numberMatched": 11,
+      "numberReturned": 11,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.785478",
+          "properties": {
+            "OBJECTID": 786743,
+            "PARCEL_ID": 781045,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "dd0495373ca0500d5987fa39e0fa9b6581c879ec75846f5cc779f6dd1d0b1d2e"
+        },
+        {
+          "transportId": "PARCEL_ALL.785479",
+          "properties": {
+            "OBJECTID": 786744,
+            "PARCEL_ID": 781046,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "e7191bf4ad363c407a2a5e2ee1b27480b45a6372a391ee29b6cd4b0a8871ea1e"
+        },
+        {
+          "transportId": "PARCEL_ALL.785480",
+          "properties": {
+            "OBJECTID": 786745,
+            "PARCEL_ID": 781047,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "c42b8c2178194e3cb17f71bfd52ae6d3041d0e518a7db0a87d6acb998dc5364f"
+        },
+        {
+          "transportId": "PARCEL_ALL.785481",
+          "properties": {
+            "OBJECTID": 786746,
+            "PARCEL_ID": 781048,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "a01c430b8e62143d89f1b1ddcafd8f8fd23cf9add2361378fc760079486e8b83"
+        },
+        {
+          "transportId": "PARCEL_ALL.785483",
+          "properties": {
+            "OBJECTID": 786748,
+            "PARCEL_ID": 781050,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "423d74b37cfb855fde4d09ef88dd54b80d4f3805efcce7da83afa645c658cce1"
+        },
+        {
+          "transportId": "PARCEL_ALL.785486",
+          "properties": {
+            "OBJECTID": 786751,
+            "PARCEL_ID": 781053,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "0811d1df6680b8b1137a177569f6f9ef58f29dbec6081fd63f6f7e2b64e0af90"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079737",
+          "properties": {
+            "OBJECTID": 1082693,
+            "PARCEL_ID": 1073113,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "67746adc85d775aff179dce6ee61514c1c238750097b69543967f06fac86a6da"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079738",
+          "properties": {
+            "OBJECTID": 1082694,
+            "PARCEL_ID": 1076454,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "c122e627f1feeb5aab8ee660ed8cdfbf3030213faf49c592290472234ffa8c42"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079740",
+          "properties": {
+            "OBJECTID": 1082696,
+            "PARCEL_ID": 1076453,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "d92caad2b3d2d9871f2ad812baf22a8e4dcaf45ba310c28251c364874dd8598e"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079742",
+          "properties": {
+            "OBJECTID": 1082698,
+            "PARCEL_ID": 1073118,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "65883c668ad213c771e4330b6ca8bd4197c66de5d15a7f5c1184a1a957643bcc"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:09.445Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 35160,
+      "numberMatched": 37,
+      "numberReturned": 37,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.531497",
+          "properties": {
+            "OBJECTID": 531737,
+            "PARCEL_ID": 531872,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "af170c319f1784b674dcc74eded758df73090a6f4782411e0ff58136c678d5e1"
+        },
+        {
+          "transportId": "PARCEL_ALL.710383",
+          "properties": {
+            "OBJECTID": 714018,
+            "PARCEL_ID": 1076455,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "20a49ac4d8ff37dfda4d9c5d445fb7f74c8f8f2d6fb5f6b2f0afbd3c9d66b98a"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079738",
+          "properties": {
+            "OBJECTID": 1082694,
+            "PARCEL_ID": 1076454,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "c122e627f1feeb5aab8ee660ed8cdfbf3030213faf49c592290472234ffa8c42"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079740",
+          "properties": {
+            "OBJECTID": 1082696,
+            "PARCEL_ID": 1076453,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "d92caad2b3d2d9871f2ad812baf22a8e4dcaf45ba310c28251c364874dd8598e"
+        },
+        {
+          "transportId": "PARCEL_ALL.20516",
+          "properties": {
+            "OBJECTID": 1091565,
+            "PARCEL_ID": 1076459,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "23af202444bca59acb3b61557aae8589f75dd6ce5ae9f05254d97a26bd9ad2eb"
+        },
+        {
+          "transportId": "PARCEL_ALL.540157",
+          "properties": {
+            "OBJECTID": 1091566,
+            "PARCEL_ID": 1076460,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "632c68f5df3ea9557d176750cc94009f427c1766661f4c3f4eb80bee32896fe2"
+        },
+        {
+          "transportId": "PARCEL_ALL.540158",
+          "properties": {
+            "OBJECTID": 1091567,
+            "PARCEL_ID": 1076461,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "4c930417b341c97ec75cdbd31ff27623f3746c809f9281a13633310067357082"
+        },
+        {
+          "transportId": "PARCEL_ALL.540159",
+          "properties": {
+            "OBJECTID": 1091568,
+            "PARCEL_ID": 1076462,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 33
+          },
+          "geometrySha256": "38d1a3a40b00a58833e0094123b17dbbb0260c5ad9bffbfe85c295448181e777"
+        },
+        {
+          "transportId": "PARCEL_ALL.540160",
+          "properties": {
+            "OBJECTID": 1091841,
+            "PARCEL_ID": 1076463,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 14
+          },
+          "geometrySha256": "ae155287695839f0f1f76e7f91001c0107714d8fe4aec5d9419a9723ca1e966b"
+        },
+        {
+          "transportId": "PARCEL_ALL.540161",
+          "properties": {
+            "OBJECTID": 1091842,
+            "PARCEL_ID": 1076464,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "be7b81b980cca01167b00dbe865609976b78609b2508d3e314ca366be5f0d0f9"
+        },
+        {
+          "transportId": "PARCEL_ALL.540162",
+          "properties": {
+            "OBJECTID": 1091843,
+            "PARCEL_ID": 1076465,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "fb47b597e1132bdbe0624e82fe393c31c61a6d959627ff7e6760563b8a0a1877"
+        },
+        {
+          "transportId": "PARCEL_ALL.540163",
+          "properties": {
+            "OBJECTID": 1091844,
+            "PARCEL_ID": 1076466,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "074a295573112a443097a8f097ef80bcb242d2e6ff8e7e65bf63524c5cee3c4a"
+        },
+        {
+          "transportId": "PARCEL_ALL.540164",
+          "properties": {
+            "OBJECTID": 1091845,
+            "PARCEL_ID": 1076467,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 21
+          },
+          "geometrySha256": "27bee6fc9ecceca40090d2032d20dc149202385601f00f59ade316375273e4d5"
+        },
+        {
+          "transportId": "PARCEL_ALL.540165",
+          "properties": {
+            "OBJECTID": 1091846,
+            "PARCEL_ID": 1076468,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "fceeef9bd1a61d45e26a5d9e8cfb72fe686eee833453fac221d4e9bd552c0904"
+        },
+        {
+          "transportId": "PARCEL_ALL.540454",
+          "properties": {
+            "OBJECTID": 1091847,
+            "PARCEL_ID": 1076469,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "c2d39c5d6cdc35823dda561f1bb81e98a23c190b250d7da11ec61e08998b5830"
+        },
+        {
+          "transportId": "PARCEL_ALL.540455",
+          "properties": {
+            "OBJECTID": 1091848,
+            "PARCEL_ID": 1076470,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 32
+          },
+          "geometrySha256": "b8f6f9748d9ee315eb1da212d63542398c67e7733bebc28673d46af0deabaf59"
+        },
+        {
+          "transportId": "PARCEL_ALL.540456",
+          "properties": {
+            "OBJECTID": 1091849,
+            "PARCEL_ID": 1076471,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 20
+          },
+          "geometrySha256": "2d024ce31c67682fe2227acc75b9c1ae423a451ba72eb95f40b8a7cff814ee99"
+        },
+        {
+          "transportId": "PARCEL_ALL.540457",
+          "properties": {
+            "OBJECTID": 1091850,
+            "PARCEL_ID": 1076472,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "640b541c712041eff866197c15b92984dc9ba6f3c3b7aac7cf7c3af441987713"
+        },
+        {
+          "transportId": "PARCEL_ALL.540458",
+          "properties": {
+            "OBJECTID": 1091851,
+            "PARCEL_ID": 1076473,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 31
+          },
+          "geometrySha256": "cc04e811a571c3571db165533451d861011a8aa2d4969dc363115e63584ad042"
+        },
+        {
+          "transportId": "PARCEL_ALL.540459",
+          "properties": {
+            "OBJECTID": 1091852,
+            "PARCEL_ID": 1076474,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "50793e2882115136a4f2b4b07fad4610055c271225df75cdd7df6a46282e21a1"
+        },
+        {
+          "transportId": "PARCEL_ALL.160558",
+          "properties": {
+            "OBJECTID": 1091853,
+            "PARCEL_ID": 1076475,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 19
+          },
+          "geometrySha256": "584341817dcea216e9ee16a74af8e7bd181809afeb9789c6bbbd3a1933ba3634"
+        },
+        {
+          "transportId": "PARCEL_ALL.160559",
+          "properties": {
+            "OBJECTID": 1091854,
+            "PARCEL_ID": 1076476,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "986a4ba1c7d6d5155bd4baa5b134a7919b473812a4808db9ba072455a7058803"
+        },
+        {
+          "transportId": "PARCEL_ALL.160560",
+          "properties": {
+            "OBJECTID": 1091855,
+            "PARCEL_ID": 1076477,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 18
+          },
+          "geometrySha256": "eccab10957a9db0eefd4bc96d71e127ac73bb7010ee6c3f0c5574601341905ec"
+        },
+        {
+          "transportId": "PARCEL_ALL.160561",
+          "properties": {
+            "OBJECTID": 1091856,
+            "PARCEL_ID": 1076478,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 17
+          },
+          "geometrySha256": "4b9240c268e93d01294c5b0adb310225d51fe19870cb4fa4787bb86d72225744"
+        },
+        {
+          "transportId": "PARCEL_ALL.160562",
+          "properties": {
+            "OBJECTID": 1091857,
+            "PARCEL_ID": 1076479,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 26
+          },
+          "geometrySha256": "3f27b0e129ea84002b31b09f48f58788d88c2df0b03522bbddf158bcbfce4a0a"
+        },
+        {
+          "transportId": "PARCEL_ALL.160563",
+          "properties": {
+            "OBJECTID": 1091858,
+            "PARCEL_ID": 1076480,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 24
+          },
+          "geometrySha256": "bf939ba99a3712c74c2d133866a7d27a27ab6e0292ddb8b803ee2abd8a8201d8"
+        },
+        {
+          "transportId": "PARCEL_ALL.160564",
+          "properties": {
+            "OBJECTID": 1091859,
+            "PARCEL_ID": 1076481,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 15
+          },
+          "geometrySha256": "4c0a4c0cc5afcf144e9dc5e2e2c267a4275d2c395e4f4d62c2a9fba20c333add"
+        },
+        {
+          "transportId": "PARCEL_ALL.160565",
+          "properties": {
+            "OBJECTID": 1091860,
+            "PARCEL_ID": 1076482,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "e3624557928eb293c455f47e4f8803af844c3aa7b7799b498013b5d972a77b7c"
+        },
+        {
+          "transportId": "PARCEL_ALL.160566",
+          "properties": {
+            "OBJECTID": 1091861,
+            "PARCEL_ID": 1076483,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "70ad2442c12eb2981c6e7990f354c505eb233e1b9364df99086c2f49f00ba13b"
+        },
+        {
+          "transportId": "PARCEL_ALL.258180",
+          "properties": {
+            "OBJECTID": 1091862,
+            "PARCEL_ID": 1076484,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "68a481530ccffd77f0808dc650e259820b0079694d011027aa51916f6605ad6e"
+        },
+        {
+          "transportId": "PARCEL_ALL.258181",
+          "properties": {
+            "OBJECTID": 1091863,
+            "PARCEL_ID": 1076485,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 22
+          },
+          "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+        },
+        {
+          "transportId": "PARCEL_ALL.258179",
+          "properties": {
+            "OBJECTID": 1091864,
+            "PARCEL_ID": 1076486,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 29
+          },
+          "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+        },
+        {
+          "transportId": "PARCEL_ALL.789589",
+          "properties": {
+            "OBJECTID": 1091865,
+            "PARCEL_ID": 1076487,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 30
+          },
+          "geometrySha256": "ace2d50d46de864da4a4cf5bc042a243d64e5635aa60cf5acf95ccffd3bff084"
+        },
+        {
+          "transportId": "PARCEL_ALL.789590",
+          "properties": {
+            "OBJECTID": 1091866,
+            "PARCEL_ID": 1076488,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 28
+          },
+          "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+        },
+        {
+          "transportId": "PARCEL_ALL.787383",
+          "properties": {
+            "OBJECTID": 1091868,
+            "PARCEL_ID": 1076490,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 27
+          },
+          "geometrySha256": "d6035bfd6334853ba58547856fe066fbb32049ef39ed8de38a698589737961c0"
+        },
+        {
+          "transportId": "PARCEL_ALL.787388",
+          "properties": {
+            "OBJECTID": 1091869,
+            "PARCEL_ID": 1076491,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 25
+          },
+          "geometrySha256": "53aa1f8d29bf98f0ea276c4cd5c36402429688448ec303be54495c21293938f9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.215%2C31.782%2C35.216%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:10.204Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 30651,
+      "numberMatched": 19,
+      "numberReturned": 19,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353162",
+          "properties": {
+            "OBJECTID": 354913,
+            "PARCEL_ID": 355197,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "197883c69b8a4473aefa33ece8a4f8644c9ed6fbabf7fd4ce5237a5df89e3a12"
+        },
+        {
+          "transportId": "PARCEL_ALL.353164",
+          "properties": {
+            "OBJECTID": 354915,
+            "PARCEL_ID": 355199,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "1826329d2cefd11c72b7c3333b80d84e7e1aa2c135286f90418f89674c680154"
+        },
+        {
+          "transportId": "PARCEL_ALL.353165",
+          "properties": {
+            "OBJECTID": 354916,
+            "PARCEL_ID": 355200,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "f307eb6539950cc94e0fbcadeb76aa2258301dbdf90902f47d0821c6b901e1e3"
+        },
+        {
+          "transportId": "PARCEL_ALL.353166",
+          "properties": {
+            "OBJECTID": 354917,
+            "PARCEL_ID": 355201,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "06cd218a0fbd2fe94a86b772596668137ca7049d23663349e03f9bb76585b9ad"
+        },
+        {
+          "transportId": "PARCEL_ALL.353335",
+          "properties": {
+            "OBJECTID": 354923,
+            "PARCEL_ID": 355207,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "91a9adbd650d40a722a8a93144298406f1747953b4c73a8271b73c2d0a3a8cb8"
+        },
+        {
+          "transportId": "PARCEL_ALL.530068",
+          "properties": {
+            "OBJECTID": 531485,
+            "PARCEL_ID": 531865,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "6214edbd54a79d6e126df388ddd62acdc5d12871beebbdc6ebe9f08a08bef2d7"
+        },
+        {
+          "transportId": "PARCEL_ALL.531317",
+          "properties": {
+            "OBJECTID": 531731,
+            "PARCEL_ID": 531866,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "fe5d8f9908a88faa90b6b402391cb504a4695583d191c7e4a8d91fb44256f843"
+        },
+        {
+          "transportId": "PARCEL_ALL.531318",
+          "properties": {
+            "OBJECTID": 531732,
+            "PARCEL_ID": 531867,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "c0a13f10a89b67c971868c774214af6bc7ff82fc6f62b82732d2ac713ae4a808"
+        },
+        {
+          "transportId": "PARCEL_ALL.531319",
+          "properties": {
+            "OBJECTID": 531733,
+            "PARCEL_ID": 1076457,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "7f4808305d907751731351379da4d7ffdaea301b43ad1c68c4d1c86fdcc5c9c6"
+        },
+        {
+          "transportId": "PARCEL_ALL.531320",
+          "properties": {
+            "OBJECTID": 531734,
+            "PARCEL_ID": 531869,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "2705b9cf37e2939d1b6ee8a290ec54592fc1ac8d1e9ede1f115b4175b6162526"
+        },
+        {
+          "transportId": "PARCEL_ALL.531321",
+          "properties": {
+            "OBJECTID": 531735,
+            "PARCEL_ID": 531870,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "b12e3bed7f151653a5ac4db0aab74417939e20f9a1cc44e40579eb7e8e873446"
+        },
+        {
+          "transportId": "PARCEL_ALL.531322",
+          "properties": {
+            "OBJECTID": 531736,
+            "PARCEL_ID": 531871,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "ca47281526ded37f2d4fbc1ace86bce824fe787c67af4917e01bd1bb613cb5c9"
+        },
+        {
+          "transportId": "PARCEL_ALL.531497",
+          "properties": {
+            "OBJECTID": 531737,
+            "PARCEL_ID": 531872,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "af170c319f1784b674dcc74eded758df73090a6f4782411e0ff58136c678d5e1"
+        },
+        {
+          "transportId": "PARCEL_ALL.710383",
+          "properties": {
+            "OBJECTID": 714018,
+            "PARCEL_ID": 1076455,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "20a49ac4d8ff37dfda4d9c5d445fb7f74c8f8f2d6fb5f6b2f0afbd3c9d66b98a"
+        },
+        {
+          "transportId": "PARCEL_ALL.540164",
+          "properties": {
+            "OBJECTID": 1091845,
+            "PARCEL_ID": 1076467,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 21
+          },
+          "geometrySha256": "27bee6fc9ecceca40090d2032d20dc149202385601f00f59ade316375273e4d5"
+        },
+        {
+          "transportId": "PARCEL_ALL.540455",
+          "properties": {
+            "OBJECTID": 1091848,
+            "PARCEL_ID": 1076470,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 32
+          },
+          "geometrySha256": "b8f6f9748d9ee315eb1da212d63542398c67e7733bebc28673d46af0deabaf59"
+        },
+        {
+          "transportId": "PARCEL_ALL.540458",
+          "properties": {
+            "OBJECTID": 1091851,
+            "PARCEL_ID": 1076473,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 31
+          },
+          "geometrySha256": "cc04e811a571c3571db165533451d861011a8aa2d4969dc363115e63584ad042"
+        },
+        {
+          "transportId": "PARCEL_ALL.160558",
+          "properties": {
+            "OBJECTID": 1091853,
+            "PARCEL_ID": 1076475,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 19
+          },
+          "geometrySha256": "584341817dcea216e9ee16a74af8e7bd181809afeb9789c6bbbd3a1933ba3634"
+        },
+        {
+          "transportId": "PARCEL_ALL.787383",
+          "properties": {
+            "OBJECTID": 1091868,
+            "PARCEL_ID": 1076490,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 27
+          },
+          "geometrySha256": "d6035bfd6334853ba58547856fe066fbb32049ef39ed8de38a698589737961c0"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.213%2C31.783%2C35.214%2C31.784%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:10.472Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.214%2C31.783%2C35.215%2C31.784%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:10.605Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.215%2C31.783%2C35.216%2C31.784%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:10.743Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 8920,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.530068",
+          "properties": {
+            "OBJECTID": 531485,
+            "PARCEL_ID": 531865,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "6214edbd54a79d6e126df388ddd62acdc5d12871beebbdc6ebe9f08a08bef2d7"
+        },
+        {
+          "transportId": "PARCEL_ALL.531317",
+          "properties": {
+            "OBJECTID": 531731,
+            "PARCEL_ID": 531866,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "fe5d8f9908a88faa90b6b402391cb504a4695583d191c7e4a8d91fb44256f843"
+        },
+        {
+          "transportId": "PARCEL_ALL.1076258",
+          "properties": {
+            "OBJECTID": 1085584,
+            "PARCEL_ID": 1077721,
+            "GUSH_NUM": 30745,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "27b5c87714e6179da5cb7daaff00dbb27ebcd25895418de3185a01f844c99244"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.214%2C31.78%2C35.215%2C31.781%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:11.014Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5205,
+      "numberMatched": 8,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.710922",
+          "properties": {
+            "OBJECTID": 713899,
+            "PARCEL_ID": 713546,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "4aba481109db9d100cbc4eb56b9303ff1d0cc3a4cbd00dd8a8d3f0a468705178"
+        },
+        {
+          "transportId": "PARCEL_ALL.710377",
+          "properties": {
+            "OBJECTID": 714012,
+            "PARCEL_ID": 713551,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "18752107a53f36aad8b5dd2e6f57838808cadd19897f7deb6e2a956c59112c9b"
+        },
+        {
+          "transportId": "PARCEL_ALL.710378",
+          "properties": {
+            "OBJECTID": 714013,
+            "PARCEL_ID": 713552,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "3e8d0646ab0660200a4b3c5481cd4767a1389bd0c982bc1c3c5114cdce8bd9ae"
+        },
+        {
+          "transportId": "PARCEL_ALL.710379",
+          "properties": {
+            "OBJECTID": 714014,
+            "PARCEL_ID": 713553,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 14
+          },
+          "geometrySha256": "397a97a091d549aa8ac36a63b52c3aa14a377d19cce43e576c61d756719529a4"
+        },
+        {
+          "transportId": "PARCEL_ALL.710380",
+          "properties": {
+            "OBJECTID": 714015,
+            "PARCEL_ID": 713554,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 18
+          },
+          "geometrySha256": "4e7151ed6f401ce91e5caf7133704a93ea68d897b9f05164243707dd95f4ec7c"
+        },
+        {
+          "transportId": "PARCEL_ALL.709723",
+          "properties": {
+            "OBJECTID": 714147,
+            "PARCEL_ID": 713581,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 15
+          },
+          "geometrySha256": "674dd218ba2eb834662955ea3eb671de49ca8fe46b42eb0b3b2add576ed83730"
+        },
+        {
+          "transportId": "PARCEL_ALL.713940",
+          "properties": {
+            "OBJECTID": 715334,
+            "PARCEL_ID": 715638,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "4102ae7a3f94e8a3fc43fc792aee7171b8e6181c1527c626fb873f6201897b65"
+        },
+        {
+          "transportId": "PARCEL_ALL.713941",
+          "properties": {
+            "OBJECTID": 715335,
+            "PARCEL_ID": 715639,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "5960dc71ee0cabe443b22bc39bdbc44a91d118705aa79f3743ff947b1076ffe5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.214%2C31.784%2C35.215%2C31.785%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:11.164Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4574,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.1076258",
+          "properties": {
+            "OBJECTID": 1085584,
+            "PARCEL_ID": 1077721,
+            "GUSH_NUM": 30745,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "27b5c87714e6179da5cb7daaff00dbb27ebcd25895418de3185a01f844c99244"
+        },
+        {
+          "transportId": "PARCEL_ALL.1076260",
+          "properties": {
+            "OBJECTID": 1085762,
+            "PARCEL_ID": 1077720,
+            "GUSH_NUM": 30745,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "7ac7213465010b1e3c6020b2bafd9de84b1a04150405c4cb31da2dcc7637926f"
+        },
+        {
+          "transportId": "PARCEL_ALL.1076561",
+          "properties": {
+            "OBJECTID": 1085764,
+            "PARCEL_ID": 1078311,
+            "GUSH_NUM": 30745,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "5707eaa6c2e75a1f8921652646e7a1de909936c5101434099ce3e4ad258f7fad"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.212%2C31.782%2C35.213%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:11.371Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 6845,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713748",
+          "properties": {
+            "OBJECTID": 715314,
+            "PARCEL_ID": 715618,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "d74422b4154d0425d377f76f47a631cd2a263994d759e4eebd742a9a664feec4"
+        },
+        {
+          "transportId": "PARCEL_ALL.714992",
+          "properties": {
+            "OBJECTID": 715575,
+            "PARCEL_ID": 715642,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "229f678cd73385dd61a4b7878dfcbdafa75bead1d73e923f19ebf6b7f6d3b7dd"
+        },
+        {
+          "transportId": "PARCEL_ALL.714993",
+          "properties": {
+            "OBJECTID": 715576,
+            "PARCEL_ID": 715643,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 14
+          },
+          "geometrySha256": "19a09949b9bb4b006618b0b33b82f0094bc29ce1df5681a883b5619d2516bbbb"
+        },
+        {
+          "transportId": "PARCEL_ALL.785478",
+          "properties": {
+            "OBJECTID": 786743,
+            "PARCEL_ID": 781045,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "dd0495373ca0500d5987fa39e0fa9b6581c879ec75846f5cc779f6dd1d0b1d2e"
+        },
+        {
+          "transportId": "PARCEL_ALL.785480",
+          "properties": {
+            "OBJECTID": 786745,
+            "PARCEL_ID": 781047,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "c42b8c2178194e3cb17f71bfd52ae6d3041d0e518a7db0a87d6acb998dc5364f"
+        },
+        {
+          "transportId": "PARCEL_ALL.785481",
+          "properties": {
+            "OBJECTID": 786746,
+            "PARCEL_ID": 781048,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "a01c430b8e62143d89f1b1ddcafd8f8fd23cf9add2361378fc760079486e8b83"
+        },
+        {
+          "transportId": "PARCEL_ALL.785482",
+          "properties": {
+            "OBJECTID": 786747,
+            "PARCEL_ID": 781049,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "c1da6518052db0ea621a694031d8e5d47998a63948f5cc62c664a66a2bb22956"
+        },
+        {
+          "transportId": "PARCEL_ALL.785483",
+          "properties": {
+            "OBJECTID": 786748,
+            "PARCEL_ID": 781050,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "423d74b37cfb855fde4d09ef88dd54b80d4f3805efcce7da83afa645c658cce1"
+        },
+        {
+          "transportId": "PARCEL_ALL.785486",
+          "properties": {
+            "OBJECTID": 786751,
+            "PARCEL_ID": 781053,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "0811d1df6680b8b1137a177569f6f9ef58f29dbec6081fd63f6f7e2b64e0af90"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.216%2C31.782%2C35.217%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:11.514Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 19976,
+      "numberMatched": 12,
+      "numberReturned": 12,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353162",
+          "properties": {
+            "OBJECTID": 354913,
+            "PARCEL_ID": 355197,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "197883c69b8a4473aefa33ece8a4f8644c9ed6fbabf7fd4ce5237a5df89e3a12"
+        },
+        {
+          "transportId": "PARCEL_ALL.353163",
+          "properties": {
+            "OBJECTID": 354914,
+            "PARCEL_ID": 355198,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "72e9f394d5d01fbfe1dd6c7e8fee666f5397969dd2d487bfd2d518c44a52d456"
+        },
+        {
+          "transportId": "PARCEL_ALL.353164",
+          "properties": {
+            "OBJECTID": 354915,
+            "PARCEL_ID": 355199,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "1826329d2cefd11c72b7c3333b80d84e7e1aa2c135286f90418f89674c680154"
+        },
+        {
+          "transportId": "PARCEL_ALL.353165",
+          "properties": {
+            "OBJECTID": 354916,
+            "PARCEL_ID": 355200,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "f307eb6539950cc94e0fbcadeb76aa2258301dbdf90902f47d0821c6b901e1e3"
+        },
+        {
+          "transportId": "PARCEL_ALL.353166",
+          "properties": {
+            "OBJECTID": 354917,
+            "PARCEL_ID": 355201,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "06cd218a0fbd2fe94a86b772596668137ca7049d23663349e03f9bb76585b9ad"
+        },
+        {
+          "transportId": "PARCEL_ALL.353167",
+          "properties": {
+            "OBJECTID": 354918,
+            "PARCEL_ID": 355202,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "718154f664687e1903800bfc709864bcbe3324c44febd183ff9f6ae9d5375a93"
+        },
+        {
+          "transportId": "PARCEL_ALL.353168",
+          "properties": {
+            "OBJECTID": 354919,
+            "PARCEL_ID": 355203,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "2742a1235de1ee69149d1701b414dcddb38bf6c1f40f479861aee7ec5f6ea72e"
+        },
+        {
+          "transportId": "PARCEL_ALL.353332",
+          "properties": {
+            "OBJECTID": 354920,
+            "PARCEL_ID": 355204,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "ae7b52563c5f56a8189df0bbbba5971592fef3babf5b91e7c3eedc26fc129804"
+        },
+        {
+          "transportId": "PARCEL_ALL.353333",
+          "properties": {
+            "OBJECTID": 354921,
+            "PARCEL_ID": 355205,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "2d22130a3ab30fce6e3681f35cbe7c665e2950642c9e7afdb7811d165dabf6d9"
+        },
+        {
+          "transportId": "PARCEL_ALL.353334",
+          "properties": {
+            "OBJECTID": 354922,
+            "PARCEL_ID": 355206,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "31d25090d9ff06885380cf7ab25c116761bccd7a98cf9fe5891d970cc2b3b397"
+        },
+        {
+          "transportId": "PARCEL_ALL.353335",
+          "properties": {
+            "OBJECTID": 354923,
+            "PARCEL_ID": 355207,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "91a9adbd650d40a722a8a93144298406f1747953b4c73a8271b73c2d0a3a8cb8"
+        },
+        {
+          "transportId": "PARCEL_ALL.530068",
+          "properties": {
+            "OBJECTID": 531485,
+            "PARCEL_ID": 531865,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "6214edbd54a79d6e126df388ddd62acdc5d12871beebbdc6ebe9f08a08bef2d7"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=0&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:11.769Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5214,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.531497",
+          "properties": {
+            "OBJECTID": 531737,
+            "PARCEL_ID": 531872,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "af170c319f1784b674dcc74eded758df73090a6f4782411e0ff58136c678d5e1"
+        },
+        {
+          "transportId": "PARCEL_ALL.710383",
+          "properties": {
+            "OBJECTID": 714018,
+            "PARCEL_ID": 1076455,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "20a49ac4d8ff37dfda4d9c5d445fb7f74c8f8f2d6fb5f6b2f0afbd3c9d66b98a"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=3&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:12.254Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3767,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.1079738",
+          "properties": {
+            "OBJECTID": 1082694,
+            "PARCEL_ID": 1076454,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "c122e627f1feeb5aab8ee660ed8cdfbf3030213faf49c592290472234ffa8c42"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079740",
+          "properties": {
+            "OBJECTID": 1082696,
+            "PARCEL_ID": 1076453,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "d92caad2b3d2d9871f2ad812baf22a8e4dcaf45ba310c28251c364874dd8598e"
+        },
+        {
+          "transportId": "PARCEL_ALL.20516",
+          "properties": {
+            "OBJECTID": 1091565,
+            "PARCEL_ID": 1076459,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "23af202444bca59acb3b61557aae8589f75dd6ce5ae9f05254d97a26bd9ad2eb"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=6&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:12.815Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3447,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540157",
+          "properties": {
+            "OBJECTID": 1091566,
+            "PARCEL_ID": 1076460,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "632c68f5df3ea9557d176750cc94009f427c1766661f4c3f4eb80bee32896fe2"
+        },
+        {
+          "transportId": "PARCEL_ALL.540158",
+          "properties": {
+            "OBJECTID": 1091567,
+            "PARCEL_ID": 1076461,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "4c930417b341c97ec75cdbd31ff27623f3746c809f9281a13633310067357082"
+        },
+        {
+          "transportId": "PARCEL_ALL.540159",
+          "properties": {
+            "OBJECTID": 1091568,
+            "PARCEL_ID": 1076462,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 33
+          },
+          "geometrySha256": "38d1a3a40b00a58833e0094123b17dbbb0260c5ad9bffbfe85c295448181e777"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=9&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:12.956Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3014,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540160",
+          "properties": {
+            "OBJECTID": 1091841,
+            "PARCEL_ID": 1076463,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 14
+          },
+          "geometrySha256": "ae155287695839f0f1f76e7f91001c0107714d8fe4aec5d9419a9723ca1e966b"
+        },
+        {
+          "transportId": "PARCEL_ALL.540161",
+          "properties": {
+            "OBJECTID": 1091842,
+            "PARCEL_ID": 1076464,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "be7b81b980cca01167b00dbe865609976b78609b2508d3e314ca366be5f0d0f9"
+        },
+        {
+          "transportId": "PARCEL_ALL.540162",
+          "properties": {
+            "OBJECTID": 1091843,
+            "PARCEL_ID": 1076465,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "fb47b597e1132bdbe0624e82fe393c31c61a6d959627ff7e6760563b8a0a1877"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=12&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:13.096Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2764,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540163",
+          "properties": {
+            "OBJECTID": 1091844,
+            "PARCEL_ID": 1076466,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "074a295573112a443097a8f097ef80bcb242d2e6ff8e7e65bf63524c5cee3c4a"
+        },
+        {
+          "transportId": "PARCEL_ALL.540164",
+          "properties": {
+            "OBJECTID": 1091845,
+            "PARCEL_ID": 1076467,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 21
+          },
+          "geometrySha256": "27bee6fc9ecceca40090d2032d20dc149202385601f00f59ade316375273e4d5"
+        },
+        {
+          "transportId": "PARCEL_ALL.540165",
+          "properties": {
+            "OBJECTID": 1091846,
+            "PARCEL_ID": 1076468,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "fceeef9bd1a61d45e26a5d9e8cfb72fe686eee833453fac221d4e9bd552c0904"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=15&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:13.239Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2699,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540454",
+          "properties": {
+            "OBJECTID": 1091847,
+            "PARCEL_ID": 1076469,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "c2d39c5d6cdc35823dda561f1bb81e98a23c190b250d7da11ec61e08998b5830"
+        },
+        {
+          "transportId": "PARCEL_ALL.540455",
+          "properties": {
+            "OBJECTID": 1091848,
+            "PARCEL_ID": 1076470,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 32
+          },
+          "geometrySha256": "b8f6f9748d9ee315eb1da212d63542398c67e7733bebc28673d46af0deabaf59"
+        },
+        {
+          "transportId": "PARCEL_ALL.540456",
+          "properties": {
+            "OBJECTID": 1091849,
+            "PARCEL_ID": 1076471,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 20
+          },
+          "geometrySha256": "2d024ce31c67682fe2227acc75b9c1ae423a451ba72eb95f40b8a7cff814ee99"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=18&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:13.372Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3235,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540457",
+          "properties": {
+            "OBJECTID": 1091850,
+            "PARCEL_ID": 1076472,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "640b541c712041eff866197c15b92984dc9ba6f3c3b7aac7cf7c3af441987713"
+        },
+        {
+          "transportId": "PARCEL_ALL.540458",
+          "properties": {
+            "OBJECTID": 1091851,
+            "PARCEL_ID": 1076473,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 31
+          },
+          "geometrySha256": "cc04e811a571c3571db165533451d861011a8aa2d4969dc363115e63584ad042"
+        },
+        {
+          "transportId": "PARCEL_ALL.540459",
+          "properties": {
+            "OBJECTID": 1091852,
+            "PARCEL_ID": 1076474,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "50793e2882115136a4f2b4b07fad4610055c271225df75cdd7df6a46282e21a1"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=21&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:13.517Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3305,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.160558",
+          "properties": {
+            "OBJECTID": 1091853,
+            "PARCEL_ID": 1076475,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 19
+          },
+          "geometrySha256": "584341817dcea216e9ee16a74af8e7bd181809afeb9789c6bbbd3a1933ba3634"
+        },
+        {
+          "transportId": "PARCEL_ALL.160559",
+          "properties": {
+            "OBJECTID": 1091854,
+            "PARCEL_ID": 1076476,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "986a4ba1c7d6d5155bd4baa5b134a7919b473812a4808db9ba072455a7058803"
+        },
+        {
+          "transportId": "PARCEL_ALL.160560",
+          "properties": {
+            "OBJECTID": 1091855,
+            "PARCEL_ID": 1076477,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 18
+          },
+          "geometrySha256": "eccab10957a9db0eefd4bc96d71e127ac73bb7010ee6c3f0c5574601341905ec"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=24&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:13.649Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4927,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.160561",
+          "properties": {
+            "OBJECTID": 1091856,
+            "PARCEL_ID": 1076478,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 17
+          },
+          "geometrySha256": "4b9240c268e93d01294c5b0adb310225d51fe19870cb4fa4787bb86d72225744"
+        },
+        {
+          "transportId": "PARCEL_ALL.160562",
+          "properties": {
+            "OBJECTID": 1091857,
+            "PARCEL_ID": 1076479,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 26
+          },
+          "geometrySha256": "3f27b0e129ea84002b31b09f48f58788d88c2df0b03522bbddf158bcbfce4a0a"
+        },
+        {
+          "transportId": "PARCEL_ALL.160563",
+          "properties": {
+            "OBJECTID": 1091858,
+            "PARCEL_ID": 1076480,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 24
+          },
+          "geometrySha256": "bf939ba99a3712c74c2d133866a7d27a27ab6e0292ddb8b803ee2abd8a8201d8"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=27&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:13.800Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2698,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.160564",
+          "properties": {
+            "OBJECTID": 1091859,
+            "PARCEL_ID": 1076481,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 15
+          },
+          "geometrySha256": "4c0a4c0cc5afcf144e9dc5e2e2c267a4275d2c395e4f4d62c2a9fba20c333add"
+        },
+        {
+          "transportId": "PARCEL_ALL.160565",
+          "properties": {
+            "OBJECTID": 1091860,
+            "PARCEL_ID": 1076482,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "e3624557928eb293c455f47e4f8803af844c3aa7b7799b498013b5d972a77b7c"
+        },
+        {
+          "transportId": "PARCEL_ALL.160566",
+          "properties": {
+            "OBJECTID": 1091861,
+            "PARCEL_ID": 1076483,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "70ad2442c12eb2981c6e7990f354c505eb233e1b9364df99086c2f49f00ba13b"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=30&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:13.935Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5559,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.258180",
+          "properties": {
+            "OBJECTID": 1091862,
+            "PARCEL_ID": 1076484,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "68a481530ccffd77f0808dc650e259820b0079694d011027aa51916f6605ad6e"
+        },
+        {
+          "transportId": "PARCEL_ALL.258181",
+          "properties": {
+            "OBJECTID": 1091863,
+            "PARCEL_ID": 1076485,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 22
+          },
+          "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+        },
+        {
+          "transportId": "PARCEL_ALL.258179",
+          "properties": {
+            "OBJECTID": 1091864,
+            "PARCEL_ID": 1076486,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 29
+          },
+          "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=33&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:14.423Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5454,
+      "numberMatched": 37,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.789589",
+          "properties": {
+            "OBJECTID": 1091865,
+            "PARCEL_ID": 1076487,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 30
+          },
+          "geometrySha256": "ace2d50d46de864da4a4cf5bc042a243d64e5635aa60cf5acf95ccffd3bff084"
+        },
+        {
+          "transportId": "PARCEL_ALL.789590",
+          "properties": {
+            "OBJECTID": 1091866,
+            "PARCEL_ID": 1076488,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 28
+          },
+          "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+        },
+        {
+          "transportId": "PARCEL_ALL.787383",
+          "properties": {
+            "OBJECTID": 1091868,
+            "PARCEL_ID": 1076490,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 27
+          },
+          "geometrySha256": "d6035bfd6334853ba58547856fe066fbb32049ef39ed8de38a698589737961c0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=3&startIndex=36&bbox=35.214%2C31.782%2C35.215%2C31.783%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:14.941Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1799,
+      "numberMatched": 37,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.787388",
+          "properties": {
+            "OBJECTID": 1091869,
+            "PARCEL_ID": 1076491,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 25
+          },
+          "geometrySha256": "53aa1f8d29bf98f0ea276c4cd5c36402429688448ec303be54495c21293938f9"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281082692%2C1082693%2C1082694%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:15.088Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2528,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079737",
+          "properties": {
+            "OBJECTID": 1082693,
+            "PARCEL_ID": 1073113,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "67746adc85d775aff179dce6ee61514c1c238750097b69543967f06fac86a6da"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079738",
+          "properties": {
+            "OBJECTID": 1082694,
+            "PARCEL_ID": 1076454,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "c122e627f1feeb5aab8ee660ed8cdfbf3030213faf49c592290472234ffa8c42"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-3",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281082695%2C1082696%2C1082697%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:20.832Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2633,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.1079739",
+          "properties": {
+            "OBJECTID": 1082695,
+            "PARCEL_ID": 1073115,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "2eff2012d4fde86fe52c0cb688e638154fbe4cec1cefc978e44cfc85961aef53"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079740",
+          "properties": {
+            "OBJECTID": 1082696,
+            "PARCEL_ID": 1076453,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "d92caad2b3d2d9871f2ad812baf22a8e4dcaf45ba310c28251c364874dd8598e"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079741",
+          "properties": {
+            "OBJECTID": 1082697,
+            "PARCEL_ID": 1073117,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "472df361b617a8866bba9e37a739ed363f7f43ba46c4b42e990d4bbf40c2e0f4"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-6",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281082698%2C1082699%2C1082700%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:26.620Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2958,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.1079742",
+          "properties": {
+            "OBJECTID": 1082698,
+            "PARCEL_ID": 1073118,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "65883c668ad213c771e4330b6ca8bd4197c66de5d15a7f5c1184a1a957643bcc"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079743",
+          "properties": {
+            "OBJECTID": 1082699,
+            "PARCEL_ID": 1076452,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "3fd18069d26678e109c04ab08f39e53bb657ddef8b784e2bb4750647de6ed479"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079884",
+          "properties": {
+            "OBJECTID": 1082700,
+            "PARCEL_ID": 1073120,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "3cd4f9821d01e083518c84c604d518569ad627ca89b4b8d66903d59e8ad2b80b"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-9",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281085584%2C1085762%2C1085764%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:32.398Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4574,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.1076258",
+          "properties": {
+            "OBJECTID": 1085584,
+            "PARCEL_ID": 1077721,
+            "GUSH_NUM": 30745,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "27b5c87714e6179da5cb7daaff00dbb27ebcd25895418de3185a01f844c99244"
+        },
+        {
+          "transportId": "PARCEL_ALL.1076260",
+          "properties": {
+            "OBJECTID": 1085762,
+            "PARCEL_ID": 1077720,
+            "GUSH_NUM": 30745,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "7ac7213465010b1e3c6020b2bafd9de84b1a04150405c4cb31da2dcc7637926f"
+        },
+        {
+          "transportId": "PARCEL_ALL.1076561",
+          "properties": {
+            "OBJECTID": 1085764,
+            "PARCEL_ID": 1078311,
+            "GUSH_NUM": 30745,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "5707eaa6c2e75a1f8921652646e7a1de909936c5101434099ce3e4ad258f7fad"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-12",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091565%2C1091566%2C1091567%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:38.494Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2810,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.20516",
+          "properties": {
+            "OBJECTID": 1091565,
+            "PARCEL_ID": 1076459,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "23af202444bca59acb3b61557aae8589f75dd6ce5ae9f05254d97a26bd9ad2eb"
+        },
+        {
+          "transportId": "PARCEL_ALL.540157",
+          "properties": {
+            "OBJECTID": 1091566,
+            "PARCEL_ID": 1076460,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "632c68f5df3ea9557d176750cc94009f427c1766661f4c3f4eb80bee32896fe2"
+        },
+        {
+          "transportId": "PARCEL_ALL.540158",
+          "properties": {
+            "OBJECTID": 1091567,
+            "PARCEL_ID": 1076461,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "4c930417b341c97ec75cdbd31ff27623f3746c809f9281a13633310067357082"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-15",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091568%2C1091841%2C1091842%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:46.888Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2200,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540159",
+          "properties": {
+            "OBJECTID": 1091568,
+            "PARCEL_ID": 1076462,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 33
+          },
+          "geometrySha256": "38d1a3a40b00a58833e0094123b17dbbb0260c5ad9bffbfe85c295448181e777"
+        },
+        {
+          "transportId": "PARCEL_ALL.540160",
+          "properties": {
+            "OBJECTID": 1091841,
+            "PARCEL_ID": 1076463,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 14
+          },
+          "geometrySha256": "ae155287695839f0f1f76e7f91001c0107714d8fe4aec5d9419a9723ca1e966b"
+        },
+        {
+          "transportId": "PARCEL_ALL.540161",
+          "properties": {
+            "OBJECTID": 1091842,
+            "PARCEL_ID": 1076464,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "be7b81b980cca01167b00dbe865609976b78609b2508d3e314ca366be5f0d0f9"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-18",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091843%2C1091844%2C1091845%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:53.808Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1882,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540162",
+          "properties": {
+            "OBJECTID": 1091843,
+            "PARCEL_ID": 1076465,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "fb47b597e1132bdbe0624e82fe393c31c61a6d959627ff7e6760563b8a0a1877"
+        },
+        {
+          "transportId": "PARCEL_ALL.540163",
+          "properties": {
+            "OBJECTID": 1091844,
+            "PARCEL_ID": 1076466,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "074a295573112a443097a8f097ef80bcb242d2e6ff8e7e65bf63524c5cee3c4a"
+        },
+        {
+          "transportId": "PARCEL_ALL.540164",
+          "properties": {
+            "OBJECTID": 1091845,
+            "PARCEL_ID": 1076467,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 21
+          },
+          "geometrySha256": "27bee6fc9ecceca40090d2032d20dc149202385601f00f59ade316375273e4d5"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-21",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091846%2C1091847%2C1091848%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T18:59:59.566Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1987,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540165",
+          "properties": {
+            "OBJECTID": 1091846,
+            "PARCEL_ID": 1076468,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "fceeef9bd1a61d45e26a5d9e8cfb72fe686eee833453fac221d4e9bd552c0904"
+        },
+        {
+          "transportId": "PARCEL_ALL.540454",
+          "properties": {
+            "OBJECTID": 1091847,
+            "PARCEL_ID": 1076469,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "c2d39c5d6cdc35823dda561f1bb81e98a23c190b250d7da11ec61e08998b5830"
+        },
+        {
+          "transportId": "PARCEL_ALL.540455",
+          "properties": {
+            "OBJECTID": 1091848,
+            "PARCEL_ID": 1076470,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 32
+          },
+          "geometrySha256": "b8f6f9748d9ee315eb1da212d63542398c67e7733bebc28673d46af0deabaf59"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-24",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091849%2C1091850%2C1091851%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:09.151Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2200,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540456",
+          "properties": {
+            "OBJECTID": 1091849,
+            "PARCEL_ID": 1076471,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 20
+          },
+          "geometrySha256": "2d024ce31c67682fe2227acc75b9c1ae423a451ba72eb95f40b8a7cff814ee99"
+        },
+        {
+          "transportId": "PARCEL_ALL.540457",
+          "properties": {
+            "OBJECTID": 1091850,
+            "PARCEL_ID": 1076472,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "640b541c712041eff866197c15b92984dc9ba6f3c3b7aac7cf7c3af441987713"
+        },
+        {
+          "transportId": "PARCEL_ALL.540458",
+          "properties": {
+            "OBJECTID": 1091851,
+            "PARCEL_ID": 1076473,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 31
+          },
+          "geometrySha256": "cc04e811a571c3571db165533451d861011a8aa2d4969dc363115e63584ad042"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-27",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091852%2C1091853%2C1091854%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:15.767Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2668,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.540459",
+          "properties": {
+            "OBJECTID": 1091852,
+            "PARCEL_ID": 1076474,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "50793e2882115136a4f2b4b07fad4610055c271225df75cdd7df6a46282e21a1"
+        },
+        {
+          "transportId": "PARCEL_ALL.160558",
+          "properties": {
+            "OBJECTID": 1091853,
+            "PARCEL_ID": 1076475,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 19
+          },
+          "geometrySha256": "584341817dcea216e9ee16a74af8e7bd181809afeb9789c6bbbd3a1933ba3634"
+        },
+        {
+          "transportId": "PARCEL_ALL.160559",
+          "properties": {
+            "OBJECTID": 1091854,
+            "PARCEL_ID": 1076476,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "986a4ba1c7d6d5155bd4baa5b134a7919b473812a4808db9ba072455a7058803"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-30",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091855%2C1091856%2C1091857%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:22.047Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2029,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.160560",
+          "properties": {
+            "OBJECTID": 1091855,
+            "PARCEL_ID": 1076477,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 18
+          },
+          "geometrySha256": "eccab10957a9db0eefd4bc96d71e127ac73bb7010ee6c3f0c5574601341905ec"
+        },
+        {
+          "transportId": "PARCEL_ALL.160561",
+          "properties": {
+            "OBJECTID": 1091856,
+            "PARCEL_ID": 1076478,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 17
+          },
+          "geometrySha256": "4b9240c268e93d01294c5b0adb310225d51fe19870cb4fa4787bb86d72225744"
+        },
+        {
+          "transportId": "PARCEL_ALL.160562",
+          "properties": {
+            "OBJECTID": 1091857,
+            "PARCEL_ID": 1076479,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 26
+          },
+          "geometrySha256": "3f27b0e129ea84002b31b09f48f58788d88c2df0b03522bbddf158bcbfce4a0a"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-33",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091858%2C1091859%2C1091860%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:28.145Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3857,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.160563",
+          "properties": {
+            "OBJECTID": 1091858,
+            "PARCEL_ID": 1076480,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 24
+          },
+          "geometrySha256": "bf939ba99a3712c74c2d133866a7d27a27ab6e0292ddb8b803ee2abd8a8201d8"
+        },
+        {
+          "transportId": "PARCEL_ALL.160564",
+          "properties": {
+            "OBJECTID": 1091859,
+            "PARCEL_ID": 1076481,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 15
+          },
+          "geometrySha256": "4c0a4c0cc5afcf144e9dc5e2e2c267a4275d2c395e4f4d62c2a9fba20c333add"
+        },
+        {
+          "transportId": "PARCEL_ALL.160565",
+          "properties": {
+            "OBJECTID": 1091860,
+            "PARCEL_ID": 1076482,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "e3624557928eb293c455f47e4f8803af844c3aa7b7799b498013b5d972a77b7c"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-36",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091861%2C1091862%2C1091863%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:34.549Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4528,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.160566",
+          "properties": {
+            "OBJECTID": 1091861,
+            "PARCEL_ID": 1076483,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "70ad2442c12eb2981c6e7990f354c505eb233e1b9364df99086c2f49f00ba13b"
+        },
+        {
+          "transportId": "PARCEL_ALL.258180",
+          "properties": {
+            "OBJECTID": 1091862,
+            "PARCEL_ID": 1076484,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "68a481530ccffd77f0808dc650e259820b0079694d011027aa51916f6605ad6e"
+        },
+        {
+          "transportId": "PARCEL_ALL.258181",
+          "properties": {
+            "OBJECTID": 1091863,
+            "PARCEL_ID": 1076485,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 22
+          },
+          "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-39",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091864%2C1091865%2C1091866%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:40.771Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4637,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.258179",
+          "properties": {
+            "OBJECTID": 1091864,
+            "PARCEL_ID": 1076486,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 29
+          },
+          "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+        },
+        {
+          "transportId": "PARCEL_ALL.789589",
+          "properties": {
+            "OBJECTID": 1091865,
+            "PARCEL_ID": 1076487,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 30
+          },
+          "geometrySha256": "ace2d50d46de864da4a4cf5bc042a243d64e5635aa60cf5acf95ccffd3bff084"
+        },
+        {
+          "transportId": "PARCEL_ALL.789590",
+          "properties": {
+            "OBJECTID": 1091866,
+            "PARCEL_ID": 1076488,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 28
+          },
+          "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-42",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091867%2C1091868%2C1091869%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:47.260Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2458,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.789593",
+          "properties": {
+            "OBJECTID": 1091867,
+            "PARCEL_ID": 1076489,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 23
+          },
+          "geometrySha256": "109c45609beaa07dd598698303ebd8f8d163c3ed5490e8d356c7b31eae9693c2"
+        },
+        {
+          "transportId": "PARCEL_ALL.787383",
+          "properties": {
+            "OBJECTID": 1091868,
+            "PARCEL_ID": 1076490,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 27
+          },
+          "geometrySha256": "d6035bfd6334853ba58547856fe066fbb32049ef39ed8de38a698589737961c0"
+        },
+        {
+          "transportId": "PARCEL_ALL.787388",
+          "properties": {
+            "OBJECTID": 1091869,
+            "PARCEL_ID": 1076491,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 25
+          },
+          "geometrySha256": "53aa1f8d29bf98f0ea276c4cd5c36402429688448ec303be54495c21293938f9"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-45",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28354913%2C354914%2C354915%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:53.286Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5781,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353162",
+          "properties": {
+            "OBJECTID": 354913,
+            "PARCEL_ID": 355197,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "197883c69b8a4473aefa33ece8a4f8644c9ed6fbabf7fd4ce5237a5df89e3a12"
+        },
+        {
+          "transportId": "PARCEL_ALL.353163",
+          "properties": {
+            "OBJECTID": 354914,
+            "PARCEL_ID": 355198,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "72e9f394d5d01fbfe1dd6c7e8fee666f5397969dd2d487bfd2d518c44a52d456"
+        },
+        {
+          "transportId": "PARCEL_ALL.353164",
+          "properties": {
+            "OBJECTID": 354915,
+            "PARCEL_ID": 355199,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "1826329d2cefd11c72b7c3333b80d84e7e1aa2c135286f90418f89674c680154"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-48",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28354916%2C354917%2C354918%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:00:59.900Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2876,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353165",
+          "properties": {
+            "OBJECTID": 354916,
+            "PARCEL_ID": 355200,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "f307eb6539950cc94e0fbcadeb76aa2258301dbdf90902f47d0821c6b901e1e3"
+        },
+        {
+          "transportId": "PARCEL_ALL.353166",
+          "properties": {
+            "OBJECTID": 354917,
+            "PARCEL_ID": 355201,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "06cd218a0fbd2fe94a86b772596668137ca7049d23663349e03f9bb76585b9ad"
+        },
+        {
+          "transportId": "PARCEL_ALL.353167",
+          "properties": {
+            "OBJECTID": 354918,
+            "PARCEL_ID": 355202,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "718154f664687e1903800bfc709864bcbe3324c44febd183ff9f6ae9d5375a93"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-51",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28354919%2C354920%2C354921%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:06.786Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2020,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353168",
+          "properties": {
+            "OBJECTID": 354919,
+            "PARCEL_ID": 355203,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "2742a1235de1ee69149d1701b414dcddb38bf6c1f40f479861aee7ec5f6ea72e"
+        },
+        {
+          "transportId": "PARCEL_ALL.353332",
+          "properties": {
+            "OBJECTID": 354920,
+            "PARCEL_ID": 355204,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "ae7b52563c5f56a8189df0bbbba5971592fef3babf5b91e7c3eedc26fc129804"
+        },
+        {
+          "transportId": "PARCEL_ALL.353333",
+          "properties": {
+            "OBJECTID": 354921,
+            "PARCEL_ID": 355205,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "2d22130a3ab30fce6e3681f35cbe7c665e2950642c9e7afdb7811d165dabf6d9"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-54",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28354922%2C354923%2C354924%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:14.798Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7170,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353334",
+          "properties": {
+            "OBJECTID": 354922,
+            "PARCEL_ID": 355206,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "31d25090d9ff06885380cf7ab25c116761bccd7a98cf9fe5891d970cc2b3b397"
+        },
+        {
+          "transportId": "PARCEL_ALL.353335",
+          "properties": {
+            "OBJECTID": 354923,
+            "PARCEL_ID": 355207,
+            "GUSH_NUM": 30845,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "91a9adbd650d40a722a8a93144298406f1747953b4c73a8271b73c2d0a3a8cb8"
+        },
+        {
+          "transportId": "PARCEL_ALL.353336",
+          "properties": {
+            "OBJECTID": 354924,
+            "PARCEL_ID": 355208,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "02816b86996b680905bb59c92bc89a442773469468248aa79c56fb4af627aa65"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-57",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28354925%2C354926%2C354927%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:21.388Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11449,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353337",
+          "properties": {
+            "OBJECTID": 354925,
+            "PARCEL_ID": 355209,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "207cae9ef70ea2151feb9e80d3e9edfc7210ec675416daa0c0bf8c7b8e3bc73a"
+        },
+        {
+          "transportId": "PARCEL_ALL.353338",
+          "properties": {
+            "OBJECTID": 354926,
+            "PARCEL_ID": 355210,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "94fcd618e5ec1eca2f472eddf5775d04ef6a349f495e83bd5a619cdd37d560ca"
+        },
+        {
+          "transportId": "PARCEL_ALL.353339",
+          "properties": {
+            "OBJECTID": 354927,
+            "PARCEL_ID": 355211,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "d915d847c4c75cb88cacc41ba2e89e98ab24dc782221dde5aa46a1af4e22de44"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-60",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28354928%2C355162%2C355163%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:27.438Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3761,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.353340",
+          "properties": {
+            "OBJECTID": 354928,
+            "PARCEL_ID": 355212,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "987e5ca0e8f3e0148a662269222f0f8fd4a594e12dde88344f6fbe43bd4972cf"
+        },
+        {
+          "transportId": "PARCEL_ALL.354376",
+          "properties": {
+            "OBJECTID": 355162,
+            "PARCEL_ID": 355213,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "538fc1db36a57d31ddb97e404d25b79a525b025cd4f13115bc73401f79ca8ea3"
+        },
+        {
+          "transportId": "PARCEL_ALL.354377",
+          "properties": {
+            "OBJECTID": 355163,
+            "PARCEL_ID": 355214,
+            "GUSH_NUM": 30846,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "6731285c1ff9b7cb794d25da334a7c37566c15bd2826608b8450f177c0a5b4b3"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-63",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28531485%2C531731%2C531732%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:33.392Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7342,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.530068",
+          "properties": {
+            "OBJECTID": 531485,
+            "PARCEL_ID": 531865,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "6214edbd54a79d6e126df388ddd62acdc5d12871beebbdc6ebe9f08a08bef2d7"
+        },
+        {
+          "transportId": "PARCEL_ALL.531317",
+          "properties": {
+            "OBJECTID": 531731,
+            "PARCEL_ID": 531866,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "fe5d8f9908a88faa90b6b402391cb504a4695583d191c7e4a8d91fb44256f843"
+        },
+        {
+          "transportId": "PARCEL_ALL.531318",
+          "properties": {
+            "OBJECTID": 531732,
+            "PARCEL_ID": 531867,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "c0a13f10a89b67c971868c774214af6bc7ff82fc6f62b82732d2ac713ae4a808"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-66",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28531733%2C531734%2C531735%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:39.371Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3921,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.531319",
+          "properties": {
+            "OBJECTID": 531733,
+            "PARCEL_ID": 1076457,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "7f4808305d907751731351379da4d7ffdaea301b43ad1c68c4d1c86fdcc5c9c6"
+        },
+        {
+          "transportId": "PARCEL_ALL.531320",
+          "properties": {
+            "OBJECTID": 531734,
+            "PARCEL_ID": 531869,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "2705b9cf37e2939d1b6ee8a290ec54592fc1ac8d1e9ede1f115b4175b6162526"
+        },
+        {
+          "transportId": "PARCEL_ALL.531321",
+          "properties": {
+            "OBJECTID": 531735,
+            "PARCEL_ID": 531870,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "b12e3bed7f151653a5ac4db0aab74417939e20f9a1cc44e40579eb7e8e873446"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-69",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28531736%2C531737%2C713897%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:45.846Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4422,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.531322",
+          "properties": {
+            "OBJECTID": 531736,
+            "PARCEL_ID": 531871,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "ca47281526ded37f2d4fbc1ace86bce824fe787c67af4917e01bd1bb613cb5c9"
+        },
+        {
+          "transportId": "PARCEL_ALL.531497",
+          "properties": {
+            "OBJECTID": 531737,
+            "PARCEL_ID": 531872,
+            "GUSH_NUM": 30844,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "af170c319f1784b674dcc74eded758df73090a6f4782411e0ff58136c678d5e1"
+        },
+        {
+          "transportId": "PARCEL_ALL.710920",
+          "properties": {
+            "OBJECTID": 713897,
+            "PARCEL_ID": 713544,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "e3b43e9d796346eb07d636eeeaf5326ba24564e3018a16ed97e267befcec4b8f"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-72",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28713898%2C713899%2C713900%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:53.194Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1988,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.710921",
+          "properties": {
+            "OBJECTID": 713898,
+            "PARCEL_ID": 713545,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "b871119bcede179512b2952931f12dd61104a0debad720cc5b4b1097b553d00e"
+        },
+        {
+          "transportId": "PARCEL_ALL.710922",
+          "properties": {
+            "OBJECTID": 713899,
+            "PARCEL_ID": 713546,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "4aba481109db9d100cbc4eb56b9303ff1d0cc3a4cbd00dd8a8d3f0a468705178"
+        },
+        {
+          "transportId": "PARCEL_ALL.711111",
+          "properties": {
+            "OBJECTID": 713900,
+            "PARCEL_ID": 713547,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "094289bf77e75efb29f5ab33236b69cfbd783bf7d6c720fe293166460533d8db"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-75",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28713901%2C713902%2C713903%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:01:59.382Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4026,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.711112",
+          "properties": {
+            "OBJECTID": 713901,
+            "PARCEL_ID": 713548,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "27e8ee108d9f4260f4c921c9b9486949c0a1ed14a5782da3ef222f8210a1ad33"
+        },
+        {
+          "transportId": "PARCEL_ALL.711113",
+          "properties": {
+            "OBJECTID": 713902,
+            "PARCEL_ID": 713549,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "2b62985ace7c2ef8745e54e3e16f402c4b2ed102f0e9042af0a2e015a793245b"
+        },
+        {
+          "transportId": "PARCEL_ALL.711114",
+          "properties": {
+            "OBJECTID": 713903,
+            "PARCEL_ID": 713550,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "09f80acd311ecf6b0d9a0b2a854bf8a67c353c8d3781de03b6283e270ba8febd"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-78",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28714012%2C714013%2C714014%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:02:05.661Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2239,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.710377",
+          "properties": {
+            "OBJECTID": 714012,
+            "PARCEL_ID": 713551,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "18752107a53f36aad8b5dd2e6f57838808cadd19897f7deb6e2a956c59112c9b"
+        },
+        {
+          "transportId": "PARCEL_ALL.710378",
+          "properties": {
+            "OBJECTID": 714013,
+            "PARCEL_ID": 713552,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "3e8d0646ab0660200a4b3c5481cd4767a1389bd0c982bc1c3c5114cdce8bd9ae"
+        },
+        {
+          "transportId": "PARCEL_ALL.710379",
+          "properties": {
+            "OBJECTID": 714014,
+            "PARCEL_ID": 713553,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 14
+          },
+          "geometrySha256": "397a97a091d549aa8ac36a63b52c3aa14a377d19cce43e576c61d756719529a4"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-81",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28714015%2C714016%2C714017%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:02:13.629Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2159,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.710380",
+          "properties": {
+            "OBJECTID": 714015,
+            "PARCEL_ID": 713554,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 18
+          },
+          "geometrySha256": "4e7151ed6f401ce91e5caf7133704a93ea68d897b9f05164243707dd95f4ec7c"
+        },
+        {
+          "transportId": "PARCEL_ALL.710381",
+          "properties": {
+            "OBJECTID": 714016,
+            "PARCEL_ID": 713555,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "a65950e4c31ba058df9f37f2b206b6e4909e7df7dbbdc878c73c1b87856aca7e"
+        },
+        {
+          "transportId": "PARCEL_ALL.710382",
+          "properties": {
+            "OBJECTID": 714017,
+            "PARCEL_ID": 713556,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "e08b9102f93f4b4b1c813446b2f8d38cb81029e275228ac4d59442c70bcf4c05"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-84",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28714018%2C714019%2C714020%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:02:19.784Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2273,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.710383",
+          "properties": {
+            "OBJECTID": 714018,
+            "PARCEL_ID": 1076455,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 16
+          },
+          "geometrySha256": "20a49ac4d8ff37dfda4d9c5d445fb7f74c8f8f2d6fb5f6b2f0afbd3c9d66b98a"
+        },
+        {
+          "transportId": "PARCEL_ALL.710384",
+          "properties": {
+            "OBJECTID": 714019,
+            "PARCEL_ID": 713558,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "03a74957b322bc22a9f62820427b5892a3a43ac75da4839384b35f66ab1c07cc"
+        },
+        {
+          "transportId": "PARCEL_ALL.710385",
+          "properties": {
+            "OBJECTID": 714020,
+            "PARCEL_ID": 713559,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 19
+          },
+          "geometrySha256": "a538cc12fe4762c56c7ee12e3e1818c2815001e7b49d8b894b2f3ae163a21bd4"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-87",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28714021%2C714145%2C714146%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:02:26.106Z",
+      "error": "fetch failed",
+      "cause": "UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "test": "fresh-ids-90",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28714147%2C715071%2C715314%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:02:36.614Z",
+      "error": "fetch failed",
+      "cause": "UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "test": "fresh-ids-93",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28715315%2C715320%2C715321%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:02:47.120Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1553,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713749",
+          "properties": {
+            "OBJECTID": 715315,
+            "PARCEL_ID": 715619,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "88135a69be3c4c22bb44338c77da212acfb4d10ec3ab2586ac8762d746a92adb"
+        },
+        {
+          "transportId": "PARCEL_ALL.713754",
+          "properties": {
+            "OBJECTID": 715320,
+            "PARCEL_ID": 715624,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "356c645e6bedad2c6bae435a30a41e1357cb4bd758e2d1396cb7af6401d01f3a"
+        },
+        {
+          "transportId": "PARCEL_ALL.713755",
+          "properties": {
+            "OBJECTID": 715321,
+            "PARCEL_ID": 715625,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "bff410ec06b6f3f6b5bb49cdc13db61e3ee6550741747342fc262b81ce3546c3"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-96",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28715322%2C715323%2C715324%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:02:53.558Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1731,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713756",
+          "properties": {
+            "OBJECTID": 715322,
+            "PARCEL_ID": 715626,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "9f06208e0f37270cca873df5db5ad6b35aa2e6138fd959412a0b2ecab9522810"
+        },
+        {
+          "transportId": "PARCEL_ALL.713757",
+          "properties": {
+            "OBJECTID": 715323,
+            "PARCEL_ID": 715627,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "0540414ba7177bb8447b537a390caa89ab720585eaaf1ecf96a8ef8ad4b42696"
+        },
+        {
+          "transportId": "PARCEL_ALL.713758",
+          "properties": {
+            "OBJECTID": 715324,
+            "PARCEL_ID": 715628,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "0e6da7ee4358bcd77a7060c2970471eecae0a6b3059c12b56da0867c7d6ff181"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-99",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28715325%2C715326%2C715327%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:00.373Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1658,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713931",
+          "properties": {
+            "OBJECTID": 715325,
+            "PARCEL_ID": 715629,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "e960ca9255071946d42433a77484dc12ee7864ec7eac9174a450ea998b133bf8"
+        },
+        {
+          "transportId": "PARCEL_ALL.713932",
+          "properties": {
+            "OBJECTID": 715326,
+            "PARCEL_ID": 1073172,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 12
+          },
+          "geometrySha256": "36793c0b178953ab07f506f4215c71c2203ff3c1d9b301c0135fe3dfc37d5c24"
+        },
+        {
+          "transportId": "PARCEL_ALL.713933",
+          "properties": {
+            "OBJECTID": 715327,
+            "PARCEL_ID": 715631,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "d4e0efa1d7ba7665c42368d3db7694190b416760047eadfc2aed89db6892f45c"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-102",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28715328%2C715329%2C715330%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:06.727Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1873,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713934",
+          "properties": {
+            "OBJECTID": 715328,
+            "PARCEL_ID": 1073173,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "fd2686593c5a10ac18f7e6e71352b8f2e22721316ee91d0caf815fb4e17172c1"
+        },
+        {
+          "transportId": "PARCEL_ALL.713935",
+          "properties": {
+            "OBJECTID": 715329,
+            "PARCEL_ID": 1073179,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 11
+          },
+          "geometrySha256": "ac0950b84902ba0ecc8c3ce675c2f49da8de6fabf0098880a7c071d1a3743577"
+        },
+        {
+          "transportId": "PARCEL_ALL.713936",
+          "properties": {
+            "OBJECTID": 715330,
+            "PARCEL_ID": 715634,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "630e97ba24b3d7c0209a05e86938c189536fd428fdd5aefdad3e987e6948e111"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-105",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28715331%2C715332%2C715333%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:13.013Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2482,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713937",
+          "properties": {
+            "OBJECTID": 715331,
+            "PARCEL_ID": 715635,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 10
+          },
+          "geometrySha256": "d3021087990aebba60b21c6e3720c0125c94ca104976528890b11267b4fbef4b"
+        },
+        {
+          "transportId": "PARCEL_ALL.713938",
+          "properties": {
+            "OBJECTID": 715332,
+            "PARCEL_ID": 715636,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "bcc75faa7445c2a82548d27add3b345d4364bb96506495b6a42659899811b5fa"
+        },
+        {
+          "transportId": "PARCEL_ALL.713939",
+          "properties": {
+            "OBJECTID": 715333,
+            "PARCEL_ID": 1073174,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "ac3c1a314bc6b9cd8abad49e39a98d82ee397602aa1b9a86f712f5e7f06208ae"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-108",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28715334%2C715335%2C715336%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:18.796Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1942,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713940",
+          "properties": {
+            "OBJECTID": 715334,
+            "PARCEL_ID": 715638,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "4102ae7a3f94e8a3fc43fc792aee7171b8e6181c1527c626fb873f6201897b65"
+        },
+        {
+          "transportId": "PARCEL_ALL.713941",
+          "properties": {
+            "OBJECTID": 715335,
+            "PARCEL_ID": 715639,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "5960dc71ee0cabe443b22bc39bdbc44a91d118705aa79f3743ff947b1076ffe5"
+        },
+        {
+          "transportId": "PARCEL_ALL.713942",
+          "properties": {
+            "OBJECTID": 715336,
+            "PARCEL_ID": 715640,
+            "GUSH_NUM": 31422,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "e2757712a09c587005d8493b8d4b9f25d5e984d0aef16e1a5901cf3a0790b983"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-111",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28715337%2C715575%2C715576%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:24.628Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2126,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.713943",
+          "properties": {
+            "OBJECTID": 715337,
+            "PARCEL_ID": 715641,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 15
+          },
+          "geometrySha256": "6b0d20dd4044630f505d4bc3b68d7770701da05bac039a114af1b64386b4323b"
+        },
+        {
+          "transportId": "PARCEL_ALL.714992",
+          "properties": {
+            "OBJECTID": 715575,
+            "PARCEL_ID": 715642,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 13
+          },
+          "geometrySha256": "229f678cd73385dd61a4b7878dfcbdafa75bead1d73e923f19ebf6b7f6d3b7dd"
+        },
+        {
+          "transportId": "PARCEL_ALL.714993",
+          "properties": {
+            "OBJECTID": 715576,
+            "PARCEL_ID": 715643,
+            "GUSH_NUM": 31421,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 14
+          },
+          "geometrySha256": "19a09949b9bb4b006618b0b33b82f0094bc29ce1df5681a883b5619d2516bbbb"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-114",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28786743%2C786744%2C786745%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:30.538Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3057,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.785478",
+          "properties": {
+            "OBJECTID": 786743,
+            "PARCEL_ID": 781045,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "dd0495373ca0500d5987fa39e0fa9b6581c879ec75846f5cc779f6dd1d0b1d2e"
+        },
+        {
+          "transportId": "PARCEL_ALL.785479",
+          "properties": {
+            "OBJECTID": 786744,
+            "PARCEL_ID": 781046,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "e7191bf4ad363c407a2a5e2ee1b27480b45a6372a391ee29b6cd4b0a8871ea1e"
+        },
+        {
+          "transportId": "PARCEL_ALL.785480",
+          "properties": {
+            "OBJECTID": 786745,
+            "PARCEL_ID": 781047,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 4
+          },
+          "geometrySha256": "c42b8c2178194e3cb17f71bfd52ae6d3041d0e518a7db0a87d6acb998dc5364f"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-117",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28786746%2C786747%2C786748%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:36.423Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2052,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.785481",
+          "properties": {
+            "OBJECTID": 786746,
+            "PARCEL_ID": 781048,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "a01c430b8e62143d89f1b1ddcafd8f8fd23cf9add2361378fc760079486e8b83"
+        },
+        {
+          "transportId": "PARCEL_ALL.785482",
+          "properties": {
+            "OBJECTID": 786747,
+            "PARCEL_ID": 781049,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 2
+          },
+          "geometrySha256": "c1da6518052db0ea621a694031d8e5d47998a63948f5cc62c664a66a2bb22956"
+        },
+        {
+          "transportId": "PARCEL_ALL.785483",
+          "properties": {
+            "OBJECTID": 786748,
+            "PARCEL_ID": 781050,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 1
+          },
+          "geometrySha256": "423d74b37cfb855fde4d09ef88dd54b80d4f3805efcce7da83afa645c658cce1"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28786749%2C786750%2C786751%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:42.196Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2400,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.785484",
+          "properties": {
+            "OBJECTID": 786749,
+            "PARCEL_ID": 781051,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 7
+          },
+          "geometrySha256": "d10b189d8d307a4840d228cc89392629a3669bc246999d0ce1f2f5e8447c9f3c"
+        },
+        {
+          "transportId": "PARCEL_ALL.785485",
+          "properties": {
+            "OBJECTID": 786750,
+            "PARCEL_ID": 781052,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "d4e0b528df3ae72e4b049287bfe43dfb6ed8b62d86570672b7e5c966f25752f4"
+        },
+        {
+          "transportId": "PARCEL_ALL.785486",
+          "properties": {
+            "OBJECTID": 786751,
+            "PARCEL_ID": 781053,
+            "GUSH_NUM": 31419,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 9
+          },
+          "geometrySha256": "0811d1df6680b8b1137a177569f6f9ef58f29dbec6081fd63f6f7e2b64e0af90"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%289876543210%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:48.322Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.21436675965057%2C31.781522976185773%2C35.214680176639014%2C31.782007017578753%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:52.914Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 14570,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.709722",
+          "properties": {
+            "OBJECTID": 714146,
+            "PARCEL_ID": 1073178,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 17
+          },
+          "geometrySha256": "f67243b48a9e8c5e565f91fe3cd35b06541127889d150d5d18225b22125561cb"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079739",
+          "properties": {
+            "OBJECTID": 1082695,
+            "PARCEL_ID": 1073115,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "2eff2012d4fde86fe52c0cb688e638154fbe4cec1cefc978e44cfc85961aef53"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079741",
+          "properties": {
+            "OBJECTID": 1082697,
+            "PARCEL_ID": 1073117,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "472df361b617a8866bba9e37a739ed363f7f43ba46c4b42e990d4bbf40c2e0f4"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079743",
+          "properties": {
+            "OBJECTID": 1082699,
+            "PARCEL_ID": 1076452,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "3fd18069d26678e109c04ab08f39e53bb657ddef8b784e2bb4750647de6ed479"
+        },
+        {
+          "transportId": "PARCEL_ALL.258181",
+          "properties": {
+            "OBJECTID": 1091863,
+            "PARCEL_ID": 1076485,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 22
+          },
+          "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+        },
+        {
+          "transportId": "PARCEL_ALL.258179",
+          "properties": {
+            "OBJECTID": 1091864,
+            "PARCEL_ID": 1076486,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 29
+          },
+          "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+        },
+        {
+          "transportId": "PARCEL_ALL.789590",
+          "properties": {
+            "OBJECTID": 1091866,
+            "PARCEL_ID": 1076488,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 28
+          },
+          "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+        },
+        {
+          "transportId": "PARCEL_ALL.789593",
+          "properties": {
+            "OBJECTID": 1091867,
+            "PARCEL_ID": 1076489,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 23
+          },
+          "geometrySha256": "109c45609beaa07dd598698303ebd8f8d163c3ed5490e8d356c7b31eae9693c2"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&bbox=35.21436675965057%2C31.781522976185773%2C35.214680176639014%2C31.782007017578753%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T19:03:54.319Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 14570,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "PARCEL_ALL.709722",
+          "properties": {
+            "OBJECTID": 714146,
+            "PARCEL_ID": 1073178,
+            "GUSH_NUM": 30847,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 17
+          },
+          "geometrySha256": "f67243b48a9e8c5e565f91fe3cd35b06541127889d150d5d18225b22125561cb"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079736",
+          "properties": {
+            "OBJECTID": 1082692,
+            "PARCEL_ID": 1076449,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 3
+          },
+          "geometrySha256": "f64cb417f24ed288224acf4d6d3f15b218fe308c753cd2d52b1f085cae79cfb0"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079739",
+          "properties": {
+            "OBJECTID": 1082695,
+            "PARCEL_ID": 1073115,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 5
+          },
+          "geometrySha256": "2eff2012d4fde86fe52c0cb688e638154fbe4cec1cefc978e44cfc85961aef53"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079741",
+          "properties": {
+            "OBJECTID": 1082697,
+            "PARCEL_ID": 1073117,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 8
+          },
+          "geometrySha256": "472df361b617a8866bba9e37a739ed363f7f43ba46c4b42e990d4bbf40c2e0f4"
+        },
+        {
+          "transportId": "PARCEL_ALL.1079743",
+          "properties": {
+            "OBJECTID": 1082699,
+            "PARCEL_ID": 1076452,
+            "GUSH_NUM": 31420,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 6
+          },
+          "geometrySha256": "3fd18069d26678e109c04ab08f39e53bb657ddef8b784e2bb4750647de6ed479"
+        },
+        {
+          "transportId": "PARCEL_ALL.258181",
+          "properties": {
+            "OBJECTID": 1091863,
+            "PARCEL_ID": 1076485,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 22
+          },
+          "geometrySha256": "23115ba36adf2ffd83c1d761c1205f7d17922817a006a86f8cf0199550170ee0"
+        },
+        {
+          "transportId": "PARCEL_ALL.258179",
+          "properties": {
+            "OBJECTID": 1091864,
+            "PARCEL_ID": 1076486,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 29
+          },
+          "geometrySha256": "5d60b8500aa59521137e8ddf1c98ffe89dc39d5001af28d60a55aa32036a2da0"
+        },
+        {
+          "transportId": "PARCEL_ALL.789590",
+          "properties": {
+            "OBJECTID": 1091866,
+            "PARCEL_ID": 1076488,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 28
+          },
+          "geometrySha256": "e2ed5d9552d02cb3361d4f310a8d1cb1149e980bdf1701dfadaf31d08ce987fa"
+        },
+        {
+          "transportId": "PARCEL_ALL.789593",
+          "properties": {
+            "OBJECTID": 1091867,
+            "PARCEL_ID": 1076489,
+            "GUSH_NUM": 30843,
+            "GUSH_SUFFI": 0,
+            "PARCEL": 23
+          },
+          "geometrySha256": "109c45609beaa07dd598698303ebd8f8d163c3ed5490e8d356c7b31eae9693c2"
+        }
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281082692%2C1082693%2C1082694%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 6313,
+      "bytes": 2528,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1082692,
+        1082693,
+        1082694
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281082695%2C1082696%2C1082697%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 5796,
+      "bytes": 2633,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1082695,
+        1082696,
+        1082697
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281082698%2C1082699%2C1082700%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 6321,
+      "bytes": 2958,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1082698,
+        1082699,
+        1082700
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281085584%2C1085762%2C1085764%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 5849,
+      "bytes": 4574,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1085584,
+        1085762,
+        1085764
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091565%2C1091566%2C1091567%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 5971,
+      "bytes": 2810,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091565,
+        1091566,
+        1091567
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091568%2C1091841%2C1091842%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 6441,
+      "bytes": 2200,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091568,
+        1091841,
+        1091842
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091843%2C1091844%2C1091845%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 5760,
+      "bytes": 1882,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091843,
+        1091844,
+        1091845
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091846%2C1091847%2C1091848%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 6009,
+      "bytes": 1987,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091846,
+        1091847,
+        1091848
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091849%2C1091850%2C1091851%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 7839,
+      "bytes": 2200,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091849,
+        1091850,
+        1091851
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091852%2C1091853%2C1091854%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 6159,
+      "bytes": 2668,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091852,
+        1091853,
+        1091854
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091855%2C1091856%2C1091857%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 6328,
+      "bytes": 2029,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091855,
+        1091856,
+        1091857
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091858%2C1091859%2C1091860%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 5774,
+      "bytes": 3857,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091858,
+        1091859,
+        1091860
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091861%2C1091862%2C1091863%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 6002,
+      "bytes": 4528,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        1091861,
+        1091862,
+        1091863
+      ]
+    },
+    {
+      "operation": "configured-idBatchSize3-caller-40",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%281091864%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 4527,
+      "bytes": 862,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "returnedSafeIds": [
+        1091864
+      ]
+    },
+    {
+      "operation": "retry-original-timeout-six-ids",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28714021%2C714145%2C714146%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 5831,
+      "bytes": 4921,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        714021,
+        714145,
+        714146
+      ]
+    },
+    {
+      "operation": "retry-original-timeout-six-ids",
+      "url": "https://open.govmap.gov.il/geoserver/opendata/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=opendata%3APARCEL_ALL&outputFormat=application%2Fjson&srsName=EPSG%3A3857&sortBy=OBJECTID&propertyName=the_geom%2COBJECTID%2CPARCEL_ID%2CGUSH_NUM%2CGUSH_SUFFI%2CPARCEL&count=100&startIndex=0&cql_filter=OBJECTID+IN+%28714147%2C715071%2C715314%29",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "elapsedMs": 5950,
+      "bytes": 2548,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "returnedSafeIds": [
+        714147,
+        715071,
+        715314
+      ]
+    }
+  ]
+}

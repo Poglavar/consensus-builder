@@ -1,0 +1,14 @@
+{
+  "taskId": "city:7774",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-7774-arlington-heights.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/arlington-heights-service-review.json",
+    "tmp/valhalla-parcel-research/root-review-1901-2000/cook-gis.headers",
+    "tmp/valhalla-parcel-research/root-review-1901-2000/cook-gis.html"
+  ],
+  "checkedAt": "2026-10-10T18:57:10.645519Z",
+  "reason": "Identity and persons match immutable roster/queue. Two queries are recorded, but both are labeled English; the second mixes English with Spanish words, so a distinct executed Spanish-language search is not independently evidenced. Live first-party Cook County GIS page confirms parcel maintenance/public access, supporting custody. Direct current layer read timed out; no native-ID polygon response or retained polygon exists. All adapter, paging, 13-cell, metric geometry, source binding, and headed Details gates are unproved; held without an absence inference."
+}

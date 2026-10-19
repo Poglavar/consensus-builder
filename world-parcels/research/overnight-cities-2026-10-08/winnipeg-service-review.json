@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2067-winnipeg.json",
+  "purpose": "Document city-local registry evidence and schema-first anonymous public geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of Winnipeg publishes an official “Assessment Parcels” dataset maintained by Assessment and Taxation. Its public property map separately labels current assessment parcels (with roll numbers) and survey-parcel lines, and warns the map is reference-only rather than a land survey. The bounded open-data response verified two complete assessment-parcel MultiPolygons within 100 m of the WUP point using only native GISID plus geometry. This verifies the assessment-parcel GIS layer only; it does not establish legal survey or title identity. Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry.",
+  "registryAssessment": "The City of Winnipeg publishes an official “Assessment Parcels” dataset maintained by Assessment and Taxation. Its public property map separately labels current assessment parcels (with roll numbers) and survey-parcel lines, and warns the map is reference-only rather than a land survey. The bounded open-data response verified two complete assessment-parcel MultiPolygons within 100 m of the WUP point using only native GISID plus geometry. This verifies the assessment-parcel GIS layer only; it does not establish legal survey or title identity.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.winnipeg.ca/maps",
+      "observation": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry."
+    },
+    {
+      "url": "https://legacy.winnipeg.ca/ppd/Mapping/PropertyMap/",
+      "observation": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry."
+    },
+    {
+      "url": "https://data.winnipeg.ca/",
+      "observation": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry."
+    },
+    {
+      "url": "https://data.winnipeg.ca/api/views/d4mq-wa44.json",
+      "observation": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry."
+    },
+    {
+      "url": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson",
+      "observation": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Winnipeg official municipal cadastral parcel map property parcel GIS City of Winnipeg open data",
+      "result": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "French",
+      "query": "Winnipeg parcelles cadastrales carte propriétés données ouvertes Ville de Winnipeg",
+      "result": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry.",
+      "method": "Separate language-specific search and official source/service review."
+    }
+  ],
+  "geometryDecision": "Retained only the safe native GIS key plus up to three complete nearby public polygons.",
+  "coverageAssessment": {
+    "claimedScope": "The City of Winnipeg publishes an official “Assessment Parcels” dataset maintained by Assessment and Taxation. Its public property map separately labels current assessment parcels (with roll numbers) and survey-parcel lines, and warns the map is reference-only rather than a land survey. The bounded open-data response verified two complete assessment-parcel MultiPolygons within 100 m of the WUP point using only native GISID plus geometry. This verifies the assessment-parcel GIS layer only; it does not establish legal survey or title identity.",
+    "verifiedOpenScope": "Official City property-map documentation distinguishes current assessment parcels from survey parcel lines and warns it is not survey/legal evidence. The official open-data metadata describes the Assessment Parcels dataset and includes GISID and MultiPolygon geometry alongside roll, address, assessment and property fields. The exact-point query returned zero features; a 100 m circle returned two complete MultiPolygons using only GISID and geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://www.winnipeg.ca/maps",
+      "outcome": "Official City/open-data source reviewed; no feature request.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://legacy.winnipeg.ca/ppd/Mapping/PropertyMap/",
+      "outcome": "Official City/open-data source reviewed; no feature request.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://data.winnipeg.ca/",
+      "outcome": "Official City/open-data source reviewed; no feature request.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://data.winnipeg.ca/api/views/d4mq-wa44.json",
+      "outcome": "HTTP 200 dataset metadata: official Assessment Parcels, daily update and Open Government Licence; schema includes GISID, MultiPolygon geometry, plus roll, address and assessment fields.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson",
+      "outcome": "Exact point query HTTP 200 with zero features; bounded 100 m circle returned two complete MultiPolygons. Only GISID and geometry requested.",
+      "fieldsRequested": [
+        "gisid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson?$select=gisid,geometry&$where=within_circle(geometry,49.8912776896545,-97.1447622935792,1)&$limit=3",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "outcome": "Exact WUP point query returned an empty FeatureCollection.",
+      "fieldsRequested": [
+        "gisid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://data.winnipeg.ca/resource/d4mq-wa44.geojson?$select=gisid,geometry&$where=within_circle(geometry,49.8912776896545,-97.1447622935792,100)&$limit=3",
+      "httpStatus": 200,
+      "featureCount": 2,
+      "outcome": "Bounded query returned two complete MultiPolygon features; both retained in sample using only GISID and geometry.",
+      "fieldsRequested": [
+        "gisid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether assessment parcels match legal cadastral parcel units or cover the entire municipality is not verified; the sample is limited to two records near the weighted centroid.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime adapter/contract test was performed."
+  },
+  "technicalBlocker": "The public dataset is an assessment parcel layer, not a title register or certified survey. Its schema also contains roll number, addresses, and assessment attributes, which were excluded from all feature requests and retained artifacts.",
+  "schemaReview": {
+    "dataset": "Assessment Parcels",
+    "datasetId": "d4mq-wa44",
+    "geometryField": "geometry (multipolygon)",
+    "safeIdentityField": "gisid (native municipal GISID; not a roll/tax key)",
+    "excludedFields": [
+      "roll_number",
+      "street_number",
+      "unit_number",
+      "street_name",
+      "full_address",
+      "detail_url",
+      "assessment values and property characteristics"
+    ],
+    "schemaNote": "The open dataset has sensitive-to-location/property attributes, so feature requests used $select=gisid,geometry. The City map distinguishes assessment parcels and survey parcel lines; no legal survey status is inferred."
+  }
+}

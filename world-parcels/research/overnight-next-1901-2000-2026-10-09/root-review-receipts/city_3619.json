@@ -1,0 +1,18 @@
+{
+  "taskId": "city:3619",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/city-3619-tanga.json",
+    "world-parcels/research/overnight-next-1901-2000-2026-10-09/tanga-service-review.json",
+    "tmp/valhalla-parcel-research/tanga/main.js",
+    "tmp/valhalla-parcel-research/tanga/wfs-capabilities.txt",
+    "tmp/valhalla-parcel-research/tanga/tp_spatial_units.json",
+    "tmp/valhalla-parcel-research/tanga/current_tp_spatial_units.json",
+    "tmp/valhalla-parcel-research/tanga/qualified_spatial_units.json",
+    "tmp/valhalla-parcel-research/tanga/survey_polygons.json"
+  ],
+  "checkedAt": "2026-10-10T19:27:18Z",
+  "reason": "Queue identity matches rank 1956, United Republic of Tanzania, point [-5.09096192967613,39.0986679278526], and 296202 persons. English and Swahili searches are recorded. Cached official e-Ardhi JavaScript binds the GeoServer route; each of three named spatial-unit layer caches contains three full MultiPolygons with numeric properties.id and EPSG:4326. The survey_polygons cache also has three features despite the packet describing a timeout, so chronology is unresolved. Bounded samples do not establish a complete manifest or citywide coverage. No fresh exact-ID reads, forced paging, 13 cells, metric overlap/operation checks, full-parcel proposal binding, or headed Details check is evidenced."
+}

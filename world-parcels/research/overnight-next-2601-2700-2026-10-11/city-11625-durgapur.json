@@ -1,0 +1,96 @@
+{
+  "cityCode": 11625,
+  "queueRank": 2658,
+  "name": "Durgapur",
+  "country": "India",
+  "countryCode": "IN",
+  "point": [23.5096684585692, 87.3414900093644],
+  "population2025": 222089,
+  "population2025k": 222.089,
+  "populationUnit": "persons",
+  "status": "complete",
+  "checkedAt": "2026-10-11",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Durgapur West Bengal official cadastral parcel map GIS property map",
+        "result": "Located the official Government of West Bengal Banglarbhumi land-record portal, the official Paschim Bardhaman district land-records page, the West Bengal State Geoportal, and the Department of Land Resources citizen-services description. Banglarbhumi advertises Mouza Map, Plot Map, Plot Information, and Mouza Map Availability services; no anonymous parcel geometry API was established.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://paschimbardhaman.gov.in/service/land-records-11/",
+          "https://basundhara.wb.gov.in/GeoPortalApp/project",
+          "https://dolr.gov.in/en/citizen-centric-services/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "দুর্গাপুর পশ্চিমবঙ্গ সরকারি জমির মানচিত্র খতিয়ান GIS",
+        "result": "The Bengali-language discovery query located the same official West Bengal land-record service family and Bengali/English Banglarbhumi portal, but did not identify a separate Durgapur municipal cadastral API or public parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://paschimbardhaman.gov.in/service/land-records-11/"
+        ]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official Paschim Bardhaman district page directs citizens to the Department of Land & Land Reforms land-record services at Banglarbhumi. The official Banglarbhumi portal explicitly lists RS-LR Plot Information, Plot Map Request, Mouza Map Request, and Mouza Map Availability Details. This evidences the state/district land-record custodian and a cadastral-map procedure, but not a separately evidenced Durgapur municipal registry or open citywide parcel feed.",
+  "officialSources": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "observation": "Government of West Bengal Land and Land Reforms portal; lists Plot Map Request, Mouza Map Request, RS-LR Plot Information, and Mouza Map Availability Details. The portal says citizen services require login."
+    },
+    {
+      "url": "https://paschimbardhaman.gov.in/service/land-records-11/",
+      "observation": "Official Paschim Bardhaman district page identifies Department of Land & Land Reforms services and directs users to banglarbhumi.gov.in."
+    },
+    {
+      "url": "https://basundhara.wb.gov.in/GeoPortalApp/",
+      "observation": "Official West Bengal State Geoportal; public landing page states the portal is for government departments and requires registration by an official letter."
+    },
+    {
+      "url": "https://dolr.gov.in/en/citizen-centric-services/",
+      "observation": "Official Department of Land Resources page describes West Bengal RoR/cadastral-map access through state services, but is general national/state program prose rather than a Durgapur parcel service."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/",
+      "method": "GET",
+      "outcome": "Timed out after 20 seconds from the research host; no response body, current JavaScript bundle, configuration, schema, CRS, or API route was obtained. This is a route failure, not evidence of source absence."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET via indexed official page",
+      "outcome": "Search-indexed official page was inspected. It exposed the service names and login requirement but not an anonymous parcel geometry response. No login, credentials, CAPTCHA bypass, or private token was used."
+    },
+    {
+      "url": "https://basundhara.wb.gov.in/GeoPortalApp/",
+      "method": "GET via indexed official page",
+      "outcome": "Public landing page was inspected. It states the geoportal is for government departments and requires registration; no public anonymous parcel endpoint or safe parcel geometry response was obtained."
+    }
+  ],
+  "source": {
+    "sourceId": "west-bengal-banglarbhumi",
+    "name": "Banglarbhumi West Bengal land-record and cadastral-map services",
+    "operator": "Department of Land and Land Reforms and Refugee Relief and Rehabilitation, Government of West Bengal",
+    "endpoint": "https://banglarbhumi.gov.in/",
+    "method": "Web portal; anonymous API route not established",
+    "responseFormat": null,
+    "sourceCrs": null,
+    "nativeIdentity": "Not observed in a bounded parcel response",
+    "fieldMapping": null,
+    "scope": "Official state land-record service referenced by Paschim Bardhaman district; Durgapur-specific parcel coverage, public API access, schema, CRS, completeness, and update cadence remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "West Bengal land-record and mouza/plot-map services, with Paschim Bardhaman district directing citizens to the service.",
+    "verifiedOpenScope": "Service existence and map-request procedure only; zero parcel geometries verified.",
+    "countrywideVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only", "full parcel polygon geometry if later obtained", "source CRS", "public service and layer metadata"],
+  "runtimeReadiness": "held_pending_serial_review",
+  "resultCategory": "official_cadastral_service_no_open_geometry_verified",
+  "remainingUncertainty": "The exact WUP point was preserved and was not used to force a parcel hit. The timed-out anonymous route and login-gated/indexed portal do not establish citywide absence, map extent miss, or lack of Durgapur parcel data. No unsafe owner, address, contact, titleholder, tax, account, or personal fields were requested or retained.",
+  "sourceIds": ["west-bengal-banglarbhumi"]
+}

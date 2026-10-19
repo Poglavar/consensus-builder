@@ -1,0 +1,32 @@
+{
+  "taskId": "city:10710",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:11:26.950Z",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-10710-laixi.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/laixi-service-review.json"
+  ],
+  "queueIdentity": {
+    "cityCode": 10710,
+    "rank": 2744,
+    "country": "China",
+    "point": [
+      36.8762561161115,
+      120.523486338404
+    ],
+    "populationPersons": 215043
+  },
+  "researchChecks": {
+    "englishAndLocalLanguageQueries": true,
+    "verifiedFullPolygonCount": 0,
+    "safeNativeParcelIdResponse": false,
+    "sourceBinding": false,
+    "freshLiveAdapterReads": false,
+    "forcedPaging": false,
+    "boundedCellCount": 0,
+    "metricGeosValidityAndOverlap": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "Official Shandong map/API pages and Qingdao registration material do not establish a safe anonymous Laixi parcel response; 401 token-route response is an access outcome, not citywide absence."
+}

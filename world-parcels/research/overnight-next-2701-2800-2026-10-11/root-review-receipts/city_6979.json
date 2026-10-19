@@ -1,0 +1,19 @@
+{
+  "taskId": "city:6979",
+  "decision": "held",
+  "checkedAt": "2026-10-11T19:23:44Z",
+  "evidenceFiles": [
+    "world-parcels/research/valhalla-handoff-2026-10-09.md",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ranked-population.json",
+    "tmp/overnight-cities-2026-10-09/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/city-6979-ciudad-del-carmen.json",
+    "world-parcels/research/overnight-next-2701-2800-2026-10-11/ciudad-del-carmen-service-review.json"
+  ],
+  "identityCheck": "Packet, pending queue, ranked roster, and original WUP 2025 source row agree on city code, rank 2755, Mexico, unshifted point [18.6488208984808, -91.8060260344894], and 214640 population persons; compressed source SHA-256 matches the handoff.",
+  "discoveryCheck": "Paired packet and review record executed English and local-language queries with URLs and outcomes; no full parcel polygons were retained (0 of maximum 3), so no unsafe parcel properties or malformed sample IDs were admitted.",
+  "admissionCheck": "No independent live adapter qualification: fresh native-ID polygon reads, forced paging, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, source binding, and headed Details-panel verification are absent.",
+  "reason": "First-party INFOCAM page returned HTTP 200 and identifies the state statistics, geography, and cadastre institute. The IDE viewer route returned the IDE login page with user/password fields. Municipal regulation was cited from an official search result but its PDF timed out in the worker attempt; the state custodian supports registryFound=true. No parcel API, native identity, or geometry was verified; the login wall and legacy 503 do not establish citywide absence.",
+  "registryFound": true,
+  "runtimeDisposition": "held; no registry, source catalog, city config, coverage report, or runtime admission change"
+}

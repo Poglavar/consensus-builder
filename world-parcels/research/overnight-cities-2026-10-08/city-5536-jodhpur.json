@@ -1,0 +1,130 @@
+{
+  "name": "Jodhpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 332,
+  "point": [
+    26.2642275719066,
+    73.0137991519094
+  ],
+  "population2025": 1515910,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local/state property or cadastral services were identified, but no point-specific public parcel polygon was verified. No full geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "A first-party Jodhpur Development Authority meeting document explicitly discusses numbered cadastral/revenue parcels in revenue village Jodhpur, with local authority land-record review. The Government of India DILRMP result names Jodhpur district in its map-digitization status. These confirm local land-record activity; the state Urban GIS shell alone does not establish Jodhpur point coverage or public parcel vectors.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "The official Urban GIS HTML is visible through web access, but shell HTTPS to its host timed out; no JS/service endpoint or successful Jodhpur city selection could be examined. BhuNaksha does not establish coverage without selected village/extent.",
+  "remainingUncertainty": "Whether the specific WUP locator is covered by a Jodhpur urban Khasra layer or the state revenue BhuNaksha; whether either portal offers anonymous machine-readable vector geometry.",
+  "nextStep": "Resolve the selected Jodhpur urban authority and village from the official viewer, then inspect only its public geometry route if accessible.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jodhpur Rajasthan official cadastral parcel map Khasra BhuNaksha Urban GIS Portal",
+        "result": "Official Rajasthan portals expose statewide BhuNaksha and an Urban GIS Portal with Khasra, urban jurisdiction, and plot search. The urban portal disclaims legal use and attributes Khasra/village boundaries to the Settlement Department, with source data from the respective urban agency. Official Jodhpur sample map documents are not point-specific.",
+        "method": "Separate English web search followed by official public-page and viewer review."
+      },
+      {
+        "language": "Hindi",
+        "query": "जोधपुर भू नक्शा राजस्थान जिला तहसील आधिकारिक खसरा नक्शा भूलेख",
+        "result": "राजस्थान के आधिकारिक भू नक्शा और शहरी GIS पोर्टल पर खसरा खोज/परतें उपलब्ध हैं। पोर्टल खसरा और ग्राम सीमाओं का स्रोत Settlement Department तथा संबंधित शहरी एजेंसी बताता है और उपयोग को केवल दृश्य संदर्भ कहता है। उपलब्ध जोधपुर नमूना नक्शा इस WUP बिंदु का प्रमाण नहीं है।",
+        "method": "Separate native-language web search and official public-page review."
+      },
+      {
+        "language": "English",
+        "query": "site.urban.rajasthan.gov.in Jodhpur Development Authority khasra map land records",
+        "result": "First-party Jodhpur authority publications describe local numbered revenue parcels and land-record review."
+      },
+      {
+        "language": "Hindi",
+        "query": "site.urban.rajasthan.gov.in जोधपुर खसरा नक्शा भूमि अभिलेख",
+        "result": "Official local authority meeting record explicitly discusses revenue village Jodhpur parcels; source is a dated document, not a live geometry feed."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bhunaksha.rajasthan.gov.in/",
+        "observation": "Official Rajasthan BhuNaksha map-with-land-records viewer."
+      },
+      {
+        "url": "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+        "observation": "Official Rajasthan georeferenced map viewer information and plot details."
+      },
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+        "observation": "Official Urban GIS Portal; includes Khasra search and Khasra/urban-jurisdiction/plot map layers; disclaimer identifies Settlement Department boundary data and respective urban agency source."
+      },
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/PDF/User_Manual_Urban_GIS_Portal.pdf",
+        "observation": "Official portal manual describes the urban GIS search and map layers."
+      },
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/",
+        "observation": "Official Rajasthan Rajdharaa portal."
+      },
+      {
+        "url": "https://lsg.urban.rajasthan.gov.in/content/dam/raj/udh/development-authority/jda-jodhpur/pdf/layout-meeting/layoutplanapp_20072016.pdf",
+        "observation": "Official PDF opened successfully (39 pages); indexed text describes numbered revenue parcels in revenue village Jodhpur and local authority land-record review. No private-owner values retained."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/113",
+        "observation": "Primary government search result names JODHPUR district on cadastral map-digitization status. Direct web open returned502; no status counts are claimed."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Opened the official Urban GIS public page and inspected the visible interface text: district/city authority selectors, Khasra search (district/tehsil/village/khasra), and Khasra/Plot/Urban Jurisdiction layers. The public page’s disclaimer says cadastral boundaries are for viewing only. Ordinary public HTTPS fetch of the portal timed out, so its JavaScript/service endpoint and exact Jodhpur extent could not be traced; no parcel geometry query was made.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no feature query",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://bhunaksha.rajasthan.gov.in/",
+    "https://www.bhunaksha.rajasthan.gov.in/georef_gmaps.html",
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/PDF/User_Manual_Urban_GIS_Portal.pdf",
+    "https://rajdharaa.rajasthan.gov.in/",
+    "https://lsg.urban.rajasthan.gov.in/content/dam/raj/udh/development-authority/jda-jodhpur/pdf/layout-meeting/layoutplanapp_20072016.pdf",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/113"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "A first-party Jodhpur Development Authority meeting document explicitly discusses numbered cadastral/revenue parcels in revenue village Jodhpur, with local authority land-record review. The Government of India DILRMP result names Jodhpur district in its map-digitization status. These confirm local land-record activity; the state Urban GIS shell alone does not establish Jodhpur point coverage or public parcel vectors.",
+    "verifiedOpenScope": "The official Urban GIS HTML is visible through web access, but shell HTTPS to its host timed out; no JS/service endpoint or successful Jodhpur city selection could be examined. BhuNaksha does not establish coverage without selected village/extent.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Jodhpur local cadastral/land-record evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://bhunaksha.rajasthan.gov.in/",
+    "scope": "A first-party Jodhpur Development Authority meeting document explicitly discusses numbered cadastral/revenue parcels in revenue village Jodhpur, with local authority land-record review. The Government of India DILRMP result names Jodhpur district in its map-digitization status. These confirm local land-record activity; the state Urban GIS shell alone does not establish Jodhpur point coverage or public parcel vectors."
+  },
+  "wupCityCode": 5536,
+  "cityId": "wup2025:5536",
+  "queueRank": 332,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    26.2642275719066,
+    73.0137991519094
+  ],
+  "rootReviewedAt": "2026-10-08T22:39:59.726347+00:00"
+}

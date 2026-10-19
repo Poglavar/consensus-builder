@@ -1,0 +1,23 @@
+{
+  "taskId": "city:237",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/city-237-buea.json",
+    "world-parcels/research/overnight-next-2601-2700-2026-10-11/buea-service-review.json",
+    "tmp/valhalla-parcel-research/buea/datasets.json",
+    "tmp/valhalla-parcel-research/buea/api_geoportal_cam_cameroon_wfs_service_WFS_version_2_0_0_request_GetCapabilities.xml"
+  ],
+  "checkedAt": "2026-10-11T17:00:09Z",
+  "finding": "WUP city 237, rank 2649, Cameroon, point and 222996 persons match the verified source archive and immutable roster. English and French searches are recorded. The first-party Geoportal cache has 109 catalogue entries with no identified parcel dataset; the attempted proxy WFS returned Not Found, while the advertised GeoServer DNS failure does not establish absence. No parcel polygon or safe native parcel ID was obtained. Local registry custody remains unresolved (null).",
+  "missingAdmissionGates": [
+    "public parcel feature and native-ID response",
+    "fresh exact native-ID round trips",
+    "forced paging and stable complete manifest",
+    "13 bounded cells",
+    "metric GEOS checks",
+    "source binding",
+    "headed Details-panel check"
+  ]
+}

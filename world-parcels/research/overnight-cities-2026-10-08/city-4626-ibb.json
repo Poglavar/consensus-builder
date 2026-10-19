@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Ibb",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The national General Authority for Lands, Survey & Urban Planning (GALSUP) is responsible for land and real-estate registration, and Yemeni law recognizes land/register records. The official National Information Center contacts page lists an Ibb coordination office, but that is an information-center office, not evidence of a local land-registry branch. No official city-specific GALSUP Ibb office/service evidence was verified, so local registry presence remains unresolved.",
+  "registryEvidenceUrls": [
+    "https://galsup.gov.ye/",
+    "https://moj.gov.ye/LawsMD/37",
+    "https://moj.gov.ye/LawsMD/8",
+    "https://www.yemen-nic.info/NIC/contact_us.php"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4626,
+  "cityId": "wup2025:4626",
+  "centerLatLon": [
+    13.9577590280226,
+    44.1658498202113
+  ],
+  "rank": 635,
+  "queueRank": 635,
+  "population2025": 826974,
+  "population2025k": 826.974,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous public parcel geometry or safe parcel schema was verified. Local registry basis is unresolved because the only directly verified Ibb office is the National Information Center, not GALSUP.",
+  "scopeLimits": "Source discovery only. Official evidence confirms local registry/land-record services only where stated in registryBasis; it does not establish complete citywide cadastral coverage or parcel geometry at the WUP point. No owner, address, tax, personal-identity, credential or account lookup was submitted or retained. No parcel geometry or feature attributes were retained.",
+  "remainingUncertainty": "No anonymous public parcel geometry or safe parcel schema was verified. Local registry basis is unresolved because the only directly verified Ibb office is the National Information Center, not GALSUP.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ibb Yemen official land registry cadastral map local GALSUP parcel geometry",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "National GALSUP and land-law sources were found, but no official Ibb-local GALSUP registry evidence or anonymous parcel geometry route was verified. The Ibb address on the National Information Center page belongs to that information-center network, not the land authority.",
+        "actualResultUrls": [
+          "https://galsup.gov.ye/",
+          "https://moj.gov.ye/LawsMD/37",
+          "https://moj.gov.ye/LawsMD/8",
+          "https://www.yemen-nic.info/NIC/contact_us.php"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "إب اليمن فرع الهيئة العامة للأراضي والمساحة والتخطيط العمراني السجل العقاري خريطة مساحية",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "ظهرت الهيئة العامة للأراضي والمساحة والتخطيط العمراني والقوانين الوطنية، لكن لم يتم التحقق من دليل رسمي خاص بإب يثبت مكتب السجل المحلي أو خدمة هندسية عامة. عنوان إب في صفحة المركز الوطني للمعلومات هو مكتب تنسيق للمركز وليس دليلاً على مكتب هيئة الأراضي.",
+        "actualResultUrls": [
+          "https://galsup.gov.ye/",
+          "https://moj.gov.ye/LawsMD/37",
+          "https://moj.gov.ye/LawsMD/8",
+          "https://www.yemen-nic.info/NIC/contact_us.php"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://galsup.gov.ye/",
+        "observation": "The official GALSUP site is the national authority portal and publishes land-authority notices; no Ibb-specific registry or map service was identified in the reviewed material."
+      },
+      {
+        "url": "https://moj.gov.ye/LawsMD/37",
+        "observation": "The official Ministry of Justice land/real-estate law is national legal background, not proof of an Ibb city registry or open geometry."
+      },
+      {
+        "url": "https://moj.gov.ye/LawsMD/8",
+        "observation": "The official Yemen National Information Center lists an Ibb coordination-office address at the governorate building in Al Dhihar; this is the center’s own local office, not a land registry."
+      }
+    ],
+    "metadataReviewFile": "ibb-service-review.json"
+  },
+  "source": {
+    "sourceId": "ye-ibb-registry-review",
+    "name": "Ibb local registry/cadastre route review",
+    "operator": "Ibb local land/registry authority (as qualified in registryBasis)",
+    "url": "https://galsup.gov.ye/",
+    "scope": "No anonymous public parcel geometry or safe parcel schema was verified. Local registry basis is unresolved because the only directly verified Ibb office is the National Information Center, not GALSUP.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous public parcel geometry or safe parcel schema was verified. Local registry basis is unresolved because the only directly verified Ibb office is the National Information Center, not GALSUP.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Low",
+  "sourceIds": [],
+  "point": [
+    13.9577590280226,
+    44.1658498202113
+  ],
+  "rootReviewedAt": "2026-10-09T02:09:36.300766+00:00"
+}

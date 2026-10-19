@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-10",
+  "cityRecord": "city-3163-santa-fe.json",
+  "purpose": "Document first-party registry/map discovery, viewer/service evidence, bounded anonymous request outcomes, and safety limits.",
+  "assessment": "Official Santa Fe provincial sources evidence SCIT as cadastral/cartographic custodian and IDESF as the public spatial-data infrastructure. The current IDESF WMS exposes parcel display layers and CRS metadata, but the parcel layers are non-queryable and the bounded GetFeatureInfo request returned LayerNotQueryable. No parcel ID or polygon was retained.",
+  "registryAssessment": "SCIT is the provincial cadastral and territorial-information service, not merely a general national agency. IDESF publishes the province's public geospatial service routes. The Santa Fe municipal GeoPortal is a separate local map platform advertising cadastral layers and downloads; neither source yielded a safe parcel feature response in this attempt.",
+  "officialPrimarySources": [
+    {"url": "https://www.santafe.gov.ar/index.php/web/content/view/full/243171", "observation": "Official page identifies SCIT as administering territorial-object and public cadastral data, including parcel plans, limits, dimensions, areas, and boundaries."},
+    {"url": "https://www.santafe.gov.ar/index.php/web/content/view/full/243182", "observation": "Official page states SCIT produces georeferenced maps with parcel layers and provides web services with varying access levels."},
+    {"url": "https://www.santafe.gov.ar/idesf/buscadorparcela/tramite.php", "observation": "Official provincial parcel-search page accepts a cadastral parcel identifier or coordinate-oriented lookup and states that a found parcel is shown on a map."},
+    {"url": "https://www.santafe.gov.ar/idesf/geoportal/paginas/servicios-OGC", "observation": "Official IDESF WMS documentation publishes the WMS endpoint, GetCapabilities/GetMap/GetFeatureInfo operations, and supported CRS including EPSG:4326 and EPSG:5347."},
+    {"url": "https://santafeciudad.gov.ar/geo-portal/", "observation": "Official municipal GeoPortal page describes cadastral and planning layers and public technical/download resources."}
+  ],
+  "viewerConfiguration": {
+    "homeUrl": "https://aswe.santafe.gov.ar/idesf/wms?service=WMS&version=1.1.1&request=GetCapabilities",
+    "observedTechnology": "OGC WMS 1.1.1 served by MapServer; IDESF public service documentation and GetCapabilities response.",
+    "observedControls": ["provincial parcel search", "IDESF visualizer", "WMS parcel map layers", "municipal GeoPortal"],
+    "schemaAndCrs": "GetCapabilities lists scit_parcelas and scit_parcelas_identificador under Planeamiento Catastral. Both advertise EPSG:4326 and EPSG:5347, with provincial extent -63.4154,-34.8242 to -57.9377,-27.6729. The layers have queryable=0; no vector schema or native ID field was returned.",
+    "nativeFieldNames": [],
+    "sourceFieldMapping": "No feature response was obtained; no source field mapping is asserted.",
+    "safeFieldAllowlist": ["stable native parcel identifier if independently verified", "complete parcel geometry", "source CRS metadata"],
+    "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "tax/account", "title or personal data"]
+  },
+  "attempts": [
+    {"url": "https://www.santafe.gov.ar/idesf/buscadorparcela/tramite.php", "method": "GET", "normalTlsVerification": true, "result": "Local curl request timed out after 20 seconds with no body; web retrieval independently confirmed the public form and its documented behavior. No parcel identifier or owner/address data was submitted."},
+    {"url": "https://aswe.santafe.gov.ar/idesf/wms?service=WMS&version=1.1.1&request=GetCapabilities", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200; 238604-byte capabilities document retrieved. It exposed scit_parcelas and scit_parcelas_identificador, both queryable=0, with EPSG:4326 and EPSG:5347."},
+    {"url": "https://aswe.santafe.gov.ar/idesf/wms?service=WMS&version=1.1.1&request=GetMap&layers=scit_parcelas&styles=&srs=EPSG:4326&bbox=-60.7092262559096,-31.617094006656,-60.7072262559096,-31.615094006656&width=600&height=600&format=image/png&transparent=true", "method": "GET", "normalTlsVerification": true, "result": "HTTP response retrieved for a bounded map extent around the exact WUP point; image-only WMS output cannot establish parcel identity or supply retained polygon geometry."},
+    {"url": "https://aswe.santafe.gov.ar/idesf/wms?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=scit_parcelas_identificador&styles=&srs=EPSG:4326&bbox=-60.7092262559096,-31.617094006656,-60.7072262559096,-31.615094006656&width=1000&height=1000&format=image/png&transparent=true&query_layers=scit_parcelas_identificador&feature_count=3&x=500&y=500&info_format=application/json", "method": "GET", "normalTlsVerification": true, "result": "HTTP 200 XML ServiceException code LayerNotQueryable: the requested parcel layer is explicitly not queryable. No ID, attributes, or geometry retained."},
+    {"url": "https://geoportal.santafeciudad.gov.ar/", "method": "GET", "normalTlsVerification": true, "result": "Official municipal GeoPortal link was retrieved through the official city page, but bounded text retrieval exposed no service schema or anonymous parcel feature endpoint."}
+  ],
+  "geometryDecision": "No full polygon retained; no qualifying safe anonymous parcel ID-plus-geometry response was verified.",
+  "geometryEvidence": {"sampleFile": null, "featureCount": 0, "query": "A bounded GetFeatureInfo query was submitted at the exact WUP point using the official parcel-identification WMS layer; the service rejected the query as LayerNotQueryable."},
+  "coverageAssessment": {"claimedScope": "Santa Fe provincial SCIT/IDESF cadastral map service and municipal GeoPortal.", "verifiedOpenScope": "Official parcel layer metadata and map route only; no anonymous feature response.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 0, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 0, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "remainingUncertainty": "Native parcel identity fields, vector endpoint, coordinate lookup behavior, and citywide coverage remain unknown. Non-queryable WMS, timeout, or map-only success does not prove absence.",
+  "runtimeAssessment": {"status": "held", "reason": "No independent anonymous ID-plus-geometry response; packet does not qualify an adapter or enable runtime."}
+}

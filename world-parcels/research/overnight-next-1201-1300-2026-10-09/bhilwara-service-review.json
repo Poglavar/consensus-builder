@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7815-bhilwara.json",
+  "cohort": "overnight-next-1201-1300",
+  "purpose": "Document Bhilwara's official Rajasthan land-record/cadastral custodians, separate local registry evidence from geometry, and record bounded anonymous request outcomes.",
+  "scopeLimits": {"maxFullPolygonsRetainedInCityRecord": 3, "maxFullPolygonsRetainedInReview": 0, "maxFullPolygonsRetainedInRepository": 3, "ownerOrAddressDataRetained": false, "credentialsOrTokenValuesRetained": false, "citywideCompletenessAsserted": false},
+  "assessment": "Official Rajasthan sources identify Bhilwara Revenue Tehsil/land-record roles and state cadastral services including Bhu-Naksha, Apna Khata, Rajdharaa Urban GIS, and e-Mapping. Bounded access to the Bhu-Naksha host timed out before current viewer configuration or parcel geometry could be inspected. No safe native ID, schema, CRS, or polygon geometry was verified; no GeoJSON sample is retained and runtime remains held.",
+  "registryAssessment": "registryFound=true is supported by the official Bhilwara district portal and Rajasthan government personnel record naming Revenue Tehsil, Bhilwara and Inspector Land Record roles, together with official Rajasthan cadastral service pages. This establishes a local/state registry custodian, not citywide geometry completeness or ownership/title information.",
+  "coverageAssessment": {"claimedScope": "Official Bhilwara district/Revenue Tehsil land-record custodian plus Rajasthan state cadastral/map services.", "verifiedOpenScope": "Official local custodian and state service identity; no live anonymous parcel response obtained.", "citywideVerified": false, "countrywideVerified": false, "geometryVerified": false},
+  "safeFieldAllowlist": ["cityCode", "queueRank", "WUP point", "official service URLs", "HTTP status/content type", "public service metadata", "native CRS/ID only if returned safely", "geometry only if independently verified"],
+  "searchQueries": [
+    {"language": "English", "query": "Bhilwara Rajasthan official cadastral parcel map GIS land records Bhu Naksha", "actualResultUrls": ["https://bhunaksha.rajasthan.gov.in/", "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx", "https://rajdharaa.rajasthan.gov.in/citizenudh/index", "https://gis.rajasthan.gov.in/dlcinfo/", "https://bhilwara.rajasthan.gov.in/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/122"]},
+    {"language": "Hindi", "query": "भीलवाड़ा राजस्थान आधिकारिक भू नक्शा खसरा नक्शा भूमि अभिलेख", "actualResultUrls": ["https://bhunaksha.rajasthan.gov.in/", "https://apnakhata.rajasthan.gov.in/LRCLogin.aspx", "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/settlementdepartment/programs-and-schemes/dilrmp/introductionandobjectives.html", "https://rajdharaa.rajasthan.gov.in/citizenudh/index"]}
+  ],
+  "attempts": [
+    "Performed separate English and Hindi first-party discovery queries and recorded actual official result URLs.",
+    "Reviewed official Bhilwara district and Rajasthan Revenue/land-record sources; identified Revenue Tehsil, Bhilwara / Inspector Land Record roles as local custodian evidence.",
+    "Reviewed official Bhu-Naksha, Apna Khata, Rajdharaa Urban GIS, e-Mapping, and DILRMP pages as service/status evidence.",
+    "Attempted bounded anonymous GET of https://bhunaksha.rajasthan.gov.in/; it timed out after 30 seconds before HTML/JavaScript/configuration or a parcel response could be retained.",
+    "Attempted bounded anonymous HEAD requests to the Bhilwara district portal and Apna Khata; no usable response was obtained within the bounded command window.",
+    "Did not submit the WUP latitude/longitude to a local endpoint, did not shift the point, did not request owner/address/title/account/tax fields, did not log in, did not bypass CAPTCHA/Cloudflare, and did not disable TLS verification.",
+    "No sample GeoJSON was created because no full parcel polygon response or safe native parcel identity was verified."
+  ],
+  "geometryEvidence": {"verified": false, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "nativeCrs": null, "exactWupPointTest": "Not run; exact WUP point [25.3436339514634, 74.6310689921485] preserved unchanged.", "polygonResponse": "None; official Bhu-Naksha access timed out and indexed official pages exposed controls/prose but no safe polygon payload."},
+  "nextStep": "Independent serial review of the current Rajasthan Bhu-Naksha/Rajdharaa/e-Mapping viewer and any public geometry-export capability; keep adapter/runtime held until real safe native IDs and polygon geometry are independently qualified.",
+  "remainingUncertainty": "Current JavaScript/configuration, API routes, native schema/CRS, parcel identity field, anonymous geometry capability, and Bhilwara citywide coverage remain unverified.",
+  "rootReview": null,
+  "rootReviewedAt": null
+}

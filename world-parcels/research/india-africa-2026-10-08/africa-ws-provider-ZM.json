@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "shared_city_source_assessment",
+  "countryCode": "ZM",
+  "checkedAt": "2026-10-08",
+  "source": {
+    "sourceId": "zm-nsdi-cadaster-new",
+    "name": "Zambia NSDI CadasterNew MapServer layer 0 (Lots)",
+    "operator": "National NSDI service hosted at map.gov.zm; exact layer custodian not independently confirmed",
+    "scope": "Candidate service whose metadata advertises full Zambia extent; Mansa coverage not verified",
+    "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "geometry": "Official search metadata describes layer Lots and keywords Customary, Cadaster, Lots, Parcels, GIS< NSDI.National; service CRS EPSG:32735",
+    "access": "Search metadata identified the service, but direct metadata and correctly encoded bounded Mansa query requests returned HTTP 000 timeouts with browser-like en-ZM headers, cookie jar, and official-host Referer.",
+    "assessment": "National service lead only; no response geometry returned, and no Mansa coverage or native ID semantics verified."
+  },
+  "searchBatches": [
+    {
+      "languageScript": "English (official Zambia/Mansa municipal terminology; Latin script)",
+      "exactQueries": [
+        "Mansa Zambia parcels cadastre land plot GIS Ministry of Lands"
+      ],
+      "date": "2026-10-08",
+      "resultUrls": [
+        "https://www.mansacouncil.gov.zm/?page_id=2435",
+        "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer"
+      ],
+      "assessment": "Mansa council GIS/survey duties and national NSDI cadastre service surfaced; neither establishes a successful Mansa parcel sample."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Metadata request timed out after 20 seconds with zero bytes."
+    },
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query",
+      "method": "GET",
+      "httpStatus": 0,
+      "contentType": null,
+      "assessment": "Correctly encoded target bbox/count=3 query timed out after 15 seconds with zero bytes; see Mansa city record for complete parameters."
+    }
+  ],
+  "limitations": "A search result and timeout do not establish data absence; service coverage, access, feature schema, and parcel identifiers require a successful query."
+}

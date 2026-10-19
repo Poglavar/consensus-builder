@@ -1,0 +1,162 @@
+{
+  "cityCode": 278,
+  "queueRank": 2867,
+  "name": "Limassol",
+  "country": "Cyprus",
+  "countryCode": "CY",
+  "iso2": "CY",
+  "iso3": "CYP",
+  "point": [34.6909748253836, 33.0357356736213],
+  "population2025": 207813,
+  "population2025k": 207.813,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cyprus official cadastral map parcel viewer Limassol Department of Lands and Surveys GIS",
+        "result": "Official Gov.cy and DLS Portal pages identify the Department of Lands and Surveys interactive maps, and the official English ArcGIS REST cadastral service exposes a public Parcels polygon layer and query endpoint.",
+        "actualResultUrls": [
+          "https://www.gov.cy/en/service/interactive-maps/",
+          "https://portal.dls.moi.gov.cy/en/",
+          "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer"
+        ]
+      },
+      {
+        "language": "Greek (local/native)",
+        "query": "Κύπρος επίσημος κτηματολογικός χάρτης τεμάχια Λεμεσός Τμήμα Κτηματολογίου GIS",
+        "result": "Official Greek Gov.cy/DLS pages identify map navigation for cadastral data and the Greek ArcGIS REST cadastral map; the Greek layer metadata describes ΤΕΜΑΧΙΑ (parcels) as polygon data with the same public service footprint.",
+        "actualResultUrls": [
+          "https://www.gov.cy/service/ploigisi-se-chartes/",
+          "https://portal.dls.moi.gov.cy/",
+          "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_GR/MapServer"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "The official Cyprus Department of Lands and Surveys (DLS) Portal is the cadastral-map custodian and provides the public interactive map service; the evidence is national rather than a separate Limassol municipal GIS.",
+    "nationalAgency": "Department of Lands and Surveys, Ministry of Interior, Cyprus.",
+    "registryEvidence": "The official DLS interactive-map service explicitly provides cadastral parcels and identification/map details, and its public ArcGIS REST Parcels layer returned bounded parcel polygons near Limassol.",
+    "registryEvidenceUrls": [
+      "https://www.gov.cy/en/service/interactive-maps/",
+      "https://portal.dls.moi.gov.cy/en/",
+      "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "GET",
+      "url": "https://www.gov.cy/en/service/interactive-maps/",
+      "httpStatus": 200,
+      "outcome": "Official English service page states that users can navigate to properties and view parcel layers, identify properties, and inspect map details."
+    },
+    {
+      "method": "GET",
+      "url": "https://portal.dls.moi.gov.cy/en/",
+      "httpStatus": 200,
+      "outcome": "Current English DLS Portal loaded and links InteractiveMaps, with Limassol listed as a DLS district office."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.gov.cy/service/ploigisi-se-chartes/",
+      "httpStatus": 200,
+      "outcome": "Official Greek service page describes navigation to cadastral/survey data, parcel search and administrative boundaries."
+    },
+    {
+      "method": "GET",
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Live official layer metadata identified Parcels as esriGeometryPolygon, supported JSON/geoJSON queries, native Web Mercator service extent, and safe fields including SBPI_ID_NO, OBJECTID, parcel number, sheet and plan."
+    },
+    {
+      "method": "GET",
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_GR/MapServer/0?f=pjson",
+      "httpStatus": 200,
+      "outcome": "Live official Greek layer metadata identified ΤΕΜΑΧΙΑ (parcels) as polygon data in the same national cadastral service footprint."
+    },
+    {
+      "method": "GET",
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0/query?f=geojson&where=1%3D1&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&outFields=SBPI_ID_NO%2COBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "httpStatus": 200,
+      "outcome": "A 1 km x 1 km envelope centered on the exact WUP point returned three Polygon features with safe native SBPI_ID_NO values 595062, 597262 and 597258. Full unchanged response is retained only in ignored tmp evidence; no source-specific attributes are retained in the packet."
+    },
+    {
+      "method": "GET",
+      "url": "https://eservices.dls.moi.gov.cy/arcgis/rest/services/National/CadastralMap_EN/MapServer/0/query?f=json&where=1%3D1&geometryType=esriGeometryPoint&inSR=3857&spatialRel=esriSpatialRelIntersects&outFields=SBPI_ID_NO&returnGeometry=false",
+      "httpStatus": 200,
+      "outcome": "Exact-point identify at the preserved WUP point returned zero features. This is a point-scale result only and is not evidence of citywide absence; the bounded envelope query returned parcel polygons nearby."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": "The current DLS Portal and its linked official ArcGIS REST service were inspected; the public service endpoint is directly usable without login or private tokens.",
+    "parcelLayer": "National/CadastralMap_EN/MapServer/0 (Parcels); Greek counterpart is National/CadastralMap_GR/MapServer/0 layer 0 (ΤΕΜΑΧΙΑ).",
+    "geometryCrs": "Service/native metadata: EPSG:3857 (WKID 102100/latestWkid 3857). The bounded response requested outSR=4326; no sample file was retained.",
+    "nativeIdentity": "SBPI_ID_NO",
+    "sourceFieldMapping": {
+      "id": "SBPI_ID_NO",
+      "secondaryObjectId": "OBJECTID",
+      "geometry": "SHAPE",
+      "parcelNumber": "PARCEL_NBR",
+      "sheet": "SHEET",
+      "plan": "PLAN_NBR"
+    },
+    "compositeKeyProvenance": "SBPI_ID_NO is the source parcel identifier returned by the official layer. DIST_CODE, VIL_CODE, QRTR_CODE, BLCK_CODE and PARCEL_NBR are source cadastral components available for provenance; no synthetic row number was used."
+  },
+  "boundedAnonymousResponse": {
+    "requestScope": "1 km x 1 km envelope centered on exact WUP point [34.6909748253836, 33.0357356736213] in latitude/longitude order; coordinates were not shifted.",
+    "featureCount": 3,
+    "geometryFeatureCount": 3,
+    "nativeIds": [595062, 597262, 597258],
+    "geometryTypes": ["Polygon", "Polygon", "Polygon"],
+    "exactPointFeatureCount": 0
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier SBPI_ID_NO",
+    "full parcel polygon geometry",
+    "geometry CRS",
+    "public source layer and service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "SBPI_ID_NO",
+    "sampleCount": 3,
+    "sampleFile": null,
+    "nativeIdField": "SBPI_ID_NO",
+    "exactWupPointTest": "Exact point returned zero features; a nearby bounded envelope returned three polygons. No coordinate shift was used.",
+    "retentionDecision": "No GeoJSON sample retained; the task permits zero samples and the unchanged response remains in ignored temporary evidence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The DLS service is national Cyprus cadastral-map coverage according to its official service description.",
+    "verifiedOpenScope": "Three parcel polygons were verified in one bounded anonymous response near Limassol; local citywide completeness, update cadence and all municipal limits were not independently measured.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeReadiness": "held_serial_review_required",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "This is cadastral-source research, not source integration or runtime admission.",
+    "The exact WUP point and population values were preserved; no coordinate was moved to force a parcel hit.",
+    "The exact-point zero and three nearby polygons are bounded evidence, not citywide coverage proof.",
+    "Only safe IDs and geometry were used; raw source-specific attributes remain only in ignored temporary evidence.",
+    "No login, credential, private token, CAPTCHA/Cloudflare bypass, TLS exception, or unsafe field request was used."
+  ],
+  "uncertainty": "The official DLS national cadastral service is a credible public parcel source and returned safe native IDs plus polygon geometry near Limassol. The exact WUP point is not itself inside a returned parcel at point-query scale, and citywide completeness, current viewer internals beyond the public REST service, and production adapter suitability remain for independent serial review."
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8865-bharatpur.json",
+  "purpose": "Independent first-party registry/map discovery and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false,
+    "exactPointMissNotInterpretedAsAbsence": true
+  },
+  "assessment": "Rajasthan's official Urban GIS presents a public Khasra workflow and its current configuration declares an ArcGIS settlement/Khasra layer. Bharatpur local-authority and DILRMP evidence establish relevant registry custody. The configured GIS host timed out for bounded anonymous metadata requests, so no safe native parcel identity plus polygon was verified, no GeoJSON sample was retained, and runtime remains held.",
+  "registryAssessment": "Local Bharatpur Development Authority custody is evidenced by its official page and linked भूज्ञान portal; Rajasthan Urban GIS/settlement custody is evidenced by the official viewer and its disclaimer; Government of India DILRMP provides district cadastral-status evidence. None was verified as an open Bharatpur parcel-vector service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "operator": "Department of Information Technology and Communication, Government of Rajasthan / respective urban agency",
+      "observation": "HTTP 200 public Urban GIS page with Khasra Search, map navigation and Khasra Info controls; disclaimer says Khasra and village boundaries are provided by the Settlement Department and final authentication rests with the local body/town-planning department."
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js",
+      "operator": "Government of Rajasthan Rajdharaa application",
+      "observation": "Public JavaScript configuration declares Settlement_JDA/MapServer/0 as the Khasra FeatureLayer and layer 10 as village; the configuration alone does not prove Bharatpur coverage."
+    },
+    {
+      "url": "https://lsg.rajasthan.gov.in/uitbharatpur/",
+      "operator": "Bharatpur Development Authority, Government of Rajasthan",
+      "observation": "Official local-authority page links a Bharatpur भूज्ञान portal and identifies the authority; no public geometry response was obtained."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/105",
+      "operator": "Department of Land Resources, Government of India",
+      "observation": "Official Bharatpur district DILRMP status page with cadastral-map, georeferencing and parcel-status fields; it is program-status evidence, not an open parcel API."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bharatpur Rajasthan official cadastral parcel map GIS भू-नक्शा भरतपुर राजस्थान",
+      "result": "Official Rajasthan Urban GIS, Bharatpur Development Authority, DILRMP Bharatpur and NATMO Bharatpur sources found; no verified public parcel vector endpoint.",
+      "actualResultUrls": ["https://rajdharaa.rajasthan.gov.in/citizenudh/index", "https://lsg.rajasthan.gov.in/uitbharatpur/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/105", "https://geoportal.natmo.gov.in/dataset/bharatpur-0"]
+    },
+    {
+      "language": "Hindi",
+      "query": "भरतपुर राजस्थान आधिकारिक भू नक्शा कैडस्ट्रल पार्सल मानचित्र GIS",
+      "result": "Hindi discovery confirmed official Rajasthan cadastral-digitization material, Urban GIS Khasra workflow, Bharatpur local authority and DILRMP evidence; no machine-readable Bharatpur parcel polygon endpoint.",
+      "actualResultUrls": ["https://rajdharaa.rajasthan.gov.in/citizenudh/index", "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html", "https://lsg.rajasthan.gov.in/uitbharatpur/", "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/105"]
+    }
+  ],
+  "attempts": [
+    {
+      "attempt": "Official Urban GIS page and current JavaScript/configuration inspection",
+      "result": "HTTP 200 page and configuration retrieved. Khasra workflow and ArcGIS layer URL were identified; Bharatpur-specific layer selection and response could not be verified.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Bounded anonymous ArcGIS layer metadata retrieval",
+      "result": "Khasra layer timed out after 20 seconds; village layer returned no usable response. No TLS exception, login, token-value use, CAPTCHA bypass or unsafe query was attempted.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    },
+    {
+      "attempt": "Bharatpur local-authority and DILRMP first-party inspection",
+      "result": "Official Bharatpur Development Authority page and DILRMP Bharatpur district status page were found. They establish custody/status context but expose no retained parcel geometry.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/0?f=pjson",
+      "method": "GET",
+      "outcome": "timeout after 20 seconds",
+      "safeRequest": true
+    },
+    {
+      "url": "https://gisprod.rajasthan.gov.in/geocode/rest/services/JDA/Settlement_JDA/MapServer/10?f=pjson",
+      "method": "GET",
+      "outcome": "no usable response after bounded request",
+      "safeRequest": true
+    },
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/js/Config.js",
+      "method": "GET",
+      "outcome": "HTTP 200; configuration saved to ignored scratch cache only",
+      "safeRequest": true
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "No full parcel polygon and no verified stable cadastral native identity were obtained. No exact-point hit or miss was used to infer coverage."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Rajasthan official Urban GIS Khasra workflow and configured ArcGIS settlement layer, Bharatpur local-authority portal, and Bharatpur DILRMP status.",
+    "verifiedOpenScope": "Public service documentation, current configuration and custody/status evidence only; parcel geometry, schema, CRS and citywide extent remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "safeFieldAllowlist": ["stable native parcel or khasra identifier if exposed", "geometry", "CRS", "source layer/service metadata"],
+  "remainingUncertainty": "The official viewer may expose Bharatpur-specific geometry through an interactive workflow or a separate local भूज्ञान route; current machine-readable availability is unknown.",
+  "runtimeDecision": "held_not_enabled_no_verified_public_geometry"
+}

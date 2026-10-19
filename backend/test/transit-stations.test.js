@@ -1,0 +1,1187 @@
+// Pure placement geometry and snapping tests for the placeable transit-station tool.
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest';
+import * as turf from '@turf/turf';
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+
+const require = createRequire(import.meta.url);
+globalThis.proj4 ||= require('proj4');
+const previousModels = globalThis.TransitStationModels;
+globalThis.TransitStationModels = require('../../frontend/js/vendor/transit-station-models.js');
+const SingleBuildingGeometry = require('../../frontend/js/single-building-geometry.js');
+const alignments = require('../../frontend/js/transit-alignments.js');
+const stations = require('../../frontend/js/transit-stations.js');
+
+afterEach(() => {
+    globalThis.transitStations = [];
+});
+
+afterAll(() => {
+    if (previousModels === undefined) delete globalThis.TransitStationModels;
+    else globalThis.TransitStationModels = previousModels;
+});
+
+function rectangle(west, south, east, north, id) {
+    return turf.polygon([[[west, south], [east, south], [east, north], [west, north], [west, south]]], {
+        parcelId: id
+    });
+}
+
+describe('transit station footprints', () => {
+    it.each([
+        ['bus', 5, 18],
+        ['tram', 5, 18],
+        ['underground', 32, 68],
+        ['elevated', 24, 30]
+    ])('builds the configured %s footprint in metres', (type, expectedWidth, expectedLength) => {
+        const geometry = stations.createStationFootprint([15.98, 45.81], 0, type, turf);
+        const ring = geometry.coordinates[0];
+        const width = turf.distance(turf.point(ring[0]), turf.point(ring[1]), { units: 'meters' });
+        const length = turf.distance(turf.point(ring[0]), turf.point(ring[3]), { units: 'meters' });
+
+        expect(width).toBeCloseTo(expectedWidth, 1);
+        expect(length).toBeCloseTo(expectedLength, 1);
+        const expectedArea = expectedWidth * expectedLength;
+        expect(Math.abs(turf.area(turf.feature(geometry)) - expectedArea) / expectedArea).toBeLessThan(0.005);
+    });
+
+    it('rotates the long axis to the requested geographic bearing', () => {
+        const geometry = stations.createStationFootprint([15.98, 45.81], 90, 'tram', turf);
+        const ring = geometry.coordinates[0];
+        const midpoint = turf.midpoint(turf.point(ring[0]), turf.point(ring[1]));
+        const center = turf.point([15.98, 45.81]);
+
+        expect(turf.bearing(center, midpoint)).toBeCloseTo(90, 1);
+    });
+});
+
+describe('station placement alignment', () => {
+    it('snaps to the nearest applied corridor and adopts its bearing', () => {
+        const proposals = [{
+            proposalId: 'road-east-west',
+            applied: true,
+            roadProposal: {
+                definition: {
+                    points: [[
+                        { lng: 15.979, lat: 45.81 },
+                        { lng: 15.981, lat: 45.81 }
+                    ]]
+                }
+            }
+        }, {
+            proposalId: 'parked-road',
+            applied: false,
+            roadProposal: {
+                definition: {
+                    points: [[
+                        { lng: 15.98, lat: 45.809 },
+                        { lng: 15.98, lat: 45.811 }
+                    ]]
+                }
+            }
+        }];
+
+        const result = stations.nearestCorridorAlignment([15.98, 45.81008], 24, turf, proposals);
+
+        expect(result.proposalId).toBe('road-east-west');
+        expect(result.distanceM).toBeLessThan(10);
+        expect(result.center[0]).toBeCloseTo(15.98, 5);
+        expect(result.center[1]).toBeCloseTo(45.81, 6);
+        expect(result.bearing).toBeCloseTo(90, 1);
+    });
+
+    it('does not snap outside the placement radius', () => {
+        const proposals = [{
+            proposalId: 'road',
+            applied: true,
+            roadProposal: {
+                definition: { points: [[{ lng: 15.979, lat: 45.81 }, { lng: 15.981, lat: 45.81 }]] }
+            }
+        }];
+
+        expect(stations.nearestCorridorAlignment([15.98, 45.811], 24, turf, proposals)).toBeNull();
+    });
+
+    it('snaps rail stations only to rail-bearing corridor segments', () => {
+        const road = {
+            proposalId: 'road', applied: true,
+            roadProposal: { definition: {
+                width: 10,
+                profile: { strips: [{ type: 'driving', width: 10 }] },
+                points: [[{ lng: 15.979, lat: 45.81 }, { lng: 15.981, lat: 45.81 }]]
+            } }
+        };
+        const rail = {
+            proposalId: 'rail', applied: true,
+            roadProposal: { definition: {
+                width: 6,
+                profile: { strips: [{ type: 'rail', width: 6 }] },
+                points: [[{ lng: 15.979, lat: 45.8101 }, { lng: 15.981, lat: 45.8101 }]]
+            } }
+        };
+
+        const result = stations.nearestCorridorAlignment([15.98, 45.81002], 24, turf, [road, rail], 'tram');
+        expect(result).toMatchObject({ proposalId: 'rail', alignmentKind: 'rail' });
+        expect(result.center[1]).toBeCloseTo(45.8101, 6);
+        expect(stations.nearestCorridorAlignment([15.98, 45.81], 24, turf, [road], 'underground')).toBeNull();
+    });
+
+    it('places bus stations beside drivable roads and aligns each side with traffic', () => {
+        const road = {
+            proposalId: 'road', applied: true,
+            roadProposal: { definition: {
+                width: 10,
+                profile: { strips: [{ type: 'driving', width: 10 }] },
+                points: [[{ lng: 15.979, lat: 45.81 }, { lng: 15.981, lat: 45.81 }]]
+            } }
+        };
+        const rail = {
+            proposalId: 'rail', applied: true,
+            roadProposal: { definition: {
+                width: 6,
+                profile: { strips: [{ type: 'rail', width: 6 }] },
+                points: [[{ lng: 15.979, lat: 45.81005 }, { lng: 15.981, lat: 45.81005 }]]
+            } }
+        };
+
+        const northSide = stations.nearestCorridorAlignment([15.98, 45.81006], 24, turf, [rail, road], 'bus');
+        expect(northSide).toMatchObject({ proposalId: 'road', alignmentKind: 'roadside', side: 'left' });
+        expect(northSide.center[1]).toBeGreaterThan(45.81);
+        expect(northSide.bearing).toBeCloseTo(270, 1);
+        expect(turf.distance(turf.point(northSide.centerlineCenter), turf.point(northSide.center), { units: 'meters' })).toBeCloseTo(8, 1);
+        expect(stations.nearestCorridorAlignment([15.98, 45.81005], 24, turf, [rail], 'bus')).toBeNull();
+    });
+
+    it('allows both rail and bus stations on a mixed tram street', () => {
+        const mixed = {
+            proposalId: 'mixed', applied: true,
+            roadProposal: { definition: {
+                width: 12,
+                profile: { strips: [{ type: 'driving', width: 8 }, { type: 'rail', width: 4 }] },
+                points: [[{ lng: 15.979, lat: 45.81 }, { lng: 15.981, lat: 45.81 }]]
+            } }
+        };
+        expect(stations.nearestCorridorAlignment([15.98, 45.81], 24, turf, [mixed], 'tram')?.proposalId).toBe('mixed');
+        expect(stations.nearestCorridorAlignment([15.98, 45.81], 24, turf, [mixed], 'bus')?.proposalId).toBe('mixed');
+    });
+
+    it('snaps tram stations to OSM tram alignments but rejects incompatible station types', () => {
+        const references = alignments.buildAlignmentRecords({
+            id: 'zagreb-tram', url: 'tram.geojson', mode: 'tram',
+            stationTypes: ['tram'], elevationM: 0, render3d: 'surface'
+        }, {
+            type: 'FeatureCollection',
+            features: [{
+                type: 'Feature', properties: { osmId: 195825111 },
+                geometry: { type: 'LineString', coordinates: [[15.979, 45.81], [15.981, 45.81]] }
+            }]
+        });
+
+        const result = stations.nearestCorridorAlignment(
+            [15.98, 45.81004], 24, turf, [], 'tram', references
+        );
+        expect(result).toMatchObject({
+            sourceKind: 'reference', sourceId: 'zagreb-tram', featureId: '195825111',
+            mode: 'tram', elevationM: 0, alignmentKind: 'rail'
+        });
+        expect(result.center[1]).toBeCloseTo(45.81, 6);
+        expect(stations.nearestCorridorAlignment(
+            [15.98, 45.81004], 24, turf, [], 'elevated', references
+        )).toBeNull();
+        expect(stations.nearestCorridorAlignment(
+            [15.98, 45.81004], 24, turf, [], 'bus', references
+        )).toBeNull();
+    });
+
+    it('inherits an existing elevated railway height and records a durable reference attachment', () => {
+        const references = alignments.buildAlignmentRecords({
+            id: 'zagreb-heavy-rail', url: 'rail.geojson', mode: 'heavy-rail',
+            stationTypes: ['elevated'], elevationM: 7.5, render3d: 'elevated'
+        }, {
+            type: 'FeatureCollection',
+            features: [{
+                type: 'Feature', properties: { osmId: 4323187 },
+                geometry: { type: 'LineString', coordinates: [[15.979, 45.81], [15.981, 45.81]] }
+            }]
+        });
+        const snap = stations.nearestCorridorAlignment(
+            [15.98, 45.81003], 24, turf, [], 'elevated', references
+        );
+        const update = stations.placementUpdateFromAlignment('elevated', snap, 10);
+
+        expect(update.platformHeightM).toBe(7.5);
+        expect(update.alignment).toMatchObject({
+            kind: 'rail', sourceKind: 'reference', sourceId: 'zagreb-heavy-rail',
+            featureId: '4323187', mode: 'heavy-rail', elevationM: 7.5,
+            proposalId: null
+        });
+        expect(update.alignment.lineSegmentIndex).toBe(0);
+        expect(update.alignment.measureM).toBeGreaterThan(0);
+        expect(update.alignment.snapDistanceM).toBeGreaterThan(0);
+    });
+
+    it('resolves the carried preview as red off-track and green only after a legal snap', () => {
+        const references = alignments.buildAlignmentRecords({
+            id: 'zagreb-tram', url: 'tram.geojson', mode: 'tram',
+            stationTypes: ['tram'], elevationM: 0, render3d: 'surface'
+        }, {
+            type: 'FeatureCollection',
+            features: [{
+                type: 'Feature', properties: { osmId: 195825111 },
+                geometry: { type: 'LineString', coordinates: [[15.979, 45.81], [15.981, 45.81]] }
+            }]
+        });
+        const parcelEntries = [{
+            id: 'track-parcel',
+            feature: rectangle(15.978, 45.8095, 15.982, 45.8105, 'track-parcel')
+        }];
+
+        const snapped = stations.resolvePlacementPreview('tram', [15.98, 45.81004], {
+            turfApi: turf,
+            proposals: [],
+            referenceAlignments: references,
+            parcelEntries
+        });
+        expect(snapped).toMatchObject({
+            aligned: true,
+            valid: true,
+            reason: null,
+            parcelIds: ['track-parcel']
+        });
+        expect(snapped.center[1]).toBeCloseTo(45.81, 6);
+
+        const offTrack = stations.resolvePlacementPreview('tram', [15.98, 45.812], {
+            turfApi: turf,
+            proposals: [],
+            referenceAlignments: references,
+            parcelEntries
+        });
+        expect(offTrack).toMatchObject({ aligned: false, valid: false, reason: 'no-alignment' });
+        expect(offTrack.center).toEqual([15.98, 45.812]);
+
+        const outsideLoadedParcels = stations.resolvePlacementPreview('tram', [15.98, 45.81004], {
+            turfApi: turf,
+            proposals: [],
+            referenceAlignments: references,
+            parcelEntries: []
+        });
+        // A station is a material proposal (PARCEL-OPTIONAL.md): with no parcel under it, it is
+        // still placeable — its binding is computed from the footprint, empty here.
+        expect(outsideLoadedParcels).toMatchObject({
+            aligned: true,
+            valid: true,
+            reason: null,
+            parcelIds: []
+        });
+    });
+
+    it('filters the emphasized alignments to the selected station type', () => {
+        const references = [{ stationTypes: ['tram'], points: [[15.97, 45.81], [15.98, 45.81]] },
+            { stationTypes: ['elevated'], points: [[15.97, 45.82], [15.98, 45.82]] }];
+        const road = {
+            proposalId: 'road', applied: true,
+            roadProposal: { definition: {
+                profile: { strips: [{ type: 'driving', width: 10 }] },
+                points: [[{ lng: 15.979, lat: 45.81 }, { lng: 15.981, lat: 45.81 }]]
+            } }
+        };
+        const rail = {
+            proposalId: 'rail', applied: true,
+            roadProposal: { definition: {
+                profile: { strips: [{ type: 'rail', width: 6 }] },
+                points: [[{ lng: 15.979, lat: 45.8101 }, { lng: 15.981, lat: 45.8101 }]]
+            } }
+        };
+
+        expect(stations.compatibleReferenceAlignments('tram', references)).toEqual([references[0]]);
+        expect(stations.compatibleReferenceAlignments('elevated', references)).toEqual([references[1]]);
+        expect(stations.compatibleProposalAlignments('tram', [road, rail]).map(entry => entry.sourceId)).toEqual(['rail']);
+        expect(stations.compatibleProposalAlignments('bus', [road, rail]).map(entry => entry.sourceId)).toEqual(['road']);
+    });
+});
+
+describe('station geometry editing', () => {
+    function openSaveHarness({ sync, commitSession = false } = {}) {
+        const keys = [
+            'map', 'L', 'document', 'turf', 'proposalDraftStore', 'ProposalSelection',
+            'hideProposalDetailsPanel', 'hideParcelInfoPanel', 'isProposalDesignCommitSession',
+            'finishProposalDraftDesignSession', 'reportProposalDesignSaveFailure', 'updateStatus',
+            'syncActiveProposalDraftFromEditor', 'OnMapEditor', 'GeometryEditHistory', 'SingleBuildingGeometry'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        const listeners = new Map();
+        const documentHandlers = new Map();
+        const panel = {
+            classList: { add() {}, remove() {} },
+            innerHTML: '', dataset: {},
+            setAttribute() {},
+            addEventListener: (type, listener) => listeners.set(type, listener),
+            removeEventListener: vi.fn(),
+            querySelector: () => null,
+            remove() {}
+        };
+        const closeSession = vi.fn();
+        const finish = vi.fn();
+        const reportFailure = vi.fn();
+        const updateStatus = vi.fn();
+        const undoButton = {
+            disabled: true, attributes: {}, listeners: {},
+            setAttribute(name, value) { this.attributes[name] = value; },
+            addEventListener(type, handler) { this.listeners[type] = handler; },
+            removeEventListener(type) { delete this.listeners[type]; },
+            fire() { this.listeners.click?.(); }
+        };
+        const layers = [];
+        const markers = [];
+        const mapHandlers = new Map();
+        const makeEventLayer = (options = {}) => ({
+            options, events: {},
+            addTo(group) { group?.items?.push(this); return this; },
+            clearLayers() { this.items = []; },
+            on(type, handler) { this.events[type] = handler; return this; },
+            fire(type, event = {}) { this.events[type]?.({ target: this, ...event }); return this; },
+            getLatLng() { return this.latlng; },
+            setLatLng(value) { this.latlng = Array.isArray(value) ? { lat: value[0], lng: value[1] } : value; return this; }
+        });
+        const draft = {
+            id: 'station-save-draft', adapterKey: 'station', sourceProposalId: 'station-1',
+            editorPayload: { structureProposal: {
+                stationType: 'elevated', center: [15.98, 45.81], bearing: 20,
+                platformHeightM: 14,
+                geometry: stations.createStationFootprint([15.98, 45.81], 20, 'elevated', turf)
+            } }
+        };
+        const makeLayer = () => Object.assign(makeEventLayer(), { items: [] });
+        globalThis.map = {
+            getPane: () => ({ style: {} }), createPane: () => ({ style: {} }), removeLayer() {},
+            dragging: { _enabled: true, enabled() { return this._enabled; }, disable() { this._enabled = false; }, enable() { this._enabled = true; } },
+            on(type, handler) { const values = mapHandlers.get(type) || []; values.push(handler); mapHandlers.set(type, values); },
+            off(type, handler) { mapHandlers.set(type, (mapHandlers.get(type) || []).filter(value => value !== handler)); },
+            fire(type, event = {}) { (mapHandlers.get(type) || []).slice().forEach(handler => handler(event)); }
+        };
+        globalThis.L = {
+            layerGroup: makeLayer, featureGroup: makeLayer,
+            geoJSON: (feature, options = {}) => {
+                const layer = makeEventLayer(options);
+                layer.feature = feature;
+                options.onEachFeature?.(feature, layer);
+                layers.push(layer);
+                return layer;
+            },
+            polyline: (_points, options) => makeEventLayer(options),
+            marker: (latlng, options) => {
+                const marker = makeEventLayer(options);
+                marker.latlng = { lat: latlng[0], lng: latlng[1] };
+                markers.push(marker);
+                return marker;
+            },
+            divIcon: options => options
+        };
+        globalThis.document = {
+            body: { appendChild() {} },
+            createElement: () => panel,
+            addEventListener(type, handler) {
+                const values = documentHandlers.get(type) || [];
+                values.push(handler);
+                documentHandlers.set(type, values);
+            },
+            removeEventListener(type, handler) {
+                documentHandlers.set(type, (documentHandlers.get(type) || []).filter(value => value !== handler));
+            },
+            fire(type, event = {}) { (documentHandlers.get(type) || []).slice().forEach(handler => handler(event)); },
+            listenerCount: type => (documentHandlers.get(type) || []).length,
+            getElementById: () => null
+        };
+        const placement = {
+            locked: false,
+            moveTarget: vi.fn((_geometry, from, to) => {
+                if (!Number.isFinite(from?.lng) || !Number.isFinite(from?.lat)) {
+                    throw new Error('move origin must be a {lng, lat} coordinate');
+                }
+                return to;
+            }),
+            accepts: () => true,
+            update: vi.fn(),
+            setLocked(value) { this.locked = value; }
+        };
+        globalThis.OnMapEditor = { open: vi.fn(options => {
+            panel.innerHTML = `${options.content}${options.footer}`;
+            return { root: panel, close: closeSession, fitFeature: vi.fn(), placement, setHint: vi.fn() };
+        }) };
+        globalThis.turf = turf;
+        globalThis.SingleBuildingGeometry = SingleBuildingGeometry;
+        globalThis.GeometryEditHistory = require('../../frontend/js/geometry-edit/history.js');
+        globalThis.proposalDraftStore = { getDraft: id => id === draft.id ? draft : null };
+        globalThis.ProposalSelection = { getKey: () => 'station-1' };
+        globalThis.hideProposalDetailsPanel = () => {};
+        globalThis.hideParcelInfoPanel = () => {};
+        globalThis.isProposalDesignCommitSession = () => commitSession;
+        globalThis.finishProposalDraftDesignSession = finish;
+        globalThis.reportProposalDesignSaveFailure = reportFailure;
+        globalThis.updateStatus = updateStatus;
+        globalThis.syncActiveProposalDraftFromEditor = vi.fn(sync);
+        panel.querySelector = selector => selector.includes('undo') ? undoButton : null;
+        expect(stations.openStationGeometryEditor(draft)).toBe(true);
+        const clickSave = () => listeners.get('click')({
+            target: { closest: () => ({ dataset: { stationEditorAction: 'save' } }) }
+        });
+        const restore = async () => {
+            await stations.cancelStationGeometryEditor();
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        };
+        return {
+            draft, panel, closeSession, finish, reportFailure, updateStatus, clickSave, undoButton, layers, markers, placement,
+            clickUndo: () => undoButton.fire(),
+            fireDocument: (type, event) => globalThis.document.fire(type, event),
+            documentListenerCount: type => globalThis.document.listenerCount(type),
+            mapListenerCount: type => (mapHandlers.get(type) || []).length,
+            isMapDraggingEnabled: () => globalThis.map.dragging.enabled(),
+            fireMap: (type, event) => globalThis.map.fire(type, event),
+            restore
+        };
+    }
+
+    it('rotates around the fixed centre and carries elevated height into the edited structure', () => {
+        const center = [15.98, 45.81];
+        const original = {
+            kind: 'station',
+            stationType: 'elevated',
+            center,
+            bearing: 0,
+            platformHeightM: 10,
+            geometry: stations.createStationFootprint(center, 0, 'elevated', turf),
+            demolishedBuildings: [{ id: 'old-impact' }],
+            demolitionScanned: true,
+            selectedParcelIds: ['original-parent']
+        };
+        const edited = stations.buildEditedStationStructure(original, {
+            bearing: 90,
+            platformHeightM: 17.5
+        }, turf, []);
+
+        expect(edited.center).toEqual(center);
+        expect(edited.bearing).toBe(90);
+        expect(edited.platformHeightM).toBe(17.5);
+        expect(edited.geometry).not.toEqual(original.geometry);
+        expect(edited.demolishedBuildings).toBeUndefined();
+        expect(edited.demolitionScanned).toBeUndefined();
+        expect(edited.selectedParcelIds).toEqual(['original-parent']);
+        expect(original.bearing).toBe(0);
+    });
+
+    it('accepts a moved centre while preserving the station dimensions and orientation', () => {
+        const originalCenter = [15.98, 45.81];
+        const nextCenter = [15.9802, 45.8103];
+        const original = {
+            stationType: 'elevated', center: originalCenter, bearing: 20, platformHeightM: 14,
+            geometry: stations.createStationFootprint(originalCenter, 20, 'elevated', turf)
+        };
+        const moved = stations.buildEditedStationStructure(original, { center: nextCenter }, turf, []);
+        expect(moved.center).toEqual(nextCenter);
+        expect(moved.bearing).toBe(20);
+        expect(moved.platformHeightM).toBe(14);
+        expect(moved.geometry).not.toEqual(original.geometry);
+    });
+
+    it('clamps elevated platform height but removes it from surface station types', () => {
+        expect(stations.normalizePlatformHeight(100, 'elevated')).toBe(40);
+        expect(stations.normalizePlatformHeight(-5, 'elevated')).toBe(3);
+        const bus = stations.buildEditedStationStructure({
+            stationType: 'bus', center: [15.98, 45.81], bearing: 0,
+            platformHeightM: 25,
+            geometry: stations.createStationFootprint([15.98, 45.81], 0, 'bus', turf)
+        }, { bearing: 45 }, turf, []);
+        expect(bus).not.toHaveProperty('platformHeightM');
+    });
+
+    it('opens a movable elevated editor with rotation, height and shared placement controls', async () => {
+        const keys = [
+            'map', 'L', 'document', 'turf', 'proposalDraftStore', 'ProposalSelection',
+            'hideProposalDetailsPanel', 'hideParcelInfoPanel', 'isProposalDesignCommitSession',
+            'finishProposalDraftDesignSession', 'OnMapEditor'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        let panel = null;
+        const makeLayer = () => ({ items: [], addTo() { return this; }, clearLayers() { this.items = []; } });
+        const classList = { add() {}, remove() {} };
+        globalThis.map = {
+            getPane: () => ({ style: {} }), createPane: () => ({ style: {} }), removeLayer() {}
+        };
+        globalThis.L = {
+            layerGroup: makeLayer,
+            featureGroup: makeLayer,
+            geoJSON: (feature, options = {}) => {
+                const layer = { events: {}, on(type, handler) { this.events[type] = handler; return this; }, addTo(group) { group?.items?.push(this); return this; } };
+                options.onEachFeature?.(feature, layer);
+                return layer;
+            },
+            polyline: () => ({ addTo() { return this; } }),
+            marker: (_latlng, options) => ({
+                options, on() { return this; }, setLatLng() { return this; }, addTo(group) { group?.items?.push(this); return this; }
+            }),
+            divIcon: options => options
+        };
+        globalThis.document = {
+            body: {
+                appendChild(value) { panel = value; }
+            },
+            createElement: () => ({
+                className: '', classList, innerHTML: '', dataset: {},
+                setAttribute() {}, addEventListener() {}, removeEventListener() {},
+                querySelector: () => null, remove() {}
+            }),
+            addEventListener() {}, removeEventListener() {}, getElementById: () => null
+        };
+        const closeSession = vi.fn();
+        globalThis.OnMapEditor = { open: vi.fn(options => {
+            panel = globalThis.document.createElement('section');
+            panel.innerHTML = options.content + options.footer;
+            return { root: panel, close: closeSession, fitFeature: vi.fn(), setHint: vi.fn(), placement: { update: vi.fn() } };
+        }) };
+        globalThis.turf = turf;
+        globalThis.ProposalSelection = { getKey: () => 'station-1' };
+        globalThis.hideProposalDetailsPanel = () => {};
+        globalThis.hideParcelInfoPanel = () => {};
+        globalThis.isProposalDesignCommitSession = () => false;
+        let finishedDraftId = null;
+        globalThis.finishProposalDraftDesignSession = id => { finishedDraftId = id; };
+        const draft = {
+            id: 'station-draft', adapterKey: 'station', sourceProposalId: 'station-1',
+            editorPayload: { structureProposal: {
+                stationType: 'elevated', center: [15.98, 45.81], bearing: 20,
+                platformHeightM: 14,
+                geometry: stations.createStationFootprint([15.98, 45.81], 20, 'elevated', turf)
+            } }
+        };
+
+        try {
+            expect(stations.openStationGeometryEditor(draft)).toBe(true);
+            expect(globalThis.OnMapEditor.open).toHaveBeenCalledWith(expect.objectContaining({ owner: 'station-geometry-editor', modes: ['2d'] }));
+            expect(globalThis.transitStationGeometryEditorActive).toBe(true);
+            expect(panel.innerHTML).toContain('data-station-editor-bearing');
+            expect(panel.innerHTML).toContain('data-station-editor-height');
+            expect(panel.innerHTML).toContain('data-station-editor-action="undo"');
+            expect(panel.innerHTML).not.toMatch(/latitude|longitude/i);
+            expect(globalThis.OnMapEditor.open).toHaveBeenCalledWith(expect.objectContaining({ placement: expect.objectContaining({ site: draft.editorPayload.structureProposal.geometry }) }));
+            await stations.cancelStationGeometryEditor();
+            expect(globalThis.transitStationGeometryEditorActive).toBe(false);
+            expect(finishedDraftId).toBe('station-draft');
+        } finally {
+            await stations.cancelStationGeometryEditor();
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        }
+    });
+
+    it.each([
+        ['returns null', () => null],
+        ['throws', () => { throw new Error('draft sync failed'); }]
+    ])('keeps the editor open and reports failure when draft sync %s', async (_label, sync) => {
+        const harness = openSaveHarness({ sync });
+        try {
+            harness.clickSave();
+
+            expect(globalThis.transitStationGeometryEditorActive).toBe(true);
+            expect(harness.closeSession).not.toHaveBeenCalled();
+            expect(harness.finish).not.toHaveBeenCalled();
+            expect(harness.reportFailure).toHaveBeenCalled();
+            expect(harness.updateStatus).not.toHaveBeenCalledWith('Station geometry saved.');
+        } finally {
+            await harness.restore();
+        }
+    });
+
+    it('supports centre-handle and body drags with one-gesture undo', async () => {
+        const sync = vi.fn(() => ({ id: 'station-save-draft' }));
+        const harness = openSaveHarness({ sync });
+        try {
+            const original = { ...harness.draft.editorPayload.structureProposal };
+            const marker = harness.markers.at(-1);
+            marker.fire('dragstart', { originalEvent: {} });
+            marker.setLatLng([45.8103, 15.9802]);
+            marker.fire('drag', { originalEvent: {} });
+            marker.fire('dragend');
+
+            expect(harness.placement.moveTarget).toHaveBeenCalledWith(
+                expect.any(Object),
+                { lng: original.center[0], lat: original.center[1] },
+                { lng: 15.9802, lat: 45.8103 },
+                {}
+            );
+            expect(harness.undoButton.disabled).toBe(false);
+            expect(harness.placement.update).toHaveBeenLastCalledWith(expect.objectContaining({ geometry: expect.any(Object) }));
+            const movedCall = sync.mock.calls.at(-1);
+            expect(movedCall[0]).toBe('station');
+            const moved = movedCall[1].structureProposal;
+            expect(moved.center[0]).toBeCloseTo(15.9802, 6);
+            expect(moved.center[1]).toBeCloseTo(45.8103, 6);
+            expect(moved.stationType).toBe(original.stationType);
+            expect(moved.bearing).toBe(original.bearing);
+            expect(moved.platformHeightM).toBe(original.platformHeightM);
+            expect(movedCall[2]).toEqual({ coalesceKey: 'editor:station', placement: { site: moved.geometry, free: true } });
+
+            harness.clickUndo();
+            expect(sync.mock.calls.at(-1)[1].structureProposal.center).toEqual(original.center);
+            expect(harness.undoButton.disabled).toBe(true);
+            expect(harness.markers.at(-1).getLatLng()).toEqual({ lat: original.center[1], lng: original.center[0] });
+
+            harness.layers.at(-1).fire('mousedown', {
+                latlng: { lng: original.center[0] + 0.00005, lat: original.center[1] + 0.00003 },
+                originalEvent: {}
+            });
+            globalThis.map.fire('mousemove', { latlng: { lng: original.center[0] + 0.00025, lat: original.center[1] + 0.00023 } });
+            globalThis.map.fire('mouseup');
+            const bodyMoved = sync.mock.calls.at(-1)[1].structureProposal;
+            expect(bodyMoved.center[0]).toBeCloseTo(original.center[0] + 0.0002, 5);
+            expect(bodyMoved.center[1]).toBeCloseTo(original.center[1] + 0.0002, 5);
+            expect(harness.undoButton.disabled).toBe(false);
+            harness.clickUndo();
+            expect(sync.mock.calls.at(-1)[1].structureProposal.center).toEqual(original.center);
+        } finally {
+            await harness.restore();
+        }
+    });
+
+    it('ends station body drags when pointer release occurs outside the map and removes completion listeners', async () => {
+        const sync = vi.fn(() => ({ id: 'station-save-draft' }));
+        const harness = openSaveHarness({ sync });
+        try {
+            const original = harness.draft.editorPayload.structureProposal.center;
+            harness.layers.at(-1).fire('mousedown', {
+                latlng: { lng: original[0] + 0.00005, lat: original[1] + 0.00003 },
+                originalEvent: {}
+            });
+            expect(harness.isMapDraggingEnabled()).toBe(false);
+            expect(harness.documentListenerCount('mouseup')).toBe(1);
+            expect(harness.documentListenerCount('touchend')).toBe(1);
+            expect(harness.documentListenerCount('touchcancel')).toBe(1);
+
+            harness.fireMap('mousemove', { latlng: { lng: original[0] + 0.00025, lat: original[1] + 0.00023 } });
+            expect(sync).not.toHaveBeenCalled();
+            harness.fireDocument('mouseup');
+            expect(sync).toHaveBeenCalledTimes(1);
+            expect(harness.isMapDraggingEnabled()).toBe(true);
+            for (const type of ['mousemove', 'touchmove', 'mouseup', 'touchend', 'touchcancel']) {
+                expect(harness.mapListenerCount(type)).toBe(0);
+            }
+            for (const type of ['mouseup', 'touchend', 'touchcancel']) {
+                expect(harness.documentListenerCount(type)).toBe(0);
+            }
+
+            const updateCount = harness.placement.update.mock.calls.length;
+            harness.fireMap('mousemove', { latlng: { lng: original[0] + 0.00045, lat: original[1] + 0.00043 } });
+            expect(harness.placement.update).toHaveBeenCalledTimes(updateCount);
+            expect(sync).toHaveBeenCalledTimes(1);
+        } finally {
+            await harness.restore();
+        }
+    });
+
+    it('does not overwrite a failed draft finish with a saved status', async () => {
+        const harness = openSaveHarness({ sync: () => ({ id: 'station-save-draft' }) });
+        harness.finish.mockReturnValue(null);
+        try {
+            harness.clickSave();
+            expect(harness.finish).toHaveBeenCalledWith(harness.draft.id);
+            expect(harness.updateStatus).not.toHaveBeenCalledWith('Station geometry saved.');
+        } finally {
+            await harness.restore();
+        }
+    });
+
+    it('closes after a valid commit-session sync without announcing save before commit finishes', async () => {
+        const harness = openSaveHarness({ sync: () => ({ synced: true }), commitSession: true });
+        try {
+            harness.clickSave();
+
+            expect(globalThis.transitStationGeometryEditorActive).toBe(false);
+            expect(harness.closeSession).toHaveBeenCalledTimes(1);
+            expect(globalThis.syncActiveProposalDraftFromEditor).toHaveBeenCalledWith(
+                'station', expect.objectContaining({ structureProposal: expect.any(Object) }),
+                { coalesceKey: 'editor:station', placement: expect.objectContaining({ free: true, site: expect.any(Object) }) }
+            );
+            expect(harness.reportFailure).not.toHaveBeenCalled();
+            expect(harness.updateStatus).not.toHaveBeenCalledWith('Station geometry saved.');
+        } finally {
+            await harness.restore();
+        }
+    });
+});
+
+describe('applied station selection hit targets', () => {
+    it('selects the station proposal from both the complete footprint and its letter marker', () => {
+        const keys = [
+            'map', 'L', 'selectAndHighlightProposal', 'showProposalDetails', 'hideParcelInfoPanel',
+            'transitStations', 'roadDrawingMode', 'transitStationPlacementMode',
+            'isTransitStationPlacementActive', 'isStructureGeometryEditorActive',
+            'isTransitStationGeometryEditorActive', 'areaMonitorDrawingMode',
+            'isAreaMonitorDrawingActive'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        const geometryLayers = [];
+        const markers = [];
+        const mapClicks = [];
+        const makeEventLayer = (options = {}) => {
+            const handlers = new Map();
+            return {
+                options,
+                handlers,
+                on(type, handler) { handlers.set(type, handler); return this; },
+                addTo() { return this; }
+            };
+        };
+        const group = { clearLayers() {}, addTo() { return this; } };
+        const panes = new Map();
+        const select = vi.fn();
+        const hideParcel = vi.fn();
+        const stop = vi.fn();
+        const stopPropagation = vi.fn();
+        globalThis.map = {
+            getPane: name => panes.get(name) || null,
+            createPane: name => {
+                const pane = { style: {} };
+                panes.set(name, pane);
+                return pane;
+            },
+            fire: (type, event) => mapClicks.push({ type, event })
+        };
+        globalThis.L = {
+            featureGroup: () => group,
+            geoJSON: (_feature, options) => {
+                const layer = makeEventLayer(options);
+                geometryLayers.push(layer);
+                return layer;
+            },
+            marker: (_latlng, options) => {
+                const marker = makeEventLayer(options);
+                markers.push(marker);
+                return marker;
+            },
+            divIcon: options => options,
+            DomEvent: { stop, stopPropagation }
+        };
+        globalThis.selectAndHighlightProposal = select;
+        globalThis.hideParcelInfoPanel = hideParcel;
+        globalThis.roadDrawingMode = false;
+        globalThis.transitStationPlacementMode = false;
+        globalThis.isTransitStationPlacementActive = () => false;
+        globalThis.isStructureGeometryEditorActive = () => false;
+        globalThis.isTransitStationGeometryEditorActive = () => false;
+        globalThis.areaMonitorDrawingMode = false;
+        globalThis.isAreaMonitorDrawingActive = () => false;
+        globalThis.transitStations = [{
+            type: 'Feature',
+            properties: {
+                proposalId: 'station-123',
+                stationType: 'tram',
+                center: [15.98, 45.81],
+                bearing: 90,
+            },
+            geometry: stations.createStationFootprint([15.98, 45.81], 90, 'tram', turf)
+        }];
+
+        try {
+            stations.updateTransitStationsLayer();
+
+            expect(geometryLayers).toHaveLength(2);
+            expect(geometryLayers[0].options).toMatchObject({
+                pane: 'transitStationsPane',
+                interactive: false
+            });
+            const hitTarget = geometryLayers[1];
+            expect(hitTarget.options).toMatchObject({
+                pane: 'transitStationHitPane',
+                interactive: true,
+                bubblingMouseEvents: false,
+                className: 'transit-station-hit-target'
+            });
+            expect(hitTarget.options.style).toMatchObject({ fill: true, fillOpacity: 0.001 });
+            expect(panes.get('transitStationHitPane').style.zIndex).toBe('664');
+
+            const footprintDomEvent = {
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                stopImmediatePropagation: vi.fn()
+            };
+            hitTarget.handlers.get('click')({ originalEvent: footprintDomEvent, latlng: { lat: 45.81, lng: 15.98 } });
+            expect(select).toHaveBeenLastCalledWith('station-123', null, false, true);
+            expect(hideParcel).toHaveBeenCalledTimes(1);
+            expect(footprintDomEvent.stopImmediatePropagation).toHaveBeenCalledTimes(1);
+
+            expect(markers).toHaveLength(1);
+            expect(markers[0].options).toMatchObject({
+                pane: 'transitStationIconsPane',
+                interactive: true,
+                keyboard: true,
+                bubblingMouseEvents: false
+            });
+            markers[0].handlers.get('click')({ originalEvent: { stopPropagation() {}, preventDefault() {} } });
+            expect(select).toHaveBeenCalledTimes(2);
+            expect(select).toHaveBeenLastCalledWith('station-123', null, false, true);
+            expect(stop).toHaveBeenCalledTimes(2);
+            expect(stopPropagation).toHaveBeenCalledTimes(2);
+
+            // A road drawing session still owns map clicks even though station hit targets sit above roads.
+            globalThis.roadDrawingMode = true;
+            hitTarget.handlers.get('click')({
+                originalEvent: {},
+                latlng: { lat: 45.81, lng: 15.98 },
+                layerPoint: { x: 1, y: 2 },
+                containerPoint: { x: 3, y: 4 }
+            });
+            expect(select).toHaveBeenCalledTimes(2);
+            expect(mapClicks).toHaveLength(1);
+            expect(mapClicks[0]).toMatchObject({ type: 'click', event: { latlng: { lat: 45.81, lng: 15.98 } } });
+        } finally {
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        }
+    });
+});
+
+describe('station placement input ownership', () => {
+    it('captures map-surface clicks before parcel layers can select themselves', () => {
+        const keys = [
+            'map', 'L', 'document', 'turf', 'addEventListener', 'removeEventListener',
+            'isThreeModeActive', 'clearParcelHover'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        const handlers = new Map();
+        const previewStyles = [];
+        let hoverClears = 0;
+        const container = {
+            style: {},
+            addEventListener(type, handler, capture) {
+                handlers.set(`${type}:${capture === true}`, handler);
+            },
+            removeEventListener(type, handler, capture) {
+                if (handlers.get(`${type}:${capture === true}`) === handler) handlers.delete(`${type}:${capture === true}`);
+            }
+        };
+        const layer = { addTo() { return this; }, clearLayers() {} };
+        globalThis.map = {
+            _container: container,
+            getContainer: () => container,
+            getPane: () => ({ style: {} }),
+            createPane: () => ({ style: {} }),
+            on(type, handler) { handlers.set(`map:${type}`, handler); },
+            off(type, handler) {
+                if (handlers.get(`map:${type}`) === handler) handlers.delete(`map:${type}`);
+            },
+            removeLayer() {},
+            mouseEventToLatLng: () => ({ lat: 45.81, lng: 15.98 })
+        };
+        globalThis.L = {
+            featureGroup: () => layer,
+            geoJSON: (_feature, options) => {
+                previewStyles.push(options?.style || null);
+                return { addTo() { return this; } };
+            },
+            polyline: () => ({ addTo() { return this; } }),
+            marker: () => ({ addTo() { return this; } }),
+            divIcon: options => options
+        };
+        globalThis.document = {
+            getElementById: () => null,
+            querySelector: () => null,
+            querySelectorAll: () => []
+        };
+        globalThis.turf = turf;
+        globalThis.addEventListener = () => {};
+        globalThis.removeEventListener = () => {};
+        globalThis.isThreeModeActive = () => false;
+        globalThis.clearParcelHover = () => { hoverClears += 1; };
+
+        try {
+            expect(stations.startTransitStationPlacement('tram')).toBe(true);
+            expect(stations.isTransitStationPlacementActive()).toBe(true);
+            expect(globalThis.transitStationPlacementMode).toBe(true);
+            expect(hoverClears).toBe(1);
+            handlers.get('map:mousemove')?.({ latlng: { lat: 45.812, lng: 15.98 } });
+            expect(previewStyles.at(-1)).toMatchObject({ color: '#dc2626', dashArray: '8 5' });
+            const click = handlers.get('click:true');
+            expect(click).toBeTypeOf('function');
+            let prevented = false;
+            let stopped = false;
+            click({
+                button: 0,
+                clientX: 100,
+                clientY: 120,
+                target: { closest: () => null },
+                preventDefault: () => { prevented = true; },
+                stopImmediatePropagation: () => { stopped = true; }
+            });
+            expect(prevented).toBe(true);
+            expect(stopped).toBe(true);
+            expect(stations.cancelTransitStationPlacement()).toBe(true);
+            expect(stations.isTransitStationPlacementActive()).toBe(false);
+            expect(globalThis.transitStationPlacementMode).toBe(false);
+        } finally {
+            stations.cancelTransitStationPlacement();
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        }
+    });
+
+    it('places a station on partly uncovered ground with a partial binding instead of refusing it', async () => {
+        const keys = [
+            'map', 'L', 'document', 'turf', 'addEventListener', 'removeEventListener',
+            'isThreeModeActive', 'clearParcelHover', 'proposalStorage', 'LiveParcelFabric',
+            'CadastralParcelRepository', 'CityConfigManager', 'updateStatus', 'TransitAlignments',
+            'proposalDraftStore', 'instantCreateProposalFromDraft'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        const handlers = new Map();
+        const messages = [];
+        const cursor = { lat: 45.81, lng: 15.98 };
+        const container = {
+            style: {},
+            addEventListener(type, handler, capture) { handlers.set(`${type}:${capture === true}`, handler); },
+            removeEventListener(type, handler, capture) {
+                if (handlers.get(`${type}:${capture === true}`) === handler) handlers.delete(`${type}:${capture === true}`);
+            }
+        };
+        const layer = { addTo() { return this; }, clearLayers() {} };
+        const rail = {
+            proposalId: 'rail', applied: true,
+            roadProposal: { definition: {
+                width: 6,
+                profile: { strips: [{ type: 'rail', width: 6 }] },
+                points: [[{ lng: 15.979, lat: 45.81 }, { lng: 15.981, lat: 45.81 }]]
+            } }
+        };
+        globalThis.map = {
+            _container: container,
+            getContainer: () => container,
+            getPane: () => ({ style: {} }),
+            createPane: () => ({ style: {} }),
+            on(type, handler) { handlers.set(`map:${type}`, handler); },
+            off(type, handler) {
+                if (handlers.get(`map:${type}`) === handler) handlers.delete(`map:${type}`);
+            },
+            removeLayer() {},
+            mouseEventToLatLng: () => cursor
+        };
+        globalThis.L = {
+            featureGroup: () => layer,
+            geoJSON: () => ({ addTo() { return this; } }),
+            polyline: () => ({ addTo() { return this; } }),
+            marker: () => ({ addTo() { return this; } }),
+            divIcon: options => options
+        };
+        globalThis.document = {
+            getElementById: () => null,
+            querySelector: () => null,
+            querySelectorAll: () => []
+        };
+        globalThis.turf = turf;
+        globalThis.addEventListener = () => {};
+        globalThis.removeEventListener = () => {};
+        globalThis.isThreeModeActive = () => false;
+        globalThis.clearParcelHover = () => {};
+        globalThis.proposalStorage = { getAllProposals: () => [rail] };
+        globalThis.LiveParcelFabric = {
+            snapshot: () => ({ revision: 1 }),
+            list: () => [rectangle(15.978, 45.8095, 15.982, 45.8105, 'track-ground')]
+        };
+        globalThis.CadastralParcelRepository = {
+            ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['partial-ground'], coverage: 0.5 } })
+        };
+        globalThis.CityConfigManager = { getCurrentCityId: () => 'test-city' };
+        globalThis.TransitAlignments = { getRecords: () => [], queryNearby: () => [] };
+        globalThis.updateStatus = message => messages.push(message);
+        const createDraft = vi.fn(input => ({ id: 'draft-1', ...input }));
+        globalThis.proposalDraftStore = { createDraft };
+        globalThis.instantCreateProposalFromDraft = vi.fn(async () => 'p-station');
+
+        try {
+            expect(stations.startTransitStationPlacement('tram')).toBe(true);
+            handlers.get('map:mousemove')?.({ latlng: cursor });
+            expect(messages.at(-1)).toBe('Snapped to a compatible track. Click to place; Esc cancels.');
+
+            handlers.get('click:true')?.({
+                button: 0,
+                clientX: 100,
+                clientY: 120,
+                target: { closest: () => null },
+                preventDefault() {},
+                stopImmediatePropagation() {}
+            });
+            await vi.waitFor(() => expect(globalThis.instantCreateProposalFromDraft).toHaveBeenCalledWith('draft-1'));
+            expect(messages).not.toContain('The complete station footprint must lie on cadastral ground.');
+            const fields = createDraft.mock.calls[0][0].fields;
+            expect(fields.selectedParcelIds).toEqual(['partial-ground']);
+            expect(fields.binding).toMatchObject({ coverage: 'partial', source: 'client-preview' });
+            expect(fields.binding.parcels.map(hit => hit.parcelId)).toEqual(['partial-ground']);
+        } finally {
+            stations.cancelTransitStationPlacement();
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        }
+    });
+
+    it('registers station placement as a parcel drawing mode fallback', () => {
+        const source = readFileSync(new URL('../../frontend/js/parcels/state.js', import.meta.url), 'utf8');
+        expect(source).toContain('global.transitStationPlacementMode');
+        expect(source).toContain('global.isTransitStationPlacementActive()');
+    });
+
+    it('keeps parcel hover and programmatic parcel selection inert during placement', () => {
+        const keys = [
+            'transitStationPlacementMode', 'highlightFeature', 'resetHighlight', 'clearParcelHover',
+            'onEachFeature', 'restoreParcelLayerStyle', 'selectParcel', 'AreaMonitorPaint'
+        ];
+        const originals = new Map(keys.map(key => [key, globalThis[key]]));
+        const parcelLayerDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'parcelLayer');
+        let parcelLayerReads = 0;
+        let styleChanges = 0;
+        try {
+            globalThis.transitStationPlacementMode = true;
+            globalThis.AreaMonitorPaint = null;
+            Object.defineProperty(globalThis, 'parcelLayer', {
+                configurable: true,
+                get() {
+                    parcelLayerReads += 1;
+                    return null;
+                }
+            });
+            delete require.cache[require.resolve('../../frontend/js/parcels/selection.js')];
+            require('../../frontend/js/parcels/selection.js');
+
+            globalThis.highlightFeature({
+                target: {
+                    feature: rectangle(15.97, 45.80, 15.98, 45.81, 'parcel-1'),
+                    setStyle() { styleChanges += 1; }
+                }
+            });
+            globalThis.selectParcel('parcel-1');
+
+            expect(styleChanges).toBe(0);
+            expect(parcelLayerReads).toBe(0);
+        } finally {
+            if (parcelLayerDescriptor) Object.defineProperty(globalThis, 'parcelLayer', parcelLayerDescriptor);
+            else delete globalThis.parcelLayer;
+            for (const [key, value] of originals.entries()) {
+                if (value === undefined) delete globalThis[key];
+                else globalThis[key] = value;
+            }
+        }
+    });
+});
+
+describe('station parcel ancestry', () => {
+    it('returns every loaded parcel intersected by the station footprint', () => {
+        const geometry = rectangle(15.9798, 45.8098, 15.9802, 45.8102, 'footprint').geometry;
+        const entries = [
+            { id: 'west', feature: rectangle(15.9795, 45.8095, 15.98, 45.8105, 'west') },
+            { id: 'east', feature: rectangle(15.98, 45.8095, 15.9805, 45.8105, 'east') },
+            { id: 'far', feature: rectangle(15.99, 45.82, 15.991, 45.821, 'far') }
+        ];
+
+        expect(stations.findStationParcelIds(geometry, turf, entries).sort()).toEqual(['east', 'west']);
+    });
+
+    it('loads the complete immutable cadastral scope before authoring a station', async () => {
+        const geometry = rectangle(15.9798, 45.8098, 15.9802, 45.8102, 'footprint').geometry;
+        const ensureFootprint = vi.fn().mockResolvedValue({
+            result: {
+                ids: ['cadastre-west', 'cadastre-east', 'cadastre-east'],
+                coverage: 0.999999
+            }
+        });
+
+        await expect(stations.resolveStationCadastreScope(geometry, {
+            repository: { ensureFootprint },
+            city: 'sibenik',
+            turfApi: turf
+        })).resolves.toEqual({
+            ids: ['cadastre-west', 'cadastre-east'],
+            coverage: 0.999999,
+            complete: true
+        });
+        expect(ensureFootprint).toHaveBeenCalledWith(geometry, {
+            city: 'sibenik',
+            parcelsOnly: true
+        });
+    });
+
+    it('refuses an incomplete cadastral footprint instead of using the currently loaded live piece', async () => {
+        const geometry = rectangle(15.9798, 45.8098, 15.9802, 45.8102, 'footprint').geometry;
+        const scope = await stations.resolveStationCadastreScope(geometry, {
+            repository: {
+                ensureFootprint: vi.fn().mockResolvedValue({
+                    result: { ids: ['only-visible-piece'], coverage: 0.45 }
+                })
+            }
+        });
+
+        expect(scope).toEqual({
+            ids: ['only-visible-piece'],
+            coverage: 0.45,
+            complete: false
+        });
+    });
+});
+
+describe('station cadastral completeness matches the derive rule', () => {
+    it('refuses a footprint the proposal manager would refuse (tiny uncovered sliver)', async () => {
+        // ~90 m² platform with 0.02 m² off the cadastre: the old 0.999 ratio accepted it, the
+        // manager's absolute epsilon (0.01 m²) refused it at derive and parked the station.
+        const geometry = rectangle(15.97990, 45.80995, 15.98005, 45.81002, 'platform').geometry;
+        const area = turf.area({ type: 'Feature', properties: {}, geometry });
+        const coverage = 1 - (0.02 / area);
+        const scope = await stations.resolveStationCadastreScope(geometry, {
+            repository: { ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['street'], coverage } }) },
+            turfApi: turf
+        });
+        expect(coverage).toBeGreaterThan(0.999);
+        expect(scope.complete).toBe(false);
+    });
+
+    it('accepts a footprint whose uncovered area is within the shared epsilon', async () => {
+        const geometry = rectangle(15.97990, 45.80995, 15.98005, 45.81002, 'platform').geometry;
+        const area = turf.area({ type: 'Feature', properties: {}, geometry });
+        const scope = await stations.resolveStationCadastreScope(geometry, {
+            repository: { ensureFootprint: vi.fn().mockResolvedValue({ result: { ids: ['street'], coverage: 1 - (0.005 / area) } }) },
+            turfApi: turf
+        });
+        expect(scope.complete).toBe(true);
+    });
+});
+
+describe('underground station surface cut-outs', () => {
+    it('opens only compact entrances while leaving the hall roof covered', () => {
+        const station = {
+            type: 'Feature',
+            properties: { stationType: 'underground', center: [15.98, 45.81], bearing: 35 },
+            geometry: stations.createStationFootprint([15.98, 45.81], 35, 'underground', turf)
+        };
+        const cuts = stations.stationSurfaceCutouts(station, turf);
+        const totalCutArea = cuts.reduce((sum, geometry) => sum + turf.area(turf.feature(geometry)), 0);
+        const footprintArea = turf.area(station);
+
+        expect(cuts).toHaveLength(3);
+        expect(totalCutArea).toBeLessThan(footprintArea * 0.2);
+        expect(cuts.every(geometry => turf.booleanWithin(turf.feature(geometry), station))).toBe(true);
+    });
+
+    it('does not cut the ground for surface or elevated stations', () => {
+        for (const stationType of ['bus', 'tram', 'elevated']) {
+            const geometry = stations.createStationFootprint([15.98, 45.81], 0, stationType, turf);
+            expect(stations.stationSurfaceCutouts({
+                type: 'Feature', properties: { stationType, center: [15.98, 45.81] }, geometry
+            }, turf)).toEqual([]);
+        }
+    });
+});

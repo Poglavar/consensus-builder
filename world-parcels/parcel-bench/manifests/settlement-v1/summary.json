@@ -1,0 +1,214 @@
+{
+  "training_tiles": 2699,
+  "lower_rise_training_tiles": 1175,
+  "selection_tiles": 46,
+  "groups": [
+    {
+      "name": "zagreb-v2-block-1",
+      "region": "zagreb-v2",
+      "tiles": [
+        "tile_2971_33051",
+        "tile_2971_33052"
+      ],
+      "weight": 0.05555555555555555
+    },
+    {
+      "name": "zagreb-v2-block-2",
+      "region": "zagreb-v2",
+      "tiles": [
+        "tile_2990_33058"
+      ],
+      "weight": 0.05555555555555555
+    },
+    {
+      "name": "zagreb-v2-block-3",
+      "region": "zagreb-v2",
+      "tiles": [
+        "tile_2990_33074",
+        "tile_2990_33075",
+        "tile_2991_33074"
+      ],
+      "weight": 0.05555555555555555
+    },
+    {
+      "name": "zagreb-v2-block-4",
+      "region": "zagreb-v2",
+      "tiles": [
+        "tile_3005_33040"
+      ],
+      "weight": 0.05555555555555555
+    },
+    {
+      "name": "zagreb-v2-block-5",
+      "region": "zagreb-v2",
+      "tiles": [
+        "tile_3009_33023"
+      ],
+      "weight": 0.05555555555555555
+    },
+    {
+      "name": "zagreb-v2-block-6",
+      "region": "zagreb-v2",
+      "tiles": [
+        "tile_3022_33074",
+        "tile_3022_33075"
+      ],
+      "weight": 0.05555555555555555
+    },
+    {
+      "name": "split-v2-block-1",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3215_31368",
+        "tile_3216_31368"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-2",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3224_31397",
+        "tile_3224_31398",
+        "tile_3225_31397"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-3",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3227_31368"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-4",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3232_31382",
+        "tile_3233_31381",
+        "tile_3233_31382"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-5",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3234_31397",
+        "tile_3234_31398",
+        "tile_3235_31397",
+        "tile_3235_31398"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-6",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3238_31368",
+        "tile_3239_31368"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-7",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3242_31379",
+        "tile_3243_31379"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-8",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3251_31397",
+        "tile_3251_31398",
+        "tile_3252_31397",
+        "tile_3252_31398"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-9",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3253_31386",
+        "tile_3253_31387",
+        "tile_3254_31386"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "split-v2-block-10",
+      "region": "split-v2",
+      "tiles": [
+        "tile_3262_31398"
+      ],
+      "weight": 0.03333333333333333
+    },
+    {
+      "name": "zadar-v1-block-1",
+      "region": "zadar-v1",
+      "tiles": [
+        "tile_2582_31827",
+        "tile_2582_31828",
+        "tile_2583_31828"
+      ],
+      "weight": 0.06666666666666667
+    },
+    {
+      "name": "zadar-v1-block-2",
+      "region": "zadar-v1",
+      "tiles": [
+        "tile_2594_31811"
+      ],
+      "weight": 0.06666666666666667
+    },
+    {
+      "name": "zadar-v1-block-3",
+      "region": "zadar-v1",
+      "tiles": [
+        "tile_2605_31826"
+      ],
+      "weight": 0.06666666666666667
+    },
+    {
+      "name": "zadar-v1-block-4",
+      "region": "zadar-v1",
+      "tiles": [
+        "tile_2606_31812",
+        "tile_2607_31812",
+        "tile_2607_31813"
+      ],
+      "weight": 0.06666666666666667
+    },
+    {
+      "name": "zadar-v1-block-5",
+      "region": "zadar-v1",
+      "tiles": [
+        "tile_2620_31790",
+        "tile_2620_31791",
+        "tile_2621_31791"
+      ],
+      "weight": 0.06666666666666667
+    }
+  ],
+  "contexts": {
+    "('zagreb-v2', 'train', 'other')": 890,
+    "('zagreb-v2', 'train', 'lower-rise-proxy')": 733,
+    "('zagreb-v2', 'selection', 'other')": 38,
+    "('zagreb-v2', 'selection', 'lower-rise-proxy')": 10,
+    "('split-v2', 'train', 'other')": 202,
+    "('split-v2', 'train', 'lower-rise-proxy')": 193,
+    "('split-v2', 'selection', 'other')": 23,
+    "('split-v2', 'selection', 'lower-rise-proxy')": 25,
+    "('zadar-v1', 'train', 'other')": 432,
+    "('zadar-v1', 'train', 'lower-rise-proxy')": 249,
+    "('zadar-v1', 'selection', 'lower-rise-proxy')": 11,
+    "('zadar-v1', 'selection', 'other')": 37
+  }
+}

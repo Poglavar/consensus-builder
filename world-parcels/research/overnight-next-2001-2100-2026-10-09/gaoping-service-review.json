@@ -1,0 +1,76 @@
+{
+  "cityRecord": "city-9228-gaoping.json",
+  "schemaVersion": "1.0",
+  "cityCode": 9228,
+  "queueRank": 2038,
+  "city": "Gaoping",
+  "country": "China",
+  "countryCode": "CN",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "reviewStatus": "complete_packet_held_for_serial_review",
+  "disposition": "held",
+  "registryFound": true,
+  "summary": "Official local evidence establishes Gaoping's Natural Resources Bureau and real-estate registration center as custodians and exposes a public service platform with a cadastral-map inquiry entry. Anonymous inspection did not verify a public parcel ID plus geometry service, so no GeoJSON sample is retained and runtime remains held.",
+  "queryOutcomes": "Separate English and Chinese discovery queries, outcomes, and actual URLs are recorded in city-9228-gaoping.json.",
+  "requestOutcomes": [
+    {
+      "request": "GET https://bdc.sxgp.gov.cn/online/index",
+      "outcome": "HTTP page retrieved; official local platform identified; no parcel data in landing page."
+    },
+    {
+      "request": "GET https://bdc.sxgp.gov.cn/online/public/search/jindu?type=jdcx",
+      "outcome": "HTTP page retrieved; JavaScript revealed the public inquiry navigation and cadastral/attachment inquiry route /online/public/search/fcfht."
+    },
+    {
+      "request": "GET https://bdc.sxgp.gov.cn/online/public/search/fcfht",
+      "outcome": "Redirected to the ordinary login page; no credentials, CAPTCHA bypass, or private token was used. No parcel request was issued beyond the public route inspection."
+    },
+    {
+      "request": "GET https://www.sxgp.gov.cn/files/gaopingmap/map.html",
+      "outcome": "HTTP page retrieved; viewer loads pano2vr_player.js, skin.js, and pano.xml. It is a panorama viewer, not a cadastral parcel feature service."
+    },
+    {
+      "request": "GET https://www.sxgp.gov.cn/files/gaopingmap/pano.xml",
+      "outcome": "HTTP XML retrieved; panorama nodes and tile URLs are present, but no parcel IDs, parcel schema, CRS, or vector geometries are present."
+    }
+  ],
+  "scopeLimits": [
+    "The exact WUP point [35.78945448775, 112.930606499431] was preserved and was not shifted.",
+    "Local registry custody and a described cadastral inquiry workflow do not prove an open vector parcel API or citywide public coverage.",
+    "No parcel schema, CRS, stable native parcel identity, geometry response, or citywide geometry coverage was verified.",
+    "No exact-point hit/miss, map extent miss, login wall, or unusable viewer is treated as evidence of citywide cadastral absence.",
+    "No owner, address, contact, titleholder, tax/account, personal, or unsafe registration fields were requested or retained.",
+    "Packet completion is research bookkeeping only and does not qualify or admit a runtime adapter; serial reviewer qualification remains required."
+  ],
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only, if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate-reference metadata",
+    "source layer and public service metadata"
+  ],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "crs": "unverified; no parcel geometry response obtained",
+  "geometryQuality": "not evaluated; no geometry retained",
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "Not performed because no verified public parcel feature service was found."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Gaoping Natural Resources Bureau and Gaoping Real-Estate Registration and Trading Center.",
+    "verifiedOpenScope": "Local institutional custody and a public platform with a login-gated inquiry workflow only; anonymous parcel geometry and citywide open coverage were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_parcel_adapter",
+  "serialReviewerQualification": "not qualified; independent serial review and adapter qualification still required",
+  "uncertainty": "The authenticated inquiry API, service schema, CRS, native parcel identity, and coverage remain unresolved. No claim is made about parcel absence, legal title, ownership, completeness, or currency.",
+  "retainedSample": null
+}

@@ -1,0 +1,164 @@
+// Geometry-only source references are application display labels, not cadastral numbers.
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { createContext, runInContext } from 'node:vm';
+
+const require = createRequire(import.meta.url);
+const parcelIds = require('../../frontend/js/proposals/parcel-id.js');
+const parcelMenu = require('../../frontend/js/ui/parcel-menu-model.js');
+const format = require('../../frontend/js/format.js');
+const panelSource = readFileSync(new URL('../../frontend/js/parcels/ui/parcel-panel.js', import.meta.url), 'utf8');
+const parcelCss = readFileSync(new URL('../../frontend/css/parcel-menu.css', import.meta.url), 'utf8');
+
+class Element {
+    constructor(id = '') {
+        this.id = id;
+        this.dataset = {};
+        this.style = {};
+        this.attributes = {};
+        this.children = [];
+        this.listeners = {};
+        this.hidden = false;
+        this.classList = {
+            add() {}, remove() {}, toggle() {}, contains() { return false; }
+        };
+        this._textContent = '';
+        this.innerHTML = '';
+    }
+    set textContent(value) { this._textContent = String(value ?? ''); this.children = []; }
+    get textContent() { return this._textContent + this.children.map(child => child.textContent || '').join(''); }
+    appendChild(child) { this.children.push(child); return child; }
+    setAttribute(key, value) { this.attributes[key] = String(value); }
+    removeAttribute(key) { delete this.attributes[key]; }
+    getAttribute(key) { return this.attributes[key] || ''; }
+    addEventListener(name, callback) { this.listeners[name] = callback; }
+    querySelector() { return null; }
+    querySelectorAll() { return []; }
+}
+
+function renderParcelPanel(properties) {
+    const ids = [
+        'parcel-info-panel', 'parcel-info-title', 'info-content', 'propose-content', 'proposals-content',
+        'parcel-owners-count', 'tools-tab', 'measureAsRoadButton', 'roadMeasurements', 'parcel-plans-content'
+    ];
+    const elements = new Map(ids.map(id => [id, new Element(id)]));
+    const copied = [];
+    const document = {
+        getElementById: id => elements.get(id) || null,
+        querySelector: () => null,
+        querySelectorAll: () => [],
+        createTextNode: text => Object.assign(new Element(), { _textContent: String(text) }),
+        createElement: () => new Element()
+    };
+    const scope = {
+        document,
+        console,
+        CbFormat: format,
+        SQM_AVG_PRICE: 0,
+        getParcelId: parcelIds.getParcelIdFromFeature,
+        getParcelDisplayNumberFromProperties: parcelIds.getParcelDisplayNumberFromProperties,
+        getParcelDisplayNumberFromFeature: parcelIds.getParcelDisplayNumberFromFeature,
+        copyTextWithFeedback: value => copied.push(value),
+        tParcel: (_key, _params, fallback) => fallback,
+        i18n: { applyTranslations() {} },
+        CityConfigManager: {
+            getCurrentCityConfig: () => ({ parcels: { ownership: false } }),
+            applyFeatureVisibility() {}
+        },
+        requestAnimationFrame: callback => callback(),
+        ParcelSetProposals: { renderPublishedOnly() {} },
+        // The Proposals tab's Plans view (cdc103eb); these tests look at the title and Info tab only.
+        ProposalPlans: {
+            decorateParcelRows() {}, bindPlanRows() {}, current: plans => plans, planRowsHtml: () => '',
+            parcelPlans: () => Promise.resolve({ plans: [] })
+        },
+        escapeHtml: text => String(text),
+        resetParcelMintStatusState() {},
+        window: null
+    };
+    scope.window = scope;
+    runInContext(panelSource, createContext(scope));
+    scope.ParcelsUIParcelPanel.showParcelInfoPanel({ type: 'Feature', geometry: null, properties });
+    return {
+        title: elements.get('parcel-info-title').textContent,
+        titleElement: elements.get('parcel-info-title'),
+        copied,
+        info: elements.get('info-content').innerHTML
+    };
+}
+
+describe('geometry-derived parcel references', () => {
+    const canonicalId = 'in-source:sha256:0123456789abcdef0123456789abcdef';
+    const displayId = 'G1-0123456789ab';
+
+    it('uses the short geometry display id only for geometry-hash identities', () => {
+        expect(parcelIds.getParcelDisplayNumberFromProperties({
+            parcelIdentityKind: 'geometry-sha256-v1', parcelId: canonicalId, geometryDisplayId: displayId
+        })).toBe(displayId);
+        expect(parcelIds.getParcelDisplayNumberFromProperties({
+            parcelIdentityKind: 'registry', parcelId: canonicalId, geometryDisplayId: displayId
+        })).toBe(canonicalId);
+    });
+
+    it('keeps the full geometry identity out of the parcel click menu', () => {
+        expect(parcelMenu.displayParcelId({
+            parcelIdentityKind: 'geometry-sha256-v1', geometryDisplayId: displayId
+        }, canonicalId)).toBe(displayId);
+        expect(parcelMenu.displayParcelId({
+            parcelIdentityKind: 'registry', geometryDisplayId: displayId
+        }, 'native-123')).toBe('native-123');
+    });
+
+    it('labels the selected parcel as an application reference and avoids showing the full hash id', () => {
+        const rendered = renderParcelPanel({
+            parcelId: canonicalId,
+            parcelIdentityKind: 'geometry-sha256-v1',
+            sourceParcelId: null,
+            parcelNumber: null,
+            geometryDisplayId: displayId,
+            sourceGeometryHash: '0123456789abcdef0123456789abcdef'
+        });
+
+        expect(rendered.title).toContain(displayId);
+        expect(rendered.title).not.toContain(canonicalId);
+        expect(rendered.title).not.toContain('0123456789abcdef0123456789abcdef');
+        expect(rendered.info).toContain('role="note"');
+        expect(rendered.info).toContain('panel.parcel.geometryReferenceNote');
+        expect(rendered.info).toContain('Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.');
+    });
+
+    it('does not show the geometry note for a parcel with another identity kind', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'native-123', parcelIdentityKind: 'registry', parcelNumber: '123'
+        });
+        expect(rendered.info).not.toContain('geometryReferenceNote');
+    });
+
+    it('keeps the normalised parcel id even when the feature also carries a cadastral number and KO', () => {
+        const rendered = renderParcelPanel({
+            parcelId: 'native-123', parcelIdentityKind: 'registry', BROJ_CESTICE: '7', MATICNI_BROJ_KO: '99'
+        });
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+        expect(copyTarget.textContent).toBe('native-123');
+    });
+
+    it('builds HR-<KO>-<number> only for a feature without an id', () => {
+        const rendered = renderParcelPanel({ BROJ_CESTICE: '7', MATICNI_BROJ_KO: '99' });
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+        expect(copyTarget.textContent).toBe('HR-99-7');
+    });
+
+    it('keeps long parcel ids complete for copy while clamping only their visual layout', () => {
+        const canonicalId = 'KE-NAIROBI-NM-g1~368402797~-12643572~hash#chain_0123456789abcdef-2';
+        const rendered = renderParcelPanel({ parcelId: canonicalId, parcelIdentityKind: 'registry' });
+        const copyTarget = rendered.titleElement.children.find(child => child.className === 'parcel-title-id');
+
+        expect(copyTarget.textContent).toBe(canonicalId);
+        expect(copyTarget.listeners.click).toBeTypeOf('function');
+        copyTarget.listeners.click();
+        expect(rendered.copied).toEqual([canonicalId]);
+        expect(parcelCss).toMatch(/\.parcel-menu__title,[\s\S]*?#parcel-info-panel \.parcel-title-id-value\s*\{[^}]*-webkit-line-clamp:\s*2;/s);
+        expect(parcelCss).toMatch(/\.parcel-id-text[\s\S]*?word-break:\s*break-all;[\s\S]*?line-clamp:\s*2;/s);
+    });
+});

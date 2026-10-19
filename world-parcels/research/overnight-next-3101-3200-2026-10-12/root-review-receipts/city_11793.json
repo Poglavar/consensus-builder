@@ -1,0 +1,24 @@
+{
+  "taskId": "city:11793",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/ranked-population.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/city-11793-dinhata.json",
+    "world-parcels/research/overnight-next-3101-3200-2026-10-12/dinhata-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T05:00:07Z",
+  "queueIdentity": {
+    "rank": 3189,
+    "cityCode": 11793,
+    "country": "India",
+    "point": [
+      26.1312782894123,
+      89.4622366453413
+    ],
+    "populationPersons": 188805
+  },
+  "finding": "English and Bengali searches were executed. The first-party Cooch Behar directory independently confirms a Dinhata land and land reforms office, supporting registryFound true. The BanglarBhumi viewer timed out and no native ID or full polygon was obtained; timeout is not absence.",
+  "firstPartyCustodyUrl": "https://coochbehar.gov.in/departmental-phones/",
+  "admissionGates": "No live native-ID adapter, forced paging, 13 bounded cells, metric GEOS checks, source binding, or headed Details verification; runtime admission remains held."
+}

@@ -1,0 +1,65 @@
+{
+  "cityCode": 8620,
+  "queueRank": 2542,
+  "name": "Ratnagiri",
+  "country": "India",
+  "countryCode": "IN",
+  "iso3": "IND",
+  "point": [16.9953270605592, 73.3222123791233],
+  "population2025": 231420,
+  "population2025k": 231.42,
+  "populationUnit": "persons",
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "registryFound": true,
+  "registryBasis": "The official Maharashtra Bhumi Abhilekh Ratnagiri district page identifies the district land-record custodian, says city-survey records maintain property cards and maps, and lists Ratnagiri city survey office (CTSO) records. This evidences a local cadastral custodian and map service, but not a live parcel feature response.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ratnagiri Maharashtra official cadastral parcel map land records Mahabhulekh Bhu Naksha",
+        "result": "Found official Maharashtra Bhumi Abhilekh services, the official Ratnagiri district land-record page, Mahabhumi land-record portal, and the official Bhu-Naksha viewer. No safe anonymous Ratnagiri parcel feature response or native parcel identity was obtained.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=17",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard",
+          "https://mahabhunakasha.mahabhumi.gov.in/"
+        ]
+      },
+      {
+        "language": "Marathi",
+        "query": "रत्नागिरी महाराष्ट्र अधिकृत भू नकाशा गट नकाशा महाभूलेख जमीन अभिलेख",
+        "result": "Official Marathi results confirmed Maharashtra Bhumi Abhilekh services, Mahabhu-Nakasha maps with land records, and the Ratnagiri district page's city-survey map/property-card custody. No public safe parcel ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=17",
+          "https://ratnagiri.gov.in/%E0%A4%9C%E0%A4%AE%E0%A5%80%E0%A4%A8-%E0%A4%A1%E0%A4%BE%E0%A4%9F%E0%A4%BE%E0%A4%AC%E0%A5%87%E0%A4%B8/"
+        ]
+      }
+    ]
+  },
+  "source": {
+    "name": "Maharashtra Bhumi Abhilekh / Mahabhu-Nakasha",
+    "operator": "Office of the Settlement Commissioner and Director of Land Records, Maharashtra State, Pune; Ratnagiri district land-record office",
+    "viewerUrl": "https://mahabhunakasha.mahabhumi.gov.in/",
+    "scope": "Ratnagiri city-survey and Maharashtra official land-record/cadastral-map services; citywide vector coverage was not verified.",
+    "crs": null,
+    "nativeIdentity": null
+  },
+  "verifiedSample": false,
+  "sampleFile": null,
+  "runtimeReadiness": "held",
+  "resultCategory": "official_local_cadastral_custody_no_verified_open_parcel_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Ratnagiri city-survey records and maps maintained by the official district land-record system.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "exactPointResult": "No exact-point parcel response was obtained; this is not evidence of absence."
+  },
+  "safeFieldAllowlist": ["stable native parcel identity", "geometry", "source CRS", "geometry type", "source URL", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax", "account", "certificate", "title"],
+  "sampleGeojson": null,
+  "remainingUncertainty": "The official Bhu-Naksha viewer timed out in a bounded request, so its current JavaScript/configuration, schema, CRS, anonymous query route, native parcel fields, and geometry remain unresolved. The Mahabhumi dashboard route returned 404 in the shell request. No citywide completeness claim is made.",
+  "notes": "Packet completion records executed research only; it is not source integration or admission. No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used."
+}

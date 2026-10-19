@@ -1,0 +1,70 @@
+{
+  "taskId": "city:9588",
+  "decision": "held",
+  "checkedAt": "2026-10-10T21:08:05Z",
+  "identity": {
+    "cityCode": 9588,
+    "rank": 2022,
+    "name": "Xinmi",
+    "country": "China",
+    "iso2": "CN",
+    "iso3": "CHN",
+    "point": [
+      34.5298990454338,
+      113.363471947789
+    ],
+    "populationPersons": 288262,
+    "wupArchiveSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+    "queueAndRankedRosterMatch": true
+  },
+  "searches": {
+    "englishAndNativeExecutedInPacket": true,
+    "queries": [
+      {
+        "language": "English",
+        "query": "Xinmi China official cadastral parcel map land registry GIS service parcel geometry",
+        "resultUrls": [
+          "https://public.xinmi.gov.cn/D1604Y/8702241.jhtml",
+          "https://www.xinmi.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "新密市 不动产登记 地籍图 GIS 官方",
+        "resultUrls": [
+          "https://public.xinmi.gov.cn/D1604Y/8702241.jhtml",
+          "https://public.xinmi.gov.cn/D6802X/7607000.jhtml",
+          "https://public.xinmi.gov.cn/attachment/%E9%80%9A%E8%BF%87%E7%BA%BF%E4%B8%8A%E6%B8%A0%E9%81%93%E6%9F%A5%E8%AF%A2%E4%B8%8D%E5%8A%A8%E4%BA%A7%E7%99%BB%E8%AE%B0%E4%BF%A1%E6%81%AF%E5%8A%9E%E4%BA%8B%E6%8C%87%E5%8D%97.pdf?gjdz_DSyt6PARVbhL0inAZyiMmkxN7OXKgERWO-yX5c_l-5iQtQaUJ2ozM85PzVyHplwLXKcjMsU46FjLJvx2F6pPBm9kP6h="
+        ]
+      }
+    ]
+  },
+  "custody": {
+    "packetRegistryFound": true,
+    "assessment": "Official Xinmi bureau functions assign natural-resource and real-estate registration and cadastral survey responsibilities. Its 2023 municipal notice proposes cadastral-map visual inquiry through Zhengzhou registration infrastructure, but does not establish anonymous vector access."
+  },
+  "samples": {
+    "retainedFullPolygonCount": 0,
+    "safeNativeIdAndGeometryVerified": false
+  },
+  "qualification": {
+    "freshNativeIdAdapterReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false,
+    "admitted": false
+  },
+  "firstPartyChecks": [
+    {
+      "url": "https://public.xinmi.gov.cn/D1604Y/8702241.jhtml",
+      "observation": "Official Xinmi bureau page identifies registration office, cadastral survey, and information-platform responsibilities."
+    },
+    {
+      "url": "https://public.xinmi.gov.cn/D6802X/7607000.jhtml",
+      "observation": "Official municipal notice item 20 describes exploring visual cadastral-map inquiry through Zhengzhou system, without parcel API evidence."
+    }
+  ],
+  "decisionReason": "No public Xinmi native-ID polygon response, schema or CRS, live adapter qualification, or headed Details check. Described visual inquiry does not prove open geometry."
+}

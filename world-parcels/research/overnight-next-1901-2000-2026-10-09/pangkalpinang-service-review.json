@@ -1,0 +1,36 @@
+{
+  "cityRecord": "city-5762-pangkalpinang.json",
+  "cityCode": 5762,
+  "queueRank": 1991,
+  "city": "Pangkalpinang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "reviewStatus": "complete",
+  "registryFound": true,
+  "provider": "ATR/BPN BHUMI/ATLAS official public map documentation; BIG Satu Peta metadata checked as a secondary national source",
+  "serviceUrl": "https://bhumi.atrbpn.go.id/peta",
+  "scope": "Official national public map route is evidenced, but Pangkalpinang-specific open parcel coverage and feature geometry were not verified.",
+  "schemaAndCrs": "No city parcel response was obtained; CRS and geometry type remain unverified for Pangkalpinang.",
+  "nativeIdentity": "NIB is preferred based on official ATLAS description; no safe city feature identity was retrieved.",
+  "fieldMapping": {
+    "nib": "Native Nomor Identifikasi Bidang; documented but not retrieved.",
+    "geometry": "Parcel polygon geometry; not retrieved.",
+    "objectid": "Service OID only; not retained."
+  },
+  "requestOutcome": "BHUMI landing and map HTML succeeded over verified TLS. A current map bundle request returned, but complete bundle/API inspection timed out and yielded no usable parcel response. BIG Satu Peta service metadata succeeded but listed no Bangka Belitung sublayer.",
+  "retainedSample": null,
+  "retainedProperties": "No GeoJSON retained because no safe native-ID-plus-geometry response was obtained.",
+  "safeFieldAllowlist": ["nib", "geometry"],
+  "unsafeDataPolicy": "Owner, titleholder, address, contact, tax/account, legal-description, rights-detail, and other source attributes were not requested or retained.",
+  "officialCustodyEvidence": "ATR/BPN BHUMI/ATLAS is an official national cadastral/spatial source. A distinct public Kantor Pertanahan Kota Pangkalpinang feature API or city-specific open layer was not located.",
+  "limits": [
+    "The WUP point [-2.12314548715739, 106.111445288954] was preserved exactly and was not shifted.",
+    "No exact-point hit or miss was established.",
+    "A timeout, incomplete bundle inspection, and absent provincial layer listing are access/coverage limitations, not evidence of citywide parcel absence.",
+    "No login, credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception was used.",
+    "RuntimeReadiness remains held pending independent serial review."
+  ],
+  "runtimeReadiness": "held",
+  "runtimeEligible": false,
+  "uncertainty": "Independent review should retest the current BHUMI/ATLAS route and search for any Pangkalpinang or Bangka Belitung public layer before adapter admission."
+}

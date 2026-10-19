@@ -16,7 +16,11 @@ const ATTESTIFY_BASE_URLS = Object.freeze({
 function isProposalDeepLinkPath() {
     try {
         const path = (typeof window !== 'undefined' && window.location && window.location.pathname) ? window.location.pathname : '';
-        return /^\/proposals\/\d+(?:\/)?$/.test(path);
+        // Numeric id, comma-separated ids, a named-plan slug, or the named plan's score view — the
+        // same forms handleProposalRouteFromUrl (js/proposals/core.js) routes.
+        return /^\/proposals\/[0-9,]+\/?$/.test(path)
+            || /^\/proposals\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/?$/i.test(path)
+            || /^\/plans\/[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\/score\/?$/i.test(path);
     } catch (_) {
         return false;
     }
@@ -43,6 +47,14 @@ function generateGuestAlias(existingAgents) {
     return `Guest ${Date.now()}`;
 }
 
+// The browser's own profile is the one user-controlled agent: getCurrentUserAgent() returns the
+// first it finds, so a new own profile that left an older one flagged (a guest made in an earlier
+// visit) kept the app treating its user as that guest.
+function addOwnUserAgent(agent) {
+    agentStorage.addAgent(agent);
+    setUserControlledAgent(agent.id, true);
+}
+
 function ensureGuestUserAgentForDeepLink() {
     if (typeof agentStorage === 'undefined' || typeof createUserAgent !== 'function') {
         return null;
@@ -52,7 +64,7 @@ function ensureGuestUserAgentForDeepLink() {
     const guestName = generateGuestAlias(existingAgents);
     const avatarIndex = pickAvailableAvatarIndex();
     const guestAgent = createUserAgent(guestName, avatarIndex, { isGuest: true });
-    agentStorage.addAgent(guestAgent);
+    addOwnUserAgent(guestAgent);
 
     currentUserAgent = guestAgent;
     currentUsername = guestAgent.name;
@@ -77,7 +89,7 @@ function ensureGuestUserAgent() {
     const guestName = generateGuestAlias(existingAgents);
     const avatarIndex = pickAvailableAvatarIndex();
     const guestAgent = createUserAgent(guestName, avatarIndex, { isGuest: true });
-    agentStorage.addAgent(guestAgent);
+    addOwnUserAgent(guestAgent);
 
     currentUserAgent = guestAgent;
     currentUsername = guestAgent.name;
@@ -157,6 +169,20 @@ function isCantonModeActive() {
     return !!(window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive());
 }
 const CANTON_CHAIN_OPTION = { chainIdHex: 'canton', chainIdDec: null, label: 'Canton (DevNet)', tooltip: 'Canton DevNet — custodial, no wallet needed', isKnownNetwork: true };
+// The Canton network option is offered only while the feature is on (environment.js CANTON_ENABLED).
+function cantonChainOptions() {
+    return (window.CANTON_ENABLED === true && window.CantonMode) ? [CANTON_CHAIN_OPTION] : [];
+}
+
+function getNoNetworkChainOption() {
+    return {
+        chainIdHex: 'none',
+        chainIdDec: null,
+        label: translateUM('wallet.noNetwork', 'No network'),
+        tooltip: translateUM('wallet.noNetworkHint', 'Disconnect wallets and leave the active chain mode.'),
+        isKnownNetwork: true
+    };
+}
 
 function isSolanaWalletActive() {
     const wm = window.solanaWalletManager;
@@ -278,6 +304,9 @@ function getChainIconMarkup(chainId) {
     if (!normalized) {
         return '<i class="fas fa-link"></i>';
     }
+    if (normalized === 'none') {
+        return '<i class="fas fa-unlink"></i>';
+    }
     if (typeof normalized === 'string' && normalized.startsWith('solana')) {
         return '<svg width="16" height="16" viewBox="0 0 128 128" style="vertical-align:middle;display:inline-block"><defs><linearGradient id="sol-g" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#9945FF"/><stop offset="100%" stop-color="#14F195"/></linearGradient></defs><rect width="128" height="128" rx="24" fill="url(#sol-g)"/><path d="M36 82h42l14-14H50L36 82zm0-22h56l14-14H50L36 60zm56 30H50L36 106h56l14-14z" fill="#fff"/></svg>';
     }
@@ -300,9 +329,9 @@ const userNotifications = {
         if (!userAgent) return;
 
         const userParcelIds = getAgentOwnedParcels(userAgent.id);
-        const proposalParcels = Array.isArray(proposal.parentParcelIds)
-            ? proposal.parentParcelIds
-            : (Array.isArray(proposal.childParcelIds) ? proposal.childParcelIds : []);
+        const proposalParcels = Array.isArray(proposal.cadastreParcelIds)
+            ? proposal.cadastreParcelIds
+            : [];
         const hasUserParcel = proposalParcels.some(parcelId =>
             userParcelIds.includes(parcelId)
         );
@@ -398,10 +427,13 @@ function autoStartGame() {
     return;
 }
 
-// Show welcome modal for new users or guests personalizing their profile
+// Show welcome modal for new users or guests personalizing their profile. The modal is the shared
+// dialog chrome in index.html (#welcome-modal is its overlay); it is shown and hidden through [hidden].
 function showWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
-    modal.style.display = 'flex';
+    modal.hidden = false;
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, hideWelcomeModal);
 
     // If guest is personalizing, pre-fill with their current avatar
     if (currentUserAgent && currentUserAgent.isGuest) {
@@ -430,11 +462,13 @@ function showWelcomeModal() {
 // Hide welcome modal
 function hideWelcomeModal() {
     const modal = document.getElementById('welcome-modal');
-    modal.style.display = 'none';
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = null;
+    modal.hidden = true;
 
     // Hide takeover section
     const takeoverSection = document.getElementById('takeover-section');
-    takeoverSection.style.display = 'none';
+    takeoverSection.hidden = true;
 }
 
 // Initialize avatar selection UI
@@ -451,25 +485,27 @@ function initializeAvatarSelection() {
     // Clear existing options
     avatarOptions.innerHTML = '';
 
-    // Create avatar options (avatar0.png to avatar15.png)
+    // Create avatar options (avatar0.png to avatar15.png): btn btn-icon toggles, the chosen one
+    // pressed (aria-pressed), one another agent already wears disabled.
     for (let i = 0; i < 16; i++) {
-        const option = document.createElement('div');
-        option.className = 'avatar-option';
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'btn btn-icon avatar-option';
+        option.setAttribute('aria-pressed', String(i === selectedAvatarIndex));
+        const label = translateUM('modal.welcome.avatarAltIndexed', 'Avatar {{index}}', { index: i });
         if (usedAvatars.has(i)) {
-            option.classList.add('used');
-            option.title = 'Avatar already in use';
+            option.disabled = true;
+            option.title = translateUM('modal.welcome.avatarUsed', 'Avatar already in use');
         } else {
+            option.title = label;
             option.addEventListener('click', () => selectAvatar(i));
         }
+        option.setAttribute('aria-label', label);
 
         const img = document.createElement('img');
         img.src = `avatars/avatar${i}.png`;
-        img.alt = `Avatar ${i}`;
+        img.alt = '';
         option.appendChild(img);
-
-        if (i === selectedAvatarIndex) {
-            option.classList.add('selected');
-        }
 
         avatarOptions.appendChild(option);
     }
@@ -486,11 +522,12 @@ function selectAvatar(index) {
     // Update selection in options
     const options = document.querySelectorAll('.avatar-option');
     options.forEach((option, i) => {
-        option.classList.toggle('selected', i === index);
+        option.setAttribute('aria-pressed', String(i === index));
     });
 
     // Hide avatar options
-    document.getElementById('avatar-options').style.display = 'none';
+    document.getElementById('avatar-options').hidden = true;
+    document.getElementById('selected-avatar')?.setAttribute('aria-expanded', 'false');
 }
 
 // Update selected avatar display
@@ -499,156 +536,124 @@ function updateSelectedAvatarDisplay() {
     const hint = document.querySelector('.avatar-selection-hint');
 
     img.src = `avatars/avatar${selectedAvatarIndex}.png`;
-    hint.textContent = `Avatar ${selectedAvatarIndex} selected`;
+    hint.textContent = translateUM('modal.welcome.avatarSelected', 'Avatar {{index}} selected', { index: selectedAvatarIndex });
 }
 
-// Show avatar options
+// Show avatar options (the grid shows and hides with the hidden attribute)
 function showAvatarOptions() {
     const options = document.getElementById('avatar-options');
-    const isVisible = options.style.display !== 'none';
-    options.style.display = isVisible ? 'none' : 'block';
+    const isVisible = !options.hidden;
+    options.hidden = isVisible;
+    document.getElementById('selected-avatar')?.setAttribute('aria-expanded', String(!isVisible));
 
     if (!isVisible) {
         initializeAvatarSelection(); // Refresh available avatars
     }
 }
 
-// Setup welcome modal event listeners
+// Setup the welcome modal's language row: the shared language picker below, started on the
+// session's language.
 function setupWelcomeModalLanguagePicker() {
     const modal = document.getElementById('welcome-modal');
     if (!modal) return;
+    // The modal is set up on every open; drop the previous open's listeners first, or every press
+    // runs once per open.
+    if (typeof modal.__welcomeLanguagePickerCleanup === 'function') {
+        try { modal.__welcomeLanguagePickerCleanup(); } catch (_) { }
+        modal.__welcomeLanguagePickerCleanup = null;
+    }
 
     const switcher = modal.querySelector('[data-language-switcher]');
     if (!switcher) return;
 
-    const toggle = switcher.querySelector('[data-language-toggle]');
-    const menu = switcher.querySelector('[data-language-menu]');
-    if (!toggle || !menu) return;
-
     const i18nApi = typeof window !== 'undefined' && window.i18n ? window.i18n : null;
-    const flagByLang = { en: '🌐', es: '🇪🇸', sr: '🇷🇸', hr: '🇭🇷' };
-    const getFlag = (lang) => flagByLang[lang] || '🌐';
 
-    // Determine initial language: user's stored language or city's default
-    let initialLang = 'en';
-
-    // First, check if user has a stored language preference
-    const LANGUAGE_STORAGE_KEY = 'cb_language';
-    let storedLang = null;
+    // Initial language: the user's pick this session, else an explicit ?lang=, else the saved
+    // preference, else the city default (i18n.resolveSessionLanguage owns that order). Opening this
+    // modal used to reset to saved-or-city-default and so discarded ?lang= (NYC → en).
+    let cityDefault = null;
     try {
-        if (typeof PersistentStorage !== 'undefined' && PersistentStorage && typeof PersistentStorage.getItem === 'function') {
-            storedLang = PersistentStorage.getItem(LANGUAGE_STORAGE_KEY);
+        const cityManager = typeof window !== 'undefined' && window.CityConfigManager ? window.CityConfigManager : null;
+        if (cityManager && typeof cityManager.getCurrentCityConfig === 'function') {
+            const cityConfig = cityManager.getCurrentCityConfig();
+            cityDefault = (cityConfig && cityConfig.language && cityConfig.language.default) || null;
         }
     } catch (_) { /* ignore */ }
 
-    if (storedLang) {
-        // User has a stored language preference, use it
-        initialLang = storedLang;
-    } else {
-        // No stored language, use city's default
-        try {
-            const cityManager = typeof window !== 'undefined' && window.CityConfigManager ? window.CityConfigManager : null;
-            if (cityManager && typeof cityManager.getCurrentCityConfig === 'function') {
-                const cityConfig = cityManager.getCurrentCityConfig();
-                if (cityConfig && cityConfig.language && cityConfig.language.default) {
-                    initialLang = cityConfig.language.default;
-                }
-            }
-        } catch (_) { /* ignore */ }
-    }
-
-    // Get current language from i18n API to see what's actually set
     const currentLang = (i18nApi && typeof i18nApi.getLanguage === 'function') ? i18nApi.getLanguage() : 'en';
-
-    // If we determined a different language than what's currently set, update it
+    let initialLang = (i18nApi && typeof i18nApi.resolveSessionLanguage === 'function')
+        ? i18nApi.resolveSessionLanguage(cityDefault)
+        : currentLang;
     if (initialLang !== currentLang && i18nApi && typeof i18nApi.setLanguage === 'function') {
         try {
-            i18nApi.setLanguage(initialLang);
-        } catch (_) { /* ignore */ }
-    } else {
-        // Use current language if no change needed
-        initialLang = currentLang;
+            // Not a user choice, so nothing is saved.
+            initialLang = i18nApi.setLanguage(initialLang, { persist: false });
+        } catch (_) { initialLang = currentLang; }
     }
 
-    const setExpanded = (expanded) => {
-        switcher.classList.toggle('is-open', expanded);
-        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        if (!expanded) {
-            menu.scrollTop = 0;
-        }
-    };
+    switcher.innerHTML = renderLanguageOptionsHtml(initialLang);
+    modal.__welcomeLanguagePickerCleanup = bindLanguageSegmented(switcher);
+}
 
+// The one language picker, in the welcome dialog and the agent dialog: a cb-segmented row of the
+// four UI languages (flag and code; the full "Switch to …" name is the accessible label), the
+// active one aria-pressed. A press sets the language as the user's choice; i18n's change event keeps
+// every open picker in step.
+const LANGUAGE_PICKER_CHOICES = [
+    { lang: 'en', flag: '🇬🇧', key: 'language.switcher.to_en', fallback: 'Switch to English' },
+    { lang: 'es', flag: '🇪🇸', key: 'language.switcher.to_es', fallback: 'Switch to Spanish' },
+    { lang: 'sr', flag: '🇷🇸', key: 'language.switcher.to_sr', fallback: 'Switch to Serbian' },
+    { lang: 'hr', flag: '🇭🇷', key: 'language.switcher.to_hr', fallback: 'Switch to Croatian' }
+];
+
+// The options of a picker, for a container that already is the cb-segmented group.
+function renderLanguageOptionsHtml(activeLang) {
+    return LANGUAGE_PICKER_CHOICES.map(choice => {
+        const label = escapeHtml(translateUM(choice.key, choice.fallback));
+        const pressed = choice.lang === activeLang ? 'true' : 'false';
+        return `<button type="button" class="cb-segmented__option" data-language="${choice.lang}" aria-pressed="${pressed}" title="${label}" aria-label="${label}" data-i18n-key="${choice.key}" data-i18n-attr="title,aria-label"><span aria-hidden="true">${choice.flag}</span> ${choice.lang.toUpperCase()}</button>`;
+    }).join('');
+}
+
+// A whole picker (the group and its options), for markup built in script (the agent dialog).
+function renderLanguagePickerHtml(activeLang, className = '') {
+    const groupLabel = escapeHtml(translateUM('language.switcher.aria', 'Language selection'));
+    return `<div class="cb-segmented${className ? ` ${className}` : ''}" data-language-switcher role="group" aria-label="${groupLabel}" data-i18n-key="language.switcher.aria" data-i18n-attr="aria-label">${renderLanguageOptionsHtml(activeLang)}</div>`;
+}
+
+// Wires a rendered picker and returns its cleanup. onChange(lang) runs after every change (the agent
+// dialog re-labels its wallet controls with it).
+function bindLanguageSegmented(container, onChange) {
+    const i18nApi = getI18nApiUM();
     const setActive = (lang) => {
         const targetLang = lang || (i18nApi && typeof i18nApi.getLanguage === 'function' ? i18nApi.getLanguage() : 'en');
-        switcher.querySelectorAll('[data-language]').forEach(button => {
-            const isActive = button.getAttribute('data-language') === targetLang;
-            button.classList.toggle('is-active', isActive);
-            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        container.querySelectorAll('[data-language]').forEach(button => {
+            button.setAttribute('aria-pressed', button.getAttribute('data-language') === targetLang ? 'true' : 'false');
         });
-        const flagEl = toggle.querySelector('span');
-        if (flagEl) {
-            flagEl.textContent = getFlag(targetLang);
-        }
+        if (typeof onChange === 'function') onChange(targetLang);
     };
-
     const handleOptionClick = (event) => {
         const targetButton = event.target.closest ? event.target.closest('[data-language]') : null;
-        if (!targetButton || !menu.contains(targetButton)) return;
+        if (!targetButton || !container.contains(targetButton)) return;
         const selectedLang = targetButton.getAttribute('data-language');
         if (!selectedLang) return;
-
         if (i18nApi && typeof i18nApi.setLanguage === 'function') {
-            i18nApi.setLanguage(selectedLang);
+            i18nApi.setLanguage(selectedLang, { userChoice: true });
         }
         setActive(selectedLang);
-        setExpanded(false);
     };
-
-    const handleToggle = () => {
-        const expanded = toggle.getAttribute('aria-expanded') === 'true';
-        setExpanded(!expanded);
-    };
-
-    const handleOutsideClick = (event) => {
-        if (!switcher.contains(event.target)) {
-            setExpanded(false);
-        }
-    };
-
-    const handleKeydown = (event) => {
-        if (event.key === 'Escape') {
-            setExpanded(false);
-        }
-    };
-
-    toggle.addEventListener('click', handleToggle);
-    menu.addEventListener('click', handleOptionClick);
-    document.addEventListener('click', handleOutsideClick);
-    document.addEventListener('keydown', handleKeydown);
-
-    let unsubscribe = null;
-    if (i18nApi && typeof i18nApi.onChange === 'function') {
-        unsubscribe = i18nApi.onChange(setActive);
-    }
-
-    setActive(initialLang);
-
-    if (i18nApi && typeof i18nApi.applyTranslations === 'function') {
-        i18nApi.applyTranslations(switcher);
-    }
-
-    // Store cleanup function
-    modal.__welcomeLanguagePickerCleanup = () => {
-        toggle.removeEventListener('click', handleToggle);
-        menu.removeEventListener('click', handleOptionClick);
-        document.removeEventListener('click', handleOutsideClick);
-        document.removeEventListener('keydown', handleKeydown);
+    container.addEventListener('click', handleOptionClick);
+    const unsubscribe = (i18nApi && typeof i18nApi.onChange === 'function') ? i18nApi.onChange(setActive) : null;
+    return () => {
+        container.removeEventListener('click', handleOptionClick);
         if (typeof unsubscribe === 'function') {
             try { unsubscribe(); } catch (_) { }
         }
     };
 }
 
+// Assigned, not added: the modal is set up on every open, and an added listener would run once per
+// open (two takeovers from one click).
 function setupWelcomeModalEventListeners() {
     const usernameInput = document.getElementById('username-input');
     const takeoverYesBtn = document.getElementById('takeover-yes-btn');
@@ -656,15 +661,15 @@ function setupWelcomeModalEventListeners() {
     const closeBtn = document.getElementById('welcome-close-btn');
 
     // Check for existing agent when typing
-    usernameInput.addEventListener('input', handleUsernameInput);
+    usernameInput.oninput = handleUsernameInput;
 
     if (closeBtn) {
         closeBtn.onclick = hideWelcomeModal;
     }
 
     // Takeover event listeners
-    takeoverYesBtn.addEventListener('click', handleTakeoverYes);
-    takeoverNoBtn.addEventListener('click', handleTakeoverNo);
+    takeoverYesBtn.onclick = handleTakeoverYes;
+    takeoverNoBtn.onclick = handleTakeoverNo;
 }
 
 // Handle username input changes
@@ -677,16 +682,18 @@ function handleUsernameInput(event) {
         const existingAgent = agents.find(agent => agent.name.toLowerCase() === username.toLowerCase());
 
         if (existingAgent) {
-            // Show takeover section
+            // Show takeover section; the agent's name in the message opens its (read-only) profile.
             const message = document.getElementById('takeover-message');
-            message.innerHTML = getLocalizedTakeoverMessage(existingAgent.id, existingAgent.name);
-            takeoverSection.style.display = 'block';
+            message.innerHTML = getLocalizedTakeoverMessage(existingAgent.name);
+            const agentLink = message.querySelector('[data-takeover-agent]');
+            if (agentLink) agentLink.onclick = () => openTakeoverAgentDialog(existingAgent.id);
+            takeoverSection.hidden = false;
             takeoverSection.dataset.agentId = existingAgent.id;
         } else {
-            takeoverSection.style.display = 'none';
+            takeoverSection.hidden = true;
         }
     } else {
-        takeoverSection.style.display = 'none';
+        takeoverSection.hidden = true;
     }
 }
 
@@ -743,22 +750,15 @@ function handleTakeoverNo() {
     usernameInput.focus();
 
     const takeoverSection = document.getElementById('takeover-section');
-    takeoverSection.style.display = 'none';
+    takeoverSection.hidden = true;
 }
 
-function escapeHtml(value) {
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-function getLocalizedTakeoverMessage(agentId, agentName) {
+// The agent's name is a cb-link button (handleUsernameInput binds it): it runs script, so it is
+// not an anchor with a placeholder "#" href.
+function getLocalizedTakeoverMessage(agentName) {
     const i18nApi = typeof window !== 'undefined' ? window.i18n : null;
     const safeName = escapeHtml(agentName || '');
-    const agentLink = `<a href="#" onclick="openTakeoverAgentDialog(${JSON.stringify(agentId)}); return false;">${safeName}</a>`;
+    const agentLink = `<button type="button" class="cb-link" data-takeover-agent>${safeName}</button>`;
 
     if (i18nApi && typeof i18nApi.t === 'function') {
         return i18nApi.t('modal.welcome.takeoverMessage', { agentLink });
@@ -771,7 +771,9 @@ function openTakeoverAgentDialog(agentId) {
     const focusWelcomeContext = () => {
         const modal = document.getElementById('welcome-modal');
         if (modal) {
-            modal.style.display = 'flex';
+            modal.hidden = false;
+            modal.__unregisterEscape?.();
+            modal.__unregisterEscape = window.ModalEscape?.register(modal, hideWelcomeModal);
         }
         const input = document.getElementById('username-input');
         if (input) {
@@ -805,7 +807,7 @@ function submitUsername(event) {
     }
 
     // Check if in takeover mode
-    if (takeoverSection.style.display !== 'none') {
+    if (!takeoverSection.hidden) {
         // User needs to decide on takeover first
         return;
     }
@@ -856,7 +858,7 @@ function submitUsername(event) {
     // Create new user agent (for non-guest flow, e.g., after logout)
     if (typeof createUserAgent === 'function') {
         const userAgent = createUserAgent(username, selectedAvatarIndex);
-        agentStorage.addAgent(userAgent);
+        addOwnUserAgent(userAgent);
 
         currentUserAgent = userAgent;
         currentUsername = username;
@@ -898,19 +900,21 @@ function updateUsernameDisplay() {
     if (usernameDisplay && currentUserAgent) {
         const unseenCount = userNotifications.getUnseenCount();
         const badgeHtml = unseenCount > 0 ?
-            `<span class="notification-badge">${unseenCount}</span>` : '';
+            `<span class="cb-badge cb-badge--count notification-badge">${unseenCount}</span>` : '';
 
         // Get wallet status for icon
         const walletState = window.walletManager ? window.walletManager.getState() : null;
         const isConnected = walletState && walletState.status === 'connected';
         const statusIcon = isConnected
-            ? '<span class="wallet-status-icon connected" title="Wallet connected">🔗</span>'
-            : '<span class="wallet-status-icon disconnected" title="Wallet disconnected">⛓️‍💥</span>';
+            ? '<i class="fa-solid fa-link wallet-status-icon connected" title="Wallet connected"></i>'
+            : '<i class="fa-solid fa-link-slash wallet-status-icon disconnected" title="Wallet disconnected"></i>';
 
+        // The phone bubble shows the avatar alone and reads the state off this attribute.
+        usernameDisplay.dataset.wallet = isConnected ? 'connected' : 'disconnected';
         // Replace content with avatar, name, and status icon
         usernameDisplay.innerHTML = `
             <img src="${getAvatarImagePath(currentUserAgent.avatarIndex)}" alt="Avatar" class="user-avatar">
-            <span id="username-text">${currentUserAgent.name}</span>
+            <span id="username-text">${escapeHtml(currentUserAgent.name)}</span>
             ${statusIcon}
             ${badgeHtml}
         `;
@@ -925,14 +929,30 @@ function updateUsernameDisplay() {
             }
         };
 
+        // The bubble is a div acting as a button (role="button" tabindex="0" in index.html): Enter
+        // and Space open it like a click, so Tab through the floating controls can use it too.
+        if (!usernameDisplay.dataset.keyboardBound) {
+            usernameDisplay.dataset.keyboardBound = '1';
+            usernameDisplay.addEventListener('keydown', event => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                usernameDisplay.click();
+            });
+        }
+
         // No longer need network indicator or wallet button in bubble
     }
 }
 
-// Show logout modal
+// Show logout modal. It is opened from the agent dialog, which may itself sit on the upper dialog
+// rung (opened over the activity explorer): the logout overlay takes that rung too and moves to the
+// end of <body>, so on an equal z-index it paints, and takes Escape, above the dialog it came from.
 function showLogoutModal() {
     const modal = document.getElementById('logout-modal');
-    modal.style.display = 'flex';
+    document.body.appendChild(modal);
+    modal.hidden = false;
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = window.ModalEscape?.register(modal, hideLogoutModal);
 
     // Setup event listeners
     setupLogoutModalEventListeners();
@@ -941,7 +961,9 @@ function showLogoutModal() {
 // Hide logout modal
 function hideLogoutModal() {
     const modal = document.getElementById('logout-modal');
-    modal.style.display = 'none';
+    modal.__unregisterEscape?.();
+    modal.__unregisterEscape = null;
+    modal.hidden = true;
 }
 
 // Setup logout modal event listeners
@@ -949,10 +971,12 @@ function setupLogoutModalEventListeners() {
     const aiBtn = document.getElementById('logout-ai-btn');
     const inactiveBtn = document.getElementById('logout-inactive-btn');
     const cancelBtn = document.getElementById('logout-cancel-btn');
+    const closeBtn = document.querySelector('#logout-modal [data-logout-close]');
 
     aiBtn.onclick = () => handleLogout(true);
     inactiveBtn.onclick = () => handleLogout(false);
     cancelBtn.onclick = hideLogoutModal;
+    if (closeBtn) closeBtn.onclick = hideLogoutModal;
 }
 
 // Handle logout with choice
@@ -961,7 +985,8 @@ function handleLogout(letAIRun) {
         // Update agent flags
         agentStorage.updateAgent(currentUserAgent.id, {
             userControlled: false,
-            aiControlled: letAIRun
+            aiControlled: letAIRun,
+            controller: letAIRun ? 'algorithm' : 'inactive'
         });
 
         // Add to game log
@@ -1040,7 +1065,7 @@ function formatStringUM(template, params = {}) {
 function translateUM(key, fallback, params = {}) {
     const api = getI18nApiUM();
     if (api && typeof api.t === 'function') {
-        return api.t(key, params);
+        { const translated = api.t(key, params); if (translated !== key) return translated; }
     }
     return formatStringUM(fallback, params);
 }
@@ -1089,6 +1114,8 @@ function renderWalletButtonLabel() {
     return translateUM('wallet.connect', 'Connect Wallet');
 }
 
+// The agent dialog's wallet button: "Connect wallet" is the profile's one primary action until a
+// wallet is connected; then it shows the address as a secondary button that offers to disconnect.
 function updateAgentDialogWalletButton() {
     const modalButton = document.querySelector('.wallet-connect-button');
     if (!modalButton) {
@@ -1099,6 +1126,7 @@ function updateAgentDialogWalletButton() {
     if (isSolanaWalletActive()) {
         const solState = window.solanaWalletManager.getState();
         modalButton.classList.add('connected');
+        modalButton.classList.remove('btn-primary');
         modalButton.title = `Connected Solana wallet: ${solState.accounts[0]}\nClick to disconnect.`;
         return;
     }
@@ -1106,9 +1134,11 @@ function updateAgentDialogWalletButton() {
     const state = window.walletManager ? window.walletManager.getState() : null;
     if (state && state.status === 'connected' && state.accounts && state.accounts.length > 0) {
         modalButton.classList.add('connected');
+        modalButton.classList.remove('btn-primary');
         modalButton.title = `${translateUM('wallet.connectedTitle', 'Connected wallet: {{account}}', { account: state.accounts[0] })}\n${translateUM('wallet.disconnectHint', 'Click to disconnect.')}`;
     } else {
         modalButton.classList.remove('connected');
+        modalButton.classList.add('btn-primary');
         modalButton.title = translateUM('wallet.connectTitle', 'Connect a wallet');
     }
 }
@@ -1165,8 +1195,11 @@ function ensureCityTokenAbiHasRequiredMethods(rawAbi) {
     return abi;
 }
 
+// The open city token dialog (a CbDialog handle) and the nodes the refresh writes into; the
+// Attestify explainer's handle rides along as attestDialog.
 const cityTokenModalState = {
-    overlay: null,
+    dialog: null,
+    attestDialog: null,
     statusNode: null,
     balanceNode: null,
     allotmentNode: null,
@@ -1217,7 +1250,8 @@ function formatCityTokenAmount(raw, decimals) {
         const formatted = window.ethers ? window.ethers.formatUnits(raw, decimals) : String(raw);
         const asNumber = Number(formatted);
         if (Number.isFinite(asNumber)) {
-            return asNumber >= 1 ? asNumber.toFixed(2) : asNumber.toFixed(4);
+            const digits = asNumber >= 1 ? 2 : 4;
+            return CbFormat.formatNumber(asNumber, { maxFractionDigits: digits, minFractionDigits: digits });
         }
         return formatted;
     } catch (_) {
@@ -1227,6 +1261,7 @@ function formatCityTokenAmount(raw, decimals) {
 
 async function resolveCityTokenContract(options = {}) {
     const requireSigner = options.requireSigner === true;
+    if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
     if (!window.walletManager) {
         throw new Error('Wallet not ready');
     }
@@ -1322,13 +1357,50 @@ function setCityTokenStatus(message, isError = false, linkHref = null, linkLabel
     }
     if (linkHref) {
         const link = document.createElement('a');
+        link.className = 'cb-link cb-link--external';
         link.href = linkHref;
         link.target = '_blank';
-        link.rel = 'noreferrer noopener';
+        link.rel = 'noopener noreferrer';
         link.textContent = linkLabel || translateUM('cityToken.statusTxLink', 'View transaction');
         node.appendChild(document.createTextNode(' '));
         node.appendChild(link);
     }
+}
+
+// "Its own token" in the explainer: plain text until the token's explorer page is known, then an
+// external link to it. Never a placeholder "#" href that opens a blank tab.
+function setCityTokenLink(url) {
+    const current = cityTokenModalState.tokenLinkNode;
+    if (!current) return;
+    const next = document.createElement(url ? 'a' : 'span');
+    next.dataset.cityTokenLink = 'true';
+    next.textContent = current.textContent;
+    if (url) {
+        next.className = 'cb-link cb-link--external';
+        next.href = url;
+        next.target = '_blank';
+        next.rel = 'noopener noreferrer';
+    }
+    current.replaceWith(next);
+    cityTokenModalState.tokenLinkNode = next;
+}
+
+// Register reads "Registered" (with a check) once the address is a citizen: there is nothing left to
+// press, so it is disabled. city-token-registered-label is a hook for scripts and tests only.
+function setCityTokenRegisterState(registered) {
+    const button = cityTokenModalState.registerButton;
+    if (!button) return;
+    button.textContent = registered
+        ? translateUM('cityToken.registeredLabel', 'Registered')
+        : translateUM('cityToken.register', 'Register');
+    if (registered) {
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-circle-check';
+        icon.setAttribute('aria-hidden', 'true');
+        button.prepend(icon);
+    }
+    button.classList.toggle('city-token-registered-label', registered);
+    button.disabled = registered;
 }
 
 function disableCityTokenActions(message) {
@@ -1341,11 +1413,13 @@ function disableCityTokenActions(message) {
     setCityTokenStatus(message, true);
 }
 
+// Closing goes through the dialog; its onClose (resetCityTokenModalState) clears the state.
 function closeCityTokenModal() {
-    if (cityTokenModalState.overlay && cityTokenModalState.overlay.parentElement) {
-        cityTokenModalState.overlay.parentElement.removeChild(cityTokenModalState.overlay);
-    }
-    cityTokenModalState.overlay = null;
+    if (cityTokenModalState.dialog) cityTokenModalState.dialog.close();
+}
+
+function resetCityTokenModalState() {
+    cityTokenModalState.dialog = null;
     cityTokenModalState.statusNode = null;
     cityTokenModalState.balanceNode = null;
     cityTokenModalState.allotmentNode = null;
@@ -1391,18 +1465,7 @@ async function refreshCityTokenModalData() {
             cityTokenModalState.contractAddress = contractAddress;
             cityTokenModalState.account = account;
 
-            if (cityTokenModalState.tokenLinkNode) {
-                const tokenUrl = buildCityTokenContractUrl(chainId, contractAddress);
-                if (tokenUrl) {
-                    cityTokenModalState.tokenLinkNode.href = tokenUrl;
-                    cityTokenModalState.tokenLinkNode.target = '_blank';
-                    cityTokenModalState.tokenLinkNode.rel = 'noreferrer noopener';
-                    cityTokenModalState.tokenLinkNode.removeAttribute('aria-disabled');
-                } else {
-                    cityTokenModalState.tokenLinkNode.href = '#';
-                    cityTokenModalState.tokenLinkNode.setAttribute('aria-disabled', 'true');
-                }
-            }
+            setCityTokenLink(buildCityTokenContractUrl(chainId, contractAddress));
 
             if (cityTokenModalState.balanceNode) {
                 cityTokenModalState.balanceNode.textContent = `${balanceDisplay} CTY`;
@@ -1411,12 +1474,7 @@ async function refreshCityTokenModalData() {
                 cityTokenModalState.allotmentNode.textContent = `${allotmentDisplay} CTY`;
             }
 
-            if (cityTokenModalState.registerButton) {
-                const registeredLabel = translateUM('cityToken.registeredLabel', '🏅 Registered');
-                cityTokenModalState.registerButton.textContent = registered ? registeredLabel : translateUM('cityToken.register', 'Register');
-                cityTokenModalState.registerButton.classList.toggle('city-token-registered-label', registered);
-                cityTokenModalState.registerButton.disabled = false;
-            }
+            setCityTokenRegisterState(registered);
             if (cityTokenModalState.claimButton) {
                 const hasClaim = cityTokenModalState.availableRaw > 0n;
                 cityTokenModalState.claimButton.disabled = !registered || !hasClaim;
@@ -1515,55 +1573,56 @@ function renderCityTokenModal() {
     const introPrefix = translateUM('cityToken.explainerIntroPrefix', 'The city has');
     const introTokenText = translateUM('cityToken.explainerIntroToken', 'its own token');
     const introSuffix = translateUM('cityToken.explainerIntroSuffix', 'of course.');
-    const body = translateUM('cityToken.explainerBody', 'Every registered citizen address has a right to 1 token per hour ⌛️, forever. You can use these tokens to Boost proposals. Think of it as a form of voting for those you like.');
+    const body = translateUM('cityToken.explainerBody', 'Every registered citizen address has a right to 1 token per hour, forever. You can pledge these tokens to proposals. Think of it as a form of voting for those you like.');
 
-    const overlay = document.createElement('div');
-    overlay.className = 'city-token-overlay';
-    overlay.innerHTML = `
-        <div class="city-token-modal">
-            <div class="city-token-header">
-                <div>
-                    <h2 data-i18n-key="cityToken.title">${title}</h2>
-                </div>
-                <button type="button" class="city-token-close close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}" title="${closeLabel}" data-readonly-allow="true">&times;</button>
+    // The shared dialog: Register and Claim are its footer actions (they stay open while the
+    // transaction runs; the status line under the amounts reports it). It is opened from the agent
+    // dialog, so it takes the upper rung (top) to stay above an elevated agent dialog.
+    const content = document.createElement('div');
+    content.innerHTML = `
+        <p class="city-token-explainer"><em data-city-token-intro></em> ${body}</p>
+        <div class="city-token-metrics">
+            <div class="city-token-row">
+                <span class="city-token-label" data-i18n-key="cityToken.currentBalance">${balanceLabel}</span>
+                <span class="city-token-value" data-city-token-balance>-</span>
             </div>
-            <div class="city-token-body">
-                <p class="city-token-explainer"><em data-city-token-intro></em> ${body}</p>
-                <div class="city-token-metrics">
-                    <div class="city-token-row">
-                        <span class="city-token-label" data-i18n-key="cityToken.currentBalance">${balanceLabel}</span>
-                        <span class="city-token-value" data-city-token-balance>-</span>
-                    </div>
-                    <div class="city-token-row">
-                        <span class="city-token-label" data-i18n-key="cityToken.currentAllotment">${allotmentLabel}</span>
-                        <span class="city-token-value" data-city-token-allotment>-</span>
-                    </div>
-                </div>
-                <div class="city-token-actions">
-                    <button type="button" class="btn btn-secondary" data-city-token-register>${registerLabel}</button>
-                    <button type="button" class="btn btn-primary" data-city-token-claim>${claimLabel}</button>
-                </div>
-                <div class="city-token-status" data-city-token-status></div>
+            <div class="city-token-row">
+                <span class="city-token-label" data-i18n-key="cityToken.currentAllotment">${allotmentLabel}</span>
+                <span class="city-token-value" data-city-token-allotment>-</span>
             </div>
         </div>
+        <div class="city-token-status" data-city-token-status role="status" aria-live="polite"></div>
     `;
+    const dialog = window.CbDialog.open({
+        title,
+        size: 'sm',
+        top: true,
+        className: 'city-token-modal',
+        overlayClassName: 'city-token-overlay',
+        bodyClassName: 'city-token-body',
+        closeLabel,
+        body: Array.from(content.childNodes),
+        actions: [
+            { id: 'register', label: registerLabel, role: 'secondary', keepOpen: true, onClick: handleCityTokenRegister },
+            { id: 'claim', label: claimLabel, role: 'primary', keepOpen: true, onClick: handleCityTokenClaim }
+        ],
+        onClose: resetCityTokenModalState
+    });
 
-    const statusNode = overlay.querySelector('[data-city-token-status]');
-    const balanceNode = overlay.querySelector('[data-city-token-balance]');
-    const allotmentNode = overlay.querySelector('[data-city-token-allotment]');
-    const registerButton = overlay.querySelector('[data-city-token-register]');
-    const claimButton = overlay.querySelector('[data-city-token-claim]');
-    const closeButton = overlay.querySelector('.city-token-close');
-    const introNode = overlay.querySelector('[data-city-token-intro]');
+    // Hooks the profile scripts and the e2e specs press: the close button and the two actions.
+    const closeButton = dialog.header.querySelector('.close-circle-btn');
+    closeButton.classList.add('city-token-close');
+    closeButton.setAttribute('data-readonly-allow', 'true');
+    const registerButton = dialog.getActionButton('register');
+    const claimButton = dialog.getActionButton('claim');
+    registerButton.setAttribute('data-city-token-register', '');
+    claimButton.setAttribute('data-city-token-claim', '');
 
+    const introNode = dialog.body.querySelector('[data-city-token-intro]');
     if (introNode) {
-        const tokenLink = document.createElement('a');
+        const tokenLink = document.createElement('span');
         tokenLink.dataset.cityTokenLink = 'true';
-        tokenLink.href = '#';
         tokenLink.textContent = introTokenText;
-        tokenLink.rel = 'noreferrer noopener';
-        tokenLink.target = '_blank';
-        tokenLink.setAttribute('aria-disabled', 'true');
 
         introNode.textContent = '';
         introNode.append(document.createTextNode(`${introPrefix} `));
@@ -1573,18 +1632,19 @@ function renderCityTokenModal() {
         cityTokenModalState.tokenLinkNode = tokenLink;
     }
 
-    cityTokenModalState.overlay = overlay;
-    cityTokenModalState.statusNode = statusNode;
-    cityTokenModalState.balanceNode = balanceNode;
-    cityTokenModalState.allotmentNode = allotmentNode;
+    cityTokenModalState.dialog = dialog;
+    cityTokenModalState.statusNode = dialog.body.querySelector('[data-city-token-status]');
+    cityTokenModalState.balanceNode = dialog.body.querySelector('[data-city-token-balance]');
+    cityTokenModalState.allotmentNode = dialog.body.querySelector('[data-city-token-allotment]');
     cityTokenModalState.registerButton = registerButton;
     cityTokenModalState.claimButton = claimButton;
 
-    registerButton.addEventListener('click', handleCityTokenRegister);
-    claimButton.addEventListener('click', handleCityTokenClaim);
-    closeButton.addEventListener('click', closeCityTokenModal);
-
-    return overlay;
+    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
+        try {
+            window.i18n.applyTranslations(dialog.body);
+        } catch (_) { }
+    }
+    return dialog;
 }
 
 async function openCityTokenModal() {
@@ -1599,14 +1659,8 @@ async function openCityTokenModal() {
         return;
     }
 
-    if (!cityTokenModalState.overlay) {
+    if (!cityTokenModalState.dialog) {
         renderCityTokenModal();
-        document.body.appendChild(cityTokenModalState.overlay);
-        if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
-            try {
-                window.i18n.applyTranslations(cityTokenModalState.overlay);
-            } catch (_) { }
-        }
     }
 
     await refreshCityTokenModalData();
@@ -1629,17 +1683,14 @@ function updateAgentDialogChainInfo() {
         const party = window.CantonMode.getParty && window.CantonMode.getParty();
         const who = party ? (window.CantonMode.hint ? window.CantonMode.hint(party) : party) : 'pick identity';
         chainInfoContainer.innerHTML = `
-            <div class="wallet-chain-label">
-                <span>🌐 Canton · ${who}</span>
+            <span class="wallet-chain-label">
+                <i class="fa-solid fa-circle-nodes" aria-hidden="true"></i>
+                <span>Canton · ${escapeHtml(who)}</span>
                 <i class="fas fa-chevron-down wallet-chain-caret" aria-hidden="true"></i>
-            </div>`;
+            </span>`;
         chainInfoContainer.title = 'Canton (DevNet) — click to choose identity or switch network';
-        chainInfoContainer.style.display = 'flex';
-        chainInfoContainer.setAttribute('role', 'button');
-        chainInfoContainer.setAttribute('tabindex', '0');
         chainInfoContainer.dataset.chainId = 'canton';
         chainInfoContainer.onclick = () => window.CantonMode.openIdentityPicker();
-        chainInfoContainer.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.CantonMode.openIdentityPicker(); } };
         return;
     }
 
@@ -1677,27 +1728,25 @@ function updateAgentDialogChainInfo() {
         const attestTitle = `Attest ${displayName} is connected to the address`;
 
         chainInfoContainer.innerHTML = `
-            <div class="wallet-chain-label">
+            <span class="wallet-chain-label">
                 ${chainIcon}
                 <span>${networkInfo.text}</span>
                 <i class="fas fa-chevron-down wallet-chain-caret" aria-hidden="true"></i>
-            </div>
+            </span>
         `;
+        // Attestify and the city token sit beside the network chip as icon buttons (btn btn-sm btn-icon).
         let attestLink = existingAttestLink;
         if (!attestLink && chainInfoParent && attestUrl) {
-            attestLink = document.createElement('a');
-            attestLink.className = 'wallet-attest-link';
+            attestLink = document.createElement('button');
+            attestLink.type = 'button';
+            attestLink.className = 'btn btn-sm btn-icon wallet-attest-link';
+            attestLink.innerHTML = '<i class="fa-solid fa-signature" aria-hidden="true"></i>';
             chainInfoParent.insertBefore(attestLink, chainInfoContainer.nextSibling);
         }
         if (attestLink && attestUrl) {
-            attestLink.href = '#';
-            attestLink.textContent = '📝';
             attestLink.title = attestTitle;
             attestLink.setAttribute('aria-label', attestTitle);
-            attestLink.onclick = (event) => {
-                event.preventDefault();
-                openAttestifyExplainer(attestUrl, attestTitle);
-            };
+            attestLink.onclick = () => openAttestifyExplainer(attestUrl, attestTitle);
         } else if (existingAttestLink && chainInfoParent) {
             chainInfoParent.removeChild(existingAttestLink);
         }
@@ -1706,54 +1755,42 @@ function updateAgentDialogChainInfo() {
         if (!cityTokenButton && chainInfoParent) {
             cityTokenButton = document.createElement('button');
             cityTokenButton.type = 'button';
-            cityTokenButton.className = 'wallet-city-token-button';
+            cityTokenButton.className = 'btn btn-sm btn-icon wallet-city-token-button';
+            cityTokenButton.innerHTML = '<i class="fa-solid fa-coins" aria-hidden="true"></i>';
             chainInfoParent.appendChild(cityTokenButton);
         }
         if (cityTokenButton) {
             const cityTokenTitle = translateUM('cityToken.title', 'City token');
-            cityTokenButton.textContent = '🪙';
             cityTokenButton.title = cityTokenTitle;
             cityTokenButton.setAttribute('aria-label', cityTokenTitle);
             cityTokenButton.onclick = () => openCityTokenModal();
         }
 
         chainInfoContainer.title = `${networkInfo.tooltip}\nClick to switch network`;
-        chainInfoContainer.style.display = 'flex';
-        chainInfoContainer.setAttribute('role', 'button');
-        chainInfoContainer.setAttribute('tabindex', '0');
         chainInfoContainer.dataset.chainId = normalizeChainId(chainId) || '';
         chainInfoContainer.onclick = openChainSelectionModal;
-        chainInfoContainer.onkeydown = (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                openChainSelectionModal();
-            }
-        };
     } else {
         // No wallet connected — still offer a network selector so Canton (which
         // needs no wallet) is reachable from the same place.
         if (existingAttestLink && chainInfoParent) chainInfoParent.removeChild(existingAttestLink);
         if (existingCityTokenButton && chainInfoParent) chainInfoParent.removeChild(existingCityTokenButton);
         chainInfoContainer.innerHTML = `
-            <div class="wallet-chain-label">
+            <span class="wallet-chain-label">
                 <span>${translateUM('wallet.selectNetwork', 'Select network')}</span>
                 <i class="fas fa-chevron-down wallet-chain-caret" aria-hidden="true"></i>
-            </div>`;
+            </span>`;
         chainInfoContainer.title = translateUM('wallet.selectNetwork', 'Select network');
-        chainInfoContainer.style.display = 'flex';
-        chainInfoContainer.setAttribute('role', 'button');
-        chainInfoContainer.setAttribute('tabindex', '0');
         chainInfoContainer.dataset.chainId = '';
         chainInfoContainer.onclick = openChainSelectionModal;
-        chainInfoContainer.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openChainSelectionModal(); } };
     }
 }
 
+// What registering a nickname on Attestify means, before leaving for it: a small shared dialog
+// whose one action opens Attestify in a new tab and closes the dialog.
 function openAttestifyExplainer(attestUrl, attestTitle) {
     if (!attestUrl) return;
-    if (cityTokenModalState.attestOverlay && cityTokenModalState.attestOverlay.parentElement) {
-        cityTokenModalState.attestOverlay.parentElement.removeChild(cityTokenModalState.attestOverlay);
-        cityTokenModalState.attestOverlay = null;
+    if (cityTokenModalState.attestDialog) {
+        cityTokenModalState.attestDialog.close();
     }
 
     const title = translateUM('attestify.title', 'Register nickname');
@@ -1764,53 +1801,32 @@ function openAttestifyExplainer(attestUrl, attestTitle) {
     const proceedLabel = translateUM('attestify.proceed', 'Proceed to Attestify.Network');
     const closeLabel = translateUM('attestify.close', 'Close');
 
-    const overlay = document.createElement('div');
-    overlay.className = 'attestify-overlay';
-    overlay.innerHTML = `
-        <div class="attestify-modal">
-            <div class="attestify-header">
-                <h2>${title}</h2>
-                <button type="button" class="attestify-close close-circle-btn close-circle-btn--lg" aria-label="${closeLabel}" title="${closeLabel}" data-readonly-allow="true">&times;</button>
-            </div>
-            <div class="attestify-body">
-                <p>${body}</p>
-                <div class="attestify-actions">
-                    <button type="button" class="btn btn-primary" data-attest-proceed>${proceedLabel}</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    const closeBtn = overlay.querySelector('.attestify-close');
-    const proceedBtn = overlay.querySelector('[data-attest-proceed]');
-
-    const closeOverlay = () => {
-        if (overlay.parentElement) {
-            overlay.parentElement.removeChild(overlay);
+    const text = document.createElement('p');
+    text.textContent = body;
+    const dialog = window.CbDialog.open({
+        title,
+        size: 'sm',
+        top: true,
+        className: 'attestify-modal',
+        overlayClassName: 'attestify-overlay',
+        closeLabel,
+        body: text,
+        actions: [{
+            id: 'proceed',
+            label: proceedLabel,
+            role: 'primary',
+            onClick: () => window.open(attestUrl, '_blank', 'noopener')
+        }],
+        onClose: () => {
+            if (cityTokenModalState.attestDialog === dialog) cityTokenModalState.attestDialog = null;
         }
-        if (cityTokenModalState) {
-            cityTokenModalState.attestOverlay = null;
-        }
-    };
-
-    closeBtn.onclick = closeOverlay;
-    overlay.onclick = (evt) => {
-        if (evt.target === overlay) closeOverlay();
-    };
-    proceedBtn.onclick = () => {
-        window.open(attestUrl, '_blank', 'noopener');
-        closeOverlay();
-    };
-
-    document.body.appendChild(overlay);
-    if (cityTokenModalState) {
-        cityTokenModalState.attestOverlay = overlay;
-    }
-    if (window.i18n && typeof window.i18n.applyTranslations === 'function') {
-        try {
-            window.i18n.applyTranslations(overlay);
-        } catch (_) { }
-    }
+    });
+    // Hooks the e2e specs press.
+    const closeButton = dialog.header.querySelector('.close-circle-btn');
+    closeButton.classList.add('attestify-close');
+    closeButton.setAttribute('data-readonly-allow', 'true');
+    dialog.getActionButton('proceed').setAttribute('data-attest-proceed', '');
+    cityTokenModalState.attestDialog = dialog;
 }
 
 async function getAvailableChainOptions() {
@@ -1821,7 +1837,7 @@ async function getAvailableChainOptions() {
             { chainIdHex: 'solana-devnet', chainIdDec: null, label: 'Solana Devnet', tooltip: 'Solana Devnet', isKnownNetwork: true },
             { chainIdHex: 'solana-mainnet-beta', chainIdDec: null, label: 'Solana Mainnet', tooltip: 'Solana Mainnet', isKnownNetwork: true }
         ];
-        return [...solanaOptions, CANTON_CHAIN_OPTION];
+        return [getNoNetworkChainOption(), ...solanaOptions, ...cantonChainOptions()];
     }
 
     const options = new Map();
@@ -1880,25 +1896,46 @@ async function getAvailableChainOptions() {
     }
 
     const sorted = Array.from(options.values()).sort((a, b) => a.label.localeCompare(b.label));
-    sorted.push(CANTON_CHAIN_OPTION); // Canton is always available (no wallet needed)
+    sorted.unshift(getNoNetworkChainOption()); // Leaving every network must always be possible.
+    sorted.push(...cantonChainOptions()); // Canton needs no wallet, so it is listed whenever enabled
     return sorted;
 }
 
+// The open network choice (a CbDialog handle), so a switch or a second open can close it.
+let chainSelectionDialog = null;
+
 function closeChainSelectionModal() {
-    const overlay = document.querySelector('.chain-modal-overlay');
-    if (overlay && overlay.parentElement) {
-        overlay.parentElement.removeChild(overlay);
-    }
+    if (chainSelectionDialog) chainSelectionDialog.close();
 }
 
-async function requestChainSwitch(chainIdHex, overlay) {
-    const errorNode = overlay ? overlay.querySelector('[data-chain-modal-error]') : null;
-    const buttons = overlay ? overlay.querySelectorAll('[data-chain-id]') : [];
+// container: the dialog body holding the network rows and the status line.
+async function requestChainSwitch(chainIdHex, container) {
+    const errorNode = container ? container.querySelector('[data-chain-modal-error]') : null;
+    const buttons = container ? container.querySelectorAll('[data-chain-id]') : [];
     buttons.forEach(btn => { btn.disabled = true; });
     if (errorNode) {
-        errorNode.textContent = 'Requesting network change...';
-        errorNode.classList.add('visible');
+        errorNode.textContent = chainIdHex === 'none'
+            ? translateUM('wallet.disconnectingNetworks', 'Disconnecting from networks...')
+            : 'Requesting network change...';
         errorNode.classList.remove('error');
+    }
+
+    // "No network" is app-level escape from every connector. It never asks an EVM wallet to switch,
+    // so it also works while Canton is active and there is no browser wallet/provider at all.
+    if (chainIdHex === 'none') {
+        if (window.CantonMode && window.CantonMode.isActive()) window.CantonMode.deactivate();
+        const disconnects = [];
+        if (window.solanaWalletManager && typeof window.solanaWalletManager.disconnect === 'function') {
+            disconnects.push(Promise.resolve().then(() => window.solanaWalletManager.disconnect()));
+        }
+        if (window.walletManager && typeof window.walletManager.disconnect === 'function') {
+            disconnects.push(Promise.resolve().then(() => window.walletManager.disconnect()));
+        }
+        await Promise.allSettled(disconnects);
+        closeChainSelectionModal();
+        updateWalletButtonDisplay();
+        updateUsernameDisplay();
+        return;
     }
 
     // Canton: a custodial network switch — no wallet, just flip the mode and pick
@@ -1948,7 +1985,6 @@ async function requestChainSwitch(chainIdHex, overlay) {
         const message = err && err.message ? err.message : 'Failed to switch network.';
         if (errorNode) {
             errorNode.textContent = message;
-            errorNode.classList.add('visible');
             errorNode.classList.add('error');
         } else if (window.showStyledAlert) {
             window.showStyledAlert(message);
@@ -1977,64 +2013,54 @@ async function openChainSelectionModal() {
         ? 'canton'
         : (hasSolanaWallet
             ? getSolanaChainId()
-            : normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null));
+            : (normalizeChainId(hasEvmWallet ? window.walletManager.getState().chainId : null) || 'none'));
 
-    const overlay = document.createElement('div');
-    overlay.className = 'wallet-modal-overlay chain-modal-overlay';
-    overlay.setAttribute('tabindex', '-1');
-    overlay.innerHTML = `
-        <div class="wallet-modal chain-modal" role="dialog" aria-modal="true">
-            <div class="wallet-modal-header">
-                <h2>Select Chain</h2>
-                <button type="button" class="wallet-modal-close close-circle-btn close-circle-btn--lg" aria-label="Close chain selection" data-chain-modal-close>&times;</button>
-            </div>
-            <div class="wallet-modal-body">
-                <div class="wallet-modal-description">Choose a network and we will ask your wallet to switch.</div>
-                <div class="wallet-options chain-options-list">
-                    ${chainOptions.map(option => {
-        const isCurrent = currentChainHex && normalizeChainId(option.chainIdHex) === currentChainHex;
+    // The shared dialog with one cb-option row per network; the current one is aria-current (the
+    // option's selected look) with a "Current" badge. Opened from the agent dialog, so it takes the
+    // upper rung (top). wallet-modal / wallet-modal-overlay / chain-modal* are hooks, not looks.
+    const content = document.createElement('div');
+    content.innerHTML = `
+        <p class="wallet-modal-description">Choose a network and we will ask your wallet to switch.</p>
+        <div class="wallet-options chain-options-list">
+            ${chainOptions.map(option => {
+        const isCurrent = option.chainIdHex === 'none'
+            ? currentChainHex === 'none'
+            : (currentChainHex && normalizeChainId(option.chainIdHex) === currentChainHex);
         const isSolana = typeof option.chainIdHex === 'string' && option.chainIdHex.startsWith('solana');
-        const subtitle = isSolana ? 'Solana' : (option.chainIdDec ? `Chain ID: ${option.chainIdDec}` : `Chain ID: ${option.chainIdHex}`);
+        const subtitle = option.chainIdHex === 'none'
+            ? option.tooltip
+            : (isSolana ? 'Solana' : (option.chainIdDec ? `Chain ID: ${option.chainIdDec}` : `Chain ID: ${option.chainIdHex}`));
         return `
-                            <button type="button" class="wallet-option chain-option${isCurrent ? ' chain-option--current' : ''}" data-chain-id="${option.chainIdHex}">
-                                <div class="wallet-option-placeholder chain-option-icon">${getChainIconMarkup(option.chainIdHex)}</div>
-                                <div class="wallet-option-meta">
-                                    <div class="wallet-option-name">
-                                        ${option.label}
-                                        ${isCurrent ? '<span class="chain-current-badge">Current</span>' : ''}
-                                    </div>
-                                    <div class="wallet-option-origin">${subtitle}</div>
-                                </div>
-                            </button>
-                        `;
+                <button type="button" class="cb-option chain-option" data-chain-id="${option.chainIdHex}"${isCurrent ? ' aria-current="true"' : ''}>
+                    <span class="cb-option__icon chain-option-icon" aria-hidden="true">${getChainIconMarkup(option.chainIdHex)}</span>
+                    <span class="cb-option__text">
+                        <span class="cb-option__title">${option.label}${isCurrent ? ' <span class="cb-badge">Current</span>' : ''}</span>
+                        <span class="cb-option__desc">${subtitle}</span>
+                    </span>
+                </button>
+            `;
     }).join('')}
-                </div>
-                <div class="wallet-modal-error chain-modal-error" data-chain-modal-error></div>
-            </div>
         </div>
+        <div class="wallet-modal-error chain-modal-error" data-chain-modal-error role="status" aria-live="polite"></div>
     `;
 
-    document.body.appendChild(overlay);
-    overlay.focus({ preventScroll: true });
-
-    overlay.addEventListener('click', (event) => {
-        if (event.target === overlay) {
-            closeChainSelectionModal();
+    const dialog = window.CbDialog.open({
+        title: translateUM('wallet.selectNetwork', 'Select network'),
+        size: 'sm',
+        top: true,
+        className: 'wallet-modal chain-modal',
+        overlayClassName: 'wallet-modal-overlay chain-modal-overlay',
+        closeLabel: 'Close chain selection',
+        body: Array.from(content.childNodes),
+        onClose: () => {
+            if (chainSelectionDialog === dialog) chainSelectionDialog = null;
         }
     });
+    const closeButton = dialog.header.querySelector('.close-circle-btn');
+    closeButton.classList.add('wallet-modal-close');
+    closeButton.setAttribute('data-chain-modal-close', '');
 
-    const closeButton = overlay.querySelector('[data-chain-modal-close]');
-    if (closeButton) {
-        closeButton.addEventListener('click', closeChainSelectionModal);
-    }
-
-    overlay.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeChainSelectionModal();
-        }
-    });
-
-    overlay.addEventListener('click', event => {
+    dialog.body.addEventListener('click', event => {
         const button = event.target.closest('[data-chain-id]');
         if (!button) {
             return;
@@ -2043,8 +2069,9 @@ async function openChainSelectionModal() {
         if (!targetChainId) {
             return;
         }
-        requestChainSwitch(targetChainId, overlay);
+        requestChainSwitch(targetChainId, dialog.body);
     });
+    chainSelectionDialog = dialog;
 }
 
 async function showWalletDisconnectConfirmation() {
@@ -2125,42 +2152,11 @@ function initializeWalletIntegration() {
     refreshUserEthBalanceDisplay();
 }
 
-function updateNetworkIndicator(walletState) {
-    const indicator = document.getElementById('wallet-network-indicator');
-    if (!indicator) {
-        return;
-    }
-
-    // Prefer Solana wallet if active
-    let chainId, status;
-    if (isSolanaWalletActive()) {
-        chainId = getSolanaChainId();
-        status = 'connected';
-    } else {
-        const state = walletState || (window.walletManager ? window.walletManager.getState() : null);
-        chainId = state ? state.chainId : null;
-        status = state ? state.status : 'idle';
-    }
-    const info = getNetworkDisplayInfo(chainId, status);
-
-    indicator.textContent = info.text;
-    indicator.title = info.tooltip;
-    indicator.dataset.chainId = info.chainId || '';
-
-    indicator.classList.remove('connected', 'disconnected', 'unknown-network');
-    if (info.isConnected) {
-        indicator.classList.add(info.isKnownNetwork ? 'connected' : 'unknown-network');
-    } else {
-        indicator.classList.add('disconnected');
-    }
-}
-
+// Amount then code ("0.0420 ETH"); an empty wallet reads "0 ETH", not "0.0000 ETH".
 function formatEthBalanceForDisplay(value) {
     const num = Number(value);
     if (!Number.isFinite(num)) return '-';
-    if (num === 0) return '0';
-    if (num >= 1) return num.toFixed(2);
-    return num.toFixed(4);
+    return CbFormat.formatMoney(num, 'ETH', num === 0 ? { minFractionDigits: 0 } : {});
 }
 
 function setUserEthBalanceDisplay(displayText) {
@@ -2183,7 +2179,7 @@ function setUserTotalWealthDisplay(balanceEth) {
     const hasPortfolio = portfolioAttr !== null && portfolioAttr !== '';
     const portfolioValue = hasPortfolio ? Number(portfolioAttr) : NaN;
     const total = (Number.isFinite(portfolioValue) ? portfolioValue : 0) + balanceEth;
-    totalNode.textContent = `${total.toFixed(2)} ETH`;
+    totalNode.textContent = CbFormat.formatMoney(total, 'ETH');
 }
 
 async function readConnectedWalletEthBalance(walletState) {
@@ -2226,14 +2222,15 @@ async function refreshUserEthBalanceDisplay() {
 
     const requestId = ++userWalletBalanceRequestId;
     try {
+        // Vendors are injected on demand; the connect path fires the loader but
+        // this event may race it, so wait here before touching window.ethers.
+        if (typeof window.ensureWalletVendors === 'function') await window.ensureWalletVendors();
         const balanceEth = await readConnectedWalletEthBalance(state);
         if (requestId !== userWalletBalanceRequestId) {
             return;
         }
         userWalletBalanceCache = balanceEth;
-        const formatted = formatEthBalanceForDisplay(balanceEth);
-        const displayText = formatted === '-' ? '-' : `${formatted} ETH`;
-        setUserEthBalanceDisplay(displayText);
+        setUserEthBalanceDisplay(formatEthBalanceForDisplay(balanceEth));
         setUserTotalWealthDisplay(balanceEth);
     } catch (err) {
         if (requestId !== userWalletBalanceRequestId) {
@@ -2296,6 +2293,49 @@ window.updateAgentDialogWalletButton = updateAgentDialogWalletButton;
 window.updateAgentDialogChainInfo = updateAgentDialogChainInfo;
 window.refreshUserEthBalanceDisplay = refreshUserEthBalanceDisplay;
 window.openTakeoverAgentDialog = openTakeoverAgentDialog;
+window.renderLanguagePickerHtml = renderLanguagePickerHtml;
+window.bindLanguageSegmented = bindLanguageSegmented;
 window.isProposalDeepLink = isProposalDeepLinkPath;
 window.ensureGuestUserAgentForDeepLink = ensureGuestUserAgentForDeepLink;
 window.shouldSkipWelcomeForProposalLink = isProposalDeepLinkPath;
+// Where a proposal created right now would be minted.
+//
+// createProposal() decides this implicitly, from three independent globals checked in a fixed order
+// (Canton mode, then a Solana wallet, then an EVM wallet). Nothing told the user, so a proposal could
+// go to a chain they had forgotten they selected. This is that same decision, named once, so the create
+// dialog and the mint dispatch cannot disagree — keep the order in step with createProposal().
+function getActiveMintTarget() {
+    try {
+        if (window.CantonMode && typeof window.CantonMode.isActive === 'function' && window.CantonMode.isActive()) {
+            const party = (typeof window.CantonMode.getParty === 'function') ? window.CantonMode.getParty() : '';
+            return { chain: 'canton', label: 'Canton (DevNet)', onchain: true, identity: party || null };
+        }
+    } catch (_) { }
+
+    try {
+        const solana = window.solanaWalletManager;
+        const state = solana && typeof solana.getState === 'function' ? solana.getState() : null;
+        if (state && state.status === 'connected' && Array.isArray(state.accounts) && state.accounts.length) {
+            const cluster = (typeof window.getSolanaChainId === 'function') ? window.getSolanaChainId() : 'solana';
+            const info = NETWORK_LABELS[cluster];
+            return { chain: cluster, label: (info && info.label) || 'Solana', onchain: true, identity: state.accounts[0] };
+        }
+    } catch (_) { }
+
+    try {
+        const wallet = window.walletManager;
+        const state = wallet && typeof wallet.getState === 'function' ? wallet.getState() : null;
+        if (state && state.status === 'connected' && state.chainId) {
+            const info = getNetworkDisplayInfo(state.chainId, state.status);
+            return { chain: info.chainId, label: info.text, onchain: true, identity: (state.accounts && state.accounts[0]) || null };
+        }
+    } catch (_) { }
+
+    // Chain names above are proper nouns; the off-chain label is prose, so it is translated.
+    const offchainLabel = (window.i18n && typeof window.i18n.t === 'function')
+        ? window.i18n.t('modal.createProposal.mintTarget.offchain')
+        : 'Off-chain (this browser only)';
+    return { chain: null, label: offchainLabel, onchain: false, identity: null };
+}
+
+window.getActiveMintTarget = getActiveMintTarget;

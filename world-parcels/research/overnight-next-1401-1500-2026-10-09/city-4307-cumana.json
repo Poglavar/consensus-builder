@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "purpose": "City-specific discovery of official cadastral and parcel-map sources for Cumaná; failed access and incomplete viewer coverage are not treated as evidence that no cadastre exists.",
+  "checkedAt": "2026-10-09",
+  "cityCode": 4307,
+  "wupCityCode": 4307,
+  "queueRank": 1498,
+  "name": "Cumana",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso2": "VE",
+  "iso3": "VEN",
+  "point": [10.4496754140564, -64.1642132580725],
+  "centerLatLon": [10.4496754140564, -64.1642132580725],
+  "pointBasis": "Exact WUP queue point; not shifted to force a parcel hit.",
+  "population2025": 379333,
+  "population2025k": 379.333,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The first-party municipal SIGAT/SAMAT portal identifies the Alcaldía Bolivariana de Sucre and exposes an inmueble urbano registration/cadastral workflow. This establishes municipal registry/procedure evidence, not open parcel-vector coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "source": null,
+  "sourceIds": [],
+  "serviceReview": "cumana-service-review.json",
+  "freshResearch": {
+    "checkedAt": "2026-10-09",
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cumana Venezuela official cadastral parcel map GIS catastro parcelas",
+        "result": "First-party discovery found the Cumaná SIGAT/SAMAT municipal tax portal and its official taxpayer portal. The sources document municipal inmueble/cadastral registration, but no open parcel geometry service was identified.",
+        "actualResultUrls": ["https://cumana.sigat.net/", "https://contribuyentes.sigat.net/?alcaldia=320", "https://contribuyentes.sigat.net/api/v1/alcaldias"]
+      },
+      {
+        "language": "Spanish/local",
+        "query": "Cumaná Venezuela catastro parcelas mapa oficial alcaldía Sucre",
+        "result": "Spanish-language discovery identified the official municipal SIGAT portal, SAMAT identity, and the inmueble urbano registration procedure. Search results also surfaced national cadastral references, but no safe anonymous Cumaná parcel geometry endpoint.",
+        "actualResultUrls": ["https://cumana.sigat.net/", "https://contribuyentes.sigat.net/?alcaldia=320", "https://www.igvsb.gob.ve/"]
+      }
+    ]
+  },
+  "officialSources": [
+    {"url":"https://cumana.sigat.net/","operator":"Municipio Sucre, Estado Sucre / SIGAT-SAMAT","observation":"Official Cumaná portal identifies the Servicio Autónomo Municipal de Administración Tributaria and links the municipal inmueble urbano registration procedure."},
+    {"url":"https://contribuyentes.sigat.net/?alcaldia=320","operator":"SIGAT taxpayer portal","observation":"Current public Angular taxpayer portal loads OpenLayers and offers inmueble/catastro workflows; taxpayer account access is required for property-specific records."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/alcaldias","operator":"SIGAT public API","observation":"Anonymous municipality metadata lists id 320 as Alcaldía Bolivariana de Sucre, Estado Sucre, with SAMAT and municipal location metadata."}
+  ],
+  "requests": [
+    {"url":"https://cumana.sigat.net/","method":"GET","httpStatus":200,"result":"Official municipal portal fetched; links to inmueble urbano registration PDF and taxpayer portal were observed."},
+    {"url":"https://contribuyentes.sigat.net/?alcaldia=320","method":"GET","httpStatus":200,"result":"Public taxpayer application shell fetched. Current JavaScript configuration was inspected; it uses /api/v1 and OpenLayers, with cadastral/inmueble workflows."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/alcaldias","method":"GET","httpStatus":200,"result":"Anonymous municipality metadata returned; id 320 matched Alcaldía Bolivariana de Sucre in Estado Sucre. No parcel geometry was returned."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/alcaldias/320","method":"GET","httpStatus":404,"result":"Guessed resource route not found; no further route guessing was used to avoid unsafe or irrelevant requests."},
+    {"url":"https://contribuyentes.sigat.net/api/v1/contribuyente/alcaldias/320","method":"GET","httpStatus":403,"result":"Contributor-scoped resource denied anonymous access. No login, credentials, CAPTCHA bypass, or property lookup was attempted."},
+    {"url":"https://cumana.sigat.net/documentos/volantes/como_registrar_y_declarar_tu_inmueble_urbano_en_cumana.pdf","method":"GET","httpStatus":200,"result":"Official procedure PDF downloaded; it was image-only/unextractable in this bounded inspection. No parcel geometry or safe native identifier was obtained."},
+    {"url":"https://www.igvsb.gob.ve/","method":"GET","httpStatus":null,"result":"TLS certificate hostname mismatch; request was not retried with verification disabled because no source-specific exception was authorized."}
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "Municipal tax/cadastral registration service for Municipio Sucre and national cadastral references found in discovery.",
+    "verifiedOpenScope": "Municipal service identity and public application routes verified; no anonymous Cumaná parcel geometry, schema, CRS, or native parcel ID verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "runtimeEligible": false,
+  "blocker": "No safe anonymous parcel geometry and native parcel identity were returned. The municipal taxpayer workflow is contributor-scoped; this research packet does not qualify or admit a runtime adapter.",
+  "remainingUncertainty": "Cumaná may have cadastral geometry behind the municipal SAMAT/SIGAT workflow or through national cadastral custody. The exact-point non-response was not used as absence evidence, and no citywide completeness or currentness claim is made.",
+  "identityPolicy": "No GeoJSON retained because no stable native parcel identity plus geometry response was verified. No owner, address, titleholder, tax/account, contact, credential, or token data retained."
+}

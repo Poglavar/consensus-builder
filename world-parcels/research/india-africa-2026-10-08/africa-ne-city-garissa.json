@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:3135",
+  "queueRank": 142,
+  "wupCityCode": 3135,
+  "name": "Garissa",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "centerLatLon": [
+    -0.449031813959942,
+    39.649453843993
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "largestRank": null,
+  "growthRank": 142,
+  "population2025": 333505,
+  "annualGrowthPct2015To2025": 5.219617,
+  "checkedAt": "2026-10-08",
+  "status": "no_verified_open_endpoint_after_attempts",
+  "priorEvidence": [],
+  "priorStatuses": [],
+  "sharedCountryAssessment": "africa-ne-country-KE.json",
+  "nativeLanguageSearch": {
+    "languageScript": "Swahili and English",
+    "exactQuery": "Garissa Kenya viwanja ardhi ramani vipande cadastral parcels GIS",
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.ramani.co.ke/pages/ramani-online",
+      "https://ramani.co.ke/pages/ramani-online",
+      "https://lands.go.ke/land-registries",
+      "https://garissa.go.ke/",
+      "https://garissaassembly.go.ke/wp-content/uploads/2024/10/Garissa-ADP-2025_2026_CP.pdf",
+      "https://ardhisasa.lands.go.ke/home",
+      "https://gis.garissa.go.ke/portal/sharing/rest/portals/self",
+      "https://gis.garissa.go.ke/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task\"}"
+    ],
+    "summary": "Swahili searches surfaced official national registries/Ardhisasa and county services; spatial polygon API not found.",
+    "executionMethod": "web.run search_query; response_length=short",
+    "resultUrlScopeNote": "These URLs were returned by the exact city-specific query, but are discovery results only. Their presence does not establish coverage of the target city; countrywide/general references are separately documented in the country assessment.",
+    "searchSummary": "Executed the recorded query on 2026-10-08. No parcel geometry or stable parcel ID was sampled from search results.",
+    "resultUrlRecords": [
+      {
+        "url": "https://www.ramani.co.ke/pages/ramani-online",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ramani.co.ke/pages/ramani-online",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://lands.go.ke/land-registries",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://garissa.go.ke/",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://garissaassembly.go.ke/wp-content/uploads/2024/10/Garissa-ADP-2025_2026_CP.pdf",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://ardhisasa.lands.go.ke/home",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://gis.garissa.go.ke/portal/sharing/rest/portals/self",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      },
+      {
+        "url": "https://gis.garissa.go.ke/server/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task\"}",
+        "evidenceRole": "returned_by_exact_city_query",
+        "coverageScope": "unverified; may be countrywide, general, third-party or city-specific; no geographic coverage is inferred"
+      }
+    ]
+  },
+  "catalogDiscoveryProbe": {
+    "provider": "ArcGIS Online catalog, non-authoritative unless source owner/terms establish authority",
+    "exactQuery": "\"Garissa\" Kenya (parcel OR cadastral OR cadastre) type:\"Feature Service\"",
+    "requestUrl": "https://www.arcgis.com/sharing/rest/search?q=%22Garissa%22+Kenya+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+    "httpMethod": "GET",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=utf-8",
+    "resultTotal": 0,
+    "candidateFeatureServices": [],
+    "assessment": "Supplementary catalog search only; no target geometry query."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "Target city only. Native-language and catalog discovery plus country-service evidence; no target-city polygon scope verified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous Garissa parcel polygons were verified. Ardhisasa is account-based; Nairobi LIMS and Meru EDAMS evidence is service-oriented and does not establish public city parcel geometry.",
+  "remainingUncertainty": "No result proves absence of cadastral records; unindexed, authenticated, scanned, or local government sources may exist.",
+  "nextStep": "Check the Garissa land registry for a public viewer/API or an anonymous bounded extract; for Mutuati, follow Meru County EDAMS specifically.",
+  "requests": [
+    {
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Garissa%22+Kenya+%28parcel+OR+cadastral+OR+cadastre%29+type%3A%22Feature+Service%22&f=json&num=3&start=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "assessment": "Supplemental catalog search only; no parcel geometry request."
+    }
+  ],
+  "followupServiceAuditRefs": []
+}

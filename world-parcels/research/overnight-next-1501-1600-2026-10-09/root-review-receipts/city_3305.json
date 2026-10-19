@@ -1,0 +1,12 @@
+{
+  "taskId": "city:3305",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/ranked-population.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/pending-queue.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/city-3305-zanjan.json",
+    "world-parcels/research/overnight-next-1501-1600-2026-10-09/zanjan-service-review.json"
+  ],
+  "checkedAt": "2026-10-10T09:18:08.171893Z",
+  "reason": "Zanjan provincial government search-indexed directory names the registration office, but direct service requests timed out. No public parcel geometry, schema, safe native ID, or adapter qualification is evidenced; timeout is not absence."
+}

@@ -1,0 +1,73 @@
+{
+  "cityCode": 3744,
+  "queueRank": 1797,
+  "name": "Catia La Mar [La Guaira]",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "iso3": "VEN",
+  "locId": 862,
+  "point": [10.6007094188117, -66.9553103163417],
+  "population2025": 320109,
+  "population2025k": 320.109,
+  "populationUnit": "persons",
+  "year": 2025,
+  "status": "complete",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Catia La Mar La Guaira Venezuela official cadastral map parcel cadastre GIS",
+        "result": "First-party discovery identified the official La Guaira state government portal and the Instituto Geográfico de Venezuela Simón Bolívar (IGVSB), the national geographic/cartographic/cadastral authority. No official Catia La Mar parcel viewer or anonymous parcel API was found in the bounded discovery.",
+        "actualResultUrls": ["https://laguaira.gobernacion.web.ve/", "https://igvsb.gob.ve/", "https://igvsb.gob.ve/servicios_cartograficos", "https://igvsb.gob.ve/servicio/7"]
+      },
+      {
+        "language": "Spanish",
+        "query": "Catia La Mar La Guaira Venezuela catastro parcelas visor mapa oficial",
+        "result": "La búsqueda oficial en español confirmó a la Gobernación del estado La Guaira como portal territorial/tributario y al IGVSB como organismo nacional rector. El catálogo público de capas vectoriales enumera límites, centros poblados, hidrografía, vialidad y otras capas de referencia, pero no una capa parcelaria pública.",
+        "actualResultUrls": ["https://laguaira.gobernacion.web.ve/", "https://igvsb.gob.ve/nosotros", "https://igvsb.gob.ve/servicios_cartograficos", "https://igvsb.gob.ve/servicio/7"]
+      }
+    ]
+  },
+  "registryFound": true,
+  "registryBasis": "The official La Guaira government portal identifies the state administration, while the official IGVSB site provides national cadastral/cartographic services and a public vector-layer catalog. This establishes official custodians, not open anonymous parcel geometry for Catia La Mar.",
+  "registryCustodian": "Gobernación del estado La Guaira; Instituto Geográfico de Venezuela Simón Bolívar (IGVSB), national geographic/cartographic/cadastral authority; municipal cadastral office not independently evidenced in this attempt.",
+  "officialSources": [
+    {"url": "https://laguaira.gobernacion.web.ve/", "observation": "Official La Guaira state government portal; page identifies the state administration and a public tax/administration portal, but exposes no parcel layer in the inspected HTML."},
+    {"url": "https://igvsb.gob.ve/", "observation": "Official IGVSB site with geographic, cartographic, geodetic and map-library services."},
+    {"url": "https://igvsb.gob.ve/servicios_cartograficos", "observation": "Official cartographic services page; links to map products and a historical map library, not a cadastral parcel viewer."},
+    {"url": "https://igvsb.gob.ve/servicio/7", "observation": "Official public vector-layer catalog. Listed layers are national reference data (international boundaries, populated places, hydrography, state/municipal divisions, airports, roads, water bodies and toponymy); no parcel layer is listed."},
+    {"url": "https://www.cgr.gob.ve/descargar/pdf...informes...gestion...2022...IG22_01_Informe_18_08.pdf/pdf...informes...gestion...2022...IG22_01_Informe_18_08.pdf", "observation": "Official Comptroller General PDF search result references the Historic Center of Catia La Mar, but it is not a parcel service and was not used as geometry evidence."}
+  ],
+  "requests": [
+    {"method": "GET", "url": "https://laguaira.gobernacion.web.ve/", "outcome": "HTTP 200; official state portal HTML returned. No parcel/map/API route was exposed in the bounded page inspection."},
+    {"method": "GET", "url": "http://www.igvsb.gob.ve/", "outcome": "HTTP 200; official IGVSB homepage returned and referenced canonical https://igvsb.gob.ve pages."},
+    {"method": "GET", "url": "https://igvsb.gob.ve/", "outcome": "HTTP 200; official homepage returned. Services included cartography and mapoteca, with no parcel endpoint visible."},
+    {"method": "GET", "url": "https://igvsb.gob.ve/servicios_cartograficos", "outcome": "HTTP 200; current HTML/configuration inspected. Embedded QGIS2Web map contains national reference layers, not parcels."},
+    {"method": "GET", "url": "https://igvsb.gob.ve/servicio/7", "outcome": "HTTP 200; public vector catalog returned. Download links cover reference layers only; no cadastral parcel dataset or service was listed."},
+    {"method": "GET", "url": "https://www.igvsb.gob.ve/", "outcome": "TLS verification failed because the certificate hostname did not match www.igvsb.gob.ve; no certificate exception was used and no data was accepted from this route."},
+    {"method": "GET", "url": "https://www.cgr.gob.ve/descargar/pdf...informes...gestion...2022...IG22_01_Informe_18_08.pdf/pdf...informes...gestion...2022...IG22_01_Informe_18_08.pdf", "outcome": "HTTP 200 application/pdf response began, but bounded download timed out after approximately 12 seconds; no parcel geometry or service endpoint was inferred."}
+  ],
+  "nativeFieldMapping": {"note": "No parcel layer, native parcel field, or parcel schema was exposed. IGVSB reference-layer attributes were not retained."},
+  "compositeKeyProvenance": "No parcel identity or composite key was returned by any inspected public route.",
+  "crs": "Parcel CRS unverified; no parcel geometry retrieved.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceCandidate": {"operator": "Gobernación del estado La Guaira / IGVSB", "viewerUrls": ["https://laguaira.gobernacion.web.ve/", "https://igvsb.gob.ve/servicios_cartograficos", "https://igvsb.gob.ve/servicio/7"], "crs": null},
+  "coverageAssessment": {
+    "claimedScope": "State government portal and IGVSB national cartographic/cadastral mandate and public map products.",
+    "verifiedOpenScope": "Official state/national custodians and non-parcel reference layers only; no anonymous Catia La Mar parcel response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "exactPointChecked": false,
+    "note": "The exact WUP point was preserved and not shifted. No exact-point hit/miss inference was made because no usable parcel geometry was available."
+  },
+  "safeFieldAllowlist": ["stable native parcel identifier only, if independently confirmed", "full parcel polygon geometry", "geometry CRS / coordinate reference metadata", "public service, layer, and schema metadata"],
+  "geometryDecision": {"verified": false, "sourceId": null, "sampleCount": 0, "sampleFile": null, "nativeId": null, "nativeIdField": null, "exactWupPointTest": "Not performed against parcel geometry; no usable parcel geometry response.", "requestEvidence": []},
+  "retainedSample": null,
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": ["A zero exact-point hit, map extent miss, timeout, login wall, certificate failure, or unusable UI is not evidence of citywide cadastral absence.", "IGVSB public layers inspected are reference/cartographic layers, not parcel layers; they cannot support a parcel-availability conclusion.", "No owner, address, titleholder, contact, tax/account, personal, or other unsafe fields were requested or retained.", "No credentials, private tokens, CAPTCHA bypass, or global TLS verification disable was used.", "Packet completion records executed attempts only and does not qualify or admit a runtime adapter."],
+  "uncertainty": "Current municipal cadastral office endpoint, anonymous parcel API, stable native parcel identity, parcel schema, parcel CRS and citywide completeness remain unresolved."
+}

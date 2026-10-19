@@ -1,0 +1,722 @@
+{
+  "schemaVersion": 1,
+  "city": "cali",
+  "countryCode": "CO",
+  "sourceId": "co-cali-idesc-cat-bas-terrenos",
+  "checkedAt": "2026-10-03",
+  "bbox": [
+    -76.5225,
+    3.4325,
+    -76.521,
+    3.4335
+  ],
+  "timeoutMs": 15000,
+  "configuration": {
+    "version": "2.0.0",
+    "pageSize": 50,
+    "maxFeatures": 200,
+    "idField": "npn",
+    "idType": "string",
+    "idPrefix": "CO-CALI-NPN-",
+    "outFields": [
+      "npn",
+      "id_predio"
+    ],
+    "cityIds": [
+      "cali"
+    ]
+  },
+  "bboxQuery": {
+    "complete": true,
+    "featureCount": 118,
+    "uniqueCanonicalIds": 118,
+    "uniqueNativeIds": 118
+  },
+  "exactLookup": {
+    "requestedIds": 118,
+    "returnedFeatures": 118,
+    "absentIds": [],
+    "missing": [],
+    "extra": [],
+    "geometryMismatches": [],
+    "allIdsResolved": true,
+    "allGeometryEqual": true
+  },
+  "requests": [
+    {
+      "operation": "bbox",
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro%3Acat_bas_terrenos&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=npn&count=50&startIndex=0&bbox=-76.5225%2C3.4325%2C-76.521%2C3.4335%2CCRS%3A84",
+      "status": 200,
+      "elapsedMs": 508,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:49.465Z",
+      "totalFeatures": 118,
+      "numberMatched": 118,
+      "numberReturned": 50
+    },
+    {
+      "operation": "bbox",
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro%3Acat_bas_terrenos&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=npn&count=50&startIndex=50&bbox=-76.5225%2C3.4325%2C-76.521%2C3.4335%2CCRS%3A84",
+      "status": 200,
+      "elapsedMs": 184,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:49.653Z",
+      "totalFeatures": 118,
+      "numberMatched": 118,
+      "numberReturned": 50
+    },
+    {
+      "operation": "bbox",
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro%3Acat_bas_terrenos&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=npn&count=50&startIndex=100&bbox=-76.5225%2C3.4325%2C-76.521%2C3.4335%2CCRS%3A84",
+      "status": 200,
+      "elapsedMs": 180,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:49.837Z",
+      "totalFeatures": 118,
+      "numberMatched": 118,
+      "numberReturned": 18
+    },
+    {
+      "operation": "exactIds:0-79",
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro%3Acat_bas_terrenos&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=npn&count=50&startIndex=0&cql_filter=npn+IN+%28%27760010100090500160001000000000%27%2C%27760010100100500080010000000000%27%2C%27760010100100500080011000000000%27%2C%27760010100100500080012000000000%27%2C%27760010100100500080013000000000%27%2C%27760010100100500080014000000000%27%2C%27760010100100500080015000000000%27%2C%27760010100100500080016000000000%27%2C%27760010100100500080017000000000%27%2C%27760010100100500080018901000029%27%2C%27760010100100500080018901000030%27%2C%27760010100100500080018901010025%27%2C%27760010100100500080018901010026%27%2C%27760010100100500080018901010027%27%2C%27760010100100500080018901010028%27%2C%27760010100100500080019000000000%27%2C%27760010100100500090009000000000%27%2C%27760010100100500090010000000000%27%2C%27760010100100500090011901010027%27%2C%27760010100100500090011901020028%27%2C%27760010100100500090011901030029%27%2C%27760010100100500090011901030030%27%2C%27760010100100500090012000000000%27%2C%27760010100100500090013000000000%27%2C%27760010100100500090014000000000%27%2C%27760010100100500090015000000000%27%2C%27760010100100500090016901010021%27%2C%27760010100100500090016901020022%27%2C%27760010100100500100002000000000%27%2C%27760010100100500100003000000000%27%2C%27760010100100500100004000000000%27%2C%27760010100100500100005901010031%27%2C%27760010100100500100005901020032%27%2C%27760010100100500100006000000000%27%2C%27760010100100500100007000000000%27%2C%27760010100100500100008000000000%27%2C%27760010100100500100009000000000%27%2C%27760010100100500100010000000000%27%2C%27760010100100500100011000000000%27%2C%27760010100100500100012000000000%27%2C%27760010100100500100013000000000%27%2C%27760010100100500100014000000000%27%2C%27760010100100500100015000000000%27%2C%27760010100100500100016000000000%27%2C%27760010100100500100017000000000%27%2C%27760010100100500100018000000000%27%2C%27760010100100500100019000000000%27%2C%27760010100100500100020000000000%27%2C%27760010100100500100021000000000%27%2C%27760010100100500100022000000000%27%2C%27760010100100500100023000000000%27%2C%27760010100100500100024000000000%27%2C%27760010100100500100025000000000%27%2C%27760010100100500100026000000000%27%2C%27760010100100500100027901010027%27%2C%27760010100100500100027901020029%27%2C%27760010100100500100028000000000%27%2C%27760010100100500100030000000000%27%2C%27760010100100500100033000000000%27%2C%27760010100100500100034000000000%27%2C%27760010100100500110001000000000%27%2C%27760010100100500110002000000000%27%2C%27760010100100500110004000000000%27%2C%27760010100100500110005000000000%27%2C%27760010100100500110006000000000%27%2C%27760010100100500110007000000000%27%2C%27760010100100500110008000000000%27%2C%27760010100100500110009000000000%27%2C%27760010100100500110010000000000%27%2C%27760010100100500110011000000000%27%2C%27760010100100500110012000000000%27%2C%27760010100100500110013000000000%27%2C%27760010100100500110014000000000%27%2C%27760010100100500110015000000000%27%2C%27760010100100500110016000000000%27%2C%27760010100100500110017000000000%27%2C%27760010100100500110018000000000%27%2C%27760010100100500110019000000000%27%2C%27760010100100500110020000000000%27%2C%27760010100100500110021000000000%27%29",
+      "status": 200,
+      "elapsedMs": 1344,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:51.185Z",
+      "totalFeatures": 80,
+      "numberMatched": 80,
+      "numberReturned": 50
+    },
+    {
+      "operation": "exactIds:0-79",
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro%3Acat_bas_terrenos&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=npn&count=50&startIndex=50&cql_filter=npn+IN+%28%27760010100090500160001000000000%27%2C%27760010100100500080010000000000%27%2C%27760010100100500080011000000000%27%2C%27760010100100500080012000000000%27%2C%27760010100100500080013000000000%27%2C%27760010100100500080014000000000%27%2C%27760010100100500080015000000000%27%2C%27760010100100500080016000000000%27%2C%27760010100100500080017000000000%27%2C%27760010100100500080018901000029%27%2C%27760010100100500080018901000030%27%2C%27760010100100500080018901010025%27%2C%27760010100100500080018901010026%27%2C%27760010100100500080018901010027%27%2C%27760010100100500080018901010028%27%2C%27760010100100500080019000000000%27%2C%27760010100100500090009000000000%27%2C%27760010100100500090010000000000%27%2C%27760010100100500090011901010027%27%2C%27760010100100500090011901020028%27%2C%27760010100100500090011901030029%27%2C%27760010100100500090011901030030%27%2C%27760010100100500090012000000000%27%2C%27760010100100500090013000000000%27%2C%27760010100100500090014000000000%27%2C%27760010100100500090015000000000%27%2C%27760010100100500090016901010021%27%2C%27760010100100500090016901020022%27%2C%27760010100100500100002000000000%27%2C%27760010100100500100003000000000%27%2C%27760010100100500100004000000000%27%2C%27760010100100500100005901010031%27%2C%27760010100100500100005901020032%27%2C%27760010100100500100006000000000%27%2C%27760010100100500100007000000000%27%2C%27760010100100500100008000000000%27%2C%27760010100100500100009000000000%27%2C%27760010100100500100010000000000%27%2C%27760010100100500100011000000000%27%2C%27760010100100500100012000000000%27%2C%27760010100100500100013000000000%27%2C%27760010100100500100014000000000%27%2C%27760010100100500100015000000000%27%2C%27760010100100500100016000000000%27%2C%27760010100100500100017000000000%27%2C%27760010100100500100018000000000%27%2C%27760010100100500100019000000000%27%2C%27760010100100500100020000000000%27%2C%27760010100100500100021000000000%27%2C%27760010100100500100022000000000%27%2C%27760010100100500100023000000000%27%2C%27760010100100500100024000000000%27%2C%27760010100100500100025000000000%27%2C%27760010100100500100026000000000%27%2C%27760010100100500100027901010027%27%2C%27760010100100500100027901020029%27%2C%27760010100100500100028000000000%27%2C%27760010100100500100030000000000%27%2C%27760010100100500100033000000000%27%2C%27760010100100500100034000000000%27%2C%27760010100100500110001000000000%27%2C%27760010100100500110002000000000%27%2C%27760010100100500110004000000000%27%2C%27760010100100500110005000000000%27%2C%27760010100100500110006000000000%27%2C%27760010100100500110007000000000%27%2C%27760010100100500110008000000000%27%2C%27760010100100500110009000000000%27%2C%27760010100100500110010000000000%27%2C%27760010100100500110011000000000%27%2C%27760010100100500110012000000000%27%2C%27760010100100500110013000000000%27%2C%27760010100100500110014000000000%27%2C%27760010100100500110015000000000%27%2C%27760010100100500110016000000000%27%2C%27760010100100500110017000000000%27%2C%27760010100100500110018000000000%27%2C%27760010100100500110019000000000%27%2C%27760010100100500110020000000000%27%2C%27760010100100500110021000000000%27%29",
+      "status": 200,
+      "elapsedMs": 1361,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:52.547Z",
+      "totalFeatures": 80,
+      "numberMatched": 80,
+      "numberReturned": 30
+    },
+    {
+      "operation": "exactIds:80-117",
+      "url": "https://ws-idesc.cali.gov.co/geoserver/catastro/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=catastro%3Acat_bas_terrenos&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=npn&count=50&startIndex=0&cql_filter=npn+IN+%28%27760010100100500110022000000000%27%2C%27760010100100500110023000000000%27%2C%27760010100100500110024000000000%27%2C%27760010100100500110025000000000%27%2C%27760010100100500110026000000000%27%2C%27760010100100500110027901010029%27%2C%27760010100100500110027901020030%27%2C%27760010100100500110028000000000%27%2C%27760010100101500030001000000000%27%2C%27760010100101500030002901010031%27%2C%27760010100101500030002901020032%27%2C%27760010100101500030023000000000%27%2C%27760010100101500040018000000000%27%2C%27760010100101500040019000000000%27%2C%27760010100101500040020000000000%27%2C%27760010100101500040021000000000%27%2C%27760010100101500040022000000000%27%2C%27760010100101500040023000000000%27%2C%27760010100101500040024000000000%27%2C%27760010100101500040025901010001%27%2C%27760010100101500040025901020002%27%2C%27760010100101500040026000000000%27%2C%27760010100101500040027000000000%27%2C%27760010100101500040028000000000%27%2C%27760010100101500040029000000000%27%2C%27760010100101500040030901010068%27%2C%27760010100101500040030901020069%27%2C%27760010100101500040032000000000%27%2C%27760010100101500040033901010070%27%2C%27760010100101500040033901010072%27%2C%27760010100101500040033901020071%27%2C%27760010100101500040033901030073%27%2C%27760010100101500040034000000000%27%2C%27760010100101500040035000000000%27%2C%27760010100101500040036000000000%27%2C%27760010100101500040037000000000%27%2C%27760010100101500040038000000000%27%2C%27760010100101500040055000000000%27%29",
+      "status": 200,
+      "elapsedMs": 1034,
+      "timeoutMs": 15000,
+      "responseTimestamp": "2026-10-03T07:47:53.586Z",
+      "totalFeatures": 38,
+      "numberMatched": 38,
+      "numberReturned": 38
+    }
+  ],
+  "maxRequestElapsedMs": 1361,
+  "allRequestsUnder15s": true,
+  "sourceTimestamps": [
+    "2026-10-03T07:47:49.465Z",
+    "2026-10-03T07:47:49.653Z",
+    "2026-10-03T07:47:49.837Z",
+    "2026-10-03T07:47:51.185Z",
+    "2026-10-03T07:47:52.547Z",
+    "2026-10-03T07:47:53.586Z"
+  ],
+  "status": "success",
+  "description": "Technical passthrough integration verification; terms are recorded as information and do not gate loading.",
+  "scope": "Cali district cadastral terrain polygons only; bounds do not establish ownership or a legal title.",
+  "licenceNote": "IDESC website terms restrict exploitation/commercialization; a separate historical CSV has CC BY-SA, which is not asserted for these WFS geometries.",
+  "licenceUrl": "https://idesc.cali.gov.co/download/normatividad/terminos_condiciones_uso_pagina_web_idesc.pdf",
+  "metricSrid": 32618,
+  "parcelCollectionsPersisted": false,
+  "technicalAssessment": "Held: two NPN keys identify different polygons, including exact lookup; id_predio repeats for both and does not disambiguate. No proven durable alternate key.",
+  "viewportVerification": {
+    "grid": {
+      "xEdges": [
+        -76.525,
+        -76.5225,
+        -76.52,
+        -76.5175
+      ],
+      "yEdges": [
+        3.43,
+        3.4325,
+        3.435,
+        3.4375
+      ],
+      "cellCount": 9
+    },
+    "totalRows": 3314,
+    "uniqueNpnCount": 2959,
+    "uniqueIdPredioCount": 2959,
+    "uniqueGeoServerFeatureIdCount": 2961,
+    "bboxVsExactGeometryDifferenceCount": 0,
+    "requests": [
+      {
+        "label": "bbox:0,0:page:0",
+        "status": 200,
+        "elapsedMs": 820,
+        "bytes": 327464,
+        "features": 200,
+        "numberMatched": 483,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:0,0:page:200",
+        "status": 200,
+        "elapsedMs": 209,
+        "bytes": 329147,
+        "features": 200,
+        "numberMatched": 483,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:0,0:page:400",
+        "status": 200,
+        "elapsedMs": 206,
+        "bytes": 253997,
+        "features": 83,
+        "numberMatched": 483,
+        "numberReturned": 83
+      },
+      {
+        "label": "bbox:1,0:page:0",
+        "status": 200,
+        "elapsedMs": 214,
+        "bytes": 321610,
+        "features": 200,
+        "numberMatched": 430,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:1,0:page:200",
+        "status": 200,
+        "elapsedMs": 219,
+        "bytes": 406034,
+        "features": 200,
+        "numberMatched": 430,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:1,0:page:400",
+        "status": 200,
+        "elapsedMs": 192,
+        "bytes": 92128,
+        "features": 30,
+        "numberMatched": 430,
+        "numberReturned": 30
+      },
+      {
+        "label": "bbox:2,0:page:0",
+        "status": 200,
+        "elapsedMs": 209,
+        "bytes": 316188,
+        "features": 200,
+        "numberMatched": 346,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:2,0:page:200",
+        "status": 200,
+        "elapsedMs": 206,
+        "bytes": 236964,
+        "features": 146,
+        "numberMatched": 346,
+        "numberReturned": 146
+      },
+      {
+        "label": "bbox:0,1:page:0",
+        "status": 200,
+        "elapsedMs": 214,
+        "bytes": 347898,
+        "features": 200,
+        "numberMatched": 356,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:0,1:page:200",
+        "status": 200,
+        "elapsedMs": 211,
+        "bytes": 256834,
+        "features": 156,
+        "numberMatched": 356,
+        "numberReturned": 156
+      },
+      {
+        "label": "bbox:1,1:page:0",
+        "status": 200,
+        "elapsedMs": 212,
+        "bytes": 327281,
+        "features": 200,
+        "numberMatched": 397,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:1,1:page:200",
+        "status": 200,
+        "elapsedMs": 216,
+        "bytes": 315473,
+        "features": 197,
+        "numberMatched": 397,
+        "numberReturned": 197
+      },
+      {
+        "label": "bbox:2,1:page:0",
+        "status": 200,
+        "elapsedMs": 208,
+        "bytes": 327444,
+        "features": 200,
+        "numberMatched": 399,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:2,1:page:200",
+        "status": 200,
+        "elapsedMs": 213,
+        "bytes": 321010,
+        "features": 199,
+        "numberMatched": 399,
+        "numberReturned": 199
+      },
+      {
+        "label": "bbox:0,2:page:0",
+        "status": 200,
+        "elapsedMs": 209,
+        "bytes": 327190,
+        "features": 200,
+        "numberMatched": 479,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:0,2:page:200",
+        "status": 200,
+        "elapsedMs": 206,
+        "bytes": 309661,
+        "features": 200,
+        "numberMatched": 479,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:0,2:page:400",
+        "status": 200,
+        "elapsedMs": 200,
+        "bytes": 132958,
+        "features": 79,
+        "numberMatched": 479,
+        "numberReturned": 79
+      },
+      {
+        "label": "bbox:1,2:page:0",
+        "status": 200,
+        "elapsedMs": 212,
+        "bytes": 351899,
+        "features": 200,
+        "numberMatched": 281,
+        "numberReturned": 200
+      },
+      {
+        "label": "bbox:1,2:page:200",
+        "status": 200,
+        "elapsedMs": 195,
+        "bytes": 134420,
+        "features": 81,
+        "numberMatched": 281,
+        "numberReturned": 81
+      },
+      {
+        "label": "bbox:2,2:page:0",
+        "status": 200,
+        "elapsedMs": 201,
+        "bytes": 228411,
+        "features": 143,
+        "numberMatched": 143,
+        "numberReturned": 143
+      },
+      {
+        "label": "exact-npn:0-79:page:0",
+        "status": 200,
+        "elapsedMs": 1088,
+        "bytes": 128403,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:80-159:page:0",
+        "status": 200,
+        "elapsedMs": 1063,
+        "bytes": 130505,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:160-239:page:0",
+        "status": 200,
+        "elapsedMs": 1081,
+        "bytes": 138103,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:240-319:page:0",
+        "status": 200,
+        "elapsedMs": 1089,
+        "bytes": 125778,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:320-399:page:0",
+        "status": 200,
+        "elapsedMs": 1083,
+        "bytes": 136450,
+        "features": 81,
+        "numberMatched": 81,
+        "numberReturned": 81
+      },
+      {
+        "label": "exact-npn:400-479:page:0",
+        "status": 200,
+        "elapsedMs": 1091,
+        "bytes": 244484,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:480-559:page:0",
+        "status": 200,
+        "elapsedMs": 1081,
+        "bytes": 123792,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:560-639:page:0",
+        "status": 200,
+        "elapsedMs": 1092,
+        "bytes": 130577,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:640-719:page:0",
+        "status": 200,
+        "elapsedMs": 1082,
+        "bytes": 133040,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:720-799:page:0",
+        "status": 200,
+        "elapsedMs": 1074,
+        "bytes": 127967,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:800-879:page:0",
+        "status": 200,
+        "elapsedMs": 1078,
+        "bytes": 124313,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:880-959:page:0",
+        "status": 200,
+        "elapsedMs": 1096,
+        "bytes": 130563,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:960-1039:page:0",
+        "status": 200,
+        "elapsedMs": 1089,
+        "bytes": 128614,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1040-1119:page:0",
+        "status": 200,
+        "elapsedMs": 1102,
+        "bytes": 128950,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1120-1199:page:0",
+        "status": 200,
+        "elapsedMs": 1101,
+        "bytes": 135280,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1200-1279:page:0",
+        "status": 200,
+        "elapsedMs": 1075,
+        "bytes": 142036,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1280-1359:page:0",
+        "status": 200,
+        "elapsedMs": 1109,
+        "bytes": 136840,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1360-1439:page:0",
+        "status": 200,
+        "elapsedMs": 1064,
+        "bytes": 129948,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1440-1519:page:0",
+        "status": 200,
+        "elapsedMs": 1083,
+        "bytes": 128517,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1520-1599:page:0",
+        "status": 200,
+        "elapsedMs": 1096,
+        "bytes": 132320,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1600-1679:page:0",
+        "status": 200,
+        "elapsedMs": 1094,
+        "bytes": 127573,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1680-1759:page:0",
+        "status": 200,
+        "elapsedMs": 1089,
+        "bytes": 123940,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1760-1839:page:0",
+        "status": 200,
+        "elapsedMs": 1072,
+        "bytes": 131559,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1840-1919:page:0",
+        "status": 200,
+        "elapsedMs": 1091,
+        "bytes": 128361,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:1920-1999:page:0",
+        "status": 200,
+        "elapsedMs": 1076,
+        "bytes": 134670,
+        "features": 81,
+        "numberMatched": 81,
+        "numberReturned": 81
+      },
+      {
+        "label": "exact-npn:2000-2079:page:0",
+        "status": 200,
+        "elapsedMs": 1066,
+        "bytes": 125807,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2080-2159:page:0",
+        "status": 200,
+        "elapsedMs": 1087,
+        "bytes": 128758,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2160-2239:page:0",
+        "status": 200,
+        "elapsedMs": 1135,
+        "bytes": 129742,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2240-2319:page:0",
+        "status": 200,
+        "elapsedMs": 1092,
+        "bytes": 133774,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2320-2399:page:0",
+        "status": 200,
+        "elapsedMs": 1090,
+        "bytes": 128842,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2400-2479:page:0",
+        "status": 200,
+        "elapsedMs": 1125,
+        "bytes": 118797,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2480-2559:page:0",
+        "status": 200,
+        "elapsedMs": 1087,
+        "bytes": 127371,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2560-2639:page:0",
+        "status": 200,
+        "elapsedMs": 1070,
+        "bytes": 139679,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2640-2719:page:0",
+        "status": 200,
+        "elapsedMs": 1078,
+        "bytes": 140441,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2720-2799:page:0",
+        "status": 200,
+        "elapsedMs": 1082,
+        "bytes": 129877,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2800-2879:page:0",
+        "status": 200,
+        "elapsedMs": 1086,
+        "bytes": 126500,
+        "features": 80,
+        "numberMatched": 80,
+        "numberReturned": 80
+      },
+      {
+        "label": "exact-npn:2880-2958:page:0",
+        "status": 200,
+        "elapsedMs": 1084,
+        "bytes": 131357,
+        "features": 79,
+        "numberMatched": 79,
+        "numberReturned": 79
+      }
+    ],
+    "exactProbes": [
+      {
+        "label": "npn-760010100101500160001901010029",
+        "status": 200,
+        "elapsedMs": 1549,
+        "count": 2,
+        "numberMatched": 2,
+        "error": null
+      },
+      {
+        "label": "id_predio-273156",
+        "status": 200,
+        "elapsedMs": 671,
+        "count": 2,
+        "numberMatched": 2,
+        "error": null
+      },
+      {
+        "label": "npn-760010100110900070021000000000",
+        "status": 200,
+        "elapsedMs": 994,
+        "count": 2,
+        "numberMatched": 2,
+        "error": null
+      },
+      {
+        "label": "id_predio-202201",
+        "status": 200,
+        "elapsedMs": 683,
+        "count": 2,
+        "numberMatched": 2,
+        "error": null
+      }
+    ],
+    "conflicts": [
+      {
+        "npn": "760010100101500160001901010029",
+        "id_predio": 273156,
+        "wfsFeatureIds": [
+          "cat_bas_terrenos.589285",
+          "cat_bas_terrenos.590308"
+        ],
+        "distinctGeometries": 2
+      },
+      {
+        "npn": "760010100110900070021000000000",
+        "id_predio": 202201,
+        "wfsFeatureIds": [
+          "cat_bas_terrenos.619118",
+          "cat_bas_terrenos.603260"
+        ],
+        "distinctGeometries": 2
+      }
+    ]
+  }
+}

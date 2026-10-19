@@ -1,0 +1,147 @@
+{
+  "cityCode": 10813,
+  "queueRank": 2805,
+  "name": "Nagapattinam",
+  "country": "India",
+  "countryCode": "IN",
+  "iso2": "IN",
+  "iso3": "IND",
+  "point": [10.7824577630385, 79.8372653046759],
+  "population2025": 211625,
+  "population2025k": 211.625,
+  "populationUnit": "persons",
+  "year": 2025,
+  "timeMid": 2025.5,
+  "attempt": 1,
+  "checkedAt": "2026-10-11",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nagapattinam Tamil Nadu official cadastral map parcel GIS land records portal",
+        "result": "First-party discovery found the official Nagapattinam District Administration land e-services page, the district Survey and Settlement page, the Tamil Nadu TNGIS portal, and the official Tamil Nadu land-record service lead. The district page identifies Patta/FMB/Chitta/TSLR and A-Register services, but no anonymous parcel-vector endpoint was exposed.",
+        "actualResultUrls": [
+          "https://nagapattinam.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://nagapattinam.nic.in/survey-settlement/",
+          "https://www.tngis.tn.gov.in/apps.html",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu"
+        ]
+      },
+      {
+        "language": "Tamil (local/native)",
+        "query": "நாகப்பட்டினம் நில அளவை வரைபடம் அதிகாரப்பூர்வ இணையதளம்",
+        "result": "Tamil-language discovery identified the official Nagapattinam District Tamil land-services page and the same district Survey and Settlement custodian context. No anonymous parcel-vector service or safe ID-plus-geometry response was exposed.",
+        "actualResultUrls": [
+          "https://nagapattinam.nic.in/ta/service/%e0%ae%87%e0%ae%a3%e0%af%88%e0%ae%af%e0%ae%b5%e0%ae%b4%e0%ae%bf-%e0%ae%9a%e0%af%87%e0%ae%b5%e0%af%88%e0%ae%95%e0%ae%b3%e0%af%8d-%e0%ae%8e%e0%ae%99%e0%af%8d%e0%ae%95%e0%af%87%e0%ae%af%e0%af%81/",
+          "https://nagapattinam.nic.in/survey-settlement/"
+        ]
+      }
+    ]
+  },
+  "officialSourceAssessment": {
+    "localCustodian": "Assistant Director of Survey and Land Records, District Collectorate Nagapattinam, identified on the official district service page; the district Survey and Settlement page describes the District Survey Unit and record custody.",
+    "stateService": "Tamil Nadu Government land-record e-services at http://eservices.tn.gov.in/eservicesnew/home.html, linked by the official district administration page.",
+    "registryEvidence": "The official district pages document local Survey and Land Records administration, digitized FMB work, Town Survey records, village maps, and land-record extracts. This is local registry/cadastre custody evidence, not open parcel-vector access.",
+    "registryEvidenceUrls": [
+      "https://nagapattinam.nic.in/service/e-services-anytime-anywhere-land/",
+      "https://nagapattinam.nic.in/survey-settlement/",
+      "https://nagapattinam.nic.in/revenue-and-disaster-management/"
+    ]
+  },
+  "attemptsRecorded": [
+    {
+      "method": "SEARCH",
+      "url": "https://nagapattinam.nic.in/service/e-services-anytime-anywhere-land/",
+      "httpStatus": 200,
+      "outcome": "Official district page retrieved. It lists Patta/FMB/Chitta/TSLR, A-Register, Patta verification, and Poramboke verification services and links the Tamil Nadu e-services portal."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://nagapattinam.nic.in/ta/service/%e0%ae%87%e0%ae%a3%e0%af%88%e0%ae%af%e0%ae%b5%e0%ae%b4%e0%ae%bf-%e0%ae%9a%e0%af%87%e0%ae%b5%e0%af%88%e0%ae%95%e0%ae%b3%e0%af%8d-%e0%ae%8e%e0%ae%99%e0%af%8d%e0%ae%95%e0%af%87%e0%ae%af%e0%af%81/",
+      "httpStatus": 200,
+      "outcome": "Official Tamil-language district service page was identified during native-language discovery; no parcel geometry endpoint was exposed in the page content."
+    },
+    {
+      "method": "SEARCH",
+      "url": "https://nagapattinam.nic.in/survey-settlement/",
+      "httpStatus": 200,
+      "outcome": "Official district Survey and Settlement page retrieved. It describes preparation of FMBs, village/taluk/district/town maps, digitization of FMBs, district survey custody, and Town Survey records held by municipal offices."
+    },
+    {
+      "method": "GET",
+      "url": "http://eservices.tn.gov.in/eservicesnew/home.html",
+      "httpStatus": null,
+      "outcome": "Bounded anonymous GET from the current environment timed out after 30 seconds. No login, CAPTCHA/Cloudflare bypass, credentials, private token, unsafe field request, or TLS exception was attempted. This is not evidence of service absence or a parcel hit/miss."
+    },
+    {
+      "method": "GET",
+      "url": "https://www.tngis.tn.gov.in/apps.html",
+      "httpStatus": 200,
+      "outcome": "Official Tamil Nadu GIS landing page was retrieved through first-party discovery. It exposes a public GIS application directory and states that TNGIS data is informational and subject to use restrictions, but no anonymous Nagapattinam parcel layer or public parcel schema was identified."
+    },
+    {
+      "method": "GET",
+      "url": "https://nagapattinam.nic.in/",
+      "httpStatus": 200,
+      "outcome": "Official district portal confirms Nagapattinam district administration and its online land-service lead; it does not publish a parcel-vector API."
+    }
+  ],
+  "schemaAndCrs": {
+    "viewerConfig": null,
+    "geometryCrs": null,
+    "nativeIdentity": null,
+    "sourceFieldMapping": {},
+    "compositeKeyProvenance": null,
+    "boundedAnonymousResponse": {
+      "requestScope": "Exact WUP point [10.7824577630385, 79.8372653046759] was preserved in latitude/longitude order; no coordinate shift or geometry-forcing query was used.",
+      "featureCount": null,
+      "geometryFeatureCount": 0,
+      "result": "No usable public parcel-vector response was obtained; no exact-point hit or miss was inferred."
+    }
+  },
+  "safeFieldAllowlist": [
+    "stable native parcel identifier only if independently confirmed",
+    "full parcel polygon geometry",
+    "geometry CRS / coordinate reference metadata",
+    "source layer and public service metadata",
+    "retrieval date"
+  ],
+  "unsafeFieldsNotRequested": [
+    "owner",
+    "address",
+    "contact",
+    "titleholder",
+    "personal data",
+    "tax/account",
+    "certificate/title"
+  ],
+  "sampleGeoJSON": null,
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No usable public parcel-vector response; no hit/miss inference."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Nagapattinam District Survey and Land Records administration plus Tamil Nadu land-record and GIS public services.",
+    "verifiedOpenScope": "Local registry/cadastre custody and public service leads were evidenced; no anonymous Nagapattinam parcel-vector coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeReadiness": "held_no_verified_public_geometry",
+  "serialReviewerQualification": "not qualified; independent serial review still required",
+  "scopeLimits": [
+    "The exact WUP point and population values were preserved; the coordinate was not shifted to force a parcel hit.",
+    "A timeout, unusable portal route, or lack of an exact-point response was not treated as citywide cadastral absence.",
+    "No parcel polygon is retained because no unchanged polygon with a qualified native identity was obtained.",
+    "No citywide coverage, update cadence, parcel schema, local service CRS, or stable parcel-identity semantics were verified.",
+    "This packet records research only and is not source integration or runtime admission."
+  ],
+  "uncertainty": "Nagapattinam local Survey and Land Records custody is clearly evidenced by official district pages, and Tamil Nadu provides official land-record and GIS service leads. The public e-services host timed out from this environment, while no anonymous parcel geometry, native identity, schema, CRS, or citywide open coverage was established; runtime readiness remains held."
+}

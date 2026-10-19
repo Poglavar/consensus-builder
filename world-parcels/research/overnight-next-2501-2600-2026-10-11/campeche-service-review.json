@@ -1,0 +1,29 @@
+{
+  "cityRecord": "city-6994-campeche.json",
+  "cityCode": 6994,
+  "queueRank": 2579,
+  "name": "Campeche",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "pointLatLon": [19.8400276088226, -90.5149434349059],
+  "checkedAt": "2026-10-11",
+  "attempt": 1,
+  "status": "complete",
+  "registryFound": true,
+  "requestOutcomes": [
+    {"method": "GET", "url": "https://ide.infocam.gob.mx/", "httpStatus": 200, "outcome": "Official INFOCAM IDE landing page retrieved. It identifies the state cadastral/geospatial institute, OGC service standards, and a login-gated visor flow; no parcel geometry response."},
+    {"method": "GET", "url": "https://ide.infocam.gob.mx/visor/", "httpStatus": 200, "outcome": "The current public route returned the IDE landing/login page rather than an open map; its JavaScript shows visor/ is opened only after successful login. No anonymous parcel request was made beyond this bounded route inspection."},
+    {"method": "GET", "url": "https://sgc.infocam.gob.mx/sgc/", "httpStatus": 200, "outcome": "Official INFOCAM Sistema de Gestión Catastral returned a login page and session cookie. No credentials were used and no protected request was attempted."},
+    {"method": "GET", "url": "https://www.infocam.gob.mx/infocam/estadisticas.php", "httpStatus": 200, "outcome": "Official INFOCAM page identifies cadastral modernization and links to a cadastral-potential viewer and cadastral information, but no anonymous parcel feature response was obtained."},
+    {"method": "GET", "url": "https://www.municipiocampeche.gob.mx/tramites-y-servicios/", "httpStatus": 200, "outcome": "Official municipality services page identifies Consulta tu predial and links to the Campeche predial service; this is a municipal payment/consultation route, not a qualified public parcel-geometry API."},
+    {"method": "GET", "url": "https://www.contribunet.campeche.gob.mx/sit-contribunet/modulos/predial/index.xhtml", "httpStatus": "DNS resolution failure", "outcome": "The official municipal link target did not resolve from the bounded request environment. No retry loop, credentials, or alternate unsafe access was used."},
+    {"method": "GET", "url": "https://www.municipiocampeche.gob.mx/wp-content/uploads/2019/03/001_FORMATO-GESTION-CATASTRAL.pdf", "httpStatus": "first-party search result; direct retrieval not required", "outcome": "Official municipal Dirección de Catastro form was identified during discovery; it concerns cadastral procedures and was not used to request owner, address, title, tax/account, or other unsafe fields."}
+  ],
+  "schemaAndCrs": {"geometryType": null, "geometryCrs": null, "nativeFieldMapping": null, "compositeKeyProvenance": null, "rawAttributesRetained": false, "inspection": "No safe anonymous parcel feature response was obtained. INFOCAM's current public routes are login-gated; the municipal predial target was not DNS-resolvable from this environment. No native identity, schema, CRS, or geometry was qualified."},
+  "sampleGeoJSON": null,
+  "safeFieldAllowlist": ["stable native parcel identity if independently evidenced", "full parcel polygon geometry if independently evidenced", "source URL", "observed coordinate order", "retrieval date"],
+  "unsafeFieldsNotRequested": ["owner", "address", "contact", "titleholder", "personal data", "tax/account", "certificate/title"],
+  "qualification": {"serialReviewerRequired": true, "runtimeReadiness": "held", "reason": "First-party state and municipal source discovery is evidenced, but no anonymous Campeche parcel feature response, native identity, schema, CRS, or geometry was qualified; research does not admit a runtime adapter."},
+  "scopeLimits": ["No exact-point parcel result was obtained; this is not evidence of absence.", "No citywide extent or completeness claim is made.", "No credentials, private tokens, CAPTCHA/Cloudflare bypass, unsafe fields, or TLS exception were used.", "Packet completion records research only; it is not source integration or runtime admission."],
+  "uncertainty": "INFOCAM and the H. Ayuntamiento de Campeche evidence a real state/local cadastral service chain, but anonymous parcel access is blocked by the current login-gated public routes and the municipal predial target was unavailable at DNS resolution. Parcel identity, geometry, CRS, and coverage remain unresolved."
+}

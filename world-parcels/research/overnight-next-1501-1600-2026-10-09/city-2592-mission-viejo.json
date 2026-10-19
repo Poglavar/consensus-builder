@@ -1,0 +1,135 @@
+{
+  "cityCode": 2592,
+  "queueRank": 1569,
+  "name": "Mission Viejo",
+  "country": "United States of America",
+  "countryCode": "US",
+  "point": [33.5935129285423, -117.683461261124],
+  "population2025": 365221,
+  "population2025k": 365.221,
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Mission Viejo official GIS parcel map Orange County California cadastral parcels ArcGIS REST",
+        "result": "Found the City of Mission Viejo Community GIS page, an official Orange County land-records page, and a public ArcGIS service for the city boundary. The city page describes property lines and links to the current Digital Map Products GeoViewer; the county page links to OC Land Insights for parcels and survey records.",
+        "actualResultUrls": [
+          "https://www.missionviejo.gov/departments/public-works/community-gis",
+          "https://pwds.oc.gov/service-areas/oc-development-services/oc-survey-map-checks-right-way/land-records",
+          "https://services1.arcgis.com/jrlD8VS1h8uKjsE9/ArcGIS/rest/services/CMV1801_MVSupportFiles/FeatureServer/5"
+        ]
+      },
+      {
+        "language": "Spanish (local-language discovery query; US local-language services are not the cadastral custodian)",
+        "query": "Mission Viejo mapa parcelas oficial GIS Orange County California parcel map",
+        "result": "Found the official Orange County Assessor Spanish contact page, which identifies Assessor Parcel Maps, and the English official city/county GIS results. No separate Spanish parcel API was identified.",
+        "actualResultUrls": [
+          "https://ocassessor.gov/contact-us/espanol",
+          "https://www.ocassessor.gov/faqs/assessor-parcel-maps",
+          "https://www.missionviejo.gov/departments/public-works/community-gis"
+        ]
+      }
+    ]
+  },
+  "sourceAssessment": {
+    "localCustodians": [
+      {
+        "name": "City of Mission Viejo Public Works / Community GIS",
+        "url": "https://www.missionviejo.gov/departments/public-works/community-gis",
+        "scope": "City property-information viewer; page states it includes property lines and is supplied by Digital Map Products, not maintained by the city.",
+        "access": "public viewer link"
+      },
+      {
+        "name": "Orange County Public Works, OC Survey/GIS",
+        "url": "https://pwds.oc.gov/service-areas/oc-development-services/oc-survey-map-checks-right-way/land-records",
+        "scope": "County land-records and survey/geospatial viewer; page says it provides research for parcels, tracts, corner records and properties.",
+        "access": "public viewer link"
+      },
+      {
+        "name": "Orange County Assessor Department",
+        "url": "https://www.ocassessor.gov/faqs/assessor-parcel-maps",
+        "scope": "County assessor parcel maps and assessment mapping procedure; the page says maps delineate every Orange County parcel, but the public page does not expose a tested polygon API.",
+        "access": "public information/procedure; external ParcelQuest link for property data"
+      }
+    ],
+    "generalAgencyOrSupportingSources": [
+      {
+        "name": "Mission Viejo City Boundary ArcGIS FeatureServer",
+        "url": "https://services1.arcgis.com/jrlD8VS1h8uKjsE9/ArcGIS/rest/services/CMV1801_MVSupportFiles/FeatureServer/5",
+        "scope": "Official/public city boundary support layer only, not a parcel layer.",
+        "tested": "Layer metadata inspected; geometry type polygon, CRS EPSG:2230/ArcGIS WKID 102646, safe OBJECTID field, GeoJSON supported. Not used as parcel evidence."
+      }
+    ]
+  },
+  "requests": [
+    {
+      "url": "https://www.missionviejo.gov/departments/public-works/community-gis",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Official city page confirms Community GIS/property lines and current GeoViewer link."
+    },
+    {
+      "url": "https://missionviejo.geoviewer.io/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Current viewer shell loaded. Main JavaScript inspected for configuration and GIS routes."
+    },
+    {
+      "url": "https://amsprod.api.geoviewer.io/api/auth/key",
+      "method": "POST",
+      "httpStatus": 201,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Viewer-issued public anonymous session token obtained; value not retained in packet."
+    },
+    {
+      "url": "https://amsprod.api.geoviewer.io/api/config?ids=missionviejopublic_appData",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Response had totalResults 141 but an empty data array; no current layer/table configuration could be recovered."
+    },
+    {
+      "url": "https://amsprod.api.geoviewer.io/api/config?ids=missionviejopublic_identifyData",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Response had totalResults 141 but an empty data array; no identify schema or parcel table was recovered."
+    },
+    {
+      "url": "https://gisprod.api.geoviewer.io/api/query/missionviejopublic/parcels?columns=*&limit=3",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Unsuccessful guessed table probe; API reported database publicviewer does not exist. Not evidence of parcel absence. No response retained in cohort."
+    },
+    {
+      "url": "https://gisprod.api.geoviewer.io/api/intersect_point/missionviejopublic/parcels/33.5935129285423,-117.683461261124,4326?geom_column=geom&columns=*&lim=3",
+      "method": "GET",
+      "httpStatus": 500,
+      "contentType": "application/json; charset=utf-8",
+      "assessment": "Exact WUP point probe against the same unconfirmed table failed with database publicviewer does not exist. Zero result was not observed and this is not evidence of citywide absence."
+    },
+    {
+      "url": "https://services1.arcgis.com/jrlD8VS1h8uKjsE9/ArcGIS/rest/services/CMV1801_MVSupportFiles/FeatureServer/5",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "assessment": "Public city-boundary layer metadata inspected; not a cadastral parcel source."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": "City GIS page claims property-line information; Orange County Assessor claims parcel maps delineate every county parcel; OC Land Insights describes county survey/geospatial parcel research.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeReadiness": "held",
+  "remainingUncertainty": "The official city viewer and county viewer are public leads, but current configuration retrieval returned no usable records and the tested GeoViewer parcel routes returned HTTP 500. No stable parcel identity plus geometry response was verified. The city GIS page disclaims city maintenance and the assessor directs users to an external property-data service. This packet does not establish source integration or admission.",
+  "nextStep": "Serial reviewer should independently inspect the live viewer's network/configuration and qualify a bounded ID-plus-geometry response, if the service becomes operational."
+}

@@ -1,0 +1,38 @@
+{
+  "taskId": "city:144",
+  "checkedAt": "2026-10-10T22:30:38Z",
+  "decision": "held",
+  "queueIdentityVerified": {
+    "cityCode": 144,
+    "rank": 2081,
+    "country": "Oman",
+    "countryCode": "OM",
+    "point": [
+      17.014471546677,
+      54.0630340123828
+    ],
+    "populationPersons": 279161
+  },
+  "executedSearchLanguages": [
+    "English",
+    "Arabic (official/local)"
+  ],
+  "firstPartyUrlsChecked": [
+    "https://webapps.housing.gov.om/opendata/en/pages/ContactUS.aspx",
+    "https://gov.om/en/w/choose-a-residential-land",
+    "https://gov.om/ar/ministry-of-housing-and-urban-planning"
+  ],
+  "firstPartyObservation": "Official indexed Ministry directory lists the Dhofar directorate at Salalah; live Gov.om service describes secure interactive plot maps tied to a personal account and identity documents. The Ministry directory direct fetch timed out in this review. No anonymous parcel feature response or sample was provided.",
+  "fullSamplePolygonCount": 0,
+  "safeNativeParcelIdsRetained": 0,
+  "qualification": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosValidityAndOverlap": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "decisionReason": "Custody is supported, but no safe native parcel ID plus full polygon was read; all adapter and headed UI admission checks remain unevidenced.",
+  "absenceConclusion": null
+}

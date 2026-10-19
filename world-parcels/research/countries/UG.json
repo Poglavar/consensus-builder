@@ -1,0 +1,57 @@
+{
+ "country": "Uganda",
+ "status": "temporarily_unavailable",
+ "cadastreAuthority": "Ministry of Lands, Housing and Urban Development (Uganda National Land Information System, UgNLIS)",
+ "portalsFound": [
+  {
+   "url": "https://ugnlis.mlhud.go.ug/",
+   "observation": "From kampala.json: UgNLIS Angular app shell; no open parcel API observed."
+  },
+  {
+   "url": "https://camcamv.kcca.go.ug/geoserver/wfs",
+   "observation": "From kampala.json: Kampala (KCCA) anonymous GeoServer lists admin/utility layers, no parcel polygons found. City-level only."
+  }
+ ],
+ "requests": [
+  {
+   "url": "https://ulis.go.ug/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.ulis.go.ug/",
+   "method": "GET",
+   "httpStatus": null,
+   "contentType": null,
+   "assessment": "proxy CONNECT tunnel failed (502) / no response; host unreachable from this environment"
+  },
+  {
+   "url": "https://www.mlhud.go.ug/",
+   "method": "GET",
+   "httpStatus": 301,
+   "contentType": "text/html; charset=UTF-8",
+   "assessment": "redirect only"
+  },
+  {
+   "url": "https://www.arcgis.com/sharing/rest/search?q=Uganda+parcel+cadastre&f=json&num=5",
+   "method": "GET",
+   "httpStatus": 200,
+   "contentType": "application/json",
+   "assessment": "only a global point layer 'Land Ownership' (city points), not parcels"
+  }
+ ],
+ "verifiedParcelResponse": null,
+ "coverageAssessment": {
+  "claimedScope": "UgNLIS national land information system (viewer/app)",
+  "regionsVerified": [],
+  "nationwideVerified": false
+ },
+ "accessModel": "unknown",
+ "remainingUncertainty": "UgNLIS API endpoints not identified; some hosts unreachable. Not proof of absence.",
+ "nextStep": "Inspect UgNLIS app JS for its backend API and test a small query.",
+ "schemaVersion": 1,
+ "countryCode": "UG",
+ "checkedAt": "2026-09-29"
+}

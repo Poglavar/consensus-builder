@@ -1,0 +1,19 @@
+{
+  "taskId": "city:2969",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/city-2969-lalmonirhat.json",
+    "world-parcels/research/overnight-next-2801-2900-2026-10-11/lalmonirhat-service-review.json",
+    "tmp/valhalla-parcel-research/lalmonirhat/districts.json",
+    "tmp/valhalla-parcel-research/lalmonirhat/district-boundary.json",
+    "tmp/valhalla-parcel-research/lalmonirhat/purchase-upazilas.json",
+    "tmp/valhalla-parcel-research/lalmonirhat/purchase-mouzas.json"
+  ],
+  "checkedAt": "2026-10-11T22:02:01Z",
+  "identityCheck": "Ranked population roster, immutable pending queue and city packet agree on code, rank, country, exact WUP point and 2025 population in persons.",
+  "researchCheck": "Paired city packet and review record separate English and native-language executed queries and result URLs. No sample GeoJSON or full parcel polygon was retained (zero of the maximum three); no safe native parcel ID was verified.",
+  "custodyDecision": "Official cached responses enumerate Lalmonirhat district and upazila and return an administrative district boundary and mouza records. These substantiate the stated land-record custodian/discovery, not a parcel polygon or native parcel ID. Keep registryFound true; geometry remains unverified.",
+  "reason": "No independently evidenced fresh native-ID reads, forced pagination, 13 bounded cells, metric GEOS validity/duplicate/overlap/operation checks, full-parcel source binding or headed Details-panel verification. Source admission is withheld; runtime, catalog and generated coverage state were not changed."
+}

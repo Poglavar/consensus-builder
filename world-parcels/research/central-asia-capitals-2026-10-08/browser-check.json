@@ -1,0 +1,276 @@
+{
+  "purpose": "Records headed Chrome selection, viewport, panning and report inspection for the Central Asian capital additions.",
+  "checkedAt": "2026-10-08T06:53:01.289047Z",
+  "result": "passed",
+  "astana": {
+    "localUrl": "http://localhost:5638/?city=astana&backend=http%3A%2F%2Flocalhost%3A4640&reduceMotion=1",
+    "initialFailure": {
+      "retainedCells": 1,
+      "retainedFeatures": 26,
+      "requests": [
+        {
+          "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.1225%2C71.4275%2C51.125",
+          "httpStatus": 502
+        },
+        {
+          "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.125%2C71.4275%2C51.1275",
+          "httpStatus": 200
+        },
+        {
+          "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.1275%2C71.4275%2C51.13000000000001",
+          "httpStatus": 502
+        },
+        {
+          "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.13000000000001%2C71.4275%2C51.1325",
+          "httpStatus": 502
+        },
+        {
+          "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.1325%2C71.4275%2C51.135",
+          "httpStatus": 502
+        },
+        {
+          "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4275%2C51.1225%2C71.43%2C51.125",
+          "httpStatus": 502
+        }
+      ],
+      "diagnosticFile": "research/central-asia-capitals-2026-10-08/astana-viewport-bbox-diagnostic.json"
+    },
+    "finalInitialView": {
+      "boundsCount": 25,
+      "featureCount": 386,
+      "centerLatLon": [
+        51.12819898570511,
+        71.430401802063
+      ],
+      "zoom": 18,
+      "loading": false,
+      "sourceWarnings": []
+    },
+    "selection": {
+      "parcelId": "KZ-ASTANA-PKK-21320072529",
+      "nativeReference": "21320072529",
+      "mapClick": [
+        600,
+        409
+      ],
+      "detailsOpened": true,
+      "unknownOwnershipDisplayed": true
+    },
+    "pan": {
+      "action": "1400 pixels east with animation disabled",
+      "boundsCount": 40,
+      "featureCount": 483,
+      "centerLatLon": [
+        51.12819898570511,
+        71.4379119873047
+      ],
+      "zoom": 18,
+      "loading": false,
+      "sourceWarnings": []
+    },
+    "requests": [
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.1225%2C71.4275%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.125%2C71.4275%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.1275%2C71.4275%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.13000000000001%2C71.4275%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.425%2C51.1325%2C71.4275%2C51.135",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4275%2C51.1225%2C71.43%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4275%2C51.125%2C71.43%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4275%2C51.1275%2C71.43%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4275%2C51.13000000000001%2C71.43%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4275%2C51.1325%2C71.43%2C51.135",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43%2C51.1225%2C71.4325%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43%2C51.125%2C71.4325%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43%2C51.1275%2C71.4325%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43%2C51.13000000000001%2C71.4325%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43%2C51.1325%2C71.4325%2C51.135",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4325%2C51.1225%2C71.43500000000002%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4325%2C51.125%2C71.43500000000002%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4325%2C51.1275%2C71.43500000000002%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4325%2C51.13000000000001%2C71.43500000000002%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4325%2C51.1325%2C71.43500000000002%2C51.135",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43500000000002%2C51.1225%2C71.4375%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43500000000002%2C51.125%2C71.4375%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43500000000002%2C51.1275%2C71.4375%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43500000000002%2C51.13000000000001%2C71.4375%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.43500000000002%2C51.1325%2C71.4375%2C51.135",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4375%2C51.1225%2C71.44%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4375%2C51.125%2C71.44%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4375%2C51.1275%2C71.44%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4375%2C51.13000000000001%2C71.44%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4375%2C51.1325%2C71.44%2C51.135",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.44%2C51.1225%2C71.4425%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.44%2C51.125%2C71.4425%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.44%2C51.1275%2C71.4425%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.44%2C51.13000000000001%2C71.4425%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.44%2C51.1325%2C71.4425%2C51.135",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4425%2C51.1225%2C71.44500000000001%2C51.125",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4425%2C51.125%2C71.44500000000001%2C51.1275",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4425%2C51.1275%2C71.44500000000001%2C51.13000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4425%2C51.13000000000001%2C71.44500000000001%2C51.1325",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/kz-astana-pkk-esil?bbox=71.4425%2C51.1325%2C71.44500000000001%2C51.135",
+        "httpStatus": 200
+      }
+    ],
+    "uncaughtPageErrors": [],
+    "visualInspection": {
+      "outlinesRendered": true,
+      "selectedParcelOutline": true,
+      "nativeCadastralReferenceVisible": true,
+      "partialEsilScopeVisible": true,
+      "newPanCellsRendered": true
+    },
+    "screenshotsViewed": [
+      "/tmp/parcel-batch3-astana-selected.png",
+      "/tmp/parcel-batch3-astana-details.png",
+      "/tmp/parcel-batch3-astana-pan.png"
+    ]
+  },
+  "report": {
+    "localUrl": "http://localhost:5638/parcel-coverage-report.html",
+    "totalCityRows": 465,
+    "regionalCohortRows": 171,
+    "centralCapitalRowsVerified": [
+      "Astana",
+      "Bishkek",
+      "Dushanbe",
+      "Toshkent (Tashkent)",
+      "Ashgabat"
+    ],
+    "appLabelCities": [
+      "Astana"
+    ],
+    "verifiedSampleCities": [
+      "Astana",
+      "Bishkek"
+    ],
+    "unverifiedSampleCities": [
+      "Dushanbe",
+      "Toshkent (Tashkent)",
+      "Ashgabat"
+    ],
+    "nonWupPopulationMissing": true,
+    "screenshotViewed": "/tmp/parcel-batch3-report-astana.png",
+    "postInspectionDataCorrection": "Bishkek hover basis was refined from QA incomplete to completed QA hold (3 invalid polygons /12 overlap pairs in111). Generated artifact was reread and its affected build tests passed; no layout changed."
+  },
+  "countsMeaning": "Feature counts are retained unique parcels across complete cells, not the visible count.",
+  "sessionCleanup": "Named parcel-batch3 browser closed; agent-browser session list reported no active sessions."
+}

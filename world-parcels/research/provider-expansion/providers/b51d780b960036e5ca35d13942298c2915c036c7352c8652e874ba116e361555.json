@@ -1,0 +1,1506 @@
+{
+ "schemaVersion": 1,
+ "countryCode": "US",
+ "regionCode": "CA",
+ "checkedAt": "2026-10-12",
+ "priorEvidence": "research/subnational/US/CA.json",
+ "uncoveredUnCities": 51,
+ "uncoveredUnCitySample": [
+  {
+   "cityCode": "1725",
+   "name": "Los Angeles",
+   "lat": 33.9870848453669,
+   "lon": -118.09413368817
+  },
+  {
+   "cityCode": "4225",
+   "name": "Sacramento",
+   "lat": 38.5825222074959,
+   "lon": -121.390743307933
+  },
+  {
+   "cityCode": "2592",
+   "name": "Mission Viejo",
+   "lat": 33.5935129285423,
+   "lon": -117.683461261124
+  },
+  {
+   "cityCode": "2061",
+   "name": "Concord",
+   "lat": 37.9523383146985,
+   "lon": -122.042026648317
+  },
+  {
+   "cityCode": "3692",
+   "name": "Murrieta",
+   "lat": 33.5360803187946,
+   "lon": -117.149890103166
+  },
+  {
+   "cityCode": "889",
+   "name": "Oxnard",
+   "lat": 34.1891769911221,
+   "lon": -119.181411608013
+  },
+  {
+   "cityCode": "4141",
+   "name": "Moreno Valley",
+   "lat": 33.9256769971331,
+   "lon": -117.234944442388
+  },
+  {
+   "cityCode": "2521",
+   "name": "Antioch",
+   "lat": 37.9995977752111,
+   "lon": -121.852977227884
+  },
+  {
+   "cityCode": "4566",
+   "name": "Indio",
+   "lat": 33.7085657702164,
+   "lon": -116.224774196825
+  },
+  {
+   "cityCode": "764",
+   "name": "Salinas",
+   "lat": 36.6903607518461,
+   "lon": -121.635875360103
+  }
+ ],
+ "access": "Anonymous HTTPS GET/POST to the public ArcGIS REST query endpoint, at most one request per second per host, no token or cookie. Only object-ID, native-ID and county/town scope fields were ever requested; no owner, address, sale, account or taxpayer fields.",
+ "helperScripts": "tmp/adapter-staging/us-statewide-a/scripts/ (state-cities.py, polite.mjs, meta.mjs, uniqueness.mjs, statewide-repeats.mjs, coverage.mjs, blank-breakdown.mjs, dup-ids.mjs, repeat-geometry.mjs, distinct-area-repeats.mjs, parts-overlap.mjs, verify.mjs, verify-parts.mjs, dense-cell.mjs, descriptors.mjs)",
+ "status": "ready",
+ "sourceId": "us-ca-calfire-statewide-parcels",
+ "layer": {
+  "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+  "layerName": "CA_Statewide_Parcels_Public",
+  "type": "Feature Layer",
+  "geometryType": "esriGeometryPolygon",
+  "objectIdField": "OBJECTID",
+  "globalIdField": null,
+  "maxRecordCount": 2000,
+  "capabilities": "Query",
+  "supportsPagination": true,
+  "supportsStatistics": true,
+  "supportsHavingClause": true,
+  "nativeSpatialReference": 6414,
+  "dataLastEditDate": "2026-05-28",
+  "fieldCount": 21,
+  "fieldNames": [
+   "OBJECTID",
+   "PARCEL_APN",
+   "FIPS_CODE",
+   "PARCEL_DMP_ID",
+   "COUNTYNAME",
+   "SITE_ADDR",
+   "SITE_CITY",
+   "SITE_STATE",
+   "SITE_ZIP",
+   "SITE_PLUS_4",
+   "SITE_UNIT_PREFIX",
+   "SITE_UNIT_NUMBER",
+   "SITE_HOUSE_NUMBER",
+   "SITE_DIRECTION",
+   "SITE_STREET_NAME",
+   "SITE_MODE",
+   "SITE_QUADRANT",
+   "FullStreetAddress",
+   "Search_PARCELAPN",
+   "Shape__Area",
+   "Shape__Length"
+  ],
+  "description": null,
+  "copyrightText": null
+ },
+ "recordCount": 13138000,
+ "coverage": {
+  "countyFipsCodesPresent": 58,
+  "of": 58,
+  "missingCounties": [],
+  "note": "All 58 California county FIPS codes are present; no service or item description documents missing counties (the service publishes no description)."
+ },
+ "identity": {
+  "idFields": [
+   "FIPS_CODE",
+   "PARCEL_APN"
+  ],
+  "parcelNumberField": "PARCEL_APN",
+  "why": "PARCEL_APN is the county assessor parcel number; APN formats are county-specific (10 digits in Los Angeles, 14 in Sacramento, dashed in Orange), so FIPS_CODE is prefixed to make a statewide key by construction. PARCEL_DMP_ID is an aggregator key with several batch prefixes (100660192_, 542204217_, 538892472_) whose stability across republications is unknown, so it is not used.",
+  "blankCounts": {
+   "1=1": 13138000,
+   "PARCEL_APN IS NULL": 23032,
+   "PARCEL_APN = ''": 0,
+   "PARCEL_APN = ' '": 0,
+   "FIPS_CODE IS NULL": 0,
+   "FIPS_CODE = ''": 0,
+   "PARCEL_DMP_ID IS NULL": 0
+  },
+  "exclusion": "attributeNotNull PARCEL_APN (23,032 null-APN rows have no native identity)."
+ },
+ "uniqueness": {
+  "bboxChecks": [
+   {
+    "state": "CA",
+    "label": "losangeles",
+    "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "bbox": [
+     -118.0991,
+     33.9821,
+     -118.0891,
+     33.9921
+    ],
+    "rows": 754,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon",
+     "MultiPolygon"
+    ],
+    "distinctGeometries": 754,
+    "fields": {
+     "PARCEL_APN": {
+      "distinctValues": 754,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "6370002008"
+       ],
+       [
+        "6370002009"
+       ],
+       [
+        "6370002011"
+       ],
+       [
+        "6370002012"
+       ],
+       [
+        "6370002016"
+       ]
+      ]
+     },
+     "PARCEL_DMP_ID": {
+      "distinctValues": 754,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "100660192_195757096"
+       ],
+       [
+        "100660192_195757097"
+       ],
+       [
+        "100660192_195757104"
+       ],
+       [
+        "100660192_195757105"
+       ],
+       [
+        "100660192_195757106"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_APN": {
+      "distinctValues": 754,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06037",
+        "6370002008"
+       ],
+       [
+        "06037",
+        "6370002009"
+       ],
+       [
+        "06037",
+        "6370002011"
+       ],
+       [
+        "06037",
+        "6370002012"
+       ],
+       [
+        "06037",
+        "6370002016"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_DMP_ID": {
+      "distinctValues": 754,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06037",
+        "100660192_195757096"
+       ],
+       [
+        "06037",
+        "100660192_195757097"
+       ],
+       [
+        "06037",
+        "100660192_195757104"
+       ],
+       [
+        "06037",
+        "100660192_195757105"
+       ],
+       [
+        "06037",
+        "100660192_195757106"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "FIPS_CODE": [
+      "06037"
+     ],
+     "COUNTYNAME": [
+      "LOS ANGELES"
+     ]
+    }
+   },
+   {
+    "state": "CA",
+    "label": "sacramento",
+    "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "bbox": [
+     -121.3957,
+     38.5775,
+     -121.3857,
+     38.5875
+    ],
+    "rows": 771,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 771,
+    "fields": {
+     "PARCEL_APN": {
+      "distinctValues": 771,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "28601800160000"
+       ],
+       [
+        "28601800090000"
+       ],
+       [
+        "28601800140000"
+       ],
+       [
+        "28601800150000"
+       ],
+       [
+        "28601800200000"
+       ]
+      ]
+     },
+     "PARCEL_DMP_ID": {
+      "distinctValues": 771,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "100660192_176200738"
+       ],
+       [
+        "100660192_176200751"
+       ],
+       [
+        "100660192_176200753"
+       ],
+       [
+        "100660192_176200754"
+       ],
+       [
+        "100660192_176200755"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_APN": {
+      "distinctValues": 771,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06067",
+        "28601800160000"
+       ],
+       [
+        "06067",
+        "28601800090000"
+       ],
+       [
+        "06067",
+        "28601800140000"
+       ],
+       [
+        "06067",
+        "28601800150000"
+       ],
+       [
+        "06067",
+        "28601800200000"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_DMP_ID": {
+      "distinctValues": 771,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 0,
+      "sharedGeometryExamples": [],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06067",
+        "100660192_176200738"
+       ],
+       [
+        "06067",
+        "100660192_176200751"
+       ],
+       [
+        "06067",
+        "100660192_176200753"
+       ],
+       [
+        "06067",
+        "100660192_176200754"
+       ],
+       [
+        "06067",
+        "100660192_176200755"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "FIPS_CODE": [
+      "06067"
+     ],
+     "COUNTYNAME": [
+      "SACRAMENTO"
+     ]
+    }
+   },
+   {
+    "state": "CA",
+    "label": "missionviejo",
+    "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "bbox": [
+     -117.6885,
+     33.5885,
+     -117.6785,
+     33.5985
+    ],
+    "rows": 818,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon"
+    ],
+    "distinctGeometries": 816,
+    "fields": {
+     "PARCEL_APN": {
+      "distinctValues": 818,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 2,
+      "sharedGeometryExamples": [
+       [
+        [
+         "620-212-02"
+        ],
+        [
+         "620-212-03"
+        ]
+       ],
+       [
+        [
+         "620-032-41"
+        ],
+        [
+         "620-032-42"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "620-063-15"
+       ],
+       [
+        "620-063-16"
+       ],
+       [
+        "620-092-16"
+       ],
+       [
+        "620-092-08"
+       ],
+       [
+        "620-091-13"
+       ]
+      ]
+     },
+     "PARCEL_DMP_ID": {
+      "distinctValues": 818,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 2,
+      "sharedGeometryExamples": [
+       [
+        [
+         "100660192_215886714"
+        ],
+        [
+         "542204217_886"
+        ]
+       ],
+       [
+        [
+         "100660192_215886716"
+        ],
+        [
+         "100660192_215886717"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "100660192_215859522"
+       ],
+       [
+        "100660192_215859523"
+       ],
+       [
+        "100660192_215859578"
+       ],
+       [
+        "100660192_215859583"
+       ],
+       [
+        "100660192_215859593"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_APN": {
+      "distinctValues": 818,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 2,
+      "sharedGeometryExamples": [
+       [
+        [
+         "06059",
+         "620-212-02"
+        ],
+        [
+         "06059",
+         "620-212-03"
+        ]
+       ],
+       [
+        [
+         "06059",
+         "620-032-41"
+        ],
+        [
+         "06059",
+         "620-032-42"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06059",
+        "620-063-15"
+       ],
+       [
+        "06059",
+        "620-063-16"
+       ],
+       [
+        "06059",
+        "620-092-16"
+       ],
+       [
+        "06059",
+        "620-092-08"
+       ],
+       [
+        "06059",
+        "620-091-13"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_DMP_ID": {
+      "distinctValues": 818,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 0,
+      "geometriesSharedByDistinctValues": 2,
+      "sharedGeometryExamples": [
+       [
+        [
+         "06059",
+         "100660192_215886714"
+        ],
+        [
+         "06059",
+         "542204217_886"
+        ]
+       ],
+       [
+        [
+         "06059",
+         "100660192_215886716"
+        ],
+        [
+         "06059",
+         "100660192_215886717"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06059",
+        "100660192_215859522"
+       ],
+       [
+        "06059",
+        "100660192_215859523"
+       ],
+       [
+        "06059",
+        "100660192_215859578"
+       ],
+       [
+        "06059",
+        "100660192_215859583"
+       ],
+       [
+        "06059",
+        "100660192_215859593"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "FIPS_CODE": [
+      "06059"
+     ],
+     "COUNTYNAME": [
+      "ORANGE"
+     ]
+    }
+   },
+   {
+    "state": "CA",
+    "label": "concord",
+    "endpoint": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0",
+    "bbox": [
+     -122.047,
+     37.9473,
+     -122.037,
+     37.9573
+    ],
+    "rows": 984,
+    "nullGeometry": 0,
+    "geometryTypes": [
+     "Polygon",
+     "MultiPolygon"
+    ],
+    "distinctGeometries": 917,
+    "fields": {
+     "PARCEL_APN": {
+      "distinctValues": 958,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 26,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "147030034"
+        ],
+        [
+         "714703160"
+        ],
+        [
+         "714703154"
+        ],
+        [
+         "714703152"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "128155009"
+       ],
+       [
+        "128155003"
+       ],
+       [
+        "128231026"
+       ],
+       [
+        "128231030"
+       ],
+       [
+        "128231031"
+       ]
+      ]
+     },
+     "PARCEL_DMP_ID": {
+      "distinctValues": 958,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 26,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "100660192_204614634"
+        ],
+        [
+         "538892472_11257"
+        ],
+        [
+         "538892472_11258"
+        ],
+        [
+         "538892472_11259"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "100660192_204612708"
+       ],
+       [
+        "100660192_204612921"
+       ],
+       [
+        "100660192_204612927"
+       ],
+       [
+        "100660192_204612930"
+       ],
+       [
+        "100660192_204612931"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_APN": {
+      "distinctValues": 958,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 26,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "06013",
+         "147030034"
+        ],
+        [
+         "06013",
+         "714703160"
+        ],
+        [
+         "06013",
+         "714703154"
+        ],
+        [
+         "06013",
+         "714703152"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06013",
+        "128155009"
+       ],
+       [
+        "06013",
+        "128155003"
+       ],
+       [
+        "06013",
+        "128231026"
+       ],
+       [
+        "06013",
+        "128231030"
+       ],
+       [
+        "06013",
+        "128231031"
+       ]
+      ]
+     },
+     "FIPS_CODE+PARCEL_DMP_ID": {
+      "distinctValues": 958,
+      "blankRows": 0,
+      "valuesRepeatedWithDistinctGeometry": 0,
+      "valuesRepeatedWithIdenticalGeometry": 26,
+      "geometriesSharedByDistinctValues": 1,
+      "sharedGeometryExamples": [
+       [
+        [
+         "06013",
+         "100660192_204614634"
+        ],
+        [
+         "06013",
+         "538892472_11257"
+        ],
+        [
+         "06013",
+         "538892472_11258"
+        ],
+        [
+         "06013",
+         "538892472_11259"
+        ]
+       ]
+      ],
+      "repeatExamples": [],
+      "sampleValues": [
+       [
+        "06013",
+        "100660192_204612708"
+       ],
+       [
+        "06013",
+        "100660192_204612921"
+       ],
+       [
+        "06013",
+        "100660192_204612927"
+       ],
+       [
+        "06013",
+        "100660192_204612930"
+       ],
+       [
+        "06013",
+        "100660192_204612931"
+       ]
+      ]
+     }
+    },
+    "scopeValues": {
+     "FIPS_CODE": [
+      "06013"
+     ],
+     "COUNTYNAME": [
+      "CONTRA COSTA"
+     ]
+    }
+   }
+  ],
+  "statewideSampleChecks": [
+   {
+    "state": "CA",
+    "label": "losangeles",
+    "field": "PARCEL_APN",
+    "sampled": 80,
+    "localRowsSampled": 80,
+    "statewideRows": 80,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   },
+   {
+    "state": "CA",
+    "label": "losangeles",
+    "field": "PARCEL_DMP_ID",
+    "sampled": 80,
+    "localRowsSampled": 80,
+    "statewideRows": 80,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   },
+   {
+    "state": "CA",
+    "label": "sacramento",
+    "field": "PARCEL_APN",
+    "sampled": 80,
+    "localRowsSampled": 80,
+    "statewideRows": 80,
+    "valuesWithRowsOutsideBbox": 0,
+    "examples": []
+   }
+  ],
+  "withinCountyRepeatedApnRows": [
+   {
+    "scope": "FIPS_CODE = '06013'",
+    "scopeRows": 393691,
+    "repeatedValues": 2000,
+    "repeatedRows": 7421,
+    "truncatedAt2000": true,
+    "top": [
+     {
+      "n": 174,
+      "PARCEL_APN": "007191004"
+     },
+     {
+      "n": 108,
+      "PARCEL_APN": "740303218"
+     },
+     {
+      "n": 97,
+      "PARCEL_APN": "098340002"
+     },
+     {
+      "n": 78,
+      "PARCEL_APN": "127150017"
+     },
+     {
+      "n": 51,
+      "PARCEL_APN": "091030010"
+     }
+    ]
+   },
+   {
+    "scope": "FIPS_CODE = '06037'",
+    "scopeRows": 2456710,
+    "repeatedValues": 1888,
+    "repeatedRows": 29113,
+    "truncatedAt2000": false,
+    "top": [
+     {
+      "n": 582,
+      "PARCEL_APN": "2582002017"
+     },
+     {
+      "n": 508,
+      "PARCEL_APN": "4224006911"
+     },
+     {
+      "n": 434,
+      "PARCEL_APN": "8730022003"
+     },
+     {
+      "n": 364,
+      "PARCEL_APN": "8109015026"
+     },
+     {
+      "n": 359,
+      "PARCEL_APN": "3001004902"
+     }
+    ]
+   },
+   {
+    "scope": "FIPS_CODE = '06059'",
+    "scopeRows": 973834,
+    "repeatedValues": 324,
+    "repeatedRows": 4957,
+    "truncatedAt2000": false,
+    "top": [
+     {
+      "n": 3938,
+      "PARCEL_APN": null
+     },
+     {
+      "n": 174,
+      "PARCEL_APN": "135-391-06"
+     },
+     {
+      "n": 91,
+      "PARCEL_APN": "691-432-02"
+     },
+     {
+      "n": 59,
+      "PARCEL_APN": "477-161-10"
+     },
+     {
+      "n": 7,
+      "PARCEL_APN": "110-016-06"
+     }
+    ]
+   },
+   {
+    "scope": "FIPS_CODE = '06067'",
+    "scopeRows": 501112,
+    "repeatedValues": 754,
+    "repeatedRows": 3619,
+    "truncatedAt2000": false,
+    "top": [
+     {
+      "n": 864,
+      "PARCEL_APN": null
+     },
+     {
+      "n": 235,
+      "PARCEL_APN": "11900700850000"
+     },
+     {
+      "n": 93,
+      "PARCEL_APN": "07700200230000"
+     },
+     {
+      "n": 90,
+      "PARCEL_APN": "22801810360000"
+     },
+     {
+      "n": 84,
+      "PARCEL_APN": "06800300430000"
+     }
+    ]
+   }
+  ],
+  "repeatedApnGeometrySamples": [
+   {
+    "value": "2582002017",
+    "rows": 582,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     762964
+    ]
+   },
+   {
+    "value": "4224006911",
+    "rows": 508,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     53601
+    ]
+   },
+   {
+    "value": "8730022003",
+    "rows": 434,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     183959
+    ]
+   },
+   {
+    "value": "8109015026",
+    "rows": 364,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     94372
+    ]
+   },
+   {
+    "value": "8717025022",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     8891
+    ]
+   },
+   {
+    "value": "8741012027",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     1457
+    ]
+   },
+   {
+    "value": "8761012012",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     42768
+    ]
+   },
+   {
+    "value": "8762001039",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     10467
+    ]
+   },
+   {
+    "value": "007191004",
+    "rows": 174,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     86081
+    ]
+   },
+   {
+    "value": "740303218",
+    "rows": 108,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     110921
+    ]
+   },
+   {
+    "value": "098340002",
+    "rows": 97,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     61260
+    ]
+   },
+   {
+    "value": "127150017",
+    "rows": 78,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     52816
+    ]
+   },
+   {
+    "value": "170360022",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     96
+    ]
+   },
+   {
+    "value": "170360027",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     88
+    ]
+   },
+   {
+    "value": "170360028",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     92
+    ]
+   },
+   {
+    "value": "170360029",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     103
+    ]
+   },
+   {
+    "value": "11900700850000",
+    "rows": 235,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     190837
+    ]
+   },
+   {
+    "value": "07700200230000",
+    "rows": 93,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     80146
+    ]
+   },
+   {
+    "value": "22801810360000",
+    "rows": 90,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     80697
+    ]
+   },
+   {
+    "value": "06800300430000",
+    "rows": 84,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     76769
+    ]
+   },
+   {
+    "value": "28500720130000",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     1294
+    ]
+   },
+   {
+    "value": "28501600140000",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     90340
+    ]
+   },
+   {
+    "value": "28601800180000",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     7031
+    ]
+   },
+   {
+    "value": "29201800650000",
+    "rows": 2,
+    "distinctGeometries": 1,
+    "pairsChecked": 0,
+    "overlappingDistinctPairs": 0,
+    "maxPairOverlapM2": 0,
+    "distinctAreasM2": [
+     24764
+    ]
+   }
+  ],
+  "apnsWithDifferingShapeArea": [
+   {
+    "scope": "FIPS_CODE = '06013'",
+    "idsWithDistinctAreas": 0
+   },
+   {
+    "scope": "FIPS_CODE = '06037'",
+    "idsWithDistinctAreas": 0
+   },
+   {
+    "scope": "FIPS_CODE = '06059'",
+    "idsWithDistinctAreas": 0
+   },
+   {
+    "scope": "FIPS_CODE = '06067'",
+    "idsWithDistinctAreas": 0
+   }
+  ],
+  "result": "No APN repeats with differing geometry in four bbox samples or in the full Los Angeles, Sacramento, Orange and Contra Costa county tables (MAX(Shape__Area) > MIN(Shape__Area) found none). APN repeats are byte-identical lot polygons (condominium-style rows), which the adapter collapses to one polygon. Sampled APNs (240) never appeared outside their own bbox/county statewide."
+ },
+ "liveVerification": [
+  {
+   "cityCode": "1725",
+   "name": "Los Angeles",
+   "unPoint": [
+    -118.09413368817,
+    33.9870848453669
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -118.094634,
+      33.986585,
+      -118.093634,
+      33.987585
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 11,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "ms": 1550,
+     "ids": [
+      "US-CA-STATEWIDE-06037~6370013032",
+      "US-CA-STATEWIDE-06037~6371018010",
+      "US-CA-STATEWIDE-06037~6371018014",
+      "US-CA-STATEWIDE-06037~6371018012",
+      "US-CA-STATEWIDE-06037~6371018011",
+      "US-CA-STATEWIDE-06037~6371018013",
+      "US-CA-STATEWIDE-06037~6378016002",
+      "US-CA-STATEWIDE-06037~6378016023",
+      "US-CA-STATEWIDE-06037~6378016001",
+      "US-CA-STATEWIDE-06037~6378017001",
+      "US-CA-STATEWIDE-06037~6378017004"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?where=PARCEL_APN+IS+NOT+NULL&outFields=OBJECTID%2CFIPS_CODE%2CPARCEL_APN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-118.094634%2C33.986585%2C-118.093634%2C33.987585&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+       "status": 200,
+       "ms": 1547
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-CA-STATEWIDE-06037~6370013032",
+     "US-CA-STATEWIDE-06037~6371018013",
+     "US-CA-STATEWIDE-06037~6378017004"
+    ],
+    "returnedIds": [
+     "US-CA-STATEWIDE-06037~6370013032",
+     "US-CA-STATEWIDE-06037~6371018013",
+     "US-CA-STATEWIDE-06037~6378017004"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-CA-STATEWIDE-06037~6370013032",
+      "sourceParcelId": "06037~6370013032",
+      "parcelNumber": "6370013032",
+      "geometryType": "Polygon",
+      "boundsHash": "5e08da92a7c44d501432b0a210f5a7d305d3c6378a0543d06d08c00ee95a23cd",
+      "idsHash": "5e08da92a7c44d501432b0a210f5a7d305d3c6378a0543d06d08c00ee95a23cd",
+      "identical": true
+     },
+     {
+      "id": "US-CA-STATEWIDE-06037~6371018013",
+      "sourceParcelId": "06037~6371018013",
+      "parcelNumber": "6371018013",
+      "geometryType": "Polygon",
+      "boundsHash": "17225c91f46bd00ea3a345189d4f10b61e2d2dc80484d0954f02d809d91d3379",
+      "idsHash": "17225c91f46bd00ea3a345189d4f10b61e2d2dc80484d0954f02d809d91d3379",
+      "identical": true
+     },
+     {
+      "id": "US-CA-STATEWIDE-06037~6378017004",
+      "sourceParcelId": "06037~6378017004",
+      "parcelNumber": "6378017004",
+      "geometryType": "Polygon",
+      "boundsHash": "b6d6fdac57953188399aae97ca1ce635b503b71d30fb27351603e64eebc5195b",
+      "idsHash": "b6d6fdac57953188399aae97ca1ce635b503b71d30fb27351603e64eebc5195b",
+      "identical": true
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?where=%28PARCEL_APN+IS+NOT+NULL%29+AND+%28%28FIPS_CODE+%3D+%2706037%27+AND+PARCEL_APN+%3D+%276370013032%27%29+OR+%28FIPS_CODE+%3D+%2706037%27+AND+PARCEL_APN+%3D+%276371018013%27%29+OR+%28FIPS_CODE+%3D+%2706037%27+AND+PARCEL_APN+%3D+%276378017004%27%29%29&outFields=OBJECTID%2CFIPS_CODE%2CPARCEL_APN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "status": 200,
+      "ms": 2494
+     }
+    ],
+    "ms": 2495
+   }
+  },
+  {
+   "cityCode": "4225",
+   "name": "Sacramento",
+   "unPoint": [
+    -121.390743307933,
+    38.5825222074959
+   ],
+   "pass": true,
+   "queryBounds": [
+    {
+     "bbox": [
+      -121.391243,
+      38.582022,
+      -121.390243,
+      38.583022
+     ],
+     "offsetDeg": [
+      0,
+      0
+     ],
+     "features": 6,
+     "complete": true,
+     "returnsWGS84": true,
+     "allWgs84Polygons": true,
+     "uniqueIds": true,
+     "geometryTypes": [
+      "Polygon"
+     ],
+     "ms": 3752,
+     "ids": [
+      "US-CA-STATEWIDE-06067~28602840050000",
+      "US-CA-STATEWIDE-06067~28602840060000",
+      "US-CA-STATEWIDE-06067~28602840070000",
+      "US-CA-STATEWIDE-06067~28602840080000",
+      "US-CA-STATEWIDE-06067~28602840090000",
+      "US-CA-STATEWIDE-06067~28603210010000"
+     ],
+     "requests": [
+      {
+       "method": "GET",
+       "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?where=PARCEL_APN+IS+NOT+NULL&outFields=OBJECTID%2CFIPS_CODE%2CPARCEL_APN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-121.391243%2C38.582022%2C-121.390243%2C38.583022&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+       "status": 200,
+       "ms": 3743
+      }
+     ]
+    }
+   ],
+   "queryIdsFreshAdapter": {
+    "requestedIds": [
+     "US-CA-STATEWIDE-06067~28602840050000",
+     "US-CA-STATEWIDE-06067~28602840080000",
+     "US-CA-STATEWIDE-06067~28603210010000"
+    ],
+    "returnedIds": [
+     "US-CA-STATEWIDE-06067~28602840050000",
+     "US-CA-STATEWIDE-06067~28602840080000",
+     "US-CA-STATEWIDE-06067~28603210010000"
+    ],
+    "absentIds": [],
+    "complete": true,
+    "pass": true,
+    "items": [
+     {
+      "id": "US-CA-STATEWIDE-06067~28602840050000",
+      "sourceParcelId": "06067~28602840050000",
+      "parcelNumber": "28602840050000",
+      "geometryType": "Polygon",
+      "boundsHash": "8872b6bff825b27e965ea188bd8178939dce8a60a192deb216eabb7a84c7b0ca",
+      "idsHash": "8872b6bff825b27e965ea188bd8178939dce8a60a192deb216eabb7a84c7b0ca",
+      "identical": true
+     },
+     {
+      "id": "US-CA-STATEWIDE-06067~28602840080000",
+      "sourceParcelId": "06067~28602840080000",
+      "parcelNumber": "28602840080000",
+      "geometryType": "Polygon",
+      "boundsHash": "01a8a493b03321327ae35388a76e39e09caa7f980b4dd052d21bfd74f7fd2cc5",
+      "idsHash": "01a8a493b03321327ae35388a76e39e09caa7f980b4dd052d21bfd74f7fd2cc5",
+      "identical": true
+     },
+     {
+      "id": "US-CA-STATEWIDE-06067~28603210010000",
+      "sourceParcelId": "06067~28603210010000",
+      "parcelNumber": "28603210010000",
+      "geometryType": "Polygon",
+      "boundsHash": "79ed234d55c6a1eb9db50911d8540ff507f6c65c6f0233117c5821e7dd13b851",
+      "idsHash": "79ed234d55c6a1eb9db50911d8540ff507f6c65c6f0233117c5821e7dd13b851",
+      "identical": true
+     }
+    ],
+    "requests": [
+     {
+      "method": "GET",
+      "url": "https://bz1uwWPKUInZBK94.svcs5.arcgis.com/bz1uwWPKUInZBK94/arcgis/rest/services/CA_Statewide_Parcels_Public_view/FeatureServer/0/query?where=%28PARCEL_APN+IS+NOT+NULL%29+AND+%28%28FIPS_CODE+%3D+%2706067%27+AND+PARCEL_APN+%3D+%2728602840050000%27%29+OR+%28FIPS_CODE+%3D+%2706067%27+AND+PARCEL_APN+%3D+%2728602840080000%27%29+OR+%28FIPS_CODE+%3D+%2706067%27+AND+PARCEL_APN+%3D+%2728603210010000%27%29%29&outFields=OBJECTID%2CFIPS_CODE%2CPARCEL_APN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "status": 200,
+      "ms": 2082
+     }
+    ],
+    "ms": 2083
+   }
+  }
+ ],
+ "denseCellTiming": "A 0.003 degree Los Angeles cell returned 87 parcels in 1.1 s (single offset page).",
+ "caveats": [
+  "APNs are county-scoped number spaces, so identity is the reversible composite FIPS_CODE~PARCEL_APN; PARCEL_DMP_ID (an aggregator key with several batch prefixes) is not used.",
+  "Condominium-style rows repeat one APN with byte-identical lot geometry (e.g. 582 rows for one Los Angeles APN); the adapter keeps one polygon per APN. No APN with differing Shape__Area was found in Los Angeles, Sacramento, Orange or Contra Costa counties; a differing repeat elsewhere fails closed.",
+  "Distinct APNs can share one identical lot polygon (observed in Orange and Contra Costa bbox samples).",
+  "metricSrid 32611 suits southern California; cities west of 120 W need a per-city metric projection (e.g. 32610) when qualified.",
+  "Layer derives from a statewide compilation of county data (data last edited 2026-05-28); per-county currency was not established and no licence text is published in the service metadata."
+ ]
+}

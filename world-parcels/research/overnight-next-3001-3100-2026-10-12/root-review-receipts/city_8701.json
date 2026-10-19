@@ -1,0 +1,35 @@
+{
+  "taskId": "city:8701",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/pending-queue.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/city-8701-hancheng.json",
+    "world-parcels/research/overnight-next-3001-3100-2026-10-12/hancheng-service-review.json"
+  ],
+  "checkedAt": "2026-10-12T02:29:42Z",
+  "identityCheck": {
+    "cityCode": 8701,
+    "rank": 3081,
+    "country": "China",
+    "point": [
+      35.472960569441,
+      110.440922699042
+    ],
+    "populationPersons": 195133,
+    "matchesImmutableQueue": true
+  },
+  "researchCheck": {
+    "englishAndLocalLanguageQueriesRecorded": true,
+    "fullPolygonSampleCount": 0,
+    "safeNativeIdPolygonResponseVerified": false
+  },
+  "admissionCheck": {
+    "freshNativeIdReads": false,
+    "forcedPaging": false,
+    "thirteenBoundedCells": false,
+    "metricGeosChecks": false,
+    "sourceBinding": false,
+    "headedDetailsPanel": false
+  },
+  "reason": "The local natural-resources custodian is evidenced; the official site timed out and no anonymous Hancheng parcel polygon, native ID, schema, or CRS was verified. A timeout is not absence."
+}

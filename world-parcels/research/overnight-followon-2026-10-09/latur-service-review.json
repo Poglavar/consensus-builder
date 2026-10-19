@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9385-latur.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A district property-card link and state digital-map service are record/map leads, but no bounded anonymous parcel polygon response was obtained. The municipal tax portal was not queried because its lookup solicits property number/owner name.",
+  "registryAssessment": "The Latur District Collectorate’s official Property Card and Revenue pages explicitly provide local land-record services and link Maharashtra’s land-record portal.",
+  "officialPrimarySources": [
+    {
+      "title": "Latur District official Property Card page",
+      "url": "https://latur.gov.in/en/property-card/",
+      "observation": "The official district site provides a View Property Card entry for Latur."
+    },
+    {
+      "title": "Latur District Revenue Department",
+      "url": "https://latur.gov.in/en/departments/revenue-department/",
+      "observation": "Collectorate revenue department lists the Latur district revenue circle/talathi context and links official state property-card and land-record services."
+    },
+    {
+      "title": "Maharashtra Mahabhumi portal",
+      "url": "https://mahabhumi.gov.in/Mahabhumilink_test/",
+      "observation": "State portal identifies digitally signed property cards and MH DIGI Maps, and is maintained by the Settlement Commissioner; no full polygon response was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Latur city Maharashtra official land records cadastral parcel map property card GIS Collector office",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://latur.gov.in/en/property-card/",
+        "https://latur.gov.in/en/departments/revenue-department/",
+        "https://mahabhumi.gov.in/Mahabhumilink_test/"
+      ]
+    },
+    {
+      "language": "Marathi",
+      "query": "लातूर शहर महाभू नकाशा सातबारा मालमत्ता पत्रक भूमी अभिलेख अधिकृत नकाशा",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://latur.gov.in/en/property-card/",
+        "https://latur.gov.in/en/departments/revenue-department/",
+        "https://mahabhumi.gov.in/Mahabhumilink_test/"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "A district property-card link and state digital-map service are record/map leads, but no bounded anonymous parcel polygon response was obtained. The municipal tax portal was not queried because its lookup solicits property number/owner name."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Latur District Collectorate’s official Property Card and Revenue pages explicitly provide local land-record services and link Maharashtra’s land-record portal.",
+    "verifiedOpenScope": "A district property-card link and state digital-map service are record/map leads, but no bounded anonymous parcel polygon response was obtained. The municipal tax portal was not queried because its lookup solicits property number/owner name.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "official source/UI and public service inspection",
+      "result": "A district property-card link and state digital-map service are record/map leads, but no bounded anonymous parcel polygon response was obtained. The municipal tax portal was not queried because its lookup solicits property number/owner name.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "The WUP point has not been tied to a specific village or urban survey parcel; the map/data query schema remains unverified."
+}

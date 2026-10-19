@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "status": "technical-qualified",
+  "cityCode": "5646",
+  "cityName": "West Valley City",
+  "sourceId": "us-ut-salt-lake-city-parcels",
+  "candidateSha256": "8e4ab6fc2b150b5ee7d7a069236924bb8c25ee673d3d149db3f6b13702ba3935",
+  "checks": {
+    "classification": {
+      "passed": true,
+      "evidenceCount": 3
+    },
+    "exactIds": {
+      "passed": true,
+      "requestedCount": 1,
+      "returnedCount": 1,
+      "freshCollectedIds": 87,
+      "freshBatchSize": 80
+    },
+    "stableGeometry": {
+      "passed": true,
+      "independentRead": true,
+      "comparedCount": 87,
+      "collectedUniqueCount": 87
+    },
+    "explicitAbsence": {
+      "passed": true,
+      "returnedCount": 0,
+      "absentCount": 1
+    },
+    "sampling": {
+      "passed": true,
+      "capability": "bbox-13-cell",
+      "cellCount": 13,
+      "passCount": 2,
+      "rowCount": 240
+    },
+    "completeness": {
+      "passed": true,
+      "completePasses": 2,
+      "cellCount": 13,
+      "forcedPageSize": 1,
+      "forcedKnownIdCount": 5,
+      "forcedComplete": true,
+      "pagingRequests": 10,
+      "observedPageLimits": [
+        1
+      ],
+      "singleIdRequests": 0,
+      "usesOffsetPaging": true,
+      "distinctOffsets": 2,
+      "pagedEvidence": true
+    },
+    "binding": {
+      "passed": true,
+      "geometryBindingCoverage": "complete",
+      "unsurveyedM2": 0,
+      "acceptedNoiseAllowanceM2": 0.01,
+      "actParcelCount": 1
+    },
+    "metric": {
+      "passed": true,
+      "inputSha256": "6c57e472cce765882adc99be8360936c8ddd95e80b6921ad47b82bf4f8dd88a9",
+      "featureCount": 87,
+      "sourceCrs": "EPSG:4326",
+      "metricCrs": "EPSG:32612",
+      "invalidCount": 0,
+      "duplicateIdCount": 0,
+      "conflictingSameIdGeometryCount": 0,
+      "exactGeometryDuplicateCount": 0,
+      "overlapPairCount": 0,
+      "operationErrorCount": 0,
+      "geometryChangedOrRepaired": false,
+      "geometryPass": true,
+      "reportFile": "metric-report.json"
+    }
+  },
+  "geometryReport": "metric-report.json",
+  "cacheFile": "full-safe.geojson",
+  "cacheSha256": "6c57e472cce765882adc99be8360936c8ddd95e80b6921ad47b82bf4f8dd88a9",
+  "featureCount": 87,
+  "sampleIds": [
+    "US-UT-SALTLAKE-21182290100000"
+  ],
+  "cellSizeDegrees": 0.001,
+  "requestCount": 43,
+  "requestLimit": 300,
+  "limitations": [
+    "Local bounded source qualification is not citywide completeness, legal title, survey accuracy, or currentness."
+  ],
+  "sampledCellsSummary": [
+    {
+      "index": 0,
+      "dx": -1,
+      "dy": -1,
+      "bbox": [
+        -111.989,
+        40.65,
+        -111.988,
+        40.651
+      ],
+      "complete": true,
+      "featureCount": 19
+    },
+    {
+      "index": 1,
+      "dx": 0,
+      "dy": -1,
+      "bbox": [
+        -111.988,
+        40.65,
+        -111.987,
+        40.651
+      ],
+      "complete": true,
+      "featureCount": 17
+    },
+    {
+      "index": 2,
+      "dx": 1,
+      "dy": -1,
+      "bbox": [
+        -111.987,
+        40.65,
+        -111.986,
+        40.651
+      ],
+      "complete": true,
+      "featureCount": 7
+    },
+    {
+      "index": 3,
+      "dx": -1,
+      "dy": 0,
+      "bbox": [
+        -111.989,
+        40.651,
+        -111.988,
+        40.652
+      ],
+      "complete": true,
+      "featureCount": 11
+    },
+    {
+      "index": 4,
+      "dx": 0,
+      "dy": 0,
+      "bbox": [
+        -111.988,
+        40.651,
+        -111.987,
+        40.652
+      ],
+      "complete": true,
+      "featureCount": 10
+    },
+    {
+      "index": 5,
+      "dx": 1,
+      "dy": 0,
+      "bbox": [
+        -111.987,
+        40.651,
+        -111.986,
+        40.652
+      ],
+      "complete": true,
+      "featureCount": 3
+    },
+    {
+      "index": 6,
+      "dx": -1,
+      "dy": 1,
+      "bbox": [
+        -111.989,
+        40.652,
+        -111.988,
+        40.653
+      ],
+      "complete": true,
+      "featureCount": 6
+    },
+    {
+      "index": 7,
+      "dx": 0,
+      "dy": 1,
+      "bbox": [
+        -111.988,
+        40.652,
+        -111.987,
+        40.653
+      ],
+      "complete": true,
+      "featureCount": 3
+    },
+    {
+      "index": 8,
+      "dx": 1,
+      "dy": 1,
+      "bbox": [
+        -111.987,
+        40.652,
+        -111.986,
+        40.653
+      ],
+      "complete": true,
+      "featureCount": 11
+    },
+    {
+      "index": 9,
+      "dx": 0,
+      "dy": -2,
+      "bbox": [
+        -111.988,
+        40.649,
+        -111.987,
+        40.65
+      ],
+      "complete": true,
+      "featureCount": 16
+    },
+    {
+      "index": 10,
+      "dx": 0,
+      "dy": 2,
+      "bbox": [
+        -111.988,
+        40.653,
+        -111.987,
+        40.654
+      ],
+      "complete": true,
+      "featureCount": 3
+    },
+    {
+      "index": 11,
+      "dx": -2,
+      "dy": 0,
+      "bbox": [
+        -111.99,
+        40.651,
+        -111.989,
+        40.652
+      ],
+      "complete": true,
+      "featureCount": 11
+    },
+    {
+      "index": 12,
+      "dx": 2,
+      "dy": 0,
+      "bbox": [
+        -111.986,
+        40.651,
+        -111.985,
+        40.652
+      ],
+      "complete": true,
+      "featureCount": 3
+    }
+  ]
+}

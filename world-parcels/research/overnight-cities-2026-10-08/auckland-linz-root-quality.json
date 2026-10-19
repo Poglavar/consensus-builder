@@ -1,0 +1,1308 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32760",
+  "featureCount": 184,
+  "validNonemptyCount": 184,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 2.713308615135824,
+    "median": 959.9359106839629,
+    "max": 459840.3467416242
+  },
+  "features": [
+    {
+      "id": "nz-linz:5032068",
+      "areaM2": 1187.257076172853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5032573",
+      "areaM2": 1044.0122495334108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5146484",
+      "areaM2": 1062.2207969967835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4772997",
+      "areaM2": 971.2080032762802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4774151",
+      "areaM2": 1420.3886668618475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4779232",
+      "areaM2": 1153.2814606422094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4901941",
+      "areaM2": 808.5491425755857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4910612",
+      "areaM2": 813.8938790924901,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5016068",
+      "areaM2": 809.5098778056432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5019464",
+      "areaM2": 876.943887782241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5075320",
+      "areaM2": 963.0303747818955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5141964",
+      "areaM2": 1062.211627127637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5159246",
+      "areaM2": 621.3771970179197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5180550",
+      "areaM2": 816.2666439359347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5211850",
+      "areaM2": 5984.838946988699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7635691",
+      "areaM2": 391.26551807335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4820311",
+      "areaM2": 813.1182944867867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5158320",
+      "areaM2": 953.0359109170754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4761853",
+      "areaM2": 899.7867054531691,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4806347",
+      "areaM2": 1304.4881939885845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4816860",
+      "areaM2": 599.6831728382608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4938798",
+      "areaM2": 1222.6968606536993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5074032",
+      "areaM2": 827.7319282855468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6615294",
+      "areaM2": 410.0810804390586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6615295",
+      "areaM2": 762.1432027906168,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6837551",
+      "areaM2": 659.0199725309454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6837552",
+      "areaM2": 619.5639069532403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7339492",
+      "areaM2": 1093.9595376112538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7451783",
+      "areaM2": 459840.3467416242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4773682",
+      "areaM2": 1062.2395764586329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4885999",
+      "areaM2": 1130.5344311016904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4900309",
+      "areaM2": 1184.6038050316067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4901739",
+      "areaM2": 1130.477223382145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5159455",
+      "areaM2": 1130.5396489490952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5159575",
+      "areaM2": 1130.441104957986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5219655",
+      "areaM2": 5638.41771256639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5030238",
+      "areaM2": 1061.4612754204857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:8175777",
+      "areaM2": 761.1714790413719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:8175778",
+      "areaM2": 401.0806116296111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4791443",
+      "areaM2": 981.7706226169344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4820753",
+      "areaM2": 1118.3419087695027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4902216",
+      "areaM2": 1212.4255494439763,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4904889",
+      "areaM2": 814.1764013821061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5152693",
+      "areaM2": 1014.2446160884045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5171707",
+      "areaM2": 1010.4515227541897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5173365",
+      "areaM2": 1232.378224577352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5182986",
+      "areaM2": 458.7120840307534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5232339",
+      "areaM2": 647.7214161901809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5245262",
+      "areaM2": 385.32188922327146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7319881",
+      "areaM2": 746.6003732286813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7319880",
+      "areaM2": 825.6596223577609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7339493",
+      "areaM2": 98.44279971117815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5046473",
+      "areaM2": 1771.617886200952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4693137",
+      "areaM2": 1033.4954415082082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4921217",
+      "areaM2": 482.0985107191513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5057116",
+      "areaM2": 655.5047977335581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5228183",
+      "areaM2": 6162.948910245682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4799496",
+      "areaM2": 937.2355696741207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4800607",
+      "areaM2": 283.6249724409451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4800548",
+      "areaM2": 155.12341830377767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4900901",
+      "areaM2": 1172.8710286786563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4907513",
+      "areaM2": 1580.6204732097121,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4913469",
+      "areaM2": 970.8863118270311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5030240",
+      "areaM2": 1162.3887651100574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5030242",
+      "areaM2": 1167.5561728878067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5035643",
+      "areaM2": 1178.0874326620005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5056997",
+      "areaM2": 1089.244768111943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5147097",
+      "areaM2": 1183.3312301192082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7321208",
+      "areaM2": 662.1639394864588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7321209",
+      "areaM2": 616.9468683780148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4777517",
+      "areaM2": 1250.7079511534148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4928528",
+      "areaM2": 576.5097271640532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4766115",
+      "areaM2": 1150.2353399724361,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4884577",
+      "areaM2": 807.0190450347689,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4916389",
+      "areaM2": 825.4024658269892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5161908",
+      "areaM2": 1284.2269898772267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5215593",
+      "areaM2": 2122.263879431055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5180483",
+      "areaM2": 2714.09515567581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4934518",
+      "areaM2": 807.9442933938656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5099860",
+      "areaM2": 1489.7467714689212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5161478",
+      "areaM2": 1081.2313709908562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5016084",
+      "areaM2": 920.8744351618772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5168306",
+      "areaM2": 916.7618045885805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4797608",
+      "areaM2": 965.8951999039028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4899378",
+      "areaM2": 985.2914127620631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4906534",
+      "areaM2": 1627.746097134088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5032506",
+      "areaM2": 883.7922357857948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5044719",
+      "areaM2": 1428.7566231125043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7438491",
+      "areaM2": 997.2296938507249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7438492",
+      "areaM2": 1289.8766404799005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5173187",
+      "areaM2": 1706.0630047086406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5157146",
+      "areaM2": 809.0336448047271,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4755198",
+      "areaM2": 1076.7111909842897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4772543",
+      "areaM2": 992.7616289218247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4795692",
+      "areaM2": 599.777505666877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4897694",
+      "areaM2": 1097.121672253631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4901736",
+      "areaM2": 1193.7692644847095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4901778",
+      "areaM2": 1740.9799620736655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5010725",
+      "areaM2": 1130.213030097697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5152153",
+      "areaM2": 1076.6238229836842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5159784",
+      "areaM2": 1163.4880331539862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5182691",
+      "areaM2": 2.713308615135824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5182692",
+      "areaM2": 925.6496510405733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6850934",
+      "areaM2": 600.4088698888847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4767647",
+      "areaM2": 1204.4139029222345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4735397",
+      "areaM2": 949.8910429494388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4746529",
+      "areaM2": 801.2495119925765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4759256",
+      "areaM2": 1062.3781193839538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4817849",
+      "areaM2": 642.7890920490918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4890651",
+      "areaM2": 1037.489382373792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4909688",
+      "areaM2": 646.7621791644756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5003269",
+      "areaM2": 689.1253549943981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5019433",
+      "areaM2": 1037.4476465937469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5075017",
+      "areaM2": 693.3563176291927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5168304",
+      "areaM2": 1037.9722375136894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5173355",
+      "areaM2": 651.9812879749692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5206898",
+      "areaM2": 2282.2614072960414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5254985",
+      "areaM2": 439.3896296522905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7347343",
+      "areaM2": 749.6442950092693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7347344",
+      "areaM2": 39.35112475463382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5039134",
+      "areaM2": 1335.776518190374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4946102",
+      "areaM2": 876.7344394617915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5118863",
+      "areaM2": 1038.2426425805634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4887382",
+      "areaM2": 857.3196378590721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5221397",
+      "areaM2": 3127.2354346287284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7916098",
+      "areaM2": 462.27345958526683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7916099",
+      "areaM2": 575.0022554740066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4945300",
+      "areaM2": 463.64349749194486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5132261",
+      "areaM2": 800.8902092558279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5168338",
+      "areaM2": 1334.3487936204683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5016088",
+      "areaM2": 1066.4883408301569,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4903594",
+      "areaM2": 951.8083016619147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4906399",
+      "areaM2": 809.3938278840243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5031006",
+      "areaM2": 46.25154643914599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7635690",
+      "areaM2": 419.78271272625136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7655990",
+      "areaM2": 452.8143132602589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7655991",
+      "areaM2": 585.2207141718421,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:823233",
+      "areaM2": 31.87802811478491,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4778207",
+      "areaM2": 1046.6643644943215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4928693",
+      "areaM2": 829.0373220975106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4800554",
+      "areaM2": 1051.5264937743489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5052477",
+      "areaM2": 599.6094542974357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5057075",
+      "areaM2": 200.7422379397299,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5158321",
+      "areaM2": 1232.3814198643736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5173718",
+      "areaM2": 1188.5206800740907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4929137",
+      "areaM2": 1013.3804027803892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7549353",
+      "areaM2": 597.8018806521943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:7549354",
+      "areaM2": 705.8819208079793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5186361",
+      "areaM2": 159.96489586179527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5057017",
+      "areaM2": 363.81037996467296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:8019084",
+      "areaM2": 771.6858003287359,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4809242",
+      "areaM2": 619.4703781283409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5020072",
+      "areaM2": 1139.8684213315669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4785669",
+      "areaM2": 939.1833890575072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5170868",
+      "areaM2": 959.5555885421412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4716201",
+      "areaM2": 252.45845555264208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4913755",
+      "areaM2": 63.16146041063432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4937477",
+      "areaM2": 1220.2935138980165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5018306",
+      "areaM2": 1142.6223500316876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5208913",
+      "areaM2": 6144.664479982376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6740778",
+      "areaM2": 808.5732217328189,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6740779",
+      "areaM2": 1077.4114046082768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4733931",
+      "areaM2": 821.168876341811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5159497",
+      "areaM2": 1178.4189217084167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5028088",
+      "areaM2": 1133.7349077703943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5026875",
+      "areaM2": 909.8777739287207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4912239",
+      "areaM2": 261.90868142362405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4784365",
+      "areaM2": 135.3991701158408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4801268",
+      "areaM2": 761.8890475872715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4802063",
+      "areaM2": 763.7411913269524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4905532",
+      "areaM2": 1446.3379967945748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5136319",
+      "areaM2": 1357.0772213614232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5254024",
+      "areaM2": 960.3162328257847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4858187",
+      "areaM2": 1186.273152665452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5103096",
+      "areaM2": 1453.6099050632527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5189366",
+      "areaM2": 1068.5559726618699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4717368",
+      "areaM2": 1111.1984724533015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4766281",
+      "areaM2": 1215.0598998180126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4773680",
+      "areaM2": 857.7409453157559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4774912",
+      "areaM2": 849.0100874072573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5034258",
+      "areaM2": 927.7708868056673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:5158822",
+      "areaM2": 810.0792307839552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:6850933",
+      "areaM2": 609.2340927634405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "nz-linz:4900596",
+      "areaM2": 1076.456165668549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

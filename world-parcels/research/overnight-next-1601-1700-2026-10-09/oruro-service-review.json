@@ -1,0 +1,34 @@
+{
+  "cityRecord": "city-505-oruro.json",
+  "cityCode": 505,
+  "queueRank": 1643,
+  "name": "Oruro",
+  "attempt": 1,
+  "checkedAt": "2026-10-10",
+  "status": "complete",
+  "registryFound": null,
+  "sourceReview": "GAMO documentation identifies a local Unidad de Catastro Urbano, making the municipality the evidenced local cadastral custodian. Its public documentation is organizational/procedural, not a public parcel service. GeoBolivia/GeoNode and OEP were checked as national/public map channels; no safe parcel layer or anonymous parcel response was verified.",
+  "queryReview": {
+    "englishDiscovery": "Completed; official GAMO, GeoBolivia, OEP, and gob.bo sources found, but no public Oruro parcel endpoint verified.",
+    "localLanguageDiscovery": "Completed in Spanish; official municipal cadastral-unit evidence found, but no public parcel viewer/API verified.",
+    "exactPoint": [-17.9662930323501, -67.1057597089078],
+    "returned": 0,
+    "ids": [],
+    "geometry": "No parcel geometry returned or retained",
+    "mapExtentOrPointMiss": false
+  },
+  "requestOutcomes": "GAMO homepage and direct OEP query returned empty curl responses; GAMO's official manual, GeoBolivia landing page, OEP ArcGIS service metadata, and gob.bo procedure page were available through first-party web discovery. GeoNode direct/API requests timed out or returned HTTP 502. No login, credentials, private token, CAPTCHA bypass, TLS exception, or unsafe field request was used.",
+  "safeFieldAllowlist": ["OBJECTID", "geometry"],
+  "nativeFieldMapping": null,
+  "compositeKeyProvenance": null,
+  "retainedSample": null,
+  "scopeLimits": [
+    "GAMO custodian evidence does not prove a public endpoint or citywide open coverage.",
+    "The OEP service is administrative/electoral mapping, not cadastral parcel data.",
+    "GeoNode timeout/502 and empty responses are service-access outcomes, not evidence of parcel absence.",
+    "No owner, address, contact, titleholder, personal, tax, account, legal-description, or value fields were requested or retained.",
+    "Runtime readiness remains held pending independent serial adapter review."
+  ],
+  "uncertainty": "No claim is made about parcel absence, geometry completeness, legal title, ownership, tax records, or internal municipal datasets. A zero verified parcel response is a public-access qualification result only.",
+  "runtimeReadiness": "held_serial_review"
+}

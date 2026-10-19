@@ -1,0 +1,19 @@
+{
+  "taskId": "city:9514",
+  "decision": "held",
+  "evidenceFiles": [
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/ranked-population.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/pending-queue.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/provenance.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/city-9514-dengfeng.json",
+    "world-parcels/research/overnight-next-2301-2400-2026-10-11/dengfeng-service-review.json"
+  ],
+  "checkedAt": "2026-10-11T09:25:25Z",
+  "reason": "The Dengfeng Natural Resources and Planning Bureau registration duties are supported by the paired record and live first-party government page. The Henan service catalog returned anonymous 401 responses; no native ID or polygon was obtained. An authentication wall does not establish citywide absence.",
+  "registryCustody": "true",
+  "identityCheck": "Immutable WUP source roster, pending queue, packet, and paired review agree on city code, rank, country, settlement point, and population persons.",
+  "searchCheck": "Packet records executed English and local-language searches with query text, results, and actual result URLs.",
+  "sampleCheck": "Zero retained parcel polygons; no sample file, unsafe attributes, or synthetic native IDs. The three-full-polygon cap is satisfied.",
+  "admissionCheck": "No original feature response/cache supports acceptance metrics; fresh exact native-ID reads, forced pagination, 13 bounded cells, metric GEOS validity/overlap and operation checks, source binding, and headed Details-panel proof are missing. Runtime admission remains held.",
+  "absenceInterpretation": "No citywide or countrywide parcel absence inferred from unavailable routes, a missing anonymous feature route, or authentication."
+}
